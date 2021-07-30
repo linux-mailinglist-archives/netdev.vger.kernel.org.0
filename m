@@ -2,95 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2521C3DB3DC
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 08:48:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E24553DB3F9
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 08:54:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237633AbhG3Gse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 02:48:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38548 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237452AbhG3Gsd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 02:48:33 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA0AC061765
-        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 23:48:29 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1m9MJh-0003zF-Ll; Fri, 30 Jul 2021 08:48:21 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:999f:536:c369:29ed])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id A2C2565B751;
-        Fri, 30 Jul 2021 06:48:18 +0000 (UTC)
-Date:   Fri, 30 Jul 2021 08:48:17 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Akshay Bhat <akshay.bhat@timesys.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net] can: hi311x: fix a signedness bug in hi3110_cmd()
-Message-ID: <20210730064817.jktiyy4rodvgjppi@pengutronix.de>
-References: <20210729141246.GA1267@kili>
+        id S237733AbhG3GyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 02:54:18 -0400
+Received: from smtp-fw-80007.amazon.com ([99.78.197.218]:62109 "EHLO
+        smtp-fw-80007.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237702AbhG3GyS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 02:54:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1627628055; x=1659164055;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=eJIXvXemTzZ+Jf6w2MSZ7dbahsya+/cy1Azgbxx/z6g=;
+  b=t1K5GvKOHggxJwadz2LROXOh6dzEAdXsYizvE8AZ2wVltBr/wW02cC4I
+   wmSJiXAl3l70m5BVldDfzaTm3IGZzrwbjaErPcOMUvl0PHYkPPiBh3fm8
+   FVLlte3QuWs3oNZDGU6dQrow2cYNDJX64gqI9urTx5k3gVqKiQVxYKqTQ
+   g=;
+X-IronPort-AV: E=Sophos;i="5.84,281,1620691200"; 
+   d="scan'208";a="15892312"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-1e-27fb8269.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 30 Jul 2021 06:54:13 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1e-27fb8269.us-east-1.amazon.com (Postfix) with ESMTPS id 46D24A1C46;
+        Fri, 30 Jul 2021 06:54:09 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.23; Fri, 30 Jul 2021 06:54:08 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.75) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.23; Fri, 30 Jul 2021 06:54:03 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <yhs@fb.com>
+CC:     <andrii@kernel.org>, <ast@kernel.org>, <benh@amazon.com>,
+        <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
+        <davem@davemloft.net>, <john.fastabend@gmail.com>, <kafai@fb.com>,
+        <kpsingh@kernel.org>, <kuba@kernel.org>, <kuni1840@gmail.com>,
+        <kuniyu@amazon.co.jp>, <netdev@vger.kernel.org>,
+        <songliubraving@fb.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf: af_unix: Implement BPF iterator for UNIX domain socket.
+Date:   Fri, 30 Jul 2021 15:53:59 +0900
+Message-ID: <20210730065359.43302-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <bcdc1540-c957-51b8-2a94-1b350a1a5a6a@fb.com>
+References: <bcdc1540-c957-51b8-2a94-1b350a1a5a6a@fb.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="o4rz6babiigy7wze"
-Content-Disposition: inline
-In-Reply-To: <20210729141246.GA1267@kili>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.75]
+X-ClientProxiedBy: EX13D25UWC003.ant.amazon.com (10.43.162.129) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From:   Yonghong Song <yhs@fb.com>
+Date:   Thu, 29 Jul 2021 23:24:41 -0700
+> On 7/29/21 4:36 PM, Kuniyuki Iwashima wrote:
+> > This patch implements the BPF iterator for the UNIX domain socket.
+> > 
+> > Currently, the batch optimization introduced for the TCP iterator in the
+> > commit 04c7820b776f ("bpf: tcp: Bpf iter batching and lock_sock") is not
+> > applied.  It will require replacing the big lock for the hash table with
+> > small locks for each hash list not to block other processes.
+> 
+> Thanks for the contribution. The patch looks okay except
+> missing seq_ops->stop implementation, see below for more explanation.
+> 
+> > 
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> > ---
+> >   include/linux/btf_ids.h |  3 +-
+> >   net/unix/af_unix.c      | 78 +++++++++++++++++++++++++++++++++++++++++
+> >   2 files changed, 80 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/include/linux/btf_ids.h b/include/linux/btf_ids.h
+> > index 57890b357f85..bed4b9964581 100644
+> > --- a/include/linux/btf_ids.h
+> > +++ b/include/linux/btf_ids.h
+> > @@ -172,7 +172,8 @@ extern struct btf_id_set name;
+> >   	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP_TW, tcp_timewait_sock)		\
+> >   	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP6, tcp6_sock)			\
+> >   	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP, udp_sock)			\
+> > -	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP6, udp6_sock)
+> > +	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP6, udp6_sock)			\
+> > +	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UNIX, unix_sock)
+> >   
+> >   enum {
+> >   #define BTF_SOCK_TYPE(name, str) name,
+> > diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+> > index 89927678c0dc..d45ad87e3a49 100644
+> > --- a/net/unix/af_unix.c
+> > +++ b/net/unix/af_unix.c
+> > @@ -113,6 +113,7 @@
+> >   #include <linux/security.h>
+> >   #include <linux/freezer.h>
+> >   #include <linux/file.h>
+> > +#include <linux/btf_ids.h>
+> >   
+> >   #include "scm.h"
+> >   
+> > @@ -2935,6 +2936,49 @@ static const struct seq_operations unix_seq_ops = {
+> >   	.stop   = unix_seq_stop,
+> >   	.show   = unix_seq_show,
+> >   };
+> > +
+> > +#ifdef CONFIG_BPF_SYSCALL
+> > +struct bpf_iter__unix {
+> > +	__bpf_md_ptr(struct bpf_iter_meta *, meta);
+> > +	__bpf_md_ptr(struct unix_sock *, unix_sk);
+> > +	uid_t uid __aligned(8);
+> > +};
+> > +
+> > +static int unix_prog_seq_show(struct bpf_prog *prog, struct bpf_iter_meta *meta,
+> > +			      struct unix_sock *unix_sk, uid_t uid)
+> > +{
+> > +	struct bpf_iter__unix ctx;
+> > +
+> > +	meta->seq_num--;  /* skip SEQ_START_TOKEN */
+> > +	ctx.meta = meta;
+> > +	ctx.unix_sk = unix_sk;
+> > +	ctx.uid = uid;
+> > +	return bpf_iter_run_prog(prog, &ctx);
+> > +}
+> > +
+> > +static int bpf_iter_unix_seq_show(struct seq_file *seq, void *v)
+> > +{
+> > +	struct bpf_iter_meta meta;
+> > +	struct bpf_prog *prog;
+> > +	struct sock *sk = v;
+> > +	uid_t uid;
+> > +
+> > +	if (v == SEQ_START_TOKEN)
+> > +		return 0;
+> > +
+> > +	uid = from_kuid_munged(seq_user_ns(seq), sock_i_uid(sk));
+> > +	meta.seq = seq;
+> > +	prog = bpf_iter_get_info(&meta, false);
+> > +	return unix_prog_seq_show(prog, &meta, v, uid);
+> > +}
+> > +
+> > +static const struct seq_operations bpf_iter_unix_seq_ops = {
+> > +	.start	= unix_seq_start,
+> > +	.next	= unix_seq_next,
+> > +	.stop	= unix_seq_stop,
+> 
+> Although it is not required for /proc/net/unix, we should still
+> implement bpf_iter version of seq_ops->stop here. The main purpose
+> of bpf_iter specific seq_ops->stop is to call bpf program one
+> more time after ALL elements have been traversed. Such
+> functionality is implemented in all other bpf_iter variants.
 
---o4rz6babiigy7wze
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thanks for your review!
+I will implement the extra call in the next spin.
 
-On 29.07.2021 17:12:46, Dan Carpenter wrote:
-> The hi3110_cmd() is supposed to return zero on success and negative
-> error codes on failure, but it was accidentally declared as a u8 when
-> it needs to be an int type.
->=20
-> Fixes: 57e83fb9b746 ("can: hi311x: Add Holt HI-311x CAN driver")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-
-Applied to linux-can/testing.
-
-Thanks,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---o4rz6babiigy7wze
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEDoK8ACgkQqclaivrt
-76k+sggArSfN5Qz1jEA+oE2PvBMy73+C8oCKI/tIS4bI55e2MienYaZLbKr5z4a/
-xMuXRU2FQJEts0k8OCnSqR0HTdbVm8vTsK1nOS9r6cb2Wn6TSserdCg9AewBdEFY
-fCxQ/VdgHeYWErNL+uWOHM45eoW1AmFVO+JCzaGsqCkj02/UomLM7LNX079pkhrb
-MWM46nCWVsRGrcY0gVHf8HyX+cuDxXDfRNU/oCKnPYEopdoCktFs2hVANhaKxa/0
-SrIToyAGlCqk1d1TJEZOJ38/N6uts+w9JgFUYFk3Ufn7hg23S/yllCUr9fk6h/wx
-8/o2LaP3OyYPyDChsWR3ATDvXIDb6g==
-=QFrE
------END PGP SIGNATURE-----
-
---o4rz6babiigy7wze--
+Just out of curiosity, is there a specific use case for the last call?
