@@ -2,148 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC9043DC060
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 23:44:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9C563DC063
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 23:47:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230393AbhG3VoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 17:44:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39254 "EHLO
+        id S231178AbhG3VrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 17:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229997AbhG3VoX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 17:44:23 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2044BC06175F;
-        Fri, 30 Jul 2021 14:44:17 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id h9so14318427ljq.8;
-        Fri, 30 Jul 2021 14:44:17 -0700 (PDT)
+        with ESMTP id S230020AbhG3VrM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 17:47:12 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8D19C06175F
+        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 14:47:05 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id x17so540647wmc.5
+        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 14:47:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iUWsYGbYRvDKidtDFAD37LhSTu0mAAw/UZoF5BX5je4=;
-        b=OBxPLbMIP9Zg1tCsP+gAveHb7Z/9qmetZxjEySQkmkZVrdOtfdVFg9vR/2s0vrE7DJ
-         G4Y0G7XB7bsR6NcAgROrFQwttHTY69EXUww9skhLiR5Ku/WZCTgtjHknOKmDg4IiahMC
-         i+tawWXEKt0K+gQw0otdQKclH++pyPaMd3vxryxAwIirSEPOt/Y1AcwOTvn3Z+5vkpga
-         aj6I0mprZrERwbxMRtiO9f+kz5/A+cvg6gTqXW3Q4NLZxQ9WVs6HXLd4gpXceCpRnIPJ
-         sZXx8GtiqDzZkQM86doOwKekydU+wTRpSBdhOQc99y5m83gJASGOX0mjzRnjRYSSgd8B
-         F7CA==
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=77NYw4tJFwAkaSUwKp+LA67qPSuC4OUccyvGLrXZCUg=;
+        b=k+pVQ81mmm/Avg/w/+Hzu7CJgzYulWXYT3Jm4QedaSjTec4h1zD1ffdnlevncHOrKC
+         tr5qL9PfYtebM1rpTRD4FHXpR9+pVz03ARjplZns+IUlTQAA2n2IJO177Ihe7rVzJp14
+         k800YY3yor3T8MIOZvnKWJFMxLYngBYuduwZf5AFggmob47KeN42slyWl+bypJ+Oi+64
+         p/2hk0bA7WZ/oLet678KKxWM+Ay3LFuntoJGS2RQ/+lhDioJILL3u/gwNWPbWkv5yxKR
+         OoqTQdP6sGrGUa5nKR6M7t6AmGNtKqLZGkHYUaKyplEdx6BF1ZLDq3/bBB1bQQIO3k98
+         XHzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=iUWsYGbYRvDKidtDFAD37LhSTu0mAAw/UZoF5BX5je4=;
-        b=a90sbxe2qyUAU3g5EwalWSp3xt38EyOH9ei7WNWL9yMdz8RqXM4C/+fako/19BKdXT
-         NJgocqhgBzbwF9/90KTmGjXPAqhYdoJbewJXprW0u15JAfjshmalFFDOwlOxgOaHrhDe
-         ZYVLGVWnCezaBGg0+QxZc8A0Y2ZaMfIT3QtLzvgrrgiYBuMLLJUeJDoowZX20eY0Zgzl
-         Zkx+H61fEmeVrh8Xo8JQLF3vr0CFylv+vLpIa83ivCRNGW9TCFkdx/h+hkbvTwGg4DPu
-         J02UZKm3m61wLyfO52EyjTtl7JNdTvedIbFKG1pHoSMONy6IdPx/JHZEFD7sPkU0095e
-         f2Ww==
-X-Gm-Message-State: AOAM530x3MIORUg3oQoUaNdsg64/qIvd470h0C/vVbOXNtq9ABDJd2j9
-        IcE+jRHMesW1Cj2McRdCkfc=
-X-Google-Smtp-Source: ABdhPJx/siIPONhywOb1T7C7lk6QtoW4/5xKjW34rQU/7G6Jr2RCrRQRgPnwO1B6wzgDxNa7PZHQUQ==
-X-Received: by 2002:a05:651c:b06:: with SMTP id b6mr3027530ljr.171.1627681455465;
-        Fri, 30 Jul 2021 14:44:15 -0700 (PDT)
-Received: from localhost.localdomain ([94.103.227.213])
-        by smtp.gmail.com with ESMTPSA id d18sm175512ljc.64.2021.07.30.14.44.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Jul 2021 14:44:15 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     petkan@nucleusys.com, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+02c9f70f3afae308464a@syzkaller.appspotmail.com
-Subject: [PATCH] net: pegasus: fix uninit-value in get_interrupt_interval
-Date:   Sat, 31 Jul 2021 00:44:11 +0300
-Message-Id: <20210730214411.1973-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        bh=77NYw4tJFwAkaSUwKp+LA67qPSuC4OUccyvGLrXZCUg=;
+        b=pNGmY8BHcfZrbncGDSqMcNxWUa3Y5fYk2Kacsg+FSP3ue2oM+ucEdwBaVz/g60aglD
+         nd5KZXAtuE0YglPwg4Qdd3RQSk6A0PdTTiG8PFqv1tpmBd4i/V2/BudHlrD65PhzsXn8
+         d8NFLG2Mp+wQFqufpN4uxog28js/ZzFw0qHuXgF2bPXEzCqqr5RSb+sUEgNPJzZrdIYL
+         gUT5QJyFUHsLDaa/bTv/OV3lPF77WuotcOrowIWrR983ozMJzV6lnUjWiwqfHZR2gJQ7
+         j+I6yQstgo32169wbWuUe8etOyQ8lfb7UoF2RwscX9E5GkpZytV31Km203+yGTY/UrE0
+         uYdg==
+X-Gm-Message-State: AOAM531ImEq6dRmA+WrEIMNlgeJNNjbPWU8pUMtUvpHYYfzLXA9Oj84Q
+        /FmQq96FjgI36OM8FU711X4Uhw==
+X-Google-Smtp-Source: ABdhPJxo1jhGotCxTiG3I0Qu/fX3+o9LB1lwjOatwmOErn5kI3hvmAluzHkaBBClg7eWi37EJg8/mQ==
+X-Received: by 2002:a05:600c:3509:: with SMTP id h9mr4982264wmq.81.1627681624520;
+        Fri, 30 Jul 2021 14:47:04 -0700 (PDT)
+Received: from [192.168.1.8] ([149.86.68.125])
+        by smtp.gmail.com with ESMTPSA id j4sm2092787wmi.4.2021.07.30.14.47.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 30 Jul 2021 14:47:04 -0700 (PDT)
+Subject: Re: [PATCH bpf-next 1/7] tools: bpftool: slightly ease bash
+ completion updates
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <20210729162932.30365-1-quentin@isovalent.com>
+ <20210729162932.30365-2-quentin@isovalent.com>
+ <CAEf4BzadrpVDm6yAriDSXK2WOzbzeZJoGKxbRzH+KA4YUD7SEg@mail.gmail.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <b80ab3fb-dc70-5b7e-b86a-8b2b9bded54e@isovalent.com>
+Date:   Fri, 30 Jul 2021 22:46:56 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAEf4BzadrpVDm6yAriDSXK2WOzbzeZJoGKxbRzH+KA4YUD7SEg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzbot reported uninit value pegasus_probe(). The problem was in missing
-error handling.
+2021-07-30 11:45 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> On Thu, Jul 29, 2021 at 9:29 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>>
+>> Bash completion for bpftool gets two minor improvements in this patch.
+>>
+>> Move the detection of attach types for "bpftool cgroup attach" outside
+>> of the "case/esac" bloc, where we cannot reuse our variable holding the
+>> list of supported attach types as a pattern list. After the change, we
+>> have only one list of cgroup attach types to update when new types are
+>> added, instead of the former two lists.
+>>
+>> Also rename the variables holding lists of names for program types, map
+>> types, and attach types, to make them more unique. This can make it
+>> slightly easier to point people to the relevant variables to update, but
+>> the main objective here is to help run a script to check that bash
+>> completion is up-to-date with bpftool's source code.
+>>
+>> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+>> ---
+>>  tools/bpf/bpftool/bash-completion/bpftool | 57 +++++++++++++----------
+>>  1 file changed, 32 insertions(+), 25 deletions(-)
+>>
+>> diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
+>> index cc33c5824a2f..b2e33a2d8524 100644
+>> --- a/tools/bpf/bpftool/bash-completion/bpftool
+>> +++ b/tools/bpf/bpftool/bash-completion/bpftool
+>> @@ -404,8 +404,10 @@ _bpftool()
+>>                              return 0
+>>                              ;;
+>>                          5)
+>> -                            COMPREPLY=( $( compgen -W 'msg_verdict stream_verdict \
+>> -                                stream_parser flow_dissector' -- "$cur" ) )
+>> +                            local BPFTOOL_PROG_ATTACH_TYPES='msg_verdict \
+>> +                                stream_verdict stream_parser flow_dissector'
+>> +                            COMPREPLY=( $( compgen -W \
+>> +                                "$BPFTOOL_PROG_ATTACH_TYPES" -- "$cur" ) )
+>>                              return 0
+>>                              ;;
+>>                          6)
+>> @@ -464,7 +466,7 @@ _bpftool()
+>>
+>>                      case $prev in
+>>                          type)
+>> -                            COMPREPLY=( $( compgen -W "socket kprobe \
+>> +                            local BPFTOOL_PROG_LOAD_TYPES='socket kprobe \
+>>                                  kretprobe classifier flow_dissector \
+>>                                  action tracepoint raw_tracepoint \
+>>                                  xdp perf_event cgroup/skb cgroup/sock \
+>> @@ -479,8 +481,9 @@ _bpftool()
+>>                                  cgroup/post_bind4 cgroup/post_bind6 \
+>>                                  cgroup/sysctl cgroup/getsockopt \
+>>                                  cgroup/setsockopt cgroup/sock_release struct_ops \
+>> -                                fentry fexit freplace sk_lookup" -- \
+>> -                                                   "$cur" ) )
+>> +                                fentry fexit freplace sk_lookup'
+>> +                            COMPREPLY=( $( compgen -W \
+>> +                                "$BPFTOOL_PROG_LOAD_TYPES" -- "$cur" ) )
+> 
+> nit: this and similar COMPREPLY assignments now can be on a single line now, no?
 
-get_interrupt_interval() internally calls read_eprom_word() which can
-fail in some cases. For example: failed to receive usb control message.
-These cases should be handled to prevent uninit value bug, since
-read_eprom_word() will not initialize passed stack variable in case of
-internal failure.
-
-Fail log:
-
-BUG: KMSAN: uninit-value in get_interrupt_interval drivers/net/usb/pegasus.c:746 [inline]
-BUG: KMSAN: uninit-value in pegasus_probe+0x10e7/0x4080 drivers/net/usb/pegasus.c:1152
-CPU: 1 PID: 825 Comm: kworker/1:1 Not tainted 5.12.0-rc6-syzkaller #0
-...
-Workqueue: usb_hub_wq hub_event
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x24c/0x2e0 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5c/0xa0 mm/kmsan/kmsan_instr.c:197
- get_interrupt_interval drivers/net/usb/pegasus.c:746 [inline]
- pegasus_probe+0x10e7/0x4080 drivers/net/usb/pegasus.c:1152
-....
-
-Local variable ----data.i@pegasus_probe created at:
- get_interrupt_interval drivers/net/usb/pegasus.c:1151 [inline]
- pegasus_probe+0xe57/0x4080 drivers/net/usb/pegasus.c:1152
- get_interrupt_interval drivers/net/usb/pegasus.c:1151 [inline]
- pegasus_probe+0xe57/0x4080 drivers/net/usb/pegasus.c:1152
-
-Reported-and-tested-by: syzbot+02c9f70f3afae308464a@syzkaller.appspotmail.com
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
- drivers/net/usb/pegasus.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
-index 9a907182569c..bc2dbf86496b 100644
---- a/drivers/net/usb/pegasus.c
-+++ b/drivers/net/usb/pegasus.c
-@@ -735,12 +735,16 @@ static inline void disable_net_traffic(pegasus_t *pegasus)
- 	set_registers(pegasus, EthCtrl0, sizeof(tmp), &tmp);
- }
- 
--static inline void get_interrupt_interval(pegasus_t *pegasus)
-+static inline int get_interrupt_interval(pegasus_t *pegasus)
- {
- 	u16 data;
- 	u8 interval;
-+	int ret;
-+
-+	ret = read_eprom_word(pegasus, 4, &data);
-+	if (ret < 0)
-+		return ret;
- 
--	read_eprom_word(pegasus, 4, &data);
- 	interval = data >> 8;
- 	if (pegasus->usb->speed != USB_SPEED_HIGH) {
- 		if (interval < 0x80) {
-@@ -755,6 +759,8 @@ static inline void get_interrupt_interval(pegasus_t *pegasus)
- 		}
- 	}
- 	pegasus->intr_interval = interval;
-+
-+	return 0;
- }
- 
- static void set_carrier(struct net_device *net)
-@@ -1149,7 +1155,9 @@ static int pegasus_probe(struct usb_interface *intf,
- 				| NETIF_MSG_PROBE | NETIF_MSG_LINK);
- 
- 	pegasus->features = usb_dev_id[dev_index].private;
--	get_interrupt_interval(pegasus);
-+	res = get_interrupt_interval(pegasus);
-+	if (res)
-+		goto out2;
- 	if (reset_mac(pegasus)) {
- 		dev_err(&intf->dev, "can't reset MAC\n");
- 		res = -EIO;
--- 
-2.32.0
-
+It will go over 80 characters, but OK, it will probably be more readable
+on a single line. I'll change for v2.
