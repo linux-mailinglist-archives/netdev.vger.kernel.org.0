@@ -2,109 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7534D3DC08B
+	by mail.lfdr.de (Postfix) with ESMTP id BE9293DC08C
 	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 23:56:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233254AbhG3V4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 17:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41854 "EHLO
+        id S233357AbhG3V4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 17:56:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232572AbhG3VzH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 17:55:07 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A63C0613CF
-        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 14:55:01 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id m12so8231447wru.12
-        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 14:55:01 -0700 (PDT)
+        with ESMTP id S232873AbhG3VzR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 17:55:17 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1202C0613D3;
+        Fri, 30 Jul 2021 14:55:10 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id s48so18259799ybi.7;
+        Fri, 30 Jul 2021 14:55:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=dDDdCBezO0q2xn1HrTWdc82ZrINOyLuTt9BwXTZEhF8=;
-        b=G2DzobJSvCw3qqqzH9OqjS0dIjT5X/cnrYNLGB9hnoEevR048BZUjdhz/Otb+x6l5N
-         2nVZ4CNVh0qnNtjK2DQvi1/4ebJP6pw4UD6jSasYV8QzL/OL6Zk61zfc4jkbFnc8t9tB
-         pIJTJGg5iZcPYmbka1/bpR718p8fSbZMfadwkp7nGtMDxOW/y1MduA/p+pste+Vjx9aR
-         pjWe+zaP7r2AeAJX6667fIgdbZF6ZJIr84SE9Lr9GcHALwQXFrTW9znGfo+9W4AhTwNt
-         BH7xD4+o0nFfuxmAn9YLM9rhDnaWh/XcVg6pPD7O4aYgZncfv/vujzxBA0/+Pm5jddUk
-         ECHQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ucMlZDLq0PkPJN6sHPh2Ls6egiVhlPqu3vmw+xBT+sY=;
+        b=PLTHNBvXfstcgRMLKjG3pl3KbIZdwoIe1C4QfICkQZ3rTEBIC3WVtVql0nOFNKrf6M
+         Ozo1IPfbM49xloWLJv0UppRC5re3tHeBEm0O3WmtErCGx6KsInzGsMnM58R3q/eCixfb
+         w8TXWoj1NHPz09Qm3QsF2twHfkjxJIdz7FpOAgTFCH/iA4CYcZfM6Vf+Wg0QFfTTslaj
+         n7aPT7xAQ09saI+za6QRjt1vnmnZJyzYszX+3+n3W6XYF0qBNOhp4NH1SZYSl3y/kIz0
+         jxOL0piugFeOLDIBrJGzqfoM2B5nWBj+/Grs2E8FbdUXHtZh7TvbfbIyEJDWnK8lAhlq
+         V72w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=dDDdCBezO0q2xn1HrTWdc82ZrINOyLuTt9BwXTZEhF8=;
-        b=tCQhqnpnsCDimebUSuy1GplZ8Slvr33LosQikUTxHzxuneziqmSMXqbj3Ay6ZUEV0H
-         oRk+4WSJNuxlzV1QLLcqbo5NjHFdlLuJXi8MJ/L4zRR5suU9Is4CHws8EnTfdhwDAqI0
-         uu3RCEThge5WIVteOUuwnAb9mSBzNq/HtMQTGGwlKV+D7NSl8m/9TjXhkaySYHdbBMmO
-         hE1oba9rBLHfZhfq9pjbqlYjfUC0UGyNPxqFS+pHmtv48fc0SAXaUo/YJnuFtvAcRgGB
-         GgZ0QhE7qP1phwe6seBfYGeQ5o9OdJ2F4fShOHmaFNbmTvwdD/RbDFTFvyRPnILsZJz9
-         Z1/Q==
-X-Gm-Message-State: AOAM532sLxz+UwPdnR7ACS0tuR1DS/cTLg2UgXdFBDIbS5VtVARBl8dE
-        jcgiOHAQSN+zDpiY3P9jI9Y7aQ==
-X-Google-Smtp-Source: ABdhPJyMaZADHSkB2SRMrAKV4ybbQTJjpoepbt4GCUENVaYGrfRPnW1130OXjldpwmoVaQIk0ag6TA==
-X-Received: by 2002:a05:6000:18c2:: with SMTP id w2mr5297081wrq.282.1627682100501;
-        Fri, 30 Jul 2021 14:55:00 -0700 (PDT)
-Received: from localhost.localdomain ([149.86.78.245])
-        by smtp.gmail.com with ESMTPSA id v15sm3210871wmj.39.2021.07.30.14.54.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Jul 2021 14:55:00 -0700 (PDT)
-From:   Quentin Monnet <quentin@isovalent.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf-next v2 7/7] tools: bpftool: complete metrics list in "bpftool prog profile" doc
-Date:   Fri, 30 Jul 2021 22:54:35 +0100
-Message-Id: <20210730215435.7095-8-quentin@isovalent.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210730215435.7095-1-quentin@isovalent.com>
-References: <20210730215435.7095-1-quentin@isovalent.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ucMlZDLq0PkPJN6sHPh2Ls6egiVhlPqu3vmw+xBT+sY=;
+        b=QWfAzCqcCZRBtQOR34EfgVLlLB+rKBPxG9/017PghSTxKgQNkh7O/xAWhS/3oxZHrr
+         U2RvtgAjDhBIUvNsp9fo/q+qFDiTv4WzRWwajkj26WKNYxQhpysLDpvEfZyBubML6osg
+         nPQRy/OeX410a2zeB0JZEtw/45DPUgIGMScjdV2Kvm6UsLRuPrgg8Gx3vrGIvDxW6ZAm
+         YBhngyAW6UJndX1SNUwXX12hZ+5v9xEUfpRdkfFCPs6Fu9dGdYXSqmDxNCFfdHRu8oJR
+         qeDHvrYeTT+ikj+kkm2WIMesBLHb4I/2zxhWIlQ3XB6eo3OHRWd8Ckv9WSsxVJ/P5BQM
+         3lnw==
+X-Gm-Message-State: AOAM530t2lSQ2MmjmhDsGsH3hmK0Qt8Mt/vT9E2DD394h4Yz4lWI1h+I
+        y/ZHROz5B4QQSqx6SSB50Qc6dS+KQL5IPZwzTWA=
+X-Google-Smtp-Source: ABdhPJzgvD1MFK7zmqHhFL+sX2/ltjsgVlVBVvt6Iv4tz8VnJHZ0k1gWfpdn0Sw8u7dw/ooHA+OOyJKdOsNlE2Ie2IM=
+X-Received: by 2002:a25:9942:: with SMTP id n2mr6130377ybo.230.1627682109757;
+ Fri, 30 Jul 2021 14:55:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210729162932.30365-1-quentin@isovalent.com> <20210729162932.30365-2-quentin@isovalent.com>
+ <CAEf4BzadrpVDm6yAriDSXK2WOzbzeZJoGKxbRzH+KA4YUD7SEg@mail.gmail.com> <b80ab3fb-dc70-5b7e-b86a-8b2b9bded54e@isovalent.com>
+In-Reply-To: <b80ab3fb-dc70-5b7e-b86a-8b2b9bded54e@isovalent.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 30 Jul 2021 14:54:58 -0700
+Message-ID: <CAEf4BzZiJ5MeBaEVcJF4mVvusCvAHmkwz+NF1xNc6fGUk7Zg6w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/7] tools: bpftool: slightly ease bash
+ completion updates
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Profiling programs with bpftool was extended some time ago to support
-two new metrics, namely itlb_misses and dtlb_misses (misses for the
-instruction/data translation lookaside buffer). Update the manual page
-and bash completion accordingly.
+On Fri, Jul 30, 2021 at 2:47 PM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> 2021-07-30 11:45 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> > On Thu, Jul 29, 2021 at 9:29 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> >>
+> >> Bash completion for bpftool gets two minor improvements in this patch.
+> >>
+> >> Move the detection of attach types for "bpftool cgroup attach" outside
+> >> of the "case/esac" bloc, where we cannot reuse our variable holding the
+> >> list of supported attach types as a pattern list. After the change, we
+> >> have only one list of cgroup attach types to update when new types are
+> >> added, instead of the former two lists.
+> >>
+> >> Also rename the variables holding lists of names for program types, map
+> >> types, and attach types, to make them more unique. This can make it
+> >> slightly easier to point people to the relevant variables to update, but
+> >> the main objective here is to help run a script to check that bash
+> >> completion is up-to-date with bpftool's source code.
+> >>
+> >> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+> >> ---
+> >>  tools/bpf/bpftool/bash-completion/bpftool | 57 +++++++++++++----------
+> >>  1 file changed, 32 insertions(+), 25 deletions(-)
+> >>
+> >> diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
+> >> index cc33c5824a2f..b2e33a2d8524 100644
+> >> --- a/tools/bpf/bpftool/bash-completion/bpftool
+> >> +++ b/tools/bpf/bpftool/bash-completion/bpftool
+> >> @@ -404,8 +404,10 @@ _bpftool()
+> >>                              return 0
+> >>                              ;;
+> >>                          5)
+> >> -                            COMPREPLY=( $( compgen -W 'msg_verdict stream_verdict \
+> >> -                                stream_parser flow_dissector' -- "$cur" ) )
+> >> +                            local BPFTOOL_PROG_ATTACH_TYPES='msg_verdict \
+> >> +                                stream_verdict stream_parser flow_dissector'
+> >> +                            COMPREPLY=( $( compgen -W \
+> >> +                                "$BPFTOOL_PROG_ATTACH_TYPES" -- "$cur" ) )
+> >>                              return 0
+> >>                              ;;
+> >>                          6)
+> >> @@ -464,7 +466,7 @@ _bpftool()
+> >>
+> >>                      case $prev in
+> >>                          type)
+> >> -                            COMPREPLY=( $( compgen -W "socket kprobe \
+> >> +                            local BPFTOOL_PROG_LOAD_TYPES='socket kprobe \
+> >>                                  kretprobe classifier flow_dissector \
+> >>                                  action tracepoint raw_tracepoint \
+> >>                                  xdp perf_event cgroup/skb cgroup/sock \
+> >> @@ -479,8 +481,9 @@ _bpftool()
+> >>                                  cgroup/post_bind4 cgroup/post_bind6 \
+> >>                                  cgroup/sysctl cgroup/getsockopt \
+> >>                                  cgroup/setsockopt cgroup/sock_release struct_ops \
+> >> -                                fentry fexit freplace sk_lookup" -- \
+> >> -                                                   "$cur" ) )
+> >> +                                fentry fexit freplace sk_lookup'
+> >> +                            COMPREPLY=( $( compgen -W \
+> >> +                                "$BPFTOOL_PROG_LOAD_TYPES" -- "$cur" ) )
+> >
+> > nit: this and similar COMPREPLY assignments now can be on a single line now, no?
+>
+> It will go over 80 characters, but OK, it will probably be more readable
+> on a single line. I'll change for v2.
 
-Fixes: 450d060e8f75 ("bpftool: Add {i,d}tlb_misses support for bpftool profile")
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
----
- tools/bpf/bpftool/Documentation/bpftool-prog.rst | 3 ++-
- tools/bpf/bpftool/bash-completion/bpftool        | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-prog.rst b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-index 2ea5df30ff21..91608cb7e44a 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-@@ -53,7 +53,8 @@ PROG COMMANDS
- |		**msg_verdict** | **skb_verdict** | **stream_verdict** | **stream_parser** | **flow_dissector**
- |	}
- |	*METRICs* := {
--|		**cycles** | **instructions** | **l1d_loads** | **llc_misses**
-+|		**cycles** | **instructions** | **l1d_loads** | **llc_misses** |
-+|		**itlb_misses** | **dtlb_misses**
- |	}
- 
- 
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index 134135424e7f..88e2bcf16cca 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -345,7 +345,8 @@ _bpftool()
- 
-             local PROG_TYPE='id pinned tag name'
-             local MAP_TYPE='id pinned name'
--            local METRIC_TYPE='cycles instructions l1d_loads llc_misses'
-+            local METRIC_TYPE='cycles instructions l1d_loads llc_misses \
-+                itlb_misses dtlb_misses'
-             case $command in
-                 show|list)
-                     [[ $prev != "$command" ]] && return 0
--- 
-2.30.2
-
+80 character rule was lifted a while ago. 100 is totally fine. And in
+some special cases readability beats even 100, IMO.
