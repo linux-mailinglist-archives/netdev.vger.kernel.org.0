@@ -2,100 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 950A73DB026
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 02:11:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB5FA3DB04D
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 02:32:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235343AbhG3ALB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 20:11:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60190 "EHLO
+        id S230172AbhG3AcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 20:32:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235124AbhG3ALA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 20:11:00 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07E3DC061765;
-        Thu, 29 Jul 2021 17:10:56 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id mz5-20020a17090b3785b0290176ecf64922so18177589pjb.3;
-        Thu, 29 Jul 2021 17:10:56 -0700 (PDT)
+        with ESMTP id S229523AbhG3AcE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 20:32:04 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F80C061765;
+        Thu, 29 Jul 2021 17:32:01 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id w17so13036248ybl.11;
+        Thu, 29 Jul 2021 17:32:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=KvNrFVgss6eSO6kUoQ3VU0X35CeoRY7KVDc86f4fQm4=;
-        b=kOZQR14Uy3g//5gbl3xlpGsDHTkZtnRt2eygeLvJGcHjKB5XzT7Ldokpq0NHg1qAFQ
-         xrUuJh8cOjV96IFiAb3OEqVzDWXY9A9Iz4H+WomwEZv8pWvjbfnAGH/WBA0megaHfwAb
-         FrZmi2FAWLjncp47tvP1GZz6eGYY3U0P/lCKl8QgOFdgFjhPely2k0UWryrc85QzoocQ
-         nxpsUlu9rex7WQydEd8E2OP286Wjz5qgZt5sbHFjX6+q3MgLSpSZBwlrr445ZibTmdHB
-         qMvuvtM3WGGw1NEYtucOdcPeFgMgOFEVG362GtLpgC47HKmy1NEok10Kr4JNtYkChDnx
-         FZaw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kSHXomxxiy7ULxfcFDer3ChErdOp/OG3+LX3KVwPf1E=;
+        b=S1feKbsHTLGYMxrMndK8bCsUEcG5O8EypW88L+pKSIAS3WRbU++zi1Y17OtCbz1PjA
+         llli6J9BG8L9YWcJAeckIDrHj6MPLjEIVWnTnpzuXXwt/wZg3G6cbjgPrcL863pEKltg
+         r73iEwUg9ylYh4WJthlCGYu2VXZf9CCBxFI7BDVL4GMpThtdiGUi6NvJQVIW/5L+1dYO
+         cXWwXf60ByhCvQiRuTAyYjVgYakv742taIBtPRspglzMOMm+VeTO0Ld2SNCGZ3r7zG3D
+         8k+7xAYXGCtfcgc86HqXX7juKhwVgDLTnnfY6+gKpoGCgVEVx/8OwhbtCoxxsng+kpZN
+         LddQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=KvNrFVgss6eSO6kUoQ3VU0X35CeoRY7KVDc86f4fQm4=;
-        b=kNjqOfQn9RyZNWaeWDtzz2ncEeCOKi0Wb2wusHK0StHso0yGJmW9HItrvHwbf7vDcn
-         9QK2fTjYTA6lN5ABXonMWmusvnDoPpFgaCoF2NkRsRLQSg17AMFvlQgGNFkeVOc5JRZm
-         caYoTQjhWyj4foz452/QKUP6rZFvyczJCy4BHXhmBUawfYfkFuK5AA+byVLYDaON/UOF
-         l+SCS4O1dgEFZ4/W9zh6RJQPKkzxT1jFTPa+lOixr0+LzMZrzpviTidzxcoKKh3PdusY
-         0jM4uFUlmH5wDVdusDUoYO87lqTuIdNLXOuTm0WvwAsdQfWshVr9a6+P43ZRTEIn3LV9
-         z3Aw==
-X-Gm-Message-State: AOAM532hpkQyqiD1AcmGkZ/d/zQ09jZtPHPWwwpD5mQr8mXv6qkfSP+K
-        bAxBVoG16n2oiUSB27LTD74urXV/wSU=
-X-Google-Smtp-Source: ABdhPJwE/niSh5UdF+w0QQdfBSjFatj+JALFmIVOdTcLe3nO62DxPf2VNDgpH154QI9H1E+xrQvSqA==
-X-Received: by 2002:a65:42c3:: with SMTP id l3mr698563pgp.377.1627603855087;
-        Thu, 29 Jul 2021 17:10:55 -0700 (PDT)
-Received: from [10.67.49.140] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id f15sm5154339pgv.92.2021.07.29.17.10.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Jul 2021 17:10:54 -0700 (PDT)
-Subject: Re: [RFC-PATCH] net: stmmac: Add KR port support.
-To:     Daniel Walker <danielwa@cisco.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Balamurugan Selvarajan <balamsel@cisco.com>,
-        xe-linux-external@cisco.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20210729234443.1713722-1-danielwa@cisco.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <81fca68f-e0c4-ce02-6b2b-e5c22a0c3152@gmail.com>
-Date:   Thu, 29 Jul 2021 17:10:45 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kSHXomxxiy7ULxfcFDer3ChErdOp/OG3+LX3KVwPf1E=;
+        b=BgLX5Zoa6GheLQ9WxO4h5BhVQPbVBnC0dX+G6XJuTHtyb/y6OZ7FN/NFa9XWz+62Kc
+         kq7NEplmh8uy8s3TI36srpC++9kMLhvM+MxUmOC5H562Lqa6ULUjyoDmTaPSgnF8fih/
+         KnSXq9HehFkS5NkwO2dSu4ujVLkRKWvbUJsHq6A3UCf+5c9iUsEOZrjBXrEJflNwLuiR
+         5XdoZBWyJUcxc82bI0HaVZdOenmVQwpkbLhllOt5yLGmM4E3iUTJ6m8nLpleBNvPztjw
+         JEmwr/J+UUS3dRUFjRHsnCo11AyvXUlcm/7em0WKRUButk3YhXEzEGGhT2NkGto2zCv2
+         QvEQ==
+X-Gm-Message-State: AOAM532b33oDasjPGeC4zgF/W7kovnFu3mlV8V4CrKtU3CCMRidYEyis
+        qjgknt/PXEJmbUtFtjxiGmtpTmCCqHSckJ5rGy8=
+X-Google-Smtp-Source: ABdhPJzRInD3fZ2PiozXyWu4P5s3LYJUtB4ywm/OJPWd2OjZuMkMEnYeURXb1lbr58kHSKWEGUyfpJfD1lMMjPEGWvk=
+X-Received: by 2002:a25:b741:: with SMTP id e1mr10292028ybm.347.1627605120289;
+ Thu, 29 Jul 2021 17:32:00 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210729234443.1713722-1-danielwa@cisco.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210729162028.29512-1-quentin@isovalent.com>
+In-Reply-To: <20210729162028.29512-1-quentin@isovalent.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 29 Jul 2021 17:31:49 -0700
+Message-ID: <CAEf4BzbrQOr8Z2oiywT-zPBEz9jbP9_6oJXOW28LdOaqAy8pLw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 0/8] libbpf: rename btf__get_from_id() and
+ btf__load() APIs, support split BTF
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/29/21 4:44 PM, Daniel Walker wrote:
-> From: Balamurugan Selvarajan <balamsel@cisco.com>
-> 
-> For KR port the mii interface is a chip-to-chip
-> interface without a mechanical connector. So PHY
-> inits are not applicable. In this case MAC is
-> configured to operate at forced speed(1000Mbps)
-> and full duplex. Modified driver to accommodate
-> PHY and NON-PHY mode.
-> 
-> Cc: xe-linux-external@cisco.com
-> Signed-off-by: Balamurugan Selvarajan <balamsel@cisco.com>
-> Signed-off-by: Daniel Walker <danielwa@cisco.com>
+On Thu, Jul 29, 2021 at 9:20 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> As part of the effort to move towards a v1.0 for libbpf [0], this set
+> improves some confusing function names related to BTF loading from and to
+> the kernel:
+>
+> - btf__load() becomes btf__load_into_kernel().
+> - btf__get_from_id becomes btf__load_from_kernel_by_id().
+> - A new version btf__load_from_kernel_by_id_split() extends the former to
+>   add support for split BTF.
+>
+> The old functions are marked for deprecation for the next minor version
+> (0.6) of libbpf.
+>
+> The last patch is a trivial change to bpftool to add support for dumping
+> split BTF objects by referencing them by their id (and not only by their
+> BTF path).
+>
+> [0] https://github.com/libbpf/libbpf/wiki/Libbpf:-the-road-to-v1.0#btfh-apis
+>
+> v3:
+> - Use libbpf_err_ptr() in btf__load_from_kernel_by_id(), ERR_PTR() in
+>   bpftool's get_map_kv_btf().
+> - Move the definition of btf__load_from_kernel_by_id() closer to the
+>   btf__parse() group in btf.h (move the legacy function with it).
+> - Fix a bug on the return value in libbpf_find_prog_btf_id(), as a new
+>   patch.
+> - Move the btf__free() fixes to their own patch.
+> - Add "Fixes:" tags to relevant patches.
+> - Re-introduce deprecation (removed in v2) for the legacy functions, as a
+>   new macro LIBBPF_DEPRECATED_SINCE(major, minor, message).
+>
+> v2:
+> - Remove deprecation marking of legacy functions (patch 4/6 from v1).
+> - Make btf__load_from_kernel_by_id{,_split}() return the btf struct, adjust
+>   surrounding code and call btf__free() when missing.
+> - Add new functions to v0.5.0 API (and not v0.6.0).
+>
+> Quentin Monnet (8):
+>   libbpf: return non-null error on failures in libbpf_find_prog_btf_id()
+>   libbpf: rename btf__load() as btf__load_into_kernel()
+>   libbpf: rename btf__get_from_id() as btf__load_from_kernel_by_id()
+>   tools: free BTF objects at various locations
+>   tools: replace btf__get_from_id() with btf__load_from_kernel_by_id()
+>   libbpf: prepare deprecation of btf__get_from_id(), btf__load()
+>   libbpf: add split BTF support for btf__load_from_kernel_by_id()
+>   tools: bpftool: support dumping split BTF by id
+>
+>  tools/bpf/bpftool/btf.c                      |  8 ++---
+>  tools/bpf/bpftool/btf_dumper.c               |  6 ++--
+>  tools/bpf/bpftool/map.c                      | 14 ++++-----
+>  tools/bpf/bpftool/prog.c                     | 29 +++++++++++------
+>  tools/lib/bpf/Makefile                       |  3 ++
+>  tools/lib/bpf/btf.c                          | 33 ++++++++++++++------
+>  tools/lib/bpf/btf.h                          |  7 ++++-
+>  tools/lib/bpf/libbpf.c                       | 11 ++++---
+>  tools/lib/bpf/libbpf.map                     |  3 ++
+>  tools/lib/bpf/libbpf_common.h                | 19 +++++++++++
+>  tools/perf/util/bpf-event.c                  | 11 ++++---
+>  tools/perf/util/bpf_counter.c                | 12 +++++--
+>  tools/testing/selftests/bpf/prog_tests/btf.c |  4 ++-
+>  13 files changed, 113 insertions(+), 47 deletions(-)
+>
+> --
+> 2.30.2
+>
 
-You are not adding KR support per-se, you are just hacking the driver so
-it is happy with an unspecified phy_interface_t value and assuming
-1000Mbits/sec, this is not going to work.
+I dropped patch #7 with deprecations and LIBBPF_DEPRECATED_SINCE and
+applied to bpf-next.
 
-Just add KR/backplane properly or use a fixed-link property hardcoded
-for 1000Mbits/sec and be done with it with no hacking, which would be
-just way better than what is proposed here.
--- 
-Florian
+Current LIBBPF_DEPRECATED_SINCE approach doesn't work (and you should
+have caught this when you built selftests/bpf, what happened there?).
+bpftool build generates warnings like this:
+
+In file included from /data/users/andriin/linux/tools/lib/bpf/libbpf.h:20,
+                 from xlated_dumper.c:10:
+/data/users/andriin/linux/tools/lib/bpf/libbpf_common.h:22:23:
+warning: "LIBBPF_MAJOR_VERSION" is not defined, evaluates to 0
+[-Wundef]
+  __LIBBPF_GET_VERSION(LIBBPF_MAJOR_VERSION, LIBBPF_MINOR_VERSION)
+                       ^~~~~~~~~~~~~~~~~~~~
+
+
+And it makes total sense. LIBBPF_DEPRECATED_SINCE() assumes
+LIBBPF_MAJOR_VERSION/LIBBPF_MINOR_VERSION is defined at compilation
+time of the *application that is using libbpf*, not just libbpf's
+compilation time. And that's clearly a bogus assumption which we can't
+and shouldn't make. The right approach will be to define
+LIBBPF_MAJOR_VERSION/LIBBPF_MINOR_VERSION in some sort of
+auto-generated header, included from libbpf_common.h and installed as
+part of libbpf package.
+
+Anyways, I've removed all the LIBBPF_DEPRECATED_SINCE stuff and
+applied all the rest, as it looks good and is a useful addition. We
+should work some more on deprecation helpers, though.
