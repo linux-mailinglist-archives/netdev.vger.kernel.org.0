@@ -2,233 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F8753DBFE7
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 22:39:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 325CB3DC017
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 23:08:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231904AbhG3Uj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 16:39:27 -0400
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:31202 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230217AbhG3UjV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 16:39:21 -0400
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16UKa7r2013229;
-        Fri, 30 Jul 2021 20:37:42 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=WQqZO2vXgRMAEHOwfeKW9pvCxNym6y/aItCMeaAsAXU=;
- b=olBVhedoSR0HyLxxaOOgS/a493vrgoE/vHjB1qCQMRSOSMkXWtAMIIzT/mgyAUMlX2a+
- 4R7x0iCWahUWZ2JGvCB3NkCUA4h6KThCiDqWSXf6OXTxu6pBBRAgG5SM0JP5zsymF4RN
- tKDuJxLyG8GE4VZxGTolR8vFsrBaLzpG3S5CRhNPsQqcDYBpsyiTcsNpRKVSaCq196Au
- oKSySFhUaitkfkM+jyqM+0QQi40s8xw+0oFUC7kD2AlEM3aiA8QYAeVGTgzVyv+HT2cD
- w6/fK3xgCh4LttpWT0ZXWGViQl6mOqpN14tSjsL29h7b18f4IrL48GZkoEw/vf1E/Ju9 OA== 
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2020-01-29;
- bh=WQqZO2vXgRMAEHOwfeKW9pvCxNym6y/aItCMeaAsAXU=;
- b=gR7P6ADvIldouOpafOj/tiG2rFjyQCQdqDp7kgnnyKPCov4DwD4ZvRkeLdokRmTnOSoW
- dCbGXm5i+9iW00b7G9zuek/bRuoFjBonzDgZdbnYNUp2n9gPNNiBlhdHLqG3GkZ9xgXM
- aeIkjbUEpQClN74QIFlBB1dQdEXUVpG+8b5Zv8+paXELjvWPmWHDBpBbIwcqjUuUl7+f
- WiVxHv5YwDpnI1gLp+zv0Iw0KmYSp7+5vEd3anfI63XBw+hmUPiVJK7z4gkYA41sTAqj
- ennltRZ+OkjZ+KOHmu8L0R3e99nSb2qaSuc+7UuCx8UuyVZBWM5UVEN0VXdZKHrFbEf/ mQ== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3a488da6us-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 30 Jul 2021 20:37:42 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 16UKZpMW026681;
-        Fri, 30 Jul 2021 20:37:41 GMT
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2177.outbound.protection.outlook.com [104.47.57.177])
-        by aserp3030.oracle.com with ESMTP id 3a4ngv12th-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 30 Jul 2021 20:37:41 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OwwTLA62HnA7D6mAwuAHj/MSfi+6JM6uBib2mZgfGOBl4fJfVuVGnL97TUyi+zVoZUYlmC+m99q/W3FyydP2mnWkEIeF5SOsfW+hwPeUgG2FLzJiH1qMjD3pOTP2Q6dtIvHLNS/3pDhYo7TK+MlmjgKHF5UVll/FhjP9j6G+VWcsaagoxhFSY/KRWVuZAKfwuOAb+UB5OIfT7eCCcI9ljc3w2u1HwSz7Lmk+/8hAS9srVCrEas0u0Q+SUMp5kpjr6+bK27vRLBK9LFW6tyOAPiIRwFuPbs7ptA63ttyNWsdETPPZFQqKCX7CDH3NQvs9akHd+gUqxuQyDO01sGCMmg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WQqZO2vXgRMAEHOwfeKW9pvCxNym6y/aItCMeaAsAXU=;
- b=AJ+Ura8vH5oA34c9wvlKyuwRSyqVVWtOGQQfdzmIHlCYhj7iqVjksaXML8VSA91MwqJy10MEfQnxGE2ROrsBl51npCcCV/Ik26uRDGpJqXevx16Sd1ze5T6hpVugyVA34NAwsuj48fXHGJJUPAYGK+g6qNvAKPVYHTJmKd0Hj/RAMP3ViE64IeicB7vVx5h8xfJF5HXcBeqgzkww+aQO9Tp7wQHJ3GxxytRdUWqErKnWoRgzjLx4I16AIrA0/Kxp4JnKOPGlGrHx1unlaJnwXUfH7Fj7muWT5mXcErxqmUuPeFKwsJdl/F8LizQuDSI2dfNKVmtY+PngEYA7QrXdjQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WQqZO2vXgRMAEHOwfeKW9pvCxNym6y/aItCMeaAsAXU=;
- b=M3qwMaSy1cNSgKlaKFRGkoV871IF3xOdtm1/pORV0cUKxkegNdV9N7V5yNfSk/IWti6yt86e0ouiK/cD+Fck/+RKYB1Hrkk9ZmzIEzpYGv7SPFU5UatApjCE1DV8Vb1o6/w0J3JT5uE6cdRokxC5r5dURfa5Cp3y7wijRbEf2vI=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=oracle.com;
-Received: from BLAPR10MB5009.namprd10.prod.outlook.com (2603:10b6:208:321::10)
- by MN2PR10MB4253.namprd10.prod.outlook.com (2603:10b6:208:1d6::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.21; Fri, 30 Jul
- 2021 20:37:39 +0000
-Received: from BLAPR10MB5009.namprd10.prod.outlook.com
- ([fe80::f10d:29d2:cb38:ed0]) by BLAPR10MB5009.namprd10.prod.outlook.com
- ([fe80::f10d:29d2:cb38:ed0%8]) with mapi id 15.20.4373.025; Fri, 30 Jul 2021
- 20:37:38 +0000
-Subject: Re: [PATCH v1 4/5] PCI: Adapt all code locations to not use struct
- pci_dev::driver directly
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>, kernel@pengutronix.de,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-pci@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Russell Currey <ruscur@russell.cc>,
-        Oliver O'Halloran <oohall@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Zhou Wang <wangzhou1@hisilicon.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Sathya Prakash <sathya.prakash@broadcom.com>,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        Suganath Prabu Subramani 
-        <suganath-prabu.subramani@broadcom.com>,
-        Frederic Barrat <fbarrat@linux.ibm.com>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Michael Buesch <m@bues.ch>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Fiona Trahe <fiona.trahe@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Wojciech Ziemba <wojciech.ziemba@intel.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-crypto@vger.kernel.org, qat-linux@intel.com,
-        MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org, oss-drivers@corigine.com,
-        xen-devel@lists.xenproject.org, linux-usb@vger.kernel.org
-References: <20210729203740.1377045-1-u.kleine-koenig@pengutronix.de>
- <20210729203740.1377045-5-u.kleine-koenig@pengutronix.de>
-From:   Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Message-ID: <2b5e8cb5-fac2-5da2-f87b-d287d2c5ea81@oracle.com>
-Date:   Fri, 30 Jul 2021 16:37:31 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
-In-Reply-To: <20210729203740.1377045-5-u.kleine-koenig@pengutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-ClientProxiedBy: CH0PR03CA0207.namprd03.prod.outlook.com
- (2603:10b6:610:e4::32) To BLAPR10MB5009.namprd10.prod.outlook.com
- (2603:10b6:208:321::10)
+        id S231567AbhG3VI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 17:08:26 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:39793 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230418AbhG3VIZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 17:08:25 -0400
+Received: by mail-io1-f69.google.com with SMTP id u22-20020a5d9f560000b02905058dc6c376so6560404iot.6
+        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 14:08:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=Ezra53fJ9ovAmRTj95ODS6/rqWMOlHrXy6SIWRBmIqE=;
+        b=Rp7Xi3cPPSJm18Q3fwpRVh4+RqZSwNA6FN3qUNAvyejHGRMq0p91ZA5W3PpI0Tgc2T
+         Np26U++kQy6qpLofB8zq6XCMXIAtm2w9o26+zQbM25qBH0mDPwN47fWHRtUht/phz6i2
+         SGtLcYNYvUGO7huU+Qx0dSDodorW7s+YtsI3n55fi/DtLtUY6UIQuSBxJoaqFzaxvywv
+         uKKf7zgyhJcMwXOyG7uO2jfJ5kcw9rfPbGUhwHJQx+SPs91fbIZRpHBmWRSQ/xRhJmDh
+         2jCL6Hr011aO/2qk1qaDRq4gHSihUmuzdIDZRGmPCIOcHf8hxvBJbunyh2v1MFDFy3FT
+         HnHA==
+X-Gm-Message-State: AOAM533eUvUMx7m6qdrSOEQfyiP6y8d1qnqCWF+skbA0ROvmFB629mSA
+        GOl8HqJeKZ1AwCYbC4DJ/ehrz86EZRRRHKPX+iGIrSP6Rqef
+X-Google-Smtp-Source: ABdhPJzl08nsf9LL1ms/XQOCdeiQ4I7sbo+awGg/+z9Et9Oq1oKi4pYR8FCGVHO56f5YYDc81cqWZ6nYq9ZQwmg9hDW9qmW4WLrc
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.74.103.140] (160.34.89.140) by CH0PR03CA0207.namprd03.prod.outlook.com (2603:10b6:610:e4::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.18 via Frontend Transport; Fri, 30 Jul 2021 20:37:33 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 96576103-4114-4377-14bd-08d95399dedd
-X-MS-TrafficTypeDiagnostic: MN2PR10MB4253:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MN2PR10MB4253B4C0F753BFF1FA01C0B38AEC9@MN2PR10MB4253.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2887;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: s6ovWgFeuFXbSv56/21AW+kfDUirYVwOPMw5MTa/HnbouQolX0Q48Fc4cLIkdalDaE1j2C2BIBId9QbD6Jd+F6lOrw35+RryNbJ1G8epQziPi4gZAfSOlZZeLnEzKCTJ90ascCHYrReDB4HLVBZH6Huv91YItm4KenDYCoSWBhj7W6IUzH+BUOe+a/L9gF0u785j8yaFEF2PN9rK42iFyTQTuwPmwP1h5S/rxodsSYfKgEh8S926zVQha7qxnCaUpRCMJ6lu62nuaQKAY/2srG5fMMN1gBlRlFTOvaIwVZokZLxQ2gFWjaFIj+XFPfezwAG+zww1EUu6b4ghgp+mSVNobpOJftrgfhMjut93w2jDWWxILz5cE4NW3GsoM+pk2d3xPanaRjawdmOPNLTnr0HBX3zoxQUnbhJpwdiIqnZyUDC6j2qHq3dBCMJ09DE+I/6ljbGaF0Qn9v2/Ery/wP2LqjIMOUo/CYUSPhqwUd7EiiUSTK/k/X/AlPa9lYTH6TVbjnkHuHHwRmigOkdzvF8Qd5ZKTqGDmn24lqJ2klYP5HMOlEh9AgyrmXZFfg9hFluxLL4A22ZGmUjUruBaTnuUGsNmABSKd+6+8jU54Bx7acBuWntyieY62mmkeSswkgUxSNRYVh/KeiFgbScPNAed7hWSc7yjRUt4EuHrXT53/UIN7tKPG+QdXOmiv3Bio5pUewx1Ja7MTT8CEW4noMxLAsTYWtpRcoY7GZj5Oqc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB5009.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(396003)(136003)(39860400002)(346002)(366004)(31686004)(2906002)(8936002)(31696002)(6486002)(7366002)(110136005)(8676002)(5660300002)(36756003)(316002)(2616005)(7416002)(16576012)(38100700002)(44832011)(7406005)(86362001)(66556008)(26005)(186003)(956004)(66476007)(478600001)(4744005)(4326008)(53546011)(66946007)(54906003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NW1WdmlybHdpdHhFcWhFSXZpZXFPK1BkNkhKeWxWSjd2SDM5NWZ4OFcrVTFT?=
- =?utf-8?B?eGQ0bE9PWEx4bHQ5NkJMc0Yvb3BBSXB2YmtXeHlScGhuU3krc0lOTVBFdWpl?=
- =?utf-8?B?TmpYRG1BTkVGRkw2MGJKUFFvRkZiSzRPaW4zMnFEVUo5eWNuQXQ4dERLR2w5?=
- =?utf-8?B?ME9YMWdQQVVaNTgrdlA0QkhwcnhGK1NUeUpvdlEzSk80ZlJXMU0zdms3QW00?=
- =?utf-8?B?QjhrdHpVVXltNUViVW9vK3ZlNmpXSnpPNFFybExiUUFYSFRNaXl1RkNJMThT?=
- =?utf-8?B?SXN4MUU3dWFiaisyWW9MZTc1YjBVMGdMOTR5b1B6OTdETkl3THFiSG4rdGhE?=
- =?utf-8?B?RDRCdTlLOVZYakdZYXhvQWZHeDQ5SysxN012d1FSN0p5RkZ1Kyt3RE9MSHB4?=
- =?utf-8?B?c3VFZWZnVDJ4RWZicnJ6dW9FYkROVndzdHU0KzVNc0pacndrYVNWVm9FNENZ?=
- =?utf-8?B?Z09ZdCsvMlA0cFBoVkV0UzhtU0tOcWFKaFBCRlphUElDOHQ0UEp4VWlnZ2NK?=
- =?utf-8?B?T1RMaXZHMzhIcUp1WGlDVUxhcGRaMTJnaVBlYUtqQnpjY0syS25ZZ3BmVlhr?=
- =?utf-8?B?V2ZTbnduUWlwT2x4ZTByNEhjUWxsVXdzOFRNWFZaY1BTZzBMKzhLeEtpKzd0?=
- =?utf-8?B?bTZvRkR6Szl3bDFoQStmQVM5QTJjRVdrbTV3cG9aZnV1QTF0WW9YYkJZOVlC?=
- =?utf-8?B?WTVGUFoxUU15Mm5qUy84d2VkLyt5VnlxbWJqRWhjSjlITWNBZVliRDZEbDdr?=
- =?utf-8?B?OWdjY0NvaEF5YlR5bWNPN2ttdDZ1OWxwNWx4MEt4anRSL1U2alRyQWpZS3No?=
- =?utf-8?B?RzFCT1p0L3ZQRHEyVjBveklmZzZxbjAyUHo2QnM0ekRNY0VRTVlnZHVUUmo5?=
- =?utf-8?B?b29QYmxsSHNKend3R1oxVUlpY1VuMDdodHk1SVZldWN0M0JsZU02ZXNvWDJw?=
- =?utf-8?B?TlJvbFNtRXRvY1ZKY25FVjBnRlVlT2hlK3ZncXZJcUcxQWVrcVorZEloQ0Z1?=
- =?utf-8?B?YjBidFh3WWlSa2JYUHNKTVI3T2ZJdmtST3YwZVZveHBjVkdNZURMZ2hiTDNO?=
- =?utf-8?B?TVA3NlVqOWVvbVNXYWpPcHVxdkV0QXhZZlVaTHZkVmxSWnBCOXkvTm1jUHZS?=
- =?utf-8?B?YVR1d1QyTzlJSmVXYkNoSHZyZzBRbFBheGFNTTFwRTRLRUN1Ui9YZEZYSkZJ?=
- =?utf-8?B?OXlTbnlud1dyZ3FEalREWExqTTFoRnh6cmdieTRiV2R5dXE4aExtcTNQbGZt?=
- =?utf-8?B?U2NDS0dtZ2h2aXU5UnhnUWVFOUl5L1hSYkUvczRwZkhaMXR4UGxnVUI1VG1U?=
- =?utf-8?B?dmp1VmEyTmxJVDY2dXBNRlZUM2Rta2JkMVVLbmhaWnhqYlNmbzh1R2d3M3A0?=
- =?utf-8?B?YUxMbTdWWFBBRC9mZm5EN0R4QzJuQVFSZmtDeCtkVFA3RmxiVlV1SmdIbmZq?=
- =?utf-8?B?VUpRMFBiOTlSNWlWMURBUHFuQ21samlEOXAxcmoxSi9oUGdTdkwxaEw0eDgz?=
- =?utf-8?B?dWd5TVFKRFIyb3BTQU94RXNSeXlqRXFXVHF6RytTY2hDaVlTQU50WVloSDRD?=
- =?utf-8?B?aUdxNGFLTmJITXREUE1FQS9xaktxNElxUnY5cFBIcEdzZUIrd3pyS3M4L0l2?=
- =?utf-8?B?cnlFbjZ5S0pqajFJeTV0KzRCK1BhUndKVVVTdWJHQWw1NUtXT0xoUGRvMXJv?=
- =?utf-8?B?dEVqZys1dVZoWEp0YWdvRmFteGV0L1JyRDE5UFBuSjZ2SVFiOE9sQXcyc1NI?=
- =?utf-8?Q?EYn00mTAVHJlTHteaHmu1hCGNpvNUR0DxNjrjdj?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 96576103-4114-4377-14bd-08d95399dedd
-X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB5009.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jul 2021 20:37:38.7750
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MYW0UmmAZESi7E9HqplJenptPPPpkZg9GTDBk/J5JkiaC7jkFeeumgUZ8WLSyI/faLrx9128OvOsyBsR90qjAO1uS5oH8QnETj+5eGZA91A=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB4253
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10061 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=909
- mlxscore=0 phishscore=0 bulkscore=0 suspectscore=0 spamscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2107140000 definitions=main-2107300140
-X-Proofpoint-GUID: KbCouSxoq4ys_s-0Tgq7VsQevDeTuMTo
-X-Proofpoint-ORIG-GUID: KbCouSxoq4ys_s-0Tgq7VsQevDeTuMTo
+X-Received: by 2002:a05:6e02:528:: with SMTP id h8mr2849385ils.223.1627679300353;
+ Fri, 30 Jul 2021 14:08:20 -0700 (PDT)
+Date:   Fri, 30 Jul 2021 14:08:20 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008183f605c85d9e9c@google.com>
+Subject: [syzbot] memory leak in packet_sendmsg
+From:   syzbot <syzbot+989efe781c74de1ddb54@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, tannerlove@google.com,
+        willemb@google.com, xie.he.0141@gmail.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-On 7/29/21 4:37 PM, Uwe Kleine-König wrote:
+syzbot found the following issue on:
 
-> --- a/drivers/pci/xen-pcifront.c
-> +++ b/drivers/pci/xen-pcifront.c
-> @@ -599,12 +599,12 @@ static pci_ers_result_t pcifront_common_process(int cmd,
->  	result = PCI_ERS_RESULT_NONE;
->  
->  	pcidev = pci_get_domain_bus_and_slot(domain, bus, devfn);
-> -	if (!pcidev || !pcidev->driver) {
-> +	pdrv = pci_driver_of_dev(pcidev);
-> +	if (!pcidev || !pdrv) {
+HEAD commit:    ff1176468d36 Linux 5.14-rc3
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=15057fa2300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4ebfe83ba9ca8666
+dashboard link: https://syzkaller.appspot.com/bug?extid=989efe781c74de1ddb54
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16e54382300000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+989efe781c74de1ddb54@syzkaller.appspotmail.com
+
+2021/07/26 20:48:07 executed programs: 1
+2021/07/26 20:48:13 executed programs: 3
+2021/07/26 20:48:19 executed programs: 5
+BUG: memory leak
+unreferenced object 0xffff88810f41be00 (size 232):
+  comm "dhclient", pid 4908, jiffies 4294938558 (age 1092.590s)
+  hex dump (first 32 bytes):
+    a0 6c 13 19 81 88 ff ff a0 6c 13 19 81 88 ff ff  .l.......l......
+    00 00 83 1a 81 88 ff ff 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff836e1e8f>] __alloc_skb+0x20f/0x280 net/core/skbuff.c:414
+    [<ffffffff836ec6ba>] alloc_skb include/linux/skbuff.h:1112 [inline]
+    [<ffffffff836ec6ba>] alloc_skb_with_frags+0x6a/0x2b0 net/core/skbuff.c:6019
+    [<ffffffff836d9fa3>] sock_alloc_send_pskb+0x353/0x3c0 net/core/sock.c:2461
+    [<ffffffff83bf47a2>] packet_alloc_skb net/packet/af_packet.c:2864 [inline]
+    [<ffffffff83bf47a2>] packet_snd net/packet/af_packet.c:2959 [inline]
+    [<ffffffff83bf47a2>] packet_sendmsg+0xbd2/0x2500 net/packet/af_packet.c:3044
+    [<ffffffff836d0b46>] sock_sendmsg_nosec net/socket.c:703 [inline]
+    [<ffffffff836d0b46>] sock_sendmsg+0x56/0x80 net/socket.c:723
+    [<ffffffff836d0c67>] sock_write_iter+0xf7/0x180 net/socket.c:1056
+    [<ffffffff81564527>] call_write_iter include/linux/fs.h:2114 [inline]
+    [<ffffffff81564527>] new_sync_write+0x1d7/0x2b0 fs/read_write.c:518
+    [<ffffffff81567ba1>] vfs_write+0x351/0x400 fs/read_write.c:605
+    [<ffffffff81567f1b>] ksys_write+0x12b/0x160 fs/read_write.c:658
+    [<ffffffff843b18b5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff843b18b5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff84400068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+BUG: memory leak
+unreferenced object 0xffff8881019ce500 (size 232):
+  comm "kworker/1:1", pid 35, jiffies 4294938559 (age 1092.580s)
+  hex dump (first 32 bytes):
+    a0 d4 28 19 81 88 ff ff a0 d4 28 19 81 88 ff ff  ..(.......(.....
+    00 00 cb 03 81 88 ff ff 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff836e1e8f>] __alloc_skb+0x20f/0x280 net/core/skbuff.c:414
+    [<ffffffff836ec6ba>] alloc_skb include/linux/skbuff.h:1112 [inline]
+    [<ffffffff836ec6ba>] alloc_skb_with_frags+0x6a/0x2b0 net/core/skbuff.c:6019
+    [<ffffffff836d9fa3>] sock_alloc_send_pskb+0x353/0x3c0 net/core/sock.c:2461
+    [<ffffffff83b812d4>] mld_newpack+0x84/0x200 net/ipv6/mcast.c:1751
+    [<ffffffff83b814f3>] add_grhead+0xa3/0xc0 net/ipv6/mcast.c:1854
+    [<ffffffff83b82196>] add_grec+0x7b6/0x820 net/ipv6/mcast.c:1992
+    [<ffffffff83b84643>] mld_send_cr net/ipv6/mcast.c:2118 [inline]
+    [<ffffffff83b84643>] mld_ifc_work+0x273/0x750 net/ipv6/mcast.c:2655
+    [<ffffffff81262669>] process_one_work+0x2c9/0x610 kernel/workqueue.c:2276
+    [<ffffffff81262f59>] worker_thread+0x59/0x5d0 kernel/workqueue.c:2422
+    [<ffffffff8126c3b8>] kthread+0x188/0x1d0 kernel/kthread.c:319
+    [<ffffffff810022cf>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+
+BUG: memory leak
+unreferenced object 0xffff88810f41b300 (size 232):
+  comm "kworker/1:1", pid 35, jiffies 4294938624 (age 1091.930s)
+  hex dump (first 32 bytes):
+    a0 ac 3f 19 81 88 ff ff a0 ac 3f 19 81 88 ff ff  ..?.......?.....
+    00 00 cb 03 81 88 ff ff 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff836e1e8f>] __alloc_skb+0x20f/0x280 net/core/skbuff.c:414
+    [<ffffffff83b6d076>] alloc_skb include/linux/skbuff.h:1112 [inline]
+    [<ffffffff83b6d076>] ndisc_alloc_skb+0x56/0xe0 net/ipv6/ndisc.c:420
+    [<ffffffff83b7183a>] ndisc_send_ns+0xba/0x2f0 net/ipv6/ndisc.c:626
+    [<ffffffff83b48b13>] addrconf_dad_work+0x643/0x900 net/ipv6/addrconf.c:4119
+    [<ffffffff81262669>] process_one_work+0x2c9/0x610 kernel/workqueue.c:2276
+    [<ffffffff81262f59>] worker_thread+0x59/0x5d0 kernel/workqueue.c:2422
+    [<ffffffff8126c3b8>] kthread+0x188/0x1d0 kernel/kthread.c:319
+    [<ffffffff810022cf>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+
+BUG: memory leak
+unreferenced object 0xffff88810dd97600 (size 232):
+  comm "softirq", pid 0, jiffies 4294938659 (age 1091.580s)
+  hex dump (first 32 bytes):
+    a0 fc fb 16 81 88 ff ff a0 fc fb 16 81 88 ff ff  ................
+    00 c0 84 03 81 88 ff ff 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff836e1e8f>] __alloc_skb+0x20f/0x280 net/core/skbuff.c:414
+    [<ffffffff839f1aff>] alloc_skb include/linux/skbuff.h:1112 [inline]
+    [<ffffffff839f1aff>] __ip_append_data+0x12cf/0x1510 net/ipv4/ip_output.c:1109
+    [<ffffffff839f429d>] ip_append_data net/ipv4/ip_output.c:1327 [inline]
+    [<ffffffff839f429d>] ip_append_data net/ipv4/ip_output.c:1306 [inline]
+    [<ffffffff839f429d>] ip_send_unicast_reply+0x33d/0x550 net/ipv4/ip_output.c:1718
+    [<ffffffff83a33e6f>] tcp_v4_send_reset+0x3df/0x980 net/ipv4/tcp_ipv4.c:818
+    [<ffffffff83a37442>] tcp_v4_rcv+0xf22/0x1620 net/ipv4/tcp_ipv4.c:2116
+    [<ffffffff839e99b2>] ip_protocol_deliver_rcu+0x22/0x2c0 net/ipv4/ip_input.c:204
+    [<ffffffff839e9cc1>] ip_local_deliver_finish+0x71/0x90 net/ipv4/ip_input.c:231
+    [<ffffffff839e9e33>] NF_HOOK include/linux/netfilter.h:307 [inline]
+    [<ffffffff839e9e33>] NF_HOOK include/linux/netfilter.h:301 [inline]
+    [<ffffffff839e9e33>] ip_local_deliver+0x153/0x160 net/ipv4/ip_input.c:252
+    [<ffffffff839e9016>] dst_input include/net/dst.h:458 [inline]
+    [<ffffffff839e9016>] ip_sublist_rcv_finish+0x76/0x90 net/ipv4/ip_input.c:551
+    [<ffffffff839e9723>] ip_list_rcv_finish net/ipv4/ip_input.c:601 [inline]
+    [<ffffffff839e9723>] ip_sublist_rcv+0x293/0x340 net/ipv4/ip_input.c:609
+    [<ffffffff839ea126>] ip_list_rcv+0x1c6/0x1f0 net/ipv4/ip_input.c:644
+    [<ffffffff83713f01>] __netif_receive_skb_list_ptype net/core/dev.c:5541 [inline]
+    [<ffffffff83713f01>] __netif_receive_skb_list_core+0x2b1/0x360 net/core/dev.c:5589
+    [<ffffffff83714305>] __netif_receive_skb_list net/core/dev.c:5641 [inline]
+    [<ffffffff83714305>] netif_receive_skb_list_internal+0x355/0x4a0 net/core/dev.c:5751
+    [<ffffffff83715d52>] gro_normal_list net/core/dev.c:5905 [inline]
+    [<ffffffff83715d52>] gro_normal_list net/core/dev.c:5901 [inline]
+    [<ffffffff83715d52>] napi_complete_done+0xe2/0x2e0 net/core/dev.c:6627
+    [<ffffffff828eb89d>] virtqueue_napi_complete drivers/net/virtio_net.c:337 [inline]
+    [<ffffffff828eb89d>] virtnet_poll+0x52d/0x6a0 drivers/net/virtio_net.c:1546
+    [<ffffffff83715f8d>] __napi_poll+0x3d/0x290 net/core/dev.c:7047
 
 
-If pcidev is NULL we are dead by the time we reach 'if' statement.
 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
--boris
-
-
-
->  		dev_err(&pdev->xdev->dev, "device or AER driver is NULL\n");
->  		pci_dev_put(pcidev);
->  		return result;
->  	}
-> -	pdrv = pcidev->driver;
->  
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
