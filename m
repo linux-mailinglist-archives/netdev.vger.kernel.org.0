@@ -2,169 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8839F3DBD97
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 19:19:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36DC73DBD9C
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 19:21:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230274AbhG3RTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 13:19:16 -0400
-Received: from mail-eopbgr130043.outbound.protection.outlook.com ([40.107.13.43]:45569
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230327AbhG3RS5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Jul 2021 13:18:57 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UFyGc/BgG3/4TI53xClcCMZy6qI+Slnz74YFAA8PGSf54SwTP3peY6fw3BMe/Z4SD0/OkMF0TqzwPwJ/jujeCrOjgRJ2Pjo6s8x9UW6HoxxuGpZHyOzsqjep2YWGiF8+3zQR63oPIe2xZTlZxaBXjyD9yYvGnqpcgX62Df8UarbQUJbxFGZMsnrf03fUGWHPuYFwCCTJNWUhbvqsRhDNUYyLRK70S3glwzw78yfy1Zx6QTWhM8wozkaNIVvcFvF44zdtmL6TMDSIZ+DwUJTJ7zICpGUhFMho8fHL3pIVWQ+1Ckx2zZbjmC7HmSHznr/TmDeFfxDCOL2XSQNE5gyu0w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZkvshXB0uErqhw46mqeZ8k2TSBDdDqNiEqlT68BQcZ4=;
- b=eRE3zDi2Azbdf8tpXNfgveGqGkazRUIfrL5dsVX5e1lrxqfGLT/NuT0QbwO/XFLxYoMlz/l/auGALVpLo9uF3zUj8DziaxH/ZwdDwR8n62f3AaX5QNYG0TtsnF3EKsZoxw2vgiLszejgQRwZpi/tqFCgwohj65KZL/YUad2rxI1rB6R+NG/rMReoWlzOxQ3CpeQx7mUKiNCa+vL6HUJdQG/O76IOVuyPYR26pguu5Z6kGWV5jwGAnTax9o0AtwkrT2R3nb3CPCOfKXOV8BvBULjlBJyoaWAqVpLIFDeDGON49428QVrBy5ucN1JfEZk8sMQJVdlchHKqziQDjCqCXQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZkvshXB0uErqhw46mqeZ8k2TSBDdDqNiEqlT68BQcZ4=;
- b=n3bIQiPyxIeezzcXyUE1QTH/gZUng4S0VOqMOIM3sskQ6zY64W9YMNONOONOWfBjLpZVY1pamPtHkWKkp5zR2Zz9VwyLy2oT/ylVI/d/sqj4C4S1PJQZfAmF92oydoEhcq4brfORpSK6rrU7JF++ouWPWcyC0H1vvBWgA4GK0Ak=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB3967.eurprd04.prod.outlook.com (2603:10a6:803:4c::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.25; Fri, 30 Jul
- 2021 17:18:45 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4373.025; Fri, 30 Jul 2021
- 17:18:45 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        id S230127AbhG3RVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 13:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58628 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229738AbhG3RV3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 13:21:29 -0400
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B45C06175F;
+        Fri, 30 Jul 2021 10:21:24 -0700 (PDT)
+Received: by mail-il1-x12e.google.com with SMTP id a14so10182258ila.1;
+        Fri, 30 Jul 2021 10:21:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=eLN7+9c7Xaj+kBy2zNIikaePL1RMYLLJgx5wBfi1ffM=;
+        b=tvbbI6MK46oyskEsShabdhLDtl0o5udZfC/1/4axn1HquUpJlgOTAKDTg+TaeSnEMs
+         en0gYSGH9GUv+T+IH6ykxTJs+JDxj4U0EIOB49X4ESiYdznOSW/759ybfSojUYGFaxFK
+         7bN0OCeU3dj7ErnkALieuEQR+KCnMyLqy8UQVy8gt03oJCD6cB6MLKP6jd/FM5U46Nx1
+         6PT9yTSXWHynBmkqDsISB23D7c+B+i6VanYnzHIYOz7nWtpuHQrt02J4pxfgRvVmQ9/B
+         MTxVoPJvz2YHATbhTywKpTAGnxQF/23sAtFsjWjTh4ulLXPasDUt/xFckx4XFqdZXYn5
+         Vg8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=eLN7+9c7Xaj+kBy2zNIikaePL1RMYLLJgx5wBfi1ffM=;
+        b=THgM+1si/IMU5d0eNKlsq7dghwlJk60px/siApV6KHAIK5yxWZiOn3ElZv0OMj/RQL
+         m65WCrhWiUhbpmo7uDoSNpoE7XoKHCXd4zUaMgIGGU3lI0Gx9Vg3Ddve3vVcefmKxklU
+         QTKYJt/3ND+L4nVRIf7v1RnaeHm15fUo+JzLRxTQQ84cIJlYBwcSk5XcQgsID2dv9x0s
+         x02l+TgKwvrKf4yH/NWWUfuwtgAWykIbU8+6rAwtBctd1PlsDgWK8/Ntk/NUsqBBE+4r
+         MENhSJ7zvUmZLtvWJKciadyKecqWpPIjRWF3J9keegpEUhdyh4a0kMwiNe7onmsrAzSi
+         tCSw==
+X-Gm-Message-State: AOAM531TzunTJLB0BPfpL/7JbQWo2zg++LEjtAFLlNHa/SMmUMKza7j1
+        6PA3pmgHW+2GwHJoUGiVB4Y=
+X-Google-Smtp-Source: ABdhPJxW8Kb8ESDrERihXtPqHK3BaZP1+FOig63zzh5s+7nQsmc9v+ldNxOLS+IbP9kF216Vn8KIhQ==
+X-Received: by 2002:a92:d9c6:: with SMTP id n6mr2701165ilq.142.1627665684203;
+        Fri, 30 Jul 2021 10:21:24 -0700 (PDT)
+Received: from haswell-ubuntu20.lan ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id l5sm1407204ion.44.2021.07.30.10.21.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Jul 2021 10:21:23 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH net 6/6] net: dsa: sja1105: match FDB entries regardless of inner/outer VLAN tag
-Date:   Fri, 30 Jul 2021 20:18:15 +0300
-Message-Id: <20210730171815.1773287-7-vladimir.oltean@nxp.com>
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC net-next 2/2] net: dsa: mt7530: trap packets from standalone ports to the CPU
+Date:   Sat, 31 Jul 2021 01:21:14 +0800
+Message-Id: <20210730171935.GA517710@haswell-ubuntu20>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210730171815.1773287-1-vladimir.oltean@nxp.com>
-References: <20210730171815.1773287-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM4PR0202CA0008.eurprd02.prod.outlook.com
- (2603:10a6:200:89::18) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+In-Reply-To: <20210730161852.4weylgdkcyacxhci@skbuf>
+References: <20210728175327.1150120-1-dqfext@gmail.com> <20210728175327.1150120-3-dqfext@gmail.com> <20210729152805.o2pur7pp2kpxvvnq@skbuf> <CALW65jbHwRhekX=7xoFvts2m7xTRM4ti9zpTiah8ed0n0fCrRg@mail.gmail.com> <20210729165027.okmfa3ulpd3e6gte@skbuf> <CALW65jYYmpnDou0dC3=1AjL9tmo_9jqLSWmusJkeqRb4mSwCGQ@mail.gmail.com> <20210730161852.4weylgdkcyacxhci@skbuf>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (82.76.66.29) by AM4PR0202CA0008.eurprd02.prod.outlook.com (2603:10a6:200:89::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.17 via Frontend Transport; Fri, 30 Jul 2021 17:18:45 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 48ee15f7-d1a0-4230-8f57-08d9537e1668
-X-MS-TrafficTypeDiagnostic: VI1PR04MB3967:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB396765E1CD683B33D3DE5852E0EC9@VI1PR04MB3967.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EcAjqkJSzJKALGeT1o5UPEBKliqPE0Y+oTuc0/GSV0ItejA5loaZzqc/l27QQXY+BtJOp9iab3AeuC3HS2Pn0i/sv2dscU4QJsF7SmB4gp433D9g1YR9eyjZ3opOCLso0NKhwTEAmNpW7p3Fc6GREAU01BeEVsEtEHiV/rcZeAnIcDy7ydeYxH+H7Qffm2vzAxB53Ezql2ihNjra+LBMwtLTud0kVpO+v4b4wlIMUH+c3vq04uSIN2aG2x0ug9lzUIUoxl3af//cRwbfpEh17HADfBZxLMBckh2UQgyX3xK8O0eYqv7JqyMum6l0251VXwvqHgt6MsDG+7CQmkQKUw8MhJ1I2XbLd1VhvFZANbPc2n5zv1mTrrwshM75KzYa2fLmzlXXVBYE3B7URPrrjnG/jYpQTKWtDx8uo7iaMiedt48XvOUI61QVbWy7l+Ku94IsFYTEeFEinavDvFuUvo+4kBVbbB21oPh6X0VHRGo7swLolC08xJutH3jidsGR6mMWDp9jyjerYb1Lgkh31YZS6BGcGW/YGN4LtUTosLugoFTXodkBJS8wS4RPrCoeSUbGsF33/Vd638rbm6k+gZuWr4WRQyd4LCfRowKHT8i2lr9iLW+1o8ujnGJN/LrxXCSCuhZtTMxJQgHweiSFglNATMYZS9Zx/vnw9nkaekAgBu9mwxHZivh6Izzv+I86MznCtIFF3w6b/KgvqCe+VF5hG7yieNS7RkPQAjoY2Mw=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(136003)(396003)(376002)(39850400004)(366004)(2906002)(86362001)(6512007)(6506007)(478600001)(956004)(83380400001)(2616005)(316002)(38100700002)(36756003)(6666004)(38350700002)(6486002)(44832011)(52116002)(186003)(4326008)(26005)(66476007)(8936002)(66556008)(5660300002)(110136005)(1076003)(8676002)(54906003)(66946007)(26953001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ELrMHv0P74dX4ZRoHCRMKf9xoJY0qvMsNMvDiClj4xsxSjxRgoqQOJh5R+70?=
- =?us-ascii?Q?yRYkKezKSW8F2ZbVQrundnCTOWoATtDhwxnpg1R+I7SroYpQAtxZzmBu1nXN?=
- =?us-ascii?Q?iPqNwX5CIVAntvoF4+J/9QxZa3boO8QUV1Bnh34nWiNlRMlL2FT3y0DjXbvo?=
- =?us-ascii?Q?NGK4IuqL/roiGjP5qYT7RGtTDfHusysdcTWFSRVDiV/auKD+Q82eYfTiY8Ur?=
- =?us-ascii?Q?7eUy6R+2oockaxubyDywL2bgX55VCAhbaHGx6P23UR07/t5nEeVdh/KHpMwz?=
- =?us-ascii?Q?E9Y/0FmaNWEsHv9uplXRAX7tkkUCd5sCUsWO61Bg9zQrLE73T0Dgdeuph5sX?=
- =?us-ascii?Q?A9sETffAV26vH2C4k4114FxshD3I4AYluBwWJRyt1Wnv3i3fX3O5dQJOLCEs?=
- =?us-ascii?Q?NhWU0dFZdVonmLNpEGYXexUiDH52q1q/aCOXCfZ0K1L5ex9vatrmvpm+XqwC?=
- =?us-ascii?Q?jLV4yOAx43F5tBKqN9sM7yJdHz3xD6/0t2jNDTzel1tdQVm+ONYzzS6YRLwP?=
- =?us-ascii?Q?0DBGMYqUwAFBVjyBPvMQEZE/PUotBR/eCxJHDdrRF6JEvYJG/rXkgAwfGvXN?=
- =?us-ascii?Q?pC2U8BfBo2wqQZGg2nVuFmloVFCfyCY57Jhn7G8xicM8Zp7HEBkdpLC6qMVa?=
- =?us-ascii?Q?1OI1Q1lhNbEMpIGVn3yrh2KDWHzajx8z/pPBjwCS37JFEO7jB8DFx1d6RsiR?=
- =?us-ascii?Q?fU9M0BVCwnYAeH8PKEY6dOW+89Eo/SqC2O45EFlTCvybdzfOaYUJdqP/NNKK?=
- =?us-ascii?Q?+3sRMDDSJwwGXLwrzfDry9MItesKhTKGEs1fEhBtSDGtvDQ+eoffEh4n+C1b?=
- =?us-ascii?Q?m+nh4XM2kv/6IMVjg2itsq0PdwLRf0kGiyawdEE55gkW5B5Ff2Ph6bA6vjKk?=
- =?us-ascii?Q?q571kK2mx2N9iRZZr0oX1IWAel43D3gvAp566KX0Uom+1MpeKiP/CTokmE5d?=
- =?us-ascii?Q?q+5DGOxvBxF1kbIO1AOebXNXplNEWHUn1CUTMe7eg+C7Klkch10rTZolM0tV?=
- =?us-ascii?Q?MeCKg/WzK2/USP/1mm3GbZfKOq514F4zTYbqutlB7nyCOKMFCq5O07iOkvk1?=
- =?us-ascii?Q?CtlbRI8lPZwPiCtFL+TMyetgU5Es6/Mc6t8J9Cb2xe4ku5mfkSbEaQHa2D06?=
- =?us-ascii?Q?6yCh0mfd4vB8e4dx/PiZIG9q0zb2G+CmxZjbVfQBX9op1gWVnIXQop6GG6Ec?=
- =?us-ascii?Q?bMm2Vhho7gzhpSLdO75v0i8oLhF6+vwRgmnXw8bAKBl146ZbFaTHQr5Yyisk?=
- =?us-ascii?Q?Vq7iWniRjpjtzj6gBxZF92dqTHtxa37yFe5R9ytIeNP4lUO+puZwQKg3+xag?=
- =?us-ascii?Q?X/SXfPPAtNcFqq2W4uTmssiM?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 48ee15f7-d1a0-4230-8f57-08d9537e1668
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jul 2021 17:18:45.7890
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /gMGo4enh2P0a8gAC/YJTIFb+X4v9r6VHDVWe0qbkeNzAiH8Nh57NIb4dnYflE26L2nK2FVva/T8bYPFIYuDmQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3967
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On SJA1105P/Q/R/S and SJA1110, the L2 Lookup Table entries contain a
-maskable "inner/outer tag" bit which means:
-- when set to 1: match single-outer and double tagged frames
-- when set to 0: match untagged and single-inner tagged frames
-- when masked off: match all frames regardless of the type of tag
+On Fri, Jul 30, 2021 at 07:18:52PM +0300, Vladimir Oltean wrote:
+> > It turns out that only PVC.VLAN_ATTR contributes to VLAN awareness.
+> > Port matrix mode just skips the VLAN table lookup. The reference
+> > manual is somehow misleading when describing PORT_VLAN modes (See Page
+> > 17 of MT7531 Reference Manual, available at
+> > http://wiki.banana-pi.org/Banana_Pi_BPI-R64#Resources). It states that
+> > PORT_MEM (VLAN port member) is used for destination if the VLAN table
+> > lookup hits, but actually it uses **PORT_MEM & PORT_MATRIX** (bitwise
+> > AND of VLAN port member and port matrix) instead, which means we can
+> > have two or more separate VLAN-aware bridges with the same PVID and
+> > traffic won't leak between them.
+> 
+> Ah, but it's not completely misleading. It does say:
+> 
+> 	2'b01: Fallback mode
+> 
+> 	Enable 802.1Q function for all the received frames.
+> 	Do not discard received frames due to ingress membership violation.
+> 	**Frames whose VID is missed on the VLAN table will be filtered
+> 	by the Port Matrix Member**.
+> 
+> (emphasis mine on the last paragraph)
+> 
+> > So I came up with a solution: Set PORT_VLAN to fallback mode when in
+> > VLAN-unaware mode, this way, even VLAN-unaware bridges will use
+> > independent VLAN filtering.
+> 
+> If you did indeed test that the Port Matrix is still used to enforce
+> separation between ports if the VLAN table _does_ match and we're in
+> fallback mode, then we should be okay.
 
-This driver does not make any meaningful distinction between inner tags
-(matches on TPID) and outer tags (matches on TPID2). In fact, all VLAN
-table entries are installed as SJA1110_VLAN_D_TAG, which means that they
-match on both inner and outer tags.
+Yes, that's what I mean. Tested as well.
 
-So it does not make sense that we install FDB entries with the IOTAG bit
-set to 1.
+> 
+> > Then assign all standalone ports to a reserved VLAN.
+> 
+> You mean all standalone ports to the same VLAN ID, like 4095, or each
+> standalone port to a separate reserved VLAN ID? As long as address
+> learning is disabled on the standalone ports, I guess using a single
+> VLAN ID like 4095 for all of them is just fine, the Port Matrix will
+> take care of the rest.
 
-In VLAN-unaware mode, we set both TPID and TPID2 to 0xdadb, so the
-switch will see frames as outer-tagged or double-tagged (never inner).
-So the FDB entries will match if IOTAG is set to 1.
-
-In VLAN-aware mode, we set TPID to 0x8100 and TPID2 to 0x88a8. So the
-switch will see untagged and 802.1Q-tagged packets as inner-tagged, and
-802.1ad-tagged packets as outer-tagged. So untagged and 802.1Q-tagged
-packets will not match FDB entries if IOTAG is set to 1, but 802.1ad
-tagged packets will. Strange.
-
-To fix this, simply mask off the IOTAG bit from FDB entries, and make
-them match regardless of whether the VLAN tag is inner or outer.
-
-Fixes: 1da73821343c ("net: dsa: sja1105: Add FDB operations for P/Q/R/S series")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/sja1105/sja1105_main.c | 4 ----
- 1 file changed, 4 deletions(-)
-
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 335b608bad11..8667c9754330 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -1445,10 +1445,8 @@ int sja1105pqrs_fdb_add(struct dsa_switch *ds, int port,
- 	/* Search for an existing entry in the FDB table */
- 	l2_lookup.macaddr = ether_addr_to_u64(addr);
- 	l2_lookup.vlanid = vid;
--	l2_lookup.iotag = SJA1105_S_TAG;
- 	l2_lookup.mask_macaddr = GENMASK_ULL(ETH_ALEN * 8 - 1, 0);
- 	l2_lookup.mask_vlanid = VLAN_VID_MASK;
--	l2_lookup.mask_iotag = BIT(0);
- 	l2_lookup.destports = BIT(port);
- 
- 	tmp = l2_lookup;
-@@ -1538,10 +1536,8 @@ int sja1105pqrs_fdb_del(struct dsa_switch *ds, int port,
- 
- 	l2_lookup.macaddr = ether_addr_to_u64(addr);
- 	l2_lookup.vlanid = vid;
--	l2_lookup.iotag = SJA1105_S_TAG;
- 	l2_lookup.mask_macaddr = GENMASK_ULL(ETH_ALEN * 8 - 1, 0);
- 	l2_lookup.mask_vlanid = VLAN_VID_MASK;
--	l2_lookup.mask_iotag = BIT(0);
- 	l2_lookup.destports = BIT(port);
- 
- 	rc = sja1105_dynamic_config_read(priv, BLK_IDX_L2_LOOKUP,
--- 
-2.25.1
-
+I just found a cleaner solution: Leaving standalone ports in port matrix
+mode. As all bridges use independent VLAN learning, standalone ports'
+FDB lookup with FID 0 won't hit.
