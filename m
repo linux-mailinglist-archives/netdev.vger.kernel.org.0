@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84C013DB1E3
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 05:18:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 846103DB1DF
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 05:18:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236399AbhG3DSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 23:18:10 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:16028 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229971AbhG3DSG (ORCPT
+        id S236087AbhG3DSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 23:18:08 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:7901 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234733AbhG3DSG (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 23:18:06 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GbXYz1MK3zZvdQ;
-        Fri, 30 Jul 2021 11:14:31 +0800 (CST)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GbXYf11qkz8246;
+        Fri, 30 Jul 2021 11:14:14 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
  15.1.2176.2; Fri, 30 Jul 2021 11:18:00 +0800
 Received: from localhost.localdomain (10.67.165.24) by
@@ -29,10 +29,12 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>,
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>, <lipeng321@huawei.com>,
         <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 0/4] net: hns3: add support for TX push
-Date:   Fri, 30 Jul 2021 11:14:20 +0800
-Message-ID: <1627614864-50824-1-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 1/4] arm64: barrier: add DGH macros to control memory accesses merging
+Date:   Fri, 30 Jul 2021 11:14:21 +0800
+Message-ID: <1627614864-50824-2-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
+In-Reply-To: <1627614864-50824-1-git-send-email-huangguangbin2@huawei.com>
+References: <1627614864-50824-1-git-send-email-huangguangbin2@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.67.165.24]
@@ -43,33 +45,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds TX push support for the HNS3 ethernet driver.
+From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
 
-Huazhong Tan (2):
-  net: hns3: add support for TX push mode
-  net: hns3: add ethtool priv-flag for TX push
+DGH prohibits merging memory accesses with Normal-NC or Device-GRE
+attributes before the hint instruction with any memory accesses
+appearing after the hint instruction. Provide macros to expose it to the
+arch code.
 
-Xiongfeng Wang (2):
-  arm64: barrier: add DGH macros to control memory accesses merging
-  io: add function to flush the write combine buffer to device
-    immediately
+Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Signed-off-by: Cheng Jian <cj.chengjian@huawei.com>
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+---
+ arch/arm64/include/asm/assembler.h | 7 +++++++
+ arch/arm64/include/asm/barrier.h   | 1 +
+ 2 files changed, 8 insertions(+)
 
- arch/arm64/include/asm/assembler.h                 |  7 ++
- arch/arm64/include/asm/barrier.h                   |  1 +
- arch/arm64/include/asm/io.h                        |  2 +
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  2 +
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 82 ++++++++++++++++++++--
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  6 ++
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 21 +++++-
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c |  2 +
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 11 ++-
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  8 +++
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c   |  2 +
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 11 ++-
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h  |  8 +++
- include/linux/io.h                                 |  6 ++
- 14 files changed, 160 insertions(+), 9 deletions(-)
-
+diff --git a/arch/arm64/include/asm/assembler.h b/arch/arm64/include/asm/assembler.h
+index 89faca0e740d..5a3348b5e9f3 100644
+--- a/arch/arm64/include/asm/assembler.h
++++ b/arch/arm64/include/asm/assembler.h
+@@ -90,6 +90,13 @@
+ 	.endm
+ 
+ /*
++ * Data gathering hint
++ */
++	.macro	dgh
++	hint	#6
++	.endm
++
++/*
+  * RAS Error Synchronization barrier
+  */
+ 	.macro  esb
+diff --git a/arch/arm64/include/asm/barrier.h b/arch/arm64/include/asm/barrier.h
+index 451e11e5fd23..02e1735706d2 100644
+--- a/arch/arm64/include/asm/barrier.h
++++ b/arch/arm64/include/asm/barrier.h
+@@ -22,6 +22,7 @@
+ #define dmb(opt)	asm volatile("dmb " #opt : : : "memory")
+ #define dsb(opt)	asm volatile("dsb " #opt : : : "memory")
+ 
++#define dgh()		asm volatile("hint #6" : : : "memory")
+ #define psb_csync()	asm volatile("hint #17" : : : "memory")
+ #define tsb_csync()	asm volatile("hint #18" : : : "memory")
+ #define csdb()		asm volatile("hint #20" : : : "memory")
 -- 
 2.8.1
 
