@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 705513E016E
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 14:46:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DE123E0170
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 14:46:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237384AbhHDMqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 08:46:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59218 "EHLO
+        id S238266AbhHDMqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 08:46:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238185AbhHDMqX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 08:46:23 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22DC5C0617A2;
-        Wed,  4 Aug 2021 05:45:48 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id k4so2138966wrc.0;
-        Wed, 04 Aug 2021 05:45:48 -0700 (PDT)
+        with ESMTP id S238244AbhHDMqY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 08:46:24 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ADEEC0617A3;
+        Wed,  4 Aug 2021 05:45:49 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id a192-20020a1c7fc90000b0290253b32e8796so3637728wmd.0;
+        Wed, 04 Aug 2021 05:45:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Cq8acZAxJnjl34wGyykc2nFnDcJrQD98GnognT8PzKE=;
-        b=Ft+83SVWaYUi4DEDs4M+rB6Ugjy7qASC89kZK1gcVnS9xuRGZH0Ggqn+5RJkaHdq18
-         6WYTwAZliEJAYb0Gkmhh4j2Mh3aeo8Fr0cPSm7oJ7kGccx2P/tXT00F+NJP+4mzpor2l
-         v+UItD6ze26zp4P5lKBLNRftaxSAW5r3eHYKtw6Oe5mP/5iSVwv/zc7P4Bu9EUZ8vfNJ
-         iDZlJ44+xv4+WoNAK9FGnNpyikIMwOwI3lpCifWQw66SSi+rpKY/l4TgrWS2cXe2kBT4
-         ziKhNvT+opbiH1QoQG7wfOqki6ykK0Jzt+tzcmLlQMREYNJ+2UyzyqG4+loAvkdrgosT
-         I/pQ==
+        bh=6Vv+kISC72wCvpQeciFaDZJ9IKz+oFeH/BbvTmATNf8=;
+        b=D3cJ0RTfTEyRzH1mbzWaTaR9iJo3gPA5/EPpDaAs3ty4c9iiPLVgkxiASzWtvEUjEE
+         UmlIsH79Rf8vZMbpjPu6Ci0hAZCp8jHL+Ubjkwc7c9Brr8q2ScLjVoqtS9ciS01fTC8/
+         I1tsnCSSi/EKlGstvZKZcojfQz1YHJgXkJdjbcNV5EUFLUVL62blK6ss3qYEEm/bDU9i
+         TaAxbtwrvPWyBlQNN9muifmcZKhNJ4T4jq4l94DAsX+PSElbmamrF3W0ZtRDwcf6ac9W
+         JwrnBONXlZL1RpVmXMah574FDd5yJaZG9aiGtl75uK/JBH4kIvMeixigA9tHySjnInBk
+         Rmzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Cq8acZAxJnjl34wGyykc2nFnDcJrQD98GnognT8PzKE=;
-        b=ecHy/x+WCVImjbdGEGpE0fX/cTCoaoBvM2PQQmE9WDdSdBIXGmEtQ0+UWJnhClnYWR
-         iZDg/RD8gcqNH4duyl+gRlvDORIIcRGUq+2ta43CukDbV0/qzxSwng3MyOON81r62O60
-         vaQ7+8QjCgLBjHd0eHf30UlUAuf66WOTPp3AayU3ZPZHMq1vbr3994tKHPshWShncr3L
-         NkFFbo4Gx8wFUWbiR//xV0nGx64y+LSlNxyT0BLUX77GIa3PHt2cUhp9ZpRJORpX2q15
-         6UQoyZIih4IVOVuRNU297e/UUHoZob7iHEckKOWHd5A+qekZPH1TeYnxGJ8h6VHSpAI5
-         Vnsw==
-X-Gm-Message-State: AOAM5314oBrob5nW/Lbz0PdvQdA1b5vRj49wvJNT+U8yQBxq4QpVYy7K
-        pkjfHfYZ3/0r/nRo9Ee8fHI6aJZnHQ67nVw=
-X-Google-Smtp-Source: ABdhPJyKRz6a7QDEPe02EpwLvraUiaxK6AD8cBqOZwo0j/LTWnsLhOtfpNZHYQbx4NxQzgopY9iyYw==
-X-Received: by 2002:a5d:6146:: with SMTP id y6mr27944652wrt.278.1628081146402;
-        Wed, 04 Aug 2021 05:45:46 -0700 (PDT)
+        bh=6Vv+kISC72wCvpQeciFaDZJ9IKz+oFeH/BbvTmATNf8=;
+        b=j9Aw5wh9vtd3MCWbUqBror9qaValrIpAasyAyOKIbMa6Xs7qX+Y88A413PX/4gu3Op
+         U6/GKAhV2b8WsOvAtLlFaJYfON5lVzsE+GpuhjE/fxfLKzBZMIfwUWOszZtSLItrNQPK
+         fwEI6JJD8xjcV5YKd2H7NwjuPiDUDeMzs2Iltcy7faJhYWnA4RezsOPEPN4XeGUW01UT
+         8s2aIo73us1ei0V8bETxubGolxfLdVUX7Jt2V4pXQUjZCCpc5uPQb6W/4cEv0AxeFGsC
+         /67mtL8nFlR4FRcJWxK34xycmB9bJyvqH6M88bz1uK/FQac2uSrjZ2oSeyt403EUbhku
+         WjTQ==
+X-Gm-Message-State: AOAM531RONggrroXF0hpR06wGAmqDISS87UOsJDtPknn36WVphKazGt8
+        kqdhLmcYL5VxMJMul55KKZRIFVZ56MTzN4c=
+X-Google-Smtp-Source: ABdhPJxdKJHMAbnPpmBQF/qYfX30GssS2XGrTnFB8UKfQCSlvR9n5ODgxRSxBS3n3QJpyCUjsqJnCQ==
+X-Received: by 2002:a05:600c:2298:: with SMTP id 24mr13600942wmf.62.1628081147736;
+        Wed, 04 Aug 2021 05:45:47 -0700 (PDT)
 Received: from localhost.localdomain ([77.109.191.101])
-        by smtp.gmail.com with ESMTPSA id y4sm2257923wmi.22.2021.08.04.05.45.45
+        by smtp.gmail.com with ESMTPSA id y4sm2257923wmi.22.2021.08.04.05.45.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Aug 2021 05:45:45 -0700 (PDT)
+        Wed, 04 Aug 2021 05:45:47 -0700 (PDT)
 From:   Jussi Maki <joamaki@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, daniel@iogearbox.net, j.vosburgh@gmail.com,
         andy@greyhouse.net, vfalico@gmail.com, andrii@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         Jussi Maki <joamaki@gmail.com>
-Subject: [PATCH bpf-next v5 1/7] net: bonding: Refactor bond_xmit_hash for use with xdp_buff
-Date:   Fri, 30 Jul 2021 06:18:16 +0000
-Message-Id: <20210730061822.6600-2-joamaki@gmail.com>
+Subject: [PATCH bpf-next v5 2/7] net: core: Add support for XDP redirection to slave device
+Date:   Fri, 30 Jul 2021 06:18:17 +0000
+Message-Id: <20210730061822.6600-3-joamaki@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210730061822.6600-1-joamaki@gmail.com>
 References: <20210609135537.1460244-1-joamaki@gmail.com>
@@ -63,281 +63,165 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In preparation for adding XDP support to the bonding driver
-refactor the packet hashing functions to be able to work with
-any linear data buffer without an skb.
+This adds the ndo_xdp_get_xmit_slave hook for transforming XDP_TX
+into XDP_REDIRECT after BPF program run when the ingress device
+is a bond slave.
+
+The dev_xdp_prog_count is exposed so that slave devices can be checked
+for loaded XDP programs in order to avoid the situation where both
+bond master and slave have programs loaded according to xdp_state.
 
 Signed-off-by: Jussi Maki <joamaki@gmail.com>
 ---
- drivers/net/bonding/bond_main.c | 147 +++++++++++++++++++-------------
- 1 file changed, 90 insertions(+), 57 deletions(-)
+ include/linux/filter.h    | 13 ++++++++++++-
+ include/linux/netdevice.h |  6 ++++++
+ net/core/dev.c            | 13 ++++++++++++-
+ net/core/filter.c         | 25 +++++++++++++++++++++++++
+ 4 files changed, 55 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index d22d78303311..dcec5cc4dab1 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -3611,55 +3611,80 @@ static struct notifier_block bond_netdev_notifier = {
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index ba36989f711a..7ea1cc378042 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -761,6 +761,10 @@ static inline u32 bpf_prog_run_clear_cb(const struct bpf_prog *prog,
  
- /*---------------------------- Hashing Policies -----------------------------*/
+ DECLARE_BPF_DISPATCHER(xdp)
  
-+/* Helper to access data in a packet, with or without a backing skb.
-+ * If skb is given the data is linearized if necessary via pskb_may_pull.
-+ */
-+static inline const void *bond_pull_data(struct sk_buff *skb,
-+					 const void *data, int hlen, int n)
-+{
-+	if (likely(n <= hlen))
-+		return data;
-+	else if (skb && likely(pskb_may_pull(skb, n)))
-+		return skb->head;
++DECLARE_STATIC_KEY_FALSE(bpf_master_redirect_enabled_key);
 +
-+	return NULL;
-+}
++u32 xdp_master_redirect(struct xdp_buff *xdp);
 +
- /* L2 hash helper */
--static inline u32 bond_eth_hash(struct sk_buff *skb)
-+static inline u32 bond_eth_hash(struct sk_buff *skb, const void *data, int mhoff, int hlen)
+ static __always_inline u32 bpf_prog_run_xdp(const struct bpf_prog *prog,
+ 					    struct xdp_buff *xdp)
  {
--	struct ethhdr *ep, hdr_tmp;
-+	struct ethhdr *ep;
- 
--	ep = skb_header_pointer(skb, 0, sizeof(hdr_tmp), &hdr_tmp);
--	if (ep)
--		return ep->h_dest[5] ^ ep->h_source[5] ^ ep->h_proto;
--	return 0;
-+	data = bond_pull_data(skb, data, hlen, mhoff + sizeof(struct ethhdr));
-+	if (!data)
-+		return 0;
-+
-+	ep = (struct ethhdr *)(data + mhoff);
-+	return ep->h_dest[5] ^ ep->h_source[5] ^ ep->h_proto;
- }
- 
--static bool bond_flow_ip(struct sk_buff *skb, struct flow_keys *fk,
--			 int *noff, int *proto, bool l34)
-+static bool bond_flow_ip(struct sk_buff *skb, struct flow_keys *fk, const void *data,
-+			 int hlen, __be16 l2_proto, int *nhoff, int *ip_proto, bool l34)
- {
- 	const struct ipv6hdr *iph6;
- 	const struct iphdr *iph;
- 
--	if (skb->protocol == htons(ETH_P_IP)) {
--		if (unlikely(!pskb_may_pull(skb, *noff + sizeof(*iph))))
-+	if (l2_proto == htons(ETH_P_IP)) {
-+		data = bond_pull_data(skb, data, hlen, *nhoff + sizeof(*iph));
-+		if (!data)
- 			return false;
--		iph = (const struct iphdr *)(skb->data + *noff);
-+
-+		iph = (const struct iphdr *)(data + *nhoff);
- 		iph_to_flow_copy_v4addrs(fk, iph);
--		*noff += iph->ihl << 2;
-+		*nhoff += iph->ihl << 2;
- 		if (!ip_is_fragment(iph))
--			*proto = iph->protocol;
--	} else if (skb->protocol == htons(ETH_P_IPV6)) {
--		if (unlikely(!pskb_may_pull(skb, *noff + sizeof(*iph6))))
-+			*ip_proto = iph->protocol;
-+	} else if (l2_proto == htons(ETH_P_IPV6)) {
-+		data = bond_pull_data(skb, data, hlen, *nhoff + sizeof(*iph6));
-+		if (!data)
- 			return false;
--		iph6 = (const struct ipv6hdr *)(skb->data + *noff);
-+
-+		iph6 = (const struct ipv6hdr *)(data + *nhoff);
- 		iph_to_flow_copy_v6addrs(fk, iph6);
--		*noff += sizeof(*iph6);
--		*proto = iph6->nexthdr;
-+		*nhoff += sizeof(*iph6);
-+		*ip_proto = iph6->nexthdr;
- 	} else {
- 		return false;
- 	}
- 
--	if (l34 && *proto >= 0)
--		fk->ports.ports = skb_flow_get_ports(skb, *noff, *proto);
-+	if (l34 && *ip_proto >= 0)
-+		fk->ports.ports = __skb_flow_get_ports(skb, *nhoff, *ip_proto, data, hlen);
- 
- 	return true;
- }
- 
--static u32 bond_vlan_srcmac_hash(struct sk_buff *skb)
-+static u32 bond_vlan_srcmac_hash(struct sk_buff *skb, const void *data, int mhoff, int hlen)
- {
--	struct ethhdr *mac_hdr = (struct ethhdr *)skb_mac_header(skb);
-+	struct ethhdr *mac_hdr;
- 	u32 srcmac_vendor = 0, srcmac_dev = 0;
- 	u16 vlan;
- 	int i;
- 
-+	data = bond_pull_data(skb, data, hlen, mhoff + sizeof(struct ethhdr));
-+	if (!data)
-+		return 0;
-+	mac_hdr = (struct ethhdr *)(data + mhoff);
-+
- 	for (i = 0; i < 3; i++)
- 		srcmac_vendor = (srcmac_vendor << 8) | mac_hdr->h_source[i];
- 
-@@ -3675,26 +3700,25 @@ static u32 bond_vlan_srcmac_hash(struct sk_buff *skb)
- }
- 
- /* Extract the appropriate headers based on bond's xmit policy */
--static bool bond_flow_dissect(struct bonding *bond, struct sk_buff *skb,
--			      struct flow_keys *fk)
-+static bool bond_flow_dissect(struct bonding *bond, struct sk_buff *skb, const void *data,
-+			      __be16 l2_proto, int nhoff, int hlen, struct flow_keys *fk)
- {
- 	bool l34 = bond->params.xmit_policy == BOND_XMIT_POLICY_LAYER34;
--	int noff, proto = -1;
-+	int ip_proto = -1;
- 
- 	switch (bond->params.xmit_policy) {
- 	case BOND_XMIT_POLICY_ENCAP23:
- 	case BOND_XMIT_POLICY_ENCAP34:
- 		memset(fk, 0, sizeof(*fk));
- 		return __skb_flow_dissect(NULL, skb, &flow_keys_bonding,
--					  fk, NULL, 0, 0, 0, 0);
-+					  fk, data, l2_proto, nhoff, hlen, 0);
- 	default:
- 		break;
- 	}
- 
- 	fk->ports.ports = 0;
- 	memset(&fk->icmp, 0, sizeof(fk->icmp));
--	noff = skb_network_offset(skb);
--	if (!bond_flow_ip(skb, fk, &noff, &proto, l34))
-+	if (!bond_flow_ip(skb, fk, data, hlen, l2_proto, &nhoff, &ip_proto, l34))
- 		return false;
- 
- 	/* ICMP error packets contains at least 8 bytes of the header
-@@ -3702,22 +3726,20 @@ static bool bond_flow_dissect(struct bonding *bond, struct sk_buff *skb,
- 	 * to correlate ICMP error packets within the same flow which
- 	 * generated the error.
+@@ -768,7 +772,14 @@ static __always_inline u32 bpf_prog_run_xdp(const struct bpf_prog *prog,
+ 	 * under local_bh_disable(), which provides the needed RCU protection
+ 	 * for accessing map entries.
  	 */
--	if (proto == IPPROTO_ICMP || proto == IPPROTO_ICMPV6) {
--		skb_flow_get_icmp_tci(skb, &fk->icmp, skb->data,
--				      skb_transport_offset(skb),
--				      skb_headlen(skb));
--		if (proto == IPPROTO_ICMP) {
-+	if (ip_proto == IPPROTO_ICMP || ip_proto == IPPROTO_ICMPV6) {
-+		skb_flow_get_icmp_tci(skb, &fk->icmp, data, nhoff, hlen);
-+		if (ip_proto == IPPROTO_ICMP) {
- 			if (!icmp_is_err(fk->icmp.type))
- 				return true;
+-	return __BPF_PROG_RUN(prog, xdp, BPF_DISPATCHER_FUNC(xdp));
++	u32 act = __BPF_PROG_RUN(prog, xdp, BPF_DISPATCHER_FUNC(xdp));
++
++	if (static_branch_unlikely(&bpf_master_redirect_enabled_key)) {
++		if (act == XDP_TX && netif_is_bond_slave(xdp->rxq->dev))
++			act = xdp_master_redirect(xdp);
++	}
++
++	return act;
+ }
  
--			noff += sizeof(struct icmphdr);
--		} else if (proto == IPPROTO_ICMPV6) {
-+			nhoff += sizeof(struct icmphdr);
-+		} else if (ip_proto == IPPROTO_ICMPV6) {
- 			if (!icmpv6_is_err(fk->icmp.type))
- 				return true;
+ void bpf_prog_change_xdp(struct bpf_prog *prev_prog, struct bpf_prog *prog);
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 42f6f866d5f3..a380786429e1 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1321,6 +1321,9 @@ struct netdev_net_notifier {
+  *	that got dropped are freed/returned via xdp_return_frame().
+  *	Returns negative number, means general error invoking ndo, meaning
+  *	no frames were xmit'ed and core-caller will free all frames.
++ * struct net_device *(*ndo_xdp_get_xmit_slave)(struct net_device *dev,
++ *					        struct xdp_buff *xdp);
++ *      Get the xmit slave of master device based on the xdp_buff.
+  * int (*ndo_xsk_wakeup)(struct net_device *dev, u32 queue_id, u32 flags);
+  *      This function is used to wake up the softirq, ksoftirqd or kthread
+  *	responsible for sending and/or receiving packets on a specific
+@@ -1539,6 +1542,8 @@ struct net_device_ops {
+ 	int			(*ndo_xdp_xmit)(struct net_device *dev, int n,
+ 						struct xdp_frame **xdp,
+ 						u32 flags);
++	struct net_device *	(*ndo_xdp_get_xmit_slave)(struct net_device *dev,
++							  struct xdp_buff *xdp);
+ 	int			(*ndo_xsk_wakeup)(struct net_device *dev,
+ 						  u32 queue_id, u32 flags);
+ 	struct devlink_port *	(*ndo_get_devlink_port)(struct net_device *dev);
+@@ -4071,6 +4076,7 @@ typedef int (*bpf_op_t)(struct net_device *dev, struct netdev_bpf *bpf);
+ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
+ 		      int fd, int expected_fd, u32 flags);
+ int bpf_xdp_link_attach(const union bpf_attr *attr, struct bpf_prog *prog);
++u8 dev_xdp_prog_count(struct net_device *dev);
+ u32 dev_xdp_prog_id(struct net_device *dev, enum bpf_xdp_mode mode);
  
--			noff += sizeof(struct icmp6hdr);
-+			nhoff += sizeof(struct icmp6hdr);
- 		}
--		return bond_flow_ip(skb, fk, &noff, &proto, l34);
-+		return bond_flow_ip(skb, fk, data, hlen, l2_proto, &nhoff, &ip_proto, l34);
+ int __dev_forward_skb(struct net_device *dev, struct sk_buff *skb);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 3ee58876e8f5..27023ea933dd 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9353,7 +9353,7 @@ static struct bpf_prog *dev_xdp_prog(struct net_device *dev,
+ 	return dev->xdp_state[mode].prog;
+ }
+ 
+-static u8 dev_xdp_prog_count(struct net_device *dev)
++u8 dev_xdp_prog_count(struct net_device *dev)
+ {
+ 	u8 count = 0;
+ 	int i;
+@@ -9363,6 +9363,7 @@ static u8 dev_xdp_prog_count(struct net_device *dev)
+ 			count++;
+ 	return count;
+ }
++EXPORT_SYMBOL_GPL(dev_xdp_prog_count);
+ 
+ u32 dev_xdp_prog_id(struct net_device *dev, enum bpf_xdp_mode mode)
+ {
+@@ -9456,6 +9457,8 @@ static int dev_xdp_attach(struct net_device *dev, struct netlink_ext_ack *extack
+ {
+ 	unsigned int num_modes = hweight32(flags & XDP_FLAGS_MODES);
+ 	struct bpf_prog *cur_prog;
++	struct net_device *upper;
++	struct list_head *iter;
+ 	enum bpf_xdp_mode mode;
+ 	bpf_op_t bpf_op;
+ 	int err;
+@@ -9494,6 +9497,14 @@ static int dev_xdp_attach(struct net_device *dev, struct netlink_ext_ack *extack
+ 		return -EBUSY;
  	}
  
- 	return true;
-@@ -3733,33 +3755,26 @@ static u32 bond_ip_hash(u32 hash, struct flow_keys *flow)
- 	return hash >> 1;
++	/* don't allow if an upper device already has a program */
++	netdev_for_each_upper_dev_rcu(dev, upper, iter) {
++		if (dev_xdp_prog_count(upper) > 0) {
++			NL_SET_ERR_MSG(extack, "Cannot attach when an upper device already has a program");
++			return -EEXIST;
++		}
++	}
++
+ 	cur_prog = dev_xdp_prog(dev, mode);
+ 	/* can't replace attached prog with link */
+ 	if (link && cur_prog) {
+diff --git a/net/core/filter.c b/net/core/filter.c
+index faf29fd82276..ff62cd39046d 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -3950,6 +3950,31 @@ void bpf_clear_redirect_map(struct bpf_map *map)
+ 	}
  }
  
--/**
-- * bond_xmit_hash - generate a hash value based on the xmit policy
-- * @bond: bonding device
-- * @skb: buffer to use for headers
-- *
-- * This function will extract the necessary headers from the skb buffer and use
-- * them to generate a hash based on the xmit_policy set in the bonding device
-+/* Generate hash based on xmit policy. If @skb is given it is used to linearize
-+ * the data as required, but this function can be used without it if the data is
-+ * known to be linear (e.g. with xdp_buff).
-  */
--u32 bond_xmit_hash(struct bonding *bond, struct sk_buff *skb)
-+static u32 __bond_xmit_hash(struct bonding *bond, struct sk_buff *skb, const void *data,
-+			    __be16 l2_proto, int mhoff, int nhoff, int hlen)
- {
- 	struct flow_keys flow;
- 	u32 hash;
- 
--	if (bond->params.xmit_policy == BOND_XMIT_POLICY_ENCAP34 &&
--	    skb->l4_hash)
--		return skb->hash;
--
- 	if (bond->params.xmit_policy == BOND_XMIT_POLICY_VLAN_SRCMAC)
--		return bond_vlan_srcmac_hash(skb);
-+		return bond_vlan_srcmac_hash(skb, data, mhoff, hlen);
- 
- 	if (bond->params.xmit_policy == BOND_XMIT_POLICY_LAYER2 ||
--	    !bond_flow_dissect(bond, skb, &flow))
--		return bond_eth_hash(skb);
-+	    !bond_flow_dissect(bond, skb, data, l2_proto, nhoff, hlen, &flow))
-+		return bond_eth_hash(skb, data, mhoff, hlen);
- 
- 	if (bond->params.xmit_policy == BOND_XMIT_POLICY_LAYER23 ||
- 	    bond->params.xmit_policy == BOND_XMIT_POLICY_ENCAP23) {
--		hash = bond_eth_hash(skb);
-+		hash = bond_eth_hash(skb, data, mhoff, hlen);
- 	} else {
- 		if (flow.icmp.id)
- 			memcpy(&hash, &flow.icmp, sizeof(hash));
-@@ -3770,6 +3785,25 @@ u32 bond_xmit_hash(struct bonding *bond, struct sk_buff *skb)
- 	return bond_ip_hash(hash, &flow);
- }
- 
-+/**
-+ * bond_xmit_hash - generate a hash value based on the xmit policy
-+ * @bond: bonding device
-+ * @skb: buffer to use for headers
-+ *
-+ * This function will extract the necessary headers from the skb buffer and use
-+ * them to generate a hash based on the xmit_policy set in the bonding device
-+ */
-+u32 bond_xmit_hash(struct bonding *bond, struct sk_buff *skb)
++DEFINE_STATIC_KEY_FALSE(bpf_master_redirect_enabled_key);
++EXPORT_SYMBOL_GPL(bpf_master_redirect_enabled_key);
++
++u32 xdp_master_redirect(struct xdp_buff *xdp)
 +{
-+	if (bond->params.xmit_policy == BOND_XMIT_POLICY_ENCAP34 &&
-+	    skb->l4_hash)
-+		return skb->hash;
++	struct net_device *master, *slave;
++	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
 +
-+	return __bond_xmit_hash(bond, skb, skb->head, skb->protocol,
-+				skb->mac_header, skb->network_header,
-+				skb_headlen(skb));
++	master = netdev_master_upper_dev_get_rcu(xdp->rxq->dev);
++	slave = master->netdev_ops->ndo_xdp_get_xmit_slave(master, xdp);
++	if (slave && slave != xdp->rxq->dev) {
++		/* The target device is different from the receiving device, so
++		 * redirect it to the new device.
++		 * Using XDP_REDIRECT gets the correct behaviour from XDP enabled
++		 * drivers to unmap the packet from their rx ring.
++		 */
++		ri->tgt_index = slave->ifindex;
++		ri->map_id = INT_MAX;
++		ri->map_type = BPF_MAP_TYPE_UNSPEC;
++		return XDP_REDIRECT;
++	}
++	return XDP_TX;
 +}
++EXPORT_SYMBOL_GPL(xdp_master_redirect);
 +
- /*-------------------------- Device entry points ----------------------------*/
- 
- void bond_work_init_all(struct bonding *bond)
-@@ -4399,8 +4433,7 @@ static netdev_tx_t bond_xmit_roundrobin(struct sk_buff *skb,
- 	return bond_tx_drop(bond_dev, skb);
- }
- 
--static struct slave *bond_xmit_activebackup_slave_get(struct bonding *bond,
--						      struct sk_buff *skb)
-+static struct slave *bond_xmit_activebackup_slave_get(struct bonding *bond)
+ int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
+ 		    struct bpf_prog *xdp_prog)
  {
- 	return rcu_dereference(bond->curr_active_slave);
- }
-@@ -4414,7 +4447,7 @@ static netdev_tx_t bond_xmit_activebackup(struct sk_buff *skb,
- 	struct bonding *bond = netdev_priv(bond_dev);
- 	struct slave *slave;
- 
--	slave = bond_xmit_activebackup_slave_get(bond, skb);
-+	slave = bond_xmit_activebackup_slave_get(bond);
- 	if (slave)
- 		return bond_dev_queue_xmit(bond, skb, slave->dev);
- 
-@@ -4712,7 +4745,7 @@ static struct net_device *bond_xmit_get_slave(struct net_device *master_dev,
- 		slave = bond_xmit_roundrobin_slave_get(bond, skb);
- 		break;
- 	case BOND_MODE_ACTIVEBACKUP:
--		slave = bond_xmit_activebackup_slave_get(bond, skb);
-+		slave = bond_xmit_activebackup_slave_get(bond);
- 		break;
- 	case BOND_MODE_8023AD:
- 	case BOND_MODE_XOR:
 -- 
 2.17.1
 
