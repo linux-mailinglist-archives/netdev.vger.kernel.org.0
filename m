@@ -2,178 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B73B3DBDF1
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 19:49:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 600553DBDF3
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 19:51:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230199AbhG3Rtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 13:49:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37850 "EHLO
+        id S230127AbhG3Rvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 13:51:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230353AbhG3Rtx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 13:49:53 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A707DC0613C1
-        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 10:49:48 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1m9Wcc-00064T-I3; Fri, 30 Jul 2021 19:48:34 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1m9WcO-0005qH-Ky; Fri, 30 Jul 2021 19:48:20 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1m9WcO-00079n-I5; Fri, 30 Jul 2021 19:48:20 +0200
-Date:   Fri, 30 Jul 2021 19:48:20 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Sathya Prakash <sathya.prakash@broadcom.com>,
-        oss-drivers@corigine.com, Oliver O'Halloran <oohall@gmail.com>,
-        Russell Currey <ruscur@russell.cc>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        linux-perf-users@vger.kernel.org,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        linux-scsi@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-        Ido Schimmel <idosch@nvidia.com>, x86@kernel.org,
-        qat-linux@intel.com,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-pci@vger.kernel.org, linux-wireless@vger.kernel.org,
+        with ESMTP id S229921AbhG3Rvy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 13:51:54 -0400
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92912C06175F;
+        Fri, 30 Jul 2021 10:51:48 -0700 (PDT)
+Received: by mail-il1-x129.google.com with SMTP id q18so10236797ile.9;
+        Fri, 30 Jul 2021 10:51:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=sAh2TyVPupc4SlO/7+ZRZndIoKJA5QlMvjRl7Cc62vo=;
+        b=vZaWUIG9YhzoHq/DrESu1sNvIu/+WtI93Ev4/7u26zHEJwAkhM9T/x0vyZhjWIEfpW
+         drknizjaupZUrwoTTO5eXxZKB+MduPyzoZ2+qul0opbUSFMl0STzKHlp72bIb5YbBGUa
+         mU35xosjPM3VJA6kzSqxJX+PLQMfiYWSolg5DKrAWvqWhRPG+nUea+PEnyggSofkrKLZ
+         S3GCYrkb1UeGgCfiGO/6zPnZmDnREVbMY1H5VmYfTR2qG0FS4AU98lkDnGt/WYXbWlcT
+         vVX500xSOkVAUUoAKm2q/tZJHqyPTlTGxGWgUzJNHLjOkY/j+ZivlXUotWvw4LmauAVZ
+         4GGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=sAh2TyVPupc4SlO/7+ZRZndIoKJA5QlMvjRl7Cc62vo=;
+        b=np+Man5lgTn60jHl7RrOclJH84oao4i1l+2DPKDHsUrRgQHm+r/ARuUsWJnjnY7EcP
+         sCNKLDzsqGcZ/vyacHAZ2fWcP4hRoK3aZTdW3XY5JDSIpwgNVH41STbfO9s4p2GGdM4y
+         I4C5JFK7+tJuofa7n67jOKJBL5gDXoxmIaUf3j/tyHlodXRYDr8C6MsML2ui8juG7yuc
+         m3R+Dv7HNH1S8WsV6N4QWDo649/At9TMPOKbC48HBPd4+NJGI/Tz4Vf+hZ3PZm1X+8K6
+         5/lCRnkXvP1Cs0iA6AWLiPVHFvLFbaVtUGWJxZuX05srJrxj9hH3YIDZmivfg4u1wXCF
+         SEsQ==
+X-Gm-Message-State: AOAM532MGy5ElOmIpshh60nHl03rSUf7LfBCkfqsEBMCzEdft25fP6E7
+        GmxRPB3vBM6+YJ20AlDb5u4=
+X-Google-Smtp-Source: ABdhPJwikl+WdVj7X74h8YFsRMAjuzkEZaOB6L6n9wMeM+n+iyQaSmmXyece5DyOUrBOjpnmxFi/Rg==
+X-Received: by 2002:a92:bf11:: with SMTP id z17mr1793894ilh.3.1627667508071;
+        Fri, 30 Jul 2021 10:51:48 -0700 (PDT)
+Received: from haswell-ubuntu20.lan ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id t11sm1427256ioc.4.2021.07.30.10.51.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Jul 2021 10:51:47 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Fiona Trahe <fiona.trahe@intel.com>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Suganath Prabu Subramani 
-        <suganath-prabu.subramani@broadcom.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Borislav Petkov <bp@alien8.de>, Michael Buesch <m@bues.ch>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Juergen Gross <jgross@suse.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        xen-devel@lists.xenproject.org, Vadym Kochan <vkochan@marvell.com>,
-        MPT-FusionLinux.pdl@broadcom.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org,
-        Wojciech Ziemba <wojciech.ziemba@intel.com>,
-        linux-kernel@vger.kernel.org, Taras Chornyi <tchornyi@marvell.com>,
-        Zhou Wang <wangzhou1@hisilicon.com>,
-        linux-crypto@vger.kernel.org, kernel@pengutronix.de,
-        netdev@vger.kernel.org, Frederic Barrat <fbarrat@linux.ibm.com>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v1 0/5] PCI: Drop duplicated tracking of a pci_dev's
- bound driver
-Message-ID: <20210730174820.i6ycjyvyzxcxwxsc@pengutronix.de>
-References: <20210729203740.1377045-1-u.kleine-koenig@pengutronix.de>
- <YQOy/OTvY66igEoe@smile.fi.intel.com>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC net-next 2/2] net: dsa: mt7530: trap packets from standalone ports to the CPU
+Date:   Sat, 31 Jul 2021 01:51:39 +0800
+Message-Id: <20210730175139.518992-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210730173511.ulsv7wfogk5cpx5j@skbuf>
+References: <20210728175327.1150120-1-dqfext@gmail.com> <20210728175327.1150120-3-dqfext@gmail.com> <20210729152805.o2pur7pp2kpxvvnq@skbuf> <CALW65jbHwRhekX=7xoFvts2m7xTRM4ti9zpTiah8ed0n0fCrRg@mail.gmail.com> <20210729165027.okmfa3ulpd3e6gte@skbuf> <CALW65jYYmpnDou0dC3=1AjL9tmo_9jqLSWmusJkeqRb4mSwCGQ@mail.gmail.com> <20210730161852.4weylgdkcyacxhci@skbuf> <20210730171935.GA517710@haswell-ubuntu20> <20210730173511.ulsv7wfogk5cpx5j@skbuf>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="t5ueb7xyetl6m7j3"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YQOy/OTvY66igEoe@smile.fi.intel.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jul 30, 2021 at 08:35:11PM +0300, Vladimir Oltean wrote:
+> On Sat, Jul 31, 2021 at 01:21:14AM +0800, DENG Qingfang wrote:
+> > I just found a cleaner solution: Leaving standalone ports in port matrix
+> > mode. As all bridges use independent VLAN learning, standalone ports'
+> > FDB lookup with FID 0 won't hit.
+> 
+> So standalone ports are completely VLAN-unaware and always use a FID of
+> 0, ports under a VLAN-unaware bridge are in fallback mode (look up the
+> VLAN table but don't drop on miss), use a FID of 1-7, and ports under a
+> VLAN-aware bridge are in the security mode and use the CVID instead of
+> the FID for VLAN classification?
 
---t5ueb7xyetl6m7j3
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+No. Both VLAN-unaware and VLAN-aware bridges use independent VLAN learning
+i.e. use CVID for FDB lookup.
 
-Hi Andy,
-
-On Fri, Jul 30, 2021 at 11:06:20AM +0300, Andy Shevchenko wrote:
-> On Thu, Jul 29, 2021 at 10:37:35PM +0200, Uwe Kleine-K=F6nig wrote:
-> > struct pci_dev tracks the bound pci driver twice. This series is about
-> > removing this duplication.
-> >=20
-> > The first two patches are just cleanups. The third patch introduces a
-> > wrapper that abstracts access to struct pci_dev->driver. In the next
-> > patch (hopefully) all users are converted to use the new wrapper and
-> > finally the fifth patch removes the duplication.
-> >=20
-> > Note this series is only build tested (allmodconfig on several
-> > architectures).
-> >=20
-> > I'm open to restructure this series if this simplifies things. E.g. the
-> > use of the new wrapper in drivers/pci could be squashed into the patch
-> > introducing the wrapper. Patch 4 could be split by maintainer tree or
-> > squashed into patch 3 completely.
->=20
-> I see only patch 4 and this cover letter...
-
-The full series is available at
-
-	https://lore.kernel.org/linux-pci/20210729203740.1377045-1-u.kleine-koenig=
-@pengutronix.de/
-
-All patches but #4 only touch drivers/pci/ (and include/linux/pci.h) and
-it seemed excessive to me to send all patches to all people. It seems at
-least for you I balanced this wrongly. The short version is that patch
-#3 introduces
-
-	+#define pci_driver_of_dev(pdev) ((pdev)->driver)
-
-which allows to do the stuff done in patch #4 and then patch #5 does
-
-	-#define pci_driver_of_dev(pdev) ((pdev)->driver)
-	+#define pci_driver_of_dev(pdev) ((pdev)->dev.driver ? to_pci_driver((pdev=
-)->dev.driver) : NULL)
-
-plus some cleanups.
-
-If you want I can send you a bounce (or you try
-
-	b4 am 20210729203740.1377045-1-u.kleine-koenig@pengutronix.de
-
-).
-
-Best regards and thanks for caring,
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---t5ueb7xyetl6m7j3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmEEO2EACgkQwfwUeK3K
-7AkOCgf/UKvRbSIrjjdKl0HWJofJEfaXlbATSgBausmxV/dcXsg1sLkhkpTN66bG
-WmAdhFN03Vtx3jHKeYtgo3x8g39nfYT4NmlYTNumgxTow6TESnJxbYewE3i0alrR
-Jv0JvBFhUaXj++XetOVHn9f5/t7o5NL/XSF5DTwQM8lZ5skmA2+XXea8lU0IFufZ
-uTi0XA3G5BNhyU6RiehvnN59J6QCN3CIVqajOrZbqf33jiiyCTDf2tEqCYRbv1vJ
-zqt7zYp05RtUaqNKe9oH4N4UFCdChrjZlFP7w7gyqM6Jh/wOSERlVdpocf0BGClR
-W6o7YIB7QFf+ByIxy6hIBeXnaPaDFQ==
-=oi24
------END PGP SIGNATURE-----
-
---t5ueb7xyetl6m7j3--
+> 
+> Make sure to test a mix of standalone, VLAN-unaware bridge and
+> VLAN-aware bridge with the same MAC address in all 3 domains. If that
+> works well this should be really good.
