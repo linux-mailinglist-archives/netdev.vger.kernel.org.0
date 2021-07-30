@@ -2,145 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25A213DB7F6
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 13:42:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF4DE3DB807
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 13:47:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238659AbhG3LnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 07:43:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44267 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238617AbhG3Lm7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 07:42:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1627645373;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aCLtm9dFHn+w/SB2693+ZgZ2eFgaS9vHe74MS+otrP0=;
-        b=TOA5NiZF3D1UmEAsOyg5oIXOkAuzlViAgZXwMpOBDlXUNjSYfKF+oIl0XgLn2EEsl7kbfe
-        hA9SGwOWEcL7YC962QpiEi8XRucsoL4EInv9HU07GPG3+cWvcZ9oSbxo1Kbskgb2ubrLYZ
-        glEC8yIzyJXkxrAOcUQMtLjdKPqYGLo=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-150-Ll2DH18YOnykIesRK0PgSA-1; Fri, 30 Jul 2021 07:42:52 -0400
-X-MC-Unique: Ll2DH18YOnykIesRK0PgSA-1
-Received: by mail-ed1-f69.google.com with SMTP id h16-20020aa7de100000b02903a6620f87feso4498849edv.18
-        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 04:42:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=aCLtm9dFHn+w/SB2693+ZgZ2eFgaS9vHe74MS+otrP0=;
-        b=XQF5crf4WLQVvjnYa9UGng9+XrCWoXzrT+ohwu6KFScvsms3uoH/w2QTNoTb/Fck3J
-         HcWvDyiFZy0kkVRj45PdJcpA8ITd38YX6bDSsxisrIXN1V5/mypKARbwU2c45Hs1Ae8q
-         zugN1Y5tF6R1cLO7kPAZH/VlZFVmKPzCFqpPQm8xHZp3poC6fVL4svDdAGqIb660VK/v
-         ScBGBGoWcbb/i9MIVuWLvDTgzKhfxLtBMwylubMJTmX7LYTY5s+TVRPm4SqwbP0PBs27
-         twS3qT5WytYbQT1xTBmwVdyempmu1rCFEFzhnwSZviZOgMeEw6Qq98KwaXp6/rE8JGwG
-         ewJg==
-X-Gm-Message-State: AOAM531rj1MtrMfC4+M5WFoGZiWFM4rCJ8StNB7BTQo+pwT7XbfthYm3
-        Xg5XEHr9DdKnuP3ugX6l4Qtayr7AH0/kiMuV60icfxK8wMMG1IecX/ucYb0cf/0MXxEH7pKrRuq
-        SpdFZ3mflU00wMBJJ
-X-Received: by 2002:a17:906:170e:: with SMTP id c14mr2099523eje.40.1627645370366;
-        Fri, 30 Jul 2021 04:42:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxLMex01yosXP2wcgUw3UaUEOh1RjmU459A47bxcVoWsy5QaUxlIHWfCdcjeeCPj1w80hxeYA==
-X-Received: by 2002:a17:906:170e:: with SMTP id c14mr2099508eje.40.1627645370200;
-        Fri, 30 Jul 2021 04:42:50 -0700 (PDT)
-Received: from redhat.com ([2.55.154.10])
-        by smtp.gmail.com with ESMTPSA id r15sm574960edw.46.2021.07.30.04.42.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Jul 2021 04:42:48 -0700 (PDT)
-Date:   Fri, 30 Jul 2021 07:42:45 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Ivan <ivan@prestigetransportation.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Willem de Bruijn <willemb@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: PROBLEM: virtio_net LRO kernel panics
-Message-ID: <20210730073029-mutt-send-email-mst@kernel.org>
-References: <CACFia2dwacaVVYD+1uG=CDGaJqdCOSBvZ5FcXp04caecaWAY3w@mail.gmail.com>
+        id S238659AbhG3Lrw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 07:47:52 -0400
+Received: from mail-am6eur05on2062.outbound.protection.outlook.com ([40.107.22.62]:19214
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230353AbhG3Lrv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Jul 2021 07:47:51 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=f3ihI3JR9rdVUa+b0VhH8Wu60htwNYmueTif6TnvmB7NJNc+03fqNZh6nUFxtlG8arcDocUtagUtdsRy66TWK3kO0rVBpL54EQU4nNSTcr1hyp5lfXKzgYeSvBJYoZd7N/brTgJaJYpq8v0ZtxRYLYFhrzHD8FlhB4GynKXQvHsxLITCaZR3p988XenLIMY/2SCH6ErK+2Gj8nzoLaNTjeOQTd9rBu5u0TvQNKwz+x+ruAI/aOToSoqjb64uV86/sCmUp90gA9vMaONlCYDKtaGPDC7ZxysPfS7hWJp2YR7wOBLIMvJ0Y9m4G8QAXtT7erkPwcXB3lHMrmLYItEXdA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VPWOohLkv221xv5qWRexntRBDcYzyOERKfBoKhN0FKQ=;
+ b=hOSjxHIqX+kr/IujbL6utSBzjXhi3procwP/AX70cG+nK+EMr//OhcIoqSk+Vpi/oCNxUaAhcwUDvHfE4Zk3U2/ZXik/ZqFqQdrYe+oegaNG0TvGSUosIcF+pyj0cBK1FmPf9Kuq0UrW5a9NhZ0JE87DhKFhNP1b4CufYzT1D15QYc9NcVgAiwyttGKDwv59rCkBz2SG1nzIF2SzDc1tdDVXwv654MP48hVmKLo6TnsItf2pm6Kt0qRCrXowhId/P4KZ4Cm/UjQjeHZ7z6fbFUy9zBmm32LbEhJdeuhtWwbtFYs0CpqFzdmz/uHwpb2ENdvvqFOaw5Vgl2HTCrfaNg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VPWOohLkv221xv5qWRexntRBDcYzyOERKfBoKhN0FKQ=;
+ b=Tcaz31xdos9SWfb8p+wWOdrs4wZgIr+cJf1Te0Pr0dW+QDwSamT62WNPuTbAEtTBDx+Vw0kJ0K8fC5VOZGKLS8DZpyWLzFKx6EUfl+127IH8LIreEX32g04+THaUKgG5Kx/c79abgA450QQBshHoP+HPFrLZib+BxkbcNZ2R0Dk=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DBAPR04MB7400.eurprd04.prod.outlook.com (2603:10a6:10:1b3::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.31; Fri, 30 Jul
+ 2021 11:47:44 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::9c70:fd2f:f676:4802]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::9c70:fd2f:f676:4802%9]) with mapi id 15.20.4373.025; Fri, 30 Jul 2021
+ 11:47:44 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: fec: fix MAC internal delay doesn't work
+Date:   Fri, 30 Jul 2021 19:47:09 +0800
+Message-Id: <20210730114709.12385-1-qiangqing.zhang@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SG2P153CA0023.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c7::10)
+ To DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACFia2dwacaVVYD+1uG=CDGaJqdCOSBvZ5FcXp04caecaWAY3w@mail.gmail.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (119.31.174.71) by SG2P153CA0023.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c7::10) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.3 via Frontend Transport; Fri, 30 Jul 2021 11:47:42 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e39c8271-eaa9-4b49-dbca-08d9534fd7fe
+X-MS-TrafficTypeDiagnostic: DBAPR04MB7400:
+X-Microsoft-Antispam-PRVS: <DBAPR04MB740038FD6936A12E07BCA6B8E6EC9@DBAPR04MB7400.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hw4ubdVgNAR5+/B0XB1IxCXKlh0JTQkHWOmzQHdrJpixUPIcmgiJxOmQJZhnZepa/qaoN6/FI05Lt/Or7Vy07fB8xelmHJWQCGKYwLt9sYBsSWrxBjNuYO6JbYE6de42ZEutmfAeVL4IbM7a5KO7gMlTPl55mSPzVn16Fs9vKFy2XzpQ0ebXqVGdmbev/VHGA++h9T4uKIF5xC8D/U8JpY0PfI1W+KsY2thdNNtsTNKQbf2P3cG5hiTLlg48i5Skwr5t0Xl966K8zJY9BlAPobajX41UGYZmj03eZ+YSC1+d6tvNtPx+6qPxV+AqUJ84ZedZtb9rn/cCG40/Jnijlhz0JPFbJdKLhd4adJcrePgtt7QIClUi1tigktgcxmmjQp5bga7LFIikrgAh5bVf028qwlX1x7Skii2DMvRowCLXHUDqxDjHQzmrmvpU1h4Gexa01gJYii39gY7O2osJdhfcngufuCYLZv4sHhaqAakBCS1qjW4dnAI917p/hbcq2+qDlyJN0/bIdj8Qf1cLCGybGtSE9O6vIhX/2uUD/GCX2VOTQ1CKpPYbZH8czYmc9Wnlrw5A4WETFPF+jqXz9fUFJjcNSLFo3GjU+i6nuqmLULMfX0lZzMTpLVm6hgvmq16QGHYCSC456bm2g5x69BzFCMx2lF/QLkWdZk3Dv8a54wpsp0jUfi2xiFydXBWyuD8yJfyzb1u5kdOxICuXVA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(396003)(136003)(39850400004)(346002)(376002)(956004)(5660300002)(26005)(86362001)(6666004)(6506007)(66556008)(66946007)(66476007)(83380400001)(186003)(8676002)(38350700002)(1076003)(2616005)(2906002)(478600001)(52116002)(36756003)(38100700002)(316002)(6486002)(8936002)(6512007)(4326008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FpM23rdgIJLKDq8+H498ekgJ7x2XohI9Joc/ObihHK5Sv83CH67r0wFBaxBW?=
+ =?us-ascii?Q?PS1FGXylWVk12MNDnQEIaVYP9XCwLh+n9Hu71NW9nu2/Yj/UVeq1+fzAXuoN?=
+ =?us-ascii?Q?fjQXNmEt6Q4vZ1bPbAxSeHoM2Gc4u4KrkzMgn4EiCp6OzKD/6Ee0BDPtPN2+?=
+ =?us-ascii?Q?7okTLpzXeO556USDRCYZ0TTbN9PpfrvVH2RFNxZxfscgZTVng/ldZkNUUXL7?=
+ =?us-ascii?Q?w8kJWKFo2+kpiJVQhRVfAVnrfRir36cGujZeTUD7hCwpNZSauiZrzQIqe8Mm?=
+ =?us-ascii?Q?EuTtSLrJWNDzZAyNXdcZrYzofLnIxfaJJURDuNhXMkWO7y08e30xops+e0t4?=
+ =?us-ascii?Q?rGDNQ5K5xPwXEq3Mzcw0+VGxlQh68m3jHcb+GHvTwR42wFvCVnt0TVOt3E6v?=
+ =?us-ascii?Q?zfiPngkwhKoAd081HqKhZ3/RcglWaSMrse39o7f9zu/r+GSLaewq/vF4QMHr?=
+ =?us-ascii?Q?4zQCiSdPDD87Rw4kqabRE4ornBtCWdcGBhZzznIZIzOyJbCfieuSU3NdGwP+?=
+ =?us-ascii?Q?p1VjIj3AmCvjM9jHnjmxLscal00ZHLF4hgvGtJp0io3TwjVcSPOkTg/4m3/y?=
+ =?us-ascii?Q?0cqDCoWZ5fqJGddrcM8iy5VTzRm3uQJpLhAEex48ig30TJ/rUKZlXv+jxsRZ?=
+ =?us-ascii?Q?UbCEK//FIqYaaYVixfcauJYE7Z7o4f5V39djRNhWgJzA6sPkh6uPa7fS0SwE?=
+ =?us-ascii?Q?7yZ/Z9ntM2yw0QJyQd3RY5EY6YeiGVIpUnRgXaBBUVG+6BGJHjxAZa7a+CEx?=
+ =?us-ascii?Q?v4VVdkMZCbtVhUDD8LJmA4hOzOFxOxAjjTRYeZMML348vR4OQewiEGGxmDnk?=
+ =?us-ascii?Q?4B1bFneYD7UiUYtWZI18g6op5RLEnHH0w30+KzJOC7sGnwMecwMPoECtT69c?=
+ =?us-ascii?Q?DF9uazAURwE9hkzvO4q6+6X5Gn0Am6S+mGNPVAWCy45Mlb9c1yKDMOXpjDVJ?=
+ =?us-ascii?Q?AptfG13TCJR8tlcN81guf4JHR8ylZsGcva1W7NnO49T0bopUh9p068PM1eqH?=
+ =?us-ascii?Q?l4BCNQt/qFuS8QD94JG9blK0amK9ocD5S3Jj99cOo6s08LiE1dCfp+uzF4+A?=
+ =?us-ascii?Q?fRuv3w//vSq9PjhJ3E4aGg1okQdAZgPFI2Wzf3cm454hRiHx4U/k/qqIVNr3?=
+ =?us-ascii?Q?t02yliXDEoSb+agKCPJDME1CPh1+VpvhtvzSlXm5d6iIFxKpkdJnooWouk7r?=
+ =?us-ascii?Q?3t/aI2MyuLY9d6v3nQYsOYV1g7Ho444OYRccdofpIOTD2m8UL4cdPZAhzJKu?=
+ =?us-ascii?Q?N1aAkoRGqFzw1uzq9loRKDCgwzMb38OuH7Qr3CdKTHruZZm9wb70+UxMuUKS?=
+ =?us-ascii?Q?cj2LvZS4b0MKMzkY0GzpTcDc?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e39c8271-eaa9-4b49-dbca-08d9534fd7fe
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jul 2021 11:47:44.3261
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: i1oJoVcuBH7BOX0si4MaokMAKUm/lLZopNu1EXPfHkfQVm4pz0ETi0GJfL2ekGRyp2HUTtIZ9UbucRFNjo/iBw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7400
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 22, 2021 at 06:27:18PM -0500, Ivan wrote:
-> Dear Sir,
-> 
-> I've been plagued with kernel panics recently. The problem is easily
-> reproducible on any virtual machine that uses the virtio-net driver
-> from stock Linux kernel. Simply isuse this command:
-> 
-> echo 1 > /proc/sys/net/ipv4/ip_forward
-> ...and the kernel panics.
-> 
-> Is there any way we can possibly fix this?
-> 
-> kernel: ------------[ cut here ]------------
-> kernel: netdevice: eth0: failed to disable LRO!
-> kernel: WARNING: CPU: 1 PID: 424 at net/core/dev.c:1768
-> dev_disable_lro+0x108/0x150
-> kernel: Modules linked in: nls_iso8859_1 nls_cp437 vfat fat usbhid
-> atkbd libps2 ahci libahci virtio_net ohci_pci net_failover failover
-> i8042 serio lpc_ich mfd_core libata ohci_hcd ehci_pci ehci_hcd usbcore
-> rng_core i2c_piix4 i2c_core virtio_pci usb_common
-> virtio_pci_modern_dev virtio_ring virtio loop unix
-> kernel: CPU: 1 PID: 424 Comm: bash Not tainted 5.13.4-gnu.4-NuMini #1
-> kernel: Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS
-> VirtualBox 12/01/2006
-> kernel: RIP: 0010:dev_disable_lro+0x108/0x150
-> kernel: Code: ae 88 74 14 be 25 00 00 00 48 89 df e8 f1 54 ed ff 48 85
-> c0 48 0f 44 eb 4c 89 e2 48 89 ee 48 c7 c7 00 c6 ae 88 e8 7a 76 0c 00
-> <0f> 0b e9 2d ff ff ff 80 3d e8 70 97 00 00 49 c7 c4 73 bb ae 88 75
-> kernel: RSP: 0018:ffffb596c0237d80 EFLAGS: 00010282
-> kernel: RAX: 0000000000000000 RBX: ffff9af9c1835000 RCX: ffff9af9fed17538
-> kernel: RDX: 00000000ffffffd8 RSI: 0000000000000027 RDI: ffff9af9fed17530
-> kernel: RBP: ffff9af9c1835000 R08: ffffffff88c96ac8 R09: 0000000000004ffb
-> kernel: R10: 00000000fffff000 R11: 3fffffffffffffff R12: ffffffff88ac7c3d
-> kernel: R13: 0000000000000000 R14: ffffffff88cb2748 R15: ffff9af9c12166c8
-> kernel: FS:  00007fd4911b8740(0000) GS:ffff9af9fed00000(0000)
-> knlGS:0000000000000000
-> kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> kernel: CR2: 0000000000532008 CR3: 000000000115c000 CR4: 00000000000406e0
-> kernel: Call Trace:
-> kernel:  devinet_sysctl_forward+0x1ac/0x1e0
-> kernel:  proc_sys_call_handler+0x127/0x230
-> kernel:  new_sync_write+0x114/0x1a0
-> kernel:  vfs_write+0x18c/0x220
-> kernel:  ksys_write+0x5a/0xd0
-> kernel:  do_syscall_64+0x45/0x80
-> kernel:  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> kernel: RIP: 0033:0x7fd4912b79b3
-> kernel: Code: 8b 15 b9 74 0d 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb
-> b7 0f 1f 00 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 01 00 00 00 0f 05
-> <48> 3d 00 f0 ff ff 77 55 c3 0f 1f 40 00 48 83 ec 28 48 89 54 24 18
-> kernel: RSP: 002b:00007ffe96fdd858 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-> kernel: RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007fd4912b79b3
-> kernel: RDX: 0000000000000002 RSI: 0000000000536810 RDI: 0000000000000001
-> kernel: RBP: 0000000000536810 R08: 000000000000000a R09: 0000000000000000
-> kernel: R10: 00007fd49134f040 R11: 0000000000000246 R12: 0000000000000002
-> kernel: R13: 00007fd4913906c0 R14: 00007fd49138c520 R15: 00007fd49138b920
-> kernel: ---[ end trace ee7985b10570603d ]---
-> kernel: ------------[ cut here ]------------
+This patch intends to fix MAC internal delay doesn't work, due to use
+of_property_read_u32() incorrectly, and improve this feature a bit:
+1) check the delay value if valid.
+2) only enable "enet_2x_txclk" clock when require MAC internal delay.
 
-So the warning is easy to reproduce.
-On qemu/kvm just set ctrl_guest_offloads=off for the device.
+Fixes: fc539459e900 ("net: fec: add MAC internal delayed clock feature support")
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+---
+Hi Andrew,
 
-The panic does not seem to trigger for me and you did not provide
-any data about it.  What happens? Does guest just freeze?
+This fix targes to net-next as this is where the offending patch was applied.
 
-I am guessing the issue is that dev_disable_lro does not report the
-return status and inet_forward_change assumes it's successful.  We then
-end up with LRO packets in unexpected places.
+When refine Andy Duan's patch to generic MAC internal delay property, I
+did make a mistake, and didn't find it during test on i.MX8MM, since the
+lack of chips which support this feature at my side. I am so sorry about this.
+Please help review if there is some flaw in the logic.
 
-Cc netdev and a bunch of people who might have a better idea.
+Joakim
+---
+ drivers/net/ethernet/freescale/fec_main.c | 47 ++++++++++++++++++-----
+ 1 file changed, 37 insertions(+), 10 deletions(-)
 
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 40ea318d7396..a9b889bf375a 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -2042,6 +2042,34 @@ static int fec_enet_clk_enable(struct net_device *ndev, bool enable)
+ 	return ret;
+ }
+ 
++static int fec_enet_parse_rgmii_delay(struct fec_enet_private *fep,
++				      struct device_node *np)
++{
++	u32 rgmii_tx_delay, rgmii_rx_delay;
++
++	/* For rgmii tx internal delay, valid values are 0ps and 2000ps */
++	if (!of_property_read_u32(np, "tx-internal-delay-ps", &rgmii_tx_delay)) {
++		if (rgmii_tx_delay != 0 && rgmii_tx_delay != 2000) {
++			dev_err(&fep->pdev->dev, "The only allowed RGMII TX delay values are: 0ps, 2000ps");
++			return -EINVAL;
++		} else if (rgmii_tx_delay == 2000) {
++			fep->rgmii_txc_dly = true;
++		}
++	}
++
++	/* For rgmii rx internal delay, valid values are 0ps and 2000ps */
++	if (!of_property_read_u32(np, "rx-internal-delay-ps", &rgmii_rx_delay)) {
++		if (rgmii_rx_delay != 0 && rgmii_rx_delay != 2000) {
++			dev_err(&fep->pdev->dev, "The only allowed RGMII RX delay values are: 0ps, 2000ps");
++			return -EINVAL;
++		} else if (rgmii_rx_delay == 2000) {
++			fep->rgmii_rxc_dly = true;
++		}
++	}
++
++	return 0;
++}
++
+ static int fec_enet_mii_probe(struct net_device *ndev)
+ {
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+@@ -3719,7 +3747,6 @@ fec_probe(struct platform_device *pdev)
+ 	char irq_name[8];
+ 	int irq_cnt;
+ 	struct fec_devinfo *dev_info;
+-	u32 rgmii_delay;
+ 
+ 	fec_enet_get_queue_num(pdev, &num_tx_qs, &num_rx_qs);
+ 
+@@ -3777,12 +3804,6 @@ fec_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto failed_stop_mode;
+ 
+-	/* For rgmii internal delay, valid values are 0ps and 2000ps */
+-	if (of_property_read_u32(np, "tx-internal-delay-ps", &rgmii_delay))
+-		fep->rgmii_txc_dly = true;
+-	if (of_property_read_u32(np, "rx-internal-delay-ps", &rgmii_delay))
+-		fep->rgmii_rxc_dly = true;
+-
+ 	phy_node = of_parse_phandle(np, "phy-handle", 0);
+ 	if (!phy_node && of_phy_is_fixed_link(np)) {
+ 		ret = of_phy_register_fixed_link(np);
+@@ -3806,6 +3827,10 @@ fec_probe(struct platform_device *pdev)
+ 		fep->phy_interface = interface;
+ 	}
+ 
++	ret = fec_enet_parse_rgmii_delay(fep, np);
++	if (ret)
++		goto failed_phy;
++
+ 	fep->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
+ 	if (IS_ERR(fep->clk_ipg)) {
+ 		ret = PTR_ERR(fep->clk_ipg);
+@@ -3835,9 +3860,11 @@ fec_probe(struct platform_device *pdev)
+ 	fep->clk_ref_rate = clk_get_rate(fep->clk_ref);
+ 
+ 	/* clk_2x_txclk is optional, depends on board */
+-	fep->clk_2x_txclk = devm_clk_get(&pdev->dev, "enet_2x_txclk");
+-	if (IS_ERR(fep->clk_2x_txclk))
+-		fep->clk_2x_txclk = NULL;
++	if (fep->rgmii_txc_dly || fep->rgmii_rxc_dly) {
++		fep->clk_2x_txclk = devm_clk_get(&pdev->dev, "enet_2x_txclk");
++		if (IS_ERR(fep->clk_2x_txclk))
++			fep->clk_2x_txclk = NULL;
++	}
+ 
+ 	fep->bufdesc_ex = fep->quirks & FEC_QUIRK_HAS_BUFDESC_EX;
+ 	fep->clk_ptp = devm_clk_get(&pdev->dev, "ptp");
 -- 
-MST
+2.17.1
 
