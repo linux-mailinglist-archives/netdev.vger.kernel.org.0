@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F019C3DC084
+	by mail.lfdr.de (Postfix) with ESMTP id 826F03DC083
 	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 23:56:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232934AbhG3VzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 17:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41812 "EHLO
+        id S232237AbhG3VzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 17:55:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232239AbhG3VzB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 17:55:01 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F76EC0613D5
-        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 14:54:55 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id u15so6812925wmj.1
-        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 14:54:55 -0700 (PDT)
+        with ESMTP id S232249AbhG3VzC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 17:55:02 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927BAC061765
+        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 14:54:56 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id h24-20020a1ccc180000b029022e0571d1a0so7281579wmb.5
+        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 14:54:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=isovalent-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=mAC8BUO1HwpV76GQDpKN1M+EroeUTcCIiK92P4SmGtg=;
-        b=s8XKDUU5T3Ly+ohE8lqlsY3yeboxbtZr3Vicz2xcHLxk+xquDRokU8mio5IiFho5XN
-         NhZHI5Z15uLBj/TsLu45DH0hPqX/BRYCzLjHIikMs+LahZuc4S6yaSIao63VCSL0GO3o
-         3+2ogSySY2qU553z1nkTwwT1PYfhjXa6j0lv9RixK/Z50vXM+CYmys8fZ7KRoNjd8qT9
-         HxVlupzQvRPA0MnMgZ0xgOsScgEcPdcoF3yMSx2iXYbtSFcAS1KSi8T9I0XSR8sHCN3/
-         FO2dJoqgMDhJvJxZHlbyz79Psts5jpQUrgn7f26P5tqVLm9nn5u5TqSyOkiPDFPA5FFT
-         0OfQ==
+        bh=xCEa9xVkgXzZA4BlxYn68KWepdc2Ew1HvcNJD7I8Ejg=;
+        b=a0aooZ0TdrIhXYZWk54CZnbIodnzHpzG0A0VdQNGrvNPAqIqYz1NpuxUXeLhQ2ia18
+         BW3DwSPILkMmwfXYoLChJd+aC/sP3SoUMFeSeZOQ8otIsngtWkDtERCue1MnSo9i/8cx
+         mPPMacd6HHV3fDnAd1at8q1X4dF59ZHHnVGRA5LU26+7REJtSSKSTenoIFwRVZL/sz5b
+         rEa8rwtDMT5Mq73M7KCYZBChT7ZVeB8YC+iSimDn0RH2+B4NPFloMiIKnvGTaUWIDzoW
+         sihALHK8JWMErud6SZEwGh7fY7JZmEMs47ogEzrqAJrzQs3Bv15pR3lYIMyLgb+7pbqS
+         EfdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=mAC8BUO1HwpV76GQDpKN1M+EroeUTcCIiK92P4SmGtg=;
-        b=fTHZaY+mCYaiIfW+lDnFKC3E4yH2irNbZhEZE9FYBu4Dykp0x9ysx69TmSsniax4sD
-         t0AbfsKCDnD3ULUE5QEWaDBde71ykIygAf2Axxt5YbcLkpI3t+e0m+H0mKQsl01SjiC1
-         YWBFLSZCPYsatzr/3hYShHONxoDfVqF0p+13q81ftsCY178Ths9j89c6n3JnkQym9gLK
-         qY1P7a1SHk94SNxIM0i2zP7t6xhlCm4J/mlUyJs5fhw/WOdjDh0YBoCi0u4lczRlIlnH
-         kmy3Qx1wM80VCq+XCc8OrTfGkLp3jksM8iNeo3S910y2hL0TSzvi1x2OwcCRlPsEklrR
-         NqLw==
-X-Gm-Message-State: AOAM5328FWa/kySei76+sQ6VYfJN//F383LYefs4JW3mACrdKfayV6+K
-        NRWb0z+yukQ3Ig+5S5WsbbzMMQ==
-X-Google-Smtp-Source: ABdhPJyRD/wusnyxOG6dN5hLnkOaTRm4m7Re/WS4sHV/+YfDB7p1jlDRvnKVgDzy/S5tKtJVd7akAw==
-X-Received: by 2002:a05:600c:1c09:: with SMTP id j9mr5123837wms.183.1627682093964;
-        Fri, 30 Jul 2021 14:54:53 -0700 (PDT)
+        bh=xCEa9xVkgXzZA4BlxYn68KWepdc2Ew1HvcNJD7I8Ejg=;
+        b=uaeU1BBv7lZxKgTVYDqqw9EeGQ2QlPZG7XFv3BzL+xl6EyF64nP+9Fbi50p4Di6n5a
+         YgUrtofUkW9CfuYF3ILa9lB+bTTJHak8DxlLk5ND3Thm3Zwd2xiIsErNuVFiAMLWyHes
+         sVHf2H5oLEadSSGE1FmhecZiex0eLBk/Jj5GDl+HucUan+WT8p+A3atv1ZuHWJJEvR4M
+         y+S1IYzcGl/paNF74v3okVxMe+GYDnKy8kjv9HTD34+vtoRdp2iLalHespM7y+ktONAs
+         3uZ0ORzudtjL96KrRoG+HffWik5oBQmoNqjdQlq0Mwfd1XPyNU2wKdqmervBqrgcbbFJ
+         f+Bw==
+X-Gm-Message-State: AOAM5305UyovxekU/NkMjFcT91fxFXgBspViJ8E6RRcaw4LPB9eEtDw+
+        xa4VeamEOIDaP8cAN/3nzGe8AX3QbKSEQ++p
+X-Google-Smtp-Source: ABdhPJxxPCYlv4sDPNhCcOmMNRU0lAFxw7XT7azMzqbjD5yXyiGFFMIm5KTs0sTrktHmgrp/GOTAPQ==
+X-Received: by 2002:a7b:c386:: with SMTP id s6mr5201177wmj.93.1627682095063;
+        Fri, 30 Jul 2021 14:54:55 -0700 (PDT)
 Received: from localhost.localdomain ([149.86.78.245])
-        by smtp.gmail.com with ESMTPSA id v15sm3210871wmj.39.2021.07.30.14.54.53
+        by smtp.gmail.com with ESMTPSA id v15sm3210871wmj.39.2021.07.30.14.54.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Jul 2021 14:54:53 -0700 (PDT)
+        Fri, 30 Jul 2021 14:54:54 -0700 (PDT)
 From:   Quentin Monnet <quentin@isovalent.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf-next v2 1/7] tools: bpftool: slightly ease bash completion updates
-Date:   Fri, 30 Jul 2021 22:54:29 +0100
-Message-Id: <20210730215435.7095-2-quentin@isovalent.com>
+Subject: [PATCH bpf-next v2 2/7] selftests/bpf: check consistency between bpftool source, doc, completion
+Date:   Fri, 30 Jul 2021 22:54:30 +0100
+Message-Id: <20210730215435.7095-3-quentin@isovalent.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210730215435.7095-1-quentin@isovalent.com>
 References: <20210730215435.7095-1-quentin@isovalent.com>
@@ -65,135 +65,547 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bash completion for bpftool gets two minor improvements in this patch.
+Whenever the eBPF subsystem gains new elements, such as new program or
+map types, it is necessary to update bpftool if we want it able to
+handle the new items.
 
-Move the detection of attach types for "bpftool cgroup attach" outside
-of the "case/esac" bloc, where we cannot reuse our variable holding the
-list of supported attach types as a pattern list. After the change, we
-have only one list of cgroup attach types to update when new types are
-added, instead of the former two lists.
+In addition to the main arrays containing the names of these elements in
+the source code, there are also multiple locations to update:
 
-Also rename the variables holding lists of names for program types, map
-types, and attach types, to make them more unique. This can make it
-slightly easier to point people to the relevant variables to update, but
-the main objective here is to help run a script to check that bash
-completion is up-to-date with bpftool's source code.
+- The help message in the do_help() functions in bpftool's source code.
+- The RST documentation files.
+- The bash completion file.
+
+This has led to omissions multiple times in the past. This patch
+attempts to address this issue by adding consistency checks for all
+these different locations. It also verifies that the bpf_prog_type,
+bpf_map_type and bpf_attach_type enums from the UAPI BPF header have all
+their members present in bpftool.
+
+The script requires no argument to run, it reads and parses the
+different files to check, and prints the mismatches, if any. It
+currently reports a number of missing elements, which will be fixed in a
+later patch:
+
+  $ ./test_bpftool_synctypes.py
+  Comparing [...]/linux/tools/bpf/bpftool/map.c (map_type_name) and [...]/linux/tools/bpf/bpftool/bash-completion/bpftool (BPFTOOL_MAP_CREATE_TYPES): {'ringbuf'}
+  Comparing BPF header (enum bpf_attach_type) and [...]/linux/tools/bpf/bpftool/common.c (attach_type_name): {'BPF_TRACE_ITER', 'BPF_XDP_DEVMAP', 'BPF_XDP', 'BPF_SK_REUSEPORT_SELECT', 'BPF_XDP_CPUMAP', 'BPF_SK_REUSEPORT_SELECT_OR_MIGRATE'}
+  Comparing [...]/linux/tools/bpf/bpftool/prog.c (attach_type_strings) and [...]/linux/tools/bpf/bpftool/prog.c (do_help() ATTACH_TYPE): {'skb_verdict'}
+  Comparing [...]/linux/tools/bpf/bpftool/prog.c (attach_type_strings) and [...]/linux/tools/bpf/bpftool/Documentation/bpftool-prog.rst (ATTACH_TYPE): {'skb_verdict'}
+  Comparing [...]/linux/tools/bpf/bpftool/prog.c (attach_type_strings) and [...]/linux/tools/bpf/bpftool/bash-completion/bpftool (BPFTOOL_PROG_ATTACH_TYPES): {'skb_verdict'}
+
+Note that the script does NOT check for consistency between the list of
+program types that bpftool claims it accepts and the actual list of
+keywords that can be used. This is because bpftool does not "see" them,
+they are ELF section names parsed by libbpf. It is not hard to parse the
+section_defs[] array in libbpf, but some section names are associated
+with program types that bpftool cannot load at the moment. For example,
+some programs require a BTF target and an attach target that bpftool
+cannot handle. The script may be extended to parse the array and check
+only relevant values in the future.
+
+The script is not added to the selftests' Makefile, because doing so
+would require all patches with BPF UAPI change to also update bpftool.
+Instead it is to be added to the CI.
 
 Signed-off-by: Quentin Monnet <quentin@isovalent.com>
 ---
- tools/bpf/bpftool/bash-completion/bpftool | 54 ++++++++++++-----------
- 1 file changed, 29 insertions(+), 25 deletions(-)
+ .../selftests/bpf/test_bpftool_synctypes.py   | 486 ++++++++++++++++++
+ 1 file changed, 486 insertions(+)
+ create mode 100755 tools/testing/selftests/bpf/test_bpftool_synctypes.py
 
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index cc33c5824a2f..a7c947e00345 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -404,8 +404,9 @@ _bpftool()
-                             return 0
-                             ;;
-                         5)
--                            COMPREPLY=( $( compgen -W 'msg_verdict stream_verdict \
--                                stream_parser flow_dissector' -- "$cur" ) )
-+                            local BPFTOOL_PROG_ATTACH_TYPES='msg_verdict \
-+                                stream_verdict stream_parser flow_dissector'
-+                            COMPREPLY=( $( compgen -W "$BPFTOOL_PROG_ATTACH_TYPES" -- "$cur" ) )
-                             return 0
-                             ;;
-                         6)
-@@ -464,7 +465,7 @@ _bpftool()
- 
-                     case $prev in
-                         type)
--                            COMPREPLY=( $( compgen -W "socket kprobe \
-+                            local BPFTOOL_PROG_LOAD_TYPES='socket kprobe \
-                                 kretprobe classifier flow_dissector \
-                                 action tracepoint raw_tracepoint \
-                                 xdp perf_event cgroup/skb cgroup/sock \
-@@ -479,8 +480,8 @@ _bpftool()
-                                 cgroup/post_bind4 cgroup/post_bind6 \
-                                 cgroup/sysctl cgroup/getsockopt \
-                                 cgroup/setsockopt cgroup/sock_release struct_ops \
--                                fentry fexit freplace sk_lookup" -- \
--                                                   "$cur" ) )
-+                                fentry fexit freplace sk_lookup'
-+                            COMPREPLY=( $( compgen -W "$BPFTOOL_PROG_LOAD_TYPES" -- "$cur" ) )
-                             return 0
-                             ;;
-                         id)
-@@ -698,15 +699,15 @@ _bpftool()
-                             return 0
-                             ;;
-                         type)
--                            COMPREPLY=( $( compgen -W 'hash array prog_array \
--                                perf_event_array percpu_hash percpu_array \
--                                stack_trace cgroup_array lru_hash \
-+                            local BPFTOOL_MAP_CREATE_TYPES='hash array \
-+                                prog_array perf_event_array percpu_hash \
-+                                percpu_array stack_trace cgroup_array lru_hash \
-                                 lru_percpu_hash lpm_trie array_of_maps \
-                                 hash_of_maps devmap devmap_hash sockmap cpumap \
-                                 xskmap sockhash cgroup_storage reuseport_sockarray \
-                                 percpu_cgroup_storage queue stack sk_storage \
--                                struct_ops inode_storage task_storage' -- \
--                                                   "$cur" ) )
-+                                struct_ops inode_storage task_storage'
-+                            COMPREPLY=( $( compgen -W "$BPFTOOL_MAP_CREATE_TYPES" -- "$cur" ) )
-                             return 0
-                             ;;
-                         key|value|flags|entries)
-@@ -1017,34 +1018,37 @@ _bpftool()
-                     return 0
-                     ;;
-                 attach|detach)
--                    local ATTACH_TYPES='ingress egress sock_create sock_ops \
--                        device bind4 bind6 post_bind4 post_bind6 connect4 connect6 \
-+                    local BPFTOOL_CGROUP_ATTACH_TYPES='ingress egress \
-+                        sock_create sock_ops device \
-+                        bind4 bind6 post_bind4 post_bind6 connect4 connect6 \
-                         getpeername4 getpeername6 getsockname4 getsockname6 \
-                         sendmsg4 sendmsg6 recvmsg4 recvmsg6 sysctl getsockopt \
-                         setsockopt sock_release'
-                     local ATTACH_FLAGS='multi override'
-                     local PROG_TYPE='id pinned tag name'
--                    case $prev in
--                        $command)
--                            _filedir
--                            return 0
--                            ;;
--                        ingress|egress|sock_create|sock_ops|device|bind4|bind6|\
--                        post_bind4|post_bind6|connect4|connect6|getpeername4|\
--                        getpeername6|getsockname4|getsockname6|sendmsg4|sendmsg6|\
--                        recvmsg4|recvmsg6|sysctl|getsockopt|setsockopt|sock_release)
-+                    # Check for $prev = $command first
-+                    if [ $prev = $command ]; then
-+                        _filedir
-+                        return 0
-+                    # Then check for attach type. This is done outside of the
-+                    # "case $prev in" to avoid writing the whole list of attach
-+                    # types again as pattern to match (where we cannot reuse
-+                    # our variable).
-+                    elif [[ $BPFTOOL_CGROUP_ATTACH_TYPES =~ $prev ]]; then
-                             COMPREPLY=( $( compgen -W "$PROG_TYPE" -- \
-                                 "$cur" ) )
-                             return 0
--                            ;;
-+                    fi
-+                    # case/esac for the other cases
-+                    case $prev in
-                         id)
-                             _bpftool_get_prog_ids
-                             return 0
-                             ;;
-                         *)
--                            if ! _bpftool_search_list "$ATTACH_TYPES"; then
--                                COMPREPLY=( $( compgen -W "$ATTACH_TYPES" -- \
--                                    "$cur" ) )
-+                            if ! _bpftool_search_list "$BPFTOOL_CGROUP_ATTACH_TYPES"; then
-+                                COMPREPLY=( $( compgen -W \
-+                                    "$BPFTOOL_CGROUP_ATTACH_TYPES" -- "$cur" ) )
-                             elif [[ "$command" == "attach" ]]; then
-                                 # We have an attach type on the command line,
-                                 # but it is not the previous word, or
+diff --git a/tools/testing/selftests/bpf/test_bpftool_synctypes.py b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
+new file mode 100755
+index 000000000000..b41464f46b3b
+--- /dev/null
++++ b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
+@@ -0,0 +1,486 @@
++#!/usr/bin/env python3
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++#
++# Copyright (C) 2021 Isovalent, Inc.
++
++import argparse
++import re
++import os, sys
++
++LINUX_ROOT = os.path.abspath(os.path.join(__file__,
++    os.pardir, os.pardir, os.pardir, os.pardir, os.pardir))
++BPFTOOL_DIR = os.path.join(LINUX_ROOT, 'tools/bpf/bpftool')
++retval = 0
++
++class BlockParser(object):
++    """
++    A parser for extracting set of values from blocks such as enums.
++    @reader: a pointer to the open file to parse
++    """
++    def __init__(self, reader):
++        self.reader = reader
++
++    def search_block(self, start_marker):
++        """
++        Search for a given structure in a file.
++        @start_marker: regex marking the beginning of a structure to parse
++        """
++        offset = self.reader.tell()
++        array_start = re.search(start_marker, self.reader.read())
++        if array_start is None:
++            raise Exception('Failed to find start of block')
++        self.reader.seek(offset + array_start.start())
++
++    def parse(self, pattern, end_marker):
++        """
++        Parse a block and return a set of values. Values to extract must be
++        on separate lines in the file.
++        @pattern: pattern used to identify the values to extract
++        @end_marker: regex marking the end of the block to parse
++        """
++        entries = set()
++        while True:
++            line = self.reader.readline()
++            if not line or re.match(end_marker, line):
++                break
++            capture = pattern.search(line)
++            if capture and pattern.groups >= 1:
++                entries.add(capture.group(1))
++        return entries
++
++class ArrayParser(BlockParser):
++    """
++    A parser for extracting dicionaries of values from some BPF-related arrays.
++    @reader: a pointer to the open file to parse
++    @array_name: name of the array to parse
++    """
++    end_marker = re.compile('^};')
++
++    def __init__(self, reader, array_name):
++        self.array_name = array_name
++        self.start_marker = re.compile(f'(static )?const char \* const {self.array_name}\[.*\] = {{\n')
++        super().__init__(reader)
++
++    def search_block(self):
++        """
++        Search for the given array in a file.
++        """
++        super().search_block(self.start_marker);
++
++    def parse(self):
++        """
++        Parse a block and return data as a dictionary. Items to extract must be
++        on separate lines in the file.
++        """
++        pattern = re.compile('\[(BPF_\w*)\]\s*= "(.*)",?$')
++        entries = {}
++        while True:
++            line = self.reader.readline()
++            if line == '' or re.match(self.end_marker, line):
++                break
++            capture = pattern.search(line)
++            if capture:
++                entries[capture.group(1)] = capture.group(2)
++        return entries
++
++class InlineListParser(BlockParser):
++    """
++    A parser for extracting set of values from inline lists.
++    """
++    def parse(self, pattern, end_marker):
++        """
++        Parse a block and return a set of values. Multiple values to extract
++        can be on a same line in the file.
++        @pattern: pattern used to identify the values to extract
++        @end_marker: regex marking the end of the block to parse
++        """
++        entries = set()
++        while True:
++            line = self.reader.readline()
++            if not line:
++                break
++            entries.update(pattern.findall(line))
++            if re.search(end_marker, line):
++                break
++        return entries
++
++class FileExtractor(object):
++    """
++    A generic reader for extracting data from a given file. This class contains
++    several helper methods that wrap arround parser objects to extract values
++    from different structures.
++    This class does not offer a way to set a filename, which is expected to be
++    defined in children classes.
++    """
++    def __init__(self):
++        self.reader = open(self.filename, 'r')
++
++    def close(self):
++        """
++        Close the file used by the parser.
++        """
++        self.reader.close()
++
++    def reset_read(self):
++        """
++        Reset the file position indicator for this parser. This is useful when
++        parsing several structures in the file without respecting the order in
++        which those structures appear in the file.
++        """
++        self.reader.seek(0)
++
++    def get_types_from_array(self, array_name):
++        """
++        Search for and parse an array associating names to BPF_* enum members,
++        for example:
++
++            const char * const prog_type_name[] = {
++                    [BPF_PROG_TYPE_UNSPEC]                  = "unspec",
++                    [BPF_PROG_TYPE_SOCKET_FILTER]           = "socket_filter",
++                    [BPF_PROG_TYPE_KPROBE]                  = "kprobe",
++            };
++
++        Return a dictionary with the enum member names as keys and the
++        associated names as values, for example:
++
++            {'BPF_PROG_TYPE_UNSPEC': 'unspec',
++             'BPF_PROG_TYPE_SOCKET_FILTER': 'socket_filter',
++             'BPF_PROG_TYPE_KPROBE': 'kprobe'}
++
++        @array_name: name of the array to parse
++        """
++        array_parser = ArrayParser(self.reader, array_name)
++        array_parser.search_block()
++        return array_parser.parse()
++
++    def get_enum(self, enum_name):
++        """
++        Search for and parse an enum containing BPF_* members, for example:
++
++            enum bpf_prog_type {
++                    BPF_PROG_TYPE_UNSPEC,
++                    BPF_PROG_TYPE_SOCKET_FILTER,
++                    BPF_PROG_TYPE_KPROBE,
++            };
++
++        Return a set containing all member names, for example:
++
++            {'BPF_PROG_TYPE_UNSPEC',
++             'BPF_PROG_TYPE_SOCKET_FILTER',
++             'BPF_PROG_TYPE_KPROBE'}
++
++        @enum_name: name of the enum to parse
++        """
++        start_marker = re.compile(f'enum {enum_name} {{\n')
++        pattern = re.compile('^\s*(BPF_\w+),?$')
++        end_marker = re.compile('^};')
++        parser = BlockParser(self.reader)
++        parser.search_block(start_marker)
++        return parser.parse(pattern, end_marker)
++
++    def __get_description_list(self, start_marker, pattern, end_marker):
++        parser = InlineListParser(self.reader)
++        parser.search_block(start_marker)
++        return parser.parse(pattern, end_marker)
++
++    def get_rst_list(self, block_name):
++        """
++        Search for and parse a list of type names from RST documentation, for
++        example:
++
++             |       *TYPE* := {
++             |               **socket** | **kprobe** |
++             |               **kretprobe**
++             |       }
++
++        Return a set containing all type names, for example:
++
++            {'socket', 'kprobe', 'kretprobe'}
++
++        @block_name: name of the blog to parse, 'TYPE' in the example
++        """
++        start_marker = re.compile(f'\*{block_name}\* := {{')
++        pattern = re.compile('\*\*([\w/]+)\*\*')
++        end_marker = re.compile('}\n')
++        return self.__get_description_list(start_marker, pattern, end_marker)
++
++    def get_help_list(self, block_name):
++        """
++        Search for and parse a list of type names from a help message in
++        bpftool, for example:
++
++            "       TYPE := { socket | kprobe |\\n"
++            "               kretprobe }\\n"
++
++        Return a set containing all type names, for example:
++
++            {'socket', 'kprobe', 'kretprobe'}
++
++        @block_name: name of the blog to parse, 'TYPE' in the example
++        """
++        start_marker = re.compile(f'"\s*{block_name} := {{')
++        pattern = re.compile('([\w/]+) [|}]')
++        end_marker = re.compile('}')
++        return self.__get_description_list(start_marker, pattern, end_marker)
++
++    def get_bashcomp_list(self, block_name):
++        """
++        Search for and parse a list of type names from a variable in bash
++        completion file, for example:
++
++            local BPFTOOL_PROG_LOAD_TYPES='socket kprobe \\
++                kretprobe'
++
++        Return a set containing all type names, for example:
++
++            {'socket', 'kprobe', 'kretprobe'}
++
++        @block_name: name of the blog to parse, 'TYPE' in the example
++        """
++        start_marker = re.compile(f'local {block_name}=\'')
++        pattern = re.compile('(?:.*=\')?([\w/]+)')
++        end_marker = re.compile('\'$')
++        return self.__get_description_list(start_marker, pattern, end_marker)
++
++class ProgFileExtractor(FileExtractor):
++    """
++    An extractor for bpftool's prog.c.
++    """
++    filename = os.path.join(BPFTOOL_DIR, 'prog.c')
++
++    def get_prog_types(self):
++        return self.get_types_from_array('prog_type_name')
++
++    def get_attach_types(self):
++        return self.get_types_from_array('attach_type_strings')
++
++    def get_prog_attach_help(self):
++        return self.get_help_list('ATTACH_TYPE')
++
++class MapFileExtractor(FileExtractor):
++    """
++    An extractor for bpftool's map.c.
++    """
++    filename = os.path.join(BPFTOOL_DIR, 'map.c')
++
++    def get_map_types(self):
++        return self.get_types_from_array('map_type_name')
++
++    def get_map_help(self):
++        return self.get_help_list('TYPE')
++
++class CgroupFileExtractor(FileExtractor):
++    """
++    An extractor for bpftool's cgroup.c.
++    """
++    filename = os.path.join(BPFTOOL_DIR, 'cgroup.c')
++
++    def get_prog_attach_help(self):
++        return self.get_help_list('ATTACH_TYPE')
++
++class CommonFileExtractor(FileExtractor):
++    """
++    An extractor for bpftool's common.c.
++    """
++    filename = os.path.join(BPFTOOL_DIR, 'common.c')
++
++    def __init__(self):
++        super().__init__()
++        self.attach_types = {}
++
++    def get_attach_types(self):
++        if not self.attach_types:
++            self.attach_types = self.get_types_from_array('attach_type_name')
++        return self.attach_types
++
++    def get_cgroup_attach_types(self):
++        if not self.attach_types:
++            self.get_attach_types()
++        cgroup_types = {}
++        for (key, value) in self.attach_types.items():
++            if key.find('BPF_CGROUP') != -1:
++                cgroup_types[key] = value
++        return cgroup_types
++
++class BpfHeaderExtractor(FileExtractor):
++    """
++    An extractor for the UAPI BPF header.
++    """
++    filename = os.path.join(LINUX_ROOT, 'tools/include/uapi/linux/bpf.h')
++
++    def get_prog_types(self):
++        return self.get_enum('bpf_prog_type')
++
++    def get_map_types(self):
++        return self.get_enum('bpf_map_type')
++
++    def get_attach_types(self):
++        return self.get_enum('bpf_attach_type')
++
++class ManProgExtractor(FileExtractor):
++    """
++    An extractor for bpftool-prog.rst.
++    """
++    filename = os.path.join(BPFTOOL_DIR, 'Documentation/bpftool-prog.rst')
++
++    def get_attach_types(self):
++        return self.get_rst_list('ATTACH_TYPE')
++
++class ManMapExtractor(FileExtractor):
++    """
++    An extractor for bpftool-map.rst.
++    """
++    filename = os.path.join(BPFTOOL_DIR, 'Documentation/bpftool-map.rst')
++
++    def get_map_types(self):
++        return self.get_rst_list('TYPE')
++
++class ManCgroupExtractor(FileExtractor):
++    """
++    An extractor for bpftool-cgroup.rst.
++    """
++    filename = os.path.join(BPFTOOL_DIR, 'Documentation/bpftool-cgroup.rst')
++
++    def get_attach_types(self):
++        return self.get_rst_list('ATTACH_TYPE')
++
++class BashcompExtractor(FileExtractor):
++    """
++    An extractor for bpftool's bash completion file.
++    """
++    filename = os.path.join(BPFTOOL_DIR, 'bash-completion/bpftool')
++
++    def get_prog_attach_types(self):
++        return self.get_bashcomp_list('BPFTOOL_PROG_ATTACH_TYPES')
++
++    def get_map_types(self):
++        return self.get_bashcomp_list('BPFTOOL_MAP_CREATE_TYPES')
++
++    def get_cgroup_attach_types(self):
++        return self.get_bashcomp_list('BPFTOOL_CGROUP_ATTACH_TYPES')
++
++def verify(first_set, second_set, message):
++    """
++    Print all values that differ between two sets.
++    @first_set: one set to compare
++    @second_set: another set to compare
++    @message: message to print for values belonging to only one of the sets
++    """
++    global retval
++    diff = first_set.symmetric_difference(second_set)
++    if diff:
++        print(message, diff)
++        retval = 1
++
++def main():
++    # No arguments supported at this time, but print usage for -h|--help
++    argParser = argparse.ArgumentParser(description="""
++    Verify that bpftool's code, help messages, documentation and bash completion
++    are all in sync on program types, map types and attach types. Also check that
++    bpftool is in sync with the UAPI BPF header.
++    """)
++    args = argParser.parse_args()
++
++    # Map types (enum)
++
++    bpf_info = BpfHeaderExtractor()
++    ref = bpf_info.get_map_types()
++
++    map_info = MapFileExtractor()
++    source_map_items = map_info.get_map_types()
++    map_types_enum = set(source_map_items.keys())
++
++    verify(ref, map_types_enum,
++            f'Comparing BPF header (enum bpf_map_type) and {MapFileExtractor.filename} (map_type_name):')
++
++    # Map types (names)
++
++    source_map_types = set(source_map_items.values())
++    source_map_types.discard('unspec')
++
++    help_map_types = map_info.get_map_help()
++    map_info.close()
++
++    man_map_info = ManMapExtractor()
++    man_map_types = man_map_info.get_map_types()
++    man_map_info.close()
++
++    bashcomp_info = BashcompExtractor()
++    bashcomp_map_types = bashcomp_info.get_map_types()
++
++    verify(source_map_types, help_map_types,
++            f'Comparing {MapFileExtractor.filename} (map_type_name) and {MapFileExtractor.filename} (do_help() TYPE):')
++    verify(source_map_types, man_map_types,
++            f'Comparing {MapFileExtractor.filename} (map_type_name) and {ManMapExtractor.filename} (TYPE):')
++    verify(source_map_types, bashcomp_map_types,
++            f'Comparing {MapFileExtractor.filename} (map_type_name) and {BashcompExtractor.filename} (BPFTOOL_MAP_CREATE_TYPES):')
++
++    # Program types (enum)
++
++    ref = bpf_info.get_prog_types()
++
++    prog_info = ProgFileExtractor()
++    prog_types = set(prog_info.get_prog_types().keys())
++
++    verify(ref, prog_types,
++            f'Comparing BPF header (enum bpf_prog_type) and {ProgFileExtractor.filename} (prog_type_name):')
++
++    # Attach types (enum)
++
++    ref = bpf_info.get_attach_types()
++    bpf_info.close()
++
++    common_info = CommonFileExtractor()
++    attach_types = common_info.get_attach_types()
++
++    verify(ref, attach_types,
++            f'Comparing BPF header (enum bpf_attach_type) and {CommonFileExtractor.filename} (attach_type_name):')
++
++    # Attach types (names)
++
++    source_prog_attach_types = set(prog_info.get_attach_types().values())
++
++    help_prog_attach_types = prog_info.get_prog_attach_help()
++    prog_info.close()
++
++    man_prog_info = ManProgExtractor()
++    man_prog_attach_types = man_prog_info.get_attach_types()
++    man_prog_info.close()
++
++    bashcomp_info.reset_read() # We stopped at map types, rewind
++    bashcomp_prog_attach_types = bashcomp_info.get_prog_attach_types()
++
++    verify(source_prog_attach_types, help_prog_attach_types,
++            f'Comparing {ProgFileExtractor.filename} (attach_type_strings) and {ProgFileExtractor.filename} (do_help() ATTACH_TYPE):')
++    verify(source_prog_attach_types, man_prog_attach_types,
++            f'Comparing {ProgFileExtractor.filename} (attach_type_strings) and {ManProgExtractor.filename} (ATTACH_TYPE):')
++    verify(source_prog_attach_types, bashcomp_prog_attach_types,
++            f'Comparing {ProgFileExtractor.filename} (attach_type_strings) and {BashcompExtractor.filename} (BPFTOOL_PROG_ATTACH_TYPES):')
++
++    # Cgroup attach types
++
++    source_cgroup_attach_types = set(common_info.get_cgroup_attach_types().values())
++    common_info.close()
++
++    cgroup_info = CgroupFileExtractor()
++    help_cgroup_attach_types = cgroup_info.get_prog_attach_help()
++    cgroup_info.close()
++
++    man_cgroup_info = ManCgroupExtractor()
++    man_cgroup_attach_types = man_cgroup_info.get_attach_types()
++    man_cgroup_info.close()
++
++    bashcomp_cgroup_attach_types = bashcomp_info.get_cgroup_attach_types()
++    bashcomp_info.close()
++
++    verify(source_cgroup_attach_types, help_cgroup_attach_types,
++            f'Comparing {CommonFileExtractor.filename} (attach_type_strings) and {CgroupFileExtractor.filename} (do_help() ATTACH_TYPE):')
++    verify(source_cgroup_attach_types, man_cgroup_attach_types,
++            f'Comparing {CommonFileExtractor.filename} (attach_type_strings) and {ManCgroupExtractor.filename} (ATTACH_TYPE):')
++    verify(source_cgroup_attach_types, bashcomp_cgroup_attach_types,
++            f'Comparing {CommonFileExtractor.filename} (attach_type_strings) and {BashcompExtractor.filename} (BPFTOOL_CGROUP_ATTACH_TYPES):')
++
++    sys.exit(retval)
++
++if __name__ == "__main__":
++    main()
 -- 
 2.30.2
 
