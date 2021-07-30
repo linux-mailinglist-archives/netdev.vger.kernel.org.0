@@ -2,240 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C0083DB708
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 12:17:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 531D03DB709
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 12:18:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238377AbhG3KR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 06:17:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33564 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238274AbhG3KRZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 06:17:25 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 797DBC061765
-        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 03:17:21 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id h10so6031110qth.5
-        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 03:17:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=EnctTM5LFQJXJa6zdjie64cwGtW6pro2388u9w2mDyg=;
-        b=Qf1iJTgx3GiKkmGb3Oz4Wm1kQ3kj1f2zB+Io7UmKmqPh74Ioen91jJ6U5wivTPiSOx
-         fKYbdH8vmnDdiLxYgTajhg/N0OdgdMgP/84eTiXE3mdegrH2it7vQAMsjjqDUgWcFymb
-         ZLyTe3qFg7Gx+frBFzCFSSKNImdrqeFEsk9EhmBQXGcl5PFK26ip33p8YiNPFr59m1+m
-         hHpHU49gjZEReJUpPMp842AKKYHVLUCdumPOwPzJGtSqKuoDHYl6wp+/LOa7koe8/wfx
-         r+uiRYAZHcvHnFuqf2Z3WC8x0uXSeDCNq4r212ndnjPisVvfOipMsSR/DivJM6/Plqqa
-         yS0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=EnctTM5LFQJXJa6zdjie64cwGtW6pro2388u9w2mDyg=;
-        b=SLE5WLmzUZZiHxrTve+s0VVvQyZ7I01mSiuZ9Z2qDDty0vj5OhbRpSbeEbHoIXV3DJ
-         w61wZVDums3vEvjLdcjJZHMmnbY3Zpp9PeyQHAGfs8evdzZyl9bPLhuBcVQkwLeClcv0
-         M/kEFk0LfPJEb4HWW04obmPT+aMekIEnJe99SaYTPrwVpy3nnxiq7Uiexg7MVWMrlMb9
-         qu0so27I+00T1vOj68XJ7NZr6nzcrYWqmhfzlNmMkVi9Bt6qBwB+GlS363NvMRz40HTu
-         TNjcxrRREUJZernMrUYPgTShjgm/MjQeYoy8StY1SJslCRpnyIGIGH8rMku4CvDcYRwd
-         jt5w==
-X-Gm-Message-State: AOAM532Se9lZrlFym5K45qhT+4yN/iom6tGvpMVuGF3ya3eDrGh3fj1u
-        LaqUQYTE9fJEynT9DDh/DMp/sg==
-X-Google-Smtp-Source: ABdhPJxXuT4yUqeuA7dU7ORib9r6ASBBeIoadtsB2EPOVBMqHo+Y/s7FlhH/GoD0GUCKvyCO3kwySA==
-X-Received: by 2002:ac8:7ed9:: with SMTP id x25mr1664225qtj.202.1627640240674;
-        Fri, 30 Jul 2021 03:17:20 -0700 (PDT)
-Received: from [192.168.1.171] (bras-base-kntaon1617w-grc-28-184-148-47-47.dsl.bell.ca. [184.148.47.47])
-        by smtp.googlemail.com with ESMTPSA id z29sm735561qkg.9.2021.07.30.03.17.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Jul 2021 03:17:20 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/3] flow_offload: allow user to offload tc
- action to net device
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     Vlad Buslov <vladbu@nvidia.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com, Baowen Zheng <baowen.zheng@corigine.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>, Roopa Prabhu <roopa@nvidia.com>
-References: <20210722091938.12956-1-simon.horman@corigine.com>
- <20210722091938.12956-2-simon.horman@corigine.com>
- <ygnhim12qxxy.fsf@nvidia.com>
- <13f494c9-e7f0-2fbb-89f9-b1500432a2f6@mojatatu.com>
- <20210727130419.GA6665@corigine.com> <ygnh7dhbrfd0.fsf@nvidia.com>
- <95d6873c-256c-0462-60f7-56dbffb8221b@mojatatu.com>
- <ygnh4kcfr9e8.fsf@nvidia.com> <20210728074616.GB18065@corigine.com>
- <7004376d-5576-1b9c-21bc-beabd05fa5c9@mojatatu.com>
- <20210728144622.GA5511@corigine.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <2ba4e24f-e34e-f893-d42b-d0fd40794da5@mojatatu.com>
-Date:   Fri, 30 Jul 2021 06:17:18 -0400
+        id S238401AbhG3KST (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 06:18:19 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:41274
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238274AbhG3KSS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 06:18:18 -0400
+Received: from [10.172.193.212] (1.general.cking.uk.vpn [10.172.193.212])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 8D3CE3F07B;
+        Fri, 30 Jul 2021 10:18:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1627640292;
+        bh=6o4Fcv+tz+TApGV06hKVmxuIUEMvqCAQ7bjotfwL0d8=;
+        h=To:Cc:From:Subject:Message-ID:Date:MIME-Version:Content-Type;
+        b=eZ8FakA3eQSRT5hn9HB05C/gB5uf13uHpJguF+3yl0wwwCJ74tuPMbt7Sf8yW3h40
+         EHW13gWc4CAhitkhthIPg13K+gdejQuz8hZYKXu2JASyqWWdt4CjBDfLlIQDMKAke8
+         +MKBKIlFd+DE7qC+mOG4bXpKh7mTd21MfUHWt0rlU4cV6DAnsAesrkLJ/LbbOHm21h
+         uftx81PlTVjI1QjRvgor5883o6b/R+Rju5KE2rLBUV+WJkIlhp37xbOT2h+Ke9N3ji
+         JpY3C6XHovp0o3WnDkJA8txWCCqcYUpK/Hwk0EoorsOFyU5tbd3wnmyKehPrZ0ctJq
+         1W0Xs2WHxG0iw==
+To:     Manish Chopra <manishc@marvell.com>,
+        Rahul Verma <rahulv@marvell.com>, GR-Linux-NIC-Dev@marvell.com
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+From:   Colin Ian King <colin.king@canonical.com>
+Subject: netxen: mask issue with redundant cases in a switch statement
+Message-ID: <26473280-f134-11c4-3dfa-1233c0262c83@canonical.com>
+Date:   Fri, 30 Jul 2021 11:18:11 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <20210728144622.GA5511@corigine.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-07-28 10:46 a.m., Simon Horman wrote:
-> On Wed, Jul 28, 2021 at 09:51:00AM -0400, Jamal Hadi Salim wrote:
->> On 2021-07-28 3:46 a.m., Simon Horman wrote:
->>> On Tue, Jul 27, 2021 at 07:47:43PM +0300, Vlad Buslov wrote:
->>>> On Tue 27 Jul 2021 at 19:13, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
->>>>> On 2021-07-27 10:38 a.m., Vlad Buslov wrote:
->>>>>> On Tue 27 Jul 2021 at 16:04, Simon Horman <simon.horman@corigine.com> wrote:
->>
->> [..]
->>
->>>>>> I think we have the same issue with filters - they might not be in
->>>>>> hardware after driver callback returned "success" (due to neigh state
->>>>>> being invalid for tunnel_key encap, for example).
->>>>>
->>>>> Sounds like we need another state for this. Otherwise, how do you debug
->>>>> that something is sitting in the driver and not in hardware after you
->>>>> issued a command to offload it? How do i tell today?
->>>>> Also knowing reason why something is sitting in the driver would be
->>>>> helpful.
->>>>
->>>> It is not about just adding another state. The issue is that there is no
->>>> way for drivers to change the state of software filter dynamically.
->>>
->>> I think it might be worth considering enhancing things at some point.
->>> But I agree that its more than a matter of adding an extra flag. And
->>> I think it's reasonable to implement something similar to the classifier
->>> current offload handling of IN_HW now and consider enhancements separately.
->>
->> Debugability is very important. If we have such gotchas we need to have
->> the admin at least be able to tell if the driver returns "success"
->> and the request is still sitting in the driver for whatever reason
->> At minimal there needs to be some indicator somewhere which say
->> "inprogress" or "waiting for resolution" etc.
->> If the control plane(user space app) starts making other decisions
->> based on assumptions that filter was successfully installed i.e
->> packets are being treated in the hardware then there could be
->> consequences when this assumption is wrong.
->>
->> So if i undestood the challenge correctly it is: how do you relay
->> this info back so it is reflected in the filter details. Yes that
->> would require some mechanism to exist and possibly mapping state
->> between whats in the driver and in the cls layer.
->> If i am not mistaken, the switchdev folks handle this asynchronicty?
->> +Cc Ido, Jiri, Roopa
->>
->> And it should be noted that: Yes, the filters have this
->> pre-existing condition but doesnt mean given the opportunity
->> to do actions we should replicate what they do.
-> 
-> I'd prefer symmetry between the use of IN_HW for filters and actions,
-> which I believe is what Vlad has suggested.
-> 
+Hi,
 
-It still not clear to me what it means from a command line pov.
-How do i add a rule and when i dump it what does it show?
+Static analysis with Coverity has found an issue in with redundant
+deadcode in some cases in a switch statement in
+drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c introduced with the
+following commit:
 
-> If we wish to enhance things - f.e. for debugging, which I
-> agree is important - then I think that is a separate topic.
-> 
+commit d612698b6246032370b96abc9afe94c8a66772c2
+Author: Sucheta Chakraborty <sucheta.chakraborty@qlogic.com>
+Date:   Wed May 9 05:55:29 2012 +0000
 
-My only concern is not to repeat mistakes that are in filters
-just for the sake of symmetry. Example the fact that something
-went wrong with insertion or insertion is still in progress
-and you get an indication that all went well.
-Looking at mlnx (NIC) ndrivers it does seem that in the normal case
-the insertion into hw is synchronous (for anything that is not sw
-only). I didnt quiet see what Vlad was referring to.
-We have spent literally hours debugging issues where rules are being
-offloaded thinking it was the driver so any extra info helps.
+    netxen: added miniDIMM support in driver.
 
+The analysis is as follows:
 
->>>>
->>>> No. How would adding more flags improve h/w update rate? I was just
->>>> thinking that it is strange that users that are not interested in
->>>> offloads would suddenly have higher memory usage for their actions just
->>>> because they happen to have offload-capable driver loaded. But it is not
->>>> a major concern for me.
->>>
->>> In that case can we rely on the global tc-offload on/off flag
->>> provided by ethtool? (I understand its not the same, but perhaps
->>> it is sufficient in practice.)
->>>
->>
->> ok.
->> So: I think i have seen this what is probably the spamming refered
->> with the intel (800?) driver ;-> Basically driver was reacting to
->> all filters regardless of need to offload or not.
->> I thought it was an oversight on their part and the driver needed
->> fixing. Are we invoking the offload regardless of whether h/w offload
->> is requested? In my naive view - at least when i looked at the intel
->> code - it didnt seem hard to avoid the spamming.
-> 
-> There is a per-netdev (not global as I wrote above) flag to enable and
-> disable offload. And there is per-classifier skip_hw flag. I can dig
-> through the code as easily as you can but I'd be surprised if the
-> driver is seeing offload requests if either of those settings
-> are in effect.
-> 
+3000        dw = NETXEN_DIMM_DATAWIDTH(val);
+3001
+3002        dimm.presence = (val & NETXEN_DIMM_PRESENT);
+3003
+3004        /* Checks if DIMM info is present. */
+3005        if (!dimm.presence) {
+3006                netdev_err(netdev, "DIMM not present\n");
+3007                goto out;
+3008        }
+3009
+3010        dimm.dimm_type = NETXEN_DIMM_TYPE(val);
+3011
+3012        switch (dimm.dimm_type) {
+3013        case NETXEN_DIMM_TYPE_RDIMM:
+3014        case NETXEN_DIMM_TYPE_UDIMM:
+3015        case NETXEN_DIMM_TYPE_SO_DIMM:
+3016        case NETXEN_DIMM_TYPE_Micro_DIMM:
+3017        case NETXEN_DIMM_TYPE_Mini_RDIMM:
+3018        case NETXEN_DIMM_TYPE_Mini_UDIMM:
+3019                break;
+3020        default:
+3021                netdev_err(netdev, "Invalid DIMM type %x\n",
+dimm.dimm_type);
+3022                goto out;
+3023        }
+3024
+3025        if (val & NETXEN_DIMM_MEMTYPE_DDR2_SDRAM)
+3026                dimm.mem_type = NETXEN_DIMM_MEM_DDR2_SDRAM;
+3027        else
+3028                dimm.mem_type = NETXEN_DIMM_MEMTYPE(val);
+3029
+3030        if (val & NETXEN_DIMM_SIZE) {
+3031                dimm.size = NETXEN_DIMM_STD_MEM_SIZE;
+3032                goto out;
+3033        }
+3034
+3035        if (!rows) {
+3036                netdev_err(netdev, "Invalid no of rows %x\n", rows);
+3037                goto out;
+3038        }
+3039
+3040        if (!cols) {
+3041                netdev_err(netdev, "Invalid no of columns %x\n", cols);
+3042                goto out;
+3043        }
+3044
+3045        if (!banks) {
+3046                netdev_err(netdev, "Invalid no of banks %x\n", banks);
+3047                goto out;
+3048        }
+3049
+3050        ranks += 1;
+3051
 
-For sure it was the 800 (Ice driver if you want to dig into the code).
-I think the ethtool flag was turned on but not skip_sw in the policy. I
-dont have the card installed in any board right now - either will go and
-dig into the logs (because it spews the message into the logs).
-Again not clear if this is what Vlad was calling spam.
+    between: When switching on dw, the value of dw must be between 0 and 3.
 
->>>>> I was looking at it more as a (currently missing) feature improvement.
->>>>> We already have a use case that is implemented by s/w today. The feature
->>>>> mimics it in h/w.
->>>>>
->>>>> At minimal all existing NICs should be able to support the counters
->>>>> as mapped to simple actions like drop. I understand for example if some
->>>>> cant support adding separately offloading of tunnels for example.
->>>>> So the syntax is something along the lines of:
->>>>>
->>>>> tc actions add action drop index 15 skip_sw
->>>>> tc filter add dev ...parent ... protocol ip prio X ..\
->>>>> u32/flower skip_sw match ... flowid 1:10 action gact index 15
->>>>>
->>>>> You get an error if counter index 15 is not offloaded or
->>>>> if skip_sw was left out..
->>>>>
->>>>> And then later on, if you support sharing of actions:
->>>>> tc filter add dev ...parent ... protocol ip prio X2 ..\
->>>>> u32/flower skip_sw match ... flowid 1:10 action gact index 15
->>>
->>> Right, I understand that makes sense and is internally consistent.
->>> But I think that in practice it only makes a difference "Approach B"
->>> implementations, none of which currently exist.
->>>
->>
->> At minimal:
->> Shouldnt counters (easily correlated to basic actions like drop or
->> accept) fit the scenario of:
->> tc actions add action drop index 15 skip_sw
->> tc filter add dev ...parent ... protocol ip prio X .. \
->> u32/flower skip_sw match ... flowid 1:10 action gact index 15
->>
->> ?
->>
->>> I would suggest we can add this when the need arises, rather than
->>> speculatively without hw/driver support. Its not precluded by the current
->>> model AFAIK.
->>>
->>
->> We are going to work on a driver that would have the "B" approach.
->> I am hoping - whatever the consensus here - it doesnt require a
->> surgery afterwards to make that work.
-> 
-> You should be able to build on the work proposed here to add what you
-> suggest into the framework to meet these requirements for your driver work.
-> 
+3052        switch (dw) {
+3053        case 0x0:
+3054                dw = 32;
+3055                break;
+3056        case 0x1:
+3057                dw = 33;
+3058                break;
+3059        case 0x2:
+3060                dw = 36;
+3061                break;
+3062        case 0x3:
+3063                dw = 64;
+3064                break;
 
-Then we are good. These are the same patches you have here?
+      Logically dead code (DEADCODE)
 
-cheers,
-jamal
+3065        case 0x4:
+3066                dw = 72;
+3067                break;
+
+     Logically dead code (DEADCODE)
+
+3068        case 0x5:
+3069                dw = 80;
+3070                break;
+
+     Logically dead code (DEADCODE)
+
+3071        case 0x6:
+3072                dw = 128;
+3073                break;
+
+     Logically dead code (DEADCODE)
+
+3074        case 0x7:
+3075                dw = 144;
+3076                break;
+
+     Logically dead code (DEADCODE)
+
+3077        default:
+3078                netdev_err(netdev, "Invalid data-width %x\n", dw);
+3079                goto out;
+3080        }
+3081
+
+Macro NETXEN_DIMM_DATAWIDTH is defined as:
+
+#define NETXEN_DIMM_DATAWIDTH(VAL)              ((VAL >> 18) & 0x3)
+
+so the value of dw is always going to be in the range 0x00..0x03
+inclusive, hence case statments for cases 0x04 to 0x07 are deadcode. Is
+the mask correct or should the case statements be removed?
+
+Colin
