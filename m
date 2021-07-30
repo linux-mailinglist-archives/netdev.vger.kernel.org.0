@@ -2,120 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC7113DB216
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 06:11:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 629513DB2A7
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 07:15:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229910AbhG3ELR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 00:11:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58626 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229465AbhG3ELQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 00:11:16 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18321C061765;
-        Thu, 29 Jul 2021 21:11:11 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id k1so9492125plt.12;
-        Thu, 29 Jul 2021 21:11:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qJu6CB2LN4QTrxCEOBdOuFEubSp0osjxUw486lmLCCE=;
-        b=ZDBlqPk7rrZwfBnBjR5AX1bDAs/03F78a8y9TTalCyS6aeo4BVkIxfh1ObzxANaAgE
-         HW8wbFpOlmHwbaCPm5cRL/enrnPzB27Dnubwd4H3F+8zFrVlyM1Smb2LawbtRzGY3LRC
-         Gb93dNjedTrLXFAZ6ab+LBvUZZSxiYikb+dLVy6ty9M5d/daHgOsw8Q+y0rAzywv5rJ1
-         9vUlTT3Rv5WnELmp/i+W4sb7zRlI3Awvh+AERZBSYUZe0JKeGzcixyqH3H8gStqkO4Ji
-         /TjYveizM/zetfPUG8Kk34aKNf2XAzZdOlHSD7bm+KS1YwZA/iLQszfwSj+JpCnElXrL
-         5VoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qJu6CB2LN4QTrxCEOBdOuFEubSp0osjxUw486lmLCCE=;
-        b=NhZbm4qE0y8PHoUerwDq4y3U6M2jXrhtlWOwKOSNlYe0ahrd0Ix8V7j2HznFId6b66
-         MkEhaNAhCvVKqpF4acPbpANrpUnGjuVCMm6KLaR0ZISpYE494rrTpSDzpFgsfSYxrA7C
-         LsfOXxv8VJpjDMET9n6EAHUuU2J6ObGkNYTeoBk94NowpytPuSbyUl8YiNHACVUxpCCu
-         VW+2qj8AHXCcmERjsVXni8Q+I+fAbHrWrVQ7DuJJydq9ajGbkKdCpjb61/wjO5Nc2dVE
-         4fy+sPpOnsLYIHvrniYhF1gUv8NL4+ioM+v79VG9H9FfSQZrAmEUGyeRuM7MisnExdFr
-         0ItA==
-X-Gm-Message-State: AOAM530/og5KYoU95IJ2MeBl/97lgE6G57hWm9y5q6ZHzsEaJ7t4oSJw
-        j97q814A3uMZ1ufYSV9eu0o=
-X-Google-Smtp-Source: ABdhPJz3KIEE78AyymdsWAIZFHiwRfrHYC57wifeuRqjNg3M8sSkO4co7S92ZJfiJ7qm9o4/XVu3Vw==
-X-Received: by 2002:a17:90a:b795:: with SMTP id m21mr872416pjr.143.1627618270672;
-        Thu, 29 Jul 2021 21:11:10 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:18:efec::4b1])
-        by smtp.gmail.com with ESMTPSA id s7sm418969pfk.12.2021.07.29.21.10.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Jul 2021 21:11:10 -0700 (PDT)
-Subject: Re: [PATCH 10/13] x86/Swiotlb: Add Swiotlb bounce buffer remap
- function for HV IVM
-To:     Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        boris.ostrovsky@oracle.com, jgross@suse.com,
-        sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, arnd@arndb.de, hch@lst.de,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, ardb@kernel.org,
-        Tianyu.Lan@microsoft.com, rientjes@google.com,
-        martin.b.radev@gmail.com, akpm@linux-foundation.org,
-        rppt@kernel.org, kirill.shutemov@linux.intel.com,
-        aneesh.kumar@linux.ibm.com, krish.sadhukhan@oracle.com,
-        saravanand@fb.com, xen-devel@lists.xenproject.org,
-        pgonda@google.com, david@redhat.com, keescook@chromium.org,
-        hannes@cmpxchg.org, sfr@canb.auug.org.au,
-        michael.h.kelley@microsoft.com, iommu@lists.linux-foundation.org,
-        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org, vkuznets@redhat.com, anparri@microsoft.com
-References: <20210728145232.285861-1-ltykernel@gmail.com>
- <20210728145232.285861-11-ltykernel@gmail.com> <YQLXYVaWWdBfF7Sm@fedora>
-From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <7afbbc7f-8f02-ca6c-0c8c-bbf01fae70ea@gmail.com>
-Date:   Fri, 30 Jul 2021 12:10:54 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S237163AbhG3FPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 01:15:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47414 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234928AbhG3FPH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Jul 2021 01:15:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6AAA660F9B;
+        Fri, 30 Jul 2021 05:14:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1627622098;
+        bh=Rd0qV6oPrMRK9x5RQHEA0i4kdEU0U+RcVzNm4XOeux8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=T6hObKQmOk4AFgIpQT4y2Zsi4Q75SgNjFNnS8pRLR4KFvnEyagvEfbTCdxstRLsYG
+         rjTcpLBlDG/oVJ8lnaqbcwXAZTVT9l8C6Cy6bhh3Fo+ilPrCNthbqlfZm24+7rNODV
+         PAMI7xMjSKfCoNPXlo3uccVRt1pE46rn5PvW/dE4=
+Date:   Fri, 30 Jul 2021 07:14:55 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        kernel@pengutronix.de, linux-pci@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Russell Currey <ruscur@russell.cc>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Zhou Wang <wangzhou1@hisilicon.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Sathya Prakash <sathya.prakash@broadcom.com>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Michael Buesch <m@bues.ch>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Fiona Trahe <fiona.trahe@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Wojciech Ziemba <wojciech.ziemba@intel.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-crypto@vger.kernel.org, qat-linux@intel.com,
+        MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
+        netdev@vger.kernel.org, oss-drivers@corigine.com,
+        xen-devel@lists.xenproject.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH v1 0/5] PCI: Drop duplicated tracking of a pci_dev's
+ bound driver
+Message-ID: <YQOKz0l6aaU8PGLV@kroah.com>
+References: <20210729203740.1377045-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <YQLXYVaWWdBfF7Sm@fedora>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210729203740.1377045-1-u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Konrad:
-      Thanks for your review.
-
-On 7/30/2021 12:29 AM, Konrad Rzeszutek Wilk wrote:
->> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
->> index 1fa81c096c1d..6866e5784b53 100644
->> --- a/kernel/dma/swiotlb.c
->> +++ b/kernel/dma/swiotlb.c
->> @@ -194,8 +194,13 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
->>   		mem->slots[i].alloc_size = 0;
->>   	}
->>   
->> -	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
->> -	memset(vaddr, 0, bytes);
->> +	mem->vaddr = dma_map_decrypted(vaddr, bytes);
->> +	if (!mem->vaddr) {
->> +		pr_err("Failed to decrypt memory.\n");
-> I am wondering if it would be worth returning an error code in this
-> function instead of just printing an error?
-
-Yes, this is good idea and will update in the next version.
-
+On Thu, Jul 29, 2021 at 10:37:35PM +0200, Uwe Kleine-König wrote:
+> Hello,
 > 
-> For this patch I think it is Ok, but perhaps going forward this would be
-> better done as I am thinking - is there some global guest->hyperv
-> reporting mechanism so that if this fails - it ends up being bubbled up
-> to the HyperV console-ish?
+> struct pci_dev tracks the bound pci driver twice. This series is about
+> removing this duplication.
+> 
+> The first two patches are just cleanups. The third patch introduces a
+> wrapper that abstracts access to struct pci_dev->driver. In the next
+> patch (hopefully) all users are converted to use the new wrapper and
+> finally the fifth patch removes the duplication.
+> 
+> Note this series is only build tested (allmodconfig on several
+> architectures).
+> 
+> I'm open to restructure this series if this simplifies things. E.g. the
+> use of the new wrapper in drivers/pci could be squashed into the patch
+> introducing the wrapper. Patch 4 could be split by maintainer tree or
+> squashed into patch 3 completely.
+> 
+> Best regards
+> Uwe
+> 
+> Uwe Kleine-König (5):
+>   PCI: Simplify pci_device_remove()
+>   PCI: Drop useless check from pci_device_probe()
+>   PCI: Provide wrapper to access a pci_dev's bound driver
+>   PCI: Adapt all code locations to not use struct pci_dev::driver
+>     directly
+>   PCI: Drop duplicated tracking of a pci_dev's bound driver
 
-Hyper-V has such panic page report mechanism. Guest can pass one page 
-log to host during crash.
+Other than my objection to patch 5/5 lack of changelog, looks sane to
+me:
 
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
