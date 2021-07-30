@@ -2,286 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7A7A3DC16A
-	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 01:00:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AACF03DC16C
+	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 01:03:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233555AbhG3XA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 19:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58162 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233584AbhG3XA1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 19:00:27 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3BF8C0613D3;
-        Fri, 30 Jul 2021 16:00:20 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id x192so18588685ybe.0;
-        Fri, 30 Jul 2021 16:00:20 -0700 (PDT)
+        id S233491AbhG3XDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 19:03:46 -0400
+Received: from smtp-fw-80007.amazon.com ([99.78.197.218]:8018 "EHLO
+        smtp-fw-80007.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231189AbhG3XDp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 19:03:45 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=G03xh2kAEbzlimx7cJbVe+bLXkoyZqrXclrus0q2F4E=;
-        b=MIaoNMVH6LJl09DjX0vC5H8SNneLdqQcfNsc80BvzBlZkKoC2DtrvschrDusLA0gfQ
-         qkN9pjKZYagMu/Eyzfcl8IaG/Y9mkpeblkfRi4S0alFUFD3cmEC5a4tJhz3N2kn8Bz2V
-         sGHgkvXGTUDNqCbvWENL9d7n1DYBW9PsBi18cMnnb+1qGUBLYHlFK6ixCEENvk524gRP
-         jzcVgdabhqC6aONuKuS9I6hsIJxnTFuwoai2RyP95bfFkwWeNPeArbYeySwTswi+AHkt
-         /FZkKF1zTns6MS7b8xiaSYHlwbtCivL4Y+pDPawp4dGkcBzInvhVbUeQRYkA7UOezb6l
-         BwwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=G03xh2kAEbzlimx7cJbVe+bLXkoyZqrXclrus0q2F4E=;
-        b=hcm8GKM5jie2qfHSQMJNqTmiRS1Uqo5USmLw9Bm4qz0xyBv8qrKGpkgMm6zVIdFSJz
-         RMr11ObmvrU2ca5Cert005UBN52XEejjm2UzXO3K9pTy8zaZ3GgM6SytRhkS1lCG+fCv
-         jgbBFJI1Lr8AGnSgsL/DJo1wIdm8f5G+5gRxj3EIziMcLFWqy23liTecaIJKdemDo3Th
-         cpAEeyORhk/gq6e1AfF3rEKB7frgbMDU2uh68txmj5zdqd14+YSriCp7KwtP2jeiFVVs
-         KzrhN6UAT1W7aNn0OHW3254yb0CfzL6uTyCCQQ4fxkydWsHhkFNGAHVx2o17WAFaBhR7
-         tLOQ==
-X-Gm-Message-State: AOAM530vJLPEvKAYmwvpedYgRahfq+boJfy1aSUcchOREXscArhgi5B3
-        aKWbXpSCZAmTxdWjlnPSyEZuXBILIhpUJQ8qPZM=
-X-Google-Smtp-Source: ABdhPJzR3hu9wEK1ei/jdw+SsQqgvL2GQEp6u/NefeZQmwQMIWqBVbK/5v3hEAmdh4wIl57oNGwI3op7jJsExO8uYf0=
-X-Received: by 2002:a25:9942:: with SMTP id n2mr6411359ybo.230.1627686020211;
- Fri, 30 Jul 2021 16:00:20 -0700 (PDT)
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1627686221; x=1659222221;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=fJ2q5BbiMM2LLNqg0ouOB11wn1yR/PXdIJv7+Hx0Se4=;
+  b=T+YjTghGSFF8zz9klw69mn1e6lHX7thOHVlY5VaEq+FTAqSSUumigWsi
+   LdTEPMcLFlalvNXoWJovXHy+qxj3OrHSbWXJ8MFO9+6NS6bDuF6W8ZcSG
+   B/tBGJlqBoYUS9JmWowL/PeFJk/JMTJCoIl8wJiI77XBZDU+Dw4d4QJse
+   Q=;
+X-IronPort-AV: E=Sophos;i="5.84,283,1620691200"; 
+   d="scan'208";a="16081931"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-1e-a70de69e.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 30 Jul 2021 23:03:40 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1e-a70de69e.us-east-1.amazon.com (Postfix) with ESMTPS id DDEC4A1C86;
+        Fri, 30 Jul 2021 23:03:37 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.23; Fri, 30 Jul 2021 23:03:37 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.216) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.23; Fri, 30 Jul 2021 23:03:31 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <andrii.nakryiko@gmail.com>
+CC:     <andrii@kernel.org>, <ast@kernel.org>, <benh@amazon.com>,
+        <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
+        <davem@davemloft.net>, <john.fastabend@gmail.com>, <kafai@fb.com>,
+        <kpsingh@kernel.org>, <kuba@kernel.org>, <kuni1840@gmail.com>,
+        <kuniyu@amazon.co.jp>, <netdev@vger.kernel.org>,
+        <songliubraving@fb.com>, <yhs@fb.com>
+Subject: Re: [PATCH bpf-next 2/2] selftest/bpf: Implement sample UNIX domain socket iterator program.
+Date:   Sat, 31 Jul 2021 08:03:28 +0900
+Message-ID: <20210730230328.23108-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CAEf4Bza6ac8B+PCHm9=-v4LpYW2E++dd1ur91MwHMjjcQS++wA@mail.gmail.com>
+References: <CAEf4Bza6ac8B+PCHm9=-v4LpYW2E++dd1ur91MwHMjjcQS++wA@mail.gmail.com>
 MIME-Version: 1.0
-References: <cover.1627463617.git.lorenzo@kernel.org> <YQEnsALmUCp2w/fL@lore-desk>
-In-Reply-To: <YQEnsALmUCp2w/fL@lore-desk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 30 Jul 2021 16:00:08 -0700
-Message-ID: <CAEf4BzYpOxegBwBWAfhn-2eq6DXkph7LiiCNN=HmgqN3ng6hAg@mail.gmail.com>
-Subject: Re: [PATCH v10 bpf-next 00/18] mvneta: introduce XDP multi-buffer support
-To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc:     Lorenzo Bianconi <me@lorenzobianconi.net>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Shay Agroskin <shayagr@amazon.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        tirthendu.sarkar@intel.com,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.216]
+X-ClientProxiedBy: EX13D19UWA004.ant.amazon.com (10.43.160.102) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 28, 2021 at 2:47 AM Lorenzo Bianconi
-<lorenzo.bianconi@redhat.com> wrote:
->
-> > From: Lorenzo Bianconi <lorenzo@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 30 Jul 2021 12:34:43 -0700
+> On Thu, Jul 29, 2021 at 4:37 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
 > >
-> > This series introduce XDP multi-buffer support. The mvneta driver is
-> > the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
-> > please focus on how these new types of xdp_{buff,frame} packets
-> > traverse the different layers and the layout design. It is on purpose
-> > that BPF-helpers are kept simple, as we don't want to expose the
-> > internal layout to allow later changes.
->
-> I sent the cover-letter. Sorry for the noise.
->
-> Regards,
-> Lorenzo
->
+> > If there are no abstract sockets, this prog can output the same result
+> > compared to /proc/net/unix.
 > >
-> > The main idea for the new multi-buffer layout is to reuse the same
-> > layout used for non-linear SKB. This rely on the "skb_shared_info"
-> > struct at the end of the first buffer to link together subsequent
-> > buffers. Keeping the layout compatible with SKBs is also done to ease
-> > and speedup creating a SKB from an xdp_{buff,frame}.
-> > Converting xdp_frame to SKB and deliver it to the network stack is show=
-n
-> > in patch 05/18 (e.g. cpumaps).
+> >   # cat /sys/fs/bpf/unix | head -n 2
+> >   Num       RefCount Protocol Flags    Type St Inode Path
+> >   ffff9ab7122db000: 00000002 00000000 00010000 0001 01 10623 private/defer
 > >
-> > A multi-buffer bit (mb) has been introduced in the flags field of xdp_{=
-buff,frame}
-> > structure to notify the bpf/network layer if this is a xdp multi-buffer=
- frame
-> > (mb =3D 1) or not (mb =3D 0).
-> > The mb bit will be set by a xdp multi-buffer capable driver only for
-> > non-linear frames maintaining the capability to receive linear frames
-> > without any extra cost since the skb_shared_info structure at the end
-> > of the first buffer will be initialized only if mb is set.
-> > Moreover the flags field in xdp_{buff,frame} will be reused even for
-> > xdp rx csum offloading in future series.
+> >   # cat /proc/net/unix | head -n 2
+> >   Num       RefCount Protocol Flags    Type St Inode Path
+> >   ffff9ab7122db000: 00000002 00000000 00010000 0001 01 10623 private/defer
 > >
-> > Typical use cases for this series are:
-> > - Jumbo-frames
-> > - Packet header split (please see Google=E2=80=99s use-case @ NetDevCon=
-f 0x14, [0])
-> > - TSO
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> > ---
+> >  .../selftests/bpf/prog_tests/bpf_iter.c       | 17 +++++
+> >  .../selftests/bpf/progs/bpf_iter_unix.c       | 75 +++++++++++++++++++
+> >  2 files changed, 92 insertions(+)
+> >  create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_unix.c
 > >
-> > The two following ebpf helpers (and related selftests) has been introdu=
-ced:
-> > - bpf_xdp_adjust_data:
-> >   Move xdp_md->data and xdp_md->data_end pointers in subsequent fragmen=
-ts
-> >   according to the offset provided by the ebpf program. This helper can=
- be
-> >   used to read/write values in frame payload.
-> > - bpf_xdp_get_buff_len:
-> >   Return the total frame size (linear + paged parts)
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
+> > index 1f1aade56504..4746bac68d36 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
+> > @@ -13,6 +13,7 @@
+> >  #include "bpf_iter_tcp6.skel.h"
+> >  #include "bpf_iter_udp4.skel.h"
+> >  #include "bpf_iter_udp6.skel.h"
+> > +#include "bpf_iter_unix.skel.h"
+> >  #include "bpf_iter_test_kern1.skel.h"
+> >  #include "bpf_iter_test_kern2.skel.h"
+> >  #include "bpf_iter_test_kern3.skel.h"
+> > @@ -313,6 +314,20 @@ static void test_udp6(void)
+> >         bpf_iter_udp6__destroy(skel);
+> >  }
 > >
-> > bpf_xdp_adjust_tail and bpf_xdp_copy helpers have been modified to take=
- into
-> > account xdp multi-buff frames.
-> >
+> > +static void test_unix(void)
+> > +{
+> > +       struct bpf_iter_unix *skel;
+> > +
+> > +       skel = bpf_iter_unix__open_and_load();
+> > +       if (CHECK(!skel, "bpf_iter_unix__open_and_load",
+> 
+> please use new ASSERT_PTR_OK() macro instead
 
-Seems like your changes are breaking selftests in no-alu32 mode ([0]).
-Please take a look.
+I'll use ASSERT_PTR_OK().
 
-  [0] https://github.com/kernel-patches/bpf/runs/3197530080?check_suite_foc=
-us=3Dtrue
 
-> > More info about the main idea behind this approach can be found here [1=
-][2].
-> >
-> > Changes since v9:
-> > - introduce bpf_xdp_adjust_data helper and related selftest
-> > - add xdp_frags_size and xdp_frags_tsize fields in skb_shared_info
-> > - introduce xdp_update_skb_shared_info utility routine in ordere to not=
- reset
-> >   frags array in skb_shared_info converting from a xdp_buff/xdp_frame t=
-o a skb
-> > - simplify bpf_xdp_copy routine
-> >
-> > Changes since v8:
-> > - add proper dma unmapping if XDP_TX fails on mvneta for a xdp multi-bu=
-ff
-> > - switch back to skb_shared_info implementation from previous xdp_share=
-d_info
-> >   one
-> > - avoid using a bietfield in xdp_buff/xdp_frame since it introduces per=
-formance
-> >   regressions. Tested now on 10G NIC (ixgbe) to verify there are no per=
-formance
-> >   penalties for regular codebase
-> > - add bpf_xdp_get_buff_len helper and remove frame_length field in xdp =
-ctx
-> > - add data_len field in skb_shared_info struct
-> > - introduce XDP_FLAGS_FRAGS_PF_MEMALLOC flag
-> >
-> > Changes since v7:
-> > - rebase on top of bpf-next
-> > - fix sparse warnings
-> > - improve comments for frame_length in include/net/xdp.h
-> >
-> > Changes since v6:
-> > - the main difference respect to previous versions is the new approach =
-proposed
-> >   by Eelco to pass full length of the packet to eBPF layer in XDP conte=
-xt
-> > - reintroduce multi-buff support to eBPF kself-tests
-> > - reintroduce multi-buff support to bpf_xdp_adjust_tail helper
-> > - introduce multi-buffer support to bpf_xdp_copy helper
-> > - rebase on top of bpf-next
-> >
-> > Changes since v5:
-> > - rebase on top of bpf-next
-> > - initialize mb bit in xdp_init_buff() and drop per-driver initializati=
-on
-> > - drop xdp->mb initialization in xdp_convert_zc_to_xdp_frame()
-> > - postpone introduction of frame_length field in XDP ctx to another ser=
-ies
-> > - minor changes
-> >
-> > Changes since v4:
-> > - rebase ontop of bpf-next
-> > - introduce xdp_shared_info to build xdp multi-buff instead of using th=
-e
-> >   skb_shared_info struct
-> > - introduce frame_length in xdp ctx
-> > - drop previous bpf helpers
-> > - fix bpf_xdp_adjust_tail for xdp multi-buff
-> > - introduce xdp multi-buff self-tests for bpf_xdp_adjust_tail
-> > - fix xdp_return_frame_bulk for xdp multi-buff
-> >
-> > Changes since v3:
-> > - rebase ontop of bpf-next
-> > - add patch 10/13 to copy back paged data from a xdp multi-buff frame t=
-o
-> >   userspace buffer for xdp multi-buff selftests
-> >
-> > Changes since v2:
-> > - add throughput measurements
-> > - drop bpf_xdp_adjust_mb_header bpf helper
-> > - introduce selftest for xdp multibuffer
-> > - addressed comments on bpf_xdp_get_frags_count
-> > - introduce xdp multi-buff support to cpumaps
-> >
-> > Changes since v1:
-> > - Fix use-after-free in xdp_return_{buff/frame}
-> > - Introduce bpf helpers
-> > - Introduce xdp_mb sample program
-> > - access skb_shared_info->nr_frags only on the last fragment
-> >
-> > Changes since RFC:
-> > - squash multi-buffer bit initialization in a single patch
-> > - add mvneta non-linear XDP buff support for tx side
-> >
-> > [0] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-m=
-tu-and-rx-zerocopy
-> > [1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/x=
-dp-multi-buffer01-design.org
-> > [2] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-=
-to-a-NIC-driver (XDPmulti-buffers section)
-> >
-> > Eelco Chaudron (3):
-> >   bpf: add multi-buff support to the bpf_xdp_adjust_tail() API
-> >   bpf: add multi-buffer support to xdp copy helpers
-> >   bpf: update xdp_adjust_tail selftest to include multi-buffer
-> >
-> > Lorenzo Bianconi (15):
-> >   net: skbuff: add size metadata to skb_shared_info for xdp
-> >   xdp: introduce flags field in xdp_buff/xdp_frame
-> >   net: mvneta: update mb bit before passing the xdp buffer to eBPF laye=
-r
-> >   net: mvneta: simplify mvneta_swbm_add_rx_fragment management
-> >   net: xdp: add xdp_update_skb_shared_info utility routine
-> >   net: marvell: rely on xdp_update_skb_shared_info utility routine
-> >   xdp: add multi-buff support to xdp_return_{buff/frame}
-> >   net: mvneta: add multi buffer support to XDP_TX
-> >   net: mvneta: enable jumbo frames for XDP
-> >   bpf: introduce bpf_xdp_get_buff_len helper
-> >   bpf: move user_size out of bpf_test_init
-> >   bpf: introduce multibuff support to bpf_prog_test_run_xdp()
-> >   bpf: test_run: add xdp_shared_info pointer in bpf_test_finish
-> >     signature
-> >   net: xdp: introduce bpf_xdp_adjust_data helper
-> >   bpf: add bpf_xdp_adjust_data selftest
-> >
-> >  drivers/net/ethernet/marvell/mvneta.c         | 213 ++++++++++--------
-> >  include/linux/skbuff.h                        |   6 +-
-> >  include/net/xdp.h                             |  95 +++++++-
-> >  include/uapi/linux/bpf.h                      |  38 ++++
-> >  kernel/trace/bpf_trace.c                      |   3 +
-> >  net/bpf/test_run.c                            | 117 ++++++++--
-> >  net/core/filter.c                             | 210 ++++++++++++++++-
-> >  net/core/xdp.c                                |  76 ++++++-
-> >  tools/include/uapi/linux/bpf.h                |  38 ++++
-> >  .../bpf/prog_tests/xdp_adjust_data.c          |  55 +++++
-> >  .../bpf/prog_tests/xdp_adjust_tail.c          | 118 ++++++++++
-> >  .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    | 151 +++++++++----
-> >  .../bpf/progs/test_xdp_adjust_tail_grow.c     |  10 +-
-> >  .../bpf/progs/test_xdp_adjust_tail_shrink.c   |  32 ++-
-> >  .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   2 +-
-> >  .../bpf/progs/test_xdp_update_frags.c         |  49 ++++
-> >  16 files changed, 1044 insertions(+), 169 deletions(-)
-> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_adjust_d=
-ata.c
-> >  create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_update_f=
-rags.c
-> >
+> 
+> > +                 "skeleton open_and_load failed\n"))
+> > +               return;
+> > +
+> > +       do_dummy_read(skel->progs.dump_unix);
+> > +
+> > +       bpf_iter_unix__destroy(skel);
+> > +}
+> > +
+> >  /* The expected string is less than 16 bytes */
+> >  static int do_read_with_fd(int iter_fd, const char *expected,
+> >                            bool read_one_char)
+> > @@ -1255,6 +1270,8 @@ void test_bpf_iter(void)
+> >                 test_udp4();
+> >         if (test__start_subtest("udp6"))
+> >                 test_udp6();
+> > +       if (test__start_subtest("unix"))
+> > +               test_unix();
+> >         if (test__start_subtest("anon"))
+> >                 test_anon_iter(false);
+> >         if (test__start_subtest("anon-read-one-char"))
+> > diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_unix.c b/tools/testing/selftests/bpf/progs/bpf_iter_unix.c
+> > new file mode 100644
+> > index 000000000000..285ec2f7944d
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/progs/bpf_iter_unix.c
+> > @@ -0,0 +1,75 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/* Copyright Amazon.com Inc. or its affiliates. */
+> > +#include "bpf_iter.h"
+> > +#include "bpf_tracing_net.h"
+> > +#include <bpf/bpf_helpers.h>
+> > +#include <bpf/bpf_endian.h>
+> > +
+> > +char _license[] SEC("license") = "GPL";
+> > +
+> > +#define __SO_ACCEPTCON         (1 << 16)
+> > +#define UNIX_HASH_SIZE         256
+> > +#define UNIX_ABSTRACT(unix_sk) (unix_sk->addr->hash < UNIX_HASH_SIZE)
+> > +
+> > +static long sock_i_ino(const struct sock *sk)
+> > +{
+> > +       const struct socket *sk_socket = sk->sk_socket;
+> > +       const struct inode *inode;
+> > +       unsigned long ino;
+> > +
+> > +       if (!sk_socket)
+> > +               return 0;
+> > +
+> > +       inode = &container_of(sk_socket, struct socket_alloc, socket)->vfs_inode;
+> > +       bpf_probe_read_kernel(&ino, sizeof(ino), &inode->i_ino);
+> > +       return ino;
+> > +}
+> > +
+> > +SEC("iter/unix")
+> > +int dump_unix(struct bpf_iter__unix *ctx)
+> > +{
+> > +       struct unix_sock *unix_sk = ctx->unix_sk;
+> > +       struct sock *sk = (struct sock *)unix_sk;
+> > +       struct seq_file *seq;
+> > +       __u32 seq_num;
+> > +
+> > +       if (!unix_sk)
+> > +               return 0;
+> > +
+> > +       seq = ctx->meta->seq;
+> > +       seq_num = ctx->meta->seq_num;
+> > +       if (seq_num == 0)
+> > +               BPF_SEQ_PRINTF(seq, "Num       RefCount Protocol Flags    "
+> > +                              "Type St Inode Path\n");
+> > +
+> > +       BPF_SEQ_PRINTF(seq, "%pK: %08X %08X %08X %04X %02X %5lu",
+> > +                      unix_sk,
+> > +                      sk->sk_refcnt.refs.counter,
+> > +                      0,
+> > +                      sk->sk_state == TCP_LISTEN ? __SO_ACCEPTCON : 0,
+> > +                      sk->sk_type,
+> > +                      sk->sk_socket ?
+> > +                      (sk->sk_state == TCP_ESTABLISHED ?
+> > +                       SS_CONNECTED : SS_UNCONNECTED) :
+> > +                      (sk->sk_state == TCP_ESTABLISHED ?
+> > +                       SS_CONNECTING : SS_DISCONNECTING),
+> 
+> nit: I'd keep these ternary operators on a single line for
+> readability. Same for header PRINTF above.
+
+I'll make the two ternary operations of `sk->sk_socket ?` on single lines.
+
+Thanks for your review!
+
+
+> 
+> > +                      sock_i_ino(sk));
+> > +
+> > +       if (unix_sk->addr) {
+> > +               if (UNIX_ABSTRACT(unix_sk))
+> > +                       /* Abstract UNIX domain socket can contain '\0' in
+> > +                        * the path, and it should be escaped.  However, it
+> > +                        * requires loops and the BPF verifier rejects it.
+> > +                        * So here, print only the escaped first byte to
+> > +                        * indicate it is an abstract UNIX domain socket.
+> > +                        * (See: unix_seq_show() and commit e7947ea770d0d)
+> > +                        */
+> > +                       BPF_SEQ_PRINTF(seq, " @");
+> > +               else
+> > +                       BPF_SEQ_PRINTF(seq, " %s", unix_sk->addr->name->sun_path);
+> > +       }
+> > +
+> > +       BPF_SEQ_PRINTF(seq, "\n");
+> > +
+> > +       return 0;
+> > +}
 > > --
-> > 2.31.1
-> >
+> > 2.30.2
