@@ -2,88 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6F613DBEF3
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 21:26:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3B0A3DBEF8
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 21:28:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231147AbhG3T0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 15:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34034 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230335AbhG3T0M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 15:26:12 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38A3DC061765;
-        Fri, 30 Jul 2021 12:26:06 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id a13so12752728iol.5;
-        Fri, 30 Jul 2021 12:26:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=1SdEFlqROmHFj3HUxGkbmgw79mMP1UfAqtIWtIV0eqU=;
-        b=W6tcu9NK+555WyEu62p2gwpE4VYEJHwTEMZ9/HW2fUxTg0eiytjtEpoPXP/R07aJO9
-         0DPVPVRpKTN6fkcgM6/yvBFBHh4BWDZhzn8O8UhXhnz/bzO8pyVW88vPdpSUYe0aG/IQ
-         7cw5Y0I09DAKCf5BxKIP4ZISJtVpcvi2PvA7QqqgDqYoG/9DiYMSLrj/N8LrQX6qW/c4
-         SVZXEchoKYK8ahbnBArRAO0XnvqbgrsIrEUztQBeNDC5VqOSquCgz1RjD+sxUKQ/jdh8
-         b4DKnWNBf0T4CNEzjBpd44goVeksoNOGkEXO3+wg/JNaMQvoQ+GAN4amyxHHG2lf+78X
-         C15Q==
+        id S230455AbhG3T2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 15:28:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:45552 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231153AbhG3T2L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 15:28:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1627673280;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PIywLjF9bhGG91hz6k+Z/hNScCoEIRSj0PrJUDAWtOI=;
+        b=FU0h28QGbscLAMqt63Ub8ifi9DF9Pz0u24OAGJ6U6lgGnZGWejrWKadiiwiLFt++saMZw8
+        GQV/+Gz0q7570I1ad4f9pY5T2m1huFyEi+YOHaD7BVdytXcsOhiEwNqzgHuoyQX7WK+oJe
+        dCkwO78OduU4Cld10xnB4CqBYzGJm1g=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-126-Ocy_S8Q7OPWOenxdIskuqw-1; Fri, 30 Jul 2021 15:27:59 -0400
+X-MC-Unique: Ocy_S8Q7OPWOenxdIskuqw-1
+Received: by mail-wm1-f70.google.com with SMTP id 25-20020a05600c0219b029024ebb12928cso3575160wmi.3
+        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 12:27:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=1SdEFlqROmHFj3HUxGkbmgw79mMP1UfAqtIWtIV0eqU=;
-        b=YYDk7cftpocxD3H7RLzu7QRK51cOTaY/wHMmfYlCv9vAg/C4EyPcY/9JWzqAlOA13L
-         W45Bqo2R0HWnuoyabhIMop9UEmJDCD5EKb7m7BH3PdgHIHXx6Cgo+wlCX2Xt5vnLgdz8
-         vMKFEnZBaT5DpPKvB/qxehuK7V8cJ/6fmb1QRyIfYRiFQ0ojnJQmrtISFOS+p9BUjipB
-         4col0nztRhsx7qpGANK7lS4rda6Syn2MKIo9vwiBcmuIp4zp0dHze8vXQ5qnE63eN6WG
-         lo1+gjSNXX/ebq2v474agfQAWLN3bc504+N4yg0+djOglM23L27qcDbQcJr/EsrTmmIO
-         ZGyA==
-X-Gm-Message-State: AOAM532O4Xev+4LRGxDEgi5fxq3+wbi/gk/GFdoeQUHP5cCnZ8fvSvUB
-        0uhI43FttXERJvhdCRZbLpsllY6dXpORY8o7
-X-Google-Smtp-Source: ABdhPJw3AWyzwHYgQ8HIQ55jKCF389gducqMMPWDj1GfbausUMakuP31ZENQC9HQut62412HBjDN+Q==
-X-Received: by 2002:a6b:f714:: with SMTP id k20mr773833iog.148.1627673165677;
-        Fri, 30 Jul 2021 12:26:05 -0700 (PDT)
-Received: from haswell-ubuntu20.lan ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id s21sm1560756iot.33.2021.07.30.12.26.00
+        h=x-gm-message-state:date:from:to:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PIywLjF9bhGG91hz6k+Z/hNScCoEIRSj0PrJUDAWtOI=;
+        b=lcuhLgjOWaNGQ21beqrSGal70K9VMvz3eUQYL+5XwLSSlzoRFv6hgvfmjsEAav5JGq
+         c8M6SkVCP3uk1UJz6oYq2KFlTBeRh4aIEuWD+KcfkvyOdPIoxNamYx1u7F9YD3gA8xtm
+         fsamO/y9R+9p/882VJwAhLjhKNh2ar8y9PJa+py4QEpsGN3fZqkgbsNUvd7DVmndkFhX
+         xH6Cd4EsbLjRyLcia7RS3K8onIWqU3dMemKIx1mQVAsIsBgYDL5r/CZ3UWARLWQE6Ucs
+         g3ucYfdxuYaiCJmuy74flqE3pi7VGbL4pmwfL6tKIyaLD0RdPotV6TPyBVrJM7QmVtYR
+         mrVg==
+X-Gm-Message-State: AOAM530u7IVFUyg/oLJTa6tLle3Q6fZUWkZmEa5/o6u8S0ICNjaRh2Qq
+        2tzrlZ6jUA8ZvyvBWuz1J0FexH/FUo+wi5OI2oRxkDuDDztMVjaMcjJX9bcclio5KOjo5Xst5ty
+        gJWAF9IZ+RSs3SIax5KRmI8/RFD0WZtaNJb2Bq3IK50Ze1gMuJdeunR9iAIIJsIkLzEga
+X-Received: by 2002:a5d:4d06:: with SMTP id z6mr4976128wrt.140.1627673277954;
+        Fri, 30 Jul 2021 12:27:57 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwTsdeikAB49nLAgfRJ+NxBKxLo6VygWS0g5vnebrGyL4KqoSgh1ajzXAO4izThzTZWJm+k0A==
+X-Received: by 2002:a5d:4d06:: with SMTP id z6mr4976107wrt.140.1627673277683;
+        Fri, 30 Jul 2021 12:27:57 -0700 (PDT)
+Received: from localhost (mob-176-242-6-116.net.vodafone.it. [176.242.6.116])
+        by smtp.gmail.com with ESMTPSA id x9sm2698455wmj.41.2021.07.30.12.27.51
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Jul 2021 12:26:04 -0700 (PDT)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC net-next 1/2] net: dsa: tag_mtk: skip address learning on transmit to standalone ports
-Date:   Sat, 31 Jul 2021 03:25:55 +0800
-Message-Id: <20210730192555.638774-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210730190706.jm7uizyqltmle2bi@skbuf>
-References: <20210728175327.1150120-1-dqfext@gmail.com> <20210728175327.1150120-2-dqfext@gmail.com> <20210728183705.4gea64qlbe64kkpl@skbuf> <20210730162403.p2dnwvwwgsxttomg@skbuf> <20210730190020.638409-1-dqfext@gmail.com> <20210730190706.jm7uizyqltmle2bi@skbuf>
+        Fri, 30 Jul 2021 12:27:57 -0700 (PDT)
+Date:   Fri, 30 Jul 2021 21:27:16 +0200
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] net/sched: store the last executed chain also
+ for clsact egress
+Message-ID: <YQRSlETLgowgik2x@dcaratti.users.ipa.redhat.com>
+References: <cf72f28de22cfb326d4f8f6ea77f2253fcd17aad.1627494599.git.dcaratti@redhat.com>
+ <CAM_iQpU--x8PRprG8W6btdXFBr0bNnYaJF6CorELmK+tOgry=Q@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAM_iQpU--x8PRprG8W6btdXFBr0bNnYaJF6CorELmK+tOgry=Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 30, 2021 at 10:07:06PM +0300, Vladimir Oltean wrote:
-> > After enabling it, I noticed .port_fdb_{add,del} are called with VID=0
-> > (which it does not use now) unless I turn on VLAN filtering. Is that
-> > normal?
-> 
-> They are called with the VID from the learned packet.
-> If the bridge is VLAN-unaware, the MAC SA is learned with VID 0.
-> Generally, VID 0 is always used for VLAN-unaware bridging. You can
-> privately translate VID 0 to whatever VLAN ID you use in VLAN-unaware
-> mode.
+hello Cong, thanks for looking at this!
 
-Now the issue is PVID is always set to the bridge's vlan_default_pvid,
-regardless of VLAN awareless.
+On Wed, Jul 28, 2021 at 03:16:02PM -0700, Cong Wang wrote:
+> On Wed, Jul 28, 2021 at 11:40 AM Davide Caratti <dcaratti@redhat.com> wrote:
+> >
+> > currently, only 'ingress' and 'clsact ingress' qdiscs store the tc 'chain
+> > id' in the skb extension. However, userspace programs (like ovs) are able
+> > to setup egress rules, and datapath gets confused in case it doesn't find
+> > the 'chain id' for a packet that's "recirculated" by tc.
+> > Change tcf_classify() to have the same semantic as tcf_classify_ingress()
+> > so that a single function can be called in ingress / egress, using the tc
+> > ingress / egress block respectively.
+> 
+> I wonder if there is any performance impact with this change? As
+> tcf_classify() now may allocate skb ext (tc_skb_ext_alloc()) too,
+> right after __tcf_classify().
+> 
+> Thanks.
+
+I think there is some performance drop for users that activate
+TC_SKB_EXT, in case packet doesn't match the filter *and* last
+executed_chain is non-zero. But in this case, I also think it's a good
+choice to spend some cycles to save the chain id in the extension: I
+might be wrong, but AFAIK openvswitch is the only "user" that configures
+TC in this way.
+
+Do you have in mind a specific case where performance can be degraded
+because of this commit? if so, I can try to investigate more.
+
+thanks!
+-- 
+davide
+
+
+
+
