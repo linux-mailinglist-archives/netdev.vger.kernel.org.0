@@ -2,165 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB4823DB8BC
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 14:38:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5765A3DB8EC
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 14:56:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238723AbhG3Mih (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 08:38:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40656 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238833AbhG3Mif (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 08:38:35 -0400
-X-Greylist: delayed 83 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 30 Jul 2021 05:38:31 PDT
-Received: from forwardcorp1p.mail.yandex.net (forwardcorp1p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b6:217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A80BC06175F;
-        Fri, 30 Jul 2021 05:38:31 -0700 (PDT)
-Received: from sas1-ec30c78b6c5b.qloud-c.yandex.net (sas1-ec30c78b6c5b.qloud-c.yandex.net [IPv6:2a02:6b8:c14:2704:0:640:ec30:c78b])
-        by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id BE03D2E1655;
-        Fri, 30 Jul 2021 15:37:04 +0300 (MSK)
-Received: from sas1-9d43635d01d6.qloud-c.yandex.net (sas1-9d43635d01d6.qloud-c.yandex.net [2a02:6b8:c08:793:0:640:9d43:635d])
-        by sas1-ec30c78b6c5b.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id QbxGsJvd91-b3xGXMci;
-        Fri, 30 Jul 2021 15:37:04 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1627648624; bh=8OxDtLWDACtxhUoRa/qI4QoNR247rdd0XQja6cQc6LI=;
-        h=To:Message-Id:References:Date:Subject:Cc:In-Reply-To:From;
-        b=ULROYcaFAnq9LUGttm98E0K0oKB/brjiIM8lM+mTR2Wiaem9M2mIvTDUTBtckflDl
-         hjBFr6tbY+ZWnIx9ivBaZYzhYm9APjne97nMPStp348xhTxyYCUREXcADp/ND5TT8r
-         WR05OLVfk3fWaz4hsdrsvXTrKE9liOG820QSPo7Y=
-Authentication-Results: sas1-ec30c78b6c5b.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from dynamic-vpn.dhcp.yndx.net (dynamic-vpn.dhcp.yndx.net [2a02:6b8:b081:1223::1:16])
-        by sas1-9d43635d01d6.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id DFWt3dCxsd-b33mR81X;
-        Fri, 30 Jul 2021 15:37:03 +0300
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client certificate not present)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.4\))
-Subject: Re: [PATCH] tcp: use rto_min value from socket in retransmits timeout
-From:   Dmitry Yakunin <zeil@yandex-team.ru>
-In-Reply-To: <CADVnQykVQhT_4f2CV6cAqx_oFvQ-vvq-S0Pnw0a6cnXFuJnPpg@mail.gmail.com>
-Date:   Fri, 30 Jul 2021 15:37:03 +0300
-Cc:     kafai@fb.com, edumazet@google.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, dmtrmonakhov@yandex-team.ru,
-        Yuchung Cheng <ycheng@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        mitradir@yandex-team.ru
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <E09A2DA0-A741-4566-B8C6-09C563546538@yandex-team.ru>
-References: <20210723093938.49354-1-zeil@yandex-team.ru>
- <CADVnQykVQhT_4f2CV6cAqx_oFvQ-vvq-S0Pnw0a6cnXFuJnPpg@mail.gmail.com>
-To:     Neal Cardwell <ncardwell@google.com>
-X-Mailer: Apple Mail (2.3608.120.23.2.4)
+        id S230445AbhG3M4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 08:56:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:48730 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230328AbhG3M4m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 08:56:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1627649797;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=UtfsScUhD+pEZHHcmHhhH+yLEg7yLqf8T5OocO85sds=;
+        b=bIl/mAF1xxox7pbLxadsVOxvN1e1EB6fScCA15/ekrDiKgjCj6luK4HogGOhB9709QX9gm
+        oHXLOxnEPz2E8jI3qwJMxWatmqcKcFk5th4s2moP0xQGSdZKqU2V3Hi0NoIy80LjDFh6hA
+        0+WXh54DkgxTn7OpzcsW4vt2lv2PE9U=
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
+ [209.85.167.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-125-b2SygdOmNuKq_7nb2ohxlA-1; Fri, 30 Jul 2021 08:56:36 -0400
+X-MC-Unique: b2SygdOmNuKq_7nb2ohxlA-1
+Received: by mail-oi1-f200.google.com with SMTP id o185-20020acaf0c20000b029025cacdf2ac0so4529570oih.9
+        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 05:56:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=UtfsScUhD+pEZHHcmHhhH+yLEg7yLqf8T5OocO85sds=;
+        b=Hpj0MXiPxwWERgWH84VKyooBWesC7V6WKBe4Q8Pe80PLVDoZPE+r48TCT+1P7bW6fZ
+         7VrGp5nkRYE1jcBm9Jcd4wkFAcvd1jTtgY3bXoEtvji5oHMWOa69t76WvBoeKnJ/3wPT
+         +hhWc+U9BVLh5cHfp9JIItraFtWSAXw+FO/sufOMqUEczV8vn9WoKZLAjN7GjIj1IECP
+         kaA8IfmyquWFs7+fcoqkTrpMaPO/gGxkZ1dJeHWj07rPdovqVJ4/RZ6HogK0FYSOqo+L
+         Yg42dc3YIJJKqVj/T+CL9PG1PPeIZnXg5whzJC8JqH04rouMiybwwe3jzu44l5e8nWLV
+         BBZQ==
+X-Gm-Message-State: AOAM530kK4mXJMae7rjcEUqxOCOeNsHOiXZwyzRkp5W2YL0FDLye60Vz
+        ElVs2YqibWWDHY50LqMTv+lvpewfCWSCHtPXxZ+zm6k4N4sykLje+qT3T9YTFCtyH/O8jKrnsK1
+        zHbbePAgzzkYbLQPHNVeIrogbO9Nm6dLF
+X-Received: by 2002:a05:6808:1887:: with SMTP id bi7mr1666426oib.115.1627649795301;
+        Fri, 30 Jul 2021 05:56:35 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxf7koHApQZ7driEjjiDkMYWNez7AyvQMuuoFtY5dVuJfLDJ6WPhPy3xdN+rQeihfaew83/39QzgNXpZV7Ii5A=
+X-Received: by 2002:a05:6808:1887:: with SMTP id bi7mr1666415oib.115.1627649795080;
+ Fri, 30 Jul 2021 05:56:35 -0700 (PDT)
+MIME-Version: 1.0
+From:   Bruno Goncalves <bgoncalv@redhat.com>
+Date:   Fri, 30 Jul 2021 14:56:24 +0200
+Message-ID: <CA+QYu4qNuOEJqWJST26CoDh6D2XPocjqaOZncpFRwR-qnEym=A@mail.gmail.com>
+Subject: BUG: MAX_LOCKDEP_ENTRIES too low! during network test
+To:     netdev@vger.kernel.org
+Cc:     CKI Project <cki-project@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello, Neal!
+Hello,
 
-Thanks for your reply and explanations.
+We've hit the call trace below twice during our tests of kernel
+5.14.0-rc2. We hit it during CKI test [1], in both cases it was
+testing on ppc64le, more logs on [2].
 
-I agree with all your points, about safe defaults for both timeouts and =
-the number of retries. But what the patch does is not changing the =
-defaults, it only provides a way to work with these values through bpf, =
-which is important in an environment that is way different from cellular =
-networks. For example in the modern DC the rto_min value should =
-correspond with real RTT, that definitely not 200ms.
+[14100.944491] BUG: MAX_LOCKDEP_ENTRIES too low!
+[14100.944651] turning off the locking correctness validator.
+[14100.944739] CPU: 121 PID: 430464 Comm: socket Tainted: G
+OE     5.14.0-rc2 #1
+[14100.944764] Call Trace:
+[14100.944775] [c00000003a92f4f0] [c00000000097d4f4]
+dump_stack_lvl+0x98/0xe0 (unreliable)
+[14100.944979] [c00000003a92f530] [c0000000002076d8]
+add_lock_to_list.constprop.0+0x218/0x230
+[14100.945007] [c00000003a92f5a0] [c00000000020e1bc]
+__lock_acquire+0x1d6c/0x2850
+[14100.945033] [c00000003a92f6d0] [c00000000020f80c] lock_acquire+0x11c/0x450
+[14100.945057] [c00000003a92f7d0] [c0000000011f0cdc]
+_raw_spin_lock_irqsave+0x6c/0xc0
+[14100.945084] [c00000003a92f810] [c00000000095f42c]
+percpu_counter_add_batch+0x5c/0x120
+[14100.945109] [c00000003a92f850] [c000000000fb9534]
+tcp_v4_destroy_sock+0x1d4/0x3b0
+[14100.945136] [c00000003a92f8a0] [c000000000f89c5c]
+inet_csk_destroy_sock+0x8c/0x1f0
+[14100.945162] [c00000003a92f8d0] [c000000000f9762c] __tcp_close+0x50c/0x680
+[14100.945185] [c00000003a92f930] [c000000000f977e4] tcp_close+0x44/0x100
+[14100.945329] [c00000003a92f960] [c000000000fed488] inet_release+0x78/0xf0
+[14100.945387] [c00000003a92f990] [c000000000e24f40] __sock_release+0x70/0x150
+[14100.945412] [c00000003a92fa10] [c000000000e25048] sock_close+0x28/0x40
+[14100.945434] [c00000003a92fa30] [c0000000005877f8] __fput+0xd8/0x360
+[14100.945457] [c00000003a92fa80] [c0000000001944f4] task_work_run+0xb4/0x120
+[14100.945478] [c00000003a92fad0] [c000000000163408] do_exit+0x4e8/0xdd0
+[14100.945500] [c00000003a92fb90] [c000000000163dc0] do_group_exit+0x60/0xd0
+[14100.945523] [c00000003a92fbd0] [c000000000179d38] get_signal+0x238/0xc00
+[14100.945546] [c00000003a92fcb0] [c0000000000229f4]
+do_notify_resume+0x114/0x4b0
+[14100.945572] [c00000003a92fd70] [c00000000002dc64]
+interrupt_exit_user_prepare_main+0x2e4/0x370
+[14100.945600] [c00000003a92fde0] [c00000000002e0a4]
+syscall_exit_prepare+0xc4/0x1c0
+[14100.945625] [c00000003a92fe10] [c00000000000c770]
+system_call_common+0x100/0x258
+[14100.945651] --- interrupt: c00 at 0x7fffa8a59904
+[14100.945670] NIP:  00007fffa8a59904 LR: 0000000010001e44 CTR: 0000000000000000
+[14100.945692] REGS: c00000003a92fe80 TRAP: 0c00   Tainted: G
+ OE      (5.14.0-rc2)
+[14100.945715] MSR:  900000000000f033 <SF,HV,EE,PR,FP,ME,IR,DR,RI,LE>
+CR: 38002842  XER: 00000000
+[14100.945908] IRQMASK: 0
+               GPR00: 0000000000000146 00007fffd5d1a870
+00007fffa8b56f00 0000000000000061
+               GPR04: 0000000000000007 0000000000000000
+00007fffa8b50018 000000019f9f6bb0
+               GPR08: 0000000000000007 0000000000000000
+0000000000000000 0000000000000000
+               GPR12: 0000000000000000 00007fffa8c0a360
+0000000000000000 0000000000000000
+               GPR16: 0000000000000000 0000000000000000
+0000000000000000 0000000000000000
+               GPR20: 0000000000000000 0000000000000000
+0000000000000000 0000000000000000
+               GPR24: 0000000010001978 00007fffd5d1ad68
+000000001001fd08 00007fffa8bfeb68
+               GPR28: 00007fffd5d1b038 00007fffd5d1ad48
+0000000000000003 00007fffd5d1a870
+[14100.946264] NIP [00007fffa8a59904] 0x7fffa8a59904
+[14100.946289] LR [0000000010001e44] 0x10001e44
+[14100.946306] --- interrupt: c00
 
-Also I add Alexander Azimov for further discussions.
 
---
-Dmitry
+[1] https://gitlab.com/cki-project/kernel-tests/-/tree/main/networking/route/pmtu
+[2] https://arr-cki-prod-datawarehouse-public.s3.amazonaws.com/index.html?prefix=datawarehouse-public/2021/07/25/342571554/build_ppc64le_redhat%3A1450600800/tests/Networking_route_pmtu/
 
-> On 23 Jul 2021, at 17:41, Neal Cardwell <ncardwell@google.com> wrote:
->=20
-> .(On Fri, Jul 23, 2021 at 5:41 AM Dmitry Yakunin <zeil@yandex-team.ru> =
-wrote:
->>=20
->> Commit ca584ba07086 ("tcp: bpf: Add TCP_BPF_RTO_MIN for =
-bpf_setsockopt")
->> adds ability to set rto_min value on socket less then default =
-TCP_RTO_MIN.
->> But retransmits_timed_out() function still uses TCP_RTO_MIN and
->> tcp_retries{1,2} sysctls don't work properly for tuned socket values.
->>=20
->> Fixes: ca584ba07086 ("tcp: bpf: Add TCP_BPF_RTO_MIN for =
-bpf_setsockopt")
->> Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
->> Acked-by: Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
->> ---
->> net/ipv4/tcp_timer.c | 7 ++++---
->> 1 file changed, 4 insertions(+), 3 deletions(-)
->>=20
->> diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
->> index 20cf4a9..66c4b97 100644
->> --- a/net/ipv4/tcp_timer.c
->> +++ b/net/ipv4/tcp_timer.c
->> @@ -199,12 +199,13 @@ static unsigned int tcp_model_timeout(struct =
-sock *sk,
->>  *  @boundary: max number of retransmissions
->>  *  @timeout:  A custom timeout value.
->>  *             If set to 0 the default timeout is calculated and =
-used.
->> - *             Using TCP_RTO_MIN and the number of unsuccessful =
-retransmits.
->> + *             Using icsk_rto_min value from socket or RTAX_RTO_MIN =
-from route
->> + *             and the number of unsuccessful retransmits.
->>  *
->>  * The default "timeout" value this function can calculate and use
->>  * is equivalent to the timeout of a TCP Connection
->>  * after "boundary" unsuccessful, exponentially backed-off
->> - * retransmissions with an initial RTO of TCP_RTO_MIN.
->> + * retransmissions with an initial RTO of icsk_rto_min or =
-RTAX_RTO_MIN.
->>  */
->> static bool retransmits_timed_out(struct sock *sk,
->>                                  unsigned int boundary,
->> @@ -217,7 +218,7 @@ static bool retransmits_timed_out(struct sock =
-*sk,
->>=20
->>        start_ts =3D tcp_sk(sk)->retrans_stamp;
->>        if (likely(timeout =3D=3D 0)) {
->> -               unsigned int rto_base =3D TCP_RTO_MIN;
->> +               unsigned int rto_base =3D tcp_rto_min(sk);
->>=20
->>                if ((1 << sk->sk_state) & (TCPF_SYN_SENT | =
-TCPF_SYN_RECV))
->>                        rto_base =3D tcp_timeout_init(sk);
->> --
->=20
-> I would argue strenuously against this. We tried the approach in this
-> patch at Google years ago, but we had to revert that approach and go
-> back to using TCP_RTO_MIN as the baseline for the computation, because
-> using the custom tcp_rto_min(sk) caused serious reliability problems.
->=20
-> The behavior in this patch causes various serious reliability problems
-> because the retransmits_timed_out() computation is used for various
-> timeout decisions that determine how long a connection tries to
-> retransmit something before deciding the path is bad and/or giving up
-> and closing the connection. Here are a few of the problems this
-> causes:
->=20
-> (1) The biggest one is probably orphan retries. By default
-> tcp_orphan_retries() uses a retry count of 8. But if your min_rto is
-> 5ms (used at Google for many years), then the 8 retries means an
-> orphaned connection (whose fd is no longer held by a process, but is
-> still established) only lasts for 1.275 seconds before giving up and
-> closing. This means that connectivity problems longer than 1.275
-> seconds (extremely common with cellular links) are not tolerated for
-> such connections; the connections often do not receive the data they
-> were supposed to receive.
->=20
-> (2) TCP_RETR1 /sysctl_tcp_retries1, used for __dst_negative_advice(),
-> also has big problems. Even with a min_rto as big as 20ms, on a route
-> with 150ms RTT, the approach in this patch will cause
-> retransmits_timed_out() to return true upon the 1st RTO timer firing,
-> even though TCP_RETR1 is 3.
->=20
-> (3) TCP_RETR2 /sysctl_tcp_retries2, with a default of 15, used for
-> regular connection retry lifetimes, also has a massive decrease in
-> robustness, due to falling from  109 minutes with a 200ms RTO, to
-> about 2.7 minutes with a min_rto of 5ms.
->=20
-> neal
+Thank you,
+Bruno
 
