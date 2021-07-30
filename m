@@ -2,69 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A00333DC065
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 23:47:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09DD23DC067
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 23:48:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231300AbhG3Vrp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 17:47:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40056 "EHLO
+        id S232134AbhG3Vsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 17:48:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231184AbhG3Vro (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 17:47:44 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8DFCC06175F
-        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 14:47:37 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id r2so13055790wrl.1
-        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 14:47:37 -0700 (PDT)
+        with ESMTP id S230284AbhG3Vs1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 17:48:27 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C467C06175F
+        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 14:48:20 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id l34-20020a05600c1d22b02902573c214807so4600539wms.2
+        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 14:48:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=isovalent-com.20150623.gappssmtp.com; s=20150623;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=i46g8UG3DHAsLBiviNjkwsX1JyJdrAOzSZ3O/djol10=;
-        b=n0PH2Lho/h9UcCl/xHfLGmDzNNo2zkXMvVcr0GMJE4TddTv+dRVaj+aVKxYmWiQ3Fp
-         RINXJ8rmx+ZFCcS8tcyWsC/8wNQpRiHTbV7NHmQdqigCuSjLPJ8maoj2dmSlwyP1JOdM
-         oS6nsVrcooWiASjrAi0GdF50S6cxdWWciDMX9zbuFSOh/mPMhgLPAR3r73Pd0l4S0EUJ
-         D2iitfPad7qOWILYjZJ+OLSMMgQhHxQ85taG9IvUj8+60aU3NdybOhD/Z2gMRV/LBltc
-         QEQ7w3VAK1iGZfRUqHHSxQE7BEukM2VMvXTj309nwJRzncQbMqlghm2vll5G18NCkhvY
-         6o8w==
+        bh=6YN1J9vmLUXCKWdwBvhu6EMYabwP3L6uMfluwtn0R3A=;
+        b=c3mmn9++MAOPBsxBE4zfM9z3wJVdVzoag+AB1FYJ3QLZEZc2RWZVkgFbokBEe0sVWj
+         yivSGt3NX4cmPokSjEkqAJYd3iOnN36L3hsg7ka9EKFzoMqlAlM9Pz+8FWb8hpEpJmQA
+         j3j3ofsurRtgETgpa89z8dbuLbHJ7TixqHy6OvNp0SbANRgRVVrO6wriBPfr04nb9LK2
+         qGoOCEizKukGqX6Jr02Ypya8RNjjrKiwKUKQRzqJuWgAIhF9lTBbsDuOwTxxd5woG9zw
+         pvHQl8UqZ/+eAXpH8x2Fq5rm/D8BGRBduunhGcZptoduWOqhbrGpqMLecPQxiPP90p1S
+         YReQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=i46g8UG3DHAsLBiviNjkwsX1JyJdrAOzSZ3O/djol10=;
-        b=AAug72CVPJJtdT4H0WqLj8h1nSOJvg5US5EdHfLB27NLUwf/C+a/ZlXdALH2vQrQ5Q
-         5OGX5BUi53kiNuvu1ULoPoa7anrvCnDdqc/ZmpAYWBnvaJlurwKIngGefh3H41EDyEZA
-         ZLeCPsouGhuBd8WU/1fEvqPZzQHA4kmOtc5ZfBWK1XOFNJi34FhU/zuULQE74ozMNCRz
-         CX99QTo8PHrK55KbpyHkMK3FPingC5l8H+EWJyyO+VL9fjAPGwVNR6AxuH2tLGcLOvon
-         oGqAzOh3BZgiO+3Dwf6+nd5NHMtQcqZXxASFBs5xSwJ1vEcpvEZfpEttL63fzzm332Dh
-         yNHg==
-X-Gm-Message-State: AOAM530VGhJkCXS+P++XpMwmldVZLo08NetHZUofbBQdjZsJUagJXPPX
-        iVS/5beBBFFVOr8qMxYimvF9Jg==
-X-Google-Smtp-Source: ABdhPJyQOFXhqIkCFOWUlCK4u8olBcohNoXcCPsXEOzescIhNAK8TXLqF/AvCtVBboBJRq7bqEEVaw==
-X-Received: by 2002:a05:6000:1149:: with SMTP id d9mr5524580wrx.26.1627681656407;
-        Fri, 30 Jul 2021 14:47:36 -0700 (PDT)
+        bh=6YN1J9vmLUXCKWdwBvhu6EMYabwP3L6uMfluwtn0R3A=;
+        b=mJkHZka+EgqJbahfVy9jl6i1Az1nFu/9j8n/53STkssUagNGjHFjM3GW8WPmR8ckQu
+         xL2AT7ptEn8M8cnoCp9tpCAge3PQSM3KxO5b0cmCzEVtxTEc/UMIV9TkvpjXW0bYqXS4
+         IoZAFsalYGS7ROIiVzWYBT2NInZZEtAFaeyDju57oPPWSzLNpC9zBfcYJ/QNc7tmlxq6
+         LOimb2cl5/wgwwwGO1nuwPsMPLdGfmnOYe5Jed9+cw6gusbGmOBurfWQiUbU9cy8PoY3
+         4In6RhVqSPrzwY6ujNlEDmS740ZAVX7zyJFclAdHHGoBS+D99esXmdjn/j+8nqy+3ZjQ
+         ZQ+w==
+X-Gm-Message-State: AOAM5328v+8CU7o/7DHQlW6yc63/UJO3OzppPWyH6JHlg6943w134EJX
+        QF6XR+sFlDMnkp1vAfDKbG51tA==
+X-Google-Smtp-Source: ABdhPJwhpXwCZmWPCzIsEX0advg+wYnkEjnxSySmGcoqiAXT/eUhd4oS6Nmj+awvShpOH4qbKxE05w==
+X-Received: by 2002:a05:600c:4fd6:: with SMTP id o22mr307741wmq.45.1627681698708;
+        Fri, 30 Jul 2021 14:48:18 -0700 (PDT)
 Received: from [192.168.1.8] ([149.86.68.125])
-        by smtp.gmail.com with ESMTPSA id d15sm2847727wrn.28.2021.07.30.14.47.35
+        by smtp.gmail.com with ESMTPSA id i7sm3113516wre.64.2021.07.30.14.48.17
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Jul 2021 14:47:35 -0700 (PDT)
-Subject: Re: [PATCH bpf-next 3/7] tools: bpftool: complete and synchronise
- attach or map types
+        Fri, 30 Jul 2021 14:48:18 -0700 (PDT)
+Subject: Re: [PATCH bpf-next 6/7] tools: bpftool: document and add bash
+ completion for -L, -B options
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 References: <20210729162932.30365-1-quentin@isovalent.com>
- <20210729162932.30365-4-quentin@isovalent.com>
- <CAEf4BzYp2QgaL9ORzs0sWk6KO63Q-9ixU-vOsFfLckE3-bPg6A@mail.gmail.com>
+ <20210729162932.30365-7-quentin@isovalent.com>
+ <CAEf4Bzb+s0f6ybq+qARTpe1wa2dOD_gweBd0kQAYh3cyx=N5mQ@mail.gmail.com>
 From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <7c8e25b4-1546-a411-ef21-ae6cd09477df@isovalent.com>
-Date:   Fri, 30 Jul 2021 22:47:34 +0100
+Message-ID: <4ad2073f-d528-788e-3222-85cd2c0fe5f9@isovalent.com>
+Date:   Fri, 30 Jul 2021 22:48:16 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzYp2QgaL9ORzs0sWk6KO63Q-9ixU-vOsFfLckE3-bPg6A@mail.gmail.com>
+In-Reply-To: <CAEf4Bzb+s0f6ybq+qARTpe1wa2dOD_gweBd0kQAYh3cyx=N5mQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
@@ -72,125 +72,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2021-07-30 11:52 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
+2021-07-30 11:59 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
 > On Thu, Jul 29, 2021 at 9:29 AM Quentin Monnet <quentin@isovalent.com> wrote:
 >>
->> Update bpftool's list of attach type names to tell it about the latest
->> attach types, or the "ringbuf" map. Also update the documentation, help
->> messages, and bash completion when relevant.
+>> The -L|--use-loader option for using loader programs when loading, or
+>> when generating a skeleton, did not have any documentation or bash
+>> completion. Same thing goes for -B|--base-btf, used to pass a path to a
+>> base BTF object for split BTF such as BTF for kernel modules.
 >>
->> These missing items were reported by the newly added Python script used
->> to help maintain consistency in bpftool.
+>> This patch documents and adds bash completion for those options.
 >>
+>> Fixes: 75fa1777694c ("tools/bpftool: Add bpftool support for split BTF")
+>> Fixes: d510296d331a ("bpftool: Use syscall/loader program in "prog load" and "gen skeleton" command.")
 >> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
 >> ---
->>  .../bpftool/Documentation/bpftool-prog.rst    |  2 +-
->>  tools/bpf/bpftool/bash-completion/bpftool     |  5 +-
->>  tools/bpf/bpftool/common.c                    | 76 ++++++++++---------
->>  tools/bpf/bpftool/prog.c                      |  4 +-
->>  4 files changed, 47 insertions(+), 40 deletions(-)
->>
-
->> diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
->> index 1828bba19020..b47797cac64f 100644
->> --- a/tools/bpf/bpftool/common.c
->> +++ b/tools/bpf/bpftool/common.c
->> @@ -31,42 +31,48 @@
->>  #endif
->>
->>  const char * const attach_type_name[__MAX_BPF_ATTACH_TYPE] = {
->> -       [BPF_CGROUP_INET_INGRESS]       = "ingress",
->> -       [BPF_CGROUP_INET_EGRESS]        = "egress",
->> -       [BPF_CGROUP_INET_SOCK_CREATE]   = "sock_create",
->> -       [BPF_CGROUP_INET_SOCK_RELEASE]  = "sock_release",
->> -       [BPF_CGROUP_SOCK_OPS]           = "sock_ops",
->> -       [BPF_CGROUP_DEVICE]             = "device",
->> -       [BPF_CGROUP_INET4_BIND]         = "bind4",
->> -       [BPF_CGROUP_INET6_BIND]         = "bind6",
->> -       [BPF_CGROUP_INET4_CONNECT]      = "connect4",
->> -       [BPF_CGROUP_INET6_CONNECT]      = "connect6",
->> -       [BPF_CGROUP_INET4_POST_BIND]    = "post_bind4",
->> -       [BPF_CGROUP_INET6_POST_BIND]    = "post_bind6",
->> -       [BPF_CGROUP_INET4_GETPEERNAME]  = "getpeername4",
->> -       [BPF_CGROUP_INET6_GETPEERNAME]  = "getpeername6",
->> -       [BPF_CGROUP_INET4_GETSOCKNAME]  = "getsockname4",
->> -       [BPF_CGROUP_INET6_GETSOCKNAME]  = "getsockname6",
->> -       [BPF_CGROUP_UDP4_SENDMSG]       = "sendmsg4",
->> -       [BPF_CGROUP_UDP6_SENDMSG]       = "sendmsg6",
->> -       [BPF_CGROUP_SYSCTL]             = "sysctl",
->> -       [BPF_CGROUP_UDP4_RECVMSG]       = "recvmsg4",
->> -       [BPF_CGROUP_UDP6_RECVMSG]       = "recvmsg6",
->> -       [BPF_CGROUP_GETSOCKOPT]         = "getsockopt",
->> -       [BPF_CGROUP_SETSOCKOPT]         = "setsockopt",
->> +       [BPF_CGROUP_INET_INGRESS]               = "ingress",
->> +       [BPF_CGROUP_INET_EGRESS]                = "egress",
->> +       [BPF_CGROUP_INET_SOCK_CREATE]           = "sock_create",
->> +       [BPF_CGROUP_INET_SOCK_RELEASE]          = "sock_release",
->> +       [BPF_CGROUP_SOCK_OPS]                   = "sock_ops",
->> +       [BPF_CGROUP_DEVICE]                     = "device",
->> +       [BPF_CGROUP_INET4_BIND]                 = "bind4",
->> +       [BPF_CGROUP_INET6_BIND]                 = "bind6",
->> +       [BPF_CGROUP_INET4_CONNECT]              = "connect4",
->> +       [BPF_CGROUP_INET6_CONNECT]              = "connect6",
->> +       [BPF_CGROUP_INET4_POST_BIND]            = "post_bind4",
->> +       [BPF_CGROUP_INET6_POST_BIND]            = "post_bind6",
->> +       [BPF_CGROUP_INET4_GETPEERNAME]          = "getpeername4",
->> +       [BPF_CGROUP_INET6_GETPEERNAME]          = "getpeername6",
->> +       [BPF_CGROUP_INET4_GETSOCKNAME]          = "getsockname4",
->> +       [BPF_CGROUP_INET6_GETSOCKNAME]          = "getsockname6",
->> +       [BPF_CGROUP_UDP4_SENDMSG]               = "sendmsg4",
->> +       [BPF_CGROUP_UDP6_SENDMSG]               = "sendmsg6",
->> +       [BPF_CGROUP_SYSCTL]                     = "sysctl",
->> +       [BPF_CGROUP_UDP4_RECVMSG]               = "recvmsg4",
->> +       [BPF_CGROUP_UDP6_RECVMSG]               = "recvmsg6",
->> +       [BPF_CGROUP_GETSOCKOPT]                 = "getsockopt",
->> +       [BPF_CGROUP_SETSOCKOPT]                 = "setsockopt",
->>
->> -       [BPF_SK_SKB_STREAM_PARSER]      = "sk_skb_stream_parser",
->> -       [BPF_SK_SKB_STREAM_VERDICT]     = "sk_skb_stream_verdict",
->> -       [BPF_SK_SKB_VERDICT]            = "sk_skb_verdict",
->> -       [BPF_SK_MSG_VERDICT]            = "sk_msg_verdict",
->> -       [BPF_LIRC_MODE2]                = "lirc_mode2",
->> -       [BPF_FLOW_DISSECTOR]            = "flow_dissector",
->> -       [BPF_TRACE_RAW_TP]              = "raw_tp",
->> -       [BPF_TRACE_FENTRY]              = "fentry",
->> -       [BPF_TRACE_FEXIT]               = "fexit",
->> -       [BPF_MODIFY_RETURN]             = "mod_ret",
->> -       [BPF_LSM_MAC]                   = "lsm_mac",
->> -       [BPF_SK_LOOKUP]                 = "sk_lookup",
->> +       [BPF_SK_SKB_STREAM_PARSER]              = "sk_skb_stream_parser",
->> +       [BPF_SK_SKB_STREAM_VERDICT]             = "sk_skb_stream_verdict",
->> +       [BPF_SK_SKB_VERDICT]                    = "sk_skb_verdict",
->> +       [BPF_SK_MSG_VERDICT]                    = "sk_msg_verdict",
->> +       [BPF_LIRC_MODE2]                        = "lirc_mode2",
->> +       [BPF_FLOW_DISSECTOR]                    = "flow_dissector",
->> +       [BPF_TRACE_RAW_TP]                      = "raw_tp",
->> +       [BPF_TRACE_FENTRY]                      = "fentry",
->> +       [BPF_TRACE_FEXIT]                       = "fexit",
->> +       [BPF_MODIFY_RETURN]                     = "mod_ret",
->> +       [BPF_LSM_MAC]                           = "lsm_mac",
->> +       [BPF_SK_LOOKUP]                         = "sk_lookup",
->> +       [BPF_TRACE_ITER]                        = "trace_iter",
->> +       [BPF_XDP_DEVMAP]                        = "xdp_devmap",
->> +       [BPF_XDP_CPUMAP]                        = "xdp_cpumap",
->> +       [BPF_XDP]                               = "xdp",
->> +       [BPF_SK_REUSEPORT_SELECT]               = "sk_skb_reuseport_select",
->> +       [BPF_SK_REUSEPORT_SELECT_OR_MIGRATE]    = "sk_skb_reuseport_select_or_migrate",
->>  };
->>
+>> Note: The second example with base BTF in the BTF man page assumes that
+>> dumping split BTF when objects are passed by id is supported. Support is
+>> currently pending review in another PR.
+>> ---
 > 
-> you are ruining Git blaming abilities for purely aesthetic reasons,
-> which are not good enough reasons, IMO. Please don't do this, this
-> nice alignment is nice, but definitely not necessary. So whatever is
-> longer then the "default indentation", just add another tab or two and
-> be done with it.
+> Not anymore :)
+> 
+> [...]
+> 
+>> @@ -73,6 +74,20 @@ OPTIONS
+>>  =======
+>>         .. include:: common_options.rst
+>>
+>> +       -B, --base-btf *FILE*
+>> +                 Pass a base BTF object. Base BTF objects are typically used
+>> +                 with BTF objects for kernel modules. To avoid duplicating
+>> +                 all kernel symbols required by modules, BTF objects for
+>> +                 modules are "split", they are built incrementally on top of
+>> +                 the kernel (vmlinux) BTF object. So the base BTF reference
+>> +                 should usually point to the kernel BTF.
+>> +
+>> +                 When the main BTF object to process (for example, the
+>> +                 module BTF to dump) is passed as a *FILE*, bpftool attempts
+>> +                 to autodetect the path for the base object, and passing
+>> +                 this option is optional. When the main BTF object is passed
+>> +                 through other handles, this option becomes necessary.
+>> +
+>>  EXAMPLES
+>>  ========
+>>  **# bpftool btf dump id 1226**
+>> @@ -217,3 +232,34 @@ All the standard ways to specify map or program are supported:
+>>  **# bpftool btf dump prog tag b88e0a09b1d9759d**
+>>
+>>  **# bpftool btf dump prog pinned /sys/fs/bpf/prog_name**
+>> +
+>> +|
+>> +| **# bpftool btf dump file /sys/kernel/btf/i2c_smbus**
+>> +| (or)
+>> +| **# I2C_SMBUS_ID=$(bpftool btf show -p | jq '.[] | select(.name=="i2c_smbus").id')**
+>> +| **# bpftool btf dump id ${I2C_SMBUS_ID} -B /sys/kernel/btf/vmlinux**
+>> +
+>> +::
+>> +
+>> +  [104848] STRUCT 'i2c_smbus_alert' size=40 vlen=2
+>> +          'alert' type_id=393 bits_offset=0
+>> +          'ara' type_id=56050 bits_offset=256
+>> +  [104849] STRUCT 'alert_data' size=12 vlen=3
+>> +          'addr' type_id=16 bits_offset=0
+>> +          'type' type_id=56053 bits_offset=32
+>> +          'data' type_id=7 bits_offset=64
+>> +  [104850] PTR '(anon)' type_id=104848
+>> +  [104851] PTR '(anon)' type_id=104849
+>> +  [104852] FUNC 'i2c_register_spd' type_id=84745 linkage=static
+>> +  [104853] FUNC 'smbalert_driver_init' type_id=1213 linkage=static
+>> +  [104854] FUNC_PROTO '(anon)' ret_type_id=18 vlen=1
+>> +          'ara' type_id=56050
+>> +  [104855] FUNC 'i2c_handle_smbus_alert' type_id=104854 linkage=static
+>> +  [104856] FUNC 'smbalert_remove' type_id=104854 linkage=static
+>> +  [104857] FUNC_PROTO '(anon)' ret_type_id=18 vlen=2
+>> +          'ara' type_id=56050
+>> +          'id' type_id=56056
+>> +  [104858] FUNC 'smbalert_probe' type_id=104857 linkage=static
+>> +  [104859] FUNC 'smbalert_work' type_id=9695 linkage=static
+>> +  [104860] FUNC 'smbus_alert' type_id=71367 linkage=static
+>> +  [104861] FUNC 'smbus_do_alert' type_id=84827 linkage=static
+> 
+> This reminded be that it would be awesome to support "format c"
+> use-case for dumping split BTF in a more sane way. I.e., instead of
+> dumping all types from base and split BTF, only dump necessary (used)
+> forward declarations from base BTF, and then full C dump of only new
+> types from the split (module) BTF. This will become more important as
+> people will start using module BTF more. It's an interesting add-on to
+> libbpf's btf_dumper functionality. Not sure how hard that would be,
+> but I'd imagine it shouldn't require much changes.
+> 
+> Just in case anyone wanted to challenge themselves with some more
+> algorithmic patch for libbpf (*wink wink*)...
 
-I think I've been asked to do the opposite in the past. And I wouldn't
-be ruining much in the current case, the array has been moved from
-another location and nearly all types were added here in the same
-commit. But OK.
-
-> That way we can actually see what was added in this
-> patch, btw.
-
-On this one I agree :)
+If you're addressing this to me, I'm not particularly looking for such
+challenge at the moment :). In fact I already noted a few things that I
+would like to fix or improve for bpftool, I will append this one to the
+list. I should maybe start thinking of a tracker of some sort to list
+and share this.
