@@ -2,123 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B48D83DB1E6
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 05:18:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C3073DB204
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 05:42:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236916AbhG3DSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 23:18:15 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:13214 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235022AbhG3DSH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 23:18:07 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GbXW72N22z1CQbF;
-        Fri, 30 Jul 2021 11:12:03 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Fri, 30 Jul 2021 11:18:01 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Fri, 30 Jul 2021 11:18:00 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <catalin.marinas@arm.com>, <will@kernel.org>, <maz@kernel.org>,
-        <mark.rutland@arm.com>, <dbrazdil@google.com>, <qperret@google.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <lipeng321@huawei.com>,
-        <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 4/4] net: hns3: add ethtool priv-flag for TX push
-Date:   Fri, 30 Jul 2021 11:14:24 +0800
-Message-ID: <1627614864-50824-5-git-send-email-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1627614864-50824-1-git-send-email-huangguangbin2@huawei.com>
-References: <1627614864-50824-1-git-send-email-huangguangbin2@huawei.com>
+        id S234737AbhG3DmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 23:42:23 -0400
+Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:39613 "EHLO
+        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230158AbhG3DmX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 23:42:23 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0UhP1c4p_1627616537;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0UhP1c4p_1627616537)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 30 Jul 2021 11:42:17 +0800
+From:   Dust Li <dust.li@linux.alibaba.com>
+To:     Willem de Bruijn <willemb@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        netdev <netdev@vger.kernel.org>,
+        Dust Li <dust.li@linux.alibaba.com>
+Subject: [PATCH] selftests/net: remove min gso test in packet_snd
+Date:   Fri, 30 Jul 2021 11:41:55 +0800
+Message-Id: <20210730034155.24560-1-dust.li@linux.alibaba.com>
+X-Mailer: git-send-email 2.19.1.3.ge56e4f7
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Huazhong Tan <tanhuazhong@huawei.com>
+This patch removed the 'raw gso min size - 1' test which
+always fails now:
+./in_netns.sh ./psock_snd -v -c -g -l "${mss}"
+  raw gso min size - 1 (expected to fail)
+  tx: 1524
+  rx: 1472
+  OK
 
-Add a control private flag in ethtool for enable/disable
-TX push feature.
+After commit 7c6d2ecbda83 ("net: be more gentle about silly
+gso requests coming from user"), we relaxed the min gso_size
+check in virtio_net_hdr_to_skb().
+So when a packet which is smaller then the gso_size,
+GSO for this packet will not be set, the packet will be
+send/recv successfully.
 
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  1 +
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  5 ++++-
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 19 ++++++++++++++++++-
- 3 files changed, 23 insertions(+), 2 deletions(-)
+ tools/testing/selftests/net/psock_snd.sh | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index f19336bbd88a..48d1f369f00e 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -807,6 +807,7 @@ struct hnae3_roce_private_info {
+diff --git a/tools/testing/selftests/net/psock_snd.sh b/tools/testing/selftests/net/psock_snd.sh
+index 170be65e0816..1cbfeb5052ec 100755
+--- a/tools/testing/selftests/net/psock_snd.sh
++++ b/tools/testing/selftests/net/psock_snd.sh
+@@ -86,9 +86,6 @@ echo "raw truncate hlen - 1 (expected to fail: EINVAL)"
+ echo "raw gso min size"
+ ./in_netns.sh ./psock_snd -v -c -g -l "${mss_exceeds}"
  
- enum hnae3_pflag {
- 	HNAE3_PFLAG_LIMIT_PROMISC,
-+	HNAE3_PFLAG_PUSH_ENABLE,
- 	HNAE3_PFLAG_MAX
- };
+-echo "raw gso min size - 1 (expected to fail)"
+-(! ./in_netns.sh ./psock_snd -v -c -g -l "${mss}")
+-
+ echo "raw gso max size"
+ ./in_netns.sh ./psock_snd -v -c -g -l "${max_mss}"
  
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index a5cf5c4f612e..c992fe18525e 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -5128,8 +5128,11 @@ static int hns3_client_init(struct hnae3_handle *handle)
- 	if (hnae3_ae_dev_rxd_adv_layout_supported(ae_dev))
- 		set_bit(HNS3_NIC_STATE_RXD_ADV_LAYOUT_ENABLE, &priv->state);
- 
--	if (test_bit(HNAE3_DEV_SUPPORT_TX_PUSH_B, ae_dev->caps))
-+	if (test_bit(HNAE3_DEV_SUPPORT_TX_PUSH_B, ae_dev->caps)) {
- 		set_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE, &priv->state);
-+		handle->priv_flags |= BIT(HNAE3_PFLAG_PUSH_ENABLE);
-+		set_bit(HNAE3_PFLAG_PUSH_ENABLE, &handle->supported_pflags);
-+	}
- 
- 	set_bit(HNS3_NIC_STATE_INITED, &priv->state);
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 155a58e11089..0b2557d4441d 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -423,8 +423,25 @@ static void hns3_update_limit_promisc_mode(struct net_device *netdev,
- 	hns3_request_update_promisc_mode(handle);
- }
- 
-+static void hns3_update_state(struct net_device *netdev,
-+			      enum hns3_nic_state state, bool enable)
-+{
-+	struct hns3_nic_priv *priv = netdev_priv(netdev);
-+
-+	if (enable)
-+		set_bit(state, &priv->state);
-+	else
-+		clear_bit(state, &priv->state);
-+}
-+
-+static void hns3_update_push_state(struct net_device *netdev, bool enable)
-+{
-+	hns3_update_state(netdev, HNS3_NIC_STATE_TX_PUSH_ENABLE, enable);
-+}
-+
- static const struct hns3_pflag_desc hns3_priv_flags[HNAE3_PFLAG_MAX] = {
--	{ "limit_promisc",	hns3_update_limit_promisc_mode }
-+	{ "limit_promisc",	hns3_update_limit_promisc_mode },
-+	{ "tx_push_enable",	hns3_update_push_state }
- };
- 
- static int hns3_get_sset_count(struct net_device *netdev, int stringset)
 -- 
-2.8.1
+2.19.1.3.ge56e4f7
 
