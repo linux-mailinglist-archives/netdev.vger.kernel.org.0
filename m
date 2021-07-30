@@ -2,80 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54A4C3DBC73
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 17:40:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 289CF3DBC80
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 17:45:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231500AbhG3PkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 11:40:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37226 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229754AbhG3PkL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Jul 2021 11:40:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 82AE760F4A;
-        Fri, 30 Jul 2021 15:40:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627659606;
-        bh=rqDtx1NqEwJWxBjz0SxwahkSeJJ/XsxyMNgNVau03Kw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=B8+JivPVtrWc5hC729Y86ULbMeZXGJ0Fmz/Lxwxxi1Lg+RsA7gvnxxvQ88oqCNIxz
-         O7p8ms/qAuYSZnHyaJq8yAn91TxlmZhzumXaixGVHYatCBevyH8WYKxHunhItj10hW
-         GLvIPrsFopJUAYywYLWG1GC0TVOM8doiTMROo0V8vLE6XJF6UBouSWoCKW0cOV5t8l
-         vKcTC4uiS5Jygy4WAg9GnYymMPUfSNKSoZuUwIM77xImYLSF5d3IKCd+DHifvxKYP/
-         QiocFg1f5qyCaw75oQcfKo3ems5r2wFffIMjHJOwEuHlGvRrOMbyY8aAgi1+D79bbP
-         sDIps1mhNcheA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 775B7609F6;
-        Fri, 30 Jul 2021 15:40:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231670AbhG3PqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 11:46:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33458 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230371AbhG3Pp7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 11:45:59 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA8EC061765;
+        Fri, 30 Jul 2021 08:45:54 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id m9so12948243ljp.7;
+        Fri, 30 Jul 2021 08:45:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fawJYldHWdolrAXivi3QZBGiBpcFEP0a9w0quyUwKgg=;
+        b=Mw3YNdZqALvcqSSDyfJu3hRXiVJIQ2Nw4EEYPsD/NtQ4uui/gJ19vEbXkqspQPXWxJ
+         pHHLDl0O9qdQT7bpST4PYSMbOvIT9W8FD/vghqRkndNEOeS9j6FQ/RgQbW2uXF0lOBg9
+         6nmQ9RHZ1/KyA15CW+htmxqFO9p9qr2oEFiSh12xGBNMyKEcEE/8zz6AECB+P4g8KR5P
+         Yi5TFhF2EBD69uf1RqHkm9d9htaWhJuBHoaKWO2Ok4l/ENProie48WcdWtqoIPOEAB20
+         2NLOgBXXPvGxQv/vrfFB6xrAIkagxumIsTarzdY1W0FaNS2VYJddsI3N+mAAE1cLKfk0
+         2j+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fawJYldHWdolrAXivi3QZBGiBpcFEP0a9w0quyUwKgg=;
+        b=OYYV4A9PiRonLOomSYwhZQtE/1dgsJ4UXAunZYAN4iWxDXIuu30noSuUgSuGpWfUFv
+         Gr7qB0rIqXdx00ePUssA1gfeSub5rYO+qLJzHH+9NEne6L7bSYRuvedGpjldMkliX33E
+         pk6LGI2q50S6TWC+WOajD9Si2lItPcoTRIUsezuBV4Gemz6z9YmTrXP0+fStrCS0mmbJ
+         cUU9V7hQJM4K+Bpt5vonsKpsLp6pgzWTB1RA8JLNLmYTJKsenFTDK61YOGED2/CbxOlz
+         4q9dMay0OKPF8YKjJHfk8u72GWqj6SyFviQ1TbV2i9ZvaEXGwxwOPPujOBqygoUjqsZy
+         gUeg==
+X-Gm-Message-State: AOAM53131U+qT76lTtZyX+Fy3Ppn0l1XJMhywXQcNZ4ow57PYz10OdAH
+        ZZtTllIg2c9ftkotVDn/l5E5OknvzjzeAV4vQW4=
+X-Google-Smtp-Source: ABdhPJxz/WdjDi4lGXhyCZtm24i63rrHi90X5+zc4DeLWMG83ZlGAInQMG/QwUP6GwNdDdJSBSf107Bte0SF5U6V1MU=
+X-Received: by 2002:a2e:98d1:: with SMTP id s17mr1956928ljj.457.1627659952804;
+ Fri, 30 Jul 2021 08:45:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 0/7] nfc: constify pointed data - missed part
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162765960648.4488.17394911523764149240.git-patchwork-notify@kernel.org>
-Date:   Fri, 30 Jul 2021 15:40:06 +0000
-References: <20210730144202.255890-1-krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20210730144202.255890-1-krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210728175327.1150120-1-dqfext@gmail.com> <20210728175327.1150120-3-dqfext@gmail.com>
+ <20210729152805.o2pur7pp2kpxvvnq@skbuf> <CALW65jbHwRhekX=7xoFvts2m7xTRM4ti9zpTiah8ed0n0fCrRg@mail.gmail.com>
+ <20210729165027.okmfa3ulpd3e6gte@skbuf>
+In-Reply-To: <20210729165027.okmfa3ulpd3e6gte@skbuf>
+From:   DENG Qingfang <dqfext@gmail.com>
+Date:   Fri, 30 Jul 2021 23:45:41 +0800
+Message-ID: <CALW65jYYmpnDou0dC3=1AjL9tmo_9jqLSWmusJkeqRb4mSwCGQ@mail.gmail.com>
+Subject: Re: [RFC net-next 2/2] net: dsa: mt7530: trap packets from standalone
+ ports to the CPU
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, Jul 30, 2021 at 12:50 AM Vladimir Oltean <olteanv@gmail.com> wrote:
+> I have the MT7621 GSW, and sadly this reference manual isn't the best in
+> explaining what is and what is not possible. For example, I am still not
+> clear what is meant by "VID1" and "VID0". Is "VID1" the inner (customer)
+> VLAN tag, and "VID0" the outer (service) VLAN tag, or "VID1" means the
+> actual VLAN ID 1?
+>
+> And the bits 3:1 of VAWD1 (VLAN table access register) indicate a FID
+> field per VLAN. I cannot find the piece that you quoted in this manual.
+> But what I expect to happen for a Transparent Port is that the packets
+> are always classified to that port's PVID, and the VLAN Table is looked
+> up with that PVID. There, it will find the FID, which this driver
+> currently always configures as zero. In my manual's description, in the
+> "Transparent Port" chapter, it does explicitly say:
+>
+>         VID0 and VID1 will store PVID as the default VID which is used
+>         to look up the VLAN table.
+>
+> So I get the impression that the phrase "the VLAN table is not applicable"
+> is not quite correct, but I might be wrong...
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Alright, I think I've made some progress.
+In the current code, we only use two combinations to toggle user
+ports' VLAN awareness: one is PCR.PORT_VLAN set to port matrix mode
+with PVC.VLAN_ATTR set to transparent port, the other is PCR.PORT_VLAN
+set to security mode with PVC.VLAN_ATTR set to user port.
 
-On Fri, 30 Jul 2021 16:41:55 +0200 you wrote:
-> Hi,
-> 
-> This was previously sent [1] but got lost. It was a prerequisite to part two of NFC const [2].
-> 
-> Changes since v2:
-> 1. Drop patch previously 7/8 which cases new warnings "warning: Using
->    plain integer as NULL pointer".
-> 
-> [...]
+It turns out that only PVC.VLAN_ATTR contributes to VLAN awareness.
+Port matrix mode just skips the VLAN table lookup. The reference
+manual is somehow misleading when describing PORT_VLAN modes (See Page
+17 of MT7531 Reference Manual, available at
+http://wiki.banana-pi.org/Banana_Pi_BPI-R64#Resources). It states that
+PORT_MEM (VLAN port member) is used for destination if the VLAN table
+lookup hits, but actually it uses **PORT_MEM & PORT_MATRIX** (bitwise
+AND of VLAN port member and port matrix) instead, which means we can
+have two or more separate VLAN-aware bridges with the same PVID and
+traffic won't leak between them.
 
-Here is the summary with links:
-  - [v3,1/7] nfc: mrvl: correct nfcmrvl_spi_parse_dt() device_node argument
-    https://git.kernel.org/netdev/net-next/c/3833b87408e5
-  - [v3,2/7] nfc: annotate af_nfc_exit() as __exit
-    https://git.kernel.org/netdev/net-next/c/bf6cd7720b08
-  - [v3,3/7] nfc: hci: annotate nfc_llc_init() as __init
-    https://git.kernel.org/netdev/net-next/c/4932c37878c9
-  - [v3,4/7] nfc: constify several pointers to u8, char and sk_buff
-    https://git.kernel.org/netdev/net-next/c/3df40eb3a2ea
-  - [v3,5/7] nfc: constify local pointer variables
-    https://git.kernel.org/netdev/net-next/c/f2479c0a2294
-  - [v3,6/7] nfc: nci: constify several pointers to u8, sk_buff and other structs
-    https://git.kernel.org/netdev/net-next/c/ddecf5556f7f
-  - [v3,7/7] nfc: hci: cleanup unneeded spaces
-    https://git.kernel.org/netdev/net-next/c/77411df5f293
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+So I came up with a solution: Set PORT_VLAN to fallback mode when in
+VLAN-unaware mode, this way, even VLAN-unaware bridges will use
+independent VLAN filtering. Then assign all standalone ports to a
+reserved VLAN.
