@@ -2,126 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1217C3DBECE
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 21:11:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7AB93DBEE7
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 21:18:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231405AbhG3TLb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 15:11:31 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:59898 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231143AbhG3TL3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 15:11:29 -0400
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16UJ4XvQ155898;
-        Fri, 30 Jul 2021 15:11:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=aCvQ/zlOFEmWQJR05jB5BMz1wTvrloq8ZnJNoFyxCgA=;
- b=V/SnNDT/aGi/sMiEOokM2ekMamcQy0RLeeIiVZMZFrWO4O48mozPYBmM7QceGF/kMjoF
- DMRH1CMMcD1prddxzZSc2osDyLb2koTOn63pL/bJHCC0NVbvu0GjZucRAbi3VY1jzgiX
- k2U0vlOBcuDq7xKB9HtUvSgt0ZeERnZYsi6MQ2f4pcAiBtvZfadmwm7p9jG4aoLhWf+s
- r61lhWE5Pm+dFsZBkjM2lLXem1NOgsRbAguI2TxxRxHJhsgAE0TBuURSwD9idolC0zj1
- YudaNTxlJCF4XJhOzk7/sNz3XehoVufKcyPnDECxYOXBiam7FZWRehMBo9IHIwCK0wAb Jw== 
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3a4pnc953r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 30 Jul 2021 15:11:09 -0400
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 16UJ7IfF029591;
-        Fri, 30 Jul 2021 19:11:08 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma03wdc.us.ibm.com with ESMTP id 3a235rncgm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 30 Jul 2021 19:11:08 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 16UJB7a410879584
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 30 Jul 2021 19:11:07 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B8D352806A;
-        Fri, 30 Jul 2021 19:11:06 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5186A28067;
-        Fri, 30 Jul 2021 19:11:03 +0000 (GMT)
-Received: from oc6857751186.ibm.com (unknown [9.160.21.31])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Fri, 30 Jul 2021 19:11:03 +0000 (GMT)
-Subject: Re: [PATCH 36/64] scsi: ibmvscsi: Avoid multi-field memset() overflow
- by aiming at srp
-To:     "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Kees Cook <keescook@chromium.org>
-Cc:     linux-hardening@vger.kernel.org,
+        id S231185AbhG3TSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 15:18:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60408 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231124AbhG3TSd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 15:18:33 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF1BC0613D5
+        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 12:18:28 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id b6so16633559pji.4
+        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 12:18:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GxQ+HQk3cdftqAN6ekEINRB7/ckK/Y3btr+5Ktub3O8=;
+        b=WS5dYESChuBnCxT0C846oXNdS39ELe0+GVYff+8CDiB/+f/gvQwIUAsaHdpyWtgQI9
+         Ksdmzxs2AfVddKWJDuxET2t1XvdH74XtC3HtYpRTl4M2aix9P85mPUTWk0m4skcu2rUY
+         hkzUA5m/uNIuqcBh7EgcpFhsleAuHbj8eKL2s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GxQ+HQk3cdftqAN6ekEINRB7/ckK/Y3btr+5Ktub3O8=;
+        b=dqAeJDSi5g4NNsUH9tId7MWgFe0yTmvFNj61Xjxu5IhqRMm7fdNg2ZsOfgLCjVglX5
+         b41sHYXPkByBygYlJVpXmz+yRvj9IF1MNQQcuY3vLeLZn1HxAhf7LbsbNQS7Fb+gF7CX
+         cluSFl/xf4MxDY+4PmqsAVuqXI1dcb4Gcwg/I/85Djf4t4jfIe164V0GcltdAR8ybj9+
+         qZ5Uvwpo2vud+ufTPSCiuYf+VycQ5sTq064Xq8XtMtbDdmrMOohALcMvhx8jiUHQpUgh
+         ruwn4WQoWiqJOjZFdNl7cXJq1HvaosbfRA3UScv9gJ41Scu6uKx9TWno9LRIpD5At98O
+         LGHQ==
+X-Gm-Message-State: AOAM531ZZVd+yzqOrvHboTCPqe2UpbfCCzLE6IuGyX9d1iovFoRwczu2
+        EmLs2/R0cLtyFJzPAlNh7wN0fg==
+X-Google-Smtp-Source: ABdhPJyCK3+AR/s/Pq/itPZjFA3DL77BZcO4l8s7xQqT+jnGem6TdAj1wqpo6cwifM6sSr5c8f1XQQ==
+X-Received: by 2002:a65:498a:: with SMTP id r10mr500564pgs.7.1627672708339;
+        Fri, 30 Jul 2021 12:18:28 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id 26sm3040727pjj.27.2021.07.30.12.18.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Jul 2021 12:18:27 -0700 (PDT)
+Date:   Fri, 30 Jul 2021 12:18:26 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>, dsterba@suse.cz,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bart Van Assche <bvanassche@acm.org>,
+        linux-hardening@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         Keith Packard <keithpac@amazon.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
         linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Brian King <brking@linux.vnet.ibm.com>
-References: <20210727205855.411487-1-keescook@chromium.org>
- <20210727205855.411487-37-keescook@chromium.org>
- <yq135rzp79c.fsf@ca-mkp.ca.oracle.com> <202107281152.515A3BA@keescook>
- <yq1k0l9oktw.fsf@ca-mkp.ca.oracle.com>
-From:   Tyrel Datwyler <tyreld@linux.ibm.com>
-Message-ID: <3ffbcf75-166e-5802-1d8e-9c7739961b80@linux.ibm.com>
-Date:   Fri, 30 Jul 2021 12:11:02 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        nborisov@suse.com
+Subject: Re: [PATCH 01/64] media: omap3isp: Extract struct group for memcpy()
+ region
+Message-ID: <202107301217.46EA9DA@keescook>
+References: <20210728091434.GQ1931@kadam>
+ <c52a52d9-a9e0-5020-80fe-4aada39035d3@acm.org>
+ <20210728213730.GR5047@suse.cz>
+ <YQJDCw01gSp1d1/M@kroah.com>
+ <20210729082039.GX25548@kadam>
+ <202107291952.C08EAE039B@keescook>
+ <20210730083845.GD5047@suse.cz>
+ <20210730090054.GX1931@kadam>
+ <202107300937.C7016A82@keescook>
+ <CAKwvOdmtKszUS0-OyGMHuhqjyXQC_283KOQOouWWtimYCvsAoA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <yq1k0l9oktw.fsf@ca-mkp.ca.oracle.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: FY4mG5iTa3n7SX9d8VHWXVbFzyl_6wEi
-X-Proofpoint-GUID: FY4mG5iTa3n7SX9d8VHWXVbFzyl_6wEi
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-07-30_11:2021-07-30,2021-07-30 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- lowpriorityscore=0 mlxlogscore=999 spamscore=0 priorityscore=1501
- adultscore=0 phishscore=0 suspectscore=0 malwarescore=0 bulkscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2107140000 definitions=main-2107300129
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKwvOdmtKszUS0-OyGMHuhqjyXQC_283KOQOouWWtimYCvsAoA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/28/21 8:35 PM, Martin K. Petersen wrote:
+On Fri, Jul 30, 2021 at 10:08:03AM -0700, Nick Desaulniers wrote:
+> On Fri, Jul 30, 2021 at 9:44 AM Kees Cook <keescook@chromium.org> wrote:
+> >
+> > On Fri, Jul 30, 2021 at 12:00:54PM +0300, Dan Carpenter wrote:
+> > > On Fri, Jul 30, 2021 at 10:38:45AM +0200, David Sterba wrote:
+> > > > Then is explicit memset the only reliable way accross all compiler
+> > > > flavors and supported versions?
+> > > >
+> > >
+> > > The = { } initializer works.  It's only when you start partially
+> > > initializing the struct that it doesn't initialize holes.
+> >
+> > No, partial works. It's when you _fully_ initialize the struct where the
+> > padding doesn't get initialized. *sob*
 > 
-> Kees,
-> 
->> For example, change it to:
->>
->> +	BUILD_BUG_ON(sizeof(evt_struct->iu.srp) != SRP_MAX_IU_LEN);
->> +	memset(&evt_struct->iu.srp, 0x00, sizeof(evt_struct->iu.srp));
->>  	srp_cmd = &evt_struct->iu.srp.cmd;
->> -	memset(srp_cmd, 0x00, SRP_MAX_IU_LEN);
-> 
->> For the moment, I'll leave the patch as-is unless you prefer having
->> the BUILD_BUG_ON(). :)
-> 
-> I'm OK with the BUILD_BUG_ON(). Hopefully Tyrel or Brian will chime in.
-> 
+> I'm pretty sure that this has more to do with whether or not the
+> compiler applies SROA then observes uses of the individual members or
+> not.
 
-All the other srp structs are at most 64 bytes and the size of the union is
-explicitly set to SRP_MAX_IU_LEN by the last field of the union.
+Ultimately, it's just not consistent, so thank goodness for
+-ftrivial-auto-var-init=zero. :)
 
-union srp_iu {
-        struct srp_login_req login_req;
-        struct srp_login_rsp login_rsp;
-        struct srp_login_rej login_rej;
-        struct srp_i_logout i_logout;
-        struct srp_t_logout t_logout;
-        struct srp_tsk_mgmt tsk_mgmt;
-        struct srp_cmd cmd;
-        struct srp_rsp rsp;
-        u8 reserved[SRP_MAX_IU_LEN];
-};
-
-So, in my mind if SRP_MAX_IU_LEN ever changes so does the size of the union
-making the BUILD_BUG_ON() superfluous. But it doesn't really hurt anything either.
-
--Tyrel
+-- 
+Kees Cook
