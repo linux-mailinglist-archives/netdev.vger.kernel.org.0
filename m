@@ -2,123 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 971693DB157
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 04:53:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38E0E3DB198
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 04:57:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbhG3CxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 22:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40618 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbhG3CxE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 22:53:04 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 909F3C061765;
-        Thu, 29 Jul 2021 19:52:59 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id l19so13123269pjz.0;
-        Thu, 29 Jul 2021 19:52:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=bmL4SQ8GAZJWK3xApvq+PZaab/7COKw/aR8FnJTkZ8A=;
-        b=NAhocIP4f3vAt+HHEuF7oFkro+lh/6vEAuGcefhg6XueHZFW/VgAw1rUNxuPFA9NmR
-         cmXx+ceLZex9nGJ0OyzZaxsYsT8tiRb1jRyPL71vgLtSWLPo0cCqvQ2qriDvy8CpQssj
-         viNqrboexe+B/LVVnnduOrHj946GTrR2N6htuF3Da/GGsbOKkj/XSoD3hUHgJvjwaB5p
-         T3Mh0d9xRtStBYG2xEqHf2hhw7W3QR/YGkGCbpjg9hYVaJSISM4slgqWraPF6pZEHZNm
-         jukHYbtabQpZEinKjbGFHZgXMHh/LOo9XYtuFBdeFaYM0POV1AQF6Po3lzHo4DXqdZqC
-         RNSA==
+        id S233890AbhG3C5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 22:57:55 -0400
+Received: from mail-pj1-f50.google.com ([209.85.216.50]:46801 "EHLO
+        mail-pj1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229750AbhG3C5y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 22:57:54 -0400
+Received: by mail-pj1-f50.google.com with SMTP id g23-20020a17090a5797b02901765d605e14so12333777pji.5;
+        Thu, 29 Jul 2021 19:57:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=bmL4SQ8GAZJWK3xApvq+PZaab/7COKw/aR8FnJTkZ8A=;
-        b=BxY6GLIvDAhhB/d/w4O2cgNVXG2HwWRr2NHWKwirZGPj082T0m9rr9Cw0oqEe01K7q
-         //x2eiRzICqr6cY/7fXbSeNQCHcxih5NOpbv09scgntHcXJ9KDvrl7flac5sXdS7siVF
-         x2iFbgeXqMNl9Pqnr5s/P8hXvJYrXfpAuVVzjYuaFdNLQOUPokUzXRbu2KTnMU/1PtYV
-         5Gjpgd16tTiBGx8rzin0JG6RckukwGHZNNrcLabWIiUnxcz+xh3E2BtbJE4cEevPiD0g
-         06SS3MZS4WO5dBLV4+jh78JL8HqAKndrC2RI0OFFBL5F8B8cZPryty0nS3o7BBPAaggH
-         1NUw==
-X-Gm-Message-State: AOAM533Xw4nqIh5Vka3CyyZu1b970O1aJyBqslC//jI7RIBqeEVvJiF8
-        cFOCzMCF9fpnazIxMh+t6tU=
-X-Google-Smtp-Source: ABdhPJyyZoBDWV7ZCj8Ji9VpActKffc9EXcufc2IzXROiuNMi/ja4nm1BshkPIm0WrFthtY+V0e3wQ==
-X-Received: by 2002:a17:90a:1109:: with SMTP id d9mr575516pja.183.1627613579170;
-        Thu, 29 Jul 2021 19:52:59 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:18:efec::4b1])
-        by smtp.gmail.com with ESMTPSA id l10sm154977pjg.11.2021.07.29.19.52.45
+        bh=SFzRUhN6YLmKo+jXursxkunKR479Zn0dAlkG5jiWhjw=;
+        b=GPrLuhOBMMS7jqmzLpbbFbhKeWqOe6NxZh70ZESsM7lnWcv8AaFJifJoeyqgj+Vx88
+         WQPWTWJqjrXqME2dj2VIZCoS4wbWRxP6+yvO+5w7s6N4mW4Ny/1+82zH6vsDjlSQK45t
+         /CSbU4YcLrs58w039Dk/uHmnjk7fYKDdbYI6y3JpQv/zpiFFHBvWDo5q2ns0diNwSAv2
+         PlTfTu5cDBPPX1M/eD//bTa1B5DkvbrxMXB7cTVZ9zNe/Rol5WrniB90Qd+Vb7tjAZxZ
+         nk64cHwfYBcPbKGrHfXM6ITtUpMQa5RM7nvtQWAMjixzGwhdrhbHnEwd4yV9aGMZsngp
+         r2ZQ==
+X-Gm-Message-State: AOAM532nQzvhllMSJLiZ0w7pDnohtNDoi9lmaOM9rLZnK3zzUf1vtwNB
+        0cvJn/ZpFmjDBVSjGZ+jmNw=
+X-Google-Smtp-Source: ABdhPJzldFKnrfj3e7CDNRZJLltOGnPwYmMzIK1MKjkK0sFTGZWcKCldhGHbW6FmNfgZHfM78rnouA==
+X-Received: by 2002:a17:90a:c092:: with SMTP id o18mr691992pjs.3.1627613869863;
+        Thu, 29 Jul 2021 19:57:49 -0700 (PDT)
+Received: from ?IPv6:2601:647:4000:d7:3f66:df55:a341:f79d? ([2601:647:4000:d7:3f66:df55:a341:f79d])
+        by smtp.gmail.com with ESMTPSA id c15sm221003pfl.181.2021.07.29.19.57.48
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Jul 2021 19:52:58 -0700 (PDT)
-Subject: Re: [PATCH 03/13] x86/HV: Add new hvcall guest address host
- visibility support
-To:     Dave Hansen <dave.hansen@intel.com>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
-        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
-        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
-        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, ardb@kernel.org,
-        Tianyu.Lan@microsoft.com, rientjes@google.com,
-        martin.b.radev@gmail.com, akpm@linux-foundation.org,
-        rppt@kernel.org, kirill.shutemov@linux.intel.com,
-        aneesh.kumar@linux.ibm.com, krish.sadhukhan@oracle.com,
-        saravanand@fb.com, xen-devel@lists.xenproject.org,
-        pgonda@google.com, david@redhat.com, keescook@chromium.org,
-        hannes@cmpxchg.org, sfr@canb.auug.org.au,
-        michael.h.kelley@microsoft.com
-Cc:     iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, anparri@microsoft.com
-References: <20210728145232.285861-1-ltykernel@gmail.com>
- <20210728145232.285861-4-ltykernel@gmail.com>
- <a2444c36-0103-8e1c-7005-d97f77f90e85@intel.com>
- <0d956a05-7d24-57a0-f4a9-dccc849b52fc@gmail.com>
- <ec1d4cfd-bbbc-e27a-7589-e85d9f0438f4@intel.com>
- <8df2845d-ee90-56d0-1228-adebb103ec37@gmail.com>
- <7a2ddcca-e249-ba63-8709-e355fcef2d41@intel.com>
-From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <fa6cf8b6-7da0-dadf-b137-d90ce3513d5e@gmail.com>
-Date:   Fri, 30 Jul 2021 10:52:43 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+        Thu, 29 Jul 2021 19:57:49 -0700 (PDT)
+Subject: Re: [PATCH 48/64] drbd: Use struct_group() to zero algs
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-hardening@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Keith Packard <keithpac@amazon.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Lars Ellenberg <lars.ellenberg@linbit.com>
+References: <20210727205855.411487-1-keescook@chromium.org>
+ <20210727205855.411487-49-keescook@chromium.org>
+ <1cc74e5e-8d28-6da4-244e-861eac075ca2@acm.org>
+ <202107291845.1E1528D@keescook>
+From:   Bart Van Assche <bvanassche@acm.org>
+Message-ID: <0d71917d-967f-beaa-d83e-a60fa254627c@acm.org>
+Date:   Thu, 29 Jul 2021 19:57:47 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <7a2ddcca-e249-ba63-8709-e355fcef2d41@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <202107291845.1E1528D@keescook>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/30/2021 12:05 AM, Dave Hansen wrote:
-> On 7/29/21 8:02 AM, Tianyu Lan wrote:
+On 7/29/21 7:31 PM, Kees Cook wrote:
+> On Wed, Jul 28, 2021 at 02:45:55PM -0700, Bart Van Assche wrote:
+>> On 7/27/21 1:58 PM, Kees Cook wrote:
+>>> In preparation for FORTIFY_SOURCE performing compile-time and run-time
+>>> field bounds checking for memset(), avoid intentionally writing across
+>>> neighboring fields.
 >>>
+>>> Add a struct_group() for the algs so that memset() can correctly reason
+>>> about the size.
+>>>
+>>> Signed-off-by: Kees Cook <keescook@chromium.org>
+>>> ---
+>>>   drivers/block/drbd/drbd_main.c     | 3 ++-
+>>>   drivers/block/drbd/drbd_protocol.h | 6 ++++--
+>>>   drivers/block/drbd/drbd_receiver.c | 3 ++-
+>>>   3 files changed, 8 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
+>>> index 55234a558e98..b824679cfcb2 100644
+>>> --- a/drivers/block/drbd/drbd_main.c
+>>> +++ b/drivers/block/drbd/drbd_main.c
+>>> @@ -729,7 +729,8 @@ int drbd_send_sync_param(struct drbd_peer_device *peer_device)
+>>>   	cmd = apv >= 89 ? P_SYNC_PARAM89 : P_SYNC_PARAM;
+>>>   	/* initialize verify_alg and csums_alg */
+>>> -	memset(p->verify_alg, 0, 2 * SHARED_SECRET_MAX);
+>>> +	BUILD_BUG_ON(sizeof(p->algs) != 2 * SHARED_SECRET_MAX);
+>>> +	memset(&p->algs, 0, sizeof(p->algs));
+>>>   	if (get_ldev(peer_device->device)) {
+>>>   		dc = rcu_dereference(peer_device->device->ldev->disk_conf);
+>>> diff --git a/drivers/block/drbd/drbd_protocol.h b/drivers/block/drbd/drbd_protocol.h
+>>> index dea59c92ecc1..a882b65ab5d2 100644
+>>> --- a/drivers/block/drbd/drbd_protocol.h
+>>> +++ b/drivers/block/drbd/drbd_protocol.h
+>>> @@ -283,8 +283,10 @@ struct p_rs_param_89 {
+>>>   struct p_rs_param_95 {
+>>>   	u32 resync_rate;
+>>> -	char verify_alg[SHARED_SECRET_MAX];
+>>> -	char csums_alg[SHARED_SECRET_MAX];
+>>> +	struct_group(algs,
+>>> +		char verify_alg[SHARED_SECRET_MAX];
+>>> +		char csums_alg[SHARED_SECRET_MAX];
+>>> +	);
+>>>   	u32 c_plan_ahead;
+>>>   	u32 c_delay_target;
+>>>   	u32 c_fill_target;
+>>> diff --git a/drivers/block/drbd/drbd_receiver.c b/drivers/block/drbd/drbd_receiver.c
+>>> index 1f740e42e457..6df2539e215b 100644
+>>> --- a/drivers/block/drbd/drbd_receiver.c
+>>> +++ b/drivers/block/drbd/drbd_receiver.c
+>>> @@ -3921,7 +3921,8 @@ static int receive_SyncParam(struct drbd_connection *connection, struct packet_i
+>>>   	/* initialize verify_alg and csums_alg */
+>>>   	p = pi->data;
+>>> -	memset(p->verify_alg, 0, 2 * SHARED_SECRET_MAX);
+>>> +	BUILD_BUG_ON(sizeof(p->algs) != 2 * SHARED_SECRET_MAX);
+>>> +	memset(&p->algs, 0, sizeof(p->algs));
 >>
->> There is x86_hyper_type to identify hypervisor type and we may check
->> this variable after checking X86_FEATURE_HYPERVISOR.
->>
->> static inline bool hv_is_isolation_supported(void)
->> {
->>      if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
->>          return 0;
->>
->>          if (x86_hyper_type != X86_HYPER_MS_HYPERV)
->>                  return 0;
->>
->>      // out of line function call:
->>      return __hv_is_isolation_supported();
->> }
+>> Using struct_group() introduces complexity. Has it been considered not to
+>> modify struct p_rs_param_95 and instead to use two memset() calls instead of
+>> one (one memset() call per member)?
 > 
-> Looks fine.  You just might want to use this existing helper:
+> I went this direction because using two memset()s (or memcpy()s in other
+> patches) changes the machine code. It's not much of a change, but it
+> seems easier to justify "no binary changes" via the use of struct_group().
 > 
-> static inline bool hypervisor_is_type(enum x86_hypervisor_type type)
-> {
->          return x86_hyper_type == type;
-> }
-> 
+> If splitting the memset() is preferred, I can totally do that instead.
+> :)
 
-Yes,thanks for suggestion and will update in the next version.
+I don't have a strong opinion about this. Lars, do you want to comment
+on this patch?
+
+Thanks,
+
+Bart.
