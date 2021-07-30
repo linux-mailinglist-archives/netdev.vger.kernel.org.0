@@ -2,123 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36DC73DBD9C
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 19:21:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F3FE3DBDAD
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 19:24:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230127AbhG3RVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 13:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58628 "EHLO
+        id S230226AbhG3RYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 13:24:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229738AbhG3RV3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 13:21:29 -0400
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B45C06175F;
-        Fri, 30 Jul 2021 10:21:24 -0700 (PDT)
-Received: by mail-il1-x12e.google.com with SMTP id a14so10182258ila.1;
-        Fri, 30 Jul 2021 10:21:24 -0700 (PDT)
+        with ESMTP id S229773AbhG3RYy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 13:24:54 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C525EC06175F;
+        Fri, 30 Jul 2021 10:24:49 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id g76so17204624ybf.4;
+        Fri, 30 Jul 2021 10:24:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=eLN7+9c7Xaj+kBy2zNIikaePL1RMYLLJgx5wBfi1ffM=;
-        b=tvbbI6MK46oyskEsShabdhLDtl0o5udZfC/1/4axn1HquUpJlgOTAKDTg+TaeSnEMs
-         en0gYSGH9GUv+T+IH6ykxTJs+JDxj4U0EIOB49X4ESiYdznOSW/759ybfSojUYGFaxFK
-         7bN0OCeU3dj7ErnkALieuEQR+KCnMyLqy8UQVy8gt03oJCD6cB6MLKP6jd/FM5U46Nx1
-         6PT9yTSXWHynBmkqDsISB23D7c+B+i6VanYnzHIYOz7nWtpuHQrt02J4pxfgRvVmQ9/B
-         MTxVoPJvz2YHATbhTywKpTAGnxQF/23sAtFsjWjTh4ulLXPasDUt/xFckx4XFqdZXYn5
-         Vg8A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bmb9EdWI6i/F5TlygeZvpTKTNwNJ5JcjLeJNhgb3CPw=;
+        b=Jrf5/it2QZBRYAm9pE489VZv7NkWaHHosqg6SZw+xX5PTdofO/EzZGzi9T++0osCiM
+         H/n13DCEVgSlsX0gveSLpQtPulrYLorTQZYOPS2Ha8SzFCTX1PRMK+UA7f7lEocFyELe
+         FXq28ZccnEIbBhYXsFClAcyxxpF/rAK7GYkLgLrSPkh01JHZIlL6Q1pvvVgCk/K3rgW6
+         +xQaT1CaaOTG15uJuTjyfzSyFQWCgAlI1SpgurrZBOegUDY4tQts9+UxcjX6/n6IHBGe
+         rEsbxFB79+B0KXP7ChtaXxZzrMbPJTWZ2SWtv+SQTSDmew/e4aEdR+clcIOS/Lpn1Zvw
+         OSWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=eLN7+9c7Xaj+kBy2zNIikaePL1RMYLLJgx5wBfi1ffM=;
-        b=THgM+1si/IMU5d0eNKlsq7dghwlJk60px/siApV6KHAIK5yxWZiOn3ElZv0OMj/RQL
-         m65WCrhWiUhbpmo7uDoSNpoE7XoKHCXd4zUaMgIGGU3lI0Gx9Vg3Ddve3vVcefmKxklU
-         QTKYJt/3ND+L4nVRIf7v1RnaeHm15fUo+JzLRxTQQ84cIJlYBwcSk5XcQgsID2dv9x0s
-         x02l+TgKwvrKf4yH/NWWUfuwtgAWykIbU8+6rAwtBctd1PlsDgWK8/Ntk/NUsqBBE+4r
-         MENhSJ7zvUmZLtvWJKciadyKecqWpPIjRWF3J9keegpEUhdyh4a0kMwiNe7onmsrAzSi
-         tCSw==
-X-Gm-Message-State: AOAM531TzunTJLB0BPfpL/7JbQWo2zg++LEjtAFLlNHa/SMmUMKza7j1
-        6PA3pmgHW+2GwHJoUGiVB4Y=
-X-Google-Smtp-Source: ABdhPJxW8Kb8ESDrERihXtPqHK3BaZP1+FOig63zzh5s+7nQsmc9v+ldNxOLS+IbP9kF216Vn8KIhQ==
-X-Received: by 2002:a92:d9c6:: with SMTP id n6mr2701165ilq.142.1627665684203;
-        Fri, 30 Jul 2021 10:21:24 -0700 (PDT)
-Received: from haswell-ubuntu20.lan ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id l5sm1407204ion.44.2021.07.30.10.21.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Jul 2021 10:21:23 -0700 (PDT)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC net-next 2/2] net: dsa: mt7530: trap packets from standalone ports to the CPU
-Date:   Sat, 31 Jul 2021 01:21:14 +0800
-Message-Id: <20210730171935.GA517710@haswell-ubuntu20>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210730161852.4weylgdkcyacxhci@skbuf>
-References: <20210728175327.1150120-1-dqfext@gmail.com> <20210728175327.1150120-3-dqfext@gmail.com> <20210729152805.o2pur7pp2kpxvvnq@skbuf> <CALW65jbHwRhekX=7xoFvts2m7xTRM4ti9zpTiah8ed0n0fCrRg@mail.gmail.com> <20210729165027.okmfa3ulpd3e6gte@skbuf> <CALW65jYYmpnDou0dC3=1AjL9tmo_9jqLSWmusJkeqRb4mSwCGQ@mail.gmail.com> <20210730161852.4weylgdkcyacxhci@skbuf>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bmb9EdWI6i/F5TlygeZvpTKTNwNJ5JcjLeJNhgb3CPw=;
+        b=Z33NIVOQtPhlOryCpcP29SJMaD9BROGRbdugrHh9qzg3rbM2FRo1TzqBke7I0XL3bP
+         qwSl+BmtVUI+ZMmU1DpWlKxNZMe9bdL8wpguWHzZeJhoS3A/pSM6znLVKksHl2mexnMI
+         3M+32uDw9SPqASB3BLeNCw5BDJL/SkTbvK0s3vTR27Ht7Lr+C6ibVkzR2FSX8RotYH2v
+         QlFts/2dEMFYMuLVj7KeJDD51wa/GN5lRls31aTjMUvnKPtf4oktQ4zCdH9HWAXXsG0m
+         7MXAWGLFbVJv0eRC7W4JiVAHnVQjL1KDIDbhlMXErVSgcLbdUBlOuIkoUUPUT7U58i8Y
+         DJrA==
+X-Gm-Message-State: AOAM53260vgs4L8erGrAROb++ITZ+Ia67E1xQvxuVPL3uja8QTxQxYXX
+        SKErX4c70hwUdQ1X8arrW3+PCdyYxNL7y/xZTpI=
+X-Google-Smtp-Source: ABdhPJxh+ysByQewmkd/sX5zE14R6pUkzf9oqKklC829TmWk+lwifcbdCj5MNJFc7PMZp7xMpRezXMGC65w9DaTC/kc=
+X-Received: by 2002:a25:cdc7:: with SMTP id d190mr4455377ybf.425.1627665889010;
+ Fri, 30 Jul 2021 10:24:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+References: <20210729162028.29512-1-quentin@isovalent.com> <CAEf4BzbrQOr8Z2oiywT-zPBEz9jbP9_6oJXOW28LdOaqAy8pLw@mail.gmail.com>
+ <22d59def-51e7-2b98-61b6-b700e7de8ef6@isovalent.com>
+In-Reply-To: <22d59def-51e7-2b98-61b6-b700e7de8ef6@isovalent.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 30 Jul 2021 10:24:38 -0700
+Message-ID: <CAEf4BzbjN+zjio3HPRkGLRgZpbLj9MUGLnXt1KDSsoOHB8_v3Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 0/8] libbpf: rename btf__get_from_id() and
+ btf__load() APIs, support split BTF
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 30, 2021 at 07:18:52PM +0300, Vladimir Oltean wrote:
-> > It turns out that only PVC.VLAN_ATTR contributes to VLAN awareness.
-> > Port matrix mode just skips the VLAN table lookup. The reference
-> > manual is somehow misleading when describing PORT_VLAN modes (See Page
-> > 17 of MT7531 Reference Manual, available at
-> > http://wiki.banana-pi.org/Banana_Pi_BPI-R64#Resources). It states that
-> > PORT_MEM (VLAN port member) is used for destination if the VLAN table
-> > lookup hits, but actually it uses **PORT_MEM & PORT_MATRIX** (bitwise
-> > AND of VLAN port member and port matrix) instead, which means we can
-> > have two or more separate VLAN-aware bridges with the same PVID and
-> > traffic won't leak between them.
-> 
-> Ah, but it's not completely misleading. It does say:
-> 
-> 	2'b01: Fallback mode
-> 
-> 	Enable 802.1Q function for all the received frames.
-> 	Do not discard received frames due to ingress membership violation.
-> 	**Frames whose VID is missed on the VLAN table will be filtered
-> 	by the Port Matrix Member**.
-> 
-> (emphasis mine on the last paragraph)
-> 
-> > So I came up with a solution: Set PORT_VLAN to fallback mode when in
-> > VLAN-unaware mode, this way, even VLAN-unaware bridges will use
-> > independent VLAN filtering.
-> 
-> If you did indeed test that the Port Matrix is still used to enforce
-> separation between ports if the VLAN table _does_ match and we're in
-> fallback mode, then we should be okay.
+On Fri, Jul 30, 2021 at 8:23 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> 2021-07-29 17:31 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> > On Thu, Jul 29, 2021 at 9:20 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> >>
+> >> As part of the effort to move towards a v1.0 for libbpf [0], this set
+> >> improves some confusing function names related to BTF loading from and to
+> >> the kernel:
+> >>
+> >> - btf__load() becomes btf__load_into_kernel().
+> >> - btf__get_from_id becomes btf__load_from_kernel_by_id().
+> >> - A new version btf__load_from_kernel_by_id_split() extends the former to
+> >>   add support for split BTF.
+> >>
+> >> The old functions are marked for deprecation for the next minor version
+> >> (0.6) of libbpf.
+> >>
+> >> The last patch is a trivial change to bpftool to add support for dumping
+> >> split BTF objects by referencing them by their id (and not only by their
+> >> BTF path).
+> >>
+> >> [0] https://github.com/libbpf/libbpf/wiki/Libbpf:-the-road-to-v1.0#btfh-apis
+> >>
+> >> v3:
+> >> - Use libbpf_err_ptr() in btf__load_from_kernel_by_id(), ERR_PTR() in
+> >>   bpftool's get_map_kv_btf().
+> >> - Move the definition of btf__load_from_kernel_by_id() closer to the
+> >>   btf__parse() group in btf.h (move the legacy function with it).
+> >> - Fix a bug on the return value in libbpf_find_prog_btf_id(), as a new
+> >>   patch.
+> >> - Move the btf__free() fixes to their own patch.
+> >> - Add "Fixes:" tags to relevant patches.
+> >> - Re-introduce deprecation (removed in v2) for the legacy functions, as a
+> >>   new macro LIBBPF_DEPRECATED_SINCE(major, minor, message).
+> >>
+> >> v2:
+> >> - Remove deprecation marking of legacy functions (patch 4/6 from v1).
+> >> - Make btf__load_from_kernel_by_id{,_split}() return the btf struct, adjust
+> >>   surrounding code and call btf__free() when missing.
+> >> - Add new functions to v0.5.0 API (and not v0.6.0).
+> >>
+> >> Quentin Monnet (8):
+> >>   libbpf: return non-null error on failures in libbpf_find_prog_btf_id()
+> >>   libbpf: rename btf__load() as btf__load_into_kernel()
+> >>   libbpf: rename btf__get_from_id() as btf__load_from_kernel_by_id()
+> >>   tools: free BTF objects at various locations
+> >>   tools: replace btf__get_from_id() with btf__load_from_kernel_by_id()
+> >>   libbpf: prepare deprecation of btf__get_from_id(), btf__load()
+> >>   libbpf: add split BTF support for btf__load_from_kernel_by_id()
+> >>   tools: bpftool: support dumping split BTF by id
+> >>
+> >>  tools/bpf/bpftool/btf.c                      |  8 ++---
+> >>  tools/bpf/bpftool/btf_dumper.c               |  6 ++--
+> >>  tools/bpf/bpftool/map.c                      | 14 ++++-----
+> >>  tools/bpf/bpftool/prog.c                     | 29 +++++++++++------
+> >>  tools/lib/bpf/Makefile                       |  3 ++
+> >>  tools/lib/bpf/btf.c                          | 33 ++++++++++++++------
+> >>  tools/lib/bpf/btf.h                          |  7 ++++-
+> >>  tools/lib/bpf/libbpf.c                       | 11 ++++---
+> >>  tools/lib/bpf/libbpf.map                     |  3 ++
+> >>  tools/lib/bpf/libbpf_common.h                | 19 +++++++++++
+> >>  tools/perf/util/bpf-event.c                  | 11 ++++---
+> >>  tools/perf/util/bpf_counter.c                | 12 +++++--
+> >>  tools/testing/selftests/bpf/prog_tests/btf.c |  4 ++-
+> >>  13 files changed, 113 insertions(+), 47 deletions(-)
+> >>
+> >> --
+> >> 2.30.2
+> >>
+> >
+> > I dropped patch #7 with deprecations and LIBBPF_DEPRECATED_SINCE and
+> > applied to bpf-next.
+> >
+> > Current LIBBPF_DEPRECATED_SINCE approach doesn't work (and you should
+> > have caught this when you built selftests/bpf, what happened there?).
+> > bpftool build generates warnings like this:
+> >
+> > In file included from /data/users/andriin/linux/tools/lib/bpf/libbpf.h:20,
+> >                  from xlated_dumper.c:10:
+> > /data/users/andriin/linux/tools/lib/bpf/libbpf_common.h:22:23:
+> > warning: "LIBBPF_MAJOR_VERSION" is not defined, evaluates to 0
+> > [-Wundef]
+> >   __LIBBPF_GET_VERSION(LIBBPF_MAJOR_VERSION, LIBBPF_MINOR_VERSION)
+> >                        ^~~~~~~~~~~~~~~~~~~~
+>
+> Apologies, I didn't realise the change would impact external applications.
 
-Yes, that's what I mean. Tested as well.
+It doesn't matter, we expect everyone to compile selftest (just `make`
+in tools/testing/selftests/bpf) and run at least test_progs,
+preferably also test_maps and test_verifier. Especially with vmtest.sh
+script it's quite simple (once you get latest Clang and pahole
+compiled locally). We obviously have CI and maintainers as the last
+line of defense, but that should be the last line of defense, not the
+main line :)
 
-> 
-> > Then assign all standalone ports to a reserved VLAN.
-> 
-> You mean all standalone ports to the same VLAN ID, like 4095, or each
-> standalone port to a separate reserved VLAN ID? As long as address
-> learning is disabled on the standalone ports, I guess using a single
-> VLAN ID like 4095 for all of them is just fine, the Port Matrix will
-> take care of the rest.
+>
+> >
+> > And it makes total sense. LIBBPF_DEPRECATED_SINCE() assumes
+> > LIBBPF_MAJOR_VERSION/LIBBPF_MINOR_VERSION is defined at compilation
+> > time of the *application that is using libbpf*, not just libbpf's
+> > compilation time. And that's clearly a bogus assumption which we can't
+> > and shouldn't make. The right approach will be to define
+> > LIBBPF_MAJOR_VERSION/LIBBPF_MINOR_VERSION in some sort of
+> > auto-generated header, included from libbpf_common.h and installed as
+> > part of libbpf package.
+>
+> So generating this header is easy. Installing it with the other headers
+> is simple too. It becomes a bit trickier when we build outside of the
+> directory (it seems I need to pass -I$(OUTPUT) to build libbpf).
 
-I just found a cleaner solution: Leaving standalone ports in port matrix
-mode. As all bridges use independent VLAN learning, standalone ports'
-FDB lookup with FID 0 won't hit.
+Not sure why using the header is tricky. We auto-generate
+bpf_helper_defs.h, which is included from bpf_helpers.h, which is
+included in every single libbpf-using application. Works good with no
+extra magic.
+
+>
+> The step I'm most struggling with at the moment is bpftool, which
+> bootstraps a first version of itself before building libbpf, by looking
+> at the headers directly in libbpf's directory. It means that the
+> generated header with the version number has not yet been generated. Do
+> you think it is worth changing bpftool's build steps to implement this
+> deprecation helper?
+
+If it doesn't do that already, bpftool should do `make install` for
+libbpf, not just build. Install will put all the headers, generated or
+otherwise, into a designated destination folder, which should be
+passed as -I parameter. But that should be already happening due to
+bpf_helper_defs.h.
+
+>
+> Alternatively, wouldn't it make more sense to have a script in the
+> GitHub repo for libbpf, and to run it once during the release process of
+> a new version to update, say, the version number, or even the
+> deprecation status directly?
+
+I'd like to avoid extra manual steps that I or someone else will
+definitely forget from time to time. Again, taking bpf_helper_defs.h
+as a precedent. In the kernel repo we auto-generate it during build.
+But when we sync libbpf to Github, we copy and check-in
+bpf_helper_defs.h, so it's always available there (and will get
+installed on `make install` or during packaging). We should do the
+same for this new header (libbpf_version.h?).
+
+>
+> >
+> > Anyways, I've removed all the LIBBPF_DEPRECATED_SINCE stuff and
+> > applied all the rest, as it looks good and is a useful addition.
+>
+> Thanks.
+> Quentin
