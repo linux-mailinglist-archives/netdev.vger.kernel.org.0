@@ -2,184 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 558F83DB7F1
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 13:41:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25A213DB7F6
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 13:42:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238663AbhG3LlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 07:41:06 -0400
-Received: from mail-mw2nam12on2079.outbound.protection.outlook.com ([40.107.244.79]:47232
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238597AbhG3LlF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Jul 2021 07:41:05 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gRwjWcQTDeDEmBGNy0LkbRHuqAAZ9kgePx6sXyIw2JQ/HyQO7Pozqf/bNrm5UG3nXSZlLYbGDB9JeSbC82b0gL2yALNSQEKrn5RXg6cZTmBH52GKF29UofKN5vEx4gup5ZaeHTIHcfQCN8T3uEgzMEA5T9DT/iJPeydlRCs8UoWFhZsOQpceX2pRmkMHh1eONhnJlBcLKMpNtXQi++noOieFg/CmjGOSRKK2v/kzv6oSt1NbCZGfX4rrMzy8MKbBS8fGLonbiCJyShmhVhYHL9a2nhQWB0nRIVshTrEBHMAEXFcbmm0m/99RB7o9Cmy+GtjEf08Wyhi1r42b4djLfw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bjjID8kKH1+Q/XeLjQ83eygmpP35gI5lgvU6gXX6Y8w=;
- b=kO+Ke8Em0rgCj8hsNn/Eo2sUzjy972/jq1C2Pgo8lVRclcE2ViPecKKUgSowUW8ZoH3zAWJjvbzZ0mHWq1dk5181obaH7sfwl/qxvS82C9XXEEPogNY7wyRK+2JgQblHN3IBlY2WGeotJruEp5E7vDKOwyXlpxb18PsFWAleuWdXSlaNPBlPyQAXVJYzgz/9dHUJvd47DLQnh3uq/eudv+mU81o4J9sz9Oj0nL5lZ8Ek00Idl/i11D4IoFn0Un1nb/XkG5dnAtgrKsN3N6/zONVpgAiY9rrChzYzND8XycsWh2r06zTvRLiobYh0q9mHhlX1J8oT+7IvCVNFBQbDVw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bjjID8kKH1+Q/XeLjQ83eygmpP35gI5lgvU6gXX6Y8w=;
- b=ClIWCg7Zd8XvRLyYzYo8D6lhYHpUKKO4uaBiR/6vJV0QPBfficOgcQGmLJwGgsf+q6FZTjHOrIg4fdU+h4npMLAy54aNN6UeDvPa88PR1ecRvB17WKkK32/QojLPp49ueCtHi7kphCPURhBj4IoFrOQiJGMxuNuaN01ZVW5jAX8cnS2eaKAnaqvzg6LT8wL4xR40MHwPE0kFqqhGSbvChJxIvX2omLo74q/MgxQ50vZbGuuSZlf8JCU3kOw1s6pvchKwwJoVJP9r95qaLfVTj/v1pxplmQxC7p1G0cF4XV/phPZJnSiRyBXqIcr2VmZ0wKMTr85JpeEThRGn4W+s1w==
-Received: from MW4PR04CA0228.namprd04.prod.outlook.com (2603:10b6:303:87::23)
- by MN2PR12MB3309.namprd12.prod.outlook.com (2603:10b6:208:106::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.21; Fri, 30 Jul
- 2021 11:40:59 +0000
-Received: from CO1NAM11FT008.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:87:cafe::d7) by MW4PR04CA0228.outlook.office365.com
- (2603:10b6:303:87::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.20 via Frontend
- Transport; Fri, 30 Jul 2021 11:40:58 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT008.mail.protection.outlook.com (10.13.175.191) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4373.18 via Frontend Transport; Fri, 30 Jul 2021 11:40:58 +0000
-Received: from reg-r-vrt-018-180.nvidia.com (172.20.187.6) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 30 Jul 2021 11:40:54 +0000
-References: <20210722091938.12956-1-simon.horman@corigine.com>
- <20210722091938.12956-2-simon.horman@corigine.com>
- <ygnhim12qxxy.fsf@nvidia.com>
- <13f494c9-e7f0-2fbb-89f9-b1500432a2f6@mojatatu.com>
- <20210727130419.GA6665@corigine.com> <ygnh7dhbrfd0.fsf@nvidia.com>
- <95d6873c-256c-0462-60f7-56dbffb8221b@mojatatu.com>
- <ygnh4kcfr9e8.fsf@nvidia.com> <20210728074616.GB18065@corigine.com>
- <7004376d-5576-1b9c-21bc-beabd05fa5c9@mojatatu.com>
- <20210728144622.GA5511@corigine.com>
- <2ba4e24f-e34e-f893-d42b-d0fd40794da5@mojatatu.com>
-User-agent: mu4e 1.4.10; emacs 27.1
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-CC:     Simon Horman <simon.horman@corigine.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>, <netdev@vger.kernel.org>,
-        <oss-drivers@corigine.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        "Ido Schimmel" <idosch@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
-        Roopa Prabhu <roopa@nvidia.com>
-Subject: Re: [PATCH net-next 1/3] flow_offload: allow user to offload tc
- action to net device
-In-Reply-To: <2ba4e24f-e34e-f893-d42b-d0fd40794da5@mojatatu.com>
-Date:   Fri, 30 Jul 2021 14:40:52 +0300
-Message-ID: <ygnhv94sowqj.fsf@nvidia.com>
+        id S238659AbhG3LnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 07:43:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44267 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238617AbhG3Lm7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 07:42:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1627645373;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=aCLtm9dFHn+w/SB2693+ZgZ2eFgaS9vHe74MS+otrP0=;
+        b=TOA5NiZF3D1UmEAsOyg5oIXOkAuzlViAgZXwMpOBDlXUNjSYfKF+oIl0XgLn2EEsl7kbfe
+        hA9SGwOWEcL7YC962QpiEi8XRucsoL4EInv9HU07GPG3+cWvcZ9oSbxo1Kbskgb2ubrLYZ
+        glEC8yIzyJXkxrAOcUQMtLjdKPqYGLo=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-150-Ll2DH18YOnykIesRK0PgSA-1; Fri, 30 Jul 2021 07:42:52 -0400
+X-MC-Unique: Ll2DH18YOnykIesRK0PgSA-1
+Received: by mail-ed1-f69.google.com with SMTP id h16-20020aa7de100000b02903a6620f87feso4498849edv.18
+        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 04:42:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=aCLtm9dFHn+w/SB2693+ZgZ2eFgaS9vHe74MS+otrP0=;
+        b=XQF5crf4WLQVvjnYa9UGng9+XrCWoXzrT+ohwu6KFScvsms3uoH/w2QTNoTb/Fck3J
+         HcWvDyiFZy0kkVRj45PdJcpA8ITd38YX6bDSsxisrIXN1V5/mypKARbwU2c45Hs1Ae8q
+         zugN1Y5tF6R1cLO7kPAZH/VlZFVmKPzCFqpPQm8xHZp3poC6fVL4svDdAGqIb660VK/v
+         ScBGBGoWcbb/i9MIVuWLvDTgzKhfxLtBMwylubMJTmX7LYTY5s+TVRPm4SqwbP0PBs27
+         twS3qT5WytYbQT1xTBmwVdyempmu1rCFEFzhnwSZviZOgMeEw6Qq98KwaXp6/rE8JGwG
+         ewJg==
+X-Gm-Message-State: AOAM531rj1MtrMfC4+M5WFoGZiWFM4rCJ8StNB7BTQo+pwT7XbfthYm3
+        Xg5XEHr9DdKnuP3ugX6l4Qtayr7AH0/kiMuV60icfxK8wMMG1IecX/ucYb0cf/0MXxEH7pKrRuq
+        SpdFZ3mflU00wMBJJ
+X-Received: by 2002:a17:906:170e:: with SMTP id c14mr2099523eje.40.1627645370366;
+        Fri, 30 Jul 2021 04:42:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxLMex01yosXP2wcgUw3UaUEOh1RjmU459A47bxcVoWsy5QaUxlIHWfCdcjeeCPj1w80hxeYA==
+X-Received: by 2002:a17:906:170e:: with SMTP id c14mr2099508eje.40.1627645370200;
+        Fri, 30 Jul 2021 04:42:50 -0700 (PDT)
+Received: from redhat.com ([2.55.154.10])
+        by smtp.gmail.com with ESMTPSA id r15sm574960edw.46.2021.07.30.04.42.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Jul 2021 04:42:48 -0700 (PDT)
+Date:   Fri, 30 Jul 2021 07:42:45 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Ivan <ivan@prestigetransportation.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Willem de Bruijn <willemb@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: PROBLEM: virtio_net LRO kernel panics
+Message-ID: <20210730073029-mutt-send-email-mst@kernel.org>
+References: <CACFia2dwacaVVYD+1uG=CDGaJqdCOSBvZ5FcXp04caecaWAY3w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.20.187.6]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a065dfe7-ff50-4428-7ea4-08d9534ee62d
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3309:
-X-Microsoft-Antispam-PRVS: <MN2PR12MB33097E226F57E8ABE76AE96DA0EC9@MN2PR12MB3309.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tTD3fFE9e+v+q1+yGvxEGjjkzZt5bqkNLMzZv/ZX7E4Aay18yK+xjd4CnOdKVjysug8x5U3JFIF1/tPWQ+GH8n5DcJ+0bnWD4v5Aq/ihU0EgpuECn+I/pcSZA44dQS9Helk9wpWuMqL3uRxe6sq6HqiKdKxHvcvZgAaw6CPJDjhAidi9djrP0O3v4s9O7l+u3Z17UAFW+dr4ZQT59AD43ocXy6a4DkZ35CJRGDSKD8PJrwfa3fbTRoN3XuJVgT+lSOMTP+qy9COQNqlN90yBKIPBJ1eUOEHeKjoiWWrhHnBnp0LRcO9u3nm8SlNy2zMqnOCHgeZhNNyVgTZJbgY2355b8w+SJmrDZJhuOp5OtTiQBy2HiiYfhFf47Vpta3ARdv5C8Nf0syD4V6a4/y97WvrFAoUxZhOY8MsVMM3fBJSi/FXf8/fYwmrSpVybVRASVkIh5XuWglP328lYGrcEtVDakjNoe+bSmCpTki5WaXhnsRd2tHcToLme8RGKiJzAWAVYvsk3JOgawZhq4XFK3sTaz7qiK3iwcqWJ4PBx4B3Xp38kHxdvWercVZypfw6U+HOUCGRaXVVOy+O+QegQJf62+aLaWR/76sdSc/Gcwyzdt7DE2jG1hoV4iRUurus5IKL396fzjAtMr4a4ceGFNo1a18evNO24umBr2KWlZqlAuuWLQlcRA8cdzg5B0QJ0gZoT0V+0EbKZGv1xdtsROQ==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(136003)(376002)(346002)(396003)(36840700001)(46966006)(8676002)(2906002)(82740400003)(7416002)(478600001)(36860700001)(7696005)(356005)(8936002)(53546011)(86362001)(70206006)(7636003)(82310400003)(36756003)(70586007)(6916009)(36906005)(316002)(47076005)(2616005)(5660300002)(107886003)(54906003)(4326008)(16526019)(26005)(83380400001)(336012)(426003)(186003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jul 2021 11:40:58.2852
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a065dfe7-ff50-4428-7ea4-08d9534ee62d
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT008.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3309
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACFia2dwacaVVYD+1uG=CDGaJqdCOSBvZ5FcXp04caecaWAY3w@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri 30 Jul 2021 at 13:17, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
-> On 2021-07-28 10:46 a.m., Simon Horman wrote:
->> On Wed, Jul 28, 2021 at 09:51:00AM -0400, Jamal Hadi Salim wrote:
->>> On 2021-07-28 3:46 a.m., Simon Horman wrote:
->>>> On Tue, Jul 27, 2021 at 07:47:43PM +0300, Vlad Buslov wrote:
->>>>> On Tue 27 Jul 2021 at 19:13, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
->>>>>> On 2021-07-27 10:38 a.m., Vlad Buslov wrote:
->>>>>>> On Tue 27 Jul 2021 at 16:04, Simon Horman <simon.horman@corigine.com> wrote:
->>>
->>> [..]
->>>
->>>>>>> I think we have the same issue with filters - they might not be in
->>>>>>> hardware after driver callback returned "success" (due to neigh state
->>>>>>> being invalid for tunnel_key encap, for example).
->>>>>>
->>>>>> Sounds like we need another state for this. Otherwise, how do you debug
->>>>>> that something is sitting in the driver and not in hardware after you
->>>>>> issued a command to offload it? How do i tell today?
->>>>>> Also knowing reason why something is sitting in the driver would be
->>>>>> helpful.
->>>>>
->>>>> It is not about just adding another state. The issue is that there is no
->>>>> way for drivers to change the state of software filter dynamically.
->>>>
->>>> I think it might be worth considering enhancing things at some point.
->>>> But I agree that its more than a matter of adding an extra flag. And
->>>> I think it's reasonable to implement something similar to the classifier
->>>> current offload handling of IN_HW now and consider enhancements separately.
->>>
->>> Debugability is very important. If we have such gotchas we need to have
->>> the admin at least be able to tell if the driver returns "success"
->>> and the request is still sitting in the driver for whatever reason
->>> At minimal there needs to be some indicator somewhere which say
->>> "inprogress" or "waiting for resolution" etc.
->>> If the control plane(user space app) starts making other decisions
->>> based on assumptions that filter was successfully installed i.e
->>> packets are being treated in the hardware then there could be
->>> consequences when this assumption is wrong.
->>>
->>> So if i undestood the challenge correctly it is: how do you relay
->>> this info back so it is reflected in the filter details. Yes that
->>> would require some mechanism to exist and possibly mapping state
->>> between whats in the driver and in the cls layer.
->>> If i am not mistaken, the switchdev folks handle this asynchronicty?
->>> +Cc Ido, Jiri, Roopa
->>>
->>> And it should be noted that: Yes, the filters have this
->>> pre-existing condition but doesnt mean given the opportunity
->>> to do actions we should replicate what they do.
->> I'd prefer symmetry between the use of IN_HW for filters and actions,
->> which I believe is what Vlad has suggested.
->> 
->
-> It still not clear to me what it means from a command line pov.
-> How do i add a rule and when i dump it what does it show?
->
->> If we wish to enhance things - f.e. for debugging, which I
->> agree is important - then I think that is a separate topic.
->> 
->
-> My only concern is not to repeat mistakes that are in filters
-> just for the sake of symmetry. Example the fact that something
-> went wrong with insertion or insertion is still in progress
-> and you get an indication that all went well.
-> Looking at mlnx (NIC) ndrivers it does seem that in the normal case
-> the insertion into hw is synchronous (for anything that is not sw
-> only). I didnt quiet see what Vlad was referring to.
+On Thu, Jul 22, 2021 at 06:27:18PM -0500, Ivan wrote:
+> Dear Sir,
+> 
+> I've been plagued with kernel panics recently. The problem is easily
+> reproducible on any virtual machine that uses the virtio-net driver
+> from stock Linux kernel. Simply isuse this command:
+> 
+> echo 1 > /proc/sys/net/ipv4/ip_forward
+> ...and the kernel panics.
+> 
+> Is there any way we can possibly fix this?
+> 
+> kernel: ------------[ cut here ]------------
+> kernel: netdevice: eth0: failed to disable LRO!
+> kernel: WARNING: CPU: 1 PID: 424 at net/core/dev.c:1768
+> dev_disable_lro+0x108/0x150
+> kernel: Modules linked in: nls_iso8859_1 nls_cp437 vfat fat usbhid
+> atkbd libps2 ahci libahci virtio_net ohci_pci net_failover failover
+> i8042 serio lpc_ich mfd_core libata ohci_hcd ehci_pci ehci_hcd usbcore
+> rng_core i2c_piix4 i2c_core virtio_pci usb_common
+> virtio_pci_modern_dev virtio_ring virtio loop unix
+> kernel: CPU: 1 PID: 424 Comm: bash Not tainted 5.13.4-gnu.4-NuMini #1
+> kernel: Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS
+> VirtualBox 12/01/2006
+> kernel: RIP: 0010:dev_disable_lro+0x108/0x150
+> kernel: Code: ae 88 74 14 be 25 00 00 00 48 89 df e8 f1 54 ed ff 48 85
+> c0 48 0f 44 eb 4c 89 e2 48 89 ee 48 c7 c7 00 c6 ae 88 e8 7a 76 0c 00
+> <0f> 0b e9 2d ff ff ff 80 3d e8 70 97 00 00 49 c7 c4 73 bb ae 88 75
+> kernel: RSP: 0018:ffffb596c0237d80 EFLAGS: 00010282
+> kernel: RAX: 0000000000000000 RBX: ffff9af9c1835000 RCX: ffff9af9fed17538
+> kernel: RDX: 00000000ffffffd8 RSI: 0000000000000027 RDI: ffff9af9fed17530
+> kernel: RBP: ffff9af9c1835000 R08: ffffffff88c96ac8 R09: 0000000000004ffb
+> kernel: R10: 00000000fffff000 R11: 3fffffffffffffff R12: ffffffff88ac7c3d
+> kernel: R13: 0000000000000000 R14: ffffffff88cb2748 R15: ffff9af9c12166c8
+> kernel: FS:  00007fd4911b8740(0000) GS:ffff9af9fed00000(0000)
+> knlGS:0000000000000000
+> kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> kernel: CR2: 0000000000532008 CR3: 000000000115c000 CR4: 00000000000406e0
+> kernel: Call Trace:
+> kernel:  devinet_sysctl_forward+0x1ac/0x1e0
+> kernel:  proc_sys_call_handler+0x127/0x230
+> kernel:  new_sync_write+0x114/0x1a0
+> kernel:  vfs_write+0x18c/0x220
+> kernel:  ksys_write+0x5a/0xd0
+> kernel:  do_syscall_64+0x45/0x80
+> kernel:  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> kernel: RIP: 0033:0x7fd4912b79b3
+> kernel: Code: 8b 15 b9 74 0d 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb
+> b7 0f 1f 00 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 01 00 00 00 0f 05
+> <48> 3d 00 f0 ff ff 77 55 c3 0f 1f 40 00 48 83 ec 28 48 89 54 24 18
+> kernel: RSP: 002b:00007ffe96fdd858 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+> kernel: RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007fd4912b79b3
+> kernel: RDX: 0000000000000002 RSI: 0000000000536810 RDI: 0000000000000001
+> kernel: RBP: 0000000000536810 R08: 000000000000000a R09: 0000000000000000
+> kernel: R10: 00007fd49134f040 R11: 0000000000000246 R12: 0000000000000002
+> kernel: R13: 00007fd4913906c0 R14: 00007fd49138c520 R15: 00007fd49138b920
+> kernel: ---[ end trace ee7985b10570603d ]---
+> kernel: ------------[ cut here ]------------
 
-Filters with tunnel_key encap actions can be offloaded/unoffloaded
-dynamically based on neigh state (see mlx5e_rep_neigh_update()) and fib
-events (see mlx5e_tc_fib_event_work()).
+So the warning is easy to reproduce.
+On qemu/kvm just set ctrl_guest_offloads=off for the device.
 
-[...]
+The panic does not seem to trigger for me and you did not provide
+any data about it.  What happens? Does guest just freeze?
+
+I am guessing the issue is that dev_disable_lro does not report the
+return status and inet_forward_change assumes it's successful.  We then
+end up with LRO packets in unexpected places.
+
+Cc netdev and a bunch of people who might have a better idea.
+
+-- 
+MST
 
