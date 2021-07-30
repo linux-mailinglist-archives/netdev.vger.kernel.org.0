@@ -2,137 +2,286 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02FB03DC159
-	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 00:58:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7A7A3DC16A
+	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 01:00:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233750AbhG3W6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 18:58:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57548 "EHLO
+        id S233555AbhG3XA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 19:00:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232934AbhG3W6K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 18:58:10 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8444C061765
-        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 15:58:04 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id k1so12800606plt.12
-        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 15:58:04 -0700 (PDT)
+        with ESMTP id S233584AbhG3XA1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 19:00:27 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3BF8C0613D3;
+        Fri, 30 Jul 2021 16:00:20 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id x192so18588685ybe.0;
+        Fri, 30 Jul 2021 16:00:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=workware-net-au.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=YVFNv/nJzPFLIKlkRvy7UBoWXkQ2+gaA9RIm68msr/k=;
-        b=NTj5WuC7VBzOEvsgIDQyhYVHPtwEDZMYcoRo53rEa1PGSDeWByZ2DAswqLVQbjYvTg
-         YZzyHQEUXHqaHQSGnrZFD1LtNWDrJUt/a6cYq4GB/jpPCJXEBpCqbN1XxPI+tw8jTjBD
-         z0sDFa3eETVYyp10gw8Fivmq+5SiQ1lNliIXZGJnUiPTBiBtPO7lXYfkgwAxKp0GhwKH
-         4BubNh1FJ+RCyMdT05YFDjyYVWXwSyHU1UjE9jZyqp6b+Cs59xnanSBV1W6ojuh7u4ko
-         lJLhNED9IrtPZ/MWxI1hGUgw6pgYDM2CitXy4vZnhdX0nF0FGIJeEwQFoO8TiumkLrOd
-         NImQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=G03xh2kAEbzlimx7cJbVe+bLXkoyZqrXclrus0q2F4E=;
+        b=MIaoNMVH6LJl09DjX0vC5H8SNneLdqQcfNsc80BvzBlZkKoC2DtrvschrDusLA0gfQ
+         qkN9pjKZYagMu/Eyzfcl8IaG/Y9mkpeblkfRi4S0alFUFD3cmEC5a4tJhz3N2kn8Bz2V
+         sGHgkvXGTUDNqCbvWENL9d7n1DYBW9PsBi18cMnnb+1qGUBLYHlFK6ixCEENvk524gRP
+         jzcVgdabhqC6aONuKuS9I6hsIJxnTFuwoai2RyP95bfFkwWeNPeArbYeySwTswi+AHkt
+         /FZkKF1zTns6MS7b8xiaSYHlwbtCivL4Y+pDPawp4dGkcBzInvhVbUeQRYkA7UOezb6l
+         BwwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=YVFNv/nJzPFLIKlkRvy7UBoWXkQ2+gaA9RIm68msr/k=;
-        b=hktiKdyEvuMAk7R+IRlaxpM+shPm7VlvT/6PAGu1XP8DsSQfo5T0F7WdC2vIGE8dYR
-         0mrjTDaJCUChu2zW65AFu2UQ3oBwfK51cpUn7RWwWrFSct3eMT9ZHz6MfwyNqy2z0bGV
-         ggQTFbFOhXpt4z1hQlQlT5md4vik2Q/wdlzJFt3Ztr5sqNZ1hhqdP78r0Kzeseq3VkHc
-         vGyFDrow3y6Ix+9oJkmjUkO3wRnmvupADcdjzfsLVwc0MXVNDaprnVBZrJPG4nf1nLzQ
-         Fo5/8U8f0k+hXWC4K3hTAjkpBCsXvNKE9yQgQ795Vo31sZJRMD1BGWY2T8YlpKI37Wd2
-         uMrg==
-X-Gm-Message-State: AOAM5334K3K53e93Le6r1SRZRIzGfIVrNlDP9nYypM0KVniOddvo5V4H
-        Kxn7T90OMFjEn/f1432D0WzAN468lLH5rJ5D
-X-Google-Smtp-Source: ABdhPJzBF4R7be2jKsTzcGhAItmUSMyV319KYORwEht+h4ehzvZ4rERnKRDiE/PD79by7SBXDNPIWw==
-X-Received: by 2002:a63:ff4d:: with SMTP id s13mr2849739pgk.237.1627685884319;
-        Fri, 30 Jul 2021 15:58:04 -0700 (PDT)
-Received: from workware.net.au (117-20-69-228.751445.bne.nbn.aussiebb.net. [117.20.69.228])
-        by smtp.gmail.com with ESMTPSA id w3sm3389178pjq.12.2021.07.30.15.58.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Jul 2021 15:58:03 -0700 (PDT)
-From:   Steve Bennett <steveb@workware.net.au>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, marex@denx.de
-Cc:     Steve Bennett <steveb@workware.net.au>
-Subject: [PATCH v2] net: phy: micrel: Fix detection of ksz87xx switch
-Date:   Sat, 31 Jul 2021 08:57:50 +1000
-Message-Id: <20210730225750.98849-1-steveb@workware.net.au>
-X-Mailer: git-send-email 2.24.2 (Apple Git-127)
-In-Reply-To: <20210730105120.93743-1-steveb@workware.net.au>
-References: <20210730105120.93743-1-steveb@workware.net.au>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=G03xh2kAEbzlimx7cJbVe+bLXkoyZqrXclrus0q2F4E=;
+        b=hcm8GKM5jie2qfHSQMJNqTmiRS1Uqo5USmLw9Bm4qz0xyBv8qrKGpkgMm6zVIdFSJz
+         RMr11ObmvrU2ca5Cert005UBN52XEejjm2UzXO3K9pTy8zaZ3GgM6SytRhkS1lCG+fCv
+         jgbBFJI1Lr8AGnSgsL/DJo1wIdm8f5G+5gRxj3EIziMcLFWqy23liTecaIJKdemDo3Th
+         cpAEeyORhk/gq6e1AfF3rEKB7frgbMDU2uh68txmj5zdqd14+YSriCp7KwtP2jeiFVVs
+         KzrhN6UAT1W7aNn0OHW3254yb0CfzL6uTyCCQQ4fxkydWsHhkFNGAHVx2o17WAFaBhR7
+         tLOQ==
+X-Gm-Message-State: AOAM530vJLPEvKAYmwvpedYgRahfq+boJfy1aSUcchOREXscArhgi5B3
+        aKWbXpSCZAmTxdWjlnPSyEZuXBILIhpUJQ8qPZM=
+X-Google-Smtp-Source: ABdhPJzR3hu9wEK1ei/jdw+SsQqgvL2GQEp6u/NefeZQmwQMIWqBVbK/5v3hEAmdh4wIl57oNGwI3op7jJsExO8uYf0=
+X-Received: by 2002:a25:9942:: with SMTP id n2mr6411359ybo.230.1627686020211;
+ Fri, 30 Jul 2021 16:00:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1627463617.git.lorenzo@kernel.org> <YQEnsALmUCp2w/fL@lore-desk>
+In-Reply-To: <YQEnsALmUCp2w/fL@lore-desk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 30 Jul 2021 16:00:08 -0700
+Message-ID: <CAEf4BzYpOxegBwBWAfhn-2eq6DXkph7LiiCNN=HmgqN3ng6hAg@mail.gmail.com>
+Subject: Re: [PATCH v10 bpf-next 00/18] mvneta: introduce XDP multi-buffer support
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Cc:     Lorenzo Bianconi <me@lorenzobianconi.net>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Shay Agroskin <shayagr@amazon.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        tirthendu.sarkar@intel.com,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The logic for discerning between KSZ8051 and KSZ87XX PHYs is incorrect
-such that the that KSZ87XX switch is not identified correctly.
+On Wed, Jul 28, 2021 at 2:47 AM Lorenzo Bianconi
+<lorenzo.bianconi@redhat.com> wrote:
+>
+> > From: Lorenzo Bianconi <lorenzo@kernel.org>
+> >
+> > This series introduce XDP multi-buffer support. The mvneta driver is
+> > the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
+> > please focus on how these new types of xdp_{buff,frame} packets
+> > traverse the different layers and the layout design. It is on purpose
+> > that BPF-helpers are kept simple, as we don't want to expose the
+> > internal layout to allow later changes.
+>
+> I sent the cover-letter. Sorry for the noise.
+>
+> Regards,
+> Lorenzo
+>
+> >
+> > The main idea for the new multi-buffer layout is to reuse the same
+> > layout used for non-linear SKB. This rely on the "skb_shared_info"
+> > struct at the end of the first buffer to link together subsequent
+> > buffers. Keeping the layout compatible with SKBs is also done to ease
+> > and speedup creating a SKB from an xdp_{buff,frame}.
+> > Converting xdp_frame to SKB and deliver it to the network stack is show=
+n
+> > in patch 05/18 (e.g. cpumaps).
+> >
+> > A multi-buffer bit (mb) has been introduced in the flags field of xdp_{=
+buff,frame}
+> > structure to notify the bpf/network layer if this is a xdp multi-buffer=
+ frame
+> > (mb =3D 1) or not (mb =3D 0).
+> > The mb bit will be set by a xdp multi-buffer capable driver only for
+> > non-linear frames maintaining the capability to receive linear frames
+> > without any extra cost since the skb_shared_info structure at the end
+> > of the first buffer will be initialized only if mb is set.
+> > Moreover the flags field in xdp_{buff,frame} will be reused even for
+> > xdp rx csum offloading in future series.
+> >
+> > Typical use cases for this series are:
+> > - Jumbo-frames
+> > - Packet header split (please see Google=E2=80=99s use-case @ NetDevCon=
+f 0x14, [0])
+> > - TSO
+> >
+> > The two following ebpf helpers (and related selftests) has been introdu=
+ced:
+> > - bpf_xdp_adjust_data:
+> >   Move xdp_md->data and xdp_md->data_end pointers in subsequent fragmen=
+ts
+> >   according to the offset provided by the ebpf program. This helper can=
+ be
+> >   used to read/write values in frame payload.
+> > - bpf_xdp_get_buff_len:
+> >   Return the total frame size (linear + paged parts)
+> >
+> > bpf_xdp_adjust_tail and bpf_xdp_copy helpers have been modified to take=
+ into
+> > account xdp multi-buff frames.
+> >
 
-ksz8051_ksz8795_match_phy_device() uses the parameter ksz_phy_id
-to discriminate whether it was called from ksz8051_match_phy_device()
-or from ksz8795_match_phy_device() but since PHY_ID_KSZ87XX is the
-same value as PHY_ID_KSZ8051, this doesn't work.
+Seems like your changes are breaking selftests in no-alu32 mode ([0]).
+Please take a look.
 
-Instead use a bool to discriminate the caller.
+  [0] https://github.com/kernel-patches/bpf/runs/3197530080?check_suite_foc=
+us=3Dtrue
 
-Without this patch, the KSZ8795 switch port identifies as:
-
-ksz8795-switch spi3.1 ade1 (uninitialized): PHY [dsa-0.1:03] driver [Generic PHY]
-
-With the patch, it identifies correctly:
-
-ksz8795-switch spi3.1 ade1 (uninitialized): PHY [dsa-0.1:03] driver [Micrel KSZ87XX Switch]
-
-Fixes: 8b95599c55ed24b36cf4 ("net: phy: micrel: Discern KSZ8051 and KSZ8795 PHYs")
-Signed-off-by: Steve Bennett <steveb@workware.net.au>
----
- drivers/net/phy/micrel.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 4d53886f7d51..53bdd673ae56 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -401,11 +401,11 @@ static int ksz8041_config_aneg(struct phy_device *phydev)
- }
- 
- static int ksz8051_ksz8795_match_phy_device(struct phy_device *phydev,
--					    const u32 ksz_phy_id)
-+					    const bool ksz_8051)
- {
- 	int ret;
- 
--	if ((phydev->phy_id & MICREL_PHY_ID_MASK) != ksz_phy_id)
-+	if ((phydev->phy_id & MICREL_PHY_ID_MASK) != PHY_ID_KSZ8051)
- 		return 0;
- 
- 	ret = phy_read(phydev, MII_BMSR);
-@@ -418,7 +418,7 @@ static int ksz8051_ksz8795_match_phy_device(struct phy_device *phydev,
- 	 * the switch does not.
- 	 */
- 	ret &= BMSR_ERCAP;
--	if (ksz_phy_id == PHY_ID_KSZ8051)
-+	if (ksz_8051)
- 		return ret;
- 	else
- 		return !ret;
-@@ -426,7 +426,7 @@ static int ksz8051_ksz8795_match_phy_device(struct phy_device *phydev,
- 
- static int ksz8051_match_phy_device(struct phy_device *phydev)
- {
--	return ksz8051_ksz8795_match_phy_device(phydev, PHY_ID_KSZ8051);
-+	return ksz8051_ksz8795_match_phy_device(phydev, true);
- }
- 
- static int ksz8081_config_init(struct phy_device *phydev)
-@@ -535,7 +535,7 @@ static int ksz8061_config_init(struct phy_device *phydev)
- 
- static int ksz8795_match_phy_device(struct phy_device *phydev)
- {
--	return ksz8051_ksz8795_match_phy_device(phydev, PHY_ID_KSZ87XX);
-+	return ksz8051_ksz8795_match_phy_device(phydev, false);
- }
- 
- static int ksz9021_load_values_from_of(struct phy_device *phydev,
--- 
-2.24.2 (Apple Git-127)
-
+> > More info about the main idea behind this approach can be found here [1=
+][2].
+> >
+> > Changes since v9:
+> > - introduce bpf_xdp_adjust_data helper and related selftest
+> > - add xdp_frags_size and xdp_frags_tsize fields in skb_shared_info
+> > - introduce xdp_update_skb_shared_info utility routine in ordere to not=
+ reset
+> >   frags array in skb_shared_info converting from a xdp_buff/xdp_frame t=
+o a skb
+> > - simplify bpf_xdp_copy routine
+> >
+> > Changes since v8:
+> > - add proper dma unmapping if XDP_TX fails on mvneta for a xdp multi-bu=
+ff
+> > - switch back to skb_shared_info implementation from previous xdp_share=
+d_info
+> >   one
+> > - avoid using a bietfield in xdp_buff/xdp_frame since it introduces per=
+formance
+> >   regressions. Tested now on 10G NIC (ixgbe) to verify there are no per=
+formance
+> >   penalties for regular codebase
+> > - add bpf_xdp_get_buff_len helper and remove frame_length field in xdp =
+ctx
+> > - add data_len field in skb_shared_info struct
+> > - introduce XDP_FLAGS_FRAGS_PF_MEMALLOC flag
+> >
+> > Changes since v7:
+> > - rebase on top of bpf-next
+> > - fix sparse warnings
+> > - improve comments for frame_length in include/net/xdp.h
+> >
+> > Changes since v6:
+> > - the main difference respect to previous versions is the new approach =
+proposed
+> >   by Eelco to pass full length of the packet to eBPF layer in XDP conte=
+xt
+> > - reintroduce multi-buff support to eBPF kself-tests
+> > - reintroduce multi-buff support to bpf_xdp_adjust_tail helper
+> > - introduce multi-buffer support to bpf_xdp_copy helper
+> > - rebase on top of bpf-next
+> >
+> > Changes since v5:
+> > - rebase on top of bpf-next
+> > - initialize mb bit in xdp_init_buff() and drop per-driver initializati=
+on
+> > - drop xdp->mb initialization in xdp_convert_zc_to_xdp_frame()
+> > - postpone introduction of frame_length field in XDP ctx to another ser=
+ies
+> > - minor changes
+> >
+> > Changes since v4:
+> > - rebase ontop of bpf-next
+> > - introduce xdp_shared_info to build xdp multi-buff instead of using th=
+e
+> >   skb_shared_info struct
+> > - introduce frame_length in xdp ctx
+> > - drop previous bpf helpers
+> > - fix bpf_xdp_adjust_tail for xdp multi-buff
+> > - introduce xdp multi-buff self-tests for bpf_xdp_adjust_tail
+> > - fix xdp_return_frame_bulk for xdp multi-buff
+> >
+> > Changes since v3:
+> > - rebase ontop of bpf-next
+> > - add patch 10/13 to copy back paged data from a xdp multi-buff frame t=
+o
+> >   userspace buffer for xdp multi-buff selftests
+> >
+> > Changes since v2:
+> > - add throughput measurements
+> > - drop bpf_xdp_adjust_mb_header bpf helper
+> > - introduce selftest for xdp multibuffer
+> > - addressed comments on bpf_xdp_get_frags_count
+> > - introduce xdp multi-buff support to cpumaps
+> >
+> > Changes since v1:
+> > - Fix use-after-free in xdp_return_{buff/frame}
+> > - Introduce bpf helpers
+> > - Introduce xdp_mb sample program
+> > - access skb_shared_info->nr_frags only on the last fragment
+> >
+> > Changes since RFC:
+> > - squash multi-buffer bit initialization in a single patch
+> > - add mvneta non-linear XDP buff support for tx side
+> >
+> > [0] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-m=
+tu-and-rx-zerocopy
+> > [1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/x=
+dp-multi-buffer01-design.org
+> > [2] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-=
+to-a-NIC-driver (XDPmulti-buffers section)
+> >
+> > Eelco Chaudron (3):
+> >   bpf: add multi-buff support to the bpf_xdp_adjust_tail() API
+> >   bpf: add multi-buffer support to xdp copy helpers
+> >   bpf: update xdp_adjust_tail selftest to include multi-buffer
+> >
+> > Lorenzo Bianconi (15):
+> >   net: skbuff: add size metadata to skb_shared_info for xdp
+> >   xdp: introduce flags field in xdp_buff/xdp_frame
+> >   net: mvneta: update mb bit before passing the xdp buffer to eBPF laye=
+r
+> >   net: mvneta: simplify mvneta_swbm_add_rx_fragment management
+> >   net: xdp: add xdp_update_skb_shared_info utility routine
+> >   net: marvell: rely on xdp_update_skb_shared_info utility routine
+> >   xdp: add multi-buff support to xdp_return_{buff/frame}
+> >   net: mvneta: add multi buffer support to XDP_TX
+> >   net: mvneta: enable jumbo frames for XDP
+> >   bpf: introduce bpf_xdp_get_buff_len helper
+> >   bpf: move user_size out of bpf_test_init
+> >   bpf: introduce multibuff support to bpf_prog_test_run_xdp()
+> >   bpf: test_run: add xdp_shared_info pointer in bpf_test_finish
+> >     signature
+> >   net: xdp: introduce bpf_xdp_adjust_data helper
+> >   bpf: add bpf_xdp_adjust_data selftest
+> >
+> >  drivers/net/ethernet/marvell/mvneta.c         | 213 ++++++++++--------
+> >  include/linux/skbuff.h                        |   6 +-
+> >  include/net/xdp.h                             |  95 +++++++-
+> >  include/uapi/linux/bpf.h                      |  38 ++++
+> >  kernel/trace/bpf_trace.c                      |   3 +
+> >  net/bpf/test_run.c                            | 117 ++++++++--
+> >  net/core/filter.c                             | 210 ++++++++++++++++-
+> >  net/core/xdp.c                                |  76 ++++++-
+> >  tools/include/uapi/linux/bpf.h                |  38 ++++
+> >  .../bpf/prog_tests/xdp_adjust_data.c          |  55 +++++
+> >  .../bpf/prog_tests/xdp_adjust_tail.c          | 118 ++++++++++
+> >  .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    | 151 +++++++++----
+> >  .../bpf/progs/test_xdp_adjust_tail_grow.c     |  10 +-
+> >  .../bpf/progs/test_xdp_adjust_tail_shrink.c   |  32 ++-
+> >  .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   2 +-
+> >  .../bpf/progs/test_xdp_update_frags.c         |  49 ++++
+> >  16 files changed, 1044 insertions(+), 169 deletions(-)
+> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_adjust_d=
+ata.c
+> >  create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_update_f=
+rags.c
+> >
+> > --
+> > 2.31.1
+> >
