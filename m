@@ -2,39 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C99293DB77B
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 12:59:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 324203DB79E
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 13:08:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238568AbhG3K7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 06:59:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57782 "EHLO mail.kernel.org"
+        id S238623AbhG3LIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 07:08:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59804 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238520AbhG3K7a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Jul 2021 06:59:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3EBCC60F9B;
-        Fri, 30 Jul 2021 10:59:25 +0000 (UTC)
+        id S238486AbhG3LI3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Jul 2021 07:08:29 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 53B6160FE7;
+        Fri, 30 Jul 2021 11:08:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627642765;
-        bh=ZbgI69aDd7vggtE8lam4FbnXr3cFmF9OJt+T1hZ8XdU=;
+        s=k20201202; t=1627643305;
+        bh=Z/0iDyHaDNLQbzPjKnr5pF+Kj8Ef43w10O7QtwBtyqw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=e6nxJhp31mFrWlDoaxq3kvu14vu/hsTaNCzMOCxn9f1IyN/eCr1zCvizUedWrIdDo
-         iU/uam/RW2h+uIaGen/CLPThgyvlh/C6ZJ9pxDnxogD2cVbGyCYItf8Zjkc36fWMol
-         8uhhAPswUn32CJbL1I2sL15PIJtsbrTVFREqblQughFGnPIh0zeSRJlHkSUMVel/S6
-         r8V1h50TIIrvm7fGbNw9yDi7+5GSoD/uM0ZxJRA1sY2Zfg1fOQesaD5ECMaIzAcoj8
-         +3N5OKAMPucENxfrjbPZZktiiZBRetlX/c8QeuLzeDeO4z/E+xufLFwMykuBsHXKJZ
-         JzbpfzleA5lbg==
-Date:   Fri, 30 Jul 2021 03:59:24 -0700
+        b=oPLZUicEg8zSXh7NXEXK2FC0RYiM6H5brE2PJFNaYbhUDW2/TZq3N1Dkzc/ITw7ze
+         3gMYPF0H1fH/ERJp28vPl1xfsn6IyjVOQjkdB7kcLpDqL83bco5ZtE19XH5HfedB+Z
+         MQaTSHxEtFGw8m/415ZMOMriUElxEwE+HF/Tw657DUI6If/SczAsd0iXXaTRUuYfJd
+         Jx8JUlaW714r9MUatm1RAv5vUXuHIB3TpNOrzKvLdv7cHMVzPgFThdUPk4AupnMQpD
+         ew0Iyk43+YfpeswuhjPbjwRPvklyppP1FtCX74JjswMIL5ALi8SKLK9k2gs6kG9n7E
+         3KhClDgEGr00Q==
+Date:   Fri, 30 Jul 2021 04:08:24 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     zhang kai <zhangkaiheb@126.com>
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        krzysztof.kozlowski@canonical.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: let flow have same hash in two directions
-Message-ID: <20210730035924.0cfda450@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210728105418.7379-1-zhangkaiheb@126.com>
-References: <20210728105418.7379-1-zhangkaiheb@126.com>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next 2/6] sk_buff: track dst status in slow_gro
+Message-ID: <20210730040824.097e0e9d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <a6d684d37ca7598dc89b1ff886f9b049393f0d99.1627405778.git.pabeni@redhat.com>
+References: <cover.1627405778.git.pabeni@redhat.com>
+        <a6d684d37ca7598dc89b1ff886f9b049393f0d99.1627405778.git.pabeni@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,10 +40,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Jul 2021 18:54:18 +0800 zhang kai wrote:
-> using same source and destination ip/port for flow hash calculation
-> within the two directions.
+On Wed, 28 Jul 2021 18:24:00 +0200 Paolo Abeni wrote:
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 3ff18300d210..b1e5bbfcc926 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -992,6 +992,7 @@ static inline struct dst_entry *skb_dst(const struct sk_buff *skb)
+>   */
+>  static inline void skb_dst_set(struct sk_buff *skb, struct dst_entry *dst)
+>  {
+> +	skb->slow_gro |= !!dst;
+>  	skb->_skb_refdst = (unsigned long)dst;
+>  }
+>  
+> @@ -1008,6 +1009,7 @@ static inline void skb_dst_set(struct sk_buff *skb, struct dst_entry *dst)
+>  static inline void skb_dst_set_noref(struct sk_buff *skb, struct dst_entry *dst)
+>  {
+>  	WARN_ON(!rcu_read_lock_held() && !rcu_read_lock_bh_held());
+> +	skb->slow_gro = !!dst;
 
-Did you observe the hash being different, or just found this by code
-inspection? AFAICT the existing code was fine, and probably slightly
-faster.
+why is this one = and not |= ?
+
+>  	skb->_skb_refdst = (unsigned long)dst | SKB_DST_NOREF;
+>  }
