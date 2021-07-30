@@ -2,98 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 030A83DBDE1
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 19:41:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B73B3DBDF1
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 19:49:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230134AbhG3Rln (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 13:41:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35766 "EHLO
+        id S230199AbhG3Rtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 13:49:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbhG3Rln (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 13:41:43 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D3A7C06175F;
-        Fri, 30 Jul 2021 10:41:38 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id qk33so18098338ejc.12;
-        Fri, 30 Jul 2021 10:41:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=fApfSt5TfcvkOvSkBi+6JejmfVBJe/9djRChVT09DVY=;
-        b=GQ945PepXalaR/gubS94TrHtXyUfJQUj/J0wpi2xt/pQppLDUysXjv1kVO/m/lqou4
-         teYX1WFF4rVpP1ICN7TdzeiN4qh2eUkGkccjS5Px1586ZLToF/ra2F/0rzExRQsYuOt9
-         Z58P/w6kgoodFXRW2aGRsp++t70y99E0+yT8kRUbnWIqBfaMkJL/8YdReCWBFTAL70RY
-         g0kso1r+V+UnBAOM3QR8pvCVZL6LtX+/9leIza9T6eTn79ZsUh1AqNhk3fvRkLJO6biH
-         MmMIq4Clm6HSZCg8YVKJ1eNXjEk0fWhAds+4BKx+rXISnQjYZxJReIdt4SHpZPk4eUFf
-         cVzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fApfSt5TfcvkOvSkBi+6JejmfVBJe/9djRChVT09DVY=;
-        b=ajgl6R+SVTIPaojve0bSlcfT4huxxpPgxZNgnTs/4Hvxu357Gy9uImBEEc+/Km9CDf
-         ONhGMWpOixBMqymbJMnKD50echxvSBIfcsttXHHKCUXlRkpqo6teqI6qvJu1/WL20PJi
-         erfyciIlwDma4aGXsX/Mxbafk++xi4/Xiih11Pq10yxHq+tU0LKjSe3b6vxMu4FjJgIg
-         hGqkQj7ecp2prVMmvCuWoYMY4vKIzzeY/nY1yFpsK+67VP/yvHimPGC0z/hj0NMRLqB8
-         bKUbPEEdTeqkRRkLqb0xhCkora5u2h3pr0sxXWDeB/23+QpzSuBYHXSGK6+JnCRV8kaP
-         kn1g==
-X-Gm-Message-State: AOAM53172p9J2mAjwvD1Zk/bEyhsZA9hiuU1bL3c8LblybBwuCCOKGkt
-        mAshYvW+lX+D+z6egPgxef0=
-X-Google-Smtp-Source: ABdhPJzbx218edLWLX17ssNbvT6tAZmN03lSwZl+pNjm6ZHecME9cktLF2EhRTTM1pyYebccYGHQzg==
-X-Received: by 2002:a17:906:cecc:: with SMTP id si12mr3704553ejb.335.1627666896775;
-        Fri, 30 Jul 2021 10:41:36 -0700 (PDT)
-Received: from skbuf ([82.76.66.29])
-        by smtp.gmail.com with ESMTPSA id n11sm820942ejg.111.2021.07.30.10.41.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Jul 2021 10:41:36 -0700 (PDT)
-Date:   Fri, 30 Jul 2021 20:41:35 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230353AbhG3Rtx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 13:49:53 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A707DC0613C1
+        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 10:49:48 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1m9Wcc-00064T-I3; Fri, 30 Jul 2021 19:48:34 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1m9WcO-0005qH-Ky; Fri, 30 Jul 2021 19:48:20 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1m9WcO-00079n-I5; Fri, 30 Jul 2021 19:48:20 +0200
+Date:   Fri, 30 Jul 2021 19:48:20 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Sathya Prakash <sathya.prakash@broadcom.com>,
+        oss-drivers@corigine.com, Oliver O'Halloran <oohall@gmail.com>,
+        Russell Currey <ruscur@russell.cc>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        linux-perf-users@vger.kernel.org,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        linux-scsi@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        Ido Schimmel <idosch@nvidia.com>, x86@kernel.org,
+        qat-linux@intel.com,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-pci@vger.kernel.org, linux-wireless@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC net-next 1/2] net: dsa: tag_mtk: skip address learning on
- transmit to standalone ports
-Message-ID: <20210730174135.ycsq3dhpr57roxsy@skbuf>
-References: <20210728175327.1150120-1-dqfext@gmail.com>
- <20210728175327.1150120-2-dqfext@gmail.com>
- <20210728183705.4gea64qlbe64kkpl@skbuf>
- <20210730162403.p2dnwvwwgsxttomg@skbuf>
- <20210730173203.518307-1-dqfext@gmail.com>
- <20210730173902.vezop3n55bk63o6f@skbuf>
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Fiona Trahe <fiona.trahe@intel.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Borislav Petkov <bp@alien8.de>, Michael Buesch <m@bues.ch>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Juergen Gross <jgross@suse.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        xen-devel@lists.xenproject.org, Vadym Kochan <vkochan@marvell.com>,
+        MPT-FusionLinux.pdl@broadcom.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org,
+        Wojciech Ziemba <wojciech.ziemba@intel.com>,
+        linux-kernel@vger.kernel.org, Taras Chornyi <tchornyi@marvell.com>,
+        Zhou Wang <wangzhou1@hisilicon.com>,
+        linux-crypto@vger.kernel.org, kernel@pengutronix.de,
+        netdev@vger.kernel.org, Frederic Barrat <fbarrat@linux.ibm.com>,
+        Paul Mackerras <paulus@samba.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v1 0/5] PCI: Drop duplicated tracking of a pci_dev's
+ bound driver
+Message-ID: <20210730174820.i6ycjyvyzxcxwxsc@pengutronix.de>
+References: <20210729203740.1377045-1-u.kleine-koenig@pengutronix.de>
+ <YQOy/OTvY66igEoe@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="t5ueb7xyetl6m7j3"
 Content-Disposition: inline
-In-Reply-To: <20210730173902.vezop3n55bk63o6f@skbuf>
+In-Reply-To: <YQOy/OTvY66igEoe@smile.fi.intel.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 30, 2021 at 08:39:02PM +0300, Vladimir Oltean wrote:
-> On Sat, Jul 31, 2021 at 01:32:03AM +0800, DENG Qingfang wrote:
-> > On Fri, Jul 30, 2021 at 07:24:03PM +0300, Vladimir Oltean wrote:
-> > > Considering that you also have the option of setting
-> > > ds->assisted_learning_on_cpu_port = true and this will have less false
-> > > positives, what are the reasons why you did not choose that approach?
-> > 
-> > You're right. Hardware learning on CPU port does have some limitations.
-> > 
-> > I have been testing a multi CPU ports patch, and assisted learning has
-> > to be used, because FDB entries should be installed like multicast
-> > ones, which point to all CPU ports.
-> 
-> Ah, mt7530 is one of the switches which has multiple CPU ports, I had
-> forgotten that. In that case, then static FDB entries are pretty much
-> the only way to go indeed.
 
-I forget which ones are the modes in which the multi-CPU feature on
-mt7530 is supposed to be used: static assignment of user ports to CPU
-ports, or LAG between the CPU ports, or a mix of both?
+--t5ueb7xyetl6m7j3
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi Andy,
+
+On Fri, Jul 30, 2021 at 11:06:20AM +0300, Andy Shevchenko wrote:
+> On Thu, Jul 29, 2021 at 10:37:35PM +0200, Uwe Kleine-K=F6nig wrote:
+> > struct pci_dev tracks the bound pci driver twice. This series is about
+> > removing this duplication.
+> >=20
+> > The first two patches are just cleanups. The third patch introduces a
+> > wrapper that abstracts access to struct pci_dev->driver. In the next
+> > patch (hopefully) all users are converted to use the new wrapper and
+> > finally the fifth patch removes the duplication.
+> >=20
+> > Note this series is only build tested (allmodconfig on several
+> > architectures).
+> >=20
+> > I'm open to restructure this series if this simplifies things. E.g. the
+> > use of the new wrapper in drivers/pci could be squashed into the patch
+> > introducing the wrapper. Patch 4 could be split by maintainer tree or
+> > squashed into patch 3 completely.
+>=20
+> I see only patch 4 and this cover letter...
+
+The full series is available at
+
+	https://lore.kernel.org/linux-pci/20210729203740.1377045-1-u.kleine-koenig=
+@pengutronix.de/
+
+All patches but #4 only touch drivers/pci/ (and include/linux/pci.h) and
+it seemed excessive to me to send all patches to all people. It seems at
+least for you I balanced this wrongly. The short version is that patch
+#3 introduces
+
+	+#define pci_driver_of_dev(pdev) ((pdev)->driver)
+
+which allows to do the stuff done in patch #4 and then patch #5 does
+
+	-#define pci_driver_of_dev(pdev) ((pdev)->driver)
+	+#define pci_driver_of_dev(pdev) ((pdev)->dev.driver ? to_pci_driver((pdev=
+)->dev.driver) : NULL)
+
+plus some cleanups.
+
+If you want I can send you a bounce (or you try
+
+	b4 am 20210729203740.1377045-1-u.kleine-koenig@pengutronix.de
+
+).
+
+Best regards and thanks for caring,
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--t5ueb7xyetl6m7j3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmEEO2EACgkQwfwUeK3K
+7AkOCgf/UKvRbSIrjjdKl0HWJofJEfaXlbATSgBausmxV/dcXsg1sLkhkpTN66bG
+WmAdhFN03Vtx3jHKeYtgo3x8g39nfYT4NmlYTNumgxTow6TESnJxbYewE3i0alrR
+Jv0JvBFhUaXj++XetOVHn9f5/t7o5NL/XSF5DTwQM8lZ5skmA2+XXea8lU0IFufZ
+uTi0XA3G5BNhyU6RiehvnN59J6QCN3CIVqajOrZbqf33jiiyCTDf2tEqCYRbv1vJ
+zqt7zYp05RtUaqNKe9oH4N4UFCdChrjZlFP7w7gyqM6Jh/wOSERlVdpocf0BGClR
+W6o7YIB7QFf+ByIxy6hIBeXnaPaDFQ==
+=oi24
+-----END PGP SIGNATURE-----
+
+--t5ueb7xyetl6m7j3--
