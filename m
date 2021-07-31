@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A5B93E1923
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 18:10:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA4043E1925
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 18:10:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230471AbhHEQKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 12:10:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37570 "EHLO
+        id S231281AbhHEQKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 12:10:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbhHEQKk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 12:10:40 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB392C061765;
-        Thu,  5 Aug 2021 09:10:25 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id d8so7279022wrm.4;
-        Thu, 05 Aug 2021 09:10:25 -0700 (PDT)
+        with ESMTP id S230137AbhHEQKl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 12:10:41 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F3E1C061765;
+        Thu,  5 Aug 2021 09:10:27 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id b11so7294016wrx.6;
+        Thu, 05 Aug 2021 09:10:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=iKwt2CNIQOHR6e39/4WlE1XM4D8qqPBdFFLhXvUbs2c=;
-        b=J5bGjDNOFp2j9iyfmg82V9jCtpcc5O1GC71ukEsWWYT+yfexjP3VYacvaUx4qbXeMY
-         YybRJe/HDOCNMGiDYzeBynzUerLNH4TZqly9nfSUdc4vFUXhO1VKivaBe79HPSqT26OL
-         3/ZBzqUMIgVYu5eJlmBxG2sva4M1XSi1ljwhkY1XeXYzNrHAKiCTWbfuHutdInUWfJ7Y
-         ShtD5EnJxOzs6F2AP5LWu/Uw36V+WM3n/wcY1dPFEYlVsCKID8tbAd3N+7KeQcA+n7BD
-         2j4PMZ6rGV3Yz5J7Wak6oJ9OpbjWDcS2OpDvIRmHdL/gRGP1d+Pvqg0sGq0+6Uf9zQCG
-         BKOQ==
+        bh=/m61cwEMf4ke8oePiJ7XNYPUM0uLdLukigTj9FMf4mU=;
+        b=NTySaqhQMS9iIq0L7mecMWAozFOYz81v55Eqd6GJLsW3WvGIshk/O3pMf/WHOOO7IF
+         utO120Ann1qJPyO7fm9cASHjMPZ0gU1XwjkvrskM5kIigWvVAioWhGp1S8jmJpHuWiis
+         qqxFOLmOmZeUs7vJccGfEAbtb4meW/xYoigo3IaMkAhtUPYMlLhhv72WNCsszkG3iuPy
+         rZhUZGq0suIG9aJUAVP6TKkrs1RBHRCCuZjWaH8ZYzz+ey/WjWRwVxu5VrdzR3rEEZ7m
+         Gk4jCfpozoXC+8a+8POw0/H70sDfzc+ag+xRMRHAH+GnC+PD3zgdXCWwBjhcXCgX7YAX
+         I7iQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=iKwt2CNIQOHR6e39/4WlE1XM4D8qqPBdFFLhXvUbs2c=;
-        b=Top+NSVdid8VsWxguy9rCWO1OG1ErAjR0ppEz/jK5elae33jL6rP3rTb/Tb8q0xGha
-         lDPexj5GRKSUttZmuDBV6pZOd/XsHRWsYGwY/6O09eVf7nT7WYnUSIMboB9mOeY3/OP6
-         X5w69FO7D8jlK7XgctY0VzDvgGSMmYosKGZV2zaRyI1/hBN8hq0IDxUb1eM3mhVHZvPk
-         sHYBb6XrXcyuZZDh5DGwchJ/QsAizPbUFWd+3BGV9/Jwri3TfT2LNHN63pAvWMMVQbpz
-         rl2CkzUWWxbvzJUi6glrUTjYdsrW3aSA0HI7fVE2yNN7kuT9UlAYutAx4uBnL8vSym6g
-         a4mQ==
-X-Gm-Message-State: AOAM5332IwQVwYU/nOUNRv/EOYmDM3482LBVk9DVJIt55bCU1WMSMxYI
-        lxXYaRdp0s4Jd0Irlrv3ilNYZ3eJ93GcuJw=
-X-Google-Smtp-Source: ABdhPJwVvbIuvq39q09RDCMohhcpSPBO+kGRedfJsVDHLGGYdoPeyKeDV6m7CXAV9GDH6AcIPMrCyQ==
-X-Received: by 2002:a5d:4a84:: with SMTP id o4mr5999329wrq.273.1628179824121;
-        Thu, 05 Aug 2021 09:10:24 -0700 (PDT)
+        bh=/m61cwEMf4ke8oePiJ7XNYPUM0uLdLukigTj9FMf4mU=;
+        b=fqnnIq5CP4ZcGJWZIuKYxuGBMdkKTsJuQ9pjzhAnL+txAoMXNgobnd2LVDk+UWwUpS
+         /qCbO5PABGWn4ym4i5Rb8BIUrgUyLJ6EBx5/dgAy94wrdrvf1R9tjM42kelvc7irJC3I
+         1H9HcjsDsGLPgtR/H9dUitdar/0AfITiluRzTQvXj8ksx+zHwOVqisa3V3uchDjP7ejF
+         owDlqtpE7qqr/eUrIQxjSLtels+FahsWNG3Hfdtcn3FNFsEcF4LfqQS+u147DtXKHjC8
+         SPBfwjxZaccwf/rt9ihdkEUrdPUgDI9G9wmWgvHDIAZlWJoTYXd1boUNU2hOcQq8Ee4+
+         Zjww==
+X-Gm-Message-State: AOAM530RHb6FGAMEI/rfGIiyps/jyVupyoU/5YJuJUPoya9+kyllMhzH
+        h6KaGO2AnjuOvOwsYyBbPaRrQUm7hXqlzz4=
+X-Google-Smtp-Source: ABdhPJzbn8da4ZGzLwCkE6yEBK/zbupsxy/TyW/rkmfI4V9n3MB/cka8oq0uXyUsKLu9UwGR47sjNA==
+X-Received: by 2002:adf:fb8f:: with SMTP id a15mr6202412wrr.92.1628179825472;
+        Thu, 05 Aug 2021 09:10:25 -0700 (PDT)
 Received: from localhost.localdomain ([77.109.191.101])
-        by smtp.gmail.com with ESMTPSA id n5sm5843968wme.47.2021.08.05.09.10.22
+        by smtp.gmail.com with ESMTPSA id n5sm5843968wme.47.2021.08.05.09.10.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Aug 2021 09:10:23 -0700 (PDT)
+        Thu, 05 Aug 2021 09:10:24 -0700 (PDT)
 From:   Jussi Maki <joamaki@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, daniel@iogearbox.net, j.vosburgh@gmail.com,
         andy@greyhouse.net, vfalico@gmail.com, andrii@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         Jussi Maki <joamaki@gmail.com>
-Subject: [PATCH bpf-next v6 5/7] net: core: Allow netdev_lower_get_next_private_rcu in bh context
-Date:   Sat, 31 Jul 2021 05:57:36 +0000
-Message-Id: <20210731055738.16820-6-joamaki@gmail.com>
+Subject: [PATCH bpf-next v6 6/7] selftests/bpf: Fix xdp_tx.c prog section name
+Date:   Sat, 31 Jul 2021 05:57:37 +0000
+Message-Id: <20210731055738.16820-7-joamaki@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210731055738.16820-1-joamaki@gmail.com>
 References: <20210609135537.1460244-1-joamaki@gmail.com>
@@ -63,31 +63,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For the XDP bonding slave lookup to work in the NAPI poll context
-in which the redudant rcu_read_lock() has been removed we have to
-follow the same approach as in [1] and modify the WARN_ON to also
-check rcu_read_lock_bh_held().
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=694cea395fded425008e93cd90cfdf7a451674af
+The program type cannot be deduced from 'tx' which causes an invalid
+argument error when trying to load xdp_tx.o using the skeleton.
+Rename the section name to "xdp" so that libbpf can deduce the type.
 
 Signed-off-by: Jussi Maki <joamaki@gmail.com>
 ---
- net/core/dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/bpf/progs/xdp_tx.c   | 2 +-
+ tools/testing/selftests/bpf/test_xdp_veth.sh | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 27023ea933dd..ae1aecf97b58 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -7588,7 +7588,7 @@ void *netdev_lower_get_next_private_rcu(struct net_device *dev,
+diff --git a/tools/testing/selftests/bpf/progs/xdp_tx.c b/tools/testing/selftests/bpf/progs/xdp_tx.c
+index 94e6c2b281cb..5f725c720e00 100644
+--- a/tools/testing/selftests/bpf/progs/xdp_tx.c
++++ b/tools/testing/selftests/bpf/progs/xdp_tx.c
+@@ -3,7 +3,7 @@
+ #include <linux/bpf.h>
+ #include <bpf/bpf_helpers.h>
+ 
+-SEC("tx")
++SEC("xdp")
+ int xdp_tx(struct xdp_md *xdp)
  {
- 	struct netdev_adjacent *lower;
+ 	return XDP_TX;
+diff --git a/tools/testing/selftests/bpf/test_xdp_veth.sh b/tools/testing/selftests/bpf/test_xdp_veth.sh
+index ba8ffcdaac30..995278e684b6 100755
+--- a/tools/testing/selftests/bpf/test_xdp_veth.sh
++++ b/tools/testing/selftests/bpf/test_xdp_veth.sh
+@@ -108,7 +108,7 @@ ip link set dev veth2 xdp pinned $BPF_DIR/progs/redirect_map_1
+ ip link set dev veth3 xdp pinned $BPF_DIR/progs/redirect_map_2
  
--	WARN_ON_ONCE(!rcu_read_lock_held());
-+	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_bh_held());
+ ip -n ns1 link set dev veth11 xdp obj xdp_dummy.o sec xdp_dummy
+-ip -n ns2 link set dev veth22 xdp obj xdp_tx.o sec tx
++ip -n ns2 link set dev veth22 xdp obj xdp_tx.o sec xdp
+ ip -n ns3 link set dev veth33 xdp obj xdp_dummy.o sec xdp_dummy
  
- 	lower = list_entry_rcu((*iter)->next, struct netdev_adjacent, list);
- 
+ trap cleanup EXIT
 -- 
 2.17.1
 
