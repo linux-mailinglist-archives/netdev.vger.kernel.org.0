@@ -2,102 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 035833DC227
-	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 02:56:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48A4D3DC243
+	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 03:17:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235029AbhGaA4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 20:56:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57750 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231337AbhGaA4u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 20:56:50 -0400
-Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD54C06175F;
-        Fri, 30 Jul 2021 17:56:44 -0700 (PDT)
-Received: by mail-oo1-xc2e.google.com with SMTP id z3-20020a4a98430000b029025f4693434bso2920237ooi.3;
-        Fri, 30 Jul 2021 17:56:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4I3sfRH5c1qD7pcvAmdOAVZq247JJaOlPdDXsBkGJVo=;
-        b=ePI09i2bpo2YPJWdPQb/QyYlqRI+5DeVdB9MuwfnpYuxP+/QNVeIB6FaakuodQZTkc
-         CBbIu6gfXy6JnZ3A8aZBA3RL9qkltsvuc5dKP8EH6l8GrDR84+5wECbzjBFdSuiZKKUH
-         ELA4CwtHt3LJ1LR3PSp8hMN05vDQZJuM87NTKzoEijtq9D5VKCUYe/XQat4quuq8ad8I
-         dLZOgxTCb6VaFIYSSmCC5iDsZQxxwoDzvFnsVDAoVCK7Sc5J6701BDRw7AFiovdF3IJb
-         b75pYp4o2WBzvCJugtInU8UZ++fRjKV0j3NazSiatL4nXZck6KBSF0TEISQsKsSXEZsx
-         pYew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4I3sfRH5c1qD7pcvAmdOAVZq247JJaOlPdDXsBkGJVo=;
-        b=TAouX7ng3SldTzz+EkgXHZsWljKWGDhyC4ntzyOq83UWARyt1pH+H8iC9C9BM8TRMY
-         cXB8A3qIDnZnkRJm7aBAlaTF7CxhKoIMRerl/xNUvRy0AUZRWAv1uaKK3tEXYhE8Q11+
-         ZkbuGp0csAYLBfeM10naCQtDIbZ7Im3mpEQfDAvPP8MvoU5/TNA+RfJKHd09Kn/BwRaa
-         D3EqCP70Lf2RbgDgvWcFUjnlxeIJYlIcYbisqP0r4NolmGwZcPDHWa8287PWOb36qx0B
-         nSKmaU02hIpV3d7+18sk51qD/ZrSi4nbxn1j06x8SNz4WHaXZ36EfCi3cO3LnSUcKimG
-         zunQ==
-X-Gm-Message-State: AOAM532j2v4Qvd1MhmRVrPO7DkdYfzXKk+zf2kgrFCwdeqwTWZgkc4pD
-        funSjAMTdXQRSxMY31sAtb6tDGbpsIf24A==
-X-Google-Smtp-Source: ABdhPJxm5TUERunhOkcXMvDJv8MwzDzJ6uuPZ3avpd0l2fWXxFE17D9tHU35lS0+orEuCdoA1CvkCQ==
-X-Received: by 2002:a4a:bf11:: with SMTP id r17mr3645698oop.29.1627693003731;
-        Fri, 30 Jul 2021 17:56:43 -0700 (PDT)
-Received: from localhost.localdomain (ip98-171-33-13.ph.ph.cox.net. [98.171.33.13])
-        by smtp.gmail.com with ESMTPSA id c26sm592804otu.38.2021.07.30.17.56.41
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 30 Jul 2021 17:56:43 -0700 (PDT)
-From:   Matthew Cover <werekraken@gmail.com>
-X-Google-Original-From: Matthew Cover <matthew.cover@stackpath.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Matthew Cover <matthew.cover@stackpath.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next] samples/bpf: xdp_redirect_cpu: Add mprog-disable to optstring.
-Date:   Fri, 30 Jul 2021 17:56:32 -0700
-Message-Id: <20210731005632.13228-1-matthew.cover@stackpath.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S234326AbhGaBRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 21:17:52 -0400
+Received: from novek.ru ([213.148.174.62]:60132 "EHLO novek.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231337AbhGaBRw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Jul 2021 21:17:52 -0400
+Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 460B1503930;
+        Sat, 31 Jul 2021 04:15:11 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 460B1503930
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1627694112; bh=rZ9CPTlAMUrYr5SqX2IEA+Ttry54YSLImCdL1jglF18=;
+        h=From:To:Cc:Subject:Date:From;
+        b=H753jvUvQra+DwA3B5nJl9Z7kHNiHjyKk8Jm9TEY1UcXopKzbKmOAnATIzB2/msXh
+         z7PzHkCUaBmEPp6PmFWIAPzfK2T43OobHU5SzcbgsHhRBuyTjS80U4jLFMLqlpVG+L
+         noudChuRQTEJ2z3V6/P0b2qFLYGBX53Ewid4Eykg=
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     Willem de Bruijn <willemb@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Vadim Fedorenko <vfedorenko@novek.ru>
+Subject: [PATCH net] net: ipv4: fix path MTU for multi path routes
+Date:   Sat, 31 Jul 2021 04:17:29 +0300
+Message-Id: <20210731011729.4357-1-vfedorenko@novek.ru>
+X-Mailer: git-send-email 2.18.4
+X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
+        autolearn=ham autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit ce4dade7f12a ("samples/bpf: xdp_redirect_cpu: Load a eBPF program
-on cpumap") added the following option, but missed adding it to optstring:
-- mprog-disable: disable loading XDP program on cpumap entries
+Bug 213729 showed that MTU check could be used against route that
+will not be used in actual transmit if source ip is not specified.
+But path MTU update is always done on route with defined source ip.
+Fix route selection by updating flow info in case when source ip
+is not explicitly defined in raw and udp sockets.
 
-Add the missing option character.
-
-Fixes: ce4dade7f12a ("samples/bpf: xdp_redirect_cpu: Load a eBPF program on cpumap")
-Signed-off-by: Matthew Cover <matthew.cover@stackpath.com>
+Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
 ---
- samples/bpf/xdp_redirect_cpu_user.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/raw.c | 11 +++++++++++
+ net/ipv4/udp.c | 13 +++++++++++++
+ 2 files changed, 24 insertions(+)
 
-diff --git a/samples/bpf/xdp_redirect_cpu_user.c b/samples/bpf/xdp_redirect_cpu_user.c
-index d3ecdc1..9e225c9 100644
---- a/samples/bpf/xdp_redirect_cpu_user.c
-+++ b/samples/bpf/xdp_redirect_cpu_user.c
-@@ -841,7 +841,7 @@ int main(int argc, char **argv)
- 	memset(cpu, 0, n_cpus * sizeof(int));
+diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+index bb446e60cf58..e4008416dfc1 100644
+--- a/net/ipv4/raw.c
++++ b/net/ipv4/raw.c
+@@ -640,6 +640,17 @@ static int raw_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 			goto done;
+ 	}
  
- 	/* Parse commands line args */
--	while ((opt = getopt_long(argc, argv, "hSd:s:p:q:c:xzFf:e:r:m:",
-+	while ((opt = getopt_long(argc, argv, "hSd:s:p:q:c:xzFf:e:r:m:n",
- 				  long_options, &longindex)) != -1) {
- 		switch (opt) {
- 		case 'd':
++	if (!saddr) {
++		rt = __ip_route_output_key(net, &fl4);
++		if (IS_ERR(rt)) {
++			err = PTR_ERR(rt);
++			rt = NULL;
++			goto done;
++		}
++		ip_rt_put(rt);
++		flowi4_update_output(&fl4, ipc.oif, tos, fl4.daddr, fl4.saddr);
++	}
++
+ 	security_sk_classify_flow(sk, flowi4_to_flowi_common(&fl4));
+ 	rt = ip_route_output_flow(net, &fl4, sk);
+ 	if (IS_ERR(rt)) {
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 1a742b710e54..c6db5c3aa294 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1215,6 +1215,19 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 				   faddr, saddr, dport, inet->inet_sport,
+ 				   sk->sk_uid);
+ 
++		if (!saddr) {
++			rt = __ip_route_output_key(net, fl4);
++			if (IS_ERR(rt)) {
++				err = PTR_ERR(rt);
++				rt = NULL;
++				if (err == -ENETUNREACH)
++					IP_INC_STATS(net, IPSTATS_MIB_OUTNOROUTES);
++				goto out;
++			}
++			ip_rt_put(rt);
++			flowi4_update_output(fl4, ipc.oif, tos, fl4->daddr, fl4->saddr);
++		}
++
+ 		security_sk_classify_flow(sk, flowi4_to_flowi_common(fl4));
+ 		rt = ip_route_output_flow(net, fl4, sk);
+ 		if (IS_ERR(rt)) {
 -- 
-1.8.3.1
+2.18.4
 
