@@ -2,37 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBB423DC6E4
-	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 18:23:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CD793DC6F0
+	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 18:33:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229840AbhGaQXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Jul 2021 12:23:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37684 "EHLO mail.kernel.org"
+        id S229921AbhGaQd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Jul 2021 12:33:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39602 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229766AbhGaQXQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 31 Jul 2021 12:23:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5958B60EB2;
-        Sat, 31 Jul 2021 16:23:10 +0000 (UTC)
+        id S229449AbhGaQd7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 31 Jul 2021 12:33:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4DC3E60F13;
+        Sat, 31 Jul 2021 16:33:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627748590;
-        bh=191/84+0rTJdsFr5LCCBl9qrYtdVVFfE5JHLy/y0B/A=;
+        s=k20201202; t=1627749232;
+        bh=BOPpUSjxDz00r/FRJaG8mxlK8DItXDs1H8BlKV/FtI8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=piS13HvHnC0M7hdsZkWFvVluW7UQXE/1OEDO1TxW2ltjBzdzYLElnEruJemHRVjeH
-         /Gi3yOBboXYVRKvvKVvzsunXYz3jEoO35+HMTQw11DWwKtFwytxAb8VKl493AVqT2Y
-         RTDLzP0c2irFJDmiAL5NsKvcIi52qT7UYRaIx/1c4GI9wqDd8s8cit0cBkaiTpLm/W
-         moa0oFMHjdKKVr7SqVQXAONYqBoThn+JIAarf6FPjQYGLW/tPX7013umJUAhh1H1Vl
-         +RTI/c5mDdnGBYckS81thTlSdUAc2FZKhZsV7v2TBqmwzx8P8CRHxoKEtFe8oGII+G
-         dq5p7S+pYcYFQ==
-Date:   Sat, 31 Jul 2021 09:23:09 -0700
+        b=cOI+2RsrQQS4FyIwRgtRa9xBkb/42RdGz4DeY59M3GPww/TjftQ6LEIBBdENRiIxB
+         uMZXCwrJZCoAbV39tXQHD7dlgkojYZJpW0gKWvDEFmVIbamuqD2YoF4WVan8kYapWh
+         ar5/meLJYdjFWPfDL5ebMx9/D2CaVt3WTqDVwBYSO1Nle2/03d4y7JN1uJ/JF7U5YS
+         c4Tc4vSEdc2ZYFM2PfQ6Xl/ieqbTJTsf+kLUie9mTSrUoHJ0oRJfiCMHmKfeU8MHLv
+         3n8KOev3mYGpr+JtmGMz98p1dWOBO8eulPM1yBWFibsQh0NcqvzBT4f8a/yyMeJ39S
+         b9LUcta5G14Uw==
+Date:   Sat, 31 Jul 2021 09:33:51 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Hao Chen <chenhaoa@uniontech.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [net,v7] net: stmmac: fix 'ethtool -P' return -EBUSY
-Message-ID: <20210731092309.487bc793@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <8d1b5896-da9f-954f-6d43-061b75863961@gmail.com>
-References: <20210731050928.32242-1-chenhaoa@uniontech.com>
-        <8d1b5896-da9f-954f-6d43-061b75863961@gmail.com>
+To:     Jordy Zomer <jordy@pwning.systems>
+Cc:     netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Chas Williams <3chas3@gmail.com>,
+        linux-atm-general@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] atm: [nicstar] make drain_scq explicitly unsigned
+Message-ID: <20210731093351.39c0e305@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210731085429.510245-1-jordy@pwning.systems>
+References: <20210731085429.510245-1-jordy@pwning.systems>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -40,9 +42,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 31 Jul 2021 11:35:58 +0200 Heiner Kallweit wrote:
-> If there's an agreement that this makes sense in general then we may add
-> this to core code, by e.g. runtime-resuming netdev->dev.parent (and maybe
-> netdev->dev if netdev has no parent).
+On Sat, 31 Jul 2021 10:54:28 +0200 Jordy Zomer wrote:
+> The drain_scq function used to take a signed integer as a pos parameter.
+> The only caller of this function passes an unsigned integer to it.
+> Therefore to make it obviously safe, let's just make this an unsgined
+> integer as this is used in pointer arithmetics.
+> 
+> Signed-off-by: Jordy Zomer <jordy@pwning.systems>
 
-Sounds very tempting to me.
+Does not build.
