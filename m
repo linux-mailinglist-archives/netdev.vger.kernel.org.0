@@ -2,93 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E3F03DC2DB
-	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 05:08:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 195BC3DC2FA
+	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 05:39:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231518AbhGaDI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 23:08:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59944 "EHLO
+        id S233122AbhGaDkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 23:40:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231453AbhGaDI6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 23:08:58 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86D89C06175F
-        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 20:08:52 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id q2so13254467plr.11
-        for <netdev@vger.kernel.org>; Fri, 30 Jul 2021 20:08:52 -0700 (PDT)
+        with ESMTP id S231487AbhGaDkB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 23:40:01 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7193BC06175F;
+        Fri, 30 Jul 2021 20:39:55 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id a20so13402922plm.0;
+        Fri, 30 Jul 2021 20:39:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1JZ26KqQk+o6r3TSFsiDOhOM+G9b244CRrd+fTUFRWs=;
-        b=OVc6jlbUCX5yntvyKSuxpsTi44Ls6qUCF7XQsKFtdegjmSLxbESj3h40J4aiNbrLSq
-         pJjW7UqWRm2USa4x9xOGLXG7CGY3ei/gRCyKxcJkKOiy/+2aaDezMpBXVJmfV6Ebh4o4
-         YLHiX9lcRg455UUtHRZOqs8Bhh+9wReN6s4b9s4zZzrHJQQDQ+6xniuRY222j6IzIBfB
-         cs/YHNYAL8WZ/uXaUUQStPxOWm482ZbkTVb2DroYJZ55bRozRrMtJP82UmpL9mClAcNr
-         XXIlLbsnGV7CRVSZaKaufpZvabPhAfjZf0zPAJ9OyxZUKCdbIVyY5cKJalhCXcKXMAik
-         q5/Q==
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-transfer-encoding:content-language;
+        bh=p2lpXtsSO03rW6tcWTOmwaCtuMDEqLxg0LUSEGGH3vI=;
+        b=JE3SeclbIM3he1tkc9keVUi25AQkxSqk1zYw/znHDZ8usMuV6gWLURbaml/8UEsW+A
+         B8HFMv5NQIG4iyODlnJseiGoYiXI10723mumdR7Pk/pL5IvDPYxo7tmLK3U0lx8toGV3
+         fSNib14rmAnynvoRlkT6dw2GKrpv/P3Gnqfc3NwKNYXK0uSiuyHcGqoa1FRdPWEJtgxm
+         RuZkLFeqyP7BsX+kWtmX/geuxrs3U8s01ZtRsG3dvxOLYJ0xqcI9My5luudQ1hgSKwk1
+         WWz9BrxK4FiWLvtDc4R9JYkOAhnWj9Y0B7gvnT5gGklnb76Bdia1IxGzZK4TWnlEgl1+
+         Vj3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=1JZ26KqQk+o6r3TSFsiDOhOM+G9b244CRrd+fTUFRWs=;
-        b=XCYnKGlCa0r7MOh52fN7+OH1m3DUgA7CitYh0B+3JEYKMltj9qP55GwjczoOnr9Fvm
-         6vYA1UoOGudD7ePtsoM/WgQZWQJKce6L8X5Jlk03gn8exfyYpOd4U9/6ZkUeZk3a9jem
-         gb5vAfOE13/I5uN0WTVh2wVzifEjqjzDEjR69BW7p6nA+oCuc4Il/IfsDjZ++rHbyNjd
-         9JYA+wDvFlt6f1iiLz8IicS8sFJ72OQs0bPHLNw4TXxx+s+IelwotLg9oX7bAg+jtphp
-         /sROpOy4ZIs6jW9sxNPzxtLitmjoUU7/dvBkoAm8PyDa+mDPTsIpqld4apzKjPoiP2L4
-         u9lQ==
-X-Gm-Message-State: AOAM5308fVsnOSU6sje8DuwPoiROPZcZlvWt2T1/iAJjoUVz3UGHuaqd
-        wYoRbCV6jljcgstTl04YVjc=
-X-Google-Smtp-Source: ABdhPJzwAdyqG+R/fCsUBgA/gyoKtfnR+Xp9raejel1pv26DrYEQRaPmbOOMApgb+SEQ2BY0Ag8sgw==
-X-Received: by 2002:a63:5f87:: with SMTP id t129mr2822273pgb.85.1627700932070;
-        Fri, 30 Jul 2021 20:08:52 -0700 (PDT)
-Received: from [10.230.31.46] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id l10sm3488371pjg.11.2021.07.30.20.08.46
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-transfer-encoding:content-language;
+        bh=p2lpXtsSO03rW6tcWTOmwaCtuMDEqLxg0LUSEGGH3vI=;
+        b=j1m8m82A7d6f24Oh5MVbNin7P9inttsTVjNCtFIeuIzLOpZIcmeO8LMrtYX3WY5dM4
+         LjRZEm8tvnjhmoh3PRDp08t/7Jb++pgzR9jGr+asUD9AtFeGSoWTXNsi+hlCu/B9fzBL
+         SINphf9RRPIKh4gha091lr2c1zn8f7FHHwBsV6tXLCh4b4smP4D+5EtR4iIbbYUmF5kb
+         gwo0spY3M78sRLoP89XQSzECKHxQ8Z0ahHMhlOuq/R9GzxJ+uWYmzyC3hWV1B1KK+lOz
+         bZx/L+KMSiGrIIYBky0iMTN7WcVm5Zl4MgtDyo8lDxPC/dqMoFWKTkPLGGlyIqCwan4e
+         6gtQ==
+X-Gm-Message-State: AOAM531HrCPVnaVf/X7X3ziICXK02iBUT941O2CHT5shh8kalDb+KePy
+        H4AFQHQsNsbDk5+so6jcC4Sg+UOg/Q296Rrp
+X-Google-Smtp-Source: ABdhPJxd77Ef1mfbPQZ8wOiSnmNHKR8W5cnPUcmXDDwNlm9EXArjLXkEKX9EWO0lHYwCm++2YbpmlQ==
+X-Received: by 2002:a63:e43:: with SMTP id 3mr1686841pgo.61.1627702795089;
+        Fri, 30 Jul 2021 20:39:55 -0700 (PDT)
+Received: from [10.106.0.42] ([45.135.186.29])
+        by smtp.gmail.com with ESMTPSA id y15sm4555337pga.34.2021.07.30.20.39.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Jul 2021 20:08:51 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: dsa: mt7530: drop paranoid checks in
- .get_tag_protocol()
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>
-References: <20210730225714.1857050-1-vladimir.oltean@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <cc8e24d2-9fed-872f-4f0a-92a6892dfd5e@gmail.com>
-Date:   Fri, 30 Jul 2021 20:08:43 -0700
+        Fri, 30 Jul 2021 20:39:54 -0700 (PDT)
+To:     stf_xl@wp.pl, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, baijiaju1990@gmail.com
+From:   Li Tuo <islituo@gmail.com>
+Subject: [BUG] iwlegacy: 3945-rs: possible null-pointer dereference in
+ il3945_rs_get_rate()
+Message-ID: <c9663714-a352-7c5c-1826-c7a1cd6d9abf@gmail.com>
+Date:   Sat, 31 Jul 2021 11:39:53 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <20210730225714.1857050-1-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
+Our static analysis tool finds a possible null-pointer dereference in 
+the iwlegacy driver in Linux 5.14.0-rc3:
 
-On 7/30/2021 3:57 PM, Vladimir Oltean wrote:
-> It is desirable to reduce the surface of DSA_TAG_PROTO_NONE as much as
-> we can, because we now have options for switches without hardware
-> support for DSA tagging, and the occurrence in the mt7530 driver is in
-> fact quite gratuitout and easy to remove. Since ds->ops->get_tag_protocol()
-> is only called for CPU ports, the checks for a CPU port in
-> mtk_get_tag_protocol() are redundant and can be removed.
+The variable rs_sta is checked in:
+629:    if (rs_sta && !rs_sta->il)
 
-The point of the check was in case the designated CPU port from device 
-tree/platform data would not match what the Mediatek driver supports, 
-similar to what b53 does in the same vein. I am fine with removing that 
-check for mt7530 as it does not look like there is an use case where the 
-CPU port is not actually MT7530_CPU_PORT.
+This indicates that rs_sta can be NULL.
+If so, some null-pointer dereferences will occur in some statements such as:
+643:    idx = min(rs_sta->last_txrate_idx & 0xffff, RATE_COUNT_3945 - 1);
+653:    if (rs_sta->start_rate != RATE_INVALID)
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+I am not quite sure whether this possible null-pointer dereference is 
+real and how to fix it if it is real.
+Any feedback would be appreciated, thanks!
+
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+
+Best wishes,
+Tuo Li
