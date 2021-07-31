@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B54E23DC1D5
+	by mail.lfdr.de (Postfix) with ESMTP id 69B053DC1D4
 	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 02:14:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234536AbhGaAOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 20:14:37 -0400
+        id S234495AbhGaAOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 20:14:34 -0400
 Received: from mail-eopbgr40043.outbound.protection.outlook.com ([40.107.4.43]:13735
         "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234449AbhGaAOd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Jul 2021 20:14:33 -0400
+        id S234366AbhGaAOb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Jul 2021 20:14:31 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eBMuBQzbo9J46STbk+MVMaTr4j+z+JaCrx899Z85eaPJz+g4MJYPm2a8A5ZfI04wkvmi1dc0W3JQnrkYhxYdHr2nLIiX8DXfQk/1cYgOVf/8aV52W1I1ZVMYdtaICNqPmTcE0Ll3Xg+NxQLX/YH2YEbq9ti58f6kJnEfmRhHejwG0SsbxBdDv1Vm2LFstFTsOlawJhXsruqZitvOPP5Vv10sjxVmWEuvBgmVuE9tYfVtAj2gYWL6JsgbaicY5nDvKWRAlUMaoYt5gRiEtqmrkbpM/2j9h922+rtrPV5JWZkRLLHwiJH2B+7sO3S5eeDV0ivd2lfAhnrCnoHmqTgIHA==
+ b=cIaeeUr3WvyRR6OgtWvcX0PHFzkv1TeML3XGF242O6Alp2rAScwoWWhvV8KPQQSxcou+z2W1cvUeVW5ntF3eJf4abBKn2NnDvMcUgRaRKMlVGgd48FBD0ogiaFDj+S2IZV75baUlJ7Rf+AlVF6wdp1Rs97ErBBpRyVxQf6HaovlZbAYoRuksOAJCWmIbtTmai21ccWgobAAuEm/3QpMGVK+rNCX/QDqDtJVceRTwgnGBpdUb19uur4DQksqnW6h0mkKmDhvmRzwABRUTAByBVNSU9vDO6jRqHBy6RpTa+BWdfCnkF9OMNII6g1ULi9ru5ZrZldk2Cc1pvILw97cxww==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kQ4VLjmrVUZqTzilbfHTVPCgRVFwI2Iy3E4oqB3Vfd0=;
- b=Pl+VMfLPZlxcnrnqf5NAUWafxqG51tlqad3jVcipZ4vpQzl5mZht3MSpfl7MdFVFCDbKjqx8m313z1kmrtRXevIFKITO7himvwM+JR4eYFgj3ke1ksRxPV1ex39OEqOAeC3MP7eGn3AQmRm5jrFCL/fwkHuIUrIK2rYSxns8f7dOSrR3uIb24q/+l2kS5DVG6y8NF1u2mYch/pdFj6F1Hzle4VUIv+R1xd4BsIFw/kRtYMyllKQtgIfrKQMAQLACwNuI3OVyM2XaQGlQVuegNuu8MYVxBv2ChMoI97dB7pVAthAxCATg+H6lkc9SLc4Q4481hehzSgWQhiJ2iy5IAg==
+ bh=amoeNrWJ4532H2p7QkiIVWJGcprWXA9ktT8T2gaXz0o=;
+ b=EIV7CUg1VRWxgWwffS3qNGtXgbQctWEf4u3dJXJ1TqijpPDNgM+bcCNsa6rcnifLYg9TmhR2GJaxC3l5goyrXGr5XsaPSu5S21n5rrtIDBU95ci77rfaQfHeoyPB3gAEjCiPDBxpoItvGCQtH4efa6yeLlTPZ4wmF+uEJeoNIqLkFuWJIACgFLAIxbGp5Lr5cApcKVo6OwSZvherC30MX7dwa8b1YTe3kersli4VPAxbhIl15JUTXlj6ZejZ8T98/g7KdEW2lyoHmrAob7rkO/QJbF4/dwODcPcJchm/yhndYTO7yp8ojL6cep2W1TlO+BRyXfHt6sD/erg5mwvd5w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kQ4VLjmrVUZqTzilbfHTVPCgRVFwI2Iy3E4oqB3Vfd0=;
- b=BM8UYRFBjIj51chpYXbhh+cb2FpsQjgoa02RqeWWvQY9qVtCGf+w3g6cUsjfGyyFxrPVK//ntC1vUeWWwiqQ4UH6VorNEhA6VW3Dm68DzGhHafyOSwdSPNSk6CYQ0LbpZ5Zcu47l3V2iEyHOMwzgMj4CQk0y5j0OyGGeCCbgCB4=
+ bh=amoeNrWJ4532H2p7QkiIVWJGcprWXA9ktT8T2gaXz0o=;
+ b=ntYEoAnG7Q19HwDuSYQqujWAU4RWmjEcuyA0VgBexomhI2anM2n2fRynIPfcjnZbhqRiuPN9LtR9nQO7X6Pl5OnRKzAZylPewnbXGOz1mMksPzVgEYYzz9JYsmBo5Ch70TgHQGmB3Gir9mNbjcOMI3WQ9U59t/QCfTkF1+OtRMM=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VE1PR04MB6511.eurprd04.prod.outlook.com (2603:10a6:803:11f::33) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.26; Sat, 31 Jul
- 2021 00:14:22 +0000
+ 2021 00:14:23 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4373.025; Sat, 31 Jul 2021
- 00:14:22 +0000
+ 00:14:23 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [RFC PATCH net-next 02/10] net: dsa: give preference to local CPU ports
-Date:   Sat, 31 Jul 2021 03:14:00 +0300
-Message-Id: <20210731001408.1882772-3-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 03/10] net: dsa: sja1105: configure the cascade ports based on topology
+Date:   Sat, 31 Jul 2021 03:14:01 +0300
+Message-Id: <20210731001408.1882772-4-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210731001408.1882772-1-vladimir.oltean@nxp.com>
 References: <20210731001408.1882772-1-vladimir.oltean@nxp.com>
@@ -56,227 +56,236 @@ X-ClientProxiedBy: AM0PR02CA0161.eurprd02.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (82.76.66.29) by AM0PR02CA0161.eurprd02.prod.outlook.com (2603:10a6:20b:28d::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.21 via Frontend Transport; Sat, 31 Jul 2021 00:14:21 +0000
+Received: from localhost.localdomain (82.76.66.29) by AM0PR02CA0161.eurprd02.prod.outlook.com (2603:10a6:20b:28d::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.21 via Frontend Transport; Sat, 31 Jul 2021 00:14:22 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a462c3cc-56d1-493b-ef93-08d953b825b5
+X-MS-Office365-Filtering-Correlation-Id: 21b35c65-daa7-4204-3c71-08d953b82642
 X-MS-TrafficTypeDiagnostic: VE1PR04MB6511:
-X-Microsoft-Antispam-PRVS: <VE1PR04MB651103069E82DBDC28361328E0ED9@VE1PR04MB6511.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Microsoft-Antispam-PRVS: <VE1PR04MB6511825CFA284769E246423DE0ED9@VE1PR04MB6511.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /5HNXEswtZwEWikRXk5odH169lSXTuvyef1wp9jE3vqrJG6tVSn1E2seEM3TeGXRccz+RrIc/ExwjbjtLoUkLu4l6NeR6mZLJqgWtSDGj0kH4JBXye6K2/5Tiyh0TVTN1WjXPCvvadQy67bQf8EFHv6U5wZAPddtUuds24EFPVpyHQWMdJq3BbmqsDrnC5ttbKm0d54q9ds9bxlrcC2g5MVHNQWvCXajVN0FsD61IhFQpbou72OyFtNYzVPHuRo+coMa0rWIAxmJjLFT9nYagDYbiNqhjkdz6Z2BcdIss4Wwj4zfaULmmqWr13+J3iT8ySC73hrI7UZc4cO+IO4C5NlhCAxdJffmsGLPieLOL6bmP//yhV8wfOXHsLyI0D1FvUiSN2MZW/0WQmvMpNajgPFwi4UJuZWzMrz4ge4iJWBZEuMkm+Sm/msa6n7uu8Kimr6w9Oc4/Rst6jtla6oD4/D6A9oVP98/FAFW0LHP7nxUvafDw4Eq4rfAOXSsUswrQX1OxWWwoxdfI1OAzUJFbOHPAXSY35XAUNCwMOBicNZkZlnGQV7tf87mXk937qcMC3f1MUpeFekHn+lEf6dRmj/7ly56+lCCvEA84YtCyQ15PSp0vBiHxMcFEs8RC7VQqJD1ZhUL67kZ80k9FbqYL5IehpksFxqElh+K637wk3S04cCXGk0VBkxWXyjIaJ2OIPGELltnexWYCaDeGj4VIQ==
+X-Microsoft-Antispam-Message-Info: CUrZH70vti25+GYd3HkzEZtn4aHgtr9vH0TcUPQsSe2d1pvN/PsbgH5C/I+dMRbPIlhfLOD4sp6WdCvG4PO80IjchYOOmuN5D7BiBqt/2BXpMX0JGHNIiGQKNdh6qJTi8WF2uMplANTNY25j/8X35rxpjkiSTSRT6/smPdzEAify55kLT9dbT6GEpYi9s1rQo6GoL5OpTtJdmH7bRHDaJlYI5whYtNbFXEyCCG3aF23T1jWD8sV58E1BwNrobArrJHOksrMREiBJJXT91IZv7qnw/rEIY7YGmgShLAXK/95SiQL5YwgZ0EFyuwaE4ks+w/HPFJfqOF+GlM4eDZvkB/c4CRb5a81bi7ikhhSW0WHBZPxBOCXzzm72UiwCkN3o5XgyaU8ebU+p7e8R5yJRBuVxpmtqmI8I3xuQUVUdhQ2lrFo/niDBaFsn6wtJL5fhtJU3N6whQIDd1xkGYXgT+tJDpUQr5NRPWSUSmJL3gOlGTGMM4P70tIh2BxSY9chj+RmYxk9L9oxLX40kjX0EsaCE4ZIVDAWAfjQarEgS71GhqLYts2KkAxn0WBBZpioic6wXln6baTt5ksOtFRgFYRb8HFVIzqjUbozsJco9G73tMHpXSiDsqG6xluvOnLXZplGi4mvCe3+IZm/7KmgwEwvp2i/o5kQ08wYWGsxmJ1Imaoe9YjduYD/wUxicMTHM
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(26005)(186003)(8936002)(6486002)(6506007)(52116002)(6512007)(508600001)(66946007)(66476007)(4326008)(66556008)(956004)(5660300002)(36756003)(44832011)(38100700002)(38350700002)(83380400001)(54906003)(2906002)(8676002)(6666004)(1076003)(110136005)(2616005)(86362001)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fyOeCcoBl9KMA+8XKLjOzS8XH7gjiFuqUtICaRAxoh8ub2Q5bv9DCL1Ezy8D?=
- =?us-ascii?Q?dk42bGW/g6VO5IiLwdH0fRLh6Hw3vqG6RRCpS1qyd1qiNFDCNpab2jDz7EqD?=
- =?us-ascii?Q?xEzCJhwMFUssoQSeKVOeHMvKHfHmTI6B6HBDg0+3wLhfM3ohmpSS0CSokYaF?=
- =?us-ascii?Q?mG+W7R/0cWPceRjEqIASQWFDMel180RW6l+bmpfns6DKpZUlhOX+c4+e6Ytr?=
- =?us-ascii?Q?QCUL089t07P9n9TLAObcjwBMhmuYtySoNYbNyrGEAAc23QvE0bUO0m6Gr/vX?=
- =?us-ascii?Q?1ILDm6qaBpjP+5Jchq5Tc8OWtU5j4jSSFB35IKPJ2NtkaR4rVOepHq65UOiX?=
- =?us-ascii?Q?sYN1RcYuoL92fVSML0r3+V5ecSzW3etLiaDpClIZtw5qhAnJUYqDVtR3mgiH?=
- =?us-ascii?Q?unw0C7L85vcwPypSXYFJSbiiEL3cNNnhua2L0HarClKrmRFlGqEZDc2ZNfhh?=
- =?us-ascii?Q?pKiSFSv9S/rKOS4GpJRYImIZ0hHUzOt6ZVHD7RSidsPHhUBxi2jDII/NI/m1?=
- =?us-ascii?Q?uu+qWanXPYOG8at/3Q4OhFuYcrRsZP/xGqOEUoU3TUc32reBR+V+6tW9Xdku?=
- =?us-ascii?Q?wTGs7Ukck+WjMh4lMzRYEfI1DjuQk9qt0TvHDRIt4mpaUaiSNcK/7+QYOXCq?=
- =?us-ascii?Q?Ynb5QcRda+ToWW9RmrbHbZXffspiuMjEcAgf5lu5+nGbEhO0pKUSFOPBzvxJ?=
- =?us-ascii?Q?V4VWROw3nVWBIY6cR/PgY9DT7WYZXO2AN2+HGY0nGezpOgflZi2oqHS3LNeg?=
- =?us-ascii?Q?SagSkvdFQTzQIbWPAyirQdrNQPDuxRkt+zsmcckPVirDhqMpGkdt4mriYCoi?=
- =?us-ascii?Q?bYJRHzc5JlnM1k86+n7sdJQhmdsjn13/wKXqJBVoqNfwKZqEhRGeNP86fXHs?=
- =?us-ascii?Q?FAfKZ0i9Z6AW4tjIFIOZG7h2vOQwySOPdpxz8dtcY6vbDbodwRXM9PuRG2R9?=
- =?us-ascii?Q?owgPy3TplPiKhPqeO3BS0fwFXfMims7Cy4B5z2kjqLGaoAIxkdQkRxo7BHct?=
- =?us-ascii?Q?GpAp1bLnG/KRm7LTVmI3Q8Ev41QGfppNPgTH68Y1axYO+A9EG7lasTTONu08?=
- =?us-ascii?Q?5emtVt8tCmlNGRyj7qVlH/jMCk4vwAHR9B89P0R3G6irfngC3D9jkdFOOgbn?=
- =?us-ascii?Q?DTXizVD/XDOzaBwcSFjKRz7y+vpZg9rubXnaATzLHwsvcC3cWgHBpt3fZLC3?=
- =?us-ascii?Q?JVLKLaKSPKPL72DmQukDH9uk6v4VkGDDPiSXnEoxYkUGkov4mF/4OwVmKJ8Y?=
- =?us-ascii?Q?40R9EyPsyY+8Q/7o+VZ0iZ1bhHwcjdhdI8KRwvolj1HvcKm5ZKWiqDf45DKm?=
- =?us-ascii?Q?reJbt7MEfdZSP2Nspkg80xaG?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HBU19mBGet2t57qNI9kRpn1Wwdqdls29QC4adAu6/FHKEcbq3fGds+Z1C+/0?=
+ =?us-ascii?Q?EEqlo+NTRQZLvo5iQMA22H6YwxT7K247Yv0VeI0ZmdVWj5ISHMnGUyNcIMdX?=
+ =?us-ascii?Q?c79jz0Vy7WTj4WRviDd9tvNV6Xy/gxLMe+Q+ktzAsnmGH0AYN7dX6MA2dANi?=
+ =?us-ascii?Q?gTR/chzxdBkRKcqmRFNf7L4yAQ+V58h1GLI7PWjH1YfUgp+KNny1A5Nb62oL?=
+ =?us-ascii?Q?YDeziFMoFzC4H5ztPjf41jk1JZtQN7hgyW4LQCrAyViSqG2+/7WptbU6/wDU?=
+ =?us-ascii?Q?eJnrxh749Twyr0vmfzLfekc4mdl9+FqflZEhmkBgj3O+HLSnLkIgavVmjGlQ?=
+ =?us-ascii?Q?QBpGaTBvUhTwUyGdOEA9Nh0A+/7rXuV5N+WwPjmxMVrtu2lf2H8ZtAQ6q9OK?=
+ =?us-ascii?Q?fSUTPUVV1FBBm0xC9tfc9YCmDaEACIyI/z7P5gGmbLeOVC4gCDpiZhWu31jy?=
+ =?us-ascii?Q?1v55ALfuNQogIAtRT+I7ffiWpSuOnRiKwF1jUyCFr7y9+ScUw2qiIxTemrK1?=
+ =?us-ascii?Q?NJTt9IXxCLWo+4IXyaiDahpo+1khCz1HThtPSAIFB+eKMzElJJXtIwDR9jnd?=
+ =?us-ascii?Q?9BZSrvRJItd+FhGWRPykj38tu0iutvP2bYcLz8Y39q85j38eZaL+Wkert6xY?=
+ =?us-ascii?Q?7gW30Y9e84QM/4WHI4Z0EO3ozu+5rMsmrJHp4sFqYczPySK/ly7iPzA1W4O9?=
+ =?us-ascii?Q?0aDnNWfURgRFKI1HZkOkp5htMPKqqL5PRzQQBpb8k7O42RAWY1B2Gj+I5mNT?=
+ =?us-ascii?Q?IZK7ryevyT6vFG6qhs5+xM9DhDX9Zu25VycsWiozPsPGgqCKGHHC1QY8z9aa?=
+ =?us-ascii?Q?AEmbHbgv9r4qytNF4KxZxpcA+hxidBoX0WUn+IQiuOB2zrhiO8bwc1gTrSJq?=
+ =?us-ascii?Q?ACSJK2WRkmfwJI42pJceQPyobC+LPkh+1IrrN+wUolrEhY0P93PGN+baeZI1?=
+ =?us-ascii?Q?qm6uzDQqUfq9xJ3T4E1yvlLBWAWjVNjF/NVFgVTO2YiSJNJl2EsGGqmeyLUe?=
+ =?us-ascii?Q?z2NdQiFJljKqfM5XDOJRI9Gjue7LLAx5kUezKjZnJSghym5CPHzh+FAG9z0w?=
+ =?us-ascii?Q?SZVrpNXfYlYtzOCNhpWgLomQLjXwTQISPVh7REIf/iK9ni0r79iMiBlA/AEL?=
+ =?us-ascii?Q?bCF5fAdO7QViuS4JA0+R3dsinriaTXI2GqOCSIDRaSh5BEyRhlxrZaVlfur5?=
+ =?us-ascii?Q?7gfPoQCSsZkG91UHPIzZe4Bh76443AG3ghpa/KF+IUsy4OgLA6gzOLz052d/?=
+ =?us-ascii?Q?yNGy48WvBzWmaVyLYV/DzUa2dexgAfOrtzPYM13cqOkGiCAj9V2RjzP9AEQP?=
+ =?us-ascii?Q?z+gz8qArXgQV5xKphVL5W7nF?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a462c3cc-56d1-493b-ef93-08d953b825b5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 21b35c65-daa7-4204-3c71-08d953b82642
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2021 00:14:22.3053
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2021 00:14:23.2237
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7CN8wux9mLpYHFO3PnA+sT7Nea8gGf4Absrxs4NQy/B603kzSn3RECm5Ibpmo/2OquoU9GefIBuy0LT9dv6fkw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: VcvhjbCPekcq/gNTFM7tZRCPJl1F3lzoThalT5nArsOjZXf8gl4cI936fdVc5hHOssdUP/xSYTff2jOkCEpLqQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6511
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Be there an "H" switch topology, where there are 2 switches connected as
-follows:
+The sja1105 switch family has a feature called "cascade ports" which can
+be used in topologies where multiple SJA1105/SJA1110 switches are daisy
+chained. Upstream switches set this bit for the DSA link towards the
+downstream switches. This is used when the upstream switch receives a
+control packet (PTP, STP) from a downstream switch, because if the
+source port for a control packet is marked as a cascade port, then the
+source port, switch ID and RX timestamp will not be taken again on the
+upstream switch, it is assumed that this has already been done by the
+downstream switch (the leaf port in the tree) and that the CPU has
+everything it needs to decode the information from this packet.
 
-         eth0                                                     eth1
-          |                                                        |
-       CPU port                                                CPU port
-          |                        DSA link                        |
- sw0p0  sw0p1  sw0p2  sw0p3  sw0p4 -------- sw1p4  sw1p3  sw1p2  sw1p1  sw1p0
-   |             |      |                            |      |             |
- user          user   user                         user   user          user
- port          port   port                         port   port          port
+We need to distinguish between an upstream-facing DSA link and a
+downstream-facing DSA link, because the upstream-facing DSA links are
+"host ports" for the SJA1105/SJA1110 switches, and the downstream-facing
+DSA links are "cascade ports".
 
-basically one where each switch has its own CPU port for termination,
-but there is also a DSA link in case packets need to be forwarded in
-hardware between one switch and another.
+Note that SJA1105 supports a single cascade port, so only daisy chain
+topologies work. With SJA1110, there can be more complex topologies such
+as:
 
-DSA insists to see this as a daisy chain topology, basically registering
-all network interfaces as sw0p0@eth0, ... sw1p0@eth0 and disregarding
-eth1 as a valid DSA master.
-
-This is only half the story, since when asked using dsa_port_is_cpu(),
-DSA will respond that sw1p1 is a CPU port, however one which has no
-dp->cpu_dp pointing to it. So sw1p1 is enabled, but not used.
-
-Furthermore, be there a driver for switches which support only one
-upstream port. This driver iterates through its ports and checks using
-dsa_is_upstream_port() whether the current port is an upstream one.
-For switch 1, two ports pass the "is upstream port" checks:
-
-- sw1p4 is an upstream port because it is a routing port towards the
-  dedicated CPU port assigned using dsa_tree_setup_default_cpu()
-
-- sw1p1 is also an upstream port because it is a CPU port, albeit one
-  that is disabled. This is because dsa_upstream_port() returns:
-
-	if (!cpu_dp)
-		return port;
-
-  which means that if @dp does not have a ->cpu_dp pointer (which is a
-  characteristic of CPU ports themselves as well as unused ports), then
-  @dp is its own upstream port.
-
-So the driver for switch 1 rightfully says: I have two upstream ports,
-but I don't support multiple upstream ports! So let me error out, I
-don't know which one to choose and what to do with the other one.
-
-Generally I am against enforcing any default policy in the kernel in
-terms of user to CPU port assignment (like round robin or such) but this
-case is different. To solve the conundrum, one would have to:
-
-- Disable sw1p1 in the device tree or mark it as "not a CPU port" in
-  order to comply with DSA's view of this topology as a daisy chain,
-  where the termination traffic from switch 1 must pass through switch 0.
-  This is counter-productive because it wastes 1Gbps of termination
-  throughput in switch 1.
-- Disable the DSA link between sw0p4 and sw1p4 and do software
-  forwarding between switch 0 and 1, and basically treat the switches as
-  part of disjoint switch trees. This is counter-productive because it
-  wastes 1Gbps of autonomous forwarding throughput between switch 0 and 1.
-- Treat sw0p4 and sw1p4 as user ports instead of DSA links. This could
-  work, but it makes cross-chip bridging impossible. In this setup we
-  would need to have 2 separate bridges, br0 spanning the ports of
-  switch 0, and br1 spanning the ports of switch 1, and the "DSA links
-  treated as user ports" sw0p4 (part of br0) and sw1p4 (part of br1) are
-  the gateway ports between one bridge and another. This is hard to
-  manage from a user's perspective, who wants to have a unified view of
-  the switching fabric and the ability to transparently add ports to the
-  same bridge. VLANs would also need to be explicitly managed by the
-  user on these gateway ports.
-
-So it seems that the only reasonable thing to do is to make DSA prefer
-CPU ports that are local to the switch. Meaning that by default, the
-user and DSA ports of switch 0 will get assigned to the CPU port from
-switch 0 (sw0p1) and the user and DSA ports of switch 1 will get
-assigned to the CPU port from switch 1.
-
-The way this solves the problem is that sw1p4 is no longer an upstream
-port as far as switch 1 is concerned (it no longer views sw0p1 as its
-dedicated CPU port).
-
-So here we are, the first multi-CPU port that DSA supports is also
-perhaps the most uneventful one: the individual switches don't support
-multiple CPUs, however the DSA switch tree as a whole does have multiple
-CPU ports. No user space assignment of user ports to CPU ports is
-desirable, necessary, or possible.
-
-Ports that do not have a local CPU port (say there was an extra switch
-hanging off of sw0p0) default to the standard implementation of getting
-assigned to the first CPU port of the DSA switch tree. Is that good
-enough? Probably not (if the downstream switch was hanging off of switch
-1, we would most certainly prefer its CPU port to be sw1p1), but in
-order to support that use case too, we would need to traverse the
-dst->rtable in search of an optimum dedicated CPU port, one that has the
-smallest number of hops between dp->ds and dp->cpu_dp->ds. At the
-moment, the DSA routing table structure does not keep the number of hops
-between dl->dp and dl->link_dp, and while it is probably deducible,
-there is zero justification to write that code now. Let's hope DSA will
-never have to support that use case.
+                    eth0
+                     |
+                 host port
+                     |
+ sw0p0    sw0p1    sw0p2    sw0p3    sw0p4
+   |        |                 |        |
+ cascade  cascade            user     user
+  port     port              port     port
+   |        |
+   |        |
+   |        |
+   |       host
+   |       port
+   |        |
+   |      sw1p0    sw1p1    sw1p2    sw1p3    sw1p4
+   |                 |        |        |        |
+   |                user     user     user     user
+  host              port     port     port     port
+  port
+   |
+ sw2p0    sw2p1    sw2p2    sw2p3    sw2p4
+            |        |        |        |
+           user     user     user     user
+           port     port     port     port
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/dsa2.c | 37 ++++++++++++++++++++++++++++++++++---
- 1 file changed, 34 insertions(+), 3 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_main.c | 97 +++++++++++++++++++-------
+ 1 file changed, 70 insertions(+), 27 deletions(-)
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 4f1aab6cf964..9ff928ccddb0 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -311,6 +311,9 @@ static struct dsa_port *dsa_tree_find_first_cpu(struct dsa_switch_tree *dst)
- 	return NULL;
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 5ab1676a7448..74cd5bf7abc6 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -688,6 +688,72 @@ static void sja1110_select_tdmaconfigidx(struct sja1105_private *priv)
+ 	general_params->tdmaconfigidx = tdmaconfigidx;
  }
  
-+/* Assign the default CPU port (the first one in the tree) to all ports of the
-+ * fabric which don't already have one as part of their own switch.
-+ */
- static int dsa_tree_setup_default_cpu(struct dsa_switch_tree *dst)
- {
- 	struct dsa_port *cpu_dp, *dp;
-@@ -321,14 +324,42 @@ static int dsa_tree_setup_default_cpu(struct dsa_switch_tree *dst)
- 		return -EINVAL;
- 	}
- 
--	/* Assign the default CPU port to all ports of the fabric */
--	list_for_each_entry(dp, &dst->ports, list)
-+	list_for_each_entry(dp, &dst->ports, list) {
-+		if (dp->cpu_dp)
-+			continue;
-+
- 		if (dsa_port_is_user(dp) || dsa_port_is_dsa(dp))
- 			dp->cpu_dp = cpu_dp;
-+	}
- 
- 	return 0;
- }
- 
-+/* Perform initial assignment of CPU ports to user ports and DSA links in the
-+ * fabric, giving preference to CPU ports local to each switch. Default to
-+ * using the first CPU port in the switch tree if the port does not have a CPU
-+ * port local to this switch.
-+ */
-+static int dsa_tree_setup_cpu_ports(struct dsa_switch_tree *dst)
++static int sja1105_init_topology(struct sja1105_private *priv,
++				 struct sja1105_general_params_entry *general_params)
 +{
-+	struct dsa_port *cpu_dp, *dp;
++	struct dsa_switch *ds = priv->ds;
++	int port;
 +
-+	list_for_each_entry(cpu_dp, &dst->ports, list) {
-+		if (!dsa_port_is_cpu(cpu_dp))
-+			continue;
++	/* The host port is the destination for traffic matching mac_fltres1
++	 * and mac_fltres0 on all ports except itself. Default to an invalid
++	 * value.
++	 */
++	general_params->host_port = ds->num_ports;
 +
-+		list_for_each_entry(dp, &dst->ports, list) {
-+			if (dp->ds != cpu_dp->ds)
-+				continue;
++	/* Link-local traffic received on casc_port will be forwarded
++	 * to host_port without embedding the source port and device ID
++	 * info in the destination MAC address, and no RX timestamps will be
++	 * taken either (presumably because it is a cascaded port and a
++	 * downstream SJA switch already did that).
++	 * To disable the feature, we need to do different things depending on
++	 * switch generation. On SJA1105 we need to set an invalid port, while
++	 * on SJA1110 which support multiple cascaded ports, this field is a
++	 * bitmask so it must be left zero.
++	 */
++	if (!priv->info->multiple_cascade_ports)
++		general_params->casc_port = ds->num_ports;
 +
-+			if (dsa_port_is_user(dp) || dsa_port_is_dsa(dp))
-+				dp->cpu_dp = cpu_dp;
++	for (port = 0; port < ds->num_ports; port++) {
++		bool is_upstream = dsa_is_upstream_port(ds, port);
++		bool is_dsa_link = dsa_is_dsa_port(ds, port);
++
++		/* Upstream ports can be dedicated CPU ports or
++		 * upstream-facing DSA links
++		 */
++		if (is_upstream) {
++			if (general_params->host_port == ds->num_ports) {
++				general_params->host_port = port;
++			} else {
++				dev_err(ds->dev,
++					"Port %llu is already a host port, configuring %d as one too is not supported\n",
++					general_params->host_port, port);
++				return -EINVAL;
++			}
++		}
++
++		/* Cascade ports are downstream-facing DSA links */
++		if (is_dsa_link && !is_upstream) {
++			if (priv->info->multiple_cascade_ports) {
++				general_params->casc_port |= BIT(port);
++			} else if (general_params->casc_port == ds->num_ports) {
++				general_params->casc_port = port;
++			} else {
++				dev_err(ds->dev,
++					"Port %llu is already a cascade port, configuring %d as one too is not supported\n",
++					general_params->casc_port, port);
++				return -EINVAL;
++			}
 +		}
 +	}
 +
-+	return dsa_tree_setup_default_cpu(dst);
++	if (general_params->host_port == ds->num_ports) {
++		dev_err(ds->dev, "No host port configured\n");
++		return -EINVAL;
++	}
++
++	return 0;
 +}
 +
- static void dsa_tree_teardown_cpu_ports(struct dsa_switch_tree *dst)
+ static int sja1105_init_general_params(struct sja1105_private *priv)
  {
- 	struct dsa_port *dp;
-@@ -921,7 +952,7 @@ static int dsa_tree_setup(struct dsa_switch_tree *dst)
- 	if (!complete)
- 		return 0;
+ 	struct sja1105_general_params_entry default_general_params = {
+@@ -706,12 +772,6 @@ static int sja1105_init_general_params(struct sja1105_private *priv)
+ 		.mac_flt0    = SJA1105_LINKLOCAL_FILTER_B_MASK,
+ 		.incl_srcpt0 = false,
+ 		.send_meta0  = false,
+-		/* The destination for traffic matching mac_fltres1 and
+-		 * mac_fltres0 on all ports except host_port. Such traffic
+-		 * receieved on host_port itself would be dropped, except
+-		 * by installing a temporary 'management route'
+-		 */
+-		.host_port = priv->ds->num_ports,
+ 		/* Default to an invalid value */
+ 		.mirr_port = priv->ds->num_ports,
+ 		/* No TTEthernet */
+@@ -731,16 +791,12 @@ static int sja1105_init_general_params(struct sja1105_private *priv)
+ 		.header_type = ETH_P_SJA1110,
+ 	};
+ 	struct sja1105_general_params_entry *general_params;
+-	struct dsa_switch *ds = priv->ds;
+ 	struct sja1105_table *table;
+-	int port;
++	int rc;
  
--	err = dsa_tree_setup_default_cpu(dst);
-+	err = dsa_tree_setup_cpu_ports(dst);
- 	if (err)
- 		return err;
+-	for (port = 0; port < ds->num_ports; port++) {
+-		if (dsa_is_cpu_port(ds, port)) {
+-			default_general_params.host_port = port;
+-			break;
+-		}
+-	}
++	rc = sja1105_init_topology(priv, &default_general_params);
++	if (rc)
++		return rc;
+ 
+ 	table = &priv->static_config.tables[BLK_IDX_GENERAL_PARAMS];
+ 
+@@ -763,19 +819,6 @@ static int sja1105_init_general_params(struct sja1105_private *priv)
+ 
+ 	sja1110_select_tdmaconfigidx(priv);
+ 
+-	/* Link-local traffic received on casc_port will be forwarded
+-	 * to host_port without embedding the source port and device ID
+-	 * info in the destination MAC address, and no RX timestamps will be
+-	 * taken either (presumably because it is a cascaded port and a
+-	 * downstream SJA switch already did that).
+-	 * To disable the feature, we need to do different things depending on
+-	 * switch generation. On SJA1105 we need to set an invalid port, while
+-	 * on SJA1110 which support multiple cascaded ports, this field is a
+-	 * bitmask so it must be left zero.
+-	 */
+-	if (!priv->info->multiple_cascade_ports)
+-		general_params->casc_port = ds->num_ports;
+-
+ 	return 0;
+ }
  
 -- 
 2.25.1
