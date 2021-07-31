@@ -2,165 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A48733DC618
-	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 15:27:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9C913DC63B
+	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 16:08:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233046AbhGaN1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Jul 2021 09:27:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40728 "EHLO
+        id S233108AbhGaOIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Jul 2021 10:08:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232211AbhGaN1O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Jul 2021 09:27:14 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B861C06175F;
-        Sat, 31 Jul 2021 06:27:08 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id cf5so5983371edb.2;
-        Sat, 31 Jul 2021 06:27:08 -0700 (PDT)
+        with ESMTP id S232752AbhGaOIL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Jul 2021 10:08:11 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39DFAC06175F
+        for <netdev@vger.kernel.org>; Sat, 31 Jul 2021 07:08:04 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id o7-20020a05600c5107b0290257f956e02dso4559771wms.1
+        for <netdev@vger.kernel.org>; Sat, 31 Jul 2021 07:08:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=in-reply-to:references:thread-topic:user-agent:mime-version
-         :content-transfer-encoding:subject:from:date:to:cc:message-id;
-        bh=xl09+cxouK/J8oQbWqVsZd+JkQVF+Hr4QFi7eK3edzg=;
-        b=nQgLQpxWPfiFCI3TlKKidWTFMQj5R2bx5WVEcdYTDRAIO5H7Ki22zu4sGPWAHI0246
-         aEm1k5BLdaoYUAN6ifFPowXWMiJzJH2wC12SKbmsD6h2g1rpquOy2ntEsMjD9RAwbBHC
-         65yy2xHFzo3hj4jHF8On0YcLlRbnUsA0c9CAkk4xedWzFBXnypui1qTU6mVC1V8CkUhw
-         B9Xa3g6aPyMxgfmAqZWiswEARMM8yfW6Ro+wMDLpkZ/S6BKk6RMTz2k84R47VsB8tW5A
-         Gk4VfrKIButSiEBtsVBM9IsDlPrE2IlARmuURy2pYI3SjoYXYhKZbOkSRyD8ObMfxBEe
-         3HVA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=8JwCnrBQjsgBVXWNwAsHcfb+DAKs5JRaEidFNsPaOG0=;
+        b=go1WxYaL+pIgLDgHEoJWKxbNje0zFUvaEcDJWszEGzYxan2L9Ik8RjFBVwEx+0kFEL
+         7rPbO5e6UHSb67pSPtdOh4JQWCelQ/xNq55nl2Db4iGvGokc61WO/vemPKrPNBTYz2E5
+         wnj+7ZmRVW7AuLFYlf828xskGTyLw3V2kbKG9H1xI2QZKy5DGHyX8Ux1brqoPhdksm2V
+         cXQ/aa//Olp3E+6NFUKcynUGiJD3K4fFzgMBrH+ImEOX8s/4KZTbwyGkae39YtNKvd7K
+         hayL74Ptpa+h2ICtwnuFnKQBaAdHXClS/DAqAGCIkrQ59Dh+5Cwzy/k+sUQihgVGq0m5
+         DD5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:in-reply-to:references:thread-topic:user-agent
-         :mime-version:content-transfer-encoding:subject:from:date:to:cc
-         :message-id;
-        bh=xl09+cxouK/J8oQbWqVsZd+JkQVF+Hr4QFi7eK3edzg=;
-        b=DveEK/4bWATKEx0rr8/Zm/Vw5r8ATIZ8Kipfcjnc5jF9kMb+uzMHU9daJ+qpuj83p5
-         QOjgFJ8IzXXPTF2+B6izStSVky0J54ywuoFb4xSW2S/Mcoo0CCbaKFjBZmykt2y2Fkq1
-         XgNLTDr6xnX8dIIWLvVFmQXZxThjyD7INGA7xPazvFw/Oi5ubohX5OLNPxHbctXAuWN8
-         vQzHPEP88JaNmqyuL94NALISIX722KTd8q2rWt8y1NkKnJavL72aw+h18S7AbbOuDGoP
-         HdFxN8HGGiRQdsgBmRZrscP4jnNuJFz4RnQFw96XzKqpQgduJSE15QLJjxpnligbXqko
-         ch5g==
-X-Gm-Message-State: AOAM532hxKi1dL7RHMrduU9WZx20gSnLWILvpRHVoaNi+440EGTx/TVw
-        fP9xbiRJdqVkgf4JJhzYmkehE5DFrh+mcw==
-X-Google-Smtp-Source: ABdhPJzlw31pNS40a/9JFPmy1rPxcNXk5ZQGBfrczjR6U3W2TJEh4j5Csva/YdpkPS3o00SAyEjjWA==
-X-Received: by 2002:a05:6402:c01:: with SMTP id co1mr9067625edb.287.1627738027162;
-        Sat, 31 Jul 2021 06:27:07 -0700 (PDT)
-Received: from [192.168.1.158] (83-87-52-217.cable.dynamic.v4.ziggo.nl. [83.87.52.217])
-        by smtp.gmail.com with ESMTPSA id l16sm1701766eje.67.2021.07.31.06.27.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 31 Jul 2021 06:27:06 -0700 (PDT)
-In-Reply-To: <20210727132015.835651-5-sashal@kernel.org>
-References: <20210727132015.835651-1-sashal@kernel.org> <20210727132015.835651-5-sashal@kernel.org>
-X-Referenced-Uid: 5707
-Thread-Topic: [PATCH AUTOSEL 4.19 5/6] mt7530 fix mt7530_fdb_write vid missing ivl bit
-X-Blue-Identity: !l=240&o=43&fo=2660&pl=166&po=0&qs=PREFIX&f=HTML&m=!%3ANzRiZDk5M2QtNTJhNy00MTE4LThlNmYtYTk2ZDg2NDQzNGU0%3ASU5CT1g%3D%3ANTcwNw%3D%3D%3AANSWERED&p=164&q=SHOW
-X-Is-Generated-Message-Id: true
-User-Agent: Android
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8JwCnrBQjsgBVXWNwAsHcfb+DAKs5JRaEidFNsPaOG0=;
+        b=oFQFbrTS6895/rKUHnm2i/YFYEYG4Oy/hEsi21t0l9ypL+kM6Drk3or2nb6Y4XZWEK
+         ujKaXbCYWo/JUb+iV2b0SHq4ILoo7t0jvJP5dCbzBg31ZU1iCcnC6RuaNjf4XhKl/+Qf
+         YpGArhqrCM2lLlDVXAH3qGKJf7ZsXQK1dmIQ446pTR3mW6udsln84E++4uORoyXIUey1
+         Z0qQHtIDBy9RYOmhVy6nxZ74pe88z8R2zmj5P0j+ftES+BK5YepBgp/8qSOKyTMwW8Aq
+         nsfVsaqv0nyZWQCgH/e3Ku+HhK0swpfmdJk5LGFJoBNzwQFwUKsZKKsDQx3LWjDeuAFx
+         M+Xw==
+X-Gm-Message-State: AOAM532lc7EcOuKMR9bMg4ZBqC7MQQLjqM4fymcSSChR9CUDuchwuGMZ
+        GFom6PkJ73xT4KNf69fI8ds=
+X-Google-Smtp-Source: ABdhPJxPO9PGV0wQaIqqEPvDHXVJV8Y/POCx4A3SgXw8ulD2eTIRiehIcjcsX7kwpDHrkvKT2AGBUw==
+X-Received: by 2002:a05:600c:ac4:: with SMTP id c4mr8391414wmr.10.1627740482641;
+        Sat, 31 Jul 2021 07:08:02 -0700 (PDT)
+Received: from skbuf ([82.76.66.29])
+        by smtp.gmail.com with ESMTPSA id h8sm4972845wmb.35.2021.07.31.07.08.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 31 Jul 2021 07:08:02 -0700 (PDT)
+Date:   Sat, 31 Jul 2021 17:08:00 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>
+Subject: Re: [PATCH net-next] net: dsa: mt7530: drop paranoid checks in
+ .get_tag_protocol()
+Message-ID: <20210731140800.ahs6lyrcekbxsycn@skbuf>
+References: <20210730225714.1857050-1-vladimir.oltean@nxp.com>
+ <cc8e24d2-9fed-872f-4f0a-92a6892dfd5e@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Local-Message-Id: <e1508978-8f0e-40a6-baa8-3d3bc4c82811@gmail.com>
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH AUTOSEL 4.19 5/6] mt7530 fix mt7530_fdb_write vid missing ivl bit
-From:   Eric Woudstra <ericwouds@gmail.com>
-Date:   Sat, 31 Jul 2021 15:27:04 +0200
-To:     Sasha Levin <sashal@kernel.org>
-CC:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Message-ID: <e1508978-8f0e-40a6-baa8-3d3bc4c82811@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cc8e24d2-9fed-872f-4f0a-92a6892dfd5e@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-A few days after this patch, I send in another as it needs a fix=2E If you=
- apply this patch, please also apply the other: set ivl bit only for vid la=
-rger than 1=2E
-
-On Jul 27, 2021, 3:20 PM, at 3:20 PM, Sasha Levin <sashal@k=
-ernel=2Eorg> wrote:
->From: Eric Woudstra <ericwouds@gmail=2Ecom>
->
->[ Upstr=
-eam commit 11d8d98cbeef1496469b268d79938b05524731e8 ]
->
->According to refer=
-ence guides mt7530 (mt7620) and mt7531:
->
->NOTE: When IVL is reset, MAC[47:=
-0] and FID[2:0] will be used to
->read/write the address table=2E When IVL i=
-s set, MAC[47:0] and CVID[11:0]
->will be used to read/write the address tab=
-le=2E
->
->Since the function only fills in CVID and no FID, we need to set t=
-he
->IVL bit=2E The existing code does not set it=2E
->
->This is a fix for th=
-e issue I dropped here earlier:
->
->http://lists=2Einfradead=2Eorg/pipermail=
-/linux-mediatek/2021-June/025697=2Ehtml
->
->With this patch, it is now possi=
-ble to delete the 'self' fdb entry
->manually=2E However, wifi roaming still=
- has the same issue, the entry
->does not get deleted automatically=2E Wifi =
-roaming also needs a fix
->somewhere else to function correctly in combinati=
-on with vlan=2E
->
->Signed-off-by: Eric Woudstra <ericwouds@gmail=2Ecom>
->Si=
-gned-off-by: David S=2E Miller <davem@davemloft=2Enet>
->Signed-off-by: Sash=
-a Levin <sashal@kernel=2Eorg>
->---
-> drivers/net/dsa/mt7530=2Ec | 1 +
-> dri=
-vers/net/dsa/mt7530=2Eh | 1 +
-> 2 files changed, 2 insertions(+)
->
->diff --=
-git a/drivers/net/dsa/mt7530=2Ec b/drivers/net/dsa/mt7530=2Ec
->index 6335c4=
-ea0957=2E=2E96dbc51caf48 100644
->--- a/drivers/net/dsa/mt7530=2Ec
->+++ b/dr=
-ivers/net/dsa/mt7530=2Ec
->@@ -414,6 +414,7 @@ mt7530_fdb_write(struct mt753=
-0_priv *priv, u16 vid,
-> 	int i;
+On Fri, Jul 30, 2021 at 08:08:43PM -0700, Florian Fainelli wrote:
+> On 7/30/2021 3:57 PM, Vladimir Oltean wrote:
+> > It is desirable to reduce the surface of DSA_TAG_PROTO_NONE as much as
+> > we can, because we now have options for switches without hardware
+> > support for DSA tagging, and the occurrence in the mt7530 driver is in
+> > fact quite gratuitout and easy to remove. Since ds->ops->get_tag_protocol()
+> > is only called for CPU ports, the checks for a CPU port in
+> > mtk_get_tag_protocol() are redundant and can be removed.
 > 
-> 	reg[1] |=3D vid & CVID_MASK;
->+	reg[=
-1] |=3D ATA2_IVL;
-> 	reg[2] |=3D (aging & AGE_TIMER_MASK) << AGE_TIMER;
-> 	=
-reg[2] |=3D (port_mask & PORT_MAP_MASK) << PORT_MAP;
-> 	/* STATIC_ENT indic=
-ate that entry is static wouldn't
->diff --git a/drivers/net/dsa/mt7530=2Eh =
-b/drivers/net/dsa/mt7530=2Eh
->index 101d309ee445=2E=2E72f53e6bc145 100644
->=
---- a/drivers/net/dsa/mt7530=2Eh
->+++ b/drivers/net/dsa/mt7530=2Eh
->@@ -43,=
-6 +43,7 @@
-> #define  STATIC_EMP			0
-> #define  STATIC_ENT			3
-> #define MT=
-7530_ATA2			0x78
->+#define  ATA2_IVL			BIT(15)
-> 
-> /* Register for address=
- table write data */
-> #define MT7530_ATWD			0x7c
->-- 
->2=2E30=2E2
+> The point of the check was in case the designated CPU port from device
+> tree/platform data would not match what the Mediatek driver supports,
+> similar to what b53 does in the same vein. I am fine with removing that
+> check for mt7530 as it does not look like there is an use case where the CPU
+> port is not actually MT7530_CPU_PORT.
 
+So if mt7530 only supports port 6 as a CPU port, how is Qingfang testing
+multiple CPU ports on it?
