@@ -2,59 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB1813DC301
-	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 05:45:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB3803DC31E
+	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 06:13:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234413AbhGaDpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 23:45:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40294 "EHLO
+        id S231491AbhGaENz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Jul 2021 00:13:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231491AbhGaDpx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 23:45:53 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59836C06175F;
-        Fri, 30 Jul 2021 20:45:47 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id nh14so6209834pjb.2;
-        Fri, 30 Jul 2021 20:45:47 -0700 (PDT)
+        with ESMTP id S229448AbhGaENz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Jul 2021 00:13:55 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9097DC06175F;
+        Fri, 30 Jul 2021 21:13:48 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id t3so11286992plg.9;
+        Fri, 30 Jul 2021 21:13:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=to:cc:from:subject:message-id:date:user-agent:mime-version
          :content-transfer-encoding:content-language;
         bh=1GinwmTZ6p1ZyLvkmIYCrplYFGZWc23PDJonSjEXc+Y=;
-        b=dcr+q9ixLa0ovEJA8HC10Veel2PT4jKqbEfSTxFxs7u+1QL9T98tv0LWNe/JKu6DCS
-         DiNJmFITVubvdUmMQBe4OySSbEDN8Rvenp7AXlei5CZyMWfoFd9tzuOXsTLb56JqB+j7
-         TEeSMagi2uyx477HlBEWFJeTGIF3s/6cKlYM0knOHjWO0AWF/0fLuqAUnICyW70CvjGl
-         lS6PZXxYQNJyvks5nAZ+7v3EP/XaBFf0T9baae1mIfxmwrYuZu5/s/a1NWptWvrlOaw6
-         bkMAIlsJevRUM70QG6OyWngX9Iyy2VvUOWhNCvJdBzFqinVdq9KI3Gl1ccfoZ0W0r/XP
-         y04w==
+        b=lrTUsK1a4TAXLwOJbnjXVYINibE0UkQouroDryetct3Mx6Wrpl0JRuMz6LHJ80bfmE
+         UUEXCWQP3cHOzCRz7BaPbuRf9HsDYGcBEB/bBmHh1Frcy5WhmETxhFrfC9cpFcyWcajn
+         eQ3KY8jmqR1sdYO+ZQ7LyxYf6TQK9vfx3tZHDwGTBN+fntqW+NPVvDeZQ428UDu+A5hW
+         ZBfgcNKoazGstkNeS8IBuSEAQZ0UlfXH1UaYbBFKK0GLGQj1xGyEOZDkw6t+BK6ly/Fa
+         IH5ccS4ypNzEKPwWm13t2y/FFKJBS3Hfp2g9Wg2PPN7SsubwRoV8Ou13Pott0IzlpGP3
+         LcCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
          :mime-version:content-transfer-encoding:content-language;
         bh=1GinwmTZ6p1ZyLvkmIYCrplYFGZWc23PDJonSjEXc+Y=;
-        b=SMXeuQc8rIAL47M0zK+yj0w7yTozZ/2kF4q7yEI7tAiuoHvwU3MHH4hWM8Ej3pa7/H
-         ZANdpMLOERIxLLd4A1eDV0qs2FGbJjpdSeGDZQJBxlPCjS69Cjqyk3+IX6gxawlNFcgj
-         bcYF1IAMKvg6BGs4oOjxrInAb0y71atNaYr8az4qsB57DZI8LjSByRQOHR79sJ2i11Rt
-         XnB5k+AmgOmeOX6DRsJbJUbQsow48QdTJKnBXaWThowq2IfXwL/sx4Co3gZcvw7qvrgZ
-         1GEM1jBL+pCtm7Vq8nqrmlcnyJe+cyZlKDu9EmkEmxvBIEMhd+97GfTCnFkqz8L45yBI
-         JfJQ==
-X-Gm-Message-State: AOAM530VvWgmauerNvSqkNkl1RsQKrwbuv66ucFE2D37kVk7IuiXNJrF
-        q7728AL5dTeoPTcAnV1jKiKYAiqGsglziQ==
-X-Google-Smtp-Source: ABdhPJyL2ozSqTKcYN/obzp11aUvsU41m/GJ5i3xFwj8vbYn37+vYg+cAG8Re7kO3q6IOkmJcQKkqw==
-X-Received: by 2002:a17:902:a9c7:b029:12b:349:b318 with SMTP id b7-20020a170902a9c7b029012b0349b318mr5137210plr.13.1627703146894;
-        Fri, 30 Jul 2021 20:45:46 -0700 (PDT)
-Received: from [10.106.0.42] ([45.135.186.29])
-        by smtp.gmail.com with ESMTPSA id z11sm3742109pjq.13.2021.07.30.20.45.45
+        b=EalSlwqTAr5m3iv7RHPorDFxzGhp8nmlglQoElSWnKfviBg0N4iXw6IyxNWtNVyq6m
+         DdCRFXfi/wZaGfhf/RsMssCIpV7/QVsIW0sW1icJx18S5AVj1ozC/m192ZN5tIUJT90n
+         fsl1IrZ56/g+wVv5KRtAu8g4jdzWRYoCbBF+UExhw7lNzU70Kt0j9iG7I2h2rjV6dX+O
+         Y5PBDr5gqATKUZF2xYxfdt/AHX0iS9onAnVDb7lnyYpPP+cAxaL0+aakhElonvjlNKut
+         dchbbSq93ENY9MDAUOt9IfWG4RL7nrB9397YKobJeJAPzf7avFYWAeZMelq7U4grkWjm
+         CKUg==
+X-Gm-Message-State: AOAM532ujBQ6ZB6j87ipLBlKiC+A+QCRtvxK8+Z8HRaASqXD5CJ6HZRM
+        er+Kz0wCMvnHtxLZTwhgEIQ=
+X-Google-Smtp-Source: ABdhPJxh1URjLRxx/MADF1nHo/octUYF4390gZQLE9oTEpF5OT5m8hG55tKx5HD9QtOf+0EBVVW8Aw==
+X-Received: by 2002:a17:902:f68d:b029:12c:4619:c63a with SMTP id l13-20020a170902f68db029012c4619c63amr4724967plg.66.1627704828165;
+        Fri, 30 Jul 2021 21:13:48 -0700 (PDT)
+Received: from [10.106.0.50] ([45.135.186.29])
+        by smtp.gmail.com with ESMTPSA id s5sm3976860pfk.114.2021.07.30.21.13.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Jul 2021 20:45:46 -0700 (PDT)
-To:     3chas3@gmail.com
-Cc:     linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        Fri, 30 Jul 2021 21:13:47 -0700 (PDT)
+To:     amitkarwar@gmail.com, ganapathi017@gmail.com,
+        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
+        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, baijiaju1990@gmail.com
 From:   Li Tuo <islituo@gmail.com>
 Subject: [BUG] mwifiex: possible null-pointer dereference in
  mwifiex_dnld_cmd_to_fw()
-Message-ID: <790f9160-f549-2788-cd37-13924883d5c1@gmail.com>
-Date:   Sat, 31 Jul 2021 11:45:46 +0800
+Message-ID: <968036b8-df27-3f22-074b-3aeed7c7bbf2@gmail.com>
+Date:   Sat, 31 Jul 2021 12:13:46 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.12.0
 MIME-Version: 1.0
