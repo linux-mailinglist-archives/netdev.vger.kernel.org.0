@@ -2,88 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3511C3DC408
-	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 08:34:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB99E3DC411
+	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 08:38:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236977AbhGaGeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Jul 2021 02:34:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51462 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232024AbhGaGeU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Jul 2021 02:34:20 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B600C06175F;
-        Fri, 30 Jul 2021 23:34:13 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id u9-20020a17090a1f09b029017554809f35so23904361pja.5;
-        Fri, 30 Jul 2021 23:34:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-transfer-encoding:content-language;
-        bh=nwHZHKPyHdulVpG6nZp/fHzmawIMoWKSVKxMeN3+CoI=;
-        b=nZszvoxugr7/mJ4QS2quqa6R7rKRH8itdwlZUuyWTz3JIkRr3p9w0c7NFQWw9drwky
-         3E6zUdRt0BWtpzvO1h/hQnwcIqmr0AYTnl3FPR1RhQnCbCEPIZTBwOOj0J8Z6SM6/4G1
-         zhd6B/NXeZTO3YffD7B3W6EXVAWhctXcRzh/WqpsUTVZ8ZI66Cql7frjRn4I9fqyj7Ny
-         Igl2h9K1NW+PxESbMKhNqRnc0hdC/GLLmnfWdSMjb5XtNan7OsIOWWgoSPF+TmwddUwV
-         EZzWX1jrT9iLmvcLQa7+xw7P/pBr7FOuSUbYu/S1vW2yoXv2tkdtaj7y2+ncZD/8q7gz
-         sqWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-transfer-encoding:content-language;
-        bh=nwHZHKPyHdulVpG6nZp/fHzmawIMoWKSVKxMeN3+CoI=;
-        b=URnQJ5z/4jgjHDGtxjA5Y8LRZwK0x+WW86iHY9J9eZ8qdXzDXdAxKKCenbXcRkVtZi
-         t6vmAWX0U2eSTPH54tOdm5DYRupW2mjZwMuc3fld45sWRbtDAujMEsFoGbmIJJErwIR9
-         8bWBp9WbEsiB/S5b0a9K0vLshym+lhhrcOSgwyDfa+1H7bYz6Yf980IjQVkCAljEJDcs
-         gNM3K+jXblYrDlKaK36vHPiMH4/omQYJ52RaUfzjzqhryTx5g7MKSvOp0XXKXKI58f69
-         0NBbCSFVX6fIForrjZXqnijUsMT3KYGUNxeYE80Fe/TSjgUdKX1VjGSvf0Apk1Uswj09
-         Agrg==
-X-Gm-Message-State: AOAM531KDDuXd8R2aWJjkjtKWY//t0SDZu1IpYZ8GsymvnDXVKrYPkCV
-        D0Srtkb3WG5e6i7u7bfIzhg=
-X-Google-Smtp-Source: ABdhPJw5aaSdBOA/B22KmWjK7ZemAJJrWlxSuRwt1dUh6nh9ejaJZSIA/kWgMbDU7K6686nV3CqBFg==
-X-Received: by 2002:a65:6a52:: with SMTP id o18mr2433953pgu.414.1627713253034;
-        Fri, 30 Jul 2021 23:34:13 -0700 (PDT)
-Received: from [10.106.0.50] ([45.135.186.29])
-        by smtp.gmail.com with ESMTPSA id n17sm5276730pgj.93.2021.07.30.23.34.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Jul 2021 23:34:12 -0700 (PDT)
-To:     vz@mleia.com, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, baijiaju1990@gmail.com
-From:   Li Tuo <islituo@gmail.com>
-Subject: [BUG] net: ethernet: lpc_eth: possible uninitialized-variable access
- in lpc_eth_drv_probe()
-Message-ID: <e431a6ad-d06c-2913-55ec-303707386029@gmail.com>
-Date:   Sat, 31 Jul 2021 14:34:09 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S237209AbhGaGii (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Jul 2021 02:38:38 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:12335 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231887AbhGaGih (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Jul 2021 02:38:37 -0400
+Received: from dggeme766-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GcDxK5b8Tz81GN;
+        Sat, 31 Jul 2021 14:33:41 +0800 (CST)
+Received: from huawei.com (10.175.104.82) by dggeme766-chm.china.huawei.com
+ (10.3.19.112) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Sat, 31
+ Jul 2021 14:38:28 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] net: natsemi: Fix missing pci_disable_device() in probe and remove
+Date:   Sat, 31 Jul 2021 14:38:01 +0800
+Message-ID: <20210731063801.818658-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggeme766-chm.china.huawei.com (10.3.19.112)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Replace pci_enable_device() with pcim_enable_device(),
+pci_disable_device() and pci_release_regions() will be
+called in release automatically.
 
-Our static analysis tool finds a possible uninitialized-variable access 
-in the nxp driver in Linux 5.14.0-rc3:
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+---
+ drivers/net/ethernet/natsemi/natsemi.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-At the beginning of the function lpc_eth_drv_probe(), the variable 
-dma_handle is not initialized.
-If the following conditions are false, it remains uninitialized.
-1304:    if (use_iram_for_net(dev))
-1314:    if (pldat->dma_buff_base_v == NULL)
+diff --git a/drivers/net/ethernet/natsemi/natsemi.c b/drivers/net/ethernet/natsemi/natsemi.c
+index 51b4b25d15ad..84f7dbe9edff 100644
+--- a/drivers/net/ethernet/natsemi/natsemi.c
++++ b/drivers/net/ethernet/natsemi/natsemi.c
+@@ -819,7 +819,7 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		printk(version);
+ #endif
+ 
+-	i = pci_enable_device(pdev);
++	i = pcim_enable_device(pdev);
+ 	if (i) return i;
+ 
+ 	/* natsemi has a non-standard PM control register
+@@ -852,7 +852,7 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	ioaddr = ioremap(iostart, iosize);
+ 	if (!ioaddr) {
+ 		i = -ENOMEM;
+-		goto err_ioremap;
++		goto err_pci_request_regions;
+ 	}
+ 
+ 	/* Work around the dropped serial bit. */
+@@ -974,9 +974,6 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
+  err_register_netdev:
+ 	iounmap(ioaddr);
+ 
+- err_ioremap:
+-	pci_release_regions(pdev);
+-
+  err_pci_request_regions:
+ 	free_netdev(dev);
+ 	return i;
+@@ -3241,7 +3238,6 @@ static void natsemi_remove1(struct pci_dev *pdev)
+ 
+ 	NATSEMI_REMOVE_FILE(pdev, dspcfg_workaround);
+ 	unregister_netdev (dev);
+-	pci_release_regions (pdev);
+ 	iounmap(ioaddr);
+ 	free_netdev (dev);
+ }
+-- 
+2.17.1
 
-However, it is accessed through:
-1333:    pldat->dma_buff_base_p = dma_handle;;
-
-I am not quite sure whether this possible uninitialized-variable access 
-is real and how to fix it if it is real.
-Any feedback would be appreciated, thanks!
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-
-Best wishes,
-Tuo Li
