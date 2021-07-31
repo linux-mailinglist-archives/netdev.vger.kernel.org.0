@@ -2,36 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38F483DC655
-	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 16:39:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 851863DC657
+	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 16:40:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233144AbhGaOjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Jul 2021 10:39:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44704 "EHLO mail.kernel.org"
+        id S233192AbhGaOkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Jul 2021 10:40:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45352 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233147AbhGaOja (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 31 Jul 2021 10:39:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7129F60C3F;
-        Sat, 31 Jul 2021 14:39:23 +0000 (UTC)
+        id S233147AbhGaOkS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 31 Jul 2021 10:40:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3F50960C3F;
+        Sat, 31 Jul 2021 14:40:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627742363;
-        bh=AKrk37W3J+Qc1vsOls7j9PcAcdJzI1GvPxAcbK/wpkg=;
+        s=k20201202; t=1627742412;
+        bh=9w96jE3kBxCB5zl0EAoh95n9JLkJjpWwO1VSUFx433Q=;
         h=From:To:Cc:Subject:Date:From;
-        b=M0b8s5yJOimu70ZdL5KWc97Jd3N1UArCd/V7pHVIZaQzi+M3XiO9TRayrlfyNbYbZ
-         XNPYmjus/vPqGQPrfAROnJgH5QZYGSolGYgWum3y8jU7fwBokCUZGTMpAZN96xVSXz
-         yf3dRoSAh099BhEYHhtLY7/B1YyQRTkmtrq03ecXrc3nW3f06zTX8blClIoxI6nGnu
-         cBh4C3C+J1W3FgeK9mnX7iZSxpqzEQ/aaQ3EQ5Y82oN+9720ay0GbKaFgYTwXPxzdi
-         zdcVBBRCjSM8SBs3f1qcY3wIjYFW68WXyluzg/w+VVm+98/Gh4dbseZiYGZwUg0+ZN
-         jk3XBj2bfshNA==
+        b=mpdhzb+MRaVB3x84SckQJkVYzbjDaAQageG4qY+iKVduSlufMP5OBg5unhOO/uDLq
+         Xio+xmX02pgxOi+9nyu/RqRUvYzzEkMXc2uSXyBuDuuDOGfbj0NB2A5TPS6ZFj186w
+         fzu/6JLqpJga/JZwK8jFIqlH6vP9uaxm+GdwchwIbdigcAawhrjhGUgvjhyVW39Yzx
+         R5f0R1c+W2mV5xYZzwkGDek9K35Q7sz6sW/lSBCCYq/k/vK//20+ER0WGKyvG4GzVW
+         e76PtrBrdNSbbw0TDXsmSaCJSMfSrmB7WfRLIHK8fsyza7YjPMR0dJEoPyUuAdg7q8
+         HFu9oOMP5Hjrw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, lars.povlsen@microchip.com,
-        Steen.Hegelund@microchip.com, UNGLinuxDriver@microchip.com,
-        bjarni.jonasson@microchip.com, Jakub Kicinski <kuba@kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: [PATCH net] net: sparx5: fix compiletime_assert for GCC 4.9
-Date:   Sat, 31 Jul 2021 07:39:17 -0700
-Message-Id: <20210731143917.994166-1-kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, corbet@lwn.net, linux-doc@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] docs: operstates: fix typo
+Date:   Sat, 31 Jul 2021 07:40:07 -0700
+Message-Id: <20210731144007.994515-1-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -39,54 +37,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stephen reports sparx5 broke GCC 4.9 build.
-Move the compiletime_assert() out of the static function.
-Compile-tested only, no object code changes.
+TVL -> TLV
 
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Fixes: f3cad2611a77 ("net: sparx5: add hostmode with phylink support")
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- .../ethernet/microchip/sparx5/sparx5_netdev.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ Documentation/networking/operstates.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
-index 9d485a9d1f1f..1a240e6bddd0 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
-@@ -13,7 +13,19 @@
-  */
- #define VSTAX 73
+diff --git a/Documentation/networking/operstates.rst b/Documentation/networking/operstates.rst
+index 9c918f7cb0e8..f6b9cce5b201 100644
+--- a/Documentation/networking/operstates.rst
++++ b/Documentation/networking/operstates.rst
+@@ -111,7 +111,7 @@ it as lower layer.
  
--static void ifh_encode_bitfield(void *ifh, u64 value, u32 pos, u32 width)
-+#define ifh_encode_bitfield(ifh, value, pos, _width)			\
-+	({								\
-+		u32 width = (_width);					\
-+									\
-+		/* Max width is 5 bytes - 40 bits. In worst case this will
-+		 * spread over 6 bytes - 48 bits
-+		 */							\
-+		compiletime_assert(width <= 40,				\
-+				   "Unsupported width, must be <= 40");	\
-+		__ifh_encode_bitfield((ifh), (value), (pos), width);	\
-+	})
-+
-+static void __ifh_encode_bitfield(void *ifh, u64 value, u32 pos, u32 width)
- {
- 	u8 *ifh_hdr = ifh;
- 	/* Calculate the Start IFH byte position of this IFH bit position */
-@@ -22,11 +34,6 @@ static void ifh_encode_bitfield(void *ifh, u64 value, u32 pos, u32 width)
- 	u32 bit  = (pos % 8);
- 	u64 encode = GENMASK(bit + width - 1, bit) & (value << bit);
+ Note that for certain kind of soft-devices, which are not managing any
+ real hardware, it is possible to set this bit from userspace.  One
+-should use TVL IFLA_CARRIER to do so.
++should use TLV IFLA_CARRIER to do so.
  
--	/* Max width is 5 bytes - 40 bits. In worst case this will
--	 * spread over 6 bytes - 48 bits
--	 */
--	compiletime_assert(width <= 40, "Unsupported width, must be <= 40");
--
- 	/* The b0-b7 goes into the start IFH byte */
- 	if (encode & 0xFF)
- 		ifh_hdr[byte] |= (u8)((encode & 0xFF));
+ netif_carrier_ok() can be used to query that bit.
+ 
 -- 
 2.31.1
 
