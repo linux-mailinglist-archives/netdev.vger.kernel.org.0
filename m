@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 535173DC1D7
+	by mail.lfdr.de (Postfix) with ESMTP id 0A1943DC1D6
 	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 02:14:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234737AbhGaAOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 20:14:44 -0400
-Received: from mail-eopbgr50056.outbound.protection.outlook.com ([40.107.5.56]:60521
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        id S234625AbhGaAOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 20:14:42 -0400
+Received: from mail-eopbgr40043.outbound.protection.outlook.com ([40.107.4.43]:13735
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234520AbhGaAOi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Jul 2021 20:14:38 -0400
+        id S234366AbhGaAOh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Jul 2021 20:14:37 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ADprBsB4j4sIiBoQa3HagBVt1AmVF4lTD9kB2h+GMrTicCl0c7P971vW0I1wBdJJsjADMkh8XjSGyTgnI909i4UL5kXy/9K48xtC4xkwd48tSaCv0wnoLJeC4/dxXyEjFosLe2o0el6i6Pn0V2mHRV7ReBlSkfJRN4ASgSf+coQR+dOlkaDQ9IdLtaijEIXrFAztizV4e2KOooIZ8+LRRDlGmx3QpDGdy7pG1CsbjvYoUzNF0/1PYCdcTCA3TVJLBzCNKOgEsLpHQUgj2scDdpFDDv0ot54p5lMh3uO7jp1yCYR4lDqkOK7fCmUA6PXNKHtjZ9O3UQ1loIEcZ5sY5w==
+ b=ACEom6KtdgHClUlCG3BKSs8O5mXX3FYXaEQiSbAomha2XSSs1DVJfYCfvs7/ssPu1lNPCKCcs52HQ+ap2KOP3yumThkwZQxbtGFpw+a21P2IePNlmtDX+/a4BPlRV2pnuuqv82c8YAHXak5EW+BTmBMjDSHhy7ZPteCs7A9jvVIQdvJvqvij2KVGAkh13FmVQ+Wni915AfAwF/7uUQcJHUGp+VcF+vfliYSeBsV5SI8bQJL5SnI/09Q//8NxDwtb/cc5x5VX3r6V65GEk0B8GGQNfMOspjRqM4psOwIL28CfwbVts3nSt0/zqA+jLo6fkfkb1UMs6LGMDYZukYolPA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+FUbX4vC43iGoyFViHGeh8jv2RK37AK+Gwbm2JgVWoQ=;
- b=elnWu7WdYFHHewy0t2LIYtuUns5jToFCSnohDxUNaKXmL8Rk+qHgMFE9HaVdck/EfjTHEhxVoDxk15hDKMQbnH0RTclmzq3+FosORCurlASy7gXLWvgL3agG580SmJi2Ydtst5Ey3I9e3UkSpLzMCnHbiYSFx8wcG2xh8Ow3dnZi0m86xILOXstNQrkL0gTArAacN3+s5e8+vIiZxWrTZW0Y3OhF2kEm+eZtCkGqbf1BMmIBuCMZxy33fz9rg/rH3tV7mHKktTcbtdtOrDIOmi3e96nG8cJXudS2SntwgGBGyQwp3E4J8cvE07v5JEK+1wryS4V6+sDA/BOkZQi4Og==
+ bh=HwI0jm+ZWgmCnORWmGh1d1TegTIKQ6d1GNKUNNMaqnI=;
+ b=AOoWftExYeWn/rT/Mu+2w2OpdG6usRb/FoT3l9hSEjbfnfnmpFdvdxWDXopdDhA9R1YKTtgeFAxfjxVCX5DjqWoslhJueRd692rlwxbwbfsdk1ZyEwTDooTnLE8Y0b4Nwr0J8UpVLlnLAaSuXmqU4yvY09rtUxLg/5D7MpmyyXTUYMD69VCejwsBgRPMhlvKAxJ0g6UG9zDwpG0IN/mzTICjPbPwvj42oz0siaSEk9EBGcoDjDD2qzN/qRWvaf/naKuNg2zRJFdsBuivwASnW0dUi54In1eRBUlWDPAfQBdmgGbAeEvu8AWmvnD/Uac19WUUuHBeFpgc8JvsCL08gQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+FUbX4vC43iGoyFViHGeh8jv2RK37AK+Gwbm2JgVWoQ=;
- b=U6DxzYChyhisFaB36yYLkfiHPtJw7l1MC3D2sKv6WXJrVkcxrDL6tgXKYUo9S7Ps1OrGlXsLG/ojCLk62Lpxvwnadc9Tls8gnsgN/5gKSLDKkZxYyIt/Tp3AtNen798aK1+qeSyGJDric/33z6NSs7fjJLKZpmyaeGq/FolyyZE=
+ bh=HwI0jm+ZWgmCnORWmGh1d1TegTIKQ6d1GNKUNNMaqnI=;
+ b=AUPLAKVyveRjFrt5A72NQTL/Hwiyg46zi2ZyEUpj4LJ3DzYnEdv/15S7YtoFG3FpoLUYjYjnc5MhBbWE322DoWTmqZoicld4a1Lg9IS8Ui1k41QTG26Uwoalq4UuAA3bpac9rKK0SpcWahDvwoyZNzM+QgCJwwE9xunOOwpVPW0=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VE1PR04MB6511.eurprd04.prod.outlook.com (2603:10a6:803:11f::33) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.26; Sat, 31 Jul
- 2021 00:14:24 +0000
+ 2021 00:14:25 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4373.025; Sat, 31 Jul 2021
- 00:14:24 +0000
+ 00:14:25 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [RFC PATCH net-next 04/10] net: dsa: sja1105: manage the forwarding domain towards DSA ports
-Date:   Sat, 31 Jul 2021 03:14:02 +0300
-Message-Id: <20210731001408.1882772-5-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 05/10] net: dsa: sja1105: manage VLANs on cascade ports
+Date:   Sat, 31 Jul 2021 03:14:03 +0300
+Message-Id: <20210731001408.1882772-6-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210731001408.1882772-1-vladimir.oltean@nxp.com>
 References: <20210731001408.1882772-1-vladimir.oltean@nxp.com>
@@ -56,208 +56,96 @@ X-ClientProxiedBy: AM0PR02CA0161.eurprd02.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (82.76.66.29) by AM0PR02CA0161.eurprd02.prod.outlook.com (2603:10a6:20b:28d::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.21 via Frontend Transport; Sat, 31 Jul 2021 00:14:23 +0000
+Received: from localhost.localdomain (82.76.66.29) by AM0PR02CA0161.eurprd02.prod.outlook.com (2603:10a6:20b:28d::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.21 via Frontend Transport; Sat, 31 Jul 2021 00:14:24 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2fa6de38-f6b9-4be7-3b3a-08d953b826ce
+X-MS-Office365-Filtering-Correlation-Id: 4243b2e8-0478-4abc-46d2-08d953b8275d
 X-MS-TrafficTypeDiagnostic: VE1PR04MB6511:
-X-Microsoft-Antispam-PRVS: <VE1PR04MB6511400B75FADE3FCABD2620E0ED9@VE1PR04MB6511.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <VE1PR04MB65117CE4FF499817FEB73EB8E0ED9@VE1PR04MB6511.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:949;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vKjI9OKtrHo5KUp+9ZeF1TVvO6KSCgwsFE7PBR0GtRG+ihQus4zjbQzuBq0MYGSKF0OqMoRdcX/uJb2dvZ9Wka8Rgc53jtgolMCnklzGjdTShszM3K83oGma0w3UzyX3PnJ00AaogZ3bEzhTzUTCiWS+7tS6h9HFO1e7DfIbX6K41M7f3wEHUo09/lZGljDqo6Z+eCS9ok+17t5CwTvkQpT7CokL4/7nbJtjNQ731F92eizLRA4z0jGHYzsqhilZWs9XnDlALguZqvmYR7P43AMHBHcJS7F3Cz7jrfjQQiL0qQIsbtvjO2pTok9Qvzw6eA+P6m3+4RwNet55+Dh5Qy1j2yWjEWLD8tgRr52n0cLlnDrkvFE/F28Eq/9/rgWv7e045zKCAGl8rZZzN8xs9fPehrocOEtvkszcZ3BLWgeWB9ExsnjIYJPBYJFJ+aMlPkLBXeTIikFX7O8k2nW3WxMw7SiBScN0zAabYK2bhz13W6lN35iVHofCvaj+JkWf3nclf3fvR3OvsFsWOezN+K3Nt8YM+St+9Mn/OYWF+1SJYGDYWA1WZbZsanrruNkTlXicw20jFBSrzFi4AaiawOm47lo/D55FjA7TTcQ42/anfpOeQ4OUb1eHqJjW3AOSgCpWiq3cTfjOVTfh/1+CN77hVNve73YizGYm7KObIz0UyYVP7uHGKnGqqGqm5UsF
+X-Microsoft-Antispam-Message-Info: gL5FSY5wGz45NWg1e3qeGxEqZcpM9qtFIaVoDN4XiVd0Jhz//0mv+5Ojo4w9+NzQnySROiXcr9o5aucE9SqSxV2PNXK7hQdxKVMP4EqPAZFGmqpHEiXAF+WNaShGaJcDv9UfGXfUNaKehA+XLfvQdZQEWA4bsVt2mXERTtyjFuLbWp8YWzWz6/+2kSDPbgjBIx/8FDRmevjchTVAtEeDucYO0uf69dofKE66n0SB8CP9ziMEWvpUzXvJ4pIccBg2B+oIyx72ZYM3+DmDbfkEcJde7KE2Tij0MHLzX0ZSVtdgSRds+sRJSw6xVG6yJZONT2UrsFwNc7iKh5eyUfiSE0CP9+uLELAZseWcizlSBJuzP1v1qtacBWSGrlBONU5E/aTotYanlh1UWI1U+3X44rRCr4YjOmf2oUyrx6IZTFVQurpoeU5gW4U0WtneHnZQgWyJ8czS3B0ZrFysNjwVsD3wNG1j95hDDMYJ6T9DF/2Pyq/PQNYLY7MQ6LR5HLf1J9L0Hy4d47A6UrsNcddZjxBuTlqYVzCtAV0RakcZgI6HqXbNDrHJXwVkAhgQIHTwQYshiohK5vvNOMRy3mWBmCVkAgb5hh1Vl/GlSbl0CUwa9MmqARdkDMIVLX6TY9ThRGq+Vo/fXTZVxJ/SMSGc01w60dpHvDAzdmdtUBIX6E+ArOINO42dspYTaEi0pUqaWvx4L0W9vsg733quy4E5eA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(26005)(186003)(8936002)(6486002)(6506007)(52116002)(6512007)(508600001)(66946007)(66476007)(4326008)(66556008)(956004)(5660300002)(36756003)(44832011)(38100700002)(38350700002)(83380400001)(54906003)(2906002)(8676002)(6666004)(1076003)(110136005)(2616005)(86362001)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?a5UYvJHYlErHZwcafnsuzkKO5osZCkXkDLQxkoUThJF5+Hkor5HCCvU/vAtP?=
- =?us-ascii?Q?2PclYCMmlWBbpxSuDzQqUx6GNYMBiF3tmSgUtPStOl0sWfV7Fmta4s9vL29b?=
- =?us-ascii?Q?MYrmWXJRHDOkI0J8Ddki3t/4wRbgXxdF81BB7gdt8Ow6hulHcD2++uDX0C62?=
- =?us-ascii?Q?DLlP1AGy8uf0FfgymY1eITRfLj7BB/Y57BxQy2AZjrp+pU35KPbG3ntMEnnt?=
- =?us-ascii?Q?fEwMmYVo947wKPJtVSpSJvXEcKGgMCKhQONd0qo+HXP+lpkwpdluRutAlUa3?=
- =?us-ascii?Q?Okuwaw6djcbk7CEE3pvp+VEYtJNJmg0sYb7Y6Ut2oXw7arJXbD+ZiCeM4jZx?=
- =?us-ascii?Q?JhRm8UOywEs2josCFtN8xsWbjSoS8WKXhFLZPL9IdEkqXeqlISEP0BOZUFSt?=
- =?us-ascii?Q?QKwoCUhNa7/VPcF9S4HLBzVL/OQpcXqn0l3d4RYIy0vdTxKYyMX9BdEXnAl7?=
- =?us-ascii?Q?iWh8zDvqS8mFh0XjXTkzc+CArzJf1WK71/T7FdwvBFqwyG8YCuw1ta5Thn59?=
- =?us-ascii?Q?rKCD4JC97oRAa3rORX5sVMyL1gZcuYRPmE+Ny6Xl5bf7CgFSjKLo9ngD5ilo?=
- =?us-ascii?Q?Ahr39hVYzwQV80k/B3REVAkimRO2eSbYoG0oHu0quesp1CXmWYcsQBcTNvQO?=
- =?us-ascii?Q?58LSfser4XoavjClF6jCyqoeFRjlMVz/rDWJvgHcndKfwnNRXVQCqempL/7f?=
- =?us-ascii?Q?A+fJHJKvw6yYKKcdM1V55UNXSt+HAJwaTzPc32UJ62NZ+2eM/WUqyJpBCZ58?=
- =?us-ascii?Q?9Swq+2gmdBJZTwJVlb3LG3DtS8rATcjXRvhray0HxTE5y9MWf6Vi8azfmBzA?=
- =?us-ascii?Q?LuOlS2sDoeIGmeNnV+KOJkxS1iMj2x+hwATSZ3NrSg3UHm1RmsIIMZ6UdizS?=
- =?us-ascii?Q?TKU3qjoPeNF6ARENBK6d18uON4td8ZMsTJKi32zuXj0Q/mQhy5KR2Uk3MBsm?=
- =?us-ascii?Q?HaKALrRKTHJz78ZqwbkYb5cYaJ7XBWqA54QvCuE2lbx/2+0bLNzSs3HfAPUS?=
- =?us-ascii?Q?O/jIVBJYP9++8zqpXpOwPqcuSgGg+9HuLBC9TxWEcQ0jvtXT97jsGThVALu2?=
- =?us-ascii?Q?iypL9aMawLLgnMDgWecTERKow4ebUKPXcrimo7aSWIwWcBvub9ONdw8fvwYs?=
- =?us-ascii?Q?PJADOCQiCApusWHpp4XUfVPGaXmkljaf2/6mEWgJlbvwCfXVpCsuCH8TSpeN?=
- =?us-ascii?Q?HXkES4RsfoNEEkMBSi+meZ4+L3dP1s4jIm5vPcgSp7MpJpNO5Pf3MDUrVwQx?=
- =?us-ascii?Q?5HYwvY9PjutVHj9lPE5NoABvkr7g0tKqhLMakkV3ZNzRZDjTnQ1epdtllIdA?=
- =?us-ascii?Q?2Hsuy+Tu76LOFk4D2DFUB1Vg?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Y7Yc7PoI0FhtLyR3+74hC6AeU5AHPcPcnQ17UqmDF+WuYmGyBl+RZeVg+2rS?=
+ =?us-ascii?Q?3aEc3AeaY2YRY6koDYxhSzQewp5NEOf0fpdlzMOpYNxAhcJF90QklYfpxFui?=
+ =?us-ascii?Q?EZbciQ0yPQyopswarK8t8lQINuIRUVa/HF57vXEL3JMJfj5Ft8RfTd6SvYHj?=
+ =?us-ascii?Q?6y1Fitl+/t0lp2F1noQ2HpkMeAbgQlapeEuYnsJ9+MgORBTzYXj6S5LzvrVh?=
+ =?us-ascii?Q?2jK5Jj3Cokxq/85lYYj70lCWlPxIaIjnI+mtG824WF6KbL4amLhNZXZ/PCOJ?=
+ =?us-ascii?Q?htuAffNUNJ7au5iOdNyo4mTNmcRPhXnpy1nMr477EKBi7j+/Wb3r/0nu41Ds?=
+ =?us-ascii?Q?r6c0eRqVuiAldVrOvR40/pBOs1rHrRNSnfNL1sDMCD+O/jj/oZtc9SMC5sZx?=
+ =?us-ascii?Q?ZrssDOZq2JF/M1Jf6T7ZLXrfdFOAbzhjmz+yzDIflnESbbmsnI0kjtPRe/Yp?=
+ =?us-ascii?Q?0DGqxiDm8ppR0ZXqukVdEhhW0A4BP8lGFDXz4XyJQzq0HsbuI5rcLkp64O4m?=
+ =?us-ascii?Q?/Ci1JUseheUD26adZWTR6z7YL1dfwvJfKzf2uJB4OpqRlyZO1UcWjzoFbs0o?=
+ =?us-ascii?Q?Hb/q0fNyatR19kg7nsacL190CGACDqZfYEj8RWv2e4IvnCOGlMdtBnZbNZQJ?=
+ =?us-ascii?Q?dodS0uOfu6xX7RAm5EMDp2XbdChEa+8mJ+KHHW8BTs+tNWUl/qWRnlmJbzhq?=
+ =?us-ascii?Q?XhdPprS+vpXjvL1/YbencogVw/ME2t37od0/z7y+IhFFEqubrqrKsmt0BmRe?=
+ =?us-ascii?Q?8C1rfVSIqBpa4mYNmvnvXCft5gDZUVi+1kc3Qd7EkXZEUXAYlfETYyWoLOOJ?=
+ =?us-ascii?Q?xsFOP//d4wt6rTopB2i2UmSMSqz6Z7qA3afl8T8sWwB87Dmsl/bTVDMaNxmp?=
+ =?us-ascii?Q?VN8ncIBri2v58y9TguEmDvfMmn/hl9FOsLfN6vEHP7GcO2RSmiexmeBmdktY?=
+ =?us-ascii?Q?37eFAdmmLTIUc4H277gxrRUrkLap4kKNkvPZ1uogomJ9Mk0I9DKMN363Cy61?=
+ =?us-ascii?Q?GQGRd1gSCJBD7K3wJyQaBS/Ooxo7dv2M8MWnLD/5o2Q3DVrOcyTowk2sr+ah?=
+ =?us-ascii?Q?o2SRmrx/6OX2NXQoJEHs7FkJr0nLH+QwQNGPP69yzPktkGqUnx49Hx3SOyUx?=
+ =?us-ascii?Q?Leo9tsbDBjLXgLvgyNEyFSxLAsAEXH049JqI4jedNFn7yLXj3IuwAFivPIgt?=
+ =?us-ascii?Q?FTmLe0eVqlQRp+4Sce3MUr815gaFR4etlV35rIlpIu0vpOfPC37s0bafqtTQ?=
+ =?us-ascii?Q?J4wg1n0NekAq0gamV83zvt5NcVzbGeM0Gg1fO73xFNRLCD9YkxMI8vszGAC3?=
+ =?us-ascii?Q?vHKwAlSP2nrFrfj1qQd8NK+Z?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2fa6de38-f6b9-4be7-3b3a-08d953b826ce
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4243b2e8-0478-4abc-46d2-08d953b8275d
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2021 00:14:24.1562
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2021 00:14:25.0647
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: D7ibPJr6LH2RYZJl3dERGk8ryLlUCOCm0wWOApXZOIqS9ekW1jJZ1ezNtXC+kMAX1j7sdqF7igM3864HAgjTQw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: TG0LY1wOPKJewc3DHrU4rRoPiQ8wErIzMBNsPBAxmZy1MZfIh9NF23w3e0wVNjjlU11BZKfK4MAK6IGMkxjQ/w==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6511
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Manage DSA links towards other switches, be they host ports or cascade
-ports, the same as the CPU port, i.e. allow forwarding and flooding
-unconditionally from all user ports.
+Since commit ed040abca4c1 ("net: dsa: sja1105: use 4095 as the private
+VLAN for untagged traffic"), this driver uses a reserved value as pvid
+for the host port (DSA CPU port). Control packets which are sent as
+untagged get classified to this VLAN, and all ports are members of it
+(this is to be expected for control packets).
 
-We send packets as always VLAN-tagged on a DSA port, and we rely on the
-cross-chip notifiers from tag_8021q to install the RX VLAN of a switch
-port only on the proper remote ports of another switch (the ports that
-are in the same bridging domain). So if there is no cross-chip bridging
-in the system, the flooded packets will be sent on the DSA ports too,
-but they will be dropped by the remote switches due to either
-(a) a lack of the RX VLAN in the VLAN table of the ingress DSA port, or
-(b) a lack of valid destinations for those packets, due to a lack of the
-    RX VLAN on the user ports of the switch
+Manage all cascade ports in the same way and allow control packets to
+egress everywhere.
 
-Note that switches which only transport packets in a cross-chip bridge,
-but have no user ports of their own as part of that bridge, such as
-switch 1 in this case:
-
-                    DSA link                   DSA link
-  sw0p0 sw0p1 sw0p2 -------- sw1p0 sw1p2 sw1p3 -------- sw2p0 sw2p2 sw2p3
-
-ip link set sw0p0 master br0
-ip link set sw2p3 master br0
-
-will still work, because the tag_8021q cross-chip notifiers keep the RX
-VLANs installed on all DSA ports.
+Also, all VLANs need to be sent as egress-tagged on all cascade ports.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 84 ++++++++++++++++++--------
- 1 file changed, 60 insertions(+), 24 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_main.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 74cd5bf7abc6..66a54defde18 100644
+index 66a54defde18..d1d4d956cae8 100644
 --- a/drivers/net/dsa/sja1105/sja1105_main.c
 +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -475,7 +475,8 @@ static int sja1105_init_l2_forwarding(struct sja1105_private *priv)
- 	struct sja1105_l2_forwarding_entry *l2fwd;
- 	struct dsa_switch *ds = priv->ds;
- 	struct sja1105_table *table;
--	int i, j;
-+	int port, tc;
-+	int from, to;
+@@ -460,7 +460,7 @@ static int sja1105_init_static_vlan(struct sja1105_private *priv)
+ 		pvid.vlan_bc |= BIT(port);
+ 		pvid.tag_port &= ~BIT(port);
  
- 	table = &priv->static_config.tables[BLK_IDX_L2_FORWARDING];
- 
-@@ -493,47 +494,82 @@ static int sja1105_init_l2_forwarding(struct sja1105_private *priv)
- 
- 	l2fwd = table->entries;
- 
--	/* First 5 entries define the forwarding rules */
--	for (i = 0; i < ds->num_ports; i++) {
--		unsigned int upstream = dsa_upstream_port(priv->ds, i);
-+	/* First 5 entries in the L2 Forwarding Table define the forwarding
-+	 * rules and the VLAN PCP to ingress queue mapping.
-+	 * Set up the ingress queue mapping first.
-+	 */
-+	for (port = 0; port < ds->num_ports; port++) {
-+		if (dsa_is_unused_port(ds, port))
-+			continue;
- 
--		if (dsa_is_unused_port(ds, i))
-+		for (tc = 0; tc < SJA1105_NUM_TC; tc++)
-+			l2fwd[port].vlan_pmap[tc] = tc;
-+	}
-+
-+	/* Then manage the forwarding domain for user ports. These can forward
-+	 * only to the always-on domain (CPU port and DSA links)
-+	 */
-+	for (from = 0; from < ds->num_ports; from++) {
-+		if (!dsa_is_user_port(ds, from))
- 			continue;
- 
--		for (j = 0; j < SJA1105_NUM_TC; j++)
--			l2fwd[i].vlan_pmap[j] = j;
-+		for (to = 0; to < ds->num_ports; to++) {
-+			if (!dsa_is_cpu_port(ds, to) &&
-+			    !dsa_is_dsa_port(ds, to))
-+				continue;
- 
--		/* All ports start up with egress flooding enabled,
--		 * including the CPU port.
--		 */
--		priv->ucast_egress_floods |= BIT(i);
--		priv->bcast_egress_floods |= BIT(i);
-+			l2fwd[from].bc_domain |= BIT(to);
-+			l2fwd[from].fl_domain |= BIT(to);
-+
-+			sja1105_port_allow_traffic(l2fwd, from, to, true);
-+		}
-+	}
- 
--		if (i == upstream)
-+	/* Then manage the forwarding domain for DSA links and CPU ports (the
-+	 * always-on domain). These can send packets to any enabled port except
-+	 * themselves.
-+	 */
-+	for (from = 0; from < ds->num_ports; from++) {
-+		if (!dsa_is_cpu_port(ds, from) && !dsa_is_dsa_port(ds, from))
- 			continue;
- 
--		sja1105_port_allow_traffic(l2fwd, i, upstream, true);
--		sja1105_port_allow_traffic(l2fwd, upstream, i, true);
-+		for (to = 0; to < ds->num_ports; to++) {
-+			if (dsa_is_unused_port(ds, to))
-+				continue;
-+
-+			if (from == to)
-+				continue;
- 
--		l2fwd[i].bc_domain = BIT(upstream);
--		l2fwd[i].fl_domain = BIT(upstream);
-+			l2fwd[from].bc_domain |= BIT(to);
-+			l2fwd[from].fl_domain |= BIT(to);
- 
--		l2fwd[upstream].bc_domain |= BIT(i);
--		l2fwd[upstream].fl_domain |= BIT(i);
-+			sja1105_port_allow_traffic(l2fwd, from, to, true);
-+		}
-+	}
-+
-+	/* Finally, manage the egress flooding domain. All ports start up with
-+	 * flooding enabled, including the CPU port and DSA links.
-+	 */
-+	for (port = 0; port < ds->num_ports; port++) {
-+		if (dsa_is_unused_port(ds, port))
-+			continue;
-+
-+		priv->ucast_egress_floods |= BIT(port);
-+		priv->bcast_egress_floods |= BIT(port);
- 	}
- 
- 	/* Next 8 entries define VLAN PCP mapping from ingress to egress.
- 	 * Create a one-to-one mapping.
- 	 */
--	for (i = 0; i < SJA1105_NUM_TC; i++) {
--		for (j = 0; j < ds->num_ports; j++) {
--			if (dsa_is_unused_port(ds, j))
-+	for (tc = 0; tc < SJA1105_NUM_TC; tc++) {
-+		for (port = 0; port < ds->num_ports; port++) {
-+			if (dsa_is_unused_port(ds, port))
- 				continue;
- 
--			l2fwd[ds->num_ports + i].vlan_pmap[j] = i;
-+			l2fwd[ds->num_ports + tc].vlan_pmap[port] = tc;
+-		if (dsa_is_cpu_port(ds, port)) {
++		if (dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port)) {
+ 			priv->tag_8021q_pvid[port] = SJA1105_DEFAULT_VLAN;
+ 			priv->bridge_pvid[port] = SJA1105_DEFAULT_VLAN;
  		}
- 
--		l2fwd[ds->num_ports + i].type_egrpcp2outputq = true;
-+		l2fwd[ds->num_ports + tc].type_egrpcp2outputq = true;
+@@ -2310,8 +2310,8 @@ static int sja1105_bridge_vlan_add(struct dsa_switch *ds, int port,
+ 		return -EBUSY;
  	}
  
- 	return 0;
+-	/* Always install bridge VLANs as egress-tagged on the CPU port. */
+-	if (dsa_is_cpu_port(ds, port))
++	/* Always install bridge VLANs as egress-tagged on CPU and DSA ports */
++	if (dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))
+ 		flags = 0;
+ 
+ 	rc = sja1105_vlan_add(priv, port, vlan->vid, flags);
 -- 
 2.25.1
 
