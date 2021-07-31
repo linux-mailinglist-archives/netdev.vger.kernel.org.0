@@ -2,137 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC2B33DC2A2
-	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 04:27:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68AD83DC2B2
+	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 04:29:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235546AbhGaCJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 22:09:31 -0400
-Received: from mailgw02.mediatek.com ([1.203.163.81]:33459 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S231335AbhGaCJa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 22:09:30 -0400
-X-UUID: 9d273a60bfbf44edb13902f379c49518-20210731
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=y38IED9myYQxrmXiRiU7/BbW5imRoZJLVz1+uPrVd64=;
-        b=LpEbyEkfSFkK2I7aP6KRuE/Iam93Z1NWqyo9rEkPvGch2zmCy/Jnvs2hpYRzcaFlM/IhmtY6JSATCfwOwH0i543zmzsY5ueMog0WT6OrqfJKqPm4L8u+4ZTIE8pYn0oce810oT1B29GjaEVfZGy9waSr6S6bZgrvcDjDEB4FPcU=;
-X-UUID: 9d273a60bfbf44edb13902f379c49518-20210731
-Received: from mtkmrs31.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
-        (envelope-from <rocco.yue@mediatek.com>)
-        (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1773357235; Sat, 31 Jul 2021 10:09:22 +0800
-Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- MTKMBS32N1.mediatek.inc (172.27.4.71) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Sat, 31 Jul 2021 10:09:09 +0800
-Received: from localhost.localdomain (10.15.20.246) by MTKCAS06.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 31 Jul 2021 10:09:02 +0800
-From:   Rocco Yue <rocco.yue@mediatek.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <rocco.yue@gmail.com>,
-        <chao.song@mediatek.com>, <zhuoliang.zhang@mediatek.com>,
-        Rocco Yue <rocco.yue@mediatek.com>
-Subject: [PATCH net-next v2] ipv6: add IFLA_INET6_RA_MTU to expose mtu value in the RA message
-Date:   Sat, 31 Jul 2021 09:52:30 +0800
-Message-ID: <20210731015230.11589-1-rocco.yue@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        id S235763AbhGaC32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 22:29:28 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54846 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231335AbhGaC31 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Jul 2021 22:29:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=fTMpPnF7MNPIeWiCWwW2KmQn0PAalSgBt+h2ZsLcBHU=; b=l/Uryn7pXFoajvjHHL7k0N/Krr
+        4ZZhnM75MOm+LJCvJh+wASnN667p+KNfS7Vq+5Q8rwjN06d9RhSlnl9DVOiAEcWeS4yulFwlBpvrP
+        UCwBceM7Jt1KzmZchFuSKSOO+PyYsCIBNuAvzUeHXrvP5fbsVzEhsn/cwbbntAoKrOYk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m9ekJ-00FYZR-Ab; Sat, 31 Jul 2021 04:29:03 +0200
+Date:   Sat, 31 Jul 2021 04:29:03 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Daniel Walker <danielwa@cisco.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Balamurugan Selvarajan <balamsel@cisco.com>,
+        xe-linux-external@cisco.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC-PATCH] net: stmmac: Add KR port support.
+Message-ID: <YQS1bzsIAD83+762@lunn.ch>
+References: <20210729234443.1713722-1-danielwa@cisco.com>
+ <YQNrmB9XHkcGy5D0@lunn.ch>
+ <20210730144830.GO1633923@zorba>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-SNTS-SMTP: C254CF878AC218E990404A06BE5801CA40785056E585CA60BD1DEB6A5A00BE8A2000:8
-X-MTK:  N
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210730144830.GO1633923@zorba>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhlIGtlcm5lbCBwcm92aWRlcyBhICIvcHJvYy9zeXMvbmV0L2lwdjYvY29uZi88aWZhY2U+L210
-dSINCmZpbGUsIHdoaWNoIGNhbiB0ZW1wb3JhcmlseSByZWNvcmQgdGhlIG10dSB2YWx1ZSBvZiB0
-aGUgbGFzdA0KcmVjZWl2ZWQgUkEgbWVzc2FnZSB3aGVuIHRoZSBSQSBtdHUgdmFsdWUgaXMgbG93
-ZXIgdGhhbiB0aGUNCmludGVyZmFjZSBtdHUsIGJ1dCB0aGlzIHByb2MgaGFzIGZvbGxvd2luZyBs
-aW1pdGF0aW9uczoNCg0KKDEpIHdoZW4gdGhlIGludGVyZmFjZSBtdHUgKC9zeXMvY2xhc3MvbmV0
-LzxpZmFjZT4vbXR1KSBpcw0KdXBkZWF0ZWQsIG10dTYgKC9wcm9jL3N5cy9uZXQvaXB2Ni9jb25m
-LzxpZmFjZT4vbXR1KSB3aWxsDQpiZSB1cGRhdGVkIHRvIHRoZSB2YWx1ZSBvZiBpbnRlcmZhY2Ug
-bXR1Ow0KKDIpIG10dTYgKC9wcm9jL3N5cy9uZXQvaXB2Ni9jb25mLzxpZmFjZT4vbXR1KSBvbmx5
-IGFmZmVjdA0KaXB2NiBjb25uZWN0aW9uLCBhbmQgbm90IGFmZmVjdCBpcHY0Lg0KDQpUaGVyZWZv
-cmUsIHdoZW4gdGhlIG10dSBvcHRpb24gaXMgY2FycmllZCBpbiB0aGUgUkEgbWVzc2FnZSwNCnRo
-ZXJlIHdpbGwgYmUgYSBwcm9ibGVtIHRoYXQgdGhlIHVzZXIgc29tZXRpbWVzIGNhbm5vdCBvYnRh
-aW4NClJBIG10dSB2YWx1ZSBjb3JyZWN0bHkgYnkgcmVhZGluZyBtdHU2Lg0KDQpBZnRlciB0aGlz
-IHBhdGNoIHNldCwgaWYgYSBSQSBtZXNzYWdlIGNhcnJpZXMgdGhlIG10dSBvcHRpb24sDQp5b3Ug
-Y2FuIHNlbmQgYSBuZXRsaW5rIG1zZyB3aGljaCBubG1zZ190eXBlIGlzIFJUTV9HRVRMSU5LLA0K
-YW5kIHRoZW4gYnkgcGFyc2luZyB0aGUgYXR0cmlidXRlIG9mIElGTEFfSU5FVDZfUkFfTVRVIHRv
-DQpnZXQgdGhlIG10dSB2YWx1ZSBjYXJyaWVkIGluIHRoZSBSQSBtZXNzYWdlIHJlY2VpdmVkIG9u
-IHRoZQ0KaW5ldDYgZGV2aWNlLg0KDQpJbiB0aGlzIHdheSwgaWYgdGhlIE1UVSB2YWx1ZXMgdGhh
-dCB0aGUgZGV2aWNlIHJlY2VpdmVzIGZyb20NCnRoZSBuZXR3b3JrIGluIHRoZSBQQ08gSVB2NCBh
-bmQgdGhlIFJBIElQdjYgcHJvY2VkdXJlcyBhcmUNCmRpZmZlcmVudCwgdGhlIHVzZXIgc3BhY2Ug
-cHJvY2VzcyBjYW4gcmVhZCByYV9tdHUgdG8gZ2V0DQp0aGUgbXR1IHZhbHVlIGNhcnJpZWQgaW4g
-dGhlIFJBIG1lc3NhZ2Ugd2l0aG91dCB3b3JyeWluZw0KYWJvdXQgdGhlIGlzc3VlIG9mIGlwdjQg
-YmVpbmcgc3R1Y2sgZHVlIHRvIHRoZSBsYXRlIGFycml2YWwNCm9mIFJBIG1lc3NhZ2UuIEFmdGVy
-IGNvbXBhcmluZyB0aGUgdmFsdWUgb2YgcmFfbXR1IGFuZCBpcHY0DQptdHUsIHRoZW4gdGhlIGRl
-dmljZSBjYW4gdXNlIHRoZSBsb3dlciBNVFUgdmFsdWUgZm9yIGJvdGgNCklQdjQgYW5kIElQdjYu
-DQoNClNpZ25lZC1vZmYtYnk6IFJvY2NvIFl1ZSA8cm9jY28ueXVlQG1lZGlhdGVrLmNvbT4NCi0t
-LQ0KIGluY2x1ZGUvbmV0L2lmX2luZXQ2LmggICAgICAgICAgICAgfCAyICsrDQogaW5jbHVkZS91
-YXBpL2xpbnV4L2lmX2xpbmsuaCAgICAgICB8IDEgKw0KIG5ldC9pcHY2L2FkZHJjb25mLmMgICAg
-ICAgICAgICAgICAgfCA1ICsrKysrDQogbmV0L2lwdjYvbmRpc2MuYyAgICAgICAgICAgICAgICAg
-ICB8IDUgKysrKysNCiB0b29scy9pbmNsdWRlL3VhcGkvbGludXgvaWZfbGluay5oIHwgMSArDQog
-NSBmaWxlcyBjaGFuZ2VkLCAxNCBpbnNlcnRpb25zKCspDQoNCmRpZmYgLS1naXQgYS9pbmNsdWRl
-L25ldC9pZl9pbmV0Ni5oIGIvaW5jbHVkZS9uZXQvaWZfaW5ldDYuaA0KaW5kZXggNzFiYjRjYzRk
-MDVkLi41Y2MyNjBkZWFkMzMgMTAwNjQ0DQotLS0gYS9pbmNsdWRlL25ldC9pZl9pbmV0Ni5oDQor
-KysgYi9pbmNsdWRlL25ldC9pZl9pbmV0Ni5oDQpAQCAtMjEzLDYgKzIxMyw4IEBAIHN0cnVjdCBp
-bmV0Nl9kZXYgew0KIA0KIAl1bnNpZ25lZCBsb25nCQl0c3RhbXA7IC8qIGlwdjZJbnRlcmZhY2VU
-YWJsZSB1cGRhdGUgdGltZXN0YW1wICovDQogCXN0cnVjdCByY3VfaGVhZAkJcmN1Ow0KKw0KKwl1
-bnNpZ25lZCBpbnQJCXJhX210dTsNCiB9Ow0KIA0KIHN0YXRpYyBpbmxpbmUgdm9pZCBpcHY2X2V0
-aF9tY19tYXAoY29uc3Qgc3RydWN0IGluNl9hZGRyICphZGRyLCBjaGFyICpidWYpDQpkaWZmIC0t
-Z2l0IGEvaW5jbHVkZS91YXBpL2xpbnV4L2lmX2xpbmsuaCBiL2luY2x1ZGUvdWFwaS9saW51eC9p
-Zl9saW5rLmgNCmluZGV4IDQ4ODJlODE1MTRiNi4uZmNkMWFlMjlmMTU0IDEwMDY0NA0KLS0tIGEv
-aW5jbHVkZS91YXBpL2xpbnV4L2lmX2xpbmsuaA0KKysrIGIvaW5jbHVkZS91YXBpL2xpbnV4L2lm
-X2xpbmsuaA0KQEAgLTQxNyw2ICs0MTcsNyBAQCBlbnVtIHsNCiAJSUZMQV9JTkVUNl9JQ01QNlNU
-QVRTLAkvKiBzdGF0aXN0aWNzIChpY21wdjYpCQkqLw0KIAlJRkxBX0lORVQ2X1RPS0VOLAkvKiBk
-ZXZpY2UgdG9rZW4JCQkqLw0KIAlJRkxBX0lORVQ2X0FERFJfR0VOX01PREUsIC8qIGltcGxpY2l0
-IGFkZHJlc3MgZ2VuZXJhdG9yIG1vZGUgKi8NCisJSUZMQV9JTkVUNl9SQV9NVFUsCS8qIG10dSBj
-YXJyaWVkIGluIHRoZSBSQSBtZXNzYWdlICAqLw0KIAlfX0lGTEFfSU5FVDZfTUFYDQogfTsNCiAN
-CmRpZmYgLS1naXQgYS9uZXQvaXB2Ni9hZGRyY29uZi5jIGIvbmV0L2lwdjYvYWRkcmNvbmYuYw0K
-aW5kZXggM2JmNjg1ZmU2NGI5Li45OGVlYWJhOWY4NmMgMTAwNjQ0DQotLS0gYS9uZXQvaXB2Ni9h
-ZGRyY29uZi5jDQorKysgYi9uZXQvaXB2Ni9hZGRyY29uZi5jDQpAQCAtNTUzNyw2ICs1NTM3LDcg
-QEAgc3RhdGljIGlubGluZSBzaXplX3QgaW5ldDZfaWZsYTZfc2l6ZSh2b2lkKQ0KIAkgICAgICsg
-bmxhX3RvdGFsX3NpemUoSUNNUDZfTUlCX01BWCAqIDgpIC8qIElGTEFfSU5FVDZfSUNNUDZTVEFU
-UyAqLw0KIAkgICAgICsgbmxhX3RvdGFsX3NpemUoc2l6ZW9mKHN0cnVjdCBpbjZfYWRkcikpIC8q
-IElGTEFfSU5FVDZfVE9LRU4gKi8NCiAJICAgICArIG5sYV90b3RhbF9zaXplKDEpIC8qIElGTEFf
-SU5FVDZfQUREUl9HRU5fTU9ERSAqLw0KKwkgICAgICsgbmxhX3RvdGFsX3NpemUoNCkgLyogSUZM
-QV9JTkVUNl9SQV9NVFUgKi8NCiAJICAgICArIDA7DQogfQ0KIA0KQEAgLTU2NDUsNiArNTY0Niw5
-IEBAIHN0YXRpYyBpbnQgaW5ldDZfZmlsbF9pZmxhNl9hdHRycyhzdHJ1Y3Qgc2tfYnVmZiAqc2ti
-LCBzdHJ1Y3QgaW5ldDZfZGV2ICppZGV2LA0KIAlpZiAobmxhX3B1dF91OChza2IsIElGTEFfSU5F
-VDZfQUREUl9HRU5fTU9ERSwgaWRldi0+Y25mLmFkZHJfZ2VuX21vZGUpKQ0KIAkJZ290byBubGFf
-cHV0X2ZhaWx1cmU7DQogDQorCWlmIChubGFfcHV0X3UzMihza2IsIElGTEFfSU5FVDZfUkFfTVRV
-LCBpZGV2LT5yYV9tdHUpKQ0KKwkJZ290byBubGFfcHV0X2ZhaWx1cmU7DQorDQogCXJldHVybiAw
-Ow0KIA0KIG5sYV9wdXRfZmFpbHVyZToNCkBAIC01NzYxLDYgKzU3NjUsNyBAQCBzdGF0aWMgaW50
-IGluZXQ2X3NldF9pZnRva2VuKHN0cnVjdCBpbmV0Nl9kZXYgKmlkZXYsIHN0cnVjdCBpbjZfYWRk
-ciAqdG9rZW4sDQogc3RhdGljIGNvbnN0IHN0cnVjdCBubGFfcG9saWN5IGluZXQ2X2FmX3BvbGlj
-eVtJRkxBX0lORVQ2X01BWCArIDFdID0gew0KIAlbSUZMQV9JTkVUNl9BRERSX0dFTl9NT0RFXQk9
-IHsgLnR5cGUgPSBOTEFfVTggfSwNCiAJW0lGTEFfSU5FVDZfVE9LRU5dCQk9IHsgLmxlbiA9IHNp
-emVvZihzdHJ1Y3QgaW42X2FkZHIpIH0sDQorCVtJRkxBX0lORVQ2X1JBX01UVV0JCT0geyAudHlw
-ZSA9IE5MQV9VMzIgfSwNCiB9Ow0KIA0KIHN0YXRpYyBpbnQgY2hlY2tfYWRkcl9nZW5fbW9kZShp
-bnQgbW9kZSkNCmRpZmYgLS1naXQgYS9uZXQvaXB2Ni9uZGlzYy5jIGIvbmV0L2lwdjYvbmRpc2Mu
-Yw0KaW5kZXggYzQ2N2M2NDE5ODkzLi45YzY0MTdhOGUyYjcgMTAwNjQ0DQotLS0gYS9uZXQvaXB2
-Ni9uZGlzYy5jDQorKysgYi9uZXQvaXB2Ni9uZGlzYy5jDQpAQCAtMTQ5Niw2ICsxNDk2LDExIEBA
-IHN0YXRpYyB2b2lkIG5kaXNjX3JvdXRlcl9kaXNjb3Zlcnkoc3RydWN0IHNrX2J1ZmYgKnNrYikN
-CiAJCW1lbWNweSgmbiwgKCh1OCAqKShuZG9wdHMubmRfb3B0c19tdHUrMSkpKzIsIHNpemVvZiht
-dHUpKTsNCiAJCW10dSA9IG50b2hsKG4pOw0KIA0KKwkJaWYgKGluNl9kZXYtPnJhX210dSAhPSBt
-dHUpIHsNCisJCQlpbjZfZGV2LT5yYV9tdHUgPSBtdHU7DQorCQkJTkRfUFJJTlRLKDIsIGluZm8s
-ICJ1cGRhdGUgcmFfbXR1IHRvICVkXG4iLCBpbjZfZGV2LT5yYV9tdHUpOw0KKwkJfQ0KKw0KIAkJ
-aWYgKG10dSA8IElQVjZfTUlOX01UVSB8fCBtdHUgPiBza2ItPmRldi0+bXR1KSB7DQogCQkJTkRf
-UFJJTlRLKDIsIHdhcm4sICJSQTogaW52YWxpZCBtdHU6ICVkXG4iLCBtdHUpOw0KIAkJfSBlbHNl
-IGlmIChpbjZfZGV2LT5jbmYubXR1NiAhPSBtdHUpIHsNCmRpZmYgLS1naXQgYS90b29scy9pbmNs
-dWRlL3VhcGkvbGludXgvaWZfbGluay5oIGIvdG9vbHMvaW5jbHVkZS91YXBpL2xpbnV4L2lmX2xp
-bmsuaA0KaW5kZXggZDIwOGIyYWY2OTdmLi4zMDMwODVjZGMyNzEgMTAwNjQ0DQotLS0gYS90b29s
-cy9pbmNsdWRlL3VhcGkvbGludXgvaWZfbGluay5oDQorKysgYi90b29scy9pbmNsdWRlL3VhcGkv
-bGludXgvaWZfbGluay5oDQpAQCAtMjMwLDYgKzIzMCw3IEBAIGVudW0gew0KIAlJRkxBX0lORVQ2
-X0lDTVA2U1RBVFMsCS8qIHN0YXRpc3RpY3MgKGljbXB2NikJCSovDQogCUlGTEFfSU5FVDZfVE9L
-RU4sCS8qIGRldmljZSB0b2tlbgkJCSovDQogCUlGTEFfSU5FVDZfQUREUl9HRU5fTU9ERSwgLyog
-aW1wbGljaXQgYWRkcmVzcyBnZW5lcmF0b3IgbW9kZSAqLw0KKwlJRkxBX0lORVQ2X1JBX01UVSwJ
-LyogbXR1IGNhcnJpZWQgaW4gdGhlIFJBIG1lc3NhZ2UgICovDQogCV9fSUZMQV9JTkVUNl9NQVgN
-CiB9Ow0KIA0KLS0gDQoyLjE4LjANCg==
+On Fri, Jul 30, 2021 at 07:48:30AM -0700, Daniel Walker wrote:
+> On Fri, Jul 30, 2021 at 05:01:44AM +0200, Andrew Lunn wrote:
+> > On Thu, Jul 29, 2021 at 04:44:42PM -0700, Daniel Walker wrote:
+> > > From: Balamurugan Selvarajan <balamsel@cisco.com>
+> > > 
+> > > For KR port the mii interface is a chip-to-chip
+> > > interface without a mechanical connector. So PHY
+> > > inits are not applicable. In this case MAC is
+> > > configured to operate at forced speed(1000Mbps)
+> > > and full duplex. Modified driver to accommodate
+> > > PHY and NON-PHY mode.
+> > 
+> > I agree with Florian here. Look at all the in kernel examples of a SoC
+> > MAC connected to an Ethernet switch. Some use rgmii, others 1000BaseX
+> > or higher. But they all follow the same scheme, and don't need
+> > invasive MAC driver changes.
+> 
+> 
+> Can you provide the examples which you looked at ?
 
+There are plenty of examples using Freescale FEC and Marvell Ethernet
+switches:
+
+arch/arm/boot/dts/vf610-zii-dev-rev-b.dts
+
+Or the Mavell based
+
+arch/arm/boot/dts/armada-xp-linksys-mamba.dts
+
+	Andrew
