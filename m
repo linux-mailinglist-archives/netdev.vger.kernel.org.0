@@ -2,143 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 754E93DC88C
-	for <lists+netdev@lfdr.de>; Sun,  1 Aug 2021 00:05:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1486D3DC8B6
+	for <lists+netdev@lfdr.de>; Sun,  1 Aug 2021 00:45:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231779AbhGaWFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Jul 2021 18:05:38 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55516 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229560AbhGaWFh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 31 Jul 2021 18:05:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=MXXfRvh2b8PuxEin99HbUG03NW+7u7VDu/JhwY7Oahw=; b=JDDyCJR0fdSb+1ODOJF5+hSOnT
-        v11BkeW3mVAMkJ2EPrwQ92ONytPZrg7bc7/3Twl3CDkS2N5XpKVLX3jmuncT5/1OmjZQ+6dKQZziV
-        gusFgRTyA3EW+I6bENx3UlNUEFk51iNsgXUq/b2NYT5m6zgtCW+nJc4VqP+kzFHT1EhE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m9x6a-00Ff1q-2F; Sun, 01 Aug 2021 00:05:16 +0200
-Date:   Sun, 1 Aug 2021 00:05:16 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
-        netdev@vger.kernel.org, robh+dt@kernel.org,
-        UNGLinuxDriver@microchip.com, Woojung.Huh@microchip.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 05/10] net: dsa: microchip: add DSA support
- for microchip lan937x
-Message-ID: <YQXJHA+z+hXjxe6+@lunn.ch>
-References: <20210723173108.459770-1-prasanna.vengateshan@microchip.com>
- <20210723173108.459770-6-prasanna.vengateshan@microchip.com>
- <20210731150416.upe5nwkwvwajhwgg@skbuf>
+        id S231808AbhGaWpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Jul 2021 18:45:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229505AbhGaWpo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Jul 2021 18:45:44 -0400
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97C65C06175F
+        for <netdev@vger.kernel.org>; Sat, 31 Jul 2021 15:45:37 -0700 (PDT)
+Received: by mail-ot1-x32a.google.com with SMTP id v8-20020a0568301bc8b02904d5b4e5ca3aso1477966ota.13
+        for <netdev@vger.kernel.org>; Sat, 31 Jul 2021 15:45:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=aleksander-es.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=p0Vt11XZOYOMlHxtjfmYxPfHjoqALLBEYIb8c+YJn3I=;
+        b=HvtVixXZuR40g1cfODTH0B/8Bca3/uXKApAzCWKGuf4AA8s8Vy7JggN4u+OzPPjXNT
+         2R1o9GpCA/dlD1bO7rjwIgzDX3EAK4J+8C33K0k/ubdz86dc4gwNpeOwak1eWSHk4bk9
+         zt/9iyevYZkJcJBC8Rz3tzf1VdVqwmpzmHFvH3TjcIFT0UzBwYqDfKc3pAvkt7NK2432
+         2Y2X+XpNhzzUXvxc/FbNxafPhwDPaeE0PZkzD7nTjqqqITWPuZCaVoogOBWG0pHOghJ0
+         M9wST/8nY3ryKDOTTmLmENnI+QuqmgtmfGgiRJzvNdXn/2S60t7aR6unCBwCoHxaC+Rb
+         Vxdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=p0Vt11XZOYOMlHxtjfmYxPfHjoqALLBEYIb8c+YJn3I=;
+        b=QEyNaeKLoa91/RQGjtv2NFNPUBYtd2QI28VJEj6p/pcgKToM1G+DUeSxl/mXeHMx9b
+         Wof7lzjKHyGiFB4nx1jpeOA2OmUT8R+dR64fhss8esrtDJ21UQMa5ajew1rm9gblioHI
+         VJHOV+xKFGsVJIb3vcwcou23ep8J/XgPQt4UCM+I55YXFwppsCUyAWwHl/4hTByEeRxK
+         t6zDVfSyUzGL6zcThjwsbzanJjQxrgfRajcp9mOyDUVGnk4uBva21S2r1gohAALFO7y7
+         AINqoj/pek3huP/QMt0eGH4uwNB825J3TH+QyL38Ca4R+lW82sd0FCjS0Pj+DHh2qrKE
+         KP+Q==
+X-Gm-Message-State: AOAM533Dq/A0si+GA3O5m6K9TVQP2lJTRQS1zktnHWDuEKqWsfUU4O3y
+        pb/jskT4DdHiyNtrqAro2eYlPPUmSOBeY3+AgXMtrQ==
+X-Google-Smtp-Source: ABdhPJy+xIUb3bX2SdmknDPC0TU0LbD/tGZS2bTOzskXfli72e9tE0RvUVU2343Uj8tVhcIChSKNIObSn6Ec5Sx87zA=
+X-Received: by 2002:a05:6830:3143:: with SMTP id c3mr6859118ots.229.1627771536858;
+ Sat, 31 Jul 2021 15:45:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210731150416.upe5nwkwvwajhwgg@skbuf>
+From:   Aleksander Morgado <aleksander@aleksander.es>
+Date:   Sun, 1 Aug 2021 00:45:26 +0200
+Message-ID: <CAAP7ucKuS9p_hkR5gMWiM984Hvt09iNQEt32tCFDCT5p0fqg4Q@mail.gmail.com>
+Subject: RMNET QMAP data aggregation with size greater than 16384
+To:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Cc:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
+        Daniele Palmas <dnlplm@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > +void lan937x_mac_config(struct ksz_device *dev, int port,
-> > +			phy_interface_t interface)
-> > +{
-> > +	u8 data8;
-> > +
-> > +	lan937x_pread8(dev, port, REG_PORT_XMII_CTRL_1, &data8);
-> > +
-> > +	/* clear MII selection & set it based on interface later */
-> > +	data8 &= ~PORT_MII_SEL_M;
-> > +
-> > +	/* configure MAC based on interface */
-> > +	switch (interface) {
-> > +	case PHY_INTERFACE_MODE_MII:
-> > +		lan937x_config_gbit(dev, false, &data8);
-> > +		data8 |= PORT_MII_SEL;
-> > +		break;
-> > +	case PHY_INTERFACE_MODE_RMII:
-> > +		lan937x_config_gbit(dev, false, &data8);
-> > +		data8 |= PORT_RMII_SEL;
-> > +		break;
-> > +	case PHY_INTERFACE_MODE_RGMII:
-> > +	case PHY_INTERFACE_MODE_RGMII_ID:
-> > +	case PHY_INTERFACE_MODE_RGMII_TXID:
-> > +	case PHY_INTERFACE_MODE_RGMII_RXID:
-> > +		lan937x_config_gbit(dev, true, &data8);
-> > +		data8 |= PORT_RGMII_SEL;
-> > +
-> > +		/* Add RGMII internal delay for cpu port*/
-> > +		if (dsa_is_cpu_port(dev->ds, port)) {
-> 
-> Why only for the CPU port? I would like Andrew/Florian to have a look
-> here, I guess the assumption is that if the port has a phy-handle, the
-> RGMII delays should be dealt with by the PHY, but the logic seems to be
-> "is a CPU port <=> has a phy-handle / isn't a CPU port <=> doesn't have
-> a phy-handle"? What if it's a fixed-link port connected to a downstream
-> switch, for which this one is a DSA master?
+Hey Subash,
 
-The marvell driver applies delays unconditionally. And as far as i
-remember, it is only used in the use case you suggest, a DSA link,
-which is using RGMII. For marvell switches, that is pretty unusual,
-most boards use 1000BaseX or higher SERDES speeds for links between
-switches.
+I'm playing with the whole QMAP data aggregation setup with a USB
+connected Fibocom FM150-AE module (SDX55).
+See https://gitlab.freedesktop.org/mobile-broadband/libqmi/-/issues/71
+for some details on how I tested all this.
 
-I'm not sure if we have the case of an external PHY using RGMII. I
-suspect it might actually be broken, because i think both the MAC and
-the PHY might add the same delay. For phylib in general, if the MAC
-applies the delays, it needs to manipulate the value passed to the PHY
-so it also does not add delays. And i'm not sure DSA does that.
+This module reports a "Downlink Data Aggregation Max Size" of 32768
+via the "QMI WDA Get Data Format" request/response, and therefore I
+configured the MTU of the master wwan0 interface with that same value
+(while in 802.3 mode, before switching to raw-ip and enabling
+qmap-pass-through in qmi_wwan).
 
-So limiting RGMII delays to only the CPU port is not
-unreasonable. However, i suspect you are correct about chained
-switches not working.
+When attempting to create a new link using netlink, the operation
+fails with -EINVAL, and following the code path in the kernel driver,
+it looks like there is a check in rmnet_vnd_change_mtu() where the
+master interface MTU is checked against the RMNET_MAX_PACKET_SIZE
+value, defined as 16384.
 
-We might need to look at this at a higher level, when the PHY is
-connected to the MAC and what mode gets passed to it.
- 
-> > +			if (interface == PHY_INTERFACE_MODE_RGMII_ID ||
-> > +			    interface == PHY_INTERFACE_MODE_RGMII_RXID)
-> > +				data8 |= PORT_RGMII_ID_IG_ENABLE;
-> > +
-> > +			if (interface == PHY_INTERFACE_MODE_RGMII_ID ||
-> > +			    interface == PHY_INTERFACE_MODE_RGMII_TXID)
-> > +				data8 |= PORT_RGMII_ID_EG_ENABLE;
-> > +		}
-> > +		break;
-> > +	default:
-> > +		dev_err(dev->dev, "Unsupported interface '%s' for port %d\n",
-> > +			phy_modes(interface), port);
-> > +		return;
-> > +	}
-> > +
-> > +	/* Write the updated value */
-> > +	lan937x_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, data8);
-> > +}
-> 
-> > +static int lan937x_mdio_register(struct dsa_switch *ds)
-> > +{
-> > +	struct ksz_device *dev = ds->priv;
-> > +	int ret;
-> > +
-> > +	dev->mdio_np = of_get_child_by_name(ds->dev->of_node, "mdio");
-> 
-> So you support both the cases where an internal PHY is described using
-> OF bindings, and where the internal PHY is implicitly accessed using the
-> slave_mii_bus of the switch, at a PHY address equal to the port number,
-> and with no phy-handle or fixed-link device tree property for that port?
-> 
-> Do you need both alternatives? The first is already more flexible than
-> the second.
+If I setup the master interface with MTU 16384 before creating the
+links with netlink, there's no error reported anywhere. The FM150
+module crashes as soon as I connect it with data aggregation enabled,
+but that's a different story...
 
-The first is also much more verbose in DT, and the second generally
-just works without any DT. What can be tricky with the second is
-getting PHY interrupts to work, but it is possible, the mv88e6xxx does
-it.
+Is this limitation imposed by the RMNET_MAX_PACKET_SIZE value still a
+valid one in this case? Should changing the max packet size to 32768
+be a reasonable approach? Am I doing something wrong? :)
 
-	Andrew
+This previous discussion for the qmi_wwan add_mux/del_mux case is
+relevant: https://patchwork.ozlabs.org/project/netdev/patch/20200909091302.20992-1-dnlplm@gmail.com/..
+The suggested patch was not included yet in the qmi_wwan driver and
+therefore the user still needs to manually configure the MTU of the
+master interface before setting up all the links, but at least there
+seems to be no maximum hardcoded limit.
+
+Cheers!
+
+-- 
+Aleksander
+https://aleksander.es
