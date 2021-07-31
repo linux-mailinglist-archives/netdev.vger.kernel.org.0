@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 195BC3DC2FA
-	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 05:39:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB1813DC301
+	for <lists+netdev@lfdr.de>; Sat, 31 Jul 2021 05:45:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233122AbhGaDkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Jul 2021 23:40:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38878 "EHLO
+        id S234413AbhGaDpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Jul 2021 23:45:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231487AbhGaDkB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 23:40:01 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7193BC06175F;
-        Fri, 30 Jul 2021 20:39:55 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id a20so13402922plm.0;
-        Fri, 30 Jul 2021 20:39:55 -0700 (PDT)
+        with ESMTP id S231491AbhGaDpx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Jul 2021 23:45:53 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59836C06175F;
+        Fri, 30 Jul 2021 20:45:47 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id nh14so6209834pjb.2;
+        Fri, 30 Jul 2021 20:45:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=to:cc:from:subject:message-id:date:user-agent:mime-version
          :content-transfer-encoding:content-language;
-        bh=p2lpXtsSO03rW6tcWTOmwaCtuMDEqLxg0LUSEGGH3vI=;
-        b=JE3SeclbIM3he1tkc9keVUi25AQkxSqk1zYw/znHDZ8usMuV6gWLURbaml/8UEsW+A
-         B8HFMv5NQIG4iyODlnJseiGoYiXI10723mumdR7Pk/pL5IvDPYxo7tmLK3U0lx8toGV3
-         fSNib14rmAnynvoRlkT6dw2GKrpv/P3Gnqfc3NwKNYXK0uSiuyHcGqoa1FRdPWEJtgxm
-         RuZkLFeqyP7BsX+kWtmX/geuxrs3U8s01ZtRsG3dvxOLYJ0xqcI9My5luudQ1hgSKwk1
-         WWz9BrxK4FiWLvtDc4R9JYkOAhnWj9Y0B7gvnT5gGklnb76Bdia1IxGzZK4TWnlEgl1+
-         Vj3A==
+        bh=1GinwmTZ6p1ZyLvkmIYCrplYFGZWc23PDJonSjEXc+Y=;
+        b=dcr+q9ixLa0ovEJA8HC10Veel2PT4jKqbEfSTxFxs7u+1QL9T98tv0LWNe/JKu6DCS
+         DiNJmFITVubvdUmMQBe4OySSbEDN8Rvenp7AXlei5CZyMWfoFd9tzuOXsTLb56JqB+j7
+         TEeSMagi2uyx477HlBEWFJeTGIF3s/6cKlYM0knOHjWO0AWF/0fLuqAUnICyW70CvjGl
+         lS6PZXxYQNJyvks5nAZ+7v3EP/XaBFf0T9baae1mIfxmwrYuZu5/s/a1NWptWvrlOaw6
+         bkMAIlsJevRUM70QG6OyWngX9Iyy2VvUOWhNCvJdBzFqinVdq9KI3Gl1ccfoZ0W0r/XP
+         y04w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
          :mime-version:content-transfer-encoding:content-language;
-        bh=p2lpXtsSO03rW6tcWTOmwaCtuMDEqLxg0LUSEGGH3vI=;
-        b=j1m8m82A7d6f24Oh5MVbNin7P9inttsTVjNCtFIeuIzLOpZIcmeO8LMrtYX3WY5dM4
-         LjRZEm8tvnjhmoh3PRDp08t/7Jb++pgzR9jGr+asUD9AtFeGSoWTXNsi+hlCu/B9fzBL
-         SINphf9RRPIKh4gha091lr2c1zn8f7FHHwBsV6tXLCh4b4smP4D+5EtR4iIbbYUmF5kb
-         gwo0spY3M78sRLoP89XQSzECKHxQ8Z0ahHMhlOuq/R9GzxJ+uWYmzyC3hWV1B1KK+lOz
-         bZx/L+KMSiGrIIYBky0iMTN7WcVm5Zl4MgtDyo8lDxPC/dqMoFWKTkPLGGlyIqCwan4e
-         6gtQ==
-X-Gm-Message-State: AOAM531HrCPVnaVf/X7X3ziICXK02iBUT941O2CHT5shh8kalDb+KePy
-        H4AFQHQsNsbDk5+so6jcC4Sg+UOg/Q296Rrp
-X-Google-Smtp-Source: ABdhPJxd77Ef1mfbPQZ8wOiSnmNHKR8W5cnPUcmXDDwNlm9EXArjLXkEKX9EWO0lHYwCm++2YbpmlQ==
-X-Received: by 2002:a63:e43:: with SMTP id 3mr1686841pgo.61.1627702795089;
-        Fri, 30 Jul 2021 20:39:55 -0700 (PDT)
+        bh=1GinwmTZ6p1ZyLvkmIYCrplYFGZWc23PDJonSjEXc+Y=;
+        b=SMXeuQc8rIAL47M0zK+yj0w7yTozZ/2kF4q7yEI7tAiuoHvwU3MHH4hWM8Ej3pa7/H
+         ZANdpMLOERIxLLd4A1eDV0qs2FGbJjpdSeGDZQJBxlPCjS69Cjqyk3+IX6gxawlNFcgj
+         bcYF1IAMKvg6BGs4oOjxrInAb0y71atNaYr8az4qsB57DZI8LjSByRQOHR79sJ2i11Rt
+         XnB5k+AmgOmeOX6DRsJbJUbQsow48QdTJKnBXaWThowq2IfXwL/sx4Co3gZcvw7qvrgZ
+         1GEM1jBL+pCtm7Vq8nqrmlcnyJe+cyZlKDu9EmkEmxvBIEMhd+97GfTCnFkqz8L45yBI
+         JfJQ==
+X-Gm-Message-State: AOAM530VvWgmauerNvSqkNkl1RsQKrwbuv66ucFE2D37kVk7IuiXNJrF
+        q7728AL5dTeoPTcAnV1jKiKYAiqGsglziQ==
+X-Google-Smtp-Source: ABdhPJyL2ozSqTKcYN/obzp11aUvsU41m/GJ5i3xFwj8vbYn37+vYg+cAG8Re7kO3q6IOkmJcQKkqw==
+X-Received: by 2002:a17:902:a9c7:b029:12b:349:b318 with SMTP id b7-20020a170902a9c7b029012b0349b318mr5137210plr.13.1627703146894;
+        Fri, 30 Jul 2021 20:45:46 -0700 (PDT)
 Received: from [10.106.0.42] ([45.135.186.29])
-        by smtp.gmail.com with ESMTPSA id y15sm4555337pga.34.2021.07.30.20.39.52
+        by smtp.gmail.com with ESMTPSA id z11sm3742109pjq.13.2021.07.30.20.45.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Jul 2021 20:39:54 -0700 (PDT)
-To:     stf_xl@wp.pl, kvalo@codeaurora.org, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Fri, 30 Jul 2021 20:45:46 -0700 (PDT)
+To:     3chas3@gmail.com
+Cc:     linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, baijiaju1990@gmail.com
 From:   Li Tuo <islituo@gmail.com>
-Subject: [BUG] iwlegacy: 3945-rs: possible null-pointer dereference in
- il3945_rs_get_rate()
-Message-ID: <c9663714-a352-7c5c-1826-c7a1cd6d9abf@gmail.com>
-Date:   Sat, 31 Jul 2021 11:39:53 +0800
+Subject: [BUG] mwifiex: possible null-pointer dereference in
+ mwifiex_dnld_cmd_to_fw()
+Message-ID: <790f9160-f549-2788-cd37-13924883d5c1@gmail.com>
+Date:   Sat, 31 Jul 2021 11:45:46 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.12.0
 MIME-Version: 1.0
@@ -69,15 +68,23 @@ X-Mailing-List: netdev@vger.kernel.org
 Hello,
 
 Our static analysis tool finds a possible null-pointer dereference in 
-the iwlegacy driver in Linux 5.14.0-rc3:
+the mwifiex driver in Linux 5.14.0-rc3:
 
-The variable rs_sta is checked in:
-629:    if (rs_sta && !rs_sta->il)
+The variable cmd_node->cmd_skb->data is assigned to the variable 
+host_cmd, and host_cmd is checked in:
+190:    if (host_cmd == NULL || host_cmd->size == 0)
 
-This indicates that rs_sta can be NULL.
-If so, some null-pointer dereferences will occur in some statements such as:
-643:    idx = min(rs_sta->last_txrate_idx & 0xffff, RATE_COUNT_3945 - 1);
-653:    if (rs_sta->start_rate != RATE_INVALID)
+This indicates that host_cmd can be NULL.
+If so, the function mwifiex_recycle_cmd_node() will be called with the 
+argument cmd_node:
+196:    mwifiex_recycle_cmd_node(adapter, cmd_node);
+
+In this called function, the variable cmd_node->cmd_skb->data is 
+assigned to the variable host_cmd, too.
+Thus the variable host_cmd in the function mwifiex_recycle_cmd_node() 
+can be also NULL.
+However, it is dereferenced when calling le16_to_cpu():
+144:    le16_to_cpu(host_cmd->command)
 
 I am not quite sure whether this possible null-pointer dereference is 
 real and how to fix it if it is real.
