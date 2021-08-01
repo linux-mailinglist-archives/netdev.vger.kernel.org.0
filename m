@@ -2,134 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B7583DCDCA
-	for <lists+netdev@lfdr.de>; Sun,  1 Aug 2021 22:34:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CABAC3DCDE1
+	for <lists+netdev@lfdr.de>; Sun,  1 Aug 2021 23:11:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230368AbhHAUel (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Aug 2021 16:34:41 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:39654 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229759AbhHAUek (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Aug 2021 16:34:40 -0400
-Received: by mail-io1-f72.google.com with SMTP id u22-20020a5d9f560000b02905058dc6c376so10233270iot.6
-        for <netdev@vger.kernel.org>; Sun, 01 Aug 2021 13:34:32 -0700 (PDT)
+        id S231496AbhHAVKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Aug 2021 17:10:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56740 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229759AbhHAVKt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Aug 2021 17:10:49 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96005C06175F;
+        Sun,  1 Aug 2021 14:10:40 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id a93so7263223ybi.1;
+        Sun, 01 Aug 2021 14:10:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5cqE+6f5sJI5BDN/verR/h91s0qeLymynL8ETBEatK0=;
+        b=Nro+3TtfxnGb0lPkpzN2Mwk34JYNPXUG6LaT7Gf/HAwoHPsEwhNX5aYlo8XOT6M4iT
+         mKBXk040q6dlY+3YTCMqJ/trrtJwyyHI1s4eZMiXA/pWpdTKT9q83GM239M0yRqtz6yp
+         SJJ60YdubtEcYMtC284csMe+0HhXJTb4zwXT3fASKrf9dOyK+Tym7MwKz4fSBLBrma/Y
+         fVpkvOA0rZ/nMfYs38tcT3rZwxLK1aUZiIJAQejyyJ3kLBEjPSvLcM9DHBLjmpJ9FTi2
+         qDhQ18CQ/0+c20sOG/l3fBeDUfWQiO907aIOrZTF9+5w7vlMWutWYbs+Eeo9544g1rHF
+         fDtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=2nTW78nne7YV4oteAEFI9yTUaPPtJoN/k/2jsa42cBY=;
-        b=Po/mSmz4KYIvKyxbTX30OU9NOz8H08TxX3shC5VLU2mU5FUGJJGDrFJD74ITXTS5//
-         XnDqDtHoLDJfirJeCpXj8Q1lys2K/Sbw9gwQCEO5xpcCqqfmMu4NCpzPsXRJCZf8z4tk
-         Ll0iq1vE2QNQUyltYl/YHWD6DeRGfsJ5zjE3rDhDbdj0KAhCRFauWwBaMfai02veKVxc
-         Qg2XQAA6WlBzOxB3ifcFySknNz6j3BwWHHDBCc5pMoM4WIxE5xedvfT1rPg8wIN/3UTn
-         jKY0yAQQnlKcU+W8oPROW/Nk6xBwrht2kbKP+Doned7gQUdTkTw/c6jj/bj4Dkz7e3wu
-         C5dQ==
-X-Gm-Message-State: AOAM531sT38nc2SBHZEXVNEbwZZHki5p2sX0lR9NJ4lW69jzk8HvS//A
-        IrS8nL5kGNata6hsIBMLs5c497n6CxU5Oh6ZkXSR0siMtXc2
-X-Google-Smtp-Source: ABdhPJxDdf6F16NElNuv+EDK47lNPw3fQeOaF7nxq3ifv2BqJl98TAAKjzfueChD4GrxpBEUmzwcPcxRbhFxFWBRwujSY1OoaiFr
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5cqE+6f5sJI5BDN/verR/h91s0qeLymynL8ETBEatK0=;
+        b=JZakkigkbBsPHxhoPTLD+zqkK6k1uglvxtbMf2WTyeIlgGtdsIzzgrrmop6EldT9Nd
+         gq0fmQGKzhpJWtAQPe1b4mJWVQY58SdLSdNV6A9Idx4bbkygeIrj809RJQAs8QwC1CQL
+         CC6Cn7CMDgdKKXSjcsMfSQaRUdX0QsxzLqDmKW4SaMVcGx56xgN9kzsqKDcX49HONqLa
+         IzqsJvJQxN+BY9ZfbrZ02or+woJweQ603Qh1Uq2Pr+5brJYXXSc+NWapxpu+vyyaRgx/
+         fSQltaIR11+/Av7Q3DbU0DDzDa3QD1unRYTpb3h/yk6oXFccRw9KOoJSWBWzZpmkjDsW
+         5mtA==
+X-Gm-Message-State: AOAM531BCGf3L9T+OSfmvanEoKK5TIt27jIqI/LLtZqJnWB+JAUw+QRj
+        Z+rEEXHlsl9cclPCACw7NIs4XaCKLjZLpD2vYZU=
+X-Google-Smtp-Source: ABdhPJwo1gVgHC/X4QbKuGz+W7OF1P3orPa5UB6Jz2v3cyf28vWB5CtmDqlpxSaZadLKvvb8jx1OUUm85SdtqPXGLXo=
+X-Received: by 2002:a25:1546:: with SMTP id 67mr17077538ybv.331.1627852239100;
+ Sun, 01 Aug 2021 14:10:39 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a02:7a18:: with SMTP id a24mr9031500jac.45.1627850072379;
- Sun, 01 Aug 2021 13:34:32 -0700 (PDT)
-Date:   Sun, 01 Aug 2021 13:34:32 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004fd4c505c8856109@google.com>
-Subject: [syzbot] general protection fault in br_switchdev_fdb_notify
-From:   syzbot <syzbot+9ba1174359adba5a5b7c@syzkaller.appspotmail.com>
-To:     bridge@lists.linux-foundation.org, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, nikolay@nvidia.com, roopa@nvidia.com,
-        syzkaller-bugs@googlegroups.com
+References: <CADVatmPShADZ0F133eS3KjeKj1ZjTNAQfy_QOoJVBan02wuR+Q@mail.gmail.com>
+ <202107311901.8CDF235F65@keescook>
+In-Reply-To: <202107311901.8CDF235F65@keescook>
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Date:   Sun, 1 Aug 2021 22:10:03 +0100
+Message-ID: <CADVatmOt6Xy+is=1CBZFqExBT63EKhO37eCJ9hsvS5jy+-PMVg@mail.gmail.com>
+Subject: Re: memory leak in do_seccomp
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        alaaemadhossney.ae@gmail.com,
+        syzkaller <syzkaller@googlegroups.com>,
+        Jann Horn <jannh@google.com>,
+        Tycho Andersen <tycho@tycho.pizza>,
+        Sargun Dhillon <sargun@sargun.me>,
+        Christian Brauner <christian.brauner@ubuntu.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Kees,
 
-syzbot found the following issue on:
+On Sun, Aug 1, 2021 at 4:26 AM Kees Cook <keescook@chromium.org> wrote:
+>
+> On Sat, Jul 31, 2021 at 08:20:29PM +0100, Sudip Mukherjee wrote:
+> > Hi All,
+> >
+> > We had been running syzkaller on v5.10.y and a "memory leak in
+> > do_seccomp" was being reported on it. I got some time to check that
+> > today and have managed to get a syzkaller
+> > reproducer. I dont have a C reproducer which I can share but I can use
+> > the syz-reproducer to reproduce this with next-20210730.
+> > The old report on v5.10.y is at
+> > https://elisa-builder-00.iol.unh.edu/syzkaller/report?id=f6ddd3b592f00e95f9cbd2e74f70a5b04b015c6f
+>
+> Thanks for the details!
+>
+> Is this the same as what syzbot saw here (with a C reproducer)?
+> https://syzkaller.appspot.com/bug?id=2809bb0ac77ad9aa3f4afe42d6a610aba594a987
 
-HEAD commit:    b11f0a4c0c81 net: dsa: sja1105: be stateless when installi..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=13b77662300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=914a8107c0ffdc14
-dashboard link: https://syzkaller.appspot.com/bug?extid=9ba1174359adba5a5b7c
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1247bf2e300000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=163c441a300000
+Looks similar but it says its fixed and I still get it with the
+reproducer I have.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+9ba1174359adba5a5b7c@syzkaller.appspotmail.com
+>
+> I can't figure out what happened with the "Patch testing request" that
+> was made; there's no link?
 
-netdevsim netdevsim0 netdevsim1: set [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim2: set [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family 0 port 6081 - 0
-general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 1 PID: 8468 Comm: syz-executor865 Not tainted 5.14.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:br_switchdev_fdb_notify+0x2bf/0x340 net/bridge/br_switchdev.c:137
-Code: c4 a8 00 00 00 5b 5d 41 5c 41 5d 41 5e 41 5f c3 e8 f6 fd 77 f9 49 8d 7e 08 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 71 4d 8b 6e 08 e9 4f ff ff ff e8 cd fd 77 f9 31 c9
-RSP: 0018:ffffc9000186f360 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000001 RSI: ffffffff87fd8c8a RDI: 0000000000000008
-RBP: 1ffff9200030de6d R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff87fd8bc7 R11: 0000000000000000 R12: 000000000000001c
-R13: ffff88801d1c8c00 R14: 0000000000000000 R15: ffff888033cb93e8
-FS:  0000000002147300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000000 CR3: 000000003756d000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- fdb_notify+0x159/0x190 net/bridge/br_fdb.c:798
- br_fdb_external_learn_add+0x2cc/0x5c0 net/bridge/br_fdb.c:1303
- __br_fdb_add+0x122/0xa40 net/bridge/br_fdb.c:1033
- br_fdb_add+0x8aa/0xcd0 net/bridge/br_fdb.c:1105
- rtnl_fdb_add+0x45f/0xad0 net/core/rtnetlink.c:4046
- rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5563
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
- netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
- netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
- sock_sendmsg_nosec net/socket.c:703 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:723
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2402
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2456
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2485
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x443239
-Code: 28 c3 e8 4a 15 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffee38b3de8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007ffee38b3df8 RCX: 0000000000443239
-RDX: 0000000000000000 RSI: 0000000020000040 RDI: 0000000000000003
-RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffee38b3e00
-R13: 00007ffee38b3e20 R14: 00000000004b8018 R15: 00000000004004b8
-Modules linked in:
----[ end trace aa1b885b5f5494d5 ]---
-RIP: 0010:br_switchdev_fdb_notify+0x2bf/0x340 net/bridge/br_switchdev.c:137
-Code: c4 a8 00 00 00 5b 5d 41 5c 41 5d 41 5e 41 5f c3 e8 f6 fd 77 f9 49 8d 7e 08 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 71 4d 8b 6e 08 e9 4f ff ff ff e8 cd fd 77 f9 31 c9
-RSP: 0018:ffffc9000186f360 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000001 RSI: ffffffff87fd8c8a RDI: 0000000000000008
-RBP: 1ffff9200030de6d R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff87fd8bc7 R11: 0000000000000000 R12: 000000000000001c
-R13: ffff88801d1c8c00 R14: 0000000000000000 R15: ffff888033cb93e8
-FS:  0000000002147300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000000 CR3: 000000003756d000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Looks like it has been merged with a566a9012acd ("seccomp: don't leak
+memory when filter install races")
+
+>
+> >
+> > BUG: memory leak
+> > unreferenced object 0xffff888019282c00 (size 512):
+> >   comm "syz-executor.1", pid 7389, jiffies 4294761829 (age 17.841s)
+> >   hex dump (first 32 bytes):
+> >     01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
+> >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+> >   backtrace:
+> >     [<00000000762c0963>] do_seccomp+0x2d5/0x27d0
+>
+> Can you run "./scripts/faddr2line do_seccomp+0x2d5/0x27d0" for this? I
+> expect it'll be:
+>         sfilter = kzalloc(sizeof(*sfilter), GFP_KERNEL | __GFP_NOWARN);
+
+Yes, it is from "(inlined by) seccomp_prepare_filter at kernel/seccomp.c:661".
+I did:
+$ scripts/faddr2line vmlinux do_seccomp+0x2d5/0x27d0
+do_seccomp+0x2d5/0x27d0:
+kmalloc at include/linux/slab.h:591
+(inlined by) kzalloc at include/linux/slab.h:721
+(inlined by) seccomp_prepare_filter at kernel/seccomp.c:661
+(inlined by) seccomp_prepare_user_filter at kernel/seccomp.c:703
+(inlined by) seccomp_set_mode_filter at kernel/seccomp.c:1852
+(inlined by) do_seccomp at kernel/seccomp.c:1972
+
+>
+> >     [<0000000006e512d1>] do_syscall_64+0x3b/0x90
+> >     [<0000000094ae9ff8>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+>
+
+<snip>
+
+>
+> My best guess is there is some LISTENER refcount state we can get into
+> where all the processes die, but a reference is left alive.
+
+Will be happy to run any debug patch if you need.
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+-- 
+Regards
+Sudip
