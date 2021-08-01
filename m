@@ -2,79 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 310F13DCB33
-	for <lists+netdev@lfdr.de>; Sun,  1 Aug 2021 12:35:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E374F3DCB15
+	for <lists+netdev@lfdr.de>; Sun,  1 Aug 2021 12:25:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231953AbhHAKfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Aug 2021 06:35:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41866 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231473AbhHAKfl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Aug 2021 06:35:41 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11432C06175F
-        for <netdev@vger.kernel.org>; Sun,  1 Aug 2021 03:35:33 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id u15so8665637wmj.1
-        for <netdev@vger.kernel.org>; Sun, 01 Aug 2021 03:35:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3PYkNkvsqsb8yO6kdKoH/De6spp/mrAfPl1YFQlB2bA=;
-        b=oxTsHCplaLjK3ResDy4YfeUA5+qyCEHPij33tgmcx63EKQQHOyAAs9w8sIdLSUrX0q
-         e0oWftbuF4s23fzKpHUUkDKAQENJ5XbsgPwaUxtXBHY2UYA4l5qjfg2SuXmhbR7xiM5Y
-         exuW9Dx+6sJMHeux8d2Tp9H+7UzzUWrCAMNMDNk7YGIjt3piu/JU8lqNMJ40eXwj2gV9
-         ccjcYZbe4fWX70R0KXSNvtROCq2NPazSUlRRhpsF2ypFFmzAAW9ad+viZrpvv6bXH0rr
-         PAmRjE7hpVS6K3aor4+LI8qZHqg2fSC9sW1Nr6bDaBI1abc5LCqG7lhcReSG6f26choN
-         ZhYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=3PYkNkvsqsb8yO6kdKoH/De6spp/mrAfPl1YFQlB2bA=;
-        b=bhTfBdFdlicsMmBaOjY2SkvdFij9NCFUu0d5jeRfVhQvv25Rpbde52ulBjjkNROLIC
-         NoNI7DInpRosvgfpsH2zY2GvZqo6tyEnyVa3oE+GOny3CR9rbTy3m3aioU7PU+dUVhop
-         gyxbEGnZQbt8xIZNzbWkG1Ypmp4uLwtFLEOEaMRa/VEe9H6IQUyZCG64gyxRSa68+3Fv
-         ol6PZ9DG+MB7qLPPcdjxnf5KFEIxzdeCnU0PXHgzRaEkRTTSuAARPrBHibTWwfubbnTi
-         GeOC2H8cx3leIiIlsOxrdpl59TGxL/AwLVt/rNjekQbebhEmCBFKwvTrNuYzaY773z0s
-         3MSg==
-X-Gm-Message-State: AOAM531KCPv/6kE/Y91ttKmv65kWetUyvoOGE8Bvte2lHeV7T1dAkBd1
-        PEw/LPdzEIEWS2mSF4u8sCq5snOBVwWXmg==
-X-Google-Smtp-Source: ABdhPJz7p9XaRgj+laGPLCZeZQhJHAch9+/1csjykB2UlplqcxPlnQXvc+yYkI7u5HUjHpkQISr0qQ==
-X-Received: by 2002:a05:600c:1906:: with SMTP id j6mr11436096wmq.108.1627814131402;
-        Sun, 01 Aug 2021 03:35:31 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f10:c200:9d9e:757:f317:c524? (p200300ea8f10c2009d9e0757f317c524.dip0.t-ipconnect.de. [2003:ea:8f10:c200:9d9e:757:f317:c524])
-        by smtp.googlemail.com with ESMTPSA id b15sm7814154wrx.73.2021.08.01.03.35.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 Aug 2021 03:35:31 -0700 (PDT)
-Subject: Re: [net,v7] net: stmmac: fix 'ethtool -P' return -EBUSY
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Hao Chen <chenhaoa@uniontech.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20210731050928.32242-1-chenhaoa@uniontech.com>
- <8d1b5896-da9f-954f-6d43-061b75863961@gmail.com>
- <20210731092309.487bc793@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <e22fed83-a4fe-52a9-7ab8-e3033b1b8142@gmail.com>
-Date:   Sun, 1 Aug 2021 12:22:51 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S231462AbhHAKZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Aug 2021 06:25:24 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:27476 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231518AbhHAKYv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Aug 2021 06:24:51 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 171ANv6Q015561;
+        Sun, 1 Aug 2021 03:23:57 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=Ib9kHgwnkFZrMK0aJR3bm+QD2/IxSk5s9omc7oqxWQw=;
+ b=RkzDw8MyaHBAQslIInPNOaddhqk6Tg7ZES/uAwPdaZizgwq+gAuBugR9uEQ17SUUCfmE
+ 7B7z56JNxEF67JXREUutFQXqwn0BhtMUe3ctAVbhE82aidtH6OnF9LVxWkZVHCHF7GJ3
+ FWAVv32vSlVTYAhbO8XGL2BaVYhWuxXdphiNQDwD0MNHWEav22USKCK3su4TQGz1K5X/
+ nkT4Lwuzl1fETAUj/Ytu6w7OoeV+AIW2AfVWPP+qHJYFSvYUR28ssKCT57w+MYelA8qy
+ dKEXT/BynwbJ5FAsViWqbtGy+N5qk6m5cavjpp5rG5XkSQv9S1+FaVNVfUqClrRgVq9N Pg== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 3a53vrah3w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 01 Aug 2021 03:23:57 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Sun, 1 Aug
+ 2021 03:23:56 -0700
+Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
+ DC5-EXCH02.marvell.com (10.69.176.39) with Microsoft SMTP Server id
+ 15.0.1497.18 via Frontend Transport; Sun, 1 Aug 2021 03:23:54 -0700
+From:   Shai Malin <smalin@marvell.com>
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <aelior@marvell.com>, <smalin@marvell.com>, <malin1024@gmail.com>
+Subject: [PATCH] qed: Avoid db_recovery during recovery
+Date:   Sun, 1 Aug 2021 13:23:40 +0300
+Message-ID: <20210801102340.19660-1-smalin@marvell.com>
+X-Mailer: git-send-email 2.16.6
 MIME-Version: 1.0
-In-Reply-To: <20210731092309.487bc793@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: GakdOEn0kNLADD69BzsdvYZ7qzDV5KGb
+X-Proofpoint-GUID: GakdOEn0kNLADD69BzsdvYZ7qzDV5KGb
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-07-31_14:2021-07-30,2021-07-31 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31.07.2021 18:23, Jakub Kicinski wrote:
-> On Sat, 31 Jul 2021 11:35:58 +0200 Heiner Kallweit wrote:
->> If there's an agreement that this makes sense in general then we may add
->> this to core code, by e.g. runtime-resuming netdev->dev.parent (and maybe
->> netdev->dev if netdev has no parent).
-> 
-> Sounds very tempting to me.
-> 
-I'll submit a proposal.
+Avoid calling the qed doorbell recovery - qed_db_rec_handler()
+during device recovery.
+
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Signed-off-by: Shai Malin <smalin@marvell.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
+index aa48b1b7eddc..6871d892eabf 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_main.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
+@@ -1215,6 +1215,10 @@ static void qed_slowpath_task(struct work_struct *work)
+ 
+ 	if (test_and_clear_bit(QED_SLOWPATH_PERIODIC_DB_REC,
+ 			       &hwfn->slowpath_task_flags)) {
++		/* skip qed_db_rec_handler during recovery/unload */
++		if (hwfn->cdev->recov_in_prog || !hwfn->slowpath_wq_active)
++			goto out;
++
+ 		qed_db_rec_handler(hwfn, ptt);
+ 		if (hwfn->periodic_db_rec_count--)
+ 			qed_slowpath_delayed_work(hwfn,
+@@ -1222,6 +1226,7 @@ static void qed_slowpath_task(struct work_struct *work)
+ 						  QED_PERIODIC_DB_REC_INTERVAL);
+ 	}
+ 
++out:
+ 	qed_ptt_release(hwfn, ptt);
+ }
+ 
+-- 
+2.22.0
+
