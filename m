@@ -2,81 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D4F73DCC77
-	for <lists+netdev@lfdr.de>; Sun,  1 Aug 2021 17:37:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F389B3DCCB1
+	for <lists+netdev@lfdr.de>; Sun,  1 Aug 2021 18:26:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232299AbhHAPhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Aug 2021 11:37:55 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:34980
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232117AbhHAPhy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Aug 2021 11:37:54 -0400
-Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 5EE3A3F0A6;
-        Sun,  1 Aug 2021 15:37:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1627832265;
-        bh=iLN8TLgdbvtmYaSUrV7g9uz/p2+EVNuytQVWi86ahzk=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
-        b=t8Fam8VC535Ic8aJxhQoRDVyQCzWKu3d4lIVBZ/POU19Bi0STVDy2y8lyutq5WdAD
-         8Q8BHNSVEF63yv55++n7UOgmygzQcvouHNFDq28M8b6dhJgk9Zt+R99ewDHavGOyqR
-         Yu8khXUp6YYRbol1kJNsKAu+zPIr6CC/eteiCc7haB7MENS2p3FX1Dq3w15jqh45Lk
-         8AsVEzReRJNwxQg+GTFkqgqxtm7VvntT8dWYubiW/4wxyZOtjPDI3Wuh9G2l8VXKxe
-         Zxc3TObvjpl9iTgua6GC5RSg/vrTUYjAxJbdKnqHQUo/SBRlVWzLIdFpwUhjWzps1F
-         pVBGXzRqmML8w==
-From:   Colin King <colin.king@canonical.com>
-To:     Tariq Toukan <tariqt@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net/mlx4: make the array states static const, makes object smaller
-Date:   Sun,  1 Aug 2021 16:37:42 +0100
-Message-Id: <20210801153742.147304-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.31.1
+        id S229615AbhHAQ0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Aug 2021 12:26:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42636 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229553AbhHAQ0K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Aug 2021 12:26:10 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE8A2C0613D3
+        for <netdev@vger.kernel.org>; Sun,  1 Aug 2021 09:26:01 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id b11so13124579wrx.6
+        for <netdev@vger.kernel.org>; Sun, 01 Aug 2021 09:26:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jkQ2i4n+v6uFFsrpGi7+MIjFv4KLYeIgFRlmb5kYCiA=;
+        b=Fh88jDnaDs/CAA/a2n8hQbyx1msHdHxbU+YF8XLPI2Imb9YV9yLbL01x/jvMHUtRYk
+         KqaQ7QD26lmKwWTKRuVeBGAjDNW59Q5ycH4bbXu20ZgYBuzLxqf3o1rY0skrLsUSPZrE
+         YeDDMlJQHSIjNQzzYTdxHn3wdQnaMErXbezUKIVTLNc6YNwjM5oNHoZOsfS+/wZKzhPt
+         wLU6tnr3KnjNk90N1sOMFrJ8xGMvfFjn8yoSR3RwYFKtJtnw7LwW7FkazgU1jaM0cf7f
+         ji+ApG8GSwnayyBLFkqNKr0sa/200MAWuW/zozv+BuwPghclBVI+5F3jPcwB4JgUqFT6
+         X9PQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jkQ2i4n+v6uFFsrpGi7+MIjFv4KLYeIgFRlmb5kYCiA=;
+        b=HP5GEEU9u0+q1bfUBdeYwdVH6MBd2pDjU7AaodOLnUtv4kQW9NgnIQFGKv80MYvzNm
+         f5YhKEJ36bvVjeEcL68qcXd4bxpQimizAVA5hXih2F7ePMa5+Mg4XWh6lZgi0UnT37to
+         9+Qba2NbD/L/cCKA2flMfJA5C+D1fonjsD36CQ9DpxlALpL/+gH1atHJlyJRznOGwg6n
+         gUHJuJrpmFJFEYIl9dvrUeywFf1TsaJQEbHnlfF1t/sIRO1ZGyLiQtJYWLTokeBFjVOV
+         fmmrKH+sQS8EWxvzD92P7qx444hU/nCtG7IOwYHSy88pyeru1RTNku1f8Gt5pmx+jZk0
+         6jNA==
+X-Gm-Message-State: AOAM532HE7kwu0J0ux1yfoqDaGVjJI2NvRZ2GI2ZTI99Gysfl2Gpdj10
+        nn+O8OkRYzo9GLsfzDzlIBgYnKAiGwNSXQ==
+X-Google-Smtp-Source: ABdhPJwzNcPQiYuiwL0Xp3b0LxrjfTmQNHUiYmTtHKA6MvRcR94fJRNOwyGwdTceIuaLboSXqZXEag==
+X-Received: by 2002:adf:db07:: with SMTP id s7mr13906546wri.106.1627835159920;
+        Sun, 01 Aug 2021 09:25:59 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f10:c200:9d9e:757:f317:c524? (p200300ea8f10c2009d9e0757f317c524.dip0.t-ipconnect.de. [2003:ea:8f10:c200:9d9e:757:f317:c524])
+        by smtp.googlemail.com with ESMTPSA id a16sm8624267wrx.7.2021.08.01.09.25.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 01 Aug 2021 09:25:59 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/4] ethtool: runtime-resume netdev parent before
+ ethtool ops
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <106547ef-7a61-2064-33f5-3cc8d12adb34@gmail.com>
+Message-ID: <8bcca610-601d-86d0-4d74-0e5055431738@gmail.com>
+Date:   Sun, 1 Aug 2021 18:25:52 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <106547ef-7a61-2064-33f5-3cc8d12adb34@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On 01.08.2021 12:35, Heiner Kallweit wrote:
+> If a network device is runtime-suspended then:
+> - network device may be flagged as detached and all ethtool ops (even if
+>   not accessing the device) will fail because netif_device_present()
+>   returns false
+> - ethtool ops may fail because device is not accessible (e.g. because being
+>   in D3 in case of a PCI device)
+> 
+> It may not be desirable that userspace can't use even simple ethtool ops
+> that not access the device if interface or link is down. To be more friendly
+> to userspace let's ensure that device is runtime-resumed when executing
+> ethtool ops in kernel.
+> 
+> This patch series covers the typical case that the netdev parent is power-
+> managed, e.g. a PCI device. Not sure whether cases exist where the netdev
+> itself is power-managed. If yes then we may need an extension for this.
+> But the series as-is at least shouldn't cause problems in that case.
+> 
+> Heiner Kallweit (4):
+>   ethtool: runtime-resume netdev parent before ethtool ioctl ops
+>   ethtool: move implementation of ethnl_ops_begin/complete to netlink.c
+>   ethtool: move netif_device_present check from
+>     ethnl_parse_header_dev_get to ethnl_ops_begin
+>   ethtool: runtime-resume netdev parent in ethnl_ops_begin
+> 
+>  net/ethtool/ioctl.c   | 18 ++++++++++++++---
+>  net/ethtool/netlink.c | 45 +++++++++++++++++++++++++++++++++++++------
+>  net/ethtool/netlink.h | 15 ++-------------
+>  3 files changed, 56 insertions(+), 22 deletions(-)
+> 
 
-Don't populate the array states on the stack but instead it
-static const. Makes the object code smaller by 79 bytes.
+Patchwork is showing the following warning for all patches in the series.
 
-Before:
-   text   data   bss    dec    hex filename
-  21309   8304   192  29805   746d drivers/net/ethernet/mellanox/mlx4/qp.o
+netdev/cc_maintainers	warning	7 maintainers not CCed: ecree@solarflare.com andrew@lunn.ch magnus.karlsson@intel.com danieller@nvidia.com arnd@arndb.de irusskikh@marvell.com alexanderduyck@fb.com
 
-After:
-   text   data   bss    dec    hex filename
-  21166   8368   192  29726   741e drivers/net/ethernet/mellanox/mlx4/qp.o
-
-(gcc version 10.2.0)
-
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/ethernet/mellanox/mlx4/qp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx4/qp.c b/drivers/net/ethernet/mellanox/mlx4/qp.c
-index 427e7a31862c..2584bc038f94 100644
---- a/drivers/net/ethernet/mellanox/mlx4/qp.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/qp.c
-@@ -917,7 +917,7 @@ int mlx4_qp_to_ready(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
- {
- 	int err;
- 	int i;
--	enum mlx4_qp_state states[] = {
-+	static const enum mlx4_qp_state states[] = {
- 		MLX4_QP_STATE_RST,
- 		MLX4_QP_STATE_INIT,
- 		MLX4_QP_STATE_RTR,
--- 
-2.31.1
-
+This seems to be a false positive, e.g. address ecree@solarflare.com
+doesn't exist at all in MAINTAINERS file.
