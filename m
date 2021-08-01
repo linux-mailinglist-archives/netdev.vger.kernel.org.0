@@ -2,74 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0FE43DCB1A
-	for <lists+netdev@lfdr.de>; Sun,  1 Aug 2021 12:29:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 162393DCB22
+	for <lists+netdev@lfdr.de>; Sun,  1 Aug 2021 12:29:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231527AbhHAK3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Aug 2021 06:29:07 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:48020 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231461AbhHAK3H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Aug 2021 06:29:07 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 171ANv6f015561;
-        Sun, 1 Aug 2021 03:28:58 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=ke4gyB5ij2SuQzxPgLIiKAQtRxchNGim7N9SceNCtuQ=;
- b=QRYZRukFx8PlUzFp/QhPP7PiyocPTQpfj0E5UtBjDjT1XXPVFyo+4DPCPv9mZZNRvV+x
- ikRRIAyYw9UOf56gr1PNnAdaoHgaaiSKiHRtKJHrJkzsxCWMhNJAryDTdVXW2FZcWnAt
- Su+L7kCarnWx9dOc1O9ajRDVtp9FaXXuKTiA775wjYD0X/V267OwB+dxWb0dz15UwwzF
- UuUmCiXf4+K7HgGV50aHiombquEHSYsIdnW+gKIsXnYUILyoviJZaLcsvxF5Ex7IrKh+
- aqfBytp163H5TM0VcKvjqeqN5W58Xo1JoFsurragWkbsPY+7f4zPw5o5XKHrL/fp43QP 1g== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3a53vrahfb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 01 Aug 2021 03:28:58 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Sun, 1 Aug
- 2021 03:28:56 -0700
-Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
- DC5-EXCH02.marvell.com (10.69.176.39) with Microsoft SMTP Server id
- 15.0.1497.18 via Frontend Transport; Sun, 1 Aug 2021 03:28:55 -0700
-From:   Shai Malin <smalin@marvell.com>
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <aelior@marvell.com>, <smalin@marvell.com>, <malin1024@gmail.com>
-Subject: [PATCH] qed: Remove redundant prints from the iWARP SYN handling
-Date:   Sun, 1 Aug 2021 13:28:40 +0300
-Message-ID: <20210801102840.21822-1-smalin@marvell.com>
-X-Mailer: git-send-email 2.16.6
+        id S231778AbhHAK3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Aug 2021 06:29:41 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:27951 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231557AbhHAK3k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Aug 2021 06:29:40 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1627813773; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=kI8QKN3K1BBYtKBZNl9UungW8huvoQTqjpmtT8Qyby4=;
+ b=TXGSH+KLRca42q+n7f/CAWEEUjmoFzz0zmYae96dpGDquC40ARASQtGQQEVYCINGAsbfpNOx
+ +jeJi74yvTnkin5ZqpjsNGSDRJWXaNCK7Oo7lAA8sx4Z1bPgfSX8Nmcf2Dndv/f4S+g8E0fG
+ rQwCVEbelx8+nrPcNiSt4dl0kHQ=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 6106777de81205dd0a72ab1b (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 01 Aug 2021 10:29:17
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 7473EC43460; Sun,  1 Aug 2021 10:29:17 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id AA05DC433F1;
+        Sun,  1 Aug 2021 10:29:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org AA05DC433F1
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: UEiLo2TRfbV9nHDAv9Ev470ehLMrgwph
-X-Proofpoint-GUID: UEiLo2TRfbV9nHDAv9Ev470ehLMrgwph
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-07-31_14:2021-07-30,2021-07-31 signatures=0
+Content-Transfer-Encoding: 7bit
+Subject: Re: libertas: Remove unnecessary label of lbs_ethtool_get_eeprom
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20210625121108.162868-1-dingsenjie@163.com>
+References: <20210625121108.162868-1-dingsenjie@163.com>
+To:     dingsenjie@163.com
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dingsenjie <dingsenjie@yulong.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-Id: <20210801102917.7473EC43460@smtp.codeaurora.org>
+Date:   Sun,  1 Aug 2021 10:29:17 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove redundant prints from the iWARP SYN handling.
+dingsenjie@163.com wrote:
 
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: Shai Malin <smalin@marvell.com>
----
- drivers/net/ethernet/qlogic/qed/qed_iwarp.c | 2 --
- 1 file changed, 2 deletions(-)
+> From: dingsenjie <dingsenjie@yulong.com>
+> 
+> The label is only used once, so we delete it and use the
+> return statement instead of the goto statement.
+> 
+> Signed-off-by: dingsenjie <dingsenjie@yulong.com>
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-index a99861124630..fc8b3e64f153 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-@@ -1624,8 +1624,6 @@ qed_iwarp_get_listener(struct qed_hwfn *p_hwfn,
- 	static const u32 ip_zero[4] = { 0, 0, 0, 0 };
- 	bool found = false;
- 
--	qed_iwarp_print_cm_info(p_hwfn, cm_info);
--
- 	list_for_each_entry(listener,
- 			    &p_hwfn->p_rdma_info->iwarp.listen_list,
- 			    list_entry) {
+Patch applied to wireless-drivers-next.git, thanks.
+
+18cb62367a8f libertas: Remove unnecessary label of lbs_ethtool_get_eeprom
+
 -- 
-2.22.0
+https://patchwork.kernel.org/project/linux-wireless/patch/20210625121108.162868-1-dingsenjie@163.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
