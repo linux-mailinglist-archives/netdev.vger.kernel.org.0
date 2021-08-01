@@ -2,108 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27FC43DCD47
-	for <lists+netdev@lfdr.de>; Sun,  1 Aug 2021 21:35:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1085B3DCDAB
+	for <lists+netdev@lfdr.de>; Sun,  1 Aug 2021 22:24:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230072AbhHATf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Aug 2021 15:35:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33690 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbhHATf1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Aug 2021 15:35:27 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98CBCC06175F;
-        Sun,  1 Aug 2021 12:35:18 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id z2so29766557lft.1;
-        Sun, 01 Aug 2021 12:35:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=mAbYsU4RPaV/8B8ZdAc5/2u4OFxmje95un7poA9waH4=;
-        b=i/TdiNJZXQYNOJ2eze2Awe3TxtRG6IWfVMgkW0vwPXWLrXSJhgrtX9m4H5E/zs0z9b
-         ra97Fsa8aJU92b0fDjTi9t0GehvsyKdnxar7b+P40DD1lwpt0Jb+Rp1bFsDC0FAwcQoL
-         wtoIfumwjk6p1TTc+xZrNqhs5wmFCi9+iPU1e22724Me3kiedCVhGHSLSOCio4hVNkPv
-         WBnyc/sPuSoSPzLzsLYUSSvjZPMp4pv8ULos3W/o6fWxEi4nW70nUBKab5rMrtb362g/
-         JwyLCAnBN9sL1xe5a7I3W0WccfihW9yV+HF5fwsMtU3iB+BC1baI3j4t7ob2hsWJanzr
-         kB/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mAbYsU4RPaV/8B8ZdAc5/2u4OFxmje95un7poA9waH4=;
-        b=EjfBbfoivYQhNLLmKrwoup8oaexve6JaZJcxKxau6pkblzcHK6h9btwmCV6qMe7eSX
-         CXv3iPtOKqI4vwcl3fXlFd/hBEz/VNAD4KPEyM8t/ntBXNQc89jSC9c83I4oMRKI/lNp
-         ZVZZA2ucfoZkUN9Zj+LOVNEu2F1U7E34f8yi+B/b+5uYgMj+K1dSmTyal3bnvzhYtXy/
-         PxWKBX2xejG8b4X8mmHi/gUunHFlnmEt73/GCjru08GeR+6EFPNRVgwiNywqLtSmregY
-         HPBuP7WFw3BASyQ9Uux3A5D29fwLTuXqWJhhA78LOKzbVwM46DXWbJHldsYFM6xnzHuG
-         vfHg==
-X-Gm-Message-State: AOAM531X4PRmFaSskRqRE8d0DDwrDfZL3TnGxTY3Oe0u48ilHaqAbg15
-        1EfmlfaJ30TQwc/oj9RgiY4=
-X-Google-Smtp-Source: ABdhPJz56fImZkjgw7zEFTCzmrviyChKKvYj94gbU5Htb5MvXsIVLYrherV22wNlonbWvgWtTUTeVw==
-X-Received: by 2002:a05:6512:314e:: with SMTP id s14mr9913562lfi.595.1627846516825;
-        Sun, 01 Aug 2021 12:35:16 -0700 (PDT)
-Received: from localhost.localdomain ([94.103.227.213])
-        by smtp.gmail.com with ESMTPSA id p22sm743442lfo.195.2021.08.01.12.35.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Aug 2021 12:35:16 -0700 (PDT)
-Date:   Sun, 1 Aug 2021 22:35:13 +0300
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     Petko Manolov <petkan@nucleusys.com>
+        id S231223AbhHAUYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Aug 2021 16:24:42 -0400
+Received: from lan.nucleusys.com ([92.247.61.126]:38882 "EHLO
+        zzt.nucleusys.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S229955AbhHAUYl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Aug 2021 16:24:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=nucleusys.com; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
+        Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=6vjd0yjQG3cLOQPkVqx7MVzNhtwrgIO01TVQGBQE7jQ=; b=lJ8Qylio8uUdgrs8Pn4kHtGhxW
+        7marUVg9NQX/bYzKVnT5vhaC0JuIoYlObAgCj+b3OILLllpxqH5ZlUITZk0druvvYIBN/94NDvv5u
+        11FAu1V+LkoehwR8HPdJEHhQu3oOYBgdQc+pfXATie9KTzjCM4HMWRY/z013NcQrWUog=;
+Received: from [94.26.108.4] (helo=carbon)
+        by zzt.nucleusys.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <petkan@nucleusys.com>)
+        id 1mAI0U-000Bk6-CG; Sun, 01 Aug 2021 23:24:23 +0300
+Date:   Sun, 1 Aug 2021 23:24:21 +0300
+From:   Petko Manolov <petkan@nucleusys.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-usb@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         syzbot+02c9f70f3afae308464a@syzkaller.appspotmail.com
-Subject: Re: [PATCH] net: pegasus: fix uninit-value in
- get_interrupt_interval
-Message-ID: <20210801223513.06bede26@gmail.com>
-In-Reply-To: <YQaVS5UwG6RFsL4t@carbon>
+Subject: Re: [PATCH] net: pegasus: fix uninit-value in get_interrupt_interval
+Message-ID: <YQcC9eOf5+MXZRsG@carbon>
+Mail-Followup-To: Pavel Skripkin <paskripkin@gmail.com>,
+        davem@davemloft.net, kuba@kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+02c9f70f3afae308464a@syzkaller.appspotmail.com
 References: <20210730214411.1973-1-paskripkin@gmail.com>
-        <YQaVS5UwG6RFsL4t@carbon>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-suse-linux-gnu)
+ <YQaVS5UwG6RFsL4t@carbon>
+ <20210801223513.06bede26@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210801223513.06bede26@gmail.com>
+X-Spam_score: -1.0
+X-Spam_bar: -
+X-Spam_report: Spam detection software, running on the system "zzt.nucleusys.com",
+ has NOT identified this incoming email as spam.  The original
+ message has been attached to this so you can view it or label
+ similar future email.  If you have any questions, see
+ @@CONTACT_ADDRESS@@ for details.
+ Content preview:  On 21-08-01 22:35:13, Pavel Skripkin wrote: > On Sun, 1 Aug
+    2021 15:36:27 +0300 Petko Manolov <petkan@nucleusys.com> wrote: > > > On
+   21-07-31 00:44:11, Pavel Skripkin wrote: > > > Syzbot reported unin [...] 
+ Content analysis details:   (-1.0 points, 5.0 required)
+  pts rule name              description
+ ---- ---------------------- --------------------------------------------------
+ -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 1 Aug 2021 15:36:27 +0300
-Petko Manolov <petkan@nucleusys.com> wrote:
-
-> On 21-07-31 00:44:11, Pavel Skripkin wrote:
-> > Syzbot reported uninit value pegasus_probe(). The problem was in
-> > missing error handling.
+On 21-08-01 22:35:13, Pavel Skripkin wrote:
+> On Sun, 1 Aug 2021 15:36:27 +0300 Petko Manolov <petkan@nucleusys.com> wrote:
+> 
+> > On 21-07-31 00:44:11, Pavel Skripkin wrote:
+> > > Syzbot reported uninit value pegasus_probe(). The problem was in missing
+> > > error handling.
+> > > 
+> > > get_interrupt_interval() internally calls read_eprom_word() which can fail
+> > > in some cases. For example: failed to receive usb control message. These
+> > > cases should be handled to prevent uninit value bug, since
+> > > read_eprom_word() will not initialize passed stack variable in case of
+> > > internal failure.
 > > 
-> > get_interrupt_interval() internally calls read_eprom_word() which
-> > can fail in some cases. For example: failed to receive usb control
-> > message. These cases should be handled to prevent uninit value bug,
-> > since read_eprom_word() will not initialize passed stack variable
-> > in case of internal failure.
+> > Well, this is most definitelly a bug.
+> > 
+> > ACK!
+> > 
+> > 
+> >		Petko
 > 
-> Well, this is most definitelly a bug.
-> 
-> ACK!
-> 
-> 
-> 		Petko
-> 
-> 
+> BTW: I found a lot uses of {get,set}_registers without error checking. I
+> think, some of them could be fixed easily (like in enable_eprom_write), but, I
+> guess, disable_eprom_write is not so easy. For example, if we cannot disable
+> eprom should we retry? If not, will device get in some unexpected state?
 
-Thank you, Petko!
+Everything bracketed by PEGASUS_WRITE_EEPROM is more or less dead code.  I've
+added this feature because the chip give us the ability to write to the flash,
+but i seriously doubt anybody ever used it.  Come to think about it, i should
+just remove this code.
 
+> Im not familiar with this device, but I can prepare a patch to wrap all these
+> calls with proper error checking
 
-BTW: I found a lot uses of {get,set}_registers without error
-checking. I think, some of them could be fixed easily (like in
-enable_eprom_write), but, I guess, disable_eprom_write is not so easy.
-For example, if we cannot disable eprom should we retry? If not, will
-device get in some unexpected state?
-
-Im not familiar with this device, but I can prepare a patch to wrap all
-these calls with proper error checking
+Well, i've stared at the code a bit and i see some places where not checking the
+error returned by {get,set}_registers() could really be problematic.  I'll cook
+a patch with what i think needs doing and will submit it here for review.
 
 
-
-With regards,
-Pavel Skripkin
-
-
+cheers,
+Petko
