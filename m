@@ -2,151 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F8533DCBAC
-	for <lists+netdev@lfdr.de>; Sun,  1 Aug 2021 14:36:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E77F63DCBB1
+	for <lists+netdev@lfdr.de>; Sun,  1 Aug 2021 14:46:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231940AbhHAMgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Aug 2021 08:36:50 -0400
-Received: from lan.nucleusys.com ([92.247.61.126]:38836 "EHLO
-        zzt.nucleusys.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S231802AbhHAMgt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Aug 2021 08:36:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=nucleusys.com; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
-        Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=qD0SaqUGLbpCXnxKQhYAIh55AI4eaqb7RBu5u1Fgycg=; b=IRidOk1XEwdiv7peuu2PYqd7f8
-        6fNmZ9dbqzc+lyEwenVQya068KgR4Rw9jAjKYr7OjzPJ799gouZIIxkWJ8AVvOC8eQOtoMCrntQ8/
-        FGsx/wilz0IbLxvQXmN9C6y15wMAoXHrsmhpF/HdG8lp0Z/qUXLdc4SGBTTKCRGLUaOg=;
-Received: from [94.26.108.4] (helo=carbon)
-        by zzt.nucleusys.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <petkan@nucleusys.com>)
-        id 1mAAhg-0000OU-Df; Sun, 01 Aug 2021 15:36:29 +0300
-Date:   Sun, 1 Aug 2021 15:36:27 +0300
-From:   Petko Manolov <petkan@nucleusys.com>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+02c9f70f3afae308464a@syzkaller.appspotmail.com
-Subject: Re: [PATCH] net: pegasus: fix uninit-value in get_interrupt_interval
-Message-ID: <YQaVS5UwG6RFsL4t@carbon>
-References: <20210730214411.1973-1-paskripkin@gmail.com>
+        id S231919AbhHAMqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Aug 2021 08:46:34 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:39042 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231461AbhHAMqe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Aug 2021 08:46:34 -0400
+Received: from localhost.localdomain (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 3FB75200E2C1;
+        Sun,  1 Aug 2021 14:46:22 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 3FB75200E2C1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1627821982;
+        bh=wuWWVTvI+IpYRAH+qIjn9IBkpUXhoswLJbpsOh+wyxg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=F3KGR8I/wsb0Ii4geUHHO+j88Ebx6okGiZ+aZ4NhI4AhjEyagsmS9gphx4I+3aBbS
+         Tv0WLK3FaQF6oGcct4ngy7gGrdOkkLZ19H6OjUYD+j6Cdo96ejM6j9YHTC0Mk9XjC7
+         YryAcsM/vyF9FED1rdyuU7v0vvi2cuv/KbrHW3fP24iB5Obd0bWJq+9gAz/u+hvpVx
+         C2tJylgUUJIHhiIbyV5s+hcRVFWrfz7eUxOZQb7Z+YX/XIwXB67dlp3YotFnbCoKZw
+         Aow4h7fCFZ+Tk8W4ySFrcewAKS+6NTWyXAjffADDpNeC6WeFGMs49NjqG7gNhu09pA
+         ywNp/vLQJpr2g==
+From:   Justin Iurman <justin.iurman@uliege.be>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com,
+        justin.iurman@uliege.be
+Subject: [PATCH iproute2-next v3 0/3] Provide support for IOAM
+Date:   Sun,  1 Aug 2021 14:45:49 +0200
+Message-Id: <20210801124552.15728-1-justin.iurman@uliege.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210730214411.1973-1-paskripkin@gmail.com>
-X-Spam_score: -1.0
-X-Spam_bar: -
-X-Spam_report: Spam detection software, running on the system "zzt.nucleusys.com",
- has NOT identified this incoming email as spam.  The original
- message has been attached to this so you can view it or label
- similar future email.  If you have any questions, see
- @@CONTACT_ADDRESS@@ for details.
- Content preview:  On 21-07-31 00:44:11, Pavel Skripkin wrote: > Syzbot reported
-    uninit value pegasus_probe(). The problem was in missing > error handling.
-    > > get_interrupt_interval() internally calls read_eprom_word() [...] 
- Content analysis details:   (-1.0 points, 5.0 required)
-  pts rule name              description
- ---- ---------------------- --------------------------------------------------
- -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21-07-31 00:44:11, Pavel Skripkin wrote:
-> Syzbot reported uninit value pegasus_probe(). The problem was in missing
-> error handling.
-> 
-> get_interrupt_interval() internally calls read_eprom_word() which can
-> fail in some cases. For example: failed to receive usb control message.
-> These cases should be handled to prevent uninit value bug, since
-> read_eprom_word() will not initialize passed stack variable in case of
-> internal failure.
+v3:
+ - Use strcmp instead of matches
+ - Use genl_init_handle instead of rtnl_open_byproto/genl_resolve_family
+ - Refine the output of schemas data
+ - distinguish trace options by adding another keyword, in this case "prealloc":
+   "encap ioam6 trace **prealloc** type ...." (anticipate future implems)
 
-Well, this is most definitelly a bug.
-
-ACK!
+v2:
+ - Use print_{hex,0xhex} instead of print_string when possible (patch #1)
 
 
-		Petko
+The IOAM patchset was merged recently (see net-next commits [1,2,3,4,5,6]).
+Therefore, this patchset provides support for IOAM inside iproute2, as well as
+manpage documentation. Here is a summary of added features inside iproute2.
 
+(1) configure IOAM namespaces and schemas:
 
-> Fail log:
-> 
-> BUG: KMSAN: uninit-value in get_interrupt_interval drivers/net/usb/pegasus.c:746 [inline]
-> BUG: KMSAN: uninit-value in pegasus_probe+0x10e7/0x4080 drivers/net/usb/pegasus.c:1152
-> CPU: 1 PID: 825 Comm: kworker/1:1 Not tainted 5.12.0-rc6-syzkaller #0
-> ...
-> Workqueue: usb_hub_wq hub_event
-> Call Trace:
->  __dump_stack lib/dump_stack.c:79 [inline]
->  dump_stack+0x24c/0x2e0 lib/dump_stack.c:120
->  kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
->  __msan_warning+0x5c/0xa0 mm/kmsan/kmsan_instr.c:197
->  get_interrupt_interval drivers/net/usb/pegasus.c:746 [inline]
->  pegasus_probe+0x10e7/0x4080 drivers/net/usb/pegasus.c:1152
-> ....
-> 
-> Local variable ----data.i@pegasus_probe created at:
->  get_interrupt_interval drivers/net/usb/pegasus.c:1151 [inline]
->  pegasus_probe+0xe57/0x4080 drivers/net/usb/pegasus.c:1152
->  get_interrupt_interval drivers/net/usb/pegasus.c:1151 [inline]
->  pegasus_probe+0xe57/0x4080 drivers/net/usb/pegasus.c:1152
-> 
-> Reported-and-tested-by: syzbot+02c9f70f3afae308464a@syzkaller.appspotmail.com
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> ---
->  drivers/net/usb/pegasus.c | 14 +++++++++++---
->  1 file changed, 11 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
-> index 9a907182569c..bc2dbf86496b 100644
-> --- a/drivers/net/usb/pegasus.c
-> +++ b/drivers/net/usb/pegasus.c
-> @@ -735,12 +735,16 @@ static inline void disable_net_traffic(pegasus_t *pegasus)
->  	set_registers(pegasus, EthCtrl0, sizeof(tmp), &tmp);
->  }
->  
-> -static inline void get_interrupt_interval(pegasus_t *pegasus)
-> +static inline int get_interrupt_interval(pegasus_t *pegasus)
->  {
->  	u16 data;
->  	u8 interval;
-> +	int ret;
-> +
-> +	ret = read_eprom_word(pegasus, 4, &data);
-> +	if (ret < 0)
-> +		return ret;
->  
-> -	read_eprom_word(pegasus, 4, &data);
->  	interval = data >> 8;
->  	if (pegasus->usb->speed != USB_SPEED_HIGH) {
->  		if (interval < 0x80) {
-> @@ -755,6 +759,8 @@ static inline void get_interrupt_interval(pegasus_t *pegasus)
->  		}
->  	}
->  	pegasus->intr_interval = interval;
-> +
-> +	return 0;
->  }
->  
->  static void set_carrier(struct net_device *net)
-> @@ -1149,7 +1155,9 @@ static int pegasus_probe(struct usb_interface *intf,
->  				| NETIF_MSG_PROBE | NETIF_MSG_LINK);
->  
->  	pegasus->features = usb_dev_id[dev_index].private;
-> -	get_interrupt_interval(pegasus);
-> +	res = get_interrupt_interval(pegasus);
-> +	if (res)
-> +		goto out2;
->  	if (reset_mac(pegasus)) {
->  		dev_err(&intf->dev, "can't reset MAC\n");
->  		res = -EIO;
-> -- 
-> 2.32.0
-> 
-> 
+$ ip ioam
+Usage:	ip ioam { COMMAND | help }
+	ip ioam namespace show
+	ip ioam namespace add ID [ data DATA32 ] [ wide DATA64 ]
+	ip ioam namespace del ID
+	ip ioam schema show
+	ip ioam schema add ID DATA
+	ip ioam schema del ID
+	ip ioam namespace set ID schema { ID | none }
+	
+(2) provide a new encap type to insert the IOAM pre-allocated trace:
+
+$ ip -6 ro ad fc00::1/128 encap ioam6 trace prealloc type 0x800000 ns 1 size 12 dev eth0
+
+  [1] db67f219fc9365a0c456666ed7c134d43ab0be8a
+  [2] 9ee11f0fff205b4b3df9750bff5e94f97c71b6a0
+  [3] 8c6f6fa6772696be0c047a711858084b38763728
+  [4] 3edede08ff37c6a9370510508d5eeb54890baf47
+  [5] de8e80a54c96d2b75377e0e5319a64d32c88c690
+  [6] 968691c777af78d2daa2ee87cfaeeae825255a58
+
+Justin Iurman (3):
+  Add, show, link, remove IOAM namespaces and schemas
+  New IOAM6 encap type for routes
+  IOAM man8
+
+ include/uapi/linux/ioam6.h          | 133 +++++++++++
+ include/uapi/linux/ioam6_genl.h     |  52 +++++
+ include/uapi/linux/ioam6_iptunnel.h |  20 ++
+ include/uapi/linux/lwtunnel.h       |   1 +
+ ip/Makefile                         |   2 +-
+ ip/ip.c                             |   3 +-
+ ip/ip_common.h                      |   1 +
+ ip/ipioam6.c                        | 340 ++++++++++++++++++++++++++++
+ ip/iproute.c                        |   5 +-
+ ip/iproute_lwtunnel.c               | 127 +++++++++++
+ man/man8/ip-ioam.8                  |  72 ++++++
+ man/man8/ip-route.8.in              |  36 ++-
+ man/man8/ip.8                       |   7 +-
+ 13 files changed, 793 insertions(+), 6 deletions(-)
+ create mode 100644 include/uapi/linux/ioam6.h
+ create mode 100644 include/uapi/linux/ioam6_genl.h
+ create mode 100644 include/uapi/linux/ioam6_iptunnel.h
+ create mode 100644 ip/ipioam6.c
+ create mode 100644 man/man8/ip-ioam.8
+
+-- 
+2.25.1
+
