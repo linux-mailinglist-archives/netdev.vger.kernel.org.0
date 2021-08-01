@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB3513DCC33
-	for <lists+netdev@lfdr.de>; Sun,  1 Aug 2021 17:06:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 249B63DCC37
+	for <lists+netdev@lfdr.de>; Sun,  1 Aug 2021 17:12:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232068AbhHAPG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Aug 2021 11:06:59 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:33826
+        id S232093AbhHAPMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Aug 2021 11:12:16 -0400
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:34054
         "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231940AbhHAPG5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Aug 2021 11:06:57 -0400
+        by vger.kernel.org with ESMTP id S231940AbhHAPMP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Aug 2021 11:12:15 -0400
 Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 96E773F043;
-        Sun,  1 Aug 2021 15:06:47 +0000 (UTC)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 0EF843F043;
+        Sun,  1 Aug 2021 15:12:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1627830408;
-        bh=O0MWsrFV/8FqTq3uVdIOdB4tqLqx6mBbBBdu5wpJA5w=;
+        s=20210705; t=1627830726;
+        bh=AB7di8QQs0GyZqrmRL+UUGYTBNO1x35EKgvYXlfpRxc=;
         h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
-        b=vqA00Mx9z0gyMmSlkqwK+n0eVHpSKnuV61GywxZxO8ipOfDOPP/UOcqAr+q54GkJL
-         U+cTSWSACJ7ia8H8qEC91+WfNgVlaPZO5VzKAP/+1FOoz5+JFUPfsWeofUNb3K8lgi
-         X9+Eyo+hxxS83lcZthJQdQfFSELOeiVF+1Vq7EWsGwEJXtr5KkvvceFWMDCQxXHhG2
-         NGPqHe3ZvxBrB5/X2GUddRwB5HugwMjXXl0wTppaiZ4NgwzG4+ZWeL9uZWS1MZV53v
-         zoa5Vx8RiKQ6GDoF6fyvGNzdkF7pi+qWwtMKTiUcwOmeT+jkRvainAvawLZPsvQyTc
-         Ca9yswsiHmQZg==
+        b=D9GZF7bgXC+SsH9vZnpGOCjeCH//I3TJBzaBjHQDWDIYiVlO43oQHlJEPDgEPoS/O
+         +WaWl9wQsHbY3DTltAjjY5olyCJ4G2RzxNlTrH0QwZ9kh3aln9gQurAj0onARPVM3Y
+         mYJb10o25K7dx5OmrNdA5t3ksXFm5q0/0bmrRdZzR4JEPaJn2jZDW9r5fPjTmtitBD
+         wyn6f4lfgUnA/ssIFwEOttETBl8sEzuUP5rXeVFRvNexjkFZbukGZP4C+z2JauK8Ju
+         TYLO7nP0Lu1gWEtAXNE8XQMRalLoM/YS+uraA5zT3naoV4cVIz9meLR88/RiM8bTsK
+         Q1N9hamGZDDGA==
 From:   Colin King <colin.king@canonical.com>
-To:     Mirko Lindner <mlindner@marvell.com>,
+To:     Raju Rangoju <rajur@chelsio.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
 Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: marvell: make the array name static, makes object smaller
-Date:   Sun,  1 Aug 2021 16:06:47 +0100
-Message-Id: <20210801150647.145728-1-colin.king@canonical.com>
+Subject: [PATCH] cxgb4: make the array match_all_mac static, makes object smaller
+Date:   Sun,  1 Aug 2021 16:12:05 +0100
+Message-Id: <20210801151205.145924-1-colin.king@canonical.com>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -45,38 +45,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Colin Ian King <colin.king@canonical.com>
 
-Don't populate the const array name on the stack but instead it
-static. Makes the object code smaller by 28 bytes. Add a missing
-const to clean up a checkpatch warning.
+Don't populate the array match_all_mac on the stack but instead it
+static const. Makes the object code smaller by 75 bytes.
 
 Before:
-   text    data   bss     dec     hex filename
- 124565   31565   384  156514   26362 drivers/net/ethernet/marvell/sky2.o
+   text    data     bss     dec     hex filename
+  46701    8960      64   55725    d9ad ../chelsio/cxgb4/cxgb4_filter.o
 
 After:
-   text    data   bss     dec     hex filename
- 124441   31661   384  156486   26346 drivers/net/ethernet/marvell/sky2.o
+   text    data     bss     dec     hex filename
+  46338    9120     192   55650    d962 ../chelsio/cxgb4/cxgb4_filter.o
 
 (gcc version 10.2.0)
 
 Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
- drivers/net/ethernet/marvell/sky2.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/marvell/sky2.c
-index 743ca96527fa..4f51882d83ca 100644
---- a/drivers/net/ethernet/marvell/sky2.c
-+++ b/drivers/net/ethernet/marvell/sky2.c
-@@ -4884,7 +4884,7 @@ static int sky2_test_msi(struct sky2_hw *hw)
- /* This driver supports yukon2 chipset only */
- static const char *sky2_name(u8 chipid, char *buf, int sz)
- {
--	const char *name[] = {
-+	static const char *const name[] = {
- 		"XL",		/* 0xb3 */
- 		"EC Ultra", 	/* 0xb4 */
- 		"Extreme",	/* 0xb5 */
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
+index 6260b3bebd2b..786ceae34488 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
+@@ -1441,7 +1441,7 @@ static int cxgb4_set_hash_filter(struct net_device *dev,
+ 	} else if (iconf & USE_ENC_IDX_F) {
+ 		if (f->fs.val.encap_vld) {
+ 			struct port_info *pi = netdev_priv(f->dev);
+-			u8 match_all_mac[] = { 0, 0, 0, 0, 0, 0 };
++			static const u8 match_all_mac[] = { 0, 0, 0, 0, 0, 0 };
+ 
+ 			/* allocate MPS TCAM entry */
+ 			ret = t4_alloc_encap_mac_filt(adapter, pi->viid,
+@@ -1688,7 +1688,7 @@ int __cxgb4_set_filter(struct net_device *dev, int ftid,
+ 	} else if (iconf & USE_ENC_IDX_F) {
+ 		if (f->fs.val.encap_vld) {
+ 			struct port_info *pi = netdev_priv(f->dev);
+-			u8 match_all_mac[] = { 0, 0, 0, 0, 0, 0 };
++			static const u8 match_all_mac[] = { 0, 0, 0, 0, 0, 0 };
+ 
+ 			/* allocate MPS TCAM entry */
+ 			ret = t4_alloc_encap_mac_filt(adapter, pi->viid,
 -- 
 2.31.1
 
