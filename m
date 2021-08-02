@@ -2,147 +2,411 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A58693DDB79
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 16:48:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A91C43DDB84
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 16:50:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234296AbhHBOsc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 10:48:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50428 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234008AbhHBOsb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Aug 2021 10:48:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 37D8760F51;
-        Mon,  2 Aug 2021 14:48:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627915702;
-        bh=7LZ+RJ0Hi/u0L7+8fl9svS8TaK1SE+sy+Aaxg/1q60o=;
-        h=From:To:Cc:Subject:Date:From;
-        b=JTyAaXXm7a2pMrK8j3CpeAm4SzIYEwKRCmUDhrghmygh0eG1ih/BJfuDqxqeWNmcx
-         /+ZjjI0tsyMFkFM6z6AaJb+WlH20BoluD71CBUJyWRm9zDPngqrbCM6b34EC12wslx
-         5tLtxvV/oGNU0aaDgch616021i+yjg2PTT6QP++QPvk4nvILh7IRJfcn4y1k/tlyFW
-         BZX2YuBWlypqld7oJJybsWrq0UiR/xbo/T/GSboQ197H/qnbNbArn3ri2L9ila23T7
-         UGgyQNRZuM9ZqbS7KNPTVw5w727vvinrMzGkjzccliSnrFiiOr/Iwvhnfp0Gm+9dCs
-         IBvt7C+069tcA==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
+        id S234573AbhHBOvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 10:51:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53482 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233925AbhHBOvC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 10:51:02 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4209C06175F;
+        Mon,  2 Aug 2021 07:50:51 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id nd39so31328944ejc.5;
+        Mon, 02 Aug 2021 07:50:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1ph9hQhMwEqNButCr5CskWxFJEGxZutn4sCtVTGhgYs=;
+        b=W5vv/4prhp/ridiCyw+pvwNegXZFQlhTzyBPeKsdPdCjXT6F5Os7fb3ooRNf4MuJZX
+         guUUrjG8ZZcBTXzJXWSGmNJLbtnavhUHxfDxOJvIDR0GjjSvsXVtEbH7mTva0BAVuCF0
+         iDCyWeAOd+G+t+hEa9rkSL2/8RHr/k66ke61LptNxLqdsM96YVuZSque4YsZdYIGNKT3
+         u3gNQERstrv4+4vlVlpEV9sfN4lhSLAFli3KX0efsBB+65qsgY6KxgpPZn5OWSb952f+
+         DVhme/a3QGS8FlHoCP99ZwYz8yMjQZXGw1NmkFE9UylTOClUs8Wj2HznzblDf8MOO9ZX
+         JxqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1ph9hQhMwEqNButCr5CskWxFJEGxZutn4sCtVTGhgYs=;
+        b=EebFvkA08GIDvJjIqQPIG7lfioetSgsx60yOq7MfDneDCgLSU7xOyt9i7N3bPyzWs2
+         kq+NSdzWHTWTGe3yNKDaNywsvwddxlfRZdTXZRkUicjg2Dc+CXDQPRDTEgCQCmiTiPEi
+         66UFtfa3YRnsUKWkOTdqPyJjqcAElYWchOSiW6AvITtv0HraUw1tcZSuj5FV6eQzoZCG
+         0jkF9nYHRlmfNQh1IbZ2w0BYZaCJTxh+IoEfJt5Tk/ulu2+mXiTQts7hNEckixGj5y2J
+         3mQz75c94MRNoHS8QGGpOKIbqYxJaTnftLHIKNpFe+CApNf0CWnb6NiUPu4Cn/tcErs8
+         kB8A==
+X-Gm-Message-State: AOAM530SuywAXLrFQXIyvw6Smum9K9qsDFfd1saLoCwIulR/AoWQpsk5
+        U99oZhVqlntSqRxRWRcgZPk=
+X-Google-Smtp-Source: ABdhPJwqFoE4bESSPuP3hjkHQd4fZgpILveFe9RSqsqzUweqmrdMOZttcV1xQqtCavizHno4dLW1MQ==
+X-Received: by 2002:a17:906:8248:: with SMTP id f8mr16137876ejx.229.1627915850313;
+        Mon, 02 Aug 2021 07:50:50 -0700 (PDT)
+Received: from skbuf ([188.25.144.60])
+        by smtp.gmail.com with ESMTPSA id q23sm1225473ejc.0.2021.08.02.07.50.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Aug 2021 07:50:49 -0700 (PDT)
+Date:   Mon, 2 Aug 2021 17:50:48 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Parav Pandit <parav@nvidia.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        oss-drivers@corigine.com
-Subject: [PATCH] switchdev: add Kconfig dependencies for bridge
-Date:   Mon,  2 Aug 2021 16:47:28 +0200
-Message-Id: <20210802144813.1152762-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        Russell King <linux@armlinux.org.uk>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH net-next v3 6/6] net: dsa: qca: ar9331: add vlan support
+Message-ID: <20210802145048.la6f4u45mguobxnp@skbuf>
+References: <20210802131037.32326-1-o.rempel@pengutronix.de>
+ <20210802131037.32326-7-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210802131037.32326-7-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Mon, Aug 02, 2021 at 03:10:37PM +0200, Oleksij Rempel wrote:
+> This switch provides simple VLAN resolution database for 16 entries.
+> With this database we can cover typical functionalities as port based
+> VLANs, untagged and tagged egress. Port based ingress filtering.
+> 
+> The VLAN database is working on top of forwarding database. So,
+> potentially, we can have multiple VLANs on top of multiple bridges.
+> Hawing one VLAN on top of multiple bridges will fail on different
+> levels, most probably DSA framework should warn if some one won't to make
+> something likes this.
 
-Multiple switchdev drivers depend on CONFIG_NET_SWITCHDEV in Kconfig,
-but have also gained a dependency on the bridge driver as they now
-call switchdev_bridge_port_offload():
+Please define the levels in which it will fail for ar9331.
 
-drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.o: In function `sparx5_netdevice_event':
-sparx5_switchdev.c:(.text+0x3cc): undefined reference to `switchdev_bridge_port_offload'
-drivers/net/ethernet/ti/cpsw_new.o: In function `cpsw_netdevice_event':
-cpsw_new.c:(.text+0x1098): undefined reference to `switchdev_bridge_port_offload'
+I opened the AR9331 manual and I see that the only forwarding isolation
+mechanism is the PORT_VID_MEMBER, the "port base VLAN", which defines
+which other ports can each port forward to. Otherwise, it seems that
+when two ports are in 802.1Q mode (VLAN-aware) and in the same VLAN,
+they can forward packets in that VLAN regardless of PORT_VID_MEMBER.
+If correct, it means you only support a single VLAN-aware bridge, I
+recommend you copy what sja1105_prechangeupper does to block a second
+one.
 
-Some of these drivers already have a 'BRIDGE || !BRIDGE' dependency
-that avoids the link failure, but the 'rocker' driver was missing this
+The manual also says "The AR9331 only supports shared VLAN learning (SVL)."
+So there isn't in fact all that much that the DSA core can save the day.
+Even with a single bridge, the standalone ports will still attempt to
+look up the FDB, and even though packets from standalone ports should
+always reach the CPU port, that might not happen if that MAC DA is in
+the bridge FDB of a bridged port. Example: you have a software LAG
+interface on top of your standalone ports, and this is in a software
+bridge with other ar9331 ports that directly offload the bridge:
+https://patchwork.kernel.org/project/netdevbpf/patch/20210731191023.1329446-3-dqfext@gmail.com/
 
-For MLXSW/MLX5, SPARX5_SWITCH, and TI_K3_AM65_CPSW_NUSS, the
-driver can conditionally use switchdev support, which is then guarded
-by another Kconfig symbol. For these, add a dependency on a new Kconfig
-symbol NET_MAY_USE_SWITCHDEV that is defined to correctly model the
-dependency: if switchdev support is enabled, these drivers cannot be
-built-in when bridge support is in a module, but if either bridge or
-switchdev is disabled, or both are built-in, there is no such restriction.
+DSA cannot (easily) help you in that case either, but I agree that
+tracking all possible constellations of unoffloaded LAG interfaces on
+top of ar9331 switches that also have ports in a hardware bridge is
+tricky too. I will give this some thought.
 
-Fixes: 2f5dc00f7a3e ("net: bridge: switchdev: let drivers inform which bridge ports are offloaded")
-Fixes: b0e81817629a ("net: build all switchdev drivers as modules when the bridge is a module")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-This version seems to pass my randconfig builds for the moment,
-but that doesn't mean it's correct either. Please have a closer
-look before this gets applied.
----
- drivers/net/ethernet/mellanox/mlx5/core/Kconfig | 1 +
- drivers/net/ethernet/mellanox/mlxsw/Kconfig     | 1 +
- drivers/net/ethernet/netronome/Kconfig          | 1 +
- drivers/net/ethernet/ti/Kconfig                 | 1 +
- net/switchdev/Kconfig                           | 5 +++++
- 5 files changed, 9 insertions(+)
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  drivers/net/dsa/qca/ar9331.c | 235 ++++++++++++++++++++++++++++++++++-
+>  1 file changed, 233 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
+> index a0324fed2136..0865ffbc2c74 100644
+> --- a/drivers/net/dsa/qca/ar9331.c
+> +++ b/drivers/net/dsa/qca/ar9331.c
+> @@ -67,6 +67,27 @@
+>  #define AR9331_SW_REG_GLOBAL_CTRL		0x30
+>  #define AR9331_SW_GLOBAL_CTRL_MFS_M		GENMASK(13, 0)
+>  
+> +#define AR9331_SW_NUM_VLAN_RECORDS		16
+> +
+> +#define AR9331_SW_REG_VLAN_TABLE_FUNCTION0	0x40
+> +#define AR9331_SW_VT0_PRI_EN			BIT(31)
+> +#define AR9331_SW_VT0_PRI			GENMASK(30, 28)
+> +#define AR9331_SW_VT0_VID			GENMASK(27, 16)
+> +#define AR9331_SW_VT0_PORT_NUM			GENMASK(11, 8)
+> +#define AR9331_SW_VT0_FULL_VIO			BIT(4)
+> +#define AR9331_SW_VT0_BUSY			BIT(3)
+> +#define AR9331_SW_VT0_FUNC			GENMASK(2, 0)
+> +#define AR9331_SW_VT0_FUNC_NOP			0
+> +#define AR9331_SW_VT0_FUNC_FLUSH_ALL		1
+> +#define AR9331_SW_VT0_FUNC_LOAD_ENTRY		2
+> +#define AR9331_SW_VT0_FUNC_PURGE_ENTRY		3
+> +#define AR9331_SW_VT0_FUNC_DEL_PORT		4
+> +#define AR9331_SW_VT0_FUNC_GET_NEXT		5
+> +
+> +#define AR9331_SW_REG_VLAN_TABLE_FUNCTION1	0x44
+> +#define AR9331_SW_VT1_VALID			BIT(11)
+> +#define AR9331_SW_VT1_VID_MEM			GENMASK(9, 0)
+> +
+>  /* Size of the address resolution table (ARL) */
+>  #define AR9331_SW_NUM_ARL_RECORDS		1024
+>  
+> @@ -309,6 +330,11 @@ struct ar9331_sw_port {
+>  	struct spinlock stats_lock;
+>  };
+>  
+> +struct ar9331_sw_vlan_db {
+> +	u16 vid;
+> +	u8 port_mask;
+> +};
+> +
+>  struct ar9331_sw_fdb {
+>  	u8 port_mask;
+>  	u8 aging;
+> @@ -327,6 +353,7 @@ struct ar9331_sw_priv {
+>  	struct regmap *regmap;
+>  	struct reset_control *sw_reset;
+>  	struct ar9331_sw_port port[AR9331_SW_PORTS];
+> +	struct ar9331_sw_vlan_db vdb[AR9331_SW_NUM_VLAN_RECORDS];
+>  };
+>  
+>  static struct ar9331_sw_priv *ar9331_sw_port_to_priv(struct ar9331_sw_port *port)
+> @@ -557,8 +584,6 @@ static int ar9331_sw_setup(struct dsa_switch *ds)
+>  			goto error;
+>  	}
+>  
+> -	ds->configure_vlan_while_not_filtering = false;
+> -
+>  	return 0;
+>  error:
+>  	dev_err_ratelimited(priv->dev, "%s: %i\n", __func__, ret);
+> @@ -1144,6 +1169,209 @@ static void ar9331_sw_port_bridge_leave(struct dsa_switch *ds, int port,
+>  	ar9331_sw_port_bridge_mod(ds, port, br, false);
+>  }
+>  
+> +static int ar9331_port_vlan_filtering(struct dsa_switch *ds, int port,
+> +				      bool vlan_filtering,
+> +				      struct netlink_ext_ack *extack)
+> +{
+> +	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
+> +	struct regmap *regmap = priv->regmap;
+> +	u32 mode;
+> +	int ret;
+> +
+> +	if (vlan_filtering)
+> +		mode = AR9331_SW_8021Q_MODE_SECURE;
+> +	else
+> +		mode = AR9331_SW_8021Q_MODE_NONE;
+> +
+> +	ret = regmap_update_bits(regmap, AR9331_SW_REG_PORT_VLAN(port),
+> +				 AR9331_SW_PORT_VLAN_8021Q_MODE,
+> +				 FIELD_PREP(AR9331_SW_PORT_VLAN_8021Q_MODE,
+> +					    mode));
+> +	if (ret)
+> +		dev_err(priv->dev, "%s: error: %pe\n", __func__, ERR_PTR(ret));
+> +
+> +	return ret;
+> +}
+> +
+> +static int ar9331_sw_vt_wait(struct ar9331_sw_priv *priv, u32 *f0)
+> +{
+> +	struct regmap *regmap = priv->regmap;
+> +
+> +	return regmap_read_poll_timeout(regmap,
+> +					AR9331_SW_REG_VLAN_TABLE_FUNCTION0,
+> +					*f0, !(*f0 & AR9331_SW_VT0_BUSY),
+> +					100, 2000);
+> +}
+> +
+> +static int ar9331_sw_port_vt_rmw(struct ar9331_sw_priv *priv, u16 vid,
+> +				 u8 port_mask_set, u8 port_mask_clr)
+> +{
+> +	struct regmap *regmap = priv->regmap;
+> +	u32 f0, f1, port_mask = 0, port_mask_new, func;
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-index e1a5a79e27c7..3a752e57c1e5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-@@ -12,6 +12,7 @@ config MLX5_CORE
- 	depends on MLXFW || !MLXFW
- 	depends on PTP_1588_CLOCK || !PTP_1588_CLOCK
- 	depends on PCI_HYPERV_INTERFACE || !PCI_HYPERV_INTERFACE
-+	depends on NET_MAY_USE_SWITCHDEV
- 	help
- 	  Core driver for low level functionality of the ConnectX-4 and
- 	  Connect-IB cards by Mellanox Technologies.
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/Kconfig b/drivers/net/ethernet/mellanox/mlxsw/Kconfig
-index 12871c8dc7c1..dee3925bdaea 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/Kconfig
-+++ b/drivers/net/ethernet/mellanox/mlxsw/Kconfig
-@@ -5,6 +5,7 @@
- 
- config MLXSW_CORE
- 	tristate "Mellanox Technologies Switch ASICs support"
-+	depends on NET_MAY_USE_SWITCHDEV
- 	select NET_DEVLINK
- 	select MLXFW
- 	help
-diff --git a/drivers/net/ethernet/netronome/Kconfig b/drivers/net/ethernet/netronome/Kconfig
-index b82758d5beed..a298d19e8383 100644
---- a/drivers/net/ethernet/netronome/Kconfig
-+++ b/drivers/net/ethernet/netronome/Kconfig
-@@ -21,6 +21,7 @@ config NFP
- 	depends on PCI && PCI_MSI
- 	depends on VXLAN || VXLAN=n
- 	depends on TLS && TLS_DEVICE || TLS_DEVICE=n
-+	depends on NET_MAY_USE_SWITCHDEV
- 	select NET_DEVLINK
- 	select CRC32
- 	help
-diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
-index 07192613256e..a73c6c236b25 100644
---- a/drivers/net/ethernet/ti/Kconfig
-+++ b/drivers/net/ethernet/ti/Kconfig
-@@ -93,6 +93,7 @@ config TI_CPTS
- config TI_K3_AM65_CPSW_NUSS
- 	tristate "TI K3 AM654x/J721E CPSW Ethernet driver"
- 	depends on OF && TI_K3_UDMA_GLUE_LAYER
-+	depends on NET_MAY_USE_SWITCHDEV
- 	select NET_DEVLINK
- 	select TI_DAVINCI_MDIO
- 	imply PHY_TI_GMII_SEL
-diff --git a/net/switchdev/Kconfig b/net/switchdev/Kconfig
-index 18a2d980e11d..3b0e627a4519 100644
---- a/net/switchdev/Kconfig
-+++ b/net/switchdev/Kconfig
-@@ -12,3 +12,8 @@ config NET_SWITCHDEV
- 	  meaning of the word "switch". This include devices supporting L2/L3 but
- 	  also various flow offloading chips, including switches embedded into
- 	  SR-IOV NICs.
-+
-+config NET_MAY_USE_SWITCHDEV
-+	def_tristate y
-+	depends on NET_SWITCHDEV || NET_SWITCHDEV=n
-+	depends on BRIDGE || NET_SWITCHDEV=n
--- 
-2.29.2
+Reverse Christmas tree ordering?
+
+> +	struct ar9331_sw_vlan_db *vdb = NULL;
+> +	int ret, i;
+> +
+> +	if (!vid)
+> +		return 0;
+
+Explanation?
+
+> +
+> +	ret = ar9331_sw_vt_wait(priv, &f0);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION0, 0);
+> +	if (ret)
+> +		goto error;
+> +
+> +	ret = regmap_write(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION1, 0);
+> +	if (ret)
+> +		goto error;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(priv->vdb); i++) {
+> +		if (priv->vdb[i].vid == vid) {
+> +			vdb = &priv->vdb[i];
+> +			break;
+> +		}
+> +	}
+> +
+> +	ret = regmap_read(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION1, &f1);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (vdb)
+> +		port_mask = vdb->port_mask;
+> +
+> +	port_mask_new = port_mask & ~port_mask_clr;
+> +	port_mask_new |= port_mask_set;
+> +
+> +	if (port_mask_new && port_mask_new == port_mask)
+> +		return 0;
+> +
+> +	if (port_mask_new) {
+> +		func = AR9331_SW_VT0_FUNC_LOAD_ENTRY;
+> +	} else {
+> +		func = AR9331_SW_VT0_FUNC_PURGE_ENTRY;
+> +		port_mask_new = port_mask;
+> +	}
+> +
+> +	if (vdb) {
+> +		vdb->port_mask = port_mask_new;
+> +
+> +		if (!port_mask_new)
+> +			vdb->vid = 0;
+> +	} else {
+> +		for (i = 0; i < ARRAY_SIZE(priv->vdb); i++) {
+> +			if (!priv->vdb[i].vid) {
+> +				vdb = &priv->vdb[i];
+> +				break;
+> +			}
+> +		}
+> +
+> +		if (!vdb)
+> +			return -ENOMEM;
+> +
+> +		vdb->vid = vid;
+> +		vdb->port_mask = port_mask_new;
+> +	}
+> +
+> +	f0 = FIELD_PREP(AR9331_SW_VT0_VID, vid) |
+> +	     FIELD_PREP(AR9331_SW_VT0_FUNC, func) |
+> +	     AR9331_SW_VT0_BUSY;
+> +	f1 = FIELD_PREP(AR9331_SW_VT1_VID_MEM, port_mask_new) |
+> +		AR9331_SW_VT1_VALID;
+> +
+> +	ret = regmap_write(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION1, f1);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION0, f0);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ar9331_sw_vt_wait(priv, &f0);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (f0 & AR9331_SW_VT0_FULL_VIO) {
+> +		/* cleanup error status */
+> +		regmap_write(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION0, 0);
+> +		return -ENOMEM;
+
+s/ENOMEM/ENOSPC/ since ENOMEM is for kernel memory allocation AFAIK
+Also, what about "ret = -ENOSPC; goto error;" to get the print for this
+too and be consistent?
+
+> +	}
+> +
+> +	return 0;
+> +
+> +error:
+> +	dev_err(priv->dev, "%s: error: %pe\n", __func__, ERR_PTR(ret));
+> +
+> +	return ret;
+> +}
+> +
+> +static int ar9331_port_vlan_set_pvid(struct ar9331_sw_priv *priv, int port,
+> +				     u16 pvid)
+> +{
+> +	struct regmap *regmap = priv->regmap;
+> +	int ret;
+> +	u32 mask, val;
+> +
+> +	mask = AR9331_SW_PORT_VLAN_8021Q_MODE |
+> +		AR9331_SW_PORT_VLAN_FORCE_DEFALUT_VID_EN |
+> +		AR9331_SW_PORT_VLAN_FORCE_PORT_VLAN_EN;
+> +	val = AR9331_SW_PORT_VLAN_FORCE_DEFALUT_VID_EN |
+> +		AR9331_SW_PORT_VLAN_FORCE_PORT_VLAN_EN |
+> +		FIELD_PREP(AR9331_SW_PORT_VLAN_8021Q_MODE,
+> +			   AR9331_SW_8021Q_MODE_FALLBACK);
+> +
+> +	ret = regmap_update_bits(regmap, AR9331_SW_REG_PORT_VLAN(port),
+> +				 mask, val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return regmap_update_bits(regmap, AR9331_SW_REG_PORT_VLAN(port),
+> +				  AR9331_SW_PORT_VLAN_PORT_VID,
+> +				  FIELD_PREP(AR9331_SW_PORT_VLAN_PORT_VID,
+> +					     pvid));
+> +}
+> +
+> +static int ar9331_port_vlan_add(struct dsa_switch *ds, int port,
+> +				const struct switchdev_obj_port_vlan *vlan,
+> +				struct netlink_ext_ack *extack)
+> +{
+> +	struct ar9331_sw_priv *priv = ds->priv;
+> +	struct regmap *regmap = priv->regmap;
+> +	int ret, mode;
+> +
+> +	ret = ar9331_sw_port_vt_rmw(priv, vlan->vid, BIT(port), 0);
+> +	if (ret)
+> +		goto error;
+> +
+> +	if (vlan->flags & BRIDGE_VLAN_INFO_PVID)
+> +		ret = ar9331_port_vlan_set_pvid(priv, port, vlan->vid);
+> +
+> +	if (ret)
+> +		goto error;
+> +
+> +	if (vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED)
+> +		mode = AR9331_SW_PORT_CTRL_EG_VLAN_MODE_STRIP;
+> +	else
+> +		mode = AR9331_SW_PORT_CTRL_EG_VLAN_MODE_ADD;
+> +
+> +	ret = regmap_update_bits(regmap, AR9331_SW_REG_PORT_CTRL(port),
+> +				 AR9331_SW_PORT_CTRL_EG_VLAN_MODE, mode);
+> +	if (ret)
+> +		goto error;
+> +
+> +	return 0;
+> +error:
+> +	dev_err(priv->dev, "%s: error: %pe\n", __func__, ERR_PTR(ret));
+> +
+> +	return ret;
+> +}
+> +
+> +static int ar9331_port_vlan_del(struct dsa_switch *ds, int port,
+> +				const struct switchdev_obj_port_vlan *vlan)
+> +{
+> +	return ar9331_sw_port_vt_rmw(ds->priv, vlan->vid, 0, BIT(port));
+> +}
+> +
+>  static const struct dsa_switch_ops ar9331_sw_ops = {
+>  	.get_tag_protocol	= ar9331_sw_get_tag_protocol,
+>  	.setup			= ar9331_sw_setup,
+> @@ -1162,6 +1390,9 @@ static const struct dsa_switch_ops ar9331_sw_ops = {
+>  	.set_ageing_time	= ar9331_sw_set_ageing_time,
+>  	.port_bridge_join	= ar9331_sw_port_bridge_join,
+>  	.port_bridge_leave	= ar9331_sw_port_bridge_leave,
+> +	.port_vlan_filtering	= ar9331_port_vlan_filtering,
+> +	.port_vlan_add		= ar9331_port_vlan_add,
+> +	.port_vlan_del		= ar9331_port_vlan_del,
+>  };
+>  
+>  static irqreturn_t ar9331_sw_irq(int irq, void *data)
+> -- 
+> 2.30.2
+> 
 
