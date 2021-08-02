@@ -2,70 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE8613DDBC1
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 17:02:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 576BB3DDBCB
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 17:03:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234598AbhHBPCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 11:02:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56968 "EHLO mail.kernel.org"
+        id S234729AbhHBPDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 11:03:20 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:57500 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234338AbhHBPCP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Aug 2021 11:02:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C7753610A2;
-        Mon,  2 Aug 2021 15:02:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627916526;
-        bh=Qr/vm1KlXY0XJtD6Yk5oe7cEh9i4wRwPY9w7iKhs77Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=m47a2WC8to4THn9+xkwp9eiCDd3jEF8pwkJn3grtVyBS4ExxhsV329w3p2vbPBfIe
-         l1VWGzcuIsSwyBeUzm1Wfg3fQPfBtn+A+koJ8euwmFnhwFgL4HlYhu2UJ1a6jQcQpT
-         6WebTz/Nf/5FXa3tmCsydx/nMCuWf+Y/StCDHogj5hZBl+nZFCpwp2/BOGOi1GDWZq
-         6Ox2SPEDtQ+8V4D2p7UZoLK1bry/DgUxyk/2S5mKCYrWTS6w+SyvlAj/+QuGfExe0D
-         Fq1QrtPgo36i012VNBRs9WiDw0sK/eOeJ70FIVZocgAqZUWAWYEu0epylVThExwRXN
-         OqC6gHJ//2Hnw==
-Date:   Mon, 2 Aug 2021 08:02:05 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
+        id S234313AbhHBPDU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Aug 2021 11:03:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=CpjFTsHcUNkF4A9FYIvAaVzwEShRcBrFT7sRZXDvKLg=; b=hDAlEe0VRsDc28y+q8Duc8mNkR
+        BMz+6cM/tWPrPYB7GbNuusIA5k6eYmdOS1ubgGiS+W0iLO2K9muO6EHV+RE4cmrlWmZOGaRZrFw9Z
+        Y6rWmvoLNHOczD3PjtBPmiTYAKFcsekNMvh2zrxi1VjK+q26AuIetlVC+fmjWtmN6Rek=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mAZSz-00FqDo-1B; Mon, 02 Aug 2021 17:02:57 +0200
+Date:   Mon, 2 Aug 2021 17:02:57 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: sparx5: fix bitmask check
-Message-ID: <20210802080205.6a9f9bb1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210802145449.1154565-1-arnd@kernel.org>
-References: <20210802145449.1154565-1-arnd@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: Re: [PATCH net-next v2 1/8] ravb: Add struct ravb_hw_info to driver
+ data
+Message-ID: <YQgJIbd3KDnS+RAu@lunn.ch>
+References: <20210802102654.5996-1-biju.das.jz@bp.renesas.com>
+ <20210802102654.5996-2-biju.das.jz@bp.renesas.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210802102654.5996-2-biju.das.jz@bp.renesas.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  2 Aug 2021 16:54:37 +0200 Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On Mon, Aug 02, 2021 at 11:26:47AM +0100, Biju Das wrote:
+> The DMAC and EMAC blocks of Gigabit Ethernet IP found on RZ/G2L SoC are
+> similar to the R-Car Ethernet AVB IP. With a few changes in the driver we
+> can support both IPs.
 > 
-> Older compilers such as gcc-5.5 produce a warning in this driver
-> when ifh_encode_bitfield() is not getting inlined:
+> Currently a runtime decision based on the chip type is used to distinguish
+> the HW differences between the SoC families.
 > 
-> drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c: In function 'ifh_encode_bitfield':
-> include/linux/compiler_types.h:333:38: error: call to '__compiletime_assert_545' declared with attribute error: Unsupported width, must be <= 40
-> drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c:28:2: note: in expansion of macro 'compiletime_assert'
->   compiletime_assert(width <= 40, "Unsupported width, must be <= 40");
->   ^
+> The number of TX descriptors for R-Car Gen3 is 1 whereas on R-Car Gen2 and
+> RZ/G2L it is 2. For cases like this it is better to select the number of
+> TX descriptors by using a structure with a value, rather than a runtime
+> decision based on the chip type.
 > 
-> Mark the function as __always_inline to make the check work correctly
-> on all compilers. 
+> This patch adds the num_tx_desc variable to struct ravb_hw_info and also
+> replaces the driver data chip type with struct ravb_hw_info by moving chip
+> type to it.
+> 
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-I fixed this by moving the check out to a macro wrapper in net:
-6387f65e2acb ("net: sparx5: fix compiletime_assert for GCC 4.9")
+Hi Biju
 
-> To make this also work on 32-bit architectures, change
-> the GENMASK() to GENMASK_ULL().
+This is better. A lot clearer what is going on. I personally would of
+done the num_tx_desc change as a separate patch, but this is O.K.
 
-Would you mind resending just that part against net/master?
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-> Fixes: f3cad2611a77 ("net: sparx5: add hostmode with phylink support")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+    Andrew
