@@ -2,68 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A35A53DE103
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 22:51:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FBC13DE105
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 22:51:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232124AbhHBUvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 16:51:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59936 "EHLO
+        id S232419AbhHBUvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 16:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231433AbhHBUvI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 16:51:08 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B0F9C06175F;
-        Mon,  2 Aug 2021 13:50:58 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id w10so12598004qtj.3;
-        Mon, 02 Aug 2021 13:50:58 -0700 (PDT)
+        with ESMTP id S231231AbhHBUvx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 16:51:53 -0400
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B59C06175F
+        for <netdev@vger.kernel.org>; Mon,  2 Aug 2021 13:51:43 -0700 (PDT)
+Received: by mail-qt1-x829.google.com with SMTP id x9so12584831qtw.13
+        for <netdev@vger.kernel.org>; Mon, 02 Aug 2021 13:51:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=cI3bAw8ypmiDHJdkJBXoE/YVWFtSuOmaJtoMVmodDns=;
-        b=df+Nxs07hhZVldp5Si0NYQLfbLRt8i7Mw869Pdb/LIBoaZNpqGq8RZMVNst6CzxuXJ
-         JPslwzdvx9RBZrHA8dcACcLvLu9/RpRXy2b+JIqBirQvw1vD2WWAZV4bDqyndC/qtLMK
-         dCgPmROybIJ8/5fX5kT1JwdMdj4yXELSJbs1Kdv+TBw+3x8M5ZtFrYVLIuccrRTYzT6e
-         wY3v0CTGnblF3pSsusQGAhXzqb2UwEatgSOY5S0q68UAf7nLoAFMXEW7RUTYA4GnW44F
-         vcRcmp6ZX9ljfSSuFzcaNl+MR+eiS8vwyGUyD2z9QV+SLJChADH6sdl//hA81A1VNSu9
-         kchA==
+        bh=BqJSD4T0M737YOUIOc1rd3UBATj9S05HS7TXPJdFx5c=;
+        b=jcaHEV1Yl4Svqrc+zHdWLfneB1HvNSpJHkFWR/QYhggWMFZXBhMb/wXoCzAdt2F5fF
+         7zrHUHP2s1GTCPxccDv4jcfVQWJdphzNUKBMFRDsFp+lBHqWhu1ba3w1gZ5A4b9HxGX9
+         2bXkPYgoGWksnFtedQ3ogrMvul1XbKQCupBby1r8sVDzJdJGnFppdQmz9JgB7Vmq9fAY
+         O/UInuIeQYYuWLskpRYH7zpHzZeKgckPN8WT9qdHdoDWRFvOnKgrIUP/R/vmekOM0XSV
+         Mc2ZZUvqn9ktdDa47Fy4vVERM5osH/0UkuaTfc9NGCKg/LfTcYySHKOKBH0O1fGVDXxf
+         q1xA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cI3bAw8ypmiDHJdkJBXoE/YVWFtSuOmaJtoMVmodDns=;
-        b=ISWqBeC8QDlGTSPpQXK5U5ie//fD9g4jfbAnoRUeESguXvAm6acI3Gfy25gqR6VpRy
-         aG75DRFLSowMehE41TfX+wYiSdOnXXTBVbf+IF7dKns5q8u3bADkzDoQlpO+71bIgp4Y
-         cK4uQMkdWC1ZWcUlNXIWgEtCIUCVLt7M3lHJQZmeZRZDnD+D9cqDHb4FbojuVy5nekbH
-         QJbAxsyuww4yS+/2WcMqPkPBrj5Av7lVTojLR43KngsCiK869y1RcuSt5T822tVXfeND
-         AlpBDhGM8zU6nNplHhwAEMz1QcH1AasClaIPm/PcFtdEr+aU9nLusIoeExmLlz9by8XH
-         SYcg==
-X-Gm-Message-State: AOAM531wz/KWBBb34ThsiMNn8ZbnQzQSt+j411AbnIgsJ+UMp2tct1xc
-        h7bqDcHyaIai3j7wnfcfjg==
-X-Google-Smtp-Source: ABdhPJzTB7qbhI8W9WNQjiD8aM6UxJAT1AHXEltCXm7G9PSLr8Y4uZ8p0UFPfAtH0h0pG4HpimknGg==
-X-Received: by 2002:ac8:7e86:: with SMTP id w6mr16025808qtj.194.1627937457370;
-        Mon, 02 Aug 2021 13:50:57 -0700 (PDT)
+        bh=BqJSD4T0M737YOUIOc1rd3UBATj9S05HS7TXPJdFx5c=;
+        b=T9VxIXirjgxDWL6bi8QKpPsZ8Amhv9peF35xv+CCmYtldup2g7QMNp3t1Q9cacdvym
+         ONmjh/pVOtfk6IqeZlc8agBU2Zr6WwAKVMytC4oCB1urgKdG3RjY5w/i8HWGeUfWnb5G
+         N/s7uyPILhxFwOGfgWNEMJc967A3f6CcHUhTtiWLAsZ08DPBejUtQKoji5PfkkzddPMu
+         XyaijNno1rfeaFfJFMjZ3izrLzpCIN+6QuSBRoisVwroqYx4u1cHENyoEdn0R5Wv9CDj
+         yNeW5BtgjgHfc8nRXkl4bxJG6iQMoL+XGxEf+SpIXfwZgnRCMsCV9B5EuFkHvSGoMbiK
+         kj2A==
+X-Gm-Message-State: AOAM5333U9DGVQgPd1rct4ePyr9ZnvpcYALXUStRD0mLkLHNEGWspcPw
+        HVMkn5mUdYclv7fOwajwg5UMns25sw==
+X-Google-Smtp-Source: ABdhPJyNEpKxXO813T0VeIV1QMFKOrpMUDidTW7A26Tg6TQzJ0cY3Kpq4V05rTSqUGka/bdXQ8EGYw==
+X-Received: by 2002:ac8:5456:: with SMTP id d22mr15988169qtq.316.1627937502837;
+        Mon, 02 Aug 2021 13:51:42 -0700 (PDT)
 Received: from bytedance.attlocal.net (ec2-13-57-97-131.us-west-1.compute.amazonaws.com. [13.57.97.131])
-        by smtp.gmail.com with ESMTPSA id f12sm6570944qke.37.2021.08.02.13.50.55
+        by smtp.gmail.com with ESMTPSA id n5sm6382134qkp.116.2021.08.02.13.51.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Aug 2021 13:50:56 -0700 (PDT)
+        Mon, 02 Aug 2021 13:51:42 -0700 (PDT)
 From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Shuah Khan <shuah@kernel.org>, Jamal Hadi Salim <jhs@mojatatu.com>,
+To:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>,
         Cong Wang <cong.wang@bytedance.com>,
         Peilin Ye <peilin.ye@bytedance.com>,
         Peilin Ye <yepeilin.cs@gmail.com>
-Subject: [PATCH net-next 2/2] tc-testing/ingress: Add control-plane selftests for clsact egress mini-Qdisc option
-Date:   Mon,  2 Aug 2021 13:50:36 -0700
-Message-Id: <165f9fb53d04c62e11f87c98ee317fb9a5aaa277.1627936393.git.peilin.ye@bytedance.com>
+Subject: [PATCH iproute2-next] tc/ingress: Introduce clsact egress mini-Qdisc option
+Date:   Mon,  2 Aug 2021 13:51:11 -0700
+Message-Id: <20210802205111.8220-1-yepeilin.cs@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <1931ca440b47344fe357d5438aeab4b439943d10.1627936393.git.peilin.ye@bytedance.com>
-References: <1931ca440b47344fe357d5438aeab4b439943d10.1627936393.git.peilin.ye@bytedance.com>
+In-Reply-To: <20210721232053.39077-1-yepeilin.cs@gmail.com>
+References: <20210721232053.39077-1-yepeilin.cs@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -72,113 +71,147 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Peilin Ye <peilin.ye@bytedance.com>
 
-Recently we added a new clsact egress mini-Qdisc option for sch_ingress.
-Add a few control-plane tdc.py selftests for it.
+If the ingress Qdisc is in use, currently it is not possible to add
+another clsact egress mini-Qdisc to the same device without taking down
+the ingress Qdisc, since both sch_ingress and sch_clsact use the same
+handle (0xFFFF0000).
 
-Depends on kernel patch "net/sched: sch_ingress: Support clsact egress
-mini-Qdisc option", as well as iproute2 patch "tc/ingress: Introduce
-clsact egress mini-Qdisc option".
+To solve this issue, recently we added a new clsact egress mini-Qdisc
+option for sch_ingress in the kernel.  Support it in the q_ingress front
+end, and update the usage message accordingly.
+
+To turn on the egress mini-Qdisc:
+
+    $ tc qdisc add dev eth0 ingress
+    $ tc qdisc change dev eth0 ingress clsact-on
+
+Then users can add filters to the egress mini-Qdisc as usual:
+
+    $ tc filter add dev eth0 egress protocol ip prio 10 \
+	    matchall action skbmod swap mac
+
+Deleting the ingress Qdisc removes the egress mini-Qdisc as well.  To
+remove egress mini-Qdisc only, use:
+
+    $ tc qdisc change dev eth0 ingress clsact-off
+
+Finally, if the egress mini-Qdisc is enabled, the "show" command will
+print out a "clsact" flag to indicate it:
+
+    $ tc qdisc show ingress
+    qdisc ingress ffff: dev eth0 parent ffff:fff1 ----------------
+    $ tc qdisc change dev eth0 ingress clsact-on
+    $ tc qdisc show ingress
+    qdisc ingress ffff: dev eth0 parent ffff:fff1 ---------------- clsact
 
 Reviewed-by: Cong Wang <cong.wang@bytedance.com>
 Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
 ---
- .../tc-testing/tc-tests/qdiscs/ingress.json   | 84 +++++++++++++++++++
- 1 file changed, 84 insertions(+)
+ include/uapi/linux/pkt_sched.h | 12 +++++++++
+ tc/q_ingress.c                 | 46 ++++++++++++++++++++++++++++++++--
+ 2 files changed, 56 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/ingress.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/ingress.json
-index d99dba6e2b1a..2cde11b2ea9b 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/ingress.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/ingress.json
-@@ -98,5 +98,89 @@
-         "teardown": [
-             "$IP link del dev $DUMMY type dummy"
-         ]
-+    },
-+    {
-+        "id": "8e8c",
-+        "name": "Enable clsact egress mini-qdisc for ingress",
-+        "category": [
-+            "qdisc",
-+            "ingress"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true",
-+            "$TC qdisc add dev $DUMMY ingress"
-+        ],
-+        "cmdUnderTest": "$TC qdisc change dev $DUMMY ingress clsact-on",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc ingress ffff:.*clsact",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "3a76",
-+        "name": "Disable clsact egress mini-qdisc for ingress",
-+        "category": [
-+            "qdisc",
-+            "ingress"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true",
-+            "$TC qdisc add dev $DUMMY ingress",
-+            "$TC qdisc change dev $DUMMY ingress clsact-on"
-+        ],
-+        "cmdUnderTest": "$TC qdisc change dev $DUMMY ingress clsact-off",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc ingress ffff:.*clsact",
-+        "matchCount": "0",
-+        "teardown": [
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "7b2b",
-+        "name": "Enable clsact egress mini-qdisc for ingress twice",
-+        "category": [
-+            "qdisc",
-+            "ingress"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true",
-+            "$TC qdisc add dev $DUMMY ingress",
-+            "$TC qdisc change dev $DUMMY ingress clsact-on"
-+        ],
-+        "cmdUnderTest": "$TC qdisc change dev $DUMMY ingress clsact-on",
-+        "expExitCode": "2",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc ingress ffff:.*clsact",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "05ab",
-+        "name": "Disable clsact egress mini-qdisc for ingress twice",
-+        "category": [
-+            "qdisc",
-+            "ingress"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true",
-+            "$TC qdisc add dev $DUMMY ingress",
-+            "$TC qdisc change dev $DUMMY ingress clsact-on",
-+            "$TC qdisc change dev $DUMMY ingress clsact-off"
-+        ],
-+        "cmdUnderTest": "$TC qdisc change dev $DUMMY ingress clsact-off",
-+        "expExitCode": "2",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc ingress ffff:.*clsact",
-+        "matchCount": "0",
-+        "teardown": [
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-     }
- ]
+diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+index 79a699f106b1..cb0eb5dd848a 100644
+--- a/include/uapi/linux/pkt_sched.h
++++ b/include/uapi/linux/pkt_sched.h
+@@ -586,6 +586,18 @@ enum {
+ 
+ #define TCA_ATM_MAX	(__TCA_ATM_MAX - 1)
+ 
++/* INGRESS section */
++
++enum {
++	TCA_INGRESS_UNSPEC,
++	TCA_INGRESS_FLAGS,
++#define	TC_INGRESS_CLSACT	   _BITUL(0)	/* enable clsact egress mini-Qdisc */
++#define	TC_INGRESS_SUPPORTED_FLAGS TC_INGRESS_CLSACT
++	__TCA_INGRESS_MAX,
++};
++
++#define	TCA_INGRESS_MAX	(__TCA_INGRESS_MAX - 1)
++
+ /* Network emulator */
+ 
+ enum {
+diff --git a/tc/q_ingress.c b/tc/q_ingress.c
+index 93313c9c2aec..25bf2dce0b56 100644
+--- a/tc/q_ingress.c
++++ b/tc/q_ingress.c
+@@ -17,21 +17,45 @@
+ 
+ static void explain(void)
+ {
+-	fprintf(stderr, "Usage: ... ingress\n");
++	fprintf(stderr,
++		"Usage: [ add | replace | link | delete ] ... ingress\n"
++		"       change ... ingress [ clsact-on | clsact-off ]\n"
++		" clsact-on\tenable clsact egress mini-Qdisc\n"
++		" clsact-off\tdelete clsact egress mini-Qdisc\n");
+ }
+ 
+ static int ingress_parse_opt(struct qdisc_util *qu, int argc, char **argv,
+ 			     struct nlmsghdr *n, const char *dev)
+ {
++	struct nla_bitfield32 flags = {
++		.selector = TC_INGRESS_SUPPORTED_FLAGS,
++	};
++	bool change = false;
++	struct rtattr *tail;
++
+ 	while (argc > 0) {
+ 		if (strcmp(*argv, "handle") == 0) {
+ 			NEXT_ARG();
+-			argc--; argv++;
++		} else if (strcmp(*argv, "clsact-on") == 0) {
++			flags.value |= TC_INGRESS_CLSACT;
++			change = true;
++		} else if (strcmp(*argv, "clsact-off") == 0) {
++			flags.value &= ~TC_INGRESS_CLSACT;
++			change = true;
+ 		} else {
+ 			fprintf(stderr, "What is \"%s\"?\n", *argv);
+ 			explain();
+ 			return -1;
+ 		}
++
++		argc--;
++		argv++;
++	}
++
++	if (change) {
++		tail = addattr_nest(n, 1024, TCA_OPTIONS);
++		addattr_l(n, 1024, TCA_INGRESS_FLAGS, &flags, sizeof(flags));
++		addattr_nest_end(n, tail);
+ 	}
+ 
+ 	return 0;
+@@ -40,7 +64,25 @@ static int ingress_parse_opt(struct qdisc_util *qu, int argc, char **argv,
+ static int ingress_print_opt(struct qdisc_util *qu, FILE *f,
+ 			     struct rtattr *opt)
+ {
++	struct rtattr *tb[TCA_INGRESS_MAX + 1];
++	struct nla_bitfield32 *flags;
++
+ 	print_string(PRINT_FP, NULL, "---------------- ", NULL);
++
++	if (!opt)
++		return 0;
++
++	parse_rtattr_nested(tb, TCA_INGRESS_MAX, opt);
++
++	if (!tb[TCA_INGRESS_FLAGS])
++		return -1;
++	if (RTA_PAYLOAD(tb[TCA_INGRESS_FLAGS]) < sizeof(*flags))
++		return -1;
++
++	flags = RTA_DATA(tb[TCA_INGRESS_FLAGS]);
++	if (flags->value & TC_INGRESS_CLSACT)
++		print_string(PRINT_FP, NULL, "clsact", NULL);
++
+ 	return 0;
+ }
+ 
 -- 
 2.20.1
 
