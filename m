@@ -2,98 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45FFC3DE125
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 22:59:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 474D43DE126
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 22:59:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231659AbhHBU7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 16:59:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231194AbhHBU7W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 16:59:22 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D979C061760;
-        Mon,  2 Aug 2021 13:59:11 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id x90so26258856ede.8;
-        Mon, 02 Aug 2021 13:59:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=w+kjeXZn22Jr79nUGbix7ah/oSHxdioLF/ZCkl2Qub4=;
-        b=q9nemMRF/WSOv+S3b/pGwEpZvXruqpf++H8j70fVBSnlwIpv1taA9OCzTyFsY9vCzA
-         Hx4o8eXwqyVsauqgTyQ0EaZi34B5MrwytQIPv0+p5ODgyG4RZSwxztKW1jXgQ7ejvVlq
-         234NpGtbrFngZaqL5g0uPZqRuhbBz4FUBUJAHqXkvL0hmZX5AIzqNhClFegwv+mc5PeK
-         zQlbjihmAOTdT6PeiFB46OgCiIiwNZT3DUP5GmPX5s0rWgYqy5tkpArIxFclX0vun91r
-         YvC1qgs8AAE+P7zMzqA5KFJkeRImFCtLdtHHktjiOpiuFM4HML5dO6EBZfTNz3tJuO09
-         q99g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=w+kjeXZn22Jr79nUGbix7ah/oSHxdioLF/ZCkl2Qub4=;
-        b=eOBQqZKUvh2Su4uuWqoSk7KCcgqQVhDymyZOyrZGcNr+9NSuGhjs8GA+iOG2ppvFf7
-         /tVfXdL2+Y5EB6GEHn3/2bSw+NyUrzTsidBtY0w0NikdhN/zuo+G0HCk/d8vHiR9K2Z2
-         R7iFc8xi5E4FIrRINsHUym/+5XBZUiRnW4ZZxgT7P6wIWQJwztJos3GOjcxvXZl8/d6Y
-         mKLIz6TVw56d+S1tEyNKV8POPe522Ogwj2NY2eAMLj6x3MLka3ISxHXoDSJb8X98D8ps
-         /xFwK8hS2vQB3uDP1wSJORXyWzMyTGUBvojl6CfRvt+EwbBzNTZ0fD8cHYfiYBF6EA2Q
-         kvFg==
-X-Gm-Message-State: AOAM530bL2BC31eWTyL42Ael1r4eXNK4Co1QGZZE0VOX3/WBMHiFMu7Q
-        tmrxqkfeiJtGlgH5p26vrtQ=
-X-Google-Smtp-Source: ABdhPJxjms0X24JkdPMRhTWj+Di0kYgwkkrV0BbXstM0ANBHXMWsT+FTOdCVkDSPzkC2EulX+M60jg==
-X-Received: by 2002:a05:6402:31e6:: with SMTP id dy6mr21666585edb.36.1627937950208;
-        Mon, 02 Aug 2021 13:59:10 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id w6sm6881617edq.58.2021.08.02.13.59.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Aug 2021 13:59:09 -0700 (PDT)
-Date:   Mon, 2 Aug 2021 23:59:08 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S232333AbhHBU7t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 16:59:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34728 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231194AbhHBU7r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Aug 2021 16:59:47 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D08E6610FE;
+        Mon,  2 Aug 2021 20:59:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627937977;
+        bh=ME91uzg3uQGioK1v2nnqNunzlz6ItvqqOC1l0uFZutU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=kcqiTXREDVH4w9R95j5w4WOfLMxOStmOouND1gl916CZScJNJtCl2GB4/lgbDDdn8
+         5xkB3lwOkmI/t0GPSl79DjQj1otssX56UVlrFBidXX0eJEU7lwU6lqO+HpUUVo+xwt
+         wZP28qF50h2MzZPUTIjMkv3Sb/lJw411baVC855CoXg5JOnKlfrBcuQRQ8x6ES6xdq
+         zFCzAefIOUF+18rwisc0W6HOai8EG1W8b4IGfxgleFUhILKu8JwqiHgdLSfApZLAYU
+         Lp0niOb4VUP4OS+u1avOiALt5h0fI0ogqg/qGz7k0ir8YhtBk5ozkl2l+0SXqQqnAb
+         ttkQRLrNH58eQ==
+Received: by mail-wm1-f54.google.com with SMTP id b128so11175416wmb.4;
+        Mon, 02 Aug 2021 13:59:37 -0700 (PDT)
+X-Gm-Message-State: AOAM531NKwDwu+K9LxegWducEHEamu9J3Omo4MKS/ZEuchieD0ApjeGw
+        uMfWq+16Iv74YJMvJ6s9ZRp/0PZnDsvWQrX8cKw=
+X-Google-Smtp-Source: ABdhPJy4NlTUHsygtWM7DW5cko6rUy0afbh+TXAP+SRYo4CljudxoDYG2Dg3SfR+K53fmjTEY+MfH6F9UpMtn2dxoOY=
+X-Received: by 2002:a7b:ce10:: with SMTP id m16mr705834wmc.75.1627937976496;
+ Mon, 02 Aug 2021 13:59:36 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210802145937.1155571-1-arnd@kernel.org> <20210802164907.GA9832@hoboy.vegasvil.org>
+ <bd631e36-1701-b120-a9b0-8825d14cc694@intel.com> <CAK8P3a3P6=ZROxT8daW83mRp7z5rYAQydetWFXQoYF7Y5_KLHA@mail.gmail.com>
+ <CO1PR11MB50892367410160A8364DBF69D6EF9@CO1PR11MB5089.namprd11.prod.outlook.com>
+In-Reply-To: <CO1PR11MB50892367410160A8364DBF69D6EF9@CO1PR11MB5089.namprd11.prod.outlook.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Mon, 2 Aug 2021 22:59:20 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a379=Qi7g7Hmf299GgM-6g32Them81uYXPqRDZDro_azg@mail.gmail.com>
+Message-ID: <CAK8P3a379=Qi7g7Hmf299GgM-6g32Them81uYXPqRDZDro_azg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] ethernet/intel: fix PTP_1588_CLOCK dependencies
+To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Nicolas Pitre <nicolas.pitre@linaro.org>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Eric Woudstra <ericwouds@gmail.com>,
-        =?utf-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>,
-        Frank Wunderlich <frank-w@public-files.de>
-Subject: Re: [RFC net-next v2 4/4] Revert "mt7530 mt7530_fdb_write only set
- ivl bit vid larger than 1"
-Message-ID: <20210802205908.queaqshisqk24pkf@skbuf>
-References: <20210731191023.1329446-1-dqfext@gmail.com>
- <20210731191023.1329446-5-dqfext@gmail.com>
- <20210802134409.dro5zjp5ymocpglf@skbuf>
- <20210802154838.1817958-1-dqfext@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210802154838.1817958-1-dqfext@gmail.com>
+        Arnd Bergmann <arnd@arndb.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 02, 2021 at 11:48:38PM +0800, DENG Qingfang wrote:
-> On Mon, Aug 02, 2021 at 04:44:09PM +0300, Vladimir Oltean wrote:
-> > Would you mind explaining what made VID 1 special in Eric's patch in the
-> > first place?
->
-> The default value of all ports' PVID is 1, which is copied into the FDB
-> entry, even if the ports are VLAN unaware. So running `bridge fdb show`
-> will show entries like `dev sw0p0 vlan 1 self` even on a VLAN-unaware
-> bridge.
->
-> Eric probably thought VID 1 is the FDB of all VLAN-unaware bridges, but
-> that is not true. And his patch probably cause a new issue that FDB is
-> inaccessible in a VLAN-**aware** bridge with PVID 1.
->
-> This series sets PVID to 0 on VLAN-unaware ports, so `bridge fdb show`
-> will no longer print `vlan 1` on VLAN-unaware bridges, and we don't
-> need special case in port_fdb_{add,del} for assisted learning.
+On Mon, Aug 2, 2021 at 10:46 PM Keller, Jacob E
+<jacob.e.keller@intel.com> wrote:
 
-All things seriously worth mentioning in the commit message.
+> > You can do something like it for a particular symbol though, such as
+> >
+> > config MAY_USE_PTP_1588_CLOCK
+> >        def_tristate PTP_1588_CLOCK || !PTP_1588_CLOCK
+> >
+> >  config E1000E
+> >         tristate "Intel(R) PRO/1000 PCI-Express Gigabit Ethernet support"
+> >         depends on PCI && (!SPARC32 || BROKEN)
+> > +       depends on MAY_USE_PTP_1588_CLOCK
+> >         select CRC32
+> > -       imply PTP_1588_CLOCK
+>
+> What about "integrates"?
+
+Maybe, we'd need to look at whether that fits for the other users of the
+"A || !A" trick.
+
+> Or.. what if we just changed "implies" to also include the dependencies
+> automatically? i.e. "implies PTP_1588_CLOCK" also means the depends
+> trick which ensures that you can't have it as module if this is built-in.
+>
+> I.e. we still get the nice "this will turn on automatically in the menu if you
+> enable this" and we enforce that you can't have it as a module since it
+> would be a dependency if it's on"?
+
+I don't want to mess with the semantics of the keyword any further.
+The original meaning was meant to avoid circular dependencies
+by making it a softer version of 'select' that would not try to select
+anything that has unmet dependencies. The current version made
+it even softer by only having an effect during 'make defconfig'
+and 'make oldconfig' but not preventing it from being soft-disabled
+any more. Changing it yet again is guarantee to break lots of the
+existing users, while probably also bringing back the original problem
+of the circular dependencies.
+
+         Arnd
