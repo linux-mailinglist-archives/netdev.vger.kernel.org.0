@@ -2,104 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA90C3DD207
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 10:31:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF4403DD217
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 10:35:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232757AbhHBIb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 04:31:58 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:44940 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbhHBIb5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 04:31:57 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 1728VXJE010222;
-        Mon, 2 Aug 2021 03:31:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1627893093;
-        bh=pSAZGmb9+ZZIRIq5mLynkHawfEAYvLAK0jyf9EHdzDA=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=bnwTqOM4baLr/jbQA2G3WkNOsl589ZmsX3fYPkA3r6dXSkAgdyq5p948ExrWHk+Wa
-         kgY4d3KGh4uqTWUE8FVGEnMgih58mZRGWZcWVC3LWY0OOq8cAGFFP7+yRRZkqmEXnR
-         KBa2Win/U3byICEerGMHJvJtEAXeV72p1cDY85bI=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 1728VXb7024136
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 2 Aug 2021 03:31:33 -0500
-Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Mon, 2 Aug
- 2021 03:31:33 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Mon, 2 Aug 2021 03:31:33 -0500
-Received: from [10.250.232.46] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 1728VR7D078697;
-        Mon, 2 Aug 2021 03:31:28 -0500
-Subject: Re: [PATCH] dt-bindings: net: can: Document power-domains property
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-CC:     Lokesh Vutla <lokeshvutla@ti.com>, Nishanth Menon <nm@ti.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S232824AbhHBIft (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 04:35:49 -0400
+Received: from smtprelay0095.hostedemail.com ([216.40.44.95]:43942 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232799AbhHBIfs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 04:35:48 -0400
+Received: from omf18.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay04.hostedemail.com (Postfix) with ESMTP id 1695C180A8859;
+        Mon,  2 Aug 2021 08:35:38 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf18.hostedemail.com (Postfix) with ESMTPA id 7C09F2EBFBF;
+        Mon,  2 Aug 2021 08:35:36 +0000 (UTC)
+Message-ID: <3f55848b4612d1b17d95a4c36bec1dee2b1814f1.camel@perches.com>
+Subject: Re: [PATCH 1/2] rtlwifi: rtl8192de: Remove redundant variable
+ initializations
+From:   Joe Perches <joe@perches.com>
+To:     Colin King <colin.king@canonical.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sriram Dash <sriram.dash@samsung.com>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20210731045138.29912-1-a-govindraju@ti.com>
- <20210802071047.n6mxecdohahhzifr@pengutronix.de>
-From:   Aswath Govindraju <a-govindraju@ti.com>
-Message-ID: <a38447f6-c7c6-751f-b8ff-ae2b1077cccc@ti.com>
-Date:   Mon, 2 Aug 2021 14:01:26 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Mon, 02 Aug 2021 01:35:35 -0700
+In-Reply-To: <20210731124044.101927-1-colin.king@canonical.com>
+References: <20210731124044.101927-1-colin.king@canonical.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
-In-Reply-To: <20210802071047.n6mxecdohahhzifr@pengutronix.de>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.10
+X-Rspamd-Server: rspamout04
+X-Rspamd-Queue-Id: 7C09F2EBFBF
+X-Stat-Signature: u1zu3eenyuecqkjwuh9k94wtp4dehu7u
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1/Jsvet2KmRc4qR68KoJmWVobQU8MF3js4=
+X-HE-Tag: 1627893336-409696
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
-
-On 02/08/21 12:40 pm, Marc Kleine-Budde wrote:
-> On 31.07.2021 10:21:38, Aswath Govindraju wrote:
->> Document power-domains property for adding the Power domain provider.
->>
->> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
->> ---
->>  Documentation/devicetree/bindings/net/can/bosch,m_can.yaml | 7 +++++++
->>  1 file changed, 7 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
->> index a7b5807c5543..d633fe1da870 100644
->> --- a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
->> +++ b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
->> @@ -104,6 +104,13 @@ properties:
->>            maximum: 32
->>      maxItems: 1
->>  
->> +  power-domains:
->> +    description:
->> +      Power domain provider node and an args specifier containing
->> +      the can device id value. Please see,
->> +      Documentation/devicetree/bindings/soc/ti/sci-pm-domain.yaml
+On Sat, 2021-07-31 at 13:40 +0100, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> Why are you referring to a TI specific file in a generic binding?
+> The variables rtstatus and place are being initialized with a values that
+> are never read, the initializations are redundant and can be removed.
+
+trivia:
+
+> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
+[]
+> @@ -1362,7 +1362,7 @@ u8 rtl92d_get_rightchnlplace_for_iqk(u8 chnl)
+>  		132, 134, 136, 138, 140, 149, 151, 153, 155,
+>  		157, 159, 161, 163, 165
+>  	};
+> -	u8 place = chnl;
+> +	u8 place;
+>  
 > 
+>  	if (chnl > 14) {
+>  		for (place = 14; place < sizeof(channel_all); place++) {
 
-I was trying to refer to an example. If it shouldn't be referred then I
-will remove it an post a post a respin.
+This line should probably be
 
-Thanks,
-Aswath
-
-> Marc
-> 
+		for (place = 14; place < ARRAY_SIZE(channel_all); place++) {
 
