@@ -2,76 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC3193DDE35
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 19:09:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94A0D3DDE38
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 19:12:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbhHBRJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 13:09:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33088 "EHLO
+        id S229722AbhHBRMc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 13:12:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229500AbhHBRJX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 13:09:23 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A011C06175F
-        for <netdev@vger.kernel.org>; Mon,  2 Aug 2021 10:09:14 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id s22-20020a17090a1c16b0290177caeba067so6871178pjs.0
-        for <netdev@vger.kernel.org>; Mon, 02 Aug 2021 10:09:14 -0700 (PDT)
+        with ESMTP id S229500AbhHBRMb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 13:12:31 -0400
+Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93F2BC061760
+        for <netdev@vger.kernel.org>; Mon,  2 Aug 2021 10:12:21 -0700 (PDT)
+Received: by mail-qk1-x74a.google.com with SMTP id i15-20020a05620a150fb02903b960837cbfso2796300qkk.10
+        for <netdev@vger.kernel.org>; Mon, 02 Aug 2021 10:12:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=TbYPxVaMbJVYxNQRLXF2hPwysjXj2BHuUt5OSy6Yi9U=;
-        b=DUl5PfyJzqeHFqi3/eTm19A06VVy10rY2p3RX5Cxfp7uo3QGysHYj/1gobb2wzxuCS
-         ApVR4EZIaR/JhO2+YwNGVl4t5/iDKppyMi7skYCLqeWxxXAJLyNVmnwAEHQ2Jzg1/z45
-         90L3ciVHCTpzBLh1zEGCzlHvZC5E8wEfaLkfJgobYprpB/UVgNxd6+9nYXktwPCsOV0N
-         YxGTg8Sb1rIVXxLUKlgADSdiDNa52rwBgFojpZdtKzsx8lhsCQIgJ25V6ScL9qoC5D7F
-         ysAV4DNalm09/1Gp1j3NCkeId0PGt0Hm9ORe5yBt/s8KQUKfY6RzjjADeRpaOzhv93aC
-         6SuA==
+        d=google.com; s=20161025;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=jZFzYHXod7OpBLYTKlRMhUmj+6abMSIaNfjrddghXyY=;
+        b=uhcjSUqLz/6psUYVI6Jcbm07ZkU/bGiFIckSbfwcpt6KCKtHk2k+NZXns/KacxCTq6
+         q+EG73meC5Rd/1kwLkNyBgEcPNXXr8TRP6UFr2xD223Qs+q8107hQK5Hb1SCoxSBz9PR
+         ZTmrcQSaGXYBhv5tgHs+43JlVYjWD9XFIeMVO3ytEu+gL2AdO6Q8WlDyuv6VRjDtRuM+
+         ZIYWpTKPF2CUiRKJDe+KrtLKZoGoS6e3/HAiRnanK+hYIiMFADKt5V3hslDEtpJk/D6V
+         s6G1hhlXlJgYh6mfX6jpo2gC8jJsXvhmRfQyeNy+6CD0XGyXdbERV6iNOgHYPgdzyPX6
+         4WzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=TbYPxVaMbJVYxNQRLXF2hPwysjXj2BHuUt5OSy6Yi9U=;
-        b=uQTznfLgwUSZt/96QbrxgpZcl53nAOU6NRgVF6ZzVwV6sOPnbjTzBxk6SV+rxpuYCT
-         VGD6AFZa2QlAou83VpTN5ewjMq4oDeMZVKYW3XN8EuosTCGssvuMZSbH/p5H1Zsq4fjB
-         57RejK17A0BuG6Lg0uCLuDUHZoPdjjG/s+3Lq6vmNEaCLRcTCRWwjvjBt2U0/dpG+6HB
-         XM1+Z+hoTzh9joZnVVugOq1oXXPA42+oVGUTBjKSQHFe6i38Mtff3eMkAxUthcF9XfGV
-         oUXU2LT5P3FYU5hydKiuBOv9rLI5RMFsJv2ZHc8qyvITyF36DyZeRXIgVNlMkYVcGoqA
-         MciA==
-X-Gm-Message-State: AOAM532MGrvGhA8l1SZE/8VkyF8vIvk0QfdsJ3CNP1x/JgPvTPYAHBfK
-        DFt4OKZONv9fVuR4/JjNWbw=
-X-Google-Smtp-Source: ABdhPJwx8moCzRrtOzm/ACUF3x0h+eVC7WV0ap38928/UUL7HTpkFgNd90rPtgRoHtR9fnyfTF0pwQ==
-X-Received: by 2002:a62:8143:0:b029:3a9:bdb9:b2c3 with SMTP id t64-20020a6281430000b02903a9bdb9b2c3mr17729137pfd.7.1627924153691;
-        Mon, 02 Aug 2021 10:09:13 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id q7sm11132041pjq.36.2021.08.02.10.09.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Aug 2021 10:09:13 -0700 (PDT)
-Date:   Mon, 2 Aug 2021 10:09:10 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH net-next v3] ptp: ocp: Expose various resources on the
- timecard.
-Message-ID: <20210802170910.GB9832@hoboy.vegasvil.org>
-References: <20210802165157.1706690-1-jonathan.lemon@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210802165157.1706690-1-jonathan.lemon@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=jZFzYHXod7OpBLYTKlRMhUmj+6abMSIaNfjrddghXyY=;
+        b=V/chxtVpkYOesNhi+VWKHeuJxjY0RF8mcbJBogrl0Dyi17SAqfYMFMW1oxsB7NzjEX
+         dfaa/1b4uXXhbrsG3Z4qoOHf4U6T24oekKs+pWnb7yPq/qlBFiu+bEAtZO2/caYaO1yN
+         5BHuvUyJsuXM5Uj1BaoOWDMfzb3M3xUzKj4d9oETXW/D/52zZzqrIlOYqzQ7rdjtGm6z
+         Qtmbhr2EBunjsB+avg3qDGzRrHDNpzlbIbCw/EM8tckqpmL3jesgdf0YxZEQPzH9FTTy
+         uhLD6Tlg3lLBhCEOUU56cF5bFiTXzN7NR6tNU3VE8fHNsQl4dKen0y2Oeu1lUybRVanE
+         4M3A==
+X-Gm-Message-State: AOAM531P6MCbNj+q4hDqnD/02pLPYCDGLtOC/FZqW4NVELKGnE0rb4su
+        /uISkS5tDjp5EFTT5N1D9j/A3Vw1AnGgXN7C2hTgMA==
+X-Google-Smtp-Source: ABdhPJz+49x/XOu51g5xapRbSw4WXzY/gzksEXm1f/yFPCCxyry4k/fhS0t1tZRzhqCwMMNrYzxkRIPVeS3Cyg33Ecf7KA==
+X-Received: from mustash.c.googlers.com ([fda3:e722:ac3:cc00:14:4d90:c0a8:337b])
+ (user=richardsonnick job=sendgmr) by 2002:a05:6214:1d0a:: with SMTP id
+ e10mr2554088qvd.15.1627924340783; Mon, 02 Aug 2021 10:12:20 -0700 (PDT)
+Date:   Mon,  2 Aug 2021 17:12:07 +0000
+In-Reply-To: <20210802071126.3b311638@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Message-Id: <20210802171210.2191096-1-richardsonnick@google.com>
+Mime-Version: 1.0
+References: <20210802071126.3b311638@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Mailer: git-send-email 2.32.0.554.ge1b32706d8-goog
+Subject: [PATCH v2] pktgen: Fix invalid clone_skb override
+From:   Nicholas Richardson <richardsonnick@google.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     nrrichar@ncsu.edu, arunkaly@google.com,
+        Nick Richardson <richardsonnick@google.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Leesoo Ahn <dev@ooseel.net>, Di Zhu <zhudi21@huawei.com>,
+        Yejune Deng <yejune.deng@gmail.com>,
+        Ye Bin <yebin10@huawei.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 02, 2021 at 09:51:57AM -0700, Jonathan Lemon wrote:
+From: Nick Richardson <richardsonnick@google.com>
 
-> The resources are collected under a driver procfs directory:
-> 
->   [jlemon@timecard ~]$ ls -g /proc/driver/ocp1
+When the netif_receive xmit_mode is set, a line is supposed to set
+clone_skb to a default 0 value. This line is not reached due to a line
+that checks if clone_skb is more than zero and returns -ENOTSUPP.
 
-I thought that adding new stuff under /proc was stopped years ago?
+Removes line that defaults clone_skb to zero. -ENOTSUPP is returned
+if clone_skb is more than zero. If clone_skb is equal to zero then the
+xmit_mode is set to netif_receive as usual and no error is returned.
 
-Thanks,
-Richard
+Signed-off-by: Nick Richardson <richardsonnick@google.com>
+---
+ net/core/pktgen.c | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+index 7e258d255e90..314f97acf39d 100644
+--- a/net/core/pktgen.c
++++ b/net/core/pktgen.c
+@@ -1190,11 +1190,6 @@ static ssize_t pktgen_if_write(struct file *file,
+ 			 * pktgen_xmit() is called
+ 			 */
+ 			pkt_dev->last_ok = 1;
+-
+-			/* override clone_skb if user passed default value
+-			 * at module loading time
+-			 */
+-			pkt_dev->clone_skb = 0;
+ 		} else if (strcmp(f, "queue_xmit") == 0) {
+ 			pkt_dev->xmit_mode = M_QUEUE_XMIT;
+ 			pkt_dev->last_ok = 1;
+-- 
+2.32.0.554.ge1b32706d8-goog
+
