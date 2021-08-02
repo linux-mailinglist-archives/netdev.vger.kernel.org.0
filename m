@@ -2,126 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 674943DE0E3
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 22:42:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0995C3DE0E7
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 22:44:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231623AbhHBUmc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 16:42:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57734 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231165AbhHBUmb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 16:42:31 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAED2C06175F;
-        Mon,  2 Aug 2021 13:42:21 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id h14so35999014lfv.7;
-        Mon, 02 Aug 2021 13:42:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yWNos4y2XTKd/qiBHjitrH5SCn6A1SHTx/LQoQqiDk8=;
-        b=YoIBiA76lvQ4DD5wg4v9sV349pCwvCYsLadfoyZoQFpwk5f2VOm4aeVXp/cqWfrZvo
-         XiT8IG7obvghGAUp+rHcAAly8qLivB4Pr4tHw/AVs9jCHIdlN1hiXXEVEJweI4kQif3y
-         uor3bymaq/oWXbPdD7qlsc4G3OdqVxQadx0vKLDh/LLbHgNvsLops6O+MCg0nxluELCB
-         anlFHOov+14FL6mkWeX9dV3qNc9XdoU6hw6j6m4+sz5utvPjNnSm+BdxDx4/YQVhh2jP
-         qPyVvjfv7ERQo+Sn/NHqWUYLGLbubtI0p7bTF1QJ9DY97QeB2dDbyfd6GDzOrumWDZKd
-         0+cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yWNos4y2XTKd/qiBHjitrH5SCn6A1SHTx/LQoQqiDk8=;
-        b=X9eHehbF4kSGxSyuOMEFzk3KxXU0q5NTZP3GPmUc9Fg5SsNfKcl9Z0JBGVSp/Bm6sA
-         zQo9seklgqI0SXvkueBjTo1ZTCGH+7JzW4ZPdVaF6hLRZYay1VZmT6kf2fzRrM2tMu2T
-         ebSROunqeQZMd+9q+lh5tP1ioDpOkobhuV0WoVuVnQ15B0F5LHcT7FTZAhEgZ4AqvXaJ
-         DmM7thSnq7U5EO4Afi9ir9oP7V5j7BZAICUxPD8Wri/bWBzoALJyZRkhH0QLKmVMO19q
-         S2EP8voNUzd0TwcGrYPLVGSslKLbFNLAvCg6bOfprYsxKpy4yBwRRyQyAElv2hd/20eh
-         Kkiw==
-X-Gm-Message-State: AOAM533GcOEi7dAVe6lNwQQfshy4rNjn0e47IQNfyGtXR2bwGi1VkDHR
-        q9r8AwfXFluB09F30MKA+gQ=
-X-Google-Smtp-Source: ABdhPJwxRS7YWOMnqVOaWTRxq6b/1qrKOo7gqTChOm2JzyF4xExMwFidT9Y+FEhEyu9dDP4/B13LQA==
-X-Received: by 2002:a05:6512:3a8:: with SMTP id v8mr12691275lfp.116.1627936940121;
-        Mon, 02 Aug 2021 13:42:20 -0700 (PDT)
-Received: from [192.168.1.102] ([31.173.81.124])
-        by smtp.gmail.com with ESMTPSA id u16sm682259lfi.45.2021.08.02.13.42.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Aug 2021 13:42:19 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 1/8] ravb: Add struct ravb_hw_info to driver
- data
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20210802102654.5996-1-biju.das.jz@bp.renesas.com>
- <20210802102654.5996-2-biju.das.jz@bp.renesas.com>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <e740c0ee-dcf0-caf5-e80e-9588605a30b3@gmail.com>
-Date:   Mon, 2 Aug 2021 23:42:18 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S232060AbhHBUod (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 16:44:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59052 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231194AbhHBUoc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Aug 2021 16:44:32 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5555E610FB;
+        Mon,  2 Aug 2021 20:44:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627937062;
+        bh=Cgk3kYA9A8Fe0MkJ3IArEFUyV3QWUPaplz9QppWpzYc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=PoGIkpksbdNTqmas5Ju8aLUJUHE2VXnHVa8u0mLqoN2DJk32IUxefe6dYWeC/czzZ
+         kds8iS3SIy0lik0i1pUxupuF7uje/QNepPI9/UFJAJjchXS1Hg423x+rwi3487vWSw
+         BJTT4dGKGpW9AlIortl1ak1nLqlUcQbTWufkoQit7/u5ZnKjdNubBDwlMncwaj+HRX
+         FrWYWp9QTyBy5pRggPCjnBX/h9tFlSrIYYxgZ61cna6Xrxvg/vHo75Q/dwQYwDHpdw
+         f2wVjfy09ZhICzUtLky+KzPMfwXxeUf6tgYycrXcTXcGVlPDIYyCrvOhkoS7kzoPjr
+         vBvFbf14YhhAw==
+Received: by mail-wm1-f49.google.com with SMTP id e25-20020a05600c4b99b0290253418ba0fbso759861wmp.1;
+        Mon, 02 Aug 2021 13:44:22 -0700 (PDT)
+X-Gm-Message-State: AOAM532QX1RqqZRHbS9PBi70boEuo8EoLD/dOOjqJpiBCRfN1/rSF8F0
+        Prhwp3vzuDy/EOBq5ECFI8w1F4UOvYXqPeqjJ9s=
+X-Google-Smtp-Source: ABdhPJzZliXA2hOgIqx700o9V8Zjjcs/EHxx3DVnpQyQ9Oc9/nINX0q75mxOl4QwBPmPGWMbtCwoCU+xWqGb4ZMl1gQ=
+X-Received: by 2002:a05:600c:3b08:: with SMTP id m8mr712652wms.84.1627937061005;
+ Mon, 02 Aug 2021 13:44:21 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210802102654.5996-2-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210802144813.1152762-1-arnd@kernel.org> <20210802162250.GA12345@corigine.com>
+ <CAK8P3a0R1wvqNE=tGAZt0GPTZFQVw=0Y3AX0WCK4hMWewBc2qA@mail.gmail.com>
+ <20210802190459.ruhfa23xcoqg2vj6@skbuf> <CAK8P3a1sT+bJitQH6B5=+bnKzn-LMJX1LnQtGTBptuDG-co94g@mail.gmail.com>
+ <20210802202047.sqc6yef75dcoowuc@skbuf>
+In-Reply-To: <20210802202047.sqc6yef75dcoowuc@skbuf>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Mon, 2 Aug 2021 22:44:04 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0hLcNvR0Td1fpu6N0r1Hb7uSq0HPKkF30uCANuDg-SrQ@mail.gmail.com>
+Message-ID: <CAK8P3a0hLcNvR0Td1fpu6N0r1Hb7uSq0HPKkF30uCANuDg-SrQ@mail.gmail.com>
+Subject: Re: [PATCH] switchdev: add Kconfig dependencies for bridge
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Simon Horman <simon.horman@corigine.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Networking <netdev@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "oss-drivers@corigine.com" <oss-drivers@corigine.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/2/21 1:26 PM, Biju Das wrote:
+On Mon, Aug 2, 2021 at 10:21 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+>
+> On Mon, Aug 02, 2021 at 09:55:20PM +0200, Arnd Bergmann wrote:
+> > On Mon, Aug 2, 2021 at 9:05 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+> > >
+> > > On Mon, Aug 02, 2021 at 08:29:25PM +0200, Arnd Bergmann wrote:
+> > > > If this looks correct to you, I can submit it as a standalone patch.
+> > >
+> > > I think it's easiest I just ask you to provide a .config that triggers
+> > > actual build failures and we can go from there.
+> >
+> > This one is with an arm64 allmodconfig, plus
+> >
+> > CONFIG_PTP_1588_CLOCK=y
+> > CONFIG_TI_K3_AM65_CPTS=y
+> > CONFIG_TI_K3_AM65_CPSW_NUSS=y
+>
+> Yeah, ok, I remember now, I saw that TI_CPSW_SWITCHDEV is tristate, and
+> incorrectly thought that TI_K3_AM65_CPSW_SWITCHDEV (which is mostly a
+> copy-paste job of the main cpsw anyway, makes you cringe that they wrote
+> a separate driver for it) is tristate too.
 
-> The DMAC and EMAC blocks of Gigabit Ethernet IP found on RZ/G2L SoC are
-> similar to the R-Car Ethernet AVB IP. With a few changes in the driver we
-> can support both IPs.
-> 
-> Currently a runtime decision based on the chip type is used to distinguish
-> the HW differences between the SoC families.
-> 
-> The number of TX descriptors for R-Car Gen3 is 1 whereas on R-Car Gen2 and
-> RZ/G2L it is 2. For cases like this it is better to select the number of
-> TX descriptors by using a structure with a value, rather than a runtime
-> decision based on the chip type.
-> 
-> This patch adds the num_tx_desc variable to struct ravb_hw_info and also
-> replaces the driver data chip type with struct ravb_hw_info by moving chip
-> type to it.
-> 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
-> v2:
->  * Incorporated Andrew and Sergei's review comments for making it smaller patch
->    and provided detailed description.
-> ---
->  drivers/net/ethernet/renesas/ravb.h      |  7 +++++
->  drivers/net/ethernet/renesas/ravb_main.c | 38 +++++++++++++++---------
->  2 files changed, 31 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-> index 80e62ca2e3d3..cfb972c05b34 100644
-> --- a/drivers/net/ethernet/renesas/ravb.h
-> +++ b/drivers/net/ethernet/renesas/ravb.h
-> @@ -988,6 +988,11 @@ enum ravb_chip_id {
->  	RCAR_GEN3,
->  };
->  
-> +struct ravb_hw_info {
-> +	enum ravb_chip_id chip_id;
-> +	int num_tx_desc;
+Right.
 
-   I think this is rather the driver's choice, than the h/w feature... Perhaps a rename
-would help with that? :-)
+> The options are either to make TI_K3_AM65_CPSW_SWITCHDEV tristate like
+> TI_CPSW_SWITCHDEV is, and to edit the Makefile accordingly to make
+> am65-cpsw-switchdev.o part of obj-$(CONFIG_TI_K3_AM65_CPSW_SWITCHDEV),
 
-[...]
+This probably won't work as this is currently part of the ti-am65-cpsw-nuss.ko
+module, so I would assume that it's not easy to separate from the main module.
 
-MBR, Sergei
+> or to extend the BRIDGE || BRIDGE=n dependency to TI_K3_AM65_CPSW_NUSS
+> which is the direct tristate dependency of CONFIG_TI_K3_AM65_CPSW_SWITCHDEV,
+
+That would work, but it's slightly more heavy-handed than my proposal, as this
+prevents TI_K3_AM65_CPSW_NUSS from being built-in when BRIDGE is a module,
+even when switchdev support is completely disabled.
+
+> and to make CONFIG_TI_K3_AM65_CPSW_SWITCHDEV simply depend on BRIDGE.
+
+This would not be needed then I think.
+
+       Arnd
