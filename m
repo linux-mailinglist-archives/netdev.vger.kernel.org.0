@@ -2,118 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6B943DD1AC
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 10:05:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17EB03DD1AF
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 10:05:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232695AbhHBIFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 04:05:08 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:47912 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232537AbhHBIFG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 04:05:06 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 17284hFrA004362, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 17284hFrA004362
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 2 Aug 2021 16:04:43 +0800
-Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
- RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 2 Aug 2021 16:04:43 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 2 Aug 2021 16:04:43 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::5bd:6f71:b434:7c91]) by
- RTEXMBS04.realtek.com.tw ([fe80::5bd:6f71:b434:7c91%5]) with mapi id
- 15.01.2106.013; Mon, 2 Aug 2021 16:04:43 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "colin.king@canonical.com" <colin.king@canonical.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] rtlwifi: rtl8192de: Remove redundant variable initializations
-Thread-Topic: [PATCH 1/2] rtlwifi: rtl8192de: Remove redundant variable
- initializations
-Thread-Index: AQHXhglPFTpvsnSxFECKhSLcmGDwpatfV88A
-Date:   Mon, 2 Aug 2021 08:04:42 +0000
-Message-ID: <1edfe34cb706b9c395cd8a6a84d4d98d209f1b56.camel@realtek.com>
-References: <20210731124044.101927-1-colin.king@canonical.com>
-In-Reply-To: <20210731124044.101927-1-colin.king@canonical.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.1-2 
-x-originating-ip: [172.16.21.121]
-x-kse-serverinfo: RTEXMBS01.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzgvMiDkuIrljYggMDY6MDE6MDA=?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <441C8F02C7F0C54EBCBC3441363F9F12@realtek.com>
-Content-Transfer-Encoding: base64
+        id S232726AbhHBIFk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 04:05:40 -0400
+Received: from out1.migadu.com ([91.121.223.63]:39748 "EHLO out1.migadu.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232537AbhHBIFj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Aug 2021 04:05:39 -0400
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1627891529;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=FNEjoqYikcFg/JQNU0unDa83ZHY6oHgRfPce5wOp754=;
+        b=jrXAmmfFAPcDrSl9f/6o/tqrjAkvSqRZ0EkPT3KByYg3jc0PfB/a+vrn6aRqj1dxmwY8eY
+        zOSdgUaymx8BYaDgI8oNIU4vFrcoxz3oFgZjMzpSZqjjWj1Ro/abFfdrpTwLBlsxKM8ebh
+        k1+zLWA6gsQvLoQp83v/wdCjw9LxCBk=
+From:   Yajun Deng <yajun.deng@linux.dev>
+To:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yajun Deng <yajun.deng@linux.dev>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH net-next v2] net: Keep vertical alignment
+Date:   Mon,  2 Aug 2021 16:05:08 +0800
+Message-Id: <20210802080508.11971-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 08/02/2021 07:47:40
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 165336 [Aug 02 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: pkshih@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 449 449 5db59deca4a4f5e6ea34a93b13bc730e229092f4
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1;127.0.0.199:7.1.2
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 08/02/2021 07:49:00
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: yajun.deng@linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gU2F0LCAyMDIxLTA3LTMxIGF0IDEzOjQwICswMTAwLCBDb2xpbiBLaW5nIHdyb3RlOg0KPiBG
-cm9tOiBDb2xpbiBJYW4gS2luZyA8Y29saW4ua2luZ0BjYW5vbmljYWwuY29tPg0KPiANCj4gVGhl
-IHZhcmlhYmxlcyBydHN0YXR1cyBhbmQgcGxhY2UgYXJlIGJlaW5nIGluaXRpYWxpemVkIHdpdGgg
-YSB2YWx1ZXMNCj4gdGhhdA0KPiBhcmUgbmV2ZXIgcmVhZCwgdGhlIGluaXRpYWxpemF0aW9ucyBh
-cmUgcmVkdW5kYW50IGFuZCBjYW4gYmUgcmVtb3ZlZC4NCj4gDQo+IEFkZHJlc3Nlcy1Db3Zlcml0
-eTogKCJVbnVzZWQgdmFsdWUiKQ0KPiBTaWduZWQtb2ZmLWJ5OiBDb2xpbiBJYW4gS2luZyA8Y29s
-aW4ua2luZ0BjYW5vbmljYWwuY29tPg0KPiAtLS0NCj4gIGRyaXZlcnMvbmV0L3dpcmVsZXNzL3Jl
-YWx0ZWsvcnRsd2lmaS9ydGw4MTkyZGUvcGh5LmMgfCA0ICsrLS0NCj4gIDEgZmlsZSBjaGFuZ2Vk
-LCAyIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJp
-dmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydGx3aWZpL3J0bDgxOTJkZS9waHkuYw0KPiBiL2Ry
-aXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRsd2lmaS9ydGw4MTkyZGUvcGh5LmMNCj4gaW5k
-ZXggNzZkZDg4MWVmOWJiLi40ZWFhNDBkNzNiYWYgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvbmV0
-L3dpcmVsZXNzL3JlYWx0ZWsvcnRsd2lmaS9ydGw4MTkyZGUvcGh5LmMNCj4gKysrIGIvZHJpdmVy
-cy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydGx3aWZpL3J0bDgxOTJkZS9waHkuYw0KPiBAQCAtNjgx
-LDcgKzY4MSw3IEBAIHN0YXRpYyBib29sIF9ydGw5MmRfcGh5X2JiX2NvbmZpZyhzdHJ1Y3QNCj4g
-aWVlZTgwMjExX2h3ICpodykNCj4gIAlzdHJ1Y3QgcnRsX3ByaXYgKnJ0bHByaXYgPSBydGxfcHJp
-dihodyk7DQo+ICAJc3RydWN0IHJ0bF9waHkgKnJ0bHBoeSA9ICYocnRscHJpdi0+cGh5KTsNCj4g
-IAlzdHJ1Y3QgcnRsX2VmdXNlICpydGxlZnVzZSA9IHJ0bF9lZnVzZShydGxfcHJpdihodykpOw0K
-PiAtCWJvb2wgcnRzdGF0dXMgPSB0cnVlOw0KPiArCWJvb2wgcnRzdGF0dXM7DQo+ICANCj4gIAly
-dGxfZGJnKHJ0bHByaXYsIENPTVBfSU5JVCwgREJHX1RSQUNFLCAiPT0+XG4iKTsNCj4gIAlydHN0
-YXR1cyA9IF9ydGw5MmRfcGh5X2NvbmZpZ19iYl93aXRoX2hlYWRlcmZpbGUoaHcsDQo+IEBAIC0x
-MzYyLDcgKzEzNjIsNyBAQCB1OCBydGw5MmRfZ2V0X3JpZ2h0Y2hubHBsYWNlX2Zvcl9pcWsodTgg
-Y2hubCkNCj4gIAkJMTMyLCAxMzQsIDEzNiwgMTM4LCAxNDAsIDE0OSwgMTUxLCAxNTMsIDE1NSwN
-Cj4gIAkJMTU3LCAxNTksIDE2MSwgMTYzLCAxNjUNCj4gIAl9Ow0KPiAtCXU4IHBsYWNlID0gY2hu
-bDsNCj4gKwl1OCBwbGFjZTsNCj4gIA0KPiAgCWlmIChjaG5sID4gMTQpIHsNCj4gIAkJZm9yIChw
-bGFjZSA9IDE0OyBwbGFjZSA8IHNpemVvZihjaGFubmVsX2FsbCk7IHBsYWNlKyspDQo+IHsNCj4g
-LS0gDQo+IDIuMzEuMQ0KPiANCj4gLS0tLS0tUGxlYXNlIGNvbnNpZGVyIHRoZSBlbnZpcm9ubWVu
-dCBiZWZvcmUgcHJpbnRpbmcgdGhpcyBlLW1haWwuDQoNCkFja2VkLWJ5OiBQaW5nLUtlIFNoaWgg
-PHBrc2hpaEByZWFsdGVrLmNvbT4NCg0KDQo=
+Those files under /proc/net/stat/ don't have vertical alignment, it looks
+very difficult. Modify the seq_printf statement, keep vertical alignment.
+
+v2:
+ - Use seq_puts() and seq_printf() correctly.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+---
+ net/core/neighbour.c | 7 ++++---
+ net/ipv4/route.c     | 7 ++++---
+ 2 files changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index c294addb7818..683b87a6a615 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -3315,12 +3315,13 @@ static int neigh_stat_seq_show(struct seq_file *seq, void *v)
+ 	struct neigh_statistics *st = v;
+ 
+ 	if (v == SEQ_START_TOKEN) {
+-		seq_printf(seq, "entries  allocs destroys hash_grows  lookups hits  res_failed  rcv_probes_mcast rcv_probes_ucast  periodic_gc_runs forced_gc_runs unresolved_discards table_fulls\n");
++		seq_puts(seq, "entries  allocs   destroys hash_grows lookups  hits     res_failed rcv_probes_mcast rcv_probes_ucast periodic_gc_runs forced_gc_runs unresolved_discards table_fulls\n");
+ 		return 0;
+ 	}
+ 
+-	seq_printf(seq, "%08x  %08lx %08lx %08lx  %08lx %08lx  %08lx  "
+-			"%08lx %08lx  %08lx %08lx %08lx %08lx\n",
++	seq_printf(seq, "%08x %08lx %08lx %08lx   %08lx %08lx %08lx   "
++			"%08lx         %08lx         %08lx         "
++			"%08lx       %08lx            %08lx\n",
+ 		   atomic_read(&tbl->entries),
+ 
+ 		   st->allocs,
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 04754d55b3c1..44a96cfcfbdf 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -276,12 +276,13 @@ static int rt_cpu_seq_show(struct seq_file *seq, void *v)
+ 	struct rt_cache_stat *st = v;
+ 
+ 	if (v == SEQ_START_TOKEN) {
+-		seq_printf(seq, "entries  in_hit in_slow_tot in_slow_mc in_no_route in_brd in_martian_dst in_martian_src  out_hit out_slow_tot out_slow_mc  gc_total gc_ignored gc_goal_miss gc_dst_overflow in_hlist_search out_hlist_search\n");
++		seq_puts(seq, "entries  in_hit   in_slow_tot in_slow_mc in_no_route in_brd   in_martian_dst in_martian_src out_hit  out_slow_tot out_slow_mc gc_total gc_ignored gc_goal_miss gc_dst_overflow in_hlist_search out_hlist_search\n");
+ 		return 0;
+ 	}
+ 
+-	seq_printf(seq,"%08x  %08x %08x %08x %08x %08x %08x %08x "
+-		   " %08x %08x %08x %08x %08x %08x %08x %08x %08x \n",
++	seq_printf(seq, "%08x %08x %08x    %08x   %08x    %08x %08x       "
++			"%08x       %08x %08x     %08x    %08x %08x   "
++			"%08x     %08x        %08x        %08x\n",
+ 		   dst_entries_get_slow(&ipv4_dst_ops),
+ 		   0, /* st->in_hit */
+ 		   st->in_slow_tot,
+-- 
+2.32.0
+
