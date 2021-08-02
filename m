@@ -2,182 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C40543DD486
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 13:20:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C017E3DD49D
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 13:26:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233341AbhHBLUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 07:20:13 -0400
-Received: from mail-vi1eur05on2055.outbound.protection.outlook.com ([40.107.21.55]:50272
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        id S233401AbhHBL0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 07:26:11 -0400
+Received: from mail-dm6nam10on2081.outbound.protection.outlook.com ([40.107.93.81]:9568
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231881AbhHBLUM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Aug 2021 07:20:12 -0400
+        id S232553AbhHBL0K (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Aug 2021 07:26:10 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F/LCgqwfgtynRpl4Gz1o7Va8YjRI25YvKeC8Z8eapYSM8w2INenduf9zpkmtwwFLFMAPNWLVgf7tToCs5Vb4ea5GE47MW7lq2iVFAceDZh/GpWQIbDNq9AYpWPVJF5AXomr8nQrWL/rnx0opvUU1VfGYh8U88AF975HEDOWfiK4ApUqVJXnC9OnxDJk3Md3GLTGKk1D7EMHXhzhrIPrrgGaX+IKgJBqUSLTQzD49UNA/CHVxy1gO4UAjmZ5fk+mL6iadAQgYJcI0EGseErQl86kj/f4D+3s0E/H8BlFM279FbZGGY2lJfceWFXMyLS+MmjWOz75y+Uiza7mI0VXgfA==
+ b=irFoAl0c+o8dNCNie6nXfn5yIR0XPi5pTjKYxyYgBTXXm+IfutZ/QwfwLqrz8z8LLZA5iM+YBTTbT+JHFUTTw/C8OP8sctvSTtFbPOI8959QLFthRp11t5fFQxU69b0W4BXV+QzwE/cwPFc5MFeLG9GgZN70x2MYd/uJ0SqXNV0wfcoyl3Vs1NTszwRgka02mKwcD4soRSzV45v/ThKeosF3qPRQ/Xdve0xQf8wVAXqMyyA0nkX1QHpKLclG4D2qyiGDmhQZjxOxjtpeTl8FY8ds12qr7LyqeCtQ5Hbfyy+zxFVRha2LrJ0J58H4LJXQyaXkNQgGXZEsdiHLB0wDyw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=225VjnI4g/cwcuGDafQ92hHuuafGlFeEaP4Z9jFRABk=;
- b=Q+1JA+Y4jJWDZamX/mGKWDSJcuXvwGA5qpaAC798IJNhQJL3sBCAZM0oX3ZVHpUSIQj2qa2b0nBdTn2ST+e4C1dsG0sm4717eOYDder8rShK8oMTNTfZZytxeliTr+si9gID0VijOBciyn0zM94lbK7OxnqDMHs0VzrQNA101GwRllkU0whPPbSfZvAwSriji1jTNZXPI1k2zjOhtImjdkx7kKgwRXZJqdX6IbAK48nxhvDX60UNhiFylrQXTsEjmEaPS6VyDKwsAsH2ZCSuDHH0Nczc259363ffAWVXRmgcTa7Ygj056BVQZuymPjRroI8advoGlgVdUDOMKp1bbA==
+ bh=8Tchkr5EshUZ+VhYo8sfhY+0gq5sEusPRP1T43T7yqA=;
+ b=oOnWw+5CDzLycyS0hbNxAa0ltcepiEnRsTGZjZU/IIxUCgyQeTzErYQnrZ+NtpkiLhuZGqJVMaUPXsWSNF7gEwDtAbuCd1lMBlb80/b3AkgZQ6yUmjUJV5PIB5BihelUbBdClSb4HP8PSAnQmUq0347WXWNqcKanEkct8CBGVKuIBNeN4oWplwo3B+1DwUKcxjgi1pTswSCVVUI/bYiYBpOgK8JMm1g57ephCR+DA5im1TVDC9+T5kfEsn8Xa1u5xm80BKs/EFyEMvY+QG89tx20nXZSU/8UNIwoiiPb1A4WA72nSxAntW6jXmxqz05vd0SBc+22RjMx37xY8pnXmg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=225VjnI4g/cwcuGDafQ92hHuuafGlFeEaP4Z9jFRABk=;
- b=jZJFDe09VLZ6R4Hu4wRELDsjwzkQBNSHScE2rxWMR4gOJtaFoaUK+7FePFiSx8ZUObd4/1Nf6f4f83RwpLuYRdqH3vN4nea1TX4Edg1Qc4S40GUlJh5DAZ9EYpm1DxRFyZgk4jwtS0D3THqHSkZ96hM9vYTvLHjbDFttsPrAplY=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19) with
+ bh=8Tchkr5EshUZ+VhYo8sfhY+0gq5sEusPRP1T43T7yqA=;
+ b=hd1PLwgPFI95jTEBIIkghx1jjxzyFU3w6nhiI99Q6q3vmdU8GlZHEHyp7r2DxvHMLiruabO2vQEWEf9VF8eMZI7PCuD6XlZ2uYtB+7IDdXEW4q2qN4WcXpwq+rl2IFLFvG/k1NokvfUyTO0nPmEWrB63HvSWT6LzUZ0xj6UDdrObEOgNzfRVJpYCIuK3GX+z/tUqN8E9xwzmMb8MPp2eTmHjTJqOpswIC0aPhDTeE7L3Pq/xvERk7kNp3D1+pONj4OukeSW2ASrRPuwZFU6bvWbK4ptjocyS8ds4CTqlqj4p/2eaj1f97Ql6gRCgpd8g2YzdCqimmwXPIwQquwV6Xw==
+Authentication-Results: syzkaller.appspotmail.com; dkim=none (message not
+ signed) header.d=none;syzkaller.appspotmail.com; dmarc=none action=none
+ header.from=nvidia.com;
+Received: from DM4PR12MB5278.namprd12.prod.outlook.com (2603:10b6:5:39e::17)
+ by DM4PR12MB5071.namprd12.prod.outlook.com (2603:10b6:5:38a::6) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.21; Mon, 2 Aug
- 2021 11:20:01 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4373.026; Mon, 2 Aug 2021
- 11:20:01 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        "syzbot+9ba1174359adba5a5b7c@syzkaller.appspotmail.com" 
-        <syzbot+9ba1174359adba5a5b7c@syzkaller.appspotmail.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.18; Mon, 2 Aug
+ 2021 11:26:00 +0000
+Received: from DM4PR12MB5278.namprd12.prod.outlook.com
+ ([fe80::c170:83a0:720d:6287]) by DM4PR12MB5278.namprd12.prod.outlook.com
+ ([fe80::c170:83a0:720d:6287%5]) with mapi id 15.20.4373.026; Mon, 2 Aug 2021
+ 11:26:00 +0000
 Subject: Re: [PATCH net] net: bridge: validate the NUD_PERMANENT bit when
  adding an extern_learn FDB entry
-Thread-Topic: [PATCH net] net: bridge: validate the NUD_PERMANENT bit when
- adding an extern_learn FDB entry
-Thread-Index: AQHXhyttiQTxBmfp1EqsG/8ivlTylqtf1ZuAgAAbcICAAAX6gIAAE6KAgAACzwCAAATegA==
-Date:   Mon, 2 Aug 2021 11:20:01 +0000
-Message-ID: <20210802112001.rxfajfttl35bnh5s@skbuf>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Jiri Pirko <jiri@resnulli.us>, Ido Schimmel <idosch@idosch.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        bridge@lists.linux-foundation.org,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        syzbot+9ba1174359adba5a5b7c@syzkaller.appspotmail.com
 References: <20210801231730.7493-1-vladimir.oltean@nxp.com>
- <ff6d11a2-2931-714a-7301-f624160a2d48@nvidia.com>
- <20210802092053.qyfkuhhqzxjyqf24@skbuf>
- <451c4538-eb77-2865-af74-777e51cd5c31@nvidia.com>
- <20210802105233.64r23kucu4mjnjsu@skbuf>
- <4d85eacb-152e-8e4e-bb18-ad2814d249c1@nvidia.com>
-In-Reply-To: <4d85eacb-152e-8e4e-bb18-ad2814d249c1@nvidia.com>
-Accept-Language: en-US
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+Message-ID: <4fb26839-5ce5-99eb-e992-e1380cd36c2e@nvidia.com>
+Date:   Mon, 2 Aug 2021 14:25:52 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+In-Reply-To: <20210801231730.7493-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: nvidia.com; dkim=none (message not signed)
- header.d=none;nvidia.com; dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 63d8b4e2-b942-44ff-d8ff-08d955a7783e
-x-ms-traffictypediagnostic: VI1PR04MB5136:
-x-microsoft-antispam-prvs: <VI1PR04MB5136FB36FFA61BD4446B1700E0EF9@VI1PR04MB5136.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 9KdIV29D6yk/k1B0roZprLYw6Kl7VBOtuyCOYsgYewG/9z/RXMsc43EZJh/PSUPPefYad66Z4zsZuUf/jcnUVAJIAo4rn2XMKwO+z5QiOWhOPV/evNv4h08t5SeBH2E5XY3Q6S78jve56gFl4mv6XCr5zhNlacmkVjSSxbMPY6jSctmYQ77dmXFY5OmKAE/r/DzegEPNSPpsmLfoDcT1kQ1J/qEyx8Uvzsn1b+X9Qs3fhtnut133QMNYexIRokl5RGbTKmQm7EORVoSNaSK+v68Nv+jnJNUboXfZkHKasBHEMTHB5SlMBmayMNDSbN6BUFWSdMkWCp000oq8BP38AvHlHMyKCVzrmtk8xCXpP0IK9YRsPmXZbbc5sh6eHbEVHFv0fjt+Vjt4Ss1dH9LtJ+Z4GiYZHIoWV0pbhn/KeF02reLmaoNkcecoATIceyyiuuYqRkPbcmsFudKyO+ntxWyD4Wt+gfHCIyB6Us1BWi9Iitrr738mJSfnWOdO39enGuXH3ZQrZfIsSdZH+8xb0eGSIIbNGmIIDXMN00r/0n5ulTl30qyYc+fNlNvIKx1bnKfOop+xfL1I6puuK/AouUHer9duUK4sijvjMFUoZdPucCQiaYZiLKkiaMxEQj7o5E784UD2OEnJ8Madjc7OudcuSdWWT2eYPxRqo5S7KqrZv7pEhc2Wz5rz288svhun3pHrq+RJ4Lugn0QMUfC3Mg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(136003)(346002)(396003)(376002)(39860400002)(366004)(478600001)(71200400001)(66446008)(6916009)(76116006)(38070700005)(64756008)(66476007)(6486002)(66946007)(66556008)(38100700002)(122000001)(33716001)(6512007)(9686003)(83380400001)(15650500001)(86362001)(7416002)(44832011)(6506007)(26005)(1076003)(5660300002)(8676002)(4326008)(316002)(186003)(2906002)(8936002)(54906003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Ij/nvNHSsN/0diktQKICFV9XSctZ5ZpNehLRh/IPFJ5ohT1U0nYATV/Ua7zQ?=
- =?us-ascii?Q?RSc7vvEIfWo51LQuyaFSjl6R3PCu49kjiY8tmUn3DIJAkPXFEsvcURLAC6s1?=
- =?us-ascii?Q?Nc1ibVeaq64j0FNXgmIn8BtdsV5ne9yfLlU/7rjTGdbM6+Vv+LrbpWftn45L?=
- =?us-ascii?Q?HxM7sqMqvFqhNrfG7IPJo21yqPvi7mlvYuxllEnUo6HTQti8XUWSeFz9P8/4?=
- =?us-ascii?Q?OOh6OjBzZ/YOsHFPamA3F8fssTclczhSKIXMNgcWqkf8eW3G6pCFTE94OggE?=
- =?us-ascii?Q?CXbvWPZ6kOdbdZEyhHEKpoYHX4WrCZzalcin47+VWNhqTisii7TaZpxzc91D?=
- =?us-ascii?Q?BEoZzPXKJqnKNxtg/fn+ZTIoygOipmisa7SpOBAFsR83Ayomez11odGYAADh?=
- =?us-ascii?Q?oZ6yeMS4e8h14xVzz+lkJt6ReVJWrwm4Wn/Qb+R8ncMJvnGUQmHCf8vIQ91k?=
- =?us-ascii?Q?932zwo2c6lzDK4l801X7PW9+BaAYwAupTQysFIq8GuyChYRK6Ah5eXs/+e98?=
- =?us-ascii?Q?A73FEVskCAnkHSfmp60fTmPUwZ04ZkLyQi4/zwIe0+9BtLuZ6gcbe1WXHVmH?=
- =?us-ascii?Q?dHuVtYr+UWKoHrYOLsJr/kmYnbr6KhzdZuCC/HahPhd1bOx4fcSJc7ATlPpX?=
- =?us-ascii?Q?qLlVXY7MVWCHh8J3BqB/Y9YC6OoghVHOWap1387mIpUNiaKx0sQSTZilzfva?=
- =?us-ascii?Q?ERci9giLCybuPtOj1jxJ8c7Vi69+Sbx3kq83k7gMTdIxRVV4LDRy2mDGvmMA?=
- =?us-ascii?Q?nvu0zfR2blBCX9krghU0vKZsIhK8Dl9YKtg1MfQJmQGa6gfgr4tU2lMi8A1h?=
- =?us-ascii?Q?TDPm09wOxs15CXu7jSVxXpislSKjhttW+mHrE+ssRMDYwkEprM4fVR1RzhcL?=
- =?us-ascii?Q?XJg1zZQjUhtxm/5HokZpMFe1NJt30AFufYS6KNqHtl6B4CeBgFdKLk7lmva4?=
- =?us-ascii?Q?ccFrxB3TU/kTsSe5NigLTgUYSkAm5YT1lZybvKHRD/F3im1A6ReH87fGMmNw?=
- =?us-ascii?Q?LPvB2AyUw67/F+D2DJHlzB5Xg/kT7+HHlR8wY/ZsZRLggh2kjMjd5+sNH3Tm?=
- =?us-ascii?Q?RG/1WALltnR/50jSvLD3sK13A1lruk7EMk2xKMIJugyxWirg7XaLcuW1BrYo?=
- =?us-ascii?Q?6iSnImQ6Jqhc6FdDaNQra6ib9PMD8nIHjkMuWfGqhbPMFztvBb82GXo8GRJ7?=
- =?us-ascii?Q?ALm8En+CXfLYMP3xNEc/bhrVwcAn9oVM3brP6HsBQP3Hrv3n7loEQ5scN4pS?=
- =?us-ascii?Q?3DWAQvbCVMzdsDUZca8avZsWIvd0kO2yvctufxZm9rX0GabuXqrqsxdiQj8t?=
- =?us-ascii?Q?hNFbVGvXPq7ISNxXFSUoPUE5?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <73DBDAD1B048D546BFAC0CFC0F9CA141@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: ZR0P278CA0003.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:16::13) To DM4PR12MB5278.namprd12.prod.outlook.com
+ (2603:10b6:5:39e::17)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.21.241.206] (213.179.129.39) by ZR0P278CA0003.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:16::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.18 via Frontend Transport; Mon, 2 Aug 2021 11:25:57 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 34a2db65-b4ec-4b73-39c6-08d955a84e24
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5071:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM4PR12MB507185A30B15AC5952C1B303DFEF9@DM4PR12MB5071.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 6FrBAjkdpl6CvEny5F/06tBcr3J2L7xEfBU5oGtmfURqSbtUPaVk2y48yEGaWdk6qSrW4pZNf4SXA3u0z3tilXyf+EIhs3zpWdterrF0Fk+oi4qt61uM9dqxtWd81jNY65parNniQ8pwCgfV+ytLnx6dmaTLJvl1IGiI19Y6KzJ1k6q/SduX2/QjC/5rAOIJRnd02eqakjsPk0dt2SnxA5iyW02iEwKxnsEnK23b42yhCIvsm4UA1/Up2XZtu5Px4eKzBRwnkFc5J9NYrZoOolI4ZTmtDVo1CfR+EUc2qdj7lyyLmFRXw2XjiUzhSAzrBsAy09JkOpgvS/rEQUUFOa/KlQjGhQe2sb0GkcwpeQZdfa5yfWn1JlT4HLb1x5tUutPaTzW2UT938XdnvBKvSNet8y3EuXIdLY4miU8YjHwDXMpovtJSM5+pZmQ9m48p5uU9anmwaLPokC3Nt6tkKU2y3Zb1kwKQmbxTAsFy/2Mcia+YlzLsxCcc+PMeT4aeF1fTEW4HZYpAeB/mT7aPQHgxfPdTcy0+zpqDUq+2eSqdeMFRFeVwqvK45lOfA1p8a0voCPzmc1xAMq9Jdn60f9+HMyOGPFV4SR91Cz4HDuhFz1aGqSKx4v0A4ISOxLqj+Pb+yTLjfS+bKuxCSgnsTKKMjZFcarIgNvMwb5iONdx3Akuzvr2hH26PL+meynEkqMAD/11WAvNhNMEuPTPWiewfWVFWImI9LxeTSQTK0wFGoaoqjM7JkiASCw/kdwuP
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5278.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(366004)(39860400002)(136003)(346002)(8676002)(8936002)(26005)(38100700002)(186003)(53546011)(6486002)(86362001)(54906003)(2906002)(83380400001)(31686004)(2616005)(956004)(110136005)(16576012)(66946007)(6666004)(36756003)(66476007)(4326008)(66556008)(316002)(478600001)(31696002)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Ui9nSDNFTVU4NXhmVjhCUzkzaUdOQ3IvWloyVVBNVmlIME94dGExMmNuZDZO?=
+ =?utf-8?B?SFk3TmdRK01MUm9PY3FmMGRoaTN4dVVWa2cxcy95cWFhUk91c3ZKZFMrS3pI?=
+ =?utf-8?B?SjJrL2MvaDc2UWtpRGRESUYzVmZGWTRxNzZFMFZzd3NmUkNwZ0x2WmpCa3F5?=
+ =?utf-8?B?ckdWMkZ4Z3dvSys1K013TVQybllFSWx3eW5BUmNMaTk5emVzRm1WNUhEeUpU?=
+ =?utf-8?B?NVdPMnBXcWFVMWFUQmMrdTZRSFZiTjMyTGs4S2tyekgwNk1JU2diSXhmOEV4?=
+ =?utf-8?B?dzB5YnpSalR5QTRUM2xHSFp4VTZkdWlXNG54b3daRFpPcHkrRndKWGZWYVQ3?=
+ =?utf-8?B?R25ZTmRnY3M4VlJlMUxzWUN2Z29jNHVONytsL0VQTDJsZmd3d0tFYXlUanZV?=
+ =?utf-8?B?ZDBHUjZpbUFHQU9laXVQU0RPbUx2UTZvNEx6b3pzWTZmVC9VRDFjV1RQczRj?=
+ =?utf-8?B?TmRwOXA2Znd6bkFNNktreDhKZ1RMK0c1VjZrWkNzMmZEOGhMd2h3MTN3L2JC?=
+ =?utf-8?B?bFBTbFRYSlVOMFlialVYeW0wbzBlMm04Nm5QcmlYYzg0L0oyN0NackJjWHBQ?=
+ =?utf-8?B?eGtPUzZXUlAyRHpRaGEwN0V3ekN3YUFWMUEwVGkrdUx4QWJVSFpqWjdVWmQ1?=
+ =?utf-8?B?b1Z0U2hISkppd1l3Q0ljT2dWc3FPbmFLbmtWNE1tbUk0YmJJb2VpcUU4TkZI?=
+ =?utf-8?B?KzFPcWRXUTAyVy9MT2oweEFUQll0dThrcHlNejNjUkdjbmJ0UEF0Q2k3VlA5?=
+ =?utf-8?B?azE4Zi83Y0w0RTF2czZkTmhsbWQ3aVJiTW1SMG0xVWZqc0loSHI3VHBnUy9v?=
+ =?utf-8?B?NGh6WWJxUW5QbmkvWGVnc2dNZFI0amJ5dkV3YXFmY2MyeFhYWWZyZ05wZkFE?=
+ =?utf-8?B?UEZyUk9Gc05NVmMzY3hYRUVwYnR5dkpvK21TTU9tdkUwSTBVVGgrWHI4OWpw?=
+ =?utf-8?B?WEJYWFY1OE9NQ3I4NHVOc3ZUOWw4RmR6anN3Zmx5blo0TmZ4MXRjclZ6VVJN?=
+ =?utf-8?B?Nk91YnhqakR1MHNEbERIeHdIcU9kd0N4WWZhNmRTSjZLQUhEb2FzQ2xvZTRG?=
+ =?utf-8?B?UzhiTDFpUENsbUI3ZVRhWS8wN0w4WVUyeS9yM3ZFWVdDSmtMaW45S1BhVnU4?=
+ =?utf-8?B?OVREcE5uWnlZVW42S2V5a01YY2FZRGlnWFRqSFVRQ2l6aGhEL3BlVXBMUFRw?=
+ =?utf-8?B?WVVUbHZwVlIyU0hiejgxM1c0LzRMRDNwc0J2bXkyb0pZQmJmaXJjS0dIT3Jx?=
+ =?utf-8?B?NWdRejRYYWc1clZqUGNEZTM4QWIvU01rbitMdnY3LzNPdEZ0blFLNGIrdDZU?=
+ =?utf-8?B?SGpjYU9lTHRWZUIzdFVnWmpXbFNJYlNNODBEM1VRWWJ0RG9GdWZuMCtGaTRH?=
+ =?utf-8?B?SFRNck1KY3pkaEcxd2RYMUJ6aHluVjY5TWc0cVprTkl2dVE1MEF0UnNEcWNJ?=
+ =?utf-8?B?TGtnNE1RVzVhV2d3S3VMeUhPazhqeVUwNUphTTVSMWxrUVZqeURyRTFOL0U4?=
+ =?utf-8?B?NENMb2x2K3FvYzBYSWVyQyswWjFma3pVcjlLRTZlVGFpaVk4Uk1FY25TR2tD?=
+ =?utf-8?B?dTZOQ3hYb1lYSHdiSGdObnZINUt3MCtXV0tJcFBHb3BESm9BNnZiVEFyQnZW?=
+ =?utf-8?B?aFUxYndRbmpqdHppa0NUY2F0MWVwS1ZMUTVCQXM2RFVoVGFlVG5DcjlScUt2?=
+ =?utf-8?B?akZ0UHlxZ0ZaM3FKNS9QWm8wNk11RmlTN1ErVDlialhpdXo3RnhlSkdZTkhF?=
+ =?utf-8?Q?qZXBv48LzCpBSoSEMwSUHeJCbC/G5hJA2ZAM8t4?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 34a2db65-b4ec-4b73-39c6-08d955a84e24
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5278.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 63d8b4e2-b942-44ff-d8ff-08d955a7783e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Aug 2021 11:20:01.4580
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2021 11:26:00.4325
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jJVl7YDePEbPtb29AZl50BpnVQaC0nsm0wGVeaBqV0fQLmjNSXDWVGo1vXVhjQfVR6Wi0EnXTUuJOYqRXdeHCg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5136
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jCmsQFyWQszLEr2tDJ1ERpXIQVVpbFGk/xl0ppCzmjzwBrCMTmdHS8kk1CgbHXt4wbNuTfUPS6RIliIEJQJyjA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5071
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 02, 2021 at 02:02:36PM +0300, Nikolay Aleksandrov wrote:
-> >> Actually I believe there is still a bug in 52e4bec15546 even with this=
- fix.
-> >> The flag can change after the dst has been read in br_switchdev_fdb_no=
-tify()
-> >> so in theory you could still do a null pointer dereference. fdb_notify=
-()
-> >> can be called from a few places without locking. The code shouldn't de=
-reference
-> >> the dst based on the flag.
-> >
-> > Are you thinking of a specific code path that triggers a race between
-> > (a) a writer side doing WRITE_ONCE(fdb->dst, NULL) and then
-> >     set_bit(BR_FDB_LOCAL, &fdb->flags), exactly in this order, and
->
-> Visible order is not guaranteed, there are no barriers neither at writer =
-nor reader
-> sides, especially when used without locking. So we cannot make any assump=
-tions
-> about the order visibility of these writes.
->
-> > (b) a reader side catching that fdb exactly in between the above 2
-> >     statements, through fdb_notify or otherwise (br_fdb_replay)?
-> >
-> > Because I don't see any.
-> >
-> > Plus, I am a bit nervous about protecting against theoretical/unproven
-> > races in a way that masks real bugs, as we would be doing if I add an
-> > extra check in br_fdb_replay_one and br_switchdev_fdb_notify against th=
-e
-> > case where an entry has fdb->dst =3D=3D NULL but not BR_FDB_LOCAL.
-> >
->
-> The bits are _not_ visible atomically with the setting of ->dst. It is ob=
-vious
-> you must not dereference anything based on them, they are only indication=
-s when used
-> outside of locked regions and code must be able to deal with inconsistenc=
-ies as that
-> is implied by the way they're used. It is a clear and obvious bug derefer=
-encing based
-> on a bit that can change in parallel without any memory ordering guarante=
-es.
+On 02/08/2021 02:17, Vladimir Oltean wrote:
+> Currently it is possible to add broken extern_learn FDB entries to the
+> bridge in two ways:
+> 
+> 1. Entries pointing towards the bridge device that are not local/permanent:
+> 
+> ip link add br0 type bridge
+> bridge fdb add 00:01:02:03:04:05 dev br0 self extern_learn static
+> 
+> 2. Entries pointing towards the bridge device or towards a port that
+> are marked as local/permanent, however the bridge does not process the
+> 'permanent' bit in any way, therefore they are recorded as though they
+> aren't permanent:
+> 
+> ip link add br0 type bridge
+> bridge fdb add 00:01:02:03:04:05 dev br0 self extern_learn permanent
+> 
+> Since commit 52e4bec15546 ("net: bridge: switchdev: treat local FDBs the
+> same as entries towards the bridge"), these incorrect FDB entries can
+> even trigger NULL pointer dereferences inside the kernel.
+> 
+> This is because that commit made the assumption that all FDB entries
+> that are not local/permanent have a valid destination port. For context,
+> local / permanent FDB entries either have fdb->dst == NULL, and these
+> point towards the bridge device and are therefore local and not to be
+> used for forwarding, or have fdb->dst == a net_bridge_port structure
+> (but are to be treated in the same way, i.e. not for forwarding).
+> 
+> That assumption _is_ correct as long as things are working correctly in
+> the bridge driver, i.e. we cannot logically have fdb->dst == NULL under
+> any circumstance for FDB entries that are not local. However, the
+> extern_learn code path where FDB entries are managed by a user space
+> controller show that it is possible for the bridge kernel driver to
+> misinterpret the NUD flags of an entry transmitted by user space, and
+> end up having fdb->dst == NULL while not being a local entry. This is
+> invalid and should be rejected.
+> 
+> Before, the two commands listed above both crashed the kernel in this
+> check from br_switchdev_fdb_notify:
+> 
+> 	struct net_device *dev = info.is_local ? br->dev : dst->dev;
+> 
+> info.is_local == false, dst == NULL.
+> 
+> After this patch, the invalid entry added by the first command is
+> rejected:
+> 
+> ip link add br0 type bridge && bridge fdb add 00:01:02:03:04:05 dev br0 self extern_learn static; ip link del br0
+> Error: bridge: FDB entry towards bridge must be permanent.
+> 
+> and the valid entry added by the second command is properly treated as a
+> local address and does not crash br_switchdev_fdb_notify anymore:
+> 
+> ip link add br0 type bridge && bridge fdb add 00:01:02:03:04:05 dev br0 self extern_learn permanent; ip link del br0
+> 
+> Fixes: eb100e0e24a2 ("net: bridge: allow to add externally learned entries from user-space")
+> Reported-by: syzbot+9ba1174359adba5a5b7c@syzkaller.appspotmail.com
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
 
-Ok, I will send a separate patch for that.
+Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-> You are not "masking" anything, but fixing what is currently buggy use of=
- fdb bits.
 
-I am "masking" in the sense that the bug I am fixing here was not
-obvious to me until it triggered a NPD. That would stop happening with
-the patch I'm about to send, but maybe there are still bridge UAPI
-functions that do not validate the 'permanent' flag from FDB entries.
-
-> As I already said - this doesn't fix the null deref bug completely, in fa=
-ct it fixes a different
-> inconsistency, before at worst you'd get blackholed traffic for such entr=
-ies now
-> you get a null pointer dereference.=
