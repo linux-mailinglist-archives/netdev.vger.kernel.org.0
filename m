@@ -2,115 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DA433DD670
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 15:07:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99FFB3DD682
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 15:09:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233797AbhHBNHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 09:07:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56400 "EHLO
+        id S233792AbhHBNJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 09:09:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233786AbhHBNHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 09:07:37 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF49C06175F;
-        Mon,  2 Aug 2021 06:07:26 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id x14so24363386edr.12;
-        Mon, 02 Aug 2021 06:07:26 -0700 (PDT)
+        with ESMTP id S233645AbhHBNJU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 09:09:20 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E25C061760;
+        Mon,  2 Aug 2021 06:09:09 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id q2so19507713plr.11;
+        Mon, 02 Aug 2021 06:09:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+SZbqu2OmCriIcHluisGz9iJ+oJzkAqrwEFMwLWTqRc=;
-        b=E48DER1OVUNlNN3AbK4cr/kyuJ+wfrZG9rqkLywltAeZxLroU/5TeEUkLEu96fsr1m
-         oVGOmUS/SyZ18O20SPsgHEmuAxgyiHgAZuHEYbYwLNvSkjctNp7iqBk5VYhOxw7iDMtc
-         OLh3jYO6kwmAd3gKoOVx1ORY5YPWE/23AtjHWFn1H+7dW6vntL2CIy2osXyKZW5f8QUF
-         uc/gD3kx+rS0jAWqGRYV6EGlM/es/kB19OSorwE9E2JtyXs1OKV4U332y2EnsU2ryq1v
-         I2fe512h1Sf6SVpXZ+T042Ae7py3SHuCdN9CBpj5KDWnOHjMuarnQy1O0EbtC4knR07P
-         BVoA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=s/dUVvpQRfOjAzBt73Z4sPW5uLvROM0ZUBasKGMCJKg=;
+        b=kRMvDASIqRBkh8RnkUbf4UEErYFb5pjTrI6eLr74f8VE9FC14kfOqhTTEmBemGcWD3
+         vxF/Oj4Z0mk+mgXZi+CkxzbvUrEg28DPozJRYT1LYoOgvdgCBdrLhlOgqpznXe77ZF+D
+         ZRsfi1MTLPkKWKWY6a5qMSDRAgZid5FCeeP8fEMwHWa1vSNeigfHF23aRro1H5sDCITB
+         EkTFVr45YxpYj6Y6XQuQIcwcDZu7zU/oMfjlkHdXqZuf7OlMlr3TYL3Nw0k3yZuHftYR
+         WAG6jG72nxOzN64BlclBwzp9zH42noiu3RiOVNcjdPpHm0wiyHoYEebWFRLTYg8ibXLV
+         BBOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+SZbqu2OmCriIcHluisGz9iJ+oJzkAqrwEFMwLWTqRc=;
-        b=CydckpFJJDXqDES5BiRxylXGKzbcCFRnBdgv3uahgnXOZJ+iU+MaPna+5Zn3F15c0I
-         KN2qnTte6Yd/nCC+9jm+E8C5bzmCHI/6WPyeZO9Onsiz1dtUv2sfK+8mdgjfSWU8VHZK
-         UZ/7W1Ypym+ClxaadeWoHpMkDz7gIK1XqURZPkKrqhTNjoAp/qXOABdgpz3+ewEvjWvy
-         e9nHiyIibFP1U9LiPXoQ82uyhNTe7g5CNJFWssMHXmqD5iHCWNPkMpHc8Plrm6ejzpN+
-         fxXreodf1Ho5P4wrlMO4zqp+/hKq/96vkRPlHE1TWSd2KBRip6e2LwJymqt5IVwqKS6i
-         EzrQ==
-X-Gm-Message-State: AOAM533aPiOYYRnCIFQtVonMosEEcH0bmTV7KzIcNelNTGYccv/I8yqq
-        TqmXB1ev0EForSRkpXOWuzk=
-X-Google-Smtp-Source: ABdhPJwDkLl+kIN1bl2f4Yw908yzO51fxWKV8HGdwOTC8AgxomlATrgugCeUjm/XBi03A5mFYLG+eA==
-X-Received: by 2002:aa7:d296:: with SMTP id w22mr19096988edq.170.1627909645224;
-        Mon, 02 Aug 2021 06:07:25 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id o3sm5969539edt.61.2021.08.02.06.07.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Aug 2021 06:07:24 -0700 (PDT)
-Date:   Mon, 2 Aug 2021 16:07:23 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Eric Woudstra <ericwouds@gmail.com>,
-        =?utf-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>,
-        Frank Wunderlich <frank-w@public-files.de>
-Subject: Re: [RFC net-next v2 1/4] net: dsa: mt7530: enable assisted learning
- on CPU port
-Message-ID: <20210802130723.6tieexl5zcxu44xr@skbuf>
-References: <20210731191023.1329446-1-dqfext@gmail.com>
- <20210731191023.1329446-2-dqfext@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=s/dUVvpQRfOjAzBt73Z4sPW5uLvROM0ZUBasKGMCJKg=;
+        b=EpbTeBRrTUS1UZ0/i/MtcuQjr6RehHs++hdJmmkUqZGqxJc+WAgPF9gjBjfgDJ+dZN
+         z//Gm2Pk/MkjcCbJpj7Zey1iuDiHHeST2OD3s5ivanbU2PQJ4+tq9lsSf8Lu6YTkP0XE
+         oorIyWpjN7w2fp9POqksiYWJoaVN3ZJJU7P+uZCmu1QdX5Yq/Wukos3ON1VfqZGH+lbc
+         0bQ6Bne/8KF2jMZV9bjTJszbtLaOVNCijfgIFMFV30BsNPldTHjjz2xxJrHGEWj2MjLy
+         RkZKqMI4ZtOW7/NcNUt2KL4YoUdyYKrccHzpHvprQpJDgB72yb4WOcVdW1beuO5Xxtq+
+         lvuw==
+X-Gm-Message-State: AOAM533UsCmQjpH87/K14BiugSAFRu45ysTucOJwrTPFQXreHrUFYWo0
+        G64YfMFjunivoFTr5EVNvd0=
+X-Google-Smtp-Source: ABdhPJx2NfTYcUiQrmyHhfgUguAE1fsYh8w8C7CJUbW8FCsL7TTUQHMc87bO07ZeIOQ6KIC3nB5Wog==
+X-Received: by 2002:a17:902:a415:b029:129:5342:eab7 with SMTP id p21-20020a170902a415b02901295342eab7mr2273582plq.26.1627909749426;
+        Mon, 02 Aug 2021 06:09:09 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:1a:efea::4b1])
+        by smtp.gmail.com with ESMTPSA id g7sm6715970pfv.66.2021.08.02.06.08.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 Aug 2021 06:09:08 -0700 (PDT)
+Subject: Re: [PATCH 04/13] HV: Mark vmbus ring buffer visible to host in
+ Isolation VM
+To:     Joerg Roedel <joro@8bytes.org>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
+        jgross@suse.com, sstabellini@kernel.org, will@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, arnd@arndb.de, hch@lst.de,
+        m.szyprowski@samsung.com, robin.murphy@arm.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, ardb@kernel.org,
+        Tianyu.Lan@microsoft.com, rientjes@google.com,
+        martin.b.radev@gmail.com, akpm@linux-foundation.org,
+        rppt@kernel.org, kirill.shutemov@linux.intel.com,
+        aneesh.kumar@linux.ibm.com, krish.sadhukhan@oracle.com,
+        saravanand@fb.com, xen-devel@lists.xenproject.org,
+        pgonda@google.com, david@redhat.com, keescook@chromium.org,
+        hannes@cmpxchg.org, sfr@canb.auug.org.au,
+        michael.h.kelley@microsoft.com, iommu@lists.linux-foundation.org,
+        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        netdev@vger.kernel.org, vkuznets@redhat.com, anparri@microsoft.com
+References: <20210728145232.285861-1-ltykernel@gmail.com>
+ <20210728145232.285861-5-ltykernel@gmail.com> <YQfgH04t2SqacnHn@8bytes.org>
+ <173823d1-280c-d34e-be2c-157b55bb6bc3@gmail.com>
+ <YQfsPv1WC7dnHGDu@8bytes.org>
+From:   Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <b1dcf756-d29c-1e64-f630-ae4c53253656@gmail.com>
+Date:   Mon, 2 Aug 2021 21:08:52 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210731191023.1329446-2-dqfext@gmail.com>
+In-Reply-To: <YQfsPv1WC7dnHGDu@8bytes.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 01, 2021 at 03:10:19AM +0800, DENG Qingfang wrote:
-> Consider the following bridge configuration, where bond0 is not
-> offloaded:
+On 8/2/2021 8:59 PM, Joerg Roedel wrote:
+> On Mon, Aug 02, 2021 at 08:56:29PM +0800, Tianyu Lan wrote:
+>> Both second and third are HV_GPADL_RING type. One is send ring and the
+>> other is receive ring. The driver keeps the order to allocate rx and
+>> tx buffer. You are right this is not robust and will add a mutex to keep
+>> the order.
 > 
->          +-- br0 --+
->         / /   |     \
->        / /    |      \
->       /  |    |     bond0
->      /   |    |     /   \
->    swp0 swp1 swp2 swp3 swp4
->      .        .       .
->      .        .       .
->      A        B       C
-> 
-> Address learning is enabled on offloaded ports (swp0~2) and the CPU
-> port, so when client A sends a packet to C, the following will happen:
-> 
-> 1. The switch learns that client A can be reached at swp0.
-> 2. The switch probably already knows that client C can be reached at the
->    CPU port, so it forwards the packet to the CPU.
-> 3. The bridge core knows client C can be reached at bond0, so it
->    forwards the packet back to the switch.
-> 4. The switch learns that client A can be reached at the CPU port.
-> 5. The switch forwards the packet to either swp3 or swp4, according to
->    the packet's tag.
-> 
-> That makes client A's MAC address flap between swp0 and the CPU port. If
-> client B sends a packet to A, it is possible that the packet is
-> forwarded to the CPU. With offload_fwd_mark = 1, the bridge core won't
-> forward it back to the switch, resulting in packet loss.
-> 
-> As we have the assisted_learning_on_cpu_port in DSA core now, enable
-> that and disable hardware learning on the CPU port.
-> 
-> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
-> ---
+> Or you introduce fixed indexes for the RX and TX buffers?
+>
 
-Reviewed-by: Vladimir Oltean <oltean@gmail.com>
+The interface just allocates a buffer and driver will continue to 
+configure the buffer to be rx or tx after calling.
+
