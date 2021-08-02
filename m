@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6234D3DDCB9
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 17:48:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69D853DDCF8
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 17:58:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235266AbhHBPs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 11:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40556 "EHLO
+        id S235432AbhHBP6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 11:58:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234148AbhHBPs5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 11:48:57 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F709C06175F;
-        Mon,  2 Aug 2021 08:48:48 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id m10-20020a17090a34cab0290176b52c60ddso559958pjf.4;
-        Mon, 02 Aug 2021 08:48:48 -0700 (PDT)
+        with ESMTP id S234551AbhHBP63 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 11:58:29 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215F4C06175F;
+        Mon,  2 Aug 2021 08:58:20 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id pj14-20020a17090b4f4eb029017786cf98f9so613579pjb.2;
+        Mon, 02 Aug 2021 08:58:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-disposition:content-transfer-encoding;
-        bh=iFEvhb+pWS2fHWjo0SPK+/xVkX5ExnAVIzPe3nLKKpI=;
-        b=gkFlepEtWgxNsrASRfaQY1uh8Mj1erqxFQyyuDQKRDZoyjFfTKzszqOVZfchtHwSxB
-         EayR11JSZNgAg968gT6S5f08lqOqp40AozL+gcIs7p5U/u2OvSV997QvGXceRBSUSyq0
-         8/6BeEz2l8ggw7ohQ7L9Aqemvo6H9iS/AjnavSo+8Sgpyfrw4pMw/juAPvShadnZ2p8G
-         XdZMWRPfIFvuGlHWcniw9F9dTzaQXIVkbANdvzc8rBVJgzP+WjOZSWpCFVWshcxHwMRc
-         FJBkEMGTYBwjm7Q7JKTBiVdV+ncrbrvMr3zySwWg7xAfLcyzwHYcG1lj6KnPs2mk69GR
-         ANgg==
+        bh=j/6mZKAL/+WSq3mfqkNpkYP79XdM38PqBABGWDQQ3Tc=;
+        b=uPu1JMpbUOnujaJMHE3tqoSBZiQu+U+tfiCwG6diQYVG+wnzWcbV5DQ2WMjyVS0Izv
+         zxhoEGILr9vgkzsvyCTZEGPFv4rQsXTCVoD2/2+QDoB3Q+IcChScDUviEdgutKRfmmX2
+         YQy3IfNrYVD2gbowIC0CxY0Kr6MdS3csAFQhoYYWhPmdOei78hlIz9hTN2yxadbKofaQ
+         odBWtZf1n1ur979EDvr/kbt9XXMfieH2r9aDhTT2PRXAc3nfZVosWNxKvbX37xJXpYrs
+         +dSl/hvoDI/vemELrP64NgUwyDYCt6rIA2liU8JfBAyUSkWjI1y0EVC/S1ltegIPbxwp
+         0v6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-disposition
          :content-transfer-encoding;
-        bh=iFEvhb+pWS2fHWjo0SPK+/xVkX5ExnAVIzPe3nLKKpI=;
-        b=MQdKrF5SP3C578dUjo7aYHUEl1LZAQ8zCnNv7UQ+sfTVm0nUt6vGvFZnTrcgHhqnCU
-         W01YBSb+3aSrtVwBvFTXMS5gBuLmkT9a/Qyp+3r2Vi72DpkIHXQMC2yo2goRAbIlcUn1
-         CmgXFIQjRqFj18+T7S/fa6AHnimMbL6KeoI8z1z1Z+tinqLCV5n4SgGzTHYn71wweRQ9
-         KpDS8zZCnv/nMasj/keazhG/7QXMT+8hCtew0mt3IvJFjn0EnrfRPwqn+IZeE5weuseG
-         Meerg/WXrL1L2AcUBufcsRPMDFhHw6obkscBqG7lUoiafBZILiQa2PYRAbu9oCtilZcf
-         POYg==
-X-Gm-Message-State: AOAM530TVyk0GoNyajzJS+gfy8G09pdj3rA3E+aFNcZqzRvbs7VDRWzs
-        Z8ST8dbI80bZ3SKF7oqT0ek=
-X-Google-Smtp-Source: ABdhPJzqXW1OAkAAZZra+6fqNo9oVwsleYwCd0ZWR5t9Yaba1OfMRtzMKyaaxDMQLw96sEu64UB2ZQ==
-X-Received: by 2002:a62:8fd4:0:b029:3af:3fa7:c993 with SMTP id n203-20020a628fd40000b02903af3fa7c993mr16580168pfd.77.1627919327667;
-        Mon, 02 Aug 2021 08:48:47 -0700 (PDT)
+        bh=j/6mZKAL/+WSq3mfqkNpkYP79XdM38PqBABGWDQQ3Tc=;
+        b=ENBioMVuuD0jRxQDB1/NTG7MF9P2HzF4R/iOYY9kpJYW+Ajw10ScqK7urb3bonMp46
+         LDbf3pOVVEc+xd0XWjbHUvIyvgnj13f3GQ0F2fi02S6L0o89BHffAnWJXuBzZjY2/zL5
+         b+jzmpeFW6I3m6YuHTK+Lw48idYQSQH5SBz+Hxc0I9NLUeu0g5rQ66Ui0TmG5UnSv1CQ
+         D2PTG5jYR9ZQKNlk16MDHGQUb/Y4umZKdq8YEnTcmTMPq+6r01kyMzqQyWKJY+FGgHx2
+         eOLfo3Iw/2JbXIVGWj9MT+ZVxo/3tW4s5pE8FqxqMO7U2QQqLOUWxwZ5/xNagwp0Fv9H
+         aTxg==
+X-Gm-Message-State: AOAM531qrrXxNrP1+5HopGMx9k5eyqKYDv4C4g/q8kvTiuGCCFAj8ney
+        fE7ljVuTdo00p0uvbckTWPs=
+X-Google-Smtp-Source: ABdhPJxV5fzd9jTejpnEU9RSAAvhHJVdgaNwKVpW8pVdf+bvLYPCkyyaLI/CAHF22yEkkNhAqYlpTA==
+X-Received: by 2002:a17:90b:3b47:: with SMTP id ot7mr17429240pjb.149.1627919899741;
+        Mon, 02 Aug 2021 08:58:19 -0700 (PDT)
 Received: from haswell-ubuntu20.lan ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id v13sm11244135pja.44.2021.08.02.08.48.42
+        by smtp.gmail.com with ESMTPSA id i1sm12097169pfo.37.2021.08.02.08.58.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Aug 2021 08:48:47 -0700 (PDT)
+        Mon, 02 Aug 2021 08:58:19 -0700 (PDT)
 From:   DENG Qingfang <dqfext@gmail.com>
 To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     Sean Wang <sean.wang@mediatek.com>,
@@ -63,12 +63,12 @@ Cc:     Sean Wang <sean.wang@mediatek.com>,
         Eric Woudstra <ericwouds@gmail.com>,
         =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
         Frank Wunderlich <frank-w@public-files.de>
-Subject: Re: [RFC net-next v2 4/4] Revert "mt7530 mt7530_fdb_write only set ivl bit vid larger than 1"
-Date:   Mon,  2 Aug 2021 23:48:38 +0800
-Message-Id: <20210802154838.1817958-1-dqfext@gmail.com>
+Subject: Re: [RFC net-next v2 3/4] net: dsa: mt7530: set STP state also on filter ID 1
+Date:   Mon,  2 Aug 2021 23:58:10 +0800
+Message-Id: <20210802155810.1818085-1-dqfext@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210802134409.dro5zjp5ymocpglf@skbuf>
-References: <20210731191023.1329446-1-dqfext@gmail.com> <20210731191023.1329446-5-dqfext@gmail.com> <20210802134409.dro5zjp5ymocpglf@skbuf>
+In-Reply-To: <20210802154226.qggqzkxe6urkx3yf@skbuf>
+References: <20210731191023.1329446-1-dqfext@gmail.com> <20210731191023.1329446-4-dqfext@gmail.com> <20210802134336.gv66le6u2z52kfkh@skbuf> <20210802153129.1817825-1-dqfext@gmail.com> <20210802154226.qggqzkxe6urkx3yf@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -77,19 +77,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 02, 2021 at 04:44:09PM +0300, Vladimir Oltean wrote:
-> Would you mind explaining what made VID 1 special in Eric's patch in the
-> first place?
+On Mon, Aug 02, 2021 at 06:42:26PM +0300, Vladimir Oltean wrote:
+> On Mon, Aug 02, 2021 at 11:31:29PM +0800, DENG Qingfang wrote:
+> > The current code only sets FID 0's STP state. This patch sets both 0's and
+> > 1's states.
+> >
+> > The *5 part is binary magic. [1:0] is FID 0's state, [3:2] is FID 1's state
+> > and so on. Since 5 == 4'b0101, the value in [1:0] is copied to [3:2] after
+> > the multiplication.
+> >
+> > Perhaps I should only change FID 1's state.
+> 
+> Keep the patches dumb for us mortals please.
+> If you only change FID 1's state, I am concerned that the driver no
+> longer initializes FID 0's port state, and might leave that to the
+> default set by other pre-kernel initialization stage (bootloader?).
+> So even if you might assume that standalone ports are FORWARDING, they
+> might not be.
 
-The default value of all ports' PVID is 1, which is copied into the FDB
-entry, even if the ports are VLAN unaware. So running `bridge fdb show`
-will show entries like `dev sw0p0 vlan 1 self` even on a VLAN-unaware
-bridge.
-
-Eric probably thought VID 1 is the FDB of all VLAN-unaware bridges, but
-that is not true. And his patch probably cause a new issue that FDB is
-inaccessible in a VLAN-**aware** bridge with PVID 1.
-
-This series sets PVID to 0 on VLAN-unaware ports, so `bridge fdb show`
-will no longer print `vlan 1` on VLAN-unaware bridges, and we don't
-need special case in port_fdb_{add,del} for assisted learning.
+The default value is forwarding, and the switch is reset by the driver
+so any pre-kernel initialization stage is no more.
