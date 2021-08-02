@@ -2,74 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BCCA3DDE71
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 19:23:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 972423DDE79
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 19:25:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231799AbhHBRYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 13:24:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36258 "EHLO mail.kernel.org"
+        id S229722AbhHBRZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 13:25:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36860 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231410AbhHBRX6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Aug 2021 13:23:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1EFA660FC2;
-        Mon,  2 Aug 2021 17:23:49 +0000 (UTC)
+        id S229551AbhHBRZv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Aug 2021 13:25:51 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D039B60FC2;
+        Mon,  2 Aug 2021 17:25:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627925029;
-        bh=08CK0O9jDcGZbEJKjbVu46c2LdAjn8sY3h2yyecrMeM=;
+        s=k20201202; t=1627925142;
+        bh=rDHGnR1MA66SVG6wpSp6UeehmSx/GDU1fTIdKvtZj1A=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SIjeAMJJnVgWp9m3GEnW+1q+Fjj/OrCIjx3WjxEd10Bchn9gUoDa50Sk7tRRmElKs
-         LisaJOVqS+VwK6LHYT3THOsy+AlEK0UDFC5g7nd4qfHK62TLStF8+XpR7S693qRY5U
-         Rd+jghlO3wmkOLCxT+TXaomFsuAu8CssXVLRtIEbhXkbvLC4Wf/+f8N0UnTubjavz3
-         5923BcpL8sidn49rPd8IGcfErQAK6vs+1Ix5aWfuV8y+1BVx/Qub6+EiWP1oTLYTh8
-         LUBkS7+FbpixGpifuKrrp5LG8w5lQKH9+MZ2g/RqhvKosaNlugJt/TCVLSp7SG1zeA
-         IPAlLSQiAhIuQ==
+        b=EfAp0hQOU+zzlJoe9/HNH8REFWUhqX6qk1quQKcucyIRW+vbMqXmRmJU+JOUbRtFk
+         i0Io9mm5WVVZ6DiBvSPOmlG9jsEsvUT1GMctcQZrd+b6/mfAls9mtfnILBscjspd45
+         g7jFIs7ZJS+pskXNL5wzCFsGAvWtl46WTX4aUqAFQjuQZUb+ztecTSxQXOcm7M3d4g
+         KqjZLmcGae5e4eaMdJaGltKPjngd7ZHIy8MMmAHxzhpynvlS0M8ILItaJjuRT1yrCJ
+         U77HcUz7HD08AABqUFNMI1CcdLGF/pzs2/KmI4eGHyWMGB4QJTpozzdpbMI7ZlNeBy
+         mFK0wgz71HFLg==
 Received: by pali.im (Postfix)
-        id C0F75B98; Mon,  2 Aug 2021 19:23:46 +0200 (CEST)
-Date:   Mon, 2 Aug 2021 19:23:46 +0200
+        id ADB4EB98; Mon,  2 Aug 2021 19:25:39 +0200 (CEST)
+Date:   Mon, 2 Aug 2021 19:25:39 +0200
 From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Guillaume Nault <gnault@redhat.com>
+To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: How to find out name or id of newly created interface
-Message-ID: <20210802172346.yj3ia7czg6o7kgn7@pali>
+Message-ID: <20210802172539.2v3qnkjmp7l2qtxl@pali>
 References: <20210731203054.72mw3rbgcjuqbf4j@pali>
- <20210802100238.GA3756@pc-32.home>
- <20210802105825.td57b5rd3d6xfxfo@pali>
- <20210802134320.GB3756@pc-32.home>
+ <YQawRZL6aeBkuDSZ@lunn.ch>
+ <20210801143840.j6bfvt3zsfb2x7q5@pali>
+ <YQf/UVmFEF2ihyKY@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210802134320.GB3756@pc-32.home>
+In-Reply-To: <YQf/UVmFEF2ihyKY@lunn.ch>
 User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Monday 02 August 2021 15:43:20 Guillaume Nault wrote:
-> On Mon, Aug 02, 2021 at 12:58:25PM +0200, Pali Rohár wrote:
-> > On Monday 02 August 2021 12:02:38 Guillaume Nault wrote:
-> > > 
-> > > So the proper solution is to implement NLM_F_ECHO support for
-> > > RTM_NEWLINK messages (RTM_NEWROUTE is an example of netlink handler
-> > > that supports NLM_F_ECHO, see rtmsg_fib()).
-> > 
-> > Do you know if there is some workaround / other solution which can be
-> > used by userspace applications now? And also with stable kernels (which
-> > obviously do not receive this new NLM_F_ECHO support for RTM_NEWLINK)?
+On Monday 02 August 2021 16:21:05 Andrew Lunn wrote:
+> > Hello! This has additional issue that I have to choose some free ifindex
+> > number and it introduce another race condition that other userspace
+> > process may choose same ifindex number. So create request in this case
+> > fails if other userspace process is faster... So it has same race
+> > condition as specifying interface name.
 > 
-> I unfortunately can't think of any clean solution. It might be possible
-> to create the new interface with attributes very unlikely to be used by
-> external programs and retrieve the interface name and id by monitoring
-> link creation messages (like 'ip monitor' does). But at this point it's
-> probably easier to just set the interface name and retry with a
-> different name every time it conflicted with an existing device.
+> O.K. if you don't want to deal with retries, you are going to have to
+> modify the return value. The nice thing is, its netlink. So you can
+> add additional attributes, and not break backwards compatibility. User
+> space should ignore all attributes it does not expect.
 
-"set interface name and retry" is what I'm using now... And looks like
-it is the only stable solution for now.
+Guillaume already proposed to implement NLM_F_ECHO...
 
-I was already thinking about monitoring link creation messages... if
-there is not some stable message ordering (e.g. order of response and
-monitor message) but I have not deduced anything from the code.
-
-> Maybe someone else could propose less hacky solutions, but I really
-> can't think of anything else apart from implementing NLM_F_ECHO.
+> But i suspect the architecture of the code is not going to make it
+> easy.
+> 
+> 	Andrew
