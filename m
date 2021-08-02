@@ -2,216 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FBC13DE105
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 22:51:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B5403DE106
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 22:51:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232419AbhHBUvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 16:51:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60152 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231231AbhHBUvx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 16:51:53 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B59C06175F
-        for <netdev@vger.kernel.org>; Mon,  2 Aug 2021 13:51:43 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id x9so12584831qtw.13
-        for <netdev@vger.kernel.org>; Mon, 02 Aug 2021 13:51:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BqJSD4T0M737YOUIOc1rd3UBATj9S05HS7TXPJdFx5c=;
-        b=jcaHEV1Yl4Svqrc+zHdWLfneB1HvNSpJHkFWR/QYhggWMFZXBhMb/wXoCzAdt2F5fF
-         7zrHUHP2s1GTCPxccDv4jcfVQWJdphzNUKBMFRDsFp+lBHqWhu1ba3w1gZ5A4b9HxGX9
-         2bXkPYgoGWksnFtedQ3ogrMvul1XbKQCupBby1r8sVDzJdJGnFppdQmz9JgB7Vmq9fAY
-         O/UInuIeQYYuWLskpRYH7zpHzZeKgckPN8WT9qdHdoDWRFvOnKgrIUP/R/vmekOM0XSV
-         Mc2ZZUvqn9ktdDa47Fy4vVERM5osH/0UkuaTfc9NGCKg/LfTcYySHKOKBH0O1fGVDXxf
-         q1xA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BqJSD4T0M737YOUIOc1rd3UBATj9S05HS7TXPJdFx5c=;
-        b=T9VxIXirjgxDWL6bi8QKpPsZ8Amhv9peF35xv+CCmYtldup2g7QMNp3t1Q9cacdvym
-         ONmjh/pVOtfk6IqeZlc8agBU2Zr6WwAKVMytC4oCB1urgKdG3RjY5w/i8HWGeUfWnb5G
-         N/s7uyPILhxFwOGfgWNEMJc967A3f6CcHUhTtiWLAsZ08DPBejUtQKoji5PfkkzddPMu
-         XyaijNno1rfeaFfJFMjZ3izrLzpCIN+6QuSBRoisVwroqYx4u1cHENyoEdn0R5Wv9CDj
-         yNeW5BtgjgHfc8nRXkl4bxJG6iQMoL+XGxEf+SpIXfwZgnRCMsCV9B5EuFkHvSGoMbiK
-         kj2A==
-X-Gm-Message-State: AOAM5333U9DGVQgPd1rct4ePyr9ZnvpcYALXUStRD0mLkLHNEGWspcPw
-        HVMkn5mUdYclv7fOwajwg5UMns25sw==
-X-Google-Smtp-Source: ABdhPJyNEpKxXO813T0VeIV1QMFKOrpMUDidTW7A26Tg6TQzJ0cY3Kpq4V05rTSqUGka/bdXQ8EGYw==
-X-Received: by 2002:ac8:5456:: with SMTP id d22mr15988169qtq.316.1627937502837;
-        Mon, 02 Aug 2021 13:51:42 -0700 (PDT)
-Received: from bytedance.attlocal.net (ec2-13-57-97-131.us-west-1.compute.amazonaws.com. [13.57.97.131])
-        by smtp.gmail.com with ESMTPSA id n5sm6382134qkp.116.2021.08.02.13.51.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Aug 2021 13:51:42 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        Peilin Ye <yepeilin.cs@gmail.com>
-Subject: [PATCH iproute2-next] tc/ingress: Introduce clsact egress mini-Qdisc option
-Date:   Mon,  2 Aug 2021 13:51:11 -0700
-Message-Id: <20210802205111.8220-1-yepeilin.cs@gmail.com>
+        id S232435AbhHBUwE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 16:52:04 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:40502 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232428AbhHBUwC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 16:52:02 -0400
+Received: from localhost.localdomain (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 090B2200DF90;
+        Mon,  2 Aug 2021 22:51:43 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 090B2200DF90
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1627937503;
+        bh=RVc+PisHuEj/CGa2TrTkJkUURwD267/c52cMbwJbPG4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=u8D1ovNs+xm8zh0lwSD0izL33OVmsZnu/+RVgrk9RFsLJfIaQOlY2VdzHyeqhQAaG
+         2ujHd4giO6fVODB9XI+tuVC9RuO5iMV38JW8QjzzqaRGg6WCFesl0rnA2DoYwInQAE
+         PE8PlGxobsd1Eq3rKw3BBn/C1RXqPj8C4t5+ULw0UOkkIUm5IZ7cagjDxpYVwJvnNw
+         y7HX9Z6KJz8gF+TsoSiDPVi36/mw5n6uH2omph/TxeTz76nroALTnE8Su4XW0HhBce
+         xdamsBLDV6/lNOlsbcK3mwsda5BF2dM+XFOeIhsd47wYw4gaN3iM+k/6CHtjWMUaDy
+         cwMpQjF2X1yuw==
+From:   Justin Iurman <justin.iurman@uliege.be>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, eric.dumazet@gmail.com, tom@herbertland.com,
+        justin.iurman@uliege.be
+Subject: [RFC net-next] ipv6: Attempt to improve options code parsing
+Date:   Mon,  2 Aug 2021 22:51:33 +0200
+Message-Id: <20210802205133.24071-1-justin.iurman@uliege.be>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210721232053.39077-1-yepeilin.cs@gmail.com>
-References: <20210721232053.39077-1-yepeilin.cs@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+As per Eric's comment on a previous patchset that was adding a new HopbyHop
+option, i.e. why should a new option appear before or after existing ones in the
+list, here is an attempt to suppress such competition. It also improves the
+efficiency and fasten the process of matching a Hbh or Dst option, which is
+probably something we want regarding the list of new options that could quickly
+grow in the future.
 
-If the ingress Qdisc is in use, currently it is not possible to add
-another clsact egress mini-Qdisc to the same device without taking down
-the ingress Qdisc, since both sch_ingress and sch_clsact use the same
-handle (0xFFFF0000).
+Basically, the two "lists" of options (Hbh and Dst) are replaced by two arrays.
+Each array has a size of 256 (for each code point). Each code point points to a
+function to process its specific option.
 
-To solve this issue, recently we added a new clsact egress mini-Qdisc
-option for sch_ingress in the kernel.  Support it in the q_ingress front
-end, and update the usage message accordingly.
+Thoughts?
 
-To turn on the egress mini-Qdisc:
-
-    $ tc qdisc add dev eth0 ingress
-    $ tc qdisc change dev eth0 ingress clsact-on
-
-Then users can add filters to the egress mini-Qdisc as usual:
-
-    $ tc filter add dev eth0 egress protocol ip prio 10 \
-	    matchall action skbmod swap mac
-
-Deleting the ingress Qdisc removes the egress mini-Qdisc as well.  To
-remove egress mini-Qdisc only, use:
-
-    $ tc qdisc change dev eth0 ingress clsact-off
-
-Finally, if the egress mini-Qdisc is enabled, the "show" command will
-print out a "clsact" flag to indicate it:
-
-    $ tc qdisc show ingress
-    qdisc ingress ffff: dev eth0 parent ffff:fff1 ----------------
-    $ tc qdisc change dev eth0 ingress clsact-on
-    $ tc qdisc show ingress
-    qdisc ingress ffff: dev eth0 parent ffff:fff1 ---------------- clsact
-
-Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
 ---
- include/uapi/linux/pkt_sched.h | 12 +++++++++
- tc/q_ingress.c                 | 46 ++++++++++++++++++++++++++++++++--
- 2 files changed, 56 insertions(+), 2 deletions(-)
+ net/ipv6/exthdrs.c | 86 ++++++++++++++++++----------------------------
+ 1 file changed, 33 insertions(+), 53 deletions(-)
 
-diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
-index 79a699f106b1..cb0eb5dd848a 100644
---- a/include/uapi/linux/pkt_sched.h
-+++ b/include/uapi/linux/pkt_sched.h
-@@ -586,6 +586,18 @@ enum {
+diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
+index d897faa4e9e6..4687fe456608 100644
+--- a/net/ipv6/exthdrs.c
++++ b/net/ipv6/exthdrs.c
+@@ -55,19 +55,6 @@
  
- #define TCA_ATM_MAX	(__TCA_ATM_MAX - 1)
+ #include <linux/uaccess.h>
  
-+/* INGRESS section */
-+
-+enum {
-+	TCA_INGRESS_UNSPEC,
-+	TCA_INGRESS_FLAGS,
-+#define	TC_INGRESS_CLSACT	   _BITUL(0)	/* enable clsact egress mini-Qdisc */
-+#define	TC_INGRESS_SUPPORTED_FLAGS TC_INGRESS_CLSACT
-+	__TCA_INGRESS_MAX,
-+};
-+
-+#define	TCA_INGRESS_MAX	(__TCA_INGRESS_MAX - 1)
-+
- /* Network emulator */
+-/*
+- *	Parsing tlv encoded headers.
+- *
+- *	Parsing function "func" returns true, if parsing succeed
+- *	and false, if it failed.
+- *	It MUST NOT touch skb->h.
+- */
+-
+-struct tlvtype_proc {
+-	int	type;
+-	bool	(*func)(struct sk_buff *skb, int offset);
+-};
+-
+ /*********************
+   Generic functions
+  *********************/
+@@ -114,14 +101,14 @@ static bool ip6_tlvopt_unknown(struct sk_buff *skb, int optoff,
  
- enum {
-diff --git a/tc/q_ingress.c b/tc/q_ingress.c
-index 93313c9c2aec..25bf2dce0b56 100644
---- a/tc/q_ingress.c
-+++ b/tc/q_ingress.c
-@@ -17,21 +17,45 @@
+ /* Parse tlv encoded option header (hop-by-hop or destination) */
  
- static void explain(void)
+-static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
++static bool ip6_parse_tlv(bool (**procs)(struct sk_buff *skb, int offset),
+ 			  struct sk_buff *skb,
+ 			  int max_count)
  {
--	fprintf(stderr, "Usage: ... ingress\n");
-+	fprintf(stderr,
-+		"Usage: [ add | replace | link | delete ] ... ingress\n"
-+		"       change ... ingress [ clsact-on | clsact-off ]\n"
-+		" clsact-on\tenable clsact egress mini-Qdisc\n"
-+		" clsact-off\tdelete clsact egress mini-Qdisc\n");
- }
+ 	int len = (skb_transport_header(skb)[1] + 1) << 3;
+ 	const unsigned char *nh = skb_network_header(skb);
++	bool (*func)(struct sk_buff *skb, int offset);
+ 	int off = skb_network_header_len(skb);
+-	const struct tlvtype_proc *curr;
+ 	bool disallow_unknowns = false;
+ 	int tlv_count = 0;
+ 	int padlen = 0;
+@@ -176,19 +163,17 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
+ 			if (tlv_count > max_count)
+ 				goto bad;
  
- static int ingress_parse_opt(struct qdisc_util *qu, int argc, char **argv,
- 			     struct nlmsghdr *n, const char *dev)
- {
-+	struct nla_bitfield32 flags = {
-+		.selector = TC_INGRESS_SUPPORTED_FLAGS,
-+	};
-+	bool change = false;
-+	struct rtattr *tail;
-+
- 	while (argc > 0) {
- 		if (strcmp(*argv, "handle") == 0) {
- 			NEXT_ARG();
--			argc--; argv++;
-+		} else if (strcmp(*argv, "clsact-on") == 0) {
-+			flags.value |= TC_INGRESS_CLSACT;
-+			change = true;
-+		} else if (strcmp(*argv, "clsact-off") == 0) {
-+			flags.value &= ~TC_INGRESS_CLSACT;
-+			change = true;
- 		} else {
- 			fprintf(stderr, "What is \"%s\"?\n", *argv);
- 			explain();
- 			return -1;
+-			for (curr = procs; curr->type >= 0; curr++) {
+-				if (curr->type == nh[off]) {
+-					/* type specific length/alignment
+-					   checks will be performed in the
+-					   func(). */
+-					if (curr->func(skb, off) == false)
+-						return false;
+-					break;
+-				}
+-			}
+-			if (curr->type < 0 &&
+-			    !ip6_tlvopt_unknown(skb, off, disallow_unknowns))
++			func = procs[nh[off]];
++			if (func) {
++				/* type specific length/alignment checks
++				 * will be performed in the func().
++				 */
++				if (func(skb, off) == false)
++					return false;
++			} else if (!ip6_tlvopt_unknown(skb, off,
++							disallow_unknowns)) {
+ 				return false;
++			}
+ 
+ 			padlen = 0;
  		}
-+
-+		argc--;
-+		argv++;
-+	}
-+
-+	if (change) {
-+		tail = addattr_nest(n, 1024, TCA_OPTIONS);
-+		addattr_l(n, 1024, TCA_INGRESS_FLAGS, &flags, sizeof(flags));
-+		addattr_nest_end(n, tail);
- 	}
+@@ -267,14 +252,16 @@ static bool ipv6_dest_hao(struct sk_buff *skb, int optoff)
+ }
+ #endif
  
- 	return 0;
-@@ -40,7 +64,25 @@ static int ingress_parse_opt(struct qdisc_util *qu, int argc, char **argv,
- static int ingress_print_opt(struct qdisc_util *qu, FILE *f,
- 			     struct rtattr *opt)
- {
-+	struct rtattr *tb[TCA_INGRESS_MAX + 1];
-+	struct nla_bitfield32 *flags;
-+
- 	print_string(PRINT_FP, NULL, "---------------- ", NULL);
-+
-+	if (!opt)
-+		return 0;
-+
-+	parse_rtattr_nested(tb, TCA_INGRESS_MAX, opt);
-+
-+	if (!tb[TCA_INGRESS_FLAGS])
-+		return -1;
-+	if (RTA_PAYLOAD(tb[TCA_INGRESS_FLAGS]) < sizeof(*flags))
-+		return -1;
-+
-+	flags = RTA_DATA(tb[TCA_INGRESS_FLAGS]);
-+	if (flags->value & TC_INGRESS_CLSACT)
-+		print_string(PRINT_FP, NULL, "clsact", NULL);
-+
- 	return 0;
+-static const struct tlvtype_proc tlvprocdestopt_lst[] = {
++/*	Parsing tlv encoded headers for Destination Options.
++ *
++ *	Parsing functions below return true, if parsing succeed
++ *	and false, if it failed.
++ *	They MUST NOT touch skb->h.
++ */
++static bool (*tlvprocdestopt[256])(struct sk_buff *skb, int offset) = {
+ #if IS_ENABLED(CONFIG_IPV6_MIP6)
+-	{
+-		.type	= IPV6_TLV_HAO,
+-		.func	= ipv6_dest_hao,
+-	},
++	[IPV6_TLV_HAO]	= ipv6_dest_hao,
+ #endif
+-	{-1,			NULL}
+ };
+ 
+ static int ipv6_destopt_rcv(struct sk_buff *skb)
+@@ -307,7 +294,7 @@ static int ipv6_destopt_rcv(struct sk_buff *skb)
+ 	dstbuf = opt->dst1;
+ #endif
+ 
+-	if (ip6_parse_tlv(tlvprocdestopt_lst, skb,
++	if (ip6_parse_tlv(tlvprocdestopt, skb,
+ 			  net->ipv6.sysctl.max_dst_opts_cnt)) {
+ 		skb->transport_header += extlen;
+ 		opt = IP6CB(skb);
+@@ -1051,24 +1038,17 @@ static bool ipv6_hop_calipso(struct sk_buff *skb, int optoff)
+ 	return false;
  }
  
+-static const struct tlvtype_proc tlvprochopopt_lst[] = {
+-	{
+-		.type	= IPV6_TLV_ROUTERALERT,
+-		.func	= ipv6_hop_ra,
+-	},
+-	{
+-		.type	= IPV6_TLV_IOAM,
+-		.func	= ipv6_hop_ioam,
+-	},
+-	{
+-		.type	= IPV6_TLV_JUMBO,
+-		.func	= ipv6_hop_jumbo,
+-	},
+-	{
+-		.type	= IPV6_TLV_CALIPSO,
+-		.func	= ipv6_hop_calipso,
+-	},
+-	{ -1, }
++/*	Parsing tlv encoded headers for HopbyHop Options.
++ *
++ *	Parsing functions below return true, if parsing succeed
++ *	and false, if it failed.
++ *	They MUST NOT touch skb->h.
++ */
++static bool (*tlvprochopopt[256])(struct sk_buff *skb, int offset) = {
++	[IPV6_TLV_ROUTERALERT]	= ipv6_hop_ra,
++	[IPV6_TLV_CALIPSO]	= ipv6_hop_calipso,
++	[IPV6_TLV_IOAM]	= ipv6_hop_ioam,
++	[IPV6_TLV_JUMBO]	= ipv6_hop_jumbo,
+ };
+ 
+ int ipv6_parse_hopopts(struct sk_buff *skb)
+@@ -1096,7 +1076,7 @@ int ipv6_parse_hopopts(struct sk_buff *skb)
+ 		goto fail_and_free;
+ 
+ 	opt->flags |= IP6SKB_HOPBYHOP;
+-	if (ip6_parse_tlv(tlvprochopopt_lst, skb,
++	if (ip6_parse_tlv(tlvprochopopt, skb,
+ 			  net->ipv6.sysctl.max_hbh_opts_cnt)) {
+ 		skb->transport_header += extlen;
+ 		opt = IP6CB(skb);
 -- 
-2.20.1
+2.25.1
 
