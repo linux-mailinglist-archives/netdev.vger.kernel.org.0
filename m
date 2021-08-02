@@ -2,83 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BE553DDBB1
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 16:59:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE8613DDBC1
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 17:02:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234401AbhHBO7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 10:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55822 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233981AbhHBO7v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 10:59:51 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2144C06175F;
-        Mon,  2 Aug 2021 07:59:40 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id hs10so22705875ejc.0;
-        Mon, 02 Aug 2021 07:59:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Rl9nBCVxzHPtjQlQ0C1CUCK9L5CCBMPqge/fuO5g570=;
-        b=QfuVMUAbRZVIcbiMc0Ds9QIQOYLAib+/PWA56KbU2GDZNdEiF01uoTugf8+AP5Un4+
-         MIK7gB5olrFRatb2B3foEI1aCTgoxFpS1OsvE6k4YboC+hVt9ABTLTrPT5vNL004azEz
-         wElAFPIpPINVrUVhSNGSKUEByA4G40Zw+AtiZKyrvKdHbcUI7OxrdYgyi7onENIlOk0V
-         YOgstrSj2qsmWcGzYpZjNn7Bw568HANofloiCQ7V4akLJJWx1Ze/PpxdBLx0VHHxa1nv
-         CzXbEv+/2oLqYXMV/S7JiBmlocH4owBK/Y4OT393EU+R5QUg67fxdL0nE3SmC5SYDUtF
-         tKEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Rl9nBCVxzHPtjQlQ0C1CUCK9L5CCBMPqge/fuO5g570=;
-        b=BHaNNZKroXT5javMOGSKYhQi42wXacTtDSFV63P24pDNV/xJhXiT6yJFX3S6+PBOzn
-         lDCaa6oag1b+InkxxzoK+L6s632pTmDEP8d2CaiAxjvGisvQq3bYJ2CEilad5myDPYYW
-         s9avZPvjKLjDySBcE8WahUnCZ5wcDmmKdtwski2CXPPEEJiivZpRIrsMuk4BEKe0NtEu
-         L/x7N5h+5Ery6euo48RLMskqzcyTLHef8HEFYP05VwmkPL56fdkVJt4MO/gHq3wTJSun
-         J/4hgHF/Xet1VPHuu0+upTPPGOctkfV7cSk1kcLzjqEiUhngY4T7EJv9aMeBwE9DP6LD
-         Lx9Q==
-X-Gm-Message-State: AOAM532uUxC38ndeeUOqaYlYQp3d5ZN+eT8TD0uErU/3q7PZKXy7EHoB
-        3SVI4aXar4HvNn3Z+k+bLRs=
-X-Google-Smtp-Source: ABdhPJwcvnIPWi00cg7ALyxChVDvyGVR4WZAbajX0P0irbXHfmvvRiSFIjNlXstacO/wFShKiFsAvQ==
-X-Received: by 2002:a17:906:9c84:: with SMTP id fj4mr15524669ejc.180.1627916379353;
-        Mon, 02 Aug 2021 07:59:39 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id ks26sm4715190ejb.58.2021.08.02.07.59.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Aug 2021 07:59:38 -0700 (PDT)
-From:   Ioana Ciornei <ciorneiioana@gmail.com>
-X-Google-Original-From: Ioana Ciornei <ciornei.ioana@gmail.com>
-Date:   Mon, 2 Aug 2021 17:59:37 +0300
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Ioana Ciornei <ciorneiioana@gmail.com>,
-        Yajun Deng <yajun.deng@linux.dev>, davem@davemloft.net,
-        kuba@kernel.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-decnet-user@lists.sourceforge.net
-Subject: Re: [PATCH] net: convert fib_treeref from int to refcount_t
-Message-ID: <20210802145937.hjguodaqphxoabdt@skbuf>
-References: <20210729071350.28919-1-yajun.deng@linux.dev>
- <20210802133727.bml3be3tpjgld45j@skbuf>
- <2033809a-1a07-1f5d-7732-f10f6e094f3d@gmail.com>
+        id S234598AbhHBPCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 11:02:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56968 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234338AbhHBPCP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Aug 2021 11:02:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C7753610A2;
+        Mon,  2 Aug 2021 15:02:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627916526;
+        bh=Qr/vm1KlXY0XJtD6Yk5oe7cEh9i4wRwPY9w7iKhs77Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=m47a2WC8to4THn9+xkwp9eiCDd3jEF8pwkJn3grtVyBS4ExxhsV329w3p2vbPBfIe
+         l1VWGzcuIsSwyBeUzm1Wfg3fQPfBtn+A+koJ8euwmFnhwFgL4HlYhu2UJ1a6jQcQpT
+         6WebTz/Nf/5FXa3tmCsydx/nMCuWf+Y/StCDHogj5hZBl+nZFCpwp2/BOGOi1GDWZq
+         6Ox2SPEDtQ+8V4D2p7UZoLK1bry/DgUxyk/2S5mKCYrWTS6w+SyvlAj/+QuGfExe0D
+         Fq1QrtPgo36i012VNBRs9WiDw0sK/eOeJ70FIVZocgAqZUWAWYEu0epylVThExwRXN
+         OqC6gHJ//2Hnw==
+Date:   Mon, 2 Aug 2021 08:02:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: sparx5: fix bitmask check
+Message-ID: <20210802080205.6a9f9bb1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210802145449.1154565-1-arnd@kernel.org>
+References: <20210802145449.1154565-1-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2033809a-1a07-1f5d-7732-f10f6e094f3d@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 02, 2021 at 08:36:59AM -0600, David Ahern wrote:
-> On 8/2/21 7:37 AM, Ioana Ciornei wrote:
-> > Unfortunately, with this patch applied I get into the following WARNINGs
-> > when booting over NFS:
+On Mon,  2 Aug 2021 16:54:37 +0200 Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> Can you test the attached?
+> Older compilers such as gcc-5.5 produce a warning in this driver
+> when ifh_encode_bitfield() is not getting inlined:
 > 
+> drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c: In function 'ifh_encode_bitfield':
+> include/linux/compiler_types.h:333:38: error: call to '__compiletime_assert_545' declared with attribute error: Unsupported width, must be <= 40
+> drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c:28:2: note: in expansion of macro 'compiletime_assert'
+>   compiletime_assert(width <= 40, "Unsupported width, must be <= 40");
+>   ^
+> 
+> Mark the function as __always_inline to make the check work correctly
+> on all compilers. 
 
-Yep, it fixes the problem.
+I fixed this by moving the check out to a macro wrapper in net:
+6387f65e2acb ("net: sparx5: fix compiletime_assert for GCC 4.9")
 
-Thanks!
+> To make this also work on 32-bit architectures, change
+> the GENMASK() to GENMASK_ULL().
 
--Ioana
+Would you mind resending just that part against net/master?
+
+> Fixes: f3cad2611a77 ("net: sparx5: add hostmode with phylink support")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
