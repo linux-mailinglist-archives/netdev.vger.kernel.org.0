@@ -2,105 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 360063DE12A
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 23:00:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4096F3DE13B
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 23:09:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232564AbhHBVAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 17:00:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34058 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232127AbhHBVAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 17:00:21 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C93C06175F;
-        Mon,  2 Aug 2021 14:00:10 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id d6so18665741edt.7;
-        Mon, 02 Aug 2021 14:00:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=au7OmFbdKv+WEAGRQZkjaVywZk0CXvijDSw0i4sbtGE=;
-        b=EdFRe/KmdoJn1AHOI1FO9W6HwfLEJuPIttmxOrfsgZ7XSj2xJ/yDY+WwBQCzW2hnM9
-         uFPAJdttH57zeJzFLM+i5h53NG/Ag4F2m4dpRrSCB3Xf2B82a32BkeO+KEIMT1CYdb7w
-         ZRA8EUoCvu1mmmHj3FR8Dd2PRjokDDk3Dw3rvdLKWxG96hVvNSpWqXJu2jOOSNzSAAOx
-         kj2KbixhxQbXUVvKHJ9rdW0Dk6jJnd4qswUs+vQC6OdvWgAAr48ndZgwLlmV26YVV4X6
-         vZVl+0dj2R6WiWUGYrIbNCcDiMqwNIch/Y8qAKpmWJYmKX1Wp3evBKuJi52lpvJ56z83
-         TcSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=au7OmFbdKv+WEAGRQZkjaVywZk0CXvijDSw0i4sbtGE=;
-        b=sywnXYufs79L4S7FWltKnRx15R0cPEPeYho42nb7/QJpkCyBQfnBVfmMWQ4yR7TH/c
-         o0DgUz2yvYKMkDRTbcsbc3DAuC0QUJj9+glXpqaiNkDXoEwIdYKlwHKNtu0d3HBS2unr
-         FONSXHxLTwQUwjfgapwENUp7/JFq707RnNb9JugDMod0i7sMJRBaz0TSFdK7l9VATcUu
-         Ikn1HF1CroFJcfc9uRdFrfNMy66d+Xj7ZWH26yUo4c8lqicKVCtPItn5v5gI/J4cvL7Y
-         RjH2ijluUntrnG+VAASccaphmry1T83YXZVpDUsnwaEsK4LkRslgTqyZO6Zbj160eJy/
-         DDHA==
-X-Gm-Message-State: AOAM532HwPa1soUVRuTLKiiadN7r8aZXcTMkmV5caWHlZPMpmvC8o5nU
-        Ff087+OVkUqCc1/4MG1/t3I=
-X-Google-Smtp-Source: ABdhPJzyuFCqFOApHOayrbRXZJjmJ3F5gh6jzvSJdRg/0sb8lMnS6VK2GCoDWXc5t1B1LePaHFf/7g==
-X-Received: by 2002:a05:6402:35d2:: with SMTP id z18mr14382992edc.282.1627938009217;
-        Mon, 02 Aug 2021 14:00:09 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id b5sm5126644ejq.56.2021.08.02.14.00.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Aug 2021 14:00:08 -0700 (PDT)
-Date:   Tue, 3 Aug 2021 00:00:06 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S231681AbhHBVJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 17:09:36 -0400
+Received: from mga07.intel.com ([134.134.136.100]:44590 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231367AbhHBVJf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Aug 2021 17:09:35 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10064"; a="277302014"
+X-IronPort-AV: E=Sophos;i="5.84,289,1620716400"; 
+   d="scan'208";a="277302014"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2021 14:09:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,289,1620716400"; 
+   d="scan'208";a="636381313"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga005.jf.intel.com with ESMTP; 02 Aug 2021 14:09:25 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10; Mon, 2 Aug 2021 14:09:25 -0700
+Received: from orsmsx605.amr.corp.intel.com (10.22.229.18) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10; Mon, 2 Aug 2021 14:09:24 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4
+ via Frontend Transport; Mon, 2 Aug 2021 14:09:24 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.171)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.10; Mon, 2 Aug 2021 14:09:23 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Zzt1bn9kQ/aeQz8vHr8S7L9RCOA+AbdBfAPCvxUZ0gABZ2VnV5srfOimB9UWA0F46RF3bsHkkjNAYmv16kK7NzKdkf1NPRkuVecYEyh1fYWrybL5hhUbuWzfjIE8dYscpfJco/nk93D1/6WJaCA+iV0/8xKm+cEbhJkdmlBAcZM7CdfyK/4pAb3Bjz46ZqmWP9WIGBpfDm6P9LQ+qALYFxBfNYoCurmfudiGu1LQXqV3BJvSGsdjauK9zNVh/2ojg3ZT8X/O8d6dOQ1/AaGixtm4j1WN3aJtk/ILPUhDr48VXjsx3M0lV8jwYPzkXreMABZa7ohxD88+5D7lh8WR+A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=O2Wjv29P7dE6LbitcyYEXyfGkp/37bHZjyEeUHjaVFE=;
+ b=I7m7aQNlIIc6xFV26FzRP5C4FI6t+wXnRHfv5aSWN82DmotfQym08S5tQMWTJpqUSi/UsN4j4rJJHirt8ijRTJ1qrcmkcY9FxScGXzfLjx8zc1kouxl67bvwe6aqfOLD6nmdfSPMMqhWrvdl4HheLaxyBSsHz1zym3+ppVS+7de2UHaC872nC5u0L6Vg9cFAFfKmnUn90TNsV3imGSzNnbMJ9HWdiaaZeYNGSKuMTDnnMDFs3FD0gqpmJVoEg7NzmRorf6WVziXgpd3Xtfp6FuV/0bX0qi6ys6WjTQne5wafptF6+caTthSWTRI6nU3FQQpRTNg3toBtAbtr2VBilg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=O2Wjv29P7dE6LbitcyYEXyfGkp/37bHZjyEeUHjaVFE=;
+ b=jfNq5Z0NnUmsyWdOd66avtOhtSUi/Uo+x04NrHnYOeaagtiZHBktqCj34Fl01eULR/WcOG/1mlKamYOL/V8t1rgcvym31UvX8JcmsZ+TG1vloONOcnfquBNptODa/83yeMr1zd0Pti++6fGA3iJBMaZR2Phm1mE2WBoGz/vkyaw=
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
+ by CO1PR11MB5044.namprd11.prod.outlook.com (2603:10b6:303:92::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.20; Mon, 2 Aug
+ 2021 21:09:20 +0000
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::bd85:7a6a:a04c:af3a]) by CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::bd85:7a6a:a04c:af3a%5]) with mapi id 15.20.4373.026; Mon, 2 Aug 2021
+ 21:09:20 +0000
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+To:     Arnd Bergmann <arnd@kernel.org>
+CC:     Richard Cochran <richardcochran@gmail.com>,
+        Nicolas Pitre <nicolas.pitre@linaro.org>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Eric Woudstra <ericwouds@gmail.com>,
-        =?utf-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>,
-        Frank Wunderlich <frank-w@public-files.de>
-Subject: Re: [RFC net-next v2 3/4] net: dsa: mt7530: set STP state also on
- filter ID 1
-Message-ID: <20210802210006.fhmb5s6dsnziyk7d@skbuf>
-References: <20210731191023.1329446-1-dqfext@gmail.com>
- <20210731191023.1329446-4-dqfext@gmail.com>
- <20210802134336.gv66le6u2z52kfkh@skbuf>
- <20210802153129.1817825-1-dqfext@gmail.com>
- <20210802154226.qggqzkxe6urkx3yf@skbuf>
- <20210802155810.1818085-1-dqfext@gmail.com>
+        Arnd Bergmann <arnd@arndb.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net-next v2] ethernet/intel: fix PTP_1588_CLOCK
+ dependencies
+Thread-Topic: [PATCH net-next v2] ethernet/intel: fix PTP_1588_CLOCK
+ dependencies
+Thread-Index: AQHXh68Y1owt0G/CUEakzTAdq+RvtqtgbT+AgAAzuICAAAqYAIAAAknggAAFUACAAAKXsA==
+Date:   Mon, 2 Aug 2021 21:09:19 +0000
+Message-ID: <CO1PR11MB5089DBFAEB671ED58D9BAEADD6EF9@CO1PR11MB5089.namprd11.prod.outlook.com>
+References: <20210802145937.1155571-1-arnd@kernel.org>
+ <20210802164907.GA9832@hoboy.vegasvil.org>
+ <bd631e36-1701-b120-a9b0-8825d14cc694@intel.com>
+ <CAK8P3a3P6=ZROxT8daW83mRp7z5rYAQydetWFXQoYF7Y5_KLHA@mail.gmail.com>
+ <CO1PR11MB50892367410160A8364DBF69D6EF9@CO1PR11MB5089.namprd11.prod.outlook.com>
+ <CAK8P3a379=Qi7g7Hmf299GgM-6g32Them81uYXPqRDZDro_azg@mail.gmail.com>
+In-Reply-To: <CAK8P3a379=Qi7g7Hmf299GgM-6g32Them81uYXPqRDZDro_azg@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a8bb2171-b8ef-4bfa-ddc3-08d955f9cba4
+x-ms-traffictypediagnostic: CO1PR11MB5044:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CO1PR11MB50440E7CF42A4155737F1350D6EF9@CO1PR11MB5044.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: T20ZFgglFxMZudlOqZ8HTcdsazSJxZDTi5So+wLph/gn2A+s3QngI1sK+daMtqNnuX/iUzM142Nf/e+ZZKiAodeJElfsZvLVedbBcXlYKXPijipouj2EvzWlxzpzaFkcAW6a+fbicNGJtEvivCAu+KUlyiMrW5G8SYPUgk2bi66cWbV5qZqrBD9+8tcihZxNkryTqM3LKslCyZnFqa8B9TS2mcPDuwdQUEQseQAnmvXy8KUc/4YSUzgVV0xeQQ7QNSVTwnGcqMAkYgjgH6eMhGwjpfE5TSpNiIzTavXh/XdBhVOMEoyxJEMMkpnlWRUgOXLT5Wsa/yDV9O+7I4qbG/W5aYKkqoC4wuxjsrq9klR7GpF9/JF1TD2tfmhulOGgje8OqUTJgOS8jnqFF9FwnzF0JdNIb9vm+ZoTUA1pNlTHKOT/XX7tPMy64FIlL2oVPyVnLui9WkSkFhgF+ovkIe/9qZREDgVJQIymGFLDv+fMo/0E9bd4FgGFSG51KtkKMf/gBbsiaVOwPABFCym+1+kVVoYH3Suc1+ViM2gnW0jLiGgZkjhvfkNwTdHP1Yea4pL2mUBhKpre3mXpyspYXguhkDQg9hjB5tFSqNlSpe9QRY9sPuYlu16662hKJxSXI29aRdi/fHWmhNlAU7sI/PkIgMm1fNttbpnjpAFMt6GlPk6noXjmlNW/44ioYmgL8Ynn4+RTUSvYmsBfxE/o6A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66476007)(86362001)(4326008)(83380400001)(66556008)(186003)(33656002)(2906002)(316002)(6916009)(9686003)(8936002)(64756008)(26005)(54906003)(7696005)(66446008)(66946007)(5660300002)(6506007)(55016002)(71200400001)(8676002)(38070700005)(53546011)(508600001)(38100700002)(122000001)(7416002)(76116006)(52536014);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?c01GNkNJcXFNWlFIcWJSaGJGejhyc2RMb01sNHc1dm1hZmU0eEJsWHFsenp5?=
+ =?utf-8?B?OWpEWDllL1R1SzZIdUxWd2labGNjcHR6VTc4dGtRQWpwaVhOaEZ1SEtsU0JM?=
+ =?utf-8?B?Wkp0OTZCTk5HMGZOVmU1K3hRdDZqdlJrN0xyTWt4V2FkbytUcTM4M2MrUVJM?=
+ =?utf-8?B?cFArY1hvekNVajRCWnBCUlpmcVNMTWczNzVFYk55TFZ1VmZNVHZyUUJ4UkFk?=
+ =?utf-8?B?NFpxOThPY3dQSmZmQTdNaDdFcnIxdEcxdU1nSnk4TXJVbmlrcXNHUFhlci9F?=
+ =?utf-8?B?MnplRzdTWThmWUF5R1pOVCszbzRIRTJ4Z1lHTCt0VG1xMklDL0pKWVpWVXJU?=
+ =?utf-8?B?Zi9qaDVSaU4xWEI1V1BUNEErQzhJZG81UER4OGw0aEc5dnFBQm9qeGtUU1pj?=
+ =?utf-8?B?WE1CckU0aFZHaHIxb3pvUVY5OVYxR2g0dmJOVCtucXRzMkdVVGNZZjlrbzlK?=
+ =?utf-8?B?RWtoNmh3dmtjMm9xVEJVSWNta3ZxSzgvMktxN2ZKVVNWVkkzSmJVQ3lXR2dt?=
+ =?utf-8?B?NC9FRHAyejE4UExJK3h4VmYrR0V1UGx2cVppNXQ0dTZyNnRyZDRobXVxd3N6?=
+ =?utf-8?B?UUwwam9oR3NBVTYwcWl5dmZIRmZ1RHBzcFJMdWxjdU9ybHNlT2xzaFJZUlk1?=
+ =?utf-8?B?WGJTVmlRT1d6bVI2Wml1d3dqbXRGVFhRWUhDQlNLTk84Z0JWUVpvNkl2SXNG?=
+ =?utf-8?B?NUFUOUJzakZiVzFtNHBCVGF2YUJHWHh5WGdtc3FFcTJRMWR3VXlvNlJOaGFS?=
+ =?utf-8?B?WG1RK2NwRTBxV0Z3ZkhYREZkbUc3TXIyczAvdG0yWEs4RU1mS0l4b1RmbXJQ?=
+ =?utf-8?B?UUV6VGpBT0d6ZVlBWDF5RHNHbGVEd0FOUytsK1ZpSFkzVkI4REtyaitnSXBy?=
+ =?utf-8?B?cnFtUlI1Ull6NjZCVnUyeWY2eEtObWh2Q0F6bk9IQmw2NDRnM0RWbXN5ckx4?=
+ =?utf-8?B?SGg0L3FaVTB4RW5xNmpCdVp0cit0K3pPUmRyVUdWQlEvdHNwNFp6TTM2TDBj?=
+ =?utf-8?B?T3R1NDNjcE9BY0RNbjY3TlVMVmF1TjhlazlBNnk1SlRrNEVJLzhkYjFUenRW?=
+ =?utf-8?B?clQ3Y3ozNkJDUGhYdFgrWk1nRUFQSW5hSTFXdUpUOFNrY05MazVEeTlKUER1?=
+ =?utf-8?B?a1dUbTZsa3VoODNPWFcrOFNFRVdLb2haak85c21oVi80NTdkWG9vSytXVE5Y?=
+ =?utf-8?B?cFpPdDQvTWUrWmdmN3VhdmpIaFY4TVl6UGJ5WWJFR1hCR1d0SlVRNjFTZXdz?=
+ =?utf-8?B?ZHVEMk8xRVhSVEZpbDhNQkdkbjBqUi9HTkZGZ2hGQVJHbmc2YmdSWHppd1Ju?=
+ =?utf-8?B?MFZRazZwcWNKU3ltdmlCT0Eyei9HMkl5aE01SFQwNnVxVSsyY0Zicnd1Zkk0?=
+ =?utf-8?B?QUdDRTFGY2YvUHpEMnhVc2xYNXN2RzR3Ylc5RU1vL3QwWEhxdk9kMndRVnBy?=
+ =?utf-8?B?bzJEQlh6TG03NEppNHU1TWVVcWpRTHJ6R1JnRXdYb3JualZ2Z0hWMDRQeDVD?=
+ =?utf-8?B?ZWlmUWwyc3RhaE1pZjltWlVmckVHdG9zK0Ixd3IrU3V0NTlaVDRwV2FaSDQz?=
+ =?utf-8?B?Zk1lYUUrVEQ5QnRZbWpPbEtQU081dXh0dGVsNnBNY2ZSS1FNSnoxM2t6REFu?=
+ =?utf-8?B?RStUMU13SHNRY2UvQ1Q2b3Fva0lDSTI4S2dUaTFuZmxPTFdsbVdnczBNM1FZ?=
+ =?utf-8?B?KzRsajJ5NDY5L05jUzBxeVNPZ201LzFWZzE0OFNqeUNqaHoxRWZrcENyK3Vh?=
+ =?utf-8?Q?lQlY/hZces8hSA/U/w=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210802155810.1818085-1-dqfext@gmail.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a8bb2171-b8ef-4bfa-ddc3-08d955f9cba4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Aug 2021 21:09:19.9421
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: PaT6cTIWmxMmeLEaRGnMMlk/l2NgwxWtVIhfAH1djmS1C0IxP2BDaUyK/l9R3+sMfMe6fV7myEKZH1yrXtaNUrhUgKXu8i7hX0g5EMb6TSY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB5044
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 02, 2021 at 11:58:10PM +0800, DENG Qingfang wrote:
-> On Mon, Aug 02, 2021 at 06:42:26PM +0300, Vladimir Oltean wrote:
-> > On Mon, Aug 02, 2021 at 11:31:29PM +0800, DENG Qingfang wrote:
-> > > The current code only sets FID 0's STP state. This patch sets both 0's and
-> > > 1's states.
-> > >
-> > > The *5 part is binary magic. [1:0] is FID 0's state, [3:2] is FID 1's state
-> > > and so on. Since 5 == 4'b0101, the value in [1:0] is copied to [3:2] after
-> > > the multiplication.
-> > >
-> > > Perhaps I should only change FID 1's state.
-> >
-> > Keep the patches dumb for us mortals please.
-> > If you only change FID 1's state, I am concerned that the driver no
-> > longer initializes FID 0's port state, and might leave that to the
-> > default set by other pre-kernel initialization stage (bootloader?).
-> > So even if you might assume that standalone ports are FORWARDING, they
-> > might not be.
->
-> The default value is forwarding, and the switch is reset by the driver
-> so any pre-kernel initialization stage is no more.
-
-So then change the port STP state only for FID 1 and resend. Any other
-reason why this patch series is marked RFC? It looked okay to me otherwise.
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQXJuZCBCZXJnbWFubiA8
+YXJuZEBrZXJuZWwub3JnPg0KPiBTZW50OiBNb25kYXksIEF1Z3VzdCAwMiwgMjAyMSAxOjU5IFBN
+DQo+IFRvOiBLZWxsZXIsIEphY29iIEUgPGphY29iLmUua2VsbGVyQGludGVsLmNvbT4NCj4gQ2M6
+IFJpY2hhcmQgQ29jaHJhbiA8cmljaGFyZGNvY2hyYW5AZ21haWwuY29tPjsgTmljb2xhcyBQaXRy
+ZQ0KPiA8bmljb2xhcy5waXRyZUBsaW5hcm8ub3JnPjsgQnJhbmRlYnVyZywgSmVzc2UgPGplc3Nl
+LmJyYW5kZWJ1cmdAaW50ZWwuY29tPjsNCj4gTmd1eWVuLCBBbnRob255IEwgPGFudGhvbnkubC5u
+Z3V5ZW5AaW50ZWwuY29tPjsgRGF2aWQgUy4gTWlsbGVyDQo+IDxkYXZlbUBkYXZlbWxvZnQubmV0
+PjsgSmFrdWIgS2ljaW5za2kgPGt1YmFAa2VybmVsLm9yZz47IEFybmQgQmVyZ21hbm4NCj4gPGFy
+bmRAYXJuZGIuZGU+OyBLdXJ0IEthbnplbmJhY2ggPGt1cnRAbGludXRyb25peC5kZT47IFNhbGVl
+bSwgU2hpcmF6DQo+IDxzaGlyYXouc2FsZWVtQGludGVsLmNvbT47IEVydG1hbiwgRGF2aWQgTSA8
+ZGF2aWQubS5lcnRtYW5AaW50ZWwuY29tPjsNCj4gaW50ZWwtd2lyZWQtbGFuQGxpc3RzLm9zdW9z
+bC5vcmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LQ0KPiBrZXJuZWxAdmdlci5rZXJu
+ZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbmV0LW5leHQgdjJdIGV0aGVybmV0L2ludGVs
+OiBmaXggUFRQXzE1ODhfQ0xPQ0sNCj4gZGVwZW5kZW5jaWVzDQo+IA0KPiBJIGRvbid0IHdhbnQg
+dG8gbWVzcyB3aXRoIHRoZSBzZW1hbnRpY3Mgb2YgdGhlIGtleXdvcmQgYW55IGZ1cnRoZXIuDQo+
+IFRoZSBvcmlnaW5hbCBtZWFuaW5nIHdhcyBtZWFudCB0byBhdm9pZCBjaXJjdWxhciBkZXBlbmRl
+bmNpZXMNCj4gYnkgbWFraW5nIGl0IGEgc29mdGVyIHZlcnNpb24gb2YgJ3NlbGVjdCcgdGhhdCB3
+b3VsZCBub3QgdHJ5IHRvIHNlbGVjdA0KPiBhbnl0aGluZyB0aGF0IGhhcyB1bm1ldCBkZXBlbmRl
+bmNpZXMuIFRoZSBjdXJyZW50IHZlcnNpb24gbWFkZQ0KPiBpdCBldmVuIHNvZnRlciBieSBvbmx5
+IGhhdmluZyBhbiBlZmZlY3QgZHVyaW5nICdtYWtlIGRlZmNvbmZpZycNCj4gYW5kICdtYWtlIG9s
+ZGNvbmZpZycgYnV0IG5vdCBwcmV2ZW50aW5nIGl0IGZyb20gYmVpbmcgc29mdC1kaXNhYmxlZA0K
+PiBhbnkgbW9yZS4gQ2hhbmdpbmcgaXQgeWV0IGFnYWluIGlzIGd1YXJhbnRlZSB0byBicmVhayBs
+b3RzIG9mIHRoZQ0KPiBleGlzdGluZyB1c2Vycywgd2hpbGUgcHJvYmFibHkgYWxzbyBicmluZ2lu
+ZyBiYWNrIHRoZSBvcmlnaW5hbCBwcm9ibGVtDQo+IG9mIHRoZSBjaXJjdWxhciBkZXBlbmRlbmNp
+ZXMuDQo+IA0KPiAgICAgICAgICBBcm5kDQoNClllYSBvayB0aGF0IG1ha2VzIHNlbnNlLiBCZXR0
+ZXIgdG8gdXNlIGEgbmV3IGtleXdvcmQgaWYgd2UgZG8gYXQgYWxsLg0K
