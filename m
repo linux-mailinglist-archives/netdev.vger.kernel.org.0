@@ -2,104 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31B643DD5DC
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 14:40:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20F763DD61E
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 14:57:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233719AbhHBMkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 08:40:10 -0400
-Received: from 8bytes.org ([81.169.241.247]:52914 "EHLO theia.8bytes.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233605AbhHBMkJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Aug 2021 08:40:09 -0400
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-        id 32B79379; Mon,  2 Aug 2021 14:39:56 +0200 (CEST)
-Date:   Mon, 2 Aug 2021 14:39:48 +0200
-From:   Joerg Roedel <joro@8bytes.org>
-To:     Tianyu Lan <ltykernel@gmail.com>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
-        jgross@suse.com, sstabellini@kernel.org, will@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, arnd@arndb.de, hch@lst.de,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, ardb@kernel.org,
-        Tianyu.Lan@microsoft.com, rientjes@google.com,
-        martin.b.radev@gmail.com, akpm@linux-foundation.org,
-        rppt@kernel.org, kirill.shutemov@linux.intel.com,
-        aneesh.kumar@linux.ibm.com, krish.sadhukhan@oracle.com,
-        saravanand@fb.com, xen-devel@lists.xenproject.org,
-        pgonda@google.com, david@redhat.com, keescook@chromium.org,
-        hannes@cmpxchg.org, sfr@canb.auug.org.au,
-        michael.h.kelley@microsoft.com, iommu@lists.linux-foundation.org,
-        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org, vkuznets@redhat.com, anparri@microsoft.com
-Subject: Re: [PATCH 06/13] HV: Add ghcb hvcall support for SNP VM
-Message-ID: <YQfnlBwyZUJyixQX@8bytes.org>
-References: <20210728145232.285861-1-ltykernel@gmail.com>
- <20210728145232.285861-7-ltykernel@gmail.com>
+        id S233795AbhHBM5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 08:57:24 -0400
+Received: from mailgw01.mediatek.com ([60.244.123.138]:45230 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S233678AbhHBM5W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 08:57:22 -0400
+X-UUID: be321d17faa848ce8adf61ad9d539a67-20210802
+X-UUID: be321d17faa848ce8adf61ad9d539a67-20210802
+Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw01.mediatek.com
+        (envelope-from <rocco.yue@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1587694583; Mon, 02 Aug 2021 20:57:10 +0800
+Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 2 Aug 2021 20:57:08 +0800
+Received: from localhost.localdomain (10.15.20.246) by MTKCAS06.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 2 Aug 2021 20:57:07 +0800
+From:   Rocco Yue <rocco.yue@mediatek.com>
+To:     David Ahern <dsahern@kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <rocco.yue@gmail.com>,
+        <chao.song@mediatek.com>, <zhuoliang.zhang@mediatek.com>,
+        Rocco Yue <rocco.yue@mediatek.com>
+Subject: Re: [PATCH net-next v2] ipv6: add IFLA_INET6_RA_MTU to expose mtu value in the RA message
+Date:   Mon, 2 Aug 2021 20:40:39 +0800
+Message-ID: <20210802124039.13231-1-rocco.yue@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20210802031924.3256-1-rocco.yue@mediatek.com>
+References: <20210802031924.3256-1-rocco.yue@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210728145232.285861-7-ltykernel@gmail.com>
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 28, 2021 at 10:52:21AM -0400, Tianyu Lan wrote:
-> +	hv_ghcb->ghcb.protocol_version = 1;
-> +	hv_ghcb->ghcb.ghcb_usage = 1;
+On Sat, 2021-07-31 at 11:17 -0600, David Ahern wrote:
+On 7/30/21 7:52 PM, Rocco Yue wrote:
 
-The values set to ghcb_usage deserve some defines (here and below).
+> IFLA_INET6_RA_MTU set. You can set "reject_message" in the policy to
+> return a message that "IFLA_INET6_RA_MTU can not be set".
 
-> +
-> +	hv_ghcb->hypercall.outputgpa = (u64)output;
-> +	hv_ghcb->hypercall.hypercallinput.asuint64 = 0;
-> +	hv_ghcb->hypercall.hypercallinput.callcode = control;
-> +
-> +	if (input_size)
-> +		memcpy(hv_ghcb->hypercall.hypercalldata, input, input_size);
-> +
-> +	VMGEXIT();
-> +
-> +	hv_ghcb->ghcb.ghcb_usage = 0xffffffff;
+Hi David,
 
+Regarding setting "reject_message" in the policy, after reviewing
+the code, I fell that it is unnecessary, because the cost of
+implementing it seems to be a bit high, which requires modifying
+the function interface. The reasons is as follows:
+
+The parameter "struct netlink_ext_ack *extack" is not exposed in the
+function inet6_validate_link_af(), and the last argument when calling
+nla_parse_nested_deprecated() is NULL, which makes the user space not
+notified even if reject_message is set.
+
+static int inet6_validate_link_af(...)
+{
 ...
+	err = nla_parse_nested_deprecated(tb, IFLA_INET6_MAX, nla,
+					  inet6_af_policy, NULL);
+...
+}
 
->  union hv_ghcb {
->  	struct ghcb ghcb;
-> +	struct {
-> +		u64 hypercalldata[509];
-> +		u64 outputgpa;
-> +		union {
-> +			union {
-> +				struct {
-> +					u32 callcode        : 16;
-> +					u32 isfast          : 1;
-> +					u32 reserved1       : 14;
-> +					u32 isnested        : 1;
-> +					u32 countofelements : 12;
-> +					u32 reserved2       : 4;
-> +					u32 repstartindex   : 12;
-> +					u32 reserved3       : 4;
-> +				};
-> +				u64 asuint64;
-> +			} hypercallinput;
-> +			union {
-> +				struct {
-> +					u16 callstatus;
-> +					u16 reserved1;
-> +					u32 elementsprocessed : 12;
-> +					u32 reserved2         : 20;
-> +				};
-> +				u64 asunit64;
-> +			} hypercalloutput;
-> +		};
-> +		u64 reserved2;
-> +	} hypercall;
 
-Okay, this answers my previous question :)
+Only when extack is not NULL, reject_message is valid.
 
+static int validate_nla(...)
+{
+...
+	switch (pt->type) {
+	case NLA_REJECT:
+		if (extack && pt->reject_message) {
+			NL_SET_BAD_ATTR(extack, nla);
+			extack->_msg = pt->reject_message;
+			return -EINVAL;
+		}
+		err = -EINVAL;
+		goto out_err;
+...
+}
+
+
+Thanks
+Rocco
