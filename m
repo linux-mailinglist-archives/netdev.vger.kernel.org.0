@@ -2,90 +2,294 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AECF13DE0FF
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 22:47:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FD393DE100
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 22:50:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232252AbhHBUrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 16:47:35 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58228 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231338AbhHBUrf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Aug 2021 16:47:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=2c8Ena5R3BasIbqSY8iZVBqPVlAVm8oJ3q3YTA5edsU=; b=VCAYf0Twr8zxnPjdGby6VjDJ5p
-        ujPHig79n8hDrURXQjWNa9UyrnAJbcWjvWwJtaXtrq6jogOFC5kqKGFGDQRxfhRocbeinRQL8tlC2
-        agTfH9S/X7KvrNCM/LHRGV6zmbhP8qgOzkFo/nhQLRPOTssbb0fOyMTe557QHgMAf2KI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mAeqC-00FsKE-Rb; Mon, 02 Aug 2021 22:47:16 +0200
-Date:   Mon, 2 Aug 2021 22:47:16 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
-        netdev@vger.kernel.org, robh+dt@kernel.org,
-        UNGLinuxDriver@microchip.com, Woojung.Huh@microchip.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 05/10] net: dsa: microchip: add DSA support
- for microchip lan937x
-Message-ID: <YQhZ1FOofUNCO53P@lunn.ch>
-References: <20210723173108.459770-1-prasanna.vengateshan@microchip.com>
- <20210723173108.459770-6-prasanna.vengateshan@microchip.com>
- <20210731150416.upe5nwkwvwajhwgg@skbuf>
- <49678cce02ac03edc6bbbd1afb5f67606ac3efc2.camel@microchip.com>
- <20210802121550.gqgbipqdvp5x76ii@skbuf>
- <YQfvXTEbyYFMLH5u@lunn.ch>
- <20210802135911.inpu6khavvwsfjsp@skbuf>
+        id S231458AbhHBUua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 16:50:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59746 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231194AbhHBUu2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 16:50:28 -0400
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7ECC06175F;
+        Mon,  2 Aug 2021 13:50:17 -0700 (PDT)
+Received: by mail-qt1-x82a.google.com with SMTP id a12so12596421qtb.2;
+        Mon, 02 Aug 2021 13:50:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8WYVXOVWiAw8d7j2eGAl0yg+RDALNOfe7GgbVDGVAc4=;
+        b=VnjAFAemJq7ihtDJ7NxlEU7/0xTvyvRt2v2vVf/fRGgKpYUIFXR0YzO9miMP9XAN2N
+         1PAJg4Eh5bHGmtcC1QdvonNV3RXDCPPXrntjzmuwBx7LY6Re47tBJ890i1nKDAzcMu5o
+         spBndUfPh5E1bqKQD9xUdlS4ZC0qWf8+RUZgm+kmnxRfxUPOF/GiNbA5QTBT/yV6IfbJ
+         jFEp3XbARn6lBKzqiXeSV7mWJF+9TLqfRIc0AdYzp0MDQUHJcfO95frK2iyU9fEzTyNZ
+         vPDUmMG6JY6Mkx636hUiJoT7wCmtt8nF1qvTK5shXGd9YJVzQxBIAG/BmCm1MgFlHN5N
+         8YCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8WYVXOVWiAw8d7j2eGAl0yg+RDALNOfe7GgbVDGVAc4=;
+        b=OCfQOTOW7qzzlXbC+37WoCWy03IECvA41zxGQP30Ftb3M5aH3UYSACxDlPoZaPPH5r
+         up+Gh4ho2qmvX5rQen1zVYALj6T+U+R8rOhlm7OoQPEs+frNYGmn0m9I+dtf1AM12OtD
+         8wf6IB8N9omtuLWijZwA2ZlPR4F4MI+bE6ntcpUvQwhU2qABTgIXLIsULaahbbQv+a/v
+         Q1LyTE3v0uvzcKyh1YwRNSs6SIZaBTLYe2vEWaB2q+ZIvmJsmmjhK4RySGFyyy+SRrkW
+         07ydtxIUDTJaUJag52PkbqRzUvdRNDwvtcxTsKlVpjOEDN8FlU13fLI9DLnRX/FBu4nN
+         byIQ==
+X-Gm-Message-State: AOAM533Aa1u4UOo5IHn2ineSgaGromiIcgiUjI8/Ff1MJIPHPWzvIvCF
+        fR+q+hGK15JegBIaH7vH6Q==
+X-Google-Smtp-Source: ABdhPJyYmgAdgsomZUjQ8CQeLqiUjImJD46X2QTAAnsDu9RhWHw75i2rFDENdYTzO1sz9J/1157ohQ==
+X-Received: by 2002:ac8:66ca:: with SMTP id m10mr15318804qtp.171.1627937416360;
+        Mon, 02 Aug 2021 13:50:16 -0700 (PDT)
+Received: from bytedance.attlocal.net (ec2-13-57-97-131.us-west-1.compute.amazonaws.com. [13.57.97.131])
+        by smtp.gmail.com with ESMTPSA id q11sm6374623qkm.56.2021.08.02.13.50.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Aug 2021 13:50:15 -0700 (PDT)
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        Peilin Ye <yepeilin.cs@gmail.com>
+Subject: [PATCH net-next 1/2] net/sched: sch_ingress: Support clsact egress mini-Qdisc option
+Date:   Mon,  2 Aug 2021 13:49:47 -0700
+Message-Id: <1931ca440b47344fe357d5438aeab4b439943d10.1627936393.git.peilin.ye@bytedance.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210802135911.inpu6khavvwsfjsp@skbuf>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 02, 2021 at 04:59:11PM +0300, Vladimir Oltean wrote:
-> On Mon, Aug 02, 2021 at 03:13:01PM +0200, Andrew Lunn wrote:
-> > In general, the MAC does nothing, and passes the value to the PHY. The
-> > PHY inserts delays as requested. To address Vladimir point,
-> > PHY_INTERFACE_MODE_RGMII_TXID would mean the PHY adds delay in the TX
-> > direction, and assumes the RX delay comes from somewhere else,
-> > probably the PCB.
-> 
-> For the PHY, that is the only portion where things are clear.
-> 
-> > I only recommend the MAC adds delays when the PHY cannot, or there is
-> > no PHY, e.g. SoC to switch, or switch to switch link. There are a few
-> > MAC drivers that do add delays, mostly because that is how the vendor
-> > crap tree does it.
-> > 
-> > So as i said, what you propose is O.K, it follows this general rule of
-> > thumb.
-> 
-> The "rule of thumb" for a MAC driver is actually applied in reverse by
-> most MAC drivers compared to what Russell described should be happening.
-> For example, mv88e6xxx_port_set_rgmii_delay():
-> 
-> 	switch (mode) {
-> 	case PHY_INTERFACE_MODE_RGMII_RXID:
-> 		reg |= MV88E6XXX_PORT_MAC_CTL_RGMII_DELAY_RXCLK;
-> 
-> The mv88e6xxx is a MAC, so when it has a phy-mode = "rgmii-rxid", it
-> should assume it is connected to a link partner (PHY or otherwise) that
-> has applied the RXCLK delay already. So it should only be concerned with
-> the TXCLK delay. That is my point. I am just trying to lay out the
-> points to Prasanna that would make a sane system going forward. I am not
-> sure that we actually have an in-tree driver that is sane in that
-> regard.
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-It is a can or worms. For the used use case for the mv88e6xxx, it is a
-DSA link, so there isn't really one side MAC and the other side
-PHY. And if i remember correctly, both sides use rgmii-rxid.
+If the ingress Qdisc is in use, currently it is not possible to add
+another clsact egress mini-Qdisc to the same device without taking down
+the ingress Qdisc, since both sch_ingress and sch_clsact use the same
+handle (0xFFFF0000).
 
-     Andrew
+Add a "change" option for sch_ingress, so that users can enable or disable
+a clsact egress mini-Qdisc, without suffering from downtime:
+
+    $ tc qdisc add dev eth0 ingress
+    $ tc qdisc change dev eth0 ingress clsact-on
+
+Then users can add filters to the egress mini-Qdisc as usual:
+
+    $ tc filter add dev eth0 egress protocol ip prio 10 \
+	    matchall action skbmod swap mac
+
+Deleting the ingress Qdisc removes the egress mini-Qdisc as well.  To
+remove egress mini-Qdisc only, use:
+
+    $ tc qdisc change dev eth0 ingress clsact-off
+
+Finally, if the egress mini-Qdisc is enabled, the "show" command will
+print out a "clsact" flag to indicate it:
+
+    $ tc qdisc show ingress
+    qdisc ingress ffff: dev eth0 parent ffff:fff1 ----------------
+    $ tc qdisc change dev eth0 ingress clsact-on
+    $ tc qdisc show ingress
+    qdisc ingress ffff: dev eth0 parent ffff:fff1 ---------------- clsact
+
+Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+---
+ include/uapi/linux/pkt_sched.h | 12 +++++
+ net/sched/sch_ingress.c        | 92 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 104 insertions(+)
+
+diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+index 79a699f106b1..cb0eb5dd848a 100644
+--- a/include/uapi/linux/pkt_sched.h
++++ b/include/uapi/linux/pkt_sched.h
+@@ -586,6 +586,18 @@ enum {
+ 
+ #define TCA_ATM_MAX	(__TCA_ATM_MAX - 1)
+ 
++/* INGRESS section */
++
++enum {
++	TCA_INGRESS_UNSPEC,
++	TCA_INGRESS_FLAGS,
++#define	TC_INGRESS_CLSACT	   _BITUL(0)	/* enable clsact egress mini-Qdisc */
++#define	TC_INGRESS_SUPPORTED_FLAGS TC_INGRESS_CLSACT
++	__TCA_INGRESS_MAX,
++};
++
++#define	TCA_INGRESS_MAX	(__TCA_INGRESS_MAX - 1)
++
+ /* Network emulator */
+ 
+ enum {
+diff --git a/net/sched/sch_ingress.c b/net/sched/sch_ingress.c
+index 84838128b9c5..96e00e9e727b 100644
+--- a/net/sched/sch_ingress.c
++++ b/net/sched/sch_ingress.c
+@@ -16,8 +16,12 @@
+ 
+ struct ingress_sched_data {
+ 	struct tcf_block *block;
++	struct tcf_block *egress_block;
+ 	struct tcf_block_ext_info block_info;
++	struct tcf_block_ext_info egress_block_info;
+ 	struct mini_Qdisc_pair miniqp;
++	struct mini_Qdisc_pair miniqp_egress;
++	bool clsact;
+ };
+ 
+ static struct Qdisc *ingress_leaf(struct Qdisc *sch, unsigned long arg)
+@@ -27,6 +31,11 @@ static struct Qdisc *ingress_leaf(struct Qdisc *sch, unsigned long arg)
+ 
+ static unsigned long ingress_find(struct Qdisc *sch, u32 classid)
+ {
++	struct ingress_sched_data *q = qdisc_priv(sch);
++
++	if (q->clsact && TC_H_MIN(classid) == TC_H_MIN(TC_H_MIN_EGRESS))
++		return TC_H_MIN(TC_H_MIN_EGRESS);
++
+ 	return TC_H_MIN(classid) + 1;
+ }
+ 
+@@ -49,6 +58,9 @@ static struct tcf_block *ingress_tcf_block(struct Qdisc *sch, unsigned long cl,
+ {
+ 	struct ingress_sched_data *q = qdisc_priv(sch);
+ 
++	if (q->clsact && cl == TC_H_MIN(TC_H_MIN_EGRESS))
++		return q->egress_block;
++
+ 	return q->block;
+ }
+ 
+@@ -66,6 +78,14 @@ static void ingress_ingress_block_set(struct Qdisc *sch, u32 block_index)
+ 	q->block_info.block_index = block_index;
+ }
+ 
++static void ingress_egress_block_set(struct Qdisc *sch, u32 block_index)
++{
++	struct ingress_sched_data *q = qdisc_priv(sch);
++
++	if (q->clsact)
++		q->egress_block_info.block_index = block_index;
++}
++
+ static u32 ingress_ingress_block_get(struct Qdisc *sch)
+ {
+ 	struct ingress_sched_data *q = qdisc_priv(sch);
+@@ -73,6 +93,13 @@ static u32 ingress_ingress_block_get(struct Qdisc *sch)
+ 	return q->block_info.block_index;
+ }
+ 
++static u32 ingress_egress_block_get(struct Qdisc *sch)
++{
++	struct ingress_sched_data *q = qdisc_priv(sch);
++
++	return q->clsact ? q->egress_block_info.block_index : 0;
++}
++
+ static int ingress_init(struct Qdisc *sch, struct nlattr *opt,
+ 			struct netlink_ext_ack *extack)
+ {
+@@ -103,16 +130,78 @@ static void ingress_destroy(struct Qdisc *sch)
+ 
+ 	tcf_block_put_ext(q->block, sch, &q->block_info);
+ 	net_dec_ingress_queue();
++
++	if (q->clsact) {
++		tcf_block_put_ext(q->egress_block, sch, &q->egress_block_info);
++		net_dec_egress_queue();
++	}
++}
++
++static const struct nla_policy ingress_policy[TCA_INGRESS_MAX + 1] = {
++	[TCA_INGRESS_FLAGS] = NLA_POLICY_BITFIELD32(TC_INGRESS_SUPPORTED_FLAGS),
++};
++
++static int ingress_change(struct Qdisc *sch, struct nlattr *arg, struct netlink_ext_ack *extack)
++{
++	struct ingress_sched_data *q = qdisc_priv(sch);
++	struct net_device *dev = qdisc_dev(sch);
++	struct nlattr *tb[TCA_INGRESS_MAX + 1];
++	struct nla_bitfield32 flags;
++	int err;
++
++	err = nla_parse_nested_deprecated(tb, TCA_INGRESS_MAX, arg, ingress_policy, extack);
++	if (err < 0)
++		return err;
++
++	if (!tb[TCA_INGRESS_FLAGS])
++		return -EINVAL;
++
++	flags = nla_get_bitfield32(tb[TCA_INGRESS_FLAGS]);
++
++	if (flags.value & TC_INGRESS_CLSACT) {
++		if (q->clsact)
++			return -EEXIST;
++
++		/* enable clsact egress mini-Qdisc */
++		mini_qdisc_pair_init(&q->miniqp_egress, sch, &dev->miniq_egress);
++
++		q->egress_block_info.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_EGRESS;
++		q->egress_block_info.chain_head_change = clsact_chain_head_change;
++		q->egress_block_info.chain_head_change_priv = &q->miniqp_egress;
++
++		err = tcf_block_get_ext(&q->egress_block, sch, &q->egress_block_info, extack);
++		if (err)
++			return err;
++
++		net_inc_egress_queue();
++		q->clsact = true;
++	} else {
++		if (!q->clsact)
++			return -ENOENT;
++
++		/* disable clsact egress mini-Qdisc */
++		tcf_block_put_ext(q->egress_block, sch, &q->egress_block_info);
++
++		net_dec_egress_queue();
++		q->clsact = false;
++	}
++
++	return 0;
+ }
+ 
+ static int ingress_dump(struct Qdisc *sch, struct sk_buff *skb)
+ {
++	struct ingress_sched_data *q = qdisc_priv(sch);
+ 	struct nlattr *nest;
+ 
+ 	nest = nla_nest_start_noflag(skb, TCA_OPTIONS);
+ 	if (nest == NULL)
+ 		goto nla_put_failure;
+ 
++	if (nla_put_bitfield32(skb, TCA_INGRESS_FLAGS, q->clsact ? TC_INGRESS_CLSACT : 0,
++			       TC_INGRESS_SUPPORTED_FLAGS))
++		goto nla_put_failure;
++
+ 	return nla_nest_end(skb, nest);
+ 
+ nla_put_failure:
+@@ -137,9 +226,12 @@ static struct Qdisc_ops ingress_qdisc_ops __read_mostly = {
+ 	.static_flags		=	TCQ_F_CPUSTATS,
+ 	.init			=	ingress_init,
+ 	.destroy		=	ingress_destroy,
++	.change			=	ingress_change,
+ 	.dump			=	ingress_dump,
+ 	.ingress_block_set	=	ingress_ingress_block_set,
++	.egress_block_set	=	ingress_egress_block_set,
+ 	.ingress_block_get	=	ingress_ingress_block_get,
++	.egress_block_get	=	ingress_egress_block_get,
+ 	.owner			=	THIS_MODULE,
+ };
+ 
+-- 
+2.20.1
+
