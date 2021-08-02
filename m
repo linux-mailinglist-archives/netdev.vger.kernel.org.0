@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A6743DCF2B
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 06:13:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B17DC3DCF2A
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 06:13:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231432AbhHBENe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 00:13:34 -0400
-Received: from lpdvsmtp11.broadcom.com ([192.19.166.231]:46084 "EHLO
+        id S231604AbhHBENb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 00:13:31 -0400
+Received: from lpdvsmtp11.broadcom.com ([192.19.166.231]:46088 "EHLO
         relay.smtp-ext.broadcom.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229988AbhHBENY (ORCPT
+        by vger.kernel.org with ESMTP id S230155AbhHBENY (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 00:13:24 -0400
 Received: from dhcp-10-123-153-22.dhcp.broadcom.net (bgccx-dev-host-lnx2.bec.broadcom.net [10.123.153.22])
-        by relay.smtp-ext.broadcom.com (Postfix) with ESMTP id D4B71EB;
-        Sun,  1 Aug 2021 21:06:53 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 relay.smtp-ext.broadcom.com D4B71EB
+        by relay.smtp-ext.broadcom.com (Postfix) with ESMTP id 358C6EA;
+        Sun,  1 Aug 2021 21:06:55 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 relay.smtp-ext.broadcom.com 358C6EA
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
-        s=dkimrelay; t=1627877215;
-        bh=uR5Gfzea/cNgnPj6GMAdEmQmjzid2r27Yttfv2940xM=;
+        s=dkimrelay; t=1627877218;
+        bh=3YsWoTLeFWoxXWisQI0tsXhvXveAsNz1lXovnBROzoY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q2OTgtVcpEMYGT1OBMnFOBTlg0g4LJLYKTGolkBFrgZoPSQycdI9a8mKz60BIHFEI
-         ZG+KOjNYt4uGV5utdlIaFwRRa3mHDtVDweDUy5tAWfPX0Zi4qMET88UCkA16AWaS0H
-         R3PmOo5EWdBtGt9q2u8my8B6RQfa3lNm7VTtdynU=
+        b=i4FyRUS5UnYGmhZvQug5xsEHvMwKN3KJSAOVk/ZqmeygWNbCX4ngIEAvGsgiL2iuE
+         6EhK4mgnaFsM7AEkbFucQS7XS/ddoBuVhh0XfvWMVI+1zoGt+nH1Yc2Z0gjzQpR4zr
+         jQ1GUNhOR4yHUg3XI755nNHoI0viNODTOsgVkrmM=
 From:   Kalesh A P <kalesh-anakkur.purayil@broadcom.com>
 To:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com
 Cc:     netdev@vger.kernel.org, edwin.peer@broadcom.com,
         michael.chan@broadcom.com
-Subject: [PATCH net-next 1/2] devlink: add device capability reporting to devlink info API
-Date:   Mon,  2 Aug 2021 09:57:39 +0530
-Message-Id: <20210802042740.10355-2-kalesh-anakkur.purayil@broadcom.com>
+Subject: [PATCH net-next 2/2] bnxt_en: Add device capabilities to devlink info_get cb
+Date:   Mon,  2 Aug 2021 09:57:40 +0530
+Message-Id: <20210802042740.10355-3-kalesh-anakkur.purayil@broadcom.com>
 X-Mailer: git-send-email 2.10.1
 In-Reply-To: <20210802042740.10355-1-kalesh-anakkur.purayil@broadcom.com>
 References: <20210802042740.10355-1-kalesh-anakkur.purayil@broadcom.com>
@@ -38,96 +38,66 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 
-It may be useful if we expose the device capabilities
-to the user through devlink info API.
-Add a new devlink API to allow retrieving device capabilities.
+HWRM_VER_GET and FUNC_QCAPS command response provides the support
+to indicate various device capabilities.
+
+Expose these details via the devlink info.
 
 Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 ---
- Documentation/networking/devlink/devlink-info.rst |  3 +++
- include/net/devlink.h                             |  2 ++
- include/uapi/linux/devlink.h                      |  3 +++
- net/core/devlink.c                                | 25 +++++++++++++++++++++++
- 4 files changed, 33 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 31 +++++++++++++++++++++--
+ 1 file changed, 29 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/networking/devlink/devlink-info.rst b/Documentation/networking/devlink/devlink-info.rst
-index 7572bf6..b9b32dc 100644
---- a/Documentation/networking/devlink/devlink-info.rst
-+++ b/Documentation/networking/devlink/devlink-info.rst
-@@ -78,6 +78,9 @@ versions is generally discouraged - here, and via any other Linux API.
-        ``stored`` versions when new software is flashed, it must not report
-        them.
- 
-+   * - ``capabilities``
-+     - Group for device capabilities.
-+
- Each version can be reported at most once in each version group. Firmware
- components stored on the flash should feature in both the ``running`` and
- ``stored`` sections, if device is capable of reporting ``stored`` versions
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 08f4c61..e06d781 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1687,6 +1687,8 @@ int devlink_info_version_stored_put(struct devlink_info_req *req,
- int devlink_info_version_running_put(struct devlink_info_req *req,
- 				     const char *version_name,
- 				     const char *version_value);
-+int devlink_info_device_capability_put(struct devlink_info_req *req,
-+				       const char *capability_name);
- 
- int devlink_fmsg_obj_nest_start(struct devlink_fmsg *fmsg);
- int devlink_fmsg_obj_nest_end(struct devlink_fmsg *fmsg);
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index 32f53a00..f61a59ae 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -551,6 +551,9 @@ enum devlink_attr {
- 	DEVLINK_ATTR_RATE_NODE_NAME,		/* string */
- 	DEVLINK_ATTR_RATE_PARENT_NODE_NAME,	/* string */
- 
-+	DEVLINK_ATTR_INFO_DEVICE_CAPABILITY_LIST,	/* nested */
-+	DEVLINK_ATTR_INFO_DEVICE_CAPABILITY_NAME,	/* string */
-+
- 	/* add new attributes above here, update the policy in devlink.c */
- 
- 	__DEVLINK_ATTR_MAX,
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 8fa0153..4f1ce03 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -5850,6 +5850,31 @@ int devlink_info_version_running_put(struct devlink_info_req *req,
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index 64381be..0ae5f47 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -379,6 +379,25 @@ static int bnxt_hwrm_get_nvm_cfg_ver(struct bnxt *bp,
+ 	return rc;
  }
- EXPORT_SYMBOL_GPL(devlink_info_version_running_put);
  
-+int devlink_info_device_capability_put(struct devlink_info_req *req,
-+				       const char *capability_name)
++static int bnxt_dl_dev_capability_info_put(struct bnxt *bp, struct devlink_info_req *req)
 +{
-+	struct nlattr *nest;
-+	int err;
++	int rc;
 +
-+	nest = nla_nest_start(req->msg, DEVLINK_ATTR_INFO_DEVICE_CAPABILITY_LIST);
-+	if (!nest)
-+		return -EMSGSIZE;
++	if (bp->fw_cap & BNXT_FW_CAP_HOT_RESET) {
++		rc = devlink_info_device_capability_put(req, "hot_reset");
++		if (rc)
++			return rc;
++	}
 +
-+	err = nla_put_string(req->msg, DEVLINK_ATTR_INFO_DEVICE_CAPABILITY_NAME,
-+			     capability_name);
-+	if (err)
-+		goto nla_put_failure;
-+
-+	nla_nest_end(req->msg, nest);
++	if (bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY) {
++		rc = devlink_info_device_capability_put(req, "error_recovery");
++		if (rc)
++			return rc;
++	}
 +
 +	return 0;
-+
-+nla_put_failure:
-+	nla_nest_cancel(req->msg, nest);
-+	return err;
 +}
-+EXPORT_SYMBOL_GPL(devlink_info_device_capability_put);
 +
- static int
- devlink_nl_info_fill(struct sk_buff *msg, struct devlink *devlink,
- 		     enum devlink_command cmd, u32 portid,
+ static int bnxt_dl_info_put(struct bnxt *bp, struct devlink_info_req *req,
+ 			    enum bnxt_dl_version_type type, const char *key,
+ 			    char *buf)
+@@ -557,8 +576,16 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
+ 	snprintf(roce_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
+ 		 nvm_dev_info.roce_fw_major, nvm_dev_info.roce_fw_minor,
+ 		 nvm_dev_info.roce_fw_build, nvm_dev_info.roce_fw_patch);
+-	return bnxt_dl_info_put(bp, req, BNXT_VERSION_STORED,
+-				DEVLINK_INFO_VERSION_GENERIC_FW_ROCE, roce_ver);
++	rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_STORED,
++			      DEVLINK_INFO_VERSION_GENERIC_FW_ROCE, roce_ver);
++	if (rc)
++		return rc;
++
++	rc = bnxt_dl_dev_capability_info_put(bp, req);
++	if (rc)
++		return rc;
++
++	return 0;
+ }
+ 
+ static int bnxt_hwrm_nvm_req(struct bnxt *bp, u32 param_id, void *msg,
 -- 
 2.10.1
 
