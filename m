@@ -2,94 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A8C83DE147
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 23:14:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D50F03DE158
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 23:19:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231583AbhHBVO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 17:14:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37424 "EHLO
+        id S232544AbhHBVTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 17:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231397AbhHBVOY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 17:14:24 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81049C06175F
-        for <netdev@vger.kernel.org>; Mon,  2 Aug 2021 14:14:14 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id o185so25648622oih.13
-        for <netdev@vger.kernel.org>; Mon, 02 Aug 2021 14:14:14 -0700 (PDT)
+        with ESMTP id S232060AbhHBVTg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 17:19:36 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD20C0613D5
+        for <netdev@vger.kernel.org>; Mon,  2 Aug 2021 14:19:26 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id i10so21203648pla.3
+        for <netdev@vger.kernel.org>; Mon, 02 Aug 2021 14:19:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=lFImlOjLXGph9FxVeJnuogv9yMgF4oPs1goTQVASutQ=;
-        b=megJTb4GaTqpKpgAnLVIrVDhCJZvbOdS7kymfbVuF7oszFSFUBCK7GQZXOu5igb0Ul
-         9zaaaFroqc2YQGSjKX66UypOaMLzHERnRbOus1vn/UAXHBjSI9caP9yS7DwjcR0n9rg1
-         YdXTvmX04gkoLJYuTc5v/KSE9J25mu/atwzt8tD8NQpARcOG4ZBBaRG5aOAPXD6kPJpG
-         40+RNT+K9Oii0/vq9mgskLoiM3Kbg3ZoQ5iZbnz+lgNVStn7D8tb98YeMkAbaU4uP/U9
-         v2PfVeJTFSkmZj812kHCjgY/Snp+2q3L/ROhLqjWhgL/z15oActOQH5vOjAOpVs/CqYq
-         d/aQ==
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aVBuXMfiCfWt5hdMv6zWGnMRg21pnjj7QA/tDQ0Y95Q=;
+        b=zKexeWwWDxfxwxGu+RH3nuqraBaI9t5GFDWnDdsIK9A8wW/PHdQCbYXtBS+bX3AXzy
+         UfeMiL8pZOQz8AvL8E5WZtzODhwG6dL9IN5ycqw6bPzBbpQMMvUhjGKqzemWKpg1eNVC
+         hEkqhLmPZFdpIiRREY8kIX1U0040YnX2NiW6Cyle1aASfV9rOuLJ6N+lYrUMKDgvxJjc
+         AZV5NnrKBOEQxG0aTMWQdMWIiVwSGKLdFis48uBClIFvUJRMStXKb9zGNWTRgzno4INn
+         x55npPu8PhasCvXe7BC5CLNaaY5YENt45917beKl7Prb7ulUg8l7dAAuC9IFrZYORFC2
+         rbvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=lFImlOjLXGph9FxVeJnuogv9yMgF4oPs1goTQVASutQ=;
-        b=eXuSdz0rUEkhl4m3WANQ1RJpCTIbfASvtTmmIoIGqhxOa+IGD2yg/cbxq1AIUWMDTN
-         BuuiZer3OhMcWUJQuLAddA5bEGG16hoRqefpebniJT0RopjopNYuUkqtCYegMryMMZJk
-         Ma6Ul6CK2Fhk5tV+aV1CMIaBTGvM7Kh3yfeyYR3VDQbLo0oHwcTK0yVYTDLofQITq6PC
-         kYoG2X9jpvUe6axRAURypXIp4DDbPYvLNUbKqlNWv4W9ej6KVSlubZGpjMmoSW2Cc61C
-         3/bVZpt508f/SzAUh9y31EUoLE75i2VRNvNKfkJ1Y24j/khyUkUx5aMAURKWrP5AHRFD
-         haGg==
-X-Gm-Message-State: AOAM532EjUAgaK/WhzwKh1WOXuEdRo4hsEqUwKbGPm4Pp2n7jRo39Lsm
-        QgDAoOz5UyWGSAwgOHj3qiyT8AbHpo1QSHA+ojk=
-X-Google-Smtp-Source: ABdhPJwVai06X3KTokZOYboyt8nwJuYSx4MUWhiMSO3pbjhAzWPSNTdv6vhEaRDhhB0LY9B+RuCk3kmLYRcQqaof28g=
-X-Received: by 2002:a54:4093:: with SMTP id i19mr743437oii.2.1627938853828;
- Mon, 02 Aug 2021 14:14:13 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aVBuXMfiCfWt5hdMv6zWGnMRg21pnjj7QA/tDQ0Y95Q=;
+        b=RUqIvd+bbLkaMwh046/U4JN69fBxwQu+8XO//QwUCyqGYH7eYXfvInSCviSfh6yDME
+         0e5vg4jxBYcOlbUBG2cstkQKVRZBnwDIdyHxXaSho5eZbeFk5mBfjyygPdmZyIyriKq1
+         D+hbjO+TkECnVcT+nclEa3usY8d86aCepFkyi1EYfssqEjpmA0XScqwvM5l98LwOw8Uz
+         cO8wb/JazJYy7V61hmqcKIbyEPt7kAbeA8Qz9xV0Jmljygs75rJBg3topzWAMV+OEuxy
+         9pbGdsWGEavN8wffp4Ij+cwQ6ptI1r0+KGwuMChkcu58iPIsynNNxHzz7yKh9Y5zetBp
+         kvTg==
+X-Gm-Message-State: AOAM530OjuOnLf2pXplfSgmNyYceSoNiv32mx5J6E5OHjN4LxCqkSacU
+        7hWOckop753J2pDED75KJq1tFalaoK1tSQ==
+X-Google-Smtp-Source: ABdhPJw5iuEF1I72i2Wlv49CHbTsllBAXTkInZEfpNrpHZpI8JXJHhz5DJQpobzibHM+k05k7kX1AQ==
+X-Received: by 2002:a17:902:cec2:b029:12c:bef0:ec4b with SMTP id d2-20020a170902cec2b029012cbef0ec4bmr3661093plg.74.1627939165685;
+        Mon, 02 Aug 2021 14:19:25 -0700 (PDT)
+Received: from ip-10-124-121-13.byted.org (ec2-54-241-92-238.us-west-1.compute.amazonaws.com. [54.241.92.238])
+        by smtp.gmail.com with ESMTPSA id 10sm12949212pjc.41.2021.08.02.14.19.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Aug 2021 14:19:25 -0700 (PDT)
+From:   Jiang Wang <jiang.wang@bytedance.com>
+To:     netdev@vger.kernel.org
+Cc:     cong.wang@bytedance.com, duanxiongchun@bytedance.com,
+        xieyongji@bytedance.com, chaiwen.cc@bytedance.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH bpf-next v3 0/5] sockmap: add sockmap support for unix stream socket
+Date:   Mon,  2 Aug 2021 21:19:04 +0000
+Message-Id: <20210802211912.116329-1-jiang.wang@bytedance.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Received: by 2002:a4a:dc46:0:0:0:0:0 with HTTP; Mon, 2 Aug 2021 14:14:13 -0700 (PDT)
-Reply-To: compaorekone34@gmail.com
-From:   Kone Compaore <gblaisecompaore@gmail.com>
-Date:   Mon, 2 Aug 2021 14:14:13 -0700
-Message-ID: <CAH5Hv74hwgBVJjqO+4BX19x6h2=dJTEpbrPCMkO9AqmxtY7scg@mail.gmail.com>
-Subject: Greetings from Kone
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch series add support for unix stream type
+for sockmap. Sockmap already supports TCP, UDP,
+unix dgram types. The unix stream support is similar
+to unix dgram.
+
+Also add selftests for unix stream type in sockmap tests.
+
+
+Jiang Wang (5):
+  af_unix: add read_sock for stream socket types
+  af_unix: add unix_stream_proto for sockmap
+  selftest/bpf: add tests for sockmap with unix stream type.
+  selftest/bpf: change udp to inet in some function names
+  selftest/bpf: add new tests in sockmap for unix stream to tcp.
+
+ include/net/af_unix.h                         |  8 +-
+ net/core/sock_map.c                           |  8 +-
+ net/unix/af_unix.c                            | 86 ++++++++++++++---
+ net/unix/unix_bpf.c                           | 96 ++++++++++++++-----
+ .../selftests/bpf/prog_tests/sockmap_listen.c | 48 ++++++----
+ 5 files changed, 193 insertions(+), 53 deletions(-)
+
+v1 -> v2 :
+ - Call unhash in shutdown.
+ - Clean up unix_create1 a bit.
+ - Return -ENOTCONN if socket is not connected.
+
+v2 -> v3 :
+ - check for stream type in update_proto
+ - remove intermediate variable in __unix_stream_recvmsg
+ - fix compile warning in unix_stream_recvmsg
 -- 
-Greetings to you and your family.
+2.20.1
 
-My name is Mr. Kone Compaore, the auditing general with the bank,
-Africa Develop bank (ADB) Ouagadougou, Burkina Faso, in West Africa. I
-am contacting you to seek our honesty and sincere cooperation in
-confidential manner to transfer the sum of 15.5 (Fifteen million five
-hundred thousand Dollars) to your existing or new bank account.
-
-This money belongs to one of our bank client, a Libyan oil exporter
-who was working with the former Libyan government; I learn t that he
-was killed by the revolutionary forces since October 2011. Our bank is
-planning to transfer this entire fund into the government public
-treasury as unclaimed fund if nobody comes to claim the money from our
-bank after four years without account activities .
-
-We did not know each other before, but due to the fact that the
-deceased is a foreigner, the bank will welcome any claim from a
-foreigner without any suspect, that is why I decided to look for
-someone whim I can trust to come and claim the fund from our bank.
-
-I will endorse your name in the deceased client file here in my office
-which will indicate to that the deceased is your legal joint account
-business partner or family member next of kin to the deceased and
-officially the bank will transfer the fund to your bank account within
-seven working days in accordance to our banking inheritance rules and
-fund claim regulation.
-
-I will share 40% for you and 60% for me after the fund is transferred
-to your bank account, we need to act fast to complete this transaction
-within seven days. I will come to your country to collect my share
-after the fund is transferred to your bank account in your country. I
-hope that you will not disappoint me after the fund is transferred to
-your bank account in your country.
-
-Waiting for your urgent response today
-Yours sincerely
-Kone Compaore
