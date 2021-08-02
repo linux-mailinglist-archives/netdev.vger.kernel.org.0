@@ -2,152 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4C2B3DE16D
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 23:20:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 110033DE190
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 23:23:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232909AbhHBVUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 17:20:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38758 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233006AbhHBVTs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 17:19:48 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9EF1C061796
-        for <netdev@vger.kernel.org>; Mon,  2 Aug 2021 14:19:38 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id l19so27045697pjz.0
-        for <netdev@vger.kernel.org>; Mon, 02 Aug 2021 14:19:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=P804EkvFn0VAlLFLpkTDkQMHTFJyfBf84bJVijuk6QE=;
-        b=DdRM6RkLT2CfJXxydidDPFezCeqrJBYnZM2Q0qbNom/dxQQ9q2LuQiUbhbx7feGTdZ
-         G+X0GLsokPOXtXzc9i2rxbQ7afnk5Emfd46M//DX18f7pwkcxSP4MBDwqI6pfGsEAE+e
-         D3v8j47bG9k7r1EptkGUKTN/GJxRGVRY5f3nkaXfuPunCbMD6uHWFCsRephw4l6ZlgwI
-         eyBBXhOz6MYPBZe/xZrkDW4jRBNGT1aTSYsl9R87nZROAgoKkCTWcn3l6w+GHLezSvei
-         4Es7dqYf/Xt2h5ol0w2JbUkOwaYxcrZLfTOTQmI9GfB3YFwoZWCME4qADqJp01eWr+U3
-         bA8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=P804EkvFn0VAlLFLpkTDkQMHTFJyfBf84bJVijuk6QE=;
-        b=aGpSKkaCcSIACZscK2vJnpSYvwoQR9REUZdBw6voeWMcVMR9eoCCO8uJj+gAjctpn6
-         WpycR/jRM/x7EPpe+5MQQ1dmJ/NTa0g/bgZ3BPT1Xiur1ID9mW9a+Au7n5Gfg2X07ym/
-         GwN05kNvqFPVESADOHy7YZJvs/AKGIrTfdHlT65i1rmUtHoOrWI85ymt9iVTqzJtbCgb
-         JvHT+Y5gWgLUAZDMgxFZlFfxuk7lhRoacTHzaBb/PGb4t6rHCc2dPAKXNLLerreOUBjD
-         z2psbfCbZyJHDhIjhBKDqNkSFTzW443iFpjR5coLxkvMFBnXbRF5oOuk3m/RGgao9MPZ
-         nm4g==
-X-Gm-Message-State: AOAM5337B5DzJkpDHQiEJIwEeFD89u6/YLFwQ1T2WNDN5QXBusESsA3g
-        vQDW9hskVQCycbTWLAa5C1oBMk+j1MTSnA==
-X-Google-Smtp-Source: ABdhPJz002j3RAze6d/+DEB4Us9NBfz/uKhtE5PjbnvPLunzjqVXQbanx8bEoFu316+v1nIW3IHl+g==
-X-Received: by 2002:a65:5c83:: with SMTP id a3mr217102pgt.287.1627939178084;
-        Mon, 02 Aug 2021 14:19:38 -0700 (PDT)
-Received: from ip-10-124-121-13.byted.org (ec2-54-241-92-238.us-west-1.compute.amazonaws.com. [54.241.92.238])
-        by smtp.gmail.com with ESMTPSA id 10sm12949212pjc.41.2021.08.02.14.19.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Aug 2021 14:19:37 -0700 (PDT)
-From:   Jiang Wang <jiang.wang@bytedance.com>
-To:     netdev@vger.kernel.org
-Cc:     cong.wang@bytedance.com, duanxiongchun@bytedance.com,
-        xieyongji@bytedance.com, chaiwen.cc@bytedance.com,
-        John Fastabend <john.fastabend@gmail.com>,
+        id S232633AbhHBVWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 17:22:35 -0400
+Received: from pb-smtp2.pobox.com ([64.147.108.71]:56285 "EHLO
+        pb-smtp2.pobox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232387AbhHBVWd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 17:22:33 -0400
+Received: from pb-smtp2.pobox.com (unknown [127.0.0.1])
+        by pb-smtp2.pobox.com (Postfix) with ESMTP id 3AE0DD1F9E;
+        Mon,  2 Aug 2021 17:22:21 -0400 (EDT)
+        (envelope-from nico@fluxnic.net)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=pobox.com; h=date:from
+        :to:cc:subject:in-reply-to:message-id:references:mime-version
+        :content-type; s=sasl; bh=CRe+PDqlDBc1oefWEPXwlMOMctNURIEIHe/d9Q
+        t60Zw=; b=m56WwsFDwPpRT2I7QecE9QLtZve1ynAPPvMtr86IMieAQ0k64QIjcG
+        ere3sLLtO6zvM5XKKEBpLA8U5yOsgOFdCEFYNjnjyv6YFtjUzpti+ITFKrna8M+t
+        hD4UfkW89CoeS57/fwcMo5aLVf0BKL2f6JdTGHEv5wnY7sE4HMEuA=
+Received: from pb-smtp2.nyi.icgroup.com (unknown [127.0.0.1])
+        by pb-smtp2.pobox.com (Postfix) with ESMTP id 306C3D1F9D;
+        Mon,  2 Aug 2021 17:22:21 -0400 (EDT)
+        (envelope-from nico@fluxnic.net)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=fluxnic.net;
+ h=date:from:to:cc:subject:in-reply-to:message-id:references:mime-version:content-type; s=2016-12.pbsmtp; bh=CRe+PDqlDBc1oefWEPXwlMOMctNURIEIHe/d9Qt60Zw=; b=ieIfu5e1D8DeXYWVBpJ3d47r+18sJuZPvVsfKLoBGLvrJ7QCly8af887QGWpjGtlqC2Q0DlUCVdRiqDh8fGFYNz0LDeMezu17uoVXLzjP4HiDrUKICoTGn66qmkxcr5UFcacvfUy/fmF4pjGlREKRXTM4p+y0kPcXqu/WWCbsDM=
+Received: from yoda.home (unknown [96.21.170.108])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by pb-smtp2.pobox.com (Postfix) with ESMTPSA id 55557D1F9C;
+        Mon,  2 Aug 2021 17:22:20 -0400 (EDT)
+        (envelope-from nico@fluxnic.net)
+Received: from xanadu.home (xanadu.home [192.168.2.2])
+        by yoda.home (Postfix) with ESMTPSA id ED3792DA09B9;
+        Mon,  2 Aug 2021 17:22:18 -0400 (EDT)
+Date:   Mon, 2 Aug 2021 17:22:18 -0400 (EDT)
+From:   Nicolas Pitre <nico@fluxnic.net>
+To:     Arnd Bergmann <arnd@kernel.org>
+cc:     "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf-next v3 5/5] selftest/bpf: add new tests in sockmap for unix stream to tcp.
-Date:   Mon,  2 Aug 2021 21:19:09 +0000
-Message-Id: <20210802211912.116329-6-jiang.wang@bytedance.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210802211912.116329-1-jiang.wang@bytedance.com>
-References: <20210802211912.116329-1-jiang.wang@bytedance.com>
+        Arnd Bergmann <arnd@arndb.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v2] ethernet/intel: fix PTP_1588_CLOCK
+ dependencies
+In-Reply-To: <CAK8P3a379=Qi7g7Hmf299GgM-6g32Them81uYXPqRDZDro_azg@mail.gmail.com>
+Message-ID: <7q2p5954-3062-po4-ps5r-9n30n5663ns3@syhkavp.arg>
+References: <20210802145937.1155571-1-arnd@kernel.org> <20210802164907.GA9832@hoboy.vegasvil.org> <bd631e36-1701-b120-a9b0-8825d14cc694@intel.com> <CAK8P3a3P6=ZROxT8daW83mRp7z5rYAQydetWFXQoYF7Y5_KLHA@mail.gmail.com> <CO1PR11MB50892367410160A8364DBF69D6EF9@CO1PR11MB5089.namprd11.prod.outlook.com>
+ <CAK8P3a379=Qi7g7Hmf299GgM-6g32Them81uYXPqRDZDro_azg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+X-Pobox-Relay-ID: B87DEF62-F3D7-11EB-A6DA-FD8818BA3BAF-78420484!pb-smtp2.pobox.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add two new test cases in sockmap tests, where unix stream is
-redirected to tcp and vice versa.
+On Mon, 2 Aug 2021, Arnd Bergmann wrote:
 
-Signed-off-by: Jiang Wang <jiang.wang@bytedance.com>
-Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
----
- .../selftests/bpf/prog_tests/sockmap_listen.c    | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+> On Mon, Aug 2, 2021 at 10:46 PM Keller, Jacob E
+> <jacob.e.keller@intel.com> wrote:
+> 
+> > > You can do something like it for a particular symbol though, such as
+> > >
+> > > config MAY_USE_PTP_1588_CLOCK
+> > >        def_tristate PTP_1588_CLOCK || !PTP_1588_CLOCK
+> > >
+> > >  config E1000E
+> > >         tristate "Intel(R) PRO/1000 PCI-Express Gigabit Ethernet support"
+> > >         depends on PCI && (!SPARC32 || BROKEN)
+> > > +       depends on MAY_USE_PTP_1588_CLOCK
+> > >         select CRC32
+> > > -       imply PTP_1588_CLOCK
+> >
+> > What about "integrates"?
+> 
+> Maybe, we'd need to look at whether that fits for the other users of the
+> "A || !A" trick.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-index 07ed8081f..afa14fb66 100644
---- a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-@@ -1884,7 +1884,7 @@ static void inet_unix_redir_to_connected(int family, int type, int sock_mapfd,
- 	xclose(p0);
- }
- 
--static void udp_unix_skb_redir_to_connected(struct test_sockmap_listen *skel,
-+static void inet_unix_skb_redir_to_connected(struct test_sockmap_listen *skel,
- 					    struct bpf_map *inner_map, int family)
- {
- 	int verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
-@@ -1899,9 +1899,13 @@ static void udp_unix_skb_redir_to_connected(struct test_sockmap_listen *skel,
- 	skel->bss->test_ingress = false;
- 	inet_unix_redir_to_connected(family, SOCK_DGRAM, sock_map, verdict_map,
- 				    REDIR_EGRESS);
-+	inet_unix_redir_to_connected(family, SOCK_STREAM, sock_map, verdict_map,
-+				    REDIR_EGRESS);
- 	skel->bss->test_ingress = true;
- 	inet_unix_redir_to_connected(family, SOCK_DGRAM, sock_map, verdict_map,
- 				    REDIR_INGRESS);
-+	inet_unix_redir_to_connected(family, SOCK_STREAM, sock_map, verdict_map,
-+				    REDIR_INGRESS);
- 
- 	xbpf_prog_detach2(verdict, sock_map, BPF_SK_SKB_VERDICT);
- }
-@@ -1961,7 +1965,7 @@ static void unix_inet_redir_to_connected(int family, int type, int sock_mapfd,
- 
- }
- 
--static void unix_udp_skb_redir_to_connected(struct test_sockmap_listen *skel,
-+static void unix_inet_skb_redir_to_connected(struct test_sockmap_listen *skel,
- 					    struct bpf_map *inner_map, int family)
- {
- 	int verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
-@@ -1976,9 +1980,13 @@ static void unix_udp_skb_redir_to_connected(struct test_sockmap_listen *skel,
- 	skel->bss->test_ingress = false;
- 	unix_inet_redir_to_connected(family, SOCK_DGRAM, sock_map, verdict_map,
- 				     REDIR_EGRESS);
-+	unix_inet_redir_to_connected(family, SOCK_STREAM, sock_map, verdict_map,
-+				     REDIR_EGRESS);
- 	skel->bss->test_ingress = true;
- 	unix_inet_redir_to_connected(family, SOCK_DGRAM, sock_map, verdict_map,
- 				     REDIR_INGRESS);
-+	unix_inet_redir_to_connected(family, SOCK_STREAM, sock_map, verdict_map,
-+				     REDIR_INGRESS);
- 
- 	xbpf_prog_detach2(verdict, sock_map, BPF_SK_SKB_VERDICT);
- }
-@@ -1994,8 +2002,8 @@ static void test_udp_unix_redir(struct test_sockmap_listen *skel, struct bpf_map
- 	snprintf(s, sizeof(s), "%s %s %s", map_name, family_name, __func__);
- 	if (!test__start_subtest(s))
- 		return;
--	udp_unix_skb_redir_to_connected(skel, map, family);
--	unix_udp_skb_redir_to_connected(skel, map, family);
-+	inet_unix_skb_redir_to_connected(skel, map, family);
-+	unix_inet_skb_redir_to_connected(skel, map, family);
- }
- 
- static void run_tests(struct test_sockmap_listen *skel, struct bpf_map *map,
--- 
-2.20.1
+I implemented "conditional dependencies" at the time, which is syntactic 
+sugar to express the above as:
 
+	depends on A if A != n
+
+	depends on A if A
+
+etc.
+
+http://lkml.iu.edu/hypermail/linux/kernel/2004.2/09783.html
+
+But Masahiro shut it down.
+
+
+Nicolas
