@@ -2,94 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D7C33DDE3E
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 19:13:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BCCA3DDE71
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 19:23:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230025AbhHBRN2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 13:13:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34096 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229571AbhHBRN1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 13:13:27 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2812DC06175F
-        for <netdev@vger.kernel.org>; Mon,  2 Aug 2021 10:13:17 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id a8so3058827pjk.4
-        for <netdev@vger.kernel.org>; Mon, 02 Aug 2021 10:13:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=wygq9ENKH3bQQnXnWPKpkSwKibpqnj2KnfbJhRQa5pY=;
-        b=oCVVw2lnN3O07xD5Pf9aciuS9v4sy7e6RKOCPtnJiWr+TL70WuMSn6oZlRi0GvgJ/b
-         kWxm8In/I3les2svlCUigNdOPckAQFPaeODUHbuSSFzHZ2m79nmYFgWUevPobN7CUe7J
-         pF6DliIOaqPUjUqdr6WgBi76FALC5ejrdHNnioOun2vGVMWrh6blIA0ctDCfnR0mLGux
-         l3rBc5yEfGrw5iVlE/oPxIvLLW4Uw0+8vA+ruslL6PcIY3s/TwbMn15Z3WdqCAC5fU+g
-         xzdaV0wOLif+9RlEZP1pieIKvWquiXanMlKpIFoq1/iDU9lSNdq2VK5gaYy9AopfVjaZ
-         8O7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=wygq9ENKH3bQQnXnWPKpkSwKibpqnj2KnfbJhRQa5pY=;
-        b=jR48veQVVH5DVDITEco1s2uAvAGgR0VWAOVa7P7/oitjjQFRkEJUTa/XB3RDRBWZtc
-         lGwKpyCVQqF3/gDwTwPIb8Xxzcs7FXEhSAbQDY4KoVCVXMorOudYRYUitv0/eGbSStY+
-         iBXP66I12L+7b6y/yblvQzlUBxLx+6Ho7s+pLq2hAeAoQfCSiSKwtEVDesFVoEe6ReC8
-         0zUXKVAG2jkk8ziTjFNRz6gS7jmZgfjQQAs6E5LX7I1p6qbBMwM7LRxKq9yhGkpFfhI9
-         iEKcUv5+ttDSTwPxGq/IxZajfLz3ANGelx1LEz46ZBimMLQsH0vlue9otLvEmi9pa0uE
-         jQhQ==
-X-Gm-Message-State: AOAM532hbvtwQHRPvgg1vbBCS4InWfzp2BXvlnMjy3wf9+vdjewm11ft
-        OJIFv0yvxvoRMFP30C9pgLID2F6UDHQeQ/SFb1nlzg==
-X-Google-Smtp-Source: ABdhPJyLNub45jGQBU6OsmDWzVt76+LDOEV+mqEGmkMUbzEetsm0FIrD9B5FnJ3jq4U9uPZ4efnE4bU6Kw/sDgoZ2W0=
-X-Received: by 2002:a17:90a:a896:: with SMTP id h22mr18683623pjq.231.1627924396503;
- Mon, 02 Aug 2021 10:13:16 -0700 (PDT)
+        id S231799AbhHBRYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 13:24:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36258 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231410AbhHBRX6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Aug 2021 13:23:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1EFA660FC2;
+        Mon,  2 Aug 2021 17:23:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627925029;
+        bh=08CK0O9jDcGZbEJKjbVu46c2LdAjn8sY3h2yyecrMeM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SIjeAMJJnVgWp9m3GEnW+1q+Fjj/OrCIjx3WjxEd10Bchn9gUoDa50Sk7tRRmElKs
+         LisaJOVqS+VwK6LHYT3THOsy+AlEK0UDFC5g7nd4qfHK62TLStF8+XpR7S693qRY5U
+         Rd+jghlO3wmkOLCxT+TXaomFsuAu8CssXVLRtIEbhXkbvLC4Wf/+f8N0UnTubjavz3
+         5923BcpL8sidn49rPd8IGcfErQAK6vs+1Ix5aWfuV8y+1BVx/Qub6+EiWP1oTLYTh8
+         LUBkS7+FbpixGpifuKrrp5LG8w5lQKH9+MZ2g/RqhvKosaNlugJt/TCVLSp7SG1zeA
+         IPAlLSQiAhIuQ==
+Received: by pali.im (Postfix)
+        id C0F75B98; Mon,  2 Aug 2021 19:23:46 +0200 (CEST)
+Date:   Mon, 2 Aug 2021 19:23:46 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: How to find out name or id of newly created interface
+Message-ID: <20210802172346.yj3ia7czg6o7kgn7@pali>
+References: <20210731203054.72mw3rbgcjuqbf4j@pali>
+ <20210802100238.GA3756@pc-32.home>
+ <20210802105825.td57b5rd3d6xfxfo@pali>
+ <20210802134320.GB3756@pc-32.home>
 MIME-Version: 1.0
-References: <1627890663-5851-1-git-send-email-loic.poulain@linaro.org>
- <1627890663-5851-2-git-send-email-loic.poulain@linaro.org> <20210802094054.7bc27154@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210802094054.7bc27154@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Mon, 2 Aug 2021 19:22:58 +0200
-Message-ID: <CAMZdPi9ZNU2d+CMKkT3xifOCbTsEeDr6Cj_90Zt3EYW=D6qMqg@mail.gmail.com>
-Subject: Re: [PATCH net-next RESEND 1/2] net: wwan: Add MHI MBIM network driver
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Richard Laing <richard.laing@alliedtelesis.co.nz>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210802134320.GB3756@pc-32.home>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2 Aug 2021 at 18:40, Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon,  2 Aug 2021 09:51:02 +0200 Loic Poulain wrote:
-> > Add new wwan driver for MBIM over MHI. MBIM is a transport protocol
-> > for IP packets, allowing packet aggregation and muxing. Initially
-> > designed for USB bus, it is also exposed through MHI bus for QCOM
-> > based PCIe wwan modems.
-> >
-> > This driver supports the new wwan rtnetlink interface for multi-link
-> > management and has been tested with Quectel EM120R-GL M2 module.
->
-> Let's make sure it builds cleanly with W=3D1 C=3D1 first.
+On Monday 02 August 2021 15:43:20 Guillaume Nault wrote:
+> On Mon, Aug 02, 2021 at 12:58:25PM +0200, Pali Rohár wrote:
+> > On Monday 02 August 2021 12:02:38 Guillaume Nault wrote:
+> > > 
+> > > So the proper solution is to implement NLM_F_ECHO support for
+> > > RTM_NEWLINK messages (RTM_NEWROUTE is an example of netlink handler
+> > > that supports NLM_F_ECHO, see rtmsg_fib()).
+> > 
+> > Do you know if there is some workaround / other solution which can be
+> > used by userspace applications now? And also with stable kernels (which
+> > obviously do not receive this new NLM_F_ECHO support for RTM_NEWLINK)?
+> 
+> I unfortunately can't think of any clean solution. It might be possible
+> to create the new interface with attributes very unlikely to be used by
+> external programs and retrieve the interface name and id by monitoring
+> link creation messages (like 'ip monitor' does). But at this point it's
+> probably easier to just set the interface name and retry with a
+> different name every time it conflicted with an existing device.
 
-Sure.
+"set interface name and retry" is what I'm using now... And looks like
+it is the only stable solution for now.
 
->
-> drivers/net/wwan/mhi_wwan_mbim.c:83:23: warning: no previous prototype fo=
-r =E2=80=98mhi_mbim_get_link=E2=80=99 [-Wmissing-prototypes]
->    83 | struct mhi_mbim_link *mhi_mbim_get_link(struct mhi_mbim_context *=
-mbim,
->       |                       ^~~~~~~~~~~~~~~~~
-> drivers/net/wwan/mhi_wwan_mbim.c:83:22: warning: symbol 'mhi_mbim_get_lin=
-k' was not declared. Should it be static?
->
-> Also - please start putting someone in the To: header, preferably the
-> maintainer / mailing list thru which you expect the code to be merged.
+I was already thinking about monitoring link creation messages... if
+there is not some stable message ordering (e.g. order of response and
+monitor message) but I have not deduced anything from the code.
 
-Not sure why my `git send-email` keeps ignoring the to field for that
-series, but going to fix that, thanks for pointing this.
-
-Regards,
-Loic
+> Maybe someone else could propose less hacky solutions, but I really
+> can't think of anything else apart from implementing NLM_F_ECHO.
