@@ -2,412 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90BC13DDEAC
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 19:39:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B3EF3DDEC6
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 19:55:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229622AbhHBRkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 13:40:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40816 "EHLO
+        id S229612AbhHBRzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 13:55:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229551AbhHBRkE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 13:40:04 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D625C061760
-        for <netdev@vger.kernel.org>; Mon,  2 Aug 2021 10:39:55 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id a6-20020a25ae060000b0290551bbd99700so19869270ybj.6
-        for <netdev@vger.kernel.org>; Mon, 02 Aug 2021 10:39:55 -0700 (PDT)
+        with ESMTP id S229537AbhHBRzL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 13:55:11 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 110BAC06175F
+        for <netdev@vger.kernel.org>; Mon,  2 Aug 2021 10:55:02 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id 184so17435706qkh.1
+        for <netdev@vger.kernel.org>; Mon, 02 Aug 2021 10:55:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=w+CHOlLR0wk12HK1n3MfzHXW9/G5oGNXdAfrSOnosh4=;
-        b=vVedRHD/d2ErzuYdcIkM/vP52T4TitUzsRz009pPzRkqXXgsW75W5260qBVDrWi6D2
-         FAaq22ybFimr7zGa5albdWh/2sOmGqgIelaenwPY19PkTCxlzgFGhBKHVgD2PQ6TvNQB
-         UdLYqKVZDwrBlOl+xdd9+KWUCLhyb9iXRR8lXA2yRIVtsQZsWpDsxcaD7OSDVaONTkPV
-         56ZEjkZH2rZA8891O060GiAhAEEdtIhB7BIfFwqEQHgZLr3mlDvkwShzFgKBXP9VSMnr
-         Hnd8W6VUZrdlFOMTPWNwxnrfUjNm2eIArkzarqGko28y4Jhz1lo9myC2nkhGEhD1lBe9
-         6v2g==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=GwfaRUkFdK10dQiPer/wQQ4LnP1Rwsjlne0r4oYL/oE=;
+        b=OyYU9jEPoWSQj5YlZ3UpybqQ0BHehxbg1txuOE5FUqVwQSadodojyaCbzpjFK0G5SZ
+         j9vNDMpudADCOIDWHBOVSlBZl/nZ/uzLOIUpR0O/6BS4sTxXY4FnBSv3furQ7FoL5HPt
+         Ak9plbdV8c9LW28AV8k7aqvGxiUkNX9UXzlMVDjpF+Lvk3JJHIqV4AGEA82Np15hzOfz
+         dm3ZhTVsIrnBpkYvAi3lN+y30cHt6tWd4U4fJIKuw/CCXuq43G5wWMoDpcP9t9ZbB8hV
+         8jFx8LNpXkURWYVYJe0asAoeTmlZdXy7LilyjpRLqQsN0/6nB/mGWHxkmZn65pdRG9S6
+         Wcig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=w+CHOlLR0wk12HK1n3MfzHXW9/G5oGNXdAfrSOnosh4=;
-        b=skv1HcGlApmlLrOKbCY6+x5ajZIrYNgHwha/i6pYpsTK6S0WE/lHjTFYU1EojDYGcG
-         8XpTWwkPgpgnRyDaRmnOV92Uxy2O2Wfucw0Tl/F8Fr3Jo33wUzZKW7NmemxJK1OenD6B
-         RG46LxdTswQK+RL+M6221pGu98cGKAp0M50TOsZ2F1fsSpsCd/CVH8WUbb3DbPQHvthI
-         jSeQfvE7zlVYOt4Y4gmFRSaePhhziCvn75tmD8uZz7bCpNf+X+REJ4R2gTTylcmNQifo
-         kwvilFUY6byczuL/oeN9DsX0sIGihHQib8gRwvvK1CxhKzcewDZI7/HiLUbBw3w/8Cnq
-         mwuQ==
-X-Gm-Message-State: AOAM530JDtEXr/IRxVuuB3A/BoAtzU1L4ym9n6NautsKgFQh0ORQZP+T
-        mV6gxCGY8eX1QVYe4SKCiVXVyL9b9G6P5ePBjDFWy6HU3IxgwiFcTLIcw7S39EbiBm0pJaYQJBI
-        Ou/1Ev/IlvQT1RZtAigzEWDKy6eljBzkzvZsFXKRtSOG9X5tBkQ1aMw==
-X-Google-Smtp-Source: ABdhPJwabKAf7qqbSTbClfn2JQ15lqWxk2T5QMJsEtrE8vfSxWxhb46zPZzZRNsTV3RVWJFhizOaJqs=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:1ad9:b7d5:f1f4:b82e])
- (user=sdf job=sendgmr) by 2002:a25:db43:: with SMTP id g64mr7972944ybf.443.1627925994212;
- Mon, 02 Aug 2021 10:39:54 -0700 (PDT)
-Date:   Mon,  2 Aug 2021 10:39:51 -0700
-Message-Id: <20210802173951.2818349-1-sdf@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.32.0.554.ge1b32706d8-goog
-Subject: [PATCH bpf-next v2] selftests/bpf: move netcnt test under test_progs
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        Stanislav Fomichev <sdf@google.com>, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=GwfaRUkFdK10dQiPer/wQQ4LnP1Rwsjlne0r4oYL/oE=;
+        b=T3oNfPvlW5+K+l1YqqQCly59i49NtSYIYnVA7UMxfhoKssaC8879ZDlp9DGtwmpSSS
+         yorPYC+1qnPlOSHjV3brpggSeWavvW6whYF0wTikTQjNDQtfu+oZEOGFJFAXJvshLsPp
+         qsRMo5flkswoUjkn5lF5/F5oJA7xFQoDoVngeTxZCQIVIo7m1BVJkoEJvZR4myICdhAE
+         tlcOm4vHe7X5ZUZZuEUfRqsfSVwKL1gvz1MONwZLrxnxYoVuWYuRTC4Cq4l3YxN9wQRC
+         1tCR5g4MZVvCmOrMmbW09NEI0BAA+Ud/+WxvggH65F31cruAQhiKM5FjMGC0KP2U6MaU
+         1nOQ==
+X-Gm-Message-State: AOAM531LFGEViSeUdShVfLC9sCis8wttRiWiH5fgELKJyguUlsYxcd6T
+        T5Z/8txqxZVF8DL5hiDSxXd9Kllkd5bj
+X-Google-Smtp-Source: ABdhPJwG+BrjubMRF0vF1JucN1eKkrcO5m+/+xjF1/JobiGjJp23ZDfjBisWhC3JnRJmJD/qCnXlTg==
+X-Received: by 2002:a37:90d:: with SMTP id 13mr16710607qkj.386.1627926897956;
+        Mon, 02 Aug 2021 10:54:57 -0700 (PDT)
+Received: from bytedance.attlocal.net (ec2-13-57-97-131.us-west-1.compute.amazonaws.com. [13.57.97.131])
+        by smtp.gmail.com with ESMTPSA id g26sm6160039qkm.122.2021.08.02.10.54.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Aug 2021 10:54:57 -0700 (PDT)
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        Peilin Ye <yepeilin.cs@gmail.com>
+Subject: [PATCH iproute2-next v2] tc/skbmod: Introduce SKBMOD_F_ECN option
+Date:   Mon,  2 Aug 2021 10:54:52 -0700
+Message-Id: <20210802175452.7734-1-yepeilin.cs@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210721232053.39077-1-yepeilin.cs@gmail.com>
+References: <20210721232053.39077-1-yepeilin.cs@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rewrite to skel and ASSERT macros as well while we are at it.
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-v2:
-- don't check result of bpf_map__fd (Yonghong Song)
-- remove from .gitignore (Andrii Nakryiko)
-- move ping_command into network_helpers (Andrii Nakryiko)
-- remove assert() (Andrii Nakryiko)
+Recently we added SKBMOD_F_ECN option support to the kernel; support it in
+the tc-skbmod(8) front end, and update its man page accordingly.
 
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
-Acked-by: Yonghong Song <yhs@fb.com>
+The 2 least significant bits of the Traffic Class field in IPv4 and IPv6
+headers are used to represent different ECN states [1]:
+
+	0b00: "Non ECN-Capable Transport", Non-ECT
+	0b10: "ECN Capable Transport", ECT(0)
+	0b01: "ECN Capable Transport", ECT(1)
+	0b11: "Congestion Encountered", CE
+
+This new option, "ecn", marks ECT(0) and ECT(1) IPv{4,6} packets as CE,
+which is useful for ECN-based rate limiting.  For example:
+
+	$ tc filter add dev eth0 parent 1: protocol ip prio 10 \
+		u32 match ip protocol 1 0xff flowid 1:2 \
+		action skbmod \
+		ecn
+
+The updated tc-skbmod SYNOPSIS looks like the following:
+
+	tc ... action skbmod { set SETTABLE | swap SWAPPABLE | ecn } ...
+
+Only one of "set", "swap" or "ecn" shall be used in a single tc-skbmod
+command.  Trying to use more than one of them at a time is considered
+undefined behavior; pipe multiple tc-skbmod commands together instead.
+"set" and "swap" only affect Ethernet packets, while "ecn" only affects
+IP packets.
+
+Depends on kernel patch "net/sched: act_skbmod: Add SKBMOD_F_ECN option
+support", as well as iproute2 patch "tc/skbmod: Remove misinformation
+about the swap action".
+
+[1] https://en.wikipedia.org/wiki/Explicit_Congestion_Notification
+
+Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
 ---
- tools/testing/selftests/bpf/.gitignore        |   1 -
- tools/testing/selftests/bpf/Makefile          |   3 +-
- tools/testing/selftests/bpf/network_helpers.c |  12 ++
- tools/testing/selftests/bpf/network_helpers.h |   1 +
- .../testing/selftests/bpf/prog_tests/netcnt.c |  82 ++++++++++
- .../selftests/bpf/prog_tests/tc_redirect.c    |  12 --
- tools/testing/selftests/bpf/test_netcnt.c     | 148 ------------------
- 7 files changed, 96 insertions(+), 163 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/netcnt.c
- delete mode 100644 tools/testing/selftests/bpf/test_netcnt.c
+Hi David,
 
-diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
-index addcfd8b615e..433f8bef261e 100644
---- a/tools/testing/selftests/bpf/.gitignore
-+++ b/tools/testing/selftests/bpf/.gitignore
-@@ -23,7 +23,6 @@ test_skb_cgroup_id_user
- test_cgroup_storage
- test_flow_dissector
- flow_dissector_load
--test_netcnt
- test_tcpnotify_user
- test_libbpf
- test_tcp_check_syncookie_user
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index f405b20c1e6c..2a58b7b5aea4 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -38,7 +38,7 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
- 	test_verifier_log test_dev_cgroup \
- 	test_sock test_sockmap get_cgroup_id_user \
- 	test_cgroup_storage \
--	test_netcnt test_tcpnotify_user test_sysctl \
-+	test_tcpnotify_user test_sysctl \
- 	test_progs-no_alu32
+Rebased on iproute2-next, should hunk now; thank you!
+
+There will be a conflict next time you merge iproute2 into iproute2-next
+because of this commit:
+
+"tc/skbmod: Remove misinformation about the swap action"
+https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=c06d313d86c1acb8dd72589816301853ff5a4ac4
+
+Please just ignore its code change since it is now superseded by this v2.
+
+Thanks!
+Peilin Ye
+
+Change since v1:
+    - rebased on iproute2-next (David)
+
+ man/man8/tc-skbmod.8 | 46 ++++++++++++++++++++++++++++++++------------
+ tc/m_skbmod.c        | 11 ++++++++---
+ 2 files changed, 42 insertions(+), 15 deletions(-)
+
+diff --git a/man/man8/tc-skbmod.8 b/man/man8/tc-skbmod.8
+index eb3c38fa6bf3..52eaf989e80b 100644
+--- a/man/man8/tc-skbmod.8
++++ b/man/man8/tc-skbmod.8
+@@ -5,12 +5,13 @@ skbmod - user-friendly packet editor action
+ .SH SYNOPSIS
+ .in +8
+ .ti -8
+-.BR tc " ... " "action skbmod " "{ [ " "set "
+-.IR SETTABLE " ] [ "
++.BR tc " ... " "action skbmod " "{ " "set "
++.IR SETTABLE " | "
+ .BI swap " SWAPPABLE"
+-.RI " ] [ " CONTROL " ] [ "
++.RB " | " ecn
++.RI "} [ " CONTROL " ] [ "
+ .BI index " INDEX "
+-] }
++]
  
- # Also test bpf-gcc, if present
-@@ -197,7 +197,6 @@ $(OUTPUT)/test_sockmap: cgroup_helpers.c
- $(OUTPUT)/test_tcpnotify_user: cgroup_helpers.c trace_helpers.c
- $(OUTPUT)/get_cgroup_id_user: cgroup_helpers.c
- $(OUTPUT)/test_cgroup_storage: cgroup_helpers.c
--$(OUTPUT)/test_netcnt: cgroup_helpers.c
- $(OUTPUT)/test_sock_fields: cgroup_helpers.c
- $(OUTPUT)/test_sysctl: cgroup_helpers.c
+ .ti -8
+ .IR SETTABLE " := "
+@@ -25,6 +26,7 @@ skbmod - user-friendly packet editor action
+ .IR SWAPPABLE " := "
+ .B mac
+ .ti -8
++
+ .IR CONTROL " := {"
+ .BR reclassify " | " pipe " | " drop " | " shot " | " continue " | " pass " }"
+ .SH DESCRIPTION
+@@ -36,6 +38,12 @@ action. Instead of having to manually edit 8-, 16-, or 32-bit chunks of an
+ ethernet header,
+ .B skbmod
+ allows complete substitution of supported elements.
++Action must be one of
++.BR set ", " swap " and " ecn "."
++.BR set " and " swap
++only affect Ethernet packets, while
++.B ecn
++only affects IP packets.
+ .SH OPTIONS
+ .TP
+ .BI dmac " DMAC"
+@@ -48,10 +56,11 @@ Change the source mac to the specified address.
+ Change the ethertype to the specified value.
+ .TP
+ .BI mac
+-Used to swap mac addresses. The
+-.B swap mac
+-directive is performed
+-after any outstanding D/SMAC changes.
++Used to swap mac addresses.
++.TP
++.B ecn
++Used to mark ECN Capable Transport (ECT) IP packets as Congestion Encountered (CE).
++Does not affect Non ECN-Capable Transport (Non-ECT) packets.
+ .TP
+ .I CONTROL
+ The following keywords allow to control how the tree of qdisc, classes,
+@@ -117,7 +126,7 @@ tc filter add dev eth5 parent 1: protocol ip prio 10 \\
+ .EE
+ .RE
  
-diff --git a/tools/testing/selftests/bpf/network_helpers.c b/tools/testing/selftests/bpf/network_helpers.c
-index 26468a8f44f3..d6857683397f 100644
---- a/tools/testing/selftests/bpf/network_helpers.c
-+++ b/tools/testing/selftests/bpf/network_helpers.c
-@@ -310,3 +310,15 @@ int make_sockaddr(int family, const char *addr_str, __u16 port,
- 	}
- 	return -1;
- }
-+
-+char *ping_command(int family)
-+{
-+	if (family == AF_INET6) {
-+		/* On some systems 'ping' doesn't support IPv6, so use ping6 if it is present. */
-+		if (!system("which ping6 >/dev/null 2>&1"))
-+			return "ping6";
-+		else
-+			return "ping -6";
-+	}
-+	return "ping";
-+}
-diff --git a/tools/testing/selftests/bpf/network_helpers.h b/tools/testing/selftests/bpf/network_helpers.h
-index d60bc2897770..c59a8f6d770b 100644
---- a/tools/testing/selftests/bpf/network_helpers.h
-+++ b/tools/testing/selftests/bpf/network_helpers.h
-@@ -46,5 +46,6 @@ int fastopen_connect(int server_fd, const char *data, unsigned int data_len,
- 		     int timeout_ms);
- int make_sockaddr(int family, const char *addr_str, __u16 port,
- 		  struct sockaddr_storage *addr, socklen_t *len);
-+char *ping_command(int family);
+-Finally, swap the destination and source mac addresses in the header:
++To swap the destination and source mac addresses in the Ethernet header:
  
- #endif
-diff --git a/tools/testing/selftests/bpf/prog_tests/netcnt.c b/tools/testing/selftests/bpf/prog_tests/netcnt.c
-new file mode 100644
-index 000000000000..6052046c60c2
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/netcnt.c
-@@ -0,0 +1,82 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <sys/sysinfo.h>
-+#include <test_progs.h>
-+#include "network_helpers.h"
-+#include "netcnt_prog.skel.h"
-+#include "netcnt_common.h"
-+
-+#define CG_NAME "/netcnt"
-+
-+void test_netcnt(void)
-+{
-+	union percpu_net_cnt *percpu_netcnt = NULL;
-+	struct bpf_cgroup_storage_key key;
-+	int map_fd, percpu_map_fd;
-+	struct netcnt_prog *skel;
-+	unsigned long packets;
-+	union net_cnt netcnt;
-+	unsigned long bytes;
-+	int cpu, nproc;
-+	int cg_fd = -1;
-+	char cmd[128];
-+
-+	skel = netcnt_prog__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "netcnt_prog__open_and_load"))
-+		return;
-+
-+	nproc = get_nprocs_conf();
-+	percpu_netcnt = malloc(sizeof(*percpu_netcnt) * nproc);
-+	if (!ASSERT_OK_PTR(percpu_netcnt, "malloc(percpu_netcnt)"))
-+		goto err;
-+
-+	cg_fd = test__join_cgroup(CG_NAME);
-+	if (!ASSERT_GE(cg_fd, 0, "test__join_cgroup"))
-+		goto err;
-+
-+	skel->links.bpf_nextcnt = bpf_program__attach_cgroup(skel->progs.bpf_nextcnt, cg_fd);
-+	if (!ASSERT_OK_PTR(skel->links.bpf_nextcnt,
-+			   "attach_cgroup(bpf_nextcnt)"))
-+		goto err;
-+
-+	snprintf(cmd, sizeof(cmd), "%s ::1 -c 10000 -f -q > /dev/null", ping_command(AF_INET6));
-+	ASSERT_OK(system(cmd), cmd);
-+
-+	map_fd = bpf_map__fd(skel->maps.netcnt);
-+	if (!ASSERT_OK(bpf_map_get_next_key(map_fd, NULL, &key), "bpf_map_get_next_key"))
-+		goto err;
-+
-+	if (!ASSERT_OK(bpf_map_lookup_elem(map_fd, &key, &netcnt), "bpf_map_lookup_elem(netcnt)"))
-+		goto err;
-+
-+	percpu_map_fd = bpf_map__fd(skel->maps.percpu_netcnt);
-+	if (!ASSERT_OK(bpf_map_lookup_elem(percpu_map_fd, &key, &percpu_netcnt[0]),
-+		       "bpf_map_lookup_elem(percpu_netcnt)"))
-+		goto err;
-+
-+	/* Some packets can be still in per-cpu cache, but not more than
-+	 * MAX_PERCPU_PACKETS.
-+	 */
-+	packets = netcnt.packets;
-+	bytes = netcnt.bytes;
-+	for (cpu = 0; cpu < nproc; cpu++) {
-+		ASSERT_LE(percpu_netcnt[cpu].packets, MAX_PERCPU_PACKETS, "MAX_PERCPU_PACKETS");
-+
-+		packets += percpu_netcnt[cpu].packets;
-+		bytes += percpu_netcnt[cpu].bytes;
-+	}
-+
-+	/* No packets should be lost */
-+	ASSERT_EQ(packets, 10000, "packets");
-+
-+	/* Let's check that bytes counter matches the number of packets
-+	 * multiplied by the size of ipv6 ICMP packet.
-+	 */
-+	ASSERT_EQ(bytes, packets * 104, "bytes");
-+
-+err:
-+	if (cg_fd != -1)
-+		close(cg_fd);
-+	free(percpu_netcnt);
-+	netcnt_prog__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-index 932e4ee3f97c..e7201ba29ccd 100644
---- a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-@@ -390,18 +390,6 @@ static void test_tcp(int family, const char *addr, __u16 port)
- 		close(client_fd);
- }
+ .RS
+ .EX
+@@ -128,9 +137,22 @@ tc filter add dev eth3 parent 1: protocol ip prio 10 \\
+ .EE
+ .RE
  
--static char *ping_command(int family)
--{
--	if (family == AF_INET6) {
--		/* On some systems 'ping' doesn't support IPv6, so use ping6 if it is present. */
--		if (!system("which ping6 >/dev/null 2>&1"))
--			return "ping6";
--		else
--			return "ping -6";
--	}
--	return "ping";
--}
--
- static int test_ping(int family, const char *addr)
+-As mentioned above, the swap action will occur after any
+-.B " smac/dmac "
+-substitutions are executed, if they are present.
++Finally, to mark the CE codepoint in the IP header for ECN Capable Transport (ECT) packets:
++
++.RS
++.EX
++tc filter add dev eth0 parent 1: protocol ip prio 10 \\
++	u32 match ip protocol 1 0xff flowid 1:2 \\
++	action skbmod \\
++	ecn
++.EE
++.RE
++
++Only one of
++.BR set ", " swap " and " ecn
++shall be used in a single command.
++Trying to use more than one of them in a single command is considered undefined behavior; pipe
++multiple commands together instead.
+ 
+ .SH SEE ALSO
+ .BR tc (8),
+diff --git a/tc/m_skbmod.c b/tc/m_skbmod.c
+index e13d3f16bfcb..8d8bac5bc481 100644
+--- a/tc/m_skbmod.c
++++ b/tc/m_skbmod.c
+@@ -28,10 +28,9 @@
+ static void skbmod_explain(void)
  {
- 	SYS("ip netns exec " NS_SRC " %s " PING_ARGS " %s > /dev/null", ping_command(family), addr);
-diff --git a/tools/testing/selftests/bpf/test_netcnt.c b/tools/testing/selftests/bpf/test_netcnt.c
-deleted file mode 100644
-index 4990a99e7381..000000000000
---- a/tools/testing/selftests/bpf/test_netcnt.c
-+++ /dev/null
-@@ -1,148 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--#include <stdio.h>
--#include <stdlib.h>
--#include <string.h>
--#include <errno.h>
--#include <assert.h>
--#include <sys/sysinfo.h>
--#include <sys/time.h>
--
--#include <linux/bpf.h>
--#include <bpf/bpf.h>
--#include <bpf/libbpf.h>
--
--#include "cgroup_helpers.h"
--#include "bpf_rlimit.h"
--#include "netcnt_common.h"
--
--#define BPF_PROG "./netcnt_prog.o"
--#define TEST_CGROUP "/test-network-counters/"
--
--static int bpf_find_map(const char *test, struct bpf_object *obj,
--			const char *name)
--{
--	struct bpf_map *map;
--
--	map = bpf_object__find_map_by_name(obj, name);
--	if (!map) {
--		printf("%s:FAIL:map '%s' not found\n", test, name);
--		return -1;
--	}
--	return bpf_map__fd(map);
--}
--
--int main(int argc, char **argv)
--{
--	union percpu_net_cnt *percpu_netcnt;
--	struct bpf_cgroup_storage_key key;
--	int map_fd, percpu_map_fd;
--	int error = EXIT_FAILURE;
--	struct bpf_object *obj;
--	int prog_fd, cgroup_fd;
--	unsigned long packets;
--	union net_cnt netcnt;
--	unsigned long bytes;
--	int cpu, nproc;
--	__u32 prog_cnt;
--
--	nproc = get_nprocs_conf();
--	percpu_netcnt = malloc(sizeof(*percpu_netcnt) * nproc);
--	if (!percpu_netcnt) {
--		printf("Not enough memory for per-cpu area (%d cpus)\n", nproc);
--		goto err;
--	}
--
--	if (bpf_prog_load(BPF_PROG, BPF_PROG_TYPE_CGROUP_SKB,
--			  &obj, &prog_fd)) {
--		printf("Failed to load bpf program\n");
--		goto out;
--	}
--
--	cgroup_fd = cgroup_setup_and_join(TEST_CGROUP);
--	if (cgroup_fd < 0)
--		goto err;
--
--	/* Attach bpf program */
--	if (bpf_prog_attach(prog_fd, cgroup_fd, BPF_CGROUP_INET_EGRESS, 0)) {
--		printf("Failed to attach bpf program");
--		goto err;
--	}
--
--	if (system("which ping6 &>/dev/null") == 0)
--		assert(!system("ping6 ::1 -c 10000 -f -q > /dev/null"));
--	else
--		assert(!system("ping -6 ::1 -c 10000 -f -q > /dev/null"));
--
--	if (bpf_prog_query(cgroup_fd, BPF_CGROUP_INET_EGRESS, 0, NULL, NULL,
--			   &prog_cnt)) {
--		printf("Failed to query attached programs");
--		goto err;
--	}
--
--	map_fd = bpf_find_map(__func__, obj, "netcnt");
--	if (map_fd < 0) {
--		printf("Failed to find bpf map with net counters");
--		goto err;
--	}
--
--	percpu_map_fd = bpf_find_map(__func__, obj, "percpu_netcnt");
--	if (percpu_map_fd < 0) {
--		printf("Failed to find bpf map with percpu net counters");
--		goto err;
--	}
--
--	if (bpf_map_get_next_key(map_fd, NULL, &key)) {
--		printf("Failed to get key in cgroup storage\n");
--		goto err;
--	}
--
--	if (bpf_map_lookup_elem(map_fd, &key, &netcnt)) {
--		printf("Failed to lookup cgroup storage\n");
--		goto err;
--	}
--
--	if (bpf_map_lookup_elem(percpu_map_fd, &key, &percpu_netcnt[0])) {
--		printf("Failed to lookup percpu cgroup storage\n");
--		goto err;
--	}
--
--	/* Some packets can be still in per-cpu cache, but not more than
--	 * MAX_PERCPU_PACKETS.
--	 */
--	packets = netcnt.packets;
--	bytes = netcnt.bytes;
--	for (cpu = 0; cpu < nproc; cpu++) {
--		if (percpu_netcnt[cpu].packets > MAX_PERCPU_PACKETS) {
--			printf("Unexpected percpu value: %llu\n",
--			       percpu_netcnt[cpu].packets);
--			goto err;
--		}
--
--		packets += percpu_netcnt[cpu].packets;
--		bytes += percpu_netcnt[cpu].bytes;
--	}
--
--	/* No packets should be lost */
--	if (packets != 10000) {
--		printf("Unexpected packet count: %lu\n", packets);
--		goto err;
--	}
--
--	/* Let's check that bytes counter matches the number of packets
--	 * multiplied by the size of ipv6 ICMP packet.
--	 */
--	if (bytes != packets * 104) {
--		printf("Unexpected bytes count: %lu\n", bytes);
--		goto err;
--	}
--
--	error = 0;
--	printf("test_netcnt:PASS\n");
--
--err:
--	cleanup_cgroup_environment();
--	free(percpu_netcnt);
--
--out:
--	return error;
--}
+ 	fprintf(stderr,
+-		"Usage:... skbmod {[set <SETTABLE>] [swap <SWAPABLE>]} [CONTROL] [index INDEX]\n"
++		"Usage:... skbmod { set <SETTABLE> | swap <SWAPPABLE> | ecn } [CONTROL] [index INDEX]\n"
+ 		"where SETTABLE is: [dmac DMAC] [smac SMAC] [etype ETYPE]\n"
+-		"where SWAPABLE is: \"mac\" to swap mac addresses\n"
+-		"note: \"swap mac\" is done after any outstanding D/SMAC change\n"
++		"where SWAPPABLE is: \"mac\" to swap mac addresses\n"
+ 		"\tDMAC := 6 byte Destination MAC address\n"
+ 		"\tSMAC := optional 6 byte Source MAC address\n"
+ 		"\tETYPE := optional 16 bit ethertype\n"
+@@ -112,6 +111,9 @@ static int parse_skbmod(struct action_util *a, int *argc_p, char ***argv_p,
+ 			p.flags |= SKBMOD_F_SMAC;
+ 			fprintf(stderr, "src MAC address <%s>\n", saddr);
+ 			ok += 1;
++		} else if (matches(*argv, "ecn") == 0) {
++			p.flags |= SKBMOD_F_ECN;
++			ok += 1;
+ 		} else if (matches(*argv, "help") == 0) {
+ 			skbmod_usage();
+ 		} else {
+@@ -212,6 +214,9 @@ static int print_skbmod(struct action_util *au, FILE *f, struct rtattr *arg)
+ 	if (p->flags & SKBMOD_F_SWAPMAC)
+ 		fprintf(f, "swap mac ");
+ 
++	if (p->flags & SKBMOD_F_ECN)
++		fprintf(f, "ecn ");
++
+ 	fprintf(f, "\n\t index %u ref %d bind %d", p->index, p->refcnt,
+ 		p->bindcnt);
+ 	if (show_stats) {
 -- 
-2.32.0.554.ge1b32706d8-goog
+2.20.1
 
