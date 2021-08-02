@@ -2,147 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25D473DE023
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 21:38:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE5CA3DE035
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 21:41:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229835AbhHBTi5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 15:38:57 -0400
-Received: from gateway30.websitewelcome.com ([192.185.194.16]:42133 "EHLO
-        gateway30.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229537AbhHBTi4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 15:38:56 -0400
-X-Greylist: delayed 1415 seconds by postgrey-1.27 at vger.kernel.org; Mon, 02 Aug 2021 15:38:56 EDT
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway30.websitewelcome.com (Postfix) with ESMTP id A40F8D4C5
-        for <netdev@vger.kernel.org>; Mon,  2 Aug 2021 14:15:03 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id AdN0mIZ0GjSwzAdN0mqx4m; Mon, 02 Aug 2021 14:13:02 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:From:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=DJIS+a5HsMmnfIxc2Pzhsn+S1rqEqCOqgc6RlnNWJ6o=; b=EBYUsbVyp+HjHZwcH9ALnmg6Fi
-        uqEN3Dltc7+UHmEwSBAJhyMK9ZKspqWrC8PHilc2jJro+1UWv1pWzRS1uW+kbZ16KM6ewHjGHIPi3
-        gIVHwcI5+GU0K5HQwLswTkbVNGeWWfWU3F2JvH+b8+fs/pT19NRPP8sd1HF4iKNAEAXmBxftqUvgt
-        XDJC7lHqzTRCj7WxZAthwVGTn6YaaidkZb56AK+i9VuRjBDcwucB+jRT8DjP7+tCkc4//pUvk5Mcq
-        FkPYAjy7URIh/9jGAB3X5QXrT7c4AMnpvN3vNJ19LzKgK0J48BoTWug6ec+dACL9Z469kbuyXgUX3
-        /zl0ZXnw==;
-Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:57696 helo=[192.168.15.8])
-        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1mAdMy-0042EB-Mo; Mon, 02 Aug 2021 14:13:00 -0500
-Subject: Re: [PATCH][next] net/ipv4: Replace one-element array with
- flexible-array member
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     patchwork-bot+netdevbpf@kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-References: <20210731170830.GA48844@embeddedor>
- <162791400741.18419.5941105433257893840.git-patchwork-notify@kernel.org>
- <6d3c2ba1-ea01-dbc1-1e18-1ba9c7a15181@embeddedor.com>
-Message-ID: <4a9987c1-1f7a-35af-af6a-01b96292d2ee@embeddedor.com>
-Date:   Mon, 2 Aug 2021 14:15:40 -0500
+        id S230409AbhHBTmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 15:42:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42910 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229537AbhHBTmC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 15:42:02 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECFA5C06175F;
+        Mon,  2 Aug 2021 12:41:52 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id m9so25301776ljp.7;
+        Mon, 02 Aug 2021 12:41:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:subject:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=cvvD7OAixc/C6SiWBm4rRETT6DwlbRXzK7cf1P/caQ0=;
+        b=GOCwh3Mf0aHCcRSSbbOuxQ6sFA0j4LthtY2KkQ1Xdbd5IT1nLRjxmV48h2p55nmfjs
+         nXcEgBe1qcHI+Ua9sI025InoI2V7N8hyf8XKTwMKkeftDmjnM5jGcX6M78FEK3m2BEDt
+         nYrPy6/JB3gwusZZ06t4sw0UXKUoZHFN1HgUm9YIO222N85vUMJX0sRAP96wcBFqz8v5
+         xJSH0PCi3kGtbkerTL7nbNAMa8eBWjUKH0k27XRSj3a0fY+i9r0lbq55ueLqVd/jOq17
+         I+VzS9mTA41sqPooUe6pttIURUBOOUeIj1iU6exywuODHbfg5Cps+WK8QmWeChXreLpM
+         ugTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=cvvD7OAixc/C6SiWBm4rRETT6DwlbRXzK7cf1P/caQ0=;
+        b=AZMQIiTNFX4JhFXYcQL++7hai4bnjN/NEWfJjdRLJN8uEpNs6FAY10g3qS4RMwC22I
+         PNas7sxw3s59UMQlD+DB1kY9FagcX3EtAOZjdV7tnXa1ik3qbtY9RQUzpNpxLUAO+hvh
+         L8tjiJ/ZhqL4kguLDyPIFJx3VvIR0lAn6HOVhPrQLQoigCFXkm8rxRyz79dDWTnva9E7
+         fu2PKayIQymVEpcQFgsnWeBSXKeFwKhtRXl95ovpOiUoJubbDf++P+v3bssFC9W8HcSf
+         AbqiqYqkaPnjE0QEbos5HBWRvHsR/1iYLuih5AZZEb1Mbjo0xE8vAOvhVoGWVsqht6jD
+         th1Q==
+X-Gm-Message-State: AOAM531iJGXYD7SrGYHhEpchg1q6RGDJOdcT1ZLDDUROpo2P/7Xppmsu
+        q+w6enCqGLMYHZf8mmrMkcc=
+X-Google-Smtp-Source: ABdhPJyB36eIK94rLUaDAs5U+C0rfXN3sgl9S3hVwW2iRT8OBPqwwX9r4WHqulEntW3EPAjnkuKb4A==
+X-Received: by 2002:a2e:9ecd:: with SMTP id h13mr12540926ljk.162.1627933311254;
+        Mon, 02 Aug 2021 12:41:51 -0700 (PDT)
+Received: from [192.168.1.102] ([31.173.81.124])
+        by smtp.gmail.com with ESMTPSA id bp31sm282592lfb.308.2021.08.02.12.41.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 Aug 2021 12:41:50 -0700 (PDT)
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Subject: Re: [PATCH net-next 12/18] ravb: Factorise {emac,dmac} init function
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20210722141351.13668-1-biju.das.jz@bp.renesas.com>
+ <20210722141351.13668-13-biju.das.jz@bp.renesas.com>
+Message-ID: <1bd80ea3-c216-a42a-c46c-0bb13173d793@gmail.com>
+Date:   Mon, 2 Aug 2021 22:41:48 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <6d3c2ba1-ea01-dbc1-1e18-1ba9c7a15181@embeddedor.com>
+In-Reply-To: <20210722141351.13668-13-biju.das.jz@bp.renesas.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.31.110
-X-Source-L: No
-X-Exim-ID: 1mAdMy-0042EB-Mo
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:57696
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 8
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello!
 
+On 7/22/21 5:13 PM, Biju Das wrote:
 
-On 8/2/21 13:46, Gustavo A. R. Silva wrote:
+> The R-Car AVB module has Magic packet detection, multiple irq's and
+> timestamp enable features which is not present on RZ/G2L Gigabit
+                                   ^ are
+
+> Ethernet module. Factorise emac and dmac initialization function to
+> support the later SoC.
 > 
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+>  drivers/net/ethernet/renesas/ravb.h      |  2 +
+>  drivers/net/ethernet/renesas/ravb_main.c | 58 ++++++++++++++++--------
+>  2 files changed, 40 insertions(+), 20 deletions(-)
 > 
-> On 8/2/21 09:20, patchwork-bot+netdevbpf@kernel.org wrote:
->> Hello:
->>
->> This patch was applied to netdev/net-next.git (refs/heads/master):
->>
->> On Sat, 31 Jul 2021 12:08:30 -0500 you wrote:
->>> There is a regular need in the kernel to provide a way to declare having
->>> a dynamically sized set of trailing elements in a structure. Kernel code
->>> should always use “flexible array members”[1] for these cases. The older
->>> style of one-element or zero-length arrays should no longer be used[2].
->>>
->>> Use an anonymous union with a couple of anonymous structs in order to
->>> keep userspace unchanged:
->>>
->>> [...]
->>
->> Here is the summary with links:
->>   - [next] net/ipv4: Replace one-element array with flexible-array member
->>     https://git.kernel.org/netdev/net-next/c/2d3e5caf96b9
-> 
-> arghh... this has a bug. Sorry, Dave. I will send a fix for this, shortly.
-> 
+> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
+> index d82bfa6e57c1..4d5910dcda86 100644
+> --- a/drivers/net/ethernet/renesas/ravb.h
+> +++ b/drivers/net/ethernet/renesas/ravb.h
+> @@ -992,6 +992,8 @@ struct ravb_ops {
+>  	void (*ring_free)(struct net_device *ndev, int q);
+>  	void (*ring_format)(struct net_device *ndev, int q);
+>  	bool (*alloc_rx_desc)(struct net_device *ndev, int q);
+> +	void (*emac_init)(struct net_device *ndev);
+> +	void (*dmac_init)(struct net_device *ndev);
+>  };
+>  
+>  struct ravb_drv_data {
+> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+> index 3d0f6598b936..e200114376e4 100644
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> @@ -454,7 +454,7 @@ static int ravb_ring_init(struct net_device *ndev, int q)
+>  }
+>  
+>  /* E-MAC init function */
+> -static void ravb_emac_init(struct net_device *ndev)
+> +static void ravb_emac_init_ex(struct net_device *ndev)
+>  {
+>  	/* Receive frame limit set register */
+>  	ravb_write(ndev, ndev->mtu + ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN, RFLR);
+> @@ -480,30 +480,19 @@ static void ravb_emac_init(struct net_device *ndev)
+>  	ravb_write(ndev, ECSIPR_ICDIP | ECSIPR_MPDIP | ECSIPR_LCHNGIP, ECSIPR);
+>  }
+>  
+> -/* Device init function for Ethernet AVB */
 
-BTW... can we expect msf->imsf_numsrc to be zero at some point in the following
-pieces of code?
+   Grr, this comment seems oudated...
 
-net/ipv4/igmp.c:
-2553         copycount = count < msf->imsf_numsrc ? count : msf->imsf_numsrc;
-2554         len = copycount * sizeof(psl->sl_addr[0]);
-2555         msf->imsf_numsrc = count;
-2556         if (put_user(IP_MSFILTER_SIZE(copycount), optlen) ||
-2557             copy_to_user(optval, msf, IP_MSFILTER_SIZE(0))) {
-2558                 return -EFAULT;
-2559         }
+> -static int ravb_dmac_init(struct net_device *ndev)
+> +static void ravb_emac_init(struct net_device *ndev)
+>  {
+>  	struct ravb_private *priv = netdev_priv(ndev);
+>  	const struct ravb_drv_data *info = priv->info;
+> -	int error;
+>  
+> -	/* Set CONFIG mode */
+> -	error = ravb_config(ndev);
+> -	if (error)
+> -		return error;
+> -
+> -	error = ravb_ring_init(ndev, RAVB_BE);
+> -	if (error)
+> -		return error;
+> -	error = ravb_ring_init(ndev, RAVB_NC);
+> -	if (error) {
+> -		ravb_ring_free(ndev, RAVB_BE);
+> -		return error;
+> -	}
+> +	info->ravb_ops->emac_init(ndev);
+> +}
 
-net/ipv4/ip_sockglue.c:
-1228         case IP_MSFILTER:
-1229         {
-1230                 struct ip_msfilter *msf;
-1231
-1232                 if (optlen < IP_MSFILTER_SIZE(0))
-1233                         goto e_inval;
-1234                 if (optlen > sysctl_optmem_max) {
-1235                         err = -ENOBUFS;
-1236                         break;
-1237                 }
-1238                 msf = memdup_sockptr(optval, optlen);
-1239                 if (IS_ERR(msf)) {
+   The whole ravb_emac_init() now consists only of a single method call?
+Why do we need it at all?
 
-			...
+>  
+> -	/* Descriptor format */
+> -	ravb_ring_format(ndev, RAVB_BE);
+> -	ravb_ring_format(ndev, RAVB_NC);
+> +/* Device init function for Ethernet AVB */
 
-1250                 if (IP_MSFILTER_SIZE(msf->imsf_numsrc) > optlen) {
-1251                         kfree(msf);
-1252                         err = -EINVAL;
-1253                         break;
-1254                 }
-1255                 err = ip_mc_msfilter(sk, msf, 0);
-1256                 kfree(msf);
-1257                 break;
-1258         }
+   s/Device/DMAC/. Or this comment shouldn't have been moved.
 
-Thanks
---
-Gustavo
+> +static void ravb_dmac_init_ex(struct net_device *ndev)
+
+   Please no _ex suffixes -- reminds me of Windoze too much. :-)
+
+> +{
+> +	struct ravb_private *priv = netdev_priv(ndev);
+> +	const struct ravb_drv_data *info = priv->info;
+>  
+>  	/* Set AVB RX */
+>  	ravb_write(ndev,
+> @@ -530,6 +519,33 @@ static int ravb_dmac_init(struct net_device *ndev)
+>  	ravb_write(ndev, RIC2_QFE0 | RIC2_QFE1 | RIC2_RFFE, RIC2);
+>  	/* Frame transmitted, timestamp FIFO updated */
+>  	ravb_write(ndev, TIC_FTE0 | TIC_FTE1 | TIC_TFUE, TIC);
+> +}
+> +
+> +static int ravb_dmac_init(struct net_device *ndev)
+> +{
+> +	struct ravb_private *priv = netdev_priv(ndev);
+> +	const struct ravb_drv_data *info = priv->info;
+> +	int error;
+> +
+> +	/* Set CONFIG mode */
+> +	error = ravb_config(ndev);
+> +	if (error)
+> +		return error;
+> +
+> +	error = ravb_ring_init(ndev, RAVB_BE);
+> +	if (error)
+> +		return error;
+> +	error = ravb_ring_init(ndev, RAVB_NC);
+> +	if (error) {
+> +		ravb_ring_free(ndev, RAVB_BE);
+> +		return error;
+> +	}
+> +
+> +	/* Descriptor format */
+> +	ravb_ring_format(ndev, RAVB_BE);
+> +	ravb_ring_format(ndev, RAVB_NC);
+> +
+> +	info->ravb_ops->dmac_init(ndev);
+>  
+>  	/* Setting the control will start the AVB-DMAC process. */
+>  	ravb_modify(ndev, CCC, CCC_OPC, CCC_OPC_OPERATION);
+> @@ -2018,6 +2034,8 @@ static const struct ravb_ops ravb_gen3_ops = {
+>  	.ring_free = ravb_ring_free_rx,
+>  	.ring_format = ravb_ring_format_rx,
+>  	.alloc_rx_desc = ravb_alloc_rx_desc,
+> +	.emac_init = ravb_emac_init_ex,
+> +	.dmac_init = ravb_dmac_init_ex,
+
+   Hmm, why not also gen2?!
+
+>  };
+[...]
+
+MBR, Sergei
