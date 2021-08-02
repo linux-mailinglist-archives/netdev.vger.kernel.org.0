@@ -2,411 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A91C43DDB84
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 16:50:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E5C53DDB8E
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 16:53:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234573AbhHBOvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 10:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53482 "EHLO
+        id S234496AbhHBOxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 10:53:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233925AbhHBOvC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 10:51:02 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4209C06175F;
-        Mon,  2 Aug 2021 07:50:51 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id nd39so31328944ejc.5;
-        Mon, 02 Aug 2021 07:50:51 -0700 (PDT)
+        with ESMTP id S233925AbhHBOxK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 10:53:10 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE31EC06175F
+        for <netdev@vger.kernel.org>; Mon,  2 Aug 2021 07:53:00 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id s22-20020a17090a1c16b0290177caeba067so6286853pjs.0
+        for <netdev@vger.kernel.org>; Mon, 02 Aug 2021 07:53:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1ph9hQhMwEqNButCr5CskWxFJEGxZutn4sCtVTGhgYs=;
-        b=W5vv/4prhp/ridiCyw+pvwNegXZFQlhTzyBPeKsdPdCjXT6F5Os7fb3ooRNf4MuJZX
-         guUUrjG8ZZcBTXzJXWSGmNJLbtnavhUHxfDxOJvIDR0GjjSvsXVtEbH7mTva0BAVuCF0
-         iDCyWeAOd+G+t+hEa9rkSL2/8RHr/k66ke61LptNxLqdsM96YVuZSque4YsZdYIGNKT3
-         u3gNQERstrv4+4vlVlpEV9sfN4lhSLAFli3KX0efsBB+65qsgY6KxgpPZn5OWSb952f+
-         DVhme/a3QGS8FlHoCP99ZwYz8yMjQZXGw1NmkFE9UylTOClUs8Wj2HznzblDf8MOO9ZX
-         JxqA==
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=UNklaVCjDlloXAvAwjCqYEGwqhMtuXDa6W996lS922E=;
+        b=MyJW8QL1O4qOjiRjVnqJfPTqH3PgiMARhYTzwz8gEf/FdjJltLlwhPpILHUhm+8Ivt
+         msIWyt6X/ECppM6EnfL1TYe2petm6NH5EAMiRvPw1l4D/pIne9k6u7iixvklx8X3/y99
+         YQ552xTqeDuuo+LIeQ2qWBxunpRUf1Nu22MK4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1ph9hQhMwEqNButCr5CskWxFJEGxZutn4sCtVTGhgYs=;
-        b=EebFvkA08GIDvJjIqQPIG7lfioetSgsx60yOq7MfDneDCgLSU7xOyt9i7N3bPyzWs2
-         kq+NSdzWHTWTGe3yNKDaNywsvwddxlfRZdTXZRkUicjg2Dc+CXDQPRDTEgCQCmiTiPEi
-         66UFtfa3YRnsUKWkOTdqPyJjqcAElYWchOSiW6AvITtv0HraUw1tcZSuj5FV6eQzoZCG
-         0jkF9nYHRlmfNQh1IbZ2w0BYZaCJTxh+IoEfJt5Tk/ulu2+mXiTQts7hNEckixGj5y2J
-         3mQz75c94MRNoHS8QGGpOKIbqYxJaTnftLHIKNpFe+CApNf0CWnb6NiUPu4Cn/tcErs8
-         kB8A==
-X-Gm-Message-State: AOAM530SuywAXLrFQXIyvw6Smum9K9qsDFfd1saLoCwIulR/AoWQpsk5
-        U99oZhVqlntSqRxRWRcgZPk=
-X-Google-Smtp-Source: ABdhPJwqFoE4bESSPuP3hjkHQd4fZgpILveFe9RSqsqzUweqmrdMOZttcV1xQqtCavizHno4dLW1MQ==
-X-Received: by 2002:a17:906:8248:: with SMTP id f8mr16137876ejx.229.1627915850313;
-        Mon, 02 Aug 2021 07:50:50 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id q23sm1225473ejc.0.2021.08.02.07.50.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Aug 2021 07:50:49 -0700 (PDT)
-Date:   Mon, 2 Aug 2021 17:50:48 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH net-next v3 6/6] net: dsa: qca: ar9331: add vlan support
-Message-ID: <20210802145048.la6f4u45mguobxnp@skbuf>
-References: <20210802131037.32326-1-o.rempel@pengutronix.de>
- <20210802131037.32326-7-o.rempel@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210802131037.32326-7-o.rempel@pengutronix.de>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=UNklaVCjDlloXAvAwjCqYEGwqhMtuXDa6W996lS922E=;
+        b=t2Ok9J4schK7rCF/kNIg+MTqaGPHhpXbj5EkZ3RZrGsfNtT1uCd2aDx5h2HWwJ+h0c
+         gPllVmbPjhff8AZ4nRXMJwczy6zvj9NJ6n1rsUMuF797dL8PeHPNjADhJBQCNBa00ajO
+         8D5nYN+ECaj7ngfzewFgnBoAILS5g2iyp1rlp3HlcKWkSGzJLERiHRV3dT66kuZwGMYe
+         OLIp6CF52iMATYzwovsyKFCKygXww7o1EKO8vkgaKGgGENX7RDrM8ZFCjJISp65cQCaC
+         viwLnvE3CpazXv6eC7FVFQ1dnaYlWAMjI+NzJxfPEFgGfHHEp4yb9q3reZPF+fklKZLK
+         3jww==
+X-Gm-Message-State: AOAM530mUJ4L61fw/uRuFOtaC57KTlAsR3al0eGyq6SQBo/qU6jpdN+O
+        8XPih1dfkjuFRltaS4Xl9WVD2g==
+X-Google-Smtp-Source: ABdhPJxg0bXjJyJQmNdq3VP/hVeT5f0/+EHnDtmkGw1jTOFyoRFRiZfbbAHbm+AZGZEGEU1+ldQJaw==
+X-Received: by 2002:a62:3896:0:b029:33a:f41a:11a4 with SMTP id f144-20020a6238960000b029033af41a11a4mr17571937pfa.9.1627915980028;
+        Mon, 02 Aug 2021 07:53:00 -0700 (PDT)
+Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id j5sm13201832pgg.41.2021.08.02.07.52.57
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 02 Aug 2021 07:52:59 -0700 (PDT)
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
+Subject: [PATCH net-next 0/2] bnxt_en: Increase maximum RX ring size when jumbo ring is unused
+Date:   Mon,  2 Aug 2021 10:52:37 -0400
+Message-Id: <1627915959-1648-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000bebcbc05c894b961"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 02, 2021 at 03:10:37PM +0200, Oleksij Rempel wrote:
-> This switch provides simple VLAN resolution database for 16 entries.
-> With this database we can cover typical functionalities as port based
-> VLANs, untagged and tagged egress. Port based ingress filtering.
-> 
-> The VLAN database is working on top of forwarding database. So,
-> potentially, we can have multiple VLANs on top of multiple bridges.
-> Hawing one VLAN on top of multiple bridges will fail on different
-> levels, most probably DSA framework should warn if some one won't to make
-> something likes this.
+--000000000000bebcbc05c894b961
 
-Please define the levels in which it will fail for ar9331.
+The RX jumbo ring is automatically enabled when HW GRO/LRO is enabled or
+when the MTU exceeds the page size.  The RX jumbo ring provides a lot
+more RX buffer space when it is in use.  When the RX jumbo ring is not
+in use, some users report that the current maximum of 2K buffers is
+too limiting.  This patchset increases the maximum to 8K buffers when
+the RX jumbo ring is not used.  The default RX ring size is unchanged
+at 511.
 
-I opened the AR9331 manual and I see that the only forwarding isolation
-mechanism is the PORT_VID_MEMBER, the "port base VLAN", which defines
-which other ports can each port forward to. Otherwise, it seems that
-when two ports are in 802.1Q mode (VLAN-aware) and in the same VLAN,
-they can forward packets in that VLAN regardless of PORT_VID_MEMBER.
-If correct, it means you only support a single VLAN-aware bridge, I
-recommend you copy what sja1105_prechangeupper does to block a second
-one.
+Michael Chan (2):
+  bnxt_en: Don't use static arrays for completion ring pages.
+  bnxt_en: Increase maximum RX ring size if jumbo ring is not used.
 
-The manual also says "The AR9331 only supports shared VLAN learning (SVL)."
-So there isn't in fact all that much that the DSA core can save the day.
-Even with a single bridge, the standalone ports will still attempt to
-look up the FDB, and even though packets from standalone ports should
-always reach the CPU port, that might not happen if that MAC DA is in
-the bridge FDB of a bridged port. Example: you have a software LAG
-interface on top of your standalone ports, and this is in a software
-bridge with other ar9331 ports that directly offload the bridge:
-https://patchwork.kernel.org/project/netdevbpf/patch/20210731191023.1329446-3-dqfext@gmail.com/
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 75 ++++++++++++++++++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     | 17 +++--
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  9 ++-
+ 3 files changed, 90 insertions(+), 11 deletions(-)
 
-DSA cannot (easily) help you in that case either, but I agree that
-tracking all possible constellations of unoffloaded LAG interfaces on
-top of ar9331 switches that also have ports in a hardware bridge is
-tricky too. I will give this some thought.
+-- 
+2.18.1
 
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  drivers/net/dsa/qca/ar9331.c | 235 ++++++++++++++++++++++++++++++++++-
->  1 file changed, 233 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
-> index a0324fed2136..0865ffbc2c74 100644
-> --- a/drivers/net/dsa/qca/ar9331.c
-> +++ b/drivers/net/dsa/qca/ar9331.c
-> @@ -67,6 +67,27 @@
->  #define AR9331_SW_REG_GLOBAL_CTRL		0x30
->  #define AR9331_SW_GLOBAL_CTRL_MFS_M		GENMASK(13, 0)
->  
-> +#define AR9331_SW_NUM_VLAN_RECORDS		16
-> +
-> +#define AR9331_SW_REG_VLAN_TABLE_FUNCTION0	0x40
-> +#define AR9331_SW_VT0_PRI_EN			BIT(31)
-> +#define AR9331_SW_VT0_PRI			GENMASK(30, 28)
-> +#define AR9331_SW_VT0_VID			GENMASK(27, 16)
-> +#define AR9331_SW_VT0_PORT_NUM			GENMASK(11, 8)
-> +#define AR9331_SW_VT0_FULL_VIO			BIT(4)
-> +#define AR9331_SW_VT0_BUSY			BIT(3)
-> +#define AR9331_SW_VT0_FUNC			GENMASK(2, 0)
-> +#define AR9331_SW_VT0_FUNC_NOP			0
-> +#define AR9331_SW_VT0_FUNC_FLUSH_ALL		1
-> +#define AR9331_SW_VT0_FUNC_LOAD_ENTRY		2
-> +#define AR9331_SW_VT0_FUNC_PURGE_ENTRY		3
-> +#define AR9331_SW_VT0_FUNC_DEL_PORT		4
-> +#define AR9331_SW_VT0_FUNC_GET_NEXT		5
-> +
-> +#define AR9331_SW_REG_VLAN_TABLE_FUNCTION1	0x44
-> +#define AR9331_SW_VT1_VALID			BIT(11)
-> +#define AR9331_SW_VT1_VID_MEM			GENMASK(9, 0)
-> +
->  /* Size of the address resolution table (ARL) */
->  #define AR9331_SW_NUM_ARL_RECORDS		1024
->  
-> @@ -309,6 +330,11 @@ struct ar9331_sw_port {
->  	struct spinlock stats_lock;
->  };
->  
-> +struct ar9331_sw_vlan_db {
-> +	u16 vid;
-> +	u8 port_mask;
-> +};
-> +
->  struct ar9331_sw_fdb {
->  	u8 port_mask;
->  	u8 aging;
-> @@ -327,6 +353,7 @@ struct ar9331_sw_priv {
->  	struct regmap *regmap;
->  	struct reset_control *sw_reset;
->  	struct ar9331_sw_port port[AR9331_SW_PORTS];
-> +	struct ar9331_sw_vlan_db vdb[AR9331_SW_NUM_VLAN_RECORDS];
->  };
->  
->  static struct ar9331_sw_priv *ar9331_sw_port_to_priv(struct ar9331_sw_port *port)
-> @@ -557,8 +584,6 @@ static int ar9331_sw_setup(struct dsa_switch *ds)
->  			goto error;
->  	}
->  
-> -	ds->configure_vlan_while_not_filtering = false;
-> -
->  	return 0;
->  error:
->  	dev_err_ratelimited(priv->dev, "%s: %i\n", __func__, ret);
-> @@ -1144,6 +1169,209 @@ static void ar9331_sw_port_bridge_leave(struct dsa_switch *ds, int port,
->  	ar9331_sw_port_bridge_mod(ds, port, br, false);
->  }
->  
-> +static int ar9331_port_vlan_filtering(struct dsa_switch *ds, int port,
-> +				      bool vlan_filtering,
-> +				      struct netlink_ext_ack *extack)
-> +{
-> +	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
-> +	struct regmap *regmap = priv->regmap;
-> +	u32 mode;
-> +	int ret;
-> +
-> +	if (vlan_filtering)
-> +		mode = AR9331_SW_8021Q_MODE_SECURE;
-> +	else
-> +		mode = AR9331_SW_8021Q_MODE_NONE;
-> +
-> +	ret = regmap_update_bits(regmap, AR9331_SW_REG_PORT_VLAN(port),
-> +				 AR9331_SW_PORT_VLAN_8021Q_MODE,
-> +				 FIELD_PREP(AR9331_SW_PORT_VLAN_8021Q_MODE,
-> +					    mode));
-> +	if (ret)
-> +		dev_err(priv->dev, "%s: error: %pe\n", __func__, ERR_PTR(ret));
-> +
-> +	return ret;
-> +}
-> +
-> +static int ar9331_sw_vt_wait(struct ar9331_sw_priv *priv, u32 *f0)
-> +{
-> +	struct regmap *regmap = priv->regmap;
-> +
-> +	return regmap_read_poll_timeout(regmap,
-> +					AR9331_SW_REG_VLAN_TABLE_FUNCTION0,
-> +					*f0, !(*f0 & AR9331_SW_VT0_BUSY),
-> +					100, 2000);
-> +}
-> +
-> +static int ar9331_sw_port_vt_rmw(struct ar9331_sw_priv *priv, u16 vid,
-> +				 u8 port_mask_set, u8 port_mask_clr)
-> +{
-> +	struct regmap *regmap = priv->regmap;
-> +	u32 f0, f1, port_mask = 0, port_mask_new, func;
 
-Reverse Christmas tree ordering?
+--000000000000bebcbc05c894b961
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-> +	struct ar9331_sw_vlan_db *vdb = NULL;
-> +	int ret, i;
-> +
-> +	if (!vid)
-> +		return 0;
-
-Explanation?
-
-> +
-> +	ret = ar9331_sw_vt_wait(priv, &f0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_write(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION0, 0);
-> +	if (ret)
-> +		goto error;
-> +
-> +	ret = regmap_write(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION1, 0);
-> +	if (ret)
-> +		goto error;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(priv->vdb); i++) {
-> +		if (priv->vdb[i].vid == vid) {
-> +			vdb = &priv->vdb[i];
-> +			break;
-> +		}
-> +	}
-> +
-> +	ret = regmap_read(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION1, &f1);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (vdb)
-> +		port_mask = vdb->port_mask;
-> +
-> +	port_mask_new = port_mask & ~port_mask_clr;
-> +	port_mask_new |= port_mask_set;
-> +
-> +	if (port_mask_new && port_mask_new == port_mask)
-> +		return 0;
-> +
-> +	if (port_mask_new) {
-> +		func = AR9331_SW_VT0_FUNC_LOAD_ENTRY;
-> +	} else {
-> +		func = AR9331_SW_VT0_FUNC_PURGE_ENTRY;
-> +		port_mask_new = port_mask;
-> +	}
-> +
-> +	if (vdb) {
-> +		vdb->port_mask = port_mask_new;
-> +
-> +		if (!port_mask_new)
-> +			vdb->vid = 0;
-> +	} else {
-> +		for (i = 0; i < ARRAY_SIZE(priv->vdb); i++) {
-> +			if (!priv->vdb[i].vid) {
-> +				vdb = &priv->vdb[i];
-> +				break;
-> +			}
-> +		}
-> +
-> +		if (!vdb)
-> +			return -ENOMEM;
-> +
-> +		vdb->vid = vid;
-> +		vdb->port_mask = port_mask_new;
-> +	}
-> +
-> +	f0 = FIELD_PREP(AR9331_SW_VT0_VID, vid) |
-> +	     FIELD_PREP(AR9331_SW_VT0_FUNC, func) |
-> +	     AR9331_SW_VT0_BUSY;
-> +	f1 = FIELD_PREP(AR9331_SW_VT1_VID_MEM, port_mask_new) |
-> +		AR9331_SW_VT1_VALID;
-> +
-> +	ret = regmap_write(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION1, f1);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_write(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION0, f0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ar9331_sw_vt_wait(priv, &f0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (f0 & AR9331_SW_VT0_FULL_VIO) {
-> +		/* cleanup error status */
-> +		regmap_write(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION0, 0);
-> +		return -ENOMEM;
-
-s/ENOMEM/ENOSPC/ since ENOMEM is for kernel memory allocation AFAIK
-Also, what about "ret = -ENOSPC; goto error;" to get the print for this
-too and be consistent?
-
-> +	}
-> +
-> +	return 0;
-> +
-> +error:
-> +	dev_err(priv->dev, "%s: error: %pe\n", __func__, ERR_PTR(ret));
-> +
-> +	return ret;
-> +}
-> +
-> +static int ar9331_port_vlan_set_pvid(struct ar9331_sw_priv *priv, int port,
-> +				     u16 pvid)
-> +{
-> +	struct regmap *regmap = priv->regmap;
-> +	int ret;
-> +	u32 mask, val;
-> +
-> +	mask = AR9331_SW_PORT_VLAN_8021Q_MODE |
-> +		AR9331_SW_PORT_VLAN_FORCE_DEFALUT_VID_EN |
-> +		AR9331_SW_PORT_VLAN_FORCE_PORT_VLAN_EN;
-> +	val = AR9331_SW_PORT_VLAN_FORCE_DEFALUT_VID_EN |
-> +		AR9331_SW_PORT_VLAN_FORCE_PORT_VLAN_EN |
-> +		FIELD_PREP(AR9331_SW_PORT_VLAN_8021Q_MODE,
-> +			   AR9331_SW_8021Q_MODE_FALLBACK);
-> +
-> +	ret = regmap_update_bits(regmap, AR9331_SW_REG_PORT_VLAN(port),
-> +				 mask, val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return regmap_update_bits(regmap, AR9331_SW_REG_PORT_VLAN(port),
-> +				  AR9331_SW_PORT_VLAN_PORT_VID,
-> +				  FIELD_PREP(AR9331_SW_PORT_VLAN_PORT_VID,
-> +					     pvid));
-> +}
-> +
-> +static int ar9331_port_vlan_add(struct dsa_switch *ds, int port,
-> +				const struct switchdev_obj_port_vlan *vlan,
-> +				struct netlink_ext_ack *extack)
-> +{
-> +	struct ar9331_sw_priv *priv = ds->priv;
-> +	struct regmap *regmap = priv->regmap;
-> +	int ret, mode;
-> +
-> +	ret = ar9331_sw_port_vt_rmw(priv, vlan->vid, BIT(port), 0);
-> +	if (ret)
-> +		goto error;
-> +
-> +	if (vlan->flags & BRIDGE_VLAN_INFO_PVID)
-> +		ret = ar9331_port_vlan_set_pvid(priv, port, vlan->vid);
-> +
-> +	if (ret)
-> +		goto error;
-> +
-> +	if (vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED)
-> +		mode = AR9331_SW_PORT_CTRL_EG_VLAN_MODE_STRIP;
-> +	else
-> +		mode = AR9331_SW_PORT_CTRL_EG_VLAN_MODE_ADD;
-> +
-> +	ret = regmap_update_bits(regmap, AR9331_SW_REG_PORT_CTRL(port),
-> +				 AR9331_SW_PORT_CTRL_EG_VLAN_MODE, mode);
-> +	if (ret)
-> +		goto error;
-> +
-> +	return 0;
-> +error:
-> +	dev_err(priv->dev, "%s: error: %pe\n", __func__, ERR_PTR(ret));
-> +
-> +	return ret;
-> +}
-> +
-> +static int ar9331_port_vlan_del(struct dsa_switch *ds, int port,
-> +				const struct switchdev_obj_port_vlan *vlan)
-> +{
-> +	return ar9331_sw_port_vt_rmw(ds->priv, vlan->vid, 0, BIT(port));
-> +}
-> +
->  static const struct dsa_switch_ops ar9331_sw_ops = {
->  	.get_tag_protocol	= ar9331_sw_get_tag_protocol,
->  	.setup			= ar9331_sw_setup,
-> @@ -1162,6 +1390,9 @@ static const struct dsa_switch_ops ar9331_sw_ops = {
->  	.set_ageing_time	= ar9331_sw_set_ageing_time,
->  	.port_bridge_join	= ar9331_sw_port_bridge_join,
->  	.port_bridge_leave	= ar9331_sw_port_bridge_leave,
-> +	.port_vlan_filtering	= ar9331_port_vlan_filtering,
-> +	.port_vlan_add		= ar9331_port_vlan_add,
-> +	.port_vlan_del		= ar9331_port_vlan_del,
->  };
->  
->  static irqreturn_t ar9331_sw_irq(int irq, void *data)
-> -- 
-> 2.30.2
-> 
-
+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
+xV4Em+0wQoEIR2kPG6yiZNtUK0tNCaZejYU/Mf/bzdKSwud3pLgHV8ls83y2OU/ha9xgJMLpRswv
+xucFCxMsPmk0yoVmpbr92kIpLm+TomNZsL++LcDRa2ECAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUz2bMvqtXpXM0u3vAvRkalz60
+CjswDQYJKoZIhvcNAQELBQADggEBAGUgeqqI/q2pkETeLr6oS7nnm1bkeNmtnJ2bnybNO/RdrbPj
+DHVSiDCCrWr6xrc+q6OiZDKm0Ieq6BN+Wfr8h5mCkZMUdJikI85WcQTRk6EEF2lzIiaULmFD7U15
+FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
+1CHkODrS2JGwDQxXKmyF64MhJiOutWHmqoGmLJVz1jnDvClsYtgT4zcNtoqKtjpWDYAefncWDPIQ
+DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIMA8vth0A7bOHICTrUroI4ft/KzuCDMn
+Ww4vUefzGmOoMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgw
+MjE0NTMwMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQC8mup+zDuddfFWH/W/fIum2hubrfx8y1t89PBUT9kRMhamdKa5
+d2Tc2TdxD2HkIw1OsQiTyvM45pLN0dZ0T7ybtZKkPM52aYCPQaTZyO8w2vn3n1Ni/ir9UeDiw6MM
+dHaku6ULBohqsGS28r/opv+9Owbs8J8l9Ai6XI5QFpnS2m8kAvg5aF6KTHQnLScXsH5OwIRqM5BG
+X2uOypBm3LgSt/elZtIAoO5/k+KAgDiIbKd7fr0SM8Q/XCtVmlTiAFp2px//icUJ8If3YRAmfKYW
+zL4jmpH4itkr90VtMwfHr65p1YZW/zgaMfURz4z4nIGITfwRkRWCZguFXhcQAmHt
+--000000000000bebcbc05c894b961--
