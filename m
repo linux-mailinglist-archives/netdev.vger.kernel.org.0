@@ -2,112 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C97773DE116
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 22:55:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45FFC3DE125
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 22:59:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232426AbhHBUzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 16:55:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32770 "EHLO
+        id S231659AbhHBU7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 16:59:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231367AbhHBUzJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 16:55:09 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967BAC061760;
-        Mon,  2 Aug 2021 13:54:59 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id x8so22746682lfe.3;
-        Mon, 02 Aug 2021 13:54:59 -0700 (PDT)
+        with ESMTP id S231194AbhHBU7W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 16:59:22 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D979C061760;
+        Mon,  2 Aug 2021 13:59:11 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id x90so26258856ede.8;
+        Mon, 02 Aug 2021 13:59:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1HZFyT/f2O2awrt0aUPQqjU99JqeiAz//7TAs6M0YVQ=;
-        b=T8jRwD54Ntq3JAYWRKMH8pfquMClgQNvcwPp5a/VTVydPo0DZE07S+hYanngSlQzuo
-         Ocbt+pm86Q0hGjUNqgv5dAoI2cX4UERXSrUYvvhiZoojVVV4FVQhT766tXuRcfq+zDj8
-         FfYFaRnJHkYJvVwEoNAKjIhGE9hvbqGDkbycZ2Xy6n8+XVKTzMW/vu51+3BM2T0zfDt/
-         Cykywwr456EA2iSDCugSYRY4x9E7WkeWOOyY5XZ55BsAQgydbLEE2W/g9OLXN/qOl4CW
-         n33EDm+K6Lf6xsR5EVJbuK6ztPREIUuhRtsr0clAAj4DYSVnNvh6rO4niozLKEerVx/8
-         VS0g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=w+kjeXZn22Jr79nUGbix7ah/oSHxdioLF/ZCkl2Qub4=;
+        b=q9nemMRF/WSOv+S3b/pGwEpZvXruqpf++H8j70fVBSnlwIpv1taA9OCzTyFsY9vCzA
+         Hx4o8eXwqyVsauqgTyQ0EaZi34B5MrwytQIPv0+p5ODgyG4RZSwxztKW1jXgQ7ejvVlq
+         234NpGtbrFngZaqL5g0uPZqRuhbBz4FUBUJAHqXkvL0hmZX5AIzqNhClFegwv+mc5PeK
+         zQlbjihmAOTdT6PeiFB46OgCiIiwNZT3DUP5GmPX5s0rWgYqy5tkpArIxFclX0vun91r
+         YvC1qgs8AAE+P7zMzqA5KFJkeRImFCtLdtHHktjiOpiuFM4HML5dO6EBZfTNz3tJuO09
+         q99g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=1HZFyT/f2O2awrt0aUPQqjU99JqeiAz//7TAs6M0YVQ=;
-        b=gDld3E48WysBZQRdwPUvdGdqXxfXg1O2kBol6LL0ymRP6meFk5UWA2oD7Cs56ynpvH
-         RxuHCBC3OIN1c1SICCm3wxTC7oET+pBgsSDCn8Oa7/EJvBef3ve/OlNY5/oYGtaqTqKK
-         QjGXwRYsrT4sGjMo15GIlqOIjgOSCwzTBtMADiDnnAeV1/GG2s4g2r8Pjz3cLrCtTA4P
-         xVD7XTYwQMJrjA3wNEJ5LPWCWs9lBksaRTujFkX5PGUiuMvVezGQSOCSeRndwt0sz0mR
-         WzNaMQo0ataqkHrTC5fXmf9Ebae2DtreKBoKFDDvN3uByFjGP7Cuu0R77N9sZzMMo2HD
-         WMAQ==
-X-Gm-Message-State: AOAM531ikSp70Gv6nmJ0lck6m9BP1f177AMSiMnWsxyeZxyDRpcU8Len
-        ElZ8R1v4CkM9Qq2ctAnES1Y=
-X-Google-Smtp-Source: ABdhPJx5fFLmZdBIT/BLQU33TKK5D2T9OekIYmIybGJuYAXrQBGYSiCnx2sgFnRwNh2E1xXK17URnA==
-X-Received: by 2002:ac2:5e8e:: with SMTP id b14mr337767lfq.165.1627937698014;
-        Mon, 02 Aug 2021 13:54:58 -0700 (PDT)
-Received: from [192.168.1.102] ([31.173.81.124])
-        by smtp.gmail.com with ESMTPSA id k14sm747844lfo.262.2021.08.02.13.54.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Aug 2021 13:54:57 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 2/8] ravb: Add skb_sz to struct ravb_hw_info
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=w+kjeXZn22Jr79nUGbix7ah/oSHxdioLF/ZCkl2Qub4=;
+        b=eOBQqZKUvh2Su4uuWqoSk7KCcgqQVhDymyZOyrZGcNr+9NSuGhjs8GA+iOG2ppvFf7
+         /tVfXdL2+Y5EB6GEHn3/2bSw+NyUrzTsidBtY0w0NikdhN/zuo+G0HCk/d8vHiR9K2Z2
+         R7iFc8xi5E4FIrRINsHUym/+5XBZUiRnW4ZZxgT7P6wIWQJwztJos3GOjcxvXZl8/d6Y
+         mKLIz6TVw56d+S1tEyNKV8POPe522Ogwj2NY2eAMLj6x3MLka3ISxHXoDSJb8X98D8ps
+         /xFwK8hS2vQB3uDP1wSJORXyWzMyTGUBvojl6CfRvt+EwbBzNTZ0fD8cHYfiYBF6EA2Q
+         kvFg==
+X-Gm-Message-State: AOAM530bL2BC31eWTyL42Ael1r4eXNK4Co1QGZZE0VOX3/WBMHiFMu7Q
+        tmrxqkfeiJtGlgH5p26vrtQ=
+X-Google-Smtp-Source: ABdhPJxjms0X24JkdPMRhTWj+Di0kYgwkkrV0BbXstM0ANBHXMWsT+FTOdCVkDSPzkC2EulX+M60jg==
+X-Received: by 2002:a05:6402:31e6:: with SMTP id dy6mr21666585edb.36.1627937950208;
+        Mon, 02 Aug 2021 13:59:10 -0700 (PDT)
+Received: from skbuf ([188.25.144.60])
+        by smtp.gmail.com with ESMTPSA id w6sm6881617edq.58.2021.08.02.13.59.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Aug 2021 13:59:09 -0700 (PDT)
+Date:   Mon, 2 Aug 2021 23:59:08 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20210802102654.5996-1-biju.das.jz@bp.renesas.com>
- <20210802102654.5996-3-biju.das.jz@bp.renesas.com>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <58df29d2-c791-df23-994f-7d6176f79fb3@gmail.com>
-Date:   Mon, 2 Aug 2021 23:54:54 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Eric Woudstra <ericwouds@gmail.com>,
+        =?utf-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>,
+        Frank Wunderlich <frank-w@public-files.de>
+Subject: Re: [RFC net-next v2 4/4] Revert "mt7530 mt7530_fdb_write only set
+ ivl bit vid larger than 1"
+Message-ID: <20210802205908.queaqshisqk24pkf@skbuf>
+References: <20210731191023.1329446-1-dqfext@gmail.com>
+ <20210731191023.1329446-5-dqfext@gmail.com>
+ <20210802134409.dro5zjp5ymocpglf@skbuf>
+ <20210802154838.1817958-1-dqfext@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210802102654.5996-3-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210802154838.1817958-1-dqfext@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/2/21 1:26 PM, Biju Das wrote:
+On Mon, Aug 02, 2021 at 11:48:38PM +0800, DENG Qingfang wrote:
+> On Mon, Aug 02, 2021 at 04:44:09PM +0300, Vladimir Oltean wrote:
+> > Would you mind explaining what made VID 1 special in Eric's patch in the
+> > first place?
+>
+> The default value of all ports' PVID is 1, which is copied into the FDB
+> entry, even if the ports are VLAN unaware. So running `bridge fdb show`
+> will show entries like `dev sw0p0 vlan 1 self` even on a VLAN-unaware
+> bridge.
+>
+> Eric probably thought VID 1 is the FDB of all VLAN-unaware bridges, but
+> that is not true. And his patch probably cause a new issue that FDB is
+> inaccessible in a VLAN-**aware** bridge with PVID 1.
+>
+> This series sets PVID to 0 on VLAN-unaware ports, so `bridge fdb show`
+> will no longer print `vlan 1` on VLAN-unaware bridges, and we don't
+> need special case in port_fdb_{add,del} for assisted learning.
 
-> The maximum descriptor size that can be specified on the reception side for
-> R-Car is 2048 bytes, whereas for RZ/G2L it is 8096.
-> 
-> Add the skb_size variable to struct ravb_hw_info for allocating different
-> skb buffer sizes for R-Car and RZ/G2L using the netdev_alloc_skb function.
-> 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
-> v2:
->  * Incorporated Andrew and Sergei's review comments for making it smaller patch
->    and provided detailed description.
-> ---
->  drivers/net/ethernet/renesas/ravb.h      |  1 +
->  drivers/net/ethernet/renesas/ravb_main.c | 10 ++++++----
->  2 files changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-> index cfb972c05b34..16d1711a0731 100644
-> --- a/drivers/net/ethernet/renesas/ravb.h
-> +++ b/drivers/net/ethernet/renesas/ravb.h
-> @@ -991,6 +991,7 @@ enum ravb_chip_id {
->  struct ravb_hw_info {
->  	enum ravb_chip_id chip_id;
->  	int num_tx_desc;
-> +	size_t skb_sz;
-
-   Bad naming -- refers to software ISO hatdware, I suggest max_rx_len or s/th of that sort.
-
-[...]
-
-MBR, Sergei
+All things seriously worth mentioning in the commit message.
