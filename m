@@ -2,240 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A48AE3DD67C
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 15:08:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF6273DD68A
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 15:10:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233829AbhHBNIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 09:08:46 -0400
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:13018 "EHLO
-        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233718AbhHBNIm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 09:08:42 -0400
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 172D1HKh028080;
-        Mon, 2 Aug 2021 13:06:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=Q9ZBUhg1LK0z1heQNXxYh1j73JsSHk6rkbtV9O7kV8c=;
- b=hl439AKrCKssYWt0Gtgdle2UFUF7VfEALhMs3sFn5ihDq3n28v1pCgibpSGLJeWPWGVV
- 9S08ujARZz6Pgv31s3kJlqg4i/z4b0RxWLYSbKayvZvl8Jm3jOC+9nhkrNnCncU5OAez
- qy2STLKPXH4uNwPDRjS71P3F4uvofYwOFEx++ywfhGkT1okvxPKkrJCefLMzTjWfX08t
- D16RcJ1NGANqGlHUUUpaHkDpf8qnMNkOpVHnPFla3zNHkTNHbM73i4pUoDn7hlB0KVqn
- MteKf5MiskWZtbyjm+p4j2vTpV+3YyeFzToryznh6eoz1d0thAfdkRPERauOM3fw/RVK AQ== 
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2020-01-29;
- bh=Q9ZBUhg1LK0z1heQNXxYh1j73JsSHk6rkbtV9O7kV8c=;
- b=emVgII1uc1IERxY3o++Kv1eMAqGG5k63VtNk5liUyXSQiNQEt+J4Iiz0AiGprvX33K63
- 1jFuTe9v6Q5oHMSCagk6RyiM7xhz87ECTo8lCdNbU2kgWKOr77vWecVlk1YGLwqxeuRa
- vpokEhM4WY5VuZKoisxx2QXJ5zU4XHVU1IO8o4hxb6mqhC6wSQJFsfBFodmUDbC4p4yz
- 2VEtmrXvVzGvzLPUkeaDtD+DwIZPlOIo5kymW0AWgtFcFInlyR3qyaKixzMhc2OWJ2Xx
- 8n6pM/X0EOKVVpcvwRCzCCxGnuCa/s3s6vETR52Cm2J0PyAuETW4kd1r1c3SSynWfBdE mw== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3a65vd975r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 02 Aug 2021 13:06:58 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 172D5rHY025118;
-        Mon, 2 Aug 2021 13:06:55 GMT
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2172.outbound.protection.outlook.com [104.47.55.172])
-        by aserp3020.oracle.com with ESMTP id 3a4xb4upbf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 02 Aug 2021 13:06:55 +0000
+        id S233715AbhHBNK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 09:10:26 -0400
+Received: from mga01.intel.com ([192.55.52.88]:24899 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233645AbhHBNKV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Aug 2021 09:10:21 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10063"; a="235378910"
+X-IronPort-AV: E=Sophos;i="5.84,289,1620716400"; 
+   d="scan'208";a="235378910"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2021 06:07:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,289,1620716400"; 
+   d="scan'208";a="510150852"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by FMSMGA003.fm.intel.com with ESMTP; 02 Aug 2021 06:07:13 -0700
+Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10; Mon, 2 Aug 2021 06:07:13 -0700
+Received: from orsmsx606.amr.corp.intel.com (10.22.229.19) by
+ ORSMSX609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10; Mon, 2 Aug 2021 06:07:13 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10 via Frontend Transport; Mon, 2 Aug 2021 06:07:13 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.174)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.10; Mon, 2 Aug 2021 06:07:12 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ipqQqAdtkrHrw53rJup/e1rMdPpPbskowkaKasngA0dVFdWvvnDHmuQingns8us1alWzTIk6VJkEYcsTfi04zbk5RZw4DSTuG2RL2RpKRMQC3K+80wpsfAZPGvnXj0nTO0ROaeuwy+Iz8ypMPTzEG3qKv0fcHFTIZciso1p3zvrhog/409CWdsXFwV2bYXtVe6YLXuMLKEfSW0wzRCTVxIsKlrbWDO4x/1odnU8C0WjE5MOv8DkePneaFelHKxjJj6f4Ddx2NB4wwtYEhQJfu+/EJsBw7HaWnT78oZKTlcoYBMj/GyFPUcsIbQdQFGUa6HvsoIr1uKC2i0M9odOQBw==
+ b=glEDCUNxTkneNxvMNRZtCLFkTQUAJl8vDKEHVr+9JlJ6BZohsT4uF1KeXAPmxhvZx8hPXQYElr0s4P4xWs5BtL36C0if3gj4bKCrWduKDVjvd7Pmw2WGq/5NGaCu8XFdoqqx2ClonkbczvA/srjOYAisO0ueK04vSQygv8Ud1CEs8HPYw9C4bf1QBs9EmqhvO3Bja2Zhj9+dTjunII0S9xHvFSHX/fq1oPiIA1xYc81mSGXXKBOpgJIHx71C0tO+hSdtKnRfS096NR7Zo7dtIh5rJ6rB4bxVZi4QOUjbgx1zSbm6ZmkURpwIvWopvEPYqu51oUD4leo13wHJgV13fQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I5W7Rt23VbQ7Mj8HWXmATUJEbSZASSn2vfTtnLqvcMA=;
- b=luW0cSXxHZrzCcfpPmNxgqfJhmU3/ftf+08o3zEpkdqayBQUDBpZwy6yLd3OBzdx/Oo8tZUp2tB4bSckkSRHrnUXIn2GBi08T5R8Rf8M+yt1UD3x+CrEx7xefhqsGODk0Np+SqkrJkjQIyqZ4FZCl0b8akNUKr+DZ7MO8b6Xn02m2FBIDhS/3ssYYUn+dKWUwxvngPzoIK7iGvqTse4n7iPKiCpyO03AfR35vzAZswtFzbObGYiuzxov0T4EPkDMUDlyNc4ugaLIkj3h1bXYBhCtqLkRRAoIPII4VWbdb/BrFO9awRzI4LbNdVZUjBc7jVkSX6fbDrrJKlX0taF82Q==
+ bh=+S8EuRRx2L+Kph/AmusR+Z6RTbE1qMugeBn2Ck0ko4o=;
+ b=dz78vuLu8aNGweCg6Da5o3lZ5RwdXZzRwHC9hchwAJZ1/8F1A6Clvzd3up6ZSDEi5F1rvBDLqSL31WNRtk3wmlp+FxgJCWqQY1KwmfCkdO+IiEVMANUywK/wzxTvSA9KdLq03YOrjj6obufaow2G8T7Rj5DN3mQ/r4vTmgJzgAAkqmNHPqDyn3NhUnFqJygwVRKfhaOLqEdTGzmjzSf4/fo/eKKYfKU2uBa4A3Jqqod2WHMQHkiITzUB7q3aPeCjqIdZndMWZKOp3WYG6Vx/lNfX99MQHp1GpCiaGpW6sUgTCFseCa9Ek0jQHy0BzStB5vX7TzHtehURSTYwAg132g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I5W7Rt23VbQ7Mj8HWXmATUJEbSZASSn2vfTtnLqvcMA=;
- b=pX856HZ+QxlSUKjYYeXuExEdh6++R+B9RlqLJdH1lymUIJQIFrk5ZISPCt5siz3U17t6M/yNyJhXRoJKDYQqnDSBZYTMwl4Snjd9iu4X+ZFppEoZEeun4snm7cga84o3f1Mq+5v44VHEf1FXNi/eCzsyyIK7n+y0qMoy8Z+W6Os=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=oracle.com;
-Received: from BLAPR10MB5009.namprd10.prod.outlook.com (2603:10b6:208:321::10)
- by MN2PR10MB4400.namprd10.prod.outlook.com (2603:10b6:208:198::22) with
+ bh=+S8EuRRx2L+Kph/AmusR+Z6RTbE1qMugeBn2Ck0ko4o=;
+ b=jgrZayfIgFOGddJ6kxYqbr9JcyC1mk5m9euFBzcvF53QpA050VznGALDbosj8QDgUMBBIn2dmUtyB+WvLBGTHa3uuki+n1OdMVrFl8GuKQCknDNUiPYPTnkbTi8EupSwHIuG2XNAatGCgRzx6/a0I0PaBaAd0xOrLGyAUrJUTts=
+Received: from BYAPR11MB3367.namprd11.prod.outlook.com (2603:10b6:a03:79::29)
+ by SJ0PR11MB5151.namprd11.prod.outlook.com (2603:10b6:a03:2ac::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.18; Mon, 2 Aug
- 2021 13:06:52 +0000
-Received: from BLAPR10MB5009.namprd10.prod.outlook.com
- ([fe80::f10d:29d2:cb38:ed0]) by BLAPR10MB5009.namprd10.prod.outlook.com
- ([fe80::f10d:29d2:cb38:ed0%8]) with mapi id 15.20.4373.026; Mon, 2 Aug 2021
- 13:06:52 +0000
-Subject: Re: [PATCH v1 4/5] PCI: Adapt all code locations to not use struct
- pci_dev::driver directly
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-pci@vger.kernel.org, Alexander Duyck <alexanderduyck@fb.com>,
-        Russell Currey <ruscur@russell.cc>,
-        Sathya Prakash <sathya.prakash@broadcom.com>,
-        oss-drivers@corigine.com, Oliver O'Halloran <oohall@gmail.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Jiri Olsa <jolsa@redhat.com>,
-        linux-perf-users@vger.kernel.org,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        linux-scsi@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-        Ido Schimmel <idosch@nvidia.com>, x86@kernel.org,
-        qat-linux@intel.com,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        linux-wireless@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Fiona Trahe <fiona.trahe@intel.com>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Suganath Prabu Subramani 
-        <suganath-prabu.subramani@broadcom.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Borislav Petkov <bp@alien8.de>, Michael Buesch <m@bues.ch>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Juergen Gross <jgross@suse.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        xen-devel@lists.xenproject.org, Vadym Kochan <vkochan@marvell.com>,
-        MPT-FusionLinux.pdl@broadcom.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org,
-        Wojciech Ziemba <wojciech.ziemba@intel.com>,
-        linux-kernel@vger.kernel.org, Taras Chornyi <tchornyi@marvell.com>,
-        Zhou Wang <wangzhou1@hisilicon.com>,
-        linux-crypto@vger.kernel.org, kernel@pengutronix.de,
-        netdev@vger.kernel.org, Frederic Barrat <fbarrat@linux.ibm.com>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        "David S. Miller" <davem@davemloft.net>
-References: <20210729203740.1377045-1-u.kleine-koenig@pengutronix.de>
- <20210729203740.1377045-5-u.kleine-koenig@pengutronix.de>
- <2b5e8cb5-fac2-5da2-f87b-d287d2c5ea81@oracle.com>
- <20210731120836.vegno6voijvlflws@pengutronix.de>
-From:   Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Message-ID: <d9dfe855-a2a5-c48b-b4c4-8109d7289809@oracle.com>
-Date:   Mon, 2 Aug 2021 09:06:34 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
-In-Reply-To: <20210731120836.vegno6voijvlflws@pengutronix.de>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
+ 2021 13:07:11 +0000
+Received: from BYAPR11MB3367.namprd11.prod.outlook.com
+ ([fe80::4d0f:77de:b513:595d]) by BYAPR11MB3367.namprd11.prod.outlook.com
+ ([fe80::4d0f:77de:b513:595d%5]) with mapi id 15.20.4373.022; Mon, 2 Aug 2021
+ 13:07:11 +0000
+From:   "G, GurucharanX" <gurucharanx.g@intel.com>
+To:     Arnd Bergmann <arnd@kernel.org>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+CC:     Arnd Bergmann <arnd@arndb.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        "intel-wired-lan-bounces@osuosl.org" 
+        <intel-wired-lan-bounces@osuosl.org>
+Subject: RE: [Intel-wired-lan] [PATCH] ethernet/intel: fix PTP_1588_CLOCK
+ dependencies
+Thread-Topic: [Intel-wired-lan] [PATCH] ethernet/intel: fix PTP_1588_CLOCK
+ dependencies
+Thread-Index: AQHXgiMw8RcSz1WqMk2A4/Ocf/AkqqtgOf5A
+Date:   Mon, 2 Aug 2021 13:07:10 +0000
+Message-ID: <BYAPR11MB336781A3C6B41DFFFD838157FCEF9@BYAPR11MB3367.namprd11.prod.outlook.com>
+References: <20210726084540.3282344-1-arnd@kernel.org>
+In-Reply-To: <20210726084540.3282344-1-arnd@kernel.org>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-X-ClientProxiedBy: SN6PR04CA0087.namprd04.prod.outlook.com
- (2603:10b6:805:f2::28) To BLAPR10MB5009.namprd10.prod.outlook.com
- (2603:10b6:208:321::10)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1bcc53fa-1746-4f1f-cbce-08d955b670a6
+x-ms-traffictypediagnostic: SJ0PR11MB5151:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SJ0PR11MB5151E29C9506344CCA56A937FCEF9@SJ0PR11MB5151.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 16Ga8t6G5OxBnMsRL1HHj36PfUoX4UMCmNy16NGFF8tUjjMX3sX+Q7bVWr/OGqfnrfbCRZdN3O4jWnItI7JQLk80r+MD2AUas0FErbdklV7t8Hz5MDxvROFPl26oxZFuufdd09+NklAHs44l6TlqAcDKQdUTH+7KWGrfpP0tzE8TV/RomTgtPGAiJACYf9CDmhTKGPBcpw1xg36VUua43YNolH3P5Ci49bobXlHFUWX+xCWQV7dPxvPKh1dicnHhTYmNrmOu2okc9afZbnrB6ilsGEXi6mbbpnbeL43vTlJ03m5o5aUTW/itgd+VE+zwfl3KyGyO9g8BJgGjYrin5VD5A+RToWE7Py3koFAn/X/77YXmqe8mTyHGJK+wDBo8W2WuQFdI5kFmPnwO82TDTqTwCl3z8bX6Ix2Gj3L/9stOb4h+lqNP1gvbFLsPtDq1BTORaCjmkU+mg6yRthOjv0eygLFZRSGuWt3/6aawJx8RXlnzp8QP/ZjRP47E4f73vGp/XTHcX02H5zAYHHYLxxUdS7tBvXJ/g7DtOK7mSr1QBz5O1PfTrMPBcF5Y/BvxwSDBY+62QDsTBNQ9zE2U+hZEuyPsKnB+d2PCmqkmoQeDnR4qQ4eTiDSM5IFmu06laVZPXjvopsWaUsI1T6pTlSUpGPjl8SZz/64RiKpM/zDzdv4qMPy4k9eZPMi9h9uJfTog0dKS0dvZYBK983EB4FrXWUcx4C1y2QlU5LmujLY=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3367.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38070700005)(66946007)(55016002)(122000001)(66476007)(83380400001)(64756008)(76116006)(66446008)(38100700002)(86362001)(33656002)(186003)(7696005)(66556008)(5660300002)(9686003)(26005)(2906002)(921005)(6506007)(8936002)(508600001)(53546011)(52536014)(110136005)(4326008)(316002)(54906003)(71200400001)(8676002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?os+dUpXjdh50yI/JcqS1a+PPzJR5oFW7WvEG2m8ATEpx8r3MsNQ2YfIdTVky?=
+ =?us-ascii?Q?EjbHae8EIUiiX2lVIy4tHTzpQtvEnU3yi0OgZ8n6JMzezMgbMNV9Ls8AhxnC?=
+ =?us-ascii?Q?fMiAl/nNMftCAy62MLoZqrNICnR+S14ruBLN5qZ4hsPXDLTibey0GibeuFdU?=
+ =?us-ascii?Q?Bz+4HxQPVz4gyO7R9n6Mp/fWh8tr5nQ0MPe5BKH0sHkiQf68bU0CEUNs0wdg?=
+ =?us-ascii?Q?PeR9osaN3N+ECvwSfvxIj8EZqA8CHiozr7sZCOtK0o0LpAPNe6I4YneApKel?=
+ =?us-ascii?Q?VX3tIinpDkKJQ7vu2Bu98pLXZaEWW9kH+32yXWC9EaKMDdd9yfnnNFSH7Axq?=
+ =?us-ascii?Q?JzkTEhQHrlsz6qycPrzuKlCzrZ73IiGqIZcXAPdEG3MTgWplS8qv4KVSVO9a?=
+ =?us-ascii?Q?Fn73jve7+1kAuCvh7G4ctajSplxdvjWJTHaiSBwuVGizjGNwlaiao+bi2n1S?=
+ =?us-ascii?Q?nTUVSl7yF0jHyVFynNKB4IuAnkwFHqC7lnN+Wi82G4DLPViuArY4/vuC+tMA?=
+ =?us-ascii?Q?8aJwycc51uPVFn8bH5o7dT9oSGxXqnKc2Oz0SmTtY/r/wkqFK0h7GmObHg7f?=
+ =?us-ascii?Q?ozeUT2TPcrk2G3jeYudndogTjTKDwRX/THpzMyCVhIcgwaL2xCOYIGLDnSmz?=
+ =?us-ascii?Q?cyFRvzHDJGoaAOED9kovgqpcXCKsZUtLjgaUoItuqCedh67pFeAGNyZk+UDU?=
+ =?us-ascii?Q?/t16c3y4tDlJQTMWkNLtxMO7musKKvjh+0JQAeXGpES39b5uaaLyGttGSet+?=
+ =?us-ascii?Q?TSzHxCKCqspqXgmanFFXRyF1aorDZ0wnz3FSJBYei7s7pBWtg5hGc9lPzpTR?=
+ =?us-ascii?Q?I6h1vjp5LYzpw0xbSOmMIDU9/nkfDPwrcMsNwDjwOteCkDhtWaAjxQshaltd?=
+ =?us-ascii?Q?cvmQ9Q2tXHvOxj82JnykgsmId178pI/j9wJ7TiMfg5opPRP8qvZNjLdS7srC?=
+ =?us-ascii?Q?JXMs1m2az9B9Ig7XjHu+oid7aW8sQPHvU3+XnFRppWO5xsy5/0jsu4qu3Sut?=
+ =?us-ascii?Q?iyd01IOj4MI7CDWIXQGt56cw++GKQCnZjJF4k81MqP1n1M1GivTLWtnYlbrr?=
+ =?us-ascii?Q?SmChpnGoTQW8mj1+iTjYiDpdKDQ2BWjsB18y8JYQvn5IjT2pp4UEPWgQSOiZ?=
+ =?us-ascii?Q?1hHnHuCIK+h7KEgDM7yLe9QUnZP8iHkLcBWyK4BxGN/Q4zlaC6xTCJSUz92R?=
+ =?us-ascii?Q?yS4UZdmSSIh5NMBFBI7mqKrnh6ziAcCQcW9OpmfPRY8dJfvhfUbo0E0jJeI3?=
+ =?us-ascii?Q?ut8u/35WoZD6EaO4kxyrM8LwseLiAsXnpRJtbT0H15LBFa+XDaEv8iT7jYHd?=
+ =?us-ascii?Q?SE0=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.74.101.14] (160.34.89.14) by SN6PR04CA0087.namprd04.prod.outlook.com (2603:10b6:805:f2::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.19 via Frontend Transport; Mon, 2 Aug 2021 13:06:38 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5d6de3c4-6f98-4c6f-2e64-08d955b6654d
-X-MS-TrafficTypeDiagnostic: MN2PR10MB4400:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MN2PR10MB4400A5E9184CD5BC55012BC28AEF9@MN2PR10MB4400.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Mh9lttD8PHCHFtbhor09IMvlqtOLt2k1ZQPqGoJoNP1JHi6njLVTS9AAfNYrhXu0Hj5Al9Y075k61p3h4eiv2JP8oiHMjaMLkrlopRWRtcotv0McNha3QJuYRV/Xl/SkxbobKP+ctDC711ILml1r6Al58ZkDld+0jtTUSkFuWCHZbb3CE63dEffimycsPMEGhUolXOx3vs1cAk1A64Lw/3ll84i7+R2yTl19lmh0LPoUp5ckRBshW8FjlcOGFesTTucGW3O7bNpMI63O7pB8jwQ4P+CYpUJOfksIY4BNmhm1307bicNsUctQ2iBqf6mFhoYoWSgrFfO3rARBPW6gJnVC5pPb1kMEJ+LHqMadVxqsiOHueZTQEwhZMDD6YKzkzGUyBXO8dYTseEZ6odHvUSwJWRC2IuJu2VVRawlgePgy1eAM6UTWi8Mu1UdGQpvWhUibxHYKy6K/Kjc2uOCOVv5zvYgHxYWVLmbyh3DNiHmZOhr5meMXw+DoOj0c/hH6MKnsJIXrlWwMBopeK4+Iurg5aMiKj5O1TNBuFpTrmMFRnv+2gaBwyAIuV4cyNi7X/9LOJ1vwNszRSqQ5amnVJwLmkch/ycOUtsAFjU27tcUa5/DxXN9hYkiiVe0lCA7RYv83AroI8StHfiwVEGLqZ+zb/dvyjqxbs3fn4YG7KNvy66mFKzGU1CeRhrgTQVOXnEus2SMP0dcDB3M/iTy5lE0Amzq2nvdVnMoGBamSlZc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB5009.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(346002)(39860400002)(396003)(136003)(366004)(6916009)(186003)(36756003)(54906003)(5660300002)(38100700002)(8676002)(26005)(478600001)(6486002)(83380400001)(4326008)(31686004)(66476007)(6666004)(31696002)(16576012)(66946007)(2616005)(956004)(316002)(7416002)(7366002)(44832011)(53546011)(2906002)(66556008)(8936002)(7406005)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?Windows-1252?Q?rcNtk0kzhjsCG5MAuUYd78NhRJ2btE+WRp7OgQ7GCAVtNOGg2NgNfzeN?=
- =?Windows-1252?Q?3o9rEXpQJNysR/gTElyHvB4f/XxlbI0UO6ccGokQ9vBPDgu4OXbOQnTv?=
- =?Windows-1252?Q?Q0ltA2jZ0Q6KyWVojNvlpKyd6Nku4FZCaS2UHZiDcbMG3Y42PvFRYAZy?=
- =?Windows-1252?Q?fmKufJ7LUBcl8DqV2uOT35yurVRG0/Fsurewhao+oa3ZYAuQ207sH0Vu?=
- =?Windows-1252?Q?gnN8I6T+lojHlav33CiYPqc7gvUlrzTTZALiL7cUYASaJK3Lt3UNvRSz?=
- =?Windows-1252?Q?LAZkkFmjCkjaQXfPN7Rb576WiVi5wpih+017cRK9ToPe5MoSb020X1BO?=
- =?Windows-1252?Q?rUxANcFtPWz546unMNUR2673dZYNGfYEQB5SxKO96OLVmneS4iTpu43j?=
- =?Windows-1252?Q?ti2ZVdj2EAnCMCcdA52f2YdZFX72Njj9PGs30NhTaEoSSEBfIYLhi8w7?=
- =?Windows-1252?Q?XsiPuGBy9mHZtTpRVGGfTCA667C1GgyCGsLHS4KkTZNDHpt2DUZi8PzJ?=
- =?Windows-1252?Q?VmqXdIBUunuL5YBFUibpOFhHHu40BN4w0JdF3ZQyQzeqXOHqEYoX0ho0?=
- =?Windows-1252?Q?jM7YBHqmR42sfiduM+LF2Eu6UHUp/ocMhFbQFsqnvH1sx4nkVVt/R6JQ?=
- =?Windows-1252?Q?So8DR07C6henvOo2xyxEq3yHAkCtOa8zW1KpyqfRGaXsvCtYjIO99yQs?=
- =?Windows-1252?Q?gK6dRhkDtZl0jOHQpkCNsN3Hm1H2hqrsYbjtdhm4VxJrQmSzo3SBn2Fp?=
- =?Windows-1252?Q?7MUeIRHYpg6pdCBSwhf7EEF37JZ6d/1ky4CC022rVR77ZsYnlXyTp/aI?=
- =?Windows-1252?Q?xkZf5YnmZJwRYG2IlRZO6nsTBnJX+aqb6qgfmgAqTcz7CJs+PG2USfdq?=
- =?Windows-1252?Q?5yTkxuBE6n8xnJbiVwkN+qXRL3/YyF6h3buteo710yHwenUkD78L/VrZ?=
- =?Windows-1252?Q?02sb8ezoMfvIgCb76ilv5+/vOkVwYQ5dB4TY4Pd2B4fB40dxg/9C3dIH?=
- =?Windows-1252?Q?uugYyizHKZNGBJOQZaUPrJfFcVhCZiuZ55rLkK7hIjlmk40K0fiad6Dq?=
- =?Windows-1252?Q?+MwBNgyUUeIdzQ+VQJmax9jbvdELms3815Ff2r3wr82P6NzM1INdgoEa?=
- =?Windows-1252?Q?moB2XIAZbWDPsD4NPS1tI6LQkqD5c8EqW6xoqRxH5Qm/D2Rz+jShLrjN?=
- =?Windows-1252?Q?0KTwRjyd7f4T/IIQJNreafs7kUHCjGaJpO6SzCg+1jOq8vz9dXeJjqm0?=
- =?Windows-1252?Q?2snzBrNeBf5u46L7bVblicBEi55ZiaSlCfLWxof4PxNRB+cCz/TpFPVW?=
- =?Windows-1252?Q?HjhUKEgKQ3D5OJHZUJh2c7reJB4vE1NaZQHijtLL7p65dBQEAfXvfrXk?=
- =?Windows-1252?Q?AOdj+7B9yO/iyqEaq8S0jXjniBq3iONcPU0JBRM3rmBfFskO/9WB9Vuk?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5d6de3c4-6f98-4c6f-2e64-08d955b6654d
-X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB5009.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2021 13:06:52.5454
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3367.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1bcc53fa-1746-4f1f-cbce-08d955b670a6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Aug 2021 13:07:10.9725
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: x2OnNT6q3yqdtGadtAo3vZIPgtDyvQxqnxYrttQ11vZL556exA0nVFhGxXF2buUtsq6pyWbMmwCMB3WyE5VMs0uzcq5pVDXEc77LySMJyRo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB4400
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10063 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 phishscore=0 malwarescore=0
- bulkscore=0 spamscore=0 adultscore=0 mlxlogscore=896 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2107140000
- definitions=main-2108020088
-X-Proofpoint-GUID: wAR5ySqhpQ-thK5-cyYz49DWDX4QJIq0
-X-Proofpoint-ORIG-GUID: wAR5ySqhpQ-thK5-cyYz49DWDX4QJIq0
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7XQl+ZwHCiIJEbKv/g0PSUQN03EwjzpQKKNMEX0tvhO5G2Nz/NOXF8bnzYxT8WKqKY/KSRVcaBDe1o+gYuMiDA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5151
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 7/31/21 8:08 AM, Uwe Kleine-König wrote:
-> Hello Boris,
->
-> On Fri, Jul 30, 2021 at 04:37:31PM -0400, Boris Ostrovsky wrote:
->> On 7/29/21 4:37 PM, Uwe Kleine-König wrote:
->>> --- a/drivers/pci/xen-pcifront.c
->>> +++ b/drivers/pci/xen-pcifront.c
->>> @@ -599,12 +599,12 @@ static pci_ers_result_t pcifront_common_process(int cmd,
->>>  	result = PCI_ERS_RESULT_NONE;
->>>  
->>>  	pcidev = pci_get_domain_bus_and_slot(domain, bus, devfn);
->>> -	if (!pcidev || !pcidev->driver) {
->>> +	pdrv = pci_driver_of_dev(pcidev);
->>> +	if (!pcidev || !pdrv) {
->> If pcidev is NULL we are dead by the time we reach 'if' statement.
-> Oh, you're right. So this needs something like:
->
-> 	if (!pcidev || !(pdrv = pci_driver_of_dev(pcidev)))
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+> Arnd Bergmann
+> Sent: Monday, July 26, 2021 2:15 PM
+> To: Brandeburg, Jesse <jesse.brandeburg@intel.com>; Nguyen, Anthony L
+> <anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>;
+> Jakub Kicinski <kuba@kernel.org>; Keller, Jacob E
+> <jacob.e.keller@intel.com>
+> Cc: Arnd Bergmann <arnd@arndb.de>; netdev@vger.kernel.org; Kurt
+> Kanzenbach <kurt@linutronix.de>; linux-kernel@vger.kernel.org; intel-
+> wired-lan@lists.osuosl.org; Saleem, Shiraz <shiraz.saleem@intel.com>
+> Subject: [Intel-wired-lan] [PATCH] ethernet/intel: fix PTP_1588_CLOCK
+> dependencies
+>=20
+> From: Arnd Bergmann <arnd@arndb.de>
+>=20
+> The 'imply' keyword does not do what most people think it does, it only
+> politely asks Kconfig to turn on another symbol, but does not prevent it =
+from
+> being disabled manually or built as a loadable module when the user is bu=
+ilt-
+> in. In the ICE driver, the latter now causes a link failure:
+>=20
+> aarch64-linux-ld: drivers/net/ethernet/intel/ice/ice_main.o: in function
+> `ice_eth_ioctl':
+> ice_main.c:(.text+0x13b0): undefined reference to `ice_ptp_get_ts_config'
+> ice_main.c:(.text+0x13b0): relocation truncated to fit: R_AARCH64_CALL26
+> against undefined symbol `ice_ptp_get_ts_config'
+> aarch64-linux-ld: ice_main.c:(.text+0x13bc): undefined reference to
+> `ice_ptp_set_ts_config'
+> ice_main.c:(.text+0x13bc): relocation truncated to fit: R_AARCH64_CALL26
+> against undefined symbol `ice_ptp_set_ts_config'
+> aarch64-linux-ld: drivers/net/ethernet/intel/ice/ice_main.o: in function
+> `ice_prepare_for_reset':
+> ice_main.c:(.text+0x31fc): undefined reference to `ice_ptp_release'
+> ice_main.c:(.text+0x31fc): relocation truncated to fit: R_AARCH64_CALL26
+> against undefined symbol `ice_ptp_release'
+> aarch64-linux-ld: drivers/net/ethernet/intel/ice/ice_main.o: in function
+> `ice_rebuild':
+>=20
+> For the other Intel network drivers, there is no link error when the driv=
+ers
+> are built-in and PTP is a loadable module, because linux/ptp_clock_kernel=
+.h
+> contains an IS_REACHABLE() check, but this just changes the compile-time
+> failure to a runtime failure, which is arguably worse.
+>=20
+> Change all the Intel drivers to use the 'depends on PTP_1588_CLOCK ||
+> !PTP_1588_CLOCK' trick to prevent the broken configuration, as we already
+> do for several other drivers. To avoid circular dependencies, this also r=
+equires
+> changing the IGB driver back to using the normal 'depends on I2C' instead=
+ of
+> 'select I2C'.
+>=20
+> Fixes: 06c16d89d2cb ("ice: register 1588 PTP clock device object for E810
+> devices")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  drivers/net/ethernet/intel/Kconfig | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+>=20
 
-
-Sure, that's fine. And while at it please also drop 'if (pdrv)' check below (it's not directly related to your change but is more noticeable now so since you are in that function anyway I'd appreciate if you could do that).
-
-
-Thanks.
-
--boris
-
-
->
-> or repeating the call to pci_driver_of_dev for each previous usage of
-> pdev->driver.
->
-> If there are no other preferences I'd got with the first approach for
-> v2.
->
-> Best regards and thanks for catching,
-> Uwe
->
+Tested-by: Gurucharan  G <Gurucharanx.g@intel.com> (A Contingent Worker at =
+Intel)
