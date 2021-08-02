@@ -2,130 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50C1A3DDC49
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 17:23:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E529B3DDC62
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 17:26:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235044AbhHBPXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 11:23:16 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:55801 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235029AbhHBPXP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 11:23:15 -0400
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.nyi.internal (Postfix) with ESMTP id E6E1C580CB7;
-        Mon,  2 Aug 2021 11:23:05 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Mon, 02 Aug 2021 11:23:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=h1Eq7O
-        AnpvENWQb1PTCF+iVNX7OWS8rEGj8fuJ0u4vs=; b=LCi7zFlyvxxpGURjsqMB+V
-        gNOVr8ofKhz09x8ju6D6ikV5eQA2M20LZdwPWMHZcRHGtU27lqCnMLznDpG1PWE/
-        yYyTvsBQ65vLS5+PG4p2rkmbmFOdF8UC/7G7uFLwk2QjpzI+uyHDatDBq94Iz0Oa
-        6MftU6DKYrgEhB4RMyC+fxGIYWKtQsqYiVTAs0iJfzSazzwQQGbiIaIV+/oVZViZ
-        Q+tB8QRvNvfJpuebHRBmQelWa6bHTnu4/lVlJO5tdH2YJQ+TuS+jKgtzBfWWpMS8
-        03T22ReQcZ4gOG45qCYQsyrmiLfI++9QbMTbXqMn0rSvCziLfNpukUd13WnCDcKQ
-        ==
-X-ME-Sender: <xms:2A0IYbset0vSbgx2TD3WOx2GLZYJ8seYCNaAMkAtnYbcDhoUe1-hxQ>
-    <xme:2A0IYccz7oiFl_S9AdGuF9UOFcNRaBP0bZABafgYJVcISEa1e2KBTIKrobARJ2WRz
-    dsSIwDc8UEl2Cg>
-X-ME-Received: <xmr:2A0IYewtxZRgTl42--KtsBa5Y22EVRBj9244nQhvNfZ-1Vk8piSqACtiBnEg0UFjUd_wawes5L1jkiZgIznu_3LmeZNjhg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddriedvgdekvdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:2A0IYaMBqsEmxbBdn_59qEBiLeIwWcO-ohyAnZrxqMWFl4gzK997aA>
-    <xmx:2A0IYb_oYktVIALBj4CAPD-jzlpPnYLQB_v9OY4SK1D8-aFJ2qRPMg>
-    <xmx:2A0IYaVPM6ltBvV8q9-8yLKFBOv-63qm7c2sftyjj7GYfUp2nYDHLA>
-    <xmx:2Q0IYRezBhgboGWTyetfxFx8RGQMrNpp_TtMaR3o2V_2-Eo_aZ3r9Q>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 2 Aug 2021 11:23:04 -0400 (EDT)
-Date:   Mon, 2 Aug 2021 18:23:01 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Mickey Rachamim <mickeyr@marvell.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Volodymyr Mytnyk <vmytnyk@marvell.com>,
-        Vadym Kochan <vkochan@marvell.com>
-Subject: Re: [PATCH net-next v2 4/4] net: marvell: prestera: Offload
- FLOW_ACTION_POLICE
-Message-ID: <YQgN1djql6wOk8dc@shredder>
-References: <20210802140849.2050-1-vadym.kochan@plvision.eu>
- <20210802140849.2050-5-vadym.kochan@plvision.eu>
+        id S235004AbhHBP1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 11:27:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55985 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229710AbhHBP1D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 11:27:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1627918013;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZDhUhOE7wVvhlT6fRTts0o1L7ni+IAaP4sO+YA1/LPs=;
+        b=JkMVuMMwf8wW3Szfi2Eq3lOa7og66x5Tgtp9ar0NOGPTRyN2ELz6Mtcj0C6clz6E8Tfm7B
+        IGg0TtgeMiWc8+1+QBu6Ou2AMnhlEmdN/zHu8Z52SxQzgbx02tbBt8VYwNAIiYYs9rARt3
+        /ccuYWUSXjFp6i1Xx17+ch9Gx4TlKA4=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-563-W9jMWuX7NxuXS31-Er7WWA-1; Mon, 02 Aug 2021 11:26:52 -0400
+X-MC-Unique: W9jMWuX7NxuXS31-Er7WWA-1
+Received: by mail-lj1-f200.google.com with SMTP id u16-20020a2e84500000b029019c1f8941d1so3295086ljh.9
+        for <netdev@vger.kernel.org>; Mon, 02 Aug 2021 08:26:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZDhUhOE7wVvhlT6fRTts0o1L7ni+IAaP4sO+YA1/LPs=;
+        b=oKCvbRJZbZsTJeuE0TJG5QipWLHjrBx20Z7m4wwZzl3GhkFOklwWJxq3QXdLJrSNOY
+         mFdByAZZIDoAw4bVa4hLLJfkOFGUUXA5tLfDzdJr/J6CRfIxK3q2Owjt7mg+S24kY8jJ
+         TeDptcZKETDiXi4el4Fr8S+kOfCsqOrXm01NeMzPikAKqsm99PAGXbB3Pkf27frY2a+q
+         iGYIFjSmi5LP/7vkqzgHF4AHKWH+i1/xMs7UxdR5Wdawmxp+KRj2NkRoxjhDQDFKBHjG
+         sZhvZNmZ1a5bJBUpt7d0YERQeKAPp102V4uhHEZ1kzzXZQiG+Y+LfvWjP5JOWH8AVzQr
+         77fg==
+X-Gm-Message-State: AOAM531n9C1H8NM7oO0kS2LCHWcY9MWpteC15blLMFbL+UYA7hll3IH5
+        4oXBaw7+c2F3AX7Puf3gOaLYiUIAvYS8jlc8jX7QMh7rrhisZpsdz5urs1+iIsv0vK/18bK4hZO
+        RnCWDGqw8P8qYUcMXxqXQ1Neabwo84Y93
+X-Received: by 2002:a05:6512:2189:: with SMTP id b9mr7974384lft.159.1627918010523;
+        Mon, 02 Aug 2021 08:26:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwxJTM6knPaot69WHjAFEXmr/LkoWJIS6PDNnEfEDimuXafoRs+es8u51ckxQOEF4QZT1655o4pRGDQ381sdSI=
+X-Received: by 2002:a05:6512:2189:: with SMTP id b9mr7974367lft.159.1627918010313;
+ Mon, 02 Aug 2021 08:26:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210802140849.2050-5-vadym.kochan@plvision.eu>
+References: <20210720232624.1493424-1-nitesh@redhat.com>
+In-Reply-To: <20210720232624.1493424-1-nitesh@redhat.com>
+From:   Nitesh Lal <nilal@redhat.com>
+Date:   Mon, 2 Aug 2021 11:26:39 -0400
+Message-ID: <CAFki+LkNzk0ajUeuBnJZ6mp1kxB0+zZf60tw1Vfq+nPy-bvftQ@mail.gmail.com>
+Subject: Re: [PATCH v5 00/14] genirq: Cleanup the abuse of irq_set_affinity_hint()
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, jassisinghbrar@gmail.com,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Tushar.Khandelwal@arm.com, manivannan.sadhasivam@linaro.org,
+        lewis.hanly@microchip.com, ley.foon.tan@intel.com,
+        kabel@kernel.org, huangguangbin2@huawei.com, davem@davemloft.net,
+        benve@cisco.com, govind@gmx.com, kashyap.desai@broadcom.com,
+        Sumit Saxena <sumit.saxena@broadcom.com>,
+        shivasharan.srikanteshwara@broadcom.com,
+        sathya.prakash@broadcom.com,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        suganath-prabu.subramani@broadcom.com, ajit.khaparde@broadcom.com,
+        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
+        linux-pci@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        rostedt@goodmis.org, Marc Zyngier <maz@kernel.org>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Ingo Molnar <mingo@kernel.org>, jbrandeb@kernel.org,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        akpm@linuxfoundation.org, sfr@canb.auug.org.au,
+        stephen@networkplumber.org, rppt@linux.vnet.ibm.com,
+        chris.friesen@windriver.com, Neil Horman <nhorman@tuxdriver.com>,
+        pjwaskiewicz@gmail.com, Stefan Assmann <sassmann@redhat.com>,
+        Tomas Henzl <thenzl@redhat.com>, james.smart@broadcom.com,
+        Dick Kennedy <dick.kennedy@broadcom.com>,
+        Ken Cox <jkc@redhat.com>, faisal.latif@intel.com,
+        shiraz.saleem@intel.com, tariqt@nvidia.com,
+        Alaa Hleihel <ahleihel@redhat.com>,
+        Kamal Heib <kheib@redhat.com>, borisp@nvidia.com,
+        saeedm@nvidia.com, Nitesh Lal <nilal@redhat.com>,
+        "Nikolova, Tatyana E" <tatyana.e.nikolova@intel.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        Al Stone <ahs3@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Chandrakanth Patil <chandrakanth.patil@broadcom.com>,
+        bjorn.andersson@linaro.org, chunkuang.hu@kernel.org,
+        yongqiang.niu@mediatek.com, baolin.wang7@gmail.com,
+        Petr Oros <poros@redhat.com>, Ming Lei <minlei@redhat.com>,
+        Ewan Milne <emilne@redhat.com>, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 02, 2021 at 05:08:49PM +0300, Vadym Kochan wrote:
-> diff --git a/drivers/net/ethernet/marvell/prestera/prestera_flower.c b/drivers/net/ethernet/marvell/prestera/prestera_flower.c
-> index e571ba09ec08..76f30856ac98 100644
-> --- a/drivers/net/ethernet/marvell/prestera/prestera_flower.c
-> +++ b/drivers/net/ethernet/marvell/prestera/prestera_flower.c
-> @@ -5,6 +5,8 @@
->  #include "prestera_acl.h"
->  #include "prestera_flower.h"
->  
-> +#define PRESTERA_HW_TC_NUM	8
-> +
->  static int prestera_flower_parse_actions(struct prestera_flow_block *block,
->  					 struct prestera_acl_rule *rule,
->  					 struct flow_action *flow_action,
-> @@ -30,6 +32,11 @@ static int prestera_flower_parse_actions(struct prestera_flow_block *block,
->  		case FLOW_ACTION_TRAP:
->  			a_entry.id = PRESTERA_ACL_RULE_ACTION_TRAP;
->  			break;
-> +		case FLOW_ACTION_POLICE:
-> +			a_entry.id = PRESTERA_ACL_RULE_ACTION_POLICE;
-> +			a_entry.police.rate = act->police.rate_bytes_ps;
-> +			a_entry.police.burst = act->police.burst;
+On Tue, Jul 20, 2021 at 7:26 PM Nitesh Narayan Lal <nitesh@redhat.com> wrote:
+>
+> The drivers currently rely on irq_set_affinity_hint() to either set the
+> affinity_hint that is consumed by the userspace and/or to enforce a custom
+> affinity.
+>
+> irq_set_affinity_hint() as the name suggests is originally introduced to
+> only set the affinity_hint to help the userspace in guiding the interrupts
+> and not the affinity itself. However, since the commit
+>
+>         e2e64a932556 "genirq: Set initial affinity in irq_set_affinity_hint()"
+>
 
-If packet rate based policing is not supported, an error should be
-returned here with extack.
+[...]
 
-It seems the implementation assumes that each rule has a different
-policer, so an error should be returned in case the same policer is
-shared between different rules.
+>  drivers/infiniband/hw/irdma/hw.c              |  4 +-
+>  drivers/mailbox/bcm-flexrm-mailbox.c          |  4 +-
+>  drivers/net/ethernet/cisco/enic/enic_main.c   |  8 +--
+>  drivers/net/ethernet/emulex/benet/be_main.c   |  4 +-
+>  drivers/net/ethernet/huawei/hinic/hinic_rx.c  |  4 +-
+>  drivers/net/ethernet/intel/i40e/i40e_main.c   |  8 +--
+>  drivers/net/ethernet/intel/iavf/iavf_main.c   |  8 +--
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 10 ++--
+>  drivers/net/ethernet/mellanox/mlx4/eq.c       |  8 ++-
+>  .../net/ethernet/mellanox/mlx5/core/pci_irq.c |  8 +--
+>  drivers/scsi/lpfc/lpfc_init.c                 |  4 +-
+>  drivers/scsi/megaraid/megaraid_sas_base.c     | 27 +++++-----
+>  drivers/scsi/mpt3sas/mpt3sas_base.c           | 21 ++++----
+>  include/linux/interrupt.h                     | 53 ++++++++++++++++++-
+>  kernel/irq/manage.c                           |  8 +--
+>  15 files changed, 114 insertions(+), 65 deletions(-)
+>
+> --
+>
+>
 
-> +			break;
->  		default:
->  			NL_SET_ERR_MSG_MOD(extack, "Unsupported action");
->  			pr_err("Unsupported action\n");
-> @@ -110,6 +117,17 @@ static int prestera_flower_parse(struct prestera_flow_block *block,
->  		return -EOPNOTSUPP;
->  	}
->  
-> +	if (f->classid) {
-> +		int hw_tc = __tc_classid_to_hwtc(PRESTERA_HW_TC_NUM, f->classid);
-> +
-> +		if (hw_tc < 0) {
-> +			NL_SET_ERR_MSG_MOD(f->common.extack, "Unsupported HW TC");
-> +			return hw_tc;
-> +		}
-> +
-> +		prestera_acl_rule_hw_tc_set(rule, hw_tc);
-> +	}
+Gentle ping.
+Any comments on the following patches:
 
-Not sure what this is. Can you show a command line example of how this
-is used?
+  genirq: Provide new interfaces for affinity hints
+  scsi: megaraid_sas: Use irq_set_affinity_and_hint
+  scsi: mpt3sas: Use irq_set_affinity_and_hint
+  enic: Use irq_update_affinity_hint
+  be2net: Use irq_update_affinity_hint
+  mailbox: Use irq_update_affinity_hint
+  hinic: Use irq_set_affinity_and_hint
 
-What about visibility regarding number of packets that were dropped by
-the policer?
+or any other patches?
+
+-- 
+Thanks
+Nitesh
+
