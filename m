@@ -2,72 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E5863DDAC1
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 16:20:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB6473DDAC9
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 16:21:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236065AbhHBOUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 10:20:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36826 "EHLO mail.kernel.org"
+        id S235687AbhHBOVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 10:21:23 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:57354 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234921AbhHBOUW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Aug 2021 10:20:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 82F41610CC;
-        Mon,  2 Aug 2021 14:20:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627914007;
-        bh=NfDZfjR0sUHnJkqTaXSLEjcmGyrcr7yymqNvT36xPgI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=GU0MyHmwNs1MgavaMsxH4BGmuU1OFcqJ76jsJFH8eIqvuPs5BeXHxlK/WjQzt7KaD
-         W0blE3QKmc4CrfXmk9LnrYwCMqULO8jSngV8jAKnvZP/7gSC70DvN/BH0xcsLVR1nC
-         62UYHOp1M6HKSrGSD5LgRC2Lzu+6CTwlRP+BmW3DKknjO84Vr9Xyj+UWHGvI8/3228
-         vl42EEZxKipFGUycKWoucoZLCDYmZffBq4rkg1vGoz2KZ6MVGuddzsxjeNcCv/TKAn
-         +DxCnUtOODEC2G1kCMQMhUKPkVGqTmCSC00lJciYIPx0ixvKMsUXPV+F0Apy0sMR31
-         xqoWmNDXpeKKg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7D12960A45;
-        Mon,  2 Aug 2021 14:20:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S235571AbhHBOVQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Aug 2021 10:21:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=4qIOHS8eFAH0iaUUz0QVNzsJO9b3q6SnKsk8d8XgdyA=; b=5UTHLExSQte7RGSE0ejymRIz3W
+        HaU1WpCl7D9VncXelbUXNpiG0o8G3lbgcc2hX7NX+1BlyFoL5dnil4LqjtKVog14hNTE9HIW5wYgw
+        TMSiR4Mof3HKr4dIvN7w8vQ/aXQB/h2aPYsvS0Sj5FyPlJH+U7e/KV2wRe/UvQ5Lhoqk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mAYoT-00FprS-Fh; Mon, 02 Aug 2021 16:21:05 +0200
+Date:   Mon, 2 Aug 2021 16:21:05 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: How to find out name or id of newly created interface
+Message-ID: <YQf/UVmFEF2ihyKY@lunn.ch>
+References: <20210731203054.72mw3rbgcjuqbf4j@pali>
+ <YQawRZL6aeBkuDSZ@lunn.ch>
+ <20210801143840.j6bfvt3zsfb2x7q5@pali>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3] nfc: hci: pass callback data param as pointer in
- nci_request()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162791400750.18419.3531561992313522609.git-patchwork-notify@kernel.org>
-Date:   Mon, 02 Aug 2021 14:20:07 +0000
-References: <20210731102144.57764-1-krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20210731102144.57764-1-krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, bongsu.jeon@samsung.com,
-        linux-nfc@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210801143840.j6bfvt3zsfb2x7q5@pali>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+> Hello! This has additional issue that I have to choose some free ifindex
+> number and it introduce another race condition that other userspace
+> process may choose same ifindex number. So create request in this case
+> fails if other userspace process is faster... So it has same race
+> condition as specifying interface name.
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+O.K. if you don't want to deal with retries, you are going to have to
+modify the return value. The nice thing is, its netlink. So you can
+add additional attributes, and not break backwards compatibility. User
+space should ignore all attributes it does not expect.
 
-On Sat, 31 Jul 2021 12:21:44 +0200 you wrote:
-> The nci_request() receives a callback function and unsigned long data
-> argument "opt" which is passed to the callback.  Almost all of the
-> nci_request() callers pass pointer to a stack variable as data argument.
-> Only few pass scalar value (e.g. u8).
-> 
-> All such callbacks do not modify passed data argument and in previous
-> commit they were made as const.  However passing pointers via unsigned
-> long removes the const annotation.  The callback could simply cast
-> unsigned long to a pointer to writeable memory.
-> 
-> [...]
+But i suspect the architecture of the code is not going to make it
+easy.
 
-Here is the summary with links:
-  - [v3] nfc: hci: pass callback data param as pointer in nci_request()
-    https://git.kernel.org/netdev/net-next/c/35d7a6f1fb53
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+	Andrew
