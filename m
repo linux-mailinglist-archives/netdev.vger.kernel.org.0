@@ -2,189 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C37043DD1DB
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 10:23:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EC743DD1F7
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 10:29:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232699AbhHBIXa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 04:23:30 -0400
-Received: from dispatch1-eu1.ppe-hosted.com ([185.183.29.33]:23120 "EHLO
-        dispatch1-eu1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232562AbhHBIX3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 04:23:29 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05lp2105.outbound.protection.outlook.com [104.47.17.105])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-eu1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 094C66C0067;
-        Mon,  2 Aug 2021 08:23:18 +0000 (UTC)
+        id S232781AbhHBI3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 04:29:34 -0400
+Received: from mail-vi1eur05on2101.outbound.protection.outlook.com ([40.107.21.101]:47004
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229917AbhHBI3c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Aug 2021 04:29:32 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gBaGd4UQc29jxm+hPRTt4DBPvzqCGamK+nlsrjKln6arkxE3ksX9wrdDmYrePO5hlE7Migxq4moPTK5+vxsBDLw3EO4dq+ksoqKhv1kGTc0TbkOwbi0xgvzyr1aLBjkTGhVbzkkGq1rwddnLgseVHs5NcwwtsRp7WziCNZ68yBWzP+Q5z7ejPsNme4fqHkbsAGiPKQT8RgBoe5evHUlaptLSSOoQ/CLv+T6dvxNK/vxqEbtNzsDMs33BhU62hbXT6dy/2mY4wtC4Wz+mVrv+RoTOQLna7jkTTcAjQTIIqFTzBO+Rd1Z8f6nXP5UpxzdgQG71/PKTx8pJQUSLkzbeNw==
+ b=OX6+V8TgSWYW+qU0MCjzgFjhL7I1vYPJSVmaeSEDceWuuBp/NuHpjLmUub492Jk5ti8hCKWyUBQT6/uZE6MC2HOEmkahfdQ3UarsL80F04kr5bUybanFA4NEMKJG+aRb6EEy6Sk1NS5p4Nh5EBR3vG6kson8KwbOf1rAiGGP0CVZEA5lY9O7/255JaWaiH6zksolkMrluBOctMh5u1F6dve6tYD32uaERpWeSTNhi6JV711Do6JOtbyVjocOOBNDaUK9Qy5iV9AFuarzyS+bb9ZPdr41b6zXYwZdZrkWmGfZTe+5Py7+LqFhyBEq0z7RvPBVA459cdKUT8M/hvH5Vw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9ANa/Ush2zBubXR/f27mszvclPdRZMNSucHSOU7fDME=;
- b=A34BVytX5OIvuOpl1wlyYiVvHf5rqN2KpvytcRn6btPIpNhPlB6TlPaNNlmySSlGhM3DSbLGfAncCkTcgmF+ju0R7TGtSb+/ejJ4555fC9Ti01yxjFjWncsR907g3H6pjlbB0PvhkckOizNPbEPDEcmR4Sou55LTRJ4sNL3vgWDKptchqnjVDvSjax8RSBOJzXf2Oe064A6hRhHy5bVLAnsHrdxE/2SXQGrrKCt99H/nHujadQ0z5ZAPlATMyK+MIgAJIADX6YRCt1iDk4i4uXwrqeARdGCke/vZubaEmeBZMMalgQtHZlkpeJ7eOZ/BrqYc3WSe9l6CgNkC9FzQSw==
+ bh=9SgChE1/Tk0ANwL+qashItnlcpR56R4qP1RnylNcp6E=;
+ b=RaMbrJUtpLhBvw/ehvyeedilxRXswExJ57n3fsOWZTsbHN3/A9B9H9ZrZNRpacwGE0NKzwB6AR9PzXkKdrxkkmTuPZkTQlGM6GvQaZ9fgfeQThRSsdUgs0RCvkFihacckEpEBr5o0bbdp24+rTl3fyGQZ3C3hVsveMOMN9iQsoPSx572Tf9mzLp/eMGVjqMYFUOk08l8uShLoKSnscYoPACrQuEBLwl6o6ms7K1+238HzCNKEeB80V7vxbqvZuySMLJikCVTwW4GlxqFQ2vT5UTmyLGOQ732yUg8FcsuVJW0PED3dbH69xvJq54sKOWLMbk3weJ4Gra2qe9StLV7ZA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=drivenets.com; dmarc=pass action=none
- header.from=drivenets.com; dkim=pass header.d=drivenets.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=drivenets.onmicrosoft.com; s=selector2-drivenets-onmicrosoft-com;
+ smtp.mailfrom=virtuozzo.com; dmarc=pass action=none
+ header.from=virtuozzo.com; dkim=pass header.d=virtuozzo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=virtuozzo.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9ANa/Ush2zBubXR/f27mszvclPdRZMNSucHSOU7fDME=;
- b=m6dS7mXlNrjRoQlDG2LqLpYurH4BdFxUBVeopQIfG7KgWB9ErzazgdOhvLD0QKgJ7zQZPs3pQUFLuTrrnRdUnOCT12QRuklV+NbkFZGK/MtDoaWupM5rjMa2r7em0BEwc7EGYMr92xuGBFlNi21WnD58ZiXNc3Fovz7Dm7T51f0=
+ bh=9SgChE1/Tk0ANwL+qashItnlcpR56R4qP1RnylNcp6E=;
+ b=nY2JdbwL53t0+7UQO4qE/sQeBNSAk5ncu797u6A0Nl8VmLg3abQKiAlNmV7XtCVROdz9lqIOs71Qv8WQ+VRTfI5QaZavilcHflKqDxj3uhEE5y72VtOVWyADq8wWHqo5L7UjK6dlaNat+AvEHSw93Upd8ZFEQxMXV6pgqyyE1mQ=
 Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=drivenets.com;
-Received: from VI1PR08MB3518.eurprd08.prod.outlook.com (2603:10a6:803:7a::23)
- by VI1PR08MB5502.eurprd08.prod.outlook.com (2603:10a6:803:12f::15) with
+ header.d=none;gmail.com; dmarc=none action=none header.from=virtuozzo.com;
+Received: from VE1PR08MB4989.eurprd08.prod.outlook.com (2603:10a6:803:114::19)
+ by VI1PR08MB3341.eurprd08.prod.outlook.com (2603:10a6:803:42::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.17; Mon, 2 Aug
- 2021 08:23:16 +0000
-Received: from VI1PR08MB3518.eurprd08.prod.outlook.com
- ([fe80::cdfb:774a:b053:7b]) by VI1PR08MB3518.eurprd08.prod.outlook.com
- ([fe80::cdfb:774a:b053:7b%6]) with mapi id 15.20.4373.026; Mon, 2 Aug 2021
- 08:23:16 +0000
-Date:   Mon, 2 Aug 2021 11:23:11 +0300
-From:   Lahav Schlesinger <lschlesinger@drivenets.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        dsahern@kernel.org
-Subject: Re: [PATCH] neigh: Support filtering neighbours for L3 slave
-Message-ID: <20210802082310.wszqbydeqpxcgq2p@kgollan-pc>
-References: <20210801090105.27595-1-lschlesinger@drivenets.com>
- <351cae13-8662-2f8f-dd8b-4127ead0ca2a@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <351cae13-8662-2f8f-dd8b-4127ead0ca2a@gmail.com>
-User-Agent: NeoMutt/20171215
-X-ClientProxiedBy: AM0PR06CA0113.eurprd06.prod.outlook.com
- (2603:10a6:208:ab::18) To VI1PR08MB3518.eurprd08.prod.outlook.com
- (2603:10a6:803:7a::23)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.26; Mon, 2 Aug
+ 2021 08:29:18 +0000
+Received: from VE1PR08MB4989.eurprd08.prod.outlook.com
+ ([fe80::c402:b828:df33:5694]) by VE1PR08MB4989.eurprd08.prod.outlook.com
+ ([fe80::c402:b828:df33:5694%7]) with mapi id 15.20.4373.026; Mon, 2 Aug 2021
+ 08:29:18 +0000
+Subject: Re: [PATCH v2] sock: allow reading and changing sk_userlocks with
+ setsockopt
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Westphal <fw@strlen.de>, linux-kernel@vger.kernel.org,
+        linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-arch@vger.kernel.org, Andrei Vagin <avagin@gmail.com>
+References: <20210730160708.6544-1-ptikhomirov@virtuozzo.com>
+ <20210730094631.106b8bec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+Message-ID: <9ead0d04-f243-b637-355c-af11af45fb5a@virtuozzo.com>
+Date:   Mon, 2 Aug 2021 11:26:09 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
+In-Reply-To: <20210730094631.106b8bec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PR1P264CA0014.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:102:19e::19) To VE1PR08MB4989.eurprd08.prod.outlook.com
+ (2603:10a6:803:114::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kgollan-pc (82.166.105.36) by AM0PR06CA0113.eurprd06.prod.outlook.com (2603:10a6:208:ab::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.21 via Frontend Transport; Mon, 2 Aug 2021 08:23:15 +0000
+Received: from [192.168.1.100] (46.39.230.13) by PR1P264CA0014.FRAP264.PROD.OUTLOOK.COM (2603:10a6:102:19e::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.18 via Frontend Transport; Mon, 2 Aug 2021 08:29:16 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: da2466bd-429f-48f3-358b-08d9558ec72d
-X-MS-TrafficTypeDiagnostic: VI1PR08MB5502:
-X-Microsoft-Antispam-PRVS: <VI1PR08MB550248E836B70ABC803AF73DCCEF9@VI1PR08MB5502.eurprd08.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 0951f286-a107-4cd1-fd8a-08d9558f9e97
+X-MS-TrafficTypeDiagnostic: VI1PR08MB3341:
+X-LD-Processed: 0bc7f26d-0264-416e-a6fc-8352af79c58f,ExtAddr
+X-Microsoft-Antispam-PRVS: <VI1PR08MB33419D3072394F7CE0F708C7B7EF9@VI1PR08MB3341.eurprd08.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2W3OOUzSEExhM5YTA8GRqU9WDgOh3srqRhQwSYty3OVlXxvdQ5UsWAsgPAvZOqxDZglZqZTh8i+ITGfCYbx+BYGsImiLeZFYKTUrPEFW4wz7cNyJh9hEwwT6qZ7HqfC1/KvPY9jbzDh+oByARHjb+HxLnBzQMt9khl4xe6Kl6tHp2QerMigDj66deZTEntde0dg8wc9h61OelgP/l4DUdDFbixO1HB+zSPS//lgQ80vhtyxbAych37D1TYLyPc3OPalmAbJmX80BW8DP5oCWSo1oAjbe5jMNj9f91SLH8j/+pptG1ncLJQAqS67Bx3KEc4J0KcJ0PDTt/ricIezIOsRtGkhaCnN5ZpOru+/OOf2BNsF4TYbtdEMosXgNAMqa5s1H6JdLZG3uKXHjscgi+fbQ7wlutuN/fpf8ONCKEVmHgcO63RCveWFLd7JDA0MfHbEQA2yq4PO/go3ePGoWrtP/u85Y0cHI7R78GpSlMQVK5p/gxWVRYze5NP4W/Z4zagZZuFbEw7Py+WQwzYDTUvwppPH7xV1l7RGCZ4/jwu47L7BRlIU/OBEgfmKRS3VrGTkW+B7xYcoaXD7ddqOLBGfFK5DsGS8I8kZ7Mo3xQdUTsRaslUsY8dtz0t8TLuJApTa83PGvc6s+o9G9P3ECAEc256wpzV6YQ+ZkMx0yB7lYq7Vcp0RCHu0AF5jGeZ4SWUamD9Y6AzF7+xkSrjKUd3R2dZTOBpmQKJw9gLvlRO0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR08MB3518.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(316002)(26005)(8676002)(8936002)(33716001)(4326008)(186003)(52116002)(55016002)(6916009)(6496006)(508600001)(86362001)(53546011)(2906002)(66946007)(66476007)(38100700002)(38350700002)(956004)(5660300002)(83380400001)(6666004)(66556008)(1076003)(9686003)(16060500005);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: GtJ7JSZ55AN6morDiZnafJWz+Jb08ea7e7h34cBXE9zkIQ+CbsVp/aqQy2T7AutlLlZ1uZNUVBz/4ev9RemQGN6FuC5MQrbE8FJ4XUpVi6L/V86TntHSwy2q07Y9bqiHZXCVsGiY/YxO90s8x23KUwnYJhnADdtKotdbkttSZLr4Oj+PNBLDjxqshw89cEVbsYA6BW/w1SLyOPmlV2YBp2M+gV+Fd2kZzHj9fvvbrM3yoJIvqQmfsRr6WcgGAJ06EdNKqEBpGvSYEXp6OUWKn8mweX2Qxe+mYUMsKbm93UpZvuJ1A5Eyh4+3UzVj1ZicaCOEsSJY43Y3qjbmcGIyrW3d2BnW2V3pyeWbsX5kdwDSym9zjNOisR/cJ6KXeNFbxA5F9LW6iqgvxd3xHn10XskTQ0uGTaRQHIZr6jTimMm8DGKm4Arp2kXZkARNNg1aIYfWR6YNlkWBXBUcg8jMMNEKt8Mj51teYrigQuyQfu3GAPcinQ5EoU4Pdj9qLReXthnHkz9ZGfDquEIkHwALQWvdaB5gzQ1r+p5ZvDSn/g0ZEeCQ2pYbrK86aj3RhWNxiiDBw+rN776OEI4piEhsARK0io1frP1vWmSgJhW29IZ87ejPDhYu1eH2fKTQjfmpVf8jSEQhQWct1dHPCDVwRoSwa+3wIrmRX+u0TOKxDPPYvMbmcA1eix94mD99LrdRb2ZX4xGjB4d5PDmGW9BfXa2oeHT+cPBRdmpEwYt3YhpzOldZStaviFlOeNrEkde6v1xuG0LP8NEApKvZSbDx1Cae1+iPaL4CGxTyMzk5iC2VHx7QyJVAGoh0SCUQFgQh10g+nkuVfddHQkfW/dzrJw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR08MB4989.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(31696002)(53546011)(8676002)(86362001)(5660300002)(83380400001)(2906002)(186003)(8936002)(36756003)(6666004)(26005)(4326008)(38100700002)(66556008)(956004)(316002)(38350700002)(16576012)(6486002)(66476007)(31686004)(508600001)(6916009)(966005)(66946007)(54906003)(52116002)(7416002)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?suoaw6oEtTsjtzMqVQMwovaJwLTVhQXwGZ0Tuzp4YRFFGpOAHx4Ip6Nfo2KP?=
- =?us-ascii?Q?iKLNLyCB9+WtB7CGMTwksUCp0coObLG9flU97WWteKHp0WnToD/V/vLct4zg?=
- =?us-ascii?Q?q0GX/AJzmKF4HB/0Bh0HlouGJ0RM8Qrx0Hkxz1sMPjQNkgTc/y3hfue6UNpE?=
- =?us-ascii?Q?31b6f17CiAU0hG1BUY0pYhQVhWgkf/IXAW2tHfwANU0zNGwHJTE1XFuE+H0p?=
- =?us-ascii?Q?VEO8zXDNv0WlN3Nk2+R+sKdWFdyLnfvLqn1g4QfbQAp8kH1C35Hn3vjb5iRF?=
- =?us-ascii?Q?X0zzFebwFVwQSK0c9yV/XLxlqzvyNNuKiyD+buujuj7MNJMHDe8Bol01zUL6?=
- =?us-ascii?Q?7jBtK0TqBFseyz3YuU0yuLmlwSOtjDkBM9oGpqSa95z11MBbm55LMjJm+0DJ?=
- =?us-ascii?Q?qlrEOH9KblMnfERvwtPnYMIJrlvKjBGzBu9gusqaepmj+nzl+SayMh1aeDjk?=
- =?us-ascii?Q?65UvEQg4BfGUwhYZmz+Gux8QODtWsKI23DIKCb39cMxXLCJGDWvvYsIsBaEo?=
- =?us-ascii?Q?/mJ1GSr+Doj1IvBNRkPiJVFft+oYLkQuuz9G41DImBF4qyPeOzL2Q+Ro1R7F?=
- =?us-ascii?Q?J/0Bsi1CuHF3B5ZXpScZzHRCDdFI11gDy3Kjk00nfv5wZYMW4qOJP3j5sH6u?=
- =?us-ascii?Q?0TVJTH/UDBRDUcqwSipOlx6yyLwmBDFavaOG2aF38//aWT/6gXlZDcbXj5Ly?=
- =?us-ascii?Q?21Bu6f0DtHMyxAx34aD+VWZ5jTsEeTtn73kIr6Mc5VexlK8+aDuMdzFsSvTe?=
- =?us-ascii?Q?Cjkdubyh20IIXJJNdQKaaBBkYvpf7e6rMSJ6qQPhKATb+DGApQYbpbg5d0/v?=
- =?us-ascii?Q?Nf7OLWzPL1pE+MulELMHbDyIhZhVIVE86rqzSvlnI2Yy/2diVXiaXwDqp7XK?=
- =?us-ascii?Q?zP0eV52411j/CPHufVoys0mSCN7Hqx6/6FcQvCctgq4UYOrTM32GvXJ7gON1?=
- =?us-ascii?Q?doIP65Vdgk3InDNNnhBEDXWaoWweC0Ou31RPcflCKM6QUL7OAmERPKnWC/Gb?=
- =?us-ascii?Q?IO0Z8TOzj4PMrvd5pWhd8rn1fhHTASRQEu3n6W8DOAMw50OBnFPHsWr+PZ6v?=
- =?us-ascii?Q?oKfQmu6itMXqbo1QGwRiJ3nIzwtF3p83OSh5I+rsJBAwBIEAYBoEWN+bnuZi?=
- =?us-ascii?Q?jU9jq90h0RyPbBPjYOmfLZvmQj0aYajJ13X1PrkLmwb8Yk96QGVLOtDbY+6O?=
- =?us-ascii?Q?USj52J0NMvvrY/1cNFaJA8+nVxUTrBBg7dJ8rD2KNYSkCanQhijpPCFeGuhy?=
- =?us-ascii?Q?3t1kLTz8v4mtMxrCZoXyFIPd5FQ1Vx4AtJ4wt1e/JYgef8VQKAHdlSa/rhWy?=
- =?us-ascii?Q?lAH3WzjeepUIBVCHAAaVwJ+6?=
-X-OriginatorOrg: drivenets.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: da2466bd-429f-48f3-358b-08d9558ec72d
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR08MB3518.eurprd08.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YVVDZUlUdTdUZlR4S3dvWTViZk9CQnRDbzVSTSsvL1BCdHRLK0o0NjN4WUhk?=
+ =?utf-8?B?WlVFUThsNWpRd2oxNnBEZE1nbnRaenBHUTQ2NmJBcnA3VmZyVGViZjFnTTBm?=
+ =?utf-8?B?SmpVckEwdnVFZDhNUFI4TFh5V3JTRklEUkdtYnFaREY0U3BIVjlXdzhPKzhz?=
+ =?utf-8?B?UU5BNFJsdXR0cFZHZ0VsZDdCM0owc1FlYzV5WEVwQngrMDBHbTRDcG1meTVB?=
+ =?utf-8?B?N3VhTXBrbTdieVlYSmJEV1hYNjk2eW9QbFN0dHNabHJjbmZKcUVLUnZzVHNz?=
+ =?utf-8?B?UkZUREdobUZ3NXU2b0x2UTNrZVZ1T1hZNU1qNkh3OU5Fa1hZQmF1Z3YwTXZr?=
+ =?utf-8?B?MkZ2enB2L28rb1phcTg4a1JUdFIrOGRxVE5MS1RpWkhpYjFGZnJkVThvcmdw?=
+ =?utf-8?B?NUpxK29COWdySkNqRTRRQ1VraUt0ZE1ROUNaSWpZcCt2aXR3RnFhYWdxTVhv?=
+ =?utf-8?B?K0VhVjQ5MTM4YkU3QkJTWDBHK1pKZEtaZ2Rvem4zSDdSbmh3Q1hvWng4MkFo?=
+ =?utf-8?B?Ly90N05YMGVSKzNkMGRjZnJUUkkxN3ZaNjJBdUpBVjFYaklGUjE4V2FiQ0NV?=
+ =?utf-8?B?bmdrUTF4NUlmZU9GWXZBUGFBcis1MnlLNURLUUlFekxGd0ZON0lZaHZIUzAz?=
+ =?utf-8?B?dDF1aDNTc3Ryai9ZTnZGSkx1Znhtc1AwQ2l4RWh6QWZEMW9VTTFwdi9QQ1Zh?=
+ =?utf-8?B?ZVdHOTZuRjJRdm1JbWt3S1hRS3E1ZThScXdlYTU4cWRmcTlGVGplWmhSWFV4?=
+ =?utf-8?B?ek1DMjBTZ2FTTy8wVjN1RHV0NktRUmYvTE5YVnRBUS9kSENKNHdRdnI3QzR6?=
+ =?utf-8?B?TkRMTnhtM2FNQ2RVajdaRzd0Z2N5OEFqb0Y0VHVoa0R2RCtDRDJWVGNvNzlm?=
+ =?utf-8?B?cnRsM2duL25OZUhFblVPNWl6UGMzMmFkcndUM09NbzBkR3Rmdnc2K1dzTDN6?=
+ =?utf-8?B?ZDE2VUVoaXF1eFUwc3pkVGJjbEMrNmNvV3pmdUJqbFlkQnVUUWlLRFBLWmQ1?=
+ =?utf-8?B?OWNiY1JVRlpSaUtuNVhrNkNxNWhUUGRpV2FORXRwb2ZFWnkycy9JbHJoUHp3?=
+ =?utf-8?B?QmNaNDN5azNmZFNobzNqZnMyZDZnb0VYcmxlOXNBZlVrdWhIMkVOeDRtb2Vq?=
+ =?utf-8?B?Tmk0T3RhZDJsbjNHU29NTHNYT2c0K3hxd2FNbFcxcStuLzN0RmFhZzBPRDFF?=
+ =?utf-8?B?R2Z4RjF4TFZKVENSSGhDSzJXODFIWUZFcVZrWGhjemJlam44akh3dVZZeTBK?=
+ =?utf-8?B?QlJLTWZXbllrMldHN3JiNkZkcVV0eVRNc0h6YTdXUlYyVjI1S1Qvc1JwQ3ZT?=
+ =?utf-8?B?SDBDaHU5ejgvbGpEQ04wQlpNMjBEZ3ZFRmRsSkZtekNORCtxcjRnWjI3N0xD?=
+ =?utf-8?B?M2FPM29YZjZtZk1nOGNuQ2gwbDNvNi91VEdaUjBVczZ0amZ3TmhnZEJRSHlB?=
+ =?utf-8?B?OEVmdDErZXdUbGdMSTR1RmxCVk5xV1ZXT1U4bFVEKy80K3pob09ocHZsanc3?=
+ =?utf-8?B?UU11ajZKN2U3WS9KendyQWZNSTlLN2tBc2NCRU10ZnErRnpRZ1VsVFduMUtp?=
+ =?utf-8?B?ZCtJTGo3VU1HYVJRWGVuZS95SGNSSW9KK2xHSlEwMld2Uk80aG9xY1lKY1gy?=
+ =?utf-8?B?RlpzcnVWRFB5M2JZL24rZktjY2UzVTYvbXJjZ2I3VFh6cjA1QUpBVkZPM0lr?=
+ =?utf-8?B?NHNmeU0zSDVxYUJpaDg1b0E0MTh5MXBQK01uV0szcDB3VXJCYWszSTdNS3RQ?=
+ =?utf-8?Q?Zx+nH8HRgj0G6W2fn29vbNyk3RL3uzC9zv8+K1L?=
+X-OriginatorOrg: virtuozzo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0951f286-a107-4cd1-fd8a-08d9558f9e97
+X-MS-Exchange-CrossTenant-AuthSource: VE1PR08MB4989.eurprd08.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2021 08:23:16.6560
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2021 08:29:18.1049
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 662f82da-cf45-4bdf-b295-33b083f5d229
+X-MS-Exchange-CrossTenant-Id: 0bc7f26d-0264-416e-a6fc-8352af79c58f
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ccgqXU5OILfiRSWUCjEVOG8TqzEnbf5Z5+t3CT1YE8m2XKeiwdrisOF7KuJhaY9MCBUmU9Twuvtk+JwUBEFCQBGcdXVPblGA4DN7Tb0TTAs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR08MB5502
-X-MDID: 1627892598-kzCjFCV1M4-Z
+X-MS-Exchange-CrossTenant-UserPrincipalName: eiaCSeDsTPGuhUOH1bKO7e9pr3OqRMzXsREqEdHzNF3PQVuU1NuVPL7z1HVQZvabei574sLNCz4pX82z0MDK1maPMOYDVaY2lATdhE1zmnA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR08MB3341
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 01, 2021 at 11:50:16AM -0600, David Ahern wrote:
-> On 8/1/21 3:01 AM, Lahav Schlesinger wrote:
-> > Currently there's support for filtering neighbours for interfaces which
-> > are in a specific VRF (passing the VRF interface in 'NDA_MASTER'), but
-> > there's not support for filtering interfaces which are not in an L3
-> > domain (the "default VRF").
-> >
-> > This means userspace is unable to show/flush neighbours in the default VRF
-> > (in contrast to a "real" VRF - Using "ip neigh show vrf <vrf_dev>").
-> >
-> > Therefore for userspace to be able to do so, it must manually iterate
-> > over all the interfaces, check each one if it's in the default VRF, and
-> > if so send the matching flush/show message.
-> >
-> > This patch adds the ability to do so easily, by passing a dummy value as
-> > the 'NDA_MASTER' ('NDV_NOT_L3_SLAVE').
-> > Note that 'NDV_NOT_L3_SLAVE' is a negative number, meaning it is not a valid
-> > ifindex, so it doesn't break existing programs.
-> >
-> > I have a patch for iproute2 ready for adding this support in userspace.
-> >
-> > Signed-off-by: Lahav Schlesinger <lschlesinger@drivenets.com>
-> > Cc: David S. Miller <davem@davemloft.net>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: David Ahern <dsahern@kernel.org>
-> > ---
-> >  include/uapi/linux/neighbour.h | 2 ++
-> >  net/core/neighbour.c           | 3 +++
-> >  2 files changed, 5 insertions(+)
-> >
-> > diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
-> > index dc8b72201f6c..d4f4c2189c63 100644
-> > --- a/include/uapi/linux/neighbour.h
-> > +++ b/include/uapi/linux/neighbour.h
-> > @@ -196,4 +196,6 @@ enum {
-> >  };
-> >  #define NFEA_MAX (__NFEA_MAX - 1)
-> >
-> > +#define NDV_NOT_L3_SLAVE	(-10)
-> > +
-> >  #endif
-> > diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> > index 53e85c70c6e5..b280103b6806 100644
-> > --- a/net/core/neighbour.c
-> > +++ b/net/core/neighbour.c
-> > @@ -2529,6 +2529,9 @@ static bool neigh_master_filtered(struct net_device *dev, int master_idx)
-> >  {
-> >  	struct net_device *master;
-> >
-> > +	if (master_idx == NDV_NOT_L3_SLAVE)
-> > +		return netif_is_l3_slave(dev);
-> > +
-> >  	if (!master_idx)
-> >  		return false;
-> >
-> >
->
-> you can not special case VRFs like this, and such a feature should apply
-> to links and addresses as well.
 
-Understandable, I'll change it.
-In this case though, how would you advice to efficiently filter
-neighbours for interfaces in the default VRF in userspace (without
-quering the master of every interface that is being dumped)?
-I reckoned that because there's support in iproute2 for filtering based
-on a specific VRF, filtering for the default VRF is a natural extension
 
->
-> One idea is to pass "*_MASTER" as -1 (use "none" keyword for iproute2)
-> and then update kernel side to only return entries if the corresponding
-> device is not enslaved to another device. Unfortunately since I did not
-> check that _MASTER was non-zero in the current code, we can not use 0 as
-> a valid flag for "not enslaved". Be sure to document why -1 is used.
+On 30.07.2021 19:46, Jakub Kicinski wrote:
+> On Fri, 30 Jul 2021 19:07:08 +0300 Pavel Tikhomirov wrote:
+>> SOCK_SNDBUF_LOCK and SOCK_RCVBUF_LOCK flags disable automatic socket
+>> buffers adjustment done by kernel (see tcp_fixup_rcvbuf() and
+>> tcp_sndbuf_expand()). If we've just created a new socket this adjustment
+>> is enabled on it, but if one changes the socket buffer size by
+>> setsockopt(SO_{SND,RCV}BUF*) it becomes disabled.
+>>
+>> CRIU needs to call setsockopt(SO_{SND,RCV}BUF*) on each socket on
+>> restore as it first needs to increase buffer sizes for packet queues
+>> restore and second it needs to restore back original buffer sizes. So
+>> after CRIU restore all sockets become non-auto-adjustable, which can
+>> decrease network performance of restored applications significantly.
+>>
+>> CRIU need to be able to restore sockets with enabled/disabled adjustment
+>> to the same state it was before dump, so let's add special setsockopt
+>> for it.
+>>
+>> Signed-off-by: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+> 
+> The patchwork bot is struggling to ingest this, please double check it
+> applies cleanly to net-next.
 
-Do you mean the command will look like "ip link show master none"?
-If so, wouldn't this cause an ambiguity if an interface names "none" is present?
+I checked that it applies cleanly to net-next:
+
+[snorch@fedora linux]$ git am 
+~/Downloads/patches/ptikhomirov/setsockopt-sk_userlocks/\[PATCH\ v2\]\ 
+sock\:\ allow\ reading\ and\ changing\ sk_userlocks\ with\ setsockopt.eml
+
+[snorch@fedora linux]$ git log --oneline
+c339520aadd5 (HEAD -> net-next) sock: allow reading and changing 
+sk_userlocks with setsockopt
+
+d39e8b92c341 (net-next/master) Merge 
+https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next
+
+
+Probably it was some temporary problem and now it's OK? 
+https://patchwork.kernel.org/project/netdevbpf/patch/20210730160708.6544-1-ptikhomirov@virtuozzo.com/
+
+> 
+
+-- 
+Best regards, Tikhomirov Pavel
+Software Developer, Virtuozzo.
