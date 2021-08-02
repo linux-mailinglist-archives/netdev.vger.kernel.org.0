@@ -2,71 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 042D23DD465
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 12:58:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0A8A3DD472
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 13:02:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233362AbhHBK6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 06:58:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44980 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232553AbhHBK6h (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Aug 2021 06:58:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A095860FC0;
-        Mon,  2 Aug 2021 10:58:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627901907;
-        bh=L0vaRfhGybBFnVttOMTEpHN6ePmbaPztnLMP/XjAKMQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GNU5cvveJeNIoXheF2cjsaOMqozqhFK6M0OlTedDZm+GofDbNpP84LM8J/qevC81S
-         t0CFAYOGUxuVP5gjIi1ucrUMFg1SXV2+xzl+BmtjyaCjMC4/LWVUIbAhffe+6N/hhK
-         dz3RVzIGnTn2eJ5b3wd2TdDvlXuZQpjeLSw1pDXnPtp3IOFQJpT3P9cT37pr1MI3EF
-         Sa6LU7KruwRtgspxps4qzRk2NOi2xTE10txEx9TuUL5Y2SsMld4Xuh6KOajYJx8pKU
-         1bhS7frXHv/wgCqtquZwlGUJ5mB49I7u5PCsjyMiHLNOmYYPXgfUkBU1jobblDKbZZ
-         XkrWrmu7BMV7w==
-Received: by pali.im (Postfix)
-        id 4568F87B; Mon,  2 Aug 2021 12:58:25 +0200 (CEST)
-Date:   Mon, 2 Aug 2021 12:58:25 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: How to find out name or id of newly created interface
-Message-ID: <20210802105825.td57b5rd3d6xfxfo@pali>
-References: <20210731203054.72mw3rbgcjuqbf4j@pali>
- <20210802100238.GA3756@pc-32.home>
+        id S233382AbhHBLCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 07:02:44 -0400
+Received: from www262.sakura.ne.jp ([202.181.97.72]:57764 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233317AbhHBLCl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 07:02:41 -0400
+Received: from fsav414.sakura.ne.jp (fsav414.sakura.ne.jp [133.242.250.113])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 172B2TPU024015;
+        Mon, 2 Aug 2021 20:02:29 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav414.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav414.sakura.ne.jp);
+ Mon, 02 Aug 2021 20:02:29 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav414.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 172B2SKW024012
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Mon, 2 Aug 2021 20:02:28 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Subject: Re: [syzbot] general protection fault in hci_release_dev
+To:     Hillf Danton <hdanton@sina.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     johan.hedberg@gmail.com, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luiz.von.dentz@intel.com,
+        marcel@holtmann.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        syzbot <syzbot+47c6d0efbb7fe2f7a5b8@syzkaller.appspotmail.com>
+References: <00000000000084201105c88bb48a@google.com>
+ <20210802095403.2100-1-hdanton@sina.com>
+From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Message-ID: <92ae9eb0-0a9c-f73a-57f3-20059d9e4c21@i-love.sakura.ne.jp>
+Date:   Mon, 2 Aug 2021 20:02:24 +0900
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
+In-Reply-To: <20210802095403.2100-1-hdanton@sina.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210802100238.GA3756@pc-32.home>
-User-Agent: NeoMutt/20180716
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Monday 02 August 2021 12:02:38 Guillaume Nault wrote:
-> On Sat, Jul 31, 2021 at 10:30:54PM +0200, Pali Rohár wrote:
-> > 
-> > And now I would like to know, how to race-free find out interface name
-> > (or id) of this newly created interface?
-> > 
-> > Response to RTM_NEWLINK/NLM_F_CREATE packet from kernel contains only
-> > buffer with struct nlmsgerr where is just error number (zero for
-> > success) without any additional information.
+Hello.
+
+On 2021/08/02 18:54, Hillf Danton wrote:
+> To fix what was addressed in e305509e678b3a4a, defer putting hdev until
+> sock is released with sock locked.
 > 
-> You'd normally pass the NLM_F_ECHO flag on the netlink request, so the
-> kernel would echo back a netlink message with all information about the
-> device it created.
-> 
-> Unfortunately, many netlink handlers don't implement this feature. And
-> it seems that RTM_NEWLINK is part of them (rtmsg_ifinfo_send() doesn't
-> provide the 'nlh' argument when it calls rtnl_notify()).
+> Now only for thoughts.
 
-I see...
+Thanks for your analysis.
 
-> So the proper solution is to implement NLM_F_ECHO support for
-> RTM_NEWLINK messages (RTM_NEWROUTE is an example of netlink handler
-> that supports NLM_F_ECHO, see rtmsg_fib()).
+hci_alloc_dev() is called from hci_uart_register_dev() from  hci_uart_set_proto()
+ from hci_uart_tty_ioctl(HCIUARTSETPROTO) via ld->ops->ioctl() from tty_ioctl(),
+and bt_host_release() is called from device_release() from kobject_put() from
+hci_uart_tty_close() from tty_ldisc_kill() from tty_ldisc_release() from
+tty_release_struct() from tty_release() from __fput().
 
-Do you know if there is some workaround / other solution which can be
-used by userspace applications now? And also with stable kernels (which
-obviously do not receive this new NLM_F_ECHO support for RTM_NEWLINK)?
+The problem is that bt_host_release() is expecting that hci_register_dev()
+was called if "struct hci_dev" was allocated by hci_alloc_dev(). In other
+words, hci_register_dev() might not be called before bt_host_release().
+
+Then, the fix I think is not to call hci_release_dev() when hci_unregister_dev()
+was not called. That is,
+
+ static void bt_host_release(struct device *dev)
+ {
+        struct hci_dev *hdev = to_hci_dev(dev);
++
++       if (hci_dev_test_flag(hdev, HCI_UNREGISTER))
++               hci_release_dev(hdev);
+        kfree(hdev);
+        module_put(THIS_MODULE);
+ }
+
+and remove kfree(hdev) from hci_release_dev(), for HCI_UNREGISTER flag is
+set if hci_unregister_dev() was called before bt_host_release() is called.
