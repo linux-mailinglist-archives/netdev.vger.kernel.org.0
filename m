@@ -2,220 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEBC93DE0A3
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 22:28:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 733CC3DE0B3
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 22:31:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231194AbhHBU21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 16:28:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54200 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229729AbhHBU20 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 16:28:26 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C36CBC06175F;
-        Mon,  2 Aug 2021 13:28:15 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id s48so7416348ybi.7;
-        Mon, 02 Aug 2021 13:28:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5OBdrYHCR2iz+DqSPSaNd9BA4JxRK6omLxbpsNsVOGQ=;
-        b=cwsFRWRq8c3YWrIkGPxrp0CbLgM/2iwdRE4/q3TcBtIe1i/DdANGMROPuKKgiNpFuK
-         UZDXXczVsYCm2PCvPI4yipeY8HM2uwFb3bsjdJQqVNJEukYEtOxWaFsIE0nYnJ4ABcYg
-         pDT6gbaRD/PHXe7laGsf8tdgJd05soXNgkIEOY0F7yj2GRaYmruREB3pxzMB6Dw1GQ3J
-         NbUOvxQzH/EtHyD8OpbW4D1lTzBlu+ajqCQlAFBgAgKJQ3+Hnwb8tfQ9bJzYXPsB3rCy
-         jVk2AZYlxdao1cWjvpClgPPkQkJouaHxDSTRqJ9py3P/lGW0d74jeFH7mI1bE0w/aToY
-         chVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5OBdrYHCR2iz+DqSPSaNd9BA4JxRK6omLxbpsNsVOGQ=;
-        b=DMfRWmTZv7fr7EMWoUz7g3uWeCv0NbaK/WUXFkANJV0hzSYtAGdjCuTNUyMLg/O9Yf
-         N86zLNSCipqUOFHpUpv5UAWDKi7nSiLT2jnXjd/OXzMCs3Jn32lm6kwadQTd5GYhtEfn
-         bOMwEd3pxID/SCCxwk/R2OxmkZ37BZDxMN8h//FuScpBkLMHAX/rglPxaCKsVzHq9jPe
-         WaHLFrSdAbnXELr4AHkHOI++p5LVIvYoufPfr73+LRgXtpgdIe6No1Z1wdaWIIG5d6u3
-         2tc630EX4OhB6qTXna1AZEz6jny20AzCrmQ2qmyMeG1q9MSYlH8uVqkMnIU8nX7ib1dD
-         FjqQ==
-X-Gm-Message-State: AOAM530GZ0MvhEwA9AQ/FWKYXEy4JL9Wsu+mPqZxdk7ETsFtF0ZZgRPl
-        o9xKjE8fJgfLmqa5xKP56zmSCvXSqQZUaumPosw=
-X-Google-Smtp-Source: ABdhPJyv/KWy5Quy3JvOq/XJ1uaiM/9WxvM3x6FhZCP2LA4GSiXCZG2p2p7fVrgyamJ59XQeIRB9aoc0ZLsRIsolK+0=
-X-Received: by 2002:a25:6148:: with SMTP id v69mr22494287ybb.510.1627936094999;
- Mon, 02 Aug 2021 13:28:14 -0700 (PDT)
+        id S231618AbhHBUbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 16:31:35 -0400
+Received: from mail-db8eur05on2071.outbound.protection.outlook.com ([40.107.20.71]:59393
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229729AbhHBUbe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Aug 2021 16:31:34 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=leFN1t2HFat3wg4KTiddTl2W70Q2TRbul+ckPGX37WqOjABjx1pDgvMh8CcMbdhGa4AruU2iOaYx8pJFE07daI/XGWB5PdfBzJ/1qPbYRGA0quL+JSIqj1QZhIKFlUkaLqI/FidxWSfDH+0T6RUdHRZpG7oQzfWJ3vj6sEXUobQiAh64Go5QhX6Vqv5PJG6i0RDpHI9b8NN+FpOjCdQREJMn1CMgkweWqGx16FIvoY0BG+agPntwKZ4BHDcPJe1RSuO36/LkRqT8OGfulpbash9+W0pxPZ9zmERIY4tL9w0/DxBZaUBX7NScABWx6qlu623DS5vKiFTz61Bkt3pLOg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nNz0nUrEkuT4hV8Y5WYeEf8L3XXFIRwc0AK31qpKZCc=;
+ b=Msi1SVai1XWR/d9iJNMEB6OsuifftGzHFDwLTwIH/HygDQtBWUZP1eqfaVcxMmlLxDdqw28XMwzF5KygKyo1i0tEQ39Qq6OhPCWZi6A5YOzVfVMWS0NwAdn3ttaJT7TKHaHVKrKf0m1jb7KSRTDauVxBp2rYax723ZgTrwUwJjd5rw363PPPifmHUVKTZAhx1aaqvh8hFgCba1ud8nfoYBjMwcsZ+Hf19dmg1kV6lNsbU0QWi651pXCzDnMF2FXltg2o9nRL06XJMTIbhdbaIiDC8E02owjFfkZv9X2Z19zS+xYbvrP/pyTkX8zNAi46nJkM31ou0EmyMHIrXlEjCA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nNz0nUrEkuT4hV8Y5WYeEf8L3XXFIRwc0AK31qpKZCc=;
+ b=PhVTicHDlxM5ZW7eLp3X4HUofOVjsUMExbgQraf7rWZ0GAVdi0pw0gEriMhNiV9VTTlyMhGNRHuEpoPUrZR5hLRohQxbpo1wWaAkkOBSIebcjMQ5liwddTbxou/u2CyA3+nsJ/Qpkv4n6xYqMoxZYcoC6YEEiHo+HVf3Ss730Ug=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR0401MB2512.eurprd04.prod.outlook.com (2603:10a6:800:4e::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.21; Mon, 2 Aug
+ 2021 20:31:21 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4373.026; Mon, 2 Aug 2021
+ 20:31:21 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Mark Brown <broonie@kernel.org>
+CC:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: manual merge of the net-next tree with the net tree
+Thread-Topic: linux-next: manual merge of the net-next tree with the net tree
+Thread-Index: AQHXh9yVdl8lK4R1wkyVts+VWcD2T6tgqvsA
+Date:   Mon, 2 Aug 2021 20:31:21 +0000
+Message-ID: <20210802203120.t6yobpb6r7kro2c5@skbuf>
+References: <20210802202531.40356-1-broonie@kernel.org>
+In-Reply-To: <20210802202531.40356-1-broonie@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 24c5d209-4239-421c-65e7-08d955f47d45
+x-ms-traffictypediagnostic: VI1PR0401MB2512:
+x-microsoft-antispam-prvs: <VI1PR0401MB25123B8E1EA320136AF1EF0FE0EF9@VI1PR0401MB2512.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:773;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: +RUCWlPs3BNcYq6mX07FhXskBxL9sCIuZ8+SRJk6QPMU3bMedHOUVP+EzFQ8HOKl2IP6SvW/yNW6aBsDL0nO61KcJt2GwiysUCQsji0fpqeuOXxXpToC7Y4l+AQS2a8zOiIJiOUkUyYf8bXIT4m9wyzYzFA9Bp4lFxopz/lhuMuCj2Y4LGwuZGgWn8uwi5yGs5HCm4PGqx2L4uwsLGq48vsR/U/xzhvZi5UWtb8ShQWGfN2AD9Fd5o9Imqi3reCcTwmGHng4ak/XI/fQcrfFoU4sBmn8DkD+ddyToepw2c9tjz2rYslpzxuULIt4uhmRPHe8kXP2/hUPo599XKh12+3x02/RQ1zF4SQCr7j0+TY/6bwXSVNxpHMLw5ECn+EhVV1HgUSGWM9I+lhlfQn1nW2S1ILXjuN7obwGBzW3NWBeAIokDUY3e1MJkbPUK4zKRgIUqT2GFznkwdBghOaj91weB4ZSLj2C/SOW8tV1ADLGF1L97deEWDJmoaG4X0xPolV5X7LZY5KnI7rvaTzL3fBPqNG6hBboPt5PSTL+RLKCPTE9/mnIGJKl9UjFBLk1IdMhhKcrGZeu8L5fIg61nS3ocHXIzWJIXH3JFD0hlemZK0+viFoJb7WHykf2jGAlFcTNPy7IN68LtHh70C5PB4E2a5JGcUHJsOLhJ+ogFtEPqmPBuOHfD24V2Lr6Afia
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(54906003)(26005)(66946007)(33716001)(5660300002)(6506007)(4744005)(316002)(2906002)(83380400001)(508600001)(6916009)(76116006)(186003)(1076003)(8936002)(6486002)(38070700005)(71200400001)(44832011)(4326008)(122000001)(8676002)(6512007)(64756008)(66556008)(66446008)(86362001)(66476007)(38100700002)(9686003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?4t6FeiBsWe+0bGUU1yyHYulOG6qbMZN3KMo0K0k3QhSimVWO2q4F+NE5xJlu?=
+ =?us-ascii?Q?eZ60MqGV3nD4T6Sv3ppT8cHq4/K6l3F9j1Vw3nc8PlfOkx5ZAhMo+I/lO9RV?=
+ =?us-ascii?Q?sZLBlQv7i9YkpfFOUbrjEFR3Vvv6vZFKmGq2aBFeiQI2aBoPEAPgqozzRPTT?=
+ =?us-ascii?Q?Q2BD5ytX676TdINFOM+noHUneIeHBUVcU5h7HuYmoqfL4Z5ZTxMkhfE8KB8F?=
+ =?us-ascii?Q?T2IF4ZzerlBzAs1jD+ogCLJW3wvxytpgHVo9qWyuCIPP4HM8ZcH7/CbbNbYV?=
+ =?us-ascii?Q?x+/2ahiCdrDtkvJb/NUMBn+b3iXPBuBVmmb2gKWc6LVmeZ3eTIoH//7iW90v?=
+ =?us-ascii?Q?xsQii17Czz9ug71TqoubL8/MroPWa3yUtlyZrgmC1lJBDsL5/bdRSQKQ3vmD?=
+ =?us-ascii?Q?dRa3ledQHmJdgt94aoC/jYZR8RH5JLPCx3Pk+R1Ups7BW//f6RagTYvQBs3H?=
+ =?us-ascii?Q?jobY8XnEvYdjf3yEa/kI/eEjruIq7qMv0xRVB3bOn0QPanz5lICMgJJr4P67?=
+ =?us-ascii?Q?6WhBoBgzt1GLto02hF5vs1Sc/f5i3+tlRkSbB+CnjE0gWRQETPoKMYJsKpvv?=
+ =?us-ascii?Q?LkOkTOw9by7TrbU3QBePCaLfPqtXYLPM3BiLnlYubOozGkTbSMIgR1YIjBoA?=
+ =?us-ascii?Q?SP7psvJxHJnq4DKBYwFzLsCU12+FE6gY2sI1rr+7cU9YNg3hbD0Eny6k/HZd?=
+ =?us-ascii?Q?d2V+4L7U49S7MOFJeCDxBGjeh/mpY79c/w5VESEY/zOAjw3dqobyjo6CIa6T?=
+ =?us-ascii?Q?sV4qOq0ypn+e3Pthpz1xpO/ZfU7oSCki3b7HRiSn6DfbkhqmMFkTbU6T68F7?=
+ =?us-ascii?Q?3gex8PR4p5BRA9dZXdN9HM0hT/YG1ZDAUr+kg4JVej+kUuGdCt94LGn0w++l?=
+ =?us-ascii?Q?m4ILgNk2n7PA16lf9lVOzG6U3X1YDf/s5QtoU9TA874d7nCkcxD6LVduLFXR?=
+ =?us-ascii?Q?6Ii3e4Mmita4nLyaa8QMaAo+qMR1GvDDlZMRz32Xi7IPLiPo3B0Grz0YFtsM?=
+ =?us-ascii?Q?Zp1DEGhgouW5J8JJfLoGFvn0iv7p+p0tetGEkfjX6eihl2uJtgxlCrD2PeLi?=
+ =?us-ascii?Q?9KWVVXSK5XONWpwhivJqrMXKfcqwf3oSXGJEtKvabVQ6ZFB1N5SfBt6571+c?=
+ =?us-ascii?Q?g4hMRBfbQELNr7QuSYhIXLPg3yn2Egv1KzoEtjhpi4bx1vrl/FJAln/ZcvcD?=
+ =?us-ascii?Q?RMmv/H1C95LMLl8enUh0z68wdKINQkOskDHxyZuHCTf26SNx3Ct8EX78NKul?=
+ =?us-ascii?Q?RBya+brT2tiudJkgI8TWCrMCIvcbWiaOR47bDPFjbhG7b1TN+m8kSEw3hbbW?=
+ =?us-ascii?Q?MXSMt/WuqJ296NoORXaElMHR?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <E116F9721EFEAD46AC751002D5889F28@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <5afe26c6-7ab1-88ab-a3e0-eb007256a856@iogearbox.net>
- <20210728164741.350370-1-johan.almbladh@anyfinetworks.com>
- <1503e9c4-7150-3244-4710-7b6b2d59e0da@fb.com> <CAM1=_QTQeTp7LF-XdrOG_qjKpPJ-oQ24kKnG_7MDSbA7LX+uoA@mail.gmail.com>
- <CAEf4BzbYbSAqU91r8RzXWWR81mq9kwJ0=r8-1aRU1UaeDqxMeg@mail.gmail.com>
- <CAEf4BzZ1nNv12s-NJEayct5Yih_G6vNkEvFPst6dLcbhxWV_0g@mail.gmail.com> <CAM1=_QSKa7W9SL7oXWGEHLtWqCeFWp-jtGoqPp9=MxQwUGOjaQ@mail.gmail.com>
-In-Reply-To: <CAM1=_QSKa7W9SL7oXWGEHLtWqCeFWp-jtGoqPp9=MxQwUGOjaQ@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 2 Aug 2021 13:28:03 -0700
-Message-ID: <CAEf4BzaheF_v0Z8ZCAT7mn31xscdgooF8bqRYgCYP01GE7GuaQ@mail.gmail.com>
-Subject: Re: [PATCH] bpf: Fix off-by-one in tail call count limiting
-To:     Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Tony Ambardar <Tony.Ambardar@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24c5d209-4239-421c-65e7-08d955f47d45
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Aug 2021 20:31:21.0347
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 9U0b6RV0YtIRHeXzlVvQ0aQ2RMQAdBsnEK/v5OWW7APPwZsQVEsR566fvZd9okY/kCwtw9PiHHNPSGJ1JDrFog==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2512
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 1, 2021 at 1:38 AM Johan Almbladh
-<johan.almbladh@anyfinetworks.com> wrote:
->
-> On Fri, Jul 30, 2021 at 12:48 AM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Thu, Jul 29, 2021 at 3:29 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Thu, Jul 29, 2021 at 2:38 PM Johan Almbladh
-> > > <johan.almbladh@anyfinetworks.com> wrote:
-> > > >
-> > > > On Wed, Jul 28, 2021 at 9:13 PM Yonghong Song <yhs@fb.com> wrote:
-> > > > > I also checked arm/arm64 jit. I saw the following comments:
-> > > > >
-> > > > >          /* if (tail_call_cnt > MAX_TAIL_CALL_CNT)
-> > > > >           *      goto out;
-> > > > >           * tail_call_cnt++;
-> > > > >           */
-> > > > >
-> > > > > Maybe we have this MAX_TAIL_CALL_CNT + 1 issue
-> > > > > for arm/arm64 jit?
-> > > >
-> > > > That wouldn't be unreasonable. I don't have an arm or arm64 setup
-> > > > available right now, but I can try to test it in qemu.
-> > >
-> > > On a brief check, there seems to be quite a mess in terms of the code
-> > > and comments.
-> > >
-> > > E.g., in arch/x86/net/bpf_jit_comp32.c:
-> > >
-> > >         /*
-> > >          * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
-> > >          *     goto out;
-> > >          */
-> > >
-> > >                             ^^^^ here comment is wrong
-> > >
-> > >         [...]
-> > >
-> > >         /* cmp edx,hi */
-> > >         EMIT3(0x83, add_1reg(0xF8, IA32_EBX), hi);
-> > >         EMIT2(IA32_JNE, 3);
-> > >         /* cmp ecx,lo */
-> > >         EMIT3(0x83, add_1reg(0xF8, IA32_ECX), lo);
-> > >
-> > >         /* ja out */
-> > >         EMIT2(IA32_JAE, jmp_label(jmp_label1, 2));
-> > >
-> > >         ^^^ JAE is >=, right? But the comment says JA.
-> > >
-> > >
-> > > As for arch/x86/net/bpf_jit_comp.c, both comment and the code seem to
-> > > do > MAX_TAIL_CALL_CNT, but you are saying JIT is correct. What am I
-> > > missing?
-> > >
-> > > Can you please check all the places where MAX_TAIL_CALL_CNT is used
-> > > throughout the code? Let's clean this up in one go.
-> > >
-> > > Also, given it's so easy to do this off-by-one error, can you please
-> > > add a negative test validating that 33 tail calls are not allowed? I
-> > > assume we have a positive test that allows exactly MAX_TAIL_CALL_CNT,
-> > > but please double-check that as well.
-> >
-> > Ok, I see that you've added this in your bpf tests patch set. Please
-> > consider, additionally, implementing a similar test as part of
-> > selftests/bpf (specifically in test_progs). We run test_progs
-> > continuously in CI for every incoming patch/patchset, so it has much
-> > higher chances of capturing any regressions.
-> >
-> > I'm also thinking that this MAX_TAIL_CALL_CNT change should probably
-> > go into the bpf-next tree. First, this off-by-one behavior was around
-> > for a while and it doesn't cause serious issues, even if abused. But
-> > on the other hand, it will make your tail call tests fail, when
-> > applied into bpf-next without your change. So I think we should apply
-> > both into bpf-next.
->
-> I can confirm that the off-by-one behaviour is present on arm. Below
-> is the test output running on qemu. Test #4 calls itself recursively
-> and increments a counter each time, so the correct result should be 1
-> + MAX_TAIL_CALL_CNT.
->
-> test_bpf: #0 Tail call leaf jited:1 71 PASS
-> test_bpf: #1 Tail call 2 jited:1 134 PASS
-> test_bpf: #2 Tail call 3 jited:1 164 PASS
-> test_bpf: #3 Tail call 4 jited:1 257 PASS
-> test_bpf: #4 Tail call error path, max count reached jited:1 ret 34 != 33 FAIL
-> test_bpf: #5 Tail call error path, NULL target jited:1 114 PASS
-> test_bpf: #6 Tail call error path, index out of range jited:1 112 PASS
-> test_bpf: test_tail_calls: Summary: 6 PASSED, 1 FAILED, [7/7 JIT'ed]
->
-> The MAX_TAIL_CALL_CNT constant is referenced in the following JITs.
->
-> arch/arm64/net/bpf_jit_comp.c
-> arch/arm/net/bpf_jit_32.c
-> arch/mips/net/ebpf_jit.c
-> arch/powerpc/net/bpf_jit_comp32.c
-> arch/powerpc/net/bpf_jit_comp64.c
-> arch/riscv/net/bpf_jit_comp32.c
-> arch/riscv/net/bpf_jit_comp64.c
-> arch/s390/net/bpf_jit_comp.c
-> arch/sparc/net/bpf_jit_comp_64.c
-> arch/x86/net/bpf_jit_comp32.c
-> arch/x86/net/bpf_jit_comp.c
->
-> The x86 JITs all pass the test, even though the comments are wrong.
-> The comments can easily be fixed of course. For JITs that have the
-> off-by-one behaviour, an easy fix would be to change all occurrences
-> of MAX_TAIL_CALL_CNT to MAX_TAIL_CALL_CNT - 1. We must first know
-> which JITs affected though.
+Hello Mark,
 
-If you are going to fix ARM, please send a fix to comments for x86 as well.
-
+On Mon, Aug 02, 2021 at 09:25:31PM +0100, Mark Brown wrote:
+> Hi all,
 >
-> The fix is easy but setting up the test is hard. It took me quite some
-> time to get the qemu/arm setup up and running. If the same has to be
-> done for arm64, mips64, powerpc, powerpc64, riscv32, risc64, sparc and
-> s390, I will need some help with this. If someone already has a
-> working setup for any of the systems, the test can be performed on
-> that.
+> Today's linux-next merge of the net-next tree got a conflict in:
 >
-
-Unfortunately, I myself have only x86-64 setup. libbpf
-CI/kernel-patches CI we use to run all tests are running selftests
-against x86-64 only as well. There was temporarily halted effort to
-add s390x support as well, but it's not done yet. No one yet
-volunteered to set up any other platforms and I don't know if that's
-possible and how hard it would be to do within Github Actions platform
-we are currently using.
-
-So in short, I understand the challenges of testing all those
-platforms and I don't really expect any single person to do all that
-work. I've applied your fix, please follow up with ARM and comment
-fixes.
-
-> Or perhaps there is a better way to do this? If I implement a similar
-> test in selftest/bpf, that would trigger the CI when the patch is
-> submitted and we will see which JITs we need to fix.
-
-The other nice benefit of implementing this in selftest/bpf, besides
-continuous testing, is that you write it in C, which allows you to
-express much more complicated logic more easily.
-
+>   drivers/net/dsa/sja1105/sja1105_main.c
 >
-> > On a related topic, please don't forget to include the target kernel
-> > tree for your patches: [PATCH bpf] or [PATCH bpf-next].
+> between commit:
 >
-> I'll add that! All patches I sent related to this are for the bpf-next tree.
+>   589918df9322 ("net: dsa: sja1105: be stateless with FDB entries on SJA1=
+105P/Q/R/S/SJA1110 too")
 >
-> Johan
+> from the net tree and commit:
+>
+>   0fac6aa098ed ("net: dsa: sja1105: delete the best_effort_vlan_filtering=
+ mode")
+>
+> from the net-next tree.
+
+The conflict resolution I intended (not the one you came up with) is
+described in the commit message of patch 589918df9322 ("net: dsa:
+sja1105: be stateless with FDB entries on SJA1105P/Q/R/S/SJA1110 too").=
