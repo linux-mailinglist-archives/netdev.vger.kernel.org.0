@@ -2,110 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F00663DDA70
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 16:14:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACD173DDAAA
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 16:18:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237098AbhHBOOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 10:14:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43446 "EHLO
+        id S236332AbhHBOSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 10:18:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236412AbhHBONL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 10:13:11 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A66C044027;
-        Mon,  2 Aug 2021 06:59:14 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id h9so15601933ejs.4;
-        Mon, 02 Aug 2021 06:59:14 -0700 (PDT)
+        with ESMTP id S237714AbhHBORM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 10:17:12 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FE6C04984F;
+        Mon,  2 Aug 2021 07:00:50 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id x11so30137135ejj.8;
+        Mon, 02 Aug 2021 07:00:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=MihKPbXWLuAHmHFbjCvlbQGWvDP7j/7zWzZnY5mOiqw=;
-        b=sFa9Aa4INuqL14NQ4sv3j2caM780TjKWwuEefU4xzCpXWpu96Ssp6nDWTdUlPfwGbh
-         1cTuMDghaIdyd7FwqZ++36zWyw+6K1PDjIyiK6haw4Ik+TZtWynM4Q9+xe7bG53WnSip
-         r0rP/SIf2Tc/sY8ipxIe5amaIQJt4M7JRDTz6NKbcDJATQAGXC+Y0eAMZhy2UEj3cyuq
-         Eb222JnZifkoCTGlRWD8IMMDx0uPaNHEjzf1SFvldkZHfQODOWhB3P4Z9WIivIDgPZJO
-         60wjSOqdTVnb59O8vl9fXLqE9Bsy6gR7lDK1CrI2/7OqcoLbdfA/041kBi/dgadWF447
-         7GFA==
+        bh=1Za1Yj9NjOylf2JMkcBxcOLagUVAwLPeusWL40lZlvQ=;
+        b=MSGxR1uk7XakGmBg8RmnXvyK+9XAw3uOmK5Gsan1JlNVQR7Jhno7DDrsx/b/jLMTLs
+         lm0Q6Pr2wKLfbgm2wpBnqrmetXUDpzTlEH/WSfxUwqHfD9Tc8e4HNgSotM+ptcT8jkFU
+         uBXRHi9S1qZxzDCUT73n3knQAfcA/vuYS+/RWBbU7lWUcUHXyd1pzBgXBY8kexmtFtc5
+         opfsXTOD+5fwJXVwQrayavSWnhwbcg3Ii6ZAVxLSYo7JqAuHgH93VusKI/ReNK3yoOxh
+         aTCH1pqsWXZRQdoyQTCyhF+4QqnVAg61RKAOibqnkofWQ/E2WGhcAcXRReoV9faA2TyX
+         2nFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=MihKPbXWLuAHmHFbjCvlbQGWvDP7j/7zWzZnY5mOiqw=;
-        b=WcSnP3EVMt8Mw6TZ3+jpemvTI+COovu//LUn+IF6Pbf1JQG6beqy+pEge6cx9MbZKU
-         rw10apYIZig6vsH4UmaVkCO4fx9y2McXhpVnka86SnutF3euJyw53BA7rJonAYMuFuHZ
-         7KoHnsXWVGrrZYC6J/Bk+nwe5/H3uYGDTSTxw2jQ0ke4GAMFVDXqMdWVtD9HtSBtGB4B
-         Qs0kGCBAVY05QancFbMJLL9XnsRw7of0V/4fbfJpCL9gIZ82Va/PTFXLbZyVv5Y7GwZE
-         5p7Ut3zwKno0mdGO8x5PEKqOFtx7+iGfwXF+tkjRLS0+7dJDGlaoNq1EP2PsaZfx6Anx
-         Y68g==
-X-Gm-Message-State: AOAM531H9jTz8QP8T7i0IpCFMJ/PXRapR26QLbXQKXn+hwgaOqWyisk4
-        Fwyne7Sf97r/uCDlbkMIyxs=
-X-Google-Smtp-Source: ABdhPJwpH+ntlOKfXt+DPJwa1ewViuJFhyfswfqjMUWJyaJWoA2ecLH0HFCLb8zfOP7fYTF0lPfUZg==
-X-Received: by 2002:a17:906:309a:: with SMTP id 26mr15651618ejv.153.1627912753220;
-        Mon, 02 Aug 2021 06:59:13 -0700 (PDT)
+        bh=1Za1Yj9NjOylf2JMkcBxcOLagUVAwLPeusWL40lZlvQ=;
+        b=VybDHjJT/hYIOu9FFKme9q6lHYyngymABE0lruyKgrRy1xoN7Um1Oog86hMLMgaB+H
+         UnhblHAlHpt8agCz6q5+zI1jSau4SEqpTGZl/DqeJEomVu8459mCqcpoJFQhP0jeZrU4
+         DnG97iN6+Qcue9RCd1U5uUK8OSDWginKmgYSCZRzQwzDEw01ozENLdkY8+M21Mfg6FTe
+         FV5NSjDQ2jAU0kSUaGtp0NX/5a1nKUL0eZGsY3TP83N0lTqpE08R8Uufzj1N7PZk2bl7
+         5Y6aBRrw3S1EO3sffNx3ru9V/UertZszmJ19k15qUbhZ1atzIdpUGddhiiFg1wx2fgLR
+         8S3Q==
+X-Gm-Message-State: AOAM531q7PN2xaBVA38kbbvUzJshJIZfjuhd+ai/fRH6mS1xctqQ2XTJ
+        08PMjnS0r7K9DXga2JQsX14=
+X-Google-Smtp-Source: ABdhPJwmc3U0XGaiP4J/l7ORgTTqgzAjE7GqluO8BvZQx+46vEUHJ1XXO4CAuCJ9aLlCbQQgtaQ0iQ==
+X-Received: by 2002:a17:906:40d5:: with SMTP id a21mr15739258ejk.325.1627912848843;
+        Mon, 02 Aug 2021 07:00:48 -0700 (PDT)
 Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id n17sm6102896edr.84.2021.08.02.06.59.12
+        by smtp.gmail.com with ESMTPSA id oz31sm4567170ejb.54.2021.08.02.07.00.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Aug 2021 06:59:12 -0700 (PDT)
-Date:   Mon, 2 Aug 2021 16:59:11 +0300
+        Mon, 02 Aug 2021 07:00:48 -0700 (PDT)
+Date:   Mon, 2 Aug 2021 17:00:46 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
-        netdev@vger.kernel.org, robh+dt@kernel.org,
-        UNGLinuxDriver@microchip.com, Woojung.Huh@microchip.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 05/10] net: dsa: microchip: add DSA support
- for microchip lan937x
-Message-ID: <20210802135911.inpu6khavvwsfjsp@skbuf>
-References: <20210723173108.459770-1-prasanna.vengateshan@microchip.com>
- <20210723173108.459770-6-prasanna.vengateshan@microchip.com>
- <20210731150416.upe5nwkwvwajhwgg@skbuf>
- <49678cce02ac03edc6bbbd1afb5f67606ac3efc2.camel@microchip.com>
- <20210802121550.gqgbipqdvp5x76ii@skbuf>
- <YQfvXTEbyYFMLH5u@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH net-next v3 1/6] net: dsa: qca: ar9331: reorder MDIO
+ write sequence
+Message-ID: <20210802140046.locxzehdjdw3cjua@skbuf>
+References: <20210802131037.32326-1-o.rempel@pengutronix.de>
+ <20210802131037.32326-2-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YQfvXTEbyYFMLH5u@lunn.ch>
+In-Reply-To: <20210802131037.32326-2-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 02, 2021 at 03:13:01PM +0200, Andrew Lunn wrote:
-> In general, the MAC does nothing, and passes the value to the PHY. The
-> PHY inserts delays as requested. To address Vladimir point,
-> PHY_INTERFACE_MODE_RGMII_TXID would mean the PHY adds delay in the TX
-> direction, and assumes the RX delay comes from somewhere else,
-> probably the PCB.
-
-For the PHY, that is the only portion where things are clear.
-
-> I only recommend the MAC adds delays when the PHY cannot, or there is
-> no PHY, e.g. SoC to switch, or switch to switch link. There are a few
-> MAC drivers that do add delays, mostly because that is how the vendor
-> crap tree does it.
+On Mon, Aug 02, 2021 at 03:10:32PM +0200, Oleksij Rempel wrote:
+> In case of this switch we work with 32bit registers on top of 16bit
+> bus. Some registers (for example access to forwarding database) have
+> trigger bit on the first 16bit half of request and the result +
+> configuration of request in the second half. Without this patch, we would
+> trigger database operation and overwrite result in one run.
 > 
-> So as i said, what you propose is O.K, it follows this general rule of
-> thumb.
+> To make it work properly, we should do the second part of transfer
+> before the first one is done.
+> 
+> So far, this rule seems to work for all registers on this switch.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> ---
 
-The "rule of thumb" for a MAC driver is actually applied in reverse by
-most MAC drivers compared to what Russell described should be happening.
-For example, mv88e6xxx_port_set_rgmii_delay():
-
-	switch (mode) {
-	case PHY_INTERFACE_MODE_RGMII_RXID:
-		reg |= MV88E6XXX_PORT_MAC_CTL_RGMII_DELAY_RXCLK;
-
-The mv88e6xxx is a MAC, so when it has a phy-mode = "rgmii-rxid", it
-should assume it is connected to a link partner (PHY or otherwise) that
-has applied the RXCLK delay already. So it should only be concerned with
-the TXCLK delay. That is my point. I am just trying to lay out the
-points to Prasanna that would make a sane system going forward. I am not
-sure that we actually have an in-tree driver that is sane in that
-regard.
-
-That discussion, and Russell's point, was here, btw:
-https://patchwork.ozlabs.org/project/netdev/patch/20200616074955.GA9092@laureti-dev/#2461123
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
