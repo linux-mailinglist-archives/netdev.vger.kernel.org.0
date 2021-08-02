@@ -2,107 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 440EC3DDADB
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 16:22:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17D543DDA4D
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 16:13:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235916AbhHBOWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 10:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45974 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235963AbhHBOWj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 10:22:39 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 412A2C0701F8;
-        Mon,  2 Aug 2021 07:09:00 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id t3so17633081plg.9;
-        Mon, 02 Aug 2021 07:09:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/cdM8HpdDM3Yh7GGE7exLVKVMbD9iA/9tyiszM+STgg=;
-        b=EyGzIbCm/4WfGRl2TIpRtI8exR5hEZdzfziWgkyJF2rPPiSQ75H+98IAopMmYevfFk
-         Ov/fJ43JIQnILsE3s/0qzNMc0nrf6uUXE2j26BExy5g7B3BpTmvtolJxygg5zsp4OzjQ
-         /7pE2ruUo+gM4LDOxH4S0QCLE3cZn8HjYiXLd7zaPCzN5tcqN75mDO2ycYHk5nf3h82W
-         fzBmyU3qV/42PwBr8KexEQmrjqnx6SCVYEPtgGSjDXNVb1Uffuv26Hb9ID8hcdFyzcOI
-         2ZeoAyGM+UdW1S66kVSqZMjoR5QEIes/nzm112DtVAisubEuzui0RUvnkB/UUMAP1zyE
-         JLjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/cdM8HpdDM3Yh7GGE7exLVKVMbD9iA/9tyiszM+STgg=;
-        b=KCWguRI6XpOC4NANbUmdJU8A2dKRuK8R8fYdNL+T/y2i5pq1CEhNeHe45HxKcHKw7Z
-         86ge4xwUvuutP+xU1LxjDEeMvvNjEsVWu2kVa3U1QxxpQMMqARf+5y4M5fp/khkhQT23
-         WayH5FKCOBE0JERAK67O8grW/MY7MUbLdbbWxBbVYcVSUcyh3kvrpJ027G0GPXcFrgJd
-         UpAq0gShQ9irj3syRYMy17jpzm0mTlxc4mw7VdyGEl2MeNxeiaz/fntlkl+o3aK2BXvW
-         IafCL2rZu5XdS8ynS5ivAMw16b68P7ejnCqw++4vWtdbqJ+rzfAWUBmbl4xjDMNqrhOw
-         FRkw==
-X-Gm-Message-State: AOAM531p54V5x9dsA35BewNi8pOllVsm8IvlHH0EVAzNGznsHIXa1fAx
-        kOnx+1AHhY0DeljgNcI3H8g=
-X-Google-Smtp-Source: ABdhPJz9/oIt1d6cc74gFPmQ4IHl6g1R2CxfQ4Ko9VZ15V7BmdIE77nzkycqmmDE/JgZuYIJykKPEQ==
-X-Received: by 2002:aa7:8148:0:b029:31b:10b4:f391 with SMTP id d8-20020aa781480000b029031b10b4f391mr16506898pfn.69.1627913339735;
-        Mon, 02 Aug 2021 07:08:59 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:18:efec::4b1])
-        by smtp.gmail.com with ESMTPSA id fz10sm11071046pjb.40.2021.08.02.07.08.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Aug 2021 07:08:59 -0700 (PDT)
-Subject: Re: [PATCH 13/13] HV/Storvsc: Add Isolation VM support for storvsc
- driver
-To:     Joerg Roedel <joro@8bytes.org>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
-        jgross@suse.com, sstabellini@kernel.org, will@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, arnd@arndb.de, hch@lst.de,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, ardb@kernel.org,
-        Tianyu.Lan@microsoft.com, rientjes@google.com,
-        martin.b.radev@gmail.com, akpm@linux-foundation.org,
-        rppt@kernel.org, kirill.shutemov@linux.intel.com,
-        aneesh.kumar@linux.ibm.com, krish.sadhukhan@oracle.com,
-        saravanand@fb.com, xen-devel@lists.xenproject.org,
-        pgonda@google.com, david@redhat.com, keescook@chromium.org,
-        hannes@cmpxchg.org, sfr@canb.auug.org.au,
-        michael.h.kelley@microsoft.com, iommu@lists.linux-foundation.org,
-        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org, vkuznets@redhat.com, anparri@microsoft.com
-References: <20210728145232.285861-1-ltykernel@gmail.com>
- <20210728145232.285861-14-ltykernel@gmail.com> <YQfxA/AYfOqyqNh0@8bytes.org>
-From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <eaeb75b7-7e98-ad2d-0e2c-0565b9db79dd@gmail.com>
-Date:   Mon, 2 Aug 2021 22:08:43 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S235132AbhHBONO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 10:13:14 -0400
+Received: from mail-am6eur05on2124.outbound.protection.outlook.com ([40.107.22.124]:50528
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S237511AbhHBOJr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Aug 2021 10:09:47 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=P+jo/DTfBOQ/MWIN5W0EM/xVbpHBGmLQaPnRNE6YKdCH1C6uxxW7nFD9dTllDr20qL8kniy/8O1dL1Pdt72zlA44Qg4q2FD1gGeNeAGcbqm+AXZiT9aNciGs/mqBoL3mGA2fXXmKoDP/a0LBvrBGrzKA9xRZVMz4IB9ibawtIe0VPWHzGJyWWOCfA5DshZ6q34Q6iLndBOCujNMCtTDNwNUiT7Y0zKG9kREFP9RYvWRATpHFa9Q9fknxlTt6KzEc24LhQeQb1oCHkMs8bE1YG+MUsz+Km0PJPCQMd//sZ17K6INHOa13xBsjVWhG5KglAZ/S5u6q5mpFzcl1OyfRjA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YVFe2leDAYW5FKXr7qooA+twJthThQdyacj1HYb2KhM=;
+ b=DZaOTV32S7GGr/TgrjLIBEfN8ZaIASgye+x8uxLrdeE40VqMei0bS2ysT9feiyIO3afbDODDf8H6BErq0+YjWwkX+ox6OveVX3oKrFhrspU5lVY0mnoti1QUbWzpNliJacGHONNWCf8c9M+Qc3MzNYGX4ZS4Gy5HaoUfgorj9jFuwE7utlkU/+IV8RPaDEshpe/O8w5WxVdiy7hLSRk5mDWma48EWi3H60zpjsY6/fu+HuGT/Cx2utcb93q1EVEhIJAsENiluH0r2/6EpHFZRlTxXaPAo+vT6BPIO2SqM95KVwN9NfbFwsHYhcRjx1054g+3gpAmePxKTi8L1MTmLQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YVFe2leDAYW5FKXr7qooA+twJthThQdyacj1HYb2KhM=;
+ b=BcZsYmKgCvSqmgx3t/WRR0SGCGizOQipNxsmEGskq0BZfVUUwYTT0LYETfjPUEMW58sYIRYvc8sw42CaDxx3EM/B57QaYRdzNZLNpKZlADw6EBSbGdv2j3cVBIF3JzjzPbmtSxhO7dZO74gP8YDsnY9EShYSQf7T++LHWHnTkVg=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=plvision.eu;
+Received: from AS8P190MB1063.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:2e4::5)
+ by AM5P190MB0306.EURP190.PROD.OUTLOOK.COM (2603:10a6:206:20::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.26; Mon, 2 Aug
+ 2021 14:09:22 +0000
+Received: from AS8P190MB1063.EURP190.PROD.OUTLOOK.COM
+ ([fe80::380c:126f:278d:b230]) by AS8P190MB1063.EURP190.PROD.OUTLOOK.COM
+ ([fe80::380c:126f:278d:b230%9]) with mapi id 15.20.4373.026; Mon, 2 Aug 2021
+ 14:09:22 +0000
+From:   Vadym Kochan <vadym.kochan@plvision.eu>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>
+Cc:     Vadym Kochan <vadym.kochan@plvision.eu>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Mickey Rachamim <mickeyr@marvell.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Vadym Kochan <vkochan@marvell.com>
+Subject: [PATCH net-next v2 0/4] Marvell Prestera add policer support
+Date:   Mon,  2 Aug 2021 17:08:45 +0300
+Message-Id: <20210802140849.2050-1-vadym.kochan@plvision.eu>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: AM6P193CA0066.EURP193.PROD.OUTLOOK.COM
+ (2603:10a6:209:8e::43) To AS8P190MB1063.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:20b:2e4::5)
 MIME-Version: 1.0
-In-Reply-To: <YQfxA/AYfOqyqNh0@8bytes.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AM6P193CA0066.EURP193.PROD.OUTLOOK.COM (2603:10a6:209:8e::43) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.17 via Frontend Transport; Mon, 2 Aug 2021 14:09:21 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f396394a-213e-458b-4939-08d955bf20b1
+X-MS-TrafficTypeDiagnostic: AM5P190MB0306:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM5P190MB0306C836BD85C0406058E87195EF9@AM5P190MB0306.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fNwuQytEvd3olBnKvb4M6kGDQ3YbHkFcl4PmaI7GeUFlsf4rdB7JEITIdS6sUfSw4SPCNWGZQebpAChfgTy0xhIvprySUoo4Xhe2W9LhKLLHhJD031srjQWDQ5rhuF2bV/a7/5w+i804igAne9T/NyF99fI20SaqIAgxhxZwNuOMHqWSmpr9NhmxfRD8GTcveigFwCueDjTmGC5Ag3yqay561350fDcEuf5ID8AIqUhEuHo2Ra+rWeqQhgZTbPptIoGnK/TONEN+co4Yd44WP6y3SfPGKY62N9yfaC0qW2wOdbwO/Ngm3futLSXPmndTnhhX0jMtx4RHj1E5xO3lI9YbhHHKPZPj2hur/Dj6KCQN3+8V8yAFFTFGOCm3HawCLvtuw64ezO5K1CIqk7fQoRnjdIy1bs91vdKg7YbkG/evTXjg4jRDrJxb4F50IZFF6xvJ5/9HR0C2ne9v5DWUS1QlpEWriqnnAJWNjhT3581Qpwrc/Rmara6AnbmumcsaDBXCFItKQYau7lR7tpifNcSRrLf+dHnugKWHVd83fnNtTjTN3iFNK3Kjzpe3UeCsRqgXiUuaCvMMHdGXvtFP6EjXxUnYY5+Y43lZzmBj96gwKp5mUmn2N5N9I9vH8A/abTByFNdz5p5XQQgD3ahFRvYpqT0hTbl4ZJST7WUqqMpT6jjlCrrsnfJCqJtdy9tq4o2Ipx03tpjGPhkQ72G7jw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8P190MB1063.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(366004)(346002)(396003)(376002)(39830400003)(136003)(4326008)(44832011)(2616005)(478600001)(8936002)(956004)(186003)(6486002)(5660300002)(86362001)(66476007)(8676002)(6636002)(66556008)(52116002)(66946007)(1076003)(2906002)(36756003)(6512007)(6506007)(7416002)(83380400001)(26005)(110136005)(54906003)(38350700002)(316002)(38100700002)(6666004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?JUtf+73RPZe0blPzXTELlfxzgK2GYXwvorq881pfVjatU+CVQdQQsw249QhV?=
+ =?us-ascii?Q?CUtmbWhj1pz8AZFjVu7RZwQsI4fB6UHj7QXGsPxBFsY9OfqI1WExuC6ufYjr?=
+ =?us-ascii?Q?QS5Gv8imfyM6GUYPGXcPm09Gn1Um9PV+GFXbRscVTpHiPc1nqrVhVKaKPjSe?=
+ =?us-ascii?Q?7Zzg65Mg26DNWmlR/03le7FKyQNnGD/qyd4SFo6b/df0RbTvSgddf/j+O5QT?=
+ =?us-ascii?Q?1u3fKAYEfpRvvrb6d2VHs3vfvm7sMvJ4+g1MkJRG7QFAvhO7LAEj/WlJU+YC?=
+ =?us-ascii?Q?EPYCdnrR9Dpl39FVNQhvzTELmGEkaT/WVTkjorbvUGT9Xy14VkMbGAiSfLIx?=
+ =?us-ascii?Q?ztxYf43MyblxoDZgMWR9vsulyYNR3+5Fu5CY8QhWDn+IauXIUt4z9BtLU4dH?=
+ =?us-ascii?Q?SfwzPETDXtSiUqfZ4jiYDTnE44WqNcBf9obxCenQpne2dTcNfK4M5+GFfR14?=
+ =?us-ascii?Q?Z5OWM+N2h2L8Wy2DDYRXqtXfvuV91qbNy91ZD//NNDrSym/fmdjjdJcmCzBn?=
+ =?us-ascii?Q?OJVHzMP0+QBKiB8SQe0+QtKYrZbC14vtUPqWRtQqyeGZmcrlCw/0IVG04mYR?=
+ =?us-ascii?Q?U7OaBZGP3KOyyoKXn/N2RrWiopw0jwsOugotoTP4fmDiD5paxN1g2t4X9441?=
+ =?us-ascii?Q?Rkka+Qc4rfriCHwSiL10kaIGIG/M0HWiEqKo/nz6pxfPusjMu6bOti8SQMwb?=
+ =?us-ascii?Q?OYBKBgCA13Y+w7JY2hWNlDZpBWZOJXVIC3TNHUfEqg6O4cAAQnEgTTziHUcd?=
+ =?us-ascii?Q?bm5tLhB/AuPYHZUiKSFWm4TurSb5PbMa+wkLOugJd7ewwhQ2r9uxfAmcIRYW?=
+ =?us-ascii?Q?kcT4c7ohzwJr/BgIFXy5YsO/uJnup/tlqE/eFq4rWZdaZ8JknrgckRliAQwN?=
+ =?us-ascii?Q?ozIFBt0nY+I3wCp2kGkTmVe0r1PHUS1taqHsfVvfD67XJTCQHIb7Ls41WDob?=
+ =?us-ascii?Q?z3ouPuJNmFE+jv5ljzuM0wOtYBqGaqqMQ0/5yhWtizgTbECFy6CEcXOUDZS1?=
+ =?us-ascii?Q?kYKfsVBD2uQLLe1lrlheUiajC8wBRBisb9Vo15RaB1+7aXHx1rd8aWJTgow5?=
+ =?us-ascii?Q?jNJvC11t/eVv48Z5k8kiv+mKoB1v5eFrb6/WrScXw2RC3t29IdORxo7ArhZM?=
+ =?us-ascii?Q?vnQuHomyQ7dJtLsUrpPQtqunqowiJwuLDnwfD6Xv/F53/QLT6AgDhLSBgLSF?=
+ =?us-ascii?Q?vezKjYRIAdW1YOWnquzN2GCxZvbx/WE6XVQWpAh959WaKwZk1ZWLJbPLWpwY?=
+ =?us-ascii?Q?0vAfLP0iiheRCa/LrhTVl2Kf2CC7uPpRrrgMeyA0h3+d9qESQPEYXGtHhhfY?=
+ =?us-ascii?Q?RxTWk7ExUsr1ZLlABL0etC4I?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: f396394a-213e-458b-4939-08d955bf20b1
+X-MS-Exchange-CrossTenant-AuthSource: AS8P190MB1063.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2021 14:09:22.6703
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rs/Uru8O1FeXxGpUCqOkuTFelc6Nyw+r+n23BZ043/N25sN3JueyBjrdY+6/JZtDEeDXueEvtLBz34AU15du6V/0rhuRoTfGSPLK/mPrWw8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5P190MB0306
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/2/2021 9:20 PM, Joerg Roedel wrote:
-> On Wed, Jul 28, 2021 at 10:52:28AM -0400, Tianyu Lan wrote:
->> In Isolation VM, all shared memory with host needs to mark visible
->> to host via hvcall. vmbus_establish_gpadl() has already done it for
->> storvsc rx/tx ring buffer. The page buffer used by vmbus_sendpacket_
->> mpb_desc() still need to handle. Use DMA API to map/umap these
->> memory during sending/receiving packet and Hyper-V DMA ops callback
->> will use swiotlb function to allocate bounce buffer and copy data
->> from/to bounce buffer.
-> 
-> I am wondering why you dont't use DMA-API unconditionally? It provides
-> enough abstraction to do the right thing for isolated and legacy VMs.
-> 
+From: Vadym Kochan <vkochan@marvell.com>
 
-In VMbus, there is already a similar bounce buffer design and so there 
-is no need to call DMA-API for such buffer. Calling DMA-API is to use
-swiotlb bounce buffer for those buffer which hasn't been covered. This
-is why need to conditionally call DMA API.
+Offload action police when keyed to a flower classifier.
+Only rate and burst is supported for now. The conform-exceed
+drop is assumed as a default value.
+
+Policer support requires FW 3.1 version. Because there are some FW ABI
+differences in ACL rule messages between 3.0 and 3.1 so added separate
+"_ext" struct version with separate HW helper.
+
+Also added new __tc_classid_to_hwtc() helper which calculates hw tc
+without need of netdev but specifying the num of tc instead, because
+ingress HW queues are globally and statically per ASIC not per port.
+
+v2:
+    1) Added missing "static" in #4 patch prestera_hw.c
+
+Serhiy Boiko (1):
+  net: marvell: prestera: Offload FLOW_ACTION_POLICE
+
+Vadym Kochan (3):
+  net: marvell: prestera: do not fail if FW reply is bigger
+  net: marvell: prestera: turn FW supported versions into an array
+  net: sched: introduce __tc_classid_to_hwtc() helper
+
+ .../ethernet/marvell/prestera/prestera_acl.c  |  14 ++
+ .../ethernet/marvell/prestera/prestera_acl.h  |  11 +-
+ .../marvell/prestera/prestera_flower.c        |  18 +++
+ .../ethernet/marvell/prestera/prestera_hw.c   | 125 +++++++++++++++++-
+ .../ethernet/marvell/prestera/prestera_pci.c  |  63 ++++-----
+ include/net/sch_generic.h                     |   9 +-
+ 6 files changed, 197 insertions(+), 43 deletions(-)
+
+-- 
+2.17.1
+
