@@ -2,125 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6F933DDFCE
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 21:05:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25D473DE023
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 21:38:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230473AbhHBTFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 15:05:13 -0400
-Received: from mail-eopbgr140083.outbound.protection.outlook.com ([40.107.14.83]:5461
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229835AbhHBTFM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Aug 2021 15:05:12 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mi2E77XImTrvzCrjo2dunsHE2ztk6PaLOzhjXWhG4F8+payuF3XYKLtvzysJ1nwm45ExUfVARDNunCqD9yJCD7rcXVZ3XgvvB+g6d7cqyxxVGpXdUwqLqJ5mxFldNI5tehvccpBGgf1PAN3FcI8RiV3zvqg21FQ0/duwpI2OJCjc8iM1BoawQRvSqAC5nWbQfQyVhYV3lhMqpg06mMaTFt/dQPN8gM3tl9zzI/4G+Lpox8+cFDDlOW3ldF2xPc/SD0l3kQh0sYcXozJwi12ZL+fhPbhQ68H515ognSHBZc6+YHtRVoqcFzgoLmnz+Lbhkyfr0u3Hpkb6vySkUVor/A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gvUzEh0sZr5frDn//sFmV/VLJ3hd8wE70p1INLwE7ng=;
- b=BxGts7NXu/m1N1dOVQtVfrQ/iiQTAnoceA9eaCOctzM/JASl+QGf2pWkVmrvmsH+6KXcHH22NrW1EwDYjGgMcy32LO0mQelihgw6eXNv+KaOkZWmfIQedH/N0XhNdKhy/L5GNzUwBjLBXLVmgu1i4kCb+0IerJYpS6sGxUmCYph3Kt8YJQ7aXCzg4L3AOE0hynXILuJq8H+6NyDkXB/QwG8riN0a62yreBSTUcXh4SSZ2KzintXdi+hCJTMEFvj+QvzwxIV9WYNKZhbQbz1zKVYO6jirDT4FVekdQlTk9YK+IdsEdqZ6M2OSjEihel9yEXahD6i0oSM7Kf7UnLJqCw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gvUzEh0sZr5frDn//sFmV/VLJ3hd8wE70p1INLwE7ng=;
- b=pRtfBuoh+o7NK/Sy1RkmzzFnLFW83vyw9MC/svLqFzkAs0lKnKWxKrjUA24srOAAFUh0MUleY9y/BlACKtUPNNjOv32m1QUpJoF4o2q0Bv4df9/upOsxQ625mL+IqQ8CNimTa+/f3W4SoglROto5qXpnOI36eWoDillw++XmqlY=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB5293.eurprd04.prod.outlook.com (2603:10a6:803:5f::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.21; Mon, 2 Aug
- 2021 19:05:00 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4373.026; Mon, 2 Aug 2021
- 19:05:00 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-CC:     Simon Horman <simon.horman@corigine.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Networking <netdev@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "oss-drivers@corigine.com" <oss-drivers@corigine.com>
-Subject: Re: [PATCH] switchdev: add Kconfig dependencies for bridge
-Thread-Topic: [PATCH] switchdev: add Kconfig dependencies for bridge
-Thread-Index: AQHXh61yQBka7eM/OUS0Ww/tlViNv6tgZe6AgAAjW4CAAAnwgA==
-Date:   Mon, 2 Aug 2021 19:05:00 +0000
-Message-ID: <20210802190459.ruhfa23xcoqg2vj6@skbuf>
-References: <20210802144813.1152762-1-arnd@kernel.org>
- <20210802162250.GA12345@corigine.com>
- <CAK8P3a0R1wvqNE=tGAZt0GPTZFQVw=0Y3AX0WCK4hMWewBc2qA@mail.gmail.com>
-In-Reply-To: <CAK8P3a0R1wvqNE=tGAZt0GPTZFQVw=0Y3AX0WCK4hMWewBc2qA@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 77466d56-7698-4188-ce24-08d955e86d83
-x-ms-traffictypediagnostic: VI1PR04MB5293:
-x-microsoft-antispam-prvs: <VI1PR04MB529360D1DF455FE3C8AC6D54E0EF9@VI1PR04MB5293.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 2xP8IirKSBC4bz5y/kzThNNjHbq7TOl4Aiex886XaZ2MFtiwct/BZ42VfEmbbmJggpzA3jysZuNzEn6UWekTm19u4g0p5raV0YAttVM0OoS0gFmsQfTTvwFKJHyf4kh2gUynnWsTytMinoR0i7Df/TTONS2cn6nRWfl5Ecp9d63kHpOgX165+Twzzn6dhvDaGjAQSiuJoL3DcqboSyy87y67UYdbT/CCRD7a0lvNNRllWwwNRjwKgJcJTziTU7e8FJUf4L68PiGZlCHoljmttHyvlcSu6xxcj8/inDYng7XrdgijaDi8SBoCK0kO7vaZhmDD4vwVBzGxECLxkm2aoZKmyfARDcqotidqVrA5MZQT39rXQI/i05cLFh52AL9fDDInO7fNyO2YjlhWSB5xY1fuV3vemi7q7A/N/5suyk22avJ6Kj8PFiBC1GXDHRCjLldvHp3fb49Fkki6R0KSqaK3w+F1WAGooaei3VKliW+kUcKVhWkYZ6LooNdye8CbERGI1fz7j+2EoHE0otg48ySXSIpfy9/vrWwbVzCXbH2aH+VymhNoTU8zKL3D3wc6A/ClvdlIHsm76cReW0MVIdi0amcKnQob/j4omafYmswgUK06PGdRFzmdHfxrVwScErYYamxMFWLaA/r67lQt0H+ZOfug/qsyFZ/3H8H6tI0T+gqtFCHttEV3oE1EoOmwpkgoqDLGJn3LyA/AibPqyg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(39860400002)(346002)(396003)(376002)(136003)(366004)(6486002)(26005)(8936002)(6506007)(186003)(316002)(33716001)(2906002)(54906003)(66556008)(64756008)(86362001)(1076003)(66946007)(7416002)(44832011)(66446008)(122000001)(83380400001)(6512007)(66476007)(9686003)(71200400001)(38100700002)(76116006)(478600001)(6916009)(91956017)(4326008)(8676002)(558084003)(38070700005)(5660300002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?K4lIhwr3R3Fe+Tvdf6wBqsLrVKGQ0mxAxLiVGnFwsJPChg7yWYEugvltOxJp?=
- =?us-ascii?Q?3FUGyMjvsbYig84rSSTzSHm0GWK0/xhkb6/6QJEUtdd/7U0tAxvUJVqHqHlZ?=
- =?us-ascii?Q?BhrSojI4ODeBoqN5nmHTv+h3ncCx7mqFIMYg+dkZAckm/KF28Pb/bvYB3zKK?=
- =?us-ascii?Q?06/bGt/m7s8gSf1wfMp+8rLsqQ6aXapBCsnHGmTWGik21WRP1QSsvwHL9wYZ?=
- =?us-ascii?Q?hK6fY7h8CXUoc2KzJmIx8GM8V6jlrw37ojcuJkSVo5oGydu4UVD5DSaVW1l5?=
- =?us-ascii?Q?BWGCSBLJ8JTlzYG3yCYVnRMkkjvGAkpy5Ri1aWb/vGKzdj2ck/TtC8nmCWbz?=
- =?us-ascii?Q?gBq4UU4nw4+aRm1dpSQxJcloLll4xxJNhJVJsd9leuazxVL9gc3BOHI/ChKW?=
- =?us-ascii?Q?VHOYHgE/h6sK54k/4nRuNySMK/zB/wtL//vjb3Dfv5NWh6LhH6yC85+yI8Mi?=
- =?us-ascii?Q?eGPIumbSy7DN/oHlLO9ke65FdmruC3lmgl/htSMTQovJWoHf2LN9dXbBqsEE?=
- =?us-ascii?Q?k0gqvp1vUXWlfCVa2skANovonv7pFrfxBx9DlylSZsqEasM1HSTivYxmL934?=
- =?us-ascii?Q?8IeemUahAsmhvsB638rv4BiDUL/4uInZ8eEYi33zDvtzRvgSrLTTN5glUMdO?=
- =?us-ascii?Q?YDmR2DGTU009DzOV48cQOGn1Fn8RGK0X02j/kOb7OIjA+y4xM94i4e9Eec+q?=
- =?us-ascii?Q?uqGKRs/ilCtygrWdY246pOjtrcPoR88I8nvCtPDCNhQaM+IC7xCsKqUFgp9B?=
- =?us-ascii?Q?XYgKbLq5XaV0P/Vv1rIy2whBA7TY5BDsgQyzqJ/h8b/aK9IjCWhht/lb6mo0?=
- =?us-ascii?Q?OVyKnheoKFppmwcLtVrTRkY076J/sq0Jefz1/by9hqg+OrY/uIYzZyUtSUKh?=
- =?us-ascii?Q?ehG7EOOT/VOmX9xaYOzPKOvKcHCnmUeAnXA7j5PoX4V1XyWqMH4quJQrHY9+?=
- =?us-ascii?Q?CI3N2yhr/M/8oQ94bxh8kAnzAmqvKL/Is5uv8DNcj7ITnkiFFH5xPe5xi5IL?=
- =?us-ascii?Q?1MFJDnzZpEO6R8irnhKPBp8jjcPDxZl2wm+H64yG9i9X8kn5A2Raq8aUn6oD?=
- =?us-ascii?Q?gsLrbAS9DpGyHZqPOgD6DW5Rd4MNHVo7ZCoiwCoQgUcPQOXXCczBD7jylFQt?=
- =?us-ascii?Q?ai7I8E3gLjpsqzDA/OuuLO22uDY89xkgIjFUfT+3fmOikzGWo87G+qEOu5a3?=
- =?us-ascii?Q?LsxW48mu7Qd/wSEcITGYw6SbBKhlG3LHlTkHhHq7dyuPFzchpb1fKI6WfPke?=
- =?us-ascii?Q?iVQeEUNRZN4t2B6Paq9+fw0mNkMZtCvZcCc4b8xfEKmyZgJhx9MMniV9D/dN?=
- =?us-ascii?Q?8HZv1OhDluvX7Ylm3Ih4xnxt?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <01489F5268A86B43A3E39A9E6C0765F1@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S229835AbhHBTi5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 15:38:57 -0400
+Received: from gateway30.websitewelcome.com ([192.185.194.16]:42133 "EHLO
+        gateway30.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229537AbhHBTi4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 15:38:56 -0400
+X-Greylist: delayed 1415 seconds by postgrey-1.27 at vger.kernel.org; Mon, 02 Aug 2021 15:38:56 EDT
+Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
+        by gateway30.websitewelcome.com (Postfix) with ESMTP id A40F8D4C5
+        for <netdev@vger.kernel.org>; Mon,  2 Aug 2021 14:15:03 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id AdN0mIZ0GjSwzAdN0mqx4m; Mon, 02 Aug 2021 14:13:02 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:From:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=DJIS+a5HsMmnfIxc2Pzhsn+S1rqEqCOqgc6RlnNWJ6o=; b=EBYUsbVyp+HjHZwcH9ALnmg6Fi
+        uqEN3Dltc7+UHmEwSBAJhyMK9ZKspqWrC8PHilc2jJro+1UWv1pWzRS1uW+kbZ16KM6ewHjGHIPi3
+        gIVHwcI5+GU0K5HQwLswTkbVNGeWWfWU3F2JvH+b8+fs/pT19NRPP8sd1HF4iKNAEAXmBxftqUvgt
+        XDJC7lHqzTRCj7WxZAthwVGTn6YaaidkZb56AK+i9VuRjBDcwucB+jRT8DjP7+tCkc4//pUvk5Mcq
+        FkPYAjy7URIh/9jGAB3X5QXrT7c4AMnpvN3vNJ19LzKgK0J48BoTWug6ec+dACL9Z469kbuyXgUX3
+        /zl0ZXnw==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:57696 helo=[192.168.15.8])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1mAdMy-0042EB-Mo; Mon, 02 Aug 2021 14:13:00 -0500
+Subject: Re: [PATCH][next] net/ipv4: Replace one-element array with
+ flexible-array member
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     patchwork-bot+netdevbpf@kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <20210731170830.GA48844@embeddedor>
+ <162791400741.18419.5941105433257893840.git-patchwork-notify@kernel.org>
+ <6d3c2ba1-ea01-dbc1-1e18-1ba9c7a15181@embeddedor.com>
+Message-ID: <4a9987c1-1f7a-35af-af6a-01b96292d2ee@embeddedor.com>
+Date:   Mon, 2 Aug 2021 14:15:40 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77466d56-7698-4188-ce24-08d955e86d83
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Aug 2021 19:05:00.6634
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +ZCCE4UwwTeaNdMzT05ol2hezbkBKujAgrcFJcM62da04cS0w5uqyik0yDBBrQuJAC13nzLKb+vukrdFJg7hbQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5293
+In-Reply-To: <6d3c2ba1-ea01-dbc1-1e18-1ba9c7a15181@embeddedor.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1mAdMy-0042EB-Mo
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:57696
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 8
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 02, 2021 at 08:29:25PM +0200, Arnd Bergmann wrote:
-> If this looks correct to you, I can submit it as a standalone patch.
 
-I think it's easiest I just ask you to provide a .config that triggers
-actual build failures and we can go from there.=
+
+On 8/2/21 13:46, Gustavo A. R. Silva wrote:
+> 
+> 
+> On 8/2/21 09:20, patchwork-bot+netdevbpf@kernel.org wrote:
+>> Hello:
+>>
+>> This patch was applied to netdev/net-next.git (refs/heads/master):
+>>
+>> On Sat, 31 Jul 2021 12:08:30 -0500 you wrote:
+>>> There is a regular need in the kernel to provide a way to declare having
+>>> a dynamically sized set of trailing elements in a structure. Kernel code
+>>> should always use “flexible array members”[1] for these cases. The older
+>>> style of one-element or zero-length arrays should no longer be used[2].
+>>>
+>>> Use an anonymous union with a couple of anonymous structs in order to
+>>> keep userspace unchanged:
+>>>
+>>> [...]
+>>
+>> Here is the summary with links:
+>>   - [next] net/ipv4: Replace one-element array with flexible-array member
+>>     https://git.kernel.org/netdev/net-next/c/2d3e5caf96b9
+> 
+> arghh... this has a bug. Sorry, Dave. I will send a fix for this, shortly.
+> 
+
+BTW... can we expect msf->imsf_numsrc to be zero at some point in the following
+pieces of code?
+
+net/ipv4/igmp.c:
+2553         copycount = count < msf->imsf_numsrc ? count : msf->imsf_numsrc;
+2554         len = copycount * sizeof(psl->sl_addr[0]);
+2555         msf->imsf_numsrc = count;
+2556         if (put_user(IP_MSFILTER_SIZE(copycount), optlen) ||
+2557             copy_to_user(optval, msf, IP_MSFILTER_SIZE(0))) {
+2558                 return -EFAULT;
+2559         }
+
+net/ipv4/ip_sockglue.c:
+1228         case IP_MSFILTER:
+1229         {
+1230                 struct ip_msfilter *msf;
+1231
+1232                 if (optlen < IP_MSFILTER_SIZE(0))
+1233                         goto e_inval;
+1234                 if (optlen > sysctl_optmem_max) {
+1235                         err = -ENOBUFS;
+1236                         break;
+1237                 }
+1238                 msf = memdup_sockptr(optval, optlen);
+1239                 if (IS_ERR(msf)) {
+
+			...
+
+1250                 if (IP_MSFILTER_SIZE(msf->imsf_numsrc) > optlen) {
+1251                         kfree(msf);
+1252                         err = -EINVAL;
+1253                         break;
+1254                 }
+1255                 err = ip_mc_msfilter(sk, msf, 0);
+1256                 kfree(msf);
+1257                 break;
+1258         }
+
+Thanks
+--
+Gustavo
