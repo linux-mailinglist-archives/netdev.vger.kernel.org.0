@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A31E13DD540
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 14:08:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 755AC3DD541
+	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 14:08:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233498AbhHBMIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 08:08:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41730 "EHLO
+        id S233721AbhHBMIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 08:08:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233678AbhHBMIc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 08:08:32 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89CA7C06175F
-        for <netdev@vger.kernel.org>; Mon,  2 Aug 2021 05:08:21 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id e5so19350682pld.6
-        for <netdev@vger.kernel.org>; Mon, 02 Aug 2021 05:08:21 -0700 (PDT)
+        with ESMTP id S233676AbhHBMIf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 08:08:35 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DEA1C061796
+        for <netdev@vger.kernel.org>; Mon,  2 Aug 2021 05:08:26 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id t3so17250454plg.9
+        for <netdev@vger.kernel.org>; Mon, 02 Aug 2021 05:08:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=LoWF/YtiATK/JG4AUtLbQvuapyw/zBxv2DS/rYBTtbw=;
-        b=LFkGS14hbazgJqhNtrMm1dWpG0XspzvDaIPmxpJ3loBEKFsby4IwhEXhxP5glW5fCN
-         dxBlvAPXrcJmZmcWOwOatsaiGrqjqw1w2YNmghgGYcNTVOESZNgrYKe19KTuJgDQqudO
-         pD8PtyQH3OpE5+Mn88ovrqQr1NthkxYhIyaPlX8UK4fwBo6U5ZZsykp1HSQBSNLoo1BX
-         3JMaDKTrzyaPeflgYFZvXrNATSBFkff5ANpCOnbcX0JrPPnpK5UoGyOH6RH+na5MpVuC
-         5a9iDXBvLUCNYbRXk0gQI69b1q/PiB2HvK1lDRvDsqJ1MGvj9ebRPF6VffE0v6Qw0sa4
-         UPQQ==
+        bh=j42q5rdRZ8gBlePD6vWg8hPTNcHOSjWSlt+Ho+ufcE8=;
+        b=UwJwUPjlDNb71qW4v0Y+K8kmjyAwvH04VEeNmg7tGkkOuSswF/yNEXYddpFCC0XJ9c
+         6fIn3JuZqAQXBkzx/b60j5tel3/imCLlvLyB7tC2jqffS2+Bcalqt6rw5xaVVKpLkZ9z
+         LjZlRiL9LCaSjslKkC1oZPCMorGfIHC3uo78b2se7pFoCgGTxjaExiGm9IvecQO+zdpz
+         YuQLqROwGIUxMALDUAhEgZ0EnJMw0nSnljq9o//n4uuT9Vo/0N5+kBmJb0C33qgGgYvh
+         fZl6w/8FwwnWwHWI3TeKkLzdM5rLazrOPrBYSiKtEW+AarU1aQx8UL35gQr2rqp1zHBs
+         EnFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=LoWF/YtiATK/JG4AUtLbQvuapyw/zBxv2DS/rYBTtbw=;
-        b=Or4ODIXRfv4fPqDOUPaJhpBkO7vKQ7qWpby4kbsPLwJGcR7YqjA38Y9FavmHq/HFhA
-         fnRvoYqmkCTLMUGm4kLIDGVCsfYthRyElt6X158egWuT/A0oyf7K0QFLmmHlgKQhVnT/
-         fxeoPaTt7dR4yZBuVSDzpS/I/j2wwtU4W4nRVnoiGf+VMAYEbr0gVqhgJhj3UZRjW0mF
-         5SQLXF1RdXWJKKYZcq9G6HD8dfltp491jlWe5QxLViiOoWDGJzOpHt6EFnsS1NARttT+
-         rt9mDmgt7IF6/DDaFjfyi3MStia0mazMKv9vHd1j6Vjb9HoNNLBpMushjJ1jZ4g/fstW
-         SRBw==
-X-Gm-Message-State: AOAM533ofq1qzMx8PV3Uoa7ktwqgXRROh/XJZpKflltY3pZacWDAVEGa
-        yp7c8etkaacx1p/KwIOBhqIMEA==
-X-Google-Smtp-Source: ABdhPJzbMFrH8i2QRZAk7grT0cT37daa6hWHXiwZ4OnHFYfUPa4v14ZTdDf4U72EMXtFuJXe8rwGZg==
-X-Received: by 2002:a65:568c:: with SMTP id v12mr1759985pgs.88.1627906101044;
-        Mon, 02 Aug 2021 05:08:21 -0700 (PDT)
+        bh=j42q5rdRZ8gBlePD6vWg8hPTNcHOSjWSlt+Ho+ufcE8=;
+        b=VcSucQWG5gSQ6dj/IMdbADAlHPycznkUwu6YIVsdSQ8sE3sYJbzN8v2NFduile8/fy
+         1iguowFYO15g/6YZQH4HaIFw8XlxHLLfeuQT9XCMxrhVhDd7Vuodv9VS2gJNYKb5Y3B/
+         U/fUalvc8ZylVOBaTBLBkXmPLI0lUUWOw1ihsNFfS4zA29rwN/7G+rvkLdEbxXHlQQBM
+         hntOHrpE4lwN+DOxXtVQ5EOy45W7SfToTNcktTx6DHTXJBDMpjuAoO8kob52Uk725qvO
+         HmAtNsTAw5Oi7LjlibmJNC619Wd3S6Z+8lL1vT1e/CmOwExi6EpRtH2CoKTkvX/n6Oao
+         P3WQ==
+X-Gm-Message-State: AOAM532/me3/7N6Yraq1s65d2nLTVamrIWnhhBQp39YEpMUvYaQw/MFf
+        YcrQJsNFQoI3eHNU+ocoa9Q21A==
+X-Google-Smtp-Source: ABdhPJyWEyx8aChLggqRUs8fOfQ650EJoTGy+jTjblU9JsWLXnlVzZKnHrFbberN8DpROD+/drzUxQ==
+X-Received: by 2002:a17:902:c20c:b029:12c:afb8:fad2 with SMTP id 12-20020a170902c20cb029012cafb8fad2mr6139991pll.19.1627906105954;
+        Mon, 02 Aug 2021 05:08:25 -0700 (PDT)
 Received: from n248-175-059.byted.org. ([121.30.179.62])
-        by smtp.googlemail.com with ESMTPSA id f30sm12874867pgl.48.2021.08.02.05.08.17
+        by smtp.googlemail.com with ESMTPSA id f30sm12874867pgl.48.2021.08.02.05.08.22
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 02 Aug 2021 05:08:20 -0700 (PDT)
+        Mon, 02 Aug 2021 05:08:25 -0700 (PDT)
 From:   fuguancheng <fuguancheng@bytedance.com>
 To:     mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
         sgarzare@redhat.com, davem@davemloft.net, kuba@kernel.org,
@@ -54,9 +54,9 @@ To:     mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
 Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         fuguancheng <fuguancheng@bytedance.com>
-Subject: [PATCH 3/4] VSOCK DRIVER: support specifying additional cids for host
-Date:   Mon,  2 Aug 2021 20:07:19 +0800
-Message-Id: <20210802120720.547894-4-fuguancheng@bytedance.com>
+Subject: [PATCH 4/4] VSOCK DRIVER: support communication using host additional cids
+Date:   Mon,  2 Aug 2021 20:07:20 +0800
+Message-Id: <20210802120720.547894-5-fuguancheng@bytedance.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20210802120720.547894-1-fuguancheng@bytedance.com>
 References: <20210802120720.547894-1-fuguancheng@bytedance.com>
@@ -64,404 +64,230 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This packet allows the user to specify multiple additional CIDS for host
-that can be used to communicate with a guest in the future. The host get
-its additional cid through the ioctl call with
-request code VHOST_VSOCK_SET_GUEST_CID.
+This patch allows the user to use the additional host CIDS to communicate
+with the guest.  As server, the host can bind to any CIDS as long as
+the cid can be mapped to one guest.
 
-Guest also knows the additional cids for host so that it can check the
-received packet to see whether the packet should be received or rejected.
+The VHOST_DEFAULT_CID can be used as normal.
 
-Guest gets host's additional cids from the device config space, so
-hypervisors that emulate the device needs to be changed to use this
-feature. The data layout of the device config space can be found at
-include/uapi/linux/virtio_vsock.h
+As client, when connect to a remote server, if no address is specified to
+be used, then it will use the first cid in the array. If the user wants
+to use a specific cid, then the user can perfrom bind before the connect
+operation, so that vsock_auto_bind will not be performed.
+
+The patch depends on the previous patch which enables hypervisors such as
+qemu to specify multiple cids for host and guest.
 
 Signed-off-by: fuguancheng <fuguancheng@bytedance.com>
 ---
- drivers/vhost/vhost.h             |   5 --
- drivers/vhost/vsock.c             | 134 ++++++++++++++++++++++++++++++++++++--
- include/uapi/linux/vhost.h        |   2 +
- include/uapi/linux/virtio_vsock.h |   5 ++
- net/vmw_vsock/virtio_transport.c  |  27 ++++++++
- 5 files changed, 161 insertions(+), 12 deletions(-)
+ drivers/vhost/vsock.c            | 39 ++++++++++++++++++++++++++++++++++++++-
+ include/net/af_vsock.h           |  4 ++++
+ net/vmw_vsock/af_vsock.c         | 20 ++++++++++++++------
+ net/vmw_vsock/virtio_transport.c | 30 ++++++++++++++++++++++++++++++
+ 4 files changed, 86 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-index 52bd143ccf0c..638bb640d6b4 100644
---- a/drivers/vhost/vhost.h
-+++ b/drivers/vhost/vhost.h
-@@ -25,11 +25,6 @@ struct vhost_work {
- 	unsigned long		flags;
- };
- 
--struct multi_cid_message {
--	u32 number_cid;
--	u64 *cid;
--};
--
- /* Poll a file (eventfd or socket) */
- /* Note: there's nothing vhost specific about this structure. */
- struct vhost_poll {
 diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-index 013f8ebf8189..f5d9b9f06ba5 100644
+index f5d9b9f06ba5..104fcdea2dd7 100644
 --- a/drivers/vhost/vsock.c
 +++ b/drivers/vhost/vsock.c
-@@ -39,10 +39,16 @@ enum {
- 	VHOST_VSOCK_BACKEND_FEATURES = (1ULL << VHOST_BACKEND_F_IOTLB_MSG_V2)
- };
+@@ -57,8 +57,22 @@ struct vhost_vsock_ref {
  
-+typedef struct vhost_vsock *(*get_vhost_vsock)(u32);
+ static bool vhost_transport_contain_cid(u32 cid)
+ {
++	unsigned int index;
++	struct vhost_vsock_ref *ref;
 +
- /* Used to track all the vhost_vsock instances on the system. */
- static DEFINE_MUTEX(vhost_vsock_mutex);
- static DEFINE_READ_MOSTLY_HASHTABLE(vhost_vsock_hash, 8);
- 
-+/* Used to track all the valid host cids for vhost_vsock in system. */
-+static DEFINE_MUTEX(valid_host_mutex);
-+static DEFINE_READ_MOSTLY_HASHTABLE(valid_host_hash, 8);
+ 	if (cid == VHOST_VSOCK_DEFAULT_HOST_CID)
+ 		return true;
 +
- struct vhost_vsock_ref {
- 	struct vhost_vsock *vsock;
- 	struct hlist_node ref_hash;
-@@ -65,12 +71,21 @@ struct vhost_vsock {
- 
- 	struct vhost_work send_pkt_work;
- 	spinlock_t send_pkt_list_lock;
--	struct list_head send_pkt_list;	/* host->guest pending packets */
-+	struct list_head send_pkt_list; /* host->guest pending packets */
- 
- 	atomic_t queued_replies;
- 
- 	u32 *cids;
- 	u32 num_cid;
++	mutex_lock(&valid_host_mutex);
++	hash_for_each(valid_host_hash, index, ref, ref_hash) {
++		u32 other_cid = ref->cid;
 +
-+	/* num_host_cid indicates how many host cids are considered valid for this guest. */
-+	/* Additional cids are stored in hostcids. */
-+	u32 num_host_cid;
-+	u32 *hostcids;
-+
-+	/* Link to table valid_host_hash, writes use valid_hash_lock. */
-+	struct vhost_vsock_ref *valid_cid_list;
-+
- 	bool seqpacket_allow;
- };
++		if (other_cid == cid) {
++			mutex_unlock(&valid_host_mutex);
++			return true;
++		}
++	}
++	mutex_unlock(&valid_host_mutex);
+ 	return false;
+ }
  
-@@ -113,7 +128,24 @@ static struct vhost_vsock *vhost_vsock_get(u32 guest_cid)
+@@ -101,6 +115,21 @@ vhost_vsock_contain_cid(struct vhost_vsock *vsock, u32 cid)
+ 	return false;
+ }
+ 
++/* Check if a cid is valid for the pkt to be received. */
++static bool
++vhost_vsock_contain_host_cid(struct vhost_vsock *vsock, u32 dst_cid)
++{
++	uint32_t index;
++
++	if (dst_cid == VHOST_VSOCK_DEFAULT_HOST_CID)
++		return true;
++	for (index = 0; index < vsock->num_host_cid; index++) {
++		if (vsock->hostcids[index] == dst_cid)
++			return true;
++	}
++	return false;
++}
++
+ static u32 vhost_transport_get_local_cid(void)
+ {
+ 	return VHOST_VSOCK_DEFAULT_HOST_CID;
+@@ -128,6 +157,13 @@ static struct vhost_vsock *vhost_vsock_get(u32 guest_cid)
  	return NULL;
  }
  
--static int check_if_cid_valid(u64 guest_cid, struct vhost_vsock *vsock)
-+/* Callers that dereference the return value must hold vhost_vsock_mutex or the
-+ * RCU read lock.
-+ */
-+static struct vhost_vsock *valid_vhost_get(u32 host_cid)
++/* This function checks if the cid is used by one of the guests. */
++static bool
++vhost_transport_contain_opposite_cid(u32 cid)
 +{
-+	struct vhost_vsock_ref *ref;
-+	/* Iterate through the hash table to prevent two vhost_vsock use the same host cid. */
-+	hash_for_each_possible_rcu(valid_host_hash, ref, ref_hash, host_cid) {
-+		u32 other_cid = ref->cid;
-+
-+		if (other_cid == host_cid)
-+			return ref->vsock;
-+	}
-+
-+	return NULL;
++	return vhost_vsock_get(cid) != NULL;
 +}
 +
-+static int check_if_cid_valid(u64 guest_cid, struct vhost_vsock *vsock, get_vhost_vsock func)
- {
- 	struct vhost_vsock *other;
+ /* Callers that dereference the return value must hold vhost_vsock_mutex or the
+  * RCU read lock.
+  */
+@@ -512,6 +548,7 @@ static struct virtio_transport vhost_transport = {
  
-@@ -130,7 +162,7 @@ static int check_if_cid_valid(u64 guest_cid, struct vhost_vsock *vsock)
- 		return -EADDRINUSE;
- 	/* Refuse if CID is already in use */
- 	mutex_lock(&vhost_vsock_mutex);
--	other = vhost_vsock_get(guest_cid);
-+	other = func(guest_cid);
- 	if (other) {
- 		mutex_unlock(&vhost_vsock_mutex);
- 		return -EADDRINUSE;
-@@ -712,6 +744,10 @@ static void vhost_vsock_free(struct vhost_vsock *vsock)
- 		kvfree(vsock->ref_list);
- 	if (vsock->cids)
- 		kvfree(vsock->cids);
-+	if (vsock->valid_cid_list)
-+		kvfree(vsock->valid_cid_list);
-+	if (vsock->hostcids)
-+		kvfree(vsock->hostcids);
- 	kvfree(vsock);
+ 		.get_local_cid            = vhost_transport_get_local_cid,
+ 		.contain_cid              = vhost_transport_contain_cid,
++		.contain_opposite_cid     = vhost_transport_contain_opposite_cid,
+ 
+ 		.init                     = virtio_transport_do_socket_init,
+ 		.destruct                 = virtio_transport_destruct,
+@@ -629,7 +666,7 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
+ 		/* Only accept correctly addressed packets */
+ 		if (vsock->num_cid > 0 &&
+ 			vhost_vsock_contain_cid(vsock, pkt->hdr.src_cid) &&
+-		    le64_to_cpu(pkt->hdr.dst_cid) == vhost_transport_get_local_cid())
++		    vhost_vsock_contain_host_cid(vsock, le64_to_cpu(pkt->hdr.dst_cid)))
+ 			virtio_transport_recv_pkt(&vhost_transport, pkt);
+ 		else
+ 			virtio_transport_free_pkt(pkt);
+diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
+index d0fc08fb9cac..739ac9aaff8f 100644
+--- a/include/net/af_vsock.h
++++ b/include/net/af_vsock.h
+@@ -171,6 +171,10 @@ struct vsock_transport {
+ 	/* Addressing. */
+ 	u32 (*get_local_cid)(void);
+ 	bool (*contain_cid)(u32 cid);
++	/* For transport_g2h, this checks if the cid is used by its host. */
++	/* For transport_h2g, this checks if the cid is used by one of its guests. */
++	/* This function is set to NULL for loopback_transport. */
++	bool (*contain_opposite_cid)(u32 cid);
+ };
+ 
+ /**** CORE ****/
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index c22ae7101e55..d3037ee885be 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -397,9 +397,9 @@ static bool vsock_use_local_transport(unsigned int remote_cid)
+ 		return true;
+ 
+ 	if (transport_g2h) {
+-		return remote_cid == transport_g2h->get_local_cid();
++		return transport_g2h->contain_cid(remote_cid);
+ 	} else {
+-		return remote_cid == VMADDR_CID_HOST;
++		return transport_h2g->contain_cid(remote_cid);
+ 	}
  }
  
-@@ -738,6 +774,10 @@ static int vhost_vsock_dev_open(struct inode *inode, struct file *file)
- 	vsock->cids = NULL;
- 	vsock->num_cid = 0;
- 
-+	vsock->valid_cid_list = NULL;
-+	vsock->hostcids = NULL;
-+	vsock->num_host_cid = 0;
-+
- 	atomic_set(&vsock->queued_replies, 0);
- 
- 	vqs[VSOCK_VQ_TX] = &vsock->vqs[VSOCK_VQ_TX];
-@@ -808,6 +848,13 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
- 	}
- 	mutex_unlock(&vhost_vsock_mutex);
- 
-+	mutex_lock(&valid_host_mutex);
-+	if (vsock->num_host_cid) {
-+		for (index = 0; index < vsock->num_host_cid; index++)
-+			hash_del_rcu(&vsock->valid_cid_list[index].ref_hash);
-+	}
-+	mutex_unlock(&valid_host_mutex);
-+
- 	/* Wait for other CPUs to finish using vsock */
- 	synchronize_rcu();
- 
-@@ -836,14 +883,19 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
- 	return 0;
- }
- 
--static int vhost_vsock_set_cid(struct vhost_vsock *vsock, u64 __user *cids, u32 number_cid)
-+static int vhost_vsock_set_cid(struct vhost_vsock *vsock, u64 __user *cids,
-+			       u32 number_cid, u64 __user *hostcids,
-+			       u32 number_host_cid)
+@@ -423,7 +423,9 @@ static void vsock_deassign_transport(struct vsock_sock *vsk)
+  *    g2h is not loaded, will use local transport;
+  *  - remote CID <= VMADDR_CID_HOST or h2g is not loaded or remote flags field
+  *    includes VMADDR_FLAG_TO_HOST flag value, will use guest->host transport;
+- *  - remote CID > VMADDR_CID_HOST will use host->guest transport;
++ *  - remote CID > VMADDR_CID_HOST will use host->guest transport if
++ *    guest->host transport is not loaded.  Otherwise, if guest->host transport
++ *    contains the remote_cid, then use the guest->host transport.
+  */
+ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
  {
- 	u64 cid;
- 	int i, ret;
+@@ -434,15 +436,18 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
+ 	int ret;
  
-+	/* num_host_cid = 0 is allowed for that
-+	 * we can use the default host cid.
-+	 */
- 	if (number_cid <= 0)
- 		return -EINVAL;
--	/* delete the old CIDs. */
-+	/* delete the old guest CIDs. */
- 	if (vsock->num_cid) {
- 		mutex_lock(&vhost_vsock_mutex);
- 		for (i = 0; i < vsock->num_cid; i++)
-@@ -854,6 +906,19 @@ static int vhost_vsock_set_cid(struct vhost_vsock *vsock, u64 __user *cids, u32
- 		kvfree(vsock->cids);
- 		vsock->cids = NULL;
- 	}
-+
-+	/* delete old host CIDS related to this vsock. */
-+	if (vsock->num_host_cid) {
-+		mutex_lock(&valid_host_mutex);
-+		for (i = 0; i < vsock->num_host_cid; i++)
-+			hash_del_rcu(&vsock->valid_cid_list[i].ref_hash);
-+		mutex_unlock(&valid_host_mutex);
-+		kvfree(vsock->valid_cid_list);
-+		vsock->valid_cid_list = NULL;
-+		kvfree(vsock->hostcids);
-+		vsock->valid_cid_list = NULL;
-+	}
-+
- 	vsock->num_cid = number_cid;
- 	vsock->cids = kmalloc_array(vsock->num_cid, sizeof(u32),
- 				    GFP_KERNEL | __GFP_RETRY_MAYFAIL);
-@@ -870,6 +935,22 @@ static int vhost_vsock_set_cid(struct vhost_vsock *vsock, u64 __user *cids, u32
- 		goto out;
- 	}
+ 	/* If the packet is coming with the source and destination CIDs higher
+-	 * than VMADDR_CID_HOST, then a vsock channel where all the packets are
++	 * than VMADDR_CID_HOST, and the source and destination CIDs are not
++	 * used by the host, then a vsock channel where all the packets are
+ 	 * forwarded to the host should be established. Then the host will
+ 	 * need to forward the packets to the guest.
+ 	 *
+ 	 * The flag is set on the (listen) receive path (psk is not NULL). On
+ 	 * the connect path the flag can be set by the user space application.
+ 	 */
+-	if (psk && vsk->local_addr.svm_cid > VMADDR_CID_HOST &&
+-	    vsk->remote_addr.svm_cid > VMADDR_CID_HOST)
++	if (psk && transport_h2g && vsk->local_addr.svm_cid > VMADDR_CID_HOST &&
++	    !transport_h2g->contain_cid(vsk->local_addr.svm_cid) &&
++	    vsk->remote_addr.svm_cid > VMADDR_CID_HOST &&
++	    !transport_h2g->contain_cid(vsk->remote_addr.svm_cid))
+ 		vsk->remote_addr.svm_flags |= VMADDR_FLAG_TO_HOST;
  
-+	vsock->num_host_cid = number_host_cid;
-+	vsock->hostcids = kmalloc_array(vsock->num_host_cid, sizeof(u32),
-+				    GFP_KERNEL | __GFP_RETRY_MAYFAIL);
-+	if (!vsock->hostcids) {
-+		vsock->num_host_cid = 0;
-+		ret = -ENOMEM;
-+		goto out;
-+	}
-+	vsock->valid_cid_list = kvmalloc_array(vsock->num_host_cid, sizeof(*vsock->ref_list),
-+			       GFP_KERNEL | __GFP_RETRY_MAYFAIL);
-+	if (!vsock->valid_cid_list) {
-+		vsock->num_host_cid = 0;
-+		ret = -ENOMEM;
-+		goto out;
-+	}
-+
- 	for (i = 0; i < number_cid; i++) {
- 		if (copy_from_user(&cid, cids + i, sizeof(cid))) {
- 			/* record where we failed, to clean up the ref in hash table. */
-@@ -877,7 +958,7 @@ static int vhost_vsock_set_cid(struct vhost_vsock *vsock, u64 __user *cids, u32
- 			ret = -EFAULT;
- 			goto out;
- 		}
--		ret = check_if_cid_valid(cid, vsock);
-+		ret = check_if_cid_valid(cid, vsock, vhost_vsock_get);
- 		if (ret) {
- 			vsock->num_cid = i;
- 			goto out;
-@@ -891,6 +972,28 @@ static int vhost_vsock_set_cid(struct vhost_vsock *vsock, u64 __user *cids, u32
- 			     vsock->cids[i]);
- 		mutex_unlock(&vhost_vsock_mutex);
- 	}
-+
-+	for (i = 0; i < number_host_cid; i++) {
-+		if (copy_from_user(&cid, hostcids + i, sizeof(cid))) {
-+			vsock->num_host_cid = i;
-+			ret = -EFAULT;
-+			goto out;
-+		}
-+		ret = check_if_cid_valid(cid, vsock, valid_vhost_get);
-+		if (ret) {
-+			vsock->num_host_cid = i;
-+			goto out;
-+		}
-+
-+		vsock->hostcids[i] = (u32)cid;
-+		vsock->valid_cid_list[i].cid = vsock->hostcids[i];
-+		vsock->valid_cid_list[i].vsock = vsock;
-+		mutex_lock(&valid_host_mutex);
-+		hash_add_rcu(valid_host_hash,
-+		     &vsock->valid_cid_list[i].ref_hash,
-+		     vsock->hostcids[i]);
-+		mutex_unlock(&valid_host_mutex);
-+	}
- 	return 0;
- 
- out:
-@@ -902,13 +1005,27 @@ static int vhost_vsock_set_cid(struct vhost_vsock *vsock, u64 __user *cids, u32
- 		mutex_unlock(&vhost_vsock_mutex);
- 		vsock->num_cid = 0;
- 	}
-+
-+	if (vsock->num_host_cid) {
-+		mutex_lock(&valid_host_mutex);
-+		for (i = 0; i < vsock->num_host_cid; i++)
-+			hash_del_rcu(&vsock->valid_cid_list[i].ref_hash);
-+		mutex_unlock(&valid_host_mutex);
-+		vsock->num_host_cid = 0;
-+	}
- 	if (vsock->ref_list)
- 		kvfree(vsock->ref_list);
- 	if (vsock->cids)
- 		kvfree(vsock->cids);
-+	if (vsock->valid_cid_list)
-+		kvfree(vsock->valid_cid_list);
-+	if (vsock->hostcids)
-+		kvfree(vsock->hostcids);
- 	/* Set it to null to prevent double release. */
- 	vsock->ref_list = NULL;
- 	vsock->cids = NULL;
-+	vsock->valid_cid_list = NULL;
-+	vsock->hostcids = NULL;
+ 	remote_flags = vsk->remote_addr.svm_flags;
+@@ -458,6 +463,9 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
+ 		else if (remote_cid <= VMADDR_CID_HOST || !transport_h2g ||
+ 			 (remote_flags & VMADDR_FLAG_TO_HOST))
+ 			new_transport = transport_g2h;
++		else if (remote_cid > VMADDR_CID_HOST && transport_g2h &&
++			 transport_g2h->contain_opposite_cid(remote_cid))
++			new_transport = transport_g2h;
+ 		else
+ 			new_transport = transport_h2g;
+ 		break;
+diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+index c552bc60e539..0c4a2f03318c 100644
+--- a/net/vmw_vsock/virtio_transport.c
++++ b/net/vmw_vsock/virtio_transport.c
+@@ -99,6 +99,35 @@ static bool virtio_transport_contain_cid(u32 cid)
  	return ret;
  }
  
-@@ -962,7 +1079,10 @@ static long vhost_vsock_dev_ioctl(struct file *f, unsigned int ioctl,
- 	case VHOST_VSOCK_SET_GUEST_CID:
- 		if (copy_from_user(&cid_message, argp, sizeof(cid_message)))
- 			return -EFAULT;
--		return vhost_vsock_set_cid(vsock, cid_message.cid, cid_message.number_cid);
-+		return vhost_vsock_set_cid(vsock, cid_message.cid,
-+					   cid_message.number_cid,
-+					   cid_message.hostcid,
-+					   cid_message.number_host_cid);
- 	case VHOST_VSOCK_SET_RUNNING:
- 		if (copy_from_user(&start, argp, sizeof(start)))
- 			return -EFAULT;
-diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
-index a3ea99f6fc7f..e2639d7ce375 100644
---- a/include/uapi/linux/vhost.h
-+++ b/include/uapi/linux/vhost.h
-@@ -22,6 +22,8 @@
- struct multi_cid_message {
- 	u32 number_cid;
- 	u64 *cid;
-+	u32 number_host_cid;
-+	u64 *hostcid;
- };
- 
- /* ioctls */
-diff --git a/include/uapi/linux/virtio_vsock.h b/include/uapi/linux/virtio_vsock.h
-index 0afc14446b01..18c54bfdcbf2 100644
---- a/include/uapi/linux/virtio_vsock.h
-+++ b/include/uapi/linux/virtio_vsock.h
-@@ -41,8 +41,13 @@
- /* The feature bitmap for virtio vsock */
- #define VIRTIO_VSOCK_F_SEQPACKET	1	/* SOCK_SEQPACKET supported */
- 
-+/* For values stored in cids, the first "number_cid" values
-+ * are used for guest additional cid.
-+ * The last "number_host_cid" values are used for host additional cid.
-+ */
- struct virtio_vsock_config {
- 	__le32 number_cid;
-+	__le32 number_host_cid;
- 	__le64 cids[];
- } __attribute__((packed));
- 
-diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-index 5f256a57d9ae..c552bc60e539 100644
---- a/net/vmw_vsock/virtio_transport.c
-+++ b/net/vmw_vsock/virtio_transport.c
-@@ -67,6 +67,9 @@ struct virtio_vsock {
- 	u32 number_cid;
- 	u32 *cids;
- 
-+	u32 number_host_cid;
-+	u32 *host_cids;
++/* This function checks if the transport_g2h is using the cid. */
++static bool virtio_transport_contain_opposite_cid(u32 cid)
++{
++	struct virtio_vsock *vsock;
++	bool ret;
++	u32 num_host_cid;
 +
- 	bool seqpacket_allow;
- };
- 
-@@ -400,11 +403,16 @@ static void virtio_vsock_update_guest_cid(struct virtio_vsock *vsock)
- 	struct virtio_device *vdev = vsock->vdev;
- 	__le64 guest_cid;
- 	__le32 number_cid;
-+	__le64 host_cid;
-+	__le32 number_host_cid;
- 	u32 index;
- 
- 	vdev->config->get(vdev, offsetof(struct virtio_vsock_config, number_cid),
- 			  &number_cid, sizeof(number_cid));
-+	vdev->config->get(vdev, offsetof(struct virtio_vsock_config, number_host_cid),
-+			  &number_host_cid, sizeof(number_host_cid));
- 	vsock->number_cid = le32_to_cpu(number_cid);
-+	vsock->number_host_cid = le32_to_cpu(number_host_cid);
- 
- 	/* number_cid must be greater than 0 in the config space
- 	 * to use this feature.
-@@ -419,6 +427,16 @@ static void virtio_vsock_update_guest_cid(struct virtio_vsock *vsock)
- 		}
- 	}
- 
-+	if (vsock->number_host_cid > 0) {
-+		vsock->host_cids = kmalloc_array(vsock->number_host_cid, sizeof(u32), GFP_KERNEL);
-+		if (!vsock->host_cids) {
-+			/* Space allocated failed, reset number_cid to 0.
-+			 * only use the original guest_cid.
-+			 */
-+			vsock->number_host_cid = 0;
++	if (cid == VMADDR_CID_HOST)
++		return true;
++	num_host_cid = 0;
++	rcu_read_lock();
++	vsock = rcu_dereference(the_virtio_vsock);
++	if (!vsock || vsock->number_host_cid == 0) {
++		ret = false;
++		goto out_rcu;
++	}
++
++	for (num_host_cid = 0; num_host_cid < vsock->number_host_cid; num_host_cid++) {
++		if (vsock->host_cids[num_host_cid] == cid) {
++			ret = true;
++			goto out_rcu;
 +		}
 +	}
++	ret = false;
++out_rcu:
++	rcu_read_unlock();
++	return ret;
++}
 +
- 	for (index = 0; index < vsock->number_cid; index++) {
- 		vdev->config->get(vdev,
- 				  offsetof(struct virtio_vsock_config, cids)
-@@ -426,6 +444,14 @@ static void virtio_vsock_update_guest_cid(struct virtio_vsock *vsock)
- 				  &guest_cid, sizeof(guest_cid));
- 		vsock->cids[index] = le64_to_cpu(guest_cid);
- 	}
-+
-+	for (index = index; index < vsock->number_cid + vsock->number_host_cid; index++) {
-+		vdev->config->get(vdev,
-+				  offsetof(struct virtio_vsock_config, cids)
-+				  + index * sizeof(uint64_t),
-+				  &host_cid, sizeof(host_cid));
-+		vsock->host_cids[index - vsock->number_cid] = le64_to_cpu(host_cid);
-+	}
- }
+ static u32 virtio_transport_get_local_cid(void)
+ {
+ 	struct virtio_vsock *vsock;
+@@ -532,6 +561,7 @@ static struct virtio_transport virtio_transport = {
  
- /* event_lock must be held */
-@@ -771,6 +797,7 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
- 	mutex_unlock(&the_virtio_vsock_mutex);
+ 		.get_local_cid            = virtio_transport_get_local_cid,
+ 		.contain_cid              = virtio_transport_contain_cid,
++		.contain_opposite_cid     = virtio_transport_contain_opposite_cid,
  
- 	kfree(vsock->cids);
-+	kfree(vsock->host_cids);
- 	kfree(vsock);
- }
- 
+ 		.init                     = virtio_transport_do_socket_init,
+ 		.destruct                 = virtio_transport_destruct,
 -- 
 2.11.0
 
