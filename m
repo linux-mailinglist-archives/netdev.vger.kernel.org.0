@@ -2,92 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10A973DF685
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 22:41:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E64B83DF688
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 22:41:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230164AbhHCUle (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 16:41:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37936 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229551AbhHCUlc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 16:41:32 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612CFC061757;
-        Tue,  3 Aug 2021 13:41:20 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id x11so426180ejj.8;
-        Tue, 03 Aug 2021 13:41:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=muiFGHEiWM25TrMqBdRhYVOUT+BYpoCINhQGE9kEJ74=;
-        b=MNlRcuGihDn3+Z15IGGZ551Y9IzqTYJz2RsPB/18HciIbgAh7DS4vs5qgpQzNuSd2+
-         ZpzYlPq46RynZktqAvy2nZr+szds0M2MjV0g0++EgJgbFGgO3o68oLUnamcJJjZCzNut
-         Yhq71OtVAfqNPzQmyEiV4kcaMF3h5ziwHE/c26ts1OlDE2LaJ8ZAFZ8kZW8QLsUeosqp
-         WmmwPWnUiY1CbLZASkGIch1ltlXeQ/Z4rPTg3EiaQnUZdcZMRoaPTmN9jCnZw1FuTHSS
-         dAY6evOYP7jawMRXnFBSTVvJC2GGYJen+gZUsPlHFQSmBbohMAesGlkHOnceCuQBpCGs
-         nXow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=muiFGHEiWM25TrMqBdRhYVOUT+BYpoCINhQGE9kEJ74=;
-        b=R44REq9Q/3vNbapLJpsZTg0rfkZFC/FnXUbyK+EyEfjTdSYr/f7h14GnPFl9ef2aB9
-         en2fP5xjUROBDnBhmoEBdBJffwY6uEuBXOd17R+T71kP8Pp5Et2fWdnXW04CElHjQ4Xg
-         ywmpsB4Kb7x5VufFfDiw8LNQ9TPX7U35jF82PFa+jY5xdgA6fQ5tlpX/Y0LN/YAITpKO
-         zFVZv4Mj/aVHPX1Lkdb6BUOqdBv5dtEVOSEUmUichzSM2r7m1wW22mHPwxq8r2khgO/s
-         Jza1VJVKshMmXNznzKC44m/9MfeFTR+DzmwK4lVeJIpXnvN19KDLTVbLsLQ2YhxiVfeN
-         aQOQ==
-X-Gm-Message-State: AOAM531X8/XkUQ4ypkmOlfk9bEQoi218Ea+ry/3qOP+gfTD23Qwbkz4c
-        RzbOipr7+mYGsuz08+24iejCzY6gdlZ1LFSX1rc=
-X-Google-Smtp-Source: ABdhPJxC90iBtIQJh6nPIWU8pSAop+ICxI60kaovcWNRh3ZFPKMATs9wV8MtyZ5+vdEpGw66BuARlVTc44++ww1Ejkc=
-X-Received: by 2002:a17:906:b0c5:: with SMTP id bk5mr22129214ejb.428.1628023278980;
- Tue, 03 Aug 2021 13:41:18 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210729201100.3994-1-linux.amoon@gmail.com>
-In-Reply-To: <20210729201100.3994-1-linux.amoon@gmail.com>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Tue, 3 Aug 2021 22:41:08 +0200
-Message-ID: <CAFBinCAPP7J-B53FCrY50oF9ttsOkkknG1NhBbL8BYZVPdkJSA@mail.gmail.com>
-Subject: Re: [PATCHv1 0/3] Add Reset controller to Ethernet PHY
-To:     Anand Moon <linux.amoon@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S229551AbhHCUlp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 16:41:45 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:46994 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230510AbhHCUln (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 16:41:43 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 173KfRSG072451;
+        Tue, 3 Aug 2021 15:41:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1628023287;
+        bh=6Mev7Km3gabjcz50WEBXisbMvaXrrUq4Smfw6hukFfw=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=Un5NeG4O+dF5//IYlWIAcJ7AURe4nTYdwqoPdOhsnehNILi3o82wjWIb20kci2of8
+         qBEQdK2z4uefXLyxpD8DJBPghlQIzGZw+Bfp+gKV7cQPIQobI5ftcZ5t3VZas0/fOs
+         w0476us51cIHf5q4KAMGGi9GLBi4/o6E2VJpm16E=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 173KfRJ6034908
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 3 Aug 2021 15:41:27 -0500
+Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 3 Aug
+ 2021 15:41:27 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Tue, 3 Aug 2021 15:41:27 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 173KfPBN119960;
+        Tue, 3 Aug 2021 15:41:25 -0500
+Subject: Re: [PATCH net-next 1/4] ethtool: runtime-resume netdev parent before
+ ethtool ioctl ops
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Emiliano Ingrassia <ingrassia@epigenesys.com>
-Content-Type: text/plain; charset="UTF-8"
+        David Miller <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>
+References: <106547ef-7a61-2064-33f5-3cc8d12adb34@gmail.com>
+ <cb44d295-5267-48a7-b7c7-e4bf5b884e7a@gmail.com>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <b4744988-4463-6463-243a-354cd87c4ced@ti.com>
+Date:   Tue, 3 Aug 2021 23:41:23 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <cb44d295-5267-48a7-b7c7-e4bf5b884e7a@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Anand,
-
-On Thu, Jul 29, 2021 at 10:11 PM Anand Moon <linux.amoon@gmail.com> wrote:
->
-> It is being observed some time the Ethernet interface
-> will not send / recive any packet after reboot.
->
-> Earlier I had submitted Ethernet reset ID patch
-> but it did not resolve it issue much, Adding new
-> reset controller of the Ethernet PHY for Amlogic SoC
-> could help resolve the issue.
-nowhere in this series you are addressing the issue from [0]
-Some more comments in the individual patch
 
 
+On 01/08/2021 13:36, Heiner Kallweit wrote:
+> If a network device is runtime-suspended then:
+> - network device may be flagged as detached and all ethtool ops (even if not
+>    accessing the device) will fail because netif_device_present() returns
+>    false
+> - ethtool ops may fail because device is not accessible (e.g. because being
+>    in D3 in case of a PCI device)
+> 
+> It may not be desirable that userspace can't use even simple ethtool ops
+> that not access the device if interface or link is down. To be more friendly
+> to userspace let's ensure that device is runtime-resumed when executing the
+> respective ethtool op in kernel.
+> 
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+>   net/ethtool/ioctl.c | 18 +++++++++++++++---
+>   1 file changed, 15 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+> index baa5d1004..b7ff9abe7 100644
+> --- a/net/ethtool/ioctl.c
+> +++ b/net/ethtool/ioctl.c
+> @@ -23,6 +23,7 @@
+>   #include <linux/rtnetlink.h>
+>   #include <linux/sched/signal.h>
+>   #include <linux/net.h>
+> +#include <linux/pm_runtime.h>
+>   #include <net/devlink.h>
+>   #include <net/xdp_sock_drv.h>
+>   #include <net/flow_offload.h>
+> @@ -2589,7 +2590,7 @@ int dev_ethtool(struct net *net, struct ifreq *ifr)
+>   	int rc;
+>   	netdev_features_t old_features;
+>   
+> -	if (!dev || !netif_device_present(dev))
+> +	if (!dev)
+>   		return -ENODEV;
+>   
+>   	if (copy_from_user(&ethcmd, useraddr, sizeof(ethcmd)))
+> @@ -2645,10 +2646,18 @@ int dev_ethtool(struct net *net, struct ifreq *ifr)
+>   			return -EPERM;
+>   	}
+>   
+> +	if (dev->dev.parent)
+> +		pm_runtime_get_sync(dev->dev.parent);
+
+the PM Runtime should allow to wake up parent when child is resumed if everything is configured properly.
+
+rpm_resume()
+...
+     if (!parent && dev->parent) {
+  --> here
+
+So, hence PM runtime calls are moved to from drivers to net_core wouldn't be more correct approach to
+enable PM runtime for netdev->dev and lets PM runtime do the job?
+
+But, to be honest, I'm not sure adding PM runtime manipulation to the net core is a good idea -
+at minimum it might be tricky and required very careful approach (especially in err path).
+For example, even in this patch you do not check return value of pm_runtime_get_sync() and in
+commit bd869245a3dc ("net: core: try to runtime-resume detached device in __dev_open") also actualy.
+
+
+The TI CPSW driver may also be placed in non reachable state when netdev is closed (and even lose context),
+but we do not use netif_device_detach() (so netdev is accessible through netdev_ops/ethtool_ops),
+but instead wake up device by runtime PM for allowed operations or just save requested configuration which
+is applied at netdev->open() time then.
+I feel that using netif_device_detach() in PM runtime sounds like a too heavy approach ;)
+
+huh, see it's merged already, so...
+
+> +
+> +	if (!netif_device_present(dev)) {
+> +		rc = -ENODEV;
+> +		goto out;
+> +	}
+> +
+>   	if (dev->ethtool_ops->begin) {
+>   		rc = dev->ethtool_ops->begin(dev);
+> -		if (rc  < 0)
+> -			return rc;
+> +		if (rc < 0)
+> +			goto out;
+>   	}
+>   	old_features = dev->features;
+>   
+> @@ -2867,6 +2876,9 @@ int dev_ethtool(struct net *net, struct ifreq *ifr)
+>   
+>   	if (old_features != dev->features)
+>   		netdev_features_change(dev);
+> +out:
+> +	if (dev->dev.parent)
+> +		pm_runtime_put(dev->dev.parent);
+>   
+>   	return rc;
+>   }
+> 
+
+-- 
 Best regards,
-Martin
-
-
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/arch/arm64/boot/dts/amlogic?id=19f6fe976a61f9afc289b062b7ef67f99b72e7b9
+grygorii
