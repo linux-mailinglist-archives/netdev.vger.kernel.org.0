@@ -2,86 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B43363DF219
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:06:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 413FC3DF21C
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:07:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231516AbhHCQGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 12:06:47 -0400
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:57801 "EHLO
-        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231316AbhHCQGq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 12:06:46 -0400
-Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPS id A7A97200BFF1;
-        Tue,  3 Aug 2021 18:06:33 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be A7A97200BFF1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1628006793;
-        bh=ccxZEbWfpIpAkEBoNZKIw0Nv2nbaM5YZA1KGk0VoK8I=;
-        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
-        b=WpfSEq9ksTmYkPuiZuj90n1eVD3b5JuD9ZM2dzWbxwWotmMlcDU7+Bzl96gvnXy9M
-         VYo9wFQrzX15JbZ3ysmVELHHNYYChjAZo1jRPR1WcRHZ5RiyRU2imTHhtNPuA+o5K+
-         rohEvE+kXRFX50pi+QbRbKNHq3L2AyYNQQkJtjbHR+qqrouGOKuJywqNbs+V/QhX2b
-         ceGifwLOJoryqbQu37ha7xFVEYVmCUt48nWfeCUr9shuw313xIPiKoV5GLDytyT0Ff
-         bliosX5bKe6ywDwCIx3dtpRLSDZ68gqXqmoUlVKhWMLql30t8El1lzuFttAlWw+Uof
-         mb6pZIL/Hz9Cg==
-Received: from localhost (localhost [127.0.0.1])
-        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 9CC13600DD841;
-        Tue,  3 Aug 2021 18:06:33 +0200 (CEST)
-Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
-        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id VG9DFQZs6U8z; Tue,  3 Aug 2021 18:06:33 +0200 (CEST)
-Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
-        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 836B16008D552;
-        Tue,  3 Aug 2021 18:06:33 +0200 (CEST)
-Date:   Tue, 3 Aug 2021 18:06:33 +0200 (CEST)
-From:   Justin Iurman <justin.iurman@uliege.be>
-Reply-To: Justin Iurman <justin.iurman@uliege.be>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, tom@herbertland.com
-Message-ID: <989297896.30838930.1628006793490.JavaMail.zimbra@uliege.be>
-In-Reply-To: <ce46ace3-11b9-6a75-b665-cee79252550e@gmail.com>
-References: <20210802205133.24071-1-justin.iurman@uliege.be> <ce46ace3-11b9-6a75-b665-cee79252550e@gmail.com>
-Subject: Re: [RFC net-next] ipv6: Attempt to improve options code parsing
+        id S231675AbhHCQHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 12:07:39 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:37521 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230459AbhHCQHb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 12:07:31 -0400
+Received: by mail-io1-f72.google.com with SMTP id e7-20020a0566020447b029050017e563a6so14570875iov.4
+        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 09:07:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=/TFQ9YeY70c6pdy1+lx9h86IEkrjaoJ6fBxIz0y1hSA=;
+        b=V9PCanoAkD65I5/cPrZT25f6AZiWAQLsvxzlvdSk9fM7ww4Cuc7hVp40+owcdSKLdK
+         WEcufQk7p/gxhIazlQVzf/J8eZ0xE8mMirKdbuoliy+ceIoF1OvH0jxn7mr8PHfSNd8I
+         UERD86QFcbEyFZekStn5BWFBhU2pBPcGx0P2x5o8rECNIolcsOaKgLrh3qu21CHEgpH9
+         gCaEvyIAfgDEa/fZAP0yhV85DXvqC1wgd/RjtY2696vu+WP6IPoAu8b1T1ykzydMI7LK
+         5EwiwOBdcQXC9vAALLVqXpBLMQV8vJCOyY2yq3wFpFNOslt0Z7JTbcpWjNcY6mP2L2ru
+         NaqQ==
+X-Gm-Message-State: AOAM533bQUKniggKnz74zfviRLSugHc6WhFALPmnk4qN+j7o+QTV2+k+
+        m/VIRZ6gSNXcC0sbFQpj5iadgugfrnMefn0Xyh2k52juP2nk
+X-Google-Smtp-Source: ABdhPJxKSWlBHmh2yP37WsW8Iw8NipjFBBUKkuhYwt6jHJgDuoIFolUN9Q2j8KBSNr/VjK2jsu97+tuYLV2+5ZCs+GFDlObp27FY
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [81.240.24.148]
-X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF90 (Linux)/8.8.15_GA_4026)
-Thread-Topic: ipv6: Attempt to improve options code parsing
-Thread-Index: TzYWc8XXuSa6+xhoSFACtb8Qr+ikRQ==
+X-Received: by 2002:a92:c10d:: with SMTP id p13mr1842563ile.83.1628006839615;
+ Tue, 03 Aug 2021 09:07:19 -0700 (PDT)
+Date:   Tue, 03 Aug 2021 09:07:19 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005e090405c8a9e1c3@google.com>
+Subject: [syzbot] net-next boot error: WARNING: refcount bug in fib_create_info
+From:   syzbot <syzbot+c5ac86461673ef58847c@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->> As per Eric's comment on a previous patchset that was adding a new HopbyHop
->> option, i.e. why should a new option appear before or after existing ones in the
->> list, here is an attempt to suppress such competition. It also improves the
->> efficiency and fasten the process of matching a Hbh or Dst option, which is
->> probably something we want regarding the list of new options that could quickly
->> grow in the future.
->> 
->> Basically, the two "lists" of options (Hbh and Dst) are replaced by two arrays.
->> Each array has a size of 256 (for each code point). Each code point points to a
->> function to process its specific option.
->> 
->> Thoughts?
->> 
-> Hi Justin
-> 
-> I think this still suffers from indirect call costs (CONFIG_RETPOLINE=y),
-> and eventually use more dcache.
+Hello,
 
-Agree with both. It was the compromise for such a solution, unfortunately.
+syzbot found the following issue on:
 
-> Since we only deal with two sets/arrays, I would simply get rid of them
-> and inline the code using two switch() clauses.
+HEAD commit:    1187c8c4642d net: phy: mscc: make some arrays static const..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=140e7b3e300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f9bb42efdc6f1d7
+dashboard link: https://syzkaller.appspot.com/bug?extid=c5ac86461673ef58847c
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
 
-Indeed, this is the more efficient. However, we still have two "issues":
- - ip6_parse_tlv will keep growing and code could look ugly at some point
- - there is still a "competition" between options, i.e. "I want to be at the top of the list"
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+c5ac86461673ef58847c@syzkaller.appspotmail.com
 
-Anyway, your solution is better than the current one so it's probably the way to go right now.
+FS-Cache: Netfs 'afs' registered for caching
+Btrfs loaded, crc32c=crc32c-intel, assert=on, zoned=yes
+Key type big_key registered
+Key type encrypted registered
+AppArmor: AppArmor sha1 policy hashing enabled
+ima: No TPM chip found, activating TPM-bypass!
+Loading compiled-in module X.509 certificates
+Loaded X.509 cert 'Build time autogenerated kernel key: f850c787ad998c396ae089c083b940ff0a9abb77'
+ima: Allocated hash algorithm: sha256
+ima: No architecture policies found
+evm: Initialising EVM extended attributes:
+evm: security.selinux (disabled)
+evm: security.SMACK64 (disabled)
+evm: security.SMACK64EXEC (disabled)
+evm: security.SMACK64TRANSMUTE (disabled)
+evm: security.SMACK64MMAP (disabled)
+evm: security.apparmor
+evm: security.ima
+evm: security.capability
+evm: HMAC attrs: 0x1
+PM:   Magic number: 1:990:690
+printk: console [netcon0] enabled
+netconsole: network logging started
+gtp: GTP module loaded (pdp ctx size 104 bytes)
+rdma_rxe: loaded
+cfg80211: Loading compiled-in X.509 certificates for regulatory database
+cfg80211: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+ALSA device list:
+  #0: Dummy 1
+  #1: Loopback 1
+  #2: Virtual MIDI Card 1
+md: Waiting for all devices to be available before autodetect
+md: If you don't use raid, use raid=noautodetect
+md: Autodetecting RAID arrays.
+md: autorun ...
+md: ... autorun DONE.
+EXT4-fs (sda1): mounted filesystem without journal. Opts: (null). Quota mode: none.
+VFS: Mounted root (ext4 filesystem) readonly on device 8:1.
+devtmpfs: mounted
+Freeing unused kernel image (initmem) memory: 4476K
+Write protecting the kernel read-only data: 169984k
+Freeing unused kernel image (text/rodata gap) memory: 2012K
+Freeing unused kernel image (rodata/data gap) memory: 1516K
+Run /sbin/init as init process
+systemd[1]: systemd 232 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD +IDN)
+systemd[1]: Detected virtualization kvm.
+systemd[1]: Detected architecture x86-64.
+systemd[1]: Set hostname to <syzkaller>.
+------------[ cut here ]------------
+refcount_t: addition on 0; use-after-free.
+WARNING: CPU: 1 PID: 1 at lib/refcount.c:25 refcount_warn_saturate+0x169/0x1e0 lib/refcount.c:25
+Modules linked in:
+CPU: 1 PID: 1 Comm: systemd Not tainted 5.14.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:refcount_warn_saturate+0x169/0x1e0 lib/refcount.c:25
+Code: 09 31 ff 89 de e8 d7 fa 9e fd 84 db 0f 85 36 ff ff ff e8 8a f4 9e fd 48 c7 c7 c0 81 e3 89 c6 05 70 51 81 09 01 e8 48 f8 13 05 <0f> 0b e9 17 ff ff ff e8 6b f4 9e fd 0f b6 1d 55 51 81 09 31 ff 89
+RSP: 0018:ffffc90000c66ab0 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff88813fe48000 RSI: ffffffff815d7b25 RDI: fffff5200018cd48
+RBP: 0000000000000002 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffffff815d195e R11: 0000000000000000 R12: 0000000000000004
+R13: 0000000000000001 R14: 0000000000000000 R15: ffff888027722e00
+FS:  00007f8c1c5d0500(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055ed0ced4368 CR3: 0000000026bac000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ __refcount_add include/linux/refcount.h:199 [inline]
+ __refcount_inc include/linux/refcount.h:250 [inline]
+ refcount_inc include/linux/refcount.h:267 [inline]
+ fib_create_info+0x36af/0x4910 net/ipv4/fib_semantics.c:1554
+ fib_table_insert+0x1cd/0x1af0 net/ipv4/fib_trie.c:1224
+ fib_magic+0x455/0x540 net/ipv4/fib_frontend.c:1087
+ fib_add_ifaddr+0x16c/0x500 net/ipv4/fib_frontend.c:1109
+ fib_inetaddr_event+0x162/0x2a0 net/ipv4/fib_frontend.c:1420
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
+ blocking_notifier_call_chain kernel/notifier.c:337 [inline]
+ blocking_notifier_call_chain+0x67/0x90 kernel/notifier.c:325
+ __inet_insert_ifa+0x919/0xc20 net/ipv4/devinet.c:553
+ inet_insert_ifa net/ipv4/devinet.c:560 [inline]
+ inetdev_event+0x1243/0x15d0 net/ipv4/devinet.c:1570
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2123
+ call_netdevice_notifiers_extack net/core/dev.c:2135 [inline]
+ call_netdevice_notifiers net/core/dev.c:2149 [inline]
+ __dev_notify_flags+0x110/0x2b0 net/core/dev.c:8878
+ dev_change_flags+0x112/0x170 net/core/dev.c:8916
+ do_setlink+0x913/0x3910 net/core/rtnetlink.c:2710
+ rtnl_setlink+0x24d/0x3c0 net/core/rtnetlink.c:3003
+ rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5563
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
+ netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
+ netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:724
+ __sys_sendto+0x21c/0x320 net/socket.c:2030
+ __do_sys_sendto net/socket.c:2042 [inline]
+ __se_sys_sendto net/socket.c:2038 [inline]
+ __x64_sys_sendto+0xdd/0x1b0 net/socket.c:2038
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f8c1ae6d693
+Code: 79 20 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb cd 66 0f 1f 44 00 00 83 3d 39 bd 20 00 00 75 13 49 89 ca b8 2c 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 34 c3 48 83 ec 08 e8 cb f7 ff ff 48 89 04 24
+RSP: 002b:00007fffa5944aa8 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+RAX: ffffffffffffffda RBX: 000055ed0ceca9a0 RCX: 00007f8c1ae6d693
+RDX: 0000000000000020 RSI: 000055ed0ceca2b0 RDI: 0000000000000004
+RBP: 000055ed0cecaab0 R08: 00007fffa5944ab0 R09: 0000000000000010
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007fffa5944b14
+R13: 0000000000000001 R14: 0000000000000001 R15: 0000000000000001
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
