@@ -2,204 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84EDB3DEDD0
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 14:24:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0E1B3DEDDE
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 14:30:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235954AbhHCMYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 08:24:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55620 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235895AbhHCMYT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 08:24:19 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3972EC06175F
-        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 05:24:08 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id m13so24003063iol.7
-        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 05:24:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=sSAJdBXerSiLD/jae6wSlhsV/AYk+DynXxE+wOZYVUg=;
-        b=bRVwX6iPyAZEcpuyB4yiUnUe+peBOZ6yDCqxfRHK/MWWbE8extM3sSfAt80FJslR6X
-         w7dtV2Q8CnEkU3c2O9xunDbtV6DjsudWluolBahN/iVlRWXcGhWPKHd5aioLLzH8Ee7g
-         S4xBD5bemnxGWjWWt/Sahnh3ca8DkVBQ29A70=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=sSAJdBXerSiLD/jae6wSlhsV/AYk+DynXxE+wOZYVUg=;
-        b=hnu9siiRyEBk1J+hj7LoZlvw9QDAV3hscGxzuGBGbeyMnZMmx+s5fFo8kAqqHuHbrd
-         AiIqc23uVYP8EsqypPaLsClWy4dwWIV/Ei4lnUr61LyLX6w9eQz1WwibKj9ySqZHxdVH
-         CAC8CYyLiqNIW1PfbX1KtXEYVF8Ln8rUv14QMol5v5S3A/EIST6VN1rPT8KkrkOg05M3
-         9EYrvGV2j2OJYANJ7CrUgy9J12QZFDPdSQGRGwUGBiCMlVTIxwGq+VBYyRxay1e1xn00
-         tF3y065auhPENGIMlt2xelGQw4NSl/IWMu9sTIOMw9BlthvT1B9o7C2koVHt0mfkE9ID
-         oQag==
-X-Gm-Message-State: AOAM530cjlv5kEfpNERUu8PgwKrsONBbiptG8s8uADLNh7iGLDU7ngco
-        hliP027jYQ8zjqANhnap//RIBQ==
-X-Google-Smtp-Source: ABdhPJzEGU9BDQUsOAVRriRZRQdWv2S8IfGFXRpD5rGJTVc1Hwa4BETVCCidP6Tqo9bvfIRHF54dBg==
-X-Received: by 2002:a5d:9284:: with SMTP id s4mr605937iom.131.1627993447634;
-        Tue, 03 Aug 2021 05:24:07 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id k2sm6244589ior.40.2021.08.03.05.24.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Aug 2021 05:24:06 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/3] dt-bindings: net: qcom,ipa: make imem
- interconnect optional
-To:     Rob Herring <robh@kernel.org>
-Cc:     Alex Elder <elder@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Gross, Andy" <agross@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Evan Green <evgreen@chromium.org>, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, Alex Elder <elder@kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20210719212456.3176086-1-elder@linaro.org>
- <20210719212456.3176086-2-elder@linaro.org>
- <20210723205252.GA2550230@robh.at.kernel.org>
- <6c1779aa-c90c-2160-f8b9-497fb8c32dc5@ieee.org>
- <CAL_JsqKTdUxro-tgCQBzhudaUFQ5GejJL2EMuX2ArcP0JTiG3g@mail.gmail.com>
-From:   Alex Elder <elder@ieee.org>
-Message-ID: <8e75f8b0-5677-42b0-54fe-06e7c69f6669@ieee.org>
-Date:   Tue, 3 Aug 2021 07:24:06 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S235857AbhHCMaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 08:30:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47992 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235709AbhHCMaT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 08:30:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1E79960F92;
+        Tue,  3 Aug 2021 12:30:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627993808;
+        bh=zZBDwl4mF8S7HyR8EoVvXQRAZbgyktGfLjOCnGxBHIg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=swul862ETScHPw/dmtVXHDSjPHI0TRlnjEsryDXg9odYbugyNjMOAhPCzAdw0cTW3
+         HvgFXo3VRQ3VM+6ymcLDPN3MPTmPhl64dVcmxpYLzUILAH/otgT9cxSbCmoOv3mj4/
+         3epIkcTUUnwoA9c9FTY/+Wg0WT3dm1AOaRLANnt9Pgdv+ek5MOqbSnLxgNoEvJBGoE
+         W9C1IlffMn60Wr4heLpj+7gIsNEIXMEFf9DXs3GOBropX/HBarvgKkA9EhI45O18Qc
+         Zx+CzXxgP0Wz7NLZhY9vELz5nGRAwzBO2EwpIPQYYOo4PobJdlOQnAn+eaqaMwHx/d
+         jIBmyyTJcqNlw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1368C60A49;
+        Tue,  3 Aug 2021 12:30:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <CAL_JsqKTdUxro-tgCQBzhudaUFQ5GejJL2EMuX2ArcP0JTiG3g@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 00/14] [net-next] drivers/net/Space.c cleanup
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162799380807.17755.14586598490801190741.git-patchwork-notify@kernel.org>
+Date:   Tue, 03 Aug 2021 12:30:08 +0000
+References: <20210803114051.2112986-1-arnd@kernel.org>
+In-Reply-To: <20210803114051.2112986-1-arnd@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     netdev@vger.kernel.org, arnd@arndb.de, davem@davemloft.net,
+        macro@orcam.me.uk, ast@kernel.org, andrew@lunn.ch, andriin@fb.com,
+        bgolaszewski@baylibre.com, christophe.jaillet@wanadoo.fr,
+        opendmb@gmail.com, edumazet@google.com, fthain@telegraphics.com.au,
+        f.fainelli@gmail.com, geert@linux-m68k.org, kuba@kernel.org,
+        jeyu@kernel.org, schmitzmic@gmail.com,
+        paul.gortmaker@windriver.com, sammy@sammy.net,
+        linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/28/21 10:33 AM, Rob Herring wrote:
-> On Mon, Jul 26, 2021 at 9:59 AM Alex Elder <elder@ieee.org> wrote:
->>
->> On 7/23/21 3:52 PM, Rob Herring wrote:
->>> On Mon, Jul 19, 2021 at 04:24:54PM -0500, Alex Elder wrote:
->>>> On some newer SoCs, the interconnect between IPA and SoC internal
->>>> memory (imem) is not used.  Reflect this in the binding by moving
->>>> the definition of the "imem" interconnect to the end and defining
->>>> minItems to be 2 for both the interconnects and interconnect-names
->>>> properties.
->>>>
->>>> Signed-off-by: Alex Elder <elder@linaro.org>
->>>> ---
->>>>    .../devicetree/bindings/net/qcom,ipa.yaml      | 18 ++++++++++--------
->>>>    1 file changed, 10 insertions(+), 8 deletions(-)
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
->>>> index ed88ba4b94df5..4853ab7017bd9 100644
->>>> --- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
->>>> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
->>>> @@ -87,16 +87,18 @@ properties:
->>>>          - const: ipa-setup-ready
->>>>
->>>>      interconnects:
->>>> +    minItems: 2
->>>>        items:
->>>> -      - description: Interconnect path between IPA and main memory
->>>> -      - description: Interconnect path between IPA and internal memory
->>>> -      - description: Interconnect path between IPA and the AP subsystem
->>>> +      - description: Path leading to system memory
->>>> +      - description: Path between the AP and IPA config space
->>>> +      - description: Path leading to internal memory
->>>>
->>>>      interconnect-names:
->>>> +    minItems: 2
->>>>        items:
->>>>          - const: memory
->>>> -      - const: imem
->>>>          - const: config
->>>> +      - const: imem
->>>
->>> What about existing users? This will generate warnings. Doing this for
->>> the 2nd item would avoid the need for .dts updates:
->>>
->>> - enum: [ imem, config ]
+Hello:
 
-In other words:
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-   interconnect-names:
-     minItems: 2
-     items:
-       - const: memory
-       - enum: [ imem, config ]
-       - const: imem
-
-What do I do with the "interconnects" descriptions in that case?
-How do I make the "interconnect-names" specified this way align
-with the described interconnect values?  Is that necessary?
-
->> If I understand correctly, the effect of this would be that
->> the second item can either be "imem" or "config", and the third
->> (if present) could only be "imem"?
+On Tue,  3 Aug 2021 13:40:37 +0200 you wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> Yes for the 2nd, but the 3rd item could only be 'config'.
-
-Sorry, yes, that's what I meant.  I might have misread the
-diff output.
-
->> And you're saying that otherwise, existing users (the only
->> one it applies to at the moment is "sdm845.dtsi") would
->> produce warnings, because the interconnects are listed
->> in an order different from what the binding specifies.
->>
->> Is that correct?
+> I discovered that there are still a couple of drivers that rely on
+> beiong statically initialized from drivers/net/Space.c the way
+> we did in the last century. As it turns out, there are a couple
+> of simplifications that can be made here, as well as some minor
+> bugfixes.
 > 
-> Yes.
-> 
->> If so, what you propose suggests "imem" could be listed twice.
->> It doesn't make sense, and maybe it's precluded in other ways
->> so that's OK.
-> 
-> Good observation. There are generic checks that the strings are unique.
+> [...]
 
-I think I don't like that quite as much, because that
-"no duplicates" rule is implied.  It also avoids any
-confusion in the "respectively" relationship between
-interconnects and interconnect-names.
+Here is the summary with links:
+  - [v2,01/14,net-next] bcmgenet: remove call to netdev_boot_setup_check
+    https://git.kernel.org/netdev/net-next/c/0852aeb9c350
+  - [v2,02/14,net-next] natsemi: sonic: stop calling netdev_boot_setup_check
+    https://git.kernel.org/netdev/net-next/c/19a11bf06c57
+  - [v2,03/14,net-next] appletalk: ltpc: remove static probing
+    https://git.kernel.org/netdev/net-next/c/81dd3ee5962d
+  - [v2,04/14,net-next] 3c509: stop calling netdev_boot_setup_check
+    https://git.kernel.org/netdev/net-next/c/8bbdf1bdf22c
+  - [v2,05/14,net-next] cs89x0: rework driver configuration
+    https://git.kernel.org/netdev/net-next/c/47fd22f2b847
+  - [v2,06/14,net-next] m68k: remove legacy probing
+    https://git.kernel.org/netdev/net-next/c/e179d78ee11a
+  - [v2,07/14,net-next] ax88796: export ax_NS8390_init() hook
+    https://git.kernel.org/netdev/net-next/c/375df5f8c181
+  - [v2,08/14,net-next] xsurf100: drop include of lib8390.c
+    https://git.kernel.org/netdev/net-next/c/f8ade8dddb16
+  - [v2,09/14,net-next] move netdev_boot_setup into Space.c
+    https://git.kernel.org/netdev/net-next/c/5ea2f5ffde39
+  - [v2,10/14,net-next] make legacy ISA probe optional
+    https://git.kernel.org/netdev/net-next/c/4228c3942821
+  - [v2,11/14,net-next] wan: remove stale Kconfig entries
+    https://git.kernel.org/netdev/net-next/c/db3db1f41754
+  - [v2,12/14,net-next] wan: remove sbni/granch driver
+    https://git.kernel.org/netdev/net-next/c/72bcad5393a7
+  - [v2,13/14,net-next] wan: hostess_sv11: use module_init/module_exit helpers
+    https://git.kernel.org/netdev/net-next/c/d52c1069d658
+  - [v2,14/14,net-next] ethernet: isa: convert to module_init/module_exit
+    https://git.kernel.org/netdev/net-next/c/a07d8ecf6b39
 
-I understand what you're suggesting though, and I would
-be happy to update the binding in the way you suggest.
-I'd like to hear what you say about my questions above
-before doing so.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
->>   But I'd be happy to update "sdm845.dtsi" to
->> address your concern.  (Maybe that's something you would rather
->> avoid?)
-> 
-> Better to not change DT if you don't have to. You're probably okay if
-> all clients (consumers of the dtb) used names and didn't care about
-
-In the IPA driver, wherever names are specified for things in DT,
-names (only) are used to look them up.  So I'm "probably okay."
-
-> the order. And I have no idea if all users of SDM845 are okay with a
-> DTB change being required. That's up to QCom maintainers. I only care
-> that ABI breakages are documented as such.
-> 
->> Also, I need to make a separate update to "sm8350.dtsi" because
->> that was defined before I understood what I do now about the
->> interconnects.  It uses the wrong names, and should combine
->> its first two interconnects into just one.
-> 
-> If the interconnects was ignored in that case, then the change doesn't matter.
-
-That platform is not yet fully supported by the IPA driver, thus
-there is (so far) no instance where it is used.  Resolving this
-is part of enabling support for that.
-
-Thanks.
-
-					-Alex
-
-
-> Rob
-> 
 
