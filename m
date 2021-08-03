@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77C7B3DEBBF
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:31:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1926C3DEBF5
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:35:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235553AbhHCLbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 07:31:20 -0400
-Received: from mail-bn7nam10on2112.outbound.protection.outlook.com ([40.107.92.112]:5066
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        id S235728AbhHCLfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 07:35:44 -0400
+Received: from mail-mw2nam10on2138.outbound.protection.outlook.com ([40.107.94.138]:60353
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235426AbhHCLbS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 07:31:18 -0400
+        id S235443AbhHCLfo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 07:35:44 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S8pDOWHgVC945MCj7/yImA1JvQEky2CqRf8JcB1EwwnuQAjB4na+kpnNXpI8HtGHYmzJJ85N6ycsir/OIiAlY7K0Nl5NuwCi69+0tqvTOBs8VBKgEOpEeSsDZLHmqI/XKgZ5q5Kikw02y38BcyL5taQO6jKp1/Pt5WVDiSL9fGObgtiAHFMXjPDwuYXsCyV8G8lmEVO/BsKdoYmWKqOhujHJ+5C+6VPYfonpOZ7tQxZ0+KkE/4OshWobPMLluwpnJf8lBQQJthP0LP9m54mU9W+sFLlRhmnW4UvF55Fb6osgI8x+iItQRBwe5bH2FKCgPnupSPUTSx6fKhBceL540g==
+ b=EfICvUs9SaCMB0rgNVdH4LLgdkYqKjLvSZZbGvrdumzBWof/vCAOdVT5FNyc1lDoRMbt+qJ0tZwiUZeqeSf2OllvrgZ5CsUrg3FgKtPr7EynWYyo1AFDjLJon5omnckBl9pZ5HNdpJwKO0UQW2hsZny/U4fqFojCfn4d6yX5m8q4zaoNEulDU8d1/DF701BIHgJ+YhayhZCMKyB8iwH4y5B8aL4L4CbEnsv8owInlBvZ8GvDi5GmPO21VLBZN6tWs873XkwXq9D1NDz3YGCDZCAtOWuWnlPsGadB6e9OptNOfU3GHCQcVigB395PLY/yrzkDZMTmAk1NG2JmSUrB2A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mOUJIX/vvcJlDd2m4wQQZBj4cngCGeh0aTBb6KQOcoM=;
- b=CDU7QqL6HcleJbNVus0PJtl8a3P2UEBcBQR+gp0ASVCnb6gg9S0RxMWkCep8qH/jK6sLXr1K8ja9wV/7w250sYUZrrdLQw237lgBgF3D+MTK++5TCK1tCCp3rtY25eIov7Noh6EUTcbmzxI6fLdx2f9ykWz81Ji49ReTUqg/UYeVR1tYVCcMgQcXNlkkGNDg6IKIafGDpr+Dw9NRyzwj6e5doTVK3nxIMwgvluyqA2iasrSXO7l8Q3+EMUzuoS13+quhPy1GEI46wQliAYs9SoVpjfvub3dxWnv17/eNDA3xN2zju3Keps5MIf4VPS7Iy4gkgPwIgTX4jdb8kHZ3MQ==
+ bh=DekMgFF7Nspif0G7l4LHZ4crAFaagRNpCmMgwpcPwvo=;
+ b=nZR0F/RmIsUXF0K+I197JuaBuKYOlgGvDfWPxAZrHVDmAvG05H1SCFWx6O/QW8BVHdYNjgkmXYjSCtElA3h2985miq18J6Cfq1b9nxthle6C0iYEg+laWqKeY/Mxicvr4rCncR3fySm+0EF+zumFmk5NaPQkLZKOPsdY96YS72cl0Pyxt2HuVIf7qcMZlLyi0p3To25WPQTEnk27c74E2rwA3wQQsSbNmVY/GR1G1TKSLzAB9gI6P7rwYrV8lJGCgafPshk6Kv3I+dTeYZqNX0HOuL03ywBA4kd3LUIxspZ/1lJCYbYpBGtutnJbi81fyY0fuj+EEfJAVASVBqSITg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mOUJIX/vvcJlDd2m4wQQZBj4cngCGeh0aTBb6KQOcoM=;
- b=Tx/qPUkor0fKd20w5RAc4mDNCjXJ4QjnQeUHH691Es3lhBSqWA/7YCAQDoHQy0dPnH3ZNyYgV49LfojOMWYnRnXJA5y6QO1Kz7cFo/XudyfXWp0PKGz/yQ8OkIqXmaz50ZmpSm7TppnO4S0PDZvJecVEHp2aTscH4a/UFKbvJD8=
+ bh=DekMgFF7Nspif0G7l4LHZ4crAFaagRNpCmMgwpcPwvo=;
+ b=n+fD3VgyjQtCxzX4nJplNCutwYs2tMHOjpzXgV+Rt0VjbtQTkLV3CUZUliQYfQ0mwcN9PYYPUzXOjVizoM+u91WC+3cmRHRIWs/zsUPyNtp+KYIy+HOOfl7dPrlhpZpW6tkb3a8xK1m8/Yl+38ZO2/ofXn3RJaipMvl79DjKx4w=
 Authentication-Results: mojatatu.com; dkim=none (message not signed)
  header.d=none;mojatatu.com; dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB4809.namprd13.prod.outlook.com (2603:10b6:510:95::8) with
+ by PH0PR13MB5068.namprd13.prod.outlook.com (2603:10b6:510:90::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15; Tue, 3 Aug
- 2021 11:31:06 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.9; Tue, 3 Aug
+ 2021 11:35:31 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::cd1:e3ba:77fd:f4f3]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::cd1:e3ba:77fd:f4f3%9]) with mapi id 15.20.4373.023; Tue, 3 Aug 2021
- 11:31:05 +0000
-Date:   Tue, 3 Aug 2021 13:31:00 +0200
+ 11:35:31 +0000
+Date:   Tue, 3 Aug 2021 13:35:25 +0200
 From:   Simon Horman <simon.horman@corigine.com>
 To:     Jamal Hadi Salim <jhs@mojatatu.com>
 Cc:     David Miller <davem@davemloft.net>,
@@ -47,96 +47,110 @@ Cc:     David Miller <davem@davemloft.net>,
         Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
         oss-drivers@corigine.com, Baowen Zheng <baowen.zheng@corigine.com>,
         Louis Peens <louis.peens@corigine.com>
-Subject: Re: [PATCH net-next 1/3] flow_offload: allow user to offload tc
- action to net device
-Message-ID: <20210803113057.GA23765@corigine.com>
+Subject: Re: [PATCH net-next 3/3] flow_offload: add process to update action
+ stats from hardware
+Message-ID: <20210803113525.GB23765@corigine.com>
 References: <20210722091938.12956-1-simon.horman@corigine.com>
- <20210722091938.12956-2-simon.horman@corigine.com>
- <5e1689de-0448-e4a7-9714-86189549ea69@mojatatu.com>
+ <20210722091938.12956-4-simon.horman@corigine.com>
+ <f9a130e8-f692-69c4-8183-dc04a5340430@mojatatu.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5e1689de-0448-e4a7-9714-86189549ea69@mojatatu.com>
+In-Reply-To: <f9a130e8-f692-69c4-8183-dc04a5340430@mojatatu.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: AM0PR03CA0078.eurprd03.prod.outlook.com
- (2603:10a6:208:69::19) To PH0PR13MB4842.namprd13.prod.outlook.com
+X-ClientProxiedBy: AM3PR03CA0068.eurprd03.prod.outlook.com
+ (2603:10a6:207:5::26) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from corigine.com (2001:982:7ed1:403:201:8eff:fe22:8fea) by AM0PR03CA0078.eurprd03.prod.outlook.com (2603:10a6:208:69::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.21 via Frontend Transport; Tue, 3 Aug 2021 11:31:04 +0000
+Received: from corigine.com (2001:982:7ed1:403:201:8eff:fe22:8fea) by AM3PR03CA0068.eurprd03.prod.outlook.com (2603:10a6:207:5::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.19 via Frontend Transport; Tue, 3 Aug 2021 11:35:29 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c468c439-d990-42b9-6ffd-08d956722e77
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4809:
+X-MS-Office365-Filtering-Correlation-Id: 93cd7319-b62e-4a09-ca28-08d95672ccba
+X-MS-TrafficTypeDiagnostic: PH0PR13MB5068:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PH0PR13MB480979E54FAF1A585E7974F8E8F09@PH0PR13MB4809.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Microsoft-Antispam-PRVS: <PH0PR13MB50688573AFC9820D9CD41073E8F09@PH0PR13MB5068.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Cl5pIQlG13eeUtjn9rRID1+CyoxgEdqAFGicHqeyH8ai8ctxxP9OxCKX8cKQtM9NAkzzwP3CqSOQNaESh6icIJ3fyPj/GH32Lto7Ma2gwfqE08MB4wpFgCOjziDqa1AINjrh/xuiUPOkKAw+ule8X8EypDi6I6V4F7eZQjYisgnyYR0uIKmQisK3njkG3s9ymv0TmU/GYaKEK+YIw1ut9T5zHxvFbnPLZ22VXTwvchMIgkEcYDSSlvewByIFyvXQncRX+WXe9/hSyyyea/lcYKyV/59lvpoJZvq+6OpDFare1U+aq8cGv3pAprNwEnxvmZc0a7nTQsAP57Ryg8i8861aBPahz48SvwKqxuhOV7ZaV9AugeeTlvuGbgotG9jew+N9ufolMN/NY83TGDDQrwunw9CMGyHMDXOi2d8C6ns5GCnJooQYWM6z/7jiDDWUTAJx+2Vj9FbesOmbOQ+UEiUtXl92VSrcE3Syiupmk7I87AtkJAubpSlYJ3Ay5WcpJr2ILG1G79TCByMog+WIc8vEcbgl5lQiSlwvVVM05TxlyupJyvHn2Nkq6YpdVeXkpUXlZqJu7ky8B/VvS3MPpjs1XvFrEO1TtlYeT4D0eU8/9/smYef5SHVtGm2quz8Ld+fDO8iDZwbKdlbnwjjxCQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(136003)(366004)(346002)(39830400003)(396003)(55016002)(186003)(86362001)(478600001)(38100700002)(83380400001)(1076003)(5660300002)(6666004)(6916009)(107886003)(53546011)(33656002)(4326008)(8886007)(2906002)(54906003)(36756003)(44832011)(2616005)(316002)(7696005)(52116002)(66946007)(8676002)(66476007)(66556008)(8936002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 26W++twGiBBFKwPyoxs39MnUv8I20zqpakQm7Oxcy53FyYMjSmjIgIJcAxg5EVIchZtwNtETBRDtI81jips0kmXgqUkNtBh4scbnFDVodbz8Li6nCqor5s6WNS8DbZ49V9Dl6M30m4xqsjMwusLNchynlj6rFwGv4gHMpvdRanA92bxe5yBCXrQe2YCmV8xs74wRqzT9ZZdDgwjAq+ggr7nqYTeymyLKapZfAUZijwOH+batUqyZR8zsGkiBgRXJ81cPJStZnkjqzBKJoKS5SQUz7mnDX2MsAxssCtmOvNDlC2/8ouE/zlqITGnaXZnkZUirLuRI+Ibu1FahLWZvJA45KEYsBnZrXzxf9qQoygExxFVn39Hq9QHMOzfRTSxjoZbtDZvu9mAc8jquogkzsOdGrVSie3W0z67G++uK7XuQveMMMr4MTwTsdWIQsSwZjmlXyPlUyi5a4H2+nuais60V5Ga91rcL9yzZ+UKQoj++F3PBqOfrqT2dY5J9bWYeFFbAk4IEARNgdn5fU0TCzPJULbGvLMmsp5E1PyHjfhhC/OcqSkX3hJ86MXARQqYaSOZzp10zTedIe9dCIjzYtNtWxEAYPIvQcQsIVjfXxuBjLPtFjelzbOOVJy2dHQy3v3l0/I0/iRigo/hcVh2BIg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(346002)(366004)(39830400003)(376002)(396003)(66556008)(66476007)(66946007)(38100700002)(36756003)(4326008)(107886003)(6916009)(1076003)(44832011)(186003)(8676002)(53546011)(8936002)(2616005)(508600001)(5660300002)(52116002)(7696005)(8886007)(55016002)(54906003)(316002)(15650500001)(83380400001)(2906002)(6666004)(86362001)(33656002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6ak8IU5gUTOHfuCs5J3lfHE9g01Ic2rB6df+Lknq8olyKPEPttFjXEdkQ6iN?=
- =?us-ascii?Q?Y5rzwppdQzzaJhwlelQHCi+6DC8NG75I/2j2rJ4tfY6DbtHPylSSI7KNp45G?=
- =?us-ascii?Q?4h+FHj81+YPF99W/QjLx7eo20pkgik6ALgkINJZbZADsOnNrwTcsv6yG1vxQ?=
- =?us-ascii?Q?Y7Kx1UNZ5Txxjsw8ZZ1tXMwW2j2DkWQBW24JPxvqEu99WiCAnCT2fk2JdGQE?=
- =?us-ascii?Q?EbJukW66AkUwL1FZbFdbhgyLRcl1R2T49aZgKbMbtpklx6Uc3LgDmLIfTS1Q?=
- =?us-ascii?Q?HgpRvUTOE33i375B6n02LAxBHTreunF+HXU3fhnMtdzqy0qty9+/a96ASoDP?=
- =?us-ascii?Q?a9ZxfHHe5xOkZ1bnLjGdC/9sTVZ9MdiRLFnTZm6zeDvCCOsueJhtOULddbNe?=
- =?us-ascii?Q?cPJlW2M/DpGRnNOuhcDw1tMwl1i/zmzQPGt+EjdaN7J/HJrsx1vqlXrKuFnA?=
- =?us-ascii?Q?p1O3bXSUki896CLj+zj9ptdwYNoVB4Kk7mRrTVaDWmz3noxGbfuQmXBkVBW7?=
- =?us-ascii?Q?QvAxkfTUWoqiiMNdcqPRetzIsmkgKlxjz8RIru6mccB0Dd706KvBlYcpoPrp?=
- =?us-ascii?Q?/nO2gscKIOZUCsSEXq0LJEjcvN+1qGFwS47nb/adrRvNrx4vfHSa0S1RsK0l?=
- =?us-ascii?Q?WjXqrh3Y6gYmd2N0wx3jgm37nWFDza3a6JqNmwiZBX09O4943u5A1Kv96BGL?=
- =?us-ascii?Q?gvz9lLgjqu48rtoQqVKKBycoqwt/zZ10/Ga35HsxAH6bOKqFgNmdl9iLj6By?=
- =?us-ascii?Q?Q8q6cojqMl+BChPMpvszCRSIV5mgR8RkfJlLpBfz81LdBH4YaC7mUSQkzBnu?=
- =?us-ascii?Q?03YestQ/MiU2peU+1AEiHfVvxdRIo9+KnMhZvV6x7KKJhITP6rqBkjLRrWOc?=
- =?us-ascii?Q?KRzz1rohyuQGl2lRe5HtIykeJ2ESKYeiuRS7wTFiSPFfnnRy7SJ4yP9SALVr?=
- =?us-ascii?Q?itfJE6vIsDBl6EVYebbH2fwLyrrGf7wk1aO4EOvOCBEw29KAi75g4PcR4ZMq?=
- =?us-ascii?Q?jbA7i+7/1Fk+wlUtcQf5wFyGCFJMajmGeVfgkY4JmC59MBIfIAgFUDU/Ocxn?=
- =?us-ascii?Q?8G6PAFzEBQ9qOLbF1iIzwbTg02mrBqBGTeNy6toHcEpbYPhJE6LXCXEEIkim?=
- =?us-ascii?Q?hYWUiMCyl40OdLE3mxBZFxma1t5VYsfQptWs1cJKpc6HRACeRs6xdEYk+Myz?=
- =?us-ascii?Q?kRQm+72Q6rUeGk4XEu6q4tS+BKfTjsFIF3t8/jooCB30tJSeGg/hWhe9V1Fr?=
- =?us-ascii?Q?CivNw+Mt15gwxeZyo3lu0FIrfFE98qeJX9/d+SYUK3X6vcgTCpPlYfBksnxC?=
- =?us-ascii?Q?+gkSmTRpVrZ4BD8rkkFde0OH4glXMZK3iFexCdW17wszchlqLwaJc+FUCA2U?=
- =?us-ascii?Q?RdWfP+rMyHmoRR36r7wLIeDjUJMB?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?84Oz78qtM/4ptuOOlJC2/ujKhr3UukuF5CZpY3Vc6fmTIVSCEqugxfYwlXwe?=
+ =?us-ascii?Q?8qKDfCLosQ4cQNakgCLmegjQDRE7Sspd+MdhuIt1ORekmoE1PtXR3J0eYKbp?=
+ =?us-ascii?Q?EswvUjNuyz9fTNGmF1LFiX3gsakNDSTiVjHMhZ8RK9GBINOYMl61GllfnWH2?=
+ =?us-ascii?Q?mlkDSbfcdd9XBca0qecjgaQdaox+iS0muwjBmOzbqQ0Kx9RNU3WacjRaxoZC?=
+ =?us-ascii?Q?ecdqBz0dn3xI/n3swUMySM2iod8BrKZbR4cR7tmgFKE0kqF5Usobvqg8UH26?=
+ =?us-ascii?Q?8Ux3XcZE6Kt6FafXQYd2/zoArvTnAmdLp+R2pt3NaJkztk9afE6nGgSQ/MPV?=
+ =?us-ascii?Q?SH1tA5MMYLF1YVdY7dr4oX6kIvGD3k5idbercIMAgCNYhoxUL74atYgmNpyL?=
+ =?us-ascii?Q?rYx9Xt1EH3Sa6puNZ9X2XegJwe7r0kbEWh2cGbHidYK7eViEQwLwRDagBsRR?=
+ =?us-ascii?Q?d1TuJPJiHhv9YWAuPTzWQ0kxWkkIg7sswh6bvuNFxk5odFr9Pxl07yb/GXuV?=
+ =?us-ascii?Q?88ON+mHzIRI6FozUwn5/998RezOizVoGKg5HQPafoDpPjZEt9QcLNDsNVkCh?=
+ =?us-ascii?Q?R1m+TUVWzlu0ZIW7bqsfIf27PtCcCgGKZhWKRHev9HoXexILHghHVyt2XaoJ?=
+ =?us-ascii?Q?Gc1kQTgLPaWy6vRG4knA5wKHfG8QyXlHWr2R2dHeVY6Gl9+hMUunJ85VH3Ef?=
+ =?us-ascii?Q?SU7CEW2N9mNlx8UUyf4KmGJgUD2qYE1xUifdDIJz45NRKxP7A8OTQj2xaSMh?=
+ =?us-ascii?Q?Y5kL94JEvMv/IHj1hKyj1oG7EYf1SX6ZHwW0uFh+wfSPUx1clt6VvcqoJHNs?=
+ =?us-ascii?Q?xnwPxS/Dp9+uwN6HiKfrgSnm3J9LDRlTXK9a3m/uDcyGhkaHTBJsdAujFKSv?=
+ =?us-ascii?Q?WCp3W5y/fDpvIWBOXpKcYFOwMTs093VyhGp9mUkULt0b/D0BaFWoJBWMlsmp?=
+ =?us-ascii?Q?JSwRAWKwExc5a41pKnnaplgwm4mnvZNR5fsw9Ui+3HGdICTLFJW2Y2vVASeW?=
+ =?us-ascii?Q?+8WPpOmSdIzQ68KH6Sv+n3FkSOKU3KhCd3bFgGdM8JfNmsTcGC0+a5dlfQJS?=
+ =?us-ascii?Q?tFAAghXlmeWs6hXRrajHp+ECWDqv9OKsRc4T6zSYy9YTFqO5o7NkJed8Zy1O?=
+ =?us-ascii?Q?LS+L+NpNmiR6ZP97zh/LDVg3NwuNL1LqSByKlrc4/nVlc20ODklyOifmBVIH?=
+ =?us-ascii?Q?m7x/WjtHQdFR++vByhGnv6jEswEBP7GlRvuLW24xXkGvG8OVMrENFWfkIRaB?=
+ =?us-ascii?Q?rpkG+Adan8i2yv1LP2n5VRiNDo2gq2pl5jk2BmPE6OKvgSf4c2ERrGaJdNR2?=
+ =?us-ascii?Q?JzIYy9MDtEz9Ug9Hv50IXezcpoQU/iLBbk3kf87paoACTfyLQGQqw20n+okW?=
+ =?us-ascii?Q?t0RQDSDZ5E4xIgkCO6uznjUoIRCY?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c468c439-d990-42b9-6ffd-08d956722e77
+X-MS-Exchange-CrossTenant-Network-Message-Id: 93cd7319-b62e-4a09-ca28-08d95672ccba
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2021 11:31:05.7845
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2021 11:35:31.1864
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cXtW8YhFbEBU0nEpNqEpxGfKVeY+HMBQ/Qaef7gNA4SaRSLtnxL3IrCH4ar00Jo3VlLcynvQ2tr8oYRF0oc3O/GF+hj6zr5nIEyXz/EVO2M=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4809
+X-MS-Exchange-CrossTenant-UserPrincipalName: qLIqZN0LX3eS3gTAIrEPPqGcsE6ntrF89oIn0Iq/3dgN1tCTMoN/5THVCNlVf/ovJJ5dAQj0RQSLbw2jkvMJ6xRlM443tvGQ0GMewl8adXI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5068
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 03, 2021 at 07:05:52AM -0400, Jamal Hadi Salim wrote:
+On Tue, Aug 03, 2021 at 07:24:47AM -0400, Jamal Hadi Salim wrote:
 > On 2021-07-22 5:19 a.m., Simon Horman wrote:
 > 
-> Triggered by my observation on 2/3 went back and looked at this again to
-> see if we have same problem with notification on REPLACE case (I think
-> we do) but here's another comment:
+> [..]
 > 
-> > +EXPORT_SYMBOL(tcf_action_offload_cmd);
-> > +
-> >   /* Returns numbers of initialized actions or negative error. */
-> >   int tcf_action_init(struct net *net, struct tcf_proto *tp, struct nlattr *nla,
-> > @@ -1514,6 +1544,9 @@ static int tcf_action_add(struct net *net, struct nlattr *nla,
-> >   		return ret;
-> >   	ret = tcf_add_notify(net, n, actions, portid, attr_size, extack);
-> > +	/* offload actions to hardware if possible */
-> > +	tcf_action_offload_cmd(actions, extack);
-> > +
+> >   /* offload the tc command after deleted */
+> >   int tcf_action_offload_del_post(struct flow_offload_action *fl_act,
+> >   				struct tc_action *actions[],
+> > @@ -1255,6 +1293,9 @@ int tcf_action_copy_stats(struct sk_buff *skb, struct tc_action *p,
+> >   	if (p == NULL)
+> >   		goto errout;
+> > +	/* update hw stats for this action */
+> > +	tcf_action_update_hw_stats(p);
 > 
-> Above seems to be unconditional whether hw update is requested or not?
-> The comment says the right thing ("if possible") but the code
-> should have checked some sort of skip_sw check?
+> This is more a curiosity than a comment on the patch: Is the
+> driver polling for these stats synchronously and what we get here
+> is the last update or do we end up invoking beyond
+> the driver when requesting for the stats?
 
-Jamal, we are going around in circles.
+I would have to double check but I believe the driver will report
+back stats already received from the HW, rather than going all the way
+to HW when the above call is made.
 
-As we have already discussed, this patchset does not add support for
-skip_sw (or skip_hw) for actions.
+> Overall commentary from looking at the patch set:
+> I believe your patches will support the individual tc actions
+> add/del/get/dump command line requests.
+
+Yes, that is the aim of this patchset.
+
+> What is missing is an example usage all the way to the driver. I am sure
+> you have additional patches that put this to good  use. My suggestion
+> is to test that cli with that pov against your overall patches and
+> show this in your commit logs - even if those patches are to follow
+> later.
+
+Thanks, I'll see about making that so.
+
+Just to be clear. We do have patches for the driver. And we do plan to post
+them for inclusion in mainline. But I do believe that from a review
+perspective its easier if one thing follows another.
