@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C2373DF346
+	by mail.lfdr.de (Postfix) with ESMTP id CDEC83DF348
 	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:52:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237508AbhHCQwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 12:52:33 -0400
-Received: from mga18.intel.com ([134.134.136.126]:30476 "EHLO mga18.intel.com"
+        id S237539AbhHCQwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 12:52:36 -0400
+Received: from mga04.intel.com ([192.55.52.120]:6624 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237432AbhHCQw0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 12:52:26 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="200924763"
+        id S237457AbhHCQw3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 12:52:29 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="211868126"
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="200924763"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:52:14 -0700
+   d="scan'208";a="211868126"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:52:17 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="667297187"
+   d="scan'208";a="585041756"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga006.fm.intel.com with ESMTP; 03 Aug 2021 09:52:03 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 03 Aug 2021 09:52:07 -0700
 Received: from alobakin-mobl.ger.corp.intel.com (mszymcza-mobl.ger.corp.intel.com [10.213.25.231])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173Gpg7A004325;
-        Tue, 3 Aug 2021 17:51:58 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173Gpg7B004325;
+        Tue, 3 Aug 2021 17:52:02 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     Michal Kubecek <mkubecek@suse.cz>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -74,9 +74,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         netdev@vger.kernel.org, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH ethtool-next 4/5] man: fix typo for "rmon" standard stat type
-Date:   Tue,  3 Aug 2021 18:51:39 +0200
-Message-Id: <20210803165140.172-5-alexandr.lobakin@intel.com>
+Subject: [PATCH ethtool-next 5/5] man: mention XDP standard statistics in help and man page
+Date:   Tue,  3 Aug 2021 18:51:40 +0200
+Message-Id: <20210803165140.172-6-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210803165140.172-1-alexandr.lobakin@intel.com>
 References: <20210803165140.172-1-alexandr.lobakin@intel.com>
@@ -86,29 +86,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Due to ".RN" instead of ".RB", "[rmon]" string was always being
-omitted from the SYNOPSIS part.
+"xdp" is a new type of standard statistics landed in with Linux
+commit a9428aaed122 ("ethtool, stats: introduce standard XDP statistics").
+Mention it in the help text and the man page source.
 
-Fixes: f8d2bc2ccd8b ("netlink: add support for standard stats")
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 ---
- ethtool.8.in | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ ethtool.8.in | 3 ++-
+ ethtool.c    | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/ethtool.8.in b/ethtool.8.in
-index f83d6d17ae41..6b7761849fca 100644
+index 6b7761849fca..7db0adebbdcf 100644
 --- a/ethtool.8.in
 +++ b/ethtool.8.in
-@@ -244,7 +244,7 @@ ethtool \- query or control network driver and hardware settings
- .RB [\fBeth\-phy\fP]
+@@ -245,6 +245,7 @@ ethtool \- query or control network driver and hardware settings
  .RB [\fBeth\-mac\fP]
  .RB [\fBeth\-ctrl\fP]
--.RN [\fBrmon\fP]
-+.RB [\fBrmon\fP]
+ .RB [\fBrmon\fP]
++.RB [\fBxdp\fP]
  .RB ]
  .HP
  .B ethtool \-\-phy\-statistics
+@@ -673,7 +674,7 @@ naming of NIC- and driver-specific statistics across vendors.
+ .B \fB\-\-all\-groups
+ .E
+ .TP
+-.B \fB\-\-groups [\fBeth\-phy\fP] [\fBeth\-mac\fP] [\fBeth\-ctrl\fP] [\fBrmon\fP]
++.B \fB\-\-groups [\fBeth\-phy\fP] [\fBeth\-mac\fP] [\fBeth\-ctrl\fP] [\fBrmon\fP] [\fBxdp\fP]
+ Request groups of standard device statistics.
+ .RE
+ .TP
+diff --git a/ethtool.c b/ethtool.c
+index 33a0a492cb15..c1f1279bd9f0 100644
+--- a/ethtool.c
++++ b/ethtool.c
+@@ -5776,7 +5776,7 @@ static const struct option args[] = {
+ 		.nlchk	= nl_gstats_chk,
+ 		.nlfunc	= nl_gstats,
+ 		.help	= "Show adapter statistics",
+-		.xhelp	= "               [ --all-groups | --groups [eth-phy] [eth-mac] [eth-ctrl] [rmon] ]\n"
++		.xhelp	= "               [ --all-groups | --groups [eth-phy] [eth-mac] [eth-ctrl] [rmon] [xdp] ]\n"
+ 	},
+ 	{
+ 		.opts	= "--phy-statistics",
 -- 
 2.31.1
 
