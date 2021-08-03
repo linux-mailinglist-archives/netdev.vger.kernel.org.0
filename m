@@ -2,147 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDF693DEDAE
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 14:15:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84EDB3DEDD0
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 14:24:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235658AbhHCMPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 08:15:19 -0400
-Received: from mail-sn1anam02on2064.outbound.protection.outlook.com ([40.107.96.64]:36244
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234524AbhHCMPR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 08:15:17 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mgjV2vfPpDLS/y1Fu+2FLVMwi4ZwatlkhkgYaSdFwnqfzMfOfJdLt7bnsZvytTkLtsxHxLUuG+q4mwPlr+YEmX3V8cesYcg1oc86drpL3h26cWSX3ITvEIpO50kHyvQQg8FjdIuC/sFt/NeXQz2a70zQIjVw/O2iSHIB8E27GCCCLgqbkQCYOIRc/iuvqr5hxUT4HOa6tqv+2XIm3Z5LbZgGwbOpmgm6FwSU+YlErdKD7mG/suS55Koipe7rbhyeYng6X1b3zBywyhL3t0rm4CsVmXWkN1GtDBfRUJmFC/h0xkp2udB0/pQi14V/xkpThnaeGzSp3H1sP7Y17wTD1Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=svmmceMY7QC6VXUfJ8WnVmqOmYUVmsiDchLktpxgTOk=;
- b=Ac/7L1XaRDJJRK8RkkcZ88m1E+6hPGMal5B+phNzW0cL82HBEZicHllGSPg2bU9Wh86CDY6WZx+CcTkOsFPbLdoNVoi0oMVIJ4jVg4RsgqaD/c2Ihy9V9lqTUkLdb8OdHJdavXIY8YTD0rDWxVn0TcmkRvNidmJqNPu+iGDjtmyNsI0pBo0Ni5l2jHH+YDQZOmujL7Aw3E6mMz+N45gQuKpbZDoeLMiL3QlbQx53ompsbePwW/gRnfcWiyos+3Dph63WOfIefE4sd2aEa8w5pgpgXIR3OyZ040edtgCMgkrvAWV+chO5ZskBh5LcA3INuXcgLhSGdYp0XHsLekcJDQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=resnulli.us smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=svmmceMY7QC6VXUfJ8WnVmqOmYUVmsiDchLktpxgTOk=;
- b=mqQCotIOAQzNEn97IzWeGGcJMhcPqu/8r4Ql7PqmhJ2JAV4kOSJYak1Prr+bJ9tBTneJY25lkYHCETkDo4orOK78VO9BD5psLZcHOkXSd+Fe1u3tDu2Wx93p19Z7QR9ocE9R1iOVJ24y9/G93S5GohHcIPMbH6Ii1JjpVw4pFBWOHHh53e9mS+jbxo9hxhepbffFqdyYqtIxFR6pPxTBXfjlF29k3aLXOhe8rfKdSmalcwLU/I8Jwt5sZj70jYL/aRCG/NnhJMGTbkQoL0OorUSGuyP7J5eTKbazk58wB10hP9mmr4BxEmXkYxVR2TOzIMEdka60bvFX2ahBEDglqw==
-Received: from CO2PR04CA0079.namprd04.prod.outlook.com (2603:10b6:102:1::47)
- by MWHPR12MB1278.namprd12.prod.outlook.com (2603:10b6:300:10::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.20; Tue, 3 Aug
- 2021 12:15:05 +0000
-Received: from CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
- (2603:10b6:102:1:cafe::6) by CO2PR04CA0079.outlook.office365.com
- (2603:10b6:102:1::47) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.20 via Frontend
- Transport; Tue, 3 Aug 2021 12:15:05 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; resnulli.us; dkim=none (message not signed)
- header.d=none;resnulli.us; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT041.mail.protection.outlook.com (10.13.174.217) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4373.18 via Frontend Transport; Tue, 3 Aug 2021 12:15:05 +0000
-Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 3 Aug
- 2021 12:15:05 +0000
-Received: from reg-r-vrt-018-180.nvidia.com (172.20.187.5) by
- DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 3 Aug 2021 12:15:01 +0000
-References: <20210722091938.12956-1-simon.horman@corigine.com>
- <20210722091938.12956-2-simon.horman@corigine.com>
- <ygnhim12qxxy.fsf@nvidia.com>
- <13f494c9-e7f0-2fbb-89f9-b1500432a2f6@mojatatu.com>
- <20210727130419.GA6665@corigine.com> <ygnh7dhbrfd0.fsf@nvidia.com>
- <95d6873c-256c-0462-60f7-56dbffb8221b@mojatatu.com>
- <ygnh4kcfr9e8.fsf@nvidia.com> <20210728074616.GB18065@corigine.com>
- <7004376d-5576-1b9c-21bc-beabd05fa5c9@mojatatu.com>
- <20210728144622.GA5511@corigine.com>
- <2ba4e24f-e34e-f893-d42b-d0fd40794da5@mojatatu.com>
- <ygnhv94sowqj.fsf@nvidia.com>
- <31fb2ae6-2b91-5530-70c8-63b42eb5c39d@mojatatu.com>
- <996ecc2d-d982-c7f3-7769-3b489d5ff66c@mojatatu.com>
-User-agent: mu4e 1.4.10; emacs 27.1
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-CC:     Simon Horman <simon.horman@corigine.com>,
+        id S235954AbhHCMYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 08:24:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55620 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235895AbhHCMYT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 08:24:19 -0400
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3972EC06175F
+        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 05:24:08 -0700 (PDT)
+Received: by mail-io1-xd30.google.com with SMTP id m13so24003063iol.7
+        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 05:24:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sSAJdBXerSiLD/jae6wSlhsV/AYk+DynXxE+wOZYVUg=;
+        b=bRVwX6iPyAZEcpuyB4yiUnUe+peBOZ6yDCqxfRHK/MWWbE8extM3sSfAt80FJslR6X
+         w7dtV2Q8CnEkU3c2O9xunDbtV6DjsudWluolBahN/iVlRWXcGhWPKHd5aioLLzH8Ee7g
+         S4xBD5bemnxGWjWWt/Sahnh3ca8DkVBQ29A70=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sSAJdBXerSiLD/jae6wSlhsV/AYk+DynXxE+wOZYVUg=;
+        b=hnu9siiRyEBk1J+hj7LoZlvw9QDAV3hscGxzuGBGbeyMnZMmx+s5fFo8kAqqHuHbrd
+         AiIqc23uVYP8EsqypPaLsClWy4dwWIV/Ei4lnUr61LyLX6w9eQz1WwibKj9ySqZHxdVH
+         CAC8CYyLiqNIW1PfbX1KtXEYVF8Ln8rUv14QMol5v5S3A/EIST6VN1rPT8KkrkOg05M3
+         9EYrvGV2j2OJYANJ7CrUgy9J12QZFDPdSQGRGwUGBiCMlVTIxwGq+VBYyRxay1e1xn00
+         tF3y065auhPENGIMlt2xelGQw4NSl/IWMu9sTIOMw9BlthvT1B9o7C2koVHt0mfkE9ID
+         oQag==
+X-Gm-Message-State: AOAM530cjlv5kEfpNERUu8PgwKrsONBbiptG8s8uADLNh7iGLDU7ngco
+        hliP027jYQ8zjqANhnap//RIBQ==
+X-Google-Smtp-Source: ABdhPJzEGU9BDQUsOAVRriRZRQdWv2S8IfGFXRpD5rGJTVc1Hwa4BETVCCidP6Tqo9bvfIRHF54dBg==
+X-Received: by 2002:a5d:9284:: with SMTP id s4mr605937iom.131.1627993447634;
+        Tue, 03 Aug 2021 05:24:07 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id k2sm6244589ior.40.2021.08.03.05.24.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Aug 2021 05:24:06 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/3] dt-bindings: net: qcom,ipa: make imem
+ interconnect optional
+To:     Rob Herring <robh@kernel.org>
+Cc:     Alex Elder <elder@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Gross, Andy" <agross@kernel.org>,
         David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>, <netdev@vger.kernel.org>,
-        <oss-drivers@corigine.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        "Ido Schimmel" <idosch@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
-        Roopa Prabhu <roopa@nvidia.com>
-Subject: Re: tc offload debug-ability
-In-Reply-To: <996ecc2d-d982-c7f3-7769-3b489d5ff66c@mojatatu.com>
-Date:   Tue, 3 Aug 2021 15:14:58 +0300
-Message-ID: <ygnhsfzqpvwd.fsf@nvidia.com>
+        Evan Green <evgreen@chromium.org>, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, Alex Elder <elder@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20210719212456.3176086-1-elder@linaro.org>
+ <20210719212456.3176086-2-elder@linaro.org>
+ <20210723205252.GA2550230@robh.at.kernel.org>
+ <6c1779aa-c90c-2160-f8b9-497fb8c32dc5@ieee.org>
+ <CAL_JsqKTdUxro-tgCQBzhudaUFQ5GejJL2EMuX2ArcP0JTiG3g@mail.gmail.com>
+From:   Alex Elder <elder@ieee.org>
+Message-ID: <8e75f8b0-5677-42b0-54fe-06e7c69f6669@ieee.org>
+Date:   Tue, 3 Aug 2021 07:24:06 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- DRHQMAIL107.nvidia.com (10.27.9.16)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d2d62e64-370f-4810-17cd-08d956785403
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1278:
-X-Microsoft-Antispam-PRVS: <MWHPR12MB1278DE7B8BC6AD8FF14DC68CA0F09@MWHPR12MB1278.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Raat8WiA7b2b+MfCRZBU8CwfYSSbMtAKkmLxP4w2iEh0N2yL6icbLu1AYQ8uPXDoO5xAmyWn4Bgh82bhfyocLFFDHLHzmjQp8wqGEEYgpCXucH1FqTtVyRtAn0+qWXJctkjmXXXucdFxFWO/cMTowrK/hsFIbC8AoABQUyIZLFB57NPUPAieZl3L14fDZ4QN21ygBfT8Uqt/ZNvbLWVTtaAoSm96yK5OPCeKe+EABVoh61EhKNhFRuyXxjmGUjBXAAaf5+kE5PQZyNJDRbN3b5m6nhFrl7+SVBgt+yfKw9+SfPFRUt/Em2/XRfOWFToEGhkHOlTI/OWH1mg6d2WDjj1Fuc8bdyZyThcNe5rBt872agV44FbB/2KWcXdAx3ZV2dhEAcxNiVQTGtBsH2txB8kalhjCY4qlyc+AKyHXK6sLQgHWznUXpEVQOKu2FQzmrjf0FXGvaq0+f3YWhrQ3evQ0osbsuN5JFBiUZcwmrpow/CC7CJeVv/rpQhzeLqkFMTwFvgNp/wwEyHVDUOJoFdU3161Peq/eXvtbimcmas6OIwtCZnid9CDRszjR+/5QA7LDxw2WF9lxgOgFFt1GMbDlFtXufwxOA1TggLHbf7Zyn4HSfI90OsF4XugihK5Y05yiFGPhYv7HKppMvNEeYQ9ayFO/fpR7cTIKTcA3oQlPlWM/LRTMZ9LlDnl/NsQG6Utyn57L+l5EDbGmLMKq/rXqbvmSl+GB0Tm/P9t0FuUtI1kHHF5CESSU1bdFhDeExsFRpSk7Y90OA2i/9lFvbGAazr7OdZWNpADg5/3TFPjkkHcS8EuKDHXDEZnN091y
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(376002)(39860400002)(136003)(396003)(46966006)(36840700001)(7636003)(6666004)(3480700007)(86362001)(7696005)(2616005)(82310400003)(47076005)(82740400003)(426003)(4326008)(53546011)(2906002)(7416002)(26005)(356005)(6916009)(8676002)(36860700001)(54906003)(316002)(36906005)(5660300002)(186003)(107886003)(336012)(16526019)(4744005)(966005)(8936002)(478600001)(70206006)(70586007)(83380400001)(36756003)(4226004);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2021 12:15:05.4089
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d2d62e64-370f-4810-17cd-08d956785403
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1278
+In-Reply-To: <CAL_JsqKTdUxro-tgCQBzhudaUFQ5GejJL2EMuX2ArcP0JTiG3g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Tue 03 Aug 2021 at 15:02, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
-> I just changed the subject line..
->
-> On 2021-08-03 5:57 a.m., Jamal Hadi Salim wrote:
->> On 2021-07-30 7:40 a.m., Vlad Buslov wrote:
->>> On Fri 30 Jul 2021 at 13:17, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
->>>> On 2021-07-28 10:46 a.m., Simon Horman wrote:
->> 
+On 7/28/21 10:33 AM, Rob Herring wrote:
+> On Mon, Jul 26, 2021 at 9:59 AM Alex Elder <elder@ieee.org> wrote:
+>>
+>> On 7/23/21 3:52 PM, Rob Herring wrote:
+>>> On Mon, Jul 19, 2021 at 04:24:54PM -0500, Alex Elder wrote:
+>>>> On some newer SoCs, the interconnect between IPA and SoC internal
+>>>> memory (imem) is not used.  Reflect this in the binding by moving
+>>>> the definition of the "imem" interconnect to the end and defining
+>>>> minItems to be 2 for both the interconnects and interconnect-names
+>>>> properties.
+>>>>
+>>>> Signed-off-by: Alex Elder <elder@linaro.org>
+>>>> ---
+>>>>    .../devicetree/bindings/net/qcom,ipa.yaml      | 18 ++++++++++--------
+>>>>    1 file changed, 10 insertions(+), 8 deletions(-)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>>>> index ed88ba4b94df5..4853ab7017bd9 100644
+>>>> --- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>>>> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>>>> @@ -87,16 +87,18 @@ properties:
+>>>>          - const: ipa-setup-ready
+>>>>
+>>>>      interconnects:
+>>>> +    minItems: 2
+>>>>        items:
+>>>> -      - description: Interconnect path between IPA and main memory
+>>>> -      - description: Interconnect path between IPA and internal memory
+>>>> -      - description: Interconnect path between IPA and the AP subsystem
+>>>> +      - description: Path leading to system memory
+>>>> +      - description: Path between the AP and IPA config space
+>>>> +      - description: Path leading to internal memory
+>>>>
+>>>>      interconnect-names:
+>>>> +    minItems: 2
+>>>>        items:
+>>>>          - const: memory
+>>>> -      - const: imem
+>>>>          - const: config
+>>>> +      - const: imem
 >>>
->>> Filters with tunnel_key encap actions can be offloaded/unoffloaded
->>> dynamically based on neigh state (see mlx5e_rep_neigh_update()) and fib
->>> events (see mlx5e_tc_fib_event_work()).
+>>> What about existing users? This will generate warnings. Doing this for
+>>> the 2nd item would avoid the need for .dts updates:
 >>>
->> Thanks. Will look and compare against the FIB case.
->> 
->
-> So unless i am mistaken Vlad:
-> a) there is no way to reflect the  details when someone dumps the rules.
-> b) No notifications sent to the control plane (user space) when the
-> neighbor updates are offloaded.
+>>> - enum: [ imem, config ]
 
-Correct.
+In other words:
 
->
-> My comments earlier are inspired by debugging tc offload and by this:
->
-> https://patches.linaro.org/cover/378345/
->
-> cheers,
-> jamal
+   interconnect-names:
+     minItems: 2
+     items:
+       - const: memory
+       - enum: [ imem, config ]
+       - const: imem
+
+What do I do with the "interconnects" descriptions in that case?
+How do I make the "interconnect-names" specified this way align
+with the described interconnect values?  Is that necessary?
+
+>> If I understand correctly, the effect of this would be that
+>> the second item can either be "imem" or "config", and the third
+>> (if present) could only be "imem"?
+> 
+> Yes for the 2nd, but the 3rd item could only be 'config'.
+
+Sorry, yes, that's what I meant.  I might have misread the
+diff output.
+
+>> And you're saying that otherwise, existing users (the only
+>> one it applies to at the moment is "sdm845.dtsi") would
+>> produce warnings, because the interconnects are listed
+>> in an order different from what the binding specifies.
+>>
+>> Is that correct?
+> 
+> Yes.
+> 
+>> If so, what you propose suggests "imem" could be listed twice.
+>> It doesn't make sense, and maybe it's precluded in other ways
+>> so that's OK.
+> 
+> Good observation. There are generic checks that the strings are unique.
+
+I think I don't like that quite as much, because that
+"no duplicates" rule is implied.  It also avoids any
+confusion in the "respectively" relationship between
+interconnects and interconnect-names.
+
+I understand what you're suggesting though, and I would
+be happy to update the binding in the way you suggest.
+I'd like to hear what you say about my questions above
+before doing so.
+
+>>   But I'd be happy to update "sdm845.dtsi" to
+>> address your concern.  (Maybe that's something you would rather
+>> avoid?)
+> 
+> Better to not change DT if you don't have to. You're probably okay if
+> all clients (consumers of the dtb) used names and didn't care about
+
+In the IPA driver, wherever names are specified for things in DT,
+names (only) are used to look them up.  So I'm "probably okay."
+
+> the order. And I have no idea if all users of SDM845 are okay with a
+> DTB change being required. That's up to QCom maintainers. I only care
+> that ABI breakages are documented as such.
+> 
+>> Also, I need to make a separate update to "sm8350.dtsi" because
+>> that was defined before I understood what I do now about the
+>> interconnects.  It uses the wrong names, and should combine
+>> its first two interconnects into just one.
+> 
+> If the interconnects was ignored in that case, then the change doesn't matter.
+
+That platform is not yet fully supported by the IPA driver, thus
+there is (so far) no instance where it is used.  Resolving this
+is part of enabling support for that.
+
+Thanks.
+
+					-Alex
+
+
+> Rob
+> 
 
