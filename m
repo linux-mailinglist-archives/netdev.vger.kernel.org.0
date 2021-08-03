@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D37E83DF301
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:42:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 747073DF30E
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:43:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234530AbhHCQmv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 12:42:51 -0400
-Received: from mga17.intel.com ([192.55.52.151]:63276 "EHLO mga17.intel.com"
+        id S235029AbhHCQnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 12:43:08 -0400
+Received: from mga01.intel.com ([192.55.52.88]:28280 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234271AbhHCQms (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 12:42:48 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="194014685"
+        id S234675AbhHCQnE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 12:43:04 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="235674742"
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="194014685"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:42:35 -0700
+   d="scan'208";a="235674742"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:42:45 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="419722331"
+   d="scan'208";a="670509401"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga003.jf.intel.com with ESMTP; 03 Aug 2021 09:42:23 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 03 Aug 2021 09:42:33 -0700
 Received: from alobakin-mobl.ger.corp.intel.com (lkalica-MOBL.ger.corp.intel.com [10.213.13.182])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GgIOK032342;
-        Tue, 3 Aug 2021 17:42:18 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GgTIX032348;
+        Tue, 3 Aug 2021 17:42:29 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -74,9 +74,9 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         netdev@vger.kernel.org, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH net-next 19/21] virtio-net: don't mix error-caused drops with XDP_DROP cases
-Date:   Tue,  3 Aug 2021 18:42:17 +0200
-Message-Id: <20210803164217.4202-1-alexandr.lobakin@intel.com>
+Subject: [PATCH net-next 20/21] virtio-net: convert to standard XDP stats
+Date:   Tue,  3 Aug 2021 18:42:28 +0200
+Message-Id: <20210803164228.4342-1-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210803163641.3743-1-alexandr.lobakin@intel.com>
 References: <20210803163641.3743-1-alexandr.lobakin@intel.com>
@@ -86,84 +86,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's pretty confusing to have just one field for tracking both
-XDP_DROP cases and various errors which lead to the frame being
-dropped.
-Add a new field, xdp_errors, to separate error paths, and leave
-xdp_drops purely for counting frames with the XDP_DROP verdict.
+Now that we have 1:1 correspondence between the driver XDP stats and
+the standard XDP stats, we can go forth and convert the driver to
+expose XDP statistics via our standard interface.
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 ---
- drivers/net/virtio_net.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+ drivers/net/virtio_net.c | 52 ++++++++++++++++++++++++++++++++++------
+ 1 file changed, 45 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 8cbb4651ed75..acad099006cd 100644
+index acad099006cd..df1fe36cf089 100644
 --- a/drivers/net/virtio_net.c
 +++ b/drivers/net/virtio_net.c
-@@ -91,6 +91,7 @@ struct virtnet_rq_stats {
- 	u64 xdp_tx;
- 	u64 xdp_redirects;
- 	u64 xdp_drops;
-+	u64 xdp_errors;
- 	u64 kicks;
+@@ -101,8 +101,6 @@ struct virtnet_rq_stats {
+ static const struct virtnet_stat_desc virtnet_sq_stats_desc[] = {
+ 	{ "packets",		VIRTNET_SQ_STAT(packets) },
+ 	{ "bytes",		VIRTNET_SQ_STAT(bytes) },
+-	{ "xdp_xmit",		VIRTNET_SQ_STAT(xdp_xmit) },
+-	{ "xdp_xmit_drops",	VIRTNET_SQ_STAT(xdp_xmit_drops) },
+ 	{ "kicks",		VIRTNET_SQ_STAT(kicks) },
  };
  
-@@ -113,6 +114,7 @@ static const struct virtnet_stat_desc virtnet_rq_stats_desc[] = {
- 	{ "xdp_tx",		VIRTNET_RQ_STAT(xdp_tx) },
- 	{ "xdp_redirects",	VIRTNET_RQ_STAT(xdp_redirects) },
- 	{ "xdp_drops",		VIRTNET_RQ_STAT(xdp_drops) },
-+	{ "xdp_errors",		VIRTNET_RQ_STAT(xdp_errors) },
+@@ -110,11 +108,6 @@ static const struct virtnet_stat_desc virtnet_rq_stats_desc[] = {
+ 	{ "packets",		VIRTNET_RQ_STAT(packets) },
+ 	{ "bytes",		VIRTNET_RQ_STAT(bytes) },
+ 	{ "drops",		VIRTNET_RQ_STAT(drops) },
+-	{ "xdp_packets",	VIRTNET_RQ_STAT(xdp_packets) },
+-	{ "xdp_tx",		VIRTNET_RQ_STAT(xdp_tx) },
+-	{ "xdp_redirects",	VIRTNET_RQ_STAT(xdp_redirects) },
+-	{ "xdp_drops",		VIRTNET_RQ_STAT(xdp_drops) },
+-	{ "xdp_errors",		VIRTNET_RQ_STAT(xdp_errors) },
  	{ "kicks",		VIRTNET_RQ_STAT(kicks) },
  };
  
-@@ -804,7 +806,8 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 			trace_xdp_exception(vi->dev, xdp_prog, act);
- 			goto err_xdp;
- 		case XDP_DROP:
--			goto err_xdp;
-+			stats->xdp_drops++;
-+			goto xdp_drop;
- 		}
+@@ -2295,6 +2288,49 @@ static void virtnet_get_ethtool_stats(struct net_device *dev,
  	}
- 	rcu_read_unlock();
-@@ -828,8 +831,9 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 	return skb;
+ }
  
- err_xdp:
-+	stats->xdp_errors++;
-+xdp_drop:
- 	rcu_read_unlock();
--	stats->xdp_drops++;
- err_len:
- 	stats->drops++;
- 	put_page(page);
-@@ -1012,7 +1016,12 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 		case XDP_DROP:
- 			if (unlikely(xdp_page != page))
- 				__free_pages(xdp_page, 0);
--			goto err_xdp;
++static int virtnet_get_std_stats_channels(struct net_device *dev, u32 sset)
++{
++	const struct virtnet_info *vi = netdev_priv(dev);
 +
-+			if (unlikely(act != XDP_DROP))
-+				goto err_xdp;
++	switch (sset) {
++	case ETH_SS_STATS_XDP:
++		return vi->curr_queue_pairs;
++	default:
++		return -EOPNOTSUPP;
++	}
++}
 +
-+			stats->xdp_drops++;
-+			goto xdp_drop;
- 		}
- 	}
- 	rcu_read_unlock();
-@@ -1081,8 +1090,9 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 	return head_skb;
++static void virtnet_get_xdp_stats(struct net_device *dev,
++				  struct ethtool_xdp_stats *xdp_stats)
++{
++	const struct virtnet_info *vi = netdev_priv(dev);
++	u32 i;
++
++	for (i = 0; i < vi->curr_queue_pairs; i++) {
++		const struct virtnet_rq_stats *rqs = &vi->rq[i].stats;
++		const struct virtnet_sq_stats *sqs = &vi->sq[i].stats;
++		struct ethtool_xdp_stats *iter = xdp_stats + i;
++		u32 start;
++
++		do {
++			start = u64_stats_fetch_begin_irq(&rqs->syncp);
++
++			iter->packets = rqs->xdp_packets;
++			iter->tx = rqs->xdp_tx;
++			iter->redirect = rqs->xdp_redirects;
++			iter->drop = rqs->xdp_drops;
++			iter->errors = rqs->xdp_errors;
++		} while (u64_stats_fetch_retry_irq(&rqs->syncp, start));
++
++		do {
++			start = u64_stats_fetch_begin_irq(&sqs->syncp);
++
++			iter->xmit = sqs->xdp_xmit;
++			iter->xmit_drops = sqs->xdp_xmit_drops;
++		} while (u64_stats_fetch_retry_irq(&sqs->syncp, start));
++	}
++}
++
+ static void virtnet_get_channels(struct net_device *dev,
+ 				 struct ethtool_channels *channels)
+ {
+@@ -2409,6 +2445,8 @@ static const struct ethtool_ops virtnet_ethtool_ops = {
+ 	.set_link_ksettings = virtnet_set_link_ksettings,
+ 	.set_coalesce = virtnet_set_coalesce,
+ 	.get_coalesce = virtnet_get_coalesce,
++	.get_std_stats_channels = virtnet_get_std_stats_channels,
++	.get_xdp_stats = virtnet_get_xdp_stats,
+ };
  
- err_xdp:
-+	stats->xdp_errors++;
-+xdp_drop:
- 	rcu_read_unlock();
--	stats->xdp_drops++;
- err_skb:
- 	put_page(page);
- 	while (num_buf-- > 1) {
+ static void virtnet_freeze_down(struct virtio_device *vdev)
 -- 
 2.31.1
 
