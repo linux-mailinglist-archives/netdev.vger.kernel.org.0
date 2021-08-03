@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE9563DF2BF
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:37:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCC133DF2B7
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:37:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234249AbhHCQhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 12:37:53 -0400
-Received: from mga18.intel.com ([134.134.136.126]:29092 "EHLO mga18.intel.com"
+        id S234269AbhHCQhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 12:37:45 -0400
+Received: from mga03.intel.com ([134.134.136.65]:60794 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234277AbhHCQhr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 12:37:47 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="200922446"
+        id S234215AbhHCQhl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 12:37:41 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="213766082"
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="200922446"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:37:26 -0700
+   d="scan'208";a="213766082"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:37:29 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="500883576"
+   d="scan'208";a="479589080"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga001.jf.intel.com with ESMTP; 03 Aug 2021 09:37:12 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 03 Aug 2021 09:37:17 -0700
 Received: from alobakin-mobl.ger.corp.intel.com (eflejszm-mobl2.ger.corp.intel.com [10.213.26.164])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GahEu029968;
-        Tue, 3 Aug 2021 17:37:08 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GahEv029968;
+        Tue, 3 Aug 2021 17:37:12 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -74,9 +74,9 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         netdev@vger.kernel.org, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH net-next 06/21] ethernet, ena: constify src and syncp args of ena_safe_update_stat()
-Date:   Tue,  3 Aug 2021 18:36:26 +0200
-Message-Id: <20210803163641.3743-7-alexandr.lobakin@intel.com>
+Subject: [PATCH net-next 07/21] ethernet, ena: convert to standard XDP stats
+Date:   Tue,  3 Aug 2021 18:36:27 +0200
+Message-Id: <20210803163641.3743-8-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210803163641.3743-1-alexandr.lobakin@intel.com>
 References: <20210803163641.3743-1-alexandr.lobakin@intel.com>
@@ -86,29 +86,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-src and syncp pointers are being read only, and thus can be const.
+Its 6 XDP per-channel counters align just fine with the standard
+stats.
+Drop them from the custom Ethtool statistics and expose to the
+standard stats infra instead.
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_ethtool.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c | 46 ++++++++++++++++---
+ 1 file changed, 40 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-index 27dae632efcb..851a198cec82 100644
+index 851a198cec82..1b6563641575 100644
 --- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
 +++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-@@ -113,8 +113,8 @@ static const struct ena_stats ena_stats_ena_com_strings[] = {
- #define ENA_STATS_ARRAY_ENI(adapter)	\
- 	(ARRAY_SIZE(ena_stats_eni_strings) * (adapter)->eni_stats_supported)
+@@ -90,12 +90,6 @@ static const struct ena_stats ena_stats_rx_strings[] = {
+ 	ENA_STAT_RX_ENTRY(bad_req_id),
+ 	ENA_STAT_RX_ENTRY(empty_rx_ring),
+ 	ENA_STAT_RX_ENTRY(csum_unchecked),
+-	ENA_STAT_RX_ENTRY(xdp_aborted),
+-	ENA_STAT_RX_ENTRY(xdp_drop),
+-	ENA_STAT_RX_ENTRY(xdp_pass),
+-	ENA_STAT_RX_ENTRY(xdp_tx),
+-	ENA_STAT_RX_ENTRY(xdp_invalid),
+-	ENA_STAT_RX_ENTRY(xdp_redirect),
+ };
  
--static void ena_safe_update_stat(u64 *src, u64 *dst,
--				 struct u64_stats_sync *syncp)
-+static void ena_safe_update_stat(const u64 *src, u64 *dst,
-+				 const struct u64_stats_sync *syncp)
+ static const struct ena_stats ena_stats_ena_com_strings[] = {
+@@ -324,6 +318,44 @@ static void ena_get_ethtool_strings(struct net_device *netdev,
+ 	}
+ }
+ 
++static int ena_get_std_stats_channels(struct net_device *netdev, u32 sset)
++{
++	const struct ena_adapter *adapter = netdev_priv(netdev);
++
++	switch (sset) {
++	case ETH_SS_STATS_XDP:
++		return adapter->num_io_queues;
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++static void ena_get_xdp_stats(struct net_device *netdev,
++			      struct ethtool_xdp_stats *xdp_stats)
++{
++	const struct ena_adapter *adapter = netdev_priv(netdev);
++	const struct u64_stats_sync *syncp;
++	const struct ena_stats_rx *stats;
++	struct ethtool_xdp_stats *iter;
++	u32 i;
++
++	for (i = 0; i < adapter->num_io_queues; i++) {
++		stats = &adapter->rx_ring[i].rx_stats;
++		syncp = &adapter->rx_ring[i].syncp;
++		iter = xdp_stats + i;
++
++		ena_safe_update_stat(&stats->xdp_drop, &iter->drop, syncp);
++		ena_safe_update_stat(&stats->xdp_pass, &iter->pass, syncp);
++		ena_safe_update_stat(&stats->xdp_tx, &iter->tx, syncp);
++		ena_safe_update_stat(&stats->xdp_redirect, &iter->redirect,
++				     syncp);
++		ena_safe_update_stat(&stats->xdp_aborted, &iter->aborted,
++				     syncp);
++		ena_safe_update_stat(&stats->xdp_invalid, &iter->invalid,
++				     syncp);
++	}
++}
++
+ static int ena_get_link_ksettings(struct net_device *netdev,
+ 				  struct ethtool_link_ksettings *link_ksettings)
  {
- 	unsigned int start;
+@@ -916,6 +948,8 @@ static const struct ethtool_ops ena_ethtool_ops = {
+ 	.get_tunable		= ena_get_tunable,
+ 	.set_tunable		= ena_set_tunable,
+ 	.get_ts_info            = ethtool_op_get_ts_info,
++	.get_std_stats_channels	= ena_get_std_stats_channels,
++	.get_xdp_stats		= ena_get_xdp_stats,
+ };
  
+ void ena_set_ethtool_ops(struct net_device *netdev)
 -- 
 2.31.1
 
