@@ -2,75 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A729E3DEF7C
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 15:59:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF5993DEF87
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 16:01:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236366AbhHCOAB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 10:00:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50602 "EHLO
+        id S236412AbhHCOBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 10:01:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236045AbhHCN77 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 09:59:59 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83082C061764;
-        Tue,  3 Aug 2021 06:59:47 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id i10so23851863pla.3;
-        Tue, 03 Aug 2021 06:59:47 -0700 (PDT)
+        with ESMTP id S236414AbhHCOBT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 10:01:19 -0400
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6248BC061764
+        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 07:01:08 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id a1so9705367ioa.12
+        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 07:01:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4mFsdkxp6Aw6HFL87VLjwezm1Sz+I3cKph9vTTCvyyM=;
-        b=ntfzF+nANifsLT5sfp87BIaEvIpgEe15cxmGFpkThesuhzjxH7cPBu7btukVF6lmAX
-         ENBCPugujh976tUFETdlEMklBjwjs5WjEfYFqynyw5Z020A8b3g8SYcoHyv9MZU8BrU0
-         OqGJXMOM/U8Ci585j+fnVb4tIiCZL+0JOoRj9tkofPDlR55OQzeDqYQgB+bUSjqpi+Fp
-         AEjntO6dyvA0jIKG2VwEF/w0tlXgEfIN5Gl/5FvHLb7j0sqRvEbnqq9r2//HpZUSYqt/
-         K5R1crrYK7w0dxkk9zTV65MJgLciMkARXQ3HWxGKW5wqcyTHOMMr+1Gpou9RlJEr8lfj
-         FqKA==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0/DHKWIP8rWNGLSAcP/V8hiWErKdNVmxV1ktr6ph0IY=;
+        b=SxavRXCU4BdTr92avY1C++0gB3PNx8cunSCef21gbaL+U0dQPSNJGuNZeXKnt/RIuO
+         0lBNLvKE3iPbPB+Nzz0nn2WHB72HPTuWRTCpvxooQT4p5a3aNxRc+zwkgca4iFymVsTf
+         tO55OH0qnh34wtaasrySCr++sOr8ZrXyJE1M7lSDOFK6K6EOCQPMpVwNqkS33KQKIIGF
+         s5rc2knAEqOPhEkaLQRHwUqqgQmWW97TkU7JHmh0SUtPH+/qZQwQuZoxCIKAv0QppCF6
+         6dBSU+8Ra8Vir1KOH4Duq6jQbgw5kuVZQbJpIlF4NmWt8CwMyfWgqePTsdNMgCjzo4bJ
+         dM0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4mFsdkxp6Aw6HFL87VLjwezm1Sz+I3cKph9vTTCvyyM=;
-        b=JvWJ0nixRlrpx6RDHucyPGMEZc7dnAKxF+XVBMAmetxlWHT6XkZTBydS6dehF6PDps
-         i8/YVkOYPA56aJwiSyv0hUCb0V0jmlFPm79fFmjo2PpODCCGKRf5pDAupKdtXF3pQCyx
-         Cifoacw5rUv7+fsraPat/pd4Eqw72nCBQLssyeWfNuQtzw6wj70p/N9ibSKoKD+fjKuU
-         tY/Ptd/QNz8Orh8MipQ/aCAv7KWbTWuTD6cPFMxf4H5Sya1dkQOgUn4uqcJNSxx/fFlY
-         FKJ8sfK2Z2DnPQvflhpmbOaGQimbl1/JsMuNFWnk2Ikstuv/ZldPRZSUdkeQ1KqHcLBm
-         gmIA==
-X-Gm-Message-State: AOAM5317L5yNrj81QwK5YKXQ2tFX31Sv/4MnFA9+ipUEHLhsgKDOSEyi
-        EXv6PbPvTm5apKpPqVJH0Kc=
-X-Google-Smtp-Source: ABdhPJyFBgHK0siEy5bldYY6aW4HwwIz9iPB0l64wLuTptbY2llyIrexYbxDT9VMbW6R6uNzRyYc7A==
-X-Received: by 2002:a17:902:9046:b029:12c:b5b7:e443 with SMTP id w6-20020a1709029046b029012cb5b7e443mr9392386plz.31.1627999187028;
-        Tue, 03 Aug 2021 06:59:47 -0700 (PDT)
-Received: from horizon.localdomain ([177.220.172.78])
-        by smtp.gmail.com with ESMTPSA id p8sm6569987pfw.35.2021.08.03.06.59.46
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0/DHKWIP8rWNGLSAcP/V8hiWErKdNVmxV1ktr6ph0IY=;
+        b=A0hrCO52tLXBRS0vFv49PtrUscYhTDfg5yoQd0LKrTU8Va5aDiGIOISa/pb3+Pc9VX
+         S5DD7f/caEron3h1bXh0aALbKu0YE7cV6FwJpLBS2nd1noJvgRY4Pv9gRaZcm5i/EWef
+         Kmxc9eMZwEN/lmhHr+bk1LxhMz1mUl28imZzh1DQ5S/ggf+VJ+4dnWion5NHlY3wYhvA
+         5IG958hORGENDE7klKWYBIEmBaV/6Tencrtiq6iJE5aS1CvBL0ymhY6qegQejZsY942I
+         wqHpG45Vb25KRMd1IzzPAMIsGMhwcAJ0Z8bZAB/zt01OyI1NxImd/JXfEs0jkD4hURc+
+         HKAw==
+X-Gm-Message-State: AOAM533Tk3cECsbiBgwfjap1YOg67gCMjIzDwhaX2GaHnxdCTfcSfwu/
+        tPbr/7t9qrLCOFNWhdII4mK0Rg==
+X-Google-Smtp-Source: ABdhPJzcZE5I5+fZfgli3z+04kaI0/+RDoeCqyiKoxscA++9qncW8AmsRqgADFQqBfSENZN8jHHzFw==
+X-Received: by 2002:a5d:9617:: with SMTP id w23mr430474iol.115.1627999267722;
+        Tue, 03 Aug 2021 07:01:07 -0700 (PDT)
+Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id w7sm9456798iox.1.2021.08.03.07.01.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Aug 2021 06:59:46 -0700 (PDT)
-Received: by horizon.localdomain (Postfix, from userid 1000)
-        id DCBA8C08C9; Tue,  3 Aug 2021 10:59:43 -0300 (-03)
-Date:   Tue, 3 Aug 2021 10:59:43 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, linux-sctp@vger.kernel.org
-Subject: Re: [PATCH net] sctp: move the active_key update after sh_keys is
- added
-Message-ID: <YQlLz90u6p0yQa4y@horizon.localdomain>
-References: <514d9b43054a4dc752b7d575700ad87ae0db5f0c.1627799131.git.lucien.xin@gmail.com>
+        Tue, 03 Aug 2021 07:01:07 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/6] net: ipa: prepare GSI interrupts for runtime PM
+Date:   Tue,  3 Aug 2021 09:00:57 -0500
+Message-Id: <20210803140103.1012697-1-elder@linaro.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <514d9b43054a4dc752b7d575700ad87ae0db5f0c.1627799131.git.lucien.xin@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 01, 2021 at 02:25:31AM -0400, Xin Long wrote:
-> In commit 58acd1009226 ("sctp: update active_key for asoc when old key is
-> being replaced"), sctp_auth_asoc_init_active_key() is called to update
-> the active_key right after the old key is deleted and before the new key
-> is added, and it caused that the active_key could be found with the key_id.
+The last patch in this series arranges for GSI interrupts to be
+disabled when the IPA hardware is suspended.  This ensures the clock
+is always operational when a GSI interrupt fires.  Leading up to
+that are patches that rearrange the code a bit to allow this to
+be done.
 
-I know it's late, but anyway:
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+The first two patches aren't *directly* related.  They remove some
+flag arguments to some GSI suspend/resume related functions, using
+the version field now present in the GSI structure.
+
+					-Alex
+
+Alex Elder (6):
+  net: ipa: use gsi->version for channel suspend/resume
+  net: ipa: move version check for channel suspend/resume
+  net: ipa: move some GSI setup functions
+  net: ipa: have gsi_irq_setup() return an error code
+  net: ipa: move gsi_irq_init() code into setup
+  net: ipa: disable GSI interrupts while suspended
+
+ drivers/net/ipa/gsi.c          | 239 ++++++++++++++++++---------------
+ drivers/net/ipa/gsi.h          |  31 ++++-
+ drivers/net/ipa/ipa_endpoint.c |  14 +-
+ drivers/net/ipa/ipa_main.c     |   5 +-
+ 4 files changed, 166 insertions(+), 123 deletions(-)
+
+-- 
+2.27.0
+
