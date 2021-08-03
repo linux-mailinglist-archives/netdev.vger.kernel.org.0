@@ -2,133 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18A1C3DF368
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 19:01:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADBC63DF373
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 19:02:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237603AbhHCRBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 13:01:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40316 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237518AbhHCQ5w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 12:57:52 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C879C0617A0
-        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 09:56:03 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id x14so29805059edr.12
-        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 09:56:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qNwutdTPtPzMvhFLvrhFDo49zFNUEnkpKIp2KgXt3ys=;
-        b=JR0LMPPDEy0WxQgKw3Kv9H7GdseDx9ecjZelGhl+OTeQUJfFGPabmjisCwFQgGB70F
-         BGIlk7+7xJXjiarmoHaUfUDr5Ct5B2SGBC0/b3QwVPNPOfYCJ1dAjwpM4No0F5Etx3zF
-         a2zGSrE6mewE3QsCkolo1UfvrAULlJMNj/eavTHmzguKeCoUnLc02CzirykFqU45bZtL
-         UmeG7b5O/56S1vtuEo5Jo9zQZT9l60O3Xf7HZkCt3fQjR6WbRKRkl4K6F8x9gN5WbLL0
-         fyfjZnxhXfxMMqg+XkZ+vVkQkryhrbs+bRrIDDoYqyh/smKkVCBItvxK+44qDnCDSXlC
-         CFNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qNwutdTPtPzMvhFLvrhFDo49zFNUEnkpKIp2KgXt3ys=;
-        b=OjPGzUHfG8IAdJ2ywylYRJO6bLzH1tY/aoR5JEIpdHcYVCt/i9WXn3hqRlQoyEYWHl
-         EAgKcNGNdVfxznAFPrC/k6kDAU2CiMH/QKWbbxM7isbrN0MuHSRTvw3wfGrAZwtGScHl
-         /RKVgzUwReehOntjBYsp+Nstz4YtvtrFvSSzrDwcQFVOstGbHYyiAd2nO1U/gK3T5e3c
-         9iRDvMbr2f0dfb11FzpGK7MYOn3rGcnLRIfmwjiPkaGR5SL6T7rnClKN9pIZO8J9QBRN
-         XpWHj3yZPezfTJZnIjh/f03KHLWruUMygEMXbsNmCuTHtz7EUJuBEJv2u2Wpzip6eE9I
-         9dag==
-X-Gm-Message-State: AOAM533qMhngDJqs08m4FewPOBjTzUvGPIoeZUWVdcuAp05L1WpkxfGf
-        QOjLXko73tQUEJ1Mshoia0Y=
-X-Google-Smtp-Source: ABdhPJzFwLGEbKPV0sIZv+Ms1iOo5mjOdrdTV17rtQedJCSR2hI4Bzh0zv6TE6Z6AkDgWbpmP8MRtg==
-X-Received: by 2002:a50:fe10:: with SMTP id f16mr26930875edt.208.1628009761748;
-        Tue, 03 Aug 2021 09:56:01 -0700 (PDT)
-Received: from yoga-910.localhost ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id e7sm8754630edk.3.2021.08.03.09.56.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Aug 2021 09:56:01 -0700 (PDT)
-From:   Ioana Ciornei <ciorneiioana@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     laurentiu.tudor@nxp.com, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next 8/8] dpaa2-switch: export MAC statistics in ethtool
-Date:   Tue,  3 Aug 2021 19:57:45 +0300
-Message-Id: <20210803165745.138175-9-ciorneiioana@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210803165745.138175-1-ciorneiioana@gmail.com>
-References: <20210803165745.138175-1-ciorneiioana@gmail.com>
+        id S237776AbhHCRCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 13:02:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36630 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237691AbhHCRBS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 13:01:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0D58C60F0F;
+        Tue,  3 Aug 2021 17:01:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628010067;
+        bh=xv6HDs8f0cdED9oqlZmIGfjdRrTqv1FrSIw7uMIr0g0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=i9nbXs1plRNmd9Odlhglnfe32A11VJ2JkyljXHuSCLliCVz9Vi14AeaJfWRM4fQB4
+         SVZulln4H9D+zlY1z/9KmEHt/BEZf4H7GGw7O0ZhZHnqQdOAqnv0rnMSkkoNyAoDhb
+         UH5WFTtcj+xdhkasiTcvMY/TEHvVc7DYNBJ57EvxwOlcmT5mDgKoWpvRv+G+oRd9T2
+         9q2hcBKQnq0DmLiOv+cbFX+rFhLyaxlYIFqArk8Fr1pc84qh8u8ClndXB+UGdQp2bI
+         LcURHqPudxt3UeurSjRAwizq6wvNBCZx3B2iqt1IUCi2+pjOQLh7b9mXru5SMSbWGG
+         q43TrVh87VW1A==
+Received: by mail-wm1-f54.google.com with SMTP id l11-20020a7bcf0b0000b0290253545c2997so2535599wmg.4;
+        Tue, 03 Aug 2021 10:01:06 -0700 (PDT)
+X-Gm-Message-State: AOAM531JTDpTZJB738l98frdNHDbiGkxyovtqnV2ybLlLlRTRFfGZOv/
+        ZZBKe0mOvODUXvCbJ1KxYFicJX9Qu+rqfjFP89w=
+X-Google-Smtp-Source: ABdhPJw97X/o6CV81AMjwzTqugYn505J+JoXq32bAbJq75QjyNy6S/smhZy5uTzyJLJCSdKFxevBxXiA194UwnGyOto=
+X-Received: by 2002:a7b:ce10:: with SMTP id m16mr5114379wmc.75.1628010065645;
+ Tue, 03 Aug 2021 10:01:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210802145937.1155571-1-arnd@kernel.org> <20210802164907.GA9832@hoboy.vegasvil.org>
+ <bd631e36-1701-b120-a9b0-8825d14cc694@intel.com> <20210802230921.GA13623@hoboy.vegasvil.org>
+ <CAK8P3a2XjgbEkYs6R7Q3RCZMV7v90gu_v82RVfFVs-VtUzw+_w@mail.gmail.com>
+ <20210803155556.GD32663@hoboy.vegasvil.org> <20210803161434.GE32663@hoboy.vegasvil.org>
+In-Reply-To: <20210803161434.GE32663@hoboy.vegasvil.org>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Tue, 3 Aug 2021 19:00:49 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2Wt9gnO4Ts_4Jw1+qpBj8HQc50jU2szjmR8MmZL9wrgQ@mail.gmail.com>
+Message-ID: <CAK8P3a2Wt9gnO4Ts_4Jw1+qpBj8HQc50jU2szjmR8MmZL9wrgQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] ethernet/intel: fix PTP_1588_CLOCK dependencies
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Nicolas Pitre <nico@fluxnic.net>,
+        "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ioana Ciornei <ioana.ciornei@nxp.com>
+On Tue, Aug 3, 2021 at 6:14 PM Richard Cochran <richardcochran@gmail.com> wrote:
+> On Tue, Aug 03, 2021 at 08:55:56AM -0700, Richard Cochran wrote:
+> > On Tue, Aug 03, 2021 at 08:59:02AM +0200, Arnd Bergmann wrote:
+> > > It may well be a lost cause, but a build fix is not the time to nail down
+> > > that decision. The fix I proposed (with the added MAY_USE_PTP_1588_CLOCK
+> > > symbol) is only two extra lines and leaves everything else working for the
+> > > moment.
+> >
+> > Well, then we'll have TWO ugly and incomprehensible Kconfig hacks,
+> > imply and MAY_USE.
 
-If a switch port is connected to a MAC, use the common dpaa2-mac support
-for exporting the available MAC statistics.
+I'm all in favor of removing imply elsewhere as well, but that needs much
+broader consensus than removing it from PTP_1588_CLOCK.
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
- .../freescale/dpaa2/dpaa2-switch-ethtool.c    | 24 +++++++++++++++----
- 1 file changed, 19 insertions(+), 5 deletions(-)
+It has already crept into cryto/ and sound/soc/codecs/, and at least in
+the latter case it does seem to even make sense, so they are less
+likely to remove it.
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-ethtool.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-ethtool.c
-index 20912fb67b9e..720c9230cab5 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-ethtool.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-ethtool.c
-@@ -142,11 +142,17 @@ dpaa2_switch_set_link_ksettings(struct net_device *netdev,
- 	return err;
- }
- 
--static int dpaa2_switch_ethtool_get_sset_count(struct net_device *dev, int sset)
-+static int
-+dpaa2_switch_ethtool_get_sset_count(struct net_device *netdev, int sset)
- {
-+	struct ethsw_port_priv *port_priv = netdev_priv(netdev);
-+	int num_ss_stats = DPAA2_SWITCH_NUM_COUNTERS;
-+
- 	switch (sset) {
- 	case ETH_SS_STATS:
--		return DPAA2_SWITCH_NUM_COUNTERS;
-+		if (port_priv->mac)
-+			num_ss_stats += dpaa2_mac_get_sset_count();
-+		return num_ss_stats;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -155,14 +161,19 @@ static int dpaa2_switch_ethtool_get_sset_count(struct net_device *dev, int sset)
- static void dpaa2_switch_ethtool_get_strings(struct net_device *netdev,
- 					     u32 stringset, u8 *data)
- {
-+	struct ethsw_port_priv *port_priv = netdev_priv(netdev);
-+	u8 *p = data;
- 	int i;
- 
- 	switch (stringset) {
- 	case ETH_SS_STATS:
--		for (i = 0; i < DPAA2_SWITCH_NUM_COUNTERS; i++)
--			memcpy(data + i * ETH_GSTRING_LEN,
--			       dpaa2_switch_ethtool_counters[i].name,
-+		for (i = 0; i < DPAA2_SWITCH_NUM_COUNTERS; i++) {
-+			memcpy(p, dpaa2_switch_ethtool_counters[i].name,
- 			       ETH_GSTRING_LEN);
-+			p += ETH_GSTRING_LEN;
-+		}
-+		if (port_priv->mac)
-+			dpaa2_mac_get_strings(p);
- 		break;
- 	}
- }
-@@ -184,6 +195,9 @@ static void dpaa2_switch_ethtool_get_stats(struct net_device *netdev,
- 			netdev_err(netdev, "dpsw_if_get_counter[%s] err %d\n",
- 				   dpaa2_switch_ethtool_counters[i].name, err);
- 	}
-+
-+	if (port_priv->mac)
-+		dpaa2_mac_get_ethtool_stats(port_priv->mac, data + i);
- }
- 
- const struct ethtool_ops dpaa2_switch_port_ethtool_ops = {
--- 
-2.31.1
+> > Can't we fix this once and for all?
+> >
+> > Seriously, "imply" has been nothing but a major PITA since day one,
+> > and all to save 22 kb.  I can't think of another subsystem which
+> > tolerates so much pain for so little gain.
+>
+> Here is what I want to have, in accordance with the KISS principle:
+>
+> config PTP_1588_CLOCK
+>         bool "PTP clock support"
+>         select NET
+>         select POSIX_TIMERS
+>         select PPS
+>         select NET_PTP_CLASSIFY
+>
+> # driver variant 1:
+>
+> config ACME_MAC
+>         select PTP_1588_CLOCK
+>
+> # driver variant 2:
+>
+> config ACME_MAC
+>
+> config ACME_MAC_PTP
+>         depends on ACME_MAC
+>         select PTP_1588_CLOCK
+>
+> Hm?
 
+Selecting a subsystem (NET, POSIX_TIMES, PPS, NET_PTP_CLASSIFY)
+from a device driver is the nightmare that 'imply' was meant to solve (but did
+not): this causes dependency loops, and unintended behavior where you
+end up accidentally enabling a lot more drivers than you actually need
+(when other symbols depend on the selected ones, and default to y).
+
+If you turn all those 'select' lines into 'depends on', this will work, but it's
+not actually much different from what I'm suggesting. Maybe we can do it
+in two steps: first fix the build failure by replacing all the 'imply'
+statements
+with the correct dependencies, and then you send a patch on top that
+turns PPS and PTP_1588_CLOCK into bool options.
+
+     Arnd
