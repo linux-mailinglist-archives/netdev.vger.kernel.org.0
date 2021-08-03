@@ -2,136 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6823A3DF3E4
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 19:25:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BC703DF3EA
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 19:26:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238196AbhHCRZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 13:25:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47224 "EHLO
+        id S238207AbhHCR0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 13:26:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238071AbhHCRZv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 13:25:51 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 098E5C061798
-        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 10:25:39 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id k4so15321987wrc.0
-        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 10:25:39 -0700 (PDT)
+        with ESMTP id S238172AbhHCR0h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 13:26:37 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694DFC06175F
+        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 10:26:25 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id o5so37526849ejy.2
+        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 10:26:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=konsulko.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DZtgNPYIMF2GH+kBEiYVWNNpqyFEpbchmbi2/jtU99g=;
-        b=DUQgQ1QLi+T1hIGIVT1YaG/pDdtuuIjeMpcv9yblDCEuibRXixp4NZiH1D/BGnQ08f
-         0lFsQevDaLGXgkSNzjHoy/xl4QEAuOKc66dwk8e6U8GabYP0z9il7ZlfnJff8VhVPHyJ
-         BZyCNGQAYInGG/lJJAHcngO9XwN4HmK8d3SHA=
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=N1Qe9TsgSzJpSwt+luP/6/md0IyKL4bJHO0YNjhwkx8=;
+        b=T2Ft/lNCv4gilYjeIIFiaBE2bdM1yh0hZiMZXToC0s6MzVcqd3jvm+Mt+1vyvEJDhC
+         mI9lNxrk0+1H8swdW8gw++EdtAAyw1zabZru37YQpoxlHxbJ9MFithg/wKgCcivetLnZ
+         u9i0dsVE5SUYYetTDyfjEoiVpcFVl7ZNMegIE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DZtgNPYIMF2GH+kBEiYVWNNpqyFEpbchmbi2/jtU99g=;
-        b=quOTTqc/GwoJHqE/MS5QJsBg9yaRtDfN4Yj5+qQUbpGvRXOxqeI34+c/PkOv4ZzosF
-         gU3Dr24fi5Nwt8Te/c1aiFWEGwvDcMrUOzJsLpL9cLYe//p/k0t6olXty3lCvcmb/Mma
-         xxDDT68eNDdr2657zBp8GfS9AOajAwn8NqI7qyvHq+omwDt5Hl9kmujORc0Q9c30EQY8
-         XPifRsxTukpQX1q/micOpSdg91bYJKTvyebTBYegvZaPqvltYN0hpcb9TEwtstIzUd7Q
-         hLNQZOs3GWLhoKbAEeJ3FZErQsBwbfnNU8TgVaKB0nKUqFSsiAzac9v1xdIUugsHlbND
-         2EWA==
-X-Gm-Message-State: AOAM530qH5c8SseXEUaxzvnIj+hf5X43encJ6Mce+WlAnELvlnYBXUfq
-        zJXuDzjuLcF0mgwHMW7SbTaNulUWau+l8A==
-X-Google-Smtp-Source: ABdhPJxPnIT2g6MrRP1wmlmOzlaYcqr2AKbwg5vdhYveNQZ11lhlqAHU1Zm4XsZcHrz+DFyszd2Dog==
-X-Received: by 2002:adf:f847:: with SMTP id d7mr24805041wrq.352.1628011538517;
-        Tue, 03 Aug 2021 10:25:38 -0700 (PDT)
-Received: from taos.k.g (lan.nucleusys.com. [92.247.61.126])
-        by smtp.gmail.com with ESMTPSA id e5sm18489190wrr.36.2021.08.03.10.25.37
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=N1Qe9TsgSzJpSwt+luP/6/md0IyKL4bJHO0YNjhwkx8=;
+        b=rVOXS8y30Jg54CBfGwIdDk0N4Jr/od1PinNGE44yvBXkJXyKNktwT0DeG85tNz7aje
+         vKyoAffzraFHvHGqEw1rYqCxPd0waHMoUpHPP9OirLE5SZcfxzmgHNZe6UIdhtbs/yrf
+         M7TaD138rVMxiHnhBhp+bNrtJEn9gD7pGV5U9bOfTNRU7+rBHr+QOY5exgy8ey5KxNJd
+         CwhQyHcKibB0H+73VK+27xezmHur0WZD45bJYwu7VJpaCNBBbr2eVHnbstf4bA1UYSjl
+         7mi5d0NU7EkcYW+AHLKgVFA7MZlQWabK3+agHRDBnqllImc0wnCvhAOdknZmMkBa0Y10
+         Buhg==
+X-Gm-Message-State: AOAM530FocrEnZUccM6j/i2VCr/lM6A7ojunsYd0liPW3D1uBTxZrNI0
+        pjkNLVUFP1WGj04GmWHQ333poQ==
+X-Google-Smtp-Source: ABdhPJw1EQxvBL7pr3J6l7rNorckSN+j3Z4vplu26A8XbjySOK8vJukdmsmVti8yMZH/pZKDprgZdw==
+X-Received: by 2002:a17:907:2145:: with SMTP id rk5mr15887098ejb.94.1628011584057;
+        Tue, 03 Aug 2021 10:26:24 -0700 (PDT)
+Received: from carbon ([94.26.108.4])
+        by smtp.gmail.com with ESMTPSA id i6sm8542059edt.28.2021.08.03.10.26.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Aug 2021 10:25:38 -0700 (PDT)
+        Tue, 03 Aug 2021 10:26:23 -0700 (PDT)
+Date:   Tue, 3 Aug 2021 20:26:22 +0300
 From:   Petko Manolov <petko.manolov@konsulko.com>
-To:     netdev@vger.kernel.org
-Cc:     paskripkin@gmail.com, davem@davemloft.net,
-        gregkh@linuxfoundation.org, stable@vger.kernel.org,
-        Petko Manolov <petkan@nucleusys.com>
-Subject: [PATCH net v3 2/2] net: usb: pegasus: Remove the changelog and DRIVER_VERSION.
-Date:   Tue,  3 Aug 2021 20:25:24 +0300
-Message-Id: <20210803172524.6088-3-petko.manolov@konsulko.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210803172524.6088-1-petko.manolov@konsulko.com>
-References: <20210803172524.6088-1-petko.manolov@konsulko.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        gregkh@linuxfoundation.org, Petko Manolov <petkan@nucleusys.com>
+Subject: Re: [PATCH net v2 1/2] Check the return value of get_geristers() and
+ friends;
+Message-ID: <YQl8Pr42Oj4PafFP@carbon>
+Mail-Followup-To: Pavel Skripkin <paskripkin@gmail.com>,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        gregkh@linuxfoundation.org, Petko Manolov <petkan@nucleusys.com>
+References: <20210803161853.5904-1-petko.manolov@konsulko.com>
+ <20210803161853.5904-2-petko.manolov@konsulko.com>
+ <69cedfb2-fc76-0afb-3a48-f24f238d5330@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <69cedfb2-fc76-0afb-3a48-f24f238d5330@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petko Manolov <petkan@nucleusys.com>
+On 21-08-03 19:45:56, Pavel Skripkin wrote:
+> On 8/3/21 7:18 PM, Petko Manolov wrote:
+> > From: Petko Manolov <petkan@nucleusys.com>
+> > 
+> > Certain call sites of get_geristers() did not do proper error handling.  This
+> > could be a problem as get_geristers() typically return the data via pointer to a
+> > buffer.  If an error occured the code is carelessly manipulating the wrong data.
+> > 
+> > Signed-off-by: Petko Manolov <petkan@nucleusys.com>
+> > ---
+> >   drivers/net/usb/pegasus.c | 104 ++++++++++++++++++++++++++------------
+> >   1 file changed, 72 insertions(+), 32 deletions(-)
+> > 
+> > diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
+> > index 9a907182569c..06e3ae6209b0 100644
+> > --- a/drivers/net/usb/pegasus.c
+> > +++ b/drivers/net/usb/pegasus.c
+> > @@ -132,9 +132,15 @@ static int get_registers(pegasus_t *pegasus, __u16 indx, __u16 size, void *data)
+> >   static int set_registers(pegasus_t *pegasus, __u16 indx, __u16 size,
+> >   			 const void *data)
+> >   {
+> > -	return usb_control_msg_send(pegasus->usb, 0, PEGASUS_REQ_SET_REGS,
+> > +	int ret;
+> > +
+> > +	ret = usb_control_msg_send(pegasus->usb, 0, PEGASUS_REQ_SET_REGS,
+> >   				    PEGASUS_REQT_WRITE, 0, indx, data, size,
+> >   				    1000, GFP_NOIO);
+> > +	if (ret < 0)
+> > +		netif_dbg(pegasus, drv, pegasus->net, "%s failed with %d\n", __func__, ret);
+> > +
+> > +	return ret;
+> >   }
+> >   /*
+> > @@ -145,10 +151,15 @@ static int set_registers(pegasus_t *pegasus, __u16 indx, __u16 size,
+> >   static int set_register(pegasus_t *pegasus, __u16 indx, __u8 data)
+> >   {
+> >   	void *buf = &data;
+> > +	int ret;
+> > -	return usb_control_msg_send(pegasus->usb, 0, PEGASUS_REQ_SET_REG,
+> > +	ret = usb_control_msg_send(pegasus->usb, 0, PEGASUS_REQ_SET_REG,
+> >   				    PEGASUS_REQT_WRITE, data, indx, buf, 1,
+> >   				    1000, GFP_NOIO);
+> > +	if (ret < 0)
+> > +		netif_dbg(pegasus, drv, pegasus->net, "%s failed with %d\n", __func__, ret);
+> > +
+> > +	return ret;
+> >   }
+> >   static int update_eth_regs_async(pegasus_t *pegasus)
+> > @@ -188,10 +199,9 @@ static int update_eth_regs_async(pegasus_t *pegasus)
+> >   static int __mii_op(pegasus_t *p, __u8 phy, __u8 indx, __u16 *regd, __u8 cmd)
+> >   {
+> > -	int i;
+> > -	__u8 data[4] = { phy, 0, 0, indx };
+> > +	int i, ret = -ETIMEDOUT;
+> >   	__le16 regdi;
+> > -	int ret = -ETIMEDOUT;
+> > +	__u8 data[4] = { phy, 0, 0, indx };
+> >   	if (cmd & PHY_WRITE) {
+> >   		__le16 *t = (__le16 *) & data[1];
+> > @@ -211,8 +221,9 @@ static int __mii_op(pegasus_t *p, __u8 phy, __u8 indx, __u16 *regd, __u8 cmd)
+> >   		goto fail;
+> 		^^^^^^^^^
+> 
+> I really don't want You to spin this series one more time, but ret
+> initialization is missed here again :) Maybe, it's not really important
+> here...
 
-These are now deemed redundant.
+I'll respin this as many times as needed. :)
 
-Signed-off-by: Petko Manolov <petkan@nucleusys.com>
----
- drivers/net/usb/pegasus.c | 30 ++----------------------------
- 1 file changed, 2 insertions(+), 28 deletions(-)
+> And Fixes or CC stable is missed too
 
-diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
-index 22353bab76c8..f18b03be1b87 100644
---- a/drivers/net/usb/pegasus.c
-+++ b/drivers/net/usb/pegasus.c
-@@ -1,31 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- *  Copyright (c) 1999-2013 Petko Manolov (petkan@nucleusys.com)
-+ *  Copyright (c) 1999-2021 Petko Manolov (petkan@nucleusys.com)
-  *
-- *	ChangeLog:
-- *		....	Most of the time spent on reading sources & docs.
-- *		v0.2.x	First official release for the Linux kernel.
-- *		v0.3.0	Beutified and structured, some bugs fixed.
-- *		v0.3.x	URBifying bulk requests and bugfixing. First relatively
-- *			stable release. Still can touch device's registers only
-- *			from top-halves.
-- *		v0.4.0	Control messages remained unurbified are now URBs.
-- *			Now we can touch the HW at any time.
-- *		v0.4.9	Control urbs again use process context to wait. Argh...
-- *			Some long standing bugs (enable_net_traffic) fixed.
-- *			Also nasty trick about resubmiting control urb from
-- *			interrupt context used. Please let me know how it
-- *			behaves. Pegasus II support added since this version.
-- *			TODO: suppressing HCD warnings spewage on disconnect.
-- *		v0.4.13	Ethernet address is now set at probe(), not at open()
-- *			time as this seems to break dhcpd.
-- *		v0.5.0	branch to 2.5.x kernels
-- *		v0.5.1	ethtool support added
-- *		v0.5.5	rx socket buffers are in a pool and the their allocation
-- *			is out of the interrupt routine.
-- *		...
-- *		v0.9.3	simplified [get|set]_register(s), async update registers
-- *			logic revisited, receive skb_pool removed.
-  */
- 
- #include <linux/sched.h>
-@@ -45,7 +21,6 @@
- /*
-  * Version Information
-  */
--#define DRIVER_VERSION "v0.9.3 (2013/04/25)"
- #define DRIVER_AUTHOR "Petko Manolov <petkan@nucleusys.com>"
- #define DRIVER_DESC "Pegasus/Pegasus II USB Ethernet driver"
- 
-@@ -914,7 +889,6 @@ static void pegasus_get_drvinfo(struct net_device *dev,
- 	pegasus_t *pegasus = netdev_priv(dev);
- 
- 	strlcpy(info->driver, driver_name, sizeof(info->driver));
--	strlcpy(info->version, DRIVER_VERSION, sizeof(info->version));
- 	usb_make_path(pegasus->usb, info->bus_info, sizeof(info->bus_info));
- }
- 
-@@ -1338,7 +1312,7 @@ static void __init parse_id(char *id)
- 
- static int __init pegasus_init(void)
- {
--	pr_info("%s: %s, " DRIVER_DESC "\n", driver_name, DRIVER_VERSION);
-+	pr_info("%s: " DRIVER_DESC "\n", driver_name);
- 	if (devid)
- 		parse_id(devid);
- 	return usb_register(&pegasus_driver);
--- 
-2.30.2
+Done.
 
+
+cheers,
+Petko
