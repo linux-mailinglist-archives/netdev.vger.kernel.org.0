@@ -2,90 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2DCE3DF37A
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 19:05:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81A403DF3A1
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 19:10:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237198AbhHCRFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 13:05:20 -0400
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:55877 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234358AbhHCRFT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 13:05:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1628010308; x=1659546308;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=6M38VUr1joiElnH/HutPY11M2i82vpMBxrOp6TL+19c=;
-  b=0ma17OquZ3D1Q+K73+yjNMiNNGEFCeXr6z2ns2CUyJjTUE/V37aBlvg7
-   1J+2qas1cdDeo9VgP8M4gz/2dweQOFY0meaP7Ge/pIO7HLUWyK6DvL9LC
-   ly2CRnHwBK81RZPbS44tHm18uE9yDKQ1y5LESBO7wb1E33mjJVQRLs7NY
-   3pHVCx9bjTfD1BOK+herGGrFc2HQIEVl0d1aHSWB1xL/PGJNZe4VY/DHv
-   GOmBTbR3Klk5a8UNJlB0ZnkncHRljDdhvpc8JyWMW+KadGMd9pTZC08fX
-   b61YyMK/OdSAKDns2u02+Thk9xD/OxKa3OgzwfF7qWM0OD7f6uxssGbwS
-   g==;
-IronPort-SDR: RrT8eWG4lZzTH6FyUEm1utbuTUVtav2Vv5lyMl8LffK+gT+SbwcZbSz2fIaxmLtWzzymB2IME7
- +VDIg5tLutlVno8qLePohoGXNUp4Gjr59TaJRBeRXulYTx5FRA3RYgYidfNE7nDonRKcCM9TJ2
- WKY94a9Fg06+X4u+e6K9aejQ03KxqFhCVj5icDe77MGVq5CfHqAEfIrQLYN0nGuww5WQJ7h4UM
- e0/GFNlDIlXvyKlfYc6RTYsND1LigRaUZCetdCmRdVC94ZiLH18ZGVMJUujm2hCS5LrQ/0jEPJ
- 1iP7f+d+zaZKLfbFzgQxPvM3
+        id S237792AbhHCRKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 13:10:47 -0400
+Received: from mga14.intel.com ([192.55.52.115]:16898 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237657AbhHCRKm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 13:10:42 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="213466132"
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="126942912"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Aug 2021 10:05:08 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 3 Aug 2021 10:05:07 -0700
-Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Tue, 3 Aug 2021 10:05:01 -0700
-Message-ID: <1ce139ac7eb4cb85c6cdb898545ba76729ac927b.camel@microchip.com>
-Subject: Re: [PATCH v3 net-next 06/10] net: dsa: microchip: add support for
- phylink management
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <robh+dt@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <Woojung.Huh@microchip.com>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Date:   Tue, 3 Aug 2021 22:34:55 +0530
-In-Reply-To: <20210731152729.r4lzc3md2bql2too@skbuf>
-References: <20210723173108.459770-1-prasanna.vengateshan@microchip.com>
-         <20210723173108.459770-7-prasanna.vengateshan@microchip.com>
-         <20210731152729.r4lzc3md2bql2too@skbuf>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.1-1 
+   d="scan'208";a="213466132"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 10:10:16 -0700
+X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
+   d="scan'208";a="521327092"
+Received: from shyamasr-mobl.amr.corp.intel.com ([10.209.65.83])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 10:10:15 -0700
+From:   Kishen Maloor <kishen.maloor@intel.com>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org, hawk@kernel.org,
+        magnus.karlsson@intel.com
+Cc:     Kishen Maloor <kishen.maloor@intel.com>
+Subject: [RFC bpf-next 0/5] SO_TXTIME support in AF_XDP
+Date:   Tue,  3 Aug 2021 13:10:01 -0400
+Message-Id: <20210803171006.13915-1-kishen.maloor@intel.com>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2021-07-31 at 18:27 +0300, Vladimir Oltean wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
-> content is safe
-> 
-> On Fri, Jul 23, 2021 at 11:01:04PM +0530, Prasanna Vengateshan wrote:
-> > +static void lan937x_phylink_validate(struct dsa_switch *ds, int port,
-> > +                                  unsigned long *supported,
-> > +                                  struct phylink_link_state *state)
-> > +{
-> > +     struct ksz_device *dev = ds->priv;
-> > +     __ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
-> > +
-> > +     /* Check for unsupported interfaces */
-> > +     if (!phy_interface_mode_is_rgmii(state->interface) &&
-> > +         state->interface != PHY_INTERFACE_MODE_RMII &&
-> > +         state->interface != PHY_INTERFACE_MODE_MII &&
-> > +         state->interface != PHY_INTERFACE_MODE_INTERNAL) {
-> 
-> According to include/linux/phylink.h, when phylink passes
-> state->interface == PHY_INTERFACE_MODE_NA, you are expected to return
-> all supported link modes.
+Background
 
-Okay, Noted. i think PHY_INTERFACE_MODE_NA check should be added in all of the
-'if' (==) checks down to the above one and including the above one (!=). 
+This change adds kernel and userspace support for SO_TXTIME
+in AF_XDP to include a specific TXTIME (aka "Launch Time")
+with XDP frames issued from userspace XDP applications.
+
+This feature may be used in conjunction with application-based traffic
+shaping methods to delay less critical traffic and prioritize
+latency sensitive packets to meet a desired QoS.
+
+Implementation notes
+
+The timestamp is stored in the XDP metadata area and passed down
+to the NIC driver to configure the launch time.
+The timestamp is internally conveyed to the sk_buff destined to generic 
+mode NIC drivers. Alternatively, it may be read via a new Zero-Copy 
+driver API.
+
+The structure of XDP metadata that stores the TXTIME takes a form
+(Shown below) that is aligned to ongoing work in the community
+for describing XDP metadata using BTF:
+
+struct xdp_user_tx_metadata {
+        __u64 timestamp;
+        __u32 md_valid;
+        __u32 btf_id;
+};
+
+On the control path from userspace XDP applications, this change
+repurposes the SO_TXTIME socket option to harness this 
+feature, and adopts the above metadata struct for storing the TXTIME.
+
+The (libbpf) userspace API has been expanded with two helper functons:
+
+- int xsk_socket__enable_so_txtime(struct xsk_socket *xsk, bool enable)
+   
+   Sets the SO_TXTIME option on the AF_XDP socket (using setsockopt()).
+
+- void xsk_umem__set_md_txtime(void *umem_area, __u64 chunkAddr,
+                               __s64 txtime)
+   
+   Packages the application supplied TXTIME into the above md struct 
+   and stores it in the XDP metadata area, which precedes the XDP frame.
+
+In practice, a userspace XDP application must ensure the following:
+
+* Store the XDP packet at the location following the XDP metadata area:
+   uint8_t *pkt = xsk_umem__get_data(xsk.buffer, chunkAddr) +
+                                     sizeof(struct xdp_user_tx_metadata);
+
+* Correctly set the pkt addr in the TX descriptor:
+   tx_desc->addr = chunkAddr + sizeof(struct xdp_user_tx_metadata);
+
+* Signal the kernel that it included metadata by setting the TX 
+  descriptor options:
+   tx_desc->options = XDP_DESC_OPTION_METADATA;
+
+In the NIC driver, a new XSK Zero-Copy Driver API:
+s64 xsk_buff_get_txtime(struct xsk_buff_pool *pool, struct xdp_desc *desc)
+is used to retrieve and consume a Launch Time provided by the userspace XDP
+application.
+
+Accompanying the kernel and userspace changes are the following updates:
+
+* Launch Time support along the XDP ZC path in the IGC driver by exercising
+  the new XSK ZC driver API.
+
+* SO_TXTIME support in the xdpsock sample application to illustrate the
+  userspace API.
+
+Jithu Joseph (3):
+  igc: Launchtime support in XDP Tx ZC path
+  samples/bpf/xdpsock_user.c: Make get_nsecs() generic
+  samples/bpf/xdpsock_user.c: Launchtime/TXTIME API usage
+
+Kishen Maloor (2):
+  net: xdp: SO_TXTIME support in AF_XDP
+  libbpf: SO_TXTIME support in AF_XDP
+
+ drivers/net/ethernet/intel/igc/igc_main.c | 49 ++++++++++++++-
+ include/net/xdp_sock.h                    |  1 +
+ include/net/xdp_sock_drv.h                | 10 +++
+ include/net/xsk_buff_pool.h               |  1 +
+ include/uapi/linux/if_xdp.h               |  2 +
+ include/uapi/linux/xdp_md_std.h           | 14 +++++
+ net/xdp/xsk.c                             | 51 +++++++++++++++-
+ net/xdp/xsk.h                             |  2 +
+ net/xdp/xsk_buff_pool.c                   | 23 +++++++
+ net/xdp/xsk_queue.h                       |  4 +-
+ samples/bpf/xdpsock_user.c                | 74 ++++++++++++++++++++---
+ tools/include/uapi/linux/if_xdp.h         |  2 +
+ tools/include/uapi/linux/xdp_md_std.h     | 14 +++++
+ tools/lib/bpf/xsk.h                       | 27 ++++++++-
+ 14 files changed, 258 insertions(+), 16 deletions(-)
+ create mode 100644 include/uapi/linux/xdp_md_std.h
+ create mode 100644 tools/include/uapi/linux/xdp_md_std.h
+
+-- 
+2.24.3 (Apple Git-128)
 
