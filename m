@@ -2,68 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 102E23DF087
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 16:42:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50F983DF08A
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 16:43:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236234AbhHCOmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 10:42:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33174 "EHLO
+        id S236529AbhHCOn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 10:43:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234360AbhHCOmm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 10:42:42 -0400
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE70C061757
-        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 07:42:29 -0700 (PDT)
-Received: by mail-ot1-x32c.google.com with SMTP id 61-20020a9d0d430000b02903eabfc221a9so20938263oti.0
-        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 07:42:29 -0700 (PDT)
+        with ESMTP id S236213AbhHCOnK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 10:43:10 -0400
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33B00C061757
+        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 07:42:56 -0700 (PDT)
+Received: by mail-ot1-x335.google.com with SMTP id v8-20020a0568301bc8b02904d5b4e5ca3aso8682240ota.13
+        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 07:42:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1TOH9OabPyDjMVUYMh7NWdlerRxMzBrAXmG+PviR58k=;
-        b=dWQJ2bcu5qyIrrAzUkvMOIz0i6xDjkbI+Lr77kRePqNe5fy/a7ki+WEcT+NNrCEkC2
-         nJBFcoA0190+WJZWRuGvetvMol/bjr+7Eri09l4l5vThNVapVc29KzG7sNR3WU/s3UMe
-         qCMa351mavhTIgX2JaZkgKwieTfIamQ8xAUc3uW4N1DpkXt9/ywK+++eFJMSVZqzxCE6
-         HqZnsB+OQc0AhtMYnTlovrC7dXmhJ9yIoPZQ68suMHdePm1RpQB8eihgIRkApY3UlmHB
-         RBBnKALIEvRQ/ON8cimLfRzdkLSJ89mfgiyaD6ZH5vKHIiLGwotQNS4OGjTX/pOblPS5
-         N3Yw==
+        bh=s8RwTlA68Z6kNirI2g3EC42JHl+/0Sk0guQl8I/CFuc=;
+        b=A/wJz33K3weIHdwVhbOYPhuq1cKb20zYBqwuYMPRan1WfX/zz9t0wF5ksUhdOyBinu
+         F/iknFITpD5tw2ZA5Dttr6pD8VcBSfnl6zZWjjp76H8SnaGQY+Z7lRBrg04DjgEF3iZu
+         PETkeGSYuKxeo3vTA9ObpyjAGCfSPqtTy0IrSvO/6FfGotC2Q8GjbdpywVNZ8BePAW7g
+         I4kBHVV8o/CqJHcpl7qhQOIRoIkyHzb7iRsDlibgBWjaON2pOWHVCn6ClCZ1c17jyLzz
+         DhLhD/k3UE8l4Cy6HACrC6AJ1ZjvdSWUbeRvhXZKItcXd47u++Uj2Oq5jVwQGSDn1114
+         hICg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=1TOH9OabPyDjMVUYMh7NWdlerRxMzBrAXmG+PviR58k=;
-        b=mv7HCChlKt3w9xhP9QT5lYExgQ9W5vkFI1LDY6uQOqNmrkHf0CKGn0Q+oGpv0YGh8j
-         gJf+2FXl5H+6ooJXHBrG8DQHYl3E+Oegag5OFW4Kc/ZPfbWqoWWdf4PWhPovr0Sspnmf
-         mqbmfdjnW0N7nYDorEyDXYPGA+sgTHzrjX+G1ZgWGRHNEtcud45DnjyYRuijOjWKn0nM
-         kp1pPCGuhlPRrZf3dm0GIzaLSFiO22Y0CFaYQFup4c/1/E1fPGxUOmqos+kqE59uaoP1
-         efNc/GMS0uhixqb7dIy+FSUHquo0wIkuWKQUFcM6prpAxm2lkqY7cCpi8eGovycElJwk
-         i9aA==
-X-Gm-Message-State: AOAM531EOF1ltOIicCMSco+WwcOyykZU8M2gjMS7LqWsOXK5lqK//Wwz
-        eAZIcOhUi+DwV7rKmiAgYO8=
-X-Google-Smtp-Source: ABdhPJzIl1Cfn4AgHJY8fwcKD6ilL7XTI7hG2o32gCkvOhlCNYdNNalotRYmJC7ZRjffkVq/fnFJtw==
-X-Received: by 2002:a05:6830:1c1:: with SMTP id r1mr15162583ota.22.1628001749355;
-        Tue, 03 Aug 2021 07:42:29 -0700 (PDT)
+        bh=s8RwTlA68Z6kNirI2g3EC42JHl+/0Sk0guQl8I/CFuc=;
+        b=gftKG2fK9o7dIbYil+ApSarfdNni7wZMeb/Qw3vrWponSJuaxaguwjS+IWdt3Obr5F
+         2Etj5qgd+u5lAMkVOnFdlZG4ID+MLChztPteQQSqyw/+ONhVzmWhiNbwnc2mdC+OP2mi
+         bdMxqAhEEy3Dqq4Ll2LzQ3jK1f3UdsqMkRiZ755c5F8wzoPACnnqzeYi5QxQUEHloMtj
+         3aWhMc0X6AXgNGwhYObS75F5fYBkOz4K7TMhsi9wf/MTbKbI7S4i2mgTkDY+O5mOh04G
+         5x4oqH5dutrBbha0I2PZ2wqudwCmuIvV9HtYkl0kUENnSSPGoa5LtT969Bqdk+evye8o
+         zAKA==
+X-Gm-Message-State: AOAM533gy5rycl8rGrji4CjZ/UdgWRsLtIsYv3gIXEyqoWFE/wyky1qY
+        tYakes8OmH3L5BMc/jQcWLexu5Gbt08=
+X-Google-Smtp-Source: ABdhPJwN0l1urNTrvf6UfGDps0k/xT1CzgSYCXCBE7hR31ucm5PKdOMC1fKm3jYn+GBhKid/GVeLvw==
+X-Received: by 2002:a05:6830:204e:: with SMTP id f14mr15418735otp.238.1628001774710;
+        Tue, 03 Aug 2021 07:42:54 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([8.48.134.27])
-        by smtp.googlemail.com with ESMTPSA id a193sm2327090oob.45.2021.08.03.07.42.28
+        by smtp.googlemail.com with ESMTPSA id g16sm2263431oos.31.2021.08.03.07.42.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Aug 2021 07:42:29 -0700 (PDT)
-Subject: Re: [PATCH] neigh: Support filtering neighbours for L3 slave
-To:     Lahav Schlesinger <lschlesinger@drivenets.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        dsahern@kernel.org
-References: <20210801090105.27595-1-lschlesinger@drivenets.com>
- <351cae13-8662-2f8f-dd8b-4127ead0ca2a@gmail.com>
- <20210802082310.wszqbydeqpxcgq2p@kgollan-pc>
- <6b3516da-0ba5-0bbf-8de1-e1232457a5aa@gmail.com>
- <20210803064730.pmkm7xesffzjscze@kgollan-pc>
+        Tue, 03 Aug 2021 07:42:54 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: decnet: Fix refcount warning for new
+ dn_fib_info
+To:     Yajun Deng <yajun.deng@linux.dev>, davem@davemloft.net,
+        kuba@kernel.org, dsahern@kernel.org
+Cc:     linux-decnet-user@lists.sourceforge.net, netdev@vger.kernel.org
+References: <20210803073739.22339-1-yajun.deng@linux.dev>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <e71a91c7-2b56-01e0-f4e3-2f45ce985add@gmail.com>
-Date:   Tue, 3 Aug 2021 08:42:27 -0600
+Message-ID: <02d31301-5f7c-07db-4aa0-e40b16fac038@gmail.com>
+Date:   Tue, 3 Aug 2021 08:42:53 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <20210803064730.pmkm7xesffzjscze@kgollan-pc>
+In-Reply-To: <20210803073739.22339-1-yajun.deng@linux.dev>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,33 +68,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/3/21 12:47 AM, Lahav Schlesinger wrote:
->>>> you can not special case VRFs like this, and such a feature should apply
->>>> to links and addresses as well.
->>>
->>> Understandable, I'll change it.
->>> In this case though, how would you advice to efficiently filter
->>> neighbours for interfaces in the default VRF in userspace (without
->>> quering the master of every interface that is being dumped)?
->>> I reckoned that because there's support in iproute2 for filtering based
->>> on a specific VRF, filtering for the default VRF is a natural extension
->>
->> iproute2 has support for a link database (ll_cache). You would basically
->> have to expand the cache to track any master device a link is associated
->> with and then fill the cache with a link dump first. It's expensive at
->> scale; the "no stats" filter helps a bit.
->>
->> This is the reason for kernel side filtering on primary attributes
->> (coarse grain filtering at reasonable cost).
->>
+On 8/3/21 1:37 AM, Yajun Deng wrote:
+> fib_treeref needs to be set after kzalloc. The old code had a ++ which
+> led to the confusion when the int was replaced by a refcount_t.
 > 
-> Nice, didn't know about the ll_cache.
-> Does filtering based on being in the default VRF is something you think
-> can be merged into iproute2 (say with "novrf" keyword, following the "nomaster"
-> convention below - e.g. "ip link show novrf")?
-> If so I'll add it as a patch to iproute2.
+> Fixes: 79976892f7ea ("net: convert fib_treeref from int to refcount_t")
+> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+> ---
+>  net/decnet/dn_fib.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-yes. There is also an outstanding request to show the vrf of neighbor
-entries (e.g., add a new column at the end with vrf) when doing a full dump.
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
 
