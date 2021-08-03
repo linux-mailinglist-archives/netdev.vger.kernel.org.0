@@ -2,83 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A59B73DF116
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 17:09:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD6523DF11B
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 17:09:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236560AbhHCPJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 11:09:36 -0400
-Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:57128
-        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236685AbhHCPJT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 11:09:19 -0400
-Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 87E4E3F070;
-        Tue,  3 Aug 2021 15:09:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1628003344;
-        bh=yujcAW928JS1+WAa5ppXQvA0AiE4xUVDj/s66hatc0A=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
-        b=mREzlHPwx8jgCXwCQp5AweexjLomZrqnpv852tP8GEMfnDNQ9EJZuB1sab7bJNrGk
-         D7QfrRHgwLxawch47XtG9QsCVQPOGIvpgWHr9SDIg4f0MgRHnL21bIUQVP2+lKueKF
-         rQOEhkLmppi2Cu5ldSdAZmpjBIL8PyThXJuBTn8v47zgboCQ+mtaKrMNVaCgRcR76q
-         +rGSxnkpHTe/HkOjautuv4a3h4TvjTJX2hajKOnSSLz9oXKWYardQxD98JjMDR3Igu
-         jr//IdPSl+37xIHBh7CDoSUnpfddVTA3gkeTcmcXkrDffArQJxK9mAkPKq6n45huO4
-         F+/KQhEPocRXw==
-From:   Colin King <colin.king@canonical.com>
-To:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        id S236650AbhHCPJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 11:09:46 -0400
+Received: from smtprelay0154.hostedemail.com ([216.40.44.154]:55456 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S236614AbhHCPJp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 11:09:45 -0400
+Received: from omf04.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay08.hostedemail.com (Postfix) with ESMTP id B31AA182CF66C;
+        Tue,  3 Aug 2021 15:09:32 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf04.hostedemail.com (Postfix) with ESMTPA id 40962D1517;
+        Tue,  3 Aug 2021 15:09:31 +0000 (UTC)
+Message-ID: <e07dfde8aa6616887c74817bed1166510b5583dd.camel@perches.com>
+Subject: Re: [PATCH 2/3][V2] rtlwifi: rtl8192de: make arrays static const,
+ makes object smaller
+From:   Joe Perches <joe@perches.com>
+To:     Colin King <colin.king@canonical.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
 Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] brcmfmac: firmware: Fix uninitialized variable ret
-Date:   Tue,  3 Aug 2021 16:09:04 +0100
-Message-Id: <20210803150904.80119-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.31.1
+Date:   Tue, 03 Aug 2021 08:09:29 -0700
+In-Reply-To: <20210803144949.79433-2-colin.king@canonical.com>
+References: <20210803144949.79433-1-colin.king@canonical.com>
+         <20210803144949.79433-2-colin.king@canonical.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-Rspamd-Server: rspamout03
+X-Rspamd-Queue-Id: 40962D1517
+X-Spam-Status: No, score=0.10
+X-Stat-Signature: qfyjgjxee9wo91ryrqsmtk1g8nbwy61c
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1/hQZTuO5PJBJ65UX12wm27sQMXQRdEsUQ=
+X-HE-Tag: 1628003371-423443
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On Tue, 2021-08-03 at 15:49 +0100, Colin King wrote:
+> Don't populate arrays the stack but instead make them static const. Replace
+> array channel_info with channel_all since it contains the same data as
+> channel_all. Makes object code smaller by 961 bytes.
+[]
+> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
+[]
+> @@ -160,6 +160,15 @@ static u32 targetchnl_2g[TARGET_CHNL_NUM_2G] = {
+>  	25711, 25658, 25606, 25554, 25502, 25451, 25328
+>  };
+> 
+> +static const u8 channel_all[59] = {
 
-Currently the variable ret is uninitialized and is only set if
-the pointer alt_path is non-null. Fix this by ininitializing ret
-to zero.
+I don't believe there is a significant value in sizing the array
+as 59 instead of letting the compiler count the elements.
 
-Addresses-Coverity: ("Uninitialized scalar variable")
-Fixes: 5ff013914c62 ("brcmfmac: firmware: Allow per-board firmware binaries")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> +	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+> +	36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58,
+> +	60, 62, 64, 100, 102, 104, 106, 108, 110, 112,
+> +	114, 116, 118, 120, 122, 124, 126, 128,	130,
+> +	132, 134, 136, 138, 140, 149, 151, 153, 155,
+> +	157, 159, 161, 163, 165
+> +};
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-index adfdfc654b10..4f387e868120 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-@@ -680,7 +680,7 @@ int brcmf_fw_get_firmwares(struct device *dev, struct brcmf_fw_request *req,
- 	struct brcmf_fw_item *first = &req->items[0];
- 	struct brcmf_fw *fwctx;
- 	char *alt_path;
--	int ret;
-+	int ret = 0;
- 
- 	brcmf_dbg(TRACE, "enter: dev=%s\n", dev_name(dev));
- 	if (!fw_cb)
--- 
-2.31.1
 
