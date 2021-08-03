@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E42EA3DEC6C
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:42:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6B0F3DEC6E
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:42:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236017AbhHCLmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 07:42:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33622 "EHLO mail.kernel.org"
+        id S236079AbhHCLmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 07:42:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33746 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235947AbhHCLlu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 07:41:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1E63B60EE9;
-        Tue,  3 Aug 2021 11:41:35 +0000 (UTC)
+        id S235801AbhHCLly (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 07:41:54 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 291AE60F11;
+        Tue,  3 Aug 2021 11:41:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627990899;
-        bh=uMSPGBXE9/m0q1YDMsyru60MbMwNd+TxQc3v8teCMV0=;
+        s=k20201202; t=1627990903;
+        bh=9iofw+iQ5OF5j1ftxTMY/6livwY32yapSHHcwhF12Ks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RRsAHGPTDlnnIsSPq+eYjaZuk/YIacirHSY8ex+0in4g5IlHnbTxghSgyH5W1Umiw
-         d3otqc1nLNuri//i57hV8XdPx5unUUds/Icjecnc6GBYPGLvL1hgcvgwHrEOe4j+3J
-         yU2ZzlCYBr77rDeDVAqQhPdot9nabLOa4MkGWGMi8hvNrwxx40EXV3gMAHfESz1+gv
-         ZV81og91zKjWtjI/19j4li6Bcy0ypWNtjuJ/qrhKygJxa4KNhNbmoKQH+TPAApupgu
-         u4Iwp5DM+hDoOKh20NQW74cp2cVWI5CrvJq+Y22qhmH+Iv8GBlhNg0sXzLdXvwIUa3
-         qoNEPtpHT6ESQ==
+        b=KAYd3Bc2PDwRoQtR5mGlXkA/RdlVoiX5GvJihGh/Buam+VutFFAGsInoUM6aFqhKj
+         aUIcFvYpMEw+kK9OBAsDPF8272W7mXbeu2M+OjEwrpsxH60kj4KvoWqIO5cuo/nOAw
+         wc/6DPklEIvuRKPvdWe8WS81HXflO2HsFdWBSCJZJCxfm9236K++vfpOKVEWFyzhLk
+         ISTUClkYgi+fYuGucy3a1GUe/lfT/wwZKhDxEbB2RdOhgfW4bUwslPuGzU56H7kuYv
+         n+avAR2fvXoGsx9g+4H+/1Aur/Ut5MT5+arVBXvQOZ9n8pdplj4Ibx5fEXCJ3VCpNC
+         zymQfCC5l5gEw==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     Arnd Bergmann <arnd@arndb.de>,
@@ -42,9 +42,9 @@ Cc:     Arnd Bergmann <arnd@arndb.de>,
         Paul Gortmaker <paul.gortmaker@windriver.com>,
         Sam Creasey <sammy@sammy.net>, linux-kernel@vger.kernel.org,
         bcm-kernel-feedback-list@broadcom.com
-Subject: [PATCH v2 08/14] [net-next] xsurf100: drop include of lib8390.c
-Date:   Tue,  3 Aug 2021 13:40:45 +0200
-Message-Id: <20210803114051.2112986-9-arnd@kernel.org>
+Subject: [PATCH v2 09/14] [net-next] move netdev_boot_setup into Space.c
+Date:   Tue,  3 Aug 2021 13:40:46 +0200
+Message-Id: <20210803114051.2112986-10-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210803114051.2112986-1-arnd@kernel.org>
 References: <20210803114051.2112986-1-arnd@kernel.org>
@@ -54,80 +54,352 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Schmitz <schmitzmic@gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-Now that ax88796.c exports the ax_NS8390_reinit() symbol, we can
-include 8390.h instead of lib8390.c, avoiding duplication of that
-function and killing a few compile warnings in the bargain.
+This is now only used by a handful of old ISA drivers,
+and can be moved into the file they already all depend on.
 
-Fixes: 861928f4e60e826c ("net-next: New ax88796 platform
-driver for Amiga X-Surf 100 Zorro board (m68k)")
-
-Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/8390/xsurf100.c | 9 ++-------
- init/main.c                          | 6 +++---
- 2 files changed, 5 insertions(+), 10 deletions(-)
+ drivers/net/Space.c       | 142 ++++++++++++++++++++++++++++++++++++++
+ include/linux/netdevice.h |  13 ----
+ net/core/dev.c            | 125 ---------------------------------
+ net/ethernet/eth.c        |   2 -
+ 4 files changed, 142 insertions(+), 140 deletions(-)
 
-diff --git a/drivers/net/ethernet/8390/xsurf100.c b/drivers/net/ethernet/8390/xsurf100.c
-index e2c963821ffe..fe7a74707aa4 100644
---- a/drivers/net/ethernet/8390/xsurf100.c
-+++ b/drivers/net/ethernet/8390/xsurf100.c
-@@ -22,8 +22,6 @@
- #define XS100_8390_DATA_WRITE32_BASE 0x0C80
- #define XS100_8390_DATA_AREA_SIZE 0x80
+diff --git a/drivers/net/Space.c b/drivers/net/Space.c
+index a03559f23295..f40f2e38682f 100644
+--- a/drivers/net/Space.c
++++ b/drivers/net/Space.c
+@@ -30,6 +30,148 @@
+ #include <linux/netlink.h>
+ #include <net/Space.h>
  
--#define __NS8390_init ax_NS8390_init
++/*
++ * This structure holds boot-time configured netdevice settings. They
++ * are then used in the device probing.
++ */
++struct netdev_boot_setup {
++	char name[IFNAMSIZ];
++	struct ifmap map;
++};
++#define NETDEV_BOOT_SETUP_MAX 8
++
++
++/******************************************************************************
++ *
++ *		      Device Boot-time Settings Routines
++ *
++ ******************************************************************************/
++
++/* Boot time configuration table */
++static struct netdev_boot_setup dev_boot_setup[NETDEV_BOOT_SETUP_MAX];
++
++/**
++ *	netdev_boot_setup_add	- add new setup entry
++ *	@name: name of the device
++ *	@map: configured settings for the device
++ *
++ *	Adds new setup entry to the dev_boot_setup list.  The function
++ *	returns 0 on error and 1 on success.  This is a generic routine to
++ *	all netdevices.
++ */
++static int netdev_boot_setup_add(char *name, struct ifmap *map)
++{
++	struct netdev_boot_setup *s;
++	int i;
++
++	s = dev_boot_setup;
++	for (i = 0; i < NETDEV_BOOT_SETUP_MAX; i++) {
++		if (s[i].name[0] == '\0' || s[i].name[0] == ' ') {
++			memset(s[i].name, 0, sizeof(s[i].name));
++			strlcpy(s[i].name, name, IFNAMSIZ);
++			memcpy(&s[i].map, map, sizeof(s[i].map));
++			break;
++		}
++	}
++
++	return i >= NETDEV_BOOT_SETUP_MAX ? 0 : 1;
++}
++
++/**
++ * netdev_boot_setup_check	- check boot time settings
++ * @dev: the netdevice
++ *
++ * Check boot time settings for the device.
++ * The found settings are set for the device to be used
++ * later in the device probing.
++ * Returns 0 if no settings found, 1 if they are.
++ */
++int netdev_boot_setup_check(struct net_device *dev)
++{
++	struct netdev_boot_setup *s = dev_boot_setup;
++	int i;
++
++	for (i = 0; i < NETDEV_BOOT_SETUP_MAX; i++) {
++		if (s[i].name[0] != '\0' && s[i].name[0] != ' ' &&
++		    !strcmp(dev->name, s[i].name)) {
++			dev->irq = s[i].map.irq;
++			dev->base_addr = s[i].map.base_addr;
++			dev->mem_start = s[i].map.mem_start;
++			dev->mem_end = s[i].map.mem_end;
++			return 1;
++		}
++	}
++	return 0;
++}
++EXPORT_SYMBOL(netdev_boot_setup_check);
++
++/**
++ * netdev_boot_base	- get address from boot time settings
++ * @prefix: prefix for network device
++ * @unit: id for network device
++ *
++ * Check boot time settings for the base address of device.
++ * The found settings are set for the device to be used
++ * later in the device probing.
++ * Returns 0 if no settings found.
++ */
++static unsigned long netdev_boot_base(const char *prefix, int unit)
++{
++	const struct netdev_boot_setup *s = dev_boot_setup;
++	char name[IFNAMSIZ];
++	int i;
++
++	sprintf(name, "%s%d", prefix, unit);
++
++	/*
++	 * If device already registered then return base of 1
++	 * to indicate not to probe for this interface
++	 */
++	if (__dev_get_by_name(&init_net, name))
++		return 1;
++
++	for (i = 0; i < NETDEV_BOOT_SETUP_MAX; i++)
++		if (!strcmp(name, s[i].name))
++			return s[i].map.base_addr;
++	return 0;
++}
++
++/*
++ * Saves at boot time configured settings for any netdevice.
++ */
++static int __init netdev_boot_setup(char *str)
++{
++	int ints[5];
++	struct ifmap map;
++
++	str = get_options(str, ARRAY_SIZE(ints), ints);
++	if (!str || !*str)
++		return 0;
++
++	/* Save settings */
++	memset(&map, 0, sizeof(map));
++	if (ints[0] > 0)
++		map.irq = ints[1];
++	if (ints[0] > 1)
++		map.base_addr = ints[2];
++	if (ints[0] > 2)
++		map.mem_start = ints[3];
++	if (ints[0] > 3)
++		map.mem_end = ints[4];
++
++	/* Add new entry to the list */
++	return netdev_boot_setup_add(str, &map);
++}
++
++__setup("netdev=", netdev_boot_setup);
++
++static int __init ether_boot_setup(char *str)
++{
++	return netdev_boot_setup(str);
++}
++__setup("ether=", ether_boot_setup);
++
++
+ /* A unified ethernet device probe.  This is the easiest way to have every
+  * ethernet adaptor have the name "eth[0123...]".
+  */
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index d63a94ecbf3b..cd136499ec59 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -295,18 +295,6 @@ enum netdev_state_t {
+ };
+ 
+ 
+-/*
+- * This structure holds boot-time configured netdevice settings. They
+- * are then used in the device probing.
+- */
+-struct netdev_boot_setup {
+-	char name[IFNAMSIZ];
+-	struct ifmap map;
+-};
+-#define NETDEV_BOOT_SETUP_MAX 8
 -
- /* force unsigned long back to 'void __iomem *' */
- #define ax_convert_addr(_a) ((void __force __iomem *)(_a))
- 
-@@ -42,10 +40,7 @@
- /* Ensure we have our RCR base value */
- #define AX88796_PLATFORM
- 
--static unsigned char version[] =
--		"ax88796.c: Copyright 2005,2007 Simtec Electronics\n";
+-int __init netdev_boot_setup(char *str);
 -
--#include "lib8390.c"
-+#include "8390.h"
- 
- /* from ne.c */
- #define NE_CMD		EI_SHIFT(0x00)
-@@ -232,7 +227,7 @@ static void xs100_block_output(struct net_device *dev, int count,
- 		if (jiffies - dma_start > 2 * HZ / 100) {	/* 20ms */
- 			netdev_warn(dev, "timeout waiting for Tx RDC.\n");
- 			ei_local->reset_8390(dev);
--			ax_NS8390_init(dev, 1);
-+			ax_NS8390_reinit(dev);
- 			break;
- 		}
- 	}
-diff --git a/init/main.c b/init/main.c
-index f5b8246e8aa1..11cbbec309fa 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -1221,7 +1221,7 @@ trace_initcall_start_cb(void *data, initcall_t fn)
- {
- 	ktime_t *calltime = (ktime_t *)data;
- 
--	printk(KERN_DEBUG "calling  %pS @ %i\n", fn, task_pid_nr(current));
-+	printk(KERN_DEBUG "calling  %pS @ %i irqs_disabled() %d\n", fn, task_pid_nr(current), irqs_disabled());
- 	*calltime = ktime_get();
+ struct gro_list {
+ 	struct list_head	list;
+ 	int			count;
+@@ -2939,7 +2927,6 @@ static inline struct net_device *first_net_device_rcu(struct net *net)
  }
  
-@@ -1235,8 +1235,8 @@ trace_initcall_finish_cb(void *data, initcall_t fn, int ret)
- 	rettime = ktime_get();
- 	delta = ktime_sub(rettime, *calltime);
- 	duration = (unsigned long long) ktime_to_ns(delta) >> 10;
--	printk(KERN_DEBUG "initcall %pS returned %d after %lld usecs\n",
--		 fn, ret, duration);
-+	printk(KERN_DEBUG "initcall %pS returned %d after %lld usecs, irqs_disabled() %d\n",
-+		 fn, ret, duration, irqs_disabled());
+ int netdev_boot_setup_check(struct net_device *dev);
+-unsigned long netdev_boot_base(const char *prefix, int unit);
+ struct net_device *dev_getbyhwaddr_rcu(struct net *net, unsigned short type,
+ 				       const char *hwaddr);
+ struct net_device *dev_getfirstbyhwtype(struct net *net, unsigned short type);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 64e1a5f63f93..4a1401008db9 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -676,131 +676,6 @@ void dev_remove_offload(struct packet_offload *po)
  }
+ EXPORT_SYMBOL(dev_remove_offload);
  
- static ktime_t initcall_calltime;
+-/******************************************************************************
+- *
+- *		      Device Boot-time Settings Routines
+- *
+- ******************************************************************************/
+-
+-/* Boot time configuration table */
+-static struct netdev_boot_setup dev_boot_setup[NETDEV_BOOT_SETUP_MAX];
+-
+-/**
+- *	netdev_boot_setup_add	- add new setup entry
+- *	@name: name of the device
+- *	@map: configured settings for the device
+- *
+- *	Adds new setup entry to the dev_boot_setup list.  The function
+- *	returns 0 on error and 1 on success.  This is a generic routine to
+- *	all netdevices.
+- */
+-static int netdev_boot_setup_add(char *name, struct ifmap *map)
+-{
+-	struct netdev_boot_setup *s;
+-	int i;
+-
+-	s = dev_boot_setup;
+-	for (i = 0; i < NETDEV_BOOT_SETUP_MAX; i++) {
+-		if (s[i].name[0] == '\0' || s[i].name[0] == ' ') {
+-			memset(s[i].name, 0, sizeof(s[i].name));
+-			strlcpy(s[i].name, name, IFNAMSIZ);
+-			memcpy(&s[i].map, map, sizeof(s[i].map));
+-			break;
+-		}
+-	}
+-
+-	return i >= NETDEV_BOOT_SETUP_MAX ? 0 : 1;
+-}
+-
+-/**
+- * netdev_boot_setup_check	- check boot time settings
+- * @dev: the netdevice
+- *
+- * Check boot time settings for the device.
+- * The found settings are set for the device to be used
+- * later in the device probing.
+- * Returns 0 if no settings found, 1 if they are.
+- */
+-int netdev_boot_setup_check(struct net_device *dev)
+-{
+-	struct netdev_boot_setup *s = dev_boot_setup;
+-	int i;
+-
+-	for (i = 0; i < NETDEV_BOOT_SETUP_MAX; i++) {
+-		if (s[i].name[0] != '\0' && s[i].name[0] != ' ' &&
+-		    !strcmp(dev->name, s[i].name)) {
+-			dev->irq = s[i].map.irq;
+-			dev->base_addr = s[i].map.base_addr;
+-			dev->mem_start = s[i].map.mem_start;
+-			dev->mem_end = s[i].map.mem_end;
+-			return 1;
+-		}
+-	}
+-	return 0;
+-}
+-EXPORT_SYMBOL(netdev_boot_setup_check);
+-
+-
+-/**
+- * netdev_boot_base	- get address from boot time settings
+- * @prefix: prefix for network device
+- * @unit: id for network device
+- *
+- * Check boot time settings for the base address of device.
+- * The found settings are set for the device to be used
+- * later in the device probing.
+- * Returns 0 if no settings found.
+- */
+-unsigned long netdev_boot_base(const char *prefix, int unit)
+-{
+-	const struct netdev_boot_setup *s = dev_boot_setup;
+-	char name[IFNAMSIZ];
+-	int i;
+-
+-	sprintf(name, "%s%d", prefix, unit);
+-
+-	/*
+-	 * If device already registered then return base of 1
+-	 * to indicate not to probe for this interface
+-	 */
+-	if (__dev_get_by_name(&init_net, name))
+-		return 1;
+-
+-	for (i = 0; i < NETDEV_BOOT_SETUP_MAX; i++)
+-		if (!strcmp(name, s[i].name))
+-			return s[i].map.base_addr;
+-	return 0;
+-}
+-
+-/*
+- * Saves at boot time configured settings for any netdevice.
+- */
+-int __init netdev_boot_setup(char *str)
+-{
+-	int ints[5];
+-	struct ifmap map;
+-
+-	str = get_options(str, ARRAY_SIZE(ints), ints);
+-	if (!str || !*str)
+-		return 0;
+-
+-	/* Save settings */
+-	memset(&map, 0, sizeof(map));
+-	if (ints[0] > 0)
+-		map.irq = ints[1];
+-	if (ints[0] > 1)
+-		map.base_addr = ints[2];
+-	if (ints[0] > 2)
+-		map.mem_start = ints[3];
+-	if (ints[0] > 3)
+-		map.mem_end = ints[4];
+-
+-	/* Add new entry to the list */
+-	return netdev_boot_setup_add(str, &map);
+-}
+-
+-__setup("netdev=", netdev_boot_setup);
+-
+ /*******************************************************************************
+  *
+  *			    Device Interface Subroutines
+diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
+index 171ba75b74c9..73fce9467467 100644
+--- a/net/ethernet/eth.c
++++ b/net/ethernet/eth.c
+@@ -62,8 +62,6 @@
+ #include <linux/uaccess.h>
+ #include <net/pkt_sched.h>
+ 
+-__setup("ether=", netdev_boot_setup);
+-
+ /**
+  * eth_header - create the Ethernet header
+  * @skb:	buffer to alter
 -- 
 2.29.2
 
