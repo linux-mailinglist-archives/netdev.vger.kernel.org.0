@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 900213DECEF
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:46:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6CAB3DECF2
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:46:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235878AbhHCLom (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 07:44:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35028 "EHLO mail.kernel.org"
+        id S235681AbhHCLop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 07:44:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35034 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235857AbhHCLoJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 07:44:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E46D560EE9;
-        Tue,  3 Aug 2021 11:43:57 +0000 (UTC)
+        id S235870AbhHCLoK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 07:44:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2891D60F56;
+        Tue,  3 Aug 2021 11:43:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627991038;
-        bh=lvcEqVgoMJ79cmjL70D1HIbTb+IuIzUON0roCXgucJI=;
+        s=k20201202; t=1627991039;
+        bh=i90K1F3cN9255PTEE8cgq6ze8clGUsHG29sCiNHzhOk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u/o++lsIC887PoQ4+EgWp380Qc2ZPFfGqmS8f/xhTORN6ruk/h2QV2jE4NbDxyenj
-         DyO1co9y6S3kWCnFm364n0BqyQ9970WAVIrOSyBHLH/XDaw3U3bZ5Yz+ZxAFtVPO3i
-         M+0LAW861Q7rfOW1HzxzMeEPk2FWxDh06dMacKVUuauKOCPv7ve9FcHAjnS0oZZ/HX
-         QwkXTVG7jWk/qS+kqjlqOgnxwfX6flp65Mkzr25UWuA+LUFtcDnMcVyXfz9KMyCqnI
-         Gsj33yN06xjT34PvRyc8bxQfTRQzi4O9JkfFPGx/r+5SK7LR5EMdHFNUVXL7zpub3H
-         UpUHMq39lnIcA==
+        b=o2tNyk3pPWUNaKJGAo+ZOU+KuQHhRmIvGFwC7171ksjeR3kq4N1lDQyhCLO39RoCN
+         7+C2RmQ+9MRme0DkGhxicRQ+QAJAXdiZFA+vn5NGv2QKFbvQmSjgJ7+Lglkw+/Zxru
+         V+rwvZJpA+nEzQ7gZo5r2LnEugtsaErlyCF0daDE8hRD/pgWuoPmazxhuYKErA4Y+I
+         iARaw24rMqL0EKrUvvKC3cdIpOQTjB1Z42Aut92aaL5GU8353OSmaIkU4RS2UKZw1J
+         v1AiULFQ7Ufg4/w7ji964hfCrtR9PVFPa6b7c9nanW9QGJciexwUpPwVPBHVwUJ9fp
+         5Khj2gpcze6WA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Matteo Croce <mcroce@microsoft.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 04/11] virt_wifi: fix error on connect
-Date:   Tue,  3 Aug 2021 07:43:45 -0400
-Message-Id: <20210803114352.2252544-4-sashal@kernel.org>
+Cc:     Harshvardhan Jha <harshvardhan.jha@oracle.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 05/11] net: qede: Fix end of loop tests for list_for_each_entry
+Date:   Tue,  3 Aug 2021 07:43:46 -0400
+Message-Id: <20210803114352.2252544-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210803114352.2252544-1-sashal@kernel.org>
 References: <20210803114352.2252544-1-sashal@kernel.org>
@@ -43,153 +42,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matteo Croce <mcroce@microsoft.com>
+From: Harshvardhan Jha <harshvardhan.jha@oracle.com>
 
-[ Upstream commit 17109e9783799be2a063b2bd861a508194b0a487 ]
+[ Upstream commit 795e3d2ea68e489ee7039ac29e98bfea0e34a96c ]
 
-When connecting without first doing a scan, the BSS list is empty
-and __cfg80211_connect_result() generates this warning:
+The list_for_each_entry() iterator, "vlan" in this code, can never be
+NULL so the warning will never be printed.
 
-$ iw dev wlan0 connect -w VirtWifi
-[   15.371989] ------------[ cut here ]------------
-[   15.372179] WARNING: CPU: 0 PID: 92 at net/wireless/sme.c:756 __cfg80211_connect_result+0x402/0x440
-[   15.372383] CPU: 0 PID: 92 Comm: kworker/u2:2 Not tainted 5.13.0-kvm #444
-[   15.372512] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-3.fc34 04/01/2014
-[   15.372597] Workqueue: cfg80211 cfg80211_event_work
-[   15.372756] RIP: 0010:__cfg80211_connect_result+0x402/0x440
-[   15.372818] Code: 48 2b 04 25 28 00 00 00 75 59 48 8b 3b 48 8b 76 10 48 8d 65 e0 5b 41 5c 41 5d 41 5e 5d 49 8d 65 f0 41 5d e9 d0 d4 fd ff 0f 0b <0f> 0b e9 f6 fd ff ff e8 f2 4a b4 ff e9 ec fd ff ff 0f 0b e9 19 fd
-[   15.372966] RSP: 0018:ffffc900005cbdc0 EFLAGS: 00010246
-[   15.373022] RAX: 0000000000000000 RBX: ffff8880028e2400 RCX: ffff8880028e2472
-[   15.373088] RDX: 0000000000000002 RSI: 00000000fffffe01 RDI: ffffffff815335ba
-[   15.373149] RBP: ffffc900005cbe00 R08: 0000000000000008 R09: ffff888002bdf8b8
-[   15.373209] R10: ffff88803ec208f0 R11: ffffffffffffe9ae R12: ffff88801d687d98
-[   15.373280] R13: ffff88801b5fe000 R14: ffffc900005cbdc0 R15: dead000000000100
-[   15.373330] FS:  0000000000000000(0000) GS:ffff88803ec00000(0000) knlGS:0000000000000000
-[   15.373382] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   15.373425] CR2: 000056421c468958 CR3: 000000001b458001 CR4: 0000000000170eb0
-[   15.373478] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   15.373529] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[   15.373580] Call Trace:
-[   15.373611]  ? cfg80211_process_wdev_events+0x10e/0x170
-[   15.373743]  cfg80211_process_wdev_events+0x10e/0x170
-[   15.373783]  cfg80211_process_rdev_events+0x21/0x40
-[   15.373846]  cfg80211_event_work+0x20/0x30
-[   15.373892]  process_one_work+0x1e9/0x340
-[   15.373956]  worker_thread+0x4b/0x3f0
-[   15.374017]  ? process_one_work+0x340/0x340
-[   15.374053]  kthread+0x11f/0x140
-[   15.374089]  ? set_kthread_struct+0x30/0x30
-[   15.374153]  ret_from_fork+0x1f/0x30
-[   15.374187] ---[ end trace 321ef0cb7e9c0be1 ]---
-wlan0 (phy #0): connected to 00:00:00:00:00:00
-
-Add the fake bss just before the connect so that cfg80211_get_bss()
-finds the virtual network.
-As some code was duplicated, move it in a common function.
-
-Signed-off-by: Matteo Croce <mcroce@microsoft.com>
-Link: https://lore.kernel.org/r/20210706154423.11065-1-mcroce@linux.microsoft.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Harshvardhan Jha <harshvardhan.jha@oracle.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/virt_wifi.c | 52 ++++++++++++++++++++------------
- 1 file changed, 32 insertions(+), 20 deletions(-)
+ drivers/net/ethernet/qlogic/qede/qede_filter.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/virt_wifi.c b/drivers/net/wireless/virt_wifi.c
-index 1df959532c7d..514f2c1124b6 100644
---- a/drivers/net/wireless/virt_wifi.c
-+++ b/drivers/net/wireless/virt_wifi.c
-@@ -136,6 +136,29 @@ static struct ieee80211_supported_band band_5ghz = {
- /* Assigned at module init. Guaranteed locally-administered and unicast. */
- static u8 fake_router_bssid[ETH_ALEN] __ro_after_init = {};
- 
-+static void virt_wifi_inform_bss(struct wiphy *wiphy)
-+{
-+	u64 tsf = div_u64(ktime_get_boottime_ns(), 1000);
-+	struct cfg80211_bss *informed_bss;
-+	static const struct {
-+		u8 tag;
-+		u8 len;
-+		u8 ssid[8];
-+	} __packed ssid = {
-+		.tag = WLAN_EID_SSID,
-+		.len = 8,
-+		.ssid = "VirtWifi",
-+	};
-+
-+	informed_bss = cfg80211_inform_bss(wiphy, &channel_5ghz,
-+					   CFG80211_BSS_FTYPE_PRESP,
-+					   fake_router_bssid, tsf,
-+					   WLAN_CAPABILITY_ESS, 0,
-+					   (void *)&ssid, sizeof(ssid),
-+					   DBM_TO_MBM(-50), GFP_KERNEL);
-+	cfg80211_put_bss(wiphy, informed_bss);
-+}
-+
- /* Called with the rtnl lock held. */
- static int virt_wifi_scan(struct wiphy *wiphy,
- 			  struct cfg80211_scan_request *request)
-@@ -156,28 +179,13 @@ static int virt_wifi_scan(struct wiphy *wiphy,
- /* Acquires and releases the rdev BSS lock. */
- static void virt_wifi_scan_result(struct work_struct *work)
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_filter.c b/drivers/net/ethernet/qlogic/qede/qede_filter.c
+index c59b72c90293..a2e4dfb5cb44 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_filter.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_filter.c
+@@ -831,7 +831,7 @@ int qede_configure_vlan_filters(struct qede_dev *edev)
+ int qede_vlan_rx_kill_vid(struct net_device *dev, __be16 proto, u16 vid)
  {
--	struct {
--		u8 tag;
--		u8 len;
--		u8 ssid[8];
--	} __packed ssid = {
--		.tag = WLAN_EID_SSID, .len = 8, .ssid = "VirtWifi",
--	};
--	struct cfg80211_bss *informed_bss;
- 	struct virt_wifi_wiphy_priv *priv =
- 		container_of(work, struct virt_wifi_wiphy_priv,
- 			     scan_result.work);
- 	struct wiphy *wiphy = priv_to_wiphy(priv);
- 	struct cfg80211_scan_info scan_info = { .aborted = false };
--	u64 tsf = div_u64(ktime_get_boottime_ns(), 1000);
+ 	struct qede_dev *edev = netdev_priv(dev);
+-	struct qede_vlan *vlan = NULL;
++	struct qede_vlan *vlan;
+ 	int rc = 0;
  
--	informed_bss = cfg80211_inform_bss(wiphy, &channel_5ghz,
--					   CFG80211_BSS_FTYPE_PRESP,
--					   fake_router_bssid, tsf,
--					   WLAN_CAPABILITY_ESS, 0,
--					   (void *)&ssid, sizeof(ssid),
--					   DBM_TO_MBM(-50), GFP_KERNEL);
--	cfg80211_put_bss(wiphy, informed_bss);
-+	virt_wifi_inform_bss(wiphy);
+ 	DP_VERBOSE(edev, NETIF_MSG_IFDOWN, "Removing vlan 0x%04x\n", vid);
+@@ -842,7 +842,7 @@ int qede_vlan_rx_kill_vid(struct net_device *dev, __be16 proto, u16 vid)
+ 		if (vlan->vid == vid)
+ 			break;
  
- 	/* Schedules work which acquires and releases the rtnl lock. */
- 	cfg80211_scan_done(priv->scan_request, &scan_info);
-@@ -225,10 +233,12 @@ static int virt_wifi_connect(struct wiphy *wiphy, struct net_device *netdev,
- 	if (!could_schedule)
- 		return -EBUSY;
- 
--	if (sme->bssid)
-+	if (sme->bssid) {
- 		ether_addr_copy(priv->connect_requested_bss, sme->bssid);
--	else
-+	} else {
-+		virt_wifi_inform_bss(wiphy);
- 		eth_zero_addr(priv->connect_requested_bss);
-+	}
- 
- 	wiphy_debug(wiphy, "connect\n");
- 
-@@ -241,11 +251,13 @@ static void virt_wifi_connect_complete(struct work_struct *work)
- 	struct virt_wifi_netdev_priv *priv =
- 		container_of(work, struct virt_wifi_netdev_priv, connect.work);
- 	u8 *requested_bss = priv->connect_requested_bss;
--	bool has_addr = !is_zero_ether_addr(requested_bss);
- 	bool right_addr = ether_addr_equal(requested_bss, fake_router_bssid);
- 	u16 status = WLAN_STATUS_SUCCESS;
- 
--	if (!priv->is_up || (has_addr && !right_addr))
-+	if (is_zero_ether_addr(requested_bss))
-+		requested_bss = NULL;
-+
-+	if (!priv->is_up || (requested_bss && !right_addr))
- 		status = WLAN_STATUS_UNSPECIFIED_FAILURE;
- 	else
- 		priv->is_connected = true;
+-	if (!vlan || (vlan->vid != vid)) {
++	if (list_entry_is_head(vlan, &edev->vlan_list, list)) {
+ 		DP_VERBOSE(edev, (NETIF_MSG_IFUP | NETIF_MSG_IFDOWN),
+ 			   "Vlan isn't configured\n");
+ 		goto out;
 -- 
 2.30.2
 
