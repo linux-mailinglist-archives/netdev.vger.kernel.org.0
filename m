@@ -2,104 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 711093DF57C
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 21:22:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA4793DF5D1
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 21:37:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239597AbhHCTXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 15:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47264 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238837AbhHCTXF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 15:23:05 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10854C061757;
-        Tue,  3 Aug 2021 12:22:53 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id u13so4497185lje.5;
-        Tue, 03 Aug 2021 12:22:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=tX6Nes6Tya5cekbY+qN6NZDqUK1uRfuKO2zy2ytbhqo=;
-        b=fD3vSCXlb8n6YT1qemNGLmJp9TBM8UCu+ILw8ao3yPk3j/kJIGV6CWZ5d43a0emRkG
-         /m9JEkGFqUc/pJswtm3KiR+JUewYHeoJR8JBm2BjtFBn2QSCnRCVjdWnfAxFCXzlno86
-         kS9jtB5zflmMVWJ3T5G1OY1MxrPXk5wkJLvUh1+b4IbzlJQh/ojCZwJqtQOG9tE3qgNl
-         axYTaBNImEa9WwNjduCj/eYqxzGzWw8cRI3o+k9qm9AO2hMXm2rjOS2w+J5R0XbbCJSv
-         H+iTapzeR+qPLUq3y7Qae5+hYTE5D5Sjyawo0agrvQAGv4WbUeOWUYV3NCaOOdmTZ2qb
-         cl/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=tX6Nes6Tya5cekbY+qN6NZDqUK1uRfuKO2zy2ytbhqo=;
-        b=I749zO4rhNJtJ48jaSyZFesq2QEs5zCU0Qjkj0e3s3MVBq9tKgVo3a/UqDC+rhK00K
-         yEQYg0ACEWRaScHzEX+VEV0L0TJgcrW2H7Hym/+cC1Ypil1DW3nBGfrGDRltcwU4/S5u
-         6zQxgsKjN6iQ+BVaxsY1DvpghXLZ3nkbjvHqgx3e5rDTbIDRvCETV3vdki9waUnb9xLf
-         gj6kDBItimdMQNSq+zAmViFKaYcrC4u8ChzXhuiBLPEsyAQVMXZ0BPPPmC7RJMq7FUYk
-         Oi7jxxQfQ/HZSA6bfbBn68yPL5NcMDepE2NbsXlMcMdNrBbqS7IcnGOtiFq80Z/XbSxX
-         0jpw==
-X-Gm-Message-State: AOAM532G8OV6PDMiy0dkNkc8HdqPdl5dS41+XUJ0lC3iOzLiRh1YlPEz
-        q2bYkQRJ0LhwlVGcBueIaZS/UZcIXR4=
-X-Google-Smtp-Source: ABdhPJxZ7SGtoL4xtRqc7Ob4gzk5vGJY5yIK9KI/viESHCp7rVZJr6ZwCCZdXt1HhW/QCkEt4f9RnQ==
-X-Received: by 2002:a2e:900c:: with SMTP id h12mr15238972ljg.240.1628018571475;
-        Tue, 03 Aug 2021 12:22:51 -0700 (PDT)
-Received: from [192.168.1.102] ([178.176.73.7])
-        by smtp.gmail.com with ESMTPSA id k30sm1210938lfj.123.2021.08.03.12.22.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Aug 2021 12:22:51 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 3/8] ravb: Add num_gstat_queue to struct
- ravb_hw_info
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20210802102654.5996-1-biju.das.jz@bp.renesas.com>
- <20210802102654.5996-4-biju.das.jz@bp.renesas.com>
- <dab78c92-8ee0-f170-89db-ee276d670a1b@gmail.com>
- <OS0PR01MB5922F86AB0FDB179B789B6DD86F09@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <f5695fbd-f365-c86e-3ca2-41cf59ad8354@gmail.com>
-Date:   Tue, 3 Aug 2021 22:22:49 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S240091AbhHCTh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 15:37:57 -0400
+Received: from smtp-out.kfki.hu ([148.6.0.48]:48979 "EHLO smtp-out.kfki.hu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240082AbhHCTh5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 15:37:57 -0400
+X-Greylist: delayed 422 seconds by postgrey-1.27 at vger.kernel.org; Tue, 03 Aug 2021 15:37:56 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by smtp2.kfki.hu (Postfix) with ESMTP id 613E7CC0101;
+        Tue,  3 Aug 2021 21:30:39 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at smtp2.kfki.hu
+Received: from smtp2.kfki.hu ([127.0.0.1])
+        by localhost (smtp2.kfki.hu [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP; Tue,  3 Aug 2021 21:30:37 +0200 (CEST)
+Received: from blackhole.kfki.hu (blackhole.szhk.kfki.hu [148.6.240.2])
+        by smtp2.kfki.hu (Postfix) with ESMTP id E13B9CC00FC;
+        Tue,  3 Aug 2021 21:30:36 +0200 (CEST)
+Received: by blackhole.kfki.hu (Postfix, from userid 1000)
+        id D08AB340D60; Tue,  3 Aug 2021 21:30:36 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by blackhole.kfki.hu (Postfix) with ESMTP id CBB7B340D5D;
+        Tue,  3 Aug 2021 21:30:36 +0200 (CEST)
+Date:   Tue, 3 Aug 2021 21:30:36 +0200 (CEST)
+From:   Jozsef Kadlecsik <kadlec@netfilter.org>
+To:     Nathan Chancellor <nathan@kernel.org>
+cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] netfilter: ipset: Fix maximal range check in
+ hash_ipportnet4_uadt()
+In-Reply-To: <20210803191813.282980-1-nathan@kernel.org>
+Message-ID: <df715f3-9a2a-5a88-5ab4-1f176ede79ed@netfilter.org>
+References: <20210803191813.282980-1-nathan@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <OS0PR01MB5922F86AB0FDB179B789B6DD86F09@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/3/21 10:13 PM, Biju Das wrote:
+Hi,
 
-[...]
->>> The number of queues used in retrieving device stats for R-Car is 2,
->>> whereas for RZ/G2L it is 1.
+On Tue, 3 Aug 2021, Nathan Chancellor wrote:
+
+> Clang warns:
 > 
->>
->>    Mhm, how many RX queues are on your platform, 1? Then we don't need so
->> specific name, just num_rx_queue.
+> net/netfilter/ipset/ip_set_hash_ipportnet.c:249:29: warning: variable
+> 'port_to' is uninitialized when used here [-Wuninitialized]
+>         if (((u64)ip_to - ip + 1)*(port_to - port + 1) > IPSET_MAX_RANGE)
+>                                    ^~~~~~~
+> net/netfilter/ipset/ip_set_hash_ipportnet.c:167:45: note: initialize the
+> variable 'port_to' to silence this warning
+>         u32 ip = 0, ip_to = 0, p = 0, port, port_to;
+>                                                    ^
+>                                                     = 0
+> net/netfilter/ipset/ip_set_hash_ipportnet.c:249:39: warning: variable
+> 'port' is uninitialized when used here [-Wuninitialized]
+>         if (((u64)ip_to - ip + 1)*(port_to - port + 1) > IPSET_MAX_RANGE)
+>                                              ^~~~
+> net/netfilter/ipset/ip_set_hash_ipportnet.c:167:36: note: initialize the
+> variable 'port' to silence this warning
+>         u32 ip = 0, ip_to = 0, p = 0, port, port_to;
+>                                           ^
+>                                            = 0
+> 2 warnings generated.
 > 
-> There are 2 RX queues, but we provide only device stats information from first queue.
+> The range check was added before port and port_to are initialized.
+> Shuffle the check after the initialization so that the check works
+> properly.
 > 
-> R-Car = 2x15 = 30 device stats
-> RZ/G2L = 1x15 = 15 device stats.
+> Fixes: 7fb6c63025ff ("netfilter: ipset: Limit the maximal range of consecutive elements to add/delete")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 
-    That's pretty strange... how the RX queue #1 is called? How many RX queues are, at all?
+Yes, good catch!
 
-> Cheers,
-> Biju
+Acked-by: Jozsef Kadlecsik <kadlec@netfilter.org>
 
-MBR, Sergei
+Best regards,
+Jozsef
+> ---
+>  net/netfilter/ipset/ip_set_hash_ipportnet.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/netfilter/ipset/ip_set_hash_ipportnet.c b/net/netfilter/ipset/ip_set_hash_ipportnet.c
+> index b293aa1ff258..7df94f437f60 100644
+> --- a/net/netfilter/ipset/ip_set_hash_ipportnet.c
+> +++ b/net/netfilter/ipset/ip_set_hash_ipportnet.c
+> @@ -246,9 +246,6 @@ hash_ipportnet4_uadt(struct ip_set *set, struct nlattr *tb[],
+>  		ip_set_mask_from_to(ip, ip_to, cidr);
+>  	}
+>  
+> -	if (((u64)ip_to - ip + 1)*(port_to - port + 1) > IPSET_MAX_RANGE)
+> -		return -ERANGE;
+> -
+>  	port_to = port = ntohs(e.port);
+>  	if (tb[IPSET_ATTR_PORT_TO]) {
+>  		port_to = ip_set_get_h16(tb[IPSET_ATTR_PORT_TO]);
+> @@ -256,6 +253,9 @@ hash_ipportnet4_uadt(struct ip_set *set, struct nlattr *tb[],
+>  			swap(port, port_to);
+>  	}
+>  
+> +	if (((u64)ip_to - ip + 1)*(port_to - port + 1) > IPSET_MAX_RANGE)
+> +		return -ERANGE;
+> +
+>  	ip2_to = ip2_from;
+>  	if (tb[IPSET_ATTR_IP2_TO]) {
+>  		ret = ip_set_get_hostipaddr4(tb[IPSET_ATTR_IP2_TO], &ip2_to);
+> 
+> base-commit: 4d3fc8ead710a06c98d36f382777c6a843a83b7c
+> -- 
+> 2.33.0.rc0
+> 
+> 
+
+-
+E-mail  : kadlec@blackhole.kfki.hu, kadlecsik.jozsef@wigner.hu
+PGP key : https://wigner.hu/~kadlec/pgp_public_key.txt
+Address : Wigner Research Centre for Physics
+          H-1525 Budapest 114, POB. 49, Hungary
+
