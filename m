@@ -2,90 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A0043DEFFA
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 16:17:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A76C33DF04B
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 16:29:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236694AbhHCORh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 10:17:37 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:56924 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236584AbhHCORX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 10:17:23 -0400
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1628000231;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=O5i4Y2RCfAfFAxzEFzPqszjZ0rjjpiENVurGeGvivvM=;
-        b=cecwzRhJuZj+i7Bqg16Fn8Aiwv+37sFwYAvLc6Co9yXkLNb538lhpx23UnXb5HHPw2jZuf
-        muMdsSlXEAeqqzwCqzFogxTMWql+3LdYMzpkG57AMTiDKwemxv8dmPCL/WAk1OZ+v6ER1/
-        0KnKExN+BST1br/u4GDWrfjZ+Re9SH5GkmwHaYt6IiN9sxuadjBx2N901c4WtRHZKGMeRn
-        CxCpG1k7wY8sGGk4m+fMSO1u9hyPS1fTGbyVPYaeZ8tDOnqiJxXSl3XLG+K+ev3iEgLi68
-        Uyi6vkbSSNi0wajGwZUB+1/OWIxZvSROFgMg3Oh3DpvJNrmlxOpuKqlYsPmAFw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1628000231;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=O5i4Y2RCfAfFAxzEFzPqszjZ0rjjpiENVurGeGvivvM=;
-        b=QmlxMsyeQZiVf8j7NqyG4xufJd51umRLAIJMaja7CrPrO96hG22maRpKxUudtEcy5Mkr4e
-        P8305N3XN+nNBTCw==
-To:     linux-kernel@vger.kernel.org
-Cc:     tglx@linutronix.de, Peter Zijlstra <peterz@infradead.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        id S236532AbhHCO3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 10:29:35 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60012 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236507AbhHCO3e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 10:29:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=39kNPjDsQBCaa+m6oCrWSY0OrXd5M9GEZtjuh6gG6zs=; b=OJnMgpTiAhK9iiaqw4yuK+PzsD
+        KtFUmXot8A+cAJx7a4u7ARxcZsRrPMVbboCeLMJUjb+RKmQ3TnCPbe1BKYcScrfoQsW+m2Jv8umQ3
+        g+pLjFRs4QyPP7oDWviwIiQXSH0a7TLXbmQs/z3l9hIjWiyy8iuNSSOc400RYT3MhvMw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mAvPt-00Fyd2-4R; Tue, 03 Aug 2021 16:29:13 +0200
+Date:   Tue, 3 Aug 2021 16:29:13 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 23/38] net: Replace deprecated CPU-hotplug functions.
-Date:   Tue,  3 Aug 2021 16:16:06 +0200
-Message-Id: <20210803141621.780504-24-bigeasy@linutronix.de>
-In-Reply-To: <20210803141621.780504-1-bigeasy@linutronix.de>
-References: <20210803141621.780504-1-bigeasy@linutronix.de>
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH net v2 1/1] net: dsa: qca: ar9331: make proper initial
+ port defaults
+Message-ID: <YQlSuX73dUli2rky@lunn.ch>
+References: <20210803085320.23605-1-o.rempel@pengutronix.de>
+ <20210803090605.bud4ocr4siz3jl7r@skbuf>
+ <20210803095419.y6hly7euht7gsktu@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210803095419.y6hly7euht7gsktu@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The functions get_online_cpus() and put_online_cpus() have been
-deprecated during the CPU hotplug rework. They map directly to
-cpus_read_lock() and cpus_read_unlock().
+On Tue, Aug 03, 2021 at 11:54:19AM +0200, Oleksij Rempel wrote:
+> On Tue, Aug 03, 2021 at 12:06:05PM +0300, Vladimir Oltean wrote:
+> > On Tue, Aug 03, 2021 at 10:53:20AM +0200, Oleksij Rempel wrote:
+> > > Make sure that all external port are actually isolated from each other,
+> > > so no packets are leaked.
+> > > 
+> > > Fixes: ec6698c272de ("net: dsa: add support for Atheros AR9331 built-in switch")
+> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > > ---
+> > > changes v2:
+> > > - do not enable address learning by default
+> > > 
+> > >  drivers/net/dsa/qca/ar9331.c | 98 +++++++++++++++++++++++++++++++++++-
+> > >  1 file changed, 97 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
+> > > index 6686192e1883..de7c06b6c85f 100644
+> > > --- a/drivers/net/dsa/qca/ar9331.c
+> > > +++ b/drivers/net/dsa/qca/ar9331.c
+> > > @@ -101,6 +101,46 @@
+> > >  	 AR9331_SW_PORT_STATUS_RX_FLOW_EN | AR9331_SW_PORT_STATUS_TX_FLOW_EN | \
+> > >  	 AR9331_SW_PORT_STATUS_SPEED_M)
+> > >  
+> > > +#define AR9331_SW_REG_PORT_CTRL(_port)			(0x104 + (_port) * 0x100)
+> > > +#define AR9331_SW_PORT_CTRL_ING_MIRROR_EN		BIT(17)
+> > > +#define AR9331_SW_PORT_CTRL_LOCK_DROP_EN		BIT(5)
+> > 
+> > not used
+> 
+> ack, will remove
 
-Replace deprecated CPU-hotplug functions with the official version.
-The behavior remains unchanged.
+Just expanding Vladimirs comment. Patches for net should be as minimal
+as possible, so they are obviously correct.
 
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- net/core/dev.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 8f1a47ad6781a..5ea4d0b34c8c9 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5876,7 +5876,7 @@ static void flush_all_backlogs(void)
- 	 */
- 	ASSERT_RTNL();
-=20
--	get_online_cpus();
-+	cpus_read_lock();
-=20
- 	cpumask_clear(&flush_cpus);
- 	for_each_online_cpu(cpu) {
-@@ -5894,7 +5894,7 @@ static void flush_all_backlogs(void)
- 	for_each_cpu(cpu, &flush_cpus)
- 		flush_work(per_cpu_ptr(&flush_works, cpu));
-=20
--	put_online_cpus();
-+	cpus_read_unlock();
- }
-=20
- /* Pass the currently batched GRO_NORMAL SKBs up to the stack. */
---=20
-2.32.0
-
+   Andrew
