@@ -2,101 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 986E63DF14C
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 17:23:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D91DA3DF153
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 17:24:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236693AbhHCPXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 11:23:41 -0400
-Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:57960
-        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236145AbhHCPXj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 11:23:39 -0400
-Received: from [10.172.193.212] (1.general.cking.uk.vpn [10.172.193.212])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id BE1D43F07E;
-        Tue,  3 Aug 2021 15:23:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1628004207;
-        bh=AAtFa3uqU80R71CuDcjQT6vhZ/7Aa3Do+6cYN2ykiig=;
-        h=To:Cc:From:Subject:Message-ID:Date:MIME-Version:Content-Type;
-        b=AN+sUgU8X+kJSPIFvbEy02kCsEG6PetoUJHJ8aLMKqUuu4f3vAdxVofgt/ojdjsUc
-         i1GEb0g8A7WbMSoPoP2ddfQqYWL29HJeSiiahPWTYjo5uschzIGCf1kmhtp1ZfVJZk
-         i2BMt3UBaUa/XYDjC3bhVCpwCa8NERSUoy19YLK0IV2vujrnfoI814q511W+NSMZaA
-         qVsYXbScN+yIjau8PmrNbB+RqrwXpvgk2cQ7W20hP52NhUyxamzjRtH9oK5ur1j4g2
-         unK5vk0pQaoCx7DLCXU7jQPxh6Q7Lb+/gnmBjfncO0/1k6cg0YtEa5fOPOYUnscXKG
-         PUBvhxu8vwOZg==
-To:     Angelo Dureghello <angelo@kernel-space.org>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-From:   Colin Ian King <colin.king@canonical.com>
-Subject: re: can: flexcan: add mcf5441x support
-Message-ID: <7c80c17f-e38a-8fb1-f3c7-987187a2c4d8@canonical.com>
-Date:   Tue, 3 Aug 2021 16:23:26 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S236738AbhHCPYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 11:24:08 -0400
+Received: from smtprelay0095.hostedemail.com ([216.40.44.95]:46410 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S236145AbhHCPYH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 11:24:07 -0400
+Received: from omf11.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay06.hostedemail.com (Postfix) with ESMTP id 8D66218225E1F;
+        Tue,  3 Aug 2021 15:23:54 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf11.hostedemail.com (Postfix) with ESMTPA id EAF2D20A29C;
+        Tue,  3 Aug 2021 15:23:52 +0000 (UTC)
+Message-ID: <ea10a82bfca380bf22856a99bcc695b3fae84152.camel@perches.com>
+Subject: Re: [PATCH 2/3][V2] rtlwifi: rtl8192de: make arrays static const,
+ makes object smaller
+From:   Joe Perches <joe@perches.com>
+To:     Colin Ian King <colin.king@canonical.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 03 Aug 2021 08:23:51 -0700
+In-Reply-To: <4e1d8a60-0af8-97d5-b95c-7d91502825e5@canonical.com>
+References: <20210803144949.79433-1-colin.king@canonical.com>
+         <20210803144949.79433-2-colin.king@canonical.com>
+         <e07dfde8aa6616887c74817bed1166510b5583dd.camel@perches.com>
+         <4e1d8a60-0af8-97d5-b95c-7d91502825e5@canonical.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Server: rspamout05
+X-Rspamd-Queue-Id: EAF2D20A29C
+X-Spam-Status: No, score=0.11
+X-Stat-Signature: b9y4z9jye3c6ejeoj3inmzicfsiu3fwk
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX18WLi5dSNuPqYskUZU1WA/ZcFH30DvAWhI=
+X-HE-Tag: 1628004232-471034
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, 2021-08-03 at 16:15 +0100, Colin Ian King wrote:
+> On 03/08/2021 16:09, Joe Perches wrote:
+> > On Tue, 2021-08-03 at 15:49 +0100, Colin King wrote:
+> > > Don't populate arrays the stack but instead make them static const. Replace
+> > > array channel_info with channel_all since it contains the same data as
+> > > channel_all. Makes object code smaller by 961 bytes.
+> > []
+> > > diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
+> > []
+> > > @@ -160,6 +160,15 @@ static u32 targetchnl_2g[TARGET_CHNL_NUM_2G] = {
+> > >  	25711, 25658, 25606, 25554, 25502, 25451, 25328
+> > >  };
+> > > 
+> > > +static const u8 channel_all[59] = {
+> > 
+> > I don't believe there is a significant value in sizing the array
+> > as 59 instead of letting the compiler count the elements.
+> 
+> I was reluctant to remove this as I supposed the original had it in for
+> a purpose, e.g. to ensure that the array was not populated with more
+> data than intended. Does it make much of a difference?
+> 
+> > 
+> > > +	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+> > > +	36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58,
+> > > +	60, 62, 64, 100, 102, 104, 106, 108, 110, 112,
+> > > +	114, 116, 118, 120, 122, 124, 126, 128,	130,
+> > > +	132, 134, 136, 138, 140, 149, 151, 153, 155,
+> > > +	157, 159, 161, 163, 165
+> > > +};
 
-Static analysis of linux-next with Coverity has detected a potential
-issue with the following commit:
+Dunno.
 
-commit d9cead75b1c66b4660b4f87ff339234042d7c6a5
-Author: Angelo Dureghello <angelo@kernel-space.org>
-Date:   Fri Jul 2 11:48:41 2021 +0200
+Maybe not, but I did have to count the elements to see if
+it really was 59 or the compiler was adding trailing 0's.
 
-    can: flexcan: add mcf5441x support
+OK I really did a grep to count the commas and added 1...
 
-The analysis is as follows:
 
-650 static int flexcan_clks_enable(const struct flexcan_priv *priv)
-651 {
-
-   1. var_decl: Declaring variable err without initializer.
-
-652        int err;
-653
-
-   2. Condition priv->clk_ipg, taking false branch.
-
-654        if (priv->clk_ipg) {
-655                err = clk_prepare_enable(priv->clk_ipg);
-656                if (err)
-657                        return err;
-658        }
-659
-
-   3. Condition priv->clk_per, taking false branch.
-
-660        if (priv->clk_per) {
-661                err = clk_prepare_enable(priv->clk_per);
-662                if (err)
-663                        clk_disable_unprepare(priv->clk_ipg);
-664        }
-665
-
-   Uninitialized scalar variable (UNINIT)
-   4. uninit_use: Using uninitialized value err.
-
-666        return err;
-667 }
-
-I'm not sure if it's possible for priv->clk_ipg and priv_clk_per to both
-be null, so I'm not sure if err can end up being not set. However, it
-does seem that either err should be zero or some err value, but I was
-unsure how err should be initialized in this corner case. As it stands,
-err probably needs to be set just to be safe.
-
-Colin
