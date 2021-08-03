@@ -2,123 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 575F23DEB3E
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 12:51:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18DB43DEB41
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 12:52:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235480AbhHCKvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 06:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60408 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235477AbhHCKug (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 06:50:36 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC037C06175F
-        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 03:50:02 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id a19so980592qkg.2
-        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 03:50:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JmJH9S8AoJGm+38o4pTb7CuCnCa5pOHvKuJqVdN6Ncg=;
-        b=xr+05NiyJn865qcyne/Rs2kdGPcGlhTvPXAH4s3othmo7w4mOlxr4eqqmtVK1sF+Do
-         P1tT1h+rD2D9CogPifzlbXF72+vyuTyK+22rwhyv8hyoOcGiSyPJKWD2xvWQEh2V8Wyj
-         FwwqUyJ5TNLPF7odoeUJojH7A+Y2zIdV4c3lqIiYId5N2m/k78kxTzvgtm4k3oi1/OfR
-         HJGVZ1gycwqqqz2cwTqcCuRQiNtWfSh5fnfeUZ0sLrqNSoxID5/Sqb37DRibCw6mI0/V
-         2I5sESmEJYwtTK75ArPG6MmBRih/2FTZqfZjBUqtjEO18sH9JWSyo7bS9E00R8qPS891
-         6pTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JmJH9S8AoJGm+38o4pTb7CuCnCa5pOHvKuJqVdN6Ncg=;
-        b=mwt2Fnsfl4K1ND2hU1P/V+AzGvQQuzBSj/+0BZBcbIBoMjJSUDyabiWpuQoTfKypdj
-         ozv10cIFNC5dDeJrSXfsM4ExlcjaANIRKS3wxwIPH1Fh8lsD/Z/Q1Te1DRyerUqlVn5n
-         TxZ+YSY/A4fVFDYvIKS92IOH/oEnxsfne+pD3OSaW8T+PX24FeR5JgaWgnSdjTBcj62t
-         V8KQLcKL2En5TtpW2Nz3lMn504n1lcw5pl7jEEilqH8LcYRnRMYEH+swhHGEqH6lsyig
-         edqxcGnSIjINqC8Qt+b3+/419LFjbjUS4ERygRNPoHue7VmaMSPBAor6s31RMKaQcMQX
-         6STQ==
-X-Gm-Message-State: AOAM5326pPfmbE4yJEkH5BDztfK5rKrjMygtxwV4qbEjnBnMrUYz/4QT
-        5fhzoh2Og7xzvZk6KKWMcp9mSQ==
-X-Google-Smtp-Source: ABdhPJz9rhHdZdEQ9GBtXd2SoovQy5HWgMxOKpyHSi5rhTyBNs0uiRKBvX5IFEBerVG//3v4FUfk9g==
-X-Received: by 2002:a05:620a:4441:: with SMTP id w1mr19891311qkp.272.1627987802028;
-        Tue, 03 Aug 2021 03:50:02 -0700 (PDT)
-Received: from [192.168.1.171] (bras-base-kntaon1617w-grc-28-184-148-47-47.dsl.bell.ca. [184.148.47.47])
-        by smtp.googlemail.com with ESMTPSA id g10sm5936116qtp.67.2021.08.03.03.50.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Aug 2021 03:50:01 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/3] flow_offload: allow user to offload tc
- action to net device
-To:     Simon Horman <simon.horman@corigine.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com, Baowen Zheng <baowen.zheng@corigine.com>,
-        Louis Peens <louis.peens@corigine.com>
-References: <20210722091938.12956-1-simon.horman@corigine.com>
- <20210722091938.12956-2-simon.horman@corigine.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <3510d005-5836-cfb5-98c8-bea9a379c113@mojatatu.com>
-Date:   Tue, 3 Aug 2021 06:50:00 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S235600AbhHCKvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 06:51:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42332 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235481AbhHCKuf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 06:50:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 906C360F94;
+        Tue,  3 Aug 2021 10:50:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627987805;
+        bh=1QOQv5V34KtBH2qOa5zdjAHcBIUjPsffHWf1wD7XsIs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=m6K3nlrH9bFVlJMb1AnxLunweDSFEwdYsxaH1HFoPNjUHkNvZBim7qMHkMCJWC+pl
+         RlgoHI2p5Ighis2ow/XkGmakWAevC09Y60vcuyKhQcSDhvbfVlbQUkeE0mHra7vacR
+         95OsFQdLkaQvLywikqAKRIPLLh/4uvBr9wcLyKbABgWjCJnVLX6ymZjLAFYLRR2WB/
+         FZQTvGqKy0Qd4OLxEyQYArBlUkONosIytk0fMPHORfhK60vD8IRNabd6KN+CUUGk1g
+         mN+bWAIOXvKoEWER4VIV1RdZhXjxGIwIq5HFwI5+KUgBdcLspOH+9Cm4ILDOl3XkE4
+         6TTnZ5WY4kKZw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8551060A49;
+        Tue,  3 Aug 2021 10:50:05 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20210722091938.12956-2-simon.horman@corigine.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] sctp: move the active_key update after sh_keys is added
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162798780554.3453.3732441559932672042.git-patchwork-notify@kernel.org>
+Date:   Tue, 03 Aug 2021 10:50:05 +0000
+References: <514d9b43054a4dc752b7d575700ad87ae0db5f0c.1627799131.git.lucien.xin@gmail.com>
+In-Reply-To: <514d9b43054a4dc752b7d575700ad87ae0db5f0c.1627799131.git.lucien.xin@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-07-22 5:19 a.m., Simon Horman wrote:
-> From: Baowen Zheng <baowen.zheng@corigine.com>
+Hello:
+
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Sun,  1 Aug 2021 02:25:31 -0400 you wrote:
+> In commit 58acd1009226 ("sctp: update active_key for asoc when old key is
+> being replaced"), sctp_auth_asoc_init_active_key() is called to update
+> the active_key right after the old key is deleted and before the new key
+> is added, and it caused that the active_key could be found with the key_id.
 > 
-> Use flow_indr_dev_register/flow_indr_dev_setup_offload to
-> offload tc action.
+> In Ying Xu's testing, the BUG_ON in sctp_auth_asoc_init_active_key() was
+> triggered:
 > 
-> We offload the tc action mainly for ovs meter configuration.
-> Make some basic changes for different vendors to return EOPNOTSUPP.
-> 
-> We need to call tc_cleanup_flow_action to clean up tc action entry since
-> in tc_setup_action, some actions may hold dev refcnt, especially the mirror
-> action.
-> 
+> [...]
+
+Here is the summary with links:
+  - [net] sctp: move the active_key update after sh_keys is added
+    https://git.kernel.org/netdev/net/c/ae954bbc451d
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-[..]
-
-> --- a/net/sched/act_api.c
-> +++ b/net/sched/act_api.c
-> @@ -1060,6 +1060,36 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
->   	return ERR_PTR(err);
->   }
->   
-> +/* offload the tc command after inserted */
-> +int tcf_action_offload_cmd(struct tc_action *actions[],
-> +			   struct netlink_ext_ack *extack)
-> +{
-> +	struct flow_offload_action *fl_act;
-> +	int err = 0;
-> +
-> +	fl_act = flow_action_alloc(tcf_act_num_actions(actions));
-> +	if (!fl_act)
-> +		return -ENOMEM;
-> +
-> +	fl_act->extack = extack;
-> +	err = tc_setup_action(&fl_act->action, actions);
-> +	if (err) {
-> +		NL_SET_ERR_MSG_MOD(extack,
-> +				   "Failed to setup tc actions for offload\n");
-> +		goto err_out;
-> +	}
-> +	fl_act->command = FLOW_ACT_REPLACE;
-> +
-
-The fn name is a bit misleading with _cmd suffix when it is
-only targeting one command: REPLACE (and not the other two).
-
-cheers,
-jamal
