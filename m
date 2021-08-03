@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87BF83DF2AA
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:37:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6CD63DF2A8
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:37:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234054AbhHCQhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 12:37:23 -0400
-Received: from mga11.intel.com ([192.55.52.93]:33456 "EHLO mga11.intel.com"
+        id S233449AbhHCQhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 12:37:22 -0400
+Received: from mga17.intel.com ([192.55.52.151]:62813 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233671AbhHCQhU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 12:37:20 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="210621129"
+        id S233670AbhHCQhT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 12:37:19 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="194013574"
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="210621129"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:37:07 -0700
+   d="scan'208";a="194013574"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:37:07 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="670507815"
+   d="scan'208";a="500883484"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga005.fm.intel.com with ESMTP; 03 Aug 2021 09:36:52 -0700
+  by orsmga001.jf.intel.com with ESMTP; 03 Aug 2021 09:36:56 -0700
 Received: from alobakin-mobl.ger.corp.intel.com (eflejszm-mobl2.ger.corp.intel.com [10.213.26.164])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GahEp029968;
-        Tue, 3 Aug 2021 17:36:48 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GahEq029968;
+        Tue, 3 Aug 2021 17:36:52 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -74,9 +74,9 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         netdev@vger.kernel.org, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH net-next 01/21] ethtool, stats: use a shorthand pointer in stats_prepare_data()
-Date:   Tue,  3 Aug 2021 18:36:21 +0200
-Message-Id: <20210803163641.3743-2-alexandr.lobakin@intel.com>
+Subject: [PATCH net-next 02/21] ethtool, stats: add compile-time checks for standard stats
+Date:   Tue,  3 Aug 2021 18:36:22 +0200
+Message-Id: <20210803163641.3743-3-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210803163641.3743-1-alexandr.lobakin@intel.com>
 References: <20210803163641.3743-1-alexandr.lobakin@intel.com>
@@ -86,63 +86,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Just place dev->ethtool_ops on the stack and use it instead of
-dereferencing the former a bunch of times to improve code
-readability.
+Make sure that the number of counters inside stats structures is
+with the corresponding Ethtool Netlink definitions.
+RMON stats is a special case -- don't take histogram fields into
+account.
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 ---
- net/ethtool/stats.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+ net/ethtool/stats.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
 diff --git a/net/ethtool/stats.c b/net/ethtool/stats.c
-index ec07f5765e03..e35c87206b4c 100644
+index e35c87206b4c..8b5c27e034f9 100644
 --- a/net/ethtool/stats.c
 +++ b/net/ethtool/stats.c
-@@ -108,12 +108,15 @@ static int stats_prepare_data(const struct ethnl_req_info *req_base,
- 	const struct stats_req_info *req_info = STATS_REQINFO(req_base);
- 	struct stats_reply_data *data = STATS_REPDATA(reply_base);
- 	struct net_device *dev = reply_base->dev;
-+	const struct ethtool_ops *ops;
- 	int ret;
+@@ -117,6 +117,15 @@ static int stats_prepare_data(const struct ethnl_req_info *req_base,
  
- 	ret = ethnl_ops_begin(dev);
- 	if (ret < 0)
- 		return ret;
+ 	ops = dev->ethtool_ops;
  
-+	ops = dev->ethtool_ops;
++	BUILD_BUG_ON(sizeof(data->phy_stats) / sizeof(u64) !=
++		     __ETHTOOL_A_STATS_ETH_PHY_CNT);
++	BUILD_BUG_ON(sizeof(data->mac_stats) / sizeof(u64) !=
++		     __ETHTOOL_A_STATS_ETH_MAC_CNT);
++	BUILD_BUG_ON(sizeof(data->ctrl_stats) / sizeof(u64) !=
++		     __ETHTOOL_A_STATS_ETH_CTRL_CNT);
++	BUILD_BUG_ON(offsetof(typeof(data->rmon_stats), hist) / sizeof(u64) !=
++		     __ETHTOOL_A_STATS_RMON_CNT);
 +
  	/* Mark all stats as unset (see ETHTOOL_STAT_NOT_SET) to prevent them
  	 * from being reported to user space in case driver did not set them.
  	 */
-@@ -123,18 +126,17 @@ static int stats_prepare_data(const struct ethnl_req_info *req_base,
- 	memset(&data->rmon_stats, 0xff, sizeof(data->rmon_stats));
- 
- 	if (test_bit(ETHTOOL_STATS_ETH_PHY, req_info->stat_mask) &&
--	    dev->ethtool_ops->get_eth_phy_stats)
--		dev->ethtool_ops->get_eth_phy_stats(dev, &data->phy_stats);
-+	    ops->get_eth_phy_stats)
-+		ops->get_eth_phy_stats(dev, &data->phy_stats);
- 	if (test_bit(ETHTOOL_STATS_ETH_MAC, req_info->stat_mask) &&
--	    dev->ethtool_ops->get_eth_mac_stats)
--		dev->ethtool_ops->get_eth_mac_stats(dev, &data->mac_stats);
-+	    ops->get_eth_mac_stats)
-+		ops->get_eth_mac_stats(dev, &data->mac_stats);
- 	if (test_bit(ETHTOOL_STATS_ETH_CTRL, req_info->stat_mask) &&
--	    dev->ethtool_ops->get_eth_ctrl_stats)
--		dev->ethtool_ops->get_eth_ctrl_stats(dev, &data->ctrl_stats);
-+	    ops->get_eth_ctrl_stats)
-+		ops->get_eth_ctrl_stats(dev, &data->ctrl_stats);
- 	if (test_bit(ETHTOOL_STATS_RMON, req_info->stat_mask) &&
--	    dev->ethtool_ops->get_rmon_stats)
--		dev->ethtool_ops->get_rmon_stats(dev, &data->rmon_stats,
--						 &data->rmon_ranges);
-+	    ops->get_rmon_stats)
-+		ops->get_rmon_stats(dev, &data->rmon_stats, &data->rmon_ranges);
- 
- 	ethnl_ops_complete(dev);
- 	return 0;
 -- 
 2.31.1
 
