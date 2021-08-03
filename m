@@ -2,58 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 151EE3DF362
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 19:01:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAA7F3DF35D
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:57:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237590AbhHCQ6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 12:58:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39914 "EHLO
+        id S237483AbhHCQ5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 12:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237533AbhHCQ4J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 12:56:09 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB32C061757
-        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 09:55:53 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id y7so27595534eda.5
-        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 09:55:53 -0700 (PDT)
+        with ESMTP id S237526AbhHCQ4I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 12:56:08 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288ABC06175F
+        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 09:55:55 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id c25so664479ejb.3
+        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 09:55:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OFRG30nP87HIzrsm/WdzGEWJLKsidV86cFqhRIxvJXQ=;
-        b=rB1Smrv4s8r41z1CPmoW1w2wollWIoP+lPJkBRNH4/8F1GISQSmt7tbRwEEGneXdWA
-         p/BKClFUnHDUczbDkQxJdz0FfdDGrshnPXmauJoXp2/7atKZujnTWCLSKtKD7b6kD8/a
-         2X/FLOoblIYPhjLDDr6IKnrWDXnl25WcLh5syQs5f73FSGtrFtjAXx0a2wujIZGkh/cv
-         QrDCVKcDeykF9oQXmta+iW1fQejLu/eN8yteNF4h+3B31z3bY3I1WRUDzvv9EgpXwfN3
-         W87oA5D7AFtgfQERcB93yD0cwoRsUnDcbe+2QiUhy7ab6wgmauj7qPQ2ju04GxEXiKxD
-         bvTQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ZA/VmrYcR7bRHhdKZDac6LEdob5bPlkHZymtysuTxu4=;
+        b=CNgyjNTUrhVGalib1Qhgb3p01mYOtN93cPZAKYkae2nGoxt/oVVe2FTelllIW5o3r6
+         lbgwoo2kL57nbP3Pk+UTN2idDfX5VBDm3Yz2o5S1VBPWGxZACspqNikMe4sK6pDUvACk
+         HEYigyI30MIdZWbHMxTtuLDUA2S6FWDgJSBpQYNntfOfvhcI11RRBT7wy5VAuNfK3si+
+         BAlnzE60U35tYPtj19ZtkLGjhlfNR3VdJoZ5c5Yo81z95YFGFDOoB5wFofortnIr5pSL
+         kjZ/u1+Cgu9f5Yk5bAupIgwVkQ1Ejvrqq+4jD7+yKbn5qoxkWG3ceANhGroQHnS7YQOj
+         VYSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OFRG30nP87HIzrsm/WdzGEWJLKsidV86cFqhRIxvJXQ=;
-        b=DwYTIFSNwjBCMZkKeI2swuGo7oa/PvrJIljf/b9c0X3iYOg5IGAzQZ4rjHCQPlzjmp
-         r7TmVhdTJ+INx8NCoKaKgymjXFZ1fpsWLdLMRBRZjj5kocBlekyzrNNIrVL1r4/WbnaI
-         8vyygHhNUBNtE/CHySC6ZWeqS6oQ4Jo66wHfIHMYYdqPZbIDJzFnUmduFJbHdz0c4X/A
-         SwcjrmUeWksutFVYLgUjCptt/d/6iyuk+oViWoktQwi8cQyyKMAk0zFrtCeTXPfRMciM
-         klG3PYpJ15GRYicmduEIMK78Q7zDcPt5ExWfwpU7agb2N9Nmp0RLuLFWATUaJ5nMDrgY
-         Iscg==
-X-Gm-Message-State: AOAM531k1qFK4h1+uueGmwY1BNKtuylrJeUwRvsE/B/nt7kpFk51wpzc
-        WWmkpRrgh8nXNN537Mh7YpI=
-X-Google-Smtp-Source: ABdhPJyDH34fxZiweQLUciii6cyzBAflYzf8eK8QObRGeu/yJGPyo/9D+K8bLl8ry6bkABV++ImF8g==
-X-Received: by 2002:a05:6402:1d90:: with SMTP id dk16mr16225891edb.94.1628009752233;
-        Tue, 03 Aug 2021 09:55:52 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ZA/VmrYcR7bRHhdKZDac6LEdob5bPlkHZymtysuTxu4=;
+        b=b32qJTfFDWNqXGTcdgF6MGo2R+bm1CiHtpsaN/P8qQgyK3LgGbFUMkd/zNSTVb47IY
+         MVpEDn6Rj//nfdS8eZwJ9wCBYxnGxSTPmct4HasfyzwnpJllJF+aCqaeyvwLnziiqBkR
+         /0CEVKkEloCrlOJj1YpNr8wSonTHrc1e1J58e99RoiQ4GK9xI5na1t0wr7uJndGtTNTY
+         SHHnqF6Hs7mWol1asZlI573J7j/zdtY1uE5McSg/vqOJxcsrTcAXRiqfkXnIB2Vx5fNR
+         qbqrK0Gt0b4nD/QMot+HrT5MehTQoK66pooX635Iz4llzGWP2gQ61DhMwUqBWvhAGuOh
+         qB/w==
+X-Gm-Message-State: AOAM530+uELVRC9MVSSPkm85pZyBaT3SaFDEox5knbE66+Ski4SIl0wn
+        LAFaCpp9ZIZ4qUQr/6MDviKmM/73Z4UMVQ==
+X-Google-Smtp-Source: ABdhPJwhNC9BL61XE/65WIuJ+t0V2ED5vUYCTgLPNjUhvI9JZk9obFp3fo6BIsVBKjfHZ2ntZxy26w==
+X-Received: by 2002:a17:906:e21a:: with SMTP id gf26mr21337483ejb.313.1628009753698;
+        Tue, 03 Aug 2021 09:55:53 -0700 (PDT)
 Received: from yoga-910.localhost ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id e7sm8754630edk.3.2021.08.03.09.55.50
+        by smtp.gmail.com with ESMTPSA id e7sm8754630edk.3.2021.08.03.09.55.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Aug 2021 09:55:51 -0700 (PDT)
+        Tue, 03 Aug 2021 09:55:53 -0700 (PDT)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     laurentiu.tudor@nxp.com, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next 0/8] dpaa2-switch: integrate the MAC endpoint support
-Date:   Tue,  3 Aug 2021 19:57:37 +0300
-Message-Id: <20210803165745.138175-1-ciorneiioana@gmail.com>
+Subject: [PATCH net-next 1/8] dpaa2-switch: request all interrupts sources on the DPSW
+Date:   Tue,  3 Aug 2021 19:57:38 +0300
+Message-Id: <20210803165745.138175-2-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210803165745.138175-1-ciorneiioana@gmail.com>
+References: <20210803165745.138175-1-ciorneiioana@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -62,35 +64,53 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-This patch set integrates the already available MAC support into the
-dpaa2-switch driver as well.
+Request all interrupt sources to be read and then cleared on the DPSW
+object. In the next patches we'll also add support for treating other
+interrupts.
 
-The first 4 patches are fixing up some minor problems or optimizing the
-code, while the remaining ones are actually integrating the dpaa2-mac
-support into the switch driver by calling the dpaa2_mac_* provided
-functions. While at it, we also export the MAC statistics in ethtool
-like we do for dpaa2-eth.
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+---
+ .../net/ethernet/freescale/dpaa2/dpaa2-switch.c    | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-Ioana Ciornei (8):
-  dpaa2-switch: request all interrupts sources on the DPSW
-  dpaa2-switch: use the port index in the IRQ handler
-  dpaa2-switch: do not enable the DPSW at probe time
-  dpaa2-switch: no need to check link state right after ndo_open
-  bus: fsl-mc: extend fsl_mc_get_endpoint() to pass interface ID
-  dpaa2-switch: integrate the MAC endpoint support
-  dpaa2-switch: add a prefix to HW ethtool stats
-  dpaa2-switch: export MAC statistics in ethtool
-
- drivers/bus/fsl-mc/fsl-mc-bus.c               |   4 +-
- drivers/net/ethernet/freescale/dpaa2/Makefile |   2 +-
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |   2 +-
- .../freescale/dpaa2/dpaa2-switch-ethtool.c    |  56 +++++--
- .../ethernet/freescale/dpaa2/dpaa2-switch.c   | 151 +++++++++++++-----
- .../ethernet/freescale/dpaa2/dpaa2-switch.h   |  18 +++
- drivers/net/ethernet/freescale/dpaa2/dpsw.h   |   5 +
- include/linux/fsl/mc.h                        |   3 +-
- 8 files changed, 177 insertions(+), 64 deletions(-)
-
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
+index 71129724d9ca..42d31a4a7da6 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
+@@ -1433,20 +1433,13 @@ static irqreturn_t dpaa2_switch_irq0_handler_thread(int irq_num, void *arg)
+ {
+ 	struct device *dev = (struct device *)arg;
+ 	struct ethsw_core *ethsw = dev_get_drvdata(dev);
+-
+-	/* Mask the events and the if_id reserved bits to be cleared on read */
+-	u32 status = DPSW_IRQ_EVENT_LINK_CHANGED | 0xFFFF0000;
++	u32 status = ~0;
+ 	int err;
+ 
+ 	err = dpsw_get_irq_status(ethsw->mc_io, 0, ethsw->dpsw_handle,
+ 				  DPSW_IRQ_INDEX_IF, &status);
+ 	if (err) {
+ 		dev_err(dev, "Can't get irq status (err %d)\n", err);
+-
+-		err = dpsw_clear_irq_status(ethsw->mc_io, 0, ethsw->dpsw_handle,
+-					    DPSW_IRQ_INDEX_IF, 0xFFFFFFFF);
+-		if (err)
+-			dev_err(dev, "Can't clear irq status (err %d)\n", err);
+ 		goto out;
+ 	}
+ 
+@@ -1454,6 +1447,11 @@ static irqreturn_t dpaa2_switch_irq0_handler_thread(int irq_num, void *arg)
+ 		dpaa2_switch_links_state_update(ethsw);
+ 
+ out:
++	err = dpsw_clear_irq_status(ethsw->mc_io, 0, ethsw->dpsw_handle,
++				    DPSW_IRQ_INDEX_IF, status);
++	if (err)
++		dev_err(dev, "Can't clear irq status (err %d)\n", err);
++
+ 	return IRQ_HANDLED;
+ }
+ 
 -- 
 2.31.1
 
