@@ -2,259 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC6113DF192
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 17:31:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B055F3DF19B
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 17:35:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236903AbhHCPbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 11:31:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46000 "EHLO
+        id S236897AbhHCPfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 11:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236831AbhHCPbj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 11:31:39 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087CCC0617BA
-        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 08:31:11 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id mt6so30133768pjb.1
-        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 08:31:11 -0700 (PDT)
+        with ESMTP id S236838AbhHCPfJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 11:35:09 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DE58C061757;
+        Tue,  3 Aug 2021 08:34:58 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id u3so40410003lff.9;
+        Tue, 03 Aug 2021 08:34:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jrkU8Qj+0nNAzkpdvpqlCvibX4RodGgN6SfNGWllDcY=;
-        b=iumIyjgshEscnZYjnTMOYSVBRkRBqiLHeAax3/ow1HD0RbBZEVShQlM/NmzpZhCmhy
-         7bwF4ADS8+xTJIRQOnd8vAj7Apg40wZaU1Y309vQwNElxnM9XE4X8smWnCiRqRQW6MeP
-         QiB6YeqYIr+29BJhiLt2x65vVZHstTNpdo7hNfx/Ja5J1syX62X7vuJ2HdJ+mLZ0Slgs
-         veC9g7lRMm9P8yZgc+Vw0vjy0Q1KxA7gxfeJbG+AkOWSpHYNFLMopOpIIojlZ72UE2bO
-         7Jom0MMTh/wYnezQjnTyGGG2i2x7PhyzPeAUlo5wroX88Dn4L307qqTPEBR8jvGsdg8k
-         tLWw==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=M/noFf4vKzG4qevBTC43NePoxOXVUarwcbqZDfiwD7s=;
+        b=TZ0+dcre3ngLoCoXAT2kG3mxmeUynsWA1fBu3vhRDABc772OmQCDEVdCjaQoh6B4h9
+         OyzR2pEHoiWjuDTW3jsGmRfZssDQce8eYKr7lnZevXYbWCw21SWQuIERYGRCR0DVmajf
+         TeVcnKD2dRBz5u3F/y2aQb7MT8pA3PI/ubrRZ71kS8nmupQ2KzMyMQmtl5yfxLTkgLiV
+         T/VNpRExMRuvU76U3E68L1K5zNopNDBVkwiuybyj7fQ+eLWLncfP/EVJ1qz/nFInQE3U
+         ml+AQH5t7gMAxi7y1GTq+Ksj5UmzaQ0cqflqUqSLNuiyvnjaqtLWWnhXfo6/2NyRS8Jp
+         k/Ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=jrkU8Qj+0nNAzkpdvpqlCvibX4RodGgN6SfNGWllDcY=;
-        b=N05/aDdvCj4/PXgw4AcEdGJYowBj0SabfXYI8sTOZUMCARrEW6J+f1z8EaKDvHkTyR
-         8icJTra+MZ6S1gxYpmoC+cgUWuKuGAoGAr2oJy+BwCIRPITruqIs+3FnMQAWVstQDgyC
-         tXHDpzwvo3ylcxcxruGxkuIKivn/cdKdK7VV0iIk0xkII7fyrNctZiq3LYW/tgI/E/+q
-         sGsd0WYUY7pMcHudqXDyx79seUbLG9rHNpCm7jlISG/ZnVOd5/DIjx7AdV5KVAs+qgWh
-         ty+hY8uODY5uKWwSJmztR7WLSyOsa7AwFHlZ/thuEDSah5/JKpnkuJ4hx29cTNcIR0wf
-         pq6w==
-X-Gm-Message-State: AOAM530hjYWpuGV/tqXmD+MaigZK+w6qaftddTuHhcAXyc3rWAI41IAb
-        DOZGtq8UYVprCNuJIplhnqw=
-X-Google-Smtp-Source: ABdhPJwFGwmV8zmCGfOu66R6oCE0EbTrUwp/UIHQ09fC1X4M4kIewxJX2x7CsnFTB3mDpX+iqLO41A==
-X-Received: by 2002:a05:6a00:8c1:b029:3a3:b86a:302f with SMTP id s1-20020a056a0008c1b02903a3b86a302fmr23403895pfu.31.1628004670492;
-        Tue, 03 Aug 2021 08:31:10 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:3354:9bf4:fc5:c7e4])
-        by smtp.gmail.com with ESMTPSA id n123sm18171091pga.69.2021.08.03.08.31.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Aug 2021 08:31:09 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Justin Iurman <justin.iurman@uliege.be>,
-        Coco Li <lixiaoyan@google.com>
-Subject: [PATCH net-next] ipv6: exthdrs: get rid of indirect calls in ip6_parse_tlv()
-Date:   Tue,  3 Aug 2021 08:31:05 -0700
-Message-Id: <20210803153105.1414473-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.32.0.554.ge1b32706d8-goog
+        bh=M/noFf4vKzG4qevBTC43NePoxOXVUarwcbqZDfiwD7s=;
+        b=WppYFv+/ghRYCPzetJ/cG2eTfi/RwcCewGPcyuOS1VvjKuDt9ngLahuRf2n73oZObZ
+         iSwH9uapM/4wS8PeKDVc2//zrLopsRJbSX8pYRUmDRJGLEb924vVNnSAdu09VPJpfbMR
+         fAIbPD6+DeIAWTNYScfij44044sLGQvECVSYCMyVef3LgoE1p11qYoO3H53EetKeoj7v
+         fJbdwU1cHMzNPLWIzb5w1UGfjkEi14AjGq2STHjHGy/HnDjuPks92+fivBUEbG/xPjvt
+         EbImU4vtdJTbbE2T3oCRNKeZrBTagS4btPecldXLXNPtX28KHHmudV0ZplArbdgv7qUG
+         wW1A==
+X-Gm-Message-State: AOAM531OTFc5ZqhGOgwCUVZ6tyM2BplAYLUW9L68P70nRX2CSlrbnqxM
+        cOA4tZXfncGlVXZKtFSIWejQ1MqPF+c=
+X-Google-Smtp-Source: ABdhPJxc1tCGkWbQRcL4Rn7SuUEssYbKcoJ9d+qPT+jZQO1bpCK9giLr9dt5zXbdhgnNhm/0O3O4pA==
+X-Received: by 2002:a05:6512:3b94:: with SMTP id g20mr17135908lfv.0.1628004896476;
+        Tue, 03 Aug 2021 08:34:56 -0700 (PDT)
+Received: from [192.168.2.145] (46-138-51-120.dynamic.spd-mgts.ru. [46.138.51.120])
+        by smtp.googlemail.com with ESMTPSA id o11sm1100246ljg.29.2021.08.03.08.34.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Aug 2021 08:34:56 -0700 (PDT)
+Subject: Re: [BUG] brcmfmac locks up on resume from suspend
+From:   Dmitry Osipenko <digetx@gmail.com>
+To:     Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "brcm80211-dev-list.pdl@broadcom.com" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <b853d145-0edf-db0a-ff42-065011f7a149@gmail.com>
+ <0a29dbcc-7ab6-bc5d-3d42-4e1a33c2f6ec@gmail.com>
+Message-ID: <8acf609c-7871-3809-6e9f-6df45a72d972@gmail.com>
+Date:   Tue, 3 Aug 2021 18:34:55 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
+In-Reply-To: <0a29dbcc-7ab6-bc5d-3d42-4e1a33c2f6ec@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+22.06.2021 20:04, Dmitry Osipenko пишет:
+> 18.06.2021 23:36, Dmitry Osipenko пишет:
+>> Hi,
+>>
+>> I'm getting a hang on resume from suspend using today's next-20210618.
+>> It's tested on Tegra20 Acer A500 that has older BCM4329, but seems the
+>> problem is generic.
+>>
+>> There is this line in pstore log:
+>>
+>>   ieee80211 phy0: brcmf_netdev_start_xmit: xmit rejected state=0
+>>
+>> Steps to reproduce:
+>>
+>> 1. Boot system
+>> 2. Connect WiFi
+>> 3. Run "rtcwake -s10 -mmem"
+>>
+>> What's interesting is that turning WiFi off/on before suspending makes
+>> resume to work and there are no suspicious messages in KMSG, all further
+>> resumes work too.
+>>
+>> This change fixes the hang:
+>>
+>> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+>> b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+>> index db5f8535fdb5..06d16f7776c7 100644
+>> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+>> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+>> @@ -301,7 +301,6 @@ static netdev_tx_t brcmf_netdev_start_xmit(struct
+>> sk_buff *skb,
+>>  	/* Can the device send data? */
+>>  	if (drvr->bus_if->state != BRCMF_BUS_UP) {
+>>  		bphy_err(drvr, "xmit rejected state=%d\n", drvr->bus_if->state);
+>> -		netif_stop_queue(ndev);
+>>  		dev_kfree_skb(skb);
+>>  		ret = -ENODEV;
+>>  		goto done;
+>> 8<---
+>>
+>> Comments? Suggestions? Thanks in advance.
+>>
+> 
+> Update:
+> 
+> After some more testing I found that the removal of netif_stop_queue() doesn't really help, apparently it was a coincidence.
+> 
+> I enabled CONFIG_BRCMDBG and added dump_stack() to the error condition of brcmf_netdev_start_xmit() and this is what it shows:
+> 
+> PM: suspend entry (s2idle)
+> Filesystems sync: 0.000 seconds
+> Freezing user space processes ... (elapsed 0.004 seconds) done.
+> OOM killer disabled.
+> Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
+...
+The hanging problem has been resolved by bumping Tegra SoC core voltage,
+so it wasn't related to BCM.
 
-As presented last month in our "BIG TCP" talk at netdev 0x15,
-we plan using IPv6 jumbograms.
-
-One of the minor problem we talked about is the fact that
-ip6_parse_tlv() is currently using tables to list known tlvs,
-thus using potentially expensive indirect calls.
-
-While we could mitigate this cost using macros from
-indirect_call_wrapper.h, we also can get rid of the tables
-and let the compiler emit optimized code.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Justin Iurman <justin.iurman@uliege.be>
-Cc: Coco Li <lixiaoyan@google.com>
----
- net/ipv6/exthdrs.c | 105 ++++++++++++++++++++-------------------------
- 1 file changed, 46 insertions(+), 59 deletions(-)
-
-diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-index d897faa4e9e63831b9b4f0ad0e59bf7032b2bd96..3a871a09f9625443d34435dde9911f3e8fea7d53 100644
---- a/net/ipv6/exthdrs.c
-+++ b/net/ipv6/exthdrs.c
-@@ -55,19 +55,6 @@
- 
- #include <linux/uaccess.h>
- 
--/*
-- *	Parsing tlv encoded headers.
-- *
-- *	Parsing function "func" returns true, if parsing succeed
-- *	and false, if it failed.
-- *	It MUST NOT touch skb->h.
-- */
--
--struct tlvtype_proc {
--	int	type;
--	bool	(*func)(struct sk_buff *skb, int offset);
--};
--
- /*********************
-   Generic functions
-  *********************/
-@@ -112,16 +99,23 @@ static bool ip6_tlvopt_unknown(struct sk_buff *skb, int optoff,
- 	return false;
- }
- 
-+static bool ipv6_hop_ra(struct sk_buff *skb, int optoff);
-+static bool ipv6_hop_ioam(struct sk_buff *skb, int optoff);
-+static bool ipv6_hop_jumbo(struct sk_buff *skb, int optoff);
-+static bool ipv6_hop_calipso(struct sk_buff *skb, int optoff);
-+#if IS_ENABLED(CONFIG_IPV6_MIP6)
-+static bool ipv6_dest_hao(struct sk_buff *skb, int optoff);
-+#endif
-+
- /* Parse tlv encoded option header (hop-by-hop or destination) */
- 
--static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
-+static bool ip6_parse_tlv(bool hopbyhop,
- 			  struct sk_buff *skb,
- 			  int max_count)
- {
- 	int len = (skb_transport_header(skb)[1] + 1) << 3;
- 	const unsigned char *nh = skb_network_header(skb);
- 	int off = skb_network_header_len(skb);
--	const struct tlvtype_proc *curr;
- 	bool disallow_unknowns = false;
- 	int tlv_count = 0;
- 	int padlen = 0;
-@@ -176,20 +170,45 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
- 			if (tlv_count > max_count)
- 				goto bad;
- 
--			for (curr = procs; curr->type >= 0; curr++) {
--				if (curr->type == nh[off]) {
--					/* type specific length/alignment
--					   checks will be performed in the
--					   func(). */
--					if (curr->func(skb, off) == false)
-+			if (hopbyhop) {
-+				switch (nh[off]) {
-+				case IPV6_TLV_ROUTERALERT:
-+					if (!ipv6_hop_ra(skb, off))
-+						return false;
-+					break;
-+				case IPV6_TLV_IOAM:
-+					if (!ipv6_hop_ioam(skb, off))
-+						return false;
-+					break;
-+				case IPV6_TLV_JUMBO:
-+					if (!ipv6_hop_jumbo(skb, off))
-+						return false;
-+					break;
-+				case IPV6_TLV_CALIPSO:
-+					if (!ipv6_hop_calipso(skb, off))
-+						return false;
-+					break;
-+				default:
-+					if (!ip6_tlvopt_unknown(skb, off,
-+								disallow_unknowns))
-+						return false;
-+					break;
-+				}
-+			} else {
-+				switch (nh[off]) {
-+#if IS_ENABLED(CONFIG_IPV6_MIP6)
-+				case IPV6_TLV_HAO:
-+					if (!ipv6_dest_hao(skb, off))
-+						return false;
-+					break;
-+#endif
-+				default:
-+					if (!ip6_tlvopt_unknown(skb, off,
-+								disallow_unknowns))
- 						return false;
- 					break;
- 				}
- 			}
--			if (curr->type < 0 &&
--			    !ip6_tlvopt_unknown(skb, off, disallow_unknowns))
--				return false;
--
- 			padlen = 0;
- 		}
- 		off += optlen;
-@@ -267,16 +286,6 @@ static bool ipv6_dest_hao(struct sk_buff *skb, int optoff)
- }
- #endif
- 
--static const struct tlvtype_proc tlvprocdestopt_lst[] = {
--#if IS_ENABLED(CONFIG_IPV6_MIP6)
--	{
--		.type	= IPV6_TLV_HAO,
--		.func	= ipv6_dest_hao,
--	},
--#endif
--	{-1,			NULL}
--};
--
- static int ipv6_destopt_rcv(struct sk_buff *skb)
- {
- 	struct inet6_dev *idev = __in6_dev_get(skb->dev);
-@@ -307,8 +316,7 @@ static int ipv6_destopt_rcv(struct sk_buff *skb)
- 	dstbuf = opt->dst1;
- #endif
- 
--	if (ip6_parse_tlv(tlvprocdestopt_lst, skb,
--			  net->ipv6.sysctl.max_dst_opts_cnt)) {
-+	if (ip6_parse_tlv(false, skb, net->ipv6.sysctl.max_dst_opts_cnt)) {
- 		skb->transport_header += extlen;
- 		opt = IP6CB(skb);
- #if IS_ENABLED(CONFIG_IPV6_MIP6)
-@@ -1051,26 +1059,6 @@ static bool ipv6_hop_calipso(struct sk_buff *skb, int optoff)
- 	return false;
- }
- 
--static const struct tlvtype_proc tlvprochopopt_lst[] = {
--	{
--		.type	= IPV6_TLV_ROUTERALERT,
--		.func	= ipv6_hop_ra,
--	},
--	{
--		.type	= IPV6_TLV_IOAM,
--		.func	= ipv6_hop_ioam,
--	},
--	{
--		.type	= IPV6_TLV_JUMBO,
--		.func	= ipv6_hop_jumbo,
--	},
--	{
--		.type	= IPV6_TLV_CALIPSO,
--		.func	= ipv6_hop_calipso,
--	},
--	{ -1, }
--};
--
- int ipv6_parse_hopopts(struct sk_buff *skb)
- {
- 	struct inet6_skb_parm *opt = IP6CB(skb);
-@@ -1096,8 +1084,7 @@ int ipv6_parse_hopopts(struct sk_buff *skb)
- 		goto fail_and_free;
- 
- 	opt->flags |= IP6SKB_HOPBYHOP;
--	if (ip6_parse_tlv(tlvprochopopt_lst, skb,
--			  net->ipv6.sysctl.max_hbh_opts_cnt)) {
-+	if (ip6_parse_tlv(true, skb, net->ipv6.sysctl.max_hbh_opts_cnt)) {
- 		skb->transport_header += extlen;
- 		opt = IP6CB(skb);
- 		opt->nhoff = sizeof(struct ipv6hdr);
--- 
-2.32.0.554.ge1b32706d8-goog
-
+The "xmit rejected" error is still there, but it's not fatal AFAICS.
