@@ -2,58 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FCE13DF1F2
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 17:59:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ABC83DF209
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:04:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237147AbhHCP7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 11:59:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48938 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237186AbhHCP7o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 11:59:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 99C5360F45;
-        Tue,  3 Aug 2021 15:59:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628006372;
-        bh=ChhPSCYwVwBW+Gw7+iatuovIf2TIbBAIu4oLOgUZzyY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CXEcYW8VOiRy/IqDk4w1z47ZV6TB8DMXPTzW1CYY5HfajRsDDtvi8Xev/ZUwWC48+
-         Aa51HsvYdXIMh8yk5fPYG1VmnBomN8B/Upoq7GG5AzB6SdEhYNL0QSksUWV8kHjKX5
-         lQuqpJzsqwsPv6M7XeD8A3Mn4C6MTFIOaDuaKGvo6egbC7csK0LzykiKuk1XGKtvwN
-         /pNDxIDlyTL3a5/+kc1KmIonqd46lgyDOr548FG0l6EC8AcJjUWNc56z32KU1oKWbz
-         M7higY0/dGWoOrUd7ahds/l7oZ46vMzb6IOwp0J0I6mwXo6rp+4o2jXSrek6Ya4TRD
-         5vDGdL3cNsNPQ==
-Date:   Tue, 3 Aug 2021 08:59:30 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     yajun.deng@linux.dev
-Cc:     "kernel test robot" <lkp@intel.com>, davem@davemloft.net,
-        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        mptcp@lists.linux.dev, Denis Kirjanov <kda@linux-powerpc.org>
-Subject: Re: [PATCH net-next] net: Modify sock_set_keepalive() for more
- scenarios
-Message-ID: <20210803085930.103d37dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <a37faefd6dcad9f01212d60f8bb32f4f@linux.dev>
-References: <202108031929.b1AMeeUj-lkp@intel.com>
-        <20210803082553.25194-1-yajun.deng@linux.dev>
-        <a37faefd6dcad9f01212d60f8bb32f4f@linux.dev>
+        id S231308AbhHCQE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 12:04:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54626 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229567AbhHCQE2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 12:04:28 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07D42C061757;
+        Tue,  3 Aug 2021 09:04:17 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id u2so16011301plg.10;
+        Tue, 03 Aug 2021 09:04:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7Q+M9bdfzC5vw78BK6KF6b7X1yy5cTQ6a22GkGLbvW8=;
+        b=EL6GO19w/yJX4+hYApVgoQg03d4gp72M5TckCBpAxCoSwFnzcgS9agnQbNQiPTTIvR
+         53OlXPv7BPOh7DjH9xOt9GPMFo+Wf/V+ASVsEPeFMio9dH/SDGa1NrUCa/xQa56E5FQt
+         BzeiVT4VzatMocLdr+hQlIgdTGNfhhHzAjI9T8yjHeHTN/+p82zKejs93QvgtfSRoORa
+         EMNwTkwbOi7VFoseVVpFY7MY4wDFc/mdXFXfxD0dhWrCA6JGMPf/1THayV9WBdq4BXv/
+         I66X4qJft2+Dsr6VVIhsU8H9HePaiKhD4+ciIZEUSE2gaNdVU2xs5XErXpLw7wRV68Pk
+         b72A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7Q+M9bdfzC5vw78BK6KF6b7X1yy5cTQ6a22GkGLbvW8=;
+        b=a8ouHAaSyXlF5KrKCgbqTYVNblkC1XAMXAYKX2St/jlk2xCPCo+li9RF2Tg1EYIvwe
+         SHmZZGfjupYlHHWOr/zvfOuvcHfqRSs9ouk23JdR6MD+gDOHG/hAiFMLOLmiQFW5FFNu
+         lj+J1d48ohjl4MtFJVoi061uoYQ2nF++zdcCCTcNjX0U7FrbzQBrdPNwOVi68q9/tyCs
+         ju8FiO/KJ7IWO6m2nmAawRm1HXeyUly0LG6FJRMVe47NVQMS9EUHOVvJ+ZkIWtvV8Kk4
+         asY5YY0Wko+/boWFCcMz4DmGNblHorEukoEm+AxhQy7ScK262+KwK3UsLh0cRyFUH2YO
+         kPOA==
+X-Gm-Message-State: AOAM532orCCYndeI/kAfM224AKTyv4Y5/nxc2z1tWRNNKt8kzkChIpjL
+        ZZlyMw700NY4I/GpxVbhqN0=
+X-Google-Smtp-Source: ABdhPJxe1Q/tx1mCHBBgNfuGn0U0PA6NgtEr/CiQbM+pLNCCSAHZbz6U3WIyTP0ViiUweMKXBNDoaQ==
+X-Received: by 2002:a17:90a:c912:: with SMTP id v18mr23181709pjt.135.1628006656475;
+        Tue, 03 Aug 2021 09:04:16 -0700 (PDT)
+Received: from haswell-ubuntu20.lan ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id y6sm14390653pjr.48.2021.08.03.09.04.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Aug 2021 09:04:15 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Eric Woudstra <ericwouds@gmail.com>,
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+Subject: [PATCH net-next v2 0/4] mt7530 software fallback bridging fix
+Date:   Wed,  4 Aug 2021 00:04:00 +0800
+Message-Id: <20210803160405.3025624-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 03 Aug 2021 11:42:39 +0000 yajun.deng@linux.dev wrote:
-> The tcp_create_listen_sock() function was already dropped in commit
-> <2dc6b1158c28c3a5e86d162628810312f98d5e97> by Alexander Aring.
+DSA core has gained software fallback support since commit 2f5dc00f7a3e
+("net: bridge: switchdev: let drivers inform which bridge ports are
+offloaded"), but it does not work properly on mt7530. This patch series
+fixes the issues.
 
-We don't have the commit you're quoting in the networking trees.
+DENG Qingfang (4):
+  net: dsa: mt7530: enable assisted learning on CPU port
+  net: dsa: mt7530: use independent VLAN learning on VLAN-unaware
+    bridges
+  net: dsa: mt7530: set STP state on filter ID 1
+  net: dsa: mt7530: always install FDB entries with IVL and FID 1
 
-You should modify tcp_create_listen_sock() and we'll deal with 
-the conflict during the merge window.
+ drivers/net/dsa/mt7530.c | 88 ++++++++++++++++++++++++++++------------
+ drivers/net/dsa/mt7530.h | 14 +++++--
+ 2 files changed, 72 insertions(+), 30 deletions(-)
 
-Unless obviously you should wait and "send the patch within a context
-of other scenarios".. (I'm unclear on what Denis is referring to.)
+-- 
+2.25.1
+
