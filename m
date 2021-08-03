@@ -2,117 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8570E3DF563
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 21:19:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C4FB3DF572
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 21:20:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239631AbhHCTTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 15:19:31 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:47260 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239734AbhHCTTN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 15:19:13 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 173JIhsk019857;
-        Tue, 3 Aug 2021 14:18:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1628018323;
-        bh=rpugVZ13ErhlSCrvrQb8dO8oAMjQUAR/3p8c0Jg+m7Y=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=JHjImjwA9i8L79IpQjStAy3PQ6mfLVejqHAXgIKhCVXBC+E3rKpUkTHW5IsanEFtp
-         1xwCuM582PhSh5jPvivGAWcRsARhXaIoeD+39PrQIXF1Oom3UjOPuCHu36BhaDWWyr
-         vIg+gMNHgC0GkpRx4wBnEICfVlrWdU9Z8Ie3B8a4=
-Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 173JIh15109192
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 3 Aug 2021 14:18:43 -0500
-Received: from DFLE100.ent.ti.com (10.64.6.21) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 3 Aug
- 2021 14:18:42 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Tue, 3 Aug 2021 14:18:42 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 173JIdWf111244;
-        Tue, 3 Aug 2021 14:18:39 -0500
-Subject: Re: [PATCH net-next 0/2] Convert switchdev_bridge_port_{,un}offload
- to notifiers
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S239458AbhHCTUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 15:20:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46678 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239336AbhHCTUl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 15:20:41 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 088FAC061757;
+        Tue,  3 Aug 2021 12:20:30 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id u3so316903lff.9;
+        Tue, 03 Aug 2021 12:20:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+PSJHn15EPtSaTCYgfVP3snmYPoR20AL2TlKBSlCfG8=;
+        b=oRcfU4q14hvDC3RJYDNpBErH2tm+8SMWAVJjcguQRz+hsn2VfzmqEodX4DUpQbMb0I
+         gKSIq83t0K3LxaefRbkb0plpAqGqAxEeVAF/OIARwB4lWYCl2XQqExdTZOjwxe+yEDbe
+         CiJNBSFs2jpJqI2qtyaYqHI85obbJepMax38BUDeJjRETBZ7VHZQKmWoHUR+UbOmTqpG
+         1Np1Gm12k3rnOAULHt2xt+2tvckDv+ed0ZNDhdDE5WMfe/UV7ydTRCQRjZr5R/AJuXan
+         NOYzOZgK0WClNIAtxlh8yRsNWd1IhN5x7UKO06uAqMtJKfUuaS5ALfZ0qsA9zfCmVJvw
+         gFyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+PSJHn15EPtSaTCYgfVP3snmYPoR20AL2TlKBSlCfG8=;
+        b=c+CgbbbT5RLezN1erc4nWpyOQivCEVRXY2R9knaudZ+xJqPpE1iesWKnLv+FaL2eVc
+         7S102POmlpXACvIcPxHaYesE0833aUOFJOIyU421OpBQVai8VLjZanBHXMrPvdgGEbhf
+         mJf4G17A8wWBrLevethwN+5M+p0nhXB6il3LiMt5kXc7SlrMYVMzBxm5IBE1V47fcAvd
+         SG6xFoeifGWn57bIjq2pEqlx7nl9sAGe9g18Zf32eMCuuHcfB7xwfkwSdBIRaVGWPjjO
+         8goG9HI0b6LSr47/aZSxHzoOibZyjqJePnpXr0aULpkkczMvwFzI0XoCjmTX+Q3EiJxJ
+         CR4g==
+X-Gm-Message-State: AOAM5334/SxtsZbDy+BbguwEhLsYBB51Sqd4XXbaBvUrKkzl9PfG2xpg
+        /y7SMGYNCuKi3oHpVHQckqw=
+X-Google-Smtp-Source: ABdhPJxOaF+OkQwcf3KvalCxOV29JXKzrVnlyJAHezyhnAjMQ11zEGojqc546KvIi9ugjydF9E2DYQ==
+X-Received: by 2002:a05:6512:3b20:: with SMTP id f32mr17881270lfv.279.1628018428459;
+        Tue, 03 Aug 2021 12:20:28 -0700 (PDT)
+Received: from [192.168.1.102] ([178.176.73.7])
+        by smtp.gmail.com with ESMTPSA id o24sm1054485lfr.41.2021.08.03.12.20.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Aug 2021 12:20:28 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 4/8] ravb: Add stats_len to struct
+ ravb_hw_info
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        Arnd Bergmann <arnd@kernel.org>
-References: <20210803143624.1135002-1-vladimir.oltean@nxp.com>
- <00acb107-8ff6-9c98-e6c3-f6718d5ce9f4@ti.com>
- <20210803181534.qgbcjow4ketd4yio@skbuf>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <d12596b2-4a2e-d567-1e52-fac7c6c3d28d@ti.com>
-Date:   Tue, 3 Aug 2021 22:18:37 +0300
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20210802102654.5996-1-biju.das.jz@bp.renesas.com>
+ <20210802102654.5996-5-biju.das.jz@bp.renesas.com>
+ <766c4067-d8b3-6aaa-5818-b4d9d5c6f42d@gmail.com>
+ <OS0PR01MB5922AEAA259BECBED6286CF086F09@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Message-ID: <b9c594b8-0353-6e24-54fa-de10171daeff@gmail.com>
+Date:   Tue, 3 Aug 2021 22:20:26 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <20210803181534.qgbcjow4ketd4yio@skbuf>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+In-Reply-To: <OS0PR01MB5922AEAA259BECBED6286CF086F09@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 8/3/21 9:47 PM, Biju Das wrote:
 
-
-On 03/08/2021 21:15, Vladimir Oltean wrote:
-> On Tue, Aug 03, 2021 at 08:11:56PM +0300, Grygorii Strashko wrote:
->> I've tested builds, but was not able to test bridge itself on TI am57x platform.
+[...]
+>>> R-Car provides 30 device stats, whereas RZ/G2L provides only 15. In
+>>> addition, RZ/G2L has stats "rx_queue_0_csum_offload_errors" instead of
+>>> "rx_queue_0_missed_errors".
+>>>
+>>> Replace RAVB_STATS_LEN macro with a structure variable stats_len to
+>>> struct ravb_hw_info, to support subsequent SoCs without any code
+>>> changes to the ravb_get_sset_count function.
+>>>
+>>> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+>>> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>> [...]
 >>
->> 1) See warning
->> [    3.958496] ------------[ cut here ]------------
->> [    3.963165] WARNING: CPU: 0 PID: 1 at lib/refcount.c:25 fib_create_info+0xae8/0xbd4
->> [    3.970855] refcount_t: addition on 0; use-after-free.
->> [    3.976043] Modules linked in: autofs4
->> [    3.979827] CPU: 0 PID: 1 Comm: systemd Not tainted 5.14.0-rc4-next-20210802-00002-g5003e4ac441d-dirty #5
->> [    3.989440] Hardware name: Generic DRA72X (Flattened Device Tree)
->> [    3.995574] [<c0111098>] (unwind_backtrace) from [<c010b834>] (show_stack+0x10/0x14)
->> [    4.003356] [<c010b834>] (show_stack) from [<c09da808>] (dump_stack_lvl+0x40/0x4c)
->> [    4.010986] [<c09da808>] (dump_stack_lvl) from [<c0137b44>] (__warn+0xd8/0x100)
->> [    4.018341] [<c0137b44>] (__warn) from [<c09d6368>] (warn_slowpath_fmt+0x94/0xbc)
->> [    4.025848] [<c09d6368>] (warn_slowpath_fmt) from [<c08f68d4>] (fib_create_info+0xae8/0xbd4)
->> [    4.034332] [<c08f68d4>] (fib_create_info) from [<c08f99c4>] (fib_table_insert+0x5c/0x604¢·†AËÕìÍ_¡
+>>    Finally a patch that I can agree with. :-)
 >>
->> 2) see warnings and "ip link add name br0 type bridge" just stuck
->> [  158.032135] unregister_netdevice: waiting for lo to become free. Usage count = 3
->>
->> It might not be related to this series.
-> 
-> 100% not me.
-> 
-> See if you have David Ahern's bug fix, and if you do, try to see what
-> other refcount conversion patches Yajun Deng did, revert them one by one
-> and see if any one fixes the issue:
-> https://patchwork.kernel.org/project/netdevbpf/patch/20210802160221.27263-1-dsahern@kernel.org/
-> 
+>> Reviewed-by: ergei Shtylyov <sergei.shtylyov@gmail.com>
+>               ^Typo here.
 
-Yep. That's it.
-build ok,
-   CONFIG_TI_CPSW_SWITCHDEV=y
-   CONFIG_BRIDGE=m
+   Sorry, here's a good one:
 
-basic bridge with ping - ok.
+Reviewed-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
 
-Tested-by: Grygorii Strashko <grygorii.strashko@ti.com>
+> Cheers,
+> Biju
 
--- 
-Best regards,
-grygorii
+MBR, Sergei
