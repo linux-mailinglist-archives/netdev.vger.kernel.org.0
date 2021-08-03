@@ -2,190 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03BF83DE6E5
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 08:54:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC2B73DE6EC
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 08:59:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234076AbhHCGyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 02:54:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58870 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233902AbhHCGym (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 02:54:42 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183E5C0613D5
-        for <netdev@vger.kernel.org>; Mon,  2 Aug 2021 23:54:32 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mAoJm-0001Wy-LZ; Tue, 03 Aug 2021 08:54:26 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mAoJl-0002XG-Lf; Tue, 03 Aug 2021 08:54:25 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        id S234093AbhHCG7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 02:59:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47544 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233907AbhHCG7a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 02:59:30 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B208F61050;
+        Tue,  3 Aug 2021 06:59:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627973959;
+        bh=4Sb+0NOSFm85LKdgmKosHIsr0gryivEtorknGClKzc0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=TGnes8jOpj6iNpciHe/Ich4G5+4pDqiCAGNBduT9YDitlBkjcuK6yWBmWN67IgPVS
+         EswliryEaIBjUMyDgglxZtwmwywFImbRj713uEMW+GbIkae9ihlWz5OLO0xgtssbYi
+         cPXN2ncD2qg/IxeHwGB3C7ksdJC9Ghar9qCCn/gJxj6h7WTxexd4VFBacy5LxEjRVz
+         LK5NOrskOw/eW/IjraAfBO/3NFoL5dm61FW1hu8vYvWl2wUvAPT1ejwSUGSEjTVyts
+         3vPhByIal78BBCpNgCQFWGwY/meu3yj6Ad1trz9Sl/h3MJ1Vnp6mlWl3kDctf2z2Q3
+         yk7w93q4b3SFQ==
+Received: by mail-wm1-f46.google.com with SMTP id x17so5535473wmc.5;
+        Mon, 02 Aug 2021 23:59:19 -0700 (PDT)
+X-Gm-Message-State: AOAM5328fcEBa1z7RK6m/Jth42NKA/DAPEZYBsVnSXjLbo9tx6BfiFhm
+        AfoLmRBfMjXX13nHnk1A9QM/3vrwpFoyKGPxG5Q=
+X-Google-Smtp-Source: ABdhPJw6f6eacQ6aHBp9WoW5eKY4Ovz5FQXgdVsMZJU/hB32fKJbdMrav10kWSfqlmfhDt2zauF+Yc3fWxlYRpp9M8g=
+X-Received: by 2002:a05:600c:3641:: with SMTP id y1mr11424785wmq.43.1627973958225;
+ Mon, 02 Aug 2021 23:59:18 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210802145937.1155571-1-arnd@kernel.org> <20210802164907.GA9832@hoboy.vegasvil.org>
+ <bd631e36-1701-b120-a9b0-8825d14cc694@intel.com> <20210802230921.GA13623@hoboy.vegasvil.org>
+In-Reply-To: <20210802230921.GA13623@hoboy.vegasvil.org>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Tue, 3 Aug 2021 08:59:02 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2XjgbEkYs6R7Q3RCZMV7v90gu_v82RVfFVs-VtUzw+_w@mail.gmail.com>
+Message-ID: <CAK8P3a2XjgbEkYs6R7Q3RCZMV7v90gu_v82RVfFVs-VtUzw+_w@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] ethernet/intel: fix PTP_1588_CLOCK dependencies
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        Nicolas Pitre <nicolas.pitre@linaro.org>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: [PATCH net 1/1] net: dsa: qca: ar9331: make proper initial port defaults
-Date:   Tue,  3 Aug 2021 08:54:24 +0200
-Message-Id: <20210803065424.9692-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        Arnd Bergmann <arnd@arndb.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make sure that all external port are actually isolated from each other,
-so no packets are leaked.
+On Tue, Aug 3, 2021 at 1:09 AM Richard Cochran <richardcochran@gmail.com> wrote:
+>
+> On Mon, Aug 02, 2021 at 07:54:20PM +0000, Keller, Jacob E wrote:
+> > So go back to "select"?
+>
+> Why not keep it simple?
+>
+> PTP core:
+>    Boolean PTP_1588_CLOCK
+>
+> drivers:
+>    depends on PTP_1588_CLOCK
+>
+> Also, make Posix timers always part of the core.  Tinification is a
+> lost cause.
 
-Fixes: ec6698c272de ("net: dsa: add support for Atheros AR9331 built-in switch")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/dsa/qca/ar9331.c | 99 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 98 insertions(+), 1 deletion(-)
+It may well be a lost cause, but a build fix is not the time to nail down
+that decision. The fix I proposed (with the added MAY_USE_PTP_1588_CLOCK
+symbol) is only two extra lines and leaves everything else working for the
+moment. I would suggest we merge that first and then raise the question
+about whether to give up on tinyfication on the summit list, there are a few
+other things that have come up that would also benefit from trying less hard,
+but if we overdo this, we can get to the point of hurting even systems that are
+otherwise still well supported (64MB MIPS/ARMv5 SoCs, small boot partitions,
+etc.).
 
-diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
-index 6686192e1883..360417e6cd8c 100644
---- a/drivers/net/dsa/qca/ar9331.c
-+++ b/drivers/net/dsa/qca/ar9331.c
-@@ -101,6 +101,46 @@
- 	 AR9331_SW_PORT_STATUS_RX_FLOW_EN | AR9331_SW_PORT_STATUS_TX_FLOW_EN | \
- 	 AR9331_SW_PORT_STATUS_SPEED_M)
- 
-+#define AR9331_SW_REG_PORT_CTRL(_port)			(0x104 + (_port) * 0x100)
-+#define AR9331_SW_PORT_CTRL_ING_MIRROR_EN		BIT(17)
-+#define AR9331_SW_PORT_CTRL_EG_MIRROR_EN		BIT(16)
-+#define AR9331_SW_PORT_CTRL_DOUBLE_TAG_VLAN		BIT(15)
-+#define AR9331_SW_PORT_CTRL_LEARN_EN			BIT(14)
-+#define AR9331_SW_PORT_CTRL_SINGLE_VLAN_EN		BIT(13)
-+#define AR9331_SW_PORT_CTRL_MAC_LOOP_BACK		BIT(12)
-+#define AR9331_SW_PORT_CTRL_HEAD_EN			BIT(11)
-+#define AR9331_SW_PORT_CTRL_IGMP_MLD_EN			BIT(10)
-+#define AR9331_SW_PORT_CTRL_EG_VLAN_MODE		GENMASK(9, 8)
-+#define AR9331_SW_PORT_CTRL_EG_VLAN_MODE_KEEP		0
-+#define AR9331_SW_PORT_CTRL_EG_VLAN_MODE_STRIP		1
-+#define AR9331_SW_PORT_CTRL_EG_VLAN_MODE_ADD		2
-+#define AR9331_SW_PORT_CTRL_EG_VLAN_MODE_DOUBLE		3
-+#define AR9331_SW_PORT_CTRL_LEARN_ONE_LOCK		BIT(7)
-+#define AR9331_SW_PORT_CTRL_PORT_LOCK_EN		BIT(6)
-+#define AR9331_SW_PORT_CTRL_LOCK_DROP_EN		BIT(5)
-+#define AR9331_SW_PORT_CTRL_PORT_STATE			GENMASK(2, 0)
-+#define AR9331_SW_PORT_CTRL_PORT_STATE_DISABLED		0
-+#define AR9331_SW_PORT_CTRL_PORT_STATE_BLOCKING		1
-+#define AR9331_SW_PORT_CTRL_PORT_STATE_LISTENING	2
-+#define AR9331_SW_PORT_CTRL_PORT_STATE_LEARNING		3
-+#define AR9331_SW_PORT_CTRL_PORT_STATE_FORWARD		4
-+
-+#define AR9331_SW_REG_PORT_VLAN(_port)			(0x108 + (_port) * 0x100)
-+#define AR9331_SW_PORT_VLAN_8021Q_MODE			GENMASK(31, 30)
-+#define AR9331_SW_8021Q_MODE_SECURE			3
-+#define AR9331_SW_8021Q_MODE_CHECK			2
-+#define AR9331_SW_8021Q_MODE_FALLBACK			1
-+#define AR9331_SW_8021Q_MODE_NONE			0
-+#define AR9331_SW_PORT_VLAN_ING_PORT_PRI		GENMASK(29, 27)
-+#define AR9331_SW_PORT_VLAN_FORCE_PORT_VLAN_EN		BIT(26)
-+#define AR9331_SW_PORT_VLAN_PORT_VID_MEMBER		GENMASK(25, 16)
-+#define AR9331_SW_PORT_VLAN_ARP_LEAKY_EN		BIT(15)
-+#define AR9331_SW_PORT_VLAN_UNI_LEAKY_EN		BIT(14)
-+#define AR9331_SW_PORT_VLAN_MULTI_LEAKY_EN		BIT(13)
-+#define AR9331_SW_PORT_VLAN_FORCE_DEFALUT_VID_EN	BIT(12)
-+#define AR9331_SW_PORT_VLAN_PORT_VID			GENMASK(11, 0)
-+#define AR9331_SW_PORT_VLAN_PORT_VID_DEF		1
-+
- /* MIB registers */
- #define AR9331_MIB_COUNTER(x)			(0x20000 + ((x) * 0x100))
- 
-@@ -371,12 +411,63 @@ static int ar9331_sw_mbus_init(struct ar9331_sw_priv *priv)
- 	return 0;
- }
- 
--static int ar9331_sw_setup(struct dsa_switch *ds)
-+static int ar9331_sw_setup_port(struct dsa_switch *ds, int port)
- {
- 	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
- 	struct regmap *regmap = priv->regmap;
-+	u32 port_mask, port_ctrl, val;
- 	int ret;
- 
-+	/* Generate default port settings */
-+	port_ctrl = FIELD_PREP(AR9331_SW_PORT_CTRL_PORT_STATE,
-+			       AR9331_SW_PORT_CTRL_PORT_STATE_DISABLED);
-+
-+	if (dsa_is_cpu_port(ds, port)) {
-+		/* CPU port should be allowed to communicate with all user
-+		 * ports.
-+		 */
-+		port_mask = dsa_user_ports(ds);
-+		/* Enable Atheros header on CPU port. This will allow us
-+		 * communicate with each port separately
-+		 */
-+		port_ctrl |= AR9331_SW_PORT_CTRL_HEAD_EN;
-+	} else if (dsa_is_user_port(ds, port)) {
-+		/* User ports should communicate only with the CPU port.
-+		 */
-+		port_mask = BIT(dsa_to_port(ds, port)->cpu_dp->index);
-+		port_ctrl |= AR9331_SW_PORT_CTRL_LEARN_EN;
-+	} else {
-+		/* Other ports do not need to communicate at all */
-+		port_mask = 0;
-+	}
-+
-+	val = FIELD_PREP(AR9331_SW_PORT_VLAN_8021Q_MODE,
-+			 AR9331_SW_8021Q_MODE_NONE) |
-+		FIELD_PREP(AR9331_SW_PORT_VLAN_PORT_VID_MEMBER, port_mask) |
-+		FIELD_PREP(AR9331_SW_PORT_VLAN_PORT_VID,
-+			   AR9331_SW_PORT_VLAN_PORT_VID_DEF);
-+
-+	ret = regmap_write(regmap, AR9331_SW_REG_PORT_VLAN(port), val);
-+	if (ret)
-+		goto error;
-+
-+	ret = regmap_write(regmap, AR9331_SW_REG_PORT_CTRL(port), port_ctrl);
-+	if (ret)
-+		goto error;
-+
-+	return 0;
-+error:
-+	dev_err(priv->dev, "%s: error: %i\n", __func__, ret);
-+
-+	return ret;
-+}
-+
-+static int ar9331_sw_setup(struct dsa_switch *ds)
-+{
-+	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
-+	struct regmap *regmap = priv->regmap;
-+	int ret, i;
-+
- 	ret = ar9331_sw_reset(priv);
- 	if (ret)
- 		return ret;
-@@ -402,6 +493,12 @@ static int ar9331_sw_setup(struct dsa_switch *ds)
- 	if (ret)
- 		goto error;
- 
-+	for (i = 0; i < ds->num_ports; i++) {
-+		ret = ar9331_sw_setup_port(ds, i);
-+		if (ret)
-+			goto error;
-+	}
-+
- 	ds->configure_vlan_while_not_filtering = false;
- 
- 	return 0;
--- 
-2.30.2
-
+        Arnd
