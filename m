@@ -2,134 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED2403DE804
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 10:11:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1B6A3DE81E
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 10:14:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234344AbhHCILL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 04:11:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31648 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234375AbhHCILJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 04:11:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1627978258;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zY0Qm6avJnx4fVfjFEoZtBf+5KuAldMVTd58ZzB3Cto=;
-        b=bNJ8lizq6MiVd9yH+5iGVvJdM2MBgBdV3O5VgUZbEql+yQF676e3dZ49eIaq2BIJWz0P52
-        /AzS+jJZu93WpHGBBdn83coKWzv0YRQeM/FMnZjm87eRaISJ9C32LXr3hPDUQoPvJpS4Eq
-        30yfgQynOZJ4/Dwse2Fc1K9e710zVDw=
-Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
- [209.85.216.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-433-QCsMIvX0P0u9FMdiprxnng-1; Tue, 03 Aug 2021 04:10:57 -0400
-X-MC-Unique: QCsMIvX0P0u9FMdiprxnng-1
-Received: by mail-pj1-f72.google.com with SMTP id v2-20020a17090ac902b0290176b4310aaeso2266747pjt.2
-        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 01:10:56 -0700 (PDT)
+        id S234430AbhHCIO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 04:14:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49836 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234238AbhHCIOz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 04:14:55 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05EEDC06175F;
+        Tue,  3 Aug 2021 01:14:44 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id q17-20020a17090a2e11b02901757deaf2c8so3696424pjd.0;
+        Tue, 03 Aug 2021 01:14:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=/9SojXjYKulRNr83vm1FtyvmUfogZ+luvbdjXo2aXGE=;
+        b=NccFQpSsZHFQ8ok/Yr5CXCW9v0dzQ1Zzb6LDno1qVe5rjruvHUf6+ZczBQwwEtcAx7
+         GUsIBfM8aIX3bpsC7LNuNnrE1xY2sD/4+vrlEd+KRyr3PgoPn5jl2TtxfToASawXpTyh
+         qfF4CnedozBoBfR3IQFAnwBw9Mh8WzG0HpQjkFmM4zkx4jpKbEMNS9TyJBQlBlLsrYrG
+         QhLvKmRHc3zpD8oz3SuLJBiKpDi1K/3zWlusjSxIbLkrnA2tVt1xRXKtm065Ztt7nKMd
+         ehTN2l44m7y2WKz5Vjw73a8YOzyrCo1TkTLPi6b9RFR2Szpn4xsRQSIHs46Urmx1Vc21
+         x6Qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=zY0Qm6avJnx4fVfjFEoZtBf+5KuAldMVTd58ZzB3Cto=;
-        b=qjmshOkBmm3aRtDHm7WDDtCP3Xs5hFJrt2eOZLfr54gjcwZ8/52yS2YsWcvyG99UXv
-         1RJIthr4Z8XL12eqolhvuXi4yRaQsspcFJ1sGCeROehL1lsQ1IlwCYWZq6QOcn4f2fGA
-         MX411X43aDI3oVYpFWYuAqWjjEOteOA34fAQNDhvo4BRumP0VhWp8GSuKN4pLMgFPWnB
-         MwpxzNez89Ntuu9LHQwH9Z1dVnM4L/puzuN9XaqIUI/GY8uGRvx8rgkOAH/ForRdI6ns
-         DQNyDcAc5Fjb2mgAm5dUgRCUZbADzvKdXU6F8GHcWAunT/6XZwz3CoHNtRpKpmQBWjNS
-         EHNg==
-X-Gm-Message-State: AOAM531jDZSLrZV5/LqVStpsKvVm5jAgZ9KuW6mzFoZR5/M2VmAMKebu
-        6iBtCqdSQ0dCq5DgOJ1H8pxLKFcLCDQ7adOAWol2iVbx6tFrdPkq4qvYI0xcC365Vks5RZmAuFG
-        ABpkHkZbW0TFTytBN
-X-Received: by 2002:a63:f904:: with SMTP id h4mr2936169pgi.238.1627978255982;
-        Tue, 03 Aug 2021 01:10:55 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwH8hbLkAijKqHClsGdxbrFT2e5OFHsYSjNhxOgbwifClMzXSHDtPi9YbQ4DmXvoCPE/e8DcA==
-X-Received: by 2002:a63:f904:: with SMTP id h4mr2936146pgi.238.1627978255811;
-        Tue, 03 Aug 2021 01:10:55 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id u21sm14097827pfh.163.2021.08.03.01.10.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Aug 2021 01:10:55 -0700 (PDT)
-Subject: Re: [PATCH v10 05/17] vhost-vdpa: Fail the vhost_vdpa_set_status() on
- reset failure
-To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
-        stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
-        hch@infradead.org, christian.brauner@canonical.com,
-        rdunlap@infradead.org, willy@infradead.org,
-        viro@zeniv.linux.org.uk, axboe@kernel.dk, bcrl@kvack.org,
-        corbet@lwn.net, mika.penttila@nextfour.com,
-        dan.carpenter@oracle.com, joro@8bytes.org,
-        gregkh@linuxfoundation.org, zhe.he@windriver.com,
-        xiaodong.liu@intel.com, joe@perches.com
-Cc:     songmuchun@bytedance.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-References: <20210729073503.187-1-xieyongji@bytedance.com>
- <20210729073503.187-6-xieyongji@bytedance.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <55191de0-1a03-ff0d-1a49-afc419014bab@redhat.com>
-Date:   Tue, 3 Aug 2021 16:10:46 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=/9SojXjYKulRNr83vm1FtyvmUfogZ+luvbdjXo2aXGE=;
+        b=fvXMzix2Vr9SMiMmOOMGoTXYN36sDPEwTjGbcHQqoS2OxF8jXCgkroYOM3TIR+cxFD
+         d7iLhKmLVp2JCqRysuS3GGa9pwKi0b/pz5nm+rA6M9BHnfcHhsV+mXQHEzLRGg4l+NxF
+         Jk88I4lJDxzU6xLk9hXH6HYLPpeQrDronvLORx4kPbcRvkS+q5HH/d0S4R/0R7phoQpo
+         byqaX5fJHFHjZK3TbGBCWSsaAsXoZAf3ioDpb+eaLMshBaeM+a1f4eg25E94PSfnezM2
+         uV7sb/slUgrkKsu+ICKUrfikTPKic87Zl8SxPw9uASKLD0AsHLJg5Ck1wyQlxo7LqlLM
+         30ag==
+X-Gm-Message-State: AOAM5315Gh3cu3xknGTE1bD3yEVKAaKytej/GlGcjweiMlRyisUSKvAG
+        gr8cdHaUgDp4mJiikuWxXZg=
+X-Google-Smtp-Source: ABdhPJwXGuLapacqlKKksk7rDnddiutOIOrRkxXIEA687wK/6T2sd9dyDdrn8LcuOcf1LyCNcFdWfw==
+X-Received: by 2002:a17:902:8648:b029:129:dda4:ddc2 with SMTP id y8-20020a1709028648b0290129dda4ddc2mr17376567plt.4.1627978483528;
+        Tue, 03 Aug 2021 01:14:43 -0700 (PDT)
+Received: from haswell-ubuntu20.lan ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id i13sm9165359pfq.72.2021.08.03.01.14.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Aug 2021 01:14:42 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH net 1/1] net: dsa: qca: ar9331: make proper initial port defaults
+Date:   Tue,  3 Aug 2021 16:14:35 +0800
+Message-Id: <20210803081435.2910620-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210803065424.9692-1-o.rempel@pengutronix.de>
+References: <20210803065424.9692-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20210729073503.187-6-xieyongji@bytedance.com>
-Content-Type: text/plain; charset=gbk; format=flowed
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Aug 03, 2021 at 08:54:24AM +0200, Oleksij Rempel wrote:
+> +	if (dsa_is_cpu_port(ds, port)) {
+> +		/* CPU port should be allowed to communicate with all user
+> +		 * ports.
+> +		 */
+> +		port_mask = dsa_user_ports(ds);
+> +		/* Enable Atheros header on CPU port. This will allow us
+> +		 * communicate with each port separately
+> +		 */
+> +		port_ctrl |= AR9331_SW_PORT_CTRL_HEAD_EN;
+> +	} else if (dsa_is_user_port(ds, port)) {
+> +		/* User ports should communicate only with the CPU port.
+> +		 */
+> +		port_mask = BIT(dsa_to_port(ds, port)->cpu_dp->index);
+> +		port_ctrl |= AR9331_SW_PORT_CTRL_LEARN_EN;
 
-ÔÚ 2021/7/29 ÏÂÎç3:34, Xie Yongji Ð´µÀ:
-> Re-read the device status to ensure it's set to zero during
-> resetting. Otherwise, fail the vhost_vdpa_set_status() after timeout.
->
-> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> ---
->   drivers/vhost/vdpa.c | 11 ++++++++++-
->   1 file changed, 10 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index b07aa161f7ad..dd05c1e1133c 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -157,7 +157,7 @@ static long vhost_vdpa_set_status(struct vhost_vdpa *v, u8 __user *statusp)
->   	struct vdpa_device *vdpa = v->vdpa;
->   	const struct vdpa_config_ops *ops = vdpa->config;
->   	u8 status, status_old;
-> -	int nvqs = v->nvqs;
-> +	int timeout = 0, nvqs = v->nvqs;
->   	u16 i;
->   
->   	if (copy_from_user(&status, statusp, sizeof(status)))
-> @@ -173,6 +173,15 @@ static long vhost_vdpa_set_status(struct vhost_vdpa *v, u8 __user *statusp)
->   		return -EINVAL;
->   
->   	ops->set_status(vdpa, status);
-> +	if (status == 0) {
-> +		while (ops->get_status(vdpa)) {
-> +			timeout += 20;
-> +			if (timeout > VDPA_RESET_TIMEOUT_MS)
-> +				return -EIO;
-> +
-> +			msleep(20);
-> +		}
+All user ports should start with address learning disabled.
+To toggle it, implement .port_pre_bridge_flags and .port_bridge_flags.
 
-
-Spec has introduced the reset a one of the basic facility. And consider 
-we differ reset here.
-
-This makes me think if it's better to introduce a dedicated vdpa ops for 
-reset?
-
-Thanks
-
-
+> +	} else {
+> +		/* Other ports do not need to communicate at all */
+> +		port_mask = 0;
 > +	}
->   
->   	if ((status & VIRTIO_CONFIG_S_DRIVER_OK) && !(status_old & VIRTIO_CONFIG_S_DRIVER_OK))
->   		for (i = 0; i < nvqs; i++)
-
+> +
