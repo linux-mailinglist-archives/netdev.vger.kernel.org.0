@@ -2,102 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADF5A3DE6CA
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 08:37:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A6783DE6D1
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 08:42:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233829AbhHCGiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 02:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55046 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231386AbhHCGiF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 02:38:05 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F249AC06175F
-        for <netdev@vger.kernel.org>; Mon,  2 Aug 2021 23:37:54 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mAo3i-0008Gw-12; Tue, 03 Aug 2021 08:37:50 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mAo3h-0000wv-Mt; Tue, 03 Aug 2021 08:37:49 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        id S234010AbhHCGmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 02:42:36 -0400
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:50624
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233931AbhHCGmf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 02:42:35 -0400
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id AB8873F34D
+        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 06:42:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1627972943;
+        bh=WOGxtwx6AEh5sPp4Uy0fChJ5+55ettnCggYD7WCOhLY=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=dCrDiUW38KjRV+u1obvcGLqtUCZ1p5Rvr1qGJnZy/QLzxr2I9S7pdEELeJ4EG9pR9
+         9AI/pliFBbJwqXHcQ3UbnyhatuQzvm8IvC9EaBk/3Ro0w+m1gvz8XoPG4QaiXd3u4a
+         JYQgyJL/25NoPWFUVqbuVpWOfcVRmtp/v+ZgPLa22FmfgxSDGoPo0e2T0QWNNGq+QO
+         prrOEXFFAQqLW/VRBCOOYvhHvakrm+RbCg2MfC+snQ/kBwcaWK5WDkDHATfoYrDcad
+         uMQcer6Fz8z+zhT1kDRJdPvWdbbyU36FFthVsUjbye6bRhWgvEdsJ9CuEpO8uQIY6b
+         GX/YUuHejTuDg==
+Received: by mail-ej1-f69.google.com with SMTP id r21-20020a1709067055b02904be5f536463so5624277ejj.0
+        for <netdev@vger.kernel.org>; Mon, 02 Aug 2021 23:42:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WOGxtwx6AEh5sPp4Uy0fChJ5+55ettnCggYD7WCOhLY=;
+        b=PJ6+X3vY98xAtFTpn893G6rgtLJDMpl5LcnX+q4zvZffm11oWSG6htptCZnuPI40uR
+         shO+kI5nfy6FB/6GqznpkZ/Q7+wC7Hz2K2g45MSpi2Pgn7pc+x8wA7jJX/t20PrT4lIo
+         Ot2S7yU3dTMEQZociWYHtzh2SLqT02+eMm5QGAAE9C6DjuhDz1YH3DrVnvF5qji91wxO
+         dCmuOrMRXEjBR9JTACGbd+ZL3zYPIrqwUfuNMO+yhv2Dr6qNP0iL3LMgCYXUSW3yXEaa
+         z9WqI1RP56ZZathhuxN2HtO3AlLcHNiYPLDab3EztXADBA6lBdc/LhnYjrIWrjpw2hly
+         Tk9A==
+X-Gm-Message-State: AOAM530lxK8xMhOp46IbH04faENUvEIdBMZYq8V54iWEc/Usvsq1fHv4
+        kacRv1GCM1SPj3ZPND8FZvzQePL6XZxL1Wf2gkAbQRiUAOvfEgD3QFuWqs1BZG4ona7blzJbdag
+        ZfENHkQr2OWHEVRoNXeS5EIiQ5FwXErDMrgXqLKJ7fA5tPzRqSg==
+X-Received: by 2002:a17:906:4e52:: with SMTP id g18mr19461989ejw.432.1627972943357;
+        Mon, 02 Aug 2021 23:42:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw4elE987Jh4ibN4W1ZpLtyp77e6TnKGcx0FC8iRxdRfFA+YYC0MIZAsiDuO4B3H+DuiodPtyWa4x9NjD6Ax9g=
+X-Received: by 2002:a17:906:4e52:: with SMTP id g18mr19461964ejw.432.1627972943071;
+ Mon, 02 Aug 2021 23:42:23 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210514071452.25220-1-kai.heng.feng@canonical.com>
+ <576B26FD-81F8-4632-82F6-57C4A7C096C4@holtmann.org> <8735ryk0o7.fsf@baylibre.com>
+ <CAAd53p7Zc3Zk21rwj_x1BLgf8tWRxaKBmXARkM6d7Kpkb+fDZA@mail.gmail.com> <87y29o58su.fsf@baylibre.com>
+In-Reply-To: <87y29o58su.fsf@baylibre.com>
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Tue, 3 Aug 2021 14:42:07 +0800
+Message-ID: <CAAd53p4Ss1Z-7CB4g=_xZYxo1xDz6ih6GHUuMcgncy+yNAfU4w@mail.gmail.com>
+Subject: Re: [PATCH v2] Bluetooth: Shutdown controller after workqueues are
+ flushed or cancelled
+To:     Mattijs Korpershoek <mkorpershoek@baylibre.com>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: [PATCH net 1/1] net: dsa: qca: ar9331: reorder MDIO write sequence
-Date:   Tue,  3 Aug 2021 08:37:46 +0200
-Message-Id: <20210803063746.3600-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        Fabien Parent <fparent@baylibre.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        "open list:BLUETOOTH SUBSYSTEM" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case of this switch we work with 32bit registers on top of 16bit
-bus. Some registers (for example access to forwarding database) have
-trigger bit on the first 16bit half of request and the result +
-configuration of request in the second half. Without this patch, we would
-trigger database operation and overwrite result in one run.
+Hi Mattijs,
 
-To make it work properly, we should do the second part of transfer
-before the first one is done.
+On Fri, Jul 30, 2021 at 7:40 PM Mattijs Korpershoek
+<mkorpershoek@baylibre.com> wrote:
+>
+> Hi Kai-Heng,
 
-So far, this rule seems to work for all registers on this switch.
+[snipped]
 
-Fixes: ec6698c272de ("net: dsa: add support for Atheros AR9331 built-in switch")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/dsa/qca/ar9331.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+> Thank you for your help. Sorry I did not post the logs previously.
+>
+> dmesg: https://pastebin.com/tpWDNyQr
+> ftrace on btmtksdio: https://pastebin.com/jmhvmwUw
 
-diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
-index ca2ad77b71f1..6686192e1883 100644
---- a/drivers/net/dsa/qca/ar9331.c
-+++ b/drivers/net/dsa/qca/ar9331.c
-@@ -837,16 +837,24 @@ static int ar9331_mdio_write(void *ctx, u32 reg, u32 val)
- 		return 0;
- 	}
- 
--	ret = __ar9331_mdio_write(sbus, AR9331_SW_MDIO_PHY_MODE_REG, reg, val);
-+	/* In case of this switch we work with 32bit registers on top of 16bit
-+	 * bus. Some registers (for example access to forwarding database) have
-+	 * trigger bit on the first 16bit half of request, the result and
-+	 * configuration of request in the second half.
-+	 * To make it work properly, we should do the second part of transfer
-+	 * before the first one is done.
-+	 */
-+	ret = __ar9331_mdio_write(sbus, AR9331_SW_MDIO_PHY_MODE_REG, reg + 2,
-+				  val >> 16);
- 	if (ret < 0)
- 		goto error;
- 
--	ret = __ar9331_mdio_write(sbus, AR9331_SW_MDIO_PHY_MODE_REG, reg + 2,
--				  val >> 16);
-+	ret = __ar9331_mdio_write(sbus, AR9331_SW_MDIO_PHY_MODE_REG, reg, val);
- 	if (ret < 0)
- 		goto error;
- 
- 	return 0;
+Seems like btmtksdio needs shudown() to be called before flush().
+Since the order was there for a very long time, changing the calling
+order indeed can break what driver expects.
+Can you please test the following patch:
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 2560ed2f144d..a61e610a400c 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -1785,6 +1785,14 @@ int hci_dev_do_close(struct hci_dev *hdev)
+        aosp_do_close(hdev);
+        msft_do_close(hdev);
+
++       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
++           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
++           test_bit(HCI_UP, &hdev->flags)) {
++               /* Execute vendor specific shutdown routine */
++               if (hdev->shutdown)
++                       hdev->shutdown(hdev);
++       }
 +
- error:
- 	dev_err_ratelimited(&sbus->dev, "Bus error. Failed to write register.\n");
- 	return ret;
--- 
-2.30.2
+        if (hdev->flush)
+                hdev->flush(hdev);
 
+@@ -1798,14 +1806,6 @@ int hci_dev_do_close(struct hci_dev *hdev)
+                clear_bit(HCI_INIT, &hdev->flags);
+        }
+
+-       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
+-           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
+-           test_bit(HCI_UP, &hdev->flags)) {
+-               /* Execute vendor specific shutdown routine */
+-               if (hdev->shutdown)
+-                       hdev->shutdown(hdev);
+-       }
+-
+        /* flush cmd  work */
+        flush_work(&hdev->cmd_work);
+
+Kai-Heng
+
+>
+> Mattijs
+> >
+> > Kai-Heng
+> >
+> >>
+> >> Thanks,
+> >> Mattijs Korpershoek
+> >>
+> >>
+> >> >
+> >> > Regards
+> >> >
+> >> > Marcel
