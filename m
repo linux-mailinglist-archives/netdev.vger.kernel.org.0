@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF9033DF865
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 01:20:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E46E3DF867
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 01:20:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233938AbhHCXUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 19:20:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38974 "EHLO mail.kernel.org"
+        id S233962AbhHCXUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 19:20:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38984 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233498AbhHCXUd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233548AbhHCXUd (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 3 Aug 2021 19:20:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 07BB560F94;
-        Tue,  3 Aug 2021 23:20:20 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A8CCF60FA0;
+        Tue,  3 Aug 2021 23:20:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628032821;
-        bh=AFc/6k5YwUwP9AAOKk7bsRXYfF/doRJC0xMN4+zaCwM=;
+        s=k20201202; t=1628032822;
+        bh=Uja8RzoMCc9BpUyWv8o01AMrFBPiPQUqo8GWoNessjw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z8rtetJNIy1A+OrVyI3/SqkUmx/G5HW7LAfoE5s1M8AK064Mkk/pDGL3LOY4C01pl
-         Qy+NbvwGYEuiko8zSBAqG2L0CWkpfrkSRKfEKbqevVqAJuLSgSxMtA1JahPaV5I6Xb
-         Nq3wtO+bB0/LoohoeEzRu/CrJ8bG6u0gYIwiletYdTkOflDGdrQSzO/MLaZyPeAeGe
-         /z17Rg/WGMIqm+lqZIvUlZjR66FdHyMyXBCzKdyRp5PiU6C+5NC8rq3NIZqXV+3mu5
-         CmVkjOWpGdYxDzpYajjQQbfe636pceY52F8Aq/rn5UnB5Te+ekneZjedioGPJVnAoT
-         /HheTpl/Dc3Zw==
+        b=CtacHI6n42JUQrWq+Ln86y9afrcNi7wQxmAWtCBsoNL3rOkyGaU4eE6xvPIT1qFrt
+         LPHtu9mFbOnpFRpoMfextBBoai1ZQWUZKiJn+V55MuF0yjxx3dvven72hP7SKepYSJ
+         aVQGYdht3P+u9xSXfOz1xXix8NtxzD9yXQdgHSxsbspstXKlsXuVzBoJn2L763Mb7e
+         AJswtI0U/GlxXm5LDWmdOjLBj6bUl1oeESm3573P7N9EsbHTqG3dszDJWwVMB1Ew0E
+         MFcbGxDC0R6Pg2iQoh80Gc2y8rLIunm+3UzbRJwmRSovK6MYzTahupBBmayRzWEWgQ
+         rBi92jN9uA58g==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     Saeed Mahameed <saeedm@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>
 Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        Roi Dayan <roid@nvidia.com>
-Subject: [PATCH mlx5-next 08/14] net/mlx5e: Use shared mappings for restoring from metadata
-Date:   Tue,  3 Aug 2021 16:19:53 -0700
-Message-Id: <20210803231959.26513-9-saeed@kernel.org>
+        Mark Bloch <mbloch@nvidia.com>,
+        Mark Zhang <markzhang@nvidia.com>
+Subject: [PATCH mlx5-next 09/14] net/mlx5: E-Switch, Add event callback for representors
+Date:   Tue,  3 Aug 2021 16:19:54 -0700
+Message-Id: <20210803231959.26513-10-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210803231959.26513-1-saeed@kernel.org>
 References: <20210803231959.26513-1-saeed@kernel.org>
@@ -40,165 +41,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+From: Mark Bloch <mbloch@nvidia.com>
 
-FTEs are added with mapped metadata which is saved per eswitch.
-When uplink reps are bonded and we are in a single FDB mode,
-we could fail to find metadata which was stored on one eswitch mapping
-but not the other or with a different id.
-To resolve this issue use shared mapping between eswitch ports.
-We do not have any conflict using a single mapping, for a type,
-between the ports.
+This callback will allow to notify representors about relevant events
+when in OFFLOADS mode. In downstream patches, this will be used to notify
+about PAIR/UNPAIR devcom events.
 
-Signed-off-by: Roi Dayan <roid@nvidia.com>
+Signed-off-by: Mark Bloch <mbloch@nvidia.com>
+Reviewed-by: Mark Zhang <markzhang@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/tc_ct.c    |  9 ++++++--
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 21 ++++++++++++++-----
- .../net/ethernet/mellanox/mlx5/core/eswitch.h |  8 +++++++
- .../mellanox/mlx5/core/eswitch_offloads.c     | 11 +++++++---
- 4 files changed, 39 insertions(+), 10 deletions(-)
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 50 +++++++++++++++++--
+ include/linux/mlx5/eswitch.h                  |  9 ++++
+ 2 files changed, 56 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index 91e7a01e32be..b1707b86aa16 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -2138,6 +2138,7 @@ mlx5_tc_ct_init(struct mlx5e_priv *priv, struct mlx5_fs_chains *chains,
- 	struct mlx5_tc_ct_priv *ct_priv;
- 	struct mlx5_core_dev *dev;
- 	const char *msg;
-+	u64 mapping_id;
- 	int err;
- 
- 	dev = priv->mdev;
-@@ -2153,13 +2154,17 @@ mlx5_tc_ct_init(struct mlx5e_priv *priv, struct mlx5_fs_chains *chains,
- 	if (!ct_priv)
- 		goto err_alloc;
- 
--	ct_priv->zone_mapping = mapping_create(sizeof(u16), 0, true);
-+	mapping_id = mlx5_query_nic_system_image_guid(dev);
-+
-+	ct_priv->zone_mapping = mapping_create_for_id(mapping_id, MAPPING_TYPE_ZONE,
-+						      sizeof(u16), 0, true);
- 	if (IS_ERR(ct_priv->zone_mapping)) {
- 		err = PTR_ERR(ct_priv->zone_mapping);
- 		goto err_mapping_zone;
- 	}
- 
--	ct_priv->labels_mapping = mapping_create(sizeof(u32) * 4, 0, true);
-+	ct_priv->labels_mapping = mapping_create_for_id(mapping_id, MAPPING_TYPE_LABELS,
-+							sizeof(u32) * 4, 0, true);
- 	if (IS_ERR(ct_priv->labels_mapping)) {
- 		err = PTR_ERR(ct_priv->labels_mapping);
- 		goto err_mapping_labels;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 629a61e8022f..aca677933423 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -4848,6 +4848,7 @@ int mlx5e_tc_nic_init(struct mlx5e_priv *priv)
- 	struct mlx5_core_dev *dev = priv->mdev;
- 	struct mapping_ctx *chains_mapping;
- 	struct mlx5_chains_attr attr = {};
-+	u64 mapping_id;
- 	int err;
- 
- 	mlx5e_mod_hdr_tbl_init(&tc->mod_hdr);
-@@ -4861,8 +4862,12 @@ int mlx5e_tc_nic_init(struct mlx5e_priv *priv)
- 
- 	lockdep_set_class(&tc->ht.mutex, &tc_ht_lock_key);
- 
--	chains_mapping = mapping_create(sizeof(struct mlx5_mapped_obj),
--					MLX5E_TC_TABLE_CHAIN_TAG_MASK, true);
-+	mapping_id = mlx5_query_nic_system_image_guid(dev);
-+
-+	chains_mapping = mapping_create_for_id(mapping_id, MAPPING_TYPE_CHAIN,
-+					       sizeof(struct mlx5_mapped_obj),
-+					       MLX5E_TC_TABLE_CHAIN_TAG_MASK, true);
-+
- 	if (IS_ERR(chains_mapping)) {
- 		err = PTR_ERR(chains_mapping);
- 		goto err_mapping;
-@@ -4951,6 +4956,7 @@ int mlx5e_tc_esw_init(struct rhashtable *tc_ht)
- 	struct mapping_ctx *mapping;
- 	struct mlx5_eswitch *esw;
- 	struct mlx5e_priv *priv;
-+	u64 mapping_id;
- 	int err = 0;
- 
- 	uplink_priv = container_of(tc_ht, struct mlx5_rep_uplink_priv, tc_ht);
-@@ -4967,8 +4973,12 @@ int mlx5e_tc_esw_init(struct rhashtable *tc_ht)
- 	uplink_priv->esw_psample = mlx5_esw_sample_init(netdev_priv(priv->netdev));
- #endif
- 
--	mapping = mapping_create(sizeof(struct tunnel_match_key),
--				 TUNNEL_INFO_BITS_MASK, true);
-+	mapping_id = mlx5_query_nic_system_image_guid(esw->dev);
-+
-+	mapping = mapping_create_for_id(mapping_id, MAPPING_TYPE_TUNNEL,
-+					sizeof(struct tunnel_match_key),
-+					TUNNEL_INFO_BITS_MASK, true);
-+
- 	if (IS_ERR(mapping)) {
- 		err = PTR_ERR(mapping);
- 		goto err_tun_mapping;
-@@ -4976,7 +4986,8 @@ int mlx5e_tc_esw_init(struct rhashtable *tc_ht)
- 	uplink_priv->tunnel_mapping = mapping;
- 
- 	/* 0xFFF is reserved for stack devices slow path table mark */
--	mapping = mapping_create(sz_enc_opts, ENC_OPTS_BITS_MASK - 1, true);
-+	mapping = mapping_create_for_id(mapping_id, MAPPING_TYPE_TUNNEL_ENC_OPTS,
-+					sz_enc_opts, ENC_OPTS_BITS_MASK - 1, true);
- 	if (IS_ERR(mapping)) {
- 		err = PTR_ERR(mapping);
- 		goto err_enc_opts_mapping;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-index 48cac5bf606d..c3a47349f447 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-@@ -86,6 +86,14 @@ struct mlx5_mapped_obj {
- #define esw_chains(esw) \
- 	((esw)->fdb_table.offloads.esw_chains_priv)
- 
-+enum {
-+	MAPPING_TYPE_CHAIN,
-+	MAPPING_TYPE_TUNNEL,
-+	MAPPING_TYPE_TUNNEL_ENC_OPTS,
-+	MAPPING_TYPE_LABELS,
-+	MAPPING_TYPE_ZONE,
-+};
-+
- struct vport_ingress {
- 	struct mlx5_flow_table *acl;
- 	struct mlx5_flow_handle *allow_rule;
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index 1735be77e1fd..dd5eadd6047b 100644
+index dd5eadd6047b..b57a5c188832 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -2787,6 +2787,7 @@ int esw_offloads_enable(struct mlx5_eswitch *esw)
- 	struct mapping_ctx *reg_c0_obj_pool;
- 	struct mlx5_vport *vport;
- 	unsigned long i;
-+	u64 mapping_id;
- 	int err;
+@@ -2316,11 +2316,22 @@ void esw_offloads_unload_rep(struct mlx5_eswitch *esw, u16 vport_num)
+ #define ESW_OFFLOADS_DEVCOM_PAIR	(0)
+ #define ESW_OFFLOADS_DEVCOM_UNPAIR	(1)
  
- 	if (MLX5_CAP_ESW_FLOWTABLE_FDB(esw->dev, reformat) &&
-@@ -2810,9 +2811,13 @@ int esw_offloads_enable(struct mlx5_eswitch *esw)
- 	if (err)
- 		goto err_vport_metadata;
+-static int mlx5_esw_offloads_pair(struct mlx5_eswitch *esw,
+-				  struct mlx5_eswitch *peer_esw)
++static void mlx5_esw_offloads_rep_event_unpair(struct mlx5_eswitch *esw)
+ {
++	const struct mlx5_eswitch_rep_ops *ops;
++	struct mlx5_eswitch_rep *rep;
++	unsigned long i;
++	u8 rep_type;
  
--	reg_c0_obj_pool = mapping_create(sizeof(struct mlx5_mapped_obj),
--					 ESW_REG_C0_USER_DATA_METADATA_MASK,
--					 true);
-+	mapping_id = mlx5_query_nic_system_image_guid(esw->dev);
+-	return esw_add_fdb_peer_miss_rules(esw, peer_esw->dev);
++	mlx5_esw_for_each_rep(esw, i, rep) {
++		rep_type = NUM_REP_TYPES;
++		while (rep_type--) {
++			ops = esw->offloads.rep_ops[rep_type];
++			if (atomic_read(&rep->rep_data[rep_type].state) == REP_LOADED &&
++			    ops->event)
++				ops->event(esw, rep, MLX5_SWITCHDEV_EVENT_UNPAIR, NULL);
++		}
++	}
+ }
+ 
+ static void mlx5_esw_offloads_unpair(struct mlx5_eswitch *esw)
+@@ -2328,9 +2339,42 @@ static void mlx5_esw_offloads_unpair(struct mlx5_eswitch *esw)
+ #if IS_ENABLED(CONFIG_MLX5_CLS_ACT)
+ 	mlx5e_tc_clean_fdb_peer_flows(esw);
+ #endif
++	mlx5_esw_offloads_rep_event_unpair(esw);
+ 	esw_del_fdb_peer_miss_rules(esw);
+ }
+ 
++static int mlx5_esw_offloads_pair(struct mlx5_eswitch *esw,
++				  struct mlx5_eswitch *peer_esw)
++{
++	const struct mlx5_eswitch_rep_ops *ops;
++	struct mlx5_eswitch_rep *rep;
++	unsigned long i;
++	u8 rep_type;
++	int err;
 +
-+	reg_c0_obj_pool = mapping_create_for_id(mapping_id, MAPPING_TYPE_CHAIN,
-+						sizeof(struct mlx5_mapped_obj),
-+						ESW_REG_C0_USER_DATA_METADATA_MASK,
-+						true);
++	err = esw_add_fdb_peer_miss_rules(esw, peer_esw->dev);
++	if (err)
++		return err;
 +
- 	if (IS_ERR(reg_c0_obj_pool)) {
- 		err = PTR_ERR(reg_c0_obj_pool);
- 		goto err_pool;
++	mlx5_esw_for_each_rep(esw, i, rep) {
++		for (rep_type = 0; rep_type < NUM_REP_TYPES; rep_type++) {
++			ops = esw->offloads.rep_ops[rep_type];
++			if (atomic_read(&rep->rep_data[rep_type].state) == REP_LOADED &&
++			    ops->event) {
++				err = ops->event(esw, rep, MLX5_SWITCHDEV_EVENT_PAIR, peer_esw);
++				if (err)
++					goto err_out;
++			}
++		}
++	}
++
++	return 0;
++
++err_out:
++	mlx5_esw_offloads_unpair(esw);
++	return err;
++}
++
+ static int mlx5_esw_offloads_set_ns_peer(struct mlx5_eswitch *esw,
+ 					 struct mlx5_eswitch *peer_esw,
+ 					 bool pair)
+diff --git a/include/linux/mlx5/eswitch.h b/include/linux/mlx5/eswitch.h
+index 0bfcf7b8ecf9..4ab5c1fc1270 100644
+--- a/include/linux/mlx5/eswitch.h
++++ b/include/linux/mlx5/eswitch.h
+@@ -29,11 +29,20 @@ enum {
+ 	REP_LOADED,
+ };
+ 
++enum mlx5_switchdev_event {
++	MLX5_SWITCHDEV_EVENT_PAIR,
++	MLX5_SWITCHDEV_EVENT_UNPAIR,
++};
++
+ struct mlx5_eswitch_rep;
+ struct mlx5_eswitch_rep_ops {
+ 	int (*load)(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep);
+ 	void (*unload)(struct mlx5_eswitch_rep *rep);
+ 	void *(*get_proto_dev)(struct mlx5_eswitch_rep *rep);
++	int (*event)(struct mlx5_eswitch *esw,
++		     struct mlx5_eswitch_rep *rep,
++		     enum mlx5_switchdev_event event,
++		     void *data);
+ };
+ 
+ struct mlx5_eswitch_rep_data {
 -- 
 2.31.1
 
