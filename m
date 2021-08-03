@@ -2,167 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DC583DEC2B
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:37:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C7383DEC55
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:41:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235922AbhHCLhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 07:37:19 -0400
-Received: from mail-dm6nam12on2109.outbound.protection.outlook.com ([40.107.243.109]:18528
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235907AbhHCLhQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 07:37:16 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jr6Crt5EslP+tLI9OyjxN5XAf3L2InL/xTqdpXFea54H8hpnjxJ7hOObrnsHTMeW8pPVMn/Rsy7Nt7u9YQyxq181+TUxR2Q4T7s8PIoijrIGdZGqArBKDcuf1/1BRhYAvP+cImlVrbQLaZ7ySpJeSmru989SwDV4w8j/5o/jP0DvI3IRLUCtBMWEnpDDgLXnWxh7cKaIQ9FapFFuQPd4P7zRNb/fqzgVfrS21emPk4AvlVmwNbtScPO/Luaw+KficIVTvzcyuFr4dzQlcUcVzDzgLe4BU723gzkkOClrhlBYiw+dKMKMNC8jbA2C4oVILTgLGgMDUatKyevZMBPSkQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vRPbo78WRY9onSULSK0PxO4Mwa/6dHghRhlFZTTOkuE=;
- b=R8xUExttEUcuXVloaGroNeW3CAPomZ4l5lKScTKh7HEI1LdNiC/ChUfKXveL0utjzPT/IJ/FHdb/IQY+R4xynyDgjkF6BL7v9x5d6rgrIaQagrx5m7ySSxbTJf/KGxWTvf5hjt+9ESEomIop0NaloDLKZp1GkaNbPG/3OiweMrfyZ7oo91EJjFhoSow/KfECr9u9hEpNSgVU0BnSH7PdX4H5bzqpej5TXAroDkggPYYU0nHaCjweqIM36GVI1qS2UZ6OQ/ZpVvmBYxRB2bX1tlO4YwvEbTK1Oid1bnRMlFSv6HOt96sh+zKUcFFX3M9qK09kxVhmD5LuPjqcNEQRVA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vRPbo78WRY9onSULSK0PxO4Mwa/6dHghRhlFZTTOkuE=;
- b=vxmMyoRbxjiqlBhky6pKkztKScBWO/2tEB2g0KSHqtJS+eSt88xl98Evzn2yy2YA3QvQYplQxtOmIbGdLbnAfPjliLkvZBMGwnd5oLUD9ndXyKCz/60cTpkqIqes+V/2BwR7J0DBoK+UFG/Q0dkDSBPHM5XuXOsRFX+XjeuOCfE=
-Authentication-Results: mojatatu.com; dkim=none (message not signed)
- header.d=none;mojatatu.com; dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB4891.namprd13.prod.outlook.com (2603:10b6:510:96::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.12; Tue, 3 Aug
- 2021 11:37:02 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::cd1:e3ba:77fd:f4f3]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::cd1:e3ba:77fd:f4f3%9]) with mapi id 15.20.4373.023; Tue, 3 Aug 2021
- 11:37:02 +0000
-Date:   Tue, 3 Aug 2021 13:36:55 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Vlad Buslov <vladbu@nvidia.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com, Baowen Zheng <baowen.zheng@corigine.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>, Roopa Prabhu <roopa@nvidia.com>
-Subject: Re: [PATCH net-next 1/3] flow_offload: allow user to offload tc
- action to net device
-Message-ID: <20210803113655.GC23765@corigine.com>
-References: <20210727130419.GA6665@corigine.com>
- <ygnh7dhbrfd0.fsf@nvidia.com>
- <95d6873c-256c-0462-60f7-56dbffb8221b@mojatatu.com>
- <ygnh4kcfr9e8.fsf@nvidia.com>
- <20210728074616.GB18065@corigine.com>
- <7004376d-5576-1b9c-21bc-beabd05fa5c9@mojatatu.com>
- <20210728144622.GA5511@corigine.com>
- <2ba4e24f-e34e-f893-d42b-d0fd40794da5@mojatatu.com>
- <20210730132002.GA31790@corigine.com>
- <a91ab46a-4325-bd98-47db-cb93989cf3c4@mojatatu.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a91ab46a-4325-bd98-47db-cb93989cf3c4@mojatatu.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: AM0PR03CA0107.eurprd03.prod.outlook.com
- (2603:10a6:208:69::48) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        id S235753AbhHCLlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 07:41:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32822 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235596AbhHCLlP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 07:41:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0EC7B60560;
+        Tue,  3 Aug 2021 11:41:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627990864;
+        bh=tgIXMlrpgPMftjmh86rBN4lsD6F7+4KJtVtcFSF6V4E=;
+        h=From:To:Cc:Subject:Date:From;
+        b=oBnNB3SzVNE2Pp9w9eeN5zhzRm1zPW5HR/13j1cITjW4sHdJkVDPtu3dFIehB8XS4
+         S+j8b434iWqMB+dPSJYVsqhdlm7wlQRyoDmAslwxwbXqLRWocJRa3ykdZ49d2o/0GP
+         sJjq1kxh81hsxVUR1Y576YrU815sgjfmQ//D5LaLRV9e4T/TJhVJAnhahWfFwmiOpo
+         UaZ/rmjTEIKRN6JFzqFPpKxTqabyx/IWVdVn/b+zhORZGiObCtN2Ig48r8PlYP79wq
+         o2N5UzA9DBA2j6mqMPqfIueylbZjfk/2/n0cOX/RHWlmrDC8EZK4SK7o9rxr+RDu7J
+         zFfnNCtJOlGiA==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Andrii Nakryiko <andriin@fb.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Doug Berger <opendmb@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Finn Thain <fthain@telegraphics.com.au>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Jakub Kicinski <kuba@kernel.org>, Jessica Yu <jeyu@kernel.org>,
+        Michael Schmitz <schmitzmic@gmail.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Sam Creasey <sammy@sammy.net>, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com
+Subject: [PATCH v2 00/14] [net-next] drivers/net/Space.c cleanup
+Date:   Tue,  3 Aug 2021 13:40:37 +0200
+Message-Id: <20210803114051.2112986-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from corigine.com (2001:982:7ed1:403:201:8eff:fe22:8fea) by AM0PR03CA0107.eurprd03.prod.outlook.com (2603:10a6:208:69::48) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.21 via Frontend Transport; Tue, 3 Aug 2021 11:36:59 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e001c7c7-e750-4424-dd76-08d9567302f4
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4891:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PH0PR13MB489115E5DFE2D391BB7AE7CFE8F09@PH0PR13MB4891.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: s14kqughT0xGi59o22N4DC/8GQGoQ2+s6xmBGph5x9eka9mWfOoo37dwbUbBv0yvwgxSQIf8fwX6hiHuPoLpigdhq/yET0P0PL/vP0xL6wEbrl3mfkmL5a2TYuJGs4HcG2WmwfDClZVDj2DWz2O68RxukG1+LnSLERvXbNzDZEPAj4e1ipQkePWHzn/kAbbKoB2YQfgplPAtA6M78B8jgiXJ/GsAog9eSYSc3HFV1+Cs/w39Mf/qLN3vGpDIf6Khm6bNT8xjn1iFPpc9ow8YN7aZLZxvLnZJaFHHPAGiykv77JeR+s7/NuNGh3RyvYx7hQy+L2JDlMHbPhIJ+6keB1HKyd7mVMWq5xIVpMvFgKDRIlAWU4G3HUO4C/t3AiP0MjRo4qbhCc+BbOAjD7OS97RJNxToDYkTU6YsMjvFLyveJIyd8hhgjjW3wrBFAB5/tbIWQRiCIHWQD1qOp7QkBEuwfjclq8/GH9al2D7TazYEihBq7Ga4pURzXZrAzeJwbwwCMQQh2jv2Y8IcGygs8AL0K3tPjklYorf8PV61JKhcYxoClda/F87C9LhmL5FKb+N63vQWEJtLsPRE9hm57jnsalSculx6UZesz2iaBFOBWMhhNVlaMh0wm6yjB16tm3T4rZMEJUfogtzRh04Uow==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(396003)(366004)(136003)(39830400003)(346002)(53546011)(83380400001)(2616005)(7696005)(44832011)(52116002)(36756003)(186003)(86362001)(478600001)(33656002)(66946007)(38100700002)(66556008)(4326008)(316002)(6666004)(6916009)(1076003)(55016002)(8936002)(66476007)(8886007)(54906003)(5660300002)(8676002)(7416002)(2906002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PBg43BEy3Ib6BuYYj54UJqpsad+Eyh42qe2J2GhhVNaYFe12eC5DXCntFdN2?=
- =?us-ascii?Q?hYg4dlwhoeTW3+h4WmVxK1EgyYkTWpa+7q8jIZYyx3r2fu8nKw+Aeuhw2c77?=
- =?us-ascii?Q?xSSrIS2mbcSfGQoFRoI8eUGw16MIPRhZB6VbYp39HC9yYtOGBjJwvRzRrgIq?=
- =?us-ascii?Q?3sxlAnCkJ5tmEaB0gmgjvFVi7mim4jUsWZ6d0SdysF/4DJvf0HvyZ0BnRc28?=
- =?us-ascii?Q?D/UcXJWsOh/liD+IscKRRo6/LXQXwHwfq/HLUtVnZZ4E1rzWYWTJ1SLABl+n?=
- =?us-ascii?Q?695PtjFjQcxBuD/iYZo4XDnj8uopgIrRnK56g8Ntl8zfb+2qa6mLEu0AwsOk?=
- =?us-ascii?Q?mx5ywjXiB+XStCe4GmztcPFR3ja3Z11wmWusF49dtFn7/g4tmppX3ZI9n3j+?=
- =?us-ascii?Q?pHGJGRq5K29gvq+XF5a9kxTqJFYTiSYVqjFKqZaQ37DkE0A5nqUgmK8aFFuJ?=
- =?us-ascii?Q?Jbq5R/htt75Y0kxMEulYnMutCLZGWq+h6Ld/+/BfGQR36voc5GTM2JIioMp0?=
- =?us-ascii?Q?QOt828TNBbVQiCswWVZln8Lx8n8FI/qAtR8RcO+JP2hCGV6JBwmxUMY9mXE+?=
- =?us-ascii?Q?XtK1F6Yy+3r+WuiRraOPsmZM3OWRQIrkKgCAXuR+Ex6pR850/9gCY2/Y1TO3?=
- =?us-ascii?Q?G8XEOWr/H+D7hR/p1s5ZFQjyVA93KFvDWURqOiAyA3pxfCmwf7t0dkg4kEoW?=
- =?us-ascii?Q?VGHelVpDCAYPG+NPLDXTDATJGYbMlC+9eEc/3i/mk6phSqm3g0fJOCEpvwhx?=
- =?us-ascii?Q?O9OGKXerjeIYSgnZDthIFjYztTHDIvjpU1O6RuZ37i2zo55OCyBS7dV3AgBy?=
- =?us-ascii?Q?WOJpqeXbasA+0MU6JfTocoH+RVZHZhTnngwFuDz/2tlk97M7Oi6gIOTIoPb2?=
- =?us-ascii?Q?DEeEZIsmyoDigX3IlWVJwHm2iq1ZV5P9GSeWddScuXmQVQRGr/t32P2lZTS5?=
- =?us-ascii?Q?5Ea9Ot/zf2balfRBB+wkbHIfoBrTi/VXmbUoTKapqIhHnmgFcHlcnyJw8Vph?=
- =?us-ascii?Q?QG3yNn554iXv7c/9Z+veHcWox8URWchWXy9s3ul6V5H+Rb7lGOyvxmPcdTnz?=
- =?us-ascii?Q?4qjJaXOS6fKjtgdo7sGzNiGxHKERDSeTPryOm+urnxSNmHOSSDTTiw72scLP?=
- =?us-ascii?Q?27lNEeuM+LU3NQ5K/iJ5nxi1wiBjfeY19jOLPTzdrGN2R76syb34xt6a7kpx?=
- =?us-ascii?Q?ZgWq32A/8BPhs6RTb8Hgs6Dp2RHvSYwrUeHtQV/1Yho79e5yh3M3DH5Zr1Hf?=
- =?us-ascii?Q?uSkVd/RYwUekDTIRwiy3/bBf8WYW3x5h9uL1HsWRbzgRg/Xk2158I/pS9vEZ?=
- =?us-ascii?Q?U9+k8p0knCbkSg2mH75RRAxFhiN7aglzlQdwGXYfP/54h2+OLgC1WQORmLCd?=
- =?us-ascii?Q?ySyQ9ThzXQioNl5/D6JSS6uRjm5Q?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e001c7c7-e750-4424-dd76-08d9567302f4
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2021 11:37:02.1560
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LqgAKV5O6I+8hjq4ALywgHmliEVMKTM+9UW72TsYlI4qIJ7FFeL6pauYf+Xe6vI8xNweB9lgcxLr6Ajy3BImP6LDmclqNB8oKTtGHe7SeRc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4891
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 03, 2021 at 06:14:08AM -0400, Jamal Hadi Salim wrote:
-> On 2021-07-30 9:20 a.m., Simon Horman wrote:
-> > On Fri, Jul 30, 2021 at 06:17:18AM -0400, Jamal Hadi Salim wrote:
-> > > On 2021-07-28 10:46 a.m., Simon Horman wrote:
-> 
-> [..]
-> 
-> > > It still not clear to me what it means from a command line pov.
-> > > How do i add a rule and when i dump it what does it show?
-> > 
-> > How about we confirm that once we've implemented the feature.
-> > 
-> > But I would assume that:
-> > 
-> > * Existing methods for adding rules work as before
-> > * When one dumps an action (in a sufficiently verbose
-> >    way) the in_hw and in_hw_counter fields are displayed as they are for
-> >    filters.
-> > 
-> > Does that help?
-> > 
-> 
-> I think it would help a lot more to say explicitly what it actually
-> means in the cover letter from a tc cli pov since the subject
-> is about offloading actions _independently_ of filters.
-> I am assuming you have some more patches on top of these that
-> actually will actually work for that.
-> 
-> Example of something you could show was adding a policer,
-> like so:
-> 
-> tc actions add action ... skip_sw...
-> 
-> then show get or dump showing things in h/w.
-> And del..
-> 
-> And i certainly hope that the above works and it is
-> not meant just for the consumption of some OVS use
-> case.
+From: Arnd Bergmann <arnd@arndb.de>
 
-I agree it would be useful to include a tc cli example in the cover letter.
-I'll see about making that so in v2.
+I discovered that there are still a couple of drivers that rely on
+beiong statically initialized from drivers/net/Space.c the way
+we did in the last century. As it turns out, there are a couple
+of simplifications that can be made here, as well as some minor
+bugfixes.
+
+There are four classes of drivers that use this:
+
+- most 10mbit ISA bus ethernet drivers (and one 100mbit one)
+- both ISA localtalk drivers
+- several m68k ethernet drivers
+- one obsolete WAN driver
+
+I found that the drivers using in arch/m68k/ don't actually benefit
+from being probed this way as they do not rely on the netdev= command
+line arguments, they have simply never been changed to work like a
+modern driver.
+
+I had previously sent a patch to remove the sbni/granch driver, and
+there were no objections to this patch but forgot to resend it after
+some discussion about another patch in the same series.
+
+For the ISA drivers, there is usually no way to probe multiple devices
+at boot time other than the netdev= arguments, so all that logic is left
+in place for the moment, but centralized in a single file that only gets
+included in the kernel build if one or more of the drivers are built-in.
+
+I'm also changing the old-style init_module() functions in these drivers
+to static functions with a module_init() annotation, to more closely
+resemble modern drivers. These are the last drivers in the kernel to
+still use init_module/cleanup_module, removing those may enable future
+cleanups to the module loading process.
+
+       Arnd
+
+Changes in v2:
+
+- replace xsurf100 change with Michael's version
+- make it PATCH instead of RFC
+- rebase to net-next as of August 3
+
+Arnd Bergmann (12):
+  [net-next] bcmgenet: remove call to netdev_boot_setup_check
+  [net-next] natsemi: sonic: stop calling netdev_boot_setup_check
+  [net-next] appletalk: ltpc: remove static probing
+  [net-next] 3c509: stop calling netdev_boot_setup_check
+  [net-next] cs89x0: rework driver configuration
+  [net-next] m68k: remove legacy probing
+  [net-next] move netdev_boot_setup into Space.c
+  [net-next] make legacy ISA probe optional
+  [net-next] wan: remove stale Kconfig entries
+  [net-next] wan: remove sbni/granch driver
+  [net-next] wan: hostess_sv11: use module_init/module_exit helpers
+  [net-next] ethernet: isa: convert to module_init/module_exit
+
+Michael Schmitz (2):
+  [net-next] ax88796: export ax_NS8390_init() hook
+  [net-next] xsurf100: drop include of lib8390.c
+
+ .../admin-guide/kernel-parameters.txt         |    2 -
+ drivers/net/Kconfig                           |    7 +
+ drivers/net/Makefile                          |    3 +-
+ drivers/net/Space.c                           |  178 +-
+ drivers/net/appletalk/Kconfig                 |    4 +-
+ drivers/net/appletalk/ltpc.c                  |    7 +-
+ drivers/net/ethernet/3com/3c509.c             |    3 -
+ drivers/net/ethernet/3com/3c515.c             |    3 +-
+ drivers/net/ethernet/3com/Kconfig             |    1 +
+ drivers/net/ethernet/8390/Kconfig             |    3 +
+ drivers/net/ethernet/8390/apne.c              |   11 +-
+ drivers/net/ethernet/8390/ax88796.c           |    7 +
+ drivers/net/ethernet/8390/ne.c                |    5 +-
+ drivers/net/ethernet/8390/smc-ultra.c         |    9 +-
+ drivers/net/ethernet/8390/wd.c                |    7 +-
+ drivers/net/ethernet/8390/xsurf100.c          |    9 +-
+ drivers/net/ethernet/amd/Kconfig              |    2 +
+ drivers/net/ethernet/amd/atarilance.c         |   11 +-
+ drivers/net/ethernet/amd/lance.c              |    6 +-
+ drivers/net/ethernet/amd/mvme147.c            |   16 +-
+ drivers/net/ethernet/amd/ni65.c               |    6 +-
+ drivers/net/ethernet/amd/sun3lance.c          |   19 +-
+ .../net/ethernet/broadcom/genet/bcmgenet.c    |    2 -
+ drivers/net/ethernet/cirrus/Kconfig           |   27 +-
+ drivers/net/ethernet/cirrus/cs89x0.c          |   31 +-
+ drivers/net/ethernet/i825xx/82596.c           |   24 +-
+ drivers/net/ethernet/i825xx/sun3_82586.c      |   17 +-
+ drivers/net/ethernet/natsemi/jazzsonic.c      |    2 -
+ drivers/net/ethernet/natsemi/xtsonic.c        |    1 -
+ drivers/net/ethernet/smsc/Kconfig             |    1 +
+ drivers/net/ethernet/smsc/smc9194.c           |    6 +-
+ drivers/net/wan/Kconfig                       |   51 -
+ drivers/net/wan/Makefile                      |    1 -
+ drivers/net/wan/hostess_sv11.c                |    6 +-
+ drivers/net/wan/sbni.c                        | 1639 -----------------
+ drivers/net/wan/sbni.h                        |  147 --
+ include/linux/netdevice.h                     |   13 -
+ include/net/Space.h                           |   10 -
+ include/net/ax88796.h                         |    3 +
+ init/main.c                                   |    6 +-
+ net/core/dev.c                                |  125 --
+ net/ethernet/eth.c                            |    2 -
+ 42 files changed, 271 insertions(+), 2162 deletions(-)
+ delete mode 100644 drivers/net/wan/sbni.c
+ delete mode 100644 drivers/net/wan/sbni.h
+
+-- 
+2.29.2
+
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Andrii Nakryiko <andriin@fb.com>
+Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: Doug Berger <opendmb@gmail.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Finn Thain <fthain@telegraphics.com.au>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Jessica Yu <jeyu@kernel.org>
+Cc: Michael Schmitz <schmitzmic@gmail.com>
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: Sam Creasey <sammy@sammy.net>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: bcm-kernel-feedback-list@broadcom.com
