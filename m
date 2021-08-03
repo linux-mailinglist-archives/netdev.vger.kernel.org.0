@@ -2,149 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C67ED3DE9DA
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 11:41:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA0AB3DE9E8
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 11:44:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235056AbhHCJl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 05:41:58 -0400
-Received: from mail-bn8nam11on2115.outbound.protection.outlook.com ([40.107.236.115]:33888
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235038AbhHCJlZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 05:41:25 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O1v/s3fRv1N6TVLVqfnaQA4U38+i7zuaAs8q59uWbnGD3E4gFU+Iticp678bPYpRT4tV7AQwh/V2I30C9Xw+FMlFLf4vtJTluhMAhou5r0piBnnHfaQB2AdLAUQ/ZbSEZvFFtUufsj5aIOg6OakD3IuWVgWkFzAS5UFAHBEZFAuOMC9BtADsZ5PyXPPQCZ/2aD7ZWoAmqPUUNjpawghfYEERb67iecKUFVokQuMZFwkxnVASdm2cJmCJMwmB9o5KYJDDRbGPLpMWPBsPfxDeFxVQp7XwfdfuW6nC6qYCkp2/hJGQ6F7MvxNacXUYzv0k+H+pFjNxRj7N3jw5NJwmEg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=53Z0UWOoBH8G4GqRmB3TwR4FiupFckFSp54nTIZw+FA=;
- b=G6gRzQF4gY8zOYk7LXHpRzEUSKMnG7J5/tsg/W2i8zXrBtOtC87b9wdInTXTGAu7oYxnJpUAUIxDJmFD4ojWQIYkG03Io6PBUzHNgcUiqD+Z4KYVSqQhsO5/vDGFA8luoBI8qeyzXD/bo+2d/M4WikCMkdgeRCajG4RwtUrIpA5324yKdusThxy5sIXT+WHWpaeoh/+SkemO5v1YcX1MwaRHoRl8AXT8KblYxAUsVEr0IRbLE3NUhMqIuUIYIzO+w8Hti2vujxcyC63dcOZi7zyA6Pb5pR5+J7DTwgpFALUsYQc4qXtYCf7V6j5lNkWGRa9EPNd6AgD0I1Mulxn3eA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        id S235179AbhHCJpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 05:45:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44198 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235139AbhHCJpI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 05:45:08 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518CEC061798
+        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 02:44:57 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id p21so28189075edi.9
+        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 02:44:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=53Z0UWOoBH8G4GqRmB3TwR4FiupFckFSp54nTIZw+FA=;
- b=kxX/rknXUNvBYBP8YVJ7SJd6rWBSAF88WGZR5Jg6ea7vReW1rxYertxfJrpMryR70HWE2uZSG6Ov2mjiU6yTYUG2YVL/PI+6bgkaDqzLeNm/gF03sqR5m0MUArVHWwMtG+5kyBj4zEz0a6chcxfbjzczhTCFk5fMUxi+QNCCGwc=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB4988.namprd13.prod.outlook.com (2603:10b6:510:94::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.6; Tue, 3 Aug
- 2021 09:40:40 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::cd1:e3ba:77fd:f4f3]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::cd1:e3ba:77fd:f4f3%9]) with mapi id 15.20.4373.023; Tue, 3 Aug 2021
- 09:40:40 +0000
-From:   Simon Horman <simon.horman@corigine.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com, Bijie Xu <bijie.xu@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next 2/2] net: sched: provide missing kdoc for tcf_pkt_info and tcf_ematch_ops
-Date:   Tue,  3 Aug 2021 11:40:19 +0200
-Message-Id: <20210803094019.17291-3-simon.horman@corigine.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210803094019.17291-1-simon.horman@corigine.com>
-References: <20210803094019.17291-1-simon.horman@corigine.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR08CA0009.eurprd08.prod.outlook.com
- (2603:10a6:208:d2::22) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=7ArTaS55GcHRrlg8uUcqb0/VYMv30LO+TcruGsLFfOA=;
+        b=nneisuAfVkRQwNF4jkMM3S1DtCT6ZpBiwI/1yDvRZehpiYxoqROz3bsi/IoEPLpKyd
+         xxYtdUxI5AUFsvWpnWsW4VtrS1REX+NU2X4KhDcQVUfGNLY1Zpz/Ub7T43jzhs4mtanz
+         7mICSo5yZQJ2uQ+SbUsLuZ8AK/c318a9X5Qed4ZfRsOcVQY8vpHH+afBNrn1sV9xrbsr
+         LF4tcKPQxxCnFpqDHBFrI9ttcK2wtfbiUtlj+8gUtRqtaztnfyGM8F06axoGMsSJCUbk
+         8XgQjvEUFQOh+PaunyKWjeGTmxGqvAxdDZqjcaOeZ30GR3HdFULQN0ZIe9vZcPK3/sWV
+         MQzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=7ArTaS55GcHRrlg8uUcqb0/VYMv30LO+TcruGsLFfOA=;
+        b=Scja4c8K8DcsRH67lUN1RwhIAipa1ahZXiBFYFVdyeJ/XyBAwkp5yYrkz4/kzS11Yz
+         7+Bdfcetkse/mcMNOiqtQQfw4O1fQ3PS66gCsOUPoVEkEsCDFQEQKOffkPFdrl1lB+r2
+         mj6U87nLJwOH1hK5lhN0j6oSVXWDKTnwqaqrMnf40r/oKQPCBFU/ts7Iw26/Nv0iHY0O
+         oF/g8svupqIUKyNQebH0yKMgkBxVi5XD0yf84L5CfrhjXL8t/2H7Os3xw0rvWIIdkgyI
+         NfR+TA+8c8PoUdeReYzoV/rrkApk9kD+jOURem24ThXJ8dCAxo1wqGm15R/qlXFl4qsA
+         F5Ow==
+X-Gm-Message-State: AOAM531Wchlwtqtz8Na47sShap9RLERVqDSs39IMUHpZxQLMfV14Fa96
+        M8jNX0cXbFwcbFgkPZCWWEhKwCiKI/Yysmln54odOQ==
+X-Google-Smtp-Source: ABdhPJwiDRUWz8PbJ85/X6g/6bE/DA8L0p3jb1n24/i0E5m+g8kBV8qWpyTyCwUsN/CKVlU0ERzbNXb12Kz0b7pPzsk=
+X-Received: by 2002:aa7:de92:: with SMTP id j18mr24304786edv.141.1627983895787;
+ Tue, 03 Aug 2021 02:44:55 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from madeliefje.horms.nl (2001:982:7ed1:403:201:8eff:fe22:8fea) by AM0PR08CA0009.eurprd08.prod.outlook.com (2603:10a6:208:d2::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.18 via Frontend Transport; Tue, 3 Aug 2021 09:40:38 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8c5acd01-6b8a-493c-7e71-08d95662c12f
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4988:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PH0PR13MB4988440D7B0ACE8C1EAA9E52E8F09@PH0PR13MB4988.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:949;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Su6gv9n00dJ9WiczDszTWYFN5ksI62hDUpUqk7gFez1qPtVo6XyS8LDE7qT7QzqHafQzXWCNpSMEYFIFEzbgL1kJmDTlRGZLG4Pnxb8H1orSaEj9KOlxLjqvXFnPPnStt1QedI5pdU5L87ktvh2lh+IRaFyFK+SMoH81wfDCfvQJBzW7UZSb4omtQSe8c8w9BzDGWxqYQ9kkxBMUWv2SzDWZl9MovNVuUTFK9gyR5r9ehX0uksNzCmckE4TuHPpGWduSNwKZ3P89UY5faKKIUXnyMJG0fkdQ8F50p/gMC9dzVVJ40pSGaO7L+m3DRDBtVcxkV5eNlV7tYuK+vuSkWMmg0MgzRZPJUNp0pkufn+527B6N/iFPe05f6uIpIrvLKeTlbBCbHypj8/qjYd2wZNJ4Al7BkVE3IiXpnyq63OPX2JIHOjtSNgnAETHT8LjcCsI3Fwkj8C5ML3aLZXXzZCsgiodu1hFC3v3JPftZ5dCFC/2TB5aj3EyCoyUbZcM2Oz68FTEB9PBU7W4EkyO3xWNQH0fX9Rb8Hcfq1TIu5nGhsdxKnx8gbnPY8qHAU6YZVVgX+5WbsOTcbM5rb7IRSNNofftEEexCWWU3vLY8IoCDRYbbvKeogDoJkdOf/5WLWJmwkv++/8kGiF2aSbMxcg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(39830400003)(366004)(346002)(396003)(136003)(110136005)(2616005)(86362001)(2906002)(316002)(8936002)(6666004)(6506007)(4326008)(44832011)(54906003)(52116002)(107886003)(508600001)(8676002)(66476007)(38100700002)(1076003)(66946007)(6512007)(6486002)(5660300002)(36756003)(186003)(66556008);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?CkNXKRxNAFc5jWhAJ73AHHHlDu7txCExUiUq+o4pdCU5DtExruSPXWZ7GOzP?=
- =?us-ascii?Q?XaUpLts/vVlPeh2qBJfzRZN1DJ/NTKlY88Ec3l7gbXMfvdMwPtSgVifGi4Fn?=
- =?us-ascii?Q?c7Tz1tTGKzcIIPgaf1zy0tKuKCBBmUIqZ5DHKAcb+XegFw5GVYB4q8mHaE6M?=
- =?us-ascii?Q?PG5740RS7idmigJbssO7ybZSIkSA1ZDJk+jFK4HVHD6uE+vc+DkpgOjwrDZK?=
- =?us-ascii?Q?BOcLLCMHX/7h3IUw63+GlMq5EnhbvomaRRQAjysycZj+6IfIp6nThtWIxWMY?=
- =?us-ascii?Q?QHb46srDp7/WyWF5Ye0pC8prJWHeCWpAF1sToMPSpZPwLrOyf6ldGkPwHlIA?=
- =?us-ascii?Q?mUwXoBaIgWSSYLq5Ei9zlPv0ppWFqwwdyO14mQqpt/l0vI0W5fs/ADFSX7PE?=
- =?us-ascii?Q?4hcsFEexq0Ak1Na4/tOszwC/qykCoZXAC4w0ErdXI0xYH3tqS9YzOrdnpztw?=
- =?us-ascii?Q?xVtKMWFzh5fR3Eub4n4kYM4zfp4FHsRC0hMpE3cbDZFjx/ZIkde+lno6S0j7?=
- =?us-ascii?Q?0JL/4ykz9hDLwGhoUWs5cI9/nNpj+CZKZrYkSsQZRzOW6N1CuT4Vuqk6ezr5?=
- =?us-ascii?Q?BGeyjdR0BInA8nXGbzyAbH10ptrDMc4rZYKGcRVZagSOeeZIheGAdemn9TtT?=
- =?us-ascii?Q?aqHyIBtyPPXWuGXw+ecwT44ldG1vL1L3gBIucVbH7rWeJBV5XCAENu4WaZkL?=
- =?us-ascii?Q?03pkei/dke1DQNBPG1/umKXVLXAuMffV4pVmivMawPe9Gr8nXG25XLLKekMo?=
- =?us-ascii?Q?WkVa0sakxENSeCv15f80mkiS5JT8bJ7AGKnwg6HoRwFW//0NhQOP/uifiD4/?=
- =?us-ascii?Q?m44iMl9Hw49SIYjaXuwg2S797JPGV+u1tN4VCd3lQZC2cXm+jB8wmEMf9UvB?=
- =?us-ascii?Q?B7P0tujyNtujxfASPNVUZsV/nqjMrQTbxPk7TD/JGVKS0vS2u8vn9gAFQlOk?=
- =?us-ascii?Q?F679fKXExIm6wyY9B/+7JK+d0qBOHNWcdcdu58d1aiO2rfrVxr7FpHp2V50p?=
- =?us-ascii?Q?Cs6DKHTcgZLx/NHSyLcb//OiA4sWQRY8BBgXKzCRf48PSoMLlTjdFzkzASqr?=
- =?us-ascii?Q?h5MFYDQl1vqpYu3D+8suj0Dej8rejf5WnVFAiTD1X2yEK+fh1Js16VDa2uoZ?=
- =?us-ascii?Q?qg5xP1sVF3Pvc2hjOYQaLSydyMpDpZgSTxYZJ9zTvntC8R+ZaIKIFejTpcty?=
- =?us-ascii?Q?LphtMD5jZSUMhfZIKP7kxH8lYDklsbonayYSaR+i+k6/+ajIBwTriH9jqUzq?=
- =?us-ascii?Q?iSl2iHE079d82wATIxjRKOV10kxOxT64VV82RNtoPpcdK7XeeYO4yN08aoNF?=
- =?us-ascii?Q?Lkwixu9OZv16LjXVRdoxW2/Fa+NXdMz9LJnAgx1gJV4eKmwHWwz2FQNA6thL?=
- =?us-ascii?Q?STle28nVRI+pi+/ThGEsTk6MxDL1?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8c5acd01-6b8a-493c-7e71-08d95662c12f
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2021 09:40:40.0382
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IESHKVitj4rNWByUDLZZWHbCaQXXtwyS2DFZqsXHfHY3gatO/Nc6yajB7MWjnKZxB1MjIvl6Ug7QKXWXveChXNeBjvwyAiBMd1npjcq4Ct0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4988
+Received: by 2002:a50:2486:0:0:0:0:0 with HTTP; Tue, 3 Aug 2021 02:44:55 -0700 (PDT)
+X-Originating-IP: [5.35.57.254]
+In-Reply-To: <20210803082553.25194-1-yajun.deng@linux.dev>
+References: <20210803082553.25194-1-yajun.deng@linux.dev>
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+Date:   Tue, 3 Aug 2021 12:44:55 +0300
+Message-ID: <CAOJe8K0_v0SHY913pnCHKZ9WUdNGOJ2nbagsr5t=ytiJ-Y3rrQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: Modify sock_set_keepalive() for more scenarios
+To:     Yajun Deng <yajun.deng@linux.dev>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, mptcp@lists.linux.dev,
+        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com,
+        linux-s390@vger.kernel.org, linux-nfs@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bijie Xu <bijie.xu@corigine.com>
+On 8/3/21, Yajun Deng <yajun.deng@linux.dev> wrote:
+> Add 2nd parameter in sock_set_keepalive(), let the caller decide
+> whether to set. This can be applied to more scenarios.
 
-Provide missing kdoc of fields of struct tcf_pkt_info and tcf_ematch_ops.
+It makes sense to send the patch within a context of other scenarios
 
-Found using ./scripts/kernel-doc -none -Werror include/net/pkt_cls.h
-
-Signed-off-by: Bijie Xu <bijie.xu@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
----
- include/net/pkt_cls.h | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index dc28fcb6f0a2..1b5100f5e660 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -329,6 +329,9 @@ int tcf_exts_dump_stats(struct sk_buff *skb, struct tcf_exts *exts);
- 
- /**
-  * struct tcf_pkt_info - packet information
-+ *
-+ * @ptr: start of the pkt data
-+ * @nexthdr: offset of the next header
-  */
- struct tcf_pkt_info {
- 	unsigned char *		ptr;
-@@ -347,6 +350,7 @@ struct tcf_ematch_ops;
-  * @ops: the operations lookup table of the corresponding ematch module
-  * @datalen: length of the ematch specific configuration data
-  * @data: ematch specific data
-+ * @net: the network namespace
-  */
- struct tcf_ematch {
- 	struct tcf_ematch_ops * ops;
--- 
-2.20.1
-
+>
+> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+> ---
+>  include/net/sock.h    |  2 +-
+>  net/core/filter.c     |  4 +---
+>  net/core/sock.c       | 10 ++++------
+>  net/mptcp/sockopt.c   |  4 +---
+>  net/rds/tcp_listen.c  |  2 +-
+>  net/smc/af_smc.c      |  2 +-
+>  net/sunrpc/xprtsock.c |  2 +-
+>  7 files changed, 10 insertions(+), 16 deletions(-)
+>
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index ff1be7e7e90b..0aae26159549 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -2772,7 +2772,7 @@ int sock_set_timestamping(struct sock *sk, int
+> optname,
+>
+>  void sock_enable_timestamps(struct sock *sk);
+>  void sock_no_linger(struct sock *sk);
+> -void sock_set_keepalive(struct sock *sk);
+> +void sock_set_keepalive(struct sock *sk, bool valbool);
+>  void sock_set_priority(struct sock *sk, u32 priority);
+>  void sock_set_rcvbuf(struct sock *sk, int val);
+>  void sock_set_mark(struct sock *sk, u32 val);
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index faf29fd82276..41b2bf140b89 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -4769,9 +4769,7 @@ static int _bpf_setsockopt(struct sock *sk, int level,
+> int optname,
+>  			ret = sock_bindtoindex(sk, ifindex, false);
+>  			break;
+>  		case SO_KEEPALIVE:
+> -			if (sk->sk_prot->keepalive)
+> -				sk->sk_prot->keepalive(sk, valbool);
+> -			sock_valbool_flag(sk, SOCK_KEEPOPEN, valbool);
+> +			sock_set_keepalive(sk, !!valbool);
+>  			break;
+>  		case SO_REUSEPORT:
+>  			sk->sk_reuseport = valbool;
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index 9671c32e6ef5..7041e6355ae1 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+> @@ -892,12 +892,12 @@ int sock_set_timestamping(struct sock *sk, int
+> optname,
+>  	return 0;
+>  }
+>
+> -void sock_set_keepalive(struct sock *sk)
+> +void sock_set_keepalive(struct sock *sk, bool valbool)
+>  {
+>  	lock_sock(sk);
+>  	if (sk->sk_prot->keepalive)
+> -		sk->sk_prot->keepalive(sk, true);
+> -	sock_valbool_flag(sk, SOCK_KEEPOPEN, true);
+> +		sk->sk_prot->keepalive(sk, valbool);
+> +	sock_valbool_flag(sk, SOCK_KEEPOPEN, valbool);
+>  	release_sock(sk);
+>  }
+>  EXPORT_SYMBOL(sock_set_keepalive);
+> @@ -1060,9 +1060,7 @@ int sock_setsockopt(struct socket *sock, int level,
+> int optname,
+>  		break;
+>
+>  	case SO_KEEPALIVE:
+> -		if (sk->sk_prot->keepalive)
+> -			sk->sk_prot->keepalive(sk, valbool);
+> -		sock_valbool_flag(sk, SOCK_KEEPOPEN, valbool);
+> +		sock_set_keepalive(sk, !!valbool);
+>  		break;
+>
+>  	case SO_OOBINLINE:
+> diff --git a/net/mptcp/sockopt.c b/net/mptcp/sockopt.c
+> index 8c03afac5ca0..879b8381055c 100644
+> --- a/net/mptcp/sockopt.c
+> +++ b/net/mptcp/sockopt.c
+> @@ -81,9 +81,7 @@ static void mptcp_sol_socket_sync_intval(struct mptcp_sock
+> *msk, int optname, in
+>  			sock_valbool_flag(ssk, SOCK_DBG, !!val);
+>  			break;
+>  		case SO_KEEPALIVE:
+> -			if (ssk->sk_prot->keepalive)
+> -				ssk->sk_prot->keepalive(ssk, !!val);
+> -			sock_valbool_flag(ssk, SOCK_KEEPOPEN, !!val);
+> +			sock_set_keepalive(ssk, !!val);
+>  			break;
+>  		case SO_PRIORITY:
+>  			ssk->sk_priority = val;
+> diff --git a/net/rds/tcp_listen.c b/net/rds/tcp_listen.c
+> index 09cadd556d1e..b69ebb3f424a 100644
+> --- a/net/rds/tcp_listen.c
+> +++ b/net/rds/tcp_listen.c
+> @@ -44,7 +44,7 @@ void rds_tcp_keepalive(struct socket *sock)
+>  	int keepidle = 5; /* send a probe 'keepidle' secs after last data */
+>  	int keepcnt = 5; /* number of unack'ed probes before declaring dead */
+>
+> -	sock_set_keepalive(sock->sk);
+> +	sock_set_keepalive(sock->sk, true);
+>  	tcp_sock_set_keepcnt(sock->sk, keepcnt);
+>  	tcp_sock_set_keepidle(sock->sk, keepidle);
+>  	/* KEEPINTVL is the interval between successive probes. We follow
+> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+> index 898389611ae8..ad8f4302037f 100644
+> --- a/net/smc/af_smc.c
+> +++ b/net/smc/af_smc.c
+> @@ -68,7 +68,7 @@ static void smc_set_keepalive(struct sock *sk, int val)
+>  {
+>  	struct smc_sock *smc = smc_sk(sk);
+>
+> -	smc->clcsock->sk->sk_prot->keepalive(smc->clcsock->sk, val);
+> +	sock_set_keepalive(smc->clcsock->sk, !!val);
+>  }
+>
+>  static struct smc_hashinfo smc_v4_hashinfo = {
+> diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+> index e573dcecdd66..306a332f8d28 100644
+> --- a/net/sunrpc/xprtsock.c
+> +++ b/net/sunrpc/xprtsock.c
+> @@ -2127,7 +2127,7 @@ static void xs_tcp_set_socket_timeouts(struct rpc_xprt
+> *xprt,
+>  	spin_unlock(&xprt->transport_lock);
+>
+>  	/* TCP Keepalive options */
+> -	sock_set_keepalive(sock->sk);
+> +	sock_set_keepalive(sock->sk, true);
+>  	tcp_sock_set_keepidle(sock->sk, keepidle);
+>  	tcp_sock_set_keepintvl(sock->sk, keepidle);
+>  	tcp_sock_set_keepcnt(sock->sk, keepcnt);
+> --
+> 2.32.0
+>
+>
