@@ -2,71 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE01A3DED31
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:50:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F51C3DEDAC
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 14:14:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235643AbhHCLuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 07:50:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38816 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235545AbhHCLuR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 07:50:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 635F460F56;
-        Tue,  3 Aug 2021 11:50:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627991406;
-        bh=MAc/ugaKBGgHBxd6X8DQM3qO4mzZBrs4eg1hYKZTRDU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ho4G3eHtSam25D8fwzbGCrLZMXsQjnjVbknW8SRPWlw1HB5IsBWJWolPaKFpSOtRf
-         bAl284xqjrWH4+pzuso3j4rm7I18dRAiRwSjCtXdKe0+TB0FHyw7Dd1Z36V8dSBRbH
-         fQ2zGtG9l+uPzoWTWa/KFXAiVEWP1fjSKzh1R4/15xIfJ9NcF9mvcykHwrTPkqe8Hi
-         LDnabZtrol+58Rc4LJOPaUt6BVXEaxc0x4TP32TAyWrN4Xjed7pidKG/rd9FTX4w1G
-         8FE40ldImgSRcPVaq6fiv77MAFBDuvpajBqYVFCL3HUJz4iI+u14+FTb6/BDAip6Kr
-         K1KHxmLaVQM6g==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 54AFE60075;
-        Tue,  3 Aug 2021 11:50:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S235782AbhHCMOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 08:14:49 -0400
+Received: from mailgw01.mediatek.com ([60.244.123.138]:59112 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S234524AbhHCMOs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 08:14:48 -0400
+X-UUID: 7f656b4bb18d4a438c61284aaf3787e5-20210803
+X-UUID: 7f656b4bb18d4a438c61284aaf3787e5-20210803
+Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw01.mediatek.com
+        (envelope-from <rocco.yue@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 709433756; Tue, 03 Aug 2021 20:14:35 +0800
+Received: from mtkcas07.mediatek.inc (172.21.101.84) by
+ mtkmbs05n1.mediatek.inc (172.21.101.15) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 3 Aug 2021 20:14:33 +0800
+Received: from localhost.localdomain (10.15.20.246) by mtkcas07.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 3 Aug 2021 20:14:33 +0800
+From:   Rocco Yue <rocco.yue@mediatek.com>
+To:     David Ahern <dsahern@kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <rocco.yue@gmail.com>,
+        <chao.song@mediatek.com>, <zhuoliang.zhang@mediatek.com>,
+        Rocco Yue <rocco.yue@mediatek.com>
+Subject: Re: [PATCH net-next v2] ipv6: add IFLA_INET6_RA_MTU to expose mtu value in the RA message
+Date:   Tue, 3 Aug 2021 19:57:59 +0800
+Message-ID: <20210803115759.4342-1-rocco.yue@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <f66750af-cbda-6d49-2b39-860c10357e95@gmail.com>
+References: <f66750af-cbda-6d49-2b39-860c10357e95@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] bnxt_en: Increase maximum RX ring size when
- jumbo ring is unused
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162799140634.31863.17683221532905359941.git-patchwork-notify@kernel.org>
-Date:   Tue, 03 Aug 2021 11:50:06 +0000
-References: <1627915959-1648-1-git-send-email-michael.chan@broadcom.com>
-In-Reply-To: <1627915959-1648-1-git-send-email-michael.chan@broadcom.com>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        gospo@broadcom.com
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Mon,  2 Aug 2021 10:52:37 -0400 you wrote:
-> The RX jumbo ring is automatically enabled when HW GRO/LRO is enabled or
-> when the MTU exceeds the page size.  The RX jumbo ring provides a lot
-> more RX buffer space when it is in use.  When the RX jumbo ring is not
-> in use, some users report that the current maximum of 2K buffers is
-> too limiting.  This patchset increases the maximum to 8K buffers when
-> the RX jumbo ring is not used.  The default RX ring size is unchanged
-> at 511.
+On Mon, 2021-08-02 at 07:35 -0600, David Ahern wrote:
+> On 8/2/21 6:40 AM, Rocco Yue wrote:
+>> 
+>> Regarding setting "reject_message" in the policy, after reviewing
+>> the code, I fell that it is unnecessary, because the cost of
+>> implementing it seems to be a bit high, which requires modifying
+>> the function interface. The reasons is as follows:
 > 
-> [...]
+> The policy can be setup now to do the right thing once the extack
+> argument is available.
+> 
+> do_setlink() has an extack argument. It calls validate_linkmsg which
+> calls validate_link_af meaning support can be added in a single patch.
+> If you decide to do it, then it should be a separate patch preceding
+> this one.
+> 
 
-Here is the summary with links:
-  - [net-next,1/2] bnxt_en: Don't use static arrays for completion ring pages
-    https://git.kernel.org/netdev/net-next/c/03c7448790b8
-  - [net-next,2/2] bnxt_en: Increase maximum RX ring size if jumbo ring is not used
-    https://git.kernel.org/netdev/net-next/c/c1129b51ca0e
+Hi David,
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Thanks for your advice,
+I will send a separate patch to add extack arg firstly.
 
+> Then userspace should get a link notification when ra_mtu is set so it
+> does not have to poll.
 
+It make sense, I will do it.
+
+Thanks
+Rocco
