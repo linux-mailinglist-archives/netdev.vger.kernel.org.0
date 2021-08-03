@@ -2,97 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30A2C3DF110
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 17:05:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A59B73DF116
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 17:09:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236319AbhHCPFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 11:05:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234206AbhHCPFo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 11:05:44 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E2CBC061757;
-        Tue,  3 Aug 2021 08:05:32 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id hs10so28183504ejc.0;
-        Tue, 03 Aug 2021 08:05:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=r0FQ7Uc64i2oRVeUtFLzokR1HqzuLG7+aDF/yA5eX4M=;
-        b=coGMZnEccQZlJTls9FK4PV3Fnmm0Y5yzVVFAB8l4/Ff2aOyAmNbTHGTJ/gm89hYw0F
-         OnwP6qBbeUa4GSa25hJLoWOsFUQEjIliSbxhOtptkdG/C4ePagilGevFk0n+bFuGpuMc
-         ZIRibIY/+FiQ37xc7rQuokgT16s5ouV6cltQ/Edqxdrg/QbXjNFK5jWruR89cprhSxn/
-         B/mWJ06h/1Xsj1elOKjMaWHjcPSCRZP/DRCdzUZ64y4r6PueI/yGTPoiOdAUB5gLCx+4
-         6FTY+xds1q5wRG5UWz71S7ho9jo/eVLuBLL+1HqYv0ilg+bXVi/YHEUO88LJhSmZmWOY
-         ylUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=r0FQ7Uc64i2oRVeUtFLzokR1HqzuLG7+aDF/yA5eX4M=;
-        b=Moo4s1UeSMTZG0MK9+WmwUn2jYzNCP/YQUQM7UUQ1aa6AUOvkycgcm7vdC+P/v6usW
-         1Qk7dYPzH3tbQ2PzRNE+adzwUcjCM4ligC8NnY+Qjc0ulCwJ1yabKjqd7k08n8oE8n91
-         cbB3G00jDrxOAFpeJuNaBMM+iSNpKzlt38khv9Gn/z9aSL+ANxacuhZFNfRjv+NGrOFl
-         ZpIo8frBWBe/LWBD+pE5w4HsWTMc0T0NBfrcwbIu1pq6LHoUMhWKsPY5KCJGeA9eeV6r
-         CICzWKX+auSSaOa8cYg5/dn/UyHYr2Rss1HpSLrPZ8i0pJwaJOre43DIs+8//qH41hQn
-         wsIA==
-X-Gm-Message-State: AOAM533gTi4Y5q2uPtRxdPVAOGrj6MxxLX2vH4DcwYOKAih6rCqb4qem
-        GUAD/UbbsbZS37W5dUjdW5Y=
-X-Google-Smtp-Source: ABdhPJxP1WfDh/SKp57yUJkwWaSPOs717d15hTVJGJ9P7zfkIDZ+IovWwaIDCd2MVfHUUsu5WL89gQ==
-X-Received: by 2002:a17:906:31cf:: with SMTP id f15mr21305332ejf.272.1628003131123;
-        Tue, 03 Aug 2021 08:05:31 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id n2sm8407071edi.32.2021.08.03.08.05.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Aug 2021 08:05:30 -0700 (PDT)
-Date:   Tue, 3 Aug 2021 18:05:29 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
-        netdev@vger.kernel.org, robh+dt@kernel.org,
-        UNGLinuxDriver@microchip.com, Woojung.Huh@microchip.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 05/10] net: dsa: microchip: add DSA support
- for microchip lan937x
-Message-ID: <20210803150529.o2whe4jw6arpdm7d@skbuf>
-References: <20210723173108.459770-1-prasanna.vengateshan@microchip.com>
- <20210723173108.459770-6-prasanna.vengateshan@microchip.com>
- <20210731150416.upe5nwkwvwajhwgg@skbuf>
- <YQXJHA+z+hXjxe6+@lunn.ch>
- <20210802213353.qu5j3gn4753xlj43@skbuf>
- <YQlWAHSTQ4K3/zet@lunn.ch>
+        id S236560AbhHCPJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 11:09:36 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:57128
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236685AbhHCPJT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 11:09:19 -0400
+Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 87E4E3F070;
+        Tue,  3 Aug 2021 15:09:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1628003344;
+        bh=yujcAW928JS1+WAa5ppXQvA0AiE4xUVDj/s66hatc0A=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=mREzlHPwx8jgCXwCQp5AweexjLomZrqnpv852tP8GEMfnDNQ9EJZuB1sab7bJNrGk
+         D7QfrRHgwLxawch47XtG9QsCVQPOGIvpgWHr9SDIg4f0MgRHnL21bIUQVP2+lKueKF
+         rQOEhkLmppi2Cu5ldSdAZmpjBIL8PyThXJuBTn8v47zgboCQ+mtaKrMNVaCgRcR76q
+         +rGSxnkpHTe/HkOjautuv4a3h4TvjTJX2hajKOnSSLz9oXKWYardQxD98JjMDR3Igu
+         jr//IdPSl+37xIHBh7CDoSUnpfddVTA3gkeTcmcXkrDffArQJxK9mAkPKq6n45huO4
+         F+/KQhEPocRXw==
+From:   Colin King <colin.king@canonical.com>
+To:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] brcmfmac: firmware: Fix uninitialized variable ret
+Date:   Tue,  3 Aug 2021 16:09:04 +0100
+Message-Id: <20210803150904.80119-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YQlWAHSTQ4K3/zet@lunn.ch>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 03, 2021 at 04:43:12PM +0200, Andrew Lunn wrote:
-> There are good reasons to use an explicit phy-handle, and i would
-> never block such code. However, implicit is historically how it was
-> done. There are many DT blobs which assume it works. So implicit is
-> not going away.
-> 
-> If you want to only support explicit in U-Boot, that is fine. I would
-> suggest making this clear in the U-Boot documentation.
+From: Colin Ian King <colin.king@canonical.com>
 
-I am happy that Prasanna made it possible for OF-based descriptions of
-the internal PHYs to be written for the lan937x generation. I did take a
-look at the bindings that Prasanna proposed and I think they would work
-with what DM_DSA can parse too. The work that Tim Harvey did was for
-ksz9897, and it is slightly different: the MDIO controller node has a
-compatible string of "microchip,ksz-mdio", and a parent container node
-of "mdios".
-https://source.denx.de/u-boot/u-boot/-/blob/master/arch/arm/dts/imx8mm-venice-gw7901.dts#L634
-However, since the lan937x would probably have a different driver even
-in U-Boot, 100% binding consistency between lan937x and ksz9897 is
-probably not necessary, since some of that can boil down to driver
-author choice too. As long as an OF based choice is available I'm
-absolutely fine.
+Currently the variable ret is uninitialized and is only set if
+the pointer alt_path is non-null. Fix this by ininitializing ret
+to zero.
+
+Addresses-Coverity: ("Uninitialized scalar variable")
+Fixes: 5ff013914c62 ("brcmfmac: firmware: Allow per-board firmware binaries")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
+index adfdfc654b10..4f387e868120 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
+@@ -680,7 +680,7 @@ int brcmf_fw_get_firmwares(struct device *dev, struct brcmf_fw_request *req,
+ 	struct brcmf_fw_item *first = &req->items[0];
+ 	struct brcmf_fw *fwctx;
+ 	char *alt_path;
+-	int ret;
++	int ret = 0;
+ 
+ 	brcmf_dbg(TRACE, "enter: dev=%s\n", dev_name(dev));
+ 	if (!fw_cb)
+-- 
+2.31.1
+
