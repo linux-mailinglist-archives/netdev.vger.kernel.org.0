@@ -2,89 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A543E3DEB50
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 12:54:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 383103DEB5C
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 12:56:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235333AbhHCKyj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 06:54:39 -0400
-Received: from foss.arm.com ([217.140.110.172]:47244 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234904AbhHCKyh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 06:54:37 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 237041396;
-        Tue,  3 Aug 2021 03:54:26 -0700 (PDT)
-Received: from [10.57.36.146] (unknown [10.57.36.146])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 805143F40C;
-        Tue,  3 Aug 2021 03:54:22 -0700 (PDT)
-Subject: Re: [PATCH v10 01/17] iova: Export alloc_iova_fast() and
- free_iova_fast()
-To:     Yongji Xie <xieyongji@bytedance.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Liu Xiaodong <xiaodong.liu@intel.com>,
-        linux-fsdevel@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
-        He Zhe <zhe.he@windriver.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        iommu@lists.linux-foundation.org, bcrl@kvack.org,
-        netdev@vger.kernel.org, Joe Perches <joe@perches.com>,
-        =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>
-References: <20210729073503.187-1-xieyongji@bytedance.com>
- <20210729073503.187-2-xieyongji@bytedance.com>
- <43d88942-1cd3-c840-6fec-4155fd544d80@redhat.com>
- <CACycT3vcpwyA3xjD29f1hGnYALyAd=-XcWp8+wJiwSqpqUu00w@mail.gmail.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-Message-ID: <6e05e25e-e569-402e-d81b-8ac2cff1c0e8@arm.com>
-Date:   Tue, 3 Aug 2021 11:53:45 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S235472AbhHCK4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 06:56:37 -0400
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:43394
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235204AbhHCK4g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 06:56:36 -0400
+Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 678F63F237;
+        Tue,  3 Aug 2021 10:56:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1627988177;
+        bh=yxPaty2Fj2e6kypVOL8AW6aRDjC9TLR/sMRLnpj4poI=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=H53X2GtdV+4IPOVm9WB60IjnnvAqmFQ4jGNoetu4mPD0YXwNfpEnCOx1mL8FanQVW
+         fVRgKudX22XjAR/Fmhsm0O0ZB4LlHSr5inwn7I2MTU7WDPM+3IK6rRHIl8Pxf1VKJg
+         2LjgFG0/TebLRWPnSVyDVFqngtKHgtkSU3OuyFmbcNo9xQhAqHmgxTYi2YH97BOgUr
+         kQTNnqGma/Af0Oz/UtBJiddtzdd0nqok21xxozfJT0WHxw3/JdW4yU56zu77csz2fn
+         r0vxxmguvTkHjvfqYEic5kepyTfEiArIh2O9/23yo/9YGKKL/eZmfSaO6o9pLZHfwo
+         NB3RV7jXQhdWA==
+From:   Colin King <colin.king@canonical.com>
+To:     Sunil Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] octeontx2-af: Fix spelling mistake "Makesure" -> "Make sure"
+Date:   Tue,  3 Aug 2021 11:56:17 +0100
+Message-Id: <20210803105617.338546-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <CACycT3vcpwyA3xjD29f1hGnYALyAd=-XcWp8+wJiwSqpqUu00w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-08-03 09:54, Yongji Xie wrote:
-> On Tue, Aug 3, 2021 at 3:41 PM Jason Wang <jasowang@redhat.com> wrote:
->>
->>
->> 在 2021/7/29 下午3:34, Xie Yongji 写道:
->>> Export alloc_iova_fast() and free_iova_fast() so that
->>> some modules can use it to improve iova allocation efficiency.
->>
->>
->> It's better to explain why alloc_iova() is not sufficient here.
->>
-> 
-> Fine.
+From: Colin Ian King <colin.king@canonical.com>
 
-What I fail to understand from the later patches is what the IOVA domain 
-actually represents. If the "device" is a userspace process then 
-logically the "IOVA" would be the userspace address, so presumably 
-somewhere you're having to translate between this arbitrary address 
-space and actual usable addresses - if you're worried about efficiency 
-surely it would be even better to not do that?
+There is a spelling mistake in a NL_SET_ERR_MSG_MOD message. Fix it.
 
-Presumably userspace doesn't have any concern about alignment and the 
-things we have to worry about for the DMA API in general, so it's pretty 
-much just allocating slots in a buffer, and there are far more effective 
-ways to do that than a full-blown address space manager. If you're going 
-to reuse any infrastructure I'd have expected it to be SWIOTLB rather 
-than the IOVA allocator. Because, y'know, you're *literally implementing 
-a software I/O TLB* ;)
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Robin.
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+index f95573a66ed4..6f963b2f54a7 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+@@ -1397,7 +1397,7 @@ static int rvu_af_dl_dwrr_mtu_validate(struct devlink *devlink, u32 id,
+ 		NL_SET_ERR_MSG_MOD(extack,
+ 				   "Changing DWRR MTU is not supported when there are active NIXLFs");
+ 		NL_SET_ERR_MSG_MOD(extack,
+-				   "Makesure none of the PF/VF interfaces are initialized and retry");
++				   "Make sure none of the PF/VF interfaces are initialized and retry");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+-- 
+2.31.1
+
