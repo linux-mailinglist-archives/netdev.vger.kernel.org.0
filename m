@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B44DD3DECD1
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:45:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7964C3DECE1
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:45:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236049AbhHCLpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 07:45:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35898 "EHLO mail.kernel.org"
+        id S236473AbhHCLpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 07:45:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36142 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236002AbhHCLpB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 07:45:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2A046610CC;
-        Tue,  3 Aug 2021 11:44:50 +0000 (UTC)
+        id S235997AbhHCLpJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 07:45:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5B828610FF;
+        Tue,  3 Aug 2021 11:44:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627991090;
+        s=k20201202; t=1627991097;
         bh=3/4sIaaFElelnzWqEYEbJuoxm01lynaT1jMQ92lvVTw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U+hsTc1Bv3JN8hlj+fLmLvJ287246jPY1cjd8KIpXtjeuJisPEqrxQ6Mrr5bRZA8D
-         ljh5hx1pL7wYW+1pyvQkxayBfWm5hahRtbNNw9TAv2CCyNiaKfi83bEnFMXjwbZ8Em
-         o5jxsejbePl9IW1dSK5xOHZWZq8bdtQRqz/LNuOO63RggDQuIbBrUUCxcCPAwntyM7
-         8xOeB+OsFbOXI/cgq7Pye5EsxXFAQgSWkXJbj3lQsPkyzLaDFgKER6jfoRrMbOJNi+
-         v65+PoBaWi/j7yCd/kVJVnR03ZTdve/3/slPdTeb/fLKK0yA/qrdZUuvyZIQ7ZWP1w
-         vehJGX2EWqn7g==
+        b=TmBxX9SarBNgDr5mlVIG3KuvoCccQbeOFqqDn30aaUQ0il2MZ9h83riYfFdRvXtEg
+         L71nQz33HekT1QbR65AtOyG1raftPQgdL8iqEKYoMpbBSimI42h7oqWZUbc4Vt4Yvu
+         GRcFM3Fm0qNpX5kRG+v8wyY+MRLHeImFL5sl7l5xc2jV4dSwsxHM3aS3OsiEoucvGk
+         raZkVxK+CTcxW0Dg2LgtD8oHVta4KJCBLpvLurePL8nNHXrceb9DyhF70wLNCg87oL
+         se38kuyWjLYDmXgXGT5PWbbLF5Nw/6ujpMwK+7lbyWiqm/cH/FB7JZHangtgunNtw/
+         TfBIKI/ooxCnA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Letu Ren <fantasquex@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 4/4] net/qla3xxx: fix schedule while atomic in ql_wait_for_drvr_lock and ql_adapter_reset
-Date:   Tue,  3 Aug 2021 07:44:44 -0400
-Message-Id: <20210803114445.2253179-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 4/4] net/qla3xxx: fix schedule while atomic in ql_wait_for_drvr_lock and ql_adapter_reset
+Date:   Tue,  3 Aug 2021 07:44:51 -0400
+Message-Id: <20210803114451.2253268-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210803114445.2253179-1-sashal@kernel.org>
-References: <20210803114445.2253179-1-sashal@kernel.org>
+In-Reply-To: <20210803114451.2253268-1-sashal@kernel.org>
+References: <20210803114451.2253268-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
