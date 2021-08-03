@@ -2,63 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E548C3DEE0C
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 14:42:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F9193DEE1D
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 14:46:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236123AbhHCMmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 08:42:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51496 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235805AbhHCMmP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 08:42:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 270B060F58;
-        Tue,  3 Aug 2021 12:42:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627994524;
-        bh=/YmirlCTIhPtprJXOvqz8B7MGjooX1KKSv8hYxHOghM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Hk9z3JZICKM+/Vx48pAqV0XXsNJ5kZcFlm2Dp3HMOIplfqpCavjEBfz2F+dabjMni
-         GUdJpRll32pJQ3MFIBh8kr+nTt0RMCRF2XI+moP58+vrhd/Sx5Quz7XM4ZXwT/BJZR
-         JAJw1IkctepZmohF315IV+vYW9iFbG+0YZo3r0yxMQaRtd3soq+BeSJhpbyGUsnV4m
-         RsvUOnYHqAFun/vf5gqwbnPwNAseN79jFQcJxGpCng8aBjhRf4RIuR4eWEv8jllVGs
-         5Kul5AEol8uKKsUD8h6dPCwVHnQv66LkkwYvbHJ08aFnMQ7dpZOuroKrJ5iEK2v2eg
-         72LbyUWJnj39A==
-Date:   Tue, 3 Aug 2021 05:42:03 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Westphal <fw@strlen.de>, linux-kernel@vger.kernel.org,
-        linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org, Andrei Vagin <avagin@gmail.com>
-Subject: Re: [PATCH v2] sock: allow reading and changing sk_userlocks with
- setsockopt
-Message-ID: <20210803054203.4f1eb9a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <ffcf4fe5-814e-b232-c749-01511eb1ceb7@virtuozzo.com>
-References: <20210730160708.6544-1-ptikhomirov@virtuozzo.com>
-        <20210730094631.106b8bec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <9ead0d04-f243-b637-355c-af11af45fb5a@virtuozzo.com>
-        <20210802091102.314fa0f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <ffcf4fe5-814e-b232-c749-01511eb1ceb7@virtuozzo.com>
+        id S236070AbhHCMrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 08:47:02 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:48684 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236022AbhHCMrC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 08:47:02 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 173CkXUs015641;
+        Tue, 3 Aug 2021 07:46:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1627994793;
+        bh=dwa6kQPQNIzIVu4zRjFxk1oyIAq25vQUEDqTws0ieMc=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=OIEUdb7fh3uigJDoABx6EiicoM98wNlzl8F2L90jD6nZWyF4JFhEdPCeBoGty/uKm
+         h56WdANzPtrXzZIjsN+Z4BWRJfpXGHuVHS+0nYDCnMVHOzkX4fXdmdgEBWCGjmbnjO
+         4UEKWwwW1rJMbFtnOWe4DDKjS8tgfzA3pwaa9jCc=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 173CkXbM058113
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 3 Aug 2021 07:46:33 -0500
+Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 3 Aug
+ 2021 07:46:32 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Tue, 3 Aug 2021 07:46:32 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 173CkScx019449;
+        Tue, 3 Aug 2021 07:46:28 -0500
+Subject: Re: [PATCH net-next] net: build all switchdev drivers as modules when
+ the bridge is a module
+To:     Arnd Bergmann <arnd@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+CC:     Networking <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Linux Kernel Functional Testing <lkft@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+References: <20210726142536.1223744-1-vladimir.oltean@nxp.com>
+ <CAK8P3a2HGm7MyUc3N1Vjdb2inS6D3E3HDq4bNTOBaHZQCP9kwA@mail.gmail.com>
+ <eab61b8f-fc54-ea63-ad31-73fb13026b1f@ti.com>
+ <20210803115819.sdtdqhmfk5k4olip@skbuf>
+ <CAK8P3a3xtC7p_iEcqLpL+uhCBGm31vrrCG5xFCxraCRZiyEWQA@mail.gmail.com>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <81e7f845-c0be-110e-d1ae-5b5574bf7267@ti.com>
+Date:   Tue, 3 Aug 2021 15:46:26 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <CAK8P3a3xtC7p_iEcqLpL+uhCBGm31vrrCG5xFCxraCRZiyEWQA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 3 Aug 2021 14:04:39 +0300 Pavel Tikhomirov wrote:
-> > Just to double check - is the expectation that the value returned is
-> > completely opaque to the user space? The defines in question are not
-> > part of uAPI.  
-> 
-> Sorry, didn't though about it initially. For criu we don't care about 
-> the actual bits we restore same what we've dumped. Buf if some real 
-> users would like to use this interface to restore default autoadjustment 
-> on their sockets we should probably export SOCK_SNDBUF_LOCK and 
-> SOCK_RCVBUF_LOCK to uAPI.
 
-Just to be sure - please mention this in the commit message.
+
+On 03/08/2021 15:33, Arnd Bergmann wrote:
+> On Tue, Aug 3, 2021 at 1:58 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+>>
+>> On Tue, Aug 03, 2021 at 02:18:38PM +0300, Grygorii Strashko wrote:
+>>> In my opinion, the problem is a bit bigger here than just fixing the build :(
+>>>
+>>> In case, of ^cpsw the switchdev mode is kinda optional and in many cases
+>>> (especially for testing purposes, NFS) the multi-mac mode is still preferable mode.
+>>>
+>>> There were no such tight dependency between switchdev drivers and bridge core before and switchdev serviced as
+>>> independent, notification based layer between them, so ^cpsw still can be "Y" and bridge can be "M".
+>>> Now for mostly every kernel build configuration the CONFIG_BRIDGE will need to be set as "Y", or we will have
+>>> to update drivers to support build with BRIDGE=n and maintain separate builds for networking vs non-networking testing.
+>>> But is this enough? Wouldn't it cause 'chain reaction' required to add more and more "Y" options (like CONFIG_VLAN_8021Q)?
+>>>
+>>> PS. Just to be sure we on the same page - ARM builds will be forced (with this patch) to have CONFIG_TI_CPSW_SWITCHDEV=m
+>>> and so all our automation testing will just fail with omap2plus_defconfig.
+>>
+>> I didn't realize it is such a big use case to have the bridge built as
+>> module and cpsw as built-in.
+> 
+> I don't think anybody realistically cares about doing, I was only interested in
+> correctly expressing what the dependency is.
+> 
+>> I will send a patch that converts the
+>> switchdev_bridge_port_{,un}offload functions to simply emit a blocking
+>> switchdev notifier which the bridge processes (a la SWITCHDEV_FDB_ADD_TO_BRIDGE),
+>> therefore making switchdev and the bridge loosely coupled in order to
+>> keep your setup the way it was before.
+> 
+> That does sounds like it can avoid future build regressions, and simplify the
+> Kconfig dependencies, so that would probably be a good solution.
+
+Yes. it sounds good, thank you.
+Just a thought - might be good to follow switchdev_attr approach (extendable), but in the opposite direction as, I feel,
+more notification dev->bridge might be added in the future.
+
+-- 
+Best regards,
+grygorii
