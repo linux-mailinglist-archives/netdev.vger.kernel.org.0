@@ -2,87 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E31913DF7BD
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 00:21:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E02A03DF7D7
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 00:32:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232530AbhHCWVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 18:21:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33048 "EHLO
+        id S233173AbhHCWcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 18:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229663AbhHCWVj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 18:21:39 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D18C061757;
-        Tue,  3 Aug 2021 15:21:26 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id e2-20020a17090a4a02b029016f3020d867so813156pjh.3;
-        Tue, 03 Aug 2021 15:21:26 -0700 (PDT)
+        with ESMTP id S233000AbhHCWcS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 18:32:18 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C408AC061757;
+        Tue,  3 Aug 2021 15:32:06 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id u25so612212oiv.5;
+        Tue, 03 Aug 2021 15:32:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=M+6JKKf52HVxLfHy469OKCbdB/YMhbbhQWcIdOqleVw=;
-        b=GqAK/nN5486TcHJjWMdZkgyfnxp3LUyPktr4rN/+JjFlwDTMYBEsBxeDDAzcw+sGBL
-         +jgkqhjB4PDxNMbn3w4qCSMrups0bFgD2OmG7P2OSdK3Hrqsjkl4g/3qf8cpP3R0PZG9
-         jwA734tjghQtz/1kJwOCDwymO26kX9d/90hEYvA9laYoLoTkYGYgwdzQKyAmMMswuyTN
-         MpnxXaxczvr4qeuvdwXIXoRVUtIZGHdH0GuKs2Dw4mjlf1gyxUcxHG60TJ4zHs47XIux
-         WOKzxCHNYC8zx8y5mOn8QrlxRyDvRxYG4dXS5on9gR2RRj6wTjsB2KBB7/8yhb/t4/xB
-         mCZw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=IxvJ3kNcHqPJOltM6QEZR4op6Xq6Iap0fFQoq3XfjDk=;
+        b=pNRU89QYktJGX/U529VWINcWShMtjw+tMcMUL8zyoreyigdHRuNOICggg5JhqFCuJ0
+         Vj/JIorfE6IQQtxMfub4IACvm0IcyVPDbwkPmdG2pqXikHzPoLLu6TsHLeypOpTe7EqS
+         vHea/r/QJfSwSspbmR5f9/Aw3fUt+6u5MP6/kJfzQwBtZu0kUzJcpISTdAjT0IwU5jNQ
+         H2wDBn3US0wE9xW81pnN7M+fYFoB4cL2t7y6PHanNwQyUGztXu6Bbfokyns3HYwWkgDA
+         8qd3b3r38KE+t/kUquWc+aBwBTvEVtaWYC9RKL9n9hzq4NukICNQAUbgN98Uht+6EUpd
+         vduQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=M+6JKKf52HVxLfHy469OKCbdB/YMhbbhQWcIdOqleVw=;
-        b=c8LzxlssrsZilCvvR05cnmcdnGr/HmTwjUvWrvdXhgkqmHKDtHZ0dYoUabXQ/SlcOS
-         n0Opem8xBi4Z4kM+eEkSB8Cy65kV9dreg82I81faCB+xmpyQtaWOudBSP712d26McQBv
-         z1DNyv3M2IvmB8KOlh+Hn5+R53q3vd6lFgVNqTM4UzFIPiVfk69M92mlz9qct5O2e+Qu
-         9BLkXVsQxut87JpI25akmKgjXKyPUQE4m07BbxhpNnalgs5EK4lP6Fwiyr4893kWZkuP
-         FE/zLrXgXnLqT8FGDeXRYYlbQFOfDVoC0nuffU0HsbCkwKzI7bnpJVRMDECGkySEw90K
-         pHhg==
-X-Gm-Message-State: AOAM530vFvUJwc+BR+mI91bO95CmsIJ/LKzACCU7rR4IBQeSXX1Rblef
-        Fk/ELS29m1shV35kyrGlNYNe5MPh5zIGdHX9tds=
-X-Google-Smtp-Source: ABdhPJxtN8MnoEd+1WkSekpJSRyCxssbz2Tsbrjk+zGX6hlCjM/L/F1Z6I127QgiIeh5iUnHDMLL+IQGOz78f1IznzQ=
-X-Received: by 2002:a17:90a:b10f:: with SMTP id z15mr15450178pjq.56.1628029286315;
- Tue, 03 Aug 2021 15:21:26 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=IxvJ3kNcHqPJOltM6QEZR4op6Xq6Iap0fFQoq3XfjDk=;
+        b=mvU/OGrd0xBtNQaGyo3k4WzO0fzUxIbgMfHdC9FASFKL12LUgBI54NhL8qkx0U53Fu
+         nQpU4gsHbLhzWxVgTjH4eJTooNBEbgMH6+JmT0pRBIASFor7OAT1dpcjc3FUAbJ9Hwty
+         1MfPWlgl9a7sgp3miwbZGCC3gx1c4q2nLjskbrpUO7f84KsTEnlsr1SFaxzuHmZdOgD9
+         QkcTdeST8ev6vW0ijg6q5cJxozlLtLLvJgx7JflV3J/0UvQyid0ItIzJOs7ccRqLHHy/
+         XkBREF8gcbM0T7qcwOC+pwx9YIYENA3tBQR45uOf8cAZAyCqn79QACjjWQg6472OrF7v
+         0xHA==
+X-Gm-Message-State: AOAM530bB5SF2ASkIMPFdbmZ+Ozu1aRM89xLxT7+kJ907jbD0qmnHM1y
+        iDORjdxsBGN+NvtTPORvaSw=
+X-Google-Smtp-Source: ABdhPJx22+N8LhOKX2RMU2RBTaJNKQQaf2Coj+Sqbg+fHUB7PaFmYJ/ium+/IiiVJuS3aHhzLnoYFw==
+X-Received: by 2002:aca:f354:: with SMTP id r81mr4913255oih.99.1628029924767;
+        Tue, 03 Aug 2021 15:32:04 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.27])
+        by smtp.googlemail.com with ESMTPSA id a7sm73851oti.47.2021.08.03.15.32.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Aug 2021 15:32:04 -0700 (PDT)
+Subject: Re: [syzbot] net-next boot error: WARNING: refcount bug in
+ fib_create_info
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Pavel Skripkin <paskripkin@gmail.com>
+Cc:     syzbot <syzbot+c5ac86461673ef58847c@syzkaller.appspotmail.com>,
+        davem@davemloft.net, dsahern@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+References: <0000000000005e090405c8a9e1c3@google.com>
+ <02372175-c3a1-3f8e-28fe-66d812f4c612@gmail.com>
+ <e6eab0c9-7b2e-179b-b9c0-459dd9a75ed1@gmail.com>
+ <20210803140435.19e560fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <80ea9025-05a7-ab21-ed53-5527356c4464@gmail.com>
+Date:   Tue, 3 Aug 2021 16:32:02 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-References: <20210803123921.2374485-1-kuba@kernel.org> <20210803221659.9847-1-yepeilin.cs@gmail.com>
-In-Reply-To: <20210803221659.9847-1-yepeilin.cs@gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 3 Aug 2021 15:21:15 -0700
-Message-ID: <CAM_iQpVUMzP8_gPsth_DncVUdC09ihizTC7jo2t1=MS9uSdfTw@mail.gmail.com>
-Subject: Re: [PATCH net-next] tc-testing: Add control-plane selftests for sch_mq
-To:     Peilin Ye <yepeilin.cs@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Lucas Bates <lucasb@mojatatu.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Peilin Ye <peilin.ye@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210803140435.19e560fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 3, 2021 at 3:17 PM Peilin Ye <yepeilin.cs@gmail.com> wrote:
-> +           "setup": [
-> +            "echo \"1 1 4\" > /sys/bus/netdevsim/new_device"
-> +           ],
-> +           "cmdUnderTest": "$TC qdisc add dev $ETH root handle 1: mq",
-> +           "expExitCode": "0",
-> +           "verifyCmd": "$TC qdisc show dev $ETH",
-> +           "matchPattern": "qdisc pfifo_fast 0: parent 1:[1-4] bands 3 priomap 1 2 2 2 1 2 0 0 1 1 1 1 1 1 1 1",
-> +           "matchCount": "4",
-> +           "teardown": [
-> +                   "echo \"1\" > /sys/bus/netdevsim/del_device"
-> +           ]
-> +       },
+On 8/3/21 3:04 PM, Jakub Kicinski wrote:
+>>>
+>>> diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+>>> index f29feb7772da..bb9949f6bb70 100644
+>>> --- a/net/ipv4/fib_semantics.c
+>>> +++ b/net/ipv4/fib_semantics.c
+>>> @@ -1428,6 +1428,7 @@ struct fib_info *fib_create_info(struct fib_config
+>>> *cfg,
+>>>    	}
+>>>
+>>>    	fib_info_cnt++;
+>>> +	refcount_set(&fi->fib_treeref, 1);
+>>>    	fi->fib_net = net;
+>>>    	fi->fib_protocol = cfg->fc_protocol;
+>>>    	fi->fib_scope = cfg->fc_scope;
+>>
+>> Oops, it's already fixed in -next, so
+>>
+>> #syz fix: ipv4: Fix refcount warning for new fib_info
+>>
+>>
+>> BTW: there is one more bug with refcounts:
+>>
+>> link_it:
+>> 	ofi = fib_find_info(fi);
+>> 	if (ofi) {
+>> 		fi->fib_dead = 1;
+>> 		free_fib_info(fi);
+>> 		refcount_inc(&ofi->fib_treeref);
+>>
+>> 		^^^^^^^^^^^^^^^^^^^^^^^
+>> 		/ *fib_treeref is 0 here */
+> 
+> Why 0? ofi is an existing object it's already initialized.
 
-Like I mentioned to Peilin, I am _not_ sure whether it is better to create
-netdevsim device in such a way. Maybe we need to create it before
-these tests and pass it via cmdline?? Lucas?
+yes, it is an existing object with a non-0 refcount.
 
-Thanks.
+> 
+>> 		return ofi;
+>> 	}
+>>
+>> 	refcount_set(&fi->fib_treeref, 1);
+>>
+>>
+>> diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+>> index f29feb7772da..38d1fc4d0be1 100644
+>> --- a/net/ipv4/fib_semantics.c
+>> +++ b/net/ipv4/fib_semantics.c
+>> @@ -1543,6 +1543,8 @@ struct fib_info *fib_create_info(struct fib_config 
+>> *cfg,
+>>   	}
+>>
+>>   link_it:
+>> +	refcount_set(&fi->fib_treeref, 1);
+
+moving the refcount_set here causes all kinds of problems with the
+release and error paths in this function.
+
