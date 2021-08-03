@@ -2,83 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C42903DF4BA
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 20:27:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64C873DF4C6
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 20:33:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238834AbhHCS1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 14:27:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36172 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238793AbhHCS1n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 14:27:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 828EF60F38;
-        Tue,  3 Aug 2021 18:27:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628015251;
-        bh=b5coXSNVumOlwboi0Y8EY/7mMzZofAt1yR97rrjEWuo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=EnOniVccHYcbPUOoldYN5TcX8f3C+JRnuXOHZxWbtWJMY1Ak5Rft8Yu9IVWd25mIX
-         iudADck47r7/bo4UFcQvUYnq8hgDIIjzrESTJ2ktslvjw9WlMl0U28hVWKLw//VWBu
-         d1HQGlOXqV5jyTRfDykOOCsp1cM4DsXuauWnSHlIWKyLmujnwW7Gg7191OH5tv9Ysa
-         r6GOfrOdkaj5I9PQoVYzh6TzMNLgh8Feahn8l0jBdxFecoTVsgKs5oI/+U3jfHaBUZ
-         e/xx8m2hml8eTRRgpcXieQrEUdQnt/C/QMfdHCIeBhVM3y7czlpbR6cVa19JB2U3FE
-         Bn+jkASbimQIA==
-Received: by mail-wm1-f48.google.com with SMTP id l11-20020a7bcf0b0000b0290253545c2997so2677634wmg.4;
-        Tue, 03 Aug 2021 11:27:31 -0700 (PDT)
-X-Gm-Message-State: AOAM533jmkLPA1WOaooXymw+poBR9UqPrAzNR03Qht7E92QkvtT1XYkS
-        +claN/LL0w43SmIRYzUubf67gbIQvsq9tSVH1+Y=
-X-Google-Smtp-Source: ABdhPJyjyh5NW4HNDbY103glgZvlOfMtw6fuLPusi+3xAq38xsO4vRLS5MKwwQ0mEBFcXf8KsEzBXD0TMoyA7M3oU3E=
-X-Received: by 2002:a05:600c:414b:: with SMTP id h11mr5573870wmm.120.1628015250107;
- Tue, 03 Aug 2021 11:27:30 -0700 (PDT)
+        id S238994AbhHCSeA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 14:34:00 -0400
+Received: from h4.fbrelay.privateemail.com ([131.153.2.45]:59560 "EHLO
+        h4.fbrelay.privateemail.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233681AbhHCSd7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 14:33:59 -0400
+Received: from MTA-08-3.privateemail.com (mta-08-1.privateemail.com [68.65.122.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by h3.fbrelay.privateemail.com (Postfix) with ESMTPS id 858C2809D1;
+        Tue,  3 Aug 2021 14:33:46 -0400 (EDT)
+Received: from mta-08.privateemail.com (localhost [127.0.0.1])
+        by mta-08.privateemail.com (Postfix) with ESMTP id 37AE7180019F;
+        Tue,  3 Aug 2021 14:33:45 -0400 (EDT)
+Received: from localhost.localdomain (unknown [10.20.151.225])
+        by mta-08.privateemail.com (Postfix) with ESMTPA id 9DA5618000A1;
+        Tue,  3 Aug 2021 14:33:43 -0400 (EDT)
+From:   Jordy Zomer <jordy@pwning.systems>
+To:     netdev@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jordy Zomer <jordy@pwning.systems>,
+        Chas Williams <3chas3@gmail.com>,
+        linux-atm-general@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] atm: [nicstar] make drain_scq explicitly unsigned
+Date:   Tue,  3 Aug 2021 20:33:37 +0200
+Message-Id: <20210803183337.927053-1-jordy@pwning.systems>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20210802145937.1155571-1-arnd@kernel.org> <20210802164907.GA9832@hoboy.vegasvil.org>
- <bd631e36-1701-b120-a9b0-8825d14cc694@intel.com> <20210802230921.GA13623@hoboy.vegasvil.org>
- <CAK8P3a2XjgbEkYs6R7Q3RCZMV7v90gu_v82RVfFVs-VtUzw+_w@mail.gmail.com>
- <20210803155556.GD32663@hoboy.vegasvil.org> <20210803161434.GE32663@hoboy.vegasvil.org>
- <CAK8P3a2Wt9gnO4Ts_4Jw1+qpBj8HQc50jU2szjmR8MmZL9wrgQ@mail.gmail.com> <CO1PR11MB50892EAF3C871F6934B85852D6F09@CO1PR11MB5089.namprd11.prod.outlook.com>
-In-Reply-To: <CO1PR11MB50892EAF3C871F6934B85852D6F09@CO1PR11MB5089.namprd11.prod.outlook.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Tue, 3 Aug 2021 20:27:14 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a06enZOf=XyZ+zcAwBczv41UuCTz+=0FMf2gBz1_cOnZQ@mail.gmail.com>
-Message-ID: <CAK8P3a06enZOf=XyZ+zcAwBczv41UuCTz+=0FMf2gBz1_cOnZQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] ethernet/intel: fix PTP_1588_CLOCK dependencies
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 3, 2021 at 7:19 PM Keller, Jacob E <jacob.e.keller@intel.com> w=
-rote:
-> > On Tue, Aug 3, 2021 at 6:14 PM Richard Cochran <richardcochran@gmail.co=
-m> wrote:
+The drain_scq function used to take a signed integer as a pos parameter.
+The only caller of this function passes an unsigned integer to it.
+Therefore to make it obviously safe, let's just make this an unsgined
+integer as this is used in pointer arithmetics.
 
-> There is an alternative solution to fixing the imply keyword:
->
-> Make the drivers use it properly by *actually* conditionally enabling the=
- feature only when IS_REACHABLE, i.e. fix ice so that it uses IS_REACHABLE =
-instead of IS_ENABLED, and so that its stub implementation in ice_ptp.h act=
-ually just silently does nothing but returns 0 to tell the rest of the driv=
-er things are fine.
+Signed-off-by: Jordy Zomer <jordy@pwning.systems>
+---
+To make this patch build I added the correct function prototype.
 
-I would consider IS_REACHABLE() part of the problem, not the solution, it m=
-akes
-things magically build, but then surprises users at runtime when they do no=
-t get
-the intended behavior.
+ drivers/atm/nicstar.c | 2 +-
+ 1 file changed, 6 insertion(+), 6 deletion(-)
 
-      Arnd
+diff --git a/drivers/atm/nicstar.c b/drivers/atm/nicstar.c
+index 530683972f16..96f53dc2df79 100644
+--- a/drivers/atm/nicstar.c
++++ b/drivers/atm/nicstar.c
+@@ -134,7 +134,7 @@ static int ns_send_bh(struct atm_vcc *vcc, struct sk_buff *skb);
+ static int push_scqe(ns_dev * card, vc_map * vc, scq_info * scq, ns_scqe * tbd,
+ 		     struct sk_buff *skb, bool may_sleep);
+ static void process_tsq(ns_dev * card);
+-static void drain_scq(ns_dev * card, scq_info * scq, int pos);
++static void drain_scq(ns_dev * card, scq_info * scq, unsigned int pos);
+ static void process_rsq(ns_dev * card);
+ static void dequeue_rx(ns_dev * card, ns_rsqe * rsqe);
+ static void recycle_rx_buf(ns_dev * card, struct sk_buff *skb);
+@@ -1917,14 +1917,14 @@ static void process_tsq(ns_dev * card)
+ 		       card->membase + TSQH);
+ }
+ 
+-static void drain_scq(ns_dev * card, scq_info * scq, int pos)
++static void drain_scq(ns_dev *card, scq_info *scq, unsigned int pos)
+ {
+ 	struct atm_vcc *vcc;
+ 	struct sk_buff *skb;
+-	int i;
++	unsigned int i;
+ 	unsigned long flags;
+ 
+-	XPRINTK("nicstar%d: drain_scq() called, scq at 0x%p, pos %d.\n",
++	XPRINTK("nicstar%d: drain_scq() called, scq at 0x%p, pos %u.\n",
+ 		card->index, scq, pos);
+ 	if (pos >= scq->num_entries) {
+ 		printk("nicstar%d: Bad index on drain_scq().\n", card->index);
+@@ -1932,12 +1932,12 @@ static void drain_scq(ns_dev * card, scq_info * scq, int pos)
+ 	}
+ 
+ 	spin_lock_irqsave(&scq->lock, flags);
+-	i = (int)(scq->tail - scq->base);
++	i = (unsigned int)(scq->tail - scq->base);
+ 	if (++i == scq->num_entries)
+ 		i = 0;
+ 	while (i != pos) {
+ 		skb = scq->skb[i];
+-		XPRINTK("nicstar%d: freeing skb at 0x%p (index %d).\n",
++		XPRINTK("nicstar%d: freeing skb at 0x%p (index %u).\n",
+ 			card->index, skb, i);
+ 		if (skb != NULL) {
+ 			dma_unmap_single(&card->pcidev->dev,
+-- 
+2.27.0
+
