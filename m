@@ -2,336 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00AB03DF86C
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 01:20:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1471E3DF875
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 01:25:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234313AbhHCXUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 19:20:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38984 "EHLO mail.kernel.org"
+        id S231651AbhHCXZ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 19:25:58 -0400
+Received: from mga01.intel.com ([192.55.52.88]:62553 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233743AbhHCXUf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 19:20:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1510760F70;
-        Tue,  3 Aug 2021 23:20:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628032824;
-        bh=wPMbOjqoH1dBdJO1XE08P8TUVvPbWReG9PxCWFW6RTE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TXyLsvAg7vUfVeQZiTI971az1RFIJbbbInyZ/Pyiz2iwc0k1uZOLPx5lhxmT5RbXY
-         6V37Lk42+Zt6xKOXy0ytIc3gLWM5M/uMk1Te9pb04GB686BjQyOm9iV4tgwjYL/C0k
-         n3LRATgsI/CLSCUsVfNLerkacPAEZtt3N9pM+6UHzrDdcaOKH4u2Q4pa5blJejSukz
-         xjdWhn6gVtqWCkeFztG1cynIB9VCGezMCBJQcUfg2rQtpaZxH0bKjSCQGbqfozxOtm
-         ll4AaiMT6274LjZA2LD4HP3R1Hx37pDhu0oKJj63c1PosZkylbQO4AZAoqXRwDhA+A
-         7aPJyh8phggFQ==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        Mark Bloch <mbloch@nvidia.com>
-Subject: [PATCH mlx5-next 14/14] net/mlx5: Lag, Create shared FDB when in switchdev mode
-Date:   Tue,  3 Aug 2021 16:19:59 -0700
-Message-Id: <20210803231959.26513-15-saeed@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210803231959.26513-1-saeed@kernel.org>
-References: <20210803231959.26513-1-saeed@kernel.org>
+        id S229684AbhHCXZ5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 19:25:57 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="235756588"
+X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
+   d="scan'208";a="235756588"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 16:25:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
+   d="scan'208";a="511539947"
+Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
+  by FMSMGA003.fm.intel.com with ESMTP; 03 Aug 2021 16:25:45 -0700
+Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10; Tue, 3 Aug 2021 16:25:44 -0700
+Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
+ fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10; Tue, 3 Aug 2021 16:25:44 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10 via Frontend Transport; Tue, 3 Aug 2021 16:25:44 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.105)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.10; Tue, 3 Aug 2021 16:25:44 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jCBckqfbDIx42SZ4UbCQM8Xh2J9I3qqJmO5LU3RPZeaC/SAG79ZBxqw7+3nGRDDMnWqqHMhftU2vQQ6S9Uhnna1JpZprI6mxH63ISxEOkcMHubJezXBSSvtzj4OD/ghGcga9/DmC0sX6kAUJcJeQUW7SJFsZZSQCOG/wcxtEUIhQj49/df0PQylqhfnFXE0DPsT3x52OfHZD0/ztFYKVwFG7HbcSqJr4QWvCtwH6OehJFOSdtJuXVMeeJlp7my7KNua0OPgaW8k7W4zBfcDxgx9bT5s2+2ETZFpvuA89ibXEMD9ueJX7UPOsjSiRFTThuiqhLp4cJtoCA63i+nXpgg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/N4WGp0EenZtIATxPsX9WF5Yi5r7YWRej09zR3AXF+s=;
+ b=T+sP3MXrcn+YqZQy3sTfCycK+PsNvUTI4D6lORSrCu5l3S5L4r1vEPHQKf6Vf9tETSR6pUM49uSE5NYbz0mglrBUR+ElPSS784oyp8XtIFU3IYQPEEbQYgY5+G47rCFhQI1tuXX8a5vqco5nAWdSee1OgNi8c/V15RdVnm8hLSGEO44SDia2kVCpGQgQ1ii5y8IRmeG5bSzBc79uvhwRdgtvnRU52lLhq3ab9VQzQgi+cVKkrhmypd9ddksKroYeqlJJsImHaE79iUu++T0sbswfQzLBO0Y784l51ZUJsu0kDsNYPV48L7KFAauJ+/jw+NIjVk3UvXFOMZRiKsgiRw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/N4WGp0EenZtIATxPsX9WF5Yi5r7YWRej09zR3AXF+s=;
+ b=fpEgA4ibBWRM+hsqNs7X5VGhaB2QriGEv2JeE9Ohq+YJo5WtIrPW69o++QHTlr0ox8CZNcX67CjczGpKHCi0G/S+U4R9FYQeG+ov6PmfrE34pLLPkDcujqBy3S/VkcZMT+K7P3WEaIIzS23P8mJ43CEDjbh/yLyNyFKJyl0ygbw=
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
+ by MWHPR11MB1886.namprd11.prod.outlook.com (2603:10b6:300:110::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.25; Tue, 3 Aug
+ 2021 23:25:43 +0000
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::bd85:7a6a:a04c:af3a]) by CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::bd85:7a6a:a04c:af3a%5]) with mapi id 15.20.4373.026; Tue, 3 Aug 2021
+ 23:25:43 +0000
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+To:     Arnd Bergmann <arnd@kernel.org>
+CC:     Richard Cochran <richardcochran@gmail.com>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net-next v2] ethernet/intel: fix PTP_1588_CLOCK
+ dependencies
+Thread-Topic: [PATCH net-next v2] ethernet/intel: fix PTP_1588_CLOCK
+ dependencies
+Thread-Index: AQHXh68Y1owt0G/CUEakzTAdq+RvtqtgbT+AgAAzuICAADaFgIAAgzoAgACWAgCAAAU1AIAADOyAgAAEIGCAABQFAIAAUvdg
+Date:   Tue, 3 Aug 2021 23:25:42 +0000
+Message-ID: <CO1PR11MB5089B32E93853E4723B02819D6F09@CO1PR11MB5089.namprd11.prod.outlook.com>
+References: <20210802145937.1155571-1-arnd@kernel.org>
+ <20210802164907.GA9832@hoboy.vegasvil.org>
+ <bd631e36-1701-b120-a9b0-8825d14cc694@intel.com>
+ <20210802230921.GA13623@hoboy.vegasvil.org>
+ <CAK8P3a2XjgbEkYs6R7Q3RCZMV7v90gu_v82RVfFVs-VtUzw+_w@mail.gmail.com>
+ <20210803155556.GD32663@hoboy.vegasvil.org>
+ <20210803161434.GE32663@hoboy.vegasvil.org>
+ <CAK8P3a2Wt9gnO4Ts_4Jw1+qpBj8HQc50jU2szjmR8MmZL9wrgQ@mail.gmail.com>
+ <CO1PR11MB50892EAF3C871F6934B85852D6F09@CO1PR11MB5089.namprd11.prod.outlook.com>
+ <CAK8P3a06enZOf=XyZ+zcAwBczv41UuCTz+=0FMf2gBz1_cOnZQ@mail.gmail.com>
+In-Reply-To: <CAK8P3a06enZOf=XyZ+zcAwBczv41UuCTz+=0FMf2gBz1_cOnZQ@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: df7c117f-50bf-4991-ed47-08d956d60374
+x-ms-traffictypediagnostic: MWHPR11MB1886:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR11MB18866077A9DEB5CE00244E9ED6F09@MWHPR11MB1886.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: mlEJROriHuNekVnPNOAEr6APpoG48UB3PtqlxbtCHU5P55d0jm9/jkm15hNlq12L1xKaAIFtyLir9kvNppTP+N0IO5M8oxbZuCJ5krBHjRF5bVPfzeVH02xNdIWYPHX8nlQK+m0o8tcKvoshXOj0J+tCgaW5kTaQ77LX4+YA+vYUilkznqTsl9uAkR34xya2K+2/jb9TIe3s9BHySQjSPVorQJqpRhsTh641UYSHlDvtcHWlUqal3Fuc3aiGla4zq+/K9yMbTx0GRqjzpPJTHGDTw7TIQQcU7EjPF7Sfsj/WKp+MqCKmv8ZLW+SqWnagGRjSJrNqJxxhTwgYKe27qwvMmnD9TXbNOpiU/6fa9PnjTVAl8BHFOG0e+obkBUQ0zBG1ye7g/AakN1dcYXiyWksM9uFQwmhHl7tVOTcrll80gLeXVvM+fXJoWI/oy9Q+yQDS7Tn4bgwNHR7OPehiVIympYguhxwy8y3BCWSiREUh6Sg7x8gaAyBIHjFdWaYl2XXOVYSZY4eDlSAE8BUYi2SY1JTGqXPBvf3g5ryGcJFx/o4CnBMpls5iMSMLT2urdMf1zQHGKgC/+fHx8pO5Z3xJtunW9zZiDzCnl7x6eRvW0cz4nHoLb9GYxhsbqCCgOURDhJ/0WExYAiga9zDCT/Gz1TCXe4RHfMGXSENcsa2LtCZoLOv52O4bulWOBdA2VKRLnCEnEPgqelGLkyOlKw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(346002)(39860400002)(376002)(396003)(366004)(2906002)(66476007)(76116006)(66556008)(33656002)(478600001)(66446008)(66946007)(64756008)(5660300002)(71200400001)(6916009)(52536014)(8676002)(7696005)(54906003)(8936002)(9686003)(7416002)(83380400001)(86362001)(55016002)(26005)(122000001)(186003)(53546011)(316002)(4326008)(6506007)(38100700002)(38070700005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?YzF2ak1TZXM1eHBTQTRiQWNrYXVqaGZpUC9CQ1Jsb3gyTDc3SEpFSVNlbCtk?=
+ =?utf-8?B?bHoyUkZ3NVhSVm9NeloxZTVCQlRiV2VySENhaDhzdDllTVl4UVdNSDNIbDBS?=
+ =?utf-8?B?WFRxU2VScFpoWFVjcU5WNEpua3BQL01tUVpYUWtQRjZENGc0SitrbVBBOFpw?=
+ =?utf-8?B?U2N0c0U5OFNsWHRFR1RHaVR3YW5iLytmV21QQmt2dW14RjNtcXVaYm5kME9x?=
+ =?utf-8?B?cnhzZUN1eHczTVlob1R1R2ZWc2NMMTdFQm9HUEhJVEZ5aGVLajNmZXBoZm15?=
+ =?utf-8?B?M1hDUTFqaHNYUnhPeHM0Z3pSSVd0dkcrR1ZWMnl3aWJwYi9BM0F1bXdhTnZy?=
+ =?utf-8?B?a2J0N0lGWDU0RWpWUUUxS3B5YmI4TElNUnhxTFpvelhOcXhMdTRaY2g2dVhU?=
+ =?utf-8?B?VEdGTkpsWnlRTkxLcW5LRFRQa0NBNmVWb28wY0pWTm94NFNvSit1dWxaaGh4?=
+ =?utf-8?B?RGNtVjUyWGw5dGQ5SUtRTW5BMWs4YTRBYnhveWZqTTZ3Z1NDUk9MckFoeU1v?=
+ =?utf-8?B?ZzhnTksxK1BSS3A1Kzk2dXQ0UE0xWnUyWlk1UC9Kak5Gdk9ydUkreFhVbk5H?=
+ =?utf-8?B?U1ovbWE1dEFxYnlzRndjQXNoMHJtcFNCU0F0eFB6cHd5NjlLMGMvTHgrUENj?=
+ =?utf-8?B?VWxmajhaZWtVSmdUaW1Hb2RLaDA0OWZobC9Hbnk2Z09nMUo5dDdKNDBTQ3VY?=
+ =?utf-8?B?UVVzWFpkVWhrb3FSZkZEUlRhS2lyRmpaNmVibFRTa2ZxREQ2OGpBeFZmLytQ?=
+ =?utf-8?B?ejdkb2VpNHN2VWYrOFFPVERvbVNDbDJ2OHpDQk5sa0Q0Z0RVVlFyVWt6K2Fp?=
+ =?utf-8?B?WHpBNGVXbk1ZSVFDTk5xU3BmTkx5UkVySFJnNWUxajFBKzdkaElibFZjTDNx?=
+ =?utf-8?B?bEFhckEwVVdQcXRrV2ZwUXFRUU9HMEtEODF0MDhEQm9mOGNBWW5NRVVacDZj?=
+ =?utf-8?B?eUdjYnNBV1BKRUJhKzIrZnJLVDVCbWZCMkozZ2w1dnVSa0xLR3Z2Qk1JVUZh?=
+ =?utf-8?B?TE5TSE5xN21ZdDZ1TFRkMGNHN3l6Z2ZDa0dXREMyZGc4Z0FVdkhLekRrZy80?=
+ =?utf-8?B?U0NuNmp4MVJXcWVTUm1qbW9UQURKUm45WE40TjdFUTVwck9sUWJQK3RQUWRa?=
+ =?utf-8?B?c05LajlVTDFxTnhFdWhLYkhkN1lBV3lVTEVBcGwvbWVBQXJveFExRUtrL25E?=
+ =?utf-8?B?bkJxQnZJTTJPVUJON1dHdHB6SzRzQ3luWnFOU2ttOStvck5GUWx2UktHNkNS?=
+ =?utf-8?B?Y3JFWW11bTBaSi9rdnlWeWIvU2ZRUXFSUVBuSWI4UWpvT2FVS1Q1RS9mNnh3?=
+ =?utf-8?B?dW5uLzluTVkyRXE3eDFmazd1UDMweUdqTnBsMkwyUU9FNU82NHN0S043Q0M2?=
+ =?utf-8?B?blY5RWdUY04rejJudDZyWEpjN0xCcXB1V0IrdjlTaXhwRU1jTXVad0lMQUpN?=
+ =?utf-8?B?dnRnRVdkSVRrVlMrS2hRWlVydHVTVUsvVC95dkZka1F6eTNoZkZuWWZhK2Q5?=
+ =?utf-8?B?SmsrckxlMWRZSVRWT1FDSjhGN2FybG5FUW1tbDBTdUE4SW1ST2tvR1poQ0pr?=
+ =?utf-8?B?eHBCRE5kZSt2NVR0a1RXRmxqU0tDbjJJa0xJdDU3bTdTTGZZY1h6UWx3NlZB?=
+ =?utf-8?B?SCtoUDNmOTBNN3ByUUV4YWxpL1UzM1dEaEhBSStiSWZBaktHRkxDdGpKNlNo?=
+ =?utf-8?B?Z0s4bFhBdlhVQTBPVCtuU25TTTJ4a2MxOHEzV1RtRlQvaFp6Y3BOY3pqQm9P?=
+ =?utf-8?Q?52A9GMf7PxTBGsB09M=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: df7c117f-50bf-4991-ed47-08d956d60374
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Aug 2021 23:25:42.9943
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Jyu8g9mM3qkFv3iuwgiuojkmnQYsBonUYwNcDJNYhAHOJmCE1S/iO+QS9vLKejvbTLevBnM+LOiY/sOw7M4ZZ8rTXTERItmphteOjRREN8E=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1886
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mark Bloch <mbloch@nvidia.com>
-
-If both eswitches are in switchdev mode and the uplink representors
-are enslaved to the same bond device create a shared FDB configuration.
-
-When moving to shared FDB mode not only the hardware needs be configured
-but the RDMA driver needs to reconfigure itself.
-
-When such change is done, unload the RDMA devices, configure the hardware
-and load the RDMA representors.
-
-When destroying the lag (can happen if a PCI function is unbinded,
-driver is unloaded or by just removing a netdev from the bond) make sure
-to restore the system to the previous state only if possible.
-
-For example, if a PCI function is unbinded there is no need to load the
-representors as the device is going away.
-
-Signed-off-by: Mark Bloch <mbloch@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/lag.c | 118 +++++++++++++++---
- drivers/net/ethernet/mellanox/mlx5/core/lag.h |   3 +-
- .../net/ethernet/mellanox/mlx5/core/lag_mp.c  |   2 +-
- 3 files changed, 105 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-index 89cd2b2af50a..f4dfa55c8c7e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-@@ -32,7 +32,9 @@
- 
- #include <linux/netdevice.h>
- #include <linux/mlx5/driver.h>
-+#include <linux/mlx5/eswitch.h>
- #include <linux/mlx5/vport.h>
-+#include "lib/devcom.h"
- #include "mlx5_core.h"
- #include "eswitch.h"
- #include "lag.h"
-@@ -45,7 +47,7 @@
- static DEFINE_SPINLOCK(lag_lock);
- 
- static int mlx5_cmd_create_lag(struct mlx5_core_dev *dev, u8 remap_port1,
--			       u8 remap_port2)
-+			       u8 remap_port2, bool shared_fdb)
- {
- 	u32 in[MLX5_ST_SZ_DW(create_lag_in)] = {};
- 	void *lag_ctx = MLX5_ADDR_OF(create_lag_in, in, ctx);
-@@ -54,6 +56,7 @@ static int mlx5_cmd_create_lag(struct mlx5_core_dev *dev, u8 remap_port1,
- 
- 	MLX5_SET(lagc, lag_ctx, tx_remap_affinity_1, remap_port1);
- 	MLX5_SET(lagc, lag_ctx, tx_remap_affinity_2, remap_port2);
-+	MLX5_SET(lagc, lag_ctx, fdb_selection_mode, shared_fdb);
- 
- 	return mlx5_cmd_exec_in(dev, create_lag, in);
- }
-@@ -224,35 +227,59 @@ void mlx5_modify_lag(struct mlx5_lag *ldev,
- }
- 
- static int mlx5_create_lag(struct mlx5_lag *ldev,
--			   struct lag_tracker *tracker)
-+			   struct lag_tracker *tracker,
-+			   bool shared_fdb)
- {
- 	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
-+	struct mlx5_core_dev *dev1 = ldev->pf[MLX5_LAG_P2].dev;
-+	u32 in[MLX5_ST_SZ_DW(destroy_lag_in)] = {};
- 	int err;
- 
- 	mlx5_infer_tx_affinity_mapping(tracker, &ldev->v2p_map[MLX5_LAG_P1],
- 				       &ldev->v2p_map[MLX5_LAG_P2]);
- 
--	mlx5_core_info(dev0, "lag map port 1:%d port 2:%d",
--		       ldev->v2p_map[MLX5_LAG_P1], ldev->v2p_map[MLX5_LAG_P2]);
-+	mlx5_core_info(dev0, "lag map port 1:%d port 2:%d shared_fdb:%d",
-+		       ldev->v2p_map[MLX5_LAG_P1], ldev->v2p_map[MLX5_LAG_P2],
-+		       shared_fdb);
- 
- 	err = mlx5_cmd_create_lag(dev0, ldev->v2p_map[MLX5_LAG_P1],
--				  ldev->v2p_map[MLX5_LAG_P2]);
--	if (err)
-+				  ldev->v2p_map[MLX5_LAG_P2], shared_fdb);
-+	if (err) {
- 		mlx5_core_err(dev0,
- 			      "Failed to create LAG (%d)\n",
- 			      err);
-+		return err;
-+	}
-+
-+	if (shared_fdb) {
-+		err = mlx5_eswitch_offloads_config_single_fdb(dev0->priv.eswitch,
-+							      dev1->priv.eswitch);
-+		if (err)
-+			mlx5_core_err(dev0, "Can't enable single FDB mode\n");
-+		else
-+			mlx5_core_info(dev0, "Operation mode is single FDB\n");
-+	}
-+
-+	if (err) {
-+		MLX5_SET(destroy_lag_in, in, opcode, MLX5_CMD_OP_DESTROY_LAG);
-+		if (mlx5_cmd_exec_in(dev0, destroy_lag, in))
-+			mlx5_core_err(dev0,
-+				      "Failed to deactivate RoCE LAG; driver restart required\n");
-+	}
-+
- 	return err;
- }
- 
- int mlx5_activate_lag(struct mlx5_lag *ldev,
- 		      struct lag_tracker *tracker,
--		      u8 flags)
-+		      u8 flags,
-+		      bool shared_fdb)
- {
- 	bool roce_lag = !!(flags & MLX5_LAG_FLAG_ROCE);
- 	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
- 	int err;
- 
--	err = mlx5_create_lag(ldev, tracker);
-+	err = mlx5_create_lag(ldev, tracker, shared_fdb);
- 	if (err) {
- 		if (roce_lag) {
- 			mlx5_core_err(dev0,
-@@ -266,6 +293,7 @@ int mlx5_activate_lag(struct mlx5_lag *ldev,
- 	}
- 
- 	ldev->flags |= flags;
-+	ldev->shared_fdb = shared_fdb;
- 	return 0;
- }
- 
-@@ -278,6 +306,12 @@ static int mlx5_deactivate_lag(struct mlx5_lag *ldev)
- 
- 	ldev->flags &= ~MLX5_LAG_MODE_FLAGS;
- 
-+	if (ldev->shared_fdb) {
-+		mlx5_eswitch_offloads_destroy_single_fdb(ldev->pf[MLX5_LAG_P1].dev->priv.eswitch,
-+							 ldev->pf[MLX5_LAG_P2].dev->priv.eswitch);
-+		ldev->shared_fdb = false;
-+	}
-+
- 	MLX5_SET(destroy_lag_in, in, opcode, MLX5_CMD_OP_DESTROY_LAG);
- 	err = mlx5_cmd_exec_in(dev0, destroy_lag, in);
- 	if (err) {
-@@ -333,6 +367,10 @@ static void mlx5_lag_remove_devices(struct mlx5_lag *ldev)
- 		if (!ldev->pf[i].dev)
- 			continue;
- 
-+		if (ldev->pf[i].dev->priv.flags &
-+		    MLX5_PRIV_FLAGS_DISABLE_ALL_ADEV)
-+			continue;
-+
- 		ldev->pf[i].dev->priv.flags |= MLX5_PRIV_FLAGS_DISABLE_IB_ADEV;
- 		mlx5_rescan_drivers_locked(ldev->pf[i].dev);
- 	}
-@@ -342,12 +380,15 @@ static void mlx5_disable_lag(struct mlx5_lag *ldev)
- {
- 	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
- 	struct mlx5_core_dev *dev1 = ldev->pf[MLX5_LAG_P2].dev;
-+	bool shared_fdb = ldev->shared_fdb;
- 	bool roce_lag;
- 	int err;
- 
- 	roce_lag = __mlx5_lag_is_roce(ldev);
- 
--	if (roce_lag) {
-+	if (shared_fdb) {
-+		mlx5_lag_remove_devices(ldev);
-+	} else if (roce_lag) {
- 		if (!(dev0->priv.flags & MLX5_PRIV_FLAGS_DISABLE_ALL_ADEV)) {
- 			dev0->priv.flags |= MLX5_PRIV_FLAGS_DISABLE_IB_ADEV;
- 			mlx5_rescan_drivers_locked(dev0);
-@@ -359,8 +400,34 @@ static void mlx5_disable_lag(struct mlx5_lag *ldev)
- 	if (err)
- 		return;
- 
--	if (roce_lag)
-+	if (shared_fdb || roce_lag)
- 		mlx5_lag_add_devices(ldev);
-+
-+	if (shared_fdb) {
-+		if (!(dev0->priv.flags & MLX5_PRIV_FLAGS_DISABLE_ALL_ADEV))
-+			mlx5_eswitch_reload_reps(dev0->priv.eswitch);
-+		if (!(dev1->priv.flags & MLX5_PRIV_FLAGS_DISABLE_ALL_ADEV))
-+			mlx5_eswitch_reload_reps(dev1->priv.eswitch);
-+	}
-+}
-+
-+static bool mlx5_shared_fdb_supported(struct mlx5_lag *ldev)
-+{
-+	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
-+	struct mlx5_core_dev *dev1 = ldev->pf[MLX5_LAG_P2].dev;
-+
-+	if (is_mdev_switchdev_mode(dev0) &&
-+	    is_mdev_switchdev_mode(dev1) &&
-+	    mlx5_eswitch_vport_match_metadata_enabled(dev0->priv.eswitch) &&
-+	    mlx5_eswitch_vport_match_metadata_enabled(dev1->priv.eswitch) &&
-+	    mlx5_devcom_is_paired(dev0->priv.devcom,
-+				  MLX5_DEVCOM_ESW_OFFLOADS) &&
-+	    MLX5_CAP_GEN(dev1, lag_native_fdb_selection) &&
-+	    MLX5_CAP_ESW(dev1, root_ft_on_other_esw) &&
-+	    MLX5_CAP_ESW(dev0, esw_shared_ingress_acl))
-+		return true;
-+
-+	return false;
- }
- 
- static void mlx5_do_bond(struct mlx5_lag *ldev)
-@@ -380,6 +447,8 @@ static void mlx5_do_bond(struct mlx5_lag *ldev)
- 	}
- 
- 	if (do_bond && !__mlx5_lag_is_active(ldev)) {
-+		bool shared_fdb = mlx5_shared_fdb_supported(ldev);
-+
- 		roce_lag = !mlx5_sriov_is_enabled(dev0) &&
- 			   !mlx5_sriov_is_enabled(dev1);
- 
-@@ -389,23 +458,40 @@ static void mlx5_do_bond(struct mlx5_lag *ldev)
- 			   dev1->priv.eswitch->mode == MLX5_ESWITCH_NONE;
- #endif
- 
--		if (roce_lag)
-+		if (shared_fdb || roce_lag)
- 			mlx5_lag_remove_devices(ldev);
- 
- 		err = mlx5_activate_lag(ldev, &tracker,
- 					roce_lag ? MLX5_LAG_FLAG_ROCE :
--					MLX5_LAG_FLAG_SRIOV);
-+						   MLX5_LAG_FLAG_SRIOV,
-+					shared_fdb);
- 		if (err) {
--			if (roce_lag)
-+			if (shared_fdb || roce_lag)
- 				mlx5_lag_add_devices(ldev);
- 
- 			return;
--		}
--
--		if (roce_lag) {
-+		} else if (roce_lag) {
- 			dev0->priv.flags &= ~MLX5_PRIV_FLAGS_DISABLE_IB_ADEV;
- 			mlx5_rescan_drivers_locked(dev0);
- 			mlx5_nic_vport_enable_roce(dev1);
-+		} else if (shared_fdb) {
-+			dev0->priv.flags &= ~MLX5_PRIV_FLAGS_DISABLE_IB_ADEV;
-+			mlx5_rescan_drivers_locked(dev0);
-+
-+			err = mlx5_eswitch_reload_reps(dev0->priv.eswitch);
-+			if (!err)
-+				err = mlx5_eswitch_reload_reps(dev1->priv.eswitch);
-+
-+			if (err) {
-+				dev0->priv.flags |= MLX5_PRIV_FLAGS_DISABLE_IB_ADEV;
-+				mlx5_rescan_drivers_locked(dev0);
-+				mlx5_deactivate_lag(ldev);
-+				mlx5_lag_add_devices(ldev);
-+				mlx5_eswitch_reload_reps(dev0->priv.eswitch);
-+				mlx5_eswitch_reload_reps(dev1->priv.eswitch);
-+				mlx5_core_err(dev0, "Failed to enable lag\n");
-+				return;
-+			}
- 		}
- 	} else if (do_bond && __mlx5_lag_is_active(ldev)) {
- 		mlx5_modify_lag(ldev, &tracker);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.h b/drivers/net/ethernet/mellanox/mlx5/core/lag.h
-index e1d7a6671cf3..d4bae528954e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.h
-@@ -73,7 +73,8 @@ void mlx5_modify_lag(struct mlx5_lag *ldev,
- 		     struct lag_tracker *tracker);
- int mlx5_activate_lag(struct mlx5_lag *ldev,
- 		      struct lag_tracker *tracker,
--		      u8 flags);
-+		      u8 flags,
-+		      bool shared_fdb);
- int mlx5_lag_dev_get_netdev_idx(struct mlx5_lag *ldev,
- 				struct net_device *ndev);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-index c4bf8b679541..011b639b29bf 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-@@ -161,7 +161,7 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
- 		struct lag_tracker tracker;
- 
- 		tracker = ldev->tracker;
--		mlx5_activate_lag(ldev, &tracker, MLX5_LAG_FLAG_MULTIPATH);
-+		mlx5_activate_lag(ldev, &tracker, MLX5_LAG_FLAG_MULTIPATH, false);
- 	}
- 
- 	mlx5_lag_set_port_affinity(ldev, MLX5_LAG_NORMAL_AFFINITY);
--- 
-2.31.1
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQXJuZCBCZXJnbWFubiA8
+YXJuZEBrZXJuZWwub3JnPg0KPiBTZW50OiBUdWVzZGF5LCBBdWd1c3QgMDMsIDIwMjEgMTE6Mjcg
+QU0NCj4gVG86IEtlbGxlciwgSmFjb2IgRSA8amFjb2IuZS5rZWxsZXJAaW50ZWwuY29tPg0KPiBD
+YzogUmljaGFyZCBDb2NocmFuIDxyaWNoYXJkY29jaHJhbkBnbWFpbC5jb20+OyBOaWNvbGFzIFBp
+dHJlDQo+IDxuaWNvQGZsdXhuaWMubmV0PjsgQnJhbmRlYnVyZywgSmVzc2UgPGplc3NlLmJyYW5k
+ZWJ1cmdAaW50ZWwuY29tPjsgTmd1eWVuLA0KPiBBbnRob255IEwgPGFudGhvbnkubC5uZ3V5ZW5A
+aW50ZWwuY29tPjsgRGF2aWQgUy4gTWlsbGVyDQo+IDxkYXZlbUBkYXZlbWxvZnQubmV0PjsgSmFr
+dWIgS2ljaW5za2kgPGt1YmFAa2VybmVsLm9yZz47IEFybmQgQmVyZ21hbm4NCj4gPGFybmRAYXJu
+ZGIuZGU+OyBLdXJ0IEthbnplbmJhY2ggPGt1cnRAbGludXRyb25peC5kZT47IFNhbGVlbSwgU2hp
+cmF6DQo+IDxzaGlyYXouc2FsZWVtQGludGVsLmNvbT47IEVydG1hbiwgRGF2aWQgTSA8ZGF2aWQu
+bS5lcnRtYW5AaW50ZWwuY29tPjsNCj4gaW50ZWwtd2lyZWQtbGFuQGxpc3RzLm9zdW9zbC5vcmc7
+IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LQ0KPiBrZXJuZWxAdmdlci5rZXJuZWwub3Jn
+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbmV0LW5leHQgdjJdIGV0aGVybmV0L2ludGVsOiBmaXgg
+UFRQXzE1ODhfQ0xPQ0sNCj4gZGVwZW5kZW5jaWVzDQo+IA0KPiBPbiBUdWUsIEF1ZyAzLCAyMDIx
+IGF0IDc6MTkgUE0gS2VsbGVyLCBKYWNvYiBFIDxqYWNvYi5lLmtlbGxlckBpbnRlbC5jb20+IHdy
+b3RlOg0KPiA+ID4gT24gVHVlLCBBdWcgMywgMjAyMSBhdCA2OjE0IFBNIFJpY2hhcmQgQ29jaHJh
+bg0KPiA8cmljaGFyZGNvY2hyYW5AZ21haWwuY29tPiB3cm90ZToNCj4gDQo+ID4gVGhlcmUgaXMg
+YW4gYWx0ZXJuYXRpdmUgc29sdXRpb24gdG8gZml4aW5nIHRoZSBpbXBseSBrZXl3b3JkOg0KPiA+
+DQo+ID4gTWFrZSB0aGUgZHJpdmVycyB1c2UgaXQgcHJvcGVybHkgYnkgKmFjdHVhbGx5KiBjb25k
+aXRpb25hbGx5IGVuYWJsaW5nIHRoZSBmZWF0dXJlDQo+IG9ubHkgd2hlbiBJU19SRUFDSEFCTEUs
+IGkuZS4gZml4IGljZSBzbyB0aGF0IGl0IHVzZXMgSVNfUkVBQ0hBQkxFIGluc3RlYWQgb2YNCj4g
+SVNfRU5BQkxFRCwgYW5kIHNvIHRoYXQgaXRzIHN0dWIgaW1wbGVtZW50YXRpb24gaW4gaWNlX3B0
+cC5oIGFjdHVhbGx5IGp1c3Qgc2lsZW50bHkNCj4gZG9lcyBub3RoaW5nIGJ1dCByZXR1cm5zIDAg
+dG8gdGVsbCB0aGUgcmVzdCBvZiB0aGUgZHJpdmVyIHRoaW5ncyBhcmUgZmluZS4NCj4gDQo+IEkg
+d291bGQgY29uc2lkZXIgSVNfUkVBQ0hBQkxFKCkgcGFydCBvZiB0aGUgcHJvYmxlbSwgbm90IHRo
+ZSBzb2x1dGlvbiwgaXQgbWFrZXMNCj4gdGhpbmdzIG1hZ2ljYWxseSBidWlsZCwgYnV0IHRoZW4g
+c3VycHJpc2VzIHVzZXJzIGF0IHJ1bnRpbWUgd2hlbiB0aGV5IGRvIG5vdCBnZXQNCj4gdGhlIGlu
+dGVuZGVkIGJlaGF2aW9yLg0KPiANCj4gICAgICAgQXJuZA0KDQpGYWlyIGVub3VnaC4gSSBhbSBh
+bHNvIGZpbmUgd2l0aCBqdXN0ICJkZXBlbmRzIi4gV2UgY2FuIG1ha2UgbW9zdCBvZiB0aGUgZHJp
+dmVycyBzaW1wbHkgYWx3YXlzIGVuYWJsZSBpdCwgYW5kIGlmIGEgc3BlY2lmaWMgZHJpdmVyIGlz
+IHVzZWQgaW4gc29tZSBlbWJlZGRlZCBzZXR1cCB0aGF0IGhhcyByZXF1aXJlbWVudHMgb24gbWlu
+aW1pemluZyB0aGluZ3MgdGhhdCBkcml2ZXIgY2FuIGJlIHNldHVwIHRvIHVzZSBhIDJuZCBjb25m
+aWcgc3ltYm9sLCBhbmQgYWxsIG9mIHRoZSBvdGhlciBkcml2ZXJzIHRoYXQgYXJlbid0IHVzZWQg
+Y2FuIGJlIGRpc2FibGVkIChhcyB0aGF0IG1pbmltaXplciBpcyBwcm9iYWJseSBhbHJlYWR5IGRv
+aW5nISkNCg0KSSB0aGluayB3ZSd2ZSBmb3VuZCB0aGUgYmVzdCByb3V0ZSB0byBnbyB0aGVuIQ0K
+DQpUaGFua3MsDQpKYWtlDQo=
