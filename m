@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6CAB3DECF2
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:46:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1BFB3DECF7
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:46:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235681AbhHCLop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 07:44:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35034 "EHLO mail.kernel.org"
+        id S236257AbhHCLos (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 07:44:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35054 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235870AbhHCLoK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 07:44:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2891D60F56;
-        Tue,  3 Aug 2021 11:43:59 +0000 (UTC)
+        id S235900AbhHCLoN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 07:44:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A7FFD60F92;
+        Tue,  3 Aug 2021 11:44:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627991039;
-        bh=i90K1F3cN9255PTEE8cgq6ze8clGUsHG29sCiNHzhOk=;
+        s=k20201202; t=1627991042;
+        bh=btAsWNFwkIaXSn8TsKrBntDZORAVNEY1cv5+S42XIlA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o2tNyk3pPWUNaKJGAo+ZOU+KuQHhRmIvGFwC7171ksjeR3kq4N1lDQyhCLO39RoCN
-         7+C2RmQ+9MRme0DkGhxicRQ+QAJAXdiZFA+vn5NGv2QKFbvQmSjgJ7+Lglkw+/Zxru
-         V+rwvZJpA+nEzQ7gZo5r2LnEugtsaErlyCF0daDE8hRD/pgWuoPmazxhuYKErA4Y+I
-         iARaw24rMqL0EKrUvvKC3cdIpOQTjB1Z42Aut92aaL5GU8353OSmaIkU4RS2UKZw1J
-         v1AiULFQ7Ufg4/w7ji964hfCrtR9PVFPa6b7c9nanW9QGJciexwUpPwVPBHVwUJ9fp
-         5Khj2gpcze6WA==
+        b=jvc9wPe7iM53uQXKeloDMdge5FNmnDTni/jHJaO4e/3K/MLKSZzkJMGcXtuc0LYPx
+         eIhjc6QphLumyCX9PtMIM7ndGh4Kqbp4kQdOMZi0EpYovLKheb0BeECv5hwYl/Gs9W
+         OsaiNuAxr1fQs7Xn4Bqg6q96hMbNzykv1SNAB7Ig9oPYdhNO6gOT+GS2hF81zs08AF
+         oQK3DBkbdgaUDgOLDJKaWGwroAQX5Ye1vjgl7qZdJWERCsDB98lz1cZCuNlffAoTwG
+         bbpoF7Id8LWbdqIPO/ggnEJTCiZeOz827g/hTrM75irkGFxU/PXGmP8PJTlbzWG39j
+         mBMJ+ZMytvF0A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Harshvardhan Jha <harshvardhan.jha@oracle.com>,
+Cc:     Letu Ren <fantasquex@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 05/11] net: qede: Fix end of loop tests for list_for_each_entry
-Date:   Tue,  3 Aug 2021 07:43:46 -0400
-Message-Id: <20210803114352.2252544-5-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.13 07/11] net/qla3xxx: fix schedule while atomic in ql_wait_for_drvr_lock and ql_adapter_reset
+Date:   Tue,  3 Aug 2021 07:43:48 -0400
+Message-Id: <20210803114352.2252544-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210803114352.2252544-1-sashal@kernel.org>
 References: <20210803114352.2252544-1-sashal@kernel.org>
@@ -42,42 +42,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Harshvardhan Jha <harshvardhan.jha@oracle.com>
+From: Letu Ren <fantasquex@gmail.com>
 
-[ Upstream commit 795e3d2ea68e489ee7039ac29e98bfea0e34a96c ]
+[ Upstream commit 92766c4628ea349c8ddab0cd7bd0488f36e5c4ce ]
 
-The list_for_each_entry() iterator, "vlan" in this code, can never be
-NULL so the warning will never be printed.
+When calling the 'ql_wait_for_drvr_lock' and 'ql_adapter_reset', the driver
+has already acquired the spin lock, so the driver should not call 'ssleep'
+in atomic context.
 
-Signed-off-by: Harshvardhan Jha <harshvardhan.jha@oracle.com>
+This bug can be fixed by using 'mdelay' instead of 'ssleep'.
+
+Reported-by: Letu Ren <fantasquex@gmail.com>
+Signed-off-by: Letu Ren <fantasquex@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qede/qede_filter.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/qlogic/qla3xxx.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_filter.c b/drivers/net/ethernet/qlogic/qede/qede_filter.c
-index c59b72c90293..a2e4dfb5cb44 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_filter.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_filter.c
-@@ -831,7 +831,7 @@ int qede_configure_vlan_filters(struct qede_dev *edev)
- int qede_vlan_rx_kill_vid(struct net_device *dev, __be16 proto, u16 vid)
- {
- 	struct qede_dev *edev = netdev_priv(dev);
--	struct qede_vlan *vlan = NULL;
-+	struct qede_vlan *vlan;
- 	int rc = 0;
+diff --git a/drivers/net/ethernet/qlogic/qla3xxx.c b/drivers/net/ethernet/qlogic/qla3xxx.c
+index 2376b2729633..c00ad57575ea 100644
+--- a/drivers/net/ethernet/qlogic/qla3xxx.c
++++ b/drivers/net/ethernet/qlogic/qla3xxx.c
+@@ -154,7 +154,7 @@ static int ql_wait_for_drvr_lock(struct ql3_adapter *qdev)
+ 				      "driver lock acquired\n");
+ 			return 1;
+ 		}
+-		ssleep(1);
++		mdelay(1000);
+ 	} while (++i < 10);
  
- 	DP_VERBOSE(edev, NETIF_MSG_IFDOWN, "Removing vlan 0x%04x\n", vid);
-@@ -842,7 +842,7 @@ int qede_vlan_rx_kill_vid(struct net_device *dev, __be16 proto, u16 vid)
- 		if (vlan->vid == vid)
+ 	netdev_err(qdev->ndev, "Timed out waiting for driver lock...\n");
+@@ -3274,7 +3274,7 @@ static int ql_adapter_reset(struct ql3_adapter *qdev)
+ 		if ((value & ISP_CONTROL_SR) == 0)
  			break;
  
--	if (!vlan || (vlan->vid != vid)) {
-+	if (list_entry_is_head(vlan, &edev->vlan_list, list)) {
- 		DP_VERBOSE(edev, (NETIF_MSG_IFUP | NETIF_MSG_IFDOWN),
- 			   "Vlan isn't configured\n");
- 		goto out;
+-		ssleep(1);
++		mdelay(1000);
+ 	} while ((--max_wait_time));
+ 
+ 	/*
+@@ -3310,7 +3310,7 @@ static int ql_adapter_reset(struct ql3_adapter *qdev)
+ 						   ispControlStatus);
+ 			if ((value & ISP_CONTROL_FSR) == 0)
+ 				break;
+-			ssleep(1);
++			mdelay(1000);
+ 		} while ((--max_wait_time));
+ 	}
+ 	if (max_wait_time == 0)
 -- 
 2.30.2
 
