@@ -2,113 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9FEE3DF29F
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:36:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AE6B3DF2A2
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:37:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233424AbhHCQgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 12:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34706 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233325AbhHCQgO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 12:36:14 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5DFC061757
-        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 09:36:02 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id p5so26002033wro.7
-        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 09:36:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2BUPgsv1ezfcVvRUYGjGq/bK349pcuBGYv6GJMpEwjo=;
-        b=ollK4aUJRa/zU0bmxNOOn96Ayjm0taA3P36QHPIRi42x52PEScLdS4V4RsiwxliMcP
-         xp9CSElUbwBMc3COZ30vAaHDYOH7tnz3Yd1SEt5ggMm1HI9PEQcHtnTuad0BCpnFMa6D
-         uH5bBrEiv+AtQL1TdtBBhK3cpUo6G15SMlcKZSarZ8wNCaEO7huEK1BLPI1ZxtieTl2F
-         N+2ywpRttfbNa53QD64aDibw0lHe2JBeU+0b/rbAV7hfce2B52MOkgnDGFvswOa2xQk2
-         VURCr6btbyUCFd3YqRp1/V+Wngdh4q+uquZrCGW8/1PndUSmngC/Tn83P12JPK9AX9ss
-         4YMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2BUPgsv1ezfcVvRUYGjGq/bK349pcuBGYv6GJMpEwjo=;
-        b=gB/ycU+9nS3JiVOXEXO9IPmllLatxTH6FRK8y4rQ2L/LpRW2KJiTH39bECG8Grvq+j
-         KGkxMnlfa3nshbx1hMpoyYjqYkpO2Yr0p3fVQVSW0b1pyTGzfCXupTrsRo/Mqs/xbbkl
-         Ob4BDQXEg9yEeEs64aol3TCIw04mIfYSPdZ4RLpVdKk2I/ZiBno3QbtDwFKQ6zt3owPC
-         jfHonkIBkUn5woaMVe9rm+LaGLeTqDiD+QXo+NaJaqCWuAZ8SwNjOJFK7I8/ROFdIpK5
-         nAB0G7bczui8HBFwXWjvdxMAfDSqFaRcJS5Dm4r97Zvqd2QwEX8NGgSToeE91VK5oQA5
-         gq3g==
-X-Gm-Message-State: AOAM532lRdJrlFJMwkNv75sh+ks8zP9iYzh+u7zXTLUVBgJ90WkGQUHm
-        kmN/hLFNqvCQE6tD0U+5cz1YXTO9r6U=
-X-Google-Smtp-Source: ABdhPJxj38FAOLwaKdXSTlZzAXaXloStf0mBks/4YAQz4I8eggyCco+nVrTQu2hMhsSMHco+biKEbA==
-X-Received: by 2002:a5d:54c2:: with SMTP id x2mr24994916wrv.338.1628008561472;
-        Tue, 03 Aug 2021 09:36:01 -0700 (PDT)
-Received: from [10.0.0.18] ([37.165.199.45])
-        by smtp.gmail.com with ESMTPSA id n186sm3593291wme.40.2021.08.03.09.35.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Aug 2021 09:36:00 -0700 (PDT)
-Subject: Re: [RFC net-next] ipv6: Attempt to improve options code parsing
-To:     Justin Iurman <justin.iurman@uliege.be>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, tom@herbertland.com
-References: <20210802205133.24071-1-justin.iurman@uliege.be>
- <ce46ace3-11b9-6a75-b665-cee79252550e@gmail.com>
- <989297896.30838930.1628006793490.JavaMail.zimbra@uliege.be>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <aa58193c-0a8f-d11b-fb0c-bc41571e33ac@gmail.com>
-Date:   Tue, 3 Aug 2021 18:35:57 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S233524AbhHCQhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 12:37:13 -0400
+Received: from mga02.intel.com ([134.134.136.20]:56666 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233449AbhHCQhM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 12:37:12 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="200900149"
+X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
+   d="scan'208";a="200900149"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:36:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
+   d="scan'208";a="636665141"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga005.jf.intel.com with ESMTP; 03 Aug 2021 09:36:48 -0700
+Received: from alobakin-mobl.ger.corp.intel.com (eflejszm-mobl2.ger.corp.intel.com [10.213.26.164])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GahEo029968;
+        Tue, 3 Aug 2021 17:36:44 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Lukasz Czapnik <lukasz.czapnik@intel.com>,
+        Marcin Kubiak <marcin.kubiak@intel.com>,
+        Michal Kubiak <michal.kubiak@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Netanel Belgazal <netanel@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        Guy Tzalik <gtzalik@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Shay Agroskin <shayagr@amazon.com>,
+        Sameeh Jubran <sameehj@amazon.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Danielle Ratson <danieller@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vladyslav Tarasiuk <vladyslavt@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jian Shen <shenjian15@huawei.com>,
+        Petr Vorel <petr.vorel@gmail.com>, Dan Murphy <dmurphy@ti.com>,
+        Yangbo Lu <yangbo.lu@nxp.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+Subject: [PATCH net-next 00/21] ethtool, stats: introduce and use standard XDP stats
+Date:   Tue,  3 Aug 2021 18:36:20 +0200
+Message-Id: <20210803163641.3743-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <989297896.30838930.1628006793490.JavaMail.zimbra@uliege.be>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series follows the Jakub's work on standard statistics and
+unifies XDP statistics across [most of] the drivers.
+The only driver left unconverted is mlx5 -- it has rather complex
+statistics, so I believe it would be better to leave this up to
+its developers.
 
+The stats itself consists of 12 counters:
+ - packets: number of frames passed to bpf_prog_run_xdp();
+ - errors: number of general XDP errors, if driver has one unified counter;
+ - aborted: number of XDP_ABORTED returns;
+ - drop: number of XDP_DROP returns;
+ - invalid: number of returns of unallowed values (i.e. not XDP_*);
+ - pass: number of XDP_PASS returns;
+ - redirect: number of successfully performed XDP_REDIRECT requests;
+ - redirect_errors: number of failed XDP_REDIRECT requests;
+ - tx: number of successfully performed XDP_TX requests;
+ - tx_errors: number of failed XDP_TX requests;
+ - xmit: number of xdp_frames successfully transmitted via .ndo_xdp_xmit();
+ - xmit_drops: number of frames dropped from .ndo_xdp_xmit().
 
-On 8/3/21 6:06 PM, Justin Iurman wrote:
->>> As per Eric's comment on a previous patchset that was adding a new HopbyHop
->>> option, i.e. why should a new option appear before or after existing ones in the
->>> list, here is an attempt to suppress such competition. It also improves the
->>> efficiency and fasten the process of matching a Hbh or Dst option, which is
->>> probably something we want regarding the list of new options that could quickly
->>> grow in the future.
->>>
->>> Basically, the two "lists" of options (Hbh and Dst) are replaced by two arrays.
->>> Each array has a size of 256 (for each code point). Each code point points to a
->>> function to process its specific option.
->>>
->>> Thoughts?
->>>
->> Hi Justin
->>
->> I think this still suffers from indirect call costs (CONFIG_RETPOLINE=y),
->> and eventually use more dcache.
-> 
-> Agree with both. It was the compromise for such a solution, unfortunately.
-> 
->> Since we only deal with two sets/arrays, I would simply get rid of them
->> and inline the code using two switch() clauses.
-> 
-> Indeed, this is the more efficient. However, we still have two "issues":
->  - ip6_parse_tlv will keep growing and code could look ugly at some point
+As most drivers stores them on a per-channel basis, Ethtool standard
+stats infra has been expanded to support this. A new nested
+attribute has been added which indicated that the fields enclosed
+in this block are related to one particular channel. If Ethtool
+utility is older than the kernel, those blocks will just be skipped
+with no errors.
+When the stats are not per-channel, Ethtool core treats them as
+regular and so does Ethtool utility display them. Otherwise,
+the example output looks like:
 
-Well, in 10 years there has not been a lot of growth.
+$ ./ethtool -S enp175s0f0 --all-groups
+Standard stats for enp175s0f0:
+[ snip ]
+channel0-xdp-aborted: 1
+channel0-xdp-drop: 2
+channel0-xdp-illegal: 3
+channel0-xdp-pass: 4
+channel0-xdp-redirect: 5
+[ snip ]
 
->  - there is still a "competition" between options, i.e. "I want to be at the top of the list"
+...and the JSON output looks like:
 
-Why would that be ?
+[ snip ]
+        "xdp": {
+            "per-channel": [
+                "channel0": {
+                    "aborted": 1,
+                    "drop": 2,
+                    "illegal": 3,
+                    "pass": 4,
+                    "redirect": 5,
+[ snip ]
+                } ]
+        }
+[ snip ]
 
-A switch() is compiled with no particular order by the compiler.
+Rouhly half of the commits are present to unify XDP stats logics
+across the drivers, and the first two are preparatory/housekeeping.
 
-Code generation depends on case density, and will use bisection-like strategy.
+This set is also available here: [0]
 
-> 
-> Anyway, your solution is better than the current one so it's probably the way to go right now.
-> 
+[0] https://github.com/alobakin/linux/tree/xdp_stats
+
+Alexander Lobakin (21):
+  ethtool, stats: use a shorthand pointer in stats_prepare_data()
+  ethtool, stats: add compile-time checks for standard stats
+  ethtool, stats: introduce standard XDP statistics
+  ethernet, dpaa2: simplify per-channel Ethtool stats counting
+  ethernet, dpaa2: convert to standard XDP stats
+  ethernet, ena: constify src and syncp args of ena_safe_update_stat()
+  ethernet, ena: convert to standard XDP stats
+  ethernet, enetc: convert to standard XDP stats
+  ethernet, mvneta: rename xdp_xmit_err to xdp_xmit_drops
+  ethernet, mvneta: convert to standard XDP stats
+  ethernet, mvpp2: rename xdp_xmit_err to xdp_xmit_drops
+  ethernet, mvpp2: convert to standard XDP stats
+  ethernet, sfc: convert to standard XDP stats
+  veth: rename rx_drops to xdp_errors
+  veth: rename xdp_xmit_errors to xdp_xmit_drops
+  veth: rename drop xdp_ suffix from packets and bytes stats
+  veth: convert to standard XDP stats
+  virtio-net: rename xdp_tx{,__drops} SQ stats to xdp_xmit{,__drops}
+  virtio-net: don't mix error-caused drops with XDP_DROP cases
+  virtio-net: convert to standard XDP stats
+  Documentation, ethtool-netlink: update standard statistics
+    documentation
+
+ Documentation/networking/ethtool-netlink.rst  |  45 +++--
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c |  50 +++++-
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |   7 +-
+ .../ethernet/freescale/dpaa2/dpaa2-ethtool.c  |  38 +++-
+ .../ethernet/freescale/enetc/enetc_ethtool.c  |  58 ++++--
+ drivers/net/ethernet/marvell/mvneta.c         | 112 ++++++------
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h    |   2 +-
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  96 +++-------
+ drivers/net/ethernet/sfc/ef100_ethtool.c      |   2 +
+ drivers/net/ethernet/sfc/ethtool.c            |   2 +
+ drivers/net/ethernet/sfc/ethtool_common.c     |  35 +++-
+ drivers/net/ethernet/sfc/ethtool_common.h     |   3 +
+ drivers/net/veth.c                            | 167 ++++++++++--------
+ drivers/net/virtio_net.c                      |  76 ++++++--
+ include/linux/ethtool.h                       |  36 ++++
+ include/uapi/linux/ethtool.h                  |   2 +
+ include/uapi/linux/ethtool_netlink.h          |  34 ++++
+ net/ethtool/netlink.h                         |   1 +
+ net/ethtool/stats.c                           | 163 +++++++++++++++--
+ net/ethtool/strset.c                          |   5 +
+ 20 files changed, 659 insertions(+), 275 deletions(-)
+
+-- 
+2.31.1
+
