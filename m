@@ -2,132 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95E703DEE02
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 14:41:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 347DD3DEE04
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 14:41:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236100AbhHCMlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 08:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59662 "EHLO
+        id S236028AbhHCMlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 08:41:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236131AbhHCMlI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 08:41:08 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F15C0617A3;
-        Tue,  3 Aug 2021 05:40:55 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id j18-20020a17090aeb12b029017737e6c349so2787991pjz.0;
-        Tue, 03 Aug 2021 05:40:55 -0700 (PDT)
+        with ESMTP id S236058AbhHCMl3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 08:41:29 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32904C06175F
+        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 05:41:18 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id e14so2115473qkg.3
+        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 05:41:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=w7Kn6QXEQelFeTJ7+s8dsrUhrZSrqjRMDTa6894wxts=;
-        b=BvH79tKxT+NJ46lxOpJ274QfCECXsRyYzb2ZSo1cZj+WIVl03lsEbe9ERzMM0qz978
-         dJuZx6U0MV27iFEllkqn5XGMgtEYcyQhGUiqU1M8I6SqqAuYfSrI+TRQnpziyRJNVhhV
-         Wp4O20eq8LfUYXWHIaNvopHWaZsFURti6KuVJmJoSrkF+bpvVpv9yGiUg54YLTMfLnR+
-         qVXxKLXUG4Msr3wMowoGKN8SlIrrfoS6VtO50LHf/iN1tUEn5/QA6Hk4VDcf8LUvecl6
-         PI/Mwimzj40c6bFOqckTw8McfFMMDSSEIf/FAVaMrVXNvlIy64n8tS4dkezRsl1lc5on
-         QGCQ==
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=S0uekF9h3D7pZJovoHrYAJpvb9GPM07lWTxjMvDOXE0=;
+        b=js7dZ5xV3quOtQibxErEWOSVpudLI6Ty1Gih1sD7U1eUgbEa/z8bpRHEI05nNEnPy2
+         4qIkd6d/kQxlrtGtQhpkH0KqJMAqrndo1MVMxuLMoEl+HkoqKbeuJI1YggO6GsdGhUV/
+         L6igvW8M4P3gpKJdutg9m0Zu1F1R0PJfMOC2PTFzgKRc1o/5HB1Pr6ED5axX6QkFV8St
+         bWGORh4YOxuEHqLukUNwcT/Ucm1X9umO/50cB1FAhxu1iDb4NnnoHB1xOxV/0UZRFI3u
+         0SkJ85tozXJU8CKEFJoH2pU5JmYPi1G0vyxhhzBu4hpm4+V2AsIGjORs9JAYK3YXhaV0
+         /Bqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=w7Kn6QXEQelFeTJ7+s8dsrUhrZSrqjRMDTa6894wxts=;
-        b=UcBwzqSi4ShFZOUZY6Ff5do8MkfMWjwHK2+FtNT5IUurKpOsFPhrLCYYmJFvCbTUde
-         cun4etgmLyVN1tFJQYfRyNu6/hEMDQ9hiL1XnOXspGBDqjqDruTA7bzMyud5Y+7g4Afq
-         wBnwzcfoOc3u6arXiM9GKBezrAE/N+JViITRgS/Po7kv7L0nh0QMPCF5sK/TRr758Pbd
-         ubUDvdy9OA9yvqAu4GQ3dakyZ/dZNz80dU1Ggzy0NnSYWEo2xQk+5bA7wYmCXmdWYz1m
-         t7zw0Lk1rBHn3wXqCL01rnvT/Sm/t8RhdRf5LeBstIPjGIfxiIJ0wP4EBd1kOQ9ThhHJ
-         kctg==
-X-Gm-Message-State: AOAM533w+QONE1yRwXDfcuDSiBt2D2teJ/8vvS+hw9IPDEUe1Gwy1qQA
-        b0cI8JBXng3JQKp/pJRKhfI=
-X-Google-Smtp-Source: ABdhPJxp9gFg7/j3CDtrOHNrsfB9FqVBSArVmrXgyH3SowyPhAc2Fu3mBv6qHFQ34Iwgo+eYhe7SHA==
-X-Received: by 2002:a17:902:7b8b:b029:12b:8d3e:70e7 with SMTP id w11-20020a1709027b8bb029012b8d3e70e7mr18389531pll.76.1627994455018;
-        Tue, 03 Aug 2021 05:40:55 -0700 (PDT)
-Received: from haswell-ubuntu20.lan ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id g25sm15747499pfk.138.2021.08.03.05.40.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Aug 2021 05:40:54 -0700 (PDT)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Eric Woudstra <ericwouds@gmail.com>,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-Subject: [PATCH net-next 4/4] net: dsa: mt7530: always install FDB entries with IVL and FID 1
-Date:   Tue,  3 Aug 2021 20:40:22 +0800
-Message-Id: <20210803124022.2912298-5-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210803124022.2912298-1-dqfext@gmail.com>
-References: <20210803124022.2912298-1-dqfext@gmail.com>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=S0uekF9h3D7pZJovoHrYAJpvb9GPM07lWTxjMvDOXE0=;
+        b=dUT0Wc2QXURvcNsCi+v/GVnFXTyYS/WEXTlFQKcfEdJFn+4jyULe6n736kWe8qoYVa
+         MPN8GLRMCgojh6iNDTaoqcCFYlP2hpbZ7VoXVwAMF3eDCClUeb4kAbWhS2deckFLxyEz
+         2J4RVxuOma1W68+oJZ62RwM3n99z/1DVGCzRBA/Yff1TYWIUHWtn1WcPIeskFJIKplWp
+         quFSoLs4MyCthKqnMUIjxFqAd31jEoOzv/uCGrD9kVuoXxg1d63jD2RHcbksRSkf5PYU
+         KMUfi0NqeuEmPjyBlPGeBgvWaTxOXIrrmVhbv7wNtRjg5oRGbbqked8dBjNd/t9eCaRm
+         t7UA==
+X-Gm-Message-State: AOAM533y/j+DxF/2jSCU2d4CwqwfWgjfOCNBaTB020PBfHOPEGerDzLw
+        UyxrGgkJ4t/d/6+3AyzRogaQktam+VDdP+M5yJ0=
+X-Google-Smtp-Source: ABdhPJwjW3F/LwTTDR3CJfttDZwV5OYepx0YoNGU6iYP4xzj2sx3xuovWICfgmzBuuu+0LMKrXTaGMxJZHeusVFh/kg=
+X-Received: by 2002:a05:620a:1399:: with SMTP id k25mr20109627qki.255.1627994476493;
+ Tue, 03 Aug 2021 05:41:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:ac8:7f82:0:0:0:0:0 with HTTP; Tue, 3 Aug 2021 05:41:15 -0700 (PDT)
+Reply-To: abdoulayehissenee2@gmail.com
+From:   ABDOULAYE HISSENE <fabricegomey@gmail.com>
+Date:   Tue, 3 Aug 2021 05:41:15 -0700
+Message-ID: <CAJbyybjk50AQ-FtVN53w1_y6YvN4eiq8AW+MokDQu29cmkiX7g@mail.gmail.com>
+Subject: Re:bonjour
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 7e777021780e ("mt7530 mt7530_fdb_write only set ivl
-bit vid larger than 1").
-
-Before this series, the default value of all ports' PVID is 1, which is
-copied into the FDB entry, even if the ports are VLAN unaware. So
-`bridge fdb show` will show entries like `dev swp0 vlan 1 self` even on
-a VLAN-unaware bridge.
-
-The blamed commit does not solve that issue completely, instead it may
-cause a new issue that FDB is inaccessible in a VLAN-aware bridge with
-PVID 1.
-
-This series sets PVID to 0 on VLAN-unaware ports, so `bridge fdb show`
-will no longer print `vlan 1` on VLAN-unaware bridges, and that special
-case in fdb_write is not required anymore.
-
-Set FDB entries' filter ID to 1 to match the VLAN table.
-
-Signed-off-by: DENG Qingfang <dqfext@gmail.com>
----
-RFC -> v1: Detailed commit message. Also set FDB entries' FID to 1.
-
- drivers/net/dsa/mt7530.c | 4 ++--
- drivers/net/dsa/mt7530.h | 1 +
- 2 files changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 8d84d7ddad38..ac2b45e472bd 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -366,8 +366,8 @@ mt7530_fdb_write(struct mt7530_priv *priv, u16 vid,
- 	int i;
- 
- 	reg[1] |= vid & CVID_MASK;
--	if (vid > 1)
--		reg[1] |= ATA2_IVL;
-+	reg[1] |= ATA2_IVL;
-+	reg[1] |= ATA2_FID(1);
- 	reg[2] |= (aging & AGE_TIMER_MASK) << AGE_TIMER;
- 	reg[2] |= (port_mask & PORT_MAP_MASK) << PORT_MAP;
- 	/* STATIC_ENT indicate that entry is static wouldn't
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index 53b7bb1f5368..73b0e0eb8f2f 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -80,6 +80,7 @@ enum mt753x_bpdu_port_fw {
- #define  STATIC_ENT			3
- #define MT7530_ATA2			0x78
- #define  ATA2_IVL			BIT(15)
-+#define  ATA2_FID(x)			(((x) & 0x7) << 12)
- 
- /* Register for address table write data */
- #define MT7530_ATWD			0x7c
--- 
-2.25.1
-
+Qm9uam91ciwNCkplwqBtJ2FwcGVsbGXCoEFiZG91bGF5ZcKgSGlzc2VuZcKgZXjCoE1pbmlzdHJl
+wqBkZcKgbGHCoEpldW5lc3NlwqBldMKgZGVzDQpTcG9ydHPCoGVuwqBSw6lwdWJsaXF1ZQ0KwqBD
+ZW50cmFmcmljYWluZcKgcMOocmXCoGRlwqAzwqBlbmZhbnRzwqBkb25jwqAywqBnYXLDp29uc8Kg
+dW5lwqBmaWxsZcKgdG91c8KgZXhpbMOpcy4NCkplwqBkaXNwb3NlwqBkJ3VuwqB0csOoc8KgYm9u
+wqBjYXBpdGFswqBhZmluwqBkJ2ludmVzdGlywqBkYW5zwqBwbHVzaWV1cnMNCmRvbWFpbmVzwqBy
+ZW50YWJsZXPCoGV0wqBzdWlzwqDDoMKgbGENCsKgcmVjaGVyY2hlwqBkJ3VuwqBib27CoHBhcnRl
+bmFpcmXCoGNlwqBxdWnCoG1lwqBwZXJtZXR0cmHCoGRlwqBtZcKgbGFuY2VywqBkYW5zDQpwbHVz
+aWV1cnPCoGludmVzdGlzc2VtZW50cy4NClNlcmllei12b3VzwqBvdXZlcnTCoMOgwqB1bsKgw6lj
+aGFuZ2XCoHTDqWzDqXBob25pcXVlwqBwb3VywqBtaWV1eMKgdm91c8KgcHLDqXNlbnRlcg0KbWHC
+oHByb3Bvc2l0aW9uwqA/DQpTacKgdm91c8Kgw6p0ZXPCoGludMOpcmVzc8OpwqBkb25uZXotbW9p
+wqB2b3PCoGNvb3Jkb25uw6llc8KgcXVpwqBzb250wqBsZXPCoHN1aXZhbnRzOg0KMcKgL8KgVm90
+cmXCoG51bcOpcm/CoGRlwqB0w6lsw6lwaG9uZcKgcG9ydGFibGUNCjLCoC/CoFZvdHJlwqBub23C
+oGV0wqBwcsOpbm9tDQpBdcKgcGxhaXNpcsKgZGXCoHZvdXPCoGxpcmUNCkNvcmRpYWxlbWVudA0K
+TXLCoEFiZG91bGF5ZcKgSGlzc2VuZQ0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fDQoNCkhlbGxvLA0KTXnCoG5hbWXCoGlzwqBNcsKgQWJkb3VsYXll
+wqBIaXNzZW5lwqBleMKgTWluaXN0ZXLCoG9mwqBZb3V0aMKgYW5kwqBTcG9ydHPCoGluwqB0aGUN
+CkNlbnRyYWzCoEFmcmljYW7CoFJlcHVibGljwqBmYXRoZXLCoMKgb2bCoDPCoGNoaWxkcmVuwqBz
+b8KgMsKgYm95c8KgYcKgZ2lybMKgYWxsDQpleGlsZWQuScKgaGF2ZcKgYcKgdmVyecKgZ29vZMKg
+Y2FwaXRhbMKgZmluYWxsecKgdG/CoGludmVzdMKgaW7CoHNldmVyYWwNCnByb2ZpdGFibGXCoGFy
+ZWFzwqBhbmTCoGFtwqBsb29raW5nwqBmb3LCoGHCoGdvb2TCoHBhcnRuZXLCoHdoaWNowqB3aWxs
+wqBhbGxvd8KgbWUNCnRvwqBlbWJhcmvCoG9uwqBzZXZlcmFswqBpbnZlc3RtZW50cy4NCldvdWxk
+wqB5b3XCoGJlwqBvcGVuwqB0b8KgYcKgdGVsZXBob25lwqBleGNoYW5nZcKgdG/CoGJldHRlcsKg
+cHJlc2VudMKgbXnCoHByb3Bvc2FswqB0b8KgeW91Pw0KSWbCoHlvdcKgYXJlwqBpbnRlcmVzdGVk
+wqBnaXZlwqBtZcKgeW91csKgY29udGFjdMKgZGV0YWlsc8Kgd2hpY2jCoGFyZcKgYXPCoGZvbGxv
+d3M6DQoxwqAvwqBZb3VywqBtb2JpbGXCoHBob25lwqBudW1iZXINCjLCoC/CoFlvdXLCoGZpcnN0
+wqBhbmTCoGxhc3TCoG5hbWUNCkxvb2tpbmfCoGZvcndhcmTCoHRvwqByZWFkaW5nwqB5b3UNCmNv
+cmRpYWxseQ0KTXLCoEFiZG91bGF5ZcKgSGlzc2VuZQ0K
