@@ -2,103 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FC353DF08D
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 16:44:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 717A63DF08E
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 16:44:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236597AbhHCOoE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 10:44:04 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:60056 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234360AbhHCOnd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 10:43:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ACG/s8bQyXMAoKivsxoVT6bV/5aODUI1FE4W/+TE7Po=; b=u9tMLfCgSHBBxy+9+7rKPi9g/W
-        TOqN+109lJMs5yOmt1Hj3kMEm+PXC+li+8Imm24m2ctMG+Iy2LJO4x5WbRxYmSjgJiFQprP1KOCC5
-        SbDmI7fxD1lWXo3oBT41FaNra1U10i5h1k2RQMssR5r/AUFXQHw+5OG9su517YxokOIs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mAvdQ-00Fyig-Vw; Tue, 03 Aug 2021 16:43:12 +0200
-Date:   Tue, 3 Aug 2021 16:43:12 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
-        netdev@vger.kernel.org, robh+dt@kernel.org,
-        UNGLinuxDriver@microchip.com, Woojung.Huh@microchip.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 05/10] net: dsa: microchip: add DSA support
- for microchip lan937x
-Message-ID: <YQlWAHSTQ4K3/zet@lunn.ch>
-References: <20210723173108.459770-1-prasanna.vengateshan@microchip.com>
- <20210723173108.459770-6-prasanna.vengateshan@microchip.com>
- <20210731150416.upe5nwkwvwajhwgg@skbuf>
- <YQXJHA+z+hXjxe6+@lunn.ch>
- <20210802213353.qu5j3gn4753xlj43@skbuf>
+        id S236677AbhHCOoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 10:44:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236565AbhHCOn7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 10:43:59 -0400
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8550BC0617A0;
+        Tue,  3 Aug 2021 07:43:43 -0700 (PDT)
+Received: by mail-ot1-x32f.google.com with SMTP id v9-20020a9d60490000b02904f06fc590dbso1970887otj.4;
+        Tue, 03 Aug 2021 07:43:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SIy7YuIpmbrBfkxoJ9arBgQ3JJKRIVRbnKJVEeiSLTg=;
+        b=HkMDkb0Qsc8j0fuAnWvVLRvJ/D1Ku0uIt1iqhg2Aidi28y9kSrxtQUwVtJAs6eJDn4
+         9UNvh34VTcMW0tmiQuoh49hPnto9VDwkKPSdqEpFOvOdj7OQJ9NQ5eFbd/KJGL+2svcf
+         x5wMIy6txSSSxtUne/EqenlGrtCT2nEYxEXbIE/sLYakrK2SgrJxMAYMO3OGI5DujKRx
+         qSpptOjPW6Gbb6tNUNoI830ySAHcrYcwimghB4e5awuockYNcR7LEYssgRxTIqXqiU09
+         WO1A9YdI4VrWoaOSfyMA5d0aWbpkfgnxR5LDP0X13EufO2eTj+JFA/JOMpLATsVBNgmO
+         cAoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SIy7YuIpmbrBfkxoJ9arBgQ3JJKRIVRbnKJVEeiSLTg=;
+        b=Mvq7xu5iT679td225dlUuaGTUID81ECJ1YuL9BWBh1/vbh/3BAGlrsAkLXnxSmgy1H
+         +vl8KFFieJYw61LgUrxJDKl66U6tLhsydXIZAqn0jfW3gCLzIAHEAYaMVCntCbS6iF4T
+         zZKDJee6k+DxnvyUpiOMWDz/LZpETiy2lkI9BCSEvz3APUa3iT6MYrM9LLDoKLE8bS9/
+         FyhfH6nJi+zemqf7LIHzQ8e35zR+vCkK8RBypyQc/A8JWa9K5kix8oeWCHs4G8HeqGKJ
+         AbT0CyQ0+JT+hM4+3T4rA3f9273dYG+XmyyMW7ku0pdEMr7Afi+dl1UtDDsjDzMlsH3B
+         MI3Q==
+X-Gm-Message-State: AOAM531tPbJ4t3uSTPSi5peBscgB/q5hC8ko2eg3llfI+Ik8QFmOoggY
+        0CDBZtc/3M/1V2PEwVhBmmE=
+X-Google-Smtp-Source: ABdhPJzUNS0djkEDeIu3OKB5uOrKgzmLfrXqUqT4dGlDfwh0SrogVs87XMCI6aWi7oxiK2GGpKHGwg==
+X-Received: by 2002:a9d:4789:: with SMTP id b9mr15514918otf.335.1628001823221;
+        Tue, 03 Aug 2021 07:43:43 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.27])
+        by smtp.googlemail.com with ESMTPSA id p10sm2146449oop.46.2021.08.03.07.43.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Aug 2021 07:43:42 -0700 (PDT)
+Subject: Re: [PATCH] net: convert fib_treeref from int to refcount_t
+To:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        Yajun Deng <yajun.deng@linux.dev>, davem@davemloft.net,
+        kuba@kernel.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-decnet-user@lists.sourceforge.net
+References: <20210729071350.28919-1-yajun.deng@linux.dev>
+ <CGME20210803110803eucas1p276a0010caad8fc21a7ea5ca5543294f8@eucas1p2.samsung.com>
+ <14e0ec1c-0345-d5d4-769a-44ded33821e8@samsung.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <43af9da8-9438-20eb-567b-4538e97d0389@gmail.com>
+Date:   Tue, 3 Aug 2021 08:43:41 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210802213353.qu5j3gn4753xlj43@skbuf>
+In-Reply-To: <14e0ec1c-0345-d5d4-769a-44ded33821e8@samsung.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 03, 2021 at 12:33:53AM +0300, Vladimir Oltean wrote:
-> On Sun, Aug 01, 2021 at 12:05:16AM +0200, Andrew Lunn wrote:
-> > > So you support both the cases where an internal PHY is described using
-> > > OF bindings, and where the internal PHY is implicitly accessed using the
-> > > slave_mii_bus of the switch, at a PHY address equal to the port number,
-> > > and with no phy-handle or fixed-link device tree property for that port?
-> > > 
-> > > Do you need both alternatives? The first is already more flexible than
-> > > the second.
-> > 
-> > The first is also much more verbose in DT, and the second generally
-> > just works without any DT. What can be tricky with the second is
-> > getting PHY interrupts to work, but it is possible, the mv88e6xxx does
-> > it.
+On 8/3/21 5:08 AM, Marek Szyprowski wrote:
+> Hi
 > 
-> - The explicit phy-handle is more verbose as far as the DT description
->   goes for one particular use case of indirect internal PHY access, but
->   it also leads to less complex code (more uniform with other usage
->   patterns in the kernel). What is tricky with an implicit phy-handle is
->   trivial without it. This makes a difference with DM_DSA in U-Boot,
->   where I would really like to avoid bloating the code and just support
->   2 options for a DSA switch port: either a phy-handle or a fixed-link.
->   These two are already "Turing-complete" (they can describe any system)
->   so I only see the implicit phy-handle as a helping hand for a few lazy
->   DT writers. Since I have been pushing back that we shouldn't bloat
->   U-Boot with implicit phy-handle logic when it doesn't give a concrete
->   benefit, and have gotten a push back in return that Linux does allow
->   it and it would be desirable for one DT binding to cover all, I now
->   need to promote the more generic approach for Linux going forward too.
+> On 29.07.2021 09:13, Yajun Deng wrote:
+>> refcount_t type should be used instead of int when fib_treeref is used as
+>> a reference counter,and avoid use-after-free risks.
+>>
+>> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
 > 
-> - If the switch has the ability for its internal PHYs to be accessed
->   directly over MDIO pins instead of using indirect SPI transfers, using
->   a phy-handle is a generic way to handle both cases, while the implicit
->   phy-handle does not give you that option.
+> This patch landed in linux-next 20210802 as commit 79976892f7ea ("net: 
+> convert fib_treeref from int to refcount_t"). It triggers the following 
+> warning on all my test systems (ARM32bit and ARM64bit based):
 > 
-> - If there is complex pinmuxing in the SoC and one port can either be
->   connected to an internal 100base-T1 or to a 100base-TX PHY, and this
->   is not detectable by software, this cannot be dealt with using an
->   implicit phy-handle if the 100base-T1 and 100base-TX PHYs are not at
->   the same address.
-> 
-> - In general, if the internal PHYs are not at an MDIO address equal to
->   the port number, this cannot be dealt with using the implicit
->   phy-handle method.
 
-There are good reasons to use an explicit phy-handle, and i would
-never block such code. However, implicit is historically how it was
-done. There are many DT blobs which assume it works. So implicit is
-not going away.
+fixed in net-next.
 
-If you want to only support explicit in U-Boot, that is fine. I would
-suggest making this clear in the U-Boot documentation.
-
-	Andrew
