@@ -2,102 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EE0B3DF6A5
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 22:55:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B26153DF6B4
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 23:04:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231576AbhHCUzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 16:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41160 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231351AbhHCUzL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 16:55:11 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDAC5C061757;
-        Tue,  3 Aug 2021 13:54:58 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id l19so31377564pjz.0;
-        Tue, 03 Aug 2021 13:54:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=fdylwn2n74tpR+dsWsjP/bwzBe3S+Rlc3LYTO8ZCWZQ=;
-        b=l9fZdUew/MpTEpSojEPYEEdc0zxAo1HHixUWdhHlEHdpHIshPwparH7XWXlHbjxA8v
-         ctM9OO/9FcF58W6HBtinH+ReHHdq/tezdhU43DpX+ZLTvYN6CgLQX+s4+EMW4gfmyu6e
-         P5L8Ze81jYnAk8RTRFDGeK4U5hVStj5Hk81CwIcXSrlodmX5yovcsraCDplm7P7JPvJu
-         wIyjL29bt0YZjebC+IBqi8Jq8zyjM0ylEmGk8dw2VKVdFbzC0VH2MljYGKPOZDYYB3UV
-         8v9WAnF4bohNN0plE7xEDDhJ3jV5JYHmhfRBxTAko2o0Rf30SRG8VK3zcdd+ToLLZEdj
-         Cy4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=fdylwn2n74tpR+dsWsjP/bwzBe3S+Rlc3LYTO8ZCWZQ=;
-        b=FEb4A6Jx2M3JhTRt40qsXRCZXu99nuPFIN165SjYV6uFBKcXlsLHiWWQfHbgIdLOYB
-         XpUFu/0R2+7BXx7lxCb0xnSzfuwsba0atnR/wjsk0IFibxaj1iAt07wn1aFXBhzyRFyF
-         Q4KGh61FYb+EYnfE4YbMCBbrKpBIm7yjD0oAnTwwPVYXaGslt4o7FUupMhVz3wvJZN0y
-         tKkFr4XlTIySHXBKL88Dsg9PgDjVVMWbME2OxNAtoVci74mxlpxETJPHFiqISz1+DwNC
-         uq5zDjBqW6SRuuOvOMbBtl0h+BGFsWhrqfiy4SvVwLb5PyPyzHSYjeAj+42Fs4HLdOOJ
-         5T4g==
-X-Gm-Message-State: AOAM531v9xg1pacNtXvi0OeYpvtCPhKRsODP5DLbA3ZCgCOooF/H96XJ
-        ilDeH0WeONECc8OvkLQGRKY=
-X-Google-Smtp-Source: ABdhPJxZCrtJ77fz1VoQjBY8XsXtnDCHDlBHfVKDsk4VUlOLAdwdRZYStnj5wA7x0+s+7pI7ybJI+g==
-X-Received: by 2002:aa7:8683:0:b029:3c4:877b:da34 with SMTP id d3-20020aa786830000b02903c4877bda34mr2764594pfo.69.1628024098477;
-        Tue, 03 Aug 2021 13:54:58 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id h16sm80861pfn.215.2021.08.03.13.54.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Aug 2021 13:54:57 -0700 (PDT)
-Date:   Tue, 3 Aug 2021 13:54:55 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Nicolas Pitre <nico@fluxnic.net>,
-        "Keller, Jacob E" <jacob.e.keller@intel.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v2] ethernet/intel: fix PTP_1588_CLOCK
- dependencies
-Message-ID: <20210803205455.GA3517@hoboy.vegasvil.org>
-References: <20210802145937.1155571-1-arnd@kernel.org>
- <20210802164907.GA9832@hoboy.vegasvil.org>
- <bd631e36-1701-b120-a9b0-8825d14cc694@intel.com>
- <20210802230921.GA13623@hoboy.vegasvil.org>
- <CAK8P3a2XjgbEkYs6R7Q3RCZMV7v90gu_v82RVfFVs-VtUzw+_w@mail.gmail.com>
- <20210803155556.GD32663@hoboy.vegasvil.org>
- <20210803161434.GE32663@hoboy.vegasvil.org>
- <CAK8P3a2Wt9gnO4Ts_4Jw1+qpBj8HQc50jU2szjmR8MmZL9wrgQ@mail.gmail.com>
+        id S231661AbhHCVEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 17:04:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37796 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230509AbhHCVEs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 17:04:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 62FB260C3F;
+        Tue,  3 Aug 2021 21:04:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628024676;
+        bh=ZMGrcXr8Q//EvHdWsc2BWNseegZXSNDQ76jEtLjlZ80=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=CPraMzawD4vrbyneaMQzVdt3+zOWqa+aPm7448eREZkukEftRMKlCy1I+3oTdIFfV
+         NcueDYDdWq+8zPkyr62w6oalrgWgfw7Ppujwo5s4bvCvYUXnt/MaIIMlG3gAYmZ28t
+         DY83h1QiEsGGr7lrIxZ0la7t1xe5nj5FBkq9Yd3Q1lGPWN3HUvYvkz0PMRSCJhuKa6
+         89cvRy2Df4pkB4SIIX7PyjV2UXQk3IOJTcNqJy1L64Ky5mE374RGxiUOAT7kEsYSIF
+         XaHdyY6VWsm4pwl/dYguafmvB08YMbjueFH+mHQ7W9ur1cucvyNDWc0BFW1cDPhmg8
+         P0MrK/xVntmyg==
+Date:   Tue, 3 Aug 2021 14:04:35 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     syzbot <syzbot+c5ac86461673ef58847c@syzkaller.appspotmail.com>,
+        davem@davemloft.net, dsahern@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Subject: Re: [syzbot] net-next boot error: WARNING: refcount bug in
+ fib_create_info
+Message-ID: <20210803140435.19e560fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <e6eab0c9-7b2e-179b-b9c0-459dd9a75ed1@gmail.com>
+References: <0000000000005e090405c8a9e1c3@google.com>
+        <02372175-c3a1-3f8e-28fe-66d812f4c612@gmail.com>
+        <e6eab0c9-7b2e-179b-b9c0-459dd9a75ed1@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a2Wt9gnO4Ts_4Jw1+qpBj8HQc50jU2szjmR8MmZL9wrgQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 3 Aug 2021 19:31:50 +0300 Pavel Skripkin wrote:
+> On 8/3/21 7:12 PM, Pavel Skripkin wrote:
+> > On 8/3/21 7:07 PM, syzbot wrote:  
+> >> Hello,
+> >> 
+> >> syzbot found the following issue on:
+> >> 
+> >> HEAD commit:    1187c8c4642d net: phy: mscc: make some arrays static const..
+> >> git tree:       net-next
+> >> console output: https://syzkaller.appspot.com/x/log.txt?x=140e7b3e300000
+> >> kernel config:  https://syzkaller.appspot.com/x/.config?x=f9bb42efdc6f1d7
+> >> dashboard link: https://syzkaller.appspot.com/bug?extid=c5ac86461673ef58847c
+> >> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+> >> 
+> >> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> >> Reported-by: syzbot+c5ac86461673ef58847c@syzkaller.appspotmail.com
+> >> 
+> >> FS-Cache: Netfs 'afs' registered for caching
+> >> Btrfs loaded, crc32c=crc32c-intel, assert=on, zoned=yes
+> >> Key type big_key registered
+> >> Key type encrypted registered
+> >> AppArmor: AppArmor sha1 policy hashing enabled
+> >> ima: No TPM chip found, activating TPM-bypass!
+> >> Loading compiled-in module X.509 certificates
+> >> Loaded X.509 cert 'Build time autogenerated kernel key: f850c787ad998c396ae089c083b940ff0a9abb77'
+> >> ima: Allocated hash algorithm: sha256
+> >> ima: No architecture policies found
+> >> evm: Initialising EVM extended attributes:
+> >> evm: security.selinux (disabled)
+> >> evm: security.SMACK64 (disabled)
+> >> evm: security.SMACK64EXEC (disabled)
+> >> evm: security.SMACK64TRANSMUTE (disabled)
+> >> evm: security.SMACK64MMAP (disabled)
+> >> evm: security.apparmor
+> >> evm: security.ima
+> >> evm: security.capability
+> >> evm: HMAC attrs: 0x1
+> >> PM:   Magic number: 1:990:690
+> >> printk: console [netcon0] enabled
+> >> netconsole: network logging started
+> >> gtp: GTP module loaded (pdp ctx size 104 bytes)
+> >> rdma_rxe: loaded
+> >> cfg80211: Loading compiled-in X.509 certificates for regulatory database
+> >> cfg80211: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+> >> ALSA device list:
+> >>    #0: Dummy 1
+> >>    #1: Loopback 1
+> >>    #2: Virtual MIDI Card 1
+> >> md: Waiting for all devices to be available before autodetect
+> >> md: If you don't use raid, use raid=noautodetect
+> >> md: Autodetecting RAID arrays.
+> >> md: autorun ...
+> >> md: ... autorun DONE.
+> >> EXT4-fs (sda1): mounted filesystem without journal. Opts: (null). Quota mode: none.
+> >> VFS: Mounted root (ext4 filesystem) readonly on device 8:1.
+> >> devtmpfs: mounted
+> >> Freeing unused kernel image (initmem) memory: 4476K
+> >> Write protecting the kernel read-only data: 169984k
+> >> Freeing unused kernel image (text/rodata gap) memory: 2012K
+> >> Freeing unused kernel image (rodata/data gap) memory: 1516K
+> >> Run /sbin/init as init process
+> >> systemd[1]: systemd 232 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD +IDN)
+> >> systemd[1]: Detected virtualization kvm.
+> >> systemd[1]: Detected architecture x86-64.
+> >> systemd[1]: Set hostname to <syzkaller>.
+> >> ------------[ cut here ]------------
+> >> refcount_t: addition on 0; use-after-free.
+> >> WARNING: CPU: 1 PID: 1 at lib/refcount.c:25 refcount_warn_saturate+0x169/0x1e0 lib/refcount.c:25
+> >> Modules linked in:
+> >> CPU: 1 PID: 1 Comm: systemd Not tainted 5.14.0-rc3-syzkaller #0
+> >> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> >> RIP: 0010:refcount_warn_saturate+0x169/0x1e0 lib/refcount.c:25
+> >> Code: 09 31 ff 89 de e8 d7 fa 9e fd 84 db 0f 85 36 ff ff ff e8 8a f4 9e fd 48 c7 c7 c0 81 e3 89 c6 05 70 51 81 09 01 e8 48 f8 13 05 <0f> 0b e9 17 ff ff ff e8 6b f4 9e fd 0f b6 1d 55 51 81 09 31 ff 89
+> >> RSP: 0018:ffffc90000c66ab0 EFLAGS: 00010286
+> >> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+> >> RDX: ffff88813fe48000 RSI: ffffffff815d7b25 RDI: fffff5200018cd48
+> >> RBP: 0000000000000002 R08: 0000000000000000 R09: 0000000000000001
+> >> R10: ffffffff815d195e R11: 0000000000000000 R12: 0000000000000004
+> >> R13: 0000000000000001 R14: 0000000000000000 R15: ffff888027722e00
+> >> FS:  00007f8c1c5d0500(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+> >> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> >> CR2: 000055ed0ced4368 CR3: 0000000026bac000 CR4: 00000000001506e0
+> >> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> >> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> >> Call Trace:
+> >>   __refcount_add include/linux/refcount.h:199 [inline]
+> >>   __refcount_inc include/linux/refcount.h:250 [inline]
+> >>   refcount_inc include/linux/refcount.h:267 [inline]
+> >>   fib_create_info+0x36af/0x4910 net/ipv4/fib_semantics.c:1554  
+> > 
+> > Missed refcount_set(), I think
+> > 
+> > diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+> > index f29feb7772da..bb9949f6bb70 100644
+> > --- a/net/ipv4/fib_semantics.c
+> > +++ b/net/ipv4/fib_semantics.c
+> > @@ -1428,6 +1428,7 @@ struct fib_info *fib_create_info(struct fib_config
+> > *cfg,
+> >    	}
+> > 
+> >    	fib_info_cnt++;
+> > +	refcount_set(&fi->fib_treeref, 1);
+> >    	fi->fib_net = net;
+> >    	fi->fib_protocol = cfg->fc_protocol;
+> >    	fi->fib_scope = cfg->fc_scope;
+> 
+> Oops, it's already fixed in -next, so
+> 
+> #syz fix: ipv4: Fix refcount warning for new fib_info
+> 
+> 
+> BTW: there is one more bug with refcounts:
+> 
+> link_it:
+> 	ofi = fib_find_info(fi);
+> 	if (ofi) {
+> 		fi->fib_dead = 1;
+> 		free_fib_info(fi);
+> 		refcount_inc(&ofi->fib_treeref);
+> 
+> 		^^^^^^^^^^^^^^^^^^^^^^^
+> 		/ *fib_treeref is 0 here */
 
-On Tue, Aug 03, 2021 at 07:00:49PM +0200, Arnd Bergmann wrote:
+Why 0? ofi is an existing object it's already initialized.
 
-> If you turn all those 'select' lines into 'depends on', this will work, but it's
-> not actually much different from what I'm suggesting.
+> 		return ofi;
+> 	}
+> 
+> 	refcount_set(&fi->fib_treeref, 1);
+> 
+> 
+> diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+> index f29feb7772da..38d1fc4d0be1 100644
+> --- a/net/ipv4/fib_semantics.c
+> +++ b/net/ipv4/fib_semantics.c
+> @@ -1543,6 +1543,8 @@ struct fib_info *fib_create_info(struct fib_config 
+> *cfg,
+>   	}
+> 
+>   link_it:
+> +	refcount_set(&fi->fib_treeref, 1);
+> +
+>   	ofi = fib_find_info(fi);
+>   	if (ofi) {
+>   		fi->fib_dead = 1;
+> @@ -1551,7 +1553,6 @@ struct fib_info *fib_create_info(struct fib_config 
+> *cfg,
+>   		return ofi;
+>   	}
+> 
+> -	refcount_set(&fi->fib_treeref, 1);
+>   	refcount_set(&fi->fib_clntref, 1);
+>   	spin_lock_bh(&fib_info_lock);
+>   	hlist_add_head(&fi->fib_hash,
+> 
+> 
+> Thoughts?
 
-"depends" instead of "select" works for me.  I just want it simple and clear.
-
-> Maybe we can do it
-> in two steps: first fix the build failure by replacing all the 'imply'
-> statements
-> with the correct dependencies, and then you send a patch on top that
-> turns PPS and PTP_1588_CLOCK into bool options.
-
-Sounds good.
-
-Thanks,
-Richard
