@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9039A3DF2B9
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:37:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0493A3DF2C8
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:38:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234292AbhHCQhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 12:37:47 -0400
-Received: from mga17.intel.com ([192.55.52.151]:62851 "EHLO mga17.intel.com"
+        id S234815AbhHCQia (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 12:38:30 -0400
+Received: from mga18.intel.com ([134.134.136.126]:29119 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234241AbhHCQhn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 12:37:43 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="194013638"
+        id S234423AbhHCQhz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 12:37:55 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="200922535"
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="194013638"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:37:31 -0700
+   d="scan'208";a="200922535"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:37:43 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="511394690"
+   d="scan'208";a="419720881"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by FMSMGA003.fm.intel.com with ESMTP; 03 Aug 2021 09:37:21 -0700
+  by orsmga003.jf.intel.com with ESMTP; 03 Aug 2021 09:37:25 -0700
 Received: from alobakin-mobl.ger.corp.intel.com (eflejszm-mobl2.ger.corp.intel.com [10.213.26.164])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GahEw029968;
-        Tue, 3 Aug 2021 17:37:16 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GahEx029968;
+        Tue, 3 Aug 2021 17:37:20 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -74,9 +74,9 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         netdev@vger.kernel.org, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH net-next 08/21] ethernet, enetc: convert to standard XDP stats
-Date:   Tue,  3 Aug 2021 18:36:28 +0200
-Message-Id: <20210803163641.3743-9-alexandr.lobakin@intel.com>
+Subject: [PATCH net-next 09/21] ethernet, mvneta: rename xdp_xmit_err to xdp_xmit_drops
+Date:   Tue,  3 Aug 2021 18:36:29 +0200
+Message-Id: <20210803163641.3743-10-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210803163641.3743-1-alexandr.lobakin@intel.com>
 References: <20210803163641.3743-1-alexandr.lobakin@intel.com>
@@ -86,128 +86,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This driver has 6 per-channel XDP counters. Convert them to 5
-standard XDP stats (redirect_sg and redirect_failures go under
-the same redirect_errors).
-As this driver theoretically can have different numbers of RX
-and TX rings, collect statistics separately for each direction.
+NETA driver also doesn't separate XDP xmit errors from drops, and in
+that case more general "drops" should be used.
+Rename the field before converting to standard XDP stats infra.
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 ---
- .../ethernet/freescale/enetc/enetc_ethtool.c  | 58 ++++++++++++++-----
- 1 file changed, 44 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/marvell/mvneta.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-index ebccaf02411c..1b94cb488850 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-@@ -192,18 +192,12 @@ static const struct {
- static const char rx_ring_stats[][ETH_GSTRING_LEN] = {
- 	"Rx ring %2d frames",
- 	"Rx ring %2d alloc errors",
--	"Rx ring %2d XDP drops",
- 	"Rx ring %2d recycles",
- 	"Rx ring %2d recycle failures",
--	"Rx ring %2d redirects",
--	"Rx ring %2d redirect failures",
--	"Rx ring %2d redirect S/G",
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index ff8db311963c..f030d5b7bdee 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -351,7 +351,7 @@ enum {
+ 	ETHTOOL_XDP_TX,
+ 	ETHTOOL_XDP_TX_ERR,
+ 	ETHTOOL_XDP_XMIT,
+-	ETHTOOL_XDP_XMIT_ERR,
++	ETHTOOL_XDP_XMIT_DROPS,
+ 	ETHTOOL_MAX_STATS,
  };
  
- static const char tx_ring_stats[][ETH_GSTRING_LEN] = {
- 	"Tx ring %2d frames",
--	"Tx ring %2d XDP frames",
--	"Tx ring %2d XDP drops",
+@@ -412,7 +412,7 @@ static const struct mvneta_statistic mvneta_statistics[] = {
+ 	{ ETHTOOL_XDP_TX, T_SW, "rx_xdp_tx", },
+ 	{ ETHTOOL_XDP_TX_ERR, T_SW, "rx_xdp_tx_errors", },
+ 	{ ETHTOOL_XDP_XMIT, T_SW, "tx_xdp_xmit", },
+-	{ ETHTOOL_XDP_XMIT_ERR, T_SW, "tx_xdp_xmit_errors", },
++	{ ETHTOOL_XDP_XMIT_DROPS, T_SW, "tx_xdp_xmit_drops", },
  };
  
- static int enetc_get_sset_count(struct net_device *ndev, int sset)
-@@ -275,21 +269,14 @@ static void enetc_get_ethtool_stats(struct net_device *ndev,
- 	for (i = 0; i < ARRAY_SIZE(enetc_si_counters); i++)
- 		data[o++] = enetc_rd64(hw, enetc_si_counters[i].reg);
+ struct mvneta_stats {
+@@ -425,7 +425,7 @@ struct mvneta_stats {
+ 	u64	xdp_pass;
+ 	u64	xdp_drop;
+ 	u64	xdp_xmit;
+-	u64	xdp_xmit_err;
++	u64	xdp_xmit_drops;
+ 	u64	xdp_tx;
+ 	u64	xdp_tx_err;
+ };
+@@ -2166,7 +2166,7 @@ mvneta_xdp_xmit(struct net_device *dev, int num_frame,
+ 	stats->es.ps.tx_bytes += nxmit_byte;
+ 	stats->es.ps.tx_packets += nxmit;
+ 	stats->es.ps.xdp_xmit += nxmit;
+-	stats->es.ps.xdp_xmit_err += num_frame - nxmit;
++	stats->es.ps.xdp_xmit_drops += num_frame - nxmit;
+ 	u64_stats_update_end(&stats->syncp);
  
--	for (i = 0; i < priv->num_tx_rings; i++) {
-+	for (i = 0; i < priv->num_tx_rings; i++)
- 		data[o++] = priv->tx_ring[i]->stats.packets;
--		data[o++] = priv->tx_ring[i]->stats.xdp_tx;
--		data[o++] = priv->tx_ring[i]->stats.xdp_tx_drops;
--	}
- 
- 	for (i = 0; i < priv->num_rx_rings; i++) {
- 		data[o++] = priv->rx_ring[i]->stats.packets;
- 		data[o++] = priv->rx_ring[i]->stats.rx_alloc_errs;
--		data[o++] = priv->rx_ring[i]->stats.xdp_drops;
- 		data[o++] = priv->rx_ring[i]->stats.recycles;
- 		data[o++] = priv->rx_ring[i]->stats.recycle_failures;
--		data[o++] = priv->rx_ring[i]->stats.xdp_redirect;
--		data[o++] = priv->rx_ring[i]->stats.xdp_redirect_failures;
--		data[o++] = priv->rx_ring[i]->stats.xdp_redirect_sg;
+ 	return nxmit;
+@@ -4630,9 +4630,9 @@ mvneta_ethtool_update_pcpu_stats(struct mvneta_port *pp,
+ 	for_each_possible_cpu(cpu) {
+ 		struct mvneta_pcpu_stats *stats;
+ 		u64 skb_alloc_error;
++		u64 xdp_xmit_drops;
+ 		u64 refill_error;
+ 		u64 xdp_redirect;
+-		u64 xdp_xmit_err;
+ 		u64 xdp_tx_err;
+ 		u64 xdp_pass;
+ 		u64 xdp_drop;
+@@ -4648,7 +4648,7 @@ mvneta_ethtool_update_pcpu_stats(struct mvneta_port *pp,
+ 			xdp_pass = stats->es.ps.xdp_pass;
+ 			xdp_drop = stats->es.ps.xdp_drop;
+ 			xdp_xmit = stats->es.ps.xdp_xmit;
+-			xdp_xmit_err = stats->es.ps.xdp_xmit_err;
++			xdp_xmit_drops = stats->es.ps.xdp_xmit_drops;
+ 			xdp_tx = stats->es.ps.xdp_tx;
+ 			xdp_tx_err = stats->es.ps.xdp_tx_err;
+ 		} while (u64_stats_fetch_retry_irq(&stats->syncp, start));
+@@ -4659,7 +4659,7 @@ mvneta_ethtool_update_pcpu_stats(struct mvneta_port *pp,
+ 		es->ps.xdp_pass += xdp_pass;
+ 		es->ps.xdp_drop += xdp_drop;
+ 		es->ps.xdp_xmit += xdp_xmit;
+-		es->ps.xdp_xmit_err += xdp_xmit_err;
++		es->ps.xdp_xmit_drops += xdp_xmit_drops;
+ 		es->ps.xdp_tx += xdp_tx;
+ 		es->ps.xdp_tx_err += xdp_tx_err;
  	}
- 
- 	if (!enetc_si_is_pf(priv->si))
-@@ -299,6 +286,45 @@ static void enetc_get_ethtool_stats(struct net_device *ndev,
- 		data[o++] = enetc_port_rd(hw, enetc_port_counters[i].reg);
- }
- 
-+static int enetc_get_std_stats_channels(struct net_device *ndev, u32 sset)
-+{
-+	const struct enetc_ndev_priv *priv = netdev_priv(ndev);
-+
-+	switch (sset) {
-+	case ETH_SS_STATS_XDP:
-+		return max(priv->num_rx_rings, priv->num_tx_rings);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static void enetc_get_xdp_stats(struct net_device *ndev,
-+				struct ethtool_xdp_stats *xdp_stats)
-+{
-+	const struct enetc_ndev_priv *priv = netdev_priv(ndev);
-+	const struct enetc_ring_stats *stats;
-+	struct ethtool_xdp_stats *iter;
-+	u32 i;
-+
-+	for (i = 0; i < priv->num_tx_rings; i++) {
-+		stats = &priv->tx_ring[i]->stats;
-+		iter = xdp_stats + i;
-+
-+		iter->tx = stats->xdp_tx;
-+		iter->tx_errors = stats->xdp_tx_drops;
-+	}
-+
-+	for (i = 0; i < priv->num_rx_rings; i++) {
-+		stats = &priv->rx_ring[i]->stats;
-+		iter = xdp_stats + i;
-+
-+		iter->drop = stats->xdp_drops;
-+		iter->redirect = stats->xdp_redirect;
-+		iter->redirect_errors = stats->xdp_redirect_failures;
-+		iter->redirect_errors += stats->xdp_redirect_sg;
-+	}
-+}
-+
- #define ENETC_RSSHASH_L3 (RXH_L2DA | RXH_VLAN | RXH_L3_PROTO | RXH_IP_SRC | \
- 			  RXH_IP_DST)
- #define ENETC_RSSHASH_L4 (ENETC_RSSHASH_L3 | RXH_L4_B_0_1 | RXH_L4_B_2_3)
-@@ -772,6 +798,8 @@ static const struct ethtool_ops enetc_pf_ethtool_ops = {
- 	.set_wol = enetc_set_wol,
- 	.get_pauseparam = enetc_get_pauseparam,
- 	.set_pauseparam = enetc_set_pauseparam,
-+	.get_std_stats_channels = enetc_get_std_stats_channels,
-+	.get_xdp_stats = enetc_get_xdp_stats,
- };
- 
- static const struct ethtool_ops enetc_vf_ethtool_ops = {
-@@ -793,6 +821,8 @@ static const struct ethtool_ops enetc_vf_ethtool_ops = {
- 	.set_coalesce = enetc_set_coalesce,
- 	.get_link = ethtool_op_get_link,
- 	.get_ts_info = enetc_get_ts_info,
-+	.get_std_stats_channels = enetc_get_std_stats_channels,
-+	.get_xdp_stats = enetc_get_xdp_stats,
- };
- 
- void enetc_set_ethtool_ops(struct net_device *ndev)
+@@ -4720,8 +4720,8 @@ static void mvneta_ethtool_update_stats(struct mvneta_port *pp)
+ 			case ETHTOOL_XDP_XMIT:
+ 				pp->ethtool_stats[i] = stats.ps.xdp_xmit;
+ 				break;
+-			case ETHTOOL_XDP_XMIT_ERR:
+-				pp->ethtool_stats[i] = stats.ps.xdp_xmit_err;
++			case ETHTOOL_XDP_XMIT_DROPS:
++				pp->ethtool_stats[i] = stats.ps.xdp_xmit_drops;
+ 				break;
+ 			}
+ 			break;
 -- 
 2.31.1
 
