@@ -2,89 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79E753DE449
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 04:17:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 406B93DE459
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 04:29:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233526AbhHCCRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 22:17:34 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:12438 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233200AbhHCCRd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 22:17:33 -0400
-Received: from dggeme701-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Gdz242zxnzckD1;
-        Tue,  3 Aug 2021 10:13:48 +0800 (CST)
-Received: from dggpemm500021.china.huawei.com (7.185.36.109) by
- dggeme701-chm.china.huawei.com (10.1.199.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Tue, 3 Aug 2021 10:17:21 +0800
-Received: from dggpemm500021.china.huawei.com ([7.185.36.109]) by
- dggpemm500021.china.huawei.com ([7.185.36.109]) with mapi id 15.01.2176.012;
- Tue, 3 Aug 2021 10:17:21 +0800
-From:   "zhudi (J)" <zhudi21@huawei.com>
-To:     Nicholas Richardson <richardsonnick@google.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     "nrrichar@ncsu.edu" <nrrichar@ncsu.edu>,
-        "arunkaly@google.com" <arunkaly@google.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        "yebin (H)" <yebin10@huawei.com>,
-        Yejune Deng <yejune.deng@gmail.com>,
-        Leesoo Ahn <dev@ooseel.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0ggdjNdIHBrdGdlbjogRml4IGludmFsaWQgY2xvbmVf?=
- =?utf-8?Q?skb_override?=
-Thread-Topic: [PATCH v3] pktgen: Fix invalid clone_skb override
-Thread-Index: AQHXh8tQ8xg7Med4W06C+qfPmCpoyKthAu9g
-Date:   Tue, 3 Aug 2021 02:17:20 +0000
-Message-ID: <47e01747a5c648c8809c77055e981e80@huawei.com>
-References: <20210802102100.5292367a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210802182057.2199810-1-richardsonnick@google.com>
-In-Reply-To: <20210802182057.2199810-1-richardsonnick@google.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.136.114.155]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S233399AbhHCC3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 22:29:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58846 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233197AbhHCC3I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Aug 2021 22:29:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2BA5F6056B;
+        Tue,  3 Aug 2021 02:28:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627957738;
+        bh=f7M1ny3Ljiorm1cDs65yb6ckOMxL+TVmvhy0uMqLoxs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bekwURy8vRuI5YfmBur/tLNbZB/3jangRG8jbUPwQXQe2iB8Za4z9jijvH1gebcMj
+         JdOWAPrSsP6jbotNknmELV06AvTfC5QPSSccuC3ZVR6XG9EJvFd6V6ehBVYNji9/sh
+         WW6Ch2JkoNRGT0yHGTaSgBgQFxrESNxBB4abF+IFFcn8nL+4Ez2CnJ3AazrIP5AHIU
+         UOw5WGnhl5ZIRqYlnwrGJ7oK/lTaWeVdTq6aT/b/jq6CwTNkZoFhP9grBemrvIfCA4
+         NtI1OFRgidXIV1wkpCn8226S0eaU6mBAYhoWLFkkSZ2j3q0t0TXO3eYwGtdlH1sf/l
+         7l9X/tpOs39tA==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next 00/16] mlx5 updates 2021-08-02
+Date:   Mon,  2 Aug 2021 19:28:37 -0700
+Message-Id: <20210803022853.106973-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBGcm9tOiBOaWNrIFJpY2hhcmRzb24gPHJpY2hhcmRzb25uaWNrQGdvb2dsZS5jb20+DQo+IA0K
-PiBXaGVuIHRoZSBuZXRpZl9yZWNlaXZlIHhtaXRfbW9kZSBpcyBzZXQsIGEgbGluZSBpcyBzdXBw
-b3NlZCB0byBzZXQNCj4gY2xvbmVfc2tiIHRvIGEgZGVmYXVsdCAwIHZhbHVlLiBUaGlzIGxpbmUg
-aXMgbWFkZSByZWR1bmRhbnQgZHVlIHRvIGENCj4gcHJlY2VkaW5nIGxpbmUgdGhhdCBjaGVja3Mg
-aWYgY2xvbmVfc2tiIGlzIG1vcmUgdGhhbiB6ZXJvIGFuZCByZXR1cm5zDQo+IC1FTk9UU1VQUC4N
-Cj4gDQo+IE9ubHkgdGhlIHBvc2l0aXZlIGNhc2UgZm9yIGNsb25lX3NrYiBuZWVkcyB0byBiZSBj
-aGVja2VkLiBJdA0KPiBpcyBpbXBvc3NpYmxlIGZvciBhIHVzZXIgdG8gc2V0IGNsb25lX3NrYiB0
-byBhIG5lZ2F0aXZlIG51bWJlci4NCj4gV2hlbiBhIHVzZXIgcGFzc2VzIGEgbmVnYXRpdmUgdmFs
-dWUgZm9yIGNsb25lX3NrYiwgdGhlIG51bV9hcmcoKQ0KPiBmdW5jdGlvbiBzdG9wcyBwYXJzaW5n
-IGF0IHRoZSBmaXJzdCBub25udW1lcmljIHZhbHVlLg0KPiANCj4gRm9yIGV4YW1wbGU6ICJjbG9u
-ZV9za2IgLTIwMCIgd291bGQgc3RvcCBwYXJzaW5nIGF0IHRoZQ0KPiBmaXJzdCBjaGFyICgnLScp
-IGFuZCByZXR1cm4gemVybyBmb3IgdGhlIG5ldyBjbG9uZV9za2IgdmFsdWUuDQo+IA0KPiBUaGUg
-dmFsdWUgcmVhZCBieSBudW1fYXJnKCkgY2Fubm90IGJlIG92ZXJmbG93LWVkIGludG8gdGhlIG5l
-Z2F0aXZlDQo+IHJhbmdlLCBzaW5jZSBpdCBpcyBhbiB1bnNpZ25lZCBsb25nLg0KPiANCg0KbW9k
-dWxlX3BhcmFtKHBnX2Nsb25lX3NrYl9kLCBpbnQsIDApOw0KDQpUaGlzIGtlcm5lbCBwYXJhbWV0
-ZXIgY2FuIGFsc28gc2V0IHRoZSB2YWx1ZSBvZiBwa3RfZGV2LT5jbG9uZV9za2INCkluIHBrdGdl
-bl9hZGRfZGV2aWNlKCkgYW5kIHRoZSB2YWx1ZSBjYW4gYmUgbmVnYXRpdmUuDQoNCg0KPiBSZW1v
-dmUgcmVkdW5kYW50IGxpbmUgdGhhdCBzZXRzIGNsb25lX3NrYiB0byB6ZXJvLiBJZiBjbG9uZV9z
-a2IgaXMNCj4gZXF1YWwgdG8gemVybyB0aGVuIHNldCB4bWl0X21vZGUgdG8gbmV0aWZfcmVjZWl2
-ZSBhcyB1c3VhbCBhbmQgcmV0dXJuDQo+IG5vIGVycm9yLg0KPiANCj4gU2lnbmVkLW9mZi1ieTog
-TmljayBSaWNoYXJkc29uIDxyaWNoYXJkc29ubmlja0Bnb29nbGUuY29tPg0KPiAtLS0NCj4gIG5l
-dC9jb3JlL3BrdGdlbi5jIHwgNSAtLS0tLQ0KPiAgMSBmaWxlIGNoYW5nZWQsIDUgZGVsZXRpb25z
-KC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvbmV0L2NvcmUvcGt0Z2VuLmMgYi9uZXQvY29yZS9wa3Rn
-ZW4uYw0KPiBpbmRleCA3ZTI1OGQyNTVlOTAuLjMxNGY5N2FjZjM5ZCAxMDA2NDQNCj4gLS0tIGEv
-bmV0L2NvcmUvcGt0Z2VuLmMNCj4gKysrIGIvbmV0L2NvcmUvcGt0Z2VuLmMNCj4gQEAgLTExOTAs
-MTEgKzExOTAsNiBAQCBzdGF0aWMgc3NpemVfdCBwa3RnZW5faWZfd3JpdGUoc3RydWN0IGZpbGUg
-KmZpbGUsDQo+ICAJCQkgKiBwa3RnZW5feG1pdCgpIGlzIGNhbGxlZA0KPiAgCQkJICovDQo+ICAJ
-CQlwa3RfZGV2LT5sYXN0X29rID0gMTsNCj4gLQ0KPiAtCQkJLyogb3ZlcnJpZGUgY2xvbmVfc2ti
-IGlmIHVzZXIgcGFzc2VkIGRlZmF1bHQgdmFsdWUNCj4gLQkJCSAqIGF0IG1vZHVsZSBsb2FkaW5n
-IHRpbWUNCj4gLQkJCSAqLw0KPiAtCQkJcGt0X2Rldi0+Y2xvbmVfc2tiID0gMDsNCj4gIAkJfSBl
-bHNlIGlmIChzdHJjbXAoZiwgInF1ZXVlX3htaXQiKSA9PSAwKSB7DQo+ICAJCQlwa3RfZGV2LT54
-bWl0X21vZGUgPSBNX1FVRVVFX1hNSVQ7DQo+ICAJCQlwa3RfZGV2LT5sYXN0X29rID0gMTsNCj4g
-LS0NCj4gMi4zMi4wLjU1NC5nZTFiMzI3MDZkOC1nb29nDQoNCg==
+From: Saeed Mahameed <saeedm@nvidia.com>
+
+Hi Dave/Jakub,
+
+This series adds misc cleanup and some refactroing to mlx5e driver,
+needed for upcoming submissions.
+
+For more information please see tag log below.
+
+Please pull and let me know if there is any problem.
+
+Thanks,
+Saeed.
+
+---
+The following changes since commit 1187c8c4642d109037202b43a5054adaef78b760:
+
+  net: phy: mscc: make some arrays static const, makes object smaller (2021-08-02 09:15:07 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-08-02
+
+for you to fetch changes up to bcd68c04c7692416206414dc8971730aa140eba7:
+
+  net/mlx5: Fix missing return value in mlx5_devlink_eswitch_inline_mode_set() (2021-08-02 19:26:29 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2021-08-02
+
+This patch-set changes the TTC (Traffic Type Classification) logic
+to be independent from the mlx5 ethernet driver by renaming the traffic
+types enums and making the TTC API generic to the mlx5 core driver.
+
+It allows to decouple TTC logic from mlx5e and reused by other parts
+of mlx5 drivers, namely ADQ and lag TX steering hashing.
+
+Patches overview:
+1 - Rename traffic type enums to be mlx5 generic.
+2 - Rename related TTC arguments and functions.
+3 - Remove dependency in the mlx5e driver from the TTC implementation.
+4 - Move TTC logic to fs_ttc.
+5 - Embed struct mlx5_ttc_table in fs_ttc.
+
+The refactoring series is followed by misc' cleanup patches.
+
+----------------------------------------------------------------
+Jiapeng Chong (1):
+      net/mlx5: Fix missing return value in mlx5_devlink_eswitch_inline_mode_set()
+
+Maor Gottlieb (5):
+      net/mlx5e: Rename traffic type enums
+      net/mlx5e: Rename some related TTC args and functions
+      net/mlx5e: Decouple TTC logic from mlx5e
+      net/mlx5: Move TTC logic to fs_ttc
+      net/mlx5: Embed mlx5_ttc_table
+
+Maxim Mikityanskiy (4):
+      net/mlx5e: Use a new initializer to build uniform indir table
+      net/mlx5e: Introduce mlx5e_channels API to get RQNs
+      net/mlx5e: Hide all implementation details of mlx5e_rx_res
+      net/mlx5e: Allocate the array of channels according to the real max_nch
+
+Roi Dayan (6):
+      net/mlx5e: Remove redundant tc act includes
+      net/mlx5e: Remove redundant filter_dev arg from parse_tc_fdb_actions()
+      net/mlx5e: Remove redundant cap check for flow counter
+      net/mlx5e: Remove redundant parse_attr arg
+      net/mlx5e: Remove redundant assignment of counter to null
+      net/mlx5e: Return -EOPNOTSUPP if more relevant when parsing tc actions
+
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |  20 +-
+ .../net/ethernet/mellanox/mlx5/core/en/channels.c  |  46 ++
+ .../net/ethernet/mellanox/mlx5/core/en/channels.h  |  16 +
+ drivers/net/ethernet/mellanox/mlx5/core/en/fs.h    |  84 +--
+ .../mellanox/mlx5/core/en/fs_tt_redirect.c         |  30 +-
+ .../mellanox/mlx5/core/en/fs_tt_redirect.h         |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c   |   6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/rqt.c   |   9 +
+ drivers/net/ethernet/mellanox/mlx5/core/en/rqt.h   |   3 +
+ .../net/ethernet/mellanox/mlx5/core/en/rx_res.c    | 782 ++++++++++++++++++++-
+ .../net/ethernet/mellanox/mlx5/core/en/rx_res.h    |  76 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/pool.c  |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.c |  56 --
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.h |   4 -
+ .../ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c  |  12 +-
+ .../mellanox/mlx5/core/en_accel/ipsec_fs.c         |  13 +-
+ .../ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c  |  24 +-
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  69 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_fs.c    | 677 +++---------------
+ .../ethernet/mellanox/mlx5/core/en_fs_ethtool.c    |  55 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 507 +------------
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  66 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  86 +--
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   5 +-
+ .../net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c  |  55 +-
+ .../net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c   | 602 ++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/lib/fs_ttc.h   |  70 ++
+ include/linux/mlx5/fs.h                            |   2 +
+ 30 files changed, 1852 insertions(+), 1535 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/channels.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/channels.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/fs_ttc.h
