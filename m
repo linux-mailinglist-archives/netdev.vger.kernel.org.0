@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 717803DF090
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 16:44:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 140113DF09C
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 16:47:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236707AbhHCOoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 10:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33524 "EHLO
+        id S236710AbhHCOsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 10:48:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236502AbhHCOoF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 10:44:05 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E8BC0617A3;
-        Tue,  3 Aug 2021 07:43:48 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id gs8so36677403ejc.13;
-        Tue, 03 Aug 2021 07:43:48 -0700 (PDT)
+        with ESMTP id S236730AbhHCOre (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 10:47:34 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D87C0617BA;
+        Tue,  3 Aug 2021 07:45:55 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id x90so29266434ede.8;
+        Tue, 03 Aug 2021 07:45:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=21UEaA5NxYYRGJ/hxwmq634fV1jMJGF++85jofJtE4A=;
-        b=Q4oH2X4OQYM73if3DK/fZ+5YpoM9OTrVM+kYPYrIMzB92rcHm/00kpquUGrft3M6Aq
-         bhog5UVno6hGuaED69POea7w3kKwejBNU7W4OFPcWxF3DYJOVA9wCODq6ljR8oB/Xqlq
-         CixV30eSX2w8G1JCJkff317rU62YhLloYVuz0tIErdz4OEWfrs8GY4N9I0/zXb6OpHD2
-         5LmCa/uXKuUFxtym0ZiM8YUE+TRaKAtwLRnmIlBQ/ytnN8IANA/MDIO9tr02tEOX2kMC
-         AXih8MH8W/HtLxJH9iEafug5VMjfm6+tx7JJaWwJhcz+xFlrAjuPKPqv5Axc1VWQk8qi
-         KJcQ==
+        bh=nLjEw0HuIJj34h6UU+m/vkoLg+whogx5QH5dKh0TA1A=;
+        b=aRSQXGQlKK76xI1w7OSHP7cBvNpZGU15KzeZeqH3cDl0kUuLvC+B6xNdkO9Clg7xz0
+         mPshYEYJEX5GYkJKW7r4yuNGmHjdkF+m5umM/PFmOzyqBgRTRR5CNp+rUE+SlNE4Izb1
+         3Q+KGc8vOZ/yq/Ya8otsRjhq7+jGjifH2quonMlY8pcsnROXYXZ8GhfQ3tllyodcKEtv
+         Py4WnMQOxX3kgM7a1VeVrXRBGi13NRSfswqfY6Cy92vh1T2Md6dY9sjFEonJpzNcIymp
+         CbUzCMHCa58RAmB3KpdrbD3NlmQwJSg/jDo+gBnTEMidK4w+eqYJWRXK0H1qvapkj7IJ
+         1cSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=21UEaA5NxYYRGJ/hxwmq634fV1jMJGF++85jofJtE4A=;
-        b=iD04e0mSxLnCjQAGT3X3bBk8p3gJN9Otah6JntAoSzDyu1thIEgLTzEQZ9oarCqhOB
-         pht54ETuoJyKlD/lEueYIa8caue2jU4Z+RKQ/5/H1CgkqBHrVAWF3qZlC7C2tm05RfAt
-         56fl+0Gj2I6oPtHxgq5GKGq2bRE9yCbB9KdoHatffdjwAoMDhqSYjh7nprTq8nXujWct
-         0BiPWdnqNALYcDFmfH+w/NKhGTFzHhS6EGD6QqMeKkZMg/bAplZHcqUY8VgKu4iRA4br
-         BYCWk/FVSmTy8W5kF1RtIoHVWvLdI09KGf9LpTVKNoL8rQVwWgO13sy+zbrS+Vd2QHEE
-         xjgg==
-X-Gm-Message-State: AOAM530kjmBZQt1rDYPr0eV1fAQVoAoEwm1MKtixq6kYPeLHNAZtnGaJ
-        bh8y84F+J6Wbd4h6qdkTIU0=
-X-Google-Smtp-Source: ABdhPJxBxb7VU3wDfc3Bj+zyEzT3+H5FmMb9p5alU9qeXPwGhB2s1WjRkH53fmF9Kynm+p4O7FWrrg==
-X-Received: by 2002:a17:906:2dc5:: with SMTP id h5mr10464333eji.515.1628001827204;
-        Tue, 03 Aug 2021 07:43:47 -0700 (PDT)
+        bh=nLjEw0HuIJj34h6UU+m/vkoLg+whogx5QH5dKh0TA1A=;
+        b=PNPEp/trV5b/ilhsUtJS71SKtY4MQL2irHqXx4DOQM7uLVBNrISkv1ryahwcg1wL9l
+         AFdrUmeG38LoCoNFymA8Krr+eDdyWkTEWuDRRR6O0ks9HHz9bwpoiVICRhSmJGGpMfCa
+         F9+wDJefqJieMJz3cla5uovd4WqPxbNF+ZZi5zsuPG6p68PQa2U+/vN9Gqc0e4lkpNlB
+         RpAzyP6nW824EIurQRh0CY/UCytXz31G56K7qd+0MStQkDRNFFIn/+C5ENW0VwTo49ka
+         nNF6+tVOY7akOPcD7Dtb+25xkEOLm59/TEAkKdfpMklyYTo145yvLawQp0QFKXjiGx6a
+         Yfhw==
+X-Gm-Message-State: AOAM531/kKpfKqrbQCEGEmXdSV0lu0W15JYbrvZchI/9MS9mHLcv4U2U
+        ZxcncnP+beYpoUcnf9ufw58=
+X-Google-Smtp-Source: ABdhPJysB/KYPljDZl8pqFu38R/m8VQYjciFVwRM65/pDUF9OZlb1yM/kbSAt6w9AUrYvkrXO4OxWw==
+X-Received: by 2002:a05:6402:270f:: with SMTP id y15mr25959942edd.65.1628001954301;
+        Tue, 03 Aug 2021 07:45:54 -0700 (PDT)
 Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id dg20sm8120790edb.13.2021.08.03.07.43.45
+        by smtp.gmail.com with ESMTPSA id cm1sm8246886edb.68.2021.08.03.07.45.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Aug 2021 07:43:46 -0700 (PDT)
-Date:   Tue, 3 Aug 2021 17:43:45 +0300
+        Tue, 03 Aug 2021 07:45:53 -0700 (PDT)
+Date:   Tue, 3 Aug 2021 17:45:52 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     DENG Qingfang <dqfext@gmail.com>
 Cc:     Sean Wang <sean.wang@mediatek.com>,
@@ -64,77 +64,78 @@ Cc:     Sean Wang <sean.wang@mediatek.com>,
         =?utf-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>,
         Frank Wunderlich <frank-w@public-files.de>,
         Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-Subject: Re: [PATCH net-next 3/4] net: dsa: mt7530: set STP state on filter
- ID 1
-Message-ID: <20210803144345.jmucndmrflnqlfo3@skbuf>
+Subject: Re: [PATCH net-next 4/4] net: dsa: mt7530: always install FDB
+ entries with IVL and FID 1
+Message-ID: <20210803144552.fluxxfoey2tbqyyu@skbuf>
 References: <20210803124022.2912298-1-dqfext@gmail.com>
- <20210803124022.2912298-4-dqfext@gmail.com>
+ <20210803124022.2912298-5-dqfext@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210803124022.2912298-4-dqfext@gmail.com>
+In-Reply-To: <20210803124022.2912298-5-dqfext@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 03, 2021 at 08:40:21PM +0800, DENG Qingfang wrote:
-> As filter ID 1 is the only one used for bridges, set STP state on it.
+On Tue, Aug 03, 2021 at 08:40:22PM +0800, DENG Qingfang wrote:
+> This reverts commit 7e777021780e ("mt7530 mt7530_fdb_write only set ivl
+> bit vid larger than 1").
+> 
+> Before this series, the default value of all ports' PVID is 1, which is
+> copied into the FDB entry, even if the ports are VLAN unaware. So
+> `bridge fdb show` will show entries like `dev swp0 vlan 1 self` even on
+> a VLAN-unaware bridge.
+> 
+> The blamed commit does not solve that issue completely, instead it may
+> cause a new issue that FDB is inaccessible in a VLAN-aware bridge with
+> PVID 1.
+> 
+> This series sets PVID to 0 on VLAN-unaware ports, so `bridge fdb show`
+> will no longer print `vlan 1` on VLAN-unaware bridges, and that special
+> case in fdb_write is not required anymore.
+> 
+> Set FDB entries' filter ID to 1 to match the VLAN table.
 > 
 > Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 > ---
-> RFC -> v1: only set FID 1's state
+> RFC -> v1: Detailed commit message. Also set FDB entries' FID to 1.
 > 
->  drivers/net/dsa/mt7530.c | 3 ++-
->  drivers/net/dsa/mt7530.h | 4 ++--
->  2 files changed, 4 insertions(+), 3 deletions(-)
+>  drivers/net/dsa/mt7530.c | 4 ++--
+>  drivers/net/dsa/mt7530.h | 1 +
+>  2 files changed, 3 insertions(+), 2 deletions(-)
 > 
 > diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> index 12f449a54833..8d84d7ddad38 100644
+> index 8d84d7ddad38..ac2b45e472bd 100644
 > --- a/drivers/net/dsa/mt7530.c
 > +++ b/drivers/net/dsa/mt7530.c
-> @@ -1147,7 +1147,8 @@ mt7530_stp_state_set(struct dsa_switch *ds, int port, u8 state)
->  		break;
->  	}
+> @@ -366,8 +366,8 @@ mt7530_fdb_write(struct mt7530_priv *priv, u16 vid,
+>  	int i;
 >  
-> -	mt7530_rmw(priv, MT7530_SSP_P(port), FID_PST_MASK, stp_state);
-> +	mt7530_rmw(priv, MT7530_SSP_P(port), FID1_PST_MASK,
-> +		   FID1_PST(stp_state));
->  }
->  
->  static int
+>  	reg[1] |= vid & CVID_MASK;
+> -	if (vid > 1)
+> -		reg[1] |= ATA2_IVL;
+> +	reg[1] |= ATA2_IVL;
+> +	reg[1] |= ATA2_FID(1);
+
+Maybe it would be good to resend with a set of #defines for the
+standalone/bridged port FID values after all, what do you think?
+
+>  	reg[2] |= (aging & AGE_TIMER_MASK) << AGE_TIMER;
+>  	reg[2] |= (port_mask & PORT_MAP_MASK) << PORT_MAP;
+>  	/* STATIC_ENT indicate that entry is static wouldn't
 > diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-> index a308886fdebc..53b7bb1f5368 100644
+> index 53b7bb1f5368..73b0e0eb8f2f 100644
 > --- a/drivers/net/dsa/mt7530.h
 > +++ b/drivers/net/dsa/mt7530.h
-> @@ -181,8 +181,8 @@ enum mt7530_vlan_egress_attr {
+> @@ -80,6 +80,7 @@ enum mt753x_bpdu_port_fw {
+>  #define  STATIC_ENT			3
+>  #define MT7530_ATA2			0x78
+>  #define  ATA2_IVL			BIT(15)
+> +#define  ATA2_FID(x)			(((x) & 0x7) << 12)
 >  
->  /* Register for port STP state control */
->  #define MT7530_SSP_P(x)			(0x2000 + ((x) * 0x100))
-> -#define  FID_PST(x)			((x) & 0x3)
-> -#define  FID_PST_MASK			FID_PST(0x3)
-> +#define  FID1_PST(x)			(((x) & 0x3) << 2)
-> +#define  FID1_PST_MASK			FID1_PST(0x3)
-
-Not a reason to resend, but I still would have expected a macro:
-
-#define FID_PST(fid, state)		((state) & 0x3) << ((fid) * 2)
-#define FID_PST_MASK(fid)		FID_PST(fid, 0x3)
-
-#define FID_STANDALONE			0
-#define FID_BRIDGED			1
-
-and called with:
-
-	mt7530_rmw(priv, MT7530_SSP_P(port), FID_PST_MASK(FID_BRIDGED),
-		   FID_PST(FID_BRIDGED, stp_state));
-
->  
->  enum mt7530_stp_state {
->  	MT7530_STP_DISABLED = 0,
+>  /* Register for address table write data */
+>  #define MT7530_ATWD			0x7c
 > -- 
 > 2.25.1
 > 
 
-Anyhow.
-
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
