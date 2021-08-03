@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 094FB3DF2D1
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:38:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 249053DF2D8
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:38:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235837AbhHCQiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 12:38:52 -0400
-Received: from mga04.intel.com ([192.55.52.120]:5348 "EHLO mga04.intel.com"
+        id S236410AbhHCQjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 12:39:01 -0400
+Received: from mga03.intel.com ([134.134.136.65]:60864 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234477AbhHCQiD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 12:38:03 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="211865584"
+        id S234338AbhHCQiE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 12:38:04 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="213766160"
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="211865584"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:37:47 -0700
+   d="scan'208";a="213766160"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:37:52 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="521316683"
+   d="scan'208";a="500883687"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga002.fm.intel.com with ESMTP; 03 Aug 2021 09:37:37 -0700
+  by orsmga001.jf.intel.com with ESMTP; 03 Aug 2021 09:37:41 -0700
 Received: from alobakin-mobl.ger.corp.intel.com (eflejszm-mobl2.ger.corp.intel.com [10.213.26.164])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GahF2029968;
-        Tue, 3 Aug 2021 17:37:32 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GahF3029968;
+        Tue, 3 Aug 2021 17:37:36 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -74,9 +74,9 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         netdev@vger.kernel.org, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH net-next 12/21] ethernet, mvpp2: convert to standard XDP stats
-Date:   Tue,  3 Aug 2021 18:36:32 +0200
-Message-Id: <20210803163641.3743-13-alexandr.lobakin@intel.com>
+Subject: [PATCH net-next 13/21] ethernet, sfc: convert to standard XDP stats
+Date:   Tue,  3 Aug 2021 18:36:33 +0200
+Message-Id: <20210803163641.3743-14-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210803163641.3743-1-alexandr.lobakin@intel.com>
 References: <20210803163641.3743-1-alexandr.lobakin@intel.com>
@@ -86,167 +86,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert PPv2 driver to provide standard XDP statistics instead of
-custom-defined Ethtool stats. This also allows to greatly simplify
-stats filling code.
-In the same fashion as mvneta, the driver uses global XDP counters.
+Just like DPAA2 driver, EF{100,X} store XDP stats per-channel, but
+present them as the sums across all channels.
+Switch to the standard per-channel XDP stats. n_rx_xdp_bad_drops
+goes as "general XDP errors", because driver uses just one counter
+for all kinds of errors.
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 ---
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 90 +++++--------------
- 1 file changed, 20 insertions(+), 70 deletions(-)
+ drivers/net/ethernet/sfc/ef100_ethtool.c  |  2 ++
+ drivers/net/ethernet/sfc/ethtool.c        |  2 ++
+ drivers/net/ethernet/sfc/ethtool_common.c | 35 ++++++++++++++++++++---
+ drivers/net/ethernet/sfc/ethtool_common.h |  3 ++
+ 4 files changed, 38 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index a3aee1a6d760..ed34f8fefced 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -1824,16 +1824,6 @@ static void mvpp2_port_loopback_set(struct mvpp2_port *port,
- 	writel(val, port->base + MVPP2_GMAC_CTRL_1_REG);
- }
- 
--enum {
--	ETHTOOL_XDP_REDIRECT,
--	ETHTOOL_XDP_PASS,
--	ETHTOOL_XDP_DROP,
--	ETHTOOL_XDP_TX,
--	ETHTOOL_XDP_TX_ERR,
--	ETHTOOL_XDP_XMIT,
--	ETHTOOL_XDP_XMIT_DROPS,
--};
--
- struct mvpp2_ethtool_counter {
- 	unsigned int offset;
- 	const char string[ETH_GSTRING_LEN];
-@@ -1926,21 +1916,10 @@ static const struct mvpp2_ethtool_counter mvpp2_ethtool_rxq_regs[] = {
- 	{ MVPP2_RX_PKTS_BM_DROP_CTR, "rxq_%d_packets_bm_drops" },
+diff --git a/drivers/net/ethernet/sfc/ef100_ethtool.c b/drivers/net/ethernet/sfc/ef100_ethtool.c
+index 835c838b7dfa..c4797fefef2e 100644
+--- a/drivers/net/ethernet/sfc/ef100_ethtool.c
++++ b/drivers/net/ethernet/sfc/ef100_ethtool.c
+@@ -49,6 +49,8 @@ const struct ethtool_ops ef100_ethtool_ops = {
+ 	.get_fecparam		= efx_ethtool_get_fecparam,
+ 	.set_fecparam		= efx_ethtool_set_fecparam,
+ 	.get_ethtool_stats	= efx_ethtool_get_stats,
++	.get_std_stats_channels	= efx_ethtool_get_std_stats_channels,
++	.get_xdp_stats		= efx_ethtool_get_xdp_stats,
+ 	.get_rxnfc              = efx_ethtool_get_rxnfc,
+ 	.set_rxnfc              = efx_ethtool_set_rxnfc,
+ 	.reset                  = efx_ethtool_reset,
+diff --git a/drivers/net/ethernet/sfc/ethtool.c b/drivers/net/ethernet/sfc/ethtool.c
+index 058d9fe41d99..307724275a3e 100644
+--- a/drivers/net/ethernet/sfc/ethtool.c
++++ b/drivers/net/ethernet/sfc/ethtool.c
+@@ -269,4 +269,6 @@ const struct ethtool_ops efx_ethtool_ops = {
+ 	.get_fec_stats		= efx_ethtool_get_fec_stats,
+ 	.get_fecparam		= efx_ethtool_get_fecparam,
+ 	.set_fecparam		= efx_ethtool_set_fecparam,
++	.get_std_stats_channels	= efx_ethtool_get_std_stats_channels,
++	.get_xdp_stats		= efx_ethtool_get_xdp_stats,
  };
- 
--static const struct mvpp2_ethtool_counter mvpp2_ethtool_xdp[] = {
--	{ ETHTOOL_XDP_REDIRECT, "rx_xdp_redirect", },
--	{ ETHTOOL_XDP_PASS, "rx_xdp_pass", },
--	{ ETHTOOL_XDP_DROP, "rx_xdp_drop", },
--	{ ETHTOOL_XDP_TX, "rx_xdp_tx", },
--	{ ETHTOOL_XDP_TX_ERR, "rx_xdp_tx_errors", },
--	{ ETHTOOL_XDP_XMIT, "tx_xdp_xmit", },
--	{ ETHTOOL_XDP_XMIT_DROPS, "tx_xdp_xmit_drops", },
--};
--
- #define MVPP2_N_ETHTOOL_STATS(ntxqs, nrxqs)	(ARRAY_SIZE(mvpp2_ethtool_mib_regs) + \
- 						 ARRAY_SIZE(mvpp2_ethtool_port_regs) + \
- 						 (ARRAY_SIZE(mvpp2_ethtool_txq_regs) * (ntxqs)) + \
--						 (ARRAY_SIZE(mvpp2_ethtool_rxq_regs) * (nrxqs)) + \
--						 ARRAY_SIZE(mvpp2_ethtool_xdp))
-+						 (ARRAY_SIZE(mvpp2_ethtool_rxq_regs) * (nrxqs)))
- 
- static void mvpp2_ethtool_get_strings(struct net_device *netdev, u32 sset,
- 				      u8 *data)
-@@ -1979,20 +1958,23 @@ static void mvpp2_ethtool_get_strings(struct net_device *netdev, u32 sset,
- 			data += ETH_GSTRING_LEN;
- 		}
- 	}
--
--	for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_xdp); i++) {
--		strscpy(data, mvpp2_ethtool_xdp[i].string,
--			ETH_GSTRING_LEN);
--		data += ETH_GSTRING_LEN;
--	}
+diff --git a/drivers/net/ethernet/sfc/ethtool_common.c b/drivers/net/ethernet/sfc/ethtool_common.c
+index bf1443539a1a..4aa6792d5795 100644
+--- a/drivers/net/ethernet/sfc/ethtool_common.c
++++ b/drivers/net/ethernet/sfc/ethtool_common.c
+@@ -87,10 +87,6 @@ static const struct efx_sw_stat_desc efx_sw_stat_desc[] = {
+ 	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_frm_trunc),
+ 	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_merge_events),
+ 	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_merge_packets),
+-	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_drops),
+-	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_bad_drops),
+-	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_tx),
+-	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_redirect),
+ #ifdef CONFIG_RFS_ACCEL
+ 	EFX_ETHTOOL_UINT_CHANNEL_STAT_NO_N(rfs_filter_count),
+ 	EFX_ETHTOOL_UINT_CHANNEL_STAT(rfs_succeeded),
+@@ -557,6 +553,37 @@ void efx_ethtool_get_stats(struct net_device *net_dev,
+ 	efx_ptp_update_stats(efx, data);
  }
  
--static void
--mvpp2_get_xdp_stats(struct mvpp2_port *port, struct mvpp2_pcpu_stats *xdp_stats)
-+static void mvpp2_ethtool_get_xdp_stats(struct net_device *dev,
-+					struct ethtool_xdp_stats *xdp_stats)
- {
-+	const struct mvpp2_port *port = netdev_priv(dev);
- 	unsigned int start;
- 	unsigned int cpu;
- 
-+	xdp_stats->redirect = 0;
-+	xdp_stats->pass = 0;
-+	xdp_stats->drop = 0;
-+	xdp_stats->xmit = 0;
-+	xdp_stats->xmit_drops = 0;
-+	xdp_stats->tx = 0;
-+	xdp_stats->tx_errors = 0;
++int efx_ethtool_get_std_stats_channels(struct net_device *net_dev, u32 sset)
++{
++	const struct efx_nic *efx = netdev_priv(net_dev);
 +
- 	/* Gather XDP Statistics */
- 	for_each_possible_cpu(cpu) {
- 		struct mvpp2_pcpu_stats *cpu_stats;
-@@ -2016,20 +1998,18 @@ mvpp2_get_xdp_stats(struct mvpp2_port *port, struct mvpp2_pcpu_stats *xdp_stats)
- 			xdp_tx_err   = cpu_stats->xdp_tx_err;
- 		} while (u64_stats_fetch_retry_irq(&cpu_stats->syncp, start));
- 
--		xdp_stats->xdp_redirect += xdp_redirect;
--		xdp_stats->xdp_pass   += xdp_pass;
--		xdp_stats->xdp_drop += xdp_drop;
--		xdp_stats->xdp_xmit   += xdp_xmit;
--		xdp_stats->xdp_xmit_drops += xdp_xmit_drops;
--		xdp_stats->xdp_tx   += xdp_tx;
--		xdp_stats->xdp_tx_err   += xdp_tx_err;
-+		xdp_stats->redirect += xdp_redirect;
-+		xdp_stats->pass += xdp_pass;
-+		xdp_stats->drop += xdp_drop;
-+		xdp_stats->xmit += xdp_xmit;
-+		xdp_stats->xmit_drops += xdp_xmit_drops;
-+		xdp_stats->tx += xdp_tx;
-+		xdp_stats->tx_errors  += xdp_tx_err;
- 	}
- }
- 
- static void mvpp2_read_stats(struct mvpp2_port *port)
- {
--	struct mvpp2_pcpu_stats xdp_stats = {};
--	const struct mvpp2_ethtool_counter *s;
- 	u64 *pstats;
- 	int i, q;
- 
-@@ -2057,37 +2037,6 @@ static void mvpp2_read_stats(struct mvpp2_port *port)
- 			*pstats++ += mvpp2_read_index(port->priv,
- 						      port->first_rxq + q,
- 						      mvpp2_ethtool_rxq_regs[i].offset);
--
--	/* Gather XDP Statistics */
--	mvpp2_get_xdp_stats(port, &xdp_stats);
--
--	for (i = 0, s = mvpp2_ethtool_xdp;
--		 s < mvpp2_ethtool_xdp + ARRAY_SIZE(mvpp2_ethtool_xdp);
--	     s++, i++) {
--		switch (s->offset) {
--		case ETHTOOL_XDP_REDIRECT:
--			*pstats++ = xdp_stats.xdp_redirect;
--			break;
--		case ETHTOOL_XDP_PASS:
--			*pstats++ = xdp_stats.xdp_pass;
--			break;
--		case ETHTOOL_XDP_DROP:
--			*pstats++ = xdp_stats.xdp_drop;
--			break;
--		case ETHTOOL_XDP_TX:
--			*pstats++ = xdp_stats.xdp_tx;
--			break;
--		case ETHTOOL_XDP_TX_ERR:
--			*pstats++ = xdp_stats.xdp_tx_err;
--			break;
--		case ETHTOOL_XDP_XMIT:
--			*pstats++ = xdp_stats.xdp_xmit;
--			break;
--		case ETHTOOL_XDP_XMIT_DROPS:
--			*pstats++ = xdp_stats.xdp_xmit_drops;
--			break;
--		}
--	}
- }
- 
- static void mvpp2_gather_hw_statistics(struct work_struct *work)
-@@ -5735,6 +5684,7 @@ static const struct ethtool_ops mvpp2_eth_tool_ops = {
- 	.set_rxfh		= mvpp2_ethtool_set_rxfh,
- 	.get_rxfh_context	= mvpp2_ethtool_get_rxfh_context,
- 	.set_rxfh_context	= mvpp2_ethtool_set_rxfh_context,
-+	.get_xdp_stats		= mvpp2_ethtool_get_xdp_stats,
- };
- 
- /* Used for PPv2.1, or PPv2.2 with the old Device Tree binding that
++	switch (sset) {
++	case ETH_SS_STATS_XDP:
++		return efx->n_channels;
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++void efx_ethtool_get_xdp_stats(struct net_device *net_dev,
++			       struct ethtool_xdp_stats *xdp_stats)
++{
++	struct efx_nic *efx = netdev_priv(net_dev);
++	const struct efx_channel *channel;
++
++	spin_lock_bh(&efx->stats_lock);
++
++	efx_for_each_channel(channel, efx) {
++		xdp_stats->drop = channel->n_rx_xdp_drops;
++		xdp_stats->errors = channel->n_rx_xdp_bad_drops;
++		xdp_stats->redirect = channel->n_rx_xdp_redirect;
++		xdp_stats->tx = channel->n_rx_xdp_tx;
++		xdp_stats++;
++	}
++
++	spin_unlock_bh(&efx->stats_lock);
++}
++
+ /* This must be called with rtnl_lock held. */
+ int efx_ethtool_get_link_ksettings(struct net_device *net_dev,
+ 				   struct ethtool_link_ksettings *cmd)
+diff --git a/drivers/net/ethernet/sfc/ethtool_common.h b/drivers/net/ethernet/sfc/ethtool_common.h
+index 659491932101..bb2a43873ba1 100644
+--- a/drivers/net/ethernet/sfc/ethtool_common.h
++++ b/drivers/net/ethernet/sfc/ethtool_common.h
+@@ -30,6 +30,9 @@ void efx_ethtool_get_strings(struct net_device *net_dev, u32 string_set,
+ void efx_ethtool_get_stats(struct net_device *net_dev,
+ 			   struct ethtool_stats *stats __attribute__ ((unused)),
+ 			   u64 *data);
++int efx_ethtool_get_std_stats_channels(struct net_device *net_dev, u32 sset);
++void efx_ethtool_get_xdp_stats(struct net_device *net_dev,
++			       struct ethtool_xdp_stats *xdp_stats);
+ int efx_ethtool_get_link_ksettings(struct net_device *net_dev,
+ 				   struct ethtool_link_ksettings *out);
+ int efx_ethtool_set_link_ksettings(struct net_device *net_dev,
 -- 
 2.31.1
 
