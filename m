@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 249053DF2D8
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:38:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 309823DF2E3
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:39:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236410AbhHCQjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 12:39:01 -0400
-Received: from mga03.intel.com ([134.134.136.65]:60864 "EHLO mga03.intel.com"
+        id S235167AbhHCQjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 12:39:22 -0400
+Received: from mga06.intel.com ([134.134.136.31]:46653 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234338AbhHCQiE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 12:38:04 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="213766160"
+        id S234579AbhHCQiV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 12:38:21 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="274787025"
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="213766160"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:37:52 -0700
+   d="scan'208";a="274787025"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:37:57 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="500883687"
+   d="scan'208";a="636665396"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga001.jf.intel.com with ESMTP; 03 Aug 2021 09:37:41 -0700
+  by orsmga005.jf.intel.com with ESMTP; 03 Aug 2021 09:37:45 -0700
 Received: from alobakin-mobl.ger.corp.intel.com (eflejszm-mobl2.ger.corp.intel.com [10.213.26.164])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GahF3029968;
-        Tue, 3 Aug 2021 17:37:36 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GahF4029968;
+        Tue, 3 Aug 2021 17:37:40 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -74,9 +74,9 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         netdev@vger.kernel.org, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH net-next 13/21] ethernet, sfc: convert to standard XDP stats
-Date:   Tue,  3 Aug 2021 18:36:33 +0200
-Message-Id: <20210803163641.3743-14-alexandr.lobakin@intel.com>
+Subject: [PATCH net-next 14/21] veth: rename rx_drops to xdp_errors
+Date:   Tue,  3 Aug 2021 18:36:34 +0200
+Message-Id: <20210803163641.3743-15-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210803163641.3743-1-alexandr.lobakin@intel.com>
 References: <20210803163641.3743-1-alexandr.lobakin@intel.com>
@@ -86,112 +86,152 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Just like DPAA2 driver, EF{100,X} store XDP stats per-channel, but
-present them as the sums across all channels.
-Switch to the standard per-channel XDP stats. n_rx_xdp_bad_drops
-goes as "general XDP errors", because driver uses just one counter
-for all kinds of errors.
+rx_drops field stores the number of errors occurred on XDP path, such
+as XDP_TX or XDP_REDIRECT non-zero return codes. There are no stores
+of this field outside XDP code.
+Give it a more fitting name which also aligns well with the standard
+XDP stats.
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 ---
- drivers/net/ethernet/sfc/ef100_ethtool.c  |  2 ++
- drivers/net/ethernet/sfc/ethtool.c        |  2 ++
- drivers/net/ethernet/sfc/ethtool_common.c | 35 ++++++++++++++++++++---
- drivers/net/ethernet/sfc/ethtool_common.h |  3 ++
- 4 files changed, 38 insertions(+), 4 deletions(-)
+ drivers/net/veth.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/ef100_ethtool.c b/drivers/net/ethernet/sfc/ef100_ethtool.c
-index 835c838b7dfa..c4797fefef2e 100644
---- a/drivers/net/ethernet/sfc/ef100_ethtool.c
-+++ b/drivers/net/ethernet/sfc/ef100_ethtool.c
-@@ -49,6 +49,8 @@ const struct ethtool_ops ef100_ethtool_ops = {
- 	.get_fecparam		= efx_ethtool_get_fecparam,
- 	.set_fecparam		= efx_ethtool_set_fecparam,
- 	.get_ethtool_stats	= efx_ethtool_get_stats,
-+	.get_std_stats_channels	= efx_ethtool_get_std_stats_channels,
-+	.get_xdp_stats		= efx_ethtool_get_xdp_stats,
- 	.get_rxnfc              = efx_ethtool_get_rxnfc,
- 	.set_rxnfc              = efx_ethtool_set_rxnfc,
- 	.reset                  = efx_ethtool_reset,
-diff --git a/drivers/net/ethernet/sfc/ethtool.c b/drivers/net/ethernet/sfc/ethtool.c
-index 058d9fe41d99..307724275a3e 100644
---- a/drivers/net/ethernet/sfc/ethtool.c
-+++ b/drivers/net/ethernet/sfc/ethtool.c
-@@ -269,4 +269,6 @@ const struct ethtool_ops efx_ethtool_ops = {
- 	.get_fec_stats		= efx_ethtool_get_fec_stats,
- 	.get_fecparam		= efx_ethtool_get_fecparam,
- 	.set_fecparam		= efx_ethtool_set_fecparam,
-+	.get_std_stats_channels	= efx_ethtool_get_std_stats_channels,
-+	.get_xdp_stats		= efx_ethtool_get_xdp_stats,
- };
-diff --git a/drivers/net/ethernet/sfc/ethtool_common.c b/drivers/net/ethernet/sfc/ethtool_common.c
-index bf1443539a1a..4aa6792d5795 100644
---- a/drivers/net/ethernet/sfc/ethtool_common.c
-+++ b/drivers/net/ethernet/sfc/ethtool_common.c
-@@ -87,10 +87,6 @@ static const struct efx_sw_stat_desc efx_sw_stat_desc[] = {
- 	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_frm_trunc),
- 	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_merge_events),
- 	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_merge_packets),
--	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_drops),
--	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_bad_drops),
--	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_tx),
--	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_redirect),
- #ifdef CONFIG_RFS_ACCEL
- 	EFX_ETHTOOL_UINT_CHANNEL_STAT_NO_N(rfs_filter_count),
- 	EFX_ETHTOOL_UINT_CHANNEL_STAT(rfs_succeeded),
-@@ -557,6 +553,37 @@ void efx_ethtool_get_stats(struct net_device *net_dev,
- 	efx_ptp_update_stats(efx, data);
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index 50eb43e5bf45..914aebfbe7c4 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -38,10 +38,10 @@
+ #define VETH_XDP_BATCH		16
+ 
+ struct veth_stats {
+-	u64	rx_drops;
+ 	/* xdp */
+ 	u64	xdp_packets;
+ 	u64	xdp_bytes;
++	u64	xdp_errors;
+ 	u64	xdp_redirect;
+ 	u64	xdp_drops;
+ 	u64	xdp_tx;
+@@ -94,7 +94,7 @@ struct veth_q_stat_desc {
+ static const struct veth_q_stat_desc veth_rq_stats_desc[] = {
+ 	{ "xdp_packets",	VETH_RQ_STAT(xdp_packets) },
+ 	{ "xdp_bytes",		VETH_RQ_STAT(xdp_bytes) },
+-	{ "drops",		VETH_RQ_STAT(rx_drops) },
++	{ "xdp_errors",		VETH_RQ_STAT(xdp_errors) },
+ 	{ "xdp_redirect",	VETH_RQ_STAT(xdp_redirect) },
+ 	{ "xdp_drops",		VETH_RQ_STAT(xdp_drops) },
+ 	{ "xdp_tx",		VETH_RQ_STAT(xdp_tx) },
+@@ -379,9 +379,9 @@ static void veth_stats_rx(struct veth_stats *result, struct net_device *dev)
+ 	result->xdp_packets = 0;
+ 	result->xdp_tx_err = 0;
+ 	result->xdp_bytes = 0;
+-	result->rx_drops = 0;
++	result->xdp_errors = 0;
+ 	for (i = 0; i < dev->num_rx_queues; i++) {
+-		u64 packets, bytes, drops, xdp_tx_err, peer_tq_xdp_xmit_err;
++		u64 packets, bytes, xdp_err, xdp_tx_err, peer_tq_xdp_xmit_err;
+ 		struct veth_rq_stats *stats = &priv->rq[i].stats;
+ 		unsigned int start;
+ 
+@@ -391,13 +391,13 @@ static void veth_stats_rx(struct veth_stats *result, struct net_device *dev)
+ 			xdp_tx_err = stats->vs.xdp_tx_err;
+ 			packets = stats->vs.xdp_packets;
+ 			bytes = stats->vs.xdp_bytes;
+-			drops = stats->vs.rx_drops;
++			xdp_err = stats->vs.xdp_errors;
+ 		} while (u64_stats_fetch_retry_irq(&stats->syncp, start));
+ 		result->peer_tq_xdp_xmit_err += peer_tq_xdp_xmit_err;
+ 		result->xdp_tx_err += xdp_tx_err;
+ 		result->xdp_packets += packets;
+ 		result->xdp_bytes += bytes;
+-		result->rx_drops += drops;
++		result->xdp_errors += xdp_err;
+ 	}
  }
  
-+int efx_ethtool_get_std_stats_channels(struct net_device *net_dev, u32 sset)
-+{
-+	const struct efx_nic *efx = netdev_priv(net_dev);
-+
-+	switch (sset) {
-+	case ETH_SS_STATS_XDP:
-+		return efx->n_channels;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+void efx_ethtool_get_xdp_stats(struct net_device *net_dev,
-+			       struct ethtool_xdp_stats *xdp_stats)
-+{
-+	struct efx_nic *efx = netdev_priv(net_dev);
-+	const struct efx_channel *channel;
-+
-+	spin_lock_bh(&efx->stats_lock);
-+
-+	efx_for_each_channel(channel, efx) {
-+		xdp_stats->drop = channel->n_rx_xdp_drops;
-+		xdp_stats->errors = channel->n_rx_xdp_bad_drops;
-+		xdp_stats->redirect = channel->n_rx_xdp_redirect;
-+		xdp_stats->tx = channel->n_rx_xdp_tx;
-+		xdp_stats++;
-+	}
-+
-+	spin_unlock_bh(&efx->stats_lock);
-+}
-+
- /* This must be called with rtnl_lock held. */
- int efx_ethtool_get_link_ksettings(struct net_device *net_dev,
- 				   struct ethtool_link_ksettings *cmd)
-diff --git a/drivers/net/ethernet/sfc/ethtool_common.h b/drivers/net/ethernet/sfc/ethtool_common.h
-index 659491932101..bb2a43873ba1 100644
---- a/drivers/net/ethernet/sfc/ethtool_common.h
-+++ b/drivers/net/ethernet/sfc/ethtool_common.h
-@@ -30,6 +30,9 @@ void efx_ethtool_get_strings(struct net_device *net_dev, u32 string_set,
- void efx_ethtool_get_stats(struct net_device *net_dev,
- 			   struct ethtool_stats *stats __attribute__ ((unused)),
- 			   u64 *data);
-+int efx_ethtool_get_std_stats_channels(struct net_device *net_dev, u32 sset);
-+void efx_ethtool_get_xdp_stats(struct net_device *net_dev,
-+			       struct ethtool_xdp_stats *xdp_stats);
- int efx_ethtool_get_link_ksettings(struct net_device *net_dev,
- 				   struct ethtool_link_ksettings *out);
- int efx_ethtool_set_link_ksettings(struct net_device *net_dev,
+@@ -415,7 +415,7 @@ static void veth_get_stats64(struct net_device *dev,
+ 
+ 	veth_stats_rx(&rx, dev);
+ 	tot->tx_dropped += rx.xdp_tx_err;
+-	tot->rx_dropped = rx.rx_drops + rx.peer_tq_xdp_xmit_err;
++	tot->rx_dropped = rx.xdp_errors + rx.peer_tq_xdp_xmit_err;
+ 	tot->rx_bytes = rx.xdp_bytes;
+ 	tot->rx_packets = rx.xdp_packets;
+ 
+@@ -633,7 +633,7 @@ static struct xdp_frame *veth_xdp_rcv_one(struct veth_rq *rq,
+ 			if (unlikely(veth_xdp_tx(rq, &xdp, bq) < 0)) {
+ 				trace_xdp_exception(rq->dev, xdp_prog, act);
+ 				frame = &orig_frame;
+-				stats->rx_drops++;
++				stats->xdp_errors++;
+ 				goto err_xdp;
+ 			}
+ 			stats->xdp_tx++;
+@@ -644,7 +644,7 @@ static struct xdp_frame *veth_xdp_rcv_one(struct veth_rq *rq,
+ 			xdp.rxq->mem = frame->mem;
+ 			if (xdp_do_redirect(rq->dev, &xdp, xdp_prog)) {
+ 				frame = &orig_frame;
+-				stats->rx_drops++;
++				stats->xdp_errors++;
+ 				goto err_xdp;
+ 			}
+ 			stats->xdp_redirect++;
+@@ -683,7 +683,7 @@ static void veth_xdp_rcv_bulk_skb(struct veth_rq *rq, void **frames,
+ 			       GFP_ATOMIC | __GFP_ZERO) < 0) {
+ 		for (i = 0; i < n_xdpf; i++)
+ 			xdp_return_frame(frames[i]);
+-		stats->rx_drops += n_xdpf;
++		stats->xdp_errors += n_xdpf;
+ 
+ 		return;
+ 	}
+@@ -695,7 +695,7 @@ static void veth_xdp_rcv_bulk_skb(struct veth_rq *rq, void **frames,
+ 						 rq->dev);
+ 		if (!skb) {
+ 			xdp_return_frame(frames[i]);
+-			stats->rx_drops++;
++			stats->xdp_errors++;
+ 			continue;
+ 		}
+ 		napi_gro_receive(&rq->xdp_napi, skb);
+@@ -783,7 +783,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
+ 		xdp.rxq->mem = rq->xdp_mem;
+ 		if (unlikely(veth_xdp_tx(rq, &xdp, bq) < 0)) {
+ 			trace_xdp_exception(rq->dev, xdp_prog, act);
+-			stats->rx_drops++;
++			stats->xdp_errors++;
+ 			goto err_xdp;
+ 		}
+ 		stats->xdp_tx++;
+@@ -794,7 +794,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
+ 		consume_skb(skb);
+ 		xdp.rxq->mem = rq->xdp_mem;
+ 		if (xdp_do_redirect(rq->dev, &xdp, xdp_prog)) {
+-			stats->rx_drops++;
++			stats->xdp_errors++;
+ 			goto err_xdp;
+ 		}
+ 		stats->xdp_redirect++;
+@@ -833,7 +833,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
+ out:
+ 	return skb;
+ drop:
+-	stats->rx_drops++;
++	stats->xdp_errors++;
+ xdp_drop:
+ 	rcu_read_unlock();
+ 	kfree_skb(skb);
+@@ -892,7 +892,7 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
+ 	rq->stats.vs.xdp_redirect += stats->xdp_redirect;
+ 	rq->stats.vs.xdp_bytes += stats->xdp_bytes;
+ 	rq->stats.vs.xdp_drops += stats->xdp_drops;
+-	rq->stats.vs.rx_drops += stats->rx_drops;
++	rq->stats.vs.xdp_errors += stats->xdp_errors;
+ 	rq->stats.vs.xdp_packets += done;
+ 	u64_stats_update_end(&rq->stats.syncp);
+ 
 -- 
 2.31.1
 
