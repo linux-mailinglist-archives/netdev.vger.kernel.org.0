@@ -2,115 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B6F53DF356
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:54:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 151EE3DF362
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 19:01:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237465AbhHCQyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 12:54:47 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:6977 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232290AbhHCQyr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 12:54:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1628009676; x=1659545676;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=uYIt3x/8UHN6h9hCPScdrOwlr7B4rNtt+KlMSwn88bw=;
-  b=oJtdk9/02wgZSRwrSrqSvQqezegiqZ22ujMy1QyisbyKO/zjeWpquBgs
-   pDVIK0vQZsmt4ZBQzFmQlgiE7Ce1xgvYnAbiB9L+iZ/MEh1DUopCSFH5J
-   kQrVPeXOW3Hnt70tqVgyMVHrhiFy4gRkU9IMYFq3ra6+mLUPYDoNdqeJo
-   2cxVEGGQQ6yvQuRmliArP8P4v0XwS37V1DSKJJu1zZVu0KAycXzSbRsog
-   tfhbHptb8bz/33yn2u8fT2YrlPvWl0eVqHOyXreAPnFrgTY0MgVzwRkMH
-   wgPYifR5NU/3NStzPRvNB2Z0zQxDYSCEIyp8Q3Mubg4kitqTKfGzpw2m2
-   g==;
-IronPort-SDR: QbaPTeX+b/60wgqTxQHWWt9ose+3MWMZqr0EDkgGtmht1tChGwp++QPcZqH3jBEBT7HXzVoDAC
- GZgUA1INXoBc+sWmQ2TAQHG99V5j7OzVcktq9TfbDHEA/fb0K0jxzqixh4ecgUMXbR266O2clL
- 2yxqIw1lNoASjVijRyw6lE9NRw0zNqKsuvVi6YIEfiSwM159J2wMGxfwkVEQZq1rEpgZ8lLBwP
- xkzWzd33jmJZ1mHDIxxI+773r0ICLQYHEkN91UOW/RmsiC4NTGZEscWTRzWR1Wr9r63pu+wdUm
- Mmcq9raeUDwtPHgIbciU11fJ
-X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="130883369"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Aug 2021 09:54:35 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 3 Aug 2021 09:54:34 -0700
-Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Tue, 3 Aug 2021 09:54:28 -0700
-Message-ID: <50eb24a1e407b651eda7aeeff26d82d3805a6a41.camel@microchip.com>
-Subject: Re: [PATCH v3 net-next 05/10] net: dsa: microchip: add DSA support
- for microchip lan937x
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <robh+dt@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <Woojung.Huh@microchip.com>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Date:   Tue, 3 Aug 2021 22:24:27 +0530
-In-Reply-To: <20210802135911.inpu6khavvwsfjsp@skbuf>
-References: <20210723173108.459770-1-prasanna.vengateshan@microchip.com>
-         <20210723173108.459770-6-prasanna.vengateshan@microchip.com>
-         <20210731150416.upe5nwkwvwajhwgg@skbuf>
-         <49678cce02ac03edc6bbbd1afb5f67606ac3efc2.camel@microchip.com>
-         <20210802121550.gqgbipqdvp5x76ii@skbuf> <YQfvXTEbyYFMLH5u@lunn.ch>
-         <20210802135911.inpu6khavvwsfjsp@skbuf>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.1-1 
+        id S237590AbhHCQ6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 12:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39914 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237533AbhHCQ4J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 12:56:09 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB32C061757
+        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 09:55:53 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id y7so27595534eda.5
+        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 09:55:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OFRG30nP87HIzrsm/WdzGEWJLKsidV86cFqhRIxvJXQ=;
+        b=rB1Smrv4s8r41z1CPmoW1w2wollWIoP+lPJkBRNH4/8F1GISQSmt7tbRwEEGneXdWA
+         p/BKClFUnHDUczbDkQxJdz0FfdDGrshnPXmauJoXp2/7atKZujnTWCLSKtKD7b6kD8/a
+         2X/FLOoblIYPhjLDDr6IKnrWDXnl25WcLh5syQs5f73FSGtrFtjAXx0a2wujIZGkh/cv
+         QrDCVKcDeykF9oQXmta+iW1fQejLu/eN8yteNF4h+3B31z3bY3I1WRUDzvv9EgpXwfN3
+         W87oA5D7AFtgfQERcB93yD0cwoRsUnDcbe+2QiUhy7ab6wgmauj7qPQ2ju04GxEXiKxD
+         bvTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OFRG30nP87HIzrsm/WdzGEWJLKsidV86cFqhRIxvJXQ=;
+        b=DwYTIFSNwjBCMZkKeI2swuGo7oa/PvrJIljf/b9c0X3iYOg5IGAzQZ4rjHCQPlzjmp
+         r7TmVhdTJ+INx8NCoKaKgymjXFZ1fpsWLdLMRBRZjj5kocBlekyzrNNIrVL1r4/WbnaI
+         8vyygHhNUBNtE/CHySC6ZWeqS6oQ4Jo66wHfIHMYYdqPZbIDJzFnUmduFJbHdz0c4X/A
+         SwcjrmUeWksutFVYLgUjCptt/d/6iyuk+oViWoktQwi8cQyyKMAk0zFrtCeTXPfRMciM
+         klG3PYpJ15GRYicmduEIMK78Q7zDcPt5ExWfwpU7agb2N9Nmp0RLuLFWATUaJ5nMDrgY
+         Iscg==
+X-Gm-Message-State: AOAM531k1qFK4h1+uueGmwY1BNKtuylrJeUwRvsE/B/nt7kpFk51wpzc
+        WWmkpRrgh8nXNN537Mh7YpI=
+X-Google-Smtp-Source: ABdhPJyDH34fxZiweQLUciii6cyzBAflYzf8eK8QObRGeu/yJGPyo/9D+K8bLl8ry6bkABV++ImF8g==
+X-Received: by 2002:a05:6402:1d90:: with SMTP id dk16mr16225891edb.94.1628009752233;
+        Tue, 03 Aug 2021 09:55:52 -0700 (PDT)
+Received: from yoga-910.localhost ([188.25.144.60])
+        by smtp.gmail.com with ESMTPSA id e7sm8754630edk.3.2021.08.03.09.55.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Aug 2021 09:55:51 -0700 (PDT)
+From:   Ioana Ciornei <ciorneiioana@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     laurentiu.tudor@nxp.com, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH net-next 0/8] dpaa2-switch: integrate the MAC endpoint support
+Date:   Tue,  3 Aug 2021 19:57:37 +0300
+Message-Id: <20210803165745.138175-1-ciorneiioana@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-08-02 at 16:59 +0300, Vladimir Oltean wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
-> content is safe
-> 
-> On Mon, Aug 02, 2021 at 03:13:01PM +0200, Andrew Lunn wrote:
-> > In general, the MAC does nothing, and passes the value to the PHY. The
-> > PHY inserts delays as requested. To address Vladimir point,
-> > PHY_INTERFACE_MODE_RGMII_TXID would mean the PHY adds delay in the TX
-> > direction, and assumes the RX delay comes from somewhere else,
-> > probably the PCB.
-> 
-> For the PHY, that is the only portion where things are clear.
-> 
-> > I only recommend the MAC adds delays when the PHY cannot, or there is
-> > no PHY, e.g. SoC to switch, or switch to switch link. There are a few
-> > MAC drivers that do add delays, mostly because that is how the vendor
-> > crap tree does it.
-> > 
-> > So as i said, what you propose is O.K, it follows this general rule of
-> > thumb.
-> 
-> The "rule of thumb" for a MAC driver is actually applied in reverse by
-> most MAC drivers compared to what Russell described should be happening.
-> For example, mv88e6xxx_port_set_rgmii_delay():
-> 
->         switch (mode) {
->         case PHY_INTERFACE_MODE_RGMII_RXID:
->                 reg |= MV88E6XXX_PORT_MAC_CTL_RGMII_DELAY_RXCLK;
-> 
-> The mv88e6xxx is a MAC, so when it has a phy-mode = "rgmii-rxid", it
-> should assume it is connected to a link partner (PHY or otherwise) that
-> has applied the RXCLK delay already. So it should only be concerned with
-> the TXCLK delay. That is my point. I am just trying to lay out the
-> points to Prasanna that would make a sane system going forward. I am not
-> sure that we actually have an in-tree driver that is sane in that
-> regard.
-> 
-> That discussion, and Russell's point, was here, btw:
-> https://patchwork.ozlabs.org/project/netdev/patch/20200616074955.GA9092@laureti-dev/#2461123
+From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-Thanks Vladimir & Andrew for the right pointers and info. The thread talks about
-"rgmii-*" are going to be applied by the PHY only as per the doc. For fixed-
-link, MAC needs to add the delay. This fixed-link can be No-PHY or MAC-MAC or
-MAC to in-accessible PHY. In such case, i am not convinced in using rgmii-tx-
-delay-ps & rgmii-rx-delay-ps on the MAC side and apply delay. I still think
-proposed code in earlier mail thread should still be okay. 
+This patch set integrates the already available MAC support into the
+dpaa2-switch driver as well.
+
+The first 4 patches are fixing up some minor problems or optimizing the
+code, while the remaining ones are actually integrating the dpaa2-mac
+support into the switch driver by calling the dpaa2_mac_* provided
+functions. While at it, we also export the MAC statistics in ethtool
+like we do for dpaa2-eth.
+
+Ioana Ciornei (8):
+  dpaa2-switch: request all interrupts sources on the DPSW
+  dpaa2-switch: use the port index in the IRQ handler
+  dpaa2-switch: do not enable the DPSW at probe time
+  dpaa2-switch: no need to check link state right after ndo_open
+  bus: fsl-mc: extend fsl_mc_get_endpoint() to pass interface ID
+  dpaa2-switch: integrate the MAC endpoint support
+  dpaa2-switch: add a prefix to HW ethtool stats
+  dpaa2-switch: export MAC statistics in ethtool
+
+ drivers/bus/fsl-mc/fsl-mc-bus.c               |   4 +-
+ drivers/net/ethernet/freescale/dpaa2/Makefile |   2 +-
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |   2 +-
+ .../freescale/dpaa2/dpaa2-switch-ethtool.c    |  56 +++++--
+ .../ethernet/freescale/dpaa2/dpaa2-switch.c   | 151 +++++++++++++-----
+ .../ethernet/freescale/dpaa2/dpaa2-switch.h   |  18 +++
+ drivers/net/ethernet/freescale/dpaa2/dpsw.h   |   5 +
+ include/linux/fsl/mc.h                        |   3 +-
+ 8 files changed, 177 insertions(+), 64 deletions(-)
+
+-- 
+2.31.1
 
