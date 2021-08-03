@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C11123DF2DF
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:39:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07BA13DF2FC
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:42:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234462AbhHCQjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 12:39:17 -0400
-Received: from mga17.intel.com ([192.55.52.151]:62913 "EHLO mga17.intel.com"
+        id S234308AbhHCQml (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 12:42:41 -0400
+Received: from mga11.intel.com ([192.55.52.93]:33932 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234750AbhHCQiY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 12:38:24 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="194013908"
+        id S233689AbhHCQmh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 12:42:37 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="210622219"
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="194013908"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:38:12 -0700
+   d="scan'208";a="210622219"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:42:25 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="568723086"
+   d="scan'208";a="466747647"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga004.jf.intel.com with ESMTP; 03 Aug 2021 09:38:01 -0700
-Received: from alobakin-mobl.ger.corp.intel.com (eflejszm-mobl2.ger.corp.intel.com [10.213.26.164])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GahF8029968;
-        Tue, 3 Aug 2021 17:37:57 +0100
+  by orsmga008.jf.intel.com with ESMTP; 03 Aug 2021 09:42:12 -0700
+Received: from alobakin-mobl.ger.corp.intel.com (lkalica-MOBL.ger.corp.intel.com [10.213.13.182])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173Gg7Ld032327;
+        Tue, 3 Aug 2021 17:42:08 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -75,8 +75,8 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
 Subject: [PATCH net-next 18/21] virtio-net: rename xdp_tx{,__drops} SQ stats to xdp_xmit{,__drops}
-Date:   Tue,  3 Aug 2021 18:36:38 +0200
-Message-Id: <20210803163641.3743-19-alexandr.lobakin@intel.com>
+Date:   Tue,  3 Aug 2021 18:42:04 +0200
+Message-Id: <20210803164204.4064-1-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210803163641.3743-1-alexandr.lobakin@intel.com>
 References: <20210803163641.3743-1-alexandr.lobakin@intel.com>
