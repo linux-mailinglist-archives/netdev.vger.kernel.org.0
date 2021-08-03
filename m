@@ -2,160 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C94AB3DEDF6
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 14:39:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD7233DEDFA
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 14:40:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235847AbhHCMjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 08:39:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49720 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235721AbhHCMjf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 08:39:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 141F560F58;
-        Tue,  3 Aug 2021 12:39:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627994364;
-        bh=1zkiaZrNIb78NDgNIblVRJ+gPwQaL5KGzP/OjD0DrTQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=fAI1WdR8g8LwYB5ViXOxYD8e/37/zVt/DOd6qarOxQ8MsAdxJ9GrkYdJEx1KXdOKw
-         /V/ewK5xDuVkYPkdGK03VmNQPYatxMuLgpHXKZnpQuc7FrAhGW8kF29xufODwVANnu
-         nV7ppzdsXlwoSpg/eHx7GYZ7ZVJBfrHMMflRRH8YgoJdi5aT8Sc/sA5EjSUwNhlUbO
-         vrO3/Fz2wkMO42lKVgeweLX6+LRgUMd3ga+mvtyKVLFdKZAEJvcrHaSh0/SIrpPDSy
-         cOFokUgkpnbfiWoHquKwJgvXswR86QSWPZ06g0OthgMhOOWnM9C6o80Wa67uyp/r/M
-         0A6uG+QLS0s7Q==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, cong.wang@bytedance.com,
-        peilin.ye@bytedance.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] Revert "netdevsim: Add multi-queue support"
-Date:   Tue,  3 Aug 2021 05:39:21 -0700
-Message-Id: <20210803123921.2374485-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        id S235877AbhHCMkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 08:40:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59586 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235782AbhHCMkn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 08:40:43 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CBB9C061757;
+        Tue,  3 Aug 2021 05:40:32 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id l19so29559121pjz.0;
+        Tue, 03 Aug 2021 05:40:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dQ9TyR/ElfRpbm66B73yjjkp4wHEV5Mt6Yp5m7wMnpM=;
+        b=Pj6L45Z5d1eZKMGaDjGEn+k38rvy794EmzxLdJb/SBe9YcVz+Am/OQ2Jc9YAn3dH56
+         NkN+NKB8dBgiUuBspVurnd1M2ZGcauGNp0w98ejIF6BPhziigns9l/nvFpsjEp+QxTeP
+         1qg+5au+gYhCsgMNP1q3myQQaOnlQrLgxsZbKt1IsCncbJLzZlzP5qialHQ6k8kBN4Wc
+         lufhtmrVT2A6OdlrcdtwYhDCOekmQbh1DbxY66wIDO54BMgIDx0ynuGEaXAQ3/ebHLZz
+         HzEosZ1FUd9VCBYFLs10i8GCICS6vzUHmNSfPAShvkfnBqm+FmN2ViyS78b7OXjKF/wj
+         Qduw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dQ9TyR/ElfRpbm66B73yjjkp4wHEV5Mt6Yp5m7wMnpM=;
+        b=MfEK+kZt5x5DSHS9pajOBgetNAHqyQZP02jV6AcOgurju9x6o4atzZd6tjSH3A5JM3
+         vt+ti0WIpNrdWWkJmZitCLSqczYnEY6R6cy2Cxvmy7LMp4rz/3zz13fTBziD014sjoYj
+         YmhElNGCeWPJ+GZnIkdOgKitnQxP3bplYPKx2dpVGByDvG86Pmnp0D/EJuVh92js2Pgl
+         OnyNhCixermxKfo/klzKYH+7SUa+3bZ5pXIoQzvP/0wK9GDRDJOqi6m2PWdICBuls2Pp
+         EVT2G+DfJ+VOhar3zJWqKpOa//FA9ZhpQT+1EV3T5twcuJm2SUyUayFbqBTSCoRB+qB0
+         F8Hw==
+X-Gm-Message-State: AOAM530URR917AWg5P1/8sPS1DJqrxW/opA8lUE69Gu1UeQqkRZGh71o
+        D8I3RI/N81C+WPdV2K1f8Pw=
+X-Google-Smtp-Source: ABdhPJwZx7+VO53Jv6LZiPKW412Lt5aGVRYJ7kbue0DP70WdatNFYtNsAGuAlhq7/AwKuQp8i2TUUA==
+X-Received: by 2002:a65:6813:: with SMTP id l19mr51800pgt.118.1627994431593;
+        Tue, 03 Aug 2021 05:40:31 -0700 (PDT)
+Received: from haswell-ubuntu20.lan ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id g25sm15747499pfk.138.2021.08.03.05.40.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Aug 2021 05:40:30 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Eric Woudstra <ericwouds@gmail.com>,
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+Subject: [PATCH net-next 0/4] mt7530 software fallback bridging fix
+Date:   Tue,  3 Aug 2021 20:40:18 +0800
+Message-Id: <20210803124022.2912298-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit d4861fc6be581561d6964700110a4dede54da6a6.
+DSA core has gained software fallback support since commit 2f5dc00f7a3e,
+but it does not work properly on mt7530. This patch series fixes the
+issues.
 
-netdevsim is for enabling upstream tests, two weeks in
-and there's no sign of upstream test using the "mutli-queue"
-option.
+DENG Qingfang (4):
+  net: dsa: mt7530: enable assisted learning on CPU port
+  net: dsa: mt7530: use independent VLAN learning on VLAN-unaware
+    bridges
+  net: dsa: mt7530: set STP state on filter ID 1
+  net: dsa: mt7530: always install FDB entries with IVL and FID 1
 
-We can add this option back when such test materializes.
-Right now it's dead code.
+ drivers/net/dsa/mt7530.c | 87 +++++++++++++++++++++++++++-------------
+ drivers/net/dsa/mt7530.h |  9 +++--
+ 2 files changed, 66 insertions(+), 30 deletions(-)
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- drivers/net/netdevsim/bus.c       | 17 +++++++----------
- drivers/net/netdevsim/netdev.c    |  6 ++----
- drivers/net/netdevsim/netdevsim.h |  1 -
- 3 files changed, 9 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/net/netdevsim/bus.c b/drivers/net/netdevsim/bus.c
-index ff01e5bdc72e..ccec29970d5b 100644
---- a/drivers/net/netdevsim/bus.c
-+++ b/drivers/net/netdevsim/bus.c
-@@ -262,31 +262,29 @@ static struct device_type nsim_bus_dev_type = {
- };
- 
- static struct nsim_bus_dev *
--nsim_bus_dev_new(unsigned int id, unsigned int port_count, unsigned int num_queues);
-+nsim_bus_dev_new(unsigned int id, unsigned int port_count);
- 
- static ssize_t
- new_device_store(struct bus_type *bus, const char *buf, size_t count)
- {
--	unsigned int id, port_count, num_queues;
- 	struct nsim_bus_dev *nsim_bus_dev;
-+	unsigned int port_count;
-+	unsigned int id;
- 	int err;
- 
--	err = sscanf(buf, "%u %u %u", &id, &port_count, &num_queues);
-+	err = sscanf(buf, "%u %u", &id, &port_count);
- 	switch (err) {
- 	case 1:
- 		port_count = 1;
- 		fallthrough;
- 	case 2:
--		num_queues = 1;
--		fallthrough;
--	case 3:
- 		if (id > INT_MAX) {
- 			pr_err("Value of \"id\" is too big.\n");
- 			return -EINVAL;
- 		}
- 		break;
- 	default:
--		pr_err("Format for adding new device is \"id port_count num_queues\" (uint uint unit).\n");
-+		pr_err("Format for adding new device is \"id port_count\" (uint uint).\n");
- 		return -EINVAL;
- 	}
- 
-@@ -297,7 +295,7 @@ new_device_store(struct bus_type *bus, const char *buf, size_t count)
- 		goto err;
- 	}
- 
--	nsim_bus_dev = nsim_bus_dev_new(id, port_count, num_queues);
-+	nsim_bus_dev = nsim_bus_dev_new(id, port_count);
- 	if (IS_ERR(nsim_bus_dev)) {
- 		err = PTR_ERR(nsim_bus_dev);
- 		goto err;
-@@ -399,7 +397,7 @@ static struct bus_type nsim_bus = {
- #define NSIM_BUS_DEV_MAX_VFS 4
- 
- static struct nsim_bus_dev *
--nsim_bus_dev_new(unsigned int id, unsigned int port_count, unsigned int num_queues)
-+nsim_bus_dev_new(unsigned int id, unsigned int port_count)
- {
- 	struct nsim_bus_dev *nsim_bus_dev;
- 	int err;
-@@ -415,7 +413,6 @@ nsim_bus_dev_new(unsigned int id, unsigned int port_count, unsigned int num_queu
- 	nsim_bus_dev->dev.bus = &nsim_bus;
- 	nsim_bus_dev->dev.type = &nsim_bus_dev_type;
- 	nsim_bus_dev->port_count = port_count;
--	nsim_bus_dev->num_queues = num_queues;
- 	nsim_bus_dev->initial_net = current->nsproxy->net_ns;
- 	nsim_bus_dev->max_vfs = NSIM_BUS_DEV_MAX_VFS;
- 	mutex_init(&nsim_bus_dev->nsim_bus_reload_lock);
-diff --git a/drivers/net/netdevsim/netdev.c b/drivers/net/netdevsim/netdev.c
-index 50572e0f1f52..c3aeb15843e2 100644
---- a/drivers/net/netdevsim/netdev.c
-+++ b/drivers/net/netdevsim/netdev.c
-@@ -347,8 +347,7 @@ nsim_create(struct nsim_dev *nsim_dev, struct nsim_dev_port *nsim_dev_port)
- 	struct netdevsim *ns;
- 	int err;
- 
--	dev = alloc_netdev_mq(sizeof(*ns), "eth%d", NET_NAME_UNKNOWN, nsim_setup,
--			      nsim_dev->nsim_bus_dev->num_queues);
-+	dev = alloc_netdev(sizeof(*ns), "eth%d", NET_NAME_UNKNOWN, nsim_setup);
- 	if (!dev)
- 		return ERR_PTR(-ENOMEM);
- 
-@@ -393,8 +392,7 @@ void nsim_destroy(struct netdevsim *ns)
- static int nsim_validate(struct nlattr *tb[], struct nlattr *data[],
- 			 struct netlink_ext_ack *extack)
- {
--	NL_SET_ERR_MSG_MOD(extack,
--			   "Please use: echo \"[ID] [PORT_COUNT] [NUM_QUEUES]\" > /sys/bus/netdevsim/new_device");
-+	NL_SET_ERR_MSG_MOD(extack, "Please use: echo \"[ID] [PORT_COUNT]\" > /sys/bus/netdevsim/new_device");
- 	return -EOPNOTSUPP;
- }
- 
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index 1c20bcbd9d91..ae462957dcee 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -352,7 +352,6 @@ struct nsim_bus_dev {
- 	struct device dev;
- 	struct list_head list;
- 	unsigned int port_count;
--	unsigned int num_queues; /* Number of queues for each port on this bus */
- 	struct net *initial_net; /* Purpose of this is to carry net pointer
- 				  * during the probe time only.
- 				  */
 -- 
-2.31.1
+2.25.1
 
