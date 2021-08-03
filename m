@@ -2,192 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62A273DE8F3
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 10:53:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E814B3DE8FA
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 10:54:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234767AbhHCIxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 04:53:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59710 "EHLO
+        id S234709AbhHCIy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 04:54:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234582AbhHCIxh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 04:53:37 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1B3C0613D5
-        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 01:53:26 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mAqAr-0008Jy-Pr; Tue, 03 Aug 2021 10:53:21 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mAqAr-00069a-3k; Tue, 03 Aug 2021 10:53:21 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: [PATCH net v2 1/1] net: dsa: qca: ar9331: make proper initial port defaults
-Date:   Tue,  3 Aug 2021 10:53:20 +0200
-Message-Id: <20210803085320.23605-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S234637AbhHCIy0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 04:54:26 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B561AC061764
+        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 01:54:15 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id u3so2638345ejz.1
+        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 01:54:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=1DVuCuuKly3zqPgMlidKVCYH4f+rj2v8udMt+8e+Uk8=;
+        b=MZubOip1Xuw9qiOUr/kIGiSZitdzEOs8Ev3b4lxWtajhiEQKwydeyb77dkWORzxr+5
+         I0/ejnvL4DaoVnpNpUdg1oEminxd1mRaWoZRj8bwrvUHNCn0mjNO300Pi9tAwh+Oi801
+         gSSS8X1xcafLCF7kbMODXynVqrHdZKumBJxcRUfwNTScuorPWQugV7ZkkalNVMCNVs2R
+         9s52YDDPCYkF8dKdTOXw8NBIEQgR4nrTX0bvsfLdbJPDO/EmX1CrkNhJHbYPSRZ4cKnG
+         QlBsDHrNlcwlhk46REypbTfQobXYQHhXCY2QZ9BYzxXo0InKXaCkqgEdCaV0QNqRaA/C
+         kpFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1DVuCuuKly3zqPgMlidKVCYH4f+rj2v8udMt+8e+Uk8=;
+        b=XGLhuttyvLaEmlTk4YpUpj2MTN2oNbdOschAYrB9uxSI1n5P6UeiWiVwjMoOwrivNl
+         0n/AzuVWEeMHDrT75qkT1EapbEPhSwshQa4yaeTe2zBGc9McxDE+FSU0yAy2kftrehTj
+         DL0A5Ddk6+vkyRii79ZHOpZdSPG98xn/ihUriwSiZPlPz+2Q0jVQvchRbOe1GW7EoYQN
+         M4h0Tif6A9MVBhguiXmydxnXYeBx8JVxaSGZdToEk7nV0ysPX7uOXVjW1vamgQKYmIHL
+         l/JB+FyHqrfMDkn/7oZ29DBJmkAmYQLZlCaz2alVsVqvCbe3dkIQWGuKHMOEj4Hu6Pzb
+         bCMA==
+X-Gm-Message-State: AOAM531wNDzFgr4GJL9D4dCEMV9MAEZ1CmhlLN7MhnEXNVzhWkklB2Jh
+        gYpzRC6jHZedHyW8m7C77bjN5TTMfIIInJW85g/R
+X-Google-Smtp-Source: ABdhPJzB2Rc0yO2aoVU5Tdu2hZC6usoNGChwlVypWWdIUMwNhodGIYWH6xML1M1VZIQCiXVlhOS7usO1CIDwdk4oZOA=
+X-Received: by 2002:a17:906:58c7:: with SMTP id e7mr19068058ejs.197.1627980854338;
+ Tue, 03 Aug 2021 01:54:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20210729073503.187-1-xieyongji@bytedance.com> <20210729073503.187-2-xieyongji@bytedance.com>
+ <43d88942-1cd3-c840-6fec-4155fd544d80@redhat.com>
+In-Reply-To: <43d88942-1cd3-c840-6fec-4155fd544d80@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Tue, 3 Aug 2021 16:54:03 +0800
+Message-ID: <CACycT3vcpwyA3xjD29f1hGnYALyAd=-XcWp8+wJiwSqpqUu00w@mail.gmail.com>
+Subject: Re: [PATCH v10 01/17] iova: Export alloc_iova_fast() and free_iova_fast()
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        Greg KH <gregkh@linuxfoundation.org>,
+        He Zhe <zhe.he@windriver.com>,
+        Liu Xiaodong <xiaodong.liu@intel.com>,
+        Joe Perches <joe@perches.com>, songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make sure that all external port are actually isolated from each other,
-so no packets are leaked.
+On Tue, Aug 3, 2021 at 3:41 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2021/7/29 =E4=B8=8B=E5=8D=883:34, Xie Yongji =E5=86=99=E9=81=93=
+:
+> > Export alloc_iova_fast() and free_iova_fast() so that
+> > some modules can use it to improve iova allocation efficiency.
+>
+>
+> It's better to explain why alloc_iova() is not sufficient here.
+>
 
-Fixes: ec6698c272de ("net: dsa: add support for Atheros AR9331 built-in switch")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
-changes v2:
-- do not enable address learning by default
+Fine.
 
- drivers/net/dsa/qca/ar9331.c | 98 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 97 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
-index 6686192e1883..de7c06b6c85f 100644
---- a/drivers/net/dsa/qca/ar9331.c
-+++ b/drivers/net/dsa/qca/ar9331.c
-@@ -101,6 +101,46 @@
- 	 AR9331_SW_PORT_STATUS_RX_FLOW_EN | AR9331_SW_PORT_STATUS_TX_FLOW_EN | \
- 	 AR9331_SW_PORT_STATUS_SPEED_M)
- 
-+#define AR9331_SW_REG_PORT_CTRL(_port)			(0x104 + (_port) * 0x100)
-+#define AR9331_SW_PORT_CTRL_ING_MIRROR_EN		BIT(17)
-+#define AR9331_SW_PORT_CTRL_EG_MIRROR_EN		BIT(16)
-+#define AR9331_SW_PORT_CTRL_DOUBLE_TAG_VLAN		BIT(15)
-+#define AR9331_SW_PORT_CTRL_LEARN_EN			BIT(14)
-+#define AR9331_SW_PORT_CTRL_SINGLE_VLAN_EN		BIT(13)
-+#define AR9331_SW_PORT_CTRL_MAC_LOOP_BACK		BIT(12)
-+#define AR9331_SW_PORT_CTRL_HEAD_EN			BIT(11)
-+#define AR9331_SW_PORT_CTRL_IGMP_MLD_EN			BIT(10)
-+#define AR9331_SW_PORT_CTRL_EG_VLAN_MODE		GENMASK(9, 8)
-+#define AR9331_SW_PORT_CTRL_EG_VLAN_MODE_KEEP		0
-+#define AR9331_SW_PORT_CTRL_EG_VLAN_MODE_STRIP		1
-+#define AR9331_SW_PORT_CTRL_EG_VLAN_MODE_ADD		2
-+#define AR9331_SW_PORT_CTRL_EG_VLAN_MODE_DOUBLE		3
-+#define AR9331_SW_PORT_CTRL_LEARN_ONE_LOCK		BIT(7)
-+#define AR9331_SW_PORT_CTRL_PORT_LOCK_EN		BIT(6)
-+#define AR9331_SW_PORT_CTRL_LOCK_DROP_EN		BIT(5)
-+#define AR9331_SW_PORT_CTRL_PORT_STATE			GENMASK(2, 0)
-+#define AR9331_SW_PORT_CTRL_PORT_STATE_DISABLED		0
-+#define AR9331_SW_PORT_CTRL_PORT_STATE_BLOCKING		1
-+#define AR9331_SW_PORT_CTRL_PORT_STATE_LISTENING	2
-+#define AR9331_SW_PORT_CTRL_PORT_STATE_LEARNING		3
-+#define AR9331_SW_PORT_CTRL_PORT_STATE_FORWARD		4
-+
-+#define AR9331_SW_REG_PORT_VLAN(_port)			(0x108 + (_port) * 0x100)
-+#define AR9331_SW_PORT_VLAN_8021Q_MODE			GENMASK(31, 30)
-+#define AR9331_SW_8021Q_MODE_SECURE			3
-+#define AR9331_SW_8021Q_MODE_CHECK			2
-+#define AR9331_SW_8021Q_MODE_FALLBACK			1
-+#define AR9331_SW_8021Q_MODE_NONE			0
-+#define AR9331_SW_PORT_VLAN_ING_PORT_PRI		GENMASK(29, 27)
-+#define AR9331_SW_PORT_VLAN_FORCE_PORT_VLAN_EN		BIT(26)
-+#define AR9331_SW_PORT_VLAN_PORT_VID_MEMBER		GENMASK(25, 16)
-+#define AR9331_SW_PORT_VLAN_ARP_LEAKY_EN		BIT(15)
-+#define AR9331_SW_PORT_VLAN_UNI_LEAKY_EN		BIT(14)
-+#define AR9331_SW_PORT_VLAN_MULTI_LEAKY_EN		BIT(13)
-+#define AR9331_SW_PORT_VLAN_FORCE_DEFALUT_VID_EN	BIT(12)
-+#define AR9331_SW_PORT_VLAN_PORT_VID			GENMASK(11, 0)
-+#define AR9331_SW_PORT_VLAN_PORT_VID_DEF		1
-+
- /* MIB registers */
- #define AR9331_MIB_COUNTER(x)			(0x20000 + ((x) * 0x100))
- 
-@@ -371,12 +411,62 @@ static int ar9331_sw_mbus_init(struct ar9331_sw_priv *priv)
- 	return 0;
- }
- 
--static int ar9331_sw_setup(struct dsa_switch *ds)
-+static int ar9331_sw_setup_port(struct dsa_switch *ds, int port)
- {
- 	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
- 	struct regmap *regmap = priv->regmap;
-+	u32 port_mask, port_ctrl, val;
- 	int ret;
- 
-+	/* Generate default port settings */
-+	port_ctrl = FIELD_PREP(AR9331_SW_PORT_CTRL_PORT_STATE,
-+			       AR9331_SW_PORT_CTRL_PORT_STATE_DISABLED);
-+
-+	if (dsa_is_cpu_port(ds, port)) {
-+		/* CPU port should be allowed to communicate with all user
-+		 * ports.
-+		 */
-+		port_mask = dsa_user_ports(ds);
-+		/* Enable Atheros header on CPU port. This will allow us
-+		 * communicate with each port separately
-+		 */
-+		port_ctrl |= AR9331_SW_PORT_CTRL_HEAD_EN;
-+	} else if (dsa_is_user_port(ds, port)) {
-+		/* User ports should communicate only with the CPU port.
-+		 */
-+		port_mask = BIT(dsa_to_port(ds, port)->cpu_dp->index);
-+	} else {
-+		/* Other ports do not need to communicate at all */
-+		port_mask = 0;
-+	}
-+
-+	val = FIELD_PREP(AR9331_SW_PORT_VLAN_8021Q_MODE,
-+			 AR9331_SW_8021Q_MODE_NONE) |
-+		FIELD_PREP(AR9331_SW_PORT_VLAN_PORT_VID_MEMBER, port_mask) |
-+		FIELD_PREP(AR9331_SW_PORT_VLAN_PORT_VID,
-+			   AR9331_SW_PORT_VLAN_PORT_VID_DEF);
-+
-+	ret = regmap_write(regmap, AR9331_SW_REG_PORT_VLAN(port), val);
-+	if (ret)
-+		goto error;
-+
-+	ret = regmap_write(regmap, AR9331_SW_REG_PORT_CTRL(port), port_ctrl);
-+	if (ret)
-+		goto error;
-+
-+	return 0;
-+error:
-+	dev_err(priv->dev, "%s: error: %i\n", __func__, ret);
-+
-+	return ret;
-+}
-+
-+static int ar9331_sw_setup(struct dsa_switch *ds)
-+{
-+	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
-+	struct regmap *regmap = priv->regmap;
-+	int ret, i;
-+
- 	ret = ar9331_sw_reset(priv);
- 	if (ret)
- 		return ret;
-@@ -402,6 +492,12 @@ static int ar9331_sw_setup(struct dsa_switch *ds)
- 	if (ret)
- 		goto error;
- 
-+	for (i = 0; i < ds->num_ports; i++) {
-+		ret = ar9331_sw_setup_port(ds, i);
-+		if (ret)
-+			goto error;
-+	}
-+
- 	ds->configure_vlan_while_not_filtering = false;
- 
- 	return 0;
--- 
-2.30.2
-
+Thanks,
+Yongji
