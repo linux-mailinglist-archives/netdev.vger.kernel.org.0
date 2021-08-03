@@ -2,98 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D37B3DE357
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 02:03:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F4663DE35D
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 02:08:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232849AbhHCADU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 20:03:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49450 "EHLO
+        id S232730AbhHCAI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 20:08:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232208AbhHCADS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 20:03:18 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E206AC06175F;
-        Mon,  2 Aug 2021 17:03:07 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id s22-20020a17090a1c16b0290177caeba067so1443426pjs.0;
-        Mon, 02 Aug 2021 17:03:07 -0700 (PDT)
+        with ESMTP id S232208AbhHCAI2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 20:08:28 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99BD6C061764;
+        Mon,  2 Aug 2021 17:08:12 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id j1so27419353pjv.3;
+        Mon, 02 Aug 2021 17:08:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=8/q4C1bwlgB68t92asml5IhaRoB/GuHV7IviWSKcBGg=;
-        b=pkgId/O8dOIgWQYV8LeIUsXWg43hnj4kmjrpusRJEDNgZwVoexR9fJ98vVjyvgdhLN
-         i8OEihmGulpvailYIIeNRw0uxqGbAih/BzzL6rJi9qmrX7NiGRkqFs32NPepZIEazcou
-         8TTpJKyEyTOYWs8ceLjCHwf2FIel9exgSwN3ZchQgbBqrE2SP61yUB2t1UcP1WByekvd
-         KqezjOqH96akdkIXiJvQ9ElJ8kDqK1+HZYVh3r/fczOQsgAnleUaLp/s4hEg2men0Z0F
-         FMSXlykixNY5opLFE81fp40kYdP2aNuKtDo5sWOro4ZUYokgvWWJ8RUTZ5iPj60fCueE
-         nbEg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hnWZQqtS4cs6S2eqLlexSQq+7EoZ7X5M8SRSYOU4pSg=;
+        b=fa9MN6mrs7i6nnx9UkVP//SvAd4Lpxw2vszy+gNUuNmEbGA4gPhMsTCzseTry+F9JA
+         9KUIDsbNNqZon2DqmmpXXXuYfOyiLRBWrZ0eLUt1/1OxAuHG3HW1pbgH7dkB/zl6vXYX
+         hbM5xEg9XsQ8tZNHnpZzm3eQr3GUFkKm2VLmPVI06fJxz7CM6fMaZ0KPq6YeMdwV32n5
+         nAG8nhxTuypwryQ9UqbxoDeplUE7ZGbXmGn0s2O6c2/0uWsC+Tjx3uqO/3kOe+wOrEd2
+         h3ECjjXCaDUwQh9Ozd76QF7f/2/oMi9qvBJrUGOtqwexcoSUUFe5SgWqcQEgyuGJi08u
+         nKcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=8/q4C1bwlgB68t92asml5IhaRoB/GuHV7IviWSKcBGg=;
-        b=EpCGTmjEw286pLDPU+dqPtRdkSF0Yr5W3rx4MMveyFlOuX+5VfdqpAUHEGIMGsx8c6
-         dLFxtGYPvDDCQ/EYnQhxjtTE9VdDZ84/25KC+BGog3ibQrMmZqaKwwUHNpVn8ILEwWXe
-         tfLj4MEkGN6WmV4Z8dQgj/Zwol/MJqWPdMZTc4TjnWxfvJeSel3FT8Qlu/5BkIovonz5
-         zRUUMtQsgNVrjMtZ8Edx3gy/nmiVFSJva9NjV5VVgIqFBCzGVqdSOgJx/HJgK0HdxFhc
-         9x1AY/55rCycWbRH8oK+BS8T2JwdPoMjZAUe+a1GLaiKwOC0pthgVo8WERwslvWn0h4K
-         Vacg==
-X-Gm-Message-State: AOAM530YEy+Sv+5JEgIimIG0UdHevcFPIK0as9hnMANlfXwuQVavpuXF
-        uouVZiUG4PpOm+wNtSfmGsA=
-X-Google-Smtp-Source: ABdhPJy5vhcjJPVyM5rzN3CyVwIuiVCNmYRHO+711Nw8B8gB1aaeoc3HF06VT9Ak/yKjNyW72SemGA==
-X-Received: by 2002:a05:6a00:1390:b029:32a:e2a2:74de with SMTP id t16-20020a056a001390b029032ae2a274demr19136371pfg.6.1627948987452;
-        Mon, 02 Aug 2021 17:03:07 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id r3sm11683878pjj.0.2021.08.02.17.03.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Aug 2021 17:03:06 -0700 (PDT)
-Date:   Mon, 2 Aug 2021 17:03:04 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     Nicolas Pitre <nico@fluxnic.net>, Arnd Bergmann <arnd@kernel.org>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hnWZQqtS4cs6S2eqLlexSQq+7EoZ7X5M8SRSYOU4pSg=;
+        b=XgB3kUiF0VMPOQFdpmIIjNnBD295rxd7KJBZos3NWk9pIJTjS3k9y9uOUPXFYn73ru
+         ajrbgfyGr7s1bhf4hViUPImIz+eMXwXqrSgfJO7hh5npvFAsLp3xStEE7fLw7lnWIXIB
+         gQiE9w7IlMHlherVlh/poAQVOqkAuEseAe/iplJFFAGZ1UGGZx1EU8AvuMhvhJJaLTA0
+         aU4/ba0ADYPSunRyBxZAUeuv6LnpWlHelpZyqxx+HX1d/Qai3cAfhlRd0pYX/r6e34tq
+         qBXBwS+6ew4OlqyksGPyMF5e3myUaW6JVhsYVSPT15yIxd4M+YqBWcUeu+LvztZI5qJA
+         Mgbg==
+X-Gm-Message-State: AOAM532OipxC0PHTEi54YEIdrhmgty7VAT12vvOau2ugvoBFQraOtutT
+        Lgtr6NxKX3UkzJ8QvVVR8CS4cv8rV6e9TqlQn3g=
+X-Google-Smtp-Source: ABdhPJx6IA17rcZlw2ovaA9RVa6EBb8E+UvzFg4a17ZqxRkhWYJVzFkIU5ChOqjKvCcpAa5aOBVenEhHesExDGA4PNs=
+X-Received: by 2002:a63:d704:: with SMTP id d4mr791229pgg.179.1627949292197;
+ Mon, 02 Aug 2021 17:08:12 -0700 (PDT)
+MIME-Version: 1.0
+References: <1931ca440b47344fe357d5438aeab4b439943d10.1627936393.git.peilin.ye@bytedance.com>
+ <672e6f13-bf58-d542-6712-e6f803286373@iogearbox.net>
+In-Reply-To: <672e6f13-bf58-d542-6712-e6f803286373@iogearbox.net>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 2 Aug 2021 17:08:01 -0700
+Message-ID: <CAM_iQpUb-zbBUGdYxCwxBJSKJ=6Gm3hFwFP+nc+43E_hofuK1w@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] net/sched: sch_ingress: Support clsact
+ egress mini-Qdisc option
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v2] ethernet/intel: fix PTP_1588_CLOCK
- dependencies
-Message-ID: <20210803000304.GA19119@hoboy.vegasvil.org>
-References: <20210802145937.1155571-1-arnd@kernel.org>
- <20210802164907.GA9832@hoboy.vegasvil.org>
- <bd631e36-1701-b120-a9b0-8825d14cc694@intel.com>
- <20210802230921.GA13623@hoboy.vegasvil.org>
- <CO1PR11MB508917A17F68DD927CD26A82D6EF9@CO1PR11MB5089.namprd11.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CO1PR11MB508917A17F68DD927CD26A82D6EF9@CO1PR11MB5089.namprd11.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 02, 2021 at 11:45:09PM +0000, Keller, Jacob E wrote:
-> Ok, so basically: if any driver that needs PTP core is on, PTP core is on, with no way to disable it.
+On Mon, Aug 2, 2021 at 2:11 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> NAK, just use clsact qdisc in the first place which has both ingress and egress
+> support instead of adding such hack. You already need to change your scripts for
+> clsact-on, so just swap 'tc qdisc add dev eth0 ingress' to 'tc qdisc add dev eth0
+> clsact' w/o needing to change kernel.
 
-Right.  Some MAC drivers keep the PTP stuff under a second Kconfig option.
+If we were able to change the "script" as easily as you described,
+you would not even see such a patch. The fact is it is not under
+our control, the most we can do is change the qdisc after it is
+created by the "script", ideally without interfering its traffic,
+hence we have such a patch.
 
-IIRC, we (davem and netdev) decided not to do that going forwards.  If
-a MAC has PTP features, then users will sure want it enabled.
+(BTW, it is actually not a script, it is a cloud platform.)
 
-So, let the MACs use "depends" or "select" PTP core.  I guess that
-"select" is more user friendly.
-
-And Posix timers: never disable this.  After all, who wants an
-embedded system without timer_create()?  Seriously?
-
-Thanks,
-Richard
-
-
+Thanks.
