@@ -2,133 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 324473DEBA4
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:19:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DDD63DEBAF
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:24:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235480AbhHCLTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 07:19:14 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:57594 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235467AbhHCLTN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 07:19:13 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 173BIjbx114050;
-        Tue, 3 Aug 2021 06:18:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1627989525;
-        bh=xOfUPHHqXVwjF79ATT4GN2kZvtYkfFv5v8eXZAY31GQ=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=fjNZeXY/VWBa/4VsSDhJfHzAdOXle125mDkxgMdz5rl9GAblcSpGkxEFR1PDgqlnU
-         /M01c9+hiwiBTirfoZGVEOGuhz935RrM86Q5aDryphlVTyZB9kSlhteyd1eqhy8YrM
-         sPbddqZjUFJTDXGwPIfd8NVlKgNQmhO5IxnZojsg=
-Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 173BIjKe067253
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 3 Aug 2021 06:18:45 -0500
-Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 3 Aug
- 2021 06:18:45 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Tue, 3 Aug 2021 06:18:44 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 173BIebq100518;
-        Tue, 3 Aug 2021 06:18:40 -0500
-Subject: Re: [PATCH net-next] net: build all switchdev drivers as modules when
- the bridge is a module
-To:     Arnd Bergmann <arnd@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-CC:     Networking <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Linux Kernel Functional Testing <lkft@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-References: <20210726142536.1223744-1-vladimir.oltean@nxp.com>
- <CAK8P3a2HGm7MyUc3N1Vjdb2inS6D3E3HDq4bNTOBaHZQCP9kwA@mail.gmail.com>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <eab61b8f-fc54-ea63-ad31-73fb13026b1f@ti.com>
-Date:   Tue, 3 Aug 2021 14:18:38 +0300
+        id S235496AbhHCLZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 07:25:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40508 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235254AbhHCLZA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 07:25:00 -0400
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1082C061757
+        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 04:24:49 -0700 (PDT)
+Received: by mail-qt1-x829.google.com with SMTP id l24so13684327qtj.4
+        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 04:24:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=2P5RHXeXCy8afq7uLYOoI4479PxrXrrMNoK9Swy9ltA=;
+        b=AR4Bv0Or6IBsAiUq8cv+KVCsRRZU/OufZ4DnBS6kicovruKMv/d27m9t28Ruse8s5K
+         K4z6V6MDmJdSOHX9m1tQsNwy6tFJ7JElZjI9dET1J9FYZ3OrSqLfWw2yMV45IkW8gWZi
+         Nf7yJwb4ftocrKJEILnFdagnV6LWEpS+EhkCC+7bt3DY9BgqZp9rhgLcPmk4T+4qflfy
+         4FkyedQ1oPl1sQRH9b1JlreMbLsBBr+N/BAtHC14wxqM3KJ25m+C8aWoRkPKsSV/Nisu
+         8uXZ7hwpUCYyMtiZTuVhB26zMXOLu2S8kLUWxGhJyB3r34KMsyFxVJCp2t6Htyw7wHWn
+         xZYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2P5RHXeXCy8afq7uLYOoI4479PxrXrrMNoK9Swy9ltA=;
+        b=KhvqRLZwjuHccM3GZpTjM11EUNu8OQqpCKNMqggef3MJtnCYlCr47TpIkgo0oRh9AB
+         kiJ1LuBLdNPA1g/NLamEEVz0px4bEJ/O4tArK1zIaUSCRbe/rsFIR1Vtr7Mr8jQPLAQK
+         PdGxghIwuh8OtmvQeJvf5lBeEiPj/RrfPALZAoGg5tdcJIKaWX9+IgI3o3k5cKbHKCKK
+         dIVRmsaLyqhJhO/K2HTTOXaD3ZrO1l2w+R/aH+ttxEVVFLU/2ihWKUQ8y7xGQswSHAlI
+         gNsnqwHNXVYBzImAmpX6NrYlcS8U1TuGObyMdcg038LMtJSZTT/DoYYrImoMErOUmWTO
+         4RDQ==
+X-Gm-Message-State: AOAM532FIUEOqa5myfqY9FzSkFmiz4XFPFjGYt6xtisZLkbUVGmBahZd
+        0+hRpORjA08qHzlrUduSHanzeA==
+X-Google-Smtp-Source: ABdhPJxWEyhm2WvVuirrDe+QVFsehrGwo9edHgMMpXu9yzZmdwi+kZdqX0Y1Gz24e6Tl1P82l2SaVg==
+X-Received: by 2002:ac8:59c6:: with SMTP id f6mr6801410qtf.232.1627989888716;
+        Tue, 03 Aug 2021 04:24:48 -0700 (PDT)
+Received: from [192.168.1.171] (bras-base-kntaon1617w-grc-28-184-148-47-47.dsl.bell.ca. [184.148.47.47])
+        by smtp.googlemail.com with ESMTPSA id i67sm7900124qkd.90.2021.08.03.04.24.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Aug 2021 04:24:48 -0700 (PDT)
+Subject: Re: [PATCH net-next 3/3] flow_offload: add process to update action
+ stats from hardware
+To:     Simon Horman <simon.horman@corigine.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, Baowen Zheng <baowen.zheng@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>
+References: <20210722091938.12956-1-simon.horman@corigine.com>
+ <20210722091938.12956-4-simon.horman@corigine.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <f9a130e8-f692-69c4-8183-dc04a5340430@mojatatu.com>
+Date:   Tue, 3 Aug 2021 07:24:47 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <CAK8P3a2HGm7MyUc3N1Vjdb2inS6D3E3HDq4bNTOBaHZQCP9kwA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <20210722091938.12956-4-simon.horman@corigine.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi All,
+On 2021-07-22 5:19 a.m., Simon Horman wrote:
 
-On 02/08/2021 17:47, Arnd Bergmann wrote:
-> On Mon, Jul 26, 2021 at 4:28 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
->>
->> Currently, all drivers depend on the bool CONFIG_NET_SWITCHDEV, but only
->> the drivers that call some sort of function exported by the bridge, like
->> br_vlan_enabled() or whatever, have an extra dependency on CONFIG_BRIDGE.
->>
->> Since the blamed commit, all switchdev drivers have a functional
->> dependency upon switchdev_bridge_port_{,un}offload(), which is a pair of
->> functions exported by the bridge module and not by the bridge-independent
->> part of CONFIG_NET_SWITCHDEV.
->>
->> Problems appear when we have:
->>
->> CONFIG_BRIDGE=m
->> CONFIG_NET_SWITCHDEV=y
->> CONFIG_TI_CPSW_SWITCHDEV=y
->>
->> because cpsw, am65_cpsw and sparx5 will then be built-in but they will
->> call a symbol exported by a loadable module. This is not possible and
->> will result in the following build error:
->>
->> drivers/net/ethernet/ti/cpsw_new.o: in function `cpsw_netdevice_event':
->> drivers/net/ethernet/ti/cpsw_new.c:1520: undefined reference to
->>                                          `switchdev_bridge_port_offload'
->> drivers/net/ethernet/ti/cpsw_new.c:1537: undefined reference to
->>                                          `switchdev_bridge_port_unoffload'
->>
->> As mentioned, the other switchdev drivers don't suffer from this because
->> switchdev_bridge_port_offload() is not the first symbol exported by the
->> bridge that they are calling, so they already needed to deal with this
->> in the same way.
->>
->> Fixes: 2f5dc00f7a3e ("net: bridge: switchdev: let drivers inform which bridge ports are offloaded")
->> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
->> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> I'm still seeing build failures after this patch was applied. I have a fixup
-> patch that seems to work, but I'm still not sure if that version is complete.
+[..]
 
-In my opinion, the problem is a bit bigger here than just fixing the build :(
+>   /* offload the tc command after deleted */
+>   int tcf_action_offload_del_post(struct flow_offload_action *fl_act,
+>   				struct tc_action *actions[],
+> @@ -1255,6 +1293,9 @@ int tcf_action_copy_stats(struct sk_buff *skb, struct tc_action *p,
+>   	if (p == NULL)
+>   		goto errout;
+>   
+> +	/* update hw stats for this action */
+> +	tcf_action_update_hw_stats(p);
 
-In case, of ^cpsw the switchdev mode is kinda optional and in many cases
-(especially for testing purposes, NFS) the multi-mac mode is still preferable mode.
+This is more a curiosity than a comment on the patch: Is the
+driver polling for these stats synchronously and what we get here
+is the last update or do we end up invoking beyond
+the driver when requesting for the stats?
 
-There were no such tight dependency between switchdev drivers and bridge core before and switchdev serviced as
-independent, notification based layer between them, so ^cpsw still can be "Y" and bridge can be "M".
-Now for mostly every kernel build configuration the CONFIG_BRIDGE will need to be set as "Y", or we will have
-to update drivers to support build with BRIDGE=n and maintain separate builds for networking vs non-networking testing.
-But is this enough? Wouldn't it cause 'chain reaction' required to add more and more "Y" options (like CONFIG_VLAN_8021Q)?
+Overall commentary from looking at the patch set:
+I believe your patches will support the individual tc actions
+add/del/get/dump command line requests.
+What is missing is an example usage all the way to the driver. I am sure
+you have additional patches that put this to good  use. My suggestion
+is to test that cli with that pov against your overall patches and
+show this in your commit logs - even if those patches are to follow
+later.
 
-PS. Just to be sure we on the same page - ARM builds will be forced (with this patch) to have CONFIG_TI_CPSW_SWITCHDEV=m
-and so all our automation testing will just fail with omap2plus_defconfig.
--- 
-Best regards,
-grygorii
+
+cheers,
+jamal
