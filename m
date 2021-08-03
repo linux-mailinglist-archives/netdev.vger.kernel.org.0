@@ -2,176 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C781F3DF312
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:43:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14F363DF317
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:46:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234741AbhHCQnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 12:43:23 -0400
-Received: from mga12.intel.com ([192.55.52.136]:58212 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234675AbhHCQnV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 12:43:21 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="193325463"
-X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="193325463"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:42:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="521318629"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga002.fm.intel.com with ESMTP; 03 Aug 2021 09:42:48 -0700
-Received: from alobakin-mobl.ger.corp.intel.com (lkalica-MOBL.ger.corp.intel.com [10.213.13.182])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173Ggihn032389;
-        Tue, 3 Aug 2021 17:42:44 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Lukasz Czapnik <lukasz.czapnik@intel.com>,
-        Marcin Kubiak <marcin.kubiak@intel.com>,
-        Michal Kubiak <michal.kubiak@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Netanel Belgazal <netanel@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        Guy Tzalik <gtzalik@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Shay Agroskin <shayagr@amazon.com>,
-        Sameeh Jubran <sameehj@amazon.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Danielle Ratson <danieller@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vladyslav Tarasiuk <vladyslavt@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jian Shen <shenjian15@huawei.com>,
-        Petr Vorel <petr.vorel@gmail.com>, Dan Murphy <dmurphy@ti.com>,
-        Yangbo Lu <yangbo.lu@nxp.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH net-next 21/21] Documentation, ethtool-netlink: update standard statistics documentation
-Date:   Tue,  3 Aug 2021 18:42:43 +0200
-Message-Id: <20210803164243.4469-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210803163641.3743-1-alexandr.lobakin@intel.com>
-References: <20210803163641.3743-1-alexandr.lobakin@intel.com>
+        id S234514AbhHCQqM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 12:46:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37264 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234340AbhHCQqL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 12:46:11 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87BD1C061757
+        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 09:45:59 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id m9so28901137ljp.7
+        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 09:45:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=cVCOgBhxK6ej5ZJaiVJqX12xy9igmesO+8WGEFSAVz8=;
+        b=ZDWR5PYYeXhAig0MN2Q0LBRsuDg4ObbPAn10CjAICzN4ePeCwaiTPZuLtzRxUDd0OE
+         5O0xPi1+p41hbETT0oG0B/G9iQuhhaPlc9bH1fezuJzxsV5LCXTYB5IFjpxcfR/bIQbe
+         BtFtgwc46+hL8IJXj1bwn5IXnPp5IjRjJd6Hnw/gttWFn6mPClJqWQiTlALZI2cPmlBp
+         DbxFyYYFix+o4S5u4xh8BDv3yE1LuumdIc2k+JnITChLZT6Lbj7PFUQDGURKmnLDM5J+
+         GM2UoEjnV1mLQCS4pkHQQKJTmppuPXVwJElQBnW2eDB/CI4kwQJRPTzkAYBsuZraI3Uu
+         nQ6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=cVCOgBhxK6ej5ZJaiVJqX12xy9igmesO+8WGEFSAVz8=;
+        b=g+MvHkl7Hzqw027ZQ+RGDyTQm8DNmWg0xA2Tk4MpyhHbE3kITPaZsgsNzRte0OMExf
+         v6s7XXVHZEOmz1o16aKlSMeqwQf76lUGwvChJXWldynonS4IuqgGL7h/ED5Rk6ypkdqv
+         z9WPmoQbv4k6GMeHI5us9d95no5Y1DVCj6/8vuDJDezHkDz2jQTwGppa1LIa6G9BcUg+
+         C4zowp03vBMfTYTaF24udaMrBki1Vy+2UDd/TFalAcweJZHL2fFcv76jrBuDPEokyPHV
+         rmIp6pRKq0wLNj79pXKSWqO8tTnFgM/22C+sB+pwpoEquTSnKP0mamPpQ83Yv9QHvoKF
+         GX3g==
+X-Gm-Message-State: AOAM531PaI2Z2bPkF5g3x4ypJPmkOm/8C1/fxwnuP4hZxO63wpm0xIed
+        xnlF7usAjVmokuo6u7iP0+SMeeyPar0=
+X-Google-Smtp-Source: ABdhPJySVcERBzgB+WSXQYkyIawC7+ereHHh7KtZJIVuBVln7/rnZTzjWC/H9tjNzJtQk9KUgoB5qA==
+X-Received: by 2002:a05:651c:1246:: with SMTP id h6mr15250087ljh.123.1628009157916;
+        Tue, 03 Aug 2021 09:45:57 -0700 (PDT)
+Received: from localhost.localdomain ([94.103.226.235])
+        by smtp.gmail.com with ESMTPSA id g11sm1140695ljl.139.2021.08.03.09.45.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Aug 2021 09:45:57 -0700 (PDT)
+Subject: Re: [PATCH net v2 1/2] Check the return value of get_geristers() and
+ friends;
+To:     Petko Manolov <petko.manolov@konsulko.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
+        Petko Manolov <petkan@nucleusys.com>
+References: <20210803161853.5904-1-petko.manolov@konsulko.com>
+ <20210803161853.5904-2-petko.manolov@konsulko.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+Message-ID: <69cedfb2-fc76-0afb-3a48-f24f238d5330@gmail.com>
+Date:   Tue, 3 Aug 2021 19:45:56 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210803161853.5904-2-petko.manolov@konsulko.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reflect the addition of the new standard XDP stats as well as of
-a new NL attribute.
+On 8/3/21 7:18 PM, Petko Manolov wrote:
+> From: Petko Manolov <petkan@nucleusys.com>
+> 
+> Certain call sites of get_geristers() did not do proper error handling.  This
+> could be a problem as get_geristers() typically return the data via pointer to a
+> buffer.  If an error occured the code is carelessly manipulating the wrong data.
+> 
+> Signed-off-by: Petko Manolov <petkan@nucleusys.com>
+> ---
+>   drivers/net/usb/pegasus.c | 104 ++++++++++++++++++++++++++------------
+>   1 file changed, 72 insertions(+), 32 deletions(-)
+> 
+> diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
+> index 9a907182569c..06e3ae6209b0 100644
+> --- a/drivers/net/usb/pegasus.c
+> +++ b/drivers/net/usb/pegasus.c
+> @@ -132,9 +132,15 @@ static int get_registers(pegasus_t *pegasus, __u16 indx, __u16 size, void *data)
+>   static int set_registers(pegasus_t *pegasus, __u16 indx, __u16 size,
+>   			 const void *data)
+>   {
+> -	return usb_control_msg_send(pegasus->usb, 0, PEGASUS_REQ_SET_REGS,
+> +	int ret;
+> +
+> +	ret = usb_control_msg_send(pegasus->usb, 0, PEGASUS_REQ_SET_REGS,
+>   				    PEGASUS_REQT_WRITE, 0, indx, data, size,
+>   				    1000, GFP_NOIO);
+> +	if (ret < 0)
+> +		netif_dbg(pegasus, drv, pegasus->net, "%s failed with %d\n", __func__, ret);
+> +
+> +	return ret;
+>   }
+>   
+>   /*
+> @@ -145,10 +151,15 @@ static int set_registers(pegasus_t *pegasus, __u16 indx, __u16 size,
+>   static int set_register(pegasus_t *pegasus, __u16 indx, __u8 data)
+>   {
+>   	void *buf = &data;
+> +	int ret;
+>   
+> -	return usb_control_msg_send(pegasus->usb, 0, PEGASUS_REQ_SET_REG,
+> +	ret = usb_control_msg_send(pegasus->usb, 0, PEGASUS_REQ_SET_REG,
+>   				    PEGASUS_REQT_WRITE, data, indx, buf, 1,
+>   				    1000, GFP_NOIO);
+> +	if (ret < 0)
+> +		netif_dbg(pegasus, drv, pegasus->net, "%s failed with %d\n", __func__, ret);
+> +
+> +	return ret;
+>   }
+>   
+>   static int update_eth_regs_async(pegasus_t *pegasus)
+> @@ -188,10 +199,9 @@ static int update_eth_regs_async(pegasus_t *pegasus)
+>   
+>   static int __mii_op(pegasus_t *p, __u8 phy, __u8 indx, __u16 *regd, __u8 cmd)
+>   {
+> -	int i;
+> -	__u8 data[4] = { phy, 0, 0, indx };
+> +	int i, ret = -ETIMEDOUT;
+>   	__le16 regdi;
+> -	int ret = -ETIMEDOUT;
+> +	__u8 data[4] = { phy, 0, 0, indx };
+>   
+>   	if (cmd & PHY_WRITE) {
+>   		__le16 *t = (__le16 *) & data[1];
+> @@ -211,8 +221,9 @@ static int __mii_op(pegasus_t *p, __u8 phy, __u8 indx, __u16 *regd, __u8 cmd)
+>   		goto fail;
+		^^^^^^^^^
 
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
----
- Documentation/networking/ethtool-netlink.rst | 45 +++++++++++++-------
- 1 file changed, 30 insertions(+), 15 deletions(-)
+I really don't want You to spin this series one more time, but ret 
+initialization is missed here again :) Maybe, it's not really important 
+here...
 
-diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-index c86628e6a235..d304a5361569 100644
---- a/Documentation/networking/ethtool-netlink.rst
-+++ b/Documentation/networking/ethtool-netlink.rst
-@@ -1415,21 +1415,26 @@ Request contents:
- 
- Kernel response contents:
- 
-- +-----------------------------------+--------+--------------------------------+
-- | ``ETHTOOL_A_STATS_HEADER``        | nested | reply header                   |
-- +-----------------------------------+--------+--------------------------------+
-- | ``ETHTOOL_A_STATS_GRP``           | nested | one or more group of stats     |
-- +-+---------------------------------+--------+--------------------------------+
-- | | ``ETHTOOL_A_STATS_GRP_ID``      | u32    | group ID - ``ETHTOOL_STATS_*`` |
-- +-+---------------------------------+--------+--------------------------------+
-- | | ``ETHTOOL_A_STATS_GRP_SS_ID``   | u32    | string set ID for names        |
-- +-+---------------------------------+--------+--------------------------------+
-- | | ``ETHTOOL_A_STATS_GRP_STAT``    | nested | nest containing a statistic    |
-- +-+---------------------------------+--------+--------------------------------+
-- | | ``ETHTOOL_A_STATS_GRP_HIST_RX`` | nested | histogram statistic (Rx)       |
-- +-+---------------------------------+--------+--------------------------------+
-- | | ``ETHTOOL_A_STATS_GRP_HIST_TX`` | nested | histogram statistic (Tx)       |
-- +-+---------------------------------+--------+--------------------------------+
-+ +--------------------------------------+--------+-----------------------------+
-+ | ``ETHTOOL_A_STATS_HEADER``           | nested | reply header                |
-+ +--------------------------------------+--------+-----------------------------+
-+ | ``ETHTOOL_A_STATS_GRP``              | nested | one or more group of stats  |
-+ +-+------------------------------------+--------+-----------------------------+
-+ | | ``ETHTOOL_A_STATS_GRP_ID``         | u32    | group ID -                  |
-+ | |                                    |        | ``ETHTOOL_STATS_*``         |
-+ +-+------------------------------------+--------+-----------------------------+
-+ | | ``ETHTOOL_A_STATS_GRP_SS_ID``      | u32    | string set ID for names     |
-+ +-+------------------------------------+--------+-----------------------------+
-+ | | ``ETHTOOL_A_STATS_GRP_STAT``       | nested | nest containing a statistic |
-+ +-+------------------------------------+--------+-----------------------------+
-+ | | ``ETHTOOL_A_STATS_GRP_STAT_BLOCK`` | nested | block of stats per channel  |
-+ +-+-+----------------------------------+--------+-----------------------------+
-+ | | | ``ETHTOOL_A_STATS_GRP_STAT``     | nested | nest containing a statistic |
-+ +-+-+----------------------------------+--------+-----------------------------+
-+ | | ``ETHTOOL_A_STATS_GRP_HIST_RX``    | nested | histogram statistic (Rx)    |
-+ +-+------------------------------------+--------+-----------------------------+
-+ | | ``ETHTOOL_A_STATS_GRP_HIST_TX``    | nested | histogram statistic (Tx)    |
-+ +-+------------------------------------+--------+-----------------------------+
- 
- Users specify which groups of statistics they are requesting via
- the ``ETHTOOL_A_STATS_GROUPS`` bitset. Currently defined values are:
-@@ -1439,6 +1444,7 @@ the ``ETHTOOL_A_STATS_GROUPS`` bitset. Currently defined values are:
-  ETHTOOL_STATS_ETH_PHY  eth-phy  Basic IEEE 802.3 PHY statistics (30.3.2.1.*)
-  ETHTOOL_STATS_ETH_CTRL eth-ctrl Basic IEEE 802.3 MAC Ctrl statistics (30.3.3.*)
-  ETHTOOL_STATS_RMON     rmon     RMON (RFC 2819) statistics
-+ ETHTOOL_STATS_XDP      xdp      XDP statistics
-  ====================== ======== ===============================================
- 
- Each group should have a corresponding ``ETHTOOL_A_STATS_GRP`` in the reply.
-@@ -1451,6 +1457,10 @@ Statistics are added to the ``ETHTOOL_A_STATS_GRP`` nest under
- single 8 byte (u64) attribute inside - the type of that attribute is
- the statistic ID and the value is the value of the statistic.
- Each group has its own interpretation of statistic IDs.
-+Statistics can be folded into a consistent (non-broken with any other attr)
-+sequence of blocks ``ETHTOOL_A_STATS_GRP_STAT_BLOCK``. This way they are
-+treated by Ethtool as per-channel statistics, and are printed with the
-+"channel%d-" prefix.
- Attribute IDs correspond to strings from the string set identified
- by ``ETHTOOL_A_STATS_GRP_SS_ID``. Complex statistics (such as RMON histogram
- entries) are also listed inside ``ETHTOOL_A_STATS_GRP`` and do not have
-@@ -1479,6 +1489,11 @@ Low and high bounds are inclusive, for example:
-  etherStatsPkts512to1023Octets 512  1023
-  ============================= ==== ====
- 
-+Drivers which want to export global (per-device) XDP statistics should
-+only implement ``get_xdp_stats`` callback. An additional one
-+``get_std_stats_channels`` is needed if the driver exposes per-channel
-+statistics.
-+
- PHC_VCLOCKS_GET
- ===============
- 
--- 
-2.31.1
+And Fixes or CC stable is missed too
 
+
+With regards,
+Pavel Skripkin
