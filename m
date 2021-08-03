@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31E2B3DE991
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 11:13:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68D5A3DE99D
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 11:18:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235044AbhHCJN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 05:13:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36680 "EHLO
+        id S235040AbhHCJST (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 05:18:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234959AbhHCJNz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 05:13:55 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A3BC061796
-        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 02:13:44 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id d6so20470468edt.7
-        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 02:13:44 -0700 (PDT)
+        with ESMTP id S234814AbhHCJSS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 05:18:18 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 349F8C061796
+        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 02:18:07 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id hs10so26679656ejc.0
+        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 02:18:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=TzdywkyaGO6eDzvYKvoBys7MoF5h7biikR9uQQ2v4KY=;
-        b=DEM52txH8kmvAxsC/lp3YibL085f86KNaEqwdtqjBneskd0IwK0e82rXwYB9c8t9Tr
-         ww3wmXWrMP+YvxKKT1uoX0D7YO1isLAI7ThWYluU0YqLEZfwyV3Now5FHhcsj9Cr4md2
-         DZbBBbTbmK4BxlAzhBhpLgE8bQmmioK+cAe9+tZXxl+zmcGsylSDUZow3cip4f0fIcZu
-         MERRn3uePPig17zL37ynIRKvdD/aR+949V8EqcMSPuQnAxFERSIirzW9KgUlD1mKDCqP
-         30ZZw62oN0JD1lDOJ7F2XvxmIbwFaTw/pPYHnAPUzntV50gGc5kMQcteBHILZ55utDRZ
-         Y5FQ==
+        bh=bNa7n1tZtuJcEEYiLTNeGKslKTEJs+rtFT0YV9yNlew=;
+        b=Jd+UZ5AGs0Ooq/66KM+jA4m9HwVi+MRm7XqkaGbn4V3hh5RUeGnjXO4FB7ez9GAPYi
+         tgsVUEl0qxA7yF00ZHW+ZQiwCQ+LlBhQO7XW9c8IihoDB7j2kIzgHGgN0wPJWzhpaSye
+         JNwP1w89B3rYkEiXk/GkfLl0DR/lZ5VVGVH+IgILe+GxDSLM0KE2pbBO9vokfAg1Y2DJ
+         4RPjt/85Mviy7n69snrUtKkUS9Z6/N8O0sY0KgvcM19Hi4Hbb6ldZkvVVYKFbXNgIOAM
+         fo/TUivWwXaMC+0AFsFKUL9/T5bEBtf2ZUMRUza95oSJ9q2/NCozwY/+6bIvFMxUfevT
+         EO6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=TzdywkyaGO6eDzvYKvoBys7MoF5h7biikR9uQQ2v4KY=;
-        b=D90wYd+fEYU5ndYzAtRJotyA/b+lvgwyNAhe9wVF/wu2pi9szz9DDIjTVLRMRIvHd7
-         8yDPzJevaVBF9Yci+14vW2DEmtsAW+LXmHclBK8g40AFGjJhKSPLRjEZsFq2xLh3J7aN
-         +R4y0ir7/KcVH3i4IpOe/LVQYRt2SH9nqOCkE4uqGv/OgehJZ7YCU5vLwU2mE/jv7nAV
-         k0V93rNKJV8Xiigs+ALl2PhDntFOduCZKUFgAiqMOt/WN9KxFiGg4yU0FWTEoRsZIXIi
-         2vZH/EJ/BdoGBYTANw219OPYCdySBi4+2FoKRrEpy9sq2lh7QTuG6r73im0fYQWQnN7m
-         MQGA==
-X-Gm-Message-State: AOAM5302ECbQJ7ny2dd4WOKQ/1VgIQaf730KrJe2hsVedX5aJX1lk0Ei
-        SvQbq1DMvlyPE+z/XgD0GXq9pSNmekwP7HSCioqk
-X-Google-Smtp-Source: ABdhPJzTcfFrmUvQ6VoEyuq0IwD//odDZyHHo9um9hSrSwgnp0TxB8fuvj0AdwM4682E0gxOiogSbfaYRhrBcwi+Smg=
-X-Received: by 2002:a50:fb05:: with SMTP id d5mr23600055edq.5.1627982023010;
- Tue, 03 Aug 2021 02:13:43 -0700 (PDT)
+        bh=bNa7n1tZtuJcEEYiLTNeGKslKTEJs+rtFT0YV9yNlew=;
+        b=pKz0KpvvbVL9weiBozph25NDTr7koaDuQ1LRgT8xBOXrnvP6AxY4n7aArbMnC8bn/e
+         d+OOrmVIXUFQfJUaU+somIzZ35Iw3gtltgGq78YIJzjIxVI+7B8apjuWXzETzlG/xV5n
+         bLgUhl6ZUPCym7b7iYj8npSwKwlrBMPVbNHqxX3v/wke4jzkE8eIQU1ttroQ9VpfwMUm
+         OukuZjXAe4mvlr3GRF5POggyLO1p/NHz6cYpADnDCPLH0RvhBapExupDb3F5Fn/ZqnhX
+         UhMP8WPqE5T2njkD9f8N+XhzSrsqKKizBS8Nm6TV6U3zfpThhRYDsTR+JrJyNX3uo55L
+         jjRA==
+X-Gm-Message-State: AOAM533wpXfHnButpt0mAsk+RKsrsLfJzGdoQAp572D8nEcMnjURFP/e
+        S7BQBxk6GW3ilJeIMjsVjmYlH6TWGxYpir1amEJR
+X-Google-Smtp-Source: ABdhPJz+l/RWTi/cEp9hIjcvn9xzMhjrwXVoQzQni85Wf2XRf3qnbCHSQTs5k/IZl5rLuZZ4G+B/tk85r0HL53eNKZg=
+X-Received: by 2002:a17:906:af77:: with SMTP id os23mr19120305ejb.427.1627982285614;
+ Tue, 03 Aug 2021 02:18:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210729073503.187-1-xieyongji@bytedance.com> <20210729073503.187-4-xieyongji@bytedance.com>
- <aaf82d3f-05e3-13d5-3a63-52cd8045b4c6@redhat.com>
-In-Reply-To: <aaf82d3f-05e3-13d5-3a63-52cd8045b4c6@redhat.com>
+References: <20210729073503.187-1-xieyongji@bytedance.com> <20210729073503.187-8-xieyongji@bytedance.com>
+ <487ed840-f417-e1b6-edb3-15f19969de51@redhat.com>
+In-Reply-To: <487ed840-f417-e1b6-edb3-15f19969de51@redhat.com>
 From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Tue, 3 Aug 2021 17:13:32 +0800
-Message-ID: <CACycT3upc6-Sfo-68vg7aFR1zd8=ovg_-rR4UQaqgcVTG62USw@mail.gmail.com>
-Subject: Re: [PATCH v10 03/17] vdpa: Fix code indentation
+Date:   Tue, 3 Aug 2021 17:17:54 +0800
+Message-ID: <CACycT3ujOQ84mNMEjE-H93cgVvrWeKaDcAabg7GPvMzU-rSPYw@mail.gmail.com>
+Subject: Re: [PATCH v10 07/17] virtio: Don't set FAILED status bit on device
+ index allocation failure
 To:     Jason Wang <jasowang@redhat.com>
 Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         Stefan Hajnoczi <stefanha@redhat.com>,
@@ -79,26 +80,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 3, 2021 at 3:51 PM Jason Wang <jasowang@redhat.com> wrote:
+On Tue, Aug 3, 2021 at 4:03 PM Jason Wang <jasowang@redhat.com> wrote:
 >
 >
 > =E5=9C=A8 2021/7/29 =E4=B8=8B=E5=8D=883:34, Xie Yongji =E5=86=99=E9=81=93=
 :
-> > Use tabs to indent the code instead of spaces.
+> > We don't need to set FAILED status bit on device index allocation
+> > failure since the device initialization hasn't been started yet.
+> > This doesn't affect runtime, found in code review.
 > >
 > > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> > ---
-> >   include/linux/vdpa.h | 29 ++++++++++++++---------------
-> >   1 file changed, 14 insertions(+), 15 deletions(-)
 >
 >
-> It looks to me not all the warnings are addressed.
->
-> Or did you silent checkpatch.pl -f?
+> Does it really harm?
 >
 
-This patch only fixes the code indent issue. I will address all
-warnings in the next version.
+Actually not. I think I can remove this patch if we don't need it.
 
 Thanks,
 Yongji
