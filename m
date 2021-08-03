@@ -2,270 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86BD83DE936
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 11:06:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31E2B3DE991
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 11:13:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234941AbhHCJGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 05:06:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34784 "EHLO
+        id S235044AbhHCJN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 05:13:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234554AbhHCJGU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 05:06:20 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDEABC06175F;
-        Tue,  3 Aug 2021 02:06:08 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id go31so35216290ejc.6;
-        Tue, 03 Aug 2021 02:06:08 -0700 (PDT)
+        with ESMTP id S234959AbhHCJNz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 05:13:55 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A3BC061796
+        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 02:13:44 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id d6so20470468edt.7
+        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 02:13:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=INnv+spyTk+SGu5OHn+pnMwsPBvYCp73sTB4fgZVCgo=;
-        b=G/rD+aBKvMf8tOXU3FAihJiDqYmtjN/MJbXWjo+1EbasqfVwkNnJD3RB9s9/FDMBG6
-         nPrtxL1aNjCZaSXf0pG1BtFvOiTit3uj0kn4Ibq9RbipAucnDgw+GadsyJUNfAF2mcv4
-         KABW3ELJ9cjrfs/ZZJ0kps2BwYj3mqiXddfdeYio9yRoQJKtI6l78p+qrZaPnAJJs7SZ
-         N0fcaURG/ViIHVPbBEFCTty1ZCWcg2X3KcvyLtZOD0UzUvjZrY9gQoeu61ZO6Y/C4+og
-         nVNqKXNpFJAPg677G6dJRtSjPGJaf+phZPesXeZO3lwJYcOXBRn4lgb8Bf+OY5vdVI8l
-         dVjA==
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=TzdywkyaGO6eDzvYKvoBys7MoF5h7biikR9uQQ2v4KY=;
+        b=DEM52txH8kmvAxsC/lp3YibL085f86KNaEqwdtqjBneskd0IwK0e82rXwYB9c8t9Tr
+         ww3wmXWrMP+YvxKKT1uoX0D7YO1isLAI7ThWYluU0YqLEZfwyV3Now5FHhcsj9Cr4md2
+         DZbBBbTbmK4BxlAzhBhpLgE8bQmmioK+cAe9+tZXxl+zmcGsylSDUZow3cip4f0fIcZu
+         MERRn3uePPig17zL37ynIRKvdD/aR+949V8EqcMSPuQnAxFERSIirzW9KgUlD1mKDCqP
+         30ZZw62oN0JD1lDOJ7F2XvxmIbwFaTw/pPYHnAPUzntV50gGc5kMQcteBHILZ55utDRZ
+         Y5FQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=INnv+spyTk+SGu5OHn+pnMwsPBvYCp73sTB4fgZVCgo=;
-        b=PSsx15vkwUWYJG3kceH93TXj7JXeoXxrNleiXpzuy/69QssYepi15ZtgXH7yOpZOjS
-         59Pg56n4xIe28x98NvObxRCChCQYdcfrnQUOxKGvTI+Svcx8P5nFxw3rkx7CuLpBamxq
-         acoqIkggwruiwycoYMGJHD9glF0Bjr4umxQY1iqRZAuSftCqhK2NU//7ney0CdkYNSqm
-         e404kmF/QnOR16FWfQwBdTRvkS4VKKUdHoHafCG8BVk7QpZzxDMSMOC1bLGJem8Hzv+e
-         k2Ai+uxP8nfNxVOwhrVmJaKXZvYfPvITBODX/V22ZSSZUnMKqVqPcZycVnBkwKRzJ/qm
-         GQ6w==
-X-Gm-Message-State: AOAM532pBjyZTg9UUjFOGlMkUgfotTCDHFwP9BvH6ctgPn5/xYCuEKKc
-        r8SfGtiBFgGZqOPWiBV6uwk=
-X-Google-Smtp-Source: ABdhPJyQJDVBKjAl1e1SMRPCe44uH1oJeDfHIJUgmWpCnKkv70AJqnTh0BSvANFJtwjo+BGyGQ8arQ==
-X-Received: by 2002:a17:906:9c84:: with SMTP id fj4mr19536839ejc.274.1627981567401;
-        Tue, 03 Aug 2021 02:06:07 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id v8sm4827706ejy.79.2021.08.03.02.06.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Aug 2021 02:06:06 -0700 (PDT)
-Date:   Tue, 3 Aug 2021 12:06:05 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH net v2 1/1] net: dsa: qca: ar9331: make proper initial
- port defaults
-Message-ID: <20210803090605.bud4ocr4siz3jl7r@skbuf>
-References: <20210803085320.23605-1-o.rempel@pengutronix.de>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=TzdywkyaGO6eDzvYKvoBys7MoF5h7biikR9uQQ2v4KY=;
+        b=D90wYd+fEYU5ndYzAtRJotyA/b+lvgwyNAhe9wVF/wu2pi9szz9DDIjTVLRMRIvHd7
+         8yDPzJevaVBF9Yci+14vW2DEmtsAW+LXmHclBK8g40AFGjJhKSPLRjEZsFq2xLh3J7aN
+         +R4y0ir7/KcVH3i4IpOe/LVQYRt2SH9nqOCkE4uqGv/OgehJZ7YCU5vLwU2mE/jv7nAV
+         k0V93rNKJV8Xiigs+ALl2PhDntFOduCZKUFgAiqMOt/WN9KxFiGg4yU0FWTEoRsZIXIi
+         2vZH/EJ/BdoGBYTANw219OPYCdySBi4+2FoKRrEpy9sq2lh7QTuG6r73im0fYQWQnN7m
+         MQGA==
+X-Gm-Message-State: AOAM5302ECbQJ7ny2dd4WOKQ/1VgIQaf730KrJe2hsVedX5aJX1lk0Ei
+        SvQbq1DMvlyPE+z/XgD0GXq9pSNmekwP7HSCioqk
+X-Google-Smtp-Source: ABdhPJzTcfFrmUvQ6VoEyuq0IwD//odDZyHHo9um9hSrSwgnp0TxB8fuvj0AdwM4682E0gxOiogSbfaYRhrBcwi+Smg=
+X-Received: by 2002:a50:fb05:: with SMTP id d5mr23600055edq.5.1627982023010;
+ Tue, 03 Aug 2021 02:13:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210803085320.23605-1-o.rempel@pengutronix.de>
+References: <20210729073503.187-1-xieyongji@bytedance.com> <20210729073503.187-4-xieyongji@bytedance.com>
+ <aaf82d3f-05e3-13d5-3a63-52cd8045b4c6@redhat.com>
+In-Reply-To: <aaf82d3f-05e3-13d5-3a63-52cd8045b4c6@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Tue, 3 Aug 2021 17:13:32 +0800
+Message-ID: <CACycT3upc6-Sfo-68vg7aFR1zd8=ovg_-rR4UQaqgcVTG62USw@mail.gmail.com>
+Subject: Re: [PATCH v10 03/17] vdpa: Fix code indentation
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        Greg KH <gregkh@linuxfoundation.org>,
+        He Zhe <zhe.he@windriver.com>,
+        Liu Xiaodong <xiaodong.liu@intel.com>,
+        Joe Perches <joe@perches.com>, songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 03, 2021 at 10:53:20AM +0200, Oleksij Rempel wrote:
-> Make sure that all external port are actually isolated from each other,
-> so no packets are leaked.
-> 
-> Fixes: ec6698c272de ("net: dsa: add support for Atheros AR9331 built-in switch")
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
-> changes v2:
-> - do not enable address learning by default
-> 
->  drivers/net/dsa/qca/ar9331.c | 98 +++++++++++++++++++++++++++++++++++-
->  1 file changed, 97 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
-> index 6686192e1883..de7c06b6c85f 100644
-> --- a/drivers/net/dsa/qca/ar9331.c
-> +++ b/drivers/net/dsa/qca/ar9331.c
-> @@ -101,6 +101,46 @@
->  	 AR9331_SW_PORT_STATUS_RX_FLOW_EN | AR9331_SW_PORT_STATUS_TX_FLOW_EN | \
->  	 AR9331_SW_PORT_STATUS_SPEED_M)
->  
-> +#define AR9331_SW_REG_PORT_CTRL(_port)			(0x104 + (_port) * 0x100)
-> +#define AR9331_SW_PORT_CTRL_ING_MIRROR_EN		BIT(17)
+On Tue, Aug 3, 2021 at 3:51 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2021/7/29 =E4=B8=8B=E5=8D=883:34, Xie Yongji =E5=86=99=E9=81=93=
+:
+> > Use tabs to indent the code instead of spaces.
+> >
+> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> > ---
+> >   include/linux/vdpa.h | 29 ++++++++++++++---------------
+> >   1 file changed, 14 insertions(+), 15 deletions(-)
+>
+>
+> It looks to me not all the warnings are addressed.
+>
+> Or did you silent checkpatch.pl -f?
+>
 
-not used
+This patch only fixes the code indent issue. I will address all
+warnings in the next version.
 
-> +#define AR9331_SW_PORT_CTRL_EG_MIRROR_EN		BIT(16)
-
-not used
-
-> +#define AR9331_SW_PORT_CTRL_DOUBLE_TAG_VLAN		BIT(15)
-
-not used
-
-> +#define AR9331_SW_PORT_CTRL_LEARN_EN			BIT(14)
-
-not used
-
-> +#define AR9331_SW_PORT_CTRL_SINGLE_VLAN_EN		BIT(13)
-
-not used
-
-> +#define AR9331_SW_PORT_CTRL_MAC_LOOP_BACK		BIT(12)
-
-not used
-
-> +#define AR9331_SW_PORT_CTRL_HEAD_EN			BIT(11)
-> +#define AR9331_SW_PORT_CTRL_IGMP_MLD_EN			BIT(10)
-
-not used
-
-> +#define AR9331_SW_PORT_CTRL_EG_VLAN_MODE		GENMASK(9, 8)
-
-not used
-
-> +#define AR9331_SW_PORT_CTRL_EG_VLAN_MODE_KEEP		0
-
-not used
-
-> +#define AR9331_SW_PORT_CTRL_EG_VLAN_MODE_STRIP		1
-
-not used
-
-> +#define AR9331_SW_PORT_CTRL_EG_VLAN_MODE_ADD		2
-
-not used
-
-> +#define AR9331_SW_PORT_CTRL_EG_VLAN_MODE_DOUBLE		3
-
-not used
-
-> +#define AR9331_SW_PORT_CTRL_LEARN_ONE_LOCK		BIT(7)
-
-not used
-
-> +#define AR9331_SW_PORT_CTRL_PORT_LOCK_EN		BIT(6)
-
-not used
-
-> +#define AR9331_SW_PORT_CTRL_LOCK_DROP_EN		BIT(5)
-
-not used
-
-> +#define AR9331_SW_PORT_CTRL_PORT_STATE			GENMASK(2, 0)
-> +#define AR9331_SW_PORT_CTRL_PORT_STATE_DISABLED		0
-> +#define AR9331_SW_PORT_CTRL_PORT_STATE_BLOCKING		1
-> +#define AR9331_SW_PORT_CTRL_PORT_STATE_LISTENING	2
-> +#define AR9331_SW_PORT_CTRL_PORT_STATE_LEARNING		3
-> +#define AR9331_SW_PORT_CTRL_PORT_STATE_FORWARD		4
-> +
-> +#define AR9331_SW_REG_PORT_VLAN(_port)			(0x108 + (_port) * 0x100)
-> +#define AR9331_SW_PORT_VLAN_8021Q_MODE			GENMASK(31, 30)
-> +#define AR9331_SW_8021Q_MODE_SECURE			3
-> +#define AR9331_SW_8021Q_MODE_CHECK			2
-> +#define AR9331_SW_8021Q_MODE_FALLBACK			1
-> +#define AR9331_SW_8021Q_MODE_NONE			0
-> +#define AR9331_SW_PORT_VLAN_ING_PORT_PRI		GENMASK(29, 27)
-> +#define AR9331_SW_PORT_VLAN_FORCE_PORT_VLAN_EN		BIT(26)
-> +#define AR9331_SW_PORT_VLAN_PORT_VID_MEMBER		GENMASK(25, 16)
-> +#define AR9331_SW_PORT_VLAN_ARP_LEAKY_EN		BIT(15)
-> +#define AR9331_SW_PORT_VLAN_UNI_LEAKY_EN		BIT(14)
-> +#define AR9331_SW_PORT_VLAN_MULTI_LEAKY_EN		BIT(13)
-> +#define AR9331_SW_PORT_VLAN_FORCE_DEFALUT_VID_EN	BIT(12)
-> +#define AR9331_SW_PORT_VLAN_PORT_VID			GENMASK(11, 0)
-> +#define AR9331_SW_PORT_VLAN_PORT_VID_DEF		1
-> +
->  /* MIB registers */
->  #define AR9331_MIB_COUNTER(x)			(0x20000 + ((x) * 0x100))
->  
-> @@ -371,12 +411,62 @@ static int ar9331_sw_mbus_init(struct ar9331_sw_priv *priv)
->  	return 0;
->  }
->  
-> -static int ar9331_sw_setup(struct dsa_switch *ds)
-> +static int ar9331_sw_setup_port(struct dsa_switch *ds, int port)
->  {
->  	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
->  	struct regmap *regmap = priv->regmap;
-> +	u32 port_mask, port_ctrl, val;
->  	int ret;
->  
-> +	/* Generate default port settings */
-> +	port_ctrl = FIELD_PREP(AR9331_SW_PORT_CTRL_PORT_STATE,
-> +			       AR9331_SW_PORT_CTRL_PORT_STATE_DISABLED);
-
-PORT_STATE_DISABLED? why? Can you ping over any interface after applying
-this patch?
-
-> +
-> +	if (dsa_is_cpu_port(ds, port)) {
-> +		/* CPU port should be allowed to communicate with all user
-> +		 * ports.
-> +		 */
-> +		port_mask = dsa_user_ports(ds);
-> +		/* Enable Atheros header on CPU port. This will allow us
-> +		 * communicate with each port separately
-> +		 */
-> +		port_ctrl |= AR9331_SW_PORT_CTRL_HEAD_EN;
-> +	} else if (dsa_is_user_port(ds, port)) {
-> +		/* User ports should communicate only with the CPU port.
-> +		 */
-> +		port_mask = BIT(dsa_to_port(ds, port)->cpu_dp->index);
-
-You can use "port_mask = BIT(dsa_upstream_port(ds, port));", looks nicer
-at least to me.
-
-> +	} else {
-> +		/* Other ports do not need to communicate at all */
-> +		port_mask = 0;
-> +	}
-> +
-> +	val = FIELD_PREP(AR9331_SW_PORT_VLAN_8021Q_MODE,
-> +			 AR9331_SW_8021Q_MODE_NONE) |
-> +		FIELD_PREP(AR9331_SW_PORT_VLAN_PORT_VID_MEMBER, port_mask) |
-> +		FIELD_PREP(AR9331_SW_PORT_VLAN_PORT_VID,
-> +			   AR9331_SW_PORT_VLAN_PORT_VID_DEF);
-> +
-> +	ret = regmap_write(regmap, AR9331_SW_REG_PORT_VLAN(port), val);
-> +	if (ret)
-> +		goto error;
-> +
-> +	ret = regmap_write(regmap, AR9331_SW_REG_PORT_CTRL(port), port_ctrl);
-> +	if (ret)
-> +		goto error;
-> +
-> +	return 0;
-> +error:
-> +	dev_err(priv->dev, "%s: error: %i\n", __func__, ret);
-> +
-> +	return ret;
-> +}
-> +
-> +static int ar9331_sw_setup(struct dsa_switch *ds)
-> +{
-> +	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
-> +	struct regmap *regmap = priv->regmap;
-> +	int ret, i;
-> +
->  	ret = ar9331_sw_reset(priv);
->  	if (ret)
->  		return ret;
-> @@ -402,6 +492,12 @@ static int ar9331_sw_setup(struct dsa_switch *ds)
->  	if (ret)
->  		goto error;
->  
-> +	for (i = 0; i < ds->num_ports; i++) {
-> +		ret = ar9331_sw_setup_port(ds, i);
-> +		if (ret)
-> +			goto error;
-> +	}
-> +
->  	ds->configure_vlan_while_not_filtering = false;
->  
->  	return 0;
-> -- 
-> 2.30.2
-> 
-
+Thanks,
+Yongji
