@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AE6B3DF2A2
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:37:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87BF83DF2AA
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:37:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233524AbhHCQhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 12:37:13 -0400
-Received: from mga02.intel.com ([134.134.136.20]:56666 "EHLO mga02.intel.com"
+        id S234054AbhHCQhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 12:37:23 -0400
+Received: from mga11.intel.com ([192.55.52.93]:33456 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233449AbhHCQhM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 12:37:12 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="200900149"
+        id S233671AbhHCQhU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 12:37:20 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="210621129"
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="200900149"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:36:59 -0700
+   d="scan'208";a="210621129"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:37:07 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="636665141"
+   d="scan'208";a="670507815"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga005.jf.intel.com with ESMTP; 03 Aug 2021 09:36:48 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 03 Aug 2021 09:36:52 -0700
 Received: from alobakin-mobl.ger.corp.intel.com (eflejszm-mobl2.ger.corp.intel.com [10.213.26.164])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GahEo029968;
-        Tue, 3 Aug 2021 17:36:44 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GahEp029968;
+        Tue, 3 Aug 2021 17:36:48 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -74,125 +74,75 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         netdev@vger.kernel.org, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH net-next 00/21] ethtool, stats: introduce and use standard XDP stats
-Date:   Tue,  3 Aug 2021 18:36:20 +0200
-Message-Id: <20210803163641.3743-1-alexandr.lobakin@intel.com>
+Subject: [PATCH net-next 01/21] ethtool, stats: use a shorthand pointer in stats_prepare_data()
+Date:   Tue,  3 Aug 2021 18:36:21 +0200
+Message-Id: <20210803163641.3743-2-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210803163641.3743-1-alexandr.lobakin@intel.com>
+References: <20210803163641.3743-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series follows the Jakub's work on standard statistics and
-unifies XDP statistics across [most of] the drivers.
-The only driver left unconverted is mlx5 -- it has rather complex
-statistics, so I believe it would be better to leave this up to
-its developers.
+Just place dev->ethtool_ops on the stack and use it instead of
+dereferencing the former a bunch of times to improve code
+readability.
 
-The stats itself consists of 12 counters:
- - packets: number of frames passed to bpf_prog_run_xdp();
- - errors: number of general XDP errors, if driver has one unified counter;
- - aborted: number of XDP_ABORTED returns;
- - drop: number of XDP_DROP returns;
- - invalid: number of returns of unallowed values (i.e. not XDP_*);
- - pass: number of XDP_PASS returns;
- - redirect: number of successfully performed XDP_REDIRECT requests;
- - redirect_errors: number of failed XDP_REDIRECT requests;
- - tx: number of successfully performed XDP_TX requests;
- - tx_errors: number of failed XDP_TX requests;
- - xmit: number of xdp_frames successfully transmitted via .ndo_xdp_xmit();
- - xmit_drops: number of frames dropped from .ndo_xdp_xmit().
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+---
+ net/ethtool/stats.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-As most drivers stores them on a per-channel basis, Ethtool standard
-stats infra has been expanded to support this. A new nested
-attribute has been added which indicated that the fields enclosed
-in this block are related to one particular channel. If Ethtool
-utility is older than the kernel, those blocks will just be skipped
-with no errors.
-When the stats are not per-channel, Ethtool core treats them as
-regular and so does Ethtool utility display them. Otherwise,
-the example output looks like:
-
-$ ./ethtool -S enp175s0f0 --all-groups
-Standard stats for enp175s0f0:
-[ snip ]
-channel0-xdp-aborted: 1
-channel0-xdp-drop: 2
-channel0-xdp-illegal: 3
-channel0-xdp-pass: 4
-channel0-xdp-redirect: 5
-[ snip ]
-
-...and the JSON output looks like:
-
-[ snip ]
-        "xdp": {
-            "per-channel": [
-                "channel0": {
-                    "aborted": 1,
-                    "drop": 2,
-                    "illegal": 3,
-                    "pass": 4,
-                    "redirect": 5,
-[ snip ]
-                } ]
-        }
-[ snip ]
-
-Rouhly half of the commits are present to unify XDP stats logics
-across the drivers, and the first two are preparatory/housekeeping.
-
-This set is also available here: [0]
-
-[0] https://github.com/alobakin/linux/tree/xdp_stats
-
-Alexander Lobakin (21):
-  ethtool, stats: use a shorthand pointer in stats_prepare_data()
-  ethtool, stats: add compile-time checks for standard stats
-  ethtool, stats: introduce standard XDP statistics
-  ethernet, dpaa2: simplify per-channel Ethtool stats counting
-  ethernet, dpaa2: convert to standard XDP stats
-  ethernet, ena: constify src and syncp args of ena_safe_update_stat()
-  ethernet, ena: convert to standard XDP stats
-  ethernet, enetc: convert to standard XDP stats
-  ethernet, mvneta: rename xdp_xmit_err to xdp_xmit_drops
-  ethernet, mvneta: convert to standard XDP stats
-  ethernet, mvpp2: rename xdp_xmit_err to xdp_xmit_drops
-  ethernet, mvpp2: convert to standard XDP stats
-  ethernet, sfc: convert to standard XDP stats
-  veth: rename rx_drops to xdp_errors
-  veth: rename xdp_xmit_errors to xdp_xmit_drops
-  veth: rename drop xdp_ suffix from packets and bytes stats
-  veth: convert to standard XDP stats
-  virtio-net: rename xdp_tx{,__drops} SQ stats to xdp_xmit{,__drops}
-  virtio-net: don't mix error-caused drops with XDP_DROP cases
-  virtio-net: convert to standard XDP stats
-  Documentation, ethtool-netlink: update standard statistics
-    documentation
-
- Documentation/networking/ethtool-netlink.rst  |  45 +++--
- drivers/net/ethernet/amazon/ena/ena_ethtool.c |  50 +++++-
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |   7 +-
- .../ethernet/freescale/dpaa2/dpaa2-ethtool.c  |  38 +++-
- .../ethernet/freescale/enetc/enetc_ethtool.c  |  58 ++++--
- drivers/net/ethernet/marvell/mvneta.c         | 112 ++++++------
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h    |   2 +-
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  96 +++-------
- drivers/net/ethernet/sfc/ef100_ethtool.c      |   2 +
- drivers/net/ethernet/sfc/ethtool.c            |   2 +
- drivers/net/ethernet/sfc/ethtool_common.c     |  35 +++-
- drivers/net/ethernet/sfc/ethtool_common.h     |   3 +
- drivers/net/veth.c                            | 167 ++++++++++--------
- drivers/net/virtio_net.c                      |  76 ++++++--
- include/linux/ethtool.h                       |  36 ++++
- include/uapi/linux/ethtool.h                  |   2 +
- include/uapi/linux/ethtool_netlink.h          |  34 ++++
- net/ethtool/netlink.h                         |   1 +
- net/ethtool/stats.c                           | 163 +++++++++++++++--
- net/ethtool/strset.c                          |   5 +
- 20 files changed, 659 insertions(+), 275 deletions(-)
-
+diff --git a/net/ethtool/stats.c b/net/ethtool/stats.c
+index ec07f5765e03..e35c87206b4c 100644
+--- a/net/ethtool/stats.c
++++ b/net/ethtool/stats.c
+@@ -108,12 +108,15 @@ static int stats_prepare_data(const struct ethnl_req_info *req_base,
+ 	const struct stats_req_info *req_info = STATS_REQINFO(req_base);
+ 	struct stats_reply_data *data = STATS_REPDATA(reply_base);
+ 	struct net_device *dev = reply_base->dev;
++	const struct ethtool_ops *ops;
+ 	int ret;
+ 
+ 	ret = ethnl_ops_begin(dev);
+ 	if (ret < 0)
+ 		return ret;
+ 
++	ops = dev->ethtool_ops;
++
+ 	/* Mark all stats as unset (see ETHTOOL_STAT_NOT_SET) to prevent them
+ 	 * from being reported to user space in case driver did not set them.
+ 	 */
+@@ -123,18 +126,17 @@ static int stats_prepare_data(const struct ethnl_req_info *req_base,
+ 	memset(&data->rmon_stats, 0xff, sizeof(data->rmon_stats));
+ 
+ 	if (test_bit(ETHTOOL_STATS_ETH_PHY, req_info->stat_mask) &&
+-	    dev->ethtool_ops->get_eth_phy_stats)
+-		dev->ethtool_ops->get_eth_phy_stats(dev, &data->phy_stats);
++	    ops->get_eth_phy_stats)
++		ops->get_eth_phy_stats(dev, &data->phy_stats);
+ 	if (test_bit(ETHTOOL_STATS_ETH_MAC, req_info->stat_mask) &&
+-	    dev->ethtool_ops->get_eth_mac_stats)
+-		dev->ethtool_ops->get_eth_mac_stats(dev, &data->mac_stats);
++	    ops->get_eth_mac_stats)
++		ops->get_eth_mac_stats(dev, &data->mac_stats);
+ 	if (test_bit(ETHTOOL_STATS_ETH_CTRL, req_info->stat_mask) &&
+-	    dev->ethtool_ops->get_eth_ctrl_stats)
+-		dev->ethtool_ops->get_eth_ctrl_stats(dev, &data->ctrl_stats);
++	    ops->get_eth_ctrl_stats)
++		ops->get_eth_ctrl_stats(dev, &data->ctrl_stats);
+ 	if (test_bit(ETHTOOL_STATS_RMON, req_info->stat_mask) &&
+-	    dev->ethtool_ops->get_rmon_stats)
+-		dev->ethtool_ops->get_rmon_stats(dev, &data->rmon_stats,
+-						 &data->rmon_ranges);
++	    ops->get_rmon_stats)
++		ops->get_rmon_stats(dev, &data->rmon_stats, &data->rmon_ranges);
+ 
+ 	ethnl_ops_complete(dev);
+ 	return 0;
 -- 
 2.31.1
 
