@@ -2,118 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F9193DEE1D
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 14:46:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A09B03DEE34
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 14:50:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236070AbhHCMrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 08:47:02 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:48684 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236022AbhHCMrC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 08:47:02 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 173CkXUs015641;
-        Tue, 3 Aug 2021 07:46:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1627994793;
-        bh=dwa6kQPQNIzIVu4zRjFxk1oyIAq25vQUEDqTws0ieMc=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=OIEUdb7fh3uigJDoABx6EiicoM98wNlzl8F2L90jD6nZWyF4JFhEdPCeBoGty/uKm
-         h56WdANzPtrXzZIjsN+Z4BWRJfpXGHuVHS+0nYDCnMVHOzkX4fXdmdgEBWCGjmbnjO
-         4UEKWwwW1rJMbFtnOWe4DDKjS8tgfzA3pwaa9jCc=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 173CkXbM058113
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 3 Aug 2021 07:46:33 -0500
-Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 3 Aug
- 2021 07:46:32 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Tue, 3 Aug 2021 07:46:32 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 173CkScx019449;
-        Tue, 3 Aug 2021 07:46:28 -0500
-Subject: Re: [PATCH net-next] net: build all switchdev drivers as modules when
- the bridge is a module
-To:     Arnd Bergmann <arnd@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-CC:     Networking <netdev@vger.kernel.org>,
+        id S235909AbhHCMum (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 08:50:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33830 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235805AbhHCMul (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 08:50:41 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53462C061757
+        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 05:50:29 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id z24so19674586qkz.7
+        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 05:50:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=PepLjEmjA+3NniRM+4NQ2XwzUjCl0m6eM3ogl66GoWs=;
+        b=JMIcSawo/AF/9g7dk+nSyVoTUJhG+0d6Ocxw/QvQZONd9XVdrP9MQExM5HiNQTeDRT
+         n3yrtwIboDEC0NQsY1e/MLDUdAbBK7Y7a5OUxOZHDTAqyv8IkC3ZN6w1etgOk+oBMHMi
+         e0G0xJG1BzUdPUk4iKJ7YIWNvbcNlqKmkol4svCmzA0KEvlzUm4tm/mn+KsbmAiWaCG0
+         DwGPtePBADOzD1SF1hxLeu/MJGai32eOe+TajIo3Spjqb7a7gKpphKB9+tVSSZl5Z1Uz
+         e2N+AoX7jb31XWckIm8AasjPuzAkunCVQwLl1xNI0aXk5+WzSicljNdSBr2HaN6/BXJ8
+         zM9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PepLjEmjA+3NniRM+4NQ2XwzUjCl0m6eM3ogl66GoWs=;
+        b=IKu9qEoMfyPcGsZVfeQvmKtYt3Hci8753M9GbFW2GdSyPXgJ/vTo76qhXkGwlout49
+         5n6KZ08fTVBAmj6RAIrd5G9hJEkCqabsaS0cz0/QdticlXpavx14wD681l79v7vxgBs+
+         moSKNSceW7wzDCDvkll8nNwa0YqS/s76leQe4Cu6lgaaSYAHhR/jui9unHo5dffRzWhg
+         99VbqwbZWDV9dLSuhsmM+4El8WhpKbfHPyITXBEo/hEd3rBDKP5SmlqhSDpjYqktReYv
+         ab0eN8dtxTl0F3dqz2sjycm3HZTHpXyR2S5vb5mKYkZzLge9mcxb4EwF8qOIVFlwXsn6
+         Ljew==
+X-Gm-Message-State: AOAM532L5iZzUofGNZXS67AGCNU4VvSGsZ5t2yg7ACzl0RIhzoBmQbqW
+        SGANq/gh9VOUdKRc/ElhEnOcKQ==
+X-Google-Smtp-Source: ABdhPJyG/6WtPsK6lD4EAaWApEk+DeInq6wNOQEOptJwPc8hQ6ng0H1NqJQL9m0EOP1EcDTN2m5faA==
+X-Received: by 2002:a05:620a:903:: with SMTP id v3mr19949626qkv.235.1627995028591;
+        Tue, 03 Aug 2021 05:50:28 -0700 (PDT)
+Received: from [192.168.1.171] (bras-base-kntaon1617w-grc-28-184-148-47-47.dsl.bell.ca. [184.148.47.47])
+        by smtp.googlemail.com with ESMTPSA id r4sm6138655qtc.66.2021.08.03.05.50.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Aug 2021 05:50:28 -0700 (PDT)
+Subject: Re: tc offload debug-ability
+To:     Vlad Buslov <vladbu@nvidia.com>
+Cc:     Simon Horman <simon.horman@corigine.com>,
+        David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Linux Kernel Functional Testing <lkft@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-References: <20210726142536.1223744-1-vladimir.oltean@nxp.com>
- <CAK8P3a2HGm7MyUc3N1Vjdb2inS6D3E3HDq4bNTOBaHZQCP9kwA@mail.gmail.com>
- <eab61b8f-fc54-ea63-ad31-73fb13026b1f@ti.com>
- <20210803115819.sdtdqhmfk5k4olip@skbuf>
- <CAK8P3a3xtC7p_iEcqLpL+uhCBGm31vrrCG5xFCxraCRZiyEWQA@mail.gmail.com>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <81e7f845-c0be-110e-d1ae-5b5574bf7267@ti.com>
-Date:   Tue, 3 Aug 2021 15:46:26 +0300
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, Baowen Zheng <baowen.zheng@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jiri Pirko <jiri@resnulli.us>, Roopa Prabhu <roopa@nvidia.com>
+References: <20210722091938.12956-1-simon.horman@corigine.com>
+ <20210722091938.12956-2-simon.horman@corigine.com>
+ <ygnhim12qxxy.fsf@nvidia.com>
+ <13f494c9-e7f0-2fbb-89f9-b1500432a2f6@mojatatu.com>
+ <20210727130419.GA6665@corigine.com> <ygnh7dhbrfd0.fsf@nvidia.com>
+ <95d6873c-256c-0462-60f7-56dbffb8221b@mojatatu.com>
+ <ygnh4kcfr9e8.fsf@nvidia.com> <20210728074616.GB18065@corigine.com>
+ <7004376d-5576-1b9c-21bc-beabd05fa5c9@mojatatu.com>
+ <20210728144622.GA5511@corigine.com>
+ <2ba4e24f-e34e-f893-d42b-d0fd40794da5@mojatatu.com>
+ <ygnhv94sowqj.fsf@nvidia.com>
+ <31fb2ae6-2b91-5530-70c8-63b42eb5c39d@mojatatu.com>
+ <996ecc2d-d982-c7f3-7769-3b489d5ff66c@mojatatu.com>
+ <ygnhsfzqpvwd.fsf@nvidia.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <092765ac-ffc6-5ccb-2dff-46370edb2e44@mojatatu.com>
+Date:   Tue, 3 Aug 2021 08:50:27 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <CAK8P3a3xtC7p_iEcqLpL+uhCBGm31vrrCG5xFCxraCRZiyEWQA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <ygnhsfzqpvwd.fsf@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2021-08-03 8:14 a.m., Vlad Buslov wrote:
+> 
+> On Tue 03 Aug 2021 at 15:02, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
 
+[..]
 
-On 03/08/2021 15:33, Arnd Bergmann wrote:
-> On Tue, Aug 3, 2021 at 1:58 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
 >>
->> On Tue, Aug 03, 2021 at 02:18:38PM +0300, Grygorii Strashko wrote:
->>> In my opinion, the problem is a bit bigger here than just fixing the build :(
->>>
->>> In case, of ^cpsw the switchdev mode is kinda optional and in many cases
->>> (especially for testing purposes, NFS) the multi-mac mode is still preferable mode.
->>>
->>> There were no such tight dependency between switchdev drivers and bridge core before and switchdev serviced as
->>> independent, notification based layer between them, so ^cpsw still can be "Y" and bridge can be "M".
->>> Now for mostly every kernel build configuration the CONFIG_BRIDGE will need to be set as "Y", or we will have
->>> to update drivers to support build with BRIDGE=n and maintain separate builds for networking vs non-networking testing.
->>> But is this enough? Wouldn't it cause 'chain reaction' required to add more and more "Y" options (like CONFIG_VLAN_8021Q)?
->>>
->>> PS. Just to be sure we on the same page - ARM builds will be forced (with this patch) to have CONFIG_TI_CPSW_SWITCHDEV=m
->>> and so all our automation testing will just fail with omap2plus_defconfig.
->>
->> I didn't realize it is such a big use case to have the bridge built as
->> module and cpsw as built-in.
+>> So unless i am mistaken Vlad:
+>> a) there is no way to reflect the  details when someone dumps the rules.
+>> b) No notifications sent to the control plane (user space) when the
+>> neighbor updates are offloaded.
 > 
-> I don't think anybody realistically cares about doing, I was only interested in
-> correctly expressing what the dependency is.
-> 
->> I will send a patch that converts the
->> switchdev_bridge_port_{,un}offload functions to simply emit a blocking
->> switchdev notifier which the bridge processes (a la SWITCHDEV_FDB_ADD_TO_BRIDGE),
->> therefore making switchdev and the bridge loosely coupled in order to
->> keep your setup the way it was before.
-> 
-> That does sounds like it can avoid future build regressions, and simplify the
-> Kconfig dependencies, so that would probably be a good solution.
+> Correct.
+>
 
-Yes. it sounds good, thank you.
-Just a thought - might be good to follow switchdev_attr approach (extendable), but in the opposite direction as, I feel,
-more notification dev->bridge might be added in the future.
+Feels like we can adopt the same mechanics. Although, unless i am
+misreading, it seems Ido's patches cover a slightly different use
+case: not totally synchronous in successfully pushing the rule to
+hardware i.e could be sitting somewhere in firmware on its way to
+the ASIC (and at least your connectx driver seems to only be
+relinquishing control after confirming the update succeeded).
+Am i mistaken Ido?
 
--- 
-Best regards,
-grygorii
+
+cheers,
+jamal
