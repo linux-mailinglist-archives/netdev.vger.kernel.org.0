@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21A013DF2E9
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:39:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C11123DF2DF
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:39:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234390AbhHCQja (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 12:39:30 -0400
-Received: from mga05.intel.com ([192.55.52.43]:42242 "EHLO mga05.intel.com"
+        id S234462AbhHCQjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 12:39:17 -0400
+Received: from mga17.intel.com ([192.55.52.151]:62913 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234838AbhHCQib (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 12:38:31 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="299318875"
+        id S234750AbhHCQiY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 12:38:24 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="194013908"
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="299318875"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:38:19 -0700
+   d="scan'208";a="194013908"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 09:38:12 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
-   d="scan'208";a="466746585"
+   d="scan'208";a="568723086"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga008.jf.intel.com with ESMTP; 03 Aug 2021 09:37:58 -0700
+  by orsmga004.jf.intel.com with ESMTP; 03 Aug 2021 09:38:01 -0700
 Received: from alobakin-mobl.ger.corp.intel.com (eflejszm-mobl2.ger.corp.intel.com [10.213.26.164])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GahF7029968;
-        Tue, 3 Aug 2021 17:37:53 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 173GahF8029968;
+        Tue, 3 Aug 2021 17:37:57 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -74,9 +74,9 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         netdev@vger.kernel.org, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH net-next 17/21] veth: convert to standard XDP stats
-Date:   Tue,  3 Aug 2021 18:36:37 +0200
-Message-Id: <20210803163641.3743-18-alexandr.lobakin@intel.com>
+Subject: [PATCH net-next 18/21] virtio-net: rename xdp_tx{,__drops} SQ stats to xdp_xmit{,__drops}
+Date:   Tue,  3 Aug 2021 18:36:38 +0200
+Message-Id: <20210803163641.3743-19-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210803163641.3743-1-alexandr.lobakin@intel.com>
 References: <20210803163641.3743-1-alexandr.lobakin@intel.com>
@@ -86,166 +86,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-veth has 7 per-channel XDP counters which could be aligned to the
-standard XDP stats. Peer stats are here too as well, with the
-original channel numbering logics.
+These two are present to track the number of frames processed and
+dropped by .ndo_xdp_xmit() callback, rename them accordingly to
+avoid confusion with xdp_tx RQ field and XDP_TX case in general.
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 ---
- drivers/net/veth.c | 91 +++++++++++++++++++++++++++++-----------------
- 1 file changed, 57 insertions(+), 34 deletions(-)
+ drivers/net/virtio_net.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index d7e95f09e19d..79614d8e88bd 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -94,22 +94,10 @@ struct veth_q_stat_desc {
- static const struct veth_q_stat_desc veth_rq_stats_desc[] = {
- 	{ "packets",		VETH_RQ_STAT(packets) },
- 	{ "bytes",		VETH_RQ_STAT(bytes) },
--	{ "xdp_errors",		VETH_RQ_STAT(xdp_errors) },
--	{ "xdp_redirect",	VETH_RQ_STAT(xdp_redirect) },
--	{ "xdp_drops",		VETH_RQ_STAT(xdp_drops) },
--	{ "xdp_tx",		VETH_RQ_STAT(xdp_tx) },
--	{ "xdp_tx_errors",	VETH_RQ_STAT(xdp_tx_err) },
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 74482a52f076..8cbb4651ed75 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -77,8 +77,8 @@ struct virtnet_sq_stats {
+ 	struct u64_stats_sync syncp;
+ 	u64 packets;
+ 	u64 bytes;
+-	u64 xdp_tx;
+-	u64 xdp_tx_drops;
++	u64 xdp_xmit;
++	u64 xdp_xmit_drops;
+ 	u64 kicks;
  };
  
- #define VETH_RQ_STATS_LEN	ARRAY_SIZE(veth_rq_stats_desc)
- 
--static const struct veth_q_stat_desc veth_tq_stats_desc[] = {
--	{ "xdp_xmit",		VETH_RQ_STAT(peer_tq_xdp_xmit) },
--	{ "xdp_xmit_drops",	VETH_RQ_STAT(peer_tq_xdp_xmit_drops) },
--};
--
--#define VETH_TQ_STATS_LEN	ARRAY_SIZE(veth_tq_stats_desc)
--
- static struct {
- 	const char string[ETH_GSTRING_LEN];
- } ethtool_stats_keys[] = {
-@@ -149,14 +137,6 @@ static void veth_get_strings(struct net_device *dev, u32 stringset, u8 *buf)
- 				p += ETH_GSTRING_LEN;
- 			}
- 		}
--		for (i = 0; i < dev->real_num_tx_queues; i++) {
--			for (j = 0; j < VETH_TQ_STATS_LEN; j++) {
--				snprintf(p, ETH_GSTRING_LEN,
--					 "tx_queue_%u_%.18s",
--					 i, veth_tq_stats_desc[j].desc);
--				p += ETH_GSTRING_LEN;
--			}
--		}
- 		break;
- 	}
- }
-@@ -166,8 +146,7 @@ static int veth_get_sset_count(struct net_device *dev, int sset)
- 	switch (sset) {
- 	case ETH_SS_STATS:
- 		return ARRAY_SIZE(ethtool_stats_keys) +
--		       VETH_RQ_STATS_LEN * dev->real_num_rx_queues +
--		       VETH_TQ_STATS_LEN * dev->real_num_tx_queues;
-+		       VETH_RQ_STATS_LEN * dev->real_num_rx_queues;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -176,8 +155,8 @@ static int veth_get_sset_count(struct net_device *dev, int sset)
- static void veth_get_ethtool_stats(struct net_device *dev,
- 		struct ethtool_stats *stats, u64 *data)
- {
--	struct veth_priv *rcv_priv, *priv = netdev_priv(dev);
--	struct net_device *peer = rtnl_dereference(priv->peer);
-+	const struct veth_priv *priv = netdev_priv(dev);
-+	const struct net_device *peer = rtnl_dereference(priv->peer);
- 	int i, j, idx;
- 
- 	data[0] = peer ? peer->ifindex : 0;
-@@ -197,25 +176,67 @@ static void veth_get_ethtool_stats(struct net_device *dev,
- 		} while (u64_stats_fetch_retry_irq(&rq_stats->syncp, start));
- 		idx += VETH_RQ_STATS_LEN;
- 	}
-+}
-+
-+static int veth_get_std_stats_channels(struct net_device *dev, u32 sset)
-+{
-+	switch (sset) {
-+	case ETH_SS_STATS_XDP:
-+		return max(dev->real_num_rx_queues, dev->real_num_tx_queues);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static void veth_get_xdp_stats(struct net_device *dev,
-+			       struct ethtool_xdp_stats *xdp_stats)
-+{
-+	const struct veth_priv *priv = netdev_priv(dev);
-+	const struct net_device *peer = rtnl_dereference(priv->peer);
-+	const struct veth_rq_stats *rq_stats;
-+	struct ethtool_xdp_stats *iter;
-+	u64 xmit, xmit_drops;
-+	u32 i, start;
-+
-+	for (i = 0; i < dev->real_num_rx_queues; i++) {
-+		rq_stats = &priv->rq[i].stats;
-+		iter = xdp_stats + i;
-+
-+		do {
-+			start = u64_stats_fetch_begin_irq(&rq_stats->syncp);
-+
-+			iter->errors = rq_stats->vs.xdp_errors;
-+			iter->redirect = rq_stats->vs.xdp_redirect;
-+			iter->drop = rq_stats->vs.xdp_drops;
-+			iter->tx = rq_stats->vs.xdp_tx;
-+			iter->tx_errors = rq_stats->vs.xdp_tx_err;
-+		} while (u64_stats_fetch_retry_irq(&rq_stats->syncp, start));
-+	}
- 
- 	if (!peer)
- 		return;
- 
--	rcv_priv = netdev_priv(peer);
-+	for (i = 0; i < dev->real_num_tx_queues; i++) {
-+		iter = xdp_stats + i;
-+		iter->xmit = 0;
-+		iter->xmit_drops = 0;
-+	}
-+
-+	priv = netdev_priv(peer);
-+
- 	for (i = 0; i < peer->real_num_rx_queues; i++) {
--		const struct veth_rq_stats *rq_stats = &rcv_priv->rq[i].stats;
--		const void *base = (void *)&rq_stats->vs;
--		unsigned int start, tx_idx = idx;
--		size_t offset;
-+		rq_stats = &priv->rq[i].stats;
-+		iter = xdp_stats + (i % dev->real_num_tx_queues);
- 
--		tx_idx += (i % dev->real_num_tx_queues) * VETH_TQ_STATS_LEN;
- 		do {
- 			start = u64_stats_fetch_begin_irq(&rq_stats->syncp);
--			for (j = 0; j < VETH_TQ_STATS_LEN; j++) {
--				offset = veth_tq_stats_desc[j].offset;
--				data[tx_idx + j] += *(u64 *)(base + offset);
--			}
-+
-+			xmit = rq_stats->vs.peer_tq_xdp_xmit;
-+			xmit_drops = rq_stats->vs.peer_tq_xdp_xmit_drops;
- 		} while (u64_stats_fetch_retry_irq(&rq_stats->syncp, start));
-+
-+		iter->xmit += xmit;
-+		iter->xmit_drops += xmit_drops;
- 	}
- }
- 
-@@ -241,6 +262,8 @@ static const struct ethtool_ops veth_ethtool_ops = {
- 	.get_ts_info		= ethtool_op_get_ts_info,
- 	.get_channels		= veth_get_channels,
- 	.set_channels		= veth_set_channels,
-+	.get_std_stats_channels	= veth_get_std_stats_channels,
-+	.get_xdp_stats		= veth_get_xdp_stats,
+@@ -100,8 +100,8 @@ struct virtnet_rq_stats {
+ static const struct virtnet_stat_desc virtnet_sq_stats_desc[] = {
+ 	{ "packets",		VIRTNET_SQ_STAT(packets) },
+ 	{ "bytes",		VIRTNET_SQ_STAT(bytes) },
+-	{ "xdp_tx",		VIRTNET_SQ_STAT(xdp_tx) },
+-	{ "xdp_tx_drops",	VIRTNET_SQ_STAT(xdp_tx_drops) },
++	{ "xdp_xmit",		VIRTNET_SQ_STAT(xdp_xmit) },
++	{ "xdp_xmit_drops",	VIRTNET_SQ_STAT(xdp_xmit_drops) },
+ 	{ "kicks",		VIRTNET_SQ_STAT(kicks) },
  };
  
- /* general routines */
+@@ -619,8 +619,8 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+ 	u64_stats_update_begin(&sq->stats.syncp);
+ 	sq->stats.bytes += bytes;
+ 	sq->stats.packets += packets;
+-	sq->stats.xdp_tx += n;
+-	sq->stats.xdp_tx_drops += n - nxmit;
++	sq->stats.xdp_xmit += n;
++	sq->stats.xdp_xmit_drops += n - nxmit;
+ 	sq->stats.kicks += kicks;
+ 	u64_stats_update_end(&sq->stats.syncp);
+ 
 -- 
 2.31.1
 
