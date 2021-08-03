@@ -2,88 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 773983DF530
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 21:14:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EB3C3DF54B
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 21:18:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239494AbhHCTOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 15:14:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45004 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239475AbhHCTOd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 15:14:33 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE10C06175F
-        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 12:14:20 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id x8so350469lfe.3
-        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 12:14:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=o0KpkzuHgK9GvKRz84YUwSFRZoVYeFdlCPtHyXWJQI4=;
-        b=IhVvc2zO0gVenINJka9gU+HwzPs2chpbN81UxmimQd2DrzkYTxm58GZq29MO5pPrqO
-         /b1z92x2EQLw7KwxaepO60QJxHJfmkD4ODPtUrnthsHL/gv5/gwORNIwMCzIzM2rwLd3
-         +qRbm3O2pt1vJ1vzGeoeZp0BBj/Jr5gZVANa0nWwTlgd59plD4greZN1+qurDjT46QhC
-         NKNFR5yWdCfqPq2mJNpvb5Gj+DC2QnwuGUswMZ5efFinEjjCF7xUnkz/A+PNvqBlEMOz
-         IWE0sQoSSqjUMHW3BCXee39qartNBPLd7H+v6iSMe6sFtM7ZVaCK+PBx1DrGYIdXb98F
-         eFWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=o0KpkzuHgK9GvKRz84YUwSFRZoVYeFdlCPtHyXWJQI4=;
-        b=GwKCLKT2JCkgjzrNrUC7WI/1lyEUF4rTLpwubde+SUih+yqIxEJrMoaFgKrAhHqHbp
-         dVLCpzPAcze/2s4witwQKDv4W+i80Gxmh3ZIk1E1ievqb2J/Oie8PPDUISIKHxaV43UA
-         3QZEMGuWRXmWwq9E32pvgdqRJ3EjpLBVWpiAmFWZyGftvRGlPXVBZ7iLogYGRQUBX7gD
-         EsBWyvCKBe1oOb3cgbR+aQIlP9i5fNjHows4RjYBi36P54r06vdC+7v/hKXTkvrZl9pu
-         zFnvcLetd2iH+cpqVIoRB32xAnKdVecV4eHHVmXfoW90fU4WwfZSruxspJfNQtlLnq0W
-         aJJg==
-X-Gm-Message-State: AOAM533EZ7kO4gzcsogZdEB4Ww4j/lNH47Qt3RvKu376Q6oYzx+uX59e
-        1ro8wZ7W/Xvs+EfJk9n6f1vVsWjn23xUIbczny3Pvg==
-X-Google-Smtp-Source: ABdhPJxhNGyqsLT6k8Bxnxe0BQDXXGxD/VmjU/Ju+m5Ftr+9Ql55KKi1LMJz+or4Ekd3G8wphgKajB3wLeYYk6dLDuc=
-X-Received: by 2002:ac2:5d4a:: with SMTP id w10mr17773309lfd.529.1628018058868;
- Tue, 03 Aug 2021 12:14:18 -0700 (PDT)
+        id S239611AbhHCTSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 15:18:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33858 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238188AbhHCTSj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 15:18:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D2D4661037;
+        Tue,  3 Aug 2021 19:18:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628018307;
+        bh=Ls8CHkpBnIy6o43INUTkceCYHQjgavmnxsmD78va1Rk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=kLqXMEY8C39pJI+Gt66lw/xI0qFymKayRjVKoOOi3ZjlWIAmesq8AYOgHYhiYv8pX
+         bX8pIoE7SS3IQZczuX+d9/xSChaZKZjdp0qciy8FaJO/X4Q74UZCJvJo9vy/iqGx2Q
+         ApR+kqdcbXB97ju0fYYYs+XtD803oe9yqk4Y3XwpzEtkIQJxrjjobbpTMs+QSOu5Gi
+         05I3N5rOPrF+zVw17EKo69J0jHDtEulT+cXR8/uBkVydJqI6A0fA3sDSvPg1/BPsfp
+         qfNNcWOCnUkcRYyLTsXbUhCxUtz22qB5cg3g8UzU0nm9i1k8DZnbTXFHD4trbumu2U
+         vixkYquKjAEMw==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] netfilter: ipset: Fix maximal range check in hash_ipportnet4_uadt()
+Date:   Tue,  3 Aug 2021 12:18:13 -0700
+Message-Id: <20210803191813.282980-1-nathan@kernel.org>
+X-Mailer: git-send-email 2.33.0.rc0
 MIME-Version: 1.0
-References: <20210803150904.80119-1-colin.king@canonical.com>
-In-Reply-To: <20210803150904.80119-1-colin.king@canonical.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 3 Aug 2021 21:14:07 +0200
-Message-ID: <CACRpkdZ5u-C8uH2pCr1689v_ndyzqevDDksXvtPYv=FfD=x_xg@mail.gmail.com>
-Subject: Re: [PATCH][next] brcmfmac: firmware: Fix uninitialized variable ret
-To:     Colin King <colin.king@canonical.com>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev <netdev@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Patchwork-Bot: notify
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 3, 2021 at 5:09 PM Colin King <colin.king@canonical.com> wrote:
+Clang warns:
 
-> From: Colin Ian King <colin.king@canonical.com>
->
-> Currently the variable ret is uninitialized and is only set if
-> the pointer alt_path is non-null. Fix this by ininitializing ret
-> to zero.
->
-> Addresses-Coverity: ("Uninitialized scalar variable")
-> Fixes: 5ff013914c62 ("brcmfmac: firmware: Allow per-board firmware binaries")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+net/netfilter/ipset/ip_set_hash_ipportnet.c:249:29: warning: variable
+'port_to' is uninitialized when used here [-Wuninitialized]
+        if (((u64)ip_to - ip + 1)*(port_to - port + 1) > IPSET_MAX_RANGE)
+                                   ^~~~~~~
+net/netfilter/ipset/ip_set_hash_ipportnet.c:167:45: note: initialize the
+variable 'port_to' to silence this warning
+        u32 ip = 0, ip_to = 0, p = 0, port, port_to;
+                                                   ^
+                                                    = 0
+net/netfilter/ipset/ip_set_hash_ipportnet.c:249:39: warning: variable
+'port' is uninitialized when used here [-Wuninitialized]
+        if (((u64)ip_to - ip + 1)*(port_to - port + 1) > IPSET_MAX_RANGE)
+                                             ^~~~
+net/netfilter/ipset/ip_set_hash_ipportnet.c:167:36: note: initialize the
+variable 'port' to silence this warning
+        u32 ip = 0, ip_to = 0, p = 0, port, port_to;
+                                          ^
+                                           = 0
+2 warnings generated.
 
-Nice catch!
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+The range check was added before port and port_to are initialized.
+Shuffle the check after the initialization so that the check works
+properly.
 
-Yours,
-Linus Walleij
+Fixes: 7fb6c63025ff ("netfilter: ipset: Limit the maximal range of consecutive elements to add/delete")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+ net/netfilter/ipset/ip_set_hash_ipportnet.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/net/netfilter/ipset/ip_set_hash_ipportnet.c b/net/netfilter/ipset/ip_set_hash_ipportnet.c
+index b293aa1ff258..7df94f437f60 100644
+--- a/net/netfilter/ipset/ip_set_hash_ipportnet.c
++++ b/net/netfilter/ipset/ip_set_hash_ipportnet.c
+@@ -246,9 +246,6 @@ hash_ipportnet4_uadt(struct ip_set *set, struct nlattr *tb[],
+ 		ip_set_mask_from_to(ip, ip_to, cidr);
+ 	}
+ 
+-	if (((u64)ip_to - ip + 1)*(port_to - port + 1) > IPSET_MAX_RANGE)
+-		return -ERANGE;
+-
+ 	port_to = port = ntohs(e.port);
+ 	if (tb[IPSET_ATTR_PORT_TO]) {
+ 		port_to = ip_set_get_h16(tb[IPSET_ATTR_PORT_TO]);
+@@ -256,6 +253,9 @@ hash_ipportnet4_uadt(struct ip_set *set, struct nlattr *tb[],
+ 			swap(port, port_to);
+ 	}
+ 
++	if (((u64)ip_to - ip + 1)*(port_to - port + 1) > IPSET_MAX_RANGE)
++		return -ERANGE;
++
+ 	ip2_to = ip2_from;
+ 	if (tb[IPSET_ATTR_IP2_TO]) {
+ 		ret = ip_set_get_hostipaddr4(tb[IPSET_ATTR_IP2_TO], &ip2_to);
+
+base-commit: 4d3fc8ead710a06c98d36f382777c6a843a83b7c
+-- 
+2.33.0.rc0
+
