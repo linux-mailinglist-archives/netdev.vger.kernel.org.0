@@ -2,73 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BEFA3DF105
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 17:03:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A102E3DF109
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 17:04:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236618AbhHCPDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 11:03:51 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:60122 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236643AbhHCPDs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 11:03:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=00bMcGZr7g/To2yLQfcu2mY9cs2Wv9EJDvKiwmXlYDE=; b=d3fZd4o4xomyFb/dI6z3/8fThI
-        Wncae1mmk9zKB+PhqU4NHOd/7NPpabhQNnTlPI3LYEVgB7XAXGJznRphwH/3QGI9yKL+Dze4S4V4s
-        nGk9NPP2laqoFfc6k4nQR+5+qIaMQNFvL1+VDhJMdCRPcsK52SgIpc0Tt/99S1nWAXlk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mAvx7-00Fysd-MY; Tue, 03 Aug 2021 17:03:33 +0200
-Date:   Tue, 3 Aug 2021 17:03:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com, Fei Qin <fei.qin@corigine.com>,
-        Louis Peens <louis.peens@corigine.com>
-Subject: Re: [PATCH net] nfp: update ethtool reporting of pauseframe control
-Message-ID: <YQlaxfef22GxTF9r@lunn.ch>
-References: <20210803103911.22639-1-simon.horman@corigine.com>
+        id S236085AbhHCPEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 11:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38930 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235932AbhHCPEO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 11:04:14 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F244C061757
+        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 08:04:03 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id b13so14793357wrs.3
+        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 08:04:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=K3/JMg8FEzWcKtCaV5PSGvcVeIOGw/bKDM+HHJV/2hg=;
+        b=cP045yghZHgLKxtRgIaQySkE+hD3mRHFkEIMjAyMLBWlWbNWl0fdykUmFB1qG+OVQo
+         Y6yIlbRHl0L0VHxDFl3JBv6ewCxACZJTrmuEqWczS/I8z7XmFy0I7+pEtgGcEVGpZDK7
+         f/egYzXkUdejlz931KY2QdBu9Etw48cSQkxTLqqgS12TT0R6Y0nWl/II3/NeLoEWZEMv
+         L2xnvwXJZDUER6LsPQMNkdqZqlXjoaCP12K97TXv1NUi2gATNar8k/94kL32HqvGdxd4
+         WAl/bxBqwjFVeRbl9DssVKDsuuuHJwuAv2TQKVo5Hffpv5WfFaZpVIE0P0Puw6MnY2Wm
+         Z2Xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=K3/JMg8FEzWcKtCaV5PSGvcVeIOGw/bKDM+HHJV/2hg=;
+        b=hATvZ14inJQXFVdJZ1ZUJByShkt8z7QR/U85pcO9ncr8SKNWuTyN3lz+hKBECbVfYo
+         mkSxRE3Uya4Ymj9y6W+5TJ4+0RsQznJyHUJU9ZA9UhLyyFJdff3gBrvf1f4881db3LqC
+         9toRbhLzpsM4xtOsXISMugD76znRC7js1RMtaUoBS2frZa1t8e5PrlSJjsg46bcsqnCX
+         9phWvpOPFbAmC3qA/psf5uS9ZStgcoQeHjcFP7AiphKunRW4Lyaoiw+oxlxDDL+hNMyZ
+         8klCIFcoXismExnZuRwzE7D34hDL/tabQMifa0RNBi27LQtEs7KOLNl9tMePRc8fK9yF
+         ggZg==
+X-Gm-Message-State: AOAM5331RAJJe5cIjMhL2q6SbW0YC9RHu/wD25opJd1ult+sh9PP02bB
+        Il+4dwyYuhG3e/r7ft/FCFI=
+X-Google-Smtp-Source: ABdhPJw1ZIVijQcctnMLos+87V3LSqmVWYSuo4fOuZ/ngDMleRs9TFH1Ki5m++tZntieyb53WYu81Q==
+X-Received: by 2002:a5d:6d82:: with SMTP id l2mr22078828wrs.225.1628003042145;
+        Tue, 03 Aug 2021 08:04:02 -0700 (PDT)
+Received: from [10.0.0.18] ([37.165.199.45])
+        by smtp.gmail.com with ESMTPSA id d15sm14606834wrn.28.2021.08.03.08.03.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Aug 2021 08:04:01 -0700 (PDT)
+Subject: Re: [RFC net-next] ipv6: Attempt to improve options code parsing
+To:     Justin Iurman <justin.iurman@uliege.be>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, eric.dumazet@gmail.com, tom@herbertland.com
+References: <20210802205133.24071-1-justin.iurman@uliege.be>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <ce46ace3-11b9-6a75-b665-cee79252550e@gmail.com>
+Date:   Tue, 3 Aug 2021 17:03:52 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210803103911.22639-1-simon.horman@corigine.com>
+In-Reply-To: <20210802205133.24071-1-justin.iurman@uliege.be>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 03, 2021 at 12:39:11PM +0200, Simon Horman wrote:
-> From: Fei Qin <fei.qin@corigine.com>
-> 
-> Pauseframe control is set to symmetric mode by default on the NFP.
-> Pause frames can not be configured through ethtool now, but ethtool can
-> report the supported mode.
-> 
-> Fixes: 265aeb511bd5 ("nfp: add support for .get_link_ksettings()")
-> Signed-off-by: Fei Qin <fei.qin@corigine.com>
-> Signed-off-by: Louis Peens <louis.peens@corigine.com>
-> Signed-off-by: Simon Horman <simon.horman@corigine.com>
-> ---
->  drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-> index 1b482446536d..8803faadd302 100644
-> --- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-> +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-> @@ -286,6 +286,8 @@ nfp_net_get_link_ksettings(struct net_device *netdev,
->  
->  	/* Init to unknowns */
->  	ethtool_link_ksettings_add_link_mode(cmd, supported, FIBRE);
-> +	ethtool_link_ksettings_add_link_mode(cmd, supported, Pause);
-> +	ethtool_link_ksettings_add_link_mode(cmd, advertising, Pause);
 
-Hi Simon
 
-Does it act on the results of the pause auto-neg? If the link peer
-says it does not support pause, will it turn pause off?
+On 8/2/21 10:51 PM, Justin Iurman wrote:
+> As per Eric's comment on a previous patchset that was adding a new HopbyHop
+> option, i.e. why should a new option appear before or after existing ones in the
+> list, here is an attempt to suppress such competition. It also improves the
+> efficiency and fasten the process of matching a Hbh or Dst option, which is
+> probably something we want regarding the list of new options that could quickly
+> grow in the future.
+> 
+> Basically, the two "lists" of options (Hbh and Dst) are replaced by two arrays.
+> Each array has a size of 256 (for each code point). Each code point points to a
+> function to process its specific option.
+> 
+> Thoughts?
+> 
+Hi Justin
 
-     Andrew
+I think this still suffers from indirect call costs (CONFIG_RETPOLINE=y),
+and eventually use more dcache.
+
+Since we only deal with two sets/arrays, I would simply get rid of them
+and inline the code using two switch() clauses.
+
+I cooked the following patch instead:
+
+
+ net/ipv6/exthdrs.c |  102 ++++++++++++++++++++++++++++++++++++++++++++++--------------------------------------------------------
+ 1 file changed, 46 insertions(+), 56 deletions(-)
+
+diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
+index d897faa4e9e63831b9b4f0ad0e59bf7032b2bd96..5acdc62bb5419b81cac46c935d7436f490dc3e74 100644
+--- a/net/ipv6/exthdrs.c
++++ b/net/ipv6/exthdrs.c
+@@ -55,19 +55,6 @@
+ 
+ #include <linux/uaccess.h>
+ 
+-/*
+- *     Parsing tlv encoded headers.
+- *
+- *     Parsing function "func" returns true, if parsing succeed
+- *     and false, if it failed.
+- *     It MUST NOT touch skb->h.
+- */
+-
+-struct tlvtype_proc {
+-       int     type;
+-       bool    (*func)(struct sk_buff *skb, int offset);
+-};
+-
+ /*********************
+   Generic functions
+  *********************/
+@@ -112,9 +99,17 @@ static bool ip6_tlvopt_unknown(struct sk_buff *skb, int optoff,
+        return false;
+ }
+ 
++static bool ipv6_hop_ra(struct sk_buff *skb, int optoff);
++static bool ipv6_hop_ioam(struct sk_buff *skb, int optoff);
++static bool ipv6_hop_jumbo(struct sk_buff *skb, int optoff);
++static bool ipv6_hop_calipso(struct sk_buff *skb, int optoff);
++#if IS_ENABLED(CONFIG_IPV6_MIP6)
++static bool ipv6_dest_hao(struct sk_buff *skb, int optoff);
++#endif
++
+ /* Parse tlv encoded option header (hop-by-hop or destination) */
+ 
+-static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
++static bool ip6_parse_tlv(bool hopbyhop,
+                          struct sk_buff *skb,
+                          int max_count)
+ {
+@@ -176,20 +171,45 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
+                        if (tlv_count > max_count)
+                                goto bad;
+ 
+-                       for (curr = procs; curr->type >= 0; curr++) {
+-                               if (curr->type == nh[off]) {
+-                                       /* type specific length/alignment
+-                                          checks will be performed in the
+-                                          func(). */
+-                                       if (curr->func(skb, off) == false)
++                       if (hopbyhop) {
++                               switch (nh[off]) {
++                               case IPV6_TLV_ROUTERALERT:
++                                       if (!ipv6_hop_ra(skb, off))
++                                               return false;
++                                       break;
++                               case IPV6_TLV_IOAM:
++                                       if (!ipv6_hop_ioam(skb, off))
++                                               return false;
++                                       break;
++                               case IPV6_TLV_JUMBO:
++                                       if (!ipv6_hop_jumbo(skb, off))
++                                               return false;
++                                       break;
++                               case IPV6_TLV_CALIPSO:
++                                       if (!ipv6_hop_calipso(skb, off))
++                                               return false;
++                                       break;
++                               default:
++                                       if (!ip6_tlvopt_unknown(skb, off,
++                                                               disallow_unknowns))
++                                               return false;
++                                       break;
++                               }
++                       } else {
++                               switch (nh[off]) {
++#if IS_ENABLED(CONFIG_IPV6_MIP6)
++                               case IPV6_TLV_HAO:
++                                       if (!ipv6_dest_hao(skb, off))
++                                               return false;
++                                       break;
++#endif
++                               default:
++                                       if (!ip6_tlvopt_unknown(skb, off,
++                                                               disallow_unknowns))
+                                                return false;
+                                        break;
+                                }
+                        }
+-                       if (curr->type < 0 &&
+-                           !ip6_tlvopt_unknown(skb, off, disallow_unknowns))
+-                               return false;
+-
+                        padlen = 0;
+                }
+                off += optlen;
+@@ -267,16 +287,6 @@ static bool ipv6_dest_hao(struct sk_buff *skb, int optoff)
+ }
+ #endif
+ 
+-static const struct tlvtype_proc tlvprocdestopt_lst[] = {
+-#if IS_ENABLED(CONFIG_IPV6_MIP6)
+-       {
+-               .type   = IPV6_TLV_HAO,
+-               .func   = ipv6_dest_hao,
+-       },
+-#endif
+-       {-1,                    NULL}
+-};
+-
+ static int ipv6_destopt_rcv(struct sk_buff *skb)
+ {
+        struct inet6_dev *idev = __in6_dev_get(skb->dev);
+@@ -307,7 +317,7 @@ static int ipv6_destopt_rcv(struct sk_buff *skb)
+        dstbuf = opt->dst1;
+ #endif
+ 
+-       if (ip6_parse_tlv(tlvprocdestopt_lst, skb,
++       if (ip6_parse_tlv(false, skb,
+                          net->ipv6.sysctl.max_dst_opts_cnt)) {
+                skb->transport_header += extlen;
+                opt = IP6CB(skb);
+@@ -1051,26 +1061,6 @@ static bool ipv6_hop_calipso(struct sk_buff *skb, int optoff)
+        return false;
+ }
+ 
+-static const struct tlvtype_proc tlvprochopopt_lst[] = {
+-       {
+-               .type   = IPV6_TLV_ROUTERALERT,
+-               .func   = ipv6_hop_ra,
+-       },
+-       {
+-               .type   = IPV6_TLV_IOAM,
+-               .func   = ipv6_hop_ioam,
+-       },
+-       {
+-               .type   = IPV6_TLV_JUMBO,
+-               .func   = ipv6_hop_jumbo,
+-       },
+-       {
+-               .type   = IPV6_TLV_CALIPSO,
+-               .func   = ipv6_hop_calipso,
+-       },
+-       { -1, }
+-};
+-
+ int ipv6_parse_hopopts(struct sk_buff *skb)
+ {
+        struct inet6_skb_parm *opt = IP6CB(skb);
+@@ -1096,7 +1086,7 @@ int ipv6_parse_hopopts(struct sk_buff *skb)
+                goto fail_and_free;
+ 
+        opt->flags |= IP6SKB_HOPBYHOP;
+-       if (ip6_parse_tlv(tlvprochopopt_lst, skb,
++       if (ip6_parse_tlv(true, skb,
+                          net->ipv6.sysctl.max_hbh_opts_cnt)) {
+                skb->transport_header += extlen;
+                opt = IP6CB(skb);
+
+
