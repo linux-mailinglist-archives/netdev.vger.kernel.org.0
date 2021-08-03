@@ -2,163 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62FF23DE83B
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 10:21:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ECAE3DE84C
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 10:23:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234500AbhHCIV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 04:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51498 "EHLO
+        id S234599AbhHCIXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 04:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234514AbhHCIVy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 04:21:54 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 038BEC06175F
-        for <netdev@vger.kernel.org>; Tue,  3 Aug 2021 01:21:44 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id c16so24324147wrp.13
-        for <netdev@vger.kernel.org>; Tue, 03 Aug 2021 01:21:43 -0700 (PDT)
+        with ESMTP id S234440AbhHCIXh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 04:23:37 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5069C0613D5;
+        Tue,  3 Aug 2021 01:23:25 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id g23-20020a17090a5797b02901765d605e14so3649891pji.5;
+        Tue, 03 Aug 2021 01:23:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=ff8CbE6jGXEso54aflbQk2VZqd85TX8kAjjTf3E2Nkg=;
-        b=UW5t912ieE7zLk/2pH3wZsrM17q1hsTlAlclN64xIWil7pk1ce2fJQUPAYgm6L+02k
-         m+Bs4HvqS2BUzuUN/NKy1VP86NV4Zn051TYa4G3XJafiMqcti1+EUN3v42jEfFO8aLy6
-         WMxmqfpT865mtkM7UQDrjHn2co5uvB6672vKTPQkRep+f+5ybkBkIBFBMnhi48cyA9IA
-         9TDTFchguVODAsJXpri63+A/u1JLIgBEUV1RFK+OhDlY0NLkT85zIGNMlnSJSsL2oDDl
-         eCIkZj2YxwFzyFguXIeyqCHu/yNp5x1ojPw5BgE+keosUIrh2jXhHpajIimolxbnPkmN
-         PltA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=fDhSpWOSrYcVlwun8gKdxsTr1lzh+svxX3HU4xChX8k=;
+        b=IUdeMuz+/AS3Ep+u+FgMmD8Ox6TBlMgruYzD3GGNU7o1g1ERcVRhhBK/QgocRFpo7f
+         gGYBlsGd8+5pZWrW+mPMa6aLOPBpiqUczPgvHyUp7nupFcyHo88cpDA8ALjYMj2MNSBR
+         DksADRmnQIYXtjsXZ9VhqjkF2z41KTxb7dyjY8zmj4YjawVdan1jzzdNpWbHA7JxPlSg
+         ob28eHXI6oKEsKT8LSQapasliDnnsiI9A2CyTXaAUrrdOQUD266AOm/FhAMtLP0h8vPC
+         hm4Dhxxh/vtAOkfy/GRGihnbs+beU56rmS0jeAX9YOqjoCWqXBAXYGvjMJCijGx/GP6I
+         Px3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=ff8CbE6jGXEso54aflbQk2VZqd85TX8kAjjTf3E2Nkg=;
-        b=YyIbnpFFX3DuzgOrCl7qFzK/JS53btO3vJhCbF2r5jJQIvEwTi/+n/Uf6d24lsGRNB
-         rGxAbcpIsDizMVzupgzzuDXP+pUqHUobcgF5m/n+lCMA9gkHscqbYRbW47xVn8PbHn4+
-         EBIy5D5WKNHrsUm+feR+Ji/bHdswqPagB75TxnwPLGp3WR4qAPkZTNLVouGuqid8gOt8
-         p2jWR2ZPOcf2dpwK4job6g2813QA6xT3hBFPRBC9Q4ADl1COhSZVha2A6GjgUShwbhCf
-         2dlfMkU4xpS747ZNKOKGg/DrJSaRNKO8D5KqZf++MqXaBcadsyt/9m6Y26ppiqLzTS/C
-         iUeg==
-X-Gm-Message-State: AOAM532VUZkCtA1tfDUGmgKptVppmE3cL+tIHueNGq2Bc/5VyL8WTmGC
-        midWiLaSAau1ihGA6rFijyQNvA==
-X-Google-Smtp-Source: ABdhPJxdD7RF3mIAbn9PzHNHSEOPHH2/jZSzAf8dHX8Fxu5P1cY3R+EphN1AFxnu5QF6SD/R5lnScg==
-X-Received: by 2002:adf:e0c8:: with SMTP id m8mr21518572wri.261.1627978902501;
-        Tue, 03 Aug 2021 01:21:42 -0700 (PDT)
-Received: from localhost ([2a01:cb19:826e:8e00:1497:8bbf:2d4a:ce01])
-        by smtp.gmail.com with ESMTPSA id y197sm1839739wmc.7.2021.08.03.01.21.41
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=fDhSpWOSrYcVlwun8gKdxsTr1lzh+svxX3HU4xChX8k=;
+        b=fBDw4oGry0u35w282Bi8dAXp3zTUPYBWlih3nWNt878fxvsFFelw8lsfbHbYR58tXJ
+         bhX85TqnU57l7F3DrT7u99lNYb73Z00CoIbn9gtfkAPqnYym8+eOlMe+A5/ctk3gRB5J
+         QyTislwW6nT6cu2YnYlSlBKlvTfxExAgXD5/+SIW0Q0XnL6goUxriZysD0y4F5ZmzEwX
+         bdaQ8fIwKqZ8xH3LmUNOXPZ/PhQeAbwEgOjK7br9IheuQoZxN+dQSRY6bF/nyCrFUgBc
+         WCXo2OtI7ItDvPLKvLHIG/7HyTllwDmwSLmuxizuIhrDPeBUJjmHYlsbOF99olljY2Qb
+         q15Q==
+X-Gm-Message-State: AOAM532o5lRdLZNXZf60HNA07VVnpNCHGGfNzN0W8c8D0Bs9ya3qtaCu
+        Zfn3fof/DDQ2qx3gY8cNg54=
+X-Google-Smtp-Source: ABdhPJzNZWth+D0i4tKa/kdtzaQkkuP562QJnrg5hpFwhUMJpx6kbamQt1Vc91d9ILTlZ3M1XGaMmw==
+X-Received: by 2002:a17:90a:7106:: with SMTP id h6mr3208328pjk.222.1627979005366;
+        Tue, 03 Aug 2021 01:23:25 -0700 (PDT)
+Received: from haswell-ubuntu20.lan ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id h16sm13815443pfn.215.2021.08.03.01.23.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Aug 2021 01:21:42 -0700 (PDT)
-From:   Mattijs Korpershoek <mkorpershoek@baylibre.com>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Tue, 03 Aug 2021 01:23:24 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        "open list:BLUETOOTH SUBSYSTEM" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] Bluetooth: Shutdown controller after workqueues are
- flushed or cancelled
-In-Reply-To: <CAAd53p4Ss1Z-7CB4g=_xZYxo1xDz6ih6GHUuMcgncy+yNAfU4w@mail.gmail.com>
-References: <20210514071452.25220-1-kai.heng.feng@canonical.com>
- <576B26FD-81F8-4632-82F6-57C4A7C096C4@holtmann.org>
- <8735ryk0o7.fsf@baylibre.com>
- <CAAd53p7Zc3Zk21rwj_x1BLgf8tWRxaKBmXARkM6d7Kpkb+fDZA@mail.gmail.com>
- <87y29o58su.fsf@baylibre.com>
- <CAAd53p4Ss1Z-7CB4g=_xZYxo1xDz6ih6GHUuMcgncy+yNAfU4w@mail.gmail.com>
-Date:   Tue, 03 Aug 2021 10:21:40 +0200
-Message-ID: <87a6lzx7jf.fsf@baylibre.com>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Eric Woudstra <ericwouds@gmail.com>,
+        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
+        Frank Wunderlich <frank-w@public-files.de>
+Subject: Re: [RFC net-next v2 3/4] net: dsa: mt7530: set STP state also on filter ID 1
+Date:   Tue,  3 Aug 2021 16:23:16 +0800
+Message-Id: <20210803082316.2910759-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210802210006.fhmb5s6dsnziyk7d@skbuf>
+References: <20210731191023.1329446-1-dqfext@gmail.com> <20210731191023.1329446-4-dqfext@gmail.com> <20210802134336.gv66le6u2z52kfkh@skbuf> <20210802153129.1817825-1-dqfext@gmail.com> <20210802154226.qggqzkxe6urkx3yf@skbuf> <20210802155810.1818085-1-dqfext@gmail.com> <20210802210006.fhmb5s6dsnziyk7d@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kai-Heng,
+On Tue, Aug 03, 2021 at 12:00:06AM +0300, Vladimir Oltean wrote:
+> 
+> So then change the port STP state only for FID 1 and resend. Any other
+> reason why this patch series is marked RFC? It looked okay to me otherwise.
 
-Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
+Okay, will resend with that change and without RFC.
 
-> Hi Mattijs,
->
-> On Fri, Jul 30, 2021 at 7:40 PM Mattijs Korpershoek
-> <mkorpershoek@baylibre.com> wrote:
->>
->> Hi Kai-Heng,
->
-> [snipped]
->
->> Thank you for your help. Sorry I did not post the logs previously.
->>
->> dmesg: https://pastebin.com/tpWDNyQr
->> ftrace on btmtksdio: https://pastebin.com/jmhvmwUw
->
-> Seems like btmtksdio needs shudown() to be called before flush().
-> Since the order was there for a very long time, changing the calling
-> order indeed can break what driver expects.
-> Can you please test the following patch:
-> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> index 2560ed2f144d..a61e610a400c 100644
-> --- a/net/bluetooth/hci_core.c
-> +++ b/net/bluetooth/hci_core.c
-> @@ -1785,6 +1785,14 @@ int hci_dev_do_close(struct hci_dev *hdev)
->         aosp_do_close(hdev);
->         msft_do_close(hdev);
->
-> +       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
-> +           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
-> +           test_bit(HCI_UP, &hdev->flags)) {
-> +               /* Execute vendor specific shutdown routine */
-> +               if (hdev->shutdown)
-> +                       hdev->shutdown(hdev);
-> +       }
-> +
->         if (hdev->flush)
->                 hdev->flush(hdev);
->
-> @@ -1798,14 +1806,6 @@ int hci_dev_do_close(struct hci_dev *hdev)
->                 clear_bit(HCI_INIT, &hdev->flags);
->         }
->
-> -       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
-> -           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
-> -           test_bit(HCI_UP, &hdev->flags)) {
-> -               /* Execute vendor specific shutdown routine */
-> -               if (hdev->shutdown)
-> -                       hdev->shutdown(hdev);
-> -       }
-> -
->         /* flush cmd  work */
->         flush_work(&hdev->cmd_work);
-
-Thanks for the patch and your help.
-I've tried it, but it seems that it does not improve for me.
-I'm still observing:
-
-i500-pumpkin login: root                                                                  
-root@i500-pumpkin:~# hciconfig hci0 up                                                    
-Can't init device hci0: Connection timed out (110)
-
-Logs for this session:
-dmesg:   https://pastebin.com/iAFk5Tzi
-ftrace:  https://pastebin.com/kEMWSYrE
-
-
->
-> Kai-Heng
->
->>
->> Mattijs
->> >
->> > Kai-Heng
->> >
->> >>
->> >> Thanks,
->> >> Mattijs Korpershoek
->> >>
->> >>
->> >> >
->> >> > Regards
->> >> >
->> >> > Marcel
+By the way, if I were to implement .port_fast_age, should I only flush
+dynamically learned FDB entries? What about MDB entries?
