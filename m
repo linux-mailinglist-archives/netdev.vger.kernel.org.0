@@ -2,203 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B26153DF6B4
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 23:04:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F34EA3DF6B7
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 23:07:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231661AbhHCVEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 17:04:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37796 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230509AbhHCVEs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 17:04:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 62FB260C3F;
-        Tue,  3 Aug 2021 21:04:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628024676;
-        bh=ZMGrcXr8Q//EvHdWsc2BWNseegZXSNDQ76jEtLjlZ80=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CPraMzawD4vrbyneaMQzVdt3+zOWqa+aPm7448eREZkukEftRMKlCy1I+3oTdIFfV
-         NcueDYDdWq+8zPkyr62w6oalrgWgfw7Ppujwo5s4bvCvYUXnt/MaIIMlG3gAYmZ28t
-         DY83h1QiEsGGr7lrIxZ0la7t1xe5nj5FBkq9Yd3Q1lGPWN3HUvYvkz0PMRSCJhuKa6
-         89cvRy2Df4pkB4SIIX7PyjV2UXQk3IOJTcNqJy1L64Ky5mE374RGxiUOAT7kEsYSIF
-         XaHdyY6VWsm4pwl/dYguafmvB08YMbjueFH+mHQ7W9ur1cucvyNDWc0BFW1cDPhmg8
-         P0MrK/xVntmyg==
-Date:   Tue, 3 Aug 2021 14:04:35 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     syzbot <syzbot+c5ac86461673ef58847c@syzkaller.appspotmail.com>,
-        davem@davemloft.net, dsahern@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-Subject: Re: [syzbot] net-next boot error: WARNING: refcount bug in
- fib_create_info
-Message-ID: <20210803140435.19e560fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <e6eab0c9-7b2e-179b-b9c0-459dd9a75ed1@gmail.com>
-References: <0000000000005e090405c8a9e1c3@google.com>
-        <02372175-c3a1-3f8e-28fe-66d812f4c612@gmail.com>
-        <e6eab0c9-7b2e-179b-b9c0-459dd9a75ed1@gmail.com>
+        id S231716AbhHCVHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 17:07:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43946 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231519AbhHCVHN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 17:07:13 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0044AC061757;
+        Tue,  3 Aug 2021 14:07:00 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id x7so142077ljn.10;
+        Tue, 03 Aug 2021 14:07:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=L3rU4ifoOnF4riIv3FdwQH45WWMP9lZjaHwDZe8Bc0w=;
+        b=nKsAbERg5PscQchW8ZdrISG1iFWtuqT/GuK7OjZlJRfD6+/S39/iSpyDAXYJ+LKr7F
+         t3tkRJGhu7PixYBgq27Plsr0rUj8/x53daXtKlYVv16aVtseC+WkFTf/tVTUsLRuvwrt
+         USF1bTuXDqLSJFeETDR/qEt8kpNVUy3RXS/4S16AODXzeGajztLwOsbi99JUFMZRbx4p
+         hKSzZEB2Liamf5mp7zpc1LftuRYsCKyngEQDQg+dQZkiAacgXhUNPDyK6tZANsV6t8DG
+         RG2ymOje8/sNkCQJuTmzd0oeUnse6YQJFbXFba3vZQq1T/agazv14GDE2YgVARgPUQUq
+         c5iQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=L3rU4ifoOnF4riIv3FdwQH45WWMP9lZjaHwDZe8Bc0w=;
+        b=rGQdsM3OAuwcUmQsDjwKp22ddtIUEHagn+Kf6vg6dbWDLfG0FmMh9/oBhhZs3onaKg
+         uvlh1isxV2xpnmJg99ev4MLP7Ntv8XG+GnXPyh2rlsI/5bWH0jIM2p5E7sufkOR1DTtY
+         H1yJkZvcY54NpHTceng37TZqXEeYUfOv+EELphsRR8TpAnj4grNU0/tYhBd04TdkDnC5
+         p1FFbk6oFbbwZ6jtVB1wR2osWljQMSWnVpOw9m0IEXRaMvyP2WQufDTU9pdZwBbfqkMr
+         FkgtmHcgvUEuFRxBUPGUHvNUO2ZuuY9T0xaHMyjQ1nKPWfDLmpOQAtZY/JjdiPRLZiyP
+         jgOA==
+X-Gm-Message-State: AOAM531ZBpip6Z2d01FJmR8UPGXfQ4NnbyqE1SzsGunzFxmAE6MGJ1VC
+        dz5It1jjyfVSOPTRu+OMl7M=
+X-Google-Smtp-Source: ABdhPJwNrELtfqA+rtCvFIEtXaXkXQf90EOhlU/qk4TAZyWwi1CorPso6tt0CRE/zEU/YI8/HT9S5A==
+X-Received: by 2002:a2e:8145:: with SMTP id t5mr15904927ljg.432.1628024819425;
+        Tue, 03 Aug 2021 14:06:59 -0700 (PDT)
+Received: from [192.168.1.102] ([178.176.76.0])
+        by smtp.gmail.com with ESMTPSA id e14sm1347208lfn.97.2021.08.03.14.06.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Aug 2021 14:06:58 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 7/8] ravb: Add internal delay hw feature to
+ struct ravb_hw_info
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20210802102654.5996-1-biju.das.jz@bp.renesas.com>
+ <20210802102654.5996-8-biju.das.jz@bp.renesas.com>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Message-ID: <ca7f38af-8ba7-877b-e76e-d30537f54fed@gmail.com>
+Date:   Wed, 4 Aug 2021 00:06:57 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210802102654.5996-8-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 3 Aug 2021 19:31:50 +0300 Pavel Skripkin wrote:
-> On 8/3/21 7:12 PM, Pavel Skripkin wrote:
-> > On 8/3/21 7:07 PM, syzbot wrote:  
-> >> Hello,
-> >> 
-> >> syzbot found the following issue on:
-> >> 
-> >> HEAD commit:    1187c8c4642d net: phy: mscc: make some arrays static const..
-> >> git tree:       net-next
-> >> console output: https://syzkaller.appspot.com/x/log.txt?x=140e7b3e300000
-> >> kernel config:  https://syzkaller.appspot.com/x/.config?x=f9bb42efdc6f1d7
-> >> dashboard link: https://syzkaller.appspot.com/bug?extid=c5ac86461673ef58847c
-> >> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
-> >> 
-> >> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> >> Reported-by: syzbot+c5ac86461673ef58847c@syzkaller.appspotmail.com
-> >> 
-> >> FS-Cache: Netfs 'afs' registered for caching
-> >> Btrfs loaded, crc32c=crc32c-intel, assert=on, zoned=yes
-> >> Key type big_key registered
-> >> Key type encrypted registered
-> >> AppArmor: AppArmor sha1 policy hashing enabled
-> >> ima: No TPM chip found, activating TPM-bypass!
-> >> Loading compiled-in module X.509 certificates
-> >> Loaded X.509 cert 'Build time autogenerated kernel key: f850c787ad998c396ae089c083b940ff0a9abb77'
-> >> ima: Allocated hash algorithm: sha256
-> >> ima: No architecture policies found
-> >> evm: Initialising EVM extended attributes:
-> >> evm: security.selinux (disabled)
-> >> evm: security.SMACK64 (disabled)
-> >> evm: security.SMACK64EXEC (disabled)
-> >> evm: security.SMACK64TRANSMUTE (disabled)
-> >> evm: security.SMACK64MMAP (disabled)
-> >> evm: security.apparmor
-> >> evm: security.ima
-> >> evm: security.capability
-> >> evm: HMAC attrs: 0x1
-> >> PM:   Magic number: 1:990:690
-> >> printk: console [netcon0] enabled
-> >> netconsole: network logging started
-> >> gtp: GTP module loaded (pdp ctx size 104 bytes)
-> >> rdma_rxe: loaded
-> >> cfg80211: Loading compiled-in X.509 certificates for regulatory database
-> >> cfg80211: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
-> >> ALSA device list:
-> >>    #0: Dummy 1
-> >>    #1: Loopback 1
-> >>    #2: Virtual MIDI Card 1
-> >> md: Waiting for all devices to be available before autodetect
-> >> md: If you don't use raid, use raid=noautodetect
-> >> md: Autodetecting RAID arrays.
-> >> md: autorun ...
-> >> md: ... autorun DONE.
-> >> EXT4-fs (sda1): mounted filesystem without journal. Opts: (null). Quota mode: none.
-> >> VFS: Mounted root (ext4 filesystem) readonly on device 8:1.
-> >> devtmpfs: mounted
-> >> Freeing unused kernel image (initmem) memory: 4476K
-> >> Write protecting the kernel read-only data: 169984k
-> >> Freeing unused kernel image (text/rodata gap) memory: 2012K
-> >> Freeing unused kernel image (rodata/data gap) memory: 1516K
-> >> Run /sbin/init as init process
-> >> systemd[1]: systemd 232 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD +IDN)
-> >> systemd[1]: Detected virtualization kvm.
-> >> systemd[1]: Detected architecture x86-64.
-> >> systemd[1]: Set hostname to <syzkaller>.
-> >> ------------[ cut here ]------------
-> >> refcount_t: addition on 0; use-after-free.
-> >> WARNING: CPU: 1 PID: 1 at lib/refcount.c:25 refcount_warn_saturate+0x169/0x1e0 lib/refcount.c:25
-> >> Modules linked in:
-> >> CPU: 1 PID: 1 Comm: systemd Not tainted 5.14.0-rc3-syzkaller #0
-> >> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> >> RIP: 0010:refcount_warn_saturate+0x169/0x1e0 lib/refcount.c:25
-> >> Code: 09 31 ff 89 de e8 d7 fa 9e fd 84 db 0f 85 36 ff ff ff e8 8a f4 9e fd 48 c7 c7 c0 81 e3 89 c6 05 70 51 81 09 01 e8 48 f8 13 05 <0f> 0b e9 17 ff ff ff e8 6b f4 9e fd 0f b6 1d 55 51 81 09 31 ff 89
-> >> RSP: 0018:ffffc90000c66ab0 EFLAGS: 00010286
-> >> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> >> RDX: ffff88813fe48000 RSI: ffffffff815d7b25 RDI: fffff5200018cd48
-> >> RBP: 0000000000000002 R08: 0000000000000000 R09: 0000000000000001
-> >> R10: ffffffff815d195e R11: 0000000000000000 R12: 0000000000000004
-> >> R13: 0000000000000001 R14: 0000000000000000 R15: ffff888027722e00
-> >> FS:  00007f8c1c5d0500(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-> >> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> >> CR2: 000055ed0ced4368 CR3: 0000000026bac000 CR4: 00000000001506e0
-> >> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> >> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> >> Call Trace:
-> >>   __refcount_add include/linux/refcount.h:199 [inline]
-> >>   __refcount_inc include/linux/refcount.h:250 [inline]
-> >>   refcount_inc include/linux/refcount.h:267 [inline]
-> >>   fib_create_info+0x36af/0x4910 net/ipv4/fib_semantics.c:1554  
-> > 
-> > Missed refcount_set(), I think
-> > 
-> > diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-> > index f29feb7772da..bb9949f6bb70 100644
-> > --- a/net/ipv4/fib_semantics.c
-> > +++ b/net/ipv4/fib_semantics.c
-> > @@ -1428,6 +1428,7 @@ struct fib_info *fib_create_info(struct fib_config
-> > *cfg,
-> >    	}
-> > 
-> >    	fib_info_cnt++;
-> > +	refcount_set(&fi->fib_treeref, 1);
-> >    	fi->fib_net = net;
-> >    	fi->fib_protocol = cfg->fc_protocol;
-> >    	fi->fib_scope = cfg->fc_scope;
-> 
-> Oops, it's already fixed in -next, so
-> 
-> #syz fix: ipv4: Fix refcount warning for new fib_info
-> 
-> 
-> BTW: there is one more bug with refcounts:
-> 
-> link_it:
-> 	ofi = fib_find_info(fi);
-> 	if (ofi) {
-> 		fi->fib_dead = 1;
-> 		free_fib_info(fi);
-> 		refcount_inc(&ofi->fib_treeref);
-> 
-> 		^^^^^^^^^^^^^^^^^^^^^^^
-> 		/ *fib_treeref is 0 here */
+On 8/2/21 1:26 PM, Biju Das wrote:
 
-Why 0? ofi is an existing object it's already initialized.
+> R-Car Gen3 supports TX and RX clock internal delay modes, whereas R-Car
+> Gen2 and RZ/G2L do not support it.
+> Add an internal_delay hw feature bit to struct ravb_hw_info to enable this
+> only for R-Car Gen3.
+> 
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+[...]
 
-> 		return ofi;
-> 	}
-> 
-> 	refcount_set(&fi->fib_treeref, 1);
-> 
-> 
-> diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-> index f29feb7772da..38d1fc4d0be1 100644
-> --- a/net/ipv4/fib_semantics.c
-> +++ b/net/ipv4/fib_semantics.c
-> @@ -1543,6 +1543,8 @@ struct fib_info *fib_create_info(struct fib_config 
-> *cfg,
->   	}
-> 
->   link_it:
-> +	refcount_set(&fi->fib_treeref, 1);
-> +
->   	ofi = fib_find_info(fi);
->   	if (ofi) {
->   		fi->fib_dead = 1;
-> @@ -1551,7 +1553,6 @@ struct fib_info *fib_create_info(struct fib_config 
-> *cfg,
->   		return ofi;
->   	}
-> 
-> -	refcount_set(&fi->fib_treeref, 1);
->   	refcount_set(&fi->fib_clntref, 1);
->   	spin_lock_bh(&fib_info_lock);
->   	hlist_add_head(&fi->fib_hash,
-> 
-> 
-> Thoughts?
+   OK, this one also seems uncontroversial:
 
+Reviewed-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
+
+MBR, Sergei
