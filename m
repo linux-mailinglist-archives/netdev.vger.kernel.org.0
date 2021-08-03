@@ -2,73 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C87F3DEDB5
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 14:16:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80E2D3DED30
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:50:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235879AbhHCMQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 08:16:11 -0400
-Received: from mailout4.zih.tu-dresden.de ([141.30.67.75]:34596 "EHLO
-        mailout4.zih.tu-dresden.de" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235873AbhHCMQK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 08:16:10 -0400
-X-Greylist: delayed 1595 seconds by postgrey-1.27 at vger.kernel.org; Tue, 03 Aug 2021 08:16:10 EDT
-Received: from [172.26.35.115] (helo=msx.tu-dresden.de)
-        by mailout4.zih.tu-dresden.de with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <sebastian.rehms@tu-dresden.de>)
-        id 1mAsu8-001Ek9-RP; Tue, 03 Aug 2021 13:49:24 +0200
-Received: from [192.168.1.195] (141.30.223.65) by
- MSX-T315.msx.ad.zih.tu-dresden.de (172.26.35.115) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2242.12; Tue, 3 Aug 2021 13:49:07 +0200
-To:     <netdev@vger.kernel.org>
-CC:     <scott@scottdial.com>, <davem@davemloft.net>,
-        <gregkh@linuxfoundation.org>
-From:   Sebastian Rehms <sebastian.rehms@mailbox.tu-dresden.de>
-Subject: MACSec performance issues
-Message-ID: <d335ddaa-18dc-f9f0-17ee-9783d3b2ca29@mailbox.tu-dresden.de>
-Date:   Tue, 3 Aug 2021 13:48:59 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-MIME-Version: 1.0
+        id S235573AbhHCLuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 07:50:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38818 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235549AbhHCLuR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 07:50:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6921E60F35;
+        Tue,  3 Aug 2021 11:50:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627991406;
+        bh=M2o3Ah9SMsWpUTDqUTuSQ8RNoFUL9F1PzuQkHYD3NkA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZHejh+YwXfXu9WlXCV64etVryTr34HfIoPzonHqOd28QcaSZuAZR8IPLQbxXW8+Xe
+         MS62+cwkvrZlRmTGbhIqC/AsfWGkI6y2VeBap/c+axs1UF60PoNsociwZ+vL+YTT8N
+         RL7sFH/TPzNlwQFGGHZAP/9yvf2P1K+EtgDDilT1+2LT3EkO/bmqbZ71g3bnpMi7Xh
+         oMwZKKqp8VT/FNRVX6nAp+QZokzoCCap2OTgUF8N2mpXbh/JnOZV5Sr8BvP4NjuHMA
+         0zLNBQdG4a7cuJ8k7LfYbdhhdhhGP7vaRfljW3VRNJzA3578vbZNeQ92WqSzYO22pZ
+         H6ySeB/wyJhtQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5EBCC60A6A;
+        Tue,  3 Aug 2021 11:50:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MSX-L106.msx.ad.zih.tu-dresden.de (172.26.34.106) To
- MSX-T315.msx.ad.zih.tu-dresden.de (172.26.35.115)
-X-PMWin-Version: 4.0.4, Antivirus-Engine: 3.82.1, Antivirus-Data: 5.85
-X-TUD-Virus-Scanned: mailout4.zih.tu-dresden.de
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] virtio-net: realign page_to_skb() after merges
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162799140638.31863.5292721687964827323.git-patchwork-notify@kernel.org>
+Date:   Tue, 03 Aug 2021 11:50:06 +0000
+References: <20210802175729.2042133-1-kuba@kernel.org>
+In-Reply-To: <20210802175729.2042133-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, mst@redhat.com,
+        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
+        xuanzhuo@linux.alibaba.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear netdev community,
+Hello:
 
-We did some performance tests on MACSec and observed data rates of about
-5-6 GBits/s. (measured with iperf3)
-After a kernel update the maximum data rate dropped to about 600 MBit/s.
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-Due to this huge difference we did some further investigations and found
-that the main reason is a change in the file drivers/net/macsec.c in the
-function crypto_alloc_aead().
+On Mon,  2 Aug 2021 10:57:29 -0700 you wrote:
+> We ended up merging two versions of the same patch set:
+> 
+> commit 8fb7da9e9907 ("virtio_net: get build_skb() buf by data ptr")
+> commit 5c37711d9f27 ("virtio-net: fix for unable to handle page fault for address")
+> 
+> into net, and
+> 
+> [...]
 
-The change was introduced by commit
-0899ff04c872463455f2749d13a5d311338021a3 (upstream commit
-ab046a5d4be4c90a3952a0eae75617b49c0cb01b)
+Here is the summary with links:
+  - [net-next] virtio-net: realign page_to_skb() after merges
+    https://git.kernel.org/netdev/net-next/c/c32325b8fdf2
 
--       tfm = crypto_alloc_aead("gcm(aes)", 0, 0);
-+       /* Pick a sync gcm(aes) cipher to ensure order is preserved. */
-+       tfm = crypto_alloc_aead("gcm(aes)", 0, CRYPTO_ALG_ASYNC);
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-According to the commit description, the  CRYPTO_ALG_ASYNC flag is
-required to guarantee correct packet ordering which is indeed an
-implicit provision of the MACSec standard.
-
-First, it would be desirable to verify, that the impact of the flag is
-large not only on our hardware but that it is a general phenomenon.
-
-Maybe this is of interest for the MACSec maintainers?
-
-Kind regards,
-Sebastian Rehms
