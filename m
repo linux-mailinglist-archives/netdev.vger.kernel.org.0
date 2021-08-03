@@ -2,84 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A76C33DF04B
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 16:29:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C5043DF05A
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 16:32:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236532AbhHCO3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 10:29:35 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:60012 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236507AbhHCO3e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Aug 2021 10:29:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=39kNPjDsQBCaa+m6oCrWSY0OrXd5M9GEZtjuh6gG6zs=; b=OJnMgpTiAhK9iiaqw4yuK+PzsD
-        KtFUmXot8A+cAJx7a4u7ARxcZsRrPMVbboCeLMJUjb+RKmQ3TnCPbe1BKYcScrfoQsW+m2Jv8umQ3
-        g+pLjFRs4QyPP7oDWviwIiQXSH0a7TLXbmQs/z3l9hIjWiyy8iuNSSOc400RYT3MhvMw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mAvPt-00Fyd2-4R; Tue, 03 Aug 2021 16:29:13 +0200
-Date:   Tue, 3 Aug 2021 16:29:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S236593AbhHCOdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 10:33:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58876 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234683AbhHCOdB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 10:33:01 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9122C061757;
+        Tue,  3 Aug 2021 07:32:50 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id x15so28331675oic.9;
+        Tue, 03 Aug 2021 07:32:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SOCfIEH2j9G9zTnYlmTQahFNZrsF6MnMcDCjvCkaZ7U=;
+        b=lP89XUc0nfNSvTOOpPc3cPSFuOAv6RkXHnmAWVEF4UY+9Zrxwa/9D8bfFWJZRSW0eQ
+         rTUg7+QWJInd5VlXSHN8Tc2Oi432pR3mcYABiG3pHVB4e/zOfN8jVIiBr6WZ2fj0DMWE
+         13W9CrDYSlKpjtwptjS+ggiekrx9D38qFZG5TSuARkqZJ1R/Ykj/NXaIaattIj8cUfHe
+         nJieVi/CuJzcrLG/5fonGGmyQvb4a0Ec640QzPRNPOWcu4OhrnH8Dr3OIZRLqu4Uj4lu
+         EFOQhSb/x+GgCO3Ixtn/ewd7EvxLX/QR7IOS3Tqrfm/IQSvt0/vTBS4i9XIJOhFEVVNn
+         W4kA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SOCfIEH2j9G9zTnYlmTQahFNZrsF6MnMcDCjvCkaZ7U=;
+        b=PSRFqhvEUsK4Hp1sV6N8bT9RMqG6DWDils8GFqOM8L76JBij4j593PyliKgHHbwSH6
+         DVpniWR+ClOY/HVH9gDgvyS/19pFeVVsPZKSHi1TyiBQN4IT7TAxTJKcFcpRKfthE7IQ
+         vC+v28BcrJRzK8LASCzS9zVKJGPEVxG2U9B6mcPVCCxmJmqkWWbdx2R7asbWDl/juEzF
+         uE0Q8g41VG6qv5EonyBtkzMtQX+Tl8SzwnShGojale6+UGfKgX+sbbexYhlQi44cm/vY
+         199PsCgHlhuekucycITZU5syIwTLd0N0N1836LCQKAF+K3fuENANC2u6twDhBddOfGju
+         9FrA==
+X-Gm-Message-State: AOAM530K8Q+sjlj6m+mP/PDKQLQLcjWUXXimSuXQkNpGv7sQLxjBYBPm
+        3y0/l/oSgeej6Vo7U7fQNAc=
+X-Google-Smtp-Source: ABdhPJzmDycLIxOOfr1TXxB4X/LwSri3dv/Dr1S4HM1kwG2oCJ4Pk8l337iTvxrauijBrRCPEswIZw==
+X-Received: by 2002:aca:a8cf:: with SMTP id r198mr14370480oie.143.1628001170299;
+        Tue, 03 Aug 2021 07:32:50 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.27])
+        by smtp.googlemail.com with ESMTPSA id b21sm2272075oov.26.2021.08.03.07.32.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Aug 2021 07:32:49 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: add extack arg for link ops
+To:     Rocco Yue <rocco.yue@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH net v2 1/1] net: dsa: qca: ar9331: make proper initial
- port defaults
-Message-ID: <YQlSuX73dUli2rky@lunn.ch>
-References: <20210803085320.23605-1-o.rempel@pengutronix.de>
- <20210803090605.bud4ocr4siz3jl7r@skbuf>
- <20210803095419.y6hly7euht7gsktu@pengutronix.de>
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, rocco.yue@gmail.com,
+        chao.song@mediatek.com, zhuoliang.zhang@mediatek.com
+References: <20210803120250.32642-1-rocco.yue@mediatek.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <f6f10fe7-afdd-fdce-c091-861a738feb8a@gmail.com>
+Date:   Tue, 3 Aug 2021 08:32:48 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210803095419.y6hly7euht7gsktu@pengutronix.de>
+In-Reply-To: <20210803120250.32642-1-rocco.yue@mediatek.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 03, 2021 at 11:54:19AM +0200, Oleksij Rempel wrote:
-> On Tue, Aug 03, 2021 at 12:06:05PM +0300, Vladimir Oltean wrote:
-> > On Tue, Aug 03, 2021 at 10:53:20AM +0200, Oleksij Rempel wrote:
-> > > Make sure that all external port are actually isolated from each other,
-> > > so no packets are leaked.
-> > > 
-> > > Fixes: ec6698c272de ("net: dsa: add support for Atheros AR9331 built-in switch")
-> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > > ---
-> > > changes v2:
-> > > - do not enable address learning by default
-> > > 
-> > >  drivers/net/dsa/qca/ar9331.c | 98 +++++++++++++++++++++++++++++++++++-
-> > >  1 file changed, 97 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
-> > > index 6686192e1883..de7c06b6c85f 100644
-> > > --- a/drivers/net/dsa/qca/ar9331.c
-> > > +++ b/drivers/net/dsa/qca/ar9331.c
-> > > @@ -101,6 +101,46 @@
-> > >  	 AR9331_SW_PORT_STATUS_RX_FLOW_EN | AR9331_SW_PORT_STATUS_TX_FLOW_EN | \
-> > >  	 AR9331_SW_PORT_STATUS_SPEED_M)
-> > >  
-> > > +#define AR9331_SW_REG_PORT_CTRL(_port)			(0x104 + (_port) * 0x100)
-> > > +#define AR9331_SW_PORT_CTRL_ING_MIRROR_EN		BIT(17)
-> > > +#define AR9331_SW_PORT_CTRL_LOCK_DROP_EN		BIT(5)
-> > 
-> > not used
+On 8/3/21 6:02 AM, Rocco Yue wrote:
+> Pass extack arg to validate_linkmsg and validate_link_af callbacks.
+> If a netlink attribute has a reject_message, use the extended ack
+> mechanism to carry the message back to user space.
 > 
-> ack, will remove
+> Signed-off-by: Rocco Yue <rocco.yue@mediatek.com>
+> ---
+>  include/net/rtnetlink.h | 3 ++-
+>  net/core/rtnetlink.c    | 9 +++++----
+>  net/ipv4/devinet.c      | 5 +++--
+>  net/ipv6/addrconf.c     | 5 +++--
+>  4 files changed, 13 insertions(+), 9 deletions(-)
+> 
 
-Just expanding Vladimirs comment. Patches for net should be as minimal
-as possible, so they are obviously correct.
-
-   Andrew
+Reviewed-by: David Ahern <dsahern@kernel.org>
