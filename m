@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A39863DF20C
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:04:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C7483DF20D
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 18:04:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231408AbhHCQEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 12:04:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54666 "EHLO
+        id S231605AbhHCQEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 12:04:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231327AbhHCQEe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 12:04:34 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B948DC061757;
-        Tue,  3 Aug 2021 09:04:23 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id g23-20020a17090a5797b02901765d605e14so5326759pji.5;
-        Tue, 03 Aug 2021 09:04:23 -0700 (PDT)
+        with ESMTP id S231523AbhHCQEl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 12:04:41 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B600BC061757;
+        Tue,  3 Aug 2021 09:04:30 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id q2so24272193plr.11;
+        Tue, 03 Aug 2021 09:04:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4DDzV8/Fk1hQnq24aZe35CXn12AVhJ1i/aTFMFKXbn4=;
-        b=okNC+95eqklwvX4zzy4qD21U1kMduj63CtRXA06V5Amw8XOIBhmMIV94OVgWUE7CY8
-         DSisxbhuSmUI8zFKabPhDSo0SRLOmEn2I1ZI+JMVQZyW8fTOaK/JnSPBjvjxz64A2OUs
-         7vhlyD5d3InukEjdCv9uW9Z1zKdmIGdEnEIfUP7JKh+i3HM8Ir+KCn0JSJSWN+a+UcxR
-         zhHMLBrXihkhTTLnw4Ul9Oym3uHDuhWwg3UtWxC53eOqCCpWBwWxRJ2D5WAY/Xosc74f
-         x7w2eWKAyv+fjEeNurlAgsWi8juyXarv915JGKd6yeqwsVKSGSpgJgVtlV+kNdg3Wk83
-         sMPg==
+        bh=trHX3dNNxUniX6odh5y30TfJPrJF2MKuXcijydie94Y=;
+        b=NfG7+rxcLJmBodWpezqUR4cmNXccL1ppNPmGHayEAk1rKL2Q8lDgU/tydcniRSfz0q
+         Hk1skwGADBUIDidM11A5sVl4FFhQcCqj233cmWTMxFu2hcUEWTOplAOfUClyo0yBgQmq
+         070yL3QqqflzfK3bdgq+jVNmVUwSBcoPYapIJWrxdb48iefYC9WFnpbebvXWSLVSCVAo
+         oi8f+1BKSiXsBCXbN3NPtoaiANnWJpeDRTlCOzeLjkW6MZIjegCzy964C82SI1mlsdAT
+         auy+W4K5YxemXFKjQ0NcjFtN2ztmpBdC5n9F6o5OUSy85rBByZBNt4tccS9lltvAfeEp
+         AMbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4DDzV8/Fk1hQnq24aZe35CXn12AVhJ1i/aTFMFKXbn4=;
-        b=hfnufSEen/6Um5vOAcKARGrbONq/kVGZLliORpVUSC0lx+junRDTh3tSYH1C1JzS2A
-         JTVDXwHc1arH9pDgcZIoYVsB3Tfl/EZItEKg0dPYGB8oE08l+cAnV6JrSV2Lq9LKZygu
-         UPOLjW28YMUgsVCUid3RbPvD4gp/IUH/+cz5WTi8MeVD6CutH8+nuv/ma7VkncEyReWC
-         y6BSHtUichyY6JqKBoJh1yBmsMpYVn6l+JXyW8CMGDFNln/BQ0o1sj0yhneT96KPA6em
-         809jGHwlCmlyvk4Dudq7BK/gPDpnIuRt0QcZdoCoRshtVz1EhMxE62A750xaVmjYe85e
-         QMRA==
-X-Gm-Message-State: AOAM533Jr4s0iAtItI12v0r/bk+Iici1CBSWTMX7B0QnVnSZpSHZmJPP
-        SDvyfMet/5kSMtRXV136VHI=
-X-Google-Smtp-Source: ABdhPJwcMc7pBn9npc80n0nNmDQDDZpGDghJbvj7Xmc/kAG5aDm7AWrnBKfIYlEynAavc3DkERbqYw==
-X-Received: by 2002:aa7:9115:0:b029:359:69db:bc89 with SMTP id 21-20020aa791150000b029035969dbbc89mr22573713pfh.32.1628006663340;
-        Tue, 03 Aug 2021 09:04:23 -0700 (PDT)
+        bh=trHX3dNNxUniX6odh5y30TfJPrJF2MKuXcijydie94Y=;
+        b=qpr1IKLSiqbGStdfxnbmRnLm9ZGFWgHxv/RWXEuWmRvSXLSo7vujNIeldrPd904mWa
+         Gvq/Um/EM5btqhgUqPLGoayxTFfnLNnHi33dINMDUKhWuhO79Pb7ZJD7DcseAkFM3rAq
+         YsyHdpvu4QHWsKd+03VuI4ye9XXhzg/Xfek4J340bzdE2Gd4QueDb5UFuLgO6mv6CjfN
+         Syy3ZGn1u0/yOLRhCsceDlxvCCIK4vPJOLRmI9+EzfJnKoWQqR7ddD4f5eKahbOUbrHS
+         ZyJ7WweoDBvFadPu9AesVe+/g5WRbtXkBTVT8bWiMiAsuz8fiomOhy8INGhhlYuHNiXb
+         3DPg==
+X-Gm-Message-State: AOAM531TAWYcqVz4i36RUef1YNLTvmSXYJY3K6vXhCcgXrvPGrZs45k9
+        FXNsTKOunvt0QPsyakuPGWE=
+X-Google-Smtp-Source: ABdhPJzsOMAtDWMmETjJ8Y08EB4KiUxjyEx0F7EmMrQAkkBaEy/ytg3ad8G1rlSQPG/nlvMV272UrA==
+X-Received: by 2002:a63:4a43:: with SMTP id j3mr696633pgl.302.1628006670264;
+        Tue, 03 Aug 2021 09:04:30 -0700 (PDT)
 Received: from haswell-ubuntu20.lan ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id y6sm14390653pjr.48.2021.08.03.09.04.18
+        by smtp.gmail.com with ESMTPSA id y6sm14390653pjr.48.2021.08.03.09.04.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Aug 2021 09:04:22 -0700 (PDT)
+        Tue, 03 Aug 2021 09:04:29 -0700 (PDT)
 From:   DENG Qingfang <dqfext@gmail.com>
 To:     Sean Wang <sean.wang@mediatek.com>,
         Landen Chao <Landen.Chao@mediatek.com>,
@@ -62,11 +62,10 @@ To:     Sean Wang <sean.wang@mediatek.com>,
 Cc:     Eric Woudstra <ericwouds@gmail.com>,
         =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
         Frank Wunderlich <frank-w@public-files.de>,
-        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
-        Vladimir Oltean <oltean@gmail.com>
-Subject: [PATCH net-next v2 1/4] net: dsa: mt7530: enable assisted learning on CPU port
-Date:   Wed,  4 Aug 2021 00:04:01 +0800
-Message-Id: <20210803160405.3025624-2-dqfext@gmail.com>
+        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+Subject: [PATCH net-next v2 2/4] net: dsa: mt7530: use independent VLAN learning on VLAN-unaware bridges
+Date:   Wed,  4 Aug 2021 00:04:02 +0800
+Message-Id: <20210803160405.3025624-3-dqfext@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210803160405.3025624-1-dqfext@gmail.com>
 References: <20210803160405.3025624-1-dqfext@gmail.com>
@@ -89,93 +88,251 @@ offloaded:
      .        .       .
      A        B       C
 
-Address learning is enabled on offloaded ports (swp0~2) and the CPU
-port, so when client A sends a packet to C, the following will happen:
+Ideally, when the switch receives a packet from swp3 or swp4, it should
+forward the packet to the CPU, according to the port matrix and unknown
+unicast flood settings.
 
-1. The switch learns that client A can be reached at swp0.
-2. The switch probably already knows that client C can be reached at the
-   CPU port, so it forwards the packet to the CPU.
-3. The bridge core knows client C can be reached at bond0, so it
-   forwards the packet back to the switch.
-4. The switch learns that client A can be reached at the CPU port.
-5. The switch forwards the packet to either swp3 or swp4, according to
-   the packet's tag.
+But packet loss will happen if the destination address is at one of the
+offloaded ports (swp0~2). For example, when client C sends a packet to
+A, the FDB lookup will indicate that it should be forwarded to swp0, but
+the port matrix of swp3 and swp4 is configured to only allow the CPU to
+be its destination, so it is dropped.
 
-That makes client A's MAC address flap between swp0 and the CPU port. If
-client B sends a packet to A, it is possible that the packet is
-forwarded to the CPU. With offload_fwd_mark = 1, the bridge core won't
-forward it back to the switch, resulting in packet loss.
+However, this issue does not happen if the bridge is VLAN-aware. That is
+because VLAN-aware bridges use independent VLAN learning, i.e. use VID
+for FDB lookup, on offloaded ports. As swp3 and swp4 are not offloaded,
+shared VLAN learning with default filter ID of 0 is used instead. So the
+lookup for A with filter ID 0 never hits and the packet can be forwarded
+to the CPU.
 
-As we have the assisted_learning_on_cpu_port in DSA core now, enable
-that and disable hardware learning on the CPU port.
+In the current code, only two combinations were used to toggle user
+ports' VLAN awareness: one is PCR.PORT_VLAN set to port matrix mode with
+PVC.VLAN_ATTR set to transparent port, the other is PCR.PORT_VLAN set to
+security mode with PVC.VLAN_ATTR set to user port.
+
+It turns out that only PVC.VLAN_ATTR contributes to VLAN awareness, and
+port matrix mode just skips the VLAN table lookup. The reference manual
+is somehow misleading when describing PORT_VLAN modes. It states that
+PORT_MEM (VLAN port member) is used for destination if the VLAN table
+lookup hits, but actually **PORT_MEM & PORT_MATRIX** (bitwise AND of
+VLAN port member and port matrix) is used instead, which means we can
+have two or more separate VLAN-aware bridges with the same PVID and
+traffic won't leak between them.
+
+Therefore, to solve this, enable independent VLAN learning with PVID 0
+on VLAN-unaware bridges, by setting their PCR.PORT_VLAN to fallback
+mode, while leaving standalone ports in port matrix mode. The CPU port
+is always set to fallback mode to serve those bridges.
+
+During testing, it is found that FDB lookup with filter ID of 0 will
+also hit entries with VID 0 even with independent VLAN learning. To
+avoid that, install all VLANs with filter ID of 1.
 
 Signed-off-by: DENG Qingfang <dqfext@gmail.com>
-Reviewed-by: Vladimir Oltean <oltean@gmail.com>
 ---
-v1 -> v2: no changes.
+v1 -> v2: use FID enum instead of hardcoding.
 
- drivers/net/dsa/mt7530.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ drivers/net/dsa/mt7530.c | 71 +++++++++++++++++++++++++++++-----------
+ drivers/net/dsa/mt7530.h |  9 ++++-
+ 2 files changed, 59 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index b6e0b347947e..abe57b04fc39 100644
+index abe57b04fc39..606a9f4db579 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -2046,6 +2046,7 @@ mt7530_setup(struct dsa_switch *ds)
- 	 * as two netdev instances.
- 	 */
- 	dn = dsa_to_port(ds, MT7530_CPU_PORT)->master->dev.of_node->parent;
-+	ds->assisted_learning_on_cpu_port = true;
- 	ds->mtu_enforcement_ingress = true;
+@@ -1021,6 +1021,10 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
+ 	mt7530_write(priv, MT7530_PCR_P(port),
+ 		     PCR_MATRIX(dsa_user_ports(priv->ds)));
  
- 	if (priv->id == ID_MT7530) {
-@@ -2116,15 +2117,15 @@ mt7530_setup(struct dsa_switch *ds)
- 		mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK,
- 			   PCR_MATRIX_CLR);
- 
-+		/* Disable learning by default on all ports */
-+		mt7530_set(priv, MT7530_PSC_P(i), SA_DIS);
++	/* Set to fallback mode for independent VLAN learning */
++	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
++		   MT7530_PORT_FALLBACK_MODE);
 +
- 		if (dsa_is_cpu_port(ds, i)) {
- 			ret = mt753x_cpu_port_enable(ds, i);
- 			if (ret)
+ 	return 0;
+ }
+ 
+@@ -1229,6 +1233,10 @@ mt7530_port_bridge_join(struct dsa_switch *ds, int port,
+ 			   PCR_MATRIX_MASK, PCR_MATRIX(port_bitmap));
+ 	priv->ports[port].pm |= PCR_MATRIX(port_bitmap);
+ 
++	/* Set to fallback mode for independent VLAN learning */
++	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
++		   MT7530_PORT_FALLBACK_MODE);
++
+ 	mutex_unlock(&priv->reg_mutex);
+ 
+ 	return 0;
+@@ -1241,16 +1249,21 @@ mt7530_port_set_vlan_unaware(struct dsa_switch *ds, int port)
+ 	bool all_user_ports_removed = true;
+ 	int i;
+ 
+-	/* When a port is removed from the bridge, the port would be set up
+-	 * back to the default as is at initial boot which is a VLAN-unaware
+-	 * port.
++	/* This is called after .port_bridge_leave when leaving a VLAN-aware
++	 * bridge. Don't set standalone ports to fallback mode.
+ 	 */
+-	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
+-		   MT7530_PORT_MATRIX_MODE);
++	if (dsa_to_port(ds, port)->bridge_dev)
++		mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
++			   MT7530_PORT_FALLBACK_MODE);
++
+ 	mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK | PVC_EG_TAG_MASK,
+ 		   VLAN_ATTR(MT7530_VLAN_TRANSPARENT) |
+ 		   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
+ 
++	/* Set PVID to 0 */
++	mt7530_rmw(priv, MT7530_PPBV1_P(port), G0_PORT_VID_MASK,
++		   G0_PORT_VID_DEF);
++
+ 	for (i = 0; i < MT7530_NUM_PORTS; i++) {
+ 		if (dsa_is_user_port(ds, i) &&
+ 		    dsa_port_is_vlan_filtering(dsa_to_port(ds, i))) {
+@@ -1276,15 +1289,14 @@ mt7530_port_set_vlan_aware(struct dsa_switch *ds, int port)
+ 	struct mt7530_priv *priv = ds->priv;
+ 
+ 	/* Trapped into security mode allows packet forwarding through VLAN
+-	 * table lookup. CPU port is set to fallback mode to let untagged
+-	 * frames pass through.
++	 * table lookup.
+ 	 */
+-	if (dsa_is_cpu_port(ds, port))
+-		mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
+-			   MT7530_PORT_FALLBACK_MODE);
+-	else
++	if (dsa_is_user_port(ds, port)) {
+ 		mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
+ 			   MT7530_PORT_SECURITY_MODE);
++		mt7530_rmw(priv, MT7530_PPBV1_P(port), G0_PORT_VID_MASK,
++			   G0_PORT_VID(priv->ports[port].pvid));
++	}
+ 
+ 	/* Set the port as a user port which is to be able to recognize VID
+ 	 * from incoming packets before fetching entry within the VLAN table.
+@@ -1329,6 +1341,13 @@ mt7530_port_bridge_leave(struct dsa_switch *ds, int port,
+ 			   PCR_MATRIX(BIT(MT7530_CPU_PORT)));
+ 	priv->ports[port].pm = PCR_MATRIX(BIT(MT7530_CPU_PORT));
+ 
++	/* When a port is removed from the bridge, the port would be set up
++	 * back to the default as is at initial boot which is a VLAN-unaware
++	 * port.
++	 */
++	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
++		   MT7530_PORT_MATRIX_MODE);
++
+ 	mutex_unlock(&priv->reg_mutex);
+ }
+ 
+@@ -1511,7 +1530,8 @@ mt7530_hw_vlan_add(struct mt7530_priv *priv,
+ 	/* Validate the entry with independent learning, create egress tag per
+ 	 * VLAN and joining the port as one of the port members.
+ 	 */
+-	val = IVL_MAC | VTAG_EN | PORT_MEM(new_members) | VLAN_VALID;
++	val = IVL_MAC | VTAG_EN | PORT_MEM(new_members) | FID(FID_BRIDGED) |
++	      VLAN_VALID;
+ 	mt7530_write(priv, MT7530_VAWD1, val);
+ 
+ 	/* Decide whether adding tag or not for those outgoing packets from the
+@@ -1601,9 +1621,13 @@ mt7530_port_vlan_add(struct dsa_switch *ds, int port,
+ 	mt7530_hw_vlan_update(priv, vlan->vid, &new_entry, mt7530_hw_vlan_add);
+ 
+ 	if (pvid) {
+-		mt7530_rmw(priv, MT7530_PPBV1_P(port), G0_PORT_VID_MASK,
+-			   G0_PORT_VID(vlan->vid));
+ 		priv->ports[port].pvid = vlan->vid;
++
++		/* Only configure PVID if VLAN filtering is enabled */
++		if (dsa_port_is_vlan_filtering(dsa_to_port(ds, port)))
++			mt7530_rmw(priv, MT7530_PPBV1_P(port),
++				   G0_PORT_VID_MASK,
++				   G0_PORT_VID(vlan->vid));
+ 	}
+ 
+ 	mutex_unlock(&priv->reg_mutex);
+@@ -1617,11 +1641,9 @@ mt7530_port_vlan_del(struct dsa_switch *ds, int port,
+ {
+ 	struct mt7530_hw_vlan_entry target_entry;
+ 	struct mt7530_priv *priv = ds->priv;
+-	u16 pvid;
+ 
+ 	mutex_lock(&priv->reg_mutex);
+ 
+-	pvid = priv->ports[port].pvid;
+ 	mt7530_hw_vlan_entry_init(&target_entry, port, 0);
+ 	mt7530_hw_vlan_update(priv, vlan->vid, &target_entry,
+ 			      mt7530_hw_vlan_del);
+@@ -1629,11 +1651,12 @@ mt7530_port_vlan_del(struct dsa_switch *ds, int port,
+ 	/* PVID is being restored to the default whenever the PVID port
+ 	 * is being removed from the VLAN.
+ 	 */
+-	if (pvid == vlan->vid)
+-		pvid = G0_PORT_VID_DEF;
++	if (priv->ports[port].pvid == vlan->vid) {
++		priv->ports[port].pvid = G0_PORT_VID_DEF;
++		mt7530_rmw(priv, MT7530_PPBV1_P(port), G0_PORT_VID_MASK,
++			   G0_PORT_VID_DEF);
++	}
+ 
+-	mt7530_rmw(priv, MT7530_PPBV1_P(port), G0_PORT_VID_MASK, pvid);
+-	priv->ports[port].pvid = pvid;
+ 
+ 	mutex_unlock(&priv->reg_mutex);
+ 
+@@ -2126,6 +2149,10 @@ mt7530_setup(struct dsa_switch *ds)
  				return ret;
  		} else {
  			mt7530_port_disable(ds, i);
--
--			/* Disable learning by default on all user ports */
--			mt7530_set(priv, MT7530_PSC_P(i), SA_DIS);
++
++			/* Set default PVID to 0 on all user ports */
++			mt7530_rmw(priv, MT7530_PPBV1_P(i), G0_PORT_VID_MASK,
++				   G0_PORT_VID_DEF);
  		}
  		/* Enable consistent egress tag */
  		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
-@@ -2281,6 +2282,9 @@ mt7531_setup(struct dsa_switch *ds)
- 		mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK,
- 			   PCR_MATRIX_CLR);
- 
-+		/* Disable learning by default on all ports */
-+		mt7530_set(priv, MT7530_PSC_P(i), SA_DIS);
-+
- 		mt7530_set(priv, MT7531_DBG_CNT(i), MT7531_DIS_CLR);
- 
- 		if (dsa_is_cpu_port(ds, i)) {
-@@ -2289,9 +2293,6 @@ mt7531_setup(struct dsa_switch *ds)
+@@ -2293,6 +2320,10 @@ mt7531_setup(struct dsa_switch *ds)
  				return ret;
  		} else {
  			mt7530_port_disable(ds, i);
--
--			/* Disable learning by default on all user ports */
--			mt7530_set(priv, MT7530_PSC_P(i), SA_DIS);
++
++			/* Set default PVID to 0 on all user ports */
++			mt7530_rmw(priv, MT7530_PPBV1_P(i), G0_PORT_VID_MASK,
++				   G0_PORT_VID_DEF);
  		}
  
  		/* Enable consistent egress tag */
-@@ -2299,6 +2300,7 @@ mt7531_setup(struct dsa_switch *ds)
- 			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
- 	}
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index b19b389ff10a..d44640bbd865 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -148,11 +148,18 @@ enum mt7530_vlan_cmd {
+ #define  VTAG_EN			BIT(28)
+ /* VLAN Member Control */
+ #define  PORT_MEM(x)			(((x) & 0xff) << 16)
++/* Filter ID */
++#define  FID(x)				(((x) & 0x7) << 1)
+ /* VLAN Entry Valid */
+ #define  VLAN_VALID			BIT(0)
+ #define  PORT_MEM_SHFT			16
+ #define  PORT_MEM_MASK			0xff
  
-+	ds->assisted_learning_on_cpu_port = true;
- 	ds->mtu_enforcement_ingress = true;
++enum mt7530_fid {
++	FID_STANDALONE = 0,
++	FID_BRIDGED = 1,
++};
++
+ #define MT7530_VAWD2			0x98
+ /* Egress Tag Control */
+ #define  ETAG_CTRL_P(p, x)		(((x) & 0x3) << ((p) << 1))
+@@ -247,7 +254,7 @@ enum mt7530_vlan_port_attr {
+ #define MT7530_PPBV1_P(x)		(0x2014 + ((x) * 0x100))
+ #define  G0_PORT_VID(x)			(((x) & 0xfff) << 0)
+ #define  G0_PORT_VID_MASK		G0_PORT_VID(0xfff)
+-#define  G0_PORT_VID_DEF		G0_PORT_VID(1)
++#define  G0_PORT_VID_DEF		G0_PORT_VID(0)
  
- 	/* Flush the FDB table */
+ /* Register for port MAC control register */
+ #define MT7530_PMCR_P(x)		(0x3000 + ((x) * 0x100))
 -- 
 2.25.1
 
