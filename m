@@ -2,71 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D3D23DEB75
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:00:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64E673DEB7A
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:00:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235616AbhHCLAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 07:00:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46098 "EHLO mail.kernel.org"
+        id S235681AbhHCLAj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 07:00:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46176 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235255AbhHCLAQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S235562AbhHCLAQ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 3 Aug 2021 07:00:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5FFBB60FC2;
-        Tue,  3 Aug 2021 11:00:05 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1587461104;
+        Tue,  3 Aug 2021 11:00:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627988405;
-        bh=u0iSr8tWET96V33a/KIoDgeLBp517jFLEILaNgFmTdI=;
+        s=k20201202; t=1627988406;
+        bh=kRXJ3Y+HRgp5wRxsEeqTmhF2aDWFtY3XyCRq+UUqmDo=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=BE9IBW8cTKdta7AVbO/Bq/ofr94tVxFB5+R1UYlKUBcdUkWlIDWbf8mm9pe3tlc4L
-         bS/IFvi5/elt9bL0wOKg0LNvm0ICNgR24sze15gPkfsMKzKc8S79LoEgSZwR9t57BB
-         5m7qXejTjfH3yMZdvReoec6vx+Fi4AENGNuh+Vkoogd/JbL10UKVpIlP14/1hG6GUt
-         2njYpvQHj2KrtJzEoysaIFMpQAOfYO52E0k/fkSF4TjWKtz8LpfcRVlx3p/+1D3Ifm
-         r163KZNo0kyaJRbBhMStmIat7MmJCnlCiIDRqftCuwlWAN/YsOI525aC8fYhOWtZ1V
-         MNAd+p7ocResw==
+        b=t68Ns+NtxgDC33T8XneJMstwmTG3cpawWgkA3XYAnvrtYok83Zch0E4iI/zvnAWxl
+         SVGgoZgXkczVJATWVI0M7JuwyRICJR2Ap34eAzoajtyYthvo1GzlX68BUF31Mp5OOd
+         jf1K7M7TrhlBPSq9x/VqHXJFgX18weSs4ktq+pZk3dkilSGTML7Pbb+kkdUsBxjQwF
+         2hhCmwBGiZl8VH0KpTlx/O3ZGk4oWG0shGrTjKXKh8R3MrtMRHIPC7fTvd1brm2v6u
+         6Z344xKeR/Pko9dMrpMHsrBpFxFubrFLWyTxHrbJgDNeyvvlVyBYCFpaa5+G1D/nTX
+         w6nCt7uSE8uLg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5595660A49;
-        Tue,  3 Aug 2021 11:00:05 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0FC6B60A49;
+        Tue,  3 Aug 2021 11:00:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] bpf: libbpf: eliminate Docum. warnings in
- libbpf_naming_convention
+Subject: Re: [PATCH] net: sparx5: fix bitmask on 32-bit targets
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162798840534.8237.10933586439896059711.git-patchwork-notify@kernel.org>
-Date:   Tue, 03 Aug 2021 11:00:05 +0000
-References: <20210802015037.787-1-rdunlap@infradead.org>
-In-Reply-To: <20210802015037.787-1-rdunlap@infradead.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     netdev@vger.kernel.org, grantseltzer@gmail.com, andrii@kernel.org,
-        daniel@iogearbox.net, ast@kernel.org, bpf@vger.kernel.org
+Message-Id: <162798840606.8237.17724316386643673744.git-patchwork-notify@kernel.org>
+Date:   Tue, 03 Aug 2021 11:00:06 +0000
+References: <20210802152201.1158412-1-arnd@kernel.org>
+In-Reply-To: <20210802152201.1158412-1-arnd@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, lars.povlsen@microchip.com,
+        Steen.Hegelund@microchip.com, UNGLinuxDriver@microchip.com,
+        bjarni.jonasson@microchip.com, arnd@arndb.de,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to bpf/bpf.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Sun,  1 Aug 2021 18:50:37 -0700 you wrote:
-> Use "code-block: none" instead of "c" for non-C-language code blocks.
-> Removes these warnings:
+On Mon,  2 Aug 2021 17:21:53 +0200 you wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> lnx-514-rc4/Documentation/bpf/libbpf/libbpf_naming_convention.rst:111: WARNING: Could not lex literal_block as "c". Highlighting skipped.
-> lnx-514-rc4/Documentation/bpf/libbpf/libbpf_naming_convention.rst:124: WARNING: Could not lex literal_block as "c". Highlighting skipped.
-> 
-> Fixes: f42cfb469f9b ("bpf: Add documentation for libbpf including API autogen")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Grant Seltzer <grantseltzer@gmail.com>
-> Cc: Andrii Nakryiko <andrii@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: bpf@vger.kernel.org
+> I saw the build failure that was fixed in commit 6387f65e2acb ("net:
+> sparx5: fix compiletime_assert for GCC 4.9") and noticed another
+> issue that was introduced in the same patch: Using GENMASK() to
+> create a 64-bit mask does not work on 32-bit architectures.
 > 
 > [...]
 
 Here is the summary with links:
-  - bpf: libbpf: eliminate Docum. warnings in libbpf_naming_convention
-    https://git.kernel.org/bpf/bpf/c/a02215ce72a3
+  - net: sparx5: fix bitmask on 32-bit targets
+    https://git.kernel.org/netdev/net/c/f41e57af926a
 
 You are awesome, thank you!
 --
