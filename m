@@ -2,103 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 774BF3DF4B1
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 20:23:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C42903DF4BA
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 20:27:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238564AbhHCSXt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 14:23:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33056 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238476AbhHCSXs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 14:23:48 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70CA5C061757;
-        Tue,  3 Aug 2021 11:23:36 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id go31so37655557ejc.6;
-        Tue, 03 Aug 2021 11:23:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=RA+iQWQTeYlsLY2I1OK863JprrWYyeqL7Fz/PQqMnUA=;
-        b=sjXLmJ7eWfTfzpvQU57ZaF/6XY2NLa+WYw0zN2WeKFlfbSSH2lgKk+eHaGlyXjrgP9
-         AMkTzoqphifICTbi6DJ+X/IYjGwSEOgcPs73DfNqzu9FxYqB+SGI/alMYgB0+Xh8vl0B
-         XETer64OR2YMk2qr347HeNrAKNLIt+QbKreLX6tcRNFi3plTxoT70eDDDfb8YWRjiX7w
-         33CiwDFPM95SkQ2YI+Gb1inIQaiRWW4rrA0O2AuE/0XsQvdaPkpYU0YD7U1eVIUvWA+e
-         EKspCn09i28DPdRhfIXtztZA44Wvpd37zfBGtmjiD5684wOmVoYzL+5alPS7wWRkownS
-         rwCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RA+iQWQTeYlsLY2I1OK863JprrWYyeqL7Fz/PQqMnUA=;
-        b=T/36T/7fLM6IZcByLUSBAqBQr4ga7VeXAnUOdDLwsMKbU8MuE4vwW0QKDOY5LKJwai
-         qoZBbWW3ugAdm67h0XpNx/sDr6OA6AxP/zlMt+KFgVfcbPhbXKoZB2G20vqGCK0+gI1L
-         jTylvYCuSP8vsIR/sRD+AjiEUbZWVwBl9axr0PHs3jSYPZy4wrO0TFPEIl1j5+I8zoGa
-         YX2ujVerkAx5N6+qFdvBBeKRT7EjZ9LIfT3x1eUDmmwO7MaNCM+EV9rLFKzvZDCE0Yir
-         AAtmWYXqPiBcoSsQN21BLAQ8PQ7kJYS6ibuacm65te3NVYsaAGGFiQz3vke9FNSUgxS6
-         3N5A==
-X-Gm-Message-State: AOAM530jI1H4L6o01bVCDTTFJZClZxwR1NtVyex8LqdL+XAx83aCpvcL
-        uoYkPJclHP35pbO++nG9kiY=
-X-Google-Smtp-Source: ABdhPJwOgUdAbv2xPdPo89MY8rKRJHap2afTvPSwUStzaGBu0/3szRY/7SWM8uiNTPJYMPh9XY/B8A==
-X-Received: by 2002:a17:906:404:: with SMTP id d4mr21836488eja.449.1628015014978;
-        Tue, 03 Aug 2021 11:23:34 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id b13sm8575284ede.49.2021.08.03.11.23.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Aug 2021 11:23:34 -0700 (PDT)
-Date:   Tue, 3 Aug 2021 21:23:33 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S238834AbhHCS1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 14:27:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36172 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238793AbhHCS1n (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Aug 2021 14:27:43 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 828EF60F38;
+        Tue,  3 Aug 2021 18:27:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628015251;
+        bh=b5coXSNVumOlwboi0Y8EY/7mMzZofAt1yR97rrjEWuo=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=EnOniVccHYcbPUOoldYN5TcX8f3C+JRnuXOHZxWbtWJMY1Ak5Rft8Yu9IVWd25mIX
+         iudADck47r7/bo4UFcQvUYnq8hgDIIjzrESTJ2ktslvjw9WlMl0U28hVWKLw//VWBu
+         d1HQGlOXqV5jyTRfDykOOCsp1cM4DsXuauWnSHlIWKyLmujnwW7Gg7191OH5tv9Ysa
+         r6GOfrOdkaj5I9PQoVYzh6TzMNLgh8Feahn8l0jBdxFecoTVsgKs5oI/+U3jfHaBUZ
+         e/xx8m2hml8eTRRgpcXieQrEUdQnt/C/QMfdHCIeBhVM3y7czlpbR6cVa19JB2U3FE
+         Bn+jkASbimQIA==
+Received: by mail-wm1-f48.google.com with SMTP id l11-20020a7bcf0b0000b0290253545c2997so2677634wmg.4;
+        Tue, 03 Aug 2021 11:27:31 -0700 (PDT)
+X-Gm-Message-State: AOAM533jmkLPA1WOaooXymw+poBR9UqPrAzNR03Qht7E92QkvtT1XYkS
+        +claN/LL0w43SmIRYzUubf67gbIQvsq9tSVH1+Y=
+X-Google-Smtp-Source: ABdhPJyjyh5NW4HNDbY103glgZvlOfMtw6fuLPusi+3xAq38xsO4vRLS5MKwwQ0mEBFcXf8KsEzBXD0TMoyA7M3oU3E=
+X-Received: by 2002:a05:600c:414b:: with SMTP id h11mr5573870wmm.120.1628015250107;
+ Tue, 03 Aug 2021 11:27:30 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210802145937.1155571-1-arnd@kernel.org> <20210802164907.GA9832@hoboy.vegasvil.org>
+ <bd631e36-1701-b120-a9b0-8825d14cc694@intel.com> <20210802230921.GA13623@hoboy.vegasvil.org>
+ <CAK8P3a2XjgbEkYs6R7Q3RCZMV7v90gu_v82RVfFVs-VtUzw+_w@mail.gmail.com>
+ <20210803155556.GD32663@hoboy.vegasvil.org> <20210803161434.GE32663@hoboy.vegasvil.org>
+ <CAK8P3a2Wt9gnO4Ts_4Jw1+qpBj8HQc50jU2szjmR8MmZL9wrgQ@mail.gmail.com> <CO1PR11MB50892EAF3C871F6934B85852D6F09@CO1PR11MB5089.namprd11.prod.outlook.com>
+In-Reply-To: <CO1PR11MB50892EAF3C871F6934B85852D6F09@CO1PR11MB5089.namprd11.prod.outlook.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Tue, 3 Aug 2021 20:27:14 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a06enZOf=XyZ+zcAwBczv41UuCTz+=0FMf2gBz1_cOnZQ@mail.gmail.com>
+Message-ID: <CAK8P3a06enZOf=XyZ+zcAwBczv41UuCTz+=0FMf2gBz1_cOnZQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] ethernet/intel: fix PTP_1588_CLOCK dependencies
+To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Eric Woudstra <ericwouds@gmail.com>,
-        =?utf-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-Subject: Re: [PATCH net-next v2 4/4] net: dsa: mt7530: always install FDB
- entries with IVL and FID 1
-Message-ID: <20210803182333.s2oc4yizwrzy746i@skbuf>
-References: <20210803160405.3025624-1-dqfext@gmail.com>
- <20210803160405.3025624-5-dqfext@gmail.com>
- <20210803165138.3obbvtjj2xn6j2n5@skbuf>
- <20210803175354.3026608-1-dqfext@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210803175354.3026608-1-dqfext@gmail.com>
+        Arnd Bergmann <arnd@arndb.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 04, 2021 at 01:53:54AM +0800, DENG Qingfang wrote:
-> On Tue, Aug 03, 2021 at 07:51:38PM +0300, Vladimir Oltean wrote:
-> > 
-> > The way FDB entries are installed now makes a lot more intuitive sense.
-> 
-> Did you forget to add the Reviewed-by tag?
+On Tue, Aug 3, 2021 at 7:19 PM Keller, Jacob E <jacob.e.keller@intel.com> w=
+rote:
+> > On Tue, Aug 3, 2021 at 6:14 PM Richard Cochran <richardcochran@gmail.co=
+m> wrote:
 
-Yeah, in fact I did. I was in a rush and by the time I figured that
-I didn't do that, I had already left home.
+> There is an alternative solution to fixing the imply keyword:
+>
+> Make the drivers use it properly by *actually* conditionally enabling the=
+ feature only when IS_REACHABLE, i.e. fix ice so that it uses IS_REACHABLE =
+instead of IS_ENABLED, and so that its stub implementation in ice_ptp.h act=
+ually just silently does nothing but returns 0 to tell the rest of the driv=
+er things are fine.
 
-Still, in fact the patch is obviously correct, which is nice. Standalone
-ports never learn and the FDB lookup will always miss because it's in
-FID 0 (a separate FID compared to the bridge ports) and there is no FDB
-entry there. Packets will always be flooded to their only possible
-destination, the CPU port. Ports under VLAN-unaware bridges always use
-IVL and learn using the pvid, which is zero, and which happily coincides
-with the VID which the bridge uses to install VLAN-unaware FDB entries.
-Ports under VLAN-aware bridges again use IVL but the VID is taken from
-the packet not just from the pvid, so the VID will be >= 1 there. Again
-it coincides with the vid that the bridge uses to offload FDB entries.
-Nice, I really like it, it is really simple.
+I would consider IS_REACHABLE() part of the problem, not the solution, it m=
+akes
+things magically build, but then surprises users at runtime when they do no=
+t get
+the intended behavior.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+      Arnd
