@@ -2,86 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F4663DE35D
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 02:08:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF9983DE378
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 02:19:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232730AbhHCAI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 20:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50622 "EHLO
+        id S232829AbhHCATv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Aug 2021 20:19:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232208AbhHCAI2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 20:08:28 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99BD6C061764;
-        Mon,  2 Aug 2021 17:08:12 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id j1so27419353pjv.3;
-        Mon, 02 Aug 2021 17:08:12 -0700 (PDT)
+        with ESMTP id S232540AbhHCATv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 20:19:51 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CEBAC06175F;
+        Mon,  2 Aug 2021 17:19:41 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id f26so10622967ybj.5;
+        Mon, 02 Aug 2021 17:19:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hnWZQqtS4cs6S2eqLlexSQq+7EoZ7X5M8SRSYOU4pSg=;
-        b=fa9MN6mrs7i6nnx9UkVP//SvAd4Lpxw2vszy+gNUuNmEbGA4gPhMsTCzseTry+F9JA
-         9KUIDsbNNqZon2DqmmpXXXuYfOyiLRBWrZ0eLUt1/1OxAuHG3HW1pbgH7dkB/zl6vXYX
-         hbM5xEg9XsQ8tZNHnpZzm3eQr3GUFkKm2VLmPVI06fJxz7CM6fMaZ0KPq6YeMdwV32n5
-         nAG8nhxTuypwryQ9UqbxoDeplUE7ZGbXmGn0s2O6c2/0uWsC+Tjx3uqO/3kOe+wOrEd2
-         h3ECjjXCaDUwQh9Ozd76QF7f/2/oMi9qvBJrUGOtqwexcoSUUFe5SgWqcQEgyuGJi08u
-         nKcA==
+        bh=OPqGRE6xJS2oRkxHfvZPuffqPnTnDTuL792ckn61KPk=;
+        b=rN+KaFXj75ktUapJTM921rmSl4zoKFORWRoDbfPycO/nOxwEkDiZapefNzOUUecvFv
+         xWY4P4y8cWnYnxEzU4inVNHkFb7Fn+u9IsQZ9MnJIn3CSHSsDhmNtR9qJBI9FXOfkZYN
+         SBnkm7+fV7DSKSKyzSpgqrBU6jFj4uoVWubLH6iycRrO8Pffv/EBqxcvkaafUW4okLMA
+         1wA24tpHz9czZ08TKEJ9q/tTc9Z9R8ylijnEKV73tsO9/vjQiTpookPHDBkbqRa8tDtN
+         02LHgKs/8s30LSJgwlpr1zAvPmuQLjvqBGykmky3JgPPlvoVTFeV2so8bJZz26oCg+kz
+         jvuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hnWZQqtS4cs6S2eqLlexSQq+7EoZ7X5M8SRSYOU4pSg=;
-        b=XgB3kUiF0VMPOQFdpmIIjNnBD295rxd7KJBZos3NWk9pIJTjS3k9y9uOUPXFYn73ru
-         ajrbgfyGr7s1bhf4hViUPImIz+eMXwXqrSgfJO7hh5npvFAsLp3xStEE7fLw7lnWIXIB
-         gQiE9w7IlMHlherVlh/poAQVOqkAuEseAe/iplJFFAGZ1UGGZx1EU8AvuMhvhJJaLTA0
-         aU4/ba0ADYPSunRyBxZAUeuv6LnpWlHelpZyqxx+HX1d/Qai3cAfhlRd0pYX/r6e34tq
-         qBXBwS+6ew4OlqyksGPyMF5e3myUaW6JVhsYVSPT15yIxd4M+YqBWcUeu+LvztZI5qJA
-         Mgbg==
-X-Gm-Message-State: AOAM532OipxC0PHTEi54YEIdrhmgty7VAT12vvOau2ugvoBFQraOtutT
-        Lgtr6NxKX3UkzJ8QvVVR8CS4cv8rV6e9TqlQn3g=
-X-Google-Smtp-Source: ABdhPJx6IA17rcZlw2ovaA9RVa6EBb8E+UvzFg4a17ZqxRkhWYJVzFkIU5ChOqjKvCcpAa5aOBVenEhHesExDGA4PNs=
-X-Received: by 2002:a63:d704:: with SMTP id d4mr791229pgg.179.1627949292197;
- Mon, 02 Aug 2021 17:08:12 -0700 (PDT)
+        bh=OPqGRE6xJS2oRkxHfvZPuffqPnTnDTuL792ckn61KPk=;
+        b=XNxFEea8Ib9sERted0tIph4f/ZJxNzYo9fNR1HWvkW9O+L4QfTgCWFeJWDKZwV6gN0
+         dq9pkKZ7fTrpqNjUQqYNpYbwwPRMSoPzv9V0TpOPfViklcq2JQjrcsoIh5plDLy+mEpI
+         B2fJJd1aMFI2DohSdbBAyE36vQ6Pk2Mje2djqhK/dtj9j7B9zeH1j94JEtXfrpc8p+FF
+         sY9nODtN35U2mcrnCJ15IQvrxz19v4Jn/RaPYG1zDZcSGdXqAES8AK36k3NG2ofwBd/5
+         RBbczPEg3jVkgtIowTX0pBnTC2sos6Mc63AMns0Aosq2ftJMFdiogLE4qcyuFaD7SAcT
+         Dd2A==
+X-Gm-Message-State: AOAM5316vUiE6g+1m0bkj2y38j7hxNemrAWZ+QE5r0ab61U35kVdWLoY
+        4SOlDj9cfkI8qK/ImrFb0eFhqZur1iomzsD5IzU=
+X-Google-Smtp-Source: ABdhPJy5npUMFjWRc6CLCVxkd+n1mlSweCIVwfhNXgN3n9BgByToq40It6kX/0eyRClx7c9V9iLH1sK24cS0ZnH/tRQ=
+X-Received: by 2002:a25:1455:: with SMTP id 82mr24088939ybu.403.1627949980593;
+ Mon, 02 Aug 2021 17:19:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <1931ca440b47344fe357d5438aeab4b439943d10.1627936393.git.peilin.ye@bytedance.com>
- <672e6f13-bf58-d542-6712-e6f803286373@iogearbox.net>
-In-Reply-To: <672e6f13-bf58-d542-6712-e6f803286373@iogearbox.net>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 2 Aug 2021 17:08:01 -0700
-Message-ID: <CAM_iQpUb-zbBUGdYxCwxBJSKJ=6Gm3hFwFP+nc+43E_hofuK1w@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] net/sched: sch_ingress: Support clsact
- egress mini-Qdisc option
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
+References: <20210609135537.1460244-1-joamaki@gmail.com> <20210728234350.28796-1-joamaki@gmail.com>
+ <20210728234350.28796-7-joamaki@gmail.com>
+In-Reply-To: <20210728234350.28796-7-joamaki@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 2 Aug 2021 17:19:29 -0700
+Message-ID: <CAEf4BzbcavnGdAjV-KjTrFg8bXWF=2qN1j67+09-CgS_Ub+4TQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 6/6] selftests/bpf: Add tests for XDP bonding
+To:     Jussi Maki <joamaki@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, j.vosburgh@gmail.com,
+        Andy Gospodarek <andy@greyhouse.net>, vfalico@gmail.com,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 2, 2021 at 2:11 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+On Mon, Aug 2, 2021 at 6:24 AM <joamaki@gmail.com> wrote:
 >
-> NAK, just use clsact qdisc in the first place which has both ingress and egress
-> support instead of adding such hack. You already need to change your scripts for
-> clsact-on, so just swap 'tc qdisc add dev eth0 ingress' to 'tc qdisc add dev eth0
-> clsact' w/o needing to change kernel.
+> From: Jussi Maki <joamaki@gmail.com>
+>
+> Add a test suite to test XDP bonding implementation
+> over a pair of veth devices.
+>
+> Signed-off-by: Jussi Maki <joamaki@gmail.com>
+> ---
 
-If we were able to change the "script" as easily as you described,
-you would not even see such a patch. The fact is it is not under
-our control, the most we can do is change the qdisc after it is
-created by the "script", ideally without interfering its traffic,
-hence we have such a patch.
+Was there any reason not to use BPF skeleton in your new tests? And
+also bpf_link-based XDP attachment instead of netlink-based?
 
-(BTW, it is actually not a script, it is a cloud platform.)
+>  .../selftests/bpf/prog_tests/xdp_bonding.c    | 467 ++++++++++++++++++
+>  1 file changed, 467 insertions(+)
+>
 
-Thanks.
+[...]
