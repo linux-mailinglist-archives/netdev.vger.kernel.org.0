@@ -2,102 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBD9B3DEBA3
-	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:18:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 324473DEBA4
+	for <lists+netdev@lfdr.de>; Tue,  3 Aug 2021 13:19:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235456AbhHCLSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Aug 2021 07:18:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38948 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234156AbhHCLSN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 07:18:13 -0400
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB6FEC061757;
-        Tue,  3 Aug 2021 04:18:02 -0700 (PDT)
+        id S235480AbhHCLTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Aug 2021 07:19:14 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:57594 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235467AbhHCLTN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Aug 2021 07:19:13 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 173BIjbx114050;
+        Tue, 3 Aug 2021 06:18:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1627989525;
+        bh=xOfUPHHqXVwjF79ATT4GN2kZvtYkfFv5v8eXZAY31GQ=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=fjNZeXY/VWBa/4VsSDhJfHzAdOXle125mDkxgMdz5rl9GAblcSpGkxEFR1PDgqlnU
+         /M01c9+hiwiBTirfoZGVEOGuhz935RrM86Q5aDryphlVTyZB9kSlhteyd1eqhy8YrM
+         sPbddqZjUFJTDXGwPIfd8NVlKgNQmhO5IxnZojsg=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 173BIjKe067253
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 3 Aug 2021 06:18:45 -0500
+Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 3 Aug
+ 2021 06:18:45 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Tue, 3 Aug 2021 06:18:44 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 173BIebq100518;
+        Tue, 3 Aug 2021 06:18:40 -0500
+Subject: Re: [PATCH net-next] net: build all switchdev drivers as modules when
+ the bridge is a module
+To:     Arnd Bergmann <arnd@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+CC:     Networking <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Linux Kernel Functional Testing <lkft@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+References: <20210726142536.1223744-1-vladimir.oltean@nxp.com>
+ <CAK8P3a2HGm7MyUc3N1Vjdb2inS6D3E3HDq4bNTOBaHZQCP9kwA@mail.gmail.com>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <eab61b8f-fc54-ea63-ad31-73fb13026b1f@ti.com>
+Date:   Tue, 3 Aug 2021 14:18:38 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1627989479;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=LgCqQlSSX2PcnXFJh1Yaw7vD5bKUCJpn+z41x69Wmwg=;
-        b=KUSvzizTn2JjWKrhAZYHOhoTmlZA/q9vTlYyNs50v9UnNeGdSiTvVRP5aJkpxua9wTZZKL
-        vutGwtvzIu0xHxkGwZQxu8rWsIQezy/bmyeysTtOjDYYC+2npCto3izoKRzU+cwdS3BEw3
-        FX8GeJ8Q9UoI6EQXS5ofH3RETq44Wf8=
-Date:   Tue, 03 Aug 2021 11:17:59 +0000
-Content-Type: multipart/mixed;
- boundary="--=_RainLoop_288_567298312.1627989479"
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   yajun.deng@linux.dev
-Message-ID: <7177b79774f6be76431ff4af9fa164f8@linux.dev>
-Subject: Fwd: Re: [PATCH] net: convert fib_treeref from int to refcount_t
-To:     m.szyprowski@samsung.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <2033809a-1a07-1f5d-7732-f10f6e094f3d@gmail.com>
-References: <2033809a-1a07-1f5d-7732-f10f6e094f3d@gmail.com>
- <20210729071350.28919-1-yajun.deng@linux.dev>
- <20210802133727.bml3be3tpjgld45j@skbuf>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yajun.deng@linux.dev
+In-Reply-To: <CAK8P3a2HGm7MyUc3N1Vjdb2inS6D3E3HDq4bNTOBaHZQCP9kwA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi All,
 
-----=_RainLoop_288_567298312.1627989479
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+On 02/08/2021 17:47, Arnd Bergmann wrote:
+> On Mon, Jul 26, 2021 at 4:28 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+>>
+>> Currently, all drivers depend on the bool CONFIG_NET_SWITCHDEV, but only
+>> the drivers that call some sort of function exported by the bridge, like
+>> br_vlan_enabled() or whatever, have an extra dependency on CONFIG_BRIDGE.
+>>
+>> Since the blamed commit, all switchdev drivers have a functional
+>> dependency upon switchdev_bridge_port_{,un}offload(), which is a pair of
+>> functions exported by the bridge module and not by the bridge-independent
+>> part of CONFIG_NET_SWITCHDEV.
+>>
+>> Problems appear when we have:
+>>
+>> CONFIG_BRIDGE=m
+>> CONFIG_NET_SWITCHDEV=y
+>> CONFIG_TI_CPSW_SWITCHDEV=y
+>>
+>> because cpsw, am65_cpsw and sparx5 will then be built-in but they will
+>> call a symbol exported by a loadable module. This is not possible and
+>> will result in the following build error:
+>>
+>> drivers/net/ethernet/ti/cpsw_new.o: in function `cpsw_netdevice_event':
+>> drivers/net/ethernet/ti/cpsw_new.c:1520: undefined reference to
+>>                                          `switchdev_bridge_port_offload'
+>> drivers/net/ethernet/ti/cpsw_new.c:1537: undefined reference to
+>>                                          `switchdev_bridge_port_unoffload'
+>>
+>> As mentioned, the other switchdev drivers don't suffer from this because
+>> switchdev_bridge_port_offload() is not the first symbol exported by the
+>> bridge that they are calling, so they already needed to deal with this
+>> in the same way.
+>>
+>> Fixes: 2f5dc00f7a3e ("net: bridge: switchdev: let drivers inform which bridge ports are offloaded")
+>> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+>> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> I'm still seeing build failures after this patch was applied. I have a fixup
+> patch that seems to work, but I'm still not sure if that version is complete.
 
-This patch from David Ahern was applied in the newest net-next.=0A=0A----=
----- Forwarded message -------=0AFrom: "David Ahern" <dsahern@gmail.com>=
-=0ATo: "Ioana Ciornei" <ciorneiioana@gmail.com>, "Yajun Deng" <yajun.deng=
-@linux.dev>=0ACC: davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ip=
-v6.org, dsahern@kernel.org,=0Anetdev@vger.kernel.org, linux-kernel@vger.k=
-ernel.org, linux-decnet-user@lists.sourceforge.net=0ASent: August 2, 2021=
- 10:36 PM=0ASubject: Re: [PATCH] net: convert fib_treeref from int to ref=
-count_t=0AOn 8/2/21 7:37 AM, Ioana Ciornei wrote:=0A=0A> Unfortunately, w=
-ith this patch applied I get into the following WARNINGs=0A> when booting=
- over NFS:=0A=0ACan you test the attached?=0A=0AThanks,
+In my opinion, the problem is a bit bigger here than just fixing the build :(
 
-----=_RainLoop_288_567298312.1627989479
-Content-Type: application/octet-stream;
- name="0001-ipv4-Fix-refcount-warning-for-new-fib_info.patch"
-Content-Disposition: attachment;
- filename="0001-ipv4-Fix-refcount-warning-for-new-fib_info.patch"
-Content-Transfer-Encoding: base64
+In case, of ^cpsw the switchdev mode is kinda optional and in many cases
+(especially for testing purposes, NFS) the multi-mac mode is still preferable mode.
 
-RnJvbSBlYzlkMTY5ZWIzM2U2YTY1ZGI2NDE3OTI4MjFjYzZhMjU5ZWQ5MzYyIE1vbiBTZXAg
-MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBEYXZpZCBBaGVybiA8ZHNhaGVybkBrZXJuZWwub3Jn
-PgpEYXRlOiBNb24sIDIgQXVnIDIwMjEgMDg6Mjk6MjYgLTA2MDAKU3ViamVjdDogW1BBVENI
-IG5ldC1uZXh0XSBpcHY0OiBGaXggcmVmY291bnQgd2FybmluZyBmb3IgbmV3IGZpYl9pbmZv
-CgpJb2FuYSByZXBvcnRlZCBhIHJlZmNvdW50IHdhcm5pbmcgd2hlbiBib290aW5nIG92ZXIg
-TkZTOgoKWyAgICA1LjA0MjUzMl0gLS0tLS0tLS0tLS0tWyBjdXQgaGVyZSBdLS0tLS0tLS0t
-LS0tClsgICAgNS4wNDcxODRdIHJlZmNvdW50X3Q6IGFkZGl0aW9uIG9uIDA7IHVzZS1hZnRl
-ci1mcmVlLgpbICAgIDUuMDUyMzI0XSBXQVJOSU5HOiBDUFU6IDcgUElEOiAxIGF0IGxpYi9y
-ZWZjb3VudC5jOjI1IHJlZmNvdW50X3dhcm5fc2F0dXJhdGUrMHhhNC8weDE1MAouLi4KWyAg
-ICA1LjE2NzIwMV0gQ2FsbCB0cmFjZToKWyAgICA1LjE2OTYzNV0gIHJlZmNvdW50X3dhcm5f
-c2F0dXJhdGUrMHhhNC8weDE1MApbICAgIDUuMTc0MDY3XSAgZmliX2NyZWF0ZV9pbmZvKzB4
-YzAwLzB4YzkwClsgICAgNS4xNzc5ODJdICBmaWJfdGFibGVfaW5zZXJ0KzB4OGMvMHg2MjAK
-WyAgICA1LjE4MTg5M10gIGZpYl9tYWdpYy5pc3JhLjArMHgxMTAvMHgxMWMKWyAgICA1LjE4
-NTg5MV0gIGZpYl9hZGRfaWZhZGRyKzB4YjgvMHgxOTAKWyAgICA1LjE4OTYyOV0gIGZpYl9p
-bmV0YWRkcl9ldmVudCsweDhjLzB4MTQwCgpmaWJfdHJlZXJlZiBuZWVkcyB0byBiZSBzZXQg
-YWZ0ZXIga3phbGxvYy4gVGhlIG9sZCBjb2RlIGhhZCBhICsrIHdoaWNoCmxlZCB0byB0aGUg
-Y29uZnVzaW9uIHdoZW4gdGhlIGludCB3YXMgcmVwbGFjZWQgYnkgYSByZWZjb3VudF90LgoK
-Rml4ZXM6IDc5OTc2ODkyZjdlYSAoIm5ldDogY29udmVydCBmaWJfdHJlZXJlZiBmcm9tIGlu
-dCB0byByZWZjb3VudF90IikKU2lnbmVkLW9mZi1ieTogRGF2aWQgQWhlcm4gPGRzYWhlcm5A
-a2VybmVsLm9yZz4KUmVwb3J0ZWQtYnk6IElvYW5hIENpb3JuZWkgPGNpb3JuZWlpb2FuYUBn
-bWFpbC5jb20+CkNjOiBZYWp1biBEZW5nIDx5YWp1bi5kZW5nQGxpbnV4LmRldj4KLS0tCiBu
-ZXQvaXB2NC9maWJfc2VtYW50aWNzLmMgfCAyICstCiAxIGZpbGUgY2hhbmdlZCwgMSBpbnNl
-cnRpb24oKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQgYS9uZXQvaXB2NC9maWJfc2Vt
-YW50aWNzLmMgYi9uZXQvaXB2NC9maWJfc2VtYW50aWNzLmMKaW5kZXggZmExOWY0Y2RmM2E0
-Li5mMjlmZWI3NzcyZGEgMTAwNjQ0Ci0tLSBhL25ldC9pcHY0L2ZpYl9zZW1hbnRpY3MuYwor
-KysgYi9uZXQvaXB2NC9maWJfc2VtYW50aWNzLmMKQEAgLTE1NTEsNyArMTU1MSw3IEBAIHN0
-cnVjdCBmaWJfaW5mbyAqZmliX2NyZWF0ZV9pbmZvKHN0cnVjdCBmaWJfY29uZmlnICpjZmcs
-CiAJCXJldHVybiBvZmk7CiAJfQogCi0JcmVmY291bnRfaW5jKCZmaS0+ZmliX3RyZWVyZWYp
-OworCXJlZmNvdW50X3NldCgmZmktPmZpYl90cmVlcmVmLCAxKTsKIAlyZWZjb3VudF9zZXQo
-JmZpLT5maWJfY2xudHJlZiwgMSk7CiAJc3Bpbl9sb2NrX2JoKCZmaWJfaW5mb19sb2NrKTsK
-IAlobGlzdF9hZGRfaGVhZCgmZmktPmZpYl9oYXNoLAotLSAKMi4yNC4zIChBcHBsZSBHaXQt
-MTI4KQoK
+There were no such tight dependency between switchdev drivers and bridge core before and switchdev serviced as
+independent, notification based layer between them, so ^cpsw still can be "Y" and bridge can be "M".
+Now for mostly every kernel build configuration the CONFIG_BRIDGE will need to be set as "Y", or we will have
+to update drivers to support build with BRIDGE=n and maintain separate builds for networking vs non-networking testing.
+But is this enough? Wouldn't it cause 'chain reaction' required to add more and more "Y" options (like CONFIG_VLAN_8021Q)?
 
-----=_RainLoop_288_567298312.1627989479--
+PS. Just to be sure we on the same page - ARM builds will be forced (with this patch) to have CONFIG_TI_CPSW_SWITCHDEV=m
+and so all our automation testing will just fail with omap2plus_defconfig.
+-- 
+Best regards,
+grygorii
