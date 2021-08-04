@@ -2,178 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43C123E09DA
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 23:10:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9271D3E09EB
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 23:16:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233670AbhHDVKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 17:10:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40760 "EHLO mail.kernel.org"
+        id S229961AbhHDVQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 17:16:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42724 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232116AbhHDVKL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Aug 2021 17:10:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7D0B761040;
-        Wed,  4 Aug 2021 21:09:58 +0000 (UTC)
+        id S229910AbhHDVQY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Aug 2021 17:16:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 511C160EE8;
+        Wed,  4 Aug 2021 21:16:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628111398;
-        bh=kyjjo4x+2rj4cpmw1MhsIVCuFJHXrKznAAMYYG0wah4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DuOoQpsjchvGC4EZ1N7wnoErYbFoUVYZNtoDNqIduM/pm73s/Z46YQ7zW7/pakX2X
-         UM8j2JQj9r7sfmzjNJyEk+a/Is2ucGbClfLRk35mkd9M1qHAvjHlYzWdjws7Ezk08F
-         P4TJMkWBam5IvwHKd/9WcdEn0w9rKwpLURv+Kf0eVw/r3bNcnQtibs+kpFJnjCPRKH
-         yeQy+fZ3+h/gFgO3fWde8RLWklu7fAEVk8Uth3slPfS8oGgv0gHez2XrJOVgRu4F0u
-         pcSDzgXOZlDdt+56eolm/TFVAe/6xbM484r39h6oeuL9PZN2Tbl2rS7qFH3A6uaM/n
-         d+be8qwtMSzsA==
-Date:   Wed, 4 Aug 2021 14:09:57 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     davem@davemloft.net, richardcochran@gmail.com, kernel-team@fb.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v4] ptp: ocp: Expose various resources on the
- timecard.
-Message-ID: <20210804140957.1fd894dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210804033327.345759-1-jonathan.lemon@gmail.com>
-References: <20210804033327.345759-1-jonathan.lemon@gmail.com>
+        s=k20201202; t=1628111770;
+        bh=VXiqPxF0kjv6nWSjkMwVKlsBbYuZtRFsnuWf5zouccE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=hF5WVeKONzt1hdOekY4f2881K2Sh+Ch7vjgKV6wOGs8H/ZI02DdgNePxokRg6nZ2g
+         YtdajtoC+X18GwemzS9BkcDiDCnLPUeaFpRlYCz3DDSl1/a4g8MJ9bN17wdBdwLwCC
+         MLLkT03bB+gYpEji0BT8GHoaOw+dBtJ6oXfRGuxoBGWusX/QfowVexx3mXLa8ZwM5g
+         rysUJxqP6p1h5H2y3viHY5yQtFQPGQ1MZbUVUHSr1+MKltHPns5/vGC1s29gbu6/PJ
+         0ODp45SjlCA63Xds+2sne77khLEs7CtXlD61Ahe0GVAcjaywqq+bgahYDb6eIeZIsp
+         QlxQB8elpYh9w==
+Date:   Wed, 4 Aug 2021 16:18:50 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] net/ipv4/igmp: Use struct_size() helper
+Message-ID: <20210804211850.GA42046@embeddedor>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  3 Aug 2021 20:33:27 -0700 Jonathan Lemon wrote:
-> +static const struct devlink_param ptp_ocp_devlink_params[] = {
-> +};
-> +
-> +static void
-> +ptp_ocp_devlink_set_params_init_values(struct devlink *devlink)
-> +{
-> +}
+Replace IP_SFLSIZE() with struct_size() helper in order to avoid any
+potential type mistakes or integer overflows that, in the worst
+scenario, could lead to heap overflows.
 
-Why register empty set of params?
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ include/linux/igmp.h |  3 ---
+ net/ipv4/igmp.c      | 20 +++++++++++++-------
+ 2 files changed, 13 insertions(+), 10 deletions(-)
 
-> +static int
-> +ptp_ocp_devlink_register(struct devlink *devlink, struct device *dev)
-> +{
-> +	int err;
-> +
-> +	err = devlink_register(devlink, dev);
-> +	if (err)
-> +		return err;
-> +
-> +	err = devlink_params_register(devlink, ptp_ocp_devlink_params,
-> +				      ARRAY_SIZE(ptp_ocp_devlink_params));
-> +	ptp_ocp_devlink_set_params_init_values(devlink);
-> +	if (err)
-> +		goto out;
-> +	devlink_params_publish(devlink);
-> +
-> +	return 0;
-> +
-> +out:
-> +	devlink_unregister(devlink);
-> +	return err;
-> +}
+diff --git a/include/linux/igmp.h b/include/linux/igmp.h
+index 64ce8cd1cfaf..93c262ecbdc9 100644
+--- a/include/linux/igmp.h
++++ b/include/linux/igmp.h
+@@ -41,9 +41,6 @@ struct ip_sf_socklist {
+ 	__be32			sl_addr[];
+ };
+ 
+-#define IP_SFLSIZE(count)	(sizeof(struct ip_sf_socklist) + \
+-	(count) * sizeof(__be32))
+-
+ #define IP_SFBLOCK	10	/* allocate this many at once */
+ 
+ /* ip_mc_socklist is real list now. Speed is not argument;
+diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
+index a5f4ecb02e97..cca84d2b13d6 100644
+--- a/net/ipv4/igmp.c
++++ b/net/ipv4/igmp.c
+@@ -2233,7 +2233,7 @@ static int ip_mc_leave_src(struct sock *sk, struct ip_mc_socklist *iml,
+ 			iml->sfmode, psf->sl_count, psf->sl_addr, 0);
+ 	RCU_INIT_POINTER(iml->sflist, NULL);
+ 	/* decrease mem now to avoid the memleak warning */
+-	atomic_sub(IP_SFLSIZE(psf->sl_max), &sk->sk_omem_alloc);
++	atomic_sub(struct_size(psf, sl_addr, psf->sl_max), &sk->sk_omem_alloc);
+ 	kfree_rcu(psf, rcu);
+ 	return err;
+ }
+@@ -2382,7 +2382,8 @@ int ip_mc_source(int add, int omode, struct sock *sk, struct
+ 
+ 		if (psl)
+ 			count += psl->sl_max;
+-		newpsl = sock_kmalloc(sk, IP_SFLSIZE(count), GFP_KERNEL);
++		newpsl = sock_kmalloc(sk, struct_size(newpsl, sl_addr, count),
++				      GFP_KERNEL);
+ 		if (!newpsl) {
+ 			err = -ENOBUFS;
+ 			goto done;
+@@ -2393,7 +2394,8 @@ int ip_mc_source(int add, int omode, struct sock *sk, struct
+ 			for (i = 0; i < psl->sl_count; i++)
+ 				newpsl->sl_addr[i] = psl->sl_addr[i];
+ 			/* decrease mem now to avoid the memleak warning */
+-			atomic_sub(IP_SFLSIZE(psl->sl_max), &sk->sk_omem_alloc);
++			atomic_sub(struct_size(psl, sl_addr, psl->sl_max),
++				   &sk->sk_omem_alloc);
+ 			kfree_rcu(psl, rcu);
+ 		}
+ 		rcu_assign_pointer(pmc->sflist, newpsl);
+@@ -2468,8 +2470,9 @@ int ip_mc_msfilter(struct sock *sk, struct ip_msfilter *msf, int ifindex)
+ 		goto done;
+ 	}
+ 	if (msf->imsf_numsrc) {
+-		newpsl = sock_kmalloc(sk, IP_SFLSIZE(msf->imsf_numsrc),
+-							   GFP_KERNEL);
++		newpsl = sock_kmalloc(sk, struct_size(newpsl, sl_addr,
++						      msf->imsf_numsrc),
++				      GFP_KERNEL);
+ 		if (!newpsl) {
+ 			err = -ENOBUFS;
+ 			goto done;
+@@ -2480,7 +2483,9 @@ int ip_mc_msfilter(struct sock *sk, struct ip_msfilter *msf, int ifindex)
+ 		err = ip_mc_add_src(in_dev, &msf->imsf_multiaddr,
+ 			msf->imsf_fmode, newpsl->sl_count, newpsl->sl_addr, 0);
+ 		if (err) {
+-			sock_kfree_s(sk, newpsl, IP_SFLSIZE(newpsl->sl_max));
++			sock_kfree_s(sk, newpsl,
++				     struct_size(newpsl, sl_addr,
++						 newpsl->sl_max));
+ 			goto done;
+ 		}
+ 	} else {
+@@ -2493,7 +2498,8 @@ int ip_mc_msfilter(struct sock *sk, struct ip_msfilter *msf, int ifindex)
+ 		(void) ip_mc_del_src(in_dev, &msf->imsf_multiaddr, pmc->sfmode,
+ 			psl->sl_count, psl->sl_addr, 0);
+ 		/* decrease mem now to avoid the memleak warning */
+-		atomic_sub(IP_SFLSIZE(psl->sl_max), &sk->sk_omem_alloc);
++		atomic_sub(struct_size(psl, sl_addr, psl->sl_max),
++			   &sk->sk_omem_alloc);
+ 		kfree_rcu(psl, rcu);
+ 	} else
+ 		(void) ip_mc_del_src(in_dev, &msf->imsf_multiaddr, pmc->sfmode,
+-- 
+2.27.0
 
-> +static int
-> +ptp_ocp_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
-> +			 struct netlink_ext_ack *extack)
-> +{
-> +	struct ptp_ocp *bp = devlink_priv(devlink);
-> +	char buf[32];
-> +	int err;
-> +
-> +	err = devlink_info_driver_name_put(req, KBUILD_MODNAME);
-> +	if (err)
-> +		return err;
-> +
-> +	if (bp->pending_image) {
-> +		err = devlink_info_version_stored_put(req,
-> +						      "timecard", "pending");
-
-"pending" is not a version. It seems you're talking to the flash
-directly, why not read the version?
-
-> +	}
-> +
-> +	if (bp->image) {
-> +		u32 ver = ioread32(&bp->image->version);
-> +
-> +		if (ver & 0xffff) {
-> +			sprintf(buf, "%d", ver);
-> +			err = devlink_info_version_running_put(req,
-> +							       "timecard",
-> +							       buf);
-> +		} else {
-> +			sprintf(buf, "%d", ver >> 16);
-> +			err = devlink_info_version_running_put(req,
-> +							       "golden flash",
-> +							       buf);
-
-What's the difference between "timecard" and "golden flash"?
-Why call firmware for a timecard timecard? We don't call NIC
-firmware "NIC".
-
-Drivers using devlink should document what they implement and meaning
-of various fields. Please see examples in
-Documentation/networking/devlink/
-
-> +		}
-> +		if (err)
-> +			return err;
-> +	}
-
-> +static int
-> +ptp_ocp_health_diagnose(struct devlink_health_reporter *reporter,
-> +			struct devlink_fmsg *fmsg,
-> +			struct netlink_ext_ack *extack)
-> +{
-> +	struct ptp_ocp *bp = devlink_health_reporter_priv(reporter);
-> +	char buf[32];
-> +	int err;
-> +
-> +	if (!bp->gps_lost)
-> +		return 0;
-> +
-> +	sprintf(buf, "%ptT", &bp->gps_lost);
-> +	err = devlink_fmsg_string_pair_put(fmsg, "Lost sync at", buf);
-> +	if (err)
-> +		return err;
-> +
-> +	return 0;
-> +}
-> +
-> +static void
-> +ptp_ocp_health_update(struct ptp_ocp *bp)
-> +{
-> +	int state;
-> +
-> +	state = bp->gps_lost ? DEVLINK_HEALTH_REPORTER_STATE_ERROR
-> +			     : DEVLINK_HEALTH_REPORTER_STATE_HEALTHY;
-> +
-> +	if (bp->gps_lost)
-> +		devlink_health_report(bp->health, "No GPS signal", NULL);
-> +
-> +	devlink_health_reporter_state_update(bp->health, state);
-> +}
-> +
-> +static const struct devlink_health_reporter_ops ptp_ocp_health_ops = {
-> +	.name = "gps_sync",
-> +	.diagnose = ptp_ocp_health_diagnose,
-> +};
-> +
-> +static void
-> +ptp_ocp_devlink_health_register(struct devlink *devlink)
-> +{
-> +	struct ptp_ocp *bp = devlink_priv(devlink);
-> +	struct devlink_health_reporter *r;
-> +
-> +	r = devlink_health_reporter_create(devlink, &ptp_ocp_health_ops, 0, bp);
-> +	if (IS_ERR(r))
-> +		dev_err(&bp->pdev->dev, "Failed to create reporter, err %ld\n",
-> +			PTR_ERR(r));
-> +	bp->health = r;
-> +}
-
-What made you use devlink health here? Why not just print that "No GPS
-signal" message to the logs? Devlink health is supposed to give us
-meaningful context dumps and remediation, here neither is used.
