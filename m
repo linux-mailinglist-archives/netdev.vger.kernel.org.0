@@ -2,237 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE8753E0763
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 20:15:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E78E3E0769
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 20:16:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240270AbhHDSPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 14:15:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50680 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240209AbhHDSPj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 14:15:39 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F58C061386
-        for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 11:15:24 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id d9so1976794qty.12
-        for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 11:15:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=YNMPWWBoaClDGCzWpP/bGEyzR71g8h2gDLmLD16sqJc=;
-        b=dwv8cmFeTB/7VVduIcYiuL/mX+jCj7V+qshDvgeCJomNbA3KYyc8eOzU/rRMrRTrIa
-         4nH8MAL3joHu6VfHDN/W4dMfiUBT1PH4tN7ThSJjFTK48804An6Sykg1ZxXoxXGjXJ2O
-         Ray/GPoTItoOH1JURgh3RqjooinZGalbRpHS8NCh8qnW7q4yFWDIb1yr1E3Lt7YyOPXQ
-         sfB3ga71JWUdZUFTHNg2Ffu4MGlKH27sWf85XB6G0mS+FohNqyX6itQ3REmyWA63HXK9
-         qBbI2igROkIdTL4gFQkqfrfUImvDgxB/iOVLLe2gTpZM8D6RIWiQkq9cslDqIZ+JZcuh
-         3tpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=YNMPWWBoaClDGCzWpP/bGEyzR71g8h2gDLmLD16sqJc=;
-        b=ZxmhOL2sn1ZO1HS9aHHvkjU3QYK+RP7aqIISXmTTZ/JM5jczdJsQfsvRdR2+x/0WSG
-         +nDKpx+CcRhnWAEzSAdol3t9U/D6jVwfdt4kl9jt7PnV5Tbk0LQgp1H6ErG6UnnEhH8M
-         MbMSXLzM887aVbe3THqmygXh4glNi29p3iIB8fV7ujppZcLeA7Hf2FMJDMKtbcR663HW
-         q6oB1IN2UQMfiibctlJSR6A7Pom0Geo7QlHZtB7gonyBbwWefQaQlQJPGcEAT7Qj8ANy
-         8PnZFp18T0uhr63cOlEWDuwuURz81qqcAmksoKH8ztQRRUgkc2Q5fgTpJob4Crqs8san
-         ko3Q==
-X-Gm-Message-State: AOAM530cE67VKAxLWqEo/SL4kZdI42PNCVW1iFvFwfwzrp/snxD4E3qE
-        yT6bQrOef5C3mDqY/+kcI1Mrf70Ibw==
-X-Google-Smtp-Source: ABdhPJxtODBKKDWpkK5B60tvRWXTc7iG4hvoQDOnQtMHxbHKP/VYK7GonODk1WGEEZlzVyPHgG+GBw==
-X-Received: by 2002:ac8:44da:: with SMTP id b26mr778139qto.81.1628100923510;
-        Wed, 04 Aug 2021 11:15:23 -0700 (PDT)
-Received: from bytedance.attlocal.net (ec2-13-57-97-131.us-west-1.compute.amazonaws.com. [13.57.97.131])
-        by smtp.gmail.com with ESMTPSA id g20sm1635952qki.73.2021.08.04.11.15.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Aug 2021 11:15:23 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        Peilin Ye <yepeilin.cs@gmail.com>
-Subject: [PATCH iproute2-next v3] tc/skbmod: Introduce SKBMOD_F_ECN option
-Date:   Wed,  4 Aug 2021 11:15:16 -0700
-Message-Id: <20210804181516.11921-1-yepeilin.cs@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210721232053.39077-1-yepeilin.cs@gmail.com>
-References: <20210721232053.39077-1-yepeilin.cs@gmail.com>
+        id S238022AbhHDSRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 14:17:01 -0400
+Received: from mail-dm6nam08on2075.outbound.protection.outlook.com ([40.107.102.75]:42091
+        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236761AbhHDSRA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Aug 2021 14:17:00 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mZ92ehMUaM+DRlisr5dVYkPbwnMPsteQ3V67nr6WqE/+LrYwMWLm6IMAmzHolmcfYjfXnhRJTth8qvSbBNSxZLjbmTEuzk/L5Pajhk1VxrHKXSlhsXcE9BIitPNDbzj5Up8KBa9qZP0GM28U1nxFWH/5vF20GA9pR3DH9xFrUVW1rs6E0Df7ooJeDPWV+CWKq7c/EkJ3ZGuQ+ITdnacI1q4UhWTpzK+7cOGFbxwhsCM7WTNz9E6p63NthsYtdyRYUcfr++ze9gkYl1Xsc4Nr6cf+CHW8sPjjax5HnKZqUWx0+XSVFGU+JOZf4UJ7ItubZqB/LzxGhzxxur9rEhlazg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=21k9UmOmECgnE1/EUpietXhisMdQ+uQcI5jWL9ilyiU=;
+ b=LhNelUCkU7itgIKNMhhnZNbhgLt3ezGdHxv7CovJlofm/W6XVhkcy4bGh30afo6cv42DRmeudc+uDVTjNfWdzZFNmyDq/5DiW6FfPqnOnIEdUekhqWzcCfC3qU+vZSW1pf1pLwwyCjZyegLQNgfXRwvYH1B2CrqB+m4XS0KjZM1lzUY1ybWGzYkhYsNBsHsNVq3FvR8sWsuaKQ4cc0Vgd83b4eAlDZCR3CD4RR58LabLumnJBZNfqwc8xMZJbFE5pI/RnA1mNOBSfq+k3NNt8DqRdwV43f4o5XO9GQ2ruFJpR3INJpPJu2b8d/9m0ke5kqMN2SrcZpelSP6Vb++0FA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=21k9UmOmECgnE1/EUpietXhisMdQ+uQcI5jWL9ilyiU=;
+ b=QXAIwMa2LTzkh5fOAcz96BgBYt+TZGg0G40Qmz+N2E6AdIodPXRDZ2Uf+yIO1bs9uETLLiLBiuUtf9v4tpsuyJe4pTnzmjF17xO7xyifHlEaEdh3OzIs0k9FXploDqq+G/MbxmvbN3AS7V1BXahcV8UpvoHW991R5CrlUZk/NDheJ3RMwxq03TxbGuyc7yuDVydUs7dBakfkOeXtT56i5zzlVWveSJ61gFilPPiFxM/e3aJd55Ytd19dWXWSrdtdNnGzLCGrRqi1nTsOkpzgnEYCUC0x7PbRpVH+xCYc/4u+bAR++fBWrBTW3zR2gOffKGrGRNiKTEOkZjU9o9vOlw==
+Authentication-Results: arndb.de; dkim=none (message not signed)
+ header.d=none;arndb.de; dmarc=none action=none header.from=nvidia.com;
+Received: from DM4PR12MB5278.namprd12.prod.outlook.com (2603:10b6:5:39e::17)
+ by DM4PR12MB5216.namprd12.prod.outlook.com (2603:10b6:5:398::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.16; Wed, 4 Aug
+ 2021 18:16:46 +0000
+Received: from DM4PR12MB5278.namprd12.prod.outlook.com
+ ([fe80::c170:83a0:720d:6287]) by DM4PR12MB5278.namprd12.prod.outlook.com
+ ([fe80::c170:83a0:720d:6287%5]) with mapi id 15.20.4373.026; Wed, 4 Aug 2021
+ 18:16:46 +0000
+Subject: Re: [syzbot] BUG: unable to handle kernel paging request in
+ cap_capable
+To:     syzbot <syzbot+79f4a8692e267bdb7227@syzkaller.appspotmail.com>,
+        jmorris@namei.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        serge@hallyn.com, syzkaller-bugs@googlegroups.com,
+        Arnd Bergmann <arnd@arndb.de>
+References: <00000000000009422905c8bf2102@google.com>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+Message-ID: <5ccf831c-025b-88d0-48f9-d5e0d9377c70@nvidia.com>
+Date:   Wed, 4 Aug 2021 21:16:38 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+In-Reply-To: <00000000000009422905c8bf2102@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: ZR0P278CA0017.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:16::27) To DM4PR12MB5278.namprd12.prod.outlook.com
+ (2603:10b6:5:39e::17)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.21.241.206] (213.179.129.39) by ZR0P278CA0017.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:16::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15 via Frontend Transport; Wed, 4 Aug 2021 18:16:43 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7cbae2f7-e571-4ee5-d50e-08d9577404cc
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5216:
+X-Microsoft-Antispam-PRVS: <DM4PR12MB52160B08C2E8486A37B0CB90DFF19@DM4PR12MB5216.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 0ankHtgtzz8YoyBb732QX+jH/kdT+IZGHSXIBkIWpN74/7SW1wZZFFZFfYlw1SZRPBENRYbpCNBvHCDLFH/bzhhH275Bhgo3CqdU28fpTTu1cKW4NX7FKeXPEyOrbCHPNQkIy7GTKLNWZqP0tqATWg9vDEFKti9i+HGQNdhZvC1jI51UiUNk9wOE+1vTxkd57qeu64uTahjuY+VNPwLv2TbK/PbrjRoF3KfFiwUh+UaHdnVie6Q0miQGJ/ii02VVXbteXeXzH+Nev3/T2DadE52xt8TwTivyMrerOfTa5/E8I2q0/y3YSOzdzJhQXfXMea90f35P5EJJTW9qILim7S9D+9RZV46zdw6OYdLqiSdV0tdzToQtkTlWa3SDIH43XRvTX8nFnh+lDMbNJVyM924MpJqRMf9tAKaEDsj321me3mXbEQRYLR+5RsIcScDCVxocPxVUybFuc4LKgMeyETR69WUUpsd5jZu986mUuZMlKVggXQtHkHfu4fdS1p86i0zgyuwYLyAuzq0OslDCP8zwpjffCIE+0ZhbmalU6dqS+izYSynn9nZxHEaZw+APR/hRIxTRX9qsgss54KFkQj2U/xMzop8N44mANMOXYEQRfE6fEq8a6Wt4cgNXpjSatG5TYIbUcnrhMTlLgI/232iXYttZqWkqzpEWyFgHR9Hk1ecSqGO2kK8ABQoAmlBmzAeqL273ROff1ylf1oZyOa4y+0w5vYpMP/8eQUrMzbkRrg4lkMsQWJbbyp2yKBVBFLAbrFJqjy6OqHTtvxQOR063a0xcTf8G09o9gHVkEDR+DFfJ2RYL4OA9ciyTeJwB0heGSXaFnTlnY95fkRvTxUlKwUFTsBXtpd9lH/T0YT487+fNrYbT023uJ7bouVil
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5278.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(376002)(396003)(39860400002)(136003)(346002)(66556008)(53546011)(66946007)(316002)(26005)(5660300002)(2906002)(2616005)(6486002)(8676002)(83380400001)(31686004)(66476007)(8936002)(110136005)(186003)(956004)(31696002)(86362001)(36756003)(38100700002)(16576012)(6666004)(478600001)(966005)(99710200001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OE5QenJYTm16bzhRd2hQV01yN1dMdkROWHRzbElQQlFIOHY5YWdJeFlkaVI0?=
+ =?utf-8?B?bXFFYnhObmMvWDZrZVBMRXlIYlNsdXVLS3V4b083MGM4YjljdHY0bXlMTVZm?=
+ =?utf-8?B?WW1TZ3Q5Q0pGWk1iL1RXTGJTRVNVdk0zdEVOS1ZCSXczSGpLLzF6eEdCa0F6?=
+ =?utf-8?B?K3NSSysySjJwZVdRWkpSSlB1QnNobnNkZmFoQm1ndkhpZW9wRWVrNmwwaWxS?=
+ =?utf-8?B?TFN5VmhNdGdhaFZWOUNnQk9YdkwyU1Q4ZmI5VWhLM3ZPTHRXY3l6cXp0ek50?=
+ =?utf-8?B?ditpVUkzS0JDaXlsaXRYUDNBR1RFUlJHYXRQSDlDdXVJMzNXYjBPZ3UrcVpX?=
+ =?utf-8?B?V1E3RlBVdUNFMWJ6akJhZDJnMktqYVc2MzB5UURRaCt4aVQydEVwMndUZi9X?=
+ =?utf-8?B?Q3lCWi81OE5RbTY0Q25xdzFVc1BGRFZ2THNadFZ1dTNrVHR2UjJqL1FlSC9V?=
+ =?utf-8?B?eXdNR1lwNVhyU2doYUZQdFNKanpRUjFwV1l4SE1Jc2ZyRHZ0OEh3L0R5eEVU?=
+ =?utf-8?B?OHpjVkpJZzdVV3dVeGJkRVFldStMM0RML2x2T0FoUUM5andHWVZtNE1GWDlJ?=
+ =?utf-8?B?aC83Nyt0Uy94UWszcUwwSDRFQmlxcGlFS1U1S1poMVd6d0h6bnNZclFUVUNs?=
+ =?utf-8?B?M3hhdTlxcjlLN1pSS3ljcnNuU09iOTdjb0RsVFVDeFhoZlJHU2hLUDNUdnAr?=
+ =?utf-8?B?Q0xUU0J0d0R4QXBCWkVVbE95U3VaQ3BkZGxOSFZzUW1jak4xN3crUHljSkVU?=
+ =?utf-8?B?VlIybVkzbE1GV1EyOWVDcTU5U3pNbXBMSXBBMnFJeVg5Vm9Qdzh1RENkT3VL?=
+ =?utf-8?B?NGZxUXYxTDRlZUU0MVkwdzk5TmFEYjdXL2FKWHowMXpjZDZKVkFFbDlkSmtw?=
+ =?utf-8?B?WmlUQXNZK2pRQmdmRDF0ZTA5NDJIUEhVaGY3cUVCRlNkWDY4Rk4vVi8vV2c1?=
+ =?utf-8?B?K1I0Mnp0Z3JCT0NFay9JbU9zbERJTzY4cDNiUHVlVm81STdYMWlEL3BrdkJx?=
+ =?utf-8?B?N1JWMFlTM04yaE84QmdaOUhlQngrSjViQkNMa3U0MnZiV1dDN2V3cHlFaXND?=
+ =?utf-8?B?bHpaeDIrTkVqVHZ1dkdHdm80SXlBdXRPVDg1THV5NnRKMXRkTTAxK1dnaFNE?=
+ =?utf-8?B?N25qWHp0eVkyNElraE8zYVVHQ0dpUTJZa1A2MlMrNlNyYjJYMW9WTS9zdUJL?=
+ =?utf-8?B?SFBudEduM05vRGFsbll1N2NDQ0FPZ3g3eERYOXFqdUNUTjc4WnllT0hjRnRF?=
+ =?utf-8?B?U0grbDZYem00VWpLNXJ1RmpLZnFJWjNKRnY5N0RDV0dNZG02NjRQSlAvcGhK?=
+ =?utf-8?B?d0tUQ05nTktsUDlaQmlaVUJIMEE5bHd5UGRuVlR6WXJFSnUvZ1FLT2xXcGVQ?=
+ =?utf-8?B?U1ZLQ0lpUjd6S2NUZis0b3d1M0pmc1ByN1F6dE9hV0kwb2xIc0Z4cHZwZ2VD?=
+ =?utf-8?B?SGZUS2lMcEVwVE9LUlVpV3M0Z3Yyc2phUW1BeFFTbC9SclViM29PSzFwRkp3?=
+ =?utf-8?B?VEZSVXd2dG00aTF5TXBrMWRDUmdnS0NvUWJqa3FBM2dWTEVweVdqdkxPYktk?=
+ =?utf-8?B?UGw1Um9mLzl3eXAzNWV2UDJWNmkyRU9yZnlucnRpMEVIWHE2YUJDMDFIbEZR?=
+ =?utf-8?B?QXRhYnpKWFVuMFFxTXRBaDhFaXZEWW1SbytTNitIaVl4R09jaGZZUlFibHFX?=
+ =?utf-8?B?dkJOQXkyNnpNM2JBNktXVGdKdXdDQnFBVW9qWkJMK1pHbkxZMjB6ejdSVFRS?=
+ =?utf-8?Q?BNw9x605mfgf4Bfr9pPYkbM8sAtAM3fTIGhDThD?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7cbae2f7-e571-4ee5-d50e-08d9577404cc
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5278.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Aug 2021 18:16:45.9982
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ogI9Qj+SJw9wFOL7U82+I5M3maCVxRPdef8kHXB9b7qeX2JutDQCO/ZxTbuNl4u01wWs5jgz2q3pEaZyXVIVLw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5216
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+On 04/08/2021 20:28, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    b820c114eba7 net: fec: fix MAC internal delay doesn't work
+> git tree:       net-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=11fbdd7a300000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=5e6797705e664e3b
+> dashboard link: https://syzkaller.appspot.com/bug?extid=79f4a8692e267bdb7227
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=127e4952300000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16fef2aa300000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+79f4a8692e267bdb7227@syzkaller.appspotmail.com
+> 
+> netdevsim netdevsim0 netdevsim1: set [1, 0] type 2 family 0 port 6081 - 0
+> netdevsim netdevsim0 netdevsim2: set [1, 0] type 2 family 0 port 6081 - 0
+> netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family 0 port 6081 - 0
+> BUG: unable to handle page fault for address: fffff3008f71a93b
+> #PF: supervisor read access in kernel mode
+> #PF: error_code(0x0000) - not-present page
+> PGD 0 P4D 0 
+> Oops: 0000 [#1] PREEMPT SMP KASAN
+> CPU: 0 PID: 8445 Comm: syz-executor610 Not tainted 5.14.0-rc3-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:cap_capable+0xa0/0x280 security/commoncap.c:83
+[snip]
+> 
+> 
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> syzbot can test patches for this issue, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
+> 
 
-Recently we added SKBMOD_F_ECN option support to the kernel; support it in
-the tc-skbmod(8) front end, and update its man page accordingly.
++CC Arnd
 
-The 2 least significant bits of the Traffic Class field in IPv4 and IPv6
-headers are used to represent different ECN states [1]:
+I think this bug is also from the recent ndo_do_ioctl conversion, it seems
+nothing checks if the device is an actual bridge so one could call br_ioctl_call()
+for any device. I'll add this to my list, it's a simple fix.
 
-	0b00: "Non ECN-Capable Transport", Non-ECT
-	0b10: "ECN Capable Transport", ECT(0)
-	0b01: "ECN Capable Transport", ECT(1)
-	0b11: "Congestion Encountered", CE
+Sorry for the delay, I will send both bridge ioctl fixes tomorrow.
 
-This new option, "ecn", marks ECT(0) and ECT(1) IPv{4,6} packets as CE,
-which is useful for ECN-based rate limiting.  For example:
-
-	$ tc filter add dev eth0 parent 1: protocol ip prio 10 \
-		u32 match ip protocol 1 0xff flowid 1:2 \
-		action skbmod \
-		ecn
-
-The updated tc-skbmod SYNOPSIS looks like the following:
-
-	tc ... action skbmod { set SETTABLE | swap SWAPPABLE | ecn } ...
-
-Only one of "set", "swap" or "ecn" shall be used in a single tc-skbmod
-command.  Trying to use more than one of them at a time is considered
-undefined behavior; pipe multiple tc-skbmod commands together instead.
-"set" and "swap" only affect Ethernet packets, while "ecn" only affects
-IP packets.
-
-Depends on kernel patch "net/sched: act_skbmod: Add SKBMOD_F_ECN option
-support", as well as iproute2 patch "tc/skbmod: Remove misinformation
-about the swap action".
-
-[1] https://en.wikipedia.org/wiki/Explicit_Congestion_Notification
-
-Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
----
-Hi David,
-
-> I just merged main into next. Please fix up this patch and re-send. In
-> the future, just ask for a merge in cases like this.
-
-Ah, I see; thanks!
-Peilin Ye
-
-Change since v2:
-    - re-rebased on iproute2-next (David)
-
- man/man8/tc-skbmod.8 | 38 +++++++++++++++++++++++++++++---------
- tc/m_skbmod.c        |  8 +++++++-
- 2 files changed, 36 insertions(+), 10 deletions(-)
-
-diff --git a/man/man8/tc-skbmod.8 b/man/man8/tc-skbmod.8
-index 76512311b17d..52eaf989e80b 100644
---- a/man/man8/tc-skbmod.8
-+++ b/man/man8/tc-skbmod.8
-@@ -8,7 +8,8 @@ skbmod - user-friendly packet editor action
- .BR tc " ... " "action skbmod " "{ " "set "
- .IR SETTABLE " | "
- .BI swap " SWAPPABLE"
--.RI " } [ " CONTROL " ] [ "
-+.RB " | " ecn
-+.RI "} [ " CONTROL " ] [ "
- .BI index " INDEX "
- ]
- 
-@@ -37,6 +38,12 @@ action. Instead of having to manually edit 8-, 16-, or 32-bit chunks of an
- ethernet header,
- .B skbmod
- allows complete substitution of supported elements.
-+Action must be one of
-+.BR set ", " swap " and " ecn "."
-+.BR set " and " swap
-+only affect Ethernet packets, while
-+.B ecn
-+only affects IP packets.
- .SH OPTIONS
- .TP
- .BI dmac " DMAC"
-@@ -51,6 +58,10 @@ Change the ethertype to the specified value.
- .BI mac
- Used to swap mac addresses.
- .TP
-+.B ecn
-+Used to mark ECN Capable Transport (ECT) IP packets as Congestion Encountered (CE).
-+Does not affect Non ECN-Capable Transport (Non-ECT) packets.
-+.TP
- .I CONTROL
- The following keywords allow to control how the tree of qdisc, classes,
- filters and actions is further traversed after this action.
-@@ -115,7 +126,7 @@ tc filter add dev eth5 parent 1: protocol ip prio 10 \\
- .EE
- .RE
- 
--Finally, swap the destination and source mac addresses in the header:
-+To swap the destination and source mac addresses in the Ethernet header:
- 
- .RS
- .EX
-@@ -126,13 +137,22 @@ tc filter add dev eth3 parent 1: protocol ip prio 10 \\
- .EE
- .RE
- 
--However, trying to
--.B set
--and
--.B swap
--in a single
--.B skbmod
--command will cause undefined behavior.
-+Finally, to mark the CE codepoint in the IP header for ECN Capable Transport (ECT) packets:
-+
-+.RS
-+.EX
-+tc filter add dev eth0 parent 1: protocol ip prio 10 \\
-+	u32 match ip protocol 1 0xff flowid 1:2 \\
-+	action skbmod \\
-+	ecn
-+.EE
-+.RE
-+
-+Only one of
-+.BR set ", " swap " and " ecn
-+shall be used in a single command.
-+Trying to use more than one of them in a single command is considered undefined behavior; pipe
-+multiple commands together instead.
- 
- .SH SEE ALSO
- .BR tc (8),
-diff --git a/tc/m_skbmod.c b/tc/m_skbmod.c
-index 3fe30651a7d8..8d8bac5bc481 100644
---- a/tc/m_skbmod.c
-+++ b/tc/m_skbmod.c
-@@ -28,7 +28,7 @@
- static void skbmod_explain(void)
- {
- 	fprintf(stderr,
--		"Usage:... skbmod { set <SETTABLE> | swap <SWAPPABLE> } [CONTROL] [index INDEX]\n"
-+		"Usage:... skbmod { set <SETTABLE> | swap <SWAPPABLE> | ecn } [CONTROL] [index INDEX]\n"
- 		"where SETTABLE is: [dmac DMAC] [smac SMAC] [etype ETYPE]\n"
- 		"where SWAPPABLE is: \"mac\" to swap mac addresses\n"
- 		"\tDMAC := 6 byte Destination MAC address\n"
-@@ -111,6 +111,9 @@ static int parse_skbmod(struct action_util *a, int *argc_p, char ***argv_p,
- 			p.flags |= SKBMOD_F_SMAC;
- 			fprintf(stderr, "src MAC address <%s>\n", saddr);
- 			ok += 1;
-+		} else if (matches(*argv, "ecn") == 0) {
-+			p.flags |= SKBMOD_F_ECN;
-+			ok += 1;
- 		} else if (matches(*argv, "help") == 0) {
- 			skbmod_usage();
- 		} else {
-@@ -211,6 +214,9 @@ static int print_skbmod(struct action_util *au, FILE *f, struct rtattr *arg)
- 	if (p->flags & SKBMOD_F_SWAPMAC)
- 		fprintf(f, "swap mac ");
- 
-+	if (p->flags & SKBMOD_F_ECN)
-+		fprintf(f, "ecn ");
-+
- 	fprintf(f, "\n\t index %u ref %d bind %d", p->index, p->refcnt,
- 		p->bindcnt);
- 	if (show_stats) {
--- 
-2.20.1
-
+Thanks,
+ Nik
