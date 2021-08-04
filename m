@@ -2,188 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DF5B3E0499
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 17:44:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D08303E04B3
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 17:48:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239228AbhHDPoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 11:44:09 -0400
-Received: from foss.arm.com ([217.140.110.172]:33872 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239214AbhHDPoG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Aug 2021 11:44:06 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 191B531B;
-        Wed,  4 Aug 2021 08:43:53 -0700 (PDT)
-Received: from [10.57.36.146] (unknown [10.57.36.146])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D22B33F66F;
-        Wed,  4 Aug 2021 08:43:48 -0700 (PDT)
-Subject: Re: [PATCH v10 01/17] iova: Export alloc_iova_fast() and
- free_iova_fast()
-To:     Yongji Xie <xieyongji@bytedance.com>
-Cc:     kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Liu Xiaodong <xiaodong.liu@intel.com>,
-        Joe Perches <joe@perches.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
-        He Zhe <zhe.he@windriver.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        iommu@lists.linux-foundation.org, bcrl@kvack.org,
-        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>
-References: <20210729073503.187-1-xieyongji@bytedance.com>
- <20210729073503.187-2-xieyongji@bytedance.com>
- <43d88942-1cd3-c840-6fec-4155fd544d80@redhat.com>
- <CACycT3vcpwyA3xjD29f1hGnYALyAd=-XcWp8+wJiwSqpqUu00w@mail.gmail.com>
- <6e05e25e-e569-402e-d81b-8ac2cff1c0e8@arm.com>
- <CACycT3sm2r8NMMUPy1k1PuSZZ3nM9aic-O4AhdmRRCwgmwGj4Q@mail.gmail.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-Message-ID: <417ce5af-4deb-5319-78ce-b74fb4dd0582@arm.com>
-Date:   Wed, 4 Aug 2021 16:43:43 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S239214AbhHDPso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 11:48:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45182 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231506AbhHDPsm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 11:48:42 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51AEEC0613D5;
+        Wed,  4 Aug 2021 08:48:29 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id a20so3513006plm.0;
+        Wed, 04 Aug 2021 08:48:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uVR++srqzKEza84ydvF70klwPUW2q5Z+fc6h5nNUeDg=;
+        b=BYWKWBBOHSR/q8Uy3UaPYy/sQ9tzQdEo4/S2QQOHlt9zrb7a9UT1xin+7kdUX4fJgK
+         CD/gmsb57b8iY0xid1jg+27JYiSPWIqkmKUj/RF+MsX8u2SWsgfkpWlB0yYsgs5hF6RD
+         kin6iRb/iIAXKXTbi5Du/MoR4sjspc/uz9AukKHusuOfgKyGlWAB+rxzg5+b6EID5iXa
+         qRmCwwiq+tqVkqhI3O7ZWI+G/IVhkr3y8upHltX1bX0gPhmO2CH3R3fH5nnTKcSPZWU5
+         Bqz1vgNJDFjlUGRZNE4oyZiAqs0sJYymGnhTW1VeA2bUyOFGtQzlcdvEEcPvKuBLNjpk
+         3G4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uVR++srqzKEza84ydvF70klwPUW2q5Z+fc6h5nNUeDg=;
+        b=uKyYxTOQ/W2EOPN6Jkn3Alhj/llA32IV6n2A0J9FB5YqpeGAObEndBJWXRwOgxaYyS
+         DFTIaEe/tY1NMEDHggakbSRDkMGRhw3ejzUJ6Eo+Y7D9WLCnaInz4wU/Ru7BvuUK/odJ
+         4dT5n3fvoHnT1cc5K6PVAkRK2m3KOjnzG5bdAqSc1zjNKWx0OFqc9/4R9bgq2UhsBl1a
+         d3iHtq3Y0gYJcUzy0ov8r97gCQ+2ZFHW1m9rXoETAAQh7eHep+BSzAVAkkDKDQ/tN0hJ
+         1d5b/YDyr6Vj0M9IjirSr6dEOIbiX5e0NwNHnn0YBHpeYSlXkk1a8TAcs3Q3Vpl+UY2F
+         72Zg==
+X-Gm-Message-State: AOAM530MVvVT6eeqFOIUDwMW2ioAqwcepywo0JB+qqfFJKVadtdW/x2d
+        oJ8CFY/bhwEILlsochF9c3c=
+X-Google-Smtp-Source: ABdhPJz1ZiBXE1dBU67RCm2FBYwTbdo5gF6c/WDoBiwc/NjeTHlH4M6mxtO41aiH3+6suNYGFGGK+A==
+X-Received: by 2002:a17:90a:2ec6:: with SMTP id h6mr10206833pjs.9.1628092108733;
+        Wed, 04 Aug 2021 08:48:28 -0700 (PDT)
+Received: from localhost.localdomain ([118.200.190.93])
+        by smtp.gmail.com with ESMTPSA id b15sm4007274pgj.60.2021.08.04.08.48.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Aug 2021 08:48:28 -0700 (PDT)
+From:   Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, sudipm.mukherjee@gmail.com
+Cc:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, skhan@linuxfoundation.org,
+        gregkh@linuxfoundation.org,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: [RESEND PATCH v5 0/6] Bluetooth: fix locking and socket killing in SCO and RFCOMM
+Date:   Wed,  4 Aug 2021 23:47:06 +0800
+Message-Id: <20210804154712.929986-1-desmondcheongzx@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <CACycT3sm2r8NMMUPy1k1PuSZZ3nM9aic-O4AhdmRRCwgmwGj4Q@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-08-04 06:02, Yongji Xie wrote:
-> On Tue, Aug 3, 2021 at 6:54 PM Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> On 2021-08-03 09:54, Yongji Xie wrote:
->>> On Tue, Aug 3, 2021 at 3:41 PM Jason Wang <jasowang@redhat.com> wrote:
->>>>
->>>>
->>>> 在 2021/7/29 下午3:34, Xie Yongji 写道:
->>>>> Export alloc_iova_fast() and free_iova_fast() so that
->>>>> some modules can use it to improve iova allocation efficiency.
->>>>
->>>>
->>>> It's better to explain why alloc_iova() is not sufficient here.
->>>>
->>>
->>> Fine.
->>
->> What I fail to understand from the later patches is what the IOVA domain
->> actually represents. If the "device" is a userspace process then
->> logically the "IOVA" would be the userspace address, so presumably
->> somewhere you're having to translate between this arbitrary address
->> space and actual usable addresses - if you're worried about efficiency
->> surely it would be even better to not do that?
->>
-> 
-> Yes, userspace daemon needs to translate the "IOVA" in a DMA
-> descriptor to the VA (from mmap(2)). But this actually doesn't affect
-> performance since it's an identical mapping in most cases.
+Apologies, resending because I botched the previous cover-letter and
+linux-bluetooth was left out of the cc. Just noticed when the
+bluez.test.bot didn't respond. Please reply to this series rather than
+the one sent previously.
 
-I'm not familiar with the vhost_iotlb stuff, but it looks suspiciously 
-like you're walking yet another tree to make those translations. Even if 
-the buffer can be mapped all at once with a fixed offset such that each 
-DMA mapping call doesn't need a lookup for each individual "IOVA" - that 
-might be what's happening already, but it's a bit hard to follow just 
-reading the patches in my mail client - vhost_iotlb_add_range() doesn't 
-look like it's super-cheap to call, and you're serialising on a lock for 
-that.
+Hi,
 
-My main point, though, is that if you've already got something else 
-keeping track of the actual addresses, then the way you're using an 
-iova_domain appears to be something you could do with a trivial bitmap 
-allocator. That's why I don't buy the efficiency argument. The main 
-design points of the IOVA allocator are to manage large address spaces 
-while trying to maximise spatial locality to minimise the underlying 
-pagetable usage, and allocating with a flexible limit to support 
-multiple devices with different addressing capabilities in the same 
-address space. If none of those aspects are relevant to the use-case - 
-which AFAICS appears to be true here - then as a general-purpose 
-resource allocator it's rubbish and has an unreasonably massive memory 
-overhead and there are many, many better choices.
+This patch series started out as a fix for "inconsistent lock state in
+sco_sock_timeout" reported by Syzbot [1].
 
-FWIW I've recently started thinking about moving all the caching stuff 
-out of iova_domain and into the iommu-dma layer since it's now a giant 
-waste of space for all the other current IOVA users.
+Patch 1 is sufficient to fix this error. This was also confirmed by the
+reproducer for "BUG: corrupted list in kobject_add_internal (3)" [2]
+which consistently hits the inconsistent lock state error.
 
->> Presumably userspace doesn't have any concern about alignment and the
->> things we have to worry about for the DMA API in general, so it's pretty
->> much just allocating slots in a buffer, and there are far more effective
->> ways to do that than a full-blown address space manager.
-> 
-> Considering iova allocation efficiency, I think the iova allocator is
-> better here. In most cases, we don't even need to hold a spin lock
-> during iova allocation.
-> 
->> If you're going
->> to reuse any infrastructure I'd have expected it to be SWIOTLB rather
->> than the IOVA allocator. Because, y'know, you're *literally implementing
->> a software I/O TLB* ;)
->>
-> 
-> But actually what we can reuse in SWIOTLB is the IOVA allocator.
+However, while testing the proposed fix, the reproducer for [1] would
+randomly return a human-unreadable error [3]. After further
+investigation, this bug seems to be caused by an unrelated error with
+forking [4].
 
-Huh? Those are completely unrelated and orthogonal things - SWIOTLB does 
-not use an external allocator (see find_slots()). By SWIOTLB I mean 
-specifically the library itself, not dma-direct or any of the other 
-users built around it. The functionality for managing slots in a buffer 
-and bouncing data in and out can absolutely be reused - that's why users 
-like the Xen and iommu-dma code *are* reusing it instead of open-coding 
-their own versions.
+While trying to fix the mysterious error, additional fixes were added,
+such as switching to lock_sock and serializing _{set,clear}_timer.
 
-> And
-> the IOVA management in SWIOTLB is not what we want. For example,
-> SWIOTLB allocates and uses contiguous memory for bouncing, which is
-> not necessary in VDUSE case.
+Additionally, as the reproducer kept hitting the oom-killer, a fix for
+SCO socket killing was also added.
 
-alloc_iova() allocates a contiguous (in IOVA address) region of space. 
-In vduse_domain_map_page() you use it to allocate a contiguous region of 
-space from your bounce buffer. Can you clarify how that is fundamentally 
-different from allocating a contiguous region of space from a bounce 
-buffer? Nobody's saying the underlying implementation details of where 
-the buffer itself comes from can't be tweaked.
+The reproducer for [1] was robust enough to catch errors with these
+additional fixes, hence all the patches in this series were squashed then
+tested with the reproducer for [1].
 
-> And VDUSE needs coherent mapping which is
-> not supported by the SWIOTLB. Besides, the SWIOTLB works in singleton
-> mode (designed for platform IOMMU) , but VDUSE is based on on-chip
-> IOMMU (supports multiple instances).
-That's not entirely true - the IOMMU bounce buffering scheme introduced 
-in intel-iommu and now moved into the iommu-dma layer was already a step 
-towards something conceptually similar. It does still rely on stealing 
-the underlying pages from the global SWIOTLB pool at the moment, but the 
-bouncing is effectively done in a per-IOMMU-domain context.
+Overall, this series makes the following changes:
 
-The next step is currently queued in linux-next, wherein we can now have 
-individual per-device SWIOTLB pools. In fact at that point I think you 
-might actually be able to do your thing without implementing any special 
-DMA ops at all - you'd need to set up a pool for your "device" with 
-force_bounce set, then when you mmap() that to userspace, set up 
-dev->dma_range_map to describe an offset from the physical address of 
-the buffer to the userspace address, and I think dma-direct would be 
-tricked into doing the right thing. It's a bit wacky, but it could stand 
-to save a hell of a lot of bother.
+- Patch 1: Schedule SCO sock timeouts with delayed_work to avoid
+inconsistent lock usage (removes SOFTIRQs from SCO)
 
-Finally, enhancing SWIOTLB to cope with virtually-mapped buffers that 
-don't have to be physically contiguous is a future improvement which I 
-think could benefit various use-cases - indeed it's possibly already on 
-the table for IOMMU bounce pages - so would probably be welcome in general.
+- Patch 2: Avoid a circular dependency between hci_dev_lock and
+lock_sock (enables the switch to lock_sock)
 
- > So I still prefer to reuse the
- > IOVA allocator to implement a MMU-based software IOTLB.
+- Patch 3: Switch to lock_sock in SCO now that SOFTIRQs and potential
+deadlocks are removed
 
-If you're dead set on open-coding all the bounce-buffering machinery, 
-then I'd honestly recommend open-coding a more suitable buffer allocator 
-as well ;)
+- Patch 4: Serialize calls to sco_sock_{set,clear}_timer
 
-Thanks,
-Robin.
+- Patch 5: Switch to lock_sock in RFCOMM
+
+- Patch 6: fix SCO socket killing
+
+v4 -> v5:
+- Renamed the delayed_work variable, moved checks for sco_pi(sk)->conn
+into sco_sock_{clear,set}_timer, as suggested by Luiz Augusto von Dentz
+and Marcel Holtmann.
+- Added check for conn->sk in sco_sock_timeout, accompanied by a
+sock_hold to avoid UAF errors.
+- Added check to flush work items before freeing conn.
+- Avoid a circular dependency between hci_dev_lock and lock_sock.
+- Switch to lock_sock in SCO, as suggested by Marcel Holtmann.
+- Serial calls to sco_sock_{set,clear}_timer.
+- Switch to lock_sock in RFCOMM, as suggested by Marcel Holtmann.
+- Add a fix for SCO socket killing.
+
+v3 -> v4:
+- Switch to using delayed_work to schedule SCO sock timeouts instead
+of using local_bh_disable. As suggested by Luiz Augusto von Dentz.
+
+v2 -> v3:
+- Split SCO and RFCOMM code changes, as suggested by Luiz Augusto von
+Dentz.
+- Simplify local bh disabling in SCO by using local_bh_disable/enable
+inside sco_chan_del since local_bh_disable/enable pairs are reentrant.
+
+v1 -> v2:
+- Instead of pulling out the clean-up code out from sco_chan_del and
+using it directly in sco_conn_del, disable local softirqs for relevant
+sections.
+- Disable local softirqs more thoroughly for instances of
+bh_lock_sock/bh_lock_sock_nested in the bluetooth subsystem.
+Specifically, the calls in af_bluetooth.c and rfcomm/sock.c are now made
+with local softirqs disabled as well.
+
+Link: https://syzkaller.appspot.com/bug?id=9089d89de0502e120f234ca0fc8a703f7368b31e [1]
+
+Link: https://syzkaller.appspot.com/bug?extid=66264bf2fd0476be7e6c [2]
+
+Link: https://syzkaller.appspot.com/text?tag=CrashReport&x=172d819a300000 [3]
+
+Link: https://syzkaller.appspot.com/bug?id=e1bf7ba90d8dafcf318666192aba1cfd65507377 [4]
+
+Best wishes,
+Desmond
+
+Desmond Cheong Zhi Xi (6):
+  Bluetooth: schedule SCO timeouts with delayed_work
+  Bluetooth: avoid circular locks in sco_sock_connect
+  Bluetooth: switch to lock_sock in SCO
+  Bluetooth: serialize calls to sco_sock_{set,clear}_timer
+  Bluetooth: switch to lock_sock in RFCOMM
+  Bluetooth: fix repeated calls to sco_sock_kill
+
+ net/bluetooth/rfcomm/sock.c |   8 +--
+ net/bluetooth/sco.c         | 107 +++++++++++++++++++++---------------
+ 2 files changed, 66 insertions(+), 49 deletions(-)
+
+-- 
+2.25.1
+
