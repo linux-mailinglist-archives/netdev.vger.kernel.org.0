@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F0D33E04DF
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 17:52:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FC023E04E6
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 17:52:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239544AbhHDPwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 11:52:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46210 "EHLO
+        id S239614AbhHDPwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 11:52:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233230AbhHDPwW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 11:52:22 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06CBDC0613D5;
-        Wed,  4 Aug 2021 08:52:09 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id c24so1966453lfi.11;
-        Wed, 04 Aug 2021 08:52:08 -0700 (PDT)
+        with ESMTP id S239602AbhHDPwi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 11:52:38 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E00C0613D5;
+        Wed,  4 Aug 2021 08:52:24 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id t9so5268886lfc.6;
+        Wed, 04 Aug 2021 08:52:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=LOerQFZ0jK8/gKUx7F6VWzq+EmsyF6Mh3+2EWyBwV7k=;
-        b=WxflTTjBUcRlekTmCCDw38zuvU4FNXPHhQjcZ7jbxeVORh5S85vqOYRllxyWYgS7Zg
-         vxfaf3QBRh7yOO5gxN76nvOiaGtXeh7K2QCJH/C7098CRiVup0TXdyJodFhPctFSclmt
-         2JDdCpe3Kskg1PwPo9Ksiad01ocnHZn96FE+FvEglegL60NCXxi3JR05VOwZvGI7iZ8X
-         VN5VJKQoXegCc28K4oTADbzUUpUtS1Yjfb59hOpZxnn859XaLVQ7wPHjqu4qi19GKQJD
-         an9ocK/KzADhJZdapLbWtE7BbaEfhkU+m0p8QXxmE6d5T5gR3xTHJGS8C+Jl1pNXgCZ2
-         AIjw==
+        bh=MBriIZ2G2M2XCFCkysf4584gS82vV2S0w04vsL/TpMs=;
+        b=Y+U0o5F1svs/jTON0xwzaWelTku7kmvUmxAofy1IhwBSR4dN39oirQHZVq3+yvAv5k
+         p9u1r/2yjY/OLkP3dRaDCqcd6udg+WW6lbe31uc1DqqPnPt14dT3Smwqcp45n746S2SJ
+         xHanq1vCz360Bo5WqUKNIWZVFbEpLHQ9DZHvuumR7mY3oezazl75yzcP2vSJqhFKDcAy
+         WGWgjMANS2Bp9rJzjyfsnpUWHbRFufaaL/7gUWBJMgVxes806gB8hpOO6dFXo/s2p4ur
+         m2BK1vC/9+3cWLd1J66LYrnZ3Ps5iTBRngnahhoKBQCR7CmHLP17Q8ZM9XJMsjwdwJ94
+         Q26w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=LOerQFZ0jK8/gKUx7F6VWzq+EmsyF6Mh3+2EWyBwV7k=;
-        b=RdmF9CJcMqLAOMuo2d1eiacyg1qvT3M72rFpiAchQcLj9crAUpX9YOfYrGi7CINHY9
-         jnbpzUqgNR6wMaq+/jURMxiB5nRsSsvyLQJEZNydV6pQFUhU6h3S9VJbnu8SbH0Akak+
-         j0m53eDeg3eDazq/EIgHiKF6EAzk1iGb7FoGm7erEy2oUfHT7OP3n820OOJplCqjNMQ2
-         AQvn7Yl7v8ROGx0PjCBq8bBX0MxkxIrS4bImZkIATYxxbh8fr2iOHGsW0DUBf8KuFbA4
-         8LG7NFfXT6wAOVx8Ox8HDX2wxIpFoOKmPoZr3sveVK3Lx+mYQEHQnxk62i7CtU6QEQ4K
-         1IWA==
-X-Gm-Message-State: AOAM533v7sRQJwwurneXZBpESGk1b9BBJJPQJoG+dKj3J/j7dSexrujx
-        auTXJo5jUsqNWmnReCOZD5k=
-X-Google-Smtp-Source: ABdhPJzsrxxqWvViyKle7Uk8+V1sK5RIVOnDfRgeJB9MD8pBmOEK6S3CmL9y00EWnS5fH33BS3UbeQ==
-X-Received: by 2002:a05:6512:3b89:: with SMTP id g9mr21267607lfv.96.1628092327374;
-        Wed, 04 Aug 2021 08:52:07 -0700 (PDT)
+        bh=MBriIZ2G2M2XCFCkysf4584gS82vV2S0w04vsL/TpMs=;
+        b=kHuj+/qYRhx2HEET/rMKQnPbdxMZ+e8kP9eA8/j3bfEfiet5nQ9vRfmI9n1ORjmVYS
+         54MWHS+eLTX4m7xkibflGP3JXOWRwm2v9vJVpRs47MzbidFN1TKBLOXoojnSUqvtRgvp
+         M5yJ4Jwghz8JdSl5U5lCn1R6WULmbZVAkMtDuqTfy9nr+8mEQeeeKf8BX4C/Mmyq0rq1
+         5ZrDvwPxV9lba4cZ3xspcbVre0HSsgxdhJwqas59lJo8/7WSidSUmIaeop6u3j0EXl1p
+         lW43+JfJE7350SGSRXc0+ZWTqv+Ub5UU8DmGpz2sYtpAEVfbHmqLsYDKvBvFx2qs6Yr9
+         JtLQ==
+X-Gm-Message-State: AOAM531V/jlHFFsaJx9WWHEnOnNm6KkncMr2DY/LamR0vvXOAmzvLmG5
+        S53LvoxNIxUNIy/IYE+H7U8=
+X-Google-Smtp-Source: ABdhPJz3DE5NVTPwgg425Om0rpKX0sRS9HYPJc2IW5qT9x5uY5l/znGh/nF+XmkrVs1LYNeZTGE8dg==
+X-Received: by 2002:ac2:57c5:: with SMTP id k5mr21398920lfo.72.1628092343168;
+        Wed, 04 Aug 2021 08:52:23 -0700 (PDT)
 Received: from localhost.localdomain ([94.103.226.235])
-        by smtp.gmail.com with ESMTPSA id o8sm231658lfu.25.2021.08.04.08.52.06
+        by smtp.gmail.com with ESMTPSA id x16sm230198lfa.244.2021.08.04.08.52.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Aug 2021 08:52:06 -0700 (PDT)
+        Wed, 04 Aug 2021 08:52:22 -0700 (PDT)
 From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, qiangqing.zhang@nxp.com,
-        hslester96@gmail.com, fugang.duan@nxp.com
+To:     davem@davemloft.net, kuba@kernel.org, jdmason@kudzu.us,
+        jesse.brandeburg@intel.com, colin.king@canonical.com
 Cc:     dan.carpenter@oracle.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH 1/2] net: fec: fix use-after-free in fec_drv_remove
-Date:   Wed,  4 Aug 2021 18:51:51 +0300
-Message-Id: <25ad9ae695546c0ce23edb25cb2a67575cbda26b.1628091954.git.paskripkin@gmail.com>
+Subject: [PATCH 2/2] net: vxge: fix use-after-free in vxge_device_unregister
+Date:   Wed,  4 Aug 2021 18:52:20 +0300
+Message-Id: <cf7e28fc0aaac4263564db2e21f22b07928fec87.1628091954.git.paskripkin@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <cover.1628091954.git.paskripkin@gmail.com>
 References: <cover.1628091954.git.paskripkin@gmail.com>
@@ -65,39 +65,43 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Smatch says:
-	drivers/net/ethernet/freescale/fec_main.c:3994 fec_drv_remove() error: Using fep after free_{netdev,candev}(ndev);
-	drivers/net/ethernet/freescale/fec_main.c:3995 fec_drv_remove() error: Using fep after free_{netdev,candev}(ndev);
+drivers/net/ethernet/neterion/vxge/vxge-main.c:3518 vxge_device_unregister() error: Using vdev after free_{netdev,candev}(dev);
+drivers/net/ethernet/neterion/vxge/vxge-main.c:3518 vxge_device_unregister() error: Using vdev after free_{netdev,candev}(dev);
+drivers/net/ethernet/neterion/vxge/vxge-main.c:3520 vxge_device_unregister() error: Using vdev after free_{netdev,candev}(dev);
+drivers/net/ethernet/neterion/vxge/vxge-main.c:3520 vxge_device_unregister() error: Using vdev after free_{netdev,candev}(dev);
 
-Since fep pointer is netdev private data, accessing it after free_netdev()
+Since vdev pointer is netdev private data accessing it after free_netdev()
 call can cause use-after-free bug. Fix it by moving free_netdev() call at
 the end of the function
 
+Fixes: 6cca200362b4 ("vxge: cleanup probe error paths")
 Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Fixes: a31eda65ba21 ("net: fec: fix clock count mis-match")
 Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 ---
- drivers/net/ethernet/freescale/fec_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/neterion/vxge/vxge-main.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 8aea707a65a7..7e4c4980ced7 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -3843,13 +3843,13 @@ fec_drv_remove(struct platform_device *pdev)
- 	if (of_phy_is_fixed_link(np))
- 		of_phy_deregister_fixed_link(np);
- 	of_node_put(fep->phy_node);
--	free_netdev(ndev);
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
+index 82eef4c72f01..7abd13e69471 100644
+--- a/drivers/net/ethernet/neterion/vxge/vxge-main.c
++++ b/drivers/net/ethernet/neterion/vxge/vxge-main.c
+@@ -3512,13 +3512,13 @@ static void vxge_device_unregister(struct __vxge_hw_device *hldev)
  
- 	clk_disable_unprepare(fep->clk_ahb);
- 	clk_disable_unprepare(fep->clk_ipg);
- 	pm_runtime_put_noidle(&pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
+ 	kfree(vdev->vpaths);
  
-+	free_netdev(ndev);
- 	return 0;
+-	/* we are safe to free it now */
+-	free_netdev(dev);
+-
+ 	vxge_debug_init(vdev->level_trace, "%s: ethernet device unregistered",
+ 			buf);
+ 	vxge_debug_entryexit(vdev->level_trace,	"%s: %s:%d  Exiting...", buf,
+ 			     __func__, __LINE__);
++
++	/* we are safe to free it now */
++	free_netdev(dev);
  }
  
+ /*
 -- 
 2.32.0
 
