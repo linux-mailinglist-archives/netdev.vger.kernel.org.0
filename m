@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0AA63E044C
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 17:36:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90F6F3E044E
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 17:36:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239184AbhHDPgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 11:36:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42240 "EHLO
+        id S239204AbhHDPgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 11:36:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239139AbhHDPgq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 11:36:46 -0400
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E664C061798
-        for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 08:36:33 -0700 (PDT)
-Received: by mail-il1-x12d.google.com with SMTP id r1so2036795iln.6
-        for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 08:36:33 -0700 (PDT)
+        with ESMTP id S239116AbhHDPgr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 11:36:47 -0400
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A649C06179A
+        for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 08:36:34 -0700 (PDT)
+Received: by mail-il1-x132.google.com with SMTP id h18so2039254ilc.5
+        for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 08:36:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Qj5hg+/X071K3Vl+DCzlvkxK2DWvvHHp1jaLOqDGaMc=;
-        b=p3DO1aCy81oCCZ6k0rsXq2geBf1UsmLcb09uL/xh/3AqDk4MpjWo8/6txzU+r0RDp7
-         lUGvI14uMErll9NdUymXrDv+XbuDz+Ol4dTb4HKP6f9Yh/BfCgqmBTOUOpl3XrYBaFrm
-         JfrjnqxYUsXU7pDMdviqwN+oqPpwFaXqIXOHbg3nDnDO1G3x28hP0wlNyzt8Lo3UVIi4
-         ZEurnEeTU0Lr1XtJo2N20aHp5zk+Mm0wfL9kNvf9iVx2H6LpxipJXJPGDdd9/s/OYwDv
-         J8IRRHSSpVj3gwLAwYkVfWi/1W0DLG93GZvJVrAtaj6Krn+FY4DMInzY06bF9O89amID
-         tA0w==
+        bh=2hCgffmVP7fwJ1V+MjpBVuuEuBwEMxZCBZdgq5a482k=;
+        b=VBZQgr9/T1LngHJ7K+Jv4SY35nmFo8hxkBKFt5cQvKKIpBQtk2C9qdDPN6s4/u+Lb7
+         7zkfPcLr9bVoLtYMyCKSnlRMbTLLJ90/fuHDqZK9KcW7Ndj0BxpYic8/is3o27mgs+K4
+         F6gB5aOrwWlOAz/AQ9pWkh5zZF0vSHsqTnyh5hHjgwSQuBzumPQutMBBFw7otYv8G2jJ
+         QZKxRQNrcS7Gh02QOuKJ9Lay3eZtv1w5VrPjBHlQDfitYiL6ooSRjHd+RZu+cRLYDNZW
+         5y7QngXaOVi4M+7mD2M3ce0IKPilk4aS7I92PGLXKYsQNJbHca9uR4CJ8rT7RZjSOreU
+         i59g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Qj5hg+/X071K3Vl+DCzlvkxK2DWvvHHp1jaLOqDGaMc=;
-        b=EHFI7GZpIA2EIvshL186Rmhg01zlqmqjrJ1ZM/4d7Glq2K7nBMdqqD4zEYHBy6NbpO
-         I03Ovi+HSmDmRcOsPTviuRKJ5uyKTuT6fxmH0v0mX15cEbIEijOGe+rmmrjQrpKR9lg4
-         J/tuk/DfboYA75F7peejpYePe71+LDySzki0RmidTHEA50319SKs5mrUFCgwBO+ie8D/
-         6vBe01nBoe9ZWA+Ucmn9W9SSn8Otc7jg9u0+Zrf0YwnnIQjVnEIpjntRla+f8zirsbhc
-         1QmEv2tPxbx3g6m49uAOGx3mA7bn/lGjvKNRd3fVRXP0bxzpX/rsvcIC/eRCCUgqEPzr
-         pTZg==
-X-Gm-Message-State: AOAM531zmpS2yfQgEqEDvp66lwpjSKhp/5j5m8Fl+v3aI4wQWK9CRd/W
-        2Z/AaTEIVrxqXhm0vVk67jqHLw==
-X-Google-Smtp-Source: ABdhPJwQCFmcmsU6JBdqBNiXQawokVykvnRcKuRrV6dZKcX5j9DLJHc0wzmgEit55eCl86fWDfAExg==
-X-Received: by 2002:a92:cd41:: with SMTP id v1mr225635ilq.212.1628091393090;
+        bh=2hCgffmVP7fwJ1V+MjpBVuuEuBwEMxZCBZdgq5a482k=;
+        b=P6VTcjYVdUQk3RoAtGKaU8JHomFUFhjXF5X8eNk3t8g1Q368khjEfRvviuxeZ8BbIX
+         en+EGCJSh32j/qWGrKan4aIwHfuv+iavab8HQAXl1XnXG7pRJ/9lMB/xMSBmlsYgj61s
+         9poXMZzjP1VnZmHJ1nwNp6fsu4Ykpu9uZi6CXD6l2cnIBE7+zz7oF5gBkrA+ICboj5Mt
+         sXIoNSxrJyMZdJWfBvQckEjOEaq50AtpUJHg5oUnZfKFkFFN1mtp5O+wjCGmiy7OzmKD
+         wmglvpo4Pv4FocaJ6FuerW1nQAXfVhcFwga3HKEzbJUDe6XtJvQJj3yY9F0pUMjtTsIG
+         nFPg==
+X-Gm-Message-State: AOAM532i+ifU9AEGB2KndhvOMmruz6p5uxHDMheFsS7rfe9LPw9qcZqj
+        wIl0nr0EIxicYgvEES+VU/a/Lg==
+X-Google-Smtp-Source: ABdhPJw/qC7E1kb164ewaA3i7f96wsE3pgjq9OcxLjqacTVJ4X2Fk/QbwquVVfEkECpVN3S0j3Dc8g==
+X-Received: by 2002:a92:2009:: with SMTP id j9mr223263ile.108.1628091393882;
         Wed, 04 Aug 2021 08:36:33 -0700 (PDT)
 Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id z11sm1687480ioh.14.2021.08.04.08.36.32
+        by smtp.gmail.com with ESMTPSA id z11sm1687480ioh.14.2021.08.04.08.36.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Aug 2021 08:36:32 -0700 (PDT)
+        Wed, 04 Aug 2021 08:36:33 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
         cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 4/6] net: ipa: move IPA power operations to ipa_clock.c
-Date:   Wed,  4 Aug 2021 10:36:24 -0500
-Message-Id: <20210804153626.1549001-5-elder@linaro.org>
+Subject: [PATCH net-next 5/6] net: ipa: move ipa_suspend_handler()
+Date:   Wed,  4 Aug 2021 10:36:25 -0500
+Message-Id: <20210804153626.1549001-6-elder@linaro.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210804153626.1549001-1-elder@linaro.org>
 References: <20210804153626.1549001-1-elder@linaro.org>
@@ -64,184 +64,182 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move ipa_suspend() and ipa_resume(), as well as the definition of
-the ipa_pm_ops structure into "ipa_clock.c".  Make ipa_pm_ops public
-and declare it as extern in "ipa_clock.h".
+Move ipa_suspend_handler() into "ipa_clock.c" from "ipa_main.c", to
+group with the reset of the suspend/resume code.  This IPA interrupt
+is triggered if an IPA RX endpoint is suspended but has a packet to
+be delivered.
 
-This is part of centralizing IPA power management functionality into
-"ipa_clock.c" (the file will eventually get a name change).
+Introduce ipa_power_setup() and ipa_power_teardown() to add and
+remove the handler for the IPA SUSPEND interrupt at the same place
+as before, while allowing the handler to remain private.
+
+The "power" naming convention will be adopted elsewhere in this
+file as well (soon).
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_clock.c | 62 +++++++++++++++++++++++++++++++++++++
- drivers/net/ipa/ipa_clock.h |  3 ++
- drivers/net/ipa/ipa_main.c  | 59 -----------------------------------
- 3 files changed, 65 insertions(+), 59 deletions(-)
+ drivers/net/ipa/ipa_clock.c | 34 +++++++++++++++++++++++++++++++++
+ drivers/net/ipa/ipa_clock.h | 12 ++++++++++++
+ drivers/net/ipa/ipa_main.c  | 38 +++++++------------------------------
+ 3 files changed, 53 insertions(+), 31 deletions(-)
 
 diff --git a/drivers/net/ipa/ipa_clock.c b/drivers/net/ipa/ipa_clock.c
-index 849b6ec671a4d..475ea6318cdb2 100644
+index 475ea6318cdb2..9e77d4854fe03 100644
 --- a/drivers/net/ipa/ipa_clock.c
 +++ b/drivers/net/ipa/ipa_clock.c
-@@ -9,9 +9,12 @@
- #include <linux/clk.h>
- #include <linux/device.h>
- #include <linux/interconnect.h>
-+#include <linux/pm.h>
-+#include <linux/bitops.h>
- 
- #include "ipa.h"
- #include "ipa_clock.h"
-+#include "ipa_endpoint.h"
- #include "ipa_modem.h"
- #include "ipa_data.h"
- 
-@@ -334,3 +337,62 @@ void ipa_clock_exit(struct ipa_clock *clock)
- 	kfree(clock);
- 	clk_put(clk);
+@@ -279,6 +279,40 @@ u32 ipa_clock_rate(struct ipa *ipa)
+ 	return ipa->clock ? (u32)clk_get_rate(ipa->clock->core) : 0;
  }
-+
+ 
 +/**
-+ * ipa_suspend() - Power management system suspend callback
-+ * @dev:	IPA device structure
++ * ipa_suspend_handler() - Handle the suspend IPA interrupt
++ * @ipa:	IPA pointer
++ * @irq_id:	IPA interrupt type (unused)
 + *
-+ * Return:	Always returns zero
-+ *
-+ * Called by the PM framework when a system suspend operation is invoked.
-+ * Suspends endpoints and releases the clock reference held to keep
-+ * the IPA clock running until this point.
++ * If an RX endpoint is suspended, and the IPA has a packet destined for
++ * that endpoint, the IPA generates a SUSPEND interrupt to inform the AP
++ * that it should resume the endpoint.  If we get one of these interrupts
++ * we just wake up the system.
 + */
-+static int ipa_suspend(struct device *dev)
++static void ipa_suspend_handler(struct ipa *ipa, enum ipa_irq_id irq_id)
 +{
-+	struct ipa *ipa = dev_get_drvdata(dev);
-+
-+	/* Endpoints aren't usable until setup is complete */
-+	if (ipa->setup_complete) {
-+		__clear_bit(IPA_FLAG_RESUMED, ipa->flags);
-+		ipa_endpoint_suspend(ipa);
-+		gsi_suspend(&ipa->gsi);
-+	}
-+
-+	ipa_clock_put(ipa);
-+
-+	return 0;
-+}
-+
-+/**
-+ * ipa_resume() - Power management system resume callback
-+ * @dev:	IPA device structure
-+ *
-+ * Return:	Always returns 0
-+ *
-+ * Called by the PM framework when a system resume operation is invoked.
-+ * Takes an IPA clock reference to keep the clock running until suspend,
-+ * and resumes endpoints.
-+ */
-+static int ipa_resume(struct device *dev)
-+{
-+	struct ipa *ipa = dev_get_drvdata(dev);
-+
-+	/* This clock reference will keep the IPA out of suspend
-+	 * until we get a power management suspend request.
++	/* Just report the event, and let system resume handle the rest.
++	 * More than one endpoint could signal this; if so, ignore
++	 * all but the first.
 +	 */
-+	ipa_clock_get(ipa);
++	if (!test_and_set_bit(IPA_FLAG_RESUMED, ipa->flags))
++		pm_wakeup_dev_event(&ipa->pdev->dev, 0, true);
 +
-+	/* Endpoints aren't usable until setup is complete */
-+	if (ipa->setup_complete) {
-+		gsi_resume(&ipa->gsi);
-+		ipa_endpoint_resume(ipa);
-+	}
-+
-+	return 0;
++	/* Acknowledge/clear the suspend interrupt on all endpoints */
++	ipa_interrupt_suspend_clear_all(ipa->interrupt);
 +}
 +
-+const struct dev_pm_ops ipa_pm_ops = {
-+	.suspend	= ipa_suspend,
-+	.resume		= ipa_resume,
-+};
++void ipa_power_setup(struct ipa *ipa)
++{
++	ipa_interrupt_add(ipa->interrupt, IPA_IRQ_TX_SUSPEND,
++			  ipa_suspend_handler);
++}
++
++void ipa_power_teardown(struct ipa *ipa)
++{
++	ipa_interrupt_remove(ipa->interrupt, IPA_IRQ_TX_SUSPEND);
++}
++
+ /* Initialize IPA clocking */
+ struct ipa_clock *
+ ipa_clock_init(struct device *dev, const struct ipa_clock_data *data)
 diff --git a/drivers/net/ipa/ipa_clock.h b/drivers/net/ipa/ipa_clock.h
-index 1fe634760e59d..2f0310d5709ca 100644
+index 2f0310d5709ca..2a0f7ff3c9e64 100644
 --- a/drivers/net/ipa/ipa_clock.h
 +++ b/drivers/net/ipa/ipa_clock.h
-@@ -11,6 +11,9 @@ struct device;
- struct ipa;
- struct ipa_clock_data;
+@@ -22,6 +22,18 @@ extern const struct dev_pm_ops ipa_pm_ops;
+  */
+ u32 ipa_clock_rate(struct ipa *ipa);
  
-+/* IPA device power management function block */
-+extern const struct dev_pm_ops ipa_pm_ops;
++/**
++ * ipa_power_setup() - Set up IPA power management
++ * @ipa:	IPA pointer
++ */
++void ipa_power_setup(struct ipa *ipa);
++
++/**
++ * ipa_power_teardown() - Inverse of ipa_power_setup()
++ * @ipa:	IPA pointer
++ */
++void ipa_power_teardown(struct ipa *ipa);
 +
  /**
-  * ipa_clock_rate() - Return the current IPA core clock rate
-  * @ipa:	IPA structure
+  * ipa_clock_init() - Initialize IPA clocking
+  * @dev:	IPA device
 diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
-index ae51109dea01b..28350b7c50c56 100644
+index 28350b7c50c56..25bbb456e0078 100644
 --- a/drivers/net/ipa/ipa_main.c
 +++ b/drivers/net/ipa/ipa_main.c
-@@ -874,65 +874,6 @@ static void ipa_shutdown(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "shutdown: remove returned %d\n", ret);
- }
+@@ -79,29 +79,6 @@
+ /* Divider for 19.2 MHz crystal oscillator clock to get common timer clock */
+ #define IPA_XO_CLOCK_DIVIDER	192	/* 1 is subtracted where used */
  
 -/**
-- * ipa_suspend() - Power management system suspend callback
-- * @dev:	IPA device structure
+- * ipa_suspend_handler() - Handle the suspend IPA interrupt
+- * @ipa:	IPA pointer
+- * @irq_id:	IPA interrupt type (unused)
 - *
-- * Return:	Always returns zero
-- *
-- * Called by the PM framework when a system suspend operation is invoked.
-- * Suspends endpoints and releases the clock reference held to keep
-- * the IPA clock running until this point.
+- * If an RX endpoint is in suspend state, and the IPA has a packet
+- * destined for that endpoint, the IPA generates a SUSPEND interrupt
+- * to inform the AP that it should resume the endpoint.  If we get
+- * one of these interrupts we just resume everything.
 - */
--static int ipa_suspend(struct device *dev)
+-static void ipa_suspend_handler(struct ipa *ipa, enum ipa_irq_id irq_id)
 -{
--	struct ipa *ipa = dev_get_drvdata(dev);
--
--	/* Endpoints aren't usable until setup is complete */
--	if (ipa->setup_complete) {
--		__clear_bit(IPA_FLAG_RESUMED, ipa->flags);
--		ipa_endpoint_suspend(ipa);
--		gsi_suspend(&ipa->gsi);
--	}
--
--	ipa_clock_put(ipa);
--
--	return 0;
--}
--
--/**
-- * ipa_resume() - Power management system resume callback
-- * @dev:	IPA device structure
-- *
-- * Return:	Always returns 0
-- *
-- * Called by the PM framework when a system resume operation is invoked.
-- * Takes an IPA clock reference to keep the clock running until suspend,
-- * and resumes endpoints.
-- */
--static int ipa_resume(struct device *dev)
--{
--	struct ipa *ipa = dev_get_drvdata(dev);
--
--	/* This clock reference will keep the IPA out of suspend
--	 * until we get a power management suspend request.
+-	/* Just report the event, and let system resume handle the rest.
+-	 * More than one endpoint could signal this; if so, ignore
+-	 * all but the first.
 -	 */
--	ipa_clock_get(ipa);
+-	if (!test_and_set_bit(IPA_FLAG_RESUMED, ipa->flags))
+-		pm_wakeup_dev_event(&ipa->pdev->dev, 0, true);
 -
--	/* Endpoints aren't usable until setup is complete */
--	if (ipa->setup_complete) {
--		gsi_resume(&ipa->gsi);
--		ipa_endpoint_resume(ipa);
--	}
--
--	return 0;
+-	/* Acknowledge/clear the suspend interrupt on all endpoints */
+-	ipa_interrupt_suspend_clear_all(ipa->interrupt);
 -}
 -
--static const struct dev_pm_ops ipa_pm_ops = {
--	.suspend	= ipa_suspend,
--	.resume		= ipa_resume,
--};
--
- static const struct attribute_group *ipa_attribute_groups[] = {
- 	&ipa_attribute_group,
- 	&ipa_feature_attribute_group,
+ /**
+  * ipa_setup() - Set up IPA hardware
+  * @ipa:	IPA pointer
+@@ -124,12 +101,11 @@ int ipa_setup(struct ipa *ipa)
+ 	if (ret)
+ 		return ret;
+ 
+-	ipa_interrupt_add(ipa->interrupt, IPA_IRQ_TX_SUSPEND,
+-			  ipa_suspend_handler);
++	ipa_power_setup(ipa);
+ 
+ 	ret = device_init_wakeup(dev, true);
+ 	if (ret)
+-		goto err_interrupt_remove;
++		goto err_gsi_teardown;
+ 
+ 	ipa_endpoint_setup(ipa);
+ 
+@@ -177,9 +153,9 @@ int ipa_setup(struct ipa *ipa)
+ 	ipa_endpoint_disable_one(command_endpoint);
+ err_endpoint_teardown:
+ 	ipa_endpoint_teardown(ipa);
++	ipa_power_teardown(ipa);
+ 	(void)device_init_wakeup(dev, false);
+-err_interrupt_remove:
+-	ipa_interrupt_remove(ipa->interrupt, IPA_IRQ_TX_SUSPEND);
++err_gsi_teardown:
+ 	gsi_teardown(&ipa->gsi);
+ 
+ 	return ret;
+@@ -204,8 +180,8 @@ static void ipa_teardown(struct ipa *ipa)
+ 	command_endpoint = ipa->name_map[IPA_ENDPOINT_AP_COMMAND_TX];
+ 	ipa_endpoint_disable_one(command_endpoint);
+ 	ipa_endpoint_teardown(ipa);
++	ipa_power_teardown(ipa);
+ 	(void)device_init_wakeup(&ipa->pdev->dev, false);
+-	ipa_interrupt_remove(ipa->interrupt, IPA_IRQ_TX_SUSPEND);
+ 	gsi_teardown(&ipa->gsi);
+ }
+ 
+@@ -474,7 +450,7 @@ static int ipa_config(struct ipa *ipa, const struct ipa_data *data)
+ 
+ 	ret = ipa_endpoint_config(ipa);
+ 	if (ret)
+-		goto err_interrupt_deconfig;
++		goto err_uc_deconfig;
+ 
+ 	ipa_table_config(ipa);		/* No deconfig required */
+ 
+@@ -491,7 +467,7 @@ static int ipa_config(struct ipa *ipa, const struct ipa_data *data)
+ 
+ err_endpoint_deconfig:
+ 	ipa_endpoint_deconfig(ipa);
+-err_interrupt_deconfig:
++err_uc_deconfig:
+ 	ipa_uc_deconfig(ipa);
+ 	ipa_interrupt_deconfig(ipa->interrupt);
+ 	ipa->interrupt = NULL;
 -- 
 2.27.0
 
