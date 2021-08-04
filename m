@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 241B83E025E
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 15:49:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08B053E0252
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 15:49:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238377AbhHDNti (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 09:49:38 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:13229 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238399AbhHDNtb (ORCPT
+        id S238495AbhHDNtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 09:49:33 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:7780 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231310AbhHDNtb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 09:49:31 -0400
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GftPx5LX5z1CRFQ;
+Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GftPx5C8vzYl0R;
         Wed,  4 Aug 2021 21:49:09 +0800 (CST)
 Received: from SZX1000464847.huawei.com (10.21.59.169) by
  dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
@@ -24,9 +24,9 @@ To:     <helgaas@kernel.org>, <hch@infradead.org>, <kw@linux.com>,
         <linux-pci@vger.kernel.org>, <rajur@chelsio.com>,
         <hverkuil-cisco@xs4all.nl>
 CC:     <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH V7 1/9] PCI: Use cached Device Capabilities Register
-Date:   Wed, 4 Aug 2021 21:47:00 +0800
-Message-ID: <1628084828-119542-2-git-send-email-liudongdong3@huawei.com>
+Subject: [PATCH V7 2/9] PCI: Use cached Device Capabilities 2 Register
+Date:   Wed, 4 Aug 2021 21:47:01 +0800
+Message-ID: <1628084828-119542-3-git-send-email-liudongdong3@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1628084828-119542-1-git-send-email-liudongdong3@huawei.com>
 References: <1628084828-119542-1-git-send-email-liudongdong3@huawei.com>
@@ -40,166 +40,136 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It will make sense to store the pcie_devcap value in the pci_dev
-structure instead of reading Device Capabilities Register multiple
-times. The fisrt place to use pcie_devcap is in set_pcie_port_type(),
-get the pcie_devcap value here, then use cached pcie_devcap in the
-needed place.
+It will make sense to store the pcie_devcap2 value in the pci_dev
+structure instead of reading Device Capabilities 2 Register multiple
+times. Get the pcie_devcap2 value set_pcie_port_type(), then use
+cached pcie_devcap2 in the needed place.
 
-Acked-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/media/pci/cobalt/cobalt-driver.c |  5 +++--
- drivers/pci/pci.c                        |  5 +----
- drivers/pci/pcie/aspm.c                  | 11 ++++-------
- drivers/pci/probe.c                      | 11 +++--------
- drivers/pci/quirks.c                     |  3 +--
- include/linux/pci.h                      |  1 +
- 6 files changed, 13 insertions(+), 23 deletions(-)
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c |  4 +---
+ drivers/pci/pci.c                               |  9 ++++-----
+ drivers/pci/probe.c                             | 10 ++++------
+ include/linux/pci.h                             |  2 ++
+ 4 files changed, 11 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/media/pci/cobalt/cobalt-driver.c b/drivers/media/pci/cobalt/cobalt-driver.c
-index 16af58f..23c6436 100644
---- a/drivers/media/pci/cobalt/cobalt-driver.c
-+++ b/drivers/media/pci/cobalt/cobalt-driver.c
-@@ -193,11 +193,12 @@ void cobalt_pcie_status_show(struct cobalt *cobalt)
- 		return;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+index dbf9a0e..a8e1e22 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+@@ -6304,7 +6304,6 @@ static int cxgb4_iov_configure(struct pci_dev *pdev, int num_vfs)
+ 		struct pci_dev *pbridge;
+ 		struct port_info *pi;
+ 		char name[IFNAMSIZ];
+-		u32 devcap2;
+ 		u16 flags;
  
- 	/* Device */
--	pcie_capability_read_dword(pci_dev, PCI_EXP_DEVCAP, &capa);
- 	pcie_capability_read_word(pci_dev, PCI_EXP_DEVCTL, &ctrl);
- 	pcie_capability_read_word(pci_dev, PCI_EXP_DEVSTA, &stat);
- 	cobalt_info("PCIe device capability 0x%08x: Max payload %d\n",
--		    capa, get_payload_size(capa & PCI_EXP_DEVCAP_PAYLOAD));
-+		    pci_dev->pcie_devcap,
-+		    get_payload_size(pci_dev->pcie_devcap &
-+				     PCI_EXP_DEVCAP_PAYLOAD));
- 	cobalt_info("PCIe device control 0x%04x: Max payload %d. Max read request %d\n",
- 		    ctrl,
- 		    get_payload_size((ctrl & PCI_EXP_DEVCTL_PAYLOAD) >> 5),
+ 		/* If we want to instantiate Virtual Functions, then our
+@@ -6314,10 +6313,9 @@ static int cxgb4_iov_configure(struct pci_dev *pdev, int num_vfs)
+ 		 */
+ 		pbridge = pdev->bus->self;
+ 		pcie_capability_read_word(pbridge, PCI_EXP_FLAGS, &flags);
+-		pcie_capability_read_dword(pbridge, PCI_EXP_DEVCAP2, &devcap2);
+ 
+ 		if ((flags & PCI_EXP_FLAGS_VERS) < 2 ||
+-		    !(devcap2 & PCI_EXP_DEVCAP2_ARI)) {
++		    !(pbridge->pcie_devcap2 & PCI_EXP_DEVCAP2_ARI)) {
+ 			/* Our parent bridge does not support ARI so issue a
+ 			 * warning and skip instantiating the VFs.  They
+ 			 * won't be reachable.
 diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index aacf575..dc3bfb2 100644
+index dc3bfb2..d14c573 100644
 --- a/drivers/pci/pci.c
 +++ b/drivers/pci/pci.c
-@@ -4630,13 +4630,10 @@ EXPORT_SYMBOL(pci_wait_for_pending_transaction);
-  */
- bool pcie_has_flr(struct pci_dev *dev)
+@@ -3700,7 +3700,7 @@ int pci_enable_atomic_ops_to_root(struct pci_dev *dev, u32 cap_mask)
  {
--	u32 cap;
+ 	struct pci_bus *bus = dev->bus;
+ 	struct pci_dev *bridge;
+-	u32 cap, ctl2;
++	u32 ctl2;
+ 
+ 	if (!pci_is_pcie(dev))
+ 		return -EINVAL;
+@@ -3724,19 +3724,18 @@ int pci_enable_atomic_ops_to_root(struct pci_dev *dev, u32 cap_mask)
+ 	while (bus->parent) {
+ 		bridge = bus->self;
+ 
+-		pcie_capability_read_dword(bridge, PCI_EXP_DEVCAP2, &cap);
 -
- 	if (dev->dev_flags & PCI_DEV_FLAGS_NO_FLR_RESET)
- 		return false;
+ 		switch (pci_pcie_type(bridge)) {
+ 		/* Ensure switch ports support AtomicOp routing */
+ 		case PCI_EXP_TYPE_UPSTREAM:
+ 		case PCI_EXP_TYPE_DOWNSTREAM:
+-			if (!(cap & PCI_EXP_DEVCAP2_ATOMIC_ROUTE))
++			if (!(bridge->pcie_devcap2 &
++			      PCI_EXP_DEVCAP2_ATOMIC_ROUTE))
+ 				return -EINVAL;
+ 			break;
  
--	pcie_capability_read_dword(dev, PCI_EXP_DEVCAP, &cap);
--	return cap & PCI_EXP_DEVCAP_FLR;
-+	return dev->pcie_devcap & PCI_EXP_DEVCAP_FLR;
- }
- EXPORT_SYMBOL_GPL(pcie_has_flr);
- 
-diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
-index 013a47f..db944f6 100644
---- a/drivers/pci/pcie/aspm.c
-+++ b/drivers/pci/pcie/aspm.c
-@@ -660,7 +660,7 @@ static void pcie_aspm_cap_init(struct pcie_link_state *link, int blacklist)
- 
- 	/* Get and check endpoint acceptable latencies */
- 	list_for_each_entry(child, &linkbus->devices, bus_list) {
--		u32 reg32, encoding;
-+		u32 encoding;
- 		struct aspm_latency *acceptable =
- 			&link->acceptable[PCI_FUNC(child->devfn)];
- 
-@@ -668,12 +668,11 @@ static void pcie_aspm_cap_init(struct pcie_link_state *link, int blacklist)
- 		    pci_pcie_type(child) != PCI_EXP_TYPE_LEG_END)
- 			continue;
- 
--		pcie_capability_read_dword(child, PCI_EXP_DEVCAP, &reg32);
- 		/* Calculate endpoint L0s acceptable latency */
--		encoding = (reg32 & PCI_EXP_DEVCAP_L0S) >> 6;
-+		encoding = (child->pcie_devcap & PCI_EXP_DEVCAP_L0S) >> 6;
- 		acceptable->l0s = calc_l0s_acceptable(encoding);
- 		/* Calculate endpoint L1 acceptable latency */
--		encoding = (reg32 & PCI_EXP_DEVCAP_L1) >> 9;
-+		encoding = (child->pcie_devcap & PCI_EXP_DEVCAP_L1) >> 9;
- 		acceptable->l1 = calc_l1_acceptable(encoding);
- 
- 		pcie_aspm_check_latency(child);
-@@ -808,7 +807,6 @@ static void free_link_state(struct pcie_link_state *link)
- static int pcie_aspm_sanity_check(struct pci_dev *pdev)
- {
- 	struct pci_dev *child;
--	u32 reg32;
- 
- 	/*
- 	 * Some functions in a slot might not all be PCIe functions,
-@@ -831,8 +829,7 @@ static int pcie_aspm_sanity_check(struct pci_dev *pdev)
- 		 * Disable ASPM for pre-1.1 PCIe device, we follow MS to use
- 		 * RBER bit to determine if a function is 1.1 version device
- 		 */
--		pcie_capability_read_dword(child, PCI_EXP_DEVCAP, &reg32);
--		if (!(reg32 & PCI_EXP_DEVCAP_RBER) && !aspm_force) {
-+		if (!(child->pcie_devcap & PCI_EXP_DEVCAP_RBER) && !aspm_force) {
- 			pci_info(child, "disabling ASPM on pre-1.1 PCIe device.  You can enable it with 'pcie_aspm=force'\n");
- 			return -EINVAL;
+ 		/* Ensure root port supports all the sizes we care about */
+ 		case PCI_EXP_TYPE_ROOT_PORT:
+-			if ((cap & cap_mask) != cap_mask)
++			if ((bridge->pcie_devcap2 & cap_mask) != cap_mask)
+ 				return -EINVAL;
+ 			break;
  		}
 diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 79177ac..cc700f6 100644
+index cc700f6..c83245b 100644
 --- a/drivers/pci/probe.c
 +++ b/drivers/pci/probe.c
-@@ -1498,8 +1498,8 @@ void set_pcie_port_type(struct pci_dev *pdev)
- 	pdev->pcie_cap = pos;
- 	pci_read_config_word(pdev, pos + PCI_EXP_FLAGS, &reg16);
+@@ -1500,6 +1500,7 @@ void set_pcie_port_type(struct pci_dev *pdev)
  	pdev->pcie_flags_reg = reg16;
--	pci_read_config_word(pdev, pos + PCI_EXP_DEVCAP, &reg16);
--	pdev->pcie_mpss = reg16 & PCI_EXP_DEVCAP_PAYLOAD;
-+	pci_read_config_dword(pdev, pos + PCI_EXP_DEVCAP, &pdev->pcie_devcap);
-+	pdev->pcie_mpss = pdev->pcie_devcap & PCI_EXP_DEVCAP_PAYLOAD;
+ 	pci_read_config_dword(pdev, pos + PCI_EXP_DEVCAP, &pdev->pcie_devcap);
+ 	pdev->pcie_mpss = pdev->pcie_devcap & PCI_EXP_DEVCAP_PAYLOAD;
++	pci_read_config_dword(pdev, pos + PCI_EXP_DEVCAP2, &pdev->pcie_devcap2);
  
  	parent = pci_upstream_bridge(pdev);
  	if (!parent)
-@@ -2031,18 +2031,13 @@ static void pci_configure_mps(struct pci_dev *dev)
- int pci_configure_extended_tags(struct pci_dev *dev, void *ign)
- {
- 	struct pci_host_bridge *host;
--	u32 cap;
- 	u16 ctl;
- 	int ret;
+@@ -2116,7 +2117,7 @@ static void pci_configure_ltr(struct pci_dev *dev)
+ #ifdef CONFIG_PCIEASPM
+ 	struct pci_host_bridge *host = pci_find_host_bridge(dev->bus);
+ 	struct pci_dev *bridge;
+-	u32 cap, ctl;
++	u32 ctl;
  
  	if (!pci_is_pcie(dev))
- 		return 0;
+ 		return;
+@@ -2124,8 +2125,7 @@ static void pci_configure_ltr(struct pci_dev *dev)
+ 	/* Read L1 PM substate capabilities */
+ 	dev->l1ss = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_L1SS);
  
--	ret = pcie_capability_read_dword(dev, PCI_EXP_DEVCAP, &cap);
--	if (ret)
--		return 0;
--
--	if (!(cap & PCI_EXP_DEVCAP_EXT_TAG))
-+	if (!(dev->pcie_devcap & PCI_EXP_DEVCAP_EXT_TAG))
- 		return 0;
+-	pcie_capability_read_dword(dev, PCI_EXP_DEVCAP2, &cap);
+-	if (!(cap & PCI_EXP_DEVCAP2_LTR))
++	if (!(dev->pcie_devcap2 & PCI_EXP_DEVCAP2_LTR))
+ 		return;
  
- 	ret = pcie_capability_read_word(dev, PCI_EXP_DEVCTL, &ctl);
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 6d74386..2b405c5 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -5173,8 +5173,7 @@ static void quirk_intel_qat_vf_cap(struct pci_dev *pdev)
- 		pdev->pcie_cap = pos;
- 		pci_read_config_word(pdev, pos + PCI_EXP_FLAGS, &reg16);
- 		pdev->pcie_flags_reg = reg16;
--		pci_read_config_word(pdev, pos + PCI_EXP_DEVCAP, &reg16);
--		pdev->pcie_mpss = reg16 & PCI_EXP_DEVCAP_PAYLOAD;
-+		pdev->pcie_mpss = pdev->pcie_devcap & PCI_EXP_DEVCAP_PAYLOAD;
+ 	pcie_capability_read_dword(dev, PCI_EXP_DEVCTL2, &ctl);
+@@ -2165,13 +2165,11 @@ static void pci_configure_eetlp_prefix(struct pci_dev *dev)
+ #ifdef CONFIG_PCI_PASID
+ 	struct pci_dev *bridge;
+ 	int pcie_type;
+-	u32 cap;
  
- 		pdev->cfg_size = PCI_CFG_SPACE_EXP_SIZE;
- 		if (pci_read_config_dword(pdev, PCI_CFG_SPACE_SIZE, &status) !=
+ 	if (!pci_is_pcie(dev))
+ 		return;
+ 
+-	pcie_capability_read_dword(dev, PCI_EXP_DEVCAP2, &cap);
+-	if (!(cap & PCI_EXP_DEVCAP2_EE_PREFIX))
++	if (!(dev->pcie_devcap2 & PCI_EXP_DEVCAP2_EE_PREFIX))
+ 		return;
+ 
+ 	pcie_type = pci_pcie_type(dev);
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 540b377..aee7c85 100644
+index aee7c85..9aab67f 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -340,6 +340,7 @@ struct pci_dev {
- 	u8		rom_base_reg;	/* Config register controlling ROM */
+@@ -341,6 +341,8 @@ struct pci_dev {
  	u8		pin;		/* Interrupt pin this device uses */
  	u16		pcie_flags_reg;	/* Cached PCIe Capabilities Register */
-+	u32		pcie_devcap;	/* Cached Device Capabilities Register */
+ 	u32		pcie_devcap;	/* Cached Device Capabilities Register */
++	u32		pcie_devcap2;	/* Cached Device Capabilities 2
++					   Register */
  	unsigned long	*dma_alias_mask;/* Mask of enabled devfn aliases */
  
  	struct pci_driver *driver;	/* Driver bound to this device */
