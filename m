@@ -2,185 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C9E53E0334
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 16:31:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD64B3E0340
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 16:33:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237275AbhHDObG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 10:31:06 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:42934 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237013AbhHDO24 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 10:28:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1628087325; x=1659623325;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=D6ii/u0govjCm682RH3I0wZetDpJcPbhqh6iE1CrIu0=;
-  b=w+ZubufUYvMKa2RCuvKaAXRYDbmWcSv+eEIuX4Yx1+vnfqFhQYLMPtQo
-   UyvjJoyjLlq9N0nr56JdSOhe6uv966eT4x/qmwEY5kAG36OmtCUL4B8pP
-   O8EstomcliWcPGjvGFc0CCO+eB4euyuqYREF1Hm5Wd593nmrv9QXy+p1Z
-   EYCuk90imx9wuDiLbf1pyRCofDWYMQKT4diHlPxHyH9cfmpXzG605hgGN
-   ISq4AipCo+jaYtj39wymQmocgCKB9JAze5VhvQw2npC1zMv+Wbs7wrNZL
-   LFnO6ltM5as3xlV2sqmAx5R1uD/21CAoZ4C5S+X5ZpVTYQY5+PE9tSIiU
-   g==;
-IronPort-SDR: cMNhvWe1d11Uf+9EPoYLCd7JXMqm4xUU7aPt7KVrSMPCBy/lOVjPWpx5vpHj4KaiPPFTqLvLqb
- bv49YdtaLPQoO6SpuOCFAaNx2agMPZluq0KNB2nzvsGZv3oKCuvVpPSxEbrxirEHxdMGQIse5y
- iRGCxxh7x50fZx0Zy47oiK0moexBeTG04zA0cghGBQomFSyJlqogGNLiSJsMx+41G4JTenkl30
- NpkL7wFZzgmQ8G/aGDu2cY20P8l4xNclMPBgmRBbJlxMInuAoDytpQL3ZaIp8pBdCYWXMog9Ul
- 3Th+Aw1gnsE8OhCLPpPcrrqy
-X-IronPort-AV: E=Sophos;i="5.84,294,1620716400"; 
-   d="scan'208";a="131030110"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Aug 2021 07:28:24 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 4 Aug 2021 07:28:22 -0700
-Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Wed, 4 Aug 2021 07:28:17 -0700
-Message-ID: <d10aa31f1258aa2975e3837acb09f26265da91eb.camel@microchip.com>
-Subject: Re: [PATCH v3 net-next 05/10] net: dsa: microchip: add DSA support
- for microchip lan937x
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC:     Andrew Lunn <andrew@lunn.ch>, <netdev@vger.kernel.org>,
-        <robh+dt@kernel.org>, <UNGLinuxDriver@microchip.com>,
-        <Woojung.Huh@microchip.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Date:   Wed, 4 Aug 2021 19:58:15 +0530
-In-Reply-To: <20210804104625.d2qw3gr7algzppz5@skbuf>
-References: <20210723173108.459770-1-prasanna.vengateshan@microchip.com>
-         <20210723173108.459770-6-prasanna.vengateshan@microchip.com>
-         <20210731150416.upe5nwkwvwajhwgg@skbuf>
-         <49678cce02ac03edc6bbbd1afb5f67606ac3efc2.camel@microchip.com>
-         <20210802121550.gqgbipqdvp5x76ii@skbuf> <YQfvXTEbyYFMLH5u@lunn.ch>
-         <20210802135911.inpu6khavvwsfjsp@skbuf>
-         <50eb24a1e407b651eda7aeeff26d82d3805a6a41.camel@microchip.com>
-         <20210803235401.rctfylazg47cjah5@skbuf>
-         <20210804095954.GN22278@shell.armlinux.org.uk>
-         <20210804104625.d2qw3gr7algzppz5@skbuf>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.1-1 
+        id S238881AbhHDObN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 10:31:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55082 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238822AbhHDOap (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 10:30:45 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C2DC0613D5;
+        Wed,  4 Aug 2021 07:30:21 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id u3so4774497lff.9;
+        Wed, 04 Aug 2021 07:30:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=mKJzb3ll4dn13iZlEAdIWf6tqFSFs0x9Rq1Rej/qSjg=;
+        b=ACv//ihaYWedxDc0yEk4YmwQ6HFrya4rg/t/C/kt9UkDksqBV/+bjUrlcx8dVAzfKm
+         f78ZZu2jXvr2xFw6OglQ3ATEWAry3E2MdRSnKvhcM92+HfY6nfL3PnLVjMDZfBQymOw3
+         JYi32nVMHitxOhbtGEMm/ezrNttJVOcCO5/ZwqBxQAXuy5HswrgEF+mFn9upqjHszBp6
+         xyTkC88Egu+hYxNx9RhT5Ha875IRamZMaQpDsf5lYkTdXxpvwqYyHRMfDJEjz9Xzkrql
+         2Q9OsmBjiQL/SQ8nnYx8eaiRbUsDmnxGhKQN/EQGvV7tMUByO5eqS7MptNm02Zvv6bYC
+         fp9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=mKJzb3ll4dn13iZlEAdIWf6tqFSFs0x9Rq1Rej/qSjg=;
+        b=pgCJPCAu2o8TAVlYSHHX78SxGk2pVl9PGSaHYklz4LveLFeCLozTg9ctqDcDxUJnn3
+         jDF9v/pgrIzYK/CU/sjY8AR9tLYttQb4bIUphgUvAlAvnnuNLihcTroEKEBs22ERiJON
+         JbfPGDjty2Bb0YyPcR/1Fz4yD3Fq9Bp+5LnASKh18Q4xQGNEi3Kcb/i+yMtAI6hg5T2o
+         uT2SzBTyiWySzynkQzP/eVGjFW+8Fpo0ScDbKVJ/UUFwKYVAg5i389T6+teU09ZjRKOe
+         K05DopDbySJwSL1/uZ+Ofq0ZBH3GJU0X3Xbyc2RNHt9JqGlsYL+if4q93VOJCXa5e7bx
+         Y4gQ==
+X-Gm-Message-State: AOAM531UiLxQzKBCXXhvUmvinfBBHCnYp4XAV8tDaLZsQahAVll6DwDc
+        e8xpuMwCEpQipu1mfgiJi+4=
+X-Google-Smtp-Source: ABdhPJwkKsHNDLJ6c/JFRTey0AqGNnMx4xhUQKjGEIqRINMcv24UiA8COKYjLDaHf85zU2OcXMYAUA==
+X-Received: by 2002:a05:6512:1281:: with SMTP id u1mr3461472lfs.136.1628087420062;
+        Wed, 04 Aug 2021 07:30:20 -0700 (PDT)
+Received: from localhost.localdomain ([94.103.226.235])
+        by smtp.gmail.com with ESMTPSA id b15sm213794lff.104.2021.08.04.07.30.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Aug 2021 07:30:19 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     petkan@nucleusys.com, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+02c9f70f3afae308464a@syzkaller.appspotmail.com
+Subject: [PATCH net v2] net: pegasus: fix uninit-value in get_interrupt_interval
+Date:   Wed,  4 Aug 2021 17:30:05 +0300
+Message-Id: <20210804143005.439-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210804045839.101fe0f0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210804045839.101fe0f0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-08-04 at 13:46 +0300, Vladimir Oltean wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
-> content is safe
-> 
-> The problem is that I have no clear migration path for the drivers I
-> maintain, like sja1105, and I suspect that others might be in the exact
-> same situation.
-> 
-> Currently, if the sja1105 needs to add internal delays in a MAC-to-MAC
-> (fixed-link) setup, it does that based on the phy-mode string. So
-> "rgmii-id" + "fixed-link" means for sja1105 "add RX and TX RGMII
-> internal delays", even though the documentation now says "the MAC should
-> not add the RX or TX delays in this case".
-> 
-> There are 2 cases to think about, old driver with new DT blob and new
-> driver with old DT blob. If breakage is involved, I am not actually very
-> interested in doing the migration, because even though the interpretation
-> of the phy-mode string is inconsistent between the phy-handle and fixed-link
-> case (which was deliberate), at least it currently does all that I need it to.
-> 
-> I am not even clear what is the expected canonical behavior for a MAC
-> driver. It parses rx-internal-delay-ps and tx-internal-delay-ps, and
-> then what? It treats all "rgmii*" phy-mode strings identically? Or is it
-> an error to have "rgmii-rxid" for phy-mode and non-zero rx-internal-delay-ps?
-> If it is an error, should all MAC drivers check for it? And if it is an
-> error, does it not make migration even more difficult (adding an
-> rx-internal-delay-ps property to a MAC OF node which already uses
-> "rgmii-id" would be preferable to also having to change the "rgmii-id"
-> to "rgmii", because an old kernel might also need to work with that DT
-> blob, and that will ignore the new rx-internal-delay-ps property).
+Syzbot reported uninit value pegasus_probe(). The problem was in missing
+error handling.
 
+get_interrupt_interval() internally calls read_eprom_word() which can
+fail in some cases. For example: failed to receive usb control message.
+These cases should be handled to prevent uninit value bug, since
+read_eprom_word() will not initialize passed stack variable in case of
+internal failure.
 
-Considering the PHY is responsible to add internal delays w.r.to phy-mode, "*-
-tx-internal-delay-ps" approach that i was applying to different connections as
-shown below by bringing up different examples.
+Fail log:
 
-1) Fixed-link MAC-MAC: 
-       port@4 {
-            .....
-            phy-mode = "rgmii";
-            rx-internal-delay-ps = <xxx>;
-            tx-internal-delay-ps = <xxx>;
-            ethernet = <&ethernet>;
-            fixed-link {
-           	......
-            };
-          };
+BUG: KMSAN: uninit-value in get_interrupt_interval drivers/net/usb/pegasus.c:746 [inline]
+BUG: KMSAN: uninit-value in pegasus_probe+0x10e7/0x4080 drivers/net/usb/pegasus.c:1152
+CPU: 1 PID: 825 Comm: kworker/1:1 Not tainted 5.12.0-rc6-syzkaller #0
+...
+Workqueue: usb_hub_wq hub_event
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x24c/0x2e0 lib/dump_stack.c:120
+ kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
+ __msan_warning+0x5c/0xa0 mm/kmsan/kmsan_instr.c:197
+ get_interrupt_interval drivers/net/usb/pegasus.c:746 [inline]
+ pegasus_probe+0x10e7/0x4080 drivers/net/usb/pegasus.c:1152
+....
 
-2) Fixed-link MAC-Unknown:
-        port@5 {
-            ......
-            phy-mode = "rgmii-id";
-            rx-internal-delay-ps = <xxx>;
-            tx-internal-delay-ps = <xxx>;
-            fixed-link {
-           .	....
-            };
-          };
+Local variable ----data.i@pegasus_probe created at:
+ get_interrupt_interval drivers/net/usb/pegasus.c:1151 [inline]
+ pegasus_probe+0xe57/0x4080 drivers/net/usb/pegasus.c:1152
+ get_interrupt_interval drivers/net/usb/pegasus.c:1151 [inline]
+ pegasus_probe+0xe57/0x4080 drivers/net/usb/pegasus.c:1152
 
-3) Fixed-link :
-        port@5 {
-            ......
-            phy-mode = "rgmii-id";
-            fixed-link {
-              .....
-            };
-          };
+Reported-and-tested-by: syzbot+02c9f70f3afae308464a@syzkaller.appspotmail.com
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
 
-From above examples,
-	a) MAC node is responsible to add RGMII delay by parsing "*-internal-
-delay-ps" for (1) & (2). Its a known item in this discussion.
-	b) Is rgmii-* to be ignored by the MAC in (2) and just apply the delays
-from MAC side? Because if its forced to have "rgmii", would it become just -
->interface=*_MODE_RGMII and affects legacy?
-	c) if MAC follows standard delay, then it needs to be validated against
-"*-internal-delay-ps", may be validating against single value and throw an
-error. Might be okay.
-	d) For 3), Neither MAC nor other side will apply delays. Expected.
+Changes in v2:
+	Rebased on top of -net
 
+---
+ drivers/net/usb/pegasus.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-3) MAC-PHY
-
-	i) &test3 {
-		phy-handle = <&phy0>;
-		phy-mode = "rgmii-id";
-		phy0: ethernet-phy@xx {
-			.....
-			rx-internal-delay = <xxx>;
-			tx-internal-delay = <xxx>;
-		};
-	  };
-
-	ii) &test4 {
-		phy-handle = <&phy0>;
-		phy-mode = "rgmii";
-        	rx-internal-delay-ps = <xxx>;
-        	tx-internal-delay-ps = <xxx>;
-		phy0: ethernet-phy@xx {
-			reg = <x>;
-	        };
-	     };
-
-
-For 3(i), I assume phy would apply internal delay values by checking its phydev-
->interface.
-For 3(ii), MAC would apply the delays.
-
-Overall, only (b) need a right decision? or any other items are missed?
-
-
-Prasanna V
+diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
+index f18b03be1..652e9fcf0 100644
+--- a/drivers/net/usb/pegasus.c
++++ b/drivers/net/usb/pegasus.c
+@@ -744,12 +744,16 @@ static inline void disable_net_traffic(pegasus_t *pegasus)
+ 	set_registers(pegasus, EthCtrl0, sizeof(tmp), &tmp);
+ }
+ 
+-static inline void get_interrupt_interval(pegasus_t *pegasus)
++static inline int get_interrupt_interval(pegasus_t *pegasus)
+ {
+ 	u16 data;
+ 	u8 interval;
++	int ret;
++
++	ret = read_eprom_word(pegasus, 4, &data);
++	if (ret < 0)
++		return ret;
+ 
+-	read_eprom_word(pegasus, 4, &data);
+ 	interval = data >> 8;
+ 	if (pegasus->usb->speed != USB_SPEED_HIGH) {
+ 		if (interval < 0x80) {
+@@ -764,6 +768,8 @@ static inline void get_interrupt_interval(pegasus_t *pegasus)
+ 		}
+ 	}
+ 	pegasus->intr_interval = interval;
++
++	return 0;
+ }
+ 
+ static void set_carrier(struct net_device *net)
+@@ -1165,7 +1171,9 @@ static int pegasus_probe(struct usb_interface *intf,
+ 				| NETIF_MSG_PROBE | NETIF_MSG_LINK);
+ 
+ 	pegasus->features = usb_dev_id[dev_index].private;
+-	get_interrupt_interval(pegasus);
++	res = get_interrupt_interval(pegasus);
++	if (res)
++		goto out2;
+ 	if (reset_mac(pegasus)) {
+ 		dev_err(&intf->dev, "can't reset MAC\n");
+ 		res = -EIO;
+-- 
+2.32.0
 
