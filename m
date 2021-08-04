@@ -2,210 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 151383E038B
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 16:42:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1AC93E03B7
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 16:51:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238178AbhHDOmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 10:42:40 -0400
-Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:56510
-        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238037AbhHDOmj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 10:42:39 -0400
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPS id C6D703F355
-        for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 14:42:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1628088145;
-        bh=3wAPLTNTz+K6PssPvD29DSKcaFgyHs1tGU9uPv0wDys=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=t5nOOzKIA2o6Rgd0nulKNvf3B/Ubf/sIK6NtMKr8ljPhuZqB+t49k/GGjp2b8kHO0
-         ThBFJHcYCxvzft7lTvo07iRC3nGaiBw52igrmR92kp/uvLqyAu+vEhmpADFe9bAPRX
-         GYAROzCmx/Mh+uLG9S619/N62bDDMDHa1SNx6riHwNrqnX4qNS4Y4uj54RkN+xtojT
-         UZFVxVJKrIw7vxzQRgDgtl/Af6G4geRgdjB3jkCw1NanCVrFq5gSSdQ6VerMDFSjfQ
-         GujC9qZa1F/0oOvp3txlMLKN9u0v0mmxokSCpBHRAzlY7kHgrQl6nWPhS1ekWHZ3hN
-         Fop2jdU7Rp/pw==
-Received: by mail-ed1-f71.google.com with SMTP id cm18-20020a0564020c92b02903bc7f21d540so1560010edb.13
-        for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 07:42:25 -0700 (PDT)
+        id S238755AbhHDOwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 10:52:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60226 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234423AbhHDOwE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 10:52:04 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23FB5C0613D5;
+        Wed,  4 Aug 2021 07:51:51 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id cf5so3905742edb.2;
+        Wed, 04 Aug 2021 07:51:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=SECr+Us9Cf/Gvs+9Axv6k/jT6yduvmzCSZPno/cMwXg=;
+        b=U3stkZoVI7t/beAJKpSu3LM6JqYlv8YCenMMQQcY8tf+fvXDa89atBkfPWEEavOhH3
+         MhcVouky8a1GuUi9nK8T/rYY+iJP0T2LuzUQM07LI2baUg1LbUadbBbIwzDl2HF4h78v
+         mdLl8lQXPGRvo/0Tf8phhVw5ZH7CKGcuWDS2cso3VGG5Ke591qxHdVxZy4SXVkwMv5HE
+         Jzc99sefhCEDFpYcl0ghjmJ/0Zq1n9aiIQ63L7NyNka+NOK6AHcECVUJntxxiDyH8Go+
+         Kwwv0mFS3URX1g9BgMmtUk7rlBMq+GqdUbtqxsXTdifSZIVV/oILSjCcAupMzn8JFBRy
+         BIsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3wAPLTNTz+K6PssPvD29DSKcaFgyHs1tGU9uPv0wDys=;
-        b=Il0hA//bDLfbsn9i71UGWcjyoOTx1BZOE24WTm1jh5XFv6zNXvs8BAUgdFVcqWbwWz
-         OJ9FmcOLZ1NtG7GcTytIj6euWvuK0x4lDge+mhiDEbytUdlNezvTvhPRe/XAjL3J8USn
-         VuRJ7dshARk+cuwyDGD74l8/OGA7XSn6l8oO/mjxlvm8/uANUHUX0io/CMQLP1RWH3a7
-         02KMwI4SFMbyRUrjNWM/zzh4h6E59ydDgxbdFlWb5QsxitLnqBKDqTxRlCLP4IjHdNHI
-         RFK49NRphZX3dKHiG0/f6b7/YeKUNC8byDK5gRwg3ae+nhOOODkqJZV2Ws0eKGyNAlv2
-         H+3Q==
-X-Gm-Message-State: AOAM533y7yNZyQKqU1TkauDPrPHIcFZhoHS1/jdv++7lPbDcelJwWWk1
-        x0reSO5B0jYc6HDImGytnZdSpuU86F6OnjCSZ5Pref4kxt+5t7aDQbHjTLcg/mK1eLUzTyoS0wN
-        EWzYOSODb3jf2TbkFMdlh6XgNIv+F2Nwjmo4vZCVgMvqHRe5Irg==
-X-Received: by 2002:a17:907:9d2:: with SMTP id bx18mr9112337ejc.117.1628088145474;
-        Wed, 04 Aug 2021 07:42:25 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyOaQSvCaKPRq4H/5+YCJPxGecpIdfcA+4DRu7m7wAnxxdu88WH23lia/jjgNqV7LJNX9GlmVz4ZA/+PeiS+gI=
-X-Received: by 2002:a17:907:9d2:: with SMTP id bx18mr9112321ejc.117.1628088145254;
- Wed, 04 Aug 2021 07:42:25 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=SECr+Us9Cf/Gvs+9Axv6k/jT6yduvmzCSZPno/cMwXg=;
+        b=i6ozAlrVsDStKork34uS1DyqyxxtB7N+5+R0vg1nd80Wp8JiBH33uHPNsjDE5YhQdf
+         s924vHmBUUNzIaNIMGXBtVTZ3Db+cA45BHaZPRrjcII6Z+aDiI0/bvHLmW9VkFQxo3ib
+         StdSiwfakYWuEwwq2XNuuGX1/Cup778uhrhiQ/tuNB+89I3mSVSeFqPx0zS+gNWZjwAr
+         ovUm2uKH3dAG6yPZXmwS8lkljVRcEsMDjVQw/i7veijEFBRDzxOQdlq01DJW3ApRM2qO
+         7T9pQ6+MnAp3C6g0KfyXCtHErCeIkjezX26/eZYKvSK3tjTdm5rotP/eg2HUUdDv3YXE
+         TICg==
+X-Gm-Message-State: AOAM533wtoyIF2p6NimQoHO4mwXzTTkg+WBlMoDnRuB1i4YqUmPabOiK
+        cQ5M7bJLACJoIYSLv70s16A=
+X-Google-Smtp-Source: ABdhPJxYL6BxYMsug5DWZ2ymXXVaxisiTIuVkW3kDQum2jb1Tc6R8sNesjrpl102Ixo82n/MTCGnhA==
+X-Received: by 2002:a05:6402:49a:: with SMTP id k26mr74673edv.279.1628088709732;
+        Wed, 04 Aug 2021 07:51:49 -0700 (PDT)
+Received: from skbuf ([188.25.144.60])
+        by smtp.gmail.com with ESMTPSA id c6sm1044261ede.48.2021.08.04.07.51.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Aug 2021 07:51:49 -0700 (PDT)
+Date:   Wed, 4 Aug 2021 17:51:47 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        robh+dt@kernel.org, UNGLinuxDriver@microchip.com,
+        Woojung.Huh@microchip.com, hkallweit1@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 05/10] net: dsa: microchip: add DSA support
+ for microchip lan937x
+Message-ID: <20210804145147.4ncxdgrfzlipsjuf@skbuf>
+References: <20210731150416.upe5nwkwvwajhwgg@skbuf>
+ <49678cce02ac03edc6bbbd1afb5f67606ac3efc2.camel@microchip.com>
+ <20210802121550.gqgbipqdvp5x76ii@skbuf>
+ <YQfvXTEbyYFMLH5u@lunn.ch>
+ <20210802135911.inpu6khavvwsfjsp@skbuf>
+ <50eb24a1e407b651eda7aeeff26d82d3805a6a41.camel@microchip.com>
+ <20210803235401.rctfylazg47cjah5@skbuf>
+ <20210804095954.GN22278@shell.armlinux.org.uk>
+ <20210804104625.d2qw3gr7algzppz5@skbuf>
+ <d10aa31f1258aa2975e3837acb09f26265da91eb.camel@microchip.com>
 MIME-Version: 1.0
-References: <20210514071452.25220-1-kai.heng.feng@canonical.com>
- <576B26FD-81F8-4632-82F6-57C4A7C096C4@holtmann.org> <8735ryk0o7.fsf@baylibre.com>
- <CAAd53p7Zc3Zk21rwj_x1BLgf8tWRxaKBmXARkM6d7Kpkb+fDZA@mail.gmail.com>
- <87y29o58su.fsf@baylibre.com> <CAAd53p4Ss1Z-7CB4g=_xZYxo1xDz6ih6GHUuMcgncy+yNAfU4w@mail.gmail.com>
- <87a6lzx7jf.fsf@baylibre.com>
-In-Reply-To: <87a6lzx7jf.fsf@baylibre.com>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Wed, 4 Aug 2021 22:42:09 +0800
-Message-ID: <CAAd53p6T_K67CPthLPObF=OWWCEChW4pMFMwuq87qWmTmzP2VA@mail.gmail.com>
-Subject: Re: [PATCH v2] Bluetooth: Shutdown controller after workqueues are
- flushed or cancelled
-To:     Mattijs Korpershoek <mkorpershoek@baylibre.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        "open list:BLUETOOTH SUBSYSTEM" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d10aa31f1258aa2975e3837acb09f26265da91eb.camel@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 3, 2021 at 4:21 PM Mattijs Korpershoek
-<mkorpershoek@baylibre.com> wrote:
->
-> Hi Kai-Heng,
->
-> Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
->
-> > Hi Mattijs,
-> >
-> > On Fri, Jul 30, 2021 at 7:40 PM Mattijs Korpershoek
-> > <mkorpershoek@baylibre.com> wrote:
-> >>
-> >> Hi Kai-Heng,
-> >
-> > [snipped]
-> >
-> >> Thank you for your help. Sorry I did not post the logs previously.
-> >>
-> >> dmesg: https://pastebin.com/tpWDNyQr
-> >> ftrace on btmtksdio: https://pastebin.com/jmhvmwUw
-> >
-> > Seems like btmtksdio needs shudown() to be called before flush().
-> > Since the order was there for a very long time, changing the calling
-> > order indeed can break what driver expects.
-> > Can you please test the following patch:
-> > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> > index 2560ed2f144d..a61e610a400c 100644
-> > --- a/net/bluetooth/hci_core.c
-> > +++ b/net/bluetooth/hci_core.c
-> > @@ -1785,6 +1785,14 @@ int hci_dev_do_close(struct hci_dev *hdev)
-> >         aosp_do_close(hdev);
-> >         msft_do_close(hdev);
-> >
-> > +       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
-> > +           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
-> > +           test_bit(HCI_UP, &hdev->flags)) {
-> > +               /* Execute vendor specific shutdown routine */
-> > +               if (hdev->shutdown)
-> > +                       hdev->shutdown(hdev);
-> > +       }
-> > +
-> >         if (hdev->flush)
-> >                 hdev->flush(hdev);
-> >
-> > @@ -1798,14 +1806,6 @@ int hci_dev_do_close(struct hci_dev *hdev)
-> >                 clear_bit(HCI_INIT, &hdev->flags);
-> >         }
-> >
-> > -       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
-> > -           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
-> > -           test_bit(HCI_UP, &hdev->flags)) {
-> > -               /* Execute vendor specific shutdown routine */
-> > -               if (hdev->shutdown)
-> > -                       hdev->shutdown(hdev);
-> > -       }
-> > -
-> >         /* flush cmd  work */
-> >         flush_work(&hdev->cmd_work);
->
-> Thanks for the patch and your help.
-> I've tried it, but it seems that it does not improve for me.
-> I'm still observing:
->
-> i500-pumpkin login: root
-> root@i500-pumpkin:~# hciconfig hci0 up
-> Can't init device hci0: Connection timed out (110)
->
-> Logs for this session:
-> dmesg:   https://pastebin.com/iAFk5Tzi
-> ftrace:  https://pastebin.com/kEMWSYrE
+On Wed, Aug 04, 2021 at 07:58:15PM +0530, Prasanna Vengateshan wrote:
+> On Wed, 2021-08-04 at 13:46 +0300, Vladimir Oltean wrote:
+> > The problem is that I have no clear migration path for the drivers I
+> > maintain, like sja1105, and I suspect that others might be in the exact
+> > same situation.
+> > 
+> > Currently, if the sja1105 needs to add internal delays in a MAC-to-MAC
+> > (fixed-link) setup, it does that based on the phy-mode string. So
+> > "rgmii-id" + "fixed-link" means for sja1105 "add RX and TX RGMII
+> > internal delays", even though the documentation now says "the MAC should
+> > not add the RX or TX delays in this case".
+> > 
+> > There are 2 cases to think about, old driver with new DT blob and new
+> > driver with old DT blob. If breakage is involved, I am not actually very
+> > interested in doing the migration, because even though the interpretation
+> > of the phy-mode string is inconsistent between the phy-handle and fixed-link
+> > case (which was deliberate), at least it currently does all that I need it to.
+> > 
+> > I am not even clear what is the expected canonical behavior for a MAC
+> > driver. It parses rx-internal-delay-ps and tx-internal-delay-ps, and
+> > then what? It treats all "rgmii*" phy-mode strings identically? Or is it
+> > an error to have "rgmii-rxid" for phy-mode and non-zero rx-internal-delay-ps?
+> > If it is an error, should all MAC drivers check for it? And if it is an
+> > error, does it not make migration even more difficult (adding an
+> > rx-internal-delay-ps property to a MAC OF node which already uses
+> > "rgmii-id" would be preferable to also having to change the "rgmii-id"
+> > to "rgmii", because an old kernel might also need to work with that DT
+> > blob, and that will ignore the new rx-internal-delay-ps property).
+> 
+> 
+> Considering the PHY is responsible to add internal delays w.r.to phy-mode, "*-
+> tx-internal-delay-ps" approach that i was applying to different connections as
+> shown below by bringing up different examples.
+> 
+> 1) Fixed-link MAC-MAC: 
+>        port@4 {
+>             .....
+>             phy-mode = "rgmii";
+>             rx-internal-delay-ps = <xxx>;
+>             tx-internal-delay-ps = <xxx>;
+>             ethernet = <&ethernet>;
+>             fixed-link {
+>            	......
+>             };
+>           };
+> 
+> 2) Fixed-link MAC-Unknown:
+>         port@5 {
+>             ......
+>             phy-mode = "rgmii-id";
+>             rx-internal-delay-ps = <xxx>;
+>             tx-internal-delay-ps = <xxx>;
+>             fixed-link {
+>            .	....
+>             };
+>           };
+> 
+> 3) Fixed-link :
+>         port@5 {
+>             ......
+>             phy-mode = "rgmii-id";
+>             fixed-link {
+>               .....
+>             };
+>           };
+> 
+> From above examples,
+> 	a) MAC node is responsible to add RGMII delay by parsing "*-internal-
+> delay-ps" for (1) & (2). Its a known item in this discussion.
+> 	b) Is rgmii-* to be ignored by the MAC in (2) and just apply the delays
+> from MAC side? Because if its forced to have "rgmii", would it become just -
+> >interface=*_MODE_RGMII and affects legacy?
 
-Thanks for the testing!
-What about moving the shutdown() part right after hci_req_sync_lock()
-so tx/rx can still work:
+Yes, I think the MAC would have to accept any "rgmii*" phy-mode in
+fixed-link. The legacy behavior would be do to whatever it did before,
+and the new behavior would be to NOT apply any MAC-level delays based on
+the phy-mode value, but only based on the {rx,tx}-internal-delay-ps
+properties if these are present, or fall back to the legacy behavior if
+they aren't.
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 2560ed2f144d4..be3113fb7d4b0 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -1727,6 +1727,14 @@ int hci_dev_do_close(struct hci_dev *hdev)
-        hci_request_cancel_all(hdev);
-        hci_req_sync_lock(hdev);
+This way:
+- New kernel with old DT blob falls back to legacy behavior
+- New kernel with new DT blob finds the explicit {rx,tx}-internal-delay-ps
+  properties and applies MAC-level delays only according to those, while
+  accepting any phy-mode string
+- Old kernel with new DT blob behaves the same as before, because it
+  does not parse {rx,tx}-internal-delay-ps and we will not change its
+  phy-mode.
 
-+       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
-+           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
-+           test_bit(HCI_UP, &hdev->flags)) {
-+               /* Execute vendor specific shutdown routine */
-+               if (hdev->shutdown)
-+                       hdev->shutdown(hdev);
-+       }
-+
-        if (!test_and_clear_bit(HCI_UP, &hdev->flags)) {
-                cancel_delayed_work_sync(&hdev->cmd_timer);
-                hci_req_sync_unlock(hdev);
-@@ -1798,14 +1806,6 @@ int hci_dev_do_close(struct hci_dev *hdev)
-                clear_bit(HCI_INIT, &hdev->flags);
-        }
+> 	c) if MAC follows standard delay, then it needs to be validated against
+> "*-internal-delay-ps", may be validating against single value and throw an
+> error. Might be okay.
 
--       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
--           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
--           test_bit(HCI_UP, &hdev->flags)) {
--               /* Execute vendor specific shutdown routine */
--               if (hdev->shutdown)
--                       hdev->shutdown(hdev);
--       }
--
-        /* flush cmd  work */
-        flush_work(&hdev->cmd_work);
+Drivers with no legacy might throw an error if:
+- phy-mode == "rgmii-id" or "rgmii-rxid" and there is a non-zero rx-internal-delay-ps
+- phy-mode == "rgmii-id" or "rgmii-txid" and there is a non-zero tx-internal-delay-ps
 
+but considering that most drivers already have a legacy to support, I'm
+not sure how useful that error will be.
 
+> 	d) For 3), Neither MAC nor other side will apply delays. Expected.
 
+In the "new" behavior, correct. In "legacy" behavior, they might have to.
 
+> 3) MAC-PHY
+> 
+> 	i) &test3 {
+> 		phy-handle = <&phy0>;
+> 		phy-mode = "rgmii-id";
+> 		phy0: ethernet-phy@xx {
+> 			.....
+> 			rx-internal-delay = <xxx>;
+> 			tx-internal-delay = <xxx>;
+> 		};
+> 	  };
+> 
+> 	ii) &test4 {
+> 		phy-handle = <&phy0>;
+> 		phy-mode = "rgmii";
+>         	rx-internal-delay-ps = <xxx>;
+>         	tx-internal-delay-ps = <xxx>;
+> 		phy0: ethernet-phy@xx {
+> 			reg = <x>;
+> 	        };
+> 	     };
+> 
+> 
+> For 3(i), I assume phy would apply internal delay values by checking its phydev-
+> >interface.
 
->
->
-> >
-> > Kai-Heng
-> >
-> >>
-> >> Mattijs
-> >> >
-> >> > Kai-Heng
-> >> >
-> >> >>
-> >> >> Thanks,
-> >> >> Mattijs Korpershoek
-> >> >>
-> >> >>
-> >> >> >
-> >> >> > Regards
-> >> >> >
-> >> >> > Marcel
+PHY drivers have a phy_get_internal_delay() helper that takes into
+consideration both the phy-mode value and the {rx,tx}-internal-delay
+properties. In example 3(i), the {rx,tx}-internal-delay properties would
+prevail as long as the PHY driver uses that helper.
+
+> For 3(ii), MAC would apply the delays.
+> 
+> Overall, only (b) need a right decision? or any other items are missed?
+> 
+> 
+> Prasanna V
+> 
