@@ -2,51 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA6203E0A14
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 23:43:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DE4E3E0A15
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 23:43:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233244AbhHDVnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 17:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41516 "EHLO
+        id S233551AbhHDVn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 17:43:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229725AbhHDVnx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 17:43:53 -0400
-Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C82BC061798
-        for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 14:43:39 -0700 (PDT)
-Received: by mail-qv1-xf49.google.com with SMTP id s12-20020ad4446c0000b029033a9344451cso2430430qvt.21
-        for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 14:43:39 -0700 (PDT)
+        with ESMTP id S232954AbhHDVny (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 17:43:54 -0400
+Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65729C061798
+        for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 14:43:41 -0700 (PDT)
+Received: by mail-qt1-x84a.google.com with SMTP id l12-20020a05622a050cb029025ca4fbcc12so1667230qtx.18
+        for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 14:43:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=Pb12EbU06/c4uVcHA6PnZi5HH8DX1Z5yrhOe7RMfqqs=;
-        b=rVcP18G61i62cfcA5J1OwAZ5xcfbbwinKlYYRIG0v+c+YMvnKA1w6xawMCCJV5CS7p
-         4p053u+v5L+Kra5xP+9qUWJ64eL0hrUP9YqUh8UVdOVoTVcSKpiA6EnC5JYyw/pMzOBC
-         YkP1Rb8ve0dLLAe/aUSEHKQX8Mv7dYWy8WQmD0Kc+C5wQs9uIXPhEUaAMGyY2bGq+bXw
-         pqTZgC5QcokVFPC6/oyGnhyouTwHsWY+GZgPeMxB6PMQg4E9SWkyGGl0zpUA6KX5HwdG
-         5BJuw8uEeN1nfmdZ1fbP6qYK9JIS4HAIh1Eopsg2YotgR84XuazpdacrfSoRFT5DJL6s
-         8ByA==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=AwsLFRNlGxJIFr7cp8dQzR2jonWQto7eXPKd1DAWM8k=;
+        b=GRG78+fJmlHfVLzal/VXwzQ2vpU/DzRYWANQDOLLoyoCMf/2xn0WDoTYfR5iqtshRn
+         TkU5KlJ1ODhic13FW78XCrW8lXqZ+3/BJX5z7JCXi8rKRHd/CKdfMbb/50YSRBAqNN78
+         0RcmpBw/Si7E2B0cy4j0Qpst38Ci8GUY0j+p42knlEDMomFJ9TwaOFmHACvhSZobdLk9
+         vNw9TJegwm/jkJD8agKysHcEMgS6XrepmPfCixVii4gb95he1ehHVQ4rfazW8vS9pfJg
+         5XYhuej0hjCK7Q13RNdQV3wIH27N3ONjpRQQvrInfuixRHEZue77roYBWvakxAytUbpu
+         c3qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=Pb12EbU06/c4uVcHA6PnZi5HH8DX1Z5yrhOe7RMfqqs=;
-        b=cbFNHZ4TmPzlKsh3VX6UNMtnCD1uSDh2pj4s4rWcpnQ9u02QttT413ad7gQPki3jIc
-         658k6M0k2jVfov1OtwFojswUWxla1z/5u7//u3oeZgIHSS6mDifhsveumRqKrICR5Jc3
-         L0Hw0B1r5Kc66gjwloLUT2SyeEL8RIxDgRgEKA2R7ouW4dogimK4XNmy42bKBS6qSbhj
-         l4S18xARqtdpH1Dc/BjqFuI4hknkc/N6l+4lbutQC5nczfIkn3pYYozsOvfho4TSlc9f
-         sXw+S5URht5YQniGvBVVB9hh+aKoZqWxRaatcbLSAuPzbXXyK1D+qvqa+oBPBYUk/FGN
-         ISnA==
-X-Gm-Message-State: AOAM533JjVYtbr3LxcvANdIuOzR/gBFDmgO9vJgq/KdH4Tv8ydBfpcWW
-        sFoBdVjWH6xXvhsO53RKG2WZG9m7gUkcsGs=
-X-Google-Smtp-Source: ABdhPJzUCDviw5bxbZkssyN3i3ZDHllO0p7OWjzr8ahlGNY9GwvlB5r2sJCY3z0O2HCPTEmzAeDT2H2e23bk8q8=
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=AwsLFRNlGxJIFr7cp8dQzR2jonWQto7eXPKd1DAWM8k=;
+        b=khmeL4Q1EgSSjY9KXYFmvTyqJu5fj29iGBizPygOWhmqJDKOuxO9sUHqOF6uDGZWX9
+         XbytY7x/EckGTSImJaFN6soat/RguslhGAABmyKHjxaKA4nSt3C2+zKi1eRJQAqF3ewK
+         bU+Rkw8c8RVaJW4q1Yt5ZBPosbnpId4UVLpxkWeKTyW0wJDTaR1OuSRn9uy8XFBFpvUV
+         X+xfsd6C2RAqOJhepybgGUvU9kOZHxJXSdibFg3e6y1wtYqkFaU+fWDruq/9ueRIqe66
+         ccsaXOU2k7iFAxhKqXWuqey+30ve5xuG1uXBcZCmzKgYMEyqOnNaE7b9cWpkXyEwyglR
+         L3Tw==
+X-Gm-Message-State: AOAM532489KXOcZfKZ0a544/VUiAowwos+LhE3+LJMuc1jajIPOrPGoc
+        zKEwulqYgDaZK0CH7L1uCoAO1CNA3lYI9vo=
+X-Google-Smtp-Source: ABdhPJy5wZd0qQwrV9lCLdjeIDeQNAv67eI0v/xXRMMJ0vMhK3kTkn9YKHcCF8ffmOpHeh2yTDYAjwMPplHfzWk=
 X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:ffe5:1245:526e:3189])
- (user=saravanak job=sendgmr) by 2002:a0c:f807:: with SMTP id
- r7mr1741921qvn.14.1628113418097; Wed, 04 Aug 2021 14:43:38 -0700 (PDT)
-Date:   Wed,  4 Aug 2021 14:43:29 -0700
-Message-Id: <20210804214333.927985-1-saravanak@google.com>
+ (user=saravanak job=sendgmr) by 2002:a0c:d68f:: with SMTP id
+ k15mr1675008qvi.14.1628113420519; Wed, 04 Aug 2021 14:43:40 -0700 (PDT)
+Date:   Wed,  4 Aug 2021 14:43:30 -0700
+In-Reply-To: <20210804214333.927985-1-saravanak@google.com>
+Message-Id: <20210804214333.927985-2-saravanak@google.com>
 Mime-Version: 1.0
+References: <20210804214333.927985-1-saravanak@google.com>
 X-Mailer: git-send-email 2.32.0.554.ge1b32706d8-goog
-Subject: [PATCH v1 0/3] Clean up and fix error handling in mdio_mux_init()
+Subject: [PATCH v1 1/3] net: mdio-mux: Delete unnecessary devm_kfree
 From:   Saravana Kannan <saravanak@google.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -63,32 +67,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series was started due to -EPROBE_DEFER not being handled
-correctly in mdio_mux_init() and causing issues [1]. While at it, I also
-did some more error handling fixes and clean ups. The -EPROBE_DEFER fix is
-the last patch.
+The whole point of devm_* APIs is that you don't have to undo them if you
+are returning an error that's going to get propagated out of a probe()
+function. So delete unnecessary devm_kfree() call in the error return path.
 
-Ideally, in the last patch we'd treat any error similar to -EPROBE_DEFER
-but I'm not sure if it'll break any board/platforms where some child
-mdiobus never successfully registers. If we treated all errors similar to
--EPROBE_DEFER, then none of the child mdiobus will work and that might be a
-regression. If people are sure this is not a real case, then I can fix up
-the last patch to always fail the entire mdio-mux init if any of the child
-mdiobus registration fails.
+Signed-off-by: Saravana Kannan <saravanak@google.com>
+---
+ drivers/net/mdio/mdio-mux.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Neil Armstrong <narmstrong@baylibre.com>
-Cc: Kevin Hilman <khilman@baylibre.com>
-[1] - https://lore.kernel.org/lkml/CAGETcx95kHrv8wA-O+-JtfH7H9biJEGJtijuPVN0V5dUKUAB3A@mail.gmail.com/#t
-
-Saravana Kannan (3):
-  net: mdio-mux: Delete unnecessary devm_kfree
-  net: mdio-mux: Don't ignore memory allocation errors
-  net: mdio-mux: Handle -EPROBE_DEFER correctly
-
- drivers/net/mdio/mdio-mux.c | 37 ++++++++++++++++++++++++-------------
- 1 file changed, 24 insertions(+), 13 deletions(-)
-
+diff --git a/drivers/net/mdio/mdio-mux.c b/drivers/net/mdio/mdio-mux.c
+index 110e4ee85785..5b37284f54d6 100644
+--- a/drivers/net/mdio/mdio-mux.c
++++ b/drivers/net/mdio/mdio-mux.c
+@@ -181,7 +181,6 @@ int mdio_mux_init(struct device *dev,
+ 	}
+ 
+ 	dev_err(dev, "Error: No acceptable child buses found\n");
+-	devm_kfree(dev, pb);
+ err_pb_kz:
+ 	put_device(&parent_bus->dev);
+ err_parent_bus:
 -- 
 2.32.0.554.ge1b32706d8-goog
 
