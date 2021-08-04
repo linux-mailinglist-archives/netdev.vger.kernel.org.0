@@ -2,78 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD6E93DFBDA
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 09:14:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D51013DFBFD
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 09:21:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235607AbhHDHOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 03:14:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53896 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235377AbhHDHOw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Aug 2021 03:14:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D2F4C60F35;
-        Wed,  4 Aug 2021 07:14:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628061280;
-        bh=cCgCZgIImHFNoxPAyAyaUjiJiyOgILXo5u6tNH3e+wM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZTSKyrsVPViua6n9kX2sZ6Gagm4cZuJtLx8inoxF9jEnv7PQuWJkOQCOj31Hri0RT
-         u049wuzQG2WsmfoOZngs/qGzoiF9lJYSRXpOQlZoOGXnXaN9cHDfoixVLeUqe+h3WL
-         f9h+TFIFoqAq9gCLiM0kzyDnh7uutFyWM2j3hSiucwLdlwfTeb0qxctZ3ML6J1T2E1
-         u5Zdm44KNyGAckDrh5hycgT4QzT1RcXqeMeKti+vHtgpVw/gfMUL8Gpu8B89uTiEQi
-         ylrUiwg58jFvLhIEbJxtP/Esf/PRLpMuFDmUa7Y0v9ikb8L4T9QLMiF5DPVNeQA/z3
-         pxPr1YibVPvYg==
-Date:   Wed, 4 Aug 2021 10:14:36 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "Cong Wang ." <cong.wang@bytedance.com>,
-        Peilin Ye <peilin.ye@bytedance.com>
-Subject: Re: [PATCH net-next] Revert "netdevsim: Add multi-queue support"
-Message-ID: <YQo+XJQNAP7jnGw0@unreal>
-References: <20210803123921.2374485-1-kuba@kernel.org>
- <CAM_iQpUS_hNAb_-NmbcywyERwYp06ebJqv5Ve__okY6755-F=w@mail.gmail.com>
- <20210803141839.79e99e23@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAM_iQpV07aWSt5Jf-zSv6Qh4ydrJMYw54X3Seb8-eKGOpBYX7A@mail.gmail.com>
- <20210803145124.71a8aab4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S235394AbhHDHVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 03:21:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41216 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235736AbhHDHVW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 03:21:22 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 832F6C0613D5
+        for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 00:21:10 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1mBBD5-00075N-7L; Wed, 04 Aug 2021 09:21:03 +0200
+Received: from pengutronix.de (unknown [IPv6:2a02:810a:8940:aa0:e44:2d7c:bf4a:7b36])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id E25D96605B5;
+        Wed,  4 Aug 2021 07:20:59 +0000 (UTC)
+Date:   Wed, 4 Aug 2021 09:20:58 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Colin Ian King <colin.king@canonical.com>
+Cc:     Angelo Dureghello <angelo@kernel-space.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: can: flexcan: add mcf5441x support
+Message-ID: <20210804072058.vechdbtfcdz66rmz@pengutronix.de>
+References: <7c80c17f-e38a-8fb1-f3c7-987187a2c4d8@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ujbc5qq3llttedpi"
 Content-Disposition: inline
-In-Reply-To: <20210803145124.71a8aab4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <7c80c17f-e38a-8fb1-f3c7-987187a2c4d8@canonical.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 03, 2021 at 02:51:24PM -0700, Jakub Kicinski wrote:
-> On Tue, 3 Aug 2021 14:32:19 -0700 Cong Wang wrote:
-> > On Tue, Aug 3, 2021 at 2:18 PM Jakub Kicinski <kuba@kernel.org> wrote:
 
-<...>
+--ujbc5qq3llttedpi
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> > Please remove all those not covered by upstream tests just to be fair??
-> 
-> I'd love to remove all test harnesses upstream which are not used by
-> upstream tests, sure :)
+On 03.08.2021 16:23:26, Colin Ian King wrote:
+> I'm not sure if it's possible for priv->clk_ipg and priv_clk_per to both
+> be null, so I'm not sure if err can end up being not set. However, it
+> does seem that either err should be zero or some err value, but I was
+> unsure how err should be initialized in this corner case. As it stands,
+> err probably needs to be set just to be safe.
 
-Jakub,
+ACK - There was already a patch that fixes the problem, but I've not
+included it in a pull request:
 
-Something related and unrelated at the same time.
+https://lore.kernel.org/linux-can/20210728075428.1493568-1-mkl@pengutronix.=
+de/
 
-I need to get rid of devlink_reload_enable()/_disable() to fix some
-panics in the devlink reload flow.
+Will send now one.
 
-Such change is relatively easy for the HW drivers, but not so for the
-netdevism due to attempt to synchronize sysfs with devlink.
+regards,
+Marc
 
-  200         mutex_lock(&nsim_bus_dev->nsim_bus_reload_lock);
-  201         devlink_reload_disable(devlink);
-  202         ret = nsim_dev_port_add(nsim_bus_dev, NSIM_DEV_PORT_TYPE_PF, port_index);
-  203         devlink_reload_enable(devlink);
-  204         mutex_unlock(&nsim_bus_dev->nsim_bus_reload_lock);
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-Are these sysfs files declared as UAPI? Or can I update upstream test
-suite and delete them safely?
+--ujbc5qq3llttedpi
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Thanks
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEKP9cACgkQqclaivrt
+76nhcQf+JviYcYhXs2AfGXxhXa1mOiIyxbhtAdJofmRGNZosFUBcRk7VUI8t4e8B
+f9bZ1kVN3VwybiLQoYdxeAHcoSCEC0DYFoAuJlQFuOC5wsk3b0/lph/aK8D37Z4d
++cqxEdhu95JgZDDROYwYabWIN0vuym5jPAqyGKwvbvbBVxShHhpQrEbimZq4eENR
+9OImRAkrjyP3v90E8scC4aupHcrsGmiDPZTSvqw1KOqK4hKYwl/wzgiIoB7QWftL
+5+vHqrLqejpmhCYaHsF6UvLAd5rg2+3nyu83r9o5stuMKn7c0o4lDezpA/S0hi8x
+0cVLp12P4s5rJCJkJ04lZmZLYQ11kQ==
+=V9nl
+-----END PGP SIGNATURE-----
+
+--ujbc5qq3llttedpi--
