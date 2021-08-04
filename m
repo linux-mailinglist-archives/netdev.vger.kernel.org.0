@@ -2,113 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25CD43E09D4
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 23:05:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43C123E09DA
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 23:10:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239948AbhHDVFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 17:05:41 -0400
-Received: from www62.your-server.de ([213.133.104.62]:35268 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237378AbhHDVFl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 17:05:41 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mBO4l-00080s-If; Wed, 04 Aug 2021 23:05:19 +0200
-Received: from [85.5.47.65] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mBO4l-00027K-Ap; Wed, 04 Aug 2021 23:05:19 +0200
-Subject: Re: [PATCH bpf-next 0/3] tools: ksnoop: tracing kernel function
- entry/return with argument/return value display
-To:     Alan Maguire <alan.maguire@oracle.com>, ast@kernel.org,
-        andrii@kernel.org
-Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        quentin@isovalent.com, toke@redhat.com, bpf@vger.kernel.org,
+        id S233670AbhHDVKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 17:10:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40760 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232116AbhHDVKL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Aug 2021 17:10:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7D0B761040;
+        Wed,  4 Aug 2021 21:09:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628111398;
+        bh=kyjjo4x+2rj4cpmw1MhsIVCuFJHXrKznAAMYYG0wah4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DuOoQpsjchvGC4EZ1N7wnoErYbFoUVYZNtoDNqIduM/pm73s/Z46YQ7zW7/pakX2X
+         UM8j2JQj9r7sfmzjNJyEk+a/Is2ucGbClfLRk35mkd9M1qHAvjHlYzWdjws7Ezk08F
+         P4TJMkWBam5IvwHKd/9WcdEn0w9rKwpLURv+Kf0eVw/r3bNcnQtibs+kpFJnjCPRKH
+         yeQy+fZ3+h/gFgO3fWde8RLWklu7fAEVk8Uth3slPfS8oGgv0gHez2XrJOVgRu4F0u
+         pcSDzgXOZlDdt+56eolm/TFVAe/6xbM484r39h6oeuL9PZN2Tbl2rS7qFH3A6uaM/n
+         d+be8qwtMSzsA==
+Date:   Wed, 4 Aug 2021 14:09:57 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     davem@davemloft.net, richardcochran@gmail.com, kernel-team@fb.com,
         netdev@vger.kernel.org
-References: <1628025796-29533-1-git-send-email-alan.maguire@oracle.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <9fab5327-b629-c6bf-454c-dffe181e1cb1@iogearbox.net>
-Date:   Wed, 4 Aug 2021 23:05:18 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+Subject: Re: [PATCH net-next v4] ptp: ocp: Expose various resources on the
+ timecard.
+Message-ID: <20210804140957.1fd894dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210804033327.345759-1-jonathan.lemon@gmail.com>
+References: <20210804033327.345759-1-jonathan.lemon@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1628025796-29533-1-git-send-email-alan.maguire@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26253/Wed Aug  4 10:20:49 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alan,
+On Tue,  3 Aug 2021 20:33:27 -0700 Jonathan Lemon wrote:
+> +static const struct devlink_param ptp_ocp_devlink_params[] = {
+> +};
+> +
+> +static void
+> +ptp_ocp_devlink_set_params_init_values(struct devlink *devlink)
+> +{
+> +}
 
-On 8/3/21 11:23 PM, Alan Maguire wrote:
-> Recent functionality added to libbpf [1] enables typed display of kernel
-> data structures; here that functionality is exploited to provide a
-> simple example of how a tracer can support deep argument/return value
-> inspection.  The intent is to provide a demonstration of these features
-> to help facilitate tracer adoption, while also providing a tool which
-> can be useful for kernel debugging.
+Why register empty set of params?
 
-Thanks a lot for working on this tool, this looks _super useful_! Right now
-under tools/bpf/ we have bpftool and resolve_btfids as the two main tools,
-the latter used during kernel build, and the former evolving with the kernel
-together with libbpf. The runqslower in there was originally thought of as
-a single/small example tool to demo how to build stand-alone tracing tools
-with all the modern practices, though the latter has also been added to [0]
-(thus could be removed). I would rather love if you could add ksnoop for
-inclusion into bcc's libbpf-based tracing tooling suite under [0] as well
-which would be a better fit long term rather than kernel tree for the tool
-to evolve. We don't intend to add a stand-alone tooling collection under the
-tools/bpf/ long term since these can evolve better outside of kernel tree.
+> +static int
+> +ptp_ocp_devlink_register(struct devlink *devlink, struct device *dev)
+> +{
+> +	int err;
+> +
+> +	err = devlink_register(devlink, dev);
+> +	if (err)
+> +		return err;
+> +
+> +	err = devlink_params_register(devlink, ptp_ocp_devlink_params,
+> +				      ARRAY_SIZE(ptp_ocp_devlink_params));
+> +	ptp_ocp_devlink_set_params_init_values(devlink);
+> +	if (err)
+> +		goto out;
+> +	devlink_params_publish(devlink);
+> +
+> +	return 0;
+> +
+> +out:
+> +	devlink_unregister(devlink);
+> +	return err;
+> +}
 
-Thanks a lot,
-Daniel
+> +static int
+> +ptp_ocp_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
+> +			 struct netlink_ext_ack *extack)
+> +{
+> +	struct ptp_ocp *bp = devlink_priv(devlink);
+> +	char buf[32];
+> +	int err;
+> +
+> +	err = devlink_info_driver_name_put(req, KBUILD_MODNAME);
+> +	if (err)
+> +		return err;
+> +
+> +	if (bp->pending_image) {
+> +		err = devlink_info_version_stored_put(req,
+> +						      "timecard", "pending");
 
-   [0] https://github.com/iovisor/bcc/tree/master/libbpf-tools
+"pending" is not a version. It seems you're talking to the flash
+directly, why not read the version?
 
-> Changes since RFC [2]:
-> 
-> - In the RFC version, kernel data structures were string-ified in
->    BPF program context vi bpf_snprintf_btf(); Alexei pointed out that
->    it would be better to dump memory to userspace and let the
->    interpretation happen there.  btf_dump__dump_type_data() in libbpf
->    now supports this (Alexei, patch 1)
-> - Added the "stack mode" specification where we trace a specific set
->    of functions being called in order (though not necessarily directly).
->    This mode of tracing is useful when debugging issues with a specific
->    stack signature.
-> 
-> [1] https://lore.kernel.org/bpf/1626362126-27775-1-git-send-email-alan.maguire@oracle.com/
-> [2] https://lore.kernel.org/bpf/1609773991-10509-1-git-send-email-alan.maguire@oracle.com/
-> 
-> Alan Maguire (3):
->    tools: ksnoop: kernel argument/return value tracing/display using BTF
->    tools: ksnoop: document ksnoop tracing of entry/return with value
->      display
->    tools: ksnoop: add .gitignore
-> 
->   tools/bpf/Makefile                        |  20 +-
->   tools/bpf/ksnoop/.gitignore               |   1 +
->   tools/bpf/ksnoop/Documentation/Makefile   |  58 ++
->   tools/bpf/ksnoop/Documentation/ksnoop.rst | 173 ++++++
->   tools/bpf/ksnoop/Makefile                 | 107 ++++
->   tools/bpf/ksnoop/ksnoop.bpf.c             | 391 +++++++++++++
->   tools/bpf/ksnoop/ksnoop.c                 | 890 ++++++++++++++++++++++++++++++
->   tools/bpf/ksnoop/ksnoop.h                 | 103 ++++
->   8 files changed, 1738 insertions(+), 5 deletions(-)
->   create mode 100644 tools/bpf/ksnoop/.gitignore
->   create mode 100644 tools/bpf/ksnoop/Documentation/Makefile
->   create mode 100644 tools/bpf/ksnoop/Documentation/ksnoop.rst
->   create mode 100644 tools/bpf/ksnoop/Makefile
->   create mode 100644 tools/bpf/ksnoop/ksnoop.bpf.c
->   create mode 100644 tools/bpf/ksnoop/ksnoop.c
->   create mode 100644 tools/bpf/ksnoop/ksnoop.h
-> 
+> +	}
+> +
+> +	if (bp->image) {
+> +		u32 ver = ioread32(&bp->image->version);
+> +
+> +		if (ver & 0xffff) {
+> +			sprintf(buf, "%d", ver);
+> +			err = devlink_info_version_running_put(req,
+> +							       "timecard",
+> +							       buf);
+> +		} else {
+> +			sprintf(buf, "%d", ver >> 16);
+> +			err = devlink_info_version_running_put(req,
+> +							       "golden flash",
+> +							       buf);
 
+What's the difference between "timecard" and "golden flash"?
+Why call firmware for a timecard timecard? We don't call NIC
+firmware "NIC".
+
+Drivers using devlink should document what they implement and meaning
+of various fields. Please see examples in
+Documentation/networking/devlink/
+
+> +		}
+> +		if (err)
+> +			return err;
+> +	}
+
+> +static int
+> +ptp_ocp_health_diagnose(struct devlink_health_reporter *reporter,
+> +			struct devlink_fmsg *fmsg,
+> +			struct netlink_ext_ack *extack)
+> +{
+> +	struct ptp_ocp *bp = devlink_health_reporter_priv(reporter);
+> +	char buf[32];
+> +	int err;
+> +
+> +	if (!bp->gps_lost)
+> +		return 0;
+> +
+> +	sprintf(buf, "%ptT", &bp->gps_lost);
+> +	err = devlink_fmsg_string_pair_put(fmsg, "Lost sync at", buf);
+> +	if (err)
+> +		return err;
+> +
+> +	return 0;
+> +}
+> +
+> +static void
+> +ptp_ocp_health_update(struct ptp_ocp *bp)
+> +{
+> +	int state;
+> +
+> +	state = bp->gps_lost ? DEVLINK_HEALTH_REPORTER_STATE_ERROR
+> +			     : DEVLINK_HEALTH_REPORTER_STATE_HEALTHY;
+> +
+> +	if (bp->gps_lost)
+> +		devlink_health_report(bp->health, "No GPS signal", NULL);
+> +
+> +	devlink_health_reporter_state_update(bp->health, state);
+> +}
+> +
+> +static const struct devlink_health_reporter_ops ptp_ocp_health_ops = {
+> +	.name = "gps_sync",
+> +	.diagnose = ptp_ocp_health_diagnose,
+> +};
+> +
+> +static void
+> +ptp_ocp_devlink_health_register(struct devlink *devlink)
+> +{
+> +	struct ptp_ocp *bp = devlink_priv(devlink);
+> +	struct devlink_health_reporter *r;
+> +
+> +	r = devlink_health_reporter_create(devlink, &ptp_ocp_health_ops, 0, bp);
+> +	if (IS_ERR(r))
+> +		dev_err(&bp->pdev->dev, "Failed to create reporter, err %ld\n",
+> +			PTR_ERR(r));
+> +	bp->health = r;
+> +}
+
+What made you use devlink health here? Why not just print that "No GPS
+signal" message to the logs? Devlink health is supposed to give us
+meaningful context dumps and remediation, here neither is used.
