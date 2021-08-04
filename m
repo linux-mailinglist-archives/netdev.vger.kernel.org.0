@@ -2,42 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C64C73E06B8
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 19:28:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CDC13E06BA
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 19:28:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239860AbhHDR2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 13:28:36 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:43742 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239795AbhHDR2f (ORCPT
+        id S239902AbhHDR2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 13:28:39 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:36640 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239814AbhHDR2f (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 13:28:35 -0400
-Received: by mail-io1-f72.google.com with SMTP id d7-20020a6b6e070000b02904c0978ed194so1919066ioh.10
+Received: by mail-io1-f70.google.com with SMTP id k20-20020a6b6f140000b029053817be16cdso1933329ioc.3
         for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 10:28:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=JLUWnWN+fs3YDOLTIDChuY6GEfR/lEW2hNSnBNIgd4A=;
-        b=JAtsQ3tGvKco147xorPpENnRstzC8u8Vi93Sx0SMrd+GyHhsvf0pPpY/RFPSW2bXUy
-         rv5c+KXncTrwG/W2rzWIlqEQlP+G80sIj6o/H88diZQOQc8BaJEuLq2puUo3O5x9OS9v
-         7BXOzF+vNLUKy3/fOQcUVg6dL1x0Whamf231N6mgyJnu9HjKm+ndiRRySlbdnjWnB7sZ
-         thXdYwDlJxl+GKUo6INea0pDkB5ftj8qYZuLjKW/MFdghzK8Hm2wJhZnfaIlWJED2BLP
-         gSF0G/2KRyJ3lgEQrREPpm+yoITTc7kTw64Ok0CTOZRUDBWeHG4z14S7dYRaowyD45pA
-         3OpQ==
-X-Gm-Message-State: AOAM532lC0ektVxxxLiZVomFRsfXlSVsKI0jv0u+OER9Nm4Ot58oJoSY
-        R7Yy1Xfd9Jj1lbNiVB8YldNBEx6AcbFbo1SdiIEhgEwPTTLQ
-X-Google-Smtp-Source: ABdhPJwVfsk65xG/Rmq41xdGxnTwkZFCsRjwGyGaXVJ92+klx0b1vk8ncl2sQPPTv0S1zdf6DOwsbyxOEUcOPtVcic1/kbdMFH4y
+        bh=Cld7LSU+rFnfR7Y1O3V+IsC69HwIxzTjlFhiOaLjv7o=;
+        b=JWy1RSQbzhVceYaeSemijK6XQo+WW/RmDygF9mIbm1iXGZRGEA+PV/rUHq/J2XBVC3
+         3kjPj+fywA82KIQxB95n8IhPJshAyTuqSHmcwX/mEE9UB6+pAPRP4zPPF1UQZFmenXji
+         Ie3cF5O+IWiZRwUjms5JFd4rDqqDgyrEQkP04Vo8bjI8OPCsXQw+w6R9Z40WfE6LOldH
+         WDAWMYcP+jnYUY8lRrkBwLPJ6bPzi33V8ty3kTL3Dfv4s3kZSrsitbNe+j1K6aa67zCZ
+         T4XVkW5xtI7QOt+2BBG8sIjNhnFZzL6+6rmKQ9/yjHTuO68VeaJXdru3utVO6DwqcKYe
+         pTPg==
+X-Gm-Message-State: AOAM5337pKzXo8su9a8DWAN968+udNfgv6SkI0mP4J937m3J5yExJkXh
+        pJzX5Ar7utzMu2UZpB3bQA3Re1AXoMNU6uo1bbasyERc/VAU
+X-Google-Smtp-Source: ABdhPJxOFBBhVQF9U9kWBKzmuoDhek0WC71czQkBinHZTBQAOorwNva3GRkyVPL6HvT2K85Kxgt31eRYFjfapQzWxKG8/Z1L+ToQ
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1046:: with SMTP id p6mr555742ilj.155.1628098102114;
+X-Received: by 2002:a05:6602:21d6:: with SMTP id c22mr106467ioc.69.1628098102350;
  Wed, 04 Aug 2021 10:28:22 -0700 (PDT)
 Date:   Wed, 04 Aug 2021 10:28:22 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000009422905c8bf2102@google.com>
-Subject: [syzbot] BUG: unable to handle kernel paging request in cap_capable
-From:   syzbot <syzbot+79f4a8692e267bdb7227@syzkaller.appspotmail.com>
-To:     jmorris@namei.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        serge@hallyn.com, syzkaller-bugs@googlegroups.com
+Message-ID: <0000000000000cda0605c8bf219e@google.com>
+Subject: [syzbot] WARNING: proc registration bug in clusterip_tg_check (3)
+From:   syzbot <syzbot+08e6343a8cbd89b0c9d8@syzkaller.appspotmail.com>
+To:     ap420073@gmail.com, coreteam@netfilter.org, davem@davemloft.net,
+        dsahern@kernel.org, fw@strlen.de, kadlec@blackhole.kfki.hu,
+        kadlec@netfilter.org, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -47,83 +50,77 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    b820c114eba7 net: fec: fix MAC internal delay doesn't work
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=11fbdd7a300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5e6797705e664e3b
-dashboard link: https://syzkaller.appspot.com/bug?extid=79f4a8692e267bdb7227
+HEAD commit:    4039146777a9 net: ipv6: fix returned variable type in ip6_..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=112e9a8e300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=bfd78f4abd4edaa6
+dashboard link: https://syzkaller.appspot.com/bug?extid=08e6343a8cbd89b0c9d8
 compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=127e4952300000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16fef2aa300000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1555b98e300000
+
+The issue was bisected to:
+
+commit 2a61d8b883bbad26b06d2e6cc3777a697e78830d
+Author: Taehee Yoo <ap420073@gmail.com>
+Date:   Mon Nov 5 09:23:13 2018 +0000
+
+    netfilter: ipt_CLUSTERIP: fix sleep-in-atomic bug in clusterip_config_entry_put()
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16ce2121300000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=15ce2121300000
+console output: https://syzkaller.appspot.com/x/log.txt?x=11ce2121300000
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+79f4a8692e267bdb7227@syzkaller.appspotmail.com
+Reported-by: syzbot+08e6343a8cbd89b0c9d8@syzkaller.appspotmail.com
+Fixes: 2a61d8b883bb ("netfilter: ipt_CLUSTERIP: fix sleep-in-atomic bug in clusterip_config_entry_put()")
 
-netdevsim netdevsim0 netdevsim1: set [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim2: set [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family 0 port 6081 - 0
-BUG: unable to handle page fault for address: fffff3008f71a93b
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 0 P4D 0 
-Oops: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 8445 Comm: syz-executor610 Not tainted 5.14.0-rc3-syzkaller #0
+------------[ cut here ]------------
+proc_dir_entry 'ipt_CLUSTERIP/172.30.0.3' already registered
+WARNING: CPU: 1 PID: 7506 at fs/proc/generic.c:376 proc_register+0x34c/0x700 fs/proc/generic.c:376
+Modules linked in:
+CPU: 1 PID: 7506 Comm: syz-executor.2 Not tainted 5.14.0-rc3-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:cap_capable+0xa0/0x280 security/commoncap.c:83
-Code: 0f 8e d3 01 00 00 41 8b ad e0 00 00 00 49 bc 00 00 00 00 00 fc ff df e8 ce ef da fd 48 8d bb e0 00 00 00 48 89 f8 48 c1 e8 03 <42> 0f b6 04 20 84 c0 74 08 3c 03 0f 8e 64 01 00 00 44 8b bb e0 00
-RSP: 0018:ffffc90001c3f9d8 EFLAGS: 00010a02
-RAX: 1ffff7008f71a93b RBX: ffffb8047b8d48f8 RCX: 0000000000000000
-RDX: ffff88802dad54c0 RSI: ffffffff839aad82 RDI: ffffb8047b8d49d8
-RBP: 0000000000000000 R08: 0000000000000028 R09: ffffffff87f70fe6
-R10: ffffffff814731be R11: 00000000000089a2 R12: dffffc0000000000
-R13: ffffffff8b83b660 R14: ffff8880155fa500 R15: ffff8880155fa500
-FS:  000000000105d300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+RIP: 0010:proc_register+0x34c/0x700 fs/proc/generic.c:376
+Code: df 48 89 f9 48 c1 e9 03 80 3c 01 00 0f 85 5d 03 00 00 48 8b 44 24 28 48 c7 c7 20 64 9c 89 48 8b b0 d8 00 00 00 e8 85 b2 f7 06 <0f> 0b 48 c7 c7 20 2c b4 8b e8 36 a0 3c 07 48 8b 4c 24 38 48 b8 00
+RSP: 0018:ffffc90002fdf3e8 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff88801ac9b880 RSI: ffffffff815d7935 RDI: fffff520005fbe6f
+RBP: ffff888020f320b8 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff815d176e R11: 0000000000000000 R12: ffff88804449b218
+R13: ffff88804699b700 R14: dffffc0000000000 R15: 000000000000000a
+FS:  00007f2fa9dcc700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: fffff3008f71a93b CR3: 000000002789f000 CR4: 00000000001506f0
+CR2: 00007f2fa9dcc718 CR3: 0000000036ad1000 CR4: 00000000001506e0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
- security_capable+0x5c/0xc0 security/security.c:805
- ns_capable_common kernel/capability.c:375 [inline]
- ns_capable+0x6f/0x100 kernel/capability.c:396
- add_del_if+0x9b/0x140 net/bridge/br_ioctl.c:89
- br_ioctl_stub+0x1c6/0x7f0 net/bridge/br_ioctl.c:397
- br_ioctl_call+0x5e/0xa0 net/socket.c:1092
- dev_ifsioc+0xc1f/0xf60 net/core/dev_ioctl.c:382
- dev_ioctl+0x1b9/0xee0 net/core/dev_ioctl.c:580
- sock_do_ioctl+0x18b/0x210 net/socket.c:1129
- sock_ioctl+0x2f1/0x640 net/socket.c:1232
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:1069 [inline]
- __se_sys_ioctl fs/ioctl.c:1055 [inline]
- __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:1055
+ proc_create_data+0x130/0x190 fs/proc/generic.c:575
+ clusterip_config_init net/ipv4/netfilter/ipt_CLUSTERIP.c:281 [inline]
+ clusterip_tg_check+0x1834/0x1e40 net/ipv4/netfilter/ipt_CLUSTERIP.c:502
+ xt_check_target+0x26c/0x9e0 net/netfilter/x_tables.c:1024
+ check_target net/ipv4/netfilter/ip_tables.c:511 [inline]
+ find_check_entry.constprop.0+0x7a9/0x9a0 net/ipv4/netfilter/ip_tables.c:553
+ translate_table+0xc26/0x16a0 net/ipv4/netfilter/ip_tables.c:717
+ do_replace net/ipv4/netfilter/ip_tables.c:1135 [inline]
+ do_ipt_set_ctl+0x56e/0xb80 net/ipv4/netfilter/ip_tables.c:1629
+ nf_setsockopt+0x83/0xe0 net/netfilter/nf_sockopt.c:101
+ ip_setsockopt+0x3c3/0x3a60 net/ipv4/ip_sockglue.c:1435
+ udp_setsockopt+0x76/0xc0 net/ipv4/udp.c:2771
+ __sys_setsockopt+0x2db/0x610 net/socket.c:2159
+ __do_sys_setsockopt net/socket.c:2170 [inline]
+ __se_sys_setsockopt net/socket.c:2167 [inline]
+ __x64_sys_setsockopt+0xba/0x150 net/socket.c:2167
  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
  entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x4430a9
-Code: 28 c3 e8 4a 15 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffe266e8a48 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007ffe266e8a58 RCX: 00000000004430a9
-RDX: 0000000020000080 RSI: 00000000000089a2 RDI: 0000000000000003
-RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffe266e8a60
-R13: 00007ffe266e8a80 R14: 00000000004b8018 R15: 00000000004004b8
-Modules linked in:
-CR2: fffff3008f71a93b
----[ end trace 5ec5ff62110878d2 ]---
-RIP: 0010:cap_capable+0xa0/0x280 security/commoncap.c:83
-Code: 0f 8e d3 01 00 00 41 8b ad e0 00 00 00 49 bc 00 00 00 00 00 fc ff df e8 ce ef da fd 48 8d bb e0 00 00 00 48 89 f8 48 c1 e8 03 <42> 0f b6 04 20 84 c0 74 08 3c 03 0f 8e 64 01 00 00 44 8b bb e0 00
-RSP: 0018:ffffc90001c3f9d8 EFLAGS: 00010a02
-RAX: 1ffff7008f71a93b RBX: ffffb8047b8d48f8 RCX: 0000000000000000
-RDX: ffff88802dad54c0 RSI: ffffffff839aad82 RDI: ffffb8047b8d49d8
-RBP: 0000000000000000 R08: 0000000000000028 R09: ffffffff87f70fe6
-R10: ffffffff814731be R11: 00000000000089a2 R12: dffffc0000000000
-R13: ffffffff8b83b660 R14: ffff8880155fa500 R15: ffff8880155fa500
-FS:  000000000105d300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: fffff3008f71a93b CR3: 000000002789f000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+RIP: 0033:0x4665e9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f2fa9dcc188 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
+RAX: ffffffffffffffda RBX: 000000000056c038 RCX: 00000000004665e9
+RDX: 0000000000000040 RSI: 8001000000000000 RDI: 0000000000000004
+RBP: 00000000004bfcc4 R08: 00000000000002a8 R09: 0000000000000000
+R10: 00000000200004c0 R11: 0000000000000246 R12: 000000000056c038
+R13: 00007fffa358c32f R14: 00007f2fa9dcc300 R15: 0000000000022000
 
 
 ---
@@ -133,5 +130,6 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this issue. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 syzbot can test patches for this issue, for details see:
 https://goo.gl/tpsmEJ#testing-patches
