@@ -2,140 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 658933E033A
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 16:33:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C9E53E0334
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 16:31:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238080AbhHDObK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 10:31:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54628 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236816AbhHDO3D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 10:29:03 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23DAC0613D5;
-        Wed,  4 Aug 2021 07:28:19 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id q2so3148263plr.11;
-        Wed, 04 Aug 2021 07:28:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=zVcpGvB1fjh2beX8VuQl4JyzQJhoYo0herXV11yWWbs=;
-        b=DlPJi8NTGYgpF0kLDymlbx/qsIOw+YUJUFd0uee97CrNMiv5C8uJX2CvB0NAcvZ7uL
-         /J9nw6aGFEKDFRk0IcEblVwVfqUNh2KG2l8ncEAnYeknHDLISdeXNIkUtuzYnCbzyH41
-         w2mWpkWBaGQ4AsUpB8tpaNoogZgJhiiw1nhZ/8SNi+qSbN4RU4Ix3nlaU1VCkLGbSz2x
-         Q1p1RAgKkY96CljmN0eDfxb6B4kK+aeleRhAHNg+KNvKiDzgAMBRYiDe+zY3Ye5NfHJ0
-         Jp65G9d0dH8GhuAABGDmC4otkfYcbBJisXNvfhmxey5BQuH/IuDS0qaEpvs7wKE1EKcM
-         Wr+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=zVcpGvB1fjh2beX8VuQl4JyzQJhoYo0herXV11yWWbs=;
-        b=j59YszDVmbDgvfUU7sNbpHhACPs43tbJsSoFRKto1OMDrNh+UB1yS+ohCC95DoZUmy
-         G16BFtgIRkETEsUEDJnnZR9uzzuoXzBko4ZEbniwqBx3nf2laH5TieQXspS/IY5gbb5r
-         ZgTkyVnt9tEyrIqSGjtsnDwBwQkqY+5rZ+49RA09eDQZNBXN/2dUV7h8IiF8Wl0NgQ3L
-         imcR6wHUsSXRYngAH0nnf2FRPaycejB6Z62roFK6ILLaD/FEvW0KiaJa5h4MyK9CgesL
-         JTIEkU/7WJBA44+LTAHNHit6wiQhsebdnMPDjLZZ+O3Ko0FQKKIbE94473TFf1KDkx79
-         QcSA==
-X-Gm-Message-State: AOAM531KeMUkBjBZTgQmMWR5EqEU3mDqYBcvDTL6OKbg4fXnqpoHWYUe
-        JamD5pd8OhwgEm+rkz8/6T0=
-X-Google-Smtp-Source: ABdhPJwpgB+G6j9ZEhkZr+2iv541VWgYpL+xsaxdbxqVoJgpZCcbeqTou5qmsHLrcKhA6pnVjWPPaA==
-X-Received: by 2002:a17:902:c391:b029:12c:f2:f5f with SMTP id g17-20020a170902c391b029012c00f20f5fmr10522935plg.48.1628087299216;
-        Wed, 04 Aug 2021 07:28:19 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id s31sm3816465pgm.27.2021.08.04.07.28.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Aug 2021 07:28:18 -0700 (PDT)
-Date:   Wed, 4 Aug 2021 07:28:14 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Shannon Nelson <snelson@pensando.io>, drivers@pensando.io,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Yangbo Lu <yangbo.lu@nxp.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Simon Horman <simon.horman@netronome.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org
-Subject: Re: [PATCH net-next v3] ethernet: fix PTP_1588_CLOCK dependencies
-Message-ID: <20210804142814.GB1645@hoboy.vegasvil.org>
-References: <20210804121318.337276-1-arnd@kernel.org>
+        id S237275AbhHDObG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 10:31:06 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:42934 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237013AbhHDO24 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 10:28:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1628087325; x=1659623325;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=D6ii/u0govjCm682RH3I0wZetDpJcPbhqh6iE1CrIu0=;
+  b=w+ZubufUYvMKa2RCuvKaAXRYDbmWcSv+eEIuX4Yx1+vnfqFhQYLMPtQo
+   UyvjJoyjLlq9N0nr56JdSOhe6uv966eT4x/qmwEY5kAG36OmtCUL4B8pP
+   O8EstomcliWcPGjvGFc0CCO+eB4euyuqYREF1Hm5Wd593nmrv9QXy+p1Z
+   EYCuk90imx9wuDiLbf1pyRCofDWYMQKT4diHlPxHyH9cfmpXzG605hgGN
+   ISq4AipCo+jaYtj39wymQmocgCKB9JAze5VhvQw2npC1zMv+Wbs7wrNZL
+   LFnO6ltM5as3xlV2sqmAx5R1uD/21CAoZ4C5S+X5ZpVTYQY5+PE9tSIiU
+   g==;
+IronPort-SDR: cMNhvWe1d11Uf+9EPoYLCd7JXMqm4xUU7aPt7KVrSMPCBy/lOVjPWpx5vpHj4KaiPPFTqLvLqb
+ bv49YdtaLPQoO6SpuOCFAaNx2agMPZluq0KNB2nzvsGZv3oKCuvVpPSxEbrxirEHxdMGQIse5y
+ iRGCxxh7x50fZx0Zy47oiK0moexBeTG04zA0cghGBQomFSyJlqogGNLiSJsMx+41G4JTenkl30
+ NpkL7wFZzgmQ8G/aGDu2cY20P8l4xNclMPBgmRBbJlxMInuAoDytpQL3ZaIp8pBdCYWXMog9Ul
+ 3Th+Aw1gnsE8OhCLPpPcrrqy
+X-IronPort-AV: E=Sophos;i="5.84,294,1620716400"; 
+   d="scan'208";a="131030110"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Aug 2021 07:28:24 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 4 Aug 2021 07:28:22 -0700
+Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2176.2 via Frontend Transport; Wed, 4 Aug 2021 07:28:17 -0700
+Message-ID: <d10aa31f1258aa2975e3837acb09f26265da91eb.camel@microchip.com>
+Subject: Re: [PATCH v3 net-next 05/10] net: dsa: microchip: add DSA support
+ for microchip lan937x
+From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>
+CC:     Andrew Lunn <andrew@lunn.ch>, <netdev@vger.kernel.org>,
+        <robh+dt@kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <Woojung.Huh@microchip.com>, <hkallweit1@gmail.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
+Date:   Wed, 4 Aug 2021 19:58:15 +0530
+In-Reply-To: <20210804104625.d2qw3gr7algzppz5@skbuf>
+References: <20210723173108.459770-1-prasanna.vengateshan@microchip.com>
+         <20210723173108.459770-6-prasanna.vengateshan@microchip.com>
+         <20210731150416.upe5nwkwvwajhwgg@skbuf>
+         <49678cce02ac03edc6bbbd1afb5f67606ac3efc2.camel@microchip.com>
+         <20210802121550.gqgbipqdvp5x76ii@skbuf> <YQfvXTEbyYFMLH5u@lunn.ch>
+         <20210802135911.inpu6khavvwsfjsp@skbuf>
+         <50eb24a1e407b651eda7aeeff26d82d3805a6a41.camel@microchip.com>
+         <20210803235401.rctfylazg47cjah5@skbuf>
+         <20210804095954.GN22278@shell.armlinux.org.uk>
+         <20210804104625.d2qw3gr7algzppz5@skbuf>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210804121318.337276-1-arnd@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 04, 2021 at 01:57:04PM +0200, Arnd Bergmann wrote:
+On Wed, 2021-08-04 at 13:46 +0300, Vladimir Oltean wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
+> content is safe
+> 
+> The problem is that I have no clear migration path for the drivers I
+> maintain, like sja1105, and I suspect that others might be in the exact
+> same situation.
+> 
+> Currently, if the sja1105 needs to add internal delays in a MAC-to-MAC
+> (fixed-link) setup, it does that based on the phy-mode string. So
+> "rgmii-id" + "fixed-link" means for sja1105 "add RX and TX RGMII
+> internal delays", even though the documentation now says "the MAC should
+> not add the RX or TX delays in this case".
+> 
+> There are 2 cases to think about, old driver with new DT blob and new
+> driver with old DT blob. If breakage is involved, I am not actually very
+> interested in doing the migration, because even though the interpretation
+> of the phy-mode string is inconsistent between the phy-handle and fixed-link
+> case (which was deliberate), at least it currently does all that I need it to.
+> 
+> I am not even clear what is the expected canonical behavior for a MAC
+> driver. It parses rx-internal-delay-ps and tx-internal-delay-ps, and
+> then what? It treats all "rgmii*" phy-mode strings identically? Or is it
+> an error to have "rgmii-rxid" for phy-mode and non-zero rx-internal-delay-ps?
+> If it is an error, should all MAC drivers check for it? And if it is an
+> error, does it not make migration even more difficult (adding an
+> rx-internal-delay-ps property to a MAC OF node which already uses
+> "rgmii-id" would be preferable to also having to change the "rgmii-id"
+> to "rgmii", because an old kernel might also need to work with that DT
+> blob, and that will ignore the new rx-internal-delay-ps property).
 
-> Since this should cover the dependencies correctly, the IS_REACHABLE()
-> hack in the header is no longer needed now, and can be turned back
-> into a normal IS_ENABLED() check. Any driver that gets the dependency
-> wrong will now cause a link time failure rather than being unable to use
-> PTP support when that is in a loadable module.
 
-yes!
+Considering the PHY is responsible to add internal delays w.r.to phy-mode, "*-
+tx-internal-delay-ps" approach that i was applying to different connections as
+shown below by bringing up different examples.
 
-> Changes in v3:
-> - rewrite to introduce a new PTP_1588_CLOCK_OPTIONAL symbol
-> - use it for all driver, not just Intel's
+1) Fixed-link MAC-MAC: 
+       port@4 {
+            .....
+            phy-mode = "rgmii";
+            rx-internal-delay-ps = <xxx>;
+            tx-internal-delay-ps = <xxx>;
+            ethernet = <&ethernet>;
+            fixed-link {
+           	......
+            };
+          };
 
-Thanks for following up.
+2) Fixed-link MAC-Unknown:
+        port@5 {
+            ......
+            phy-mode = "rgmii-id";
+            rx-internal-delay-ps = <xxx>;
+            tx-internal-delay-ps = <xxx>;
+            fixed-link {
+           .	....
+            };
+          };
 
-> diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
-> index 82744a7501c7..9c1d0b715748 100644
-> --- a/drivers/net/ethernet/intel/Kconfig
-> +++ b/drivers/net/ethernet/intel/Kconfig
-> @@ -58,8 +58,8 @@ config E1000
->  config E1000E
->  	tristate "Intel(R) PRO/1000 PCI-Express Gigabit Ethernet support"
->  	depends on PCI && (!SPARC32 || BROKEN)
-> +	depends on PTP_1588_CLOCK_OPTIONAL
->  	select CRC32
-> -	imply PTP_1588_CLOCK
->  	help
->  	  This driver supports the PCI-Express Intel(R) PRO/1000 gigabit
->  	  ethernet family of adapters. For PCI or PCI-X e1000 adapters,
-> @@ -87,8 +87,8 @@ config E1000E_HWTS
->  config IGB
->  	tristate "Intel(R) 82575/82576 PCI-Express Gigabit Ethernet support"
->  	depends on PCI
-> -	imply PTP_1588_CLOCK
-> -	select I2C
-> +	depends on PTP_1588_CLOCK_OPTIONAL
-> +	depends on I2C
+3) Fixed-link :
+        port@5 {
+            ......
+            phy-mode = "rgmii-id";
+            fixed-link {
+              .....
+            };
+          };
 
-This little i2c bit sneaks in, but I guess you considered any possible
-trouble with it?
+From above examples,
+	a) MAC node is responsible to add RGMII delay by parsing "*-internal-
+delay-ps" for (1) & (2). Its a known item in this discussion.
+	b) Is rgmii-* to be ignored by the MAC in (2) and just apply the delays
+from MAC side? Because if its forced to have "rgmii", would it become just -
+>interface=*_MODE_RGMII and affects legacy?
+	c) if MAC follows standard delay, then it needs to be validated against
+"*-internal-delay-ps", may be validating against single value and throw an
+error. Might be okay.
+	d) For 3), Neither MAC nor other side will apply delays. Expected.
 
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+
+3) MAC-PHY
+
+	i) &test3 {
+		phy-handle = <&phy0>;
+		phy-mode = "rgmii-id";
+		phy0: ethernet-phy@xx {
+			.....
+			rx-internal-delay = <xxx>;
+			tx-internal-delay = <xxx>;
+		};
+	  };
+
+	ii) &test4 {
+		phy-handle = <&phy0>;
+		phy-mode = "rgmii";
+        	rx-internal-delay-ps = <xxx>;
+        	tx-internal-delay-ps = <xxx>;
+		phy0: ethernet-phy@xx {
+			reg = <x>;
+	        };
+	     };
+
+
+For 3(i), I assume phy would apply internal delay values by checking its phydev-
+>interface.
+For 3(ii), MAC would apply the delays.
+
+Overall, only (b) need a right decision? or any other items are missed?
+
+
+Prasanna V
+
