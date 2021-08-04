@@ -2,91 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC59D3E01E7
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 15:27:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51A583E025A
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 15:49:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238369AbhHDN1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 09:27:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40308 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238126AbhHDN1F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 09:27:05 -0400
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B22A8C061799
-        for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 06:26:42 -0700 (PDT)
-Received: by mail-io1-xd35.google.com with SMTP id 188so647304ioa.8
-        for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 06:26:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dYdEg3FEjnNJNThyUvC517fEe1eHnKogxE9Vzfv1UIY=;
-        b=pyuZLS/FOfE/HBGll+dPoZ1LtOgBykNvSiMNx5Kqhp/Ypy+svNMfDD4IVaPagLGLoM
-         L4MXI00DzGsGUTi/nnu23RMlKv8X7QhmSMuEJd9dTbLVyLWHuMGhbM4Qhm/aMxyeeUOq
-         nUmTi63s/xOtwLZZN465P50BtDaubNZgKKGjf4wPW0E2x5c5OQrJ+TXEIMxeYWw+cKny
-         idm9y51ARmYxC58XFBZOk1Km6GxfVy02QHpI3wWp+eLFOrvciJzlQEHsYDWGqXQ306SC
-         3aD++ejy5rJMQyjyg1daDJhKE0rJYoa5ZDskmj+BuZ2HLfzTcE58/6fW+mRVS0Vw7YV7
-         kPHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dYdEg3FEjnNJNThyUvC517fEe1eHnKogxE9Vzfv1UIY=;
-        b=sq3cFPtz9V1+YI0GCIkC1yB8iApHuZcce6sHqqAABl7uPesEkpFm4dIy41PHHBUVa2
-         T9NQ3UaaBHPBCE89CKfxbpml4UeDyRCTu6OaKihDOAG0S7plwdy0YOZ37V6CJLx3yRwL
-         U5RrSvkzfRSx7T6tBNbjMc3P5LDr0jXSzPFeM0Y3MXPEoEqWwTMyOwni46eqS2p8mbc/
-         lgNJH1sXs+rONoWLcFK740nE5Z9fQHeWXwzEcJ5pbOXU+DyFniDU7pg/m8RWfuWE8yIf
-         GqBaAbZYffB5G6JnKwGwErrZioI+nOr1xEt9U8Vb/mpuZVAxUdSHzqBmwuDqiQHBIuqN
-         AFsw==
-X-Gm-Message-State: AOAM532CsqwAqbjBOYzrHEwU+RqYRZX6SA6FD6aA4nDXMi4pGtW80Mbd
-        CZ3+HhbSCFZJu/CxTlpW4eYJxRhaqqk42HXnxKQ=
-X-Google-Smtp-Source: ABdhPJwHCkpNkLRfonCftH7xrpR5xKYOfBuU7tCEvKhzz4cL8l/tVlCLekEnJrlwYG79KY2VRUDXt2bCOoRTN5pbiAM=
-X-Received: by 2002:a6b:e602:: with SMTP id g2mr286609ioh.50.1628083602175;
- Wed, 04 Aug 2021 06:26:42 -0700 (PDT)
+        id S238461AbhHDNtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 09:49:32 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:7923 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238394AbhHDNta (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 09:49:30 -0400
+Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GftKc2SVdz83YD;
+        Wed,  4 Aug 2021 21:45:24 +0800 (CST)
+Received: from SZX1000464847.huawei.com (10.21.59.169) by
+ dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Wed, 4 Aug 2021 21:49:15 +0800
+From:   Dongdong Liu <liudongdong3@huawei.com>
+To:     <helgaas@kernel.org>, <hch@infradead.org>, <kw@linux.com>,
+        <logang@deltatee.com>, <leon@kernel.org>,
+        <linux-pci@vger.kernel.org>, <rajur@chelsio.com>,
+        <hverkuil-cisco@xs4all.nl>
+CC:     <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: [PATCH V7 0/9] PCI: Enable 10-Bit tag support for PCIe devices
+Date:   Wed, 4 Aug 2021 21:46:59 +0800
+Message-ID: <1628084828-119542-1-git-send-email-liudongdong3@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-References: <20210722110325.371-1-borisp@nvidia.com> <20210722110325.371-5-borisp@nvidia.com>
- <20210723060631.GA32369@lst.de>
-In-Reply-To: <20210723060631.GA32369@lst.de>
-From:   Or Gerlitz <gerlitz.or@gmail.com>
-Date:   Wed, 4 Aug 2021 16:26:31 +0300
-Message-ID: <CAJ3xEMjFOPFfU4ibFJPYdYUSh0nFkRwfW1cdAV2BMvg1aaP_eg@mail.gmail.com>
-Subject: Re: [PATCH v5 net-next 04/36] net/tls: expose get_netdev_for_sock
-To:     Christoph Hellwig <hch@lst.de>, Jakub Kicinski <kuba@kernel.org>
-Cc:     Boris Pismenny <borisp@nvidia.com>,
-        David Miller <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sagi Grimberg <sagi@grimberg.me>, axboe@fb.com,
-        Keith Busch <kbusch@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Eric Dumazet <edumazet@google.com>,
-        Shai Malin <smalin@marvell.com>, boris.pismenny@gmail.com,
-        linux-nvme@lists.infradead.org,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        benishay@nvidia.com, Or Gerlitz <ogerlitz@nvidia.com>,
-        Yoray Zack <yorayz@nvidia.com>, David Ahern <dsahern@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.21.59.169]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggeme758-chm.china.huawei.com (10.3.19.104)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 23, 2021 at 9:09 AM Christoph Hellwig <hch@lst.de> wrote:
->
-> On Thu, Jul 22, 2021 at 02:02:53PM +0300, Boris Pismenny wrote:
-> > From: Boris Pismenny <borisp@mellanox.com>
-> >
-> > get_netdev_for_sock is a utility that is used to obtain
-> > the net_device structure from a connected socket.
-> >
-> > Later patches will use this for nvme-tcp DDP and DDP DDGST offloads.
-> >
-> > Signed-off-by: Boris Pismenny <borisp@mellanox.com>
-> > Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
->
-> I don't think this should be an inline.  Please move it to net/core/dev.c,
-> andd add an EXPORT_SYMBOL_GPL and a kerneldoc comment.
+10-Bit Tag capability, introduced in PCIe-4.0 increases the total Tag
+field size from 8 bits to 10 bits.
 
-Jakub,
+This patchset is to enable 10-Bit tag for PCIe EP devices (include VF) and
+RP device.
 
-What's your preference here?
+V6->V7:
+- Rebased on v5.14-rc3.
+- Change the "pci=disable_10bit_tag=" parameter to sysfs file to disable
+  10-Bit Tag Requester when need for p2pdma suggested by Leon.
+- Fix comment for p2pdma 10-bit tag check.
 
-Or.
+V5->V6:
+- Rebased on v5.14-rc2.
+- Add Reviewed-by: Christoph Hellwig <hch@lst.de> in [PATCH V6 2/8].
+- PCI: Add "pci=disable_10bit_tag=" parameter for peer-to-peer support.
+- Add a 10-bit tag check in P2PDMA.
+- Simplified implementation in [PATCH V6 6/8].
+- Fix some comments in [PATCH V6 4/8].
+
+V4->V5:
+- Fix warning variable 'capa' is uninitialized.
+- Fix warning unused variable 'pchild'.
+
+V3->V4:
+- Get the value of pcie_devcap2 in set_pcie_port_type().
+- Add Reviewed-by: Christoph Hellwig <hch@lst.de> in [PATCH V4 1/6],
+  [PATCH V4 3/6], [PATCH V4 4/6], [PATCH V4 5/6].
+- Fix some code style.
+- Rebased on v5.13-rc6.
+
+V2->V3:
+- Use cached Device Capabilities Register suggested by Christoph.
+- Fix code style to avoid > 80 char lines.
+- Rename devcap2 to pcie_devcap2.
+
+V1->V2: Fix some comments by Christoph.
+- Store the devcap2 value in the pci_dev instead of reading it multiple
+  times.
+- Change pci_info to pci_dbg to avoid the noisy log.
+- Rename ext_10bit_tag_comp_path to ext_10bit_tag.
+- Fix the compile error.
+- Rebased on v5.13-rc1.
+
+Dongdong Liu (9):
+  PCI: Use cached Device Capabilities Register
+  PCI: Use cached Device Capabilities 2 Register
+  PCI: Add 10-Bit Tag register definitions
+  PCI: Enable 10-Bit Tag support for PCIe Endpoint devices
+  PCI/IOV: Enable 10-Bit tag support for PCIe VF devices
+  PCI: Enable 10-Bit Tag support for PCIe RP devices
+  PCI/sysfs: Add a 10-Bit Tag sysfs file
+  PCI/IOV: Add 10-Bit Tag sysfs files for VF devices
+  PCI/P2PDMA: Add a 10-Bit Tag check in P2PDMA
+
+ Documentation/ABI/testing/sysfs-bus-pci         | 36 ++++++++++++-
+ drivers/media/pci/cobalt/cobalt-driver.c        |  5 +-
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c |  4 +-
+ drivers/pci/iov.c                               | 58 +++++++++++++++++++++
+ drivers/pci/p2pdma.c                            | 40 ++++++++++++++
+ drivers/pci/pci-sysfs.c                         | 69 +++++++++++++++++++++++++
+ drivers/pci/pci.c                               | 14 ++---
+ drivers/pci/pcie/aspm.c                         | 11 ++--
+ drivers/pci/pcie/portdrv_pci.c                  | 69 +++++++++++++++++++++++++
+ drivers/pci/probe.c                             | 66 ++++++++++++++++++-----
+ drivers/pci/quirks.c                            |  3 +-
+ include/linux/pci.h                             |  5 ++
+ include/uapi/linux/pci_regs.h                   |  5 ++
+ 13 files changed, 347 insertions(+), 38 deletions(-)
+
+--
+2.7.4
+
