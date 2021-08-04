@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD7D03E0A17
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 23:43:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA08B3E0A19
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 23:43:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233670AbhHDVn6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 17:43:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41546 "EHLO
+        id S233816AbhHDVoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 17:44:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232829AbhHDVn5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 17:43:57 -0400
+        with ESMTP id S233805AbhHDVn7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 17:43:59 -0400
 Received: from mail-qk1-x749.google.com (mail-qk1-x749.google.com [IPv6:2607:f8b0:4864:20::749])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04357C0613D5
-        for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 14:43:44 -0700 (PDT)
-Received: by mail-qk1-x749.google.com with SMTP id b4-20020a3799040000b02903b899a4309cso2886033qke.14
-        for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 14:43:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B03E5C06179A
+        for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 14:43:46 -0700 (PDT)
+Received: by mail-qk1-x749.google.com with SMTP id 18-20020a05620a0792b02903b8e915ccceso2874923qka.18
+        for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 14:43:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=Yfvc1y59oR5+LtzVBBauZFH1r/tvrwxUqR7lrvF7mpY=;
-        b=kTmOFrP7L/yw8DPyAq+Z9PdmavFp56OCF/BKatjh3C5PTq4hbHOwJh7VYSOlTzbvZf
-         lgzgeD7Ao1klgXljKIqzg4sby9v4uAyNdWwihF0so/j4O51xLfiiwAn7dbpEiQIsUJps
-         br2k7Fzr1t8Yc4z60bh5FtEiwgaC+4v6C3knP+d8rlmMUXNdIpHQIYTSfrCQut2NBnkc
-         l+HgGMMqRjeuG9+MvsKONbR+4CXKUkiIKeOh/e3Luv4Inn+eZHio8mBFI5oRBgbBRVAF
-         riSUm2NwDCGnE4Bw48DmmM+qkSYF3ikncB5BTYe4vXD+EoWPaTFLP4eqZrapz6vPqOdA
-         Pi+w==
+        bh=Rynpga3J+xjZzUqZXpOXfkfOoHAVyRGf/PRkioLCwmY=;
+        b=B8/MlBGQclT50fb7n0ieBcTHQoZD+gRQ/u345in6OYabDUyr30L+tBW1j2xiCfNLr7
+         a1C8CtX5vMQRm7x1CDvBkHnR7zdve2JnoVx+Z7xbdcxfV8yk3pWdXvh+j8UYSWjpIiG6
+         rQTgFQZx6M0HcZUL+vGBw04INfBrgmBHJ2l9jkRxNUionVIyWBvYuy2oGjIubI+Tp0Yo
+         XGhjEY7KB+c3EYjb5InTMJ/2ppIb+GcWeznUvm2v3ZPxxskJbztyZsN3GfzDLyk9Mh31
+         WWLv+LGc6qcqeKBXZiBeJ7l+m+i/DGhYActbYEasEVcdsi3dwW04HAEC2deDco3mysZ3
+         YMOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=Yfvc1y59oR5+LtzVBBauZFH1r/tvrwxUqR7lrvF7mpY=;
-        b=MYg3qwuh6Dhq3NJ57cYz97dkfozN6+JHYcwy0oym7wwox3wBD3l+xYXe0Q2KxGysPd
-         +0E+EKuejd1V5t0N9DklcUkTJb17yqPQeuuZgdYiPMMhHSv95IaBu+F29YAIPDq8CQQl
-         DwMlUNsKdHR9862PQYZNFgnWGibAEvhxw4JGZoLpgtqvYRsoGMC9FiLK9Zuka6Oihkak
-         z4SHoQcpTRQRcrTjE1+U3fIkAG4Be0LPkgmzEj+ZKiRsUezQv4zu/oee68WV65bAEafO
-         l/CejppupBGb+Obo8ET4q7W5lQwXIhbvQ1CW89+zV7AWRfDASFoneWKTxbTHTorK9AYH
-         MnBw==
-X-Gm-Message-State: AOAM53125pRFYG3u6qDBF4ha8a6oI94O/KUYq71usG/kpVdFPeBrAFeK
-        /gNkkoGn8JSwbnL7WeoAtpczbv3XVXVzaFs=
-X-Google-Smtp-Source: ABdhPJxP4qxypc1Lm8WQZTN0xdIV9kZ1Q3kp6P0dl9diA/2iCpr9UsfvSrl8gf3HIuwSOzKOn85j6PDmXnySW5A=
+        bh=Rynpga3J+xjZzUqZXpOXfkfOoHAVyRGf/PRkioLCwmY=;
+        b=YPW9fMM85CUFtBrkE86xPvMwMJ1XcqwG0X42DTiAxzsAcCVUL8irGcLpmYgG/kMcAz
+         aTKPs5Bt56TbfuOiMJYcjX5fm/cxH1Jp2FXdK1rgLR4whdAARXgO0vN7p29SNK1FGJ7o
+         W0G1Dw7mRdAeC9UurDiVZApLYFUYnFlpFBukQIB5AIXKaPK+Zicd4stPmY4EAlwwbmKp
+         hH1yTjmTNvo28/ctYcKSWMfeegjaWd+/E6b7SdRbxa/0zL2EF65WDrFLuDqpTSTSmP4O
+         x6r44fdpulhHSrRFO1Jhe4oytoj/MRRvl3i2HBt3K5cTBCkMNtR9wBTuTXPtIKyYqV5l
+         Nh7w==
+X-Gm-Message-State: AOAM533hTJQsJoyEQWRtyR01cpbEdAZmEnTM3k473z+wEiQ5TJiC8MgC
+        48FdBWQjW6PoRgHZCZM2zELiK4LQFB7wT0E=
+X-Google-Smtp-Source: ABdhPJzlOYEDH8yob9gAEtyiJ+2bW8yWLnsn+Oa2Ym13tfciy/2gVuwXNkqzQileftC8X7uEAeOaOlgtP57eeUw=
 X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:ffe5:1245:526e:3189])
- (user=saravanak job=sendgmr) by 2002:ad4:55d0:: with SMTP id
- bt16mr1690482qvb.49.1628113423244; Wed, 04 Aug 2021 14:43:43 -0700 (PDT)
-Date:   Wed,  4 Aug 2021 14:43:31 -0700
+ (user=saravanak job=sendgmr) by 2002:ad4:40cb:: with SMTP id
+ x11mr1616861qvp.60.1628113425608; Wed, 04 Aug 2021 14:43:45 -0700 (PDT)
+Date:   Wed,  4 Aug 2021 14:43:32 -0700
 In-Reply-To: <20210804214333.927985-1-saravanak@google.com>
-Message-Id: <20210804214333.927985-3-saravanak@google.com>
+Message-Id: <20210804214333.927985-4-saravanak@google.com>
 Mime-Version: 1.0
 References: <20210804214333.927985-1-saravanak@google.com>
 X-Mailer: git-send-email 2.32.0.554.ge1b32706d8-goog
-Subject: [PATCH v1 2/3] net: mdio-mux: Don't ignore memory allocation errors
+Subject: [PATCH v1 3/3] net: mdio-mux: Handle -EPROBE_DEFER correctly
 From:   Saravana Kannan <saravanak@google.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -67,82 +67,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If we are seeing memory allocation errors, don't try to continue
-registering child mdiobus devices. It's unlikely they'll succeed.
+When registering mdiobus children, if we get an -EPROBE_DEFER, we shouldn't
+ignore it and continue registering the rest of the mdiobus children. This
+would permanently prevent the deferring child mdiobus from working instead
+of reattempting it in the future. So, if a child mdiobus needs to be
+reattempted in the future, defer the entire mdio-mux initialization.
 
+This fixes the issue where PHYs sitting under the mdio-mux aren't
+initialized correctly if the PHY's interrupt controller is not yet ready
+when the mdio-mux is being probed. Additional context in the link below.
+
+Link: https://lore.kernel.org/lkml/CAGETcx95kHrv8wA-O+-JtfH7H9biJEGJtijuPVN0V5dUKUAB3A@mail.gmail.com/#t
 Signed-off-by: Saravana Kannan <saravanak@google.com>
 ---
- drivers/net/mdio/mdio-mux.c | 28 ++++++++++++++++++----------
- 1 file changed, 18 insertions(+), 10 deletions(-)
+ drivers/net/mdio/mdio-mux.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/mdio/mdio-mux.c b/drivers/net/mdio/mdio-mux.c
-index 5b37284f54d6..13035e2685c4 100644
+index 13035e2685c4..ebd001f0eece 100644
 --- a/drivers/net/mdio/mdio-mux.c
 +++ b/drivers/net/mdio/mdio-mux.c
-@@ -82,6 +82,17 @@ static int mdio_mux_write(struct mii_bus *bus, int phy_id,
- 
- static int parent_count;
- 
-+static void mdio_mux_uninit_children(struct mdio_mux_parent_bus *pb)
-+{
-+	struct mdio_mux_child_bus *cb = pb->children;
-+
-+	while (cb) {
-+		mdiobus_unregister(cb->mii_bus);
-+		mdiobus_free(cb->mii_bus);
-+		cb = cb->next;
-+	}
-+}
-+
- int mdio_mux_init(struct device *dev,
- 		  struct device_node *mux_node,
- 		  int (*switch_fn)(int cur, int desired, void *data),
-@@ -144,7 +155,7 @@ int mdio_mux_init(struct device *dev,
- 		cb = devm_kzalloc(dev, sizeof(*cb), GFP_KERNEL);
- 		if (!cb) {
- 			ret_val = -ENOMEM;
--			continue;
-+			goto err_loop;
- 		}
- 		cb->bus_number = v;
- 		cb->parent = pb;
-@@ -152,8 +163,7 @@ int mdio_mux_init(struct device *dev,
- 		cb->mii_bus = mdiobus_alloc();
- 		if (!cb->mii_bus) {
- 			ret_val = -ENOMEM;
+@@ -175,11 +175,15 @@ int mdio_mux_init(struct device *dev,
+ 		cb->mii_bus->write = mdio_mux_write;
+ 		r = of_mdiobus_register(cb->mii_bus, child_bus_node);
+ 		if (r) {
++			mdiobus_free(cb->mii_bus);
++			if (r == -EPROBE_DEFER) {
++				ret_val = r;
++				goto err_loop;
++			}
++			devm_kfree(dev, cb);
+ 			dev_err(dev,
+ 				"Error: Failed to register MDIO bus for child %pOF\n",
+ 				child_bus_node);
+-			mdiobus_free(cb->mii_bus);
 -			devm_kfree(dev, cb);
--			continue;
-+			goto err_loop;
- 		}
- 		cb->mii_bus->priv = cb;
- 
-@@ -181,6 +191,10 @@ int mdio_mux_init(struct device *dev,
- 	}
- 
- 	dev_err(dev, "Error: No acceptable child buses found\n");
-+
-+err_loop:
-+	mdio_mux_uninit_children(pb);
-+	of_node_put(child_bus_node);
- err_pb_kz:
- 	put_device(&parent_bus->dev);
- err_parent_bus:
-@@ -192,14 +206,8 @@ EXPORT_SYMBOL_GPL(mdio_mux_init);
- void mdio_mux_uninit(void *mux_handle)
- {
- 	struct mdio_mux_parent_bus *pb = mux_handle;
--	struct mdio_mux_child_bus *cb = pb->children;
--
--	while (cb) {
--		mdiobus_unregister(cb->mii_bus);
--		mdiobus_free(cb->mii_bus);
--		cb = cb->next;
--	}
- 
-+	mdio_mux_uninit_children(pb);
- 	put_device(&pb->mii_bus->dev);
- }
- EXPORT_SYMBOL_GPL(mdio_mux_uninit);
+ 		} else {
+ 			cb->next = pb->children;
+ 			pb->children = cb;
 -- 
 2.32.0.554.ge1b32706d8-goog
 
