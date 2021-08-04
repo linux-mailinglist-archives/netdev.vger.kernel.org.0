@@ -2,107 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01FB43E02E1
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 16:14:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1050C3E02E6
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 16:16:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238658AbhHDOOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 10:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51340 "EHLO
+        id S238659AbhHDORD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 10:17:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238560AbhHDOOV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 10:14:21 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95765C061798
-        for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 07:14:07 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id i9so1791423ilk.9
-        for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 07:14:07 -0700 (PDT)
+        with ESMTP id S238560AbhHDORC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 10:17:02 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6499C0613D5
+        for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 07:16:49 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id j1so3178062pjv.3
+        for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 07:16:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6E78/6zLDHtWRwajFV5K+kCnVIVVes2MqNHejOQaS6E=;
-        b=vhAPM98ttnDbUN4JAbm0oJHOwVuyzxx1A3gOH5ff9H+jkXHwXrh98SfBcCaCrEdXH2
-         htkVLFQJctJNT86mLuAlVwF2pSypVr7j5GVJi7UdTdfNVM9LRK4riLcQEzvk6IsiAxeO
-         TPDDQJ0GW4LhBu9bix1JjBdiMvHfRujOg5EsLWfNXAiuHNjei3JkNC3GVeY7GE5svhsR
-         dICREVX9pTY4wrdbx+noHQlbci9Fk8DE25D+RGniZwRLo2pz+zqVNZ5StlqOY6GJ78yH
-         TQwlL7+reOx2rucQq3DcsR2OT4VcCcvfWt9K4B9I+Bvpl9zjPZ7JgK3lGMzibwsJV8GT
-         JGGg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=9S4mjDYlxG706jJ9ez20gM1cyQRhN79/fJLBwzXUuKg=;
+        b=NBUw4CyKrAc19terhigXAFb6mYQ4Ko4Ux8/0m9SQxqTFp3O+YfluPXYrHIj6nQY7E5
+         GWGro6oNVR+mArQXQ7+JImgbUMKyiDgk1hOiquT5XzjovzaN7y/BEZ2kVcB1zGCRMGTQ
+         vrS4hBInD/E8kejt5P/NaT+im/LyYLgs37JgoKO1z4mH94A7R14EVNHXsA9IRKaL7RCY
+         ThaVnk9reg5ne861J2QcIX+bgLsBGMSxStXnJZIHD2rF33d4v3kBKauyER9oQVmDbHFR
+         KweANV5ODO0KiJ6kzvpr2mYRSJO5Cns9tWOwf8wYdKfII232VLiu506ODFQBLZt5rUxB
+         ygZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6E78/6zLDHtWRwajFV5K+kCnVIVVes2MqNHejOQaS6E=;
-        b=nF20RBU0dRON+o5mPVRsnznw9rzAbHOJeGqtdn50JOk/U+IWD5Z2geUkIEZXo/Q5yZ
-         ydV/wV3SNwwiHY2ST4rT8AlFVkfYG10c1Jy0lEytpXHNxi5PgpapYlgoNRFtWLzT0JzO
-         TpkoJtWOiuL2H1VENPNyApW0B7dVUs7SoGarlAf6QolYyzt89O6Y1kTD3wDUU4zY+K6P
-         /8MEaSQSnocuMdlc2FTk5faRV+50cQ094DTunrTjNWNxdzSA7DTrta2+Ekxq7lo/EXYh
-         MSX5PGqR0m3RvyNTO/TUbYqGrpofjTgpu87nskVA8WpWZTEOJEG0geM7X48Ab7263hV0
-         jGMA==
-X-Gm-Message-State: AOAM533M3a9EGTSVqcpx5vUdIhLngvvTS2WbxYcQ+KV7Lpl00nmeJSw8
-        WvW3+pEmf4E0qSilesaoYnfm9XSqPD5jvYXOIBQ=
-X-Google-Smtp-Source: ABdhPJzI07cnNLAaxl2fP6+LCl/V6mxvF+ndNz0UwEqi0SZof6epBx37dsf8PW4pOi/lXNC8iZe7Ls1qtbBBa7OxdhE=
-X-Received: by 2002:a05:6e02:2190:: with SMTP id j16mr823136ila.144.1628086447042;
- Wed, 04 Aug 2021 07:14:07 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=9S4mjDYlxG706jJ9ez20gM1cyQRhN79/fJLBwzXUuKg=;
+        b=f1/6eI4RGw+Mnum658K+k88C7OeV/YM2r45tkOSL+b/d4pLRQV38BZsguVFT8CT7R7
+         cexeCDnXJqJUGqTf6nRZQib15KDp69v2077IO07P4geYKXFwEHNDO8aO93QiYDZLunUM
+         nz5vBz6NKLM1Z1cUHcCLMdvEEtEXgQP5QYcMIOcel0RVOLf9EJIIPNuiBiGgHYa6+G8C
+         A/Wr+UdNO5HVRCqcx+DnLwkI9AmOAe5bVKzt7WyzrBnf67vvkmBeAUhCDbrxWyDtNPWV
+         tOrSo/C01iFUPU0LZaJ1jYI/rXfA2HJ0sD+eFhBL9tC/fBpa0JdCob23ICo5ZVQY/Be4
+         Wa3g==
+X-Gm-Message-State: AOAM533Z9NyUr9nYPuT+1ywZx4RzobNyMW1WXH36jSDCUYW/ioSZhipy
+        oVDn2aTzClEO48+5XfYiILk=
+X-Google-Smtp-Source: ABdhPJy92stKVG2vLj5Nt8Y3EkSpbjovi23JFUiEKyBOcO+bVYOOqqnxM+W1BVUKc/wUw5Hzq4FbPQ==
+X-Received: by 2002:a17:902:d4cc:b029:12c:dd57:d097 with SMTP id o12-20020a170902d4ccb029012cdd57d097mr316154plg.23.1628086609191;
+        Wed, 04 Aug 2021 07:16:49 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id j187sm3118303pfb.132.2021.08.04.07.16.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Aug 2021 07:16:48 -0700 (PDT)
+Date:   Wed, 4 Aug 2021 07:16:46 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, kernel-team@fb.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v4] ptp: ocp: Expose various resources on the
+ timecard.
+Message-ID: <20210804141646.GA1645@hoboy.vegasvil.org>
+References: <20210804033327.345759-1-jonathan.lemon@gmail.com>
 MIME-Version: 1.0
-References: <20210722110325.371-1-borisp@nvidia.com> <20210722110325.371-3-borisp@nvidia.com>
- <YPlzHTnoxDinpOsP@infradead.org> <6f7f96dc-f1e6-99d9-6ab4-920126615302@gmail.com>
- <20210723050302.GA30841@lst.de> <YPpRziMHmeatfAw2@zeniv-ca.linux.org.uk>
-In-Reply-To: <YPpRziMHmeatfAw2@zeniv-ca.linux.org.uk>
-From:   Or Gerlitz <gerlitz.or@gmail.com>
-Date:   Wed, 4 Aug 2021 17:13:55 +0300
-Message-ID: <CAJ3xEMid0sWkCf4CPK5Aotu=+U4=vtDrdJANqn+CnWd7HTb-vg@mail.gmail.com>
-Subject: Re: [PATCH v5 net-next 02/36] iov_iter: DDP copy to iter/pages
-To:     Al Viro <viro@zeniv.linux.org.uk>, Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>
-Cc:     Boris Pismenny <borispismenny@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>, axboe@fb.com,
-        Keith Busch <kbusch@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Shai Malin <smalin@marvell.com>, boris.pismenny@gmail.com,
-        linux-nvme@lists.infradead.org,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        benishay@nvidia.com, Or Gerlitz <ogerlitz@nvidia.com>,
-        Yoray Zack <yorayz@nvidia.com>,
-        Boris Pismenny <borisp@mellanox.com>,
-        Ben Ben-Ishay <benishay@mellanox.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yoray Zack <yorayz@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210804033327.345759-1-jonathan.lemon@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 23, 2021 at 8:30 AM Al Viro <viro@zeniv.linux.org.uk> wrote:
-> On Fri, Jul 23, 2021 at 07:03:02AM +0200, Christoph Hellwig wrote:
-> > On Thu, Jul 22, 2021 at 11:23:38PM +0300, Boris Pismenny wrote:
+On Tue, Aug 03, 2021 at 08:33:27PM -0700, Jonathan Lemon wrote:
+> The OpenCompute timecard driver has additional functionality besides
+> a clock.  Make the following resources available:
+> 
+>  - The external timestamp channels (ts0/ts1)
+>  - devlink support for flashing and health reporting
+>  - GPS and MAC serial ports
+>  - board serial number (obtained from i2c device)
+> 
+> Also add watchdog functionality for when GNSS goes into holdover.
+> 
+> The resources are collected under a timecard class directory:
+> 
+>   [jlemon@timecard ~]$ ls -g /sys/class/timecard/ocp1/
+>   total 0
+>   -r--r--r--. 1 root 4096 Aug  3 19:49 available_clock_sources
+>   -rw-r--r--. 1 root 4096 Aug  3 19:49 clock_source
+>   lrwxrwxrwx. 1 root    0 Aug  3 19:49 device -> ../../../0000:04:00.0/
+>   -r--r--r--. 1 root 4096 Aug  3 19:49 gps_sync
+>   lrwxrwxrwx. 1 root    0 Aug  3 19:49 i2c -> ../../xiic-i2c.1024/i2c-2/
+>   drwxr-xr-x. 2 root    0 Aug  3 19:49 power/
+>   lrwxrwxrwx. 1 root    0 Aug  3 19:49 pps ->
+>   ../../../../../virtual/pps/pps1/
+>   lrwxrwxrwx. 1 root    0 Aug  3 19:49 ptp -> ../../ptp/ptp2/
+>   -r--r--r--. 1 root 4096 Aug  3 19:49 serialnum
+>   lrwxrwxrwx. 1 root    0 Aug  3 19:49 subsystem ->
+>   ../../../../../../class/timecard/
+>   lrwxrwxrwx. 1 root    0 Aug  3 19:49 ttyGPS -> ../../tty/ttyS7/
+>   lrwxrwxrwx. 1 root    0 Aug  3 19:49 ttyMAC -> ../../tty/ttyS8/
+>   -rw-r--r--. 1 root 4096 Aug  3 19:39 uevent
 
->>> This routine, like other changes in this file, replicates the logic in
->>> memcpy_to_page. The only difference is that "ddp" avoids copies when the
->>> copy source and destinations buffers are one and the same.
+I like this user friendly grouping.
 
->> Now why can't we just make that change to the generic routine?
-
-> Doable... replace memcpy(base, addr + off, len) with
->         base != addr + off && memcpy(base, addr + off, len)
-> in _copy_to_iter() and be done with that...
-
-Guys,
-
-AFAIR we did the adding ddp_ prefix exercise to the copy functions call chain
-
-ddp_hash_and_copy_to_iter
--> ddp_copy_to_iter
--> _ddp_copy_to_iter
--> ddp_memcpy_to_page
-
-to address feedback given on earlier versions of the series. So let's
-decide please.. are we all set to remove the ddp_ prefixed calls and just
-plant the new check (plus a nice comment!) as Al suggested?
-
-re the comments given on ddp_memcpy_to_page, upstream move
-to just call memcpy, so we need not have it anyway, will be fixed in v6
-if we remain with ddp_ call chain or becomes irrelevant if we drop it.
+Acked-by: Richard Cochran <richardcochran@gmail.com>
