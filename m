@@ -2,215 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 774C33DFAE0
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 07:05:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C4F63DFAF2
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 07:13:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234982AbhHDFGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 01:06:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39510 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229910AbhHDFGA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 01:06:00 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF21BC0613D5;
-        Tue,  3 Aug 2021 22:05:44 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id c16so2389686lfc.2;
-        Tue, 03 Aug 2021 22:05:44 -0700 (PDT)
+        id S235189AbhHDFN2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 01:13:28 -0400
+Received: from mail-eopbgr1410109.outbound.protection.outlook.com ([40.107.141.109]:49024
+        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229910AbhHDFN1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Aug 2021 01:13:27 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iTIdSI0UUqf2NzY1VPhb2mT3WIIYo+qtfZohaK/Yo47PjW6HnL5EMQzwbPBSOt7nECK0RlTS2HPS5FtoMMcQkqZruxEG4pMIZNVY2NFFz/nyjQpb8fKIQW7gVaHnVef60rVGp8O9Og3yp2du7IMbsnfv+q56lrmuxfvDTt1XvWLE9oakZO/kiNSxltU0vMJ7RpHifN01WUsC4jJdhn99m8N8FCPBZ1z3N8b03Sr/COlpdsBPoFBqutCgqXIWmwg8+fMgZ4il528UpSHFOC0owYPPCozGffk8zcO0S7/yx71jRUAqzSS4ID2xYHQdNuKQ0RNYKKwyh3iPL3+Tk0utBQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zNuxLG9peIbQdKgYCKc3om2eeX+ueMKFAOdWUMi+i9Q=;
+ b=m7PofNWZIqV3aQboDV6BbJFRb4Hw5C+/BcaF66sT72EpeTrrCmrUyNNZPK8v2SGQrz7Z4y+yIqN2p2Cd+rCZts1w+UtyyXZkkW7qr6n08FT5fkJhkKBkPFRhPbSMSkIKRph44nJXQW4Ixtr+hamjYl1NOpk1KdSFMjjU3wAFfX5HIypPapmjZCvPLsE4XUiokewChgNmHln4OgfpqdaEa74QyGqIp7vligELwIhqFV20+aUfP5rcz3gIyr8tV2TuUW30nyQpP4s/4YNefHFaY2TqP1ngtO6G3z5bHHJgX8xwHr/d1K2CybBzqrtFaceRiIW3mH1TQnRDvRZJjSdIfQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hI5NzRhUttF3NkJIlIa+2m79J5Vt3BFIqnT8E+2YJP8=;
-        b=u/VCxW3vjNPhkEWCXTf/wTjN2vbWQc3CLJNiad4GADDgvalUCNQfa8BTEK9QsZvXcN
-         XreNRtxZ43I55Uw3RkfgQn3xdwJQ2mWIqQFfQ0dk5lY3QNy8zwDOqivjJwVyhTbwlC1O
-         hUuBN1fbXL4YSfCX+vRk8gcF41Ze0g5XgB7iOvxz03QAHPEU8UiHpYC9iZb58eMZbpQd
-         57VS/dVij0L5R28Jn11pXcqKnBgSn7LuBz84NOWhodUERqSou2azTqwEGc91e4GIZkLZ
-         ddWV0kEt6dCigqSagcWiFE3wh7x6JLXSaT6z7jJ6hxiDGN3G/1fEBgwylrOOpARcAOS7
-         rVvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hI5NzRhUttF3NkJIlIa+2m79J5Vt3BFIqnT8E+2YJP8=;
-        b=lvg58BWZ6Vdyv+1QI7OsTLybvEKPVMqVcvr+cQDit2h3AVXimFv33cjlrhRT7CNMvc
-         8aLmZF/XzHLQ4VueJDB9LxC4XBW6eoo7oAJe+oWrfbFo2kvdsWN5HOfh+nwXbh2l0tUu
-         9UCbeY0Fc1QSdqxuWqSRtwxp1K9apUSVF8GIKaLB+zcHeRiHcUJVFrHHIBb43B13Yhlz
-         CpHdKxVxLHzI9gKLDuj+khzClkMCaBgqRHTlfT/rPyzPI2/Dr1KRwKk925QfQHnBX2v4
-         tCN6aI7l40CtX1mGF/nl+h4pVxCsy9u5z7uenBWUzWI/LdHjkUT28oVuV06a5uHX043P
-         t3Zw==
-X-Gm-Message-State: AOAM530YznCiFHQiRnlFY7Yp4MTHqyc7cUW+D0qb0Wve9PxbeX7CaQNA
-        7GWsD9PGH27QzueR7L3/z0I=
-X-Google-Smtp-Source: ABdhPJyxzX4rn1jutx6PgAnxB+Sz21O4V45VqnseQdwR26l5GtR25DaMZlXCo62I3hjEwef0pLfaCA==
-X-Received: by 2002:a05:6512:3da2:: with SMTP id k34mr17306867lfv.3.1628053543074;
-        Tue, 03 Aug 2021 22:05:43 -0700 (PDT)
-Received: from localhost.localdomain ([46.61.204.60])
-        by smtp.gmail.com with ESMTPSA id n8sm83558lfk.198.2021.08.03.22.05.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Aug 2021 22:05:42 -0700 (PDT)
-Date:   Wed, 4 Aug 2021 08:05:36 +0300
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     syzbot <syzbot+c5ac86461673ef58847c@syzkaller.appspotmail.com>,
-        davem@davemloft.net, dsahern@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-Subject: Re: [syzbot] net-next boot error: WARNING: refcount bug in
- fib_create_info
-Message-ID: <20210804080536.3b655024@gmail.com>
-In-Reply-To: <20210803140435.19e560fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <0000000000005e090405c8a9e1c3@google.com>
-        <02372175-c3a1-3f8e-28fe-66d812f4c612@gmail.com>
-        <e6eab0c9-7b2e-179b-b9c0-459dd9a75ed1@gmail.com>
-        <20210803140435.19e560fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Mailer: Claws Mail 3.17.8git77 (GTK+ 2.24.33; x86_64-suse-linux-gnu)
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zNuxLG9peIbQdKgYCKc3om2eeX+ueMKFAOdWUMi+i9Q=;
+ b=Q5uuZB+qI7FyGLMmtg/sqZd6AU8gxldJrfONXJWsS54QfeoNgnTW75KAS9mUZ51Djb2wbTRA+ZzfWbCh7527DQ8paQKeK++Z+ctyGSF4Tg/o2Mto6s5UstPnK29s/akubEQ1cUDoSmDmBo7S9FE5aNWk0NeLiQlnte3WafVrj2c=
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
+ by OSAPR01MB4801.jpnprd01.prod.outlook.com (2603:1096:604:6d::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.21; Wed, 4 Aug
+ 2021 05:13:12 +0000
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::c6f:e31f:eaa9:60fe]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::c6f:e31f:eaa9:60fe%8]) with mapi id 15.20.4373.026; Wed, 4 Aug 2021
+ 05:13:12 +0000
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: RE: [PATCH net-next v2 7/8] ravb: Add internal delay hw feature to
+ struct ravb_hw_info
+Thread-Topic: [PATCH net-next v2 7/8] ravb: Add internal delay hw feature to
+ struct ravb_hw_info
+Thread-Index: AQHXh4kJVg2tFXlcHEytJvY9Z7FsDqtiSZqAgACEk/A=
+Date:   Wed, 4 Aug 2021 05:13:12 +0000
+Message-ID: <OS0PR01MB5922974FA17E6ABB4697B6B986F19@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+References: <20210802102654.5996-1-biju.das.jz@bp.renesas.com>
+ <20210802102654.5996-8-biju.das.jz@bp.renesas.com>
+ <ad727120-3ae6-4db7-e368-f06c82cfa759@gmail.com>
+In-Reply-To: <ad727120-3ae6-4db7-e368-f06c82cfa759@gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 4640d51a-47a3-4645-e5f4-08d957068e9e
+x-ms-traffictypediagnostic: OSAPR01MB4801:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <OSAPR01MB48011B7F1481A687259EE8BA86F19@OSAPR01MB4801.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Zw5rL4rNIVRZyMB76PGs94te2FrSh82ZyQx6CMYEidrirnq6yYW71nDH+Xj3Jpzr6YlvrKNBtSzaFX10VhxwX9Fi9LjAmNzXLM6PVCBQVaDc1B5rT7konn6XjIXOpszycOO9ia67Dhkk3UrmKlcfjEKeflF3k4Njjij4+pMFyKIyCoI2lPD1V34r7lbPILEIVE6ilMJdjT1NX2PJ0C8g3jHcuksqE9jedk85l5WRG9Lr5oHwk/jzQx0KWQGNORlxYaiHsOAXDFEB4iuO6TiBfLpsjqY9JLPwj7XomtT9Hb2EvnGKb0+6ADHKoCNbbLiPyem1NH5hQkJh5RZjpPlxFDkpHkakXLig1+IcXIsuyBZYraQTzMPCxHc8wQWSw5nVxangw97WKSlno7ZNtOet/ujBhA1hkys49uC92tcKQpHHqGlUn7uOJ84OZjlbvzQJlBmM8RYXDLBxAOSWEeKCDnK20iq/x77kD6Y03iDA5ajhC9QJYFVzd0IjmDxj/lOCHMi260J4LoRE1os7t5MfmelgQ2eOerXe9Z6W9hKhdVhILbhpman+0Pe2/0On5UNEkw9TssI+JU0N5LpjxMWI79S1/mtJzclglpdEjuURfHsPr2p9mU3Z4FYQuKNhqwxTiQfBqCxDYG+voem/yuRimxYmoVyoMgcZ9tNsw0JxnxVGXm1P1YL5aGgS50adNUEba6ENE5h36IIHaH7qeCu4Cg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(396003)(136003)(39860400002)(346002)(33656002)(6506007)(478600001)(71200400001)(66476007)(107886003)(316002)(54906003)(122000001)(7416002)(110136005)(26005)(86362001)(38100700002)(66556008)(66946007)(76116006)(9686003)(64756008)(66446008)(7696005)(5660300002)(4326008)(186003)(2906002)(52536014)(8676002)(38070700005)(8936002)(55016002)(83380400001)(53546011);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?R3VGbXVHZjB5UHJJYXI4SnhRZURDaWo4dTZQRG1kbDMwbDBWZEVFeFcrTHhm?=
+ =?utf-8?B?WVBaNSt4N2hWRGVyTkFUSTVQSUlpRHBkMUJSWEdSQWlTOXNyemtLRmoxbm5i?=
+ =?utf-8?B?UEZVUldSOWcrOFdLWGc0YWI2OG1HSE0vY09Yd2o0azNzbHBFcWpXMEk2NFND?=
+ =?utf-8?B?RXhlN1dTd0ZPVVFGSFUzaFFiNVhPbUpRZ0praFljVndsNlVZcEJPajFiM0I2?=
+ =?utf-8?B?NDJRbjRNbmdiMURReWhRNmt5WkRac1lNcnpJdmpPZHlQZGlYOE5WbUVoR1FS?=
+ =?utf-8?B?bk43K3N6NWZqRGdXTUk4T3Z5TXowaWxsSjVIc0RySEhKbmxWRWNYdVVPTWQw?=
+ =?utf-8?B?U3MrT0puWFE1cVppWFFPK2d0WEFYdDZkN2UrZDd5em5yRzBIa2tqcjE2a1Bo?=
+ =?utf-8?B?YWczZlJlSmdHSHdlTzZIOUVPYUQ4SnR2UmhDbERndi9Tb09XemtBMnlLNk9H?=
+ =?utf-8?B?a29nbjRVTCtNSW9RNGNNK1NiZ2FyelRqV3h3NjJQV3UzWkFqNFEvOGJPVTJP?=
+ =?utf-8?B?Y05YNnZBQmJXQVNUWHZiYXdGRnVrVmpUUm04dGtiNS9NbndEV1AzbFAwQnI3?=
+ =?utf-8?B?RHRCc2NFcFVOWU9zdUoxSDZmR0dOaXhNQmpaYjNJMmtWSTJabFJKNlZEak01?=
+ =?utf-8?B?bG00OTdjZVlJTU43ZVQ4TzhmdVdhcTJVUlh1aElYNG8wb2VSWDVmbTE0b05M?=
+ =?utf-8?B?am1VK01KMFhORzlmMnZEN08waUNJVHorN3I4V3d1RXJUZHZZYTJVV3ZROWJL?=
+ =?utf-8?B?ZmloZUVPREYwd29jMWdINWU3TDJLa21VTzB3SG9UL0VmcU1Ya1ByQ2VMam9w?=
+ =?utf-8?B?YmpjVWpnN0RHMHYycGJEbmg5K1ArU0JBMEwrSlZwTS9BUVBuWXJ3RkpYOHNY?=
+ =?utf-8?B?VldONzBvTm1RTmR5RGRLaWQzdk1RWGlpbVkwUGhLeWl5WEF5aUFYcFpFTzdX?=
+ =?utf-8?B?djNYZWFMN3NkaFVzeHZlL0tTeFY4YkpIZmhvVG1kcmZXSjk5OERHa3BnR1F2?=
+ =?utf-8?B?WjdWdXVQcEhxMHErYWsvUnRRa21DMGhQcXJFc0JXMGVGL3liUTZsWFpiWExk?=
+ =?utf-8?B?Zi9aVnRHRDBRU000cmFvU08xODR3bU5kYnpwK2laaGNqdFdiaVJpa2dtZnBV?=
+ =?utf-8?B?L3EwcmFmdCtadVlrQkRxbjdsN01HTzlwaUhsMVNkaDYyS0ZxaGVVOUc4MTFw?=
+ =?utf-8?B?UHhPZWN3M2pZWFFoL09vcHZpRlRjTkI0SDloM01nN09rdkI2elREeitzcm00?=
+ =?utf-8?B?VlNOcnlha1Y0ek9xc2RCVCtNWDFWTFBQRFFFRkIrbGl0RmlNUktnTVdYdjZh?=
+ =?utf-8?B?OEhBOElIRnFGZm5PeUE4M3BHaXZuMlJML1NvcnkxSENQSm9FYmx5WGYwMUh2?=
+ =?utf-8?B?cE5GSS96N09NS280VW9KdHJtZkpYa2NVWDNMV0R6Q3hpYlNvK1FuRm0vRHEx?=
+ =?utf-8?B?ck1iQjFVTnAzRDVWYW5jc1N4RjVhbHZ6NXNZVmtCaG5wWGFuYmMyY1ZVeXZW?=
+ =?utf-8?B?K3RNbE1aN0xBdDFQWnMxOGVITkNmOVlNcGZiRCtGem9jUk5ockNUdUNvQzBR?=
+ =?utf-8?B?TGxKZXRnLys1eUsvdlNHRDlQQUo5Z3BTZXlCanJaZU9yK052RG5yOWFyaHgv?=
+ =?utf-8?B?ZTRLZFZMRjVWaGRqODJuUzBWNDZVUWh2YlBEc3E1UnVPVE9nbjBybGRhRkVZ?=
+ =?utf-8?B?akFXM3RGR3NrNENEU1dMYUNLcEJJZGowSEMydGJZYnhkc3FsRTl1UStDYTJQ?=
+ =?utf-8?Q?4aKAP1F9uwrJTG/vQC51KmQxzCu0MGXUpQz3HMo?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4640d51a-47a3-4645-e5f4-08d957068e9e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Aug 2021 05:13:12.0867
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YjRNqbDp4Remj4vq80koKnb14yhN82g46p54Em4AO5wR7bM01fiYWDUstA5Vl88EyTqj7/IqgoeWgq2LcmDZLIa0/4XaLRoGdZx8nkVZZag=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB4801
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 3 Aug 2021 14:04:35 -0700
-Jakub Kicinski <kuba@kernel.org> wrote:
-
-> On Tue, 3 Aug 2021 19:31:50 +0300 Pavel Skripkin wrote:
-> > On 8/3/21 7:12 PM, Pavel Skripkin wrote:
-> > > On 8/3/21 7:07 PM, syzbot wrote:  
-> > >> Hello,
-> > >> 
-> > >> syzbot found the following issue on:
-> > >> 
-> > >> HEAD commit:    1187c8c4642d net: phy: mscc: make some arrays
-> > >> static const.. git tree:       net-next
-> > >> console output:
-> > >> https://syzkaller.appspot.com/x/log.txt?x=140e7b3e300000 kernel
-> > >> config:
-> > >> https://syzkaller.appspot.com/x/.config?x=f9bb42efdc6f1d7
-> > >> dashboard link:
-> > >> https://syzkaller.appspot.com/bug?extid=c5ac86461673ef58847c
-> > >> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld
-> > >> (GNU Binutils for Debian) 2.35.1
-> > >> 
-> > >> IMPORTANT: if you fix the issue, please add the following tag to
-> > >> the commit: Reported-by:
-> > >> syzbot+c5ac86461673ef58847c@syzkaller.appspotmail.com
-> > >> 
-> > >> FS-Cache: Netfs 'afs' registered for caching
-> > >> Btrfs loaded, crc32c=crc32c-intel, assert=on, zoned=yes
-> > >> Key type big_key registered
-> > >> Key type encrypted registered
-> > >> AppArmor: AppArmor sha1 policy hashing enabled
-> > >> ima: No TPM chip found, activating TPM-bypass!
-> > >> Loading compiled-in module X.509 certificates
-> > >> Loaded X.509 cert 'Build time autogenerated kernel key:
-> > >> f850c787ad998c396ae089c083b940ff0a9abb77' ima: Allocated hash
-> > >> algorithm: sha256 ima: No architecture policies found
-> > >> evm: Initialising EVM extended attributes:
-> > >> evm: security.selinux (disabled)
-> > >> evm: security.SMACK64 (disabled)
-> > >> evm: security.SMACK64EXEC (disabled)
-> > >> evm: security.SMACK64TRANSMUTE (disabled)
-> > >> evm: security.SMACK64MMAP (disabled)
-> > >> evm: security.apparmor
-> > >> evm: security.ima
-> > >> evm: security.capability
-> > >> evm: HMAC attrs: 0x1
-> > >> PM:   Magic number: 1:990:690
-> > >> printk: console [netcon0] enabled
-> > >> netconsole: network logging started
-> > >> gtp: GTP module loaded (pdp ctx size 104 bytes)
-> > >> rdma_rxe: loaded
-> > >> cfg80211: Loading compiled-in X.509 certificates for regulatory
-> > >> database cfg80211: Loaded X.509 cert 'sforshee:
-> > >> 00b28ddf47aef9cea7' ALSA device list:
-> > >>    #0: Dummy 1
-> > >>    #1: Loopback 1
-> > >>    #2: Virtual MIDI Card 1
-> > >> md: Waiting for all devices to be available before autodetect
-> > >> md: If you don't use raid, use raid=noautodetect
-> > >> md: Autodetecting RAID arrays.
-> > >> md: autorun ...
-> > >> md: ... autorun DONE.
-> > >> EXT4-fs (sda1): mounted filesystem without journal. Opts:
-> > >> (null). Quota mode: none. VFS: Mounted root (ext4 filesystem)
-> > >> readonly on device 8:1. devtmpfs: mounted
-> > >> Freeing unused kernel image (initmem) memory: 4476K
-> > >> Write protecting the kernel read-only data: 169984k
-> > >> Freeing unused kernel image (text/rodata gap) memory: 2012K
-> > >> Freeing unused kernel image (rodata/data gap) memory: 1516K
-> > >> Run /sbin/init as init process
-> > >> systemd[1]: systemd 232 running in system mode. (+PAM +AUDIT
-> > >> +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP
-> > >> +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD
-> > >> +IDN) systemd[1]: Detected virtualization kvm. systemd[1]:
-> > >> Detected architecture x86-64. systemd[1]: Set hostname to
-> > >> <syzkaller>. ------------[ cut here ]------------ refcount_t:
-> > >> addition on 0; use-after-free. WARNING: CPU: 1 PID: 1 at
-> > >> lib/refcount.c:25 refcount_warn_saturate+0x169/0x1e0
-> > >> lib/refcount.c:25 Modules linked in: CPU: 1 PID: 1 Comm: systemd
-> > >> Not tainted 5.14.0-rc3-syzkaller #0 Hardware name: Google Google
-> > >> Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > >> RIP: 0010:refcount_warn_saturate+0x169/0x1e0 lib/refcount.c:25
-> > >> Code: 09 31 ff 89 de e8 d7 fa 9e fd 84 db 0f 85 36 ff ff ff e8
-> > >> 8a f4 9e fd 48 c7 c7 c0 81 e3 89 c6 05 70 51 81 09 01 e8 48 f8
-> > >> 13 05 <0f> 0b e9 17 ff ff ff e8 6b f4 9e fd 0f b6 1d 55 51 81 09
-> > >> 31 ff 89 RSP: 0018:ffffc90000c66ab0 EFLAGS: 00010286 RAX:
-> > >> 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> > >> RDX: ffff88813fe48000 RSI: ffffffff815d7b25 RDI:
-> > >> fffff5200018cd48 RBP: 0000000000000002 R08: 0000000000000000
-> > >> R09: 0000000000000001 R10: ffffffff815d195e R11:
-> > >> 0000000000000000 R12: 0000000000000004 R13: 0000000000000001
-> > >> R14: 0000000000000000 R15: ffff888027722e00 FS:
-> > >> 00007f8c1c5d0500(0000) GS:ffff8880b9d00000(0000)
-> > >> knlGS:0000000000000000 CS:  0010 DS: 0000 ES: 0000 CR0:
-> > >> 0000000080050033 CR2: 000055ed0ced4368 CR3: 0000000026bac000
-> > >> CR4: 00000000001506e0 DR0: 0000000000000000 DR1:
-> > >> 0000000000000000 DR2: 0000000000000000 DR3: 0000000000000000
-> > >> DR6: 00000000fffe0ff0 DR7: 0000000000000400 Call Trace:
-> > >> __refcount_add include/linux/refcount.h:199 [inline]
-> > >> __refcount_inc include/linux/refcount.h:250 [inline]
-> > >> refcount_inc include/linux/refcount.h:267 [inline]
-> > >> fib_create_info+0x36af/0x4910 net/ipv4/fib_semantics.c:1554  
-> > > 
-> > > Missed refcount_set(), I think
-> > > 
-> > > diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-> > > index f29feb7772da..bb9949f6bb70 100644
-> > > --- a/net/ipv4/fib_semantics.c
-> > > +++ b/net/ipv4/fib_semantics.c
-> > > @@ -1428,6 +1428,7 @@ struct fib_info *fib_create_info(struct
-> > > fib_config *cfg,
-> > >    	}
-> > > 
-> > >    	fib_info_cnt++;
-> > > +	refcount_set(&fi->fib_treeref, 1);
-> > >    	fi->fib_net = net;
-> > >    	fi->fib_protocol = cfg->fc_protocol;
-> > >    	fi->fib_scope = cfg->fc_scope;
-> > 
-> > Oops, it's already fixed in -next, so
-> > 
-> > #syz fix: ipv4: Fix refcount warning for new fib_info
-> > 
-> > 
-> > BTW: there is one more bug with refcounts:
-> > 
-> > link_it:
-> > 	ofi = fib_find_info(fi);
-> > 	if (ofi) {
-> > 		fi->fib_dead = 1;
-> > 		free_fib_info(fi);
-> > 		refcount_inc(&ofi->fib_treeref);
-> > 
-> > 		^^^^^^^^^^^^^^^^^^^^^^^
-> > 		/ *fib_treeref is 0 here */
-> 
-> Why 0? ofi is an existing object it's already initialized.
-> 
-
-Yep, I see now, sorry for misinformation :(
-
-
-
-With regards,
-Pavel Skripkin
+SGkgU2VyZ2VpLA0KDQpUaGFua3MgZm9yIHRoZSBmZWVkYmFjaw0KDQo+IFN1YmplY3Q6IFJlOiBb
+UEFUQ0ggbmV0LW5leHQgdjIgNy84XSByYXZiOiBBZGQgaW50ZXJuYWwgZGVsYXkgaHcgZmVhdHVy
+ZQ0KPiB0byBzdHJ1Y3QgcmF2Yl9od19pbmZvDQo+IA0KPiBPbiA4LzIvMjEgMToyNiBQTSwgQmlq
+dSBEYXMgd3JvdGU6DQo+IA0KPiA+IFItQ2FyIEdlbjMgc3VwcG9ydHMgVFggYW5kIFJYIGNsb2Nr
+IGludGVybmFsIGRlbGF5IG1vZGVzLCB3aGVyZWFzDQo+ID4gUi1DYXINCj4gPiBHZW4yIGFuZCBS
+Wi9HMkwgZG8gbm90IHN1cHBvcnQgaXQuDQo+ID4gQWRkIGFuIGludGVybmFsX2RlbGF5IGh3IGZl
+YXR1cmUgYml0IHRvIHN0cnVjdCByYXZiX2h3X2luZm8gdG8gZW5hYmxlDQo+ID4gdGhpcyBvbmx5
+IGZvciBSLUNhciBHZW4zLg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogQmlqdSBEYXMgPGJpanUu
+ZGFzLmp6QGJwLnJlbmVzYXMuY29tPg0KPiA+IFJldmlld2VkLWJ5OiBMYWQgUHJhYmhha2FyIDxw
+cmFiaGFrYXIubWFoYWRldi1sYWQucmpAYnAucmVuZXNhcy5jb20+DQo+ID4gLS0tDQo+ID4gdjI6
+DQo+ID4gICogSW5jb3Jwb3JhdGVkIEFuZHJldyBhbmQgU2VyZ2VpJ3MgcmV2aWV3IGNvbW1lbnRz
+IGZvciBtYWtpbmcgaXQNCj4gc21hbGxlciBwYXRjaA0KPiA+ICAgIGFuZCBwcm92aWRlZCBkZXRh
+aWxlZCBkZXNjcmlwdGlvbi4NCj4gPiAtLS0NCj4gPiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvcmVu
+ZXNhcy9yYXZiLmggICAgICB8IDMgKysrDQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L3JlbmVz
+YXMvcmF2Yl9tYWluLmMgfCA2ICsrKystLQ0KPiA+ICAyIGZpbGVzIGNoYW5nZWQsIDcgaW5zZXJ0
+aW9ucygrKSwgMiBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25l
+dC9ldGhlcm5ldC9yZW5lc2FzL3JhdmIuaA0KPiA+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvcmVu
+ZXNhcy9yYXZiLmgNCj4gPiBpbmRleCAzZGY4MTNiMmUyNTMuLjBkNjQwZGJlMWVlZCAxMDA2NDQN
+Cj4gPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9yZW5lc2FzL3JhdmIuaA0KPiA+ICsrKyBi
+L2RyaXZlcnMvbmV0L2V0aGVybmV0L3JlbmVzYXMvcmF2Yi5oDQo+ID4gQEAgLTk5OCw2ICs5OTgs
+OSBAQCBzdHJ1Y3QgcmF2Yl9od19pbmZvIHsNCj4gPiAgCWludCBudW1fdHhfZGVzYzsNCj4gPiAg
+CWludCBzdGF0c19sZW47DQo+ID4gIAlzaXplX3Qgc2tiX3N6Ow0KPiA+ICsNCj4gPiArCS8qIGhh
+cmR3YXJlIGZlYXR1cmVzICovDQo+ID4gKwl1bnNpZ25lZCBpbnRlcm5hbF9kZWxheToxOwkvKiBS
+QVZCIGhhcyBpbnRlcm5hbCBkZWxheXMgKi8NCj4gDQo+ICAgIE9vcHMsIG1pc3NlZCBpdCBpbml0
+aWFsbHk6DQo+ICAgIFJBVkI/IFRoYXQncyBub3QgYSBkZXZpY2UgbmFtZSwgYWNjb3JkaW5nIHRv
+IHRoZSBtYW51YWxzLiBJdCBzZWVtcyB0bw0KPiBiZSB0aGUgZHJpdmVyJ3MgbmFtZS4NCg0KT0su
+IHdpbGwgY2hhbmdlIGl0IHRvIEFWQi1ETUFDIGhhcyBpbnRlcm5hbCBkZWxheXMuDQoNCkNoZWVy
+cywNCkJpanUNCg0K
