@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10FD83E044A
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 17:36:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A72853E0451
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 17:37:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239149AbhHDPgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 11:36:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42222 "EHLO
+        id S239273AbhHDPg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 11:36:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239099AbhHDPgo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 11:36:44 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 095ACC0613D5
+        with ESMTP id S239169AbhHDPgt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 11:36:49 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D44C061799
         for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 08:36:32 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id i9so2032770ilk.9
+Received: by mail-io1-xd2b.google.com with SMTP id y200so2913160iof.1
         for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 08:36:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fYPy0EiH44k22cfOkFHbddfBvF8NraMV8hju0p8WV3I=;
-        b=nfa3a3gifGAmzcnPuZcW28cXDmG7gslzHVrpFLibwHKn64pSf5F/fFXAkN5hxytTFh
-         c0t9+UkVdA1SGhzdUZGHw4bKRUh7vheepR4V2huVhnQGjCoMaUISEC37qvUHyLPLcWjZ
-         W64vnSt7ckWVNnG7lG9SI0LODBArDaedcM3lpze2zHX+DVRCAsibwTl9ReYUa28PiqWV
-         BTfrDCUlzG49F3K6xUtadCNjZT61slN9YjELEpkE+okX9aFEx99mGnCrieUQvDVgspeD
-         BVYUIMEFZ+xezpvVatoESVQsGVCq4nGfQz0wiNrWNVRlmaOgIEEiPoUsaPIlgdntuSWM
-         nq/A==
+        bh=K0ORQADKMrB8WnJjXtRJ19aGpSRDE6kwVQjbknX6w+0=;
+        b=n/uWlEkm7XKu/2h40pw0rlVHdIIKW1N/XX2i3dvGQzYOhOa58g0a2qzwYzl71tHUY1
+         wFKOeWGm1cv5/bdLm7IbF6SBcITLiqLWA5ycgPqxzJyfuMulGgAgcR0bySJEvywWTnAv
+         HhLKm+cZAsd8ZMYk4sag3eGmd6nw8hnQzx0zZW4rt3ZlBKo4ABJgMumtAgEwzXInQhpQ
+         iJ3KwWjCRmgPTALOfMwepuVx+KSN1mfPzT3wrPLd41dfgz4wQWCWmiP+hs8XtZQrRy8M
+         XifUEjHfYv5vrBNHeRttAlyHPlmfg+181MmqAXr/zPzyt08FWp1GZBUy/6Np0o6uvvJ0
+         WN8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fYPy0EiH44k22cfOkFHbddfBvF8NraMV8hju0p8WV3I=;
-        b=p/1E1PjRxJU47rCS556p5zfczfHdMPeMyGvNhcSbeSYiQ4eNMtjN4UkCkQ8N7VGY2p
-         aBif0OvNFBPKcEqOZYZ0TkAAeI42b/rZV5Ywy5Eybo7Hj5Hr7RttHUuQg3y5rYifgSpq
-         u6naswAxqIyi7wXr+7G8VL0M71HlfCZGJILj+vG8e3kArzK7aQ8351+C4Yh0YF9xe93J
-         vQ81Sa38GvfgfVBb/KV+xpgnB1jR3DYpVSCsu76Za0vfNJ07Vs11Gtg9uMiDXSLE/HDQ
-         sJmek+SJBsw6/SPO4dleXrlvLPXkRjSksBFrKMSb2oHrhgdUIj/nSibUn/bUH9Ia0dht
-         qDyg==
-X-Gm-Message-State: AOAM531RNM7h98w0+IlfPgWI9jkcKwNYpfNqjc+dftAQuIMWKeHirbgo
-        GfZxldMW/IPRjVEz/lBnk9k6Zw==
-X-Google-Smtp-Source: ABdhPJwGqr5/W6FnnktevxSPEjDx/bi8jPDZYzGSMV8sOYwzaTbXIWly9NHRvAY0TkszVEtUUoUytA==
-X-Received: by 2002:a92:d088:: with SMTP id h8mr11704ilh.165.1628091391490;
-        Wed, 04 Aug 2021 08:36:31 -0700 (PDT)
+        bh=K0ORQADKMrB8WnJjXtRJ19aGpSRDE6kwVQjbknX6w+0=;
+        b=iLu2FyB6BPiwpuI1+Wy/YK3qfF0vSUlgO3eVXzEJDFt4oBJKd05EBrdiNCxWfT4cQF
+         Ap5ri7/ojOXJukE/99JCIr7/Mrhpg2AEAwir4Hxht1UhbFfGPeA7pRb7b1B80NM/VHpg
+         HDIXsc38D5rCJ/8psWEd3N+cB3dvbTuioAG0DEbKO31wSOGk3OW1zyNIeOodicaxd/Ur
+         BoQ+D/OuyBkm4rdXvez0+cv6bPaSzM7EHGRhHQv9QQM4SKzjE3mFZK9v3tWVjtg0tyf1
+         EwGtBlStmu7RHRUFn9QPK7+jlaLpdKnBxm6XAf+GV3j2uAg6jYbPF1fGeIiOVjhUbl2a
+         D//A==
+X-Gm-Message-State: AOAM5306/FciHUs6yzh4l7oaHJTVjxLqh6O48hG3zN1iyRTgiN6c1LW1
+        G9XoLRnd6Ltn3Z+/7Z0s5a6AFb5juaWpEQ==
+X-Google-Smtp-Source: ABdhPJzomRaa3mASOSFb1gNArAICM4aHrmx+rchKx8LU2nl8KhkM/VsLskfh+uHzSYQjACEB0evP1g==
+X-Received: by 2002:a02:6a24:: with SMTP id l36mr113117jac.4.1628091392293;
+        Wed, 04 Aug 2021 08:36:32 -0700 (PDT)
 Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id z11sm1687480ioh.14.2021.08.04.08.36.30
+        by smtp.gmail.com with ESMTPSA id z11sm1687480ioh.14.2021.08.04.08.36.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Aug 2021 08:36:31 -0700 (PDT)
+        Wed, 04 Aug 2021 08:36:32 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
         cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 2/6] net: ipa: reorder netdev pointer assignments
-Date:   Wed,  4 Aug 2021 10:36:22 -0500
-Message-Id: <20210804153626.1549001-3-elder@linaro.org>
+Subject: [PATCH net-next 3/6] net: ipa: improve IPA clock error messages
+Date:   Wed,  4 Aug 2021 10:36:23 -0500
+Message-Id: <20210804153626.1549001-4-elder@linaro.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210804153626.1549001-1-elder@linaro.org>
 References: <20210804153626.1549001-1-elder@linaro.org>
@@ -64,58 +64,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Assign the ipa->modem_netdev and endpoint->netdev pointers *before*
-registering the network device.  As soon as the device is
-registered it can be opened, and by that time we'll want those
-pointers valid.
+Rearrange messages reported when errors occur in the IPA clock code,
+so that the specific interconnect is identified when an error occurs
+enabling or disabling it, or the core clock is indicated when an
+error occurs enabling it.
 
-Similarly, don't make those pointers NULL until *after* the modem
-network device is unregistered in ipa_modem_stop().
+Have ipa_interconnect_disable() return zero or the negative error
+value returned by the first interconnect that produced an error
+when disabled.  For now, the callers ignore the returned value.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_modem.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ drivers/net/ipa/ipa_clock.c | 39 +++++++++++++++++++++----------------
+ 1 file changed, 22 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_modem.c b/drivers/net/ipa/ipa_modem.c
-index 663a610979e70..ad4019e8016ec 100644
---- a/drivers/net/ipa/ipa_modem.c
-+++ b/drivers/net/ipa/ipa_modem.c
-@@ -231,13 +231,15 @@ int ipa_modem_start(struct ipa *ipa)
- 	SET_NETDEV_DEV(netdev, &ipa->pdev->dev);
- 	priv = netdev_priv(netdev);
- 	priv->ipa = ipa;
-+	ipa->name_map[IPA_ENDPOINT_AP_MODEM_TX]->netdev = netdev;
-+	ipa->name_map[IPA_ENDPOINT_AP_MODEM_RX]->netdev = netdev;
-+	ipa->modem_netdev = netdev;
+diff --git a/drivers/net/ipa/ipa_clock.c b/drivers/net/ipa/ipa_clock.c
+index 69ef6ea41e619..849b6ec671a4d 100644
+--- a/drivers/net/ipa/ipa_clock.c
++++ b/drivers/net/ipa/ipa_clock.c
+@@ -144,8 +144,12 @@ static int ipa_interconnect_enable(struct ipa *ipa)
+ 		ret = icc_set_bw(interconnect->path,
+ 				 interconnect->average_bandwidth,
+ 				 interconnect->peak_bandwidth);
+-		if (ret)
++		if (ret) {
++			dev_err(&ipa->pdev->dev,
++				"error %d enabling %s interconnect\n",
++				ret, icc_get_name(interconnect->path));
+ 			goto out_unwind;
++		}
+ 		interconnect++;
+ 	}
  
- 	ret = register_netdev(netdev);
--	if (!ret) {
--		ipa->modem_netdev = netdev;
--		ipa->name_map[IPA_ENDPOINT_AP_MODEM_TX]->netdev = netdev;
--		ipa->name_map[IPA_ENDPOINT_AP_MODEM_RX]->netdev = netdev;
--	} else {
+@@ -159,10 +163,11 @@ static int ipa_interconnect_enable(struct ipa *ipa)
+ }
+ 
+ /* To disable an interconnect, we just its bandwidth to 0 */
+-static void ipa_interconnect_disable(struct ipa *ipa)
++static int ipa_interconnect_disable(struct ipa *ipa)
+ {
+ 	struct ipa_interconnect *interconnect;
+ 	struct ipa_clock *clock = ipa->clock;
++	struct device *dev = &ipa->pdev->dev;
+ 	int result = 0;
+ 	u32 count;
+ 	int ret;
+@@ -172,13 +177,16 @@ static void ipa_interconnect_disable(struct ipa *ipa)
+ 	while (count--) {
+ 		interconnect--;
+ 		ret = icc_set_bw(interconnect->path, 0, 0);
+-		if (ret && !result)
+-			result = ret;
++		if (ret) {
++			dev_err(dev, "error %d disabling %s interconnect\n",
++				ret, icc_get_name(interconnect->path));
++			/* Try to disable all; record only the first error */
++			if (!result)
++				result = ret;
++		}
+ 	}
+ 
+-	if (result)
+-		dev_err(&ipa->pdev->dev,
+-			"error %d disabling IPA interconnects\n", ret);
++	return result;
+ }
+ 
+ /* Turn on IPA clocks, including interconnects */
+@@ -191,8 +199,10 @@ static int ipa_clock_enable(struct ipa *ipa)
+ 		return ret;
+ 
+ 	ret = clk_prepare_enable(ipa->clock->core);
+-	if (ret)
+-		ipa_interconnect_disable(ipa);
 +	if (ret) {
-+		ipa->modem_netdev = NULL;
-+		ipa->name_map[IPA_ENDPOINT_AP_MODEM_RX]->netdev = NULL;
-+		ipa->name_map[IPA_ENDPOINT_AP_MODEM_TX]->netdev = NULL;
- 		free_netdev(netdev);
- 	}
++		dev_err(&ipa->pdev->dev, "error %d enabling core clock\n", ret);
++		(void)ipa_interconnect_disable(ipa);
++	}
  
-@@ -276,10 +278,10 @@ int ipa_modem_stop(struct ipa *ipa)
- 		/* If it was opened, stop it first */
- 		if (netdev->flags & IFF_UP)
- 			(void)ipa_stop(netdev);
--		ipa->name_map[IPA_ENDPOINT_AP_MODEM_RX]->netdev = NULL;
--		ipa->name_map[IPA_ENDPOINT_AP_MODEM_TX]->netdev = NULL;
--		ipa->modem_netdev = NULL;
- 		unregister_netdev(netdev);
-+		ipa->modem_netdev = NULL;
-+		ipa->name_map[IPA_ENDPOINT_AP_MODEM_RX]->netdev = NULL;
-+		ipa->name_map[IPA_ENDPOINT_AP_MODEM_TX]->netdev = NULL;
- 		free_netdev(netdev);
- 	}
+ 	return ret;
+ }
+@@ -201,7 +211,7 @@ static int ipa_clock_enable(struct ipa *ipa)
+ static void ipa_clock_disable(struct ipa *ipa)
+ {
+ 	clk_disable_unprepare(ipa->clock->core);
+-	ipa_interconnect_disable(ipa);
++	(void)ipa_interconnect_disable(ipa);
+ }
  
+ /* Get an IPA clock reference, but only if the reference count is
+@@ -238,13 +248,8 @@ void ipa_clock_get(struct ipa *ipa)
+ 		goto out_mutex_unlock;
+ 
+ 	ret = ipa_clock_enable(ipa);
+-	if (ret) {
+-		dev_err(&ipa->pdev->dev, "error %d enabling IPA clock\n", ret);
+-		goto out_mutex_unlock;
+-	}
+-
+-	refcount_set(&clock->count, 1);
+-
++	if (!ret)
++		refcount_set(&clock->count, 1);
+ out_mutex_unlock:
+ 	mutex_unlock(&clock->mutex);
+ }
 -- 
 2.27.0
 
