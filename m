@@ -2,192 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 442F33DFBAB
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 09:03:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BE213DFBAD
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 09:03:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235752AbhHDHDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 03:03:49 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:41826 "EHLO a.mx.secunet.com"
+        id S235766AbhHDHDx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 03:03:53 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:41858 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235720AbhHDHDq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S235723AbhHDHDq (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 4 Aug 2021 03:03:46 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id D73BB205E3;
-        Wed,  4 Aug 2021 09:03:32 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTP id 833A320534;
+        Wed,  4 Aug 2021 09:03:33 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id X0KoHjyTzM4c; Wed,  4 Aug 2021 09:03:31 +0200 (CEST)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        with ESMTP id nB0TtGpQpH5j; Wed,  4 Aug 2021 09:03:32 +0200 (CEST)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id C2AE2205A4;
-        Wed,  4 Aug 2021 09:03:31 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 41273205DD;
+        Wed,  4 Aug 2021 09:03:32 +0200 (CEST)
 Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
-        by mailout2.secunet.com (Postfix) with ESMTP id BDA9C80004A;
-        Wed,  4 Aug 2021 09:03:31 +0200 (CEST)
+        by mailout1.secunet.com (Postfix) with ESMTP id 38B2880004A;
+        Wed,  4 Aug 2021 09:03:32 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 4 Aug 2021 09:03:31 +0200
+ 15.1.2176.2; Wed, 4 Aug 2021 09:03:32 +0200
 Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 4 Aug 2021
  09:03:31 +0200
 Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 10DD531808F6; Wed,  4 Aug 2021 09:03:31 +0200 (CEST)
+        id 15BF4318095E; Wed,  4 Aug 2021 09:03:31 +0200 (CEST)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH 3/6] xfrm: Fix RCU vs hash_resize_mutex lock inversion
-Date:   Wed, 4 Aug 2021 09:03:26 +0200
-Message-ID: <20210804070329.1357123-4-steffen.klassert@secunet.com>
+Subject: [PATCH 4/6] net/xfrm/compat: Copy xfrm_spdattr_type_t atributes
+Date:   Wed, 4 Aug 2021 09:03:27 +0200
+Message-ID: <20210804070329.1357123-5-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210804070329.1357123-1-steffen.klassert@secunet.com>
 References: <20210804070329.1357123-1-steffen.klassert@secunet.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
  mbx-essen-01.secunet.de (10.53.40.197)
 X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Frederic Weisbecker <frederic@kernel.org>
+From: Dmitry Safonov <dima@arista.com>
 
-xfrm_bydst_resize() calls synchronize_rcu() while holding
-hash_resize_mutex. But then on PREEMPT_RT configurations,
-xfrm_policy_lookup_bytype() may acquire that mutex while running in an
-RCU read side critical section. This results in a deadlock.
+The attribute-translator has to take in mind maxtype, that is
+xfrm_link::nla_max. When it is set, attributes are not of xfrm_attr_type_t.
+Currently, they can be only XFRMA_SPD_MAX (message XFRM_MSG_NEWSPDINFO),
+their UABI is the same for 64/32-bit, so just copy them.
 
-In fact the scope of hash_resize_mutex is way beyond the purpose of
-xfrm_policy_lookup_bytype() to just fetch a coherent and stable policy
-for a given destination/direction, along with other details.
+Thanks to YueHaibing for reporting this:
+In xfrm_user_rcv_msg_compat() if maxtype is not zero and less than
+XFRMA_MAX, nlmsg_parse_deprecated() do not initialize attrs array fully.
+xfrm_xlate32() will access uninit 'attrs[i]' while iterating all attrs
+array.
 
-The lower level net->xfrm.xfrm_policy_lock, which among other things
-protects per destination/direction references to policy entries, is
-enough to serialize and benefit from priority inheritance against the
-write side. As a bonus, it makes it officially a per network namespace
-synchronization business where a policy table resize on namespace A
-shouldn't block a policy lookup on namespace B.
+KASAN: probably user-memory-access in range [0x0000000041b58ab0-0x0000000041b58ab7]
+CPU: 0 PID: 15799 Comm: syz-executor.2 Tainted: G        W         5.14.0-rc1-syzkaller #0
+RIP: 0010:nla_type include/net/netlink.h:1130 [inline]
+RIP: 0010:xfrm_xlate32_attr net/xfrm/xfrm_compat.c:410 [inline]
+RIP: 0010:xfrm_xlate32 net/xfrm/xfrm_compat.c:532 [inline]
+RIP: 0010:xfrm_user_rcv_msg_compat+0x5e5/0x1070 net/xfrm/xfrm_compat.c:577
+[...]
+Call Trace:
+ xfrm_user_rcv_msg+0x556/0x8b0 net/xfrm/xfrm_user.c:2774
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
+ xfrm_netlink_rcv+0x6b/0x90 net/xfrm/xfrm_user.c:2824
+ netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
+ netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
+ sock_sendmsg_nosec net/socket.c:702 [inline]
 
-Fixes: 77cc278f7b20 (xfrm: policy: Use sequence counters with associated lock)
-Cc: stable@vger.kernel.org
-Cc: Ahmed S. Darwish <a.darwish@linutronix.de>
-Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: Varad Gautam <varad.gautam@suse.com>
-Cc: Steffen Klassert <steffen.klassert@secunet.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: David S. Miller <davem@davemloft.net>
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Fixes: 5106f4a8acff ("xfrm/compat: Add 32=>64-bit messages translator")
+Cc: <stable@kernel.org>
+Reported-by: YueHaibing <yuehaibing@huawei.com>
+Signed-off-by: Dmitry Safonov <dima@arista.com>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 ---
- include/net/netns/xfrm.h |  1 +
- net/xfrm/xfrm_policy.c   | 17 ++++++++---------
- 2 files changed, 9 insertions(+), 9 deletions(-)
+ net/xfrm/xfrm_compat.c | 49 +++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 44 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/netns/xfrm.h b/include/net/netns/xfrm.h
-index e816b6a3ef2b..9b376b87bd54 100644
---- a/include/net/netns/xfrm.h
-+++ b/include/net/netns/xfrm.h
-@@ -74,6 +74,7 @@ struct netns_xfrm {
- #endif
- 	spinlock_t		xfrm_state_lock;
- 	seqcount_spinlock_t	xfrm_state_hash_generation;
-+	seqcount_spinlock_t	xfrm_policy_hash_generation;
+diff --git a/net/xfrm/xfrm_compat.c b/net/xfrm/xfrm_compat.c
+index a20aec9d7393..2bf269390163 100644
+--- a/net/xfrm/xfrm_compat.c
++++ b/net/xfrm/xfrm_compat.c
+@@ -298,8 +298,16 @@ static int xfrm_xlate64(struct sk_buff *dst, const struct nlmsghdr *nlh_src)
+ 	len = nlmsg_attrlen(nlh_src, xfrm_msg_min[type]);
  
- 	spinlock_t xfrm_policy_lock;
- 	struct mutex xfrm_cfg_mutex;
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index ce500f847b99..46a6d15b66d6 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -155,7 +155,6 @@ static struct xfrm_policy_afinfo const __rcu *xfrm_policy_afinfo[AF_INET6 + 1]
- 						__read_mostly;
+ 	nla_for_each_attr(nla, attrs, len, remaining) {
+-		int err = xfrm_xlate64_attr(dst, nla);
++		int err;
  
- static struct kmem_cache *xfrm_dst_cache __ro_after_init;
--static __read_mostly seqcount_mutex_t xfrm_policy_hash_generation;
++		switch (type) {
++		case XFRM_MSG_NEWSPDINFO:
++			err = xfrm_nla_cpy(dst, nla, nla_len(nla));
++			break;
++		default:
++			err = xfrm_xlate64_attr(dst, nla);
++			break;
++		}
+ 		if (err)
+ 			return err;
+ 	}
+@@ -341,7 +349,8 @@ static int xfrm_alloc_compat(struct sk_buff *skb, const struct nlmsghdr *nlh_src
  
- static struct rhashtable xfrm_policy_inexact_table;
- static const struct rhashtable_params xfrm_pol_inexact_params;
-@@ -585,7 +584,7 @@ static void xfrm_bydst_resize(struct net *net, int dir)
- 		return;
+ /* Calculates len of translated 64-bit message. */
+ static size_t xfrm_user_rcv_calculate_len64(const struct nlmsghdr *src,
+-					    struct nlattr *attrs[XFRMA_MAX+1])
++					    struct nlattr *attrs[XFRMA_MAX + 1],
++					    int maxtype)
+ {
+ 	size_t len = nlmsg_len(src);
  
- 	spin_lock_bh(&net->xfrm.xfrm_policy_lock);
--	write_seqcount_begin(&xfrm_policy_hash_generation);
-+	write_seqcount_begin(&net->xfrm.xfrm_policy_hash_generation);
- 
- 	odst = rcu_dereference_protected(net->xfrm.policy_bydst[dir].table,
- 				lockdep_is_held(&net->xfrm.xfrm_policy_lock));
-@@ -596,7 +595,7 @@ static void xfrm_bydst_resize(struct net *net, int dir)
- 	rcu_assign_pointer(net->xfrm.policy_bydst[dir].table, ndst);
- 	net->xfrm.policy_bydst[dir].hmask = nhashmask;
- 
--	write_seqcount_end(&xfrm_policy_hash_generation);
-+	write_seqcount_end(&net->xfrm.xfrm_policy_hash_generation);
- 	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
- 
- 	synchronize_rcu();
-@@ -1245,7 +1244,7 @@ static void xfrm_hash_rebuild(struct work_struct *work)
- 	} while (read_seqretry(&net->xfrm.policy_hthresh.lock, seq));
- 
- 	spin_lock_bh(&net->xfrm.xfrm_policy_lock);
--	write_seqcount_begin(&xfrm_policy_hash_generation);
-+	write_seqcount_begin(&net->xfrm.xfrm_policy_hash_generation);
- 
- 	/* make sure that we can insert the indirect policies again before
- 	 * we start with destructive action.
-@@ -1354,7 +1353,7 @@ static void xfrm_hash_rebuild(struct work_struct *work)
- 
- out_unlock:
- 	__xfrm_policy_inexact_flush(net);
--	write_seqcount_end(&xfrm_policy_hash_generation);
-+	write_seqcount_end(&net->xfrm.xfrm_policy_hash_generation);
- 	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
- 
- 	mutex_unlock(&hash_resize_mutex);
-@@ -2095,9 +2094,9 @@ static struct xfrm_policy *xfrm_policy_lookup_bytype(struct net *net, u8 type,
- 	rcu_read_lock();
-  retry:
- 	do {
--		sequence = read_seqcount_begin(&xfrm_policy_hash_generation);
-+		sequence = read_seqcount_begin(&net->xfrm.xfrm_policy_hash_generation);
- 		chain = policy_hash_direct(net, daddr, saddr, family, dir);
--	} while (read_seqcount_retry(&xfrm_policy_hash_generation, sequence));
-+	} while (read_seqcount_retry(&net->xfrm.xfrm_policy_hash_generation, sequence));
- 
- 	ret = NULL;
- 	hlist_for_each_entry_rcu(pol, chain, bydst) {
-@@ -2128,7 +2127,7 @@ static struct xfrm_policy *xfrm_policy_lookup_bytype(struct net *net, u8 type,
+@@ -358,10 +367,20 @@ static size_t xfrm_user_rcv_calculate_len64(const struct nlmsghdr *src,
+ 	case XFRM_MSG_POLEXPIRE:
+ 		len += 8;
+ 		break;
++	case XFRM_MSG_NEWSPDINFO:
++		/* attirbutes are xfrm_spdattr_type_t, not xfrm_attr_type_t */
++		return len;
+ 	default:
+ 		break;
  	}
  
- skip_inexact:
--	if (read_seqcount_retry(&xfrm_policy_hash_generation, sequence))
-+	if (read_seqcount_retry(&net->xfrm.xfrm_policy_hash_generation, sequence))
- 		goto retry;
++	/* Unexpected for anything, but XFRM_MSG_NEWSPDINFO, please
++	 * correct both 64=>32-bit and 32=>64-bit translators to copy
++	 * new attributes.
++	 */
++	if (WARN_ON_ONCE(maxtype))
++		return len;
++
+ 	if (attrs[XFRMA_SA])
+ 		len += 4;
+ 	if (attrs[XFRMA_POLICY])
+@@ -440,7 +459,8 @@ static int xfrm_xlate32_attr(void *dst, const struct nlattr *nla,
  
- 	if (ret && !xfrm_pol_hold_rcu(ret))
-@@ -4084,6 +4083,7 @@ static int __net_init xfrm_net_init(struct net *net)
- 	/* Initialize the per-net locks here */
- 	spin_lock_init(&net->xfrm.xfrm_state_lock);
- 	spin_lock_init(&net->xfrm.xfrm_policy_lock);
-+	seqcount_spinlock_init(&net->xfrm.xfrm_policy_hash_generation, &net->xfrm.xfrm_policy_lock);
- 	mutex_init(&net->xfrm.xfrm_cfg_mutex);
- 
- 	rv = xfrm_statistics_init(net);
-@@ -4128,7 +4128,6 @@ void __init xfrm_init(void)
+ static int xfrm_xlate32(struct nlmsghdr *dst, const struct nlmsghdr *src,
+ 			struct nlattr *attrs[XFRMA_MAX+1],
+-			size_t size, u8 type, struct netlink_ext_ack *extack)
++			size_t size, u8 type, int maxtype,
++			struct netlink_ext_ack *extack)
  {
- 	register_pernet_subsys(&xfrm_net_ops);
- 	xfrm_dev_init();
--	seqcount_mutex_init(&xfrm_policy_hash_generation, &hash_resize_mutex);
- 	xfrm_input_init();
+ 	size_t pos;
+ 	int i;
+@@ -520,6 +540,25 @@ static int xfrm_xlate32(struct nlmsghdr *dst, const struct nlmsghdr *src,
+ 	}
+ 	pos = dst->nlmsg_len;
  
- #ifdef CONFIG_XFRM_ESPINTCP
++	if (maxtype) {
++		/* attirbutes are xfrm_spdattr_type_t, not xfrm_attr_type_t */
++		WARN_ON_ONCE(src->nlmsg_type != XFRM_MSG_NEWSPDINFO);
++
++		for (i = 1; i <= maxtype; i++) {
++			int err;
++
++			if (!attrs[i])
++				continue;
++
++			/* just copy - no need for translation */
++			err = xfrm_attr_cpy32(dst, &pos, attrs[i], size,
++					nla_len(attrs[i]), nla_len(attrs[i]));
++			if (err)
++				return err;
++		}
++		return 0;
++	}
++
+ 	for (i = 1; i < XFRMA_MAX + 1; i++) {
+ 		int err;
+ 
+@@ -564,7 +603,7 @@ static struct nlmsghdr *xfrm_user_rcv_msg_compat(const struct nlmsghdr *h32,
+ 	if (err < 0)
+ 		return ERR_PTR(err);
+ 
+-	len = xfrm_user_rcv_calculate_len64(h32, attrs);
++	len = xfrm_user_rcv_calculate_len64(h32, attrs, maxtype);
+ 	/* The message doesn't need translation */
+ 	if (len == nlmsg_len(h32))
+ 		return NULL;
+@@ -574,7 +613,7 @@ static struct nlmsghdr *xfrm_user_rcv_msg_compat(const struct nlmsghdr *h32,
+ 	if (!h64)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	err = xfrm_xlate32(h64, h32, attrs, len, type, extack);
++	err = xfrm_xlate32(h64, h32, attrs, len, type, maxtype, extack);
+ 	if (err < 0) {
+ 		kvfree(h64);
+ 		return ERR_PTR(err);
 -- 
 2.25.1
 
