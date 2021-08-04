@@ -2,283 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2C0F3DFD03
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 10:34:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A5523DFD2B
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 10:43:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236637AbhHDIfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 04:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57856 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236613AbhHDIe4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 04:34:56 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 864C5C061798
-        for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 01:34:40 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id w17so2821922ybl.11
-        for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 01:34:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0CTfCNbfY1m9OBrWFZPhcEhGSy7DNXKX4GwNGkq+X1g=;
-        b=QmT3pbXMsz09tghu3H/sl/G9IDaUhFSWKS74ovRCAFzugw78Ehpt8Zv0Bhs3/XC0mJ
-         BgbGt3YjtGmG1cB8/xM8S8gj0VGKgyFq4CwCqPz9QG3hluAASdeghf0dYhTed90ywkp4
-         csPSMNGXzqJqF5gIZmUVrYGjkY4W9eAxqfIYsgmJsbTs6djsUrvNlyc4hEdxc0Ysa3Mj
-         MPb2pKrKk++1vNXbUtPt5yfykaoZiMTvieLMkO3/9no515vi4YIr5/5XvAyWJKgpBt+J
-         tbNdv0midy6C0QrSTrV76g1vQDFuSzcpjxGqbOm6pmH0Rmdi8BSTm4T4Yu0sUfBRsUUN
-         yKIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0CTfCNbfY1m9OBrWFZPhcEhGSy7DNXKX4GwNGkq+X1g=;
-        b=OySOBECS4MiwJ6RusmCkKyHzCUmNXH/OID7n0Q/rJfKo1UeL8iEhAXjCkxu9bk769T
-         fGFFJOa2GXw0njbhF3TU7yHyKx2kNHsub+VoKD3ewV2prGGorLfQF2vMcr8sl+BboVV1
-         oVBVHjppHb0nmwtc6wkZ88LZlFvjuIEw53g8jxorQrFVa+y8P2TNywXffGCMC1pUserg
-         jNBpnErDKSrYTQAdMLCh/1k7FBZDNfs1namPghAJHreGje7oILF+5XjHaKT+GokImU/2
-         fQcPUWdlw29hb3OxPZKz+NgjyAacqwHZCv1Ju2gafYO4wG1VVJ4Wo6RMVeUXcQUzHie6
-         rtSA==
-X-Gm-Message-State: AOAM532Ey2r1o5/+jXSJIJkzHutxbBuoLRKtM8Czfe3X9FwyyMHDTX3Z
-        zgTjtFIWlCHjolvbjSzQfUZu3gHKI4dpv40IvPxRV6z0dFeJwsr1
-X-Google-Smtp-Source: ABdhPJzBEBMFio/4f/n7MXtT8b+2gqBl/NcHszvil/PLytVOHO6+5FiSb1mclZkBCsyKGgRpmhbupM/gkQFyJ4THnPg=
-X-Received: by 2002:a25:ad57:: with SMTP id l23mr34970381ybe.303.1628066079331;
- Wed, 04 Aug 2021 01:34:39 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210804075556.2582-1-ptikhomirov@virtuozzo.com>
-In-Reply-To: <20210804075556.2582-1-ptikhomirov@virtuozzo.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 4 Aug 2021 10:34:28 +0200
-Message-ID: <CANn89i+Sz1xLmo1tFgbx0KH=RJks6Q=zw0O7NM962T-FG063aQ@mail.gmail.com>
-Subject: Re: [PATCH v3] sock: allow reading and changing sk_userlocks with setsockopt
-To:     Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S236657AbhHDIne (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 04:43:34 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:52398 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235307AbhHDInd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 04:43:33 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 1748hELW097792;
+        Wed, 4 Aug 2021 03:43:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1628066594;
+        bh=kQdRC18Y8lAmvWSjJzUGN6NTvpsn6EzbOCLRcl0VoQ4=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=GHJqndX2yaqnb5IMEUk2J8W3O6cBIsv27A7MRTzbXbxqjoQDtKFIprL7Tw3R6UmiQ
+         nxDOAFavzNVzoCbQNQWjrMtCm6CA615YZnWSpNXGJ4w9t8a7/eClomq46H2HM8NhCj
+         kr4nyX7srI/qqAtC10rAfJXiFx0cvtr2d1S2jDNc=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 1748hEB8039559
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 4 Aug 2021 03:43:14 -0500
+Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 4 Aug
+ 2021 03:43:13 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Wed, 4 Aug 2021 03:43:13 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 1748hBFx100102;
+        Wed, 4 Aug 2021 03:43:12 -0500
+Subject: Re: [PATCH net-next 1/4] ethtool: runtime-resume netdev parent before
+ ethtool ioctl ops
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Paolo Abeni <pabeni@redhat.com>,
-        Florian Westphal <fw@strlen.de>,
-        LKML <linux-kernel@vger.kernel.org>, linux-alpha@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        sparclinux@vger.kernel.org,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Andrei Vagin <avagin@gmail.com>, kernel@openvz.org
-Content-Type: text/plain; charset="UTF-8"
+        David Miller <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+References: <106547ef-7a61-2064-33f5-3cc8d12adb34@gmail.com>
+ <cb44d295-5267-48a7-b7c7-e4bf5b884e7a@gmail.com>
+ <b4744988-4463-6463-243a-354cd87c4ced@ti.com>
+ <75bdf142-f5f4-9a98-bf85-ac2cbbf1179b@gmail.com>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <5b401877-51a2-7a67-09b4-4227a82ce027@ti.com>
+Date:   Wed, 4 Aug 2021 11:43:11 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <75bdf142-f5f4-9a98-bf85-ac2cbbf1179b@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 4, 2021 at 9:56 AM Pavel Tikhomirov
-<ptikhomirov@virtuozzo.com> wrote:
->
-> SOCK_SNDBUF_LOCK and SOCK_RCVBUF_LOCK flags disable automatic socket
-> buffers adjustment done by kernel (see tcp_fixup_rcvbuf() and
-> tcp_sndbuf_expand()). If we've just created a new socket this adjustment
-> is enabled on it, but if one changes the socket buffer size by
-> setsockopt(SO_{SND,RCV}BUF*) it becomes disabled.
->
-> CRIU needs to call setsockopt(SO_{SND,RCV}BUF*) on each socket on
-> restore as it first needs to increase buffer sizes for packet queues
-> restore and second it needs to restore back original buffer sizes.
-
-We could argue the bug is in TCP_REPAIR code, not allowing restoring
-queues unless
-those setsockopt() calls have been done.
-
-For instance SO_RCVLOWAT is able to automatically increase sk->sk_rcvbuf
-
-But I think this feature might be useful regardless of TCP_REPAIR needs.
-
-(There is no way to 'undo' a prior SO_RCVBUF or SO_SNDBUF since they are setting
-the SOCK_[SND|RCV]BUF_LOCK bits permanently)
-
-Reviewed-by: Eric Dumazet <edumazet@google.com>
 
 
-> So after CRIU restore all sockets become non-auto-adjustable, which can
-> decrease network performance of restored applications significantly.
->
-> CRIU need to be able to restore sockets with enabled/disabled adjustment
-> to the same state it was before dump, so let's add special setsockopt
-> for it.
->
-> Let's also export SOCK_SNDBUF_LOCK and SOCK_RCVBUF_LOCK flags to uAPI so
-> that using these interface one can reenable automatic socket buffer
-> adjustment on their sockets.
->
-> Signed-off-by: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
-> ---
-> Here is a corresponding CRIU commits using these new feature to fix slow
-> download speed problem after migration:
-> https://github.com/checkpoint-restore/criu/pull/1568
->
-> Origin of the problem:
->
-> We have a customer in Virtuozzo who mentioned that nginx server becomes
-> slower after container migration. Especially it is easy to mention when
-> you wget some big file via localhost from the same container which was
-> just migrated.
->
-> By strace-ing all nginx processes I see that nginx worker process before
-> c/r sends data to local wget with big chunks ~1.5Mb, but after c/r it
-> only succeeds to send by small chunks ~64Kb.
->
-> Before:
-> sendfile(12, 13, [7984974] => [9425600], 11479629) = 1440626 <0.000180>
->
-> After:
-> sendfile(8, 13, [1507275] => [1568768], 17957328) = 61493 <0.000675>
->
-> Smaller buffer can explain the decrease in download speed. So as a POC I
-> just commented out all buffer setting manipulations and that helped.
->
-> Note: I'm not sure about the way I export flags to uAPI, probably there
-> is some other better way without separating BUF and BIND lock flags to
-> different header files.
->
-> v2: define SOCK_BUF_LOCK_MASK mask
-> v3: reject other flags except SOCK_SNDBUF_LOCK and SOCK_RCVBUF_LOCK, use
-> mask in sock_getsockopt, export flags to uapi/linux/socket.h
-> ---
->  arch/alpha/include/uapi/asm/socket.h  |  2 ++
->  arch/mips/include/uapi/asm/socket.h   |  2 ++
->  arch/parisc/include/uapi/asm/socket.h |  2 ++
->  arch/sparc/include/uapi/asm/socket.h  |  2 ++
->  include/net/sock.h                    |  3 +--
->  include/uapi/asm-generic/socket.h     |  2 ++
->  include/uapi/linux/socket.h           |  5 +++++
->  net/core/sock.c                       | 13 +++++++++++++
->  8 files changed, 29 insertions(+), 2 deletions(-)
->
-> diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/uapi/asm/socket.h
-> index 6b3daba60987..1dd9baf4a6c2 100644
-> --- a/arch/alpha/include/uapi/asm/socket.h
-> +++ b/arch/alpha/include/uapi/asm/socket.h
-> @@ -129,6 +129,8 @@
->
->  #define SO_NETNS_COOKIE                71
->
-> +#define SO_BUF_LOCK            72
-> +
->  #if !defined(__KERNEL__)
->
->  #if __BITS_PER_LONG == 64
-> diff --git a/arch/mips/include/uapi/asm/socket.h b/arch/mips/include/uapi/asm/socket.h
-> index cdf404a831b2..1eaf6a1ca561 100644
-> --- a/arch/mips/include/uapi/asm/socket.h
-> +++ b/arch/mips/include/uapi/asm/socket.h
-> @@ -140,6 +140,8 @@
->
->  #define SO_NETNS_COOKIE                71
->
-> +#define SO_BUF_LOCK            72
-> +
->  #if !defined(__KERNEL__)
->
->  #if __BITS_PER_LONG == 64
-> diff --git a/arch/parisc/include/uapi/asm/socket.h b/arch/parisc/include/uapi/asm/socket.h
-> index 5b5351cdcb33..8baaad52d799 100644
-> --- a/arch/parisc/include/uapi/asm/socket.h
-> +++ b/arch/parisc/include/uapi/asm/socket.h
-> @@ -121,6 +121,8 @@
->
->  #define SO_NETNS_COOKIE                0x4045
->
-> +#define SO_BUF_LOCK            0x4046
-> +
->  #if !defined(__KERNEL__)
->
->  #if __BITS_PER_LONG == 64
-> diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/uapi/asm/socket.h
-> index 92675dc380fa..e80ee8641ac3 100644
-> --- a/arch/sparc/include/uapi/asm/socket.h
-> +++ b/arch/sparc/include/uapi/asm/socket.h
-> @@ -122,6 +122,8 @@
->
->  #define SO_NETNS_COOKIE          0x0050
->
-> +#define SO_BUF_LOCK              0x0051
-> +
->  #if !defined(__KERNEL__)
->
->
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index ff1be7e7e90b..6e761451c927 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -68,6 +68,7 @@
->  #include <net/tcp_states.h>
->  #include <linux/net_tstamp.h>
->  #include <net/l3mdev.h>
-> +#include <uapi/linux/socket.h>
->
->  /*
->   * This structure really needs to be cleaned up.
-> @@ -1438,8 +1439,6 @@ static inline int __sk_prot_rehash(struct sock *sk)
->  #define RCV_SHUTDOWN   1
->  #define SEND_SHUTDOWN  2
->
-> -#define SOCK_SNDBUF_LOCK       1
-> -#define SOCK_RCVBUF_LOCK       2
->  #define SOCK_BINDADDR_LOCK     4
->  #define SOCK_BINDPORT_LOCK     8
->
-> diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
-> index d588c244ec2f..1f0a2b4864e4 100644
-> --- a/include/uapi/asm-generic/socket.h
-> +++ b/include/uapi/asm-generic/socket.h
-> @@ -124,6 +124,8 @@
->
->  #define SO_NETNS_COOKIE                71
->
-> +#define SO_BUF_LOCK            72
-> +
->  #if !defined(__KERNEL__)
->
->  #if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
-> diff --git a/include/uapi/linux/socket.h b/include/uapi/linux/socket.h
-> index c3409c8ec0dd..eb0a9a5b6e71 100644
-> --- a/include/uapi/linux/socket.h
-> +++ b/include/uapi/linux/socket.h
-> @@ -26,4 +26,9 @@ struct __kernel_sockaddr_storage {
->         };
->  };
->
-> +#define SOCK_SNDBUF_LOCK       1
-> +#define SOCK_RCVBUF_LOCK       2
-> +
-> +#define SOCK_BUF_LOCK_MASK (SOCK_SNDBUF_LOCK | SOCK_RCVBUF_LOCK)
-> +
->  #endif /* _UAPI_LINUX_SOCKET_H */
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index 9671c32e6ef5..aada649e07e8 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -1358,6 +1358,15 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
->                 ret = sock_bindtoindex_locked(sk, val);
->                 break;
->
-> +       case SO_BUF_LOCK:
-> +               if (val & ~SOCK_BUF_LOCK_MASK) {
-> +                       ret = -EINVAL;
-> +                       break;
-> +               }
-> +               sk->sk_userlocks = val | (sk->sk_userlocks &
-> +                                         ~SOCK_BUF_LOCK_MASK);
-> +               break;
-> +
->         default:
->                 ret = -ENOPROTOOPT;
->                 break;
-> @@ -1720,6 +1729,10 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
->                 v.val64 = sock_net(sk)->net_cookie;
->                 break;
->
-> +       case SO_BUF_LOCK:
-> +               v.val = sk->sk_userlocks & SOCK_BUF_LOCK_MASK;
-> +               break;
-> +
->         default:
->                 /* We implement the SO_SNDLOWAT etc to not be settable
->                  * (1003.1g 7).
-> --
-> 2.31.1
->
+On 04/08/2021 00:32, Heiner Kallweit wrote:
+> On 03.08.2021 22:41, Grygorii Strashko wrote:
+>>
+>>
+>> On 01/08/2021 13:36, Heiner Kallweit wrote:
+>>> If a network device is runtime-suspended then:
+>>> - network device may be flagged as detached and all ethtool ops (even if not
+>>>     accessing the device) will fail because netif_device_present() returns
+>>>     false
+>>> - ethtool ops may fail because device is not accessible (e.g. because being
+>>>     in D3 in case of a PCI device)
+>>>
+>>> It may not be desirable that userspace can't use even simple ethtool ops
+>>> that not access the device if interface or link is down. To be more friendly
+>>> to userspace let's ensure that device is runtime-resumed when executing the
+>>> respective ethtool op in kernel.
+>>>
+>>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+>>> ---
+>>>    net/ethtool/ioctl.c | 18 +++++++++++++++---
+>>>    1 file changed, 15 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+>>> index baa5d1004..b7ff9abe7 100644
+>>> --- a/net/ethtool/ioctl.c
+>>> +++ b/net/ethtool/ioctl.c
+>>> @@ -23,6 +23,7 @@
+>>>    #include <linux/rtnetlink.h>
+>>>    #include <linux/sched/signal.h>
+>>>    #include <linux/net.h>
+>>> +#include <linux/pm_runtime.h>
+>>>    #include <net/devlink.h>
+>>>    #include <net/xdp_sock_drv.h>
+>>>    #include <net/flow_offload.h>
+>>> @@ -2589,7 +2590,7 @@ int dev_ethtool(struct net *net, struct ifreq *ifr)
+>>>        int rc;
+>>>        netdev_features_t old_features;
+>>>    -    if (!dev || !netif_device_present(dev))
+>>> +    if (!dev)
+>>>            return -ENODEV;
+>>>          if (copy_from_user(&ethcmd, useraddr, sizeof(ethcmd)))
+>>> @@ -2645,10 +2646,18 @@ int dev_ethtool(struct net *net, struct ifreq *ifr)
+>>>                return -EPERM;
+>>>        }
+>>>    +    if (dev->dev.parent)
+>>> +        pm_runtime_get_sync(dev->dev.parent);
+>>
+>> the PM Runtime should allow to wake up parent when child is resumed if everything is configured properly.
+>>
+> Not sure if there's any case yet where the netdev-embedded device is power-managed.
+> Typically only the parent (e.g. a PCI device) is.
+> 
+>> rpm_resume()
+>> ...
+>>      if (!parent && dev->parent) {
+>>   --> here
+>>
+> Currently we don't get that far because we will bail out here already:
+> 
+> else if (dev->power.disable_depth > 0)
+> 		retval = -EACCES;
+> 
+> If netdev-embedded device isn't power-managed then disable_depth is 1.
+
+Right. But if pm_runtime_enable() is added for ndev->dev then PM runtime will start working for it
+and should handle parent properly - from my experience, every time any code need manipulate with "parent" or
+smth. else to make PM runtime working it means smth. is wrong.
+
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index f6197774048b..33b72b788aa2 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -1963,6 +1963,7 @@ int netdev_register_kobject(struct net_device *ndev)
+         }
+  
+         pm_runtime_set_memalloc_noio(dev, true);
++       pm_runtime_enable(dev);
+  
+         return error;
+  }
+
+
+> 
+>> So, hence PM runtime calls are moved to from drivers to net_core wouldn't be more correct approach to
+>> enable PM runtime for netdev->dev and lets PM runtime do the job?
+>>
+> Where would netdev->dev be runtime-resumed so that netif_device_present() passes?
+
+That's the biggest issues here. Some driver uses netif_device_detach() in PM runtime and, this way, introduces custom dependency
+between Core device PM (runtime) sate and Net core, other driver does not do.
+Does it means every driver with PM runtime now have to be updated to indicate it PM state to Net core with netif_device_detach()?
+Why? Why return value from pm_runtime_get calls is not enough?
+
+Believe me it's terrible idea to introduce custom PM state dependency between PM runtime and Net core,
+for example it took years to sync properly System wide suspend and PM runtime which are separate framworks.
+
+By the way netif_device_detach() during System Wide suspend is looks perfectly valid, because entering
+System wide Suspend should prohibit any access to netdev at some stage. And that's what 99% of network drivers are doing
+(actually I can find only ./realtek/r8169_main.c which abuse netif_device_detach() function and,
+I assume, it is your case)
+
+> Wouldn't we then need RPM ops for the parent (e.g. PCI) and for netdev->dev?
+
+No. as I know -  netdev->dev can be declared as pm_runtime_no_callbacks(&adap->dev);
+I2C adapter might be a good example to check.
+
+> E.g. the parent runtime-resume can be triggered by a PCI PME, then it would
+> have to resume netdev->dev.
+> 
+>> But, to be honest, I'm not sure adding PM runtime manipulation to the net core is a good idea -
+> 
+> The TI CPSW driver runtime-resumes the device in begin ethtool op and suspends
+> it in complete. This pattern is used in more than one driver and may be worth
+> being moved to the core.
+
+I'm not against code refactoring and optimization, but in my opinion it has to be done right from the beginning or
+not done at all.
+
+> 
+>> at minimum it might be tricky and required very careful approach (especially in err path).
+>> For example, even in this patch you do not check return value of pm_runtime_get_sync() and in
+>> commit bd869245a3dc ("net: core: try to runtime-resume detached device in __dev_open") also actualy.
+> 
+> The pm_runtime_get_sync() calls are attempts here. We don't want to bail out if a device
+> doesn't support RPM.
+
+And if 'parent' is not supporting PM runtime - it, as i see, should be handled by PM runtime core properly.
+
+I agree that checking the return code could make sense, but then we would
+> have to be careful which error codes we consider as failed.
+
+huh. you can't 'try' pm_runtime_get_sync() and then align on netif_device_present() :(
+
+might be, some how, it will work for r8169_main, but will not work for others.
+- no checking pm_runtime_get_sync() err code will cause PM runtime 'usage_count' leak
+- no checking pm_runtime_get_sync() err may cause to continue( for TI CPSW for example) with
+   device in undefined PM state ("disabled" or "half-enabled") and so crash later.
+
+
+
+> 
+>>
+>>
+>> The TI CPSW driver may also be placed in non reachable state when netdev is closed (and even lose context),
+>> but we do not use netif_device_detach() (so netdev is accessible through netdev_ops/ethtool_ops),
+>> but instead wake up device by runtime PM for allowed operations or just save requested configuration which
+>> is applied at netdev->open() time then.
+>> I feel that using netif_device_detach() in PM runtime sounds like a too heavy approach ;)
+>>
+> That's not a rare pattern when suspending or runtime-suspending to prevent different types
+> of access to a not accessible device. But yes, it's relatively big hammer ..
+
+Again, netif_device_detach() seems correct for System wide suspend, but in my opinion - it's
+not correct for PM runtime.
+
+Sry, with all do respect, first corresponding driver has to be fixed and not Net core hacked to support it.
+
+Further decisions is up to maintainers.
+
+
+> 
+>> huh, see it's merged already, so...
+>>
+>>> +
+>>> +    if (!netif_device_present(dev)) {
+>>> +        rc = -ENODEV;
+>>> +        goto out;
+>>> +    }
+>>> +
+>>>        if (dev->ethtool_ops->begin) {
+>>>            rc = dev->ethtool_ops->begin(dev);
+>>> -        if (rc  < 0)
+>>> -            return rc;
+>>> +        if (rc < 0)
+>>> +            goto out;
+>>>        }
+>>>        old_features = dev->features;
+>>>    @@ -2867,6 +2876,9 @@ int dev_ethtool(struct net *net, struct ifreq *ifr)
+>>>          if (old_features != dev->features)
+>>>            netdev_features_change(dev);
+>>> +out:
+>>> +    if (dev->dev.parent)
+>>> +        pm_runtime_put(dev->dev.parent);
+>>>          return rc;
+>>>    }
+>>>
+>>
+> 
+
+-- 
+Best regards,
+grygorii
