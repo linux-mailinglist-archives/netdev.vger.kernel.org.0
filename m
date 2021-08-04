@@ -2,101 +2,303 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E0803E0AD3
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 01:29:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9957C3E0AE1
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 01:33:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233780AbhHDX3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 19:29:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44604 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229464AbhHDX3v (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Aug 2021 19:29:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4FCF7610A8;
-        Wed,  4 Aug 2021 23:29:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628119778;
-        bh=P7SfHN5MwK2Yea8Mc759NMWkYnjT904mx+vUrokN1a8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=Q9U2DkxKEneNMWJ5Tmj9LPqrkqsO3wF4kpNF9J2nfUOLywTdYD/xGpi06VzymtoJm
-         fM8XXIHtcJReWSwiMlKCDbUsLlfGrP9j2qq5R8wRJMCcYyTIMqICIBCUPgq73gdDGJ
-         24aUqtu3ytmzevHZmLvot7PipvxVTPqse3CBUnlaZ/KKSQgzJHBcDWPS1am7Nbzcm1
-         QhXkX7kLUkZnMW/byJH3F739Gsu2fVRRQ1aaeSVynQCbwGEtLluhYHzWZ/p2gHFYJt
-         c+j55UAw2IjfQD0YpaDtkMXhe/v1MqWggvfee9tNlqG82X+HxBf8uxNz9/LnUSAM7T
-         TB7fPwvci8PSg==
-Date:   Wed, 4 Aug 2021 18:29:37 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Dongdong Liu <liudongdong3@huawei.com>
-Cc:     hch@infradead.org, kw@linux.com, logang@deltatee.com,
-        leon@kernel.org, linux-pci@vger.kernel.org, rajur@chelsio.com,
-        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH V7 5/9] PCI/IOV: Enable 10-Bit tag support for PCIe VF
- devices
-Message-ID: <20210804232937.GA1691653@bjorn-Precision-5520>
+        id S235705AbhHDXde (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 19:33:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229746AbhHDXdb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 19:33:31 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B9CC0613D5;
+        Wed,  4 Aug 2021 16:33:15 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id c137so5911611ybf.5;
+        Wed, 04 Aug 2021 16:33:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=s8mGh6ZU46o1NxoX4tZMuQ/6IYMuNAX9LrEMJOwwa3E=;
+        b=E30HpGe+8gc1PNJODaL9+/DSvm4sOumHrVlJJ/47/aeM8IqkA14eeRmkFU8DkPHiUJ
+         nlLs3NUe5vdMRglcghUEJNAQOy4bN+nOAPqia9GMbKESusZCMHZNWcU/23qfuV6T8uTP
+         94itVrWxTfryvyjffB7HysG8OPu1N677af4B2GdCTgAOeGHouULfmKfYXYEHRMQkV5Oa
+         RyYPeK3itzG+/Fd4+PZOHpaGkPMbjYBhiX+AoBWJYoKXL7eq2t4NJ8rAkTHnI5jTL/ra
+         YAz0vFSmHbuVVcKDeDt5P5DeJmMiUKta/WfpiJ35K8g9cIl90mfJngCIFP0Ol4zr5zE1
+         +K5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=s8mGh6ZU46o1NxoX4tZMuQ/6IYMuNAX9LrEMJOwwa3E=;
+        b=QcykIETBDzMV6S89Jpu6fJf1CTu0pagCRLySnauL+N+G9oQcURfZ6dnxSF3cNoLgjd
+         t2kmTR6PowdWyDwU8Y49oYjbKk5zh0iUhHK7As8TEtcBJ7LWhWgKO1bfNqu4FPMlbFo8
+         zRLjTOfqBXqiRAmGwYNT+9AzkAB721Ds9pR0H7Jc2trrI7+d98NCoDHaBa0hmbLBva9n
+         V+Wp3lRLsJo17EOEY4yaFQh635vmQ6/Tzvq81k+2K5R/gvnEDDB0r9PdqCi2DRKWhzsl
+         5KWZ0o98OWaSM+0tfTSKc7zj7d5icb2GV6oWT2GpETZ7+yqQ/gSUeQ35o65DEI8GTzp+
+         LLVg==
+X-Gm-Message-State: AOAM531NdIm4WuALNaB6UaQxqZXmoPAF0hd+xhlj4efX9GvkFeh2Fzcv
+        S8N7dYqFEojTyK+J7pWgklE0Jz6BaDgDw4IgA6A=
+X-Google-Smtp-Source: ABdhPJw0gysMvKoSB3ITG2DHPQ+N+j7NDYNtQizBM8a4Rs97iV2lq36LLGFgdKnegw5379VtLe6aOykdUHnkxtJycXQ=
+X-Received: by 2002:a25:cdc7:: with SMTP id d190mr2243458ybf.425.1628119994837;
+ Wed, 04 Aug 2021 16:33:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1628084828-119542-6-git-send-email-liudongdong3@huawei.com>
+References: <20210609135537.1460244-1-joamaki@gmail.com> <20210730061822.6600-1-joamaki@gmail.com>
+ <20210730061822.6600-8-joamaki@gmail.com>
+In-Reply-To: <20210730061822.6600-8-joamaki@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 4 Aug 2021 16:33:03 -0700
+Message-ID: <CAEf4BzbSAAHibT2r47MPOB_9-ohk6B-RR=-n7+V+GkBA0=EpTA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 7/7] selftests/bpf: Add tests for XDP bonding
+To:     Jussi Maki <joamaki@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, j.vosburgh@gmail.com,
+        Andy Gospodarek <andy@greyhouse.net>, vfalico@gmail.com,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 04, 2021 at 09:47:04PM +0800, Dongdong Liu wrote:
-> Enable VF 10-Bit Tag Requester when it's upstream component support
-> 10-bit Tag Completer.
-
-s/it's/its/
-s/support/supports/
-
-I think "upstream component" here means the PF, doesn't it?  I don't
-think the PF is really an *upstream* component; there's no routing
-like with a switch.
-
-> Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
+On Wed, Aug 4, 2021 at 5:45 AM Jussi Maki <joamaki@gmail.com> wrote:
+>
+> Add a test suite to test XDP bonding implementation
+> over a pair of veth devices.
+>
+> Signed-off-by: Jussi Maki <joamaki@gmail.com>
 > ---
->  drivers/pci/iov.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
-> index dafdc65..0d0bed1 100644
-> --- a/drivers/pci/iov.c
-> +++ b/drivers/pci/iov.c
-> @@ -634,6 +634,10 @@ static int sriov_enable(struct pci_dev *dev, int nr_virtfn)
->  
->  	pci_iov_set_numvfs(dev, nr_virtfn);
->  	iov->ctrl |= PCI_SRIOV_CTRL_VFE | PCI_SRIOV_CTRL_MSE;
-> +	if ((iov->cap & PCI_SRIOV_CAP_VF_10BIT_TAG_REQ) &&
-> +	    dev->ext_10bit_tag)
-> +		iov->ctrl |= PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN;
+>  .../selftests/bpf/prog_tests/xdp_bonding.c    | 533 ++++++++++++++++++
+>  1 file changed, 533 insertions(+)
+>
+
+[...]
+
 > +
->  	pci_cfg_access_lock(dev);
->  	pci_write_config_word(dev, iov->pos + PCI_SRIOV_CTRL, iov->ctrl);
->  	msleep(100);
-> @@ -650,6 +654,8 @@ static int sriov_enable(struct pci_dev *dev, int nr_virtfn)
->  
->  err_pcibios:
->  	iov->ctrl &= ~(PCI_SRIOV_CTRL_VFE | PCI_SRIOV_CTRL_MSE);
-> +	if (iov->ctrl & PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN)
-> +		iov->ctrl &= ~PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN;
->  	pci_cfg_access_lock(dev);
->  	pci_write_config_word(dev, iov->pos + PCI_SRIOV_CTRL, iov->ctrl);
->  	ssleep(1);
-> @@ -682,6 +688,8 @@ static void sriov_disable(struct pci_dev *dev)
->  
->  	sriov_del_vfs(dev);
->  	iov->ctrl &= ~(PCI_SRIOV_CTRL_VFE | PCI_SRIOV_CTRL_MSE);
-> +	if (iov->ctrl & PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN)
-> +		iov->ctrl &= ~PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN;
+> +static int xdp_attach(struct skeletons *skeletons, struct bpf_program *prog, char *iface)
+> +{
+> +       struct bpf_link *link;
+> +       int ifindex;
+> +
+> +       ifindex = if_nametoindex(iface);
+> +       if (!ASSERT_GT(ifindex, 0, "get ifindex"))
+> +               return -1;
+> +
+> +       if (!ASSERT_LE(skeletons->nlinks, MAX_BPF_LINKS, "too many XDP programs attached"))
 
-You can just clear PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN unconditionally,
-can't you?  I know it wouldn't change anything, but removing the "if"
-makes the code prettier.  You could just add it in the existing
-PCI_SRIOV_CTRL_VFE | PCI_SRIOV_CTRL_MSE mask.
+If it's already less or equal to MAX_BPF_LINKS, then you'll bump
+nlinks below one more time and write beyond the array boundaries?
 
->  	pci_cfg_access_lock(dev);
->  	pci_write_config_word(dev, iov->pos + PCI_SRIOV_CTRL, iov->ctrl);
->  	ssleep(1);
-> -- 
-> 2.7.4
-> 
+> +               return -1;
+> +
+> +       link = bpf_program__attach_xdp(prog, ifindex);
+> +       if (!ASSERT_OK_PTR(link, "attach xdp program"))
+> +               return -1;
+> +
+> +       skeletons->links[skeletons->nlinks++] = link;
+> +       return 0;
+> +}
+> +
+
+[...]
+
+> +
+> +static void bonding_cleanup(struct skeletons *skeletons)
+> +{
+> +       restore_root_netns();
+> +       while (skeletons->nlinks) {
+> +               skeletons->nlinks--;
+> +               bpf_link__detach(skeletons->links[skeletons->nlinks]);
+
+You want bpf_link__destroy, not bpf_link__detach (detach will leave
+underlying BPF link FD open and ensure that bpf_link__destory() won't
+do anything with it, just frees memory).
+
+> +       }
+> +       ASSERT_OK(system("ip link delete bond1"), "delete bond1");
+> +       ASSERT_OK(system("ip link delete veth1_1"), "delete veth1_1");
+> +       ASSERT_OK(system("ip link delete veth1_2"), "delete veth1_2");
+> +       ASSERT_OK(system("ip netns delete ns_dst"), "delete ns_dst");
+> +}
+> +
+
+> +out:
+> +       bonding_cleanup(skeletons);
+> +}
+> +
+> +
+
+nit: extra line
+
+> +/* Test the broadcast redirection using xdp_redirect_map_multi_prog and adding
+> + * all the interfaces to it and checking that broadcasting won't send the packet
+> + * to neither the ingress bond device (bond2) or its slave (veth2_1).
+> + */
+> +void test_xdp_bonding_redirect_multi(struct skeletons *skeletons)
+> +{
+> +       static const char * const ifaces[] = {"bond2", "veth2_1", "veth2_2"};
+> +       int veth1_1_rx, veth1_2_rx;
+> +       int err;
+> +
+> +       if (!test__start_subtest("xdp_bonding_redirect_multi"))
+> +               return;
+> +
+> +       if (bonding_setup(skeletons, BOND_MODE_ROUNDROBIN, BOND_XMIT_POLICY_LAYER23,
+> +                         BOND_ONE_NO_ATTACH))
+> +               goto out;
+> +
+> +
+
+nit: another extra empty line, please check if there are more
+
+> +       if (!ASSERT_OK(setns_by_name("ns_dst"), "could not set netns to ns_dst"))
+> +               goto out;
+> +
+
+[...]
+
+> +       /* enslaving with a XDP program loaded fails */
+> +       link = bpf_program__attach_xdp(skeletons->xdp_dummy->progs.xdp_dummy_prog, veth);
+> +       if (!ASSERT_OK_PTR(link, "attach program to veth"))
+> +               goto out;
+> +
+> +       err = system("ip link set veth master bond");
+> +       if (!ASSERT_NEQ(err, 0, "attaching slave with xdp program expected to fail"))
+> +               goto out;
+> +
+> +       bpf_link__detach(link);
+
+same here and in few more places, you need destroy
+
+> +       link = NULL;
+> +
+> +       err = system("ip link set veth master bond");
+> +       if (!ASSERT_OK(err, "set veth master"))
+> +               goto out;
+> +
+> +       /* attaching to slave when master has no program is allowed */
+> +       link = bpf_program__attach_xdp(skeletons->xdp_dummy->progs.xdp_dummy_prog, veth);
+> +       if (!ASSERT_OK_PTR(link, "attach program to slave when enslaved"))
+> +               goto out;
+> +
+> +       /* attaching to master not allowed when slave has program loaded */
+> +       link2 = bpf_program__attach_xdp(skeletons->xdp_dummy->progs.xdp_dummy_prog, bond);
+> +       if (!ASSERT_ERR_PTR(link2, "attach program to master when slave has program"))
+> +               goto out;
+> +
+> +       bpf_link__detach(link);
+> +       link = NULL;
+> +
+> +       /* attaching XDP program to master allowed when slave has no program */
+> +       link = bpf_program__attach_xdp(skeletons->xdp_dummy->progs.xdp_dummy_prog, bond);
+> +       if (!ASSERT_OK_PTR(link, "attach program to master"))
+> +               goto out;
+> +
+> +       /* attaching to slave not allowed when master has program loaded */
+> +       link2 = bpf_program__attach_xdp(skeletons->xdp_dummy->progs.xdp_dummy_prog, bond);
+> +       ASSERT_ERR_PTR(link2, "attach program to slave when master has program");
+> +
+> +out:
+> +       if (link)
+> +               bpf_link__detach(link);
+> +       if (link2)
+> +               bpf_link__detach(link2);
+
+bpf_link__destroy() handles NULLs just fine, you don't have to do extra checks
+
+> +
+> +       system("ip link del veth");
+> +       system("ip link del bond");
+> +}
+> +
+> +static int libbpf_debug_print(enum libbpf_print_level level,
+> +                             const char *format, va_list args)
+> +{
+> +       if (level != LIBBPF_WARN)
+> +               vprintf(format, args);
+> +       return 0;
+> +}
+> +
+> +struct bond_test_case {
+> +       char *name;
+> +       int mode;
+> +       int xmit_policy;
+> +};
+> +
+> +static struct bond_test_case bond_test_cases[] = {
+> +       { "xdp_bonding_roundrobin", BOND_MODE_ROUNDROBIN, BOND_XMIT_POLICY_LAYER23, },
+> +       { "xdp_bonding_activebackup", BOND_MODE_ACTIVEBACKUP, BOND_XMIT_POLICY_LAYER23 },
+> +
+> +       { "xdp_bonding_xor_layer2", BOND_MODE_XOR, BOND_XMIT_POLICY_LAYER2, },
+> +       { "xdp_bonding_xor_layer23", BOND_MODE_XOR, BOND_XMIT_POLICY_LAYER23, },
+> +       { "xdp_bonding_xor_layer34", BOND_MODE_XOR, BOND_XMIT_POLICY_LAYER34, },
+> +};
+> +
+> +void test_xdp_bonding(void)
+
+this should be the only non-static function in this file, please fix
+all the functions above
+
+> +{
+> +       libbpf_print_fn_t old_print_fn;
+> +       struct skeletons skeletons = {};
+> +       int i;
+> +
+> +       old_print_fn = libbpf_set_print(libbpf_debug_print);
+> +
+> +       root_netns_fd = open("/proc/self/ns/net", O_RDONLY);
+> +       if (!ASSERT_GE(root_netns_fd, 0, "open /proc/self/ns/net"))
+> +               goto out;
+> +
+> +       skeletons.xdp_dummy = xdp_dummy__open_and_load();
+> +       if (!ASSERT_OK_PTR(skeletons.xdp_dummy, "xdp_dummy__open_and_load"))
+> +               goto out;
+> +
+> +       skeletons.xdp_tx = xdp_tx__open_and_load();
+> +       if (!ASSERT_OK_PTR(skeletons.xdp_tx, "xdp_tx__open_and_load"))
+> +               goto out;
+> +
+> +       skeletons.xdp_redirect_multi_kern = xdp_redirect_multi_kern__open_and_load();
+> +       if (!ASSERT_OK_PTR(skeletons.xdp_redirect_multi_kern,
+> +                          "xdp_redirect_multi_kern__open_and_load"))
+> +               goto out;
+> +
+> +       test_xdp_bonding_attach(&skeletons);
+
+check for errors
+
+> +
+> +       for (i = 0; i < ARRAY_SIZE(bond_test_cases); i++) {
+> +               struct bond_test_case *test_case = &bond_test_cases[i];
+> +
+> +               test_xdp_bonding_with_mode(
+> +                       &skeletons,
+> +                       test_case->name,
+> +                       test_case->mode,
+> +                       test_case->xmit_policy);
+> +       }
+> +
+> +       test_xdp_bonding_redirect_multi(&skeletons);
+> +
+> +out:
+> +       if (skeletons.xdp_dummy)
+> +               xdp_dummy__destroy(skeletons.xdp_dummy);
+> +       if (skeletons.xdp_tx)
+> +               xdp_tx__destroy(skeletons.xdp_tx);
+> +       if (skeletons.xdp_redirect_multi_kern)
+> +               xdp_redirect_multi_kern__destroy(skeletons.xdp_redirect_multi_kern);
+
+similarly, all libbpf destructors handle NULL and error pointers
+cleanly, no need for extra ifs
+
+
+> +
+> +       libbpf_set_print(old_print_fn);
+> +       if (root_netns_fd)
+> +               close(root_netns_fd);
+> +}
+> --
+> 2.17.1
+>
