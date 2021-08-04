@@ -2,62 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 593FD3DFFCF
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 13:03:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8BB43DFFD4
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 13:04:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237759AbhHDLEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 07:04:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35910 "EHLO
+        id S237771AbhHDLEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 07:04:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237728AbhHDLED (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 07:04:03 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB574C0613D5;
-        Wed,  4 Aug 2021 04:03:50 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id m10-20020a17090a34cab0290176b52c60ddso2975962pjf.4;
-        Wed, 04 Aug 2021 04:03:50 -0700 (PDT)
+        with ESMTP id S237728AbhHDLER (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 07:04:17 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21FABC061798;
+        Wed,  4 Aug 2021 04:04:04 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id a8so2390588pjk.4;
+        Wed, 04 Aug 2021 04:04:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=srAeYY/EiQIT3OULRf8vlai9yqHxF+kaop05ae2z79I=;
-        b=RGgUEIqv7EX3sOd8lMSiTQDivsxOgCMUFZDXh5+/jjewhAEgrysmVO+ACv84Gf2w+A
-         nQvFXo5L5BeKS/AclyuD/jDVzlU8JHSUx4LkDfkP7IJXcPbZ/iswMHVf1PeLe70q2To6
-         0njJsUWQCZxsr3L0PIe49RDhHRk+f7qhlKmtQ0la10XXrC2nWaK5lLP4kaUyskd9M7vU
-         PsAbUjFV6XCKlq9spLCty/nSROfI3o8y38vWlv+3ffgaNpczEc3OK1XOje8itSD3U03z
-         diDle0TVvD0uA08W8tWF1IKt+efuaEvVqhyLK7YpVS+wm6pi44fQTcyvrg9wkfNG+ZLj
-         1s9Q==
+        bh=vp3C+KtcRQlpP3ktxmRwtjoom3vC9256tobMdzr+KLo=;
+        b=p1NaCDuc1w5ZhC0aNsJoBG1EM/w8pyBWr6PtCIdso5t/fX4P430ujCU2rsMtP2G4YS
+         /aKOaWmTl2aUlYnUUBbUQfTTtKwkcdsDdk3kLfaz0iuoOhrh5UMo4+GRZyl85B4qr99j
+         66treAQ6NnutEHYHmw9I0uhxQYsdeHR5m8GgdlQoEMJUyBZWn0zSHyGsF0kF5uT7kpO6
+         8PoKjD3nkiRsUTWYxEZpopX09sgzTzW/nTiKoAk6hRGcEYXYgQahZi8FEuA2nYi3UoTB
+         VUbqQt9tGZjlV40Ji3PGuKrdhYRq0vdh5w2pbymNLgc3c7zw7FIYcc4/0wJvShThB6F+
+         QWrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=srAeYY/EiQIT3OULRf8vlai9yqHxF+kaop05ae2z79I=;
-        b=T60x0ZgDShcNkuGbXjz86CShLXYgULZaNbMePPKDao3XY8i5ZOB4PBF+Z0lBNd3+Nr
-         bkKwsRd+7l2z9TTUGAv14ShN5/Ga1NlsdIVSjB1GieClg8cQ9Lc11nqtSMeH/iOblsgs
-         UtaZjuYnig4/wo6Zrw/ce2edlrKHwxJ2lVvCPYrYCp546YBYBJ7ILdBIX/gGsDFbLEHv
-         MFUTRrmWAfmUypk6f6qJFJCOCNLCIrVerF1VeCNUyxT6NQql+4U42r9Hwb3Xpa8c3Z4K
-         IBZRDgG15H9Eg5jX/Tcpt2nuMDKQWof7ak69FnUkcienvYN1C5HflWKr0o2gROZLQUhy
-         3RVA==
-X-Gm-Message-State: AOAM533XhWvI8om8WmY6WOqtZKHsRUkH6htGI/bUw3sxkXm1SlRi7kD7
-        lOo881IeEHU2TuGo2ER+Yfs=
-X-Google-Smtp-Source: ABdhPJw+OpqNnmqZmZ5BJkWvuLH5QpMKkTC47+FumpiJAWxcQOjVU/x/c2N0mXuzUKoSrM9tSOIZlw==
-X-Received: by 2002:a17:90a:c57:: with SMTP id u23mr9270081pje.186.1628075030416;
-        Wed, 04 Aug 2021 04:03:50 -0700 (PDT)
+        bh=vp3C+KtcRQlpP3ktxmRwtjoom3vC9256tobMdzr+KLo=;
+        b=q14NWFnD2Ms4qA8W1ocmpbJCdvOH7+R4BvZ2SANbtek0xONO2hwqLqyH4amrTV1aW1
+         qNsPbtajK/5o6zQGmVRgP+931RaxIdWnEq9EfmrenekoCOru+x40g4a1vMoLrULPbaU+
+         GIskSpYu0D7N7GNH2djeOkHmCP4kdHN3IXyvK8tBXXXME4CzJz3+PuU30fCSHyRZya8/
+         QKnKc+GA3s2SqVPOB+IL6cLGKxrxSNXHPtzNenYZ8tvtdNfRhJWDV8GPfLCrMghcKtBK
+         1PzAFV2Ab9J/cmbh1nzC43Pz4NNFYmznxdRRUobli4FtY9UjeE4IZJ6sstw5v6Sh6Mlt
+         iEow==
+X-Gm-Message-State: AOAM531OKQ9JDz62/d55E5a8d+sfEpnARtSzxUaqI9unqwqwmNGHBNHg
+        dbxe0aIOD55W0JelnclT9xqDzj6y/ziP/1HLMc4=
+X-Google-Smtp-Source: ABdhPJy5C2VySxRgUimihXzOoHabJIku6LCsaF4BQkeb5J4mkLavK/Upe40tdEaAxtWp+HRKPl5wUQ==
+X-Received: by 2002:a17:902:e74d:b029:12b:e3f2:f5d3 with SMTP id p13-20020a170902e74db029012be3f2f5d3mr22029907plf.82.1628075043657;
+        Wed, 04 Aug 2021 04:04:03 -0700 (PDT)
 Received: from localhost.localdomain ([118.200.190.93])
-        by smtp.gmail.com with ESMTPSA id k4sm2206147pjs.55.2021.08.04.04.03.46
+        by smtp.gmail.com with ESMTPSA id k4sm2206147pjs.55.2021.08.04.04.04.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Aug 2021 04:03:50 -0700 (PDT)
+        Wed, 04 Aug 2021 04:04:03 -0700 (PDT)
 From:   Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
 To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
         davem@davemloft.net, kuba@kernel.org, sudipm.mukherjee@gmail.com
 Cc:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         skhan@linuxfoundation.org, gregkh@linuxfoundation.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
-Subject: [PATCH v5 1/6] Bluetooth: schedule SCO timeouts with delayed_work
-Date:   Wed,  4 Aug 2021 19:03:03 +0800
-Message-Id: <20210804110308.910744-2-desmondcheongzx@gmail.com>
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: [PATCH v5 2/6] Bluetooth: avoid circular locks in sco_sock_connect
+Date:   Wed,  4 Aug 2021 19:03:04 +0800
+Message-Id: <20210804110308.910744-3-desmondcheongzx@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210804110308.910744-1-desmondcheongzx@gmail.com>
 References: <20210804110308.910744-1-desmondcheongzx@gmail.com>
@@ -67,147 +66,229 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-struct sock.sk_timer should be used as a sock cleanup timer. However,
-SCO uses it to implement sock timeouts.
+In a future patch, calls to bh_lock_sock in sco.c should be replaced
+by lock_sock now that none of the functions are run in IRQ context.
 
-This causes issues because struct sock.sk_timer's callback is run in
-an IRQ context, and the timer callback function sco_sock_timeout takes
-a spin lock on the socket. However, other functions such as
-sco_conn_del and sco_conn_ready take the spin lock with interrupts
-enabled.
+However, doing so results in a circular locking dependency:
 
-This inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} lock usage could
-lead to deadlocks as reported by Syzbot [1]:
-       CPU0
-       ----
-  lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
-  <Interrupt>
-    lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
+======================================================
+WARNING: possible circular locking dependency detected
+5.14.0-rc4-syzkaller #0 Not tainted
+------------------------------------------------------
+syz-executor.2/14867 is trying to acquire lock:
+ffff88803e3c1120 (sk_lock-AF_BLUETOOTH-BTPROTO_SCO){+.+.}-{0:0}, at:
+lock_sock include/net/sock.h:1613 [inline]
+ffff88803e3c1120 (sk_lock-AF_BLUETOOTH-BTPROTO_SCO){+.+.}-{0:0}, at:
+sco_conn_del+0x12a/0x2a0 net/bluetooth/sco.c:191
 
-To fix this, we use delayed work to implement SCO sock timouts
-instead. This allows us to avoid taking the spin lock on the socket in
-an IRQ context, and corrects the misuse of struct sock.sk_timer.
+but task is already holding lock:
+ffffffff8d2dc7c8 (hci_cb_list_lock){+.+.}-{3:3}, at:
+hci_disconn_cfm include/net/bluetooth/hci_core.h:1497 [inline]
+ffffffff8d2dc7c8 (hci_cb_list_lock){+.+.}-{3:3}, at:
+hci_conn_hash_flush+0xda/0x260 net/bluetooth/hci_conn.c:1608
 
-As a note, cancel_delayed_work is used instead of
-cancel_delayed_work_sync in sco_sock_set_timer and
-sco_sock_clear_timer to avoid a deadlock. In the future, the call to
-bh_lock_sock inside sco_sock_timeout should be changed to lock_sock to
-synchronize with other functions using lock_sock. However, since
-sco_sock_set_timer and sco_sock_clear_timer are sometimes called under
-the locked socket (in sco_connect and __sco_sock_close),
-cancel_delayed_work_sync might cause them to sleep until an
-sco_sock_timeout that has started finishes running. But
-sco_sock_timeout would also sleep until it can grab the lock_sock.
+which lock already depends on the new lock.
 
-Using cancel_delayed_work is fine because sco_sock_timeout does not
-change from run to run, hence there is no functional difference
-between:
-1. waiting for a timeout to finish running before scheduling another
-timeout
-2. scheduling another timeout while a timeout is running.
+the existing dependency chain (in reverse order) is:
 
-Link: https://syzkaller.appspot.com/bug?id=9089d89de0502e120f234ca0fc8a703f7368b31e [1]
-Reported-by: syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
-Tested-by: syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
+-> #2 (hci_cb_list_lock){+.+.}-{3:3}:
+       __mutex_lock_common kernel/locking/mutex.c:959 [inline]
+       __mutex_lock+0x12a/0x10a0 kernel/locking/mutex.c:1104
+       hci_connect_cfm include/net/bluetooth/hci_core.h:1482 [inline]
+       hci_remote_features_evt net/bluetooth/hci_event.c:3263 [inline]
+       hci_event_packet+0x2f4d/0x7c50 net/bluetooth/hci_event.c:6240
+       hci_rx_work+0x4f8/0xd30 net/bluetooth/hci_core.c:5122
+       process_one_work+0x98d/0x1630 kernel/workqueue.c:2276
+       worker_thread+0x658/0x11f0 kernel/workqueue.c:2422
+       kthread+0x3e5/0x4d0 kernel/kthread.c:319
+       ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+
+-> #1 (&hdev->lock){+.+.}-{3:3}:
+       __mutex_lock_common kernel/locking/mutex.c:959 [inline]
+       __mutex_lock+0x12a/0x10a0 kernel/locking/mutex.c:1104
+       sco_connect net/bluetooth/sco.c:245 [inline]
+       sco_sock_connect+0x227/0xa10 net/bluetooth/sco.c:601
+       __sys_connect_file+0x155/0x1a0 net/socket.c:1879
+       __sys_connect+0x161/0x190 net/socket.c:1896
+       __do_sys_connect net/socket.c:1906 [inline]
+       __se_sys_connect net/socket.c:1903 [inline]
+       __x64_sys_connect+0x6f/0xb0 net/socket.c:1903
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+-> #0 (sk_lock-AF_BLUETOOTH-BTPROTO_SCO){+.+.}-{0:0}:
+       check_prev_add kernel/locking/lockdep.c:3051 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3174 [inline]
+       validate_chain kernel/locking/lockdep.c:3789 [inline]
+       __lock_acquire+0x2a07/0x54a0 kernel/locking/lockdep.c:5015
+       lock_acquire kernel/locking/lockdep.c:5625 [inline]
+       lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5590
+       lock_sock_nested+0xca/0x120 net/core/sock.c:3170
+       lock_sock include/net/sock.h:1613 [inline]
+       sco_conn_del+0x12a/0x2a0 net/bluetooth/sco.c:191
+       sco_disconn_cfm+0x71/0xb0 net/bluetooth/sco.c:1202
+       hci_disconn_cfm include/net/bluetooth/hci_core.h:1500 [inline]
+       hci_conn_hash_flush+0x127/0x260 net/bluetooth/hci_conn.c:1608
+       hci_dev_do_close+0x528/0x1130 net/bluetooth/hci_core.c:1778
+       hci_unregister_dev+0x1c0/0x5a0 net/bluetooth/hci_core.c:4015
+       vhci_release+0x70/0xe0 drivers/bluetooth/hci_vhci.c:340
+       __fput+0x288/0x920 fs/file_table.c:280
+       task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+       exit_task_work include/linux/task_work.h:32 [inline]
+       do_exit+0xbd4/0x2a60 kernel/exit.c:825
+       do_group_exit+0x125/0x310 kernel/exit.c:922
+       get_signal+0x47f/0x2160 kernel/signal.c:2808
+       arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:865
+       handle_signal_work kernel/entry/common.c:148 [inline]
+       exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
+       exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:209
+       __syscall_exit_to_user_mode_work kernel/entry/common.c:291 [inline]
+       syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:302
+       ret_from_fork+0x15/0x30 arch/x86/entry/entry_64.S:288
+
+other info that might help us debug this:
+
+Chain exists of:
+  sk_lock-AF_BLUETOOTH-BTPROTO_SCO --> &hdev->lock --> hci_cb_list_lock
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(hci_cb_list_lock);
+                               lock(&hdev->lock);
+                               lock(hci_cb_list_lock);
+  lock(sk_lock-AF_BLUETOOTH-BTPROTO_SCO);
+
+ *** DEADLOCK ***
+
+The issue is that the lock hierarchy should go from &hdev->lock -->
+hci_cb_list_lock --> sk_lock-AF_BLUETOOTH-BTPROTO_SCO. For example,
+one such call trace is:
+
+  hci_dev_do_close():
+    hci_dev_lock();
+    hci_conn_hash_flush():
+      hci_disconn_cfm():
+        mutex_lock(&hci_cb_list_lock);
+	sco_disconn_cfm():
+	  sco_conn_del():
+	    lock_sock(sk);
+
+However, in sco_sock_connect, we call lock_sock before calling
+hci_dev_lock inside sco_connect, thus inverting the lock hierarchy.
+
+We fix this by pulling the call to hci_dev_lock out from sco_connect.
+
 Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
 ---
- net/bluetooth/sco.c | 41 +++++++++++++++++++++++++++++++++++------
- 1 file changed, 35 insertions(+), 6 deletions(-)
+ net/bluetooth/sco.c | 39 ++++++++++++++++-----------------------
+ 1 file changed, 16 insertions(+), 23 deletions(-)
 
 diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
-index ffa2a77a3e4c..89cb987ca9eb 100644
+index 89cb987ca9eb..558f8874b65e 100644
 --- a/net/bluetooth/sco.c
 +++ b/net/bluetooth/sco.c
-@@ -48,6 +48,8 @@ struct sco_conn {
- 	spinlock_t	lock;
- 	struct sock	*sk;
- 
-+	struct delayed_work	timeout_work;
-+
- 	unsigned int    mtu;
- };
- 
-@@ -74,9 +76,20 @@ struct sco_pinfo {
- #define SCO_CONN_TIMEOUT	(HZ * 40)
- #define SCO_DISCONN_TIMEOUT	(HZ * 2)
- 
--static void sco_sock_timeout(struct timer_list *t)
-+static void sco_sock_timeout(struct work_struct *work)
- {
--	struct sock *sk = from_timer(sk, t, sk_timer);
-+	struct sco_conn *conn = container_of(work, struct sco_conn,
-+					     timeout_work.work);
-+	struct sock *sk;
-+
-+	sco_conn_lock(conn);
-+	sk = conn->sk;
-+	if (sk)
-+		sock_hold(sk);
-+	sco_conn_unlock(conn);
-+
-+	if (!sk)
-+		return;
- 
- 	BT_DBG("sock %p state %d", sk, sk->sk_state);
- 
-@@ -91,14 +104,27 @@ static void sco_sock_timeout(struct timer_list *t)
- 
- static void sco_sock_set_timer(struct sock *sk, long timeout)
- {
-+	struct delayed_work *work;
-+
-+	if (!sco_pi(sk)->conn)
-+		return;
-+	work = &sco_pi(sk)->conn->timeout_work;
-+
- 	BT_DBG("sock %p state %d timeout %ld", sk, sk->sk_state, timeout);
--	sk_reset_timer(sk, &sk->sk_timer, jiffies + timeout);
-+	cancel_delayed_work(work);
-+	schedule_delayed_work(work, timeout);
+@@ -243,44 +243,32 @@ static int sco_chan_add(struct sco_conn *conn, struct sock *sk,
+ 	return err;
  }
  
- static void sco_sock_clear_timer(struct sock *sk)
+-static int sco_connect(struct sock *sk)
++static int sco_connect(struct hci_dev *hdev, struct sock *sk)
  {
-+	struct delayed_work *work;
-+
-+	if (!sco_pi(sk)->conn)
-+		return;
-+	work = &sco_pi(sk)->conn->timeout_work;
-+
- 	BT_DBG("sock %p state %d", sk, sk->sk_state);
--	sk_stop_timer(sk, &sk->sk_timer);
-+	cancel_delayed_work(work);
- }
+ 	struct sco_conn *conn;
+ 	struct hci_conn *hcon;
+-	struct hci_dev  *hdev;
+ 	int err, type;
  
- /* ---- SCO connections ---- */
-@@ -179,6 +205,9 @@ static void sco_conn_del(struct hci_conn *hcon, int err)
- 		bh_unlock_sock(sk);
- 		sco_sock_kill(sk);
- 		sock_put(sk);
-+
-+		/* Ensure no more work items will run before freeing conn. */
-+		cancel_delayed_work_sync(&conn->timeout_work);
+ 	BT_DBG("%pMR -> %pMR", &sco_pi(sk)->src, &sco_pi(sk)->dst);
+ 
+-	hdev = hci_get_route(&sco_pi(sk)->dst, &sco_pi(sk)->src, BDADDR_BREDR);
+-	if (!hdev)
+-		return -EHOSTUNREACH;
+-
+-	hci_dev_lock(hdev);
+-
+ 	if (lmp_esco_capable(hdev) && !disable_esco)
+ 		type = ESCO_LINK;
+ 	else
+ 		type = SCO_LINK;
+ 
+ 	if (sco_pi(sk)->setting == BT_VOICE_TRANSPARENT &&
+-	    (!lmp_transp_capable(hdev) || !lmp_esco_capable(hdev))) {
+-		err = -EOPNOTSUPP;
+-		goto done;
+-	}
++	    (!lmp_transp_capable(hdev) || !lmp_esco_capable(hdev)))
++		return -EOPNOTSUPP;
+ 
+ 	hcon = hci_connect_sco(hdev, type, &sco_pi(sk)->dst,
+ 			       sco_pi(sk)->setting);
+-	if (IS_ERR(hcon)) {
+-		err = PTR_ERR(hcon);
+-		goto done;
+-	}
++	if (IS_ERR(hcon))
++		return PTR_ERR(hcon);
+ 
+ 	conn = sco_conn_add(hcon);
+ 	if (!conn) {
+ 		hci_conn_drop(hcon);
+-		err = -ENOMEM;
+-		goto done;
++		return -ENOMEM;
  	}
  
- 	hcon->sco_data = NULL;
-@@ -193,6 +222,8 @@ static void __sco_chan_add(struct sco_conn *conn, struct sock *sk,
- 	sco_pi(sk)->conn = conn;
- 	conn->sk = sk;
+ 	/* Update source addr of the socket */
+@@ -288,7 +276,7 @@ static int sco_connect(struct sock *sk)
  
-+	INIT_DELAYED_WORK(&conn->timeout_work, sco_sock_timeout);
+ 	err = sco_chan_add(conn, sk, NULL);
+ 	if (err)
+-		goto done;
++		return err;
+ 
+ 	if (hcon->state == BT_CONNECTED) {
+ 		sco_sock_clear_timer(sk);
+@@ -298,9 +286,6 @@ static int sco_connect(struct sock *sk)
+ 		sco_sock_set_timer(sk, sk->sk_sndtimeo);
+ 	}
+ 
+-done:
+-	hci_dev_unlock(hdev);
+-	hci_dev_put(hdev);
+ 	return err;
+ }
+ 
+@@ -595,6 +580,7 @@ static int sco_sock_connect(struct socket *sock, struct sockaddr *addr, int alen
+ {
+ 	struct sockaddr_sco *sa = (struct sockaddr_sco *) addr;
+ 	struct sock *sk = sock->sk;
++	struct hci_dev  *hdev;
+ 	int err;
+ 
+ 	BT_DBG("sk %p", sk);
+@@ -609,12 +595,19 @@ static int sco_sock_connect(struct socket *sock, struct sockaddr *addr, int alen
+ 	if (sk->sk_type != SOCK_SEQPACKET)
+ 		return -EINVAL;
+ 
++	hdev = hci_get_route(&sa->sco_bdaddr, &sco_pi(sk)->src, BDADDR_BREDR);
++	if (!hdev)
++		return -EHOSTUNREACH;
++	hci_dev_lock(hdev);
 +
- 	if (parent)
- 		bt_accept_enqueue(parent, sk, true);
- }
-@@ -500,8 +531,6 @@ static struct sock *sco_sock_alloc(struct net *net, struct socket *sock,
+ 	lock_sock(sk);
  
- 	sco_pi(sk)->setting = BT_VOICE_CVSD_16BIT;
+ 	/* Set destination address and psm */
+ 	bacpy(&sco_pi(sk)->dst, &sa->sco_bdaddr);
  
--	timer_setup(&sk->sk_timer, sco_sock_timeout, 0);
--
- 	bt_sock_link(&sco_sk_list, sk);
- 	return sk;
- }
+-	err = sco_connect(sk);
++	err = sco_connect(hdev, sk);
++	hci_dev_unlock(hdev);
++	hci_dev_put(hdev);
+ 	if (err)
+ 		goto done;
+ 
 -- 
 2.25.1
 
