@@ -2,80 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC9DF3E051A
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 18:01:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C95ED3E0595
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 18:13:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239297AbhHDQCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 12:02:11 -0400
-Received: from jabberwock.ucw.cz ([46.255.230.98]:39410 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236453AbhHDQCJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 12:02:09 -0400
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 6B8101C0B76; Wed,  4 Aug 2021 18:01:55 +0200 (CEST)
-Date:   Wed, 4 Aug 2021 18:01:54 +0200
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Ben Whitten <ben.whitten@gmail.com>, Dan Murphy <dmurphy@ti.com>,
-        linux-leds@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: leds: netdev trigger - misleading link state indication at boot
-Message-ID: <20210804160154.GD25072@amd>
-References: <20210413182051.GR1463@shell.armlinux.org.uk>
+        id S234054AbhHDQNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 12:13:21 -0400
+Received: from mga12.intel.com ([192.55.52.136]:7118 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232580AbhHDQNS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Aug 2021 12:13:18 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10066"; a="193547271"
+X-IronPort-AV: E=Sophos;i="5.84,294,1620716400"; 
+   d="scan'208";a="193547271"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2021 09:11:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,294,1620716400"; 
+   d="scan'208";a="569083133"
+Received: from ccgwwan-adlp1.iind.intel.com ([10.224.174.35])
+  by orsmga004.jf.intel.com with ESMTP; 04 Aug 2021 09:11:00 -0700
+From:   M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        krishna.c.sudi@intel.com, linuxwwan@intel.com
+Subject: [PATCH 0/4] net: wwan: iosm: fixes
+Date:   Wed,  4 Aug 2021 21:39:48 +0530
+Message-Id: <20210804160952.70254-1-m.chetan.kumar@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="3Pql8miugIZX0722"
-Content-Disposition: inline
-In-Reply-To: <20210413182051.GR1463@shell.armlinux.org.uk>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch series contains IOSM Driver fixes. Below is the patch
+series breakdown.
 
---3Pql8miugIZX0722
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+PATCH1:
+* Correct the td buffer type casting & format specifier to fix lkp buildbot
+warning.
 
-Hi!
+PATCH2:
+* Endianness type correction for nr_of_bytes. This field is exchanged
+as part of host-device protocol communication.
 
-> I'm seeing some odd behaviour with the netdev trigger and some WiFi
-> interfaces.
->=20
-> When the WiFi interface has never been brought up (so is in an
-> operationally disabled state), if I bind a LED to the netdev
-> trigger, setting the device_name to the WiFi interface name and
-> enable the "link" property, the LED illuminates, indicating that
-> the WiFi device has link - but it's disabled.
->=20
-> If I up/down the WiFi interface, thereby returning it to the
-> original state, the link LED goes out.
->=20
-> I suspect ledtrig-netdev.c needs to check that the device is both
-> up (dev->flags & IFF_UP) and netif_carrier_ok(dev) both return true,
-> rather than just relying on netif_carrier_ok(). I don't think using
-> netif_running() is appropriate, as that will return true before
-> ndo_open() has been called to initialise the carrier state.
->=20
-> Agreed?
+PATCH3:
+* Correct ul/dl data protocol mask bit to know which protocol capability
+does device implement.
 
-Seems reasonable to me. Will you do the patch?
+PATCH4:
+* Calling unregister_netdevice() inside wwan del link is trying to
+acquire the held lock in ndo_stop_cb(). Instead, queue net dev to
+be unregistered later.
 
-Best regards,
-								Pavel
---=20
-http://www.livejournal.com/~pavelmachek
+--
+M Chetan Kumar (4):
+  net: wwan: iosm: fix lkp buildbot warning
+  net: wwan: iosm: endianness type correction
+  net: wwan: iosm: correct data protocol mask bit
+  net: wwan: iosm: fix recursive lock acquire in unregister
 
---3Pql8miugIZX0722
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+ drivers/net/wwan/iosm/iosm_ipc_mmio.h         | 4 ++--
+ drivers/net/wwan/iosm/iosm_ipc_mux_codec.c    | 4 ++--
+ drivers/net/wwan/iosm/iosm_ipc_mux_codec.h    | 2 +-
+ drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c | 4 ++--
+ drivers/net/wwan/iosm/iosm_ipc_wwan.c         | 2 +-
+ 5 files changed, 8 insertions(+), 8 deletions(-)
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+-- 
+2.25.1
 
-iEYEARECAAYFAmEKufIACgkQMOfwapXb+vJ3WQCdEnZkrj2Pk2vo3BdffEIfC3ip
-3oEAnjYwe3keTT+kDHzMPXpe2Ic2cDwC
-=VBi1
------END PGP SIGNATURE-----
-
---3Pql8miugIZX0722--
