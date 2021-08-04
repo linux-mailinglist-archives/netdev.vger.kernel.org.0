@@ -2,109 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FA843E06F4
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 19:51:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCFC23E0705
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 19:57:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239970AbhHDRvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 13:51:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45174 "EHLO
+        id S239977AbhHDR5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 13:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239914AbhHDRvC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 13:51:02 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3992C061799;
-        Wed,  4 Aug 2021 10:50:48 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id s22-20020a17090a1c16b0290177caeba067so9927660pjs.0;
-        Wed, 04 Aug 2021 10:50:48 -0700 (PDT)
+        with ESMTP id S238270AbhHDR5v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 13:57:51 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACA64C0613D5;
+        Wed,  4 Aug 2021 10:57:38 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id h9so4995798ejs.4;
+        Wed, 04 Aug 2021 10:57:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=UBg423yx32A1qO4m1utyUDRqy/ul+Eqo8Zka5xgwqa0=;
-        b=ghdtmD1sDvLYG1dGFNfSvjKModtvS3BXqFvv1opCp5yU9rR8u10EjvSFOHCtaFb1rQ
-         rGH0JZOujXN+imECE3RMlpyO/pedLKDOEAKbJGSc/TvJm5ee063zbuZUHmz5mUHlug6f
-         bJDDc/Sy+Sp3LF/nP/Fe4lkcy7EiRjjPTSKRmoqfKh+0YrfDvuiKQcRPgKE/+zYQhz/X
-         u4rICXJbnnYaPrs8sbnmAUz+QkJlXYnkf+qXYAgeRw3Wd9WZHQ4oZ+4OVfu/qwiuomjn
-         6x30dJPXnbhiqZBvTGvsdgUJ8gQCi8qNYc23Cn262ZJ8jHrulG5Hw0aJnufLnkglyyZY
-         cVrQ==
+        bh=Hv6OJITDeCO1wZKdd4Bk2dI2GTNw+Rm7uJdsjk0rDgo=;
+        b=nd+v3KM//dHdWrDKhud6dJZMizCqe82AyFfUAXfbklC67SZ7SkQbHka2kvZPF5O32c
+         f4lHUhq+MWmpzIaNWXad8zZN6ZOSl6wMM+dl1Q9k/hnTey2CQA/7+QAGKl9rQuPp5PWA
+         j0qzWiuL0f2FHlXU5Vbmo5qfzsRvwgZBWIByFBWq1dpqKxPcPyQQYsr11ru0XGg/gpT0
+         +2Qh1hNfG2oaJNNGWi3a9ZKeugrzDM/qb/85g0ZDzC21xkDOQ6a/FSVPjAjsXMuvY9HI
+         MmKtbEkQJI8/IiSdVeDdIMceK3KM4BgLoKjOq8N5Oy64CrVE+sNseSnLJn5k2vW89kOe
+         0S5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=UBg423yx32A1qO4m1utyUDRqy/ul+Eqo8Zka5xgwqa0=;
-        b=UsoFdxd07M0VaECQb3ST9EQq781yFx6CM4s7OoINQv7PatSDkfXwOpIQCqzZ644SbA
-         pZHVVe1OhKTUCMqtNMYs8PPiBJvtafamUQiztKCdxYiuCukBv4MSWfCLhIP9RmOTnJFF
-         6dh5ev2XEX7m8hhD9PP/33GdykX26eebl6eb51E7/xsLZuCvh3LEroETA9+D1IV/XTwm
-         nrD8D3FDm8zcf7F4OuP7/NBjtvreX66WwcddsGtsbifjHfEvu6qNL47LNAuxYhKYtX2y
-         7e9+1m4U3W9Mo3fPkKgKvMIBapL3spHlp5bK5NbAGfTxKgVemJBGTQ1US0hDacLChtRx
-         O0Pg==
-X-Gm-Message-State: AOAM531a5/Qly8vurQ1GMd5kOwU6nBzaUZp8pBKQnex+ZJhmgdIDyhx6
-        /9rfoMPCfr4tksGkHvWiVWt6fsLRW2P+dvwtil/44jK4Vsg=
-X-Google-Smtp-Source: ABdhPJwFCIZ/GJHp2dPMuOHwQcylFMLbuhLGTITuPt96w+fdzKmRLOXA+duG1rQArJPTxeV3nlJx6rb799CpjN3W5ac=
-X-Received: by 2002:a63:154a:: with SMTP id 10mr212645pgv.428.1628099448194;
- Wed, 04 Aug 2021 10:50:48 -0700 (PDT)
+        bh=Hv6OJITDeCO1wZKdd4Bk2dI2GTNw+Rm7uJdsjk0rDgo=;
+        b=TifzWw2HpePdKANokA9yxjrNNt0WbHiGyjArChmH2eSTozXTzhX0sIl4OKBmKEgY55
+         Lh2JinWzYg7VbRCMIdXqzqlN2awOwGhQpBQHUIEu5qYC3HBtliHIX6xfHYCNFGjUUpDb
+         s5cmGZkw74Ns3lDoh3Ade4mEc4Fsk7cle6CLD7csddMHowqN+/CJhCDECSd8YBMjOAw6
+         eqIxOTjnB9RMxi0QimQRTAho2pFbuj9IYK5NEf5u4C2Tt14j8AckBXOB1peZD/6T/MQG
+         jWc7I5uPWqR7FXjE2f3lDsBR2XHQvxFNSsAV8w61zovn0esI51I491c1QXFwguis41oi
+         Q+6w==
+X-Gm-Message-State: AOAM532rzqmlkywxtE0T38wrAV1MDjSdl5Lho/cNOo0NF13/mHuR85e+
+        2/tRGxbb/eRRhvgn/4IQzI9mlZR0TYoTzQdujGw=
+X-Google-Smtp-Source: ABdhPJxL85OILSymzCbF8NDSlvJ1b433gAjux2RGQTx2bblBUjdzk7XlKWDFXRV8lHl1rJS2FWnEEZ36hxhVx5ij48g=
+X-Received: by 2002:a17:906:fc0b:: with SMTP id ov11mr417955ejb.238.1628099857243;
+ Wed, 04 Aug 2021 10:57:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <1931ca440b47344fe357d5438aeab4b439943d10.1627936393.git.peilin.ye@bytedance.com>
- <672e6f13-bf58-d542-6712-e6f803286373@iogearbox.net> <CAM_iQpUb-zbBUGdYxCwxBJSKJ=6Gm3hFwFP+nc+43E_hofuK1w@mail.gmail.com>
- <e2a8ac28-f6ee-25e7-6cb9-cc28369b030a@iogearbox.net>
-In-Reply-To: <e2a8ac28-f6ee-25e7-6cb9-cc28369b030a@iogearbox.net>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 4 Aug 2021 10:50:37 -0700
-Message-ID: <CAM_iQpU-Z5qQOW=0FV4uXo__EDmyMqycgiuyykfHD8TN+-xZ-w@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] net/sched: sch_ingress: Support clsact
- egress mini-Qdisc option
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+References: <20210731005632.13228-1-matthew.cover@stackpath.com> <20210731152523.22syukzew6c7njjh@apollo.localdomain>
+In-Reply-To: <20210731152523.22syukzew6c7njjh@apollo.localdomain>
+From:   Matt Cover <werekraken@gmail.com>
+Date:   Wed, 4 Aug 2021 10:57:25 -0700
+Message-ID: <CAGyo_hp2Uunp0_McN3J8MjSeF593thwiODfUaiE-u_NXArEDPg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] samples/bpf: xdp_redirect_cpu: Add mprog-disable
+ to optstring.
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Matthew Cover <matthew.cover@stackpath.com>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 3, 2021 at 1:08 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+On Sat, Jul 31, 2021 at 8:25 AM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
 >
-> On 8/3/21 2:08 AM, Cong Wang wrote:
-> > On Mon, Aug 2, 2021 at 2:11 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >>
-> >> NAK, just use clsact qdisc in the first place which has both ingress and egress
-> >> support instead of adding such hack. You already need to change your scripts for
-> >> clsact-on, so just swap 'tc qdisc add dev eth0 ingress' to 'tc qdisc add dev eth0
-> >> clsact' w/o needing to change kernel.
+> On Sat, Jul 31, 2021 at 06:26:32AM IST, Matthew Cover wrote:
+> > Commit ce4dade7f12a ("samples/bpf: xdp_redirect_cpu: Load a eBPF program
+> > on cpumap") added the following option, but missed adding it to optstring:
+> > - mprog-disable: disable loading XDP program on cpumap entries
 > >
-> > If we were able to change the "script" as easily as you described,
-> > you would not even see such a patch. The fact is it is not under
-> > our control, the most we can do is change the qdisc after it is
-> > created by the "script", ideally without interfering its traffic,
-> > hence we have such a patch.
+> > Add the missing option character.
 > >
-> > (BTW, it is actually not a script, it is a cloud platform.)
 >
-> Sigh, so you're trying to solve a non-technical issue with one cloud provider by
-> taking a detour for unnecessarily extending the kernel instead with functionality
-> that already exists in another qdisc (and potentially waiting few years until they
-> eventually upgrade). I presume Bytedance should be a big enough entity to make a
-> case for that provider to change it. After all swapping ingress with clsact for
-> such script is completely transparent and there is nothing that would break. (Fwiw,
-> from all the major cloud providers we have never seen such issue in our deployments.)
+> I made some changes in this area in [0], since the support was primarily to do
+> redirection from the cpumap prog, so by default we don't install anything now
+> and only do so if a redirection interface is specified (and use devmap instead).
+> So this option won't be used anyway going forward (since we don't install a
+> dummy XDP_PASS program anymore) if it gets accepted.
+>
+> [0]: https://lore.kernel.org/bpf/20210728165552.435050-1-memxor@gmail.com
+>
+> PS: I can restore it again if this is something really used beyond redirecting
+> to another device (i.e. with custom BPF programs). Any feedback would be helpful.
 
-Well, it is both non-technical and technical at the same time.
+Hey Kartikeya. I happened to be looking through this code to get a
+feel for using CPUMAP for custom steering (e.g. RSS on encapsulated
+packets) in XDP and noticed the missing option character. Figured it
+was worth doing a quick patch and test.
 
-The non-technical part is that it is really hard to convince people from
-other team to restart their services just for a kernel change, people are just
-not happy to take risks.
+Unfortunately, I'm not able to say much on your changes as I'm still
+getting familiarized with this code. It looks like your submission is
+in need of a rebase; v3 has been marked "Changes Requested" in
+patchwork [0]. As I see things, It'd be good to get this fix in there
+for now, whether or not the code is removed later.
 
-The technical part is the bad design of clsact. It is too late to complain,
-but it should not create two _conceptual_  qdiscs (actually just one struct
-Qdisc) at the same time. If it only created just egress, we would
-not even bother changing ingress at all. Sigh.
+[0]:https://patchwork.kernel.org/project/netdevbpf/patch/20210728165552.435050-9-memxor@gmail.com/
 
-Thanks.
+>
+> > Fixes: ce4dade7f12a ("samples/bpf: xdp_redirect_cpu: Load a eBPF program on cpumap")
+> > Signed-off-by: Matthew Cover <matthew.cover@stackpath.com>
+> > ---
+> >  samples/bpf/xdp_redirect_cpu_user.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/samples/bpf/xdp_redirect_cpu_user.c b/samples/bpf/xdp_redirect_cpu_user.c
+> > index d3ecdc1..9e225c9 100644
+> > --- a/samples/bpf/xdp_redirect_cpu_user.c
+> > +++ b/samples/bpf/xdp_redirect_cpu_user.c
+> > @@ -841,7 +841,7 @@ int main(int argc, char **argv)
+> >       memset(cpu, 0, n_cpus * sizeof(int));
+> >
+> >       /* Parse commands line args */
+> > -     while ((opt = getopt_long(argc, argv, "hSd:s:p:q:c:xzFf:e:r:m:",
+> > +     while ((opt = getopt_long(argc, argv, "hSd:s:p:q:c:xzFf:e:r:m:n",
+> >                                 long_options, &longindex)) != -1) {
+> >               switch (opt) {
+> >               case 'd':
+> > --
+> > 1.8.3.1
+> >
+>
+> --
+> Kartikeya
