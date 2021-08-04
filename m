@@ -2,241 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA3E13E082D
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 20:48:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B6D23E087D
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 21:07:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240697AbhHDSrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 14:47:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57970 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240658AbhHDSqd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 14:46:33 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 859FAC06179B;
-        Wed,  4 Aug 2021 11:45:58 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id u2so3981808plg.10;
-        Wed, 04 Aug 2021 11:45:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=29igml5xJQT7NZ/zHELD608zwBtMw+CBZNUu6aD3TXw=;
-        b=YYV/m/LMm9LueSaFvS1QqjEzusaN78zRUrtnhZOuMU1heWUA9GqVjn0EIfdioy78dO
-         pqyQr1mh3jD0fZRJ227Vtm1Yr/MBIZJfqPV9t2r5oVj/djtM4H34a0d2hv9nWJlmMMMc
-         C0ZzKol4Vgsz/Q9xqcn/U6GmtuToaeHJ1NsP9ZfEz7Fm5ahWkDMW7GGoANygL8DZ1y+9
-         uQ94GlUlEs4n5qTeavI4gSb/EIbS1zykqnrzZoZRj6oHARuYcWdHel7RiRpwWfqTur7t
-         +RFWBknyfar4zEtojp765cEWGfOex77YKgaagkx/IKKYP556Mlmva4L/VpYkV17KUMj1
-         QvGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=29igml5xJQT7NZ/zHELD608zwBtMw+CBZNUu6aD3TXw=;
-        b=RY72IIN/jNHVZqxyjSQE6SLq1g5uAJz5zxeiJGYSVk1YyMz63kveKErWjxGC1Ar8gd
-         5N6GORQE2v4k3vpgiKHEoeMJ3/KwnoIPElZgArFJWAt03ifQhRtXO1JaYDwQXp0dbfRf
-         iBAObfqWtby7pEz6AwksAie2ePQhukOOO8tWyOmWh83DB6r1vaCWPO2TJ/9bKvvuf4Al
-         IlW0vlM8RmHavs1mWfb87odvdAc9yoOcD+HfFN5SlQFsN842DYUf9rWfFryKV7vbH56f
-         pYTyFXbWyPjk5TnMfKqE2aCWimHOZenlTzSno+CzALn1YEzROkN391LV/zoW6dQFEfhn
-         LgzQ==
-X-Gm-Message-State: AOAM530Sid2JUNvCQ1PUtR2sFJ5EmeU7piJiqXwJYmxFNV+B42Kms5fc
-        J1hJ/LB8gVqovEaQctG6Ebg=
-X-Google-Smtp-Source: ABdhPJys+uUC+8R4d08qbIFnIv7LBHGpTM/c9FmBOlVHRSO99KZWQKeZJC0uWF82I4cQhSNYNbC05Q==
-X-Received: by 2002:a17:902:8b83:b029:12c:cbce:a52f with SMTP id ay3-20020a1709028b83b029012ccbcea52fmr546876plb.9.1628102758109;
-        Wed, 04 Aug 2021 11:45:58 -0700 (PDT)
-Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:f:1947:6842:b8a8:6f83])
-        by smtp.gmail.com with ESMTPSA id f5sm3325647pjo.23.2021.08.04.11.45.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Aug 2021 11:45:57 -0700 (PDT)
-From:   Tianyu Lan <ltykernel@gmail.com>
-To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
-        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
-        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
-        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
-        Tianyu.Lan@microsoft.com, rppt@kernel.org,
-        kirill.shutemov@linux.intel.com, akpm@linux-foundation.org,
-        brijesh.singh@amd.com, thomas.lendacky@amd.com, pgonda@google.com,
-        david@redhat.com, krish.sadhukhan@oracle.com, saravanand@fb.com,
-        aneesh.kumar@linux.ibm.com, xen-devel@lists.xenproject.org,
-        martin.b.radev@gmail.com, ardb@kernel.org, rientjes@google.com,
-        tj@kernel.org, keescook@chromium.org,
-        michael.h.kelley@microsoft.com
-Cc:     iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, parri.andrea@gmail.com
-Subject: [PATCH V2 14/14] HV/Storvsc: Add Isolation VM support for storvsc driver
-Date:   Wed,  4 Aug 2021 14:45:10 -0400
-Message-Id: <20210804184513.512888-15-ltykernel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210804184513.512888-1-ltykernel@gmail.com>
-References: <20210804184513.512888-1-ltykernel@gmail.com>
+        id S240486AbhHDTHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 15:07:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32177 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240443AbhHDTHb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 15:07:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1628104038;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vs/wUv7LInl+rb6VabGCiRlDPHTEKrgRHujGUJXyUs0=;
+        b=i5gi5x1urRPS5l+qvuP+prZA8460IfbEe98P3wjnAB4g7kFlzkSyuErINlb3d1NE1WMjRO
+        Bh4vJJUjR2FpZKUFpoi1KYzeT5Lwi9jerHJVVUpOrVUWzATJoV6R/i9PmR7SNVS3uKu/Pq
+        CZAXb0W4q817TIAkCZz6XF+2eMvwS5U=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-479-GMgoQgGpOC2JUqCV2OKM7A-1; Wed, 04 Aug 2021 15:07:16 -0400
+X-MC-Unique: GMgoQgGpOC2JUqCV2OKM7A-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8A33F190B2A3;
+        Wed,  4 Aug 2021 19:07:15 +0000 (UTC)
+Received: from gerbillo.redhat.com (unknown [10.39.194.34])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id ED7A05D6B1;
+        Wed,  4 Aug 2021 19:07:13 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next] net: fix GRO skb truesize update
+Date:   Wed,  4 Aug 2021 21:07:00 +0200
+Message-Id: <9134e63fd0d42787e4fbd4bd890d330d6fda9f81.1628097645.git.pabeni@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+commit 5e10da5385d2 ("skbuff: allow 'slow_gro' for skb carring sock
+reference") introduces a serious regression at the GRO layer setting
+the wrong truesize for stolen-head skbs.
 
-In Isolation VM, all shared memory with host needs to mark visible
-to host via hvcall. vmbus_establish_gpadl() has already done it for
-storvsc rx/tx ring buffer. The page buffer used by vmbus_sendpacket_
-mpb_desc() still need to handle. Use DMA API to map/umap these
-memory during sending/receiving packet and Hyper-V DMA ops callback
-will use swiotlb function to allocate bounce buffer and copy data
-from/to bounce buffer.
+Restore the correct truesize: SKB_DATA_ALIGN(...) instead of
+SKB_TRUESIZE(...)
 
-Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+Reported-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Fixes: 5e10da5385d2 ("skbuff: allow 'slow_gro' for skb carring sock reference")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- drivers/scsi/storvsc_drv.c | 68 +++++++++++++++++++++++++++++++++++---
- 1 file changed, 63 insertions(+), 5 deletions(-)
+ net/core/skbuff.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
-index 328bb961c281..78320719bdd8 100644
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -21,6 +21,8 @@
- #include <linux/device.h>
- #include <linux/hyperv.h>
- #include <linux/blkdev.h>
-+#include <linux/io.h>
-+#include <linux/dma-mapping.h>
- #include <scsi/scsi.h>
- #include <scsi/scsi_cmnd.h>
- #include <scsi/scsi_host.h>
-@@ -427,6 +429,8 @@ struct storvsc_cmd_request {
- 	u32 payload_sz;
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 97ed77a86bb0..02a603556408 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -4375,7 +4375,7 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
+ 		memcpy(frag + 1, skbinfo->frags, sizeof(*frag) * skbinfo->nr_frags);
+ 		/* We dont need to clear skbinfo->nr_frags here */
  
- 	struct vstor_packet vstor_packet;
-+	u32 hvpg_count;
-+	struct hv_dma_range *dma_range;
- };
- 
- 
-@@ -509,6 +513,14 @@ struct storvsc_scan_work {
- 	u8 tgt_id;
- };
- 
-+#define storvsc_dma_map(dev, page, offset, size, dir) \
-+	dma_map_page(dev, page, offset, size, dir)
-+
-+#define storvsc_dma_unmap(dev, dma_range, dir)		\
-+		dma_unmap_page(dev, dma_range.dma,	\
-+			       dma_range.mapping_size,	\
-+			       dir ? DMA_FROM_DEVICE : DMA_TO_DEVICE)
-+
- static void storvsc_device_scan(struct work_struct *work)
- {
- 	struct storvsc_scan_work *wrk;
-@@ -1260,6 +1272,7 @@ static void storvsc_on_channel_callback(void *context)
- 	struct hv_device *device;
- 	struct storvsc_device *stor_device;
- 	struct Scsi_Host *shost;
-+	int i;
- 
- 	if (channel->primary_channel != NULL)
- 		device = channel->primary_channel->device_obj;
-@@ -1314,6 +1327,15 @@ static void storvsc_on_channel_callback(void *context)
- 				request = (struct storvsc_cmd_request *)scsi_cmd_priv(scmnd);
- 			}
- 
-+			if (request->dma_range) {
-+				for (i = 0; i < request->hvpg_count; i++)
-+					storvsc_dma_unmap(&device->device,
-+						request->dma_range[i],
-+						request->vstor_packet.vm_srb.data_in == READ_TYPE);
-+
-+				kfree(request->dma_range);
-+			}
-+
- 			storvsc_on_receive(stor_device, packet, request);
- 			continue;
- 		}
-@@ -1810,7 +1832,9 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 		unsigned int hvpgoff, hvpfns_to_add;
- 		unsigned long offset_in_hvpg = offset_in_hvpage(sgl->offset);
- 		unsigned int hvpg_count = HVPFN_UP(offset_in_hvpg + length);
-+		dma_addr_t dma;
- 		u64 hvpfn;
-+		u32 size;
- 
- 		if (hvpg_count > MAX_PAGE_BUFFER_COUNT) {
- 
-@@ -1824,6 +1848,13 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 		payload->range.len = length;
- 		payload->range.offset = offset_in_hvpg;
- 
-+		cmd_request->dma_range = kcalloc(hvpg_count,
-+				 sizeof(*cmd_request->dma_range),
-+				 GFP_ATOMIC);
-+		if (!cmd_request->dma_range) {
-+			ret = -ENOMEM;
-+			goto free_payload;
-+		}
- 
- 		for (i = 0; sgl != NULL; sgl = sg_next(sgl)) {
- 			/*
-@@ -1847,9 +1878,29 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 			 * last sgl should be reached at the same time that
- 			 * the PFN array is filled.
- 			 */
--			while (hvpfns_to_add--)
--				payload->range.pfn_array[i++] =	hvpfn++;
-+			while (hvpfns_to_add--) {
-+				size = min(HV_HYP_PAGE_SIZE - offset_in_hvpg,
-+					   (unsigned long)length);
-+				dma = storvsc_dma_map(&dev->device, pfn_to_page(hvpfn++),
-+						      offset_in_hvpg, size,
-+						      scmnd->sc_data_direction);
-+				if (dma_mapping_error(&dev->device, dma)) {
-+					ret = -ENOMEM;
-+					goto free_dma_range;
-+				}
-+
-+				if (offset_in_hvpg) {
-+					payload->range.offset = dma & ~HV_HYP_PAGE_MASK;
-+					offset_in_hvpg = 0;
-+				}
-+
-+				cmd_request->dma_range[i].dma = dma;
-+				cmd_request->dma_range[i].mapping_size = size;
-+				payload->range.pfn_array[i++] = dma >> HV_HYP_PAGE_SHIFT;
-+				length -= size;
-+			}
- 		}
-+		cmd_request->hvpg_count = hvpg_count;
- 	}
- 
- 	cmd_request->payload = payload;
-@@ -1860,13 +1911,20 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 	put_cpu();
- 
- 	if (ret == -EAGAIN) {
--		if (payload_sz > sizeof(cmd_request->mpb))
--			kfree(payload);
- 		/* no more space */
--		return SCSI_MLQUEUE_DEVICE_BUSY;
-+		ret = SCSI_MLQUEUE_DEVICE_BUSY;
-+		goto free_dma_range;
- 	}
- 
- 	return 0;
-+
-+free_dma_range:
-+	kfree(cmd_request->dma_range);
-+
-+free_payload:
-+	if (payload_sz > sizeof(cmd_request->mpb))
-+		kfree(payload);
-+	return ret;
- }
- 
- static struct scsi_host_template scsi_driver = {
+-		new_truesize = SKB_TRUESIZE(sizeof(struct sk_buff));
++		new_truesize = SKB_DATA_ALIGN(sizeof(struct sk_buff));
+ 		delta_truesize = skb->truesize - new_truesize;
+ 		skb->truesize = new_truesize;
+ 		NAPI_GRO_CB(skb)->free = NAPI_GRO_FREE_STOLEN_HEAD;
 -- 
-2.25.1
+2.26.3
 
