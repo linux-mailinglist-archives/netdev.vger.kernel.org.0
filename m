@@ -2,200 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 680433E09A6
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 22:53:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA9A23E09A9
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 22:53:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238225AbhHDUxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 16:53:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58442 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237989AbhHDUxV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 16:53:21 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52041C061798
-        for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 13:53:08 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id j3so4422693plx.4
-        for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 13:53:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=rK3k+rHc8/RnfuN3prVZdmtdlxSgIiV7Am4HL9pa+EE=;
-        b=z4wh9vO35AyKSHTEq83Ox3ONe5kSLlV6p6v6I70eE7eo32A3/xb4LfMwlgBz2F1dR0
-         ACaL8TA6u0a71F84LaJZja6HQNMXZiiI0QzUk84kz+4kvGKy4twIYxxoMve7qF7BBPkF
-         IWyGICKoRWHWP2tgRjEIwu9rUNvbeqwESDId7zSA4bT0sn5D6wRQFbroBDDodREnt0SC
-         jOWfRtWdlboGt5VfbNC/kBxzrWLvwbm3L7IBmk1ff1+VPxkd00pUWjQcreO+gMn9F1LH
-         LXzI0MVH9oU0sjnIXjdXRVharjZcP4lipatd0FvGojzbUB31/3KzOJ+r+3+bwXy24BQC
-         HsgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=rK3k+rHc8/RnfuN3prVZdmtdlxSgIiV7Am4HL9pa+EE=;
-        b=BqVV3nz7KON7P5RI7DmJjJgoH0EZKE4lZmRJsd+hLCLpKHsqu73+5xZZdCBWEOAl8b
-         sOo32TfN6/n9UGIi/VlF214wM7BhXqo1xUSefpM37RKwUwG7bfX6sg7U6dyDraPY3pyD
-         AbqsdIowwGo2Dp3Ysbp6/YKtMDsE3QQy6oUH5S91qJueXV0XnOVU2Hf6ETHWUPu1bEmt
-         K/pH7sDBoRiYTauUDOJvLPQ0Pfsa62arFbzs0yqxVavWF7p48rRKs1n4xoM+jS1WDnZf
-         SlICmD8jwo/EEnd2EwHKCEAWsGG1/aeMTsSOCkJ+sQ2mBa7z2/pWSBySxoqpGAXuNwy4
-         fNtA==
-X-Gm-Message-State: AOAM530q2SNxwVOkmGpC2J/DFeU63jJ4q6AVa1pNcs6QVD/M3xFBRO7B
-        /v8ThA+85Bb8DVRzCdZKCr5kfg==
-X-Google-Smtp-Source: ABdhPJxmqvMa7dvxygw6pvQHFSb91+HBNZcfuAfCw2o0x4Q9n3vPAkr6yQpeRTCbfkRnqswKx2a+vQ==
-X-Received: by 2002:a63:e214:: with SMTP id q20mr957879pgh.134.1628110387829;
-        Wed, 04 Aug 2021 13:53:07 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id p17sm7195060pjg.54.2021.08.04.13.53.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Aug 2021 13:53:07 -0700 (PDT)
-Subject: Re: [PATCH net-next v3] ethernet: fix PTP_1588_CLOCK dependencies
-To:     Arnd Bergmann <arnd@kernel.org>,
+        id S238592AbhHDUxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 16:53:41 -0400
+Received: from mga12.intel.com ([192.55.52.136]:32655 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237474AbhHDUxd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Aug 2021 16:53:33 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10066"; a="193603685"
+X-IronPort-AV: E=Sophos;i="5.84,295,1620716400"; 
+   d="scan'208";a="193603685"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2021 13:53:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,295,1620716400"; 
+   d="scan'208";a="458758925"
+Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
+  by orsmga007.jf.intel.com with ESMTP; 04 Aug 2021 13:53:13 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10; Wed, 4 Aug 2021 13:53:12 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10 via Frontend Transport; Wed, 4 Aug 2021 13:53:12 -0700
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (104.47.51.46) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.10; Wed, 4 Aug 2021 13:53:12 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EoClzYE8Zhm+6pMyx8qJwRq+oQhG+x81rlmVG2jlJ3CL5FnZcs5JxLBJ3U5xD29STb2usDaCpphY5re6FLmQkUSst1qDL4mKZChwjCKPTo9GjO/thYgh+ijJeN0VEUo/6vXLJjaek7fFYSwT94SlxwKrrknNSK9hZSRhHV2EtgdbbE7wE8EYsGkpmXnDTRDYotsuwIFqtnPWhPLpAb24DflQ7YTh82eBi45CJ88r71riCWP5T+I7z32zk0K89xmni3UlGxzBnqiYD1g2H6Hwf+oYCafB7xEJXJ+yZaHUuQKxxDm3nZzEM0iTjWDSZiZUv7v4ROtx1Ypw8vOQ5kVmzQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=J6csrNdhVed0myjY05sUMdiHSbCRopzPGypJwZpL2XE=;
+ b=GNh1HzywBEkj2Hz/k6AcnURxHIDEXiUT5aGzpOmufsWLHwHNbsj5DBBLmvPLtQgH/HfVSHT+/dvsAvQ/yqOFGHkk6iInMeLWoUM9Cg1WpFCjiAjpvdr5jfkaIBeEIIqdRJKSb+0RDEOjvDcvt8oXKbJh4ucaGxA5YWf1uObQe+KD3hRhnu2kfqZq+Pq9OgpBFxPnPVTwjv8HawFkxtm8I0xOTkNLSX5R7BaX9avbWe6581jmyf95ATJYgzcKmIJ2Rou4kAUrtkU+P1LPROJcaZwPbuWg7l8P4y2oQjpFQLLmErEhzR+Ef4h1ot07/NvItbHrdXnGML19m/xSb5DtDA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=J6csrNdhVed0myjY05sUMdiHSbCRopzPGypJwZpL2XE=;
+ b=Pd6/4Y32k+zvn1ZJIfXdS8JwedM7LNCORwxOdWOAhOwLFFBTVOGzkt007cnGcJIW+3UbqbTC6bKRMWos2xzjK6YSl1u9UnwjEqxeJqxxrrSgwie21MiZPUEcqjAFSUCpzHwcqJVfT92GYSkFhhfxU5FbLvQMXDSRjXtTsPz4usQ=
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
+ by MWHPR11MB1407.namprd11.prod.outlook.com (2603:10b6:300:26::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.26; Wed, 4 Aug
+ 2021 20:53:05 +0000
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::bd85:7a6a:a04c:af3a]) by CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::bd85:7a6a:a04c:af3a%5]) with mapi id 15.20.4373.027; Wed, 4 Aug 2021
+ 20:53:05 +0000
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+To:     Richard Cochran <richardcochran@gmail.com>,
+        Arnd Bergmann <arnd@kernel.org>
+CC:     Nicolas Pitre <nico@fluxnic.net>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        drivers@pensando.io, Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Yangbo Lu <yangbo.lu@nxp.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Simon Horman <simon.horman@netronome.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org
-References: <20210804121318.337276-1-arnd@kernel.org>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <61f766be-b384-29a5-3bf1-c8f3ac6c4a94@pensando.io>
-Date:   Wed, 4 Aug 2021 13:53:00 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
-MIME-Version: 1.0
-In-Reply-To: <20210804121318.337276-1-arnd@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        "Jakub Kicinski" <kuba@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net-next v2] ethernet/intel: fix PTP_1588_CLOCK
+ dependencies
+Thread-Topic: [PATCH net-next v2] ethernet/intel: fix PTP_1588_CLOCK
+ dependencies
+Thread-Index: AQHXh68Y1owt0G/CUEakzTAdq+RvtqtgbT+AgAAzuICAADaFgIAAgzoAgACWAgCAAAU1AIAADOyAgABBaICAAZHC4A==
+Date:   Wed, 4 Aug 2021 20:53:05 +0000
+Message-ID: <CO1PR11MB5089005017FE714B8A37F9B0D6F19@CO1PR11MB5089.namprd11.prod.outlook.com>
+References: <20210802145937.1155571-1-arnd@kernel.org>
+ <20210802164907.GA9832@hoboy.vegasvil.org>
+ <bd631e36-1701-b120-a9b0-8825d14cc694@intel.com>
+ <20210802230921.GA13623@hoboy.vegasvil.org>
+ <CAK8P3a2XjgbEkYs6R7Q3RCZMV7v90gu_v82RVfFVs-VtUzw+_w@mail.gmail.com>
+ <20210803155556.GD32663@hoboy.vegasvil.org>
+ <20210803161434.GE32663@hoboy.vegasvil.org>
+ <CAK8P3a2Wt9gnO4Ts_4Jw1+qpBj8HQc50jU2szjmR8MmZL9wrgQ@mail.gmail.com>
+ <20210803205455.GA3517@hoboy.vegasvil.org>
+In-Reply-To: <20210803205455.GA3517@hoboy.vegasvil.org>
+Accept-Language: en-US
 Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e0f9a0bd-0197-4af9-568e-08d95789db7b
+x-ms-traffictypediagnostic: MWHPR11MB1407:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR11MB14072B6B8FCFF8937BFD1035D6F19@MWHPR11MB1407.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ynXPzQnvLjc3civNV+CgQC0//TpUMQVtMtovm78dfEPiK2L6B7VrSdKl0BIBPPLglxqMaWmyfoTlL02gFYCXQQjWKY/41Fw4WSOirGAhPvH2aX7V7ied7E5nFilIXkBN6AGxfuN6l+fFjyapTxnvIY+P2zQ+NSldyMqpTN3T7ehR0yX9A1p3iAlM4rNq2LQ9OiyxsdS83kXMW60W4eziNPWOyhKnqwsLXmx9TTqD3sB+yYsHJunhWSqM9e9TyDUp1IO8mAX0Yc6zMqzcqTQwkH9/nOLkaWcBldJp6iopZB/5QQTcja164NiWfPNN9E6MMCytclVRQLNzcuAoD5F9WdttDAiBvkpWYr6JRG8l6bANEwr790RKhghctHb5Xo0Dw96coRk+WbwaRpuaetBpkYwjxSAwWRqjjqlFbpwLr2s+L3gSQ24P6ZODlq2OsbEukC56qT/G5J7QzBdSml7NGhdaELRboh1Wz5sNkoXb51T1R17T/aEuRv2CRXKYzMSitbaHH5AXe7M8VYVpSRIfyIiW+A3Ayuc9GFxXvzPxKvwz/qFWVwp0NADCIzNq9K76YBeIwk4Hnc1W+BzhbetlBM/mVp8wL0HU/hMPWS7LrBnOFGDa6sD3XRDruLVB+FOXLxeWKp++omMN/A1w+IChi6g+ek41NDtGFbo9Ey7mHj7uPSOVxKUbn5DQ9RYfs5ERXKxsZrMhItXn6gQGE+qiFg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(376002)(366004)(136003)(39860400002)(396003)(83380400001)(110136005)(2906002)(9686003)(86362001)(76116006)(26005)(38070700005)(71200400001)(7696005)(478600001)(54906003)(316002)(66946007)(7416002)(33656002)(53546011)(186003)(38100700002)(64756008)(66476007)(66556008)(122000001)(55016002)(6506007)(5660300002)(66446008)(4326008)(8676002)(8936002)(52536014);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?9ew3QM1TPZrlmgiiw6OCIEgzu3JQOfXkA+nZhY3Tc+Q9gzfURrUIYsYBzqnt?=
+ =?us-ascii?Q?NnyxijvS6cznewKJzScQuxuja2PJBR7qUiiFSY8TJ5ZeEd1XgL7Y3Cjt6duv?=
+ =?us-ascii?Q?g5I9SNbZ7rNP7ZA1Kpm5/YSkYCPeL0ZNe4CRXHEnFae1U4nw42XYD0R6fhnC?=
+ =?us-ascii?Q?2WNMTYiYsvr/i0Pd9rMZ/CipZxDFqlgQ6wui4liSAwPFEc1g+Hr+pAKBMzFb?=
+ =?us-ascii?Q?/XY7vVafU71t3myUuNvWFCNg86pSE3nYiLjDqIfZR85QSZEM6441irGlmKhJ?=
+ =?us-ascii?Q?5T+rqEYeLPdz13sedkdnGet/p83loB2SFi3/H8izsVKOHc+6k5njI7hz7tEr?=
+ =?us-ascii?Q?irSyvaHKHle52y2zbyWxBCdgmBfqXoigE7iyCFlJIHU1uX4gWa1buzxbiHqX?=
+ =?us-ascii?Q?4DtG1g76WmcZ2WB0PYndtniOPSzURGfipNVHJyj31+MWauW6/sOyAG3jEsPQ?=
+ =?us-ascii?Q?eXWMn75a7QJ2LBPfOb604ll8i0U/4duZESfDcCPnmyqakj7r48JbH0ZPMAMp?=
+ =?us-ascii?Q?2+oaWY+Agny++6CT+rEfskm27JoeIo0AWMKEum39zvEf7KpUEfLdpmiZPcTQ?=
+ =?us-ascii?Q?mCi4Q/5uJLitbaWoKDAXEYTsjemRcWr86ZllwhjBsjQ7ZGNmwOrQv+kijqXT?=
+ =?us-ascii?Q?30dlslzFsIwUwTZIYPguPKVlCn95RtfPWCO7eXsmvqxoPpIfbpRGv7tbRpJn?=
+ =?us-ascii?Q?d8yW4B4sz00f18Qu+lXyt6Cs35BHI2iR2RHlNz+5d0s+SjCtNbVDQhs8s+rQ?=
+ =?us-ascii?Q?cRMES1D88gQt38K1/ZkY7hoFi6+H2M7+QjG3vEjX0m0pvgTjGnQ5HEoGejIc?=
+ =?us-ascii?Q?5qHiqbM0TINhgbrMm7Sh6sx7cFUdWisAoSVGItnoGQJDFDwnz9AI4AMtQPVM?=
+ =?us-ascii?Q?wS1lHXEVxVRq5sz3VdgxfOP2Pv4ulDcDJvi7e6aWKVGPSXUkrN1zxu89Kvif?=
+ =?us-ascii?Q?DwRSj0VvzS6FXbXPS+hijfavmTHhkseT49uBD3QOTFB8ewJIN08M4CPlNTp7?=
+ =?us-ascii?Q?e76rVCoNxuGe1TBEqd0ol0AA/WYXlA1iJdr7nPM5PhErXy3Mdf3svDUHRrsv?=
+ =?us-ascii?Q?Ritm8eznuI26UGjZMei40PT2XQhmkFO6t6L4vcw4SvnPo+BZa1yxN9xwYJQ+?=
+ =?us-ascii?Q?cP+Kld+pMn/zJ+ZQ9EIyJblLa7lzPLdgQ5btIoZmAVhp7+6CO4Tp1UmrVmet?=
+ =?us-ascii?Q?AmYrpAhjfARWkjiuNsbVluw57mIKSX/mxjR0MHqJwhQi4BrQ9djtnzzW8Rv2?=
+ =?us-ascii?Q?1JHLS92jYDWRyFqf8tEOhF1gCRaoiw4s84Yd8qsVsc7eqG/4vPV27KZXTwI7?=
+ =?us-ascii?Q?0PE=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e0f9a0bd-0197-4af9-568e-08d95789db7b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Aug 2021 20:53:05.1496
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 28nPTEC+A/R1e79oHa6GCnahOzTAu/AcfA5JlSTRX/0WLS0/seoL7KIaSUqKR2BHXun8N60OLQ+YIDYg+3oL5qcrVSU0b8P/wYKFITQz4vU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1407
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/4/21 4:57 AM, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> The 'imply' keyword does not do what most people think it does, it only
-> politely asks Kconfig to turn on another symbol, but does not prevent
-> it from being disabled manually or built as a loadable module when the
-> user is built-in. In the ICE driver, the latter now causes a link failure:
->
-> aarch64-linux-ld: drivers/net/ethernet/intel/ice/ice_main.o: in function `ice_eth_ioctl':
-> ice_main.c:(.text+0x13b0): undefined reference to `ice_ptp_get_ts_config'
-> ice_main.c:(.text+0x13b0): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `ice_ptp_get_ts_config'
-> aarch64-linux-ld: ice_main.c:(.text+0x13bc): undefined reference to `ice_ptp_set_ts_config'
-> ice_main.c:(.text+0x13bc): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `ice_ptp_set_ts_config'
-> aarch64-linux-ld: drivers/net/ethernet/intel/ice/ice_main.o: in function `ice_prepare_for_reset':
-> ice_main.c:(.text+0x31fc): undefined reference to `ice_ptp_release'
-> ice_main.c:(.text+0x31fc): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `ice_ptp_release'
-> aarch64-linux-ld: drivers/net/ethernet/intel/ice/ice_main.o: in function `ice_rebuild':
->
-> This is a recurring problem in many drivers, and we have discussed
-> it several times befores, without reaching a consensus. I'm providing
-> a link to the previous email thread for reference, which discusses
-> some related problems.
->
-> To solve the dependency issue better than the 'imply' keyword, introduce a
-> separate Kconfig symbol "CONFIG_PTP_1588_CLOCK_OPTIONAL" that any driver
-> can depend on if it is able to use PTP support when available, but works
-> fine without it. Whenever CONFIG_PTP_1588_CLOCK=m, those drivers are
-> then prevented from being built-in, the same way as with a 'depends on
-> PTP_1588_CLOCK || !PTP_1588_CLOCK' dependency that does the same trick,
-> but that can be rather confusing when you first see it.
->
-> Since this should cover the dependencies correctly, the IS_REACHABLE()
-> hack in the header is no longer needed now, and can be turned back
-> into a normal IS_ENABLED() check. Any driver that gets the dependency
-> wrong will now cause a link time failure rather than being unable to use
-> PTP support when that is in a loadable module.
->
-> However, the two recently added ptp_get_vclocks_index() and
-> ptp_convert_timestamp() interfaces are only called from builtin code with
-> ethtool and socket timestamps, so keep the current behavior by stubbing
-> those out completely when PTP is in a loadable module. This should be
-> addressed properly in a follow-up.
->
-> As Richard suggested, we may want to actually turn PTP support into a
-> 'bool' option later on, preventing it from being a loadable module
-> altogether, which would be one way to solve the problem with the ethtool
-> interface.
->
-> Fixes: 06c16d89d2cb ("ice: register 1588 PTP clock device object for E810 devices")
-> Link: https://lore.kernel.org/netdev/CAK8P3a06enZOf=XyZ+zcAwBczv41UuCTz+=0FMf2gBz1_cOnZQ@mail.gmail.com/
-> Link: https://lore.kernel.org/netdev/CAK8P3a3=eOxE-K25754+fB_-i_0BZzf9a9RfPTX3ppSwu9WZXw@mail.gmail.com/
-> Link: https://lore.kernel.org/netdev/20210726084540.3282344-1-arnd@kernel.org/
-> Cc: Richard Cochran <richardcochran@gmail.com>
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
-> Changes in v3:
-> - rewrite to introduce a new PTP_1588_CLOCK_OPTIONAL symbol
-> - use it for all driver, not just Intel's
-> - change IS_REACHABLE() to IS_ENABLED() in the header
->
-> Changes in v2:
-> - include a missing patch hunk
-> - link to a previous discussion with Richard Cochran
-> ---
->   drivers/net/dsa/mv88e6xxx/Kconfig             |  1 +
->   drivers/net/dsa/ocelot/Kconfig                |  2 +
->   drivers/net/ethernet/amd/Kconfig              |  2 +-
->   drivers/net/ethernet/broadcom/Kconfig         |  6 +--
->   drivers/net/ethernet/cadence/Kconfig          |  1 +
->   drivers/net/ethernet/cavium/Kconfig           |  4 +-
->   drivers/net/ethernet/freescale/Kconfig        |  2 +-
->   drivers/net/ethernet/hisilicon/Kconfig        |  2 +-
->   drivers/net/ethernet/intel/Kconfig            | 14 +++---
->   drivers/net/ethernet/mellanox/mlx4/Kconfig    |  2 +-
->   .../net/ethernet/mellanox/mlx5/core/Kconfig   |  2 +-
->   drivers/net/ethernet/mellanox/mlxsw/Kconfig   |  2 +-
->   drivers/net/ethernet/mscc/Kconfig             |  2 +
->   drivers/net/ethernet/oki-semi/pch_gbe/Kconfig |  1 +
->   drivers/net/ethernet/pensando/Kconfig         |  2 +-
 
-[...]
 
->   drivers/net/ethernet/qlogic/Kconfig           |  2 +-
-> diff --git a/drivers/net/ethernet/pensando/Kconfig b/drivers/net/ethernet/pensando/Kconfig
-> index 202973a82712..3f7519e435b8 100644
-> --- a/drivers/net/ethernet/pensando/Kconfig
-> +++ b/drivers/net/ethernet/pensando/Kconfig
-> @@ -20,7 +20,7 @@ if NET_VENDOR_PENSANDO
->   config IONIC
->   	tristate "Pensando Ethernet IONIC Support"
->   	depends on 64BIT && PCI
-> -	depends on PTP_1588_CLOCK || !PTP_1588_CLOCK
-> +	depends on PTP_1588_CLOCK_OPTIONAL
->   	select NET_DEVLINK
->   	select DIMLIB
->   	help
->
+> -----Original Message-----
+> From: Richard Cochran <richardcochran@gmail.com>
+> Sent: Tuesday, August 03, 2021 1:55 PM
+> To: Arnd Bergmann <arnd@kernel.org>
+> Cc: Nicolas Pitre <nico@fluxnic.net>; Keller, Jacob E <jacob.e.keller@int=
+el.com>;
+> Brandeburg, Jesse <jesse.brandeburg@intel.com>; Nguyen, Anthony L
+> <anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>; Jaku=
+b
+> Kicinski <kuba@kernel.org>; Arnd Bergmann <arnd@arndb.de>; Kurt
+> Kanzenbach <kurt@linutronix.de>; Saleem, Shiraz <shiraz.saleem@intel.com>=
+;
+> Ertman, David M <david.m.ertman@intel.com>; intel-wired-lan@lists.osuosl.=
+org;
+> netdev@vger.kernel.org; linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH net-next v2] ethernet/intel: fix PTP_1588_CLOCK
+> dependencies
+>=20
+>=20
+> On Tue, Aug 03, 2021 at 07:00:49PM +0200, Arnd Bergmann wrote:
+>=20
+> > If you turn all those 'select' lines into 'depends on', this will work,=
+ but it's
+> > not actually much different from what I'm suggesting.
+>=20
+> "depends" instead of "select" works for me.  I just want it simple and cl=
+ear.
+>=20
+> > Maybe we can do it
+> > in two steps: first fix the build failure by replacing all the 'imply'
+> > statements
+> > with the correct dependencies, and then you send a patch on top that
+> > turns PPS and PTP_1588_CLOCK into bool options.
+>=20
+> Sounds good.
+>=20
+> Thanks,
+> Richard
 
-Acked-by: Shannon Nelson <snelson@pensando.io>
+Works for me too.
 
+Thanks,
+Jake
