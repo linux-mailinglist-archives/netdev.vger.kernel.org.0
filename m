@@ -2,107 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43C563DFB79
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 08:36:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E61843DFBAA
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 09:03:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235571AbhHDGge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 02:36:34 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:37500 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234591AbhHDGgd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 02:36:33 -0400
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1746YVnN136551;
-        Wed, 4 Aug 2021 02:36:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=7uhHyolhhabnaBZToujkywYbLmOYIOBSlAGjyBfoCC4=;
- b=RQeei9YZomsmoJvR/ZPCoz4ekrSojNL3imrt7bxI761EIZ0oay8yXYr+YPHUWpAd7ePA
- kjrv93+t12Iv6rTLFOW8NpC0nTqKLBK0XKf4DtZ6SZbrKTGaY8BePb0oP2oqQkJykVg7
- eP2Vt6kpK7yoC5j0IWOKXr3z4u/xsmBbjmcTwK4W4WrOYtz7td69NyHC1T6JRjTdi2IM
- NWq3kwJbWC9UsV87LgdtKTQeS30cj++56h1o7kgKmxQwQFaEj/KYNkTtiQ1JLpmQudYV
- YD46Jqog6JasqDpuePO2XjowFunGIQrM6enyYata90S0T8iue2+GlO6frn/ZMnJ1Dxdr Bg== 
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3a7342e5t3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 04 Aug 2021 02:36:09 -0400
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1746BiZM013303;
-        Wed, 4 Aug 2021 06:36:07 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma05fra.de.ibm.com with ESMTP id 3a4x58fsg5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 04 Aug 2021 06:36:06 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1746a4U755509278
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 4 Aug 2021 06:36:04 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 59C5642097;
-        Wed,  4 Aug 2021 06:36:04 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4889242083;
-        Wed,  4 Aug 2021 06:36:03 +0000 (GMT)
-Received: from [9.145.13.232] (unknown [9.145.13.232])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  4 Aug 2021 06:36:03 +0000 (GMT)
-Subject: Re: [PATCH 22/38] net/af_iucv: Replace deprecated CPU-hotplug
- functions.
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-kernel@vger.kernel.org
-Cc:     tglx@linutronix.de, Peter Zijlstra <peterz@infradead.org>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20210803141621.780504-1-bigeasy@linutronix.de>
- <20210803141621.780504-23-bigeasy@linutronix.de>
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-Message-ID: <9c86b167-c657-435e-3f23-a3e798797069@linux.ibm.com>
-Date:   Wed, 4 Aug 2021 09:36:02 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S235748AbhHDHDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 03:03:47 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:41802 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235227AbhHDHDp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Aug 2021 03:03:45 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 2C3EF205E7;
+        Wed,  4 Aug 2021 09:03:32 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id hl0xWQqfqBwK; Wed,  4 Aug 2021 09:03:31 +0200 (CEST)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id A1EAB20534;
+        Wed,  4 Aug 2021 09:03:31 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id 9A1B180004A;
+        Wed,  4 Aug 2021 09:03:31 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 4 Aug 2021 09:03:31 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 4 Aug 2021
+ 09:03:31 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 01EE631807A0; Wed,  4 Aug 2021 09:03:30 +0200 (CEST)
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        <netdev@vger.kernel.org>
+Subject: pull request (net): ipsec 2021-08-04
+Date:   Wed, 4 Aug 2021 09:03:23 +0200
+Message-ID: <20210804070329.1357123-1-steffen.klassert@secunet.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20210803141621.780504-23-bigeasy@linutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: BVdelk-Abp68oFLz4UVuLcwpyLp9r2Ve
-X-Proofpoint-GUID: BVdelk-Abp68oFLz4UVuLcwpyLp9r2Ve
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-08-04_02:2021-08-03,2021-08-04 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- malwarescore=0 adultscore=0 spamscore=0 lowpriorityscore=0 bulkscore=0
- priorityscore=1501 impostorscore=0 phishscore=0 suspectscore=0
- clxscore=1011 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2107140000 definitions=main-2108040035
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03.08.21 17:16, Sebastian Andrzej Siewior wrote:
-> The functions get_online_cpus() and put_online_cpus() have been
-> deprecated during the CPU hotplug rework. They map directly to
-> cpus_read_lock() and cpus_read_unlock().
-> 
-> Replace deprecated CPU-hotplug functions with the official version.
-> The behavior remains unchanged.
-> 
-> Cc: Julian Wiedmann <jwi@linux.ibm.com>
-> Cc: Karsten Graul <kgraul@linux.ibm.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: linux-s390@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> ---
->  net/iucv/iucv.c | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
-> 
+1) Fix a sysbot reported memory leak in xfrm_user_rcv_msg.
+   From Pavel Skripkin.
 
-Applied, thanks.
+2) Revert "xfrm: policy: Read seqcount outside of rcu-read side
+   in xfrm_policy_lookup_bytype". This commit tried to fix a
+   lockin bug, but only cured some of the symptoms. A proper
+   fix is applied on top of this revert.
 
-I fixed up the subject to say "net/iucv: ...", as the change is in
-the iucv base-layer and not the socket code.
+3) Fix a locking bug on xfrm state hash resize. A recent change
+   on sequence counters accidentally repaced a spinlock by a mutex.
+   Fix from Frederic Weisbecker.
+
+4) Fix possible user-memory-access in xfrm_user_rcv_msg_compat().
+   From Dmitry Safonov.
+
+5) Add initialiation sefltest fot xfrm_spdattr_type_t.
+   From Dmitry Safonov.
+
+Please pull or let me know if there are problems.
+
+Thanks!
+
+The following changes since commit a118ff661889ecee3ca90f8125bad8fb5bbc07d5:
+
+  selftests: net: devlink_port_split: check devlink returned an element before dereferencing it (2021-06-28 16:14:38 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec.git master
+
+for you to fetch changes up to 480e93e12aa04d857f7cc2e6fcec181c0d690404:
+
+  net: xfrm: Fix end of loop tests for list_for_each_entry (2021-07-26 12:26:28 +0200)
+
+----------------------------------------------------------------
+Dmitry Safonov (2):
+      net/xfrm/compat: Copy xfrm_spdattr_type_t atributes
+      selftests/net/ipsec: Add test for xfrm_spdattr_type_t
+
+Frederic Weisbecker (1):
+      xfrm: Fix RCU vs hash_resize_mutex lock inversion
+
+Harshvardhan Jha (1):
+      net: xfrm: Fix end of loop tests for list_for_each_entry
+
+Pavel Skripkin (1):
+      net: xfrm: fix memory leak in xfrm_user_rcv_msg
+
+Steffen Klassert (2):
+      Revert "xfrm: policy: Read seqcount outside of rcu-read side in xfrm_policy_lookup_bytype"
+      Merge branch 'xfrm/compat: Fix xfrm_spdattr_type_t copying'
+
+ include/net/netns/xfrm.h            |   1 +
+ net/xfrm/xfrm_compat.c              |  49 +++++++++--
+ net/xfrm/xfrm_ipcomp.c              |   2 +-
+ net/xfrm/xfrm_policy.c              |  32 +++----
+ net/xfrm/xfrm_user.c                |  10 +++
+ tools/testing/selftests/net/ipsec.c | 165 +++++++++++++++++++++++++++++++++++-
+ 6 files changed, 231 insertions(+), 28 deletions(-)
