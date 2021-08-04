@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C64073E0285
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 15:55:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6E253E0288
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 15:56:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238523AbhHDNzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 09:55:47 -0400
-Received: from mail-db8eur05on2061.outbound.protection.outlook.com ([40.107.20.61]:28896
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        id S238557AbhHDNzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 09:55:50 -0400
+Received: from mail-am6eur05on2087.outbound.protection.outlook.com ([40.107.22.87]:27905
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238540AbhHDNzj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Aug 2021 09:55:39 -0400
+        id S238510AbhHDNzr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Aug 2021 09:55:47 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hM+Q3CFPXmT4atd2vCpBoTK0jQBOUqpsvX4SepLsGsEiTkSKA9WAkSxR2IZAHz/GNvl872+RFR/pcAIPS6kjZw1cwOmVGdKnIoZTlCeawd1uq+Sis4qy5y5M5Yp3GalV3526TJ/ty79M48s2FoTB3ELqNftl5OFCy50EEcywaSzT22FgRplkTVIaOwasEqRx51byRLqnRBtQoBW5gWTCcb81ReB8zjihYyTkuUAU7SKOp89wkGSak3zy7lFPspVMsRJ5PbCe0m16kKY9aitrhDfFbQGkEgnXKe7cqWpozEQaFlN9wEmoXrVx9xpVBthlMq55IMReRwq0QPMp+0FHHQ==
+ b=MFEvd1y6feLl3ysUPg4GGv0cu7E1EWoOTVRNAvd5YKZjdTv7KsWIcMvTg0VvLEkX63Az25J4uAtgU5cpZlNnjArq/0+W9ryoeP/VDgyKrSkiidBXPNC1yY9+ozaaj3EfTC3hoKwPHTocoL61XrqZhAM9vWLDu81Iscf6wXp9w/0soD9MZgX5ALGrxcNCHV22b9fF9FzlD8z1y7tPB7FJb5I7RSiKrpbDJqzBqpm1EuUNyW592sRwYu7nSg2iNbzj2gwAnrQhlRdVVe7Ox2CFz4qlifDXjZnG3uD43sHLO6wj56bCISVA/X5NJwa8ZnYO2v07TM9BncfsAGPjL9ju2w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4TuMvmJH7L+Vlds5rFAsFSG1+pHMWI8Fb91zoNxYNiQ=;
- b=TId0wJD0lvL8UOpdAyiTRPRTzgkdSakmVF4j+E2nXJSfSFyPncfWVqSiIPgvtFjIRXG6o0jEaDPQFG56wme9d3+juFN4bMxfzDLgL6PVBi3PKPADi6HnaxHHkVVHc3Nx6VAVdZZv8TZz7B/xditAiSSeKj+WrP8Z5xWna47tp1CNIpMzuyt1Bh+F4nogzr234O6+lcWrHUj5KY5auB8ENtZeXc8+Qf5/FB2m7x55G2klv7+7yeXHf7qIkwoK6NV/4TAnq/Xu1S3rxB4bz5WZtOFc2SMwp6DwOgfoWJy5gzlkcnmSliQLTf0kT6X89+etuL229hk5OsvP8bf8gKzEdg==
+ bh=tFP0ZDXnCmxYhygfqgxLl3BCxbUOVWsrQ3TY81MvUAI=;
+ b=H3Xpdhexm3mfecvFbKbIJ1qtl+pLmaq9I+0OUlEvfrTQv+ZMp1rdg5bgLP0SUCoTVgeyhNpoIy98vrqvXUnaIpDWkh6ptKRKbdPfq+7CKNyrqglH3qBKBDaZgxLj9KAlKpxchc8y2ggzGPwCgDUythEWkUbUwtE7QI6YmMTZcDhmMZU+KvNP1THGMzzQInBdY2NtUEp3MMpXfUJLOi4HwULz34KmTZOjL26x2gtFlMk5AkyDf3EIeUoVFVrUetqMmpyBQ3r2xgRZRqhDuxu07XU3qPL7DwxUSRLXQU0ns+WAsIxmVxIEL+eXRsKgxGTr2Htp8Jp4/ZxpgIP4+vKlYA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4TuMvmJH7L+Vlds5rFAsFSG1+pHMWI8Fb91zoNxYNiQ=;
- b=j1rsvBU6SeF4lSLoDfyClB9BJIU9zK3b0Fhqlte6KfDB/P5bxqpEQu0o59rIxujcwh3oyN2eFR8CH8CEhynIOHU78WsIUrchd2I0wsp2V02DfpUdsE4H3kl4MmOGW/VhtZNGEueyYGuFx61d2/H/qmd1v8GKfHfDCDXbup3nNGw=
+ bh=tFP0ZDXnCmxYhygfqgxLl3BCxbUOVWsrQ3TY81MvUAI=;
+ b=ULZ3TkIB4f5NsfbRNmQaeq+cdlNbdcemWd9kLAA5jC+ZB3xQSkC8u8/YC/VwiCMzagRqAm2fdsCoMpIKEvsRBH6h0sAPcg95/O1q3Ky3sBAcT97FhXVbGcXmz39MblHPwVqXgQ28i/zHbWYOT8HBQ48VBnxkI/uXAntx6IM+Dx0=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0401MB2687.eurprd04.prod.outlook.com (2603:10a6:800:57::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15; Wed, 4 Aug
- 2021 13:55:14 +0000
+ 2021 13:55:15 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4373.027; Wed, 4 Aug 2021
- 13:55:14 +0000
+ 13:55:15 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -44,9 +44,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH v3 net-next 7/8] net: dsa: sja1105: suppress TX packets from looping back in "H" topologies
-Date:   Wed,  4 Aug 2021 16:54:35 +0300
-Message-Id: <20210804135436.1741856-8-vladimir.oltean@nxp.com>
+Subject: [PATCH v3 net-next 8/8] net: dsa: sja1105: enable address learning on cascade ports
+Date:   Wed,  4 Aug 2021 16:54:36 +0300
+Message-Id: <20210804135436.1741856-9-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210804135436.1741856-1-vladimir.oltean@nxp.com>
 References: <20210804135436.1741856-1-vladimir.oltean@nxp.com>
@@ -57,158 +57,132 @@ X-ClientProxiedBy: AM0PR01CA0155.eurprd01.prod.exchangelabs.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.144.60) by AM0PR01CA0155.eurprd01.prod.exchangelabs.com (2603:10a6:208:aa::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15 via Frontend Transport; Wed, 4 Aug 2021 13:55:13 +0000
+Received: from localhost.localdomain (188.25.144.60) by AM0PR01CA0155.eurprd01.prod.exchangelabs.com (2603:10a6:208:aa::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15 via Frontend Transport; Wed, 4 Aug 2021 13:55:14 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b48825ec-24ea-46ef-66b2-08d9574f7bb2
+X-MS-Office365-Filtering-Correlation-Id: 8b7ccf8d-3966-4dfd-8368-08d9574f7c42
 X-MS-TrafficTypeDiagnostic: VI1PR0401MB2687:
-X-Microsoft-Antispam-PRVS: <VI1PR0401MB26878D10D296D164D6130FDEE0F19@VI1PR0401MB2687.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Microsoft-Antispam-PRVS: <VI1PR0401MB2687A0AD0AA9C2C3393E3AC6E0F19@VI1PR0401MB2687.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: k8S8EvQXyLfWmzryOxTGT7EB1QFT3qeaEBqNx2/8a8p07PI4gbOXPu8GYP6zCXieMd/EYp9E2YCs+0tQfRxfDmxxsf0eZ0MRTGNLJReiiuja41V+5k1pWXLjE5t8L8Il50LUafuc6pfdhk+PmzLRp35AQzlDuF9XyMrSmEkhyZU3jPvAEceblQQ77Y3wFf+4K6NIbAbXijBLwSdxSf1XmVYI16Bs5LTd0S2KpHoyu7XuHmYkZUWxLot7q084pnpd+xndqxh9hwCbqr7kyfRofeUEsqQneZSOxe87CAUxDe9Sn3z0mf81jJWFP0tX9yQ/sT2YQNomD/fg3GnmoDUq6f++jOFAoQDqifk8kUuByCVri1JKmpFsT9/CYwHr+XWMr9j1HfxMZUIWGHATf/7C7+ATl1x5V9sZjBc2QU4g9TkKWUn2JC+ou/Qz6ToLI/V6Ffz5vOq2FMjfd0YN0V06XIOaNiBi/b94B8kjv/7JEkw97Wh1tZr5FnCkCRNkgYG0RkTyMCl3PhpOyH5d0BqAMxz7ZQWL3023y3AOaSLKLwWb75ckDDsTQEyH1kW/L6horlcZYhp9UkJMcj+4zQRbfLRiJDfUvQ5aiVrMPcls93KPRklfa5kpUKnfGk1+4bbQg7oQfdPK56kBZi59e8kkA/v9kX7ZGbhft4C0WpHpl1+A/NpR5fL/OH/0cnu+D19aFx8TZhat6W0Ur1jcTcAaQQ==
+X-Microsoft-Antispam-Message-Info: wF/U2THdC+h0teHETrmrVT6OemKQPOkFgcueMU+RAi+GJf0zTKWudN4bXUQgdWtOYS8OWZ3hpgQW7j0vAoR0VRpi5Jq11wMQHkpBsltqKo2VxbFZ2VNSpNyC1Jw/FmFlOwtKu/gcUAeK7NGX67KstnNw8AwbRlQUM6KWzSbJhY5dN1E8dn9tih9FtPkkyVikQIRgDBrhtSvU/Pk+xuj+JSEHl8uV/Z9dkfv2B7ydSGtcC0WG8bzVci1w2ywJqtA9Fja8KNXEufJonlBWpp3XEDId4C5a7v49l4kMfIlMld9166i25YdRsqog+sbw4z580ssxA6MFzIdxLTvRST1JG1FWsUnLE3ZzT3r4C6s50ntATbjegByJaRIkcgVz3vBPil8wLU98KLLola6GfjhGjKFus9ycKonuD/lWK3Vb46NDGXLdUZinMI0TlAndS4tgrvR5rDcQW8d9jzi2+nkDaabV3D0/JEhDUGEU2snhDe0RpRX9aKyiVh+i/EfiKMZcVNg2Q3SwLvM62iWBNgGgfOJekWviD6UlPKSe0GNgDIkR9oK11vIfQwDQgrmZIf4ALizUkvOb9NqbdL8eq/GjqgaADtTMcZVrW8mnu1NvSP4496pWd0D9VP+ikyLRD1eEbpdGpCCXAW55CizoBcj8Ec92mL97cJgxt3IGs41lrPs0Xk7DTNRSVSjs+OuuE0edy2DKRbDxnHTcVDwmN2rURw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(136003)(366004)(396003)(376002)(39860400002)(6666004)(6486002)(5660300002)(478600001)(66946007)(1076003)(66476007)(4326008)(66556008)(54906003)(26005)(44832011)(38350700002)(86362001)(2616005)(52116002)(8676002)(6506007)(2906002)(36756003)(110136005)(83380400001)(38100700002)(956004)(6512007)(316002)(8936002)(186003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?OY0Sd4bUiFNGJdvzU9+rpfS7DmCFpwJ8lSoUs5DCnhzHKX25BhydTHXt8QWt?=
- =?us-ascii?Q?JKHVcX7DzHEkcXNg0BNZcjrmUmLhCTIIuCLrVDAORA0MxkXuZxURUP5LWpfP?=
- =?us-ascii?Q?vRrG4ntOVMzU2DXFKwahqjve0fbGKtDyw3Y4VAg+KFhz+CcH1PPVSEugJxq9?=
- =?us-ascii?Q?dU6iztTSky5y2xYf5kYUvJSa2roUdh1EB5mHlUCYjvu6ZRoidvSY45tBlXvX?=
- =?us-ascii?Q?zj+dg2i9Uv2G4PJpHHHAghDpdCovu+7Scs4gsB3miYYR6KYb5JLppbwLomX6?=
- =?us-ascii?Q?93rwd2I8Ono/QJpCpwk63H4W99QKqe7j46/T8gZNRfYF2hW+aOiT09AG9ooX?=
- =?us-ascii?Q?H2b33MUJr66MCJAOZVoLKWshtfQ8HAH1qUiaLuaT4a8bKUo2StVirkGcDxMW?=
- =?us-ascii?Q?rrwDZTxRNqMt7PDlZkye1wL7fYeo5iTNHqs5F1F9QxqZ7qC/5wW/bHlIHfhQ?=
- =?us-ascii?Q?n5WKcIwYwbzKxjOlNupCTrdmiZzg2oGWJjxMjEBd4MExOy9G1N51dkqQED/b?=
- =?us-ascii?Q?4KWeTafqs+CB4oVZz/gvs1JYE4kMxjyFbm6SIRfUHZ53xhn4dawPsGTa7zUB?=
- =?us-ascii?Q?M9jGMbVBeIhI2eCoN3m/+/8uMisuHMRhwWgoXsEIYwNYWYlfOVEcTH7d73nn?=
- =?us-ascii?Q?m0RhExi+Hfy9beRUU9tagEHPoKHJu9ylwP6Ahz779Z8pJ3W0RJayvhkfReK9?=
- =?us-ascii?Q?xAOp2AGQVvyFs0AI4bGJmBj5L2QG6kWG7qYOhVfaNVR2jURgMm2UmrjqkPhc?=
- =?us-ascii?Q?oE2CmbQW4E1OU7cOyL9EnaUPkGjNIUQZG74FkO+jFWagmhSEvv8X7b/s7iY7?=
- =?us-ascii?Q?NfJcWOzG41jOFB1mLDF38+wjdPEn14u9vTJDhEni3myUVPXEswunlyDHpbxL?=
- =?us-ascii?Q?2IZzwKqK6KSARr4XLlpmu/GCvwLrKIM/W+ZCM/VMsBev42f4i8SRNteJmyOv?=
- =?us-ascii?Q?1pOeEvPQR55rmoRzsaz96BWwQNbzO91xHUPad1VABcYyzLzLh/7DS62Vvk3U?=
- =?us-ascii?Q?I+E7g2Z6WnASourK1UzuDprW61uTO4JSeAU2YF/phB6Cy78Cisg1yMnbxaNk?=
- =?us-ascii?Q?HeF7BAiZaWpgdtGnJ1JoguVFWIAvYAUD9BM7Pd7r5byIjFmQbwUi3nYD3hhI?=
- =?us-ascii?Q?BMkiUd4lOX2gHSrpRQgiHeO6H/982lljSHnJDATshPIOVhTcSGcTgXZIxayd?=
- =?us-ascii?Q?G4qyS/AGFZkQcMMaIkmcYsiqHWtVCetJR2sc+pbwe1Zycs59ci7QaL9MR41b?=
- =?us-ascii?Q?ng4inxCCl3XxJA1+C3X9YuK7BIT/8GCGtOR1t9nDFFm+yMuh/RzspxZ6y7hG?=
- =?us-ascii?Q?hRpgTPAib3i9/PbAsmpT8j7V?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8UeEGJFqtcG93PUeWFtUtAla/NMjWWA7r4Uo027pCgM+4pY7/r4/Ag2yL3j1?=
+ =?us-ascii?Q?MGOq3rHa4+HlldhTakaN3bGJisWAy9gVLfveRiJ+pD+NlQrgkVVNeVOxLCMr?=
+ =?us-ascii?Q?K8auYPuNmzmRufJ+1j//BZTbAfQ4fG4dOApQIC0i9MZ4bo4F08UZC6PoyB7R?=
+ =?us-ascii?Q?NwgDlGTlj085M3WJqVdEVeDGJ+8qtOBrTkhKKZi/sTxhpckmO6spzibByAsl?=
+ =?us-ascii?Q?5MMy8lxterIfPkEu3m68l7nHDPo7NZbY6rI6G1FDqe/9Zdv1Ty+tfILNYfXw?=
+ =?us-ascii?Q?nmexhNsI/L3MIdOU6CQ0Tw8VUlnmQOoR+eO8kvxfXyvRWTn/pMrD9FP8f3gk?=
+ =?us-ascii?Q?G+aoGRLgSv1zGs/VWiDZzHT8aBLaZ7fg/dQrZ2lwUUgxpi48p1LP/h+RnxHp?=
+ =?us-ascii?Q?97JXip1LFXXp4qN9fm2iGi8DwFfe64IVHXhlfT0drGfCojIo/ZwvewKv1wB7?=
+ =?us-ascii?Q?lihFhru6w3HlOCAJMyXVdym5KOTXV6PRVk7VSU1DvqpKrOD7Vl7ODydQinxd?=
+ =?us-ascii?Q?oSDQz8BxFdKIDxOFIt2VNNNkHHtItbJZCEJjbLdnd4g65T1FjBlPpczxEgN9?=
+ =?us-ascii?Q?N6iiwlyPtLnLGtdtUpml929gIN20Ow0W1SOB+IpS3RPL3JACAOpRcAOIhQDI?=
+ =?us-ascii?Q?yMw+JBkg9f+3QXTvmT9jH8WWSeH7sv3AdI4s2+VGYgm2lOCu4VFzAldXrhcK?=
+ =?us-ascii?Q?p9d4QmYGTkQzUrLc8ANYJF9hrUl6eH8jqKshfMsQs8IlW2Wzgq8EK5xLl9V5?=
+ =?us-ascii?Q?i+0qJ+QjWG0rs1BNxpiFRsk4f2/Oizski6XMkXlFdStpCjFBgaxe45+33kbG?=
+ =?us-ascii?Q?/ZJWTXHoriq4P+qiWRMHRyFEDxKr0kDh8IRShayEsA+U/67DG1jNnwriRZHX?=
+ =?us-ascii?Q?azdokSARjwZq33BM0ZFBnZDqGKAoLH7r5OAv4xnNsExULNUHA8bRoVURJW+B?=
+ =?us-ascii?Q?9DH+WaOk1+dkm+m/9EnNrPEl1IhGJNk5x+QTxitIwY+fQeOiqki/oJrc/+FA?=
+ =?us-ascii?Q?zHAtYdxUNyA0/k14LcU69dtFhudjvSCGxL/LhhXPznzFbFJcDmD7kkAR7RdC?=
+ =?us-ascii?Q?bTn7HGypx44tUq/HULNPw+0aiD6MmODsN/+tvevVUzpizB6HBSnXg7GNbCUZ?=
+ =?us-ascii?Q?Es/yDE3bihnzjblaeX/BEFytrN693MBEhxgeTtQUYWDeE23Yl23Gzg1oXZQs?=
+ =?us-ascii?Q?7hNo4+eRYKqkCRWATZKPwCv1B6OmTUSF/+mCic/DAa418qtj1CfAvdgq5Xls?=
+ =?us-ascii?Q?lJ3QGuZ4qFA1Xn/lDCGaiagCpgkKFxfMTmFltKvPtu28TUv6MXa6JQougYBQ?=
+ =?us-ascii?Q?lfLt2Hq/j6/JYXK5e+EuLzI8?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b48825ec-24ea-46ef-66b2-08d9574f7bb2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8b7ccf8d-3966-4dfd-8368-08d9574f7c42
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Aug 2021 13:55:14.0627
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Aug 2021 13:55:14.9921
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GVHDu97/5oVm0jwUn1H5u6h2mceBXiBCkdNodOJhYHCPkg95tsQUrgSrrcrDMvANiFLOC9DRX6yNIBGrMYcToA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: ODGNJzk5LE8a9RWnNzFVu2Th/D3KxaUAkYCPgE/bU+aUYgA2K2GVamWiA47S25ImF75ThYiEvy+jsTNVsUrCdQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2687
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-H topologies like this one have a problem:
+Right now, address learning is disabled on DSA ports, which means that a
+packet received over a DSA port from a cross-chip switch will be flooded
+to unrelated ports.
 
-         eth0                                                     eth1
-          |                                                        |
-       CPU port                                                CPU port
-          |                        DSA link                        |
- sw0p0  sw0p1  sw0p2  sw0p3  sw0p4 -------- sw1p4  sw1p3  sw1p2  sw1p1  sw1p0
-   |             |      |                            |      |             |
- user          user   user                         user   user          user
- port          port   port                         port   port          port
+It is desirable to eliminate that, but for that we need a breakdown of
+the possibilities for the sja1105 driver. A DSA port can be:
 
-Basically any packet sent by the eth0 DSA master can be flooded on the
-interconnecting DSA link sw0p4 <-> sw1p4 and it will be received by the
-eth1 DSA master too. Basically we are talking to ourselves.
+- a downstream-facing cascade port. This is simple because it will
+  always receive packets from a downstream switch, and there should be
+  no other route to reach that downstream switch in the first place,
+  which means it should be safe to learn that MAC address towards that
+  switch.
 
-In VLAN-unaware mode, these packets are encoded using a tag_8021q TX
-VLAN, which dsa_8021q_rcv() rightfully cannot decode and complains.
-Whereas in VLAN-aware mode, the packets are encoded with a bridge VLAN
-which _can_ be decoded by the tagger running on eth1, so it will attempt
-to reinject that packet into the network stack (the bridge, if there is
-any port under eth1 that is under a bridge). In the case where the ports
-under eth1 are under the same cross-chip bridge as the ports under eth0,
-the TX packets will even be learned as RX packets. The only thing that
-will prevent loops with the software bridging path, and therefore
-disaster, is that the source port and the destination port are in the
-same hardware domain, and the bridge will receive packets from the
-driver with skb->offload_fwd_mark = true and will not forward between
-the two.
+- an upstream-facing cascade port. This receives packets either:
+  * autonomously forwarded by an upstream switch (and therefore these
+    packets belong to the data plane of a bridge, so address learning
+    should be ok), or
+  * injected from the CPU. This deserves further discussion, as normally,
+    an upstream-facing cascade port is no different than the CPU port
+    itself. But with "H" topologies (a DSA link towards a switch that
+    has its own CPU port), these are more "laterally-facing" cascade
+    ports than they are "upstream-facing". Here, there is a risk that
+    the port might learn the host addresses on the wrong port (on the
+    DSA port instead of on its own CPU port), but this is solved by
+    DSA's RX filtering infrastructure, which installs the host addresses
+    as static FDB entries on the CPU port of all switches in a "H" tree.
+    So even if there will be an attempt from the switch to migrate the
+    FDB entry from the CPU port to the laterally-facing cascade port, it
+    will fail to do that, because the FDB entry that already exists is
+    static and cannot migrate. So address learning should be safe for
+    this configuration too.
 
-The proper solution to this problem is to detect H topologies and
-enforce that all packets are received through the local switch and we do
-not attempt to receive packets on our CPU port from switches that have
-their own. This is a viable solution which works thanks to the fact that
-MAC addresses which should be filtered towards the host are installed by
-DSA as static MAC addresses towards the CPU port of each switch.
-
-TX from a CPU port towards the DSA port continues to be allowed, this is
-because sja1105 supports bridge TX forwarding offload, and the skb->dev
-used initially for xmit does not have any direct correlation with where
-the station that will respond to that packet is connected. It may very
-well happen that when we send a ping through a br0 interface that spans
-all switch ports, the xmit packet will exit the system through a DSA
-switch interface under eth1 (say sw1p2), but the destination station is
-connected to a switch port under eth0, like sw0p0. So the switch under
-eth1 needs to communicate on TX with the switch under eth0. The
-response, however, will not follow the same path, but instead, this
-patch enforces that the response is sent by the first switch directly to
-its DSA master which is eth0.
+Ok, so what about other MAC addresses coming from the host, not
+necessarily the bridge local FDB entries? What about MAC addresses
+dynamically learned on foreign interfaces, isn't there a risk that
+cascade ports will learn these entries dynamically when they are
+supposed to be delivered towards the CPU port? Well, that is correct,
+and this is why we also need to enable the assisted learning feature, to
+snoop for these addresses and write them to hardware as static FDB
+entries towards the CPU, to make the switch's learning process on the
+cascade ports ineffective for them. With assisted learning enabled, the
+hardware learning on the CPU port must be disabled.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 29 ++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ drivers/net/dsa/sja1105/sja1105_main.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index fffcaef6b148..b3b5ae3ef408 100644
+index b3b5ae3ef408..f13a6766dd41 100644
 --- a/drivers/net/dsa/sja1105/sja1105_main.c
 +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -474,7 +474,9 @@ static int sja1105_init_l2_forwarding(struct sja1105_private *priv)
- {
- 	struct sja1105_l2_forwarding_entry *l2fwd;
- 	struct dsa_switch *ds = priv->ds;
-+	struct dsa_switch_tree *dst;
- 	struct sja1105_table *table;
-+	struct dsa_link *dl;
- 	int port, tc;
- 	int from, to;
+@@ -199,9 +199,13 @@ static int sja1105_init_mac_settings(struct sja1105_private *priv)
+ 		mac[i] = default_mac;
  
-@@ -547,6 +549,33 @@ static int sja1105_init_l2_forwarding(struct sja1105_private *priv)
- 		}
+ 		/* Let sja1105_bridge_stp_state_set() keep address learning
+-		 * enabled for the CPU port.
++		 * enabled for the DSA ports. CPU ports use software-assisted
++		 * learning to ensure that only FDB entries belonging to the
++		 * bridge are learned, and that they are learned towards all
++		 * CPU ports in a cross-chip topology if multiple CPU ports
++		 * exist.
+ 		 */
+-		if (dsa_is_cpu_port(ds, i))
++		if (dsa_is_dsa_port(ds, i))
+ 			priv->learn_ena |= BIT(i);
  	}
  
-+	/* In odd topologies ("H" connections where there is a DSA link to
-+	 * another switch which also has its own CPU port), TX packets can loop
-+	 * back into the system (they are flooded from CPU port 1 to the DSA
-+	 * link, and from there to CPU port 2). Prevent this from happening by
-+	 * cutting RX from DSA links towards our CPU port, if the remote switch
-+	 * has its own CPU port and therefore doesn't need ours for network
-+	 * stack termination.
-+	 */
-+	dst = ds->dst;
-+
-+	list_for_each_entry(dl, &dst->rtable, list) {
-+		if (dl->dp->ds != ds || dl->link_dp->cpu_dp == dl->dp->cpu_dp)
-+			continue;
-+
-+		from = dl->dp->index;
-+		to = dsa_upstream_port(ds, from);
-+
-+		dev_warn(ds->dev,
-+			 "H topology detected, cutting RX from DSA link %d to CPU port %d to prevent TX packet loops\n",
-+			 from, to);
-+
-+		sja1105_port_allow_traffic(l2fwd, from, to, false);
-+
-+		l2fwd[from].bc_domain &= ~BIT(to);
-+		l2fwd[from].fl_domain &= ~BIT(to);
-+	}
-+
- 	/* Finally, manage the egress flooding domain. All ports start up with
- 	 * flooding enabled, including the CPU port and DSA links.
- 	 */
+@@ -2509,6 +2513,7 @@ static int sja1105_setup(struct dsa_switch *ds)
+ 	ds->num_tx_queues = SJA1105_NUM_TC;
+ 
+ 	ds->mtu_enforcement_ingress = true;
++	ds->assisted_learning_on_cpu_port = true;
+ 
+ 	rc = sja1105_devlink_setup(ds);
+ 	if (rc < 0)
 -- 
 2.25.1
 
