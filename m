@@ -2,109 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA08B3E0A19
-	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 23:43:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39E123E0A11
+	for <lists+netdev@lfdr.de>; Wed,  4 Aug 2021 23:41:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233816AbhHDVoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 17:44:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41568 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233805AbhHDVn7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 17:43:59 -0400
-Received: from mail-qk1-x749.google.com (mail-qk1-x749.google.com [IPv6:2607:f8b0:4864:20::749])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B03E5C06179A
-        for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 14:43:46 -0700 (PDT)
-Received: by mail-qk1-x749.google.com with SMTP id 18-20020a05620a0792b02903b8e915ccceso2874923qka.18
-        for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 14:43:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=Rynpga3J+xjZzUqZXpOXfkfOoHAVyRGf/PRkioLCwmY=;
-        b=B8/MlBGQclT50fb7n0ieBcTHQoZD+gRQ/u345in6OYabDUyr30L+tBW1j2xiCfNLr7
-         a1C8CtX5vMQRm7x1CDvBkHnR7zdve2JnoVx+Z7xbdcxfV8yk3pWdXvh+j8UYSWjpIiG6
-         rQTgFQZx6M0HcZUL+vGBw04INfBrgmBHJ2l9jkRxNUionVIyWBvYuy2oGjIubI+Tp0Yo
-         XGhjEY7KB+c3EYjb5InTMJ/2ppIb+GcWeznUvm2v3ZPxxskJbztyZsN3GfzDLyk9Mh31
-         WWLv+LGc6qcqeKBXZiBeJ7l+m+i/DGhYActbYEasEVcdsi3dwW04HAEC2deDco3mysZ3
-         YMOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=Rynpga3J+xjZzUqZXpOXfkfOoHAVyRGf/PRkioLCwmY=;
-        b=YPW9fMM85CUFtBrkE86xPvMwMJ1XcqwG0X42DTiAxzsAcCVUL8irGcLpmYgG/kMcAz
-         aTKPs5Bt56TbfuOiMJYcjX5fm/cxH1Jp2FXdK1rgLR4whdAARXgO0vN7p29SNK1FGJ7o
-         W0G1Dw7mRdAeC9UurDiVZApLYFUYnFlpFBukQIB5AIXKaPK+Zicd4stPmY4EAlwwbmKp
-         hH1yTjmTNvo28/ctYcKSWMfeegjaWd+/E6b7SdRbxa/0zL2EF65WDrFLuDqpTSTSmP4O
-         x6r44fdpulhHSrRFO1Jhe4oytoj/MRRvl3i2HBt3K5cTBCkMNtR9wBTuTXPtIKyYqV5l
-         Nh7w==
-X-Gm-Message-State: AOAM533hTJQsJoyEQWRtyR01cpbEdAZmEnTM3k473z+wEiQ5TJiC8MgC
-        48FdBWQjW6PoRgHZCZM2zELiK4LQFB7wT0E=
-X-Google-Smtp-Source: ABdhPJzlOYEDH8yob9gAEtyiJ+2bW8yWLnsn+Oa2Ym13tfciy/2gVuwXNkqzQileftC8X7uEAeOaOlgtP57eeUw=
-X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:ffe5:1245:526e:3189])
- (user=saravanak job=sendgmr) by 2002:ad4:40cb:: with SMTP id
- x11mr1616861qvp.60.1628113425608; Wed, 04 Aug 2021 14:43:45 -0700 (PDT)
-Date:   Wed,  4 Aug 2021 14:43:32 -0700
-In-Reply-To: <20210804214333.927985-1-saravanak@google.com>
-Message-Id: <20210804214333.927985-4-saravanak@google.com>
-Mime-Version: 1.0
-References: <20210804214333.927985-1-saravanak@google.com>
-X-Mailer: git-send-email 2.32.0.554.ge1b32706d8-goog
-Subject: [PATCH v1 3/3] net: mdio-mux: Handle -EPROBE_DEFER correctly
-From:   Saravana Kannan <saravanak@google.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Saravana Kannan <saravanak@google.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>, kernel-team@android.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S232879AbhHDVl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 17:41:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48564 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231893AbhHDVlZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Aug 2021 17:41:25 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7BE7360C3F;
+        Wed,  4 Aug 2021 21:41:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628113272;
+        bh=19rsvQG9EMQz8ZhU8YsqRzqcn4Eqt5DitxY+bamsUcM=;
+        h=Date:From:To:Cc:Subject:From;
+        b=JlTvXNk9yjFt4kBLUd2m7/d5ZyfZPTcIYF7Hc9Omr28oBjW62I0Gdd1V/ih/72y+h
+         XKSDdi2e4o6F36xUgFDGD1LK0FAzqkSutClEEsZZYOA1MkEWzk8GX6tbmju4DksBXJ
+         BOHwNy56fXnWQwyoa26p8CT+a8Vc1rXgurUmwUm17XGqa0Neh9WawGnrv2E/zjOR1/
+         CS4iK3w7V1qBFTUZVkHwCUmbTr6fsFeuI/NAsURQSkvtzCp0xIz/0+WXd8UM4L+MUS
+         E62czxYC/LrHuQimjN92RM2A6v23PBIRumwwMwbNB1WmfGRVo7wu8dMqsICo3RC3Fx
+         7kOZ12XC/Znxg==
+Date:   Wed, 4 Aug 2021 16:43:52 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] net/ipv6/mcast: Use struct_size() helper
+Message-ID: <20210804214352.GA46670@embeddedor>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When registering mdiobus children, if we get an -EPROBE_DEFER, we shouldn't
-ignore it and continue registering the rest of the mdiobus children. This
-would permanently prevent the deferring child mdiobus from working instead
-of reattempting it in the future. So, if a child mdiobus needs to be
-reattempted in the future, defer the entire mdio-mux initialization.
+Replace IP6_SFLSIZE() with struct_size() helper in order to avoid any
+potential type mistakes or integer overflows that, in the worst
+scenario, could lead to heap overflows.
 
-This fixes the issue where PHYs sitting under the mdio-mux aren't
-initialized correctly if the PHY's interrupt controller is not yet ready
-when the mdio-mux is being probed. Additional context in the link below.
-
-Link: https://lore.kernel.org/lkml/CAGETcx95kHrv8wA-O+-JtfH7H9biJEGJtijuPVN0V5dUKUAB3A@mail.gmail.com/#t
-Signed-off-by: Saravana Kannan <saravanak@google.com>
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/net/mdio/mdio-mux.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ include/net/if_inet6.h |  3 ---
+ net/ipv6/mcast.c       | 20 +++++++++++++-------
+ 2 files changed, 13 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/mdio/mdio-mux.c b/drivers/net/mdio/mdio-mux.c
-index 13035e2685c4..ebd001f0eece 100644
---- a/drivers/net/mdio/mdio-mux.c
-+++ b/drivers/net/mdio/mdio-mux.c
-@@ -175,11 +175,15 @@ int mdio_mux_init(struct device *dev,
- 		cb->mii_bus->write = mdio_mux_write;
- 		r = of_mdiobus_register(cb->mii_bus, child_bus_node);
- 		if (r) {
-+			mdiobus_free(cb->mii_bus);
-+			if (r == -EPROBE_DEFER) {
-+				ret_val = r;
-+				goto err_loop;
-+			}
-+			devm_kfree(dev, cb);
- 			dev_err(dev,
- 				"Error: Failed to register MDIO bus for child %pOF\n",
- 				child_bus_node);
--			mdiobus_free(cb->mii_bus);
--			devm_kfree(dev, cb);
- 		} else {
- 			cb->next = pb->children;
- 			pb->children = cb;
+diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
+index 71bb4cc4d05d..42235c178b06 100644
+--- a/include/net/if_inet6.h
++++ b/include/net/if_inet6.h
+@@ -82,9 +82,6 @@ struct ip6_sf_socklist {
+ 	struct in6_addr		sl_addr[];
+ };
+ 
+-#define IP6_SFLSIZE(count)	(sizeof(struct ip6_sf_socklist) + \
+-	(count) * sizeof(struct in6_addr))
+-
+ #define IP6_SFBLOCK	10	/* allocate this many at once */
+ 
+ struct ipv6_mc_socklist {
+diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
+index 54ec163fbafa..cd951faa2fac 100644
+--- a/net/ipv6/mcast.c
++++ b/net/ipv6/mcast.c
+@@ -447,7 +447,8 @@ int ip6_mc_source(int add, int omode, struct sock *sk,
+ 
+ 		if (psl)
+ 			count += psl->sl_max;
+-		newpsl = sock_kmalloc(sk, IP6_SFLSIZE(count), GFP_KERNEL);
++		newpsl = sock_kmalloc(sk, struct_size(newpsl, sl_addr, count),
++				      GFP_KERNEL);
+ 		if (!newpsl) {
+ 			err = -ENOBUFS;
+ 			goto done;
+@@ -457,7 +458,8 @@ int ip6_mc_source(int add, int omode, struct sock *sk,
+ 		if (psl) {
+ 			for (i = 0; i < psl->sl_count; i++)
+ 				newpsl->sl_addr[i] = psl->sl_addr[i];
+-			atomic_sub(IP6_SFLSIZE(psl->sl_max), &sk->sk_omem_alloc);
++			atomic_sub(struct_size(psl, sl_addr, psl->sl_max),
++				   &sk->sk_omem_alloc);
+ 			kfree_rcu(psl, rcu);
+ 		}
+ 		psl = newpsl;
+@@ -525,8 +527,9 @@ int ip6_mc_msfilter(struct sock *sk, struct group_filter *gsf,
+ 		goto done;
+ 	}
+ 	if (gsf->gf_numsrc) {
+-		newpsl = sock_kmalloc(sk, IP6_SFLSIZE(gsf->gf_numsrc),
+-							  GFP_KERNEL);
++		newpsl = sock_kmalloc(sk, struct_size(newpsl, sl_addr,
++						      gsf->gf_numsrc),
++				      GFP_KERNEL);
+ 		if (!newpsl) {
+ 			err = -ENOBUFS;
+ 			goto done;
+@@ -543,7 +546,8 @@ int ip6_mc_msfilter(struct sock *sk, struct group_filter *gsf,
+ 				     newpsl->sl_count, newpsl->sl_addr, 0);
+ 		if (err) {
+ 			mutex_unlock(&idev->mc_lock);
+-			sock_kfree_s(sk, newpsl, IP6_SFLSIZE(newpsl->sl_max));
++			sock_kfree_s(sk, newpsl, struct_size(newpsl, sl_addr,
++							     newpsl->sl_max));
+ 			goto done;
+ 		}
+ 		mutex_unlock(&idev->mc_lock);
+@@ -559,7 +563,8 @@ int ip6_mc_msfilter(struct sock *sk, struct group_filter *gsf,
+ 	if (psl) {
+ 		ip6_mc_del_src(idev, group, pmc->sfmode,
+ 			       psl->sl_count, psl->sl_addr, 0);
+-		atomic_sub(IP6_SFLSIZE(psl->sl_max), &sk->sk_omem_alloc);
++		atomic_sub(struct_size(psl, sl_addr, psl->sl_max),
++			   &sk->sk_omem_alloc);
+ 		kfree_rcu(psl, rcu);
+ 	} else {
+ 		ip6_mc_del_src(idev, group, pmc->sfmode, 0, NULL, 0);
+@@ -2607,7 +2612,8 @@ static int ip6_mc_leave_src(struct sock *sk, struct ipv6_mc_socklist *iml,
+ 		err = ip6_mc_del_src(idev, &iml->addr, iml->sfmode,
+ 				     psl->sl_count, psl->sl_addr, 0);
+ 		RCU_INIT_POINTER(iml->sflist, NULL);
+-		atomic_sub(IP6_SFLSIZE(psl->sl_max), &sk->sk_omem_alloc);
++		atomic_sub(struct_size(psl, sl_addr, psl->sl_max),
++			   &sk->sk_omem_alloc);
+ 		kfree_rcu(psl, rcu);
+ 	}
+ 
 -- 
-2.32.0.554.ge1b32706d8-goog
+2.27.0
 
