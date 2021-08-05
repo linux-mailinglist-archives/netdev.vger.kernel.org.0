@@ -2,129 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 785FD3E180E
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 17:31:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C187F3E1825
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 17:37:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242046AbhHEPbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 11:31:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42314 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238390AbhHEPbv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Aug 2021 11:31:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3138060F35;
-        Thu,  5 Aug 2021 15:31:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628177497;
-        bh=U6aKIz0g06u4wCe/q6bsAhRSJ5oHrtqJe+reCcGUy14=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=k6uyNpMzgdLgc/vVL5x+KZZQ5XStYUwqo13M2XdNMByP64SC3vdGLSDKDQD87j+9u
-         uvFFs4OGg4fNE8g2YavD90klD4okcS604fbh7WNBuiP4PIJNOPWKCjToeSZLqh0Sbb
-         TAY5vKM414V9CdN3szxHrpK0oVzZ7Irnk/btY4KmiUlTm0bpx0A4i61FZKn7PP/W37
-         4ULpfj3C5GcjEhIcqSDaX9784uAQU8MU9GNSh+e0ugC2XjWDi8s26V6gGAkyJ+s4j4
-         RH85NBRt9vhf3MG8beeXCbEAVFkvPZ+HDORIotGj3geKKcLhB9kopO4Rxa6CsRpyOR
-         p49CQCyOiJiwA==
-Date:   Thu, 5 Aug 2021 10:31:35 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Dongdong Liu <liudongdong3@huawei.com>
-Cc:     hch@infradead.org, kw@linux.com, logang@deltatee.com,
-        leon@kernel.org, linux-pci@vger.kernel.org, rajur@chelsio.com,
-        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH V7 7/9] PCI/sysfs: Add a 10-Bit Tag sysfs file
-Message-ID: <20210805153135.GA1757362@bjorn-Precision-5520>
+        id S242066AbhHEPhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 11:37:19 -0400
+Received: from ale.deltatee.com ([204.191.154.188]:46304 "EHLO
+        ale.deltatee.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242000AbhHEPhS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 11:37:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
+        Message-ID:From:References:Cc:To:content-disposition;
+        bh=FxYXTHDKCyAHR0FYBUwfJJEcH3aS8cyREXURVdqN5q0=; b=BjKGfcMbJaSz5EI4uoGVGgtNou
+        zfsti+KtAHPe6/B1GVGOmRjNso8+YObUCICxTILRRqezHaHobvX4d4r7x6yz7w5C04P191lQH1Syr
+        2ADzcIxeZZwp71jJRPRCrd2S1Gp0QbvMzDUq7cnoB4SvD9QKmccnh0J/JUriAYF/wsCG4+ZnHVtzw
+        pPNAXdrdWOKXv/+2dJcoUUnZwB7ZOcyu6dKPnGiGd8oN3EP+C+ghLngsGKLZjXRBSo75qFImfKAcM
+        oBW6FUiG/zmmePYL7Ssa4m1kdI/m8q//cy9U3kCDYUAPuRkDvoGGBZsv8w556Zvoq1cFEubtM1HXt
+        pd0JNqbA==;
+Received: from s0106a84e3fe8c3f3.cg.shawcable.net ([24.64.144.200] helo=[192.168.0.10])
+        by ale.deltatee.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <logang@deltatee.com>)
+        id 1mBfQZ-0001xq-3P; Thu, 05 Aug 2021 09:36:59 -0600
+To:     Dongdong Liu <liudongdong3@huawei.com>, helgaas@kernel.org,
+        hch@infradead.org, kw@linux.com, leon@kernel.org,
+        linux-pci@vger.kernel.org, rajur@chelsio.com,
+        hverkuil-cisco@xs4all.nl
+Cc:     linux-media@vger.kernel.org, netdev@vger.kernel.org
+References: <1628084828-119542-1-git-send-email-liudongdong3@huawei.com>
+ <1628084828-119542-8-git-send-email-liudongdong3@huawei.com>
+ <75243571-3213-6ae2-040f-ae1b1f799e42@deltatee.com>
+ <8758a42b-233b-eb73-dce4-493e0ce8eed5@huawei.com>
+From:   Logan Gunthorpe <logang@deltatee.com>
+Message-ID: <fee2f889-f549-26a1-4afa-57f52500d6e2@deltatee.com>
+Date:   Thu, 5 Aug 2021 09:36:55 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f300d75c-5fb8-54ae-0c84-3916b1dda360@huawei.com>
+In-Reply-To: <8758a42b-233b-eb73-dce4-493e0ce8eed5@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-CA
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 24.64.144.200
+X-SA-Exim-Rcpt-To: netdev@vger.kernel.org, linux-media@vger.kernel.org, hverkuil-cisco@xs4all.nl, rajur@chelsio.com, linux-pci@vger.kernel.org, leon@kernel.org, kw@linux.com, hch@infradead.org, helgaas@kernel.org, liudongdong3@huawei.com
+X-SA-Exim-Mail-From: logang@deltatee.com
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on ale.deltatee.com
+X-Spam-Level: 
+X-Spam-Status: No, score=-8.9 required=5.0 tests=ALL_TRUSTED,BAYES_00,
+        GREYLIST_ISWHITE,MYRULES_OFFER,NICE_REPLY_A autolearn=ham
+        autolearn_force=no version=3.4.2
+Subject: Re: [PATCH V7 7/9] PCI/sysfs: Add a 10-Bit Tag sysfs file
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 05, 2021 at 04:37:39PM +0800, Dongdong Liu wrote:
+
+
+On 2021-08-05 7:14 a.m., Dongdong Liu wrote:
+> On 2021/8/4 23:51, Logan Gunthorpe wrote:
+>>
+>>
+>>
+>> On 2021-08-04 7:47 a.m., Dongdong Liu wrote:
+>>> PCIe spec 5.0 r1.0 section 2.2.6.2 says that if an Endpoint supports
+>>> sending Requests to other Endpoints (as opposed to host memory), the
+>>> Endpoint must not send 10-Bit Tag Requests to another given Endpoint
+>>> unless an implementation-specific mechanism determines that the Endpoint
+>>> supports 10-Bit Tag Completer capability. Add a 10bit_tag sysfs file,
+>>> write 0 to disable 10-Bit Tag Requester when the driver does not bind
+>>> the device if the peer device does not support the 10-Bit Tag Completer.
+>>> This will make P2P traffic safe. the 10bit_tag file content indicate
+>>> current 10-Bit Tag Requester Enable status.
+>>
+>> Can we not have both the sysfs file and the command line parameter? If
+>> the user wants to disable it always for a specific device this sysfs
+>> parameter is fairly awkward. A script at boot to unbind the driver, set
+>> the sysfs file and rebind the driver is not trivial and the command line
+>> parameter offers additional options for users.
+> Does the command line parameter as "[PATCH V6 7/8] PCI: Add
+> "pci=disable_10bit_tag=" parameter for peer-to-peer support" does?
 > 
-> 
-> On 2021/8/5 7:49, Bjorn Helgaas wrote:
-> > On Wed, Aug 04, 2021 at 09:47:06PM +0800, Dongdong Liu wrote:
-> > > PCIe spec 5.0 r1.0 section 2.2.6.2 says that if an Endpoint supports
-> > > sending Requests to other Endpoints (as opposed to host memory), the
-> > > Endpoint must not send 10-Bit Tag Requests to another given Endpoint
-> > > unless an implementation-specific mechanism determines that the Endpoint
-> > > supports 10-Bit Tag Completer capability. Add a 10bit_tag sysfs file,
-> > > write 0 to disable 10-Bit Tag Requester when the driver does not bind
-> > > the device if the peer device does not support the 10-Bit Tag Completer.
-> > > This will make P2P traffic safe. the 10bit_tag file content indicate
-> > > current 10-Bit Tag Requester Enable status.
-> > > 
-> > > Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
-> > > ---
-> > >  Documentation/ABI/testing/sysfs-bus-pci | 16 +++++++-
-> > >  drivers/pci/pci-sysfs.c                 | 69 +++++++++++++++++++++++++++++++++
-> > >  2 files changed, 84 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
-> > > index 793cbb7..0e0c97d 100644
-> > > --- a/Documentation/ABI/testing/sysfs-bus-pci
-> > > +++ b/Documentation/ABI/testing/sysfs-bus-pci
-> > > @@ -139,7 +139,7 @@ Description:
-> > >  		binary file containing the Vital Product Data for the
-> > >  		device.  It should follow the VPD format defined in
-> > >  		PCI Specification 2.1 or 2.2, but users should consider
-> > > -		that some devices may have incorrectly formatted data.
-> > > +		that some devices may have incorrectly formatted data.
-> > >  		If the underlying VPD has a writable section then the
-> > >  		corresponding section of this file will be writable.
-> > > 
-> > > @@ -407,3 +407,17 @@ Description:
-> > > 
-> > >  		The file is writable if the PF is bound to a driver that
-> > >  		implements ->sriov_set_msix_vec_count().
-> > > +
-> > > +What:		/sys/bus/pci/devices/.../10bit_tag
-> > > +Date:		August 2021
-> > > +Contact:	Dongdong Liu <liudongdong3@huawei.com>
-> > > +Description:
-> > > +		If a PCI device support 10-Bit Tag Requester, will create the
-> > > +		10bit_tag sysfs file. The file is readable, the value
-> > > +		indicate current 10-Bit Tag Requester Enable.
-> > > +		1 - enabled, 0 - disabled.
-> > > +
-> > > +		The file is also writeable, the value only accept by write 0
-> > > +		to disable 10-Bit Tag Requester when the driver does not bind
-> > > +		the deivce. The typical use case is for p2pdma when the peer
-> > > +		device does not support 10-BIT Tag Completer.
+> Do we also need such command line if we already had sysfs file?
+> I think we may not need.
 
-> > > +static ssize_t pci_10bit_tag_store(struct device *dev,
-> > > +				   struct device_attribute *attr,
-> > > +				   const char *buf, size_t count)
-> > > +{
-> > > +	struct pci_dev *pdev = to_pci_dev(dev);
-> > > +	bool enable;
-> > > +
-> > > +	if (kstrtobool(buf, &enable) < 0)
-> > > +		return -EINVAL;
-> > > +
-> > > +	if (enable != false )
-> > > +		return -EINVAL;
-> > 
-> > Is this the same as "if (enable)"?
-> Yes, Will fix.
+In my opinion, for reasons stated above, the command line parameter is
+way more convenient.
 
-I actually don't like the one-way nature of this.  When the hierarchy
-supports 10-bit tags, we automatically enable them during enumeration.
-
-Then we provide this sysfs file, but it can only *disable* 10-bit
-tags.  There's no way to re-enable them except by rebooting (or using
-setpci, I guess).
-
-Why can't we allow *enabling* them here if they're supported in this
-hierarchy?
-
-> > > +	if (pdev->driver)
-> > > +		 return -EBUSY;
-> > > +
-> > > +	pcie_capability_clear_word(pdev, PCI_EXP_DEVCTL2,
-> > > +				   PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN);
-> > > +	pci_info(pdev, "disabled 10-Bit Tag Requester\n");
-> > > +
-> > > +	return count;
-> > > +}
+Logan
