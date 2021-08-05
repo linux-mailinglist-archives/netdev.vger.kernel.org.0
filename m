@@ -2,99 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C629F3E15B2
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 15:31:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D94F3E15B9
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 15:32:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240819AbhHENbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 09:31:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57910 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231162AbhHENbR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Aug 2021 09:31:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9B55F60D07;
-        Thu,  5 Aug 2021 13:31:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628170263;
-        bh=JgZfnGslfqp/znxG0wr4ON7p64h3QH4jX6hdzhwkSy8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=e2j4Jzm/+ngWy+h13j3kNnu5YPHrXRAClhE0rE7QeGSs8XQIDzV0ZhdsZNwuo9n0I
-         c114gVNx3acfTmS1+KlxdxAsYs3810FBDa8+5cKE2PWjifIn2rNbzFzGE7OXLqWuUU
-         as/a6FRc/f3oApFBn4wf/x10U+h91YSvFSD8pNSuMpw5Y6HkDCP+jvHbRJzEXtfpyK
-         RxI33YR3HHOcLw7SLjhwKse7XmJ73ZULsylMm1DM0MROWTicZhgsRk26NdI4T4XCf5
-         j98kMTzIohJViS0Nge2YeI+7zpK30VAjZajBrIYRmPvOYdP8GECU+FJAZ8Hr15TQC0
-         Q7U4td/WzHHbg==
-Date:   Thu, 5 Aug 2021 06:31:00 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Lukasz Czapnik <lukasz.czapnik@intel.com>,
-        Marcin Kubiak <marcin.kubiak@intel.com>,
-        Michal Kubiak <michal.kubiak@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@intel.com>,
+        id S241703AbhHENcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 09:32:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:27799 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241694AbhHENcL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 09:32:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1628170317;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KFeFt1ww8WzoDvTA8B4ID/THa1sBrEwi6JiSRoox5oM=;
+        b=KxgJvvePd0BsGfZ9/4xcPeGN/nVwDis5l3SxkjZKKlINSLBN+7RFC9txCrYt/zOocg4yC9
+        ZrgaA37hR5svQDcWPTfP8sYCGTc/OJLT6DGSXkRx09l9t89tdQyB2mre9pIsbYHIsTqC4S
+        xIy44FlMMFHNU9pdegWAV1eVZaAbQ0w=
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
+ [209.85.216.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-486-SDWRXJFqMS2WMOZO9YzBHw-1; Thu, 05 Aug 2021 09:31:53 -0400
+X-MC-Unique: SDWRXJFqMS2WMOZO9YzBHw-1
+Received: by mail-pj1-f69.google.com with SMTP id s2-20020a17090a0742b0290177b02e795eso5697081pje.7
+        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 06:31:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=KFeFt1ww8WzoDvTA8B4ID/THa1sBrEwi6JiSRoox5oM=;
+        b=I1vjZg4dXbz6DCrUyqgVps+7D3FUmL1jt5rCWkwuH94DvcPGPSJY5nHcG+fepUoHIC
+         dlzKfk5eDjF5+7bFWfVB76kaC49Phyn4lfsECD1oYvGpasThw7l1FeRntkhQNCG+KYNy
+         fDBwp2ROhbXhbh/66quE6+nMUMKQT3CnoDp7JUxZY6hWa1kRrSyWa0D/0Umwp9anb9DK
+         Ps+hVyEdGWtCV7shYx4DqJkK00gjAuK/XhpiaKGocqQ7Ar0Kz9lkHRta9g2gfzxg0GIo
+         QYtlOvipTCM0+FWO19JFxxpqPPQue5WWmVlb1hip3jNvLJEdqRAIPdlNKYfRuKbaGaRH
+         0lnA==
+X-Gm-Message-State: AOAM532APBuC+0fRNrekNTsmsToK4YzpWFgt4O2ZeQsU9ws7fHT5dFLO
+        EyhhNLUcbnNlRx2SLJYl2ZQ3X3LlxvwdqyPPnfiNDiWKTKbksRp3hmoQyXcm9JKU8tXF6ipn5xL
+        FGDB8bWMv5hOVSqEU
+X-Received: by 2002:a65:610c:: with SMTP id z12mr612904pgu.453.1628170312973;
+        Thu, 05 Aug 2021 06:31:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJweBq6SSyDD2nP+XrrpaLsd2Knf9rcBqrsnAXcXPB8geZ/AllW4llVpLKWNfVfqwtMjCV4ZTA==
+X-Received: by 2002:a65:610c:: with SMTP id z12mr612875pgu.453.1628170312586;
+        Thu, 05 Aug 2021 06:31:52 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id y67sm6867035pfg.218.2021.08.05.06.31.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Aug 2021 06:31:52 -0700 (PDT)
+Subject: Re: [PATCH v10 01/17] iova: Export alloc_iova_fast() and
+ free_iova_fast()
+To:     Yongji Xie <xieyongji@bytedance.com>,
+        Robin Murphy <robin.murphy@arm.com>
+Cc:     kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
         Jonathan Corbet <corbet@lwn.net>,
-        Netanel Belgazal <netanel@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Shay Agroskin <shayagr@amazon.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Danielle Ratson <danieller@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jian Shen <shenjian15@huawei.com>,
-        Petr Vorel <petr.vorel@gmail.com>,
-        Yangbo Lu <yangbo.lu@nxp.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next 03/21] ethtool, stats: introduce standard XDP
- statistics
-Message-ID: <20210805063100.0c376dda@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210805111826.252-1-alexandr.lobakin@intel.com>
-References: <20210803163641.3743-1-alexandr.lobakin@intel.com>
-        <20210803163641.3743-4-alexandr.lobakin@intel.com>
-        <20210803134900.578b4c37@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <ec0aefbc987575d1979f9102d331bd3e8f809824.camel@kernel.org>
-        <20210804053650.22aa8a5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210804155327.337-1-alexandr.lobakin@intel.com>
-        <20210804095716.35387fcd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210805111826.252-1-alexandr.lobakin@intel.com>
+        Matthew Wilcox <willy@infradead.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Liu Xiaodong <xiaodong.liu@intel.com>,
+        Joe Perches <joe@perches.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
+        He Zhe <zhe.he@windriver.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        iommu@lists.linux-foundation.org, bcrl@kvack.org,
+        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>
+References: <20210729073503.187-1-xieyongji@bytedance.com>
+ <20210729073503.187-2-xieyongji@bytedance.com>
+ <43d88942-1cd3-c840-6fec-4155fd544d80@redhat.com>
+ <CACycT3vcpwyA3xjD29f1hGnYALyAd=-XcWp8+wJiwSqpqUu00w@mail.gmail.com>
+ <6e05e25e-e569-402e-d81b-8ac2cff1c0e8@arm.com>
+ <CACycT3sm2r8NMMUPy1k1PuSZZ3nM9aic-O4AhdmRRCwgmwGj4Q@mail.gmail.com>
+ <417ce5af-4deb-5319-78ce-b74fb4dd0582@arm.com>
+ <CACycT3vARzvd4-dkZhDHqUkeYoSxTa2ty0z0ivE1znGti+n1-g@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <8c381d3d-9bbd-73d6-9733-0f0b15c40820@redhat.com>
+Date:   Thu, 5 Aug 2021 21:31:43 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <CACycT3vARzvd4-dkZhDHqUkeYoSxTa2ty0z0ivE1znGti+n1-g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  5 Aug 2021 13:18:26 +0200 Alexander Lobakin wrote:
->  - encourage driver developers to use this new API when they want to
->    provide any XDP stats, not the Ethtool stats which are already
->    overburdened and mix HW, SW and whatnot in most of the complex
->    drivers.
 
-On the question of adding the stats in general I'd still ask for 
-(a) performance analysis or (b) to start with just the exception 
-stats which I'd think should be uncontroversial.
+在 2021/8/5 下午8:34, Yongji Xie 写道:
+>> My main point, though, is that if you've already got something else
+>> keeping track of the actual addresses, then the way you're using an
+>> iova_domain appears to be something you could do with a trivial bitmap
+>> allocator. That's why I don't buy the efficiency argument. The main
+>> design points of the IOVA allocator are to manage large address spaces
+>> while trying to maximise spatial locality to minimise the underlying
+>> pagetable usage, and allocating with a flexible limit to support
+>> multiple devices with different addressing capabilities in the same
+>> address space. If none of those aspects are relevant to the use-case -
+>> which AFAICS appears to be true here - then as a general-purpose
+>> resource allocator it's rubbish and has an unreasonably massive memory
+>> overhead and there are many, many better choices.
+>>
+> OK, I get your point. Actually we used the genpool allocator in the
+> early version. Maybe we can fall back to using it.
+
+
+I think maybe you can share some perf numbers to see how much 
+alloc_iova_fast() can help.
+
+Thanks
+
+
+>
+
