@@ -2,212 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9B653E0DF8
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 08:12:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70B233E0E65
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 08:31:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235929AbhHEGMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 02:12:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40858 "EHLO
+        id S237333AbhHEGb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 02:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234461AbhHEGMu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 02:12:50 -0400
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94F6AC0613D5
-        for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 23:12:36 -0700 (PDT)
-Received: by mail-io1-xd35.google.com with SMTP id 188so3631466ioa.8
-        for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 23:12:36 -0700 (PDT)
+        with ESMTP id S235664AbhHEGbY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 02:31:24 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C2EC061765
+        for <netdev@vger.kernel.org>; Wed,  4 Aug 2021 23:31:10 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id n12-20020a05600c3b8cb029025a67bbd40aso5461633wms.0
+        for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 23:31:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gU4DcyTuEfs53h2u5rnsqBhluzfPKtNUI3JuZEnf8Vw=;
-        b=QaFuazGqXKXVUefNfbHpKyMO2kZOt2tmGh6GlIXAYbiNGTZK3quOcskLunHY1oBsw7
-         cXQa9BCUXwsZiuBfWi3l1mUStvnlKWPBFzb/zCaaLlrhK4PeAItAGfXIiCKOChsIbIw1
-         imtfU8KUUFt+GlqdrPpgzUf6tdFKojOjJZchA=
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6jUhEtKSiG7ZerzsDL2H1kO7Htn4R9iX/da1sgzTYhQ=;
+        b=sVkwhLsN7lFzvmfY3MOh+638o1qqgcCi1P8Mz/17oEAwPa4qnuPqbFxbhny+sYRAkX
+         l3KQp/WFPkwKHO/sgBLIC6Gswo9/GKzE+u9ZBqmOq1NQd+DXQbd4Hd3BCbdCWQ57pTin
+         1xA7/h53c5t/wsXjIkv0R62LWSm25FluPws1e4TUmKiDrcJMVdszVF+tf/jqCn61AC8g
+         YgeQTyFVuuqAzA+PWHr9sWy3gwEKX9YYxL0mwH1uclnJaRIkiSUchCftUP8ZPwfyOQ4F
+         xgNzj2zblW+nFiQcaXNTapERV2fNgVVo45D7LUjFk2u8kg4ENZEEpBNg5RnOBCZG/7t6
+         XImw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gU4DcyTuEfs53h2u5rnsqBhluzfPKtNUI3JuZEnf8Vw=;
-        b=Jr75BXlzr8ViSI3e8O9mvUfkNHCgFKG2WDEQ5ZGYsa9bI4uwot4hM3MOoYOyptfU5k
-         PEIaPN0HWLf/E35ppedWHRBhXYgtOlt7k55114pqA+YfusNih9k8HO+g30I273Vj2LZ3
-         T2uzixrHq+WIRfOPo+et3tzPlJPDylhPtY80onpFBuNwCYy7RW7680hrWfwxNON1f6cC
-         OiXtPMhgUp10m/QMGYZVgMbq5a0vs8oJvExaK/um7qhgrSgSWz/LZIvAdMSsNsA5LkLa
-         OeSDuBrDRi+CJsA1/LG67IKxMSjdtzdzW1Q+rMvDmHAQPY9tZEhXwq/TSpIRuaSfRQNw
-         idYw==
-X-Gm-Message-State: AOAM5320W+IQZEpNTzsidS1aY2TaL0guhR6C357KahtQ+3GhbR3w2dNB
-        y/PPONQqHz/obuJiFji/20ocRXwR/oYgFiZBC60qBA==
-X-Google-Smtp-Source: ABdhPJzXqUglAP+NmPtfQU0dkX+5cbEMg5HBIIPjOt4LrWhXBRw9EtrOQxlXsDnGe7CIPi1CS6RfrPR6ZgSwCPKtbKE=
-X-Received: by 2002:a02:6a24:: with SMTP id l36mr3020270jac.4.1628143955837;
- Wed, 04 Aug 2021 23:12:35 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=6jUhEtKSiG7ZerzsDL2H1kO7Htn4R9iX/da1sgzTYhQ=;
+        b=KnynWOfR0pyswwQgdeCTVJ6rOz0PMQVVAD+tr2pw53gVL2j4jhG8R+jCoiQVpKb9CB
+         n08oQdLXaY7KAts1qFly5U9x6DjanH5SpB7mOlmJn7TLnmAdrJZdONot+Cfpzuq768fe
+         KH4mKXJ7g11E+4xtIgJo2CseyPakURszQN5syklwSoWT4JyjTcWRcBkeN2LdCuBYyGNI
+         FAHuUl49to2J97dZ3P8hh9XTTOABbo8YdHivbuCLfXITnxs4qeK5rTS6xCSQnrgAWfIg
+         q+SNpkyZc2d4sihsILkeyRxe9kxnDjAh80vzm5zwwQEqErQ0JFc9rnkVuSLN/S6Sgpha
+         ZROw==
+X-Gm-Message-State: AOAM533t1ffFlWg04UJLC9huVD25UMWH/dpryeJjXAMUQeIsCKN55UKG
+        npsIf0ivcP9tlOTj0UftVlz3YQ==
+X-Google-Smtp-Source: ABdhPJwhzVUVFwT3U+v9V/pf/bnOjk+HxXuJhP6KwE+dmCvAuziAmYWEXS/ynfioDbEwv2YrnygzVg==
+X-Received: by 2002:a1c:cc1a:: with SMTP id h26mr3169713wmb.47.1628145068651;
+        Wed, 04 Aug 2021 23:31:08 -0700 (PDT)
+Received: from [10.1.3.29] (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.gmail.com with ESMTPSA id j14sm4735302wrr.16.2021.08.04.23.31.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 Aug 2021 23:31:08 -0700 (PDT)
+Subject: Re: [PATCH 1/2] irqchip: irq-meson-gpio: make it possible to build as
+ a module
+To:     Saravana Kannan <saravanak@google.com>,
+        Marc Zyngier <maz@kernel.org>, Andrew Lunn <andrew@lunn.ch>
+Cc:     Kevin Hilman <khilman@baylibre.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        linux-amlogic@lists.infradead.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Android Kernel Team <kernel-team@android.com>
+References: <20201020072532.949137-1-narmstrong@baylibre.com>
+ <20201020072532.949137-2-narmstrong@baylibre.com>
+ <7hsga8kb8z.fsf@baylibre.com>
+ <CAF2Aj3g6c8FEZb3e1by6sd8LpKLaeN5hsKrrQkZUvh8hosiW9A@mail.gmail.com>
+ <87r1hwwier.wl-maz@kernel.org> <7h7diwgjup.fsf@baylibre.com>
+ <87im0m277h.wl-maz@kernel.org>
+ <CAGETcx9OukoWM_qprMse9aXdzCE=GFUgFEkfhhNjg44YYsOQLw@mail.gmail.com>
+ <87sfzpwq4f.wl-maz@kernel.org>
+ <CAGETcx95kHrv8wA-O+-JtfH7H9biJEGJtijuPVN0V5dUKUAB3A@mail.gmail.com>
+ <CAGETcx8bpWQEnkpJ0YW9GqX8WE0ewT45zqkbWWdZ0ktJBhG4yQ@mail.gmail.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+Message-ID: <4e98d876-330f-21a4-846e-94e1f01f0eed@baylibre.com>
+Date:   Thu, 5 Aug 2021 08:31:06 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210514071452.25220-1-kai.heng.feng@canonical.com>
- <20210802030538.2023-1-hdanton@sina.com> <CAAd53p4NO3KJkn2Zp=hxQOtR8vynkJpcPmNtwv2R6z=zei056Q@mail.gmail.com>
-In-Reply-To: <CAAd53p4NO3KJkn2Zp=hxQOtR8vynkJpcPmNtwv2R6z=zei056Q@mail.gmail.com>
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-Date:   Thu, 5 Aug 2021 14:12:10 +0800
-Message-ID: <CAJMQK-gT4e_xTc8WY+n52DJPUagPGce-0FJEtqZSwPm3U=LViQ@mail.gmail.com>
-Subject: Re: [PATCH v2] Bluetooth: Shutdown controller after workqueues are
- flushed or cancelled
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Hillf Danton <hdanton@sina.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "bluez mailin list (linux-bluetooth@vger.kernel.org)" 
-        <linux-bluetooth@vger.kernel.org>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAGETcx8bpWQEnkpJ0YW9GqX8WE0ewT45zqkbWWdZ0ktJBhG4yQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 3, 2021 at 2:45 PM Kai-Heng Feng
-<kai.heng.feng@canonical.com> wrote:
->
-> On Mon, Aug 2, 2021 at 11:05 AM Hillf Danton <hdanton@sina.com> wrote:
-> >
-> > On Fri, 14 May 2021 15:14:52 +0800 Kai-Heng Feng wrote:
-> > > Rfkill block and unblock Intel USB Bluetooth [8087:0026] may make it
-> > > stops working:
-> > > [  509.691509] Bluetooth: hci0: HCI reset during shutdown failed
-> > > [  514.897584] Bluetooth: hci0: MSFT filter_enable is already on
-> > > [  530.044751] usb 3-10: reset full-speed USB device number 5 using xhci_hcd
-> > > [  545.660350] usb 3-10: device descriptor read/64, error -110
-> > > [  561.283530] usb 3-10: device descriptor read/64, error -110
-> > > [  561.519682] usb 3-10: reset full-speed USB device number 5 using xhci_hcd
-> > > [  566.686650] Bluetooth: hci0: unexpected event for opcode 0x0500
-> > > [  568.752452] Bluetooth: hci0: urb 0000000096cd309b failed to resubmit (113)
-> > > [  578.797955] Bluetooth: hci0: Failed to read MSFT supported features (-110)
-> > > [  586.286565] Bluetooth: hci0: urb 00000000c522f633 failed to resubmit (113)
-> > > [  596.215302] Bluetooth: hci0: Failed to read MSFT supported features (-110)
-> > >
-> > > Or kernel panics because other workqueues already freed skb:
-> > > [ 2048.663763] BUG: kernel NULL pointer dereference, address: 0000000000000000
-> > > [ 2048.663775] #PF: supervisor read access in kernel mode
-> > > [ 2048.663779] #PF: error_code(0x0000) - not-present page
-> > > [ 2048.663782] PGD 0 P4D 0
-> > > [ 2048.663787] Oops: 0000 [#1] SMP NOPTI
-> > > [ 2048.663793] CPU: 3 PID: 4491 Comm: rfkill Tainted: G        W         5.13.0-rc1-next-20210510+ #20
-> > > [ 2048.663799] Hardware name: HP HP EliteBook 850 G8 Notebook PC/8846, BIOS T76 Ver. 01.01.04 12/02/2020
-> > > [ 2048.663801] RIP: 0010:__skb_ext_put+0x6/0x50
-> > > [ 2048.663814] Code: 8b 1b 48 85 db 75 db 5b 41 5c 5d c3 be 01 00 00 00 e8 de 13 c0 ff eb e7 be 02 00 00 00 e8 d2 13 c0 ff eb db 0f 1f 44 00 00 55 <8b> 07 48 89 e5 83 f8 01 74 14 b8 ff ff ff ff f0 0f c1
-> > > 07 83 f8 01
-> > > [ 2048.663819] RSP: 0018:ffffc1d105b6fd80 EFLAGS: 00010286
-> > > [ 2048.663824] RAX: 0000000000000000 RBX: ffff9d9ac5649000 RCX: 0000000000000000
-> > > [ 2048.663827] RDX: ffffffffc0d1daf6 RSI: 0000000000000206 RDI: 0000000000000000
-> > > [ 2048.663830] RBP: ffffc1d105b6fd98 R08: 0000000000000001 R09: ffff9d9ace8ceac0
-> > > [ 2048.663834] R10: ffff9d9ace8ceac0 R11: 0000000000000001 R12: ffff9d9ac5649000
-> > > [ 2048.663838] R13: 0000000000000000 R14: 00007ffe0354d650 R15: 0000000000000000
-> > > [ 2048.663843] FS:  00007fe02ab19740(0000) GS:ffff9d9e5f8c0000(0000) knlGS:0000000000000000
-> > > [ 2048.663849] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > [ 2048.663853] CR2: 0000000000000000 CR3: 0000000111a52004 CR4: 0000000000770ee0
-> > > [ 2048.663856] PKRU: 55555554
-> > > [ 2048.663859] Call Trace:
-> > > [ 2048.663865]  ? skb_release_head_state+0x5e/0x80
-> > > [ 2048.663873]  kfree_skb+0x2f/0xb0
-> > > [ 2048.663881]  btusb_shutdown_intel_new+0x36/0x60 [btusb]
-> > > [ 2048.663905]  hci_dev_do_close+0x48c/0x5e0 [bluetooth]
-> > > [ 2048.663954]  ? __cond_resched+0x1a/0x50
-> > > [ 2048.663962]  hci_rfkill_set_block+0x56/0xa0 [bluetooth]
-> > > [ 2048.664007]  rfkill_set_block+0x98/0x170
-> > > [ 2048.664016]  rfkill_fop_write+0x136/0x1e0
-> > > [ 2048.664022]  vfs_write+0xc7/0x260
-> > > [ 2048.664030]  ksys_write+0xb1/0xe0
-> > > [ 2048.664035]  ? exit_to_user_mode_prepare+0x37/0x1c0
-> > > [ 2048.664042]  __x64_sys_write+0x1a/0x20
-> > > [ 2048.664048]  do_syscall_64+0x40/0xb0
-> > > [ 2048.664055]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> > > [ 2048.664060] RIP: 0033:0x7fe02ac23c27
-> > > [ 2048.664066] Code: 0d 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 48 89 54 24 18 48 89 74 24
-> > > [ 2048.664070] RSP: 002b:00007ffe0354d638 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-> > > [ 2048.664075] RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 00007fe02ac23c27
-> > > [ 2048.664078] RDX: 0000000000000008 RSI: 00007ffe0354d650 RDI: 0000000000000003
-> > > [ 2048.664081] RBP: 0000000000000000 R08: 0000559b05998440 R09: 0000559b05998440
-> > > [ 2048.664084] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
-> > > [ 2048.664086] R13: 0000000000000000 R14: ffffffff00000000 R15: 00000000ffffffff
-> > >
-> > > So move the shutdown callback to a place where workqueues are either
-> > > flushed or cancelled to resolve the issue.
-> > >
-> > > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> > > ---
-> > > v2:
-> > >  - Rebased on bluetooth-next.
-> > >
-> > >  net/bluetooth/hci_core.c | 16 ++++++++--------
-> > >  1 file changed, 8 insertions(+), 8 deletions(-)
-> > >
-> > > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> > > index 7baf93eda936..6eedf334f943 100644
-> > > --- a/net/bluetooth/hci_core.c
-> > > +++ b/net/bluetooth/hci_core.c
-> > > @@ -1716,14 +1716,6 @@ int hci_dev_do_close(struct hci_dev *hdev)
-> > >
-> > >       BT_DBG("%s %p", hdev->name, hdev);
-> > >
-> > > -     if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
-> > > -         !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
-> > > -         test_bit(HCI_UP, &hdev->flags)) {
-> > > -             /* Execute vendor specific shutdown routine */
-> > > -             if (hdev->shutdown)
-> > > -                     hdev->shutdown(hdev);
-> > > -     }
-> > > -
-> > >       cancel_delayed_work(&hdev->power_off);
-> > >       cancel_delayed_work(&hdev->ncmd_timer);
-> > >
-> > > @@ -1801,6 +1793,14 @@ int hci_dev_do_close(struct hci_dev *hdev)
-> > >               clear_bit(HCI_INIT, &hdev->flags);
-> > >       }
-> > >
-> > > +     if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
-> > > +         !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
-> > > +         test_bit(HCI_UP, &hdev->flags)) {
-> > > +             /* Execute vendor specific shutdown routine */
-> > > +             if (hdev->shutdown)
-> > > +                     hdev->shutdown(hdev);
-> > > +     }
-> > > +
-> > >       /* flush cmd  work */
-> > >       flush_work(&hdev->cmd_work);
-> > >
-> > > --
-> > > 2.30.2
-> >
-> > btusb_shutdown_intel_new
-> >   __hci_cmd_sync(hdev, HCI_OP_RESET, 0, NULL, HCI_INIT_TIMEOUT);
-> >     __hci_cmd_sync_ev(hdev, opcode, plen, param, 0, timeout);
-> >       hci_req_run_skb(&req, hci_req_sync_complete);
-> >
-> > hci_req_sync_complete
-> >   if (skb)
-> >         hdev->req_skb = skb_get(skb);
-> >
-> > Given the skb_get in hci_req_sync_complete makes it safe to free skb on
-> > driver side, I doubt this patch is the correct fix as it is.
->
-> Some workqueues are still active.
-> The shutdown() should be called at least after hci_request_cancel_all().
->
-Hello,
+Hi Saravana,
 
-The original patch 60789afc02f592b8d91217b60930e7a76271ae07
-("Bluetooth: Shutdown controller after workqueues are flushed or
-cancelled") is causing the tx fail when downloading fw on mediatek
-mt8183 device using QCA bluetooth:
+On 04/08/2021 23:47, Saravana Kannan wrote:
+> On Wed, Aug 4, 2021 at 11:20 AM Saravana Kannan <saravanak@google.com> wrote:
+>>
+>> On Wed, Aug 4, 2021 at 1:50 AM Marc Zyngier <maz@kernel.org> wrote:
+>>>
+>>> On Wed, 04 Aug 2021 02:36:45 +0100,
+>>> Saravana Kannan <saravanak@google.com> wrote:
+>>>
+>>> Hi Saravana,
+>>>
+>>> Thanks for looking into this.
+>>
+>> You are welcome. I just don't want people to think fw_devlink is broken :)
+>>
+>>>
+>>> [...]
+>>>
+>>>>> Saravana, could you please have a look from a fw_devlink perspective?
+>>>>
+>>>> Sigh... I spent several hours looking at this and wrote up an analysis
+>>>> and then realized I might be looking at the wrong DT files.
+>>>>
+>>>> Marc, can you point me to the board file in upstream that corresponds
+>>>> to the platform in which you see this issue? I'm not asking for [1],
+>>>> but the actual final .dts (not .dtsi) file that corresponds to the
+>>>> platform/board/system.
+>>>
+>>> The platform I can reproduce this on is described in
+>>> arch/arm64/boot/dts/amlogic/meson-sm1-khadas-vim3l.dts. It is an
+>>> intricate maze of inclusion, node merge and other DT subtleties. I
+>>> suggest you look at the decompiled version to get a view of the
+>>> result.
+>>
+>> Thanks. After decompiling it, it looks something like (stripped a
+>> bunch of reg and address properties and added the labels back):
+>>
+>> eth_phy: mdio-multiplexer@4c000 {
+>>         compatible = "amlogic,g12a-mdio-mux";
+>>         clocks = <0x02 0x13 0x1e 0x02 0xb1>;
+>>         clock-names = "pclk\0clkin0\0clkin1";
+>>         mdio-parent-bus = <0x22>;
+>>
+>>         ext_mdio: mdio@0 {
+>>                 reg = <0x00>;
+>>
+>>                 ethernet-phy@0 {
+>>                         max-speed = <0x3e8>;
+>>                         interrupt-parent = <0x23>;
+>>                         interrupts = <0x1a 0x08>;
+>>                         phandle = <0x16>;
+>>                 };
+>>         };
+>>
+>>         int_mdio: mdio@1 {
+>>                 ...
+>>         }
+>> }
+>>
+>> And phandle 0x23 refers to the gpio_intc interrupt controller with the
+>> modular driver.
+>>
+>>>> Based on your error messages, it's failing for mdio@0 which
+>>>> corresponds to ext_mdio. But none of the board dts files in upstream
+>>>> have a compatible property for "ext_mdio". Which means fw_devlink
+>>>> _should_ propagate the gpio_intc IRQ dependency all the way up to
+>>>> eth_phy.
+>>>>
+>>>> Also, in the failing case, can you run:
+>>>> ls -ld supplier:*
+>>>>
+>>>> in the /sys/devices/....<something>/ folder that corresponds to the
+>>>> "eth_phy: mdio-multiplexer@4c000" DT node and tell me what it shows?
+>>>
+>>> Here you go:
+>>>
+>>> root@tiger-roach:~# find /sys/devices/ -name 'supplier*'|grep -i mdio | xargs ls -ld
+>>> lrwxrwxrwx 1 root root 0 Aug  4 09:47 /sys/devices/platform/soc/ff600000.bus/ff64c000.mdio-multiplexer/supplier:platform:ff63c000.system-controller:clock-controller -> ../../../../virtual/devlink/platform:ff63c000.system-controller:clock-controller--platform:ff64c000.mdio-multiplexer
+>>
+>> As we discussed over chat, this was taken after the mdio-multiplexer
+>> driver "successfully" probes this device. This will cause
+>> SYNC_STATE_ONLY device links created by fw_devlink to be deleted
+>> (because they are useless after a device probes). So, this doesn't
+>> show the info I was hoping to demonstrate.
+>>
+>> In any case, one can see that fw_devlink properly created the device
+>> link for the clocks dependency. So fw_devlink is parsing this node
+>> properly. But it doesn't create a similar probe order enforcing device
+>> link between the mdio-multiplexer and the gpio_intc because the
+>> dependency is only present in a grand child DT node (ethernet-phy@0
+>> under ext_mdio). So fw_devlink is working as intended.
+>>
+>> I spent several hours squinting at the code/DT yesterday. Here's what
+>> is going on and causing the problem:
+>>
+>> The failing driver in this case is
+>> drivers/net/mdio/mdio-mux-meson-g12a.c. And the only DT node it's
+>> handling is what I pasted above in this email. In the failure case,
+>> the call flow is something like this:
+>>
+>> g12a_mdio_mux_probe()
+>> -> mdio_mux_init()
+>> -> of_mdiobus_register(ext_mdio DT node)
+>> -> of_mdiobus_register_phy(ext_mdio DT node)
+>> -> several calls deep fwnode_mdiobus_phy_device_register(ethernet_phy DT node)
+>> -> Tried to get the IRQ listed in ethernet_phy and fails with
+>> -EPROBE_DEFER because the IRQ driver isn't loaded yet.
+>>
+>> The error is propagated correctly all the way up to of_mdiobus_register(), but
+>> mdio_mux_init() ignores the -EPROBE_DEFER from of_mdiobus_register() and just
+>> continues on with the rest of the stuff and returns success as long as
+>> one of the child nodes (in this case int_mdio) succeeds.
+>>
+>> Since the probe returns 0 without really succeeding, networking stuff
+>> just fails badly after this. So, IMO, the real problem is with
+>> mdio_mux_init() not propagating up the -EPROBE_DEFER. I gave Marc a
+>> quick hack (pasted at the end of this email) to test my theory and he
+>> confirmed that it fixes the issue (a few deferred probes later, things
+>> work properly).
+>>
+>> Andrew, I don't see any good reason for mdio_mux_init() not
+>> propagating the errors up correctly (at least for EPROBE_DEFER). I'll
+>> send a patch to fix this. Please let me know if there's a reason it
+>> has to stay as-is.
+> 
+> I sent out the proper fix as a series:
+> https://lore.kernel.org/lkml/20210804214333.927985-1-saravanak@google.com/T/#t
 
-[  225.205061] Bluetooth: qca_download_firmware() hci0: QCA
-Downloading qca/rampatch_00440302.bin
-[  227.252653] Bluetooth: hci_cmd_timeout() hci0: command 0xfc00 tx timeout
-...
-follows by a lot of:
-[  223.604971] Bluetooth: qca_recv() hci0: Frame reassembly failed (-84)
-[  223.605027] Bluetooth: qca_recv() hci0: Frame reassembly failed (-84)
+Thanks a lot for digging here and providing the appropriate fixes !
 
-After applying the fixup to allow tx, the issue is solved.
+Neil
 
+> 
+> Marc, can you give it a shot please?
+> 
+> -Saravana
+> 
+>>
+>> -Saravana
+>>
+>> index 110e4ee85785..d973a267151f 100644
+>> --- a/drivers/net/mdio/mdio-mux.c
+>> +++ b/drivers/net/mdio/mdio-mux.c
+>> @@ -170,6 +170,9 @@ int mdio_mux_init(struct device *dev,
+>>                                 child_bus_node);
+>>                         mdiobus_free(cb->mii_bus);
+>>                         devm_kfree(dev, cb);
+>> +                       /* Not a final fix. I think it can cause UAF issues. */
+>> +                       mdio_mux_uninit(pb);
+>> +                       return r;
+>>                 } else {
+>>                         cb->next = pb->children;
+>>                         pb->children = cb;
 
-> Kai-Heng
