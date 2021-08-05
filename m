@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CFB13E1BD2
+	by mail.lfdr.de (Postfix) with ESMTP id 925B73E1BD3
 	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 20:58:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241865AbhHES6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 14:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48186 "EHLO
+        id S241892AbhHES6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 14:58:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241061AbhHES6L (ORCPT
+        with ESMTP id S241866AbhHES6L (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 14:58:11 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0BF8C061765
-        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 11:57:55 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id z6-20020a0568302906b02904f268d34f86so5870043otu.2
-        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 11:57:55 -0700 (PDT)
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D27C0613D5
+        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 11:57:56 -0700 (PDT)
+Received: by mail-ot1-x32e.google.com with SMTP id v8-20020a0568301bc8b02904d5b4e5ca3aso6148691ota.13
+        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 11:57:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=nsRwK3nV8f5bjMv6jFFTlnHRWwO4N1j6c3q+aaDgWjk=;
-        b=p+ctxhe6pqTDt9ZQSPT3CZnCK6CrfSZprtQEPUW/kodux9lPWnH7DAfaGd657mnrJi
-         GOpHV+U69K/yv1apyLzSsRIoQ/Mab00jWhkNNdrFyGqPpelHfYgZ2dbBXaClDhXWpOyc
-         bKiowGgzyphVJTovVSeahTDch4RvM4ZzOf3bBy0HdA5jRoDxCuElVB9ks9fjOFKoDXRN
-         AEPI5jqHoKV5FWzTdll1Aj4nx7vztdGsWAnKiWAPUx5jZBCnSjJBCC7Si9eED1i/JVaG
-         o1qJUkDjU7iUItc7KcdKAEG7q+nBlV6l3k0ise0+wD6IQa90uH63jF+O6G+snNWnlm0t
-         TlSQ==
+        bh=6kT6Vk2sprR6tKH7a6ctkmsP8co54EU62v99qfPXUNQ=;
+        b=KUJwPCbniDvY5WKL7bjZ5L+6JhmrplMy61KVPoW8kJKGbWzSU1z1ph+BwELAXz8uMG
+         yPA6udV25RLamSjOqI0Fews2kPAQTaA7YeIoHkTCTIv4WYNr16iCx5wQAwvkawLGUS3S
+         TqGUzhVivDM0PC2fcG63KzwkhAdD4e8R2XBu9VPvbO0rLA/SREduA1YfRgWpyidJX5+2
+         dm4Fe1VssnLWi9BqPK1l7ACho0ZYT6RN+UnYJe9mQG8RIwwjnBPfrTJLGIQSFM1N1QZh
+         hXOZiTgcftmP1KvMOKpd2WVEPmsuf0vTGzlpsqxyqLy+VQLW9DlHAtuQYZ09DnjY+Hdn
+         OaTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nsRwK3nV8f5bjMv6jFFTlnHRWwO4N1j6c3q+aaDgWjk=;
-        b=mhZLdcZLvb1mfa52aCJFV3KVIFnhKhxqN4EgzgMmQhGbLc+rW9HKaH2wAXmQn096Fd
-         Nh0+5D0owoFkVHFh96wlfcGwP0FcZMqNhb9z2lbDHaUItys14rol8sa8JXFEmZQPtaGw
-         YUYXUhg610lZgkNQW7vx5YxVk/y1tnWlYvvz2p9kD4c5CABK8D1msRyFG8Wdu6brCzk8
-         iQZ1UZ/Q0TMwvloBFrMCqLtvvdhpFIaKBwzIneUz+zdGNBAvHiWNj39qttyWMex12I76
-         IDGXMAoJkRPNaa5V/hMUqLO7Y3wry5N8c1tgjgQZu6/iGuLf55/4n9u2c+JC/KzVDbIc
-         Rryg==
-X-Gm-Message-State: AOAM532j6G5ENpNGwmjUzFbLLRDLOMgpARu2WyDwILX073MXscHvytmH
-        qVMH5DbBN39KuxYG5iSEDdGRRX536VY=
-X-Google-Smtp-Source: ABdhPJwWMz7ODnEKth7YEYpAajCchjvEm7Xfu80AQG3RqGFVusPeNXFhd4sbAtw0KbEU7pfCNiM8xA==
-X-Received: by 2002:a9d:206c:: with SMTP id n99mr4717411ota.64.1628189874108;
-        Thu, 05 Aug 2021 11:57:54 -0700 (PDT)
+        bh=6kT6Vk2sprR6tKH7a6ctkmsP8co54EU62v99qfPXUNQ=;
+        b=HMsy7qA72Kct071IcwWbLuhX+pntD7t5Bp802Wm2+EyXe9inzN/hAHVncQ9lYbNgW/
+         decUxYGWj7dNewWqciXeG9EFsOkHMdrv4RuMT7YUBX5pL8FBNavzkYtuJnX/JrRpwg4A
+         sOlbCk0YuXZd4CZ4McCJqQNJv7b/5AjFJ4wYOshHNTwDLhbqb52cxjAySuzKBFhBbkKR
+         2NLoV+aKGaKP5tPE5Xto5uQyDmlO6WpG+T7/EW4YNRoFBi0lyIQ9xr0DadDdcjQ3HG53
+         xw8dnMWLSIPZF4g/exdoXY3MjQxI9OlmTdAXVyXfVYtNtL3d4j7fLowHNobX3xXNII/m
+         UraQ==
+X-Gm-Message-State: AOAM531BOXjESd7QXiKX7Z3r8XzM7q6Rc5xPSvQkcvJYK4ZTGDBYihS6
+        11Nks4E0Jc/3fIeuPXstxN/X7RkSvX4=
+X-Google-Smtp-Source: ABdhPJw6kZDFSIDLG/PrYGmrCQAwI1DPfvWNZ1jnMxW8s3/e8EMhGEl4acNG0jMqtjUvmBpAzWFmRQ==
+X-Received: by 2002:a9d:eed:: with SMTP id 100mr4951820otj.50.1628189875751;
+        Thu, 05 Aug 2021 11:57:55 -0700 (PDT)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:c64b:2366:2e53:c024])
-        by smtp.gmail.com with ESMTPSA id r5sm358678otk.71.2021.08.05.11.57.53
+        by smtp.gmail.com with ESMTPSA id r5sm358678otk.71.2021.08.05.11.57.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Aug 2021 11:57:53 -0700 (PDT)
+        Thu, 05 Aug 2021 11:57:55 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Qitao Xu <qitao.xu@bytedance.com>,
         Cong Wang <cong.wang@bytedance.com>
-Subject: [Patch net-next 01/13] net: introduce a new header file include/trace/events/ip.h
-Date:   Thu,  5 Aug 2021 11:57:38 -0700
-Message-Id: <20210805185750.4522-2-xiyou.wangcong@gmail.com>
+Subject: [Patch net-next 02/13] ipv4: introduce tracepoint trace_ip_queue_xmit()
+Date:   Thu,  5 Aug 2021 11:57:39 -0700
+Message-Id: <20210805185750.4522-3-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210805185750.4522-1-xiyou.wangcong@gmail.com>
 References: <20210805185750.4522-1-xiyou.wangcong@gmail.com>
@@ -65,82 +65,97 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Qitao Xu <qitao.xu@bytedance.com>
 
-Header file include/trace/events/ip.h is introduced to define
-IP/IPv6 layer tracepoints.
+Tracepoint trace_ip_queue_xmit() is introduced to trace skb
+at the entrance of IP layer on TX side.
 
 Reviewed-by: Cong Wang <cong.wang@bytedance.com>
 Signed-off-by: Qitao Xu <qitao.xu@bytedance.com>
 ---
- include/trace/events/ip.h | 47 +++++++++++++++++++++++++++++++++++++++
- net/core/net-traces.c     |  1 +
- 2 files changed, 48 insertions(+)
- create mode 100644 include/trace/events/ip.h
+ include/trace/events/ip.h | 42 +++++++++++++++++++++++++++++++++++++++
+ net/ipv4/ip_output.c      | 10 +++++++++-
+ 2 files changed, 51 insertions(+), 1 deletion(-)
 
 diff --git a/include/trace/events/ip.h b/include/trace/events/ip.h
-new file mode 100644
-index 000000000000..008f821ebc50
---- /dev/null
+index 008f821ebc50..553ae7276732 100644
+--- a/include/trace/events/ip.h
 +++ b/include/trace/events/ip.h
-@@ -0,0 +1,47 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#undef TRACE_SYSTEM
-+#define TRACE_SYSTEM ip
+@@ -41,6 +41,48 @@
+ 	TP_STORE_V4MAPPED(__entry, saddr, daddr)
+ #endif
+ 
++TRACE_EVENT(ip_queue_xmit,
 +
-+#if !defined(_TRACE_IP_H) || defined(TRACE_HEADER_MULTI_READ)
-+#define _TRACE_IP_H
++	TP_PROTO(const struct sock *sk, const struct sk_buff *skb),
 +
-+#include <linux/ipv6.h>
-+#include <linux/tcp.h>
-+#include <linux/tracepoint.h>
-+#include <net/ipv6.h>
-+#include <net/tcp.h>
-+#include <linux/sock_diag.h>
++	TP_ARGS(sk, skb),
 +
-+#define TP_STORE_V4MAPPED(__entry, saddr, daddr)		\
-+	do {							\
-+		struct in6_addr *pin6;				\
-+								\
-+		pin6 = (struct in6_addr *)__entry->saddr_v6;	\
-+		ipv6_addr_set_v4mapped(saddr, pin6);		\
-+		pin6 = (struct in6_addr *)__entry->daddr_v6;	\
-+		ipv6_addr_set_v4mapped(daddr, pin6);		\
-+	} while (0)
++	TP_STRUCT__entry(
++		__field(const void *, skbaddr)
++		__field(const void *, skaddr)
++		__field(__u16, sport)
++		__field(__u16, dport)
++		__array(__u8, saddr, 4)
++		__array(__u8, daddr, 4)
++		__array(__u8, saddr_v6, 16)
++		__array(__u8, daddr_v6, 16)
++	),
 +
-+#if IS_ENABLED(CONFIG_IPV6)
-+#define TP_STORE_ADDRS(__entry, saddr, daddr, saddr6, daddr6)		\
-+	do {								\
-+		if (sk->sk_family == AF_INET6) {			\
-+			struct in6_addr *pin6;				\
-+									\
-+			pin6 = (struct in6_addr *)__entry->saddr_v6;	\
-+			*pin6 = saddr6;					\
-+			pin6 = (struct in6_addr *)__entry->daddr_v6;	\
-+			*pin6 = daddr6;					\
-+		} else {						\
-+			TP_STORE_V4MAPPED(__entry, saddr, daddr);	\
-+		}							\
-+	} while (0)
-+#else
-+#define TP_STORE_ADDRS(__entry, saddr, daddr, saddr6, daddr6)	\
-+	TP_STORE_V4MAPPED(__entry, saddr, daddr)
-+#endif
++	TP_fast_assign(
++		struct inet_sock *inet = inet_sk(sk);
++		__be32 *p32;
 +
-+#endif /* _TRACE_IP_H */
++		__entry->skbaddr = skb;
++		__entry->skaddr = sk;
 +
-+/* This part must be outside protection */
-+#include <trace/define_trace.h>
-diff --git a/net/core/net-traces.c b/net/core/net-traces.c
-index c40cd8dd75c7..e1bd46076ad0 100644
---- a/net/core/net-traces.c
-+++ b/net/core/net-traces.c
-@@ -35,6 +35,7 @@
- #include <trace/events/tcp.h>
- #include <trace/events/fib.h>
- #include <trace/events/qdisc.h>
++		__entry->sport = ntohs(inet->inet_sport);
++		__entry->dport = ntohs(inet->inet_dport);
++
++		p32 = (__be32 *) __entry->saddr;
++		*p32 = inet->inet_saddr;
++
++		p32 = (__be32 *) __entry->daddr;
++		*p32 =  inet->inet_daddr;
++
++		TP_STORE_ADDRS(__entry, inet->inet_saddr, inet->inet_daddr,
++			      sk->sk_v6_rcv_saddr, sk->sk_v6_daddr);
++	),
++
++	TP_printk("sport=%hu dport=%hu saddr=%pI4 daddr=%pI4 saddrv6=%pI6c daddrv6=%pI6c skbaddr=%px",
++		  __entry->sport, __entry->dport, __entry->saddr, __entry->daddr,
++		  __entry->saddr_v6, __entry->daddr_v6, __entry->skbaddr)
++);
++
+ #endif /* _TRACE_IP_H */
+ 
+ /* This part must be outside protection */
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 6b04a88466b2..dcf94059112e 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -82,6 +82,7 @@
+ #include <linux/netfilter_bridge.h>
+ #include <linux/netlink.h>
+ #include <linux/tcp.h>
 +#include <trace/events/ip.h>
- #if IS_ENABLED(CONFIG_BRIDGE)
- #include <trace/events/bridge.h>
- EXPORT_TRACEPOINT_SYMBOL_GPL(br_fdb_add);
+ 
+ static int
+ ip_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
+@@ -536,7 +537,14 @@ EXPORT_SYMBOL(__ip_queue_xmit);
+ 
+ int ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl)
+ {
+-	return __ip_queue_xmit(sk, skb, fl, inet_sk(sk)->tos);
++	int ret;
++
++	ret = __ip_queue_xmit(sk, skb, fl, inet_sk(sk)->tos);
++	if (!ret)
++		trace_ip_queue_xmit(sk, skb);
++
++	return ret;
++
+ }
+ EXPORT_SYMBOL(ip_queue_xmit);
+ 
 -- 
 2.27.0
 
