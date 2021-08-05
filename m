@@ -2,71 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DF5A3E125E
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 12:13:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FD193E1262
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 12:14:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240345AbhHEKN2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 06:13:28 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:43623 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240314AbhHEKNY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 06:13:24 -0400
-Received: by mail-il1-f197.google.com with SMTP id v5-20020a92ab050000b02902223cc2accaso2503874ilh.10
-        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 03:13:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=mfp3dcRamri2wGmkRJSK01Pfy3daGYI42UfXp0QgTjU=;
-        b=ldBt/lv9YGyvzMd5f/fX9KeuIUPEGPF0kD/t6wmVX+AfGx36J12FXjshw8/JHGohRU
-         VZZpgt0c60ifV2M8YgBGtPCTdt+TNpi7pCJM22vzdM1IHkwTNDlgnZaJGxcdk8L2XkA6
-         o9AMkyrdMFf+SwrcRyQU7cNjFec2nB7bqkl1HA04Ma82aLVGnCCBxu96tNQN1RxLu8Qa
-         byCNNF9S4pZhQv1uD5+3f4vn3nPPBMvNud9InNW/9U/O5BQYmLJxP8/2YJ03Oi2H8RS+
-         2ogK1vTIkOHo+UrHEm0CtieHM8yp7EzrY6OlijWpbhe4vdun8+85UK20L19v9pNy+f1u
-         bDVQ==
-X-Gm-Message-State: AOAM530eAnVKoFLQqawYesNsZlnpc2fkw3c4mI12f+xvsyVouptzvi+s
-        qeNz7fWumgHMjz+uP9MI/iZntvMbrBAGIFItiT+BDRxHgxSA
-X-Google-Smtp-Source: ABdhPJzPTZ4ctrrUGavvOHBH4NTS8BJbXcUPvlgq/7QfOSLC+LhG2uxQJN+Qfdv0epwVMqtQzdMZM9CmWaSpH6ty4Vl8Ed/4Bek7
+        id S240463AbhHEKPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 06:15:09 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:41340 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232490AbhHEKPH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 06:15:07 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 175AECGq041313;
+        Thu, 5 Aug 2021 05:14:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1628158453;
+        bh=wXXYvUKbgAewe2Dkhit4put0hvhHFaTNeZ1ZUFaL7RA=;
+        h=From:To:CC:Subject:Date;
+        b=D8AK4XisRZMEgaqE5PxNrJMCzMfpfse+UAFix30Ipjwv8kWHsgvI8VZgfWlZckp5y
+         W/bTzB5fldi8v4gn8tdCq0s/UMqqr/d3mczCx80ZN5z4Y3zIes1Qalt2yajyDZnGxX
+         CMHpcmnnEOYPq3nGdjgxb7wQnz1KVgHUUQ7ctJZg=
+Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 175AECCF108467
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 5 Aug 2021 05:14:12 -0500
+Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 5 Aug
+ 2021 05:14:12 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Thu, 5 Aug 2021 05:14:12 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 175AEBcI037522;
+        Thu, 5 Aug 2021 05:14:12 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH] net: ethernet: ti: am65-cpsw: fix crash in am65_cpsw_port_offload_fwd_mark_update()
+Date:   Thu, 5 Aug 2021 13:14:09 +0300
+Message-ID: <20210805101409.3366-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-Received: by 2002:a6b:28a:: with SMTP id 132mr527433ioc.157.1628158390707;
- Thu, 05 Aug 2021 03:13:10 -0700 (PDT)
-Date:   Thu, 05 Aug 2021 03:13:10 -0700
-In-Reply-To: <00000000000040b7ba05ae32a94a@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000842d2f05c8cd2ac7@google.com>
-Subject: Re: [syzbot] possible deadlock in __sock_release
-From:   syzbot <syzbot+8e467b009209f1fcf666@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, dave@pr1mo.net, davem@davemloft.net,
-        dsahern@kernel.org, john.fastabend@gmail.com, kafai@fb.com,
-        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com,
-        yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+The am65_cpsw_port_offload_fwd_mark_update() causes NULL exception crash
+when there is at least one disabled port and any other port added to the
+bridge first time.
 
-commit 8fb4792f091e608a0a1d353dfdf07ef55a719db5
-Author: Paolo Abeni <pabeni@redhat.com>
-Date:   Tue Jul 20 13:08:40 2021 +0000
+Unable to handle kernel NULL pointer dereference at virtual address 0000000000000858
+pc : am65_cpsw_port_offload_fwd_mark_update+0x54/0x68
+lr : am65_cpsw_netdevice_event+0x8c/0xf0
+Call trace:
+am65_cpsw_port_offload_fwd_mark_update+0x54/0x68
+notifier_call_chain+0x54/0x98
+raw_notifier_call_chain+0x14/0x20
+call_netdevice_notifiers_info+0x34/0x78
+__netdev_upper_dev_link+0x1c8/0x290
+netdev_master_upper_dev_link+0x1c/0x28
+br_add_if+0x3f0/0x6d0 [bridge]
 
-    ipv6: fix another slab-out-of-bounds in fib6_nh_flush_exceptions
+Fix it by adding proper check for port->ndev != NULL.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=113a99f1300000
-start commit:   c6c205ed442e Merge branch 'stmmac-ptp'
-git tree:       net
-kernel config:  https://syzkaller.appspot.com/x/.config?x=26b64b13fcecb7e1
-dashboard link: https://syzkaller.appspot.com/bug?extid=8e467b009209f1fcf666
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=152188d2300000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10d5493c300000
+Fixes: 2934db9bcb30 ("net: ti: am65-cpsw-nuss: Add netdevice notifiers")
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+---
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-If the result looks correct, please mark the issue as fixed by replying with:
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index 718539cdd2f2..67a08cbba859 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -2060,8 +2060,12 @@ static void am65_cpsw_port_offload_fwd_mark_update(struct am65_cpsw_common *comm
+ 
+ 	for (i = 1; i <= common->port_num; i++) {
+ 		struct am65_cpsw_port *port = am65_common_get_port(common, i);
+-		struct am65_cpsw_ndev_priv *priv = am65_ndev_to_priv(port->ndev);
++		struct am65_cpsw_ndev_priv *priv;
+ 
++		if (!port->ndev)
++			continue;
++
++		priv = am65_ndev_to_priv(port->ndev);
+ 		priv->offload_fwd_mark = set_val;
+ 	}
+ }
+-- 
+2.17.1
 
-#syz fix: ipv6: fix another slab-out-of-bounds in fib6_nh_flush_exceptions
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
