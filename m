@@ -2,226 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4BA23E0F89
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 09:48:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 563A43E0FB2
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 09:54:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238926AbhHEHsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 03:48:17 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:13234 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237095AbhHEHrv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 03:47:51 -0400
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GgLL50NJ5z1CRRl;
-        Thu,  5 Aug 2021 15:47:25 +0800 (CST)
-Received: from [10.67.103.235] (10.67.103.235) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Thu, 5 Aug 2021 15:47:31 +0800
-Subject: Re: [PATCH V7 4/9] PCI: Enable 10-Bit Tag support for PCIe Endpoint
- devices
-To:     Bjorn Helgaas <helgaas@kernel.org>
-References: <20210804231729.GA1679826@bjorn-Precision-5520>
-CC:     <hch@infradead.org>, <kw@linux.com>, <logang@deltatee.com>,
-        <leon@kernel.org>, <linux-pci@vger.kernel.org>,
-        <rajur@chelsio.com>, <hverkuil-cisco@xs4all.nl>,
-        <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
-From:   Dongdong Liu <liudongdong3@huawei.com>
-Message-ID: <7d84ede9-8983-50f0-8387-3d4c6db1b042@huawei.com>
-Date:   Thu, 5 Aug 2021 15:47:31 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        id S238834AbhHEHyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 03:54:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35936 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238830AbhHEHyc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 03:54:32 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C97AC061765
+        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 00:54:18 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id z3so6074819plg.8
+        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 00:54:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=R49BBtfwUSQ0Gn8IrXLWnW688wWW2GAReEpfTpLLUm4=;
+        b=EPCTMrMXzZSix+p+Oi/ysvUIe/5QCJsuzBejYSLrLblGCWl3XZGeRIhXbOKL1n0hkQ
+         iD9cK55xd3t2U239+6JmzpGoWZN1t/6AhnX3ej+Q2RpRmiVK2TevMpP7/27jJ8KSudWU
+         Rf7A/YxxQ9Ra6xYyUx/HFFRUtvv1aeTB4uUAnQElzMHQYLuMcO+MFTNs8Bmv8fjH9Yvc
+         e6dftAwccuM3M0oqM9y7HRbGG0BJCvrmq9audc3KQstA4FUeqpGYMaR8ojSv5zUEPqSj
+         u7AZY6Wqku92iM+Dda/99z2ZXTSoq6zkNKSnSom1vKSfYXMA6h7G9dledQTaTVMjJMIE
+         PDug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=R49BBtfwUSQ0Gn8IrXLWnW688wWW2GAReEpfTpLLUm4=;
+        b=FvzvqDLmYh9DqJNdHBApfIesbuwaXDdtTpQLxHE8of7oZo/WfFaDzGtDRrAJPYjR5w
+         xrOVuD/M4mCCxgCuRq8pIgXR0ZKqEGN9eMJaU6/xQiMurGXQQ7FA4u6vmU4W28hSY61D
+         TU9XEigmhlGpcx6rQgEE4KArjSnEbVL6fx7YcEujp/EMLwxpk/wgPse9K8QestwB4Qdf
+         6rDKilOCv/ffi8Abvc2AUDZXCVIhuGkW1JCFX6IFAGtT3F0WgylqwMlML0MqgPtJZxMC
+         CLFr8+5oRZg1kIbjwAXz3FC1r3I6+cAjr3x4swBVWEtU78OQWLbucsuE3coeukDs7iWX
+         QlYg==
+X-Gm-Message-State: AOAM5311d/j80XALIF2qooGQ/56Yiu3AEMZ/7Mqt5bT33Ooklncem3fj
+        YkvIGud4F+Cw4gK4FMpSqQ==
+X-Google-Smtp-Source: ABdhPJworZo0SuDFX4r/a7j32vEs12EOwd+SqzzGHiSjkUZ1Nci/H7ixzDgN1VfLkNGq2fiYAjyS/Q==
+X-Received: by 2002:a17:902:c651:b029:12c:1ec0:a8b8 with SMTP id s17-20020a170902c651b029012c1ec0a8b8mr2867053pls.40.1628150058060;
+        Thu, 05 Aug 2021 00:54:18 -0700 (PDT)
+Received: from DESKTOP (softbank126075190089.bbtec.net. [126.75.190.89])
+        by smtp.gmail.com with ESMTPSA id n23sm5986591pgv.76.2021.08.05.00.54.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Aug 2021 00:54:17 -0700 (PDT)
+Date:   Thu, 5 Aug 2021 16:54:14 +0900
+From:   Takeshi Misawa <jeliantsurux@gmail.com>
+To:     David Howells <dhowells@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net] net: Fix memory leak in ieee802154_raw_deliver
+Message-ID: <20210805075414.GA15796@DESKTOP>
 MIME-Version: 1.0
-In-Reply-To: <20210804231729.GA1679826@bjorn-Precision-5520>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.103.235]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Bjorn
+If IEEE-802.15.4-RAW is closed before receive skb, skb is leaked.
+Fix this, by freeing sk_receive_queue in sk->sk_destruct().
 
-Many thanks for your review.
-On 2021/8/5 7:17, Bjorn Helgaas wrote:
-> On Wed, Aug 04, 2021 at 09:47:03PM +0800, Dongdong Liu wrote:
->> 10-Bit Tag capability, introduced in PCIe-4.0 increases the total Tag
->> field size from 8 bits to 10 bits.
->>
->> PCIe spec 5.0 r1.0 section 2.2.6.2 "Considerations for Implementing
->> 10-Bit Tag Capabilities" Implementation Note.
->> For platforms where the RC supports 10-Bit Tag Completer capability,
->> it is highly recommended for platform firmware or operating software
->> that configures PCIe hierarchies to Set the 10-Bit Tag Requester Enable
->> bit automatically in Endpoints with 10-Bit Tag Requester capability. This
->> enables the important class of 10-Bit Tag capable adapters that send
->> Memory Read Requests only to host memory.
->
-> Quoted material should be set off with a blank line before it and
-> indented by two spaces so it's clear exactly what comes from the spec
-> and what you've added.  For example, see
-> https://git.kernel.org/linus/ec411e02b7a2
-Good point, will fix.
->
-> We need to say why we assume it's safe to enable 10-bit tags for all
-> devices below a Root Port that supports them.  I think this has to do
-> with switches being required to forward 10-bit tags correctly even if
-> they were designed before 10-bit tags were added to the spec.
+syzbot report:
+BUG: memory leak
+unreferenced object 0xffff88810f644600 (size 232):
+  comm "softirq", pid 0, jiffies 4294967032 (age 81.270s)
+  hex dump (first 32 bytes):
+    10 7d 4b 12 81 88 ff ff 10 7d 4b 12 81 88 ff ff  .}K......}K.....
+    00 00 00 00 00 00 00 00 40 7c 4b 12 81 88 ff ff  ........@|K.....
+  backtrace:
+    [<ffffffff83651d4a>] skb_clone+0xaa/0x2b0 net/core/skbuff.c:1496
+    [<ffffffff83fe1b80>] ieee802154_raw_deliver net/ieee802154/socket.c:369 [inline]
+    [<ffffffff83fe1b80>] ieee802154_rcv+0x100/0x340 net/ieee802154/socket.c:1070
+    [<ffffffff8367cc7a>] __netif_receive_skb_one_core+0x6a/0xa0 net/core/dev.c:5384
+    [<ffffffff8367cd07>] __netif_receive_skb+0x27/0xa0 net/core/dev.c:5498
+    [<ffffffff8367cdd9>] netif_receive_skb_internal net/core/dev.c:5603 [inline]
+    [<ffffffff8367cdd9>] netif_receive_skb+0x59/0x260 net/core/dev.c:5662
+    [<ffffffff83fe6302>] ieee802154_deliver_skb net/mac802154/rx.c:29 [inline]
+    [<ffffffff83fe6302>] ieee802154_subif_frame net/mac802154/rx.c:102 [inline]
+    [<ffffffff83fe6302>] __ieee802154_rx_handle_packet net/mac802154/rx.c:212 [inline]
+    [<ffffffff83fe6302>] ieee802154_rx+0x612/0x620 net/mac802154/rx.c:284
+    [<ffffffff83fe59a6>] ieee802154_tasklet_handler+0x86/0xa0 net/mac802154/main.c:35
+    [<ffffffff81232aab>] tasklet_action_common.constprop.0+0x5b/0x100 kernel/softirq.c:557
+    [<ffffffff846000bf>] __do_softirq+0xbf/0x2ab kernel/softirq.c:345
+    [<ffffffff81232f4c>] do_softirq kernel/softirq.c:248 [inline]
+    [<ffffffff81232f4c>] do_softirq+0x5c/0x80 kernel/softirq.c:235
+    [<ffffffff81232fc1>] __local_bh_enable_ip+0x51/0x60 kernel/softirq.c:198
+    [<ffffffff8367a9a4>] local_bh_enable include/linux/bottom_half.h:32 [inline]
+    [<ffffffff8367a9a4>] rcu_read_unlock_bh include/linux/rcupdate.h:745 [inline]
+    [<ffffffff8367a9a4>] __dev_queue_xmit+0x7f4/0xf60 net/core/dev.c:4221
+    [<ffffffff83fe2db4>] raw_sendmsg+0x1f4/0x2b0 net/ieee802154/socket.c:295
+    [<ffffffff8363af16>] sock_sendmsg_nosec net/socket.c:654 [inline]
+    [<ffffffff8363af16>] sock_sendmsg+0x56/0x80 net/socket.c:674
+    [<ffffffff8363deec>] __sys_sendto+0x15c/0x200 net/socket.c:1977
+    [<ffffffff8363dfb6>] __do_sys_sendto net/socket.c:1989 [inline]
+    [<ffffffff8363dfb6>] __se_sys_sendto net/socket.c:1985 [inline]
+    [<ffffffff8363dfb6>] __x64_sys_sendto+0x26/0x30 net/socket.c:1985
 
-PCIe spec 5.0 r1.0 section 2.2.6.2 "Considerations for Implementing
-10-Bit Tag Capabilities" Implementation Note:
+Fixes: 9ec767160357 ("net: add IEEE 802.15.4 socket family implementation")
+Reported-and-tested-by: syzbot+1f68113fa907bf0695a8@syzkaller.appspotmail.com
+Signed-off-by: Takeshi Misawa <jeliantsurux@gmail.com>
+---
+Dear David Howells, Jakub Kicinski
 
-   Switches that lack 10-Bit Tag Completer capability are still able to
-   forward NPRs and Completions carrying 10-Bit Tags correctly, since the
-   two new Tag bits are in TLP Header bits that were formerly Reserved,
-   and Switches are required to forward Reserved TLP Header bits without
-   modification. However, if such a Switch detects an error with an NPR
-   carrying a 10-Bit Tag, and that Switch handles the error by acting as
-   the Completer for the NPR, the resulting Completion will have an
-   invalid 10-Bit Tag. Thus, it is strongly recommended that Switches
-   between any components using 10-Bit Tags support 10-Bit Tag Completer
-   capability.  Note that Switches supporting 16.0 GT/s data rates or
-   greater must support 10-Bit Tag Completer capability.
+syzbot reported memory leak in ieee802154_raw_deliver.
 
-This patch also consider to enable 10-Bit Tag for EP device need RP
-and Switch device support 10-Bit Tag Completer capability.
->
-> And it should call out any cases where it is *not* safe, e.g., if P2P
-> traffic is an issue.
-Yes, indeed.
->
-> If there are cases where we don't want to enable 10-bit tags, whether
-> it's to enable P2P traffic or merely to work around device defects,
-> that ability needs to be here from the beginning.  If somebody needs
-> to bisect with 10-bit tags disabled, we don't want a bisection hole
-> between this commit and the commit that adds the control.
-We provide sysfs file to disable 10-bit tag for P2P traffic when needed.
-The details see PATCH 7/8/9.
+I send a patch that passed syzbot reproducer test.
+Please consider this memory leak and patch.
 
-Current we do not know the 10-bit tag defective devices, current may no
-need do as 8-bit tag does in quirk_no_ext_tags().
->
->> Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
->> Reviewed-by: Christoph Hellwig <hch@lst.de>
->> ---
->>  drivers/pci/probe.c | 47 ++++++++++++++++++++++++++++++++++++++++++++++-
->>  include/linux/pci.h |  2 ++
->>  2 files changed, 48 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
->> index c83245b..3da7baa 100644
->> --- a/drivers/pci/probe.c
->> +++ b/drivers/pci/probe.c
->> @@ -2029,10 +2029,42 @@ static void pci_configure_mps(struct pci_dev *dev)
->>  		 p_mps, mps, mpss);
->>  }
->>
->> +static void pci_configure_10bit_tags(struct pci_dev *dev)
->> +{
->> +	struct pci_dev *bridge;
->> +
->> +	if (!(dev->pcie_devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_COMP))
->> +		return;
->> +
->> +	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT) {
->> +		dev->ext_10bit_tag = 1;
->> +		return;
->> +	}
->> +
->> +	bridge = pci_upstream_bridge(dev);
->> +	if (bridge && bridge->ext_10bit_tag)
->> +		dev->ext_10bit_tag = 1;
->
-> Is it meaningful to set dev->ext_10bit_tag when "dev" is a VF?  I
-> suspect only if the VF could be a switch.  Is that possible?  If not,
-Yes, no need.
-> I think the dev->is_virtfn check could be done first.
-Will do.
->
->> +
->> +	/*
->> +	 * 10-Bit Tag Requester Enable in Device Control 2 Register is RsvdP
->> +	 * for VF.
->
-> (Per 9.3.5.10)
-Will fix.
+syzbot link:
+https://syzkaller.appspot.com/bug?id=8dd3bcb1dc757587adfb4dbb810fd24dd990283f
 
-Thanks,
-Dongdong
->
->> +	 */
->> +	if (dev->is_virtfn)
->> +		return;
->> +
->> +	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ENDPOINT &&
->> +	    dev->ext_10bit_tag == 1 &&
->> +	    (dev->pcie_devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_REQ)) {
->> +		pci_dbg(dev, "enabling 10-Bit Tag Requester\n");
->> +		pcie_capability_set_word(dev, PCI_EXP_DEVCTL2,
->> +					PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN);
->> +	}
->> +}
->> +
->>  int pci_configure_extended_tags(struct pci_dev *dev, void *ign)
->>  {
->>  	struct pci_host_bridge *host;
->> -	u16 ctl;
->> +	u16 ctl, ctl2;
->>  	int ret;
->>
->>  	if (!pci_is_pcie(dev))
->> @@ -2045,6 +2077,10 @@ int pci_configure_extended_tags(struct pci_dev *dev, void *ign)
->>  	if (ret)
->>  		return 0;
->>
->> +	ret = pcie_capability_read_word(dev, PCI_EXP_DEVCTL2, &ctl2);
->> +	if (ret)
->> +		return 0;
->> +
->>  	host = pci_find_host_bridge(dev->bus);
->>  	if (!host)
->>  		return 0;
->> @@ -2059,6 +2095,12 @@ int pci_configure_extended_tags(struct pci_dev *dev, void *ign)
->>  			pcie_capability_clear_word(dev, PCI_EXP_DEVCTL,
->>  						   PCI_EXP_DEVCTL_EXT_TAG);
->>  		}
->> +
->> +		if (ctl2 & PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN) {
->> +			pci_info(dev, "disabling 10-Bit Tags\n");
->> +			pcie_capability_clear_word(dev, PCI_EXP_DEVCTL2,
->> +					PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN);
->> +		}
->>  		return 0;
->>  	}
->>
->> @@ -2067,6 +2109,9 @@ int pci_configure_extended_tags(struct pci_dev *dev, void *ign)
->>  		pcie_capability_set_word(dev, PCI_EXP_DEVCTL,
->>  					 PCI_EXP_DEVCTL_EXT_TAG);
->>  	}
->> +
->> +	pci_configure_10bit_tags(dev);
->> +
->>  	return 0;
->>  }
->>
->> diff --git a/include/linux/pci.h b/include/linux/pci.h
->> index 9aab67f..af6cb53 100644
->> --- a/include/linux/pci.h
->> +++ b/include/linux/pci.h
->> @@ -393,6 +393,8 @@ struct pci_dev {
->>  #endif
->>  	unsigned int	eetlp_prefix_path:1;	/* End-to-End TLP Prefix */
->>
->> +	unsigned int	ext_10bit_tag:1; /* 10-Bit Tag Completer Supported
->> +					    from root to here */
->>  	pci_channel_state_t error_state;	/* Current connectivity state */
->>  	struct device	dev;			/* Generic device interface */
->>
->> --
->> 2.7.4
->>
-> .
->
+Regards.
+---
+ net/ieee802154/socket.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/net/ieee802154/socket.c b/net/ieee802154/socket.c
+index a45a0401adc5..c25f7617770c 100644
+--- a/net/ieee802154/socket.c
++++ b/net/ieee802154/socket.c
+@@ -984,6 +984,11 @@ static const struct proto_ops ieee802154_dgram_ops = {
+ 	.sendpage	   = sock_no_sendpage,
+ };
+ 
++static void ieee802154_sock_destruct(struct sock *sk)
++{
++	skb_queue_purge(&sk->sk_receive_queue);
++}
++
+ /* Create a socket. Initialise the socket, blank the addresses
+  * set the state.
+  */
+@@ -1024,7 +1029,7 @@ static int ieee802154_create(struct net *net, struct socket *sock,
+ 	sock->ops = ops;
+ 
+ 	sock_init_data(sock, sk);
+-	/* FIXME: sk->sk_destruct */
++	sk->sk_destruct = ieee802154_sock_destruct;
+ 	sk->sk_family = PF_IEEE802154;
+ 
+ 	/* Checksums on by default */
+-- 
+2.25.1
+
