@@ -2,167 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 308D93E18B5
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 17:50:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6018B3E18BF
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 17:52:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242618AbhHEPuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 11:50:50 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:50050
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242644AbhHEPus (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 11:50:48 -0400
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id 2B4EA3F22F
-        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 15:50:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1628178626;
-        bh=D1l7i5Vb28UXsgNtCBHcCcosslzh2sOmteJR8SBleRE=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=g2AAadfmeyKla1dH/Y+Xk1fHUWovHttV+mLNaoWNrMugWEcRlIF2iLfSy+B+yuVb+
-         VU0X09spn5cxjmwDlhVkSJpd7LIK0URshF5JWtde5lW6o92OvqlOnBetFF31parjIk
-         DMNaeNryvmULBtBoQAIXvojjkVChBI8ep9bo7Jk+efKC3xX6QxcXwrjI52j6vmmlWZ
-         A0CDEW0hZpW0jg8pKILrTxTPcXbSijIBCzipwRnC9MxX4ifb0W2BMfa5DgWm3rFAb2
-         YWcvKSva2VJHHgrDLq5ThgNgRR4vMdPTgW7O1o6/bc8dMyNB6rlYURBKivRzO47MbD
-         71U7sDa9yC81Q==
-Received: by mail-ej1-f72.google.com with SMTP id qh25-20020a170906ecb9b02905a655de6553so2084372ejb.19
-        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 08:50:26 -0700 (PDT)
+        id S242694AbhHEPwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 11:52:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33266 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229482AbhHEPwP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 11:52:15 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF64C061765;
+        Thu,  5 Aug 2021 08:52:00 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id ca5so9842992pjb.5;
+        Thu, 05 Aug 2021 08:52:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+WAVvy3jG8c4BM1UieKc0hBr5+TPYkK4USUWUu/waLs=;
+        b=f9NRItGcA82zfK89pCSO+FmqIIS9do5TDWjGS2Phwk71Ji2CmZnf8PxAfzm2UDR9km
+         lAgg56lZbpeu+K8iuYKOH1bUmUq+Y/w/ympLbW5zEuqcXD+Ru4sUL4cDWR8qGdqEidfP
+         ziOfCCbUfhxx8uX8F2JJ2xPz5qHc78AmuoWiHkw+umEWamoItzUkWexCOBGuIR0ULKl+
+         eOmE9bSQ4nk3xuDfmkfuO0ZE6gpw9xgYHGc/K8FFsdr9ojyhAkwggIRaPFhLl1LTpS6j
+         IdRxy4GUR6A7AcO0BdasFcNqOb53Xf4LXDenQVsPE/VC2bZYgbJo499AOTpLdDoOb8Uh
+         Zbqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=D1l7i5Vb28UXsgNtCBHcCcosslzh2sOmteJR8SBleRE=;
-        b=mK+uyGjU3QF8A7VJJqal1ZjU9E0IhA1+sxFpnSWUZhFrjmwOlR+Wz/LbCVcBj5fe0X
-         OXFHfiTABbvOJJyM3iVIX1nhnv97RkpbPu+2BLBdTYiktAVpuiJ9UspOTQX1le0crfqS
-         lLf0o88r+XQ8RL+jN6ZKNImXSOX6pPKiZaORkWU4aWKDvUTxkWTWLCP70W3xHNPqq/s6
-         cREJ8Yna2fz2cnBk/v9Helll9pB07PbL7K6DKp/a7RnfCZm41inwjXaRi1xS4qS7hyZj
-         vu9X6x9vXRqIQc+4t1PPvMwur2wEJCTNcq3X601tp2Ku00CTRqmEUSZ1L1y5Xjew4STd
-         GmxQ==
-X-Gm-Message-State: AOAM530sLQUbepTkpVatwo30rnnXAZavTtolaU4Vh964o8S3yqyj/834
-        RDNiLW0oIGgh6elRpMDLB4/AY5878Gt+IG3IU9j98E5H57dNWNkHWwUEsXuFVjxFOLZw3lbJQ5M
-        dE3Vw9KKNHdsiR9ga8Dg1wcx77wYg7+Gisp9SDmEGjF0HXpVm8A==
-X-Received: by 2002:a17:907:9d2:: with SMTP id bx18mr5515901ejc.117.1628178625867;
-        Thu, 05 Aug 2021 08:50:25 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzv/WSADBZGHTodg1DBbwRBVFcjOn0YB5R69RD6u/wvTjmlwPTmtgTeS5cInQdde63/dbkb+r7CykRPnppdfSg=
-X-Received: by 2002:a17:907:9d2:: with SMTP id bx18mr5515871ejc.117.1628178625561;
- Thu, 05 Aug 2021 08:50:25 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+WAVvy3jG8c4BM1UieKc0hBr5+TPYkK4USUWUu/waLs=;
+        b=NoeS6ZRxQ1QcJMIGRcj7d4+uvlDHdtilLojbYj+nf17zY89IjJdgbcp/zciueQjmGv
+         JwYYyh9grmMiq1lURn/IqMs21AXfzLyHYkWp2DXi2KJ3+03QM7p57JXHSZPRZyqoQSSW
+         idQWMxJtvlnAXPQDwJMFsdjea9Cq1SmNG0tLvdOtYp0VMG3DubMr10J5va+i/hDqvnml
+         FiKNvDO5VSId4bs+nhiNYCFGmByGeXxfXP12Cf9KTpiSfJj0REmfb2RJtW29eb7yphh0
+         GDYnzVwtjNz9EcYPBoHWSuT8Jhil341Mdg0w3VydmqDY/BjaouOkbS3qxwVmkhSiim7s
+         iUIg==
+X-Gm-Message-State: AOAM531iuRyfO625zkJSTzxGQUdV/t+QL39O8hCBCdlEN36+V7r+55VZ
+        6bAan7oNqsnFJaW53NKQOU4=
+X-Google-Smtp-Source: ABdhPJzLAimd4Y4p28t2bHcnYkc9F26SFPNdWJKKxX6QGrlC4uJA5cMAwBVxgkywklDtK+gtxm7ShA==
+X-Received: by 2002:a62:d447:0:b029:291:19f7:ddcd with SMTP id u7-20020a62d4470000b029029119f7ddcdmr169701pfl.54.1628178720447;
+        Thu, 05 Aug 2021 08:52:00 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:1a:efea::4b1])
+        by smtp.gmail.com with ESMTPSA id w11sm8659286pgk.34.2021.08.05.08.51.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Aug 2021 08:51:59 -0700 (PDT)
+Subject: Re: [PATCH V2 03/14] x86/set_memory: Add x86_set_memory_enc static
+ call support
+To:     Dave Hansen <dave.hansen@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        dave.hansen@linux.intel.com, luto@kernel.org,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
+        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
+        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
+        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        Tianyu.Lan@microsoft.com, rppt@kernel.org,
+        kirill.shutemov@linux.intel.com, akpm@linux-foundation.org,
+        brijesh.singh@amd.com, thomas.lendacky@amd.com, pgonda@google.com,
+        david@redhat.com, krish.sadhukhan@oracle.com, saravanand@fb.com,
+        aneesh.kumar@linux.ibm.com, xen-devel@lists.xenproject.org,
+        martin.b.radev@gmail.com, ardb@kernel.org, rientjes@google.com,
+        tj@kernel.org, keescook@chromium.org,
+        michael.h.kelley@microsoft.com, iommu@lists.linux-foundation.org,
+        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        netdev@vger.kernel.org, vkuznets@redhat.com, parri.andrea@gmail.com
+References: <20210804184513.512888-1-ltykernel@gmail.com>
+ <20210804184513.512888-4-ltykernel@gmail.com>
+ <5823af8a-7dbb-dbb0-5ea2-d9846aa2a36a@intel.com>
+ <942e6fcb-3bdf-9294-d3db-ca311db440d3@gmail.com>
+ <YQv0bRBUq1N5+jgG@hirez.programming.kicks-ass.net>
+ <fa63e6ad-9536-d5e9-d754-fa04fad69252@intel.com>
+From:   Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <01d2f33c-6e50-ae88-73ff-84042504c26e@gmail.com>
+Date:   Thu, 5 Aug 2021 23:51:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-References: <20210514071452.25220-1-kai.heng.feng@canonical.com>
- <576B26FD-81F8-4632-82F6-57C4A7C096C4@holtmann.org> <8735ryk0o7.fsf@baylibre.com>
- <CAAd53p7Zc3Zk21rwj_x1BLgf8tWRxaKBmXARkM6d7Kpkb+fDZA@mail.gmail.com>
- <87y29o58su.fsf@baylibre.com> <CAAd53p4Ss1Z-7CB4g=_xZYxo1xDz6ih6GHUuMcgncy+yNAfU4w@mail.gmail.com>
- <87a6lzx7jf.fsf@baylibre.com> <CAAd53p6T_K67CPthLPObF=OWWCEChW4pMFMwuq87qWmTmzP2VA@mail.gmail.com>
- <87bl6cnzy2.fsf@baylibre.com>
-In-Reply-To: <87bl6cnzy2.fsf@baylibre.com>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Thu, 5 Aug 2021 23:50:09 +0800
-Message-ID: <CAAd53p5TVJk3G4cArS_UO7cgUpJLONNGVHnpezXy0XTYoXd_uw@mail.gmail.com>
-Subject: Re: [PATCH v2] Bluetooth: Shutdown controller after workqueues are
- flushed or cancelled
-To:     Mattijs Korpershoek <mkorpershoek@baylibre.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        "open list:BLUETOOTH SUBSYSTEM" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <fa63e6ad-9536-d5e9-d754-fa04fad69252@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mattijs,
-
-On Thu, Aug 5, 2021 at 2:55 PM Mattijs Korpershoek
-<mkorpershoek@baylibre.com> wrote:
+On 8/5/2021 10:29 PM, Dave Hansen wrote:
+> On 8/5/21 7:23 AM, Peter Zijlstra wrote:
+>> This is assuming any of this is actually performance critical, based off
+>> of this using static_call() to begin with.
+> 
+> This code is not performance critical.
+> 
+> I think I sent folks off on a wild goose chase when I asked that we make
+> an effort to optimize code that does:
+> 
+> 	if (some_hyperv_check())
+> 		foo();
+> 
+> 	if (some_amd_feature_check())
+> 		bar();
+> 
+> with checks that will actually compile away when Hyper-V or
+> some_amd_feature() is disabled.  That's less about performance and just
+> about good hygiene.  I *wanted* to see
+> cpu_feature_enabled(X86_FEATURE...) checks.
+> 
+> Someone suggested using static calls, and off we went...
+> 
+> Could we please just use cpu_feature_enabled()?
 >
-> Hi Kai-Heng,
->
-> Thanks for your patch,
->
-> Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
->
 
-[snipped]
-
-> I confirm this diff works for me:
->
-> root@i500-pumpkin:~# hciconfig hci0 up
-> root@i500-pumpkin:~# hciconfig hci0 down
-> root@i500-pumpkin:~# hciconfig hci0 up
-> root@i500-pumpkin:~# hciconfig hci0
-> hci0:   Type: Primary  Bus: SDIO
->         BD Address: 00:0C:E7:55:FF:12  ACL MTU: 1021:8  SCO MTU: 244:4
->         UP RUNNING
->         RX bytes:11268 acl:0 sco:0 events:829 errors:0
->         TX bytes:182569 acl:0 sco:0 commands:829 errors:0
->
-> root@i500-pumpkin:~# hcitool scan
-> Scanning ...
->         <redacted>       Pixel 3 XL
->
-> Tested-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
-
-I found that btmtksdio_flush() only cancels the work instead of doing
-flush_work(). That probably explains why putting ->shutdown right
-before ->flush doesn't work.
-So can you please test the following again:
-diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
-index 9872ef18f9fea..b33c05ad2150b 100644
---- a/drivers/bluetooth/btmtksdio.c
-+++ b/drivers/bluetooth/btmtksdio.c
-@@ -649,9 +649,9 @@ static int btmtksdio_flush(struct hci_dev *hdev)
- {
-        struct btmtksdio_dev *bdev = hci_get_drvdata(hdev);
-
--       skb_queue_purge(&bdev->txq);
-+       flush_work(&bdev->tx_work);
-
--       cancel_work_sync(&bdev->tx_work);
-+       skb_queue_purge(&bdev->txq);
-
-        return 0;
- }
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 2560ed2f144d4..a61e610a400cb 100644
-
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -1785,6 +1785,14 @@ int hci_dev_do_close(struct hci_dev *hdev)
-        aosp_do_close(hdev);
-        msft_do_close(hdev);
-
-+       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
-+           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
-+           test_bit(HCI_UP, &hdev->flags)) {
-+               /* Execute vendor specific shutdown routine */
-+               if (hdev->shutdown)
-+                       hdev->shutdown(hdev);
-+       }
-+
-        if (hdev->flush)
-                hdev->flush(hdev);
-
-@@ -1798,14 +1806,6 @@ int hci_dev_do_close(struct hci_dev *hdev)
-                clear_bit(HCI_INIT, &hdev->flags);
-        }
-
--       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
--           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
--           test_bit(HCI_UP, &hdev->flags)) {
--               /* Execute vendor specific shutdown routine */
--               if (hdev->shutdown)
--                       hdev->shutdown(hdev);
--       }
--
-        /* flush cmd  work */
-        flush_work(&hdev->cmd_work);
-
-Kai-Heng
+Yes, cpu_feature_enabled() works. The target is just to run platform 
+code after platform check. I will update this in the next version.
