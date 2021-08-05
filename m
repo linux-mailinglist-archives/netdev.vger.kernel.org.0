@@ -2,97 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2BA43E1522
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 14:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 484E23E152C
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 14:57:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241528AbhHEMzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 08:55:35 -0400
-Received: from relay.sw.ru ([185.231.240.75]:46324 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232615AbhHEMzf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Aug 2021 08:55:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
-        Subject; bh=k7doBg0e3JXjBZq/zURAjt4EJ5ZAbtwrV59dNqCZYJA=; b=zEm0nOAsAaQ7PAk+4
-        10tK5qsVpCEZi2uwaq6GIjMXzj95niq3fpstkC6W5zCcwKpUQHuOt7Sh/uO/bFfIQlki36J6O4MLr
-        a4E3SeGJLE2fMRFcupv2UoRVXWxG73CTf21LwyKzvN4RG6YxrYR4WTK08WbzJoSni0j5y0/AXgm+o
-        =;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1mBcu4-006UwH-E1; Thu, 05 Aug 2021 15:55:16 +0300
-Subject: Re: [PATCH NET v3 5/7] vrf: use skb_expand_head in vrf_finish_output
-To:     Julian Wiedmann <jwi@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <15eba3b2-80e2-5547-8ad9-167d810ad7e3@virtuozzo.com>
- <cover.1627891754.git.vvs@virtuozzo.com>
- <e4ca1ef1-56f3-5bce-eec8-617e24bc7b1a@virtuozzo.com>
- <ccce7edb-54dd-e6bf-1e84-0ec320d8886c@linux.ibm.com>
-From:   Vasily Averin <vvs@virtuozzo.com>
-Message-ID: <08c09fff-87f3-b29c-f681-88b031b0bb0d@virtuozzo.com>
-Date:   Thu, 5 Aug 2021 15:55:15 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S241544AbhHEM5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 08:57:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49248 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232615AbhHEM5c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 08:57:32 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86698C061765
+        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 05:57:18 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id t7-20020a17090a5d87b029017807007f23so11334849pji.5
+        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 05:57:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=CUJAPxl/NPUJn40+0/B+dDcum5FvMyz50MbPQFWF6HU=;
+        b=kSbrYQiRaYGFrCOTv470twLUCd30Zw4RwxpUWIHXF7EuiDGl+tdnhWMLgP6Udtu/l6
+         Ojpts803+AsYFc3mnoCFnAwp5ERFRxBDIi6+uOrz+8mpzeMXsB/MHEGJPYQnTln8CJml
+         qn5UWfusy+irJLgjOvYvujdVybPCCdl3LEwhs/BTtNkOMBmYjr6kcQaEtQ12kM50I71s
+         V6rlTc/OptBdeejRzo6zSpXuLnVdYgC3kQwvn8HrY6MosrnVoibQJhyaq9FqvcHTRTZm
+         Gi4E1WP9CkMS7hPI1ubDtFa1XClf5Ezxv663/fnPY2T1SXCkPxqLRLdLabGiSyinEGjZ
+         MEtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=CUJAPxl/NPUJn40+0/B+dDcum5FvMyz50MbPQFWF6HU=;
+        b=jYTbIihYoZkGVMN3cvs4a4XsKSVeyD8GolP3Uf81IgAOrl3VzFXIjWOERpFR/7HsG8
+         BnrKa+0vEorWeJ8SYU7jHwwXpp2t+G7qKs5LA0ynFRS3NgtZXWAFiq/C+Wm/1fhB3Pjb
+         qNgi8X8LBNEY03LELcA2VElBMQi0mJ3p4/7R5vuOwdAcJoDsv/h6XQeGxvp26PVHTh7b
+         xxx+5PhTNKIg3G8HrJ0WO7TcR2h5w2Y7488OeBuqelKLmATTzDcFD5Ij/fOz98qww9GJ
+         eyQijYe6iSaKGwiDWyWadEjjDjCbK+mo9GhQg5LCJzcsD4IiMOxD0yUMGVfqtdw1qRgg
+         GKmw==
+X-Gm-Message-State: AOAM5325SCVluFHh0kixrdZNODjRtIfBgpkHslBKIrc8RldwllvWZbnG
+        znMGyh4rVXQxVfKHMxtmOa0dGe2ih6YkCzKxxeI=
+X-Google-Smtp-Source: ABdhPJzXgvJVbNNYmiDGZeImFLBJfMB1AAtf+J5ip2ICfM2m9DxZ/BX2x5bxeRnFtXiEOdKK3wafHHm7Wf6eJ4Vb2mg=
+X-Received: by 2002:a63:5144:: with SMTP id r4mr274006pgl.223.1628168238082;
+ Thu, 05 Aug 2021 05:57:18 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <ccce7edb-54dd-e6bf-1e84-0ec320d8886c@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a17:90a:9289:0:0:0:0 with HTTP; Thu, 5 Aug 2021 05:57:17
+ -0700 (PDT)
+Reply-To: shawnhayden424@gmail.com
+From:   shawn hayden <kentfloyd829@gmail.com>
+Date:   Thu, 5 Aug 2021 13:57:17 +0100
+Message-ID: <CAN0vV=6uangt6nB-xLz4w9MdhV1bu_wx+2evp7T1_LePxXGAPQ@mail.gmail.com>
+Subject: =?UTF-8?B?Q8Otc2jDoG4gasSrZ8OydSDmhYjlloTmqZ/mp4s=?=
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/5/21 2:55 PM, Julian Wiedmann wrote:
-> On 02.08.21 11:52, Vasily Averin wrote:
->> Unlike skb_realloc_headroom, new helper skb_expand_head
->> does not allocate a new skb if possible.
->>
->> Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
->> ---
->>  drivers/net/vrf.c | 21 +++++++--------------
->>  1 file changed, 7 insertions(+), 14 deletions(-)
->>
-> 
-> [...]
-> 
->>  	/* Be paranoid, rather than too clever. */
->>  	if (unlikely(skb_headroom(skb) < hh_len && dev->header_ops)) {
->> -		struct sk_buff *skb2;
->> -
->> -		skb2 = skb_realloc_headroom(skb, LL_RESERVED_SPACE(dev));
->> -		if (!skb2) {
->> -			ret = -ENOMEM;
->> -			goto err;
->> +		skb = skb_expand_head(skb, hh_len);
->> +		if (!skb) {
->> +			skb->dev->stats.tx_errors++;
->> +			return -ENOMEM;
-> 
-> Hello Vasily,
-> 
-> FYI, Coverity complains that we check skb != NULL here but then
-> still dereference skb->dev:
-> 
-> 
-> *** CID 1506214:  Null pointer dereferences  (FORWARD_NULL)
-> /drivers/net/vrf.c: 867 in vrf_finish_output()
-> 861     	nf_reset_ct(skb);
-> 862     
-> 863     	/* Be paranoid, rather than too clever. */
-> 864     	if (unlikely(skb_headroom(skb) < hh_len && dev->header_ops)) {
-> 865     		skb = skb_expand_head(skb, hh_len);
-> 866     		if (!skb) {
->>>>     CID 1506214:  Null pointer dereferences  (FORWARD_NULL)
->>>>     Dereferencing null pointer "skb".
-> 867     			skb->dev->stats.tx_errors++;
-> 868     			return -ENOMEM;
-
-My fault, I missed it.
-
-Thank you,
-	Vasily Averin
+6Kaq5oSb55qE5pyL5Y+L77yMDQoNCuaIkeaYr+WxheS9j+WcqOe+juWci+eahOa+s+Wkp+WIqeS6
+nuWFrOawke+8jOS5n+aYr+S4gOWQjeaTgeaciSAzNSDlubTlt6XkvZzntpPpqZfnmoTmiL/lnLDn
+lKLntpPntIDkuroNCue2k+mpl+OAguaIkeacgOi/keaEn+afk+S6hiBDb3ZpZC0xOSDnl4Xmr5Lv
+vIzkuKbkuJTnlLHmlrwNCuaIkemAmeWAi+W5tOe0gO+8jOaIkeimuuW+l+aIkeaSkOS4jeS4i+WO
+u+S6huOAguaIkeS4gOebtOWcqOawp+awo+S4iw0K5bm+5aSp77yM5oiR5LiN6IO955So6Yyi6LK3
+5oiR55qE55Sf5rS744CC5oiR5Y+v5Lul5ZCR5oWI5ZaE5qmf5qeL5o2Q6LSIIDU1MDAg6JCs576O
+5YWD77yMDQrnibnliKXmmK/luavliqnnqq7kurrjgILljrvlubTmiJHnmoTlprvlrZDmrbvmlrzn
+mYznl4fvvIzmiJHllK/kuIDnmoTlhZLlrZDmmK/mhaLmgKfnl4UNCuizreW+kuaPrumcjeS6huaI
+kee1puS7lueahOaJgOacieizh+mHkeOAgg0K6Lq65Zyo55eF5bqK5LiK77yM5rKS5pyJ55Sf5a2Y
+55qE5biM5pyb77yM5oiR5biM5pybDQrkvaDluavmiJHlrozmiJDkuobmiJHmnIDlvoznmoTpoZjm
+nJvjgILpgJnmmK/kuIDlgIvngrrmiJHmnI3li5nnmoTpoZjmnJsNCueCuuaIkeeahOmdiOmtguWS
+jOe9queahOi1puWFjeWQkeS4iuW4neaHh+axguOAguWmguaenOS9oOmhmOaEjw0K5Lim5rqW5YKZ
+5o+Q5L6b5bmr5Yqp77yM6KuL5Zue562U5oiR77yM5oiR5pyD54K65oKo5o+Q5L6b6Kmz57Sw5L+h
+5oGv44CC5oiR55+l6YGT5oiRDQrlj6/ku6Xkv6Hku7vkvaDjgILoq4vluavluavmiJHjgIINCg0K
+6Kaq5YiH55qE5ZWP5YCZ44CCDQoNCuiCluaBqcK35rW355m744CCDQoNClHEq24nw6BpIGRlIHDD
+qW5neceSdSwNCg0Kd8eSIHNow6wgasWremjDuSB6w6BpIG3Em2lndcOzIGRlIMOgb2TDoGzDrHnH
+jiBnxY1uZ23DrW4sIHnEm3Now6wgecSrIG3DrW5nIHnHkm5neceSdSAzNQ0KbmnDoW4gZ8WNbmd6
+dcOyIGrEq25necOgbiBkZSBmw6FuZ2TDrGNox45uIGrEq25nasOsIHLDqW4NCmrEq25necOgbi4g
+V8eSIHp1w6xqw6xuIGfHjm5yx45ubGUgQ292aWQtMTkgYsOsbmdkw7osIGLDrG5ncWnEmyB5w7N1
+ecO6DQp3x5IgemjDqGdlIG5pw6FuasOsLCB3x5IganXDqWTDqSB3x5IgY2jEk25nIGLDuSB4acOg
+ccO5bGUuIFfHkiB5xKt6aMOtIHrDoGkgeceObmdxw6wgeGnDoA0KaseQIHRpxIFuLCB3x5IgYsO5
+bsOpbmcgecOybmcgcWnDoW4gbceOaSB3x5IgZGUgc2jEk25naHXDsy4gV8eSIGvEm3nHkCB4acOg
+bmcgY8Otc2jDoG4NCmrEq2fDsnUganXEgW56w6huZyA1NTAwIHfDoG4gbcSbaXl1w6FuLA0KdMOo
+YmnDqSBzaMOsIGLEgW5nemjDuSBxacOzbmcgcsOpbi4gUcO5bmnDoW4gd8eSIGRlIHHEq3ppIHPH
+kCB5w7ogw6FpemjDqG5nLCB3x5Igd8OpaXnEqw0KZGUgw6lyemkgc2jDrCBtw6BueMOsbmdiw6xu
+Zw0KZMeUIHTDuiBodcSraHXDsmxlIHfHkiBnxJtpIHTEgSBkZSBzdceSeceSdSB6xKtqxKtuLg0K
+VMeObmcgesOgaSBiw6xuZ2NodcOhbmcgc2jDoG5nLCBtw6lpeceSdSBzaMSTbmdjw7puIGRlIHjE
+q3fDoG5nLCB3x5IgeMSrd8OgbmcNCm7HkCBixIFuZyB3x5Igd8OhbmNow6luZ2xlIHfHkiB6dcOs
+aMOydSBkZSB5dcOgbnfDoG5nLiBaaMOoIHNow6wgecSrZ8OoIHfDqGkgd8eSIGbDunfDuQ0KZGUg
+eXXDoG53w6BuZw0Kd8OoaSB3x5IgZGUgbMOtbmdow7puIGjDqSB6dcOsIGRlIHNow6htaceObiB4
+acOgbmcgc2jDoG5nZMOsIGvEm25xacO6LiBSw7pndceSIG7HkCB5dcOgbnnDrA0KYsOsbmcgemjH
+lG5iw6hpIHTDrWfFjW5nIGLEgW5nemjDuSwgcceQbmcgaHXDrWTDoSB3x5IsIHfHkiBodcOsIHfD
+qGkgbsOtbiB0w61nxY1uZw0KeGnDoW5neMOsIHjDrG54xKsuIFfHkiB6aMSrZMOgbyB3x5INCmvE
+m3nHkCB4w6xucsOobiBux5AuIFHHkG5nIGLEgW5nIGLEgW5nIHfHki4NCg0KUcSrbnFpw6ggZGUg
+d8OobmjDsnUuDQoNClhpw6BvIMSTbsK3aMeOaSBkxJNuZy4NCg==
