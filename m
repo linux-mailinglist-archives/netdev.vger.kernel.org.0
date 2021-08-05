@@ -2,141 +2,383 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 628923E166D
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 16:07:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 339D53E165B
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 16:06:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241849AbhHEOIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 10:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37292 "EHLO
+        id S241841AbhHEOGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 10:06:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239887AbhHEOIA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 10:08:00 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91EDAC061765;
-        Thu,  5 Aug 2021 07:07:45 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id u13-20020a17090abb0db0290177e1d9b3f7so15072025pjr.1;
-        Thu, 05 Aug 2021 07:07:45 -0700 (PDT)
+        with ESMTP id S241861AbhHEOGB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 10:06:01 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B96C061798;
+        Thu,  5 Aug 2021 07:05:33 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id j1so9037085pjv.3;
+        Thu, 05 Aug 2021 07:05:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OibPOHM4csfd5W9jXrElMvcVRfnZS6gDVVfoFCeSUOI=;
-        b=BVuGKKHnUlwvm+fNGyv2t1uabrBpZuVRIaJvS/V7uR4Hsfspd77wayaNwI3LvSJ6qk
-         mYMltcw12BRXxY8FPF9M9JR2p+H7A5x7iaD8c+2Lkdlt3SYIaQICLEgJybUxtoaI8Q5W
-         nCAen9+yaNXxdLna9VdqvtGm9L4hsKgRkMrphhPDkBDVJlNEMQKjLh9tHqljySEwlatU
-         8QcbMaVHlIF6on0byMk08kt5VDYBRiFzgIsUbZLiOWlLYajfqFv8lHsKQ3xYxqoC0hdH
-         T8+riozdQgYYzDyy6zPATqR0DcZa1MovepWN06sbCUdye2gW5ef3m3aF9wNf6XfxbfVj
-         RUAw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=F8VMrdCyOywJRypSYr/zNvHCgQ+meFAot/YAU98HWWE=;
+        b=ECF3X5iUC+sX/vDMJPtan9DyiKntE4JTT1Af+ZUPGy2bBqryLNVeJ3gR5+CS3fJHFH
+         +BGde9+tFxN33KSJ0vdmOJMD6p8xehdYyALwQFZ6G3NzehgjZywkm09J/HtwwfaTXzBP
+         S1WS2pWntdKte5+ILpRc2l734SfMuogBUrcU4GO/fIwTACeWEGst0D8KKq7Hp2ykipoA
+         QyhNf7ug3UEf8Ogx6Kd+jbFj4xFPVdasYhyQWntvhxI1wBJbaTa3jT5pkrkRsaek/UAd
+         NLLA6VCbXzd2NA0YhNwAwyGzJ7MPCd9oBnOdf+3gO1asduizzv+vye87H8v2E/Sqy61q
+         QusA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=OibPOHM4csfd5W9jXrElMvcVRfnZS6gDVVfoFCeSUOI=;
-        b=EtXgCi7Mgn2PKnx9VvrW63/s/JRzBY/Ok7Jo/8PqkdLmq4C1KY+iDLl2bpBVLBMpfK
-         JmnPz+Y2J2bCZ2DPJlJ4CS8GAQedgvDbeuOcYFSg/E2cCT+Lx9pEC6hRsratjxetRRjN
-         85AfvWiFcd2XARRlADKxThTEDrf6CPywUxUtGTFDgln+5aU0/lI1Hyfn5yEdtPatqx0P
-         id3U0O0PkmYBQcs+ZzrGR8sDflJ0f/baa0GCtgavHq0Y4ZlUPEcp4VMA5X3hW2QgGDBL
-         qKSt/FazUrdoUZSKsI4BNXiireb78FfiTwcZn0fz4ifvCzy2uZQJ4Xj3Ax9DBNcPKp1X
-         /0fw==
-X-Gm-Message-State: AOAM533kCl9e31CuCuT2uDnsMKfBhSYw5E9eAYcquZlRRaLhYrsz8zv+
-        8rXZxSdNxGxy4f2qG5M5zzs=
-X-Google-Smtp-Source: ABdhPJwullE2U2YB4rB8fXaVU00zqEu67SeTVjhu1pKKItUzNZFPjttiUIylxx/1wTB+JW7yVq2CKg==
-X-Received: by 2002:a63:e14c:: with SMTP id h12mr510070pgk.431.1628172465075;
-        Thu, 05 Aug 2021 07:07:45 -0700 (PDT)
-Received: from localhost.localdomain ([240b:11:82a2:3000:45ab:3f64:7350:39b4])
-        by smtp.gmail.com with ESMTPSA id y12sm8682892pgk.7.2021.08.05.07.07.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Aug 2021 07:07:44 -0700 (PDT)
-From:   Tatsuhiko Yasumatsu <th.yasumatsu@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     th.yasumatsu@gmail.com, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] bpf: Fix integer overflow involving bucket_size
-Date:   Thu,  5 Aug 2021 23:05:15 +0900
-Message-Id: <20210805140515.35630-1-th.yasumatsu@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=F8VMrdCyOywJRypSYr/zNvHCgQ+meFAot/YAU98HWWE=;
+        b=RhR6DUfep5k0/wzg6iwW6yTbiO+B+HXXsnOumI3TofbZS9C9kUDVVtb/HivlCE7Cbg
+         yLc3qGIMjLLJLr+fTYAE31D6Y84YF/JTCOv5SgmlJcHxHTIyBijMMqkizIcLqbUjouVY
+         D6OgeRvsOGRTmQoVViKUx5e2F13Td+qFobP7CzKZ99TU/9PHhjuCwz/ZGfoMnHNEVvgs
+         dgO4ZV+ltwCh6g2xplvzcG679GsL+HBNZqBDaGKoCRYWed8X4TgV/WukidIqyN72FLjj
+         FzHVpfXRMnGoJ12k/7+A54kV+ibUrDBkZS0wPx5BJLyTYNhqCuqyCk+n7MtRrY5htII6
+         TBww==
+X-Gm-Message-State: AOAM530uf2lmogXbILTf+hdG1UT5iFkOCOYkFRx+aJZ/GVhEJCwVdRDZ
+        zAtfCBGE1csYDbq0STghdNg=
+X-Google-Smtp-Source: ABdhPJwBb/TGQHg7Q/TCL0bQgwmOAloOQN4ZDR0PVYFzozUh9xJAeBD4+y2vpy2azMRYRouhtcDM2Q==
+X-Received: by 2002:aa7:9719:0:b029:3b7:6965:c9b0 with SMTP id a25-20020aa797190000b02903b76965c9b0mr5413104pfg.50.1628172332669;
+        Thu, 05 Aug 2021 07:05:32 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:1a:efea::4b1])
+        by smtp.gmail.com with ESMTPSA id w11sm8331978pgk.34.2021.08.05.07.05.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Aug 2021 07:05:31 -0700 (PDT)
+Subject: Re: [PATCH V2 03/14] x86/set_memory: Add x86_set_memory_enc static
+ call support
+To:     Dave Hansen <dave.hansen@intel.com>, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
+        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
+        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
+        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        Tianyu.Lan@microsoft.com, rppt@kernel.org,
+        kirill.shutemov@linux.intel.com, akpm@linux-foundation.org,
+        brijesh.singh@amd.com, thomas.lendacky@amd.com, pgonda@google.com,
+        david@redhat.com, krish.sadhukhan@oracle.com, saravanand@fb.com,
+        aneesh.kumar@linux.ibm.com, xen-devel@lists.xenproject.org,
+        martin.b.radev@gmail.com, ardb@kernel.org, rientjes@google.com,
+        tj@kernel.org, keescook@chromium.org,
+        michael.h.kelley@microsoft.com, Joerg Roedel <joro@8bytes.org>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+Cc:     iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, parri.andrea@gmail.com
+References: <20210804184513.512888-1-ltykernel@gmail.com>
+ <20210804184513.512888-4-ltykernel@gmail.com>
+ <5823af8a-7dbb-dbb0-5ea2-d9846aa2a36a@intel.com>
+From:   Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <942e6fcb-3bdf-9294-d3db-ca311db440d3@gmail.com>
+Date:   Thu, 5 Aug 2021 22:05:17 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <5823af8a-7dbb-dbb0-5ea2-d9846aa2a36a@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In __htab_map_lookup_and_delete_batch(), hash buckets are iterated over
-to count the number of elements in each bucket (bucket_size).
-If bucket_size is large enough, the multiplication to calculate
-kvmalloc() size could overflow, resulting in out-of-bounds write
-as reported by KASAN.
+Hi Dave:
+	Thanks for review.
 
-[...]
-[  104.986052] BUG: KASAN: vmalloc-out-of-bounds in __htab_map_lookup_and_delete_batch+0x5ce/0xb60
-[  104.986489] Write of size 4194224 at addr ffffc9010503be70 by task crash/112
-[  104.986889]
-[  104.987193] CPU: 0 PID: 112 Comm: crash Not tainted 5.14.0-rc4 #13
-[  104.987552] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-[  104.988104] Call Trace:
-[  104.988410]  dump_stack_lvl+0x34/0x44
-[  104.988706]  print_address_description.constprop.0+0x21/0x140
-[  104.988991]  ? __htab_map_lookup_and_delete_batch+0x5ce/0xb60
-[  104.989327]  ? __htab_map_lookup_and_delete_batch+0x5ce/0xb60
-[  104.989622]  kasan_report.cold+0x7f/0x11b
-[  104.989881]  ? __htab_map_lookup_and_delete_batch+0x5ce/0xb60
-[  104.990239]  kasan_check_range+0x17c/0x1e0
-[  104.990467]  memcpy+0x39/0x60
-[  104.990670]  __htab_map_lookup_and_delete_batch+0x5ce/0xb60
-[  104.990982]  ? __wake_up_common+0x4d/0x230
-[  104.991256]  ? htab_of_map_free+0x130/0x130
-[  104.991541]  bpf_map_do_batch+0x1fb/0x220
-[...]
+On 8/5/2021 3:27 AM, Dave Hansen wrote:
+> On 8/4/21 11:44 AM, Tianyu Lan wrote:
+>> +static int default_set_memory_enc(unsigned long addr, int numpages, bool enc);
+>> +DEFINE_STATIC_CALL(x86_set_memory_enc, default_set_memory_enc);
+>> +
+>>   #define CPA_FLUSHTLB 1
+>>   #define CPA_ARRAY 2
+>>   #define CPA_PAGES_ARRAY 4
+>> @@ -1981,6 +1985,11 @@ int set_memory_global(unsigned long addr, int numpages)
+>>   }
+>>   
+>>   static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
+>> +{
+>> +	return static_call(x86_set_memory_enc)(addr, numpages, enc);
+>> +}
+>> +
+>> +static int default_set_memory_enc(unsigned long addr, int numpages, bool enc)
+>>   {
+>>   	struct cpa_data cpa;
+>>   	int ret;
+> 
+> It doesn't make a lot of difference to add this infrastructure and then
+> ignore it for the existing in-tree user:
+> 
+>> static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
+>> {
+>>          struct cpa_data cpa;
+>>          int ret;
+>>
+>>          /* Nothing to do if memory encryption is not active */
+>>          if (!mem_encrypt_active())
+>>                  return 0;
+> 
+> Shouldn't the default be to just "return 0"?  Then on
+> mem_encrypt_active() systems, do the bulk of what is in
+> __set_memory_enc_dec() today.
+> 
 
-In hashtable, if the elements' keys have the same jhash() value, the
-elements will be put into the same bucket. By putting a lot of elements
-into a single bucket, the value of bucket_size can be increased to
-trigger the integer overflow.
+OK. I try moving code in __set_memory_enc_dec() to sev file 
+mem_encrypt.c and this requires to expose cpa functions and structure.
+Please have a look.
 
-Triggering the overflow is possible for both callers with CAP_SYS_ADMIN
-and callers without CAP_SYS_ADMIN.
+Tom, Joerg and Brijesh, Could you review at sev code change?
+Thanks.
 
-It will be trivial for a caller with CAP_SYS_ADMIN to intentionally
-reach this overflow by enabling BPF_F_ZERO_SEED. As this flag will set
-the random seed passed to jhash() to 0, it will be easy for the caller
-to prepare keys which will be hashed into the same value, and thus put
-all the elements into the same bucket.
 
-If the caller does not have CAP_SYS_ADMIN, BPF_F_ZERO_SEED cannot be
-used. However, it will be still technically possible to trigger the
-overflow, by guessing the random seed value passed to jhash() (32bit)
-and repeating the attempt to trigger the overflow. In this case,
-the probability to trigger the overflow will be low and will take
-a very long time.
 
-Fix the integer overflow by casting 1 operand to u64.
+diff --git a/arch/x86/include/asm/set_memory.h 
+b/arch/x86/include/asm/set_memory.h
+index 43fa081a1adb..991366612deb 100644
+--- a/arch/x86/include/asm/set_memory.h
++++ b/arch/x86/include/asm/set_memory.h
+@@ -4,6 +4,25 @@
 
-Fixes: 057996380a42 ("bpf: Add batch ops to all htab bpf map")
-Signed-off-by: Tatsuhiko Yasumatsu <th.yasumatsu@gmail.com>
----
- kernel/bpf/hashtab.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+  #include <asm/page.h>
+  #include <asm-generic/set_memory.h>
++#include <linux/static_call.h>
++
++/*
++ * The current flushing context - we pass it instead of 5 arguments:
++ */
++struct cpa_data {
++	unsigned long	*vaddr;
++	pgd_t		*pgd;
++	pgprot_t	mask_set;
++	pgprot_t	mask_clr;
++	unsigned long	numpages;
++	unsigned long	curpage;
++	unsigned long	pfn;
++	unsigned int	flags;
++	unsigned int	force_split		: 1,
++			force_static_prot	: 1,
++			force_flush_all		: 1;
++	struct page	**pages;
++};
 
-diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index 72c58cc516a3..e29283c3b17f 100644
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -1565,8 +1565,8 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
- 	/* We cannot do copy_from_user or copy_to_user inside
- 	 * the rcu_read_lock. Allocate enough space here.
- 	 */
--	keys = kvmalloc(key_size * bucket_size, GFP_USER | __GFP_NOWARN);
--	values = kvmalloc(value_size * bucket_size, GFP_USER | __GFP_NOWARN);
-+	keys = kvmalloc((u64)key_size * bucket_size, GFP_USER | __GFP_NOWARN);
-+	values = kvmalloc((u64)value_size * bucket_size, GFP_USER | __GFP_NOWARN);
- 	if (!keys || !values) {
- 		ret = -ENOMEM;
- 		goto after_loop;
--- 
-2.25.1
+  /*
+   * The set_memory_* API can be used to change various attributes of a 
+virtual
+@@ -83,6 +102,11 @@ int set_pages_rw(struct page *page, int numpages);
+  int set_direct_map_invalid_noflush(struct page *page);
+  int set_direct_map_default_noflush(struct page *page);
+  bool kernel_page_present(struct page *page);
++int __change_page_attr_set_clr(struct cpa_data *cpa, int checkalias);
++void cpa_flush(struct cpa_data *data, int cache);
++
++int dummy_set_memory_enc(unsigned long addr, int numpages, bool enc);
++DECLARE_STATIC_CALL(x86_set_memory_enc, dummy_set_memory_enc);
 
+  extern int kernel_set_to_readonly;
+
+diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+index ff08dc463634..49e957c4191f 100644
+--- a/arch/x86/mm/mem_encrypt.c
++++ b/arch/x86/mm/mem_encrypt.c
+@@ -20,6 +20,8 @@
+  #include <linux/bitops.h>
+  #include <linux/dma-mapping.h>
+  #include <linux/virtio_config.h>
++#include <linux/highmem.h>
++#include <linux/static_call.h>
+
+  #include <asm/tlbflush.h>
+  #include <asm/fixmap.h>
+@@ -178,6 +180,45 @@ void __init sme_map_bootdata(char *real_mode_data)
+  	__sme_early_map_unmap_mem(__va(cmdline_paddr), COMMAND_LINE_SIZE, true);
+  }
+
++static int sev_set_memory_enc(unsigned long addr, int numpages, bool enc)
++{
++	struct cpa_data cpa;
++	int ret;
++
++	/* Should not be working on unaligned addresses */
++	if (WARN_ONCE(addr & ~PAGE_MASK, "misaligned address: %#lx\n", addr))
++		addr &= PAGE_MASK;
++
++	memset(&cpa, 0, sizeof(cpa));
++	cpa.vaddr = &addr;
++	cpa.numpages = numpages;
++	cpa.mask_set = enc ? __pgprot(_PAGE_ENC) : __pgprot(0);
++	cpa.mask_clr = enc ? __pgprot(0) : __pgprot(_PAGE_ENC);
++	cpa.pgd = init_mm.pgd;
++
++	/* Must avoid aliasing mappings in the highmem code */
++	kmap_flush_unused();
++	vm_unmap_aliases();
++
++	/*
++	 * Before changing the encryption attribute, we need to flush caches.
++	 */
++	cpa_flush(&cpa, !this_cpu_has(X86_FEATURE_SME_COHERENT));
++
++	ret = __change_page_attr_set_clr(&cpa, 1);
++
++	/*
++	 * After changing the encryption attribute, we need to flush TLBs again
++	 * in case any speculative TLB caching occurred (but no need to flush
++	 * caches again).  We could just use cpa_flush_all(), but in case TLB
++	 * flushing gets optimized in the cpa_flush() path use the same logic
++	 * as above.
++	 */
++	cpa_flush(&cpa, 0);
++
++	return ret;
++}
++
+  void __init sme_early_init(void)
+  {
+  	unsigned int i;
+@@ -185,6 +226,8 @@ void __init sme_early_init(void)
+  	if (!sme_me_mask)
+  		return;
+
++	static_call_update(x86_set_memory_enc, sev_set_memory_enc);
++
+  	early_pmd_flags = __sme_set(early_pmd_flags);
+
+  	__supported_pte_mask = __sme_set(__supported_pte_mask);
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index ad8a5c586a35..4f15f7c89dbc 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -18,6 +18,7 @@
+  #include <linux/libnvdimm.h>
+  #include <linux/vmstat.h>
+  #include <linux/kernel.h>
++#include <linux/static_call.h>
+
+  #include <asm/e820/api.h>
+  #include <asm/processor.h>
+@@ -32,24 +33,6 @@
+
+  #include "../mm_internal.h"
+
+-/*
+- * The current flushing context - we pass it instead of 5 arguments:
+- */
+-struct cpa_data {
+-	unsigned long	*vaddr;
+-	pgd_t		*pgd;
+-	pgprot_t	mask_set;
+-	pgprot_t	mask_clr;
+-	unsigned long	numpages;
+-	unsigned long	curpage;
+-	unsigned long	pfn;
+-	unsigned int	flags;
+-	unsigned int	force_split		: 1,
+-			force_static_prot	: 1,
+-			force_flush_all		: 1;
+-	struct page	**pages;
+-};
+-
+  enum cpa_warn {
+  	CPA_CONFLICT,
+  	CPA_PROTECT,
+@@ -66,6 +49,13 @@ static const int cpa_warn_level = CPA_PROTECT;
+   */
+  static DEFINE_SPINLOCK(cpa_lock);
+
++static int default_set_memory_enc(unsigned long addr, int numpages, 
+bool enc)
++{
++	return 0;
++}
++
++DEFINE_STATIC_CALL(x86_set_memory_enc, default_set_memory_enc);
++
+  #define CPA_FLUSHTLB 1
+  #define CPA_ARRAY 2
+  #define CPA_PAGES_ARRAY 4
+@@ -357,7 +347,7 @@ static void __cpa_flush_tlb(void *data)
+  		flush_tlb_one_kernel(fix_addr(__cpa_addr(cpa, i)));
+  }
+
+-static void cpa_flush(struct cpa_data *data, int cache)
++void cpa_flush(struct cpa_data *data, int cache)
+  {
+  	struct cpa_data *cpa = data;
+  	unsigned int i;
+@@ -1587,8 +1577,6 @@ static int __change_page_attr(struct cpa_data 
+*cpa, int primary)
+  	return err;
+  }
+
+-static int __change_page_attr_set_clr(struct cpa_data *cpa, int 
+checkalias);
+-
+  static int cpa_process_alias(struct cpa_data *cpa)
+  {
+  	struct cpa_data alias_cpa;
+@@ -1646,7 +1634,7 @@ static int cpa_process_alias(struct cpa_data *cpa)
+  	return 0;
+  }
+
+-static int __change_page_attr_set_clr(struct cpa_data *cpa, int checkalias)
++int __change_page_attr_set_clr(struct cpa_data *cpa, int checkalias)
+  {
+  	unsigned long numpages = cpa->numpages;
+  	unsigned long rempages = numpages;
+@@ -1982,45 +1970,7 @@ int set_memory_global(unsigned long addr, int 
+numpages)
+
+  static int __set_memory_enc_dec(unsigned long addr, int numpages, bool 
+enc)
+  {
+-	struct cpa_data cpa;
+-	int ret;
+-
+-	/* Nothing to do if memory encryption is not active */
+-	if (!mem_encrypt_active())
+-		return 0;
+-
+-	/* Should not be working on unaligned addresses */
+-	if (WARN_ONCE(addr & ~PAGE_MASK, "misaligned address: %#lx\n", addr))
+-		addr &= PAGE_MASK;
+-
+-	memset(&cpa, 0, sizeof(cpa));
+-	cpa.vaddr = &addr;
+-	cpa.numpages = numpages;
+-	cpa.mask_set = enc ? __pgprot(_PAGE_ENC) : __pgprot(0);
+-	cpa.mask_clr = enc ? __pgprot(0) : __pgprot(_PAGE_ENC);
+-	cpa.pgd = init_mm.pgd;
+-
+-	/* Must avoid aliasing mappings in the highmem code */
+-	kmap_flush_unused();
+-	vm_unmap_aliases();
+-
+-	/*
+-	 * Before changing the encryption attribute, we need to flush caches.
+-	 */
+-	cpa_flush(&cpa, !this_cpu_has(X86_FEATURE_SME_COHERENT));
+-
+-	ret = __change_page_attr_set_clr(&cpa, 1);
+-
+-	/*
+-	 * After changing the encryption attribute, we need to flush TLBs again
+-	 * in case any speculative TLB caching occurred (but no need to flush
+-	 * caches again).  We could just use cpa_flush_all(), but in case TLB
+-	 * flushing gets optimized in the cpa_flush() path use the same logic
+-	 * as above.
+-	 */
+-	cpa_flush(&cpa, 0);
+-
+-	return ret;
++	return static_call(x86_set_memory_enc)(addr, numpages, enc);
+  }
+
+  int set_memory_encrypted(unsigned long addr, int numpages)
