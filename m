@@ -2,153 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 767463E16F0
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 16:26:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 012163E16F5
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 16:29:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241683AbhHEO1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 10:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41732 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241678AbhHEO1G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 10:27:06 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EAFEC0613D5
-        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 07:26:51 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id s22-20020a17090a1c16b0290177caeba067so15267788pjs.0
-        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 07:26:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4Z62VjdfuhZ7eaSPHHjKLEZ+eXOGVQq7qo6c+hqx5eo=;
-        b=VxkbNqNxmqK7N6+gir754s4mC/jo06fa/HBdjo8oOiKQyRvxubUoICA7wJdmeidP7s
-         AYadKd+PhX3wT6AJ3bNeOEWSaDz+dlz2UjDSLX13vPjkNc1DoEjY+nh2YcOqFTMI1qHW
-         olsAfWxrAIcydP8F3xkoZLv2QxTEv7o+UR0w4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4Z62VjdfuhZ7eaSPHHjKLEZ+eXOGVQq7qo6c+hqx5eo=;
-        b=iR9k5xymzrER1mnc7cGdmp/gfqxWppCGaoMXkYfZY65WD9Lge7oxEBNaAaDersqC7L
-         Ka9GuKLsl3LCrygZe3lr+LQrWnawzQo27pijg2JfeLLWtaNva15bNo4bax2F7ZX6EhGG
-         3JEBw3Eo7eXc5zZuwCnQwvtrjQYBlz6+EYsBK27zAw/kEc44OcGruS+P9tghUEjhRx0g
-         h6prbcWCrYKmwF0I1cBsbznKzi54S4k2W868VlKi6pcBnswrwd9yNB94dLFjpzzS4GnG
-         hrwuEvRlHHkjjCbG903WVf6XfMQ10Xl5hfWPpvG4fWSxp+voq0OWZSxYcvANioIp5+oI
-         jo6A==
-X-Gm-Message-State: AOAM533feoYApDPOIhAYztBdagpZsyahmgCFANCNANzGxX3tv8OnbIuZ
-        aKM+J+3gYYZGKjmiO6c3HN6Rhw==
-X-Google-Smtp-Source: ABdhPJwZu5LjOvFgT6i3Po4/ZpUPMhEskn63XSLoGzDS+369QY0jKmg4fgfoE4G22vtrHrfiTnH1ww==
-X-Received: by 2002:a62:92d7:0:b029:3c4:d123:928e with SMTP id o206-20020a6292d70000b02903c4d123928emr5487876pfd.43.1628173611107;
-        Thu, 05 Aug 2021 07:26:51 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id c136sm6893037pfc.53.2021.08.05.07.26.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Aug 2021 07:26:50 -0700 (PDT)
-Date:   Thu, 5 Aug 2021 07:26:49 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Tatsuhiko Yasumatsu <th.yasumatsu@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH] bpf: Fix integer overflow involving bucket_size
-Message-ID: <202108050725.384AA3E0@keescook>
-References: <20210805140515.35630-1-th.yasumatsu@gmail.com>
+        id S241700AbhHEO3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 10:29:48 -0400
+Received: from mga14.intel.com ([192.55.52.115]:28696 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233183AbhHEO3r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Aug 2021 10:29:47 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10067"; a="213893038"
+X-IronPort-AV: E=Sophos;i="5.84,296,1620716400"; 
+   d="scan'208";a="213893038"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2021 07:29:32 -0700
+X-IronPort-AV: E=Sophos;i="5.84,296,1620716400"; 
+   d="scan'208";a="442448718"
+Received: from apeddoll-mobl1.amr.corp.intel.com (HELO [10.209.20.48]) ([10.209.20.48])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2021 07:29:30 -0700
+Subject: Re: [PATCH V2 03/14] x86/set_memory: Add x86_set_memory_enc static
+ call support
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Tianyu Lan <ltykernel@gmail.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        dave.hansen@linux.intel.com, luto@kernel.org,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
+        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
+        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
+        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        Tianyu.Lan@microsoft.com, rppt@kernel.org,
+        kirill.shutemov@linux.intel.com, akpm@linux-foundation.org,
+        brijesh.singh@amd.com, thomas.lendacky@amd.com, pgonda@google.com,
+        david@redhat.com, krish.sadhukhan@oracle.com, saravanand@fb.com,
+        aneesh.kumar@linux.ibm.com, xen-devel@lists.xenproject.org,
+        martin.b.radev@gmail.com, ardb@kernel.org, rientjes@google.com,
+        tj@kernel.org, keescook@chromium.org,
+        michael.h.kelley@microsoft.com, iommu@lists.linux-foundation.org,
+        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        netdev@vger.kernel.org, vkuznets@redhat.com, parri.andrea@gmail.com
+References: <20210804184513.512888-1-ltykernel@gmail.com>
+ <20210804184513.512888-4-ltykernel@gmail.com>
+ <5823af8a-7dbb-dbb0-5ea2-d9846aa2a36a@intel.com>
+ <942e6fcb-3bdf-9294-d3db-ca311db440d3@gmail.com>
+ <YQv0bRBUq1N5+jgG@hirez.programming.kicks-ass.net>
+From:   Dave Hansen <dave.hansen@intel.com>
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+ z5cecg==
+Message-ID: <fa63e6ad-9536-d5e9-d754-fa04fad69252@intel.com>
+Date:   Thu, 5 Aug 2021 07:29:28 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210805140515.35630-1-th.yasumatsu@gmail.com>
+In-Reply-To: <YQv0bRBUq1N5+jgG@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 05, 2021 at 11:05:15PM +0900, Tatsuhiko Yasumatsu wrote:
-> In __htab_map_lookup_and_delete_batch(), hash buckets are iterated over
-> to count the number of elements in each bucket (bucket_size).
-> If bucket_size is large enough, the multiplication to calculate
-> kvmalloc() size could overflow, resulting in out-of-bounds write
-> as reported by KASAN.
-> 
-> [...]
-> [  104.986052] BUG: KASAN: vmalloc-out-of-bounds in __htab_map_lookup_and_delete_batch+0x5ce/0xb60
-> [  104.986489] Write of size 4194224 at addr ffffc9010503be70 by task crash/112
-> [  104.986889]
-> [  104.987193] CPU: 0 PID: 112 Comm: crash Not tainted 5.14.0-rc4 #13
-> [  104.987552] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-> [  104.988104] Call Trace:
-> [  104.988410]  dump_stack_lvl+0x34/0x44
-> [  104.988706]  print_address_description.constprop.0+0x21/0x140
-> [  104.988991]  ? __htab_map_lookup_and_delete_batch+0x5ce/0xb60
-> [  104.989327]  ? __htab_map_lookup_and_delete_batch+0x5ce/0xb60
-> [  104.989622]  kasan_report.cold+0x7f/0x11b
-> [  104.989881]  ? __htab_map_lookup_and_delete_batch+0x5ce/0xb60
-> [  104.990239]  kasan_check_range+0x17c/0x1e0
-> [  104.990467]  memcpy+0x39/0x60
-> [  104.990670]  __htab_map_lookup_and_delete_batch+0x5ce/0xb60
-> [  104.990982]  ? __wake_up_common+0x4d/0x230
-> [  104.991256]  ? htab_of_map_free+0x130/0x130
-> [  104.991541]  bpf_map_do_batch+0x1fb/0x220
-> [...]
-> 
-> In hashtable, if the elements' keys have the same jhash() value, the
-> elements will be put into the same bucket. By putting a lot of elements
-> into a single bucket, the value of bucket_size can be increased to
-> trigger the integer overflow.
-> 
-> Triggering the overflow is possible for both callers with CAP_SYS_ADMIN
-> and callers without CAP_SYS_ADMIN.
-> 
-> It will be trivial for a caller with CAP_SYS_ADMIN to intentionally
-> reach this overflow by enabling BPF_F_ZERO_SEED. As this flag will set
-> the random seed passed to jhash() to 0, it will be easy for the caller
-> to prepare keys which will be hashed into the same value, and thus put
-> all the elements into the same bucket.
-> 
-> If the caller does not have CAP_SYS_ADMIN, BPF_F_ZERO_SEED cannot be
-> used. However, it will be still technically possible to trigger the
-> overflow, by guessing the random seed value passed to jhash() (32bit)
-> and repeating the attempt to trigger the overflow. In this case,
-> the probability to trigger the overflow will be low and will take
-> a very long time.
-> 
-> Fix the integer overflow by casting 1 operand to u64.
-> 
-> Fixes: 057996380a42 ("bpf: Add batch ops to all htab bpf map")
-> Signed-off-by: Tatsuhiko Yasumatsu <th.yasumatsu@gmail.com>
-> ---
->  kernel/bpf/hashtab.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-> index 72c58cc516a3..e29283c3b17f 100644
-> --- a/kernel/bpf/hashtab.c
-> +++ b/kernel/bpf/hashtab.c
-> @@ -1565,8 +1565,8 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
->  	/* We cannot do copy_from_user or copy_to_user inside
->  	 * the rcu_read_lock. Allocate enough space here.
->  	 */
-> -	keys = kvmalloc(key_size * bucket_size, GFP_USER | __GFP_NOWARN);
-> -	values = kvmalloc(value_size * bucket_size, GFP_USER | __GFP_NOWARN);
-> +	keys = kvmalloc((u64)key_size * bucket_size, GFP_USER | __GFP_NOWARN);
-> +	values = kvmalloc((u64)value_size * bucket_size, GFP_USER | __GFP_NOWARN);
+On 8/5/21 7:23 AM, Peter Zijlstra wrote:
+> This is assuming any of this is actually performance critical, based off
+> of this using static_call() to begin with.
 
-Please, no open-coded multiplication[1]. This should use kvmalloc_array()
-instead.
+This code is not performance critical.
 
--Kees
+I think I sent folks off on a wild goose chase when I asked that we make
+an effort to optimize code that does:
 
-[1] https://www.kernel.org/doc/html/latest/process/deprecated.html#open-coded-arithmetic-in-allocator-arguments
+	if (some_hyperv_check())
+		foo();
 
->  	if (!keys || !values) {
->  		ret = -ENOMEM;
->  		goto after_loop;
-> -- 
-> 2.25.1
-> 
+	if (some_amd_feature_check())
+		bar();
 
--- 
-Kees Cook
+with checks that will actually compile away when Hyper-V or
+some_amd_feature() is disabled.  That's less about performance and just
+about good hygiene.  I *wanted* to see
+cpu_feature_enabled(X86_FEATURE...) checks.
+
+Someone suggested using static calls, and off we went...
+
+Could we please just use cpu_feature_enabled()?
