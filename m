@@ -2,75 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2534B3E1BCA
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 20:55:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 329813E1BD1
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 20:57:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241687AbhHESzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 14:55:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43732 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241446AbhHESzo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Aug 2021 14:55:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A656060F3A;
-        Thu,  5 Aug 2021 18:55:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628189729;
-        bh=c0Y49VAWYDL9aHd/TC0IBNp+E9TYi+R1sNukzF6o8ng=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AKJVU4IvF08G782A7LQ8d8zYpR9WYGHOxaQz+zcl7AgWJD2ACOJjn3nWM3EkZE+vc
-         efyXXxfU0qnZvyZjkzT69xN/dBVOEzLrvkWhBk3LT6jSUfvub3+pjRND9PBpRZmaoo
-         vbresr+qFcu63l1eG/UHvT0QdfcP/MQIB5vYmkGZLeWCg50R6cqqNmiNlpvhdA8wwp
-         bpRjh8PU6ueiz+w2GvPpuI0K3hwYjmnTdjSwXwD8aOQRws+FuPwnGJdOOD4YM851kI
-         rCl3lbX1+t6DgrjC0wUF3ceiVhb1hptqtZ992mfV1AOCMG7G2DC4Hij2d/7Er2EYg2
-         dwL6yqMnkzM3A==
-Date:   Thu, 5 Aug 2021 11:55:28 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     davem@davemloft.net, richardcochran@gmail.com, kernel-team@fb.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v4] ptp: ocp: Expose various resources on the
- timecard.
-Message-ID: <20210805115528.2308fed6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210805172623.mwyh4wt3gupfiurd@bsd-mbp.dhcp.thefacebook.com>
-References: <20210804033327.345759-1-jonathan.lemon@gmail.com>
-        <20210804140957.1fd894dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210804235223.rkyxuvdeowcf7wgl@bsd-mbp.dhcp.thefacebook.com>
-        <20210805060326.4c5fbef9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210805172623.mwyh4wt3gupfiurd@bsd-mbp.dhcp.thefacebook.com>
+        id S241846AbhHES6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 14:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48180 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241061AbhHES6I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 14:58:08 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08004C061765
+        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 11:57:54 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id x15so8660955oic.9
+        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 11:57:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yVPLgQpPXe6+N9RqmGThhjXXoGbGoZZT+RMEhfb9dZ0=;
+        b=uWVqTueJs5sKWacVP6wxSeFX7hUF3YqDH2C4nGH96ld6Yrzyy6+5jksS242PH6RWkm
+         vyoUn7mPt5ZXWouupL1LIquqz8Zc1JOzuXWgveh9mzOEqcX/RrpjkNXQIqTnmcv0YE+f
+         JXmS5Vj73rM8W59oYfq0yF4AixbW5J+CzoyHtc48HiBQotHaO3JxEQuU+BaWJNkBfBkc
+         GDFY6EAXVlfW6epHu+FrGujgFeVZxJ3F4uuFMm0vMNCb7PiXVvISxNfl7xqR7Lqe7FJE
+         8Rs0elyNBX0Q3tTlBnC20qowtzoI3jLrvKrr9PQjijdEWxIFmqejm6AAUwLK4kE/NhG5
+         1hLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yVPLgQpPXe6+N9RqmGThhjXXoGbGoZZT+RMEhfb9dZ0=;
+        b=AQpvCqa9xVT6becnwoHmpecpZJNdfCWp2ax6OLxCJbb6Tz3PiTjqs07Fu6tJzBDRm3
+         9NzvHxOEkEg+BuZXFZL+NDd5OiGekdrHiNK3RFX+Pmsr0ZWhgCnhmRugvMUkk5o2CfJy
+         KeSkcl3KokliprMLQpQRORYEGoFKMIAPzgGLz2bdjnCKwg7zXPPWrXWmoCGwUHDACltG
+         VJvSZekAtI9T8BLTkwqYANqup+f/ct1P7MXV/gUe6OIJgCiUep8rrNL4/uSJBRx30YHN
+         AxCyuMsouF4+VOJFpEwuJ/xxoW28GbD+GG1wIz0p8QNezTLgwnVGC5h+MJH5E9muTCFV
+         z7lw==
+X-Gm-Message-State: AOAM531uAGLUqnRx5OGiksF7OBZDWgrh2eV5Ae/M/YNC0qgXNypwwXsP
+        YbYqYpnaxE6vD/tFGNQg6geXILzbaIk=
+X-Google-Smtp-Source: ABdhPJwEcY8L19YAwqJvOpo8G4f/P5fOOSCIjiqWSAtxMyzqwUNOHKdQfOLEAHvLXza9RzEXeE5ypQ==
+X-Received: by 2002:aca:919:: with SMTP id 25mr1902606oij.145.1628189873250;
+        Thu, 05 Aug 2021 11:57:53 -0700 (PDT)
+Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:c64b:2366:2e53:c024])
+        by smtp.gmail.com with ESMTPSA id r5sm358678otk.71.2021.08.05.11.57.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Aug 2021 11:57:52 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <cong.wang@bytedance.com>
+Subject: [Patch net-next 00/13] net: add more tracepoints to TCP/IP stack
+Date:   Thu,  5 Aug 2021 11:57:37 -0700
+Message-Id: <20210805185750.4522-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 5 Aug 2021 10:26:23 -0700 Jonathan Lemon wrote:
-> > > We're not talking to the flash yet.  We're writing a new image, but don't
-> > > know the image version, since it's not accessible from the FPGA blob.  So
-> > > since we're don't know what the stored image is until we reboot, I've set
-> > > it to 'pending' here - aka "pending reboot".  Could also be "unknown".  
-> > 
-> > Having the driver remember that the device was flashed is not a solid
-> > indication that the image is actually different. It may be that user
-> > flashed the same version, driver may get reloaded and lose the
-> > indication.. Let's not make a precedent for (ab) use of the version
-> > field to indicate reset required.  
-> 
-> I'd like to have some way to remind/tell the user that a reset is required.
-> 
-> Right now, I can only get the running version from the FPGA register, so
-> after flashing, there's no way for me to know what's on the flash (or if 
-> the flash write failed).  Setting "pending" or "reboot" works for most
-> cases - but obviously fails if the driver is reloaded. 
-> 
-> But most users won't do rmmod/insmod, just a reboot.
+From: Cong Wang <cong.wang@bytedance.com>
 
-I appreciate the problem of knowing if FW activation is required exists
-but the way devlink API is intending to solve it is by displaying the
-actual versions. Version entries are for carrying versions, not
-arbitrary information.
+This patchset adds 12 more tracepoints to TCP/IP stack, both
+IPv4 and IPv6. The goal is to trace skb in different layers
+and to measure the latency of each layer.
 
-If we assume driver does not get re-initialized / kernel kexeced etc.
-we can assume other things, like for example that nothing will mess
-with the filesystem. Ergo the flashing process can create a file in 
-a well known location on the FS to indicate that reset is pending..
+We only add information we need to each trace point. If any other
+information is needed, it is easy to extend without breaking ABI,
+see commit 3dd344ea84e1 ("net: tracepoint: exposing sk_family in all
+tcp:tracepoints").
+
+And similar to trace_qdisc_enqueue(), we only intend to trace
+success cases, because most (if not all) failure cases can be traced
+via kfree_skb() even if they are really interesting.
+
+Lastly, per previous discussion, trace ring buffer is only accessible
+to privileged users, it is safe to use a real kernel address with %px.
+
+Qitao Xu (13):
+  net: introduce a new header file include/trace/events/ip.h
+  ipv4: introduce tracepoint trace_ip_queue_xmit()
+  tcp: introduce tracepoint trace_tcp_transmit_skb()
+  udp: introduce tracepoint trace_udp_send_skb()
+  udp: introduce tracepoint trace_udp_v6_send_skb()
+  ipv4: introduce tracepoint trace_ip_rcv()
+  ipv6: introduce tracepoint trace_ipv6_rcv()
+  ipv4: introduce tracepoint trace_ip_local_deliver_finish()
+  udp: introduce tracepoint trace_udp_rcv()
+  ipv6: introduce tracepoint trace_udpv6_rcv()
+  tcp: introduce tracepoint trace_tcp_v4_rcv()
+  ipv6: introduce tracepoint trace_tcp_v6_rcv()
+  sock: introduce tracepoint trace_sk_data_ready()
+
+ include/trace/events/ip.h   | 140 ++++++++++++++++++++++++++++++++++++
+ include/trace/events/sock.h |  19 +++++
+ include/trace/events/tcp.h  |  27 ++++++-
+ include/trace/events/udp.h  |  74 +++++++++++++++++++
+ net/core/net-traces.c       |   7 ++
+ net/ipv4/ip_input.c         |   9 ++-
+ net/ipv4/ip_output.c        |  10 ++-
+ net/ipv4/tcp_input.c        |   8 ++-
+ net/ipv4/tcp_ipv4.c         |   2 +
+ net/ipv4/tcp_output.c       |   8 ++-
+ net/ipv4/udp.c              |  17 ++++-
+ net/ipv6/ip6_input.c        |   5 +-
+ net/ipv6/tcp_ipv6.c         |   3 +
+ net/ipv6/udp.c              |   9 ++-
+ 14 files changed, 327 insertions(+), 11 deletions(-)
+ create mode 100644 include/trace/events/ip.h
+
+-- 
+2.27.0
+
