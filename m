@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFE2D3E0F5C
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 09:36:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FDFF3E0F60
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 09:36:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238157AbhHEHhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 03:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60008 "EHLO
+        id S238528AbhHEHhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 03:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231181AbhHEHhB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 03:37:01 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0294FC061765
-        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 00:36:48 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id w19-20020a170902d113b029012c1505a89fso4138143plw.13
-        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 00:36:47 -0700 (PDT)
+        with ESMTP id S238437AbhHEHhD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 03:37:03 -0400
+Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0566FC061765
+        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 00:36:50 -0700 (PDT)
+Received: by mail-qk1-x74a.google.com with SMTP id b9-20020a05620a1269b02903b8bd5c7d95so3647961qkl.12
+        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 00:36:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=CmPszHYG0rF1Z92kkhNAS8nYPzqb/OsUPx4rS3jtdKQ=;
-        b=eiU6BQGK+s2AGBdgCDH3rbF4hpXhqfn7ZfILj2tIbL8cnWlRPvuKUZ7APyzRdqOq0s
-         6toiu3DAtlMxvnB11V2zobFxV9V/aXeaXDwqi1p0qb4ZCwATgOPZAaFhR826MDfcgTML
-         tNiXv2xHKwEEHMnenB3jKw1HVbm8tWYOnjj9/Zh4O3LbMXb6/AOtZmWEFBOvndvhqRp6
-         T3SvbG2bUOeWzVKzWTenZmdC3OXfnGz6SxLOQBK4+3xjS1Q3JZGcHx2cUKr96yvAC32S
-         suxSKguGbCW10zuIT1jyVYFbRAmm9McmBVP4Ps8ebssRvi0QSav+j4ANP98PMzf7Prs7
-         huAQ==
+        bh=NQRWp2g2NfStif6k6z29c2YTuuBFYQaoUCZiUHyGFXs=;
+        b=sSuBDt7vTpsveB1G8EpKGWXL9qSEMhnP8GIjZl7UxanDODTdp+t3mnwGmh5ceeSDT/
+         R+wsNTRbbKA8otSebO7WXTDUsmc8/1CsfBWoitqvxyb6kflycDBOEpU9BZEdoUpiDAFe
+         xQmP+xAvZF0XvNv0l8nUnTYFkWkDi7aPBbzX6OL0bWDgXb1NJBrp0S/yhPSSAJrBo+jb
+         uib/8cj9z5jRXvqXcUSvyDyk9XALkVx2y5Q8RTMSyM2chP1E+DrkOm+XhgvskoJQBwr/
+         KP/DE2DoNtTrFzm/EutJlAIGHRLTXz8JcJ93qQy4FExddWLBp0BW3IHaaNRj1CgpONVt
+         eW0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=CmPszHYG0rF1Z92kkhNAS8nYPzqb/OsUPx4rS3jtdKQ=;
-        b=k2dFi/woRdhZEJu5NbGbfUugp/Hbww5R0v3oVhz0LpMUAGHXyfBwGXLASEFMfVhG5F
-         RnuvzcScDuY7eBsyBEppu6P1WvYGeDTAG/N23kRGGEWWyDeOgzdFeaMIOOsbOnaw/uH8
-         Exk2AyKe0qQTWgokMDSre4Szzg5sfiOaMepPB2gNMluyHNdcxHRFYTWm/LX0l614RekP
-         DVZtxBPWM5dILPN9sfYwS4eiIkOJFVs3EPh6vPem+cuG5vvfxAf7qDamFE8iDl8RCUOM
-         R85lwcsNXfVI5fNN2QTqWpmgFTHnZV++kAuv3SvX55mfuBvK+5jFZ8lYcQZkCbjR9xd+
-         GpAg==
-X-Gm-Message-State: AOAM531YFlG2R06MERoga8JBjVMYq2Ievhn4dEsAzPYliF7YibzEdXZb
-        Fu7ytVWqX5Jxeud41FIEr1SSMj/vuBGwBtf1oWRXNj6UslcJkb630T1/tXcQze5w/uHtflEIkoH
-        9v0TTPd8E3Ij0RRxDI+3pF6WG78tJkJAJE7W5P0HCUyFTIukHX0P+qevoo5yRnndHK47uug==
-X-Google-Smtp-Source: ABdhPJxxopkD3j+EZT6ZLrsaCOIQIUenA7runV7q6wwQE8tMX3vrA7mSE4pZGKjfyvDhXREJfcTRdFeGnR75e3s=
+        bh=NQRWp2g2NfStif6k6z29c2YTuuBFYQaoUCZiUHyGFXs=;
+        b=i0Qynj+qDS7pk5kfPVzg9IaJWKpj3MyAumDDXKD4mE44YRM/aOHuUquJfpzoMr4XJu
+         MnCoSixptMo5ZuDhyagaq0PFmcg5hYTDCFXlRpJeTDv0s3d/UvUqPuFKfQUmBzXOYiAK
+         R54nCPKNakzZK9tfQqafN/IUR1FqU86eoZ5e011+M8m6QrPi4o+mIoSuo7qT60+2jokt
+         iaVkw+y00lQaGXe+TQ69JxbFjd7vV91+2PV0OET7mXzkbj+9eCrx48bf0DacbyNOz0DN
+         1Ulxe7wbuGKhgBPj5PDopZ8/66oTaUNuUBoTT0Q0mfUGCvsxCQD58o6Xq4Kx+QBMpizE
+         JHUw==
+X-Gm-Message-State: AOAM531kjt+EEqRxeh0aKbPPH4T2gjVgj6ToWGxCwXeYlKoNf9nIvPCs
+        gWwVj840EediS+yZOVI+pNAIWy92mjh9dJsajGWHrxmX/VAxIgh1sHl+j8Cgdu8VBzVXaesBZtT
+        kbJ0bidUewEg/LAvHAOvhKGzoDiAULhmKeJQmfGemxXnLcqIAotKw6OyDPAg67cpIy/+YTQ==
+X-Google-Smtp-Source: ABdhPJwx6D9rd6uBX3FiVecfhaT1WvHHupQSQXuBkntAVWoQCdIxkW+9UhT3sdMCu+ugEi8MTqvUZpD2Rf5Gerk=
 X-Received: from coco0920.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:5738])
- (user=lixiaoyan job=sendgmr) by 2002:aa7:85da:0:b029:329:aacc:333e with SMTP
- id z26-20020aa785da0000b0290329aacc333emr3572084pfn.60.1628149007425; Thu, 05
- Aug 2021 00:36:47 -0700 (PDT)
-Date:   Thu,  5 Aug 2021 07:36:40 +0000
+ (user=lixiaoyan job=sendgmr) by 2002:a05:6214:1230:: with SMTP id
+ p16mr3950095qvv.42.1628149009131; Thu, 05 Aug 2021 00:36:49 -0700 (PDT)
+Date:   Thu,  5 Aug 2021 07:36:41 +0000
 In-Reply-To: <20210805073641.3533280-1-lixiaoyan@google.com>
-Message-Id: <20210805073641.3533280-2-lixiaoyan@google.com>
+Message-Id: <20210805073641.3533280-3-lixiaoyan@google.com>
 Mime-Version: 1.0
 References: <20210805073641.3533280-1-lixiaoyan@google.com>
 X-Mailer: git-send-email 2.32.0.554.ge1b32706d8-goog
-Subject: [PATCH net-next 1/2] selftests/net: GRO coalesce test
+Subject: [PATCH net-next 2/2] selftests/net: toeplitz test
 From:   Coco Li <lixiaoyan@google.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -63,114 +62,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement a GRO testsuite that expects Linux kernel GRO behavior.
-All tests pass with the kernel software GRO stack. Run against a device
-with hardware GRO to verify that it matches the software stack.
+To verify that this hash implements the Toeplitz hash function.
 
-gro.c generates packets and sends them out through a packet socket. The
-receiver in gro.c (run separately) receives the packets on a packet
-socket, filters them by destination ports using BPF and checks the
-packet geometry to see whether GRO was applied.
+Additionally, provide a script toeplitz.sh to run the test in loopback mode
+on a networking device of choice (see setup_loopback.sh). Since the
+script modifies the NIC setup, it will not be run by selftests
+automatically.
 
-gro.sh provides a wrapper to run the gro.c in NIC loopback mode.
-It is not included in continuous testing because it modifies network
-configuration around a physical NIC: gro.sh sets the NIC in loopback
-mode, creates macvlan devices on the physical device in separate
-namespaces, and sends traffic generated by gro.c between the two
-namespaces to observe coalescing behavior.
-
-GRO coalescing is time sensitive.
-Some tests may prove flaky on some hardware.
-
-Note that this test suite tests for software GRO unless hardware GRO is
-enabled (ethtool -K $DEV rx-gro-hw on).
-
-To test, run ./gro.sh.
-The wrapper will output success or failed test names, and generate
-log.txt and stderr.
-
-Sample log.txt result:
-...
-pure data packet of same size: Test succeeded
-
-large data packets followed by a smaller one: Test succeeded
-
-small data packets followed by a larger one: Test succeeded
-...
-
-Sample stderr result:
-...
+Tested:
+./toeplitz.sh -i eth0 -irq_prefix <eth0_pattern> -t -6
 carrier ready
-running test ipv4 data
-Expected {200 }, Total 1 packets
-Received {200 }, Total 1 packets.
+rxq 0: cpu 14
+rxq 1: cpu 20
+rxq 2: cpu 17
+rxq 3: cpu 23
+cpu 14: rx_hash 0x69103ebc [saddr fda8::2 daddr fda8::1 sport 58938 dport 8000] OK rxq 0 (cpu 14)
 ...
+cpu 20: rx_hash 0x257118b9 [saddr fda8::2 daddr fda8::1 sport 59258 dport 8000] OK rxq 1 (cpu 20)
+count: pass=111 nohash=0 fail=0
+Test Succeeded!
 
 Signed-off-by: Coco Li <lixiaoyan@google.com>
 Reviewed-by: Willem de Bruijn <willemb@google.com>
 ---
- tools/testing/selftests/net/Makefile          |    1 +
- tools/testing/selftests/net/gro.c             | 1095 +++++++++++++++++
- tools/testing/selftests/net/gro.sh            |  128 ++
- tools/testing/selftests/net/setup_loopback.sh |   82 ++
- 4 files changed, 1306 insertions(+)
- create mode 100644 tools/testing/selftests/net/gro.c
- create mode 100755 tools/testing/selftests/net/gro.sh
- create mode 100755 tools/testing/selftests/net/setup_loopback.sh
+ tools/testing/selftests/net/Makefile          |   1 +
+ tools/testing/selftests/net/toeplitz.c        | 585 ++++++++++++++++++
+ tools/testing/selftests/net/toeplitz.sh       | 199 ++++++
+ .../testing/selftests/net/toeplitz_client.sh  |  28 +
+ 4 files changed, 813 insertions(+)
+ create mode 100644 tools/testing/selftests/net/toeplitz.c
+ create mode 100755 tools/testing/selftests/net/toeplitz.sh
+ create mode 100755 tools/testing/selftests/net/toeplitz_client.sh
 
 diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 5b169e915679..a0981fcede2c 100644
+index a0981fcede2c..4f9f73e7a299 100644
 --- a/tools/testing/selftests/net/Makefile
 +++ b/tools/testing/selftests/net/Makefile
-@@ -38,6 +38,7 @@ TEST_GEN_FILES += reuseaddr_ports_exhausted
- TEST_GEN_FILES += hwtstamp_config rxtimestamp timestamping txtimestamp
- TEST_GEN_FILES += ipsec
- TEST_GEN_FILES += ioam6_parser
-+TEST_GEN_FILES += gro
+@@ -41,6 +41,7 @@ TEST_GEN_FILES += ioam6_parser
+ TEST_GEN_FILES += gro
  TEST_GEN_PROGS = reuseport_bpf reuseport_bpf_cpu reuseport_bpf_numa
  TEST_GEN_PROGS += reuseport_dualstack reuseaddr_conflict tls
++TEST_GEN_FILES += toeplitz
  
-diff --git a/tools/testing/selftests/net/gro.c b/tools/testing/selftests/net/gro.c
+ TEST_FILES := settings
+ 
+diff --git a/tools/testing/selftests/net/toeplitz.c b/tools/testing/selftests/net/toeplitz.c
 new file mode 100644
-index 000000000000..cf37ce86b0fd
+index 000000000000..710ac956bdb3
 --- /dev/null
-+++ b/tools/testing/selftests/net/gro.c
-@@ -0,0 +1,1095 @@
++++ b/tools/testing/selftests/net/toeplitz.c
+@@ -0,0 +1,585 @@
 +// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * This testsuite provides conformance testing for GRO coalescing.
++/* Toeplitz test
 + *
-+ * Test cases:
-+ * 1.data
-+ *  Data packets of the same size and same header setup with correct
-+ *  sequence numbers coalesce. The one exception being the last data
-+ *  packet coalesced: it can be smaller than the rest and coalesced
-+ *  as long as it is in the same flow.
-+ * 2.ack
-+ *  Pure ACK does not coalesce.
-+ * 3.flags
-+ *  Specific test cases: no packets with PSH, SYN, URG, RST set will
-+ *  be coalesced.
-+ * 4.tcp
-+ *  Packets with incorrect checksum, non-consecutive seqno and
-+ *  different TCP header options shouldn't coalesce. Nit: given that
-+ *  some extension headers have paddings, such as timestamp, headers
-+ *  that are padding differently would not be coalesced.
-+ * 5.ip:
-+ *  Packets with different (ECN, TTL, TOS) header, ip options or
-+ *  ip fragments (ipv6) shouldn't coalesce.
-+ * 6.large:
-+ *  Packets larger than GRO_MAX_SIZE packets shouldn't coalesce.
++ * 1. Read packets and their rx_hash using PF_PACKET/TPACKET_V3
++ * 2. Compute the rx_hash in software based on the packet contents
++ * 3. Compare the two
 + *
-+ * MSS is defined as 4096 - header because if it is too small
-+ * (i.e. 1500 MTU - header), it will result in many packets,
-+ * increasing the "large" test case's flakiness. This is because
-+ * due to time sensitivity in the coalescing window, the receiver
-+ * may not coalesce all of the packets.
++ * Optionally, either '-C $rx_irq_cpu_list' or '-r $rps_bitmap' may be given.
 + *
-+ * Note the timing issue applies to all of the test cases, so some
-+ * flakiness is to be expected.
++ * If '-C $rx_irq_cpu_list' is given, also
 + *
++ * 4. Identify the cpu on which the packet arrived with PACKET_FANOUT_CPU
++ * 5. Compute the rxqueue that RSS would select based on this rx_hash
++ * 6. Using the $rx_irq_cpu_list map, identify the arriving cpu based on rxq irq
++ * 7. Compare the cpus from 4 and 6
++ *
++ * Else if '-r $rps_bitmap' is given, also
++ *
++ * 4. Identify the cpu on which the packet arrived with PACKET_FANOUT_CPU
++ * 5. Compute the cpu that RPS should select based on rx_hash and $rps_bitmap
++ * 6. Compare the cpus from 4 and 5
 + */
 +
 +#define _GNU_SOURCE
@@ -178,1281 +140,802 @@ index 000000000000..cf37ce86b0fd
 +#include <arpa/inet.h>
 +#include <errno.h>
 +#include <error.h>
++#include <fcntl.h>
 +#include <getopt.h>
 +#include <linux/filter.h>
++#include <linux/if_ether.h>
 +#include <linux/if_packet.h>
-+#include <linux/ipv6.h>
-+#include <net/ethernet.h>
 +#include <net/if.h>
-+#include <netinet/in.h>
++#include <netdb.h>
 +#include <netinet/ip.h>
 +#include <netinet/ip6.h>
 +#include <netinet/tcp.h>
++#include <netinet/udp.h>
++#include <poll.h>
 +#include <stdbool.h>
 +#include <stddef.h>
++#include <stdint.h>
 +#include <stdio.h>
-+#include <stdarg.h>
++#include <stdlib.h>
 +#include <string.h>
++#include <sys/mman.h>
++#include <sys/socket.h>
++#include <sys/stat.h>
++#include <sys/sysinfo.h>
++#include <sys/time.h>
++#include <sys/types.h>
 +#include <unistd.h>
 +
-+#define DPORT 8000
-+#define SPORT 1500
-+#define PAYLOAD_LEN 100
-+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
-+#define NUM_PACKETS 4
-+#define START_SEQ 100
-+#define START_ACK 100
-+#define SIP6 "fdaa::2"
-+#define DIP6 "fdaa::1"
-+#define SIP4 "192.168.1.200"
-+#define DIP4 "192.168.1.100"
-+#define ETH_P_NONE 0
-+#define TOTAL_HDR_LEN (ETH_HLEN + sizeof(struct ipv6hdr) + sizeof(struct tcphdr))
-+#define MSS (4096 - sizeof(struct tcphdr) - sizeof(struct ipv6hdr))
-+#define MAX_PAYLOAD (IP_MAXPACKET - sizeof(struct tcphdr) - sizeof(struct ipv6hdr))
-+#define NUM_LARGE_PKT (MAX_PAYLOAD / MSS)
-+#define MAX_HDR_LEN (ETH_HLEN + sizeof(struct ipv6hdr) + sizeof(struct tcphdr))
++#define TOEPLITZ_KEY_MIN_LEN	40
++#define TOEPLITZ_KEY_MAX_LEN	60
 +
-+static int proto = -1;
-+static uint8_t src_mac[ETH_ALEN], dst_mac[ETH_ALEN];
-+static char *testname = "data";
-+static char *ifname = "eth0";
-+static char *smac = "aa:00:00:00:00:02";
-+static char *dmac = "aa:00:00:00:00:01";
-+static bool verbose;
-+static bool tx_socket = true;
-+static int tcp_offset = -1;
-+static int total_hdr_len = -1;
-+static int ethhdr_proto = -1;
++#define TOEPLITZ_STR_LEN(K)	(((K) * 3) - 1)	/* hex encoded: AA:BB:CC:...:ZZ */
++#define TOEPLITZ_STR_MIN_LEN	TOEPLITZ_STR_LEN(TOEPLITZ_KEY_MIN_LEN)
++#define TOEPLITZ_STR_MAX_LEN	TOEPLITZ_STR_LEN(TOEPLITZ_KEY_MAX_LEN)
 +
-+static void vlog(const char *fmt, ...)
++#define FOUR_TUPLE_MAX_LEN	((sizeof(struct in6_addr) * 2) + (sizeof(uint16_t) * 2))
++
++#define RSS_MAX_CPUS (1 << 16)	/* real constraint is PACKET_FANOUT_MAX */
++
++#define RPS_MAX_CPUS 16UL	/* must be a power of 2 */
++
++/* configuration options (cmdline arguments) */
++static uint16_t cfg_dport =	8000;
++static int cfg_family =		AF_INET6;
++static char *cfg_ifname =	"eth0";
++static int cfg_num_queues;
++static int cfg_num_rps_cpus;
++static bool cfg_sink;
++static int cfg_type =		SOCK_STREAM;
++static int cfg_timeout_msec =	1000;
++static bool cfg_verbose;
++
++/* global vars */
++static int num_cpus;
++static int ring_block_nr;
++static int ring_block_sz;
++
++/* stats */
++static int frames_received;
++static int frames_nohash;
++static int frames_error;
++
++#define log_verbose(args...)	do { if (cfg_verbose) fprintf(stderr, args); } while (0)
++
++/* tpacket ring */
++struct ring_state {
++	int fd;
++	char *mmap;
++	int idx;
++	int cpu;
++};
++
++static unsigned int rx_irq_cpus[RSS_MAX_CPUS];	/* map from rxq to cpu */
++static int rps_silo_to_cpu[RPS_MAX_CPUS];
++static unsigned char toeplitz_key[TOEPLITZ_KEY_MAX_LEN];
++static struct ring_state rings[RSS_MAX_CPUS];
++
++static inline uint32_t toeplitz(const unsigned char *four_tuple,
++				const unsigned char *key)
 +{
-+	va_list args;
++	int i, bit, ret = 0;
++	uint32_t key32;
 +
-+	if (verbose) {
-+		va_start(args, fmt);
-+		vfprintf(stderr, fmt, args);
-+		va_end(args);
++	key32 = ntohl(*((uint32_t *)key));
++	key += 4;
++
++	for (i = 0; i < FOUR_TUPLE_MAX_LEN; i++) {
++		for (bit = 7; bit >= 0; bit--) {
++			if (four_tuple[i] & (1 << bit))
++				ret ^= key32;
++
++			key32 <<= 1;
++			key32 |= !!(key[0] & (1 << bit));
++		}
++		key++;
++	}
++
++	return ret;
++}
++
++/* Compare computed cpu with arrival cpu from packet_fanout_cpu */
++static void verify_rss(uint32_t rx_hash, int cpu)
++{
++	int queue = rx_hash % cfg_num_queues;
++
++	log_verbose(" rxq %d (cpu %d)", queue, rx_irq_cpus[queue]);
++	if (rx_irq_cpus[queue] != cpu) {
++		log_verbose(". error: rss cpu mismatch (%d)", cpu);
++		frames_error++;
 +	}
 +}
 +
-+static void setup_sock_filter(int fd)
++static void verify_rps(uint64_t rx_hash, int cpu)
 +{
-+	const int dport_off = tcp_offset + offsetof(struct tcphdr, dest);
-+	const int ethproto_off = offsetof(struct ethhdr, h_proto);
-+	int optlen = 0;
-+	int ipproto_off;
-+	int next_off;
++	int silo = (rx_hash * cfg_num_rps_cpus) >> 32;
 +
-+	if (proto == PF_INET)
-+		next_off = offsetof(struct iphdr, protocol);
++	log_verbose(" silo %d (cpu %d)", silo, rps_silo_to_cpu[silo]);
++	if (rps_silo_to_cpu[silo] != cpu) {
++		log_verbose(". error: rps cpu mismatch (%d)", cpu);
++		frames_error++;
++	}
++}
++
++static void log_rxhash(int cpu, uint32_t rx_hash,
++		       const char *addrs, int addr_len)
++{
++	char saddr[INET6_ADDRSTRLEN], daddr[INET6_ADDRSTRLEN];
++	uint16_t *ports;
++
++	if (!inet_ntop(cfg_family, addrs, saddr, sizeof(saddr)) ||
++	    !inet_ntop(cfg_family, addrs + addr_len, daddr, sizeof(daddr)))
++		error(1, 0, "address parse error");
++
++	ports = (void *)addrs + (addr_len * 2);
++	log_verbose("cpu %d: rx_hash 0x%08x [saddr %s daddr %s sport %02hu dport %02hu]",
++		    cpu, rx_hash, saddr, daddr,
++		    ntohs(ports[0]), ntohs(ports[1]));
++}
++
++/* Compare computed rxhash with rxhash received from tpacket_v3 */
++static void verify_rxhash(const char *pkt, uint32_t rx_hash, int cpu)
++{
++	unsigned char four_tuple[FOUR_TUPLE_MAX_LEN] = {0};
++	uint32_t rx_hash_sw;
++	const char *addrs;
++	int addr_len;
++
++	if (cfg_family == AF_INET) {
++		addr_len = sizeof(struct in_addr);
++		addrs = pkt + offsetof(struct iphdr, saddr);
++	} else {
++		addr_len = sizeof(struct in6_addr);
++		addrs = pkt + offsetof(struct ip6_hdr, ip6_src);
++	}
++
++	memcpy(four_tuple, addrs, (addr_len * 2) + (sizeof(uint16_t) * 2));
++	rx_hash_sw = toeplitz(four_tuple, toeplitz_key);
++
++	if (cfg_verbose)
++		log_rxhash(cpu, rx_hash, addrs, addr_len);
++
++	if (rx_hash != rx_hash_sw) {
++		log_verbose(" != expected 0x%x\n", rx_hash_sw);
++		frames_error++;
++		return;
++	}
++
++	log_verbose(" OK");
++	if (cfg_num_queues)
++		verify_rss(rx_hash, cpu);
++	else if (cfg_num_rps_cpus)
++		verify_rps(rx_hash, cpu);
++	log_verbose("\n");
++}
++
++static char *recv_frame(const struct ring_state *ring, char *frame)
++{
++	struct tpacket3_hdr *hdr = (void *)frame;
++
++	if (hdr->hv1.tp_rxhash)
++		verify_rxhash(frame + hdr->tp_net, hdr->hv1.tp_rxhash,
++			      ring->cpu);
 +	else
-+		next_off = offsetof(struct ipv6hdr, nexthdr);
-+	ipproto_off = ETH_HLEN + next_off;
++		frames_nohash++;
 +
-+	if (strcmp(testname, "ip") == 0) {
-+		if (proto == PF_INET)
-+			optlen = sizeof(struct ip_timestamp);
-+		else
-+			optlen = sizeof(struct ip6_frag);
++	return frame + hdr->tp_next_offset;
++}
++
++/* A single TPACKET_V3 block can hold multiple frames */
++static void recv_block(struct ring_state *ring)
++{
++	struct tpacket_block_desc *block;
++	char *frame;
++	int i;
++
++	block = (void *)(ring->mmap + ring->idx * ring_block_sz);
++	if (!(block->hdr.bh1.block_status & TP_STATUS_USER))
++		return;
++
++	frame = (char *)block;
++	frame += block->hdr.bh1.offset_to_first_pkt;
++
++	for (i = 0; i < block->hdr.bh1.num_pkts; i++) {
++		frame = recv_frame(ring, frame);
++		frames_received++;
 +	}
 +
++	block->hdr.bh1.block_status = TP_STATUS_KERNEL;
++	ring->idx = (ring->idx + 1) % ring_block_nr;
++}
++
++/* simple test: sleep once unconditionally and then process all rings */
++static void process_rings(void)
++{
++	int i;
++
++	usleep(1000 * cfg_timeout_msec);
++
++	for (i = 0; i < num_cpus; i++)
++		recv_block(&rings[i]);
++
++	fprintf(stderr, "count: pass=%u nohash=%u fail=%u\n",
++		frames_received - frames_nohash - frames_error,
++		frames_nohash, frames_error);
++}
++
++static char *setup_ring(int fd)
++{
++	struct tpacket_req3 req3 = {0};
++	void *ring;
++
++	req3.tp_retire_blk_tov = cfg_timeout_msec;
++	req3.tp_feature_req_word = TP_FT_REQ_FILL_RXHASH;
++
++	req3.tp_frame_size = 2048;
++	req3.tp_frame_nr = 1 << 10;
++	req3.tp_block_nr = 2;
++
++	req3.tp_block_size = req3.tp_frame_size * req3.tp_frame_nr;
++	req3.tp_block_size /= req3.tp_block_nr;
++
++	if (setsockopt(fd, SOL_PACKET, PACKET_RX_RING, &req3, sizeof(req3)))
++		error(1, errno, "setsockopt PACKET_RX_RING");
++
++	ring_block_sz = req3.tp_block_size;
++	ring_block_nr = req3.tp_block_nr;
++
++	ring = mmap(0, req3.tp_block_size * req3.tp_block_nr,
++		    PROT_READ | PROT_WRITE,
++		    MAP_SHARED | MAP_LOCKED | MAP_POPULATE, fd, 0);
++	if (ring == MAP_FAILED)
++		error(1, 0, "mmap failed");
++
++	return ring;
++}
++
++static void __set_filter(int fd, int off_proto, uint8_t proto, int off_dport)
++{
 +	struct sock_filter filter[] = {
-+			BPF_STMT(BPF_LD  + BPF_H   + BPF_ABS, ethproto_off),
-+			BPF_JUMP(BPF_JMP + BPF_JEQ + BPF_K, ntohs(ethhdr_proto), 0, 7),
-+			BPF_STMT(BPF_LD  + BPF_B   + BPF_ABS, ipproto_off),
-+			BPF_JUMP(BPF_JMP + BPF_JEQ + BPF_K, IPPROTO_TCP, 0, 5),
-+			BPF_STMT(BPF_LD  + BPF_H   + BPF_ABS, dport_off),
-+			BPF_JUMP(BPF_JMP + BPF_JEQ + BPF_K, DPORT, 2, 0),
-+			BPF_STMT(BPF_LD  + BPF_H   + BPF_ABS, dport_off + optlen),
-+			BPF_JUMP(BPF_JMP + BPF_JEQ + BPF_K, DPORT, 0, 1),
-+			BPF_STMT(BPF_RET + BPF_K, 0xFFFFFFFF),
-+			BPF_STMT(BPF_RET + BPF_K, 0),
++		BPF_STMT(BPF_LD  + BPF_B   + BPF_ABS, SKF_AD_OFF + SKF_AD_PKTTYPE),
++		BPF_JUMP(BPF_JMP + BPF_JEQ + BPF_K, PACKET_HOST, 0, 4),
++		BPF_STMT(BPF_LD  + BPF_B   + BPF_ABS, off_proto),
++		BPF_JUMP(BPF_JMP + BPF_JEQ + BPF_K, proto, 0, 2),
++		BPF_STMT(BPF_LD  + BPF_H   + BPF_ABS, off_dport),
++		BPF_JUMP(BPF_JMP + BPF_JEQ + BPF_K, cfg_dport, 1, 0),
++		BPF_STMT(BPF_RET + BPF_K, 0),
++		BPF_STMT(BPF_RET + BPF_K, 0xFFFF),
 +	};
++	struct sock_fprog prog = {};
 +
-+	struct sock_fprog bpf = {
-+		.len = ARRAY_SIZE(filter),
-+		.filter = filter,
++	prog.filter = filter;
++	prog.len = sizeof(filter) / sizeof(struct sock_filter);
++	if (setsockopt(fd, SOL_SOCKET, SO_ATTACH_FILTER, &prog, sizeof(prog)))
++		error(1, errno, "setsockopt filter");
++}
++
++/* filter on transport protocol and destination port */
++static void set_filter(int fd)
++{
++	const int off_dport = offsetof(struct tcphdr, dest);	/* same for udp */
++	uint8_t proto;
++
++	proto = cfg_type == SOCK_STREAM ? IPPROTO_TCP : IPPROTO_UDP;
++	if (cfg_family == AF_INET)
++		__set_filter(fd, offsetof(struct iphdr, protocol), proto,
++			     sizeof(struct iphdr) + off_dport);
++	else
++		__set_filter(fd, offsetof(struct ip6_hdr, ip6_nxt), proto,
++			     sizeof(struct ip6_hdr) + off_dport);
++}
++
++/* drop everything: used temporarily during setup */
++static void set_filter_null(int fd)
++{
++	struct sock_filter filter[] = {
++		BPF_STMT(BPF_RET + BPF_K, 0),
 +	};
++	struct sock_fprog prog = {};
 +
-+	if (setsockopt(fd, SOL_SOCKET, SO_ATTACH_FILTER, &bpf, sizeof(bpf)) < 0)
-+		error(1, errno, "error setting filter");
++	prog.filter = filter;
++	prog.len = sizeof(filter) / sizeof(struct sock_filter);
++	if (setsockopt(fd, SOL_SOCKET, SO_ATTACH_FILTER, &prog, sizeof(prog)))
++		error(1, errno, "setsockopt filter");
 +}
 +
-+static uint32_t checksum_nofold(void *data, size_t len, uint32_t sum)
++static int create_ring(char **ring)
 +{
-+	uint16_t *words = data;
-+	int i;
-+
-+	for (i = 0; i < len / 2; i++)
-+		sum += words[i];
-+	if (len & 1)
-+		sum += ((char *)data)[len - 1];
-+	return sum;
-+}
-+
-+static uint16_t checksum_fold(void *data, size_t len, uint32_t sum)
-+{
-+	sum = checksum_nofold(data, len, sum);
-+	while (sum > 0xFFFF)
-+		sum = (sum & 0xFFFF) + (sum >> 16);
-+	return ~sum;
-+}
-+
-+static uint16_t tcp_checksum(void *buf, int payload_len)
-+{
-+	struct pseudo_header6 {
-+		struct in6_addr saddr;
-+		struct in6_addr daddr;
-+		uint16_t protocol;
-+		uint16_t payload_len;
-+	} ph6;
-+	struct pseudo_header4 {
-+		struct in_addr saddr;
-+		struct in_addr daddr;
-+		uint16_t protocol;
-+		uint16_t payload_len;
-+	} ph4;
-+	uint32_t sum = 0;
-+
-+	if (proto == PF_INET6) {
-+		if (inet_pton(AF_INET6, SIP6, &ph6.saddr) != 1)
-+			error(1, errno, "inet_pton6 source ip pseudo");
-+		if (inet_pton(AF_INET6, DIP6, &ph6.daddr) != 1)
-+			error(1, errno, "inet_pton6 dest ip pseudo");
-+		ph6.protocol = htons(IPPROTO_TCP);
-+		ph6.payload_len = htons(sizeof(struct tcphdr) + payload_len);
-+
-+		sum = checksum_nofold(&ph6, sizeof(ph6), 0);
-+	} else if (proto == PF_INET) {
-+		if (inet_pton(AF_INET, SIP4, &ph4.saddr) != 1)
-+			error(1, errno, "inet_pton source ip pseudo");
-+		if (inet_pton(AF_INET, DIP4, &ph4.daddr) != 1)
-+			error(1, errno, "inet_pton dest ip pseudo");
-+		ph4.protocol = htons(IPPROTO_TCP);
-+		ph4.payload_len = htons(sizeof(struct tcphdr) + payload_len);
-+
-+		sum = checksum_nofold(&ph4, sizeof(ph4), 0);
-+	}
-+
-+	return checksum_fold(buf, sizeof(struct tcphdr) + payload_len, sum);
-+}
-+
-+static void read_MAC(uint8_t *mac_addr, char *mac)
-+{
-+	if (sscanf(mac, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
-+		   &mac_addr[0], &mac_addr[1], &mac_addr[2],
-+		   &mac_addr[3], &mac_addr[4], &mac_addr[5]) != 6)
-+		error(1, 0, "sscanf");
-+}
-+
-+static void fill_datalinklayer(void *buf)
-+{
-+	struct ethhdr *eth = buf;
-+
-+	memcpy(eth->h_dest, dst_mac, ETH_ALEN);
-+	memcpy(eth->h_source, src_mac, ETH_ALEN);
-+	eth->h_proto = ethhdr_proto;
-+}
-+
-+static void fill_networklayer(void *buf, int payload_len)
-+{
-+	struct ipv6hdr *ip6h = buf;
-+	struct iphdr *iph = buf;
-+
-+	if (proto == PF_INET6) {
-+		memset(ip6h, 0, sizeof(*ip6h));
-+
-+		ip6h->version = 6;
-+		ip6h->payload_len = htons(sizeof(struct tcphdr) + payload_len);
-+		ip6h->nexthdr = IPPROTO_TCP;
-+		ip6h->hop_limit = 8;
-+		if (inet_pton(AF_INET6, SIP6, &ip6h->saddr) != 1)
-+			error(1, errno, "inet_pton source ip6");
-+		if (inet_pton(AF_INET6, DIP6, &ip6h->daddr) != 1)
-+			error(1, errno, "inet_pton dest ip6");
-+	} else if (proto == PF_INET) {
-+		memset(iph, 0, sizeof(*iph));
-+
-+		iph->version = 4;
-+		iph->ihl = 5;
-+		iph->ttl = 8;
-+		iph->protocol	= IPPROTO_TCP;
-+		iph->tot_len = htons(sizeof(struct tcphdr) +
-+				payload_len + sizeof(struct iphdr));
-+		iph->frag_off = htons(0x4000); /* DF = 1, MF = 0 */
-+		if (inet_pton(AF_INET, SIP4, &iph->saddr) != 1)
-+			error(1, errno, "inet_pton source ip");
-+		if (inet_pton(AF_INET, DIP4, &iph->daddr) != 1)
-+			error(1, errno, "inet_pton dest ip");
-+		iph->check = checksum_fold(buf, sizeof(struct iphdr), 0);
-+	}
-+}
-+
-+static void fill_transportlayer(void *buf, int seq_offset, int ack_offset,
-+				int payload_len, int fin)
-+{
-+	struct tcphdr *tcph = buf;
-+
-+	memset(tcph, 0, sizeof(*tcph));
-+
-+	tcph->source = htons(SPORT);
-+	tcph->dest = htons(DPORT);
-+	tcph->seq = ntohl(START_SEQ + seq_offset);
-+	tcph->ack_seq = ntohl(START_ACK + ack_offset);
-+	tcph->ack = 1;
-+	tcph->fin = fin;
-+	tcph->doff = 5;
-+	tcph->window = htons(TCP_MAXWIN);
-+	tcph->urg_ptr = 0;
-+	tcph->check = tcp_checksum(tcph, payload_len);
-+}
-+
-+static void write_packet(int fd, char *buf, int len, struct sockaddr_ll *daddr)
-+{
-+	int ret = -1;
-+
-+	ret = sendto(fd, buf, len, 0, (struct sockaddr *)daddr, sizeof(*daddr));
-+	if (ret == -1)
-+		error(1, errno, "sendto failure");
-+	if (ret != len)
-+		error(1, errno, "sendto wrong length");
-+}
-+
-+static void create_packet(void *buf, int seq_offset, int ack_offset,
-+			  int payload_len, int fin)
-+{
-+	memset(buf, 0, total_hdr_len);
-+	memset(buf + total_hdr_len, 'a', payload_len);
-+	fill_transportlayer(buf + tcp_offset, seq_offset, ack_offset,
-+			    payload_len, fin);
-+	fill_networklayer(buf + ETH_HLEN, payload_len);
-+	fill_datalinklayer(buf);
-+}
-+
-+/* send one extra flag, not first and not last pkt */
-+static void send_flags(int fd, struct sockaddr_ll *daddr, int psh, int syn,
-+		       int rst, int urg)
-+{
-+	static char flag_buf[MAX_HDR_LEN + PAYLOAD_LEN];
-+	static char buf[MAX_HDR_LEN + PAYLOAD_LEN];
-+	int payload_len, pkt_size, flag, i;
-+	struct tcphdr *tcph;
-+
-+	payload_len = PAYLOAD_LEN * psh;
-+	pkt_size = total_hdr_len + payload_len;
-+	flag = NUM_PACKETS / 2;
-+
-+	create_packet(flag_buf, flag * payload_len, 0, payload_len, 0);
-+
-+	tcph = (struct tcphdr *)(flag_buf + tcp_offset);
-+	tcph->psh = psh;
-+	tcph->syn = syn;
-+	tcph->rst = rst;
-+	tcph->urg = urg;
-+	tcph->check = 0;
-+	tcph->check = tcp_checksum(tcph, payload_len);
-+
-+	for (i = 0; i < NUM_PACKETS + 1; i++) {
-+		if (i == flag) {
-+			write_packet(fd, flag_buf, pkt_size, daddr);
-+			continue;
-+		}
-+		create_packet(buf, i * PAYLOAD_LEN, 0, PAYLOAD_LEN, 0);
-+		write_packet(fd, buf, total_hdr_len + PAYLOAD_LEN, daddr);
-+	}
-+}
-+
-+/* Test for data of same length, smaller than previous
-+ * and of different lengths
-+ */
-+static void send_data_pkts(int fd, struct sockaddr_ll *daddr,
-+			   int payload_len1, int payload_len2)
-+{
-+	static char buf[ETH_HLEN + IP_MAXPACKET];
-+
-+	create_packet(buf, 0, 0, payload_len1, 0);
-+	write_packet(fd, buf, total_hdr_len + payload_len1, daddr);
-+	create_packet(buf, payload_len1, 0, payload_len2, 0);
-+	write_packet(fd, buf, total_hdr_len + payload_len2, daddr);
-+}
-+
-+/* If incoming segments make tracked segment length exceed
-+ * legal IP datagram length, do not coalesce
-+ */
-+static void send_large(int fd, struct sockaddr_ll *daddr, int remainder)
-+{
-+	static char pkts[NUM_LARGE_PKT][TOTAL_HDR_LEN + MSS];
-+	static char last[TOTAL_HDR_LEN + MSS];
-+	static char new_seg[TOTAL_HDR_LEN + MSS];
-+	int i;
-+
-+	for (i = 0; i < NUM_LARGE_PKT; i++)
-+		create_packet(pkts[i], i * MSS, 0, MSS, 0);
-+	create_packet(last, NUM_LARGE_PKT * MSS, 0, remainder, 0);
-+	create_packet(new_seg, (NUM_LARGE_PKT + 1) * MSS, 0, remainder, 0);
-+
-+	for (i = 0; i < NUM_LARGE_PKT; i++)
-+		write_packet(fd, pkts[i], total_hdr_len + MSS, daddr);
-+	write_packet(fd, last, total_hdr_len + remainder, daddr);
-+	write_packet(fd, new_seg, total_hdr_len + remainder, daddr);
-+}
-+
-+/* Pure acks and dup acks don't coalesce */
-+static void send_ack(int fd, struct sockaddr_ll *daddr)
-+{
-+	static char buf[MAX_HDR_LEN];
-+
-+	create_packet(buf, 0, 0, 0, 0);
-+	write_packet(fd, buf, total_hdr_len, daddr);
-+	write_packet(fd, buf, total_hdr_len, daddr);
-+	create_packet(buf, 0, 1, 0, 0);
-+	write_packet(fd, buf, total_hdr_len, daddr);
-+}
-+
-+static void recompute_packet(char *buf, char *no_ext, int extlen)
-+{
-+	struct tcphdr *tcphdr = (struct tcphdr *)(buf + tcp_offset);
-+	struct ipv6hdr *ip6h = (struct ipv6hdr *)(buf + ETH_HLEN);
-+	struct iphdr *iph = (struct iphdr *)(buf + ETH_HLEN);
-+
-+	memmove(buf, no_ext, total_hdr_len);
-+	memmove(buf + total_hdr_len + extlen,
-+		no_ext + total_hdr_len, PAYLOAD_LEN);
-+
-+	tcphdr->doff = tcphdr->doff + (extlen / 4);
-+	tcphdr->check = 0;
-+	tcphdr->check = tcp_checksum(tcphdr, PAYLOAD_LEN + extlen);
-+	if (proto == PF_INET) {
-+		iph->tot_len = htons(ntohs(iph->tot_len) + extlen);
-+		iph->check = 0;
-+		iph->check = checksum_fold(iph, sizeof(struct iphdr), 0);
-+	} else {
-+		ip6h->payload_len = htons(ntohs(ip6h->payload_len) + extlen);
-+	}
-+}
-+
-+static void tcp_write_options(char *buf, int kind, int ts)
-+{
-+	struct tcp_option_ts {
-+		uint8_t kind;
-+		uint8_t len;
-+		uint32_t tsval;
-+		uint32_t tsecr;
-+	} *opt_ts = (void *)buf;
-+	struct tcp_option_window {
-+		uint8_t kind;
-+		uint8_t len;
-+		uint8_t shift;
-+	} *opt_window = (void *)buf;
-+
-+	switch (kind) {
-+	case TCPOPT_NOP:
-+		buf[0] = TCPOPT_NOP;
-+		break;
-+	case TCPOPT_WINDOW:
-+		memset(opt_window, 0, sizeof(struct tcp_option_window));
-+		opt_window->kind = TCPOPT_WINDOW;
-+		opt_window->len = TCPOLEN_WINDOW;
-+		opt_window->shift = 0;
-+		break;
-+	case TCPOPT_TIMESTAMP:
-+		memset(opt_ts, 0, sizeof(struct tcp_option_ts));
-+		opt_ts->kind = TCPOPT_TIMESTAMP;
-+		opt_ts->len = TCPOLEN_TIMESTAMP;
-+		opt_ts->tsval = ts;
-+		opt_ts->tsecr = 0;
-+		break;
-+	default:
-+		error(1, 0, "unimplemented TCP option");
-+		break;
-+	}
-+}
-+
-+/* TCP with options is always a permutation of {TS, NOP, NOP}.
-+ * Implement different orders to verify coalescing stops.
-+ */
-+static void add_standard_tcp_options(char *buf, char *no_ext, int ts, int order)
-+{
-+	switch (order) {
-+	case 0:
-+		tcp_write_options(buf + total_hdr_len, TCPOPT_NOP, 0);
-+		tcp_write_options(buf + total_hdr_len + 1, TCPOPT_NOP, 0);
-+		tcp_write_options(buf + total_hdr_len + 2 /* two NOP opts */,
-+				  TCPOPT_TIMESTAMP, ts);
-+		break;
-+	case 1:
-+		tcp_write_options(buf + total_hdr_len, TCPOPT_NOP, 0);
-+		tcp_write_options(buf + total_hdr_len + 1,
-+				  TCPOPT_TIMESTAMP, ts);
-+		tcp_write_options(buf + total_hdr_len + 1 + TCPOLEN_TIMESTAMP,
-+				  TCPOPT_NOP, 0);
-+		break;
-+	case 2:
-+		tcp_write_options(buf + total_hdr_len, TCPOPT_TIMESTAMP, ts);
-+		tcp_write_options(buf + total_hdr_len + TCPOLEN_TIMESTAMP + 1,
-+				  TCPOPT_NOP, 0);
-+		tcp_write_options(buf + total_hdr_len + TCPOLEN_TIMESTAMP + 2,
-+				  TCPOPT_NOP, 0);
-+		break;
-+	default:
-+		error(1, 0, "unknown order");
-+		break;
-+	}
-+	recompute_packet(buf, no_ext, TCPOLEN_TSTAMP_APPA);
-+}
-+
-+/* Packets with invalid checksum don't coalesce. */
-+static void send_changed_checksum(int fd, struct sockaddr_ll *daddr)
-+{
-+	static char buf[MAX_HDR_LEN + PAYLOAD_LEN];
-+	struct tcphdr *tcph = (struct tcphdr *)(buf + tcp_offset);
-+	int pkt_size = total_hdr_len + PAYLOAD_LEN;
-+
-+	create_packet(buf, 0, 0, PAYLOAD_LEN, 0);
-+	write_packet(fd, buf, pkt_size, daddr);
-+
-+	create_packet(buf, PAYLOAD_LEN, 0, PAYLOAD_LEN, 0);
-+	tcph->check = tcph->check - 1;
-+	write_packet(fd, buf, pkt_size, daddr);
-+}
-+
-+ /* Packets with non-consecutive sequence number don't coalesce.*/
-+static void send_changed_seq(int fd, struct sockaddr_ll *daddr)
-+{
-+	static char buf[MAX_HDR_LEN + PAYLOAD_LEN];
-+	struct tcphdr *tcph = (struct tcphdr *)(buf + tcp_offset);
-+	int pkt_size = total_hdr_len + PAYLOAD_LEN;
-+
-+	create_packet(buf, 0, 0, PAYLOAD_LEN, 0);
-+	write_packet(fd, buf, pkt_size, daddr);
-+
-+	create_packet(buf, PAYLOAD_LEN, 0, PAYLOAD_LEN, 0);
-+	tcph->seq = ntohl(htonl(tcph->seq) + 1);
-+	tcph->check = 0;
-+	tcph->check = tcp_checksum(tcph, PAYLOAD_LEN);
-+	write_packet(fd, buf, pkt_size, daddr);
-+}
-+
-+ /* Packet with different timestamp option or different timestamps
-+  * don't coalesce.
-+  */
-+static void send_changed_ts(int fd, struct sockaddr_ll *daddr)
-+{
-+	static char buf[MAX_HDR_LEN + PAYLOAD_LEN];
-+	static char extpkt[sizeof(buf) + TCPOLEN_TSTAMP_APPA];
-+	int pkt_size = total_hdr_len + PAYLOAD_LEN + TCPOLEN_TSTAMP_APPA;
-+
-+	create_packet(buf, 0, 0, PAYLOAD_LEN, 0);
-+	add_standard_tcp_options(extpkt, buf, 0, 0);
-+	write_packet(fd, extpkt, pkt_size, daddr);
-+
-+	create_packet(buf, PAYLOAD_LEN, 0, PAYLOAD_LEN, 0);
-+	add_standard_tcp_options(extpkt, buf, 0, 0);
-+	write_packet(fd, extpkt, pkt_size, daddr);
-+
-+	create_packet(buf, PAYLOAD_LEN * 2, 0, PAYLOAD_LEN, 0);
-+	add_standard_tcp_options(extpkt, buf, 100, 0);
-+	write_packet(fd, extpkt, pkt_size, daddr);
-+
-+	create_packet(buf, PAYLOAD_LEN * 3, 0, PAYLOAD_LEN, 0);
-+	add_standard_tcp_options(extpkt, buf, 100, 1);
-+	write_packet(fd, extpkt, pkt_size, daddr);
-+
-+	create_packet(buf, PAYLOAD_LEN * 4, 0, PAYLOAD_LEN, 0);
-+	add_standard_tcp_options(extpkt, buf, 100, 2);
-+	write_packet(fd, extpkt, pkt_size, daddr);
-+}
-+
-+/* Packet with different tcp options don't coalesce. */
-+static void send_diff_opt(int fd, struct sockaddr_ll *daddr)
-+{
-+	static char buf[MAX_HDR_LEN + PAYLOAD_LEN];
-+	static char extpkt1[sizeof(buf) + TCPOLEN_TSTAMP_APPA];
-+	static char extpkt2[sizeof(buf) + TCPOLEN_MAXSEG];
-+	int extpkt1_size = total_hdr_len + PAYLOAD_LEN + TCPOLEN_TSTAMP_APPA;
-+	int extpkt2_size = total_hdr_len + PAYLOAD_LEN + TCPOLEN_MAXSEG;
-+
-+	create_packet(buf, 0, 0, PAYLOAD_LEN, 0);
-+	add_standard_tcp_options(extpkt1, buf, 0, 0);
-+	write_packet(fd, extpkt1, extpkt1_size, daddr);
-+
-+	create_packet(buf, PAYLOAD_LEN, 0, PAYLOAD_LEN, 0);
-+	add_standard_tcp_options(extpkt1, buf, 0, 0);
-+	write_packet(fd, extpkt1, extpkt1_size, daddr);
-+
-+	create_packet(buf, PAYLOAD_LEN * 2, 0, PAYLOAD_LEN, 0);
-+	tcp_write_options(extpkt2 + MAX_HDR_LEN, TCPOPT_NOP, 0);
-+	tcp_write_options(extpkt2 + MAX_HDR_LEN + 1, TCPOPT_WINDOW, 0);
-+	recompute_packet(extpkt2, buf, TCPOLEN_WINDOW + 1);
-+	write_packet(fd, extpkt2, extpkt2_size, daddr);
-+}
-+
-+static void add_ipv4_ts_option(void *buf, void *optpkt)
-+{
-+	struct ip_timestamp *ts = (struct ip_timestamp *)(optpkt + tcp_offset);
-+	int optlen = sizeof(struct ip_timestamp);
-+	struct iphdr *iph;
-+
-+	if (optlen % 4)
-+		error(1, 0, "ipv4 timestamp length is not a multiple of 4B");
-+
-+	ts->ipt_code = IPOPT_TS;
-+	ts->ipt_len = optlen;
-+	ts->ipt_ptr = 5;
-+	ts->ipt_flg = IPOPT_TS_TSONLY;
-+
-+	memcpy(optpkt, buf, tcp_offset);
-+	memcpy(optpkt + tcp_offset + optlen, buf + tcp_offset,
-+	       sizeof(struct tcphdr) + PAYLOAD_LEN);
-+
-+	iph = (struct iphdr *)(optpkt + ETH_HLEN);
-+	iph->ihl = 5 + (optlen / 4);
-+	iph->tot_len = htons(ntohs(iph->tot_len) + optlen);
-+	iph->check = 0;
-+	iph->check = checksum_fold(iph, sizeof(struct iphdr) + optlen, 0);
-+}
-+
-+/* IPv4 options shouldn't coalesce */
-+static void send_ip_options(int fd, struct sockaddr_ll *daddr)
-+{
-+	static char buf[MAX_HDR_LEN + PAYLOAD_LEN];
-+	static char optpkt[sizeof(buf) + sizeof(struct ip_timestamp)];
-+	int optlen = sizeof(struct ip_timestamp);
-+	int pkt_size = total_hdr_len + PAYLOAD_LEN + optlen;
-+
-+	create_packet(buf, 0, 0, PAYLOAD_LEN, 0);
-+	write_packet(fd, buf, total_hdr_len + PAYLOAD_LEN, daddr);
-+
-+	create_packet(buf, PAYLOAD_LEN * 1, 0, PAYLOAD_LEN, 0);
-+	add_ipv4_ts_option(buf, optpkt);
-+	write_packet(fd, optpkt, pkt_size, daddr);
-+
-+	create_packet(buf, PAYLOAD_LEN * 2, 0, PAYLOAD_LEN, 0);
-+	write_packet(fd, buf, total_hdr_len + PAYLOAD_LEN, daddr);
-+}
-+
-+/*  IPv4 fragments shouldn't coalesce */
-+static void send_fragment4(int fd, struct sockaddr_ll *daddr)
-+{
-+	static char buf[IP_MAXPACKET];
-+	struct iphdr *iph = (struct iphdr *)(buf + ETH_HLEN);
-+	int pkt_size = total_hdr_len + PAYLOAD_LEN;
-+
-+	create_packet(buf, 0, 0, PAYLOAD_LEN, 0);
-+	write_packet(fd, buf, pkt_size, daddr);
-+
-+	/* Once fragmented, packet would retain the total_len.
-+	 * Tcp header is prepared as if rest of data is in follow-up frags,
-+	 * but follow up frags aren't actually sent.
++	struct fanout_args args = {
++		.id = 1,
++		.type_flags = PACKET_FANOUT_CPU,
++		.max_num_members = RSS_MAX_CPUS
++	};
++	struct sockaddr_ll ll = { 0 };
++	int fd, val;
++
++	fd = socket(PF_PACKET, SOCK_DGRAM, 0);
++	if (fd == -1)
++		error(1, errno, "socket creation failed");
++
++	val = TPACKET_V3;
++	if (setsockopt(fd, SOL_PACKET, PACKET_VERSION, &val, sizeof(val)))
++		error(1, errno, "setsockopt PACKET_VERSION");
++	*ring = setup_ring(fd);
++
++	/* block packets until all rings are added to the fanout group:
++	 * else packets can arrive during setup and get misclassified
 +	 */
-+	memset(buf + total_hdr_len, 'a', PAYLOAD_LEN * 2);
-+	fill_transportlayer(buf + tcp_offset, PAYLOAD_LEN, 0, PAYLOAD_LEN * 2, 0);
-+	fill_networklayer(buf + ETH_HLEN, PAYLOAD_LEN);
-+	fill_datalinklayer(buf);
++	set_filter_null(fd);
 +
-+	iph->frag_off = htons(0x6000); // DF = 1, MF = 1
-+	iph->check = 0;
-+	iph->check = checksum_fold(iph, sizeof(struct iphdr), 0);
-+	write_packet(fd, buf, pkt_size, daddr);
-+}
++	ll.sll_family = AF_PACKET;
++	ll.sll_ifindex = if_nametoindex(cfg_ifname);
++	ll.sll_protocol = cfg_family == AF_INET ? htons(ETH_P_IP) :
++						  htons(ETH_P_IPV6);
++	if (bind(fd, (void *)&ll, sizeof(ll)))
++		error(1, errno, "bind");
 +
-+/* IPv4 packets with different ttl don't coalesce.*/
-+static void send_changed_ttl(int fd, struct sockaddr_ll *daddr)
-+{
-+	int pkt_size = total_hdr_len + PAYLOAD_LEN;
-+	static char buf[MAX_HDR_LEN + PAYLOAD_LEN];
-+	struct iphdr *iph = (struct iphdr *)(buf + ETH_HLEN);
-+
-+	create_packet(buf, 0, 0, PAYLOAD_LEN, 0);
-+	write_packet(fd, buf, pkt_size, daddr);
-+
-+	create_packet(buf, PAYLOAD_LEN, 0, PAYLOAD_LEN, 0);
-+	iph->ttl = 7;
-+	iph->check = 0;
-+	iph->check = checksum_fold(iph, sizeof(struct iphdr), 0);
-+	write_packet(fd, buf, pkt_size, daddr);
-+}
-+
-+/* Packets with different tos don't coalesce.*/
-+static void send_changed_tos(int fd, struct sockaddr_ll *daddr)
-+{
-+	int pkt_size = total_hdr_len + PAYLOAD_LEN;
-+	static char buf[MAX_HDR_LEN + PAYLOAD_LEN];
-+	struct iphdr *iph = (struct iphdr *)(buf + ETH_HLEN);
-+	struct ipv6hdr *ip6h = (struct ipv6hdr *)(buf + ETH_HLEN);
-+
-+	create_packet(buf, 0, 0, PAYLOAD_LEN, 0);
-+	write_packet(fd, buf, pkt_size, daddr);
-+
-+	create_packet(buf, PAYLOAD_LEN, 0, PAYLOAD_LEN, 0);
-+	if (proto == PF_INET) {
-+		iph->tos = 1;
-+		iph->check = 0;
-+		iph->check = checksum_fold(iph, sizeof(struct iphdr), 0);
-+	} else if (proto == PF_INET6) {
-+		ip6h->priority = 0xf;
++	/* must come after bind: verifies all programs in group match */
++	if (setsockopt(fd, SOL_PACKET, PACKET_FANOUT, &args, sizeof(args))) {
++		/* on failure, retry using old API if that is sufficient:
++		 * it has a hard limit of 256 sockets, so only try if
++		 * (a) only testing rxhash, not RSS or (b) <= 256 cpus.
++		 * in this API, the third argument is left implicit.
++		 */
++		if (cfg_num_queues || num_cpus > 256 ||
++		    setsockopt(fd, SOL_PACKET, PACKET_FANOUT,
++			       &args, sizeof(uint32_t)))
++			error(1, errno, "setsockopt PACKET_FANOUT cpu");
 +	}
-+	write_packet(fd, buf, pkt_size, daddr);
++
++	return fd;
 +}
 +
-+/* Packets with different ECN don't coalesce.*/
-+static void send_changed_ECN(int fd, struct sockaddr_ll *daddr)
++/* setup inet(6) socket to blackhole the test traffic, if arg '-s' */
++static int setup_sink(void)
 +{
-+	int pkt_size = total_hdr_len + PAYLOAD_LEN;
-+	static char buf[MAX_HDR_LEN + PAYLOAD_LEN];
-+	struct iphdr *iph = (struct iphdr *)(buf + ETH_HLEN);
++	int fd, val;
 +
-+	create_packet(buf, 0, 0, PAYLOAD_LEN, 0);
-+	write_packet(fd, buf, pkt_size, daddr);
++	fd = socket(cfg_family, cfg_type, 0);
++	if (fd == -1)
++		error(1, errno, "socket %d.%d", cfg_family, cfg_type);
 +
-+	create_packet(buf, PAYLOAD_LEN, 0, PAYLOAD_LEN, 0);
-+	if (proto == PF_INET) {
-+		buf[ETH_HLEN + 1] ^= 0x2; // ECN set to 10
-+		iph->check = 0;
-+		iph->check = checksum_fold(iph, sizeof(struct iphdr), 0);
-+	} else {
-+		buf[ETH_HLEN + 1] ^= 0x20; // ECN set to 10
-+	}
-+	write_packet(fd, buf, pkt_size, daddr);
++	val = 1 << 20;
++	if (setsockopt(fd, SOL_SOCKET, SO_RCVBUFFORCE, &val, sizeof(val)))
++		error(1, errno, "setsockopt rcvbuf");
++
++	return fd;
 +}
 +
-+/* IPv6 fragments and packets with extensions don't coalesce.*/
-+static void send_fragment6(int fd, struct sockaddr_ll *daddr)
++static void setup_rings(void)
 +{
-+	static char buf[MAX_HDR_LEN + PAYLOAD_LEN];
-+	static char extpkt[MAX_HDR_LEN + PAYLOAD_LEN +
-+			   sizeof(struct ip6_frag)];
-+	struct ipv6hdr *ip6h = (struct ipv6hdr *)(buf + ETH_HLEN);
-+	struct ip6_frag *frag = (void *)(extpkt + tcp_offset);
-+	int extlen = sizeof(struct ip6_frag);
-+	int bufpkt_len = total_hdr_len + PAYLOAD_LEN;
-+	int extpkt_len = bufpkt_len + extlen;
 +	int i;
 +
-+	for (i = 0; i < 2; i++) {
-+		create_packet(buf, PAYLOAD_LEN * i, 0, PAYLOAD_LEN, 0);
-+		write_packet(fd, buf, bufpkt_len, daddr);
++	for (i = 0; i < num_cpus; i++) {
++		rings[i].cpu = i;
++		rings[i].fd = create_ring(&rings[i].mmap);
 +	}
 +
-+	create_packet(buf, PAYLOAD_LEN * 2, 0, PAYLOAD_LEN, 0);
-+	memset(extpkt, 0, extpkt_len);
-+
-+	ip6h->nexthdr = IPPROTO_FRAGMENT;
-+	ip6h->payload_len = htons(ntohs(ip6h->payload_len) + extlen);
-+	frag->ip6f_nxt = IPPROTO_TCP;
-+
-+	memcpy(extpkt, buf, tcp_offset);
-+	memcpy(extpkt + tcp_offset + extlen, buf + tcp_offset,
-+	       sizeof(struct tcphdr) + PAYLOAD_LEN);
-+	write_packet(fd, extpkt, extpkt_len, daddr);
-+
-+	create_packet(buf, PAYLOAD_LEN * 3, 0, PAYLOAD_LEN, 0);
-+	write_packet(fd, buf, bufpkt_len, daddr);
++	/* accept packets once all rings in the fanout group are up */
++	for (i = 0; i < num_cpus; i++)
++		set_filter(rings[i].fd);
 +}
 +
-+static void bind_packetsocket(int fd)
++static void cleanup_rings(void)
 +{
-+	struct sockaddr_ll daddr = {};
-+
-+	daddr.sll_family = AF_PACKET;
-+	daddr.sll_protocol = ethhdr_proto;
-+	daddr.sll_ifindex = if_nametoindex(ifname);
-+	if (daddr.sll_ifindex == 0)
-+		error(1, errno, "if_nametoindex");
-+
-+	if (bind(fd, (void *)&daddr, sizeof(daddr)) < 0)
-+		error(1, errno, "could not bind socket");
-+}
-+
-+static void set_timeout(int fd)
-+{
-+	struct timeval timeout;
-+
-+	timeout.tv_sec = 120;
-+	timeout.tv_usec = 0;
-+	if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout,
-+		       sizeof(timeout)) < 0)
-+		error(1, errno, "cannot set timeout, setsockopt failed");
-+}
-+
-+static void check_recv_pkts(int fd, int *correct_payload,
-+			    int correct_num_pkts)
-+{
-+	static char buffer[IP_MAXPACKET + ETH_HLEN + 1];
-+	struct iphdr *iph = (struct iphdr *)(buffer + ETH_HLEN);
-+	struct ipv6hdr *ip6h = (struct ipv6hdr *)(buffer + ETH_HLEN);
-+	struct tcphdr *tcph;
-+	bool bad_packet = false;
-+	int tcp_ext_len = 0;
-+	int ip_ext_len = 0;
-+	int pkt_size = -1;
-+	int data_len = 0;
-+	int num_pkt = 0;
 +	int i;
 +
-+	vlog("Expected {");
-+	for (i = 0; i < correct_num_pkts; i++)
-+		vlog("%d ", correct_payload[i]);
-+	vlog("}, Total %d packets\nReceived {", correct_num_pkts);
++	for (i = 0; i < num_cpus; i++) {
++		if (munmap(rings[i].mmap, ring_block_nr * ring_block_sz))
++			error(1, errno, "munmap");
++		if (close(rings[i].fd))
++			error(1, errno, "close");
++	}
++}
 +
-+	while (1) {
-+		pkt_size = recv(fd, buffer, IP_MAXPACKET + ETH_HLEN + 1, 0);
-+		if (pkt_size < 0)
-+			error(1, errno, "could not receive");
++static void parse_cpulist(const char *arg)
++{
++	do {
++		rx_irq_cpus[cfg_num_queues++] = strtol(arg, NULL, 10);
 +
-+		if (iph->version == 4)
-+			ip_ext_len = (iph->ihl - 5) * 4;
-+		else if (ip6h->version == 6 && ip6h->nexthdr != IPPROTO_TCP)
-+			ip_ext_len = sizeof(struct ip6_frag);
-+
-+		tcph = (struct tcphdr *)(buffer + tcp_offset + ip_ext_len);
-+
-+		if (tcph->fin)
++		arg = strchr(arg, ',');
++		if (!arg)
 +			break;
-+
-+		tcp_ext_len = (tcph->doff - 5) * 4;
-+		data_len = pkt_size - total_hdr_len - tcp_ext_len - ip_ext_len;
-+		/* Min ethernet frame payload is 46(ETH_ZLEN - ETH_HLEN) by RFC 802.3.
-+		 * Ipv4/tcp packets without at least 6 bytes of data will be padded.
-+		 * Packet sockets are protocol agnostic, and will not trim the padding.
-+		 */
-+		if (pkt_size == ETH_ZLEN && iph->version == 4) {
-+			data_len = ntohs(iph->tot_len)
-+				- sizeof(struct tcphdr) - sizeof(struct iphdr);
-+		}
-+		vlog("%d ", data_len);
-+		if (data_len != correct_payload[num_pkt]) {
-+			vlog("[!=%d]", correct_payload[num_pkt]);
-+			bad_packet = true;
-+		}
-+		num_pkt++;
-+	}
-+	vlog("}, Total %d packets.\n", num_pkt);
-+	if (num_pkt != correct_num_pkts)
-+		error(1, 0, "incorrect number of packets");
-+	if (bad_packet)
-+		error(1, 0, "incorrect packet geometry");
-+
-+	printf("Test succeeded\n\n");
++		arg++;			// skip ','
++	} while (1);
 +}
 +
-+static void gro_sender(void)
++static void show_cpulist(void)
 +{
-+	static char fin_pkt[MAX_HDR_LEN];
-+	struct sockaddr_ll daddr = {};
-+	int txfd = -1;
++	int i;
 +
-+	txfd = socket(PF_PACKET, SOCK_RAW, IPPROTO_RAW);
-+	if (txfd < 0)
-+		error(1, errno, "socket creation");
-+
-+	memset(&daddr, 0, sizeof(daddr));
-+	daddr.sll_ifindex = if_nametoindex(ifname);
-+	if (daddr.sll_ifindex == 0)
-+		error(1, errno, "if_nametoindex");
-+	daddr.sll_family = AF_PACKET;
-+	memcpy(daddr.sll_addr, dst_mac, ETH_ALEN);
-+	daddr.sll_halen = ETH_ALEN;
-+	create_packet(fin_pkt, PAYLOAD_LEN * 2, 0, 0, 1);
-+
-+	if (strcmp(testname, "data") == 0) {
-+		send_data_pkts(txfd, &daddr, PAYLOAD_LEN, PAYLOAD_LEN);
-+		write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+
-+		send_data_pkts(txfd, &daddr, PAYLOAD_LEN, PAYLOAD_LEN / 2);
-+		write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+
-+		send_data_pkts(txfd, &daddr, PAYLOAD_LEN / 2, PAYLOAD_LEN);
-+		write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+	} else if (strcmp(testname, "ack") == 0) {
-+		send_ack(txfd, &daddr);
-+		write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+	} else if (strcmp(testname, "flags") == 0) {
-+		send_flags(txfd, &daddr, 1, 0, 0, 0);
-+		write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+
-+		send_flags(txfd, &daddr, 0, 1, 0, 0);
-+		write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+
-+		send_flags(txfd, &daddr, 0, 0, 1, 0);
-+		write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+
-+		send_flags(txfd, &daddr, 0, 0, 0, 1);
-+		write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+	} else if (strcmp(testname, "tcp") == 0) {
-+		send_changed_checksum(txfd, &daddr);
-+		write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+
-+		send_changed_seq(txfd, &daddr);
-+		write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+
-+		send_changed_ts(txfd, &daddr);
-+		write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+
-+		send_diff_opt(txfd, &daddr);
-+		write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+	} else if (strcmp(testname, "ip") == 0) {
-+		send_changed_ECN(txfd, &daddr);
-+		write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+
-+		send_changed_tos(txfd, &daddr);
-+		write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+		if (proto == PF_INET) {
-+			/* Modified packets may be received out of order.
-+			 * Sleep function added to enforce test boundaries
-+			 * so that fin pkts are not received prior to other pkts.
-+			 */
-+			sleep(1);
-+			send_changed_ttl(txfd, &daddr);
-+			write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+
-+			sleep(1);
-+			send_ip_options(txfd, &daddr);
-+			sleep(1);
-+			write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+
-+			sleep(1);
-+			send_fragment4(txfd, &daddr);
-+			sleep(1);
-+			write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+		} else if (proto == PF_INET6) {
-+			send_fragment6(txfd, &daddr);
-+			write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+		}
-+	} else if (strcmp(testname, "large") == 0) {
-+		/* 20 is the difference between min iphdr size
-+		 * and min ipv6hdr size. Like MAX_HDR_SIZE,
-+		 * MAX_PAYLOAD is defined with the larger header of the two.
-+		 */
-+		int offset = proto == PF_INET ? 20 : 0;
-+		int remainder = (MAX_PAYLOAD + offset) % MSS;
-+
-+		send_large(txfd, &daddr, remainder);
-+		write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+
-+		send_large(txfd, &daddr, remainder + 1);
-+		write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
-+	} else {
-+		error(1, 0, "Unknown testcase");
-+	}
-+
-+	if (close(txfd))
-+		error(1, errno, "socket close");
++	for (i = 0; i < cfg_num_queues; i++)
++		fprintf(stderr, "rxq %d: cpu %d\n", i, rx_irq_cpus[i]);
 +}
 +
-+static void gro_receiver(void)
++static void show_silos(void)
 +{
-+	static int correct_payload[NUM_PACKETS];
-+	int rxfd = -1;
++	int i;
 +
-+	rxfd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_NONE));
-+	if (rxfd < 0)
-+		error(1, 0, "socket creation");
-+	setup_sock_filter(rxfd);
-+	set_timeout(rxfd);
-+	bind_packetsocket(rxfd);
-+
-+	memset(correct_payload, 0, sizeof(correct_payload));
-+
-+	if (strcmp(testname, "data") == 0) {
-+		printf("pure data packet of same size: ");
-+		correct_payload[0] = PAYLOAD_LEN * 2;
-+		check_recv_pkts(rxfd, correct_payload, 1);
-+
-+		printf("large data packets followed by a smaller one: ");
-+		correct_payload[0] = PAYLOAD_LEN * 1.5;
-+		check_recv_pkts(rxfd, correct_payload, 1);
-+
-+		printf("small data packets followed by a larger one: ");
-+		correct_payload[0] = PAYLOAD_LEN / 2;
-+		correct_payload[1] = PAYLOAD_LEN;
-+		check_recv_pkts(rxfd, correct_payload, 2);
-+	} else if (strcmp(testname, "ack") == 0) {
-+		printf("duplicate ack and pure ack: ");
-+		check_recv_pkts(rxfd, correct_payload, 3);
-+	} else if (strcmp(testname, "flags") == 0) {
-+		correct_payload[0] = PAYLOAD_LEN * 3;
-+		correct_payload[1] = PAYLOAD_LEN * 2;
-+
-+		printf("psh flag ends coalescing: ");
-+		check_recv_pkts(rxfd, correct_payload, 2);
-+
-+		correct_payload[0] = PAYLOAD_LEN * 2;
-+		correct_payload[1] = 0;
-+		correct_payload[2] = PAYLOAD_LEN * 2;
-+		printf("syn flag ends coalescing: ");
-+		check_recv_pkts(rxfd, correct_payload, 3);
-+
-+		printf("rst flag ends coalescing: ");
-+		check_recv_pkts(rxfd, correct_payload, 3);
-+
-+		printf("urg flag ends coalescing: ");
-+		check_recv_pkts(rxfd, correct_payload, 3);
-+	} else if (strcmp(testname, "tcp") == 0) {
-+		correct_payload[0] = PAYLOAD_LEN;
-+		correct_payload[1] = PAYLOAD_LEN;
-+		correct_payload[2] = PAYLOAD_LEN;
-+		correct_payload[3] = PAYLOAD_LEN;
-+
-+		printf("changed checksum does not coalesce: ");
-+		check_recv_pkts(rxfd, correct_payload, 2);
-+
-+		printf("Wrong Seq number doesn't coalesce: ");
-+		check_recv_pkts(rxfd, correct_payload, 2);
-+
-+		printf("Different timestamp doesn't coalesce: ");
-+		correct_payload[0] = PAYLOAD_LEN * 2;
-+		check_recv_pkts(rxfd, correct_payload, 4);
-+
-+		printf("Different options doesn't coalesce: ");
-+		correct_payload[0] = PAYLOAD_LEN * 2;
-+		check_recv_pkts(rxfd, correct_payload, 2);
-+	} else if (strcmp(testname, "ip") == 0) {
-+		correct_payload[0] = PAYLOAD_LEN;
-+		correct_payload[1] = PAYLOAD_LEN;
-+
-+		printf("different ECN doesn't coalesce: ");
-+		check_recv_pkts(rxfd, correct_payload, 2);
-+
-+		printf("different tos doesn't coalesce: ");
-+		check_recv_pkts(rxfd, correct_payload, 2);
-+
-+		if (proto == PF_INET) {
-+			printf("different ttl doesn't coalesce: ");
-+			check_recv_pkts(rxfd, correct_payload, 2);
-+
-+			printf("ip options doesn't coalesce: ");
-+			correct_payload[2] = PAYLOAD_LEN;
-+			check_recv_pkts(rxfd, correct_payload, 3);
-+
-+			printf("fragmented ip4 doesn't coalesce: ");
-+			check_recv_pkts(rxfd, correct_payload, 2);
-+		} else if (proto == PF_INET6) {
-+			/* GRO doesn't check for ipv6 hop limit when flushing.
-+			 * Hence no corresponding test to the ipv4 case.
-+			 */
-+			printf("fragmented ip6 doesn't coalesce: ");
-+			correct_payload[0] = PAYLOAD_LEN * 2;
-+			check_recv_pkts(rxfd, correct_payload, 2);
-+		}
-+	} else if (strcmp(testname, "large") == 0) {
-+		int offset = proto == PF_INET ? 20 : 0;
-+		int remainder = (MAX_PAYLOAD + offset) % MSS;
-+
-+		correct_payload[0] = (MAX_PAYLOAD + offset);
-+		correct_payload[1] = remainder;
-+		printf("Shouldn't coalesce if exceed IP max pkt size: ");
-+		check_recv_pkts(rxfd, correct_payload, 2);
-+
-+		/* last segment sent individually, doesn't start new segment */
-+		correct_payload[0] = correct_payload[0] - remainder;
-+		correct_payload[1] = remainder + 1;
-+		correct_payload[2] = remainder + 1;
-+		check_recv_pkts(rxfd, correct_payload, 3);
-+	} else {
-+		error(1, 0, "Test case error, should never trigger");
-+	}
-+
-+	if (close(rxfd))
-+		error(1, 0, "socket close");
++	for (i = 0; i < cfg_num_rps_cpus; i++)
++		fprintf(stderr, "silo %d: cpu %d\n", i, rps_silo_to_cpu[i]);
 +}
 +
-+static void parse_args(int argc, char **argv)
++static void parse_toeplitz_key(const char *str, int slen, unsigned char *key)
 +{
-+	static const struct option opts[] = {
-+		{ "dmac", required_argument, NULL, 'D' },
-+		{ "iface", required_argument, NULL, 'i' },
-+		{ "ipv4", no_argument, NULL, '4' },
-+		{ "ipv6", no_argument, NULL, '6' },
-+		{ "rx", no_argument, NULL, 'r' },
-+		{ "smac", required_argument, NULL, 'S' },
-+		{ "test", required_argument, NULL, 't' },
-+		{ "verbose", no_argument, NULL, 'v' },
-+		{ 0, 0, 0, 0 }
++	int i, ret, off;
++
++	if (slen < TOEPLITZ_STR_MIN_LEN ||
++	    slen > TOEPLITZ_STR_MAX_LEN + 1)
++		error(1, 0, "invalid toeplitz key");
++
++	for (i = 0, off = 0; off < slen; i++, off += 3) {
++		ret = sscanf(str + off, "%hhx", &key[i]);
++		if (ret != 1)
++			error(1, 0, "key parse error at %d off %d len %d",
++			      i, off, slen);
++	}
++}
++
++static void parse_rps_bitmap(const char *arg)
++{
++	unsigned long bitmap;
++	int i;
++
++	bitmap = strtoul(arg, NULL, 0);
++
++	if (bitmap & ~(RPS_MAX_CPUS - 1))
++		error(1, 0, "rps bitmap 0x%lx out of bounds 0..%lu",
++		      bitmap, RPS_MAX_CPUS - 1);
++
++	for (i = 0; i < RPS_MAX_CPUS; i++)
++		if (bitmap & 1UL << i)
++			rps_silo_to_cpu[cfg_num_rps_cpus++] = i;
++}
++
++static void parse_opts(int argc, char **argv)
++{
++	static struct option long_options[] = {
++	    {"dport",	required_argument, 0, 'd'},
++	    {"cpus",	required_argument, 0, 'C'},
++	    {"key",	required_argument, 0, 'k'},
++	    {"iface",	required_argument, 0, 'i'},
++	    {"ipv4",	no_argument, 0, '4'},
++	    {"ipv6",	no_argument, 0, '6'},
++	    {"sink",	no_argument, 0, 's'},
++	    {"tcp",	no_argument, 0, 't'},
++	    {"timeout",	required_argument, 0, 'T'},
++	    {"udp",	no_argument, 0, 'u'},
++	    {"verbose",	no_argument, 0, 'v'},
++	    {"rps",	required_argument, 0, 'r'},
++	    {0, 0, 0, 0}
 +	};
-+	int c;
++	bool have_toeplitz = false;
++	int index, c;
 +
-+	while ((c = getopt_long(argc, argv, "46D:i:rS:t:v", opts, NULL)) != -1) {
++	while ((c = getopt_long(argc, argv, "46C:d:i:k:r:stT:u:v", long_options, &index)) != -1) {
 +		switch (c) {
 +		case '4':
-+			proto = PF_INET;
-+			ethhdr_proto = htons(ETH_P_IP);
++			cfg_family = AF_INET;
 +			break;
 +		case '6':
-+			proto = PF_INET6;
-+			ethhdr_proto = htons(ETH_P_IPV6);
++			cfg_family = AF_INET6;
 +			break;
-+		case 'D':
-+			dmac = optarg;
++		case 'C':
++			parse_cpulist(optarg);
++			break;
++		case 'd':
++			cfg_dport = strtol(optarg, NULL, 0);
 +			break;
 +		case 'i':
-+			ifname = optarg;
++			cfg_ifname = optarg;
++			break;
++		case 'k':
++			parse_toeplitz_key(optarg, strlen(optarg),
++					   toeplitz_key);
++			have_toeplitz = true;
 +			break;
 +		case 'r':
-+			tx_socket = false;
++			parse_rps_bitmap(optarg);
 +			break;
-+		case 'S':
-+			smac = optarg;
++		case 's':
++			cfg_sink = true;
 +			break;
 +		case 't':
-+			testname = optarg;
++			cfg_type = SOCK_STREAM;
++			break;
++		case 'T':
++			cfg_timeout_msec = strtol(optarg, NULL, 0);
++			break;
++		case 'u':
++			cfg_type = SOCK_DGRAM;
 +			break;
 +		case 'v':
-+			verbose = true;
++			cfg_verbose = true;
 +			break;
++
 +		default:
-+			error(1, 0, "%s invalid option %c\n", __func__, c);
++			error(1, 0, "unknown option %c", optopt);
 +			break;
 +		}
++	}
++
++	if (!have_toeplitz)
++		error(1, 0, "Must supply rss key ('-k')");
++
++	num_cpus = get_nprocs();
++	if (num_cpus > RSS_MAX_CPUS)
++		error(1, 0, "increase RSS_MAX_CPUS");
++
++	if (cfg_num_queues && cfg_num_rps_cpus)
++		error(1, 0,
++		      "Can't supply both RSS cpus ('-C') and RPS map ('-r')");
++	if (cfg_verbose) {
++		show_cpulist();
++		show_silos();
 +	}
 +}
 +
 +int main(int argc, char **argv)
 +{
-+	parse_args(argc, argv);
++	const int min_tests = 10;
++	int fd_sink = -1;
 +
-+	if (proto == PF_INET) {
-+		tcp_offset = ETH_HLEN + sizeof(struct iphdr);
-+		total_hdr_len = tcp_offset + sizeof(struct tcphdr);
-+	} else if (proto == PF_INET6) {
-+		tcp_offset = ETH_HLEN + sizeof(struct ipv6hdr);
-+		total_hdr_len = MAX_HDR_LEN;
-+	} else {
-+		error(1, 0, "Protocol family is not ipv4 or ipv6");
-+	}
++	parse_opts(argc, argv);
 +
-+	read_MAC(src_mac, smac);
-+	read_MAC(dst_mac, dmac);
++	if (cfg_sink)
++		fd_sink = setup_sink();
 +
-+	if (tx_socket)
-+		gro_sender();
-+	else
-+		gro_receiver();
-+	return 0;
++	setup_rings();
++	process_rings();
++	cleanup_rings();
++
++	if (cfg_sink && close(fd_sink))
++		error(1, errno, "close sink");
++
++	if (frames_received - frames_nohash < min_tests)
++		error(1, 0, "too few frames for verification");
++
++	return frames_error;
 +}
-diff --git a/tools/testing/selftests/net/gro.sh b/tools/testing/selftests/net/gro.sh
+diff --git a/tools/testing/selftests/net/toeplitz.sh b/tools/testing/selftests/net/toeplitz.sh
 new file mode 100755
-index 000000000000..794d2bf36dd7
+index 000000000000..0a49907cd4fe
 --- /dev/null
-+++ b/tools/testing/selftests/net/gro.sh
-@@ -0,0 +1,128 @@
++++ b/tools/testing/selftests/net/toeplitz.sh
+@@ -0,0 +1,199 @@
 +#!/bin/bash
 +# SPDX-License-Identifier: GPL-2.0
++#
++# extended toeplitz test: test rxhash plus, optionally, either (1) rss mapping
++# from rxhash to rx queue ('-rss') or (2) rps mapping from rxhash to cpu
++# ('-rps <rps_map>')
++#
++# irq-pattern-prefix can be derived from /sys/kernel/irq/*/action,
++# which is a driver-specific encoding.
++#
++# invoke as ./toeplitz.sh (-i <iface>) -u|-t -4|-6 \
++# [(-rss -irq_prefix <irq-pattern-prefix>)|(-rps <rps_map>)]
 +
 +source setup_loopback.sh
++readonly SERVER_IP4="192.168.1.200/24"
++readonly SERVER_IP6="fda8::1/64"
 +readonly SERVER_MAC="aa:00:00:00:00:02"
++
++readonly CLIENT_IP4="192.168.1.100/24"
++readonly CLIENT_IP6="fda8::2/64"
 +readonly CLIENT_MAC="aa:00:00:00:00:01"
-+readonly TESTS=("data" "ack" "flags" "tcp" "ip" "large")
-+readonly PROTOS=("ipv4" "ipv6")
-+dev="eth0"
-+test="all"
-+proto="ipv4"
 +
-+setup_interrupt() {
-+  # Use timer on  host to trigger the network stack
-+  # Also disable device interrupt to not depend on NIC interrupt
-+  # Reduce test flakiness caused by unexpected interrupts
-+  echo 100000 >"${FLUSH_PATH}"
-+  echo 50 >"${IRQ_PATH}"
++PORT=8000
++KEY="$(</proc/sys/net/core/netdev_rss_key)"
++TEST_RSS=false
++RPS_MAP=""
++PROTO_FLAG=""
++IP_FLAG=""
++DEV="eth0"
++
++# Return the number of rxqs among which RSS is configured to spread packets.
++# This is determined by reading the RSS indirection table using ethtool.
++get_rss_cfg_num_rxqs() {
++	echo $(ethtool -x "${DEV}" |
++		egrep [[:space:]]+[0-9]+:[[:space:]]+ |
++		cut -d: -f2- |
++		awk '{$1=$1};1' |
++		tr ' ' '\n' |
++		sort -u |
++		wc -l)
 +}
 +
-+setup_ns() {
-+  # Set up server_ns namespace and client_ns namespace
-+  setup_macvlan_ns "${dev}" server_ns server "${SERVER_MAC}"
-+  setup_macvlan_ns "${dev}" client_ns client "${CLIENT_MAC}"
++# Return a list of the receive irq handler cpus.
++# The list is ordered by the irqs, so first rxq-0 cpu, then rxq-1 cpu, etc.
++# Reads /sys/kernel/irq/ in order, so algorithm depends on
++# irq_{rxq-0} < irq_{rxq-1}, etc.
++get_rx_irq_cpus() {
++	CPUS=""
++	# sort so that irq 2 is read before irq 10
++	SORTED_IRQS=$(for i in /sys/kernel/irq/*; do echo $i; done | sort -V)
++	# Consider only as many queues as RSS actually uses. We assume that
++	# if RSS_CFG_NUM_RXQS=N, then RSS uses rxqs 0-(N-1).
++	RSS_CFG_NUM_RXQS=$(get_rss_cfg_num_rxqs)
++	RXQ_COUNT=0
++
++	for i in ${SORTED_IRQS}
++	do
++		[[ "${RXQ_COUNT}" -lt "${RSS_CFG_NUM_RXQS}" ]] || break
++		# lookup relevant IRQs by action name
++		[[ -e "$i/actions" ]] || continue
++		cat "$i/actions" | grep -q "${IRQ_PATTERN}" || continue
++		irqname=$(<"$i/actions")
++
++		# does the IRQ get called
++		irqcount=$(cat "$i/per_cpu_count" | tr -d '0,')
++		[[ -n "${irqcount}" ]] || continue
++
++		# lookup CPU
++		irq=$(basename "$i")
++		cpu=$(cat "/proc/irq/$irq/smp_affinity_list")
++
++		if [[ -z "${CPUS}" ]]; then
++			CPUS="${cpu}"
++		else
++			CPUS="${CPUS},${cpu}"
++		fi
++		RXQ_COUNT=$((RXQ_COUNT+1))
++	done
++
++	echo "${CPUS}"
 +}
 +
-+cleanup_ns() {
-+  cleanup_macvlan_ns server_ns server client_ns client
++get_disable_rfs_cmd() {
++	echo "echo 0 > /proc/sys/net/core/rps_sock_flow_entries;"
++}
++
++get_set_rps_bitmaps_cmd() {
++	CMD=""
++	for i in /sys/class/net/${DEV}/queues/rx-*/rps_cpus
++	do
++		CMD="${CMD} echo $1 > ${i};"
++	done
++
++	echo "${CMD}"
++}
++
++get_disable_rps_cmd() {
++	echo "$(get_set_rps_bitmaps_cmd 0)"
++}
++
++die() {
++	echo "$1"
++	exit 1
++}
++
++check_nic_rxhash_enabled() {
++	local -r pattern="receive-hashing:\ on"
++
++	ethtool -k "${DEV}" | grep -q "${pattern}" || die "rxhash must be enabled"
++}
++
++parse_opts() {
++	local prog=$0
++	shift 1
++
++	while [[ "$1" =~ "-" ]]; do
++		if [[ "$1" = "-irq_prefix" ]]; then
++			shift
++			IRQ_PATTERN="^$1-[0-9]*$"
++		elif [[ "$1" = "-u" || "$1" = "-t" ]]; then
++			PROTO_FLAG="$1"
++		elif [[ "$1" = "-4" ]]; then
++			IP_FLAG="$1"
++			SERVER_IP="${SERVER_IP4}"
++			CLIENT_IP="${CLIENT_IP4}"
++		elif [[ "$1" = "-6" ]]; then
++			IP_FLAG="$1"
++			SERVER_IP="${SERVER_IP6}"
++			CLIENT_IP="${CLIENT_IP6}"
++		elif [[ "$1" = "-rss" ]]; then
++			TEST_RSS=true
++		elif [[ "$1" = "-rps" ]]; then
++			shift
++			RPS_MAP="$1"
++		elif [[ "$1" = "-i" ]]; then
++			shift
++			DEV="$1"
++		else
++			die "Usage: ${prog} (-i <iface>) -u|-t -4|-6 \
++			     [(-rss -irq_prefix <irq-pattern-prefix>)|(-rps <rps_map>)]"
++		fi
++		shift
++	done
 +}
 +
 +setup() {
-+  setup_loopback_environment "${dev}"
-+  setup_interrupt
++	setup_loopback_environment "${DEV}"
++
++	# Set up server_ns namespace and client_ns namespace
++	setup_macvlan_ns "${DEV}" server_ns server \
++	"${SERVER_MAC}" "${SERVER_IP}"
++	setup_macvlan_ns "${DEV}" client_ns client \
++	"${CLIENT_MAC}" "${CLIENT_IP}"
 +}
 +
 +cleanup() {
-+  cleanup_loopback "${dev}"
-+
-+  echo "${FLUSH_TIMEOUT}" >"${FLUSH_PATH}"
-+  echo "${HARD_IRQS}" >"${IRQ_PATH}"
++	cleanup_macvlan_ns server_ns server client_ns client
++	cleanup_loopback "${DEV}"
 +}
 +
-+run_test() {
-+  local server_pid=0
-+  local exit_code=0
-+  local protocol=$1
-+  local test=$2
-+  local ARGS=( "--${protocol}" "--dmac" "${SERVER_MAC}" \
-+  "--smac" "${CLIENT_MAC}" "--test" "${test}" "--verbose" )
++parse_opts $0 $@
 +
-+  setup_ns
-+  # Each test is run 3 times to deflake, because given the receive timing,
-+  # not all packets that should coalesce will be considered in the same flow
-+  # on every try.
-+  for tries in {1..3}; do
-+    # Actual test starts here
-+    ip netns exec server_ns ./gro "${ARGS[@]}" "--rx" "--iface" "server" \
-+      1>>log.txt &
-+    server_pid=$!
-+    sleep 0.5  # to allow for socket init
-+    ip netns exec client_ns ./gro "${ARGS[@]}" "--iface" "client" \
-+      1>>log.txt
-+    wait "${server_pid}"
-+    exit_code=$?
-+    if [[ "${exit_code}" -eq 0 ]]; then
-+        break;
-+    fi
-+  done
-+  cleanup_ns
-+  echo ${exit_code}
-+}
-+
-+run_all_tests() {
-+  local failed_tests=()
-+  for proto in "${PROTOS[@]}"; do
-+    for test in "${TESTS[@]}"; do
-+      echo "running test ${proto} ${test}" >&2
-+      exit_code=$(run_test $proto $test)
-+      if [[ "${exit_code}" -ne 0 ]]; then
-+        failed_tests+=("${proto}_${test}")
-+      fi;
-+    done;
-+  done
-+  if [[ ${#failed_tests[@]} -ne 0 ]]; then
-+    echo "failed tests: ${failed_tests[*]}. \
-+    Please see log.txt for more logs"
-+    exit 1
-+  else
-+    echo "All Tests Succeeded!"
-+  fi;
-+}
-+
-+usage() {
-+  echo "Usage: $0 \
-+  [-i <DEV>] \
-+  [-t data|ack|flags|tcp|ip|large] \
-+  [-p <ipv4|ipv6>]" 1>&2;
-+  exit 1;
-+}
-+
-+while getopts "i:t:p:" opt; do
-+  case "${opt}" in
-+    i)
-+      dev="${OPTARG}"
-+      ;;
-+    t)
-+      test="${OPTARG}"
-+      ;;
-+    p)
-+      proto="${OPTARG}"
-+      ;;
-+    *)
-+      usage
-+      ;;
-+  esac
-+done
-+
-+readonly FLUSH_PATH="/sys/class/net/${dev}/gro_flush_timeout"
-+readonly IRQ_PATH="/sys/class/net/${dev}/napi_defer_hard_irqs"
-+readonly FLUSH_TIMEOUT="$(< ${FLUSH_PATH})"
-+readonly HARD_IRQS="$(< ${IRQ_PATH})"
 +setup
 +trap cleanup EXIT
-+if [[ "${test}" == "all" ]]; then
-+  run_all_tests
++
++check_nic_rxhash_enabled
++
++# Actual test starts here
++if [[ "${TEST_RSS}" = true ]]; then
++	# RPS/RFS must be disabled because they move packets between cpus,
++	# which breaks the PACKET_FANOUT_CPU identification of RSS decisions.
++	eval "$(get_disable_rfs_cmd) $(get_disable_rps_cmd)" \
++	  ip netns exec server_ns ./toeplitz "${IP_FLAG}" "${PROTO_FLAG}" \
++	  -d "${PORT}" -i "${DEV}" -k "${KEY}" -T 1000 \
++	  -C "$(get_rx_irq_cpus)" -s -v &
++elif [[ ! -z "${RPS_MAP}" ]]; then
++	eval "$(get_disable_rfs_cmd) $(get_set_rps_bitmaps_cmd ${RPS_MAP})" \
++	  ip netns exec server_ns ./toeplitz "${IP_FLAG}" "${PROTO_FLAG}" \
++	  -d "${PORT}" -i "${DEV}" -k "${KEY}" -T 1000 \
++	  -r "0x${RPS_MAP}" -s -v &
 +else
-+  run_test "${proto}" "${test}"
-+fi;
-diff --git a/tools/testing/selftests/net/setup_loopback.sh b/tools/testing/selftests/net/setup_loopback.sh
++	ip netns exec server_ns ./toeplitz "${IP_FLAG}" "${PROTO_FLAG}" \
++	  -d "${PORT}" -i "${DEV}" -k "${KEY}" -T 1000 -s -v &
++fi
++
++server_pid=$!
++
++ip netns exec client_ns ./toeplitz_client.sh "${PROTO_FLAG}" \
++  "${IP_FLAG}" "${SERVER_IP%%/*}" "${PORT}" &
++
++client_pid=$!
++
++wait "${server_pid}"
++exit_code=$?
++kill -9 "${client_pid}"
++if [[ "${exit_code}" -eq 0 ]]; then
++	echo "Test Succeeded!"
++fi
++exit "${exit_code}"
+diff --git a/tools/testing/selftests/net/toeplitz_client.sh b/tools/testing/selftests/net/toeplitz_client.sh
 new file mode 100755
-index 000000000000..0a8ad97b07ea
+index 000000000000..2fef34f4aba1
 --- /dev/null
-+++ b/tools/testing/selftests/net/setup_loopback.sh
-@@ -0,0 +1,82 @@
++++ b/tools/testing/selftests/net/toeplitz_client.sh
+@@ -0,0 +1,28 @@
 +#!/bin/bash
 +# SPDX-License-Identifier: GPL-2.0
-+netdev_check_for_carrier() {
-+	local -r dev="$1"
++#
++# A simple program for generating traffic for the toeplitz test.
++#
++# This program sends packets periodically for, conservatively, 20 seconds. The
++# intent is for the calling program to kill this program once it is no longer
++# needed, rather than waiting for the 20 second expiration.
 +
-+	for i in {1..5}; do
-+		carrier="$(cat /sys/class/net/${dev}/carrier)"
-+		if [[ "${carrier}" -ne 1 ]] ; then
-+			echo "carrier not ready yet..." >&2
-+			sleep 1
++send_traffic() {
++	expiration=$((SECONDS+20))
++	while [[ "${SECONDS}" -lt "${expiration}" ]]
++	do
++		if [[ "${PROTO}" == "-u" ]]; then
++			echo "msg $i" | nc "${IPVER}" -u -w 0 "${ADDR}" "${PORT}"
 +		else
-+			echo "carrier ready" >&2
-+			break
++			echo "msg $i" | nc "${IPVER}" -w 0 "${ADDR}" "${PORT}"
 +		fi
-+	done
-+	echo "${carrier}"
-+}
-+
-+# Assumes that there is no existing ipvlan device on the physical device
-+setup_loopback_environment() {
-+    local dev="$1"
-+
-+	# Fail hard if cannot turn on loopback mode for current NIC
-+	ethtool -K "${dev}" loopback on || exit 1
-+	sleep 1
-+
-+	# Check for the carrier
-+	carrier=$(netdev_check_for_carrier ${dev})
-+	if [[ "${carrier}" -ne 1 ]] ; then
-+		echo "setup_loopback_environment failed"
-+		exit 1
-+	fi
-+}
-+
-+setup_macvlan_ns(){
-+	local -r link_dev="$1"
-+	local -r ns_name="$2"
-+	local -r ns_dev="$3"
-+	local -r ns_mac="$4"
-+	local -r addr="$5"
-+
-+	ip link add link "${link_dev}" dev "${ns_dev}" \
-+		address "${ns_mac}" type macvlan
-+	exit_code=$?
-+	if [[ "${exit_code}" -ne 0 ]]; then
-+		echo "setup_macvlan_ns failed"
-+		exit $exit_code
-+	fi
-+
-+	[[ -e /var/run/netns/"${ns_name}" ]] || ip netns add "${ns_name}"
-+	ip link set dev "${ns_dev}" netns "${ns_name}"
-+	ip -netns "${ns_name}" link set dev "${ns_dev}" up
-+	if [[ -n "${addr}" ]]; then
-+		ip -netns "${ns_name}" addr add dev "${ns_dev}" "${addr}"
-+	fi
-+
-+	sleep 1
-+}
-+
-+cleanup_macvlan_ns(){
-+	while (( $# >= 2 )); do
-+		ns_name="$1"
-+		ns_dev="$2"
-+		ip -netns "${ns_name}" link del dev "${ns_dev}"
-+		ip netns del "${ns_name}"
-+		shift 2
++		sleep 0.001
 +	done
 +}
 +
-+cleanup_loopback(){
-+	local -r dev="$1"
++PROTO=$1
++IPVER=$2
++ADDR=$3
++PORT=$4
 +
-+	ethtool -K "${dev}" loopback off
-+	sleep 1
-+
-+	# Check for the carrier
-+	carrier=$(netdev_check_for_carrier ${dev})
-+	if [[ "${carrier}" -ne 1 ]] ; then
-+		echo "setup_loopback_environment failed"
-+		exit 1
-+	fi
-+}
++send_traffic
 -- 
 2.32.0.554.ge1b32706d8-goog
 
