@@ -2,179 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65EEF3E15C2
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 15:33:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD0133E15F0
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 15:44:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241705AbhHENdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 09:33:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57530 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239373AbhHENdR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 09:33:17 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60070C061765;
-        Thu,  5 Aug 2021 06:33:03 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id d6so8386499edt.7;
-        Thu, 05 Aug 2021 06:33:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5KnmBsMekLsd2KwbsCS76Z4wO/OCvggDPwW2Gn92Ahw=;
-        b=M+Mo3cGpJOMX18N6LDI1LAyw7SvwYwAAxW2/b5IQcqeDKiFV3D1yniW86DRuabe95M
-         ZwexJyeLi4cSWMz/8IzinGKVuCQ6LapSRhjiYHRhVmuPAGmkCkLfV2cCks1i/tKotVDK
-         tSh3i8nyKsuJ6wsDaP1czISWsff7gPfGLNCss8Sr5taIKQznhRV4kZN5OP2+wzdYXbdx
-         brSEEYpyh+Y+M2YR63u6gQ41NMTRr8Dg6a6anUG3c9L5FVbXOVFJbSnOYWAZKnyBd2F9
-         R/Hr3bp3jk8a9ZB4BzvyXFtfJZjcyJ/0oceL7BfQliuPP4NeGMyqUUi3KxqMoISmE1q6
-         W6Dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5KnmBsMekLsd2KwbsCS76Z4wO/OCvggDPwW2Gn92Ahw=;
-        b=TcQTJPiQKZk56OJUnki6qMj342MlR7dCJWumlGbSfeCi/b9QVbrGaBFvs2ER17CLdC
-         yih4p5VE437yQQN09eLfi7HvvlMxG4sG69VXzIA3pACl5fZl/hGmE0UqHCRP73iwXlTm
-         /Sf0qJMeRBKxnbnVRNd3c6Mu99RBoMB0g5PzsRRpyLAiqyd15E0AeS5j1FUKNA6aVefv
-         upG+eCYd15t3CbJiVVYMPu0J5QAZQafxqV4s7TvNUHW+DKreo92nYGkIq3rtaxle4WZ9
-         lvqP6cUBrYg6GLdyGmkmuauXrLCsWLB5Jp8eFKcrkfQ86fxyDbCQzNPfqrdef/FlcntQ
-         eFmA==
-X-Gm-Message-State: AOAM532ZOyI2Ei5Qn2QmfK8NbYdj3OiVA7XaBw7RpbBo7U/N/GqnExCP
-        BlFhx2LCXQtfO1tWbZ/FvFk=
-X-Google-Smtp-Source: ABdhPJy8m29nLG+tfWs5oWsDoLeffEefb1XumC1J2kldxf7KmM/8mwma+wQMLr7MKklhYfK2aA4PUg==
-X-Received: by 2002:a05:6402:b19:: with SMTP id bm25mr6658537edb.213.1628170382003;
-        Thu, 05 Aug 2021 06:33:02 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id df14sm2294248edb.90.2021.08.05.06.32.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Aug 2021 06:33:01 -0700 (PDT)
-Date:   Thu, 5 Aug 2021 16:32:58 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Shannon Nelson <snelson@pensando.io>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        drivers@pensando.io, Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Yangbo Lu <yangbo.lu@nxp.com>, Karen Xie <kxie@chelsio.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-scsi@vger.kernel.org
-Subject: Re: [PATCH net-next v4] ethernet: fix PTP_1588_CLOCK dependencies
-Message-ID: <20210805133258.zvhn5kznjt7taqyu@skbuf>
-References: <20210805082253.3654591-1-arnd@kernel.org>
+        id S241261AbhHENon (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 09:44:43 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:61016 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239222AbhHENom (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Aug 2021 09:44:42 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1628171069; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=UDqqULtEilcoytZXS/txGxlVIVFuUcqpiXHWmqfAO/E=; b=hynM6R9MEB9mKwo/gtJY/gdKh2DvE3awN/Ft29y/6F58foq+nSUVGVke0XpVuJ4tRAkbCnpy
+ b2h+7FJIv8ndtWwqttzDHEMS9P3sNfLuDmy83BX6HF9VUAlidF0IFq/grVqUhVENQmMZZQna
+ JCcLdhwcg8uIvzdJpIpSbj+XxAY=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
+ 610beb3ab4dfc4b0ef2dfff3 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 05 Aug 2021 13:44:26
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 64548C43144; Thu,  5 Aug 2021 13:44:25 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9B60DC4338A;
+        Thu,  5 Aug 2021 13:44:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 9B60DC4338A
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Liwei Song <liwei.song@windriver.com>
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
+        David <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iwlwifi: select MAC80211_LEDS conditionally
+References: <20210624100823.854-1-liwei.song@windriver.com>
+        <87sg17ilz2.fsf@codeaurora.org>
+        <92d293b4-0ef1-6239-4b91-4af420786980@windriver.com>
+Date:   Thu, 05 Aug 2021 16:44:17 +0300
+In-Reply-To: <92d293b4-0ef1-6239-4b91-4af420786980@windriver.com> (Liwei
+        Song's message of "Thu, 24 Jun 2021 19:06:39 +0800")
+Message-ID: <87fsvoc8ge.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210805082253.3654591-1-arnd@kernel.org>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 05, 2021 at 10:13:57AM +0200, Arnd Bergmann wrote:
-> diff --git a/drivers/net/dsa/mv88e6xxx/Kconfig b/drivers/net/dsa/mv88e6xxx/Kconfig
-> index 634a48e6616b..7a2445a34eb7 100644
-> --- a/drivers/net/dsa/mv88e6xxx/Kconfig
-> +++ b/drivers/net/dsa/mv88e6xxx/Kconfig
-> @@ -2,6 +2,7 @@
->  config NET_DSA_MV88E6XXX
->  	tristate "Marvell 88E6xxx Ethernet switch fabric support"
->  	depends on NET_DSA
-> +	depends on PTP_1588_CLOCK_OPTIONAL
->  	select IRQ_DOMAIN
->  	select NET_DSA_TAG_EDSA
->  	select NET_DSA_TAG_DSA
-> diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
-> index 932b6b6fe817..9948544ba1c4 100644
-> --- a/drivers/net/dsa/ocelot/Kconfig
-> +++ b/drivers/net/dsa/ocelot/Kconfig
-> @@ -5,6 +5,7 @@ config NET_DSA_MSCC_FELIX
->  	depends on NET_VENDOR_MICROSEMI
->  	depends on NET_VENDOR_FREESCALE
->  	depends on HAS_IOMEM
-> +	depends on PTP_1588_CLOCK_OPTIONAL
->  	select MSCC_OCELOT_SWITCH_LIB
->  	select NET_DSA_TAG_OCELOT_8021Q
->  	select NET_DSA_TAG_OCELOT
-> @@ -19,6 +20,7 @@ config NET_DSA_MSCC_SEVILLE
->  	depends on NET_DSA
->  	depends on NET_VENDOR_MICROSEMI
->  	depends on HAS_IOMEM
-> +	depends on PTP_1588_CLOCK_OPTIONAL
->  	select MSCC_OCELOT_SWITCH_LIB
->  	select NET_DSA_TAG_OCELOT_8021Q
->  	select NET_DSA_TAG_OCELOT
-> diff --git a/drivers/net/dsa/sja1105/Kconfig b/drivers/net/dsa/sja1105/Kconfig
-> index b29d41e5e1e7..1291bba3f3b6 100644
-> --- a/drivers/net/dsa/sja1105/Kconfig
-> +++ b/drivers/net/dsa/sja1105/Kconfig
-> @@ -2,6 +2,7 @@
->  config NET_DSA_SJA1105
->  tristate "NXP SJA1105 Ethernet switch family support"
->  	depends on NET_DSA && SPI
-> +	depends on PTP_1588_CLOCK_OPTIONAL
->  	select NET_DSA_TAG_SJA1105
->  	select PCS_XPCS
->  	select PACKING
-> diff --git a/drivers/net/ethernet/mscc/Kconfig b/drivers/net/ethernet/mscc/Kconfig
-> index 2d3157e4d081..b07912434560 100644
-> --- a/drivers/net/ethernet/mscc/Kconfig
-> +++ b/drivers/net/ethernet/mscc/Kconfig
-> @@ -13,6 +13,7 @@ if NET_VENDOR_MICROSEMI
->  
->  # Users should depend on NET_SWITCHDEV, HAS_IOMEM, BRIDGE
->  config MSCC_OCELOT_SWITCH_LIB
-> +	depends on PTP_1588_CLOCK_OPTIONAL
+Liwei Song <liwei.song@windriver.com> writes:
 
-No, don't make the MSCC_OCELOT_SWITCH_LIB depend on anything please,
-since it is always "select"-ed, it shouldn't have dependencies, see
-the comment above. If you want, add this to the comment: "Users should
-depend on (...), PTP_1588_CLOCK_OPTIONAL".
+> On 6/24/21 18:41, Kalle Valo wrote:
+>> Liwei Song <liwei.song@windriver.com> writes:
+>> 
+>>> MAC80211_LEDS depends on LEDS_CLASS=y or LEDS_CLASS=MAC80211,
+>>> add condition to enable it in iwlwifi/Kconfig to avoid below
+>>> compile warning when LEDS_CLASS was set to m:
+>>>
+>>> WARNING: unmet direct dependencies detected for MAC80211_LEDS
+>>>   Depends on [n]: NET [=y] && WIRELESS [=y] && MAC80211 [=y] &&
+>>> (LEDS_CLASS [=m]=y || LEDS_CLASS [=m]=MAC80211 [=y])
+>>>   Selected by [m]:
+>>>   - IWLWIFI_LEDS [=y] && NETDEVICES [=y] && WLAN [=y] &&
+>>> WLAN_VENDOR_INTEL [=y] && IWLWIFI [=m] && (LEDS_CLASS [=m]=y ||
+>>> LEDS_CLASS [=m]=IWLWIFI [=m]) && (IWLMVM [=m] || IWLDVM [=m])
+>>>
+>>> Signed-off-by: Liwei Song <liwei.song@windriver.com>
+>> 
+>> Is this is a new regression or an old bug? What commit caused this?
+>
+> It should be exist when the below commit change the dependency of MAC80211_LEDS
+> to fix some build error:
+>
+> commit b64acb28da8394485f0762e657470c9fc33aca4d
+> Author: Arnd Bergmann <arnd@arndb.de>
+> Date:   Mon Jan 25 12:36:42 2021 +0100
+>
+>     ath9k: fix build error with LEDS_CLASS=m
 
->  	select NET_DEVLINK
->  	select REGMAP_MMIO
->  	select PACKING
-> @@ -24,6 +25,7 @@ config MSCC_OCELOT_SWITCH_LIB
->  
->  config MSCC_OCELOT_SWITCH
->  	tristate "Ocelot switch driver"
-> +	depends on PTP_1588_CLOCK_OPTIONAL
->  	depends on BRIDGE || BRIDGE=n
->  	depends on NET_SWITCHDEV
->  	depends on HAS_IOMEM
-> @@ -253,6 +254,7 @@ config NATIONAL_PHY
->  
->  config NXP_C45_TJA11XX_PHY
->  	tristate "NXP C45 TJA11XX PHYs"
-> +	depends on PTP_1588_CLOCK_OPTIONAL
->  	help
->  	  Enable support for NXP C45 TJA11XX PHYs.
->  	  Currently supports only the TJA1103 PHY.
+Thanks, it seems LEDS_CLASS is a constant source of problems for
+wireless drivers :/
 
-With that changed:
+Luca, what should we do? We cannot have compile errors in the tree.
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+I assigned this patch to me on patchwork.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
