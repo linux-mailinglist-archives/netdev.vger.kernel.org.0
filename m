@@ -2,176 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 433193E1BDE
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 20:58:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BACC3E1C09
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 21:04:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241994AbhHES6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 14:58:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48258 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241976AbhHES6V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 14:58:21 -0400
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA216C06179C
-        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 11:58:06 -0700 (PDT)
-Received: by mail-ot1-x336.google.com with SMTP id x15-20020a05683000cfb02904d1f8b9db81so6165500oto.12
-        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 11:58:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TfANmzxuxCY2gvVM/g2uHx9GgAPY4q4Zm0u5kvWrtVE=;
-        b=qiom+Gue2FS4mIZMbZPuH6HG899nTXv0Tvb0mP82YiFve1hUd4znCCg0VQ+zloUC61
-         cZk53WupcbWo0rMy1lm9CC7A8T7GmQVeFM9knFs+QAkYVm25m/lB8wV6PGNyJep6I/RL
-         AvRgBeWksrOL9wuoyLCA+44BBlt6ijZhq8uAxVXhY7HKlQRO0caqb1lTC6qi7fd/iYlM
-         4xqUVi9n9FMtECg0pF98cZVGjbZ6wcNm399+MEyePRifC9EUifuwl1PA4eRLBIZD5VLS
-         GcF2lghXsHOiUf8cHR/ojSkyej9XMK5Uytpd5WqKX1VGUbX/WNTjr4Ht9e5EyXwlu6k7
-         RlWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TfANmzxuxCY2gvVM/g2uHx9GgAPY4q4Zm0u5kvWrtVE=;
-        b=KE/xhVL023PEuHAw77QggyxyaZie/AO77i9EnVYlRsSnw67dAerLLX2kb3BkznZIzC
-         OMEqqJn8TmFu/af3zCxUM/TCXWvDZmNmcbUqvrBoVFkmTlp7EtFxKs/Kn7wjb9876Enf
-         HvgR0+4Coz5NjvUrqkWM5xl69gZ/JeoBB7PoCciL816NgXQEMHQOszQ+9DJLazjxG62A
-         cjJnAKl2CQaffItdZm1yl/DIt9/mJ7objz1zndUBMSu/5AGjYUInnqAP8PBqQAsjNo5P
-         WBRo+jj54+phjL30okLMSw/aCe6ebAp5WqQyzN5ypiEGZ5x7XVh/X/bqjvV/h2FZWnGz
-         mQyw==
-X-Gm-Message-State: AOAM530OIyIXgu6ViT2UadNypnhs+ht7FbU3JtAv5Oew1Q1pzIgQAn+d
-        bT1InBSXiekpy3qkVzmJkN8XQ3cOEqM=
-X-Google-Smtp-Source: ABdhPJyUH6p3ypu0Ow/W/piO27aKavA0yS+cPHnJOphWnvv0ZRuMnyHneMh8gdTyqipT+rfNrEdB8g==
-X-Received: by 2002:a05:6830:278b:: with SMTP id x11mr4954674otu.146.1628189885946;
-        Thu, 05 Aug 2021 11:58:05 -0700 (PDT)
-Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:c64b:2366:2e53:c024])
-        by smtp.gmail.com with ESMTPSA id r5sm358678otk.71.2021.08.05.11.58.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Aug 2021 11:58:05 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Qitao Xu <qitao.xu@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>
-Subject: [Patch net-next 13/13] sock: introduce tracepoint trace_sk_data_ready()
-Date:   Thu,  5 Aug 2021 11:57:50 -0700
-Message-Id: <20210805185750.4522-14-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210805185750.4522-1-xiyou.wangcong@gmail.com>
-References: <20210805185750.4522-1-xiyou.wangcong@gmail.com>
+        id S242172AbhHETEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 15:04:48 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:41724 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242313AbhHETEd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 15:04:33 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 175J4JDp011244
+        for <netdev@vger.kernel.org>; Thu, 5 Aug 2021 14:04:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1628190259;
+        bh=KJjBxFRrLVVeMq6WW7rpCQvJaLIXnD5n8GjN1/3L91U=;
+        h=To:From:Subject:Date;
+        b=vg9cbysw/aM7P8+wnN9dqSH0VRBHoCjzncbvVZeIFB86qGUbkJfCwfwBV4qUyt9Pr
+         QTnXnxxviPn6wCQV2JjB6Mt3pwRxxh+7Hh76SIVvTRd7hsWYWyyjOFgPVsIu65ZLZX
+         FpoL+B2785mPC+6lkwZw4+hXS914Ur7OKoAcwIE4=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 175J4J0I052428
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL)
+        for <netdev@vger.kernel.org>; Thu, 5 Aug 2021 14:04:19 -0500
+Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 5 Aug
+ 2021 14:04:18 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Thu, 5 Aug 2021 14:04:18 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 175J4HdD109830
+        for <netdev@vger.kernel.org>; Thu, 5 Aug 2021 14:04:18 -0500
+To:     netdev <netdev@vger.kernel.org>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [net-next] WARNING: CPU: 2 PID: 1189 at ../net/core/skbuff.c:5412
+ skb_try_coalesce+0x354/0x368
+Message-ID: <dcf8012a-ffa5-f5ab-af68-5c59a410299f@ti.com>
+Date:   Thu, 5 Aug 2021 22:04:16 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Qitao Xu <qitao.xu@bytedance.com>
+Hi all
 
-Tracepoint trace_sk_data_ready is introduced to trace skb
-at exit of socket layer on RX side. Here we only implement
-it for UDP and TCP.
+with current net-next is see below splat when run netperf TCP_STREAM
 
-Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Qitao Xu <qitao.xu@bytedance.com>
----
- include/trace/events/sock.h | 19 +++++++++++++++++++
- net/ipv4/tcp_input.c        |  8 +++++++-
- net/ipv4/udp.c              |  5 ++++-
- 3 files changed, 30 insertions(+), 2 deletions(-)
+<REMOTE HOST> netperf -l 10 -H 192.168.1.2 -t TCP_STREAM -c -C -j -B "am6 " -s 1 -s 1
 
-diff --git a/include/trace/events/sock.h b/include/trace/events/sock.h
-index 12c315782766..860d8b0f02c5 100644
---- a/include/trace/events/sock.h
-+++ b/include/trace/events/sock.h
-@@ -261,6 +261,25 @@ TRACE_EVENT(inet_sk_error_report,
- 		  __entry->error)
- );
- 
-+TRACE_EVENT(sk_data_ready,
-+
-+	TP_PROTO(const struct sock *sk, const struct sk_buff *skb),
-+
-+	TP_ARGS(sk, skb),
-+
-+	TP_STRUCT__entry(
-+		__field(const void *, skaddr)
-+		__field(const void *, skbaddr)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->skaddr = sk;
-+		__entry->skbaddr = skb;
-+	),
-+
-+	TP_printk("skaddr=%px, skbaddr=%px", __entry->skaddr, __entry->skbaddr)
-+);
-+
- #endif /* _TRACE_SOCK_H */
- 
- /* This part must be outside protection */
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 3f7bd7ae7d7a..16edb9d37529 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -77,6 +77,7 @@
- #include <asm/unaligned.h>
- #include <linux/errqueue.h>
- #include <trace/events/tcp.h>
-+#include <trace/events/sock.h>
- #include <linux/jump_label_ratelimit.h>
- #include <net/busy_poll.h>
- #include <net/mptcp.h>
-@@ -5034,6 +5035,8 @@ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
- 
- 		tcp_fast_path_check(sk);
- 
-+		if (!sock_flag(sk, SOCK_DEAD))
-+			trace_sk_data_ready(sk, skb);
- 		if (eaten > 0)
- 			kfree_skb_partial(skb, fragstolen);
- 		if (!sock_flag(sk, SOCK_DEAD))
-@@ -5601,8 +5604,10 @@ static void tcp_urg(struct sock *sk, struct sk_buff *skb, const struct tcphdr *t
- 			if (skb_copy_bits(skb, ptr, &tmp, 1))
- 				BUG();
- 			tp->urg_data = TCP_URG_VALID | tmp;
--			if (!sock_flag(sk, SOCK_DEAD))
-+			if (!sock_flag(sk, SOCK_DEAD)) {
-+				trace_sk_data_ready(sk, skb);
- 				sk->sk_data_ready(sk);
-+			}
- 		}
- 	}
- }
-@@ -5894,6 +5899,7 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
- 
- 			__tcp_ack_snd_check(sk, 0);
- no_ack:
-+			trace_sk_data_ready(sk, skb);
- 			if (eaten)
- 				kfree_skb_partial(skb, fragstolen);
- 			tcp_data_ready(sk);
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 4751a8f9acff..b58cc943a862 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -108,6 +108,7 @@
- #include <linux/static_key.h>
- #include <linux/btf_ids.h>
- #include <trace/events/skb.h>
-+#include <trace/events/sock.h>
- #include <net/busy_poll.h>
- #include "udp_impl.h"
- #include <net/sock_reuseport.h>
-@@ -1579,8 +1580,10 @@ int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
- 	__skb_queue_tail(list, skb);
- 	spin_unlock(&list->lock);
- 
--	if (!sock_flag(sk, SOCK_DEAD))
-+	if (!sock_flag(sk, SOCK_DEAD)) {
-+		trace_sk_data_ready(sk, skb);
- 		sk->sk_data_ready(sk);
-+	}
- 
- 	busylock_release(busy);
- 	return 0;
+Is this know issue?
+
+<FAILED DUT>
+root@am65xx-evm:~# uname -a
+Linux am65xx-evm 5.14.0-rc3-00973-g372bbdd5bb3f #5 SMP PREEMPT Thu Aug 5 21:57:28 EEST 2021 aarch64 GNU/Linux
+
+root@am65xx-evm:~# [  227.929271] ------------[ cut here ]------------
+[  227.933917] WARNING: CPU: 2 PID: 1189 at ../net/core/skbuff.c:5412 skb_try_coalesce+0x354/0x368
+[  227.942624] Modules linked in:
+[  227.945679] CPU: 2 PID: 1189 Comm: netserver Not tainted 5.14.0-rc3-00973-g372bbdd5bb3f #5
+[  227.953931] Hardware name: Texas Instruments AM654 Base Board (DT)
+[  227.960098] pstate: 80000005 (Nzcv daif -PAN -UAO -TCO BTYPE=--)
+[  227.966097] pc : skb_try_coalesce+0x354/0x368
+[  227.970449] lr : tcp_try_coalesce.part.74+0x48/0x180
+[  227.975410] sp : ffff80001544fa40
+[  227.978716] x29: ffff80001544fa40 x28: ffff0008013a0dc0 x27: 0000000000000000
+[  227.985851] x26: 0000000000000000 x25: 0000000000002d20 x24: ffff000809f25240
+[  227.992984] x23: ffff000809f286c0 x22: 0000000000002d40 x21: ffff80001544fac4
+[  228.000118] x20: ffff000807536600 x19: ffff000807535800 x18: 0000000000000000
+[  228.007251] x17: 0000000000000000 x16: 0000000000000000 x15: ffff00080794a882
+[  228.014384] x14: 72657074656e0066 x13: 0000000000000080 x12: ffff000800792e58
+[  228.021517] x11: 0000000000000000 x10: 0000000000000001 x9 : ffff000000000000
+[  228.028650] x8 : 0000000000002798 x7 : 00000000000005a8 x6 : ffff000809f24c82
+[  228.035783] x5 : 0000000000000000 x4 : 0000000000000640 x3 : 0000000000000001
+[  228.042915] x2 : ffff80001544fb57 x1 : 0000000000000007 x0 : ffff000809f286c0
+[  228.050050] Call trace:
+[  228.052490]  skb_try_coalesce+0x354/0x368
+[  228.056497]  tcp_try_coalesce.part.74+0x48/0x180
+[  228.061108]  tcp_queue_rcv+0x12c/0x170
+[  228.064853]  tcp_rcv_established+0x558/0x6f8
+[  228.069118]  tcp_v4_do_rcv+0x90/0x220
+[  228.072775]  __release_sock+0x70/0xb8
+[  228.076439]  release_sock+0x30/0x90
+[  228.079926]  tcp_recvmsg+0x90/0x1d0
+[  228.083411]  inet_recvmsg+0x54/0x128
+[  228.086983]  __sys_recvfrom+0xbc/0x148
+[  228.090728]  __arm64_sys_recvfrom+0x24/0x38
+[  228.094906]  invoke_syscall+0x44/0x100
+[  228.098655]  el0_svc_common+0x3c/0xd8
+[  228.102314]  do_el0_svc+0x28/0x90
+[  228.105626]  el0_svc+0x24/0x38
+[  228.108679]  el0t_64_sync_handler+0x90/0xb8
+[  228.112857]  el0t_64_sync+0x178/0x17c
+[  228.116517] ---[ end trace 2e0ec9d02424634a ]---        0
+
 -- 
-2.27.0
-
+Best regards,
+grygorii
