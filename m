@@ -2,128 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C7493E1AF6
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 20:09:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B23D3E1B05
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 20:12:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239830AbhHESJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 14:09:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36964 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232818AbhHESJy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 14:09:54 -0400
-Received: from caffeine.csclub.uwaterloo.ca (caffeine.csclub.uwaterloo.ca [IPv6:2620:101:f000:4901:c5c:0:caff:e12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA963C061765;
-        Thu,  5 Aug 2021 11:09:39 -0700 (PDT)
-Received: by caffeine.csclub.uwaterloo.ca (Postfix, from userid 20367)
-        id 0C7844609A1; Thu,  5 Aug 2021 14:09:37 -0400 (EDT)
-Date:   Thu, 5 Aug 2021 14:09:37 -0400
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: macvlan breaks garp for vrrp
-Message-ID: <20210805180936.GB6676@csclub.uwaterloo.ca>
-References: <20210715153720.GA2378@csclub.uwaterloo.ca>
+        id S241011AbhHESMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 14:12:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44904 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239013AbhHESMt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Aug 2021 14:12:49 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ABF7F60F43;
+        Thu,  5 Aug 2021 18:12:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628187155;
+        bh=p3jgh7jK/C4VhYgj51TWN+4tV+Kpxd+e+Euwt7iJ+8k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=Nbmy1Htd7+FJpa8uHUgsDo+M1Af0j7Fje1ddfPZtMi8xZPbWlR26yCjP4t1ZSU0np
+         8TDne6zs6Ot06VDPAG9moGXfQPynyaFQHZvsGX9Y55vjwqRQHqEwzGloXcYMkqcVwa
+         eLvgh0xGENrwHEGKoi3DzB3mjA1Z1ZZeBoRjqIk2sA3l2tIy0+NKG3vf1APMFPG9UM
+         6iYQgew/I+11rS8uceDG96MhLFK2emEaZ9ie5SdPnNih/hJ64smxkIifIAKMZn+6z2
+         bc9khRePRPwp1KErIDIltAfd3JIbNjnZUkTlXdGcDk1J1IhangNPnKXiFRZ8IhLRhr
+         skBVsncaskgUg==
+Date:   Thu, 5 Aug 2021 13:12:33 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Dongdong Liu <liudongdong3@huawei.com>
+Cc:     hch@infradead.org, kw@linux.com, logang@deltatee.com,
+        leon@kernel.org, linux-pci@vger.kernel.org, rajur@chelsio.com,
+        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH V7 9/9] PCI/P2PDMA: Add a 10-Bit Tag check in P2PDMA
+Message-ID: <20210805181233.GA1765293@bjorn-Precision-5520>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210715153720.GA2378@csclub.uwaterloo.ca>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-From:   Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+In-Reply-To: <1628084828-119542-10-git-send-email-liudongdong3@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 15, 2021 at 11:37:20AM -0400, Lennart Sorensen wrote:
-> We are seeing an occational problem where a node in a cluster running
-> vrrp stops being able to send packets to the current master due to having
-> the wrong arp entry for the virtual IP.  It appears that what happens
-> is that if around the time vrrp changes who the master is, a packet is
-> sent from the new master to another node, that node will learn the mac
-> of the virtual IP as the mac of the physical interface of the master
-> (since it always transmits from the physical mac, not the virtual mac).
-> In most cases nodes seem to correctly send an arp request for the
-> virtual IP and get back the virtual mac (from the maclan interface
-> used by keepalived with use_vmac enabled), in which case all is fine.
-> Only if the timing is unlucky do you end up learning the wrong mac and
-> then you can no longer send packets back to the master since it doesn't
-> accept packets on the physical interface mac, only the virtual mac.
-> 
-> Of course one would have thought that the garp sent by the master would
-> take care of the problem, but unfortunately the macvlan code is not
-> allowing garp packets with a source mac macthing the macvlan interface to
-> reach the physical interface.  The code causing this is below.  keepalived
-> uses MACVLAN_MODE_PRIVATE which does not match the condition, so the code
-> tries to do its work and consumes the packet, and the physical interface
-> hence never gets to see it, and the arp table is hence not corrected.
-> I can't actually make sense of what this code is trying to do in this
-> case where the source mac of the packet matches the macvlan interface,
-> even though it was received from outside (from the current master in
-> the vrrp cluster).
-> 
->         port = macvlan_port_get_rcu(skb->dev);
->           if (is_multicast_ether_addr(eth->h_dest)) {
->                   unsigned int hash;
-> 
->                   skb = ip_check_defrag(dev_net(skb->dev), skb, IP_DEFRAG_MACVLAN);                                                                                           if (!skb)
->                           return RX_HANDLER_CONSUMED;
->                   *pskb = skb;
->                   eth = eth_hdr(skb);
->                   if (macvlan_forward_source(skb, port, eth->h_source))
->                           return RX_HANDLER_CONSUMED;
->                   src = macvlan_hash_lookup(port, eth->h_source);  <- this of course has a match
->                   if (src && src->mode != MACVLAN_MODE_VEPA &&     <- so this is true and eats the packet
->                       src->mode != MACVLAN_MODE_BRIDGE) {
->                           /* forward to original port. */
->                           vlan = src;
->                           ret = macvlan_broadcast_one(skb, vlan, eth, 0) ?:
->                                 netif_rx(skb);
->                           handle_res = RX_HANDLER_CONSUMED;
->                           goto out;
->                   }
-> 
->                   hash = mc_hash(NULL, eth->h_dest);
->                   if (test_bit(hash, port->mc_filter))
->                           macvlan_broadcast_enqueue(port, src, skb);
-> 
->                   return RX_HANDLER_PASS;
->           }
-> 
-> If I patch it to do:
-> 
->                    if (src && src->mode != MACVLAN_MODE_VEPA &&
-> +                      src->mode != MACVLAN_MODE_PRIVATE &&
->                        src->mode != MACVLAN_MODE_BRIDGE) {
-> 
-> the problem goes away, but since I don't understand what the idea of
-> this code was, that doesn't feel safe.
-> 
-> Can someone that understands the point of this code perhaps give an idea
-> how to correctly fix this?  Definitely packets received with the same
-> mac address as this macvlan should still be able to make it through to
-> the underlying interface, since that is how vrrp is supposed to operate
-> per the RFC.  Having the wrong arp entry is bad since each time we
-> receive a packet we increase the timeout so it never ages out, even
-> though it is the wrong mac address for actually replying (due to how
-> macvlan interfaces seem to work).
-> 
-> So far this doesn't seem to happen very often since the timing has to
-> be just "wrong" on the packets, but I have now seen it 4 or 5 times in
-> the last year.  The solution each time was to manually delete the arp
-> entry for the virtual IP on the affected node, after which it correctly
-> arp'd for the right mac and everything worked again.
-> 
-> To test it I would manually set a temp arp entry using the physical mac of
-> the interface on the master as the arp entry, and see if the garp ever
-> fixed it, and it did not until I made my small patch, after which it
-> does fix the arp table reliably as far as I can tell.
+On Wed, Aug 04, 2021 at 09:47:08PM +0800, Dongdong Liu wrote:
+> Add a 10-Bit Tag check in the P2PDMA code to ensure that a device with
+> 10-Bit Tag Requester doesn't interact with a device that does not
+> support 10-BIT Tag Completer. Before that happens, the kernel should
+> emit a warning. "echo 0 > /sys/bus/pci/devices/.../10bit_tag" to
+> disable 10-BIT Tag Requester for PF device.
+> "echo 0 > /sys/bus/pci/devices/.../sriov_vf_10bit_tag_ctl" to disable
+> 10-BIT Tag Requester for VF device.
 
-Well I discovered that that my patch breaks other traffic, so clearly that
-doesn't work.
+s/10-BIT/10-Bit/ several times.
 
-Does anyone have any idea how to fix the code so garp packets from other
-systems with the sae macvlan mac address can actually be sent to the
-physical interface so the arp table can be updated?
+Add blank lines between paragraphs.
 
--- 
-Len Sorensen
+> Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
+> ---
+>  drivers/pci/p2pdma.c | 40 ++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 40 insertions(+)
+> 
+> diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
+> index 50cdde3..948f2be 100644
+> --- a/drivers/pci/p2pdma.c
+> +++ b/drivers/pci/p2pdma.c
+> @@ -19,6 +19,7 @@
+>  #include <linux/random.h>
+>  #include <linux/seq_buf.h>
+>  #include <linux/xarray.h>
+> +#include "pci.h"
+>  
+>  enum pci_p2pdma_map_type {
+>  	PCI_P2PDMA_MAP_UNKNOWN = 0,
+> @@ -410,6 +411,41 @@ static unsigned long map_types_idx(struct pci_dev *client)
+>  		(client->bus->number << 8) | client->devfn;
+>  }
+>  
+> +static bool check_10bit_tags_vaild(struct pci_dev *a, struct pci_dev *b,
+
+s/vaild/valid/
+
+Or maybe s/valid/safe/ or s/valid/supported/, since "valid" isn't
+quite the right word here.  We want to know whether the source is
+enabled to generate 10-bit tags, and if so, whether the destination
+can handle them.
+
+"if (check_10bit_tags_valid())" does not make sense because
+"check_10bit_tags_valid()" is not a question with a yes/no answer.
+
+"10bit_tags_valid()" *might* be, because "if (10bit_tags_valid())"
+makes sense.  But I don't think you can start with a digit.
+
+Or maybe you want to invert the sense, e.g.,
+"10bit_tags_unsupported()", since that avoids negation at the caller:
+
+  if (10bit_tags_unsupported(a, b) ||
+      10bit_tags_unsupported(b, a))
+        map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
+
+Doesn't this patch need to be at the very beginning, before you start
+enabling 10-bit tags?  Otherwise there's a hole in the middle where we
+enable them and P2P DMA might break.
+
+> +				   bool verbose)
+> +{
+> +	bool req;
+> +	bool comp;
+> +	u16 ctl2;
+> +
+> +	if (a->is_virtfn) {
+> +#ifdef CONFIG_PCI_IOV
+> +		req = !!(a->physfn->sriov->ctrl &
+> +			 PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN);
+> +#endif
+> +	} else {
+> +		pcie_capability_read_word(a, PCI_EXP_DEVCTL2, &ctl2);
+> +		req = !!(ctl2 & PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN);
+> +	}
+> +
+> +	comp = !!(b->pcie_devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_COMP);
+> +	if (req && (!comp)) {
+> +		if (verbose) {
+> +			pci_warn(a, "cannot be used for peer-to-peer DMA as 10-Bit Tag Requester enable is set in device (%s), but peer device (%s) does not support the 10-Bit Tag Completer\n",
+> +				 pci_name(a), pci_name(b));
+
+No point in printing pci_name(a) twice.  pci_warn() prints it already;
+that should be enough.
+
+I think you can simplify this a little, e.g.,
+
+  if (!req)           /* 10-bit tags not enabled on requester */
+    return true;
+
+  if (comp)           /* completer can handle anything */
+    return true;
+
+  /* error case */
+  if (!verbose)
+    return false;
+
+  pci_warn(...);
+  return false;
+
+> +			if (a->is_virtfn)
+> +				pci_warn(a, "to disable 10-Bit Tag Requester for this device, echo 0 > /sys/bus/pci/devices/%s/sriov_vf_10bit_tag_ctl\n",
+> +					 pci_name(a));
+> +			else
+> +				pci_warn(a, "to disable 10-Bit Tag Requester for this device, echo 0 > /sys/bus/pci/devices/%s/10bit_tag\n",
+> +					 pci_name(a));
+> +		}
+> +		return false;
+> +	}
+> +
+> +	return true;
+> +}
+> +
+>  /*
+>   * Calculate the P2PDMA mapping type and distance between two PCI devices.
+>   *
+> @@ -532,6 +568,10 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
+>  		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
+>  	}
+>  done:
+> +	if (!check_10bit_tags_vaild(client, provider, verbose) ||
+> +	    !check_10bit_tags_vaild(provider, client, verbose))
+> +		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
+> +
+>  	rcu_read_lock();
+>  	p2pdma = rcu_dereference(provider->p2pdma);
+>  	if (p2pdma)
+> -- 
+> 2.7.4
+> 
