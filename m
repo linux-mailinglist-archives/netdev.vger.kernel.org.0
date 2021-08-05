@@ -2,285 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E62BA3E1F48
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 01:14:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BC263E1F35
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 01:13:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242346AbhHEXOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 19:14:49 -0400
-Received: from mga07.intel.com ([134.134.136.100]:23394 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242380AbhHEXOl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Aug 2021 19:14:41 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10067"; a="278023072"
-X-IronPort-AV: E=Sophos;i="5.84,296,1620716400"; 
-   d="scan'208";a="278023072"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2021 16:14:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,296,1620716400"; 
-   d="scan'208";a="503591639"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga004.fm.intel.com with ESMTP; 05 Aug 2021 16:14:23 -0700
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        anthony.l.nguyen@intel.com, kuba@kernel.org, bjorn@kernel.org,
-        magnus.karlsson@intel.com, jesse.brandeburg@intel.com,
-        alexandr.lobakin@intel.com, joamaki@gmail.com, toke@redhat.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH v3 intel-next 6/6] ice: introduce XDP_TX fallback path
-Date:   Fri,  6 Aug 2021 01:00:46 +0200
-Message-Id: <20210805230046.28715-7-maciej.fijalkowski@intel.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210805230046.28715-1-maciej.fijalkowski@intel.com>
-References: <20210805230046.28715-1-maciej.fijalkowski@intel.com>
+        id S236352AbhHEXN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 19:13:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49272 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229697AbhHEXNZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 19:13:25 -0400
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4FEC0613D5
+        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 16:13:10 -0700 (PDT)
+Received: by mail-ot1-x334.google.com with SMTP id g5-20020a9d6b050000b02904f21e977c3eso6911062otp.5
+        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 16:13:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=24XAboUUyxpv3JLo8zr8d3XCXSfLEMkk0OCni9MjHsY=;
+        b=Xpi7UveHPov3Z+cAK3YpPwQVmlokvAvCewd+e9/cNYN8paDSjHUHPnEw95CDF198R4
+         IH8EW0sVmFmPn1xcrahca78zVsJ2x8UI2lOSael9o6wsf/2UZeqa5fyjz6gJoQiZRTrw
+         HBOL+ulgugP+ysPyK9OxWpo7DKGqhwoMw2FWDTjGLJ/M3066zwwLADpA/ifhlVkMLtLz
+         GSkmSPif9SnOGJHUussdQfzjTppCY+mjYJNRpA9O3ZgOhw5DIvy6gxy5dJ0ElDw9XAEy
+         FUy9f3IYyS3/DP6dHIOJ24QK9kE3RHJV3SRJF4EfHy5EbTmxQnQYXrzEw8EZALJHWvP8
+         Hapg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=24XAboUUyxpv3JLo8zr8d3XCXSfLEMkk0OCni9MjHsY=;
+        b=pjCyXULVh045lXRlDABAN/9lCRM2KPw+Wl2PlmzyV3gOOcK9vC4n/jZo456rRIvD+W
+         6QXzwZ7fK52cNZrbjq5rU0aTvwhpmTz2H7QBNyynndH2wZ7ihfpjxkW8zqhlMikcx/1G
+         S02FE2AuQAHtfDOwngEpMfgG94+BmW9o4+2AGdXJyfMqn6dy2ns8XAfu9V39L7r/TLE/
+         hLzzSqQtn2aqXUbqfOsX5mZ6VPBqWB3duQ9QkQXby9myt7tM8Gtfz3o/RmpFJZifTZy2
+         2daHGQDTVE9sQOKhcEu+jsqF4UYa/uEqghWboq8PGJSxHeqEq4xG6Yaw97adYOEPo6hj
+         Lk7g==
+X-Gm-Message-State: AOAM532BK6WeNvN1niEaZ1eZJ3qGHIkrlhrSs8LM1pmV1WnMedFJIol/
+        1dYaHN0NOt69U74k/jgINduNB2cMlJUJ0Q==
+X-Google-Smtp-Source: ABdhPJzGS4tWAUSZz7rSIHcOMeVp+oaschTTDBzfWpydAy4E/AU/DnzsdWRe00n+nuNiJKSpJEPxYg==
+X-Received: by 2002:a05:6830:2a0b:: with SMTP id y11mr5625582otu.275.1628205189972;
+        Thu, 05 Aug 2021 16:13:09 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.45])
+        by smtp.googlemail.com with ESMTPSA id w6sm1002040otu.25.2021.08.05.16.13.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Aug 2021 16:13:09 -0700 (PDT)
+Subject: Re: [PATCH net] net: ipv4: fix path MTU for multi path routes
+To:     Vadim Fedorenko <vfedorenko@novek.ru>
+Cc:     Willem de Bruijn <willemb@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <20210731011729.4357-1-vfedorenko@novek.ru>
+ <dc6aafb6-cd1f-2006-6f45-55a4f224e319@gmail.com>
+ <71b3384d-6d9c-4841-c610-463879f993b2@novek.ru>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <54587372-eb47-e154-2d63-75b14fa6f3d5@gmail.com>
+Date:   Thu, 5 Aug 2021 17:13:08 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <71b3384d-6d9c-4841-c610-463879f993b2@novek.ru>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Under rare circumstances there might be a situation where a requirement
-of having XDP Tx queue per CPU could not be fulfilled and some of the Tx
-resources have to be shared between CPUs. This yields a need for placing
-accesses to xdp_ring inside a critical section protected by spinlock.
-These accesses happen to be in the hot path, so let's introduce the
-static branch that will be triggered from the control plane when driver
-could not provide Tx queue dedicated for XDP on each CPU.
+On 8/5/21 2:51 PM, Vadim Fedorenko wrote:
+> On 01.08.2021 18:12, David Ahern wrote:
+>> On 7/30/21 7:17 PM, Vadim Fedorenko wrote:
+>>> Bug 213729 showed that MTU check could be used against route that
+>>> will not be used in actual transmit if source ip is not specified.
+>>> But path MTU update is always done on route with defined source ip.
+>>> Fix route selection by updating flow info in case when source ip
+>>> is not explicitly defined in raw and udp sockets.
+>>
+>> There is more to it than just setting the source address and doing a
+>> second lookup.
+>>
+> You are right. Update of source address fixes only some specific cases.
+> Also, I'm not fun of doing several lookups just because we found additional
+> next hops. It looks like (for ipv4 case) fib_table_lookup() should select
+> correct next-hop based on hash and update source ip and output interface
+> for flowi4. But right now flowi4 is constant and such change looks more
+> like net-next improvement. Or do you have another solution?
+> 
 
-Currently, the design that has been picked is to allow any number of XDP
-Tx queues that is at least half of a count of CPUs that platform has.
-For lower number driver will bail out with a response to user that there
-were not enough Tx resources that would allow configuring XDP. The
-sharing of rings is signalled via static branch enablement which in turn
-indicates that lock for xdp_ring accesses needs to be taken in hot path.
+This is a rare case where I wrote the test script first lacking ideas at
+that moment. What comes to mind now is that one part of the solution is
+to make ipv4 similar to ipv6 in that
 
-Approach based on static branch has no impact on performance of a
-non-fallback path. One thing that is needed to be mentioned is a fact
-that the static branch will act as a global driver switch, meaning that
-if one PF got out of Tx resources, then other PFs that ice driver is
-servicing will suffer. However, given the fact that HW that ice driver
-is handling has 1024 Tx queues per each PF, this is currently an
-unlikely scenario.
+1. device bind is always stronger than source address bind, and
+2. if saddr is set, prefer the nexthop device with that address (but
+only for local traffic). This handles the connect() case where saddr has
+not been set yet.
 
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
----
- drivers/net/ethernet/intel/ice/ice.h          |  3 ++
- drivers/net/ethernet/intel/ice/ice_lib.c      |  4 +-
- drivers/net/ethernet/intel/ice/ice_main.c     | 53 ++++++++++++++++---
- drivers/net/ethernet/intel/ice/ice_txrx.c     | 16 +++++-
- drivers/net/ethernet/intel/ice/ice_txrx.h     |  1 +
- drivers/net/ethernet/intel/ice/ice_txrx_lib.c |  7 ++-
- 6 files changed, 75 insertions(+), 9 deletions(-)
+The second one will get expensive if a device has multiple addresses.
+FIB lookups for IPv4 have been highly optimized, and we do not want to
+explode the lookup time for forwards where saddr is always known and it
+does not need to be considered in the lookup to fix local local traffic
+which needs a saddr to be picked along with the egress device. Perhaps a
+flow flag (SKIP_SADDR similar to the current SKIP_NH_OIF) will address
+this part. Another less desirable option is to improve but not totally
+fix the problem by only considering the primary address.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 2e15e097bc0f..4c7ff0e8c20f 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -158,6 +158,8 @@
- 
- #define ice_pf_to_dev(pf) (&((pf)->pdev->dev))
- 
-+DECLARE_STATIC_KEY_FALSE(ice_xdp_locking_key);
-+
- struct ice_txq_meta {
- 	u32 q_teid;	/* Tx-scheduler element identifier */
- 	u16 q_id;	/* Entry in VSI's txq_map bitmap */
-@@ -662,6 +664,7 @@ int ice_up(struct ice_vsi *vsi);
- int ice_down(struct ice_vsi *vsi);
- int ice_vsi_cfg(struct ice_vsi *vsi);
- struct ice_vsi *ice_lb_vsi_setup(struct ice_pf *pf, struct ice_port_info *pi);
-+int ice_vsi_determine_xdp_res(struct ice_vsi *vsi);
- int ice_prepare_xdp_rings(struct ice_vsi *vsi, struct bpf_prog *prog);
- int ice_destroy_xdp_rings(struct ice_vsi *vsi);
- int
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index d44a657384e6..09890a69b154 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -3152,7 +3152,9 @@ int ice_vsi_rebuild(struct ice_vsi *vsi, bool init_vsi)
- 
- 		ice_vsi_map_rings_to_vectors(vsi);
- 		if (ice_is_xdp_ena_vsi(vsi)) {
--			vsi->num_xdp_txq = num_possible_cpus();
-+			ret = ice_vsi_determine_xdp_res(vsi);
-+			if (ret)
-+				goto err_vectors;
- 			ret = ice_prepare_xdp_rings(vsi, vsi->xdp_prog);
- 			if (ret)
- 				goto err_vectors;
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 9f7388698b82..7ab207cda62b 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -42,6 +42,8 @@ MODULE_PARM_DESC(debug, "netif level (0=none,...,16=all)");
- #endif /* !CONFIG_DYNAMIC_DEBUG */
- 
- static DEFINE_IDA(ice_aux_ida);
-+DEFINE_STATIC_KEY_FALSE(ice_xdp_locking_key);
-+EXPORT_SYMBOL(ice_xdp_locking_key);
- 
- static struct workqueue_struct *ice_wq;
- static const struct net_device_ops ice_netdev_safe_mode_ops;
-@@ -2383,10 +2385,15 @@ static int ice_xdp_alloc_setup_rings(struct ice_vsi *vsi)
- 			goto free_xdp_rings;
- 		ice_set_ring_xdp(xdp_ring);
- 		xdp_ring->xsk_pool = ice_tx_xsk_pool(xdp_ring);
-+		spin_lock_init(&xdp_ring->tx_lock);
- 	}
- 
--	ice_for_each_rxq(vsi, i)
--		vsi->rx_rings[i]->xdp_ring = vsi->xdp_rings[i];
-+	ice_for_each_rxq(vsi, i) {
-+		if (static_key_enabled(&ice_xdp_locking_key))
-+			vsi->rx_rings[i]->xdp_ring = vsi->xdp_rings[i % vsi->num_xdp_txq];
-+		else
-+			vsi->rx_rings[i]->xdp_ring = vsi->xdp_rings[i];
-+	}
- 
- 	return 0;
- 
-@@ -2451,6 +2458,10 @@ int ice_prepare_xdp_rings(struct ice_vsi *vsi, struct bpf_prog *prog)
- 	if (__ice_vsi_get_qs(&xdp_qs_cfg))
- 		goto err_map_xdp;
- 
-+	if (static_key_enabled(&ice_xdp_locking_key))
-+		netdev_warn(vsi->netdev,
-+			    "Could not allocate one XDP Tx ring per CPU, XDP_TX/XDP_REDIRECT actions will be slower\n");
-+
- 	if (ice_xdp_alloc_setup_rings(vsi))
- 		goto clear_xdp_rings;
- 
-@@ -2567,6 +2578,9 @@ int ice_destroy_xdp_rings(struct ice_vsi *vsi)
- 	devm_kfree(ice_pf_to_dev(pf), vsi->xdp_rings);
- 	vsi->xdp_rings = NULL;
- 
-+	if (static_key_enabled(&ice_xdp_locking_key))
-+		static_branch_dec(&ice_xdp_locking_key);
-+
- 	if (ice_is_reset_in_progress(pf->state) || !vsi->q_vectors[0])
- 		return 0;
- 
-@@ -2601,6 +2615,29 @@ static void ice_vsi_rx_napi_schedule(struct ice_vsi *vsi)
- 	}
- }
- 
-+/**
-+ * ice_vsi_determine_xdp_res - figure out how many Tx qs can XDP have
-+ * @vsi: VSI to determine the count of XDP Tx qs
-+ *
-+ * returns 0 if Tx qs count is higher than at least half of CPU count,
-+ * -ENOMEM otherwise
-+ */
-+int ice_vsi_determine_xdp_res(struct ice_vsi *vsi)
-+{
-+	u16 avail = ice_get_avail_txq_count(vsi->back);
-+	u16 cpus = num_possible_cpus();
-+
-+	if (avail < cpus / 2)
-+		return -ENOMEM;
-+
-+	vsi->num_xdp_txq = min_t(u16, avail, cpus);
-+
-+	if (vsi->num_xdp_txq < cpus)
-+		static_branch_inc(&ice_xdp_locking_key);
-+
-+	return 0;
-+}
-+
- /**
-  * ice_xdp_setup_prog - Add or remove XDP eBPF program
-  * @vsi: VSI to setup XDP for
-@@ -2630,10 +2667,14 @@ ice_xdp_setup_prog(struct ice_vsi *vsi, struct bpf_prog *prog,
- 	}
- 
- 	if (!ice_is_xdp_ena_vsi(vsi) && prog) {
--		vsi->num_xdp_txq = num_possible_cpus();
--		xdp_ring_err = ice_prepare_xdp_rings(vsi, prog);
--		if (xdp_ring_err)
--			NL_SET_ERR_MSG_MOD(extack, "Setting up XDP Tx resources failed");
-+		xdp_ring_err = ice_vsi_determine_xdp_res(vsi);
-+		if (xdp_ring_err) {
-+			NL_SET_ERR_MSG_MOD(extack, "Not enough Tx resources for XDP");
-+		} else {
-+			xdp_ring_err = ice_prepare_xdp_rings(vsi, prog);
-+			if (xdp_ring_err)
-+				NL_SET_ERR_MSG_MOD(extack, "Setting up XDP Tx resources failed");
-+		}
- 	} else if (ice_is_xdp_ena_vsi(vsi) && !prog) {
- 		xdp_ring_err = ice_destroy_xdp_rings(vsi);
- 		if (xdp_ring_err)
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index 7d8e4af65ca3..7714fc7bab2b 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -545,7 +545,11 @@ ice_run_xdp(struct ice_ring *rx_ring, struct xdp_buff *xdp,
- 	case XDP_PASS:
- 		return ICE_XDP_PASS;
- 	case XDP_TX:
-+		if (static_branch_unlikely(&ice_xdp_locking_key))
-+			spin_lock(&xdp_ring->tx_lock);
- 		err = ice_xmit_xdp_ring(xdp->data, xdp->data_end - xdp->data, xdp_ring);
-+		if (static_branch_unlikely(&ice_xdp_locking_key))
-+			spin_unlock(&xdp_ring->tx_lock);
- 		if (err == ICE_XDP_CONSUMED)
- 			goto out_failure;
- 		return err;
-@@ -597,7 +601,14 @@ ice_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **frames,
- 	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
- 		return -EINVAL;
- 
--	xdp_ring = vsi->xdp_rings[queue_index];
-+	if (static_branch_unlikely(&ice_xdp_locking_key)) {
-+		queue_index %= vsi->num_xdp_txq;
-+		xdp_ring = vsi->xdp_rings[queue_index];
-+		spin_lock(&xdp_ring->tx_lock);
-+	} else {
-+		xdp_ring = vsi->xdp_rings[queue_index];
-+	}
-+
- 	for (i = 0; i < n; i++) {
- 		struct xdp_frame *xdpf = frames[i];
- 		int err;
-@@ -611,6 +622,9 @@ ice_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **frames,
- 	if (unlikely(flags & XDP_XMIT_FLUSH))
- 		ice_xdp_ring_update_tail(xdp_ring);
- 
-+	if (static_branch_unlikely(&ice_xdp_locking_key))
-+		spin_unlock(&xdp_ring->tx_lock);
-+
- 	return nxmit;
- }
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
-index 8c30d92af4c9..7916d2adebeb 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.h
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
-@@ -332,6 +332,7 @@ struct ice_tx_ring {
- 	struct rcu_head rcu;		/* to avoid race on free */
- 	DECLARE_BITMAP(xps_state, ICE_TX_NBITS);	/* XPS Config State */
- 	struct ice_ptp_tx *tx_tstamps;
-+	spinlock_t tx_lock;
- 	u32 txq_teid;			/* Added Tx queue TEID */
- #define ICE_TX_FLAGS_RING_XDP		BIT(0)
- 	u8 flags;
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-index f82e2789ad93..d18ea4612ba4 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-@@ -348,6 +348,11 @@ void ice_finalize_xdp_rx(struct ice_tx_ring *xdp_ring, unsigned int xdp_res)
- 	if (xdp_res & ICE_XDP_REDIR)
- 		xdp_do_flush_map();
- 
--	if (xdp_res & ICE_XDP_TX)
-+	if (xdp_res & ICE_XDP_TX) {
-+		if (static_branch_unlikely(&ice_xdp_locking_key))
-+			spin_lock(&xdp_ring->tx_lock);
- 		ice_xdp_ring_update_tail(xdp_ring);
-+		if (static_branch_unlikely(&ice_xdp_locking_key))
-+			spin_unlock(&xdp_ring->tx_lock);
-+	}
- }
--- 
-2.20.1
-
+For ICMP the PMTU update should look at the header returned in the icmp
+payload to determine which device needs the pmtu exception.
