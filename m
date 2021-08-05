@@ -2,130 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 012163E16F5
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 16:29:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26F7D3E1707
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 16:33:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241700AbhHEO3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 10:29:48 -0400
-Received: from mga14.intel.com ([192.55.52.115]:28696 "EHLO mga14.intel.com"
+        id S241976AbhHEOd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 10:33:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51504 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233183AbhHEO3r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Aug 2021 10:29:47 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10067"; a="213893038"
-X-IronPort-AV: E=Sophos;i="5.84,296,1620716400"; 
-   d="scan'208";a="213893038"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2021 07:29:32 -0700
-X-IronPort-AV: E=Sophos;i="5.84,296,1620716400"; 
-   d="scan'208";a="442448718"
-Received: from apeddoll-mobl1.amr.corp.intel.com (HELO [10.209.20.48]) ([10.209.20.48])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2021 07:29:30 -0700
-Subject: Re: [PATCH V2 03/14] x86/set_memory: Add x86_set_memory_enc static
- call support
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Tianyu Lan <ltykernel@gmail.com>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
-        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
-        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
-        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
-        Tianyu.Lan@microsoft.com, rppt@kernel.org,
-        kirill.shutemov@linux.intel.com, akpm@linux-foundation.org,
-        brijesh.singh@amd.com, thomas.lendacky@amd.com, pgonda@google.com,
-        david@redhat.com, krish.sadhukhan@oracle.com, saravanand@fb.com,
-        aneesh.kumar@linux.ibm.com, xen-devel@lists.xenproject.org,
-        martin.b.radev@gmail.com, ardb@kernel.org, rientjes@google.com,
-        tj@kernel.org, keescook@chromium.org,
-        michael.h.kelley@microsoft.com, iommu@lists.linux-foundation.org,
-        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org, vkuznets@redhat.com, parri.andrea@gmail.com
-References: <20210804184513.512888-1-ltykernel@gmail.com>
- <20210804184513.512888-4-ltykernel@gmail.com>
- <5823af8a-7dbb-dbb0-5ea2-d9846aa2a36a@intel.com>
- <942e6fcb-3bdf-9294-d3db-ca311db440d3@gmail.com>
- <YQv0bRBUq1N5+jgG@hirez.programming.kicks-ass.net>
-From:   Dave Hansen <dave.hansen@intel.com>
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
- z5cecg==
-Message-ID: <fa63e6ad-9536-d5e9-d754-fa04fad69252@intel.com>
-Date:   Thu, 5 Aug 2021 07:29:28 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S241678AbhHEOdy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Aug 2021 10:33:54 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B4F6260F70;
+        Thu,  5 Aug 2021 14:33:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628174020;
+        bh=uS5k7NT/OtSSpIhp7kkMdv3wNhYKJVGqUHgVMB90X+k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pQsSYEtjIUMsWaCO9Q0Gj0qiHIPDbbs4GmN4Dq0d3dh7CgX8aof2xXi/vu4KHgkdm
+         ro1miJjlCGWMTgEnpnjIdd+c39+/8kVesjyMjf4uV36w6PMjyEh5i2S/4a1ccgbrv3
+         yO1HRKw54EdqJqCuxVSFt3QK+AUJULqhnw5JnLB6Oq29VmMEqNqIi31L4p5CfqO7ka
+         Yh4L9pLxPWWrfPeueVtWyZH3Wv0HtTjJTHSED1B64vcPH0ffmdXWMD6Nv/re6bon8i
+         Rv2vJ3Nj20PmNF9ZGUUufxws20DYpGH6dUFu11O/LmNGImt9diCVfcZEverM3SHbeH
+         ZFY1yZ+ovBA3w==
+Date:   Thu, 5 Aug 2021 17:33:35 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1] netdevsim: Forbid devlink reload when adding
+ or deleting ports
+Message-ID: <YQv2v5cTqLvoPc4n@unreal>
+References: <53cd1a28dd34ced9fb4c39885c6e13523e97d62c.1628161323.git.leonro@nvidia.com>
+ <20210805061547.3e0869ad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YQvs4wRIIEDG6Dcu@unreal>
+ <20210805072342.17faf851@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <YQv0bRBUq1N5+jgG@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210805072342.17faf851@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/5/21 7:23 AM, Peter Zijlstra wrote:
-> This is assuming any of this is actually performance critical, based off
-> of this using static_call() to begin with.
+On Thu, Aug 05, 2021 at 07:23:42AM -0700, Jakub Kicinski wrote:
+> On Thu, 5 Aug 2021 16:51:31 +0300 Leon Romanovsky wrote:
+> > > > +	nsim_bus_dev = nsim_dev->nsim_bus_dev;
+> > > > +	if (!mutex_trylock(&nsim_bus_dev->nsim_bus_reload_lock))
+> > > > +		return -EOPNOTSUPP;  
+> > > 
+> > > Why not -EBUSY?  
+> > 
+> > This is what devlink_reload_disable() returns, so I kept same error.
+> > It is not important at all.
+> > 
+> > What about the following change on top of this patch?
+> 
+> LGTM, the only question is whether we should leave in_reload true 
+> if nsim_dev->fail_reload is set.
 
-This code is not performance critical.
+I don't think so, it will block add/delete ports.
 
-I think I sent folks off on a wild goose chase when I asked that we make
-an effort to optimize code that does:
-
-	if (some_hyperv_check())
-		foo();
-
-	if (some_amd_feature_check())
-		bar();
-
-with checks that will actually compile away when Hyper-V or
-some_amd_feature() is disabled.  That's less about performance and just
-about good hygiene.  I *wanted* to see
-cpu_feature_enabled(X86_FEATURE...) checks.
-
-Someone suggested using static calls, and off we went...
-
-Could we please just use cpu_feature_enabled()?
+> 
+> > @@ -889,17 +890,26 @@ static int nsim_dev_reload_up(struct devlink *devlink, enum devlink_reload_actio
+> >  			      struct netlink_ext_ack *extack)
+> >  {
+> >  	struct nsim_dev *nsim_dev = devlink_priv(devlink);
+> > +	struct nsim_bus_dev *nsim_bus_dev;
+> > +	int ret;
+> > +
+> > +	nsim_bus_dev = nsim_dev->nsim_bus_dev;
+> > +	mutex_lock(&nsim_bus_dev->nsim_bus_reload_lock);
+> > +	nsim_bus_dev->in_reload = false;
+> >  
+> >  	if (nsim_dev->fail_reload) {
+> >  		/* For testing purposes, user set debugfs fail_reload
+> >  		 * value to true. Fail right away.
+> >  		 */
+> >  		NL_SET_ERR_MSG_MOD(extack, "User setup the reload to fail for testing purposes");
+> > +		mutex_unlock(&nsim_bus_dev->nsim_bus_reload_lock);
+> >  		return -EINVAL;
+> >  	}
+> >  
+> >  	*actions_performed = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT);
+> > -	return nsim_dev_reload_create(nsim_dev, extack);
+> > +	ret = nsim_dev_reload_create(nsim_dev, extack);
+> > +	mutex_unlock(&nsim_bus_dev->nsim_bus_reload_lock);
+> > +	return ret;
+> >  }
+> 
+> 
