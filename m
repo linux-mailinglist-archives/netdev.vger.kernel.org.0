@@ -2,85 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A6D23E1D1D
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 21:59:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 458F33E1CEE
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 21:44:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243087AbhHET75 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 15:59:57 -0400
-Received: from smtp5.emailarray.com ([65.39.216.39]:49297 "EHLO
-        smtp5.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242910AbhHET7v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 15:59:51 -0400
-Received: (qmail 83248 invoked by uid 89); 5 Aug 2021 19:52:56 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21ANzEuMjEyLjEzOC4zOQ==) (POLARISLOCAL)  
-  by smtp5.emailarray.com with SMTP; 5 Aug 2021 19:52:56 -0000
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, richardcochran@gmail.com
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH net-next 6/6] ptp: ocp: Remove pending_image indicator from devlink
-Date:   Thu,  5 Aug 2021 12:52:48 -0700
-Message-Id: <20210805195248.35665-7-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210805195248.35665-1-jonathan.lemon@gmail.com>
-References: <20210805195248.35665-1-jonathan.lemon@gmail.com>
+        id S238707AbhHEToe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 15:44:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59138 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230107AbhHETob (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 15:44:31 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D40FC061765
+        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 12:44:16 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id s22-20020a17090a1c16b0290177caeba067so17544094pjs.0
+        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 12:44:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ftm3zfKV6cpZYHKiwh7RI7XBwvcEz4eEvPAk+OMRUDA=;
+        b=AiI5oLhAaXyaR3SelPewteL4mJEYEc8AT+m39Z5oK666U2KmUalH0V/Q3PVNYdxyh+
+         pT/htNE/pG8f0RblYqtzbq0cjvqhKOstqn1U6oKns3zmNiF0uI/1fVova6+HCtP3yYZh
+         FZ8OFiwBLhcoeWS8uluHq88j4d7258KHrdcakZJ3wLOQ0mcBNNKyBAekqdIuE2OtH4gp
+         8V3DmcVxt/jcSCirJIblDWlGhCsvHLoO7raBntgN3UPtSxBMDdRmzhoaQ3D8pC/qH1Cv
+         XY+44eeRqWsmnHXoMwYzl3m9zlROKHrmNWBtYhH7leiujgsjOwCaEiXOoMvWTZEuheZd
+         cwKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ftm3zfKV6cpZYHKiwh7RI7XBwvcEz4eEvPAk+OMRUDA=;
+        b=jXMziBYgL1Cp3dcwr3/jeUbbDm33W6KmNvUqNrcxqKyCaV2VLaAetaBb2mHt7NhZg2
+         mBrf8PdSU8E36LsyYznUvuG8uRM9jqfkiTp13wELXdBZJaVtewVpQ1+z43WR+/9sy1+h
+         RU7aXhEBNilxCnAJ/Jc/bsQbMrUe7+8b0zpDNLvQWIIPKkcgg55T7Q6WubJ9jH5Grv+Q
+         Fe2E6up0qIwIhXm2Ks/vyIOia5J2Z/DmA8viWXrBpOXXB20CpD6QH03Gu9LbfNAMu/Ni
+         JC7XuQZe6nr4SEw304NxcgZBhiwaQ1QC+LsRxfdp9r9+mWhayZzCgSlln39kAEk514TC
+         dsvg==
+X-Gm-Message-State: AOAM532BHTye2uKbAAy9USF6GAdPd+gDXqV/jY9SUkM5/htKodrIPT+T
+        fWvg7FU5eIpx3/ZqX3RaLcM/S2OEPeIAHvrRo0EM0A==
+X-Google-Smtp-Source: ABdhPJy33KaTp4XtlbKdMxRSehhUd59CykvfbtbM5r61VDZ0N+etwKCXbdTEw65Chwe10nsN/sSiu5v0t/KGL99tTmA=
+X-Received: by 2002:a62:6304:0:b029:3c7:be8b:ae6 with SMTP id
+ x4-20020a6263040000b02903c7be8b0ae6mr419609pfb.55.1628192655927; Thu, 05 Aug
+ 2021 12:44:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210805183100.49071-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20210805183100.49071-1-andriy.shevchenko@linux.intel.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Thu, 5 Aug 2021 21:53:57 +0200
+Message-ID: <CAMZdPi_+GpG8h2tJ1AxOj6HaPiXXDh6aC2RvO=+zXRy_AQpWkg@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] wwan: core: Avoid returning error pointer from wwan_create_dev()
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After writing an image blob to the flash memory, a reboot is required
-to reload the FPGA.  There is no versioning prsent in the FPGA image
-file, so only a running version is available.  The 'stored version'
-was set to 'pending' in order to indicate a reboot was needed.
+On Thu, 5 Aug 2021 at 20:38, Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> wwan_create_dev() is expected to return either valid pointer or NULL,
+> In some cases it might return the error pointer. Prevent this by converting
+> it to NULL after wwan_dev_get_by_parent().
 
-This isn't reliable, as the module could be unloaded/loaded, losing
-the "reboot needed" indicator.  Also, the devlink 'stored version'
-information is designed to refer to the actual image version.
+wwan_create_dev is called both from wwan_register_ops() and
+wwan_create_port(), one using IS_ERR and the other using NULL testing,
+they should be aligned as well.
 
-Unfortunately, there is no method to determine the flash image version
-other than booting it, so remove the devlink stored version setting.
-
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
----
- drivers/ptp/ptp_ocp.c | 10 ----------
- 1 file changed, 10 deletions(-)
-
-diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index 1412015fd261..6b9c14586987 100644
---- a/drivers/ptp/ptp_ocp.c
-+++ b/drivers/ptp/ptp_ocp.c
-@@ -171,7 +171,6 @@ struct ptp_ocp {
- 	u8			serial[6];
- 	int			flash_start;
- 	bool			has_serial;
--	bool			pending_image;
- };
- 
- struct ocp_resource {
-@@ -836,8 +835,6 @@ ptp_ocp_devlink_flash_update(struct devlink *devlink,
- 	msg = err ? "Flash error" : "Flash complete";
- 	devlink_flash_update_status_notify(devlink, msg, NULL, 0, 0);
- 
--	bp->pending_image = true;
--
- 	put_device(dev);
- 	return err;
- }
-@@ -854,13 +851,6 @@ ptp_ocp_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
- 	if (err)
- 		return err;
- 
--	if (bp->pending_image) {
--		err = devlink_info_version_stored_put(req,
--						      "timecard", "pending");
--		if (err)
--			return err;
--	}
--
- 	if (bp->image) {
- 		u32 ver = ioread32(&bp->image->version);
- 
--- 
-2.31.1
-
+Regards,
+Loic
