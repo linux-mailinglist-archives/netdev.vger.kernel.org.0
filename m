@@ -2,130 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E1393E160C
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 15:50:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDDEA3E1611
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 15:51:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241767AbhHENui (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 09:50:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39824 "EHLO mail.kernel.org"
+        id S241776AbhHENvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 09:51:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40612 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233033AbhHENuh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Aug 2021 09:50:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 632FD6113B;
-        Thu,  5 Aug 2021 13:50:23 +0000 (UTC)
+        id S233033AbhHENvv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Aug 2021 09:51:51 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 60D4661156;
+        Thu,  5 Aug 2021 13:51:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628171423;
-        bh=nT1UWnENjBDcl40entDFb9eLWswm/nuKc503srol/vs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gIchlBOMqTDeBdHZTHenHuInKv3KPHn8Meym0knKTakBQy70DvHmNpoau1xhq17Xb
-         pVr0TkUEe7oHjFXzveRVMD/lrUVnV2SY22MjBTTUjRd9NiG6I6nPZvZ8CcvZbKRgQD
-         Kp1ouuwH8pn8IU3cE4EbO3Nqz6Ia9VHuPURg5TY6DfB+UEmvgpVCtPvUWZvqA3RQ2B
-         ff7YfkJdPXdl059bjZ9uRUZvZm5lnCrIeowDDdL5tObHk6zgrlRxCNhT559wRqy0fa
-         aV+4AZmbuUNlRYLEagzocbq32FRkU9dUZwVqTSi5bsWpeZyag7n5GMSJ1nWq2qEH0D
-         BWQRarPdpMPPw==
-Date:   Thu, 5 Aug 2021 06:50:22 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Takeshi Misawa <jeliantsurux@gmail.com>
-Cc:     David Howells <dhowells@redhat.com>, netdev@vger.kernel.org,
-        Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org
-Subject: Re: [PATCH net] net: Fix memory leak in ieee802154_raw_deliver
-Message-ID: <20210805065022.574e0691@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210805075414.GA15796@DESKTOP>
-References: <20210805075414.GA15796@DESKTOP>
+        s=k20201202; t=1628171497;
+        bh=eIjO8q3dhBFOBiTJiXZLDxR693f1XsUtcz1lB0NBadg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=euCaLvEL1JhYPrWQAXHI9RKCbFe+XEs+yvYcp3K31Dk/QfcDZ6QjmwzKpOdxTLXjj
+         lgPrLBw80OY6Mky90gvJ9RFKWy7MPcUUCofCSva/sqZnwY3f8RBm7seSw4OCjWXTQA
+         0jyolV+GGmbWzh1SFvuiIo6FgnPQdTHOc9QcWQ7mo4JjoXm5C8kMer5aZdCiy3yAUB
+         K3U+Fe346FWSBn5TwvZpwiMkTpb76W6+Vml3Dv0ZpGG5d3aqRo0wJOn5gXaDH94EgE
+         a4alq8+UH2rq4LH7g6H1w+DlplsQKun0r0XpB3VIbKVKDOce3OZ1lDY1Zk/oC4Wkga
+         2FTnSYL4Dc9YQ==
+Date:   Thu, 5 Aug 2021 16:51:31 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1] netdevsim: Forbid devlink reload when adding
+ or deleting ports
+Message-ID: <YQvs4wRIIEDG6Dcu@unreal>
+References: <53cd1a28dd34ced9fb4c39885c6e13523e97d62c.1628161323.git.leonro@nvidia.com>
+ <20210805061547.3e0869ad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210805061547.3e0869ad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 5 Aug 2021 16:54:14 +0900 Takeshi Misawa wrote:
-> If IEEE-802.15.4-RAW is closed before receive skb, skb is leaked.
-> Fix this, by freeing sk_receive_queue in sk->sk_destruct().
+On Thu, Aug 05, 2021 at 06:15:47AM -0700, Jakub Kicinski wrote:
+> On Thu,  5 Aug 2021 14:05:41 +0300 Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > In order to remove complexity in devlink core related to
+> > devlink_reload_enable/disable, let's rewrite new_port/del_port
+> > logic to rely on internal to netdevsim lock.
+> > 
+> > We should protect only reload_down flow because it destroys nsim_dev,
+> > which is needed for nsim_dev_port_add/nsim_dev_port_del to hold
+> > port_list_lock.
 > 
-> syzbot report:
-> BUG: memory leak
-> unreferenced object 0xffff88810f644600 (size 232):
->   comm "softirq", pid 0, jiffies 4294967032 (age 81.270s)
->   hex dump (first 32 bytes):
->     10 7d 4b 12 81 88 ff ff 10 7d 4b 12 81 88 ff ff  .}K......}K.....
->     00 00 00 00 00 00 00 00 40 7c 4b 12 81 88 ff ff  ........@|K.....
->   backtrace:
->     [<ffffffff83651d4a>] skb_clone+0xaa/0x2b0 net/core/skbuff.c:1496
->     [<ffffffff83fe1b80>] ieee802154_raw_deliver net/ieee802154/socket.c:369 [inline]
->     [<ffffffff83fe1b80>] ieee802154_rcv+0x100/0x340 net/ieee802154/socket.c:1070
->     [<ffffffff8367cc7a>] __netif_receive_skb_one_core+0x6a/0xa0 net/core/dev.c:5384
->     [<ffffffff8367cd07>] __netif_receive_skb+0x27/0xa0 net/core/dev.c:5498
->     [<ffffffff8367cdd9>] netif_receive_skb_internal net/core/dev.c:5603 [inline]
->     [<ffffffff8367cdd9>] netif_receive_skb+0x59/0x260 net/core/dev.c:5662
->     [<ffffffff83fe6302>] ieee802154_deliver_skb net/mac802154/rx.c:29 [inline]
->     [<ffffffff83fe6302>] ieee802154_subif_frame net/mac802154/rx.c:102 [inline]
->     [<ffffffff83fe6302>] __ieee802154_rx_handle_packet net/mac802154/rx.c:212 [inline]
->     [<ffffffff83fe6302>] ieee802154_rx+0x612/0x620 net/mac802154/rx.c:284
->     [<ffffffff83fe59a6>] ieee802154_tasklet_handler+0x86/0xa0 net/mac802154/main.c:35
->     [<ffffffff81232aab>] tasklet_action_common.constprop.0+0x5b/0x100 kernel/softirq.c:557
->     [<ffffffff846000bf>] __do_softirq+0xbf/0x2ab kernel/softirq.c:345
->     [<ffffffff81232f4c>] do_softirq kernel/softirq.c:248 [inline]
->     [<ffffffff81232f4c>] do_softirq+0x5c/0x80 kernel/softirq.c:235
->     [<ffffffff81232fc1>] __local_bh_enable_ip+0x51/0x60 kernel/softirq.c:198
->     [<ffffffff8367a9a4>] local_bh_enable include/linux/bottom_half.h:32 [inline]
->     [<ffffffff8367a9a4>] rcu_read_unlock_bh include/linux/rcupdate.h:745 [inline]
->     [<ffffffff8367a9a4>] __dev_queue_xmit+0x7f4/0xf60 net/core/dev.c:4221
->     [<ffffffff83fe2db4>] raw_sendmsg+0x1f4/0x2b0 net/ieee802154/socket.c:295
->     [<ffffffff8363af16>] sock_sendmsg_nosec net/socket.c:654 [inline]
->     [<ffffffff8363af16>] sock_sendmsg+0x56/0x80 net/socket.c:674
->     [<ffffffff8363deec>] __sys_sendto+0x15c/0x200 net/socket.c:1977
->     [<ffffffff8363dfb6>] __do_sys_sendto net/socket.c:1989 [inline]
->     [<ffffffff8363dfb6>] __se_sys_sendto net/socket.c:1985 [inline]
->     [<ffffffff8363dfb6>] __x64_sys_sendto+0x26/0x30 net/socket.c:1985
-> 
-> Fixes: 9ec767160357 ("net: add IEEE 802.15.4 socket family implementation")
-> Reported-and-tested-by: syzbot+1f68113fa907bf0695a8@syzkaller.appspotmail.com
-> Signed-off-by: Takeshi Misawa <jeliantsurux@gmail.com>
-> ---
-> Dear David Howells, Jakub Kicinski
+> I don't understand why we only have to protect reload_down.
 
-Please use scripts/get_maintainer.pl to find the people you should CC.
-Adding Alexander and Stefan.
+I assumed that if we succeeded to pass reload_down and we are in
+reload_up stage, everything was already bailed out.
 
-> syzbot reported memory leak in ieee802154_raw_deliver.
 > 
-> I send a patch that passed syzbot reproducer test.
-> Please consider this memory leak and patch.
-> 
-> syzbot link:
-> https://syzkaller.appspot.com/bug?id=8dd3bcb1dc757587adfb4dbb810fd24dd990283f
-> 
-> Regards.
-> ---
->  net/ieee802154/socket.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/ieee802154/socket.c b/net/ieee802154/socket.c
-> index a45a0401adc5..c25f7617770c 100644
-> --- a/net/ieee802154/socket.c
-> +++ b/net/ieee802154/socket.c
-> @@ -984,6 +984,11 @@ static const struct proto_ops ieee802154_dgram_ops = {
->  	.sendpage	   = sock_no_sendpage,
->  };
->  
-> +static void ieee802154_sock_destruct(struct sock *sk)
-> +{
-> +	skb_queue_purge(&sk->sk_receive_queue);
-> +}
-> +
->  /* Create a socket. Initialise the socket, blank the addresses
->   * set the state.
->   */
-> @@ -1024,7 +1029,7 @@ static int ieee802154_create(struct net *net, struct socket *sock,
->  	sock->ops = ops;
->  
->  	sock_init_data(sock, sk);
-> -	/* FIXME: sk->sk_destruct */
-> +	sk->sk_destruct = ieee802154_sock_destruct;
->  	sk->sk_family = PF_IEEE802154;
->  
->  	/* Checksums on by default */
+> What protects us from adding a port right after down? That'd hit a
+> destroyed mutex, up wipes the port list etc...
 
+You will have very similar crash to already existing one:
+* parallel call to del_device and add_port will hit same issue.
+
+The idea is not make netdevsim universally correct, but to ensure that
+it doesn't crash immediately.
+
+> 
+> > +	nsim_bus_dev = nsim_dev->nsim_bus_dev;
+> > +	if (!mutex_trylock(&nsim_bus_dev->nsim_bus_reload_lock))
+> > +		return -EOPNOTSUPP;
+> 
+> Why not -EBUSY?
+
+This is what devlink_reload_disable() returns, so I kept same error.
+It is not important at all.
+
+What about the following change on top of this patch?
+
+diff --git a/drivers/net/netdevsim/bus.c b/drivers/net/netdevsim/bus.c
+index a29ec264119d..62d033a1a557 100644
+--- a/drivers/net/netdevsim/bus.c
++++ b/drivers/net/netdevsim/bus.c
+@@ -196,6 +196,11 @@ new_port_store(struct device *dev, struct device_attribute *attr,
+ 	if (!mutex_trylock(&nsim_bus_dev->nsim_bus_reload_lock))
+ 		return -EBUSY;
+ 
++	if (nsim_bus_dev->in_reload) {
++		mutex_unlock(&nsim_bus_dev->nsim_bus_reload_lock);
++		return -EBUSY;
++	}
++
+ 	ret = nsim_dev_port_add(nsim_bus_dev, NSIM_DEV_PORT_TYPE_PF, port_index);
+ 	mutex_unlock(&nsim_bus_dev->nsim_bus_reload_lock);
+ 	return ret ? ret : count;
+@@ -221,6 +226,11 @@ del_port_store(struct device *dev, struct device_attribute *attr,
+ 	if (!mutex_trylock(&nsim_bus_dev->nsim_bus_reload_lock))
+ 		return -EBUSY;
+ 
++	if (nsim_bus_dev->in_reload) {
++		mutex_unlock(&nsim_bus_dev->nsim_bus_reload_lock);
++		return -EBUSY;
++	}
++
+ 	ret = nsim_dev_port_del(nsim_bus_dev, NSIM_DEV_PORT_TYPE_PF, port_index);
+ 	mutex_unlock(&nsim_bus_dev->nsim_bus_reload_lock);
+ 	return ret ? ret : count;
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index ff5714209b86..53068e184c90 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -878,6 +878,7 @@ static int nsim_dev_reload_down(struct devlink *devlink, bool netns_change,
+ 		mutex_unlock(&nsim_bus_dev->nsim_bus_reload_lock);
+ 		return -EOPNOTSUPP;
+ 	}
++	nsim_bus_dev->in_reload = true;
+ 
+ 	nsim_dev_reload_destroy(nsim_dev);
+ 	mutex_unlock(&nsim_bus_dev->nsim_bus_reload_lock);
+@@ -889,17 +890,26 @@ static int nsim_dev_reload_up(struct devlink *devlink, enum devlink_reload_actio
+ 			      struct netlink_ext_ack *extack)
+ {
+ 	struct nsim_dev *nsim_dev = devlink_priv(devlink);
++	struct nsim_bus_dev *nsim_bus_dev;
++	int ret;
++
++	nsim_bus_dev = nsim_dev->nsim_bus_dev;
++	mutex_lock(&nsim_bus_dev->nsim_bus_reload_lock);
++	nsim_bus_dev->in_reload = false;
+ 
+ 	if (nsim_dev->fail_reload) {
+ 		/* For testing purposes, user set debugfs fail_reload
+ 		 * value to true. Fail right away.
+ 		 */
+ 		NL_SET_ERR_MSG_MOD(extack, "User setup the reload to fail for testing purposes");
++		mutex_unlock(&nsim_bus_dev->nsim_bus_reload_lock);
+ 		return -EINVAL;
+ 	}
+ 
+ 	*actions_performed = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT);
+-	return nsim_dev_reload_create(nsim_dev, extack);
++	ret = nsim_dev_reload_create(nsim_dev, extack);
++	mutex_unlock(&nsim_bus_dev->nsim_bus_reload_lock);
++	return ret;
+ }
+ 
+ static int nsim_dev_info_get(struct devlink *devlink,
+diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
+index 1c20bcbd9d91..793c86dc5a9c 100644
+--- a/drivers/net/netdevsim/netdevsim.h
++++ b/drivers/net/netdevsim/netdevsim.h
+@@ -362,6 +362,7 @@ struct nsim_bus_dev {
+ 	struct nsim_vf_config *vfconfigs;
+ 	/* Lock for devlink->reload_enabled in netdevsim module */
+ 	struct mutex nsim_bus_reload_lock;
++	bool in_reload;
+ 	bool init;
+ };
+ 
+
+
+Thanks
