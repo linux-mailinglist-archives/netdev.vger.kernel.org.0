@@ -2,106 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48DD33E1180
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 11:39:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65CE13E11CA
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 12:00:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239354AbhHEJjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 05:39:52 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:13281 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239159AbhHEJjv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 05:39:51 -0400
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GgNjv31F7z7x6Z;
-        Thu,  5 Aug 2021 17:34:43 +0800 (CST)
-Received: from [10.67.103.235] (10.67.103.235) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Thu, 5 Aug 2021 17:39:35 +0800
-Subject: Re: [PATCH V7 8/9] PCI/IOV: Add 10-Bit Tag sysfs files for VF devices
-To:     Bjorn Helgaas <helgaas@kernel.org>
-References: <20210805000525.GA1693795@bjorn-Precision-5520>
-CC:     <hch@infradead.org>, <kw@linux.com>, <logang@deltatee.com>,
-        <leon@kernel.org>, <linux-pci@vger.kernel.org>,
-        <rajur@chelsio.com>, <hverkuil-cisco@xs4all.nl>,
-        <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
-From:   Dongdong Liu <liudongdong3@huawei.com>
-Message-ID: <06da7110-da9f-5afe-e086-7a9a9b448fd7@huawei.com>
-Date:   Thu, 5 Aug 2021 17:39:35 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        id S240106AbhHEKAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 06:00:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59842 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240021AbhHEKAT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Aug 2021 06:00:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9C1B361108;
+        Thu,  5 Aug 2021 10:00:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628157605;
+        bh=nhfHHaTG+BB6zlYyzCgWIha6OSgDvkxetAeXUhsmXqM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Q2q0ZEq8b39SiaZImETqZoMsxseKE5ES+lQC5KjVsWCfbdzC/YVBUJA3xffwnNnxJ
+         ST2hJjHN/at6Ri4oUom1E037HK1qL3iMvl9ydtJ6e1OUmURUiX7YrhFtkYitJy+joP
+         bKcm9CiYxG1Rn6Dhy67Tfnys/Rkno42nRlri3yijCYzHQ+rrwtc8QdYtBA38iZnu43
+         8FWi0+BpD/4sMOKX6Lqz2r6AsyfGyDKYxAImHwykqKOgsQCNcndwfesPuxliNo52PH
+         v6h14ROeL66EyfthpejFBE5A8g1TdyRBZwvt7bGvBlTFXF80BhkCrekOrIgcRC7Jni
+         0DoIhv5q2h4og==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8DAD760A7C;
+        Thu,  5 Aug 2021 10:00:05 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20210805000525.GA1693795@bjorn-Precision-5520>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.103.235]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH][next] mctp: remove duplicated assignment of pointer hdr
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162815760557.30466.3323577657561138862.git-patchwork-notify@kernel.org>
+Date:   Thu, 05 Aug 2021 10:00:05 +0000
+References: <20210804121530.110521-1-colin.king@canonical.com>
+In-Reply-To: <20210804121530.110521-1-colin.king@canonical.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     jk@codeconstruct.com.au, matt@codeconstruct.com.au,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Miss a comment reply  :).
+Hello:
 
-On 2021/8/5 8:05, Bjorn Helgaas wrote:
-> On Wed, Aug 04, 2021 at 09:47:07PM +0800, Dongdong Liu wrote:
->> PCIe spec 5.0 r1.0 section 2.2.6.2 says that if an Endpoint supports
->> sending Requests to other Endpoints (as opposed to host memory), the
->> Endpoint must not send 10-Bit Tag Requests to another given Endpoint
->> unless an implementation-specific mechanism determines that the
->> Endpoint supports 10-Bit Tag Completer capability.
->> Add sriov_vf_10bit_tag file to query the status of VF 10-Bit Tag
->> Requester Enable. Add sriov_vf_10bit_tag_ctl file to disable the VF
->> 10-Bit Tag Requester. The typical use case is for p2pdma when the peer
->> device does not support 10-BIT Tag Completer.
->
-> Fix the usual spec quoting issue.  Or maybe this is not actually
-> quoted but is missing blank lines between paragraphs.
->
-> s/10-BIT/10-Bit/
->
->> Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
->> ---
->>  Documentation/ABI/testing/sysfs-bus-pci | 20 +++++++++++++
->>  drivers/pci/iov.c                       | 50 +++++++++++++++++++++++++++++++++
->>  2 files changed, 70 insertions(+)
->>
->> diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
->> index 0e0c97d..8fdbfae 100644
->> --- a/Documentation/ABI/testing/sysfs-bus-pci
->> +++ b/Documentation/ABI/testing/sysfs-bus-pci
->> @@ -421,3 +421,23 @@ Description:
->>  		to disable 10-Bit Tag Requester when the driver does not bind
->>  		the deivce. The typical use case is for p2pdma when the peer
->>  		device does not support 10-BIT Tag Completer.
->> +
->> +What:		/sys/bus/pci/devices/.../sriov_vf_10bit_tag
->> +Date:		August 2021
->> +Contact:	Dongdong Liu <liudongdong3@huawei.com>
->> +Description:
->> +		This file is associated with a SR-IOV physical function (PF).
->> +		It is visible when the device has VF 10-Bit Tag Requester
->> +		Supported. It contains the status of VF 10-Bit Tag Requester
->> +		Enable. The file is only readable.
->
-> s/only readable/read-only/
->
->> +What:		/sys/bus/pci/devices/.../sriov_vf_10bit_tag_ctl
->
-> Why does this file have "_ctl" on the end when the one in patch 7/9
-> does not?
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-PF: 0000:82:00.0  VF:0000:82:10.0
-/sys/bus/pci/devices/0000:82:00.0/sriov_vf_10bit_tag
-/sys/bus/pci/devices/0000:82:10.0/sriov_vf_10bit_tag_ctl
+On Wed,  4 Aug 2021 13:15:30 +0100 you wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> The pointer hdr is being initialized and also re-assigned with the
+> same value from the call to function mctp_hdr. Static analysis reports
+> that the initializated value is unused. The second assignment is
+> duplicated and can be removed.
+> 
+> [...]
 
-sriov_vf_10bit_tag is used to qeury the status of VF 10-Bit Tag
-Requester Enable,  bind with PF device.
+Here is the summary with links:
+  - [next] mctp: remove duplicated assignment of pointer hdr
+    https://git.kernel.org/netdev/net-next/c/df7ba0eb25ed
 
-sriov_vf_10bit_tag_ctl is used to disable the VF 10-Bit Tag Requester,
-bind with VF device, although in fact it writes PF SR-IOV control 
-register, just detect if the VF driver have already bond with the VF deivce.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Thanks,
-Dongdong
+
