@@ -2,177 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B9B13E1A4C
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 19:23:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A84083E1A54
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 19:26:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239673AbhHERXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 13:23:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54660 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238198AbhHERXj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 13:23:39 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F60C061765;
-        Thu,  5 Aug 2021 10:23:25 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id cl16-20020a17090af690b02901782c35c4ccso7447101pjb.5;
-        Thu, 05 Aug 2021 10:23:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CCA4VfC8oJsngcHNQHqxfvcnSQIQ9FY8OuEOGE4n/ac=;
-        b=cZavTf7ANl8OFNfJo563qA51fsfdLu+lGVjrKfWZApxc9LCwUJIVKLARVzKNDKTrfD
-         yaDhlep9ypUPzIMOIB6QvD4Z2FbwiGGYsBNSZFpYaKvJBZGaa0e2eiBfanGv9uFiBnsh
-         gFQX/iBVdVtVi1SLQQACfqq5Pc45KU6RG62xVK6yiBtRg9m0/q78o7XUVOXB3H/zhnJ4
-         BUwcKYTPEd303BZgpXjDzdK6CkHVkzLPiMgATGRFqPsrHU5cuvdEJ4xYfIeRQ1OKnIf1
-         aRdLHWkr4yupNpC5KNaSJotTkSIHkCZusf0P81XtY4LGMpY/Dc0g3yCfEpIh+BDrcsX4
-         TPLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CCA4VfC8oJsngcHNQHqxfvcnSQIQ9FY8OuEOGE4n/ac=;
-        b=asdgkSWMZRmOVMsCsMwEfkr0tGZ5eJ1kgUeVvUkcJv3rbLiNDntX3hzTAqEDgeRD7k
-         l6dGEzFrNpRV3wWD0PIsDb+kkoWWhdqI/wAJ/u52SwZUvpUFLbfcC9rL6PBR1HSgdtP+
-         Ror+WC5v52uUTdN5YNvZz9J6/ClpHOM8Iz4+8in7dCWKxYmakmJ+Y94E2iE6o8cOPTvg
-         8gCh0xjkz5XDr21fulOt8uX3sopI1+AyYTU5mlkb/+Lt9W8NhKPh2fWyERH2KIU54zz3
-         4vNmZV3GD+iBpweJkh8VShp56jcQN5V7pd/EBx0QIIuEAr/1FChytpoNxwjoBfB4D4kC
-         u8Fg==
-X-Gm-Message-State: AOAM533bhuDW8y1w6NXesa3mW1M1TkEX+1j1D8Gqzwsh7grHM24ZDq5o
-        ka/gDEwJ7PDmPnxmMMPOP4I=
-X-Google-Smtp-Source: ABdhPJxwNlBA5AefYt8BJuAxtTtzEWiCghRdd7UiBDfhSVo+ZgTTYiDj+LCAR2b5qmqgwsbo0yoUZw==
-X-Received: by 2002:a63:a0f:: with SMTP id 15mr452388pgk.80.1628184204831;
-        Thu, 05 Aug 2021 10:23:24 -0700 (PDT)
-Received: from haswell-ubuntu20.lan ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id j187sm7381115pfb.132.2021.08.05.10.23.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Aug 2021 10:23:24 -0700 (PDT)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: dsa: mt7530: drop untagged frames on VLAN-aware ports without PVID
-Date:   Fri,  6 Aug 2021 01:23:14 +0800
-Message-Id: <20210805172315.362165-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S239868AbhHER0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 13:26:49 -0400
+Received: from smtp8.emailarray.com ([65.39.216.67]:58088 "EHLO
+        smtp8.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230004AbhHER0p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 13:26:45 -0400
+Received: (qmail 79734 invoked by uid 89); 5 Aug 2021 17:26:25 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMQ==) (POLARISLOCAL)  
+  by smtp8.emailarray.com with SMTP; 5 Aug 2021 17:26:25 -0000
+Date:   Thu, 5 Aug 2021 10:26:23 -0700
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, richardcochran@gmail.com, kernel-team@fb.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v4] ptp: ocp: Expose various resources on the
+ timecard.
+Message-ID: <20210805172623.mwyh4wt3gupfiurd@bsd-mbp.dhcp.thefacebook.com>
+References: <20210804033327.345759-1-jonathan.lemon@gmail.com>
+ <20210804140957.1fd894dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210804235223.rkyxuvdeowcf7wgl@bsd-mbp.dhcp.thefacebook.com>
+ <20210805060326.4c5fbef9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210805060326.4c5fbef9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver currently still accepts untagged frames on VLAN-aware ports
-without PVID. Use PVC.ACC_FRM to drop untagged frames in that case.
+On Thu, Aug 05, 2021 at 06:03:26AM -0700, Jakub Kicinski wrote:
+> On Wed, 4 Aug 2021 16:52:23 -0700 Jonathan Lemon wrote:
+> > > > +static int
+> > > > +ptp_ocp_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
+> > > > +			 struct netlink_ext_ack *extack)
+> > > > +{
+> > > > +	struct ptp_ocp *bp = devlink_priv(devlink);
+> > > > +	char buf[32];
+> > > > +	int err;
+> > > > +
+> > > > +	err = devlink_info_driver_name_put(req, KBUILD_MODNAME);
+> > > > +	if (err)
+> > > > +		return err;
+> > > > +
+> > > > +	if (bp->pending_image) {
+> > > > +		err = devlink_info_version_stored_put(req,
+> > > > +						      "timecard", "pending");  
+> > > 
+> > > "pending" is not a version. It seems you're talking to the flash
+> > > directly, why not read the version?  
+> > 
+> > We're not talking to the flash yet.  We're writing a new image, but don't
+> > know the image version, since it's not accessible from the FPGA blob.  So
+> > since we're don't know what the stored image is until we reboot, I've set
+> > it to 'pending' here - aka "pending reboot".  Could also be "unknown".
+> 
+> Having the driver remember that the device was flashed is not a solid
+> indication that the image is actually different. It may be that user
+> flashed the same version, driver may get reloaded and lose the
+> indication.. Let's not make a precedent for (ab) use of the version
+> field to indicate reset required.
 
-Signed-off-by: DENG Qingfang <dqfext@gmail.com>
----
- drivers/net/dsa/mt7530.c | 32 ++++++++++++++++++++++++++++++--
- drivers/net/dsa/mt7530.h |  7 +++++++
- 2 files changed, 37 insertions(+), 2 deletions(-)
+I'd like to have some way to remind/tell the user that a reset is required.
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 385e169080d9..df167f0529bb 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -1257,9 +1257,11 @@ mt7530_port_set_vlan_unaware(struct dsa_switch *ds, int port)
- 		mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
- 			   MT7530_PORT_FALLBACK_MODE);
- 
--	mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK | PVC_EG_TAG_MASK,
-+	mt7530_rmw(priv, MT7530_PVC_P(port),
-+		   VLAN_ATTR_MASK | PVC_EG_TAG_MASK | ACC_FRM_MASK,
- 		   VLAN_ATTR(MT7530_VLAN_TRANSPARENT) |
--		   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
-+		   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT) |
-+		   MT7530_VLAN_ACC_ALL);
- 
- 	/* Set PVID to 0 */
- 	mt7530_rmw(priv, MT7530_PPBV1_P(port), G0_PORT_VID_MASK,
-@@ -1297,6 +1299,11 @@ mt7530_port_set_vlan_aware(struct dsa_switch *ds, int port)
- 			   MT7530_PORT_SECURITY_MODE);
- 		mt7530_rmw(priv, MT7530_PPBV1_P(port), G0_PORT_VID_MASK,
- 			   G0_PORT_VID(priv->ports[port].pvid));
-+
-+		/* Only accept tagged frames if PVID is not set */
-+		if (!priv->ports[port].pvid)
-+			mt7530_rmw(priv, MT7530_PVC_P(port), ACC_FRM_MASK,
-+				   MT7530_VLAN_ACC_TAGGED);
- 	}
- 
- 	/* Set the port as a user port which is to be able to recognize VID
-@@ -1624,11 +1631,26 @@ mt7530_port_vlan_add(struct dsa_switch *ds, int port,
- 	if (pvid) {
- 		priv->ports[port].pvid = vlan->vid;
- 
-+		/* Accept all frames if PVID is set */
-+		mt7530_rmw(priv, MT7530_PVC_P(port), ACC_FRM_MASK,
-+			   MT7530_VLAN_ACC_ALL);
-+
- 		/* Only configure PVID if VLAN filtering is enabled */
- 		if (dsa_port_is_vlan_filtering(dsa_to_port(ds, port)))
- 			mt7530_rmw(priv, MT7530_PPBV1_P(port),
- 				   G0_PORT_VID_MASK,
- 				   G0_PORT_VID(vlan->vid));
-+	} else if (priv->ports[port].pvid == vlan->vid) {
-+		/* This VLAN is overwritten without PVID, so unset it */
-+		priv->ports[port].pvid = G0_PORT_VID_DEF;
-+
-+		/* Only accept tagged frames if the port is VLAN-aware */
-+		if (dsa_port_is_vlan_filtering(dsa_to_port(ds, port)))
-+			mt7530_rmw(priv, MT7530_PVC_P(port), ACC_FRM_MASK,
-+				   MT7530_VLAN_ACC_TAGGED);
-+
-+		mt7530_rmw(priv, MT7530_PPBV1_P(port), G0_PORT_VID_MASK,
-+			   G0_PORT_VID_DEF);
- 	}
- 
- 	mutex_unlock(&priv->reg_mutex);
-@@ -1654,6 +1676,12 @@ mt7530_port_vlan_del(struct dsa_switch *ds, int port,
- 	 */
- 	if (priv->ports[port].pvid == vlan->vid) {
- 		priv->ports[port].pvid = G0_PORT_VID_DEF;
-+
-+		/* Only accept tagged frames if the port is VLAN-aware */
-+		if (dsa_port_is_vlan_filtering(dsa_to_port(ds, port)))
-+			mt7530_rmw(priv, MT7530_PVC_P(port), ACC_FRM_MASK,
-+				   MT7530_VLAN_ACC_TAGGED);
-+
- 		mt7530_rmw(priv, MT7530_PPBV1_P(port), G0_PORT_VID_MASK,
- 			   G0_PORT_VID_DEF);
- 	}
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index 4a91d80f51bb..fe4cd2ac26d0 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -238,6 +238,7 @@ enum mt7530_port_mode {
- #define  PVC_EG_TAG_MASK		PVC_EG_TAG(7)
- #define  VLAN_ATTR(x)			(((x) & 0x3) << 6)
- #define  VLAN_ATTR_MASK			VLAN_ATTR(3)
-+#define  ACC_FRM_MASK			GENMASK(1, 0)
- 
- enum mt7530_vlan_port_eg_tag {
- 	MT7530_VLAN_EG_DISABLED = 0,
-@@ -249,6 +250,12 @@ enum mt7530_vlan_port_attr {
- 	MT7530_VLAN_TRANSPARENT = 3,
- };
- 
-+enum mt7530_vlan_port_acc_frm {
-+	MT7530_VLAN_ACC_ALL = 0,
-+	MT7530_VLAN_ACC_TAGGED = 1,
-+	MT7530_VLAN_ACC_UNTAGGED = 2,
-+};
-+
- #define  STAG_VPID			(((x) & 0xffff) << 16)
- 
- /* Register for port port-and-protocol based vlan 1 control */
--- 
-2.25.1
+Right now, I can only get the running version from the FPGA register, so
+after flashing, there's no way for me to know what's on the flash (or if 
+the flash write failed).  Setting "pending" or "reboot" works for most
+cases - but obviously fails if the driver is reloaded. 
 
+But most users won't do rmmod/insmod, just a reboot.
+
+
+> > > > +	}
+> > > > +
+> > > > +	if (bp->image) {
+> > > > +		u32 ver = ioread32(&bp->image->version);
+> > > > +
+> > > > +		if (ver & 0xffff) {
+> > > > +			sprintf(buf, "%d", ver);
+> > > > +			err = devlink_info_version_running_put(req,
+> > > > +							       "timecard",
+> > > > +							       buf);
+> > > > +		} else {
+> > > > +			sprintf(buf, "%d", ver >> 16);
+> > > > +			err = devlink_info_version_running_put(req,
+> > > > +							       "golden flash",
+> > > > +							       buf);  
+> > > 
+> > > What's the difference between "timecard" and "golden flash"?  
+> > 
+> > There are two images stored in flash: "golden image", an image that
+> > just provides flash functionality, and the actual featured FPGA image.
+> > 
+> > > Why call firmware for a timecard timecard? We don't call NIC
+> > > firmware "NIC".  
+> > 
+> > I didn't see a standard string to use.  I can call it 'fw.version', just
+> > needed to differentiate it between the 'golden flash' loader and actual
+> > firmware.
+> 
+> Is the 'golden flash' a backup in case full featured image does not
+> work or 'first stage' image/'loader'? IIUC it's the latter so maybe
+> we can just use "loader"? "fw" for the actual image would be better 
+> than "fw.version" the entire string is a version after all.
+
+Undetermined.  I believe that /currently/ it is the same image, but
+that is just happenstance.  The vendor says the only functionality 
+that the golden image guarantees is flashing - the rest of the FPGA
+may or may not work.
+
+I'll use "fw" and "loader".
+
+
+> > > > +static void
+> > > > +ptp_ocp_devlink_health_register(struct devlink *devlink)
+> > > > +{
+> > > > +	struct ptp_ocp *bp = devlink_priv(devlink);
+> > > > +	struct devlink_health_reporter *r;
+> > > > +
+> > > > +	r = devlink_health_reporter_create(devlink, &ptp_ocp_health_ops, 0, bp);
+> > > > +	if (IS_ERR(r))
+> > > > +		dev_err(&bp->pdev->dev, "Failed to create reporter, err %ld\n",
+> > > > +			PTR_ERR(r));
+> > > > +	bp->health = r;
+> > > > +}  
+> > > 
+> > > What made you use devlink health here? Why not just print that "No GPS
+> > > signal" message to the logs? Devlink health is supposed to give us
+> > > meaningful context dumps and remediation, here neither is used.  
+> > 
+> > The initial idea was to use 'devlink monitor' report the immediate
+> > failure of the GNSS signal (rather than going through the kernel logs)
+> > The 'devlink health' also keeps a count of how often the GPS signal
+> > is lost.
+> > 
+> > Our application guys decided to use a different monitoring method,
+> > so I can rip this out if objectionable. 
+> 
+> Great, thanks!
