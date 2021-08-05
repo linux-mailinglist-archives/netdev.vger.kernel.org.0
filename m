@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A32FC3E137D
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 13:07:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 491DB3E1378
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 13:06:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240776AbhHELHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 07:07:12 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:12455 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240708AbhHELGm (ORCPT
+        id S240546AbhHELG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 07:06:58 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:13282 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240690AbhHELGm (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 07:06:42 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GgQgX1QDFzclCr;
-        Thu,  5 Aug 2021 19:02:48 +0800 (CST)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GgQf26Z7Rz833d;
+        Thu,  5 Aug 2021 19:01:30 +0800 (CST)
 Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 5 Aug 2021 19:06:22 +0800
+ 15.1.2176.2; Thu, 5 Aug 2021 19:06:23 +0800
 Received: from localhost.localdomain (10.69.192.56) by
  dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -41,9 +41,9 @@ CC:     <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
         <kafai@fb.com>, <songliubraving@fb.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH net-next 1/4] page_pool: keep pp info as long as page pool owns the page
-Date:   Thu, 5 Aug 2021 19:05:23 +0800
-Message-ID: <1628161526-29076-2-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH net-next 2/4] page_pool: add interface to manipulate frag count in page pool
+Date:   Thu, 5 Aug 2021 19:05:24 +0800
+Message-ID: <1628161526-29076-3-git-send-email-linyunsheng@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1628161526-29076-1-git-send-email-linyunsheng@huawei.com>
 References: <1628161526-29076-1-git-send-email-linyunsheng@huawei.com>
@@ -57,184 +57,146 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, page->pp is cleared and set everytime the page
-is recycled, which is unnecessary.
+For 32 bit systems with 64 bit dma, dma_addr[1] is used to
+store the upper 32 bit dma addr, those system should be rare
+those days.
 
-So only set the page->pp when the page is added to the page
-pool and only clear it when the page is released from the
-page pool.
+For normal system, the dma_addr[1] in 'struct page' is not
+used, so we can reuse dma_addr[1] for storing frag count,
+which means how many frags this page might be splited to.
 
-This is also a preparation to support allocating frag page
-in page pool.
+In order to simplify the page frag support in the page pool,
+the PAGE_POOL_DMA_USE_PP_FRAG_COUNT macro is added to indicate
+the 32 bit systems with 64 bit dma, and the page frag support
+in page pool is disabled for such system.
 
-Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+The newly added page_pool_set_frag_count() is called to reserve
+the maximum frag count before any page frag is passed to the
+user. The page_pool_atomic_sub_frag_count_return() is called
+when user is done with the page frag.
+
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 ---
- drivers/net/ethernet/marvell/mvneta.c           |  6 +-----
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c |  2 +-
- drivers/net/ethernet/ti/cpsw.c                  |  2 +-
- drivers/net/ethernet/ti/cpsw_new.c              |  2 +-
- include/linux/skbuff.h                          |  4 +---
- include/net/page_pool.h                         |  7 -------
- net/core/page_pool.c                            | 21 +++++++++++++++++----
- 7 files changed, 22 insertions(+), 22 deletions(-)
+ include/linux/mm_types.h | 18 +++++++++++++-----
+ include/net/page_pool.h  | 46 +++++++++++++++++++++++++++++++++++++++-------
+ net/core/page_pool.c     |  4 ++++
+ 3 files changed, 56 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 361bc4f..89bf31fd 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -2327,7 +2327,7 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
- 	if (!skb)
- 		return ERR_PTR(-ENOMEM);
- 
--	skb_mark_for_recycle(skb, virt_to_page(xdp->data), pool);
-+	skb_mark_for_recycle(skb);
- 
- 	skb_reserve(skb, xdp->data - xdp->data_hard_start);
- 	skb_put(skb, xdp->data_end - xdp->data);
-@@ -2339,10 +2339,6 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
- 		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
- 				skb_frag_page(frag), skb_frag_off(frag),
- 				skb_frag_size(frag), PAGE_SIZE);
--		/* We don't need to reset pp_recycle here. It's already set, so
--		 * just mark fragments for recycling.
--		 */
--		page_pool_store_mem_info(skb_frag_page(frag), pool);
- 	}
- 
- 	return skb;
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 3229baf..320eddb 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -3995,7 +3995,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
- 		}
- 
- 		if (pp)
--			skb_mark_for_recycle(skb, page, pp);
-+			skb_mark_for_recycle(skb);
- 		else
- 			dma_unmap_single_attrs(dev->dev.parent, dma_addr,
- 					       bm_pool->buf_size, DMA_FROM_DEVICE,
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index cbbd0f6..9d59143 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -431,7 +431,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
- 	skb->protocol = eth_type_trans(skb, ndev);
- 
- 	/* mark skb for recycling */
--	skb_mark_for_recycle(skb, page, pool);
-+	skb_mark_for_recycle(skb);
- 	netif_receive_skb(skb);
- 
- 	ndev->stats.rx_bytes += len;
-diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-index 57d279f..a4234a3 100644
---- a/drivers/net/ethernet/ti/cpsw_new.c
-+++ b/drivers/net/ethernet/ti/cpsw_new.c
-@@ -374,7 +374,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
- 	skb->protocol = eth_type_trans(skb, ndev);
- 
- 	/* mark skb for recycling */
--	skb_mark_for_recycle(skb, page, pool);
-+	skb_mark_for_recycle(skb);
- 	netif_receive_skb(skb);
- 
- 	ndev->stats.rx_bytes += len;
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index b2db9cd..7795979 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -4711,11 +4711,9 @@ static inline u64 skb_get_kcov_handle(struct sk_buff *skb)
- }
- 
- #ifdef CONFIG_PAGE_POOL
--static inline void skb_mark_for_recycle(struct sk_buff *skb, struct page *page,
--					struct page_pool *pp)
-+static inline void skb_mark_for_recycle(struct sk_buff *skb)
- {
- 	skb->pp_recycle = 1;
--	page_pool_store_mem_info(page, pp);
- }
- #endif
- 
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index d33d97c..3e339dd 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -103,11 +103,19 @@ struct page {
+ 			unsigned long pp_magic;
+ 			struct page_pool *pp;
+ 			unsigned long _pp_mapping_pad;
+-			/**
+-			 * @dma_addr: might require a 64-bit value on
+-			 * 32-bit architectures.
+-			 */
+-			unsigned long dma_addr[2];
++			unsigned long dma_addr;
++			union {
++				/**
++				 * dma_addr_upper: might require a 64-bit
++				 * value on 32-bit architectures.
++				 */
++				unsigned long dma_addr_upper;
++				/**
++				 * For frag page support, not supported in
++				 * 32-bit architectures with 64-bit DMA.
++				 */
++				atomic_long_t pp_frag_count;
++			};
+ 		};
+ 		struct {	/* slab, slob and slub */
+ 			union {
 diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index 3dd62dd..8d7744d 100644
+index 8d7744d..42e6997 100644
 --- a/include/net/page_pool.h
 +++ b/include/net/page_pool.h
-@@ -253,11 +253,4 @@ static inline void page_pool_ring_unlock(struct page_pool *pool)
- 		spin_unlock_bh(&pool->ring.producer_lock);
+@@ -45,7 +45,10 @@
+ 					* Please note DMA-sync-for-CPU is still
+ 					* device driver responsibility
+ 					*/
+-#define PP_FLAG_ALL		(PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV)
++#define PP_FLAG_PAGE_FRAG	BIT(2) /* for page frag feature */
++#define PP_FLAG_ALL		(PP_FLAG_DMA_MAP |\
++				 PP_FLAG_DMA_SYNC_DEV |\
++				 PP_FLAG_PAGE_FRAG)
+ 
+ /*
+  * Fast allocation side cache array/stack
+@@ -198,19 +201,48 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
+ 	page_pool_put_full_page(pool, page, true);
  }
  
--/* Store mem_info on struct page and use it while recycling skb frags */
--static inline
--void page_pool_store_mem_info(struct page *page, struct page_pool *pp)
--{
--	page->pp = pp;
--}
--
- #endif /* _NET_PAGE_POOL_H */
++#define PAGE_POOL_DMA_USE_PP_FRAG_COUNT	\
++		(sizeof(dma_addr_t) > sizeof(unsigned long))
++
+ static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
+ {
+-	dma_addr_t ret = page->dma_addr[0];
+-	if (sizeof(dma_addr_t) > sizeof(unsigned long))
+-		ret |= (dma_addr_t)page->dma_addr[1] << 16 << 16;
++	dma_addr_t ret = page->dma_addr;
++
++	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
++		ret |= (dma_addr_t)page->dma_addr_upper << 16 << 16;
++
+ 	return ret;
+ }
+ 
+ static inline void page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
+ {
+-	page->dma_addr[0] = addr;
+-	if (sizeof(dma_addr_t) > sizeof(unsigned long))
+-		page->dma_addr[1] = upper_32_bits(addr);
++	page->dma_addr = addr;
++	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
++		page->dma_addr_upper = upper_32_bits(addr);
++}
++
++static inline void page_pool_set_frag_count(struct page *page, long nr)
++{
++	atomic_long_set(&page->pp_frag_count, nr);
++}
++
++static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
++							  long nr)
++{
++	long ret;
++
++	/* As suggested by Alexander, atomic_long_read() may cover up the
++	 * reference count errors, so avoid calling atomic_long_read() in
++	 * the cases of freeing or draining the page_frags, where we would
++	 * not expect it to match or that are slowpath anyway.
++	 */
++	if (__builtin_constant_p(nr) &&
++	    atomic_long_read(&page->pp_frag_count) == nr)
++		return 0;
++
++	ret = atomic_long_sub_return(nr, &page->pp_frag_count);
++	WARN_ON(ret < 0);
++	return ret;
+ }
+ 
+ static inline bool is_page_pool_compiled_in(void)
 diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 33b7dd7..bee33f6 100644
+index bee33f6..d40c11c 100644
 --- a/net/core/page_pool.c
 +++ b/net/core/page_pool.c
-@@ -206,6 +206,19 @@ static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
- 	return true;
- }
- 
-+static void page_pool_set_pp_info(struct page_pool *pool,
-+				  struct page *page)
-+{
-+	page->pp = pool;
-+	page->pp_magic |= PP_SIGNATURE;
-+}
-+
-+static void page_pool_clear_pp_info(struct page *page)
-+{
-+	page->pp_magic = 0;
-+	page->pp = NULL;
-+}
-+
- static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
- 						 gfp_t gfp)
- {
-@@ -222,7 +235,7 @@ static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
- 		return NULL;
+@@ -67,6 +67,10 @@ static int page_pool_init(struct page_pool *pool,
+ 		 */
  	}
  
--	page->pp_magic |= PP_SIGNATURE;
-+	page_pool_set_pp_info(pool, page);
- 
- 	/* Track how many pages are held 'in-flight' */
- 	pool->pages_state_hold_cnt++;
-@@ -266,7 +279,8 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- 			put_page(page);
- 			continue;
- 		}
--		page->pp_magic |= PP_SIGNATURE;
++	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT &&
++	    pool->p.flags & PP_FLAG_PAGE_FRAG)
++		return -EINVAL;
 +
-+		page_pool_set_pp_info(pool, page);
- 		pool->alloc.cache[pool->alloc.count++] = page;
- 		/* Track how many pages are held 'in-flight' */
- 		pool->pages_state_hold_cnt++;
-@@ -345,7 +359,7 @@ void page_pool_release_page(struct page_pool *pool, struct page *page)
- 			     DMA_ATTR_SKIP_CPU_SYNC);
- 	page_pool_set_dma_addr(page, 0);
- skip_dma_unmap:
--	page->pp_magic = 0;
-+	page_pool_clear_pp_info(page);
+ 	if (ptr_ring_init(&pool->ring, ring_qsize, GFP_KERNEL) < 0)
+ 		return -ENOMEM;
  
- 	/* This may be the last page returned, releasing the pool, so
- 	 * it is not safe to reference pool afterwards.
-@@ -644,7 +658,6 @@ bool page_pool_return_skb_page(struct page *page)
- 	 * The page will be returned to the pool here regardless of the
- 	 * 'flipped' fragment being in use or not.
- 	 */
--	page->pp = NULL;
- 	page_pool_put_full_page(pp, page, false);
- 
- 	return true;
 -- 
 2.7.4
 
