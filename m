@@ -2,105 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD0133E15F0
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 15:44:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E1393E160C
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 15:50:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241261AbhHENon (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 09:44:43 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:61016 "EHLO m43-7.mailgun.net"
+        id S241767AbhHENui (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 09:50:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39824 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239222AbhHENom (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Aug 2021 09:44:42 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1628171069; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=UDqqULtEilcoytZXS/txGxlVIVFuUcqpiXHWmqfAO/E=; b=hynM6R9MEB9mKwo/gtJY/gdKh2DvE3awN/Ft29y/6F58foq+nSUVGVke0XpVuJ4tRAkbCnpy
- b2h+7FJIv8ndtWwqttzDHEMS9P3sNfLuDmy83BX6HF9VUAlidF0IFq/grVqUhVENQmMZZQna
- JCcLdhwcg8uIvzdJpIpSbj+XxAY=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
- 610beb3ab4dfc4b0ef2dfff3 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 05 Aug 2021 13:44:26
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 64548C43144; Thu,  5 Aug 2021 13:44:25 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9B60DC4338A;
-        Thu,  5 Aug 2021 13:44:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 9B60DC4338A
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Liwei Song <liwei.song@windriver.com>
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
-        David <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iwlwifi: select MAC80211_LEDS conditionally
-References: <20210624100823.854-1-liwei.song@windriver.com>
-        <87sg17ilz2.fsf@codeaurora.org>
-        <92d293b4-0ef1-6239-4b91-4af420786980@windriver.com>
-Date:   Thu, 05 Aug 2021 16:44:17 +0300
-In-Reply-To: <92d293b4-0ef1-6239-4b91-4af420786980@windriver.com> (Liwei
-        Song's message of "Thu, 24 Jun 2021 19:06:39 +0800")
-Message-ID: <87fsvoc8ge.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S233033AbhHENuh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Aug 2021 09:50:37 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 632FD6113B;
+        Thu,  5 Aug 2021 13:50:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628171423;
+        bh=nT1UWnENjBDcl40entDFb9eLWswm/nuKc503srol/vs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gIchlBOMqTDeBdHZTHenHuInKv3KPHn8Meym0knKTakBQy70DvHmNpoau1xhq17Xb
+         pVr0TkUEe7oHjFXzveRVMD/lrUVnV2SY22MjBTTUjRd9NiG6I6nPZvZ8CcvZbKRgQD
+         Kp1ouuwH8pn8IU3cE4EbO3Nqz6Ia9VHuPURg5TY6DfB+UEmvgpVCtPvUWZvqA3RQ2B
+         ff7YfkJdPXdl059bjZ9uRUZvZm5lnCrIeowDDdL5tObHk6zgrlRxCNhT559wRqy0fa
+         aV+4AZmbuUNlRYLEagzocbq32FRkU9dUZwVqTSi5bsWpeZyag7n5GMSJ1nWq2qEH0D
+         BWQRarPdpMPPw==
+Date:   Thu, 5 Aug 2021 06:50:22 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Takeshi Misawa <jeliantsurux@gmail.com>
+Cc:     David Howells <dhowells@redhat.com>, netdev@vger.kernel.org,
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org
+Subject: Re: [PATCH net] net: Fix memory leak in ieee802154_raw_deliver
+Message-ID: <20210805065022.574e0691@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210805075414.GA15796@DESKTOP>
+References: <20210805075414.GA15796@DESKTOP>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Liwei Song <liwei.song@windriver.com> writes:
+On Thu, 5 Aug 2021 16:54:14 +0900 Takeshi Misawa wrote:
+> If IEEE-802.15.4-RAW is closed before receive skb, skb is leaked.
+> Fix this, by freeing sk_receive_queue in sk->sk_destruct().
+> 
+> syzbot report:
+> BUG: memory leak
+> unreferenced object 0xffff88810f644600 (size 232):
+>   comm "softirq", pid 0, jiffies 4294967032 (age 81.270s)
+>   hex dump (first 32 bytes):
+>     10 7d 4b 12 81 88 ff ff 10 7d 4b 12 81 88 ff ff  .}K......}K.....
+>     00 00 00 00 00 00 00 00 40 7c 4b 12 81 88 ff ff  ........@|K.....
+>   backtrace:
+>     [<ffffffff83651d4a>] skb_clone+0xaa/0x2b0 net/core/skbuff.c:1496
+>     [<ffffffff83fe1b80>] ieee802154_raw_deliver net/ieee802154/socket.c:369 [inline]
+>     [<ffffffff83fe1b80>] ieee802154_rcv+0x100/0x340 net/ieee802154/socket.c:1070
+>     [<ffffffff8367cc7a>] __netif_receive_skb_one_core+0x6a/0xa0 net/core/dev.c:5384
+>     [<ffffffff8367cd07>] __netif_receive_skb+0x27/0xa0 net/core/dev.c:5498
+>     [<ffffffff8367cdd9>] netif_receive_skb_internal net/core/dev.c:5603 [inline]
+>     [<ffffffff8367cdd9>] netif_receive_skb+0x59/0x260 net/core/dev.c:5662
+>     [<ffffffff83fe6302>] ieee802154_deliver_skb net/mac802154/rx.c:29 [inline]
+>     [<ffffffff83fe6302>] ieee802154_subif_frame net/mac802154/rx.c:102 [inline]
+>     [<ffffffff83fe6302>] __ieee802154_rx_handle_packet net/mac802154/rx.c:212 [inline]
+>     [<ffffffff83fe6302>] ieee802154_rx+0x612/0x620 net/mac802154/rx.c:284
+>     [<ffffffff83fe59a6>] ieee802154_tasklet_handler+0x86/0xa0 net/mac802154/main.c:35
+>     [<ffffffff81232aab>] tasklet_action_common.constprop.0+0x5b/0x100 kernel/softirq.c:557
+>     [<ffffffff846000bf>] __do_softirq+0xbf/0x2ab kernel/softirq.c:345
+>     [<ffffffff81232f4c>] do_softirq kernel/softirq.c:248 [inline]
+>     [<ffffffff81232f4c>] do_softirq+0x5c/0x80 kernel/softirq.c:235
+>     [<ffffffff81232fc1>] __local_bh_enable_ip+0x51/0x60 kernel/softirq.c:198
+>     [<ffffffff8367a9a4>] local_bh_enable include/linux/bottom_half.h:32 [inline]
+>     [<ffffffff8367a9a4>] rcu_read_unlock_bh include/linux/rcupdate.h:745 [inline]
+>     [<ffffffff8367a9a4>] __dev_queue_xmit+0x7f4/0xf60 net/core/dev.c:4221
+>     [<ffffffff83fe2db4>] raw_sendmsg+0x1f4/0x2b0 net/ieee802154/socket.c:295
+>     [<ffffffff8363af16>] sock_sendmsg_nosec net/socket.c:654 [inline]
+>     [<ffffffff8363af16>] sock_sendmsg+0x56/0x80 net/socket.c:674
+>     [<ffffffff8363deec>] __sys_sendto+0x15c/0x200 net/socket.c:1977
+>     [<ffffffff8363dfb6>] __do_sys_sendto net/socket.c:1989 [inline]
+>     [<ffffffff8363dfb6>] __se_sys_sendto net/socket.c:1985 [inline]
+>     [<ffffffff8363dfb6>] __x64_sys_sendto+0x26/0x30 net/socket.c:1985
+> 
+> Fixes: 9ec767160357 ("net: add IEEE 802.15.4 socket family implementation")
+> Reported-and-tested-by: syzbot+1f68113fa907bf0695a8@syzkaller.appspotmail.com
+> Signed-off-by: Takeshi Misawa <jeliantsurux@gmail.com>
+> ---
+> Dear David Howells, Jakub Kicinski
 
-> On 6/24/21 18:41, Kalle Valo wrote:
->> Liwei Song <liwei.song@windriver.com> writes:
->> 
->>> MAC80211_LEDS depends on LEDS_CLASS=y or LEDS_CLASS=MAC80211,
->>> add condition to enable it in iwlwifi/Kconfig to avoid below
->>> compile warning when LEDS_CLASS was set to m:
->>>
->>> WARNING: unmet direct dependencies detected for MAC80211_LEDS
->>>   Depends on [n]: NET [=y] && WIRELESS [=y] && MAC80211 [=y] &&
->>> (LEDS_CLASS [=m]=y || LEDS_CLASS [=m]=MAC80211 [=y])
->>>   Selected by [m]:
->>>   - IWLWIFI_LEDS [=y] && NETDEVICES [=y] && WLAN [=y] &&
->>> WLAN_VENDOR_INTEL [=y] && IWLWIFI [=m] && (LEDS_CLASS [=m]=y ||
->>> LEDS_CLASS [=m]=IWLWIFI [=m]) && (IWLMVM [=m] || IWLDVM [=m])
->>>
->>> Signed-off-by: Liwei Song <liwei.song@windriver.com>
->> 
->> Is this is a new regression or an old bug? What commit caused this?
->
-> It should be exist when the below commit change the dependency of MAC80211_LEDS
-> to fix some build error:
->
-> commit b64acb28da8394485f0762e657470c9fc33aca4d
-> Author: Arnd Bergmann <arnd@arndb.de>
-> Date:   Mon Jan 25 12:36:42 2021 +0100
->
->     ath9k: fix build error with LEDS_CLASS=m
+Please use scripts/get_maintainer.pl to find the people you should CC.
+Adding Alexander and Stefan.
 
-Thanks, it seems LEDS_CLASS is a constant source of problems for
-wireless drivers :/
+> syzbot reported memory leak in ieee802154_raw_deliver.
+> 
+> I send a patch that passed syzbot reproducer test.
+> Please consider this memory leak and patch.
+> 
+> syzbot link:
+> https://syzkaller.appspot.com/bug?id=8dd3bcb1dc757587adfb4dbb810fd24dd990283f
+> 
+> Regards.
+> ---
+>  net/ieee802154/socket.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/ieee802154/socket.c b/net/ieee802154/socket.c
+> index a45a0401adc5..c25f7617770c 100644
+> --- a/net/ieee802154/socket.c
+> +++ b/net/ieee802154/socket.c
+> @@ -984,6 +984,11 @@ static const struct proto_ops ieee802154_dgram_ops = {
+>  	.sendpage	   = sock_no_sendpage,
+>  };
+>  
+> +static void ieee802154_sock_destruct(struct sock *sk)
+> +{
+> +	skb_queue_purge(&sk->sk_receive_queue);
+> +}
+> +
+>  /* Create a socket. Initialise the socket, blank the addresses
+>   * set the state.
+>   */
+> @@ -1024,7 +1029,7 @@ static int ieee802154_create(struct net *net, struct socket *sock,
+>  	sock->ops = ops;
+>  
+>  	sock_init_data(sock, sk);
+> -	/* FIXME: sk->sk_destruct */
+> +	sk->sk_destruct = ieee802154_sock_destruct;
+>  	sk->sk_family = PF_IEEE802154;
+>  
+>  	/* Checksums on by default */
 
-Luca, what should we do? We cannot have compile errors in the tree.
-
-I assigned this patch to me on patchwork.
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
