@@ -2,115 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DF463E0FD5
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 10:04:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12AC13E0FF6
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 10:11:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239180AbhHEIEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 04:04:43 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:13235 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239214AbhHEIER (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 04:04:17 -0400
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GgLj33fdfz1CRVR;
-        Thu,  5 Aug 2021 16:03:51 +0800 (CST)
-Received: from [10.67.103.235] (10.67.103.235) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Thu, 5 Aug 2021 16:03:58 +0800
-Subject: Re: [PATCH V7 5/9] PCI/IOV: Enable 10-Bit tag support for PCIe VF
- devices
-To:     Bjorn Helgaas <helgaas@kernel.org>
-References: <20210804232937.GA1691653@bjorn-Precision-5520>
-CC:     <hch@infradead.org>, <kw@linux.com>, <logang@deltatee.com>,
-        <leon@kernel.org>, <linux-pci@vger.kernel.org>,
-        <rajur@chelsio.com>, <hverkuil-cisco@xs4all.nl>,
-        <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
-From:   Dongdong Liu <liudongdong3@huawei.com>
-Message-ID: <08b7a9b7-2951-43c3-5e81-3461b6724955@huawei.com>
-Date:   Thu, 5 Aug 2021 16:03:58 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        id S239163AbhHEIMF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 04:12:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38566 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235877AbhHEIME (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Aug 2021 04:12:04 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B333B61078;
+        Thu,  5 Aug 2021 08:11:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628151110;
+        bh=UDVn/n+b4ifejuAldecYtpvLiHWebHyZJ2ot8Xm7zJM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=b0bBXsXf0pUJWq2yllF1qZMuHrpPG6LxjhBUeAXyLYJku3Z6bBbvtPXEfZzdzAY/1
+         /3YLTx8JEPhzLoUwkA7bWclJaxsmLuIymRpiuTqfpoXMvKPl3biKRKD2lWLFd6WeDf
+         k5W2c6SUTDZB8SBm2mO+YoeD7VaRpvGBFsCKhbhADb/EkGnNC1eIb5vdTOmJpYPDI6
+         HUT7D1p3WilK3XMdUX0GTesFeeU96OW+WuEUGz5YQC099XO3dRC1PNVGeqM8K/ardt
+         5+2K6ni6aRV6MPBEZ3bfov5VvVNfNqndnt41eLT7yX/bE96MvHJBivgiTiIPHs26x1
+         lNqBUVsEAr/pg==
+Received: by mail-wr1-f45.google.com with SMTP id l18so5343241wrv.5;
+        Thu, 05 Aug 2021 01:11:50 -0700 (PDT)
+X-Gm-Message-State: AOAM5316JnSntH5P0ByQmEcYMyIDAnXUzmfZ981Wmg7T0U38VTC6Ip0I
+        4v6HsPfX7yLZ6PtoWimy2kiQCeSv1i0EawFlk2M=
+X-Google-Smtp-Source: ABdhPJygsRjjgl2ODlzfwGyOxtVwMsKnmyPUzAx8U1eXjyLXcuOHPt8tpnA6IimrkOf9W8kenBTfPfIKmG6jzhpGARQ=
+X-Received: by 2002:adf:e107:: with SMTP id t7mr3674023wrz.165.1628151109296;
+ Thu, 05 Aug 2021 01:11:49 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210804232937.GA1691653@bjorn-Precision-5520>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.103.235]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
+References: <20210804121318.337276-1-arnd@kernel.org> <CO1PR11MB5089A77D5388203C4AA2F9E4D6F19@CO1PR11MB5089.namprd11.prod.outlook.com>
+In-Reply-To: <CO1PR11MB5089A77D5388203C4AA2F9E4D6F19@CO1PR11MB5089.namprd11.prod.outlook.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Thu, 5 Aug 2021 10:11:33 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2ZTmtkU9StyWMG=TwODxqAVEN_AFyGdyerr9C5vUMaVA@mail.gmail.com>
+Message-ID: <CAK8P3a2ZTmtkU9StyWMG=TwODxqAVEN_AFyGdyerr9C5vUMaVA@mail.gmail.com>
+Subject: Re: [PATCH net-next v3] ethernet: fix PTP_1588_CLOCK dependencies
+To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        "drivers@pensando.io" <drivers@pensando.io>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Yangbo Lu <yangbo.lu@nxp.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Simon Horman <simon.horman@netronome.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Aug 4, 2021 at 10:52 PM Keller, Jacob E
+<jacob.e.keller@intel.com> wrote:
 
-On 2021/8/5 7:29, Bjorn Helgaas wrote:
-> On Wed, Aug 04, 2021 at 09:47:04PM +0800, Dongdong Liu wrote:
->> Enable VF 10-Bit Tag Requester when it's upstream component support
->> 10-bit Tag Completer.
+> > diff --git a/drivers/net/ethernet/oki-semi/pch_gbe/Kconfig
+> > b/drivers/net/ethernet/oki-semi/pch_gbe/Kconfig
+> > index af84f72bf08e..4e18b64dceb9 100644
+> > --- a/drivers/net/ethernet/oki-semi/pch_gbe/Kconfig
+> > +++ b/drivers/net/ethernet/oki-semi/pch_gbe/Kconfig
+> > @@ -6,6 +6,7 @@
+> >  config PCH_GBE
+> >       tristate "OKI SEMICONDUCTOR IOH(ML7223/ML7831) GbE"
+> >       depends on PCI && (X86_32 || COMPILE_TEST)
+> > +     depends on PTP_1588_CLOCK
+> >       select MII
+> >       select PTP_1588_CLOCK_PCH
+> >       select NET_PTP_CLASSIFY
 >
-> s/it's/its/
-> s/support/supports/
-Will fix.
->
-> I think "upstream component" here means the PF, doesn't it?  I don't
-> think the PF is really an *upstream* component; there's no routing
-> like with a switch.
-I want to say the switch and root port devices that support 10-Bit
-Tag Completer. Sure, VF also needs to have 10-bit Tag Requester
-Supported capability.
->
->> Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
->> Reviewed-by: Christoph Hellwig <hch@lst.de>
->> ---
->>  drivers/pci/iov.c | 8 ++++++++
->>  1 file changed, 8 insertions(+)
->>
->> diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
->> index dafdc65..0d0bed1 100644
->> --- a/drivers/pci/iov.c
->> +++ b/drivers/pci/iov.c
->> @@ -634,6 +634,10 @@ static int sriov_enable(struct pci_dev *dev, int nr_virtfn)
->>
->>  	pci_iov_set_numvfs(dev, nr_virtfn);
->>  	iov->ctrl |= PCI_SRIOV_CTRL_VFE | PCI_SRIOV_CTRL_MSE;
->> +	if ((iov->cap & PCI_SRIOV_CAP_VF_10BIT_TAG_REQ) &&
->> +	    dev->ext_10bit_tag)
->> +		iov->ctrl |= PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN;
->> +
->>  	pci_cfg_access_lock(dev);
->>  	pci_write_config_word(dev, iov->pos + PCI_SRIOV_CTRL, iov->ctrl);
->>  	msleep(100);
->> @@ -650,6 +654,8 @@ static int sriov_enable(struct pci_dev *dev, int nr_virtfn)
->>
->>  err_pcibios:
->>  	iov->ctrl &= ~(PCI_SRIOV_CTRL_VFE | PCI_SRIOV_CTRL_MSE);
->> +	if (iov->ctrl & PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN)
->> +		iov->ctrl &= ~PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN;
->>  	pci_cfg_access_lock(dev);
->>  	pci_write_config_word(dev, iov->pos + PCI_SRIOV_CTRL, iov->ctrl);
->>  	ssleep(1);
->> @@ -682,6 +688,8 @@ static void sriov_disable(struct pci_dev *dev)
->>
->>  	sriov_del_vfs(dev);
->>  	iov->ctrl &= ~(PCI_SRIOV_CTRL_VFE | PCI_SRIOV_CTRL_MSE);
->> +	if (iov->ctrl & PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN)
->> +		iov->ctrl &= ~PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN;
->
-> You can just clear PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN unconditionally,
-> can't you?  I know it wouldn't change anything, but removing the "if"
-> makes the code prettier.  You could just add it in the existing
-> PCI_SRIOV_CTRL_VFE | PCI_SRIOV_CTRL_MSE mask.
-Will do.
+> I did notice this one driver which now directly depends on PTP_1558_CLOCK, but I
+> suspect that's because it actually doesn't work if you disable PTP?
 
-Thanks,
-Dongdong
->
->>  	pci_cfg_access_lock(dev);
->>  	pci_write_config_word(dev, iov->pos + PCI_SRIOV_CTRL, iov->ctrl);
->>  	ssleep(1);
->> --
->> 2.7.4
->>
-> .
->
+Yes, it's the 'select PTP_1588_CLOCK_PCH' and 'select NET_PTP_CLASSIFY'
+that actually need it.
+
+      Arnd
