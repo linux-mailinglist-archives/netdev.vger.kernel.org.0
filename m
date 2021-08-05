@@ -2,147 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 563A43E0FB2
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 09:54:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83A853E0FBE
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 09:57:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238834AbhHEHyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 03:54:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35936 "EHLO
+        id S239062AbhHEH5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 03:57:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238830AbhHEHyc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 03:54:32 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C97AC061765
-        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 00:54:18 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id z3so6074819plg.8
-        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 00:54:18 -0700 (PDT)
+        with ESMTP id S229470AbhHEH5b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 03:57:31 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886C0C0613C1
+        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 00:57:17 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id i10-20020a05600c354ab029025a0f317abfso5582684wmq.3
+        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 00:57:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=R49BBtfwUSQ0Gn8IrXLWnW688wWW2GAReEpfTpLLUm4=;
-        b=EPCTMrMXzZSix+p+Oi/ysvUIe/5QCJsuzBejYSLrLblGCWl3XZGeRIhXbOKL1n0hkQ
-         iD9cK55xd3t2U239+6JmzpGoWZN1t/6AhnX3ej+Q2RpRmiVK2TevMpP7/27jJ8KSudWU
-         Rf7A/YxxQ9Ra6xYyUx/HFFRUtvv1aeTB4uUAnQElzMHQYLuMcO+MFTNs8Bmv8fjH9Yvc
-         e6dftAwccuM3M0oqM9y7HRbGG0BJCvrmq9audc3KQstA4FUeqpGYMaR8ojSv5zUEPqSj
-         u7AZY6Wqku92iM+Dda/99z2ZXTSoq6zkNKSnSom1vKSfYXMA6h7G9dledQTaTVMjJMIE
-         PDug==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=8f5irXTOZ+x1gqeO+/tRlTIZs9mBkkMUf4VKbD7vsag=;
+        b=Cjclz8AMLNKZ/ixpsGLo+HKLOR46pfRb386vdXb2uBUOFefb6AEr/JxCkmjY/3ja44
+         E4vQHrVP0gOphI/lf35gPhbAlms+8PIy8RPMX0zrs35OfswTfsfJh1gCVqNxAsLp+r3f
+         CEcIT/9vNxJSIU30ExwwJELU6CIhKMQLpuOOUhKrCrkH8zcm6+vJkBEg05IHQLXoxpNr
+         zVpETORHtLOpC5Q9VkIaj/MQ9SmzWBi/i60zfJg0ENdfCoIhwQIoM2FjFB12nRThk+Ek
+         qJevUFuVOyOxBgJIIp36POaxE0lSD6uaiQHR6YH9+M4CB6OHUiGgjb/oalS7dnpDhLJd
+         skXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=R49BBtfwUSQ0Gn8IrXLWnW688wWW2GAReEpfTpLLUm4=;
-        b=FvzvqDLmYh9DqJNdHBApfIesbuwaXDdtTpQLxHE8of7oZo/WfFaDzGtDRrAJPYjR5w
-         xrOVuD/M4mCCxgCuRq8pIgXR0ZKqEGN9eMJaU6/xQiMurGXQQ7FA4u6vmU4W28hSY61D
-         TU9XEigmhlGpcx6rQgEE4KArjSnEbVL6fx7YcEujp/EMLwxpk/wgPse9K8QestwB4Qdf
-         6rDKilOCv/ffi8Abvc2AUDZXCVIhuGkW1JCFX6IFAGtT3F0WgylqwMlML0MqgPtJZxMC
-         CLFr8+5oRZg1kIbjwAXz3FC1r3I6+cAjr3x4swBVWEtU78OQWLbucsuE3coeukDs7iWX
-         QlYg==
-X-Gm-Message-State: AOAM5311d/j80XALIF2qooGQ/56Yiu3AEMZ/7Mqt5bT33Ooklncem3fj
-        YkvIGud4F+Cw4gK4FMpSqQ==
-X-Google-Smtp-Source: ABdhPJworZo0SuDFX4r/a7j32vEs12EOwd+SqzzGHiSjkUZ1Nci/H7ixzDgN1VfLkNGq2fiYAjyS/Q==
-X-Received: by 2002:a17:902:c651:b029:12c:1ec0:a8b8 with SMTP id s17-20020a170902c651b029012c1ec0a8b8mr2867053pls.40.1628150058060;
-        Thu, 05 Aug 2021 00:54:18 -0700 (PDT)
-Received: from DESKTOP (softbank126075190089.bbtec.net. [126.75.190.89])
-        by smtp.gmail.com with ESMTPSA id n23sm5986591pgv.76.2021.08.05.00.54.16
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=8f5irXTOZ+x1gqeO+/tRlTIZs9mBkkMUf4VKbD7vsag=;
+        b=UGkTRHfol0/tzXy6rYpk9bjQGj75WPJBnCmOcFlB+UfPlkITZNcgNYGyXcd60uko2r
+         OQvtBtVtoZCD5OkWfQP4gqN7J7/l1qtHXwFDc7bT6U008/g4HTbSk8QxEBiIef4TD850
+         1lrQsMZa0m6Sg33fpMQiOCPgCEremmSKUjSnAFDFb5n5NxQk7imd34GsdlSFzVuwJpa1
+         7Gu2AZllNdBNccRJjUUGUWAK/vUBThApYy8dSpAntBjFWCIkjV+GAAkjpG+frwwJ6E6m
+         q0kR71LU2qvcy2n0887belREbMi7pzmpyTYvhhSY7wablBZrOEAf6XAGD/jHkzrmn91o
+         NCtg==
+X-Gm-Message-State: AOAM532PU41LIplHoizKqXJzmkXhJQEvyYLYmaCTnM6AqN4wdLWB8NmQ
+        zSYafqO4z3bbhevhCxhtnbrWAA==
+X-Google-Smtp-Source: ABdhPJwhLLopAA/dTEvx/HThhsTVbzLYE3o0/re8+AVTzlEJn7scdP89e0g2se26WnCV5dLwJZ3FQg==
+X-Received: by 2002:a05:600c:4101:: with SMTP id j1mr3576009wmi.110.1628150236118;
+        Thu, 05 Aug 2021 00:57:16 -0700 (PDT)
+Received: from google.com ([109.180.115.228])
+        by smtp.gmail.com with ESMTPSA id f26sm5233182wrd.41.2021.08.05.00.57.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Aug 2021 00:54:17 -0700 (PDT)
-Date:   Thu, 5 Aug 2021 16:54:14 +0900
-From:   Takeshi Misawa <jeliantsurux@gmail.com>
-To:     David Howells <dhowells@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net] net: Fix memory leak in ieee802154_raw_deliver
-Message-ID: <20210805075414.GA15796@DESKTOP>
+        Thu, 05 Aug 2021 00:57:15 -0700 (PDT)
+Date:   Thu, 5 Aug 2021 08:57:13 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Marc Zyngier <maz@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        linux-amlogic@lists.infradead.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Android Kernel Team <kernel-team@android.com>
+Subject: Re: [PATCH 1/2] irqchip: irq-meson-gpio: make it possible to build
+ as a module
+Message-ID: <YQuZ2cKVE+3Os25Z@google.com>
+References: <20201020072532.949137-2-narmstrong@baylibre.com>
+ <7hsga8kb8z.fsf@baylibre.com>
+ <CAF2Aj3g6c8FEZb3e1by6sd8LpKLaeN5hsKrrQkZUvh8hosiW9A@mail.gmail.com>
+ <87r1hwwier.wl-maz@kernel.org>
+ <7h7diwgjup.fsf@baylibre.com>
+ <87im0m277h.wl-maz@kernel.org>
+ <CAGETcx9OukoWM_qprMse9aXdzCE=GFUgFEkfhhNjg44YYsOQLw@mail.gmail.com>
+ <87sfzpwq4f.wl-maz@kernel.org>
+ <CAGETcx95kHrv8wA-O+-JtfH7H9biJEGJtijuPVN0V5dUKUAB3A@mail.gmail.com>
+ <CAGETcx8bpWQEnkpJ0YW9GqX8WE0ewT45zqkbWWdZ0ktJBhG4yQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAGETcx8bpWQEnkpJ0YW9GqX8WE0ewT45zqkbWWdZ0ktJBhG4yQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If IEEE-802.15.4-RAW is closed before receive skb, skb is leaked.
-Fix this, by freeing sk_receive_queue in sk->sk_destruct().
+On Wed, 04 Aug 2021, Saravana Kannan wrote:
 
-syzbot report:
-BUG: memory leak
-unreferenced object 0xffff88810f644600 (size 232):
-  comm "softirq", pid 0, jiffies 4294967032 (age 81.270s)
-  hex dump (first 32 bytes):
-    10 7d 4b 12 81 88 ff ff 10 7d 4b 12 81 88 ff ff  .}K......}K.....
-    00 00 00 00 00 00 00 00 40 7c 4b 12 81 88 ff ff  ........@|K.....
-  backtrace:
-    [<ffffffff83651d4a>] skb_clone+0xaa/0x2b0 net/core/skbuff.c:1496
-    [<ffffffff83fe1b80>] ieee802154_raw_deliver net/ieee802154/socket.c:369 [inline]
-    [<ffffffff83fe1b80>] ieee802154_rcv+0x100/0x340 net/ieee802154/socket.c:1070
-    [<ffffffff8367cc7a>] __netif_receive_skb_one_core+0x6a/0xa0 net/core/dev.c:5384
-    [<ffffffff8367cd07>] __netif_receive_skb+0x27/0xa0 net/core/dev.c:5498
-    [<ffffffff8367cdd9>] netif_receive_skb_internal net/core/dev.c:5603 [inline]
-    [<ffffffff8367cdd9>] netif_receive_skb+0x59/0x260 net/core/dev.c:5662
-    [<ffffffff83fe6302>] ieee802154_deliver_skb net/mac802154/rx.c:29 [inline]
-    [<ffffffff83fe6302>] ieee802154_subif_frame net/mac802154/rx.c:102 [inline]
-    [<ffffffff83fe6302>] __ieee802154_rx_handle_packet net/mac802154/rx.c:212 [inline]
-    [<ffffffff83fe6302>] ieee802154_rx+0x612/0x620 net/mac802154/rx.c:284
-    [<ffffffff83fe59a6>] ieee802154_tasklet_handler+0x86/0xa0 net/mac802154/main.c:35
-    [<ffffffff81232aab>] tasklet_action_common.constprop.0+0x5b/0x100 kernel/softirq.c:557
-    [<ffffffff846000bf>] __do_softirq+0xbf/0x2ab kernel/softirq.c:345
-    [<ffffffff81232f4c>] do_softirq kernel/softirq.c:248 [inline]
-    [<ffffffff81232f4c>] do_softirq+0x5c/0x80 kernel/softirq.c:235
-    [<ffffffff81232fc1>] __local_bh_enable_ip+0x51/0x60 kernel/softirq.c:198
-    [<ffffffff8367a9a4>] local_bh_enable include/linux/bottom_half.h:32 [inline]
-    [<ffffffff8367a9a4>] rcu_read_unlock_bh include/linux/rcupdate.h:745 [inline]
-    [<ffffffff8367a9a4>] __dev_queue_xmit+0x7f4/0xf60 net/core/dev.c:4221
-    [<ffffffff83fe2db4>] raw_sendmsg+0x1f4/0x2b0 net/ieee802154/socket.c:295
-    [<ffffffff8363af16>] sock_sendmsg_nosec net/socket.c:654 [inline]
-    [<ffffffff8363af16>] sock_sendmsg+0x56/0x80 net/socket.c:674
-    [<ffffffff8363deec>] __sys_sendto+0x15c/0x200 net/socket.c:1977
-    [<ffffffff8363dfb6>] __do_sys_sendto net/socket.c:1989 [inline]
-    [<ffffffff8363dfb6>] __se_sys_sendto net/socket.c:1985 [inline]
-    [<ffffffff8363dfb6>] __x64_sys_sendto+0x26/0x30 net/socket.c:1985
+> On Wed, Aug 4, 2021 at 11:20 AM Saravana Kannan <saravanak@google.com> wrote:
+> >
+> > On Wed, Aug 4, 2021 at 1:50 AM Marc Zyngier <maz@kernel.org> wrote:
+> > >
+> > > On Wed, 04 Aug 2021 02:36:45 +0100,
+> > > Saravana Kannan <saravanak@google.com> wrote:
+> > >
+> > > Hi Saravana,
+> > >
+> > > Thanks for looking into this.
+> >
+> > You are welcome. I just don't want people to think fw_devlink is broken :)
+> >
+> > >
+> > > [...]
+> > >
+> > > > > Saravana, could you please have a look from a fw_devlink perspective?
+> > > >
+> > > > Sigh... I spent several hours looking at this and wrote up an analysis
+> > > > and then realized I might be looking at the wrong DT files.
+> > > >
+> > > > Marc, can you point me to the board file in upstream that corresponds
+> > > > to the platform in which you see this issue? I'm not asking for [1],
+> > > > but the actual final .dts (not .dtsi) file that corresponds to the
+> > > > platform/board/system.
+> > >
+> > > The platform I can reproduce this on is described in
+> > > arch/arm64/boot/dts/amlogic/meson-sm1-khadas-vim3l.dts. It is an
+> > > intricate maze of inclusion, node merge and other DT subtleties. I
+> > > suggest you look at the decompiled version to get a view of the
+> > > result.
+> >
+> > Thanks. After decompiling it, it looks something like (stripped a
+> > bunch of reg and address properties and added the labels back):
+> >
+> > eth_phy: mdio-multiplexer@4c000 {
+> >         compatible = "amlogic,g12a-mdio-mux";
+> >         clocks = <0x02 0x13 0x1e 0x02 0xb1>;
+> >         clock-names = "pclk\0clkin0\0clkin1";
+> >         mdio-parent-bus = <0x22>;
+> >
+> >         ext_mdio: mdio@0 {
+> >                 reg = <0x00>;
+> >
+> >                 ethernet-phy@0 {
+> >                         max-speed = <0x3e8>;
+> >                         interrupt-parent = <0x23>;
+> >                         interrupts = <0x1a 0x08>;
+> >                         phandle = <0x16>;
+> >                 };
+> >         };
+> >
+> >         int_mdio: mdio@1 {
+> >                 ...
+> >         }
+> > }
+> >
+> > And phandle 0x23 refers to the gpio_intc interrupt controller with the
+> > modular driver.
+> >
+> > > > Based on your error messages, it's failing for mdio@0 which
+> > > > corresponds to ext_mdio. But none of the board dts files in upstream
+> > > > have a compatible property for "ext_mdio". Which means fw_devlink
+> > > > _should_ propagate the gpio_intc IRQ dependency all the way up to
+> > > > eth_phy.
+> > > >
+> > > > Also, in the failing case, can you run:
+> > > > ls -ld supplier:*
+> > > >
+> > > > in the /sys/devices/....<something>/ folder that corresponds to the
+> > > > "eth_phy: mdio-multiplexer@4c000" DT node and tell me what it shows?
+> > >
+> > > Here you go:
+> > >
+> > > root@tiger-roach:~# find /sys/devices/ -name 'supplier*'|grep -i mdio | xargs ls -ld
+> > > lrwxrwxrwx 1 root root 0 Aug  4 09:47 /sys/devices/platform/soc/ff600000.bus/ff64c000.mdio-multiplexer/supplier:platform:ff63c000.system-controller:clock-controller -> ../../../../virtual/devlink/platform:ff63c000.system-controller:clock-controller--platform:ff64c000.mdio-multiplexer
+> >
+> > As we discussed over chat, this was taken after the mdio-multiplexer
+> > driver "successfully" probes this device. This will cause
+> > SYNC_STATE_ONLY device links created by fw_devlink to be deleted
+> > (because they are useless after a device probes). So, this doesn't
+> > show the info I was hoping to demonstrate.
+> >
+> > In any case, one can see that fw_devlink properly created the device
+> > link for the clocks dependency. So fw_devlink is parsing this node
+> > properly. But it doesn't create a similar probe order enforcing device
+> > link between the mdio-multiplexer and the gpio_intc because the
+> > dependency is only present in a grand child DT node (ethernet-phy@0
+> > under ext_mdio). So fw_devlink is working as intended.
+> >
+> > I spent several hours squinting at the code/DT yesterday. Here's what
+> > is going on and causing the problem:
+> >
+> > The failing driver in this case is
+> > drivers/net/mdio/mdio-mux-meson-g12a.c. And the only DT node it's
+> > handling is what I pasted above in this email. In the failure case,
+> > the call flow is something like this:
+> >
+> > g12a_mdio_mux_probe()
+> > -> mdio_mux_init()
+> > -> of_mdiobus_register(ext_mdio DT node)
+> > -> of_mdiobus_register_phy(ext_mdio DT node)
+> > -> several calls deep fwnode_mdiobus_phy_device_register(ethernet_phy DT node)
+> > -> Tried to get the IRQ listed in ethernet_phy and fails with
+> > -EPROBE_DEFER because the IRQ driver isn't loaded yet.
+> >
+> > The error is propagated correctly all the way up to of_mdiobus_register(), but
+> > mdio_mux_init() ignores the -EPROBE_DEFER from of_mdiobus_register() and just
+> > continues on with the rest of the stuff and returns success as long as
+> > one of the child nodes (in this case int_mdio) succeeds.
+> >
+> > Since the probe returns 0 without really succeeding, networking stuff
+> > just fails badly after this. So, IMO, the real problem is with
+> > mdio_mux_init() not propagating up the -EPROBE_DEFER. I gave Marc a
+> > quick hack (pasted at the end of this email) to test my theory and he
+> > confirmed that it fixes the issue (a few deferred probes later, things
+> > work properly).
+> >
+> > Andrew, I don't see any good reason for mdio_mux_init() not
+> > propagating the errors up correctly (at least for EPROBE_DEFER). I'll
+> > send a patch to fix this. Please let me know if there's a reason it
+> > has to stay as-is.
+> 
+> I sent out the proper fix as a series:
+> https://lore.kernel.org/lkml/20210804214333.927985-1-saravanak@google.com/T/#t
+> 
+> Marc, can you give it a shot please?
+> 
+> -Saravana
 
-Fixes: 9ec767160357 ("net: add IEEE 802.15.4 socket family implementation")
-Reported-and-tested-by: syzbot+1f68113fa907bf0695a8@syzkaller.appspotmail.com
-Signed-off-by: Takeshi Misawa <jeliantsurux@gmail.com>
----
-Dear David Howells, Jakub Kicinski
+Superstar!  Thanks for taking the time to rectify this for all of us.
 
-syzbot reported memory leak in ieee802154_raw_deliver.
-
-I send a patch that passed syzbot reproducer test.
-Please consider this memory leak and patch.
-
-syzbot link:
-https://syzkaller.appspot.com/bug?id=8dd3bcb1dc757587adfb4dbb810fd24dd990283f
-
-Regards.
----
- net/ieee802154/socket.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/net/ieee802154/socket.c b/net/ieee802154/socket.c
-index a45a0401adc5..c25f7617770c 100644
---- a/net/ieee802154/socket.c
-+++ b/net/ieee802154/socket.c
-@@ -984,6 +984,11 @@ static const struct proto_ops ieee802154_dgram_ops = {
- 	.sendpage	   = sock_no_sendpage,
- };
- 
-+static void ieee802154_sock_destruct(struct sock *sk)
-+{
-+	skb_queue_purge(&sk->sk_receive_queue);
-+}
-+
- /* Create a socket. Initialise the socket, blank the addresses
-  * set the state.
-  */
-@@ -1024,7 +1029,7 @@ static int ieee802154_create(struct net *net, struct socket *sock,
- 	sock->ops = ops;
- 
- 	sock_init_data(sock, sk);
--	/* FIXME: sk->sk_destruct */
-+	sk->sk_destruct = ieee802154_sock_destruct;
- 	sk->sk_family = PF_IEEE802154;
- 
- 	/* Checksums on by default */
 -- 
-2.25.1
-
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
