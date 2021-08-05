@@ -2,34 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D60FE3E1D2F
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 22:12:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C52C03E1D39
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 22:16:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240541AbhHEUMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 16:12:37 -0400
-Received: from smtp-31-i2.italiaonline.it ([213.209.12.31]:34457 "EHLO
+        id S239712AbhHEUQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 16:16:23 -0400
+Received: from smtp-31-i2.italiaonline.it ([213.209.12.31]:59037 "EHLO
         libero.it" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235633AbhHEUMg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Aug 2021 16:12:36 -0400
+        id S232931AbhHEUQW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Aug 2021 16:16:22 -0400
 Received: from oxapps-35-162.iol.local ([10.101.8.208])
         by smtp-31.iol.local with ESMTPA
-        id Bjj1m5S9tzHnRBjj1mO1JO; Thu, 05 Aug 2021 22:12:20 +0200
+        id Bjmgm5TujzHnRBjmgmO1r6; Thu, 05 Aug 2021 22:16:06 +0200
 x-libjamoibt: 1601
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=libero.it; s=s2021;
-        t=1628194340; bh=1J5aPU1fgy/RfqWkhF1b2fqgF1PKccxV9uZUSHRwS/M=;
+        t=1628194566; bh=VpohMvBfsZqbfNbBMTVaNf8bFAKmlnd6RyJI3PigMS0=;
         h=From;
-        b=xx/QPmJ1ilp5UnX9CSNfhClMIFSWubXddyKFAHW+HiP1Wr4i1ZdQdvIWJf8GbTSTx
-         5Wtre3yam9MdgyolHxg4ofylJNY1GjD2fFaFaw8NGF5/e+Z88JhnwXZ1Wrm4u9Fja9
-         Hz7QOu5LYF/OhcjkQXfVwIXl5mdkMB53qOD10RQI/jNBmltx8X5DUK6Mqgz3JGUIeN
-         Y8t4y9eoYAUsjbLIYM0GDoL0fmcWjXZ2wmcz0wDf4NukeY/AblD8YF+IeXoVTsZwmw
-         Vh13XXDZJ2oZiQw2wJagAzfBOXAZ+WeXFBlWSaXfEMTbVvlSND9NaEItidQglWwvDw
-         SY0OZcROabgvA==
-X-CNFS-Analysis: v=2.4 cv=L6DY/8f8 c=1 sm=1 tr=0 ts=610c4624 cx=a_exe
+        b=e383E/s3/nkklTiY7s3DUW0vGCOy3KDF6A4jyra1LG/8ecHM5AvivwB4R4ligQAqO
+         0u8miRhi6c7xB5l0Kqt06WQJzpmiu4z9tSRwg9K0YNxyYhd6UjnOq/roKWauulWLFp
+         p6ZkYj0zPUVoVM48xOBQEgFB3A1DnPtFRa/K0osUBIledAQwp6Pcn5tTeKZZaJkDV1
+         usY7ELCTyjoSL684/SszQKSAQqGkNf03jNtF6eHX303brXTurPTygbG2vM5GXrnDeb
+         MqxZZv81LpM18LASSk2GMHlToHmF+3ZAJBiHeWeFJFLJg3lSnZD4doc8xCdnbIWbl2
+         p0QdfijDZB4VQ==
+X-CNFS-Analysis: v=2.4 cv=L6DY/8f8 c=1 sm=1 tr=0 ts=610c4706 cx=a_exe
  a=OCAZjQWm+uh9gf1btJle/A==:117 a=J7go-RGC33AA:10 a=IkcTkHD0fZMA:10
- a=nep-EciQ0nEA:10 a=bGNZPXyTAAAA:8 a=wn1pJw0M0rjdo80TUYYA:9
- a=S33eJTiIa1C7FzhL:21 a=cSzkvvT6OTDMtG98:21 a=QEXdDO2ut3YA:10
+ a=nep-EciQ0nEA:10 a=bGNZPXyTAAAA:8 a=wn1pJw0M0rjdo80TUYYA:9 a=QEXdDO2ut3YA:10
  a=yL4RfsBhuEsimFDS2qtJ:22
-Date:   Thu, 5 Aug 2021 22:12:18 +0200 (CEST)
+Date:   Thu, 5 Aug 2021 22:16:06 +0200 (CEST)
 From:   Dario Binacchi <dariobin@libero.it>
 To:     Marc Kleine-Budde <mkl@pengutronix.de>
 Cc:     linux-kernel@vger.kernel.org,
@@ -41,11 +40,11 @@ Cc:     linux-kernel@vger.kernel.org,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Wolfgang Grandegger <wg@grandegger.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Message-ID: <1172393027.218339.1628194339000@mail1.libero.it>
-In-Reply-To: <20210804093423.ms2p245f5oiw4xn4@pengutronix.de>
+Message-ID: <1485600069.218377.1628194566441@mail1.libero.it>
+In-Reply-To: <20210804094515.ariv7d24t2i4hic5@pengutronix.de>
 References: <20210725161150.11801-1-dariobin@libero.it>
  <20210725161150.11801-5-dariobin@libero.it>
- <20210804093423.ms2p245f5oiw4xn4@pengutronix.de>
+ <20210804094515.ariv7d24t2i4hic5@pengutronix.de>
 Subject: Re: [RESEND PATCH 4/4] can: c_can: cache frames to operate as a
  true FIFO
 MIME-Version: 1.0
@@ -56,52 +55,42 @@ Importance: Normal
 X-Mailer: Open-Xchange Mailer v7.10.3-Rev34
 X-Originating-IP: 82.60.87.158
 X-Originating-Client: open-xchange-appsuite
-x-libjamsun: bxvGk6IQYMshaJt8Lq3yzglMBGdMK7FO
-x-libjamv: +8bcFj4z+iY=
-X-CMAE-Envelope: MS4xfIJvIiDBn5RyDY/2gszC1bv8IJM3R/HAKPpLM6XmOaWj6r9fGFRniG+h54c4oXjCNTvE0LUUC8I2zeIyabUC1R+K71mq3usl9sJfbwEDVWtHpLJxQh8f
- h6+aqsHQdNFx6RQfVrrdMnvJAZh12wsynJuY1k8dvN3gU2GO6xw6cXtvfN1KzohFETO/gUDNXtzsEZmP5YTGDojO8J8eW8yVwErmAMvXAfAWAaKGCt3uSKt+
- GqVAwm9iD4d0CCcRj1t+7xVj+bDGfKLvB8/W0vXwuNzZPK+pl/UOhuGEHhCTlqo54pTHhmBuUw75U9uP8nPlnyd45oKlkAIR87hKv/YJbGs2wckU12xclPMc
- ilHNNqLNJrqPIAiXBDR9Pxf7cfLWC6AOZ3Qig15OhSl8IeOmRkXmDkWj1LoY4K4iTkcO0AQ0VErpqhkrTQiiMlidMYs8le7WV3fW9df5kgsSS4AXPiTr+12p
- PbHAeMsGcvXPve7O8CqrI64Lj17Q48HueoeZSr1Z19gO6euYPNU09JJqsB+NJGymq0j0e6rcWhllH//m
+x-libjamsun: WyJBSNMH9kkd8tqUyBiVLSk9X7CgnRUG
+x-libjamv: SgYUR9btM7M=
+X-CMAE-Envelope: MS4xfOvJk5+0VcReNnxjPbprZydZvfc/h79Lj17mJlHQGb8bhqaF+hIxSGjJiExPt5qV11Woh2U4bmqa0Yd3sXC63y1JQFXrHwoRc3iYxmbkYazZD+ji1lni
+ cNlbXgyWAHzG+gF2OoMHXaqsarzBLhBWHokpVyrNf0m0BYI2pHe7SfxGSI/Gw5d8gFaRxGcOZxutGlPkq/XxBYkTQvivRZ9ZCSC/NDjhHg8fBA5UwNzH5Cyn
+ GY1aWtCEqNVzs4p7VTRYjpGi9g8hRg3v2zxi4ih5YMlkV5nOvoJb+tum+zfviUgIwCY/2+1rSW2LtsFBc3n7dzDQVs0i3ugoT9CI9nuKPmMsVaY8nvoKsCCO
+ b4XXnWxlA1Yv0bdJKxmta3DDiMYIKzTqvB4WgWFsS/WtwoHvscaRDfEFToeMfUnzgiXqIkr5Ddd5hjQP7XBGGKaJALjsro/9xMjig3YUpNRVGnp9yVJabBCf
+ ABHhZsSiMMe/zMDT35gfsrBNRjehea7C8AEE2ZpweEa/N2/ih8S0o2Vs/PEVdRAoJv5qPzjOSfLMWhmv
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hi Marc,
 
-> Il 04/08/2021 11:34 Marc Kleine-Budde <mkl@pengutronix.de> ha scritto:
+> Il 04/08/2021 11:45 Marc Kleine-Budde <mkl@pengutronix.de> ha scritto:
 > 
 >  
 > On 25.07.2021 18:11:50, Dario Binacchi wrote:
-> > As reported by a comment in the c_can_start_xmit() this was not a FIFO.
-> > C/D_CAN controller sends out the buffers prioritized so that the lowest
-> > buffer number wins.
-> > 
-> > What did c_can_start_xmit() do if head was less tail in the tx ring ? It
-> > waited until all the frames queued in the FIFO was actually transmitted
-> > by the controller before accepting a new CAN frame to transmit, even if
-> > the FIFO was not full, to ensure that the messages were transmitted in
-> > the order in which they were loaded.
-> > 
-> > By storing the frames in the FIFO without requiring its transmission, we
-> > will be able to use the full size of the FIFO even in cases such as the
-> > one described above. The transmission interrupt will trigger their
-> > transmission only when all the messages previously loaded but stored in
-> > less priority positions of the buffers have been transmitted.
-> > 
-> > Suggested-by: Gianluca Falavigna <gianluca.falavigna@inwind.it>
-> > Signed-off-by: Dario Binacchi <dariobin@libero.it>
-> > 
-> > ---
-> > 
-> >  drivers/net/can/c_can/c_can.h      |  6 +++++
-> >  drivers/net/can/c_can/c_can_main.c | 42 +++++++++++++++++-------------
-> >  2 files changed, 30 insertions(+), 18 deletions(-)
-> > 
 > > diff --git a/drivers/net/can/c_can/c_can.h b/drivers/net/can/c_can/c_can.h
 > > index 8fe7e2138620..fc499a70b797 100644
 > > --- a/drivers/net/can/c_can/c_can.h
 > > +++ b/drivers/net/can/c_can/c_can.h
+> > @@ -200,6 +200,7 @@ struct c_can_priv {
+> >  	atomic_t sie_pending;
+> >  	unsigned long tx_dir;
+> >  	int last_status;
+> > +	spinlock_t tx_lock;
+> 
+> What does the spin lock protect?
+> 
+> >  	struct c_can_tx_ring tx;
+> >  	u16 (*read_reg)(const struct c_can_priv *priv, enum reg index);
+> >  	void (*write_reg)(const struct c_can_priv *priv, enum reg index, u16 val);
+> > @@ -236,4 +237,9 @@ static inline u8 c_can_get_tx_tail(const struct c_can_tx_ring *ring)
+> >  	return ring->tail & (ring->obj_num - 1);
+> >  }
+> >  
 > > +static inline u8 c_can_get_tx_free(const struct c_can_tx_ring *ring)
 > > +{
 > > +	return ring->obj_num - (ring->head - ring->tail);
@@ -130,19 +119,38 @@ Hi Marc,
 > > -	return ring->obj_num - head;
 > > -}
 > > -
+> >  static bool c_can_tx_busy(const struct c_can_priv *priv,
+> >  			  const struct c_can_tx_ring *tx_ring)
+> >  {
+> > @@ -470,7 +456,7 @@ static netdev_tx_t c_can_start_xmit(struct sk_buff *skb,
+> >  	struct can_frame *frame = (struct can_frame *)skb->data;
+> >  	struct c_can_priv *priv = netdev_priv(dev);
+> >  	struct c_can_tx_ring *tx_ring = &priv->tx;
+> > -	u32 idx, obj;
+> > +	u32 idx, obj, cmd = IF_COMM_TX;
+> >  
+> >  	if (can_dropped_invalid_skb(dev, skb))
+> >  		return NETDEV_TX_OK;
+> > @@ -483,7 +469,11 @@ static netdev_tx_t c_can_start_xmit(struct sk_buff *skb,
+> >  	if (c_can_get_tx_free(tx_ring) == 0)
+> >  		netif_stop_queue(dev);
+> >  
+> > -	obj = idx + priv->msg_obj_tx_first;
+> > +	spin_lock_bh(&priv->tx_lock);
 > 
-> Can you move that change into patch 3?
+> What does the spin_lock protect? The ndo_start_xmit function is properly
+> serialized by the networking core.
+> 
 
-Patch 3 adds the ring transmission algorithm without compromising the
-message transmission order. This is not a FIFO. C/D_CAN controller sends
-out the buffers prioritized. The lowest buffer number wins, so moving the
-change into patch 3 may not guarantee the transmission order.
-In patch 3, however, I will move c_can_get_tx_free() from c_can_main.c to 
-c_can.h, so that in patch 4 it will be clearer how the routine has changed.
+The spin_lock protects the access to the IF_TX interface. Enabling the transmission 
+of cached messages occur inside interrupt and the use of the IF_RX interface,
+which would avoid the use of the spinlock, has not been validated by
+the tests.
 
 Thanks and regards,
 Dario
 
+> Otherwise the patch looks good!
 > 
 > Marc
 > 
