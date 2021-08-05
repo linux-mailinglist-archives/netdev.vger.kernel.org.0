@@ -2,104 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56A0F3E1C26
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 21:08:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62DB13E1C2E
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 21:10:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242232AbhHETIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 15:08:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50842 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232716AbhHETIu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 15:08:50 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617B6C061765
-        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 12:08:34 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id k4so4018140wms.3
-        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 12:08:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=JRVOBU22/4EewlO/b8oAz5a46oCU2XYL39mDzxU1rUU=;
-        b=K/jc0SsBo6DflWqJZiKG/zDRN12la/AD1x8utmhM8Str2VhO0o1PWzAfbZGH5BhPCU
-         kikFk7YboT0dLCLfgBIyVC7o0fBcxV4WM3Ch09VrbTwPJqxnhJOXDs10VLb1D4nV4WTG
-         E/JLbxv9qrCoAzPnzLHESimcmfj933QJPzjnT9WT0brL0iPfj+nuXPBIxUlW6gF+Df/a
-         RHK7+gTpws1rsek+xCTJboJw0Brp+z6CivLo/+OiucqZTDlBRu91pzLV+BU6KPCWtDS5
-         MsjdTXgbmsUriX6WWlPOBvYUOsD5d3md/Jvj9Sw4zqjxOiQPd8aRQrtV9XqvgQGUVBw1
-         XJNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=JRVOBU22/4EewlO/b8oAz5a46oCU2XYL39mDzxU1rUU=;
-        b=hYebznad7BIkw7E72nRDAXsva1qniYSte4Y6LrwIwXda6NF1QbT/FvEHkZIq8FCB7w
-         VMvZofl6Gii4Zs1a7hOl9Md31fXqWKm7VSIdxPmg3VjBO83FmF0WI6vwdzI6AgArF2rq
-         5lTKASzm9lt99xoCUADvSkDTNpxwUq2ddpA3e1H1phLAQwyqm26KYijrDvrQFRp/GDkx
-         DE2zozB3/1z+yju4zhvri0Eo6agZo/j6BslzKVHGvXkkrNEjf4W/IvtbuVZPC33LqnM2
-         k+PzZYR8WHtIhrg/dKlXco20hSG9+AxcRlHSr8vzwirTBSd99l0CVCJth/wZOgUHVd0A
-         aQVQ==
-X-Gm-Message-State: AOAM531R/Xhqt4gCXUknZ/JppINOQ+ImzQiPrdk99NEucU49uQZHg8Gz
-        kP+hO+RLick0AOrhTOLCmAs=
-X-Google-Smtp-Source: ABdhPJx/cMdCjO4IdQjsCqGwSeS2hkg7vmWSBVYLfhUY0ixMCnTCoFTSJVC96X9/nD2ik9RNFzUbnA==
-X-Received: by 2002:a7b:c353:: with SMTP id l19mr16328497wmj.127.1628190513073;
-        Thu, 05 Aug 2021 12:08:33 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f10:c200:75d1:7bfc:8928:d5ba? (p200300ea8f10c20075d17bfc8928d5ba.dip0.t-ipconnect.de. [2003:ea:8f10:c200:75d1:7bfc:8928:d5ba])
-        by smtp.googlemail.com with ESMTPSA id z6sm6225818wmp.1.2021.08.05.12.08.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Aug 2021 12:08:32 -0700 (PDT)
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] ethtool: return error from ethnl_ops_begin if dev is
- NULL
-Message-ID: <21a1abb0-300f-ccae-56da-16f016c4fff2@gmail.com>
-Date:   Thu, 5 Aug 2021 21:08:22 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S242354AbhHETKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 15:10:35 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:21560 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242056AbhHETKe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 15:10:34 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1628190620; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=nqq7puYdZare1wTZSwwTfBn9rYP+HFD1uwErPWMP3Ow=;
+ b=sI+9BkHFKWnUResbajlT++zoRWak+jhWlK6R2PznF25LMdpQSsAb737/OKjt19DK+QgiU4Rr
+ fuYpPzcj5fMT8t+on4tDjQBnrYEZdD5Un6ntyJAWQD3cmfNIbUa8JxQlLN9cVpLAxCmLpEne
+ Hc8w/XmklV33EHiqC0msTthz6kA=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
+ 610c37901b76afb4467b10ba (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 05 Aug 2021 19:10:08
+ GMT
+Sender: subashab=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 9F31FC433D3; Thu,  5 Aug 2021 19:10:08 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: subashab)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 68785C43460;
+        Thu,  5 Aug 2021 19:10:07 +0000 (UTC)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 05 Aug 2021 13:10:07 -0600
+From:   subashab@codeaurora.org
+To:     Aleksander Morgado <aleksander@aleksander.es>
+Cc:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
+        Daniele Palmas <dnlplm@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        stranche@codeaurora.org
+Subject: Re: RMNET QMAP data aggregation with size greater than 16384
+In-Reply-To: <CAAP7ucKuS9p_hkR5gMWiM984Hvt09iNQEt32tCFDCT5p0fqg4Q@mail.gmail.com>
+References: <CAAP7ucKuS9p_hkR5gMWiM984Hvt09iNQEt32tCFDCT5p0fqg4Q@mail.gmail.com>
+Message-ID: <c0e14605e9bc650aca26b8c3920e9aba@codeaurora.org>
+X-Sender: subashab@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Julian reported that after d43c65b05b84 Coverity complains about a
-missing check whether dev is NULL in ethnl_ops_complete().
-There doesn't seem to be any valid case where dev could be NULL when
-calling ethnl_ops_begin(), therefore return an error if dev is NULL.
+On 2021-07-31 16:45, Aleksander Morgado wrote:
+> Hey Subash,
+> 
+> I'm playing with the whole QMAP data aggregation setup with a USB
+> connected Fibocom FM150-AE module (SDX55).
+> See https://gitlab.freedesktop.org/mobile-broadband/libqmi/-/issues/71
+> for some details on how I tested all this.
+> 
+> This module reports a "Downlink Data Aggregation Max Size" of 32768
+> via the "QMI WDA Get Data Format" request/response, and therefore I
+> configured the MTU of the master wwan0 interface with that same value
+> (while in 802.3 mode, before switching to raw-ip and enabling
+> qmap-pass-through in qmi_wwan).
+> 
+> When attempting to create a new link using netlink, the operation
+> fails with -EINVAL, and following the code path in the kernel driver,
+> it looks like there is a check in rmnet_vnd_change_mtu() where the
+> master interface MTU is checked against the RMNET_MAX_PACKET_SIZE
+> value, defined as 16384.
+> 
+> If I setup the master interface with MTU 16384 before creating the
+> links with netlink, there's no error reported anywhere. The FM150
+> module crashes as soon as I connect it with data aggregation enabled,
+> but that's a different story...
+> 
+> Is this limitation imposed by the RMNET_MAX_PACKET_SIZE value still a
+> valid one in this case? Should changing the max packet size to 32768
+> be a reasonable approach? Am I doing something wrong? :)
+> 
+> This previous discussion for the qmi_wwan add_mux/del_mux case is
+> relevant:
+> https://patchwork.ozlabs.org/project/netdev/patch/20200909091302.20992-1-dnlplm@gmail.com/..
+> The suggested patch was not included yet in the qmi_wwan driver and
+> therefore the user still needs to manually configure the MTU of the
+> master interface before setting up all the links, but at least there
+> seems to be no maximum hardcoded limit.
+> 
+> Cheers!
 
-Fixes: d43c65b05b84 ("ethtool: runtime-resume netdev parent in ethnl_ops_begin")
-Reported-by: Julian Wiedmann <jwi@linux.ibm.com>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- net/ethtool/netlink.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Hi Aleksander
 
-diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-index 417aaf9ca..fe8bf2b3c 100644
---- a/net/ethtool/netlink.c
-+++ b/net/ethtool/netlink.c
-@@ -35,7 +35,7 @@ int ethnl_ops_begin(struct net_device *dev)
- 	int ret;
- 
- 	if (!dev)
--		return 0;
-+		return -ENODEV;
- 
- 	if (dev->dev.parent)
- 		pm_runtime_get_sync(dev->dev.parent);
-@@ -61,7 +61,7 @@ int ethnl_ops_begin(struct net_device *dev)
- 
- void ethnl_ops_complete(struct net_device *dev)
- {
--	if (dev && dev->ethtool_ops->complete)
-+	if (dev->ethtool_ops->complete)
- 		dev->ethtool_ops->complete(dev);
- 
- 	if (dev->dev.parent)
--- 
-2.32.0
+The downlink data aggregation size shouldn't affect the MTU.
+MTU applies for uplink only and there is no correlation with the 
+downlink path.
+Ideally, you should be able to use standard 1500 bytes (+ additional 
+size for MAP header)
+for the master device. Is there some specific network which is using
+greater than 1500 for the IP packet itself in uplink.
 
+--
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
+Forum,
+a Linux Foundation Collaborative Project
