@@ -2,124 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 612DD3E1766
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 16:56:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CFBB3E1769
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 16:56:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241749AbhHEO4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 10:56:22 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:50760 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241561AbhHEO4U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 10:56:20 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 175Eu4X6028606;
-        Thu, 5 Aug 2021 09:56:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1628175364;
-        bh=NDuefcGE9c7lZJH8LHOIrKPTwwvMdPR6WsTEg+PqBPo=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=H2pxgQP6OHM0XBsqhDY9Q2KeUDrfSxwn9QyURLN3QmQB4u9XX+IPQMxddtqXm2NCu
-         nZt1stl0u2MV2RF30bV6QW90s476b0kHROfuaTzNyVxIUw1kzK2K47pZf8yMiTNmRn
-         ceOkloX9ePMb/uzSkMoKXvoOr0r3uWeNWjp0ez8Q=
-Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 175Eu4e1078589
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 5 Aug 2021 09:56:04 -0500
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 5 Aug
- 2021 09:56:03 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Thu, 5 Aug 2021 09:56:03 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 175Eu2j8118114;
-        Thu, 5 Aug 2021 09:56:03 -0500
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>,
-        Ben Hutchings <ben.hutchings@essensium.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        <linux-omap@vger.kernel.org>, Lokesh Vutla <lokeshvutla@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH net-next 3/3] net: ethernet: ti: davinci_cpdma: drop frame padding
-Date:   Thu, 5 Aug 2021 17:55:55 +0300
-Message-ID: <20210805145555.12182-4-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210805145555.12182-1-grygorii.strashko@ti.com>
-References: <20210805145555.12182-1-grygorii.strashko@ti.com>
+        id S241659AbhHEO4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 10:56:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48442 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233269AbhHEO4m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 10:56:42 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76DFEC061765
+        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 07:56:27 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id x14so8769632edr.12
+        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 07:56:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=Mozi9talEt/mI/l6KvxWbDISyLan2Xy8GUlPURIr5DU=;
+        b=dBJ4orWE4wbjz/7v8qxzGdzVPP34CGlyICUyvVShe6aFWPl2f+906og5lmqDKqKh8p
+         9R42niRsqWDmFN6nC0o8SQlObuGKFlNVmuHq6j6Dx8y356maPolP5/IdWngORYa0oGS3
+         3nqzPNdUejQGE35N+ZTsaw0nvZzdMs+mvpb5i+CwN1ktED8Q2Uun8mG87SkuvUanshgP
+         W0CwRRpWVAnHrSxM44/MM5ShyiYzJqhk7srbbQNRfdgspeyhQbL6fPKfL4BAVKPOZ/UX
+         wA8mXCqx/PNKn3Vf26cHAKUCKN8IRQjW6YSYc2mD+eMntNfPc2AETZZCvpWGN97OGJKO
+         154A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=Mozi9talEt/mI/l6KvxWbDISyLan2Xy8GUlPURIr5DU=;
+        b=JtDPZL7m55uP4aBaacMIqFRxJcv7rCP8S6KCJ7b0AyXYv6Nwbh6oXeVF80e/LL7G0r
+         UGgoeEwLLnQt1z95yGbKvu/gOPJPv1Ut26kS0sefPLtzdyYGsBjkLcKILxEJYwz6YoHe
+         nLhm54HxNZ6rFZSQ01tvySSscAlQBhsd9/ib+NJ1x4KjuTAKeIvpAFlsRd8QD5LeBJMy
+         f3DnJ9f8doiNdtWMI7swFYeeHXZE5E6r8pDr59VVG09Z3CB0qTuBqnICZiTfq0/6HW6D
+         /jJayZa6+OLaBxM76x7E3R0qRskPTT+gu8shMbaiIQK0vnF5xqXvDlILzMBeLcC6lCIN
+         Kq6w==
+X-Gm-Message-State: AOAM532MlrBzmXmxeXcQeDCFGIPlKdMLIlW/ZuefifZLeQDIczN2oLp5
+        wJZtUUN4tqnnFoGO3h5ImUd4E9+kUceCpAI+QqI=
+X-Google-Smtp-Source: ABdhPJyIHtZWza6sOpQRy9AM3j8qtwGD4x/EUZHpKyo4EubRy8iwVLAPW/EqiYfbLo4PXa/uGYlS2HbJ5SPHtwWrMlc=
+X-Received: by 2002:aa7:d144:: with SMTP id r4mr7095642edo.111.1628175386112;
+ Thu, 05 Aug 2021 07:56:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Received: by 2002:a05:6402:358c:0:0:0:0 with HTTP; Thu, 5 Aug 2021 07:56:25
+ -0700 (PDT)
+Reply-To: georgemike7031@gmail.com
+From:   george mike <kotsllos2000@gmail.com>
+Date:   Thu, 5 Aug 2021 16:56:25 +0200
+Message-ID: <CAKnPpxCqZ=dKyttJ+JDk2t5OUK7JOdepaXdYesuyTh+D+CY6Mg@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hence all users of davinci_cpdma switched to skb_put_padto() the frame
-padding can be removed from it.
+Hallo
 
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
----
- drivers/net/ethernet/ti/cpsw_priv.c     | 1 -
- drivers/net/ethernet/ti/davinci_cpdma.c | 5 -----
- drivers/net/ethernet/ti/davinci_cpdma.h | 1 -
- drivers/net/ethernet/ti/davinci_emac.c  | 1 -
- 4 files changed, 8 deletions(-)
+Mein Name ist George Mike, ich bin von Beruf Rechtsanwalt. Ich m=C3=B6chte
+dir anbieten
+der n=C3=A4chste Angeh=C3=B6rige meines Klienten. Sie erben die Summe von (=
+8,5
+Millionen US-Dollar)
+Dollar, die mein Mandant vor seinem Tod auf der Bank hinterlie=C3=9F.
 
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
-index ecc2a6b7e28f..d97a72c9ec53 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.c
-+++ b/drivers/net/ethernet/ti/cpsw_priv.c
-@@ -518,7 +518,6 @@ int cpsw_init_common(struct cpsw_common *cpsw, void __iomem *ss_regs,
- 
- 	dma_params.num_chan		= data->channels;
- 	dma_params.has_soft_reset	= true;
--	dma_params.min_packet_size	= CPSW_MIN_PACKET_SIZE;
- 	dma_params.desc_mem_size	= data->bd_ram_size;
- 	dma_params.desc_align		= 16;
- 	dma_params.has_ext_regs		= true;
-diff --git a/drivers/net/ethernet/ti/davinci_cpdma.c b/drivers/net/ethernet/ti/davinci_cpdma.c
-index d2eab5cd1e0c..753d94c9915a 100644
---- a/drivers/net/ethernet/ti/davinci_cpdma.c
-+++ b/drivers/net/ethernet/ti/davinci_cpdma.c
-@@ -1034,11 +1034,6 @@ static int cpdma_chan_submit_si(struct submit_info *si)
- 		return -ENOMEM;
- 	}
- 
--	if (len < ctlr->params.min_packet_size) {
--		len = ctlr->params.min_packet_size;
--		chan->stats.runt_transmit_buff++;
--	}
--
- 	mode = CPDMA_DESC_OWNER | CPDMA_DESC_SOP | CPDMA_DESC_EOP;
- 	cpdma_desc_to_port(chan, mode, si->directed);
- 
-diff --git a/drivers/net/ethernet/ti/davinci_cpdma.h b/drivers/net/ethernet/ti/davinci_cpdma.h
-index d3cfe234d16a..62151f13c7ce 100644
---- a/drivers/net/ethernet/ti/davinci_cpdma.h
-+++ b/drivers/net/ethernet/ti/davinci_cpdma.h
-@@ -26,7 +26,6 @@ struct cpdma_params {
- 	void __iomem		*rxthresh, *rxfree;
- 	int			num_chan;
- 	bool			has_soft_reset;
--	int			min_packet_size;
- 	dma_addr_t		desc_mem_phys;
- 	dma_addr_t		desc_hw_addr;
- 	int			desc_mem_size;
-diff --git a/drivers/net/ethernet/ti/davinci_emac.c b/drivers/net/ethernet/ti/davinci_emac.c
-index b1c5cbe7478b..cd2ef0282f38 100644
---- a/drivers/net/ethernet/ti/davinci_emac.c
-+++ b/drivers/net/ethernet/ti/davinci_emac.c
-@@ -1850,7 +1850,6 @@ static int davinci_emac_probe(struct platform_device *pdev)
- 	dma_params.txcp			= priv->emac_base + 0x640;
- 	dma_params.rxcp			= priv->emac_base + 0x660;
- 	dma_params.num_chan		= EMAC_MAX_TXRX_CHANNELS;
--	dma_params.min_packet_size	= EMAC_DEF_MIN_ETHPKTSIZE;
- 	dma_params.desc_hw_addr		= hw_ram_addr;
- 	dma_params.desc_mem_size	= pdata->ctrl_ram_size;
- 	dma_params.desc_align		= 16;
--- 
-2.17.1
+Mein Mandant ist ein B=C3=BCrger Ihres Landes, der mit seiner Frau bei
+einem Autounfall gestorben ist
+und einziger Sohn. Ich habe Anspruch auf 50% des Gesamtfonds, w=C3=A4hrend
+50% dies tun werden
+sein f=C3=BCr dich.
+Bitte kontaktieren Sie meine private E-Mail hier f=C3=BCr weitere
+Details:georgemike7031@gmail.com
 
+Vielen Dank im Voraus,
+Herr George Mike,
