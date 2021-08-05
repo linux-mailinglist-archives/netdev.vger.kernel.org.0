@@ -2,116 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A5263E1D94
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 22:51:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C7C13E1D9F
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 22:54:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241239AbhHEUv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 16:51:58 -0400
-Received: from novek.ru ([213.148.174.62]:45760 "EHLO novek.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231689AbhHEUv5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Aug 2021 16:51:57 -0400
-Received: from [192.168.0.18] (unknown [37.228.234.253])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id D0682503EA8;
-        Thu,  5 Aug 2021 23:49:00 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru D0682503EA8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1628196542; bh=AvRIgv68spDFkRN2aW/DbsgeWmJgDf2pBShLl7FdmzM=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=Bhhq3HOYmzhQq6yOimh6laALNHxrARMVnxQZ6MvRYKMspaLze87zjqNsUBploeokM
-         eQTRIzPNHZ5NBwUNDYc9TwarCZ4Y/0UFUTiyVuZFx+52hXCIOl0sq4XW4sn0E0wwxG
-         jjhASayLtnsGsdKUKTHlhCzPIy/l89da1LrEL4gM=
-Subject: Re: [PATCH net] net: ipv4: fix path MTU for multi path routes
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Willem de Bruijn <willemb@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20210731011729.4357-1-vfedorenko@novek.ru>
- <dc6aafb6-cd1f-2006-6f45-55a4f224e319@gmail.com>
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-Message-ID: <71b3384d-6d9c-4841-c610-463879f993b2@novek.ru>
-Date:   Thu, 5 Aug 2021 21:51:38 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-MIME-Version: 1.0
-In-Reply-To: <dc6aafb6-cd1f-2006-6f45-55a4f224e319@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,NICE_REPLY_A
-        autolearn=ham autolearn_force=no version=3.4.1
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
+        id S241284AbhHEUyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 16:54:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230241AbhHEUyI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 16:54:08 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CCF6C0613D5
+        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 13:53:53 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id x14so10194183edr.12
+        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 13:53:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:content-transfer-encoding:mime-version:subject:message-id:date
+         :to;
+        bh=NBk4v7YJbgRux5qvAIwvi4IbfCS0FzKP8BULNvVbo8k=;
+        b=chEEneEuTkdmPpPwDKs+6gKVJ8L5edK6WPaYK0i6CBIAUwkdSbsYJhPcCu9I+MDe/a
+         bNLgyMxzWx0nhwCBghFuDsbnfOkN7WilCDtZK7XSVAr/z4/GR0fRpwMiYF2wkexwQYO6
+         LPulZmpb9DyHOIyilQjnXC41cEKINnz+HWNlb8tKloxU0RLGbN7M0I1ArTL1QwQZIKQD
+         sCPpM0Hr/T6Pe+ibkhjv23DLVLw/ChMLUpo4rKrFJ2sKKABAKYyd3pFm52IvZoYiDEI+
+         VBZGx0i/+IUQgvHpmb2WERdTvkS3Bdtntb+hzWtVxtfBqe7Ki0qkUVAhJmKmmxrEtLju
+         xOIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:content-transfer-encoding:mime-version
+         :subject:message-id:date:to;
+        bh=NBk4v7YJbgRux5qvAIwvi4IbfCS0FzKP8BULNvVbo8k=;
+        b=CkaIT0IIScN3XL4h01Y1bv1Wf/Ls3zxNUspTipuRkeQeXEAYDFCyCKZxWmi6y68wtS
+         HIrRpSbCph0nUQqs5EA4VFdJ80Q6cJ8C6u8jT4rTzup35YeIO2Uf0W68SMWm2OZi85oB
+         /1rCQuXA0o1OLOWjekqJMFkKdeF1zoJprFP6qrJHy1PLKNegET7jMPWrgAqkeblEC+Kg
+         LXUDQZHVouivl6LR7Of632nSiwXk5smwk7HJauNl7d8sHdk3zPZ9AWLMWur34AmNR3lj
+         YaEjZPjjsauRR2zjCz7HOnDlEl76KCj1qOcZ64qtP23EA6+dNWu6qNuCVqv5Nenna1/v
+         tMtg==
+X-Gm-Message-State: AOAM530dZjZ2ew6fQ7hmMbUXRStdh+wRJSf581amzfeEXVLSkbp6YjzM
+        7kIxQZWoYMgBEXSRy0e74EWsB1pxIfzt/Q==
+X-Google-Smtp-Source: ABdhPJx/UAaOLTZqEHqxay7bUTyDGw4e9zoy7uMUt8ixUMRD90kS/YPFVFfLWOGmbkwi0TyZhcHqFw==
+X-Received: by 2002:a05:6402:60e:: with SMTP id n14mr8955741edv.142.1628196831821;
+        Thu, 05 Aug 2021 13:53:51 -0700 (PDT)
+Received: from smtpclient.apple ([178.254.237.20])
+        by smtp.gmail.com with ESMTPSA id mh10sm2088440ejb.32.2021.08.05.13.53.51
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 05 Aug 2021 13:53:51 -0700 (PDT)
+From:   Martin Zaharinov <micron10@gmail.com>
+Content-Type: text/plain;
+        charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
+Subject: Urgent  Bug report: PPPoE ioctl(PPPIOCCONNECT): Transport endpoint is
+ not connected
+Message-Id: <7EE80F78-6107-4C6E-B61D-01752D44155F@gmail.com>
+Date:   Thu, 5 Aug 2021 23:53:50 +0300
+To:     netdev <netdev@vger.kernel.org>, gregkh@linuxfoundation.org,
+        Eric Dumazet <eric.dumazet@gmail.com>
+X-Mailer: Apple Mail (2.3654.120.0.1.13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01.08.2021 18:12, David Ahern wrote:
-> On 7/30/21 7:17 PM, Vadim Fedorenko wrote:
->> Bug 213729 showed that MTU check could be used against route that
->> will not be used in actual transmit if source ip is not specified.
->> But path MTU update is always done on route with defined source ip.
->> Fix route selection by updating flow info in case when source ip
->> is not explicitly defined in raw and udp sockets.
-> 
-> There is more to it than just setting the source address and doing a
-> second lookup.
-> 
-You are right. Update of source address fixes only some specific cases.
-Also, I'm not fun of doing several lookups just because we found additional
-next hops. It looks like (for ipv4 case) fib_table_lookup() should select
-correct next-hop based on hash and update source ip and output interface
-for flowi4. But right now flowi4 is constant and such change looks more
-like net-next improvement. Or do you have another solution?
+Hi Net dev team
 
-> Attached is a test script I started last summer which shows the problem
-> at hand and is setup to cover various permutations of routing (legacy
-> routing, nexthop objects, and vrf), network protocols (v4 and v6) and
-> should cover tcp, udp and icmp:
-> 
-> # PMTU handling with multipath routing.
-> #
-> #          .-- sw1 --.
-> #   h1 ----|-- sw2 --|---- h2 -------- h3
-> #          |   ...   |       reduced mtu
-> #          .-- swN --.
-> #
-> # h2-h3 segment has reduced mtu.
-> # Exceptions created in h1 for h3.
-> 
-> N=8 (8-way multipath) seems to always demonstrate it; N=2 is a 50-50 chance.
-> 
-> Snippet from a run this morning:
-> 
-> # ip netns exec h1 ping -s 1450 10.100.2.254
-> PING 10.100.2.254 (10.100.2.254) 1450(1478) bytes of data.
->  From 10.2.22.254 icmp_seq=1 Frag needed and DF set (mtu = 1420)
->  From 10.2.22.254 icmp_seq=2 Frag needed and DF set (mtu = 1420)
->  From 10.2.22.254 icmp_seq=3 Frag needed and DF set (mtu = 1420)
->  From 10.2.22.254 icmp_seq=4 Frag needed and DF set (mtu = 1420)
-> 
-> ok, an MTU message makes it back to h1, but that it continues shows the
-> exception is not created on the right interface:
-> 
-> # ip -netns h1 ro ls cache
-> 10.100.2.254 via 10.1.15.5 dev eth5
->      cache expires 580sec mtu 1420
-> 
-> But the selected path is:
-> # ip -netns h1 ro get 10.100.2.254
-> 10.100.2.254 via 10.1.12.2 dev eth2 src 10.1.12.254 uid 0
->      cache
-> 
-> Adding in the source address does not fix it but it does change the
-> selected path. .e.g,
-> 
-> # ip -netns h1 ro get 10.100.2.254 from 10.1.16.254
-> 10.100.2.254 from 10.1.16.254 via 10.1.14.4 dev eth4 uid 0
->      cache
-> 
-> If 10.1.16.254 is the set source address then egress should be eth6, not
-> eth4, since that is an address on eth6.
-> 
 
+Please check this error :
+Last time I write for this problem : =
+https://www.spinics.net/lists/netdev/msg707513.html
+
+But not find any solution.
+
+Config of server is : Bonding port channel (LACP)  > Accel PPP server > =
+Huawei switch.
+
+Server is work fine users is down/up 500+ users .
+But in one moment server make spike and affect other vlans in same =
+server .
+And in accel I see many row with this error.
+
+Is there options to find and fix this bug.
+
+With accel team I discus this problem  and they claim it is kernel bug =
+and need to find solution with Kernel dev team.
+
+
+[2021-08-05 13:52:05.294] vlan912: 24b205903d09718e: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:05.298] vlan912: 24b205903d097162: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:05.626] vlan641: 24b205903d09711b: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:11.000] vlan912: 24b205903d097105: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:17.852] vlan912: 24b205903d0971ae: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:21.113] vlan641: 24b205903d09715b: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:27.963] vlan912: 24b205903d09718d: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:30.249] vlan496: 24b205903d097184: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:30.992] vlan420: 24b205903d09718a: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:33.937] vlan640: 24b205903d0971cd: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:40.032] vlan912: 24b205903d097182: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:40.420] vlan912: 24b205903d0971d5: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:42.799] vlan912: 24b205903d09713a: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:42.799] vlan614: 24b205903d0971e5: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:43.102] vlan912: 24b205903d097190: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:43.850] vlan479: 24b205903d097153: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:43.850] vlan479: 24b205903d097141: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:43.852] vlan912: 24b205903d097198: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:43.977] vlan637: 24b205903d097148: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+[2021-08-05 13:52:44.528] vlan637: 24b205903d0971c3: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+
+
+Martin=
