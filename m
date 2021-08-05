@@ -2,77 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A83C63E1570
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 15:14:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 462DD3E1574
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 15:15:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241653AbhHENPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 09:15:07 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:7794 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241638AbhHENPG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 09:15:06 -0400
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GgTbl2KdxzYlJg;
-        Thu,  5 Aug 2021 21:14:43 +0800 (CST)
-Received: from [10.67.103.235] (10.67.103.235) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Thu, 5 Aug 2021 21:14:50 +0800
-Subject: Re: [PATCH V7 7/9] PCI/sysfs: Add a 10-Bit Tag sysfs file
-To:     Logan Gunthorpe <logang@deltatee.com>, <helgaas@kernel.org>,
-        <hch@infradead.org>, <kw@linux.com>, <leon@kernel.org>,
-        <linux-pci@vger.kernel.org>, <rajur@chelsio.com>,
-        <hverkuil-cisco@xs4all.nl>
-References: <1628084828-119542-1-git-send-email-liudongdong3@huawei.com>
- <1628084828-119542-8-git-send-email-liudongdong3@huawei.com>
- <75243571-3213-6ae2-040f-ae1b1f799e42@deltatee.com>
-CC:     <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
-From:   Dongdong Liu <liudongdong3@huawei.com>
-Message-ID: <8758a42b-233b-eb73-dce4-493e0ce8eed5@huawei.com>
-Date:   Thu, 5 Aug 2021 21:14:50 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        id S241654AbhHENPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 09:15:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44086 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241638AbhHENPk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Aug 2021 09:15:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A099761158;
+        Thu,  5 Aug 2021 13:15:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628169326;
+        bh=4NIJtcb7LVpgprmnn/ZQlhukqiHdGqkRtLckoCaJvdU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=CXMAY1T79Sm5k41dm24uwiU6PcIptSDxPc2jrnQZZfS4DYXRDYHqJFZ2TMUkC6M9Y
+         OaLduJy3BOjlphF+ILGXT+YYadrCr7e/oKej0qM1CRFAoK2wbAVaRyDP+TJajWb7ts
+         o+ueEqX6GEvDxOHPOJHHZU2//aFH1/SFA5bhnOvsFl/iALJW+NGNR87OQa4RwLlWOD
+         BxBUaKmdQulg/kiIKc4AA5VGhjWKUUS1j+86LzPw3IW2OC6PiHCaItWv6UeUNKOKg8
+         POf9arRFTLRyljTghiL8jbmGj/qOxsriuLzHUSuPItuHQCrLPfSVgi39caFNRjr2OP
+         jhw5LCR2jQqsQ==
+Received: by mail-wm1-f51.google.com with SMTP id m28-20020a05600c3b1cb02902b5a8c22575so3464679wms.0;
+        Thu, 05 Aug 2021 06:15:26 -0700 (PDT)
+X-Gm-Message-State: AOAM532RgdvALtbzSOFF+jNUdXpPjSvMfXLw7vX/a/L5NLacPc91JHQW
+        V/ApMRV0IirYc0K4RxI+dkP/NP/2tFTOOgR7QPE=
+X-Google-Smtp-Source: ABdhPJx+NRm3dfDwrab5xgBSMUaJimXbhghgZk25OYmrxZH/Ca7tSBtp/oA5JvJTFsQKNt64ZbrCT61Tvd4FgcMNRGw=
+X-Received: by 2002:a05:600c:3641:: with SMTP id y1mr4884578wmq.43.1628169325222;
+ Thu, 05 Aug 2021 06:15:25 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <75243571-3213-6ae2-040f-ae1b1f799e42@deltatee.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.103.235]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
+References: <20210805082253.3654591-1-arnd@kernel.org> <CAGRGNgV89tdRvUXyfBCgmYMa3CXQV4oYeMeCq_-g5u1MtUkdKQ@mail.gmail.com>
+In-Reply-To: <CAGRGNgV89tdRvUXyfBCgmYMa3CXQV4oYeMeCq_-g5u1MtUkdKQ@mail.gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Thu, 5 Aug 2021 15:15:08 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2W9s3K4x4MpaqHfsBOXq+bKAUYHh5hFAh7oExXZYuFTg@mail.gmail.com>
+Message-ID: <CAK8P3a2W9s3K4x4MpaqHfsBOXq+bKAUYHh5hFAh7oExXZYuFTg@mail.gmail.com>
+Subject: Re: [PATCH net-next v4] ethernet: fix PTP_1588_CLOCK dependencies
+To:     Julian Calaby <julian.calaby@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Shannon Nelson <snelson@pensando.io>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        drivers@pensando.io, Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Yangbo Lu <yangbo.lu@nxp.com>, Karen Xie <kxie@chelsio.com>,
+        Networking <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        Linux SCSI List <linux-scsi@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/8/4 23:51, Logan Gunthorpe wrote:
->
->
->
-> On 2021-08-04 7:47 a.m., Dongdong Liu wrote:
->> PCIe spec 5.0 r1.0 section 2.2.6.2 says that if an Endpoint supports
->> sending Requests to other Endpoints (as opposed to host memory), the
->> Endpoint must not send 10-Bit Tag Requests to another given Endpoint
->> unless an implementation-specific mechanism determines that the Endpoint
->> supports 10-Bit Tag Completer capability. Add a 10bit_tag sysfs file,
->> write 0 to disable 10-Bit Tag Requester when the driver does not bind
->> the device if the peer device does not support the 10-Bit Tag Completer.
->> This will make P2P traffic safe. the 10bit_tag file content indicate
->> current 10-Bit Tag Requester Enable status.
->
-> Can we not have both the sysfs file and the command line parameter? If
-> the user wants to disable it always for a specific device this sysfs
-> parameter is fairly awkward. A script at boot to unbind the driver, set
-> the sysfs file and rebind the driver is not trivial and the command line
-> parameter offers additional options for users.
-Does the command line parameter as "[PATCH V6 7/8] PCI: Add 
-"pci=disable_10bit_tag=" parameter for peer-to-peer support" does?
+On Thu, Aug 5, 2021 at 2:52 PM Julian Calaby <julian.calaby@gmail.com> wrote:
+> On Thu, Aug 5, 2021 at 9:49 PM Arnd Bergmann <arnd@kernel.org> wrote:
 
-Do we also need such command line if we already had sysfs file?
-I think we may not need.
+> > diff --git a/drivers/scsi/cxgbi/cxgb4i/Kconfig b/drivers/scsi/cxgbi/cxgb4i/Kconfig
+> > index 8b0deece9758..e78c07f08cdf 100644
+> > --- a/drivers/scsi/cxgbi/cxgb4i/Kconfig
+> > +++ b/drivers/scsi/cxgbi/cxgb4i/Kconfig
+> > @@ -2,6 +2,7 @@
+> >  config SCSI_CXGB4_ISCSI
+> >         tristate "Chelsio T4 iSCSI support"
+> >         depends on PCI && INET && (IPV6 || IPV6=n)
+> > ++      depends on PTP_1588_CLOCK_OPTIONAL
+>
+> Extra +?
+>
 
-Thanks,
-Dongdong
->
-> Logan
-> .
->
+Indeed, this must have happened when I rebased onto net-next after
+testing it on my current randconfig branch (which does not have the
+typo).
+
+v5 coming, thanks for noticing!
+
+      Arnd
