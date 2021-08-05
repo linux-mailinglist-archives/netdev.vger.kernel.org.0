@@ -2,76 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37E8E3E12CE
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 12:40:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1478F3E135C
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 13:00:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240339AbhHEKkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 06:40:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55970 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232619AbhHEKkU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Aug 2021 06:40:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B3F286105A;
-        Thu,  5 Aug 2021 10:40:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628160006;
-        bh=LhqQugWyEtFPfVHlTMB1zuu+3ElXURLnc+tNxE3iQ/A=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Iim5TFr8cWPPMlSz5AwA2Uoom71hsnhD71qMwfHYxuA22agOtuaCBNN0bC63ncxEf
-         UA5Nat1hsV7llk0Q9G5KuVPJpGW8lBx7uUE8EtRrqwDUZS4EgGMqAP+IyyDi3dna3h
-         RbDuIkSf9T4kJQKnbdN7cPQxOb/K7RbxPPHKUqpRpn8WatkSwcN5V5blsthL1J2vqd
-         n9t5uHQz79Flu1vUvCFBAaD8ZdafELUcgARSpUz75c9GFHD+dOVCTQTn8PDE0k985N
-         ymmxRtT8GqwQkMz3Kda8fHY7GTwhSUNS3wc7EpkEMCzlvcD5mtK00mvuLDHiNmgQGV
-         xXnGJPyIscLqQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A34C160A72;
-        Thu,  5 Aug 2021 10:40:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S240654AbhHELAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 07:00:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50384 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234312AbhHELAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 07:00:19 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD1CAC061765;
+        Thu,  5 Aug 2021 04:00:05 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id l8-20020a05600c1d08b02902b5acf7d8b5so2674130wms.2;
+        Thu, 05 Aug 2021 04:00:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=GdKJ/76XIyi+KqTfYxSG/ISbmFlzZeKfXC5olcHHZYA=;
+        b=Ed2NCkfiEeQv+1lxfHlAxCbsDzsRcZc5cKSsHL6LvgrzEmyr1guxXIhkGGggE2/veo
+         3N6CEv7zxTyBjcnIOHdn7vasLopKd4dmyG1Iy16EL1DXRYChOcHNSqsWiNxjiQXOw35A
+         5tYiJqnXmebaQDA2ZQkliOk7foDVCDfqHyj2WygsqOqWva/vQooYqIkyTcjmcA8YpG/O
+         fv6hG22viPu+sa4x1/cj1coFHlI/jNkgtJArfDDfcSHjauSyRmyNo7c10f71YTeZ/jht
+         rkRfcPsOZ1/Xj9q0hkgpTx1VhZE0/TIcsAhtPq+rksPoMXLTDGY65LB5K64na0xYm/XO
+         c3dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=GdKJ/76XIyi+KqTfYxSG/ISbmFlzZeKfXC5olcHHZYA=;
+        b=ZQU6BVzTHejAP3GDjp5PkAI36pRIoF0bpnFavjOFiMA0oQTvzcp7qeQIkpCPz38eGV
+         lOKu1pMNNq99oIfBALwq48OhoaW6nu637CnuE1Fm/CKP+UDD59zYR3w8rGO28tcGhlza
+         JuMmruvleGqXrb37lzofJd3Fe4bACbfN2zKpVb1bNT0+7bJFEKcLl3CgG13t+jhABIL+
+         JiyqaqEJqoj9BEQYSBbWXSJHmLrjbrUTI8cemR6aECi0J3NGHfsFN93LEFvthuoYK2TX
+         kf4YUSS4LG+64a1sGTcJylqJ4/mTR6uxRCQ3c1JjZSOTNZgWMAITdKPL85xOd0HyQ0TB
+         vUlw==
+X-Gm-Message-State: AOAM533RE4NWGBnwxPyyLKBlyvl4LojW+5dAxwkqnTPfeaa7hbmGkrb/
+        DjmxC4eO1SVJQPNt++zzMHsUTMKB3VI=
+X-Google-Smtp-Source: ABdhPJyphZzKYyn5WvyxcM7dFRCPY3IH/YfgIZ9plDKy6RucnA2uDC/S0nk18eARVC2mFwicBitbqQ==
+X-Received: by 2002:a05:600c:3b08:: with SMTP id m8mr14646736wms.84.1628161203797;
+        Thu, 05 Aug 2021 04:00:03 -0700 (PDT)
+Received: from [10.0.0.18] ([37.168.176.89])
+        by smtp.gmail.com with ESMTPSA id p5sm6394296wrd.25.2021.08.05.04.00.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Aug 2021 04:00:03 -0700 (PDT)
+Subject: Re: [PATCH][next] net/ipv6/mcast: Use struct_size() helper
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+References: <20210804214352.GA46670@embeddedor>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <aaa77803-fb5f-6444-ae2b-d6498ffea252@gmail.com>
+Date:   Thu, 5 Aug 2021 13:00:01 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3] net: bridge: fix recent ioctl changes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162816000666.17050.13699886393043128255.git-patchwork-notify@kernel.org>
-Date:   Thu, 05 Aug 2021 10:40:06 +0000
-References: <20210805082903.711396-1-razor@blackwall.org>
-In-Reply-To: <20210805082903.711396-1-razor@blackwall.org>
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     netdev@vger.kernel.org, roopa@nvidia.com, arnd@arndb.de,
-        bridge@lists.linux-foundation.org, nikolay@nvidia.com
+In-Reply-To: <20210804214352.GA46670@embeddedor>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu,  5 Aug 2021 11:29:00 +0300 you wrote:
-> From: Nikolay Aleksandrov <nikolay@nvidia.com>
+On 8/4/21 11:43 PM, Gustavo A. R. Silva wrote:
+> Replace IP6_SFLSIZE() with struct_size() helper in order to avoid any
+> potential type mistakes or integer overflows that, in the worst
+> scenario, could lead to heap overflows.
 > 
-> Hi,
-> These are three fixes for the recent bridge removal of ndo_do_ioctl
-> done by commit ad2f99aedf8f ("net: bridge: move bridge ioctls out of
-> .ndo_do_ioctl"). Patch 01 fixes a deadlock of the new bridge ioctl
-> hook lock and rtnl by taking a netdev reference and always taking the
-> bridge ioctl lock first then rtnl from within the bridge hook.
-> Patch 02 fixes old_deviceless() bridge calls device name argument, and
-> patch 03 checks in dev_ifsioc()'s SIOCBRADD/DELIF cases if the netdevice is
-> actually a bridge before interpreting its private ptr as net_bridge.
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> ---
+>  include/net/if_inet6.h |  3 ---
+>  net/ipv6/mcast.c       | 20 +++++++++++++-------
+>  2 files changed, 13 insertions(+), 10 deletions(-)
 > 
-> [...]
+> diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
+> index 71bb4cc4d05d..42235c178b06 100644
+> --- a/include/net/if_inet6.h
+> +++ b/include/net/if_inet6.h
+> @@ -82,9 +82,6 @@ struct ip6_sf_socklist {
+>  	struct in6_addr		sl_addr[];
+>  };
+>  
+> -#define IP6_SFLSIZE(count)	(sizeof(struct ip6_sf_socklist) + \
+> -	(count) * sizeof(struct in6_addr))
+> -
+>  #define IP6_SFBLOCK	10	/* allocate this many at once */
+>  
+>  struct ipv6_mc_socklist {
+> diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
+> index 54ec163fbafa..cd951faa2fac 100644
+> --- a/net/ipv6/mcast.c
+> +++ b/net/ipv6/mcast.c
+> @@ -447,7 +447,8 @@ int ip6_mc_source(int add, int omode, struct sock *sk,
+>  
+>  		if (psl)
+>  			count += psl->sl_max;
+> -		newpsl = sock_kmalloc(sk, IP6_SFLSIZE(count), GFP_KERNEL);
+> +		newpsl = sock_kmalloc(sk, struct_size(newpsl, sl_addr, count),
+> +				      GFP_KERNEL);
 
-Here is the summary with links:
-  - [net-next,1/3] net: bridge: fix ioctl locking
-    https://git.kernel.org/netdev/net-next/c/893b19587534
-  - [net-next,2/3] net: bridge: fix ioctl old_deviceless bridge argument
-    https://git.kernel.org/netdev/net-next/c/cbd7ad29a507
-  - [net-next,3/3] net: core: don't call SIOCBRADD/DELIF for non-bridge devices
-    https://git.kernel.org/netdev/net-next/c/9384eacd80f3
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I find the current code is more readable.
 
+Please only change IP6_SFLSIZE() definition maybe 
 
