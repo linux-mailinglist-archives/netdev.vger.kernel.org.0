@@ -2,154 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C6323E1EE2
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 00:35:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27D423E1EFE
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 00:43:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241899AbhHEWfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 18:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40872 "EHLO
+        id S241068AbhHEWoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 18:44:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241766AbhHEWfp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 18:35:45 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39E96C06179A
-        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 15:35:30 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id u21-20020a17090a8915b02901782c36f543so9582710pjn.4
-        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 15:35:30 -0700 (PDT)
+        with ESMTP id S232925AbhHEWoA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 18:44:00 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4814C0613D5;
+        Thu,  5 Aug 2021 15:43:44 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id z5so9957728ybj.2;
+        Thu, 05 Aug 2021 15:43:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=9iqwgQUcM7kXjxKmNPoKYxMsXr+XLcOB8+pWCUZkNe8=;
-        b=KAkMYMuNhvbZA2iCgZEddbTrejl0xEpGZSkXpfQBGb/1/lYKz0GuhZCyFf3+H1n0bA
-         TAQnCcRFAk59TUWLrhXD+xAo9iZUYIhy9f0pj2l1fgPXW1lbjX/HepmeNUWO5vXUq+3m
-         2LB/zgQel3Yt+5RYecnR8uK9lfX5l0wQ9DITdvyuppXnwrsHOGZr1/38Q2AnzzCjf9Gx
-         J4Bb0aICxZQ4QUH8VTMGsfLprejlIvpCbKPFAz8BC8rwzJ7oGdSXIQ+lsKifmJOK9Q2c
-         S9q35vaOip7TKdawSrct3l2lOBTL0Hj/8HkPD3K2X/t1VTTiQ9f6GxAGNscvm6u0HjXV
-         Fkzw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=scjRLh8ZcXfO6SUHVoj14tEPc7VJ/CQloEmyH1MTO9E=;
+        b=eal2D2FgZj49uAlBa3sbD10mG8zgKmCvf/LKCOpXtPUafUU8FXfb0y4f+UFhjDBmD3
+         +eHJQxUPmsKRhcPLIccsj9VlpzNbpugA8gETONAJD9rSn5+BFtWyOL/eBU4RiC/r1KYJ
+         QwNsn8VtnLMWL3QWB3L0/D/T4ncIwcAEIneSMcVcWlBxJWTYhHzmx/u06pDmf5rlU459
+         Bw1aGxVXXrqSaNrOxEIvw7YqAlYOS5objwmG6rfluhRxOPiTIe8oky7h3LlLSwtJvFPQ
+         aY2mZ8JGdG9UVR3iouO5m8VtJy8/xiLjK+4Br/ltdhxpkvorwt7+dstgvK6i5YCCSE6A
+         VCLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9iqwgQUcM7kXjxKmNPoKYxMsXr+XLcOB8+pWCUZkNe8=;
-        b=LNdl+oEwWi3269RwJg6fClGy5zvrGkzV52tEERtkOPcE/eFOB08U6p7Oc+nImR8MLH
-         0CYZvGLpgqeWrOsTlgldcL56+mBIMHHPaZPpatrbGCwu9ul/yne/X+uNALyoau4G18OQ
-         kDDU3pa45HPEAmZfEyq110jxno5TRuWxGluVqDJpC4whKllkaKzeeu1R2C+yDjMUMfmE
-         QIk96RCJySC6sdKR7MkoHGmQ4SZGRKDbW6E7gUGL1dDN0kFi+3vS9q+vS4P5SRyndH8d
-         N+eSo9LrjaJQqZbXpdquGKHpwK8Tg8CYsCyajDbb2ss7/zb6CTlRHUstcetZZeWMKUG2
-         hSnw==
-X-Gm-Message-State: AOAM532slDKUn07HkuW1v6qLmIwxKryvH94K/nrSvKDFYUQkyD34y1kC
-        xVrJNx/4nYrm9uphCtohTvaY2NqACyTmDA==
-X-Google-Smtp-Source: ABdhPJzW6GMV6BoC5T/W4tbrJ1yEdpKk8g9f0/Jwf/Eq01QTVqY9YkXfVCRs1xtX6tfdF8MQluGFOg==
-X-Received: by 2002:a17:902:b717:b029:11a:fae3:ba7c with SMTP id d23-20020a170902b717b029011afae3ba7cmr2734784pls.28.1628202929446;
-        Thu, 05 Aug 2021 15:35:29 -0700 (PDT)
-Received: from ip-10-124-121-13.byted.org (ec2-54-241-92-238.us-west-1.compute.amazonaws.com. [54.241.92.238])
-        by smtp.gmail.com with ESMTPSA id z8sm7931638pfa.113.2021.08.05.15.35.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Aug 2021 15:35:29 -0700 (PDT)
-From:   Jiang Wang <jiang.wang@bytedance.com>
-To:     netdev@vger.kernel.org
-Cc:     cong.wang@bytedance.com, duanxiongchun@bytedance.com,
-        xieyongji@bytedance.com, chaiwen.cc@bytedance.com,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=scjRLh8ZcXfO6SUHVoj14tEPc7VJ/CQloEmyH1MTO9E=;
+        b=Wp/ZaUw7no4gWqzpqw3iczM+cPdIh1HSrxAD2E9CzEXPGAsL+HvgsmXPWxcMGP8921
+         6gGqISnK9VM0T6/SqH01Q7TAQyz6CWO/iwzGYQ3X0RJakHXdz4rLj08lMmS5E5RaIw6p
+         Rf78g0UyGjge/KnGZhFiPofp/PcoScPlg300KChMVU4/99iFjanZ6/16ycrATEpvrftT
+         C+p/wPXt4VKr1tBI/27PTmj0S0UrdZ3Pi54NXN31mWGqug3mExanGm7fb3VWBCArMhab
+         DObMXDbvvkW1aXuXe+SGDaCK2TuxflEvVbwzkHrk4+2FjboraUnAgqoWQgI5J4JS0CH6
+         Y3KA==
+X-Gm-Message-State: AOAM533xyjBfeqdaTrX8lZs1ySf+OCala5UIlPqltJDNRjEL05GL7oNM
+        16ljuTu3ORnvHNtVA1DIQuv/o2LVfdHcnCa7MrE=
+X-Google-Smtp-Source: ABdhPJyl7Rq/gI+55e5fIAcZC4uTAcfUajdYmypUitxWoMMG2n4brfg+JhgZq21mTwre1vA8xXAtlH9IiZi+bFVLpFA=
+X-Received: by 2002:a25:d691:: with SMTP id n139mr9306982ybg.27.1628203423989;
+ Thu, 05 Aug 2021 15:43:43 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210704190252.11866-1-xiyou.wangcong@gmail.com> <20210704190252.11866-12-xiyou.wangcong@gmail.com>
+In-Reply-To: <20210704190252.11866-12-xiyou.wangcong@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 5 Aug 2021 15:43:33 -0700
+Message-ID: <CAEf4BzaccTCGeONN4MB5iRBZfmzfS3rR0R6XEPVmUKukrLSJ3w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 11/11] selftests/bpf: add test cases for
+ redirection between udp and unix
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cong Wang <cong.wang@bytedance.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf-next v5 5/5] selftest/bpf: add new tests in sockmap for unix stream to tcp.
-Date:   Thu,  5 Aug 2021 22:34:42 +0000
-Message-Id: <20210805223445.624330-6-jiang.wang@bytedance.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210805223445.624330-1-jiang.wang@bytedance.com>
-References: <20210805223445.624330-1-jiang.wang@bytedance.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Lorenz Bauer <lmb@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add two new test cases in sockmap tests, where unix stream is
-redirected to tcp and vice versa.
+On Sun, Jul 4, 2021 at 12:05 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> From: Cong Wang <cong.wang@bytedance.com>
+>
+> Add two test cases to ensure redirection between udp and unix
+> work bidirectionally.
+>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
+>  .../selftests/bpf/prog_tests/sockmap_listen.c | 170 ++++++++++++++++++
+>  1 file changed, 170 insertions(+)
+>
 
-Signed-off-by: Jiang Wang <jiang.wang@bytedance.com>
-Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
----
- .../selftests/bpf/prog_tests/sockmap_listen.c    | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+[...]
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-index 07ed8081f9ae..afa14fb66f08 100644
---- a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-@@ -1884,7 +1884,7 @@ static void inet_unix_redir_to_connected(int family, int type, int sock_mapfd,
- 	xclose(p0);
- }
- 
--static void udp_unix_skb_redir_to_connected(struct test_sockmap_listen *skel,
-+static void inet_unix_skb_redir_to_connected(struct test_sockmap_listen *skel,
- 					    struct bpf_map *inner_map, int family)
- {
- 	int verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
-@@ -1899,9 +1899,13 @@ static void udp_unix_skb_redir_to_connected(struct test_sockmap_listen *skel,
- 	skel->bss->test_ingress = false;
- 	inet_unix_redir_to_connected(family, SOCK_DGRAM, sock_map, verdict_map,
- 				    REDIR_EGRESS);
-+	inet_unix_redir_to_connected(family, SOCK_STREAM, sock_map, verdict_map,
-+				    REDIR_EGRESS);
- 	skel->bss->test_ingress = true;
- 	inet_unix_redir_to_connected(family, SOCK_DGRAM, sock_map, verdict_map,
- 				    REDIR_INGRESS);
-+	inet_unix_redir_to_connected(family, SOCK_STREAM, sock_map, verdict_map,
-+				    REDIR_INGRESS);
- 
- 	xbpf_prog_detach2(verdict, sock_map, BPF_SK_SKB_VERDICT);
- }
-@@ -1961,7 +1965,7 @@ static void unix_inet_redir_to_connected(int family, int type, int sock_mapfd,
- 
- }
- 
--static void unix_udp_skb_redir_to_connected(struct test_sockmap_listen *skel,
-+static void unix_inet_skb_redir_to_connected(struct test_sockmap_listen *skel,
- 					    struct bpf_map *inner_map, int family)
- {
- 	int verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
-@@ -1976,9 +1980,13 @@ static void unix_udp_skb_redir_to_connected(struct test_sockmap_listen *skel,
- 	skel->bss->test_ingress = false;
- 	unix_inet_redir_to_connected(family, SOCK_DGRAM, sock_map, verdict_map,
- 				     REDIR_EGRESS);
-+	unix_inet_redir_to_connected(family, SOCK_STREAM, sock_map, verdict_map,
-+				     REDIR_EGRESS);
- 	skel->bss->test_ingress = true;
- 	unix_inet_redir_to_connected(family, SOCK_DGRAM, sock_map, verdict_map,
- 				     REDIR_INGRESS);
-+	unix_inet_redir_to_connected(family, SOCK_STREAM, sock_map, verdict_map,
-+				     REDIR_INGRESS);
- 
- 	xbpf_prog_detach2(verdict, sock_map, BPF_SK_SKB_VERDICT);
- }
-@@ -1994,8 +2002,8 @@ static void test_udp_unix_redir(struct test_sockmap_listen *skel, struct bpf_map
- 	snprintf(s, sizeof(s), "%s %s %s", map_name, family_name, __func__);
- 	if (!test__start_subtest(s))
- 		return;
--	udp_unix_skb_redir_to_connected(skel, map, family);
--	unix_udp_skb_redir_to_connected(skel, map, family);
-+	inet_unix_skb_redir_to_connected(skel, map, family);
-+	unix_inet_skb_redir_to_connected(skel, map, family);
- }
- 
- static void run_tests(struct test_sockmap_listen *skel, struct bpf_map *map,
--- 
-2.20.1
+> +       n = write(c1, "a", 1);
+> +       if (n < 0)
+> +               FAIL_ERRNO("%s: write", log_prefix);
+> +       if (n == 0)
+> +               FAIL("%s: incomplete write", log_prefix);
+> +       if (n < 1)
+> +               goto close;
+> +
+> +       key = SK_PASS;
+> +       err = xbpf_map_lookup_elem(verd_mapfd, &key, &pass);
+> +       if (err)
+> +               goto close;
+> +       if (pass != 1)
+> +               FAIL("%s: want pass count 1, have %d", log_prefix, pass);
+> +
+> +       n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
+> +       if (n < 0)
+> +               FAIL_ERRNO("%s: read", log_prefix);
 
+Hey Cong,
+
+This test is pretty flaky and quite frequently fails in our CIs (e.g., [0]):
+
+./test_progs-no_alu32:unix_udp_redir_to_connected:1949: egress: read:
+Resource temporarily unavailable
+  unix_udp_redir_to_connected:FAIL:1949
+
+Please send a fix to make it more reliable. Thanks!
+
+
+  [0] https://github.com/anakryiko/libbpf/runs/3249152533?check_suite_focus=true
+
+
+> +       if (n == 0)
+> +               FAIL("%s: incomplete read", log_prefix);
+> +
+> +close:
+> +       xclose(c1);
+> +       xclose(p1);
+> +close_cli0:
+> +       xclose(c0);
+> +       xclose(p0);
+> +
+> +}
+> +
+
+[...]
