@@ -2,100 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FD193E1262
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 12:14:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8227F3E12A9
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 12:30:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240463AbhHEKPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 06:15:09 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:41340 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232490AbhHEKPH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 06:15:07 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 175AECGq041313;
-        Thu, 5 Aug 2021 05:14:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1628158453;
-        bh=wXXYvUKbgAewe2Dkhit4put0hvhHFaTNeZ1ZUFaL7RA=;
-        h=From:To:CC:Subject:Date;
-        b=D8AK4XisRZMEgaqE5PxNrJMCzMfpfse+UAFix30Ipjwv8kWHsgvI8VZgfWlZckp5y
-         W/bTzB5fldi8v4gn8tdCq0s/UMqqr/d3mczCx80ZN5z4Y3zIes1Qalt2yajyDZnGxX
-         CMHpcmnnEOYPq3nGdjgxb7wQnz1KVgHUUQ7ctJZg=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 175AECCF108467
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 5 Aug 2021 05:14:12 -0500
-Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 5 Aug
- 2021 05:14:12 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Thu, 5 Aug 2021 05:14:12 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 175AEBcI037522;
-        Thu, 5 Aug 2021 05:14:12 -0500
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH] net: ethernet: ti: am65-cpsw: fix crash in am65_cpsw_port_offload_fwd_mark_update()
-Date:   Thu, 5 Aug 2021 13:14:09 +0300
-Message-ID: <20210805101409.3366-1-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
+        id S240378AbhHEKaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 06:30:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38642 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240337AbhHEKaT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Aug 2021 06:30:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id D11A3610A2;
+        Thu,  5 Aug 2021 10:30:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628159405;
+        bh=U0Mh9BU99ln86RjZkvjJcfBCeOWHuI286RoN9JQwBIM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=KEgXHsGlYRBxBpMHceJJ8aPCm/OHAV5nOWy2pqmJdxBypGwKKO5RpS9wscW2jvhyb
+         srCHAeRUC7GxbyE22Qcqudu+SQ6RLKgUGXI7Qob0sAdY8JQxcww+Ma0wZx/b1llIfX
+         busUWURu0aPv4H4o+BPepj2BU7WpGTPWfmeSqCnSa9o4XOVgrj16/zqiyNf1tdVLSV
+         uu7Cc9do0jm9OyBLDUKBDRrsucW5IzYouwUeyDRrIwF9ugcVNe/MrSkOIs0ggz2PaW
+         F5sN8UE/m5h/b26gmJIAggx2bAcxNr9+fQUspPKJl1f1fqA/ca2Sh5gFiTaXnrhgaf
+         JMh0o8cxe4Y/A==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C409460A72;
+        Thu,  5 Aug 2021 10:30:05 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 0/4] net: wwan: iosm: fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162815940579.12505.8844586412472635889.git-patchwork-notify@kernel.org>
+Date:   Thu, 05 Aug 2021 10:30:05 +0000
+References: <20210804160952.70254-1-m.chetan.kumar@linux.intel.com>
+In-Reply-To: <20210804160952.70254-1-m.chetan.kumar@linux.intel.com>
+To:     Chetan Kumar <m.chetan.kumar@linux.intel.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        johannes@sipsolutions.net, ryazanov.s.a@gmail.com,
+        loic.poulain@linaro.org, krishna.c.sudi@intel.com,
+        linuxwwan@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The am65_cpsw_port_offload_fwd_mark_update() causes NULL exception crash
-when there is at least one disabled port and any other port added to the
-bridge first time.
+Hello:
 
-Unable to handle kernel NULL pointer dereference at virtual address 0000000000000858
-pc : am65_cpsw_port_offload_fwd_mark_update+0x54/0x68
-lr : am65_cpsw_netdevice_event+0x8c/0xf0
-Call trace:
-am65_cpsw_port_offload_fwd_mark_update+0x54/0x68
-notifier_call_chain+0x54/0x98
-raw_notifier_call_chain+0x14/0x20
-call_netdevice_notifiers_info+0x34/0x78
-__netdev_upper_dev_link+0x1c8/0x290
-netdev_master_upper_dev_link+0x1c/0x28
-br_add_if+0x3f0/0x6d0 [bridge]
+This series was applied to netdev/net.git (refs/heads/master):
 
-Fix it by adding proper check for port->ndev != NULL.
+On Wed,  4 Aug 2021 21:39:48 +0530 you wrote:
+> This patch series contains IOSM Driver fixes. Below is the patch
+> series breakdown.
+> 
+> PATCH1:
+> * Correct the td buffer type casting & format specifier to fix lkp buildbot
+> warning.
+> 
+> [...]
 
-Fixes: 2934db9bcb30 ("net: ti: am65-cpsw-nuss: Add netdevice notifiers")
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
----
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Here is the summary with links:
+  - [1/4] net: wwan: iosm: fix lkp buildbot warning
+    https://git.kernel.org/netdev/net/c/5a7c1b2a5bb4
+  - [2/4] net: wwan: iosm: endianness type correction
+    https://git.kernel.org/netdev/net/c/b46c5795d641
+  - [3/4] net: wwan: iosm: correct data protocol mask bit
+    https://git.kernel.org/netdev/net/c/c98f5220e970
+  - [4/4] net: wwan: iosm: fix recursive lock acquire in unregister
+    https://git.kernel.org/netdev/net/c/679505baaaab
 
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index 718539cdd2f2..67a08cbba859 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -2060,8 +2060,12 @@ static void am65_cpsw_port_offload_fwd_mark_update(struct am65_cpsw_common *comm
- 
- 	for (i = 1; i <= common->port_num; i++) {
- 		struct am65_cpsw_port *port = am65_common_get_port(common, i);
--		struct am65_cpsw_ndev_priv *priv = am65_ndev_to_priv(port->ndev);
-+		struct am65_cpsw_ndev_priv *priv;
- 
-+		if (!port->ndev)
-+			continue;
-+
-+		priv = am65_ndev_to_priv(port->ndev);
- 		priv->offload_fwd_mark = set_val;
- 	}
- }
--- 
-2.17.1
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
