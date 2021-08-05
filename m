@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F19E63E1BD4
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 20:58:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E1583E1BD5
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 20:58:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241918AbhHES6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 14:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48196 "EHLO
+        id S241912AbhHES6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 14:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241061AbhHES6M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 14:58:12 -0400
-Received: from mail-oo1-xc31.google.com (mail-oo1-xc31.google.com [IPv6:2607:f8b0:4864:20::c31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D14C061765
-        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 11:57:57 -0700 (PDT)
-Received: by mail-oo1-xc31.google.com with SMTP id t1-20020a4a54010000b02902638ef0f883so1574324ooa.11
-        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 11:57:57 -0700 (PDT)
+        with ESMTP id S241866AbhHES6O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 14:58:14 -0400
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2910C06179A
+        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 11:57:58 -0700 (PDT)
+Received: by mail-ot1-x331.google.com with SMTP id d10-20020a9d4f0a0000b02904f51c5004e3so1814236otl.9
+        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 11:57:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=McPiBDHkFlEeo+/bDbhJFKtuMToZTHJqpAeNdBcA7WE=;
-        b=FtYYn0/EXNO9zPob1GSYc2LSUhoIujAjNCKWcalY0Aa9VRAUD+eYIlyii0t6WRKM2x
-         w9wIDwH19yNchkNBVJHmrPs70L2REPnWYyuGCzsTPcI7XiP99I6qWjLgPohzOW38IFDN
-         HmjLogBmtPOeZ3bwv1nUFF4tyPgcHFLObKumgLPm1dFqiTDFJeUgxSEW/xE/+JhwSFz1
-         iyEBVqKxwpiOVs90nNs1I5fmgDCV/2kDQ07lhsw14HEUCiIUp7tr3S/e3XystttckjNg
-         HkGQb8pN/oaUqMqGekWJU0W/RYlt8I8um8+9Kv4rKAhv6dP8yJHMrLoH1uF34iee7Zhw
-         8bHA==
+        bh=5gXqt201hXQPzHGNu6FBADW/OpgGLxD/Q2DnkbRCYQs=;
+        b=btL3zEcHti9xHY6bFF3zqG+rClYmeB4FIwPChMnYj17KN58DKmgVyMJoDDjHr4yhCm
+         kwajc6plXcPB/MC1S3b6LsziMfcQfPOsyaiMbK/BjAC8rmciabHRS5CmeSFRUAYlQSDk
+         bs3CrJm1Gom/QbDlyDpX9OCxFRDAvJhjXPvLsbhseW7GA0SvZJojfWQWfkskLfNTvP9E
+         aysi4lovf9vbePeZYsGALx500CetTtW+4nLpWXrhgifFlTE8Ez5dSBd9WTMTBAUwdxZk
+         4AzCW7HTYm8xCMzOrO2PTfrYCGHkBP4Y+3fzn29WhlcTMfxtZLcTMPiw9xJ3WXSZe30/
+         gD/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=McPiBDHkFlEeo+/bDbhJFKtuMToZTHJqpAeNdBcA7WE=;
-        b=F4Y30Rg/eKpP0HgrbuOD7kZHNVa6hYdyB3Mf62pEA8caObIxzh1o3fEo8GOQIrm242
-         n7XAWeX0gKl6mZRJwta+mgIjQF77p7FznD43u/92lDEJisck/sZapHYBVGJdxsBlbOPt
-         GRqh+T6sptI6jKnhLrVaf8IDOGKtivQSPXtp/9soEPzifm8jA3TUrKBY+LJ5VFarfbRp
-         trVhtJMGkHmMctDWWkDnM1GAb1A1vX5pawnU3L3gKieP9iv4bZT1ftutyisDosyEO3n9
-         aDsy6Sj0COWbczExXjgjL2o2VwGab1EAh1y5v7nQW9gHCJ36iD0zTnQIXsR7xnZ3Exo7
-         RMSQ==
-X-Gm-Message-State: AOAM530cT0TL1YYs4r9pInnzNt/F5+/AOZeMhbLeg/BV6ooHXJUrp14m
-        AYsdz2y0GzlWgPiEjiUW4L62aRU2wT8=
-X-Google-Smtp-Source: ABdhPJzBDFqQS/AacMf4L02mHdvy6sYJN5r0OOTjR9UxBYK5OHuk7XIcnk51zkfWXKg1auOBjCFyLg==
-X-Received: by 2002:a4a:4c55:: with SMTP id a82mr4380273oob.66.1628189876814;
-        Thu, 05 Aug 2021 11:57:56 -0700 (PDT)
+        bh=5gXqt201hXQPzHGNu6FBADW/OpgGLxD/Q2DnkbRCYQs=;
+        b=pmEooaaxX3NTd7ULBFg+j2eMMKMAZ74KKw9JKmBO/2lb5Oa88yp+am7pUlxW3ZKYzA
+         OjwISDSdWPKfRXbBQSuyLrnNxAQcaqxZ4E4nyKu7ttDYUmiPkr9i0X1dO6loAbQgmmCd
+         7G03ywW5NdwEoJ4ws0Bzi10OWtrKGn4p9+hhtEWjty+eWfdGOACARHzmnuU+6grA2snC
+         8lMiNkIyEQpEbsrYNWwB7WzTcrUqLBsJ1tosVS15YXvoRav7jq9qV6YCOA32V7E7gToq
+         zMWk9ZXDP85N7edaw2YokBvgV4eaSW3Yz82IgoIl5vjPOrCXs7QZKrdarc/j7l8CyqyO
+         o6lQ==
+X-Gm-Message-State: AOAM533ig3IeVOU3Ine+Uo0BKqGzuGUpZt5wVhdLFej+6QlNOoo/+P7w
+        tMxYvjzgJ85NkE4bkjZ9ks2B+2D+Tx0=
+X-Google-Smtp-Source: ABdhPJxdF86KmgBFU0b2g3TfaPv9PtSts+bYnalBB9PU8Nb/s69EG/Za2ZbEqaPiR/hk7cEcZNDCSg==
+X-Received: by 2002:a05:6830:3113:: with SMTP id b19mr4767289ots.152.1628189877849;
+        Thu, 05 Aug 2021 11:57:57 -0700 (PDT)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:c64b:2366:2e53:c024])
-        by smtp.gmail.com with ESMTPSA id r5sm358678otk.71.2021.08.05.11.57.55
+        by smtp.gmail.com with ESMTPSA id r5sm358678otk.71.2021.08.05.11.57.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Aug 2021 11:57:56 -0700 (PDT)
+        Thu, 05 Aug 2021 11:57:57 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Qitao Xu <qitao.xu@bytedance.com>,
         Cong Wang <cong.wang@bytedance.com>
-Subject: [Patch net-next 03/13] tcp: introduce tracepoint trace_tcp_transmit_skb()
-Date:   Thu,  5 Aug 2021 11:57:40 -0700
-Message-Id: <20210805185750.4522-4-xiyou.wangcong@gmail.com>
+Subject: [Patch net-next 04/13] udp: introduce tracepoint trace_udp_send_skb()
+Date:   Thu,  5 Aug 2021 11:57:41 -0700
+Message-Id: <20210805185750.4522-5-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210805185750.4522-1-xiyou.wangcong@gmail.com>
 References: <20210805185750.4522-1-xiyou.wangcong@gmail.com>
@@ -65,61 +65,63 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Qitao Xu <qitao.xu@bytedance.com>
 
-Tracepoint trace_tcp_transmit_skb() is introduced to trace skb
-at the exit of TCP layer on TX side.
+Tracepoint trace_udp_send_skb() is introduced to trace skb
+at the exit of UDP layer on TX side.
 
 Reviewed-by: Cong Wang <cong.wang@bytedance.com>
 Signed-off-by: Qitao Xu <qitao.xu@bytedance.com>
 ---
- include/trace/events/tcp.h | 11 +++++++++--
- net/ipv4/tcp_output.c      |  8 +++++++-
- 2 files changed, 16 insertions(+), 3 deletions(-)
+ include/trace/events/udp.h | 19 +++++++++++++++++++
+ net/ipv4/udp.c             |  4 +++-
+ 2 files changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/include/trace/events/tcp.h b/include/trace/events/tcp.h
-index 521059d8dc0a..6147528d93ba 100644
---- a/include/trace/events/tcp.h
-+++ b/include/trace/events/tcp.h
-@@ -88,11 +88,18 @@ DECLARE_EVENT_CLASS(tcp_event_sk_skb,
- 			      sk->sk_v6_rcv_saddr, sk->sk_v6_daddr);
- 	),
+diff --git a/include/trace/events/udp.h b/include/trace/events/udp.h
+index 336fe272889f..7babc1a11693 100644
+--- a/include/trace/events/udp.h
++++ b/include/trace/events/udp.h
+@@ -27,6 +27,25 @@ TRACE_EVENT(udp_fail_queue_rcv_skb,
+ 	TP_printk("rc=%d port=%hu", __entry->rc, __entry->lport)
+ );
  
--	TP_printk("family=%s sport=%hu dport=%hu saddr=%pI4 daddr=%pI4 saddrv6=%pI6c daddrv6=%pI6c state=%s",
-+	TP_printk("family=%s sport=%hu dport=%hu saddr=%pI4 daddr=%pI4 saddrv6=%pI6c daddrv6=%pI6c state=%s skbaddr=%px",
- 		  show_family_name(__entry->family),
- 		  __entry->sport, __entry->dport, __entry->saddr, __entry->daddr,
- 		  __entry->saddr_v6, __entry->daddr_v6,
--		  show_tcp_state_name(__entry->state))
-+		  show_tcp_state_name(__entry->state), __entry->skbaddr)
-+);
-+
-+DEFINE_EVENT(tcp_event_sk_skb, tcp_transmit_skb,
++TRACE_EVENT(udp_send_skb,
 +
 +	TP_PROTO(const struct sock *sk, const struct sk_buff *skb),
 +
-+	TP_ARGS(sk, skb)
- );
++	TP_ARGS(sk, skb),
++
++	TP_STRUCT__entry(
++		__field(const void *, skaddr)
++		__field(const void *, skbaddr)
++	),
++
++	TP_fast_assign(
++		__entry->skaddr = sk;
++		__entry->skbaddr = skb;
++	),
++
++	TP_printk("skaddr=%px, skbaddr=%px", __entry->skaddr, __entry->skbaddr)
++);
++
+ #endif /* _TRACE_UDP_H */
  
- DEFINE_EVENT(tcp_event_sk_skb, tcp_retransmit_skb,
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 29553fce8502..628b28332851 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -1420,8 +1420,14 @@ static int __tcp_transmit_skb(struct sock *sk, struct sk_buff *skb,
- static int tcp_transmit_skb(struct sock *sk, struct sk_buff *skb, int clone_it,
- 			    gfp_t gfp_mask)
- {
--	return __tcp_transmit_skb(sk, skb, clone_it, gfp_mask,
-+	int ret;
-+
-+	ret = __tcp_transmit_skb(sk, skb, clone_it, gfp_mask,
- 				  tcp_sk(sk)->rcv_nxt);
-+	if (!ret)
-+		trace_tcp_transmit_skb(sk, skb);
-+	return ret;
-+
+ /* This part must be outside protection */
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 1a742b710e54..daa618465a1d 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -970,9 +970,11 @@ static int udp_send_skb(struct sk_buff *skb, struct flowi4 *fl4,
+ 				      UDP_MIB_SNDBUFERRORS, is_udplite);
+ 			err = 0;
+ 		}
+-	} else
++	} else {
+ 		UDP_INC_STATS(sock_net(sk),
+ 			      UDP_MIB_OUTDATAGRAMS, is_udplite);
++		trace_udp_send_skb(sk, skb);
++	}
+ 	return err;
  }
  
- /* This routine just queues the buffer for sending.
 -- 
 2.27.0
 
