@@ -2,322 +2,502 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7B153E0D7D
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 07:01:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4885B3E0DB8
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 07:20:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236905AbhHEFCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 01:02:04 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:8406 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S233118AbhHEFCD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 01:02:03 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 1754s1em012120
-        for <netdev@vger.kernel.org>; Wed, 4 Aug 2021 22:01:49 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=SNGcIBPdzcnIhOQErt6wLxvW/8hJT8zsr7EWLGLn6wQ=;
- b=O7prDKTrKd0VPLZE9XjbV7rsborNGI/Dj/ZJ44cELlYsfobwFeaDt3vmOqc//puTxLeq
- 66WUTA4TIqZmuwwJP9r9yPDfB0+VNb8iyXpYpDk8nAQNpP6J7lwRNESzrJz1yxcwaUyP
- 2cvgzGskta1BQ+/oJbmfPsoAUrh8nWgowrM= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0089730.ppops.net with ESMTP id 3a7kdkqckr-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 04 Aug 2021 22:01:49 -0700
-Received: from intmgw001.06.ash9.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 4 Aug 2021 22:01:47 -0700
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 78506294203D; Wed,  4 Aug 2021 22:01:44 -0700 (PDT)
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH bpf-next 4/4] bpf: selftests: Add dctcp fallback test
-Date:   Wed, 4 Aug 2021 22:01:44 -0700
-Message-ID: <20210805050144.1352078-1-kafai@fb.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210805050119.1349009-1-kafai@fb.com>
-References: <20210805050119.1349009-1-kafai@fb.com>
+        id S231463AbhHEFUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 01:20:42 -0400
+Received: from pegase2.c-s.fr ([93.17.235.10]:51877 "EHLO pegase2.c-s.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229674AbhHEFUg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Aug 2021 01:20:36 -0400
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4GgGj406Lvz9sS6;
+        Thu,  5 Aug 2021 07:03:36 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id cAYlmELQErNj; Thu,  5 Aug 2021 07:03:35 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4GgGj35PN3z9sS0;
+        Thu,  5 Aug 2021 07:03:35 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 8C70B8B7AE;
+        Thu,  5 Aug 2021 07:03:35 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id MvH5Fk3aJuYh; Thu,  5 Aug 2021 07:03:35 +0200 (CEST)
+Received: from [192.168.4.90] (unknown [192.168.4.90])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id C85628B76A;
+        Thu,  5 Aug 2021 07:03:34 +0200 (CEST)
+Subject: Re: [PATCH v4 01/10] net/ps3_gelic: Add gelic_descr structures
+To:     Geoff Levand <geoff@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+References: <cover.1627068552.git.geoff@infradead.org>
+ <c95aa8e57aca8b3af6893f13f2e03731f8198184.1627068552.git.geoff@infradead.org>
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+Message-ID: <b819b8cf-c079-10d5-3c6e-245cb8e33f39@csgroup.eu>
+Date:   Thu, 5 Aug 2021 07:03:35 +0200
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-FB-Source: Intern
-X-Proofpoint-GUID: hPcNaZP6djg9EvKttkvxuxn40Iul8RKo
-X-Proofpoint-ORIG-GUID: hPcNaZP6djg9EvKttkvxuxn40Iul8RKo
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-08-05_01:2021-08-04,2021-08-05 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- spamscore=0 suspectscore=0 impostorscore=0 mlxscore=0 phishscore=0
- adultscore=0 priorityscore=1501 clxscore=1015 bulkscore=0 malwarescore=0
- mlxlogscore=972 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2107140000 definitions=main-2108050028
-X-FB-Internal: deliver
+In-Reply-To: <c95aa8e57aca8b3af6893f13f2e03731f8198184.1627068552.git.geoff@infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: fr
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch makes the bpf_dctcp test to fallback to cubic by
-using setsockopt(TCP_CONGESTION) when the tcp flow is not
-ecn ready.
 
-It also checks setsockopt() is not available to release().
 
-The settimeo() from the network_helpers.h is used, so the local
-one is removed.
+Le 23/07/2021 à 22:31, Geoff Levand a écrit :
+> In an effort to make the PS3 gelic driver easier to maintain, create two
+> new structures, struct gelic_hw_regs and struct gelic_chain_link, and
+> replace the corresponding members of struct gelic_descr with the new
+> structures.
+> 
+> struct gelic_hw_regs holds the register variables used by the gelic
+> hardware device.  struct gelic_chain_link holds variables used to manage
+> the driver's linked list of gelic descr structures.
+> 
+> Signed-off-by: Geoff Levand <geoff@infradead.org>
 
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- tools/testing/selftests/bpf/bpf_tcp_helpers.h |   4 +
- .../selftests/bpf/prog_tests/bpf_tcp_ca.c     | 101 ++++++++++++++----
- tools/testing/selftests/bpf/progs/bpf_dctcp.c |  20 ++++
- .../selftests/bpf/progs/bpf_dctcp_release.c   |  26 +++++
- 4 files changed, 128 insertions(+), 23 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/bpf_dctcp_release.c
+Running checkpatch script provides the following feedback:
 
-diff --git a/tools/testing/selftests/bpf/bpf_tcp_helpers.h b/tools/testin=
-g/selftests/bpf/bpf_tcp_helpers.h
-index e49b7c450b42..5a024646918b 100644
---- a/tools/testing/selftests/bpf/bpf_tcp_helpers.h
-+++ b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
-@@ -12,6 +12,10 @@
- SEC("struct_ops/"#name) \
- BPF_PROG(name, args)
-=20
-+#ifndef SOL_TCP
-+#define SOL_TCP 6
-+#endif
-+
- #define tcp_jiffies32 ((__u32)bpf_jiffies64())
-=20
- struct sock_common {
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c b/tools/=
-testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-index efe1e979affb..b0ba8fa9d0ec 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-@@ -4,37 +4,18 @@
- #include <linux/err.h>
- #include <netinet/tcp.h>
- #include <test_progs.h>
-+#include "network_helpers.h"
- #include "bpf_dctcp.skel.h"
- #include "bpf_cubic.skel.h"
- #include "bpf_tcp_nogpl.skel.h"
-+#include "bpf_dctcp_release.skel.h"
-=20
- #define min(a, b) ((a) < (b) ? (a) : (b))
-=20
- static const unsigned int total_bytes =3D 10 * 1024 * 1024;
--static const struct timeval timeo_sec =3D { .tv_sec =3D 10 };
--static const size_t timeo_optlen =3D sizeof(timeo_sec);
- static int expected_stg =3D 0xeB9F;
- static int stop, duration;
-=20
--static int settimeo(int fd)
--{
--	int err;
--
--	err =3D setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeo_sec,
--			 timeo_optlen);
--	if (CHECK(err =3D=3D -1, "setsockopt(fd, SO_RCVTIMEO)", "errno:%d\n",
--		  errno))
--		return -1;
--
--	err =3D setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeo_sec,
--			 timeo_optlen);
--	if (CHECK(err =3D=3D -1, "setsockopt(fd, SO_SNDTIMEO)", "errno:%d\n",
--		  errno))
--		return -1;
--
--	return 0;
--}
--
- static int settcpca(int fd, const char *tcp_ca)
- {
- 	int err;
-@@ -61,7 +42,7 @@ static void *server(void *arg)
- 		goto done;
- 	}
-=20
--	if (settimeo(fd)) {
-+	if (settimeo(fd, 0)) {
- 		err =3D -errno;
- 		goto done;
- 	}
-@@ -114,7 +95,7 @@ static void do_test(const char *tcp_ca, const struct b=
-pf_map *sk_stg_map)
- 	}
-=20
- 	if (settcpca(lfd, tcp_ca) || settcpca(fd, tcp_ca) ||
--	    settimeo(lfd) || settimeo(fd))
-+	    settimeo(lfd, 0) || settimeo(fd, 0))
- 		goto done;
-=20
- 	/* bind, listen and start server thread to accept */
-@@ -267,6 +248,76 @@ static void test_invalid_license(void)
- 	libbpf_set_print(old_print_fn);
- }
-=20
-+static void test_dctcp_fallback(void)
-+{
-+	int err, lfd =3D -1, cli_fd =3D -1, srv_fd =3D -1;
-+	struct network_helper_opts opts =3D {
-+		.cc =3D "cubic",
-+	};
-+	struct bpf_dctcp *dctcp_skel;
-+	struct bpf_link *link =3D NULL;
-+	char srv_cc[16];
-+	socklen_t cc_len =3D sizeof(srv_cc);
-+
-+	dctcp_skel =3D bpf_dctcp__open();
-+	if (!ASSERT_OK_PTR(dctcp_skel, "dctcp_skel"))
-+		return;
-+	strcpy(dctcp_skel->rodata->fallback, "cubic");
-+	if (!ASSERT_OK(bpf_dctcp__load(dctcp_skel), "bpf_dctcp__load"))
-+		goto done;
-+
-+	link =3D bpf_map__attach_struct_ops(dctcp_skel->maps.dctcp);
-+	if (!ASSERT_OK_PTR(link, "dctcp link"))
-+		goto done;
-+
-+	lfd =3D start_server(AF_INET6, SOCK_STREAM, "::1", 0, 0);
-+	if (!ASSERT_GE(lfd, 0, "lfd") ||
-+	    !ASSERT_OK(settcpca(lfd, "bpf_dctcp"), "lfd=3D>bpf_dctcp"))
-+		goto done;
-+
-+	cli_fd =3D connect_to_fd_opts(lfd, &opts);
-+	if (!ASSERT_GE(cli_fd, 0, "cli_fd"))
-+		goto done;
-+
-+	srv_fd =3D accept(lfd, NULL, 0);
-+	if (!ASSERT_GE(srv_fd, 0, "srv_fd"))
-+		goto done;
-+	ASSERT_STREQ(dctcp_skel->bss->cc_res, "cubic", "cc_res");
-+
-+	err =3D getsockopt(srv_fd, SOL_TCP, TCP_CONGESTION, srv_cc, &cc_len);
-+	if (!ASSERT_OK(err, "getsockopt(srv_fd, TCP_CONGESTION)"))
-+		goto done;
-+	ASSERT_STREQ(srv_cc, "cubic", "srv_fd cc");
-+
-+done:
-+	bpf_link__destroy(link);
-+	bpf_dctcp__destroy(dctcp_skel);
-+	if (lfd !=3D -1)
-+		close(lfd);
-+	if (srv_fd !=3D -1)
-+		close(srv_fd);
-+	if (cli_fd !=3D -1)
-+		close(cli_fd);
-+}
-+
-+static void test_rel_setsockopt(void)
-+{
-+	struct bpf_dctcp_release *rel_skel;
-+	libbpf_print_fn_t old_print_fn;
-+
-+	err_str =3D "unknown func bpf_setsockopt";
-+	found =3D false;
-+
-+	old_print_fn =3D libbpf_set_print(libbpf_debug_print);
-+	rel_skel =3D bpf_dctcp_release__open_and_load();
-+	libbpf_set_print(old_print_fn);
-+
-+	ASSERT_ERR_PTR(rel_skel, "rel_skel");
-+	ASSERT_TRUE(found, "expected_err_msg");
-+
-+	bpf_dctcp_release__destroy(rel_skel);
-+}
-+
- void test_bpf_tcp_ca(void)
- {
- 	if (test__start_subtest("dctcp"))
-@@ -275,4 +326,8 @@ void test_bpf_tcp_ca(void)
- 		test_cubic();
- 	if (test__start_subtest("invalid_license"))
- 		test_invalid_license();
-+	if (test__start_subtest("dctcp_fallback"))
-+		test_dctcp_fallback();
-+	if (test__start_subtest("rel_setsockopt"))
-+		test_rel_setsockopt();
- }
-diff --git a/tools/testing/selftests/bpf/progs/bpf_dctcp.c b/tools/testin=
-g/selftests/bpf/progs/bpf_dctcp.c
-index fd42247da8b4..48df7ffbefdb 100644
---- a/tools/testing/selftests/bpf/progs/bpf_dctcp.c
-+++ b/tools/testing/selftests/bpf/progs/bpf_dctcp.c
-@@ -17,6 +17,9 @@
-=20
- char _license[] SEC("license") =3D "GPL";
-=20
-+volatile const char fallback[TCP_CA_NAME_MAX];
-+const char bpf_dctcp[] =3D "bpf_dctcp";
-+char cc_res[TCP_CA_NAME_MAX];
- int stg_result =3D 0;
-=20
- struct {
-@@ -57,6 +60,23 @@ void BPF_PROG(dctcp_init, struct sock *sk)
- 	struct dctcp *ca =3D inet_csk_ca(sk);
- 	int *stg;
-=20
-+	if (!(tp->ecn_flags & TCP_ECN_OK) && fallback[0]) {
-+		/* Switch to fallback */
-+		bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
-+			       (void *)fallback, sizeof(fallback));
-+		/* Switch back to myself which the bpf trampoline
-+		 * stopped calling dctcp_init recursively.
-+		 */
-+		bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
-+			       (void *)bpf_dctcp, sizeof(bpf_dctcp));
-+		/* Switch back to fallback */
-+		bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
-+			       (void *)fallback, sizeof(fallback));
-+		bpf_getsockopt(sk, SOL_TCP, TCP_CONGESTION,
-+			       (void *)cc_res, sizeof(cc_res));
-+		return;
-+	}
-+
- 	ca->prior_rcv_nxt =3D tp->rcv_nxt;
- 	ca->dctcp_alpha =3D min(dctcp_alpha_on_init, DCTCP_MAX_ALPHA);
- 	ca->loss_cwnd =3D 0;
-diff --git a/tools/testing/selftests/bpf/progs/bpf_dctcp_release.c b/tool=
-s/testing/selftests/bpf/progs/bpf_dctcp_release.c
-new file mode 100644
-index 000000000000..d836f7c372f0
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/bpf_dctcp_release.c
-@@ -0,0 +1,26 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+
-+#include <stddef.h>
-+#include <linux/bpf.h>
-+#include <linux/types.h>
-+#include <linux/stddef.h>
-+#include <linux/tcp.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+#include "bpf_tcp_helpers.h"
-+
-+char _license[] SEC("license") =3D "GPL";
-+const char cubic[] =3D "cubic";
-+
-+void BPF_STRUCT_OPS(dctcp_nouse_release, struct sock *sk)
-+{
-+	bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
-+		       (void *)cubic, sizeof(cubic));
-+}
-+
-+SEC(".struct_ops")
-+struct tcp_congestion_ops dctcp_rel =3D {
-+	.release	=3D (void *)dctcp_nouse_release,
-+	.name		=3D "bpf_dctcp_rel",
-+};
---=20
-2.30.2
+CHECK:PARENTHESIS_ALIGNMENT: Alignment should match open parenthesis
+#164: FILE: drivers/net/ethernet/toshiba/ps3_gelic_net.c:400:
++	descr->hw_regs.payload.dev_addr = cpu_to_be32(dma_map_single(ctodev(card),
+  						     descr->skb->data,
 
+WARNING:AVOID_BUG: Avoid crashing the kernel - try using WARN_ON & recovery code rather than BUG() 
+or BUG_ON()
+#190: FILE: drivers/net/ethernet/toshiba/ps3_gelic_net.c:497:
++	BUG_ON(!(be32_to_cpu(descr->hw_regs.data_status) & GELIC_DESCR_TX_TAIL));
+
+ERROR:SPACING: spaces required around that '?' (ctx:VxE)
+#333: FILE: drivers/net/ethernet/toshiba/ps3_gelic_net.c:922:
++	skb_put(skb, be32_to_cpu(descr->hw_regs.valid_size)?
+  	                                                   ^
+
+
+NOTE: For some of the reported defects, checkpatch may be able to
+       mechanically convert to the typical style using --fix or --fix-inplace.
+
+Commit 5c33bdbe1861 ("net/ps3_gelic: Add gelic_descr structures") has style problems, please review.
+
+NOTE: Ignored message types: ARCH_INCLUDE_LINUX BIT_MACRO COMPARISON_TO_NULL DT_SPLIT_BINDING_PATCH 
+EMAIL_SUBJECT FILE_PATH_CHANGES GLOBAL_INITIALISERS LINE_SPACING MULTIPLE_ASSIGNMENTS
+
+
+
+> ---
+>   drivers/net/ethernet/toshiba/ps3_gelic_net.c | 133 ++++++++++---------
+>   drivers/net/ethernet/toshiba/ps3_gelic_net.h |  24 ++--
+>   2 files changed, 82 insertions(+), 75 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.c b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+> index 55e652624bd7..cb45571573d7 100644
+> --- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+> +++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+> @@ -98,7 +98,7 @@ static void gelic_card_get_ether_port_status(struct gelic_card *card,
+>   static enum gelic_descr_dma_status
+>   gelic_descr_get_status(struct gelic_descr *descr)
+>   {
+> -	return be32_to_cpu(descr->dmac_cmd_status) & GELIC_DESCR_DMA_STAT_MASK;
+> +	return be32_to_cpu(descr->hw_regs.dmac_cmd_status) & GELIC_DESCR_DMA_STAT_MASK;
+>   }
+>   
+>   static int gelic_card_set_link_mode(struct gelic_card *card, int mode)
+> @@ -154,13 +154,13 @@ static void gelic_card_enable_rxdmac(struct gelic_card *card)
+>   		printk(KERN_ERR "%s: status=%x\n", __func__,
+>   		       be32_to_cpu(card->rx_chain.head->dmac_cmd_status));
+>   		printk(KERN_ERR "%s: nextphy=%x\n", __func__,
+> -		       be32_to_cpu(card->rx_chain.head->next_descr_addr));
+> +		       be32_to_cpu(card->rx_chain.head->hw_regs.next_descr_addr));
+>   		printk(KERN_ERR "%s: head=%p\n", __func__,
+>   		       card->rx_chain.head);
+>   	}
+>   #endif
+>   	status = lv1_net_start_rx_dma(bus_id(card), dev_id(card),
+> -				card->rx_chain.head->bus_addr, 0);
+> +				card->rx_chain.head->link.cpu_addr, 0);
+>   	if (status)
+>   		dev_info(ctodev(card),
+>   			 "lv1_net_start_rx_dma failed, status=%d\n", status);
+> @@ -195,8 +195,8 @@ static void gelic_card_disable_rxdmac(struct gelic_card *card)
+>   static void gelic_descr_set_status(struct gelic_descr *descr,
+>   				   enum gelic_descr_dma_status status)
+>   {
+> -	descr->dmac_cmd_status = cpu_to_be32(status |
+> -			(be32_to_cpu(descr->dmac_cmd_status) &
+> +	descr->hw_regs.dmac_cmd_status = cpu_to_be32(status |
+> +			(be32_to_cpu(descr->hw_regs.dmac_cmd_status) &
+>   			 ~GELIC_DESCR_DMA_STAT_MASK));
+>   	/*
+>   	 * dma_cmd_status field is used to indicate whether the descriptor
+> @@ -224,13 +224,13 @@ static void gelic_card_reset_chain(struct gelic_card *card,
+>   
+>   	for (descr = start_descr; start_descr != descr->next; descr++) {
+>   		gelic_descr_set_status(descr, GELIC_DESCR_DMA_CARDOWNED);
+> -		descr->next_descr_addr = cpu_to_be32(descr->next->bus_addr);
+> +		descr->hw_regs.next_descr_addr = cpu_to_be32(descr->next->link.cpu_addr);
+>   	}
+>   
+>   	chain->head = start_descr;
+>   	chain->tail = (descr - 1);
+>   
+> -	(descr - 1)->next_descr_addr = 0;
+> +	(descr - 1)->hw_regs.next_descr_addr = 0;
+>   }
+>   
+>   void gelic_card_up(struct gelic_card *card)
+> @@ -286,10 +286,10 @@ static void gelic_card_free_chain(struct gelic_card *card,
+>   {
+>   	struct gelic_descr *descr;
+>   
+> -	for (descr = descr_in; descr && descr->bus_addr; descr = descr->next) {
+> -		dma_unmap_single(ctodev(card), descr->bus_addr,
+> -				 GELIC_DESCR_SIZE, DMA_BIDIRECTIONAL);
+> -		descr->bus_addr = 0;
+> +	for (descr = descr_in; descr && descr->link.cpu_addr; descr = descr->next) {
+> +		dma_unmap_single(ctodev(card), descr->link.cpu_addr,
+> +				 descr->link.size, DMA_BIDIRECTIONAL);
+> +		descr->link.cpu_addr = 0;
+>   	}
+>   }
+>   
+> @@ -317,13 +317,14 @@ static int gelic_card_init_chain(struct gelic_card *card,
+>   
+>   	/* set up the hardware pointers in each descriptor */
+>   	for (i = 0; i < no; i++, descr++) {
+> +		descr->link.size = sizeof(struct gelic_hw_regs);
+>   		gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
+> -		descr->bus_addr =
+> +		descr->link.cpu_addr =
+>   			dma_map_single(ctodev(card), descr,
+> -				       GELIC_DESCR_SIZE,
+> +				       descr->link.size,
+>   				       DMA_BIDIRECTIONAL);
+>   
+> -		if (!descr->bus_addr)
+> +		if (!descr->link.cpu_addr)
+>   			goto iommu_error;
+>   
+>   		descr->next = descr + 1;
+> @@ -336,22 +337,22 @@ static int gelic_card_init_chain(struct gelic_card *card,
+>   	/* chain bus addr of hw descriptor */
+>   	descr = start_descr;
+>   	for (i = 0; i < no; i++, descr++) {
+> -		descr->next_descr_addr = cpu_to_be32(descr->next->bus_addr);
+> +		descr->hw_regs.next_descr_addr = cpu_to_be32(descr->next->link.cpu_addr);
+>   	}
+>   
+>   	chain->head = start_descr;
+>   	chain->tail = start_descr;
+>   
+>   	/* do not chain last hw descriptor */
+> -	(descr - 1)->next_descr_addr = 0;
+> +	(descr - 1)->hw_regs.next_descr_addr = 0;
+>   
+>   	return 0;
+>   
+>   iommu_error:
+>   	for (i--, descr--; 0 <= i; i--, descr--)
+> -		if (descr->bus_addr)
+> -			dma_unmap_single(ctodev(card), descr->bus_addr,
+> -					 GELIC_DESCR_SIZE,
+> +		if (descr->link.cpu_addr)
+> +			dma_unmap_single(ctodev(card), descr->link.cpu_addr,
+> +					 descr->link.size,
+>   					 DMA_BIDIRECTIONAL);
+>   	return -ENOMEM;
+>   }
+> @@ -381,25 +382,25 @@ static int gelic_descr_prepare_rx(struct gelic_card *card,
+>   	 * bit more */
+>   	descr->skb = dev_alloc_skb(bufsize + GELIC_NET_RXBUF_ALIGN - 1);
+>   	if (!descr->skb) {
+> -		descr->buf_addr = 0; /* tell DMAC don't touch memory */
+> +		descr->hw_regs.payload.dev_addr = 0; /* tell DMAC don't touch memory */
+>   		return -ENOMEM;
+>   	}
+> -	descr->buf_size = cpu_to_be32(bufsize);
+> -	descr->dmac_cmd_status = 0;
+> -	descr->result_size = 0;
+> -	descr->valid_size = 0;
+> -	descr->data_error = 0;
+> +	descr->hw_regs.payload.size = cpu_to_be32(bufsize);
+> +	descr->hw_regs.dmac_cmd_status = 0;
+> +	descr->hw_regs.result_size = 0;
+> +	descr->hw_regs.valid_size = 0;
+> +	descr->hw_regs.data_error = 0;
+>   
+>   	offset = ((unsigned long)descr->skb->data) &
+>   		(GELIC_NET_RXBUF_ALIGN - 1);
+>   	if (offset)
+>   		skb_reserve(descr->skb, GELIC_NET_RXBUF_ALIGN - offset);
+>   	/* io-mmu-map the skb */
+> -	descr->buf_addr = cpu_to_be32(dma_map_single(ctodev(card),
+> +	descr->hw_regs.payload.dev_addr = cpu_to_be32(dma_map_single(ctodev(card),
+>   						     descr->skb->data,
+>   						     GELIC_NET_MAX_MTU,
+>   						     DMA_FROM_DEVICE));
+> -	if (!descr->buf_addr) {
+> +	if (!descr->hw_regs.payload.dev_addr) {
+>   		dev_kfree_skb_any(descr->skb);
+>   		descr->skb = NULL;
+>   		dev_info(ctodev(card),
+> @@ -424,10 +425,10 @@ static void gelic_card_release_rx_chain(struct gelic_card *card)
+>   	do {
+>   		if (descr->skb) {
+>   			dma_unmap_single(ctodev(card),
+> -					 be32_to_cpu(descr->buf_addr),
+> +					 be32_to_cpu(descr->hw_regs.payload.dev_addr),
+>   					 descr->skb->len,
+>   					 DMA_FROM_DEVICE);
+> -			descr->buf_addr = 0;
+> +			descr->hw_regs.payload.dev_addr = 0;
+>   			dev_kfree_skb_any(descr->skb);
+>   			descr->skb = NULL;
+>   			gelic_descr_set_status(descr,
+> @@ -493,19 +494,19 @@ static void gelic_descr_release_tx(struct gelic_card *card,
+>   {
+>   	struct sk_buff *skb = descr->skb;
+>   
+> -	BUG_ON(!(be32_to_cpu(descr->data_status) & GELIC_DESCR_TX_TAIL));
+> +	BUG_ON(!(be32_to_cpu(descr->hw_regs.data_status) & GELIC_DESCR_TX_TAIL));
+>   
+> -	dma_unmap_single(ctodev(card), be32_to_cpu(descr->buf_addr), skb->len,
+> +	dma_unmap_single(ctodev(card), be32_to_cpu(descr->hw_regs.payload.dev_addr), skb->len,
+>   			 DMA_TO_DEVICE);
+>   	dev_kfree_skb_any(skb);
+>   
+> -	descr->buf_addr = 0;
+> -	descr->buf_size = 0;
+> -	descr->next_descr_addr = 0;
+> -	descr->result_size = 0;
+> -	descr->valid_size = 0;
+> -	descr->data_status = 0;
+> -	descr->data_error = 0;
+> +	descr->hw_regs.payload.dev_addr = 0;
+> +	descr->hw_regs.payload.size = 0;
+> +	descr->hw_regs.next_descr_addr = 0;
+> +	descr->hw_regs.result_size = 0;
+> +	descr->hw_regs.valid_size = 0;
+> +	descr->hw_regs.data_status = 0;
+> +	descr->hw_regs.data_error = 0;
+>   	descr->skb = NULL;
+>   
+>   	/* set descr status */
+> @@ -698,7 +699,7 @@ static void gelic_descr_set_tx_cmdstat(struct gelic_descr *descr,
+>   				       struct sk_buff *skb)
+>   {
+>   	if (skb->ip_summed != CHECKSUM_PARTIAL)
+> -		descr->dmac_cmd_status =
+> +		descr->hw_regs.dmac_cmd_status =
+>   			cpu_to_be32(GELIC_DESCR_DMA_CMD_NO_CHKSUM |
+>   				    GELIC_DESCR_TX_DMA_FRAME_TAIL);
+>   	else {
+> @@ -706,19 +707,19 @@ static void gelic_descr_set_tx_cmdstat(struct gelic_descr *descr,
+>   		 * if yes: tcp? udp? */
+>   		if (skb->protocol == htons(ETH_P_IP)) {
+>   			if (ip_hdr(skb)->protocol == IPPROTO_TCP)
+> -				descr->dmac_cmd_status =
+> +				descr->hw_regs.dmac_cmd_status =
+>   				cpu_to_be32(GELIC_DESCR_DMA_CMD_TCP_CHKSUM |
+>   					    GELIC_DESCR_TX_DMA_FRAME_TAIL);
+>   
+>   			else if (ip_hdr(skb)->protocol == IPPROTO_UDP)
+> -				descr->dmac_cmd_status =
+> +				descr->hw_regs.dmac_cmd_status =
+>   				cpu_to_be32(GELIC_DESCR_DMA_CMD_UDP_CHKSUM |
+>   					    GELIC_DESCR_TX_DMA_FRAME_TAIL);
+>   			else	/*
+>   				 * the stack should checksum non-tcp and non-udp
+>   				 * packets on his own: NETIF_F_IP_CSUM
+>   				 */
+> -				descr->dmac_cmd_status =
+> +				descr->hw_regs.dmac_cmd_status =
+>   				cpu_to_be32(GELIC_DESCR_DMA_CMD_NO_CHKSUM |
+>   					    GELIC_DESCR_TX_DMA_FRAME_TAIL);
+>   		}
+> @@ -763,7 +764,7 @@ static int gelic_descr_prepare_tx(struct gelic_card *card,
+>   				  struct gelic_descr *descr,
+>   				  struct sk_buff *skb)
+>   {
+> -	dma_addr_t buf;
+> +	dma_addr_t cpu_addr;
+>   
+>   	if (card->vlan_required) {
+>   		struct sk_buff *skb_tmp;
+> @@ -777,20 +778,20 @@ static int gelic_descr_prepare_tx(struct gelic_card *card,
+>   		skb = skb_tmp;
+>   	}
+>   
+> -	buf = dma_map_single(ctodev(card), skb->data, skb->len, DMA_TO_DEVICE);
+> +	cpu_addr = dma_map_single(ctodev(card), skb->data, skb->len, DMA_TO_DEVICE);
+>   
+> -	if (!buf) {
+> +	if (!cpu_addr) {
+>   		dev_err(ctodev(card),
+>   			"dma map 2 failed (%p, %i). Dropping packet\n",
+>   			skb->data, skb->len);
+>   		return -ENOMEM;
+>   	}
+>   
+> -	descr->buf_addr = cpu_to_be32(buf);
+> -	descr->buf_size = cpu_to_be32(skb->len);
+> +	descr->hw_regs.payload.dev_addr = cpu_to_be32(cpu_addr);
+> +	descr->hw_regs.payload.size = cpu_to_be32(skb->len);
+>   	descr->skb = skb;
+> -	descr->data_status = 0;
+> -	descr->next_descr_addr = 0; /* terminate hw descr */
+> +	descr->hw_regs.data_status = 0;
+> +	descr->hw_regs.next_descr_addr = 0; /* terminate hw descr */
+>   	gelic_descr_set_tx_cmdstat(descr, skb);
+>   
+>   	/* bump free descriptor pointer */
+> @@ -815,7 +816,7 @@ static int gelic_card_kick_txdma(struct gelic_card *card,
+>   	if (gelic_descr_get_status(descr) == GELIC_DESCR_DMA_CARDOWNED) {
+>   		card->tx_dma_progress = 1;
+>   		status = lv1_net_start_tx_dma(bus_id(card), dev_id(card),
+> -					      descr->bus_addr, 0);
+> +					      descr->link.cpu_addr, 0);
+>   		if (status) {
+>   			card->tx_dma_progress = 0;
+>   			dev_info(ctodev(card), "lv1_net_start_txdma failed," \
+> @@ -868,7 +869,7 @@ netdev_tx_t gelic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
+>   	 * link this prepared descriptor to previous one
+>   	 * to achieve high performance
+>   	 */
+> -	descr->prev->next_descr_addr = cpu_to_be32(descr->bus_addr);
+> +	descr->prev->hw_regs.next_descr_addr = cpu_to_be32(descr->link.cpu_addr);
+>   	/*
+>   	 * as hardware descriptor is modified in the above lines,
+>   	 * ensure that the hardware sees it
+> @@ -881,12 +882,12 @@ netdev_tx_t gelic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
+>   		 */
+>   		netdev->stats.tx_dropped++;
+>   		/* don't trigger BUG_ON() in gelic_descr_release_tx */
+> -		descr->data_status = cpu_to_be32(GELIC_DESCR_TX_TAIL);
+> +		descr->hw_regs.data_status = cpu_to_be32(GELIC_DESCR_TX_TAIL);
+>   		gelic_descr_release_tx(card, descr);
+>   		/* reset head */
+>   		card->tx_chain.head = descr;
+>   		/* reset hw termination */
+> -		descr->prev->next_descr_addr = 0;
+> +		descr->prev->hw_regs.next_descr_addr = 0;
+>   		dev_info(ctodev(card), "%s: kick failure\n", __func__);
+>   	}
+>   
+> @@ -911,21 +912,21 @@ static void gelic_net_pass_skb_up(struct gelic_descr *descr,
+>   	struct sk_buff *skb = descr->skb;
+>   	u32 data_status, data_error;
+>   
+> -	data_status = be32_to_cpu(descr->data_status);
+> -	data_error = be32_to_cpu(descr->data_error);
+> +	data_status = be32_to_cpu(descr->hw_regs.data_status);
+> +	data_error = be32_to_cpu(descr->hw_regs.data_error);
+>   	/* unmap skb buffer */
+> -	dma_unmap_single(ctodev(card), be32_to_cpu(descr->buf_addr),
+> +	dma_unmap_single(ctodev(card), be32_to_cpu(descr->hw_regs.payload.dev_addr),
+>   			 GELIC_NET_MAX_MTU,
+>   			 DMA_FROM_DEVICE);
+>   
+> -	skb_put(skb, be32_to_cpu(descr->valid_size)?
+> -		be32_to_cpu(descr->valid_size) :
+> -		be32_to_cpu(descr->result_size));
+> -	if (!descr->valid_size)
+> +	skb_put(skb, be32_to_cpu(descr->hw_regs.valid_size)?
+> +		be32_to_cpu(descr->hw_regs.valid_size) :
+> +		be32_to_cpu(descr->hw_regs.result_size));
+> +	if (!descr->hw_regs.valid_size)
+>   		dev_info(ctodev(card), "buffer full %x %x %x\n",
+> -			 be32_to_cpu(descr->result_size),
+> -			 be32_to_cpu(descr->buf_size),
+> -			 be32_to_cpu(descr->dmac_cmd_status));
+> +			 be32_to_cpu(descr->hw_regs.result_size),
+> +			 be32_to_cpu(descr->hw_regs.payload.size),
+> +			 be32_to_cpu(descr->hw_regs.dmac_cmd_status));
+>   
+>   	descr->skb = NULL;
+>   	/*
+> @@ -1036,14 +1037,14 @@ static int gelic_card_decode_one_descr(struct gelic_card *card)
+>   
+>   	/* is the current descriptor terminated with next_descr == NULL? */
+>   	dmac_chain_ended =
+> -		be32_to_cpu(descr->dmac_cmd_status) &
+> +		be32_to_cpu(descr->hw_regs.dmac_cmd_status) &
+>   		GELIC_DESCR_RX_DMA_CHAIN_END;
+>   	/*
+>   	 * So that always DMAC can see the end
+>   	 * of the descriptor chain to avoid
+>   	 * from unwanted DMAC overrun.
+>   	 */
+> -	descr->next_descr_addr = 0;
+> +	descr->hw_regs.next_descr_addr = 0;
+>   
+>   	/* change the descriptor state: */
+>   	gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
+> @@ -1060,7 +1061,7 @@ static int gelic_card_decode_one_descr(struct gelic_card *card)
+>   	/*
+>   	 * Set this descriptor the end of the chain.
+>   	 */
+> -	descr->prev->next_descr_addr = cpu_to_be32(descr->bus_addr);
+> +	descr->prev->hw_regs.next_descr_addr = cpu_to_be32(descr->link.cpu_addr);
+>   
+>   	/*
+>   	 * If dmac chain was met, DMAC stopped.
+> diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.h b/drivers/net/ethernet/toshiba/ps3_gelic_net.h
+> index 68f324ed4eaf..569f691021d9 100644
+> --- a/drivers/net/ethernet/toshiba/ps3_gelic_net.h
+> +++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.h
+> @@ -220,29 +220,35 @@ enum gelic_lv1_phy {
+>   	GELIC_LV1_PHY_ETHERNET_0	= 0x0000000000000002L,
+>   };
+>   
+> -/* size of hardware part of gelic descriptor */
+> -#define GELIC_DESCR_SIZE	(32)
+> -
+>   enum gelic_port_type {
+>   	GELIC_PORT_ETHERNET_0	= 0,
+>   	GELIC_PORT_WIRELESS	= 1,
+>   	GELIC_PORT_MAX
+>   };
+>   
+> -struct gelic_descr {
+> -	/* as defined by the hardware */
+> -	__be32 buf_addr;
+> -	__be32 buf_size;
+> +/* as defined by the hardware */
+> +struct gelic_hw_regs {
+> +	struct  {
+> +		__be32 dev_addr;
+> +		__be32 size;
+> +	} __packed payload;
+>   	__be32 next_descr_addr;
+>   	__be32 dmac_cmd_status;
+>   	__be32 result_size;
+>   	__be32 valid_size;	/* all zeroes for tx */
+>   	__be32 data_status;
+>   	__be32 data_error;	/* all zeroes for tx */
+> +} __packed;
+>   
+> -	/* used in the driver */
+> +struct gelic_chain_link {
+> +	dma_addr_t cpu_addr;
+> +	unsigned int size;
+> +};
+> +
+> +struct gelic_descr {
+> +	struct gelic_hw_regs hw_regs;
+> +	struct gelic_chain_link link;
+>   	struct sk_buff *skb;
+> -	dma_addr_t bus_addr;
+>   	struct gelic_descr *next;
+>   	struct gelic_descr *prev;
+>   } __attribute__((aligned(32)));
+> 
