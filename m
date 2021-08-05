@@ -2,70 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C62D3E37B1
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 02:22:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D8883E1651
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 16:05:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229919AbhHHAWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Aug 2021 20:22:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51096 "EHLO
+        id S241450AbhHEOFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 10:05:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229797AbhHHAWh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 20:22:37 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD63C061760
-        for <netdev@vger.kernel.org>; Sat,  7 Aug 2021 17:22:19 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id l11-20020a7bcf0b0000b0290253545c2997so8786541wmg.4
-        for <netdev@vger.kernel.org>; Sat, 07 Aug 2021 17:22:18 -0700 (PDT)
+        with ESMTP id S241858AbhHEOFR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 10:05:17 -0400
+Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A867C061765
+        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 07:04:19 -0700 (PDT)
+Received: by mail-oo1-xc34.google.com with SMTP id b25-20020a4ac2990000b0290263aab95660so1329746ooq.13
+        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 07:04:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=message-id:from:mime-version:content-transfer-encoding
-         :content-description:subject:to:date:reply-to;
-        bh=r9Vql557re3jXGZooejQWBUekFnWOJl61zQZedxcKNo=;
-        b=PgVXMODzN6IGt9s28sTiz+1IaKsE6OUgmGUWpWU12G3NvRaj20g6jPZZj/EHT7Lmk2
-         5OvNBFWUiAXWv73zXsfga2tPhwxpLDgvBZg3oDe0kcEj8mTZ9UDRvOF7IdjMPs0eWPiY
-         uH2DpNP8Q0eWhuUz0Gs/5XtP/4PT5oz9oeazhTM9q54uf+kWSmQ5UUMT5nN0oP1/ikCp
-         vvv1O/1RBsKY2x40BfZr65zJMWKMifiN6XXcnwCYV0pEJgzUwKkEUn62w4f3sJtKHsYM
-         pKiF3aF6hqALquaAzNx+3kjF6VufBYag77Tq3SOm5W6Cv9CcfMWPqJE15z60OigKjcE+
-         e/6w==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jriByzyhrgk5PqT0TTXr/bcvWNeCJ6JcDk7WTOQw6+g=;
+        b=UY3MUxv1wlBCJqD6cmpk9bqYXvgh1S2LtSLbUQE9EihTSplUt4y/64GVYiZrGiH8oq
+         0bnrENhJcqT68G+pLjQNuCmzffFPVeEPLrsqBOgfi/5V6yPRT6hgRxgWpWIXSTOJ7q4h
+         sHPtXOaZ49m+FT0OdeQCvShRXwhUEolxTr7rW/9YFHU8ltvnnUE89Hc9lII10um54MU2
+         gdd9oxikr4LLBMwJlNmyCPhkiz8pQeEQwi583/jtOddp4Du6XcMWo2y6yCjWhWznwSgf
+         cwzejssfylkDNTKMV49FlO9UjhsNMd6NADvy8eMLAJfLM1B9fZ/vm3ebHinFSL41AwdM
+         nXMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:from:mime-version
-         :content-transfer-encoding:content-description:subject:to:date
-         :reply-to;
-        bh=r9Vql557re3jXGZooejQWBUekFnWOJl61zQZedxcKNo=;
-        b=EUYB+RB9pJXQt6lLPYlIcpfn1UxxRlS/1YhAQMBoJuBpggk6h8OHT5lxlF5p7NM1OM
-         hqERih80HWrtC8V1jjIfQJho07Z0iQbDGHk7YvoDxvNZyAf/g9DWlPqqsSo9x8hkaedc
-         1HyJdTGoYVyP985C6qh8UnV3ZNJvdIchPGnTSb75K2N4UzDoUR1Ft557b1ehC7vaOF7v
-         on2pimniM2hbe+dpXWqskSZrs7KPQwDklH7iVe8lAnWwLX3oqNW3QrIlz2q2lPaX/AO2
-         AVJhxK9yL6lrareZca3v7EyY8mEjTUAth710K1UL3uno1KTMADIhlHX7CIePtiXrFc/k
-         NGOQ==
-X-Gm-Message-State: AOAM5318Iqabu9rgX6BuqPNPoHBCmQ87Rsry+q0S4V3s2sLNle/YTVBg
-        P0J6dK22RHW+mO2H9AXl7Ks=
-X-Google-Smtp-Source: ABdhPJyUZWV5qT8O+JjLj3soJ74kD1R1/8Wo5ZuyQEOzgyiZ9z5lQD8pTzV5OgJZDEOAZPF4qCDVvA==
-X-Received: by 2002:a1c:4b09:: with SMTP id y9mr2160487wma.133.1628382137666;
-        Sat, 07 Aug 2021 17:22:17 -0700 (PDT)
-Received: from [192.168.1.76] ([102.64.178.34])
-        by smtp.gmail.com with ESMTPSA id q20sm12983205wmj.27.2021.08.07.17.22.14
-        (version=TLS1 cipher=AES128-SHA bits=128/128);
-        Sat, 07 Aug 2021 17:22:17 -0700 (PDT)
-Message-ID: <610f23b9.1c69fb81.fe51c.635c@mx.google.com>
-From:   Leong Su ling <ayaoviignacio@gmail.com>
-X-Google-Original-From: Leong Su ling
-Content-Type: text/plain; charset="iso-8859-1"
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jriByzyhrgk5PqT0TTXr/bcvWNeCJ6JcDk7WTOQw6+g=;
+        b=Nch6CbWqMCP7rv7XOSb8t+UOkKFEC6gVPENGiFTtq2dQT1gvB3E8mjbSDI5umzQFGe
+         GBKIRdiP0+ccWETl2ZUFd3dkjBkO78JsNGtZ+1SuaDPGojHmYmE1Y5eQWn35CeNAeRCH
+         TZWecVMOLJZ32OLN8nJw3Ow4VPruHgNrXRZOTfDizSkMpVJPrp8G4d2rinLMxLaFbBrH
+         4PJDWoKzWQyAaPfcq56bwKTuw9nXr3VIdFPSk9FyPcn6LT2fGcCyyZrdSvSkMACzsfEl
+         5D3EYG+4w1TRq9SR+CQdLELROkNT0eaR1UP6oRFp3Skn4FujBtci1X0dQIRMsSJ5n+Ge
+         lV0A==
+X-Gm-Message-State: AOAM533tuF3pIGDYo4WrP22le278gc4mX8qbEIOx7Isnsxa5JvwFz9bi
+        Tl8PJPu7WgC8C3suvfpJFGs=
+X-Google-Smtp-Source: ABdhPJzSg2KmVSL9RGDxX20fyRhpdh0GgK3KKaHKkFl2wcol32d3r/whCl7Dlkkhl0v3Lbm84VyFnA==
+X-Received: by 2002:a4a:d40a:: with SMTP id n10mr3340780oos.32.1628172258812;
+        Thu, 05 Aug 2021 07:04:18 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.45])
+        by smtp.googlemail.com with ESMTPSA id m2sm951539otr.46.2021.08.05.07.04.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Aug 2021 07:04:18 -0700 (PDT)
+Subject: Re: net/ipv6: broken handling of ICMPv6 redirects since Linux
+ 4.18-rc1
+To:     =?UTF-8?Q?Ond=c5=99ej_Caletka?= <Ondrej.Caletka@ripe.net>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Michal Kubecek <mkubecek@suse.cz>
+References: <472e38a0-5096-4d5a-755b-f8658a05c4b3@ripe.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <17674516-5e6b-5222-4925-2af73b91f84e@gmail.com>
+Date:   Thu, 5 Aug 2021 08:04:17 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: INQUIRY
-To:     Recipients <Leong@vger.kernel.org>
-Date:   Thu, 05 Aug 2021 14:02:02 +0000
-Reply-To: leongnsuling@gmail.com
+In-Reply-To: <472e38a0-5096-4d5a-755b-f8658a05c4b3@ripe.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-INQUIRY
+On 8/5/21 6:50 AM, Ondřej Caletka wrote:
+> 
+> Dear maintainers,
+> 
+> I think I discovered a bug introduced in 4.18-rc1 and still present in
+> 5.14-rc4. The problem is that Linux does not react on received ICMPv6
+> redirect - the nexthop visible in the output of "ip -6 route get <dest>"
+> does not get changed and the data are still sent to the nexthop of the
+> default gateway. This used to work in kernels up to and including 4.17.19.
+> 
+> Steps to reproduce:
+> -------------------
+> 
+> I am reproducing the issue in a VM running Ubuntu 20.04 running three
+> LXD containers. I use tool `redir6` from
+> [THC-IPv6](https://github.com/vanhauser-thc/thc-ipv6) to perform the
+> redirect attack. I am testing using vanilla kernels, compiled following
+> this guide: https://wiki.ubuntu.com/KernelTeam/GitKernelBuild
+> 
+>  1. Download and run [the
+> VM](https://github.com/RIPE-NCC/ipv6-security-lab)
+>  2. on hostA, check that an arbitrary IPv6 address is routed through the
+> default gateway:
+> 
+>     root@hostA:~# ip -6 rou get 2001:db8:bad:dad::1
+>     2001:db8:bad:dad::1 from :: via fe80::216:3eff:feee:1 dev eth0 proto
+> ra src 2001:db8:f:1:216:3eff:feee:a metric 100 mtu 1500 pref medium
+> 
+>  3. on hostC, perform the redirect attack and sniff the incoming traffic
+> 
+>     root@hostC:~# redir6 eth0 2001:db8:f:1:216:3eff:feee:a
+> 2001:db8:bad:dad::1 fe80::216:3eff:feee:1 fe80::216:3eff:feee:c
+>     Sent ICMPv6 redirect for 2001:db8:bad:dad::1
+>     root@hostC:~# tcpdump -nei eth0 dst host 2001:db8:bad:dad::1
+> 
+>  4. on hostA, check the route again and try to send an echo request to
+> that address:
+> 
+>     root@hostA:~# ip -6 rou get 2001:db8:bad:dad::1
+>     2001:db8:bad:dad::1 from :: via fe80::216:3eff:feee:1 dev eth0 proto
+> ra src 2001:db8:f:1:216:3eff:feee:a metric 100 mtu 1500 pref medium
+>     root@hostA:~# ping -c 1 2001:db8:bad:dad::1
+>     PING 2001:db8:bad:dad::1(2001:db8:bad:dad::1) 56 data bytes
+>     From 2001:db8:f:1::1 icmp_seq=1 Destination unreachable: No route
+> 
 
-Can you Source and Supply for us this product? Pls inform us
+how does your test differ from:
 
-Leong Su Ling
-Email:procurement@bio-dvacc.com
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/tools/testing/selftests/net/icmp_redirect.sh
+
+Can you create a similar script for your test setup?
+
