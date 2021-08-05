@@ -2,75 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71F733E125B
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 12:12:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DF5A3E125E
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 12:13:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240186AbhHEKMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 06:12:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39488 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239946AbhHEKMe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 06:12:34 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06143C061765
-        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 03:12:21 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id f6so6025026ioc.6
-        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 03:12:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=JgSrcULNaOdiEU0gJY4fVzPMy894wr9ygHl+ydiVexI=;
-        b=FIxC5VvRqdmKAhGI5LXpIrqSeWX3PMyXO7aqI/erWokL1qrlS+7WvGDnnL4vyZuBrF
-         2w8O2ujsa5W5WFsFKdYvFDGu13T1oAIesMgA81VpE76Qb0AXNEvOA51h4EvTLwj8DcSZ
-         4a+P1/5fuV5SHPOZGDNVMGIt+2FHPgDqbvbXHBlC5E8h5OkNK6KO8ZOzi7jnnQhHi18u
-         ++wgWJ+AalkNXoIR39kZ91rRYwhiuwHCS4+YRq3Xw/s92FOzJrbs7S4thIiHo0O7Nnh1
-         cUBOj9Iw1CvGJ7ePAHH54sj9kt8IY3u1pyzr42hW7OTglwJA52qCgaF5EGOjsGb3O2kD
-         +JEw==
+        id S240345AbhHEKN2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 06:13:28 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:43623 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240314AbhHEKNY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 06:13:24 -0400
+Received: by mail-il1-f197.google.com with SMTP id v5-20020a92ab050000b02902223cc2accaso2503874ilh.10
+        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 03:13:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=JgSrcULNaOdiEU0gJY4fVzPMy894wr9ygHl+ydiVexI=;
-        b=iVFsy81LQrWV9T2wpRvIzpFvgALCmXYlWUt4pvlkzuQJ6J5olaEh7WBBJOgtTQewzD
-         vZduPABcnJiijBYwncNPikhk7N24nleXNwtqj2TzjEBPzUORI5AvLKuLpdJQ7gjZcGtH
-         v4oMiD61e5Ot9aWO5VaRkAx5VJBRid33bibyIpDcCmTcaEbmDQiwI9hH4s5TmacYCoKo
-         Blo+TEy293XINz1+idTPp5/cpworXSNKYZPTWvDPe+F/nA07nKxwTHsIgyzEVCsLVIRe
-         SWAHdfAmE/OcW31/wMkJhdC3oexqFVgkHZLT+n4v102xQsVxkHdrU+1Zk6X3WROsxAFL
-         9hbQ==
-X-Gm-Message-State: AOAM531AF07Bd+d9jiEdoZIcdzNrUdDwbg7zJz2Pm4Sc74ScOoLzn6YW
-        w5sr7MHuqvbdlnvO9O5hiCukAz4DOb0gYLJNrWk=
-X-Google-Smtp-Source: ABdhPJxOHrPvi/wQpHbrNyRKMDZ/a9hR47EHWEhlbFyXc1LsBl26XKqmLcmKJ12PjC2wLbFRGDzF8fW3BKEvbcJDoJA=
-X-Received: by 2002:a5d:8d83:: with SMTP id b3mr118754ioj.179.1628158340546;
- Thu, 05 Aug 2021 03:12:20 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=mfp3dcRamri2wGmkRJSK01Pfy3daGYI42UfXp0QgTjU=;
+        b=ldBt/lv9YGyvzMd5f/fX9KeuIUPEGPF0kD/t6wmVX+AfGx36J12FXjshw8/JHGohRU
+         VZZpgt0c60ifV2M8YgBGtPCTdt+TNpi7pCJM22vzdM1IHkwTNDlgnZaJGxcdk8L2XkA6
+         o9AMkyrdMFf+SwrcRyQU7cNjFec2nB7bqkl1HA04Ma82aLVGnCCBxu96tNQN1RxLu8Qa
+         byCNNF9S4pZhQv1uD5+3f4vn3nPPBMvNud9InNW/9U/O5BQYmLJxP8/2YJ03Oi2H8RS+
+         2ogK1vTIkOHo+UrHEm0CtieHM8yp7EzrY6OlijWpbhe4vdun8+85UK20L19v9pNy+f1u
+         bDVQ==
+X-Gm-Message-State: AOAM530eAnVKoFLQqawYesNsZlnpc2fkw3c4mI12f+xvsyVouptzvi+s
+        qeNz7fWumgHMjz+uP9MI/iZntvMbrBAGIFItiT+BDRxHgxSA
+X-Google-Smtp-Source: ABdhPJzPTZ4ctrrUGavvOHBH4NTS8BJbXcUPvlgq/7QfOSLC+LhG2uxQJN+Qfdv0epwVMqtQzdMZM9CmWaSpH6ty4Vl8Ed/4Bek7
 MIME-Version: 1.0
-Received: by 2002:a4f:ce86:0:0:0:0:0 with HTTP; Thu, 5 Aug 2021 03:12:20 -0700 (PDT)
-Reply-To: pointerscott009@gmail.com
-From:   Sir Jakes <sirjakes12@gmail.com>
-Date:   Thu, 5 Aug 2021 11:12:20 +0100
-Message-ID: <CAE2OSQeLpquVejjEMV=TnZK1_OGcgcEKLMkyonqgWKs4CT879A@mail.gmail.com>
-Subject: Business Office Offer.
-To:     undisclosed-recipients:;
+X-Received: by 2002:a6b:28a:: with SMTP id 132mr527433ioc.157.1628158390707;
+ Thu, 05 Aug 2021 03:13:10 -0700 (PDT)
+Date:   Thu, 05 Aug 2021 03:13:10 -0700
+In-Reply-To: <00000000000040b7ba05ae32a94a@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000842d2f05c8cd2ac7@google.com>
+Subject: Re: [syzbot] possible deadlock in __sock_release
+From:   syzbot <syzbot+8e467b009209f1fcf666@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, dave@pr1mo.net, davem@davemloft.net,
+        dsahern@kernel.org, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com,
+        yoshfuji@linux-ipv6.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Dear Sir / Madam,
-We are experts in Finance, Investments, and Advisory.
-We grant loans to interested investors, Companies & Individuals
-Available offer as follows:-
-Consolidation, Buying, Building, Business Improving, Refinancing
-Commercial Property and Personal Loan.
-We fund for $50,000,000.00 million up to $500,000,000.00 million at @
-2% Interest rate duration of 1/25 years without resorting to your
-bank.
+syzbot suspects this issue was fixed by commit:
 
-Kindly revert back if you have projects that need funding for
-immediate consideration and negotiation by contacting us back with
-Loan Amount Needed and Duration for further processing.
+commit 8fb4792f091e608a0a1d353dfdf07ef55a719db5
+Author: Paolo Abeni <pabeni@redhat.com>
+Date:   Tue Jul 20 13:08:40 2021 +0000
 
-Pointers Financial Corporation
-25954 Eden Landing Rd, Hayward
-CA 94545 United States.
-Loan Department.
+    ipv6: fix another slab-out-of-bounds in fib6_nh_flush_exceptions
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=113a99f1300000
+start commit:   c6c205ed442e Merge branch 'stmmac-ptp'
+git tree:       net
+kernel config:  https://syzkaller.appspot.com/x/.config?x=26b64b13fcecb7e1
+dashboard link: https://syzkaller.appspot.com/bug?extid=8e467b009209f1fcf666
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=152188d2300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10d5493c300000
+
+If the result looks correct, please mark the issue as fixed by replying with:
+
+#syz fix: ipv6: fix another slab-out-of-bounds in fib6_nh_flush_exceptions
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
