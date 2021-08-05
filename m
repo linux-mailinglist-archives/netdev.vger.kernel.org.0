@@ -2,60 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B75173E1CD4
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 21:37:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84C9C3E1CDB
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 21:38:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242848AbhHEThQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 15:37:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60904 "EHLO mail.kernel.org"
+        id S243071AbhHETis (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 15:38:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36390 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237310AbhHEThP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Aug 2021 15:37:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B72B3610FB;
-        Thu,  5 Aug 2021 19:37:00 +0000 (UTC)
+        id S237315AbhHETip (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Aug 2021 15:38:45 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8652561102;
+        Thu,  5 Aug 2021 19:38:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628192220;
-        bh=9OTiKLZBzM4V3aTDBqubFToc2HxCgDB1+5CBNLusQ6U=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=IJl//HyK+bysZ6bKqZ2xZ0V8WMihOb2tjpd8YNwFNyy93xdMFpeQyT5BwVQNcLG+D
-         GAdTwDGrKWjTU7Q3aAREKvk/Bz4dwFX95NCMVNnYie8CYozKt6clNPEY0D1by1lT/7
-         co9Ekfz4K7ekOMqma5lZlTaSFxmVmE1W2j+9wOvlydT+aCPImBFPa0N53qjMfGqKmx
-         usegYdRkTlAHQVTilZDnCCfTIb06qeJl5mn9Yp/DWQrKGtKxTflp4LungUVy3alr+M
-         OJ+oytg3oxdxV36j2bJhRBN1BscsbSVHxqquUUtcmX3ZAHdjayF/0cz+j/96bkemEH
-         phXhkZUUPV/RQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A833B609D7;
-        Thu,  5 Aug 2021 19:37:00 +0000 (UTC)
+        s=k20201202; t=1628192310;
+        bh=/6LWnXW6m9roLRtF3lgoRi7tfJOpEuhkjmWxlGm2QjY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MqurThVoECmbFsY/9qsn1xO8gvIK0aazTrRtUADbBBefWV42lZLL+6WZhNYrc1xMZ
+         Eo2nWKcwaMfxqaumO4kokdm+WXJEOQVzYuQ/grtcloz4m2Xw6ayyDBfbACnrEPwBUd
+         IfvpWXJT972doof2vw7yaHFyyzHhjiM/WKdzKS/Tt0aG4sMJT77X8lybWroaMORglf
+         d58VjWfLSB1Z3j1RDrVvMSzk37UvwoxGNoml5hJ7O70pJCs+RPc2A3rqo+mDCG3oLK
+         ZwrMhBmeb3/KmHHmIm5W8PjtfZVafK7w6X5lLu/MUOjPDwQ17kxFLShZyNM0o3l1Tr
+         KzWZLueLNenoA==
+Date:   Thu, 5 Aug 2021 12:38:29 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Subject: Re: [GIT PULL] Networking for 5.14-rc5
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20210805154335.1070064-1-kuba@kernel.org>
+Message-ID: <20210805123829.1f3a276f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <afa0b41f-bcb9-455e-4ea8-476ed880fbd2@infradead.org>
 References: <20210805154335.1070064-1-kuba@kernel.org>
-X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20210805154335.1070064-1-kuba@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.14-rc5
-X-PR-Tracked-Commit-Id: 6bb5318ce501cb744e58105ba56cd5308e75004d
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 902e7f373fff2476b53824264c12e4e76c7ec02a
-Message-Id: <162819222062.18936.3286459954059288658.pr-tracker-bot@kernel.org>
-Date:   Thu, 05 Aug 2021 19:37:00 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        <CAHk-=wi8ufjAUS=+gPxpDPx_tupvfPppLX03RxjWeJ1JtuDZYg@mail.gmail.com>
+        <afa0b41f-bcb9-455e-4ea8-476ed880fbd2@infradead.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Thu,  5 Aug 2021 08:43:35 -0700:
+On Thu, 5 Aug 2021 12:34:17 -0700 Randy Dunlap wrote:
+> On 8/5/21 12:30 PM, Linus Torvalds wrote:
+> > On Thu, Aug 5, 2021 at 8:43 AM Jakub Kicinski <kuba@kernel.org> wrote:  
+> >>
+> >> Small PR this week, maybe it's cucumber time, maybe just bad
+> >> timing vs subtree PRs, maybe both.  
+> > 
+> > "Cucumber time"?
+> > 
+> > Google informs me about this concept, but I'd never heard that term before.  
+> 
+> wow, nor had I.
+> Thanks for the info. :)
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.14-rc5
+Oops, I thought it was pan-European term, guess not.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/902e7f373fff2476b53824264c12e4e76c7ec02a
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+For the record I meant peak vacation time when not much 
+is happening because beach beats work.
