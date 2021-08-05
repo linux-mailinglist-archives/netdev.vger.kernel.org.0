@@ -2,130 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E83BE3E1BA9
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 20:47:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25C383E1BAB
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 20:48:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241709AbhHESsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 14:48:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45914 "EHLO
+        id S241738AbhHESst (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 14:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240771AbhHESsK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 14:48:10 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64FB2C0613D5
-        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 11:47:56 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id w17so10618466ybl.11
-        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 11:47:56 -0700 (PDT)
+        with ESMTP id S240771AbhHESst (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 14:48:49 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D04CEC061765
+        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 11:48:33 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id p5so7862092wro.7
+        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 11:48:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=onuCFbbIQy648bmW/hwLBepA/MfcS58ir6/e+6DRbBo=;
-        b=VIIVDNyqYua7BtaGpFeK3EMvAjJmWnuFMWzmaiDFsgthEfL232m9fNny/y9FigkwJD
-         EGRJdFj6BRhWrfgJaTRUCIOo/KbLllEwQIfToTLRMxLcQ9NAG+9Vdxqk+rlrlPvNSIWN
-         Y/EVrsrOAdeT/oASTIO/ZZM7aSgISZVK4o74p/90qR6Hj+2/5dMsEhv2V1zkxHck6nS3
-         jYab+9E5wuV2TiStooLzOcjZBbqpWeVU75ZK0oc89LfFnwSWQVRRAGoZBvj7QgoRAxqr
-         ejkGR4qqUujrruKTfgBJqSI9yrygLzA78mWj9M2vZrvLYggQ0jG/8oxvWOSyR1uP/s6p
-         3KuQ==
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=n3DFyEUcKB/CA5jIT2EW0WAQ2YqqDzPoJj3CNP+FfjU=;
+        b=ol/PTbb/EtNmnSt+wwIbEOZgkHUJ+/Cujd8f16p06gPnhTe8JLIcY/4/WUtlR+wgqr
+         1qHthHMr1OHRkBi3DRBsYCfGu3/aOXIwzq+jz2L3FPxhLrudKlksW/SbrF8fly2fuO54
+         Lhn8G0SZr6sOonzFUPJ+yehg52B04rSneBFpmkWwaZd2e0eIPqhg1wObLxTrdnLQF3uu
+         OrKdWyMrFey9URAsRNPQ1JmF7nrqwOqnkBCaS54FW4jW0A5QtGFd0Q0KnH4e9lt9BKxq
+         mkfcztaO+rdwb4CkXIPa92bvTfVbrWlwkp+2DsvPKnof3xWIvzVGjjMe1G9lMgbjvnEJ
+         A7fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=onuCFbbIQy648bmW/hwLBepA/MfcS58ir6/e+6DRbBo=;
-        b=DCdl1wqivQtuRnnRJZT/mPd+5eGRJFRtF0PI/VWahu3EiM/V5bC4J10hKq2DWqEfhN
-         dK9K46eqCervdgFla5et3B5rKpk8h/79DHewyS+IkoN1cBz+sc5Jikg4yw4QCD/MhDcw
-         Kz3/C0+CLPvDBjodLfaeojObs9yRMtYhz2LRs5oT+egwtCBJDzw3qHX3AOeLZEXxgmBA
-         sUmnaQjCkp3YlzoaagT/C60PJq1rJCyI0Ry4c2lylDprR4ZKeqtqsYtUfo8CGk4NM1i7
-         c3oL3h1lqnaiieyJktaL/LDCa9ZPsFLr580V3S5Kxx2C5UL7KZcdDWwta/jEkfWDr6Nf
-         gVpA==
-X-Gm-Message-State: AOAM530QrDBivgqLZU6buMioZDkIFLXKb20sZLVzoctwERgGOYCHOSmn
-        vHSdfb8HVXghtZ7rpb+4df7SqlT5jqkcog0P7VBsFg==
-X-Google-Smtp-Source: ABdhPJyw4t3SQ1CiV/jHTLCnD3Vw+lQF8TgvS9wXsKkqPWx2SlrxG6H7AKe85SYI05V6/I7bDkTh8Ae1k4bkd9alWHg=
-X-Received: by 2002:a25:d1c2:: with SMTP id i185mr7676130ybg.466.1628189275466;
- Thu, 05 Aug 2021 11:47:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210804214333.927985-1-saravanak@google.com> <87v94kb6xa.wl-maz@kernel.org>
- <7hfsvng2mj.fsf@baylibre.com> <CAOi56cW5=Yy_vtPM+i1M7YxQuKw75Zx2xgcgEsyfdm2E-qobmQ@mail.gmail.com>
-In-Reply-To: <CAOi56cW5=Yy_vtPM+i1M7YxQuKw75Zx2xgcgEsyfdm2E-qobmQ@mail.gmail.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Thu, 5 Aug 2021 11:47:19 -0700
-Message-ID: <CAGETcx_QUz9AUONgtYqNOqZqNkkfg2wOP48Q8=-W1zPc-mfoFg@mail.gmail.com>
-Subject: Re: [PATCH v1 0/3] Clean up and fix error handling in mdio_mux_init()
-To:     Kevin Hilman <khilman@baylibre.com>
-Cc:     Marc Zyngier <maz@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=n3DFyEUcKB/CA5jIT2EW0WAQ2YqqDzPoJj3CNP+FfjU=;
+        b=bZnEKno8t5IcifXjYn8aR1VMpUbQhJFZDJ21YnPTiUJCS4VVrBjyJb1hNAWMxc2SZL
+         o1pQ21Y/QSBshK0j2p74maCLK236JbeiZLhlAeY8dtwyplBHmA0ekYM85+AD2AgIj7ws
+         Gg8o+hrx9izoP8btzICrnrQRK3Mi6bWuoZeHJZ/Vpb+JuCHZnD9GU6BUlidm/YZl4l9Z
+         nzeTGCNkreYsmJNBqMiWUMPSzyWcZP7wWtWibmWAQgpMyfhDja8MXWDmdzJ5fdaYPgx6
+         1Qcs4Y9Q8AuBHcZxqfL1rymz+lXL4l18i/N/RY73XcXg2WO7/Qicf0XKz+7LnnENlIVy
+         yNmQ==
+X-Gm-Message-State: AOAM530cmeL7wH1H+DAKo/bHPYnHLDRyuRT7sk8A6y2sVw2R0GR6mHG+
+        /FcgMFiv/1NGZK/qofU3MKveL2mIwItLxA==
+X-Google-Smtp-Source: ABdhPJx0U6Sl8ba6up1Q61eodjVNGnSAQRWrXV69bjgpsj4AvEwI2ObXcA4NrGOfYVTOFeopNh/gbw==
+X-Received: by 2002:adf:eb4a:: with SMTP id u10mr6681769wrn.11.1628189312289;
+        Thu, 05 Aug 2021 11:48:32 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f10:c200:75d1:7bfc:8928:d5ba? (p200300ea8f10c20075d17bfc8928d5ba.dip0.t-ipconnect.de. [2003:ea:8f10:c200:75d1:7bfc:8928:d5ba])
+        by smtp.googlemail.com with ESMTPSA id j19sm11395290wmi.3.2021.08.05.11.48.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Aug 2021 11:48:31 -0700 (PDT)
+To:     Julian Wiedmann <jwi@linux.ibm.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        kernel-team@android.com, netdev@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <106547ef-7a61-2064-33f5-3cc8d12adb34@gmail.com>
+ <05bae6c6-502e-4715-1283-fc4135702515@gmail.com>
+ <89f026f5-cc61-80e5-282d-717bc566632c@linux.ibm.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next 4/4] ethtool: runtime-resume netdev parent in
+ ethnl_ops_begin
+Message-ID: <c937314e-57a0-03ef-cde2-02d7746cd39c@gmail.com>
+Date:   Thu, 5 Aug 2021 20:48:20 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
+MIME-Version: 1.0
+In-Reply-To: <89f026f5-cc61-80e5-282d-717bc566632c@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 5, 2021 at 11:38 AM Kevin Hilman <khilman@baylibre.com> wrote:
->
-> On Thu, Aug 5, 2021 at 11:36 AM Kevin Hilman <khilman@baylibre.com> wrote:
-> >
-> > Marc Zyngier <maz@kernel.org> writes:
-> >
-> > > Hi Saravana,
-> > >
-> > > On Wed, 04 Aug 2021 22:43:29 +0100,
-> > > Saravana Kannan <saravanak@google.com> wrote:
-> > >>
-> > >> This patch series was started due to -EPROBE_DEFER not being handled
-> > >> correctly in mdio_mux_init() and causing issues [1]. While at it, I also
-> > >> did some more error handling fixes and clean ups. The -EPROBE_DEFER fix is
-> > >> the last patch.
-> > >>
-> > >> Ideally, in the last patch we'd treat any error similar to -EPROBE_DEFER
-> > >> but I'm not sure if it'll break any board/platforms where some child
-> > >> mdiobus never successfully registers. If we treated all errors similar to
-> > >> -EPROBE_DEFER, then none of the child mdiobus will work and that might be a
-> > >> regression. If people are sure this is not a real case, then I can fix up
-> > >> the last patch to always fail the entire mdio-mux init if any of the child
-> > >> mdiobus registration fails.
-> > >>
-> > >> Cc: Marc Zyngier <maz@kernel.org>
-> > >> Cc: Neil Armstrong <narmstrong@baylibre.com>
-> > >> Cc: Kevin Hilman <khilman@baylibre.com>
-> > >> [1] - https://lore.kernel.org/lkml/CAGETcx95kHrv8wA-O+-JtfH7H9biJEGJtijuPVN0V5dUKUAB3A@mail.gmail.com/#t
-> > >>
-> > >> Saravana Kannan (3):
-> > >>   net: mdio-mux: Delete unnecessary devm_kfree
-> > >>   net: mdio-mux: Don't ignore memory allocation errors
-> > >>   net: mdio-mux: Handle -EPROBE_DEFER correctly
-> > >>
-> > >>  drivers/net/mdio/mdio-mux.c | 37 ++++++++++++++++++++++++-------------
-> > >>  1 file changed, 24 insertions(+), 13 deletions(-)
-> > >
-> > > Thanks for this. I've just gave it a go on my test platform, and this
-> > > indeed addresses the issues I was seeing [1].
-> > >
-> > > Acked-by: Marc Zyngier <maz@kernel.org>
-> > > Tested-by: Marc Zyngier <maz@kernel.org>
-> >
-> > I wasn't seeing the same issues as Marc, but am heavily using everything
-> > as modules on a few platforms using this code, and I'm not seeing any
-> > regressions.
+On 05.08.2021 13:51, Julian Wiedmann wrote:
+> On 01.08.21 13:41, Heiner Kallweit wrote:
+>> If a network device is runtime-suspended then:
+>> - network device may be flagged as detached and all ethtool ops (even if not
+>>   accessing the device) will fail because netif_device_present() returns
+>>   false
+>> - ethtool ops may fail because device is not accessible (e.g. because being
+>>   in D3 in case of a PCI device)
+>>
+>> It may not be desirable that userspace can't use even simple ethtool ops
+>> that not access the device if interface or link is down. To be more friendly
+>> to userspace let's ensure that device is runtime-resumed when executing the
+>> respective ethtool op in kernel.
+>>
+>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+>> ---
+>>  net/ethtool/netlink.c | 31 +++++++++++++++++++++++++------
+>>  1 file changed, 25 insertions(+), 6 deletions(-)
+>>
+> 
+> [...]
+> 
+>>  
+>>  void ethnl_ops_complete(struct net_device *dev)
+>>  {
+>>  	if (dev && dev->ethtool_ops->complete)
+>>  		dev->ethtool_ops->complete(dev);
+>> +
+>> +	if (dev->dev.parent)
+>> +		pm_runtime_put(dev->dev.parent);
+>>  }
+>>  
+>>  /**
+>>
+> 
+> Hello Heiner,
+> 
+> Coverity complains that we checked dev != NULL earlier but now
+> unconditionally dereference it:
+> 
+Thanks for the hint. I wonder whether we have any valid case where
+dev could be NULL. There are several places where dev is dereferenced
+after the call to ethnl_ops_begin(). Just one example:
+linkmodes_prepare_data()
 
-The only guess I have for this difference in results is I'm guessing
-in your case the IRQ module is somehow getting loaded before the
-mux/PHY driver?
+Only ethnl_request_ops where allow_nodev_do is true is
+ethnl_strset_request_ops. However in strset_prepare_data()
+ethnl_ops_begin() is called only if dev isn't NULL.
+Supposedly we should return an error from ethnl_ops_begin()
+if dev is NULL.
 
-> >
-> > Thanks Saravana for finding the root cause here.
-> >
-> > Acked-by: Kevin Hilman <khilman@baylibre.com>
-> > Signed-off-by: Kevin Hilman <khilman@baylibre.com>
->
-> Oops, that should not be a SoB, but rather:
->
-> Tested-by: Kevin Hilman <khilman@baylibre.com>
+> 
+> *** CID 1506213:  Null pointer dereferences  (FORWARD_NULL)
+> /net/ethtool/netlink.c: 67 in ethnl_ops_complete()
+> 61     
+> 62     void ethnl_ops_complete(struct net_device *dev)
+> 63     {
+> 64     	if (dev && dev->ethtool_ops->complete)
+> 65     		dev->ethtool_ops->complete(dev);
+> 66     
+>>>>     CID 1506213:  Null pointer dereferences  (FORWARD_NULL)
+>>>>     Dereferencing null pointer "dev".
+> 67     	if (dev->dev.parent)
+> 68     		pm_runtime_put(dev->dev.parent);
+> 69     }
+> 70     
+> 71     /**
+> 72      * ethnl_parse_header_dev_get() - parse request header
+> 
 
-Thanks for the Acks/tests.
-
--Saravana
