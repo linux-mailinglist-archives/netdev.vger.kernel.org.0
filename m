@@ -2,87 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B08C3E0BF1
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 03:08:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DF4E3E0C30
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 03:51:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236569AbhHEBIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Aug 2021 21:08:10 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:13230 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231143AbhHEBIJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 21:08:09 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Gg9Sz2MYyz1CSWM;
-        Thu,  5 Aug 2021 09:07:47 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 5 Aug 2021 09:07:53 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 5 Aug 2021 09:07:52 +0800
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <hawk@kernel.org>, <ilias.apalodimas@linaro.org>,
-        <mcroce@microsoft.com>, <willy@infradead.org>,
-        <alexander.duyck@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
-        <chenhao288@hisilicon.com>
-Subject: [PATCH net] page_pool: mask the page->signature before the checking
-Date:   Thu, 5 Aug 2021 09:06:57 +0800
-Message-ID: <1628125617-49538-1-git-send-email-linyunsheng@huawei.com>
-X-Mailer: git-send-email 2.7.4
+        id S237985AbhHEBvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Aug 2021 21:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231771AbhHEBvT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Aug 2021 21:51:19 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDB35C061765;
+        Wed,  4 Aug 2021 18:51:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=+AyhSExA3Fnz/39iPyMXN4re8NRswkCJG6tx7OX3bQs=; b=Po6jD2Fj1SsJ0rdIY4FEhex3hb
+        UitNhZti2gsvHktX5KS1YXB6twYhbngjCjeQjwWnUoEgXvDmi5wVW3VBH/DNIkfJvOxsZ71foPJ8f
+        tGNYJ0/0ZAzGxfp/WV9VRCDDe0Grnr9nST62P2cdDuIUWmNcIYVXvoBgRNWpaKENEPh9mIlq0Jk1p
+        6W9iaFU+bfYDTn3FYhFdrg9GisiBnQhMzo+5UdDSvUaB5EUsLRIykkXDCV3EHX7dBcBljBdRJeeKi
+        Wiv1JVE7CxqoFFsqrHQkNkZzeH6Jz77rb0p6I/RDTEXjJORaxvQwf1/limfYqMCi/81HoTRDJafyW
+        qTC/iiNw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mBSWI-006UNQ-Pk; Thu, 05 Aug 2021 01:50:09 +0000
+Date:   Thu, 5 Aug 2021 02:50:02 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
+        ilias.apalodimas@linaro.org, mcroce@microsoft.com,
+        alexander.duyck@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
+        chenhao288@hisilicon.com
+Subject: Re: [PATCH net] page_pool: mask the page->signature before the
+ checking
+Message-ID: <YQtDynWsDxZ/T41e@casper.infradead.org>
+References: <1628125617-49538-1-git-send-email-linyunsheng@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+In-Reply-To: <1628125617-49538-1-git-send-email-linyunsheng@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As mentioned in commit c07aea3ef4d4 ("mm: add a signature
-in struct page"):
-"The page->signature field is aliased to page->lru.next and
-page->compound_head."
+On Thu, Aug 05, 2021 at 09:06:57AM +0800, Yunsheng Lin wrote:
+> As mentioned in commit c07aea3ef4d4 ("mm: add a signature
+> in struct page"):
+> "The page->signature field is aliased to page->lru.next and
+> page->compound_head."
+> 
+> And as the comment in page_is_pfmemalloc():
+> "lru.next has bit 1 set if the page is allocated from the
+> pfmemalloc reserves. Callers may simply overwrite it if they
+> do not need to preserve that information."
+> 
+> The page->signature is or’ed with PP_SIGNATURE when a page is
+> allocated in page pool, see __page_pool_alloc_pages_slow(),
+> and page->signature is checked directly with PP_SIGNATURE in
+> page_pool_return_skb_page(), which might cause resoure leaking
+> problem for a page from page pool if bit 1 of lru.next is set for
+> a pfmemalloc page.
+> 
+> As bit 0 is page->compound_head, So mask both bit 0 and 1 before
+> the checking in page_pool_return_skb_page().
 
-And as the comment in page_is_pfmemalloc():
-"lru.next has bit 1 set if the page is allocated from the
-pfmemalloc reserves. Callers may simply overwrite it if they
-do not need to preserve that information."
-
-The page->signature is or’ed with PP_SIGNATURE when a page is
-allocated in page pool, see __page_pool_alloc_pages_slow(),
-and page->signature is checked directly with PP_SIGNATURE in
-page_pool_return_skb_page(), which might cause resoure leaking
-problem for a page from page pool if bit 1 of lru.next is set for
-a pfmemalloc page.
-
-As bit 0 is page->compound_head, So mask both bit 0 and 1 before
-the checking in page_pool_return_skb_page().
-
-Fixes: 6a5bcd84e886 ("page_pool: Allow drivers to hint on SKB recycling")
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
----
- net/core/page_pool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 5e4eb45..33b7dd7 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -634,7 +634,7 @@ bool page_pool_return_skb_page(struct page *page)
- 	struct page_pool *pp;
- 
- 	page = compound_head(page);
--	if (unlikely(page->pp_magic != PP_SIGNATURE))
-+	if (unlikely((page->pp_magic & ~0x3UL) != PP_SIGNATURE))
- 		return false;
- 
- 	pp = page->pp;
--- 
-2.7.4
-
+No, you don't understand.  We *want* the check to fail if we were low
+on memory so we return the emergency allocation.
