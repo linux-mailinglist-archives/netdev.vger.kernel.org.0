@@ -2,98 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 675EB3E141C
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 13:49:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D5523E141F
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 13:51:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241100AbhHELuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 07:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33660 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232513AbhHELuD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 07:50:03 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2858C061765;
-        Thu,  5 Aug 2021 04:49:49 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id z11so7915908edb.11;
-        Thu, 05 Aug 2021 04:49:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mOSZkg7FYwdwe0mHrQ/hjMERJjb3MAqRK9bYtfC1anc=;
-        b=nZiAuwudRCQI9y5JPyP4ZEWV2/HTaKwn0E0PQ012b3iTZoB4qEF1Tbh/GbAYpMSMdj
-         pzvBUrKqfZlQ3PRzNtmXo/j9DkA6UZa6EiqEHk9HfS/ic6eVyNjpilElrtw1iAVqeGw5
-         ENHCY2XeckwqJ7BAa6LJQnMlZlW5GRGe/af6YKFf2AZVpp3dDguXrbiSZIVQDOsxBWsu
-         nLLGbEM2k3w7/YdEb3xwUXwe8IIhQ7KBYne4LhsO4+MT/QOSx+T5dBJGAb4Pr6VhPjq1
-         rICEL8MMOkn4ANYhUb2MLp/F9xJzBMGFqZJH1Qgdg1zvNVwVIYA+U0mghegGwlTl/L1D
-         ofgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mOSZkg7FYwdwe0mHrQ/hjMERJjb3MAqRK9bYtfC1anc=;
-        b=m3wZfktuurqzmyNkiQUNQrGUGXjMbG54eCCF8meC7diLWEUQGvTh9oDP2JupxMBkD0
-         CLXhnYKnxNR1ILnDUB0Pq4jc+haUTtoOjn/CMl0Duu8BHMKaO1HUaLmaD+o06foZKFFZ
-         7eTVUXm7oAtnTZdUWGzY9gTHRAjRO0moGJBaM06FLE7g8aTP4nPhS2Ofd/pKQKMJ1PNU
-         TT9PZl86AVRywKZplnD7DHeRCmZbor7A2qzMhHWQzKd2yt0YwIpJx1PWOVuNMMwk/xFC
-         SDX3WUl1Jh+CRNQ+fXbcwk6UnWS0CskSQ2SNVbXqYRVo+6krhCkjXDf6YbKVtFSldCq8
-         20uw==
-X-Gm-Message-State: AOAM532vKict3GesOHpsW4B87Oavvz4GHUjw4HgTEB8ZEzQaCO1jA1iN
-        IwwyXVvJzjWuGUDY0yBA7NU=
-X-Google-Smtp-Source: ABdhPJyyT7Ht/n561kq2TwbGlX8RLpEBLh2u19s32pgmzz9Cxwu6K84tSZsVs4fnrW45GOBlpemYhQ==
-X-Received: by 2002:aa7:c7d0:: with SMTP id o16mr5950266eds.75.1628164188385;
-        Thu, 05 Aug 2021 04:49:48 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id s3sm1634436ejm.49.2021.08.05.04.49.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Aug 2021 04:49:48 -0700 (PDT)
-Date:   Thu, 5 Aug 2021 14:49:46 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S241120AbhHELvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 07:51:25 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:54738 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241116AbhHELvY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 07:51:24 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 175BXR3B100094;
+        Thu, 5 Aug 2021 07:51:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=446wwEmq1DAA0zb5B/LS/a4Q2zxSuWc7pxhRgHEmZNA=;
+ b=PQXN+Qk9jlsVP7gUqbx6wCZQVU15UzEl23CQdYm45QZcDizZGul8BrCYd0zFyql/H0ON
+ d6DanP86erqZQWBCxwklhXhEVOhQ3GsOZXHJzeqJqzq9A2dbXOnapCHJLlcPcgaH2OXD
+ MfEesqimEHngjl7pOJOYx1TUo3nhmS5gYCMfjeYwPNAmf6HTt1T2fhv2D+vJgxvA0aRj
+ HiBpPt+AUuSAbttKDJ+/ydcSwsRy/x9SwQEofdGSwLb/DIJaj/kZZikQIHyjBOPRiCvf
+ lwIpVqY4lzyDYtU3Q25PI3OBNT0p/K8cQb9HMI42m0Zs6e51smpTZyASPjhza+rZ3LY7 yw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3a7b796ykg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 05 Aug 2021 07:51:07 -0400
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 175Bg1GS135604;
+        Thu, 5 Aug 2021 07:51:06 -0400
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3a7b796yjt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 05 Aug 2021 07:51:06 -0400
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 175BlgQJ011127;
+        Thu, 5 Aug 2021 11:51:05 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma04ams.nl.ibm.com with ESMTP id 3a4x59354r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 05 Aug 2021 11:51:05 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 175Bp2lN56492370
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 5 Aug 2021 11:51:02 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 962F1A4064;
+        Thu,  5 Aug 2021 11:51:02 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D14F3A4060;
+        Thu,  5 Aug 2021 11:51:01 +0000 (GMT)
+Received: from [9.145.20.243] (unknown [9.145.20.243])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu,  5 Aug 2021 11:51:01 +0000 (GMT)
+Subject: Re: [PATCH net-next 4/4] ethtool: runtime-resume netdev parent in
+ ethnl_ops_begin
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Yangbo Lu <yangbo.lu@nxp.com>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] dsa: sja1105: fix reverse dependency
-Message-ID: <20210805114946.n46mumz2re7fxdto@skbuf>
-References: <20210805110048.1696362-1-arnd@kernel.org>
- <20210805112546.gitosuu7bzogbzyf@skbuf>
- <CAK8P3a0w95+3dBo5OLeCsEi8gjmFqabnSeqeNPQq49=rPeRm=A@mail.gmail.com>
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <106547ef-7a61-2064-33f5-3cc8d12adb34@gmail.com>
+ <05bae6c6-502e-4715-1283-fc4135702515@gmail.com>
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+Message-ID: <89f026f5-cc61-80e5-282d-717bc566632c@linux.ibm.com>
+Date:   Thu, 5 Aug 2021 14:51:00 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a0w95+3dBo5OLeCsEi8gjmFqabnSeqeNPQq49=rPeRm=A@mail.gmail.com>
+In-Reply-To: <05bae6c6-502e-4715-1283-fc4135702515@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: RmGMuRV5Vq8yaikeyMIZhmeZwCrhoWK9
+X-Proofpoint-ORIG-GUID: bsKC0Lmw4w9_RZpUSWwNkRYlvx-21Wy1
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-08-05_03:2021-08-05,2021-08-05 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
+ mlxscore=0 lowpriorityscore=0 phishscore=0 bulkscore=0 suspectscore=0
+ adultscore=0 spamscore=0 mlxlogscore=976 priorityscore=1501 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2107140000
+ definitions=main-2108050069
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 05, 2021 at 01:39:34PM +0200, Arnd Bergmann wrote:
-> Do you have any opinion on whether that 'select' going the other way is still
-> relevant?
+On 01.08.21 13:41, Heiner Kallweit wrote:
+> If a network device is runtime-suspended then:
+> - network device may be flagged as detached and all ethtool ops (even if not
+>   accessing the device) will fail because netif_device_present() returns
+>   false
+> - ethtool ops may fail because device is not accessible (e.g. because being
+>   in D3 in case of a PCI device)
+> 
+> It may not be desirable that userspace can't use even simple ethtool ops
+> that not access the device if interface or link is down. To be more friendly
+> to userspace let's ensure that device is runtime-resumed when executing the
+> respective ethtool op in kernel.
+> 
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+>  net/ethtool/netlink.c | 31 +++++++++++++++++++++++++------
+>  1 file changed, 25 insertions(+), 6 deletions(-)
+> 
 
-Yes, of course it is. It also has nothing to do with build dependencies.
-With the original DSA design from 2008, an Ethernet switch has separate
-drivers for
-(a) accessing its registers
-(b) manipulating the packets that the switch sends towards a host
-    Ethernet controller ("DSA master")
+[...]
 
-The register access drivers are in drivers/net/dsa/*, the packet
-manipulation ("tagging protocol") drivers are in net/dsa/tag_*.c.
+>  
+>  void ethnl_ops_complete(struct net_device *dev)
+>  {
+>  	if (dev && dev->ethtool_ops->complete)
+>  		dev->ethtool_ops->complete(dev);
+> +
+> +	if (dev->dev.parent)
+> +		pm_runtime_put(dev->dev.parent);
+>  }
+>  
+>  /**
+> 
 
-[ This is because it was originally thought that a "tagging protocol" is
-  completely stateless and you should never need to access a hardware
-  register when manipulating a packet. ]
+Hello Heiner,
 
-When you enable a driver for a switch, you absolutely want to ping
-through it too, so all register access drivers enable the tagging
-protocol driver specific to their hardware as well, using 'select'.
-This works just fine because tagging protocol drivers generally have no
-dependencies, or if they do, the register access driver inherits them too.
-So a user does not need to manually enable the tagging protocol driver.
+Coverity complains that we checked dev != NULL earlier but now
+unconditionally dereference it:
+
+
+*** CID 1506213:  Null pointer dereferences  (FORWARD_NULL)
+/net/ethtool/netlink.c: 67 in ethnl_ops_complete()
+61     
+62     void ethnl_ops_complete(struct net_device *dev)
+63     {
+64     	if (dev && dev->ethtool_ops->complete)
+65     		dev->ethtool_ops->complete(dev);
+66     
+>>>     CID 1506213:  Null pointer dereferences  (FORWARD_NULL)
+>>>     Dereferencing null pointer "dev".
+67     	if (dev->dev.parent)
+68     		pm_runtime_put(dev->dev.parent);
+69     }
+70     
+71     /**
+72      * ethnl_parse_header_dev_get() - parse request header
