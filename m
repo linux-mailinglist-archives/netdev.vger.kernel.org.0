@@ -2,112 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BC263E1F35
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 01:13:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8CF43E1F74
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 01:42:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236352AbhHEXN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 19:13:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49272 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbhHEXNZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 19:13:25 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4FEC0613D5
-        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 16:13:10 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id g5-20020a9d6b050000b02904f21e977c3eso6911062otp.5
-        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 16:13:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=24XAboUUyxpv3JLo8zr8d3XCXSfLEMkk0OCni9MjHsY=;
-        b=Xpi7UveHPov3Z+cAK3YpPwQVmlokvAvCewd+e9/cNYN8paDSjHUHPnEw95CDF198R4
-         IH8EW0sVmFmPn1xcrahca78zVsJ2x8UI2lOSael9o6wsf/2UZeqa5fyjz6gJoQiZRTrw
-         HBOL+ulgugP+ysPyK9OxWpo7DKGqhwoMw2FWDTjGLJ/M3066zwwLADpA/ifhlVkMLtLz
-         GSkmSPif9SnOGJHUussdQfzjTppCY+mjYJNRpA9O3ZgOhw5DIvy6gxy5dJ0ElDw9XAEy
-         FUy9f3IYyS3/DP6dHIOJ24QK9kE3RHJV3SRJF4EfHy5EbTmxQnQYXrzEw8EZALJHWvP8
-         Hapg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=24XAboUUyxpv3JLo8zr8d3XCXSfLEMkk0OCni9MjHsY=;
-        b=pjCyXULVh045lXRlDABAN/9lCRM2KPw+Wl2PlmzyV3gOOcK9vC4n/jZo456rRIvD+W
-         6QXzwZ7fK52cNZrbjq5rU0aTvwhpmTz2H7QBNyynndH2wZ7ihfpjxkW8zqhlMikcx/1G
-         S02FE2AuQAHtfDOwngEpMfgG94+BmW9o4+2AGdXJyfMqn6dy2ns8XAfu9V39L7r/TLE/
-         hLzzSqQtn2aqXUbqfOsX5mZ6VPBqWB3duQ9QkQXby9myt7tM8Gtfz3o/RmpFJZifTZy2
-         2daHGQDTVE9sQOKhcEu+jsqF4UYa/uEqghWboq8PGJSxHeqEq4xG6Yaw97adYOEPo6hj
-         Lk7g==
-X-Gm-Message-State: AOAM532BK6WeNvN1niEaZ1eZJ3qGHIkrlhrSs8LM1pmV1WnMedFJIol/
-        1dYaHN0NOt69U74k/jgINduNB2cMlJUJ0Q==
-X-Google-Smtp-Source: ABdhPJzGS4tWAUSZz7rSIHcOMeVp+oaschTTDBzfWpydAy4E/AU/DnzsdWRe00n+nuNiJKSpJEPxYg==
-X-Received: by 2002:a05:6830:2a0b:: with SMTP id y11mr5625582otu.275.1628205189972;
-        Thu, 05 Aug 2021 16:13:09 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.45])
-        by smtp.googlemail.com with ESMTPSA id w6sm1002040otu.25.2021.08.05.16.13.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Aug 2021 16:13:09 -0700 (PDT)
-Subject: Re: [PATCH net] net: ipv4: fix path MTU for multi path routes
-To:     Vadim Fedorenko <vfedorenko@novek.ru>
-Cc:     Willem de Bruijn <willemb@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        id S242461AbhHEXmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 19:42:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36664 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238198AbhHEXmv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Aug 2021 19:42:51 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C4D0E610CD;
+        Thu,  5 Aug 2021 23:42:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628206956;
+        bh=Z/61WgkabawKvCqT33aQpch4UJfYpbpJ/lpjJTDKmJE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=KuDKmWy8QxzyN9WG7Q1pVzQ6S5j62PkYn7/jQtSiQ405ZyO5HsJaxlGQ4ptwW9KWQ
+         8JzTD06NkExqlaqFClHSIgp3ZV4HCT08Q0ZvAqUHpT3JHz2y5xKJeL0G0pylHGRvn6
+         U5xMy5iYmp2VcbacJIAcWlgxiuyj7K4SXjueq2YyorPxHzpAkvrgrNXJfYWPF6dNbg
+         +rqlXTqZ1NVd0xWfnIPttHUHPunKRAjCa2hTqiMX3yjjCM3obbaCQHJI0obD1yIuBB
+         sBxx4HfHs+13rY1cXK0ifZwIzG7diuJ8rdtPvOtsYTWDljySsOW/3p75koSGgoeKnq
+         J3gIMCJ0Jo3qg==
+Date:   Thu, 5 Aug 2021 18:42:34 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>, kernel@pengutronix.de,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-pci@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Russell Currey <ruscur@russell.cc>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Zhou Wang <wangzhou1@hisilicon.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Sathya Prakash <sathya.prakash@broadcom.com>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20210731011729.4357-1-vfedorenko@novek.ru>
- <dc6aafb6-cd1f-2006-6f45-55a4f224e319@gmail.com>
- <71b3384d-6d9c-4841-c610-463879f993b2@novek.ru>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <54587372-eb47-e154-2d63-75b14fa6f3d5@gmail.com>
-Date:   Thu, 5 Aug 2021 17:13:08 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Michael Buesch <m@bues.ch>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Fiona Trahe <fiona.trahe@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Wojciech Ziemba <wojciech.ziemba@intel.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-crypto@vger.kernel.org, qat-linux@intel.com,
+        MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
+        netdev@vger.kernel.org, oss-drivers@corigine.com,
+        xen-devel@lists.xenproject.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH v2 0/6] PCI: Drop duplicated tracking of a pci_dev's
+ bound driver
+Message-ID: <20210805234234.GA1797883@bjorn-Precision-5520>
 MIME-Version: 1.0
-In-Reply-To: <71b3384d-6d9c-4841-c610-463879f993b2@novek.ru>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210803100150.1543597-1-u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/5/21 2:51 PM, Vadim Fedorenko wrote:
-> On 01.08.2021 18:12, David Ahern wrote:
->> On 7/30/21 7:17 PM, Vadim Fedorenko wrote:
->>> Bug 213729 showed that MTU check could be used against route that
->>> will not be used in actual transmit if source ip is not specified.
->>> But path MTU update is always done on route with defined source ip.
->>> Fix route selection by updating flow info in case when source ip
->>> is not explicitly defined in raw and udp sockets.
->>
->> There is more to it than just setting the source address and doing a
->> second lookup.
->>
-> You are right. Update of source address fixes only some specific cases.
-> Also, I'm not fun of doing several lookups just because we found additional
-> next hops. It looks like (for ipv4 case) fib_table_lookup() should select
-> correct next-hop based on hash and update source ip and output interface
-> for flowi4. But right now flowi4 is constant and such change looks more
-> like net-next improvement. Or do you have another solution?
+On Tue, Aug 03, 2021 at 12:01:44PM +0200, Uwe Kleine-König wrote:
+> Hello,
 > 
+> changes since v1 (https://lore.kernel.org/linux-pci/20210729203740.1377045-1-u.kleine-koenig@pengutronix.de):
+> 
+> - New patch to simplify drivers/pci/xen-pcifront.c, spotted and
+>   suggested by Boris Ostrovsky
+> - Fix a possible NULL pointer dereference I introduced in xen-pcifront.c
+> - A few whitespace improvements
+> - Add a commit log to patch #6 (formerly #5)
+> 
+> I also expanded the audience for patches #4 and #6 to allow affected
+> people to actually see the changes to their drivers.
+> 
+> Interdiff can be found below.
+> 
+> The idea is still the same: After a few cleanups (#1 - #3) a new macro
+> is introduced abstracting access to struct pci_dev->driver. All users
+> are then converted to use this and in the last patch the macro is
+> changed to make use of struct pci_dev::dev->driver to get rid of the
+> duplicated tracking.
 
-This is a rare case where I wrote the test script first lacking ideas at
-that moment. What comes to mind now is that one part of the solution is
-to make ipv4 similar to ipv6 in that
+I love the idea of this series!
 
-1. device bind is always stronger than source address bind, and
-2. if saddr is set, prefer the nexthop device with that address (but
-only for local traffic). This handles the connect() case where saddr has
-not been set yet.
+I looked at all the bus_type.probe() methods, it looks like pci_dev is
+not the only offender here.  At least the following also have a driver
+pointer in the device struct:
 
-The second one will get expensive if a device has multiple addresses.
-FIB lookups for IPv4 have been highly optimized, and we do not want to
-explode the lookup time for forwards where saddr is always known and it
-does not need to be considered in the lookup to fix local local traffic
-which needs a saddr to be picked along with the egress device. Perhaps a
-flow flag (SKIP_SADDR similar to the current SKIP_NH_OIF) will address
-this part. Another less desirable option is to improve but not totally
-fix the problem by only considering the primary address.
+  parisc_device.driver
+  acpi_device.driver
+  dio_dev.driver
+  hid_device.driver
+  pci_dev.driver
+  pnp_dev.driver
+  rio_dev.driver
+  zorro_dev.driver
 
-For ICMP the PMTU update should look at the header returned in the icmp
-payload to determine which device needs the pmtu exception.
+Do you plan to do the same for all of them, or is there some reason
+why they need the pointer and PCI doesn't?
+
+In almost all cases, other buses define a "to_<bus>_driver()"
+interface.  In fact, PCI already has a to_pci_driver().
+
+This series adds pci_driver_of_dev(), which basically just means we
+can do this:
+
+  pdrv = pci_driver_of_dev(pdev);
+
+instead of this:
+
+  pdrv = to_pci_driver(pdev->dev.driver);
+
+I don't see any other "<bus>_driver_of_dev()" interfaces, so I assume
+other buses just live with the latter style?  I'd rather not be
+different and have two ways to get the "struct pci_driver *" unless
+there's a good reason.
+
+Looking through the places that care about pci_dev.driver (the ones
+updated by patch 5/6), many of them are ... a little dubious to begin
+with.  A few need the "struct pci_error_handlers *err_handler"
+pointer, so that's probably legitimate.  But many just need a name,
+and should probably be using dev_driver_string() instead.
+
+Bjorn
