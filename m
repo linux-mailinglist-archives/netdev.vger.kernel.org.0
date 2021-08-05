@@ -2,93 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C187F3E1825
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 17:37:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D42DA3E1840
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 17:39:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242066AbhHEPhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 11:37:19 -0400
-Received: from ale.deltatee.com ([204.191.154.188]:46304 "EHLO
-        ale.deltatee.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242000AbhHEPhS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 11:37:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
-        Message-ID:From:References:Cc:To:content-disposition;
-        bh=FxYXTHDKCyAHR0FYBUwfJJEcH3aS8cyREXURVdqN5q0=; b=BjKGfcMbJaSz5EI4uoGVGgtNou
-        zfsti+KtAHPe6/B1GVGOmRjNso8+YObUCICxTILRRqezHaHobvX4d4r7x6yz7w5C04P191lQH1Syr
-        2ADzcIxeZZwp71jJRPRCrd2S1Gp0QbvMzDUq7cnoB4SvD9QKmccnh0J/JUriAYF/wsCG4+ZnHVtzw
-        pPNAXdrdWOKXv/+2dJcoUUnZwB7ZOcyu6dKPnGiGd8oN3EP+C+ghLngsGKLZjXRBSo75qFImfKAcM
-        oBW6FUiG/zmmePYL7Ssa4m1kdI/m8q//cy9U3kCDYUAPuRkDvoGGBZsv8w556Zvoq1cFEubtM1HXt
-        pd0JNqbA==;
-Received: from s0106a84e3fe8c3f3.cg.shawcable.net ([24.64.144.200] helo=[192.168.0.10])
-        by ale.deltatee.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.92)
-        (envelope-from <logang@deltatee.com>)
-        id 1mBfQZ-0001xq-3P; Thu, 05 Aug 2021 09:36:59 -0600
-To:     Dongdong Liu <liudongdong3@huawei.com>, helgaas@kernel.org,
-        hch@infradead.org, kw@linux.com, leon@kernel.org,
-        linux-pci@vger.kernel.org, rajur@chelsio.com,
-        hverkuil-cisco@xs4all.nl
-Cc:     linux-media@vger.kernel.org, netdev@vger.kernel.org
-References: <1628084828-119542-1-git-send-email-liudongdong3@huawei.com>
- <1628084828-119542-8-git-send-email-liudongdong3@huawei.com>
- <75243571-3213-6ae2-040f-ae1b1f799e42@deltatee.com>
- <8758a42b-233b-eb73-dce4-493e0ce8eed5@huawei.com>
-From:   Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <fee2f889-f549-26a1-4afa-57f52500d6e2@deltatee.com>
-Date:   Thu, 5 Aug 2021 09:36:55 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S242256AbhHEPju (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 11:39:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58426 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241840AbhHEPjm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 11:39:42 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED049C061765;
+        Thu,  5 Aug 2021 08:39:26 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id mz5-20020a17090b3785b0290176ecf64922so15722209pjb.3;
+        Thu, 05 Aug 2021 08:39:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5vBIrdt8B8CVa9oETvI/wFhOCaIABa5EmEBz4zWZ01I=;
+        b=Gg6667v/ufxR+ZJaa1GECyIPiUAgnOnIHtmOWBZkrSlCb/f29ngyB/Y5YYjDO1b3zN
+         vOr0+vQUEhKQw3YDnTttWdS7WkkIV2K2ggxxOp0g0HAMXB6DTpqDBm7Rd8xIvEq8z1Vr
+         +nL45S2Q9gt3ZsnBXUroCx1LZm4/OmcfXAjuBc1WsU9hYUBsh/KuowOhuoDouAozO23Q
+         bNJxQir0bF8ekbmMGDXMxFoy3XU3K6mmPms56dKPNOQq2q6OAEFdTuYOTn53X1YnpSO+
+         Ic7LyGTKafpb4w9Gx8nLuXoW4FwpguvakzmZg5HiI/9hWi0OMNpbL7ZBen57OhmY6wte
+         0Pyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5vBIrdt8B8CVa9oETvI/wFhOCaIABa5EmEBz4zWZ01I=;
+        b=rupzMTPg4wTGstpifztfR2ScxRk2M1Ii/Y9gys3jnhviKyVpW7IJp2gJwQEC15n//q
+         iecM4yu4KWaXZNxdLP6ncMBCepqPACgmAOLjA+mnk3FeVwaHZW/GpBB9rTYbi+sXQtWG
+         2mYGpUZY7wjqdI+Va6rVvyt+3mAkixb8s5CBHQbPtV2nMg3qWnZfiVk8YxYUt96vkOU1
+         JzdgQCmqCbzM5B9hlbDjOGLT6TQOf/xLwIg5gaWyFLs6hbLzE+5UOC8X1Q56DhmWUKDm
+         EosP577l4V7PRM993TMIJPM4ho/bVwpU8QhPcKNrIxT4FW84VPoD52BXuiHawQyuFz+J
+         yHDw==
+X-Gm-Message-State: AOAM532D0eYnGO7Ewn3woPJvh0hgnY87SI8+O4v0xaIhyVqNosExL0ha
+        iVOG6kRC6NvA71Bt8XvF3fs=
+X-Google-Smtp-Source: ABdhPJzf3lTIGiMS4P/exM38/Nyj0q06ZBOyeQapWim+xLd79Q9eNN7cBIDMLwGU0eieDdUMrsVbNw==
+X-Received: by 2002:a62:bd15:0:b029:31c:a584:5f97 with SMTP id a21-20020a62bd150000b029031ca5845f97mr5935776pff.33.1628177966550;
+        Thu, 05 Aug 2021 08:39:26 -0700 (PDT)
+Received: from localhost.localdomain ([45.135.186.81])
+        by smtp.gmail.com with ESMTPSA id p53sm7222242pfw.143.2021.08.05.08.39.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Aug 2021 08:39:26 -0700 (PDT)
+From:   Tuo Li <islituo@gmail.com>
+To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, baijiaju1990@gmail.com,
+        Tuo Li <islituo@gmail.com>, TOTE Robot <oslab@tsinghua.edu.cn>
+Subject: [PATCH] ath: dfs_pattern_detector: Fix possible null-pointer dereference in channel_detector_create()
+Date:   Thu,  5 Aug 2021 08:38:53 -0700
+Message-Id: <20210805153854.154066-1-islituo@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <8758a42b-233b-eb73-dce4-493e0ce8eed5@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-CA
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 24.64.144.200
-X-SA-Exim-Rcpt-To: netdev@vger.kernel.org, linux-media@vger.kernel.org, hverkuil-cisco@xs4all.nl, rajur@chelsio.com, linux-pci@vger.kernel.org, leon@kernel.org, kw@linux.com, hch@infradead.org, helgaas@kernel.org, liudongdong3@huawei.com
-X-SA-Exim-Mail-From: logang@deltatee.com
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on ale.deltatee.com
-X-Spam-Level: 
-X-Spam-Status: No, score=-8.9 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-        GREYLIST_ISWHITE,MYRULES_OFFER,NICE_REPLY_A autolearn=ham
-        autolearn_force=no version=3.4.2
-Subject: Re: [PATCH V7 7/9] PCI/sysfs: Add a 10-Bit Tag sysfs file
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+kzalloc() is used to allocate memory for cd->detectors, and if it fails,
+channel_detector_exit() behind the label fail will be called:
+  channel_detector_exit(dpd, cd);
 
+In channel_detector_exit(), cd->detectors is dereferenced through:
+  struct pri_detector *de = cd->detectors[i];
 
-On 2021-08-05 7:14 a.m., Dongdong Liu wrote:
-> On 2021/8/4 23:51, Logan Gunthorpe wrote:
->>
->>
->>
->> On 2021-08-04 7:47 a.m., Dongdong Liu wrote:
->>> PCIe spec 5.0 r1.0 section 2.2.6.2 says that if an Endpoint supports
->>> sending Requests to other Endpoints (as opposed to host memory), the
->>> Endpoint must not send 10-Bit Tag Requests to another given Endpoint
->>> unless an implementation-specific mechanism determines that the Endpoint
->>> supports 10-Bit Tag Completer capability. Add a 10bit_tag sysfs file,
->>> write 0 to disable 10-Bit Tag Requester when the driver does not bind
->>> the device if the peer device does not support the 10-Bit Tag Completer.
->>> This will make P2P traffic safe. the 10bit_tag file content indicate
->>> current 10-Bit Tag Requester Enable status.
->>
->> Can we not have both the sysfs file and the command line parameter? If
->> the user wants to disable it always for a specific device this sysfs
->> parameter is fairly awkward. A script at boot to unbind the driver, set
->> the sysfs file and rebind the driver is not trivial and the command line
->> parameter offers additional options for users.
-> Does the command line parameter as "[PATCH V6 7/8] PCI: Add
-> "pci=disable_10bit_tag=" parameter for peer-to-peer support" does?
-> 
-> Do we also need such command line if we already had sysfs file?
-> I think we may not need.
+To fix this possible null-pointer dereference, check cd->detectors before 
+the for loop to dereference cd->detectors. 
 
-In my opinion, for reasons stated above, the command line parameter is
-way more convenient.
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Tuo Li <islituo@gmail.com>
+---
+ drivers/net/wireless/ath/dfs_pattern_detector.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-Logan
+diff --git a/drivers/net/wireless/ath/dfs_pattern_detector.c b/drivers/net/wireless/ath/dfs_pattern_detector.c
+index 80390495ea25..75cb53a3ec15 100644
+--- a/drivers/net/wireless/ath/dfs_pattern_detector.c
++++ b/drivers/net/wireless/ath/dfs_pattern_detector.c
+@@ -183,10 +183,12 @@ static void channel_detector_exit(struct dfs_pattern_detector *dpd,
+ 	if (cd == NULL)
+ 		return;
+ 	list_del(&cd->head);
+-	for (i = 0; i < dpd->num_radar_types; i++) {
+-		struct pri_detector *de = cd->detectors[i];
+-		if (de != NULL)
+-			de->exit(de);
++	if (cd->detectors) {
++		for (i = 0; i < dpd->num_radar_types; i++) {
++			struct pri_detector *de = cd->detectors[i];
++			if (de != NULL)
++				de->exit(de);
++		}
+ 	}
+ 	kfree(cd->detectors);
+ 	kfree(cd);
+-- 
+2.25.1
+
