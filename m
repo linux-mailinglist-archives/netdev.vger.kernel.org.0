@@ -2,175 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6684D3E105D
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 10:33:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 525FF3E106E
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 10:37:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236880AbhHEIda (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 04:33:30 -0400
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:12214 "EHLO
-        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233624AbhHEIda (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 04:33:30 -0400
-Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 62812520D38;
-        Thu,  5 Aug 2021 11:33:14 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1628152394;
-        bh=k0pgS1kHGbla5ruFilbtneTZqlGPAFUQro8mBMppHLE=;
-        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        b=5Jl3ZrfuwildCQlS79Y/Bsx4GwA0unWegjmiYNWjJfy9cAlWIrr9DVHnSfBw1Kmll
-         eoNTRZx32yLUaWTVt+deAI49RrEwgmARzr9LoZk5kCMIbcDHVHhTaxWI/UvMyge/OF
-         5FJPv/NQiJu6reifjT01DD41avbz5BVC2PyYjWqNc3rFHVGgfTswYKku/lw708c8HI
-         u2wzWbwX/hCVUJgyxncXOhTIVkX9QktJDwbJeEFSL0Md2Zrk/1ruFp2JQ1kXzTUFF9
-         9hd0VaisTaFRrOaecPbOZKczRe/Resn6n/8f6IvNuDaPR2dSodcCy7iUuHgxtrco4C
-         IlmDdKiBcNWaQ==
-Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 9DC01520D3A;
-        Thu,  5 Aug 2021 11:33:13 +0300 (MSK)
-Received: from [10.16.171.77] (10.64.64.121) by hqmailmbx3.avp.ru
- (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 5
- Aug 2021 11:33:13 +0300
-Subject: Re: [RFC PATCH v1 0/7] virtio/vsock: introduce MSG_EOR flag for
- SEQPACKET
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Colin Ian King <colin.king@canonical.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
-References: <20210726163137.2589102-1-arseny.krasnov@kaspersky.com>
- <20210804125737.kbgc6mg2v5lw25wu@steredhat>
-From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Message-ID: <8e44442c-4cac-dcbc-a88d-17d9878e7d32@kaspersky.com>
-Date:   Thu, 5 Aug 2021 11:33:12 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S238277AbhHEIh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 04:37:57 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:16048 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237036AbhHEIh4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 04:37:56 -0400
+Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GgMMx6yyXzZxn3;
+        Thu,  5 Aug 2021 16:34:05 +0800 (CST)
+Received: from [10.67.103.235] (10.67.103.235) by
+ dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Thu, 5 Aug 2021 16:37:40 +0800
+Subject: Re: [PATCH V7 7/9] PCI/sysfs: Add a 10-Bit Tag sysfs file
+To:     Bjorn Helgaas <helgaas@kernel.org>
+References: <20210804234954.GA1692741@bjorn-Precision-5520>
+CC:     <hch@infradead.org>, <kw@linux.com>, <logang@deltatee.com>,
+        <leon@kernel.org>, <linux-pci@vger.kernel.org>,
+        <rajur@chelsio.com>, <hverkuil-cisco@xs4all.nl>,
+        <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
+From:   Dongdong Liu <liudongdong3@huawei.com>
+Message-ID: <f300d75c-5fb8-54ae-0c84-3916b1dda360@huawei.com>
+Date:   Thu, 5 Aug 2021 16:37:39 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-In-Reply-To: <20210804125737.kbgc6mg2v5lw25wu@steredhat>
-Content-Type: text/plain; charset="windows-1252"
+In-Reply-To: <20210804234954.GA1692741@bjorn-Precision-5520>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.64.64.121]
-X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
- (10.64.67.243)
-X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 08/05/2021 08:19:01
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 165422 [Aug 04 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
-X-KSE-AntiSpam-Info: LuaCore: 449 449 5db59deca4a4f5e6ea34a93b13bc730e229092f4
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;kaspersky.com:7.1.1;127.0.0.199:7.1.2
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 08/05/2021 08:22:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 04.08.2021 22:55:00
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KLMS-Rule-ID: 52
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Status: not scanned, disabled by settings
-X-KLMS-AntiSpam-Interceptor-Info: not scanned
-X-KLMS-AntiPhishing: Clean, bases: 2021/08/04 17:04:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/08/04 22:55:00 #16982736
-X-KLMS-AntiVirus-Status: Clean, skipped
+X-Originating-IP: [10.67.103.235]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggeme758-chm.china.huawei.com (10.3.19.104)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 04.08.2021 15:57, Stefano Garzarella wrote:
-> Caution: This is an external email. Be cautious while opening links or attachments.
+
+On 2021/8/5 7:49, Bjorn Helgaas wrote:
+> On Wed, Aug 04, 2021 at 09:47:06PM +0800, Dongdong Liu wrote:
+>> PCIe spec 5.0 r1.0 section 2.2.6.2 says that if an Endpoint supports
+>> sending Requests to other Endpoints (as opposed to host memory), the
+>> Endpoint must not send 10-Bit Tag Requests to another given Endpoint
+>> unless an implementation-specific mechanism determines that the Endpoint
+>> supports 10-Bit Tag Completer capability. Add a 10bit_tag sysfs file,
+>> write 0 to disable 10-Bit Tag Requester when the driver does not bind
+>> the device if the peer device does not support the 10-Bit Tag Completer.
+>> This will make P2P traffic safe. the 10bit_tag file content indicate
+>> current 10-Bit Tag Requester Enable status.
+>>
+>> Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
+>> ---
+>>  Documentation/ABI/testing/sysfs-bus-pci | 16 +++++++-
+>>  drivers/pci/pci-sysfs.c                 | 69 +++++++++++++++++++++++++++++++++
+>>  2 files changed, 84 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
+>> index 793cbb7..0e0c97d 100644
+>> --- a/Documentation/ABI/testing/sysfs-bus-pci
+>> +++ b/Documentation/ABI/testing/sysfs-bus-pci
+>> @@ -139,7 +139,7 @@ Description:
+>>  		binary file containing the Vital Product Data for the
+>>  		device.  It should follow the VPD format defined in
+>>  		PCI Specification 2.1 or 2.2, but users should consider
+>> -		that some devices may have incorrectly formatted data.
+>> +		that some devices may have incorrectly formatted data.
+>>  		If the underlying VPD has a writable section then the
+>>  		corresponding section of this file will be writable.
+>>
+>> @@ -407,3 +407,17 @@ Description:
+>>
+>>  		The file is writable if the PF is bound to a driver that
+>>  		implements ->sriov_set_msix_vec_count().
+>> +
+>> +What:		/sys/bus/pci/devices/.../10bit_tag
+>> +Date:		August 2021
+>> +Contact:	Dongdong Liu <liudongdong3@huawei.com>
+>> +Description:
+>> +		If a PCI device support 10-Bit Tag Requester, will create the
+>> +		10bit_tag sysfs file. The file is readable, the value
+>> +		indicate current 10-Bit Tag Requester Enable.
+>> +		1 - enabled, 0 - disabled.
+>> +
+>> +		The file is also writeable, the value only accept by write 0
+>> +		to disable 10-Bit Tag Requester when the driver does not bind
+>> +		the deivce. The typical use case is for p2pdma when the peer
+>> +		device does not support 10-BIT Tag Completer.
 >
+> s/writeable/writable/
+> s/deivce/device/
+Will fix.
 >
+> The first sentence does not parse.
+10bit_tag sysfs file will be visible only when the device have 10-Bit
+Tag Requester Supported capability.
+
+Will fix.
 >
-> Hi Arseny,
+>> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+>> index 5d63df7..e93ce8b 100644
+>> --- a/drivers/pci/pci-sysfs.c
+>> +++ b/drivers/pci/pci-sysfs.c
+>> @@ -306,6 +306,49 @@ static ssize_t enable_show(struct device *dev, struct device_attribute *attr,
+>>  }
+>>  static DEVICE_ATTR_RW(enable);
+>>
+>> +static ssize_t pci_10bit_tag_store(struct device *dev,
+>> +				   struct device_attribute *attr,
+>> +				   const char *buf, size_t count)
+>> +{
+>> +	struct pci_dev *pdev = to_pci_dev(dev);
+>> +	bool enable;
+>> +
+>> +	if (kstrtobool(buf, &enable) < 0)
+>> +		return -EINVAL;
+>> +
+>> +	if (enable != false )
+>> +		return -EINVAL;
 >
-> On Mon, Jul 26, 2021 at 07:31:33PM +0300, Arseny Krasnov wrote:
->>       This patchset implements support of MSG_EOR bit for SEQPACKET
->> AF_VSOCK sockets over virtio transport.
->>       Idea is to distinguish concepts of 'messages' and 'records'.
->> Message is result of sending calls: 'write()', 'send()', 'sendmsg()'
->> etc. It has fixed maximum length, and it bounds are visible using
->> return from receive calls: 'read()', 'recv()', 'recvmsg()' etc.
->> Current implementation based on message definition above.
-> Okay, so the implementation we merged is wrong right?
-> Should we disable the feature bit in stable kernels that contain it? Or
-> maybe we can backport the fixes...
-
-Hi,
-
-No, this is correct and it is message boundary based. Idea of this
-
-patchset is to add extra boundaries marker which i think could be
-
-useful when we want to send data in seqpacket mode which length
-
-is bigger than maximum message length(this is limited by transport).
-
-Of course we can fragment big piece of data too small messages, but this
-
-requires to carry fragmentation info in data protocol. So In this case
-
-when we want to maintain boundaries receiver calls recvmsg() until MSG_EOR found.
-
-But when receiver knows, that data is fit in maximum datagram length,
-
-it doesn't care about checking MSG_EOR just calling recv() or read()(e.g.
-
-message based mode).
-
-
-Thank You
-
+> Is this the same as "if (enable)"?
+Yes, Will fix.
 >
->>       Record has unlimited length, it consists of multiple message,
->> and bounds of record are visible via MSG_EOR flag returned from
->> 'recvmsg()' call. Sender passes MSG_EOR to sending system call and
->> receiver will see MSG_EOR when corresponding message will be processed.
->>       To support MSG_EOR new bit was added along with existing
->> 'VIRTIO_VSOCK_SEQ_EOR': 'VIRTIO_VSOCK_SEQ_EOM'(end-of-message) - now it
->> works in the same way as 'VIRTIO_VSOCK_SEQ_EOR'. But 'VIRTIO_VSOCK_SEQ_EOR'
->> is used to mark 'MSG_EOR' bit passed from userspace.
-> I understand that it makes sense to remap VIRTIO_VSOCK_SEQ_EOR to
-> MSG_EOR to make the user understand the boundaries, but why do we need
-> EOM as well?
+>> +	if (pdev->driver)
+>> +		 return -EBUSY;
+>> +
+>> +	pcie_capability_clear_word(pdev, PCI_EXP_DEVCTL2,
+>> +				   PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN);
+>> +	pci_info(pdev, "disabled 10-Bit Tag Requester\n");
+>> +
+>> +	return count;
+>> +}
+>> +
+>> +static ssize_t pci_10bit_tag_show(struct device *dev,
+>> +				  struct device_attribute *attr,
+>> +				  char *buf)
+>> +{
+>> +	struct pci_dev *pdev = to_pci_dev(dev);
+>> +	u16 ctl;
+>> +	int ret;
+>> +
+>> +	ret = pcie_capability_read_word(pdev, PCI_EXP_DEVCTL2, &ctl);
+>> +	if (ret)
+>> +		return -EINVAL;
+>> +
+>> +	return sysfs_emit(buf, "%u\n",
+>> +			  !!(ctl & PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN));
+>> +}
+>> +
+>> +static struct device_attribute dev_attr_10bit_tag = __ATTR(10bit_tag, 0600,
+>> +							   pci_10bit_tag_show,
+>> +							   pci_10bit_tag_store);
 >
-> Why do we care about the boundaries of a message within a record?
-> I mean, if the sender makes 3 calls:
->      send(A1,0)
->      send(A2,0)
->      send(A3, MSG_EOR);
+> Is this DEVICE_ATTR_ADMIN_RW()?
 >
-> IIUC it should be fine if the receiver for example receives all in one
-> single recv() calll with MSG_EOR set, so why do we need EOM?
+> Why is it 0600?  Everything else in this file looks like
+> DEVICE_ATTR_RO or DEVICE_ATTR_RW.  This should be the same unless
+> there's a reason to be different.
+Should be 0644, I do not use DEVICE_ATTR_RW, just want to
+use "10bit_tag" file name.
+Will fix.
+
+Thanks,
+Dongdong
 >
-> Thanks,
-> Stefano
->
+>>  #ifdef CONFIG_NUMA
+>>  static ssize_t numa_node_store(struct device *dev,
+>>  			       struct device_attribute *attr, const char *buf,
+>> @@ -635,6 +678,11 @@ static struct attribute *pcie_dev_attrs[] = {
+>>  	NULL,
+>>  };
+>>
+>> +static struct attribute *pcie_dev_10bit_tag_attrs[] = {
+>> +	&dev_attr_10bit_tag.attr,
+>> +	NULL,
+>> +};
+>> +
+>>  static struct attribute *pcibus_attrs[] = {
+>>  	&dev_attr_bus_rescan.attr,
+>>  	&dev_attr_cpuaffinity.attr,
+>> @@ -1482,6 +1530,21 @@ static umode_t pcie_dev_attrs_are_visible(struct kobject *kobj,
+>>  	return 0;
+>>  }
+>>
+>> +static umode_t pcie_dev_10bit_tag_attrs_are_visible(struct kobject *kobj,
+>> +					  struct attribute *a, int n)
+>> +{
+>> +	struct device *dev = kobj_to_dev(kobj);
+>> +	struct pci_dev *pdev = to_pci_dev(dev);
+>> +
+>> +	if (pdev->is_virtfn)
+>> +		return 0;
+>> +
+>> +	if (!(pdev->pcie_devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_REQ))
+>> +		return 0;
+>> +
+>> +	return a->mode;
+>> +}
+>> +
+>>  static const struct attribute_group pci_dev_group = {
+>>  	.attrs = pci_dev_attrs,
+>>  };
+>> @@ -1521,6 +1584,11 @@ static const struct attribute_group pcie_dev_attr_group = {
+>>  	.is_visible = pcie_dev_attrs_are_visible,
+>>  };
+>>
+>> +static const struct attribute_group pcie_dev_10bit_tag_attr_group = {
+>> +	.attrs = pcie_dev_10bit_tag_attrs,
+>> +	.is_visible = pcie_dev_10bit_tag_attrs_are_visible,
+>> +};
+>> +
+>>  static const struct attribute_group *pci_dev_attr_groups[] = {
+>>  	&pci_dev_attr_group,
+>>  	&pci_dev_hp_attr_group,
+>> @@ -1530,6 +1598,7 @@ static const struct attribute_group *pci_dev_attr_groups[] = {
+>>  #endif
+>>  	&pci_bridge_attr_group,
+>>  	&pcie_dev_attr_group,
+>> +	&pcie_dev_10bit_tag_attr_group,
+>>  #ifdef CONFIG_PCIEAER
+>>  	&aer_stats_attr_group,
+>>  #endif
+>> --
+>> 2.7.4
+>>
+> .
 >
