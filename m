@@ -2,84 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3334F3E1245
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 12:10:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23DDF3E1253
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 12:10:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240431AbhHEKKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 06:10:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41796 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240360AbhHEKKU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Aug 2021 06:10:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id D8ED561107;
-        Thu,  5 Aug 2021 10:10:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628158206;
-        bh=y2e6tMoKHAD1MT+NaZEBfhZ8QsyxS+dK65cMvlQlfRw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=B3MP9TH4zmHK8lyc5XUYiF8EYoNNQv7aQdgnGtqJIkUD8NWDsRrmXOzlLu6I/jFV1
-         yHC3dpb4V7+wX+Fuq/Rabu5H35Dk+NnO43zYCW617uoV2hZn0ckuRE6PZqQCKtkTRr
-         aQAFr4z3d2Zj5LSClW3bRfflHBAdREfOG82W79jWL6KeqH4msLDikMQvCKt0OIW2Q6
-         w3oaHrB2px8565qEBlEIkaOFWpE4FZVci0UHiAPWGXPpE/w7fsgCliazHfTjXlfRrF
-         TYy9cIW/BCDapQS6GVfE2gTM6hdLvn9DBcPr13GCeu3QZJj4l81z52U1QJVYQ1am1a
-         Fr5aWyTkfv+kw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C880B60A48;
-        Thu,  5 Aug 2021 10:10:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S240466AbhHEKKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 06:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39022 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240420AbhHEKKg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 06:10:36 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D854C0617B1
+        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 03:10:17 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id i6so7607811edu.1
+        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 03:10:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=J67+rxbQxfS8kPDQ/50P30WNOuT2eFzd+bURjICaS/k=;
+        b=iS9YA7D4AkLyKrMVsoVYMawu0L36NuU4+ZSSyySlEHd80Db/SKmaXNHUYbn10iE1ak
+         iC2IvrlH8v1AbmVGIfByuGkfSJI0XOychxHlUayNB69sXT4UE/GxiJdUnwpUeLi55ukG
+         xxmbK315oyKozAfiGnXEqKK3PxzEgZV5MZYS8JrbDSFfNkjPPnwGCrlh5tDeKwhJwNKw
+         T5dIuH8sR8enUCr5iznpK0TZ2LjgjrjjYSvOKCwjpML2kXz9bFVQEOg044XfixvXje/K
+         h6N675zJB4VwjShIVvQTmJWjRDKft4Rcevz64ZRcI/rUzQ/43BUMnv9UMxVY4mSVx0dv
+         +ZPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=J67+rxbQxfS8kPDQ/50P30WNOuT2eFzd+bURjICaS/k=;
+        b=XYpobNp3aGRvbPdR7g4aTF6ql72Af5GzwMvcKquu5WqlK52pxLo/YJVjbBpWTsv3Ox
+         2GqXbEhuQW8ZtfOmZkS0xYmByHf3bA1yvVdvEHGzCQitqpswP/4lGg8cd7NGzxhkVibQ
+         VTizAfOVq8jyMl71Lo1q07D+ROGFajelgJJjZ5wi77a5UeDXODrFPZILwmw/bu2Skdzj
+         58rYw8N5c1GSZHwIAhbk0Moln5W+HriY9A597w+tqPVZbCkDX9kmnXdP8u7o3/TJRqYe
+         nsVPz/GLtmPIp4NjpR12YXILHJ+LCI3TFgHonJPw9TYtFD0ERv9NnVLjFN0ZvwXIkdxq
+         8rWA==
+X-Gm-Message-State: AOAM533ynwndSYPllvxgmPbhaheTVNd5lbwUhAurbEaYn1ofnTcudRF8
+        GPQQ2Rv4YRSJeR3n22XxJlOT1sM9+U8KFeeiBxg=
+X-Google-Smtp-Source: ABdhPJz/RKmv260xIbuerDTPdwMwXLpAeKReSpRsKd2xVxrYh4CfQJfzAebDIdig2CS2Izsib4l5qV0PM0JZd046dok=
+X-Received: by 2002:a05:6402:40c7:: with SMTP id z7mr5373679edb.193.1628158216069;
+ Thu, 05 Aug 2021 03:10:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 net-next 0/8] NXP SJA1105 driver support for "H" switch
- topologies
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162815820681.2686.14597996768431492044.git-patchwork-notify@kernel.org>
-Date:   Thu, 05 Aug 2021 10:10:06 +0000
-References: <20210804135436.1741856-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20210804135436.1741856-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        olteanv@gmail.com
+Received: by 2002:a05:6408:258c:b029:e3:fe5c:5c2d with HTTP; Thu, 5 Aug 2021
+ 03:10:15 -0700 (PDT)
+Reply-To: theresabangurah3333@yahoo.com
+From:   Theresa Bangurah <mariamabah77879@gmail.com>
+Date:   Thu, 5 Aug 2021 11:10:15 +0100
+Message-ID: <CAAi==jrP1LU0nh-DrLEYOsm5GW=VtCGzFW8zeRyVbCcv17qusA@mail.gmail.com>
+Subject: Hello
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Wed,  4 Aug 2021 16:54:28 +0300 you wrote:
-> Changes in v3:
-> Preserve the behavior of dsa_tree_setup_default_cpu() which is to pick
-> the first CPU port and not the last.
-> 
-> Changes in v2:
-> Send as non-RFC, drop the patches for discarding DSA-tagged packets on
-> user ports and DSA-untagged packets on DSA and CPU ports for now.
-> 
-> [...]
-
-Here is the summary with links:
-  - [v3,net-next,1/8] net: dsa: rename teardown_default_cpu to teardown_cpu_ports
-    https://git.kernel.org/netdev/net-next/c/0e8eb9a16e25
-  - [v3,net-next,2/8] net: dsa: give preference to local CPU ports
-    https://git.kernel.org/netdev/net-next/c/2c0b03258b8b
-  - [v3,net-next,3/8] net: dsa: sja1105: configure the cascade ports based on topology
-    https://git.kernel.org/netdev/net-next/c/30a100e60cf3
-  - [v3,net-next,4/8] net: dsa: sja1105: manage the forwarding domain towards DSA ports
-    https://git.kernel.org/netdev/net-next/c/3fa212707b8e
-  - [v3,net-next,5/8] net: dsa: sja1105: manage VLANs on cascade ports
-    https://git.kernel.org/netdev/net-next/c/c51300298083
-  - [v3,net-next,6/8] net: dsa: sja1105: increase MTU to account for VLAN header on DSA ports
-    https://git.kernel.org/netdev/net-next/c/777e55e30d12
-  - [v3,net-next,7/8] net: dsa: sja1105: suppress TX packets from looping back in "H" topologies
-    https://git.kernel.org/netdev/net-next/c/0f9b762c097c
-  - [v3,net-next,8/8] net: dsa: sja1105: enable address learning on cascade ports
-    https://git.kernel.org/netdev/net-next/c/81d45898a59a
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+-- 
+My name is Mrs.Theresa Bangurah,i am American citizen i have something
+important to tell you.Reply me immediately you get this message.God
+bless you.
