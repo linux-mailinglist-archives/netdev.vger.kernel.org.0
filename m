@@ -2,175 +2,377 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F32BE3E1C59
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 21:19:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DD243E1C96
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 21:24:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242738AbhHETTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 15:19:23 -0400
-Received: from mail-eopbgr1410099.outbound.protection.outlook.com ([40.107.141.99]:52128
-        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S242897AbhHETTV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Aug 2021 15:19:21 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bm3OnFIGlXfdaIvYjC2/TAkePiSLdBMH+6jKqF8soTUrBI30BCsCPk9pELWhrtua4M3Ly3hu5ygp8rmvg26XkD3eOrWqBRa6lFmxWbTNOne7WBO/F8p2udGoB2qtO01HK+JJKsLtrSmsbuSkwsWw8PKS28Yur5Iz1i+aZuHfB8ud/YB8h4n3VNeFOrWuEYHt6oZhyiz94X1VD4fkBfWYUDEq/2iUmQiJV2t5NT+UrsY1767SxA4V05Kdshfz7Rzjj0JldG8jI7Kq1Ads97wbE6qyVUdau5yC5CYF0VVZDNMVj95tiqzHCXlLoUGFpwYHRO9WNe0zPP/YmWJ0lVzDsw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nAEYEHpn0kD0YA60lv7DS/d5Gg2+R8lk0AyrzmVekUo=;
- b=ZoW95lI+IEahoBwXGY7vEmH3Ti3Iy+PfBhi0k4+ysGEgEFzIPIkCgjpBp6SuBCUWNIGSzO1XU3ZizkinpTzjJ1HkG9tUZ6eu2UI6h7Fi3QvACasxYC35MXhkDh2UQXG60Tsq1+X09Hme/VV5nwtLJG3Meai9Shq60lEpXARKiFRXvLZpqB29rUTVRLn/x6XYFE6x2/VqDCP4wbicFbm9bcFWdBhTsSci1oj0/BBiqNQPWQHEToCsokiu26Uv5xI00+7ewOa77XtFZ1ZdUiDIgVl0ETXgl9Bczm1fwnjzbZwB7Fp1xpjknzfGkkNx4My0fuLTGmEr7GTGiz6a8TENGw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+        id S230043AbhHETYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 15:24:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54474 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229578AbhHETYq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 15:24:46 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF19C061765;
+        Thu,  5 Aug 2021 12:24:31 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id m12so7947783wru.12;
+        Thu, 05 Aug 2021 12:24:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nAEYEHpn0kD0YA60lv7DS/d5Gg2+R8lk0AyrzmVekUo=;
- b=XM6yz6DZ+gncnNvgV29wHcJtgqFOyXVLS518et6I4QdLIY+GKT/v+EBeyeTZkfTFiF1lFdxin+gNB6LcOTn+v2OMEgissuF1o7qkvbMFlRjO4FG7LuC346IGDJu81zMKPVNSEV8/F3Ph1mb5GTXOljUqNXoyJhh7/ZVX0blyI/s=
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
- by OS0PR01MB5409.jpnprd01.prod.outlook.com (2603:1096:604:ab::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.18; Thu, 5 Aug
- 2021 19:18:56 +0000
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::c6f:e31f:eaa9:60fe]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::c6f:e31f:eaa9:60fe%8]) with mapi id 15.20.4373.026; Thu, 5 Aug 2021
- 19:18:56 +0000
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: RE: [PATCH net-next v2 6/8] ravb: Add net_features and
- net_hw_features to struct ravb_hw_info
-Thread-Topic: [PATCH net-next v2 6/8] ravb: Add net_features and
- net_hw_features to struct ravb_hw_info
-Thread-Index: AQHXh4kFp+geaJbxPkSeNoy79C/vbatlSxwAgAABWNA=
-Date:   Thu, 5 Aug 2021 19:18:56 +0000
-Message-ID: <OS0PR01MB5922C5EE008113DEA3354BFA86F29@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-References: <20210802102654.5996-1-biju.das.jz@bp.renesas.com>
- <20210802102654.5996-7-biju.das.jz@bp.renesas.com>
- <0daf8d07-b412-4cb0-cbfb-e8f8b84184e5@gmail.com>
-In-Reply-To: <0daf8d07-b412-4cb0-cbfb-e8f8b84184e5@gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1cd90fdc-1291-4723-7ff6-08d95845def0
-x-ms-traffictypediagnostic: OS0PR01MB5409:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <OS0PR01MB540980919D6B0E92DA3B0A3386F29@OS0PR01MB5409.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: dSyibuWNWSjnBwoEs6CU0GjcDq1P/8LJx9vu6AsRhRr/LNw88W8nxW+rLVvk12eAsXq7rVMr9+M1bQm6qQduXHBm3ujMT+tLlkaQnNFrcdA5wGcikxcqPSS0NhIMcokc/gudyXwLkNb/eMgVj2Fq9NeAvf0l5C0pEIhdNQ9pBsO6cXzdwG+AL1+gDHla3U4kpOiNKSJVGFNydYXZCi+lNQcZY49ArLyg1iFVFwPtURQRAirEigsi0gOKGIt0Ql6ScY3ZSO+lnf8QHTrpQorswOCKeXC2J3NX/9L/1T6wqQjmpx3UlUX5ijXDLBZf/seZKTorGQJkmK6IiASQVug2EagqOA9/JgVmuz2ViOCVnKshN0xj5cVzcuhVyC10ithMYtXlxxjkULNDCCnfv92E/Tsh2p8pLZ7l3ls/7B/N3nJOMCC4aTYyySjckVLDX/uu8QuC5DpB/sX6pUs3TWmzvVs5sifiLK2jXFBNbihf0/ylWZz+2i4ADpzBLigANsuWmYRHWdM01so5UjAR44g6FAHuTz3qXcaiZHjJufNbsd9moNuJVFRL8+HkSiMEF4kDFC/vjD1S90fcWa4FaS5+pChC35FgixukkrpBweqhcnVI1unGcbSb0Vj/26lcwrOe7Urf0Kt7pPJUZtv87pkj35H2nIn2FPtaGPlZtEM8/f616ZxNrDaO5aY2r7Eb6AohAvJMEm9Q9Z9WkKZGzUczfA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(346002)(39850400004)(396003)(376002)(366004)(4326008)(7416002)(38100700002)(122000001)(54906003)(76116006)(66946007)(110136005)(66476007)(316002)(64756008)(66446008)(52536014)(55016002)(9686003)(66556008)(7696005)(71200400001)(38070700005)(86362001)(2906002)(5660300002)(26005)(8936002)(107886003)(8676002)(186003)(53546011)(33656002)(6506007)(478600001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SGxWb0p5aHBmdERQak9nWGpSTW9oWmRxdXR4TWlmdWs3WlZiQW1EazZ1Q2Nj?=
- =?utf-8?B?bC81c3NMY3ArdW1YZ0IySlpBdkhEYm4vRFZaVStiVkpJWnRrRHIzbE9VTTN3?=
- =?utf-8?B?SnZ3RUZWMUgvaSsxVE9teW1XTlg4dlV3cG81Rk5vVEhLSTg3eDZoM2hKWjNh?=
- =?utf-8?B?K2ExYUtDelpzbVhhQ1FsTElMTUpBMENZVGJHcHcxeUtsaExxSHN4dk44NXhH?=
- =?utf-8?B?cSsrNjlubHBVSVpXczFIM0s0bkFrSGJNS1NFNlc0cHF3SDNVdk5uZ0ZWS29y?=
- =?utf-8?B?bzc5TWQxY2Z6RENTOVFrR2dyRnh2N3ZkV0VKTm54OTRQa252dFRuYlhWYkRM?=
- =?utf-8?B?ZzBRT1czK1A5MHZnYmJvdnVoSHNTRWNlZ1JRU1JNazlMeWlVYlBxLzVrelhI?=
- =?utf-8?B?N2dBd1psb2pTTjI0dzd2c2ErTjBFQXhuVGJTbzlsZVNCNEtoZTdsbTlHSGZj?=
- =?utf-8?B?NjV3TzNoYjFuVEl3S1NXV2NhdnZsSmoyd0E2S245dXRNOVNQSjFJQ0cvbFRz?=
- =?utf-8?B?SDVRTTlsUFBUOGNpbFBKYnMzdDBuZTlrdXJLaDdXTkRWRXlJZW9iRjdsMjV2?=
- =?utf-8?B?K2ZJWjlDQWJQZy9TWkU2TXVyS1c1UUN3WE9jVXYvaDhHZm9LTlFkdG55V1dV?=
- =?utf-8?B?QjYwRERla3dCdk83bTc4S3BYSmh5QWZYTzF3bzBwSUhzU2R6UW1sOXl6ZGMv?=
- =?utf-8?B?L2hFSElZbTk1L1puMFVnZ3JqNG5PWlNzSjZJVUYyZVpPWGRyY2hjRlpBUDVp?=
- =?utf-8?B?a2ZWL3N5T3hvNHgwbXJoRVk4dUxNTDVkcFNHS0laZE9wZm5DYUNRNHZTc2xz?=
- =?utf-8?B?SWx1Vkx1Y0FNZ2QyR3BWWFhhTzU0Zk9JM2tqNkpQTFRSWmZzanR0bVgyU3VH?=
- =?utf-8?B?QkhzRjFzTUljNU5XR3MrM3lEdlFobzYzdkxxaVZJK2g1SGRELzlpVXBTWGFm?=
- =?utf-8?B?bWJRa3VhM0tDWlRCTGgzN1NLQ2Z1V014WnIvYzRGNjBLOTdlRkh6L1pTeUh3?=
- =?utf-8?B?aTVQRXdsSU90RDdMdGExckFvYjZNbGt6aE51RGNZTXIrV2FQOFV4UzFEdG9J?=
- =?utf-8?B?MHpoMmdlVi9UUG0wMDMrZGdEZkxQeUxNQ0o0bHpOZ0RTR0pmRHdwdXVEeEhE?=
- =?utf-8?B?Q3ZjL1FrNElUNnQ2bDVVQmlISjBuODRlak5MT2YxaWVIZ0MwRXduR0FLNHl4?=
- =?utf-8?B?cEhSRGxnMjJuRDZhMVpUOUEyeVNoamNncTZBNlQxRFNGMHYvV3kzWndWL2U4?=
- =?utf-8?B?N3dxeEp1SnJJQ00wempiU2M0TFVqR1JQRkdOazdZKzdkVEVlRUIzanhCeFRq?=
- =?utf-8?B?aVdpc0g4WWlnZmpBSWJEYWdCcWNudUh5c3YrOENkY0pCTkdKOGk5V25Bc1k2?=
- =?utf-8?B?YmR5WnhxTkR6Uko4YW9lc2h5OFV6UkhkeThYWDJSby9PTjIzbWhxbTNrUjNk?=
- =?utf-8?B?TFplR3ZlelhjVzRtclZsblM3MEtiNGVsYUN6L1B3cjIvcTZ0cDRuVTFwanNV?=
- =?utf-8?B?Q2gyczl3K2xITlQ4WWhIdytKVXZNTjJzU2c0dFhua0xaNkFuVGdjRjZpQ3VS?=
- =?utf-8?B?ZCtxNlJGbkZKbU5Bejg0WW1lYkxHUHRDcVUxa045STBUb29EOXE0YldBZENm?=
- =?utf-8?B?b0VlWlVQOGpCbVF1cDVTUCt2VWFvOG5LUmttL283WkVZWUh2Y3hqQkkvL3cw?=
- =?utf-8?B?OVNRWGJXcEs5S0Q5eTJQZFF0M2VINWd5M1pKNVFmMThES3NJMXNjRXRiZmlI?=
- =?utf-8?Q?N30IC41LbxDGtjitW8k9tt1DJtnOgOH9E/PRs9I?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=9I/uBmU6b+Aw9Xuosi9Sjt3H3ZNJJ4Xi1b1s2iEBifo=;
+        b=alwYMSvvYWzVRwl1BR16hfamiTDOrU88Y/BvP39yP1hFHhRsGq+BCsshg1/7joZxgV
+         a8U8Y4rvTNdbimzsJUg+QQUgk31qKusvmJpuTlP1JbzKMc5yI2023kG4+yUzKus0SgtJ
+         doeuPFFXuKMyydHfJpZpaeupBlioBnJ5ZKrMxGRIbcVgcdFflCwUWpU/F+nFPywPfRTW
+         /A6OQynxTSV4y8gsFEFVXTTFlfqVf7AmAvZSlqXXKZYeBBxifje1TxBLSNeFMZyad309
+         RfvsMdxA5hYKoq5OW2hFtsbU5ZkgUeA5C9n+lrZM1lNXo8OezJ4AEtXq78mcMq+/RgGA
+         L6NQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=9I/uBmU6b+Aw9Xuosi9Sjt3H3ZNJJ4Xi1b1s2iEBifo=;
+        b=APGqOzP1BC5ZnWBR2oj2WIfkYME8VMZ6YAGc6LgKjDrGHlYR714REoOLC6YJq/QB72
+         tNjQj7p0gSG/ZhCDVC6DkIJCN78lWXBxlxUwEvGqSd62RpAwbtLUuVtXYroImFLv28qt
+         cQ7tXCy7RwA+3dgEotPZdvUHxiFgJUsMRRaAjSY7eGuQit6c1r9nuRUgXmljCc8xEVrU
+         m0w0WG9qq+crFFWljzgrfix/qVqg9CHo+eE1DWy2sw2ZFQJ8shB4EYHt7b4BioFiJbYA
+         bxp3dRK3yP5E0eT6KV6GR/7/RSQxkZnZ7q4kDa+SO8qlBts1p7ooIun5bT+taD3S/7xq
+         fiag==
+X-Gm-Message-State: AOAM532GUgpUEUPIYyQjY1BmXchnfiiJwhrQZbod59yvCck42ySuPl2o
+        x9vg4qEssC+rIK9c6h8R6Ao=
+X-Google-Smtp-Source: ABdhPJygKZJUlhx4UCzLskrOLC44LTkXKs3x/XnLLB+xuQuy66/kuIJM1sq0F3YW5f3Sh3gFoUxr0Q==
+X-Received: by 2002:adf:f707:: with SMTP id r7mr6753196wrp.175.1628191470031;
+        Thu, 05 Aug 2021 12:24:30 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f10:c200:75d1:7bfc:8928:d5ba? (p200300ea8f10c20075d17bfc8928d5ba.dip0.t-ipconnect.de. [2003:ea:8f10:c200:75d1:7bfc:8928:d5ba])
+        by smtp.googlemail.com with ESMTPSA id c15sm7191585wrw.93.2021.08.05.12.24.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Aug 2021 12:24:29 -0700 (PDT)
+To:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+References: <106547ef-7a61-2064-33f5-3cc8d12adb34@gmail.com>
+ <cb44d295-5267-48a7-b7c7-e4bf5b884e7a@gmail.com>
+ <b4744988-4463-6463-243a-354cd87c4ced@ti.com>
+ <75bdf142-f5f4-9a98-bf85-ac2cbbf1179b@gmail.com>
+ <5b401877-51a2-7a67-09b4-4227a82ce027@ti.com>
+ <4d84eaea-a5be-9790-8884-a2555fabf507@gmail.com>
+ <ad83fe47-e9ef-73cb-06fa-765cd69f5a6d@ti.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next 1/4] ethtool: runtime-resume netdev parent before
+ ethtool ioctl ops
+Message-ID: <21baed17-f8bb-2a41-6485-a149f99df9ea@gmail.com>
+Date:   Thu, 5 Aug 2021 21:24:16 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1cd90fdc-1291-4723-7ff6-08d95845def0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Aug 2021 19:18:56.3985
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ZIvlxOgsvuIOx7g/ekkwgdRSyFb3zVsAQGul+rSTpkb1T+hh63Uw0peX1LTgHtbIyXxqKCTAPg462cf//8P6JxFqHEkBeuKpYc1zIqIAt2Q=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS0PR01MB5409
+In-Reply-To: <ad83fe47-e9ef-73cb-06fa-765cd69f5a6d@ti.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgU2VyZ2VpLA0KDQpUaGFua3MgZm9yIHRoZSBmZWVkYmFjay4NCg0KPiBTdWJqZWN0OiBSZTog
-W1BBVENIIG5ldC1uZXh0IHYyIDYvOF0gcmF2YjogQWRkIG5ldF9mZWF0dXJlcyBhbmQNCj4gbmV0
-X2h3X2ZlYXR1cmVzIHRvIHN0cnVjdCByYXZiX2h3X2luZm8NCj4gDQo+IE9uIDgvMi8yMSAxOjI2
-IFBNLCBCaWp1IERhcyB3cm90ZToNCj4gDQo+ID4gT24gUi1DYXIgdGhlIGNoZWNrc3VtIGNhbGN1
-bGF0aW9uIG9uIFJYIGZyYW1lcyBpcyBkb25lIGJ5IHRoZSBFLU1BQw0KPiA+IG1vZHVsZSwgd2hl
-cmVhcyBvbiBSWi9HMkwgaXQgaXMgZG9uZSBieSB0aGUgVE9FLg0KPiA+DQo+ID4gVE9FIGNhbGN1
-bGF0ZXMgdGhlIGNoZWNrc3VtIG9mIHJlY2VpdmVkIGZyYW1lcyBmcm9tIEUtTUFDIGFuZCBvdXRw
-dXRzDQo+ID4gaXQgdG8gRE1BQy4gVE9FIGFsc28gY2FsY3VsYXRlcyB0aGUgY2hlY2tzdW0gb2Yg
-dHJhbnNtaXNzaW9uIGZyYW1lcw0KPiA+IGZyb20gRE1BQyBhbmQgb3V0cHV0cyBpdCBFLU1BQy4N
-Cj4gPg0KPiA+IEFkZCBuZXRfZmVhdHVyZXMgYW5kIG5ldF9od19mZWF0dXJlcyB0byBzdHJ1Y3Qg
-cmF2Yl9od19pbmZvLCB0bw0KPiA+IHN1cHBvcnQgc3Vic2VxdWVudCBTb0NzIHdpdGhvdXQgYW55
-IGNvZGUgY2hhbmdlcyBpbiB0aGUgcmF2Yl9wcm9iZQ0KPiBmdW5jdGlvbi4NCj4gPg0KPiA+IFNp
-Z25lZC1vZmYtYnk6IEJpanUgRGFzIDxiaWp1LmRhcy5qekBicC5yZW5lc2FzLmNvbT4NCj4gPiBS
-ZXZpZXdlZC1ieTogTGFkIFByYWJoYWthciA8cHJhYmhha2FyLm1haGFkZXYtbGFkLnJqQGJwLnJl
-bmVzYXMuY29tPg0KPiANCj4gWy4uLl0NCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRo
-ZXJuZXQvcmVuZXNhcy9yYXZiLmgNCj4gPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L3JlbmVzYXMv
-cmF2Yi5oDQo+ID4gaW5kZXggYjc2NWIyYjdkOWU5Li4zZGY4MTNiMmUyNTMgMTAwNjQ0DQo+ID4g
-LS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvcmVuZXNhcy9yYXZiLmgNCj4gPiArKysgYi9kcml2
-ZXJzL25ldC9ldGhlcm5ldC9yZW5lc2FzL3JhdmIuaA0KPiA+IEBAIC05OTEsNiArOTkxLDggQEAg
-ZW51bSByYXZiX2NoaXBfaWQgeyAgc3RydWN0IHJhdmJfaHdfaW5mbyB7DQo+ID4gIAljb25zdCBj
-aGFyICgqZ3N0cmluZ3Nfc3RhdHMpW0VUSF9HU1RSSU5HX0xFTl07DQo+ID4gIAlzaXplX3QgZ3N0
-cmluZ3Nfc2l6ZTsNCj4gPiArCW5ldGRldl9mZWF0dXJlc190IG5ldF9od19mZWF0dXJlczsNCj4g
-PiArCW5ldGRldl9mZWF0dXJlc190IG5ldF9mZWF0dXJlczsNCj4gDQo+ICAgIERvIHdlIHJlYWxs
-eSBuZWVkIGJvdGggb2YgdGhlc2UgaGVyZT8gDQoNClItQ2FyIGhhcyBvbmx5IFJ4IENoZWNrc3Vt
-IG9uIEUtTWFjLCB3aGVyZSBhcyBHZXRoIHN1cHBvcnRzIFJ4IENoZWNrIFN1bSBvbiBFLU1hYyBv
-ciBSeC9UeCBDaGVja1N1bSBvbiBUT0UuDQpTbyB0aGVyZSBpcyBhIGh3IGRpZmZlcmVuY2UuIFBs
-ZWFzZSBsZXQgbWUga25vdyB3aGF0IGlzIHRoZSBiZXN0IHdheSB0byBoYW5kbGUgdGhpcz8NCg0K
-Pkl0IHNlZW1zIGxpa2UgdGhlICdmZWFydHVyZXMnDQo+IG1pcnJvcnMgdGhlIGVuYWJsZWQgZmVh
-dHVyZXM/DQoNCkNhbiB5b3UgcGxlYXNlIGV4cGxhaW4gdGhpcyBsaXR0bGUgYml0Pw0KDQo+IA0K
-PiA+ICAJZW51bSByYXZiX2NoaXBfaWQgY2hpcF9pZDsNCj4gPiAgCWludCBudW1fZ3N0YXRfcXVl
-dWU7DQo+ID4gIAlpbnQgbnVtX3R4X2Rlc2M7DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0
-L2V0aGVybmV0L3JlbmVzYXMvcmF2Yl9tYWluLmMNCj4gPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0
-L3JlbmVzYXMvcmF2Yl9tYWluLmMNCj4gPiBpbmRleCA3YTY5NjY4Y2I1MTIuLjJhYzk2MmI1Yjhm
-YiAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9yZW5lc2FzL3JhdmJfbWFp
-bi5jDQo+ID4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvcmVuZXNhcy9yYXZiX21haW4uYw0K
-PiBbLi4uXQ0KPiA+IEBAIC0yMDc3LDE0ICsyMDgxLDE0IEBAIHN0YXRpYyBpbnQgcmF2Yl9wcm9i
-ZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlDQo+ICpwZGV2KQ0KPiA+ICAJaWYgKCFuZGV2KQ0KPiA+
-ICAJCXJldHVybiAtRU5PTUVNOw0KPiA+DQo+ID4gLQluZGV2LT5mZWF0dXJlcyA9IE5FVElGX0Zf
-UlhDU1VNOw0KPiA+IC0JbmRldi0+aHdfZmVhdHVyZXMgPSBORVRJRl9GX1JYQ1NVTTsNCj4gPiAr
-CWluZm8gPSBvZl9kZXZpY2VfZ2V0X21hdGNoX2RhdGEoJnBkZXYtPmRldik7DQo+ID4gKw0KPiA+
-ICsJbmRldi0+ZmVhdHVyZXMgPSBpbmZvLT5uZXRfZmVhdHVyZXM7DQo+ID4gKwluZGV2LT5od19m
-ZWF0dXJlcyA9IGluZm8tPm5ldF9od19mZWF0dXJlczsNCj4gDQo+ICAgIFdoYXQgdmFsdWUgeW91
-IHBsYW4gdG8gc2V0IGhlciBmb3IgR2JFdGgsIE5FVElGX0ZfSFdfQ1NVTT8NCg0KWWVzLCBUaGF0
-IGlzIHRoZSBwbGFuLg0KLm5ldF9od19mZWF0dXJlcyA9IChORVRJRl9GX0hXX0NTVU0gfCBORVRJ
-Rl9GX1JYQ1NVTSksDQoNClJlZ2FyZHMsDQpCaWp1DQoNCj4gDQo+IFsuLi5dDQo+IA0KPiBNQlIs
-IFNlcmdlaQ0K
+On 05.08.2021 10:20, Grygorii Strashko wrote:
+> 
+> 
+> On 04/08/2021 22:33, Heiner Kallweit wrote:
+>> On 04.08.2021 10:43, Grygorii Strashko wrote:
+>>>
+>>>
+>>> On 04/08/2021 00:32, Heiner Kallweit wrote:
+>>>> On 03.08.2021 22:41, Grygorii Strashko wrote:
+>>>>>
+>>>>>
+>>>>> On 01/08/2021 13:36, Heiner Kallweit wrote:
+>>>>>> If a network device is runtime-suspended then:
+>>>>>> - network device may be flagged as detached and all ethtool ops (even if not
+>>>>>>      accessing the device) will fail because netif_device_present() returns
+>>>>>>      false
+>>>>>> - ethtool ops may fail because device is not accessible (e.g. because being
+>>>>>>      in D3 in case of a PCI device)
+>>>>>>
+>>>>>> It may not be desirable that userspace can't use even simple ethtool ops
+>>>>>> that not access the device if interface or link is down. To be more friendly
+>>>>>> to userspace let's ensure that device is runtime-resumed when executing the
+>>>>>> respective ethtool op in kernel.
+>>>>>>
+>>>>>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+>>>>>> ---
+>>>>>>     net/ethtool/ioctl.c | 18 +++++++++++++++---
+>>>>>>     1 file changed, 15 insertions(+), 3 deletions(-)
+>>>>>>
+>>>>>> diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+>>>>>> index baa5d1004..b7ff9abe7 100644
+>>>>>> --- a/net/ethtool/ioctl.c
+>>>>>> +++ b/net/ethtool/ioctl.c
+>>>>>> @@ -23,6 +23,7 @@
+>>>>>>     #include <linux/rtnetlink.h>
+>>>>>>     #include <linux/sched/signal.h>
+>>>>>>     #include <linux/net.h>
+>>>>>> +#include <linux/pm_runtime.h>
+>>>>>>     #include <net/devlink.h>
+>>>>>>     #include <net/xdp_sock_drv.h>
+>>>>>>     #include <net/flow_offload.h>
+>>>>>> @@ -2589,7 +2590,7 @@ int dev_ethtool(struct net *net, struct ifreq *ifr)
+>>>>>>         int rc;
+>>>>>>         netdev_features_t old_features;
+>>>>>>     -    if (!dev || !netif_device_present(dev))
+>>>>>> +    if (!dev)
+>>>>>>             return -ENODEV;
+>>>>>>           if (copy_from_user(&ethcmd, useraddr, sizeof(ethcmd)))
+>>>>>> @@ -2645,10 +2646,18 @@ int dev_ethtool(struct net *net, struct ifreq *ifr)
+>>>>>>                 return -EPERM;
+>>>>>>         }
+>>>>>>     +    if (dev->dev.parent)
+>>>>>> +        pm_runtime_get_sync(dev->dev.parent);
+>>>>>
+>>>>> the PM Runtime should allow to wake up parent when child is resumed if everything is configured properly.
+>>>>>
+>>>> Not sure if there's any case yet where the netdev-embedded device is power-managed.
+>>>> Typically only the parent (e.g. a PCI device) is.
+>>>>
+>>>>> rpm_resume()
+>>>>> ...
+>>>>>       if (!parent && dev->parent) {
+>>>>>    --> here
+>>>>>
+>>>> Currently we don't get that far because we will bail out here already:
+>>>>
+>>>> else if (dev->power.disable_depth > 0)
+>>>>          retval = -EACCES;
+>>>>
+>>>> If netdev-embedded device isn't power-managed then disable_depth is 1.
+>>>
+>>> Right. But if pm_runtime_enable() is added for ndev->dev then PM runtime will start working for it
+>>> and should handle parent properly - from my experience, every time any code need manipulate with "parent" or
+>>> smth. else to make PM runtime working it means smth. is wrong.
+>>>
+>>> diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+>>> index f6197774048b..33b72b788aa2 100644
+>>> --- a/net/core/net-sysfs.c
+>>> +++ b/net/core/net-sysfs.c
+>>> @@ -1963,6 +1963,7 @@ int netdev_register_kobject(struct net_device *ndev)
+>>>          }
+>>>            pm_runtime_set_memalloc_noio(dev, true);
+>>> +       pm_runtime_enable(dev);
+>>>            return error;
+>>>   }
+>>>
+>>>
+>>>>
+>>>>> So, hence PM runtime calls are moved to from drivers to net_core wouldn't be more correct approach to
+>>>>> enable PM runtime for netdev->dev and lets PM runtime do the job?
+>>>>>
+>>>> Where would netdev->dev be runtime-resumed so that netif_device_present() passes?
+>>>
+>>> That's the biggest issues here. Some driver uses netif_device_detach() in PM runtime and, this way, introduces custom dependency
+>>> between Core device PM (runtime) sate and Net core, other driver does not do.
+>>> Does it means every driver with PM runtime now have to be updated to indicate it PM state to Net core with netif_device_detach()?
+>>
+>> No, that's not needed.
+>>
+>>> Why? Why return value from pm_runtime_get calls is not enough?
+>>>
+>>> Believe me it's terrible idea to introduce custom PM state dependency between PM runtime and Net core,
+>>> for example it took years to sync properly System wide suspend and PM runtime which are separate framworks.
+>>>
+>>> By the way netif_device_detach() during System Wide suspend is looks perfectly valid, because entering
+>>> System wide Suspend should prohibit any access to netdev at some stage. And that's what 99% of network drivers are doing
+>>> (actually I can find only ./realtek/r8169_main.c which abuse netif_device_detach() function and,
+>>> I assume, it is your case)
+>>>
+>> Actually I was inspired by the Intel drivers, see e.g. __igc_shutdown(). They also detach the
+>> netdevice on runtime suspend. One reason is that several core functions check for device
+>> presence before e.g. calling a ndo callback. Example: dev_set_mtu_ext()
+> 
+> right and also:
+> - netlink - which you've hacked already
+> - 8021q: vlan_dev_ioctl/vlan_dev_neigh_setup/vlan_add_rx_filter_info/vlan_kill_rx_filter_info
+> 
+> 
+>> Same applies for __dev_set_rx_mode(). Therefore I wondered whether cpsw_ndo_set_rx_mode()
+>> - that does not include runtime-resuming the device - may be called when device is
+>> runtime-suspended, e.g. if interface is up, but link is down.
+> 
+> CPSW doesn't manage PM runtime in link status handler, as it has only on/off state and off state can cause full
+> context loss restore of which is expensive and hard to implement. And for most of netdev drivers no aggressive PM runtime
+> is implemented exactly because of that (mac/vlan/fdb/mdb/...). Common patterns:
+> 
+> (a)
+> .probe
+>  -get
+> .remove
+>  -put
+> 
+> (b)
+> .probe
+>  -get
+>  -put
+> .open
+>  -get
+> .close
+>  -put
+> .protect places which may be called when netif is down
+> 
+> The CPSW follows (b) and so cpsw_ndo_set_rx_mode() can't be called when when device is
+> runtime-suspended.
+> 
+> I assume, some hw like PCI, can have more PM states and in some of them keep HW context intact.
+> 
+Exactly, there's no reason to keep PCI in D0 if link is down. Once NIC detects a cable was
+plugged in it triggers a PCI PME and PCI core sets PCI bus from D3cold/D3hot to D0 and
+runtime-resumes device.
+
+> 
+>>
+>>>> Wouldn't we then need RPM ops for the parent (e.g. PCI) and for netdev->dev?
+>>>
+>>> No. as I know -  netdev->dev can be declared as pm_runtime_no_callbacks(&adap->dev);
+>>> I2C adapter might be a good example to check.
+>>>
+>>>> E.g. the parent runtime-resume can be triggered by a PCI PME, then it would
+>>>> have to resume netdev->dev.
+>>>>
+>>>>> But, to be honest, I'm not sure adding PM runtime manipulation to the net core is a good idea -
+>>>>
+>>>> The TI CPSW driver runtime-resumes the device in begin ethtool op and suspends
+>>>> it in complete. This pattern is used in more than one driver and may be worth
+>>>> being moved to the core.
+>>>
+>>> I'm not against code refactoring and optimization, but in my opinion it has to be done right from the beginning or
+>>> not done at all.
+>>>
+>>>>
+>>>>> at minimum it might be tricky and required very careful approach (especially in err path).
+>>>>> For example, even in this patch you do not check return value of pm_runtime_get_sync() and in
+>>>>> commit bd869245a3dc ("net: core: try to runtime-resume detached device in __dev_open") also actualy.
+>>>>
+>>>> The pm_runtime_get_sync() calls are attempts here. We don't want to bail out if a device
+>>>> doesn't support RPM.
+>>>
+>>> And if 'parent' is not supporting PM runtime - it, as i see, should be handled by PM runtime core properly.
+>>>
+>>> I agree that checking the return code could make sense, but then we would
+>>>> have to be careful which error codes we consider as failed.
+>>>
+>>> huh. you can't 'try' pm_runtime_get_sync() and then align on netif_device_present() :(
+>>>
+>>> might be, some how, it will work for r8169_main, but will not work for others.
+>>> - no checking pm_runtime_get_sync() err code will cause PM runtime 'usage_count' leak
+>>
+>> No. pm_runtime_get_sync() always bumps the usage count, no matter whether it fails or not.
+> 
+> 
+>> This makes it easy to deal with this. The problem you describe exists with
+>> pm_runtime_resume_and_get(). That's why I wondered whether we should annotate this
+>> function as __must_check. See here:
+>> https://lore.kernel.org/linux-pm/CAJZ5v0gps0C2923VqM8876npvhcETsyN+ajAkBKX5kf49J0+Mg@mail.gmail.com/T/#t
+>>
+>>> - no checking pm_runtime_get_sync() err may cause to continue( for TI CPSW for example) with
+>>>    device in undefined PM state ("disabled" or "half-enabled") and so crash later.
+>>>
+>> I'd say 95% of rpm callers don't check the return value. I'm not saying this is a good thing,
+>> but obviously it doesn't cause relevant harm.
+> 
+> this is completely wrong assumption as PM errors cause silent stuck, undefined behavior or dumps (sometimes delayed)
+> which is terribly hard to root cause.
+> 
+> yes. many drivers do not check, but over last few years more and more strict policies applied to avoid that and
+> in many case no checking return code - is red flag and patch reject.
+> Don't like that phrase ;), but "It doesn't mean that incorrect code has to be copy-pasted all over the places"
+> 
+> this is correct get pattern for get:
+>     ret = pm_runtime_get_sync(&pdev->dev);
+>     if (ret < 0) {
+>         pm_runtime_put_noidle(&pdev->dev);
+>         return ret;
+>     }
+> 
+That's exactly what pm_runtime_resume_and_get() does. IIRC this helper hasn't been
+part of the API from the beginning and was added later.
+
+> My strong opinion
+>  - PM runtime return code must be checked.
+>  - get rid of netif_device_detach() in r8169
+> 
+> by the way, have you tried below test with your driver (not sure how it works for you):
+> 
+> .rtl_open
+>  - pm_runtime_get_sync
+>  - pm_runtime_put_sync - usage_count == 0
+> .r8169_phylink_handler
+>  - pm_request_resume - why async? still usage_count == 0
+
+pm_request_resume() is only meant to cancel a potentially scheduled runtime-suspend
+if link has a short drop. In such a case link would be up again after ~ 3-4s,
+timeout for runtime-suspending device after link drop is 10s.
+
+> .some ethtool request to go through dev_ethtool()
+>  - pm_runtime_get_sync
+>  - pm_runtime_put - async, usage_count == 0
+>    ^ would not it put r8169 in runtime-suspended state while link is still UP?
+>  
+No, see rtl8169_runtime_idle(). If link is up no runtime suspend is scheduled.
+
+> 
+>>
+>>>
+>>>
+>>>>
+>>>>>
+>>>>>
+>>>>> The TI CPSW driver may also be placed in non reachable state when netdev is closed (and even lose context),
+>>>>> but we do not use netif_device_detach() (so netdev is accessible through netdev_ops/ethtool_ops),
+>>>>> but instead wake up device by runtime PM for allowed operations or just save requested configuration which
+>>>>> is applied at netdev->open() time then.
+>>>>> I feel that using netif_device_detach() in PM runtime sounds like a too heavy approach ;)
+>>>>>
+>>>> That's not a rare pattern when suspending or runtime-suspending to prevent different types
+>>>> of access to a not accessible device. But yes, it's relatively big hammer ..
+>>>
+>>> Again, netif_device_detach() seems correct for System wide suspend, but in my opinion - it's
+>>> not correct for PM runtime.
+>>>
+>>> Sry, with all do respect, first corresponding driver has to be fixed and not Net core hacked to support it.
+>>>
+>>> Further decisions is up to maintainers.
+>>>
+>>>
+>>>>
+>>>>> huh, see it's merged already, so...
+>>>>>
+>>>>>> +
+>>>>>> +    if (!netif_device_present(dev)) {
+>>>>>> +        rc = -ENODEV;
+>>>>>> +        goto out;
+>>>>>> +    }
+>>>>>> +
+>>>>>>         if (dev->ethtool_ops->begin) {
+>>>>>>             rc = dev->ethtool_ops->begin(dev);
+>>>>>> -        if (rc  < 0)
+>>>>>> -            return rc;
+>>>>>> +        if (rc < 0)
+>>>>>> +            goto out;
+>>>>>>         }
+>>>>>>         old_features = dev->features;
+>>>>>>     @@ -2867,6 +2876,9 @@ int dev_ethtool(struct net *net, struct ifreq *ifr)
+>>>>>>           if (old_features != dev->features)
+>>>>>>             netdev_features_change(dev);
+>>>>>> +out:
+>>>>>> +    if (dev->dev.parent)
+>>>>>> +        pm_runtime_put(dev->dev.parent);
+>>>>>>           return rc;
+>>>>>>     }
+>>>>>>
+>>>>>
+>>>>
+>>>
+>>
+> 
+
