@@ -2,95 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C055A3E1A22
-	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 19:11:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B9B13E1A4C
+	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 19:23:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238477AbhHERLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 13:11:36 -0400
-Received: from mail-ed1-f53.google.com ([209.85.208.53]:44666 "EHLO
-        mail-ed1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231359AbhHERLg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 13:11:36 -0400
-Received: by mail-ed1-f53.google.com with SMTP id z11so9380644edb.11;
-        Thu, 05 Aug 2021 10:11:20 -0700 (PDT)
+        id S239673AbhHERXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 13:23:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54660 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238198AbhHERXj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 13:23:39 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F60C061765;
+        Thu,  5 Aug 2021 10:23:25 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id cl16-20020a17090af690b02901782c35c4ccso7447101pjb.5;
+        Thu, 05 Aug 2021 10:23:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CCA4VfC8oJsngcHNQHqxfvcnSQIQ9FY8OuEOGE4n/ac=;
+        b=cZavTf7ANl8OFNfJo563qA51fsfdLu+lGVjrKfWZApxc9LCwUJIVKLARVzKNDKTrfD
+         yaDhlep9ypUPzIMOIB6QvD4Z2FbwiGGYsBNSZFpYaKvJBZGaa0e2eiBfanGv9uFiBnsh
+         gFQX/iBVdVtVi1SLQQACfqq5Pc45KU6RG62xVK6yiBtRg9m0/q78o7XUVOXB3H/zhnJ4
+         BUwcKYTPEd303BZgpXjDzdK6CkHVkzLPiMgATGRFqPsrHU5cuvdEJ4xYfIeRQ1OKnIf1
+         aRdLHWkr4yupNpC5KNaSJotTkSIHkCZusf0P81XtY4LGMpY/Dc0g3yCfEpIh+BDrcsX4
+         TPLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3Zmyx7SsE2CZ1f1aWOzazG1eiYj3hoTl2IjNLvtlL+c=;
-        b=qgnyCcg/el3xzLC+YMccrG8L9cy6IW6bD4bYqpQOhunlwwY5QOWK2HT6EmBBc6MTTU
-         Qn+xOdqbXc/IaAhJ8JfVH2NGFyXMeAX7E2NlxJoSU37Zb2y5D6Andfi/l2rnUTHtMpDu
-         xf6mMI4SHtDTC4wiUXGF9P88kRoOCzD3eXJeeYlDG8XdaG140yDHpjc4T0pfCrQkbaMy
-         4s/q33IpiSfNb6cbn7/9Lz9e+ZSzifE6eC4piW0zx56ZjU2pnNkeQRYT+hr+clUXy2/0
-         G6/32aPY1wIeSyGhFA4R7F6JR77nmUXejSteiJWf1KM2uX3MX5FcUC4CjcMdnjGxhF2x
-         J57g==
-X-Gm-Message-State: AOAM5314wRR0s2LCL4O3YEYVKZXCyAEXqcusBkDbxpgi6YNlkGqedVPw
-        +dkmxb7gdtroGbBJ3yJs/tKnzrPzxDMXLw==
-X-Google-Smtp-Source: ABdhPJzLqHFvCFevmrya4YFKb6AejF9zs+3Of0jN857PIM+ynmoddWFCAw8SdwMdoDtjp3aQ+rbMlw==
-X-Received: by 2002:a05:6402:13d8:: with SMTP id a24mr7911446edx.158.1628183479714;
-        Thu, 05 Aug 2021 10:11:19 -0700 (PDT)
-Received: from msft-t490s.fritz.box (host-80-116-27-227.retail.telecomitalia.it. [80.116.27.227])
-        by smtp.gmail.com with ESMTPSA id n2sm2592655edi.32.2021.08.05.10.11.18
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CCA4VfC8oJsngcHNQHqxfvcnSQIQ9FY8OuEOGE4n/ac=;
+        b=asdgkSWMZRmOVMsCsMwEfkr0tGZ5eJ1kgUeVvUkcJv3rbLiNDntX3hzTAqEDgeRD7k
+         l6dGEzFrNpRV3wWD0PIsDb+kkoWWhdqI/wAJ/u52SwZUvpUFLbfcC9rL6PBR1HSgdtP+
+         Ror+WC5v52uUTdN5YNvZz9J6/ClpHOM8Iz4+8in7dCWKxYmakmJ+Y94E2iE6o8cOPTvg
+         8gCh0xjkz5XDr21fulOt8uX3sopI1+AyYTU5mlkb/+Lt9W8NhKPh2fWyERH2KIU54zz3
+         4vNmZV3GD+iBpweJkh8VShp56jcQN5V7pd/EBx0QIIuEAr/1FChytpoNxwjoBfB4D4kC
+         u8Fg==
+X-Gm-Message-State: AOAM533bhuDW8y1w6NXesa3mW1M1TkEX+1j1D8Gqzwsh7grHM24ZDq5o
+        ka/gDEwJ7PDmPnxmMMPOP4I=
+X-Google-Smtp-Source: ABdhPJxwNlBA5AefYt8BJuAxtTtzEWiCghRdd7UiBDfhSVo+ZgTTYiDj+LCAR2b5qmqgwsbo0yoUZw==
+X-Received: by 2002:a63:a0f:: with SMTP id 15mr452388pgk.80.1628184204831;
+        Thu, 05 Aug 2021 10:23:24 -0700 (PDT)
+Received: from haswell-ubuntu20.lan ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id j187sm7381115pfb.132.2021.08.05.10.23.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Aug 2021 10:11:19 -0700 (PDT)
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-To:     netdev@vger.kernel.org
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [RFT net-next 2/2] stmmac: skb recycling
-Date:   Thu,  5 Aug 2021 19:11:01 +0200
-Message-Id: <20210805171101.13776-3-mcroce@linux.microsoft.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210805171101.13776-1-mcroce@linux.microsoft.com>
-References: <20210805171101.13776-1-mcroce@linux.microsoft.com>
+        Thu, 05 Aug 2021 10:23:24 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: dsa: mt7530: drop untagged frames on VLAN-aware ports without PVID
+Date:   Fri,  6 Aug 2021 01:23:14 +0800
+Message-Id: <20210805172315.362165-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matteo Croce <mcroce@microsoft.com>
+The driver currently still accepts untagged frames on VLAN-aware ports
+without PVID. Use PVC.ACC_FRM to drop untagged frames in that case.
 
-Signed-off-by: Matteo Croce <mcroce@microsoft.com>
+Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/dsa/mt7530.c | 32 ++++++++++++++++++++++++++++++--
+ drivers/net/dsa/mt7530.h |  7 +++++++
+ 2 files changed, 37 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 30a0d915cd4b..2c48f1b5e9e9 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5219,7 +5219,7 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 			skb_reserve(skb, buf->page_offset);
- 			skb_put(skb, buf1_len);
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 385e169080d9..df167f0529bb 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -1257,9 +1257,11 @@ mt7530_port_set_vlan_unaware(struct dsa_switch *ds, int port)
+ 		mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
+ 			   MT7530_PORT_FALLBACK_MODE);
  
--			page_pool_release_page(rx_q->page_pool, buf->page);
-+			skb_mark_for_recycle(skb, buf->page, rx_q->page_pool);
- 			buf->page = NULL;
- 		} else if (buf1_len) {
- 			dma_sync_single_for_cpu(priv->device, buf->addr,
-@@ -5229,7 +5229,7 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 					priv->dma_buf_sz);
+-	mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK | PVC_EG_TAG_MASK,
++	mt7530_rmw(priv, MT7530_PVC_P(port),
++		   VLAN_ATTR_MASK | PVC_EG_TAG_MASK | ACC_FRM_MASK,
+ 		   VLAN_ATTR(MT7530_VLAN_TRANSPARENT) |
+-		   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
++		   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT) |
++		   MT7530_VLAN_ACC_ALL);
  
- 			/* Data payload appended into SKB */
--			page_pool_release_page(rx_q->page_pool, buf->page);
-+			page_pool_store_mem_info(buf->page, rx_q->page_pool);
- 			buf->page = NULL;
- 		}
+ 	/* Set PVID to 0 */
+ 	mt7530_rmw(priv, MT7530_PPBV1_P(port), G0_PORT_VID_MASK,
+@@ -1297,6 +1299,11 @@ mt7530_port_set_vlan_aware(struct dsa_switch *ds, int port)
+ 			   MT7530_PORT_SECURITY_MODE);
+ 		mt7530_rmw(priv, MT7530_PPBV1_P(port), G0_PORT_VID_MASK,
+ 			   G0_PORT_VID(priv->ports[port].pvid));
++
++		/* Only accept tagged frames if PVID is not set */
++		if (!priv->ports[port].pvid)
++			mt7530_rmw(priv, MT7530_PVC_P(port), ACC_FRM_MASK,
++				   MT7530_VLAN_ACC_TAGGED);
+ 	}
  
-@@ -5241,7 +5241,7 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 					priv->dma_buf_sz);
+ 	/* Set the port as a user port which is to be able to recognize VID
+@@ -1624,11 +1631,26 @@ mt7530_port_vlan_add(struct dsa_switch *ds, int port,
+ 	if (pvid) {
+ 		priv->ports[port].pvid = vlan->vid;
  
- 			/* Data payload appended into SKB */
--			page_pool_release_page(rx_q->page_pool, buf->sec_page);
-+			page_pool_store_mem_info(buf->sec_page, rx_q->page_pool);
- 			buf->sec_page = NULL;
- 		}
++		/* Accept all frames if PVID is set */
++		mt7530_rmw(priv, MT7530_PVC_P(port), ACC_FRM_MASK,
++			   MT7530_VLAN_ACC_ALL);
++
+ 		/* Only configure PVID if VLAN filtering is enabled */
+ 		if (dsa_port_is_vlan_filtering(dsa_to_port(ds, port)))
+ 			mt7530_rmw(priv, MT7530_PPBV1_P(port),
+ 				   G0_PORT_VID_MASK,
+ 				   G0_PORT_VID(vlan->vid));
++	} else if (priv->ports[port].pvid == vlan->vid) {
++		/* This VLAN is overwritten without PVID, so unset it */
++		priv->ports[port].pvid = G0_PORT_VID_DEF;
++
++		/* Only accept tagged frames if the port is VLAN-aware */
++		if (dsa_port_is_vlan_filtering(dsa_to_port(ds, port)))
++			mt7530_rmw(priv, MT7530_PVC_P(port), ACC_FRM_MASK,
++				   MT7530_VLAN_ACC_TAGGED);
++
++		mt7530_rmw(priv, MT7530_PPBV1_P(port), G0_PORT_VID_MASK,
++			   G0_PORT_VID_DEF);
+ 	}
  
+ 	mutex_unlock(&priv->reg_mutex);
+@@ -1654,6 +1676,12 @@ mt7530_port_vlan_del(struct dsa_switch *ds, int port,
+ 	 */
+ 	if (priv->ports[port].pvid == vlan->vid) {
+ 		priv->ports[port].pvid = G0_PORT_VID_DEF;
++
++		/* Only accept tagged frames if the port is VLAN-aware */
++		if (dsa_port_is_vlan_filtering(dsa_to_port(ds, port)))
++			mt7530_rmw(priv, MT7530_PVC_P(port), ACC_FRM_MASK,
++				   MT7530_VLAN_ACC_TAGGED);
++
+ 		mt7530_rmw(priv, MT7530_PPBV1_P(port), G0_PORT_VID_MASK,
+ 			   G0_PORT_VID_DEF);
+ 	}
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index 4a91d80f51bb..fe4cd2ac26d0 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -238,6 +238,7 @@ enum mt7530_port_mode {
+ #define  PVC_EG_TAG_MASK		PVC_EG_TAG(7)
+ #define  VLAN_ATTR(x)			(((x) & 0x3) << 6)
+ #define  VLAN_ATTR_MASK			VLAN_ATTR(3)
++#define  ACC_FRM_MASK			GENMASK(1, 0)
+ 
+ enum mt7530_vlan_port_eg_tag {
+ 	MT7530_VLAN_EG_DISABLED = 0,
+@@ -249,6 +250,12 @@ enum mt7530_vlan_port_attr {
+ 	MT7530_VLAN_TRANSPARENT = 3,
+ };
+ 
++enum mt7530_vlan_port_acc_frm {
++	MT7530_VLAN_ACC_ALL = 0,
++	MT7530_VLAN_ACC_TAGGED = 1,
++	MT7530_VLAN_ACC_UNTAGGED = 2,
++};
++
+ #define  STAG_VPID			(((x) & 0xffff) << 16)
+ 
+ /* Register for port port-and-protocol based vlan 1 control */
 -- 
-2.31.1
+2.25.1
 
