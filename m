@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B7023E1BD8
+	by mail.lfdr.de (Postfix) with ESMTP id 86C9C3E1BD9
 	for <lists+netdev@lfdr.de>; Thu,  5 Aug 2021 20:58:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241886AbhHES6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 14:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48236 "EHLO
+        id S242014AbhHES6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 14:58:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241923AbhHES6Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 14:58:16 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BA30C06179F
-        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 11:58:01 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id w6so8665087oiv.11
-        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 11:58:01 -0700 (PDT)
+        with ESMTP id S241889AbhHES6R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 14:58:17 -0400
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47855C0617A3
+        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 11:58:02 -0700 (PDT)
+Received: by mail-ot1-x32a.google.com with SMTP id f20-20020a9d6c140000b02904bb9756274cso6201918otq.6
+        for <netdev@vger.kernel.org>; Thu, 05 Aug 2021 11:58:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=uHLR0MavhDSaNhIg+Yt96bJSeYOMhkrDg2qD+caZse0=;
-        b=kuxIx4Ia71vnyH30uqBRVt1/WNq8KzYvh04IeOG3IgJKE+XPncgeT0Fj1HJ3rNXZ0J
-         nUGcvT7xNzbxpDqvZCDvhKTakyI+EMgr1pwA63Usjv1P7QktaF03XCNvqahXtkut0BJx
-         gs03bc9M6fTMaTX+2/M2A5UT3DgPGpMjW2UM9UpQ3O9gcfFyrwOOwBsGC0xHML8vUjy3
-         22wFAw0SS6UIMmaiivm3pYLXuopGfS2yGE7Sf6mJpcfTxfuXU1bDzcPYWB79bTwUm+EQ
-         SwXkPfmeHCvOCB8FP6lTXLhhOMSTsiaIlhycGFtMIZ5qr1VjhyfuoqUcAID0VhiklpuW
-         UAtg==
+        bh=3NDv+2mkKlSB+W/MaDynaGijbuMKowO0Dp3HF5S/4+Y=;
+        b=GsM45pdYOR2O9617KOLK5xeKEBAJYLFbA5Lu6DlxDfa9w0PhjZtNMHFJcgqSGAOnnt
+         6Cp4h7hSXyGCHvmzodP8arOaByohsS+wOxD5btYqedZbn3L6M3qnmhFhoRQbF83JOqps
+         9aRltHXr29frrxLy+YdtoadEeIydfVd/4RKD0D3ijICv/prCHd5H2BRplxQoJt6/LLx0
+         FthtaSPlshxQlcbdg+e7YNkaxiik6/clvU/2rUz2xtjG7h1F2naFtFRXP2JlYOkWaG8O
+         FmqeCZeSRAeNiOLBaJXCVNUe4SzW7G1OAXaJipJWJjm1oUAeN9KNKy5yZ9qQXrsPBcQ8
+         u2Gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=uHLR0MavhDSaNhIg+Yt96bJSeYOMhkrDg2qD+caZse0=;
-        b=BtyByI5fkzkWOqowJfEIzoJUmkz0kSdyNM3u3w0VpVFUa4p7VGAzvsCJ7A+jv32g+8
-         edXD0LPF838TBirD/RW5Df8mGgxF7ujlmZRFSS0hIujqpTLiA0JP7QZoAeOUTvjWnjDL
-         M9Pm3UT6b8RxacDDFsCiHad0ml4/NBqAwJXDwmSwlJsbdhXaISUFYrJpYXdEoVbNz/5r
-         1fxNYYx4buKuVI15YEgt7yfY1pguVM9LShRYpy/VLUH4T3ff1phlmU5lUZLuCEdFdHfO
-         Zqn4bVARSCyQD0HjKDSRCXd8aAVAqSr9YZUjhP+qscJeHNqXbstUK9k/Yx+Jyftgdctg
-         7xNQ==
-X-Gm-Message-State: AOAM530ZKNf3/grL5J/CfYYhmM3ipsmOdLXTxwhWuBe7eiVQ5PeAbqHa
-        OaOQ032+TMRRzrAyCLpgvC7JA1UovwA=
-X-Google-Smtp-Source: ABdhPJyprhj1I92oNj+V9Q53k7sYbbG1OXJOTvWpkA+cSlvxA5h07yQTUlIhmFDYBeR4eX/s4o/XYw==
-X-Received: by 2002:a05:6808:bd2:: with SMTP id o18mr4877554oik.20.1628189880647;
-        Thu, 05 Aug 2021 11:58:00 -0700 (PDT)
+        bh=3NDv+2mkKlSB+W/MaDynaGijbuMKowO0Dp3HF5S/4+Y=;
+        b=YQgjoo7BoDWfnrP6Wwm4CG/PcFW8S/pmUhrjYEmxKoxvsfJrKo2k/FpSWI+fJ8fwD8
+         /Hfp12aAST2785Kv9b/Xhq2Ab5bpQway913ZeByCgt+pe+35xqU4ASyHqCJ09NQwInMP
+         XpXmU15Ol4KyQUezi+RJh+ohaFus/eKs4FAgU+PDP8oDPzWtd4yAoOsWMhHThOW1bwxk
+         wdXSldaebcwcBsi/GWWu7eq6k6nRVN2on0tdLp/2ORRCo2vY24c/m6J9laEpokcgOOG9
+         MdW/gF6JEahv+WRWHBQJ+4HgK38tdGnBYtgdSSLJ39uhjMp1CC/Az400TDQS+g+WVMJ3
+         7Kjg==
+X-Gm-Message-State: AOAM532SsYxEWi2Qu0lLULsybNGiKPN56Uyil1kYrKavuWngYNmL3YDP
+        s26GsUA55toKdc6nP7f5FmBKUT2Nsr8=
+X-Google-Smtp-Source: ABdhPJwqJadlgsrL8ORkjVJvstrOA1JZpTysudp+/k6/+8qXAQyJ3PP7SS32MdtX2mflOLd0pNJjQg==
+X-Received: by 2002:a05:6830:b84:: with SMTP id a4mr4661375otv.357.1628189881551;
+        Thu, 05 Aug 2021 11:58:01 -0700 (PDT)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:c64b:2366:2e53:c024])
-        by smtp.gmail.com with ESMTPSA id r5sm358678otk.71.2021.08.05.11.57.59
+        by smtp.gmail.com with ESMTPSA id r5sm358678otk.71.2021.08.05.11.58.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Aug 2021 11:58:00 -0700 (PDT)
+        Thu, 05 Aug 2021 11:58:01 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Qitao Xu <qitao.xu@bytedance.com>,
         Cong Wang <cong.wang@bytedance.com>
-Subject: [Patch net-next 07/13] ipv6: introduce tracepoint trace_ipv6_rcv()
-Date:   Thu,  5 Aug 2021 11:57:44 -0700
-Message-Id: <20210805185750.4522-8-xiyou.wangcong@gmail.com>
+Subject: [Patch net-next 08/13] ipv4: introduce tracepoint trace_ip_local_deliver_finish()
+Date:   Thu,  5 Aug 2021 11:57:45 -0700
+Message-Id: <20210805185750.4522-9-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210805185750.4522-1-xiyou.wangcong@gmail.com>
 References: <20210805185750.4522-1-xiyou.wangcong@gmail.com>
@@ -65,27 +65,26 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Qitao Xu <qitao.xu@bytedance.com>
 
-Tracepoint trace_ipv6_rcv() is introduced to trace skb at the
-entrance of IPv6 layer on RX side.
+Tracepoint trace_ip_local_deliver_finish() is introduced to trace
+skb at the exit of IP layer on RX side.
 
 Reviewed-by: Cong Wang <cong.wang@bytedance.com>
 Signed-off-by: Qitao Xu <qitao.xu@bytedance.com>
 ---
- include/trace/events/ip.h | 18 ++++++++++++++++++
- net/core/net-traces.c     |  1 +
- net/ipv6/ip6_input.c      |  5 ++++-
- 3 files changed, 23 insertions(+), 1 deletion(-)
+ include/trace/events/ip.h | 17 +++++++++++++++++
+ net/ipv4/ip_input.c       |  7 ++++++-
+ 2 files changed, 23 insertions(+), 1 deletion(-)
 
 diff --git a/include/trace/events/ip.h b/include/trace/events/ip.h
-index 20ee1a81405c..6cd0907728ce 100644
+index 6cd0907728ce..9653bc3c7fa0 100644
 --- a/include/trace/events/ip.h
 +++ b/include/trace/events/ip.h
-@@ -99,6 +99,24 @@ TRACE_EVENT(ip_rcv,
- 	TP_printk("skbaddr=%px", __entry->skbaddr)
+@@ -117,6 +117,23 @@ TRACE_EVENT(ipv6_rcv,
  );
+ #endif
  
-+#if IS_ENABLED(CONFIG_IPV6)
-+TRACE_EVENT(ipv6_rcv,
++TRACE_EVENT(ip_local_deliver_finish,
++
 +	TP_PROTO(const struct sk_buff *skb),
 +
 +	TP_ARGS(skb),
@@ -100,45 +99,36 @@ index 20ee1a81405c..6cd0907728ce 100644
 +
 +	TP_printk("skbaddr=%px", __entry->skbaddr)
 +);
-+#endif
 +
  #endif /* _TRACE_IP_H */
  
  /* This part must be outside protection */
-diff --git a/net/core/net-traces.c b/net/core/net-traces.c
-index 0aca299dfb55..de5a13ae933c 100644
---- a/net/core/net-traces.c
-+++ b/net/core/net-traces.c
-@@ -64,4 +64,5 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(tcp_send_reset);
- EXPORT_TRACEPOINT_SYMBOL_GPL(tcp_bad_csum);
- #if IS_ENABLED(CONFIG_IPV6)
- EXPORT_TRACEPOINT_SYMBOL_GPL(udp_v6_send_skb);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(ipv6_rcv);
- #endif
-diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-index 80256717868e..8ce23ef5f011 100644
---- a/net/ipv6/ip6_input.c
-+++ b/net/ipv6/ip6_input.c
-@@ -44,6 +44,7 @@
- #include <net/xfrm.h>
- #include <net/inet_ecn.h>
- #include <net/dst_metadata.h>
-+#include <trace/events/ip.h>
+diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
+index 2eb7a0cbc0d3..31c5c6903fff 100644
+--- a/net/ipv4/ip_input.c
++++ b/net/ipv4/ip_input.c
+@@ -244,15 +244,20 @@ int ip_local_deliver(struct sk_buff *skb)
+ 	 *	Reassemble IP fragments.
+ 	 */
+ 	struct net *net = dev_net(skb->dev);
++	int ret;
  
- INDIRECT_CALLABLE_DECLARE(void tcp_v6_early_demux(struct sk_buff *));
- static void ip6_rcv_finish_core(struct net *net, struct sock *sk,
-@@ -59,8 +60,10 @@ static void ip6_rcv_finish_core(struct net *net, struct sock *sk,
- 			INDIRECT_CALL_2(edemux, tcp_v6_early_demux,
- 					udp_v6_early_demux, skb);
+ 	if (ip_is_fragment(ip_hdr(skb))) {
+ 		if (ip_defrag(net, skb, IP_DEFRAG_LOCAL_DELIVER))
+ 			return 0;
  	}
--	if (!skb_valid_dst(skb))
-+	if (!skb_valid_dst(skb)) {
-+		trace_ipv6_rcv(skb);
- 		ip6_route_input(skb);
-+	}
- }
  
- int ip6_rcv_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
+-	return NF_HOOK(NFPROTO_IPV4, NF_INET_LOCAL_IN,
++	ret = NF_HOOK(NFPROTO_IPV4, NF_INET_LOCAL_IN,
+ 		       net, NULL, skb, skb->dev, NULL,
+ 		       ip_local_deliver_finish);
++	if (!ret)
++		trace_ip_local_deliver_finish(skb);
++	return ret;
++
+ }
+ EXPORT_SYMBOL(ip_local_deliver);
+ 
 -- 
 2.27.0
 
