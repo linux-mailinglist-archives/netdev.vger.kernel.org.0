@@ -2,204 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F7D53E2A63
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 14:10:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DD3E3E2A85
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 14:29:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343600AbhHFMKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 08:10:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28271 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1343592AbhHFMKh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 08:10:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1628251821;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iUX9tkPbPQoCHmRVVBakL5GihoDlnIvlBLjyIrxXxlQ=;
-        b=LAow66GmT3jca8v5qZWQ/6Tv7iZKzy0EI7aaO1SR8Msy7YiX8dml201kibDgynQZ+pTc+3
-        DjJnz0pq3KeSrjf/P7ow79rklmBRSgl7yVofPBnOjFl9IRM6bvf0N+xHjapehj7vYZ/blZ
-        STZZd4fwijkhpg9xeeMhp/4/1V2Nor8=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-415-EfI8pywsOeGjGoRYnwhErw-1; Fri, 06 Aug 2021 08:10:20 -0400
-X-MC-Unique: EfI8pywsOeGjGoRYnwhErw-1
-Received: by mail-ed1-f70.google.com with SMTP id cm18-20020a0564020c92b02903bc7f21d540so4806711edb.13
-        for <netdev@vger.kernel.org>; Fri, 06 Aug 2021 05:10:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=iUX9tkPbPQoCHmRVVBakL5GihoDlnIvlBLjyIrxXxlQ=;
-        b=OT5Aj8Hqk1ZpFGXUOBlzTUislsjw+1GIoYkQrnPiuhlPz/BW8W2HcesaNCX2HLz3Yc
-         RHOP8tz9gOljAxjmEcnQ5aSDx5rrIY3yH1dlMpMm+l5gwurxqrrlqjXCI+XSv4hfPQQp
-         RHH4NoLysr1fM+wJshJRZNhR9R9+1OgiHnOFdVdjK+jYBIkkLVf3U2izJthCmnzMQ/Ah
-         T+1kUgXgL7rpuD6hTK31TFVN3p4SIqwbkOW27oblX6Hi3exSDzzm76mzQvGZginzZyDu
-         dh5DFr5yLfTnP3QGu/jRM1KI2bmzV1Ha+igV0ehsjFIe7haZJFBuC7FvEy1TAZ3CqGdg
-         3LuQ==
-X-Gm-Message-State: AOAM532xVrXBdVlQjZQhwM2m/dWJpe4d12nXp4J5bJe+PjOT5o0vDZPQ
-        lE+A/e0GhH0lHtbTdwBvcbYSiLTgc+o5pyvPB8jxsnE0Mn2+nCRNnMr1C1StSi2hOufmQuLuRye
-        qCcXlKgrINv7PI8KzcHxAbyKq0xM8nc+ytbOqEcsnwwoGryNJvBsM+Mi0kpU2M7zB7sJc
-X-Received: by 2002:a17:906:190c:: with SMTP id a12mr9606630eje.141.1628251818782;
-        Fri, 06 Aug 2021 05:10:18 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxIy7pPE5neyynmuNk+K1t2AeMYsAbqvWPh61GejqqHO3cLZMf+XAD32NUXkg67Vn1gH2F8cw==
-X-Received: by 2002:a17:906:190c:: with SMTP id a12mr9606597eje.141.1628251818587;
-        Fri, 06 Aug 2021 05:10:18 -0700 (PDT)
-Received: from x1.localdomain (2001-1c00-0c1e-bf00-1054-9d19-e0f0-8214.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1054:9d19:e0f0:8214])
-        by smtp.gmail.com with ESMTPSA id ov4sm2818048ejb.122.2021.08.06.05.10.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Aug 2021 05:10:18 -0700 (PDT)
-Subject: Re: [PATCH v4 0/7] Add TDX Guest Support (Attestation support)
-To:     Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Mark Gross <mgross@linux.intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S1343666AbhHFM3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 08:29:34 -0400
+Received: from mail-bn8nam12on2121.outbound.protection.outlook.com ([40.107.237.121]:46560
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S243697AbhHFM3d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Aug 2021 08:29:33 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lPBJWEZHM3BQB+2RMKLD96JMMEVifjp/woQq34g53pG41qWWI01Y9a413OxIR42rSfrlnWz36JA8FJ/mbg/My1yyUHvUZMDh66qgJLzVEMbGqvIvz/0BtbSqSYUzGaiyXw2xuXHi63nxVHDPRh7U/NaTWOHcIXSy5nZKXsn8EQ+kIpEhblqO+Uz5bSuTU6/wjTaLsIn7ZKHJSZE5ZhCa2e77iiLWmowI8BAcrXXRTJSt/dPvwUKxwl+JhoYOnGKpcmiQ/kHuxWdTIz3jgSils3NqVp3IjHXhYfBPD54b7NxRhk0lndp7vonH+XJOoGVhlxd3XSVXkvXooZ7cYZbFKg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=izZDCUrbFb04cCoc7qQ18KA544YhPnK5i2PMzNbsc30=;
+ b=Lz4QhEjba1eZVZi6REbOa3W0jma5cHFbyVxl84v7H6zkdbOW/Vo6I/sMTaklAdR4DQTC1T28Oqy/fuQgBH9E5KhI6Jn/lSNqT2w9QmVrOTwS7XavHYl+FSNwQqXcLi7k3dGAg7yul9ig+ofQYYmqvDFG2ggFDA3aqqcJ90nuBza1/ZleRvY3dCsAejnnsOtlmsQV655uA63NjDI4b0WfEMoMuXch/kfS4swBlyP4WhTQ8r+sUu2wyMPofNUgpSwrsnOHzkV7SbkPVC83lPl4SH/fxKJY55ciYZfdgZvM+1IaFm6BmHm33tDhokP2l0HA8d1FBXUmK3NOwF2Deu868g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=izZDCUrbFb04cCoc7qQ18KA544YhPnK5i2PMzNbsc30=;
+ b=jR4rzj60zqkrrTarL89/AMShjtBf8AMB8AsyM4guOkrrYVu7irQsMOO5rYDJOJmFZwHk3dEAZ27Hmhwr24D7cBTpqXBqqFbxkMqGZA58t3JXxzJaCWZNzvSwdlTHnAYw0AcN+cxLzcoyXNzXdb7vOnx1ox9Lj1O8H3C+Hz0L/fM=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by PH0PR13MB4825.namprd13.prod.outlook.com (2603:10b6:510:99::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.7; Fri, 6 Aug
+ 2021 12:29:15 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::cd1:e3ba:77fd:f4f3]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::cd1:e3ba:77fd:f4f3%9]) with mapi id 15.20.4373.023; Fri, 6 Aug 2021
+ 12:29:15 +0000
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>
-Cc:     Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kirill Shutemov <kirill.shutemov@linux.intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Kuppuswamy Sathyanarayanan <knsathya@kernel.org>,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20210806000946.2951441-1-sathyanarayanan.kuppuswamy@linux.intel.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-Message-ID: <a9d0c7b3-31fa-b7d9-4631-7d0d44a7c848@redhat.com>
-Date:   Fri, 6 Aug 2021 14:10:17 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-MIME-Version: 1.0
-In-Reply-To: <20210806000946.2951441-1-sathyanarayanan.kuppuswamy@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        oss-drivers@corigine.com,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>
+Subject: [PATCH 0/2] samples/bpf: xdpsock: Minor enhancements
+Date:   Fri,  6 Aug 2021 14:28:53 +0200
+Message-Id: <20210806122855.26115-1-simon.horman@corigine.com>
+X-Mailer: git-send-email 2.20.1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: AM3PR07CA0141.eurprd07.prod.outlook.com
+ (2603:10a6:207:8::27) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from madeliefje.horms.nl (2001:982:7ed1:403:201:8eff:fe22:8fea) by AM3PR07CA0141.eurprd07.prod.outlook.com (2603:10a6:207:8::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.6 via Frontend Transport; Fri, 6 Aug 2021 12:29:13 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: dc4fe441-3f7e-4cc8-1d40-08d958d5cda7
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4825:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <PH0PR13MB4825DC435E122D01A58A7B7EE8F39@PH0PR13MB4825.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:792;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5ov8MxQrTCU1RPo9qyZi5uPF8vNTe+R06uxfUXYMmYx9Lugo4kjZU5VzJQqg1K50TqnQFFNNymDMS3Kj4mu8Ba15tPiSeuJHlesHVRnBeR6QBcNRfTZjYGjwThCIk/kSUjdG0C43vFPKMFQAJcpXpkwpdilStWhsm2lvEMIXRRqUUkvpbR8Zs481iGSWFEQjcQS/T9YOUCWwIZYXsepEgpUAp2R/at//YYtLDw0GolOP9mQF8X6jCINYmySwqN1Om4y+j5vz4G3mmVynN+s96WjTRLk878zqjO7pIKRT39tZn2vvXT8X5khnZQ+9r2iSbOQEUCaHaS8r9YraUrpi9XXY49noo9zhgFidH5RRFgVKSXD/Qz9zObUS65Rr3hnN78RDiJJJ3R77NS9OIaDDSp0uLs23p9ivQVYTYNyYuFpmmkB9nw3QHbXFeGEKQwQVA7kiO4/8Su9ObuYXlntVs9hmz6P9MqGmHOGJ7ZFV/iKWuyOVLzZ784bOJPO2p0JSZgVgUhRpokGCBUH2BoPMHsiWMcD2t9bVAkTiM+glTgKdm2CyJZaXW4ztrNfoMyvdVgEqEh3pGgkgm+E7Qw/hbyyne7j0QYGKbHhF/gHF0DoXN+Uirqwl0Q0BlOLC453DqAcuG7/pkp7YB6zs7/otzw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(396003)(39840400004)(346002)(366004)(376002)(38100700002)(6486002)(186003)(5660300002)(478600001)(4326008)(52116002)(6506007)(36756003)(86362001)(83380400001)(110136005)(107886003)(8936002)(54906003)(8676002)(66946007)(44832011)(66556008)(2616005)(66476007)(1076003)(6666004)(4744005)(2906002)(6512007)(316002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VTV0YURDZDh2cm5MRGFlK0pLK0ZmVVc3YWRUaEd2eXV6TXMvRmFKdTQ5Qktk?=
+ =?utf-8?B?dDVLSVZBRW4vVDY4czhOVDdLTUVHTUNwS2tNT3lBRkt0aHdXTi9wdzRWTlFi?=
+ =?utf-8?B?Y1RJN2pHdTluN3Z4SThwaE4zd0g0NHRycTVURUo4YjcrOExDV0NiVjZxMlk0?=
+ =?utf-8?B?L0ZFVU9TaE8xMmdmc2R2NzdsNmZnNllaYU1kMko3S204cEp2MzZIVlY5ZmFU?=
+ =?utf-8?B?MWMvU0dIL2E1RW9VT1RVUW5PcDRkZ1QreW4zT2lzQm45OUMxMEdZNk8yMXJn?=
+ =?utf-8?B?OXFSbDYxVXJ5a0VFMDh6R2ZiRWhIY0ZwMCswcUdGdEMzeFNvQ2dMRjhzUE9Z?=
+ =?utf-8?B?VXA5M1JGRXFDVERIQm1GSG91M25wL3p0QzE5ckpNTXZOTFJHRFpXcXNXWUtL?=
+ =?utf-8?B?UUY4RzJFY0VRa3gyTVdDNTdPdUhKd2Y0eUI0ZHJSTTg2czdBNVczbVBLMjFU?=
+ =?utf-8?B?UU95MlBYKzQwNE9UL2UxN1RjL2hqREM2YmJYZW43S3NoRHJuL2M5Sk9Samdz?=
+ =?utf-8?B?dXhxNTgxcGdkQUl6NUlITGFVait1bDdxR0FBS1o3TTlLY2xrcDVUR2hvNm5s?=
+ =?utf-8?B?TGpMS3MydFhYNFlaMWJnZ2N0bHMrUlJTbVhadnM0UnNKSU9SNXA2a2tkTHRu?=
+ =?utf-8?B?cTVDZEpiaERhTCtaLzU0S0sxaTJlSVZaMkgxdmRCR09HbC9ENkxQMFdZVEtp?=
+ =?utf-8?B?L1Jza3JITDBNdCttcGFuT0xNVFFOeHN6YXU4RU9KVEJvNkhWcjRYQldpd2ZD?=
+ =?utf-8?B?QTBNVExsU3NaYnJSZ3NnekpmbmdhelpyVW93NDNnUWgvcjgvUU9QUHdraHkz?=
+ =?utf-8?B?YllSaEZjRjllTEtLa094Um9lWnZSaTVONjVNVG12bVNEUnRJMmQ0VTJ1VnUw?=
+ =?utf-8?B?SlRSQUx4dmp4TEZrK29CYnlLRmFqbHNkSEdJTTZEdUQzbnVVZ2wzLzZnQUJB?=
+ =?utf-8?B?Y0ZHRkwxVGxoRERmZTNkUDFudXQxdkJwUEFZVndhaU1JRmFVaWxBUkhTM1pp?=
+ =?utf-8?B?VVF1SkR3OGlyejhnUkt1TklZWDZuTU9SeWtiYXNZRzMrT2FRK2szRlg0T1Z1?=
+ =?utf-8?B?aTNWNlh5bW9JZjc0d1U1TjFsK3J0NlBXeUhYRy94ZmV6dGZ0YlpEQiswNEZm?=
+ =?utf-8?B?TDlmT09FL2tsM1dHdithVHF3SlVlWVRBaVRhNWNGbjlhcnhSdWZjS3NiTitk?=
+ =?utf-8?B?VXd1R3pINWxJVkh5ZGYxNGZoOFp0OVZGS3hvWDc0dm5rUmd4dFA2RUduZDRn?=
+ =?utf-8?B?S1A2bTVxS0ljLzNzbzZNNjAzeWZZeWJ0OUVuTkxvcHFSNi9TRzBxVXZHN2hP?=
+ =?utf-8?B?Ly84YzBSZzI0NXljUEJFSjJpaUJDZERqemJTZmRINEZ6NS9tZ2lBeFFSMXRk?=
+ =?utf-8?B?V2lISlczcXBJclM0SWVaVzBCM0ZYVjhhbDFrd3FreSthNGlyckFFc2IzSE96?=
+ =?utf-8?B?RHN2aGJvZUtBS0t1SDBDZmprV093UEptcGNVMzRwU3dzNmEzVWlKeDhHWjVx?=
+ =?utf-8?B?RTg4enU0Qzk0OTRwemRDQmV3UEhGbHpGclI3ZjZobkIvOEFDRjJKSW9ENzFD?=
+ =?utf-8?B?eUYwS1B3anFVdVQxd24yNzh1ekVXWnM5TDFZMXk3VkkvclpoN3prTE9hdHBp?=
+ =?utf-8?B?NE9mdGg5Mmo3blBEYWFUdTUvWDNQTDlNci9PMDVKUGhlYnJua3NiQU9jSjdu?=
+ =?utf-8?B?Q2ZqWWVvRkJyb1pvS0liSHF3WjhWQzdyTTdGMWd5UzhGVGwrQlNZVy9oOGV3?=
+ =?utf-8?B?RThkRitFWnFleFZpa2lTRm9rNlFZcE9TR3hNSTR0bEFremZ4NVM1TDhnM2Rj?=
+ =?utf-8?B?WXBBRTJsK3FBMndaR09TM2p3S1JkcTRaS3ZEMktXaUwyN0huK3AzVWV1RXVy?=
+ =?utf-8?Q?7rjscqSG8XiHP?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dc4fe441-3f7e-4cc8-1d40-08d958d5cda7
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Aug 2021 12:29:15.4062
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +tH+XdwOT0bDwC7n5tp3A7z9YSqHXTm5okiOReBK8OO39qutgfeZxGDIi3tkPPOMOdLQB0qqPu9DX8HEK8y/f3SpU5Zhr8S7XnkL1VXI7RQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4825
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-On 8/6/21 2:09 AM, Kuppuswamy Sathyanarayanan wrote:
-> Hi All,
-> 
-> Intel's Trust Domain Extensions (TDX) protect guest VMs from malicious
-> hosts and some physical attacks. VM guest with TDX support is called
-> as TD Guest.
-> 
-> In TD Guest, the attestationÂ process is used to verify the 
-> trustworthiness of TD guest to the 3rd party servers. Such attestation
-> process is required by 3rd party servers before sending sensitive
-> information to TD guests. One usage example is to get encryption keys
-> from the key server for mounting the encrypted rootfs or secondary drive.
->     
-> Following patches adds the attestation support to TDX guest which
-> includes attestation user interface driver, user agent example, and
-> related hypercall support.
-> 
-> In this series, only following patches are in arch/x86 and are
-> intended for x86 maintainers review.
-> 
-> * x86/tdx: Add TDREPORT TDX Module call support
-> * x86/tdx: Add GetQuote TDX hypercall support
-> * x86/tdx: Add SetupEventNotifyInterrupt TDX hypercall support
-> 
-> Patch titled "platform/x86: intel_tdx_attest: Add TDX Guest attestation
-> interface driver" adds the attestation driver support. This is supposed
-> to be reviewed by platform-x86 maintainers.
+this short series provides to minor enhancements to the
+ample code in samples/bpf/xdpsock_user.c.
 
-Since the patches depend on each other I believe that it would be best
-if the entire series gets merged through the tip tree.
+Each change is explained more fully in its own commit message.
 
-Here is my ack for patch 6/7 for that:
+Niklas Söderlund (2):
+  samples/bpf: xdpsock: Make the sample more useful outside the tree
+  samples/bpf: xdpsock: Remove forward declaration of ip_fast_csum()
 
-Acked-by: Hans de Goede <hdegoede@redhat.com>
+ samples/bpf/xdpsock_user.c | 20 ++++++++------------
+ 1 file changed, 8 insertions(+), 12 deletions(-)
 
-Regards,
-
-Hans
-
-
-> 
-> Also, patch titled "tools/tdx: Add a sample attestation user app" adds
-> a testing app for attestation feature which needs review from
-> bpf@vger.kernel.org.
-> 
-> This series is the continuation of the following TDX patch series which
-> added basic TDX guest support.
-> 
-> [set 1, v5] - https://lore.kernel.org/patchwork/project/lkml/list/?seriesQ0805
-> [set 2, v4] - https://lore.kernel.org/patchwork/project/lkml/list/?seriesQ0814
-> [set 3, v4] - https://lore.kernel.org/patchwork/project/lkml/list/?seriesQ0816
-> [set 4, v4] - https://lore.kernel.org/patchwork/project/lkml/list/?seriesQ0836
-> [set 5, v3] - https://lkml.org/lkml/2021/8/5/1195
-> 
-> Also please note that this series alone is not necessarily fully
-> functional.
-> 
-> You can find TDX related documents in the following link.
-> 
-> https://software.intel.com/content/www/br/pt/develop/articles/intel-trust-domain-extensions.html
-> 
-> Changes since v3:
->  * Since the code added by patch titled "x86/tdx: Add tdg_debug_enabled()
->    interface" is only used by other patches in this series, moved it here.
->  * Rebased on top of Tom Lendacky's protected guest
->    changes (https://lore.kernel.org/patchwork/cover/1468760/
->  * Rest of the history is included in individual patches.
-> 
-> Changes since v2:
->  * Rebased on top of v5.14-rc1.
->  * Rest of the history is included in individual patches.
-> 
-> Changes since v1:
->  * Included platform-x86 and test tool maintainers in recipient list.
->  * Fixed commit log and comments in attestation driver as per Han's comments.
-> 
-> Kuppuswamy Sathyanarayanan (7):
->   x86/tdx: Add tdg_debug_enabled() interface
->   x86/tdx: Add TDREPORT TDX Module call support
->   x86/tdx: Add GetQuote TDX hypercall support
->   x86/tdx: Add SetupEventNotifyInterrupt TDX hypercall support
->   x86/tdx: Add TDX Guest event notify interrupt vector support
->   platform/x86: intel_tdx_attest: Add TDX Guest attestation interface
->     driver
->   tools/tdx: Add a sample attestation user app
-> 
->  arch/x86/include/asm/hardirq.h                |   1 +
->  arch/x86/include/asm/idtentry.h               |   4 +
->  arch/x86/include/asm/irq_vectors.h            |   7 +-
->  arch/x86/include/asm/tdx.h                    |   8 +
->  arch/x86/kernel/irq.c                         |   7 +
->  arch/x86/kernel/tdx.c                         | 140 +++++++++++
->  drivers/platform/x86/intel/Kconfig            |   1 +
->  drivers/platform/x86/intel/Makefile           |   1 +
->  drivers/platform/x86/intel/tdx/Kconfig        |  13 +
->  drivers/platform/x86/intel/tdx/Makefile       |   3 +
->  .../platform/x86/intel/tdx/intel_tdx_attest.c | 212 ++++++++++++++++
->  include/uapi/misc/tdx.h                       |  37 +++
->  tools/Makefile                                |  13 +-
->  tools/tdx/Makefile                            |  19 ++
->  tools/tdx/attest/.gitignore                   |   2 +
->  tools/tdx/attest/Makefile                     |  24 ++
->  tools/tdx/attest/tdx-attest-test.c            | 232 ++++++++++++++++++
->  17 files changed, 717 insertions(+), 7 deletions(-)
->  create mode 100644 drivers/platform/x86/intel/tdx/Kconfig
->  create mode 100644 drivers/platform/x86/intel/tdx/Makefile
->  create mode 100644 drivers/platform/x86/intel/tdx/intel_tdx_attest.c
->  create mode 100644 include/uapi/misc/tdx.h
->  create mode 100644 tools/tdx/Makefile
->  create mode 100644 tools/tdx/attest/.gitignore
->  create mode 100644 tools/tdx/attest/Makefile
->  create mode 100644 tools/tdx/attest/tdx-attest-test.c
-> 
+-- 
+2.20.1
 
