@@ -2,100 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD0473E31FA
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 00:57:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8C833E31FF
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 00:59:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245645AbhHFW56 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 18:57:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36430 "EHLO mail.kernel.org"
+        id S245653AbhHFW7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 18:59:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43066 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230280AbhHFW55 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Aug 2021 18:57:57 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 022E0610FD;
-        Fri,  6 Aug 2021 22:57:40 +0000 (UTC)
+        id S230280AbhHFW7f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Aug 2021 18:59:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A030A60EE9;
+        Fri,  6 Aug 2021 22:59:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628290661;
-        bh=P08v43kWxgysH8p5CKZRHTjxskrEu8Sz1idoUji2/ds=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=HTGqFBGQapkQ1gT1VGkVkOTMwbCTNC/S40gPye/rw7H4US6zR4jXwtQxMiHTrw8zA
-         lVL469HcxJbzNwdYFiIiZLVeBKRQhqpf/QOwasKd4mMGJ2yGRUJ+QHvauRcBic+8Mn
-         qPW3RYAIizAjIV2+SPLGbjQqtX9ICOsas51xtYle+K3U/4jkK1850eg/5Ra7D2RX61
-         akadC5pjwQsMHnVTDs67Ea0AA7171ZoQw1Ijk0eJZBczTDy6ZsSTGnFsEqcCoMGcIL
-         TPJLPnSiXi5ObuFqnlpf19uujX6LmTflz4WQDVkRWGwu5QbaXVQb539TfqSFqym28A
-         nBiykiQFqtI4Q==
-Message-ID: <b5f1c558fef468fe8550ebb5e77d36bf1d0971a7.camel@kernel.org>
-Subject: Re: [PATCH] net/mlx5e: Avoid field-overflowing memcpy()
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Date:   Fri, 06 Aug 2021 15:57:40 -0700
-In-Reply-To: <202108061541.976BE67@keescook>
-References: <20210806215003.2874554-1-keescook@chromium.org>
-         <920853c06192a4f5cadf59c90b1510411b197a5e.camel@kernel.org>
-         <202108061541.976BE67@keescook>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.3 (3.40.3-1.fc34) 
+        s=k20201202; t=1628290758;
+        bh=HU2xeowJBFARB+34Pp8jGrd/zZAOVyAJGJWh8YkA/Ho=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=d3jngVQutsnEePS1XLx+uK1ceEvIan/3CPVuRqoMqeoPrlsJOhlRopE606S4OnOVL
+         xYzOtTibLua3S6jLxK4i3hSqCV1cv3wGzPbpMmXJpB8Zkm47bdbZS4W2dCzYZJXvYD
+         Y8mLDXTOt7g3Si/7HmQ6q8XBerUZdY7F2OzSPKFmwXRJUWbb3Io5LfYpcJ+4weLeY7
+         YNlmo/DW9TX61aM0Mh6im9C5H/7U+8MZVT1rvvTAOmiUWd1HJVy5xnSUmVgd1dpM6P
+         w0uujMI/8gsDaiYwjPm/Sc8xaOnw2LvOD1WrpDQGO8JPMBWqSSOBxb8rSEuTC+nWvq
+         05X8uhCWFRHcA==
+Date:   Fri, 6 Aug 2021 17:59:17 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Dongdong Liu <liudongdong3@huawei.com>
+Cc:     hch@infradead.org, kw@linux.com, logang@deltatee.com,
+        leon@kernel.org, linux-pci@vger.kernel.org, rajur@chelsio.com,
+        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH V7 5/9] PCI/IOV: Enable 10-Bit tag support for PCIe VF
+ devices
+Message-ID: <20210806225917.GA1897594@bjorn-Precision-5520>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <08b7a9b7-2951-43c3-5e81-3461b6724955@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2021-08-06 at 15:45 -0700, Kees Cook wrote:
-> On Fri, Aug 06, 2021 at 03:17:56PM -0700, Saeed Mahameed wrote:
-> > On Fri, 2021-08-06 at 14:50 -0700, Kees Cook wrote:
-> > > [...]
-> > > So, split the memcpy() so the compiler can reason about the buffer
-> > > sizes.
-> > > 
-> > > "pahole" shows no size nor member offset changes to struct > >
-> > > mlx5e_tx_wqe
-> > > nor struct mlx5e_umr_wqe. "objdump -d" shows no meaningful object
-> > > code changes (i.e. only source line number induced differences and
-> > > optimizations).
+On Thu, Aug 05, 2021 at 04:03:58PM +0800, Dongdong Liu wrote:
+> 
+> On 2021/8/5 7:29, Bjorn Helgaas wrote:
+> > On Wed, Aug 04, 2021 at 09:47:04PM +0800, Dongdong Liu wrote:
+> > > Enable VF 10-Bit Tag Requester when it's upstream component support
+> > > 10-bit Tag Completer.
 > > 
-> > spiting the memcpy doesn't induce any performance degradation ? extra
-> > instruction to copy the 1st 2 bytes ? 
-> 
-> Not meaningfully, but strictly speaking, yes, it's a different series
-> of
-> instructions.
-> 
-> > [...]
-> > > --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-> > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-> > 
-> > why only here ? mlx5 has at least 3 other places where we use this
-> > unbound memcpy .. 
-> 
-> Can you point them out? I've been fixing only the ones I've been able
-> to
-> find through instrumentation (generally speaking, those with fixed
-> sizes).
-> 
+> > I think "upstream component" here means the PF, doesn't it?  I don't
+> > think the PF is really an *upstream* component; there's no routing
+> > like with a switch.
+>
+> I want to say the switch and root port devices that support 10-Bit
+> Tag Completer. Sure, VF also needs to have 10-bit Tag Requester
+> Supported capability.
 
-we will need to examine each change carefully to look for performance
-degradation and maybe run some micro-benchmark tests in house before i
-can ack this patch. 
-
-$ git grep -n "eseg->inline_hdr.start"
-drivers/infiniband/hw/mlx5/wr.c:129:            copysz = min_t(u64,
-*cur_edge - (void *)eseg->inline_hdr.start,
-drivers/infiniband/hw/mlx5/wr.c:131:            memcpy(eseg-
->inline_hdr.start, pdata, copysz);
-drivers/infiniband/hw/mlx5/wr.c:133:                          
-sizeof(eseg->inline_hdr.start) + copysz, 16);
-drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c:344:          
-memcpy(eseg->inline_hdr.start, xdptxd->data, MLX5E_XDP_MIN_INLINE);
-drivers/net/ethernet/mellanox/mlx5/core/en_tx.c:510:                  
-mlx5e_insert_vlan(eseg->inline_hdr.start, skb, attr->ihs);
-drivers/net/ethernet/mellanox/mlx5/core/en_tx.c:514:                  
-memcpy(eseg->inline_hdr.start, skb->data, attr->ihs);
-drivers/net/ethernet/mellanox/mlx5/core/en_tx.c:1033:          
-memcpy(eseg->inline_hdr.start, skb->data, attr.ihs);
-
-
+OK.  IIUC we're not talking about P2PDMA here; we're talking about
+regular DMA to host memory, which means I *think* only the Root Port
+is important, since it is the completer for DMA to host memory.  We're
+not talking about P2PDMA to a switch BAR, where the switch would be
+the completer.
