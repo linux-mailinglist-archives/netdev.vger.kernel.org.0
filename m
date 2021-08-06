@@ -2,208 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 050DF3E29AC
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 13:31:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FE753E29DB
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 13:40:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245507AbhHFLcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 07:32:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45866 "EHLO
+        id S245578AbhHFLkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 07:40:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242793AbhHFLcA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 07:32:00 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A88FC061799
-        for <netdev@vger.kernel.org>; Fri,  6 Aug 2021 04:31:45 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id ca5so16130739pjb.5
-        for <netdev@vger.kernel.org>; Fri, 06 Aug 2021 04:31:45 -0700 (PDT)
+        with ESMTP id S245584AbhHFLkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 07:40:04 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1843BC061799
+        for <netdev@vger.kernel.org>; Fri,  6 Aug 2021 04:39:48 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id f11so10850636ioj.3
+        for <netdev@vger.kernel.org>; Fri, 06 Aug 2021 04:39:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ds3n8hSNVoGPCAUL9kFKf30uUNAJz2JQMUgtQGgLmqE=;
-        b=CbojwidOTgZku5Mo6TxVSagFAa7oKxjCWdE7j+iZqKboAq4BLHL1690PBeJ8/my3bS
-         fQj/oIdYS3mWwx1hh3NlhDm2xozuxO2kt4cc7hEWkpWx86MkJsSYb2KMa6Ri8Sw08Bo0
-         qUdRHVpK01p/EV1+LMeziMR2zBMKLBgTlNx3M=
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xGnaeWiZTs5fNQR2qA95KLEQMbyD+we6yJVFMP2FLC4=;
+        b=nBmOWHMXBB2v1kM+XTASXE939Pqft9mRyJjKVm3taVZEKZHzRrWoHkvwppnc1sMm14
+         UAjTX6HsouJ1O1XkrAUDBwdnoEp1SjbSXejkBxo+Gk0Az6FvLxOyDhuiOoVVU//xGosN
+         koVDPTMvexPQk00728yWQBsuI3WclJ/9CcLUkyEjg4Amnl+LvFTeRDblvbViA15ZLV4p
+         vW50q88DqI8MrCKbLct52+En2nXy7EQdB0DCKqop5bHmOkiQ1WFDY3ikf8LW/HQXDxap
+         5v9GI9YcUvAZgOHnX8iROS2k8GUAlPeumvhiHC3eGo4K8EMwtvqU8DbGoM9tJlyL1rcl
+         YGKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ds3n8hSNVoGPCAUL9kFKf30uUNAJz2JQMUgtQGgLmqE=;
-        b=ISxQmZm1diexPDxfS8IsSSPFwl9NRRqQqICpI6l7AEMgd3n9OZXPJ1TM1l5a8nKi75
-         0cLTyR1xnGGoYL5i5nSjlXSNb01dat6iVi8W3iaedQHvitqJpcmq7i4w10XGOeGdqru4
-         XNoD6+IZLFSyEB+bEWaQ26f2uheUMgKnpPJIUBc8yPoIR7NpsvZ2bcEOMWQXFldgMWoS
-         f6ls0KVaXSAR5x+vDlSBT0X4xXFewm5zkHd5P9+F3u8GUrJwbQr+HkkPn5cAWWNXPkuU
-         Wvm1CtjTc8HKBseXu6qYarK/mj3Rxs1YzLWUmob2QRQLt8R8gt3KsMAgzBzTgxKjS06r
-         UkZw==
-X-Gm-Message-State: AOAM531GLc27vO1Kl1V4tzdPHvWUjhbkK7kj+XIZ5FpAoeqyAmhSPy/4
-        d/+D7apTNxOV45O4QBdyGFXsRiTfgZr4ZEFxNZ2bEA==
-X-Google-Smtp-Source: ABdhPJzhCivQnMUOksiAttetSTcJXOtjmTzXvmHLDwVH/6STxIombyEykHE2elX3cpgDa8R/pgIyGruGpSmZKaALc+I=
-X-Received: by 2002:a17:90a:2a8e:: with SMTP id j14mr20429914pjd.208.1628249504446;
- Fri, 06 Aug 2021 04:31:44 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xGnaeWiZTs5fNQR2qA95KLEQMbyD+we6yJVFMP2FLC4=;
+        b=qT7uBR1RVt6bs4xj3JIVySrBePcjbzsP4n6fFt2+mX6Kog+WVWUMIJ4pmUHwM4Px4/
+         69HpCeYJo/ByMF4AuI5z2lwlYP2ALFLnOmRf0X8P1jiAlSO6tVH3StVc7inx3FkADe2/
+         HKKzwrkzZuVt3iQzjMgtfVJ51YBy7j4lPChPCnIm5Inpjr7QhgYbRB+H4i6aUvqq+DbX
+         Xpr3lnUueZGpFCECjfLWYe+brQs9SwRdnlEACvc3c8n4aSmm0hpx47/2exlJCL+im49t
+         8pgkoFPD4TCfQmXoERIMeDPANyYbMH5hKBofwaryyeRiK9yDr6OT76aMggTSpqftRjtp
+         Vc3w==
+X-Gm-Message-State: AOAM533FdK46RBtJeWHYFk69phehTjxfkSHjCI6R6ooyMOT51FiCgLks
+        PT6dLzByh1vAbVkD2tG7McWDIg==
+X-Google-Smtp-Source: ABdhPJxfeJgxxm/Pl9KF+4WKK/a14yaoWV8BpRUQ0OOeSvzRhhmCHkwQ0Gf5OqqWchpG+vCqX5IoJQ==
+X-Received: by 2002:a05:6638:34aa:: with SMTP id t42mr9263870jal.128.1628249987453;
+        Fri, 06 Aug 2021 04:39:47 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id a4sm5345165ioe.19.2021.08.06.04.39.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Aug 2021 04:39:47 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/6] net: ipa: don't suspend/resume modem if not
+ up
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, bjorn.andersson@linaro.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210804153626.1549001-1-elder@linaro.org>
+ <20210804153626.1549001-2-elder@linaro.org>
+ <20210805182628.02ebf355@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <9aedc291-c424-9a9b-eac2-052d404ba0ad@linaro.org>
+Date:   Fri, 6 Aug 2021 06:39:46 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210720232624.1493424-1-nitesh@redhat.com> <20210720232624.1493424-5-nitesh@redhat.com>
-In-Reply-To: <20210720232624.1493424-5-nitesh@redhat.com>
-From:   Sumit Saxena <sumit.saxena@broadcom.com>
-Date:   Fri, 6 Aug 2021 17:01:17 +0530
-Message-ID: <CAL2rwxqz4dcjdbqtPMaCTud+3jPhuFvJeuVgt774Rpm-+_KJxQ@mail.gmail.com>
-Subject: Re: [PATCH v5 04/14] scsi: megaraid_sas: Use irq_set_affinity_and_hint
-To:     Nitesh Narayan Lal <nitesh@redhat.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux SCSI List <linux-scsi@vger.kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-pci@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        jesse.brandeburg@intel.com, robin.murphy@arm.com,
-        mtosatti@redhat.com, mingo@kernel.org, jbrandeb@kernel.org,
-        frederic@kernel.org, juri.lelli@redhat.com, abelits@marvell.com,
-        Bjorn Helgaas <bhelgaas@google.com>, rostedt@goodmis.org,
-        peterz@infradead.org, "David S. Miller" <davem@davemloft.net>,
-        akpm@linux-foundation.org, sfr@canb.auug.org.au,
-        stephen@networkplumber.org, rppt@linux.vnet.ibm.com,
-        chris.friesen@windriver.com, maz@kernel.org, nhorman@tuxdriver.com,
-        pjwaskiewicz@gmail.com, sassmann@redhat.com,
-        Tomas Henzl <thenzl@redhat.com>,
-        Kashyap Desai <kashyap.desai@broadcom.com>,
-        Shivasharan Srikanteshwara 
-        <shivasharan.srikanteshwara@broadcom.com>,
-        Sathya Prakash Veerichetty <sathya.prakash@broadcom.com>,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        Suganath Prabu Subramani 
-        <suganath-prabu.subramani@broadcom.com>, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, jkc@redhat.com, faisal.latif@intel.com,
-        shiraz.saleem@intel.com, tariqt@nvidia.com, ahleihel@redhat.com,
-        kheib@redhat.com, borisp@nvidia.com, saeedm@nvidia.com,
-        benve@cisco.com, govind@gmx.com, jassisinghbrar@gmail.com,
-        ajit.khaparde@broadcom.com, sriharsha.basavapatna@broadcom.com,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Nitesh Lal <nilal@redhat.com>, tatyana.e.nikolova@intel.com,
-        mustafa.ismail@intel.com, ahs3@redhat.com, leonro@nvidia.com,
-        Chandrakanth Patil <chandrakanth.patil@broadcom.com>,
-        bjorn.andersson@linaro.org, chunkuang.hu@kernel.org,
-        yongqiang.niu@mediatek.com, baolin.wang7@gmail.com,
-        poros@redhat.com, minlei@redhat.com,
-        Ewan Milne <emilne@redhat.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>, _govind@gmx.com,
-        kabel@kernel.org, viresh.kumar@linaro.org,
-        Tushar.Khandelwal@arm.com, kuba@kernel.org
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000005adf8d05c8e26167"
+In-Reply-To: <20210805182628.02ebf355@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000005adf8d05c8e26167
-Content-Type: text/plain; charset="UTF-8"
+On 8/5/21 8:26 PM, Jakub Kicinski wrote:
+> On Wed,  4 Aug 2021 10:36:21 -0500 Alex Elder wrote:
+>> The modem network device is set up by ipa_modem_start().  But its
+>> TX queue is not actually started and endpoints enabled until it is
+>> opened.
+>>
+>> So avoid stopping the modem network device TX queue and disabling
+>> endpoints on suspend or stop unless the netdev is marked UP.  And
+>> skip attempting to resume unless it is UP.
+>>
+>> Signed-off-by: Alex Elder <elder@linaro.org>
+> 
+> You said in the cover letter that in practice this fix doesn't matter.
 
-On Wed, Jul 21, 2021 at 4:57 AM Nitesh Narayan Lal <nitesh@redhat.com> wrote:
->
-> The driver uses irq_set_affinity_hint() specifically for the high IOPS
-> queue interrupts for two purposes:
->
-> - To set the affinity_hint which is consumed by the userspace for
->   distributing the interrupts
->
-> - To apply an affinity that it provides
->
-> The driver enforces its own affinity to bind the high IOPS queue interrupts
-> to the local NUMA node. However, irq_set_affinity_hint() applying the
-> provided cpumask as an affinity for the interrupt is an undocumented side
-> effect.
->
-> To remove this side effect irq_set_affinity_hint() has been marked
-> as deprecated and new interfaces have been introduced. Hence, replace the
-> irq_set_affinity_hint() with the new interface irq_set_affinity_and_hint()
-> where the provided mask needs to be applied as the affinity and
-> affinity_hint pointer needs to be set and replace with
-> irq_update_affinity_hint() where only affinity_hint needs to be updated.
->
-> Change the megasas_set_high_iops_queue_affinity_hint function name to
-> megasas_set_high_iops_queue_affinity_and_hint to clearly indicate that the
-> function is setting both affinity and affinity_hint.
->
-> Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
-Looks good.
-Acked-by: Sumit Saxena <sumit.saxena@broadcom.com>
+I don't think we've seen this problem with system suspend, but
+with runtime suspend we could get a forced suspend request at
+any time (and frequently), so if there is a problem, it will be
+much more likely to occur.
 
---0000000000005adf8d05c8e26167
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+For suspend, I don't think it's actually a "problem".  Disabling
+the TX queue if it wasn't open is harmless--it just sets the
+DRV_XOFF bit in the TX queue state field.  And we have a
+separate "enabled endpoints" mask that prevents stopping or
+suspending the endpoint if it wasn't opened.
 
-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
-GmgWG68YahkDuVSTTt2beZdyMeDwq/KifJFo18EkhcL3e7rmDAh8SniUI/0o3HX6hrgdmUI1wSdz
-uIVL/m6Ok9mIl2U5kvguitOSC0bVaQPfNzlj+7PCKBECAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZc3VtaXQuc2F4ZW5hQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUNz+JSIXEXl2uQ4Utcnx7FnFi
-hhowDQYJKoZIhvcNAQELBQADggEBAL0HLbxgPSW4BFbbIMN3A/ifBg4Lzaph8ARJOnZpGQivo9jG
-kQOd95knQi9Lm95JlBAJZCqXXj7QS+dnE71tsFeHWcHNNxHrTSwn4Xi5EqaRjLC6g4IEPyZHWDrD
-zzJidgfwQvfZONkf4IXnnrIEFle+26/gPs2kOjCeLMo6XGkNC4HNla1ol1htToQaNN8974pCqwIC
-rTXcWqD03VkqSOo+oPP/NAgFAZVfpeuBoK2Xv8zYlrF49Q4hxgFpWhaiDsZUSdWIS7vg1ak1n+6L
-3aHRY/lheSkOn/uJWXsqsTDp613hVtOTEDsHSQK32yTGr8jN/oRQgJASuUqQFdD4VzAxggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwoQTpBmhDxj9JoN1ow
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEICClRGnU34JeOANfwPN09QLWPCxn3+Gr
-domU4wk4bC65MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgw
-NjExMzE0NVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBG3ptR7Upgft8i48vuo/ts0G69CYpfWH2zO2uF54uh8SZqkYJL
-U0de0L4D8+c2tHmSh2v7u6IUpPaCzizlubn7PHzYYOZ9n/kYVXDQx25YpaGa9VmcSFjTGXToXpZV
-VDb7sq/b1TNYdcUF+NGdVdN3hRMG9CmgVr6dX4tiCMlFYUWlenwsqlOXD41a6rQFI3KbcXMB/wqQ
-2pM6Yq8xz7tVakC0/kD251VMHL1unvr3K5GkHGOYzIKpUUFxIveb6hz/a7S6sFEI2P54InMBRVXT
-1qG+CNUDYEr8uKoGAfY7B6RCw4dp0noqaBT9p83LTMYXQ76Xn039TFgo+cnPzVIA
---0000000000005adf8d05c8e26167--
+But for resume, waking the queue schedules it.  I'm not sure
+what exactly ensues in that case, but it's not correct if the
+network device hasn't been opened.  For endpoints, again, they
+won't be resumed if they weren't enabled, so that part's OK.
+
+> It seems trivial to test so perhaps it doesn't and we should leave the
+> code be? Looking at dev->flags without holding rtnl_lock() seems
+> suspicious, drivers commonly put the relevant portion of suspend/resume
+> routines under rtnl_lock()/rtnl_unlock() (although to be completely
+
+I don't use rtnl_lock()/rtnl_unlock() *anywhere* in the driver.
+It has no netlink interface (yet), and therefore I didn't even
+think about using rtnl_lock().  Do I need it?
+
+> frank IDK if it's actually possible for concurrent suspend +
+> open/close to happen).
+
+I think it isn't possible, but I'm less than 100% sure.  I've
+been thinking a lot about exactly this sort of question lately...
+
+> Are there any callers of ipa_modem_stop() which don't hold rtnl_lock()?
+
+None of them take that lock.  It is called in the driver ->remove
+callback, and is called during cleanup if the modem crashes.
+
+I think this fix is good, but as I said in the cover letter I'm
+not aware of ever having hit it to date.
+
+Thank you very much for your review and comments.
+
+					-Alex
+
+>> diff --git a/drivers/net/ipa/ipa_modem.c b/drivers/net/ipa/ipa_modem.c
+>> index 4ea8287e9d237..663a610979e70 100644
+>> --- a/drivers/net/ipa/ipa_modem.c
+>> +++ b/drivers/net/ipa/ipa_modem.c
+>> @@ -178,6 +178,9 @@ void ipa_modem_suspend(struct net_device *netdev)
+>>   	struct ipa_priv *priv = netdev_priv(netdev);
+>>   	struct ipa *ipa = priv->ipa;
+>>   
+>> +	if (!(netdev->flags & IFF_UP))
+>> +		return;
+>> +
+>>   	netif_stop_queue(netdev);
+>>   
+>>   	ipa_endpoint_suspend_one(ipa->name_map[IPA_ENDPOINT_AP_MODEM_RX]);
+>> @@ -194,6 +197,9 @@ void ipa_modem_resume(struct net_device *netdev)
+>>   	struct ipa_priv *priv = netdev_priv(netdev);
+>>   	struct ipa *ipa = priv->ipa;
+>>   
+>> +	if (!(netdev->flags & IFF_UP))
+>> +		return;
+>> +
+>>   	ipa_endpoint_resume_one(ipa->name_map[IPA_ENDPOINT_AP_MODEM_TX]);
+>>   	ipa_endpoint_resume_one(ipa->name_map[IPA_ENDPOINT_AP_MODEM_RX]);
+>>   
+>> @@ -265,9 +271,11 @@ int ipa_modem_stop(struct ipa *ipa)
+>>   	/* Prevent the modem from triggering a call to ipa_setup() */
+>>   	ipa_smp2p_disable(ipa);
+>>   
+>> -	/* Stop the queue and disable the endpoints if it's open */
+>> +	/* Clean up the netdev and endpoints if it was started */
+>>   	if (netdev) {
+>> -		(void)ipa_stop(netdev);
+>> +		/* If it was opened, stop it first */
+>> +		if (netdev->flags & IFF_UP)
+>> +			(void)ipa_stop(netdev);
+>>   		ipa->name_map[IPA_ENDPOINT_AP_MODEM_RX]->netdev = NULL;
+>>   		ipa->name_map[IPA_ENDPOINT_AP_MODEM_TX]->netdev = NULL;
+>>   		ipa->modem_netdev = NULL;
+> 
+
