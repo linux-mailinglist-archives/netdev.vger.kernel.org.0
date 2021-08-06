@@ -2,162 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29ABF3E2391
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 08:53:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4048A3E23CE
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 09:16:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243459AbhHFGxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 02:53:53 -0400
-Received: from mail-dm6nam10on2070.outbound.protection.outlook.com ([40.107.93.70]:32097
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229635AbhHFGxu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Aug 2021 02:53:50 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QLQ8cDHnFdbFspIZCISJXnx4tVi7fMg51sbfYB12vOZchkge61tfaobjtqY0beZPO46RA9+RZw8YUzqyoNQGxcGbTR4r53R/EJ4acnL0c0l27qrWZV2dnipLdICd7YZhYd2F+MkqMFmYiSdV4xbbspw2yoUdDK2qvfWUtkuAJQMNCdMk+gBT4mmhfxja1dRxj3vW9fov+h7Nyjbu8OjMpyLXEmaomfithFdzsTaGhGLs7hpWaoY2wcPsWzeU9Pn9I0RNSvNlG5DKHS9KGs3m9/LdH96wGUYriRObqW2Etnvmcv+RANF/UAv+EPe+POHDJADa3kM9P/8dZtltth7g7w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zDUQk891/yzCAmBUgUjNk4g+NqLk1QEetLUqMTpYQMY=;
- b=gZ0fUSUGl3lZU1kiRNS2URBQVYl1RC4fiYfT2VxDKJmEgBCEfBm0/U76biHCp2fSC1NGyEAGlTklRIVMIhQfHoGC6YGZEF6516pBMLMgjUXTf4m7M6H0+dy4i5ExltMS62hiRsNSA5zRrCLJfK8DoGdfJxv7MGHmT65L3rB6m8huiWKP21h5cT6qeGWwrZXxGqglOKo/neSRafWUD3ki42ZgXWSpe4dFaGwB7R4g2nqB++5Q1vYAZHn6HOMXa17jIPKzIAY3/dYHy5CwCtWYGooawhn54DuWzvPtPw9gWm12w0nL7UG4UM6jRCuHGDZYCzAWKCRPXLitatvZz6ql6w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.36) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zDUQk891/yzCAmBUgUjNk4g+NqLk1QEetLUqMTpYQMY=;
- b=r2Fs+jbgcugJyKt0UB5vR28iuztcEDm7yjG7J+Fs4RSDrqg3XzOUutUx5B8DXabF3EXMKG8ENoFrQ+4jUBACOEl27HSaVNSFDrZUwY1j8EFgFtifuPW2ZTnEBFsPc1Q7CuV7SrcTJMXygBfm5NzJT5tHyvtuzQx+AXWeTeP8NnmFDIeZ/f6iJ2tddV+yIVfol9vQnIXxwTTqa/7lHKIRfH+lbywzixSHCXbqADxPpD9Pe8lHH/g0jxVUT7srX7jSTz30A1EGOTgsfr1+ncD48DBQEDX3X/CcnuYzr3eM7ngGbKo7aaDlmha2g0ocySHZXwnklCiUZbY0F+EiQ30Jew==
-Received: from MWHPR12CA0042.namprd12.prod.outlook.com (2603:10b6:301:2::28)
- by DM6PR12MB5024.namprd12.prod.outlook.com (2603:10b6:5:20a::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.25; Fri, 6 Aug
- 2021 06:53:33 +0000
-Received: from CO1NAM11FT012.eop-nam11.prod.protection.outlook.com
- (2603:10b6:301:2:cafe::af) by MWHPR12CA0042.outlook.office365.com
- (2603:10b6:301:2::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15 via Frontend
- Transport; Fri, 6 Aug 2021 06:53:33 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.36)
- smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.36 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.36; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.36) by
- CO1NAM11FT012.mail.protection.outlook.com (10.13.175.192) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4394.16 via Frontend Transport; Fri, 6 Aug 2021 06:53:33 +0000
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 6 Aug
- 2021 06:53:32 +0000
-Received: from sandstorm.attlocal.net (172.20.187.5) by mail.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 6 Aug 2021 06:53:32 +0000
-From:   John Hubbard <jhubbard@nvidia.com>
-To:     Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>
-CC:     "David S . Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <linux-s390@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>,
-        "Sven Auhagen" <sven.auhagen@voleatech.de>,
-        Matteo Croce <mcroce@microsoft.com>
-Subject: [PATCH] net: mvvp2: fix short frame size on s390
-Date:   Thu, 5 Aug 2021 23:53:30 -0700
-Message-ID: <20210806065330.23000-1-jhubbard@nvidia.com>
-X-Mailer: git-send-email 2.32.0
+        id S243560AbhHFHRF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 03:17:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53298 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241480AbhHFHRE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 03:17:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1628234209;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4h9NXCahpaPwahhaO5hMLHu+0Sj92iJsupdJcdmnrx4=;
+        b=QyZvqAEae9RwU2R0wLA6NaPiHcc/a+2+C0owzLknw8Q1Qj1llWV8wkmcsG3Q6SxYK+PszG
+        3jPOe19/VP3p5+VzlPJpuFx7MSqGb83bb9gRRf/l05XxtifBphT1M48vnOwc8vmxYGGsk0
+        Q7y2O5vUIbBCDMFxyF/Ig1DjUtFf9Q4=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-123-oUbLV41wP-KW2_NfPRte_w-1; Fri, 06 Aug 2021 03:16:47 -0400
+X-MC-Unique: oUbLV41wP-KW2_NfPRte_w-1
+Received: by mail-ej1-f71.google.com with SMTP id k22-20020a1709061596b02905a370b2f477so2850059ejd.17
+        for <netdev@vger.kernel.org>; Fri, 06 Aug 2021 00:16:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4h9NXCahpaPwahhaO5hMLHu+0Sj92iJsupdJcdmnrx4=;
+        b=l83uXM30p+P433TnxCzzQsal2SAu/REnbpWvz0+OlQrmF2ZX0fQegJwZTlJKKSdv19
+         F8zX2PKjOjf9jyd5rmUQ3hzJfK0ZNlVhvfK650AtVhnVjPJ4WR6nSeaiymQZVejNmKku
+         aloLLSCudWS13c7cl1eRa8S9cFhD1vjNBBme0agLH0O5rE+k0NtPXyL3Ocye+yEWL7Ba
+         3W/vBgsg3EIQmS2fFDXtHtoZzH2H3BZWlNhy0NACg0SYVPwDKj1eXkk49323PAI1AOcA
+         g1gXHGQaNNoAxzt76CrnHaoQIKalCbtXSE4Hv7Z3Fy5ub5Gj+j2Y1EE/6PXxhPaynrey
+         cJ1Q==
+X-Gm-Message-State: AOAM532YHcCVYVRJTVqc82H3RL8EdhHhOb4XaJ2oBq9aH5P3rEVbQLgI
+        4RFms8YpyyQCbfRoLBp8rWcVzdBmG9P4fYRAv3JKYq9ZkLgRc0jYWpRltaoCjrVLr1qjKcbddJC
+        NZktDPg4RIeLuDMAZ
+X-Received: by 2002:a05:6402:3552:: with SMTP id f18mr11179145edd.82.1628234206526;
+        Fri, 06 Aug 2021 00:16:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwYURfrjKTFZrJHZ9Mcw5cT6VZwzIqZ9tPmHg4AX/+74PdKLsXxtkvp1Vnsgy4/vQl/I70njg==
+X-Received: by 2002:a05:6402:3552:: with SMTP id f18mr11179120edd.82.1628234206380;
+        Fri, 06 Aug 2021 00:16:46 -0700 (PDT)
+Received: from steredhat (host-79-18-148-79.retail.telecomitalia.it. [79.18.148.79])
+        by smtp.gmail.com with ESMTPSA id gv7sm2535932ejc.5.2021.08.06.00.16.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Aug 2021 00:16:46 -0700 (PDT)
+Date:   Fri, 6 Aug 2021 09:16:43 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
+Subject: Re: [!!Mass Mail KSE][MASSMAIL KLMS] Re: [RFC PATCH v1 0/7]
+ virtio/vsock: introduce MSG_EOR flag for SEQPACKET
+Message-ID: <20210806071643.byebg4hmm3dtnb2x@steredhat>
+References: <20210726163137.2589102-1-arseny.krasnov@kaspersky.com>
+ <20210804125737.kbgc6mg2v5lw25wu@steredhat>
+ <8e44442c-4cac-dcbc-a88d-17d9878e7d32@kaspersky.com>
+ <20210805090657.y2sz3pzhruuolncq@steredhat>
+ <8bd80d3f-3e00-5e31-42a1-300ff29100ae@kaspersky.com>
 MIME-Version: 1.0
-X-NVConfidentiality: public
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 11c2c6ea-8a12-4256-239f-08d958a6e846
-X-MS-TrafficTypeDiagnostic: DM6PR12MB5024:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB5024CF7EC7564CF4BE6B0371A8F39@DM6PR12MB5024.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:56;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: l4oxJ3gAfeE1dsB2mdmDHjUalV95m5UF7Iwhe95/LiIQkkNW3LJ2bPEFrd1SaeI4+NcLvCcE7Sj7XNP5IAMbc02XAtipA+e6/eXkU5UlpBKNfVaJDe0uxM9iMDkdyBxM16mTmHWEmcPeloUy/O/tjtod6Rj6m06/w1S89VNcRjbxIgPsIv2oEUJ0+12ar13uqgO5lOQ4n77gMsOtITzkaqiCQ5nCUNqnwIRL42dyJ0etE08CqDfRT65VS+BjsuERUniNQj9+F7ZjsQdCUGelSzNYsORW6jqz8gTeoB/X4Wx1jyleBGckmnaTv/CIOLrpcIwW9OHECOUvCB0NOkdX7/QtO4S7VupLzHXVSTFGjRal2D7ZeBXntFU7u8fPHP0vxXTEzP1jNQrtP5t7KDvP2CA6PObqEi34lNY8LpagR3B12P+6lNIhfsi9gle8JiVHznasisA7e+ImwFEhBZ+xw1WxlvZ65Bt6tTWEwUyJlqtxiF9VpQAbsnV6qROUKTOkBeHXuHvWigWMmQeNjO4xnxW4xOeCjgOOFrFa8zt7FvNP3yii9dbFBi+NAa2HSQxCKSszvpoloGKfb9281BsRov+V/4ARKaf6HscVm/bRExbaI53M1CL2mYUHUOjjmM6yEfnka1WUzapHiBplra6YyjFnrgABug/VVPfmJxhf0/aZjHcenaTLw2kw9sxKEidow20Hi9s6IHvUoUc3TYduAA==
-X-Forefront-Antispam-Report: CIP:216.228.112.36;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid05.nvidia.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(70206006)(7636003)(54906003)(110136005)(5660300002)(70586007)(186003)(2906002)(8936002)(8676002)(336012)(4326008)(26005)(316002)(36860700001)(45080400002)(36906005)(508600001)(1076003)(356005)(47076005)(83380400001)(36756003)(86362001)(7416002)(426003)(82310400003)(2616005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Aug 2021 06:53:33.3262
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 11c2c6ea-8a12-4256-239f-08d958a6e846
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.36];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT012.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB5024
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <8bd80d3f-3e00-5e31-42a1-300ff29100ae@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On s390, the following build warning occurs:
+On Thu, Aug 05, 2021 at 12:21:57PM +0300, Arseny Krasnov wrote:
+>
+>On 05.08.2021 12:06, Stefano Garzarella wrote:
+>> Caution: This is an external email. Be cautious while opening links or attachments.
+>>
+>>
+>>
+>> On Thu, Aug 05, 2021 at 11:33:12AM +0300, Arseny Krasnov wrote:
+>>> On 04.08.2021 15:57, Stefano Garzarella wrote:
+>>>> Caution: This is an external email. Be cautious while opening links or attachments.
+>>>>
+>>>>
+>>>>
+>>>> Hi Arseny,
+>>>>
+>>>> On Mon, Jul 26, 2021 at 07:31:33PM +0300, Arseny Krasnov wrote:
+>>>>>       This patchset implements support of MSG_EOR bit for SEQPACKET
+>>>>> AF_VSOCK sockets over virtio transport.
+>>>>>       Idea is to distinguish concepts of 'messages' and 'records'.
+>>>>> Message is result of sending calls: 'write()', 'send()', 'sendmsg()'
+>>>>> etc. It has fixed maximum length, and it bounds are visible using
+>>>>> return from receive calls: 'read()', 'recv()', 'recvmsg()' etc.
+>>>>> Current implementation based on message definition above.
+>>>> Okay, so the implementation we merged is wrong right?
+>>>> Should we disable the feature bit in stable kernels that contain it? Or
+>>>> maybe we can backport the fixes...
+>>> Hi,
+>>>
+>>> No, this is correct and it is message boundary based. Idea of this
+>>> patchset is to add extra boundaries marker which i think could be
+>>> useful when we want to send data in seqpacket mode which length
+>>> is bigger than maximum message length(this is limited by transport).
+>>> Of course we can fragment big piece of data too small messages, but
+>>> this
+>>> requires to carry fragmentation info in data protocol. So In this case
+>>> when we want to maintain boundaries receiver calls recvmsg() until
+>>> MSG_EOR found.
+>>> But when receiver knows, that data is fit in maximum datagram length,
+>>> it doesn't care about checking MSG_EOR just calling recv() or
+>>> read()(e.g.
+>>> message based mode).
+>> I'm not sure we should maintain boundaries of multiple send(), from
+>> POSIX standard [1]:
+>
+>Yes, but also from POSIX: such calls like send() and sendmsg()
+>
+>operates with "message" and if we check recvmsg() we will
+>
+>find the following thing:
+>
+>
+>For message-based sockets, such as SOCK_DGRAM and SOCK_SEQPACKET, the entire
+>
+>message shall be read in a single operation. If a message is too long to fit in the supplied
+>
+>buffers, and MSG_PEEK is not set in the flags argument, the excess bytes shall be discarded.
+>
+>
+>I understand this, that send() boundaries also must be maintained.
+>
+>I've checked SEQPACKET in AF_UNIX and AX_25 - both doesn't support
+>
+>MSG_EOR, so send() boundaries must be supported.
+>
+>>
+>>    SOCK_SEQPACKET
+>>      Provides sequenced, reliable, bidirectional, connection-mode
+>>      transmission paths for records. A record can be sent using one or
+>>      more output operations and received using one or more input
+>>      operations, but a single operation never transfers part of more than
+>>      one record. Record boundaries are visible to the receiver via the
+>>      MSG_EOR flag.
+>>
+>>  From my understanding a record could be sent with multiple send() 
+>>  and
+>> received, for example, with a single recvmsg().
+>> The only boundary should be the MSG_EOR flag set by the user on the 
+>> last
+>> send() of a record.
+>You are right, if we talking about "record".
+>>
+>>  From send() description [2]:
+>>
+>>    MSG_EOR
+>>      Terminates a record (if supported by the protocol).
+>>
+>>  From recvmsg() description [3]:
+>>
+>>    MSG_EOR
+>>      End-of-record was received (if supported by the protocol).
+>>
+>> Thanks,
+>> Stefano
+>>
+>> [1]
+>> https://pubs.opengroup.org/onlinepubs/9699919799/functions/socket.html
+>> [2] 
+>> https://pubs.opengroup.org/onlinepubs/9699919799/functions/send.html
+>> [3]
+>> https://pubs.opengroup.org/onlinepubs/9699919799/functions/recvmsg.html
+>
+>P.S.: seems SEQPACKET is too exotic thing that everyone implements it 
+>in
+>
+>own manner, because i've tested SCTP seqpacket implementation, and 
+>found
+>
+>that:
+>
+>1) It doesn't support MSG_EOR bit at send side, but uses MSG_EOR at 
+>receiver
+>
+>side to mark MESSAGE boundary.
+>
+>2) According POSIX any extra bytes that didn't fit in user's buffer 
+>must be dropped,
+>
+>but SCTP doesn't drop it - you can read rest of datagram in next calls.
+>
 
-drivers/net/ethernet/marvell/mvpp2/mvpp2.h:844:2: warning: overflow in
-conversion from 'long unsigned int' to 'int' changes value from
-'18446744073709551584' to '-32' [-Woverflow]
-844 |  ((total_size) - MVPP2_SKB_HEADROOM - MVPP2_SKB_SHINFO_SIZE)
+Thanks for this useful information, now I see the differences and why we 
+should support both.
 
-This happens because MVPP2_SKB_SHINFO_SIZE, which is 320 bytes (which is
-already 64-byte aligned) on some architectures, actually gets ALIGN'd up
-to 512 bytes in the s390 case.
+I think is better to include them in the cover letter.
 
-So then, when this is invoked:
+I'm going to review the paches right now :-)
 
-    MVPP2_RX_MAX_PKT_SIZE(MVPP2_BM_SHORT_FRAME_SIZE)
-
-...that turns into:
-
-     704 - 224 - 512 == -32
-
-...which is not a good frame size to end up with! The warning above is a
-bit lucky: it notices a signed/unsigned bad behavior here, which leads
-to the real problem of a frame that is too short for its contents.
-
-Increase MVPP2_BM_SHORT_FRAME_SIZE by 32 (from 704 to 736), which is
-just exactly big enough. (The other values can't readily be changed
-without causing a lot of other problems.)
-
-Fixes: 07dd0a7aae7f ("mvpp2: add basic XDP support")
-Cc: Sven Auhagen <sven.auhagen@voleatech.de>
-Cc: Matteo Croce <mcroce@microsoft.com>
-Cc: David S. Miller <davem@davemloft.net>
-Signed-off-by: John Hubbard <jhubbard@nvidia.com>
----
-
-Hi,
-
-This patch is based on today's linux.git (commit 902e7f373fff).
-
-thanks,
-John Hubbard
-NVIDIA
-
-
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index b9fbc9f000f2..cf8acabb90ac 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -938,7 +938,7 @@ enum mvpp22_ptp_packet_format {
- #define MVPP2_BM_COOKIE_POOL_OFFS	8
- #define MVPP2_BM_COOKIE_CPU_OFFS	24
- 
--#define MVPP2_BM_SHORT_FRAME_SIZE	704	/* frame size 128 */
-+#define MVPP2_BM_SHORT_FRAME_SIZE	736	/* frame size 128 */
- #define MVPP2_BM_LONG_FRAME_SIZE	2240	/* frame size 1664 */
- #define MVPP2_BM_JUMBO_FRAME_SIZE	10432	/* frame size 9856 */
- /* BM short pool packet size
--- 
-2.32.0
+Stefano
 
