@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 228BF3E2D5A
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 17:12:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D1703E2D56
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 17:12:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244040AbhHFPM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 11:12:29 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:33830 "EHLO
+        id S243942AbhHFPMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 11:12:24 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:33818 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240199AbhHFPMV (ORCPT
+        with ESMTP id S233214AbhHFPMV (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 11:12:21 -0400
 Received: from salvia.lan (bl11-146-165.dsl.telepac.pt [85.244.146.165])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 0145660060;
-        Fri,  6 Aug 2021 17:11:25 +0200 (CEST)
+        by mail.netfilter.org (Postfix) with ESMTPSA id E65FB60058;
+        Fri,  6 Aug 2021 17:11:26 +0200 (CEST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 7/9] netfilter: nfnetlink_hook: Use same family as request message
-Date:   Fri,  6 Aug 2021 17:11:47 +0200
-Message-Id: <20210806151149.6356-8-pablo@netfilter.org>
+Subject: [PATCH net 8/9] netfilter: conntrack: remove offload_pickup sysctl again
+Date:   Fri,  6 Aug 2021 17:11:48 +0200
+Message-Id: <20210806151149.6356-9-pablo@netfilter.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210806151149.6356-1-pablo@netfilter.org>
 References: <20210806151149.6356-1-pablo@netfilter.org>
@@ -29,50 +29,224 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the same family as the request message, for consistency. The
-netlink payload provides sufficient information to describe the hook
-object, including the family.
+From: Florian Westphal <fw@strlen.de>
 
-This makes it easier to userspace to correlate the hooks are that
-visited by the packets for a certain family.
+These two sysctls were added because the hardcoded defaults (2 minutes,
+tcp, 30 seconds, udp) turned out to be too low for some setups.
 
-Fixes: e2cf17d3774c ("netfilter: add new hook nfnl subsystem")
+They appeared in 5.14-rc1 so it should be fine to remove it again.
+
+Marcelo convinced me that there should be no difference between a flow
+that was offloaded vs. a flow that was not wrt. timeout handling.
+Thus the default is changed to those for TCP established and UDP stream,
+5 days and 120 seconds, respectively.
+
+Marcelo also suggested to account for the timeout value used for the
+offloading, this avoids increase beyond the value in the conntrack-sysctl
+and will also instantly expire the conntrack entry with altered sysctls.
+
+Example:
+   nf_conntrack_udp_timeout_stream=60
+   nf_flowtable_udp_timeout=60
+
+This will remove offloaded udp flows after one minute, rather than two.
+
+An earlier version of this patch also cleared the ASSURED bit to
+allow nf_conntrack to evict the entry via early_drop (i.e., table full).
+However, it looks like we can safely assume that connection timed out
+via HW is still in established state, so this isn't needed.
+
+Quoting Oz:
+ [..] the hardware sends all packets with a set FIN flags to sw.
+ [..] Connections that are aged in hardware are expected to be in the
+ established state.
+
+In case it turns out that back-to-sw-path transition can occur for
+'dodgy' connections too (e.g., one side disappeared while software-path
+would have been in RETRANS timeout), we can adjust this later.
+
+Cc: Oz Shlomo <ozsh@nvidia.com>
+Cc: Paul Blakey <paulb@nvidia.com>
+Suggested-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nfnetlink_hook.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ Documentation/networking/nf_conntrack-sysctl.rst | 10 ----------
+ include/net/netns/conntrack.h                    |  2 --
+ net/netfilter/nf_conntrack_proto_tcp.c           |  1 -
+ net/netfilter/nf_conntrack_proto_udp.c           |  1 -
+ net/netfilter/nf_conntrack_standalone.c          | 16 ----------------
+ net/netfilter/nf_flow_table_core.c               | 11 ++++++++---
+ 6 files changed, 8 insertions(+), 33 deletions(-)
 
-diff --git a/net/netfilter/nfnetlink_hook.c b/net/netfilter/nfnetlink_hook.c
-index 7b0d4a317457..32eea785ae25 100644
---- a/net/netfilter/nfnetlink_hook.c
-+++ b/net/netfilter/nfnetlink_hook.c
-@@ -113,7 +113,7 @@ static int nfnl_hook_put_nft_chain_info(struct sk_buff *nlskb,
- static int nfnl_hook_dump_one(struct sk_buff *nlskb,
- 			      const struct nfnl_dump_hook_data *ctx,
- 			      const struct nf_hook_ops *ops,
--			      unsigned int seq)
-+			      int family, unsigned int seq)
- {
- 	u16 event = nfnl_msg_type(NFNL_SUBSYS_HOOK, NFNL_MSG_HOOK_GET);
- 	unsigned int portid = NETLINK_CB(nlskb).portid;
-@@ -124,7 +124,7 @@ static int nfnl_hook_dump_one(struct sk_buff *nlskb,
- 	char *module_name;
+diff --git a/Documentation/networking/nf_conntrack-sysctl.rst b/Documentation/networking/nf_conntrack-sysctl.rst
+index d31ed6c1cb0d..024d784157c8 100644
+--- a/Documentation/networking/nf_conntrack-sysctl.rst
++++ b/Documentation/networking/nf_conntrack-sysctl.rst
+@@ -191,19 +191,9 @@ nf_flowtable_tcp_timeout - INTEGER (seconds)
+         TCP connections may be offloaded from nf conntrack to nf flow table.
+         Once aged, the connection is returned to nf conntrack with tcp pickup timeout.
+ 
+-nf_flowtable_tcp_pickup - INTEGER (seconds)
+-        default 120
+-
+-        TCP connection timeout after being aged from nf flow table offload.
+-
+ nf_flowtable_udp_timeout - INTEGER (seconds)
+         default 30
+ 
+         Control offload timeout for udp connections.
+         UDP connections may be offloaded from nf conntrack to nf flow table.
+         Once aged, the connection is returned to nf conntrack with udp pickup timeout.
+-
+-nf_flowtable_udp_pickup - INTEGER (seconds)
+-        default 30
+-
+-        UDP connection timeout after being aged from nf flow table offload.
+diff --git a/include/net/netns/conntrack.h b/include/net/netns/conntrack.h
+index 37e5300c7e5a..fefd38db95b3 100644
+--- a/include/net/netns/conntrack.h
++++ b/include/net/netns/conntrack.h
+@@ -30,7 +30,6 @@ struct nf_tcp_net {
+ 	u8 tcp_ignore_invalid_rst;
+ #if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
+ 	unsigned int offload_timeout;
+-	unsigned int offload_pickup;
  #endif
- 	nlh = nfnl_msg_put(nlskb, portid, seq, event,
--			   NLM_F_MULTI, ops->pf, NFNETLINK_V0, 0);
-+			   NLM_F_MULTI, family, NFNETLINK_V0, 0);
- 	if (!nlh)
- 		goto nla_put_failure;
+ };
  
-@@ -264,7 +264,7 @@ static int nfnl_hook_dump(struct sk_buff *nlskb,
- 	ops = nf_hook_entries_get_hook_ops(e);
+@@ -44,7 +43,6 @@ struct nf_udp_net {
+ 	unsigned int timeouts[UDP_CT_MAX];
+ #if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
+ 	unsigned int offload_timeout;
+-	unsigned int offload_pickup;
+ #endif
+ };
  
- 	for (; i < e->num_hook_entries; i++) {
--		err = nfnl_hook_dump_one(nlskb, ctx, ops[i],
-+		err = nfnl_hook_dump_one(nlskb, ctx, ops[i], family,
- 					 cb->nlh->nlmsg_seq);
- 		if (err)
- 			break;
+diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
+index 3259416f2ea4..af5115e127cf 100644
+--- a/net/netfilter/nf_conntrack_proto_tcp.c
++++ b/net/netfilter/nf_conntrack_proto_tcp.c
+@@ -1478,7 +1478,6 @@ void nf_conntrack_tcp_init_net(struct net *net)
+ 
+ #if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
+ 	tn->offload_timeout = 30 * HZ;
+-	tn->offload_pickup = 120 * HZ;
+ #endif
+ }
+ 
+diff --git a/net/netfilter/nf_conntrack_proto_udp.c b/net/netfilter/nf_conntrack_proto_udp.c
+index 698fee49e732..f8e3c0d2602f 100644
+--- a/net/netfilter/nf_conntrack_proto_udp.c
++++ b/net/netfilter/nf_conntrack_proto_udp.c
+@@ -271,7 +271,6 @@ void nf_conntrack_udp_init_net(struct net *net)
+ 
+ #if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
+ 	un->offload_timeout = 30 * HZ;
+-	un->offload_pickup = 30 * HZ;
+ #endif
+ }
+ 
+diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
+index 214d9f9e499b..e84b499b7bfa 100644
+--- a/net/netfilter/nf_conntrack_standalone.c
++++ b/net/netfilter/nf_conntrack_standalone.c
+@@ -575,7 +575,6 @@ enum nf_ct_sysctl_index {
+ 	NF_SYSCTL_CT_PROTO_TIMEOUT_TCP_UNACK,
+ #if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
+ 	NF_SYSCTL_CT_PROTO_TIMEOUT_TCP_OFFLOAD,
+-	NF_SYSCTL_CT_PROTO_TIMEOUT_TCP_OFFLOAD_PICKUP,
+ #endif
+ 	NF_SYSCTL_CT_PROTO_TCP_LOOSE,
+ 	NF_SYSCTL_CT_PROTO_TCP_LIBERAL,
+@@ -585,7 +584,6 @@ enum nf_ct_sysctl_index {
+ 	NF_SYSCTL_CT_PROTO_TIMEOUT_UDP_STREAM,
+ #if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
+ 	NF_SYSCTL_CT_PROTO_TIMEOUT_UDP_OFFLOAD,
+-	NF_SYSCTL_CT_PROTO_TIMEOUT_UDP_OFFLOAD_PICKUP,
+ #endif
+ 	NF_SYSCTL_CT_PROTO_TIMEOUT_ICMP,
+ 	NF_SYSCTL_CT_PROTO_TIMEOUT_ICMPV6,
+@@ -776,12 +774,6 @@ static struct ctl_table nf_ct_sysctl_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_jiffies,
+ 	},
+-	[NF_SYSCTL_CT_PROTO_TIMEOUT_TCP_OFFLOAD_PICKUP] = {
+-		.procname	= "nf_flowtable_tcp_pickup",
+-		.maxlen		= sizeof(unsigned int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_jiffies,
+-	},
+ #endif
+ 	[NF_SYSCTL_CT_PROTO_TCP_LOOSE] = {
+ 		.procname	= "nf_conntrack_tcp_loose",
+@@ -832,12 +824,6 @@ static struct ctl_table nf_ct_sysctl_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_jiffies,
+ 	},
+-	[NF_SYSCTL_CT_PROTO_TIMEOUT_UDP_OFFLOAD_PICKUP] = {
+-		.procname	= "nf_flowtable_udp_pickup",
+-		.maxlen		= sizeof(unsigned int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_jiffies,
+-	},
+ #endif
+ 	[NF_SYSCTL_CT_PROTO_TIMEOUT_ICMP] = {
+ 		.procname	= "nf_conntrack_icmp_timeout",
+@@ -1018,7 +1004,6 @@ static void nf_conntrack_standalone_init_tcp_sysctl(struct net *net,
+ 
+ #if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
+ 	table[NF_SYSCTL_CT_PROTO_TIMEOUT_TCP_OFFLOAD].data = &tn->offload_timeout;
+-	table[NF_SYSCTL_CT_PROTO_TIMEOUT_TCP_OFFLOAD_PICKUP].data = &tn->offload_pickup;
+ #endif
+ 
+ }
+@@ -1111,7 +1096,6 @@ static int nf_conntrack_standalone_init_sysctl(struct net *net)
+ 	table[NF_SYSCTL_CT_PROTO_TIMEOUT_UDP_STREAM].data = &un->timeouts[UDP_CT_REPLIED];
+ #if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
+ 	table[NF_SYSCTL_CT_PROTO_TIMEOUT_UDP_OFFLOAD].data = &un->offload_timeout;
+-	table[NF_SYSCTL_CT_PROTO_TIMEOUT_UDP_OFFLOAD_PICKUP].data = &un->offload_pickup;
+ #endif
+ 
+ 	nf_conntrack_standalone_init_tcp_sysctl(net, table);
+diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
+index 551976e4284c..8788b519255e 100644
+--- a/net/netfilter/nf_flow_table_core.c
++++ b/net/netfilter/nf_flow_table_core.c
+@@ -183,7 +183,7 @@ static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
+ 	const struct nf_conntrack_l4proto *l4proto;
+ 	struct net *net = nf_ct_net(ct);
+ 	int l4num = nf_ct_protonum(ct);
+-	unsigned int timeout;
++	s32 timeout;
+ 
+ 	l4proto = nf_ct_l4proto_find(l4num);
+ 	if (!l4proto)
+@@ -192,15 +192,20 @@ static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
+ 	if (l4num == IPPROTO_TCP) {
+ 		struct nf_tcp_net *tn = nf_tcp_pernet(net);
+ 
+-		timeout = tn->offload_pickup;
++		timeout = tn->timeouts[TCP_CONNTRACK_ESTABLISHED];
++		timeout -= tn->offload_timeout;
+ 	} else if (l4num == IPPROTO_UDP) {
+ 		struct nf_udp_net *tn = nf_udp_pernet(net);
+ 
+-		timeout = tn->offload_pickup;
++		timeout = tn->timeouts[UDP_CT_REPLIED];
++		timeout -= tn->offload_timeout;
+ 	} else {
+ 		return;
+ 	}
+ 
++	if (timeout < 0)
++		timeout = 0;
++
+ 	if (nf_flow_timeout_delta(ct->timeout) > (__s32)timeout)
+ 		ct->timeout = nfct_time_stamp + timeout;
+ }
 -- 
 2.20.1
 
