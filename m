@@ -2,84 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8DB23E3216
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 01:22:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2678C3E321A
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 01:30:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244755AbhHFXWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 19:22:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46268 "EHLO mail.kernel.org"
+        id S243922AbhHFXaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 19:30:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46752 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230280AbhHFXWw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Aug 2021 19:22:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 96B2061158;
-        Fri,  6 Aug 2021 23:22:35 +0000 (UTC)
+        id S230280AbhHFXaV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Aug 2021 19:30:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7664B61104;
+        Fri,  6 Aug 2021 23:30:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628292155;
-        bh=C6ywIFcePa4Rg5+pKYASIbZl4SqTp+oziLoHdx7Hrco=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Q9iCWQcw5s6RiIsyZ847VZIMq8WVPEEgek58P0pI7hRWotpKq5TH348eaO7wzJIZk
-         O0d6J96F5tu097KlybmyZxdHWtf+jr+0Ce/GmMRC3pCVa9uwGS1IJxdg96En9eHCRq
-         NfH0XP0cHulSofFC67dX3reaAS/VhrejllTBUfpMZ2IU8M7JSNY9prpfT6UubJdoux
-         GZCaUDAl3ocFCa6U+TSQVX1ILxczc6GX5pcemzojLzIOSS8TIM22tMbLiupUO1WSJO
-         cglm765PkDh1NMiJXQYbalZiT+TdykHdRFg4d384MfWbRIuYBvHz3sTDSQDwv2PxKG
-         U1eOgSKWQgaBA==
-Date:   Fri, 6 Aug 2021 16:22:34 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Martin Varghese <martin.varghese@nokia.com>,
-        Willem de Bruijn <willemb@google.com>
-Subject: Re: [PATCH net] bareudp: Fix invalid read beyond skb's linear data
-Message-ID: <20210806162234.69334902@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <7741c46545c6ef02e70c80a9b32814b22d9616b3.1628264975.git.gnault@redhat.com>
-References: <7741c46545c6ef02e70c80a9b32814b22d9616b3.1628264975.git.gnault@redhat.com>
+        s=k20201202; t=1628292605;
+        bh=DYy+ZIaxswpVjqjePpN6rabkMlJ9RAKKiv/OClreniw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=lsUKtkBhihz2HQW6zhyViztoJJCpVlr8W4V6CNJzSX6LPRQk1oaqbBRJZdfDSYepR
+         HRQxbTKiPmFX198r5SpWV+VUhY+Y+Tg6LfKU1nuiVvsPtkftyzwpHXZZ4OKaxozqhN
+         Jdod+702tD9TjWdevbxOa77iNjTftyZ9dNI9YSky9mQ8ARcg1tgAh+Pl2SzZBpE0wa
+         HfxsjtYlIIvVg41Ra3+FHVjjaAiiHK71VRwAJAU+4dT/oj3WLOIDTE86ZF8MISC6iJ
+         QsIjySZOa+y1f5EEvzvzA+TDQCz80gBnd6mFv0BMs4+yZSKo4S7wCOtWSwtLI0+6X2
+         1NTiEbKX222TQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 657DD60A7C;
+        Fri,  6 Aug 2021 23:30:05 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: ethernet: ti: davinci_cpdma: revert "drop frame
+ padding"
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162829260541.19160.13562237803383676607.git-patchwork-notify@kernel.org>
+Date:   Fri, 06 Aug 2021 23:30:05 +0000
+References: <20210806142809.15069-1-grygorii.strashko@ti.com>
+In-Reply-To: <20210806142809.15069-1-grygorii.strashko@ti.com>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, ben.hutchings@essensium.com,
+        vigneshr@ti.com, linux-omap@vger.kernel.org, lokeshvutla@ti.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 6 Aug 2021 17:52:06 +0200 Guillaume Nault wrote:
-> Data beyond the UDP header might not be part of the skb's linear data.
-> Use skb_copy_bits() instead of direct access to skb->data+X, so that
-> we read the correct bytes even on a fragmented skb.
-> 
-> Fixes: 4b5f67232d95 ("net: Special handling for IP & MPLS.")
-> Signed-off-by: Guillaume Nault <gnault@redhat.com>
-> ---
->  drivers/net/bareudp.c | 16 +++++++++++-----
->  1 file changed, 11 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
-> index a7ee0af1af90..54e321a695ce 100644
-> --- a/drivers/net/bareudp.c
-> +++ b/drivers/net/bareudp.c
-> @@ -71,12 +71,18 @@ static int bareudp_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
->  		family = AF_INET6;
->  
->  	if (bareudp->ethertype == htons(ETH_P_IP)) {
-> -		struct iphdr *iphdr;
-> +		__u8 ipversion;
->  
-> -		iphdr = (struct iphdr *)(skb->data + BAREUDP_BASE_HLEN);
-> -		if (iphdr->version == 4) {
-> -			proto = bareudp->ethertype;
-> -		} else if (bareudp->multi_proto_mode && (iphdr->version == 6)) {
-> +		if (skb_copy_bits(skb, BAREUDP_BASE_HLEN, &ipversion,
-> +				  sizeof(ipversion))) {
+Hello:
 
-No preference just curious - could skb_header_pointer() be better suited?
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-> +			bareudp->dev->stats.rx_dropped++;
-> +			goto drop;
-> +		}
-> +		ipversion >>= 4;
-> +
-> +		if (ipversion == 4) {
-> +			proto = htons(ETH_P_IP);
-> +		} else if (ipversion == 6 && bareudp->multi_proto_mode) {
->  			proto = htons(ETH_P_IPV6);
->  		} else {
->  			bareudp->dev->stats.rx_dropped++;
+On Fri, 6 Aug 2021 17:28:09 +0300 you wrote:
+> This reverts commit 9ffc513f95ee ("net: ethernet: ti: davinci_cpdma: drop
+> frame padding") which has depndency from not yet merged patch [1] and so
+> breaks cpsw_new driver.
+> 
+> [1] https://patchwork.kernel.org/project/netdevbpf/patch/20210805145511.12016-1-grygorii.strashko@ti.com/
+> Fixes: 9ffc513f95ee ("net: ethernet: ti: davinci_cpdma: drop frame padding")
+> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] net: ethernet: ti: davinci_cpdma: revert "drop frame padding"
+    https://git.kernel.org/netdev/net-next/c/35ba6abb73e4
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
