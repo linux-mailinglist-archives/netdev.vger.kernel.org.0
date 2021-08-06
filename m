@@ -2,75 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0827E3E2A27
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 13:53:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED3D13E2A2E
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 13:56:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343561AbhHFLws (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 07:52:48 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:33318 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343505AbhHFLwk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 07:52:40 -0400
-Received: from salvia.lan (bl11-146-165.dsl.telepac.pt [85.244.146.165])
-        by mail.netfilter.org (Postfix) with ESMTPSA id ABE956005B;
-        Fri,  6 Aug 2021 13:51:44 +0200 (CEST)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 9/9] netfilter: nfnetlink_hook: translate inet ingress to netdev
-Date:   Fri,  6 Aug 2021 13:52:07 +0200
-Message-Id: <20210806115207.2976-10-pablo@netfilter.org>
+        id S243630AbhHFL5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 07:57:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60970 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229578AbhHFL5F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Aug 2021 07:57:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A6C40610CB;
+        Fri,  6 Aug 2021 11:56:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628251010;
+        bh=r8kvqaMszSSwZoRgi7xAfkmVF6R+Ig+dxYweEdMXW0k=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ptw6kqOWyFt2EeI6RFgPcRgKeGMUgfdiAeewWhju8IcH10fruA7ERJKxjLchmHTpg
+         K8QNhgDmoumjP+rrG8onjydbOF052LkbMXEqMxJDws6IYS3LDT5IxXr87F3jnVWk2B
+         xo9CoU00FQwE9Ah/hEE/6fP/ryXXP+Dksi1UAB53QyGTKui8vQv/JIHD9pL2LlQzFX
+         hWHnefZzEooA3wcMN8cWYEdKSEnAFHbWYMzZmzk3/dP8ufPIiTFV/4UgbOoORkKZTQ
+         cKMl4ArrjN22YGGTfGkGUY9SKgNhGMyNZkJtFfTS2gGDyhEXkEi7auGbPARMngX/Rq
+         4iyFLLw+1MqGw==
+From:   Mark Brown <broonie@kernel.org>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: linux-next: manual merge of the bluetooth tree with the net tree
+Date:   Fri,  6 Aug 2021 12:56:33 +0100
+Message-Id: <20210806115633.23180-1-broonie@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210806115207.2976-1-pablo@netfilter.org>
-References: <20210806115207.2976-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The NFPROTO_INET pseudofamily is not exposed through this new netlink
-interface. The netlink dump either shows NFPROTO_IPV4 or NFPROTO_IPV6
-for NFPROTO_INET prerouting/input/forward/output/postrouting hooks.
-The NFNLA_CHAIN_FAMILY attribute provides the family chain, which
-specifies if this hook applies to inet traffic only (either IPv4 or
-IPv6).
+Hi all,
 
-Translate the inet/ingress hook to netdev/ingress to fully hide the
-NFPROTO_INET implementation details.
+Today's linux-next merge of the bluetooth tree got conflicts in:
 
-Fixes: e2cf17d3774c ("netfilter: add new hook nfnl subsystem")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nfnetlink_hook.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+  net/bluetooth/hci_sysfs.c
+  net/bluetooth/hci_core.c
+  include/net/bluetooth/hci_core.h
 
-diff --git a/net/netfilter/nfnetlink_hook.c b/net/netfilter/nfnetlink_hook.c
-index 32eea785ae25..f554e2ea32ee 100644
---- a/net/netfilter/nfnetlink_hook.c
-+++ b/net/netfilter/nfnetlink_hook.c
-@@ -119,6 +119,7 @@ static int nfnl_hook_dump_one(struct sk_buff *nlskb,
- 	unsigned int portid = NETLINK_CB(nlskb).portid;
- 	struct nlmsghdr *nlh;
- 	int ret = -EMSGSIZE;
-+	u32 hooknum;
- #ifdef CONFIG_KALLSYMS
- 	char sym[KSYM_SYMBOL_LEN];
- 	char *module_name;
-@@ -156,7 +157,12 @@ static int nfnl_hook_dump_one(struct sk_buff *nlskb,
- 		goto nla_put_failure;
- #endif
- 
--	ret = nla_put_be32(nlskb, NFNLA_HOOK_HOOKNUM, htonl(ops->hooknum));
-+	if (ops->pf == NFPROTO_INET && ops->hooknum == NF_INET_INGRESS)
-+		hooknum = NF_NETDEV_INGRESS;
-+	else
-+		hooknum = ops->hooknum;
-+
-+	ret = nla_put_be32(nlskb, NFNLA_HOOK_HOOKNUM, htonl(hooknum));
- 	if (ret)
- 		goto nla_put_failure;
- 
--- 
-2.20.1
+between commit:
 
+  e04480920d1e ("Bluetooth: defer cleanup of resources in hci_unregister_dev()")
+
+from the net tree and commit:
+
+  58ce6d5b271a ("Bluetooth: defer cleanup of resources in hci_unregister_dev()")
+
+from the bluetooth tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+diff --cc include/net/bluetooth/hci_core.h
+index db4312e44d47,a7d06d7da602..000000000000
+--- a/include/net/bluetooth/hci_core.h
++++ b/include/net/bluetooth/hci_core.h
+diff --cc net/bluetooth/hci_core.c
+index e1a545c8a69f,cb2e9e513907..000000000000
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+diff --cc net/bluetooth/hci_sysfs.c
+index b69d88b88d2e,ebf282d1eb2b..000000000000
+--- a/net/bluetooth/hci_sysfs.c
++++ b/net/bluetooth/hci_sysfs.c
