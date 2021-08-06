@@ -2,87 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32CC83E2112
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 03:37:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1D513E2115
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 03:40:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240621AbhHFBh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 21:37:29 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:13283 "EHLO
+        id S240831AbhHFBk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 21:40:26 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:13284 "EHLO
         szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239868AbhHFBh2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 21:37:28 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Ggnyp1xslz83FG;
-        Fri,  6 Aug 2021 09:32:18 +0800 (CST)
+        with ESMTP id S232199AbhHFBkY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 21:40:24 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Ggp293gK2z83FW;
+        Fri,  6 Aug 2021 09:35:13 +0800 (CST)
 Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 6 Aug 2021 09:37:10 +0800
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Fri, 6 Aug 2021
- 09:37:10 +0800
-Subject: Re: [PATCH net-next 4/4] net: hns3: support skb's frag page recycling
- based on page pool
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <alexander.duyck@gmail.com>,
-        <linux@armlinux.org.uk>, <mw@semihalf.com>,
-        <linuxarm@openeuler.org>, <yisen.zhuang@huawei.com>,
-        <salil.mehta@huawei.com>, <thomas.petazzoni@bootlin.com>,
-        <hawk@kernel.org>, <ilias.apalodimas@linaro.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
-        <akpm@linux-foundation.org>, <peterz@infradead.org>,
-        <will@kernel.org>, <willy@infradead.org>, <vbabka@suse.cz>,
-        <fenghua.yu@intel.com>, <guro@fb.com>, <peterx@redhat.com>,
-        <feng.tang@intel.com>, <jgg@ziepe.ca>, <mcroce@microsoft.com>,
-        <hughd@google.com>, <jonathan.lemon@gmail.com>, <alobakin@pm.me>,
-        <willemb@google.com>, <wenxu@ucloud.cn>, <cong.wang@bytedance.com>,
-        <haokexin@gmail.com>, <nogikh@google.com>, <elver@google.com>,
-        <yhs@fb.com>, <kpsingh@kernel.org>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <chenhao288@hisilicon.com>
-References: <1628161526-29076-1-git-send-email-linyunsheng@huawei.com>
- <1628161526-29076-5-git-send-email-linyunsheng@huawei.com>
- <20210805182006.66133c8e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ 15.1.2176.2; Fri, 6 Aug 2021 09:40:06 +0800
+Received: from localhost.localdomain (10.69.192.56) by
+ dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 6 Aug 2021 09:40:05 +0800
 From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <72f6a642-2efc-b2fd-7d4e-f099b63c0703@huawei.com>
-Date:   Fri, 6 Aug 2021 09:37:10 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <hawk@kernel.org>, <ilias.apalodimas@linaro.org>,
+        <mcroce@microsoft.com>, <willy@infradead.org>,
+        <alexander.duyck@gmail.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH net V2] page_pool: mask the page->signature before the checking
+Date:   Fri, 6 Aug 2021 09:39:07 +0800
+Message-ID: <1628213947-39384-1-git-send-email-linyunsheng@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-In-Reply-To: <20210805182006.66133c8e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme720-chm.china.huawei.com (10.1.199.116) To
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.69.192.56]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
  dggpemm500005.china.huawei.com (7.185.36.74)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/8/6 9:20, Jakub Kicinski wrote:
-> On Thu, 5 Aug 2021 19:05:26 +0800 Yunsheng Lin wrote:
->> This patch adds skb's frag page recycling support based on
->> the frag page support in page pool.
->>
->> The performance improves above 10~20% for single thread iperf
->> TCP flow with IOMMU disabled when iperf server and irq/NAPI
->> have a different CPU.
->>
->> The performance improves about 135%(14Gbit to 33Gbit) for single
->> thread iperf TCP flow IOMMU is in strict mode and iperf server
->> shares the same cpu with irq/NAPI.
->>
->> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> 
-> This patch does not apply cleanly to net-next, please rebase 
-> if you're targeting that tree.
+As mentioned in commit c07aea3ef4d4 ("mm: add a signature in
+struct page"):
+"The page->signature field is aliased to page->lru.next and
+page->compound_head."
 
-It seems I forgot to rebase the net-next tree before doing
-"git format-patch", thanks for mentioning that.
+And as the comment in page_is_pfmemalloc():
+"lru.next has bit 1 set if the page is allocated from the
+pfmemalloc reserves. Callers may simply overwrite it if they
+do not need to preserve that information."
 
-> .
-> 
+The page->signature is OR’ed with PP_SIGNATURE when a page is
+allocated in page pool, see __page_pool_alloc_pages_slow(),
+and page->signature is checked directly with PP_SIGNATURE in
+page_pool_return_skb_page(), which might cause resoure leaking
+problem for a page from page pool if bit 1 of lru.next is set
+for a pfmemalloc page. What happens here is that the original
+pp->signature is OR'ed with PP_SIGNATURE after the allocation
+in order to preserve any existing bits(such as the bit 1, used
+to indicate a pfmemalloc page), so when those bits are present,
+those page is not considered to be from page pool and the DMA
+mapping of those pages will be left stale.
+
+As bit 0 is for page->compound_head, So mask both bit 0/1 before
+the checking in page_pool_return_skb_page(). And we will return
+those pfmemalloc pages back to the page allocator after cleaning
+up the DMA mapping.
+
+Fixes: 6a5bcd84e886 ("page_pool: Allow drivers to hint on SKB recycling")
+Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+---
+V2: explain more on why we need to mask those bits.
+---
+ net/core/page_pool.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index 5e4eb45..8ab7b40 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -634,7 +634,15 @@ bool page_pool_return_skb_page(struct page *page)
+ 	struct page_pool *pp;
+ 
+ 	page = compound_head(page);
+-	if (unlikely(page->pp_magic != PP_SIGNATURE))
++
++	/* page->pp_magic is OR'ed with PP_SIGNATURE after the allocation
++	 * in order to preserve any existing bits, such as bit 0 for the
++	 * head page of compound page and bit 1 for pfmemalloc page, so
++	 * mask those bits for freeing side when doing below checking,
++	 * and page_is_pfmemalloc() is checked in __page_pool_put_page()
++	 * to avoid recycling the pfmemalloc page.
++	 */
++	if (unlikely((page->pp_magic & ~0x3UL) != PP_SIGNATURE))
+ 		return false;
+ 
+ 	pp = page->pp;
+-- 
+2.7.4
+
