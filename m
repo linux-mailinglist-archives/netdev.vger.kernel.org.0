@@ -2,96 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65C183E268B
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 10:57:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56BD93E268E
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 10:58:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243851AbhHFI5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 04:57:54 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:52785 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243425AbhHFI5y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Aug 2021 04:57:54 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1628240258; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=fpyjPu+FBT9NUHrFq7Z7ZZkGRCTZTAek+H6Ad5eVnrk=;
- b=qsfYY6n9PV75GQFIFtV9cL7zKBU6wlPGl2yjKRlySzpAA5oBJQeW7emu/6xyDu4R8vxMscm+
- 9zecT5bUdjE4WSYefHAcSZAr/yGpZjilD5/Il/4jEujIhtvaNzYZtzdSN5UVvmX+bZiAqv3n
- CSLY+M7IdCW8+YPxHxaKluz0OJI=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
- 610cf981041a739c46f62c7e (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 06 Aug 2021 08:57:37
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 25802C43460; Fri,  6 Aug 2021 08:57:37 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 67D26C433D3;
-        Fri,  6 Aug 2021 08:57:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 67D26C433D3
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S243914AbhHFI6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 04:58:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38198 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243591AbhHFI6j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 04:58:39 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE2DC061798
+        for <netdev@vger.kernel.org>; Fri,  6 Aug 2021 01:58:22 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id c25so142287ejb.3
+        for <netdev@vger.kernel.org>; Fri, 06 Aug 2021 01:58:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Iw/Qld2BXHBhuZYypT5bN2CCKgDqDnynAHMjC5IKYhw=;
+        b=bAuhZuxuGSyYxPQn5X+Har7aoOkIEccdwEP6EtLovSPxgCEtOc1Xu8fMKZ740wXuY4
+         8y2h444bZoljFnbwX5td/YoN0oYU9d+iQM2ArWXpJtbR0ZAajjYfZGt4MK5VLkkKJPon
+         n7qiFiw/n6OArpr/D8vO4mauFptmiqu9sJk3jE9lrSg2cH4naqDt7atF29DovPILkgEX
+         tAPm0vBv6ySPI2IxPGnFpeDMvSiFvRPzGLk1kbkIokGld4ot4pQGAVNAmU6g/sKwvkAx
+         l02Ocaklk5fmuT8P1yC2ib+wjgfmDct3ga28KyLUNKVxCQi+YFe80w3g3838FNNL8wCZ
+         AzFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Iw/Qld2BXHBhuZYypT5bN2CCKgDqDnynAHMjC5IKYhw=;
+        b=GfpS661fve+P+9zknhASn3ZmhmDbJRiZdWfpiwzma5p6RJL2fAs9G1FFWw0NmoCBse
+         78CMO1RdePBcLFAgBrI4SfoC4JjEtZZK+MAbQNTE4xKOtEB1K8j94pG3IhqkHdL27uwE
+         3zi1SPnXChT7LaM3TWXa/fO/ygiPAb0bWcIgDQR5tcIoiK8PjoO+MaPP7Jhns79P7oA+
+         ZREkjMJrRiymBh8GOBpogARnkV04NDgs4UQl5XWirxERmST9vytt1FtuP06r1JeqWpa1
+         NOvIOxBs2VuzILM0o0ejWeFJo1BqKDpnNbsWISFi802yRBDYRCs2qRSZ3KlPwbgFpXTf
+         GuIw==
+X-Gm-Message-State: AOAM533OkivSay1eXAmKiL8ViM+FT67Kn744KcxOZS1O2O17Mzvtdmbm
+        gAXg/SnbeCEm8GPZy/JdySfzMQ==
+X-Google-Smtp-Source: ABdhPJwY5LT29MLFMd+DAew3TMJoytUphZsKpnjrTCeSOTD1wf0nQmwfAyslJIIt2cMFwxki8xFdWQ==
+X-Received: by 2002:a17:906:138d:: with SMTP id f13mr8998205ejc.34.1628240301420;
+        Fri, 06 Aug 2021 01:58:21 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net (94.105.102.61.dyn.edpnet.net. [94.105.102.61])
+        by smtp.gmail.com with ESMTPSA id mh10sm2648924ejb.32.2021.08.06.01.58.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Aug 2021 01:58:21 -0700 (PDT)
+To:     Yajun Deng <yajun.deng@linux.dev>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210806063847.21639-1-yajun.deng@linux.dev>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: Re: [PATCH net-next] net: Remove redundant if statements
+Message-ID: <4b175501-50c1-fedf-1eaf-05c0de67c3c8@tessares.net>
+Date:   Fri, 6 Aug 2021 10:58:20 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: intersil: remove obsolete prism54 wireless driver
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210713054025.32006-1-lukas.bulwahn@gmail.com>
-References: <20210713054025.32006-1-lukas.bulwahn@gmail.com>
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     linux-wireless@vger.kernel.org,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-Id: <20210806085737.25802C43460@smtp.codeaurora.org>
-Date:   Fri,  6 Aug 2021 08:57:37 +0000 (UTC)
+In-Reply-To: <20210806063847.21639-1-yajun.deng@linux.dev>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
+Hi Yajun,
 
-> Commit 1d89cae1b47d ("MAINTAINERS: mark prism54 obsolete") indicated the
-> prism54 driver as obsolete in July 2010.
-> 
-> Now, after being exposed for ten years to refactoring, general tree-wide
-> changes and various janitor clean-up, it is really time to delete the
-> driver for good.
-> 
-> This was discovered as part of a checkpatch evaluation, investigating all
-> reports of checkpatch's WARNING:OBSOLETE check.
-> 
-> p54 replaces prism54 so users should be unaffected. There was a one off chipset
-> someone long ago reported that p54 didn't work with but the reporter never
-> followed up on that. Additionally, distributions have been blacklisting prism54
-> for years now.
-> 
-> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> Acked-by: Luis Chamberlain <mcgrof@kernel.org>
+Thank you for sharing this patch.
 
-Patch applied to wireless-drivers-next.git, thanks.
+On 06/08/2021 08:38, Yajun Deng wrote:
+> The if statement already move into sock_{put , hold},
+> just remove it.
 
-d249ff28b1d8 intersil: remove obsolete prism54 wireless driver
+I was wondering in which subtree you had 'sock_put' checking the socket
+pointer but then I realised you sent another patch just before adding
+this check: "net: sock: add the case if sk is NULL"
 
+Please next time send them in the same series to clearly indicate that
+this is the 2nd patch (2/2) and it depends on patch 1/2.
+
+Related to the modification in MPTCP part: it looks OK but we do a few
+other calls to 'sock_put()' where we don't need to check if the socket
+is NULL or not.
+
+In other words, if your patch "net: sock: add the case if sk is NULL" is
+accepted, then the modification in "net/mptcp/subflow.c" is OK for us.
+
+Cheers,
+Matt
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210713054025.32006-1-lukas.bulwahn@gmail.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
