@@ -2,122 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFE2D3E218F
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 04:34:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BC273E2190
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 04:34:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239381AbhHFCec (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 22:34:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37654 "EHLO
+        id S240047AbhHFCex (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 22:34:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230247AbhHFCeb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 22:34:31 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8197BC061798;
-        Thu,  5 Aug 2021 19:34:15 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id ca5so13682953pjb.5;
-        Thu, 05 Aug 2021 19:34:15 -0700 (PDT)
+        with ESMTP id S230093AbhHFCes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 22:34:48 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 162E9C061798;
+        Thu,  5 Aug 2021 19:34:33 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id l19so13785103pjz.0;
+        Thu, 05 Aug 2021 19:34:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l3yFM7Aq+tdblJGSgD+OMG6ojcZodZ4OUSc1uTav2Sc=;
-        b=fqGqRuyaGjfkMG0jTnz+J4dGDwe6OmD/2S+5bEjgxIJUwN4E3oPOReLv2bsT85zHgx
-         biubkZpKP6oRCZXdnphdz9+aHr3phUAwHbYAy4mJ99JzPqdiDric4pqEjZS4jiBqVxjx
-         hCfANGhq3mcbyzzcE10ZUcQBdI5AEotGqAp+5IT9N4tJDlR6yEap9HdMmDEvdTrx8qoJ
-         AbDLDsfqdH3W4Z7H6xLLPbexO9HRvSTlvJRbGLG/0e/76mO2InCuQWuFU4ISAp58h+ni
-         JbadzriuonGlK6Yc6i1uWiPEnVaFfAD6XsATWV7bhXboXdAzwc3VkkfHMcW2EV9vZBFa
-         dDhg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=YTL8rATwgxSuPGDhJbThhFcHRN/9Vn25uHPn0zaGPNM=;
+        b=X5I4I5hSZKO0FqOT8VVX6wA9MndpzlwOJSH1gYjIYGXpIfLfM3aat5kka3JlkO4NFn
+         ZWhYW53gk9CUN+zYaKp3kz3eDOopUYqQNjPGwZdn1f8ib0ZyQfE4SUxwtV7nq6+dmrGP
+         Vv9GchnSClXOq96Dy2xcpzTChtwai4GvWHp/BJbKMn8d6tK7CoQod1katCU/OUcNvOSz
+         cGrFcFlZFrfhxyTQqLLmh9m8yV5OXB2dRqqP/f52j8elj3xFjJNJdpyNbA51iyIb1HQN
+         I1CMXbd8q58ux+urT/kRwZfbaLfAIEQV0D6s9FQhHOUj3Ui/kDt3SgYe12XQnsVNBJcr
+         +5BQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l3yFM7Aq+tdblJGSgD+OMG6ojcZodZ4OUSc1uTav2Sc=;
-        b=eA2vewHAScwmXcofRlO0EyQRqbPJmcxyIR8J3dHeUwFM2bcPTa5KGyLAGMB1+DLVDB
-         7ydaraQ1txn9HZfQsBhBOuQDcFDPopp3UuIyMR7mNfgBBNDbQF6K2xbJBezMdrseNtGw
-         xYmUylHGfZ5eSeTAIX7tFMXLY3f4NFrAeKsLaYnoEv0C+K0joeqQ/I0fTAafzUsIJgTU
-         v0U9QH7z0MgiVMUTHOaURvmPEMIzi5roeVgo15vckbbrS66WoCbHFQO0XY3peBDMHxSc
-         sJoDP17Hwq5bWYQ9ITwn2N69Hkcwa1LdAAJJUKOQa0QBvZKjZFGAAQEzJna4qyotzyd+
-         AH5A==
-X-Gm-Message-State: AOAM5334uR8d0xAz2xIqwh1JHLv6HGpykkQQVYP5+DU7YDh3TVVyj1oe
-        lzgEBdPUt0S/X6cYkuhfjerNLQbZ66F8igMniR0=
-X-Google-Smtp-Source: ABdhPJyhn5g+f8LxB40t6eXCSwF+4XZmoleFKgRrFnEholrkMEzobxwR+84qJIMqoz5pJzWpnr4zKogtCiDCERfRuK4=
-X-Received: by 2002:a63:154a:: with SMTP id 10mr2893567pgv.428.1628217255025;
- Thu, 05 Aug 2021 19:34:15 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=YTL8rATwgxSuPGDhJbThhFcHRN/9Vn25uHPn0zaGPNM=;
+        b=QTMXsiMwR679yCQHfEF37zlHwDzxfERdAEm0mJKWpaXZRhXaWwI4aw1BgCeXUZhH6q
+         inDAoQ6E689NRFCe4lT/9AuJti3lnadoOtp8Urf6CyK3v+dhMpHEJqE/3mPsqQfQxG24
+         SNgEcVy/CRvD9avSJcRnvk/pzpuz0dV2oD77ql7Wc0mhlnNtl/MdekXw/LmKiXXgwyNn
+         lPfGswXg8mE1hAPGX7cIUsbTzh8Dj7USszpQvVz4HUKn0L0OdDXGlI9MBw6UZPthVgsi
+         4fA5sQIIfK6EUjkZb8R1LpD1ZzBGxdZM/3p01r2Uu44HyL+JgR54iigH6Gio7QDq76SM
+         W/Hg==
+X-Gm-Message-State: AOAM533DwkpcjVPw48fr3BMiPctsYCJpxuaGuJmX1XCylq2Tqlcvnupn
+        FAALLjJj8lAKxL4vItbQNgs=
+X-Google-Smtp-Source: ABdhPJwidkXXkUXiIi8CIl8fimh1qfF44CfoC43Ahyp84TqgG6PJhxxSaLVSz+5tjMZn88RSbcxqSQ==
+X-Received: by 2002:a17:90a:1b2a:: with SMTP id q39mr7615105pjq.219.1628217272638;
+        Thu, 05 Aug 2021 19:34:32 -0700 (PDT)
+Received: from haswell-ubuntu20.lan ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id b5sm7190597pjq.2.2021.08.05.19.34.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Aug 2021 19:34:31 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: mt7530: drop untagged frames on VLAN-aware ports without PVID
+Date:   Fri,  6 Aug 2021 10:34:23 +0800
+Message-Id: <20210806023423.519560-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210806001740.cayorz3vlfrvk75l@skbuf>
+References: <20210805172315.362165-1-dqfext@gmail.com> <20210806001740.cayorz3vlfrvk75l@skbuf>
 MIME-Version: 1.0
-References: <20210704190252.11866-1-xiyou.wangcong@gmail.com>
- <20210704190252.11866-12-xiyou.wangcong@gmail.com> <CAEf4BzaccTCGeONN4MB5iRBZfmzfS3rR0R6XEPVmUKukrLSJ3w@mail.gmail.com>
-In-Reply-To: <CAEf4BzaccTCGeONN4MB5iRBZfmzfS3rR0R6XEPVmUKukrLSJ3w@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 5 Aug 2021 19:34:04 -0700
-Message-ID: <CAM_iQpWo7DU+LEVG42bWmxhWY-z9m3mx3=TWvUu6v7DgFN2OoA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 11/11] selftests/bpf: add test cases for
- redirection between udp and unix
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 5, 2021 at 3:43 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Sun, Jul 4, 2021 at 12:05 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > From: Cong Wang <cong.wang@bytedance.com>
-> >
-> > Add two test cases to ensure redirection between udp and unix
-> > work bidirectionally.
-> >
-> > Cc: John Fastabend <john.fastabend@gmail.com>
-> > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> > Cc: Lorenz Bauer <lmb@cloudflare.com>
-> > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > ---
-> >  .../selftests/bpf/prog_tests/sockmap_listen.c | 170 ++++++++++++++++++
-> >  1 file changed, 170 insertions(+)
-> >
->
-> [...]
->
-> > +       n = write(c1, "a", 1);
-> > +       if (n < 0)
-> > +               FAIL_ERRNO("%s: write", log_prefix);
-> > +       if (n == 0)
-> > +               FAIL("%s: incomplete write", log_prefix);
-> > +       if (n < 1)
-> > +               goto close;
-> > +
-> > +       key = SK_PASS;
-> > +       err = xbpf_map_lookup_elem(verd_mapfd, &key, &pass);
-> > +       if (err)
-> > +               goto close;
-> > +       if (pass != 1)
-> > +               FAIL("%s: want pass count 1, have %d", log_prefix, pass);
-> > +
-> > +       n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
-> > +       if (n < 0)
-> > +               FAIL_ERRNO("%s: read", log_prefix);
->
-> Hey Cong,
->
-> This test is pretty flaky and quite frequently fails in our CIs (e.g., [0]):
->
-> ./test_progs-no_alu32:unix_udp_redir_to_connected:1949: egress: read:
-> Resource temporarily unavailable
->   unix_udp_redir_to_connected:FAIL:1949
->
-> Please send a fix to make it more reliable. Thanks!
+On Fri, Aug 06, 2021 at 03:17:40AM +0300, Vladimir Oltean wrote:
+> 
+> Good catch with this condition, sja1105 and ocelot are buggy in this
+> regard, it seems, probably others too. Need to fix them. Although
+> honestly I would probably rather spend the time patching the bridge
+> already to not accept duplicate VLAN entries from user space, just with
+> different flags, it's just too complex to handle the overwrites everywhere...
+> Plus, bridge accepting duplicate VLANs means we cannot refcount them on
+> DSA and CPU ports at the cross-chip level, which in turn means we can
+> never delete them from those ports.
+> 
+> Anyhow, enough rambling.
+> 
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
-Using an unbound number of retries makes this reliable, but you
-dislike it. ;) But, there must be some reason for the delay of
-packet delivery, I guess it might be related to workqueue scheduling,
-let me check it tomorrow.
-
-Thanks.
+Please allow me to send a v2. This sets the CPU port's PVID to 0
+on boot, which causes some undefined behaviour..
