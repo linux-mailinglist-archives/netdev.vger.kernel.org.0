@@ -2,57 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B6153E20FD
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 03:27:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32CC83E2112
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 03:37:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241540AbhHFB13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Aug 2021 21:27:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59876 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234559AbhHFB12 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Aug 2021 21:27:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B02B4611C7;
-        Fri,  6 Aug 2021 01:27:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628213234;
-        bh=SoicOYPCF17y/01EXt18RtCrEYdiMeZr7K7nnYXbAwY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ghbqp84sspt79xYpYgeUEiEWKaq1AXNxLAs/ajW4WdGAhoa6noeUSdOGYOrkNAapX
-         G1xpQgmx2K9xEmjuCkTLrEbRf1gzpbUVbges5cO+lraUmxiqiEz/Mubt7yo6HuhcvJ
-         /RO+e+ktv0k+N0+SUdi0i2A6cK+NQwEABip+syvgixVYE2iBEx5SZab6LHPI39oS3G
-         dxTw0SBbJpbybRuYQQbzPR/BXogtQmohbhqVBIs4cKYIfKZOvHD+YSas1g/Mp5VHvZ
-         tj2mvgDSADpHQjok9p/DYm7pjCIuG3+nfhy2uopYoJRyGKu8pT2oocdVk5aW2IsSNF
-         CcVOQ9aALFjuQ==
-Date:   Thu, 5 Aug 2021 18:27:12 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, bjorn.andersson@linaro.org,
-        evgreen@chromium.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 2/6] net: ipa: reorder netdev pointer
- assignments
-Message-ID: <20210805182712.4f071aa8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210804153626.1549001-3-elder@linaro.org>
-References: <20210804153626.1549001-1-elder@linaro.org>
-        <20210804153626.1549001-3-elder@linaro.org>
+        id S240621AbhHFBh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Aug 2021 21:37:29 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:13283 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239868AbhHFBh2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Aug 2021 21:37:28 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Ggnyp1xslz83FG;
+        Fri,  6 Aug 2021 09:32:18 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 6 Aug 2021 09:37:10 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Fri, 6 Aug 2021
+ 09:37:10 +0800
+Subject: Re: [PATCH net-next 4/4] net: hns3: support skb's frag page recycling
+ based on page pool
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <alexander.duyck@gmail.com>,
+        <linux@armlinux.org.uk>, <mw@semihalf.com>,
+        <linuxarm@openeuler.org>, <yisen.zhuang@huawei.com>,
+        <salil.mehta@huawei.com>, <thomas.petazzoni@bootlin.com>,
+        <hawk@kernel.org>, <ilias.apalodimas@linaro.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
+        <akpm@linux-foundation.org>, <peterz@infradead.org>,
+        <will@kernel.org>, <willy@infradead.org>, <vbabka@suse.cz>,
+        <fenghua.yu@intel.com>, <guro@fb.com>, <peterx@redhat.com>,
+        <feng.tang@intel.com>, <jgg@ziepe.ca>, <mcroce@microsoft.com>,
+        <hughd@google.com>, <jonathan.lemon@gmail.com>, <alobakin@pm.me>,
+        <willemb@google.com>, <wenxu@ucloud.cn>, <cong.wang@bytedance.com>,
+        <haokexin@gmail.com>, <nogikh@google.com>, <elver@google.com>,
+        <yhs@fb.com>, <kpsingh@kernel.org>, <andrii@kernel.org>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <chenhao288@hisilicon.com>
+References: <1628161526-29076-1-git-send-email-linyunsheng@huawei.com>
+ <1628161526-29076-5-git-send-email-linyunsheng@huawei.com>
+ <20210805182006.66133c8e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <72f6a642-2efc-b2fd-7d4e-f099b63c0703@huawei.com>
+Date:   Fri, 6 Aug 2021 09:37:10 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210805182006.66133c8e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme720-chm.china.huawei.com (10.1.199.116) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  4 Aug 2021 10:36:22 -0500 Alex Elder wrote:
-> Assign the ipa->modem_netdev and endpoint->netdev pointers *before*
-> registering the network device.  As soon as the device is
-> registered it can be opened, and by that time we'll want those
-> pointers valid.
+On 2021/8/6 9:20, Jakub Kicinski wrote:
+> On Thu, 5 Aug 2021 19:05:26 +0800 Yunsheng Lin wrote:
+>> This patch adds skb's frag page recycling support based on
+>> the frag page support in page pool.
+>>
+>> The performance improves above 10~20% for single thread iperf
+>> TCP flow with IOMMU disabled when iperf server and irq/NAPI
+>> have a different CPU.
+>>
+>> The performance improves about 135%(14Gbit to 33Gbit) for single
+>> thread iperf TCP flow IOMMU is in strict mode and iperf server
+>> shares the same cpu with irq/NAPI.
+>>
+>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 > 
-> Similarly, don't make those pointers NULL until *after* the modem
-> network device is unregistered in ipa_modem_stop().
-> 
-> Signed-off-by: Alex Elder <elder@linaro.org>
+> This patch does not apply cleanly to net-next, please rebase 
+> if you're targeting that tree.
 
-This one seems like a pretty legit race, net would be better if you
-don't mind.
+It seems I forgot to rebase the net-next tree before doing
+"git format-patch", thanks for mentioning that.
+
+> .
+> 
