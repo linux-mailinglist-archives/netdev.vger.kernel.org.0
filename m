@@ -2,219 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 184363E2378
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 08:49:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29ABF3E2391
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 08:53:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243420AbhHFGt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 02:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36842 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243439AbhHFGt1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 02:49:27 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6167BC061798
-        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 23:49:12 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mBtcu-0007Bd-Gw; Fri, 06 Aug 2021 08:46:40 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mBtce-0004p1-8f; Fri, 06 Aug 2021 08:46:24 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mBtce-0003LN-5b; Fri, 06 Aug 2021 08:46:24 +0200
-Date:   Fri, 6 Aug 2021 08:46:23 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-pci@vger.kernel.org, Alexander Duyck <alexanderduyck@fb.com>,
-        Russell Currey <ruscur@russell.cc>,
-        Sathya Prakash <sathya.prakash@broadcom.com>,
-        oss-drivers@corigine.com, Paul Mackerras <paulus@samba.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Jiri Olsa <jolsa@redhat.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        linux-perf-users@vger.kernel.org,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        linux-scsi@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-        Ido Schimmel <idosch@nvidia.com>, x86@kernel.org,
-        qat-linux@intel.com,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        linux-wireless@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Fiona Trahe <fiona.trahe@intel.com>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Suganath Prabu Subramani 
-        <suganath-prabu.subramani@broadcom.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Borislav Petkov <bp@alien8.de>, Michael Buesch <m@bues.ch>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Juergen Gross <jgross@suse.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        xen-devel@lists.xenproject.org, Vadym Kochan <vkochan@marvell.com>,
-        MPT-FusionLinux.pdl@broadcom.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org,
-        Wojciech Ziemba <wojciech.ziemba@intel.com>,
-        linux-kernel@vger.kernel.org, Taras Chornyi <tchornyi@marvell.com>,
-        Zhou Wang <wangzhou1@hisilicon.com>,
-        linux-crypto@vger.kernel.org, kernel@pengutronix.de,
-        netdev@vger.kernel.org, Frederic Barrat <fbarrat@linux.ibm.com>,
-        Oliver O'Halloran <oohall@gmail.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v2 0/6] PCI: Drop duplicated tracking of a pci_dev's
- bound driver
-Message-ID: <20210806064623.3lxl4clzbjpmchef@pengutronix.de>
-References: <20210803100150.1543597-1-u.kleine-koenig@pengutronix.de>
- <20210805234234.GA1797883@bjorn-Precision-5520>
+        id S243459AbhHFGxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 02:53:53 -0400
+Received: from mail-dm6nam10on2070.outbound.protection.outlook.com ([40.107.93.70]:32097
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229635AbhHFGxu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Aug 2021 02:53:50 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QLQ8cDHnFdbFspIZCISJXnx4tVi7fMg51sbfYB12vOZchkge61tfaobjtqY0beZPO46RA9+RZw8YUzqyoNQGxcGbTR4r53R/EJ4acnL0c0l27qrWZV2dnipLdICd7YZhYd2F+MkqMFmYiSdV4xbbspw2yoUdDK2qvfWUtkuAJQMNCdMk+gBT4mmhfxja1dRxj3vW9fov+h7Nyjbu8OjMpyLXEmaomfithFdzsTaGhGLs7hpWaoY2wcPsWzeU9Pn9I0RNSvNlG5DKHS9KGs3m9/LdH96wGUYriRObqW2Etnvmcv+RANF/UAv+EPe+POHDJADa3kM9P/8dZtltth7g7w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zDUQk891/yzCAmBUgUjNk4g+NqLk1QEetLUqMTpYQMY=;
+ b=gZ0fUSUGl3lZU1kiRNS2URBQVYl1RC4fiYfT2VxDKJmEgBCEfBm0/U76biHCp2fSC1NGyEAGlTklRIVMIhQfHoGC6YGZEF6516pBMLMgjUXTf4m7M6H0+dy4i5ExltMS62hiRsNSA5zRrCLJfK8DoGdfJxv7MGHmT65L3rB6m8huiWKP21h5cT6qeGWwrZXxGqglOKo/neSRafWUD3ki42ZgXWSpe4dFaGwB7R4g2nqB++5Q1vYAZHn6HOMXa17jIPKzIAY3/dYHy5CwCtWYGooawhn54DuWzvPtPw9gWm12w0nL7UG4UM6jRCuHGDZYCzAWKCRPXLitatvZz6ql6w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.36) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zDUQk891/yzCAmBUgUjNk4g+NqLk1QEetLUqMTpYQMY=;
+ b=r2Fs+jbgcugJyKt0UB5vR28iuztcEDm7yjG7J+Fs4RSDrqg3XzOUutUx5B8DXabF3EXMKG8ENoFrQ+4jUBACOEl27HSaVNSFDrZUwY1j8EFgFtifuPW2ZTnEBFsPc1Q7CuV7SrcTJMXygBfm5NzJT5tHyvtuzQx+AXWeTeP8NnmFDIeZ/f6iJ2tddV+yIVfol9vQnIXxwTTqa/7lHKIRfH+lbywzixSHCXbqADxPpD9Pe8lHH/g0jxVUT7srX7jSTz30A1EGOTgsfr1+ncD48DBQEDX3X/CcnuYzr3eM7ngGbKo7aaDlmha2g0ocySHZXwnklCiUZbY0F+EiQ30Jew==
+Received: from MWHPR12CA0042.namprd12.prod.outlook.com (2603:10b6:301:2::28)
+ by DM6PR12MB5024.namprd12.prod.outlook.com (2603:10b6:5:20a::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.25; Fri, 6 Aug
+ 2021 06:53:33 +0000
+Received: from CO1NAM11FT012.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:301:2:cafe::af) by MWHPR12CA0042.outlook.office365.com
+ (2603:10b6:301:2::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15 via Frontend
+ Transport; Fri, 6 Aug 2021 06:53:33 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.36)
+ smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.36 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.36; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.36) by
+ CO1NAM11FT012.mail.protection.outlook.com (10.13.175.192) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4394.16 via Frontend Transport; Fri, 6 Aug 2021 06:53:33 +0000
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 6 Aug
+ 2021 06:53:32 +0000
+Received: from sandstorm.attlocal.net (172.20.187.5) by mail.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 6 Aug 2021 06:53:32 +0000
+From:   John Hubbard <jhubbard@nvidia.com>
+To:     Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>
+CC:     "David S . Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <linux-s390@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        John Hubbard <jhubbard@nvidia.com>,
+        "Sven Auhagen" <sven.auhagen@voleatech.de>,
+        Matteo Croce <mcroce@microsoft.com>
+Subject: [PATCH] net: mvvp2: fix short frame size on s390
+Date:   Thu, 5 Aug 2021 23:53:30 -0700
+Message-ID: <20210806065330.23000-1-jhubbard@nvidia.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="nllglfksvmzlkdkm"
-Content-Disposition: inline
-In-Reply-To: <20210805234234.GA1797883@bjorn-Precision-5520>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-NVConfidentiality: public
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 11c2c6ea-8a12-4256-239f-08d958a6e846
+X-MS-TrafficTypeDiagnostic: DM6PR12MB5024:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB5024CF7EC7564CF4BE6B0371A8F39@DM6PR12MB5024.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:56;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: l4oxJ3gAfeE1dsB2mdmDHjUalV95m5UF7Iwhe95/LiIQkkNW3LJ2bPEFrd1SaeI4+NcLvCcE7Sj7XNP5IAMbc02XAtipA+e6/eXkU5UlpBKNfVaJDe0uxM9iMDkdyBxM16mTmHWEmcPeloUy/O/tjtod6Rj6m06/w1S89VNcRjbxIgPsIv2oEUJ0+12ar13uqgO5lOQ4n77gMsOtITzkaqiCQ5nCUNqnwIRL42dyJ0etE08CqDfRT65VS+BjsuERUniNQj9+F7ZjsQdCUGelSzNYsORW6jqz8gTeoB/X4Wx1jyleBGckmnaTv/CIOLrpcIwW9OHECOUvCB0NOkdX7/QtO4S7VupLzHXVSTFGjRal2D7ZeBXntFU7u8fPHP0vxXTEzP1jNQrtP5t7KDvP2CA6PObqEi34lNY8LpagR3B12P+6lNIhfsi9gle8JiVHznasisA7e+ImwFEhBZ+xw1WxlvZ65Bt6tTWEwUyJlqtxiF9VpQAbsnV6qROUKTOkBeHXuHvWigWMmQeNjO4xnxW4xOeCjgOOFrFa8zt7FvNP3yii9dbFBi+NAa2HSQxCKSszvpoloGKfb9281BsRov+V/4ARKaf6HscVm/bRExbaI53M1CL2mYUHUOjjmM6yEfnka1WUzapHiBplra6YyjFnrgABug/VVPfmJxhf0/aZjHcenaTLw2kw9sxKEidow20Hi9s6IHvUoUc3TYduAA==
+X-Forefront-Antispam-Report: CIP:216.228.112.36;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid05.nvidia.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(70206006)(7636003)(54906003)(110136005)(5660300002)(70586007)(186003)(2906002)(8936002)(8676002)(336012)(4326008)(26005)(316002)(36860700001)(45080400002)(36906005)(508600001)(1076003)(356005)(47076005)(83380400001)(36756003)(86362001)(7416002)(426003)(82310400003)(2616005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Aug 2021 06:53:33.3262
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 11c2c6ea-8a12-4256-239f-08d958a6e846
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.36];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT012.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB5024
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On s390, the following build warning occurs:
 
---nllglfksvmzlkdkm
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+drivers/net/ethernet/marvell/mvpp2/mvpp2.h:844:2: warning: overflow in
+conversion from 'long unsigned int' to 'int' changes value from
+'18446744073709551584' to '-32' [-Woverflow]
+844 |  ((total_size) - MVPP2_SKB_HEADROOM - MVPP2_SKB_SHINFO_SIZE)
 
-Hello Bjorn,
+This happens because MVPP2_SKB_SHINFO_SIZE, which is 320 bytes (which is
+already 64-byte aligned) on some architectures, actually gets ALIGN'd up
+to 512 bytes in the s390 case.
 
-On Thu, Aug 05, 2021 at 06:42:34PM -0500, Bjorn Helgaas wrote:
-> On Tue, Aug 03, 2021 at 12:01:44PM +0200, Uwe Kleine-K=F6nig wrote:
-> > Hello,
-> >=20
-> > changes since v1 (https://lore.kernel.org/linux-pci/20210729203740.1377=
-045-1-u.kleine-koenig@pengutronix.de):
-> >=20
-> > - New patch to simplify drivers/pci/xen-pcifront.c, spotted and
-> >   suggested by Boris Ostrovsky
-> > - Fix a possible NULL pointer dereference I introduced in xen-pcifront.c
-> > - A few whitespace improvements
-> > - Add a commit log to patch #6 (formerly #5)
-> >=20
-> > I also expanded the audience for patches #4 and #6 to allow affected
-> > people to actually see the changes to their drivers.
-> >=20
-> > Interdiff can be found below.
-> >=20
-> > The idea is still the same: After a few cleanups (#1 - #3) a new macro
-> > is introduced abstracting access to struct pci_dev->driver. All users
-> > are then converted to use this and in the last patch the macro is
-> > changed to make use of struct pci_dev::dev->driver to get rid of the
-> > duplicated tracking.
->=20
-> I love the idea of this series!
+So then, when this is invoked:
 
-\o/
+    MVPP2_RX_MAX_PKT_SIZE(MVPP2_BM_SHORT_FRAME_SIZE)
 
-> I looked at all the bus_type.probe() methods, it looks like pci_dev is
-> not the only offender here.  At least the following also have a driver
-> pointer in the device struct:
->=20
->   parisc_device.driver
->   acpi_device.driver
->   dio_dev.driver
->   hid_device.driver
->   pci_dev.driver
->   pnp_dev.driver
->   rio_dev.driver
->   zorro_dev.driver
+...that turns into:
 
-Right, when I converted zorro_dev it was pointed out that the code was
-copied from pci and the latter has the same construct. :-)
-See
-https://lore.kernel.org/r/20210730191035.1455248-5-u.kleine-koenig@pengutro=
-nix.de
-for the patch, I don't find where pci was pointed out, maybe it was on
-irc only.
+     704 - 224 - 512 == -32
 
-> Do you plan to do the same for all of them, or is there some reason
-> why they need the pointer and PCI doesn't?
+...which is not a good frame size to end up with! The warning above is a
+bit lucky: it notices a signed/unsigned bad behavior here, which leads
+to the real problem of a frame that is too short for its contents.
 
-There is a list of cleanup stuff I intend to work on. Considering how
-working on that list only made it longer in the recent past, maybe it
-makes more sense to not work on it :-)
+Increase MVPP2_BM_SHORT_FRAME_SIZE by 32 (from 704 to 736), which is
+just exactly big enough. (The other values can't readily be changed
+without causing a lot of other problems.)
 
-> In almost all cases, other buses define a "to_<bus>_driver()"
-> interface.  In fact, PCI already has a to_pci_driver().
->=20
-> This series adds pci_driver_of_dev(), which basically just means we
-> can do this:
->=20
->   pdrv =3D pci_driver_of_dev(pdev);
->=20
-> instead of this:
->=20
->   pdrv =3D to_pci_driver(pdev->dev.driver);
->=20
-> I don't see any other "<bus>_driver_of_dev()" interfaces, so I assume
-> other buses just live with the latter style?  I'd rather not be
-> different and have two ways to get the "struct pci_driver *" unless
-> there's a good reason.
+Fixes: 07dd0a7aae7f ("mvpp2: add basic XDP support")
+Cc: Sven Auhagen <sven.auhagen@voleatech.de>
+Cc: Matteo Croce <mcroce@microsoft.com>
+Cc: David S. Miller <davem@davemloft.net>
+Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+---
 
-Among few the busses I already fixed in this regard pci was the first
-that has a considerable amount of usage. So I considered it worth giving
-it a name.
-=20
-> Looking through the places that care about pci_dev.driver (the ones
-> updated by patch 5/6), many of them are ... a little dubious to begin
-> with.  A few need the "struct pci_error_handlers *err_handler"
-> pointer, so that's probably legitimate.  But many just need a name,
-> and should probably be using dev_driver_string() instead.
+Hi,
 
-Yeah, I considered adding a function to get the driver name from a
-pci_dev and a function to get the error handlers. Maybe it's an idea to
-introduce these two and then use to_pci_driver(pdev->dev.driver) for the
-few remaining users? Maybe doing that on top of my current series makes
-sense to have a clean switch from pdev->driver to pdev->dev.driver?!
+This patch is based on today's linux.git (commit 902e7f373fff).
 
-Best regards
-Uwe
+thanks,
+John Hubbard
+NVIDIA
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
---nllglfksvmzlkdkm
-Content-Type: application/pgp-signature; name="signature.asc"
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
------BEGIN PGP SIGNATURE-----
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+index b9fbc9f000f2..cf8acabb90ac 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+@@ -938,7 +938,7 @@ enum mvpp22_ptp_packet_format {
+ #define MVPP2_BM_COOKIE_POOL_OFFS	8
+ #define MVPP2_BM_COOKIE_CPU_OFFS	24
+ 
+-#define MVPP2_BM_SHORT_FRAME_SIZE	704	/* frame size 128 */
++#define MVPP2_BM_SHORT_FRAME_SIZE	736	/* frame size 128 */
+ #define MVPP2_BM_LONG_FRAME_SIZE	2240	/* frame size 1664 */
+ #define MVPP2_BM_JUMBO_FRAME_SIZE	10432	/* frame size 9856 */
+ /* BM short pool packet size
+-- 
+2.32.0
 
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmEM2rwACgkQwfwUeK3K
-7AlqBggAh2Z8+ZW+YMYlQQ8AzujRmGYo9gKX26eGdp2jNjZUeOc0CEZwm/GiW4aZ
-9+W1RS3i+O6ToHVYkt9fNEpdUGO3YdBKiMHGWsrkQuwNjm4Yv5Dlx/wRz0dU4vIX
-QQDa5tw6Mow1g0gjZqHvDuwbgKoJyHXzFD115kBaINYN/XqOLST9YvMqxxSsHHsD
-qRmpU59QTxEqHXKIsgABctdVnQBkbixppZH3/6nu+Xh7qkZvczBLpx/C5V1+XeAv
-47LOxaH3wiLQBS/sICKlAFeYcbAyNhwh+nbMxx5i3lG6O6LhaeX46FPMoTG6qiAj
-MaO1mAnwrEO35eTXFBgw4IYh37zS9A==
-=/ZHI
------END PGP SIGNATURE-----
-
---nllglfksvmzlkdkm--
