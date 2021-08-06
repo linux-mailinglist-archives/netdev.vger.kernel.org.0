@@ -2,140 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D0173E24E4
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 10:15:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C014D3E251F
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 10:17:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243705AbhHFIPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 04:15:06 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:24593 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243470AbhHFIPA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 04:15:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1628237685; x=1659773685;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=vh/BL0aX8xxc9KpUT74mE1eVjgLeMpUkwiTiAs0EAkU=;
-  b=w26awP+ec+4u+8pWrl/943+tqcGJ7E0YD5uMR2AF0pMfy6LeXvlCNaiw
-   SpxviWPCLL+jd/cHS6P6fsE5PulQ+RoooTQkozvyaaZfSNCWWudvYD8uz
-   TYV8bHhAKUoUnRBS0B8XB71sCGUmrRmAsUT8f2vtQ8l3bfzS1AyzzPy/2
-   nHJ4afp0MvnmLtqG1jTXvIIK7XULk5MFYgspEjngRsuaJ4b2XN++Ry2a4
-   Q9Kwvouh9Hy53ut1cCsjVo67B4I5kiryO7oEAIzQx3qU7Rr+WwDhWIlGx
-   JJh4XA5JNKj4R3CnUwrQg/PcjWhPySd1jqlJGNMWwenU/689HY9+RJ+St
-   w==;
-IronPort-SDR: 56qDI2tzlZc5Xe3Btz6aE9Hg3kpD/7R6mUnQhSsq5ZmOCvfH0sLwu8QhGSSD5Kf58fC6i182Be
- bD/x+84LZZLYo7xNjQMVad+6+bqXgjsDUojC2BSspoqR9/sKcO3tffdcIPbSTFQtCzsYl49qSj
- /F/vNfaaxWsuRyNCqJdA69VHE+4XDJPQrYmBWUabXtt6XDMp4V3RZ5O+m1d3h9YdNsluDi7ooY
- Gsuz1+hU+k0bY/eS6L+GUzIbYxtAb+rjCamo6yZFVwDBfqtfZR7HAEkZ8AWrQXNSPHMM7b1aPB
- ISNLtFmuJ8wtbot5O8y4nVaq
-X-IronPort-AV: E=Sophos;i="5.84,300,1620716400"; 
-   d="scan'208";a="139048860"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Aug 2021 01:14:42 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+        id S242387AbhHFIRq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 04:17:46 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:7796 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243591AbhHFIQG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 04:16:06 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GgywD3GwRzYkqc;
+        Fri,  6 Aug 2021 16:15:40 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 6 Aug 2021 01:14:42 -0700
-Received: from m18063-ThinkPad-T460p.mchp-main.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Fri, 6 Aug 2021 01:14:40 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <ajay.kathat@microchip.com>, <kvalo@codeaurora.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 3/3] wilc1000: use devm_clk_get_optional()
-Date:   Fri, 6 Aug 2021 11:12:29 +0300
-Message-ID: <20210806081229.721731-4-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210806081229.721731-1-claudiu.beznea@microchip.com>
-References: <20210806081229.721731-1-claudiu.beznea@microchip.com>
+ 15.1.2176.2; Fri, 6 Aug 2021 16:15:48 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 6 Aug 2021 16:15:48 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <hannes@stressinduktion.org>, <davem@davemloft.net>
+CC:     <akpm@linux-foundation.org>, <gregkh@linuxfoundation.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Minmin chen <chenmingmin@huawei.com>
+Subject: [PATCH v2] once: Fix panic when module unload
+Date:   Fri, 6 Aug 2021 16:21:24 +0800
+Message-ID: <20210806082124.96607-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use devm_clk_get_optional() for rtc clock: it simplifies a bit
-the code.
+DO_ONCE
+DEFINE_STATIC_KEY_TRUE(___once_key);
+__do_once_done
+  once_disable_jump(once_key);
+    INIT_WORK(&w->work, once_deferred);
+    struct once_work *w;
+    w->key = key;
+    schedule_work(&w->work);                     module unload
+                                                   //*the key is
+destroy*
+process_one_work
+  once_deferred
+    BUG_ON(!static_key_enabled(work->key));
+       static_key_count((struct static_key *)x)    //*access key, crash*
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+When module uses DO_ONCE mechanism, it could crash due to the above
+concurrency problem, we could reproduce it with link[1].
+
+Fix it by add/put module refcount in the once work process.
+
+[1] https://lore.kernel.org/netdev/eaa6c371-465e-57eb-6be9-f4b16b9d7cbf@huawei.com/
+
+Cc: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Reported-by: Minmin chen <chenmingmin@huawei.com>
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 ---
- drivers/net/wireless/microchip/wilc1000/sdio.c | 14 ++++++--------
- drivers/net/wireless/microchip/wilc1000/spi.c  | 15 +++++++--------
- 2 files changed, 13 insertions(+), 16 deletions(-)
+v2: always pass THIS_MODULE to macro DO_ONCE(), suggested by hannes
 
-diff --git a/drivers/net/wireless/microchip/wilc1000/sdio.c b/drivers/net/wireless/microchip/wilc1000/sdio.c
-index d1fd182bbbff..42e03a701ae1 100644
---- a/drivers/net/wireless/microchip/wilc1000/sdio.c
-+++ b/drivers/net/wireless/microchip/wilc1000/sdio.c
-@@ -146,12 +146,12 @@ static int wilc_sdio_probe(struct sdio_func *func,
- 	wilc->bus_data = sdio_priv;
- 	wilc->dev = &func->dev;
+ include/linux/once.h |  4 ++--
+ lib/once.c           | 11 ++++++++---
+ 2 files changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/include/linux/once.h b/include/linux/once.h
+index 9225ee6d96c7..ae6f4eb41cbe 100644
+--- a/include/linux/once.h
++++ b/include/linux/once.h
+@@ -7,7 +7,7 @@
  
--	wilc->rtc_clk = devm_clk_get(&func->card->dev, "rtc");
--	if (PTR_ERR_OR_ZERO(wilc->rtc_clk) == -EPROBE_DEFER) {
--		ret = -EPROBE_DEFER;
-+	wilc->rtc_clk = devm_clk_get_optional(&func->card->dev, "rtc");
-+	if (IS_ERR(wilc->rtc_clk)) {
-+		ret = PTR_ERR(wilc->rtc_clk);
- 		goto dispose_irq;
--	} else if (!IS_ERR(wilc->rtc_clk))
--		clk_prepare_enable(wilc->rtc_clk);
-+	}
-+	clk_prepare_enable(wilc->rtc_clk);
+ bool __do_once_start(bool *done, unsigned long *flags);
+ void __do_once_done(bool *done, struct static_key_true *once_key,
+-		    unsigned long *flags);
++		    unsigned long *flags, struct module *mod);
  
- 	dev_info(&func->dev, "Driver Initializing success\n");
- 	return 0;
-@@ -168,9 +168,7 @@ static void wilc_sdio_remove(struct sdio_func *func)
- {
- 	struct wilc *wilc = sdio_get_drvdata(func);
+ /* Call a function exactly once. The idea of DO_ONCE() is to perform
+  * a function call such as initialization of random seeds, etc, only
+@@ -46,7 +46,7 @@ void __do_once_done(bool *done, struct static_key_true *once_key,
+ 			if (unlikely(___ret)) {				     \
+ 				func(__VA_ARGS__);			     \
+ 				__do_once_done(&___done, &___once_key,	     \
+-					       &___flags);		     \
++					       &___flags, THIS_MODULE);	     \
+ 			}						     \
+ 		}							     \
+ 		___ret;							     \
+diff --git a/lib/once.c b/lib/once.c
+index 8b7d6235217e..59149bf3bfb4 100644
+--- a/lib/once.c
++++ b/lib/once.c
+@@ -3,10 +3,12 @@
+ #include <linux/spinlock.h>
+ #include <linux/once.h>
+ #include <linux/random.h>
++#include <linux/module.h>
  
--	if (!IS_ERR(wilc->rtc_clk))
--		clk_disable_unprepare(wilc->rtc_clk);
--
-+	clk_disable_unprepare(wilc->rtc_clk);
- 	wilc_netdev_cleanup(wilc);
+ struct once_work {
+ 	struct work_struct work;
+ 	struct static_key_true *key;
++	struct module *module;
+ };
+ 
+ static void once_deferred(struct work_struct *w)
+@@ -16,10 +18,11 @@ static void once_deferred(struct work_struct *w)
+ 	work = container_of(w, struct once_work, work);
+ 	BUG_ON(!static_key_enabled(work->key));
+ 	static_branch_disable(work->key);
++	module_put(work->module);
+ 	kfree(work);
  }
  
-diff --git a/drivers/net/wireless/microchip/wilc1000/spi.c b/drivers/net/wireless/microchip/wilc1000/spi.c
-index 23d811b2b925..8b180c29d682 100644
---- a/drivers/net/wireless/microchip/wilc1000/spi.c
-+++ b/drivers/net/wireless/microchip/wilc1000/spi.c
-@@ -162,12 +162,12 @@ static int wilc_bus_probe(struct spi_device *spi)
- 	wilc->bus_data = spi_priv;
- 	wilc->dev_irq_num = spi->irq;
- 
--	wilc->rtc_clk = devm_clk_get(&spi->dev, "rtc");
--	if (PTR_ERR_OR_ZERO(wilc->rtc_clk) == -EPROBE_DEFER) {
--		ret = -EPROBE_DEFER;
-+	wilc->rtc_clk = devm_clk_get_optional(&spi->dev, "rtc");
-+	if (IS_ERR(wilc->rtc_clk)) {
-+		ret = PTR_ERR(wilc->rtc_clk);
- 		goto netdev_cleanup;
--	} else if (!IS_ERR(wilc->rtc_clk))
--		clk_prepare_enable(wilc->rtc_clk);
-+	}
-+	clk_prepare_enable(wilc->rtc_clk);
- 
- 	return 0;
- 
-@@ -182,10 +182,9 @@ static int wilc_bus_remove(struct spi_device *spi)
+-static void once_disable_jump(struct static_key_true *key)
++static void once_disable_jump(struct static_key_true *key, struct module *mod)
  {
- 	struct wilc *wilc = spi_get_drvdata(spi);
+ 	struct once_work *w;
  
--	if (!IS_ERR(wilc->rtc_clk))
--		clk_disable_unprepare(wilc->rtc_clk);
--
-+	clk_disable_unprepare(wilc->rtc_clk);
- 	wilc_netdev_cleanup(wilc);
-+
- 	return 0;
+@@ -29,6 +32,8 @@ static void once_disable_jump(struct static_key_true *key)
+ 
+ 	INIT_WORK(&w->work, once_deferred);
+ 	w->key = key;
++	w->module = mod;
++	__module_get(mod);
+ 	schedule_work(&w->work);
  }
  
+@@ -53,11 +58,11 @@ bool __do_once_start(bool *done, unsigned long *flags)
+ EXPORT_SYMBOL(__do_once_start);
+ 
+ void __do_once_done(bool *done, struct static_key_true *once_key,
+-		    unsigned long *flags)
++		    unsigned long *flags, struct module *mod)
+ 	__releases(once_lock)
+ {
+ 	*done = true;
+ 	spin_unlock_irqrestore(&once_lock, *flags);
+-	once_disable_jump(once_key);
++	once_disable_jump(once_key, mod);
+ }
+ EXPORT_SYMBOL(__do_once_done);
 -- 
-2.25.1
+2.26.2
 
