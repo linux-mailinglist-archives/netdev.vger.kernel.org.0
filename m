@@ -2,93 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 437A33E23E1
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 09:20:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D1883E23E8
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 09:21:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243088AbhHFHUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 03:20:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52901 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241509AbhHFHUp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 03:20:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1628234429;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HTm9fbXgLtcZGdGW/3I21kvZ1VGYI5U7k0mhmEpEDg0=;
-        b=FSTa0CY5QWVMGSAhJkJC7vjnuHrBQCQfqwkY3HEfrr+B3P9NL1ZZzdAfJtB+3FwPXwV1nx
-        2WS96G0N6qoKpi1YBaXeve/LdBjuzFszM7dgnpn9eUQH9IyYQFj5DsxiApY/6bHmjiEmYU
-        bWdDXK9GSg1mp+a/TUA8U1aSU2vMsns=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-152-Yj1TCEtcMxS3Wn2loY3zPw-1; Fri, 06 Aug 2021 03:20:28 -0400
-X-MC-Unique: Yj1TCEtcMxS3Wn2loY3zPw-1
-Received: by mail-ed1-f69.google.com with SMTP id x1-20020a05640218c1b02903bc7f97f858so4443095edy.2
-        for <netdev@vger.kernel.org>; Fri, 06 Aug 2021 00:20:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HTm9fbXgLtcZGdGW/3I21kvZ1VGYI5U7k0mhmEpEDg0=;
-        b=exD9npFzyXGxuq2hkBDFHtp8zdIPTHDyk6qY6dFeQxdR191iUxT14ohKYaxsjzRtk3
-         vxhU/xdFIpfelswhBGNwSQexmI5auJfQdW0DZvPT8/NX7tEK9LYaL1bzZmZUB0orfZ7l
-         rQv4hLT9bnYFE4U3GDP6frRgNPTIEObvVxhoI2Ny4TcIAuXwo7IVZ8kkxgBkbIv0kpVn
-         WzaCuouymhX9ZQiCubNypsgBolPThFA9CvsQXzEyAbOFbB0IP+Qh7Rp+FV0hmpCDHO6m
-         1ku19khqo5umUgDjhT8+UMlf4plT1i7qJfqxO2P7ktNCIknV3CuxjpZBw1Sb8/bf6Sms
-         S9TQ==
-X-Gm-Message-State: AOAM5325TYs4ps6PqOcwBNiQV60HXfaeyJKQ71GbpIBUUzVZCwGbakQX
-        MrPs/dpEo/DBotvc6gEjWiTjF9oUCkcFdA580d1+QsZhh5H8lxXP3Yp4WMs2XAhEVwe2fEi8gLn
-        KY/qHenyulQMtr7QB
-X-Received: by 2002:a05:6402:361:: with SMTP id s1mr11209647edw.172.1628234427597;
-        Fri, 06 Aug 2021 00:20:27 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyuVKndM6vRqX10g0DMF+zN0NMme5c3sOtXbrtFonOTm7kn0n+W/NJwkU2ojVAcnd/691RvGg==
-X-Received: by 2002:a05:6402:361:: with SMTP id s1mr11209627edw.172.1628234427450;
-        Fri, 06 Aug 2021 00:20:27 -0700 (PDT)
-Received: from steredhat (host-79-18-148-79.retail.telecomitalia.it. [79.18.148.79])
-        by smtp.gmail.com with ESMTPSA id p16sm3396595eds.73.2021.08.06.00.20.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Aug 2021 00:20:27 -0700 (PDT)
-Date:   Fri, 6 Aug 2021 09:20:24 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        id S243632AbhHFHVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 03:21:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44048 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243617AbhHFHVP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 03:21:15 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 223ECC061799
+        for <netdev@vger.kernel.org>; Fri,  6 Aug 2021 00:20:59 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1mBu9y-0002hU-1c; Fri, 06 Aug 2021 09:20:50 +0200
+Received: from pengutronix.de (unknown [IPv6:2a02:810a:8940:aa0:66f0:974b:98ab:a2fd])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1B0BC661BEA;
+        Fri,  6 Aug 2021 07:20:46 +0000 (UTC)
+Date:   Fri, 6 Aug 2021 09:20:45 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dariobin@libero.it>
+Cc:     linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Colin Ian King <colin.king@canonical.com>,
-        Andra Paraschiv <andraprs@amazon.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v1 2/7] vsock: rename implementation from 'record' to
- 'message'
-Message-ID: <20210806072024.ejp2d5sgfatga6oz@steredhat>
-References: <20210726163137.2589102-1-arseny.krasnov@kaspersky.com>
- <20210726163328.2589649-1-arseny.krasnov@kaspersky.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        devicetree@vger.kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v5] dt-bindings: net: can: c_can: convert to json-schema
+Message-ID: <20210806072045.akase7hseu4wrxxt@pengutronix.de>
+References: <20210805192750.9051-1-dariobin@libero.it>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ywt3kfhn3c2zmo73"
 Content-Disposition: inline
-In-Reply-To: <20210726163328.2589649-1-arseny.krasnov@kaspersky.com>
+In-Reply-To: <20210805192750.9051-1-dariobin@libero.it>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 26, 2021 at 07:33:25PM +0300, Arseny Krasnov wrote:
->As 'record' is not same as 'message', rename current variables,
->comments and defines from 'record' concept to 'message'.
->
->Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->---
-> drivers/vhost/vsock.c                   | 18 +++++++++---------
-> net/vmw_vsock/virtio_transport_common.c | 14 +++++++-------
-> 2 files changed, 16 insertions(+), 16 deletions(-)
 
+--ywt3kfhn3c2zmo73
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-This patch is fine, I think you can move here the renaming of the flag 
-too.
+On 05.08.2021 21:27:50, Dario Binacchi wrote:
+> Convert the Bosch C_CAN/D_CAN controller device tree binding
+> documentation to json-schema.
+>=20
+> Document missing properties.
+> Remove "ti,hwmods" as it is no longer used in TI dts.
+> Make "clocks" required as it is used in all dts.
+> Update the examples.
+>=20
+> Signed-off-by: Dario Binacchi <dariobin@libero.it>
 
-Stefano
+[...]
 
+> +if:
+> +  properties:
+> +    compatible:
+> +      contains:
+> +        enum:
+> +          - bosch,d_can
+> +
+> +then:
+> +  properties:
+> +    interrupts:
+> +      minItems: 4
+> +      maxItems: 4
+
+The driver uses only 1 interrupt, on the other hand the only in-tree
+user the bosch,d_can compatible specifies 4 interrupts.
+
+Marc
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--ywt3kfhn3c2zmo73
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEM4ssACgkQqclaivrt
+76kH+wf/Us0Znp2pcbUwxbQq8O11+Bbroua1J8Na8qc7NwTESuk9N2Qu0zpUO8Tz
+oTTsibqJD9m3Z3AXxILJcv0mueNL4NbvFdjQ2hd7kl28X7B1KgqJvx63DLRrI9Vp
+ZtY1ve+ZEqf1ZwG0CnHThvLBqAR0102h29X7HrjS1JGD9mVNXiobqArfcLfh5Lpu
+7rGXUYj6OtQmg+QoWsduOpMAwod91M0bCkvGuTDZGqdCOxyTb/TZPZTtQOTS0e2Z
+FBSD8hp8mp4AffaX3MXe2rEbDCSY/ZRFlhth3WRigVSu0rpf5m0al9QiRcOe9nUc
+0hcetz9jGIIn4gNvOm6nxBKRXO10MA==
+=Boa7
+-----END PGP SIGNATURE-----
+
+--ywt3kfhn3c2zmo73--
