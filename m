@@ -2,152 +2,330 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3B2F3E2771
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 11:39:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D76F83E277F
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 11:40:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244610AbhHFJjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 05:39:22 -0400
-Received: from mail-dm6nam10on2119.outbound.protection.outlook.com ([40.107.93.119]:47529
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S244234AbhHFJjV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Aug 2021 05:39:21 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=G0KnnuVUK3dzRnis8BJjdMIagzsOK2wHbUPBN9rabkNc61Q/gWwZcBLTbs/9l18I6/MxXERXlyB2aKJdJnZC+R+7EHZGdUScTyh+HyT1YwNqO4A8kpixTNO9Sm3ju+zYatS1K69LHfQo0wpWizOEztl41lHbMX1Vgx2Up6zyMbEdJgGc58EOgbSXLuH9yZFIMpzSp8BnvNpAjRnVsOq71ZGNV1yigp/fB4flmMVspOlt4w3fuTuOcVDe6fAeb8tKimqAtpnFtuoNuYN0SF8ISxrVQeR6fhgN9ST31M9h1t3m2dIZjqhX9VJPSl++/fOP5GpkPK1un7r1SjG+X/jF6g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ClLtM1gqHYYdjbxJVDvR3fgNciHctxJbS/5t1xhdLqI=;
- b=oey5+vii9VNkXjJzLxTZvdB/Kn7YR2zWNFr0d8GkevhGOL/iNPQszfkP6OEApFwPZcLTP8LrcVKqeEFNy++lh2K6PJzxo1uKO4+wbuspnDa4klIlyuWLZ+zHawhkV4myvbXZi8gZFQqpUyoxaz5s8w5//GqHNiumV4UrmX33O39+dCdP7aceKy3HGQqOh2ixjiaqdWGGrwpL8yYFaR9SJo9i3LMlq97lfLsGizTy9KPf7Jra7pvtiyuU/7arci956eQr8fFadGxp40uhYM+HlXnchmXt3tA7CfcoCTEQQQDq0N6Riylw8ZfLwi/xsEqp6lvFd6LH94oEuCjhbSyOMw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ClLtM1gqHYYdjbxJVDvR3fgNciHctxJbS/5t1xhdLqI=;
- b=PUHVAaHEwmVe0HWSmJFiqa3n/6DIdsDgCxC5ZxK4YnnXoTyOsKVM5efxI8OKaUuCrbucQBGHLtTDno1mJoulZlbcgTcKTSq4zhA0ghNpQY+QZZZJVL7DZrsGm61Ff6vZ7vy4QMokZVnsqC39R/qBurPKCxqyvD2rcvz2Dd4hjf0=
-Authentication-Results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB4908.namprd13.prod.outlook.com (2603:10b6:510:7b::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.6; Fri, 6 Aug
- 2021 09:39:03 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::cd1:e3ba:77fd:f4f3]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::cd1:e3ba:77fd:f4f3%9]) with mapi id 15.20.4373.023; Fri, 6 Aug 2021
- 09:39:03 +0000
-Date:   Fri, 6 Aug 2021 11:38:57 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com, Fei Qin <fei.qin@corigine.com>,
-        Louis Peens <louis.peens@corigine.com>
-Subject: Re: [PATCH net] nfp: update ethtool reporting of pauseframe control
-Message-ID: <20210806093856.GA28022@corigine.com>
-References: <20210803103911.22639-1-simon.horman@corigine.com>
- <YQlaxfef22GxTF9r@lunn.ch>
- <20210803155023.GC17597@corigine.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210803155023.GC17597@corigine.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: LO4P123CA0403.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:189::12) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        id S244641AbhHFJko (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 05:40:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48334 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242680AbhHFJkn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 05:40:43 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2C4C06179A
+        for <netdev@vger.kernel.org>; Fri,  6 Aug 2021 02:40:27 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mBwKQ-0002EX-4A; Fri, 06 Aug 2021 11:39:46 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mBwKK-00055m-8Y; Fri, 06 Aug 2021 11:39:40 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mBwKK-00045k-6o; Fri, 06 Aug 2021 11:39:40 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>
+Cc:     Corey Minyard <minyard@acm.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, linux-parisc@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-input@vger.kernel.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, kernel@pengutronix.de
+Subject: [PATCH] parisc: Make struct parisc_driver::remove() return void
+Date:   Fri,  6 Aug 2021 11:39:38 +0200
+Message-Id: <20210806093938.1950990-1-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from corigine.com (2001:982:7ed1:403:201:8eff:fe22:8fea) by LO4P123CA0403.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:189::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15 via Frontend Transport; Fri, 6 Aug 2021 09:39:02 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5630ed6f-fc1c-4075-d918-08d958be0720
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4908:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PH0PR13MB4908F96079F43CCE64F77882E8F39@PH0PR13MB4908.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3pHML+NCvg9Nt+eVJ6bAz5EkZLNQzqvN5pZi0lmvG3QsTVbz1o+0UocWojk9iJMhleOPWrJVwIBVLidCUaXN+euZB4RM+pIb+TZmmHGkUjqhKmjECPj59sxcIlN181J9pHOCw/jAGriLuK1dlDF7ffihlOE86vQHZShDJtyB41FisBbdEY9Pwd+F0Rm/psn9dXQ4k4rs/r8V7VFc0Bu0Q2YnyS/cCV1UBImhVZ/kUQOGGkjgzOXOs9EviIRvSAsI2AWMGjguPHTXt2bSvH67swMW7tGGjeujN0QxGbzi8cmtdin9Cg5HZNzj7s/rhwK0aB3IMqsI1CpxfhmdtYed+iTdIbn3gRt//jKVIjcTS5DnV+g6R2WUxztDW5j4pCxeulnpKzw2V95+XFetcKjj3cBG1Vfb/lCPEDoGdCkVuwXW7+psVbf6YhizAgRyZMzCMpkJ1fHBZ4SRjqt2ZKsWdvBo+KC6OKekOYqITHUzAppgbVTD67InkjVmKAUr6ZpEHHzPm/PcPV1ucN7uZXUZRBdZFfD6NdYQ80SKq9nGcJHJRWXfHZtwfz7UWzqfz29W4j1sAWC2aMxPrKw5qe806T4DHhN9VF7IGp+di5z3xOPUsRijciBlzRAge4I225UMAMoMsMfc/6YVFu7VbiFJBg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(39830400003)(376002)(366004)(346002)(136003)(86362001)(1076003)(508600001)(55016002)(36756003)(316002)(6916009)(8886007)(38100700002)(54906003)(107886003)(2616005)(52116002)(66556008)(7696005)(66946007)(8676002)(5660300002)(44832011)(186003)(8936002)(33656002)(66476007)(4326008)(2906002)(6666004);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TK4hiMmomjn4g0770hQmAiDYSSTa6+FyIlfoLAPBsH3DR8+87fADh2y4HaRH?=
- =?us-ascii?Q?9u+JSIC6C2tLwWDpsM517o7xf4kSCfP+0gZJB3ya9Mps/3R6e8Sey9211jtd?=
- =?us-ascii?Q?0ItcaBN7b5b4yr6P5AmEb5z0Stgxsuo5oycwJE+zwPF6oIiGBxJoF67msV+a?=
- =?us-ascii?Q?EJ2uIz8XXeHCvz9mjpTngYxXIdYzVlWQLt8GpR/4Zi8G/W3xUrmh+b0axSDs?=
- =?us-ascii?Q?1LJ57Vajy+I4vxMhKZhGahh6SKtmdvAGloNQ4cVXQi5UF9qoQQ/nKNsW0e9f?=
- =?us-ascii?Q?i0sn0nWYO2IWHKayEIIj7FqlADMFg6cDRtrcxnow84TzWL8HBegqNdv6LYhG?=
- =?us-ascii?Q?GNfL7jwJsnBOmCcndZ9B2dM70RKXv+gG/X69YnCTzN7Y5mMdJVEW5+SmYneM?=
- =?us-ascii?Q?cXBD1iO17Snj6hpJzBIfKSpUUSGPZ+nr03n8jgBAgQNsH7TtTmbzwt5Vo/WT?=
- =?us-ascii?Q?KfaFIm/WTyiR0sFrRAAW59+r6Vv2jk0IJLt+qac3Y9BSlRAjIwW1sARomXAR?=
- =?us-ascii?Q?FvwEzVyR9a4lCZU0Z/y7AUkJlpOZo3NyK5XaDR5Y83qdAVaWbjA5BMNoC6RU?=
- =?us-ascii?Q?/seFulFlBeEpBYy/g3ieGCh1dT7l8VsRFh//kdh0ngaSsVgHfUhlKKnF/QXv?=
- =?us-ascii?Q?q55s/ztOA2VZYaRSJQ8WEvmSyoknG3ReJCQDFu5mUhhuqgJjgB+jM8BPTt9F?=
- =?us-ascii?Q?gX7DDzbAr5D3gIXdznW/MpyrlQuj26GGDpqPS9ZAzNB4T7hyvP0xCmgOPLjP?=
- =?us-ascii?Q?RR/vLJKd5Fitg3XLK4Zxlt+W3M8+/YFFprN1qPgXpmJC+PDdOcHJ3nrRn7qj?=
- =?us-ascii?Q?2ZkoEyiMVb6oxBAzsbd/5Z0Jf4auWF0RUkKnl6i1TK0kMuXyjegPH/iyRvgg?=
- =?us-ascii?Q?P7vjrmYgt04/DUOVUXKOx1nokABzZ0OSPCVPxKx3SBj8VwePGXxnoJRmGCmK?=
- =?us-ascii?Q?QzptgZ1iPE1dVIEnN+OQyESis2ahCZtf0C3oM3pC27Wd3dIMC06rJrpV5w04?=
- =?us-ascii?Q?h4nGFpfpd9Lv8mRC1d1daKoWt6K0P6NqQX5TP8Sz6bMrT1/L5cCV7QU9r1mB?=
- =?us-ascii?Q?88eAetmlD5nJFqTNSjAEfUfw5no9C9/H9n+3p/h34b+eoH1a7Jl95SbjH5aR?=
- =?us-ascii?Q?ZUechQvkx3MT7x02XoAmcgKwhZ1oCW5VDAPKLZ46SeTXGsiRX4ZNO+XYfV8D?=
- =?us-ascii?Q?H5mLzwZXeoKsUYvHpqNPhfDd/nAftxgEZxl7NVfHdC8W0KaWKe2sXddhSLSK?=
- =?us-ascii?Q?18xI/LRHcVyJDu4mXzPJBUm39+EfDgLqnBbDtWwKyx39UOc7uyT5bdD8urHV?=
- =?us-ascii?Q?fip4hbYNJ0lEACov8mHxiiYT+lvGAxMwYHI9KvSyPQ4ozGd4EKjUpkz/GrEr?=
- =?us-ascii?Q?hZSOzKGpQPbnKZ6tfWFC3M9a67or?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5630ed6f-fc1c-4075-d918-08d958be0720
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Aug 2021 09:39:03.7354
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cXx34bngC/QIHtpfLkBY/L8C+yFpRZedBTCAOS4yO1XBpuF/rhRh0TflTBo+bRjduJLsS0rJFgLgHSLC7vhSJyeypx1bTRTxhY9oltwpW6c=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4908
+Content-Type: text/plain; charset=UTF-8
+X-Patch-Hashes: v=1; h=sha256; i=HLXgmV0qGpnDkwp+WuFBRiMxpahH8/d1S8XGx9ztOew=; m=/Xfiwv9Sgti2fAWM+CCGGuyEa+42WeTUsYSiavJEcp4=; p=LTinZqdEm+49N5fzpMRX/3KHEg6iSFKlQ37K2YsT/yw=; g=31eafea52988a1959a5f1e91faf2fa6fa1180f08
+X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmENA1YACgkQwfwUeK3K7AmwFAf/QMo DCcLmUzOdVxwtZVUJeAeibE3hDSCOquffMEws3ZHebJbIY/48zK3qN9oNIE42DIGpbutke8RMTIL/ YcpodRezDno0n23pIo8+CvrVJbbDSRRor8T/sjhwmgVQN6A3hrZNFPzeYJJE5s7aAIYHla2EyTPFu w0GwFqjSkyB/GbI31rrm0iVC1oyIa1vM7ka+QaY+VB04YlS6fkRjBJ/Lq8tkE/vkU9drpXWYC55OI TJsjvnfhCMBrq/Ni589VoNnb7/ulNssXgL3lmhPYlVSv2lq8JZa4Gcj/XeSf08R7PQ3gyEo5lFN3B cKYf44UYWGWu2PusacXlcxzVx0HjxpA==
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 03, 2021 at 05:50:26PM +0200, Simon Horman wrote:
-> On Tue, Aug 03, 2021 at 05:03:33PM +0200, Andrew Lunn wrote:
-> > On Tue, Aug 03, 2021 at 12:39:11PM +0200, Simon Horman wrote:
-> > > From: Fei Qin <fei.qin@corigine.com>
-> > > 
-> > > Pauseframe control is set to symmetric mode by default on the NFP.
-> > > Pause frames can not be configured through ethtool now, but ethtool can
-> > > report the supported mode.
-> > > 
-> > > Fixes: 265aeb511bd5 ("nfp: add support for .get_link_ksettings()")
-> > > Signed-off-by: Fei Qin <fei.qin@corigine.com>
-> > > Signed-off-by: Louis Peens <louis.peens@corigine.com>
-> > > Signed-off-by: Simon Horman <simon.horman@corigine.com>
-> > > ---
-> > >  drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c | 2 ++
-> > >  1 file changed, 2 insertions(+)
-> > > 
-> > > diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-> > > index 1b482446536d..8803faadd302 100644
-> > > --- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-> > > +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-> > > @@ -286,6 +286,8 @@ nfp_net_get_link_ksettings(struct net_device *netdev,
-> > >  
-> > >  	/* Init to unknowns */
-> > >  	ethtool_link_ksettings_add_link_mode(cmd, supported, FIBRE);
-> > > +	ethtool_link_ksettings_add_link_mode(cmd, supported, Pause);
-> > > +	ethtool_link_ksettings_add_link_mode(cmd, advertising, Pause);
-> > 
-> > Hi Simon
-> > 
-> > Does it act on the results of the pause auto-neg? If the link peer
-> > says it does not support pause, will it turn pause off?
-> 
-> Thanks Andrew,
-> 
-> I'll try and get an answer to that question for you.
+The caller of this function (parisc_driver_remove() in
+arch/parisc/kernel/drivers.c) ignores the return value, so better don't
+return any value at all to not wake wrong expectations in driver authors.
 
-Hi Andrew,
+The only function that could return a non-zero value before was
+ipmi_parisc_remove() which returns the return value of
+ipmi_si_remove_by_dev(). Make this function return void, too, as for all
+other callers the value is ignored, too.
 
-The simple answer to those questions is no.
+Also fold in a small checkpatch fix for:
+
+WARNING: Unnecessary space before function pointer arguments
++	void (*remove) (struct parisc_device *dev);
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ arch/parisc/include/asm/parisc-device.h  | 4 ++--
+ drivers/char/ipmi/ipmi_si_intf.c         | 6 +-----
+ drivers/char/ipmi/ipmi_si_parisc.c       | 4 ++--
+ drivers/char/ipmi/ipmi_si_platform.c     | 4 +++-
+ drivers/input/keyboard/hilkbd.c          | 4 +---
+ drivers/input/serio/gscps2.c             | 3 +--
+ drivers/net/ethernet/i825xx/lasi_82596.c | 3 +--
+ drivers/parport/parport_gsc.c            | 3 +--
+ drivers/scsi/lasi700.c                   | 4 +---
+ drivers/scsi/zalon.c                     | 4 +---
+ drivers/tty/serial/mux.c                 | 3 +--
+ sound/parisc/harmony.c                   | 3 +--
+ 12 files changed, 16 insertions(+), 29 deletions(-)
+
+diff --git a/arch/parisc/include/asm/parisc-device.h b/arch/parisc/include/asm/parisc-device.h
+index d02d144c6012..4de3b391d812 100644
+--- a/arch/parisc/include/asm/parisc-device.h
++++ b/arch/parisc/include/asm/parisc-device.h
+@@ -34,8 +34,8 @@ struct parisc_driver {
+ 	struct parisc_driver *next;
+ 	char *name; 
+ 	const struct parisc_device_id *id_table;
+-	int (*probe) (struct parisc_device *dev); /* New device discovered */
+-	int (*remove) (struct parisc_device *dev);
++	int (*probe)(struct parisc_device *dev); /* New device discovered */
++	void (*remove)(struct parisc_device *dev);
+ 	struct device_driver drv;
+ };
+ 
+diff --git a/drivers/char/ipmi/ipmi_si_intf.c b/drivers/char/ipmi/ipmi_si_intf.c
+index 62929a3e397e..bb466981dc1b 100644
+--- a/drivers/char/ipmi/ipmi_si_intf.c
++++ b/drivers/char/ipmi/ipmi_si_intf.c
+@@ -2228,22 +2228,18 @@ static void cleanup_one_si(struct smi_info *smi_info)
+ 	kfree(smi_info);
+ }
+ 
+-int ipmi_si_remove_by_dev(struct device *dev)
++void ipmi_si_remove_by_dev(struct device *dev)
+ {
+ 	struct smi_info *e;
+-	int rv = -ENOENT;
+ 
+ 	mutex_lock(&smi_infos_lock);
+ 	list_for_each_entry(e, &smi_infos, link) {
+ 		if (e->io.dev == dev) {
+ 			cleanup_one_si(e);
+-			rv = 0;
+ 			break;
+ 		}
+ 	}
+ 	mutex_unlock(&smi_infos_lock);
+-
+-	return rv;
+ }
+ 
+ struct device *ipmi_si_remove_by_data(int addr_space, enum si_type si_type,
+diff --git a/drivers/char/ipmi/ipmi_si_parisc.c b/drivers/char/ipmi/ipmi_si_parisc.c
+index 11c9160275df..2be2967f6b5f 100644
+--- a/drivers/char/ipmi/ipmi_si_parisc.c
++++ b/drivers/char/ipmi/ipmi_si_parisc.c
+@@ -29,9 +29,9 @@ static int __init ipmi_parisc_probe(struct parisc_device *dev)
+ 	return ipmi_si_add_smi(&io);
+ }
+ 
+-static int __exit ipmi_parisc_remove(struct parisc_device *dev)
++static void __exit ipmi_parisc_remove(struct parisc_device *dev)
+ {
+-	return ipmi_si_remove_by_dev(&dev->dev);
++	ipmi_si_remove_by_dev(&dev->dev);
+ }
+ 
+ static const struct parisc_device_id ipmi_parisc_tbl[] __initconst = {
+diff --git a/drivers/char/ipmi/ipmi_si_platform.c b/drivers/char/ipmi/ipmi_si_platform.c
+index 380a6a542890..505cc978c97a 100644
+--- a/drivers/char/ipmi/ipmi_si_platform.c
++++ b/drivers/char/ipmi/ipmi_si_platform.c
+@@ -411,7 +411,9 @@ static int ipmi_probe(struct platform_device *pdev)
+ 
+ static int ipmi_remove(struct platform_device *pdev)
+ {
+-	return ipmi_si_remove_by_dev(&pdev->dev);
++	ipmi_si_remove_by_dev(&pdev->dev);
++
++	return 0;
+ }
+ 
+ static int pdev_match_name(struct device *dev, const void *data)
+diff --git a/drivers/input/keyboard/hilkbd.c b/drivers/input/keyboard/hilkbd.c
+index 62ccfebf2f60..c1a4d5055de6 100644
+--- a/drivers/input/keyboard/hilkbd.c
++++ b/drivers/input/keyboard/hilkbd.c
+@@ -316,11 +316,9 @@ static int __init hil_probe_chip(struct parisc_device *dev)
+ 	return hil_keyb_init();
+ }
+ 
+-static int __exit hil_remove_chip(struct parisc_device *dev)
++static void __exit hil_remove_chip(struct parisc_device *dev)
+ {
+ 	hil_keyb_exit();
+-
+-	return 0;
+ }
+ 
+ static const struct parisc_device_id hil_tbl[] __initconst = {
+diff --git a/drivers/input/serio/gscps2.c b/drivers/input/serio/gscps2.c
+index 2f9775de3c5b..a9065c6ab550 100644
+--- a/drivers/input/serio/gscps2.c
++++ b/drivers/input/serio/gscps2.c
+@@ -411,7 +411,7 @@ static int __init gscps2_probe(struct parisc_device *dev)
+  * @return: success/error report
+  */
+ 
+-static int __exit gscps2_remove(struct parisc_device *dev)
++static void __exit gscps2_remove(struct parisc_device *dev)
+ {
+ 	struct gscps2port *ps2port = dev_get_drvdata(&dev->dev);
+ 
+@@ -425,7 +425,6 @@ static int __exit gscps2_remove(struct parisc_device *dev)
+ #endif
+ 	dev_set_drvdata(&dev->dev, NULL);
+ 	kfree(ps2port);
+-	return 0;
+ }
+ 
+ 
+diff --git a/drivers/net/ethernet/i825xx/lasi_82596.c b/drivers/net/ethernet/i825xx/lasi_82596.c
+index 96c6f4f36904..48e001881c75 100644
+--- a/drivers/net/ethernet/i825xx/lasi_82596.c
++++ b/drivers/net/ethernet/i825xx/lasi_82596.c
+@@ -196,7 +196,7 @@ lan_init_chip(struct parisc_device *dev)
+ 	return retval;
+ }
+ 
+-static int __exit lan_remove_chip(struct parisc_device *pdev)
++static void __exit lan_remove_chip(struct parisc_device *pdev)
+ {
+ 	struct net_device *dev = parisc_get_drvdata(pdev);
+ 	struct i596_private *lp = netdev_priv(dev);
+@@ -205,7 +205,6 @@ static int __exit lan_remove_chip(struct parisc_device *pdev)
+ 	dma_free_noncoherent(&pdev->dev, sizeof(struct i596_private), lp->dma,
+ 		       lp->dma_addr, DMA_BIDIRECTIONAL);
+ 	free_netdev (dev);
+-	return 0;
+ }
+ 
+ static const struct parisc_device_id lan_tbl[] __initconst = {
+diff --git a/drivers/parport/parport_gsc.c b/drivers/parport/parport_gsc.c
+index 1e43b3f399a8..4332692ca4b8 100644
+--- a/drivers/parport/parport_gsc.c
++++ b/drivers/parport/parport_gsc.c
+@@ -378,7 +378,7 @@ static int __init parport_init_chip(struct parisc_device *dev)
+ 	return 0;
+ }
+ 
+-static int __exit parport_remove_chip(struct parisc_device *dev)
++static void __exit parport_remove_chip(struct parisc_device *dev)
+ {
+ 	struct parport *p = dev_get_drvdata(&dev->dev);
+ 	if (p) {
+@@ -397,7 +397,6 @@ static int __exit parport_remove_chip(struct parisc_device *dev)
+ 		parport_put_port(p);
+ 		kfree (ops); /* hope no-one cached it */
+ 	}
+-	return 0;
+ }
+ 
+ static const struct parisc_device_id parport_tbl[] __initconst = {
+diff --git a/drivers/scsi/lasi700.c b/drivers/scsi/lasi700.c
+index 6d14a7a94d0b..86fe19e0468d 100644
+--- a/drivers/scsi/lasi700.c
++++ b/drivers/scsi/lasi700.c
+@@ -134,7 +134,7 @@ lasi700_probe(struct parisc_device *dev)
+ 	return -ENODEV;
+ }
+ 
+-static int __exit
++static void __exit
+ lasi700_driver_remove(struct parisc_device *dev)
+ {
+ 	struct Scsi_Host *host = dev_get_drvdata(&dev->dev);
+@@ -146,8 +146,6 @@ lasi700_driver_remove(struct parisc_device *dev)
+ 	free_irq(host->irq, host);
+ 	iounmap(hostdata->base);
+ 	kfree(hostdata);
+-
+-	return 0;
+ }
+ 
+ static struct parisc_driver lasi700_driver __refdata = {
+diff --git a/drivers/scsi/zalon.c b/drivers/scsi/zalon.c
+index 7eac76cccc4c..f1e5cf8a17d9 100644
+--- a/drivers/scsi/zalon.c
++++ b/drivers/scsi/zalon.c
+@@ -168,15 +168,13 @@ static const struct parisc_device_id zalon_tbl[] __initconst = {
+ 
+ MODULE_DEVICE_TABLE(parisc, zalon_tbl);
+ 
+-static int __exit zalon_remove(struct parisc_device *dev)
++static void __exit zalon_remove(struct parisc_device *dev)
+ {
+ 	struct Scsi_Host *host = dev_get_drvdata(&dev->dev);
+ 
+ 	scsi_remove_host(host);
+ 	ncr53c8xx_release(host);
+ 	free_irq(dev->irq, host);
+-
+-	return 0;
+ }
+ 
+ static struct parisc_driver zalon_driver __refdata = {
+diff --git a/drivers/tty/serial/mux.c b/drivers/tty/serial/mux.c
+index be640d9863cd..643dfbcc43f9 100644
+--- a/drivers/tty/serial/mux.c
++++ b/drivers/tty/serial/mux.c
+@@ -496,7 +496,7 @@ static int __init mux_probe(struct parisc_device *dev)
+ 	return 0;
+ }
+ 
+-static int __exit mux_remove(struct parisc_device *dev)
++static void __exit mux_remove(struct parisc_device *dev)
+ {
+ 	int i, j;
+ 	int port_count = (long)dev_get_drvdata(&dev->dev);
+@@ -518,7 +518,6 @@ static int __exit mux_remove(struct parisc_device *dev)
+ 	}
+ 
+ 	release_mem_region(dev->hpa.start + MUX_OFFSET, port_count * MUX_LINE_OFFSET);
+-	return 0;
+ }
+ 
+ /* Hack.  This idea was taken from the 8250_gsc.c on how to properly order
+diff --git a/sound/parisc/harmony.c b/sound/parisc/harmony.c
+index 1440db8b4177..2e3e5aa47682 100644
+--- a/sound/parisc/harmony.c
++++ b/sound/parisc/harmony.c
+@@ -968,11 +968,10 @@ snd_harmony_probe(struct parisc_device *padev)
+ 	return err;
+ }
+ 
+-static int __exit
++static void __exit
+ snd_harmony_remove(struct parisc_device *padev)
+ {
+ 	snd_card_free(parisc_get_drvdata(padev));
+-	return 0;
+ }
+ 
+ static struct parisc_driver snd_harmony_driver __refdata = {
+-- 
+2.30.2
+
