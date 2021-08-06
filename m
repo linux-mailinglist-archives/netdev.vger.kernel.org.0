@@ -2,134 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B87713E2F64
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 20:43:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9BCB3E2F72
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 20:46:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243281AbhHFSnY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 14:43:24 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:58178 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231889AbhHFSnW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 14:43:22 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1628275386; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=IbPZn8iNaCUL+l5O5Ljf/OCMajoxh9XOhvk0L9CL2X8=;
- b=a9fSoGLmq/QW7DQLmmidJLYYaeB7Ay0u1PEKpkpjulIW/fX3ctZ59+9CNOyEie2MapjfoMdI
- 1Yjp+4V08Y+n+uQFArB3WQIvcoCKzmOg6aAX8zC5JtOm8pewo39aBa3o3d0PeMInaulXpko2
- SqvReZp6rDzQ4OWoaC3IrA1K00M=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 610d82ab041a739c4641c0b6 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 06 Aug 2021 18:42:51
- GMT
-Sender: subashab=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id EE1B6C4338A; Fri,  6 Aug 2021 18:42:49 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
-        autolearn=ham autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: subashab)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 90E7FC433D3;
-        Fri,  6 Aug 2021 18:42:49 +0000 (UTC)
+        id S243378AbhHFSqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 14:46:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60014 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231889AbhHFSqf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 14:46:35 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C1AC0613CF;
+        Fri,  6 Aug 2021 11:46:18 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id t7-20020a17090a5d87b029017807007f23so20864357pji.5;
+        Fri, 06 Aug 2021 11:46:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=lq+ZJabFR/aEqAVLWWQwRS+Bk30mmVgINsLo2QOd63g=;
+        b=oPU85Ks4t/BD97TfUEBxq2w8KeO5d4b1Nvchn+Yv7kB9wyq/mf6St5MBYsxebm3xyK
+         2TryVrMzKvdFR8lsNpJJvPTGVD4xpl+ayOSVdJa9rxZqEG8whTlQ9VyP8dlNEQrJJob9
+         L1GJYfPOIitMNMopL09Z+xctxoFgA0e1jTOj55Hexm/8/2DIwLeTuQql2G/TkU9C3erd
+         aqjtHdqEda9mrydWw7Nl7tQlscqzQhgaTkh3FsV8iPW0Y607/KxDgxiwjF79JrWcFsfS
+         nD/+RPX0BYNASPKwyYxj4WgS75i+bpNHRnG/mqXLAaY3TvvGXIOmp2cf1T5bSsVeRVnR
+         2OKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=lq+ZJabFR/aEqAVLWWQwRS+Bk30mmVgINsLo2QOd63g=;
+        b=DucPVjjs0ZsvWYowKi+0i2xiOpQfbZ6htuepHQYDtVV/xB/HOyWy+ZEUwaJBaj0E7T
+         kqI8tS6Q/8ExE6mn69Knt+K0ZVfSFAjwkpHwH3RCwazvCphLC6UIVLj+Mb0gxQfjJMc7
+         PmVoomIqHbYgxr/nGguyYDSLiflnRYfNcAbWrOdEZ7yUia+cTZyrKDKV7EB4UI9EabHj
+         EUmf89xO0vXQB3iHCUXddkfov+Ym17e/RvZ9yiKdA4x7Z6jqPldTi+qhfyL7s4VbR1up
+         J7yhgnB3TSS1Wm+k6fA5IWB6rZ0Aj0oA+K8hpr9UOPW9avLdg7XdL/BzYCAmh7/t4D/E
+         RwbA==
+X-Gm-Message-State: AOAM530kZahHgGV18PkCCoCHNrird3Zmbke3lYJzSsa6g40sQ1CheERm
+        D2mu3sep3fbmrkoIGFsOfyI=
+X-Google-Smtp-Source: ABdhPJzzMFSdpyMOk7GztnyuZ8fgTAmGVjar/iMG55IOe92tbJufWKgnV6AdQl2ufQFq5C/G1yNdUw==
+X-Received: by 2002:a62:8f86:0:b029:32e:33d7:998b with SMTP id n128-20020a628f860000b029032e33d7998bmr12215091pfd.64.1628275577437;
+        Fri, 06 Aug 2021 11:46:17 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:8873:2b2a:719c:18c7])
+        by smtp.gmail.com with ESMTPSA id jz24sm10017062pjb.9.2021.08.06.11.46.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Aug 2021 11:46:16 -0700 (PDT)
+Date:   Fri, 6 Aug 2021 11:46:13 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>, Corey Minyard <minyard@acm.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, linux-parisc@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-input@vger.kernel.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, kernel@pengutronix.de
+Subject: Re: [PATCH] parisc: Make struct parisc_driver::remove() return void
+Message-ID: <YQ2DdZG2tQuzM22U@google.com>
+References: <20210806093938.1950990-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Fri, 06 Aug 2021 12:42:49 -0600
-From:   subashab@codeaurora.org
-To:     Aleksander Morgado <aleksander@aleksander.es>
-Cc:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
-        Daniele Palmas <dnlplm@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Sean Tranchetti <stranche@codeaurora.org>
-Subject: Re: RMNET QMAP data aggregation with size greater than 16384
-In-Reply-To: <CAAP7ucJRbg58Yqcx-qFFUuu=_=3Ss1HE1ZW4XGrm0KsSXnwdmA@mail.gmail.com>
-References: <CAAP7ucKuS9p_hkR5gMWiM984Hvt09iNQEt32tCFDCT5p0fqg4Q@mail.gmail.com>
- <c0e14605e9bc650aca26b8c3920e9aba@codeaurora.org>
- <CAAP7ucK7EeBPJHt9XFp7bd5cGXtH5w2VGgh3yD7OA9SYd5JkJw@mail.gmail.com>
- <77b850933d9af8ddbc21f5908ca0764d@codeaurora.org>
- <CAAP7ucJRbg58Yqcx-qFFUuu=_=3Ss1HE1ZW4XGrm0KsSXnwdmA@mail.gmail.com>
-Message-ID: <13972ac97ffe7a10fd85fe03dc84dc02@codeaurora.org>
-X-Sender: subashab@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210806093938.1950990-1-u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I tried with a SIMCOM 7600E, with data aggregation enabled with QMAPv1:
+On Fri, Aug 06, 2021 at 11:39:38AM +0200, Uwe Kleine-König wrote:
+> The caller of this function (parisc_driver_remove() in
+> arch/parisc/kernel/drivers.c) ignores the return value, so better don't
+> return any value at all to not wake wrong expectations in driver authors.
 > 
-> $ sudo qmicli -d /dev/cdc-wdm0 -p --wda-get-data-format
-> [/dev/cdc-wdm0] Successfully got data format
->                    QoS flow header: no
->                Link layer protocol: 'raw-ip'
->   Uplink data aggregation protocol: 'qmap'
-> Downlink data aggregation protocol: 'qmap'
->                      NDP signature: '0'
-> Downlink data aggregation max datagrams: '10'
-> Downlink data aggregation max size: '4096'
+> The only function that could return a non-zero value before was
+> ipmi_parisc_remove() which returns the return value of
+> ipmi_si_remove_by_dev(). Make this function return void, too, as for all
+> other callers the value is ignored, too.
 > 
-> As you suggested, the MTU of the new muxed interface is set to 1500
-> and the MTU of the master interface to only 4 more bytes (1504):
+> Also fold in a small checkpatch fix for:
 > 
-> # ip link
-> 8: wwp0s20f0u8u4i5: <POINTOPOINT,UP,LOWER_UP> mtu 1504 qdisc fq_codel
-> state UNKNOWN mode DEFAULT group default qlen 1000
->     link/none
-> 9: qmapmux0.0@wwp0s20f0u8u4i5: <UP,LOWER_UP> mtu 1500 qdisc fq_codel
-> state UNKNOWN mode DEFAULT group default qlen 1000
->     link/[519]
+> WARNING: Unnecessary space before function pointer arguments
+> +	void (*remove) (struct parisc_device *dev);
 > 
-> Under this scenario, the downlink is completely broken (speedtest
-> 0.39Mbps), while the uplink seems to work (speedtest 13Mbps).
-> 
-> If I use the logic I had before, associating the downlink data
-> aggregation max size reported by the module to the MTU of the master
-> interface, same as I had to do when using qmi_wwan add_mux/del_mux,
-> then it works properly:
-> 
-> # ip link
-> 14: wwp0s20f0u8u4i5: <POINTOPOINT,UP,LOWER_UP> mtu 4096 qdisc fq_codel
-> state UNKNOWN mode DEFAULT group default qlen 1000
->     link/none
-> 15: qmapmux0.0@wwp0s20f0u8u4i5: <UP,LOWER_UP> mtu 1500 qdisc fq_codel
-> state UNKNOWN mode DEFAULT group default qlen 1000
->     link/[519]
-> 
-> Downlink is now 26Mbps and uplink still 13Mbps.
-> 
-> Is there something I'm doing wrong? Or do we really need to do the
-> same thing as in qmi_wwan add_mux/del_mux; i.e. configuring the master
-> interface MTU to be the same as the downlink max aggregation data size
-> so that we change the rx_urb_size?
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> ---
 
-Unfortunately, this seems to be a limitation of qmi_wwan (usbnet)
-where its tying the RX to the TX size through usbnet_change_mtu.
+...
 
-Ideally, we should break this dependency and have a sysfs or some other
-configuration scheme to set the rx_urb_size.
+>  drivers/input/keyboard/hilkbd.c          | 4 +---
+>  drivers/input/serio/gscps2.c             | 3 +--
 
-Looks like this discussion has happened a while back and the option to 
-use
-a configurable scheme for rx_urb_size was rejected by Bjorn and Greg KH.
-The summary of the thread was to set a large rx_urb_size during probe 
-itself for qmi_wwan.
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-https://patchwork.kernel.org/project/linux-usb/patch/20200803065105.8997-1-yzc666@netease.com/
+Thanks.
 
-We could try setting a large value as suggested there and it should 
-hopefully
-solve the issue you are seeing.
-
---
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
-Forum,
-a Linux Foundation Collaborative Project
+-- 
+Dmitry
