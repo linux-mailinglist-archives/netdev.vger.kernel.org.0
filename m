@@ -2,123 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88C4A3E31D9
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 00:40:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 743C23E31DB
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 00:42:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242434AbhHFWks (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 18:40:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56030 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231281AbhHFWkr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 18:40:47 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FAF3C0613CF;
-        Fri,  6 Aug 2021 15:40:30 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id j77so17858748ybj.3;
-        Fri, 06 Aug 2021 15:40:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=80dsSfMEM2/OOVuLC4bXzv6yTdaVBrlMogH/dimQq7c=;
-        b=UgkXVhMHF42NXB0G8m59N2rpOqow5TPa2wT2EQme0kZo9PrYyPGqmzauMqOMwf/JFr
-         Hc+BjhwVdLMPLqy8BDcyGFE2F2UjDRrefsSnYCNUu7AZpAZpKTqwG6CufzCWMAb8thUD
-         EESHurRzwC0uHp4f83WM53KTVmeyJ4V7MRC7H8JO/IVgjGqsARF6HriuNE/bbYlpJru1
-         qq/7DGPOYXD97SYH0LRn7KcVW0cG1NNwcZoVnsUepWsksDACBZhI/81L+Byl7ySJdj6z
-         KOzke2s8ZkiLnbSlWOBGiUpwbzkRgvB2WTNIhswnppR+DiEkKFfzDo0g8WKo/wwz0W/9
-         KXfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=80dsSfMEM2/OOVuLC4bXzv6yTdaVBrlMogH/dimQq7c=;
-        b=IZVAuHe5Y/gCiPgTaPd9EPGsptxieSgRXY74Cigbq5nBhWDkO1EInagCV0xeGmaS20
-         VisAp6fReng3F9olFYKs4S7qqBEBfiF22RU0wY7Jy2x9WjMr1uDyGUepQWhxZRjE2EWB
-         E9p5SuTPfQMxL6M/jdZmARl1WOUHIq4pWnst2TnYe1+qSpu43a1tDiayZh5+tMvyPtTL
-         6UVqRwkkkTkMSwDxdNYmqZjY5o8v2iA27Y1GiYq/WaRJKzPHMeKS0z9KGF30jMt6WEvc
-         PtaAYBCGYtr0JA0enwdEG6dD61gOLduS7zcUbFaXHiIr/R+AUaSSm3IzjYhCZjIGi4lh
-         PsjQ==
-X-Gm-Message-State: AOAM5338hbfxj522oQsOjsIRQAnci7WAylssVzMSjldtB7F33Xaw8Ubd
-        wRvLwlWpKmZ9jwtrao7eNePnyO3+GCO9WXlP/sA=
-X-Google-Smtp-Source: ABdhPJy5OB+B+A+EKSnk9A9ItdT3iGzq28Hxj4l3l0DOsGkBiUn+puLC9US3kS7+djXzqIgl8M4qK+nWpjPH58FBaFI=
-X-Received: by 2002:a25:2901:: with SMTP id p1mr15804127ybp.459.1628289629951;
- Fri, 06 Aug 2021 15:40:29 -0700 (PDT)
+        id S243272AbhHFWmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 18:42:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56046 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242484AbhHFWmo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Aug 2021 18:42:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0DCC860EE7;
+        Fri,  6 Aug 2021 22:42:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628289748;
+        bh=AXfG4bL+S5KpiWpdKgIENx9EqmoykkbhVX5F/NL+Vss=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=j8t+HZ56qH16mzBQSBeshmeB3gqT8o+jz8WjbYOPROwvGev0cbxvgGFiDTjNkZHJZ
+         xwy7HN5vB9S20So7fNpTcE8M0pB9DE0osori9dkYh4vQeL5UGJmsetkhtzILB3HrR8
+         46Y3+KJrghpiDLvtaTD62AUgFbnBi9wtcbEmyncCAluPPQJD5B3BUOoo5k+ajzL7dc
+         5o5pL+EsozOPLGvCs3fcb0uKtzh7XMw4/D1jSXkCmMNY38qtATC/slMwIImUaLhZ0s
+         UMRGUGTGi5mGaHUdHphG7bX19pkN9d4OiuSvnZlqdu601PhNZbhZVMPexrYcbn+eOv
+         gS4vdSRUe+f5g==
+Date:   Fri, 6 Aug 2021 15:42:27 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vasily Averin <vvs@virtuozzo.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@openvz.org,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: Re: [PATCH NET] vrf: fix null pointer dereference in
+ vrf_finish_output()
+Message-ID: <20210806154227.49ac089d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <5ba67c28-1056-e24d-cad3-4b7aaac01111@virtuozzo.com>
+References: <20210806.111412.1329682129695306949.davem@davemloft.net>
+        <5ba67c28-1056-e24d-cad3-4b7aaac01111@virtuozzo.com>
 MIME-Version: 1.0
-References: <20210802212815.3488773-1-haoluo@google.com>
-In-Reply-To: <20210802212815.3488773-1-haoluo@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 6 Aug 2021 15:40:19 -0700
-Message-ID: <CAEf4BzbRyf41ADFa==mT591Zh8FDOtNnm5LZQvu3X+SxmkoAew@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: support weak typed ksyms.
-To:     Hao Luo <haoluo@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 2, 2021 at 2:29 PM Hao Luo <haoluo@google.com> wrote:
->
-> Currently weak typeless ksyms have default value zero, when they don't
-> exist in the kernel. However, weak typed ksyms are rejected by libbpf.
-> This means that if a bpf object contains the declaration of a
-> non-existing weak typed ksym, it will be rejected even if there is
-> no program that references the symbol.
->
-> In fact, we could let them to pass the checks in libbpf and leave the
-> object to be rejected by the bpf verifier. More specifically, upon
-> seeing a weak typed symbol, libbpf can assign it a zero btf_id, which
-> is associated to the type 'void'. The verifier expects the symbol to
-> be BTF_VAR_KIND instead, therefore will reject loading.
->
-> In practice, we often add new kernel symbols and roll out the kernel
-> changes to fleet. And we want to release a single bpf object that can
-> be loaded on both the new and the old kernels. Passing weak typed ksyms
-> in libbpf allows us to do so as long as the programs that reference the
-> new symbols are disabled on the old kernel.
+On Fri, 6 Aug 2021 15:53:00 +0300 Vasily Averin wrote:
+> After 14ee70ca89e6 ("vrf: use skb_expand_head in vrf_finish_output")
+> skb->dev  is accessed after skb free.
+> Let's replace skb->dev by dev = skb_dst(skb)->dev:
+> vrf_finish_output() is only called from vrf_output(),
+> it set skb->dev to skb_dst(skb)->dev and calls POSTROUTING netfilter
+> hooks, where output device should not be changed.
+> 
+> Fixes: 14ee70ca89e6 ("vrf: use skb_expand_head in vrf_finish_output")
+> Reported-by: Julian Wiedmann <jwi@linux.ibm.com>
+> Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
 
-How do you detect whether a given ksym is present or not? You check
-that from user-space and then use .rodata to turn off pieces of BPF
-logic? That's quite inconvenient. It would be great if these typed
-ksyms worked the same way as typeless ones:
+Thanks for following up! I decided to pick a similar patch from Dan
+Carpenter [1] because the chunk quoted below is not really necessary.
 
-extern const int bpf_link_fops3 __ksym __weak;
+[1] https://lore.kernel.org/kernel-janitors/20210806150435.GB15586@kili/
 
-/* then in BPF program */
+> @@ -883,7 +883,7 @@ static int vrf_finish_output(struct net *net, struct sock *sk, struct sk_buff *s
+>  	}
+>  
+>  	rcu_read_unlock_bh();
+> -	vrf_tx_error(skb->dev, skb);
+> +	vrf_tx_error(dev, skb);
+>  	return -EINVAL;
+>  }
+>  
 
-if (&bpf_link_fops3) {
-   /* use bpf_link_fops3 */
-}
-
-
-I haven't tried, but I suspect it could be made to work if libbpf
-replaces corresponding ldimm64 instruction (with BTF ID) into a plain
-ldimm64 instruction loading 0 directly. That would allow the above
-check (and it would be known false to the verifier) to succeed without
-the verifier rejecting the BPF program. If actual use of non-existing
-typed symbol is not guarded properly, verifier would see that register
-is not PTR_TO_BTF_ID and wouldn't allow to use it for direct memory
-reads or passing it to BPF helpers.
-
-Have you considered such an approach?
-
-
-Separately, please use ASSERT_XXX() macros for tests, not plain
-CHECK()s. Thanks.
-
->
-> Signed-off-by: Hao Luo <haoluo@google.com>
-> ---
->  tools/lib/bpf/libbpf.c                        | 17 +++++-
->  .../selftests/bpf/prog_tests/ksyms_btf.c      | 42 +++++++++++++
->  .../selftests/bpf/progs/test_ksyms_weak.c     | 60 +++++++++++++++++++
->  3 files changed, 116 insertions(+), 3 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_weak.c
->
-
-[...]
