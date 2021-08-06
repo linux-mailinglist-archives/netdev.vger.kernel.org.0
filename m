@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C8153E2923
+	by mail.lfdr.de (Postfix) with ESMTP id 133A93E2922
 	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 13:10:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245328AbhHFLKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 07:10:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56350 "EHLO mail.kernel.org"
+        id S245330AbhHFLKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 07:10:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56374 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245327AbhHFLKW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S245328AbhHFLKW (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 6 Aug 2021 07:10:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B128561184;
-        Fri,  6 Aug 2021 11:10:05 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 52DDC611CB;
+        Fri,  6 Aug 2021 11:10:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628248205;
-        bh=Forx3ImztBpSG2TKZ1Gvy+15tskdGHf8cQn36yqEqVE=;
+        s=k20201202; t=1628248206;
+        bh=DeksanZJAJuEFD+IWsvGh4MfBW0sx+VI60/yKXttqLs=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=N+vwUn7ZyTkosISZkElxXFKvIjlZHtRib32n8DB8vLb1jsLVZmkT1dSWts7QVwZ7/
-         mEAPFKnsT2KiUFuXak7a+ih0MUi2ADEB4LySyc16J5KxVEp4cNO7swlEBgknxnl40F
-         oIHK/hb6X+5Zacxfs3tM+xqqp+zGjtOxxdiknQkGAsSwekM6rP17P8C0BEGa90KUT5
-         y53indSuv1t0dvV9Y7QR0b1rTyqwTkcSz4BuoPxfs+Uy04meXksPV1jJfs0d6hNswY
-         hP3IXImv1MBLV1XiXI0/v2aOF6RFxy82MxmopEL2lj0pWvuzuEpbTu1NAWOONuawps
-         EdjQ51qjjwOfw==
+        b=KULod0S8Afp1+QRyPXhkekJZ1/Igf7aFRDI3982xYH03qXofYyI6RRBGd25eiI0gJ
+         FVEf+MuSQ1RGatycHrkiQ1OMuxyRpI9D6dlu5JfPjvzlYA5jg2/IXU8T96Vfbxx8R+
+         K/mtcrn41hrkFxw/ERhqA1Vq/XT/Oovy7i2uRWASgyPvu3DG7kHPAUWlgtgEgcsBW9
+         kFk8qzekBQKZd0TNLavTkgF4eJ8u0U1Y6VpkQ3hiemvfPzWpLKN8dBYJfIygYJlRsn
+         Vu05K29/jEG9IWXyyWC6X+E/scPoCnZTJrkQoGQabTSIKZ0xa4kooMbWcJozSgWUbY
+         m7iu19R0fTpKw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A5C4160A7C;
-        Fri,  6 Aug 2021 11:10:05 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4CEB960A7C;
+        Fri,  6 Aug 2021 11:10:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: dsa: mt7530: add the missing RxUnicast MIB counter
+Subject: Re: [PATCH net-next v2] net: dsa: mt7530: drop untagged frames on
+ VLAN-aware ports without PVID
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162824820567.31954.9014839863327381261.git-patchwork-notify@kernel.org>
-Date:   Fri, 06 Aug 2021 11:10:05 +0000
-References: <20210806040528.735606-1-dqfext@gmail.com>
-In-Reply-To: <20210806040528.735606-1-dqfext@gmail.com>
+Message-Id: <162824820631.31954.9293662469034354478.git-patchwork-notify@kernel.org>
+Date:   Fri, 06 Aug 2021 11:10:06 +0000
+References: <20210806034713.734853-1-dqfext@gmail.com>
+In-Reply-To: <20210806034713.734853-1-dqfext@gmail.com>
 To:     DENG Qingfang <dqfext@gmail.com>
 Cc:     sean.wang@mediatek.com, Landen.Chao@mediatek.com, andrew@lunn.ch,
         vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
@@ -47,20 +48,21 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri,  6 Aug 2021 12:05:27 +0800 you wrote:
-> Add the missing RxUnicast counter.
+On Fri,  6 Aug 2021 11:47:11 +0800 you wrote:
+> The driver currently still accepts untagged frames on VLAN-aware ports
+> without PVID. Use PVC.ACC_FRM to drop untagged frames in that case.
 > 
-> Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
 > Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 > ---
->  drivers/net/dsa/mt7530.c | 1 +
->  1 file changed, 1 insertion(+)
+> v1 -> v2: Avoid setting PVID to 0 on the CPU port.
+> 
+> [...]
 
 Here is the summary with links:
-  - [net] net: dsa: mt7530: add the missing RxUnicast MIB counter
-    https://git.kernel.org/netdev/net/c/aff51c5da320
+  - [net-next,v2] net: dsa: mt7530: drop untagged frames on VLAN-aware ports without PVID
+    https://git.kernel.org/netdev/net-next/c/8fbebef80107
 
 You are awesome, thank you!
 --
