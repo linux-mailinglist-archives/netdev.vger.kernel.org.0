@@ -2,72 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E8763E2725
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 11:22:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EE693E2766
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 11:37:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244469AbhHFJWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 05:22:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44080 "EHLO
+        id S244605AbhHFJhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 05:37:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244440AbhHFJWm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 05:22:42 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2061C061798
-        for <netdev@vger.kernel.org>; Fri,  6 Aug 2021 02:22:25 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id t7-20020a17090a5d87b029017807007f23so18630452pji.5
-        for <netdev@vger.kernel.org>; Fri, 06 Aug 2021 02:22:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4e0e8RzJHNC8NMBSDrNb+O++Kfle4Og9kFyfQoKTp+Y=;
-        b=tPMSFqN689ucOJGdfodJAUX/dWUYhOjpbSQcBsw6vVF45SJ4pKulia0I5G16s0U0Sz
-         qz2IuEh7v8QBo+H6S1XLE9A9+d/TXDE/c1d0B0elSSP+St7keSGj6UFYdKmyJWlhjpG2
-         ydyRRN7cbFlIHm010nv/ypG9aE9sE1pMjOVrAVg3NnuyjryEf0GmG74LMcFrknqWdelw
-         bqPRwFvY3n0vlEw5bFynzJm/99MzXSxgxOW8x3gOlCdz0lvTGAqYsrh4CJSMYHVuogFp
-         xmLa9psx+JbOcQJBxdDR9BfRw8DB2IYJnvN20vE5WN9i/bfpeo05FXQ/TOTdX8MNerRw
-         kR9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4e0e8RzJHNC8NMBSDrNb+O++Kfle4Og9kFyfQoKTp+Y=;
-        b=TwfzSv/mZcck6ihPKm+hTwn0cE/cGpjwthWlBx9B0m6Dp2M4OARckzwYsLD7jsc7pv
-         +ZAuTLNmD/knP2ICnFPDQTtjMhdDj0Af3iupI7IzobVlxLnjBTEUDBwZYYIo7hy2PxCO
-         pw8RVOff1+SiRm9T5P4T8SWISovI159uBsaC2krrJ2jvx1oC1L+U9T5RL0P0ajavbnWN
-         C7a0NHOMZc64zTjGXOUS61udDisQI8u058epihVwkAIczp3Bf2M+5LOpADt+4do523bz
-         za9701aHk+lucBVEyf+HgmWyAkSnDUy2xynjglo3SsERtznvvX0v6shAK7ILtQrw3aOs
-         3ReQ==
-X-Gm-Message-State: AOAM530XeLQ2haikABoN0yiPdpK0BnJqz/CMlGAPwMFcBIE302ySeP2+
-        zsrtgrGdBZUOzjU4Z/CMTvvzrlU04g7DtwWk9zGYXQ==
-X-Google-Smtp-Source: ABdhPJxtO9TQLjXBXT8b34CKFnwdZ8VY47y9UF1MPjqpnSRcDVModYWb7Ko1e3WykXeNwqXC1OCEWgHry60+UoKXx68=
-X-Received: by 2002:a17:90a:5982:: with SMTP id l2mr9575814pji.18.1628241745166;
- Fri, 06 Aug 2021 02:22:25 -0700 (PDT)
+        with ESMTP id S244396AbhHFJhY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 05:37:24 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09383C061799
+        for <netdev@vger.kernel.org>; Fri,  6 Aug 2021 02:37:09 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1mBwHm-00029e-MZ; Fri, 06 Aug 2021 11:37:02 +0200
+Received: from pengutronix.de (unknown [IPv6:2a02:810a:8940:aa0:66f0:974b:98ab:a2fd])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 63286661D5B;
+        Fri,  6 Aug 2021 09:37:00 +0000 (UTC)
+Date:   Fri, 6 Aug 2021 11:36:58 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dariobin@libero.it>
+Cc:     linux-kernel@vger.kernel.org,
+        Gianluca Falavigna <gianluca.falavigna@inwind.it>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 4/4] can: c_can: cache frames to operate as a true FIFO
+Message-ID: <20210806093658.rvzw7zycrmyp4msp@pengutronix.de>
+References: <20210805201900.23146-1-dariobin@libero.it>
+ <20210805201900.23146-5-dariobin@libero.it>
 MIME-Version: 1.0
-References: <20210806085413.61536-1-andriy.shevchenko@linux.intel.com> <20210806085413.61536-2-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20210806085413.61536-2-andriy.shevchenko@linux.intel.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Fri, 6 Aug 2021 11:32:05 +0200
-Message-ID: <CAMZdPi-OWJBwso=ZMA7E0VKck0wGt-RsbTMBSX+q118c=TSPsA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] wwan: core: Unshadow error code returned by ida_alloc_range))
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="kkgc47zk5ugabioc"
+Content-Disposition: inline
+In-Reply-To: <20210805201900.23146-5-dariobin@libero.it>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 6 Aug 2021 at 11:00, Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
->
-> ida_alloc_range)) may return other than -ENOMEM error code.
-> Unshadow it in the wwan_create_port().
->
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+--kkgc47zk5ugabioc
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On 05.08.2021 22:19:00, Dario Binacchi wrote:
+> As reported by a comment in the c_can_start_xmit() this was not a FIFO.
+> C/D_CAN controller sends out the buffers prioritized so that the lowest
+> buffer number wins.
+>=20
+> What did c_can_start_xmit() do if head was less tail in the tx ring ? It
+> waited until all the frames queued in the FIFO was actually transmitted
+> by the controller before accepting a new CAN frame to transmit, even if
+> the FIFO was not full, to ensure that the messages were transmitted in
+> the order in which they were loaded.
+>=20
+> By storing the frames in the FIFO without requiring its transmission, we
+> will be able to use the full size of the FIFO even in cases such as the
+> one described above. The transmission interrupt will trigger their
+> transmission only when all the messages previously loaded but stored in
+> less priority positions of the buffers have been transmitted.
+>=20
+> Suggested-by: Gianluca Falavigna <gianluca.falavigna@inwind.it>
+> Signed-off-by: Dario Binacchi <dariobin@libero.it>
+
+My review from
+https://lore.kernel.org/linux-can/20210806092523.hij5ejjq6wecbgfr@pengutron=
+ix.de/
+applies here, too.
+
+Please use IF_RX in c_can_do_tx(), remove the spin_lock and test. After
+applying your series, I'll send a patch that changes IF_RX into IF_NAPI
+to avoid any further confusion.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--kkgc47zk5ugabioc
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmENArgACgkQqclaivrt
+76lr2ggAtT5H7Kcg2sOQ418ClRECb7Ivlr96/mGdHw2VANvbT0xzrmACGFjFQG1k
+yGPnmsKdA+SZp5lkRJNVFgZMUc5vZQjqFEh+V5YScdG1hYSnRtRkvvbqOqWrxfmG
+bZBHiUJKZIGRQLT61mBHQS9HmKnGMX0j3WEGn/uNTr/guFH+P3JzbZj7GGLNUgGA
+hjdTYUnO3j2i7dV/E6hPRSDwcBDkXzuwZxmtkuWOdb5ZNeokfF/1oi466phe5fBg
+r1UXw830FbsaqrkI+HnoxxZRBXCl6EneRNfapJxMmtRGdc8+czpdkoo5xDL61DMW
+UdcsQpCF8GUp9Igluek5mBqCnzVa1w==
+=WNgH
+-----END PGP SIGNATURE-----
+
+--kkgc47zk5ugabioc--
