@@ -2,45 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 701743E2479
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 09:50:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D4AE3E247B
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 09:50:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242077AbhHFHuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 03:50:21 -0400
-Received: from relay.sw.ru ([185.231.240.75]:36248 "EHLO relay.sw.ru"
+        id S242895AbhHFHua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 03:50:30 -0400
+Received: from relay.sw.ru ([185.231.240.75]:36286 "EHLO relay.sw.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241314AbhHFHuR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Aug 2021 03:50:17 -0400
+        id S242209AbhHFHuX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Aug 2021 03:50:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
-        :From; bh=tAY88asZF2lnIac1kxZ5VSRxDa9BzKen9bRoCOT7Gjs=; b=zkseI4wOADbNhRt5alS
-        B5g3WeSKk7ur7OiZAxAnCamSftCNQdOHSRrOswlqkaL85/C2t8RPpxbDDzKKyuH9DIpm3V+nhRZ71
-        dv5NOeZcdq8+g5OXFdix4fxmA/TgQ46mszHfFfupoo8VyAKig5QsCDgJNrBSdNhe4l/J9F6hEKo=;
+        :From; bh=CcmfkmJYo6kZODF8AVqH6bbGmNVNZI3ZHZIA+228wdg=; b=wtG+eg9IA5qkeBCiTWc
+        L3lm8E8CykZWwx0OZLZdPnyhDiaeOVeSnH1n6Pi1QO5xLryq7EBFnf5Te0GL1aaSHS1WPNGZS1UGD
+        8T7fSVzgNodazH4i2ter8nNSiyWBMhPcEdgUKppixj2+tsVMmqziVvspG3iFuRrJzvTa0xmfqkw=;
 Received: from [10.93.0.56]
         by relay.sw.ru with esmtp (Exim 4.94.2)
         (envelope-from <vvs@virtuozzo.com>)
-        id 1mBuc9-006aeP-QY; Fri, 06 Aug 2021 10:49:57 +0300
+        id 1mBucG-006af6-Qq; Fri, 06 Aug 2021 10:50:04 +0300
 From:   Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH NET v4 1/7] skbuff: introduce skb_expand_head()
+Subject: [PATCH NET v4 2/7] ipv6: use skb_expand_head in ip6_finish_output2
 To:     "David S. Miller" <davem@davemloft.net>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, Joerg Reuter <jreuter@yaina.de>,
-        Ralf Baechle <ralf@linux-mips.org>, linux-hams@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@openvz.org,
-        Julian Wiedmann <jwi@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@openvz.org, Julian Wiedmann <jwi@linux.ibm.com>
 References: <ccce7edb-54dd-e6bf-1e84-0ec320d8886c@linux.ibm.com>
  <cover.1628235065.git.vvs@virtuozzo.com>
-Message-ID: <5290ec1e-72e5-06dc-4886-ffc5255a162a@virtuozzo.com>
-Date:   Fri, 6 Aug 2021 10:49:57 +0300
+Message-ID: <973dd226-6a0f-d8c8-26c7-7a368ff11d5d@virtuozzo.com>
+Date:   Fri, 6 Aug 2021 10:50:04 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
@@ -52,84 +44,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Like skb_realloc_headroom(), new helper increases headroom of specified skb.
-Unlike skb_realloc_headroom(), it does not allocate a new skb if possible;
-copies skb->sk on new skb when as needed and frees original skb in case
-of failures.
+Unlike skb_realloc_headroom, new helper skb_expand_head does not allocate
+a new skb if possible.
 
-This helps to simplify ip[6]_finish_output2() and a few other similar cases.
+Additionally this patch replaces commonly used dereferencing with variables.
 
 Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
 ---
- include/linux/skbuff.h |  1 +
- net/core/skbuff.c      | 42 ++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 43 insertions(+)
+ net/ipv6/ip6_output.c | 51 ++++++++++++++++-----------------------------------
+ 1 file changed, 16 insertions(+), 35 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index b2db9cd..ec8a783 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1179,6 +1179,7 @@ static inline struct sk_buff *__pskb_copy(struct sk_buff *skb, int headroom,
- int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail, gfp_t gfp_mask);
- struct sk_buff *skb_realloc_headroom(struct sk_buff *skb,
- 				     unsigned int headroom);
-+struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom);
- struct sk_buff *skb_copy_expand(const struct sk_buff *skb, int newheadroom,
- 				int newtailroom, gfp_t priority);
- int __must_check skb_to_sgvec_nomark(struct sk_buff *skb, struct scatterlist *sg,
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index fc7942c..0c70b2b 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -1786,6 +1786,48 @@ struct sk_buff *skb_realloc_headroom(struct sk_buff *skb, unsigned int headroom)
- EXPORT_SYMBOL(skb_realloc_headroom);
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 8e6ca9a..7d2ec25 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -60,46 +60,29 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
+ {
+ 	struct dst_entry *dst = skb_dst(skb);
+ 	struct net_device *dev = dst->dev;
++	struct inet6_dev *idev = ip6_dst_idev(dst);
+ 	unsigned int hh_len = LL_RESERVED_SPACE(dev);
+-	int delta = hh_len - skb_headroom(skb);
+-	const struct in6_addr *nexthop;
++	const struct in6_addr *daddr, *nexthop;
++	struct ipv6hdr *hdr;
+ 	struct neighbour *neigh;
+ 	int ret;
  
- /**
-+ *	skb_expand_head - reallocate header of &sk_buff
-+ *	@skb: buffer to reallocate
-+ *	@headroom: needed headroom
-+ *
-+ *	Unlike skb_realloc_headroom, this one does not allocate a new skb
-+ *	if possible; copies skb->sk to new skb as needed
-+ *	and frees original skb in case of failures.
-+ *
-+ *	It expect increased headroom and generates warning otherwise.
-+ */
-+
-+struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
-+{
-+	int delta = headroom - skb_headroom(skb);
-+
-+	if (WARN_ONCE(delta <= 0,
-+		      "%s is expecting an increase in the headroom", __func__))
-+		return skb;
-+
-+	/* pskb_expand_head() might crash, if skb is shared */
-+	if (skb_shared(skb)) {
-+		struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
-+
-+		if (likely(nskb)) {
-+			if (skb->sk)
-+				skb_set_owner_w(nskb, skb->sk);
-+			consume_skb(skb);
-+		} else {
-+			kfree_skb(skb);
-+		}
-+		skb = nskb;
-+	}
-+	if (skb &&
-+	    pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
-+		kfree_skb(skb);
-+		skb = NULL;
-+	}
-+	return skb;
-+}
-+EXPORT_SYMBOL(skb_expand_head);
-+
-+/**
-  *	skb_copy_expand	-	copy and expand sk_buff
-  *	@skb: buffer to copy
-  *	@newheadroom: new free bytes at head
+ 	/* Be paranoid, rather than too clever. */
+-	if (unlikely(delta > 0) && dev->header_ops) {
+-		/* pskb_expand_head() might crash, if skb is shared */
+-		if (skb_shared(skb)) {
+-			struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
+-
+-			if (likely(nskb)) {
+-				if (skb->sk)
+-					skb_set_owner_w(nskb, skb->sk);
+-				consume_skb(skb);
+-			} else {
+-				kfree_skb(skb);
+-			}
+-			skb = nskb;
+-		}
+-		if (skb &&
+-		    pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
+-			kfree_skb(skb);
+-			skb = NULL;
+-		}
++	if (unlikely(hh_len > skb_headroom(skb)) && dev->header_ops) {
++		skb = skb_expand_head(skb, hh_len);
+ 		if (!skb) {
+-			IP6_INC_STATS(net, ip6_dst_idev(dst), IPSTATS_MIB_OUTDISCARDS);
++			IP6_INC_STATS(net, idev, IPSTATS_MIB_OUTDISCARDS);
+ 			return -ENOMEM;
+ 		}
+ 	}
+ 
+-	if (ipv6_addr_is_multicast(&ipv6_hdr(skb)->daddr)) {
+-		struct inet6_dev *idev = ip6_dst_idev(skb_dst(skb));
+-
++	hdr = ipv6_hdr(skb);
++	daddr = &hdr->daddr;
++	if (ipv6_addr_is_multicast(daddr)) {
+ 		if (!(dev->flags & IFF_LOOPBACK) && sk_mc_loop(sk) &&
+ 		    ((mroute6_is_socket(net, skb) &&
+ 		     !(IP6CB(skb)->flags & IP6SKB_FORWARDED)) ||
+-		     ipv6_chk_mcast_addr(dev, &ipv6_hdr(skb)->daddr,
+-					 &ipv6_hdr(skb)->saddr))) {
++		     ipv6_chk_mcast_addr(dev, daddr, &hdr->saddr))) {
+ 			struct sk_buff *newskb = skb_clone(skb, GFP_ATOMIC);
+ 
+ 			/* Do not check for IFF_ALLMULTI; multicast routing
+@@ -110,7 +93,7 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
+ 					net, sk, newskb, NULL, newskb->dev,
+ 					dev_loopback_xmit);
+ 
+-			if (ipv6_hdr(skb)->hop_limit == 0) {
++			if (hdr->hop_limit == 0) {
+ 				IP6_INC_STATS(net, idev,
+ 					      IPSTATS_MIB_OUTDISCARDS);
+ 				kfree_skb(skb);
+@@ -119,9 +102,7 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
+ 		}
+ 
+ 		IP6_UPD_PO_STATS(net, idev, IPSTATS_MIB_OUTMCAST, skb->len);
+-
+-		if (IPV6_ADDR_MC_SCOPE(&ipv6_hdr(skb)->daddr) <=
+-		    IPV6_ADDR_SCOPE_NODELOCAL &&
++		if (IPV6_ADDR_MC_SCOPE(daddr) <= IPV6_ADDR_SCOPE_NODELOCAL &&
+ 		    !(dev->flags & IFF_LOOPBACK)) {
+ 			kfree_skb(skb);
+ 			return 0;
+@@ -136,10 +117,10 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
+ 	}
+ 
+ 	rcu_read_lock_bh();
+-	nexthop = rt6_nexthop((struct rt6_info *)dst, &ipv6_hdr(skb)->daddr);
+-	neigh = __ipv6_neigh_lookup_noref(dst->dev, nexthop);
++	nexthop = rt6_nexthop((struct rt6_info *)dst, daddr);
++	neigh = __ipv6_neigh_lookup_noref(dev, nexthop);
+ 	if (unlikely(!neigh))
+-		neigh = __neigh_create(&nd_tbl, nexthop, dst->dev, false);
++		neigh = __neigh_create(&nd_tbl, nexthop, dev, false);
+ 	if (!IS_ERR(neigh)) {
+ 		sock_confirm_neigh(skb, neigh);
+ 		ret = neigh_output(neigh, skb, false);
+@@ -148,7 +129,7 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
+ 	}
+ 	rcu_read_unlock_bh();
+ 
+-	IP6_INC_STATS(net, ip6_dst_idev(dst), IPSTATS_MIB_OUTNOROUTES);
++	IP6_INC_STATS(net, idev, IPSTATS_MIB_OUTNOROUTES);
+ 	kfree_skb(skb);
+ 	return -EINVAL;
+ }
 -- 
 1.8.3.1
 
