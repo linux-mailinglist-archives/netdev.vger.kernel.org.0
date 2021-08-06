@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D5393E2716
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 11:18:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46FB73E2714
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 11:17:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244476AbhHFJSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 05:18:15 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:39757 "EHLO
+        id S244261AbhHFJRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 05:17:30 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:39755 "EHLO
         rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244406AbhHFJR1 (ORCPT
+        with ESMTP id S244398AbhHFJR1 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 05:17:27 -0400
 Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1769H6Q60013647, This message is accepted by code: ctloc85258
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1769H6kuC013651, This message is accepted by code: ctloc85258
 Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1769H6Q60013647
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1769H6kuC013651
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
         Fri, 6 Aug 2021 17:17:06 +0800
 Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
@@ -24,14 +24,14 @@ Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
 Received: from fc34.localdomain (172.21.177.102) by RTEXMBS04.realtek.com.tw
  (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Fri, 6 Aug 2021
- 17:17:04 +0800
+ 17:17:05 +0800
 From:   Hayes Wang <hayeswang@realtek.com>
 To:     <hkallweit1@gmail.com>
 CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
         <koba.ko@canonical.com>, Hayes Wang <hayeswang@realtek.com>
-Subject: [PATCH net-next 1/2] Revert "r8169: avoid link-up interrupt issue on RTL8106e if user enables ASPM"
-Date:   Fri, 6 Aug 2021 17:15:55 +0800
-Message-ID: <20210806091556.1297186-375-nic_swsd@realtek.com>
+Subject: [PATCH net-next 2/2] r8169: change the L0/L1 entrance latencies for RTL8106e
+Date:   Fri, 6 Aug 2021 17:15:56 +0800
+Message-ID: <20210806091556.1297186-376-nic_swsd@realtek.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210806091556.1297186-374-nic_swsd@realtek.com>
 References: <20210806091556.1297186-374-nic_swsd@realtek.com>
@@ -65,9 +65,8 @@ X-KSE-AntiSpam-Info: Lua profiles 165435 [Aug 06 2021]
 X-KSE-AntiSpam-Info: Version: 5.9.20.0
 X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
 X-KSE-AntiSpam-Info: LuaCore: 454 454 39c6e442fd417993330528e7f9d13ac1bf7fdf8c
-X-KSE-AntiSpam-Info: {Tracking_all_Bitcoin, text}
 X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;realtek.com:7.1.1
+X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1
 X-KSE-AntiSpam-Info: Rate: 0
 X-KSE-AntiSpam-Info: Status: not_detected
 X-KSE-AntiSpam-Info: Method: none
@@ -80,27 +79,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 1ee8856de82faec9bc8bd0f2308a7f27e30ba207.
+The original L0 and L1 entrance latencies of RTL8106e are 4us. And
+they cause the delay of link-up interrupt when enabling ASPM. Change
+the L0 entrance latency to 7us and L1 entrance latency to 32us. Then,
+they could avoid the issue.
 
-This is used to re-enable ASPM on RTL8106e, if it is possible.
-
+Tested-by: Koba Ko <koba.ko@canonical.com>
 Signed-off-by: Hayes Wang <hayeswang@realtek.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/realtek/r8169_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index fa2dab6980bb..d2647036b1e7 100644
+index d2647036b1e7..2c643ec36bdf 100644
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -3508,6 +3508,7 @@ static void rtl_hw_start_8106(struct rtl8169_private *tp)
- 	rtl_eri_write(tp, 0x1b0, ERIAR_MASK_0011, 0x0000);
+@@ -3502,6 +3502,9 @@ static void rtl_hw_start_8106(struct rtl8169_private *tp)
+ 	RTL_W8(tp, MCU, RTL_R8(tp, MCU) | EN_NDP | EN_OOB_RESET);
+ 	RTL_W8(tp, DLLPR, RTL_R8(tp, DLLPR) & ~PFM_EN);
  
- 	rtl_pcie_state_l2l3_disable(tp);
-+	rtl_hw_aspm_clkreq_enable(tp, true);
- }
++	/* The default value is 0x13. Change it to 0x2f */
++	rtl_csi_access_enable(tp, 0x2f);
++
+ 	rtl_eri_write(tp, 0x1d0, ERIAR_MASK_0011, 0x0000);
  
- DECLARE_RTL_COND(rtl_mac_ocp_e00e_cond)
+ 	/* disable EEE */
 -- 
 2.31.1
 
