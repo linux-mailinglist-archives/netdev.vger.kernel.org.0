@@ -2,125 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56B123E2C7D
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 16:28:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B7733E2D04
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 16:56:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239050AbhHFO2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 10:28:39 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:60806 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238446AbhHFO2g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 10:28:36 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 176ESFNA082549;
-        Fri, 6 Aug 2021 09:28:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1628260095;
-        bh=BilTB8yGmwYUQpauRBnVTlubDNoaX2E2FswH6R2Se1Q=;
-        h=From:To:CC:Subject:Date;
-        b=KtxHbrOQBNvw8E6nJ04+p0zF+7+XPmAe5jge98qRmOUmD6n2NJYiswB+55FpUzIJc
-         qcn8u4Y5anh6cP9UyW6IkaKRWRTgsoXWxUaGQhHbg6mYzACYtnWVgig5A3ptZBYbYL
-         1IR0seu2Zs7dWy1z/6D5Ka/fkM/3narztc5HxMaw=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 176ESFoP119293
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 6 Aug 2021 09:28:15 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Fri, 6 Aug
- 2021 09:28:15 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Fri, 6 Aug 2021 09:28:15 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 176ESEIp094816;
-        Fri, 6 Aug 2021 09:28:14 -0500
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>,
-        Ben Hutchings <ben.hutchings@essensium.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        <linux-omap@vger.kernel.org>, Lokesh Vutla <lokeshvutla@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH net-next] net: ethernet: ti: davinci_cpdma: revert "drop frame padding"
-Date:   Fri, 6 Aug 2021 17:28:09 +0300
-Message-ID: <20210806142809.15069-1-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
+        id S242345AbhHFO4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 10:56:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46669 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242073AbhHFO4m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 10:56:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1628261785;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Gplto+9RiGLBeHt41MKFNCwZ4jJrvlaCOPaj0G5G4zY=;
+        b=hxjkrEQvU1Wwpu2MQlNexil1atmHLu8i2fRIVZQna6SY0j16arm3Vzgwv7TKxj1TN6qgUs
+        HU7puA6ZeHn0iIptw8GhPC/OIF6nBgi+5z56nikmu4X1YQnRcD1bNnCfKYQdiFwLapLfgb
+        7l/M6071roFneViMYOlg8R97cA4TPks=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-291-To9IMOkyMlS4WG5215IVXQ-1; Fri, 06 Aug 2021 10:56:24 -0400
+X-MC-Unique: To9IMOkyMlS4WG5215IVXQ-1
+Received: by mail-lf1-f72.google.com with SMTP id c24-20020a0565123258b02903c025690adcso2031917lfr.22
+        for <netdev@vger.kernel.org>; Fri, 06 Aug 2021 07:56:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Gplto+9RiGLBeHt41MKFNCwZ4jJrvlaCOPaj0G5G4zY=;
+        b=IRjhWLyBR64CAumKMJqcKkA0HiVxDbHpYtqJ9kvpiWhPl9RIUBb2iGkphJ9LCCd0Ts
+         4zgiRyiqa/WEt7rHioH0ixCEA2Vh9NWknkVG+KG8XU8cU98Zh/9v2Ybq6sZsCxBcGwzN
+         exOY3rA12bR0P4b9XUUGwCY+jkmndMZGXD9hEqf6GTxVi7q+r487OMooUWT6nT1rTmGX
+         S06Jng3DGoogoD1++LX8OopOcDnecF3IeTijLqfcagY6MqoKQGqzekbKhYqIUTH2Puvk
+         hVOGYBwQRstAeQMOfcSvFS/s/509VTeAwb03sV13i6YbYcx80DlM1qsbwx2NtV0nVU+3
+         yVmw==
+X-Gm-Message-State: AOAM532zs2jcdQESq/JnrBpPL1r9t75+U9igYmMEPDV1a6/jRJbFMeIs
+        oYaP0ZNCT1TTdHGUuSHyaDma+x6R7oNo2X4Cw3bnb6W3QK25vPu6sT0qZJcMgjCOUuy1MuvAykb
+        24q3q/+0ZKnBQFMKQiXSesn2uf+tRYVmZ
+X-Received: by 2002:a2e:a5c5:: with SMTP id n5mr6964971ljp.197.1628261783011;
+        Fri, 06 Aug 2021 07:56:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwC/7IBeDvUIpspKDafXFNaZJL39fA0LdoJUUoo9fxtc2w2X3B23dOmAeuPnaLpGXRV1mvPec3FVULqmmMy5+E=
+X-Received: by 2002:a2e:a5c5:: with SMTP id n5mr6964936ljp.197.1628261782465;
+ Fri, 06 Aug 2021 07:56:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <20210720232624.1493424-1-nitesh@redhat.com> <CAFki+LkNzk0ajUeuBnJZ6mp1kxB0+zZf60tw1Vfq+nPy-bvftQ@mail.gmail.com>
+ <yq11r77gtq0.fsf@ca-mkp.ca.oracle.com>
+In-Reply-To: <yq11r77gtq0.fsf@ca-mkp.ca.oracle.com>
+From:   Nitesh Lal <nilal@redhat.com>
+Date:   Fri, 6 Aug 2021 10:56:11 -0400
+Message-ID: <CAFki+LmgTDtbZEhJF6FMRUV_oSMPLWqvrcKvBXUfNhzodVh+aA@mail.gmail.com>
+Subject: Re: [PATCH v5 00/14] genirq: Cleanup the abuse of irq_set_affinity_hint()
+To:     "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sumit Saxena <sumit.saxena@broadcom.com>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, jassisinghbrar@gmail.com,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Tushar.Khandelwal@arm.com,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        lewis.hanly@microchip.com, ley.foon.tan@intel.com,
+        kabel@kernel.org, huangguangbin2@huawei.com, davem@davemloft.net,
+        benve@cisco.com, govind@gmx.com, kashyap.desai@broadcom.com,
+        shivasharan.srikanteshwara@broadcom.com,
+        sathya.prakash@broadcom.com, suganath-prabu.subramani@broadcom.com,
+        ajit.khaparde@broadcom.com, sriharsha.basavapatna@broadcom.com,
+        somnath.kotur@broadcom.com, linux-pci@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>, rostedt@goodmis.org,
+        Marc Zyngier <maz@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Ingo Molnar <mingo@kernel.org>, jbrandeb@kernel.org,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        akpm@linuxfoundation.org, sfr@canb.auug.org.au,
+        stephen@networkplumber.org, rppt@linux.vnet.ibm.com,
+        chris.friesen@windriver.com, Neil Horman <nhorman@tuxdriver.com>,
+        pjwaskiewicz@gmail.com, Stefan Assmann <sassmann@redhat.com>,
+        Tomas Henzl <thenzl@redhat.com>, james.smart@broadcom.com,
+        Dick Kennedy <dick.kennedy@broadcom.com>,
+        Ken Cox <jkc@redhat.com>, faisal.latif@intel.com,
+        shiraz.saleem@intel.com, tariqt@nvidia.com,
+        Alaa Hleihel <ahleihel@redhat.com>,
+        Kamal Heib <kheib@redhat.com>, borisp@nvidia.com,
+        saeedm@nvidia.com,
+        "Nikolova, Tatyana E" <tatyana.e.nikolova@intel.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        Al Stone <ahs3@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Chandrakanth Patil <chandrakanth.patil@broadcom.com>,
+        bjorn.andersson@linaro.org, chunkuang.hu@kernel.org,
+        yongqiang.niu@mediatek.com, baolin.wang7@gmail.com,
+        Petr Oros <poros@redhat.com>, Ming Lei <minlei@redhat.com>,
+        Ewan Milne <emilne@redhat.com>, jejb@linux.ibm.com,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 9ffc513f95ee ("net: ethernet: ti: davinci_cpdma: drop
-frame padding") which has depndency from not yet merged patch [1] and so
-breaks cpsw_new driver.
+On Thu, Aug 5, 2021 at 11:06 PM Martin K. Petersen
+<martin.petersen@oracle.com> wrote:
+>
+>
+> Nitesh,
+>
+> > Gentle ping.
+> > Any comments on the following patches:
+> >
+> >   scsi: megaraid_sas: Use irq_set_affinity_and_hint
+> >   scsi: mpt3sas: Use irq_set_affinity_and_hint
+>
+> Sumit and Sreekanth: Please review.
+>
+> Thanks!
+>
+> --
+> Martin K. Petersen      Oracle Linux Engineering
+>
 
-[1] https://patchwork.kernel.org/project/netdevbpf/patch/20210805145511.12016-1-grygorii.strashko@ti.com/
-Fixes: 9ffc513f95ee ("net: ethernet: ti: davinci_cpdma: drop frame padding")
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
----
- drivers/net/ethernet/ti/cpsw_priv.c     | 1 +
- drivers/net/ethernet/ti/davinci_cpdma.c | 5 +++++
- drivers/net/ethernet/ti/davinci_cpdma.h | 1 +
- drivers/net/ethernet/ti/davinci_emac.c  | 1 +
- 4 files changed, 8 insertions(+)
+Thanks, Martin, Sumit & Sreekanth for the help.
 
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
-index d97a72c9ec53..ecc2a6b7e28f 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.c
-+++ b/drivers/net/ethernet/ti/cpsw_priv.c
-@@ -518,6 +518,7 @@ int cpsw_init_common(struct cpsw_common *cpsw, void __iomem *ss_regs,
- 
- 	dma_params.num_chan		= data->channels;
- 	dma_params.has_soft_reset	= true;
-+	dma_params.min_packet_size	= CPSW_MIN_PACKET_SIZE;
- 	dma_params.desc_mem_size	= data->bd_ram_size;
- 	dma_params.desc_align		= 16;
- 	dma_params.has_ext_regs		= true;
-diff --git a/drivers/net/ethernet/ti/davinci_cpdma.c b/drivers/net/ethernet/ti/davinci_cpdma.c
-index 753d94c9915a..d2eab5cd1e0c 100644
---- a/drivers/net/ethernet/ti/davinci_cpdma.c
-+++ b/drivers/net/ethernet/ti/davinci_cpdma.c
-@@ -1034,6 +1034,11 @@ static int cpdma_chan_submit_si(struct submit_info *si)
- 		return -ENOMEM;
- 	}
- 
-+	if (len < ctlr->params.min_packet_size) {
-+		len = ctlr->params.min_packet_size;
-+		chan->stats.runt_transmit_buff++;
-+	}
-+
- 	mode = CPDMA_DESC_OWNER | CPDMA_DESC_SOP | CPDMA_DESC_EOP;
- 	cpdma_desc_to_port(chan, mode, si->directed);
- 
-diff --git a/drivers/net/ethernet/ti/davinci_cpdma.h b/drivers/net/ethernet/ti/davinci_cpdma.h
-index 62151f13c7ce..d3cfe234d16a 100644
---- a/drivers/net/ethernet/ti/davinci_cpdma.h
-+++ b/drivers/net/ethernet/ti/davinci_cpdma.h
-@@ -26,6 +26,7 @@ struct cpdma_params {
- 	void __iomem		*rxthresh, *rxfree;
- 	int			num_chan;
- 	bool			has_soft_reset;
-+	int			min_packet_size;
- 	dma_addr_t		desc_mem_phys;
- 	dma_addr_t		desc_hw_addr;
- 	int			desc_mem_size;
-diff --git a/drivers/net/ethernet/ti/davinci_emac.c b/drivers/net/ethernet/ti/davinci_emac.c
-index cd2ef0282f38..b1c5cbe7478b 100644
---- a/drivers/net/ethernet/ti/davinci_emac.c
-+++ b/drivers/net/ethernet/ti/davinci_emac.c
-@@ -1850,6 +1850,7 @@ static int davinci_emac_probe(struct platform_device *pdev)
- 	dma_params.txcp			= priv->emac_base + 0x640;
- 	dma_params.rxcp			= priv->emac_base + 0x660;
- 	dma_params.num_chan		= EMAC_MAX_TXRX_CHANNELS;
-+	dma_params.min_packet_size	= EMAC_DEF_MIN_ETHPKTSIZE;
- 	dma_params.desc_hw_addr		= hw_ram_addr;
- 	dma_params.desc_mem_size	= pdata->ctrl_ram_size;
- 	dma_params.desc_align		= 16;
--- 
-2.17.1
+--
+Nitesh
 
