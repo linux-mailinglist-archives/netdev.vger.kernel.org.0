@@ -2,114 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 388E53E2AB4
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 14:35:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6AF93E2AF1
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 14:50:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343734AbhHFMfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 08:35:40 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:33262 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343724AbhHFMfk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 08:35:40 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1628253324; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=N2y4oRCNfmsOR5AcLj7KTqZExbR4TqZaeaiHeBAWq7o=; b=S0MIYlKVBti4dThUFgq/St1y19X91dbIPDdqqYO6c6m8K1Pz90t811ScuU8+UhenB+Xinkb/
- XdWHCAmHj3m229b+CU0XhDDyAoV2I+dLQ+7jNCl1sn+a7mITy1UdHnXetByoGP1LXCGD+IEs
- K+JmHkN5gweB3qcuZikNP5N2PxI=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
- 610d2c815c73bba6fbbc3544 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 06 Aug 2021 12:35:13
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 81AB6C43145; Fri,  6 Aug 2021 12:35:12 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1343852AbhHFMua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 08:50:30 -0400
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:55206
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1343844AbhHFMtu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 08:49:50 -0400
+Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id D3A5AC433F1;
-        Fri,  6 Aug 2021 12:35:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D3A5AC433F1
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Colin Ian King <colin.king@canonical.com>
-Cc:     Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev <netdev@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH][next] brcmfmac: firmware: Fix uninitialized variable ret
-References: <20210803150904.80119-1-colin.king@canonical.com>
-        <CACRpkdZ5u-C8uH2pCr1689v_ndyzqevDDksXvtPYv=FfD=x_xg@mail.gmail.com>
-        <875ywkc80d.fsf@codeaurora.org>
-        <96709926-30c6-457e-3e80-eb7ad6e9d778@broadcom.com>
-        <b2034ac5-0080-a2fb-32ef-61ad50dfd248@canonical.com>
-Date:   Fri, 06 Aug 2021 15:35:05 +0300
-In-Reply-To: <b2034ac5-0080-a2fb-32ef-61ad50dfd248@canonical.com> (Colin Ian
-        King's message of "Fri, 6 Aug 2021 12:28:29 +0100")
-Message-ID: <87eeb6bvk6.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id B1A773F0A3;
+        Fri,  6 Aug 2021 12:49:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1628254172;
+        bh=xLL7KcCcVibNluvYyGE+ueFwARuKpLLEcqYrSzigE5U=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=bR2M1qwA5Xf9NWVVRqMjdx479fRGFjSBBNtoK/YxI+/nG9o1IsuGZtlC4mZZhzfXT
+         q60WXROLI6xZVd1ic6CJjaeCmniyGpRcsLxR1ggJV+UlLky4Ipj8Yk9oTFOXE8SYi+
+         QfEtekE0XHlXrd1wveJG9lI4RxFsm2dOt1EDNzHUYGwANgTl/kibrINvzNzgtbgL0k
+         RpVM1dOMQC4lM8dv15Eq8IIYA0frxt2Q+rre02I4DKTIRXj74t/748WmRUE3CKjeci
+         NLtPKAb40OFbww9PuZL47PXo0w7WeLSDsZKjCd1fokppFTiJEEuqj0QTIRnqavS3Js
+         WQw7DHKveDrpg==
+From:   Colin King <colin.king@canonical.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-parisc@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] tulip: Remove deadcode on startup true condition
+Date:   Fri,  6 Aug 2021 13:49:32 +0100
+Message-Id: <20210806124932.14981-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Colin Ian King <colin.king@canonical.com> writes:
+From: Colin Ian King <colin.king@canonical.com>
 
-> On 06/08/2021 12:23, Arend van Spriel wrote:
->> On 05-08-2021 15:53, Kalle Valo wrote:
->>> Linus Walleij <linus.walleij@linaro.org> writes:
->>>
->>>> On Tue, Aug 3, 2021 at 5:09 PM Colin King <colin.king@canonical.com>
->>>> wrote:
->>>>
->>>>> From: Colin Ian King <colin.king@canonical.com>
->>>>>
->>>>> Currently the variable ret is uninitialized and is only set if
->>>>> the pointer alt_path is non-null. Fix this by ininitializing ret
->>>>> to zero.
->>>>>
->>>>> Addresses-Coverity: ("Uninitialized scalar variable")
->>>>> Fixes: 5ff013914c62 ("brcmfmac: firmware: Allow per-board firmware
->>>>> binaries")
->>>>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
->>>>
->>>> Nice catch!
->>>> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
->>>
->>> I assume this will be fixed by Linus' patch "brcmfmac: firmware: Fix
->>> firmware loading" and I should drop Colin's patch, correct?
->> 
->> That would be my assumption as well, but not sure when he will submit
->> another revision of it. You probably know what to do ;-)
->
-> I'd prefer my patch to be dropped in preference to Linus' fix.
+The true check on the variable startable in the ternary operator
+is always false because the previous if statement handles the true
+condition for startable. Hence the ternary check is dead code and
+can be removed.
 
-Ok, I'll then drop Colin's patch.
+Addresses-Coverity: ("Logically dead code")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/dec/tulip/media.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/dec/tulip/media.c b/drivers/net/ethernet/dec/tulip/media.c
+index 011604787b8e..55d6fc99f40b 100644
+--- a/drivers/net/ethernet/dec/tulip/media.c
++++ b/drivers/net/ethernet/dec/tulip/media.c
+@@ -355,21 +355,21 @@ void tulip_select_media(struct net_device *dev, int startup)
+ 		} else if (startup) {
+ 			/* Start with 10mbps to do autonegotiation. */
+ 			iowrite32(0x32, ioaddr + CSR12);
+ 			new_csr6 = 0x00420000;
+ 			iowrite32(0x0001B078, ioaddr + 0xB8);
+ 			iowrite32(0x0201B078, ioaddr + 0xB8);
+ 		} else if (dev->if_port == 3  ||  dev->if_port == 5) {
+ 			iowrite32(0x33, ioaddr + CSR12);
+ 			new_csr6 = 0x01860000;
+ 			/* Trigger autonegotiation. */
+-			iowrite32(startup ? 0x0201F868 : 0x0001F868, ioaddr + 0xB8);
++			iowrite32(0x0001F868, ioaddr + 0xB8);
+ 		} else {
+ 			iowrite32(0x32, ioaddr + CSR12);
+ 			new_csr6 = 0x00420000;
+ 			iowrite32(0x1F078, ioaddr + 0xB8);
+ 		}
+ 	} else {					/* Unknown chip type with no media table. */
+ 		if (tp->default_port == 0)
+ 			dev->if_port = tp->mii_cnt ? 11 : 3;
+ 		if (tulip_media_cap[dev->if_port] & MediaIsMII) {
+ 			new_csr6 = 0x020E0000;
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.31.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
