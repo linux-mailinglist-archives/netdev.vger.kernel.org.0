@@ -2,74 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC9F33E26FE
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 11:15:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2CA43E2715
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 11:18:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244300AbhHFJPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 05:15:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42356 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244091AbhHFJPh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 05:15:37 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF41C061798;
-        Fri,  6 Aug 2021 02:15:22 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id s13so1965548oie.10;
-        Fri, 06 Aug 2021 02:15:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=msvlg61+FMMnpmyBPV+pIriFEH/ejI4VCVNLKTM5r+s=;
-        b=Yl4jduFwo0Hq9Oc9EC2SrWqBPAbJkdOaXavmTj2zFJzvEEVKhFnnQvsKW9RqhbzoMH
-         CN01CixRtVkG2x+yZN/LVSJVDRxWx0X1DVfl1RX9O0X/8PCZpTG+L2zP2DnzAypA7x54
-         ZxSbQdKDFfaf3hsxLvIKPLs+V8y77i0pM3Ja5p0RnUwBCklXEbkhs4yCxzplQ/iqCRIT
-         89BIHt+EmaJh95mpT+Y0fa+5PJKAGghfkuH5Qqno5K3ihxwHkPrx1Z3liXn76bjskV24
-         7ET7xf0DFuTTsAyFwMgfU6Yet6b8nOAxWpt72PtV9m3Nsb7llkbBCOCVk0HezbMSg1/S
-         +MKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=msvlg61+FMMnpmyBPV+pIriFEH/ejI4VCVNLKTM5r+s=;
-        b=DjrCUB4hZrvKAOh133RMpwNrXj/cSzytD1jfHox2InHP/+xtup+ApwuKLFQOcWXWOA
-         oT1SjMl/ibvHDOIsVEUKZGcrKIv69lm/vBUxIMMZ3a2/nXQKkPiahOkaJqA51OOgk11e
-         O0CkZgPPVpdbuTqHb/VEfgq+n8O4yqEPi9SOfjl4ZtJweKJfyZXetjKEimppMPBm5JpT
-         pZcJsovukogumEr181OcP795HKKvA2eK5+w75w9Gu5yXOqYeWkHYqyAfVVaxuGCHMGgQ
-         o6F1QPmiWuBCiNIlZqqAnE0Epz1EiQ8CKpej+X1AIvmr5KXM9HBog1xBbHt9XH4JqDe8
-         Eh6A==
-X-Gm-Message-State: AOAM533LWosU8n52WJ22H4MtsEVRmPWxz9jCOtwZ1i8Kv0lQbn44q/bh
-        Da6EUL08EK80gyfM2L9uxllseilfl28E46DpK0M=
-X-Google-Smtp-Source: ABdhPJxgKSg+RxBruJaZHGRtNQqEqEOO2iM/Nx73ndB2zZK+fnx6VJKW3qgoL+fK3e//+glSoMm55BLdYwKVKBflBqc=
-X-Received: by 2002:aca:1817:: with SMTP id h23mr6692129oih.146.1628241321514;
- Fri, 06 Aug 2021 02:15:21 -0700 (PDT)
+        id S244447AbhHFJRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 05:17:55 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:39756 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244480AbhHFJR1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 05:17:27 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1769H5SS0013643, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1769H5SS0013643
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 6 Aug 2021 17:17:05 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Fri, 6 Aug 2021 17:17:05 +0800
+Received: from fc34.localdomain (172.21.177.102) by RTEXMBS04.realtek.com.tw
+ (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Fri, 6 Aug 2021
+ 17:17:04 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     <hkallweit1@gmail.com>
+CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        <koba.ko@canonical.com>, Hayes Wang <hayeswang@realtek.com>
+Subject: [PATCH net-next 0/2] r8169: adjust the setting for RTL8106e
+Date:   Fri, 6 Aug 2021 17:15:54 +0800
+Message-ID: <20210806091556.1297186-374-nic_swsd@realtek.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210806085413.61536-1-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20210806085413.61536-1-andriy.shevchenko@linux.intel.com>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Fri, 6 Aug 2021 12:15:10 +0300
-Message-ID: <CAHNKnsSLQ9QpOk+YqqVKj3hJEJXMPGpazBV_hWngj2bwLp8LSQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] wwan: core: Avoid returning NULL from wwan_create_dev()
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.177.102]
+X-ClientProxiedBy: RTEXMBS01.realtek.com.tw (172.21.6.94) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 08/06/2021 07:23:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzgvNiCkV6TIIDA2OjAwOjAw?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 08/06/2021 07:22:02
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 165435 [Aug 06 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 454 454 39c6e442fd417993330528e7f9d13ac1bf7fdf8c
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 08/06/2021 07:23:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 6, 2021 at 12:00 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
-> Make wwan_create_dev() to return either valid or error pointer,
-> In some cases it may return NULL. Prevent this by converting
-> it to the respective error pointer.
->
-> Fixes: 9a44c1cc6388 ("net: Add a WWAN subsystem")
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
-> v2: rewrote to return error pointer, align callers (Loic)
+These patches are uesed to avoid the delay of link-up interrupt, when
+enabling ASPM for RTL8106e. The patch #1 is used to enable ASPM if
+it is possible. And the patch #2 is used to modify the entrance latencies
+of L0 and L1.
 
-Acked-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Hayes Wang (2):
+  Revert "r8169: avoid link-up interrupt issue on RTL8106e if user
+    enables ASPM"
+  r8169: change the L0/L1 entrance latencies for RTL8106e
+
+ drivers/net/ethernet/realtek/r8169_main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+-- 
+2.31.1
+
