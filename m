@@ -2,262 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D3E63E2DC1
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 17:26:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35F783E2DD1
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 17:36:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244629AbhHFP0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 11:26:36 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:52446 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244335AbhHFP0b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 11:26:31 -0400
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 176F4DMJ059723;
-        Fri, 6 Aug 2021 11:26:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=Eq4mSA4tY62pPSAGNu35GsuAw/Y+hKXqB6bveQmvDz0=;
- b=L7wJzC8dUWBLqkMZrPFRU3jpCexC4krq6zxErMdplurFoWm5Jb6EwpJJVJTpZgXd2zx/
- o4ZCtZz0iEN6E29NbXZg/MFDmRUXZaiB5pFg+PR98Im2WkzkepWNne2JbArXsN2MBhRA
- n1rqy9d/I8cRBz69wf1KcIyDs1VizSerMO420QjTFhidzjosV/9UNv4pRLPgiOR0DxJP
- F2wisieykKM/u5KgeX+5sr5DyIxoPrLFwlZiTskIW2V0BDOnvnczfgCMX3efqXdLMnTy
- FmM1LVMuukOvvkxs/XsiJPHR78kUq03/xV5GgZHTqDJyh1FIjoZjCykvcjuQgQVwGHAl Nw== 
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3a89fntsf4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 Aug 2021 11:26:13 -0400
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 176FO5pV016612;
-        Fri, 6 Aug 2021 15:26:11 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma05fra.de.ibm.com with ESMTP id 3a4x58kyyu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 Aug 2021 15:26:10 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 176FQ7nw54329796
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 6 Aug 2021 15:26:07 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6DFC8A4068;
-        Fri,  6 Aug 2021 15:26:07 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0B5B4A405C;
-        Fri,  6 Aug 2021 15:26:07 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri,  6 Aug 2021 15:26:06 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Guvenc Gulce <guvenc@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>
-Subject: [PATCH net-next 3/3] s390/qeth: Update MACs of LEARNING_SYNC device
-Date:   Fri,  6 Aug 2021 17:26:03 +0200
-Message-Id: <20210806152603.375642-4-kgraul@linux.ibm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210806152603.375642-1-kgraul@linux.ibm.com>
-References: <20210806152603.375642-1-kgraul@linux.ibm.com>
+        id S232286AbhHFPga (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 11:36:30 -0400
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:50874
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232103AbhHFPg3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 11:36:29 -0400
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id 9E2753F34D
+        for <netdev@vger.kernel.org>; Fri,  6 Aug 2021 15:36:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1628264172;
+        bh=nn6L3pGPAVUAOexXMQWFiqKMMywY28ef7UC0JW8Ecg0=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=WmvDKVWor8VkbzreY0Ni/fYR8IV/8T3D77mb5VcXdxId8k4Z8ofYQzpJhl0+BFlyz
+         9RDw0LeysFrb33x2mNU5cR/1wh7hIjAHjWymIE3PUswEDj5ddKcpvm7n6TVxdr/rHN
+         U8T0N8ejw4HkpjxK4jXU0BJV0Jk5tY0ODSEyW8GMstckcLViqwojNT96MtGKdhpxiS
+         XvUD7so3iqMp7oe6aHpQuNYdOlwr5KzrXEeTDMRKv0dagi7P1U52o9MZ+xmgCdZJzl
+         u821woPThz5Wws3o3uiIwPSdZUtFtvnjrB7kofPSl2bnFnv9F8mYAywdMBiXuoLAD2
+         ADcFO5ppzEg5Q==
+Received: by mail-ed1-f70.google.com with SMTP id d6-20020a50f6860000b02903bc068b7717so5128917edn.11
+        for <netdev@vger.kernel.org>; Fri, 06 Aug 2021 08:36:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nn6L3pGPAVUAOexXMQWFiqKMMywY28ef7UC0JW8Ecg0=;
+        b=fUOYopJ5hJ/K0cyCJ0fw7WKBRK2IaO9jAZCOgbycXRg0vuaXShGJafhZFYl+b+lDQF
+         SsOAYxPDaocLXmSRvUN0Kgw+jK31rJN495VxhihTUFlVRYKujTBf+56DACnEcNjWnXqu
+         rOsD6g+cOQH3DI0h+UT5lvKmf+EYlqPS5uRLRstuO+szJu8+MbjTCi69Av/M//EowgVa
+         1vwW1IIp2YIUgjRpUxOujyMBaI/vMcGhZfMOT7JJ8kTaiyyLNZ/M9/0eceIUe706xY1b
+         em8ZarJc+p+p5RGpuQvhyiJ3jquSO4bOUvvFu7uIyA3d4WTUg0gYBcXFduvc6N0lKFQL
+         X1UA==
+X-Gm-Message-State: AOAM532np6BeLxWRUCrXX+VoOZOIZLT1wcaO4G9J47Ryx8HTj5CtwtTw
+        DDOrl86UX1oEgLGrUq3WMQAToDoyPHXrFHwGGNfIH0hPPjSK9kCcz2WAL+DpoyaQ9+absqtiJpq
+        iu6hzrzEDpVqMGY+R38kxLQpiYX2Gt8/jcuCNVihSrC10iw1GBA==
+X-Received: by 2002:a17:906:79a:: with SMTP id l26mr10772915ejc.192.1628264172328;
+        Fri, 06 Aug 2021 08:36:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwJqPGLR0PlJMC/OXDefak0pjjk5EqClsHvqh8s6/EmtI7kAm/K+l+Zroo4+IF9Cf6F8ZPDPs2bZKtQYy+55U0=
+X-Received: by 2002:a17:906:79a:: with SMTP id l26mr10772892ejc.192.1628264172061;
+ Fri, 06 Aug 2021 08:36:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 4SGf7Jb4gzA1JYNlu-zKCH9azbEsEEGO
-X-Proofpoint-GUID: 4SGf7Jb4gzA1JYNlu-zKCH9azbEsEEGO
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-08-06_05:2021-08-05,2021-08-06 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 suspectscore=0
- priorityscore=1501 bulkscore=0 phishscore=0 adultscore=0 malwarescore=0
- impostorscore=0 mlxscore=0 mlxlogscore=999 lowpriorityscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2107140000
- definitions=main-2108060104
+References: <20210514071452.25220-1-kai.heng.feng@canonical.com>
+ <576B26FD-81F8-4632-82F6-57C4A7C096C4@holtmann.org> <8735ryk0o7.fsf@baylibre.com>
+ <CAAd53p7Zc3Zk21rwj_x1BLgf8tWRxaKBmXARkM6d7Kpkb+fDZA@mail.gmail.com>
+ <87y29o58su.fsf@baylibre.com> <CAAd53p4Ss1Z-7CB4g=_xZYxo1xDz6ih6GHUuMcgncy+yNAfU4w@mail.gmail.com>
+ <87a6lzx7jf.fsf@baylibre.com> <CAAd53p6T_K67CPthLPObF=OWWCEChW4pMFMwuq87qWmTmzP2VA@mail.gmail.com>
+ <87bl6cnzy2.fsf@baylibre.com> <CAAd53p5TVJk3G4cArS_UO7cgUpJLONNGVHnpezXy0XTYoXd_uw@mail.gmail.com>
+ <87tuk3j6rh.fsf@baylibre.com>
+In-Reply-To: <87tuk3j6rh.fsf@baylibre.com>
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Fri, 6 Aug 2021 23:36:00 +0800
+Message-ID: <CAAd53p7BU2=GwmyLUECKZfGhD830UQUk12mxU2y9HsXv=F_AfA@mail.gmail.com>
+Subject: Re: [PATCH v2] Bluetooth: Shutdown controller after workqueues are
+ flushed or cancelled
+To:     Mattijs Korpershoek <mkorpershoek@baylibre.com>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Fabien Parent <fparent@baylibre.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        "open list:BLUETOOTH SUBSYSTEM" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexandra Winter <wintera@linux.ibm.com>
+Hi Mattijs,
 
-Update the MAC addresses that are registered with a LEARNING_SYNC qeth
-device with the events announced by the attached software bridge.
+On Fri, Aug 6, 2021 at 4:51 PM Mattijs Korpershoek
+<mkorpershoek@baylibre.com> wrote:
+>
+> Hi Kai-Heng,
+>
+> Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
+>
+> > Hi Mattijs,
+> >
+> > On Thu, Aug 5, 2021 at 2:55 PM Mattijs Korpershoek
+> > <mkorpershoek@baylibre.com> wrote:
+> >>
+> >> Hi Kai-Heng,
+> >>
+> >> Thanks for your patch,
+> >>
+> >> Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
+> >>
+> >
+> > [snipped]
+> >
+> >> I confirm this diff works for me:
+> >>
+> >> root@i500-pumpkin:~# hciconfig hci0 up
+> >> root@i500-pumpkin:~# hciconfig hci0 down
+> >> root@i500-pumpkin:~# hciconfig hci0 up
+> >> root@i500-pumpkin:~# hciconfig hci0
+> >> hci0:   Type: Primary  Bus: SDIO
+> >>         BD Address: 00:0C:E7:55:FF:12  ACL MTU: 1021:8  SCO MTU: 244:4
+> >>         UP RUNNING
+> >>         RX bytes:11268 acl:0 sco:0 events:829 errors:0
+> >>         TX bytes:182569 acl:0 sco:0 commands:829 errors:0
+> >>
+> >> root@i500-pumpkin:~# hcitool scan
+> >> Scanning ...
+> >>         <redacted>       Pixel 3 XL
+> >>
+> >> Tested-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+> >
+> > I found that btmtksdio_flush() only cancels the work instead of doing
+> > flush_work(). That probably explains why putting ->shutdown right
+> > before ->flush doesn't work.
+> > So can you please test the following again:
+> > diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
+> > index 9872ef18f9fea..b33c05ad2150b 100644
+> > --- a/drivers/bluetooth/btmtksdio.c
+> > +++ b/drivers/bluetooth/btmtksdio.c
+> > @@ -649,9 +649,9 @@ static int btmtksdio_flush(struct hci_dev *hdev)
+> >  {
+> >         struct btmtksdio_dev *bdev = hci_get_drvdata(hdev);
+> >
+> > -       skb_queue_purge(&bdev->txq);
+> > +       flush_work(&bdev->tx_work);
+> >
+> > -       cancel_work_sync(&bdev->tx_work);
+> > +       skb_queue_purge(&bdev->txq);
+> >
+> >         return 0;
+> >  }
+> > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+> > index 2560ed2f144d4..a61e610a400cb 100644
+> >
+> > --- a/net/bluetooth/hci_core.c
+> > +++ b/net/bluetooth/hci_core.c
+> > @@ -1785,6 +1785,14 @@ int hci_dev_do_close(struct hci_dev *hdev)
+> >         aosp_do_close(hdev);
+> >         msft_do_close(hdev);
+> >
+> > +       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
+> > +           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
+> > +           test_bit(HCI_UP, &hdev->flags)) {
+> > +               /* Execute vendor specific shutdown routine */
+> > +               if (hdev->shutdown)
+> > +                       hdev->shutdown(hdev);
+> > +       }
+> > +
+> >         if (hdev->flush)
+> >                 hdev->flush(hdev);
+> >
+> > @@ -1798,14 +1806,6 @@ int hci_dev_do_close(struct hci_dev *hdev)
+> >                 clear_bit(HCI_INIT, &hdev->flags);
+> >         }
+> >
+> > -       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
+> > -           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
+> > -           test_bit(HCI_UP, &hdev->flags)) {
+> > -               /* Execute vendor specific shutdown routine */
+> > -               if (hdev->shutdown)
+> > -                       hdev->shutdown(hdev);
+> > -       }
+> > -
+> >         /* flush cmd  work */
+> >         flush_work(&hdev->cmd_work);
+> I've tried this but I have the same (broken) symptoms as before.
+>
+> Here are some logs of v3:
+> dmesg: https://pastebin.com/1x4UHkzy
+> ftrace: https://pastebin.com/Lm1d6AWy
 
-Typically the LEARNING_SYNC qeth bridge port has an isolated sibling (the
-default interface of an 'HiperSockets Converged Interface' (HSCI)). Update
-the MACs of isolated siblings as well, to avoid unnecessary flooding in
-the attached virtualized switches.
+Thanks for your testing. I think I finally got it:
+btmtksdio_shutdown()
+-> mtk_hci_wmt_sync()
+ -> __hci_cmd_send()
+  then waiting for BTMTKSDIO_TX_WAIT_VND_EVT, which is cleared in
+btmtksdio_recv_event():
+btmtksdio_recv_event()
+-> hci_recv_frame()
+ -> queue_work(hdev->workqueue, &hdev->rx_work);
 
-Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
-Reviewed-by: Wenjia Zhang <wenjia@linux.ibm.com>
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
----
- drivers/s390/net/qeth_l2_main.c | 131 +++++++++++++++++++++++++++++++-
- 1 file changed, 127 insertions(+), 4 deletions(-)
+That means it has to be done before the following drain_workqueue() call.
+Can you please see if moving the ->shutdown() part right before
+drain_workqueue() can fix the issue?
 
-diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
-index e38a1befce3f..4871f712b874 100644
---- a/drivers/s390/net/qeth_l2_main.c
-+++ b/drivers/s390/net/qeth_l2_main.c
-@@ -717,6 +717,15 @@ static int qeth_l2_dev2br_an_set(struct qeth_card *card, bool enable)
- 	return rc;
- }
- 
-+struct qeth_l2_br2dev_event_work {
-+	struct work_struct work;
-+	struct net_device *br_dev;
-+	struct net_device *lsync_dev;
-+	struct net_device *dst_dev;
-+	unsigned long event;
-+	unsigned char addr[ETH_ALEN];
-+};
-+
- static const struct net_device_ops qeth_l2_netdev_ops;
- 
- static bool qeth_l2_must_learn(struct net_device *netdev,
-@@ -732,6 +741,116 @@ static bool qeth_l2_must_learn(struct net_device *netdev,
- 		netdev->netdev_ops == &qeth_l2_netdev_ops);
- }
- 
-+/**
-+ *	qeth_l2_br2dev_worker() - update local MACs
-+ *	@work: bridge to device FDB update
-+ *
-+ *	Update local MACs of a learning_sync bridgeport so it can receive
-+ *	messages for a destination port.
-+ *	In case of an isolated learning_sync port, also update its isolated
-+ *	siblings.
-+ */
-+static void qeth_l2_br2dev_worker(struct work_struct *work)
-+{
-+	struct qeth_l2_br2dev_event_work *br2dev_event_work =
-+		container_of(work, struct qeth_l2_br2dev_event_work, work);
-+	struct net_device *lsyncdev = br2dev_event_work->lsync_dev;
-+	struct net_device *dstdev = br2dev_event_work->dst_dev;
-+	struct net_device *brdev = br2dev_event_work->br_dev;
-+	unsigned long event = br2dev_event_work->event;
-+	unsigned char *addr = br2dev_event_work->addr;
-+	struct qeth_card *card = lsyncdev->ml_priv;
-+	struct net_device *lowerdev;
-+	struct list_head *iter;
-+	int err = 0;
-+
-+	kfree(br2dev_event_work);
-+	QETH_CARD_TEXT_(card, 4, "b2dw%04x", event);
-+	QETH_CARD_TEXT_(card, 4, "ma%012lx", ether_addr_to_u64(addr));
-+
-+	rcu_read_lock();
-+	/* Verify preconditions are still valid: */
-+	if (!netif_is_bridge_port(lsyncdev) ||
-+	    brdev != netdev_master_upper_dev_get_rcu(lsyncdev))
-+		goto unlock;
-+	if (!qeth_l2_must_learn(lsyncdev, dstdev))
-+		goto unlock;
-+
-+	if (br_port_flag_is_set(lsyncdev, BR_ISOLATED)) {
-+		/* Update lsyncdev and its isolated sibling(s): */
-+		iter = &brdev->adj_list.lower;
-+		lowerdev = netdev_next_lower_dev_rcu(brdev, &iter);
-+		while (lowerdev) {
-+			if (br_port_flag_is_set(lowerdev, BR_ISOLATED)) {
-+				switch (event) {
-+				case SWITCHDEV_FDB_ADD_TO_DEVICE:
-+					err = dev_uc_add(lowerdev, addr);
-+					break;
-+				case SWITCHDEV_FDB_DEL_TO_DEVICE:
-+					err = dev_uc_del(lowerdev, addr);
-+					break;
-+				default:
-+					break;
-+				}
-+				if (err) {
-+					QETH_CARD_TEXT(card, 2, "b2derris");
-+					QETH_CARD_TEXT_(card, 2,
-+							"err%02x%03d", event,
-+							lowerdev->ifindex);
-+				}
-+			}
-+			lowerdev = netdev_next_lower_dev_rcu(brdev, &iter);
-+		}
-+	} else {
-+		switch (event) {
-+		case SWITCHDEV_FDB_ADD_TO_DEVICE:
-+			err = dev_uc_add(lsyncdev, addr);
-+			break;
-+		case SWITCHDEV_FDB_DEL_TO_DEVICE:
-+			err = dev_uc_del(lsyncdev, addr);
-+			break;
-+		default:
-+			break;
-+		}
-+		if (err)
-+			QETH_CARD_TEXT_(card, 2, "b2derr%02x", event);
-+	}
-+
-+unlock:
-+	rcu_read_unlock();
-+	dev_put(brdev);
-+	dev_put(lsyncdev);
-+	dev_put(dstdev);
-+}
-+
-+static int qeth_l2_br2dev_queue_work(struct net_device *brdev,
-+				     struct net_device *lsyncdev,
-+				     struct net_device *dstdev,
-+				     unsigned long event,
-+				     const unsigned char *addr)
-+{
-+	struct qeth_l2_br2dev_event_work *worker_data;
-+	struct qeth_card *card;
-+
-+	worker_data = kzalloc(sizeof(*worker_data), GFP_ATOMIC);
-+	if (!worker_data)
-+		return -ENOMEM;
-+	INIT_WORK(&worker_data->work, qeth_l2_br2dev_worker);
-+	worker_data->br_dev = brdev;
-+	worker_data->lsync_dev = lsyncdev;
-+	worker_data->dst_dev = dstdev;
-+	worker_data->event = event;
-+	ether_addr_copy(worker_data->addr, addr);
-+
-+	card = lsyncdev->ml_priv;
-+	/* Take a reference on the sw port devices and the bridge */
-+	dev_hold(brdev);
-+	dev_hold(lsyncdev);
-+	dev_hold(dstdev);
-+	queue_work(card->event_wq, &worker_data->work);
-+	return 0;
-+}
-+
- /* Called under rtnl_lock */
- static int qeth_l2_switchdev_event(struct notifier_block *unused,
- 				   unsigned long event, void *ptr)
-@@ -741,6 +860,7 @@ static int qeth_l2_switchdev_event(struct notifier_block *unused,
- 	struct switchdev_notifier_info *info = ptr;
- 	struct list_head *iter;
- 	struct qeth_card *card;
-+	int rc;
- 
- 	if (!(event == SWITCHDEV_FDB_ADD_TO_DEVICE ||
- 	      event == SWITCHDEV_FDB_DEL_TO_DEVICE))
-@@ -759,10 +879,13 @@ static int qeth_l2_switchdev_event(struct notifier_block *unused,
- 		if (qeth_l2_must_learn(lowerdev, dstdev)) {
- 			card = lowerdev->ml_priv;
- 			QETH_CARD_TEXT_(card, 4, "b2dqw%03x", event);
--			/* tbd: rc = qeth_l2_br2dev_queue_work(brdev, lowerdev,
--			 *				       dstdev, event,
--			 *				       fdb_info->addr);
--			 */
-+			rc = qeth_l2_br2dev_queue_work(brdev, lowerdev,
-+						       dstdev, event,
-+						       fdb_info->addr);
-+			if (rc) {
-+				QETH_CARD_TEXT(card, 2, "b2dqwerr");
-+				return NOTIFY_BAD;
-+			}
- 		}
- 		lowerdev = netdev_next_lower_dev_rcu(brdev, &iter);
- 	}
--- 
-2.25.1
+Kai-Heng
 
+>
+> Mattijs
+>
+> >
+> > Kai-Heng
