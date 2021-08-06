@@ -2,92 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C06153E3049
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 22:22:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D78FB3E3052
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 22:31:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244936AbhHFUWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 16:22:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53146 "EHLO
+        id S243640AbhHFUcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 16:32:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231823AbhHFUWa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 16:22:30 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51172C0613CF
-        for <netdev@vger.kernel.org>; Fri,  6 Aug 2021 13:22:14 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id z9-20020a9d62c90000b0290462f0ab0800so909687otk.11
-        for <netdev@vger.kernel.org>; Fri, 06 Aug 2021 13:22:14 -0700 (PDT)
+        with ESMTP id S230031AbhHFUb7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 16:31:59 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F84C0613CF;
+        Fri,  6 Aug 2021 13:31:41 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id h17so2248693ljh.13;
+        Fri, 06 Aug 2021 13:31:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=aleksander-es.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oT1ZaMnF/922fd8LeOSNLkY5D7MM5QFVcedxKnQmmuY=;
-        b=DqCYiA3kfhyWS45JVuQNyl4NSV0Q8gfQNzVz64+fVx05v0O/3aERdCM8tbI8KuG5bX
-         ++BLY+EVv8CD7iglXvHGMsh9FBbU/3aaBfT4hXldf4QXR9EaGXzMIpJSqZJIMwHCMc/F
-         zlWg8QRNUSnCUj+cPRNvRnUR/dpvncODT9tgrv0jO4QjzOIr3m/5bx4blaTEE3JUQf7M
-         32pI4RHgS7XNeafBqKWML6q604dSuWP5k4GPoawzGXe3rPzcCyOPVIbVaDVgH3utW5qE
-         ijgrBKSpSv57DT5Jq6TJ2NMTiCrUaRlMO+D2BabPzcPUvZapzE42JE61zdsJYzWrWoeC
-         tTaA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SNGIyJeSN3Wn92YqPN78qZBm9w648CwT8vppURAnW2U=;
+        b=eCKNmqjcgH757HdMfmp/mzvZLkmsER7KEpZAwys9qv5QHjwN5iKrrtP+OJvxxJ0bCd
+         sWR3PaXkuUxgTrpxIcAprDWoWrKdpl/EqlLQ0kgptx/WlBs124RyriYUjQlvACmPsb1x
+         ODiqkx50APNCFBsIrPW109uFfGYr8U1uoOC9xGjZsmCaSYFOgWSLtjQoPFsDMq6/Wbv2
+         0MZlJWsoF6KMTGhQsLHvvxU2bv9QhmG5Ox/3A/Mxfjs+sOqhRxVR5LWeePpDrZSaegzK
+         ncR7PthFf7zmurNqhs0zMJ3ndDJFoxAUMa7E42mPOLRxUfT+VMG8JZaZNCsg903IoH2C
+         eCSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oT1ZaMnF/922fd8LeOSNLkY5D7MM5QFVcedxKnQmmuY=;
-        b=grWRzyMq3AbvbhBKdXSIuBpr4m43nChRFEU4WueTcXVlSbQZG3PECkKBk9hB/u+EXj
-         B/Bu1yQ0ZuzY0Nm8tV6VHgNPbvv9o+XCTCaeYweYLoJLircviVJMDUe8gT0oYfeC3kjD
-         cUPcUNAGXwVaM+obgT4iX1SnII7d5XA18lA52ks9glBK5XOyouQyjIEgYg9vWE6Y0Bq4
-         w0HbNYZHCncVhlOLGKsn6L2EVJ7joxqrSfrYuN3iC0NRjv5ILs3nRu9KMnNotG4XYAUE
-         R1GF4xaYd84Uves2ub1TKTTU7deba8DqX/dewIyWUYvyrvdY7NEx2BAELrYNCvBwij7o
-         9CDA==
-X-Gm-Message-State: AOAM533RcstiIpVHGoKg7mj5/6866SaUvMN6TcLq+JfZOKi3slOAmIKs
-        n4K8TD9a6CPnRZMrDdvf7dVSXHZPZ4rvrW7DZwi82g==
-X-Google-Smtp-Source: ABdhPJwzj8mVkjaEbMHJrQlDaEv/v7ndldmE4RrSndfFONu0sVpp9+/bvZNtHc+l2QjcOzrCkyg1N5rhOieEHkhbWwo=
-X-Received: by 2002:a05:6830:3143:: with SMTP id c3mr8845702ots.229.1628281333710;
- Fri, 06 Aug 2021 13:22:13 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SNGIyJeSN3Wn92YqPN78qZBm9w648CwT8vppURAnW2U=;
+        b=jw1zAs2M0L36ctcQsPG0rq8P5WmCX5NSpyXwmCp8yedvGjc/AMAC6qAFpFc4kMhLw/
+         IfrWv+M2fu3CiqkPd5xRWeniONskk5oAbbcVX/JIozbE3KMaxhXTNa35R5Timp+ZztoV
+         FOCoZjoYYgnfeOd6hOlGVdbp/2Rwe4ninADzbEy/iHjAUf3wMaBzznmJ6YXjDTmQSuuR
+         llGxx/9iUMtPnnpjQBiiqy+LTLqM5JSF/EFpfPF7B1dnOmTlSBeFk339plx3TWisTtRA
+         ute7Lni+sp244BJzD1huHSZe5yA6fbK3wgsa3rhWo0QHXHgbeo41GVpI0zQD7LaEwXll
+         WLGQ==
+X-Gm-Message-State: AOAM530wPPMij/spXBVseVj/APPtUwRVXCUhjQnlPBfDvsA2BnIpY19K
+        Fd6K7r78aTNjVJKzjT3eals=
+X-Google-Smtp-Source: ABdhPJzh8RJgrBpw4NWlECwNDCbKBlPUHRbDy44RQmVSzlCYf1iewKtlNFZfS5DrcTkGlFPWYB/R8g==
+X-Received: by 2002:a05:651c:1143:: with SMTP id h3mr7612068ljo.300.1628281900276;
+        Fri, 06 Aug 2021 13:31:40 -0700 (PDT)
+Received: from [192.168.1.102] ([178.176.75.100])
+        by smtp.gmail.com with ESMTPSA id p25sm381650ljj.20.2021.08.06.13.31.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Aug 2021 13:31:39 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 6/8] ravb: Add net_features and
+ net_hw_features to struct ravb_hw_info
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20210802102654.5996-1-biju.das.jz@bp.renesas.com>
+ <20210802102654.5996-7-biju.das.jz@bp.renesas.com>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Message-ID: <6aef0ce4-87b7-944f-9750-4311d3823163@gmail.com>
+Date:   Fri, 6 Aug 2021 23:31:38 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-References: <CAAP7ucKuS9p_hkR5gMWiM984Hvt09iNQEt32tCFDCT5p0fqg4Q@mail.gmail.com>
- <c0e14605e9bc650aca26b8c3920e9aba@codeaurora.org> <CAAP7ucK7EeBPJHt9XFp7bd5cGXtH5w2VGgh3yD7OA9SYd5JkJw@mail.gmail.com>
- <77b850933d9af8ddbc21f5908ca0764d@codeaurora.org> <CAAP7ucJRbg58Yqcx-qFFUuu=_=3Ss1HE1ZW4XGrm0KsSXnwdmA@mail.gmail.com>
- <13972ac97ffe7a10fd85fe03dc84dc02@codeaurora.org> <87bl6aqrat.fsf@miraculix.mork.no>
-In-Reply-To: <87bl6aqrat.fsf@miraculix.mork.no>
-From:   Aleksander Morgado <aleksander@aleksander.es>
-Date:   Fri, 6 Aug 2021 22:22:02 +0200
-Message-ID: <CAAP7ucLDFPMG08syrcnKKrX-+MS4_-tpPzZSfMOD6_7G-zq4gQ@mail.gmail.com>
-Subject: Re: RMNET QMAP data aggregation with size greater than 16384
-To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Daniele Palmas <dnlplm@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Sean Tranchetti <stranche@codeaurora.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210802102654.5996-7-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey,
+On 8/2/21 1:26 PM, Biju Das wrote:
 
-> > The summary of the thread was to set a large rx_urb_size during probe
-> > itself for qmi_wwan.
->
-> Yes, I think it would be good to make the driver DTRT automatically.
-> Coding driver specific quirks into ModemManager might work, but it feels
-> wrong to work around a Linux driver bug. We don't have to do that.  We
-> can fix the driver.
->
-> > https://patchwork.kernel.org/project/linux-usb/patch/20200803065105.8997-1-yzc666@netease.com/
-> >
-> > We could try setting a large value as suggested there and it should
-> > hopefully
-> > solve the issue you are seeing.
->
-> Why can't we break the rx_urb_size dependency on MTU automatically when
-> pass_through or qmi_wwan internal muxing is enabled? Preferably with
-> some fixed default size which would Just Work for everyone.
->
+> On R-Car the checksum calculation on RX frames is done by the E-MAC
+> module, whereas on RZ/G2L it is done by the TOE.
+> 
+> TOE calculates the checksum of received frames from E-MAC and outputs it to
+> DMAC. TOE also calculates the checksum of transmission frames from DMAC and
+> outputs it E-MAC.
+> 
+> Add net_features and net_hw_features to struct ravb_hw_info, to support
+> subsequent SoCs without any code changes in the ravb_probe function.
+> 
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-That default fixed size you're suggesting for the rx_urb_size, isn't
-it supposed to have the same logical meaning as RMNET_MAX_PACKET_SIZE
-at the end?
+Reviewed-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
 
--- 
-Aleksander
-https://aleksander.es
+
+[...]
+
+MBR, Sergei
