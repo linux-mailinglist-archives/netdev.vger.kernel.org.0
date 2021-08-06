@@ -2,118 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDB4E3E2489
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 09:51:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 079F13E248F
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 09:52:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243249AbhHFHvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 03:51:05 -0400
-Received: from relay.sw.ru ([185.231.240.75]:36444 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242857AbhHFHvC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Aug 2021 03:51:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
-        :From; bh=rCy2NaJChVwaNZpi28B6dE5KboUh3ih3z6EATump7Xs=; b=Kjfd8vb3ikucAMwRVLW
-        BQkgfVrir5haBYl7dg0qjVmeSKY4yYT26BJcdkbDw1ci0mSGEacL/X7e0AJ2oHQCHuAN+Zom+3OdG
-        gI2JEpAZ2+QNPkIJ7lofMpoa8I2QzJz8jJay89tFF8x/4yfJp4VlUdUIJMqDigmRwZxzTcmi18Y=;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1mBucs-006agv-Mh; Fri, 06 Aug 2021 10:50:42 +0300
-From:   Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH NET v4 7/7] bpf: use skb_expand_head in bpf_out_neigh_v4/6
-To:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
+        id S241468AbhHFHwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 03:52:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51388 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240780AbhHFHwt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 03:52:49 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E416BC061799
+        for <netdev@vger.kernel.org>; Fri,  6 Aug 2021 00:52:33 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1mBueZ-00069C-1x; Fri, 06 Aug 2021 09:52:27 +0200
+Received: from pengutronix.de (unknown [IPv6:2a02:810a:8940:aa0:66f0:974b:98ab:a2fd])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 505C9661C36;
+        Fri,  6 Aug 2021 07:52:22 +0000 (UTC)
+Date:   Fri, 6 Aug 2021 09:52:20 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dariobin@libero.it>
+Cc:     linux-kernel@vger.kernel.org,
+        Gianluca Falavigna <gianluca.falavigna@inwind.it>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@openvz.org,
-        Julian Wiedmann <jwi@linux.ibm.com>
-References: <ccce7edb-54dd-e6bf-1e84-0ec320d8886c@linux.ibm.com>
- <cover.1628235065.git.vvs@virtuozzo.com>
-Message-ID: <be52fba6-54c7-2163-dea9-aa198efca92f@virtuozzo.com>
-Date:   Fri, 6 Aug 2021 10:50:42 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [RESEND PATCH 4/4] can: c_can: cache frames to operate as a true
+ FIFO
+Message-ID: <20210806075220.2psgtigcy3quyzrw@pengutronix.de>
+References: <20210725161150.11801-1-dariobin@libero.it>
+ <20210725161150.11801-5-dariobin@libero.it>
+ <20210804093423.ms2p245f5oiw4xn4@pengutronix.de>
+ <1172393027.218339.1628194339000@mail1.libero.it>
 MIME-Version: 1.0
-In-Reply-To: <cover.1628235065.git.vvs@virtuozzo.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ytec7r7yzkahyzfg"
+Content-Disposition: inline
+In-Reply-To: <1172393027.218339.1628194339000@mail1.libero.it>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unlike skb_realloc_headroom, new helper skb_expand_head
-does not allocate a new skb if possible.
 
-Additionally this patch replaces commonly used dereferencing with variables.
+--ytec7r7yzkahyzfg
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
----
- net/core/filter.c | 27 +++++----------------------
- 1 file changed, 5 insertions(+), 22 deletions(-)
+On 05.08.2021 22:12:18, Dario Binacchi wrote:
+> > > diff --git a/drivers/net/can/c_can/c_can.h b/drivers/net/can/c_can/c_=
+can.h
+> > > index 8fe7e2138620..fc499a70b797 100644
+> > > --- a/drivers/net/can/c_can/c_can.h
+> > > +++ b/drivers/net/can/c_can/c_can.h
+> > > +static inline u8 c_can_get_tx_free(const struct c_can_tx_ring *ring)
+> > > +{
+> > > +	return ring->obj_num - (ring->head - ring->tail);
+> > > +}
+> > > +
+> > >  #endif /* C_CAN_H */
+> > > diff --git a/drivers/net/can/c_can/c_can_main.c b/drivers/net/can/c_c=
+an/c_can_main.c
+> > > index 451ac9a9586a..4c061fef002c 100644
+> > > --- a/drivers/net/can/c_can/c_can_main.c
+> > > +++ b/drivers/net/can/c_can/c_can_main.c
+> > > @@ -427,20 +427,6 @@ static void c_can_setup_receive_object(struct ne=
+t_device *dev, int iface,
+> > >  	c_can_object_put(dev, iface, obj, IF_COMM_RCV_SETUP);
+> > >  }
+> > > =20
+> > > -static u8 c_can_get_tx_free(const struct c_can_tx_ring *ring)
+> > > -{
+> > > -	u8 head =3D c_can_get_tx_head(ring);
+> > > -	u8 tail =3D c_can_get_tx_tail(ring);
+> > > -
+> > > -	/* This is not a FIFO. C/D_CAN sends out the buffers
+> > > -	 * prioritized. The lowest buffer number wins.
+> > > -	 */
+> > > -	if (head < tail)
+> > > -		return 0;
+> > > -
+> > > -	return ring->obj_num - head;
+> > > -}
+> > > -
+> >=20
+> > Can you move that change into patch 3?
+>=20
+> Patch 3 adds the ring transmission algorithm without compromising the
+> message transmission order. This is not a FIFO.
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index d70187c..9c2f434 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -2179,17 +2179,9 @@ static int bpf_out_neigh_v6(struct net *net, struct sk_buff *skb,
- 	skb->tstamp = 0;
- 
- 	if (unlikely(skb_headroom(skb) < hh_len && dev->header_ops)) {
--		struct sk_buff *skb2;
--
--		skb2 = skb_realloc_headroom(skb, hh_len);
--		if (unlikely(!skb2)) {
--			kfree_skb(skb);
-+		skb = skb_expand_head(skb, hh_len);
-+		if (!skb)
- 			return -ENOMEM;
--		}
--		if (skb->sk)
--			skb_set_owner_w(skb2, skb->sk);
--		consume_skb(skb);
--		skb = skb2;
- 	}
- 
- 	rcu_read_lock_bh();
-@@ -2213,8 +2205,7 @@ static int bpf_out_neigh_v6(struct net *net, struct sk_buff *skb,
- 	}
- 	rcu_read_unlock_bh();
- 	if (dst)
--		IP6_INC_STATS(dev_net(dst->dev),
--			      ip6_dst_idev(dst), IPSTATS_MIB_OUTNOROUTES);
-+		IP6_INC_STATS(net, ip6_dst_idev(dst), IPSTATS_MIB_OUTNOROUTES);
- out_drop:
- 	kfree_skb(skb);
- 	return -ENETDOWN;
-@@ -2286,17 +2277,9 @@ static int bpf_out_neigh_v4(struct net *net, struct sk_buff *skb,
- 	skb->tstamp = 0;
- 
- 	if (unlikely(skb_headroom(skb) < hh_len && dev->header_ops)) {
--		struct sk_buff *skb2;
--
--		skb2 = skb_realloc_headroom(skb, hh_len);
--		if (unlikely(!skb2)) {
--			kfree_skb(skb);
-+		skb = skb_expand_head(skb, hh_len);
-+		if (!skb)
- 			return -ENOMEM;
--		}
--		if (skb->sk)
--			skb_set_owner_w(skb2, skb->sk);
--		consume_skb(skb);
--		skb = skb2;
- 	}
- 
- 	rcu_read_lock_bh();
--- 
-1.8.3.1
+Right, thanks!
 
+> C/D_CAN controller sends out the buffers prioritized. The lowest
+> buffer number wins, so moving the change into patch 3 may not
+> guarantee the transmission order. In patch 3, however, I will move
+> c_can_get_tx_free() from c_can_main.c to c_can.h, so that in patch 4
+> it will be clearer how the routine has changed.
+
+The updated patch looks much nicer now, thanks!
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--ytec7r7yzkahyzfg
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEM6jIACgkQqclaivrt
+76mJTQf+LOmiuG/ukL5ndwOZWfIUKOjv3Zeu0AN9oksXoiX65pkqa4Vb+NJydIi/
+hxd6qqOx7Sf7V81++0IV2fCIp3uCBLg+4dtvXewHhYfQcfnRhWXvcHYIE/RBYXBY
+Qb6jn1uBybhQQPX/SpkAj/1wXMniIIPwsl15ewUMkaNTL3gZgVwoanTpYgLX9h9J
+mdkmTZBb3pHm+uT0q3oAVSkzX4QN//mXwKQ2wdI/qjkBA2Y3zSFakLZca4/Z3qMK
+U2r47AAkeZGzqv4nTg7UdF7AQ9Fi0NJYGxqKahdTuObNVZbq7mqhdlNSUUHtakQK
+aVkDXxw8suuxsLXyn9HKAeh/PZXt/A==
+=m0gP
+-----END PGP SIGNATURE-----
+
+--ytec7r7yzkahyzfg--
