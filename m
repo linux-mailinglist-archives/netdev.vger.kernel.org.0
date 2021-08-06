@@ -2,125 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 998CD3E2743
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 11:30:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E9013E2746
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 11:30:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244493AbhHFJa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 05:30:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45830 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231553AbhHFJaZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 05:30:25 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C742FC061798;
-        Fri,  6 Aug 2021 02:30:08 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id k4so10273485wrc.0;
-        Fri, 06 Aug 2021 02:30:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=xVmV3MxgVZtNRkbXJvQYjtW4khHw2wRmtUrVvlrtgOk=;
-        b=JdDGjYPx0vws4f7/bOh7rQkoIsWRMU758JX/s46GGNXlb+a0E/SEZ1D0YB6qgSEkyW
-         Y2/nuhoeRirGBbHqc0TWVuAKyOglbBBaNdP0e4VewTv+Jlez0zxg6/GCVwaIIuzweWtx
-         yjjfEsBBDN5bqLe7/+uo5X8Atfv4/FFfAe6WeE6EY2IsgY4NrzwHOJ/KFS0CKuG42UHx
-         lEQ2qsLU2SDpv9cN5XI8k80UGbNfc25zoS4AFH5gEeI4QEuwGyMhz9Irpyag4VHKWwPW
-         QTv7ADHi3AC3WTFposFYGuSH9R/iTWjq5/Z1KjxAqM8YW/QRZZqvXr8sVpvkioRyD6u+
-         +V+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xVmV3MxgVZtNRkbXJvQYjtW4khHw2wRmtUrVvlrtgOk=;
-        b=U/u/PXu+SqX48tzT62bE3NRW7/oGveY0cRoQ5G4cr/unOGd6sgPWF6poG4gbV7M5SS
-         3mRTYTB+CsmHaSEc32HHSYd5OlSQp5vullZ3fk7hX3+ceRyWRqHqvvKlwNxTkymaTCm8
-         G9zZf6dl6IPuWSgEcSfsk5hVnLezwHrou7hoblUqw2TNseCN4vsdQcXWtQUYEYUyGBUo
-         h6+tju85JsMXO1N5YMaUI+yNTkTiadxc9v1u264KuOUi600za+1G7bgkr/lbsPcnMB6b
-         4auvgxQVmhF2bx0bmXevjjZBYk810oxN0f4HxjCrZdtWCjoA6pyKIP3GSAdOzIu+hGur
-         Axqg==
-X-Gm-Message-State: AOAM530beW3/Egz68Ak1e94cIMO2Ow7Q0msyG8MhVaFD63Bun2b8kYmY
-        ah7I/W4Cn/QFvdkqqsbxu71QYsHvMTo=
-X-Google-Smtp-Source: ABdhPJyWKBaBzS7mYe6OvG66bz3ShW5Ut3+1HkZ2RF2ULlK7GoNl+ZMuTNepzZYoC4LvjBwJsDuzgQ==
-X-Received: by 2002:adf:f1cd:: with SMTP id z13mr9862756wro.210.1628242207163;
-        Fri, 06 Aug 2021 02:30:07 -0700 (PDT)
-Received: from [10.0.0.18] ([37.165.149.227])
-        by smtp.gmail.com with ESMTPSA id o22sm10513764wmq.3.2021.08.06.02.30.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Aug 2021 02:30:06 -0700 (PDT)
-Subject: Re: [PATCH AUTOSEL 5.13 184/189] flow_offload: action should not be
- NULL when it is referenced
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     gushengxian <gushengxian@yulong.com>,
-        gushengxian <13145886936@163.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20210706111409.2058071-1-sashal@kernel.org>
- <20210706111409.2058071-184-sashal@kernel.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <caf751a7-ef2d-e31d-85e9-801e748b70dc@gmail.com>
-Date:   Fri, 6 Aug 2021 11:30:04 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S244540AbhHFJa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 05:30:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34340 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231553AbhHFJa1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Aug 2021 05:30:27 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0F8F861164;
+        Fri,  6 Aug 2021 09:30:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628242206;
+        bh=BmFFvRbhkRMBT1AROh0Lvw35ncy0VbHfmyiRMh4UMak=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=HsRne+DSe6cK6Fbkd+KMh6LHSAmw5qm1LfSIL7tD6d0iMippbPDxn7FKL4TrzkkzP
+         fF2a6sSvddfQByjTq/OHhrQ+X/d3BSau+3NeLVYKH0G7BzBG7PkfuR5Ou83BiTWAOg
+         vwv6xRp4SmOrSBjfE4Ezo4YFdrpOkdGJ+78wU/r71OBeIUiBJsU/NEQT9eRPxN4Kcs
+         62g6+U+tcePmuLpkr80OJAO33XEv2wbVPbomAoK5QH5CWkYzh8WCz1UZRnxoevy7U8
+         rejy/5CLcu794wrwX38lbPCO/O6tMpISXiGD/n/mQXFLzLvSf0y77CSopgv0gkOUIg
+         +MlDOw5js9c9A==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 06CF560A7C;
+        Fri,  6 Aug 2021 09:30:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20210706111409.2058071-184-sashal@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/3] net: ethernet: ti: cpsw/emac: switch to use
+ skb_put_padto()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162824220602.18289.6086651097784470216.git-patchwork-notify@kernel.org>
+Date:   Fri, 06 Aug 2021 09:30:06 +0000
+References: <20210805145555.12182-1-grygorii.strashko@ti.com>
+In-Reply-To: <20210805145555.12182-1-grygorii.strashko@ti.com>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, ben.hutchings@essensium.com,
+        vigneshr@ti.com, linux-omap@vger.kernel.org, lokeshvutla@ti.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On 7/6/21 1:14 PM, Sasha Levin wrote:
-> From: gushengxian <gushengxian@yulong.com>
+On Thu, 5 Aug 2021 17:55:52 +0300 you wrote:
+> hi
 > 
-> [ Upstream commit 9ea3e52c5bc8bb4a084938dc1e3160643438927a ]
+> Now frame padding in TI TI CPSW/EMAC is implemented in a bit of entangled way as
+> frame SKB padded in drivers (without skb->len) while frame length fixed in CPDMA.
+> Things became even more confusing hence CPSW switcdev driver need to perform min
+> TX frame length correction in switch mode [1].
 > 
-> "action" should not be NULL when it is referenced.
-> 
-> Signed-off-by: gushengxian <13145886936@163.com>
-> Signed-off-by: gushengxian <gushengxian@yulong.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  include/net/flow_offload.h | 12 +++++++-----
->  1 file changed, 7 insertions(+), 5 deletions(-)
-> 
-> diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-> index dc5c1e69cd9f..69c9eabf8325 100644
-> --- a/include/net/flow_offload.h
-> +++ b/include/net/flow_offload.h
-> @@ -319,12 +319,14 @@ flow_action_mixed_hw_stats_check(const struct flow_action *action,
->  	if (flow_offload_has_one_action(action))
->  		return true;
->  
-> -	flow_action_for_each(i, action_entry, action) {
-> -		if (i && action_entry->hw_stats != last_hw_stats) {
-> -			NL_SET_ERR_MSG_MOD(extack, "Mixing HW stats types for actions is not supported");
-> -			return false;
-> +	if (action) {
-> +		flow_action_for_each(i, action_entry, action) {
-> +			if (i && action_entry->hw_stats != last_hw_stats) {
-> +				NL_SET_ERR_MSG_MOD(extack, "Mixing HW stats types for actions is not supported");
-> +				return false;
-> +			}
-> +			last_hw_stats = action_entry->hw_stats;
->  		}
-> -		last_hw_stats = action_entry->hw_stats;
->  	}
->  	return true;
->  }
-> 
+> [...]
 
-This patch makes no sense really.
+Here is the summary with links:
+  - [net-next,1/3] net: ethernet: ti: cpsw: switch to use skb_put_padto()
+    https://git.kernel.org/netdev/net-next/c/1f88d5d566b8
+  - [net-next,2/3] net: ethernet: ti: davinci_emac: switch to use skb_put_padto()
+    https://git.kernel.org/netdev/net-next/c/61e7a22da75b
+  - [net-next,3/3] net: ethernet: ti: davinci_cpdma: drop frame padding
+    https://git.kernel.org/netdev/net-next/c/9ffc513f95ee
 
-If action is NULL, a crash would happen earlier anyway in
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-if (flow_offload_has_one_action(action))
-    return true;
-
-Also, I wonder why it has been backported to stable version,
-there was no Fixes: tag in the submission.
 
