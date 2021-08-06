@@ -2,58 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2204C3E2BF7
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 15:53:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA0F93E2C12
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 16:05:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233560AbhHFNxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 09:53:40 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:47198 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232548AbhHFNxk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 09:53:40 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: ezequiel)
-        with ESMTPSA id 148DF1F44A73
-Message-ID: <765dc1f100d36b90f424eeccb76ddfa7b5fdb227.camel@collabora.com>
-Subject: Re: [PATCH 0/2] D_CAN RX buffer size improvements
-From:   Ezequiel Garcia <ezequiel@collabora.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Andrejs Cainikovs <andrejs.cainikovs@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-can@vger.kernel.org, Dario Binacchi <dariobin@libero.it>,
-        fede.a.rossi@gmail.com, msonnaillon@gmail.com
-Date:   Fri, 06 Aug 2021 10:53:15 -0300
-In-Reply-To: <20210806103639.q3xim42zcispv6ak@pengutronix.de>
-References: <20190208132954.28166-1-andrejs.cainikovs@netmodule.com>
-         <4da667f3-899a-459c-2cca-6514135a1918@gmail.com>
-         <20210806103639.q3xim42zcispv6ak@pengutronix.de>
-Organization: Collabora
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        id S235207AbhHFOFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 10:05:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53718 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234249AbhHFOFy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 10:05:54 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62B0EC0613CF;
+        Fri,  6 Aug 2021 07:05:38 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id x7so529549ljn.10;
+        Fri, 06 Aug 2021 07:05:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Hus37unWQtifpvoADvykgqUYzzDBdjAzOWr44VKS+/8=;
+        b=PLLmjZAkW67pCRxQVGMe74qVbgssttujHRRU85qn0wNlwQl0aQJKml8Tuu1zDo3xd2
+         OvxMP2apgteuHaZ6q0tb3ZlfPL6S8RoMYWF6hQbD5j01MicmZm4SYOPaUK4Fib44bc2G
+         3nVN3yj3+uV9axed28hMcymV/+ySWvNqKEKGiWPks7zGOn58Co9gqv35iIEYLVbNib/M
+         eWb9WooNyv+Aw453WQM/64t9lR0TwOJCDWmxIPQ4h19bdANLx0fKmYcsszOcc8meXLau
+         hP6g8h7of7GyMer6qGNUiEBOybd53KUTxccYUyWFhVNgtdNdGhV5sHfBE369CM1H7Ddn
+         dzqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Hus37unWQtifpvoADvykgqUYzzDBdjAzOWr44VKS+/8=;
+        b=WaVH/XO2XeYiq7gk8QSnvqCyiGOLnPrzaNtFXxlLjTk5H/7XsVaAUaqGB8v9YDsAvM
+         pt2NYahacQic5aWodDfZtySjgPogJsn4TCHC2wqdHBi1qQ5lm/gqCpGjYZKEAFpAilVy
+         O/s2tMfdBCHk/16gAdTpWMTDHUD8WMXOjCwPTbFgaUPw9vteRZBzDmIaGOMVlHJhxO5+
+         9HyDTT4IGSUd4YUOxp2GPNpujJb/yGtys0J5rXbfVK2p4L/SeMDq3ZLiKvis4r0+NT+v
+         BMY0u32L8IO3mBx/E50peedd0mMwTk/Xx4oIyP1k3Nh6S5YQVdg5MHB6n+2KHaG5K6c8
+         l0IQ==
+X-Gm-Message-State: AOAM5334vu7Azs7RcU3g4SctUklGz43hKANjQWkdFHi928m6sYcVA+Yt
+        0Z9/mMlt6W3CavgoxGXOkig=
+X-Google-Smtp-Source: ABdhPJySzgwhbHlP1vQ/DOqDLDD2IUNZXSmOLLrYQG82+xqgSmfdmTD0Xe9CD/Y3SQkret30elHpww==
+X-Received: by 2002:a2e:3c0d:: with SMTP id j13mr6692126lja.414.1628258736439;
+        Fri, 06 Aug 2021 07:05:36 -0700 (PDT)
+Received: from localhost.localdomain ([185.6.236.169])
+        by smtp.googlemail.com with ESMTPSA id o1sm848020lfl.67.2021.08.06.07.05.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Aug 2021 07:05:36 -0700 (PDT)
+From:   Maksim <bigunclemax@gmail.com>
+Cc:     Maksim <bigunclemax@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: marvell: fix MVNETA_TX_IN_PRGRS bit number
+Date:   Fri,  6 Aug 2021 17:04:37 +0300
+Message-Id: <20210806140437.4016159-1-bigunclemax@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(Adding Federico and Max)
+According to Armada XP datasheet bit at 0 position is corresponding for
+TxInProg indication.
 
-On Fri, 2021-08-06 at 12:36 +0200, Marc Kleine-Budde wrote:
-> On 06.08.2021 12:16:26, Andrejs Cainikovs wrote:
-> > Sorry for a late reply. I'm the author of this patch set, and I will
-> > have a look at this after I obtain the hardware. I hope this is still
-> > relevant.
-> 
-> Dario (Cc'ed) created a proper patch series to support 64 message
-> objects. The series has been mainlined in:
-> 
-> https://git.kernel.org/linus/132f2d45fb2302a582aef617ea766f3fa52a084c
-> 
+Signed-off-by: Maksim <bigunclemax@gmail.com>
+---
+ drivers/net/ethernet/marvell/mvneta.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Ah, that's really great news.
-
-Thanks a lot Marc and Dario.
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index 76a7777c746da..de32e5b49053b 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -105,7 +105,7 @@
+ #define	MVNETA_VLAN_PRIO_TO_RXQ			 0x2440
+ #define      MVNETA_VLAN_PRIO_RXQ_MAP(prio, rxq) ((rxq) << ((prio) * 3))
+ #define MVNETA_PORT_STATUS                       0x2444
+-#define      MVNETA_TX_IN_PRGRS                  BIT(1)
++#define      MVNETA_TX_IN_PRGRS                  BIT(0)
+ #define      MVNETA_TX_FIFO_EMPTY                BIT(8)
+ #define MVNETA_RX_MIN_FRAME_SIZE                 0x247c
+ /* Only exists on Armada XP and Armada 370 */
 -- 
-Kindly,
-Ezequiel
+2.30.2
 
