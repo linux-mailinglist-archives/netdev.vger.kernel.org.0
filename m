@@ -2,202 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35F783E2DD1
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 17:36:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C50F23E2DF2
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 17:52:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232286AbhHFPga (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 11:36:30 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:50874
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232103AbhHFPg3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 11:36:29 -0400
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id 9E2753F34D
-        for <netdev@vger.kernel.org>; Fri,  6 Aug 2021 15:36:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1628264172;
-        bh=nn6L3pGPAVUAOexXMQWFiqKMMywY28ef7UC0JW8Ecg0=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=WmvDKVWor8VkbzreY0Ni/fYR8IV/8T3D77mb5VcXdxId8k4Z8ofYQzpJhl0+BFlyz
-         9RDw0LeysFrb33x2mNU5cR/1wh7hIjAHjWymIE3PUswEDj5ddKcpvm7n6TVxdr/rHN
-         U8T0N8ejw4HkpjxK4jXU0BJV0Jk5tY0ODSEyW8GMstckcLViqwojNT96MtGKdhpxiS
-         XvUD7so3iqMp7oe6aHpQuNYdOlwr5KzrXEeTDMRKv0dagi7P1U52o9MZ+xmgCdZJzl
-         u821woPThz5Wws3o3uiIwPSdZUtFtvnjrB7kofPSl2bnFnv9F8mYAywdMBiXuoLAD2
-         ADcFO5ppzEg5Q==
-Received: by mail-ed1-f70.google.com with SMTP id d6-20020a50f6860000b02903bc068b7717so5128917edn.11
-        for <netdev@vger.kernel.org>; Fri, 06 Aug 2021 08:36:12 -0700 (PDT)
+        id S244836AbhHFPw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 11:52:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:48776 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244763AbhHFPw2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 11:52:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1628265132;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ocgP4yowhB/EUlnSIxuQMOG6kjLjSAHTmb8OYmd4EOQ=;
+        b=Kr6m1tpPchjzWu25UwcCdoz89ETW1+vRd7RRMfRNYX4nGIxHvllkR0L2F5v5mFFixMHvUc
+        JVeauVsbuSHqa0uzlJC2AqY9UW8RYUadGgK6czeLNAlX6KJLtbiOUdtYD6YYzQW2FzzXX8
+        dM9TF6Z098Bd+L/N5iDlu/5sscf8AAw=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-511-9xecoPRSM86nZdz0zPSR8Q-1; Fri, 06 Aug 2021 11:52:11 -0400
+X-MC-Unique: 9xecoPRSM86nZdz0zPSR8Q-1
+Received: by mail-lf1-f70.google.com with SMTP id p3-20020a0565121383b0290384997a48fcso4088474lfa.21
+        for <netdev@vger.kernel.org>; Fri, 06 Aug 2021 08:52:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=nn6L3pGPAVUAOexXMQWFiqKMMywY28ef7UC0JW8Ecg0=;
-        b=fUOYopJ5hJ/K0cyCJ0fw7WKBRK2IaO9jAZCOgbycXRg0vuaXShGJafhZFYl+b+lDQF
-         SsOAYxPDaocLXmSRvUN0Kgw+jK31rJN495VxhihTUFlVRYKujTBf+56DACnEcNjWnXqu
-         rOsD6g+cOQH3DI0h+UT5lvKmf+EYlqPS5uRLRstuO+szJu8+MbjTCi69Av/M//EowgVa
-         1vwW1IIp2YIUgjRpUxOujyMBaI/vMcGhZfMOT7JJ8kTaiyyLNZ/M9/0eceIUe706xY1b
-         em8ZarJc+p+p5RGpuQvhyiJ3jquSO4bOUvvFu7uIyA3d4WTUg0gYBcXFduvc6N0lKFQL
-         X1UA==
-X-Gm-Message-State: AOAM532np6BeLxWRUCrXX+VoOZOIZLT1wcaO4G9J47Ryx8HTj5CtwtTw
-        DDOrl86UX1oEgLGrUq3WMQAToDoyPHXrFHwGGNfIH0hPPjSK9kCcz2WAL+DpoyaQ9+absqtiJpq
-        iu6hzrzEDpVqMGY+R38kxLQpiYX2Gt8/jcuCNVihSrC10iw1GBA==
-X-Received: by 2002:a17:906:79a:: with SMTP id l26mr10772915ejc.192.1628264172328;
-        Fri, 06 Aug 2021 08:36:12 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwJqPGLR0PlJMC/OXDefak0pjjk5EqClsHvqh8s6/EmtI7kAm/K+l+Zroo4+IF9Cf6F8ZPDPs2bZKtQYy+55U0=
-X-Received: by 2002:a17:906:79a:: with SMTP id l26mr10772892ejc.192.1628264172061;
- Fri, 06 Aug 2021 08:36:12 -0700 (PDT)
+        bh=ocgP4yowhB/EUlnSIxuQMOG6kjLjSAHTmb8OYmd4EOQ=;
+        b=N59/UGFXTqoGUUpxH/E2zZHrWF2iY2dij7lCjHN2f9FhOhwowXGAbn9kyqIZHfqe4b
+         BASXr1ibEpbTUYHchnWQkXFI0pehomdMApYqUNhqgcDFnLOwgfC/pn65gTqAgPQtONV0
+         U64bPHoZu4uCypEcpKEGfV6VEEkUb5OOnb2przMtlV9fea7QnB8MdIcmF1/VVzeb1veP
+         a9ZA2lEmV2MOLfwkBVS1R5YX4uukvebPI/c+hj0IPfJvou2D+mnYAeZ4hOZ/FI7pCMdR
+         PJsZpVMeEDewIglTwJXGIw7bfOra8z59IESNBnbKiOnFHFwBQcQKNAYkA5Qdwkro2hMl
+         e0cg==
+X-Gm-Message-State: AOAM532Gvp14Ifip1194LslBDoLqk0D/OiQwLiPmxjvUVCQUUlW7RzcI
+        8V+4BGLsK1089rMcMld0SX31w4LXiSncdN4de+mqv39Vxw2PJ9BjOIMbxUkzjivCLtZevdpzC7B
+        FnoXWMySgMNNSvr76kc6DtIgtHeQDHug2
+X-Received: by 2002:ac2:446d:: with SMTP id y13mr8071820lfl.632.1628265129893;
+        Fri, 06 Aug 2021 08:52:09 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz9NmyUDGHNtqA5+JG3Fj8AovGBdtXdP/uo+X1AK+D5LYRCKOEMar1/c1smD31PF3dDW/0pEabI/MsAyUK/eQ0=
+X-Received: by 2002:ac2:446d:: with SMTP id y13mr8071774lfl.632.1628265129728;
+ Fri, 06 Aug 2021 08:52:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210514071452.25220-1-kai.heng.feng@canonical.com>
- <576B26FD-81F8-4632-82F6-57C4A7C096C4@holtmann.org> <8735ryk0o7.fsf@baylibre.com>
- <CAAd53p7Zc3Zk21rwj_x1BLgf8tWRxaKBmXARkM6d7Kpkb+fDZA@mail.gmail.com>
- <87y29o58su.fsf@baylibre.com> <CAAd53p4Ss1Z-7CB4g=_xZYxo1xDz6ih6GHUuMcgncy+yNAfU4w@mail.gmail.com>
- <87a6lzx7jf.fsf@baylibre.com> <CAAd53p6T_K67CPthLPObF=OWWCEChW4pMFMwuq87qWmTmzP2VA@mail.gmail.com>
- <87bl6cnzy2.fsf@baylibre.com> <CAAd53p5TVJk3G4cArS_UO7cgUpJLONNGVHnpezXy0XTYoXd_uw@mail.gmail.com>
- <87tuk3j6rh.fsf@baylibre.com>
-In-Reply-To: <87tuk3j6rh.fsf@baylibre.com>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Fri, 6 Aug 2021 23:36:00 +0800
-Message-ID: <CAAd53p7BU2=GwmyLUECKZfGhD830UQUk12mxU2y9HsXv=F_AfA@mail.gmail.com>
-Subject: Re: [PATCH v2] Bluetooth: Shutdown controller after workqueues are
- flushed or cancelled
-To:     Mattijs Korpershoek <mkorpershoek@baylibre.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        "open list:BLUETOOTH SUBSYSTEM" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+References: <20210720232624.1493424-1-nitesh@redhat.com> <20210720232624.1493424-2-nitesh@redhat.com>
+In-Reply-To: <20210720232624.1493424-2-nitesh@redhat.com>
+From:   Ming Lei <ming.lei@redhat.com>
+Date:   Fri, 6 Aug 2021 23:51:58 +0800
+Message-ID: <CAFj5m9+9asdQOCRHb0tZ=XSD-sOj+RLEDVEAObN81Z9y1JcgQg@mail.gmail.com>
+Subject: Re: [PATCH v5 01/14] genirq: Provide new interfaces for affinity hints
+To:     Nitesh Narayan Lal <nitesh@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-pci@vger.kernel.org,
+        tglx@linutronix.de, jesse.brandeburg@intel.com,
+        Robin Murphy <robin.murphy@arm.com>, mtosatti@redhat.com,
+        mingo@kernel.org, jbrandeb@kernel.org, frederic@kernel.org,
+        juri.lelli@redhat.com, abelits@marvell.com, bhelgaas@google.com,
+        rostedt@goodmis.org, peterz@infradead.org, davem@davemloft.net,
+        akpm@linux-foundation.org, sfr@canb.auug.org.au,
+        stephen@networkplumber.org, rppt@linux.vnet.ibm.com,
+        chris.friesen@windriver.com, maz@kernel.org, nhorman@tuxdriver.com,
+        pjwaskiewicz@gmail.com, sassmann@redhat.com, thenzl@redhat.com,
+        Kashyap Desai <kashyap.desai@broadcom.com>,
+        sumit.saxena@broadcom.com, shivasharan.srikanteshwara@broadcom.com,
+        sathya.prakash@broadcom.com, sreekanth.reddy@broadcom.com,
+        suganath-prabu.subramani@broadcom.com,
+        James Smart <james.smart@broadcom.com>,
+        dick.kennedy@broadcom.com, jkc@redhat.com, faisal.latif@intel.com,
+        shiraz.saleem@intel.com, tariqt@nvidia.com, ahleihel@redhat.com,
+        kheib@redhat.com, borisp@nvidia.com, saeedm@nvidia.com,
+        benve@cisco.com, govind@gmx.com, jassisinghbrar@gmail.com,
+        ajit.khaparde@broadcom.com, sriharsha.basavapatna@broadcom.com,
+        somnath.kotur@broadcom.com, nilal@redhat.com,
+        tatyana.e.nikolova@intel.com, mustafa.ismail@intel.com,
+        ahs3@redhat.com, leonro@nvidia.com,
+        chandrakanth.patil@broadcom.com, bjorn.andersson@linaro.org,
+        chunkuang.hu@kernel.org, yongqiang.niu@mediatek.com,
+        baolin.wang7@gmail.com, poros@redhat.com,
+        Ewan Milne <emilne@redhat.com>, jejb@linux.ibm.com,
+        "Martin K. Petersen" <martin.petersen@oracle.com>, _govind@gmx.com,
+        kabel@kernel.org, viresh.kumar@linaro.org,
+        Tushar.Khandelwal@arm.com, kuba@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mattijs,
+On Wed, Jul 21, 2021 at 7:26 AM Nitesh Narayan Lal <nitesh@redhat.com> wrote:
+>
+> From: Thomas Gleixner <tglx@linutronix.de>
+>
+> The discussion about removing the side effect of irq_set_affinity_hint() of
+> actually applying the cpumask (if not NULL) as affinity to the interrupt,
+> unearthed a few unpleasantries:
+>
+>   1) The modular perf drivers rely on the current behaviour for the very
+>      wrong reasons.
+>
+>   2) While none of the other drivers prevents user space from changing
+>      the affinity, a cursorily inspection shows that there are at least
+>      expectations in some drivers.
+>
+> #1 needs to be cleaned up anyway, so that's not a problem
+>
+> #2 might result in subtle regressions especially when irqbalanced (which
+>    nowadays ignores the affinity hint) is disabled.
+>
+> Provide new interfaces:
+>
+>   irq_update_affinity_hint()  - Only sets the affinity hint pointer
+>   irq_set_affinity_and_hint() - Set the pointer and apply the affinity to
+>                                 the interrupt
+>
+> Make irq_set_affinity_hint() a wrapper around irq_apply_affinity_hint() and
+> document it to be phased out.
+>
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
+> Link: https://lore.kernel.org/r/20210501021832.743094-1-jesse.brandeburg@intel.com
 
-On Fri, Aug 6, 2021 at 4:51 PM Mattijs Korpershoek
-<mkorpershoek@baylibre.com> wrote:
->
-> Hi Kai-Heng,
->
-> Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
->
-> > Hi Mattijs,
-> >
-> > On Thu, Aug 5, 2021 at 2:55 PM Mattijs Korpershoek
-> > <mkorpershoek@baylibre.com> wrote:
-> >>
-> >> Hi Kai-Heng,
-> >>
-> >> Thanks for your patch,
-> >>
-> >> Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
-> >>
-> >
-> > [snipped]
-> >
-> >> I confirm this diff works for me:
-> >>
-> >> root@i500-pumpkin:~# hciconfig hci0 up
-> >> root@i500-pumpkin:~# hciconfig hci0 down
-> >> root@i500-pumpkin:~# hciconfig hci0 up
-> >> root@i500-pumpkin:~# hciconfig hci0
-> >> hci0:   Type: Primary  Bus: SDIO
-> >>         BD Address: 00:0C:E7:55:FF:12  ACL MTU: 1021:8  SCO MTU: 244:4
-> >>         UP RUNNING
-> >>         RX bytes:11268 acl:0 sco:0 events:829 errors:0
-> >>         TX bytes:182569 acl:0 sco:0 commands:829 errors:0
-> >>
-> >> root@i500-pumpkin:~# hcitool scan
-> >> Scanning ...
-> >>         <redacted>       Pixel 3 XL
-> >>
-> >> Tested-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
-> >
-> > I found that btmtksdio_flush() only cancels the work instead of doing
-> > flush_work(). That probably explains why putting ->shutdown right
-> > before ->flush doesn't work.
-> > So can you please test the following again:
-> > diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
-> > index 9872ef18f9fea..b33c05ad2150b 100644
-> > --- a/drivers/bluetooth/btmtksdio.c
-> > +++ b/drivers/bluetooth/btmtksdio.c
-> > @@ -649,9 +649,9 @@ static int btmtksdio_flush(struct hci_dev *hdev)
-> >  {
-> >         struct btmtksdio_dev *bdev = hci_get_drvdata(hdev);
-> >
-> > -       skb_queue_purge(&bdev->txq);
-> > +       flush_work(&bdev->tx_work);
-> >
-> > -       cancel_work_sync(&bdev->tx_work);
-> > +       skb_queue_purge(&bdev->txq);
-> >
-> >         return 0;
-> >  }
-> > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> > index 2560ed2f144d4..a61e610a400cb 100644
-> >
-> > --- a/net/bluetooth/hci_core.c
-> > +++ b/net/bluetooth/hci_core.c
-> > @@ -1785,6 +1785,14 @@ int hci_dev_do_close(struct hci_dev *hdev)
-> >         aosp_do_close(hdev);
-> >         msft_do_close(hdev);
-> >
-> > +       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
-> > +           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
-> > +           test_bit(HCI_UP, &hdev->flags)) {
-> > +               /* Execute vendor specific shutdown routine */
-> > +               if (hdev->shutdown)
-> > +                       hdev->shutdown(hdev);
-> > +       }
-> > +
-> >         if (hdev->flush)
-> >                 hdev->flush(hdev);
-> >
-> > @@ -1798,14 +1806,6 @@ int hci_dev_do_close(struct hci_dev *hdev)
-> >                 clear_bit(HCI_INIT, &hdev->flags);
-> >         }
-> >
-> > -       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
-> > -           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
-> > -           test_bit(HCI_UP, &hdev->flags)) {
-> > -               /* Execute vendor specific shutdown routine */
-> > -               if (hdev->shutdown)
-> > -                       hdev->shutdown(hdev);
-> > -       }
-> > -
-> >         /* flush cmd  work */
-> >         flush_work(&hdev->cmd_work);
-> I've tried this but I have the same (broken) symptoms as before.
->
-> Here are some logs of v3:
-> dmesg: https://pastebin.com/1x4UHkzy
-> ftrace: https://pastebin.com/Lm1d6AWy
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
 
-Thanks for your testing. I think I finally got it:
-btmtksdio_shutdown()
--> mtk_hci_wmt_sync()
- -> __hci_cmd_send()
-  then waiting for BTMTKSDIO_TX_WAIT_VND_EVT, which is cleared in
-btmtksdio_recv_event():
-btmtksdio_recv_event()
--> hci_recv_frame()
- -> queue_work(hdev->workqueue, &hdev->rx_work);
-
-That means it has to be done before the following drain_workqueue() call.
-Can you please see if moving the ->shutdown() part right before
-drain_workqueue() can fix the issue?
-
-Kai-Heng
-
->
-> Mattijs
->
-> >
-> > Kai-Heng
