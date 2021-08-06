@@ -2,100 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 337D83E2475
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 09:50:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 701743E2479
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 09:50:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241355AbhHFHuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 03:50:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52028 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241186AbhHFHuO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 03:50:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1628236198;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=L/XAQHsDYCO+RIwBULn3V8152VMpaegY7HPopBgGtwM=;
-        b=RsjW/K53EhLfeq6m9W+A2l/qPGHGIbRfQnUJxZFVwXeVAxgVP5ICNyCqtL35femXuVjQOo
-        PaFx0PZEHCFVZ7jpf/5VPjDhSxw9+35+FWymgfH93ZofMRXnHfrPudVsxgKuGkuVZzfDDY
-        F9wnsgKE6pk2xKaiwiFGRk+l71Exp7I=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-288-hLAo-GTCPS-Pu_hDcayiMg-1; Fri, 06 Aug 2021 03:49:56 -0400
-X-MC-Unique: hLAo-GTCPS-Pu_hDcayiMg-1
-Received: by mail-wm1-f70.google.com with SMTP id o67-20020a1ca5460000b0290223be6fd23dso1740165wme.1
-        for <netdev@vger.kernel.org>; Fri, 06 Aug 2021 00:49:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=L/XAQHsDYCO+RIwBULn3V8152VMpaegY7HPopBgGtwM=;
-        b=PA0Fb4vdZh7bFOHN237jtA7Tf0Fqh8us47iC2ALJViSQDApGL0QATG32HED7PDuRVI
-         0gCvwNE9ATSGbMyk6AKJnDJhfWsygvoNGEjsqWkoIrwyJcsjqsLQ/ALQKfDGyQp/pxzb
-         IQoV4bj1CfAV8Jk1FlQ5je07Gge5227lU3MNuuoH9G4DkJ1hQZiBjqFhLWNwyjHAABde
-         lZU0vWm4VuRFiKBAnDnt1wkOyZXQrGI0xxGxXOf05hJNBVZvthGhpENu+rthfPfOaBGn
-         t/lnnGpKutKGdTzlqAxBoq3HrolBl203oExb1COnGagaXoFB21kKPeC/hG6jHuYf/bG1
-         +WBg==
-X-Gm-Message-State: AOAM530w5X1707hkpmYnhQAKQI+pjsFrzGTHAF8EMIKbK0rbq+3R8q0x
-        FAtSLdvX4wvHRQOZkj9yeIrf+Xfy9592LqMBqLh5X2DIPkfczcRPdHYg9UzHtdC/bKJNdxVHjnU
-        FwBpMsbNeK3SlMCmF
-X-Received: by 2002:a1c:4487:: with SMTP id r129mr18557025wma.62.1628236195568;
-        Fri, 06 Aug 2021 00:49:55 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwuc7Cgq9/1x/vHrvrkqXmHMzhrekrhaEMX/jbQhwO2cwiVTeBB6Y8XuABTzXxSJtxK4sbB7g==
-X-Received: by 2002:a1c:4487:: with SMTP id r129mr18557010wma.62.1628236195293;
-        Fri, 06 Aug 2021 00:49:55 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-240-80.dyn.eolo.it. [146.241.240.80])
-        by smtp.gmail.com with ESMTPSA id h16sm8526236wre.52.2021.08.06.00.49.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Aug 2021 00:49:55 -0700 (PDT)
-Message-ID: <dea381f16949a076860a550ae1db91dcca935f8f.camel@redhat.com>
-Subject: Re: [PATCH net-next 1/2] selftests/net: GRO coalesce test
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Coco Li <lixiaoyan@google.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        Willem de Bruijn <willemb@google.com>,
-        Tanner Love <tannerlove@google.com>
-Date:   Fri, 06 Aug 2021 09:49:53 +0200
-In-Reply-To: <CADjXwjhvb9BVNPjY2f-4yfE51RGL88U3VbiN_gwaMSGbagzQEg@mail.gmail.com>
-References: <20210805073641.3533280-1-lixiaoyan@google.com>
-         <20210805073641.3533280-2-lixiaoyan@google.com>
-         <6595b716cb0b37e9daf4202163b4567116d4b4e2.camel@redhat.com>
-         <CADjXwjhvb9BVNPjY2f-4yfE51RGL88U3VbiN_gwaMSGbagzQEg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S242077AbhHFHuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 03:50:21 -0400
+Received: from relay.sw.ru ([185.231.240.75]:36248 "EHLO relay.sw.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241314AbhHFHuR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Aug 2021 03:50:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
+        :From; bh=tAY88asZF2lnIac1kxZ5VSRxDa9BzKen9bRoCOT7Gjs=; b=zkseI4wOADbNhRt5alS
+        B5g3WeSKk7ur7OiZAxAnCamSftCNQdOHSRrOswlqkaL85/C2t8RPpxbDDzKKyuH9DIpm3V+nhRZ71
+        dv5NOeZcdq8+g5OXFdix4fxmA/TgQ46mszHfFfupoo8VyAKig5QsCDgJNrBSdNhe4l/J9F6hEKo=;
+Received: from [10.93.0.56]
+        by relay.sw.ru with esmtp (Exim 4.94.2)
+        (envelope-from <vvs@virtuozzo.com>)
+        id 1mBuc9-006aeP-QY; Fri, 06 Aug 2021 10:49:57 +0300
+From:   Vasily Averin <vvs@virtuozzo.com>
+Subject: [PATCH NET v4 1/7] skbuff: introduce skb_expand_head()
+To:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     netdev@vger.kernel.org, Joerg Reuter <jreuter@yaina.de>,
+        Ralf Baechle <ralf@linux-mips.org>, linux-hams@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@openvz.org,
+        Julian Wiedmann <jwi@linux.ibm.com>
+References: <ccce7edb-54dd-e6bf-1e84-0ec320d8886c@linux.ibm.com>
+ <cover.1628235065.git.vvs@virtuozzo.com>
+Message-ID: <5290ec1e-72e5-06dc-4886-ffc5255a162a@virtuozzo.com>
+Date:   Fri, 6 Aug 2021 10:49:57 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
+In-Reply-To: <cover.1628235065.git.vvs@virtuozzo.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Like skb_realloc_headroom(), new helper increases headroom of specified skb.
+Unlike skb_realloc_headroom(), it does not allocate a new skb if possible;
+copies skb->sk on new skb when as needed and frees original skb in case
+of failures.
 
-On Thu, 2021-08-05 at 13:17 -0700, Coco Li wrote:
-> > Have you considered additionally run the same test of top of a veth
-> > pair, and have such tests always enabled, so we could have some
-> > coverage regardless of specific H/W available?
-> 
-> > To do the above you should disable TSO on the veth sender peer and
-> > enable GRO on the other end.
-> 
-> Thanks for the suggestion! To make sure I understand you correctly,
-> would this be another script that creates the veth pair separate from
-> the gro.sh wrapper?
+This helps to simplify ip[6]_finish_output2() and a few other similar cases.
 
-I personally don't have any strict preference. I *think* the veth
-thing could still fit the gro.sh script, but whatever is easier coding
-wise would fit. 
+Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
+---
+ include/linux/skbuff.h |  1 +
+ net/core/skbuff.c      | 42 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 43 insertions(+)
 
-The gro.sh script with no/default argument could run all the tests on a
-veth pair; if a device name is specified via the command line, it could
-additionally run (the specified set of tests) on such device.
-
-Cheers,
-
-Paolo
-
-
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index b2db9cd..ec8a783 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -1179,6 +1179,7 @@ static inline struct sk_buff *__pskb_copy(struct sk_buff *skb, int headroom,
+ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail, gfp_t gfp_mask);
+ struct sk_buff *skb_realloc_headroom(struct sk_buff *skb,
+ 				     unsigned int headroom);
++struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom);
+ struct sk_buff *skb_copy_expand(const struct sk_buff *skb, int newheadroom,
+ 				int newtailroom, gfp_t priority);
+ int __must_check skb_to_sgvec_nomark(struct sk_buff *skb, struct scatterlist *sg,
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index fc7942c..0c70b2b 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -1786,6 +1786,48 @@ struct sk_buff *skb_realloc_headroom(struct sk_buff *skb, unsigned int headroom)
+ EXPORT_SYMBOL(skb_realloc_headroom);
+ 
+ /**
++ *	skb_expand_head - reallocate header of &sk_buff
++ *	@skb: buffer to reallocate
++ *	@headroom: needed headroom
++ *
++ *	Unlike skb_realloc_headroom, this one does not allocate a new skb
++ *	if possible; copies skb->sk to new skb as needed
++ *	and frees original skb in case of failures.
++ *
++ *	It expect increased headroom and generates warning otherwise.
++ */
++
++struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
++{
++	int delta = headroom - skb_headroom(skb);
++
++	if (WARN_ONCE(delta <= 0,
++		      "%s is expecting an increase in the headroom", __func__))
++		return skb;
++
++	/* pskb_expand_head() might crash, if skb is shared */
++	if (skb_shared(skb)) {
++		struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
++
++		if (likely(nskb)) {
++			if (skb->sk)
++				skb_set_owner_w(nskb, skb->sk);
++			consume_skb(skb);
++		} else {
++			kfree_skb(skb);
++		}
++		skb = nskb;
++	}
++	if (skb &&
++	    pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
++		kfree_skb(skb);
++		skb = NULL;
++	}
++	return skb;
++}
++EXPORT_SYMBOL(skb_expand_head);
++
++/**
+  *	skb_copy_expand	-	copy and expand sk_buff
+  *	@skb: buffer to copy
+  *	@newheadroom: new free bytes at head
+-- 
+1.8.3.1
 
