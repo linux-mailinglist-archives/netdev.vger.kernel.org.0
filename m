@@ -2,93 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C9403E2251
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 06:05:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AB8D3E22AD
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 06:40:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242087AbhHFEFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 00:05:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57726 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233048AbhHFEFy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 00:05:54 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90634C061798;
-        Thu,  5 Aug 2021 21:05:38 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id a8so14143445pjk.4;
-        Thu, 05 Aug 2021 21:05:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8xTUSIk0PEm8dgw5EgzCWiooT9Ptt7rnMynSDDHrUL4=;
-        b=P9QyDwPfaCBusnlXTuu8jpSN8khInXlLCQ/da6NCgEyS3nN+rpE75pUJmpr4/XwEMv
-         aErgvi+ExObcztUeWzsK4JDkhIoDldjw8/RLiiNFPwlFk3XrV4IYne/UmWpGRRgu74Q9
-         xyUYCgY39kEhZep5et8zywvCTZ4Nh3hyVEkppRQuY/igndPb30C30qHWBuZZSSonNlm2
-         6QAF397lUIAqDlg9Di+bOhvCOtOcOJhcMShMwto4tOykNPjdNAktEd09F+0wbgUOKMGM
-         5T7DCvODfVxCfTZavL+NbxOwDa9EUIiDY4QJBLj9n3+66jvOmYyqrFAOuFjh19QhF29Y
-         x1fA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8xTUSIk0PEm8dgw5EgzCWiooT9Ptt7rnMynSDDHrUL4=;
-        b=FkJd+jD9rs43K67VZP7B23HS1g7vF2dt6sfZvQB4iM+FwzYxA7N6lY1bugxUVsUWGj
-         TrHOZRuPirUHNVTwo58MihIDuQXnnc/3xICv/ZAMl2kY2we/0UC4YjxCYDu3EyDmivft
-         YqkbDWosqc1cPWwnu7+dZXJA7+osRwct7tTRFAwBJkma++L5LCNzeVvzEiWqxDm+fLB8
-         ajsh346hgvOWu7gQuo8udR3lP00HcG39sUlJ76J7zHMJhlvzEUh+H1S1yClcDVjwzw0I
-         Sf+QDibtINqS9PsXq8ra8DqzbxbP7vOzIZrsUxnyDzyYXXQXhcfY1/XgnBToeh1Wk+Fx
-         nrMQ==
-X-Gm-Message-State: AOAM533NPBPz2wKuF6/aAs8x+35zL8K50n2j6EPfo/MYF4CHoqrvf3GU
-        DY8GArgHoAb5ixPxjLYtBCs=
-X-Google-Smtp-Source: ABdhPJy2+Gv/lUqLi0cu47cWtSKJ+epXlw5mBn6fJYrYzFKdgAssRpEufHv2GHAmie5Vs+J8jK4bLg==
-X-Received: by 2002:a63:5619:: with SMTP id k25mr286282pgb.92.1628222738170;
-        Thu, 05 Aug 2021 21:05:38 -0700 (PDT)
-Received: from haswell-ubuntu20.lan ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id 186sm8597505pfg.11.2021.08.05.21.05.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Aug 2021 21:05:37 -0700 (PDT)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net] net: dsa: mt7530: add the missing RxUnicast MIB counter
-Date:   Fri,  6 Aug 2021 12:05:27 +0800
-Message-Id: <20210806040528.735606-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S242734AbhHFEkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 00:40:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35898 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231694AbhHFEkW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Aug 2021 00:40:22 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 492AD611C5;
+        Fri,  6 Aug 2021 04:40:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1628224806;
+        bh=nvFMt4PbVOSjw9AF/7nA43J6gtfYsIRT4xo7EOVQ3EE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tGE6YChgml8dtCcmbJSKKXJQRepMLkDrRWrpqj94wK1Ee4W//xcMY0Ilk12EA/OHI
+         WWvV8SFP2k0iU8GqNI4n91+3Gt/KKSkVxIVdwB7yVFxS4qXPCOXZ8DLp4pa3eULelp
+         gpXnHlui9/qT3tlkkmhhGC8P1W/E8LYhdV6SbqkY=
+Date:   Fri, 6 Aug 2021 06:40:04 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Martin Zaharinov <micron10@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: Re: Urgent  Bug report: PPPoE ioctl(PPPIOCCONNECT): Transport
+ endpoint is not connected
+Message-ID: <YQy9JKgo+BE3G7+a@kroah.com>
+References: <7EE80F78-6107-4C6E-B61D-01752D44155F@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7EE80F78-6107-4C6E-B61D-01752D44155F@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the missing RxUnicast counter.
+On Thu, Aug 05, 2021 at 11:53:50PM +0300, Martin Zaharinov wrote:
+> Hi Net dev team
+> 
+> 
+> Please check this error :
+> Last time I write for this problem : https://www.spinics.net/lists/netdev/msg707513.html
+> 
+> But not find any solution.
+> 
+> Config of server is : Bonding port channel (LACP)  > Accel PPP server > Huawei switch.
+> 
+> Server is work fine users is down/up 500+ users .
+> But in one moment server make spike and affect other vlans in same server .
+> And in accel I see many row with this error.
+> 
+> Is there options to find and fix this bug.
+> 
+> With accel team I discus this problem  and they claim it is kernel bug and need to find solution with Kernel dev team.
+> 
+> 
+> [2021-08-05 13:52:05.294] vlan912: 24b205903d09718e: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:05.298] vlan912: 24b205903d097162: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:05.626] vlan641: 24b205903d09711b: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:11.000] vlan912: 24b205903d097105: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:17.852] vlan912: 24b205903d0971ae: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:21.113] vlan641: 24b205903d09715b: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:27.963] vlan912: 24b205903d09718d: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:30.249] vlan496: 24b205903d097184: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:30.992] vlan420: 24b205903d09718a: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:33.937] vlan640: 24b205903d0971cd: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:40.032] vlan912: 24b205903d097182: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:40.420] vlan912: 24b205903d0971d5: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:42.799] vlan912: 24b205903d09713a: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:42.799] vlan614: 24b205903d0971e5: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:43.102] vlan912: 24b205903d097190: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:43.850] vlan479: 24b205903d097153: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:43.850] vlan479: 24b205903d097141: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:43.852] vlan912: 24b205903d097198: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:43.977] vlan637: 24b205903d097148: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> [2021-08-05 13:52:44.528] vlan637: 24b205903d0971c3: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
 
-Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
-Signed-off-by: DENG Qingfang <dqfext@gmail.com>
----
- drivers/net/dsa/mt7530.c | 1 +
- 1 file changed, 1 insertion(+)
+These are userspace error messages, not kernel messages.
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 385e169080d9..9d7c52172af5 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -47,6 +47,7 @@ static const struct mt7530_mib_desc mt7530_mib[] = {
- 	MIB_DESC(2, 0x48, "TxBytes"),
- 	MIB_DESC(1, 0x60, "RxDrop"),
- 	MIB_DESC(1, 0x64, "RxFiltering"),
-+	MIB_DESC(1, 0x68, "RxUnicast"),
- 	MIB_DESC(1, 0x6c, "RxMulticast"),
- 	MIB_DESC(1, 0x70, "RxBroadcast"),
- 	MIB_DESC(1, 0x74, "RxAlignErr"),
--- 
-2.25.1
+What kernel version are you using?
 
+thanks,
+
+greg k-h
