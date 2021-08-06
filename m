@@ -2,61 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57EF83E26F7
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 11:13:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC9F33E26FE
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 11:15:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244263AbhHFJNj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 05:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41900 "EHLO
+        id S244300AbhHFJPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 05:15:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244111AbhHFJNj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 05:13:39 -0400
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90082C061798;
-        Fri,  6 Aug 2021 02:13:23 -0700 (PDT)
+        with ESMTP id S244091AbhHFJPh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 05:15:37 -0400
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF41C061798;
+        Fri,  6 Aug 2021 02:15:22 -0700 (PDT)
+Received: by mail-oi1-x22b.google.com with SMTP id s13so1965548oie.10;
+        Fri, 06 Aug 2021 02:15:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=msvlg61+FMMnpmyBPV+pIriFEH/ejI4VCVNLKTM5r+s=;
+        b=Yl4jduFwo0Hq9Oc9EC2SrWqBPAbJkdOaXavmTj2zFJzvEEVKhFnnQvsKW9RqhbzoMH
+         CN01CixRtVkG2x+yZN/LVSJVDRxWx0X1DVfl1RX9O0X/8PCZpTG+L2zP2DnzAypA7x54
+         ZxSbQdKDFfaf3hsxLvIKPLs+V8y77i0pM3Ja5p0RnUwBCklXEbkhs4yCxzplQ/iqCRIT
+         89BIHt+EmaJh95mpT+Y0fa+5PJKAGghfkuH5Qqno5K3ihxwHkPrx1Z3liXn76bjskV24
+         7ET7xf0DFuTTsAyFwMgfU6Yet6b8nOAxWpt72PtV9m3Nsb7llkbBCOCVk0HezbMSg1/S
+         +MKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=msvlg61+FMMnpmyBPV+pIriFEH/ejI4VCVNLKTM5r+s=;
+        b=DjrCUB4hZrvKAOh133RMpwNrXj/cSzytD1jfHox2InHP/+xtup+ApwuKLFQOcWXWOA
+         oT1SjMl/ibvHDOIsVEUKZGcrKIv69lm/vBUxIMMZ3a2/nXQKkPiahOkaJqA51OOgk11e
+         O0CkZgPPVpdbuTqHb/VEfgq+n8O4yqEPi9SOfjl4ZtJweKJfyZXetjKEimppMPBm5JpT
+         pZcJsovukogumEr181OcP795HKKvA2eK5+w75w9Gu5yXOqYeWkHYqyAfVVaxuGCHMGgQ
+         o6F1QPmiWuBCiNIlZqqAnE0Epz1EiQ8CKpej+X1AIvmr5KXM9HBog1xBbHt9XH4JqDe8
+         Eh6A==
+X-Gm-Message-State: AOAM533LWosU8n52WJ22H4MtsEVRmPWxz9jCOtwZ1i8Kv0lQbn44q/bh
+        Da6EUL08EK80gyfM2L9uxllseilfl28E46DpK0M=
+X-Google-Smtp-Source: ABdhPJxgKSg+RxBruJaZHGRtNQqEqEOO2iM/Nx73ndB2zZK+fnx6VJKW3qgoL+fK3e//+glSoMm55BLdYwKVKBflBqc=
+X-Received: by 2002:aca:1817:: with SMTP id h23mr6692129oih.146.1628241321514;
+ Fri, 06 Aug 2021 02:15:21 -0700 (PDT)
 MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1628241201;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hqVQBmaEF2fDEHUUbwaYPLD3q9fwnxrg3znPjsP3I54=;
-        b=YkflkaAvMPaIO3ZqTrNGRkrJaHGtFAKsF2y95PY5C/qIilBv9+zekavF/hbes4KxycBAql
-        6OkLDeDoHv9NXhCQoPqdJA2g9SZ4do21CqTfF6/HNw02Ir7IRudHrCJIdQbRWMI0j1C6G0
-        d/mbkUgEybNjlrD7tDUEYA88Z8g14Gs=
-Date:   Fri, 06 Aug 2021 09:13:21 +0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   yajun.deng@linux.dev
-Message-ID: <a9ed105aa609b619492044da3e22ff65@linux.dev>
-Subject: Re: [PATCH net-next] net: Remove redundant if statements
-To:     "Matthieu Baerts" <matthieu.baerts@tessares.net>,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <4b175501-50c1-fedf-1eaf-05c0de67c3c8@tessares.net>
-References: <4b175501-50c1-fedf-1eaf-05c0de67c3c8@tessares.net>
- <20210806063847.21639-1-yajun.deng@linux.dev>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yajun.deng@linux.dev
+References: <20210806085413.61536-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20210806085413.61536-1-andriy.shevchenko@linux.intel.com>
+From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Date:   Fri, 6 Aug 2021 12:15:10 +0300
+Message-ID: <CAHNKnsSLQ9QpOk+YqqVKj3hJEJXMPGpazBV_hWngj2bwLp8LSQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] wwan: core: Avoid returning NULL from wwan_create_dev()
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-August 6, 2021 4:58 PM, "Matthieu Baerts" <matthieu.baerts@tessares.net> =
-wrote:=0A=0A> Hi Yajun,=0A> =0A> Thank you for sharing this patch.=0A> =
-=0A> On 06/08/2021 08:38, Yajun Deng wrote:=0A> =0A>> The if statement al=
-ready move into sock_{put , hold},=0A>> just remove it.=0A> =0A> I was wo=
-ndering in which subtree you had 'sock_put' checking the socket=0A> point=
-er but then I realised you sent another patch just before adding=0A> this=
- check: "net: sock: add the case if sk is NULL"=0A> =0A> Please next time=
- send them in the same series to clearly indicate that=0A> this is the 2n=
-d patch (2/2) and it depends on patch 1/2.=0A> =0AOK, Thank you for your =
-advice.=0A=0A> Related to the modification in MPTCP part: it looks OK but=
- we do a few=0A> other calls to 'sock_put()' where we don't need to check=
- if the socket=0A> is NULL or not.=0A> =0A> In other words, if your patch=
- "net: sock: add the case if sk is NULL" is=0A> accepted, then the modifi=
-cation in "net/mptcp/subflow.c" is OK for us.=0A> =0A> Cheers,=0A> Matt=
-=0A> --=0A> Tessares | Belgium | Hybrid Access Solutions=0A> www.tessares=
-.net
+On Fri, Aug 6, 2021 at 12:00 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+> Make wwan_create_dev() to return either valid or error pointer,
+> In some cases it may return NULL. Prevent this by converting
+> it to the respective error pointer.
+>
+> Fixes: 9a44c1cc6388 ("net: Add a WWAN subsystem")
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+> v2: rewrote to return error pointer, align callers (Loic)
+
+Acked-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
