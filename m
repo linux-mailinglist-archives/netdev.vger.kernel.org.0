@@ -2,499 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5D113E235A
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 08:39:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 184363E2378
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 08:49:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243382AbhHFGjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 02:39:24 -0400
-Received: from out0.migadu.com ([94.23.1.103]:11406 "EHLO out0.migadu.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229625AbhHFGjU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Aug 2021 02:39:20 -0400
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1628231943;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=mfWSpEHL97cOOqGzjfbOjX7k9KIFgT3KANvCddVv9gI=;
-        b=W8z+ASsTeY/l6TDNBA+sI0JfgLZVn+NY0ruS/wR/yY3TAnkb1pYK+Hbdp7q91V/+rMQlNy
-        kJjamKUSHAxyrhbsDTsck4fRyA2iPqH/Ae4ogqdrPaWNvxq+Co9TIOXYF3pCXy4pyqjUWL
-        zyzhJ/38GnOgf3zS+iXvpkAEQplRFnE=
-From:   Yajun Deng <yajun.deng@linux.dev>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yajun Deng <yajun.deng@linux.dev>
-Subject: [PATCH net-next] net: Remove redundant if statements
-Date:   Fri,  6 Aug 2021 14:38:47 +0800
-Message-Id: <20210806063847.21639-1-yajun.deng@linux.dev>
+        id S243420AbhHFGt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 02:49:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36842 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243439AbhHFGt1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 02:49:27 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6167BC061798
+        for <netdev@vger.kernel.org>; Thu,  5 Aug 2021 23:49:12 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mBtcu-0007Bd-Gw; Fri, 06 Aug 2021 08:46:40 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mBtce-0004p1-8f; Fri, 06 Aug 2021 08:46:24 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mBtce-0003LN-5b; Fri, 06 Aug 2021 08:46:24 +0200
+Date:   Fri, 6 Aug 2021 08:46:23 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-pci@vger.kernel.org, Alexander Duyck <alexanderduyck@fb.com>,
+        Russell Currey <ruscur@russell.cc>,
+        Sathya Prakash <sathya.prakash@broadcom.com>,
+        oss-drivers@corigine.com, Paul Mackerras <paulus@samba.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Jiri Olsa <jolsa@redhat.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        linux-perf-users@vger.kernel.org,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        linux-scsi@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        Ido Schimmel <idosch@nvidia.com>, x86@kernel.org,
+        qat-linux@intel.com,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        linux-wireless@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Fiona Trahe <fiona.trahe@intel.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Borislav Petkov <bp@alien8.de>, Michael Buesch <m@bues.ch>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Juergen Gross <jgross@suse.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        xen-devel@lists.xenproject.org, Vadym Kochan <vkochan@marvell.com>,
+        MPT-FusionLinux.pdl@broadcom.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org,
+        Wojciech Ziemba <wojciech.ziemba@intel.com>,
+        linux-kernel@vger.kernel.org, Taras Chornyi <tchornyi@marvell.com>,
+        Zhou Wang <wangzhou1@hisilicon.com>,
+        linux-crypto@vger.kernel.org, kernel@pengutronix.de,
+        netdev@vger.kernel.org, Frederic Barrat <fbarrat@linux.ibm.com>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        linuxppc-dev@lists.ozlabs.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v2 0/6] PCI: Drop duplicated tracking of a pci_dev's
+ bound driver
+Message-ID: <20210806064623.3lxl4clzbjpmchef@pengutronix.de>
+References: <20210803100150.1543597-1-u.kleine-koenig@pengutronix.de>
+ <20210805234234.GA1797883@bjorn-Precision-5520>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yajun.deng@linux.dev
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="nllglfksvmzlkdkm"
+Content-Disposition: inline
+In-Reply-To: <20210805234234.GA1797883@bjorn-Precision-5520>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The if statement already move into sock_{put , hold},
-just remove it.
 
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
----
- net/ax25/ax25_in.c             |  3 +--
- net/bluetooth/mgmt.c           | 24 ++++++++----------------
- net/can/af_can.c               |  6 ++----
- net/core/skmsg.c               |  6 ++----
- net/ipv4/udp_diag.c            |  3 +--
- net/l2tp/l2tp_ppp.c            |  3 +--
- net/mptcp/subflow.c            |  8 ++------
- net/netfilter/nf_queue.c       |  8 ++------
- net/netlink/af_netlink.c       |  3 +--
- net/netrom/af_netrom.c         |  3 +--
- net/phonet/pep.c               |  4 +---
- net/phonet/socket.c            |  3 +--
- net/qrtr/mhi.c                 |  9 +++------
- net/unix/af_unix.c             | 18 ++++++------------
- net/unix/diag.c                |  3 +--
- net/vmw_vsock/af_vsock.c       |  8 ++------
- net/vmw_vsock/vmci_transport.c |  3 +--
- 17 files changed, 36 insertions(+), 79 deletions(-)
+--nllglfksvmzlkdkm
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/net/ax25/ax25_in.c b/net/ax25/ax25_in.c
-index cd6afe895db9..713f75e3bbdc 100644
---- a/net/ax25/ax25_in.c
-+++ b/net/ax25/ax25_in.c
-@@ -380,8 +380,7 @@ static int ax25_rcv(struct sk_buff *skb, struct net_device *dev,
- 	    (ax25->digipeat = kmalloc(sizeof(ax25_digi), GFP_ATOMIC)) == NULL) {
- 		kfree_skb(skb);
- 		ax25_destroy_socket(ax25);
--		if (sk)
--			sock_put(sk);
-+		sock_put(sk);
- 		return 0;
- 	}
- 
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 3663f880df11..48c2299c8096 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -1896,8 +1896,7 @@ static void le_enable_complete(struct hci_dev *hdev, u8 status, u16 opcode)
- 
- 	new_settings(hdev, match.sk);
- 
--	if (match.sk)
--		sock_put(match.sk);
-+	sock_put(match.sk);
- 
- 	/* Make sure the controller has a good default for
- 	 * advertising data. Restrict the update to when LE
-@@ -5335,8 +5334,7 @@ static void set_advertising_complete(struct hci_dev *hdev, u8 status,
- 
- 	new_settings(hdev, match.sk);
- 
--	if (match.sk)
--		sock_put(match.sk);
-+	sock_put(match.sk);
- 
- 	/* Handle suspend notifier */
- 	if (test_and_clear_bit(SUSPEND_PAUSE_ADVERTISING,
-@@ -8569,8 +8567,7 @@ void mgmt_power_on(struct hci_dev *hdev, int err)
- 
- 	new_settings(hdev, match.sk);
- 
--	if (match.sk)
--		sock_put(match.sk);
-+	sock_put(match.sk);
- 
- 	hci_dev_unlock(hdev);
- }
-@@ -8605,8 +8602,7 @@ void __mgmt_power_off(struct hci_dev *hdev)
- 
- 	new_settings(hdev, match.sk);
- 
--	if (match.sk)
--		sock_put(match.sk);
-+	sock_put(match.sk);
- }
- 
- void mgmt_set_powered_failed(struct hci_dev *hdev, int err)
-@@ -8887,8 +8883,7 @@ void mgmt_device_disconnected(struct hci_dev *hdev, bdaddr_t *bdaddr,
- 
- 	mgmt_event(MGMT_EV_DEVICE_DISCONNECTED, hdev, &ev, sizeof(ev), sk);
- 
--	if (sk)
--		sock_put(sk);
-+	sock_put(sk);
- 
- 	mgmt_pending_foreach(MGMT_OP_UNPAIR_DEVICE, hdev, unpair_device_rsp,
- 			     hdev);
-@@ -9114,8 +9109,7 @@ void mgmt_auth_enable_complete(struct hci_dev *hdev, u8 status)
- 	if (changed)
- 		new_settings(hdev, match.sk);
- 
--	if (match.sk)
--		sock_put(match.sk);
-+	sock_put(match.sk);
- }
- 
- static void clear_eir(struct hci_request *req)
-@@ -9169,8 +9163,7 @@ void mgmt_ssp_enable_complete(struct hci_dev *hdev, u8 enable, u8 status)
- 	if (changed)
- 		new_settings(hdev, match.sk);
- 
--	if (match.sk)
--		sock_put(match.sk);
-+	sock_put(match.sk);
- 
- 	hci_req_init(&req, hdev);
- 
-@@ -9211,8 +9204,7 @@ void mgmt_set_class_of_dev_complete(struct hci_dev *hdev, u8 *dev_class,
- 		ext_info_changed(hdev, NULL);
- 	}
- 
--	if (match.sk)
--		sock_put(match.sk);
-+	sock_put(match.sk);
- }
- 
- void mgmt_set_local_name_complete(struct hci_dev *hdev, u8 *name, u8 status)
-diff --git a/net/can/af_can.c b/net/can/af_can.c
-index cce2af10eb3e..7f6c6969e203 100644
---- a/net/can/af_can.c
-+++ b/net/can/af_can.c
-@@ -493,8 +493,7 @@ static void can_rx_delete_receiver(struct rcu_head *rp)
- 	struct sock *sk = rcv->sk;
- 
- 	kmem_cache_free(rcv_cache, rcv);
--	if (sk)
--		sock_put(sk);
-+	sock_put(sk);
- }
- 
- /**
-@@ -562,8 +561,7 @@ void can_rx_unregister(struct net *net, struct net_device *dev, canid_t can_id,
- 
- 	/* schedule the receiver item for deletion */
- 	if (rcv) {
--		if (rcv->sk)
--			sock_hold(rcv->sk);
-+		sock_hold(rcv->sk);
- 		call_rcu(&rcv->rcu, can_rx_delete_receiver);
- 	}
- }
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 2d6249b28928..187f3f91bbae 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -782,8 +782,7 @@ static void sk_psock_destroy(struct work_struct *work)
- 	sk_psock_link_destroy(psock);
- 	sk_psock_cork_free(psock);
- 
--	if (psock->sk_redir)
--		sock_put(psock->sk_redir);
-+	sock_put(psock->sk_redir);
- 	sock_put(psock->sk);
- 	kfree(psock);
- }
-@@ -838,8 +837,7 @@ int sk_psock_msg_verdict(struct sock *sk, struct sk_psock *psock,
- 	ret = sk_psock_map_verd(ret, msg->sk_redir);
- 	psock->apply_bytes = msg->apply_bytes;
- 	if (ret == __SK_REDIRECT) {
--		if (psock->sk_redir)
--			sock_put(psock->sk_redir);
-+		sock_put(psock->sk_redir);
- 		psock->sk_redir = msg->sk_redir;
- 		if (!psock->sk_redir) {
- 			ret = __SK_DROP;
-diff --git a/net/ipv4/udp_diag.c b/net/ipv4/udp_diag.c
-index 1ed8c4d78e5c..629e3f112b08 100644
---- a/net/ipv4/udp_diag.c
-+++ b/net/ipv4/udp_diag.c
-@@ -80,8 +80,7 @@ static int udp_dump_one(struct udp_table *tbl,
- 	err = nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
- 
- out:
--	if (sk)
--		sock_put(sk);
-+	sock_put(sk);
- out_nosk:
- 	return err;
- }
-diff --git a/net/l2tp/l2tp_ppp.c b/net/l2tp/l2tp_ppp.c
-index bf35710127dd..e8f01f1708c8 100644
---- a/net/l2tp/l2tp_ppp.c
-+++ b/net/l2tp/l2tp_ppp.c
-@@ -141,8 +141,7 @@ static struct sock *pppol2tp_session_get_sock(struct l2tp_session *session)
- 
- 	rcu_read_lock();
- 	sk = rcu_dereference(ps->sk);
--	if (sk)
--		sock_hold(sk);
-+	sock_hold(sk);
- 	rcu_read_unlock();
- 
- 	return sk;
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 966f777d35ce..9fd6737d8a2f 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -41,9 +41,7 @@ static void subflow_req_destructor(struct request_sock *req)
- 
- 	pr_debug("subflow_req=%p", subflow_req);
- 
--	if (subflow_req->msk)
--		sock_put((struct sock *)subflow_req->msk);
--
-+	sock_put((struct sock *)subflow_req->msk);
- 	mptcp_token_destroy_request(req);
- 	tcp_request_sock_ops.destructor(req);
- }
-@@ -601,9 +599,7 @@ static void subflow_drop_ctx(struct sock *ssk)
- 		return;
- 
- 	subflow_ulp_fallback(ssk, ctx);
--	if (ctx->conn)
--		sock_put(ctx->conn);
--
-+	sock_put(ctx->conn);
- 	kfree_rcu(ctx, rcu);
- }
- 
-diff --git a/net/netfilter/nf_queue.c b/net/netfilter/nf_queue.c
-index 7f2f69b609d8..a7a199293186 100644
---- a/net/netfilter/nf_queue.c
-+++ b/net/netfilter/nf_queue.c
-@@ -53,9 +53,7 @@ static void nf_queue_entry_release_refs(struct nf_queue_entry *entry)
- 	/* Release those devices we held, or Alexey will kill me. */
- 	dev_put(state->in);
- 	dev_put(state->out);
--	if (state->sk)
--		sock_put(state->sk);
--
-+	sock_put(state->sk);
- #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
- 	dev_put(entry->physin);
- 	dev_put(entry->physout);
-@@ -93,9 +91,7 @@ void nf_queue_entry_get_refs(struct nf_queue_entry *entry)
- 
- 	dev_hold(state->in);
- 	dev_hold(state->out);
--	if (state->sk)
--		sock_hold(state->sk);
--
-+	sock_hold(state->sk);
- #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
- 	dev_hold(entry->physin);
- 	dev_hold(entry->physout);
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index 24b7cf447bc5..1aad9528416b 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -532,8 +532,7 @@ static struct sock *netlink_lookup(struct net *net, int protocol, u32 portid)
- 
- 	rcu_read_lock();
- 	sk = __netlink_lookup(table, portid, net);
--	if (sk)
--		sock_hold(sk);
-+	sock_hold(sk);
- 	rcu_read_unlock();
- 
- 	return sk;
-diff --git a/net/netrom/af_netrom.c b/net/netrom/af_netrom.c
-index 6d16e1ab1a8a..dde89b6c2432 100644
---- a/net/netrom/af_netrom.c
-+++ b/net/netrom/af_netrom.c
-@@ -958,8 +958,7 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
- 	if (sk == NULL || sk_acceptq_is_full(sk) ||
- 	    (make = nr_make_new(sk)) == NULL) {
- 		nr_transmit_refusal(skb, 0);
--		if (sk)
--			sock_put(sk);
-+		sock_put(sk);
- 		return 0;
- 	}
- 
-diff --git a/net/phonet/pep.c b/net/phonet/pep.c
-index a1525916885a..2c7ddf6dbb76 100644
---- a/net/phonet/pep.c
-+++ b/net/phonet/pep.c
-@@ -1314,9 +1314,7 @@ static void pep_sock_unhash(struct sock *sk)
- 	if (hlist_empty(&pn->hlist))
- 		pn_sock_unhash(&pn->pn_sk.sk);
- 	release_sock(sk);
--
--	if (skparent)
--		sock_put(skparent);
-+	sock_put(skparent);
- }
- 
- static struct proto pep_proto = {
-diff --git a/net/phonet/socket.c b/net/phonet/socket.c
-index 71e2caf6ab85..0e7de755c1aa 100644
---- a/net/phonet/socket.c
-+++ b/net/phonet/socket.c
-@@ -620,8 +620,7 @@ struct sock *pn_find_sock_by_res(struct net *net, u8 res)
- 
- 	rcu_read_lock();
- 	sk = rcu_dereference(pnres.sk[res]);
--	if (sk)
--		sock_hold(sk);
-+	sock_hold(sk);
- 	rcu_read_unlock();
- 	return sk;
- }
-diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
-index 1dc955ca57d3..7980d18409af 100644
---- a/net/qrtr/mhi.c
-+++ b/net/qrtr/mhi.c
-@@ -40,8 +40,7 @@ static void qcom_mhi_qrtr_ul_callback(struct mhi_device *mhi_dev,
- {
- 	struct sk_buff *skb = mhi_res->buf_addr;
- 
--	if (skb->sk)
--		sock_put(skb->sk);
-+	sock_put(skb->sk);
- 	consume_skb(skb);
- }
- 
-@@ -55,8 +54,7 @@ static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
- 	if (rc)
- 		goto free_skb;
- 
--	if (skb->sk)
--		sock_hold(skb->sk);
-+	sock_hold(skb->sk);
- 
- 	rc = skb_linearize(skb);
- 	if (rc)
-@@ -70,8 +68,7 @@ static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
- 	return rc;
- 
- free_skb:
--	if (skb->sk)
--		sock_put(skb->sk);
-+	sock_put(skb->sk);
- 	kfree_skb(skb);
- 
- 	return rc;
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index ec02e70a549b..f02787e98114 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -206,8 +206,7 @@ struct sock *unix_peer_get(struct sock *s)
- 
- 	unix_state_lock(s);
- 	peer = unix_peer(s);
--	if (peer)
--		sock_hold(peer);
-+	sock_hold(peer);
- 	unix_state_unlock(s);
- 	return peer;
- }
-@@ -311,8 +310,7 @@ static inline struct sock *unix_find_socket_byname(struct net *net,
- 
- 	spin_lock(&unix_table_lock);
- 	s = __unix_find_socket_byname(net, sunname, len, hash);
--	if (s)
--		sock_hold(s);
-+	sock_hold(s);
- 	spin_unlock(&unix_table_lock);
- 	return s;
- }
-@@ -1439,8 +1437,7 @@ static int unix_stream_connect(struct socket *sock, struct sockaddr *uaddr,
- 	kfree_skb(skb);
- 	if (newsk)
- 		unix_release_sock(newsk, 0);
--	if (other)
--		sock_put(other);
-+	sock_put(other);
- 	return err;
- }
- 
-@@ -1884,8 +1881,7 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
- out_free:
- 	kfree_skb(skb);
- out:
--	if (other)
--		sock_put(other);
-+	sock_put(other);
- 	scm_destroy(&scm);
- 	return err;
- }
-@@ -2765,8 +2761,7 @@ static int unix_shutdown(struct socket *sock, int mode)
- 	unix_state_lock(sk);
- 	sk->sk_shutdown |= mode;
- 	other = unix_peer(sk);
--	if (other)
--		sock_hold(other);
-+	sock_hold(other);
- 	unix_state_unlock(sk);
- 	sk->sk_state_change(sk);
- 
-@@ -2788,8 +2783,7 @@ static int unix_shutdown(struct socket *sock, int mode)
- 		else if (peer_mode & RCV_SHUTDOWN)
- 			sk_wake_async(other, SOCK_WAKE_WAITD, POLL_IN);
- 	}
--	if (other)
--		sock_put(other);
-+	sock_put(other);
- 
- 	return 0;
- }
-diff --git a/net/unix/diag.c b/net/unix/diag.c
-index 7e7d7f45685a..e6a03d806b4a 100644
---- a/net/unix/diag.c
-+++ b/net/unix/diag.c
-@@ -298,8 +298,7 @@ static int unix_diag_get_exact(struct sk_buff *in_skb,
- 	err = nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
- 
- out:
--	if (sk)
--		sock_put(sk);
-+	sock_put(sk);
- out_nosk:
- 	return err;
- }
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 3e02cc3b24f8..eccdbdb43808 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -301,9 +301,7 @@ struct sock *vsock_find_bound_socket(struct sockaddr_vm *addr)
- 
- 	spin_lock_bh(&vsock_table_lock);
- 	sk = __vsock_find_bound_socket(addr);
--	if (sk)
--		sock_hold(sk);
--
-+	sock_hold(sk);
- 	spin_unlock_bh(&vsock_table_lock);
- 
- 	return sk;
-@@ -317,9 +315,7 @@ struct sock *vsock_find_connected_socket(struct sockaddr_vm *src,
- 
- 	spin_lock_bh(&vsock_table_lock);
- 	sk = __vsock_find_connected_socket(src, dst);
--	if (sk)
--		sock_hold(sk);
--
-+	sock_hold(sk);
- 	spin_unlock_bh(&vsock_table_lock);
- 
- 	return sk;
-diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
-index 7aef34e32bdf..944d5302a222 100644
---- a/net/vmw_vsock/vmci_transport.c
-+++ b/net/vmw_vsock/vmci_transport.c
-@@ -792,8 +792,7 @@ static int vmci_transport_recv_stream_cb(void *data, struct vmci_datagram *dg)
- 	}
- 
- out:
--	if (sk)
--		sock_put(sk);
-+	sock_put(sk);
- 
- 	return err;
- }
--- 
-2.32.0
+Hello Bjorn,
 
+On Thu, Aug 05, 2021 at 06:42:34PM -0500, Bjorn Helgaas wrote:
+> On Tue, Aug 03, 2021 at 12:01:44PM +0200, Uwe Kleine-K=F6nig wrote:
+> > Hello,
+> >=20
+> > changes since v1 (https://lore.kernel.org/linux-pci/20210729203740.1377=
+045-1-u.kleine-koenig@pengutronix.de):
+> >=20
+> > - New patch to simplify drivers/pci/xen-pcifront.c, spotted and
+> >   suggested by Boris Ostrovsky
+> > - Fix a possible NULL pointer dereference I introduced in xen-pcifront.c
+> > - A few whitespace improvements
+> > - Add a commit log to patch #6 (formerly #5)
+> >=20
+> > I also expanded the audience for patches #4 and #6 to allow affected
+> > people to actually see the changes to their drivers.
+> >=20
+> > Interdiff can be found below.
+> >=20
+> > The idea is still the same: After a few cleanups (#1 - #3) a new macro
+> > is introduced abstracting access to struct pci_dev->driver. All users
+> > are then converted to use this and in the last patch the macro is
+> > changed to make use of struct pci_dev::dev->driver to get rid of the
+> > duplicated tracking.
+>=20
+> I love the idea of this series!
+
+\o/
+
+> I looked at all the bus_type.probe() methods, it looks like pci_dev is
+> not the only offender here.  At least the following also have a driver
+> pointer in the device struct:
+>=20
+>   parisc_device.driver
+>   acpi_device.driver
+>   dio_dev.driver
+>   hid_device.driver
+>   pci_dev.driver
+>   pnp_dev.driver
+>   rio_dev.driver
+>   zorro_dev.driver
+
+Right, when I converted zorro_dev it was pointed out that the code was
+copied from pci and the latter has the same construct. :-)
+See
+https://lore.kernel.org/r/20210730191035.1455248-5-u.kleine-koenig@pengutro=
+nix.de
+for the patch, I don't find where pci was pointed out, maybe it was on
+irc only.
+
+> Do you plan to do the same for all of them, or is there some reason
+> why they need the pointer and PCI doesn't?
+
+There is a list of cleanup stuff I intend to work on. Considering how
+working on that list only made it longer in the recent past, maybe it
+makes more sense to not work on it :-)
+
+> In almost all cases, other buses define a "to_<bus>_driver()"
+> interface.  In fact, PCI already has a to_pci_driver().
+>=20
+> This series adds pci_driver_of_dev(), which basically just means we
+> can do this:
+>=20
+>   pdrv =3D pci_driver_of_dev(pdev);
+>=20
+> instead of this:
+>=20
+>   pdrv =3D to_pci_driver(pdev->dev.driver);
+>=20
+> I don't see any other "<bus>_driver_of_dev()" interfaces, so I assume
+> other buses just live with the latter style?  I'd rather not be
+> different and have two ways to get the "struct pci_driver *" unless
+> there's a good reason.
+
+Among few the busses I already fixed in this regard pci was the first
+that has a considerable amount of usage. So I considered it worth giving
+it a name.
+=20
+> Looking through the places that care about pci_dev.driver (the ones
+> updated by patch 5/6), many of them are ... a little dubious to begin
+> with.  A few need the "struct pci_error_handlers *err_handler"
+> pointer, so that's probably legitimate.  But many just need a name,
+> and should probably be using dev_driver_string() instead.
+
+Yeah, I considered adding a function to get the driver name from a
+pci_dev and a function to get the error handlers. Maybe it's an idea to
+introduce these two and then use to_pci_driver(pdev->dev.driver) for the
+few remaining users? Maybe doing that on top of my current series makes
+sense to have a clean switch from pdev->driver to pdev->dev.driver?!
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--nllglfksvmzlkdkm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmEM2rwACgkQwfwUeK3K
+7AlqBggAh2Z8+ZW+YMYlQQ8AzujRmGYo9gKX26eGdp2jNjZUeOc0CEZwm/GiW4aZ
+9+W1RS3i+O6ToHVYkt9fNEpdUGO3YdBKiMHGWsrkQuwNjm4Yv5Dlx/wRz0dU4vIX
+QQDa5tw6Mow1g0gjZqHvDuwbgKoJyHXzFD115kBaINYN/XqOLST9YvMqxxSsHHsD
+qRmpU59QTxEqHXKIsgABctdVnQBkbixppZH3/6nu+Xh7qkZvczBLpx/C5V1+XeAv
+47LOxaH3wiLQBS/sICKlAFeYcbAyNhwh+nbMxx5i3lG6O6LhaeX46FPMoTG6qiAj
+MaO1mAnwrEO35eTXFBgw4IYh37zS9A==
+=/ZHI
+-----END PGP SIGNATURE-----
+
+--nllglfksvmzlkdkm--
