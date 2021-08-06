@@ -2,212 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A5013E281F
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 12:09:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01E003E282D
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 12:09:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244922AbhHFKJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 06:09:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:57670 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244905AbhHFKJQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 06:09:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1628244540;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=tDHQ9Ulm3F1gZvDZHi0UnxkFYVqUZuhtyF1seBl2e04=;
-        b=hI0adXF8EColLVHDP6+tmaYddTKmY72NI0uP7bik1i4heEYHG7P0by2xSjrNPbA62S+x0K
-        gxnnZrD0Fcdaejek9Le+Pp0EkJ2EbOVXo3A9t6ptWgjORWnqdyxz8UiyBS3ls6SsJss+xi
-        QDHEINC+k0IYMyXDGZBuZ/JTByf8wTM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-592-fJyrQIvZNpemSWHwaQcnZg-1; Fri, 06 Aug 2021 06:08:58 -0400
-X-MC-Unique: fJyrQIvZNpemSWHwaQcnZg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1A9C087180C;
-        Fri,  6 Aug 2021 10:08:57 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.22.32.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 566597A8D7;
-        Fri,  6 Aug 2021 10:08:55 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-To:     Jeffrey E Altman <jaltman@auristor.com>,
-        Marc Dionne <marc.dionne@auristor.com>
-cc:     dhowells@redhat.com, Benjamin Kaduk <kaduk@mit.edu>,
-        linux-afs@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RFC][PATCH] rxrpc: Support reception of extended-SACK ACK packet
+        id S244942AbhHFKJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 06:09:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54932 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244918AbhHFKJT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 06:09:19 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06BD5C061798
+        for <netdev@vger.kernel.org>; Fri,  6 Aug 2021 03:09:03 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id h14so10336749wrx.10
+        for <netdev@vger.kernel.org>; Fri, 06 Aug 2021 03:09:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=9TcQUErF6kGMwloADz8tjauGd442Uaan9uU/4Tjkpuc=;
+        b=O7ZiCJh1m5Gm39prdAy7ARxQy8Asx9ZVwCG4QwcmC59lG6l0ylWuu1TZxoQnhuSVaK
+         GnKcwMiyQlO0QKmHG3RZ9FMMLDNNikpcwxmmW7FLT81J0qumSpBceRJs/cqKm3Xosehx
+         3X1Pu/I6N0+WXmp8lGhWzzgJtNjRClwQ0YN+OLjqhaqd1Njc66gHBiEEPj8Fi3tkhd45
+         c17F5XTDoyftt62AUmn3k1hrmeQuwyfq6llyqv8WrjRLeazhBT967GjZsL0fNMag5HWi
+         xNOHPuTiWLPAKqRUUzqKL08gWnUYcvQOFGS7krTQlC+CTve5U+g8d/92hy36TJwAYAR1
+         JQhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=9TcQUErF6kGMwloADz8tjauGd442Uaan9uU/4Tjkpuc=;
+        b=RakqTxTkqZU+Y7ctSP2wFvLoRdfy7Q3OhroOFx6noRphF6u233a8t3nF5pS6CB7haw
+         fJQULDqA55SIZtueg0GDVMuUS0WqF8oICR0NeQ6gIA3Efc7d9b2ZBbQlBqnCsdk0D9y6
+         C9+GqfPvK+a76P7RprzBIhX3R0cD9NXPALAhQMRmEqWL0dwKGJzisrvbTnBElATvZDm6
+         /1A6Hyp1X8kD8ym5/T1KG3sfaf8i/6RE5G/NAtpq3EYf/aw9viiDHDJ/d9KltIvY/4pP
+         hllIw3L6ughztMz7otApHzgMy/JyCq1Sj64MYJaIBdvu0LTu3+Rb4HOt7asYZWO0ZR53
+         TqYQ==
+X-Gm-Message-State: AOAM532zKVWry/5gdXxvfrZxDLw6kGkcgZs4GqMMTQtnJqs3C/Kjogr0
+        xfS6DpfcLF5JUr/61LMUm5U=
+X-Google-Smtp-Source: ABdhPJwrSSgHPTl27e6EZHT5C/HFUMSoV8RqXbIcjVM5QUTUeYZ5XZ2ZkUlof4wwoGh/UDqFX8tZKQ==
+X-Received: by 2002:adf:f2cd:: with SMTP id d13mr9755610wrp.315.1628244541637;
+        Fri, 06 Aug 2021 03:09:01 -0700 (PDT)
+Received: from [10.0.0.18] ([37.165.149.227])
+        by smtp.gmail.com with ESMTPSA id c15sm9033414wrw.93.2021.08.06.03.09.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Aug 2021 03:09:01 -0700 (PDT)
+Subject: Re: [Patch net-next 02/13] ipv4: introduce tracepoint
+ trace_ip_queue_xmit()
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     Qitao Xu <qitao.xu@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>
+References: <20210805185750.4522-1-xiyou.wangcong@gmail.com>
+ <20210805185750.4522-3-xiyou.wangcong@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <5c565b2c-85a5-9141-112f-be854cccc558@gmail.com>
+Date:   Fri, 6 Aug 2021 12:08:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1290707.1628244534.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Fri, 06 Aug 2021 11:08:54 +0100
-Message-ID: <1290708.1628244534@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+In-Reply-To: <20210805185750.4522-3-xiyou.wangcong@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-    =
 
-The RxRPC ACK packet supports selective ACK of up to 255 DATA packets.  It
-contains a variable length array with one octet allocated for each DATA
-packet to be ACK'd.  Each octet is either 0 or 1 depending on whether it i=
-s
-a negative or positive ACK.  7 bits in each octet are effectively unused
-and, further, there are three reserved octets following the ACK array that
-are all set to 0.
 
-To extend the ACK window up to 2048 ACKs, it is proposed[1]:
+On 8/5/21 8:57 PM, Cong Wang wrote:
+> From: Qitao Xu <qitao.xu@bytedance.com>
+> 
+> Tracepoint trace_ip_queue_xmit() is introduced to trace skb
+> at the entrance of IP layer on TX side.
+> 
+> Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+> Signed-off-by: Qitao Xu <qitao.xu@bytedance.com>
+> ---
+>  include/trace/events/ip.h | 42 +++++++++++++++++++++++++++++++++++++++
+>  net/ipv4/ip_output.c      | 10 +++++++++-
+>  2 files changed, 51 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/trace/events/ip.h b/include/trace/events/ip.h
+> index 008f821ebc50..553ae7276732 100644
+> --- a/include/trace/events/ip.h
+> +++ b/include/trace/events/ip.h
+> @@ -41,6 +41,48 @@
+>  	TP_STORE_V4MAPPED(__entry, saddr, daddr)
+>  #endif
+>  
+> +TRACE_EVENT(ip_queue_xmit,
+> +
+> +	TP_PROTO(const struct sock *sk, const struct sk_buff *skb),
+> +
+> +	TP_ARGS(sk, skb),
+> +
+> +	TP_STRUCT__entry(
+> +		__field(const void *, skbaddr)
+> +		__field(const void *, skaddr)
+> +		__field(__u16, sport)
+> +		__field(__u16, dport)
+> +		__array(__u8, saddr, 4)
+> +		__array(__u8, daddr, 4)
+> +		__array(__u8, saddr_v6, 16)
+> +		__array(__u8, daddr_v6, 16)
+> +	),
+> +
+> +	TP_fast_assign(
+> +		struct inet_sock *inet = inet_sk(sk);
+> +		__be32 *p32;
+> +
+> +		__entry->skbaddr = skb;
+> +		__entry->skaddr = sk;
+> +
+> +		__entry->sport = ntohs(inet->inet_sport);
+> +		__entry->dport = ntohs(inet->inet_dport);
+> +
+> +		p32 = (__be32 *) __entry->saddr;
+> +		*p32 = inet->inet_saddr;
+> +
+> +		p32 = (__be32 *) __entry->daddr;
+> +		*p32 =  inet->inet_daddr;
+> +
+> +		TP_STORE_ADDRS(__entry, inet->inet_saddr, inet->inet_daddr,
+> +			      sk->sk_v6_rcv_saddr, sk->sk_v6_daddr);
+> +	),
+> +
+> +	TP_printk("sport=%hu dport=%hu saddr=%pI4 daddr=%pI4 saddrv6=%pI6c daddrv6=%pI6c skbaddr=%px",
+> +		  __entry->sport, __entry->dport, __entry->saddr, __entry->daddr,
+> +		  __entry->saddr_v6, __entry->daddr_v6, __entry->skbaddr)
+> +);
+> +
+>  #endif /* _TRACE_IP_H */
+>  
+>  /* This part must be outside protection */
+> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+> index 6b04a88466b2..dcf94059112e 100644
+> --- a/net/ipv4/ip_output.c
+> +++ b/net/ipv4/ip_output.c
+> @@ -82,6 +82,7 @@
+>  #include <linux/netfilter_bridge.h>
+>  #include <linux/netlink.h>
+>  #include <linux/tcp.h>
+> +#include <trace/events/ip.h>
+>  
+>  static int
+>  ip_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
+> @@ -536,7 +537,14 @@ EXPORT_SYMBOL(__ip_queue_xmit);
+>  
+>  int ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl)
+>  {
+> -	return __ip_queue_xmit(sk, skb, fl, inet_sk(sk)->tos);
+> +	int ret;
+> +
+> +	ret = __ip_queue_xmit(sk, skb, fl, inet_sk(sk)->tos);
+> +	if (!ret)
+> +		trace_ip_queue_xmit(sk, skb);
+> +
+> +	return ret;
+> +
+>  }
+>  EXPORT_SYMBOL(ip_queue_xmit);
+>  
+> 
 
- (1) that the ACKs for DATA packets first+0...first+254 in the Rx window
-     are in bit 0 of the octets in the array, ie. acks[0...254], pretty
-     much as now; and
+While it is useful to have stuff like this,
+ddding so many trace points has a certain cost.
 
- (2) that if the ACK count is >=3D256, the first reserved byte after the A=
-CK
-     table is annexed to the ACK table as acks[255] and contains the ACK
-     for packet first+255 in bit 0; and
+I fear that you have not determined this cost
+on workloads where we enter these functions with cold caches.
 
- (3) that if the ACK count is >256, horizontal striping be employed such
-     that the ACK for packet first+256 in the window is then in bit 1 of
-     acks[0], first+257 is in bit 1 of acks[1], up to first+511 being in
-     bit 1 of the borrowed reserved byte (ie. acks[255]).
+For instance, before this patch, compiler gives us :
 
-     first+512 is then in bit 2 of acks[0], going all the way up to
-     first+2048 being in bit 7 of acks[255].
+2e10 <ip_queue_xmit>:
+    2e10:	e8 00 00 00 00       	callq  2e15 <ip_queue_xmit+0x5> (__fentry__-0x4)
+    2e15:	0f b6 8f 1c 03 00 00 	movzbl 0x31c(%rdi),%ecx
+    2e1c:	e9 ef fb ff ff       	jmpq   2a10 <__ip_queue_xmit>
 
-If extended SACK is employed in an ACK packet, it should have EXTENDED-SAC=
-K
-(0x08) set in the RxRPC packet header.
 
-Alter rxrpc_input_ack() to sanity check the ACK count.
+After patch, we see the compiler had to save/restore registers, and no longer
+jumps to __ip_queue_xmit. Code is bigger, even when tracepoint is not enabled.
 
-Alter rxrpc_input_ack() to limit the number of bytes it extracts from the
-packet for the ack array to 256.
-
-Alter rxrpc_input_soft_acks() to handle an extended SACK table.
-
-Signed-off-by: David Howells <dhowells@redhat.com>
-Link: https://gerrit.openafs.org/#/c/14693/3 [1]
----
- net/rxrpc/input.c    |   21 ++++++++++++++-------
- net/rxrpc/protocol.h |    7 +++++--
- 2 files changed, 19 insertions(+), 9 deletions(-)
-
-diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index dc201363f2c4..0a7f7462b617 100644
---- a/net/rxrpc/input.c
-+++ b/net/rxrpc/input.c
-@@ -767,15 +767,17 @@ static void rxrpc_input_soft_acks(struct rxrpc_call =
-*call, u8 *acks,
- 				  rxrpc_seq_t seq, int nr_acks,
- 				  struct rxrpc_ack_summary *summary)
- {
--	int ix;
--	u8 annotation, anno_type;
-+	int ix, i;
-+	u8 annotation, anno_type, ack;
- =
-
--	for (; nr_acks > 0; nr_acks--, seq++) {
-+	for (i =3D 0; i < nr_acks; i++, seq++) {
- 		ix =3D seq & RXRPC_RXTX_BUFF_MASK;
- 		annotation =3D call->rxtx_annotations[ix];
- 		anno_type =3D annotation & RXRPC_TX_ANNO_MASK;
- 		annotation &=3D ~RXRPC_TX_ANNO_MASK;
--		switch (*acks++) {
-+		ack =3D acks[i % RXRPC_EXTENDED_SACK_SIZE];
-+		ack >>=3D i / RXRPC_EXTENDED_SACK_SIZE;
-+		switch (ack) {
- 		case RXRPC_ACK_TYPE_ACK:
- 			summary->nr_acks++;
- 			if (anno_type =3D=3D RXRPC_TX_ANNO_ACK)
-@@ -846,7 +848,7 @@ static void rxrpc_input_ack(struct rxrpc_call *call, s=
-truct sk_buff *skb)
- 	union {
- 		struct rxrpc_ackpacket ack;
- 		struct rxrpc_ackinfo info;
--		u8 acks[RXRPC_MAXACKS];
-+		u8 acks[RXRPC_EXTENDED_SACK_SIZE];
- 	} buf;
- 	rxrpc_serial_t ack_serial, acked_serial;
- 	rxrpc_seq_t first_soft_ack, hard_ack, prev_pkt;
-@@ -874,6 +876,10 @@ static void rxrpc_input_ack(struct rxrpc_call *call, =
-struct sk_buff *skb)
- 			   first_soft_ack, prev_pkt,
- 			   summary.ack_reason, nr_acks);
- =
-
-+	if ((nr_acks > RXRPC_MAXACKS && !(sp->hdr.flags & RXRPC_EXTENDED_SACK)) =
-||
-+	    (nr_acks > RXRPC_MAXACKS_EXTENDED))
-+		return rxrpc_proto_abort("AKC", call, 0);
-+	=
-
- 	switch (buf.ack.reason) {
- 	case RXRPC_ACK_PING_RESPONSE:
- 		rxrpc_input_ping_response(call, skb->tstamp, acked_serial,
-@@ -912,7 +918,7 @@ static void rxrpc_input_ack(struct rxrpc_call *call, s=
-truct sk_buff *skb)
- 	}
- =
-
- 	buf.info.rxMTU =3D 0;
--	ioffset =3D offset + nr_acks + 3;
-+	ioffset =3D offset + min(nr_acks, RXRPC_MAXACKS) + 3;
- 	if (skb->len >=3D ioffset + sizeof(buf.info) &&
- 	    skb_copy_bits(skb, ioffset, &buf.info, sizeof(buf.info)) < 0)
- 		return rxrpc_proto_abort("XAI", call, 0);
-@@ -969,7 +975,8 @@ static void rxrpc_input_ack(struct rxrpc_call *call, s=
-truct sk_buff *skb)
- 	}
- =
-
- 	if (nr_acks > 0) {
--		if (skb_copy_bits(skb, offset, buf.acks, nr_acks) < 0) {
-+		if (skb_copy_bits(skb, offset, buf.acks,
-+				  min_t(unsigned int, nr_acks, sizeof(buf.acks))) < 0) {
- 			rxrpc_proto_abort("XSA", call, 0);
- 			goto out;
- 		}
-diff --git a/net/rxrpc/protocol.h b/net/rxrpc/protocol.h
-index 49bb972539aa..287986012cd9 100644
---- a/net/rxrpc/protocol.h
-+++ b/net/rxrpc/protocol.h
-@@ -51,7 +51,8 @@ struct rxrpc_wire_header {
- #define RXRPC_CLIENT_INITIATED	0x01		/* signifies a packet generated by a=
- client */
- #define RXRPC_REQUEST_ACK	0x02		/* request an unconditional ACK of this p=
-acket */
- #define RXRPC_LAST_PACKET	0x04		/* the last packet from this side for thi=
-s call */
--#define RXRPC_MORE_PACKETS	0x08		/* more packets to come */
-+#define RXRPC_MORE_PACKETS	0x08		/* [DATA] More packets to come */
-+#define RXRPC_EXTENDED_SACK	0x08		/* [ACK] Extended SACK table */
- #define RXRPC_JUMBO_PACKET	0x20		/* [DATA] this is a jumbo packet */
- #define RXRPC_SLOW_START_OK	0x20		/* [ACK] slow start supported */
- =
-
-@@ -124,7 +125,9 @@ struct rxrpc_ackpacket {
- #define RXRPC_ACK__INVALID		10	/* Representation of invalid ACK reason */
- =
-
- 	uint8_t		nAcks;		/* number of ACKs */
--#define RXRPC_MAXACKS	255
-+#define RXRPC_MAXACKS	255		/* Normal maximum number of ACKs */
-+#define RXRPC_EXTENDED_SACK_SIZE 256	/* Size of the extended SACK table *=
-/
-+#define RXRPC_MAXACKS_EXTENDED	2048	/* Maximum number of ACKs in extended=
- SACK table */
- =
-
- 	uint8_t		acks[0];	/* list of ACK/NAKs */
- #define RXRPC_ACK_TYPE_NACK		0
+    2e10:	e8 00 00 00 00       	callq  2e15 <ip_queue_xmit+0x5>
+			2e11: R_X86_64_PLT32	__fentry__-0x4
+    2e15:	41 55                	push   %r13
+    2e17:	49 89 f5             	mov    %rsi,%r13
+    2e1a:	41 54                	push   %r12
+    2e1c:	55                   	push   %rbp
+    2e1d:	0f b6 8f 1c 03 00 00 	movzbl 0x31c(%rdi),%ecx
+    2e24:	48 89 fd             	mov    %rdi,%rbp
+    2e27:	e8 00 00 00 00       	callq  2e2c <ip_queue_xmit+0x1c>
+			2e28: R_X86_64_PLT32	__ip_queue_xmit-0x4
+    2e2c:	41 89 c4             	mov    %eax,%r12d
+    2e2f:	85 c0                	test   %eax,%eax
+    2e31:	74 09                	je     2e3c <ip_queue_xmit+0x2c>
+    2e33:	44 89 e0             	mov    %r12d,%eax
+    2e36:	5d                   	pop    %rbp
+    2e37:	41 5c                	pop    %r12
+    2e39:	41 5d                	pop    %r13
+    2e3b:	c3                   	retq   
+    2e3c:	66 90                	xchg   %ax,%ax
+    2e3e:	44 89 e0             	mov    %r12d,%eax
+    2e41:	5d                   	pop    %rbp
+    2e42:	41 5c                	pop    %r12
+    2e44:	41 5d                	pop    %r13
+    2e46:	c3                   	retq  
+---- tracing code --- 
+    2e47:	65 8b 05 00 00 00 00 	mov    %gs:0x0(%rip),%eax        # 2e4e <ip_queue_xmit+0x3e>
+			2e4a: R_X86_64_PC32	cpu_number-0x4
+    2e4e:	89 c0                	mov    %eax,%eax
+    2e50:	48 0f a3 05 00 00 00 	bt     %rax,0x0(%rip)        # 2e58 <ip_queue_xmit+0x48>
+    2e57:	00 
+			2e54: R_X86_64_PC32	__cpu_online_mask-0x4
+    2e58:	73 d9                	jae    2e33 <ip_queue_xmit+0x23>
+    2e5a:	48 8b 05 00 00 00 00 	mov    0x0(%rip),%rax        # 2e61 <ip_queue_xmit+0x51>
+			2e5d: R_X86_64_PC32	__tracepoint_ip_queue_xmit+0x3c
+    2e61:	48 85 c0             	test   %rax,%rax
+    2e64:	74 0f                	je     2e75 <ip_queue_xmit+0x65>
+    2e66:	48 8b 78 08          	mov    0x8(%rax),%rdi
+    2e6a:	4c 89 ea             	mov    %r13,%rdx
+    2e6d:	48 89 ee             	mov    %rbp,%rsi
+    2e70:	e8 00 00 00 00       	callq  2e75 <ip_queue_xmit+0x65>
+			2e71: R_X86_64_PLT32	__SCT__tp_func_ip_queue_xmit-0x4
+    2e75:	44 89 e0             	mov    %r12d,%eax
+    2e78:	5d                   	pop    %rbp
+    2e79:	41 5c                	pop    %r12
+    2e7b:	41 5d                	pop    %r13
+    2e7d:	c3                   	retq   
 
