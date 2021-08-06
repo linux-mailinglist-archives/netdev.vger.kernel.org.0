@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D69D13E2307
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 07:49:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DFA43E230A
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 07:49:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243201AbhHFFtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 01:49:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51966 "EHLO
+        id S243311AbhHFFuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 01:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243079AbhHFFto (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 01:49:44 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F7AC061798;
-        Thu,  5 Aug 2021 22:49:28 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id u21-20020a17090a8915b02901782c36f543so11803408pjn.4;
-        Thu, 05 Aug 2021 22:49:28 -0700 (PDT)
+        with ESMTP id S243079AbhHFFtu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 01:49:50 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B3D8C06179B;
+        Thu,  5 Aug 2021 22:49:34 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id m10-20020a17090a34cab0290176b52c60ddso15449818pjf.4;
+        Thu, 05 Aug 2021 22:49:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zqMZMqZJHFbP2V0kxEUSf4W659vCCPUOGtyXObXbhd4=;
-        b=FEA/jsHnYicr8hEmI9Hd6v+L9GtwBlSEh7zhEwMiFbdVuhL5GvVUXEf26vRYX4jQn7
-         rCJWXVgDmkaj3RStDaHNBVk2ceo49m1MkIWbi/yzsH7BBW7YDZk0jYfpkz5RXcqo/fEo
-         UwV0OqrrQq2ZeQRmuLSABvtv4xOZFYq6sN5mrYdAfCumJGB0dayv8OIC/BwMizokUJko
-         mA//yFub12pd+E1cxoVYx7kVzRhvm+suJqri4e60jLWdQ9pd0EkOeDecZLpV8g+aBkjK
-         Nr75J3P2ggECgTL0Un5yiTJ0GWAYt0a4QKmU0aPcFaYrUpdoRWx0Et+M8dolqy4DvrI1
-         8cIQ==
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=hD8la+uQht470Z79A1A0VyiqMXVtxSlHKEsCD9ytGxY=;
+        b=g8CYSTwEJigiAEwta2YaRM2kHqI7Qsz8dmHhg97XYpevCmoOTzJeHfS9Nw6+7i3lQK
+         pccMDuIt9413IfkhYTDPkzKCfYpTNoXyChdrqb4bWfd0ElBuefTuuND73w+/8JWNGISi
+         7eYW3q7AtuC4fKP/bzxoirIR0EpD+vz4hxujgb/ubjysPLzS5DBVXvScki0bZ/LQKJJA
+         ZpoQ9KWCLf98xLUKZe8PaFuWqlXZLBxix2v+fTtC9y29aBT0gOg12FXLc4qsqMUgU1aB
+         TkhvC4ivxiLIF+XGgEoKZ0gveTuaNj6d/wqSb2TjWMN3Zlz+KOsjR8MmIg8Lh8+w7FH5
+         Rz8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=zqMZMqZJHFbP2V0kxEUSf4W659vCCPUOGtyXObXbhd4=;
-        b=oBIk5+xoiSbTK8zesM3A+N+TWYMWlUuEfQEkt1Jn2vbbe2kaKfcU6ieGtwXO7eqcPN
-         UDH1nByndZhUrSQ+JtZhJBm7Yxfp3mE5aRxY3j450HQB6R1cjlt2oXrA7eT4CwD61jHs
-         MhgBgkuewmHQgxK7WACNEwzXUdQdR3mEJhWi1ZeISqejoDVnLyZuycr3LSUBqurbUoz8
-         v1bkgxkWgTw0CAJ1Ahm2nJhYOMFIzyi7ydxlGjE1Ul0w9FiGFmGU/ij5R3j+FoiNz5GS
-         Lh6DujRJgSsgYy9C2r2/S0u424MwBMGA2l9PwtBXdSOqRWbhexiBsZy8iQZgb/qnsROv
-         /FbA==
-X-Gm-Message-State: AOAM532j57f9ZfOgvncRzlsFUpByfYdqHAsXjy6SWfydZkFBrFqQwxWp
-        tm+kWsJykWUJVvoU9e5K1YQ=
-X-Google-Smtp-Source: ABdhPJyAhj0uidaqzzVLr1t2NkUtFKfKpVBBS+rg0myzv8o9nBjCsMfLgZL8Wt00+07AUc33CFduMQ==
-X-Received: by 2002:a65:670f:: with SMTP id u15mr1282279pgf.205.1628228968377;
-        Thu, 05 Aug 2021 22:49:28 -0700 (PDT)
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=hD8la+uQht470Z79A1A0VyiqMXVtxSlHKEsCD9ytGxY=;
+        b=NUz0HXMqMPbvKjMmsfZYYw7pQrWyGwVKSDNNigcqkOaYZZ80BtKXAoGSEg4AGu1Pww
+         Lhi9o3mdTn5aVU4qXIx4xZnfjaBweT7MeFTx7oD8JU8duDL8EdSuG748foz8Un8VpnY6
+         uxPo8LWU51oecRlivzHE1VwTg6HC5rtZVHmKpFmotWFoabRGTwaB+crqEwjfXAKlnAXS
+         UM+vt94jgNr/9ia1MY5zJA0DBxkKAcxq8UhcHk2aqrWk73BRavx+5u0wJSd8/J2OdmZ/
+         s1Qpd2a+GtLOOApkvWkF5gHTdH1dwzqUh3Hc5zrIhSIcWQpvXzQRtvvjSvr89QpWHmq8
+         CiBg==
+X-Gm-Message-State: AOAM5332BXVw0a2S0Lj6avvxOJg7ilRcq3LfebCkTkQVpM9lFaqwGllP
+        qjS6O8fDziGIunA8wPwugdA=
+X-Google-Smtp-Source: ABdhPJxDSrKuont5VakZtWdqOVBFXK3oiVuU0xp4fJdTlKlcnsB1vTfgxwiv36/MFxr83F+lk6FybA==
+X-Received: by 2002:a17:90a:a103:: with SMTP id s3mr8522363pjp.121.1628228974137;
+        Thu, 05 Aug 2021 22:49:34 -0700 (PDT)
 Received: from voyager.lan ([45.124.203.15])
-        by smtp.gmail.com with ESMTPSA id z2sm10902205pgz.43.2021.08.05.22.49.22
+        by smtp.gmail.com with ESMTPSA id z2sm10902205pgz.43.2021.08.05.22.49.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Aug 2021 22:49:27 -0700 (PDT)
+        Thu, 05 Aug 2021 22:49:33 -0700 (PDT)
 Sender: "joel.stan@gmail.com" <joel.stan@gmail.com>
 From:   Joel Stanley <joel@jms.id.au>
 To:     "David S . Miller" <davem@davemloft.net>,
@@ -60,38 +60,95 @@ Cc:     Stafford Horne <shorne@gmail.com>,
         Mateusz Holenko <mholenko@antmicro.com>,
         devicetree@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 0/2] net: Add LiteETH network driver
-Date:   Fri,  6 Aug 2021 15:19:02 +0930
-Message-Id: <20210806054904.534315-1-joel@jms.id.au>
+Subject: [PATCH 1/2] dt-bindings: net: Add bindings for LiteETH
+Date:   Fri,  6 Aug 2021 15:19:03 +0930
+Message-Id: <20210806054904.534315-2-joel@jms.id.au>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210806054904.534315-1-joel@jms.id.au>
+References: <20210806054904.534315-1-joel@jms.id.au>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds a driver for the LiteX network device, LiteETH.
+LiteETH is a small footprint and configurable Ethernet core for FPGA
+based system on chips.
 
-It is a simple driver for the FPGA based Ethernet device used in various
-RISC-V, PowerPC's microwatt, OpenRISC's mor1k and other FPGA based
-systems on chip.
-
-Joel Stanley (2):
-  dt-bindings: net: Add bindings for LiteETH
-  net: Add driver for LiteX's LiteETH network interface
-
- .../bindings/net/litex,liteeth.yaml           |  62 ++++
- drivers/net/ethernet/Kconfig                  |   1 +
- drivers/net/ethernet/Makefile                 |   1 +
- drivers/net/ethernet/litex/Kconfig            |  24 ++
- drivers/net/ethernet/litex/Makefile           |   5 +
- drivers/net/ethernet/litex/litex_liteeth.c    | 340 ++++++++++++++++++
- 6 files changed, 433 insertions(+)
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+---
+ .../bindings/net/litex,liteeth.yaml           | 62 +++++++++++++++++++
+ 1 file changed, 62 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/net/litex,liteeth.yaml
- create mode 100644 drivers/net/ethernet/litex/Kconfig
- create mode 100644 drivers/net/ethernet/litex/Makefile
- create mode 100644 drivers/net/ethernet/litex/litex_liteeth.c
 
+diff --git a/Documentation/devicetree/bindings/net/litex,liteeth.yaml b/Documentation/devicetree/bindings/net/litex,liteeth.yaml
+new file mode 100644
+index 000000000000..e2a837dbfdaa
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/litex,liteeth.yaml
+@@ -0,0 +1,62 @@
++# SPDX-License-Identifier: GPL-2.0-or-later OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/litex,liteeth.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: LiteX LiteETH ethernet device
++
++maintainers:
++  - Joel Stanley <joel@jms.id.au>
++
++description: |
++  LiteETH is a small footprint and configurable Ethernet core for FPGA based
++  system on chips.
++
++  The hardware source is Open Source and can be found on at
++  https://github.com/enjoy-digital/liteeth/.
++
++properties:
++  compatible:
++    const: litex,liteeth
++
++  reg:
++    minItems: 3
++    items:
++      - description: MAC registers
++      - description: MDIO registers
++      - description: Packet buffer
++
++  interrupts:
++    maxItems: 1
++
++  rx-fifo-depth:
++    description: Receive FIFO size, in units of 2048 bytes
++
++  tx-fifo-depth:
++    description: Transmit FIFO size, in units of 2048 bytes
++
++  mac-address:
++    description: MAC address to use
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++additionalProperties: false
++
++examples:
++  - |
++    mac: ethernet@8020000 {
++        compatible = "litex,liteeth";
++        reg = <0x8021000 0x100
++               0x8020800 0x100
++               0x8030000 0x2000>;
++        rx-fifo-depth = <2>;
++        tx-fifo-depth = <2>;
++        interrupts = <0x11 0x1>;
++    };
++...
++
++#  vim: set ts=2 sw=2 sts=2 tw=80 et cc=80 ft=yaml :
 -- 
 2.32.0
 
