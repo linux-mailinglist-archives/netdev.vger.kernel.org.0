@@ -2,163 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1ECF3E2C78
-	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 16:26:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56B123E2C7D
+	for <lists+netdev@lfdr.de>; Fri,  6 Aug 2021 16:28:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238810AbhHFOZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 10:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58234 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238715AbhHFOZx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 10:25:53 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933B8C0613CF;
-        Fri,  6 Aug 2021 07:25:37 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id j1so16880829pjv.3;
-        Fri, 06 Aug 2021 07:25:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=q/j3Xb+QXNRlW1sZUNvztC5XQiybXR3PMONgEvC1s+k=;
-        b=Yk9bG9BIee00+d4vyRk0Y5K4ZO5QOEgv5x7gOJ9COavYzXJO+zCZYbE/lvP9UzqTZo
-         XY0IBIYNFYATpT3BuXN39IU35SxRcPQbafqa6KRgOk+7cFzxIK9MWWkCfZ/Tc7rXIoWj
-         euPScV02xmRsuKyMoQjjV1yCNgXfAlj3YOYFvCBVkDNS5ntnRd1Y/qqIq1385OaBUdap
-         ZXx4PTtZVXr0uzfhEiXTbU/I6hqJY3I6zYLjqitBtM9PJ8upOTYto2sWF0nB5be4vPzI
-         IQ/pqUJCVxy6T/SWWe3A9Aok2WHwbABWmMGTmFiiSZ3+8z8BXkQI7KVVuF4KlTVbagnQ
-         F8Qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=q/j3Xb+QXNRlW1sZUNvztC5XQiybXR3PMONgEvC1s+k=;
-        b=bNFn0YM7OqyhDnQr0RC0GWhJ8XUkcF2IpV27Lei+M/wGbq7F0n3im2qKmT6b8OMn5j
-         PS5bOgE2SolPtjEfLqPkNxMinXiEC7K8mif7B/lD6k14Crq7JiX5scMDsQdqI6TmTY4H
-         QPzS3wMzm+3AvMvcP13vQoauvRO8SZ3Ulpfgqzbzz0w2e0NBcS0UQx0FrZF2K8dZ6nUd
-         FsmBhd4PxiC7R3dJgn5FbR3vFhPAlBWakHOrUb+8Yr1RkHp6euxblmlgbBwBNkmve8AD
-         Rz9kyNLytSPCKPZ59V7qy1+0VMZV8bytkF7exDvAjZ/3WFSB0ByMzdEOdhEFTQzE3oS2
-         xd7Q==
-X-Gm-Message-State: AOAM530cGVKLmd/BTW08jmufJvu2WME+ZN1UfMpTRvKPIpTSf/ndSxVf
-        GWCXrM9ZtQifyi4idefgsCc=
-X-Google-Smtp-Source: ABdhPJxcFjX0A5zWaEjKiJb+3hMZHioagJWgs/KwFTj8HB+bbOoIUWO2YijQDuwlATUe7chMY1bfIQ==
-X-Received: by 2002:aa7:9117:0:b029:35c:4791:ff52 with SMTP id 23-20020aa791170000b029035c4791ff52mr10775088pfh.76.1628259937154;
-        Fri, 06 Aug 2021 07:25:37 -0700 (PDT)
-Received: from ty-ThinkPad-X280 ([240b:11:82a2:3000:e2d5:fd62:ea40:4dc4])
-        by smtp.gmail.com with ESMTPSA id f4sm12967400pgi.68.2021.08.06.07.25.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Aug 2021 07:25:36 -0700 (PDT)
-Date:   Fri, 6 Aug 2021 23:25:32 +0900
-From:   Tatsuhiko Yasumatsu <th.yasumatsu@gmail.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH] bpf: Fix integer overflow involving bucket_size
-Message-ID: <20210806142532.GC87387@ty-ThinkPad-X280>
-References: <20210805140515.35630-1-th.yasumatsu@gmail.com>
- <202108050725.384AA3E0@keescook>
+        id S239050AbhHFO2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 10:28:39 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:60806 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238446AbhHFO2g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 10:28:36 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 176ESFNA082549;
+        Fri, 6 Aug 2021 09:28:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1628260095;
+        bh=BilTB8yGmwYUQpauRBnVTlubDNoaX2E2FswH6R2Se1Q=;
+        h=From:To:CC:Subject:Date;
+        b=KtxHbrOQBNvw8E6nJ04+p0zF+7+XPmAe5jge98qRmOUmD6n2NJYiswB+55FpUzIJc
+         qcn8u4Y5anh6cP9UyW6IkaKRWRTgsoXWxUaGQhHbg6mYzACYtnWVgig5A3ptZBYbYL
+         1IR0seu2Zs7dWy1z/6D5Ka/fkM/3narztc5HxMaw=
+Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 176ESFoP119293
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 6 Aug 2021 09:28:15 -0500
+Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Fri, 6 Aug
+ 2021 09:28:15 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Fri, 6 Aug 2021 09:28:15 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 176ESEIp094816;
+        Fri, 6 Aug 2021 09:28:14 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        Ben Hutchings <ben.hutchings@essensium.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        <linux-omap@vger.kernel.org>, Lokesh Vutla <lokeshvutla@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH net-next] net: ethernet: ti: davinci_cpdma: revert "drop frame padding"
+Date:   Fri, 6 Aug 2021 17:28:09 +0300
+Message-ID: <20210806142809.15069-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202108050725.384AA3E0@keescook>
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 05, 2021 at 07:26:49AM -0700, Kees Cook wrote:
-> On Thu, Aug 05, 2021 at 11:05:15PM +0900, Tatsuhiko Yasumatsu wrote:
-> > In __htab_map_lookup_and_delete_batch(), hash buckets are iterated over
-> > to count the number of elements in each bucket (bucket_size).
-> > If bucket_size is large enough, the multiplication to calculate
-> > kvmalloc() size could overflow, resulting in out-of-bounds write
-> > as reported by KASAN.
-> > 
-> > [...]
-> > [  104.986052] BUG: KASAN: vmalloc-out-of-bounds in __htab_map_lookup_and_delete_batch+0x5ce/0xb60
-> > [  104.986489] Write of size 4194224 at addr ffffc9010503be70 by task crash/112
-> > [  104.986889]
-> > [  104.987193] CPU: 0 PID: 112 Comm: crash Not tainted 5.14.0-rc4 #13
-> > [  104.987552] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-> > [  104.988104] Call Trace:
-> > [  104.988410]  dump_stack_lvl+0x34/0x44
-> > [  104.988706]  print_address_description.constprop.0+0x21/0x140
-> > [  104.988991]  ? __htab_map_lookup_and_delete_batch+0x5ce/0xb60
-> > [  104.989327]  ? __htab_map_lookup_and_delete_batch+0x5ce/0xb60
-> > [  104.989622]  kasan_report.cold+0x7f/0x11b
-> > [  104.989881]  ? __htab_map_lookup_and_delete_batch+0x5ce/0xb60
-> > [  104.990239]  kasan_check_range+0x17c/0x1e0
-> > [  104.990467]  memcpy+0x39/0x60
-> > [  104.990670]  __htab_map_lookup_and_delete_batch+0x5ce/0xb60
-> > [  104.990982]  ? __wake_up_common+0x4d/0x230
-> > [  104.991256]  ? htab_of_map_free+0x130/0x130
-> > [  104.991541]  bpf_map_do_batch+0x1fb/0x220
-> > [...]
-> > 
-> > In hashtable, if the elements' keys have the same jhash() value, the
-> > elements will be put into the same bucket. By putting a lot of elements
-> > into a single bucket, the value of bucket_size can be increased to
-> > trigger the integer overflow.
-> > 
-> > Triggering the overflow is possible for both callers with CAP_SYS_ADMIN
-> > and callers without CAP_SYS_ADMIN.
-> > 
-> > It will be trivial for a caller with CAP_SYS_ADMIN to intentionally
-> > reach this overflow by enabling BPF_F_ZERO_SEED. As this flag will set
-> > the random seed passed to jhash() to 0, it will be easy for the caller
-> > to prepare keys which will be hashed into the same value, and thus put
-> > all the elements into the same bucket.
-> > 
-> > If the caller does not have CAP_SYS_ADMIN, BPF_F_ZERO_SEED cannot be
-> > used. However, it will be still technically possible to trigger the
-> > overflow, by guessing the random seed value passed to jhash() (32bit)
-> > and repeating the attempt to trigger the overflow. In this case,
-> > the probability to trigger the overflow will be low and will take
-> > a very long time.
-> > 
-> > Fix the integer overflow by casting 1 operand to u64.
-> > 
-> > Fixes: 057996380a42 ("bpf: Add batch ops to all htab bpf map")
-> > Signed-off-by: Tatsuhiko Yasumatsu <th.yasumatsu@gmail.com>
-> > ---
-> >  kernel/bpf/hashtab.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-> > index 72c58cc516a3..e29283c3b17f 100644
-> > --- a/kernel/bpf/hashtab.c
-> > +++ b/kernel/bpf/hashtab.c
-> > @@ -1565,8 +1565,8 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
-> >  	/* We cannot do copy_from_user or copy_to_user inside
-> >  	 * the rcu_read_lock. Allocate enough space here.
-> >  	 */
-> > -	keys = kvmalloc(key_size * bucket_size, GFP_USER | __GFP_NOWARN);
-> > -	values = kvmalloc(value_size * bucket_size, GFP_USER | __GFP_NOWARN);
-> > +	keys = kvmalloc((u64)key_size * bucket_size, GFP_USER | __GFP_NOWARN);
-> > +	values = kvmalloc((u64)value_size * bucket_size, GFP_USER | __GFP_NOWARN);
-> 
-> Please, no open-coded multiplication[1]. This should use kvmalloc_array()
-> instead.
-> 
-> -Kees
-> 
-> [1] https://www.kernel.org/doc/html/latest/process/deprecated.html#open-coded-arithmetic-in-allocator-arguments
-> 
-> >  	if (!keys || !values) {
-> >  		ret = -ENOMEM;
-> >  		goto after_loop;
-> > -- 
-> > 2.25.1
-> > 
-> 
-> -- 
-> Kees Cook
-Thank you for pointing out.
-I'll modify the patch.
+This reverts commit 9ffc513f95ee ("net: ethernet: ti: davinci_cpdma: drop
+frame padding") which has depndency from not yet merged patch [1] and so
+breaks cpsw_new driver.
 
-Regards,
-Tatsuhiko Yasumatsu
+[1] https://patchwork.kernel.org/project/netdevbpf/patch/20210805145511.12016-1-grygorii.strashko@ti.com/
+Fixes: 9ffc513f95ee ("net: ethernet: ti: davinci_cpdma: drop frame padding")
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+---
+ drivers/net/ethernet/ti/cpsw_priv.c     | 1 +
+ drivers/net/ethernet/ti/davinci_cpdma.c | 5 +++++
+ drivers/net/ethernet/ti/davinci_cpdma.h | 1 +
+ drivers/net/ethernet/ti/davinci_emac.c  | 1 +
+ 4 files changed, 8 insertions(+)
+
+diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
+index d97a72c9ec53..ecc2a6b7e28f 100644
+--- a/drivers/net/ethernet/ti/cpsw_priv.c
++++ b/drivers/net/ethernet/ti/cpsw_priv.c
+@@ -518,6 +518,7 @@ int cpsw_init_common(struct cpsw_common *cpsw, void __iomem *ss_regs,
+ 
+ 	dma_params.num_chan		= data->channels;
+ 	dma_params.has_soft_reset	= true;
++	dma_params.min_packet_size	= CPSW_MIN_PACKET_SIZE;
+ 	dma_params.desc_mem_size	= data->bd_ram_size;
+ 	dma_params.desc_align		= 16;
+ 	dma_params.has_ext_regs		= true;
+diff --git a/drivers/net/ethernet/ti/davinci_cpdma.c b/drivers/net/ethernet/ti/davinci_cpdma.c
+index 753d94c9915a..d2eab5cd1e0c 100644
+--- a/drivers/net/ethernet/ti/davinci_cpdma.c
++++ b/drivers/net/ethernet/ti/davinci_cpdma.c
+@@ -1034,6 +1034,11 @@ static int cpdma_chan_submit_si(struct submit_info *si)
+ 		return -ENOMEM;
+ 	}
+ 
++	if (len < ctlr->params.min_packet_size) {
++		len = ctlr->params.min_packet_size;
++		chan->stats.runt_transmit_buff++;
++	}
++
+ 	mode = CPDMA_DESC_OWNER | CPDMA_DESC_SOP | CPDMA_DESC_EOP;
+ 	cpdma_desc_to_port(chan, mode, si->directed);
+ 
+diff --git a/drivers/net/ethernet/ti/davinci_cpdma.h b/drivers/net/ethernet/ti/davinci_cpdma.h
+index 62151f13c7ce..d3cfe234d16a 100644
+--- a/drivers/net/ethernet/ti/davinci_cpdma.h
++++ b/drivers/net/ethernet/ti/davinci_cpdma.h
+@@ -26,6 +26,7 @@ struct cpdma_params {
+ 	void __iomem		*rxthresh, *rxfree;
+ 	int			num_chan;
+ 	bool			has_soft_reset;
++	int			min_packet_size;
+ 	dma_addr_t		desc_mem_phys;
+ 	dma_addr_t		desc_hw_addr;
+ 	int			desc_mem_size;
+diff --git a/drivers/net/ethernet/ti/davinci_emac.c b/drivers/net/ethernet/ti/davinci_emac.c
+index cd2ef0282f38..b1c5cbe7478b 100644
+--- a/drivers/net/ethernet/ti/davinci_emac.c
++++ b/drivers/net/ethernet/ti/davinci_emac.c
+@@ -1850,6 +1850,7 @@ static int davinci_emac_probe(struct platform_device *pdev)
+ 	dma_params.txcp			= priv->emac_base + 0x640;
+ 	dma_params.rxcp			= priv->emac_base + 0x660;
+ 	dma_params.num_chan		= EMAC_MAX_TXRX_CHANNELS;
++	dma_params.min_packet_size	= EMAC_DEF_MIN_ETHPKTSIZE;
+ 	dma_params.desc_hw_addr		= hw_ram_addr;
+ 	dma_params.desc_mem_size	= pdata->ctrl_ram_size;
+ 	dma_params.desc_align		= 16;
+-- 
+2.17.1
+
