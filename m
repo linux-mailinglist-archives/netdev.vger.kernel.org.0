@@ -2,70 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 975C23E3662
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 19:00:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D505B3E3666
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 19:01:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbhHGRAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Aug 2021 13:00:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21450 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229614AbhHGQ6d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 12:58:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1628355495;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=+Wk6KKmfIbCVhzm5mHVZmh4o4+U4BbsQ7OXtpgEsF1k=;
-        b=NgTBAFJa7TCpzuk/FcM6QWqphGvd7ual9Z5I5ikh6bwF/xEFWmFomca7WVdZdG0Z8unxsy
-        s6TKdoailbMsW5S4YaLV5QiKlqbzPp0/ZKcJ6fONj8moUWoJuMhzs0fjyUBf79ThXC2n9e
-        IK5rr+9RcD1xu1XskND4aL/bUrn/8S4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-173-SvDRvHNtMcewAJkSc0kAhw-1; Sat, 07 Aug 2021 12:58:14 -0400
-X-MC-Unique: SvDRvHNtMcewAJkSc0kAhw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 19979760C0;
-        Sat,  7 Aug 2021 16:58:13 +0000 (UTC)
-Received: from renaissance-vector.redhat.com (unknown [10.39.192.34])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 167735B826;
-        Sat,  7 Aug 2021 16:58:09 +0000 (UTC)
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com, haliu@redhat.com
-Subject: [PATCH iproute2] lib: bpf_glue: remove useless assignment
-Date:   Sat,  7 Aug 2021 18:58:02 +0200
-Message-Id: <25ea92f064e11ba30ae696b176df9d6b0aaaa66a.1628352013.git.aclaudi@redhat.com>
+        id S229918AbhHGRBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Aug 2021 13:01:11 -0400
+Received: from smtprelay0173.hostedemail.com ([216.40.44.173]:37650 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229622AbhHGRA4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 13:00:56 -0400
+Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com [10.5.19.251])
+        by smtpgrave07.hostedemail.com (Postfix) with ESMTP id 0E8E4180D0F8A;
+        Sat,  7 Aug 2021 17:00:17 +0000 (UTC)
+Received: from omf05.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 377F219478;
+        Sat,  7 Aug 2021 16:58:16 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf05.hostedemail.com (Postfix) with ESMTPA id 494B0B2794;
+        Sat,  7 Aug 2021 16:58:15 +0000 (UTC)
+Message-ID: <7afa073ece002f84f4f2c28b3ac3032ded94bf43.camel@perches.com>
+Subject: Re: [V2][PATCH] atm: horizon: Fix spelling mistakes in TX comment
+From:   Joe Perches <joe@perches.com>
+To:     Jun Miao <jun.miao@windriver.com>, 3chas3@gmail.com
+Cc:     linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Sat, 07 Aug 2021 09:58:14 -0700
+In-Reply-To: <20210807153830.1293760-1-jun.miao@windriver.com>
+References: <20210807153830.1293760-1-jun.miao@windriver.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Spam-Status: No, score=0.11
+X-Stat-Signature: bsrdfkk7u7f9wndwikex4j4but6fbxem
+X-Rspamd-Server: rspamout01
+X-Rspamd-Queue-Id: 494B0B2794
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX18CJGDPYaoC+RPaCCYosPaoxTfRnMIQ484=
+X-HE-Tag: 1628355495-985621
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The value of s used inside the cycle is the result of strstr(), so this
-assignment is useless.
+On Sat, 2021-08-07 at 23:38 +0800, Jun Miao wrote:
+> It's "must not", not "musn't", meaning "shall not".
+> Let's fix that.
+> 
+> Suggested-by: Joe Perches <joe@perches.com>
+> Signed-off-by: Jun Miao <jun.miao@windriver.com>
+> ---
+>  drivers/atm/horizon.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/atm/horizon.c b/drivers/atm/horizon.c
+> index 4f2951cbe69c..9ee494bc5c51 100644
+> --- a/drivers/atm/horizon.c
+> +++ b/drivers/atm/horizon.c
+> @@ -2167,10 +2167,10 @@ static int hrz_open (struct atm_vcc *atm_vcc)
+>    
+> 
+>    // Part of the job is done by atm_pcr_goal which gives us a PCR
+>    // specification which says: EITHER grab the maximum available PCR
+> -  // (and perhaps a lower bound which we musn't pass), OR grab this
+> +  // (and perhaps a lower bound which we mustn't pass), OR grab this
 
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
----
- lib/bpf_glue.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I meant to suggest you change the patch to use "must not" not
+the commit message.
 
-diff --git a/lib/bpf_glue.c b/lib/bpf_glue.c
-index eaa9504f..70d00184 100644
---- a/lib/bpf_glue.c
-+++ b/lib/bpf_glue.c
-@@ -63,7 +63,7 @@ const char *get_libbpf_version(void)
- 	if (fp == NULL)
- 		goto out;
- 
--	while ((s = fgets(buf, sizeof(buf), fp)) != NULL) {
-+	while (fgets(buf, sizeof(buf), fp) != NULL) {
- 		if ((s = strstr(buf, "libbpf.so.")) != NULL) {
- 			strncpy(_libbpf_version, s+10, sizeof(_libbpf_version)-1);
- 			strtok(_libbpf_version, "\n");
--- 
-2.31.1
+>    // amount, rounding down if you have to (and perhaps a lower bound
+> -  // which we musn't pass) OR grab this amount, rounding up if you
+> -  // have to (and perhaps an upper bound which we musn't pass). If any
+> +  // which we mustn't pass) OR grab this amount, rounding up if you
+> +  // have to (and perhaps an upper bound which we mustn't pass). If any
+>    // bounds ARE passed we fail. Note that rounding is only rounding to
+>    // match device limitations, we do not round down to satisfy
+>    // bandwidth availability even if this would not violate any given
+
 
