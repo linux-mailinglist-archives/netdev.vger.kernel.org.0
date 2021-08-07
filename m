@@ -2,113 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E76C3E33A9
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 07:43:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 233B43E33B9
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 08:19:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231149AbhHGFoK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Aug 2021 01:44:10 -0400
-Received: from mx21.baidu.com ([220.181.3.85]:59046 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230377AbhHGFoK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 7 Aug 2021 01:44:10 -0400
-Received: from BC-Mail-Ex22.internal.baidu.com (unknown [172.31.51.16])
-        by Forcepoint Email with ESMTPS id 163192238BD1E574BF5B;
-        Sat,  7 Aug 2021 13:43:49 +0800 (CST)
-Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
- BC-Mail-Ex22.internal.baidu.com (172.31.51.16) with Microsoft SMTP Server
+        id S231317AbhHGGTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Aug 2021 02:19:32 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:13242 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229495AbhHGGTa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 02:19:30 -0400
+Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GhXH86wjQz1CSMK;
+        Sat,  7 Aug 2021 14:19:00 +0800 (CST)
+Received: from [10.67.103.235] (10.67.103.235) by
+ dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2242.12; Sat, 7 Aug 2021 13:43:48 +0800
-Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.62.11) by
- BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.14; Sat, 7 Aug 2021 13:43:47 +0800
-From:   Cai Huoqing <caihuoqing@baidu.com>
-To:     <j.vosburgh@gmail.com>, <vfalico@gmail.com>, <andy@greyhouse.net>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, Cai Huoqing <caihuoqing@baidu.com>
-Subject: [PATCH] net: bonding: bond_alb: Remove the dependency on ipx network layer
-Date:   Sat, 7 Aug 2021 13:43:36 +0800
-Message-ID: <20210807054336.1684-1-caihuoqing@baidu.com>
-X-Mailer: git-send-email 2.32.0.windows.2
+ 15.1.2176.2; Sat, 7 Aug 2021 14:19:10 +0800
+Subject: Re: [PATCH V7 4/9] PCI: Enable 10-Bit Tag support for PCIe Endpoint
+ devices
+To:     Bjorn Helgaas <helgaas@kernel.org>
+References: <20210805195407.GA1763784@bjorn-Precision-5520>
+CC:     <hch@infradead.org>, <kw@linux.com>, <logang@deltatee.com>,
+        <leon@kernel.org>, <linux-pci@vger.kernel.org>,
+        <rajur@chelsio.com>, <hverkuil-cisco@xs4all.nl>,
+        <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
+From:   Dongdong Liu <liudongdong3@huawei.com>
+Message-ID: <c7fdb77d-8b93-f3ef-05d2-54daf67305e2@huawei.com>
+Date:   Sat, 7 Aug 2021 14:19:10 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [172.31.62.11]
-X-ClientProxiedBy: BC-Mail-Ex17.internal.baidu.com (172.31.51.11) To
- BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42)
+In-Reply-To: <20210805195407.GA1763784@bjorn-Precision-5520>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.103.235]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggeme758-chm.china.huawei.com (10.3.19.104)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit <47595e32869f> ("<MAINTAINERS: Mark some staging directories>")
-indicated the ipx network layer as obsolete in Jan 2018,
-updated in the MAINTAINERS file
 
-now, after being exposed for 3 years to refactoring,
-so to delete the ipx net layer related code for good.
 
-Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
----
- drivers/net/bonding/bond_alb.c | 32 --------------------------------
- 1 file changed, 32 deletions(-)
+On 2021/8/6 3:54, Bjorn Helgaas wrote:
+> On Thu, Aug 05, 2021 at 03:47:31PM +0800, Dongdong Liu wrote:
+>> Hi Bjorn
+>>
+>> Many thanks for your review.
+>> On 2021/8/5 7:17, Bjorn Helgaas wrote:
+>>> On Wed, Aug 04, 2021 at 09:47:03PM +0800, Dongdong Liu wrote:
+>>>> 10-Bit Tag capability, introduced in PCIe-4.0 increases the total Tag
+>>>> field size from 8 bits to 10 bits.
+>>>>
+>>>> PCIe spec 5.0 r1.0 section 2.2.6.2 "Considerations for Implementing
+>>>> 10-Bit Tag Capabilities" Implementation Note.
+>>>> For platforms where the RC supports 10-Bit Tag Completer capability,
+>>>> it is highly recommended for platform firmware or operating software
+>>>> that configures PCIe hierarchies to Set the 10-Bit Tag Requester Enable
+>>>> bit automatically in Endpoints with 10-Bit Tag Requester capability. This
+>>>> enables the important class of 10-Bit Tag capable adapters that send
+>>>> Memory Read Requests only to host memory.
+>>>
+>>> Quoted material should be set off with a blank line before it and
+>>> indented by two spaces so it's clear exactly what comes from the spec
+>>> and what you've added.  For example, see
+>>> https://git.kernel.org/linus/ec411e02b7a2
+>> Good point, will fix.
+>>>
+>>> We need to say why we assume it's safe to enable 10-bit tags for all
+>>> devices below a Root Port that supports them.  I think this has to do
+>>> with switches being required to forward 10-bit tags correctly even if
+>>> they were designed before 10-bit tags were added to the spec.
+>>
+>> PCIe spec 5.0 r1.0 section 2.2.6.2 "Considerations for Implementing
+>> 10-Bit Tag Capabilities" Implementation Note:
+>>
+>>   Switches that lack 10-Bit Tag Completer capability are still able to
+>>   forward NPRs and Completions carrying 10-Bit Tags correctly, since the
+>>   two new Tag bits are in TLP Header bits that were formerly Reserved,
+>>   and Switches are required to forward Reserved TLP Header bits without
+>>   modification. However, if such a Switch detects an error with an NPR
+>>   carrying a 10-Bit Tag, and that Switch handles the error by acting as
+>>   the Completer for the NPR, the resulting Completion will have an
+>>   invalid 10-Bit Tag. Thus, it is strongly recommended that Switches
+>>   between any components using 10-Bit Tags support 10-Bit Tag Completer
+>>   capability.  Note that Switches supporting 16.0 GT/s data rates or
+>>   greater must support 10-Bit Tag Completer capability.
+>>
+>> This patch also consider to enable 10-Bit Tag for EP device need RP
+>> and Switch device support 10-Bit Tag Completer capability.
+>>>
+>>> And it should call out any cases where it is *not* safe, e.g., if P2P
+>>> traffic is an issue.
+>> Yes, indeed.
+>>>
+>>> If there are cases where we don't want to enable 10-bit tags, whether
+>>> it's to enable P2P traffic or merely to work around device defects,
+>>> that ability needs to be here from the beginning.  If somebody needs
+>>> to bisect with 10-bit tags disabled, we don't want a bisection hole
+>>> between this commit and the commit that adds the control.
+>> We provide sysfs file to disable 10-bit tag for P2P traffic when needed.
+>> The details see PATCH 7/8/9.
+>
+> A mechanism for avoiding problems needs to be present from the very
+> beginning so there's no bisection hole.  It should not be added by a
+> future patch.
+Yes, will adjust PATCH 7/8/9 before PATCH 4。
+>
+> The sysfs file is a start, but if we run into an issue, it could mean
+> that we can't boot and run long enough to use sysfs to disable 10-bit
+> tags.  So I think we might need a kernel parameter that disables it
+> (and possibly other things like MPS optimization).
 
-diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
-index 22e5632089ac..7d3752cbf761 100644
---- a/drivers/net/bonding/bond_alb.c
-+++ b/drivers/net/bonding/bond_alb.c
-@@ -17,7 +17,6 @@
- #include <linux/if_bonding.h>
- #include <linux/if_vlan.h>
- #include <linux/in.h>
--#include <net/ipx.h>
- #include <net/arp.h>
- #include <net/ipv6.h>
- #include <asm/byteorder.h>
-@@ -1351,8 +1350,6 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
- 	if (!is_multicast_ether_addr(eth_data->h_dest)) {
- 		switch (skb->protocol) {
- 		case htons(ETH_P_IP):
--		case htons(ETH_P_IPX):
--		    /* In case of IPX, it will falback to L2 hash */
- 		case htons(ETH_P_IPV6):
- 			hash_index = bond_xmit_hash(bond, skb);
- 			if (bond->params.tlb_dynamic_lb) {
-@@ -1454,35 +1451,6 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
- 		hash_size = sizeof(ip6hdr->daddr);
- 		break;
- 	}
--	case ETH_P_IPX: {
--		const struct ipxhdr *ipxhdr;
--
--		if (pskb_network_may_pull(skb, sizeof(*ipxhdr))) {
--			do_tx_balance = false;
--			break;
--		}
--		ipxhdr = (struct ipxhdr *)skb_network_header(skb);
--
--		if (ipxhdr->ipx_checksum != IPX_NO_CHECKSUM) {
--			/* something is wrong with this packet */
--			do_tx_balance = false;
--			break;
--		}
--
--		if (ipxhdr->ipx_type != IPX_TYPE_NCP) {
--			/* The only protocol worth balancing in
--			 * this family since it has an "ARP" like
--			 * mechanism
--			 */
--			do_tx_balance = false;
--			break;
--		}
--
--		eth_data = eth_hdr(skb);
--		hash_start = (char *)eth_data->h_dest;
--		hash_size = ETH_ALEN;
--		break;
--	}
- 	case ETH_P_ARP:
- 		do_tx_balance = false;
- 		if (bond_info->rlb_enabled)
--- 
-2.25.1
+Yes, We can add a pcie_tag_p2p kernel parameter just to use the 8-bit
+tags, not to enable 10-bit tags for all PCIe devices.
+
+Thanks,
+Dongdong
 
