@@ -2,67 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A66343E3581
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 15:22:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3627C3E3586
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 15:28:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232287AbhHGNWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Aug 2021 09:22:15 -0400
-Received: from smtprelay0066.hostedemail.com ([216.40.44.66]:37604 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S232181AbhHGNWO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 09:22:14 -0400
-Received: from omf02.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id DA0A91802203A;
-        Sat,  7 Aug 2021 13:21:55 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf02.hostedemail.com (Postfix) with ESMTPA id F100C1D42F5;
-        Sat,  7 Aug 2021 13:21:54 +0000 (UTC)
-Message-ID: <0b52c87bb939fe45c1cf07fe9c3409e927138046.camel@perches.com>
-Subject: Re: [PATCH] atm: horizon: Fix spelling mistakes in TX comment
-From:   Joe Perches <joe@perches.com>
-To:     Jun Miao <jun.miao@windriver.com>, 3chas3@gmail.com
-Cc:     linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        id S232303AbhHGN3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Aug 2021 09:29:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58206 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232286AbhHGN3I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 7 Aug 2021 09:29:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1476D610FB;
+        Sat,  7 Aug 2021 13:28:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628342931;
+        bh=UC7Y+bKIfxbXggliQGmWxQhW3dM7xZsPS/HEcNc9Esc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mf/j8G4vtHQCytTURcwIew+p60imE1a1QcqnFdQLPod5OPz5c+zRH5wwYOuwdPD1v
+         hsIJS2xKSvucpvY0Kjdl3H3cks7keBtsOyezoi6WC+gIJakWHpj+64fhbeXbxhvVRO
+         u1mE3Gf8mg6omGhctlP2rWjjvPbh7RBbe8ikSRgkgQ0bm1Ox2NYVrzQQearPZuqo5a
+         7UstWAKFNkcdirMIeC39IFCxEsVidr3sy2+VrX5h/DyLRx7TZ2za36Uxvt6FTapI/q
+         gF/CSFg8E2iUhLKCcpdJJ2jz2741IMpWvGN0Czu1Lk1M14t7CrgeBiA6ZHHw3VH0MP
+         g+Dd3+61r1Qlw==
+Received: by pali.im (Postfix)
+        id B4FE3A52; Sat,  7 Aug 2021 15:28:48 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Paul Mackerras <paulus@samba.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Guillaume Nault <g.nault@alphalink.fr>
+Cc:     linux-ppp@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Date:   Sat, 07 Aug 2021 06:21:53 -0700
-In-Reply-To: <20210807124903.1237510-1-jun.miao@windriver.com>
-References: <20210807124903.1237510-1-jun.miao@windriver.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.0-1 
+Subject: [PATCH] ppp: Fix generating ifname when empty IFLA_IFNAME is specified
+Date:   Sat,  7 Aug 2021 15:27:03 +0200
+Message-Id: <20210807132703.26303-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Server: rspamout05
-X-Rspamd-Queue-Id: F100C1D42F5
-X-Spam-Status: No, score=0.11
-X-Stat-Signature: xa3pkcrguuujaerdidd13utzegda99m8
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1947+D92hpECD2REcbo0UEsQCSWWwcspLk=
-X-HE-Tag: 1628342514-354626
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2021-08-07 at 20:49 +0800, Jun Miao wrote:
-> It's "mustn't", not "musn't", meaning "shall not".
-> Let's fix that.
+IFLA_IFNAME is nul-term string which means that IFLA_IFNAME buffer can be
+larger than length of string which contains.
 
-Perhaps more useful to change to 'must not' for the
-non-native speaker.
+Function __rtnl_newlink() generates new own ifname if either IFLA_IFNAME
+was not specified at all or userspace passed empty nul-term string.
+
+It is expected that if userspace does not specify ifname for new ppp netdev
+then kernel generates one in format "ppp<id>" where id matches to the ppp
+unit id which can be later obtained by PPPIOCGUNIT ioctl.
+
+And it works in this way if IFLA_IFNAME is not specified at all. But it
+does not work when IFLA_IFNAME is specified with empty string.
+
+So fix this logic also for empty IFLA_IFNAME in ppp_nl_newlink() function
+and correctly generates ifname based on ppp unit identifier if userspace
+did not provided preferred ifname.
+
+Without this patch when IFLA_IFNAME was specified with empty string then
+kernel created a new ppp interface in format "ppp<id>" but id did not
+match ppp unit id returned by PPPIOCGUNIT ioctl. In this case id was some
+number generated by __rtnl_newlink() function.
+
+Signed-off-by: Pali Roh√°r <pali@kernel.org>
+Fixes: bb8082f69138 ("ppp: build ifname using unit identifier for rtnl based devices")
+---
+ drivers/net/ppp/ppp_generic.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
+index d445ecb1d0c7..1c6ba5a5e081 100644
+--- a/drivers/net/ppp/ppp_generic.c
++++ b/drivers/net/ppp/ppp_generic.c
+@@ -1306,7 +1306,7 @@ static int ppp_nl_newlink(struct net *src_net, struct net_device *dev,
+ 	 * the PPP unit identifer as suffix (i.e. ppp<unit_id>). This allows
+ 	 * userspace to infer the device name using to the PPPIOCGUNIT ioctl.
+ 	 */
+-	if (!tb[IFLA_IFNAME])
++	if (!tb[IFLA_IFNAME] || !nla_len(tb[IFLA_IFNAME]) || !*(char *)nla_data(tb[IFLA_IFNAME]))
+ 		conf.ifname_is_set = false;
  
-> diff --git a/drivers/atm/horizon.c b/drivers/atm/horizon.c
-[]
-> @@ -2167,10 +2167,10 @@ static int hrz_open (struct atm_vcc *atm_vcc)
-> †††
-> 
-> †††// Part of the job is done by atm_pcr_goal which gives us a PCR
-> †††// specification which says: EITHER grab the maximum available PCR
-> -  // (and perhaps a lower bound which we musn't pass), OR grab this
-> +  // (and perhaps a lower bound which we mustn't pass), OR grab this
-> †††// amount, rounding down if you have to (and perhaps a lower bound
-> -  // which we musn't pass) OR grab this amount, rounding up if you
-> -  // have to (and perhaps an upper bound which we musn't pass). If any
-> +  // which we mustn't pass) OR grab this amount, rounding up if you
-> +  // have to (and perhaps an upper bound which we mustn't pass). If any
-> †††// bounds ARE passed we fail. Note that rounding is only rounding to
-> †††// match device limitations, we do not round down to satisfy
-> †††// bandwidth availability even if this would not violate any given
-
+ 	err = ppp_dev_configure(src_net, dev, &conf);
+-- 
+2.20.1
 
