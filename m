@@ -2,56 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 848333E35DE
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 16:23:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02F783E35EA
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 16:42:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232462AbhHGOXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Aug 2021 10:23:44 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38162 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232443AbhHGOXn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 7 Aug 2021 10:23:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=W+yNPO8ADdU8CJbeVWbrtRNwy3j7TqGqTagO91d37wQ=; b=cwHqDgSblUEbdM5Z+/x1u4cOm6
-        /mGEUKr42O49n+jAZUJODNEXU+CQ2j1B3DHHkVNrDhL/3OCMU5aIAt1KAHf73bBuZuPmzWm3gHRlB
-        E2FovNGzK+bdyR/dzwU81Q1eU2SOBBkXTHcv5kbyWQkaMKT5/RN5yM88cLfjFB0lS8qs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mCNEL-00GVBy-Bl; Sat, 07 Aug 2021 16:23:17 +0200
-Date:   Sat, 7 Aug 2021 16:23:17 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>, kernel-team@android.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 1/3] net: mdio-mux: Delete unnecessary devm_kfree
-Message-ID: <YQ6XVcjkgYnjHRnc@lunn.ch>
-References: <20210804214333.927985-1-saravanak@google.com>
- <20210804214333.927985-2-saravanak@google.com>
+        id S232420AbhHGOi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Aug 2021 10:38:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38258 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232313AbhHGOi1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 10:38:27 -0400
+Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D793EC0613CF
+        for <netdev@vger.kernel.org>; Sat,  7 Aug 2021 07:38:08 -0700 (PDT)
+Received: by mail-oi1-x243.google.com with SMTP id u25so16746701oiv.5
+        for <netdev@vger.kernel.org>; Sat, 07 Aug 2021 07:38:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=ReBm15rRPJeYRvR3xmCb6oyrIFi7dzUt1xwgpUczySQ=;
+        b=VmttECjO0ENZLIrUCH1DBNDX7Xn0sJ0TBHYCenyJHEuxuBdwksIDNhYYXFPyfZnmG2
+         jsLmS8qY+3yexXit7oXOjyVv8C3Dy6FeLK80mEArcjArilbOL29wIDM+sr4Vh+TXTMJN
+         CKHCVnFJe3d8aFy/oyDlU/TZHUeec1W9NZKxZA1D9vN9KRVJejZfPutEamxU5e8scxIK
+         BgX+c/hM6GygAZ4l9gdXOmti6wcCWH/sQNXhijpOn3qP1hMr2FFtdxQ6JMnIUAssTP8+
+         Jxdu3xhzf0h6b48FiIjjdfENNYZcWUz6+GB03JYHZeH0NG4KnvTuYQEiHwW6r9mCSl3w
+         YOew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=ReBm15rRPJeYRvR3xmCb6oyrIFi7dzUt1xwgpUczySQ=;
+        b=tleAa4Bmfcb90C4m3sMZ8CD7FonoqnhWf8Fv6HFPq09skM1sXYXw/BdtBg/rofqQXA
+         tOQu7ZtufEJbkL8G+NPSKod52NVorW00nxKAeWqyhuN2w2p+IN0vqipXirDtQkcgIc0E
+         32tr+vtukOz6O5N82+nY5+hWGhkBhmuqHzIH2+rdK4TZBDOICUonFtvnLoLvryD5++b0
+         kFSYtCQEB0yLqTaG/GkCGz56flET6XiZqD6FriYicQY+raZ1aCCfL3OVIkRWrfNQ+bab
+         /rB6aa8zyejqOoP/qVTjZTYTUzpJgx+q0O5qfkTd6SE576u+OXR+ttx2ro1IDFtQi4je
+         lDyg==
+X-Gm-Message-State: AOAM532XW6KO/KVkrLQ47i/nHA9nQJQUKgk0cYvE+PxSqsofnzt4HGXh
+        CXoie7JwGwhu/0Ikn74iYG0B7eOOGgYLuBoFCm0=
+X-Google-Smtp-Source: ABdhPJwJdnnA+yCV1s3edIEK81SqHkoDZDbYEPON1lmI6ViBBdV3K7CXxWQ3f1ca5q7Erj3Xn9jHsz+iXr3Ygmnud8g=
+X-Received: by 2002:aca:bb88:: with SMTP id l130mr4931961oif.162.1628347088263;
+ Sat, 07 Aug 2021 07:38:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210804214333.927985-2-saravanak@google.com>
+Received: by 2002:a9d:b97:0:0:0:0:0 with HTTP; Sat, 7 Aug 2021 07:38:07 -0700 (PDT)
+Reply-To: bensmithparker@gmail.com
+From:   "Mr. Parker Ben Smith" <jmicheal277@gmail.com>
+Date:   Sat, 7 Aug 2021 15:38:07 +0100
+Message-ID: <CAB8M5oTAkRr_Z6_+MM2fVJO=uziEW17dz-Vbcy3TuE7vo0SOfg@mail.gmail.com>
+Subject: Dear Fiend.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 04, 2021 at 02:43:30PM -0700, Saravana Kannan wrote:
-> The whole point of devm_* APIs is that you don't have to undo them if you
-> are returning an error that's going to get propagated out of a probe()
-> function. So delete unnecessary devm_kfree() call in the error return path.
-> 
-> Signed-off-by: Saravana Kannan <saravanak@google.com>
+-- 
+Dear Fiend,
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+I'm glad to have you here as good business partner. I have a good
+capital and am looking for any lucrative project around you which i
+can invest on that can yield us a good profit in returns.Could you
+please suggest any for me and you will benefit from it too.
 
-    Andrew
+Am waiting for your reply for us to have a better discussion there.
+
+Regards!
+
+Mr. Parker Ben Smith
