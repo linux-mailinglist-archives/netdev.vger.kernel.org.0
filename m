@@ -2,171 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCC7B3E32FE
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 05:31:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 832113E3307
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 05:51:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231142AbhHGDbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 23:31:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:41237 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230510AbhHGDbg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 23:31:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1628307079;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nHbeQb3co1qFdO5yYL3pbqWGx/3+00txeK0/F7Wbgx4=;
-        b=HNHVztcj8IK7LP7rzi0DuofpbI52FQd9ilpnPT1ZLOiYbdbcnnZaAyjLiG6g/9zPsQgOoO
-        KA/Dks86uRmlF0GneZLPB73n9IG8naZcvnz3KFnIWiumw/KBAmbCNnxFsBn3RtQV4v3/kc
-        ahUVnIbv6S/Bt/qPuu+tWoED90xZHgg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-530-S_6Njpf1NQCdkRiTNnEiug-1; Fri, 06 Aug 2021 23:31:15 -0400
-X-MC-Unique: S_6Njpf1NQCdkRiTNnEiug-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ACB11871803;
-        Sat,  7 Aug 2021 03:31:14 +0000 (UTC)
-Received: from jtoppins.rdu.csb (unknown [10.22.8.31])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7FEF627C5E;
-        Sat,  7 Aug 2021 03:31:13 +0000 (UTC)
-From:   Jonathan Toppins <jtoppins@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 2/2] bonding: combine netlink and console error messages
-Date:   Fri,  6 Aug 2021 23:30:55 -0400
-Message-Id: <a36c7639a13963883f49c272ed7993c9625a712a.1628306392.git.jtoppins@redhat.com>
-In-Reply-To: <cover.1628306392.git.jtoppins@redhat.com>
-References: <cover.1628306392.git.jtoppins@redhat.com>
+        id S230419AbhHGDvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 23:51:13 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:49930 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230144AbhHGDvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 23:51:12 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1773onvI7027306, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1773onvI7027306
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Sat, 7 Aug 2021 11:50:49 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Sat, 7 Aug 2021 11:50:48 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Sat, 7 Aug 2021 11:50:47 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::5bd:6f71:b434:7c91]) by
+ RTEXMBS04.realtek.com.tw ([fe80::5bd:6f71:b434:7c91%5]) with mapi id
+ 15.01.2106.013; Sat, 7 Aug 2021 11:50:47 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "koba.ko@canonical.com" <koba.ko@canonical.com>
+Subject: RE: [PATCH net-next 2/2] r8169: change the L0/L1 entrance latencies for RTL8106e
+Thread-Topic: [PATCH net-next 2/2] r8169: change the L0/L1 entrance latencies
+ for RTL8106e
+Thread-Index: AQHXiqPUBB936oECW06D4tOEh+kMGKtmeFwAgADuiUA=
+Date:   Sat, 7 Aug 2021 03:50:47 +0000
+Message-ID: <95d8ea6b2b814bb9932961360ccd2061@realtek.com>
+References: <20210806091556.1297186-374-nic_swsd@realtek.com>
+ <20210806091556.1297186-376-nic_swsd@realtek.com>
+ <3cfd64a9-dff2-6e60-1524-ddbd1c388c01@gmail.com>
+In-Reply-To: <3cfd64a9-dff2-6e60-1524-ddbd1c388c01@gmail.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.203]
+x-kse-serverinfo: RTEXMBS04.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzgvNiDkuIvljYggMTE6MDI6MDA=?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 08/07/2021 03:41:31
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 165456 [Aug 06 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 454 454 39c6e442fd417993330528e7f9d13ac1bf7fdf8c
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 08/07/2021 03:44:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There seems to be no reason to have different error messages between
-netlink and printk. It also cleans up the function slightly.
-
-Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
----
- drivers/net/bonding/bond_main.c | 45 ++++++++++++++++++---------------
- 1 file changed, 25 insertions(+), 20 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 3ba5f4871162..46b95175690b 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -1712,6 +1712,16 @@ void bond_lower_state_changed(struct slave *slave)
- 	netdev_lower_state_changed(slave->dev, &info);
- }
- 
-+#define BOND_NL_ERR(bond_dev, extack, errmsg) do {		\
-+	NL_SET_ERR_MSG(extack, errmsg);				\
-+	netdev_err(bond_dev, "Error: " errmsg "\n");		\
-+} while (0)
-+
-+#define SLAVE_NL_ERR(bond_dev, slave_dev, extack, errmsg) do {	\
-+	NL_SET_ERR_MSG(extack, errmsg);				\
-+	slave_err(bond_dev, slave_dev, "Error: " errmsg "\n");	\
-+} while (0)
-+
- /* enslave device <slave> to bond device <master> */
- int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 		 struct netlink_ext_ack *extack)
-@@ -1725,9 +1735,8 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 
- 	if (slave_dev->flags & IFF_MASTER &&
- 	    !netif_is_bond_master(slave_dev)) {
--		NL_SET_ERR_MSG(extack, "Device with IFF_MASTER cannot be enslaved");
--		netdev_err(bond_dev,
--			   "Error: Device with IFF_MASTER cannot be enslaved\n");
-+		BOND_NL_ERR(bond_dev, extack,
-+			    "Device with IFF_MASTER cannot be enslaved");
- 		return -EPERM;
- 	}
- 
-@@ -1739,15 +1748,13 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 
- 	/* already in-use? */
- 	if (netdev_is_rx_handler_busy(slave_dev)) {
--		NL_SET_ERR_MSG(extack, "Device is in use and cannot be enslaved");
--		slave_err(bond_dev, slave_dev,
--			  "Error: Device is in use and cannot be enslaved\n");
-+		SLAVE_NL_ERR(bond_dev, slave_dev, extack,
-+			     "Device is in use and cannot be enslaved");
- 		return -EBUSY;
- 	}
- 
- 	if (bond_dev == slave_dev) {
--		NL_SET_ERR_MSG(extack, "Cannot enslave bond to itself.");
--		netdev_err(bond_dev, "cannot enslave bond to itself.\n");
-+		BOND_NL_ERR(bond_dev, extack, "Cannot enslave bond to itself.");
- 		return -EPERM;
- 	}
- 
-@@ -1756,8 +1763,8 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 	if (slave_dev->features & NETIF_F_VLAN_CHALLENGED) {
- 		slave_dbg(bond_dev, slave_dev, "is NETIF_F_VLAN_CHALLENGED\n");
- 		if (vlan_uses_dev(bond_dev)) {
--			NL_SET_ERR_MSG(extack, "Can not enslave VLAN challenged device to VLAN enabled bond");
--			slave_err(bond_dev, slave_dev, "Error: cannot enslave VLAN challenged slave on VLAN enabled bond\n");
-+			SLAVE_NL_ERR(bond_dev, slave_dev, extack,
-+				     "Can not enslave VLAN challenged device to VLAN enabled bond");
- 			return -EPERM;
- 		} else {
- 			slave_warn(bond_dev, slave_dev, "enslaved VLAN challenged slave. Adding VLANs will be blocked as long as it is part of bond.\n");
-@@ -1775,8 +1782,8 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 	 * enslaving it; the old ifenslave will not.
- 	 */
- 	if (slave_dev->flags & IFF_UP) {
--		NL_SET_ERR_MSG(extack, "Device can not be enslaved while up");
--		slave_err(bond_dev, slave_dev, "slave is up - this may be due to an out of date ifenslave\n");
-+		SLAVE_NL_ERR(bond_dev, slave_dev, extack,
-+			     "Device can not be enslaved while up");
- 		return -EPERM;
- 	}
- 
-@@ -1815,17 +1822,15 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 						 bond_dev);
- 		}
- 	} else if (bond_dev->type != slave_dev->type) {
--		NL_SET_ERR_MSG(extack, "Device type is different from other slaves");
--		slave_err(bond_dev, slave_dev, "ether type (%d) is different from other slaves (%d), can not enslave it\n",
--			  slave_dev->type, bond_dev->type);
-+		SLAVE_NL_ERR(bond_dev, slave_dev, extack,
-+			     "Device type is different from other slaves");
- 		return -EINVAL;
- 	}
- 
- 	if (slave_dev->type == ARPHRD_INFINIBAND &&
- 	    BOND_MODE(bond) != BOND_MODE_ACTIVEBACKUP) {
--		NL_SET_ERR_MSG(extack, "Only active-backup mode is supported for infiniband slaves");
--		slave_warn(bond_dev, slave_dev, "Type (%d) supports only active-backup mode\n",
--			   slave_dev->type);
-+		SLAVE_NL_ERR(bond_dev, slave_dev, extack,
-+			     "Only active-backup mode is supported for infiniband slaves");
- 		res = -EOPNOTSUPP;
- 		goto err_undo_flags;
- 	}
-@@ -1839,8 +1844,8 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 				bond->params.fail_over_mac = BOND_FOM_ACTIVE;
- 				slave_warn(bond_dev, slave_dev, "Setting fail_over_mac to active for active-backup mode\n");
- 			} else {
--				NL_SET_ERR_MSG(extack, "Slave device does not support setting the MAC address, but fail_over_mac is not set to active");
--				slave_err(bond_dev, slave_dev, "The slave device specified does not support setting the MAC address, but fail_over_mac is not set to active\n");
-+				SLAVE_NL_ERR(bond_dev, slave_dev, extack,
-+					     "Slave device does not support setting the MAC address, but fail_over_mac is not set to active");
- 				res = -EOPNOTSUPP;
- 				goto err_undo_flags;
- 			}
--- 
-2.27.0
-
+SGVpbmVyIEthbGx3ZWl0IDxoa2FsbHdlaXQxQGdtYWlsLmNvbT4NCj4gU2VudDogU2F0dXJkYXks
+IEF1Z3VzdCA3LCAyMDIxIDU6MjggQU0NClsuLi5dDQo+IE1vc3QgY2hpcCB2ZXJzaW9ucyB1c2Ug
+cnRsX3NldF9kZWZfYXNwbV9lbnRyeV9sYXRlbmN5KCkgdGhhdCBzZXRzDQo+IHRoZSB2YWx1ZSB0
+byAweDI3LiBEb2VzIHRoaXMgdmFsdWUgYWxzbyB3b3JrIGZvciBSVEw4MTA2ZT8NCg0KTm8sIGl0
+IGRvZXNuJ3Qgd29yay4NCg0KPiBDYW4geW91IGV4cGxhaW4gaG93IHRoZSBMMCBhbmQgTDEgdGlt
+ZXMgaW4gdXMgbWFwIHRvIHRoZQ0KPiByZWdpc3RlciB2YWx1ZT8gVGhlbiB3ZSBjb3VsZCBhZGQg
+YSBmdW5jdGlvbiB0aGF0IGRvZXNuJ3Qgd29yaw0KPiB3aXRoIGEgbWFnaWMgdmFsdWUgYnV0IHRh
+a2VzIHRoZSBMMCBhbmQgTDEgdGltZXMgaW4gdXMgYXMNCj4gcGFyYW1ldGVyLg0KDQpMMCAoYml0
+IDB+Mik6DQoJMDogMXVzDQoJMTogMnVzDQoJMjogM3VzDQoJMzogNHVzDQoJNDogNXVzDQoJNTog
+NnVzDQoJNjogN3VzDQoJNzogN3VzIChUaGUgbWF4aW11bSBpcyA3dXMpDQoNCkwxIChiaXQgM341
+KToNCgkwOiAxdXMNCgkxOiAydXMNCgkyOiA0dXMNCgkzOiA4dXMNCgk0OiAxNnVzDQoJNTogMzJ1
+cw0KCTY6IDY0dXMNCgk3OiA2NHVzIChUaGUgbWF4aW11bSBpcyA2NHVzKQ0KDQpCZXN0IFJlZ2Fy
+ZHMsDQpIYXllcw0KDQo=
