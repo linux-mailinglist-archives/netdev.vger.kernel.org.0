@@ -2,146 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEE523E367C
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 19:21:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0592E3E368A
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 19:44:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229663AbhHGRVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Aug 2021 13:21:09 -0400
-Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:51811 "EHLO
-        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229464AbhHGRVH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 13:21:07 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=wenyang@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UiEXaLV_1628356842;
-Received: from localhost(mailfrom:wenyang@linux.alibaba.com fp:SMTPD_---0UiEXaLV_1628356842)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sun, 08 Aug 2021 01:20:47 +0800
-From:   Wen Yang <wenyang@linux.alibaba.com>
-To:     davem@davemloft.net, David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc:     Wen Yang <wenyang@linux.alibaba.com>,
-        Baoyou Xie <baoyou.xie@alibaba-inc.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ipv4: return early for possible invalid uaddr
-Date:   Sun,  8 Aug 2021 01:19:38 +0800
-Message-Id: <20210807171938.38501-1-wenyang@linux.alibaba.com>
-X-Mailer: git-send-email 2.23.0
+        id S229562AbhHGRoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Aug 2021 13:44:24 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:38342 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229464AbhHGRoX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 7 Aug 2021 13:44:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=BRK5L6T4KuYFCyZr+/n2UE9YDeqkKvXCisEuYuPGvUs=; b=InQaQiNJv8HWTKxhzlTwvkfd1B
+        McuJ/iSsPysKDwhbDgPHVxutMzrMVvKfX0anqHSGTLgg6mtCcPt7Vb34TfMHpGeH1tU9sVC208CkA
+        g7reFzTvn6uLAUU7OWFEUMvCcwInwyELk8Z3/KmtHoiLVqXFDDz6b7GR9PDs2IVhmKy0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mCQMf-00GVj9-0S; Sat, 07 Aug 2021 19:44:05 +0200
+Date:   Sat, 7 Aug 2021 19:44:04 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dario Alcocer <dalcocer@helixd.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: Marvell switch port shows LOWERLAYERDOWN, ping fails
+Message-ID: <YQ7GZINFFwgnVALz@lunn.ch>
+References: <YPxPF2TFSDX8QNEv@lunn.ch>
+ <f8ee6413-9cf5-ce07-42f3-6cc670c12824@helixd.com>
+ <bcd589bd-eeb4-478c-127b-13f613fdfebc@helixd.com>
+ <527bcc43-d99c-f86e-29b0-2b4773226e38@helixd.com>
+ <fb7ced72-384c-9908-0a35-5f425ec52748@helixd.com>
+ <YQGgvj2e7dqrHDCc@lunn.ch>
+ <59790fef-bf4a-17e5-4927-5f8d8a1645f7@helixd.com>
+ <YQGu2r02XdMR5Ajp@lunn.ch>
+ <11b81662-e9ce-591c-122a-af280f1e1f59@helixd.com>
+ <fea36eed-eaff-4381-b2fd-628b60237aab@helixd.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fea36eed-eaff-4381-b2fd-628b60237aab@helixd.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The inet_dgram_connect() first calls inet_autobind() to select an
-ephemeral port, then checks uaddr in udp_pre_connect() or
-__ip4_datagram_connect(), but the port is not released until the socket
-is closed.
+On Thu, Aug 05, 2021 at 02:44:32PM -0700, Dario Alcocer wrote:
+> On 7/28/21 12:37 PM, Dario Alcocer wrote:
+> > On 7/28/21 12:24 PM, Andrew Lunn wrote:
+> > > Take a look at:
+> > > 
+> > > https://github.com/lunn/mv88e6xxx_dump/blob/master/mv88e6xxx_dump.c
+> > > 
+> > 
+> > Many thanks for the link; I will build and install it on the target.
+> > Hope it will work with the older kernel (5.4.114) we're using.
+> 
+> I've got a dumb question: is mv88e6xxx_dump intended to be built on the
+> target, or do I use a cross compiler?
 
-We should return early for invalid uaddr to improve performance and
-simplify the code a bit, and also switch from a mix of tabs and spaces
-to just tabs.
+I've always built it on the target. In order to make kernel
+development work easy, i generally use Debian on everything. Sometimes
+with a USB stick, or a big MMC card, sometimes NFS root. Once the
+kernel works, then i will move to the production environment, which
+generally makes a poor development environment, so should be avoided
+as much as possible.
 
-Signed-off-by: Wen Yang <wenyang@linux.alibaba.com>
-Cc: Baoyou Xie <baoyou.xie@alibaba-inc.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
- net/ipv4/af_inet.c  | 27 ++++++++++++++++-----------
- net/ipv4/datagram.c |  7 -------
- net/ipv4/udp.c      |  7 -------
- 3 files changed, 16 insertions(+), 25 deletions(-)
+It should be possible to cross compile it, since it uses autotools.
 
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 5464818..97b6fc4 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -569,6 +569,11 @@ int inet_dgram_connect(struct socket *sock, struct sockaddr *uaddr,
- 	if (uaddr->sa_family == AF_UNSPEC)
- 		return sk->sk_prot->disconnect(sk, flags);
- 
-+	if (uaddr->sa_family != AF_INET)
-+		return -EAFNOSUPPORT;
-+	if (addr_len < sizeof(struct sockaddr_in))
-+		return -EINVAL;
-+
- 	if (BPF_CGROUP_PRE_CONNECT_ENABLED(sk)) {
- 		err = sk->sk_prot->pre_connect(sk, uaddr, addr_len);
- 		if (err)
-@@ -1136,23 +1141,23 @@ static int inet_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned lon
- 		.prot =       &udp_prot,
- 		.ops =        &inet_dgram_ops,
- 		.flags =      INET_PROTOSW_PERMANENT,
--       },
-+	},
- 
--       {
-+	{
- 		.type =       SOCK_DGRAM,
- 		.protocol =   IPPROTO_ICMP,
- 		.prot =       &ping_prot,
- 		.ops =        &inet_sockraw_ops,
- 		.flags =      INET_PROTOSW_REUSE,
--       },
--
--       {
--	       .type =       SOCK_RAW,
--	       .protocol =   IPPROTO_IP,	/* wild card */
--	       .prot =       &raw_prot,
--	       .ops =        &inet_sockraw_ops,
--	       .flags =      INET_PROTOSW_REUSE,
--       }
-+	},
-+
-+	{
-+		.type =       SOCK_RAW,
-+		.protocol =   IPPROTO_IP,	/* wild card */
-+		.prot =       &raw_prot,
-+		.ops =        &inet_sockraw_ops,
-+		.flags =      INET_PROTOSW_REUSE,
-+	}
- };
- 
- #define INETSW_ARRAY_LEN ARRAY_SIZE(inetsw_array)
-diff --git a/net/ipv4/datagram.c b/net/ipv4/datagram.c
-index 4a8550c..81aae1d 100644
---- a/net/ipv4/datagram.c
-+++ b/net/ipv4/datagram.c
-@@ -27,13 +27,6 @@ int __ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len
- 	int oif;
- 	int err;
- 
--
--	if (addr_len < sizeof(*usin))
--		return -EINVAL;
--
--	if (usin->sin_family != AF_INET)
--		return -EAFNOSUPPORT;
--
- 	sk_dst_reset(sk);
- 
- 	oif = sk->sk_bound_dev_if;
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 62cd4cd..1ef0770 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1928,13 +1928,6 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
- 
- int udp_pre_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- {
--	/* This check is replicated from __ip4_datagram_connect() and
--	 * intended to prevent BPF program called below from accessing bytes
--	 * that are out of the bound specified by user in addr_len.
--	 */
--	if (addr_len < sizeof(struct sockaddr_in))
--		return -EINVAL;
--
- 	return BPF_CGROUP_RUN_PROG_INET4_CONNECT_LOCK(sk, uaddr);
- }
- EXPORT_SYMBOL(udp_pre_connect);
--- 
-1.8.3.1
-
+   Andrew
