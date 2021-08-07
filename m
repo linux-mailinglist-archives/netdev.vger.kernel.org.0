@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEC2D3E3541
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 14:07:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D9D73E3542
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 14:08:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232257AbhHGMIO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Aug 2021 08:08:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
+        id S232251AbhHGMIZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Aug 2021 08:08:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232237AbhHGMIN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 08:08:13 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44557C0613CF;
-        Sat,  7 Aug 2021 05:07:55 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id pj14-20020a17090b4f4eb029017786cf98f9so22134544pjb.2;
-        Sat, 07 Aug 2021 05:07:55 -0700 (PDT)
+        with ESMTP id S232243AbhHGMIW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 08:08:22 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A4CC0613CF;
+        Sat,  7 Aug 2021 05:08:03 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id u2so10837666plg.10;
+        Sat, 07 Aug 2021 05:08:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=nHNcflnG0a4A9LfEWKsvfNtPEZu1Ro6r81VoleoWmDs=;
-        b=mU6imz/bwXHRCKkt9haQM7HUPdT/OsRXdwPx8HHOv6bGROuIqvIVUiSUZDN8WKDIUM
-         KeFtZGJ4gWfTGX4EsR8eYSVD7jYimKDOlW6rDMDDNdITOZM8rzRSH7lw3vKBDUIFYp1G
-         RF/Y9pDdxLS1Et7lgHPtfDoo78nS8f462Tp66JgUYeKTca07/3Se69S53oMrDXCxBdvz
-         Cwj2fQNuiCVIcXHBV0jcm2AFLjp5daTqusG9miXgFyY9oaS8Isik0PgWESSwRMd+dstQ
-         RA5+tzLc/pVfY7kZVEgy4l9D46nbrqVbZt40PP1dGxFSD6TEkm/14hCg9Jptv5IUebMk
-         2Btg==
+        bh=Fe+Qj13L2fpPtbQOlPpWUWp2MGqwowpxswIvzZUFPvw=;
+        b=pwxgEYD4YDmvPKT65ehV5p9rq2kaMo1WsBdQc0LPMOsK1ocpIMQExH6S9dM+nWEIUJ
+         NeD9P1sVLAAoZLx1pH33AZzFQ8FI5u+ob9GqsJEJjfWvDcB5BEa84neHewUlfLIgzmhb
+         Q1AqIEtcRcbi2LNjRE3k8egJj2XClxNeqyLseB3clw6RpNRoCdPEFW98HyaxqWyNpZSE
+         hsSzo+T7tDsvO8kzAuxsP8e78zoyx4Ht3deLvxZkiLDC5EIxAw488igkkvwbMHyR8UV7
+         BxOVfPwSdCxmbcFVq9ViT/PBRb3dN88DaIiO+nzuG1RnCg96karkTqlwRxKqPuvFSD/u
+         PgbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nHNcflnG0a4A9LfEWKsvfNtPEZu1Ro6r81VoleoWmDs=;
-        b=IU6yLEBRTZwnUA7Z0uxFapctAWel/OybmJFg3ZA6Ctu1qD8yEb+MAnwHpSuEtOsj5H
-         /IQiYT5VaU5ugPYKlor7vVrsY/djoAjYHOZH5i8zzpey6JGeySvHuktMdAkhV43uXZgm
-         SSQD8fVyB/EMmEw6WL68JzAZbpoO6JNYQNQl4+KnRAu2sqLVVWeYZ7WdKGV0jG8b3/XF
-         VoLxr5/6ES7r6eZHPfSn5yi49VunnRFVnfcQM+yIuhcsk9w8dhWSXBAqhsGjfRwGoSAQ
-         J9z+TWHkO0ua9mKxk88yYEYbTmNMzqhA+9GECR0u8mJ+/fKxj8RtTHM2RM3mcQXnvRwS
-         l1IA==
-X-Gm-Message-State: AOAM533jmMG16qH2NhDBa8rc7989PlU66tQIYpco2CQNpmBq6ye5be33
-        fM93+hzyp3E+ivji48DInUQ=
-X-Google-Smtp-Source: ABdhPJybRBEtj4boTWrozQ+AoJLBGIqC8C4EFEtrv6HMyXSjUgpR4n23eo6084tWzOluZu7jmJZXcw==
-X-Received: by 2002:a17:902:d501:b029:12c:3386:96ed with SMTP id b1-20020a170902d501b029012c338696edmr12676391plg.39.1628338074863;
-        Sat, 07 Aug 2021 05:07:54 -0700 (PDT)
+        bh=Fe+Qj13L2fpPtbQOlPpWUWp2MGqwowpxswIvzZUFPvw=;
+        b=HIuUgCzZHJ/gYh//5AeaGG7ZN1ynA9xZMnXStmH4i/Gl0beGnN9TC2V5GSiIt8QuAc
+         tU7ePlnEsRqceERLCWool8DBjPGaDoB5t+VpyEbq5QTfIuhhFhk5qhAU0HpkQaRsvTyk
+         +tpESWPmgGChSrMUcFQAJAZCGojGYIwZU43L81RiKD/rJAEYjLsQTU9mwDPDL7mOFqOf
+         VOOvYli4hlDaIzFHMId04m9iXGILTANWhomCCk6T2riOorqbmAJPZ8ScXyhcK+eThX07
+         t7JaCvsnbYfmoAd8Ao2YLtZwqKgu45LP6HSVmvFAAEPIsxHtgENm6LNqlF/2pWhgPlrb
+         Ge3g==
+X-Gm-Message-State: AOAM530pVNXC71GmM+9qr1EQ/ARFSEV0UkY7KsEAlCAS+OHbfaG/thBF
+        M+5Vl+p6pzAtUFPhGtOk43I=
+X-Google-Smtp-Source: ABdhPJxzlYppj5h2KdgEpEL+dwojRRtBt/bO/LqjU8q0P/dgmC+3e1Vcm8yjwm+DTIahIHNxOtigvw==
+X-Received: by 2002:a62:9709:0:b029:3b2:ef36:6872 with SMTP id n9-20020a6297090000b02903b2ef366872mr15186759pfe.34.1628338083415;
+        Sat, 07 Aug 2021 05:08:03 -0700 (PDT)
 Received: from haswell-ubuntu20.lan ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id b15sm16471035pgj.60.2021.08.07.05.07.47
+        by smtp.gmail.com with ESMTPSA id b15sm16471035pgj.60.2021.08.07.05.07.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Aug 2021 05:07:54 -0700 (PDT)
+        Sat, 07 Aug 2021 05:08:02 -0700 (PDT)
 From:   DENG Qingfang <dqfext@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -70,9 +70,9 @@ Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
         Frank Wunderlich <frank-w@public-files.de>,
         Nick Lowe <nick.lowe@gmail.com>,
         =?UTF-8?q?Andr=C3=A9=20Valentin?= <avalentin@vmh.kalnet.hooya.de>
-Subject: [RFC net-next 2/3] net: dsa: qca8k: enable assisted learning on CPU port
-Date:   Sat,  7 Aug 2021 20:07:25 +0800
-Message-Id: <20210807120726.1063225-3-dqfext@gmail.com>
+Subject: [RFC net-next 3/3] net: dsa: tag_qca: set offload_fwd_mark
+Date:   Sat,  7 Aug 2021 20:07:26 +0800
+Message-Id: <20210807120726.1063225-4-dqfext@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210807120726.1063225-1-dqfext@gmail.com>
 References: <20210807120726.1063225-1-dqfext@gmail.com>
@@ -82,27 +82,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enable assisted learning on CPU port to fix roaming issues.
-
-Although hardware learning is available, it won't work well with
-software bridging fallback or multiple CPU ports.
+As we offload flooding and forwarding, set offload_fwd_mark according to
+Atheros header's type.
 
 Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/dsa/tag_qca.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 798bc548e5b0..de2aa7812d1c 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -1114,6 +1114,8 @@ qca8k_setup(struct dsa_switch *ds)
- 	/* We don't have interrupts for link changes, so we need to poll */
- 	ds->pcs_poll = true;
+diff --git a/net/dsa/tag_qca.c b/net/dsa/tag_qca.c
+index 6e3136990491..ee5c1fdfef47 100644
+--- a/net/dsa/tag_qca.c
++++ b/net/dsa/tag_qca.c
+@@ -50,7 +50,7 @@ static struct sk_buff *qca_tag_xmit(struct sk_buff *skb, struct net_device *dev)
  
-+	ds->assisted_learning_on_cpu_port = true;
+ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
+ {
+-	u8 ver;
++	u8 ver, type;
+ 	u16  hdr;
+ 	int port;
+ 	__be16 *phdr;
+@@ -82,6 +82,15 @@ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
+ 	if (!skb->dev)
+ 		return NULL;
+ 
++	type = (hdr & QCA_HDR_RECV_TYPE_MASK) >> QCA_HDR_RECV_TYPE_S;
++	switch (type) {
++	case 0x00: /* Normal packet */
++	case 0x19: /* Flooding to CPU */
++	case 0x1a: /* Forwarding to CPU */
++		dsa_default_offload_fwd_mark(skb);
++		break;
++	}
 +
- 	return 0;
+ 	return skb;
  }
  
 -- 
