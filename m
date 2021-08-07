@@ -2,159 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61A063E36E6
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 21:03:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B59E23E36E7
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 21:03:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229777AbhHGTD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Aug 2021 15:03:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39328 "EHLO
+        id S229843AbhHGTED (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Aug 2021 15:04:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229780AbhHGTD6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 15:03:58 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32EF2C0613CF
-        for <netdev@vger.kernel.org>; Sat,  7 Aug 2021 12:03:41 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id u5-20020a17090ae005b029017842fe8f82so13919472pjy.0
-        for <netdev@vger.kernel.org>; Sat, 07 Aug 2021 12:03:41 -0700 (PDT)
+        with ESMTP id S229801AbhHGTEC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 15:04:02 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF5CC0613CF
+        for <netdev@vger.kernel.org>; Sat,  7 Aug 2021 12:03:45 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id nh14so21644552pjb.2
+        for <netdev@vger.kernel.org>; Sat, 07 Aug 2021 12:03:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=S/3D3aMDtXVSJFM7tsLzMurd5V2BhLQrS2h6MfO9wr4=;
-        b=Dkz7F/timlKKI8zYFblpjK5i/3wLqBYbWNQbV157b0VIxUcpbPXFyUVjjrjo2BNZ29
-         w9KG+LNxWL8mtmcsV4FRBPjUKEOiqhF8xgFq4JW4OTJXnDOG3Y90Y8nOpptC5rpgsK9l
-         49g3LM5Z3WRTtI+drWiST1BEpJyKrnkWgWYpg=
+        bh=puil/UMrb0zhWnBpkSpeAY6GuUiwPFQp47/vjwrIkOc=;
+        b=PcycGMvaynSL4U+iE3EO3011LmJva5TbNXDdoKBinBdTnYxrGWiLJZSLlwehC5gKfd
+         auRHBrEQlaR6BWjpwyfgFzVGho5fkMDhp75k6TgzBA1w/bZU9sBLkhMjVUj9+C48X5gP
+         SK9O7eNLASkA4eX7V6KgvYddgOyubqcOPBvVU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=S/3D3aMDtXVSJFM7tsLzMurd5V2BhLQrS2h6MfO9wr4=;
-        b=ZaBBbzXlfAk5l6zc/tGqstNVKy/nVWI0Gdt9Yz/iMNn83G/bWtR0g0ZCZi5mrAAM7n
-         iT4UC+bfBlMw8xQLjMFlyoqW3tw/JnWepo2s0XSo75XkYVbWdXMcendXUOZcOanKqcr4
-         xUGuGmaB16aUA6E7s9owjuN2yk1Ts2Z5RS0wZeFTwi8dvSY3A3KD+mUP81efiCMj/jru
-         rc2Wu7yqiZa9wAIvwhTbWwTA7Wtf80naVAZo3e1tdX+hi7yhT2fGprDy/PxOPsk7iGbt
-         lITVbiOS9gYVGY+q271O+extAr+vg7fPvslNuT0GIcGGqutkxmTc/brQuI0OrNqCIVqd
-         nIZg==
-X-Gm-Message-State: AOAM530hUn9b5Et57qAQjRXEk6vTPKRpzUCeoGoU1eD65Gb4B9eyOE82
-        1ORqVUBgngVD6Z4o5FuEnO9TeQ==
-X-Google-Smtp-Source: ABdhPJzm4ENuHp7tHAdxjuE4AhJdUPiegYbclUd/wzgXCGQqR5Suq0zxU8jWjHd2e9BZGAcV2r8Y4w==
-X-Received: by 2002:a17:90b:295:: with SMTP id az21mr16954804pjb.123.1628363020392;
-        Sat, 07 Aug 2021 12:03:40 -0700 (PDT)
+        bh=puil/UMrb0zhWnBpkSpeAY6GuUiwPFQp47/vjwrIkOc=;
+        b=XogIiusoocRq9gv6K+fOa/KBJ9Za9TxGgQOPko6ChLG4swbX61mkZldI01nhsgqg9S
+         FY2zSv3GraGeWKcN94Tya4COuTGUXX+odsTPf45bCj783HV5e50YDCoGcDyNPnGnKN5c
+         x/2BCqA/D6Hw7xsKTLJUMGW6deYLCVmiSPOLQc9Fnb7gjvgr1kQT4AWKCNiMrJNHu4Ij
+         JtjRhPVewJ8b0TzM89HEQD/eCetg1u2zv2e+C6LbtQSI9o+gD9KgvLKiXO8BMrdXlviY
+         +sqiZUZ42Az+PuRmcbxL7z7CLZKTEatlTrBBTDA5YeaqRznSv4BAiMxCb/E6VskGuMSj
+         y82Q==
+X-Gm-Message-State: AOAM533zc0D1HgqrFHMVDBpuyNg4Bz1l1lJvFufQOySmLGlutusHcp6W
+        4xQSetGYokyRmDSWZ27E7dTugg==
+X-Google-Smtp-Source: ABdhPJyuXPc0SluNbWauEj10sSnYCF7ByjRrdxCimuXK1LC1wt+FssfW+JZ2lfwCSC1nwSV8Cn5CQw==
+X-Received: by 2002:a17:90a:d3d0:: with SMTP id d16mr11975091pjw.103.1628363024373;
+        Sat, 07 Aug 2021 12:03:44 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id o18sm3378006pjp.1.2021.08.07.12.03.36
+        by smtp.gmail.com with ESMTPSA id o18sm3378006pjp.1.2021.08.07.12.03.40
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 07 Aug 2021 12:03:39 -0700 (PDT)
+        Sat, 07 Aug 2021 12:03:43 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
         richardcochran@gmail.com, pavan.chebbi@broadcom.com
-Subject: [PATCH net 2/3] bnxt_en: Update firmware call to retrieve TX PTP timestamp
-Date:   Sat,  7 Aug 2021 15:03:14 -0400
-Message-Id: <1628362995-7938-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 3/3] bnxt_en: Use register window 6 instead of 5 to read the PHC
+Date:   Sat,  7 Aug 2021 15:03:15 -0400
+Message-Id: <1628362995-7938-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1628362995-7938-1-git-send-email-michael.chan@broadcom.com>
 References: <1628362995-7938-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000006dcec605c8fccf7f"
+        boundary="000000000000ac181705c8fccf87"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000006dcec605c8fccf7f
+--000000000000ac181705c8fccf87
 
-New firmware interface requires the PTP sequence ID header offset to
-be passed to the firmware to properly find the matching timestamp
-for all protocols.
+Some older Broadcom debug tools use window 5 and may conflict, so switch
+to use window 6 instead.
 
-Fixes: 83bb623c968e ("bnxt_en: Transmit and retrieve packet timestamps")
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+Fixes: 118612d519d8 ("bnxt_en: Add PTP clock APIs, ioctls, and ethtool methods")
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 5 ++++-
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 4 +++-
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h | 6 ++++--
- 3 files changed, 11 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 89606587b156..2fe743503949 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -426,7 +426,10 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 		if (ptp && ptp->tx_tstamp_en && !skb_is_gso(skb) &&
- 		    atomic_dec_if_positive(&ptp->tx_avail) >= 0) {
--			if (!bnxt_ptp_parse(skb, &ptp->tx_seqid)) {
-+			if (!bnxt_ptp_parse(skb, &ptp->tx_seqid,
-+					    &ptp->tx_hdr_off)) {
-+				if (vlan_tag_flags)
-+					ptp->tx_hdr_off += VLAN_HLEN;
- 				lflags |= cpu_to_le32(TX_BD_FLAGS_STAMP);
- 				skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
- 			} else {
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-index ec381c2423b8..81f40ab748f1 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-@@ -20,7 +20,7 @@
- #include "bnxt.h"
- #include "bnxt_ptp.h"
- 
--int bnxt_ptp_parse(struct sk_buff *skb, u16 *seq_id)
-+int bnxt_ptp_parse(struct sk_buff *skb, u16 *seq_id, u16 *hdr_off)
- {
- 	unsigned int ptp_class;
- 	struct ptp_header *hdr;
-@@ -34,6 +34,7 @@ int bnxt_ptp_parse(struct sk_buff *skb, u16 *seq_id)
- 		if (!hdr)
- 			return -EINVAL;
- 
-+		*hdr_off = (u8 *)hdr - skb->data;
- 		*seq_id	 = ntohs(hdr->sequence_id);
- 		return 0;
- 	default:
-@@ -91,6 +92,7 @@ static int bnxt_hwrm_port_ts_query(struct bnxt *bp, u32 flags, u64 *ts)
- 	    PORT_TS_QUERY_REQ_FLAGS_PATH_TX) {
- 		req.enables = cpu_to_le16(BNXT_PTP_QTS_TX_ENABLES);
- 		req.ptp_seq_id = cpu_to_le32(bp->ptp_cfg->tx_seqid);
-+		req.ptp_hdr_offset = cpu_to_le16(bp->ptp_cfg->tx_hdr_off);
- 		req.ts_req_timeout = cpu_to_le16(BNXT_PTP_QTS_TIMEOUT);
- 	}
- 	mutex_lock(&bp->hwrm_cmd_lock);
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-index 254ba7bc0f99..57a8b9243a31 100644
+index 57a8b9243a31..524f1c272054 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-@@ -19,7 +19,8 @@
+@@ -10,8 +10,8 @@
+ #ifndef BNXT_PTP_H
+ #define BNXT_PTP_H
  
- #define BNXT_PTP_QTS_TIMEOUT	1000
- #define BNXT_PTP_QTS_TX_ENABLES	(PORT_TS_QUERY_REQ_ENABLES_PTP_SEQ_ID |	\
--				 PORT_TS_QUERY_REQ_ENABLES_TS_REQ_TIMEOUT)
-+				 PORT_TS_QUERY_REQ_ENABLES_TS_REQ_TIMEOUT | \
-+				 PORT_TS_QUERY_REQ_ENABLES_PTP_HDR_OFFSET)
+-#define BNXT_PTP_GRC_WIN	5
+-#define BNXT_PTP_GRC_WIN_BASE	0x5000
++#define BNXT_PTP_GRC_WIN	6
++#define BNXT_PTP_GRC_WIN_BASE	0x6000
  
- struct bnxt_ptp_cfg {
- 	struct ptp_clock_info	ptp_info;
-@@ -37,6 +38,7 @@ struct bnxt_ptp_cfg {
- 	#define BNXT_PHC_OVERFLOW_PERIOD	(19 * 3600 * HZ)
- 
- 	u16			tx_seqid;
-+	u16			tx_hdr_off;
- 	struct bnxt		*bp;
- 	atomic_t		tx_avail;
- #define BNXT_MAX_TX_TS	1
-@@ -74,7 +76,7 @@ do {						\
- 	((dst) = READ_ONCE(src))
- #endif
- 
--int bnxt_ptp_parse(struct sk_buff *skb, u16 *seq_id);
-+int bnxt_ptp_parse(struct sk_buff *skb, u16 *seq_id, u16 *hdr_off);
- int bnxt_hwtstamp_set(struct net_device *dev, struct ifreq *ifr);
- int bnxt_hwtstamp_get(struct net_device *dev, struct ifreq *ifr);
- int bnxt_get_tx_ts_p5(struct bnxt *bp, struct sk_buff *skb);
+ #define BNXT_MAX_PHC_DRIFT	31000000
+ #define BNXT_LO_TIMER_MASK	0x0000ffffffffUL
 -- 
 2.18.1
 
 
---0000000000006dcec605c8fccf7f
+--000000000000ac181705c8fccf87
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -225,13 +161,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINAGrFr33E7zOnU/QdDeDbcX2xiwCUD7
-CaleQE+Vmy27MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgw
-NzE5MDM0MFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIH2tax2Ax/WB+F7VpRyBbXyxYegGBWMA
+34f7gJMTkdJxMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgw
+NzE5MDM0NVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQANndnqwBH//2pgqpp92pelTX9rlNSqTy2XP8biyfoXXBDJwSzi
-pXd6TkQEHyRDE49wXf7nvZl1urNCyjWkBJN3hy96IgTWjkOlncUA+/JiFAIvJSA9ie6cXzqsOIt5
-OhmeXWsuGpu5mCHWyginBUPE0ovy9sqtfd0hzsLchTFYDzkMTPIhXxL8dTLrjMqsFxIwUdCWiDo+
-yGsUKNUgU5tx61hZre6KGpwoKshN00ZX79sdZEZE++v1ihnnd/0OACdjRVD9kyO0XYeJ/vvwO7f0
-oF9lBL1yuOc9QbR0tSNZgHTm4Qb8qVl0SkKEY1qyj2WBGL3y5yivKEXbr2XZwmRw
---0000000000006dcec605c8fccf7f--
+ATANBgkqhkiG9w0BAQEFAASCAQAaX0iHV0c2EhcJZKFVRs6GsBEqK6RClrE4ZPwlmuFYAI37ZN5x
+af7QSiZ/1hqDYk22cZ2mE5ndpcOIUNu77b3Z6A+uyIblwJp+lr6jLYp4c7ogsONB87xLvLkbU6/+
+Jzi390I2jpOk4vy6yM+NoiYkYXDp2IAFxgb/GfPiY6DlNIRsUK/MEgsdd3+HQ2LzWoLOoPNBb2WM
+QbmlB7qCuLHgRP/70Xr4TScOfxO9SSITadQ2pCSVToycxnTzysYmeWSQtVA8h5EWP5klphf4dQFm
+By4juZaRgaSI0z1Q0knG6DiZwwbDLaBiDzT73UAsP6VrVInKHA/AD7T4/RgLXoCk
+--000000000000ac181705c8fccf87--
