@@ -2,33 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50F643E356C
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 15:08:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4EFF3E356D
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 15:08:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230291AbhHGNI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Aug 2021 09:08:27 -0400
-Received: from smtp-32.italiaonline.it ([213.209.10.32]:42629 "EHLO libero.it"
+        id S232288AbhHGNI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Aug 2021 09:08:28 -0400
+Received: from smtp-32.italiaonline.it ([213.209.10.32]:44067 "EHLO libero.it"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232176AbhHGNI0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 7 Aug 2021 09:08:26 -0400
+        id S232207AbhHGNI1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 7 Aug 2021 09:08:27 -0400
 Received: from passgat-Modern-14-A10M.homenet.telecomitalia.it
  ([82.60.87.158])
         by smtp-32.iol.local with ESMTPA
-        id CM3WmQm3XPvRTCM3amIfYI; Sat, 07 Aug 2021 15:08:07 +0200
+        id CM3WmQm3XPvRTCM3bmIfYk; Sat, 07 Aug 2021 15:08:08 +0200
 x-libjamoibt: 1601
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=libero.it; s=s2021;
-        t=1628341687; bh=whE/smR+GfQX6eqwPlzh75+C188l9V5ywfgFh/erjGo=;
+        t=1628341688; bh=h42hvfOsVcsxyMi5VYbK7VWGEQ0NFsL2rgTVmpybmxg=;
         h=From;
-        b=oYgZU853/nnrWGJwIz/IlbPnBsKer7Vppx2tKf7T6sjTf+Dx2HD+NKj68oqWWm8O9
-         vT80vbCzUPsQdbSNou21+C6mJnmKTAFoAViB31MELxFj/wYgdMyI51C291wmTnjdaG
-         waQ8i2dmQQAhhgDhM+cKawj4XEk2zYSbnZh5Rlh+O09cgG1RUfS28wWu1zxofGfnJd
-         dbDILumkTyoM3e2SSEb1jeWo4Y+agPQCLip5pHNDeBcQCXzOmQ2m8awwqHQlxkfksJ
-         HlJBJjvvc17l7WPnRnZ/bK8pp9ZmkVkf9M6+YTtuBqbz5Pfeq+VEjfPrhp1WPkPay3
-         H+fD3vyugPJMA==
-X-CNFS-Analysis: v=2.4 cv=NqgUz+RJ c=1 sm=1 tr=0 ts=610e85b7 cx=a_exe
- a=Hc/BMeSBGyun2kpB8NmEvQ==:117 a=Hc/BMeSBGyun2kpB8NmEvQ==:17 a=gu6fZOg2AAAA:8
- a=8Szu4Ex1LEpqERUTuRwA:9 a=-FEs8UIgK8oA:10 a=NWVoK91CQyQA:10
- a=2RSlZUUhi9gRBrsHwhhZ:22
+        b=vLOFj436iHwG4y9ulGw15LMD3n4sZmLh/QhYvFT0j/r54aKABMIwgrXpdSyVGtE4N
+         BzaOzZ88bs4csZO4dnol+oTJOMAjB/f0UVEhO/wb/ZByAIBw+YHlKKDMaH3PIyqCjD
+         DgjvzgxeZht+jJsopCBfG/VGyx3SQ64GvVbrHi5ne/DVGJQITKXzePravHbVLqlyj7
+         1RetIaAAv1jEFLzJdbW4VTSPqGjSp6/TIr5Qd1AmCCOfAy2H7OhRi6JfciJR+jT01D
+         nFGlIkMwAg+x2MQhZYyMHLlh+5ew8VhwD7nALYGpexb1olNwupW8AZC9x39XQInA61
+         pk0b8y9lY+Ztg==
+X-CNFS-Analysis: v=2.4 cv=NqgUz+RJ c=1 sm=1 tr=0 ts=610e85b8 cx=a_exe
+ a=Hc/BMeSBGyun2kpB8NmEvQ==:117 a=Hc/BMeSBGyun2kpB8NmEvQ==:17
+ a=TSeAaTSCjiJB7GOU1roA:9
 From:   Dario Binacchi <dariobin@libero.it>
 To:     linux-kernel@vger.kernel.org
 Cc:     Gianluca Falavigna <gianluca.falavigna@inwind.it>,
@@ -37,88 +36,59 @@ Cc:     Gianluca Falavigna <gianluca.falavigna@inwind.it>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
         Tong Zhang <ztong0001@gmail.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Wolfgang Grandegger <wg@grandegger.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v3 0/4] can: c_can: cache frames to operate as a true FIFO
-Date:   Sat,  7 Aug 2021 15:07:56 +0200
-Message-Id: <20210807130800.5246-1-dariobin@libero.it>
+Subject: [PATCH v3 1/4] can: c_can: remove struct c_can_priv::priv field
+Date:   Sat,  7 Aug 2021 15:07:57 +0200
+Message-Id: <20210807130800.5246-2-dariobin@libero.it>
 X-Mailer: git-send-email 2.17.1
-X-CMAE-Envelope: MS4xfJ9UyNdh2EUq9EiRVjihG6s1usW765LlWJv078A5wh5ixuN84y3IBvMwgw4lUiJZrSrqatSlsGEif4bXSpE9eDXh5dZTHBgwrVuLevzoH/tuxkjXnUKo
- ytfTjkVuo7m47wqHrv9xlhT+LwRHLDgn8rby2qn1v26OePvCUEvnNImjG/5pwt5xi6e8ukqvUXkQlh1nQmMEvi+uOt7aNNQQzYIKNtL1kDq1hdeJCAYbIk+u
- OUoY//Km+tOjia3+ngzxWnBDeCsLTGGE+UfyFj/Ic3WryEPqShxSUK7H05ybmSx90qeQXPSPsWqN+amu1NYzRuPffwyKKO7TSw6cdjMkk1rVuVb4IHpmDIMv
- FLCjHqNZRSX+XTcLMxbv8rhWCRUl7aaIwZn/rD5mZ789oO+7QPcTnS6uvdA30Tl5cLXUSeXzsvnerEvKVfSkWgqhOFnF4jva+f0bDLfrW8xZF7I8yDKqhODR
- N3xgAYqJrn4OdUFckDW2UPw1aT7Jqa/HA+QYmx8wTHoYIrFSuzNrFy/6gjssczAtFg+unHEflG46I6cs2zn/o0KHtoraVGZkbaAfV4pe6LLuEQRYPLN6VPUW
- KbsQ2eHQaVqhdyRVzxoT1+eED54vHFVs9fWhkHpz3CWZig==
+In-Reply-To: <20210807130800.5246-1-dariobin@libero.it>
+References: <20210807130800.5246-1-dariobin@libero.it>
+X-CMAE-Envelope: MS4xfFXjyjkSSREEemsSXHD6ghKK6Ear5v3Gm1j9QSAtbp+ZLi0S+dxRbwa1ixcbKnNpPW9G15s+HZxGOUSaQCbbhZ2TQURMi8QBGm6Z54yoHyPdL3QXcVNP
+ BMiNJz8LTXzQtOjmHx2DGyNucM60bl0VQXUxG+aANmgHbpd+u8SoVLDRdxIRLejPEEAuQ6Dvesb6kPHJXQ1G62S0+DikujHvIa9JIBJp/au1CHnHj0GaTiYk
+ u3awC2snpN5WVznLBOIl2MtJsoXQTlWmSO21ILaZAZLvgDD/YWu7/CNWj3DrET0L+X7wVyj6k3sZzENm4o0UPgVdKSLyok8ftZXN4jmTP/M6aleRo+jJok6g
+ ux+9cxLLZa9C2RQpYjqhObEH0vkMkV4cbt2fWjdS0i/24rlrZFzOuTLL0aArxVpALPZ1y6rklrmYRaUInu98FhLsT1HO4kvJhc0ba5yIIATAdUh5ssJhOWtq
+ isYUDbfqV4JrZ8T9GTInV8bx6nq7gWQUs5yBdplHzVH5fU5m8PUIsEykyOyKUMtdBohhlUb1gJ2nweVv
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+It references the clock but it is never used. So let's remove it.
 
-Performance tests of the c_can driver led to the patch that gives the
-series its name. I also added two patches not really related to the topic
-of the series.
+Signed-off-by: Dario Binacchi <dariobin@libero.it>
+---
 
-Run test succesfully on a custom board having two CAN ports.
-I connected the CAN1 port to the CAN2 port with a cable. Then I
-opened two terminals. On one I issued a dump command and on the
-other the transmit command used in the tests described in
-https://marc.info/?l=linux-can&m=139746476821294&w=2.
+(no changes since v1)
 
-Terminal-1:
-$ ip link set can1 type can bitrate <bitrate>
-$ ip link set up can1
-$ candump can1 >/tmp/can-test-<bitrate>
+ drivers/net/can/c_can/c_can.h          | 1 -
+ drivers/net/can/c_can/c_can_platform.c | 1 -
+ 2 files changed, 2 deletions(-)
 
-Terminal-2
-$ ip link set can0 type can bitrate <bitrate>
-$ ip link set up can0
-$ time cangen can0 -g0 -p1 -I5A5 -L0 -x -n 1000000
-
-Then I applied the following commands to the file generated by the dump
-command:
-$ wc -l </tmp/can-test-<bitrate>                                 # ca
-$ egrep -v '  can1  5A5   \[0\]' /tmp/can-test-<bitrate> | wc -l # cb
-
-I repeated the tests for 1000000, 500000, 250000 and 125000 bitrates,
-before and after applying the series.
-Here are the results:
-
-Before applying the series:
- bitrate       time         ca         cb
-  125000    6m 42.71s    1000000        0
-  250000    3m 23.28s    1000000        0
-  500000    1m 44.04s    1000000        0
- 1000000    1m  8.44s    1000000        0
-
-After applying ring-FIFO series:
- bitrate       time         ca         cb
-  125000    6m 40.48s    1000000        0
-  250000    3m 20.80s    1000000        0
-  500000    1m 42.56s    1000000        0
- 1000000    1m  7.89s    1000000        0
-
-
-Changes in v3:
-- Remove the transmission spin_lock.
-- Use IF_RX in c_can_do_tx().
-
-Changes in v2:
-- Move c_can_get_tx_free() from c_can_main.c to c_can.h.
-
-Dario Binacchi (4):
-  can: c_can: remove struct c_can_priv::priv field
-  can: c_can: exit c_can_do_tx() early if no frames have been sent
-  can: c_can: support tx ring algorithm
-  can: c_can: cache frames to operate as a true FIFO
-
- drivers/net/can/c_can/c_can.h          | 25 ++++++-
- drivers/net/can/c_can/c_can_main.c     | 95 +++++++++++++++++++-------
- drivers/net/can/c_can/c_can_platform.c |  1 -
- 3 files changed, 94 insertions(+), 27 deletions(-)
-
+diff --git a/drivers/net/can/c_can/c_can.h b/drivers/net/can/c_can/c_can.h
+index 4247ff80a29c..8f23e9c83c84 100644
+--- a/drivers/net/can/c_can/c_can.h
++++ b/drivers/net/can/c_can/c_can.h
+@@ -200,7 +200,6 @@ struct c_can_priv {
+ 	void (*write_reg32)(const struct c_can_priv *priv, enum reg index, u32 val);
+ 	void __iomem *base;
+ 	const u16 *regs;
+-	void *priv;		/* for board-specific data */
+ 	enum c_can_dev_id type;
+ 	struct c_can_raminit raminit_sys;	/* RAMINIT via syscon regmap */
+ 	void (*raminit)(const struct c_can_priv *priv, bool enable);
+diff --git a/drivers/net/can/c_can/c_can_platform.c b/drivers/net/can/c_can/c_can_platform.c
+index 36950363682f..86e95e9d6533 100644
+--- a/drivers/net/can/c_can/c_can_platform.c
++++ b/drivers/net/can/c_can/c_can_platform.c
+@@ -385,7 +385,6 @@ static int c_can_plat_probe(struct platform_device *pdev)
+ 	priv->base = addr;
+ 	priv->device = &pdev->dev;
+ 	priv->can.clock.freq = clk_get_rate(clk);
+-	priv->priv = clk;
+ 	priv->type = drvdata->id;
+ 
+ 	platform_set_drvdata(pdev, dev);
 -- 
 2.17.1
 
