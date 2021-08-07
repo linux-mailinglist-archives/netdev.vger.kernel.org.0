@@ -2,69 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02F783E35EA
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 16:42:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29AD33E35ED
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 16:43:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232420AbhHGOi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Aug 2021 10:38:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38258 "EHLO
+        id S230113AbhHGOnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Aug 2021 10:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232313AbhHGOi1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 10:38:27 -0400
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D793EC0613CF
-        for <netdev@vger.kernel.org>; Sat,  7 Aug 2021 07:38:08 -0700 (PDT)
-Received: by mail-oi1-x243.google.com with SMTP id u25so16746701oiv.5
-        for <netdev@vger.kernel.org>; Sat, 07 Aug 2021 07:38:08 -0700 (PDT)
+        with ESMTP id S229503AbhHGOnx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 10:43:53 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F29C0613CF;
+        Sat,  7 Aug 2021 07:43:36 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id d6so17536825edt.7;
+        Sat, 07 Aug 2021 07:43:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=ReBm15rRPJeYRvR3xmCb6oyrIFi7dzUt1xwgpUczySQ=;
-        b=VmttECjO0ENZLIrUCH1DBNDX7Xn0sJ0TBHYCenyJHEuxuBdwksIDNhYYXFPyfZnmG2
-         jsLmS8qY+3yexXit7oXOjyVv8C3Dy6FeLK80mEArcjArilbOL29wIDM+sr4Vh+TXTMJN
-         CKHCVnFJe3d8aFy/oyDlU/TZHUeec1W9NZKxZA1D9vN9KRVJejZfPutEamxU5e8scxIK
-         BgX+c/hM6GygAZ4l9gdXOmti6wcCWH/sQNXhijpOn3qP1hMr2FFtdxQ6JMnIUAssTP8+
-         Jxdu3xhzf0h6b48FiIjjdfENNYZcWUz6+GB03JYHZeH0NG4KnvTuYQEiHwW6r9mCSl3w
-         YOew==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KCNLnCUiZ+ov8onPR3PzcmV7yH057fWxJ3U1+LFsGFg=;
+        b=QsEp3LsokWXgTBYa573FAuouSLXfRxMfWZmnKLl8UhRbZgh+Uo92IcVfwKVWPEbC3w
+         u818UjNdH9gMLW/ea+WncjsGTRBbR9+gYQFUsVRbjwR2J8MQLLusyJJSIjU1IjvTeCkM
+         NOTbwx2BVDTXSIQPyhlua3mkjm6DlEhS+wboajYVOZyzjJnUvrs2fk9XsyzZmzgFut9T
+         XZJR5eg7f7MR0KvFwv5M/LQBOr7EPsC7WNNkc7BbRozHCWXA/lsl+2dHBOoLskpMHX5V
+         olt2DFuKJxPZ3QcDCdtRFXScux7ld7X4ZQLsf9wfvF1SRNskOr+asXwPJ1X5eZj8pfSA
+         Me0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=ReBm15rRPJeYRvR3xmCb6oyrIFi7dzUt1xwgpUczySQ=;
-        b=tleAa4Bmfcb90C4m3sMZ8CD7FonoqnhWf8Fv6HFPq09skM1sXYXw/BdtBg/rofqQXA
-         tOQu7ZtufEJbkL8G+NPSKod52NVorW00nxKAeWqyhuN2w2p+IN0vqipXirDtQkcgIc0E
-         32tr+vtukOz6O5N82+nY5+hWGhkBhmuqHzIH2+rdK4TZBDOICUonFtvnLoLvryD5++b0
-         kFSYtCQEB0yLqTaG/GkCGz56flET6XiZqD6FriYicQY+raZ1aCCfL3OVIkRWrfNQ+bab
-         /rB6aa8zyejqOoP/qVTjZTYTUzpJgx+q0O5qfkTd6SE576u+OXR+ttx2ro1IDFtQi4je
-         lDyg==
-X-Gm-Message-State: AOAM532XW6KO/KVkrLQ47i/nHA9nQJQUKgk0cYvE+PxSqsofnzt4HGXh
-        CXoie7JwGwhu/0Ikn74iYG0B7eOOGgYLuBoFCm0=
-X-Google-Smtp-Source: ABdhPJwJdnnA+yCV1s3edIEK81SqHkoDZDbYEPON1lmI6ViBBdV3K7CXxWQ3f1ca5q7Erj3Xn9jHsz+iXr3Ygmnud8g=
-X-Received: by 2002:aca:bb88:: with SMTP id l130mr4931961oif.162.1628347088263;
- Sat, 07 Aug 2021 07:38:08 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KCNLnCUiZ+ov8onPR3PzcmV7yH057fWxJ3U1+LFsGFg=;
+        b=nLmsxRJptfLPaiFghIFcBYL2sPkqPeP/9II6utLbCg5Hg4knQpHqrW2TfREm/Sm7M0
+         ysUTypJrE4N8BIvSpjCTM4HBOzXh1aBWQ325fS3NqFhOaQ4Biy/h3sJbaMPlkvCyDBD+
+         M6ji60TzoefB0EeZTktpGPTXMPS2aosLfjiG6+JJGK8DaXtTkcOilA2cyZg6H/w+Md3Z
+         Agnirg2Hrgkue2r7OxT0m56A4SPMmnkbtiL4xe/f08bm4BTOX4+8WcGXA8cKG0MFv6Vw
+         oLKmvxbOv2UN9cUtkF4AHFXdNkG/NZRhmM5hy9lDmxKDnVMELSNjs6u3ZxBkQ0aqCxAz
+         VVMg==
+X-Gm-Message-State: AOAM533/xmQ/1vyZPxXV/MGremS1RJLC4HjPc/HwizEPerEHePkL2pId
+        MYWasIQOl6SpppkGyWH+xlY=
+X-Google-Smtp-Source: ABdhPJztTtlI6TKOgyeMDZCsy49dmZOxhDW7ufw1JqVFBH5TmTflfqph5UKt8P7Z/RD05A8J2QE4HA==
+X-Received: by 2002:a05:6402:1719:: with SMTP id y25mr19430725edu.331.1628347414721;
+        Sat, 07 Aug 2021 07:43:34 -0700 (PDT)
+Received: from skbuf ([188.25.144.60])
+        by smtp.gmail.com with ESMTPSA id k23sm3599454ejr.2.2021.08.07.07.43.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 07 Aug 2021 07:43:34 -0700 (PDT)
+Date:   Sat, 7 Aug 2021 17:43:32 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        mptcp@lists.linux.dev, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Shuah Khan <shuah@kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Rui Sousa <rui.sousa@nxp.com>,
+        Sebastien Laveze <sebastien.laveze@nxp.com>
+Subject: Re: [net-next, v5, 02/11] ptp: support ptp physical/virtual clocks
+ conversion
+Message-ID: <20210807144332.szyazdfl42abwzmd@skbuf>
+References: <20210630081202.4423-1-yangbo.lu@nxp.com>
+ <20210630081202.4423-3-yangbo.lu@nxp.com>
+ <87r1f6kqby.fsf@vcostago-mobl2.amr.corp.intel.com>
+ <20210807142259.GB22362@hoboy.vegasvil.org>
 MIME-Version: 1.0
-Received: by 2002:a9d:b97:0:0:0:0:0 with HTTP; Sat, 7 Aug 2021 07:38:07 -0700 (PDT)
-Reply-To: bensmithparker@gmail.com
-From:   "Mr. Parker Ben Smith" <jmicheal277@gmail.com>
-Date:   Sat, 7 Aug 2021 15:38:07 +0100
-Message-ID: <CAB8M5oTAkRr_Z6_+MM2fVJO=uziEW17dz-Vbcy3TuE7vo0SOfg@mail.gmail.com>
-Subject: Dear Fiend.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210807142259.GB22362@hoboy.vegasvil.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Dear Fiend,
+On Sat, Aug 07, 2021 at 07:22:59AM -0700, Richard Cochran wrote:
+> On Fri, Aug 06, 2021 at 06:15:29PM -0700, Vinicius Costa Gomes wrote:
+> 
+> > >  int ptp_clock_unregister(struct ptp_clock *ptp)
+> > >  {
+> > > +	if (ptp_vclock_in_use(ptp)) {
+> > > +		pr_err("ptp: virtual clock in use\n");
+> > > +		return -EBUSY;
+> > > +	}
+> > > +
+> > 
+> > None of the drivers (that I looked) expect ptp_clock_unregister() to
+> > return an error.
+> > 
+> > So, what should we do?
+> >  1. Fix all the drivers to return an error on module unloading (that's
+> >  usually the path ptp_clock_unregister() is called)?
+> >  2. Remove all the PTP virtual clocks when the physical clock is
+> >  unregistered?
+> 
+> This:
+> 
+>  3. Let the vclocks hold a reference to the underlying posix dynamic clock.
 
-I'm glad to have you here as good business partner. I have a good
-capital and am looking for any lucrative project around you which i
-can invest on that can yield us a good profit in returns.Could you
-please suggest any for me and you will benefit from it too.
+So even if the vclock holds a reference to the underlying POSIX clock,
+that won't prevent the hardware driver from unbinding, and further
+gettime() calls on the vclock from faulting, will it?
 
-Am waiting for your reply for us to have a better discussion there.
+What about:
 
-Regards!
+4. Create a device link with the vclock being a consumer and the parent
+   clock being a supplier? This way, ptp_vclock_unregister() is
+   automatically called whenever (and before) ptp_clock_unregister() is.
 
-Mr. Parker Ben Smith
+https://www.kernel.org/doc/html/latest/driver-api/device_link.html
