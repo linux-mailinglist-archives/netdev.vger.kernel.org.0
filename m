@@ -2,122 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 233B43E33B9
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 08:19:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06E993E33BB
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 08:21:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231317AbhHGGTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Aug 2021 02:19:32 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:13242 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbhHGGTa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 02:19:30 -0400
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GhXH86wjQz1CSMK;
-        Sat,  7 Aug 2021 14:19:00 +0800 (CST)
-Received: from [10.67.103.235] (10.67.103.235) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Sat, 7 Aug 2021 14:19:10 +0800
-Subject: Re: [PATCH V7 4/9] PCI: Enable 10-Bit Tag support for PCIe Endpoint
- devices
-To:     Bjorn Helgaas <helgaas@kernel.org>
-References: <20210805195407.GA1763784@bjorn-Precision-5520>
-CC:     <hch@infradead.org>, <kw@linux.com>, <logang@deltatee.com>,
-        <leon@kernel.org>, <linux-pci@vger.kernel.org>,
-        <rajur@chelsio.com>, <hverkuil-cisco@xs4all.nl>,
-        <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
-From:   Dongdong Liu <liudongdong3@huawei.com>
-Message-ID: <c7fdb77d-8b93-f3ef-05d2-54daf67305e2@huawei.com>
-Date:   Sat, 7 Aug 2021 14:19:10 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        id S231352AbhHGGVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Aug 2021 02:21:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42922 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229495AbhHGGVa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 02:21:30 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD635C0613CF;
+        Fri,  6 Aug 2021 23:21:12 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id o44-20020a17090a0a2fb0290176ca3e5a2fso21305722pjo.1;
+        Fri, 06 Aug 2021 23:21:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=m2cqmq90O7bUx6WnzE787bEO9ZOPXuPJtWAxQVGTmx4=;
+        b=Py6Y955oz6HI1f43MbKUetr8rs+3ZJ6lB8q0Qf5Opr/7xJTeHo+rODYHo3BN9XFHEz
+         IU85n4Dk9qBDKSBldSV9znRV07mYtKnIS4ZVLjg3QkbjzU7ggFanCAMiF04TDJ8Fh/FZ
+         i9auyoj0NYc2LlwSNbsoSHru5iyH7MOxxxWPidSjU8yrYp03ZV6IdZIa0IXfvXNGlodD
+         76gTaBUxCnfWToWZBPjzWLAR1S0rfG3SVznjj4GXBapDBRDg+7bgpv9GreHyvYgqudtc
+         r24o043IlEzBMLGqwyuAf3h62uATtvaNqnj3NkIa3wDyExg7HePpBCwqgOwsDzVPvhYE
+         gg6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=m2cqmq90O7bUx6WnzE787bEO9ZOPXuPJtWAxQVGTmx4=;
+        b=Fl/r/+/dGZy1JY8ZQ1zuyYJF9drSwBm96qld2hPRDoXR19T2ugxBxEpno8jgCkIwDa
+         xfYySNvq5GxLwrdb7JdzbHLW3T7X1EyT6KsyvZUzjSqiVeVA+o1UGKfvsuJ7JZI4JxQO
+         R8P52uvhHpDtGAZRATW4burFO1qLTkelR9MeP3Kq/nH8HIeO1iJCrN1MOW+F9TaEknOR
+         9EQ/m+GEfA+g7wQsEth021PdfBPBCcm4IAjhxZ7eW0zktZsw4MpX51J5dptWs3X8r8c0
+         NITGqS1QsikQdrwEZJNwnNWklO72pDIIEiffXWzOBOCBT2f6HadFL3+XqUM7WX4l5IQ2
+         Pyzg==
+X-Gm-Message-State: AOAM533sPfXg+QnScsyf/tdVR1JhFvM/TAj/oePwUGcnErq8OerVPROV
+        8thIDS7mfq3IO65ZnKAkmN4=
+X-Google-Smtp-Source: ABdhPJwJOiCK3vqkQxeVgeIXyYL9YVCNVjrzLHcjv41inI2KjVSwGPFUPOTv1Jgbttk8NY778o/Rqg==
+X-Received: by 2002:a63:e214:: with SMTP id q20mr11413pgh.134.1628317272349;
+        Fri, 06 Aug 2021 23:21:12 -0700 (PDT)
+Received: from localhost.localdomain ([1.240.193.107])
+        by smtp.googlemail.com with ESMTPSA id y4sm10985287pjw.57.2021.08.06.23.21.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Aug 2021 23:21:11 -0700 (PDT)
+From:   Kangmin Park <l4stpr0gr4m@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] netfilter: remove duplicate code
+Date:   Sat,  7 Aug 2021 15:21:06 +0900
+Message-Id: <20210807062106.2563-1-l4stpr0gr4m@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20210805195407.GA1763784@bjorn-Precision-5520>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.103.235]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+nf_nat_ipv4_fn() and nf_nat_ipv6_fn() call nf_nat_inet_fn().
+Those two functions are already contains routine that gets nf_conn
+object and checks the untrackable situation.
+So, the following code is duplicated.
 
+```
+ct = nf_ct_get(skb, &ctinfo);
+if (!ct)
+        return NF_ACCEPT;
+```
 
-On 2021/8/6 3:54, Bjorn Helgaas wrote:
-> On Thu, Aug 05, 2021 at 03:47:31PM +0800, Dongdong Liu wrote:
->> Hi Bjorn
->>
->> Many thanks for your review.
->> On 2021/8/5 7:17, Bjorn Helgaas wrote:
->>> On Wed, Aug 04, 2021 at 09:47:03PM +0800, Dongdong Liu wrote:
->>>> 10-Bit Tag capability, introduced in PCIe-4.0 increases the total Tag
->>>> field size from 8 bits to 10 bits.
->>>>
->>>> PCIe spec 5.0 r1.0 section 2.2.6.2 "Considerations for Implementing
->>>> 10-Bit Tag Capabilities" Implementation Note.
->>>> For platforms where the RC supports 10-Bit Tag Completer capability,
->>>> it is highly recommended for platform firmware or operating software
->>>> that configures PCIe hierarchies to Set the 10-Bit Tag Requester Enable
->>>> bit automatically in Endpoints with 10-Bit Tag Requester capability. This
->>>> enables the important class of 10-Bit Tag capable adapters that send
->>>> Memory Read Requests only to host memory.
->>>
->>> Quoted material should be set off with a blank line before it and
->>> indented by two spaces so it's clear exactly what comes from the spec
->>> and what you've added.  For example, see
->>> https://git.kernel.org/linus/ec411e02b7a2
->> Good point, will fix.
->>>
->>> We need to say why we assume it's safe to enable 10-bit tags for all
->>> devices below a Root Port that supports them.  I think this has to do
->>> with switches being required to forward 10-bit tags correctly even if
->>> they were designed before 10-bit tags were added to the spec.
->>
->> PCIe spec 5.0 r1.0 section 2.2.6.2 "Considerations for Implementing
->> 10-Bit Tag Capabilities" Implementation Note:
->>
->>   Switches that lack 10-Bit Tag Completer capability are still able to
->>   forward NPRs and Completions carrying 10-Bit Tags correctly, since the
->>   two new Tag bits are in TLP Header bits that were formerly Reserved,
->>   and Switches are required to forward Reserved TLP Header bits without
->>   modification. However, if such a Switch detects an error with an NPR
->>   carrying a 10-Bit Tag, and that Switch handles the error by acting as
->>   the Completer for the NPR, the resulting Completion will have an
->>   invalid 10-Bit Tag. Thus, it is strongly recommended that Switches
->>   between any components using 10-Bit Tags support 10-Bit Tag Completer
->>   capability.  Note that Switches supporting 16.0 GT/s data rates or
->>   greater must support 10-Bit Tag Completer capability.
->>
->> This patch also consider to enable 10-Bit Tag for EP device need RP
->> and Switch device support 10-Bit Tag Completer capability.
->>>
->>> And it should call out any cases where it is *not* safe, e.g., if P2P
->>> traffic is an issue.
->> Yes, indeed.
->>>
->>> If there are cases where we don't want to enable 10-bit tags, whether
->>> it's to enable P2P traffic or merely to work around device defects,
->>> that ability needs to be here from the beginning.  If somebody needs
->>> to bisect with 10-bit tags disabled, we don't want a bisection hole
->>> between this commit and the commit that adds the control.
->> We provide sysfs file to disable 10-bit tag for P2P traffic when needed.
->> The details see PATCH 7/8/9.
->
-> A mechanism for avoiding problems needs to be present from the very
-> beginning so there's no bisection hole.  It should not be added by a
-> future patch.
-Yes, will adjust PATCH 7/8/9 before PATCH 4。
->
-> The sysfs file is a start, but if we run into an issue, it could mean
-> that we can't boot and run long enough to use sysfs to disable 10-bit
-> tags.  So I think we might need a kernel parameter that disables it
-> (and possibly other things like MPS optimization).
+Therefore, define a function __nf_nat_inet_fn() that has the same
+contents as the nf_nat_inet_fn() except for routine gets and checks
+the nf_conn object.
+Then, separate the nf_nat_inet_fn() into a routine that gets a
+nf_conn object and a routine that calls the __nf_nat_inet_fn().
 
-Yes, We can add a pcie_tag_p2p kernel parameter just to use the 8-bit
-tags, not to enable 10-bit tags for all PCIe devices.
+Signed-off-by: Kangmin Park <l4stpr0gr4m@gmail.com>
+---
+ include/net/netfilter/nf_nat.h |  5 +++++
+ net/netfilter/nf_nat_core.c    | 37 ++++++++++++++++++++++------------
+ net/netfilter/nf_nat_proto.c   |  4 ++--
+ 3 files changed, 31 insertions(+), 15 deletions(-)
 
-Thanks,
-Dongdong
+diff --git a/include/net/netfilter/nf_nat.h b/include/net/netfilter/nf_nat.h
+index 987111ae5240..a66f617c5054 100644
+--- a/include/net/netfilter/nf_nat.h
++++ b/include/net/netfilter/nf_nat.h
+@@ -100,6 +100,11 @@ void nf_nat_ipv6_unregister_fn(struct net *net, const struct nf_hook_ops *ops);
+ int nf_nat_inet_register_fn(struct net *net, const struct nf_hook_ops *ops);
+ void nf_nat_inet_unregister_fn(struct net *net, const struct nf_hook_ops *ops);
+ 
++unsigned int
++__nf_nat_inet_fn(void *priv, struct sk_buff *skb,
++		 const struct nf_hook_state *state, struct nf_conn *ct,
++		 enum ip_conntrack_info ctinfo);
++
+ unsigned int
+ nf_nat_inet_fn(void *priv, struct sk_buff *skb,
+ 	       const struct nf_hook_state *state);
+diff --git a/net/netfilter/nf_nat_core.c b/net/netfilter/nf_nat_core.c
+index 7de595ead06a..98ebba2c0f6d 100644
+--- a/net/netfilter/nf_nat_core.c
++++ b/net/netfilter/nf_nat_core.c
+@@ -682,25 +682,15 @@ unsigned int nf_nat_packet(struct nf_conn *ct,
+ }
+ EXPORT_SYMBOL_GPL(nf_nat_packet);
+ 
+ unsigned int
+-nf_nat_inet_fn(void *priv, struct sk_buff *skb,
+-	       const struct nf_hook_state *state)
++__nf_nat_inet_fn(void *priv, struct sk_buff *skb,
++		 const struct nf_hook_state *state, struct nf_conn *ct,
++		 enum ip_conntrack_info ctinfo)
+ {
+-	struct nf_conn *ct;
+-	enum ip_conntrack_info ctinfo;
+ 	struct nf_conn_nat *nat;
+ 	/* maniptype == SRC for postrouting. */
+ 	enum nf_nat_manip_type maniptype = HOOK2MANIP(state->hook);
+ 
+-	ct = nf_ct_get(skb, &ctinfo);
+-	/* Can't track?  It's not due to stress, or conntrack would
+-	 * have dropped it.  Hence it's the user's responsibilty to
+-	 * packet filter it out, or implement conntrack/NAT for that
+-	 * protocol. 8) --RR
+-	 */
+-	if (!ct)
+-		return NF_ACCEPT;
+-
+ 	nat = nfct_nat(ct);
+ 
+ 	switch (ctinfo) {
+@@ -755,6 +745,26 @@ nf_nat_inet_fn(void *priv, struct sk_buff *skb,
+ 	nf_ct_kill_acct(ct, ctinfo, skb);
+ 	return NF_DROP;
+ }
++EXPORT_SYMBOL_GPL(__nf_nat_inet_fn);
++
++unsigned int
++nf_nat_inet_fn(void *priv, struct sk_buff *skb,
++	       const struct nf_hook_state *state)
++{
++	struct nf_conn *ct;
++	enum ip_conntrack_info ctinfo;
++
++	ct = nf_ct_get(skb, &ctinfo);
++	/* Can't track?  It's not due to stress, or conntrack would
++	 * have dropped it.  Hence it's the user's responsibilty to
++	 * packet filter it out, or implement conntrack/NAT for that
++	 * protocol. 8) --RR
++	 */
++	if (!ct)
++		return NF_ACCEPT;
++
++	return __nf_nat_inet_fn(priv, skb, state, ct, ctinfo);
++}
+ EXPORT_SYMBOL_GPL(nf_nat_inet_fn);
+ 
+ struct nf_nat_proto_clean {
+diff --git a/net/netfilter/nf_nat_proto.c b/net/netfilter/nf_nat_proto.c
+index 48cc60084d28..897859730078 100644
+--- a/net/netfilter/nf_nat_proto.c
++++ b/net/netfilter/nf_nat_proto.c
+@@ -642,7 +642,7 @@ nf_nat_ipv4_fn(void *priv, struct sk_buff *skb,
+ 		}
+ 	}
+ 
+-	return nf_nat_inet_fn(priv, skb, state);
++	return __nf_nat_inet_fn(priv, skb, state, ct, ctinfo);
+ }
+ 
+ static unsigned int
+@@ -934,7 +934,7 @@ nf_nat_ipv6_fn(void *priv, struct sk_buff *skb,
+ 		}
+ 	}
+ 
+-	return nf_nat_inet_fn(priv, skb, state);
++	return __nf_nat_inet_fn(priv, skb, state, ct, ctinfo);
+ }
+ 
+ static unsigned int
+-- 
+2.26.2
 
