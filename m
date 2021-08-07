@@ -2,107 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6AD43E370A
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 22:47:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 440B23E370C
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 22:47:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229854AbhHGUpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Aug 2021 16:45:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32870 "EHLO
+        id S229914AbhHGUqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Aug 2021 16:46:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229640AbhHGUpq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 16:45:46 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2793C0613CF;
-        Sat,  7 Aug 2021 13:45:26 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id c25so7734923ejb.3;
-        Sat, 07 Aug 2021 13:45:26 -0700 (PDT)
+        with ESMTP id S229882AbhHGUqE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 16:46:04 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011EEC0613CF
+        for <netdev@vger.kernel.org>; Sat,  7 Aug 2021 13:45:47 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id e2-20020a17090a4a02b029016f3020d867so23401034pjh.3
+        for <netdev@vger.kernel.org>; Sat, 07 Aug 2021 13:45:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UX7cugeGwnRCrPEXlPOSjdRgHaxlQWVJIYETVe5lRjg=;
-        b=NbJceOX2FnCfDvHVjGl478m+FoutH/jDuyjZE+vxfZQVXZN1yHr6RNaZk/96Zs1br1
-         OboR23oVmG4XsrK245TlOJLZp/HhOBVlzHxiX08JBb5p5lUDxIh2pfHqWYT2G617bceW
-         kjtUd6FFM4dpzzphXXOxoNC044AvNPYIpR47vfYa6lSS027APQj/6kvXK/LPSFT9l8rd
-         cEkhvj78iHKCvfDqfBdmvVtfHMw/FAhDdO+UlM+pwEk3SDQTYXVoDIMET0Zd1IumYp7J
-         enK16cTtsiPnlSB797Fa/wH5+7uxgpcqS8qXzZNmPP4FOGV5emVjL6lRl8K4SaNm+Nr3
-         9itw==
+         :content-disposition:in-reply-to:user-agent;
+        bh=Zi8Ckmn+MFCZzYYd00KoG4NgYZUjFUOPpnnNJj+1WBw=;
+        b=gfL7NqQBPfm9T7Sz8t+Lx2mx4ruZCPs8Gt1vz5exy/wqmCBHss3zeHTVpDma+2ysCs
+         j1OZ0aMr7cY1D2nXYMp8bsSOWFp12RFKBGrQLFNXWw36JK23zbtIDM+jHM+FUnYEuHwe
+         u/u3ATE2IvlOliqdGcKuio9Ufx9IWqyv3m33WX7xXDVZwtPCsPowBG7Wger1/WMgZcvu
+         /Fi0kkNrTwDUsJ34Mlx97dndzhYFMG1mMMdkSSEWDW3oJximxl5kMnitlydEg7Smbkif
+         7SZksxpPJ+sM+ydMqMfVI50lCXZOhXF/cKhi4VcQnoqpLSl3uLE9H5nD9MkNZ2z/u8yX
+         D6jA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UX7cugeGwnRCrPEXlPOSjdRgHaxlQWVJIYETVe5lRjg=;
-        b=o+nxEU0/Pr9AdugMxoBZn309fZH93XhCmBESSy7GIzbCdCp4ihlg9jJQ3fL9zfk1k7
-         uMvzjKC+OQuo8OWNeP90uM7hdsY63TQppSFby8te3aFSZx/0bGQpt44/Fv3uJ8usmkD1
-         0ag2VCNW9htyFedYNok4VWl+pf4vV+XFC91qMx48aQkuSGLqiKP1/UEeNWQYdsweLeHp
-         dzq3qsVXQJzTb/jFkJ+R4/4ew6QEzJdjBNNg8GLRZgFe6Klcbt0jPqepfJBVwqtaHr8a
-         S1riYtTAPz8LqTpJSw3xlfIxPuzDYycKnv0W4b5zn0vcAlID+pn25U8M+87QkLEsxJyR
-         QP1Q==
-X-Gm-Message-State: AOAM533zOCeIg1fRjgAYCELto2u+R6HO8t8XMrmbaj3D4LlDgRehOHZB
-        XxWSTY9RKFJZ4wF3VS9COXs=
-X-Google-Smtp-Source: ABdhPJxR5VvMDwLu4NEEnt2V7HoUu/i7zbukzf5BDLpAfxn5TnbWAhvCoAY6rnc3V0On2EbwsDAkWw==
-X-Received: by 2002:a17:906:c08e:: with SMTP id f14mr15322642ejz.380.1628369125341;
-        Sat, 07 Aug 2021 13:45:25 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id c8sm398824ejp.124.2021.08.07.13.45.23
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Zi8Ckmn+MFCZzYYd00KoG4NgYZUjFUOPpnnNJj+1WBw=;
+        b=ShebDVlTyakUDJQ2KQ08thePSnFE2lyvuV0XdPtlKLu4wC11gSWD/NpHqwVfZd5RtJ
+         UbBxpZy5GthxfmFS6filHEfEl7wUgMmGElMO6L/Fy+buhDNsObc0XUOULMr8NhhypfKU
+         QPVK/m4P6F1X5xTuSfWDvvr0WagaoO3sxlDdIl68RMxeyyr1OBiYoHYuvB5ViQlheg2P
+         jkfYxY/3lvEv2+bxQ7cnt0Cf6diYCFC/WZQ1uh/cjrcc0rV3U9SF+7tt2Hj9V9vjpRjy
+         t9nL6c6XuUAWy9lycMO2YoaMiwfC5gxcg3pBxJ28YmDSVXHeIkuvYu5z18chhvBOkZUT
+         oVqg==
+X-Gm-Message-State: AOAM532MY7Bs481VP7SYjwdoJ/88hkNx3CazM1OrRFl1a7wflTkvk7m5
+        yld7sIMLKilNdoa3PrDyz3k=
+X-Google-Smtp-Source: ABdhPJxvLtVBVicv4tgpshBl8j1k+ApO4fOXnBNQeRCw5kZQ/EG9VvuY5NNuQwt5XsCwnxLnI402EA==
+X-Received: by 2002:a17:90a:3f87:: with SMTP id m7mr16737488pjc.96.1628369146508;
+        Sat, 07 Aug 2021 13:45:46 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id c26sm8721827pfo.3.2021.08.07.13.45.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Aug 2021 13:45:25 -0700 (PDT)
-Date:   Sat, 7 Aug 2021 23:45:23 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        Jonathan McDowell <noodles@earth.li>,
-        Michal =?utf-8?B?Vm9rw6HEjQ==?= <vokac.m@gmail.com>,
-        Christian Lamparter <chunkeey@gmail.com>,
-        Nishka Dasgupta <nishkadg.linux@gmail.com>,
-        Xiaofei Shen <xiaofeis@codeaurora.org>,
-        John Crispin <john@phrozen.org>,
-        Stefan Lippers-Hollmann <s.l-h@gmx.de>,
-        Hannu Nyman <hannu.nyman@iki.fi>,
-        Imran Khan <gururug@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Nick Lowe <nick.lowe@gmail.com>,
-        =?utf-8?B?QW5kcsOp?= Valentin <avalentin@vmh.kalnet.hooya.de>
-Subject: Re: [RFC net-next 1/3] net: dsa: qca8k: offload bridge flags
-Message-ID: <20210807204523.iy43swaq2sekgsj6@skbuf>
-References: <20210807120726.1063225-1-dqfext@gmail.com>
- <20210807120726.1063225-2-dqfext@gmail.com>
+        Sat, 07 Aug 2021 13:45:45 -0700 (PDT)
+Date:   Sat, 7 Aug 2021 13:45:43 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        gospo@broadcom.com, pavan.chebbi@broadcom.com
+Subject: Re: [PATCH net 0/3] bnxt_en: PTP fixes
+Message-ID: <20210807204543.GC22362@hoboy.vegasvil.org>
+References: <1628362995-7938-1-git-send-email-michael.chan@broadcom.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210807120726.1063225-2-dqfext@gmail.com>
+In-Reply-To: <1628362995-7938-1-git-send-email-michael.chan@broadcom.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 07, 2021 at 08:07:24PM +0800, DENG Qingfang wrote:
-> +static int
-> +qca8k_port_bridge_flags(struct dsa_switch *ds, int port,
-> +			struct switchdev_brport_flags flags,
-> +			struct netlink_ext_ack *extack)
-> +{
-> +	struct qca8k_priv *priv = ds->priv;
-> +	int ret = 0;
-> +
-> +	if (!ret && flags.mask & BR_LEARNING)
-> +		ret = qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
-> +				QCA8K_PORT_LOOKUP_LEARN,
-> +				flags.val & BR_LEARNING ?
-> +				QCA8K_PORT_LOOKUP_LEARN : 0);
+On Sat, Aug 07, 2021 at 03:03:12PM -0400, Michael Chan wrote:
+> This series includes 2 fixes for the PTP feature.  Update to the new
+> firmware interface so that the driver can pass the PTP sequence number
+> header offset of TX packets to the firmware.  This is needed for all
+> PTP packet types (v1, v2, with or without VLAN) to work.  The 2nd
+> fix is to use a different register window to read the PHC to avoid
+> conflict with an older Broadcom tool.
+>  
+> Michael Chan (3):
+>   bnxt_en: Update firmware interface to 1.10.2.52
+>   bnxt_en: Update firmware call to retrieve TX PTP timestamp
+>   bnxt_en: Use register window 6 instead of 5 to read the PHC
 
-And fast ageing when learning on a port is turned off?
+for the series:
 
-> +
-> +	if (!ret && flags.mask & BR_FLOOD)
-> +		ret = qca8k_rmw(priv, QCA8K_REG_GLOBAL_FW_CTRL1,
-> +				BIT(port + QCA8K_GLOBAL_FW_CTRL1_UC_DP_S),
-> +				flags.val & BR_FLOOD ?
-> +				BIT(port + QCA8K_GLOBAL_FW_CTRL1_UC_DP_S) : 0);
+Acked-by: Richard Cochran <richardcochran@gmail.com>
