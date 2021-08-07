@@ -2,102 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D80233E3713
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 23:01:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7E863E3719
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 23:26:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229865AbhHGU5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Aug 2021 16:57:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35314 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbhHGU5H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 16:57:07 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF318C0613CF;
-        Sat,  7 Aug 2021 13:56:48 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id k11-20020a17090a62cbb02901786a5edc9aso4314106pjs.5;
-        Sat, 07 Aug 2021 13:56:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=aDPS+XgQ7hE35dLkgpgBaogFW2sWOGSB2/ljVEyiaXE=;
-        b=QkN+d27NFol80qPk1x1PjEoadt867p+EnfVJEqQr3mIcvz03YJ3gO1J6bUhpUlgSBC
-         HRu9ZMDPANHSGwqKlJ8kkTfoUCwVQ4k10powPrORmLPwjpXjciqPdQz3SjKEG3GbQJL9
-         YeQwJOzEDSrDTavXdi928gnCdhu0CmelWuE5FttBfOeYNG+J2R91b5yAniGIQlJt1Tf8
-         69Ha4VqwQtHl1irko2AgAAuQcTISDnNRWJKbMrj3qOu+uK//g4/psooaxzmqYYUXISXO
-         5tS6uCo4XXLB91hv981M3AsXAqYVdHscQrx5l55M9tn4kj1LoQriaQdO9y0afbLI881u
-         JC9Q==
+        id S229882AbhHGV04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Aug 2021 17:26:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31986 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229517AbhHGV0z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 17:26:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1628371597;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Ql473xDetlxsytlL7rANAqL7UeihJd6f7EVjv1H0164=;
+        b=MrEILaE/GqYRS9lpXX/ga5I1eKz3qrR0rCgyZohAvG+FeGQNynjcrNrb3ucAmm/Xf5n2AS
+        poGPbSmiumfuJ2tBzkIjV0inELuTGITNKTCW6b3IBqkat9ud4RsPDNSSpuqHSLFdt2wUiF
+        AKzGHBDriNeNv/b9cECrKyV+vqi0TYc=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-101-lh3JgH4YPXqljFiYiHB9hA-1; Sat, 07 Aug 2021 17:26:36 -0400
+X-MC-Unique: lh3JgH4YPXqljFiYiHB9hA-1
+Received: by mail-qv1-f71.google.com with SMTP id r14-20020a0c8d0e0000b02902e82df307f0so9111956qvb.4
+        for <netdev@vger.kernel.org>; Sat, 07 Aug 2021 14:26:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=aDPS+XgQ7hE35dLkgpgBaogFW2sWOGSB2/ljVEyiaXE=;
-        b=ZETXojj/0+HQc5IqooKnxTJRAN0Che09uc4ENaKtK8Tjyl28jwbzRZ/Y7IogHqmlJC
-         MxmzQXcR4ZpPOAe8ehn8lRh0uNYXr7rzj/FO68Pf0S923AmplAiUIc8Yiw1gpkM+2vfG
-         QFPLtFFlrGjvdXK87U2K0/Gpj6kY3wWuiR/ckONZjz3aUoZOrfE809TIGT6+dcosJ/o5
-         94uny19yAKD4RaFXoVDYVPHd3jtm3kP3ZTZ2pKjhju1vjYpyW7INv1/5qOimkRR05q6o
-         oiFFauVJWxosijLE9JIsofXEHigyS92VdFj8dht97z72DurYE5lKoWKyY18M86lBV0qD
-         /mnA==
-X-Gm-Message-State: AOAM530qgFKZFqV6NRF4OiLYE7XemDkyzyCX5NKut4CYrVFUvTtCZipG
-        uSUoqHKyUF4tyu6XTngdx2g=
-X-Google-Smtp-Source: ABdhPJwYep8tTUVrpoNuljGQS+T87KcHeKmlJQ8E1VasglxRR6sopaSE2SP5GJqcCuWgm1dBo0iYFA==
-X-Received: by 2002:a17:90a:5982:: with SMTP id l2mr17279489pji.18.1628369807552;
-        Sat, 07 Aug 2021 13:56:47 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id b15sm16955974pgm.15.2021.08.07.13.56.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Aug 2021 13:56:47 -0700 (PDT)
-Date:   Sat, 7 Aug 2021 13:56:44 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        mptcp@lists.linux.dev, "David S . Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=Ql473xDetlxsytlL7rANAqL7UeihJd6f7EVjv1H0164=;
+        b=igaf+J3niQbsZo+8OcYl7+eWlnqclwk+KzpffXCAbYDx34r2vsxaUp8qHNnXg/6Z3t
+         PN5VqIFbZi5hNuIbJS2hX2QF6yMp55sFojemAJodbMFmMaipeX5XruqLgBNq3JKKF2r3
+         eeyacWAF4Sn0MWmRqBKqw9dP/hLmF7Qx7rV+FWpr3ODqYmafHxvd+VmeAYyNcF67mkH0
+         zt501Uulvyr+hkoDwH2Lkdos6LDtFP3UFfLFSglMyjsSe3DrnYUF1VYjtF3RiMHslQKQ
+         YlSTC2erD9ujHU8iPoKSwhHP4Cg5SECGm4c3W47/BmACxzKbIJQgsfC4tm898LkSjx3G
+         lvVA==
+X-Gm-Message-State: AOAM531unHD2fZCECFi64HRG8ECHpYuJ5tFWlaTf6PDewG3CGlJj1vkd
+        BnkPvMNllSaaCqZOPbEIzZC0E/PY588T4+jvPR6QoEQbufIghJOCIWUof9ExHncLlKczjBxWahg
+        Azu8AuUvbRn3d2kh+
+X-Received: by 2002:ad4:54ae:: with SMTP id r14mr17350057qvy.1.1628371595724;
+        Sat, 07 Aug 2021 14:26:35 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzC5zDGpPjn1+I+DTLwfT/IPU19lPrvDGE5/skNWFSqRPsdfvGiv3FS3SsFxZZvPeAxWUEudg==
+X-Received: by 2002:ad4:54ae:: with SMTP id r14mr17350041qvy.1.1628371595547;
+        Sat, 07 Aug 2021 14:26:35 -0700 (PDT)
+Received: from jtoppins.rdu.csb ([107.15.110.69])
+        by smtp.gmail.com with ESMTPSA id c1sm5164245qtj.36.2021.08.07.14.26.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 07 Aug 2021 14:26:35 -0700 (PDT)
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     Veaceslav Falico <vfalico@gmail.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Shuah Khan <shuah@kernel.org>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Rui Sousa <rui.sousa@nxp.com>,
-        Sebastien Laveze <sebastien.laveze@nxp.com>
-Subject: Re: [net-next, v5, 02/11] ptp: support ptp physical/virtual clocks
- conversion
-Message-ID: <20210807205644.GD22362@hoboy.vegasvil.org>
-References: <20210630081202.4423-1-yangbo.lu@nxp.com>
- <20210630081202.4423-3-yangbo.lu@nxp.com>
- <87r1f6kqby.fsf@vcostago-mobl2.amr.corp.intel.com>
- <20210807142259.GB22362@hoboy.vegasvil.org>
- <20210807144332.szyazdfl42abwzmd@skbuf>
+        LKML <linux-kernel@vger.kernel.org>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+Subject: bonding: link state question
+Message-ID: <020577f3-763d-48fd-73ce-db38c3c7fdf9@redhat.com>
+Date:   Sat, 7 Aug 2021 17:26:34 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210807144332.szyazdfl42abwzmd@skbuf>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 07, 2021 at 05:43:32PM +0300, Vladimir Oltean wrote:
-> >  3. Let the vclocks hold a reference to the underlying posix dynamic clock.
-> 
-> So even if the vclock holds a reference to the underlying POSIX clock,
-> that won't prevent the hardware driver from unbinding, and further
-> gettime() calls on the vclock from faulting, will it?
+Is there any reason why bonding should have an operstate of up when none 
+of its slaves are in an up state? In this particular scenario it seems 
+like the bonding device should at least assert NO-CARRIER, thoughts?
 
-Oh, your are right.  The vclocks call the real PHC clock's methods
-directly, not through the posix dynamic clock layer.
+$ ip -o -d link show | grep "bond5"
+2: enp0s31f6: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> mtu 1500 qdisc 
+fq_codel master bond5 state DOWN mode DEFAULT group default qlen 1000\ 
+  link/ether 8c:8c:aa:f8:62:16 brd ff:ff:ff:ff:ff:ff promiscuity 0 
+minmtu 68 maxmtu 9000 \    bond_slave state ACTIVE mii_status UP 
+link_failure_count 0 perm_hwaddr 8c:8c:aa:f8:62:16 queue_id 0 
+numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
+41: bond5: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc 
+noqueue state UP mode DEFAULT group default qlen 1000\    link/ether 
+8c:8c:aa:f8:62:16 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 68 maxmtu 
+65535 \    bond mode balance-xor miimon 0 updelay 0 downdelay 0 
+peer_notify_delay 0 use_carrier 1 arp_interval 0 arp_validate none 
+arp_all_targets any primary_reselect always fail_over_mac none 
+xmit_hash_policy layer2 resend_igmp 1 num_grat_arp 1 all_slaves_active 0 
+min_links 0 lp_interval 1 packets_per_slave 1 lacp_rate slow ad_select 
+stable tlb_dynamic_lb 1 numtxqueues 16 numrxqueues 16 gso_max_size 65536 
+gso_max_segs 65535
 
-> What about:
-> 
-> 4. Create a device link with the vclock being a consumer and the parent
->    clock being a supplier? This way, ptp_vclock_unregister() is
->    automatically called whenever (and before) ptp_clock_unregister() is.
-> 
-> https://www.kernel.org/doc/html/latest/driver-api/device_link.html
+$ cat /sys/class/net/enp0s31f6/operstate
+down
 
-Sounds promising.
+$ cat /sys/class/net/bond5/operstate
+up
+
+This is an older kernel (4.18.0-305.7.1.el8_4.x86_64) but I do not see 
+any changes upstream that would indicate a change in this operation.
 
 Thanks,
-Richard
+-Jon
+
