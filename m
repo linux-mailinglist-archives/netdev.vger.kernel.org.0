@@ -2,105 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2FCE3E376F
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 00:42:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A26F3E3776
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 00:50:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230027AbhHGWmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Aug 2021 18:42:35 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:33120
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229537AbhHGWme (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 18:42:34 -0400
-Received: from famine.localdomain (1.general.jvosburgh.us.vpn [10.172.68.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id E0A7A3F043;
-        Sat,  7 Aug 2021 22:42:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1628376136;
-        bh=G9duVisYT1xEcW17Z4N6y/MIlXkHahKN2T7r/8xAxHg=;
-        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-         Content-Type:Date:Message-ID;
-        b=IoyX9VPYzhDyXMBcKeLSoqGC+GtiqqnhgRacncza7TxLNsLP4Ttxcwk47qF+01sRS
-         ZoPFBbBgWBnL0rOggSWGX0bIjwGWeTKnw1d3Kac8e25q4BOqo9veGopEJrta2/sApj
-         MSfcTSCD6ZWtiq4if8XxQ1OtNAx4z8mngWtV06ItXVZ/hOMTWDEVBoGg3FiBWUx7h4
-         qCltsWChCv7u/uI477bkmtilZvz+tltbn/dUfzgeBeelXrfvv+vTNC0QG3gTdSb4Ir
-         5eB323XFMX+aSRKfo9w3w36ZHJRK9lhlgyxCfsOL+QKQ1z6xAfmU7AQXUYFXT5Cg2o
-         iRHEafqhloMdw==
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 35F8A5FDD5; Sat,  7 Aug 2021 15:42:14 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 2D0E59FAC3;
-        Sat,  7 Aug 2021 15:42:14 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Jonathan Toppins <jtoppins@redhat.com>
-cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: bonding: link state question
-In-reply-to: <020577f3-763d-48fd-73ce-db38c3c7fdf9@redhat.com>
-References: <020577f3-763d-48fd-73ce-db38c3c7fdf9@redhat.com>
-Comments: In-reply-to Jonathan Toppins <jtoppins@redhat.com>
-   message dated "Sat, 07 Aug 2021 17:26:34 -0400."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S230057AbhHGWus (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Aug 2021 18:50:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59622 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229842AbhHGWun (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 18:50:43 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88750C061760;
+        Sat,  7 Aug 2021 15:50:24 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id t7-20020a17090a5d87b029017807007f23so25099965pji.5;
+        Sat, 07 Aug 2021 15:50:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:cc:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=uEem7psRvM7YsBApVUOIYNX9Q3BxPkvG81EmDGqOa9s=;
+        b=N9IES7qCgsNkrW/7jSSrTnkTQSYBHoyCYvBGetifVfUNrX8wXw6sERlAP8taH+i2zW
+         VreBpQswl30ZTDEKo9ubDqhnKR4MGU1zbgQXZ/rNwMOIiBt4KdEsjCs4kl9QagcKQA/n
+         phVqqkZbWyRsrmMEjB9qlrBopnPk8joNV/Qf/jUy+8P0a6yra+8nt9lWvrgReAPo8wlf
+         js0IAx9DEa3iNLOEjbgj/1o3quIVfBofnnyULTRcG0zToVHix/eV4mbUtLLLTwbmZREe
+         4OrQ3Zx88qszNlElZrYUgetb0k8ANPf3GnpSmYTycKz0UpKOuH50G+JDQY0iA+KX0Ipp
+         CN9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
+        bh=uEem7psRvM7YsBApVUOIYNX9Q3BxPkvG81EmDGqOa9s=;
+        b=jjYwJDtCcDeUYA08JiRr7t2uQuFA/KyEHRL9w8LwA0sBZ3rrbbTqBk7FuDR8+5C6Rh
+         YtHTc+Nw3IyLzbI432J3WEQwRk64GDZWr9AcTI7AFKU3qOYq9VPiReP+eGmuZrnFdbcI
+         drVsNw+QkWfM/jBtsrKTGISVRyxCrAYXAM6ZkvfdDlFMJzdZlGW5hGxKLmxdhkeJr1JW
+         tRPATYaaa8KKe+6I/HTeOYQ1WjgoFki8NCQlhDIUDNxoPY/3yKjo1Y/hIVdhgFmX3izI
+         ReT2KzjNBwwsU62x5U5q6pCKEw9L63v1mK9k9i1ni0YQWe8hkjaM79WjzlnfSeQYaoQp
+         4ZGA==
+X-Gm-Message-State: AOAM530+tbDF9IsZ7I3pigbiOSGtC/CWNwO2Xc9w6gXKEqBa05sWhKa0
+        KGcD311G334+GDyY8Wbnz+fUJcsae6Q=
+X-Google-Smtp-Source: ABdhPJy9UlLVGkcYgyLrV9r1YxVDfu1PzXTl1kbZkqY3lWe00Gf4nUWjbWZNHRWFNzd/ZIfjiW2jIg==
+X-Received: by 2002:a17:90a:ea82:: with SMTP id h2mr17383874pjz.99.1628376623850;
+        Sat, 07 Aug 2021 15:50:23 -0700 (PDT)
+Received: from [10.1.1.25] (222-152-189-37-fibre.sparkbb.co.nz. [222.152.189.37])
+        by smtp.gmail.com with ESMTPSA id b15sm17880465pgj.60.2021.08.07.15.50.18
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 07 Aug 2021 15:50:23 -0700 (PDT)
+Subject: Re: [PATCH 0/2] net: ethernet: Remove the 8390 network drivers
+To:     Cai Huoqing <caihuoqing@baidu.com>, davem@davemloft.net,
+        kuba@kernel.org, arnd@arndb.de, geert@linux-m68k.org, jgg@ziepe.ca
+References: <20210807145619.832-1-caihuoqing@baidu.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+From:   Michael Schmitz <schmitzmic@gmail.com>
+Message-ID: <05a5ddb5-1c51-8679-60a3-a74e0688b72d@gmail.com>
+Date:   Sun, 8 Aug 2021 10:50:16 +1200
+User-Agent: Mozilla/5.0 (X11; Linux ppc; rv:45.0) Gecko/20100101
+ Icedove/45.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <22625.1628376134.1@famine>
-Date:   Sat, 07 Aug 2021 15:42:14 -0700
-Message-ID: <22626.1628376134@famine>
+In-Reply-To: <20210807145619.832-1-caihuoqing@baidu.com>
+Content-Type: text/plain; charset=iso-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jonathan Toppins <jtoppins@redhat.com> wrote:
+Cai,
 
->Is there any reason why bonding should have an operstate of up when none
->of its slaves are in an up state? In this particular scenario it seems
->like the bonding device should at least assert NO-CARRIER, thoughts?
->
->$ ip -o -d link show | grep "bond5"
->2: enp0s31f6: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> mtu 1500 qdisc
->fq_codel master bond5 state DOWN mode DEFAULT group default qlen 1000\
->link/ether 8c:8c:aa:f8:62:16 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 68
->maxmtu 9000 \    bond_slave state ACTIVE mii_status UP link_failure_count
->0 perm_hwaddr 8c:8c:aa:f8:62:16 queue_id 0 numtxqueues 1 numrxqueues 1
->gso_max_size 65536 gso_max_segs 65535
->41: bond5: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue
->state UP mode DEFAULT group default qlen 1000\    link/ether
->8c:8c:aa:f8:62:16 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 68 maxmtu
->65535 \    bond mode balance-xor miimon 0 updelay 0 downdelay 0
->peer_notify_delay 0 use_carrier 1 arp_interval 0 arp_validate none
+a number of the 8390 drivers are still in active use on legacy 
+architectures. These drivers get occasional updates (not just bugfixes, 
+but support for 'new' network cards - I have a patch to add X-Surf 500 
+support somewhere in the pipline).
 
-	I'm going to speculate that your problem is that miimon and
-arp_interval are both 0, and the bond then doesn't have any active
-mechanism to monitor the link state of its interfaces.  There might be a
-warning in dmesg to this effect.
+Removing the 8390 drivers would leave most m68k legacy systems without 
+networking support.
 
-	Do you see what you'd consider to be correct behavior if miimon
-is set to 100?
+Unless there is a clear and compelling reason to do so, these drivers 
+should not be removed.
 
-	-J
-	
->arp_all_targets any primary_reselect always fail_over_mac none
->xmit_hash_policy layer2 resend_igmp 1 num_grat_arp 1 all_slaves_active 0
->min_links 0 lp_interval 1 packets_per_slave 1 lacp_rate slow ad_select
->stable tlb_dynamic_lb 1 numtxqueues 16 numrxqueues 16 gso_max_size 65536
->gso_max_segs 65535
->
->$ cat /sys/class/net/enp0s31f6/operstate
->down
->
->$ cat /sys/class/net/bond5/operstate
->up
->
->This is an older kernel (4.18.0-305.7.1.el8_4.x86_64) but I do not see any
->changes upstream that would indicate a change in this operation.
->
->Thanks,
->-Jon
+Cheers,
 
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+	Michael
+
+Am 08.08.2021 um 02:56 schrieb Cai Huoqing:
+> commit <0cf445ceaf43> ("<netdev: Update status of 8390 based drivers>")
+> indicated the 8390 network drivers as orphan/obsolete in Jan 2011,
+> updated in the MAINTAINERS file.
+>
+> now, after being exposed for 10 years to refactoring and
+> no one has become its maintainer for the past 10 years,
+> so to remove the 8390 network drivers for good.
+>
+> additionally, 8390 is a kind of old ethernet chip based on
+> ISA interface which is hard to find in the market.
+>
+> Cai Huoqing (2):
+>   net: ethernet: Remove the 8390 network drivers
+>   MAINTAINERS: Remove the 8390 network drivers info
+>
+>  MAINTAINERS                           |    6 -
+>  drivers/net/ethernet/8390/8390.c      |  103 --
+>  drivers/net/ethernet/8390/8390.h      |  236 ----
+>  drivers/net/ethernet/8390/8390p.c     |  105 --
+>  drivers/net/ethernet/8390/Kconfig     |  212 ---
+>  drivers/net/ethernet/8390/Makefile    |   20 -
+>  drivers/net/ethernet/8390/apne.c      |  619 ---------
+>  drivers/net/ethernet/8390/ax88796.c   | 1022 ---------------
+>  drivers/net/ethernet/8390/axnet_cs.c  | 1707 ------------------------
+>  drivers/net/ethernet/8390/etherh.c    |  856 -------------
+>  drivers/net/ethernet/8390/hydra.c     |  273 ----
+>  drivers/net/ethernet/8390/lib8390.c   | 1092 ----------------
+>  drivers/net/ethernet/8390/mac8390.c   |  848 ------------
+>  drivers/net/ethernet/8390/mcf8390.c   |  475 -------
+>  drivers/net/ethernet/8390/ne.c        | 1004 ---------------
+>  drivers/net/ethernet/8390/ne2k-pci.c  |  747 -----------
+>  drivers/net/ethernet/8390/pcnet_cs.c  | 1708 -------------------------
+>  drivers/net/ethernet/8390/smc-ultra.c |  629 ---------
+>  drivers/net/ethernet/8390/stnic.c     |  303 -----
+>  drivers/net/ethernet/8390/wd.c        |  574 ---------
+>  drivers/net/ethernet/8390/xsurf100.c  |  377 ------
+>  drivers/net/ethernet/8390/zorro8390.c |  452 -------
+>  drivers/net/ethernet/Kconfig          |    1 -
+>  drivers/net/ethernet/Makefile         |    1 -
+>  24 files changed, 13370 deletions(-)
+>  delete mode 100644 drivers/net/ethernet/8390/8390.c
+>  delete mode 100644 drivers/net/ethernet/8390/8390.h
+>  delete mode 100644 drivers/net/ethernet/8390/8390p.c
+>  delete mode 100644 drivers/net/ethernet/8390/Kconfig
+>  delete mode 100644 drivers/net/ethernet/8390/Makefile
+>  delete mode 100644 drivers/net/ethernet/8390/apne.c
+>  delete mode 100644 drivers/net/ethernet/8390/ax88796.c
+>  delete mode 100644 drivers/net/ethernet/8390/axnet_cs.c
+>  delete mode 100644 drivers/net/ethernet/8390/etherh.c
+>  delete mode 100644 drivers/net/ethernet/8390/hydra.c
+>  delete mode 100644 drivers/net/ethernet/8390/lib8390.c
+>  delete mode 100644 drivers/net/ethernet/8390/mac8390.c
+>  delete mode 100644 drivers/net/ethernet/8390/mcf8390.c
+>  delete mode 100644 drivers/net/ethernet/8390/ne.c
+>  delete mode 100644 drivers/net/ethernet/8390/ne2k-pci.c
+>  delete mode 100644 drivers/net/ethernet/8390/pcnet_cs.c
+>  delete mode 100644 drivers/net/ethernet/8390/smc-ultra.c
+>  delete mode 100644 drivers/net/ethernet/8390/stnic.c
+>  delete mode 100644 drivers/net/ethernet/8390/wd.c
+>  delete mode 100644 drivers/net/ethernet/8390/xsurf100.c
+>  delete mode 100644 drivers/net/ethernet/8390/zorro8390.c
+>
