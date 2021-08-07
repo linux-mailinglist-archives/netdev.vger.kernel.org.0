@@ -2,191 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06E993E33BB
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 08:21:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6D683E33CD
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 08:41:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231352AbhHGGVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Aug 2021 02:21:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42922 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbhHGGVa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 02:21:30 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD635C0613CF;
-        Fri,  6 Aug 2021 23:21:12 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id o44-20020a17090a0a2fb0290176ca3e5a2fso21305722pjo.1;
-        Fri, 06 Aug 2021 23:21:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=m2cqmq90O7bUx6WnzE787bEO9ZOPXuPJtWAxQVGTmx4=;
-        b=Py6Y955oz6HI1f43MbKUetr8rs+3ZJ6lB8q0Qf5Opr/7xJTeHo+rODYHo3BN9XFHEz
-         IU85n4Dk9qBDKSBldSV9znRV07mYtKnIS4ZVLjg3QkbjzU7ggFanCAMiF04TDJ8Fh/FZ
-         i9auyoj0NYc2LlwSNbsoSHru5iyH7MOxxxWPidSjU8yrYp03ZV6IdZIa0IXfvXNGlodD
-         76gTaBUxCnfWToWZBPjzWLAR1S0rfG3SVznjj4GXBapDBRDg+7bgpv9GreHyvYgqudtc
-         r24o043IlEzBMLGqwyuAf3h62uATtvaNqnj3NkIa3wDyExg7HePpBCwqgOwsDzVPvhYE
-         gg6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=m2cqmq90O7bUx6WnzE787bEO9ZOPXuPJtWAxQVGTmx4=;
-        b=Fl/r/+/dGZy1JY8ZQ1zuyYJF9drSwBm96qld2hPRDoXR19T2ugxBxEpno8jgCkIwDa
-         xfYySNvq5GxLwrdb7JdzbHLW3T7X1EyT6KsyvZUzjSqiVeVA+o1UGKfvsuJ7JZI4JxQO
-         R8P52uvhHpDtGAZRATW4burFO1qLTkelR9MeP3Kq/nH8HIeO1iJCrN1MOW+F9TaEknOR
-         9EQ/m+GEfA+g7wQsEth021PdfBPBCcm4IAjhxZ7eW0zktZsw4MpX51J5dptWs3X8r8c0
-         NITGqS1QsikQdrwEZJNwnNWklO72pDIIEiffXWzOBOCBT2f6HadFL3+XqUM7WX4l5IQ2
-         Pyzg==
-X-Gm-Message-State: AOAM533sPfXg+QnScsyf/tdVR1JhFvM/TAj/oePwUGcnErq8OerVPROV
-        8thIDS7mfq3IO65ZnKAkmN4=
-X-Google-Smtp-Source: ABdhPJwJOiCK3vqkQxeVgeIXyYL9YVCNVjrzLHcjv41inI2KjVSwGPFUPOTv1Jgbttk8NY778o/Rqg==
-X-Received: by 2002:a63:e214:: with SMTP id q20mr11413pgh.134.1628317272349;
-        Fri, 06 Aug 2021 23:21:12 -0700 (PDT)
-Received: from localhost.localdomain ([1.240.193.107])
-        by smtp.googlemail.com with ESMTPSA id y4sm10985287pjw.57.2021.08.06.23.21.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Aug 2021 23:21:11 -0700 (PDT)
-From:   Kangmin Park <l4stpr0gr4m@gmail.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] netfilter: remove duplicate code
-Date:   Sat,  7 Aug 2021 15:21:06 +0900
-Message-Id: <20210807062106.2563-1-l4stpr0gr4m@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        id S231335AbhHGGmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Aug 2021 02:42:03 -0400
+Received: from relay.sw.ru ([185.231.240.75]:48474 "EHLO relay.sw.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230297AbhHGGmC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 7 Aug 2021 02:42:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
+        Subject; bh=Y0aAjMVRc2eMCd5br2aos6hJsJXTCYbOLMiB+Wn43ow=; b=mweOF5glY4Bj4Go5i
+        Jm0sx5N4aSZowSnbwDmH49ln3HofW+0xGQyxHl8sMrlBphr9ILU1+h0OE3+scf81O9xYR4/nl73Xs
+        cnveq2wTplnJ5r91kPqWq9202QD7CeKyuqvDU9C4mfB/KlYmMjd+Hm1PCDQM9CZqA0X5Q2rP8Hc+U
+        =;
+Received: from [10.93.0.56]
+        by relay.sw.ru with esmtp (Exim 4.94.2)
+        (envelope-from <vvs@virtuozzo.com>)
+        id 1mCG1b-006hh6-BY; Sat, 07 Aug 2021 09:41:39 +0300
+Subject: Re: [PATCH NET] vrf: fix null pointer dereference in
+ vrf_finish_output()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@openvz.org,
+        Julian Wiedmann <jwi@linux.ibm.com>
+References: <20210806.111412.1329682129695306949.davem@davemloft.net>
+ <5ba67c28-1056-e24d-cad3-4b7aaac01111@virtuozzo.com>
+ <20210806154227.49ac089d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Vasily Averin <vvs@virtuozzo.com>
+Message-ID: <11bb7d25-71e2-c49a-4754-8daa52150adb@virtuozzo.com>
+Date:   Sat, 7 Aug 2021 09:41:38 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210806154227.49ac089d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-nf_nat_ipv4_fn() and nf_nat_ipv6_fn() call nf_nat_inet_fn().
-Those two functions are already contains routine that gets nf_conn
-object and checks the untrackable situation.
-So, the following code is duplicated.
+On 8/7/21 1:42 AM, Jakub Kicinski wrote:
+> On Fri, 6 Aug 2021 15:53:00 +0300 Vasily Averin wrote:
+>> After 14ee70ca89e6 ("vrf: use skb_expand_head in vrf_finish_output")
+>> skb->dev  is accessed after skb free.
+>> Let's replace skb->dev by dev = skb_dst(skb)->dev:
+>> vrf_finish_output() is only called from vrf_output(),
+>> it set skb->dev to skb_dst(skb)->dev and calls POSTROUTING netfilter
+>> hooks, where output device should not be changed.
+>>
+>> Fixes: 14ee70ca89e6 ("vrf: use skb_expand_head in vrf_finish_output")
+>> Reported-by: Julian Wiedmann <jwi@linux.ibm.com>
+>> Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
+> 
+> Thanks for following up! I decided to pick a similar patch from Dan
+> Carpenter [1] because the chunk quoted below is not really necessary.
 
-```
-ct = nf_ct_get(skb, &ctinfo);
-if (!ct)
-        return NF_ACCEPT;
-```
+I still think that my patch version is preferable.
+It's better to use vrf_tx_error(dev, skb) because:
+a) both rollbacks can use the same net device
+b) probably using 'dev' allows to avoid an extra pointer dereference.
 
-Therefore, define a function __nf_nat_inet_fn() that has the same
-contents as the nf_nat_inet_fn() except for routine gets and checks
-the nf_conn object.
-Then, separate the nf_nat_inet_fn() into a routine that gets a
-nf_conn object and a routine that calls the __nf_nat_inet_fn().
+Originally, i.e. before fixed patch 14ee70ca89e6, rollback after failed header expand
+called the save vrf_tx_error() call. This function does 2 things:  
+- increments stats.tx_errors on specified network device
+- frees provided skb.
 
-Signed-off-by: Kangmin Park <l4stpr0gr4m@gmail.com>
----
- include/net/netfilter/nf_nat.h |  5 +++++
- net/netfilter/nf_nat_core.c    | 37 ++++++++++++++++++++++------------
- net/netfilter/nf_nat_proto.c   |  4 ++--
- 3 files changed, 31 insertions(+), 15 deletions(-)
+Commit 14ee70ca89e6 replaced skb_realloc_headroom() by skb_expand_head() that frees skb inside,
+So vrf_tx_error() call on rollback was replaced with direct increment of  stats.tx_errors.
+We cannot use now original skb->dev so our fixup patches replaces it with dev variable already
+used in this function.
+Though, if we should use the same net device in both rollbacks. It's illogical for me
+to change one place and do not change another one. 
 
-diff --git a/include/net/netfilter/nf_nat.h b/include/net/netfilter/nf_nat.h
-index 987111ae5240..a66f617c5054 100644
---- a/include/net/netfilter/nf_nat.h
-+++ b/include/net/netfilter/nf_nat.h
-@@ -100,6 +100,11 @@ void nf_nat_ipv6_unregister_fn(struct net *net, const struct nf_hook_ops *ops);
- int nf_nat_inet_register_fn(struct net *net, const struct nf_hook_ops *ops);
- void nf_nat_inet_unregister_fn(struct net *net, const struct nf_hook_ops *ops);
- 
-+unsigned int
-+__nf_nat_inet_fn(void *priv, struct sk_buff *skb,
-+		 const struct nf_hook_state *state, struct nf_conn *ct,
-+		 enum ip_conntrack_info ctinfo);
-+
- unsigned int
- nf_nat_inet_fn(void *priv, struct sk_buff *skb,
- 	       const struct nf_hook_state *state);
-diff --git a/net/netfilter/nf_nat_core.c b/net/netfilter/nf_nat_core.c
-index 7de595ead06a..98ebba2c0f6d 100644
---- a/net/netfilter/nf_nat_core.c
-+++ b/net/netfilter/nf_nat_core.c
-@@ -682,25 +682,15 @@ unsigned int nf_nat_packet(struct nf_conn *ct,
- }
- EXPORT_SYMBOL_GPL(nf_nat_packet);
- 
- unsigned int
--nf_nat_inet_fn(void *priv, struct sk_buff *skb,
--	       const struct nf_hook_state *state)
-+__nf_nat_inet_fn(void *priv, struct sk_buff *skb,
-+		 const struct nf_hook_state *state, struct nf_conn *ct,
-+		 enum ip_conntrack_info ctinfo)
- {
--	struct nf_conn *ct;
--	enum ip_conntrack_info ctinfo;
- 	struct nf_conn_nat *nat;
- 	/* maniptype == SRC for postrouting. */
- 	enum nf_nat_manip_type maniptype = HOOK2MANIP(state->hook);
- 
--	ct = nf_ct_get(skb, &ctinfo);
--	/* Can't track?  It's not due to stress, or conntrack would
--	 * have dropped it.  Hence it's the user's responsibilty to
--	 * packet filter it out, or implement conntrack/NAT for that
--	 * protocol. 8) --RR
--	 */
--	if (!ct)
--		return NF_ACCEPT;
--
- 	nat = nfct_nat(ct);
- 
- 	switch (ctinfo) {
-@@ -755,6 +745,26 @@ nf_nat_inet_fn(void *priv, struct sk_buff *skb,
- 	nf_ct_kill_acct(ct, ctinfo, skb);
- 	return NF_DROP;
- }
-+EXPORT_SYMBOL_GPL(__nf_nat_inet_fn);
-+
-+unsigned int
-+nf_nat_inet_fn(void *priv, struct sk_buff *skb,
-+	       const struct nf_hook_state *state)
-+{
-+	struct nf_conn *ct;
-+	enum ip_conntrack_info ctinfo;
-+
-+	ct = nf_ct_get(skb, &ctinfo);
-+	/* Can't track?  It's not due to stress, or conntrack would
-+	 * have dropped it.  Hence it's the user's responsibilty to
-+	 * packet filter it out, or implement conntrack/NAT for that
-+	 * protocol. 8) --RR
-+	 */
-+	if (!ct)
-+		return NF_ACCEPT;
-+
-+	return __nf_nat_inet_fn(priv, skb, state, ct, ctinfo);
-+}
- EXPORT_SYMBOL_GPL(nf_nat_inet_fn);
- 
- struct nf_nat_proto_clean {
-diff --git a/net/netfilter/nf_nat_proto.c b/net/netfilter/nf_nat_proto.c
-index 48cc60084d28..897859730078 100644
---- a/net/netfilter/nf_nat_proto.c
-+++ b/net/netfilter/nf_nat_proto.c
-@@ -642,7 +642,7 @@ nf_nat_ipv4_fn(void *priv, struct sk_buff *skb,
- 		}
- 	}
- 
--	return nf_nat_inet_fn(priv, skb, state);
-+	return __nf_nat_inet_fn(priv, skb, state, ct, ctinfo);
- }
- 
- static unsigned int
-@@ -934,7 +934,7 @@ nf_nat_ipv6_fn(void *priv, struct sk_buff *skb,
- 		}
- 	}
- 
--	return nf_nat_inet_fn(priv, skb, state);
-+	return __nf_nat_inet_fn(priv, skb, state, ct, ctinfo);
- }
- 
- static unsigned int
--- 
-2.26.2
+If we follow to your decision -- it isn't a problem. skb->dev and skb should be identical.
+Though 'skb->dev' does an extra dereference, while dev was used in function and probably
+was saved to register.
+
+Thank you,
+	Vasily Averin
+
+> [1] https://lore.kernel.org/kernel-janitors/20210806150435.GB15586@kili/
+> 
+>> @@ -883,7 +883,7 @@ static int vrf_finish_output(struct net *net, struct sock *sk, struct sk_buff *s
+>>  	}
+>>  
+>>  	rcu_read_unlock_bh();
+>> -	vrf_tx_error(skb->dev, skb);
+>> +	vrf_tx_error(dev, skb);
+>>  	return -EINVAL;
+>>  }
+>>  
+> 
 
