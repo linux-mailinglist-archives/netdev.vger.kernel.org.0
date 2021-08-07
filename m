@@ -2,71 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BF213E323E
-	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 02:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A29C3E323F
+	for <lists+netdev@lfdr.de>; Sat,  7 Aug 2021 02:01:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230242AbhHGAAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Aug 2021 20:00:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51312 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229480AbhHGAAW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Aug 2021 20:00:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 07CE3611C5;
-        Sat,  7 Aug 2021 00:00:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628294406;
-        bh=4A+8Gdr0GxJ3QR/5/1CZG4CMQQjvAVlXL9P64LaMOPk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=njJIEcdqOWqzTq2iTeKDx9hkJsRsldn60uhN79Z0KVn+b1r7So+xeC4IxSnhz25W0
-         +vE0K/lcZy/OGitJSXScJo/ydp/9VSKSj65V5Xr702vnSPn89h2VK6zzRiNAXDTT+1
-         0OeDPomgL+IOkwucewBQbMx2qr6KEZrjOV5JB6xpvvKupAbX4g98Rv95wmdkoHghen
-         YZa6T3+PtvNf7MFqxaRLA3rQzDJzjkduVP673F+vBjfxWd7i+gVXZ+ucygeDhSXqFQ
-         jsjITMZcBEO//ha55dOhkiKfn+zjXNGUQXhsrsNNVtsphAz8Z/CBz0i39d1xfWCw+N
-         3x9iTdOipaqVA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EEBDC60A7C;
-        Sat,  7 Aug 2021 00:00:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230479AbhHGABq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Aug 2021 20:01:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45548 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229480AbhHGABp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Aug 2021 20:01:45 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E16CAC0613CF
+        for <netdev@vger.kernel.org>; Fri,  6 Aug 2021 17:01:27 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id hs10so17908877ejc.0
+        for <netdev@vger.kernel.org>; Fri, 06 Aug 2021 17:01:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=essensium.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=HBtQ2hhaYUSjTBWgcpF3U+mC8/e4OqXAIMMO04ke2UE=;
+        b=Ug43YjGJHgSrDzGmUYxO34YjaAlLbM6jlTwtfQYdwYD0cINtGGbEm0/2WKonJiVsqC
+         jX+J/iINJfYwRnf0X38w0CMaP1TgAYMJSVBD/aZj4ZtyuElwNFSmuXIWItQt5lMgiNl2
+         3Lp2+zieboe0GC9N6ImjeseN+BL5IbdEoI00m91OaQORLkEDIjcWanmdow5Xs0TFyXw0
+         Bc6IC8PHGSHfcGHmbLvhkCq/Y8rKNGiMaGStnp3K7wg0lDqg0a4NRr7Z1E11f7S6EWxS
+         XMJRsoAgKVrKv2702RAq1MAQtxo6UJVmw16mG1FMmM6g+df/zHpKIOPt6MDplQm+u1Cd
+         zACA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=HBtQ2hhaYUSjTBWgcpF3U+mC8/e4OqXAIMMO04ke2UE=;
+        b=RjpC3CCTohq5Wi85L8f3OB3mnT6CLjLKacb8uPisZxe3JA1uh8wDGH4VyOBIW48Z2U
+         O1OtT+0tUwE+ZTtCNQtF20RQcIHg+VcspAz4RI3ceeh+RWbgqQyO1UhWYO+IjlJ+Jsjg
+         zA/9zzGaFj2w186yjS1uxGo935RWxhhchYkYW7YgxexZR+YPvS7VYt9jPLR8m2Vridc6
+         61IwXZ0MArtU9ae+ILA9rB0tgF1XEFJEOE9xxAubtTHuvPz1/o5Ub8298gPk6jtNdTEc
+         lpEyA3BM9+1arHrAq/71LIFxQlmuHigeGDeHAlQp7NW4eyjlct+6iNZGiI2BCEzPQHBk
+         MsNw==
+X-Gm-Message-State: AOAM532LTuKNBuuRUUcA8diXfAFfIUGjCulWoSwN7zItGc5LRprqRaP/
+        3Mw4UrrX8uEmHL20DMxEDo7e0w==
+X-Google-Smtp-Source: ABdhPJxGfPPi8eB3Sk09HHrqm2nw6b8V3LtJd3BiTn2/P/eRdczKSpn6up1WTWjwfwTaCd4RFwv4JA==
+X-Received: by 2002:a17:906:6d4e:: with SMTP id a14mr12090534ejt.328.1628294486450;
+        Fri, 06 Aug 2021 17:01:26 -0700 (PDT)
+Received: from cephalopod (168.7-181-91.adsl-dyn.isp.belgacom.be. [91.181.7.168])
+        by smtp.gmail.com with ESMTPSA id m20sm4470785edv.67.2021.08.06.17.01.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Aug 2021 17:01:26 -0700 (PDT)
+Date:   Sat, 7 Aug 2021 02:01:24 +0200
+From:   Ben Hutchings <ben.hutchings@essensium.com>
+To:     Steve Bennett <steveb@workware.net.au>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: micrel: Fix detection of ksz87xx switch
+Message-ID: <20210807000123.GA4898@cephalopod>
+References: <20210730105120.93743-1-steveb@workware.net.au>
+ <20210730095936.1420b930@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <74BE3A85-61E2-45C9-BA77-242B1014A820@workware.net.au>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/2] samples/bpf: xdpsock: Minor enhancements
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162829440597.32097.9443934066485128574.git-patchwork-notify@kernel.org>
-Date:   Sat, 07 Aug 2021 00:00:05 +0000
-References: <20210806122855.26115-1-simon.horman@corigine.com>
-In-Reply-To: <20210806122855.26115-1-simon.horman@corigine.com>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        oss-drivers@corigine.com, niklas.soderlund@corigine.com,
-        louis.peens@corigine.com
+In-Reply-To: <74BE3A85-61E2-45C9-BA77-242B1014A820@workware.net.au>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to bpf/bpf-next.git (refs/heads/master):
-
-On Fri,  6 Aug 2021 14:28:53 +0200 you wrote:
-> Hi,
+On Sat, Jul 31, 2021 at 08:19:17AM +1000, Steve Bennett wrote:
+> > On 31 Jul 2021, at 2:59 am, Jakub Kicinski <kuba@kernel.org> wrote:
+> > 
+> > Please extend the CC list to the maintainers, and people who
+> > worked on this driver in the past, especially Marek.
 > 
-> this short series provides to minor enhancements to the
-> ample code in samples/bpf/xdpsock_user.c.
+> Sure, I can do that in a v2 of the patch along with the more detailed
+> explanation below.
 > 
-> Each change is explained more fully in its own commit message.
+> > 
+> > On Fri, 30 Jul 2021 20:51:20 +1000 Steve Bennett wrote:
+> >> The previous logic was wrong such that the ksz87xx
+> >> switch was not identified correctly.
+> > 
+> > Any more details of what is happening? Which extact device do you see
+> > this problem on?
 > 
-> [...]
+> I have a ksz8795 switch.
+> 
+> Without the patch:
+> 
+> ksz8795-switch spi3.1 ade1 (uninitialized): PHY [dsa-0.1:03] driver [Generic PHY]
+> ksz8795-switch spi3.1 ade2 (uninitialized): PHY [dsa-0.1:04] driver [Generic PHY]
+> 
+> With the patch:
+> 
+> ksz8795-switch spi3.1 ade1 (uninitialized): PHY [dsa-0.1:03] driver [Micrel KSZ87XX Switch]
+> ksz8795-switch spi3.1 ade2 (uninitialized): PHY [dsa-0.1:04] driver [Micrel KSZ87XX Switch]
+[...]
 
-Here is the summary with links:
-  - [1/2] samples/bpf: xdpsock: Make the sample more useful outside the tree
-    https://git.kernel.org/bpf/bpf-next/c/29f24c43cbe0
-  - [2/2] samples/bpf: xdpsock: Remove forward declaration of ip_fast_csum()
-    https://git.kernel.org/bpf/bpf-next/c/f4700a62c271
+And do the external ports work for you after this?
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I have a development board with a KSZ8795.  All ports worked before
+this patch.  After this patch, when I bring up the external ports they
+are reported as having link up at 10M half duplex, when the link is
+actually down.
 
+The ksz8873mll_read_status() function is trying to read a non-standard
+MDIO register that is not handled by the ksz8795 driver's MDIO
+emulation (and is not documented as existing on the KSZ8873MLL,
+either!).  It also also reports link up, which is obviously not
+correct for an external port.
 
+I'll post a patch as a reply to this.
+
+Ben.
+
+-- 
+Ben Hutchings · Senior Embedded Software Engineer, Essensium-Mind · mind.be
