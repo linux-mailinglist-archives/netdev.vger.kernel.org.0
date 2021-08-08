@@ -2,128 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F6753E3B01
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 17:11:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61C253E3B08
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 17:14:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231910AbhHHPL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 11:11:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45068 "EHLO
+        id S232114AbhHHPOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 11:14:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229923AbhHHPL7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 11:11:59 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40CB4C061760
-        for <netdev@vger.kernel.org>; Sun,  8 Aug 2021 08:11:39 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id n12so7846589wrr.2
-        for <netdev@vger.kernel.org>; Sun, 08 Aug 2021 08:11:39 -0700 (PDT)
+        with ESMTP id S229923AbhHHPOc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 11:14:32 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628C3C061760
+        for <netdev@vger.kernel.org>; Sun,  8 Aug 2021 08:14:12 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id z20so1650529ejf.5
+        for <netdev@vger.kernel.org>; Sun, 08 Aug 2021 08:14:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=kLmtjfc9jbv7e5Z+43AnHmDCkXiD4eKYvYejrLrE3cA=;
-        b=KuN41J2JgLHholts07NPh9pSHHpc6oLH0XBl9cfFigiW7QbDM8GYgOx/pDWULxjYLb
-         Y96WZ3MaDisbNiqqNiBzTACR6gsIsaPEsVQJvY9unpxdoP0mev6Llfky18vUkRnGT76U
-         nQlVMb2hwlnoWTzl/UwT9LjHlDbgZ9ROcl7xo0+HV8WSMsNwDfW88pC0JhiqFKD306Je
-         m+8v1e0zL0gp/1441q7f77vMyvYNIxZcTKE1Pe/tZt69qihgF3RReEPMW8e9zrIopJWp
-         +AZLMXSu1OTtuhseLyCva2NvIesmf9Mvj2uPxWefv8TyfRRLw+lPBDvkXUqqPBSnDibl
-         aq5Q==
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=fv6mYAaW8IXvhD+Bs/2hepBUD6FI+iZ0//02l4LE76o=;
+        b=p5K8Zazgwif2qaTUQhwmx2dNJi6OSLzYTDTHEOID4a6cJOg1N2v7LjeZdWODY2t/KV
+         yKO11h2uMr4O73c3ZZQtxEsIiKH6Pp4mFZcKBIf9vKM77Hh1dKFGH+hcqTHbdVe8W/fh
+         +EsCpHT1xrPGK1cTy8hezLqtrrDI1dCH4UyA34z91aFh0coijOmlkiDRchXM+g/HGDZ4
+         nq3VPxtPsLQQHTzgtSKfY0ZP847qt9f4zPaVBcacIIrs7GovHGpLy+jZ65mMhEhuCQIV
+         /3LL6hILnG/QLQ5WBxrQIcz74Gez9CmOAeusJzgzMwbLT+Ft5UEU+366VyyTpq/59VE1
+         4DKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=kLmtjfc9jbv7e5Z+43AnHmDCkXiD4eKYvYejrLrE3cA=;
-        b=m6VqEX1y283x4EFBlUUKrnWjGmxC43hQreYWuE1IK69X75lu8qPtfnFILpIh/f9A5I
-         lhOMRD7xZdtTRXljuTkM/OJ7iayyefemXHG+mAq5Qoj1rfnqkF7ACfw05sX0qoiO8aSX
-         X6Yy0GB3gldg8fnE5ncxsTsEp4q4KdxFR5HSOsp4tLICwdeePl3RMcVU5rQmN1HnzHdj
-         pT22XkcXATz4Q0gYOj9iNyihnSDVTxmGOw5MN2uLuDPb7n5TgwXO+QoMm6fwOs2rhyp4
-         YomaPksZgaWoo75bKBqY1eqvYPZvv+He7dfvrjE8YQODAb/LNRzOte/PpG3PdBdYqv+T
-         LrmQ==
-X-Gm-Message-State: AOAM530tBCkGDBt3HAT+dnMueNrI+anM80ctxO1N0mG5MMgFmGj/PlV4
-        SoE8Em5/vCyhL9BD8WoWQR1+0cTJhkS/+w==
-X-Google-Smtp-Source: ABdhPJyk/q/jAfj7G4KDCZWp1DFVGK//W8G7zJKOO+ClMnrD1vzlUSeCNgfEDKFn4NH2hjUbdDxNaA==
-X-Received: by 2002:a05:6000:227:: with SMTP id l7mr19697223wrz.289.1628435497709;
-        Sun, 08 Aug 2021 08:11:37 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f10:c200:7101:8b48:5eab:cb5f? (p200300ea8f10c20071018b485eabcb5f.dip0.t-ipconnect.de. [2003:ea:8f10:c200:7101:8b48:5eab:cb5f])
-        by smtp.googlemail.com with ESMTPSA id q14sm16736993wrm.66.2021.08.08.08.11.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 Aug 2021 08:11:37 -0700 (PDT)
-Subject: Re: [PATCH net-next] r8169: rename rtl_csi_access_enable to
- rtl_set_aspm_entry_latency
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <f25dc81e-7615-0b51-24cf-e1137f0f9969@gmail.com>
-Message-ID: <b33fab87-3ef8-994b-4fc2-a624faf2dba8@gmail.com>
-Date:   Sun, 8 Aug 2021 17:11:32 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
-MIME-Version: 1.0
-In-Reply-To: <f25dc81e-7615-0b51-24cf-e1137f0f9969@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=fv6mYAaW8IXvhD+Bs/2hepBUD6FI+iZ0//02l4LE76o=;
+        b=tZC8NJLbO0LevAZUtT9NDUWYWkXSZJU032t4rsn8ve/0AKb9o9OJ0QTyYnV41vUF9W
+         CeF6X+eUCLQUnioRrEhBUhwPlD8cIJueOI9+IzN5Osys5zXf1aLUBHo+2pCsP8JrDixW
+         +vfpcgftb5Pu0uOya9mHxyU8/GIcfxTIsK0ILq/p3o/7jOsXPFxfPULeKiBVVNAYodfq
+         yVceaL16q6UWf/RnC3+1tETNYz4zMd1Ke9OUeO+c04hyQmGjN/rIpveetm2vhyddt4fu
+         ADsIjgHt0f7ODNQQ/97vYoIwCCJmgOZMcdc63xjgtC5zWQORgu1vJ8a0dfUcaM0M9m5w
+         RKbQ==
+X-Gm-Message-State: AOAM5317vAQX/6ZBL8DeZvTlp0kkVPNENcsby/dchCFCTw+cKNqct4+I
+        NaH/6nhueZl+f77n0xdmec4=
+X-Google-Smtp-Source: ABdhPJwLQYjI6MeX3Gb5fR1FWhxJkMICXqCpmV2q0sSmpyxLGEoogWfy6m+p4FgxZmNeJAN77gaRrg==
+X-Received: by 2002:a17:906:c013:: with SMTP id e19mr18856512ejz.389.1628435651003;
+        Sun, 08 Aug 2021 08:14:11 -0700 (PDT)
+Received: from smtpclient.apple ([178.254.237.20])
+        by smtp.gmail.com with ESMTPSA id a22sm5071833ejk.35.2021.08.08.08.14.09
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 08 Aug 2021 08:14:10 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
+Subject: Re: Urgent  Bug report: PPPoE ioctl(PPPIOCCONNECT): Transport
+ endpoint is not connected
+From:   Martin Zaharinov <micron10@gmail.com>
+In-Reply-To: <YQy9JKgo+BE3G7+a@kroah.com>
+Date:   Sun, 8 Aug 2021 18:14:09 +0300
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>, pali@kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <08EC1CDD-21C4-41AB-B6A8-1CC2D40F5C05@gmail.com>
+References: <7EE80F78-6107-4C6E-B61D-01752D44155F@gmail.com>
+ <YQy9JKgo+BE3G7+a@kroah.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+X-Mailer: Apple Mail (2.3654.120.0.1.13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08.08.2021 15:06, Heiner Kallweit wrote:
-> Rename the function to reflect what it's doing. Also add a description
-> of the register values as kindly provided by Realtek.
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Add Pali Roh=C3=A1r,
 
-Just saw that the original patch was applied on net. Therefore this one
-will apply only once net is merged to net-next. 
+If have any idea .
 
-> ---
->  drivers/net/ethernet/realtek/r8169_main.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index 2c643ec36..7a69b4685 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -2598,7 +2598,7 @@ static u32 rtl_csi_read(struct rtl8169_private *tp, int addr)
->  		RTL_R32(tp, CSIDR) : ~0;
->  }
->  
-> -static void rtl_csi_access_enable(struct rtl8169_private *tp, u8 val)
-> +static void rtl_set_aspm_entry_latency(struct rtl8169_private *tp, u8 val)
->  {
->  	struct pci_dev *pdev = tp->pci_dev;
->  	u32 csi;
-> @@ -2606,6 +2606,8 @@ static void rtl_csi_access_enable(struct rtl8169_private *tp, u8 val)
->  	/* According to Realtek the value at config space address 0x070f
->  	 * controls the L0s/L1 entrance latency. We try standard ECAM access
->  	 * first and if it fails fall back to CSI.
-> +	 * bit 0..2: L0: 0 = 1us, 1 = 2us .. 6 = 7us, 7 = 7us (no typo)
-> +	 * bit 3..5: L1: 0 = 1us, 1 = 2us .. 6 = 64us, 7 = 64us
->  	 */
->  	if (pdev->cfg_size > 0x070f &&
->  	    pci_write_config_byte(pdev, 0x070f, val) == PCIBIOS_SUCCESSFUL)
-> @@ -2619,7 +2621,8 @@ static void rtl_csi_access_enable(struct rtl8169_private *tp, u8 val)
->  
->  static void rtl_set_def_aspm_entry_latency(struct rtl8169_private *tp)
->  {
-> -	rtl_csi_access_enable(tp, 0x27);
-> +	/* L0 7us, L1 16us */
-> +	rtl_set_aspm_entry_latency(tp, 0x27);
->  }
->  
->  struct ephy_info {
-> @@ -3502,8 +3505,8 @@ static void rtl_hw_start_8106(struct rtl8169_private *tp)
->  	RTL_W8(tp, MCU, RTL_R8(tp, MCU) | EN_NDP | EN_OOB_RESET);
->  	RTL_W8(tp, DLLPR, RTL_R8(tp, DLLPR) & ~PFM_EN);
->  
-> -	/* The default value is 0x13. Change it to 0x2f */
-> -	rtl_csi_access_enable(tp, 0x2f);
-> +	/* L0 7us, L1 32us - needed to avoid issues with link-up detection */
-> +	rtl_set_aspm_entry_latency(tp, 0x2f);
->  
->  	rtl_eri_write(tp, 0x1d0, ERIAR_MASK_0011, 0x0000);
->  
-> 
+Martin
+
+> On 6 Aug 2021, at 7:40, Greg KH <gregkh@linuxfoundation.org> wrote:
+>=20
+> On Thu, Aug 05, 2021 at 11:53:50PM +0300, Martin Zaharinov wrote:
+>> Hi Net dev team
+>>=20
+>>=20
+>> Please check this error :
+>> Last time I write for this problem : =
+https://www.spinics.net/lists/netdev/msg707513.html
+>>=20
+>> But not find any solution.
+>>=20
+>> Config of server is : Bonding port channel (LACP)  > Accel PPP server =
+> Huawei switch.
+>>=20
+>> Server is work fine users is down/up 500+ users .
+>> But in one moment server make spike and affect other vlans in same =
+server .
+>> And in accel I see many row with this error.
+>>=20
+>> Is there options to find and fix this bug.
+>>=20
+>> With accel team I discus this problem  and they claim it is kernel =
+bug and need to find solution with Kernel dev team.
+>>=20
+>>=20
+>> [2021-08-05 13:52:05.294] vlan912: 24b205903d09718e: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:05.298] vlan912: 24b205903d097162: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:05.626] vlan641: 24b205903d09711b: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:11.000] vlan912: 24b205903d097105: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:17.852] vlan912: 24b205903d0971ae: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:21.113] vlan641: 24b205903d09715b: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:27.963] vlan912: 24b205903d09718d: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:30.249] vlan496: 24b205903d097184: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:30.992] vlan420: 24b205903d09718a: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:33.937] vlan640: 24b205903d0971cd: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:40.032] vlan912: 24b205903d097182: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:40.420] vlan912: 24b205903d0971d5: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:42.799] vlan912: 24b205903d09713a: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:42.799] vlan614: 24b205903d0971e5: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:43.102] vlan912: 24b205903d097190: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:43.850] vlan479: 24b205903d097153: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:43.850] vlan479: 24b205903d097141: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:43.852] vlan912: 24b205903d097198: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:43.977] vlan637: 24b205903d097148: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>> [2021-08-05 13:52:44.528] vlan637: 24b205903d0971c3: =
+ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+>=20
+> These are userspace error messages, not kernel messages.
+>=20
+> What kernel version are you using?
+>=20
+> thanks,
+>=20
+> greg k-h
 
