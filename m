@@ -2,156 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28F473E3D21
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 01:08:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D0D73E3D2C
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 01:41:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232169AbhHHXIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 19:08:55 -0400
-Received: from mailout1.samsung.com ([203.254.224.24]:52115 "EHLO
-        mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231158AbhHHXIy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 19:08:54 -0400
-Received: from epcas1p1.samsung.com (unknown [182.195.41.45])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20210808230833epoutp01f138b3a7f2570fecc53876a40eb75b22~Zd3uel2cW1513315133epoutp01b
-        for <netdev@vger.kernel.org>; Sun,  8 Aug 2021 23:08:33 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20210808230833epoutp01f138b3a7f2570fecc53876a40eb75b22~Zd3uel2cW1513315133epoutp01b
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1628464113;
-        bh=jvL3UYfe1fnogHMOYPJzMx9xpzgagoS4gyTCYbeMpBw=;
-        h=Subject:To:From:Date:In-Reply-To:References:From;
-        b=S1ADDSUB0BbuPrqoyvJ5/JSwFGqNadkOLAYnToz4V5Z1lxpst7nYnLi5iqoztEw6i
-         rRfOl3eRwhYMz0OgtEz8EHjn63LMv3IoHsy5CVoFsWdqtfIsl9WZvtNBwd1KqCOvQf
-         fy2Tsm4Bszm6ABtB5gHs5hCFBVLIauXZgfojclmA=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20210808230832epcas1p2a51ccbdd1dde25963e707fa23c685015~Zd3txeD6M3036730367epcas1p2S;
-        Sun,  8 Aug 2021 23:08:32 +0000 (GMT)
-Received: from epsmges1p4.samsung.com (unknown [182.195.40.158]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4GjZdT0TB8z4x9QD; Sun,  8 Aug
-        2021 23:08:29 +0000 (GMT)
-Received: from epcas1p3.samsung.com ( [182.195.41.47]) by
-        epsmges1p4.samsung.com (Symantec Messaging Gateway) with SMTP id
-        31.38.10119.CE360116; Mon,  9 Aug 2021 08:08:28 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20210808230828epcas1p17835a0574e65e9c41d853cfa8d5bf1ce~Zd3pwQrEt0136301363epcas1p1M;
-        Sun,  8 Aug 2021 23:08:28 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20210808230828epsmtrp1ce1171943a869376c5c1ef6382c7d1ce~Zd3pvIOLV2793027930epsmtrp1C;
-        Sun,  8 Aug 2021 23:08:28 +0000 (GMT)
-X-AuditID: b6c32a38-965ff70000002787-db-611063eccdc2
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        C8.2C.08394.BE360116; Mon,  9 Aug 2021 08:08:27 +0900 (KST)
-Received: from [10.113.113.235] (unknown [10.113.113.235]) by
-        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20210808230827epsmtip2e25de7e5d2324b984c47152384feffcf~Zd3pYtg1B1773317733epsmtip2D;
-        Sun,  8 Aug 2021 23:08:27 +0000 (GMT)
-Subject: Re: [PATCH] iwlwifi Add support for ax201 in Samsung Galaxy Book
- Flex2 Alpha
-To:     Justin Forbes <jmforbes@linuxtx.org>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matti Gottlieb <matti.gottlieb@intel.com>,
-        ybaruch <yaara.baruch@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Ihab Zhaika <ihab.zhaika@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        linux-wireless@vger.kernel.org,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        yj99.shin@samsung.com
-From:   Jaehoon Chung <jh80.chung@samsung.com>
-Message-ID: <8c55c7c9-a5ae-3b0e-8a0f-8954a8da7e7b@samsung.com>
-Date:   Mon, 9 Aug 2021 08:09:13 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
-        Thunderbird/78.11.0
+        id S230337AbhHHXik (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 19:38:40 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:49851 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230024AbhHHXij (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 19:38:39 -0400
+Received: by mail-io1-f69.google.com with SMTP id k6-20020a6b3c060000b0290568c2302268so11617679iob.16
+        for <netdev@vger.kernel.org>; Sun, 08 Aug 2021 16:38:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=6Sls2ZePO2B7rK1frbRgJ99vGjzszT5eqt0ie+TyZh4=;
+        b=Y4fjUtQR6TxKnRnqRmwn2GDhAxbgdorAP5xi44sFKSHr2FroC7b4tOxsiaKUoMTUwh
+         sXyRu8p6GAUJBAsC2IRBVEZYHDZKjiRXEuCKFH8oamE5tpX5++Gfcz8kXJS2983i2Sa2
+         zr2Ksw3Bj3ov21vHO3nSLxeOidhE90dLARMpstXNB0GTdDJ8v9YA/WFhxx0zKvDbO+a5
+         JmcYWa8Xi2m7+UgWgsEAjbadycZftdKChdN8+AExJt3auxEv5NwSAst35Gd7yPYmCgMY
+         v/lPbWjQR541ccUDWHpoDp5josxYuszlyTySDYhz4Yx/RZrJRipq+Ldce8NeCt5JxoWX
+         YG5Q==
+X-Gm-Message-State: AOAM5309+ShoeAMjiLybeNUxSbIIjv0Z/JwXZYMEmFVDS989SoO0Hm0v
+        BrP1wU0QXELRPf8gT7IbHBpz71BGV+RZr/LmG76p5qHveeoi
+X-Google-Smtp-Source: ABdhPJzDq0KkjK6Hn7ioKuW9SGjXRihEUKOaipf9eMWxxIETGIhosE/xhsxde+AokRZJxSiizlG2oXwC7MMWm60zZs2yAHMtKZYd
 MIME-Version: 1.0
-In-Reply-To: <CAFxkdApGUeGdg4=rH=iC2SK58FO6yzbFiq3uSFMFTyZsDQ5j5w@mail.gmail.com>
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrEJsWRmVeSWpSXmKPExsWy7bCmvu6bZIFEgwOdlhZzzrewWLRuu8tq
-        8ej1NmaLB5vvMlk8WjGL3eLCtj5Wi0UrF7JZXN41h83izYo77BaHty5gspjTco7Z4tgCMYv5
-        2x4xWhy6s5DZgc/jcl8vk8eWlTeZPBbvecnksWlVJ5vH9B0OHn1bVjF6fN4kF8AelW2TkZqY
-        klqkkJqXnJ+SmZduq+QdHO8cb2pmYKhraGlhrqSQl5ibaqvk4hOg65aZA3SxkkJZYk4pUCgg
-        sbhYSd/Opii/tCRVISO/uMRWKbUgJafAskCvODG3uDQvXS85P9fK0MDAyBSoMCE7Y9efxWwF
-        39kqDt2dz9LAuIW1i5GTQ0LARKL73A2WLkYuDiGBHYwS+3deZAZJCAl8YpR4f1QNIvGNUeLu
-        0nNMXYwcYB0LJ7tBxPcySjQd6WWCcN4zSvy7P5MJpFtYIFzi0vsrLCC2iMAhFomFb7NBbDYB
-        HYnt346D1fAK2EkcWnQOrIZFQEXi2vV+dhBbVCBS4vzuBSwQNYISJ2c+AbM5BQIljuz4BNbL
-        LCAucevJfChbXmL72znMEO8c4JB4czkBwnaR2HL9FDuELSzx6vgWKFtK4mV/G5RdLbGr+Qwz
-        yAMSAh2MEre2NTFBJIwl9i+dDPYxs4CmxPpd+hBhRYmdv+cyQuzlk3j3tYcVEii8Eh1tQhAl
-        KhKXXr9kgll198l/aEh7SMyZtxka0rcZJZZ29LNOYFSYheTNWUhem4XktVkIVyxgZFnFKJZa
-        UJybnlpsWGCCHNmbGMGJWctiB+Pctx/0DjEycTAeYpTgYFYS4V0/gy9RiDclsbIqtSg/vqg0
-        J7X4EKMpMOAnMkuJJucDc0NeSbyhqZGxsbGFiaGZqaGhkjjvt9ivCUIC6YklqdmpqQWpRTB9
-        TBycUg1MhRvMpvt3Lnn4dmHbEfew8rUTCvxqvnvOvPHe9r6PDeeLjJarwgH7+sRzT4isC81l
-        2li+NefYAYkVk3ZFP7zz5Y37HueboY3fk358Zc7pCM9KEP0YqnqFy10h6tz75U3B/U2zP02a
-        Iul9at7znGbdyb3r1p5Zu6s+vdCy+Kb89t/+/lfXTlS6d2ODpOS5354Hr79a8fFvRN6Ktled
-        s6S+tXfryAYtTlPhnyP+dJJOt4sxp/RToxusnI+ebLij4la6W0xp44KnIpxW866pBK3171qq
-        M1v/48f8qxuYLp8S9V2/chqD7YMc9V3Hqje6b5O6EX39RS6D1RvmnVtz+9cvn/Pw9KLXWz6t
-        UuIJ1dG69k+JpTgj0VCLuag4EQAKG+FmVQQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprKIsWRmVeSWpSXmKPExsWy7bCSvO7rZIFEgyN3jSzmnG9hsWjddpfV
-        4tHrbcwWDzbfZbJ4tGIWu8WFbX2sFotWLmSzuLxrDpvFmxV32C0Ob13AZDGn5RyzxbEFYhbz
-        tz1itDh0ZyGzA5/H5b5eJo8tK28yeSze85LJY9OqTjaP6TscPPq2rGL0+LxJLoA9issmJTUn
-        syy1SN8ugStj15/FbAXf2SoO3Z3P0sC4hbWLkYNDQsBEYuFkty5GLg4hgd2MEp9f7GLrYuQE
-        iktJfH46lQ2iRlji8OFiiJq3jBI3Ph5lBqkRFgiXuPT+CgtIQkTgEIvEy19PwBJCArcZJSa3
-        eoDYbAI6Etu/HWcCsXkF7CQOLTrHAmKzCKhIXLvezw5iiwpESnxe8IoVokZQ4uTMJ2A1nAKB
-        Ekd2fALrZRZQl/gz7xIzhC0ucevJfKi4vMT2t3OYJzAKzkLSPgtJyywkLbOQtCxgZFnFKJla
-        UJybnltsWGCYl1quV5yYW1yal66XnJ+7iREcc1qaOxi3r/qgd4iRiYPxEKMEB7OSCO/6GXyJ
-        QrwpiZVVqUX58UWlOanFhxilOViUxHkvdJ2MFxJITyxJzU5NLUgtgskycXBKNTCt+e6y3dLv
-        ModTL/e6y42HuLg4jXlsdh/ocjC6VRr79WVymDFbboBPEVPt7O9Kh/Tzlrwzz319mPfIiUNb
-        CkK6L545GdqRKmqm4eNU6VGuovp6nqzgSsajMT3L/+m9s0tct+9XkJXv33rJjz7Zu1ImnZf5
-        X22/vWRhIrvXQq843nYRqaIvG208mNo9WE/Zl32J2rZ76XLnPuWWcu69hZl1e/eul+zeMmfp
-        vW61D9b1q4v+sc1IWNS37OJKoXMtGx8sW/vz2QH9H5Fqk3idVLcxmK5SvXbEk50n9tf7guRH
-        zFVlW6x4Va7zLi3Ibamo+fjk+m4zTq4mjRnpF+9r741f8u22Y9nt0GXMsVudo5VYijMSDbWY
-        i4oTAQFCeSIoAwAA
-X-CMS-MailID: 20210808230828epcas1p17835a0574e65e9c41d853cfa8d5bf1ce
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: SVC_REQ_APPROVE
-CMS-TYPE: 101P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20210709173244epcas1p3ea6488202595e182d45f59fcba695e0a
-References: <20210702223155.1981510-1-jforbes@fedoraproject.org>
-        <CGME20210709173244epcas1p3ea6488202595e182d45f59fcba695e0a@epcas1p3.samsung.com>
-        <CAFxkdApGUeGdg4=rH=iC2SK58FO6yzbFiq3uSFMFTyZsDQ5j5w@mail.gmail.com>
+X-Received: by 2002:a05:6e02:1aa3:: with SMTP id l3mr453617ilv.299.1628465898703;
+ Sun, 08 Aug 2021 16:38:18 -0700 (PDT)
+Date:   Sun, 08 Aug 2021 16:38:18 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006bd0b305c914c3dc@google.com>
+Subject: [syzbot] BUG: sleeping function called from invalid context in _copy_to_iter
+From:   syzbot <syzbot+8760ca6c1ee783ac4abd@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        christian.brauner@ubuntu.com, cong.wang@bytedance.com,
+        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
+        jamorris@linux.microsoft.com, john.fastabend@gmail.com,
+        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, rao.shoaib@oracle.com, shuah@kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
+        viro@zeniv.linux.org.uk, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+Hello,
 
-On 7/10/21 2:32 AM, Justin Forbes wrote:
-> On Fri, Jul 2, 2021 at 5:32 PM Justin M. Forbes
-> <jforbes@fedoraproject.org> wrote:
->>
->> The Samsung Galaxy Book Flex2 Alpha uses an ax201 with the ID a0f0/6074.
->> This works fine with the existing driver once it knows to claim it.
->> Simple patch to add the device.
->>
->> Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
+syzbot found the following issue on:
+
+HEAD commit:    c2eecaa193ff pktgen: Remove redundant clone_skb override
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=12e3a69e300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=aba0c23f8230e048
+dashboard link: https://syzkaller.appspot.com/bug?extid=8760ca6c1ee783ac4abd
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15c5b104300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10062aaa300000
+
+The issue was bisected to:
+
+commit 314001f0bf927015e459c9d387d62a231fe93af3
+Author: Rao Shoaib <rao.shoaib@oracle.com>
+Date:   Sun Aug 1 07:57:07 2021 +0000
+
+    af_unix: Add OOB support
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10765f8e300000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=12765f8e300000
+console output: https://syzkaller.appspot.com/x/log.txt?x=14765f8e300000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8760ca6c1ee783ac4abd@syzkaller.appspotmail.com
+Fixes: 314001f0bf92 ("af_unix: Add OOB support")
+
+BUG: sleeping function called from invalid context at lib/iov_iter.c:619
+in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 8443, name: syz-executor700
+2 locks held by syz-executor700/8443:
+ #0: ffff888028fa0d00 (&u->iolock){+.+.}-{3:3}, at: unix_stream_read_generic+0x16c6/0x2190 net/unix/af_unix.c:2501
+ #1: ffff888028fa0df0 (&u->lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:354 [inline]
+ #1: ffff888028fa0df0 (&u->lock){+.+.}-{2:2}, at: unix_stream_read_generic+0x16d0/0x2190 net/unix/af_unix.c:2502
+Preemption disabled at:
+[<0000000000000000>] 0x0
+CPU: 1 PID: 8443 Comm: syz-executor700 Not tainted 5.14.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
+ ___might_sleep.cold+0x1f1/0x237 kernel/sched/core.c:9154
+ __might_fault+0x6e/0x180 mm/memory.c:5258
+ _copy_to_iter+0x199/0x1600 lib/iov_iter.c:619
+ copy_to_iter include/linux/uio.h:139 [inline]
+ simple_copy_to_iter+0x4c/0x70 net/core/datagram.c:519
+ __skb_datagram_iter+0x10f/0x770 net/core/datagram.c:425
+ skb_copy_datagram_iter+0x40/0x50 net/core/datagram.c:533
+ skb_copy_datagram_msg include/linux/skbuff.h:3620 [inline]
+ unix_stream_read_actor+0x78/0xc0 net/unix/af_unix.c:2701
+ unix_stream_recv_urg net/unix/af_unix.c:2433 [inline]
+ unix_stream_read_generic+0x17cd/0x2190 net/unix/af_unix.c:2504
+ unix_stream_recvmsg+0xb1/0xf0 net/unix/af_unix.c:2717
+ sock_recvmsg_nosec net/socket.c:944 [inline]
+ sock_recvmsg net/socket.c:962 [inline]
+ sock_recvmsg net/socket.c:958 [inline]
+ ____sys_recvmsg+0x2c4/0x600 net/socket.c:2622
+ ___sys_recvmsg+0x127/0x200 net/socket.c:2664
+ do_recvmmsg+0x24d/0x6d0 net/socket.c:2758
+ __sys_recvmmsg net/socket.c:2837 [inline]
+ __do_sys_recvmmsg net/socket.c:2860 [inline]
+ __se_sys_recvmmsg net/socket.c:2853 [inline]
+ __x64_sys_recvmmsg+0x20b/0x260 net/socket.c:2853
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x43ef39
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffca8776d68 EFLAGS: 00000246 ORIG_RAX: 000000000000012b
+RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043ef39
+RDX: 0000000000000700 RSI: 0000000020001140 RDI: 0000000000000004
+RBP: 0000000000402f20 R08: 0000000000000000 R09: 0000000000400488
+R10: 0000000000000007 R11: 0000000000000246 R12: 0000000000402fb0
+R13: 0000000000000000 R14: 00000000004ac018 R15: 0000000000400488
+
+=============================
+[ BUG: Invalid wait context ]
+5.14.0-rc3-syzkaller #0 Tainted: G        W        
+-----------------------------
+syz-executor700/8443 is trying to lock:
+ffff8880212b6a28 (&mm->mmap_lock#2){++++}-{3:3}, at: __might_fault+0xa3/0x180 mm/memory.c:5260
+other info that might help us debug this:
+context-{4:4}
+2 locks held by syz-executor700/8443:
+ #0: ffff888028fa0d00 (&u->iolock){+.+.}-{3:3}, at: unix_stream_read_generic+0x16c6/0x2190 net/unix/af_unix.c:2501
+ #1: ffff888028fa0df0 (&u->lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:354 [inline]
+ #1: ffff888028fa0df0 (&u->lock){+.+.}-{2:2}, at: unix_stream_read_generic+0x16d0/0x2190 net/unix/af_unix.c:2502
+stack backtrace:
+CPU: 1 PID: 8443 Comm: syz-executor700 Tainted: G        W         5.14.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
+ print_lock_invalid_wait_context kernel/locking/lockdep.c:4666 [inline]
+ check_wait_context kernel/locking/lockdep.c:4727 [inline]
+ __lock_acquire.cold+0x213/0x3ab kernel/locking/lockdep.c:4965
+ lock_acquire kernel/locking/lockdep.c:5625 [inline]
+ lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5590
+ __might_fault mm/memory.c:5261 [inline]
+ __might_fault+0x106/0x180 mm/memory.c:5246
+ _copy_to_iter+0x199/0x1600 lib/iov_iter.c:619
+ copy_to_iter include/linux/uio.h:139 [inline]
+ simple_copy_to_iter+0x4c/0x70 net/core/datagram.c:519
+ __skb_datagram_iter+0x10f/0x770 net/core/datagram.c:425
+ skb_copy_datagram_iter+0x40/0x50 net/core/datagram.c:533
+ skb_copy_datagram_msg include/linux/skbuff.h:3620 [inline]
+ unix_stream_read_actor+0x78/0xc0 net/unix/af_unix.c:2701
+ unix_stream_recv_urg net/unix/af_unix.c:2433 [inline]
+ unix_stream_read_generic+0x17cd/0x2190 net/unix/af_unix.c:2504
+ unix_stream_recvmsg+0xb1/0xf0 net/unix/af_unix.c:2717
+ sock_recvmsg_nosec net/socket.c:944 [inline]
+ sock_recvmsg net/socket.c:962 [inline]
+ sock_recvmsg net/socket.c:958 [inline]
+ ____sys_recvmsg+0x2c4/0x600 net/socket.c:2622
+ ___sys_recvmsg+0x127/0x200 net/socket.c:2664
+ do_recvmmsg+0x24d/0x6d0 net/socket.c:2758
+ __sys_recvmmsg net/socket.c:2837 [inline]
+ __do_sys_recvmmsg net/socket.c:2860 [inline]
+ __se_sys_recvmmsg net/socket.c:2853 [inline]
+ __x64_sys_recvmmsg+0x20b/0x260 net/socket.c:2853
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x43ef39
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffca8776d68 EFLAGS: 00000246 ORIG_RAX: 000000000000012b
+RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043ef39
+RDX: 0000000000000700 RSI: 0000000020001140 RDI: 0000000000000004
+RBP: 0000000000402f20 R08: 0000000000000000 R09: 0000000000400488
+R10: 0000000000000007 R11: 0000000000000246 R12: 0000
 
 
-Before sending patch, I have found same patch to solve the Wifi problem.
-Is there any progress about this patch? 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-I hope that this patch will be applied.
-
-Reviewed-by: Jaehoon Chung <jh80.chung@samsung.com>
-
-Best Regards,
-Jaehoon Chung
-
-
->> ---
-> 
-> Just an update from the user with this hardware that I built a test kernel for:
-> "Still going strong w/ AX201, speed OK, on par w/ speeds on windows,
-> no crashes, no weird messages about the driver."
-> 
-> Justin
-> 
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
