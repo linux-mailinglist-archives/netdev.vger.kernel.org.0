@@ -2,71 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D31853E39DD
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 12:23:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82ACB3E39EB
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 13:13:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230098AbhHHKXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 06:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38796 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbhHHKXR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 06:23:17 -0400
-Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A424EC061760;
-        Sun,  8 Aug 2021 03:22:57 -0700 (PDT)
-Received: by mail-oo1-xc36.google.com with SMTP id e3-20020a4ab9830000b029026ada3b6b90so3549187oop.0;
-        Sun, 08 Aug 2021 03:22:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=60Gvr5OIXwK22nwkVBSgaU/i8SL3qWVYPuBR2P0gTyg=;
-        b=D1MJm4Eo1stU5GMhmbNoMKYFYExcT2+lF4HylgYWWM41/WLLyx8UWwLWbsQmiOCqZE
-         d+G14VFI6Vy+vd81WU5cjxJmmuR+nwCxwyUnXxAc7q8hWgWuOyVlPEefQMZHWmBJT+22
-         KdkAIG/ed8vtFUFnIGCAiVnQEtcPttvryJ9a9RhM+8tPZ8ezuflbnGJKxBA+WW7fa+VE
-         bqC2qAwM8VC1MMZJINUBlwgzzWPXn9XtfhlDxYLC1Xl84ReTbnlBII2n5JiTmNTtRAFh
-         sBlMnRX2nJj0zQdYPOGaAmKMZJ4rze5rPuZrhZyNUB2bfCCHzoN4eHUwU4xu22vSqg/m
-         tBig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=60Gvr5OIXwK22nwkVBSgaU/i8SL3qWVYPuBR2P0gTyg=;
-        b=K/xlvdChOAHOviMNttPJpdIq3E0k+iwVycPqTqbw6+rXWaX4sl8kpSMiVcxJ+uobIn
-         OIny9wV9ueeclh4aUla+825t0ytHfUNQtoYKr9WnfT1oOqPW/+4cfn1W2RUn3BnRwm0k
-         l6i/YxnKpkQu+pLtXltziTXW0fYtRA0IeGKWImKSqAuMxX6DqTU1VOLeRNtuM85Jq+dE
-         jVafW4X/VruI0VJR/kdDihVtO5F97ASQc0j/x/+whQSvmhNnqbNDg9Ct2MOJ0FcRVTTg
-         Wk7XDnBXcb5dcR+SXh3kuhBJB/myku+zUUfIu5Pn44lV5ZKbAjO3lApzXN9PyWPp2HqH
-         Cbog==
-X-Gm-Message-State: AOAM530WM3rOQq081Gag/yrkkjMymbo1HBe4Vp9JioHecfwEree9+osB
-        2q341tSezkL9hXlXZSQuPiDc2mrPQGqGtBBMZsM=
-X-Google-Smtp-Source: ABdhPJy9Q7gNsBcArGWIDUn1yfqmW3uJ2x7jmvfjMbBIVVdHGOmTpeeTeps8cD8p0eeluQrRRYYscI93toHv05G0CEE=
-X-Received: by 2002:a4a:98b0:: with SMTP id a45mr12054396ooj.22.1628418176944;
- Sun, 08 Aug 2021 03:22:56 -0700 (PDT)
+        id S229923AbhHHLKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 07:10:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39140 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229473AbhHHLKY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 8 Aug 2021 07:10:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id B30316101E;
+        Sun,  8 Aug 2021 11:10:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628421005;
+        bh=0f56xpiVXt+VAbohAJHX35HCvdKAVptLGU8kId2ZMIw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=MDaMaCrnn4lcC+4pBUQeAPV/RBglU8SIlFj3EGX6b6WZR/UY6uiWf+6WkaFqpuUn2
+         xE6deNdj5+83MP2HGRiZv9ytVcxWiTZ0/iM8jN5GvGr4Xa8GhUON8VhwHSEN2Y8Qcr
+         3krfPqiBsonQ/nfeZIvPGqDKOUNnJ4yC+IqZ0hO+BPpSWChPzgF4N0yt/V4mx/rIDf
+         qXIaUfD+UVt0Qwy4kpHvu36XivtUvvdCukg1hHueAi8Co4vK0bhW7vsg4+FaIl97AL
+         BdEioljKBZw1cTr6MDPQ0cJVneVusihRSui8cW3NUBEjWcOhzmVa6ktOLQLgdoeuki
+         KJXp0pf0p7Prg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A52DB60985;
+        Sun,  8 Aug 2021 11:10:05 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20210808063344.255867-1-weiyongjun1@huawei.com>
-In-Reply-To: <20210808063344.255867-1-weiyongjun1@huawei.com>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Sun, 8 Aug 2021 13:23:17 +0300
-Message-ID: <CAHNKnsQHpkMU6yo7MB0M_9ucwRynNwdKx7a9+6WB9Zx+_s_mGg@mail.gmail.com>
-Subject: Re: [PATCH net-next] wwan: mhi: Fix missing spin_lock_init() in mhi_mbim_probe()
-To:     Wei Yongjun <weiyongjun1@huawei.com>
-Cc:     Loic Poulain <loic.poulain@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, Hulk Robot <hulkci@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: phy: micrel: Fix link detection on ksz87xx switch"
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162842100567.27537.2856135053086059450.git-patchwork-notify@kernel.org>
+Date:   Sun, 08 Aug 2021 11:10:05 +0000
+References: <20210807000618.GB4898@cephalopod>
+In-Reply-To: <20210807000618.GB4898@cephalopod>
+To:     Ben Hutchings <ben.hutchings@mind.be>
+Cc:     steveb@workware.net.au, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 8, 2021 at 9:21 AM Wei Yongjun <weiyongjun1@huawei.com> wrote:
->
-> The driver allocates the spinlock but not initialize it.
-> Use spin_lock_init() on it to initialize it correctly.
->
-> Fixes: aa730a9905b7 ("net: wwan: Add MHI MBIM network driver")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Hello:
 
-Reviewed-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Sat, 7 Aug 2021 02:06:18 +0200 you wrote:
+> Commit a5e63c7d38d5 "net: phy: micrel: Fix detection of ksz87xx
+> switch" broke link detection on the external ports of the KSZ8795.
+> 
+> The previously unused phy_driver structure for these devices specifies
+> config_aneg and read_status functions that appear to be designed for a
+> fixed link and do not work with the embedded PHYs in the KSZ8795.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] net: phy: micrel: Fix link detection on ksz87xx switch"
+    https://git.kernel.org/netdev/net/c/2383cb9497d1
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
