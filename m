@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9154C3E3A23
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 14:10:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C94CF3E3A25
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 14:10:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230354AbhHHMKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 08:10:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50046 "EHLO mail.kernel.org"
+        id S230453AbhHHMK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 08:10:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50052 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229473AbhHHMKZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229504AbhHHMKZ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sun, 8 Aug 2021 08:10:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 349D161004;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 4343460EE4;
         Sun,  8 Aug 2021 12:10:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1628424606;
-        bh=kOmrIc6SOEnQ/VK949NAIdQ6H53pH2HJroH5/66NlFw=;
+        bh=5VcRUR0j4xWYYFvu0wIfCCjWT/gfLI8XiSyTbkBzUWg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dczTHNgDQ7OKCA0Xy+m9DsYv1d8u0XifXWLUC4kTReoPS7TM/vFVg6mG2QDfULrp8
-         WQsHrB6tfcFQHrtwmekFkXo9dltsuxHPt3gtTvfad2XA/3QyrqMZGgCKNvhT42kQPo
-         wljDj5igOxhyqVKTSX2zn6ZGRJi1Wcqiom6zFe8e64Tw5AG5cAqfoNKcXMQWo2FazE
-         j4xEfcuUO3ySfeH2iNDnDh6t1u7fP9ogzNpbUB4nzcSREH+mcJroiIg+0Iww6Muygi
-         gycF9Xm1zESM6JU9ug39b06cg+FV5Z/rQl7lwT+0Tm1aRFzG5tfg2qOGWuGyxV7REa
-         mNian4E2Rjjww==
+        b=hDhNBiLnF/YkwDx7q6qzmgqxV5BBSTfHziERG+KbW9PTfchBkevDTCFhYYdeBtEfm
+         g5GuJ0hbwRDM/aIr3m6XkpTwQ9FkyfQnNJf5i00fNbG2f+KAD6++EOelOBegH7rLam
+         mqoXzfXdj9/EEV8xsFs7UQW/jjS/C2rJAG3yqIcbVyTb0uEn3zc/ODMbxsIdas4mxG
+         6ruoy4h4x2TxoxNxa7kQnqpY9PmmPyWJAyQwCFT5HstLtOjzuoLV3V7fHBxxUfZOii
+         VOtCAzX4D4QpPm/a7k8KGkBe7wCc7vaZ3xMz6c7IPxAVKrv8ucjOaL+/izkPPvIdsR
+         BeAJvrbMWHXEQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2699D6096D;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 31429609B3;
         Sun,  8 Aug 2021 12:10:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/3] bnxt_en: PTP fixes
+Subject: Re: [PATCH] ppp: Fix generating ifname when empty IFLA_IFNAME is
+ specified
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162842460615.22263.16511156778511102158.git-patchwork-notify@kernel.org>
+Message-Id: <162842460619.22263.12540809953818710205.git-patchwork-notify@kernel.org>
 Date:   Sun, 08 Aug 2021 12:10:06 +0000
-References: <1628362995-7938-1-git-send-email-michael.chan@broadcom.com>
-In-Reply-To: <1628362995-7938-1-git-send-email-michael.chan@broadcom.com>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        gospo@broadcom.com, richardcochran@gmail.com,
-        pavan.chebbi@broadcom.com
+References: <20210807132703.26303-1-pali@kernel.org>
+In-Reply-To: <20210807132703.26303-1-pali@kernel.org>
+To:     =?utf-8?b?UGFsaSBSb2jDoXIgPHBhbGlAa2VybmVsLm9yZz4=?=@ci.codeaurora.org
+Cc:     paulus@samba.org, davem@davemloft.net, kuba@kernel.org,
+        g.nault@alphalink.fr, linux-ppp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Sat,  7 Aug 2021 15:03:12 -0400 you wrote:
-> This series includes 2 fixes for the PTP feature.  Update to the new
-> firmware interface so that the driver can pass the PTP sequence number
-> header offset of TX packets to the firmware.  This is needed for all
-> PTP packet types (v1, v2, with or without VLAN) to work.  The 2nd
-> fix is to use a different register window to read the PHC to avoid
-> conflict with an older Broadcom tool.
+On Sat,  7 Aug 2021 15:27:03 +0200 you wrote:
+> IFLA_IFNAME is nul-term string which means that IFLA_IFNAME buffer can be
+> larger than length of string which contains.
+> 
+> Function __rtnl_newlink() generates new own ifname if either IFLA_IFNAME
+> was not specified at all or userspace passed empty nul-term string.
+> 
+> It is expected that if userspace does not specify ifname for new ppp netdev
+> then kernel generates one in format "ppp<id>" where id matches to the ppp
+> unit id which can be later obtained by PPPIOCGUNIT ioctl.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/3] bnxt_en: Update firmware interface to 1.10.2.52
-    https://git.kernel.org/netdev/net/c/fbfee25796e2
-  - [net,2/3] bnxt_en: Update firmware call to retrieve TX PTP timestamp
-    https://git.kernel.org/netdev/net/c/9e26680733d5
-  - [net,3/3] bnxt_en: Use register window 6 instead of 5 to read the PHC
-    https://git.kernel.org/netdev/net/c/92529df76db5
+  - ppp: Fix generating ifname when empty IFLA_IFNAME is specified
+    https://git.kernel.org/netdev/net/c/2459dcb96bcb
 
 You are awesome, thank you!
 --
