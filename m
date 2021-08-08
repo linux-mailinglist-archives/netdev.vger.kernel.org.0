@@ -2,80 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8FD33E3C99
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 22:00:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6B7D3E3C9C
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 22:02:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231597AbhHHUAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 16:00:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38876 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229977AbhHHUAZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 8 Aug 2021 16:00:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id D41CB60F25;
-        Sun,  8 Aug 2021 20:00:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628452805;
-        bh=avv7/tOkUh2iyOaTAPl1E2HFkHjRoBP5tCyefO0kTXg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=A841M6cVb8Vy1xnwChgRL+DYyS9lHxF/jz95wLvFeTHW+iWxneuX+soOYnMChQazf
-         LdEYSQEx+KaXXScAX1UdA/MX5xzcNWzJlCWx0HKx4eEWEFPLk0yG8gg4ZJjPw9gIQL
-         gq3ve+Xjhsf9wo0Eyx3zE0PvN2qRvgiH3NYRzUx6wwbrkeMe1L2vkH5EDbx2UQxXUA
-         B2xN7m2IUgCGY/2Hpjl6g9E7jeGaKbxOLbQd+abBMRy8L/UxIlpOpVbrQ7cOgppJTe
-         /cMUmQW5fF7Q+hFJp6mMjsUXrMbwc8aLoatnpDXrlzZNQ+XZk2fHDJegvomdAEd3nt
-         OCWD/KmdVlfZQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C148060726;
-        Sun,  8 Aug 2021 20:00:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232353AbhHHUC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 16:02:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52090 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229977AbhHHUC6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 16:02:58 -0400
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1743C061760
+        for <netdev@vger.kernel.org>; Sun,  8 Aug 2021 13:02:38 -0700 (PDT)
+Received: by mail-ot1-x32c.google.com with SMTP id a5-20020a05683012c5b029036edcf8f9a6so15591824otq.3
+        for <netdev@vger.kernel.org>; Sun, 08 Aug 2021 13:02:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UCT7FLsey68PTcAFD96vt4fuP+5ZLftDCPDj1rG9OhQ=;
+        b=XxX8WYKCfZVJVL3w1FTUs65UlK9SqjclkVPa8aRr3yiYAJhHoGrG7y57kXYcOmP7CY
+         o68jZXbrLI0wIlYWFSo8lQfdrDZlQ7pAMKpJmqqB/iqRaOvtSbkdu34WvdoEiqo8UI5/
+         xFx+1xqK3gCGImNDMgSC6WGF0oEoWZqLHyWRpYMNOuNvSXq8X3I3OCFSWiTgxIEYkSbt
+         30s8/DTuJngHWcNXX6jKlqlVwi9iNQ9DGcxX1nwD+NY8jXZpGLxcY+ZBtEIkyFjskyUn
+         knwj442tzHWC2f4PEXq1SDQpeylD8fRR4//SWvePsm97hZGAAKLJ9JmRGCf5zfEurKEV
+         nnZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UCT7FLsey68PTcAFD96vt4fuP+5ZLftDCPDj1rG9OhQ=;
+        b=MWoSNcqaB5qGPzJonQM6iAPg8WyzbGgwrjB09W98d9HP2t8b09KzavtBmjxYs7fODR
+         PyYX0UXjRZ7dk3at9asfQ3Gfh+HN5pgpnse6mmbE3iVH+Inq7O3NGq8zwM9/D02YhOy5
+         4xCZnbZ7UcqhlXd6dEgClOXrwtCWrzAKUTm1jsjevbtyprtttLSHI/OS2x2NC3O0XGHU
+         IxNQE5egWqlxVFFcTbXo664deAmV925Emhx2pi2xYt3cXDrrabwspP+kk/Um8oX9/NyA
+         o92Cm5OSVBsstE2R2lHqEwMEldeB1i2PgJF4V7hQk7eshbm/0I/HCuY/viqE5IU9Z5mG
+         IiBg==
+X-Gm-Message-State: AOAM533EE4IvYXXtFUD1ktUVo1EUwhBSLziG7oqDjtB3q+gZSpo1oLYY
+        W6mu4vEN7hK0Js+9yloH/yo=
+X-Google-Smtp-Source: ABdhPJwCnoV6yw4dt03S7U002zpgtakT1ltiES+iM3veZprrZSZcgJsMe2MexHl+tUZBe7/P63lmFQ==
+X-Received: by 2002:a05:6830:2783:: with SMTP id x3mr14814333otu.37.1628452958246;
+        Sun, 08 Aug 2021 13:02:38 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.45])
+        by smtp.googlemail.com with ESMTPSA id m4sm2406480oou.0.2021.08.08.13.02.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Aug 2021 13:02:37 -0700 (PDT)
+Subject: Re: [PATCH] net: Support filtering interfaces on no master
+To:     Lahav Schlesinger <lschlesinger@drivenets.com>,
+        netdev@vger.kernel.org
+Cc:     dsahern@kernel.org, davem@davemloft.net, kuba@kernel.org
+References: <20210808132836.1552870-1-lschlesinger@drivenets.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <439cf1f8-78ad-2fec-8a43-a863ac34297b@gmail.com>
+Date:   Sun, 8 Aug 2021 14:02:36 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5] Fast ageing support for SJA1105 DSA driver
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162845280578.6085.1916652625687670762.git-patchwork-notify@kernel.org>
-Date:   Sun, 08 Aug 2021 20:00:05 +0000
-References: <20210808143527.4041242-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20210808143527.4041242-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        olteanv@gmail.com, dqfext@gmail.com, tobias@waldekranz.com,
-        wintera@linux.ibm.com, jwi@linux.ibm.com, roopa@nvidia.com,
-        nikolay@nvidia.com
+In-Reply-To: <20210808132836.1552870-1-lschlesinger@drivenets.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Sun,  8 Aug 2021 17:35:22 +0300 you wrote:
-> While adding support for flushing dynamically learned FDB entries in the
-> sja1105 driver, I noticed a few things that could be improved in DSA.
-> Most notably, drivers could omit a fast age when address learning is
-> turned off, which might mean that ports leaving a bridge and becoming
-> standalone could still have FDB entries pointing towards them. Secondly,
-> when DSA fast ages a port after the 'learning' flag has been turned off,
-> the software bridge still has the dynamically learned 'master' FDB
-> entries installed, and those should be deleted too.
+On 8/8/21 7:28 AM, Lahav Schlesinger wrote:
+> Currently there's support for filtering neighbours/links for interfaces
+> which have a specific master device (using the IFLA_MASTER/NDA_MASTER
+> attributes).
 > 
-> [...]
+> This patch adds support for filtering interfaces/neighbours dump for
+> interfaces that *don't* have a master.
+> 
+> I have a patch for iproute2 ready for adding this support in userspace.
+> 
+> Signed-off-by: Lahav Schlesinger <lschlesinger@drivenets.com>
+> Cc: David Ahern <dsahern@kernel.org>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  net/core/neighbour.c | 7 +++++++
+>  net/core/rtnetlink.c | 7 +++++++
+>  2 files changed, 14 insertions(+)
+> 
+> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+> index 53e85c70c6e5..1b1e0ca70650 100644
+> --- a/net/core/neighbour.c
+> +++ b/net/core/neighbour.c
+> @@ -2533,6 +2533,13 @@ static bool neigh_master_filtered(struct net_device *dev, int master_idx)
+>  		return false;
+>  
+>  	master = dev ? netdev_master_upper_dev_get(dev) : NULL;
+> +
+> +	/* 0 is already used to denote NDA_MASTER wasn't passed, therefore need another
+> +	 * invalid value for ifindex to denote "no master".
+> +	 */
+> +	if (master_idx == -1)
+> +                return (bool)master;
 
-Here is the summary with links:
-  - [net-next,1/5] net: dsa: centralize fast ageing when address learning is turned off
-    https://git.kernel.org/netdev/net-next/c/045c45d1f598
-  - [net-next,2/5] net: dsa: don't fast age bridge ports with learning turned off
-    https://git.kernel.org/netdev/net-next/c/4eab90d9737b
-  - [net-next,3/5] net: dsa: flush the dynamic FDB of the software bridge when fast ageing a port
-    https://git.kernel.org/netdev/net-next/c/9264e4ad2611
-  - [net-next,4/5] net: dsa: sja1105: rely on DSA core tracking of port learning state
-    https://git.kernel.org/netdev/net-next/c/5313a37b881e
-  - [net-next,5/5] net: dsa: sja1105: add FDB fast ageing support
-    https://git.kernel.org/netdev/net-next/c/5126ec72a094
+return !!master;
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+same below
 
+> +
+>  	if (!master || master->ifindex != master_idx)
+>  		return true;
+>  
+> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+> index f6af3e74fc44..8ccc314744d4 100644
+> --- a/net/core/rtnetlink.c
+> +++ b/net/core/rtnetlink.c
+> @@ -1970,6 +1970,13 @@ static bool link_master_filtered(struct net_device *dev, int master_idx)
+>  		return false;
+>  
+>  	master = netdev_master_upper_dev_get(dev);
+> +
+> +	/* 0 is already used to denote IFLA_MASTER wasn't passed, therefore need
+> +	 * another invalid value for ifindex to denote "no master".
+> +	 */
+> +	if (master_idx == -1)
+> +                return (bool)master;
+> +
+>  	if (!master || master->ifindex != master_idx)
+>  		return true;
+>  
+> 
 
