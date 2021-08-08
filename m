@@ -2,107 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BE8C3E3920
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 07:56:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DD603E392C
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 08:21:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230155AbhHHFtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 01:49:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36426 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbhHHFtl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 01:49:41 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C64C061760;
-        Sat,  7 Aug 2021 22:49:23 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id d1so12936614pll.1;
-        Sat, 07 Aug 2021 22:49:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6BZAJwNVxh7BBq5KJRh3cIe1IxGdTWQfrAqveunfQ9A=;
-        b=X282WwyX2+xa2GLcX2oWX4NRxg3Ys39kcIzAVStrLh1r24CkmQsLruZtJ2vvtPYp76
-         yfkF8V1hKwnk0OZs//Tdil6kbp0+u0dYnKejgmVnLWYVlvKecrLotYyCFYJ9ZlMi0l7A
-         wVNVULhVeYahsS+6AtAFItxKKtZWxtknHuI0e3XsL8jG6pCTUtYsBz/P1v09XcYK+RL2
-         8wHjXWJseisLxQAvb8r2MIrpS/T22OcbQlYbZbV6aD8phd7OSURg76KS37ULX2xgP1JN
-         9Gaby/AVM2bVr2AWJPcz+u4fa744t2aeubQwuGISzn/KCMcsZifhVE1BwlFvsI4pMwks
-         ussg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6BZAJwNVxh7BBq5KJRh3cIe1IxGdTWQfrAqveunfQ9A=;
-        b=Ato1EbExa00KaOmma35Q6pxhRJFw0PloJtzubf176EPz6asXtcf+mXj1/XiYVDvdEE
-         e5vpLGqJUlREHKvf7rtNWdTFDXhrJzZVsT7n/ugZLkkvl/oLSSsZFjERttg02YByGjxu
-         lR3A1N0KUUamhD8ol+2Fh11uuJlxgHDAMcZobkafuLDPcb+AcgUZ9kEmBcAaHyBfXVOI
-         6ycKGZJm5CqUma4QA8RNDvyvUHuOP8oCKsmfp6SLhGyR49PinNDWd+nOU/lJxhV82zK/
-         9JMjGOlSYR6i+uJI4IVNZBy4H9J1WgZZFFwy3DpR+iAKjMZdC0Jszl3/kXqHiLCgTBsR
-         EMCA==
-X-Gm-Message-State: AOAM530IN6rLnYP6+UKkdmSUkt2tcJTtfgny7S2xPHjRx9Gi7VA7PXv6
-        N2zeBtvBVmxt5L5nojVR+T4=
-X-Google-Smtp-Source: ABdhPJyfiVBRK91EqgPnTh4dRdUKDMgLtniNBWtoEBxeDUjehqtCy70im+rX1IfJMcqe6zslv14lUw==
-X-Received: by 2002:a62:7d84:0:b029:3b8:49bb:4c3f with SMTP id y126-20020a627d840000b02903b849bb4c3fmr12642251pfc.49.1628401762761;
-        Sat, 07 Aug 2021 22:49:22 -0700 (PDT)
-Received: from localhost.localdomain ([1.240.193.107])
-        by smtp.googlemail.com with ESMTPSA id o10sm12842849pjg.34.2021.08.07.22.49.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Aug 2021 22:49:22 -0700 (PDT)
-From:   Kangmin Park <l4stpr0gr4m@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] ipv4: fix error path in fou_create()
-Date:   Sun,  8 Aug 2021 14:49:17 +0900
-Message-Id: <20210808054917.5418-1-l4stpr0gr4m@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        id S230197AbhHHGWM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 02:22:12 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:7809 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229516AbhHHGWL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 02:22:11 -0400
+Received: from dggeml759-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Gj8Hl0RxHzYmHp;
+        Sun,  8 Aug 2021 14:21:39 +0800 (CST)
+Received: from localhost.localdomain (10.175.102.38) by
+ dggeml759-chm.china.huawei.com (10.1.199.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Sun, 8 Aug 2021 14:21:49 +0800
+From:   Wei Yongjun <weiyongjun1@huawei.com>
+To:     <weiyongjun1@huawei.com>, Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
+        Hulk Robot <hulkci@huawei.com>
+Subject: [PATCH net-next] wwan: mhi: Fix missing spin_lock_init() in mhi_mbim_probe()
+Date:   Sun, 8 Aug 2021 06:33:44 +0000
+Message-ID: <20210808063344.255867-1-weiyongjun1@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+X-Originating-IP: [10.175.102.38]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggeml759-chm.china.huawei.com (10.1.199.138)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sock is always NULL when udp_sock_create() is failed and fou is
-always NULL when kzalloc() is failed.
+The driver allocates the spinlock but not initialize it.
+Use spin_lock_init() on it to initialize it correctly.
 
-So, add error_sock and error_alloc label and fix the error path
-in those cases.
-
-Signed-off-by: Kangmin Park <l4stpr0gr4m@gmail.com>
+Fixes: aa730a9905b7 ("net: wwan: Add MHI MBIM network driver")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 ---
-v2:
- - change commit message
- - fix error path
+ drivers/net/wwan/mhi_wwan_mbim.c | 1 +
+ 1 file changed, 1 insertion(+)
 
- net/ipv4/fou.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv4/fou.c b/net/ipv4/fou.c
-index 60d67ae76880..f1d99e776bb8 100644
---- a/net/ipv4/fou.c
-+++ b/net/ipv4/fou.c
-@@ -578,7 +578,7 @@ static int fou_create(struct net *net, struct fou_cfg *cfg,
- 	fou = kzalloc(sizeof(*fou), GFP_KERNEL);
- 	if (!fou) {
- 		err = -ENOMEM;
--		goto error;
-+		goto error_alloc;
- 	}
+diff --git a/drivers/net/wwan/mhi_wwan_mbim.c b/drivers/net/wwan/mhi_wwan_mbim.c
+index f37232fb29c0..377529bbf124 100644
+--- a/drivers/net/wwan/mhi_wwan_mbim.c
++++ b/drivers/net/wwan/mhi_wwan_mbim.c
+@@ -601,6 +601,7 @@ static int mhi_mbim_probe(struct mhi_device *mhi_dev, const struct mhi_device_id
+ 	if (!mbim)
+ 		return -ENOMEM;
  
- 	sk = sock->sk;
-@@ -627,9 +627,10 @@ static int fou_create(struct net *net, struct fou_cfg *cfg,
- 
- error:
- 	kfree(fou);
--error_sock:
-+error_alloc:
- 	if (sock)
- 		udp_tunnel_sock_release(sock);
-+error_sock:
- 	return err;
- }
- 
--- 
-2.26.2
++	spin_lock_init(&mbim->tx_lock);
+ 	dev_set_drvdata(&mhi_dev->dev, mbim);
+ 	mbim->mdev = mhi_dev;
+ 	mbim->mru = mhi_dev->mhi_cntrl->mru ? mhi_dev->mhi_cntrl->mru : MHI_DEFAULT_MRU;
 
