@@ -2,193 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D0D73E3D2C
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 01:41:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF3893E3D3D
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 01:52:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230337AbhHHXik (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 19:38:40 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:49851 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230024AbhHHXij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 19:38:39 -0400
-Received: by mail-io1-f69.google.com with SMTP id k6-20020a6b3c060000b0290568c2302268so11617679iob.16
-        for <netdev@vger.kernel.org>; Sun, 08 Aug 2021 16:38:18 -0700 (PDT)
+        id S230337AbhHHXwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 19:52:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229662AbhHHXwX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 19:52:23 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C021C061760;
+        Sun,  8 Aug 2021 16:52:04 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id bo19so2609503edb.9;
+        Sun, 08 Aug 2021 16:52:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=g+mMde5qqc4uqYbMYLo0oM6z7/xWv3oSIgHXhyEzI18=;
+        b=HG3IPM1H6BKAhnp9qibICBx63Uwux2bThByqPA/ojs6WFDEThJtqm+A82+7yz1knMT
+         n1Bh794jpjjyeqMlOQnMCLfj30tuJ/stefGVB0HV/aUH6h7cDeX6rMxvINcrzQbuPtsC
+         VQmmlya7O7WdPHTSyxJfCrGVsqXA4dDSLohHO3GMItkSVYCnf9mRP/vtUgLTWovcRdJR
+         wvT+Zx2QM8Do9ZqGZ8HTR3KtOqiORh4WN666q1ADedsufn0R3RFd1G6PqbilDRgBFtR4
+         PLoOvUxOzGFGziNHgfvwn0A6gpeCtoyc3MFQsD1lF+xk6W137aSByQWIGlCRXNKRUfqa
+         BwOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=6Sls2ZePO2B7rK1frbRgJ99vGjzszT5eqt0ie+TyZh4=;
-        b=Y4fjUtQR6TxKnRnqRmwn2GDhAxbgdorAP5xi44sFKSHr2FroC7b4tOxsiaKUoMTUwh
-         sXyRu8p6GAUJBAsC2IRBVEZYHDZKjiRXEuCKFH8oamE5tpX5++Gfcz8kXJS2983i2Sa2
-         zr2Ksw3Bj3ov21vHO3nSLxeOidhE90dLARMpstXNB0GTdDJ8v9YA/WFhxx0zKvDbO+a5
-         JmcYWa8Xi2m7+UgWgsEAjbadycZftdKChdN8+AExJt3auxEv5NwSAst35Gd7yPYmCgMY
-         v/lPbWjQR541ccUDWHpoDp5josxYuszlyTySDYhz4Yx/RZrJRipq+Ldce8NeCt5JxoWX
-         YG5Q==
-X-Gm-Message-State: AOAM5309+ShoeAMjiLybeNUxSbIIjv0Z/JwXZYMEmFVDS989SoO0Hm0v
-        BrP1wU0QXELRPf8gT7IbHBpz71BGV+RZr/LmG76p5qHveeoi
-X-Google-Smtp-Source: ABdhPJzDq0KkjK6Hn7ioKuW9SGjXRihEUKOaipf9eMWxxIETGIhosE/xhsxde+AokRZJxSiizlG2oXwC7MMWm60zZs2yAHMtKZYd
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=g+mMde5qqc4uqYbMYLo0oM6z7/xWv3oSIgHXhyEzI18=;
+        b=FVm3WEyKn88ZgM2/1JY3CjJpLPEtK/c4OnBGEaLsgc1sAO620QWx6rM1psENKqkmQa
+         u6MWglypeEg9JJt8HHwM4R8sfZQO6hVQ/egWnrdELQUhMGgaljdRIuZU+Ff1yM1UHpPS
+         WtIB+iO6HS205IAn/bFEdTn9yjgyuv5Nxxo0TUffkHDwOxqcLffCEl6fl8hEM8af2FXH
+         ogkC93TJNLi9rWvMPRVrwgJKt3xcQsokxHlBvbwFAHT2QT6fZJV2ryssFMsqHjuQKVR3
+         SmGXZqft10IEIlhuAUKX5mM0eSjO10QvUDlZ4gq2C2E1Z+yzPb/ADh5GrLdXwhK+7qm9
+         sqsQ==
+X-Gm-Message-State: AOAM533YCtXNoytZ8C2YsLBXiD/fiYI44HA2MNmrABQxiIh751Tu4xjp
+        ZhD7wO9qqqbQamM/SvHyNsQ=
+X-Google-Smtp-Source: ABdhPJylExpK6vSu0VFC4Y40mLv8hd5y8/R6uN6ZHtpGeCgyB23L+D+b0vxQY52+4Tz75Gunuig9xg==
+X-Received: by 2002:a05:6402:31a4:: with SMTP id dj4mr26352070edb.350.1628466722891;
+        Sun, 08 Aug 2021 16:52:02 -0700 (PDT)
+Received: from skbuf ([188.25.144.60])
+        by smtp.gmail.com with ESMTPSA id v12sm1572958ejq.36.2021.08.08.16.52.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Aug 2021 16:52:02 -0700 (PDT)
+Date:   Mon, 9 Aug 2021 02:52:01 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     Eric Woudstra <ericwouds@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mt7530 fix mt7530_fdb_write vid missing ivl bit
+Message-ID: <20210808235201.wvw6mjzyvcpumxgk@skbuf>
+References: <20210716152213.4213-1-ericwouds@gmail.com>
+ <20210808170024.228363-1-dqfext@gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1aa3:: with SMTP id l3mr453617ilv.299.1628465898703;
- Sun, 08 Aug 2021 16:38:18 -0700 (PDT)
-Date:   Sun, 08 Aug 2021 16:38:18 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006bd0b305c914c3dc@google.com>
-Subject: [syzbot] BUG: sleeping function called from invalid context in _copy_to_iter
-From:   syzbot <syzbot+8760ca6c1ee783ac4abd@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        christian.brauner@ubuntu.com, cong.wang@bytedance.com,
-        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
-        jamorris@linux.microsoft.com, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, rao.shoaib@oracle.com, shuah@kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
-        viro@zeniv.linux.org.uk, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210808170024.228363-1-dqfext@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Aug 09, 2021 at 01:00:24AM +0800, DENG Qingfang wrote:
+> On Fri, Jul 16, 2021 at 05:22:11PM +0200, ericwouds@gmail.com wrote:
+> > From: Eric Woudstra <37153012+ericwoud@users.noreply.github.com>
+> >
+> > According to reference guides mt7530 (mt7620) and mt7531:
+> >
+> > NOTE: When IVL is reset, MAC[47:0] and FID[2:0] will be used to
+> > read/write the address table. When IVL is set, MAC[47:0] and CVID[11:0]
+> > will be used to read/write the address table.
+> >
+> > Since the function only fills in CVID and no FID, we need to set the
+> > IVL bit. The existing code does not set it.
+> >
+> > This is a fix for the issue I dropped here earlier:
+> >
+> > http://lists.infradead.org/pipermail/linux-mediatek/2021-June/025697.html
+> >
+> > With this patch, it is now possible to delete the 'self' fdb entry
+> > manually. However, wifi roaming still has the same issue, the entry
+> > does not get deleted automatically. Wifi roaming also needs a fix
+> > somewhere else to function correctly in combination with vlan.
+>
+> Sorry to bump this up, but I think I identified the issue:
+>
+> Consider a VLAN-aware bridge br0, with two ports set to different PVIDs:
+>
+> > bridge vlan
+> > port         vlan-id
+> > swp0         1 PVID Egress Untagged
+> > swp1         2 PVID Egress Untagged
+>
+> When the bridge core sends a packet to swp1, the packet will be sent to
+> the CPU port of the switch as untagged because swp1 is set as "Egress
+> Untagged". However if the switch uses independent VLAN learning, the CPU
+> port PVID will be used to update the FDB.
 
-syzbot found the following issue on:
+Sadly the Banana Pi MT7531 reference manual I have does not appear to
+cover the DSA tagging header, so I am not actually clear what
+MTK_HDR_XMIT_SA_DIS does when not set. Does it default to the CPU port's
+value from the PSC register?
 
-HEAD commit:    c2eecaa193ff pktgen: Remove redundant clone_skb override
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=12e3a69e300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=aba0c23f8230e048
-dashboard link: https://syzkaller.appspot.com/bug?extid=8760ca6c1ee783ac4abd
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15c5b104300000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10062aaa300000
+If it does, then I expect that your patch 0b69c54c74bc ("net: dsa:
+mt7530: enable assisted learning on CPU port") fixes the issue Eric was
+seeing, which in turn was caused by your other patch 5e5502e012b8 ("net:
+dsa: mt7530: fix roaming from DSA user ports").
 
-The issue was bisected to:
+> As we don't change its PVID
+> (not reasonable to change it anyway), hardware learning may not update
+> the correct FDB.
+>
+> A possible solution is always send packets as tagged when serving a
+> VLAN-aware bridge.
 
-commit 314001f0bf927015e459c9d387d62a231fe93af3
-Author: Rao Shoaib <rao.shoaib@oracle.com>
-Date:   Sun Aug 1 07:57:07 2021 +0000
+So as usual, VLANs put the "hard" in "hardware learning on the CPU port".
+I would say "a possible solution is to not attempt to learn from
+CPU-injected frames unless they are sent using the tx_fwd_offload
+framework"....
 
-    af_unix: Add OOB support
+>
+> mv88e6xxx has been using hardware learning on CPU port since commit
+> d82f8ab0d874 ("net: dsa: tag_dsa: offload the bridge forwarding process"),
+> does it have the same issue?
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10765f8e300000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=12765f8e300000
-console output: https://syzkaller.appspot.com/x/log.txt?x=14765f8e300000
+...which ensures that bridge data plane packets are always sent to the
+CPU port as VLAN-tagged:
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+8760ca6c1ee783ac4abd@syzkaller.appspotmail.com
-Fixes: 314001f0bf92 ("af_unix: Add OOB support")
+br_handle_vlan:
 
-BUG: sleeping function called from invalid context at lib/iov_iter.c:619
-in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 8443, name: syz-executor700
-2 locks held by syz-executor700/8443:
- #0: ffff888028fa0d00 (&u->iolock){+.+.}-{3:3}, at: unix_stream_read_generic+0x16c6/0x2190 net/unix/af_unix.c:2501
- #1: ffff888028fa0df0 (&u->lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:354 [inline]
- #1: ffff888028fa0df0 (&u->lock){+.+.}-{2:2}, at: unix_stream_read_generic+0x16d0/0x2190 net/unix/af_unix.c:2502
-Preemption disabled at:
-[<0000000000000000>] 0x0
-CPU: 1 PID: 8443 Comm: syz-executor700 Not tainted 5.14.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
- ___might_sleep.cold+0x1f1/0x237 kernel/sched/core.c:9154
- __might_fault+0x6e/0x180 mm/memory.c:5258
- _copy_to_iter+0x199/0x1600 lib/iov_iter.c:619
- copy_to_iter include/linux/uio.h:139 [inline]
- simple_copy_to_iter+0x4c/0x70 net/core/datagram.c:519
- __skb_datagram_iter+0x10f/0x770 net/core/datagram.c:425
- skb_copy_datagram_iter+0x40/0x50 net/core/datagram.c:533
- skb_copy_datagram_msg include/linux/skbuff.h:3620 [inline]
- unix_stream_read_actor+0x78/0xc0 net/unix/af_unix.c:2701
- unix_stream_recv_urg net/unix/af_unix.c:2433 [inline]
- unix_stream_read_generic+0x17cd/0x2190 net/unix/af_unix.c:2504
- unix_stream_recvmsg+0xb1/0xf0 net/unix/af_unix.c:2717
- sock_recvmsg_nosec net/socket.c:944 [inline]
- sock_recvmsg net/socket.c:962 [inline]
- sock_recvmsg net/socket.c:958 [inline]
- ____sys_recvmsg+0x2c4/0x600 net/socket.c:2622
- ___sys_recvmsg+0x127/0x200 net/socket.c:2664
- do_recvmmsg+0x24d/0x6d0 net/socket.c:2758
- __sys_recvmmsg net/socket.c:2837 [inline]
- __do_sys_recvmmsg net/socket.c:2860 [inline]
- __se_sys_recvmmsg net/socket.c:2853 [inline]
- __x64_sys_recvmmsg+0x20b/0x260 net/socket.c:2853
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x43ef39
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffca8776d68 EFLAGS: 00000246 ORIG_RAX: 000000000000012b
-RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043ef39
-RDX: 0000000000000700 RSI: 0000000020001140 RDI: 0000000000000004
-RBP: 0000000000402f20 R08: 0000000000000000 R09: 0000000000400488
-R10: 0000000000000007 R11: 0000000000000246 R12: 0000000000402fb0
-R13: 0000000000000000 R14: 00000000004ac018 R15: 0000000000400488
+	/* If the skb will be sent using forwarding offload, the assumption is
+	 * that the switchdev will inject the packet into hardware together
+	 * with the bridge VLAN, so that it can be forwarded according to that
+	 * VLAN. The switchdev should deal with popping the VLAN header in
+	 * hardware on each egress port as appropriate. So only strip the VLAN
+	 * header if forwarding offload is not being used.
+	 */
+	if (v->flags & BRIDGE_VLAN_INFO_UNTAGGED &&
+	    !br_switchdev_frame_uses_tx_fwd_offload(skb))
+		__vlan_hwaccel_clear_tag(skb);
 
-=============================
-[ BUG: Invalid wait context ]
-5.14.0-rc3-syzkaller #0 Tainted: G        W        
------------------------------
-syz-executor700/8443 is trying to lock:
-ffff8880212b6a28 (&mm->mmap_lock#2){++++}-{3:3}, at: __might_fault+0xa3/0x180 mm/memory.c:5260
-other info that might help us debug this:
-context-{4:4}
-2 locks held by syz-executor700/8443:
- #0: ffff888028fa0d00 (&u->iolock){+.+.}-{3:3}, at: unix_stream_read_generic+0x16c6/0x2190 net/unix/af_unix.c:2501
- #1: ffff888028fa0df0 (&u->lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:354 [inline]
- #1: ffff888028fa0df0 (&u->lock){+.+.}-{2:2}, at: unix_stream_read_generic+0x16d0/0x2190 net/unix/af_unix.c:2502
-stack backtrace:
-CPU: 1 PID: 8443 Comm: syz-executor700 Tainted: G        W         5.14.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
- print_lock_invalid_wait_context kernel/locking/lockdep.c:4666 [inline]
- check_wait_context kernel/locking/lockdep.c:4727 [inline]
- __lock_acquire.cold+0x213/0x3ab kernel/locking/lockdep.c:4965
- lock_acquire kernel/locking/lockdep.c:5625 [inline]
- lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5590
- __might_fault mm/memory.c:5261 [inline]
- __might_fault+0x106/0x180 mm/memory.c:5246
- _copy_to_iter+0x199/0x1600 lib/iov_iter.c:619
- copy_to_iter include/linux/uio.h:139 [inline]
- simple_copy_to_iter+0x4c/0x70 net/core/datagram.c:519
- __skb_datagram_iter+0x10f/0x770 net/core/datagram.c:425
- skb_copy_datagram_iter+0x40/0x50 net/core/datagram.c:533
- skb_copy_datagram_msg include/linux/skbuff.h:3620 [inline]
- unix_stream_read_actor+0x78/0xc0 net/unix/af_unix.c:2701
- unix_stream_recv_urg net/unix/af_unix.c:2433 [inline]
- unix_stream_read_generic+0x17cd/0x2190 net/unix/af_unix.c:2504
- unix_stream_recvmsg+0xb1/0xf0 net/unix/af_unix.c:2717
- sock_recvmsg_nosec net/socket.c:944 [inline]
- sock_recvmsg net/socket.c:962 [inline]
- sock_recvmsg net/socket.c:958 [inline]
- ____sys_recvmsg+0x2c4/0x600 net/socket.c:2622
- ___sys_recvmsg+0x127/0x200 net/socket.c:2664
- do_recvmmsg+0x24d/0x6d0 net/socket.c:2758
- __sys_recvmmsg net/socket.c:2837 [inline]
- __do_sys_recvmmsg net/socket.c:2860 [inline]
- __se_sys_recvmmsg net/socket.c:2853 [inline]
- __x64_sys_recvmmsg+0x20b/0x260 net/socket.c:2853
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x43ef39
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffca8776d68 EFLAGS: 00000246 ORIG_RAX: 000000000000012b
-RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043ef39
-RDX: 0000000000000700 RSI: 0000000020001140 RDI: 0000000000000004
-RBP: 0000000000402f20 R08: 0000000000000000 R09: 0000000000400488
-R10: 0000000000000007 R11: 0000000000000246 R12: 0000
+Seriously, I expect that a packet injected through the CPU port will,
+under normal circumstances, not default not look up the FDB, not update
+the FDB, etc etc.
 
+As long as you let the frame analyzer look in depth at the packet you do
+need to ensure that it has a valid VLAN ID. Otherwise it is an actual
+forwarding correctness issue and not just a "learn in wrong VLAN" issue:
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+https://patchwork.kernel.org/project/netdevbpf/patch/20210426170411.1789186-6-tobias@waldekranz.com/
