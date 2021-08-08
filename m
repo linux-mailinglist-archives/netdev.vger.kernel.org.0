@@ -2,117 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A2EA3E3943
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 08:53:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 738743E3947
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 09:06:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230426AbhHHGxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 02:53:32 -0400
-Received: from mail-bn8nam12on2047.outbound.protection.outlook.com ([40.107.237.47]:50400
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230348AbhHHGxc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 8 Aug 2021 02:53:32 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jxHfxRRwyqQdL43oo7XkrzPhYfYR7AihT2RadtM63z6jVAG9joAV2fV9idIgY4HbQY2Xde3Trm57G1tkCgijxtgiulrnZAJ9YdSkWNVNTY4U3gU2LXaCB2dJyqY+axi/83Zv9AqbnxbnjSvUa4W5o6IOmidcZwlCjBPdKJPT64IK/yTgMqetuAoLRHJfUD65tedpmycoDcjYWDyiCznTZq+fFEa+pdVyhJWile+MfdgZyUhDOOGY44YTFnqvScF+V1RF9LaB+3sYXAdtgm34vDKoBnkvaFh3nrrk2uuunt5xJKPxC/B6aQOORfBLJBXuum/yqep0iSyoVyJq7A1rYQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZHgQXkzGdXxgySkzYS5Bqjf5uFkrJVtwgxaaikR/h5M=;
- b=f25qzhtdPQO/bNruF57jDUoVvmZFscRT3UTjLQSxCdC/JdX6q/M0z1rqdavewC7BwoMMAbRSexf6RFS+m+M8Ksn9JBUNOULJLxoaYcCgab8QB7ZUZcaw++VyY5PgilHIWPD1cSAePH8RRXxJZsyYr6PIBqlL3k4PWPC4a48e80pH6/gG4jewi3fH5tu2EC31nfTdl2N2ZH7dJeQsocsJMEjARynq/vE3X62m5MHloLhrPJESgdFRPNXOz6exbl9b44BaFSLSoJslC5ISWQs6l5GO/gs74olq9wY8Uo1FLI8AQGhqJacGIG0ALEBEagsuJfnpQ4AnyDL0wp59P2PRcQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZHgQXkzGdXxgySkzYS5Bqjf5uFkrJVtwgxaaikR/h5M=;
- b=mkV3lL1aF/n13qVG3dzxXE+vdQYXfhxlLoG2smUJy4ZmOQjmGLtFL8kj/O7adngBj8xWq7rQRS/YxR2lfnn2e8l7B/eDmpXMcRx6PIFDY+WdnyHaD24qsQdWRx9uYvUOFSuihziLl9kWiG6bEw1+a5bGcANkCTmTR1SWLNljQ4ZtagOoyX81ZJpjr1X6wl7IVulEBLKToi+VTY6SnijhmMZpGz7NHss5+yBcxgyIY26+2InzyqFwWQjc74eZhDF9e1Y9Gz55bC0PkMFJnKT2QqDb/dkR5BUSpLl8kSbUoRri2CMWmTgh6qvF/7Be9HWEWqCKnHXLh458iS85rvhzag==
-Received: from MW4P221CA0017.NAMP221.PROD.OUTLOOK.COM (2603:10b6:303:8b::22)
- by MWHPR12MB1712.namprd12.prod.outlook.com (2603:10b6:300:112::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.19; Sun, 8 Aug
- 2021 06:53:10 +0000
-Received: from CO1NAM11FT060.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8b:cafe::a) by MW4P221CA0017.outlook.office365.com
- (2603:10b6:303:8b::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15 via Frontend
- Transport; Sun, 8 Aug 2021 06:53:10 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT060.mail.protection.outlook.com (10.13.175.132) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4394.16 via Frontend Transport; Sun, 8 Aug 2021 06:53:10 +0000
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 8 Aug
- 2021 06:53:08 +0000
-Received: from dev-r-vrt-138.mtr.labs.mlnx (172.20.187.6) by mail.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 8 Aug 2021 06:53:07 +0000
-From:   Roi Dayan <roid@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     Roi Dayan <roid@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net 1/1] psample: Add a fwd declaration for skbuff
-Date:   Sun, 8 Aug 2021 09:52:42 +0300
-Message-ID: <20210808065242.1522535-1-roid@nvidia.com>
-X-Mailer: git-send-email 2.26.3
+        id S230259AbhHHHGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 03:06:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52878 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229504AbhHHHGW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 03:06:22 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4920C061760;
+        Sun,  8 Aug 2021 00:06:03 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id m10-20020a17090a34cab0290176b52c60ddso24638279pjf.4;
+        Sun, 08 Aug 2021 00:06:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Id49AvJlsrukCQw2aVHFU3JVesZ+nmFVyp5cZUBrgDk=;
+        b=D5WO1UksA4807jR59fpOkdeRfaH4f597Fbf6r1/Bf/LCSUNRgnRcQ+xad5STftxJrI
+         e3k05T2Hu5lAVsA79FCb/+8H18V29oIOkNmy0xLxoBaCNFAEbKJIp9vPq78hkPDm6I2M
+         kRUSBrjchX+dUYdZTcUxk18IFlcf0cdfYzI+LoJ3PcpOtXN8bNthdqUD/xfqOU1dMQS2
+         LaAKsSf80f2+PcUconldVR5prEurpdK64wez0zyMgzg5n1v+OxjgcExZ2+I/Mj6viJD3
+         QzdXlZro5sHOJDcYwpF6iGcqGiibZzniVH7FV6Hgb9+JjbymOhH0sOoe8XYvgLl4+cGo
+         h1/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Id49AvJlsrukCQw2aVHFU3JVesZ+nmFVyp5cZUBrgDk=;
+        b=ZigzGeMgBFkOcYpzqlf+JrM8PKmrkYRzt2OXfbsjHBbpheXxN4OypapYl3XfwfLxD9
+         5lkIFcwyqRhGK7Tla1FoHbYLaPV/+fPeIN9W3qURN8pXw55DX8ZaJM9y65PjIfn1ZieR
+         PRR4e6cD21e6NCVKQGYdzaHobNoOoDHt/G81pHPcgh8oFKW8WZg84yc3xzrPYwviK3Zx
+         ZuhIQYlg4saYsdVQl/yS7dkm/h+3Sy0Sl9joGf6BJzQTzBGJjMh24tNUVNRx4WQwNlE7
+         m8ZO1x3MUtdiU9x9ChopJh7EZWFj16rk3od62MOa3lfkrXm39mrcjrRt2d6xs1z3wgKc
+         7BTg==
+X-Gm-Message-State: AOAM530c72jbSjtHNL0Jxo5x28hD2z/w/qZjRiDkTSeddEitO25Y4mzr
+        WX+IrTlPJcmyBgUT3i3ULdKAYp+1f0U4zI/CD8M=
+X-Google-Smtp-Source: ABdhPJwO5zgXyH9DLPdlzB4IcPfBeyPOT2uAJcJz7eySfvO8B3PjLZ0EZWOelMryhPwm+RmEP8MMcA==
+X-Received: by 2002:a17:90b:4ac8:: with SMTP id mh8mr18104180pjb.5.1628406363398;
+        Sun, 08 Aug 2021 00:06:03 -0700 (PDT)
+Received: from localhost.localdomain ([1.240.193.107])
+        by smtp.googlemail.com with ESMTPSA id 37sm17672490pgt.28.2021.08.08.00.06.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Aug 2021 00:06:02 -0700 (PDT)
+From:   Kangmin Park <l4stpr0gr4m@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 net] ipv4: fix error path in fou_create()
+Date:   Sun,  8 Aug 2021 16:05:57 +0900
+Message-Id: <20210808070557.17858-1-l4stpr0gr4m@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2126c32a-d14a-4a89-420f-08d95a392f5b
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1712:
-X-Microsoft-Antispam-PRVS: <MWHPR12MB1712CE784C08B4BA9A019817B8F59@MWHPR12MB1712.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1186;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bmdzBqAB7RiFcACgsvTpJoKtN+Bu745UrupmMhSguyvwdGIMUqN/5IpVlDOew+w0IJahGskr8yeDtWF9UMmN/VW0apL+jCmL+XCIfmNsGWR6swsiKd+n2IosdnR6348iRDR9qqE6gB8ZNqK+2AilkOrekWV+mVZu9Tmr9NZp78iMCeyWSHj+2D7VnE0DFINLqL40wGa+M+HhxZEEvAkJKMWV+k5GN2zePhd20ddDPbyyUZlV+J/5avqfTxQbKtf+/VMIlRnBd8B9JCj1P6X3TL1x2XpvvPJ7wqhGryWqNijgHgSY4L78KPfksqzisNAsZQwSrfDnRSLuN83T09fZw0nBMRdqt1Rcva7Yskvx+VZCBgC8OGO0yOSWfOCzmHyhJUm9gXMR8YCBXLDwNSVs1C8UVM6AdYsJqR06gtMk7MbOlS+RpJbMHdol+Avl4mGZWM9sSUXskt0d1H1Yeb8b7oP7c9pN1vRArEsqt9RxFvzwsqIh7x58d8jPfz+q7/GGKHnqQRzcsDCdWSzTrQQZ3en5QLDvWuWaelCfUOGSuUxpZhV1JnBCzwrta6jdxPBEdkfpNSi3dHKqJ0oBhgMLRDEVrSMEbe/EMh0mN2pRLHU8qEVOgvq4TaFSbzSJXHkdexJXdW4emXs55EkBt9hyrFb6x/gQzYK2xAVaBdqYUQJBaW2TnwtC+SkjQrz+DhMeyqnjDA0NFCU+0Pbt2cCnCQ==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(136003)(39860400002)(346002)(376002)(46966006)(36840700001)(70586007)(70206006)(47076005)(2616005)(426003)(1076003)(8936002)(36860700001)(5660300002)(26005)(4744005)(86362001)(8676002)(82740400003)(7636003)(2906002)(336012)(83380400001)(186003)(478600001)(82310400003)(6916009)(36906005)(6666004)(316002)(356005)(54906003)(4326008)(36756003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Aug 2021 06:53:10.2721
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2126c32a-d14a-4a89-420f-08d95a392f5b
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT060.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1712
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Without this there is a warning if source files include psample.h
-before skbuff.h or doesn't include it at all.
+sock is always NULL when udp_sock_create() is failed and fou is
+always NULL when kzalloc() is failed in error label.
 
-Fixes: 6ae0a6286171 ("net: Introduce psample, a new genetlink channel for packet sampling")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
+So, add error_sock and error_alloc label and fix the error path
+in those cases.
+
+Signed-off-by: Kangmin Park <l4stpr0gr4m@gmail.com>
 ---
- include/net/psample.h | 2 ++
- 1 file changed, 2 insertions(+)
+v3:
+ - change commit message
+ - fix error path
+---
+ net/ipv4/fou.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/psample.h b/include/net/psample.h
-index e328c5127757..0509d2d6be67 100644
---- a/include/net/psample.h
-+++ b/include/net/psample.h
-@@ -31,6 +31,8 @@ struct psample_group *psample_group_get(struct net *net, u32 group_num);
- void psample_group_take(struct psample_group *group);
- void psample_group_put(struct psample_group *group);
+diff --git a/net/ipv4/fou.c b/net/ipv4/fou.c
+index e5f69b0bf3df..f1d99e776bb8 100644
+--- a/net/ipv4/fou.c
++++ b/net/ipv4/fou.c
+@@ -572,13 +572,13 @@ static int fou_create(struct net *net, struct fou_cfg *cfg,
+ 	/* Open UDP socket */
+ 	err = udp_sock_create(net, &cfg->udp_config, &sock);
+ 	if (err < 0)
+-		goto error;
++		goto error_sock;
  
-+struct sk_buff;
-+
- #if IS_ENABLED(CONFIG_PSAMPLE)
+ 	/* Allocate FOU port structure */
+ 	fou = kzalloc(sizeof(*fou), GFP_KERNEL);
+ 	if (!fou) {
+ 		err = -ENOMEM;
+-		goto error;
++		goto error_alloc;
+ 	}
  
- void psample_sample_packet(struct psample_group *group, struct sk_buff *skb,
+ 	sk = sock->sk;
+@@ -627,9 +627,10 @@ static int fou_create(struct net *net, struct fou_cfg *cfg,
+ 
+ error:
+ 	kfree(fou);
++error_alloc:
+ 	if (sock)
+ 		udp_tunnel_sock_release(sock);
+-
++error_sock:
+ 	return err;
+ }
+ 
 -- 
-2.26.3
+2.26.2
 
