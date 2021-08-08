@@ -2,105 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D006D3E3988
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 09:54:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A27C3E39AC
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 10:42:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231284AbhHHHyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 03:54:18 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:10710 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231247AbhHHHyS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 03:54:18 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1628409239; h=Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=/89OpH7bCsRBSg7PGY3QGk97FxRsWj/9fRV0YEJiKD0=; b=tTfnXQ3EAwXydmtuJpDWcElBAF9ei7s8Lj4F+UGN1sYMefUmUvAi/ukoJdxjr17pKG21St6r
- 2JZXt94StToOhczi0NMgZOMEbTUf5HW9VZLdgKaLoheDTpVHh1fo6KXI5qoZiWyR9ScVwjiS
- CxxMUXAh+nVKcTBfOdG5hLWtfUs=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
- 610f8d86b14e7e2ecb7f884c (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 08 Aug 2021 07:53:42
- GMT
-Sender: luoj=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 57222C4323A; Sun,  8 Aug 2021 07:53:42 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from akronite-sh-dev02.qualcomm.com (unknown [180.166.53.21])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: luoj)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id C7C76C433F1;
-        Sun,  8 Aug 2021 07:53:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C7C76C433F1
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=luoj@codeaurora.org
-From:   Luo Jie <luoj@codeaurora.org>
-To:     agross@kernel.org, bjorn.andersson@linaro.org, davem@davemloft.net,
-        kuba@kernel.org, robh+dt@kernel.org, robert.marko@sartura.hr
-Cc:     linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sricharan@codeaurora.org, Luo Jie <luoj@codeaurora.org>
-Subject: [PATCH] dt-bindings: net: Add the properties for ipq4019 MDIO
-Date:   Sun,  8 Aug 2021 15:53:28 +0800
-Message-Id: <20210808075328.30961-1-luoj@codeaurora.org>
-X-Mailer: git-send-email 2.17.1
+        id S231262AbhHHImk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 04:42:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45540 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231176AbhHHImj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 04:42:39 -0400
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A60C061760
+        for <netdev@vger.kernel.org>; Sun,  8 Aug 2021 01:42:21 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id h1so21873464iol.9
+        for <netdev@vger.kernel.org>; Sun, 08 Aug 2021 01:42:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=z6XeSLDu67S+l2ZQ5ASD/gFdraiF+dKpUZMLlrUkTHE=;
+        b=CfbGPy5r/MJYhYVxEikIdcI6gBAatAU923eOtE6vFlxSGTQXX5TJX8LnkHvndLGjcV
+         VL0AmTp892eJfkmQGHKjzq7qGkjnfh7RKwxfjVNPItQ97Y903l0djX+/MuvHXsxMMn+x
+         yH/S/+FX65qwz/j6+zpgUJxEmGFkeFjJmwdkSw0Z7/B1tsPuvHsxDHSD7CVOadlZOTzA
+         8snN2Ei6/EZ6HF45mBmg7Ve7u28FHPN7kJXztLvTvXarEeMIkKiSv6aGVpqqONlVXHXS
+         nUnLL3HhsjqZv4GiB5tAX9tufTih4fxPX8KUgPtG+k8lA9OAFd/Y/14kcmZjigUbMVdh
+         FhoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=z6XeSLDu67S+l2ZQ5ASD/gFdraiF+dKpUZMLlrUkTHE=;
+        b=uKmVlGdV3iu6iM5DlP84z0AAQW6pjT6yNtWuu8HJmDVdFNZljHdVN4j4s/KG0d9dhV
+         D6AfopCnFqDx6Gk2trdiSjie54xtSHD0g0c9fE+LkBvrXnHkTaOzK7ySu3RhR+vLhQu9
+         Vz5AwttHplwUFEZLt9f9hJATaKxmaGsTRu4/mZdQCY3rGc9tiMJV0847djDwAJDXddl2
+         nFGJGL/I76kMwbi/QKh+ZW8GDonAabwJoVsooETBrmldzweqjVrXNs7/etxtjCfwgavX
+         cJ71GJKSuV/WohPND6yc7xo/cGt2ehnEY3x640/PdVLmswqvSsDjBBNquFFIXB8qkRvo
+         PcyQ==
+X-Gm-Message-State: AOAM5315J1zDDdfosEaaPHA0/aYKrtUqUm5B1jiAYrvc8iCkuIVdD6Bf
+        NrwGzBCh25N9tBf4lrRGuRQ3/XJEA+83oARUdOs=
+X-Google-Smtp-Source: ABdhPJzu8n7V6BLKv8MlxjOm2WhPIxTmu5YLFqn/oP1KBZbSPU1Ayi5Shd8G1f6syc617zryD4cVykanjAqX1hqgvd4=
+X-Received: by 2002:a05:6638:3796:: with SMTP id w22mr17237774jal.34.1628412140165;
+ Sun, 08 Aug 2021 01:42:20 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 2002:a02:cd99:0:0:0:0:0 with HTTP; Sun, 8 Aug 2021 01:42:19 -0700 (PDT)
+Reply-To: Contactscpmakakpo122@gmail.com
+From:   Martial Akakpo <danielsylvester277@gmail.com>
+Date:   Sun, 8 Aug 2021 08:42:19 +0000
+Message-ID: <CAH6FPsOQiz2-VEJLrp1uRgxKa-tFgG0U6bFad+yzUQXjKuJbBQ@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The new added properties resource "reg" is for configuring
-ethernet LDO in the IPQ5018 chipset, the property "clocks"
-is for configuring the MDIO clock source frequency.
-
-This patch depends on the following patch:
-Commit 2b8951cb4670 ("net: mdio: Add the reset function for IPQ MDIO
-driver")
-
-Signed-off-by: Luo Jie <luoj@codeaurora.org>
----
- .../devicetree/bindings/net/qcom,ipq4019-mdio.yaml | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml b/Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml
-index 0c973310ada0..8f53fa2a00f8 100644
---- a/Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml
-+++ b/Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml
-@@ -14,7 +14,9 @@ allOf:
- 
- properties:
-   compatible:
--    const: qcom,ipq4019-mdio
-+    enum:
-+      - qcom,ipq4019-mdio
-+      - qcom,ipq5018-mdio
- 
-   "#address-cells":
-     const: 1
-@@ -23,7 +25,15 @@ properties:
-     const: 0
- 
-   reg:
--    maxItems: 1
-+    minItems: 1
-+    maxItems: 2
-+    description:
-+      the first Address and length of the register set for the MDIO controller.
-+      the optional second Address and length of the register for ethernet LDO.
-+
-+  clocks:
-+    items:
-+      - description: MDIO clock
- 
- required:
-   - compatible
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Good day!
 
+My name is Martial Akakapo, a personal lawyer to late Mr, Robert
+Wilson, who used to worked with an oil servicing company here in
+Republic of Lome, .my client and his family was killed in Kenya
+shopping mall attack At least 67 people died when gunmen from terror
+group  AL-Shabaab laid siege to the East-gate shopping center in
+Nairobi.Kenya.. i have made several inquiries to locate any of his
+relatives but have been  unsuccessful
+
+I am contacting you to assist in the repatriation of funds worth  $3
+million dollars before it is confiscated by the bank. The bank  has
+issued me a notice to provide the next of kin or the account will be
+confiscated, I seek your consent to present you as next of Kin,
+Affidavit it on your name and so you can claim this huge amount he
+left. As soon as I hear from you I will let you know more detailed
+information regarding this transaction.
+
+Thanks
