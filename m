@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 223ED3E3A15
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 14:00:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CDBC3E3A12
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 14:00:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230484AbhHHMA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 08:00:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48726 "EHLO mail.kernel.org"
+        id S231171AbhHHMA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 08:00:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48734 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230270AbhHHMAY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 8 Aug 2021 08:00:24 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 28FD461056;
+        id S229504AbhHHMAZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 8 Aug 2021 08:00:25 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 412A66105A;
         Sun,  8 Aug 2021 12:00:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1628424006;
-        bh=iYTrV9QESJfVuxWpMo57RWko8EE5TF5De0b1jivUQIg=;
+        bh=0rPFTeCglxE5PhGXHBRIfxjljlrPUV3qvyTh7X//HEs=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VDm3dIhXVPMlX8vcV8KgfH1QMVH93c66Vkl/blaF6N9IJrrh+kQeol2/m0AsayXCG
-         d/VUwEorb+p0trae06H1PdTcbogFrmUL5kiU6a1lMbLDXyo+4Fcel8PWzC0ujH0VMI
-         l/aRrsCFwxW3jvOS2knf9q9X8F+djeWLMxgKynBwDH2Un/YoLchy4axeGL/9gvR3Yj
-         n0R6zYGwah9gKDeK/xofyWIbU0IuGbZ6r95BdVqJPWsr30LB1W0RUt351IM1O4mK7Z
-         KUbmEKYx6VU38olmpAxkjWCq6joJe2gMfDN1jKQRMtDGqLdQvDVJ5EcLeczvQQA5Oz
-         7oFedGjK/nMHA==
+        b=hIxU27FzRETKJk3BkgO0Yp3Z2K6CRn3rdwt4CBe1bkhoHJbKEcF1rXL0lCZITqG7n
+         SYpJTHaAoiJovLdQ6t8hPSItP9CUu5zEFLeaS4/r8h2XaJRJzYzzu60bl6qVfZfGvo
+         vzk+7rQGz5CG5B++XxfO5XVCkojRahrQP+9VYEUi/IlUWELkv43QIS/u8qrcUkh4kx
+         JR1Cg7EfhnBP06xob3/+WnNUdNOxoZDtUWaxMy4e7K7TWOHhvxicnjrsFkmh7h2ZIk
+         hhdy7Y6UAtRselR6SNbEQF4M0VN34Rv1btLXOKPEeJMpaeyyPaIJ0KlIEP5Ks3hOO6
+         5gqIIjOKzgZpg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2396660726;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 37DDD6096D;
         Sun,  8 Aug 2021 12:00:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [V2][PATCH] atm: horizon: Fix spelling mistakes in TX comment
+Subject: Re: [PATCH net-next] net: dsa: don't fast age standalone ports
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162842400614.17847.3821752720470977425.git-patchwork-notify@kernel.org>
+Message-Id: <162842400622.17847.7414298564279667332.git-patchwork-notify@kernel.org>
 Date:   Sun, 08 Aug 2021 12:00:06 +0000
-References: <20210807154140.1294779-1-jun.miao@windriver.com>
-In-Reply-To: <20210807154140.1294779-1-jun.miao@windriver.com>
-To:     Jun Miao <jun.miao@windriver.com>
-Cc:     3chas3@gmail.com, linux-atm-general@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210808111637.3819465-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20210808111637.3819465-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        olteanv@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,19 +47,26 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Sat,  7 Aug 2021 23:41:40 +0800 you wrote:
-> It's "must not", not "musn't", meaning "shall not".
-> Let's fix that.
+On Sun,  8 Aug 2021 14:16:37 +0300 you wrote:
+> DSA drives the procedure to flush dynamic FDB entries from a port based
+> on the change of STP state: whenever we go from a state where address
+> learning is enabled (LEARNING, FORWARDING) to a state where it isn't
+> (LISTENING, BLOCKING, DISABLED), we need to flush the existing dynamic
+> entries.
 > 
-> Suggested-by: Joe Perches <joe@perches.com>
-> Signed-off-by: Jun Miao <jun.miao@windriver.com>
-> ---
->  drivers/atm/horizon.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+> However, there are cases when this is not needed. Internally, when a
+> DSA switch interface is not under a bridge, DSA still keeps it in the
+> "FORWARDING" STP state. And when that interface joins a bridge, the
+> bridge will meticulously iterate that port through all STP states,
+> starting with BLOCKING and ending with FORWARDING. Because there is a
+> state transition from the standalone version of FORWARDING into the
+> temporary BLOCKING bridge port state, DSA calls the fast age procedure.
+> 
+> [...]
 
 Here is the summary with links:
-  - [V2] atm: horizon: Fix spelling mistakes in TX comment
-    https://git.kernel.org/netdev/net-next/c/64ec13ec92d5
+  - [net-next] net: dsa: don't fast age standalone ports
+    https://git.kernel.org/netdev/net-next/c/39f32101543b
 
 You are awesome, thank you!
 --
