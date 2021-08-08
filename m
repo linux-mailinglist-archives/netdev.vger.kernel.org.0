@@ -2,81 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1877A3E39D9
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 12:16:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D31853E39DD
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 12:23:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229977AbhHHKRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 06:17:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41678 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229613AbhHHKRJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 8 Aug 2021 06:17:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 566D261002;
-        Sun,  8 Aug 2021 10:16:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628417811;
-        bh=X9dnTD0xyKMIdTIRG+oJBdvfJeZaP8irwsirpacwiZ0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Wa1neRgs6ZQchJmGvV2//Z3KqL0LzwQa2fSBU2jlLzqJ3o1SxAXyj76TV32RtoeNK
-         E8tPA1RBLqZJskjm/0VitWGAZD1elaq6cgm0IokCgaCjaaWQbgEo+1gGp9ZHmrCVBr
-         luRZQ4+4vgnmk2M0zjHENrcQJbjS9WO5p1dl8IeflUZRlfZBxNh4DDCRt8LIHFSd1Q
-         cC154kLyWE63rE4vtbWY63KCmLvdS0iK6USw9Dx8YkGJbDw6WTluIVzZIzDw1uOEOP
-         JAaiz8yNg56rcZccmt/wvewDjTTbxWgC2UI5xl3HoDOGf8EaYmOVjQLmsRbjLxfTJT
-         rQygtY0KjZjKw==
-Date:   Sun, 8 Aug 2021 13:16:46 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jonathan Toppins <jtoppins@redhat.com>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 2/2] bonding: combine netlink and console error
- messages
-Message-ID: <YQ+vDtXPV5DHqruU@unreal>
-References: <cover.1628306392.git.jtoppins@redhat.com>
- <a36c7639a13963883f49c272ed7993c9625a712a.1628306392.git.jtoppins@redhat.com>
+        id S230098AbhHHKXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 06:23:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38796 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229613AbhHHKXR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 06:23:17 -0400
+Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A424EC061760;
+        Sun,  8 Aug 2021 03:22:57 -0700 (PDT)
+Received: by mail-oo1-xc36.google.com with SMTP id e3-20020a4ab9830000b029026ada3b6b90so3549187oop.0;
+        Sun, 08 Aug 2021 03:22:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=60Gvr5OIXwK22nwkVBSgaU/i8SL3qWVYPuBR2P0gTyg=;
+        b=D1MJm4Eo1stU5GMhmbNoMKYFYExcT2+lF4HylgYWWM41/WLLyx8UWwLWbsQmiOCqZE
+         d+G14VFI6Vy+vd81WU5cjxJmmuR+nwCxwyUnXxAc7q8hWgWuOyVlPEefQMZHWmBJT+22
+         KdkAIG/ed8vtFUFnIGCAiVnQEtcPttvryJ9a9RhM+8tPZ8ezuflbnGJKxBA+WW7fa+VE
+         bqC2qAwM8VC1MMZJINUBlwgzzWPXn9XtfhlDxYLC1Xl84ReTbnlBII2n5JiTmNTtRAFh
+         sBlMnRX2nJj0zQdYPOGaAmKMZJ4rze5rPuZrhZyNUB2bfCCHzoN4eHUwU4xu22vSqg/m
+         tBig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=60Gvr5OIXwK22nwkVBSgaU/i8SL3qWVYPuBR2P0gTyg=;
+        b=K/xlvdChOAHOviMNttPJpdIq3E0k+iwVycPqTqbw6+rXWaX4sl8kpSMiVcxJ+uobIn
+         OIny9wV9ueeclh4aUla+825t0ytHfUNQtoYKr9WnfT1oOqPW/+4cfn1W2RUn3BnRwm0k
+         l6i/YxnKpkQu+pLtXltziTXW0fYtRA0IeGKWImKSqAuMxX6DqTU1VOLeRNtuM85Jq+dE
+         jVafW4X/VruI0VJR/kdDihVtO5F97ASQc0j/x/+whQSvmhNnqbNDg9Ct2MOJ0FcRVTTg
+         Wk7XDnBXcb5dcR+SXh3kuhBJB/myku+zUUfIu5Pn44lV5ZKbAjO3lApzXN9PyWPp2HqH
+         Cbog==
+X-Gm-Message-State: AOAM530WM3rOQq081Gag/yrkkjMymbo1HBe4Vp9JioHecfwEree9+osB
+        2q341tSezkL9hXlXZSQuPiDc2mrPQGqGtBBMZsM=
+X-Google-Smtp-Source: ABdhPJy9Q7gNsBcArGWIDUn1yfqmW3uJ2x7jmvfjMbBIVVdHGOmTpeeTeps8cD8p0eeluQrRRYYscI93toHv05G0CEE=
+X-Received: by 2002:a4a:98b0:: with SMTP id a45mr12054396ooj.22.1628418176944;
+ Sun, 08 Aug 2021 03:22:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a36c7639a13963883f49c272ed7993c9625a712a.1628306392.git.jtoppins@redhat.com>
+References: <20210808063344.255867-1-weiyongjun1@huawei.com>
+In-Reply-To: <20210808063344.255867-1-weiyongjun1@huawei.com>
+From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Date:   Sun, 8 Aug 2021 13:23:17 +0300
+Message-ID: <CAHNKnsQHpkMU6yo7MB0M_9ucwRynNwdKx7a9+6WB9Zx+_s_mGg@mail.gmail.com>
+Subject: Re: [PATCH net-next] wwan: mhi: Fix missing spin_lock_init() in mhi_mbim_probe()
+To:     Wei Yongjun <weiyongjun1@huawei.com>
+Cc:     Loic Poulain <loic.poulain@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, Hulk Robot <hulkci@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 06, 2021 at 11:30:55PM -0400, Jonathan Toppins wrote:
-> There seems to be no reason to have different error messages between
-> netlink and printk. It also cleans up the function slightly.
-> 
-> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
-> ---
->  drivers/net/bonding/bond_main.c | 45 ++++++++++++++++++---------------
->  1 file changed, 25 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> index 3ba5f4871162..46b95175690b 100644
-> --- a/drivers/net/bonding/bond_main.c
-> +++ b/drivers/net/bonding/bond_main.c
-> @@ -1712,6 +1712,16 @@ void bond_lower_state_changed(struct slave *slave)
->  	netdev_lower_state_changed(slave->dev, &info);
->  }
->  
-> +#define BOND_NL_ERR(bond_dev, extack, errmsg) do {		\
-> +	NL_SET_ERR_MSG(extack, errmsg);				\
-> +	netdev_err(bond_dev, "Error: " errmsg "\n");		\
-> +} while (0)
-> +
-> +#define SLAVE_NL_ERR(bond_dev, slave_dev, extack, errmsg) do {	\
-> +	NL_SET_ERR_MSG(extack, errmsg);				\
-> +	slave_err(bond_dev, slave_dev, "Error: " errmsg "\n");	\
-> +} while (0)
+On Sun, Aug 8, 2021 at 9:21 AM Wei Yongjun <weiyongjun1@huawei.com> wrote:
+>
+> The driver allocates the spinlock but not initialize it.
+> Use spin_lock_init() on it to initialize it correctly.
+>
+> Fixes: aa730a9905b7 ("net: wwan: Add MHI MBIM network driver")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 
-I don't think that both extack messages and dmesg prints are needed.
-
-They both will be caused by the same source, and both will be seen by
-the caller, but duplicated.
-
-IMHO, errors that came from the netlink, should be printed with NL_SET_ERR_MSG(),
-other errors should use netdev_err/slave_err prints.
-
-Thanks
+Reviewed-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
