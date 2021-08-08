@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F08983E3CDB
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 23:10:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D1C73E3CDE
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 23:14:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232542AbhHHVKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 17:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38510 "EHLO
+        id S232574AbhHHVOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 17:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229895AbhHHVKs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 17:10:48 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC1FC061760;
-        Sun,  8 Aug 2021 14:10:27 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id w5so1238613ejq.2;
-        Sun, 08 Aug 2021 14:10:27 -0700 (PDT)
+        with ESMTP id S229895AbhHHVOh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 17:14:37 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1EFC061760;
+        Sun,  8 Aug 2021 14:14:17 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id f13so21497250edq.13;
+        Sun, 08 Aug 2021 14:14:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=kV70Em3N4KOCd6dHIIaiZADIw5HnAbPwuwCd758ehig=;
-        b=uVRwDzIw9Wp8HLXzx0vQQ59PJVbg6lZ0rueUpSjOlIuc7YvndmzeD8IptEleYyvLRC
-         oWkWRPzdMRaJA2Jw3qek0Wik+vcU5y7j3xpaB1jOPo/wwMT37ASsUfKu6eZNY/g43oaC
-         wGT5f5P+hsvm4E2NSOjNOGEBP54PdfY1VFgK7NfeC2/LIZQ6CXg1E9rltwLe9bnFkSOT
-         dK62WYLuXdDldfSHJcKwTUUCoawlmpoqUEK3hcCpmBzzWZcOzH22nBC+Imehxbpnv8Vp
-         kz/WacaENGxbMxylWJ9kabzbdCWASqrZPSOU3VKFox9TE2qNJKUR8BnylRcf8wF+aPYS
-         rBbA==
+        bh=4jBI5fwS+8PcqcFnWHTT4nTI4zqvMfHeyhnQQ2c+hc4=;
+        b=V2Mx3EVNdOgB5oUMJEZpZGNuRL45Bt2CgsuyTZPescuYmeinTUEPbeo4ayGCSQhiKu
+         EhJQbQ6jW2/4Ukxr20IxGtjqbLFGCdPmQt4m+6bWrEyuqVQqjKkK1ikarpHCg7sQ2TKC
+         6j5UhXVBnNGQx3naZZkkBGNv+DAgwS4HnL7Hi9kFQC65x66oTBY9LkhVb3Re3h+iv26t
+         LfhamzG8n5bvaGtLRMJed+gzv8u4fWzIoXzjYT37Ao4hJKGrwYcbV1h/I9cxHO/mp38Q
+         lAUThEdNu+G9qy77VgK7KM9U8p9Bu/74XgQ79l4mDfUr8NRt8jUpnELFq3mB0teLhCSh
+         WqkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=kV70Em3N4KOCd6dHIIaiZADIw5HnAbPwuwCd758ehig=;
-        b=h71u8JxAG3Lce0tmaMZ9s+RNXON1/0ezonAY5vnas5HQ2MmwO39hBOesbZFchrME/n
-         5GETIWREps7yYEp3SUeNCWbnj6RPxQvp/QoTovMhTGeiRuZ2s9gjOA5WaKDIPWx4Y/DJ
-         FEievp9E2IDLymDXTENb0f2qgSePa2Y6lH3ngcceFqb9wYvlh01QbN+su60ZC4lHf585
-         9yg30U5mYtgTjITKHwIBUKrmuZkzhmE0sU/LFgIc7w8C0rE3zKkuc8bmMEVMstnm6naU
-         pBHKD0TYXchrTveAYUUER3B01wNYFdKlFMa2oKWoRmQaTYK72uOVfPtmvXBDrrFOdbn/
-         YOKw==
-X-Gm-Message-State: AOAM532Qyw+/i5NCoZjO3lap3AZ/zeYlF+VtxMcbJbls9U7bFrhhG36R
-        OS5qPfRuQIBe1fQARTlgtCQ=
-X-Google-Smtp-Source: ABdhPJyso1dfHrgUkCBbNvCk6Ueem47W0B7uOYR4SQFzerekxjG0JLz5EBMeWRYV5pZdWk+24Ch7qw==
-X-Received: by 2002:a17:906:3fd7:: with SMTP id k23mr2606589ejj.176.1628457026144;
-        Sun, 08 Aug 2021 14:10:26 -0700 (PDT)
+        bh=4jBI5fwS+8PcqcFnWHTT4nTI4zqvMfHeyhnQQ2c+hc4=;
+        b=r8JmlBGcIg/G0Nm0Gy/J3QvQNoQKY4BWFc7UFWr3I1DUP6SqgHXUuR/ajGFVLes/1c
+         oZiErAe5ruuDARHwAYTSXjhenTSEYvR5QtE3RPk5iyHE3sDb4ZqdekkzEkrGtZbKh4My
+         9F6kDFQqRdxhbsrWe62ceX10eLmOlxJeMtd6U6U+JRv5hiroPs1iIEAYaMTO44Y5YLIy
+         y2U5/Qpn/IToBAlpW/t3AA2BnyFC53f1z5bn+1Gv77eUIjWEpXsV6/KVgZ5vrksc1rSc
+         YyCvJ1wnTkaTuecpae7y9kBi9IfdMhC1CiS+/dmzz0CpQoFu47N1dFccJxVJh1KDBFlK
+         7LMw==
+X-Gm-Message-State: AOAM531HYQolf801Oz34idz+lJQU5QtLdDY4yFZvKFptpmgPxYrhVIjZ
+        gOUlc2VHL6cciiSlDrOnwf0=
+X-Google-Smtp-Source: ABdhPJzokKec6876qc7sH9rHOWFh83ObCR0CU5Rnz0C7t90O42gKw1/ACD11OnbtczG4JBKYNGEb1A==
+X-Received: by 2002:a05:6402:1a4c:: with SMTP id bf12mr25632909edb.137.1628457255713;
+        Sun, 08 Aug 2021 14:14:15 -0700 (PDT)
 Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id h15sm5250244ejg.31.2021.08.08.14.10.24
+        by smtp.gmail.com with ESMTPSA id t17sm1193073edw.13.2021.08.08.14.14.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Aug 2021 14:10:25 -0700 (PDT)
-Date:   Mon, 9 Aug 2021 00:10:24 +0300
+        Sun, 08 Aug 2021 14:14:15 -0700 (PDT)
+Date:   Mon, 9 Aug 2021 00:14:13 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+Cc:     Hauke Mehrtens <hauke@hauke-m.de>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -70,76 +70,38 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Frank Wunderlich <frank-w@public-files.de>,
         Nick Lowe <nick.lowe@gmail.com>,
         =?utf-8?B?QW5kcsOp?= Valentin <avalentin@marcant.net>
-Subject: Re: [RFC net-next 2/3] net: dsa: qca8k: enable assisted learning on
- CPU port
-Message-ID: <20210808211024.pcqjfoxo5rg2umuf@skbuf>
+Subject: Re: [RFC net-next 3/3] net: dsa: tag_qca: set offload_fwd_mark
+Message-ID: <20210808211413.33voutdjlz4qavzn@skbuf>
 References: <20210807120726.1063225-1-dqfext@gmail.com>
- <20210807120726.1063225-3-dqfext@gmail.com>
- <20210807222555.y6r7qxhdyy6d3esx@skbuf>
- <20210808160503.227880-1-dqfext@gmail.com>
+ <20210807120726.1063225-4-dqfext@gmail.com>
+ <20210807225721.xk5q6osyqoqjmhmp@skbuf>
+ <20210808161224.228001-1-dqfext@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210808160503.227880-1-dqfext@gmail.com>
+In-Reply-To: <20210808161224.228001-1-dqfext@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 09, 2021 at 12:05:03AM +0800, DENG Qingfang wrote:
-> On Sun, Aug 08, 2021 at 01:25:55AM +0300, Vladimir Oltean wrote:
-> > On Sat, Aug 07, 2021 at 08:07:25PM +0800, DENG Qingfang wrote:
-> > > Enable assisted learning on CPU port to fix roaming issues.
+On Mon, Aug 09, 2021 at 12:12:24AM +0800, DENG Qingfang wrote:
+> On Sun, Aug 08, 2021 at 01:57:21AM +0300, Vladimir Oltean wrote:
+> > In this day and age, I consider this commit to be a bug fix, since the
+> > software bridge, seeing an skb with offload_fwd_mark = false on an
+> > offloaded port, will think it hasn't been forwarded and do that job
+> > itself. So all broadcast and multicast traffic flooded to the CPU will
+> > end up being transmitted with duplicates on the other bridge ports.
 > > 
-> > 'roaming issues' implies to me it suffered from blindness to MAC
-> > addresses learned on foreign interfaces, which appears to not be true
-> > since your previous patch removes hardware learning on the CPU port
-> > (=> hardware learning on the CPU port was supported, so there were no
-> > roaming issues)
+> > When the qca8k tagger was added in 2016 in commit cafdc45c949b
+> > ("net-next: dsa: add Qualcomm tag RX/TX handler"), the offload_fwd_mark
+> > framework was already there, but no DSA driver was using it - the first
+> > commit I can find that uses offload_fwd_mark in DSA is f849772915e5
+> > ("net: dsa: lan9303: lan9303_rcv set skb->offload_fwd_mark") in 2017,
+> > and then quite a few more followed suit. But you could still blame
+> > commit cafdc45c949b.
 > 
-> The datasheet says learning is enabled by default, but if that's true,
-> the driver won't have to enable it manually.
-> 
-> Others have reported roaming issues as well:
-> https://github.com/Ansuel/openwrt/pull/3
-> 
-> As I don't have the hardware to test, I don't know what the default
-> value really is, so I just disable learning to make sure.
+> The driver currently only enables flooding to the CPU port (like MT7530
+> back then), so offload_fwd_mark should NOT be set until bridge flags
+> offload is supported.
 
-That link doesn't really say more than "roaming issues" either, so I am
-still not clear on what is being fixed here exactly.
-
-Note that I can still think of 'roaming'-related issues with VLAN-aware
-bridges and foreign interfaces and hardware learning on the CPU port,
-but I don't want to speculate too much and just want to hear what is the
-issue that is being fixed.
-
-> > > Although hardware learning is available, it won't work well with
-> > > software bridging fallback or multiple CPU ports.
-> > 
-> > This part is potentially true however, but it would need proof. I am not
-> > familiar enough with the qca8k driver to say for sure that it suffers
-> > from the typical problem with bridging with software LAG uppers (no FDB
-> > isolation for standalone ports => attempt to shortcircuit the forwarding
-> > through the CPU port and go directly towards the bridged port, which
-> > would result in drops), and I also can't say anything about its support
-> > for multiple CPU ports.
-> 
-> QCA8337 supports disabling learning and FDB lookup on a per-VLAN basis,
-> so we could assign all standalone ports to a reserved VLAN (ID 0 or 4095)
-> with learning and FDB lookup disabled.
-
-And to follow along that idea, if you also change the tagger to send
-all packets towards a standalone port using that reserved VLAN, then
-even if hardware learning is enabled on the CPU port, it will be
-inconsequential as long as IVL is used, because no FDB lookup will match
-the VLAN in which those addresses were learned.
-
-My point is, if you come with something functional to the table, present
-the whole story. If more changes still need to be made until it works
-with software bridging fallback, say that too. Otherwise, I think that
-the general idea that "hardware learning on the CPU port won't work well
-with software bridging fallback" is not strictly true, and that this
-patch has a weak overall justification.
-
-> 
-> Ansuel has a patch set for multiple CPU ports.
+Ok, I missed that. Please squash this with patch 1 then, please.
