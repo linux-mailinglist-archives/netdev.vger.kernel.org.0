@@ -2,102 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14EE73E3812
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 05:22:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B44A23E381C
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 05:28:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230190AbhHHDWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Aug 2021 23:22:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33120 "EHLO
+        id S230221AbhHHD21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Aug 2021 23:28:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229977AbhHHDWW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 23:22:22 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F9DC061760;
-        Sat,  7 Aug 2021 20:22:03 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id j3so12685873plx.4;
-        Sat, 07 Aug 2021 20:22:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=b4+eN9bpiKnHX7lu+xFEi0IU4TCXd8H9JxiJveHTsSw=;
-        b=dEtmzyC5kAP2AaQ8rVpxMNpb98KMTvXG4fr83hlbj+7cgOMCZr5GG8evKsqcnaNU+a
-         eLJDai3kjOOtSZ0t7SDspn/ZmTHYVyMFgqfvUv8VuizHzm7m3V4M940ob4wlp8eo3OYG
-         N3KTQ0+JkF2i+mfFvhwB6sOk/xQgdaPdqeDplLzvuoy1XFygvJjWMN8rtkhdeBeGBS6h
-         /3jexKGhBcgd8iHgnvexKwSYm2pFTAEHri3Uvsq807TukqOjH2qA2mtJnkAudioOUf5W
-         2CKdpYfh408PvXGd1D/haQ8sAyVWKKSZ+6OodJmTk9DhhLYRfjcgJIhqLoe+eVFZIq0D
-         2a6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=b4+eN9bpiKnHX7lu+xFEi0IU4TCXd8H9JxiJveHTsSw=;
-        b=ATb5d/XHcjVei65av7gDYCxUi3dXZlNqf3Nmp+3mEds1umtaZ+yi6i72eFAs3lP5JN
-         ScKe/BscCSXy6YNh1HGFmv3a9vXaFzvyzH7Wzj9N7aL7uper1jQN4UwBkTYXGhR3AVvP
-         na1zQB5OLzh3ioklF+QntwHDAeXu8uGQhzPzMk0oQBS0Rs+o0Vi6w5xDeevvharuyDKh
-         IV5365U6jHmBDFzb9So2x/I9KQ+vQamZkad6Nm31eDG25to94/oBxfexhVivi3tGFfEj
-         ee6iEvrXRO18uBQABSRGWll6EuiEHYWFBSy13e26hRu9HMivHx7YNziR3LkpHtAPwI8g
-         5i2A==
-X-Gm-Message-State: AOAM533GM9quiPHjHmh9E8YU+sMwyGl2n6UbFzi1bId7qvc18uz7LHVN
-        Ly8QQq/Wg7Al1c6ePk/Cu7g=
-X-Google-Smtp-Source: ABdhPJwjoDLiT4fHUYwUMvUXtEVKOQY0BPXm6hBkgOtP8vVtAbR+r9QfbRhF2ZdWad3QEiXNKx5Bjg==
-X-Received: by 2002:a17:90a:150d:: with SMTP id l13mr17919388pja.93.1628392922521;
-        Sat, 07 Aug 2021 20:22:02 -0700 (PDT)
-Received: from localhost.localdomain ([1.240.193.107])
-        by smtp.googlemail.com with ESMTPSA id bj6sm16961198pjb.53.2021.08.07.20.22.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Aug 2021 20:22:02 -0700 (PDT)
-From:   Kangmin Park <l4stpr0gr4m@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ipv4: fix error path in fou_create()
-Date:   Sun,  8 Aug 2021 12:21:57 +0900
-Message-Id: <20210808032157.2439-1-l4stpr0gr4m@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        with ESMTP id S229977AbhHHD21 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Aug 2021 23:28:27 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7FE0C061760;
+        Sat,  7 Aug 2021 20:28:08 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.94.2)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1mCZTk-0000zx-Ny; Sun, 08 Aug 2021 05:28:00 +0200
+Date:   Sun, 8 Aug 2021 04:27:49 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Michael Walle <michael@walle.cc>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] ARM: kirkwood: add missing <linux/if_ether.h> for
+ ETH_ALEN
+Message-ID: <YQ9PNeka8VhZqxGR@makrotopia.org>
+References: <YQxk4jrbm31NM1US@makrotopia.org>
+ <cde9de20efd3a75561080751766edbec@walle.cc>
+ <YQ6WCK0Sytb0nxj9@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YQ6WCK0Sytb0nxj9@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kzalloc() to allocate fou is never called when udp_sock_create()
-is failed. So, fou is always NULL in error label in this case.
+Hi Andrew,
 
-Therefore, add a error_sock label and goto this label when
-udp_sock_screate() is failed.
+On Sat, Aug 07, 2021 at 04:17:44PM +0200, Andrew Lunn wrote:
+> > What kernel is this? I've just tested with this exact commit as
+> > base and it compiles just fine.
+> > 
+> > I'm not saying including the file is wrong, but it seems it isn't
+> > needed in the upstream kernel and I don't know if it qualifies for
+> > the stable queue therefore.
+> 
+> I would like to see a reproducer for mainline. Do you have a kernel
+> config which generates the problem.
 
-Signed-off-by: Kangmin Park <l4stpr0gr4m@gmail.com>
----
- net/ipv4/fou.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I encountered the problem when building the 'kirkwood' target in
+OpenWrt. I have now tried building vanilla, and the problem indeed
+doesn't exist. After tracing the header includes with the precompiler
+for some time I concluded that <linux/of_net.h> included in kirkwood.c
+includes <linux/phy.h> which includes <linux/ethtool.h> which includes
+<uapi/linux/ethtool.h> which includes <uapi/linux/if_ether.h> which
+includes <linux/if_ether.h> which defined ETH_ALEN.
 
-diff --git a/net/ipv4/fou.c b/net/ipv4/fou.c
-index e5f69b0bf3df..60d67ae76880 100644
---- a/net/ipv4/fou.c
-+++ b/net/ipv4/fou.c
-@@ -572,7 +572,7 @@ static int fou_create(struct net *net, struct fou_cfg *cfg,
- 	/* Open UDP socket */
- 	err = udp_sock_create(net, &cfg->udp_config, &sock);
- 	if (err < 0)
--		goto error;
-+		goto error_sock;
- 
- 	/* Allocate FOU port structure */
- 	fou = kzalloc(sizeof(*fou), GFP_KERNEL);
-@@ -627,9 +627,9 @@ static int fou_create(struct net *net, struct fou_cfg *cfg,
- 
- error:
- 	kfree(fou);
-+error_sock:
- 	if (sock)
- 		udp_tunnel_sock_release(sock);
--
- 	return err;
- }
- 
--- 
-2.26.2
+When building OpenWrt kernel which includes a backport of
+"of: net: pass the dst buffer to of_get_mac_address()", this is not the
+same as <linux/of_net.h> doesn't include <linux/phy.h> yet. This is
+because we miss commit 0c65b2b90d13c1 ("net: of_get_phy_mode: Change
+API to solve int/unit warnings") which has been in mainline for a long
+time.
 
+> The change itself does seems reasonable, so if we can reproduce it, i
+> would be happy to merge it for stable.
+
+Sorry for the noise caused, I'm not sure what the policy is in this
+case, but certainly this is *not* a regression which should make it to
+stable asap. The long and confusing chain of includes which lead to the
+ETH_ALEN macro being defined in arch/arm/mach-mvebu/kirkwood.c is
+certainly not ideal, and in case you still consider this patch worth
+merging, I will post v2 with re-written commit description.
