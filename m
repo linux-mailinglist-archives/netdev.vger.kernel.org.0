@@ -2,120 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 546593E3BC4
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 19:00:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F6343E3BDD
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 19:19:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231967AbhHHRAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 13:00:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40754 "EHLO
+        id S231649AbhHHRUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 13:20:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230169AbhHHRAy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 13:00:54 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19C8C061760;
-        Sun,  8 Aug 2021 10:00:34 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id j3so13883242plx.4;
-        Sun, 08 Aug 2021 10:00:34 -0700 (PDT)
+        with ESMTP id S230049AbhHHRUE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 13:20:04 -0400
+Received: from mail-vs1-xe36.google.com (mail-vs1-xe36.google.com [IPv6:2607:f8b0:4864:20::e36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86FE1C061760;
+        Sun,  8 Aug 2021 10:19:44 -0700 (PDT)
+Received: by mail-vs1-xe36.google.com with SMTP id k24so8633641vsg.9;
+        Sun, 08 Aug 2021 10:19:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=+2IKb4s8fLaRZamykzK5nK7Y6dvXALlvgfnoRe+HK/Y=;
-        b=V7i3FJXi/sN/dE+EzN/zCtN1Ty5SXScTHTYaqSD8NMxo9IGHF4rxb2kjRpQu1WpJjm
-         jdNqqrLLQOgojgaMnANSNHJ4S/MVy8H6I8CatnefIBLVU3GPvalJTkZiBxH1aDNNKhIR
-         huMpeQiXkxsmqHa9bqg0qi28cT3Nvy8T3NEqt8JwmV5djH6Wkx01iDgfWe1PJunrCbcr
-         frwhGcqaJLnb/sTuyxgx4muiXlfSbX76J+Bk20eZ8GkU56qzA/FtSHQiTy91p1RYXkXh
-         w2r1zogUW3f3m0K610hXcLajdvE9UAKrmeVLfMkQ6VR47uEALFHU1HVhet67KLZq/7eL
-         24Ww==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vtiBarJA2O3XYt1tUFE/I5LovrEOojrmK31AlVK6Ol0=;
+        b=a/kOWvI/nFqESMGbUxe4awyrXxSG9AUxnJLkwfbc/53URjXKXCluX48sji/6H+xGRd
+         go6ijFKp4j0Dx9F3qi9p8TmQHMlAskeJJV/v323S6EjPrEgR2IU7FxoJNQdb6VMXADdD
+         x575/rsA2+xNVEsrIBBvOQrl/Yi0Fxz15Xj0RC+mMfKNwcNGSlmb+uzf6te3FedrfZmP
+         5ffwidlhwiLn3LWYC+jJz+9GL5T8s/kGftz+7xQTeAjrkCPrwH2ZeBbwZXCMWvErQp4n
+         77VtXTH8740S2reUZN9dPLuLv9ebuFTU+Fq17YzJA+BqPfd/+ybuBo7cGMChpfuuKdlE
+         vJrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=+2IKb4s8fLaRZamykzK5nK7Y6dvXALlvgfnoRe+HK/Y=;
-        b=beCV3Iwy970jBYU+T08ZkucQSqMSW6YgINE3sdy8W1/aSDuCvYqHifxte1zR9PBqMX
-         oDoa+cA34SdIFws7nlf2ptz+NTgOK60Gq1r32+uWtZRcyAfN+J9596VEdMo8XTyo1wbY
-         cnxlzFG7PDaXnLiTjrFFD8FhJ1nnO9vXVwdcROWNRFCZ5/8WIEG4z1ljO4O/uwg0GPlD
-         Q/fSj4b5zcO0ZlcY/cvAmqF/ZstN83n4g60kg1HZWStrk+QWtrJgJGZfKssxc0wY1Ty+
-         bY5DxQrhYajbI0NdLMkup5G3MKXW5NVIE9psmzfiesJvXXE8FSG7uCmD7iYOa9947/Hy
-         fixg==
-X-Gm-Message-State: AOAM533v/TIjjqLpGSeR413+TF+QHmViTpmjYCSGclosNFU+O7EtQ047
-        soARgTd7m3u/9+OVi9kWGc8=
-X-Google-Smtp-Source: ABdhPJzI6b4wFZ9s//pHD6eCbcos1ptHiqYy/HRV5zh3u+BW1GPVZvtWLyGfb1QM/JFtvRYk9ArgIg==
-X-Received: by 2002:a63:3e05:: with SMTP id l5mr31867pga.403.1628442033404;
-        Sun, 08 Aug 2021 10:00:33 -0700 (PDT)
-Received: from haswell-ubuntu20.lan ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id q5sm15251889pjo.7.2021.08.08.10.00.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Aug 2021 10:00:32 -0700 (PDT)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     Eric Woudstra <ericwouds@gmail.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mt7530 fix mt7530_fdb_write vid missing ivl bit
-Date:   Mon,  9 Aug 2021 01:00:24 +0800
-Message-Id: <20210808170024.228363-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210716152213.4213-1-ericwouds@gmail.com>
-References: <20210716152213.4213-1-ericwouds@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vtiBarJA2O3XYt1tUFE/I5LovrEOojrmK31AlVK6Ol0=;
+        b=kOffy/+xBxbFyF0ICDv2qRvvriOl0dyUkPXLzIGV1sOFje2CR73EBLxgJSZCEfR4bp
+         eS6mymN18xupINcy2ho0Gdt2JpJZkG/d0iPOZa6AHgF0USQYJRQZ8fKRMRC1C6pZ8+1Z
+         1G20AzwsEN3FPnoGJni7EyVKjuPdFqP149sLha/I9NQwzjtDmVEIfd8yWJA2KLFTWYim
+         QfOCKWqLG92tESZ9K9TFULBUflWGFVwabg3L10xZrzhFNXq59tLJQa30AhDYrOObDIQa
+         xOa2+ujpKsfzvz8uM8RCdT3cVZBGs3ONUpQqjpqSKulquyPD4KHmVVzfbhyJhaR18Dvv
+         c5LA==
+X-Gm-Message-State: AOAM530DeMAjws9OydGiaak/jKZVHKtQcH8v8vaa+JWssJTBuIoN/GWM
+        dDPtRVWp/JDG+iXSzjrj5tUjbomkoAcdNodJjOE=
+X-Google-Smtp-Source: ABdhPJxhh2JbB4V5du3GdOf5QgIqy4FLdeN4oyYjSTKkP/oHzfFW7y7jtyugIiNqZVzh0/OJMlCSGT/Yqg+RZhz524s=
+X-Received: by 2002:a67:16c1:: with SMTP id 184mr14134320vsw.14.1628443183656;
+ Sun, 08 Aug 2021 10:19:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+References: <20210808122411.10980-1-falakreyaz@gmail.com> <be9121ef-cea7-d3f9-b1cf-edd9e4e1a756@fb.com>
+In-Reply-To: <be9121ef-cea7-d3f9-b1cf-edd9e4e1a756@fb.com>
+From:   Muhammad Falak Reyaz <falakreyaz@gmail.com>
+Date:   Sun, 8 Aug 2021 22:49:32 +0530
+Message-ID: <CAOmbKqkYDXvMQntk39Ud-63G3ju+Kti2A8UFNodgJ6y1+4=AeA@mail.gmail.com>
+Subject: Re: [PATCH] samples: bpf: xdp1: remove duplicate code to find protocol
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        KP Singh <kpsingh@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 16, 2021 at 05:22:11PM +0200, ericwouds@gmail.com wrote:
-> From: Eric Woudstra <37153012+ericwoud@users.noreply.github.com>
-> 
-> According to reference guides mt7530 (mt7620) and mt7531:
-> 
-> NOTE: When IVL is reset, MAC[47:0] and FID[2:0] will be used to 
-> read/write the address table. When IVL is set, MAC[47:0] and CVID[11:0] 
-> will be used to read/write the address table.
-> 
-> Since the function only fills in CVID and no FID, we need to set the
-> IVL bit. The existing code does not set it.
-> 
-> This is a fix for the issue I dropped here earlier:
-> 
-> http://lists.infradead.org/pipermail/linux-mediatek/2021-June/025697.html
-> 
-> With this patch, it is now possible to delete the 'self' fdb entry
-> manually. However, wifi roaming still has the same issue, the entry
-> does not get deleted automatically. Wifi roaming also needs a fix
-> somewhere else to function correctly in combination with vlan.
+On Sun, Aug 8, 2021 at 10:23 PM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 8/8/21 5:24 AM, Muhammad Falak R Wani wrote:
+> > The code to find h_vlan_encapsulated_proto is duplicated.
+> > Remove the extra block.
+> >
+> > Signed-off-by: Muhammad Falak R Wani <falakreyaz@gmail.com>
+> > ---
+> >   samples/bpf/xdp1_kern.c | 9 ---------
+> >   1 file changed, 9 deletions(-)
+> >
+> > diff --git a/samples/bpf/xdp1_kern.c b/samples/bpf/xdp1_kern.c
+> > index 34b64394ed9c..a35e064d7726 100644
+> > --- a/samples/bpf/xdp1_kern.c
+> > +++ b/samples/bpf/xdp1_kern.c
+> > @@ -57,15 +57,6 @@ int xdp_prog1(struct xdp_md *ctx)
+> >
+> >       h_proto = eth->h_proto;
+> >
+> > -     if (h_proto == htons(ETH_P_8021Q) || h_proto == htons(ETH_P_8021AD)) {
+> > -             struct vlan_hdr *vhdr;
+> > -
+> > -             vhdr = data + nh_off;
+> > -             nh_off += sizeof(struct vlan_hdr);
+> > -             if (data + nh_off > data_end)
+> > -                     return rc;
+> > -             h_proto = vhdr->h_vlan_encapsulated_proto;
+>
+> No. This is not a duplicate. The h_proto in the above line will be used
+> in the below "if" condition.
+>
+> > -     }
+> >       if (h_proto == htons(ETH_P_8021Q) || h_proto == htons(ETH_P_8021AD)) {
+> >               struct vlan_hdr *vhdr;
+> >
+> >
+Apologies :(
+I now realize, it could be double vlan encapsulated.
+Would it make sense to add an explicit comment for newbies like me ?
+I can send a patch, if it is okay.
 
-Sorry to bump this up, but I think I identified the issue:
-
-Consider a VLAN-aware bridge br0, with two ports set to different PVIDs:
-
-> bridge vlan
-> port         vlan-id
-> swp0         1 PVID Egress Untagged
-> swp1         2 PVID Egress Untagged
-
-When the bridge core sends a packet to swp1, the packet will be sent to
-the CPU port of the switch as untagged because swp1 is set as "Egress
-Untagged". However if the switch uses independent VLAN learning, the CPU
-port PVID will be used to update the FDB. As we don't change its PVID
-(not reasonable to change it anyway), hardware learning may not update
-the correct FDB.
-
-A possible solution is always send packets as tagged when serving a
-VLAN-aware bridge.
-
-mv88e6xxx has been using hardware learning on CPU port since commit
-d82f8ab0d874 ("net: dsa: tag_dsa: offload the bridge forwarding process"),
-does it have the same issue?
+-mfrw
