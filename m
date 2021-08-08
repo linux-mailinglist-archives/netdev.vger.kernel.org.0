@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A00713E3AD7
+	by mail.lfdr.de (Postfix) with ESMTP id E94E63E3AD8
 	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 16:36:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231741AbhHHOgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 10:36:20 -0400
-Received: from mail-eopbgr70088.outbound.protection.outlook.com ([40.107.7.88]:17029
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        id S231958AbhHHOgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 10:36:22 -0400
+Received: from mail-db8eur05on2044.outbound.protection.outlook.com ([40.107.20.44]:24033
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231825AbhHHOgO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 8 Aug 2021 10:36:14 -0400
+        id S231841AbhHHOgQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 8 Aug 2021 10:36:16 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZhuQ9z3jyOLw6OwzMw2KRG/k3hCFir9gKETAi0r+zWNxWqwOvVGUcNN2b7N4mtQy+NTWa5TQSmjBCUs4KAHQ+pD/apPiZis0xnyqlru61KP2lHb4e069TPzgvp74my1ys56QyQQch2W1uWNdcuEEWQCc8GrcFRkkdfgzHEwS9Kt0Gh4RHL7qGtwPwHfSSZPBRc5K5Rpz4/ZiSzrgHzlFL99zadez6tI3hOQo2lfQdYM3cRCIv02YyKzITecyDWYssUq4O3Z7WkSv2oEMzCAvOhHX7D5qRQGtidGdkaZYkAYZgPURyWu0BBWq7Gsux15RuOyzNa0fXz03ZqVz1FE/9w==
+ b=L6f1dI48O6bEP+zI8hzQ1wJ+oDYjfg/GCZltKOwErD71Hs9NXp/0R3T0Gk5GR5RRqZMRC7yM2HZmmlS5qEpYULhGsNgOs3kwgamsWqVsDI5AHX3lIDTC5Ivn7a02qmWzCZv4Tht2Me+L6kEEj/k09Ml8jQ91J3V23qMpZC7Nb4CYUsIPb4rZ8472ydnjSFyOArHfEsDsZbmsAi/we6pFSAoyStDdV2DxMbKZev9moNyaiewzdhXkz0t5rnIPmJUVyWLSu34qXbcM6Z1Pz4y7tkRugOLyAPFoS1PnxWBjSGM5NvvHxDbOo3cCVNHorSUYlC9wplWRF4nd++PWXdQuRg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Sdk60Yfjh+myoEeqT2Z2gVN+a/ECsZvt6gey/Z9dTQo=;
- b=L8x87XCw0z3NANkStA1oLgpsYjX0Px1FKegs+ssobajkwoviiF66S0ClQMnVXbkLyOXpGqsE0ZatM2x52lwirukItW0R4DMCiuDB1wi2SxpwTHrrHMD9MOtQs6p6//IIWM/Gx5S5yIOmTqL513rZ/biw+A92CMzPRKtBF0tD1vpGBbfmOjQ1+pWm0EBAFLI1qO+aiuj/ynBtoNsofUHQOASIsPCTkbGTeM/PDOk/EfE15vWIzGmZ2hInvY6sns/zXl3kNujlYVFjg378oir3nMQPURb3QnT666zoiomSuFOtf3UZcoo59x3zXkplt3K7CysF7nEUgHBzT5Fy46ywlQ==
+ bh=YnOF/uCCgriJR/rH1D4T/uFiEU5ijtyHies5RzDu9c8=;
+ b=LAGsD4lUtQ71C2q8CCqkpvziiuhVxNsUYdLijEmk1WF9UGk8BW4tIa6HeTLH5OosrLo0JVpt2iYtBAUxSLk+DAqPczYmcd5RrCjYs1gXd62BDXRe3apnZleVZYgWmwtrVgdBnW8oUXrLun+rLnWYT0F+hujc9OaMrzcBA1D+gZAtDbCCSj10SXHl4ftCYgfvY5ZRB6SxT0PCFCGayaDkIlAFPw9DZNGnWEubW/RlEO544N+UsQXyTtlHmWRkRV5Pm2wFMhQcAHqYGubBLjc3s1uO6eWNPB6vLy7DM5IaueVeOp4rq087cOXX0PBtQf1jOV5E8akWQCHn1wUdD35a3w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Sdk60Yfjh+myoEeqT2Z2gVN+a/ECsZvt6gey/Z9dTQo=;
- b=AHhbOYySzgu3n4qB/2on6MJM6aIgJcb5PuNcEc7bEjQW9y/ScKgRXbNwSc3Z30JOfJtz+Kv7cjnmWR5DpwmK0o1jxx+zQQCNNx5RcDkQKB1rGPhMOZhOxv3RGxfNNu0D7xIFKpi1j/F8bkFEEyLZajnXEQjRq568a/atuxozAQs=
+ bh=YnOF/uCCgriJR/rH1D4T/uFiEU5ijtyHies5RzDu9c8=;
+ b=sqxCCZNpmtWHPmBE/NMoaMNERnXOE/BSh1rrqnPz9EiX+wKrjnq6h2YQW3CgXUHvBW+bht2LxAxmaQ2jGf69AwoGQ/0UskJLTgzuZn70RCouFDTfHQzd6WKtueXEOgh3sdrKdROUTv0H7ejCiSCOh7+8Zx7YXdG3Ql852/t4n2E=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
@@ -36,21 +36,17 @@ Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4394.022; Sun, 8 Aug 2021
- 14:35:49 +0000
+ 14:35:50 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net-next 3/5] net: dsa: flush the dynamic FDB of the software bridge when fast ageing a port
-Date:   Sun,  8 Aug 2021 17:35:25 +0300
-Message-Id: <20210808143527.4041242-4-vladimir.oltean@nxp.com>
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net-next 4/5] net: dsa: sja1105: rely on DSA core tracking of port learning state
+Date:   Sun,  8 Aug 2021 17:35:26 +0300
+Message-Id: <20210808143527.4041242-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210808143527.4041242-1-vladimir.oltean@nxp.com>
 References: <20210808143527.4041242-1-vladimir.oltean@nxp.com>
@@ -61,124 +57,190 @@ X-ClientProxiedBy: VI1PR0601CA0003.eurprd06.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.144.60) by VI1PR0601CA0003.eurprd06.prod.outlook.com (2603:10a6:800:1e::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.16 via Frontend Transport; Sun, 8 Aug 2021 14:35:49 +0000
+Received: from localhost.localdomain (188.25.144.60) by VI1PR0601CA0003.eurprd06.prod.outlook.com (2603:10a6:800:1e::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.16 via Frontend Transport; Sun, 8 Aug 2021 14:35:50 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 50dbb95f-a24c-4333-97a7-08d95a79d148
+X-MS-Office365-Filtering-Correlation-Id: 090849fe-701c-4329-847f-08d95a79d19f
 X-MS-TrafficTypeDiagnostic: VI1PR0401MB2301:
-X-Microsoft-Antispam-PRVS: <VI1PR0401MB2301731F0EF9EF02D8DD047DE0F59@VI1PR0401MB2301.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-Microsoft-Antispam-PRVS: <VI1PR0401MB230164E3AAEC76D0401523C4E0F59@VI1PR0401MB2301.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aj6BegeCGTwL70JCIzDB5+C99RRCyNurAF8j/uEB6QT0oUDjc80S+SX61qH+zlSFABNjV502kNovPufpWKMbQnSWuKxcRBHrrsavfAiV03v92wZgS16vRia4pNH3z7qHRW0KhIisQqsTOBi/OtsgKfqhLaf/OrZiwb16CwF/vo45i1KxZYiHAffR3gh7EswIIlboLFx61sW90kUOPew3x6U4QL1bE9bhx9WNVBL3790wWSU9ekdWhdBRe6ZQR1vbiH+EFUjwpg6VKKeq4H2TWZzz6st4pFDh5iOSw9uSf18IlLM7DQ2ohej3olNQ4IgayJeBehQ0qM5AEV4vFXrs32NimdYIAV5x/l8X2CgOBciIEWCLJx0sZwSph9x6j959ysb4Uu6kXpG4z9ZsOacMotl6sXA6ijhEL09Wd2jm4vsM+nHmut5o91GvFoEyDffHJ5udmBvluHiyeVxljRHvWwhL+0ohFkJ5/9Q4Vqv4Qp146PAyd7EQSpW6wnQJhcxZ+PwZNlQG3ofjnu2cZvQVOOKasf5zz+bK3yUGfVO+oFOmeDyB8aT9DJBDm8cftAoTaz9X7VZIdltrolEj0fZQ9raSNdSYf5ieWhHsKwIGHjL5rbw9LuW1LcLW16lMs0sEs2fF/onyfMkc3o+3Kn7xo9QNHwjER5DUW5AmgUpBYAwqyOldKo1YkrFGxEJTjOkpkBxLUDNZzb/Y+CDCd7z0iQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(86362001)(7416002)(36756003)(8676002)(6486002)(6512007)(956004)(2616005)(44832011)(4326008)(6506007)(186003)(2906002)(1076003)(38350700002)(38100700002)(26005)(52116002)(66556008)(66946007)(66476007)(8936002)(83380400001)(6666004)(110136005)(54906003)(5660300002)(508600001)(316002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: HBOveOH5knI39DIRPUhVgpIzWTml9IKkB4ssoBuO6Y38r5BL/eGCB/WrVgiaHTTrxd5SgNK4ItznUjT3DaOuKYyLby2JV9UUeM/j16Pl3tr3ZlMi/cNc2ROBsBUygbdS+gdA51PiIajpRXQUgc5B5lQ/G9Fd+dIr4NdkWLPbscYIIm2xNNIP+ZN/LqTxii0st1jgJS6LQoScYfDuHtG6UhHNElrYCcSevuWgNTgdevtSE/3b0OXbKFEsVrydfGXzSgCoop0Z/N4v80UGRJHeUsXxkaWlbnuEZAQzrOy+zcDvWNVo+DP23e+i1Ji1YcIgmQt4OASduuDMyu2iI+UpI6VuryppJKBk+haQPraFo41w+nW83e4/fGG7Gqp40pP/fzC7rG/3XUqP4doOgiF9vpH1hm4ARRWWgdpjP4iVqa6Or4HRWxUirVHtZHGd/RtJ6jXFiJZ+fwVIMeeBrp7zOpp8qcYQR0bmswQkqENLFRQ7Vlls1vOsSz0mhNkFOOzxmBRFQwvyUTLHcMsz1rUcjx0zkLsqji6qkj50JAFEDjOdEMV85SnL7hZjjAz5pNKQsI+aipWw60SOIWphQSD2+6M67u7ksauhnEI1EkyQAhgzflrQLdSnpzlL+j/7iZA9JVfTHWyZWYaFkQOT0sXuQVUjKyC0/a8Ka5pm6VM48uGQ41R/c5GV2G7Qnl/u/41m
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(86362001)(36756003)(8676002)(6486002)(6512007)(956004)(2616005)(44832011)(4326008)(6506007)(186003)(2906002)(1076003)(38350700002)(38100700002)(26005)(52116002)(66556008)(66946007)(66476007)(8936002)(83380400001)(6666004)(110136005)(54906003)(5660300002)(508600001)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?z1dSI65mM5YFzOTWXnyela9TeK1vx3C8JwqD78uHy6ZxJCg+ZfWIWqn5w1wC?=
- =?us-ascii?Q?0inSAtVNbL4o73WfCXz+KOJsKwIlPvANx2h2ccpuiLCUstRmtEHZndDVkFj7?=
- =?us-ascii?Q?G3Vom1EANDZsKSmYqQ2by8g4vo7mqXzft47ShZsN6qsdHTWpzpnrVxyqcwcr?=
- =?us-ascii?Q?I/y+/HMxqZU5e4MOAjxod3Iitq3EvyyN3A8vJcSIWey+xVMgFnqdaHsjFV0H?=
- =?us-ascii?Q?Wa0Oi/ALTNkPBKXcfSQINYIX+mtY1nH4xdVKVYTIPPg5q+U3t4RNXUyH1m4E?=
- =?us-ascii?Q?p0uftdzmDWMeIMRT0FMRGG2beTL/fjB3JxoP2xdzciAMQY4Cx+WhLpbL9POM?=
- =?us-ascii?Q?xLNNkJT6ANp5GZnFXZTwWXSmfrHJ4e8VkGBI7Dt3UeHOjhxmcnH2vX61c2Ea?=
- =?us-ascii?Q?6kThtutIldf/wfXDFrdIIvAn3s3GAYOdQD+SoFSLJwh2mSXjykCxStU/1Rzv?=
- =?us-ascii?Q?rFSMA+amInozDPlVYnukL37SIufxvbrDyeo4Q/FxjIJN8D+8DU/LM8mmGCIY?=
- =?us-ascii?Q?/25Sq27vJRbd+WNVJZPRvjStZzXwMMeqeDpqXrJ9V9LWnxoHD3E/NkKi+SML?=
- =?us-ascii?Q?5EytAi2HMF4jYNAJ8RLdbj31kedUVHDW+UhlYAzUnODL2ApaIPX1QKuxH1Bs?=
- =?us-ascii?Q?89ekLyVJyvpCWEoAuPHLaBRubEqFy8T9Bf3kd8s+m7RciCrSGhcl4EShDbiY?=
- =?us-ascii?Q?lJTQORwU0fKxQLUBm93BLDrjIEgteBcGL7odbNGvbe2NKyrSdXmk5MJbmMaw?=
- =?us-ascii?Q?y69Hxywx8CRWAimHVpk5n+C7mgB5ZaP5NegbM+gYfs4P/9Xoxid0gCL9+57l?=
- =?us-ascii?Q?RMUn0DKe2678usWbzyxi4gwluttx2+7tHlxqamXh13QLeqc5JxUuqFr1r7RV?=
- =?us-ascii?Q?dO3s89HliSuWrH5o81g2Bvbw3iwb44+QALa+vgTUbWzmwkoRDrgTyuBq688J?=
- =?us-ascii?Q?i6EEOd4JnZjEcijAuXmpy7YbGuZ2nsZ2qbv6uCy+zF2yOeCPu8LAwdsYFEgB?=
- =?us-ascii?Q?lD/pbrYIwSh++m7U0UfvErwdgvzNyGbC5jMr0u28J/WxCXcBYdmM2CTIQ35f?=
- =?us-ascii?Q?Kb6P2GhVDTOTMdiQWSWSDiGnLiIwtMqOHScUvkQXEsj0rZvi9NbbANTe/2/v?=
- =?us-ascii?Q?8u6sxEFb6qmaPrc9zbRN6Hbv+0RXcNuK5EDnVZ8hWLkRqJ17SW/eNTWfnZMB?=
- =?us-ascii?Q?gMcBsWaSM+5XhhoQrMqH0c2g0TyEcClftADVZdGZJsSTQ97cnjFrzaAOfKyY?=
- =?us-ascii?Q?QvTj52iS0hwv8Sr5ubnWwVxJeXzeisB9fPPAAWCXwwsTiyo+EFREPcxxfvMU?=
- =?us-ascii?Q?z3hUAmKeD9goPKKWdGLwzq8O?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?oQsb/J6antLSpiqTAkqIjO2J4LFrrudMaFHxpkQJ2ytrlihUQgfgfFvZUwDF?=
+ =?us-ascii?Q?J9JwkXTuQTjxDgnVoD5R+OlFeZG7M79lPSNXdLshbq2nSE4wv/KKJl/+i4er?=
+ =?us-ascii?Q?9I9Qi65bStd2s0eL+TDOx1dkpHdNrBTNDs/8xDwELxzbSh7berhOlgbppF+v?=
+ =?us-ascii?Q?QxxQ+rG9udt9/uEWDnY8vsd7ug7fYNE8fUgn9kIWc+Vznu7D9q3fC69BDuch?=
+ =?us-ascii?Q?HLddLyeeO7kBYC5cXMV1h05VDY7eqImLk8k29i0vleLImzK9TgxoFfhgzr+l?=
+ =?us-ascii?Q?ksgmgUnTEW1SD4hEBm6K58OcEqhoN4gPQk9FDMN29VVXZy1gh9RXnnmavVge?=
+ =?us-ascii?Q?YVJVI3yj3iQ/ibElz09HEFvLVpTH9i+5lLe5UWSMGfI91eU70q5E/aS1AXOG?=
+ =?us-ascii?Q?CrQB6fKG20jNFRghlPWKw4GLoF7yGkxjeAZiuKsWOQJz3Bum8ry6dHLAa2gx?=
+ =?us-ascii?Q?YqR3hfmcZQtbz8V0KlLlVCiu74yWlUSR5ZBg0bUIkZWmWgDpXnBXcVfOqLvw?=
+ =?us-ascii?Q?ZFG4E88Lt7N4gqsvIsnVWhREh9Aii8f0h0phUxiKCF743TgygKjSWvcHjaJZ?=
+ =?us-ascii?Q?aylhoPzS5sQ2MV9/q/wGlktdxdffGNVHvfxlus0SxhizzhwRWTLjTd1ixcT9?=
+ =?us-ascii?Q?AG8QhNr4DhUlw1t0G7b/juNXzaCRbgK2zz4C1euJh+5qPNENWVD2Fh2xYtbP?=
+ =?us-ascii?Q?YY6b7hhUPestVsr49f29VmNK8hLTg/pIBNrvULdqMYz0ozyKO8wXtJHlkrs3?=
+ =?us-ascii?Q?M64z/IldAoZ/Kh2jmAUaUIbfGx22n6HFAgwMHHLMkWeMP5RA+GENlI77dKSG?=
+ =?us-ascii?Q?fXdXHns/OepiNeShiXnU/dBCKhyuqEeurb2mUUQjL4qkZ7/mb2p02w/tFLqq?=
+ =?us-ascii?Q?5V1vvR8CNe4FKVKU76FtI2EpD0JXZ/9zrMn1eXdG7y6Lfy+3ca1YcqR3Rlr/?=
+ =?us-ascii?Q?4n55tDSXUaYlGmaahQYIR3eowJ+5UNA4hhK3RlEdMgoOIPbhb+HAfO0IaVwI?=
+ =?us-ascii?Q?eKFAmpa2RFgHLVCfIjCTwRe4GeR3aBswcXG5nAhECl6aA1is6u0EZCr0FtpL?=
+ =?us-ascii?Q?Av8rTpbsGKmJre5HgHg/RV7L4K1L0T1gMHEBUMeSCps8Mt9C6Nb+mH0m0TRX?=
+ =?us-ascii?Q?mZxChnljRhnOETr8op7KWfbPSnoEUQ6rrgaWLhBYBTIygm2t3j5U2O35a26E?=
+ =?us-ascii?Q?SsASpfbMTcU3LnXenJMdoatjXHaKI5pbM84Y5UdCfTPGoK2ZsMoNCjTLNRKQ?=
+ =?us-ascii?Q?KeIpVoSNgkdlhyN1vTJnKt1dQftD6S4AuYcCJen+Slg9jwQB8gtFCiYlzDNk?=
+ =?us-ascii?Q?bIcJb4xVwWxUbm3O3H6Se6fi?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 50dbb95f-a24c-4333-97a7-08d95a79d148
+X-MS-Exchange-CrossTenant-Network-Message-Id: 090849fe-701c-4329-847f-08d95a79d19f
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Aug 2021 14:35:49.9633
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Aug 2021 14:35:50.5300
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /zhZ7HfgB5XWEoWKgjAs6OZW2soaXcW0XgQggbzAFPoO7dQ10puvf71EjoWid9YQQZY2ebGfKzJ4/JkB6xRxow==
+X-MS-Exchange-CrossTenant-UserPrincipalName: qf89jLfj6wf+3MTeSwDd5DCoauuvf843cPDiqGGFqXOOs8KExRY0PXWkW1XPJxMFPAggPTGvCmme6H+HxBxwYQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2301
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, when DSA performs fast ageing on a port, 'bridge fdb' shows
-us that the 'self' entries (corresponding to the hardware bridge, as
-printed by dsa_slave_fdb_dump) are deleted, but the 'master' entries
-(corresponding to the software bridge) aren't.
+Now that DSA keeps track of the port learning state, it becomes
+superfluous to keep an additional variable with this information in the
+sja1105 driver. Remove it.
 
-Indeed, searching through the bridge driver, neither the
-brport_attr_learning handler nor the IFLA_BRPORT_LEARNING handler call
-br_fdb_delete_by_port. However, br_stp_disable_port does, which is one
-of the paths which DSA uses to trigger a fast ageing process anyway.
+The DSA core's learning state is present in struct dsa_port *dp.
+To avoid the antipattern where we iterate through a DSA switch's
+ports and then call dsa_to_port to obtain the "dp" reference (which is
+bad because dsa_to_port iterates through the DSA switch tree once
+again), just iterate through the dst->ports and operate on those
+directly.
 
-There is, however, one other very promising caller of
-br_fdb_delete_by_port, and that is the bridge driver's handler of the
-SWITCHDEV_FDB_FLUSH_TO_BRIDGE atomic notifier. Currently the s390/qeth
-HiperSockets card driver is the only user of this.
+The sja1105 had an extra use of priv->learn_ena on non-user ports. DSA
+does not touch the learning state of those ports - drivers are free to
+do what they wish on them. Mark that information with a comment in
+struct dsa_port and let sja1105 set dp->learning for cascade ports.
 
-I can't say I understand that driver's architecture or interaction with
-the bridge, but it appears to not be a switchdev driver in the traditional
-sense of the word. Nonetheless, the mechanism it provides is a useful
-way for DSA to express the fact that it performs fast ageing too, in a
-way that does not change the existing behavior for other drivers.
-
-Cc: Alexandra Winter <wintera@linux.ibm.com>
-Cc: Julian Wiedmann <jwi@linux.ibm.com>
-Cc: Roopa Prabhu <roopa@nvidia.com>
-Cc: Nikolay Aleksandrov <nikolay@nvidia.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/port.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ drivers/net/dsa/sja1105/sja1105.h      |  1 -
+ drivers/net/dsa/sja1105/sja1105_main.c | 32 +++++++++++---------------
+ include/net/dsa.h                      |  1 +
+ 3 files changed, 14 insertions(+), 20 deletions(-)
 
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index a4c8d19a76e2..96a4de67eccb 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -30,6 +30,24 @@ static int dsa_port_notify(const struct dsa_port *dp, unsigned long e, void *v)
- 	return dsa_tree_notify(dp->ds->dst, e, v);
- }
+diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
+index 9cd7dbdd7db9..2e899c9f036d 100644
+--- a/drivers/net/dsa/sja1105/sja1105.h
++++ b/drivers/net/dsa/sja1105/sja1105.h
+@@ -233,7 +233,6 @@ struct sja1105_private {
+ 	phy_interface_t phy_mode[SJA1105_MAX_NUM_PORTS];
+ 	bool fixed_link[SJA1105_MAX_NUM_PORTS];
+ 	bool vlan_aware;
+-	unsigned long learn_ena;
+ 	unsigned long ucast_egress_floods;
+ 	unsigned long bcast_egress_floods;
+ 	const struct sja1105_info *info;
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 241fd25b0b86..87e279be89c9 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -176,7 +176,7 @@ static int sja1105_init_mac_settings(struct sja1105_private *priv)
+ 	struct sja1105_mac_config_entry *mac;
+ 	struct dsa_switch *ds = priv->ds;
+ 	struct sja1105_table *table;
+-	int i;
++	struct dsa_port *dp;
  
-+static void dsa_port_notify_bridge_fdb_flush(const struct dsa_port *dp)
-+{
-+	struct net_device *brport_dev = dsa_port_to_bridge_port(dp);
-+	struct switchdev_notifier_fdb_info info = {
-+		/* flush all VLANs */
-+		.vid = 0,
-+	};
+ 	table = &priv->static_config.tables[BLK_IDX_MAC_CONFIG];
+ 
+@@ -195,8 +195,11 @@ static int sja1105_init_mac_settings(struct sja1105_private *priv)
+ 
+ 	mac = table->entries;
+ 
+-	for (i = 0; i < ds->num_ports; i++) {
+-		mac[i] = default_mac;
++	list_for_each_entry(dp, &ds->dst->ports, list) {
++		if (dp->ds != ds)
++			continue;
 +
-+	/* When the port becomes standalone it has already left the bridge.
-+	 * Don't notify the bridge in that case.
-+	 */
-+	if (!brport_dev)
-+		return;
-+
-+	call_switchdev_notifiers(SWITCHDEV_FDB_FLUSH_TO_BRIDGE,
-+				 brport_dev, &info.info, NULL);
-+}
-+
- static void dsa_port_fast_age(const struct dsa_port *dp)
++		mac[dp->index] = default_mac;
+ 
+ 		/* Let sja1105_bridge_stp_state_set() keep address learning
+ 		 * enabled for the DSA ports. CPU ports use software-assisted
+@@ -205,8 +208,8 @@ static int sja1105_init_mac_settings(struct sja1105_private *priv)
+ 		 * CPU ports in a cross-chip topology if multiple CPU ports
+ 		 * exist.
+ 		 */
+-		if (dsa_is_dsa_port(ds, i))
+-			priv->learn_ena |= BIT(i);
++		if (dsa_port_is_dsa(dp))
++			dp->learning = true;
+ 	}
+ 
+ 	return 0;
+@@ -1899,6 +1902,7 @@ static int sja1105_bridge_member(struct dsa_switch *ds, int port,
+ static void sja1105_bridge_stp_state_set(struct dsa_switch *ds, int port,
+ 					 u8 state)
  {
- 	struct dsa_switch *ds = dp->ds;
-@@ -38,6 +56,8 @@ static void dsa_port_fast_age(const struct dsa_port *dp)
- 		return;
++	struct dsa_port *dp = dsa_to_port(ds, port);
+ 	struct sja1105_private *priv = ds->priv;
+ 	struct sja1105_mac_config_entry *mac;
  
- 	ds->ops->port_fast_age(ds, dp->index);
-+
-+	dsa_port_notify_bridge_fdb_flush(dp);
+@@ -1924,12 +1928,12 @@ static void sja1105_bridge_stp_state_set(struct dsa_switch *ds, int port,
+ 	case BR_STATE_LEARNING:
+ 		mac[port].ingress   = true;
+ 		mac[port].egress    = false;
+-		mac[port].dyn_learn = !!(priv->learn_ena & BIT(port));
++		mac[port].dyn_learn = dp->learning;
+ 		break;
+ 	case BR_STATE_FORWARDING:
+ 		mac[port].ingress   = true;
+ 		mac[port].egress    = true;
+-		mac[port].dyn_learn = !!(priv->learn_ena & BIT(port));
++		mac[port].dyn_learn = dp->learning;
+ 		break;
+ 	default:
+ 		dev_err(ds->dev, "invalid STP state: %d\n", state);
+@@ -2891,23 +2895,13 @@ static int sja1105_port_set_learning(struct sja1105_private *priv, int port,
+ 				     bool enabled)
+ {
+ 	struct sja1105_mac_config_entry *mac;
+-	int rc;
+ 
+ 	mac = priv->static_config.tables[BLK_IDX_MAC_CONFIG].entries;
+ 
+ 	mac[port].dyn_learn = enabled;
+ 
+-	rc = sja1105_dynamic_config_write(priv, BLK_IDX_MAC_CONFIG, port,
+-					  &mac[port], true);
+-	if (rc)
+-		return rc;
+-
+-	if (enabled)
+-		priv->learn_ena |= BIT(port);
+-	else
+-		priv->learn_ena &= ~BIT(port);
+-
+-	return 0;
++	return sja1105_dynamic_config_write(priv, BLK_IDX_MAC_CONFIG, port,
++					    &mac[port], true);
  }
  
- int dsa_port_set_state(struct dsa_port *dp, u8 state, bool do_fast_age)
+ static int sja1105_port_ucast_bcast_flood(struct sja1105_private *priv, int to,
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 995e9d3f9cfc..0c2cba45fa79 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -254,6 +254,7 @@ struct dsa_port {
+ 	struct device_node	*dn;
+ 	unsigned int		ageing_time;
+ 	bool			vlan_filtering;
++	/* Managed by DSA on user ports and by drivers on CPU and DSA ports */
+ 	bool			learning;
+ 	u8			stp_state;
+ 	struct net_device	*bridge_dev;
 -- 
 2.25.1
 
