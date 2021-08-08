@@ -2,64 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6B7D3E3C9C
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 22:02:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9771F3E3C9E
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 22:05:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232353AbhHHUC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 16:02:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52090 "EHLO
+        id S232454AbhHHUFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 16:05:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229977AbhHHUC6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 16:02:58 -0400
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1743C061760
-        for <netdev@vger.kernel.org>; Sun,  8 Aug 2021 13:02:38 -0700 (PDT)
-Received: by mail-ot1-x32c.google.com with SMTP id a5-20020a05683012c5b029036edcf8f9a6so15591824otq.3
-        for <netdev@vger.kernel.org>; Sun, 08 Aug 2021 13:02:38 -0700 (PDT)
+        with ESMTP id S230337AbhHHUFx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 16:05:53 -0400
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51330C061760;
+        Sun,  8 Aug 2021 13:05:33 -0700 (PDT)
+Received: by mail-ot1-x333.google.com with SMTP id z9-20020a9d62c90000b0290462f0ab0800so6230602otk.11;
+        Sun, 08 Aug 2021 13:05:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=UCT7FLsey68PTcAFD96vt4fuP+5ZLftDCPDj1rG9OhQ=;
-        b=XxX8WYKCfZVJVL3w1FTUs65UlK9SqjclkVPa8aRr3yiYAJhHoGrG7y57kXYcOmP7CY
-         o68jZXbrLI0wIlYWFSo8lQfdrDZlQ7pAMKpJmqqB/iqRaOvtSbkdu34WvdoEiqo8UI5/
-         xFx+1xqK3gCGImNDMgSC6WGF0oEoWZqLHyWRpYMNOuNvSXq8X3I3OCFSWiTgxIEYkSbt
-         30s8/DTuJngHWcNXX6jKlqlVwi9iNQ9DGcxX1nwD+NY8jXZpGLxcY+ZBtEIkyFjskyUn
-         knwj442tzHWC2f4PEXq1SDQpeylD8fRR4//SWvePsm97hZGAAKLJ9JmRGCf5zfEurKEV
-         nnZw==
+        bh=y+fsNvcP8dkgO4RaKDxTWoK76a0HM9+fIwumjal/z98=;
+        b=e8icHDF1d9r/1SuGSml/MwK5+13gAI/GT9voeI4kYgHxb/5xe2Wh3osnexHqrNQrPU
+         0S2yGm0e6k1C0/bYFTI4+DUbPeDAnG3b8MYgKyWegJ9M2sxd8hUQ1Q39epU5cryulsbn
+         VZWjzCkrZSKVKDQHCIstYX9e2t2ONJcTlbyJ1luvXNG50n8gtOn1KN7Mch59cPLRBGuo
+         bppEvTpWfglhTOm6JFSHieeCby9t407RrYbiiGXOdR/0nYqHGZyLGWQP0nrq4Oubep7i
+         LqCYvE834F3w4Igvvio3eyPEZHAfGGeF9HFKWa7PHwIRVZJC9QxjwPlr+LeBb+ujuX0B
+         tn+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=UCT7FLsey68PTcAFD96vt4fuP+5ZLftDCPDj1rG9OhQ=;
-        b=MWoSNcqaB5qGPzJonQM6iAPg8WyzbGgwrjB09W98d9HP2t8b09KzavtBmjxYs7fODR
-         PyYX0UXjRZ7dk3at9asfQ3Gfh+HN5pgpnse6mmbE3iVH+Inq7O3NGq8zwM9/D02YhOy5
-         4xCZnbZ7UcqhlXd6dEgClOXrwtCWrzAKUTm1jsjevbtyprtttLSHI/OS2x2NC3O0XGHU
-         IxNQE5egWqlxVFFcTbXo664deAmV925Emhx2pi2xYt3cXDrrabwspP+kk/Um8oX9/NyA
-         o92Cm5OSVBsstE2R2lHqEwMEldeB1i2PgJF4V7hQk7eshbm/0I/HCuY/viqE5IU9Z5mG
-         IiBg==
-X-Gm-Message-State: AOAM533EE4IvYXXtFUD1ktUVo1EUwhBSLziG7oqDjtB3q+gZSpo1oLYY
-        W6mu4vEN7hK0Js+9yloH/yo=
-X-Google-Smtp-Source: ABdhPJwCnoV6yw4dt03S7U002zpgtakT1ltiES+iM3veZprrZSZcgJsMe2MexHl+tUZBe7/P63lmFQ==
-X-Received: by 2002:a05:6830:2783:: with SMTP id x3mr14814333otu.37.1628452958246;
-        Sun, 08 Aug 2021 13:02:38 -0700 (PDT)
+        bh=y+fsNvcP8dkgO4RaKDxTWoK76a0HM9+fIwumjal/z98=;
+        b=fqWLxRwxn3QMa7ZrewqSik+chkm5TEr1y0uUrvUl+U6TM2q9POvvTRNAgAXXlE0tu3
+         toTv3R7A7g2FevG58mNmJTMgS+h2DlYhvKHofOkX3nk9K1MoZs9n38B10PJSo6zExFWx
+         QzBpnCsyEeWoQMuFoWYrStpM6R4dJMEWCgaChFi9M9vh6qW5IxQjYJuvh5hm8YwstJzD
+         zxiK+94CFcwbV/EixnTZahfaxZTU9JrWQEgvIYvN5jntNQdWBD1ILbAADE14mKLf1jRJ
+         xrFX0uE708xWkw3YealWcpPvPMTdVJJ9nmJPspo26kJf2vTwcnrzOWvNEJbyDvWW8gZw
+         cmLw==
+X-Gm-Message-State: AOAM532OPYYrKCyPS8/NtfzvMchDQyKeI4JICeabkPDksLtwcjYSdVCE
+        rqU1g78z2+B8+EYLNAyalNy/Mf7l8b0=
+X-Google-Smtp-Source: ABdhPJyJ5NHyew5awjZJpsqYT54QPoa3HPj/dA72EChby49AbfBfH+pefO2G5I3YGVVOd3Pxz4/NFQ==
+X-Received: by 2002:a9d:7556:: with SMTP id b22mr4257721otl.238.1628453132525;
+        Sun, 08 Aug 2021 13:05:32 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([8.48.134.45])
-        by smtp.googlemail.com with ESMTPSA id m4sm2406480oou.0.2021.08.08.13.02.37
+        by smtp.googlemail.com with ESMTPSA id f26sm2783023oto.65.2021.08.08.13.05.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 Aug 2021 13:02:37 -0700 (PDT)
-Subject: Re: [PATCH] net: Support filtering interfaces on no master
-To:     Lahav Schlesinger <lschlesinger@drivenets.com>,
-        netdev@vger.kernel.org
-Cc:     dsahern@kernel.org, davem@davemloft.net, kuba@kernel.org
-References: <20210808132836.1552870-1-lschlesinger@drivenets.com>
+        Sun, 08 Aug 2021 13:05:32 -0700 (PDT)
+Subject: Re: [PATCH v3 net] ipv4: fix error path in fou_create()
+To:     Kangmin Park <l4stpr0gr4m@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210808070557.17858-1-l4stpr0gr4m@gmail.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <439cf1f8-78ad-2fec-8a43-a863ac34297b@gmail.com>
-Date:   Sun, 8 Aug 2021 14:02:36 -0600
+Message-ID: <751fe234-21cd-3a56-dff7-6768bbbfaaad@gmail.com>
+Date:   Sun, 8 Aug 2021 14:05:31 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <20210808132836.1552870-1-lschlesinger@drivenets.com>
+In-Reply-To: <20210808070557.17858-1-l4stpr0gr4m@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -67,65 +70,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/8/21 7:28 AM, Lahav Schlesinger wrote:
-> Currently there's support for filtering neighbours/links for interfaces
-> which have a specific master device (using the IFLA_MASTER/NDA_MASTER
-> attributes).
+On 8/8/21 1:05 AM, Kangmin Park wrote:
+> sock is always NULL when udp_sock_create() is failed and fou is
+> always NULL when kzalloc() is failed in error label.
 > 
-> This patch adds support for filtering interfaces/neighbours dump for
-> interfaces that *don't* have a master.
+> So, add error_sock and error_alloc label and fix the error path
+> in those cases.
 > 
-> I have a patch for iproute2 ready for adding this support in userspace.
-> 
-> Signed-off-by: Lahav Schlesinger <lschlesinger@drivenets.com>
-> Cc: David Ahern <dsahern@kernel.org>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Kangmin Park <l4stpr0gr4m@gmail.com>
 > ---
->  net/core/neighbour.c | 7 +++++++
->  net/core/rtnetlink.c | 7 +++++++
->  2 files changed, 14 insertions(+)
+> v3:
+>  - change commit message
+>  - fix error path
+> ---
+>  net/ipv4/fou.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
 > 
-> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> index 53e85c70c6e5..1b1e0ca70650 100644
-> --- a/net/core/neighbour.c
-> +++ b/net/core/neighbour.c
-> @@ -2533,6 +2533,13 @@ static bool neigh_master_filtered(struct net_device *dev, int master_idx)
->  		return false;
+> diff --git a/net/ipv4/fou.c b/net/ipv4/fou.c
+> index e5f69b0bf3df..f1d99e776bb8 100644
+> --- a/net/ipv4/fou.c
+> +++ b/net/ipv4/fou.c
+> @@ -572,13 +572,13 @@ static int fou_create(struct net *net, struct fou_cfg *cfg,
+>  	/* Open UDP socket */
+>  	err = udp_sock_create(net, &cfg->udp_config, &sock);
+>  	if (err < 0)
+> -		goto error;
+> +		goto error_sock;
 >  
->  	master = dev ? netdev_master_upper_dev_get(dev) : NULL;
-> +
-> +	/* 0 is already used to denote NDA_MASTER wasn't passed, therefore need another
-> +	 * invalid value for ifindex to denote "no master".
-> +	 */
-> +	if (master_idx == -1)
-> +                return (bool)master;
-
-return !!master;
-
-same below
-
-> +
->  	if (!master || master->ifindex != master_idx)
->  		return true;
+>  	/* Allocate FOU port structure */
+>  	fou = kzalloc(sizeof(*fou), GFP_KERNEL);
+>  	if (!fou) {
+>  		err = -ENOMEM;
+> -		goto error;
+> +		goto error_alloc;
+>  	}
 >  
-> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> index f6af3e74fc44..8ccc314744d4 100644
-> --- a/net/core/rtnetlink.c
-> +++ b/net/core/rtnetlink.c
-> @@ -1970,6 +1970,13 @@ static bool link_master_filtered(struct net_device *dev, int master_idx)
->  		return false;
+>  	sk = sock->sk;
+> @@ -627,9 +627,10 @@ static int fou_create(struct net *net, struct fou_cfg *cfg,
 >  
->  	master = netdev_master_upper_dev_get(dev);
-> +
-> +	/* 0 is already used to denote IFLA_MASTER wasn't passed, therefore need
-> +	 * another invalid value for ifindex to denote "no master".
-> +	 */
-> +	if (master_idx == -1)
-> +                return (bool)master;
-> +
->  	if (!master || master->ifindex != master_idx)
->  		return true;
+>  error:
+>  	kfree(fou);
+> +error_alloc:
+>  	if (sock)
+>  		udp_tunnel_sock_release(sock);
+> -
+> +error_sock:
+>  	return err;
+>  }
 >  
 > 
 
+since sock and fou are initialized to NULL, kfree(NULL) is allowed and
+there is an 'if (sock)' check before the release, no fix is really needed.
