@@ -2,94 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A6503E3CDA
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 23:09:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F08983E3CDB
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 23:10:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231268AbhHHVKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 17:10:02 -0400
-Received: from mout.kundenserver.de ([217.72.192.73]:42177 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229895AbhHHVKC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 17:10:02 -0400
-Received: from mail-wr1-f48.google.com ([209.85.221.48]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1Ma1HG-1mZvNZ1Wvk-00Vwox; Sun, 08 Aug 2021 23:09:41 +0200
-Received: by mail-wr1-f48.google.com with SMTP id b11so2536115wrx.6;
-        Sun, 08 Aug 2021 14:09:41 -0700 (PDT)
-X-Gm-Message-State: AOAM530eNSPBmMZm6PhOlp3gxnIjtMFbXGKSL78k8JlXzwgJp6sjrOeE
-        /MBksqugIuFOr4RlAT5AeMDHr3vpvsWjmP4uMOc=
-X-Google-Smtp-Source: ABdhPJybbFYwPOSl9WSB6Pw1W7XUWtRLqh2VSbwy4zR6de8Y7+DcIn+8hflJ283ShEuBwpbjDfEc2ChGjSCbDgJK01o=
-X-Received: by 2002:adf:f446:: with SMTP id f6mr22293490wrp.361.1628456980852;
- Sun, 08 Aug 2021 14:09:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210807145619.832-1-caihuoqing@baidu.com> <05a5ddb5-1c51-8679-60a3-a74e0688b72d@gmail.com>
- <CAK8P3a0FUGbwbWuu0R7-Bm4O0MgNfYmE4FTZY9oE9jnRcMK9xQ@mail.gmail.com> <bd0a1112-af59-16be-3fd3-b0a6aa1f2773@gmail.com>
-In-Reply-To: <bd0a1112-af59-16be-3fd3-b0a6aa1f2773@gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Sun, 8 Aug 2021 23:09:24 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1Ea_6cHKCM3CeDayXsrZPmeiKF-SF3=U-dAadZiMkU7g@mail.gmail.com>
-Message-ID: <CAK8P3a1Ea_6cHKCM3CeDayXsrZPmeiKF-SF3=U-dAadZiMkU7g@mail.gmail.com>
-Subject: Re: [PATCH 0/2] net: ethernet: Remove the 8390 network drivers
-To:     Michael Schmitz <schmitzmic@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Cai Huoqing <caihuoqing@baidu.com>,
-        David Miller <davem@davemloft.net>,
+        id S232542AbhHHVKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 17:10:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38510 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229895AbhHHVKs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 17:10:48 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC1FC061760;
+        Sun,  8 Aug 2021 14:10:27 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id w5so1238613ejq.2;
+        Sun, 08 Aug 2021 14:10:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kV70Em3N4KOCd6dHIIaiZADIw5HnAbPwuwCd758ehig=;
+        b=uVRwDzIw9Wp8HLXzx0vQQ59PJVbg6lZ0rueUpSjOlIuc7YvndmzeD8IptEleYyvLRC
+         oWkWRPzdMRaJA2Jw3qek0Wik+vcU5y7j3xpaB1jOPo/wwMT37ASsUfKu6eZNY/g43oaC
+         wGT5f5P+hsvm4E2NSOjNOGEBP54PdfY1VFgK7NfeC2/LIZQ6CXg1E9rltwLe9bnFkSOT
+         dK62WYLuXdDldfSHJcKwTUUCoawlmpoqUEK3hcCpmBzzWZcOzH22nBC+Imehxbpnv8Vp
+         kz/WacaENGxbMxylWJ9kabzbdCWASqrZPSOU3VKFox9TE2qNJKUR8BnylRcf8wF+aPYS
+         rBbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kV70Em3N4KOCd6dHIIaiZADIw5HnAbPwuwCd758ehig=;
+        b=h71u8JxAG3Lce0tmaMZ9s+RNXON1/0ezonAY5vnas5HQ2MmwO39hBOesbZFchrME/n
+         5GETIWREps7yYEp3SUeNCWbnj6RPxQvp/QoTovMhTGeiRuZ2s9gjOA5WaKDIPWx4Y/DJ
+         FEievp9E2IDLymDXTENb0f2qgSePa2Y6lH3ngcceFqb9wYvlh01QbN+su60ZC4lHf585
+         9yg30U5mYtgTjITKHwIBUKrmuZkzhmE0sU/LFgIc7w8C0rE3zKkuc8bmMEVMstnm6naU
+         pBHKD0TYXchrTveAYUUER3B01wNYFdKlFMa2oKWoRmQaTYK72uOVfPtmvXBDrrFOdbn/
+         YOKw==
+X-Gm-Message-State: AOAM532Qyw+/i5NCoZjO3lap3AZ/zeYlF+VtxMcbJbls9U7bFrhhG36R
+        OS5qPfRuQIBe1fQARTlgtCQ=
+X-Google-Smtp-Source: ABdhPJyso1dfHrgUkCBbNvCk6Ueem47W0B7uOYR4SQFzerekxjG0JLz5EBMeWRYV5pZdWk+24Ch7qw==
+X-Received: by 2002:a17:906:3fd7:: with SMTP id k23mr2606589ejj.176.1628457026144;
+        Sun, 08 Aug 2021 14:10:26 -0700 (PDT)
+Received: from skbuf ([188.25.144.60])
+        by smtp.gmail.com with ESMTPSA id h15sm5250244ejg.31.2021.08.08.14.10.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Aug 2021 14:10:25 -0700 (PDT)
+Date:   Mon, 9 Aug 2021 00:10:24 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:gWqbxSGJP4fT9d7Cl9BE14b1I6AY70S0Ecdmi0EMUBNaBYgiUsu
- ew8gvwMQmGiJIspFi5/JabY13hPlwkSCPgJjalMoD/bQF5AqJhif07HTEIShk0ou1ygwHpR
- YCkyzWfwfam+htHGAyChmNJ7SuNodoAGgVfzOmE8tPPRUXsGx+oWNiEUgRGYfhwWYfPT9bA
- Ckv5JejcOSJZTS9eb8T8Q==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:U9yBVhXJwM0=:bGqJNiGTIaEs6UxR3hux9A
- nf4R1ArwMryOQj/Z5taRNcy5jP4RYk0o7zlpaF66nSAj8qtkW5fXcA+6r92U8xYHVRkPZkjEO
- ZUnlfFd5KFMmBX1cleg6756jW8WWQhcCBUeYIgsNujA1Wqfy5ZMAnQLSgVvA8IWPxRCq6Hpxy
- Mv0eBaULQTUjOrXpgTUJuu/BwU/gudQqDBODU16QNF7VqebxDJyCKjQ4+ZRgBHWzaeAmeO1Fh
- UnKgDRGiQx1TkvsEoDo2QlB9MWaFWw8sdpNGnL8OYBli4QenLrBPyyU6wIvnRZbUUWAvST9ok
- iSV1MhkVWt87PQllR/mrhsykM/3TsvwFz6iogDmk7GNpoB8lBl6E6GUrKSu9f7vFH75drZQgY
- XYKMccngxDA0lXotMVUnbnkFv4HVnCF7MpdQa9ZuVXwnBZwaG14RodVbUcAOrXlXyObPduwPm
- Aa+KvUe4WvA32kCAZdtCc7e1CNY+Tjs/4SaJpKwUisuFoD+3vaHcoG6MMKiVBt0ZLiwc6KQEf
- MmOWaeCGvQW+VoaNCHHXZv0XOOamOApIvkOw3rECFqH2AKlbBDWqxa++NPabdMaFjqPr9bMDY
- PfXYk/RRB0RpZKHRv3AOc10k5CAV+Eg4rEiKJ/8MSb4Z7C+fZVwCElZ2lJOM9kmCkU9uiTB2y
- y7KINKyIiWAxSljBl7Lj0HCiqobLr97cNYsnujC5TSQKlBaUVaHgneXyBGfbBW/Qlyx3OljQ7
- 7JySAkcdRp7MlN761mUy4X+T/qUqUsCt/c1W1vz+Wb+cqTxUq1Fn6SS/l0DZ3QRR2TJwl7Y6l
- tcWuO8CAyOQ7R9GTWf8WquysttdUEqoaSr1JOLFsghh42l8mhOU5ziO7GiC1HfiPYP1+qgF
+        Russell King <linux@armlinux.org.uk>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        Jonathan McDowell <noodles@earth.li>,
+        Michal =?utf-8?B?Vm9rw6HEjQ==?= <vokac.m@gmail.com>,
+        Christian Lamparter <chunkeey@gmail.com>,
+        Nishka Dasgupta <nishkadg.linux@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Stefan Lippers-Hollmann <s.l-h@gmx.de>,
+        Hannu Nyman <hannu.nyman@iki.fi>,
+        Imran Khan <gururug@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Nick Lowe <nick.lowe@gmail.com>,
+        =?utf-8?B?QW5kcsOp?= Valentin <avalentin@marcant.net>
+Subject: Re: [RFC net-next 2/3] net: dsa: qca8k: enable assisted learning on
+ CPU port
+Message-ID: <20210808211024.pcqjfoxo5rg2umuf@skbuf>
+References: <20210807120726.1063225-1-dqfext@gmail.com>
+ <20210807120726.1063225-3-dqfext@gmail.com>
+ <20210807222555.y6r7qxhdyy6d3esx@skbuf>
+ <20210808160503.227880-1-dqfext@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210808160503.227880-1-dqfext@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 8, 2021 at 10:39 PM Michael Schmitz <schmitzmic@gmail.com> wrote:
-> > Two candidates I can see for removing would be smc-ultra and
-> > wd80x3, both of them fairly rare ISA cards. The only other
-> > ISA 8390 variant is the ne2000 driver (ne.c), which is probably
-> > the most common ISA card overall, and I'd suggest leaving
-> > that in place for as long as we support CONFIG_ISA.
->
-> That particular driver is the one I rely on (via a weird ROM-port to ISA
-> bridge). Would be useful even after ISA bus support is gone, in that
-> case. Just saying. The Amiga and Mac drivers likewise. Though you may
-> well argue that once ISA support has been removed, these can all be
-> rewritten to support MMIO more directly (and more flexibly).
+On Mon, Aug 09, 2021 at 12:05:03AM +0800, DENG Qingfang wrote:
+> On Sun, Aug 08, 2021 at 01:25:55AM +0300, Vladimir Oltean wrote:
+> > On Sat, Aug 07, 2021 at 08:07:25PM +0800, DENG Qingfang wrote:
+> > > Enable assisted learning on CPU port to fix roaming issues.
+> > 
+> > 'roaming issues' implies to me it suffered from blindness to MAC
+> > addresses learned on foreign interfaces, which appears to not be true
+> > since your previous patch removes hardware learning on the CPU port
+> > (=> hardware learning on the CPU port was supported, so there were no
+> > roaming issues)
+> 
+> The datasheet says learning is enabled by default, but if that's true,
+> the driver won't have to enable it manually.
+> 
+> Others have reported roaming issues as well:
+> https://github.com/Ansuel/openwrt/pull/3
+> 
+> As I don't have the hardware to test, I don't know what the default
+> value really is, so I just disable learning to make sure.
 
-I don't think we are anywhere near removing ISA support (probably
-not before removing EISA, which in turn is required for some platforms),
-but that was what I implied: No point removing NE2000 support as long as
-there are platforms or bus types using that driver (Q40, Atari, TX49xx),
-and even the ISA version of NE2000 may outlive other CONFIG_ISA
-itself because it is a typical emulation target.
+That link doesn't really say more than "roaming issues" either, so I am
+still not clear on what is being fixed here exactly.
 
-> > There are a couple of other ISA-only network drivers (localtalk,
-> > arcnet,  ethernet/amd) that may be candidates for removal,
-> > or perhaps some PCMCIA ones.
->
-> ethernet/amd has the other set of network card drivers used on m68k
-> (*lance).
+Note that I can still think of 'roaming'-related issues with VLAN-aware
+bridges and foreign interfaces and hardware learning on the CPU port,
+but I don't want to speculate too much and just want to hear what is the
+issue that is being fixed.
 
-Same here, I specifically mean the drivers that are /only/ used for ISA
-here: CONFIG_LANCE and CONFIG_NI65, not the various other lance
-variants.
+> > > Although hardware learning is available, it won't work well with
+> > > software bridging fallback or multiple CPU ports.
+> > 
+> > This part is potentially true however, but it would need proof. I am not
+> > familiar enough with the qca8k driver to say for sure that it suffers
+> > from the typical problem with bridging with software LAG uppers (no FDB
+> > isolation for standalone ports => attempt to shortcircuit the forwarding
+> > through the CPU port and go directly towards the bridged port, which
+> > would result in drops), and I also can't say anything about its support
+> > for multiple CPU ports.
+> 
+> QCA8337 supports disabling learning and FDB lookup on a per-VLAN basis,
+> so we could assign all standalone ports to a reserved VLAN (ID 0 or 4095)
+> with learning and FDB lookup disabled.
 
-       Arnd
+And to follow along that idea, if you also change the tagger to send
+all packets towards a standalone port using that reserved VLAN, then
+even if hardware learning is enabled on the CPU port, it will be
+inconsequential as long as IVL is used, because no FDB lookup will match
+the VLAN in which those addresses were learned.
+
+My point is, if you come with something functional to the table, present
+the whole story. If more changes still need to be made until it works
+with software bridging fallback, say that too. Otherwise, I think that
+the general idea that "hardware learning on the CPU port won't work well
+with software bridging fallback" is not strictly true, and that this
+patch has a weak overall justification.
+
+> 
+> Ansuel has a patch set for multiple CPU ports.
