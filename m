@@ -2,76 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A27C3E39AC
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 10:42:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A7DB3E39D0
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 12:02:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231262AbhHHImk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 04:42:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45540 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231176AbhHHImj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 04:42:39 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A60C061760
-        for <netdev@vger.kernel.org>; Sun,  8 Aug 2021 01:42:21 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id h1so21873464iol.9
-        for <netdev@vger.kernel.org>; Sun, 08 Aug 2021 01:42:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=z6XeSLDu67S+l2ZQ5ASD/gFdraiF+dKpUZMLlrUkTHE=;
-        b=CfbGPy5r/MJYhYVxEikIdcI6gBAatAU923eOtE6vFlxSGTQXX5TJX8LnkHvndLGjcV
-         VL0AmTp892eJfkmQGHKjzq7qGkjnfh7RKwxfjVNPItQ97Y903l0djX+/MuvHXsxMMn+x
-         yH/S/+FX65qwz/j6+zpgUJxEmGFkeFjJmwdkSw0Z7/B1tsPuvHsxDHSD7CVOadlZOTzA
-         8snN2Ei6/EZ6HF45mBmg7Ve7u28FHPN7kJXztLvTvXarEeMIkKiSv6aGVpqqONlVXHXS
-         nUnLL3HhsjqZv4GiB5tAX9tufTih4fxPX8KUgPtG+k8lA9OAFd/Y/14kcmZjigUbMVdh
-         FhoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=z6XeSLDu67S+l2ZQ5ASD/gFdraiF+dKpUZMLlrUkTHE=;
-        b=uKmVlGdV3iu6iM5DlP84z0AAQW6pjT6yNtWuu8HJmDVdFNZljHdVN4j4s/KG0d9dhV
-         D6AfopCnFqDx6Gk2trdiSjie54xtSHD0g0c9fE+LkBvrXnHkTaOzK7ySu3RhR+vLhQu9
-         Vz5AwttHplwUFEZLt9f9hJATaKxmaGsTRu4/mZdQCY3rGc9tiMJV0847djDwAJDXddl2
-         nFGJGL/I76kMwbi/QKh+ZW8GDonAabwJoVsooETBrmldzweqjVrXNs7/etxtjCfwgavX
-         cJ71GJKSuV/WohPND6yc7xo/cGt2ehnEY3x640/PdVLmswqvSsDjBBNquFFIXB8qkRvo
-         PcyQ==
-X-Gm-Message-State: AOAM5315J1zDDdfosEaaPHA0/aYKrtUqUm5B1jiAYrvc8iCkuIVdD6Bf
-        NrwGzBCh25N9tBf4lrRGuRQ3/XJEA+83oARUdOs=
-X-Google-Smtp-Source: ABdhPJzu8n7V6BLKv8MlxjOm2WhPIxTmu5YLFqn/oP1KBZbSPU1Ayi5Shd8G1f6syc617zryD4cVykanjAqX1hqgvd4=
-X-Received: by 2002:a05:6638:3796:: with SMTP id w22mr17237774jal.34.1628412140165;
- Sun, 08 Aug 2021 01:42:20 -0700 (PDT)
+        id S231175AbhHHKC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 06:02:59 -0400
+Received: from smtprelay0193.hostedemail.com ([216.40.44.193]:60260 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S230354AbhHHKC6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 06:02:58 -0400
+Received: from omf16.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay07.hostedemail.com (Postfix) with ESMTP id C386D181D3025;
+        Sun,  8 Aug 2021 10:02:38 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf16.hostedemail.com (Postfix) with ESMTPA id 86E95255108;
+        Sun,  8 Aug 2021 10:02:37 +0000 (UTC)
+Message-ID: <745ab8a85430ad4268a86b0957aa690c1a7a6d0f.camel@perches.com>
+Subject: Re: [PATCH net-next 2/2] bonding: combine netlink and console error
+ messages
+From:   Joe Perches <joe@perches.com>
+To:     Jonathan Toppins <jtoppins@redhat.com>, netdev@vger.kernel.org
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Date:   Sun, 08 Aug 2021 03:02:35 -0700
+In-Reply-To: <f519f9eb-aefd-4d0a-01ce-4ed37b7930ef@redhat.com>
+References: <cover.1628306392.git.jtoppins@redhat.com>
+         <a36c7639a13963883f49c272ed7993c9625a712a.1628306392.git.jtoppins@redhat.com>
+         <37c7bbbb01ede99974fc9ce3c3f5dad4845df9ee.camel@perches.com>
+         <f519f9eb-aefd-4d0a-01ce-4ed37b7930ef@redhat.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
-Received: by 2002:a02:cd99:0:0:0:0:0 with HTTP; Sun, 8 Aug 2021 01:42:19 -0700 (PDT)
-Reply-To: Contactscpmakakpo122@gmail.com
-From:   Martial Akakpo <danielsylvester277@gmail.com>
-Date:   Sun, 8 Aug 2021 08:42:19 +0000
-Message-ID: <CAH6FPsOQiz2-VEJLrp1uRgxKa-tFgG0U6bFad+yzUQXjKuJbBQ@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.62
+X-Rspamd-Server: rspamout04
+X-Rspamd-Queue-Id: 86E95255108
+X-Stat-Signature: xp76j3p7soenw57a8bias8zr65oqfbqa
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX18sWdJ0gR/negchCb2xjZXqr9B6PKsIgFM=
+X-HE-Tag: 1628416957-534976
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Good day!
+On Sat, 2021-08-07 at 17:54 -0400, Jonathan Toppins wrote:
+> On 8/6/21 11:52 PM, Joe Perches wrote:
+> > On Fri, 2021-08-06 at 23:30 -0400, Jonathan Toppins wrote:
+> > > There seems to be no reason to have different error messages between
+> > > netlink and printk. It also cleans up the function slightly.
+> > []
+> > > diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+> > []
+> > > +#define BOND_NL_ERR(bond_dev, extack, errmsg) do {		\
+> > > +	NL_SET_ERR_MSG(extack, errmsg);				\
+> > > +	netdev_err(bond_dev, "Error: " errmsg "\n");		\
+> > > +} while (0)
+> > > +
+> > > +#define SLAVE_NL_ERR(bond_dev, slave_dev, extack, errmsg) do {	\
+> > > +	NL_SET_ERR_MSG(extack, errmsg);				\
+> > > +	slave_err(bond_dev, slave_dev, "Error: " errmsg "\n");	\
+> > > +} while (0)
+> > 
+> > If you are doing this, it's probably smaller object code to use
+> > 	"%s", errmsg
+> > as the errmsg string can be reused
+> > 
+> > #define BOND_NL_ERR(bond_dev, extack, errmsg)			\
+> > do {								\
+> > 	NL_SET_ERR_MSG(extack, errmsg);				\
+> > 	netdev_err(bond_dev, "Error: %s\n", errmsg);		\
+> > } while (0)
+> > 
+> > #define SLAVE_NL_ERR(bond_dev, slave_dev, extack, errmsg)	\
+> > do {								\
+> > 	NL_SET_ERR_MSG(extack, errmsg);				\
+> > 	slave_err(bond_dev, slave_dev, "Error: %s\n", errmsg);	\
+> > } while (0)
+> > 
+> > 
+> 
+> I like the thought and would agree if not for how NL_SET_ERR_MSG is 
+> coded. Unfortunately it does not appear as though doing the above change 
+> actually generates smaller object code. Maybe I have incorrectly 
+> interpreted something?
 
-My name is Martial Akakapo, a personal lawyer to late Mr, Robert
-Wilson, who used to worked with an oil servicing company here in
-Republic of Lome, .my client and his family was killed in Kenya
-shopping mall attack At least 67 people died when gunmen from terror
-group  AL-Shabaab laid siege to the East-gate shopping center in
-Nairobi.Kenya.. i have made several inquiries to locate any of his
-relatives but have been  unsuccessful
+No, it's because you are compiling allyesconfig or equivalent.
+Try defconfig with bonding.
 
-I am contacting you to assist in the repatriation of funds worth  $3
-million dollars before it is confiscated by the bank. The bank  has
-issued me a notice to provide the next of kin or the account will be
-confiscated, I seek your consent to present you as next of Kin,
-Affidavit it on your name and so you can claim this huge amount he
-left. As soon as I hear from you I will let you know more detailed
-information regarding this transaction.
 
-Thanks
