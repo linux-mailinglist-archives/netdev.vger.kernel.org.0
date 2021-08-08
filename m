@@ -2,121 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 775623E3A58
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 15:14:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFFDE3E3A74
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 15:28:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230354AbhHHNGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 09:06:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45984 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbhHHNGk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 09:06:40 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690CCC061760
-        for <netdev@vger.kernel.org>; Sun,  8 Aug 2021 06:06:20 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id m28-20020a05600c3b1cb02902b5a8c22575so9290268wms.0
-        for <netdev@vger.kernel.org>; Sun, 08 Aug 2021 06:06:20 -0700 (PDT)
+        id S231452AbhHHN3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 09:29:11 -0400
+Received: from dispatch1-eu1.ppe-hosted.com ([185.132.181.7]:53602 "EHLO
+        dispatch1-eu1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229923AbhHHN3J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 09:29:09 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04lp2056.outbound.protection.outlook.com [104.47.12.56])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-eu1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id AE8A980026;
+        Sun,  8 Aug 2021 13:28:48 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E02755v8TQUFQeh9elNW58zMg/7n0NZiJYOIsr7twvNMS+Swb5QnQ1lEQdS244K3mApzuN6Ac2lOKlSneu7FxFossxdEg00Z15c4gM5JFx6AvXn516D3jeYrqJxqZgKwU6gHfYb2h6KymmJnqA+uri5XQqfC4QX1fVMiS6bvefS9BAYb90Pk9JWfWQ01rQ5p0ntK4b3JtUg27oL7CWW/SBojbaeos1lqv9fv9vNvRgBrhg4Ky8iyVSe1UoAUS6/3jOSRE4ifn1dy3rhoHNW8mqfNCicm54GSRPXkflfWCoKKOwwSg9p0qWUqG3P6fJOTzOxyHVJ8rtd6kSgVS/esuA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dfaW8NdaBk7J0829JeqFA1GU4kCNQssZifohenExx4Q=;
+ b=K4OMJu9ZSOIkD5GDD9sFL9js5dBGOKMCK51VXAFRQaA0gO1nTVty927lUvwHG7Rr2r1E2Hbtmndo+KLaqSn7tHg7Nqz+3ic9JTLXq8EbysIZCF8voyAN8a5171fvBh0/7/dTn/m/PRm3je/2B08wQWU4fI/YcBo6miNBY8Nx6d4427nqWa11sODXuqNAm5vhojO1ExT42WmodUxm9OikGiqewERwRtvh7uphtU2gvpU/+KW0LQ6QyeBUzUKkP77b0FC1gjo41i9bkKjnLezuXWCYdL0Taz5oDEywicvZMVXiVl1ROCKVLs7ZiUKIXA3MzlvkMWDJQ6v7w2krQ8xaWg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=drivenets.com; dmarc=pass action=none
+ header.from=drivenets.com; dkim=pass header.d=drivenets.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=wAjKS1vt9FTQkfUmOoQMRGLzVP3/rY0bv0rum+XWJAo=;
-        b=WRZk6O5/svvKdSc0lE8vNq1+Vvek+9Vx285dR/dUli8bDfAKFT1Aq7qCrXNben8qSn
-         QDYKmYIM6/ouFtLDgGM4OqDMB8RTW4n38mGHRisNn0g1x1yVLUS1xuwJxXtO4dyHHf8L
-         cDpaNZzoWWHbfXnRDgC2ljiuMqxQNT8GjdvqSDQdwKQ5u08dmMEoJFhN62fItwXEsqoq
-         Xyuw9WSxRIWloHmiaflJQXeuoNlCGhwDouvun7ZS18aKGdm7Kwpq21sSw4rVDpsApGFh
-         /VALZE9c5QXBjxMAtA4aOkg5vLOd3zz50NpylPIiGB/xpUDvmaLNcQGS6UPOo8kXTteu
-         Ld0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=wAjKS1vt9FTQkfUmOoQMRGLzVP3/rY0bv0rum+XWJAo=;
-        b=idIIHVFTJMPAvSIkoEbF47E8m5EV1Bs/Ys8v/ZWTTsm+ibaSDAHPwt7VrOq4iHpgRe
-         l89Tet+goZvnn/W/SvfAyhZNrtPLiUIe5P6+fjrQ/IYQMMmi6PG3vec/kNUjrlZuoN23
-         kGndXrTlL8w97AvwnU+Em3C4/YEcLimZQmtlnQ+QstszY9UpSK/dZytObjChV52wo6uI
-         D3J1hHmxHsNCVc7bRR5ZqozbS3k174bLVrpi/W+9KiOK4kw5G8z2mhjxX63WgNNWjJyl
-         CzOlpYLWIiegr7G7p+YW4nwHVcW7OBMdgMFW+uiI2ni4AwyU/bPVrXIPbBx/L42GlnSy
-         Ah+g==
-X-Gm-Message-State: AOAM533EQUjjdNbclgubSBNwwN6eHGGCvlnWdRrSdMzmncuLE8mF3W49
-        kSQxli4epFPwU89EjYM8pQ9y+qsY0NiuYA==
-X-Google-Smtp-Source: ABdhPJz1qbrjr9G/i120rNO6wCgf2AIGIvUoO2uCOial7M4gO1E8mdDfepQEBX1oSIqG1lHr9WN3wA==
-X-Received: by 2002:a7b:ce08:: with SMTP id m8mr29194505wmc.21.1628427977154;
-        Sun, 08 Aug 2021 06:06:17 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f10:c200:7101:8b48:5eab:cb5f? (p200300ea8f10c20071018b485eabcb5f.dip0.t-ipconnect.de. [2003:ea:8f10:c200:7101:8b48:5eab:cb5f])
-        by smtp.googlemail.com with ESMTPSA id k17sm18180890wmj.0.2021.08.08.06.06.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 Aug 2021 06:06:16 -0700 (PDT)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: [PATCH net-next] r8169: rename rtl_csi_access_enable to
- rtl_set_aspm_entry_latency
-Message-ID: <f25dc81e-7615-0b51-24cf-e1137f0f9969@gmail.com>
-Date:   Sun, 8 Aug 2021 15:06:08 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+ d=drivenets.onmicrosoft.com; s=selector2-drivenets-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dfaW8NdaBk7J0829JeqFA1GU4kCNQssZifohenExx4Q=;
+ b=qMPOR3WQwe114jeegDd4o1uqhTEBxQ2cGgkMA1Uq8I6Y+TpNLVgt73h/U8XjI9DmqNLY+bld1weoNhUH9+9WnZqfqmQ8V0kCdPCcVOzfEwk80yN925eacK83fxlfQwqByyRgFHvQcuHyoaEKOw0ZV2q32WVg2O7EDfywXvYglUQ=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=drivenets.com;
+Received: from VI1PR08MB3518.eurprd08.prod.outlook.com (20.177.58.151) by
+ VE1PR08MB5726.eurprd08.prod.outlook.com (20.181.180.144) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4394.15; Sun, 8 Aug 2021 13:28:47 +0000
+Received: from VI1PR08MB3518.eurprd08.prod.outlook.com
+ ([fe80::cdfb:774a:b053:7b]) by VI1PR08MB3518.eurprd08.prod.outlook.com
+ ([fe80::cdfb:774a:b053:7b%6]) with mapi id 15.20.4394.022; Sun, 8 Aug 2021
+ 13:28:47 +0000
+From:   Lahav Schlesinger <lschlesinger@drivenets.com>
+To:     netdev@vger.kernel.org
+Cc:     dsahern@kernel.org, davem@davemloft.net, kuba@kernel.org
+Subject: [PATCH] net: Support filtering interfaces on no master
+Date:   Sun,  8 Aug 2021 13:28:36 +0000
+Message-Id: <20210808132836.1552870-1-lschlesinger@drivenets.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: LO2P123CA0059.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:1::23) To VI1PR08MB3518.eurprd08.prod.outlook.com
+ (2603:10a6:803:7a::23)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (199.203.244.232) by LO2P123CA0059.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:1::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15 via Frontend Transport; Sun, 8 Aug 2021 13:28:46 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6edd44ce-6814-4fae-7528-08d95a70737d
+X-MS-TrafficTypeDiagnostic: VE1PR08MB5726:
+X-Microsoft-Antispam-PRVS: <VE1PR08MB5726361F802C04338DF41850CCF59@VE1PR08MB5726.eurprd08.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FQSCycglsovQlxoezIqlW6bBJVs/wDs6STKQw6UvYQh5moyHlnRAZG2pLpAjh3RW4urcB/YTg10yovsJKk4I2Q3v+juWVHQ+OINrJcvW3aSWGyE3YdMb3vUzXSJS8srdcI8ovUHLh//o3v9CEnFVZ5f9GbshIMNQqzxuy9WYJEKtctgdDOmO2asNH1Cwc1cbX8C/WLgTBwQgQI1LCfp1U417paxmBN0OSdOh+qoXMEZ25vg+xVCLplaC6eRvy4JQSE33Qxicd2VIcX/jexoygBOHPuCh7wgcdtISCHCqVYtME9mRFI+fI4RaGjB4rEAJexdZQ6kOCQeM5J0JlKYXVjo21mehlr58GGj0nWunqSMP+yOKEwvO6XO//rgKldlevI6exk6fyLaKW4BUs7CAmD5fgXi+0iTYxBzJFMTJ9qEvx2AQppSxNuJZHrQrp8sQkrc08TqBpb1uneqEymyxR2hSyL7zKHLTq1Uf+//YadWaMcnDASCPJxc+sk2MgtAhx5gRCinyBOsDGsvaAoZFu42r3P4WIMB6j5cvUEzTkLRJyk3eg+FD8EXldikeibGRE+95NW7FDvZcMFCenPrhapoKqkmamU5QJTQ8Ugnd5ZZgCBi6XYAJ1t343FcHr+UqhU22BhgTpp0mnqvJBn3lHH7IDITxDaU6AMwLHkRTbUJs6uCs8szLDpIid24qSGy4tHrrzxhUfGfRRJpJX3KEDA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR08MB3518.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(39840400004)(376002)(396003)(136003)(366004)(186003)(4326008)(8676002)(6512007)(36756003)(6666004)(26005)(8936002)(5660300002)(6916009)(1076003)(66946007)(6486002)(316002)(2906002)(86362001)(66476007)(478600001)(6506007)(38100700002)(38350700002)(2616005)(956004)(66556008)(52116002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hVczhiCSn3uvJyNJxve+6iR19t98PHDINqF68J+kFT6vAdJEJbanXJUGgXM2?=
+ =?us-ascii?Q?wM/jju2vXVolGrMXWxTj5xFZrDWKiA6L+PFnwiQ8gyr4lj3y+EAIS/CTosDs?=
+ =?us-ascii?Q?Py0IG05yTzuqClyuRf4ky9YOMyI0WmB0uspmBxwJZ4bQ5dI1+iq0RdSwH/cA?=
+ =?us-ascii?Q?GCSDmanAmFFMi8aAMk0WRdozVog6lFQs2bN3/4hMGv3WuFKEPPfXtUB1Zh1S?=
+ =?us-ascii?Q?fr5D4boLJ6rgZDKdRBr9P8b7LXKNXcG9aD/Cyk8HCCzTvYbLnpPHMLqnj1EB?=
+ =?us-ascii?Q?34ewZKElN7CZq5KR45+NwsWGzxG1IDcUjvB6M2Ow12ZbwDtQEGwsDurDGkAK?=
+ =?us-ascii?Q?ER2rm4KcqWiYV+W8TQvNKfTxf9I9llaTt8uLhIVpMKUXMyFUHjzKKB7KB+Uc?=
+ =?us-ascii?Q?w6mHXSWfoVoxgzNT4+049su9ArNePTnobSaGF+ccWME9lwLpGRjdC/2I31in?=
+ =?us-ascii?Q?MxRKPAsBptqvVOuM278t4oZ7bb1H4fq2CFhKGBLXC884W3mTSpyiCB4/Gp3l?=
+ =?us-ascii?Q?bbj36HUbs6mUR6Qrp1VPijBtfDo25HxcWXvV6sKeZFcAiaTsqD9Rc65m6r50?=
+ =?us-ascii?Q?JcXlE73pjDULMZlX4x/NYoUqRP9OdavoDUcUMHcLeQocY+XOzWFk+37cECNR?=
+ =?us-ascii?Q?hZ+kSx/ugWWrY8t5AqsuU+94CpTcP3K9JFBMWc1OX3/Bg3rsBZbNTiij4CnB?=
+ =?us-ascii?Q?6frFMUUjq8qD7fO9cIArGs9rA8gwcl8OMbB/e1tFVQrhG6p4QyIg1ReQK/LB?=
+ =?us-ascii?Q?mSoF/KaNn9u2QXBfyG6eySs8xgqPoMNzWMwvMxcVZ2TfZ3uIPPHZrWp/Vnrj?=
+ =?us-ascii?Q?H5kIOSsCIiS9qSFdVxcKzDLtLPy6H015+rh6fGDDn62EHxDkHOUVVkt+VcnO?=
+ =?us-ascii?Q?ipObhQ9ASBrmu+cGbmfgOdFazf62/iH+9JMavlPlmH5tW2Y6THCYjPKpBHNg?=
+ =?us-ascii?Q?ZxY+bHEGiJ6eZxYqzGPt4AIcv24II5HCFvAYCvPiPCddUNJm/2MaCDu/5PnP?=
+ =?us-ascii?Q?dVlcE/+xEItKKTF4SLdH1Oa6JcxRjBKHyYb4hGrT+pqsvopa3xjmgK7Ql6bZ?=
+ =?us-ascii?Q?dfR+SQwrDOe9mZU3iXUBkxizlqtf/IdE9OZ5wke1opaVgbL93tEYsp3pRDxi?=
+ =?us-ascii?Q?xEu/1+e11KRrcO+EZt6Fz32wf4na+RRZHILzg7W5OV/lENt7R6PdwyzT6yDb?=
+ =?us-ascii?Q?+2lrln+uOI9Sz0F9Lx8DklfL4fh7Zpnazypbjzbl/VJnK4nADLk2+ts4p+3c?=
+ =?us-ascii?Q?2G6KsATgoPcukB62jeRv3sjB4ODfxNSfZy0xULIKLkoF8loMm8hu+L91aj2v?=
+ =?us-ascii?Q?8+Kj+AhlvW842EVt/O2NR5QH?=
+X-OriginatorOrg: drivenets.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6edd44ce-6814-4fae-7528-08d95a70737d
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR08MB3518.eurprd08.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Aug 2021 13:28:47.2313
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 662f82da-cf45-4bdf-b295-33b083f5d229
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nlKo5hi1JbHQubrCrhpXaVEOdmtQxJci7cIRDy3Hmqfw621l2AkkVORFvXFbGwzQfnthuCZARYmJiM13ABAL8sA14Ep/HZQBzqpmzs1Izkk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR08MB5726
+X-MDID: 1628429329-0II5XnSK9YAd
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rename the function to reflect what it's doing. Also add a description
-of the register values as kindly provided by Realtek.
+Currently there's support for filtering neighbours/links for interfaces
+which have a specific master device (using the IFLA_MASTER/NDA_MASTER
+attributes).
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+This patch adds support for filtering interfaces/neighbours dump for
+interfaces that *don't* have a master.
+
+I have a patch for iproute2 ready for adding this support in userspace.
+
+Signed-off-by: Lahav Schlesinger <lschlesinger@drivenets.com>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ net/core/neighbour.c | 7 +++++++
+ net/core/rtnetlink.c | 7 +++++++
+ 2 files changed, 14 insertions(+)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 2c643ec36..7a69b4685 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2598,7 +2598,7 @@ static u32 rtl_csi_read(struct rtl8169_private *tp, int addr)
- 		RTL_R32(tp, CSIDR) : ~0;
- }
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index 53e85c70c6e5..1b1e0ca70650 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -2533,6 +2533,13 @@ static bool neigh_master_filtered(struct net_device *dev, int master_idx)
+ 		return false;
  
--static void rtl_csi_access_enable(struct rtl8169_private *tp, u8 val)
-+static void rtl_set_aspm_entry_latency(struct rtl8169_private *tp, u8 val)
- {
- 	struct pci_dev *pdev = tp->pci_dev;
- 	u32 csi;
-@@ -2606,6 +2606,8 @@ static void rtl_csi_access_enable(struct rtl8169_private *tp, u8 val)
- 	/* According to Realtek the value at config space address 0x070f
- 	 * controls the L0s/L1 entrance latency. We try standard ECAM access
- 	 * first and if it fails fall back to CSI.
-+	 * bit 0..2: L0: 0 = 1us, 1 = 2us .. 6 = 7us, 7 = 7us (no typo)
-+	 * bit 3..5: L1: 0 = 1us, 1 = 2us .. 6 = 64us, 7 = 64us
- 	 */
- 	if (pdev->cfg_size > 0x070f &&
- 	    pci_write_config_byte(pdev, 0x070f, val) == PCIBIOS_SUCCESSFUL)
-@@ -2619,7 +2621,8 @@ static void rtl_csi_access_enable(struct rtl8169_private *tp, u8 val)
+ 	master = dev ? netdev_master_upper_dev_get(dev) : NULL;
++
++	/* 0 is already used to denote NDA_MASTER wasn't passed, therefore need another
++	 * invalid value for ifindex to denote "no master".
++	 */
++	if (master_idx == -1)
++                return (bool)master;
++
+ 	if (!master || master->ifindex != master_idx)
+ 		return true;
  
- static void rtl_set_def_aspm_entry_latency(struct rtl8169_private *tp)
- {
--	rtl_csi_access_enable(tp, 0x27);
-+	/* L0 7us, L1 16us */
-+	rtl_set_aspm_entry_latency(tp, 0x27);
- }
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index f6af3e74fc44..8ccc314744d4 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -1970,6 +1970,13 @@ static bool link_master_filtered(struct net_device *dev, int master_idx)
+ 		return false;
  
- struct ephy_info {
-@@ -3502,8 +3505,8 @@ static void rtl_hw_start_8106(struct rtl8169_private *tp)
- 	RTL_W8(tp, MCU, RTL_R8(tp, MCU) | EN_NDP | EN_OOB_RESET);
- 	RTL_W8(tp, DLLPR, RTL_R8(tp, DLLPR) & ~PFM_EN);
- 
--	/* The default value is 0x13. Change it to 0x2f */
--	rtl_csi_access_enable(tp, 0x2f);
-+	/* L0 7us, L1 32us - needed to avoid issues with link-up detection */
-+	rtl_set_aspm_entry_latency(tp, 0x2f);
- 
- 	rtl_eri_write(tp, 0x1d0, ERIAR_MASK_0011, 0x0000);
+ 	master = netdev_master_upper_dev_get(dev);
++
++	/* 0 is already used to denote IFLA_MASTER wasn't passed, therefore need
++	 * another invalid value for ifindex to denote "no master".
++	 */
++	if (master_idx == -1)
++                return (bool)master;
++
+ 	if (!master || master->ifindex != master_idx)
+ 		return true;
  
 -- 
-2.32.0
+2.25.1
 
