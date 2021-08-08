@@ -2,112 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C4DD3E3C73
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 21:08:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 002683E3C91
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 21:50:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232334AbhHHTI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 15:08:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40410 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231717AbhHHTI4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 15:08:56 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018D7C061760
-        for <netdev@vger.kernel.org>; Sun,  8 Aug 2021 12:08:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=khXPKSkNoUsQSwBadPWBGTyq4Rkr53mWJ4WPs9p2pZk=; b=bdHiRQTihCIu6IRMZGO1eRbM0Q
-        iuzDtsYNhtDAXQk9hTUXCxXLQ5M6i7Dna1ZZH5fzPLvW/nBQci8ib7Eu4GtY5i9kAMxmZPPIYCV1T
-        j6G8EbRHD+H7Sxj9GV2n98qtmYbCIa7J6e9IuuriN29bOJBtnU0v1ktgyh4dqJsZVC820OTfQLLgS
-        uUSHikHaSFps61ISiyp0y7oZUGq8UjUE1xxQdLQA5rTDFG0FdPo/obaYvoRctosx+a64eUFIXqJsY
-        YI0O0FPXWW4L0wvcpjwB4nWpH4IT2CQkpkIHHxmDFua1sy3ex2wlThGm2YmcbT2YBDPzFhBA9a4up
-        u71Szesw==;
-Received: from [2601:1c0:6280:3f0:e65e:37ff:febd:ee53] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mCo9z-00GHOT-MH; Sun, 08 Aug 2021 19:08:35 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     netdev@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Pravin B Shelar <pshelar@ovn.org>, dev@openvswitch.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH] net: openvswitch: fix kernel-doc warnings in flow.c
-Date:   Sun,  8 Aug 2021 12:08:34 -0700
-Message-Id: <20210808190834.23362-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.31.1
+        id S232387AbhHHTuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 15:50:18 -0400
+Received: from mout.kundenserver.de ([212.227.17.24]:55903 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230049AbhHHTuS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 15:50:18 -0400
+Received: from mail-wr1-f45.google.com ([209.85.221.45]) by
+ mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1M1YpJ-1mFqwg33XP-0032eP; Sun, 08 Aug 2021 21:49:57 +0200
+Received: by mail-wr1-f45.google.com with SMTP id h14so18487932wrx.10;
+        Sun, 08 Aug 2021 12:49:57 -0700 (PDT)
+X-Gm-Message-State: AOAM533VY0EoxiS5viLf6vEpQPJMm9LtNZkRZCi3vucPr9gose2yVK00
+        QhL4QyteF1MuyA/PY5K4hmQ5CANHjwjQj2SFr54=
+X-Google-Smtp-Source: ABdhPJx6F59rJO1Pery+r6nQDO2xzNpLN7m093anVuScAsNwhXhrgKEl7Ac/J+6VQWafXCkrAPzeB/ANsqaDe3eG/qA=
+X-Received: by 2002:a5d:44c7:: with SMTP id z7mr21960891wrr.286.1628452197374;
+ Sun, 08 Aug 2021 12:49:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210807145619.832-1-caihuoqing@baidu.com> <05a5ddb5-1c51-8679-60a3-a74e0688b72d@gmail.com>
+In-Reply-To: <05a5ddb5-1c51-8679-60a3-a74e0688b72d@gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Sun, 8 Aug 2021 21:49:41 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0FUGbwbWuu0R7-Bm4O0MgNfYmE4FTZY9oE9jnRcMK9xQ@mail.gmail.com>
+Message-ID: <CAK8P3a0FUGbwbWuu0R7-Bm4O0MgNfYmE4FTZY9oE9jnRcMK9xQ@mail.gmail.com>
+Subject: Re: [PATCH 0/2] net: ethernet: Remove the 8390 network drivers
+To:     Michael Schmitz <schmitzmic@gmail.com>
+Cc:     Cai Huoqing <caihuoqing@baidu.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:WiU2XRJbHqPgT+V+BhYVDVaiH5BTOP6MKVg/3erGqMb9XmuB/ED
+ avNh6N6w5v8gvEggMBsAk8d9lR1VXP856rjuQoRlSD+kDYGwJ4eqYgozv8zBjoWZhVWUWZN
+ ZHwhI4VtSZuzhUP8OIEIr3vMSWxNrpfFTs9T3Vy/DvyqIfpkDd7HK4aa/PFebT0GvhO23lg
+ xzbHV4YBiUuYHNVr1eBYw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:AGINesSpU3c=:tLx8Yi5ke9gfsO+evGbdj/
+ 4iGBX7TBGIicU8m/2zz+vNKxOdDrXX0wmA+nPrH5toDFlxYk42B7KwNU0jrzWs3Opap6QeaRR
+ QjXXkYdeSsz54+7e+v9qwiNJ/fbTaKDIi3BNPkAQRutZE5XEqQW1cfr6+dulFklmXhrk0RibA
+ WkFEMbyOaSDCQlkUi4kd9cBVsN59udylfUezj4o+7dWn6I1hgbxKLDFO9TwfbNHwxpjpsQsKd
+ KGMZ2GVhAGP7qS4GCwgKZLmyrgoVg7Ak468XjtrIS9Ff1JjGDg/3r4aNOx0Ss6JdZh4Xx2dx3
+ PpQT1HQmNMUOL1e+HkglvA4yttDcjNQJMjePnF8/YwY3RiPp1IDWHzUpqcIl7NDECNN0nAK3H
+ UgViL2uXXcA6Ql2yRJ1MBgeT39mYxcSp2Af+K0llzwrnB4qKXqNCnaPLayiUmoaJnWcvuGwEN
+ v/7k/z/nYrJUm0MC5zBWk2qzA/rF7azM4+oCUsKrKIHdlpo4XVXQx1KkTdUfabYc1G0uGMBLo
+ GPfafZxXImp4qfMVJfldzZ1HpTYmfs4IwdK9sPJMfMTw8+GiIVCziip13U8YaET6nD/d93w6c
+ B2yL3jby8yD3YlkeLTuMG4ijggX6iVh8AsZmWD4j1dXlwcXWXVF28DRssHCZI+lrFRmA9m79Z
+ eAQuAcHb0YHGwXeYKXlRZpBuoH7ZIFyHJhC7Z33w2f93Et7QG+zwq7TdpozHXn7sUaNpvYqTT
+ Cs7XzxvyG8OJDEmHw6huH6ozLodwWUmQW+V+nX7EYhR8vUqoToUtYvJDYCa+6TQnMjDEvEUxj
+ YlL70zvESzFfQRF8flGiuo7bppaZ8ntSZjzI1blzsJ82iL8lbfeByGTxAPOrohbIPU3TTLC
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Repair kernel-doc notation in a few places to make it conform to
-the expected format.
+On Sun, Aug 8, 2021 at 12:51 AM Michael Schmitz <schmitzmic@gmail.com> wrote:
+>
+> Removing the 8390 drivers would leave most m68k legacy systems without
+> networking support.
+>
+> Unless there is a clear and compelling reason to do so, these drivers
+> should not be removed.
 
-Fixes the following kernel-doc warnings:
+Right, any driver that is tied to a particular machine should generally
+be left working as long as we support that machine.
 
-flow.c:296: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
- * Parse vlan tag from vlan header.
-flow.c:296: warning: missing initial short description on line:
- * Parse vlan tag from vlan header.
-flow.c:537: warning: No description found for return value of 'key_extract_l3l4'
-flow.c:769: warning: No description found for return value of 'key_extract'
+> >  MAINTAINERS                           |    6 -
+> >  drivers/net/ethernet/8390/8390.c      |  103 --
+> >  drivers/net/ethernet/8390/8390.h      |  236 ----
+> >  drivers/net/ethernet/8390/8390p.c     |  105 --
+> >  drivers/net/ethernet/8390/Kconfig     |  212 ---
+> >  drivers/net/ethernet/8390/Makefile    |   20 -
+> >  drivers/net/ethernet/8390/apne.c      |  619 ---------
+> >  drivers/net/ethernet/8390/ax88796.c   | 1022 ---------------
+> >  drivers/net/ethernet/8390/axnet_cs.c  | 1707 ------------------------
+> >  drivers/net/ethernet/8390/etherh.c    |  856 -------------
+> >  drivers/net/ethernet/8390/hydra.c     |  273 ----
+> >  drivers/net/ethernet/8390/lib8390.c   | 1092 ----------------
+> >  drivers/net/ethernet/8390/mac8390.c   |  848 ------------
+> >  drivers/net/ethernet/8390/mcf8390.c   |  475 -------
+> >  drivers/net/ethernet/8390/ne.c        | 1004 ---------------
+> >  drivers/net/ethernet/8390/ne2k-pci.c  |  747 -----------
+> >  drivers/net/ethernet/8390/pcnet_cs.c  | 1708 -------------------------
+> >  drivers/net/ethernet/8390/smc-ultra.c |  629 ---------
+> >  drivers/net/ethernet/8390/stnic.c     |  303 -----
+> >  drivers/net/ethernet/8390/wd.c        |  574 ---------
+> >  drivers/net/ethernet/8390/xsurf100.c  |  377 ------
+> >  drivers/net/ethernet/8390/zorro8390.c |  452 -------
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Pravin B Shelar <pshelar@ovn.org>
-Cc: dev@openvswitch.org
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
----
- net/openvswitch/flow.c |   13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+Two candidates I can see for removing would be smc-ultra and
+wd80x3, both of them fairly rare ISA cards. The only other
+ISA 8390 variant is the ne2000 driver (ne.c), which is probably
+the most common ISA card overall, and I'd suggest leaving
+that in place for as long as we support CONFIG_ISA.
 
---- linux-next-20210806.orig/net/openvswitch/flow.c
-+++ linux-next-20210806/net/openvswitch/flow.c
-@@ -293,14 +293,14 @@ static bool icmp6hdr_ok(struct sk_buff *
- }
- 
- /**
-- * Parse vlan tag from vlan header.
-+ * parse_vlan_tag - Parse vlan tag from vlan header.
-  * @skb: skb containing frame to parse
-  * @key_vh: pointer to parsed vlan tag
-  * @untag_vlan: should the vlan header be removed from the frame
-  *
-- * Returns ERROR on memory error.
-- * Returns 0 if it encounters a non-vlan or incomplete packet.
-- * Returns 1 after successfully parsing vlan tag.
-+ * Return: ERROR on memory error.
-+ * %0 if it encounters a non-vlan or incomplete packet.
-+ * %1 after successfully parsing vlan tag.
-  */
- static int parse_vlan_tag(struct sk_buff *skb, struct vlan_head *key_vh,
- 			  bool untag_vlan)
-@@ -532,6 +532,7 @@ static int parse_nsh(struct sk_buff *skb
-  *       L3 header
-  * @key: output flow key
-  *
-+ * Return: %0 if successful, otherwise a negative errno value.
-  */
- static int key_extract_l3l4(struct sk_buff *skb, struct sw_flow_key *key)
- {
-@@ -748,8 +749,6 @@ static int key_extract_l3l4(struct sk_bu
-  *
-  * The caller must ensure that skb->len >= ETH_HLEN.
-  *
-- * Returns 0 if successful, otherwise a negative errno value.
-- *
-  * Initializes @skb header fields as follows:
-  *
-  *    - skb->mac_header: the L2 header.
-@@ -764,6 +763,8 @@ static int key_extract_l3l4(struct sk_bu
-  *
-  *    - skb->protocol: the type of the data starting at skb->network_header.
-  *      Equals to key->eth.type.
-+ *
-+ * Return: %0 if successful, otherwise a negative errno value.
-  */
- static int key_extract(struct sk_buff *skb, struct sw_flow_key *key)
- {
+There are a couple of other ISA-only network drivers (localtalk,
+arcnet,  ethernet/amd) that may be candidates for removal,
+or perhaps some PCMCIA ones.
+
+      Arnd
