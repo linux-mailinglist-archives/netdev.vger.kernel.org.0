@@ -2,106 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D1C73E3CDE
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 23:14:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C82013E3D01
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 00:18:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232574AbhHHVOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 17:14:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39352 "EHLO
+        id S229662AbhHHWSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 18:18:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229895AbhHHVOh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 17:14:37 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1EFC061760;
-        Sun,  8 Aug 2021 14:14:17 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id f13so21497250edq.13;
-        Sun, 08 Aug 2021 14:14:17 -0700 (PDT)
+        with ESMTP id S231829AbhHHWSy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 18:18:54 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4674C061760
+        for <netdev@vger.kernel.org>; Sun,  8 Aug 2021 15:18:34 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id d17so14320063plr.12
+        for <netdev@vger.kernel.org>; Sun, 08 Aug 2021 15:18:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4jBI5fwS+8PcqcFnWHTT4nTI4zqvMfHeyhnQQ2c+hc4=;
-        b=V2Mx3EVNdOgB5oUMJEZpZGNuRL45Bt2CgsuyTZPescuYmeinTUEPbeo4ayGCSQhiKu
-         EhJQbQ6jW2/4Ukxr20IxGtjqbLFGCdPmQt4m+6bWrEyuqVQqjKkK1ikarpHCg7sQ2TKC
-         6j5UhXVBnNGQx3naZZkkBGNv+DAgwS4HnL7Hi9kFQC65x66oTBY9LkhVb3Re3h+iv26t
-         LfhamzG8n5bvaGtLRMJed+gzv8u4fWzIoXzjYT37Ao4hJKGrwYcbV1h/I9cxHO/mp38Q
-         lAUThEdNu+G9qy77VgK7KM9U8p9Bu/74XgQ79l4mDfUr8NRt8jUpnELFq3mB0teLhCSh
-         WqkQ==
+        d=workware-net-au.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=uXF/HlLy6BpvjjoddG1ldyRg+oHgXHYKMFkCEC267qM=;
+        b=lSQuWfRJMP36Z+1SgFTtAsmXpGj7xwm57C8lGNF1AHEK+lsyzHsIG6a9KEWScp0yEy
+         LQWvITelD7LcyPACTS3je333OKZ7guO23WpAdtTNtNvevgV3j9+9ndVthkq7a1GFLOEx
+         rfU8z/DtRCOka3Gi3xz74QQmX/Zo0TJJQSrDMNiDv0p/6SbQhwMlgQGmmTXfx8e38Byu
+         R7HVDauTa3v2R5dukvxaZHGFRy0SqBkMd7i3HhMdiNBDwgMFn28mpWZXMTgzzFTjOHcK
+         nX5Wrx9ZfXf8vrrM/1eHHPT133FVdPQHX72qep+LsTSnCgCLWBm68xl7i7RfKVEdk+RQ
+         tNpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4jBI5fwS+8PcqcFnWHTT4nTI4zqvMfHeyhnQQ2c+hc4=;
-        b=r8JmlBGcIg/G0Nm0Gy/J3QvQNoQKY4BWFc7UFWr3I1DUP6SqgHXUuR/ajGFVLes/1c
-         oZiErAe5ruuDARHwAYTSXjhenTSEYvR5QtE3RPk5iyHE3sDb4ZqdekkzEkrGtZbKh4My
-         9F6kDFQqRdxhbsrWe62ceX10eLmOlxJeMtd6U6U+JRv5hiroPs1iIEAYaMTO44Y5YLIy
-         y2U5/Qpn/IToBAlpW/t3AA2BnyFC53f1z5bn+1Gv77eUIjWEpXsV6/KVgZ5vrksc1rSc
-         YyCvJ1wnTkaTuecpae7y9kBi9IfdMhC1CiS+/dmzz0CpQoFu47N1dFccJxVJh1KDBFlK
-         7LMw==
-X-Gm-Message-State: AOAM531HYQolf801Oz34idz+lJQU5QtLdDY4yFZvKFptpmgPxYrhVIjZ
-        gOUlc2VHL6cciiSlDrOnwf0=
-X-Google-Smtp-Source: ABdhPJzokKec6876qc7sH9rHOWFh83ObCR0CU5Rnz0C7t90O42gKw1/ACD11OnbtczG4JBKYNGEb1A==
-X-Received: by 2002:a05:6402:1a4c:: with SMTP id bf12mr25632909edb.137.1628457255713;
-        Sun, 08 Aug 2021 14:14:15 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id t17sm1193073edw.13.2021.08.08.14.14.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Aug 2021 14:14:15 -0700 (PDT)
-Date:   Mon, 9 Aug 2021 00:14:13 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Hauke Mehrtens <hauke@hauke-m.de>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        Jonathan McDowell <noodles@earth.li>,
-        Michal =?utf-8?B?Vm9rw6HEjQ==?= <vokac.m@gmail.com>,
-        Christian Lamparter <chunkeey@gmail.com>,
-        Nishka Dasgupta <nishkadg.linux@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Stefan Lippers-Hollmann <s.l-h@gmx.de>,
-        Hannu Nyman <hannu.nyman@iki.fi>,
-        Imran Khan <gururug@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Nick Lowe <nick.lowe@gmail.com>,
-        =?utf-8?B?QW5kcsOp?= Valentin <avalentin@marcant.net>
-Subject: Re: [RFC net-next 3/3] net: dsa: tag_qca: set offload_fwd_mark
-Message-ID: <20210808211413.33voutdjlz4qavzn@skbuf>
-References: <20210807120726.1063225-1-dqfext@gmail.com>
- <20210807120726.1063225-4-dqfext@gmail.com>
- <20210807225721.xk5q6osyqoqjmhmp@skbuf>
- <20210808161224.228001-1-dqfext@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210808161224.228001-1-dqfext@gmail.com>
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=uXF/HlLy6BpvjjoddG1ldyRg+oHgXHYKMFkCEC267qM=;
+        b=dbB3BfPK1Rq+xQc2ewF//m12LW90X5JeMikdIW1exjb04Bd+WUSLduEA/Ab3H+3Qnh
+         8n8xHdaP7it2aChIlwsp6QxTm0S8yMbpDe86E4NDy+CvujeNo75S9251hFASZFl0KCbh
+         CFVeEKGGFumlNWt4yNsAPRiAH0ioH9yfyKLI9RtjOdhuGlcbMdtV1NwiJ143nmgmn5fd
+         emy9q31JFl8l+54CD1RAusmMeJslxKLl1C56Ckw4hVS6Mgu46CNh2trtQaEwT4ic1sFc
+         UNqeNQNGj2Xj6IKF7wNHxShMT2txGCAIizoa6Ue1tPixOnhfIihwHLxruRsBx5SZFWEh
+         yAVQ==
+X-Gm-Message-State: AOAM5327mi2JMi5fSM/67cH1rpWLjMPbYNLOWTzT9/HYNYxiVemoTN1r
+        30uedipLehth8luxrqG0mlObvA==
+X-Google-Smtp-Source: ABdhPJwFwToNws/BYXYez5Gjg39xHwk/nkOmruK/PM8hyEb6KOfDeX15Aozd943TeypmTcOQQhnJpw==
+X-Received: by 2002:a63:f754:: with SMTP id f20mr186055pgk.385.1628461113677;
+        Sun, 08 Aug 2021 15:18:33 -0700 (PDT)
+Received: from smtpclient.apple (117-20-69-228.751445.bne.nbn.aussiebb.net. [117.20.69.228])
+        by smtp.gmail.com with ESMTPSA id m18sm15968802pjq.32.2021.08.08.15.18.31
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 08 Aug 2021 15:18:33 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.100.0.2.22\))
+Subject: Re: [PATCH] net: phy: micrel: Fix detection of ksz87xx switch
+From:   Steve Bennett <steveb@workware.net.au>
+In-Reply-To: <20210807000123.GA4898@cephalopod>
+Date:   Mon, 9 Aug 2021 08:18:28 +1000
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Workware-Check: steveb@workware.net.au
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <F8C5F7CD-343A-4C25-B04B-EEA5C086B693@workware.net.au>
+References: <20210730105120.93743-1-steveb@workware.net.au>
+ <20210730095936.1420b930@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <74BE3A85-61E2-45C9-BA77-242B1014A820@workware.net.au>
+ <20210807000123.GA4898@cephalopod>
+To:     Ben Hutchings <ben.hutchings@essensium.com>
+X-Mailer: Apple Mail (2.3654.100.0.2.22)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 09, 2021 at 12:12:24AM +0800, DENG Qingfang wrote:
-> On Sun, Aug 08, 2021 at 01:57:21AM +0300, Vladimir Oltean wrote:
-> > In this day and age, I consider this commit to be a bug fix, since the
-> > software bridge, seeing an skb with offload_fwd_mark = false on an
-> > offloaded port, will think it hasn't been forwarded and do that job
-> > itself. So all broadcast and multicast traffic flooded to the CPU will
-> > end up being transmitted with duplicates on the other bridge ports.
-> > 
-> > When the qca8k tagger was added in 2016 in commit cafdc45c949b
-> > ("net-next: dsa: add Qualcomm tag RX/TX handler"), the offload_fwd_mark
-> > framework was already there, but no DSA driver was using it - the first
-> > commit I can find that uses offload_fwd_mark in DSA is f849772915e5
-> > ("net: dsa: lan9303: lan9303_rcv set skb->offload_fwd_mark") in 2017,
-> > and then quite a few more followed suit. But you could still blame
-> > commit cafdc45c949b.
-> 
-> The driver currently only enables flooding to the CPU port (like MT7530
-> back then), so offload_fwd_mark should NOT be set until bridge flags
-> offload is supported.
 
-Ok, I missed that. Please squash this with patch 1 then, please.
+
+> On 7 Aug 2021, at 10:01 am, Ben Hutchings =
+<ben.hutchings@essensium.com> wrote:
+>=20
+> On Sat, Jul 31, 2021 at 08:19:17AM +1000, Steve Bennett wrote:
+>>> On 31 Jul 2021, at 2:59 am, Jakub Kicinski <kuba@kernel.org> wrote:
+>>>=20
+>>> Please extend the CC list to the maintainers, and people who
+>>> worked on this driver in the past, especially Marek.
+>>=20
+>> Sure, I can do that in a v2 of the patch along with the more detailed
+>> explanation below.
+>>=20
+>>>=20
+>>> On Fri, 30 Jul 2021 20:51:20 +1000 Steve Bennett wrote:
+>>>> The previous logic was wrong such that the ksz87xx
+>>>> switch was not identified correctly.
+>>>=20
+>>> Any more details of what is happening? Which extact device do you =
+see
+>>> this problem on?
+>>=20
+>> I have a ksz8795 switch.
+>>=20
+>> Without the patch:
+>>=20
+>> ksz8795-switch spi3.1 ade1 (uninitialized): PHY [dsa-0.1:03] driver =
+[Generic PHY]
+>> ksz8795-switch spi3.1 ade2 (uninitialized): PHY [dsa-0.1:04] driver =
+[Generic PHY]
+>>=20
+>> With the patch:
+>>=20
+>> ksz8795-switch spi3.1 ade1 (uninitialized): PHY [dsa-0.1:03] driver =
+[Micrel KSZ87XX Switch]
+>> ksz8795-switch spi3.1 ade2 (uninitialized): PHY [dsa-0.1:04] driver =
+[Micrel KSZ87XX Switch]
+> [...]
+>=20
+> And do the external ports work for you after this?
+>=20
+> I have a development board with a KSZ8795.  All ports worked before
+> this patch.  After this patch, when I bring up the external ports they
+> are reported as having link up at 10M half duplex, when the link is
+> actually down.
+>=20
+> The ksz8873mll_read_status() function is trying to read a non-standard
+> MDIO register that is not handled by the ksz8795 driver's MDIO
+> emulation (and is not documented as existing on the KSZ8873MLL,
+> either!).  It also also reports link up, which is obviously not
+> correct for an external port.
+>=20
+> I'll post a patch as a reply to this.
+>=20
+> Ben.
+
+Thanks Ben,
+
+That looks reasonable to me. My board is running the external ports at =
+10HD so
+I didn't pick this up, but your patch looks correct.
+
+Cheers,
+Steve=
