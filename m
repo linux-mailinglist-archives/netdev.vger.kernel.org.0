@@ -2,99 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD36C3E3A37
-	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 14:35:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 775623E3A58
+	for <lists+netdev@lfdr.de>; Sun,  8 Aug 2021 15:14:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231217AbhHHMfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 08:35:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39092 "EHLO
+        id S230354AbhHHNGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 09:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbhHHMe7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 08:34:59 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0285AC061760;
-        Sun,  8 Aug 2021 05:34:39 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id m10-20020a17090a34cab0290176b52c60ddso25375259pjf.4;
-        Sun, 08 Aug 2021 05:34:39 -0700 (PDT)
+        with ESMTP id S229504AbhHHNGk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 09:06:40 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690CCC061760
+        for <netdev@vger.kernel.org>; Sun,  8 Aug 2021 06:06:20 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id m28-20020a05600c3b1cb02902b5a8c22575so9290268wms.0
+        for <netdev@vger.kernel.org>; Sun, 08 Aug 2021 06:06:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=kZTCEpO46weGKXlGlV/kVDBT/mA13JjacOVJ1zjYzdA=;
-        b=HBsvAWFtwd97kkuj4vSYoLEYqSixtYX/+29nW7D1ZWOkC0q3qz3Zx7c/sqY54y/qOO
-         oKBGlkvVirxmm7C37vYesEH6BCge9W7JTt2oD07abPOy9xy0Y06ULxv6ZvlqGc+3QS9T
-         xwr2Q6B7s77K7mVthktfSRKIP4e/LE+pV8H0h5IwIlC5d9oUItyrLv95e/N5zWZhN8Cl
-         6DsmxTYfwzNjcvNA8JzqfZ5pseiJaW4kzJZb2k/NtsSAnYOikZa+AnnKzS628mgcgS65
-         735nQZXUon/SBEHQ3LeNnOK2FnXp7U+M6hQ3tUlJpfChSSuW6SUAE+MhG64Jj0WtQe8a
-         cIhw==
+        h=from:to:cc:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=wAjKS1vt9FTQkfUmOoQMRGLzVP3/rY0bv0rum+XWJAo=;
+        b=WRZk6O5/svvKdSc0lE8vNq1+Vvek+9Vx285dR/dUli8bDfAKFT1Aq7qCrXNben8qSn
+         QDYKmYIM6/ouFtLDgGM4OqDMB8RTW4n38mGHRisNn0g1x1yVLUS1xuwJxXtO4dyHHf8L
+         cDpaNZzoWWHbfXnRDgC2ljiuMqxQNT8GjdvqSDQdwKQ5u08dmMEoJFhN62fItwXEsqoq
+         Xyuw9WSxRIWloHmiaflJQXeuoNlCGhwDouvun7ZS18aKGdm7Kwpq21sSw4rVDpsApGFh
+         /VALZE9c5QXBjxMAtA4aOkg5vLOd3zz50NpylPIiGB/xpUDvmaLNcQGS6UPOo8kXTteu
+         Ld0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=kZTCEpO46weGKXlGlV/kVDBT/mA13JjacOVJ1zjYzdA=;
-        b=CKvZzAzBU3z6ybg0rW61B4adKfgfjBAzxXQtqoG+MF+eJHqt+N1R+g8rzlqzENc3Dz
-         +FsDwi/gh3ItC0Y0qTXR+feWDE37Wq/JJwOABtbNZ8QrC6CShRKJjL6H69hq3Wfx9bn5
-         SrbWdNznYqTV8KX9IV9LtEm82UwI73xmffolfS1MNGvBb0MZX9HXvO/65x1Ouj8Bpdv2
-         7uhv6apBb+IHVaAqU1SR0raWg07ZP68hTqunHRAWwlnABD8LvDJzGhBrIBVsjqw2ZNNn
-         D3J+hUq2XAkRYnhJhGYSLGBnZQHHVJqCmMYLnivQxR48tiwJSbRa5oecu5Fc3J/0G4oG
-         5G+w==
-X-Gm-Message-State: AOAM533MaFtosA5uYpqgBEIPSA4erKFqdXP/yCAtStZ02hIKV8rjRY2J
-        iuDJiwLCc6q81acvjbR4YYw=
-X-Google-Smtp-Source: ABdhPJy/SspUG28+VcrTiiMl2wB1Bdyl7KY3P83lMOOKRlz5Slz1RooGU54stiPjaYzZIQKSDG/H0w==
-X-Received: by 2002:a63:f959:: with SMTP id q25mr278841pgk.52.1628426079425;
-        Sun, 08 Aug 2021 05:34:39 -0700 (PDT)
-Received: from u18.mshome.net ([167.220.238.132])
-        by smtp.gmail.com with ESMTPSA id h7sm14881710pjs.38.2021.08.08.05.34.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Aug 2021 05:34:39 -0700 (PDT)
-From:   Muhammad Falak R Wani <falakreyaz@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        KP Singh <kpsingh@kernel.org>, Yonghong Song <yhs@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org,
-        Muhammad Falak R Wani <falakreyaz@gmail.com>
-Subject: [PATCH] samples: bpf: xdp2: remove duplicate code to find protocol
-Date:   Sun,  8 Aug 2021 18:04:28 +0530
-Message-Id: <20210808123428.12796-1-falakreyaz@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=wAjKS1vt9FTQkfUmOoQMRGLzVP3/rY0bv0rum+XWJAo=;
+        b=idIIHVFTJMPAvSIkoEbF47E8m5EV1Bs/Ys8v/ZWTTsm+ibaSDAHPwt7VrOq4iHpgRe
+         l89Tet+goZvnn/W/SvfAyhZNrtPLiUIe5P6+fjrQ/IYQMMmi6PG3vec/kNUjrlZuoN23
+         kGndXrTlL8w97AvwnU+Em3C4/YEcLimZQmtlnQ+QstszY9UpSK/dZytObjChV52wo6uI
+         D3J1hHmxHsNCVc7bRR5ZqozbS3k174bLVrpi/W+9KiOK4kw5G8z2mhjxX63WgNNWjJyl
+         CzOlpYLWIiegr7G7p+YW4nwHVcW7OBMdgMFW+uiI2ni4AwyU/bPVrXIPbBx/L42GlnSy
+         Ah+g==
+X-Gm-Message-State: AOAM533EQUjjdNbclgubSBNwwN6eHGGCvlnWdRrSdMzmncuLE8mF3W49
+        kSQxli4epFPwU89EjYM8pQ9y+qsY0NiuYA==
+X-Google-Smtp-Source: ABdhPJz1qbrjr9G/i120rNO6wCgf2AIGIvUoO2uCOial7M4gO1E8mdDfepQEBX1oSIqG1lHr9WN3wA==
+X-Received: by 2002:a7b:ce08:: with SMTP id m8mr29194505wmc.21.1628427977154;
+        Sun, 08 Aug 2021 06:06:17 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f10:c200:7101:8b48:5eab:cb5f? (p200300ea8f10c20071018b485eabcb5f.dip0.t-ipconnect.de. [2003:ea:8f10:c200:7101:8b48:5eab:cb5f])
+        by smtp.googlemail.com with ESMTPSA id k17sm18180890wmj.0.2021.08.08.06.06.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Aug 2021 06:06:16 -0700 (PDT)
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: [PATCH net-next] r8169: rename rtl_csi_access_enable to
+ rtl_set_aspm_entry_latency
+Message-ID: <f25dc81e-7615-0b51-24cf-e1137f0f9969@gmail.com>
+Date:   Sun, 8 Aug 2021 15:06:08 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The code to find h_vlan_encapsulated_proto is duplicated.
-Remove the extra block.
+Rename the function to reflect what it's doing. Also add a description
+of the register values as kindly provided by Realtek.
 
-Signed-off-by: Muhammad Falak R Wani <falakreyaz@gmail.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- samples/bpf/xdp2_kern.c | 9 ---------
- 1 file changed, 9 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/samples/bpf/xdp2_kern.c b/samples/bpf/xdp2_kern.c
-index c787f4b49646..be4b0c642a6b 100644
---- a/samples/bpf/xdp2_kern.c
-+++ b/samples/bpf/xdp2_kern.c
-@@ -73,15 +73,6 @@ int xdp_prog1(struct xdp_md *ctx)
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 2c643ec36..7a69b4685 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -2598,7 +2598,7 @@ static u32 rtl_csi_read(struct rtl8169_private *tp, int addr)
+ 		RTL_R32(tp, CSIDR) : ~0;
+ }
  
- 	h_proto = eth->h_proto;
+-static void rtl_csi_access_enable(struct rtl8169_private *tp, u8 val)
++static void rtl_set_aspm_entry_latency(struct rtl8169_private *tp, u8 val)
+ {
+ 	struct pci_dev *pdev = tp->pci_dev;
+ 	u32 csi;
+@@ -2606,6 +2606,8 @@ static void rtl_csi_access_enable(struct rtl8169_private *tp, u8 val)
+ 	/* According to Realtek the value at config space address 0x070f
+ 	 * controls the L0s/L1 entrance latency. We try standard ECAM access
+ 	 * first and if it fails fall back to CSI.
++	 * bit 0..2: L0: 0 = 1us, 1 = 2us .. 6 = 7us, 7 = 7us (no typo)
++	 * bit 3..5: L1: 0 = 1us, 1 = 2us .. 6 = 64us, 7 = 64us
+ 	 */
+ 	if (pdev->cfg_size > 0x070f &&
+ 	    pci_write_config_byte(pdev, 0x070f, val) == PCIBIOS_SUCCESSFUL)
+@@ -2619,7 +2621,8 @@ static void rtl_csi_access_enable(struct rtl8169_private *tp, u8 val)
  
--	if (h_proto == htons(ETH_P_8021Q) || h_proto == htons(ETH_P_8021AD)) {
--		struct vlan_hdr *vhdr;
--
--		vhdr = data + nh_off;
--		nh_off += sizeof(struct vlan_hdr);
--		if (data + nh_off > data_end)
--			return rc;
--		h_proto = vhdr->h_vlan_encapsulated_proto;
--	}
- 	if (h_proto == htons(ETH_P_8021Q) || h_proto == htons(ETH_P_8021AD)) {
- 		struct vlan_hdr *vhdr;
+ static void rtl_set_def_aspm_entry_latency(struct rtl8169_private *tp)
+ {
+-	rtl_csi_access_enable(tp, 0x27);
++	/* L0 7us, L1 16us */
++	rtl_set_aspm_entry_latency(tp, 0x27);
+ }
+ 
+ struct ephy_info {
+@@ -3502,8 +3505,8 @@ static void rtl_hw_start_8106(struct rtl8169_private *tp)
+ 	RTL_W8(tp, MCU, RTL_R8(tp, MCU) | EN_NDP | EN_OOB_RESET);
+ 	RTL_W8(tp, DLLPR, RTL_R8(tp, DLLPR) & ~PFM_EN);
+ 
+-	/* The default value is 0x13. Change it to 0x2f */
+-	rtl_csi_access_enable(tp, 0x2f);
++	/* L0 7us, L1 32us - needed to avoid issues with link-up detection */
++	rtl_set_aspm_entry_latency(tp, 0x2f);
+ 
+ 	rtl_eri_write(tp, 0x1d0, ERIAR_MASK_0011, 0x0000);
  
 -- 
-2.17.1
+2.32.0
 
