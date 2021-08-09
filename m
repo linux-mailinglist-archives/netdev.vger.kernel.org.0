@@ -2,120 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 616F13E496F
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 18:06:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5191C3E4987
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 18:16:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232130AbhHIQHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 12:07:13 -0400
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:34772 "EHLO 1wt.eu"
+        id S231658AbhHIQQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 12:16:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35878 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229456AbhHIQHM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Aug 2021 12:07:12 -0400
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 179G6fVI022669;
-        Mon, 9 Aug 2021 18:06:41 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Willy Tarreau <w@1wt.eu>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH net] net: linkwatch: fix failure to restore device state across suspend/resume
-Date:   Mon,  9 Aug 2021 18:06:28 +0200
-Message-Id: <20210809160628.22623-1-w@1wt.eu>
-X-Mailer: git-send-email 2.17.5
+        id S229488AbhHIQQn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Aug 2021 12:16:43 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 17D4860EB9;
+        Mon,  9 Aug 2021 16:16:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628525782;
+        bh=C5/2dVgJImM/dgrdIjcufSzzf7XvsOxZHwVOIj8pShE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eSokIi1AXe7eH/E/RW+03kMmrL/YNf2bMht4nF6os6Baba65ELy1ADAw+/nYc6QBD
+         1OH8WiLaKIcj1WbbpQMm9wTFh5ZDq7oc23tbUxElV9gtgpYRmlh8LCmUszq5N2CNXf
+         I4yJHMaNWuqrRN0ZNc1p+0m+tdNrPwEBcMyagB/8Xas1ECKfWqTvN+neYebAHWPViB
+         HlS/1l1FSxTUQiTrethkTKArmDhVFEnbewVICG95sc+6HdfgBUtnc6/y4uC9Euyiw6
+         zvL6Q+wEMLwN2QI1HM1IS1KGIuFylqsQWc9viRx+33kiY5Ya0Mafv1az+ujYi3DTZn
+         cdJ1STGr2qReg==
+Date:   Mon, 9 Aug 2021 09:16:21 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Joel Stanley <joel@jms.id.au>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stafford Horne <shorne@gmail.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Anton Blanchard <anton@ozlabs.org>,
+        Gabriel Somlo <gsomlo@gmail.com>, David Shah <dave@ds0.me>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] net: Add driver for LiteX's LiteETH network
+ interface
+Message-ID: <20210809091621.40c91f01@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CACPK8XcCjNWm=85uXX2tubP=WAgfF8ewqMAMWO_wJVeHB-U_0w@mail.gmail.com>
+References: <20210806054904.534315-1-joel@jms.id.au>
+        <20210806054904.534315-3-joel@jms.id.au>
+        <20210806161030.52a7ae93@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CACPK8XcCjNWm=85uXX2tubP=WAgfF8ewqMAMWO_wJVeHB-U_0w@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After migrating my laptop from 4.19-LTS to 5.4-LTS a while ago I noticed
-that my Ethernet port to which a bond and a VLAN interface are attached
-appeared to remain up after resuming from suspend with the cable unplugged
-(and that problem still persists with 5.10-LTS).
+On Mon, 9 Aug 2021 12:03:36 +0000 Joel Stanley wrote:
+> On Fri, 6 Aug 2021 at 23:10, Jakub Kicinski <kuba@kernel.org> wrote:
+> > > +static int liteeth_start_xmit(struct sk_buff *skb, struct net_device *netdev)
+> > > +{
+> > > +     struct liteeth *priv = netdev_priv(netdev);
+> > > +     void __iomem *txbuffer;
+> > > +     int ret;
+> > > +     u8 val;
+> > > +
+> > > +     /* Reject oversize packets */
+> > > +     if (unlikely(skb->len > MAX_PKT_SIZE)) {
+> > > +             if (net_ratelimit())
+> > > +                     netdev_dbg(netdev, "tx packet too big\n");
+> > > +             goto drop;
+> > > +     }
+> > > +
+> > > +     txbuffer = priv->tx_base + priv->tx_slot * LITEETH_BUFFER_SIZE;
+> > > +     memcpy_toio(txbuffer, skb->data, skb->len);
+> > > +     writeb(priv->tx_slot, priv->base + LITEETH_READER_SLOT);
+> > > +     writew(skb->len, priv->base + LITEETH_READER_LENGTH);
+> > > +
+> > > +     ret = readl_poll_timeout_atomic(priv->base + LITEETH_READER_READY, val, val, 5, 1000);  
+> >
+> > Why the need for poll if there is an interrupt?
+> > Why not stop the Tx queue once you're out of slots and restart
+> > it when the completion interrupt comes?  
+> 
+> That makes sense.
+> 
+> In testing I have not been able to hit the LITEETH_READER_READY
+> not-ready state. I assume it's there to say that the slots are full.
 
-It happens that the following happens:
-
-  - the network driver (e1000e here) prepares to suspend, calls e1000e_down()
-    which calls netif_carrier_off() to signal that the link is going down.
-  - netif_carrier_off() adds a link_watch event to the list of events for
-    this device
-  - the device is completely stopped.
-  - the machine suspends
-  - the cable is unplugged and the machine brought to another location
-  - the machine is resumed
-  - the queued linkwatch events are processed for the device
-  - the device doesn't yet have the __LINK_STATE_PRESENT bit and its events
-    are silently dropped
-  - the device is resumed with its link down
-  - the upper VLAN and bond interfaces are never notified that the link had
-    been turned down and remain up
-  - the only way to provoke a change is to physically connect the machine
-    to a port and possibly unplug it.
-
-The state after resume looks like this:
-  $ ip -br li | egrep 'bond|eth'
-  bond0            UP             e8:6a:64:64:64:64 <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP>
-  eth0             DOWN           e8:6a:64:64:64:64 <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP>
-  eth0.2@eth0      UP             e8:6a:64:64:64:64 <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP>
-
-Placing an explicit call to netdev_state_change() either in the suspend
-or the resume code in the NIC driver worked around this but the solution
-is not satisfying.
-
-The issue in fact really is in link_watch that loses events while it
-ought not to. It happens that the test for the device being present was
-added by commit 124eee3f6955 ("net: linkwatch: add check for netdevice
-being present to linkwatch_do_dev") in 4.20 to avoid an access to
-devices that are not present.
-
-Instead of dropping events, this patch proceeds slightly differently by
-postponing their handling so that they happen after the device is fully
-resumed.
-
-Fixes: 124eee3f6955 ("net: linkwatch: add check for netdevice being present to linkwatch_do_dev") 
-Link: https://lists.openwall.net/netdev/2018/03/15/62
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
----
-
-Note: I've been wondering if instead we shouldn't simply teach
-      netdev_state_change() not to call rtmsg_ifinfo() when the
-      device is not present, since this is exactly the problem that
-      Geert met in the discussion above and that was attempted to be
-      addressed by Heiner's initial patch. At least this patch deals
-      with the issue where it was introduced but I'm fine with
-      modifying netdev_state_change() instead if that's preferred.
-
-
- net/core/link_watch.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/net/core/link_watch.c b/net/core/link_watch.c
-index 75431ca9300f..1a455847da54 100644
---- a/net/core/link_watch.c
-+++ b/net/core/link_watch.c
-@@ -158,7 +158,7 @@ static void linkwatch_do_dev(struct net_device *dev)
- 	clear_bit(__LINK_STATE_LINKWATCH_PENDING, &dev->state);
+In that case it's probably best to stop the Tx queue in the xmit routine
+once all the lots are used, and restart it from the interrupt. I was
+guessing maybe the IRQ is not always there, but that doesn't seem to be
+the case.
  
- 	rfc2863_policy(dev);
--	if (dev->flags & IFF_UP && netif_device_present(dev)) {
-+	if (dev->flags & IFF_UP) {
- 		if (netif_carrier_ok(dev))
- 			dev_activate(dev);
- 		else
-@@ -204,7 +204,8 @@ static void __linkwatch_run_queue(int urgent_only)
- 		dev = list_first_entry(&wrk, struct net_device, link_watch_list);
- 		list_del_init(&dev->link_watch_list);
- 
--		if (urgent_only && !linkwatch_urgent_event(dev)) {
-+		if (!netif_device_present(dev) ||
-+		    (urgent_only && !linkwatch_urgent_event(dev))) {
- 			list_add_tail(&dev->link_watch_list, &lweventlist);
- 			continue;
- 		}
--- 
-2.28.0
+> > > +     if (ret == -ETIMEDOUT) {
+> > > +             netdev_err(netdev, "LITEETH_READER_READY timed out\n");  
+> >
+> > ratelimit this as well, please
+> >  
+> > > +             goto drop;
+> > > +     }
+> > > +
+> > > +     writeb(1, priv->base + LITEETH_READER_START);
+> > > +
+> > > +     netdev->stats.tx_bytes += skb->len;  
+> >
+> > Please count bytes and packets in the same place  
+> 
+> AFAIK we don't know the length when the interrupt comes in, so we need
+> to count both here in xmit?
 
+Either that or allocate a small array (num_tx_slots) to save the
+lengths for IRQ routine to use.
+
+> > > +     priv->tx_slot = (priv->tx_slot + 1) % priv->num_tx_slots;
+> > > +     dev_kfree_skb_any(skb);
+> > > +     return NETDEV_TX_OK;
+> > > +drop:
+> > > +     /* Drop the packet */
+> > > +     dev_kfree_skb_any(skb);
+> > > +     netdev->stats.tx_dropped++;
+> > > +
+> > > +     return NETDEV_TX_OK;
+> > > +}  
