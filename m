@@ -2,135 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C19E3E4D17
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 21:31:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 323F43E4D18
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 21:31:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236004AbhHITbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 15:31:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58392 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231439AbhHITbc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 15:31:32 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542C1C0613D3
-        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 12:31:09 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id qk33so30862652ejc.12
-        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 12:31:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=e02C7uRqGfTlJ1NI6vZSalj/qxawB+R1DCOirtdhgFI=;
-        b=KvxYLuehcaYVJJ3QRZNiVqKHHjSmpJHVJ6niltRgpLp33xo82sICTV/+EFAzMu3SnP
-         KsrP7rFK11he9BeFc5aZtaWDkTbDBy8K2mniHyBnsVtzeKpcIU6D+YHSfLiKGboqqLTk
-         eD2cR3RxUgFUjh6nEaYDjZH5ArOo7YfS634UVgprYL8Xjgd+dGq7NvgMBDSKO/KJwq6q
-         zCBnyaYWNrhrS5IzyZNe6koHk8n2LV69rNTgo5BWbM9lFI/Ns4JgPxyP/8LV1rFirSfr
-         nadB9BvqpbeSzf2dpHOp+eOGTwFiMfEgyCBhwxowpOZwixZM6IB5QmUk2M3Mtv3/FhaW
-         JMeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=e02C7uRqGfTlJ1NI6vZSalj/qxawB+R1DCOirtdhgFI=;
-        b=JJTn6pliKMdMiwrfbcTvWZGAnJuoFjHgu0lMoREEQPqh7EQ21mCwDVi64Nm4e2ivjq
-         kiCgD5Lu7bGSU4w/OiirkNmttlVWplNPW244rgPD+bY2gTu6MckdIYQ2so5OCC5QeUwu
-         UT/6GUYpptbqiYTwpZe0E5LKMOuc5lLZ3TkGKNkoHnd6av7Cn2JE9vFLBH7iwForc2/T
-         tPCDR0byST/cKKmx7ayGUdk+sVR9vzgTWd8Yu7SY8PJB19ZcRR5yKPWNAmc0dr5o8Kmp
-         j2glKdW+EIBloTfdIpPIYu0uHNc8EzDEkKc3JO/sENVxal2Paq8Y1gufnuXAahfF0c+L
-         3Mhw==
-X-Gm-Message-State: AOAM531nYu5VlLOdPxV/7WvqrlswTF5gkCyAwxTgvUPFWDISvN7jkPlB
-        m1Ctk2f04G+IzJDLDQQWj8E=
-X-Google-Smtp-Source: ABdhPJzU9xMPn2Y+4ghfMSRH0HH4zHhftZPRfPzNXFrNqfcsRFByUtIE+GFUJ7mC+9PVxz74SLLI1g==
-X-Received: by 2002:a17:906:4156:: with SMTP id l22mr8517200ejk.75.1628537467844;
-        Mon, 09 Aug 2021 12:31:07 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id s20sm6103063eji.116.2021.08.09.12.31.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Aug 2021 12:31:07 -0700 (PDT)
-Date:   Mon, 9 Aug 2021 22:31:05 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        id S236037AbhHITbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 15:31:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49398 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235547AbhHITbd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Aug 2021 15:31:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 94B9D60C51;
+        Mon,  9 Aug 2021 19:31:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628537472;
+        bh=MrY/68GZ2Oe9njx/vSw5170b7WPyBLvamVAoadcb0kI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BWKcuWw9oc0cMdHuJ1xgqEk08FRS62kffb9z42tbOR7IKAbmdzacH9uvFM2sKxr26
+         yL1MfVvLFb6Hjrkm9vpXooCJitdCWKSdKZufVMtmtOmLF1g9JNR94NRVRrzvyUS5Ap
+         xifkakDJPRrnKdsqGAqxqzzEJSkAMHeheoEOi3FJ3qit2Xk1Pk0CwgWgFH91cE6WTR
+         61Qaai7ZLCOZd8P287FJmJyuJU5bBh6LExw5fMMfpsq3V8KLWLc0wSXHj0AUyuJLbh
+         3E7rsa2g8eoeW+2Bz5me6JUuvy+prIzNqoVig5PYk5gEPLeCJ1SFl5vkPHyMDeMaMo
+         /ECDuyQ8VaSag==
+Received: by pali.im (Postfix)
+        id 241AEC7C; Mon,  9 Aug 2021 21:31:10 +0200 (CEST)
+Date:   Mon, 9 Aug 2021 21:31:09 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Paul Mackerras <paulus@samba.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        George McCollister <george.mccollister@gmail.com>
-Subject: Re: [RFC PATCH net-next 0/4] Remove the "dsa_to_port in a loop"
- antipattern
-Message-ID: <20210809193105.ijzvvkdwvtgkihun@skbuf>
-References: <20210809190320.1058373-1-vladimir.oltean@nxp.com>
+        Guillaume Nault <gnault@redhat.com>, linux-ppp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ppp: Add rtnl attribute IFLA_PPP_UNIT_ID for specifying
+ ppp unit id
+Message-ID: <20210809193109.mw6ritfdu27uhie7@pali>
+References: <20210807163749.18316-1-pali@kernel.org>
+ <20210809122546.758e41de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20210809190320.1058373-1-vladimir.oltean@nxp.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210809122546.758e41de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-FWIW, I also have a small test: on my Turris MOX with 25 mv88e6xxx user
-ports, I have a script which sets up the bridge for my network:
+On Monday 09 August 2021 12:25:46 Jakub Kicinski wrote:
+> On Sat,  7 Aug 2021 18:37:49 +0200 Pali Rohár wrote:
+> > Currently there are two ways how to create a new ppp interface. Old method
+> > via ioctl(PPPIOCNEWUNIT) and new method via rtnl RTM_NEWLINK/NLM_F_CREATE
+> > which was introduced in v4.7 by commit 96d934c70db6 ("ppp: add rtnetlink
+> > device creation support").
+> > 
+> > ...
+> 
+> Your 2 previous patches were fixes and went into net, this patch seems
+> to be on top of them but is a feature, so should go to net-next. 
 
------------------------------[ cut here ]-----------------------------
-# cat /etc/init.d/S50bridge
-#!/bin/bash
+Yes
 
-ip link del br0
-ip link add br0 type bridge vlan_filtering 1
-for eth in lan1 lan2 lan3 lan4 lan5 lan6 lan7 lan8 lan9 lan10 lan11 lan12 lan13 lan14 lan15 lan16 lan17 lan18 lan19 lan20 lan21 lan22 lan23 lan24 sfp; do
-        ip link set ${eth} master br0
-done
+> But it doesn't apply to net-next given net was not merged into net-next.
+> Please rebase on top of net-next or (preferably) wait until next week
+> so that the trees can get merged and then you can repost without causing
+> any conflicts.
 
-# For TFTP, the server is connected to sfp
-# bridge vlan add dev sfp vid 100
-bridge vlan add dev lan19 vid 100
+Better to wait. I would like hear some comments / review on this patch
+if this is the correct approach as it adds a new API/ABI for userspace.
 
-# lan1-lan24 are the for board access to TFTP. Use VLAN 100.
-# FIXME: I removed lan19 from this list and now use it for TFTP server
-for eth in lan1 lan2 lan3 lan4 lan5 lan6 lan7 lan8 lan9 lan10 lan11 lan12 lan13 lan14 lan15 lan16 lan17 lan18 lan20 lan21 lan22 lan23 lan24; do
-        bridge vlan del dev ${eth} vid 1
-        bridge vlan add dev ${eth} vid 100 pvid untagged
-done
+> >  static const struct nla_policy ppp_nl_policy[IFLA_PPP_MAX + 1] = {
+> >  	[IFLA_PPP_DEV_FD]	= { .type = NLA_S32 },
+> > +	[IFLA_PPP_UNIT_ID]	= { .type = NLA_S32 },
+> >  };
+> 
+> set .strict_start_type, please so new attrs get validated better
+> 
+> >  static int ppp_nl_validate(struct nlattr *tb[], struct nlattr *data[],
+> > @@ -1274,6 +1277,15 @@ static int ppp_nl_validate(struct nlattr *tb[], struct nlattr *data[],
+> >  
+> >  	if (!data[IFLA_PPP_DEV_FD])
+> >  		return -EINVAL;
+> > +
+> > +	/* Check for IFLA_PPP_UNIT_ID before IFLA_PPP_DEV_FD to allow userspace
+> > +	 * detect if kernel supports IFLA_PPP_UNIT_ID or not by specifying
+> > +	 * negative IFLA_PPP_DEV_FD. Previous kernel versions ignored
+> > +	 * IFLA_PPP_UNIT_ID attribute.
+> > +	 */
+> > +	if (data[IFLA_PPP_UNIT_ID] && nla_get_s32(data[IFLA_PPP_UNIT_ID]) < -1)
+> > +		return -EINVAL;
+> 
+> please use NLA_POLICY_MIN() instead, no need to open-code
+> 
+> >  	if (nla_get_s32(data[IFLA_PPP_DEV_FD]) < 0)
+> >  		return -EBADF;
 
-ip link set br0 up
------------------------------[ cut here ]-----------------------------
-
-Before this series:
-
-time /etc/init.d/S50bridge
-real    0m8.809s
-user    0m0.253s
-sys     0m2.614s
-
-time ip link del br0
-real    0m4.509s
-user    0m0.006s
-sys     0m1.184s
-
-After:
-
-time /etc/init.d/S50bridge
-real    0m8.270s
-user    0m0.199s
-sys     0m2.468s
-
-time ip link del br0
-real    0m3.964s
-user    0m0.000s
-sys     0m1.024s
-
-So there is a (small, but still visible) improvement - note that
-mv88e6xxx is heavily limited by MDIO access anyway, and that would be
-the predominant latency.
-
-Also, I noticed that I forgot an unused "int port" variable in
-felix_vsc9959.c variable, that I'm sure the kernel test robot will
-complain about. So this is just RFC for now.
+I will look at both issues... and I would like to know what is preferred
+way to introduce new attributes in a way that userspace can detect if
+kernel supports them or not.
