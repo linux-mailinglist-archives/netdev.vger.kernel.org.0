@@ -2,95 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B7A23E43A2
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 12:10:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9BEA3E43A4
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 12:10:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234615AbhHIKK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 06:10:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54544 "EHLO mail.kernel.org"
+        id S234865AbhHIKK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 06:10:56 -0400
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:34761 "EHLO 1wt.eu"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233565AbhHIKKZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Aug 2021 06:10:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B6A956108F;
-        Mon,  9 Aug 2021 10:10:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628503805;
-        bh=a1uxI0PmtDV0o9QXF4KHowqZymMZjF1yGtsUwEk1RqI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=BzWZjAooTYbX9m+pxaxQPRP5+5PrE52yWMjjj1YxHJmqkjeNZhTn0hL5eEPQaWeTj
-         UyXBPgz+AQXMbwjhE7VRaqJyI+848SceFfW3NSAz8uiZ3Dt/jemlu9QGkvgFqJiFVq
-         1pNQ6UhcP+Re4a+QntcEA8hKsSOFpZUG/cdPADR5++O8vxSl6oeuc2Hy+XHYi3eC2/
-         UifSaW6lSOOXGkVAtnU6ulnAwCnz6uKAxWLp2kxXT5/Pssae9/sw++GJ3zfxpAlbCI
-         7AOidtmwfhCqsewcGt4Rq0sN+nvA4Q93XaW6Zlpg2yA2XuzvfNeFkdZ0fpo5ikkXIQ
-         VhwCSoDvQGwtQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AC44560A2A;
-        Mon,  9 Aug 2021 10:10:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233565AbhHIKKz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Aug 2021 06:10:55 -0400
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 179AALEM020477;
+        Mon, 9 Aug 2021 12:10:21 +0200
+Date:   Mon, 9 Aug 2021 12:10:21 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     Jonathan Toppins <jtoppins@redhat.com>
+Cc:     Jay Vosburgh <jay.vosburgh@canonical.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: bonding: link state question
+Message-ID: <20210809101021.GA20448@1wt.eu>
+References: <020577f3-763d-48fd-73ce-db38c3c7fdf9@redhat.com>
+ <22626.1628376134@famine>
+ <d2dfeba3-6cd6-1760-0abb-6005659ac125@redhat.com>
+ <20210808044912.GA10092@1wt.eu>
+ <79019b7e-1c2e-7186-4908-cf085b33fb59@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: fec: fix build error for ARCH m68k
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162850380570.4301.2549596232050862056.git-patchwork-notify@kernel.org>
-Date:   Mon, 09 Aug 2021 10:10:05 +0000
-References: <20210809042921.28931-1-qiangqing.zhang@nxp.com>
-In-Reply-To: <20210809042921.28931-1-qiangqing.zhang@nxp.com>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, groeck7@gmail.com,
-        netdev@vger.kernel.org, linux-imx@nxp.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <79019b7e-1c2e-7186-4908-cf085b33fb59@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Jonathan,
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+On Sun, Aug 08, 2021 at 09:31:39PM -0400, Jonathan Toppins wrote:
+> I am likely very wrong but the lack of a recalculation of the bond carrier
+> state after a lower notifies of an up/down event seemed incorrect. Maybe a
+> place to start?
 
-On Mon,  9 Aug 2021 12:29:21 +0800 you wrote:
-> reproduce:
-> 	wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> 	chmod +x ~/bin/make.cross
-> 	make.cross ARCH=m68k  m5272c3_defconfig
-> 	make.cross ARCH=m68k
-> 
->    drivers/net/ethernet/freescale/fec_main.c: In function 'fec_enet_eee_mode_set':
-> >> drivers/net/ethernet/freescale/fec_main.c:2758:33: error: 'FEC_LPI_SLEEP' undeclared (first use in this function); did you mean 'FEC_ECR_SLEEP'?
->     2758 |  writel(sleep_cycle, fep->hwp + FEC_LPI_SLEEP);
->          |                                 ^~~~~~~~~~~~~
->    arch/m68k/include/asm/io_no.h:25:66: note: in definition of macro '__raw_writel'
->       25 | #define __raw_writel(b, addr) (void)((*(__force volatile u32 *) (addr)) = (b))
->          |                                                                  ^~~~
->    drivers/net/ethernet/freescale/fec_main.c:2758:2: note: in expansion of macro 'writel'
->     2758 |  writel(sleep_cycle, fep->hwp + FEC_LPI_SLEEP);
->          |  ^~~~~~
->    drivers/net/ethernet/freescale/fec_main.c:2758:33: note: each undeclared identifier is reported only once for each function it appears in
->     2758 |  writel(sleep_cycle, fep->hwp + FEC_LPI_SLEEP);
->          |                                 ^~~~~~~~~~~~~
->    arch/m68k/include/asm/io_no.h:25:66: note: in definition of macro '__raw_writel'
->       25 | #define __raw_writel(b, addr) (void)((*(__force volatile u32 *) (addr)) = (b))
->          |                                                                  ^~~~
->    drivers/net/ethernet/freescale/fec_main.c:2758:2: note: in expansion of macro 'writel'
->     2758 |  writel(sleep_cycle, fep->hwp + FEC_LPI_SLEEP);
->          |  ^~~~~~
-> >> drivers/net/ethernet/freescale/fec_main.c:2759:32: error: 'FEC_LPI_WAKE' undeclared (first use in this function)
->     2759 |  writel(wake_cycle, fep->hwp + FEC_LPI_WAKE);
->          |                                ^~~~~~~~~~~~
->    arch/m68k/include/asm/io_no.h:25:66: note: in definition of macro '__raw_writel'
->       25 | #define __raw_writel(b, addr) (void)((*(__force volatile u32 *) (addr)) = (b))
->          |                                                                  ^~~~
->    drivers/net/ethernet/freescale/fec_main.c:2759:2: note: in expansion of macro 'writel'
->     2759 |  writel(wake_cycle, fep->hwp + FEC_LPI_WAKE);
->          |  ^~~~~~
-> 
-> [...]
+Thanks for the test, it could have been a good candidate but it does
+not work :-)
 
-Here is the summary with links:
-  - [net-next] net: fec: fix build error for ARCH m68k
-    https://git.kernel.org/netdev/net-next/c/e08d6d42b6f9
+That's what I have after the following sequence:
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+  - link is up
+  - suspend-to-ram
+  - unplug the cable
+  - resume
 
+  $ ip -br li
+  eth0             DOWN           e8:6a:64:5d:19:ed <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> 
+  eth0.2@eth0      UP             e8:6a:64:5d:19:ed <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> 
+  bond0            UP             e8:6a:64:5d:19:ed <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> 
 
+My bond interface uses eth0 and eth0.2 in active-backup scenario allowing
+me to instantly switch between tagged/untagged network depending on the
+port I'm connecting to.
+
+I just figured the problem. It's not the bonding driver which is causing
+this issue, the issue is with the VLAN interface which incorrectly shows
+up while it ought not to, as can be seen above, and the bond naturally
+selected it:
+
+  Primary Slave: eth0 (primary_reselect always)
+  Currently Active Slave: eth0.2
+  MII Status: up
+  MII Polling Interval (ms): 200
+  Up Delay (ms): 0
+  Down Delay (ms): 0
+  Peer Notification Delay (ms): 0
+
+So the bond driver works well, I'll have to dig into the 802.1q code
+and/or see how the no-carrier state is propagated upstream. So you were
+not very wrong at all and put me on the right track :-)
+
+Cheers,
+Willy
