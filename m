@@ -2,310 +2,370 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB3523E4CF9
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 21:22:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C27773E4D04
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 21:23:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235999AbhHITWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 15:22:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56316 "EHLO
+        id S236028AbhHITXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 15:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235628AbhHITW3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 15:22:29 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A240C061799
-        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 12:22:09 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id t68so19640928qkf.8
-        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 12:22:09 -0700 (PDT)
+        with ESMTP id S235965AbhHITXM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 15:23:12 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2014C0613D3;
+        Mon,  9 Aug 2021 12:22:51 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id p38so8667158lfa.0;
+        Mon, 09 Aug 2021 12:22:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=C8SAQNxBSJ7h+JJ2+3jC6E0qK1LNwDyR7yX5THBQn28=;
-        b=ulwQto5XlLOfLT5jHR/AppflzVcl4my0r1atXsSimzIr62uFQe0ZSLQ6S+E4EOdvpq
-         AdKAtrwh5NOuXJWQpv9qAzX9wig8Bllx+DV11AEDE5MEMYNd6O+HZB/A4Sr8XTzA5OE1
-         xIZPPkIwt2iav2B/44jYGcfSTFXez9hrzuQZ1Eipfu1d7HpXPjHCiKT3ZEZ/LtEVIehD
-         rZhxFKfVStLucbWASgEkyXJuFqXXRU8JWAdKdwgQOb6F9NgB7P3WafukQpvBq3y6fiAG
-         aAZ8RW77mBHUFOB7H/duGpNDr8EeWgN3L6kQr876tn8fWpPtp0e5ylXN4mbGkXQNXQEx
-         g+Vw==
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language;
+        bh=w3tbBGNJpLHc/C3pq2pDHqNw7VDhxGZ5hPAvVRFbnWs=;
+        b=qO6aqFDioMAtO1VlSxGzXJRyPuIEBIkeVFYK2YaU2/3MxajupOapNuZDHWyZH6k2J5
+         7FS1TeMXUuMBALsIhDQAkAYnNuqw2/MwjkmOz+sOP5ux8rEplfBxqGcGgF1OnJVSwanB
+         wresSVEvxTSxLcuuLcwNnqZTBpJ55bbBw/K6Q/ivdybjwmLtGOprBQH96mTnLqWNGhrI
+         2LRb7OyTWxXV4AlP/umIyOMMrnW/tf55cDvylYvwmoJn+RN9+Mvfa4wZ35Pc/LD8U0LR
+         pDz9fI8AR0J+4LSQkhA4abzEnfgDsskM5Mbkr/CGTbEHq0am8lla74KOeFsavE2zjVgc
+         /cCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=C8SAQNxBSJ7h+JJ2+3jC6E0qK1LNwDyR7yX5THBQn28=;
-        b=VJLXlrQ+dKFxlKuGeh1sUD+1jI9yHjBGcJKchUXJJPUHOCjIXUoOhdjXzImN3n0Dko
-         ITSldPvtz2uI87WnAKGcL/IsO+VdPi7YqoOu/nS91ZEmz3/uANJdwphB5DAZENZHHYJT
-         66160dOEM+f84Ab4Ue0Mdo08kmwMGqOAQxGP81N9eYfvNqXHJQqL4GhJYpPP2TQyeRPr
-         ZyY7GZ7EnbmOk38GvOaiqwfR2TkPa+u9CzbVnqWgRacN+Y6GY7EzCnNASJvoOmnIHuNR
-         tC3zMaqI9VlmmxSKb9JII8Bo3u6Hmxz/+M1X2zhY/GBT2wJRWRIk+Q0HjOY20/Efke7k
-         FGsg==
-X-Gm-Message-State: AOAM532f1jmehkI7VKVxNOvtk88YbosfBG7y/7pcWdYQRIG01kOJX7wS
-        v8/GCD9lPq70DDis1TyZqYg25EHmxo/8pX4JXFEitQ==
-X-Google-Smtp-Source: ABdhPJxxmaul+jamEF/omyvUGbP8ZyPFGD5pOnEizG8WANZWiPlCGtvl7PjJROm9NGP3QUqzEhVC63zu2encu9w4gyU=
-X-Received: by 2002:a05:620a:811:: with SMTP id s17mr7626516qks.350.1628536927754;
- Mon, 09 Aug 2021 12:22:07 -0700 (PDT)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language;
+        bh=w3tbBGNJpLHc/C3pq2pDHqNw7VDhxGZ5hPAvVRFbnWs=;
+        b=NM+Ja0Ps0aCuROlcqjQdDrCxJVO0z1NfSyh+f3cffLP54YwcWNlYUOy+eJsPvQ/KwF
+         3qvr8aVxC/8hOAP+onZuhvOzLtyeevUEP1SmoEb2aHH4xf4d/XmHR1mHMWcrPV1HT6OR
+         lTbRR4U3y+rV10qwr17y5wKEic9XCkC98SqR/ZQ6tvNN6b1+5z6EFx4HTrwWDkuuLjIh
+         yTTR8O1ibewbv2lJzKCzi3UkOrEyl2fm7Y228WARAqFrxc6PclNK4IEtdPVUevaRsEpf
+         CivoSFvDFgHC2rLEDf8ccbhF00pHR+43X85FpG+Fa1AfHcJEmkXvyQ8vJCS5FqjnCb6r
+         RuBA==
+X-Gm-Message-State: AOAM5326L1VcCCz2DjrWJvkknnYUyYMy7Ej9j9oIEgqZHqpn20xNKXOO
+        MP8czEnvlAEk/5yUff6g5Og=
+X-Google-Smtp-Source: ABdhPJzmwcAERU9dZaauyZ2TtpN0yXv+TjXVqNoXKa0laJG+N+XKByztdntRLFEGY1r668dzNGhURQ==
+X-Received: by 2002:a05:6512:2215:: with SMTP id h21mr18616628lfu.543.1628536970060;
+        Mon, 09 Aug 2021 12:22:50 -0700 (PDT)
+Received: from [192.168.1.11] ([46.235.67.232])
+        by smtp.gmail.com with ESMTPSA id h9sm1243524ljq.92.2021.08.09.12.22.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 Aug 2021 12:22:49 -0700 (PDT)
+Subject: Re: [syzbot] KASAN: use-after-free Write in nft_ct_tmpl_put_pcpu
+To:     syzbot <syzbot+649e339fa6658ee623d3@syzkaller.appspotmail.com>,
+        coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com
+References: <000000000000b720b705c8f8599f@google.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+Message-ID: <cdb5f0c9-1ad9-dd9d-b24d-e127928ada98@gmail.com>
+Date:   Mon, 9 Aug 2021 22:22:47 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-References: <0000000000006bd0b305c914c3dc@google.com> <0c106e6c-672f-474e-5815-97b65596139d@oracle.com>
- <CACT4Y+bK61B3r5Rx150FwKt5WJ8T-q-X0nC-r=oH7x4ZU5vdVw@mail.gmail.com> <e99cc036-2f83-ff9e-ea68-3eeb19bd4147@oracle.com>
-In-Reply-To: <e99cc036-2f83-ff9e-ea68-3eeb19bd4147@oracle.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 9 Aug 2021 21:21:56 +0200
-Message-ID: <CACT4Y+bFLFg9WUiGWq=8ubKFug47=XNjqQJkTX3v1Hos0r+Z_A@mail.gmail.com>
-Subject: Re: [syzbot] BUG: sleeping function called from invalid context in _copy_to_iter
-To:     Shoaib Rao <rao.shoaib@oracle.com>
-Cc:     syzbot <syzbot+8760ca6c1ee783ac4abd@syzkaller.appspotmail.com>,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        christian.brauner@ubuntu.com, cong.wang@bytedance.com,
-        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
-        jamorris@linux.microsoft.com, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, shuah@kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk,
-        yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <000000000000b720b705c8f8599f@google.com>
+Content-Type: multipart/mixed;
+ boundary="------------B2B9016DCAFA275198E2C6CE"
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 9 Aug 2021 at 21:16, Shoaib Rao <rao.shoaib@oracle.com> wrote:
-> On 8/9/21 11:06 AM, Dmitry Vyukov wrote:
-> > On Mon, 9 Aug 2021 at 19:33, Shoaib Rao <rao.shoaib@oracle.com> wrote:
-> >> This seems like a false positive. 1) The function will not sleep becau=
-se
-> >> it only calls copy routine if the byte is present. 2). There is no
-> >> difference between this new call and the older calls in
-> >> unix_stream_read_generic().
-> > Hi Shoaib,
-> >
-> > Thanks for looking into this.
-> > Do you have any ideas on how to fix this tool's false positive? Tools
-> > with false positives are order of magnitude less useful than tools w/o
-> > false positives. E.g. do we turn it off on syzbot? But I don't
-> > remember any other false positives from "sleeping function called from
-> > invalid context" checker...
->
-> Before we take any action I would like to understand why the tool does
-> not single out other calls to recv_actor in unix_stream_read_generic().
-> The context in all cases is the same. I also do not understand why the
-> code would sleep, Let's assume the user provided address is bad, the
-> code will return EFAULT, it will never sleep,
+This is a multi-part message in MIME format.
+--------------B2B9016DCAFA275198E2C6CE
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-I always assumed that it's because if user pages are swapped out, it
-may need to read them back from disk.
+On 8/7/21 4:44 PM, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    894d6f401b21 Merge tag 'spi-fix-v5.14-rc4' of git://git.ke..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=17c622fa300000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=343fd21f6f4da2d6
+> dashboard link: https://syzkaller.appspot.com/bug?extid=649e339fa6658ee623d3
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=110319aa300000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1142fac9d00000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+649e339fa6658ee623d3@syzkaller.appspotmail.com
+> 
+> ==================================================================
+> BUG: KASAN: use-after-free in instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
+> BUG: KASAN: use-after-free in atomic_dec_and_test include/asm-generic/atomic-instrumented.h:542 [inline]
+> BUG: KASAN: use-after-free in nf_conntrack_put include/linux/netfilter/nf_conntrack_common.h:33 [inline]
+> BUG: KASAN: use-after-free in nf_ct_put include/net/netfilter/nf_conntrack.h:176 [inline]
+> BUG: KASAN: use-after-free in nft_ct_tmpl_put_pcpu+0x135/0x1e0 net/netfilter/nft_ct.c:356
+> Write of size 4 at addr ffff88803d750400 by task syz-executor409/9789
+> 
+> CPU: 0 PID: 9789 Comm: syz-executor409 Not tainted 5.14.0-rc4-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>   __dump_stack lib/dump_stack.c:88 [inline]
+>   dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
+>   print_address_description.constprop.0.cold+0x6c/0x309 mm/kasan/report.c:233
+>   __kasan_report mm/kasan/report.c:419 [inline]
+>   kasan_report.cold+0x83/0xdf mm/kasan/report.c:436
+>   check_region_inline mm/kasan/generic.c:183 [inline]
+>   kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
+>   instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
+>   atomic_dec_and_test include/asm-generic/atomic-instrumented.h:542 [inline]
+>   nf_conntrack_put include/linux/netfilter/nf_conntrack_common.h:33 [inline]
+>   nf_ct_put include/net/netfilter/nf_conntrack.h:176 [inline]
+>   nft_ct_tmpl_put_pcpu+0x135/0x1e0 net/netfilter/nft_ct.c:356
 
-> if the kernel provided
-> address is bad the system will panic. The only difference I see is that
-> the new code holds 2 locks while the previous code held one lock, but
-> the locks are acquired before the call to copy.
->
-> So please help me understand how the tool works. Even though I have
-> evaluated the code carefully, there is always a possibility that the
-> tool is correct.
->
-> Shoaib
->
-> >
-> >
-> >
-> >> On 8/8/21 4:38 PM, syzbot wrote:
-> >>> Hello,
-> >>>
-> >>> syzbot found the following issue on:
-> >>>
-> >>> HEAD commit:    c2eecaa193ff pktgen: Remove redundant clone_skb overr=
-ide
-> >>> git tree:       net-next
-> >>> console output: https://urldefense.com/v3/__https://syzkaller.appspot=
-.com/x/log.txt?x=3D12e3a69e300000__;!!ACWV5N9M2RV99hQ!fbn9ny5Bw51Jl6yrU93iU=
-LDBXa_DPjyVIgQuZWyQbCo5IRkAzvYs6JKlPHEdQcWD$
-> >>> kernel config:  https://urldefense.com/v3/__https://syzkaller.appspot=
-.com/x/.config?x=3Daba0c23f8230e048__;!!ACWV5N9M2RV99hQ!fbn9ny5Bw51Jl6yrU93=
-iULDBXa_DPjyVIgQuZWyQbCo5IRkAzvYs6JKlPLGp1-Za$
-> >>> dashboard link: https://urldefense.com/v3/__https://syzkaller.appspot=
-.com/bug?extid=3D8760ca6c1ee783ac4abd__;!!ACWV5N9M2RV99hQ!fbn9ny5Bw51Jl6yrU=
-93iULDBXa_DPjyVIgQuZWyQbCo5IRkAzvYs6JKlPCORTNOH$
-> >>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Bi=
-nutils for Debian) 2.35.1
-> >>> syz repro:      https://urldefense.com/v3/__https://syzkaller.appspot=
-.com/x/repro.syz?x=3D15c5b104300000__;!!ACWV5N9M2RV99hQ!fbn9ny5Bw51Jl6yrU93=
-iULDBXa_DPjyVIgQuZWyQbCo5IRkAzvYs6JKlPAjhi2yc$
-> >>> C reproducer:   https://urldefense.com/v3/__https://syzkaller.appspot=
-.com/x/repro.c?x=3D10062aaa300000__;!!ACWV5N9M2RV99hQ!fbn9ny5Bw51Jl6yrU93iU=
-LDBXa_DPjyVIgQuZWyQbCo5IRkAzvYs6JKlPNzAjzQJ$
-> >>>
-> >>> The issue was bisected to:
-> >>>
-> >>> commit 314001f0bf927015e459c9d387d62a231fe93af3
-> >>> Author: Rao Shoaib <rao.shoaib@oracle.com>
-> >>> Date:   Sun Aug 1 07:57:07 2021 +0000
-> >>>
-> >>>       af_unix: Add OOB support
-> >>>
-> >>> bisection log:  https://urldefense.com/v3/__https://syzkaller.appspot=
-.com/x/bisect.txt?x=3D10765f8e300000__;!!ACWV5N9M2RV99hQ!fbn9ny5Bw51Jl6yrU9=
-3iULDBXa_DPjyVIgQuZWyQbCo5IRkAzvYs6JKlPK2iWt2r$
-> >>> final oops:     https://urldefense.com/v3/__https://syzkaller.appspot=
-.com/x/report.txt?x=3D12765f8e300000__;!!ACWV5N9M2RV99hQ!fbn9ny5Bw51Jl6yrU9=
-3iULDBXa_DPjyVIgQuZWyQbCo5IRkAzvYs6JKlPKAb0dft$
-> >>> console output: https://urldefense.com/v3/__https://syzkaller.appspot=
-.com/x/log.txt?x=3D14765f8e300000__;!!ACWV5N9M2RV99hQ!fbn9ny5Bw51Jl6yrU93iU=
-LDBXa_DPjyVIgQuZWyQbCo5IRkAzvYs6JKlPNlW_w-u$
-> >>>
-> >>> IMPORTANT: if you fix the issue, please add the following tag to the =
-commit:
-> >>> Reported-by: syzbot+8760ca6c1ee783ac4abd@syzkaller.appspotmail.com
-> >>> Fixes: 314001f0bf92 ("af_unix: Add OOB support")
-> >>>
-> >>> BUG: sleeping function called from invalid context at lib/iov_iter.c:=
-619
-> >>> in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 8443, name: sy=
-z-executor700
-> >>> 2 locks held by syz-executor700/8443:
-> >>>    #0: ffff888028fa0d00 (&u->iolock){+.+.}-{3:3}, at: unix_stream_rea=
-d_generic+0x16c6/0x2190 net/unix/af_unix.c:2501
-> >>>    #1: ffff888028fa0df0 (&u->lock){+.+.}-{2:2}, at: spin_lock include=
-/linux/spinlock.h:354 [inline]
-> >>>    #1: ffff888028fa0df0 (&u->lock){+.+.}-{2:2}, at: unix_stream_read_=
-generic+0x16d0/0x2190 net/unix/af_unix.c:2502
-> >>> Preemption disabled at:
-> >>> [<0000000000000000>] 0x0
-> >>> CPU: 1 PID: 8443 Comm: syz-executor700 Not tainted 5.14.0-rc3-syzkall=
-er #0
-> >>> Hardware name: Google Google Compute Engine/Google Compute Engine, BI=
-OS Google 01/01/2011
-> >>> Call Trace:
-> >>>    __dump_stack lib/dump_stack.c:88 [inline]
-> >>>    dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
-> >>>    ___might_sleep.cold+0x1f1/0x237 kernel/sched/core.c:9154
-> >>>    __might_fault+0x6e/0x180 mm/memory.c:5258
-> >>>    _copy_to_iter+0x199/0x1600 lib/iov_iter.c:619
-> >>>    copy_to_iter include/linux/uio.h:139 [inline]
-> >>>    simple_copy_to_iter+0x4c/0x70 net/core/datagram.c:519
-> >>>    __skb_datagram_iter+0x10f/0x770 net/core/datagram.c:425
-> >>>    skb_copy_datagram_iter+0x40/0x50 net/core/datagram.c:533
-> >>>    skb_copy_datagram_msg include/linux/skbuff.h:3620 [inline]
-> >>>    unix_stream_read_actor+0x78/0xc0 net/unix/af_unix.c:2701
-> >>>    unix_stream_recv_urg net/unix/af_unix.c:2433 [inline]
-> >>>    unix_stream_read_generic+0x17cd/0x2190 net/unix/af_unix.c:2504
-> >>>    unix_stream_recvmsg+0xb1/0xf0 net/unix/af_unix.c:2717
-> >>>    sock_recvmsg_nosec net/socket.c:944 [inline]
-> >>>    sock_recvmsg net/socket.c:962 [inline]
-> >>>    sock_recvmsg net/socket.c:958 [inline]
-> >>>    ____sys_recvmsg+0x2c4/0x600 net/socket.c:2622
-> >>>    ___sys_recvmsg+0x127/0x200 net/socket.c:2664
-> >>>    do_recvmmsg+0x24d/0x6d0 net/socket.c:2758
-> >>>    __sys_recvmmsg net/socket.c:2837 [inline]
-> >>>    __do_sys_recvmmsg net/socket.c:2860 [inline]
-> >>>    __se_sys_recvmmsg net/socket.c:2853 [inline]
-> >>>    __x64_sys_recvmmsg+0x20b/0x260 net/socket.c:2853
-> >>>    do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> >>>    do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-> >>>    entry_SYSCALL_64_after_hwframe+0x44/0xae
-> >>> RIP: 0033:0x43ef39
-> >>> Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 =
-89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f=
-0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-> >>> RSP: 002b:00007ffca8776d68 EFLAGS: 00000246 ORIG_RAX: 000000000000012=
-b
-> >>> RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043ef39
-> >>> RDX: 0000000000000700 RSI: 0000000020001140 RDI: 0000000000000004
-> >>> RBP: 0000000000402f20 R08: 0000000000000000 R09: 0000000000400488
-> >>> R10: 0000000000000007 R11: 0000000000000246 R12: 0000000000402fb0
-> >>> R13: 0000000000000000 R14: 00000000004ac018 R15: 0000000000400488
-> >>>
-> >>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
-> >>> [ BUG: Invalid wait context ]
-> >>> 5.14.0-rc3-syzkaller #0 Tainted: G        W
-> >>> -----------------------------
-> >>> syz-executor700/8443 is trying to lock:
-> >>> ffff8880212b6a28 (&mm->mmap_lock#2){++++}-{3:3}, at: __might_fault+0x=
-a3/0x180 mm/memory.c:5260
-> >>> other info that might help us debug this:
-> >>> context-{4:4}
-> >>> 2 locks held by syz-executor700/8443:
-> >>>    #0: ffff888028fa0d00 (&u->iolock){+.+.}-{3:3}, at: unix_stream_rea=
-d_generic+0x16c6/0x2190 net/unix/af_unix.c:2501
-> >>>    #1: ffff888028fa0df0 (&u->lock){+.+.}-{2:2}, at: spin_lock include=
-/linux/spinlock.h:354 [inline]
-> >>>    #1: ffff888028fa0df0 (&u->lock){+.+.}-{2:2}, at: unix_stream_read_=
-generic+0x16d0/0x2190 net/unix/af_unix.c:2502
-> >>> stack backtrace:
-> >>> CPU: 1 PID: 8443 Comm: syz-executor700 Tainted: G        W         5.=
-14.0-rc3-syzkaller #0
-> >>> Hardware name: Google Google Compute Engine/Google Compute Engine, BI=
-OS Google 01/01/2011
-> >>> Call Trace:
-> >>>    __dump_stack lib/dump_stack.c:88 [inline]
-> >>>    dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
-> >>>    print_lock_invalid_wait_context kernel/locking/lockdep.c:4666 [inl=
-ine]
-> >>>    check_wait_context kernel/locking/lockdep.c:4727 [inline]
-> >>>    __lock_acquire.cold+0x213/0x3ab kernel/locking/lockdep.c:4965
-> >>>    lock_acquire kernel/locking/lockdep.c:5625 [inline]
-> >>>    lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5590
-> >>>    __might_fault mm/memory.c:5261 [inline]
-> >>>    __might_fault+0x106/0x180 mm/memory.c:5246
-> >>>    _copy_to_iter+0x199/0x1600 lib/iov_iter.c:619
-> >>>    copy_to_iter include/linux/uio.h:139 [inline]
-> >>>    simple_copy_to_iter+0x4c/0x70 net/core/datagram.c:519
-> >>>    __skb_datagram_iter+0x10f/0x770 net/core/datagram.c:425
-> >>>    skb_copy_datagram_iter+0x40/0x50 net/core/datagram.c:533
-> >>>    skb_copy_datagram_msg include/linux/skbuff.h:3620 [inline]
-> >>>    unix_stream_read_actor+0x78/0xc0 net/unix/af_unix.c:2701
-> >>>    unix_stream_recv_urg net/unix/af_unix.c:2433 [inline]
-> >>>    unix_stream_read_generic+0x17cd/0x2190 net/unix/af_unix.c:2504
-> >>>    unix_stream_recvmsg+0xb1/0xf0 net/unix/af_unix.c:2717
-> >>>    sock_recvmsg_nosec net/socket.c:944 [inline]
-> >>>    sock_recvmsg net/socket.c:962 [inline]
-> >>>    sock_recvmsg net/socket.c:958 [inline]
-> >>>    ____sys_recvmsg+0x2c4/0x600 net/socket.c:2622
-> >>>    ___sys_recvmsg+0x127/0x200 net/socket.c:2664
-> >>>    do_recvmmsg+0x24d/0x6d0 net/socket.c:2758
-> >>>    __sys_recvmmsg net/socket.c:2837 [inline]
-> >>>    __do_sys_recvmmsg net/socket.c:2860 [inline]
-> >>>    __se_sys_recvmmsg net/socket.c:2853 [inline]
-> >>>    __x64_sys_recvmmsg+0x20b/0x260 net/socket.c:2853
-> >>>    do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> >>>    do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-> >>>    entry_SYSCALL_64_after_hwframe+0x44/0xae
-> >>> RIP: 0033:0x43ef39
-> >>> Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 =
-89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f=
-0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-> >>> RSP: 002b:00007ffca8776d68 EFLAGS: 00000246 ORIG_RAX: 000000000000012=
-b
-> >>> RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043ef39
-> >>> RDX: 0000000000000700 RSI: 0000000020001140 RDI: 0000000000000004
-> >>> RBP: 0000000000402f20 R08: 0000000000000000 R09: 0000000000400488
-> >>> R10: 0000000000000007 R11: 0000000000000246 R12: 0000
-> >>>
-> >>>
-> >>> ---
-> >>> This report is generated by a bot. It may contain errors.
-> >>> See https://urldefense.com/v3/__https://goo.gl/tpsmEJ__;!!ACWV5N9M2RV=
-99hQ!fbn9ny5Bw51Jl6yrU93iULDBXa_DPjyVIgQuZWyQbCo5IRkAzvYs6JKlPG1UhbpZ$  for=
- more information about syzbot.
-> >>> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> >>>
-> >>> syzbot will keep track of this issue. See:
-> >>> https://urldefense.com/v3/__https://goo.gl/tpsmEJ*status__;Iw!!ACWV5N=
-9M2RV99hQ!fbn9ny5Bw51Jl6yrU93iULDBXa_DPjyVIgQuZWyQbCo5IRkAzvYs6JKlPKlEx5v1$=
-  for how to communicate with syzbot.
-> >>> For information about bisection process see: https://urldefense.com/v=
-3/__https://goo.gl/tpsmEJ*bisection__;Iw!!ACWV5N9M2RV99hQ!fbn9ny5Bw51Jl6yrU=
-93iULDBXa_DPjyVIgQuZWyQbCo5IRkAzvYs6JKlPJk7KaIr$
-> >>> syzbot can test patches for this issue, for details see:
-> >>> https://urldefense.com/v3/__https://goo.gl/tpsmEJ*testing-patches__;I=
-w!!ACWV5N9M2RV99hQ!fbn9ny5Bw51Jl6yrU93iULDBXa_DPjyVIgQuZWyQbCo5IRkAzvYs6JKl=
-PMhq2hD3$
-> >> --
-> >> You received this message because you are subscribed to the Google Gro=
-ups "syzkaller-bugs" group.
-> >> To unsubscribe from this group and stop receiving emails from it, send=
- an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> >> To view this discussion on the web visit https://urldefense.com/v3/__h=
-ttps://groups.google.com/d/msgid/syzkaller-bugs/0c106e6c-672f-474e-5815-97b=
-65596139d*40oracle.com__;JQ!!ACWV5N9M2RV99hQ!fbn9ny5Bw51Jl6yrU93iULDBXa_DPj=
-yVIgQuZWyQbCo5IRkAzvYs6JKlPHjmYAGZ$ .
+(*)
+
+
+>   __nft_ct_set_destroy net/netfilter/nft_ct.c:529 [inline]
+>   __nft_ct_set_destroy net/netfilter/nft_ct.c:518 [inline]
+>   nft_ct_set_init+0x41e/0x750 net/netfilter/nft_ct.c:614
+>   nf_tables_newexpr net/netfilter/nf_tables_api.c:2742 [inline]
+>   nft_expr_init+0x145/0x2d0 net/netfilter/nf_tables_api.c:2780
+>   nft_set_elem_expr_alloc+0x27/0x280 net/netfilter/nf_tables_api.c:5284
+>   nf_tables_newset+0x208a/0x32f0 net/netfilter/nf_tables_api.c:4389
+>   nfnetlink_rcv_batch+0x1710/0x25f0 net/netfilter/nfnetlink.c:513
+>   nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:634 [inline]
+>   nfnetlink_rcv+0x3af/0x420 net/netfilter/nfnetlink.c:652
+>   netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+>   netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
+>   netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
+>   sock_sendmsg_nosec net/socket.c:703 [inline]
+>   sock_sendmsg+0xcf/0x120 net/socket.c:723
+>   ____sys_sendmsg+0x6e8/0x810 net/socket.c:2392
+>   ___sys_sendmsg+0xf3/0x170 net/socket.c:2446
+>   __sys_sendmsg+0xe5/0x1b0 net/socket.c:2475
+>   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>   entry_SYSCALL_64_after_hwframe+0x44/0xae
+> RIP: 0033:0x444819
+
+[snip]
+
+> Freed by task 9788:
+>   kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+>   kasan_set_track+0x1c/0x30 mm/kasan/common.c:46
+>   kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:360
+>   ____kasan_slab_free mm/kasan/common.c:366 [inline]
+>   ____kasan_slab_free mm/kasan/common.c:328 [inline]
+>   __kasan_slab_free+0xfb/0x130 mm/kasan/common.c:374
+>   kasan_slab_free include/linux/kasan.h:230 [inline]
+>   slab_free_hook mm/slub.c:1625 [inline]
+>   slab_free_freelist_hook+0xdf/0x240 mm/slub.c:1650
+>   slab_free mm/slub.c:3210 [inline]
+>   kfree+0xe4/0x530 mm/slub.c:4264
+>   nf_ct_tmpl_free net/netfilter/nf_conntrack_core.c:590 [inline]
+>   destroy_conntrack+0x222/0x2c0 net/netfilter/nf_conntrack_core.c:613
+>   nf_conntrack_destroy+0xab/0x230 net/netfilter/core.c:677
+>   nf_conntrack_put include/linux/netfilter/nf_conntrack_common.h:34 [inline]
+>   nf_ct_put include/net/netfilter/nf_conntrack.h:176 [inline]
+>   nft_ct_tmpl_put_pcpu+0x15e/0x1e0 net/netfilter/nft_ct.c:356
+
+I think, there a missing lock in this function:
+
+	for_each_possible_cpu(cpu) {
+		ct = per_cpu(nft_ct_pcpu_template, cpu);
+		if (!ct)
+			break;
+		nf_ct_put(ct);
+		per_cpu(nft_ct_pcpu_template, cpu) = NULL;
+		
+	}
+
+Syzbot hit a UAF in nft_ct_tmpl_put_pcpu() (*), but freed template 
+should be NULL.
+
+So I suspect following scenario:
+
+
+CPU0:			CPU1:
+= per_cpu()
+			= per_cpu()
+
+nf_ct_put
+per_cpu = NULL
+			nf_ct_put()
+			* UAF *
+
+
+#syz test
+git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+
+
+With regards,
+Pavel Skripkin
+
+>   __nft_ct_set_destroy net/netfilter/nft_ct.c:529 [inline]
+>   __nft_ct_set_destroy net/netfilter/nft_ct.c:518 [inline]
+>   nft_ct_set_init+0x41e/0x750 net/netfilter/nft_ct.c:614
+>   nf_tables_newexpr net/netfilter/nf_tables_api.c:2742 [inline]
+>   nft_expr_init+0x145/0x2d0 net/netfilter/nf_tables_api.c:2780
+>   nft_set_elem_expr_alloc+0x27/0x280 net/netfilter/nf_tables_api.c:5284
+>   nf_tables_newset+0x208a/0x32f0 net/netfilter/nf_tables_api.c:4389
+>   nfnetlink_rcv_batch+0x1710/0x25f0 net/netfilter/nfnetlink.c:513
+>   nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:634 [inline]
+>   nfnetlink_rcv+0x3af/0x420 net/netfilter/nfnetlink.c:652
+>   netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+>   netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
+>   netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
+>   sock_sendmsg_nosec net/socket.c:703 [inline]
+>   sock_sendmsg+0xcf/0x120 net/socket.c:723
+>   ____sys_sendmsg+0x6e8/0x810 net/socket.c:2392
+>   ___sys_sendmsg+0xf3/0x170 net/socket.c:2446
+>   __sys_sendmsg+0xe5/0x1b0 net/socket.c:2475
+>   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>   entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> The buggy address belongs to the object at ffff88803d750400
+>   which belongs to the cache kmalloc-512 of size 512
+> The buggy address is located 0 bytes inside of
+>   512-byte region [ffff88803d750400, ffff88803d750600)
+> The buggy address belongs to the page:
+> page:ffffea0000f5d400 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x3d750
+> head:ffffea0000f5d400 order:2 compound_mapcount:0 compound_pincount:0
+> flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
+> raw: 00fff00000010200 0000000000000000 dead000000000122 ffff888010841c80
+> raw: 0000000000000000 0000000080100010 00000001ffffffff 0000000000000000
+> page dumped because: kasan: bad access detected
+> page_owner tracks the page as allocated
+> page last allocated via order 2, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 9789, ts 226704064982, free_ts 0
+>   prep_new_page mm/page_alloc.c:2436 [inline]
+>   get_page_from_freelist+0xa72/0x2f80 mm/page_alloc.c:4169
+>   __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5391
+>   alloc_pages+0x18c/0x2a0 mm/mempolicy.c:2244
+>   alloc_slab_page mm/slub.c:1688 [inline]
+>   allocate_slab+0x32e/0x4b0 mm/slub.c:1828
+>   new_slab mm/slub.c:1891 [inline]
+>   new_slab_objects mm/slub.c:2637 [inline]
+>   ___slab_alloc+0x4ba/0x820 mm/slub.c:2800
+>   __slab_alloc.constprop.0+0xa7/0xf0 mm/slub.c:2840
+>   slab_alloc_node mm/slub.c:2922 [inline]
+>   slab_alloc mm/slub.c:2964 [inline]
+>   kmem_cache_alloc_trace+0x30f/0x3c0 mm/slub.c:2981
+>   kmalloc include/linux/slab.h:591 [inline]
+>   kzalloc include/linux/slab.h:721 [inline]
+>   nf_ct_tmpl_alloc+0x8d/0x270 net/netfilter/nf_conntrack_core.c:569
+>   nft_ct_tmpl_alloc_pcpu net/netfilter/nft_ct.c:371 [inline]
+>   nft_ct_set_init+0x4d6/0x750 net/netfilter/nft_ct.c:567
+>   nf_tables_newexpr net/netfilter/nf_tables_api.c:2742 [inline]
+>   nft_expr_init+0x145/0x2d0 net/netfilter/nf_tables_api.c:2780
+>   nft_set_elem_expr_alloc+0x27/0x280 net/netfilter/nf_tables_api.c:5284
+>   nf_tables_newset+0x208a/0x32f0 net/netfilter/nf_tables_api.c:4389
+>   nfnetlink_rcv_batch+0x1710/0x25f0 net/netfilter/nfnetlink.c:513
+>   nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:634 [inline]
+>   nfnetlink_rcv+0x3af/0x420 net/netfilter/nfnetlink.c:652
+>   netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+>   netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
+>   netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
+> page_owner free stack trace missing
+> 
+> Memory state around the buggy address:
+>   ffff88803d750300: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>   ffff88803d750380: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>>ffff88803d750400: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>                     ^
+>   ffff88803d750480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>   ffff88803d750500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> ==================================================================
+> 
+
+--------------B2B9016DCAFA275198E2C6CE
+Content-Type: text/x-patch; charset=UTF-8;
+ name="0001-netfilter-add-mutex-to-protect-nft_ct_pcpu_template.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename*0="0001-netfilter-add-mutex-to-protect-nft_ct_pcpu_template.pat";
+ filename*1="ch"
+
+From 39275bfc1bac5758752ba2bf4df68e244590589b Mon Sep 17 00:00:00 2001
+From: Pavel Skripkin <paskripkin@gmail.com>
+Date: Mon, 9 Aug 2021 22:13:44 +0300
+Subject: [PATCH] netfilter: add mutex to protect nft_ct_pcpu_template
+
+/* ... */
+
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
+ net/netfilter/nft_ct.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/net/netfilter/nft_ct.c b/net/netfilter/nft_ct.c
+index 337e22d8b40b..09f03036e5c8 100644
+--- a/net/netfilter/nft_ct.c
++++ b/net/netfilter/nft_ct.c
+@@ -10,6 +10,7 @@
+ #include <linux/init.h>
+ #include <linux/module.h>
+ #include <linux/netlink.h>
++#include <linux/mutex.h>
+ #include <linux/netfilter.h>
+ #include <linux/netfilter/nf_tables.h>
+ #include <net/netfilter/nf_tables.h>
+@@ -41,6 +42,7 @@ struct nft_ct_helper_obj  {
+ #ifdef CONFIG_NF_CONNTRACK_ZONES
+ static DEFINE_PER_CPU(struct nf_conn *, nft_ct_pcpu_template);
+ static unsigned int nft_ct_pcpu_template_refcnt __read_mostly;
++static DEFINE_MUTEX(nft_ct_pcpu_template_mutex);
+ #endif
+ 
+ static u64 nft_ct_get_eval_counter(const struct nf_conn_counter *c,
+@@ -344,11 +346,13 @@ static const struct nla_policy nft_ct_policy[NFTA_CT_MAX + 1] = {
+ };
+ 
+ #ifdef CONFIG_NF_CONNTRACK_ZONES
+-static void nft_ct_tmpl_put_pcpu(void)
++static void nft_ct_tmpl_put_pcpu(bool lock)
+ {
+ 	struct nf_conn *ct;
+ 	int cpu;
+ 
++	if (lock)
++		mutex_lock(&nft_ct_pcpu_template_mutex);
+ 	for_each_possible_cpu(cpu) {
+ 		ct = per_cpu(nft_ct_pcpu_template, cpu);
+ 		if (!ct)
+@@ -356,6 +360,8 @@ static void nft_ct_tmpl_put_pcpu(void)
+ 		nf_ct_put(ct);
+ 		per_cpu(nft_ct_pcpu_template, cpu) = NULL;
+ 	}
++	if (lock)
++		mutex_unlock(&nft_ct_pcpu_template_mutex);
+ }
+ 
+ static bool nft_ct_tmpl_alloc_pcpu(void)
+@@ -367,16 +373,18 @@ static bool nft_ct_tmpl_alloc_pcpu(void)
+ 	if (nft_ct_pcpu_template_refcnt)
+ 		return true;
+ 
++	mutex_lock(&nft_ct_pcpu_template_mutex);
+ 	for_each_possible_cpu(cpu) {
+ 		tmp = nf_ct_tmpl_alloc(&init_net, &zone, GFP_KERNEL);
+ 		if (!tmp) {
+-			nft_ct_tmpl_put_pcpu();
++			nft_ct_tmpl_put_pcpu(false);
+ 			return false;
+ 		}
+ 
+ 		atomic_set(&tmp->ct_general.use, 1);
+ 		per_cpu(nft_ct_pcpu_template, cpu) = tmp;
+ 	}
++	mutex_unlock(&nft_ct_pcpu_template_mutex);
+ 
+ 	return true;
+ }
+@@ -526,7 +534,7 @@ static void __nft_ct_set_destroy(const struct nft_ctx *ctx, struct nft_ct *priv)
+ #ifdef CONFIG_NF_CONNTRACK_ZONES
+ 	case NFT_CT_ZONE:
+ 		if (--nft_ct_pcpu_template_refcnt == 0)
+-			nft_ct_tmpl_put_pcpu();
++			nft_ct_tmpl_put_pcpu(true);
+ 		break;
+ #endif
+ 	default:
+-- 
+2.32.0
+
+
+--------------B2B9016DCAFA275198E2C6CE--
