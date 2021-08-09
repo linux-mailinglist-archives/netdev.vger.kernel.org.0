@@ -2,156 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35DCA3E3F45
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 07:11:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B669A3E3F70
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 07:51:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233069AbhHIFLy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 01:11:54 -0400
-Received: from mail-vi1eur05on2077.outbound.protection.outlook.com ([40.107.21.77]:61536
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231996AbhHIFLx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Aug 2021 01:11:53 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CuPnq5QtKFFlqjb1r8xNHk+G2hDmVQBMoaiqAfpvAgnH1QV0aqRhJcAfpt6YFknZGuPM5NiPAWpN9wLmyez1xps80dkNCT6NGLGTPxmZ/qg86cGLFbRNPyLF3QrgKowsBwoS7kCtKK+Eim6vyIvRVdziAun5LsRiPicxfpevU4SKBURJ6f2AoUfh1EVd/Y3ipJRGIXbOSGTZ9YixC0hUaYvxAiY3GTPRjihWPuxITCyJazBK2+ScE/5274Xd6xKVDDeJjfaY0KlWCaX/5zFpeWOQTNmWulCfhgQKdxUMc215vgfzL3OkcyAfVAjOd4k1E/4YPWb+Fpba6dn9HxQWSw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EtspRq5npEh87AC+Arr/P6boAe+7nWyNF1Zan7b/oRw=;
- b=NGzyfz35NNODRkRIsjD/wsDs0UtyLN8zcjfgo2K+lTAoPZ4Niub1R+MvZ8M4NyrveZrFNFdttiTxLvEpf2rqfSooc1gd/OAP9eitxrhBy2mjpMDYW0/y/QvlYgsr8xt9tcFCzFxP0CrC/wWxkC6+JXPoPvZzeAb/bh8PXNimGzbenwEvQAOUyKA2QBVPeEJIEud0I/yhHACwBfhq1yzBtlsHjCm5I/96uKYh1GlYayO9/D/B3XRimkQV76oj6j010eIurSTCH/i7aV8K8ckQW3MZERMYMjRBO0TisWO0/zNr5p7dsT2pa7fKYCwjo361ojWJiT0nLbmz+asY94kdSg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EtspRq5npEh87AC+Arr/P6boAe+7nWyNF1Zan7b/oRw=;
- b=mBMctz27vlJsTWDR7y/4+U30cu1izciReG+eqnoSXuDKxj7G9iRxRX6R4ZcVdWYeURI6Co4ypC68WZYeFUKj5eKVfE1yYn5zOWP5WeoIZ1SNCDgsIaMHwult4SaFJtMZDH/AwcBVUSJSWo8uecInHb5KOZVQ5GgBSJ9A0ZO/Mtc=
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DB9PR04MB8430.eurprd04.prod.outlook.com (2603:10a6:10:24f::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15; Mon, 9 Aug
- 2021 05:11:31 +0000
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::6969:eadc:6001:c0d]) by DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::6969:eadc:6001:c0d%6]) with mapi id 15.20.4394.022; Mon, 9 Aug 2021
- 05:11:31 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     Guenter Roeck <linux@roeck-us.net>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: RE: [PATCH V1 4/5] net: fec: add eee mode tx lpi support
-Thread-Topic: [PATCH V1 4/5] net: fec: add eee mode tx lpi support
-Thread-Index: AQHXdJeZXIVAjgPwdk68s5rhZYjv2KtqlfKAgAA6T0A=
-Date:   Mon, 9 Aug 2021 05:11:31 +0000
-Message-ID: <DB8PR04MB67956C9894A1F77FF537A731E6F69@DB8PR04MB6795.eurprd04.prod.outlook.com>
-References: <20210709075355.27218-1-qiangqing.zhang@nxp.com>
- <20210709075355.27218-5-qiangqing.zhang@nxp.com>
- <20210809014043.GA3712165@roeck-us.net>
-In-Reply-To: <20210809014043.GA3712165@roeck-us.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: roeck-us.net; dkim=none (message not signed)
- header.d=none;roeck-us.net; dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 489a85aa-6c17-4478-28cd-08d95af4267a
-x-ms-traffictypediagnostic: DB9PR04MB8430:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB9PR04MB84309813772A6489EDB62ADCE6F69@DB9PR04MB8430.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4714;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: HT/o75Ib9ujTJCyvLueNYEECfCxOxyawLkIt+zxBB3QXzm4Kiqp9fue9e5wJIG8EFlhejBjm4hZOodv5HqDAQLAi//8gNRHXxuxEKwN+2zZudXwVqS0ugfLd1i3NbCzdqN56aJIV161E6DgRxlhQkHRmZNjkOlpCjQm3dLtrPKYZzwWTYsLQ4/elmI3OruCh3Oa2yWN0lr36+OCup921lpN+OIldN5MKt/a3rH6wSbokQUthY+nGi2/vvSRYsWPZTnx7xWLwPfBs3RPC0fzU01xMVDKSlaWCC5kWcrJZ3ZEGYDzN+Prr8OPB4gPC6J4Wb73wJ0tGHvu+JH9+rp/M7LXpFy2KA9hFQ/riJNkUqD5WHRgLN2O3ZCAC/+g/9NB30tPBDdLoQD5qOj59yKONQkH6DZeAJprTOo0IeMXKG9PfjXsTjAXeulpynMaaJpRqBSv7MBogZUWBO3Xh1rTQA0ZDna1JzxKEFVeTfXaVN+SSS5jJI/qdcQFiqKLCKJ7GUIFoNRhtR9sudlyodHVGbr54V7twXyHLpynNCyRkXB6JWNk7whdXqzgT40ODY6yZ3qf77Bv6QwRSvmZcXKdaBwn/+/oSt5ZSUYWqqoLO+4bi3b4x1X+4cMRPnvzET/wVDV+Tf4aGHLVC3+Dc4GeGTIBi8IqpLOt5iw+ZfGvFbBjbssHcEg/URPdNT5uaEsAtauK2gtIUPxZyhxSFTCooJQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(186003)(26005)(52536014)(6916009)(83380400001)(86362001)(66946007)(66556008)(76116006)(64756008)(66446008)(66476007)(55016002)(71200400001)(2906002)(9686003)(54906003)(8936002)(122000001)(4326008)(38100700002)(38070700005)(33656002)(316002)(6506007)(8676002)(53546011)(7696005)(508600001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?gb2312?B?bkhMcTgxS0RmbEdRL054NmVEY3F0dzBLQlNaaXczOHJLbkNDZlRocEw2OXFR?=
- =?gb2312?B?N0FkektsL0ppYXFGZUZWS3FHalRIdlAyUVpxQmJ2ZUZWclpsS0o0VE1NQkxy?=
- =?gb2312?B?N3hLMFJ5LzZhVjlKc0R1SExPMndRUlZUamhJd2Jva2w2VVFPY3RBRXZ2Mmo1?=
- =?gb2312?B?V1JFRkVIdU1uTm42bm9tT25pTmU1Vnl6M2QxenFVc2UwSEQ2ZlMrVkNxdzJQ?=
- =?gb2312?B?RElmb29VRTNOSlpDUGtkcFFvQlkvOTBITmd4bFQrb3p5cTJXYnllRkJrejFv?=
- =?gb2312?B?Ty9xVjdKRmwzVUUzRHZ4ZWIwV3pPUnMxWDQ0N3NRTHB4M0hMNjlrYTByUlF1?=
- =?gb2312?B?dC9pdk9meU5OYTNpeTdzRkRaZS9ocUMrNUNsLzZQS1ROZ2Jyay9rWmRnSHpK?=
- =?gb2312?B?S1lBM3RQUkpnQ2lwTHVZOVo1YlhWTmRZRjJ2RjBTMTIwcjNVT00razY0LzMr?=
- =?gb2312?B?TXpLR0xHandZWWgrTW9kY2VkSXJ4VVRwQnlpb1dGTUFzUlJDY01wTHN3VUk1?=
- =?gb2312?B?NXlYMXcvZ2kvcjRCVGJad1VyeGNnOFQ0cmdpYjZWekFBYXNaY29jZTA1M3k0?=
- =?gb2312?B?S2pOUkIyQWN6c3RYdml4Skd5L2FkWS9RbWJaYVBGUVQ1U3Z3SFErOFVMQ200?=
- =?gb2312?B?V2xSWFlyeGlNYmt3SnZpV3ZEWlZoMzk0T0I2aHp1TWJmRE5VcVlwM1ExSGN6?=
- =?gb2312?B?ZWNlcVpxbWk1eTYvNUo3THFCNytJYXVxLzVLOE5zVGZTbUJWQlJ3Q0NFRW1t?=
- =?gb2312?B?NGpKY3BWNTZ3KzdqL1JwR3VxNEg0cmZpWnhxcGRZbDIwdmlSSzFOUVA3YTBN?=
- =?gb2312?B?UUo4anQxYnpUS0kyRkxwMHdReXNld2dWNTR2OVZvR0ZxcUhSM2ozT1B1eWl3?=
- =?gb2312?B?cmM2WUc3NHNjaEpDby80MWs2d2EvbDBQanZlT0Fsc2FPUUtINEVHVUdvY0JE?=
- =?gb2312?B?QXQ0ZnQ2OHVqN3JiczBhclBpUWI2d1ZBL3VFK05NcVQ1Vk1aK2xPeEE0NjZH?=
- =?gb2312?B?L2dRd0g1TTQ3Q0xvSGRFeHhJOER4d0UxRTA5ZHVjaHZxRmZxTGNXVFZicWRj?=
- =?gb2312?B?YWVtUW94WFpUTXk1TTdkY1B3UUs1ZWxBMjI1cldUanhVQmUwdld6SVFLK21N?=
- =?gb2312?B?Ym1oQTU2SEk5UmphNVhKM3ZEbmJ3dkVTdGdTVTBrOS9HTVlJVzVyRkdYR2F5?=
- =?gb2312?B?bnRsWFYxOGxNWFc4eXptMHVUWGlvYzJkOURsMnduYVRxdDg0N0tqekdQdCtR?=
- =?gb2312?B?alErR3QzNW93ZDRkM0dHRkNwMGtzeGJCd1k1MzhvSXhndDZYSURiMVZIaWJr?=
- =?gb2312?B?akJVNnJqTDRGaVMwR3crTlRFK2lyVjREWm9WY1greGxHTVJyeW11SXBnaEJE?=
- =?gb2312?B?Q2FIaENadnJySVJUVDhpV2d5UkF5QVJ6TytDZUMrSTFCSU9ackpQUUU3eDBI?=
- =?gb2312?B?WXB1VFRSeEF2RXp0L0dRaU9CaUxpYnVBNHBuMXk5UHFYT0hMSFhwV1poNEZw?=
- =?gb2312?B?eG5RU2pMQXRlNm92eWZqZ2tkQnpCSERsS3Y1NTVZZnM3WG9vWmtJcWRRNmVx?=
- =?gb2312?B?OVloQVNMV3NWZHI0NWFxbzVtZG1LL1F0NG4ybU04TERLdDBjR291eDhIdDM4?=
- =?gb2312?B?Tlk0dnpDRVNiUGtVVGs2a3YzM0dZNm9wc3lybEpHdGlRT25DRkpQQXFXaGNI?=
- =?gb2312?B?NVJ3QmJEWGJaME5aRi9UbGNQa3NFUTBpVUc4NXo0ZTFIQTJ1UEIybXhRQXp4?=
- =?gb2312?Q?Co5PP5Gj7DFugZjyls=3D?=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S233093AbhHIFwJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 01:52:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57736 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232786AbhHIFwI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Aug 2021 01:52:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E783261019;
+        Mon,  9 Aug 2021 05:51:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628488308;
+        bh=N6D6KBErRK5MuvWTGfm6sCYWXXDU8X7+uJ9vxdxmzlA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=avWaDshwyaOqt22JisRFBjWdAdBsscGbrulGrJF3zwZm0dWppood/jud0l6Aopw0l
+         /YN9tNC901f0mg4xL+584bElPwDDw4J0GDF3AAIJL6JraF//RUf5b9O6sBFvxCgz6e
+         5XNhGXo6qc6l+kyjSMVy/FquS5lkbp8F8q26TbCVn4vor02hgVXIYDS0jRGKtTNS51
+         M8zhNp5djTeeY/WyOX5T9stWtY/8oKPFm3LCeqHjA33xxDExIN7IFprUSxy3TGrTKN
+         3s3J6+e/rXVUjdIXiun3zHyAIFWCgR4JGqFwIXsf6RILThjPPKZ5NBytP1x0686AOZ
+         1FfGSgu8s7IBQ==
+Date:   Mon, 9 Aug 2021 08:51:44 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     AceLan Kao <acelan.kao@canonical.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Wei Wang <weiwan@google.com>, Taehee Yoo <ap420073@gmail.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RESEND][PATCH] net: called rtnl_unlock() before runpm resumes
+ devices
+Message-ID: <YRDCcDZGVkCdNF34@unreal>
+References: <20210809032809.1224002-1-acelan.kao@canonical.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 489a85aa-6c17-4478-28cd-08d95af4267a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Aug 2021 05:11:31.3287
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: m+bsweSXRGk+bLP5h5ycF9TkC+LMuICCz22HIzV5FvHdOpBZhZmJyzO1t57F1Xh4qKDeRwHS8sDJKBvN2jRRaA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB8430
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210809032809.1224002-1-acelan.kao@canonical.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpIaSBHdWVudGVyLA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEd1
-ZW50ZXIgUm9lY2sgPGdyb2VjazdAZ21haWwuY29tPiBPbiBCZWhhbGYgT2YgR3VlbnRlciBSb2Vj
-aw0KPiBTZW50OiAyMDIxxOo41MI5yNUgOTo0MQ0KPiBUbzogSm9ha2ltIFpoYW5nIDxxaWFuZ3Fp
-bmcuemhhbmdAbnhwLmNvbT4NCj4gQ2M6IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGt1YmFAa2VybmVs
-Lm9yZzsgcm9iaCtkdEBrZXJuZWwub3JnOw0KPiBhbmRyZXdAbHVubi5jaDsgbmV0ZGV2QHZnZXIu
-a2VybmVsLm9yZzsgZGV2aWNldHJlZUB2Z2VyLmtlcm5lbC5vcmc7DQo+IGxpbnV4LWtlcm5lbEB2
-Z2VyLmtlcm5lbC5vcmc7IGRsLWxpbnV4LWlteCA8bGludXgtaW14QG54cC5jb20+DQo+IFN1Ympl
-Y3Q6IFJlOiBbUEFUQ0ggVjEgNC81XSBuZXQ6IGZlYzogYWRkIGVlZSBtb2RlIHR4IGxwaSBzdXBw
-b3J0DQo+IA0KPiBPbiBGcmksIEp1bCAwOSwgMjAyMSBhdCAwMzo1Mzo1NFBNICswODAwLCBKb2Fr
-aW0gWmhhbmcgd3JvdGU6DQo+ID4gRnJvbTogRnVnYW5nIER1YW4gPGZ1Z2FuZy5kdWFuQG54cC5j
-b20+DQo+ID4NCj4gPiBUaGUgaS5NWDhNUSBFTkVUIHZlcnNpb24gc3VwcG9ydCBJRUVFODAyLjNh
-eiBlZWUgbW9kZSwgYWRkIGVlZSBtb2RlIHR4DQo+ID4gbHBpIGVuYWJsZSB0byBzdXBwb3J0IGV0
-aHRvb2wgaW50ZXJmYWNlLg0KPiA+DQo+ID4gdXNhZ2U6DQo+ID4gMS4gc2V0IHNsZWVwIGFuZCB3
-YWtlIHRpbWVyIHRvIDVtczoNCj4gPiBldGh0b29sIC0tc2V0LWVlZSBldGgwIGVlZSBvbiB0eC1s
-cGkgb24gdHgtdGltZXIgNTAwMCAyLiBjaGVjayB0aGUgZWVlDQo+ID4gbW9kZToNCj4gPiB+IyBl
-dGh0b29sIC0tc2hvdy1lZWUgZXRoMA0KPiA+IEVFRSBTZXR0aW5ncyBmb3IgZXRoMDoNCj4gPiAg
-ICAgICAgIEVFRSBzdGF0dXM6IGVuYWJsZWQgLSBhY3RpdmUNCj4gPiAgICAgICAgIFR4IExQSTog
-NTAwMCAodXMpDQo+ID4gICAgICAgICBTdXBwb3J0ZWQgRUVFIGxpbmsgbW9kZXM6ICAxMDBiYXNl
-VC9GdWxsDQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAxMDAwYmFzZVQv
-RnVsbA0KPiA+ICAgICAgICAgQWR2ZXJ0aXNlZCBFRUUgbGluayBtb2RlczogIDEwMGJhc2VUL0Z1
-bGwNCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAxMDAwYmFzZVQvRnVs
-bA0KPiA+ICAgICAgICAgTGluayBwYXJ0bmVyIGFkdmVydGlzZWQgRUVFIGxpbmsgbW9kZXM6ICAx
-MDBiYXNlVC9GdWxsDQo+ID4NCj4gPiBOb3RlOiBGb3IgcmVhbHRpbWUgY2FzZSBhbmQgSUVFRTE1
-ODggcHRwIGNhc2UsIGl0IHNob3VsZCBkaXNhYmxlIEVFRQ0KPiA+IG1vZGUuDQo+ID4NCj4gPiBT
-aWduZWQtb2ZmLWJ5OiBGdWdhbmcgRHVhbiA8ZnVnYW5nLmR1YW5AbnhwLmNvbT4NCj4gPiBTaWdu
-ZWQtb2ZmLWJ5OiBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPg0KPiANCj4g
-VGhpcyBwYXRjaCByZXN1bHRzIGluOg0KPiANCj4gZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNj
-YWxlL2ZlY19tYWluLmM6IEluIGZ1bmN0aW9uDQo+ICdmZWNfZW5ldF9lZWVfbW9kZV9zZXQnOg0K
-PiBkcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZmVjX21haW4uYzoyODAxOjQwOiBlcnJv
-cjogJ0ZFQ19MUElfU0xFRVAnDQo+IHVuZGVjbGFyZWQNCj4gZHJpdmVycy9uZXQvZXRoZXJuZXQv
-ZnJlZXNjYWxlL2ZlY19tYWluLmM6MjgwMjozOTogZXJyb3I6ICdGRUNfTFBJX1dBS0UnDQo+IHVu
-ZGVjbGFyZWQNCj4gDQo+IHdoZW4gYnVpbGRpbmcgbTY4azptNTI3MmMzX2RlZmNvbmZpZy4NCg0K
-SSBqdXN0IHNlbnQgdG8gcGF0Y2ggdG8gZml4IHRoaXMgYnVpbGQgaXNzdWUsIHNvcnJ5IGZvciB0
-aGlzIGluY29udmVuaWVuY2UuDQoNCkJlc3QgUmVnYXJkcywNCkpvYWtpbSBaaGFuZw0KPiBHdWVu
-dGVyDQo=
+On Mon, Aug 09, 2021 at 11:28:09AM +0800, AceLan Kao wrote:
+> From: "Chia-Lin Kao (AceLan)" <acelan.kao@canonical.com>
+> 
+> The rtnl_lock() has been called in rtnetlink_rcv_msg(), and then in
+> __dev_open() it calls pm_runtime_resume() to resume devices, and in
+> some devices' resume function(igb_resum,igc_resume) they calls rtnl_lock()
+> again. That leads to a recursive lock.
+> 
+> It should leave the devices' resume function to decide if they need to
+> call rtnl_lock()/rtnl_unlock(), 
+
+Why? It doesn't sound right that drivers internally decide if to take or
+release some external to them lock without seeing full picture.
+
+Most of the time, device driver authors do it wrong. I afraid that igs
+is one of such drivers that did it wrong.
+
+Thanks
+
+> so call rtnl_unlock() before calling pm_runtime_resume() and then call
+> rtnl_lock() after it in __dev_open().
+> 
+> [  967.723577] INFO: task ip:6024 blocked for more than 120 seconds.
+> [  967.723588]       Not tainted 5.12.0-rc3+ #1
+> [  967.723592] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+> [  967.723594] task:ip              state:D stack:    0 pid: 6024 ppid:  5957 flags:0x00004000
+> [  967.723603] Call Trace:
+> [  967.723610]  __schedule+0x2de/0x890
+> [  967.723623]  schedule+0x4f/0xc0
+> [  967.723629]  schedule_preempt_disabled+0xe/0x10
+> [  967.723636]  __mutex_lock.isra.0+0x190/0x510
+> [  967.723644]  __mutex_lock_slowpath+0x13/0x20
+> [  967.723651]  mutex_lock+0x32/0x40
+> [  967.723657]  rtnl_lock+0x15/0x20
+> [  967.723665]  igb_resume+0xee/0x1d0 [igb]
+> [  967.723687]  ? pci_pm_default_resume+0x30/0x30
+> [  967.723696]  igb_runtime_resume+0xe/0x10 [igb]
+> [  967.723713]  pci_pm_runtime_resume+0x74/0x90
+> [  967.723718]  __rpm_callback+0x53/0x1c0
+> [  967.723725]  rpm_callback+0x57/0x80
+> [  967.723730]  ? pci_pm_default_resume+0x30/0x30
+> [  967.723735]  rpm_resume+0x547/0x760
+> [  967.723740]  __pm_runtime_resume+0x52/0x80
+> [  967.723745]  __dev_open+0x56/0x160
+> [  967.723753]  ? _raw_spin_unlock_bh+0x1e/0x20
+> [  967.723758]  __dev_change_flags+0x188/0x1e0
+> [  967.723766]  dev_change_flags+0x26/0x60
+> [  967.723773]  do_setlink+0x723/0x10b0
+> [  967.723782]  ? __nla_validate_parse+0x5b/0xb80
+> [  967.723792]  __rtnl_newlink+0x594/0xa00
+> [  967.723800]  ? nla_put_ifalias+0x38/0xa0
+> [  967.723807]  ? __nla_reserve+0x41/0x50
+> [  967.723813]  ? __nla_reserve+0x41/0x50
+> [  967.723818]  ? __kmalloc_node_track_caller+0x49b/0x4d0
+> [  967.723824]  ? pskb_expand_head+0x75/0x310
+> [  967.723830]  ? nla_reserve+0x28/0x30
+> [  967.723835]  ? skb_free_head+0x25/0x30
+> [  967.723843]  ? security_sock_rcv_skb+0x2f/0x50
+> [  967.723850]  ? netlink_deliver_tap+0x3d/0x210
+> [  967.723859]  ? sk_filter_trim_cap+0xc1/0x230
+> [  967.723863]  ? skb_queue_tail+0x43/0x50
+> [  967.723870]  ? sock_def_readable+0x4b/0x80
+> [  967.723876]  ? __netlink_sendskb+0x42/0x50
+> [  967.723888]  ? security_capable+0x3d/0x60
+> [  967.723894]  ? __cond_resched+0x19/0x30
+> [  967.723900]  ? kmem_cache_alloc_trace+0x390/0x440
+> [  967.723906]  rtnl_newlink+0x49/0x70
+> [  967.723913]  rtnetlink_rcv_msg+0x13c/0x370
+> [  967.723920]  ? _copy_to_iter+0xa0/0x460
+> [  967.723927]  ? rtnl_calcit.isra.0+0x130/0x130
+> [  967.723934]  netlink_rcv_skb+0x55/0x100
+> [  967.723939]  rtnetlink_rcv+0x15/0x20
+> [  967.723944]  netlink_unicast+0x1a8/0x250
+> [  967.723949]  netlink_sendmsg+0x233/0x460
+> [  967.723954]  sock_sendmsg+0x65/0x70
+> [  967.723958]  ____sys_sendmsg+0x218/0x290
+> [  967.723961]  ? copy_msghdr_from_user+0x5c/0x90
+> [  967.723966]  ? lru_cache_add_inactive_or_unevictable+0x27/0xb0
+> [  967.723974]  ___sys_sendmsg+0x81/0xc0
+> [  967.723980]  ? __mod_memcg_lruvec_state+0x22/0xe0
+> [  967.723987]  ? kmem_cache_free+0x244/0x420
+> [  967.723991]  ? dentry_free+0x37/0x70
+> [  967.723996]  ? mntput_no_expire+0x4c/0x260
+> [  967.724001]  ? __cond_resched+0x19/0x30
+> [  967.724007]  ? security_file_free+0x54/0x60
+> [  967.724013]  ? call_rcu+0xa4/0x250
+> [  967.724021]  __sys_sendmsg+0x62/0xb0
+> [  967.724026]  ? exit_to_user_mode_prepare+0x3d/0x1a0
+> [  967.724032]  __x64_sys_sendmsg+0x1f/0x30
+> [  967.724037]  do_syscall_64+0x38/0x90
+> [  967.724044]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> Fixes: bd869245a3dc ("net: core: try to runtime-resume detached device in __dev_open")
+> Signed-off-by: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
+> ---
+>  net/core/dev.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 8f1a47ad6781..dd43a29419fd 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -1585,8 +1585,11 @@ static int __dev_open(struct net_device *dev, struct netlink_ext_ack *extack)
+>  
+>  	if (!netif_device_present(dev)) {
+>  		/* may be detached because parent is runtime-suspended */
+> -		if (dev->dev.parent)
+> +		if (dev->dev.parent) {
+> +			rtnl_unlock();
+>  			pm_runtime_resume(dev->dev.parent);
+> +			rtnl_lock();
+> +		}
+>  		if (!netif_device_present(dev))
+>  			return -ENODEV;
+>  	}
+> -- 
+> 2.25.1
+> 
