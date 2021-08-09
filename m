@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AA383E4FA9
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 00:59:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87B113E4FAB
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 00:59:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236974AbhHIW7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 18:59:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49394 "EHLO
+        id S236993AbhHIXAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 19:00:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233128AbhHIW7w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 18:59:52 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F66C0613D3
-        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 15:59:31 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id go31so31824686ejc.6
-        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 15:59:31 -0700 (PDT)
+        with ESMTP id S236982AbhHIXAC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 19:00:02 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF325C0613D3
+        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 15:59:40 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id n12so3261353edx.8
+        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 15:59:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mind.be; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=y3AKjkQhrbsJp6r3NozM8uONsoZG+T4yti+l7i+HdTw=;
-        b=W8Ygkzgdv/oXhiKEDZfPiorS0cbmaV33IU6eHAFr7DG5TgHW8Q8pA/mTsmQfuf/spX
-         Jo1sfSLa+xD/ZIujZsIntUxhv4yE/1rlKiwPXNl2EEt2usDIRLRzoeVYRnfTNYr7RX12
-         8xPgLhXkK/XF2b/H5KGnJWGSGAnNXvycXIeGyilhgelpjCH2mNvi470ln1+b076KcGF0
-         atqxVvFShxGvUWgyTlE6IFvkQ8N3fL1CbATGoU3ai48VS4S2CmPbsZ+ogBj+JTUtdeNm
-         vT4AtaO791QocCs3KnQtNCdlOj/3qjspf/0pV+5ksDOq8pCdRjVyvHm7P9ArFCl6/K10
-         uxBg==
+        bh=MzJr0qbqsvMw55RyyIfqZjVAh0S51a48rx6Wiy6q1jc=;
+        b=ASZB51Kw764JmFIkT8xeMKlV6w950pnSN5eZfS6ZGWXH6bRk/P/f1eS+4+zc1P8sJo
+         P1TnwhIvL6H+xyDXMAIadhrTa3dJ9H02RJ8W9pdqeDnACAvlKemnM5IqeJ71OOrMbBQ+
+         cdd7LhkG2hn68iA3hK2MXfkrP/0z91c0o2b7XiQ6kfrm2+f2ZS7o9cCFKl56t6xvgIyz
+         NxT6g+V8fghDRlk50qfpnpBbJlUKjzk6PTdsHVEoKRDCbL6lknFaodbyBG4XApUA3ID8
+         vQ4mukklJu+0HAcO5Xjr4fP51NiftK4BdYDzYqg7BcAOBKHTkG8Wap74+PLBA+FsZdej
+         jpwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=y3AKjkQhrbsJp6r3NozM8uONsoZG+T4yti+l7i+HdTw=;
-        b=HYyN+hNNOzLOzD1g1+/2F/TvcVhx8UOYltiIqeo5/v7ZAMoMdNsyE8C8JZvLXl67h+
-         FcGftKLP/c7TBpp8dE+g9AMMSAindaFp/mCPtLuQEdjM2p86sTtSvgedWjzDkqGMkoc4
-         TvYXTLUSrU328F3CUHovvrc1c+5H1Ih6739p+9igkYdm2ETP2larBp8xN6ItBS7GzX8l
-         8tuV8Vza5kLB9HGC34WK/MdwwB4N3pfuzPmCUPiRzvorMMVNfFOsrRVJxig7zDQprqYo
-         wV0s3Md4iRUUpq178sqsWOUTowSXYsNEaTpBaFUGWCwo0cKuIFbuwUpIzDku48sf8ycZ
-         8qyA==
-X-Gm-Message-State: AOAM531exgqZxAy1ghYNChzyY3lNlY6/gCM0RNsqr9c5Vo0GIKJS+zPB
-        R+R7GqBLVhInVwAzM3k3svGCJw==
-X-Google-Smtp-Source: ABdhPJxqcJ16ykQwMaTUp/UVxGBDYPP+sQh99V0G2ImLy+bXYAOPJ35tQXfKx7x8TvoMmeGtmXZnAg==
-X-Received: by 2002:a17:906:a0ce:: with SMTP id bh14mr24253093ejb.434.1628549970159;
-        Mon, 09 Aug 2021 15:59:30 -0700 (PDT)
+        bh=MzJr0qbqsvMw55RyyIfqZjVAh0S51a48rx6Wiy6q1jc=;
+        b=C2Ec9ct7H+eeIXcIrP1bFvyi6m6aCq8pPU5YsxSuAFBGHhUlJZL8+xY1Vcjwo4N7PI
+         3yhRoAfYWJh/B5YVEmSmkwLjQCKprtorCSl/DL2AubYxPnU4ylHcyEigPAmFIjpYEmd4
+         80AwIokokNqQgjFPB5WiggJyXcrMcilCgzbGsv00AnNbH7AWFtDZbhg90m5Fm+9ZR9L1
+         d3AipWEZbm+jgcIPqNXQqIrqxEtOXXhCyw18FT0rNxiNq1DwBe40wyfuEddepHzk9eru
+         pdzBBxgbjurw1ccMhtAOrJL1dob6h98RVvlDglKoUYxRuJ4220+BJD2lSXV8YPdKgiae
+         dtFg==
+X-Gm-Message-State: AOAM532/NY20+mymUocplCPuVL2WJEpKZnFMcGC1IlgOoFXzxn9AbgQ6
+        po8xdF6KFNkS3iyqyac6vpHlS07Wn3omfw==
+X-Google-Smtp-Source: ABdhPJxc4jSSmf9PrpRZxrxkRoexiFO15pz9nv8mIXM+kfqrgK4bVpuKwewgnm7p5uwRU/t7KWe78A==
+X-Received: by 2002:a05:6402:104b:: with SMTP id e11mr926156edu.62.1628549979431;
+        Mon, 09 Aug 2021 15:59:39 -0700 (PDT)
 Received: from cephalopod (168.7-181-91.adsl-dyn.isp.belgacom.be. [91.181.7.168])
-        by smtp.gmail.com with ESMTPSA id q8sm8585719edv.95.2021.08.09.15.59.29
+        by smtp.gmail.com with ESMTPSA id n26sm8620495eds.63.2021.08.09.15.59.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Aug 2021 15:59:29 -0700 (PDT)
-Date:   Tue, 10 Aug 2021 00:59:28 +0200
+        Mon, 09 Aug 2021 15:59:39 -0700 (PDT)
+Date:   Tue, 10 Aug 2021 00:59:37 +0200
 From:   Ben Hutchings <ben.hutchings@mind.be>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH net 2/7] net: dsa: microchip: ksz8795: Fix PVID tag insertion
-Message-ID: <20210809225927.GC17207@cephalopod>
+Subject: [PATCH net 3/7] net: dsa: microchip: ksz8795: Reject unsupported
+ VLAN configuration
+Message-ID: <20210809225936.GD17207@cephalopod>
 References: <20210809225753.GA17207@cephalopod>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -64,115 +65,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ksz8795 has never actually enabled PVID tag insertion, and it also
-programmed the PVID incorrectly.  To fix this:
+The switches supported by ksz8795 only have a per-port flag for Tag
+Removal.  This means it is not possible to support both tagged and
+untagged VLANs on the same port.  Reject attempts to add a VLAN that
+requires the flag to be changed, unless there are no VLANs currently
+configured.
 
-* Allow tag insertion to be controlled per ingress port.  On most
-  chips, set bit 2 in Global Control 19.  On KSZ88x3 this control
-  flag doesn't exist.
+VID 0 is excluded from this check since it is untagged regardless of
+the state of the flag.
 
-* When adding a PVID:
-  - Set the appropriate register bits to enable tag insertion on
-    egress at every other port if this was the packet's ingress port.
-  - Mask *out* the VID from the default tag, before or-ing in the new
-    PVID.
-
-* When removing a PVID:
-  - Clear the same control bits to disable tag insertion.
-  - Don't update the default tag.  This wasn't doing anything useful.
+On the CPU port we could support tagged and untagged VLANs at the same
+time.  This will be enabled by a later patch.
 
 Fixes: e66f840c08a2 ("net: dsa: ksz: Add Microchip KSZ8795 DSA driver")
 Signed-off-by: Ben Hutchings <ben.hutchings@mind.be>
 ---
- drivers/net/dsa/microchip/ksz8795.c     | 26 ++++++++++++++++++-------
- drivers/net/dsa/microchip/ksz8795_reg.h |  4 ++++
- 2 files changed, 23 insertions(+), 7 deletions(-)
+ drivers/net/dsa/microchip/ksz8795.c    | 27 +++++++++++++++++++++++++-
+ drivers/net/dsa/microchip/ksz_common.h |  1 +
+ 2 files changed, 27 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index b0e2b844478a..95842f7b2f1b 100644
+index 95842f7b2f1b..045786f4e29e 100644
 --- a/drivers/net/dsa/microchip/ksz8795.c
 +++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1124,6 +1124,16 @@ static int ksz8_port_vlan_filtering(struct dsa_switch *ds, int port, bool flag,
- 	return 0;
- }
- 
-+static void ksz8_port_enable_pvid(struct ksz_device *dev, int port, bool state)
-+{
-+	if (ksz_is_ksz88x3(dev)) {
-+		ksz_cfg(dev, REG_SW_INSERT_SRC_PVID,
-+			0x03 << (4 - 2 * port), state);
-+	} else {
-+		ksz_pwrite8(dev, port, REG_PORT_CTRL_12, state ? 0x0f : 0x00);
-+	}
-+}
-+
- static int ksz8_port_vlan_add(struct dsa_switch *ds, int port,
- 			      const struct switchdev_obj_port_vlan *vlan,
- 			      struct netlink_ext_ack *extack)
-@@ -1160,9 +1170,11 @@ static int ksz8_port_vlan_add(struct dsa_switch *ds, int port,
- 		u16 vid;
- 
- 		ksz_pread16(dev, port, REG_PORT_CTRL_VID, &vid);
--		vid &= 0xfff;
-+		vid &= ~VLAN_VID_MASK;
- 		vid |= new_pvid;
- 		ksz_pwrite16(dev, port, REG_PORT_CTRL_VID, vid);
-+
-+		ksz8_port_enable_pvid(dev, port, true);
- 	}
- 
- 	return 0;
-@@ -1173,7 +1185,7 @@ static int ksz8_port_vlan_del(struct dsa_switch *ds, int port,
+@@ -1140,13 +1140,38 @@ static int ksz8_port_vlan_add(struct dsa_switch *ds, int port,
  {
  	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
  	struct ksz_device *dev = ds->priv;
--	u16 data, pvid, new_pvid = 0;
-+	u16 data, pvid;
++	struct ksz_port *p = &dev->ports[port];
+ 	u16 data, new_pvid = 0;
  	u8 fid, member, valid;
  
  	if (ksz_is_ksz88x3(dev))
-@@ -1195,14 +1207,11 @@ static int ksz8_port_vlan_del(struct dsa_switch *ds, int port,
- 		valid = 0;
- 	}
+ 		return -ENOTSUPP;
  
--	if (pvid == vlan->vid)
--		new_pvid = 1;
--
- 	ksz8_to_vlan(dev, fid, member, valid, &data);
- 	ksz8_w_vlan_table(dev, vlan->vid, data);
- 
--	if (new_pvid != pvid)
--		ksz_pwrite16(dev, port, REG_PORT_CTRL_VID, pvid);
-+	if (pvid == vlan->vid)
-+		ksz8_port_enable_pvid(dev, port, false);
- 
- 	return 0;
- }
-@@ -1438,6 +1447,9 @@ static int ksz8_setup(struct dsa_switch *ds)
- 
- 	ksz_cfg(dev, S_MIRROR_CTRL, SW_MIRROR_RX_TX, false);
- 
-+	if (!ksz_is_ksz88x3(dev))
-+		ksz_cfg(dev, REG_SW_CTRL_19, SW_INS_TAG_ENABLE, true);
+-	ksz_port_cfg(dev, port, P_TAG_CTRL, PORT_REMOVE_TAG, untagged);
++	/* If a VLAN is added with untagged flag different from the
++	 * port's Remove Tag flag, we need to change the latter.
++	 * Ignore VID 0, which is always untagged.
++	 */
++	if (untagged != p->remove_tag && vlan->vid != 0) {
++		unsigned int vid;
 +
- 	/* set broadcast storm protection 10% rate */
- 	regmap_update_bits(dev->regmap[1], S_REPLACE_VID_CTRL,
- 			   BROADCAST_STORM_RATE,
-diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h b/drivers/net/dsa/microchip/ksz8795_reg.h
-index a32355624f31..6b40bc25f7ff 100644
---- a/drivers/net/dsa/microchip/ksz8795_reg.h
-+++ b/drivers/net/dsa/microchip/ksz8795_reg.h
-@@ -631,6 +631,10 @@
- #define REG_PORT_4_OUT_RATE_3		0xEE
- #define REG_PORT_5_OUT_RATE_3		0xFE
- 
-+/* 88x3 specific */
++		/* Reject attempts to add a VLAN that requires the
++		 * Remove Tag flag to be changed, unless there are no
++		 * other VLANs currently configured.
++		 */
++		for (vid = 1; vid < dev->num_vlans; ++vid) {
++			/* Skip the VID we are going to add or reconfigure */
++			if (vid == vlan->vid)
++				continue;
 +
-+#define REG_SW_INSERT_SRC_PVID		0xC2
++			ksz8_from_vlan(dev, dev->vlan_cache[vid].table[0],
++				       &fid, &member, &valid);
++			if (valid && (member & BIT(port)))
++				return -EINVAL;
++		}
 +
- /* PME */
++		ksz_port_cfg(dev, port, P_TAG_CTRL, PORT_REMOVE_TAG, untagged);
++		p->remove_tag = untagged;
++	}
  
- #define SW_PME_OUTPUT_ENABLE		BIT(1)
+ 	ksz8_r_vlan_table(dev, vlan->vid, &data);
+ 	ksz8_from_vlan(dev, data, &fid, &member, &valid);
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 6afbb41ad39e..1597c63988b4 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -27,6 +27,7 @@ struct ksz_port_mib {
+ struct ksz_port {
+ 	u16 member;
+ 	u16 vid_member;
++	bool remove_tag;		/* Remove Tag flag set, for ksz8795 only */
+ 	int stp_state;
+ 	struct phy_device phydev;
+ 
 -- 
 2.20.1
 
