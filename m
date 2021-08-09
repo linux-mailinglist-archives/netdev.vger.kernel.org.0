@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B40B3E4C73
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 20:54:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03A523E4C74
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 20:54:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235845AbhHISy0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 14:54:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49802 "EHLO
+        id S235497AbhHISyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 14:54:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235895AbhHISyV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 14:54:21 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A851C061798
-        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 11:54:01 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id a5so1823131plh.5
-        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 11:54:01 -0700 (PDT)
+        with ESMTP id S235887AbhHISyb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 14:54:31 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54D35C061796
+        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 11:54:10 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id pj14-20020a17090b4f4eb029017786cf98f9so1419445pjb.2
+        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 11:54:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=herbertland-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4+vb4UQI5XhwkQ1xvPoLu56obdJI+5TluGytOgxzYRs=;
-        b=wm8dVH1pjbR2mPtDMUazv2NPL9FasOaWeOJgsQov4Q+o0TprMCjXJ1YgwC0pgOuvTg
-         KQkCqm4B1GxlDtrvIy8YEhBHPtuMWG4t0ZX34R5j/M9ht22J8XvOPop0ddTujQ+M60EB
-         CtYKzA1cfsMRZO6UmJ9VTFRT8WyfMyRVROgQOakCZyP6f8Emh9P2rSZhjT7xgBzigMfv
-         BQ1OZKIYhmdl8sQXbv4NF4JsWv4vyfN5/ZjKcZ6+sXsNWQFWoXa+ccHt4SNwvYU9JWPd
-         U1z9sEq/wM4InIJ1Pb0aFwYQPixxId/Ievinb7rfAC2ZWsRepCg/oPzlBpf64Mhi3Qde
-         7l1w==
+        bh=IVzqBxR/DNsVDsAqg23OHVpD/90VIgIQWvil1h3GW3Y=;
+        b=fqxYI4khJjHjABi34XG9sQJ4mL2qG1eTs6ijgjbZgIKx5szwNGRZDpJ66iglt5/Jjx
+         XbzO+7xRCTCfXMW/6kxnDUlNEFn4SBYCSrC3lDEqliVrcWBiXrFCOV2cPJ8W08ybBk5K
+         1MuhD1CUFwrspI6AfeK8BHINXh+M9i7guMro+ks44t+dczFUeGKuLX1EtoOjaa4LieT5
+         YCzspa9HwrsYt7NGPDweKbQZ2aG3k+aKUG1Shi5HztJgsIVGL5AqpcF7f+VrnriDjkWr
+         cGRVfBUeLi9kQnvhWfdHJRp4nysIuTn9mgAW/1Rnvq0glQeC2pjj4XyzOIDjmvy8hzyY
+         iOOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4+vb4UQI5XhwkQ1xvPoLu56obdJI+5TluGytOgxzYRs=;
-        b=Ds7wnCpEgVgXWtbzpTQI3QWc8BdiIMyootjuj5w1+7zk1aHBZzX3E6zv+19bg/OgmT
-         ORinDceOQNIqLpmr4ZUEBOXfSRcAEWHVEN1H7tdESd2pZ7laely/bXZc6oel65XKcszt
-         HZPeuPcFrCbleaDhiLcGNen4qYz6y2zi+/aCX/BV4/gSHK4A+uNZrkgDUFVJYaD5amiy
-         koXj2wi/fV6kuQXK+qkqheJTtF9PCNsGyVHDAx1bIOPea8d4x9dxWSv7RGVAfTNoTrgH
-         IaivEr/bWdyf5CKKwQFu9qiv6l9eYeSRqCHcHq4GoHd9LamkMDhq/1CJPs19UEWXwhqK
-         QVig==
-X-Gm-Message-State: AOAM53037Le2MPgTbeuCV37XoNo0/htyLKzCXXkM4eZFpootZqp3Vg/e
-        SoIe/dIGPIGwK+GVTpEY2ZEDFxiH1R3anLBQ
-X-Google-Smtp-Source: ABdhPJyPq/qLmO16VtLmixUW8k8DHZflqK2OgkaSuyBNzbwopyKBBYicD4d75ajejPeLYRRaUMXpSQ==
-X-Received: by 2002:a17:90a:a883:: with SMTP id h3mr27389616pjq.226.1628535240433;
-        Mon, 09 Aug 2021 11:54:00 -0700 (PDT)
+        bh=IVzqBxR/DNsVDsAqg23OHVpD/90VIgIQWvil1h3GW3Y=;
+        b=It/AwmeDmoqwVI36OM5wd3WNBuJ4JuhLMPwbz1adRcrctH5N/Uk1DtUYfhvSmSBeVc
+         eEUoR2wxZEdQf9FHDo95TVsj6rGFa6CMsOAmf1MWb3IhOmMi3Uzu1LiSl7fX8WPOTqD8
+         Ewojx1Pze1BpUfp37zN+YuqGxw7Y9mhjtRTajKqg6W17kcr+77VSBaMK+R5Zc6DqZRvs
+         BJyppVPrX2HqBY/XSw6ocmoDqwMPAQR1g/mfcwhGp3+3VtzF6Uf5EQi2NOWJdBg8Yo8Y
+         P/YtJHxenyQgd8zNkJpLeUtxf7Dy5Ue96CdI9T5Fgh75a+QUQ59uqTc0RL5WkFD183i1
+         dQ4w==
+X-Gm-Message-State: AOAM5312e0ITysrs0RS6u6mmcigzdM1Uv6wu09/Z6TeuW5L1oyd10NMG
+        AhuRvCpiA/NP8nXDqfU98T/KMxwWPiAcT3dc
+X-Google-Smtp-Source: ABdhPJxZBX5rRGcAker3mq8ffPFDxi32ncV+69+Yllk2VeDMMf/vhEO0sB/n9Lx36xrAnDaQx2A8fQ==
+X-Received: by 2002:a17:90a:4681:: with SMTP id z1mr12545435pjf.131.1628535249474;
+        Mon, 09 Aug 2021 11:54:09 -0700 (PDT)
 Received: from localhost.localdomain ([12.33.129.114])
-        by smtp.gmail.com with ESMTPSA id b28sm21255364pff.155.2021.08.09.11.53.55
+        by smtp.gmail.com with ESMTPSA id b28sm21255364pff.155.2021.08.09.11.54.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Aug 2021 11:54:00 -0700 (PDT)
+        Mon, 09 Aug 2021 11:54:09 -0700 (PDT)
 From:   Tom Herbert <tom@herbertland.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net, brakmo@fb.com,
         ycheng@google.com, eric.dumazet@gmail.com, a.e.azimov@gmail.com
 Cc:     Tom Herbert <tom@herbertland.com>
-Subject: [RFC PATCH net-next 1/3] txhash: Make rethinking txhash behavior configurable via sysctl
-Date:   Mon,  9 Aug 2021 11:53:12 -0700
-Message-Id: <20210809185314.38187-2-tom@herbertland.com>
+Subject: [RFC PATCH net-next 2/3] txhash: Add socket option to control TX hash rethink behavior
+Date:   Mon,  9 Aug 2021 11:53:13 -0700
+Message-Id: <20210809185314.38187-3-tom@herbertland.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210809185314.38187-1-tom@herbertland.com>
 References: <20210809185314.38187-1-tom@herbertland.com>
@@ -63,203 +63,163 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a per ns sysctl that controls the txhash rethink behavior,
-sk_rethink_txhash. This sysctl value is a mask rethink modes that are:
-rethink at negative advice, rethink at SYN RTO, and rethink at non-SYN
-RTO. A value of zero disables hash rethink. The default mask is set
-to rethink with all three modes (retains current default behavior)
+Add the SO_TXREHASH_MODE socket option to control hash rethink behavior
+per socket. The setsockopt argument is a mask of rethink modes
+(SOCK_TXREHASH_MODE_NEG_ADVICE, SOCK_TXREHASH_MODE_SYN_RTO,
+and SOCK_TXREHASH_MODE_RTO). The argument may also be -1U
+(SOCK_TXREHASH_MODE_DEFAULT) which indicates that the default system
+value should be used (see txrehash_mode sysctl)
 ---
- include/net/netns/core.h    |  2 ++
- include/net/sock.h          | 26 +++++++++++++++++---------
- include/uapi/linux/socket.h | 13 +++++++++++++
- net/core/net_namespace.c    |  6 ++++++
- net/core/sysctl_net_core.c  |  7 +++++++
- net/ipv4/tcp_input.c        |  2 +-
- net/ipv4/tcp_timer.c        |  5 ++++-
- 7 files changed, 50 insertions(+), 11 deletions(-)
+ arch/alpha/include/uapi/asm/socket.h  |  2 ++
+ arch/mips/include/uapi/asm/socket.h   |  2 ++
+ arch/parisc/include/uapi/asm/socket.h |  2 ++
+ arch/sparc/include/uapi/asm/socket.h  |  3 ++-
+ include/net/sock.h                    |  8 +++++++-
+ include/uapi/asm-generic/socket.h     |  2 ++
+ net/core/sock.c                       | 16 ++++++++++++++++
+ 7 files changed, 33 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/netns/core.h b/include/net/netns/core.h
-index 36c2d998a43c..503f43bfc1d3 100644
---- a/include/net/netns/core.h
-+++ b/include/net/netns/core.h
-@@ -11,6 +11,8 @@ struct netns_core {
+diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/uapi/asm/socket.h
+index 1dd9baf4a6c2..1165cdab5277 100644
+--- a/arch/alpha/include/uapi/asm/socket.h
++++ b/arch/alpha/include/uapi/asm/socket.h
+@@ -131,6 +131,8 @@
  
- 	int	sysctl_somaxconn;
+ #define SO_BUF_LOCK		72
  
-+	unsigend int sysctl_txrehash_mode;
++#define SO_TXREHASH_MODE	73
 +
- #ifdef CONFIG_PROC_FS
- 	int __percpu *sock_inuse;
- 	struct prot_inuse __percpu *prot_inuse;
+ #if !defined(__KERNEL__)
+ 
+ #if __BITS_PER_LONG == 64
+diff --git a/arch/mips/include/uapi/asm/socket.h b/arch/mips/include/uapi/asm/socket.h
+index 1eaf6a1ca561..91412f7725bd 100644
+--- a/arch/mips/include/uapi/asm/socket.h
++++ b/arch/mips/include/uapi/asm/socket.h
+@@ -142,6 +142,8 @@
+ 
+ #define SO_BUF_LOCK		72
+ 
++#define SO_TXREHASH_MODE	73
++
+ #if !defined(__KERNEL__)
+ 
+ #if __BITS_PER_LONG == 64
+diff --git a/arch/parisc/include/uapi/asm/socket.h b/arch/parisc/include/uapi/asm/socket.h
+index 8baaad52d799..80e0eddc6730 100644
+--- a/arch/parisc/include/uapi/asm/socket.h
++++ b/arch/parisc/include/uapi/asm/socket.h
+@@ -123,6 +123,8 @@
+ 
+ #define SO_BUF_LOCK		0x4046
+ 
++#define SO_TXREHASH_MODE	0x4047
++
+ #if !defined(__KERNEL__)
+ 
+ #if __BITS_PER_LONG == 64
+diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/uapi/asm/socket.h
+index e80ee8641ac3..2fd5679e4116 100644
+--- a/arch/sparc/include/uapi/asm/socket.h
++++ b/arch/sparc/include/uapi/asm/socket.h
+@@ -124,8 +124,9 @@
+ 
+ #define SO_BUF_LOCK              0x0051
+ 
+-#if !defined(__KERNEL__)
++#define SO_TXREHASH_MODE	 0x0052
+ 
++#if !defined(__KERNEL__)
+ 
+ #if __BITS_PER_LONG == 64
+ #define SO_TIMESTAMP		SO_TIMESTAMP_OLD
 diff --git a/include/net/sock.h b/include/net/sock.h
-index 6e761451c927..6ef5314e8eed 100644
+index 6ef5314e8eed..b6ddb5278b8c 100644
 --- a/include/net/sock.h
 +++ b/include/net/sock.h
-@@ -577,6 +577,12 @@ static inline bool sk_user_data_is_nocopy(const struct sock *sk)
- 			   __tmp | SK_USER_DATA_NOCOPY);		\
- })
+@@ -313,6 +313,7 @@ struct bpf_local_storage;
+   *	@sk_rcvtimeo: %SO_RCVTIMEO setting
+   *	@sk_sndtimeo: %SO_SNDTIMEO setting
+   *	@sk_txhash: computed flow hash for use on transmit
++  *	@sk_txrehash_mode: configuration bits for controlling TX hash rethink
+   *	@sk_filter: socket filtering instructions
+   *	@sk_timer: sock cleanup timer
+   *	@sk_stamp: time stamp of last packet received
+@@ -462,6 +463,7 @@ struct sock {
+ 	unsigned int		sk_gso_max_size;
+ 	gfp_t			sk_allocation;
+ 	__u32			sk_txhash;
++	unsigned int		sk_txrehash_mode;
  
-+static inline
-+struct net *sock_net(const struct sock *sk)
-+{
-+	return read_pnet(&sk->sk_net);
-+}
-+
- /*
-  * SK_CAN_REUSE and SK_NO_REUSE on a socket mean that the socket is OK
-  * or not whether his port will be reused by someone else. SK_FORCE_REUSE
-@@ -1940,12 +1946,20 @@ static inline void sk_set_txhash(struct sock *sk)
- 	WRITE_ONCE(sk->sk_txhash, net_tx_rndhash());
- }
+ 	/*
+ 	 * Because of non atomicity rules, all
+@@ -1953,7 +1955,11 @@ static inline bool sk_rethink_txhash(struct sock *sk, unsigned int level)
+ 	if (!sk->sk_txhash)
+ 		return false;
  
--static inline bool sk_rethink_txhash(struct sock *sk)
-+static inline bool sk_rethink_txhash(struct sock *sk, unsigned int level)
- {
--	if (sk->sk_txhash) {
-+	unsigned int rehash_mode;
-+
-+	if (!sk->sk_txhash)
-+		return false;
-+
-+	rehash_mode = READ_ONCE(sock_net(sk)->core.sysctl_txrehash_mode);
-+
-+	if (level & rehash_mode) {
+-	rehash_mode = READ_ONCE(sock_net(sk)->core.sysctl_txrehash_mode);
++	if (sk->sk_txrehash_mode == SOCK_TXREHASH_MODE_DEFAULT)
++		rehash_mode =
++			READ_ONCE(sock_net(sk)->core.sysctl_txrehash_mode);
++	else
++		rehash_mode = sk->sk_txrehash_mode;
+ 
+ 	if (level & rehash_mode) {
  		sk_set_txhash(sk);
- 		return true;
- 	}
+diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
+index 1f0a2b4864e4..daa775cc4108 100644
+--- a/include/uapi/asm-generic/socket.h
++++ b/include/uapi/asm-generic/socket.h
+@@ -126,6 +126,8 @@
+ 
+ #define SO_BUF_LOCK		72
+ 
++#define SO_TXREHASH_MODE	73
 +
- 	return false;
- }
+ #if !defined(__KERNEL__)
  
-@@ -1986,7 +2000,7 @@ static inline void __dst_negative_advice(struct sock *sk)
+ #if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
+diff --git a/net/core/sock.c b/net/core/sock.c
+index aada649e07e8..946d9e9242c8 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1367,6 +1367,17 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+ 					  ~SOCK_BUF_LOCK_MASK);
+ 		break;
  
- static inline void dst_negative_advice(struct sock *sk)
- {
--	sk_rethink_txhash(sk);
-+	sk_rethink_txhash(sk, SOCK_TXREHASH_MODE_NEG_ADVICE);
- 	__dst_negative_advice(sk);
- }
- 
-@@ -2591,12 +2605,6 @@ static inline void sk_eat_skb(struct sock *sk, struct sk_buff *skb)
- 	__kfree_skb(skb);
- }
- 
--static inline
--struct net *sock_net(const struct sock *sk)
--{
--	return read_pnet(&sk->sk_net);
--}
--
- static inline
- void sock_net_set(struct sock *sk, struct net *net)
- {
-diff --git a/include/uapi/linux/socket.h b/include/uapi/linux/socket.h
-index eb0a9a5b6e71..2c2cef795a9b 100644
---- a/include/uapi/linux/socket.h
-+++ b/include/uapi/linux/socket.h
-@@ -31,4 +31,17 @@ struct __kernel_sockaddr_storage {
- 
- #define SOCK_BUF_LOCK_MASK (SOCK_SNDBUF_LOCK | SOCK_RCVBUF_LOCK)
- 
-+#define SOCK_TXREHASH_MODE_DISABLE	0
++	case SO_TXREHASH_MODE:
++		if (val == SOCK_TXREHASH_MODE_DEFAULT ||
++		    (val & ~SOCK_TXREHASH_MODE_MASK)) {
++			ret = -EINVAL;
++			break;
++		}
 +
-+/* Flag bits for individual rehash function modes */
-+#define SOCK_TXREHASH_MODE_NEG_ADVICE	0x1
-+#define SOCK_TXREHASH_MODE_SYN_RTO	0x2
-+#define SOCK_TXREHASH_MODE_RTO		0x4
++		sk->sk_txrehash_mode =  val;
 +
-+#define SOCK_TXREHASH_MODE_DEFAULT	-1U
++		break;
 +
-+#define SOCK_TXREHASH_MODE_MASK	(SOCK_TXREHASH_MODE_NEG_ADVICE |	\
-+				 SOCK_TXREHASH_MODE_SYN_RTO |		\
-+				 SOCK_TXREHASH_MODE_RTO)
+ 	default:
+ 		ret = -ENOPROTOOPT;
+ 		break;
+@@ -1733,6 +1744,10 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
+ 		v.val = sk->sk_userlocks & SOCK_BUF_LOCK_MASK;
+ 		break;
+ 
++	case SO_TXREHASH_MODE:
++		v.val = sk->sk_txrehash_mode;
++		break;
 +
- #endif /* _UAPI_LINUX_SOCKET_H */
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index 9b5a767eddd5..03d3767e6728 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -366,6 +366,12 @@ static __net_init int setup_net(struct net *net, struct user_namespace *user_ns)
- static int __net_init net_defaults_init_net(struct net *net)
- {
- 	net->core.sysctl_somaxconn = SOMAXCONN;
-+
-+	/* Default rethink mode is aggrssive (i.e. rethink on first RTO) */
-+	net->core.sysctl_txrehash_mode = SOCK_TXREHASH_MODE_NEG_ADVICE |
-+					 SOCK_TXREHASH_MODE_SYN_RTO |
-+					 SOCK_TXREHASH_MODE_RTO;
-+
- 	return 0;
- }
+ 	default:
+ 		/* We implement the SO_SNDLOWAT etc to not be settable
+ 		 * (1003.1g 7).
+@@ -3158,6 +3173,7 @@ void sock_init_data(struct socket *sock, struct sock *sk)
+ 	sk->sk_pacing_rate = ~0UL;
+ 	WRITE_ONCE(sk->sk_pacing_shift, 10);
+ 	sk->sk_incoming_cpu = -1;
++	sk->sk_txrehash_mode = SOCK_TXREHASH_MODE_DEFAULT;
  
-diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
-index c8496c1142c9..7e828a892bf5 100644
---- a/net/core/sysctl_net_core.c
-+++ b/net/core/sysctl_net_core.c
-@@ -592,6 +592,13 @@ static struct ctl_table netns_core_table[] = {
- 		.extra1		= SYSCTL_ZERO,
- 		.proc_handler	= proc_dointvec_minmax
- 	},
-+	{
-+		.procname	= "txrehash_mode",
-+		.data		= &init_net.core.sysctl_txrehash_mode,
-+		.maxlen		= sizeof(unsigned int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec
-+	},
- 	{ }
- };
- 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 3f7bd7ae7d7a..08eeb2523393 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -4442,7 +4442,7 @@ static void tcp_rcv_spurious_retrans(struct sock *sk, const struct sk_buff *skb)
- 	 * DSACK state and change the txhash to re-route speculatively.
- 	 */
- 	if (TCP_SKB_CB(skb)->seq == tcp_sk(sk)->duplicate_sack[0].start_seq &&
--	    sk_rethink_txhash(sk))
-+	    sk_rethink_txhash(sk, SOCK_TXREHASH_MODE_RTO))
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPDUPLICATEDATAREHASH);
- }
- 
-diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
-index 20cf4a98c69d..53ae43ab5ebe 100644
---- a/net/ipv4/tcp_timer.c
-+++ b/net/ipv4/tcp_timer.c
-@@ -234,6 +234,7 @@ static int tcp_write_timeout(struct sock *sk)
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct net *net = sock_net(sk);
- 	bool expired = false, do_reset;
-+	unsigned int rehash_mode;
- 	int retry_until;
- 
- 	if ((1 << sk->sk_state) & (TCPF_SYN_SENT | TCPF_SYN_RECV)) {
-@@ -241,6 +242,7 @@ static int tcp_write_timeout(struct sock *sk)
- 			__dst_negative_advice(sk);
- 		retry_until = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_syn_retries;
- 		expired = icsk->icsk_retransmits >= retry_until;
-+		rehash_mode = SOCK_TXREHASH_MODE_SYN_RTO;
- 	} else {
- 		if (retransmits_timed_out(sk, net->ipv4.sysctl_tcp_retries1, 0)) {
- 			/* Black hole detection */
-@@ -260,6 +262,7 @@ static int tcp_write_timeout(struct sock *sk)
- 			if (tcp_out_of_resources(sk, do_reset))
- 				return 1;
- 		}
-+		rehash_mode = SOCK_TXREHASH_MODE_RTO;
- 	}
- 	if (!expired)
- 		expired = retransmits_timed_out(sk, retry_until,
-@@ -277,7 +280,7 @@ static int tcp_write_timeout(struct sock *sk)
- 		return 1;
- 	}
- 
--	if (sk_rethink_txhash(sk)) {
-+	if (sk_rethink_txhash(sk, rehash_mode)) {
- 		tp->timeout_rehash++;
- 		__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPTIMEOUTREHASH);
- 	}
+ 	sk_rx_queue_clear(sk);
+ 	/*
 -- 
 2.25.1
 
