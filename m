@@ -2,112 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30D703E4FB0
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 01:00:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C82E3E5008
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 01:36:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237004AbhHIXAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 19:00:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237001AbhHIXAk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 19:00:40 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF09C0613D3
-        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 16:00:18 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id b15so7690688ejg.10
-        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 16:00:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mind.be; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=R/UdCYZCVR4mjo6B5/QmX6kXXoyFbU1YPunfol2qSgA=;
-        b=OF/OYnn6/YR6r77VKmCIq84XLu5DNMhZFxv/LFbDRo07PooME9/85XZU4+5ee+Ht40
-         ICKuMPyOocuGgpKaKYp1U7rPZTjgn00u6SuEFq1xZab8ADDD6jS+Df4Wov8vQ8j38gv/
-         dI6y2GS/EtJeWR39m0sg/eApUef3RgN23R++xAy/koU9s2F73hy9ascv8vljRBT8Sz78
-         R6axkZwHjGrAaCxdTeU7gKN7LbQtGnkg8Rt4Zkwxhb36YzZCSxliPC8bJuNW1QjB18Eo
-         mq3A9ayao671W7SFJuFLHQOWKE8ticSsDya3b27QTlDh18397xNMgP8lMy782Q2oeuP6
-         VtGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=R/UdCYZCVR4mjo6B5/QmX6kXXoyFbU1YPunfol2qSgA=;
-        b=ZqaXO79hQygXmUIV/WPl2/fl8yyb2SaKHpGsYPiVRZ7Ob4YZQ6oFmrTjxPE6EDUGpg
-         gnjlPkEY3aVE5/WnG/0b+Q2ctOJHm+ThgGnR+3y8vNmWzJafhDBbyEVrbjMVuI6gaWRL
-         r6kn8b8eidvazkeBguAIZ5ozEyH0utZTawhY0i+wGLspEA5RA3qByY1aCPmqLlkerUhH
-         /+q9Q+yljC4wFY7xEMYIGcrUQjkC00zhuqe8CifkS1dlupVT53aGMkRHgvx8y76fynOJ
-         i+ApOlIto0P5FZDFv3daR4tnm6keKBkb/D1vNIYV4FM6bpUBQDW6XshhSGx0oG1ie5su
-         Fl8g==
-X-Gm-Message-State: AOAM532ZWWjMokMoDH8Z+MdMwYBp3IrgwAmnQCC1ZOfkLwQ4ICK8SMON
-        dbt71+zQbQMTZFaVGgJeXwAVVw==
-X-Google-Smtp-Source: ABdhPJwUrJQOW+b0EdhOT4z2/x0+wptC+QwasZq4CQz0v8qOMZD2V4APihRg5ya3hVYiZCTA2XXJTA==
-X-Received: by 2002:a17:906:1299:: with SMTP id k25mr24663178ejb.139.1628550017546;
-        Mon, 09 Aug 2021 16:00:17 -0700 (PDT)
-Received: from cephalopod (168.7-181-91.adsl-dyn.isp.belgacom.be. [91.181.7.168])
-        by smtp.gmail.com with ESMTPSA id y23sm6283778ejp.115.2021.08.09.16.00.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Aug 2021 16:00:17 -0700 (PDT)
-Date:   Tue, 10 Aug 2021 01:00:15 +0200
-From:   Ben Hutchings <ben.hutchings@mind.be>
-To:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net 7/7] net: dsa: microchip: ksz8795: Don't use phy_port_cnt
- in VLAN table lookup
-Message-ID: <20210809230014.GH17207@cephalopod>
-References: <20210809225753.GA17207@cephalopod>
+        id S236241AbhHIXgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 19:36:54 -0400
+Received: from mga05.intel.com ([192.55.52.43]:30712 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235336AbhHIXgx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Aug 2021 19:36:53 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10070"; a="300391694"
+X-IronPort-AV: E=Sophos;i="5.84,308,1620716400"; 
+   d="scan'208";a="300391694"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2021 16:36:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,308,1620716400"; 
+   d="scan'208";a="483773228"
+Received: from anambiarhost.jf.intel.com ([10.166.224.238])
+  by fmsmga008.fm.intel.com with ESMTP; 09 Aug 2021 16:36:21 -0700
+Subject: [net-next PATCH] net: act_skbedit: Fix tc action skbedit
+ queue_mapping
+From:   Amritha Nambiar <amritha.nambiar@intel.com>
+To:     netdev@vger.kernel.org, kuba@kernel.org
+Cc:     alexander.duyck@gmail.com, jhs@mojatatu.com, jiri@resnulli.us,
+        xiyou.wangcong@gmail.com, sridhar.samudrala@intel.com,
+        amritha.nambiar@intel.com
+Date:   Mon, 09 Aug 2021 16:41:09 -0700
+Message-ID: <162855246915.98025.18251604658503765863.stgit@anambiarhost.jf.intel.com>
+User-Agent: StGit/unknown-version
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210809225753.GA17207@cephalopod>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The magic number 4 in VLAN table lookup was the number of entries we
-can read and write at once.  Using phy_port_cnt here doesn't make
-sense and presumably broke VLAN filtering for 3-port switches.  Change
-it back to 4.
+For skbedit action queue_mapping to select the transmit queue,
+queue_mapping takes the value N for tx-N (where N is the actual
+queue number). However, current behavior is the following:
+1. Queue selection is off by 1, tx queue N-1 is selected for
+   action skbedit queue_mapping N. (If the general syntax for queue
+   index is 1 based, i.e., action skbedit queue_mapping N would
+   transmit to tx queue N-1, where N >=1, then the last queue cannot
+   be used for transmit as this fails the upper bound check.)
+2. Transmit to first queue of TCs other than TC0 selects the
+   next queue.
+3. It is not possible to transmit to the first queue (tx-0) as
+   this fails the bounds check, in this case the fallback
+   mechanism for hash calculation is used.
 
-Fixes: 4ce2a984abd8 ("net: dsa: microchip: ksz8795: use phy_port_cnt ...")
-Signed-off-by: Ben Hutchings <ben.hutchings@mind.be>
+Fix the call to skb_set_queue_mapping(), the code retrieving the
+transmit queue uses skb_get_rx_queue() which subtracts the queue
+index by 1. This makes it so that "action skbedit queue_mapping N"
+will transmit to tx-N (including the first and last queue).
+
+Signed-off-by: Amritha Nambiar <amritha.nambiar@intel.com>
+Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
 ---
- drivers/net/dsa/microchip/ksz8795.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/sched/act_skbedit.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 891eaeb62ad0..4a6a3838418f 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -687,8 +687,8 @@ static void ksz8_r_vlan_entries(struct ksz_device *dev, u16 addr)
- 	shifts = ksz8->shifts;
- 
- 	ksz8_r_table(dev, TABLE_VLAN, addr, &data);
--	addr *= dev->phy_port_cnt;
--	for (i = 0; i < dev->phy_port_cnt; i++) {
-+	addr *= 4;
-+	for (i = 0; i < 4; i++) {
- 		dev->vlan_cache[addr + i].table[0] = (u16)data;
- 		data >>= shifts[VLAN_TABLE];
+diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
+index e5f3fb8b00e3..a7bba15c74c4 100644
+--- a/net/sched/act_skbedit.c
++++ b/net/sched/act_skbedit.c
+@@ -59,7 +59,7 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
  	}
-@@ -702,7 +702,7 @@ static void ksz8_r_vlan_table(struct ksz_device *dev, u16 vid, u16 *vlan)
- 	u64 buf;
- 
- 	data = (u16 *)&buf;
--	addr = vid / dev->phy_port_cnt;
-+	addr = vid / 4;
- 	index = vid & 3;
- 	ksz8_r_table(dev, TABLE_VLAN, addr, &buf);
- 	*vlan = data[index];
-@@ -716,7 +716,7 @@ static void ksz8_w_vlan_table(struct ksz_device *dev, u16 vid, u16 vlan)
- 	u64 buf;
- 
- 	data = (u16 *)&buf;
--	addr = vid / dev->phy_port_cnt;
-+	addr = vid / 4;
- 	index = vid & 3;
- 	ksz8_r_table(dev, TABLE_VLAN, addr, &buf);
- 	data[index] = vlan;
--- 
-2.20.1
+ 	if (params->flags & SKBEDIT_F_QUEUE_MAPPING &&
+ 	    skb->dev->real_num_tx_queues > params->queue_mapping)
+-		skb_set_queue_mapping(skb, params->queue_mapping);
++		skb_set_queue_mapping(skb, params->queue_mapping + 1);
+ 	if (params->flags & SKBEDIT_F_MARK) {
+ 		skb->mark &= ~params->mask;
+ 		skb->mark |= params->mark & params->mask;
+
