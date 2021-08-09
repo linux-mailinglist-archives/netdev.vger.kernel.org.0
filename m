@@ -2,77 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4414B3E4EAF
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 23:41:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BFD93E4EBE
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 23:52:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231974AbhHIVl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 17:41:57 -0400
-Received: from www62.your-server.de ([213.133.104.62]:45990 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234846AbhHIVlz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 17:41:55 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mDD1Y-0000tj-Ff; Mon, 09 Aug 2021 23:41:32 +0200
-Received: from [85.5.47.65] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mDD1Y-0007xF-7W; Mon, 09 Aug 2021 23:41:32 +0200
-Subject: Re: [PATCH bpf-next v6 7/7] selftests/bpf: Add tests for XDP bonding
-To:     Jussi Maki <joamaki@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        j.vosburgh@gmail.com, Andy Gospodarek <andy@greyhouse.net>,
-        vfalico@gmail.com, Andrii Nakryiko <andrii@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>
-References: <20210609135537.1460244-1-joamaki@gmail.com>
- <20210731055738.16820-1-joamaki@gmail.com>
- <20210731055738.16820-8-joamaki@gmail.com>
- <CAEf4BzZvojbuHseDbnqRUMAAfn-j4J+_3omWJw8=W6cTPmf0dw@mail.gmail.com>
- <CAHn8xcnBQhO_=YEO2cd_uCRYQDZkfQjW2r8aExu8=FYTi_=X5A@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <0bb57862-c8aa-0279-84ae-77f9cbdc47c2@iogearbox.net>
-Date:   Mon, 9 Aug 2021 23:41:31 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S236095AbhHIVw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 17:52:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34158 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232193AbhHIVwx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 17:52:53 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3659CC0613D3;
+        Mon,  9 Aug 2021 14:52:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=KaMCWRlr/ASepwlmVfaesE6d3p8eFAZJ8++WT6RE5fg=; b=SviCN2OLkJcomgD3WQoDogkksR
+        1QAh3HMIWThmPcVoPw/JHjFwp89kxrilMJsj3qqmDaT9Q/d6G3tTxYQ1DcnkNCvLZLC2oGohfohWU
+        kadHOpjzrHRwz26VBMnqMUoACoAXM5zpor6/cLettkTxtxGe7/lIESm1Kswckrevmh9+rrsi48QOx
+        4/G3SPp8gi9YgUcPTEqruV5i4lImc747nanKfqRm3JHD7AFoza3U0JQ9Nituqg+QkkMPaTrHi7TeE
+        6It1rxqi5Y5P+l8MLHNtrLTpH2FuYLTUJfW0kvKySubV5+iPYEam7PVwOuh082JxlUX9w5gkALDGP
+        luNK3qMw==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mDDCB-00224L-0W; Mon, 09 Aug 2021 21:52:31 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     netdev@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org
+Subject: [PATCH] bpf: core: fix kernel-doc notation
+Date:   Mon,  9 Aug 2021 14:52:29 -0700
+Message-Id: <20210809215229.7556-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <CAHn8xcnBQhO_=YEO2cd_uCRYQDZkfQjW2r8aExu8=FYTi_=X5A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26258/Mon Aug  9 10:18:46 2021)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/9/21 4:24 PM, Jussi Maki wrote:
-[...]
->>> +       if (!test__start_subtest("xdp_bonding_redirect_multi"))
->>> +               test_xdp_bonding_redirect_multi(&skeletons);
->>> +
->>> +out:
->>> +       xdp_dummy__destroy(skeletons.xdp_dummy);
->>> +       xdp_tx__destroy(skeletons.xdp_tx);
->>> +       xdp_redirect_multi_kern__destroy(skeletons.xdp_redirect_multi_kern);
->>> +
->>> +       libbpf_set_print(old_print_fn);
->>> +       if (root_netns_fd)
->>
->> technically, fd could be 0, so for fds we have if (fd >= 0)
->> everywhere. Also, if open() above fails, root_netns_fd will be -1 and
->> you'll still attempt to close it.
-> 
-> Good catch. Daniel, could you fix this when applying to be "if
-> (root_netns_fd >= 0)"?
+Fix kernel-doc warnings in kernel/bpf/core.c (found by
+scripts/kernel-doc and W=1 builds).
 
-Yep, done now, I had to rebase due to 220ade77452c ("bonding: 3ad: fix the concurrency
-between __bond_release_one() and bond_3ad_state_machine_handler()") which this series
-here didn't take into account. Please double check.
+Correct a function name in a comment and add return descriptions
+for 2 functions.
 
-Thanks everyone,
-Daniel
+Fixes these kernel-doc warnings:
+
+kernel/bpf/core.c:1372: warning: expecting prototype for __bpf_prog_run(). Prototype was for ___bpf_prog_run() instead
+kernel/bpf/core.c:1372: warning: No description found for return value of '___bpf_prog_run'
+kernel/bpf/core.c:1883: warning: No description found for return value of 'bpf_prog_select_runtime'
+
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Andrii Nakryiko <andrii@kernel.org>
+Cc: bpf@vger.kernel.org
+---
+ kernel/bpf/core.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+--- linux-next-20210806.orig/kernel/bpf/core.c
++++ linux-next-20210806/kernel/bpf/core.c
+@@ -1362,11 +1362,13 @@ u64 __weak bpf_probe_read_kernel(void *d
+ }
+ 
+ /**
+- *	__bpf_prog_run - run eBPF program on a given context
++ *	___bpf_prog_run - run eBPF program on a given context
+  *	@regs: is the array of MAX_BPF_EXT_REG eBPF pseudo-registers
+  *	@insn: is the array of eBPF instructions
+  *
+  * Decode and execute eBPF instructions.
++ *
++ * Return: whatever value is in %BPF_R0 at program exit
+  */
+ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
+ {
+@@ -1878,6 +1880,9 @@ static void bpf_prog_select_func(struct
+  *
+  * Try to JIT eBPF program, if JIT is not available, use interpreter.
+  * The BPF program will be executed via BPF_PROG_RUN() macro.
++ *
++ * Return: the &fp argument along with &err set to 0 for success or
++ * a negative errno code on failure
+  */
+ struct bpf_prog *bpf_prog_select_runtime(struct bpf_prog *fp, int *err)
+ {
