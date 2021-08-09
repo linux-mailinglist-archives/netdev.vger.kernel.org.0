@@ -2,70 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB4363E427F
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 11:20:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42BE43E4283
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 11:20:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234406AbhHIJU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 05:20:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36354 "EHLO mail.kernel.org"
+        id S234459AbhHIJU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 05:20:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36394 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234298AbhHIJUZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Aug 2021 05:20:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 576E161055;
-        Mon,  9 Aug 2021 09:20:05 +0000 (UTC)
+        id S234349AbhHIJU0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Aug 2021 05:20:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 751AD610A1;
+        Mon,  9 Aug 2021 09:20:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628500805;
-        bh=3zRG7v/waZcxAgmTqiGZs19GVAjU11ZNwz9T0OMd2pc=;
+        s=k20201202; t=1628500806;
+        bh=dyB6k7gx7p1UgqVPtpoRpaBC6qnvvZUq5R8yHOybFOI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=c5ySM2xe1N9Z1UkysGSk1Giax4WGu+jOG2kUOZyOW9ViOI8O7fTYJNSE+RtTSWrqo
-         c40Da9cVxoGQ6EN7BFp3ueXjiNT0o3DkAbk8DlGY8tssJJJ7pExrokaCugXb1/yf2T
-         83QJO08iqFWq1xQ+AuaJif+AzAA4sEMG4hcmJ+igvd0rBnweGrTNq63+FIsej/lB1V
-         eQGL5/zq0ueqAxpCdkd7ykYIrhyDAS1jDMtvMHFt+qBH2AwmwZOp7TBp0j+PLyP4mc
-         OZbhX/zoFydbRGnc60GZhy+t5Vhoun+rjqypAzy3lq91RYmqawmhDlES7M7HHTCLsU
-         k9XOcDRCa6A1w==
+        b=oqIWgpK7gKz5A8oZV0Psak7VD72T4jmf8DRv45+BmUk1uNcsLspatD3g1dtIWPDDG
+         AT49TEDQDrpk9GGLsNV2bUVuk7HbZwP4WBZpEBmXibuNxBMZegDS6EJBcmP38CQhPn
+         /8cshFpH2c+6V8lSrFdcx3sc2L1uBK3ORxtC2jzEgDhrakzM7hXh+9KN5RIqgwW01Y
+         L7+6DFJZQ32WtnugQqnM4bnuCL8q3YR1wzFUHD/M4Bv0DuI7NmvHzrV34A8r6uWbfF
+         Fk7IYBtXCsVpoe+BwC7lCqBByf8Wp+HYc87NljkR+co8oZ7eXFXHkFHMsNdr3YSqsl
+         wNWfECVcy8/pQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 47841609B8;
-        Mon,  9 Aug 2021 09:20:05 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6AE9C60A14;
+        Mon,  9 Aug 2021 09:20:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] net: ethernet: ti: cpsw: fix min eth packet size for
- non-switch use-cases
+Subject: Re: [PATCH net-next] wwan: mhi: Fix missing spin_lock_init() in
+ mhi_mbim_probe()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162850080528.12236.16924791752972517567.git-patchwork-notify@kernel.org>
-Date:   Mon, 09 Aug 2021 09:20:05 +0000
-References: <20210805145511.12016-1-grygorii.strashko@ti.com>
-In-Reply-To: <20210805145511.12016-1-grygorii.strashko@ti.com>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        ben.hutchings@essensium.com, linux-kernel@vger.kernel.org,
-        vigneshr@ti.com, linux-omap@vger.kernel.org, lokeshvutla@ti.com,
-        stable@vger.kernel.org
+Message-Id: <162850080643.12236.562671529597026467.git-patchwork-notify@kernel.org>
+Date:   Mon, 09 Aug 2021 09:20:06 +0000
+References: <20210808063344.255867-1-weiyongjun1@huawei.com>
+In-Reply-To: <20210808063344.255867-1-weiyongjun1@huawei.com>
+To:     Wei Yongjun <weiyongjun1@huawei.com>
+Cc:     loic.poulain@linaro.org, ryazanov.s.a@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, hulkci@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu, 5 Aug 2021 17:55:11 +0300 you wrote:
-> The CPSW switchdev driver inherited fix from commit 9421c9015047 ("net:
-> ethernet: ti: cpsw: fix min eth packet size") which changes min TX packet
-> size to 64bytes (VLAN_ETH_ZLEN, excluding ETH_FCS). It was done to fix HW
-> packed drop issue when packets are sent from Host to the port with PVID and
-> un-tagging enabled. Unfortunately this breaks some other non-switch
-> specific use-cases, like:
-> - [1] CPSW port as DSA CPU port with DSA-tag applied at the end of the
-> packet
-> - [2] Some industrial protocols, which expects min TX packet size 60Bytes
-> (excluding FCS).
+On Sun, 8 Aug 2021 06:33:44 +0000 you wrote:
+> The driver allocates the spinlock but not initialize it.
+> Use spin_lock_init() on it to initialize it correctly.
+> 
+> Fixes: aa730a9905b7 ("net: wwan: Add MHI MBIM network driver")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v2] net: ethernet: ti: cpsw: fix min eth packet size for non-switch use-cases
-    https://git.kernel.org/netdev/net/c/acc68b8d2a11
+  - [net-next] wwan: mhi: Fix missing spin_lock_init() in mhi_mbim_probe()
+    https://git.kernel.org/netdev/net-next/c/94c0a6fbd5cf
 
 You are awesome, thank you!
 --
