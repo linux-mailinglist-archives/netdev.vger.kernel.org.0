@@ -2,108 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A1153E42DB
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 11:35:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 714FA3E42D5
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 11:34:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234659AbhHIJfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 05:35:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33980 "EHLO
+        id S234664AbhHIJfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 05:35:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234570AbhHIJf3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 05:35:29 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132D0C0613CF
-        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 02:35:09 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id x90so23562016ede.8
-        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 02:35:09 -0700 (PDT)
+        with ESMTP id S234669AbhHIJe6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 05:34:58 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74FECC061796;
+        Mon,  9 Aug 2021 02:34:37 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id l18so20532868wrv.5;
+        Mon, 09 Aug 2021 02:34:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zwAAZtoe5JzXwMl3BpwlMJNUPbe45ZpYwTmRl3QO43w=;
-        b=zSx2RwzNsht4f2/bo6VzWdIj65matsW9qhjPPJO3ptc/WjUMzFzad9pwS74bs8z/Mp
-         OhhEkmbLQeK5okI4BmVTCWcL53vpJ936O9hAh7aS4qVo7QWsy5BQ9da+gju7Vab2MB4h
-         5PDAP8t1qehCi1ZYuBJ2nbn9BG6AdMVmrSF20afGRnwr8EshJqQkynsnyiqy/0mRgSMw
-         NODT7sKY4WEjQtwV9UUyASMN+eFtLAQ/MVhIHbKpBTmDMfu1pL0cCg3hapx7otqCpEbB
-         Mkq1GKvayRMAbDts5/7MPm+NvD1lS3h1Vby1rGnzxCOVxBS0VG7QfWw3xpp5jOQmKmHM
-         eWSw==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vjxCT+VJ0iUMgOfKLV2Avr5JuRXfNiXW4v7j2+9ljXo=;
+        b=jIcKNRea72ZTofO1kxXWEISoqgUDKhrkqztw/Fm1UPM4Cyy6wKBo5pUxaM5c8m2xTF
+         CpaE9PaIVutrEbligPqYOq+fxBSz4h+ph3u3sd36VceBkqOCraoPb8HaLl9RGaIWBfZV
+         YlpSAZzuAnOyXYd4TbS7RRoC4xSZqF9QP4RxxSqsOQdqTyvnPJECum35Xc8eYbBZa2Kr
+         zvQWgV30Dy8DIB4zVUyn1p7U1JrcPJwtLN2u6cxfMDtc0ViOw9Ip8U0GAHlBp1mtJLLw
+         euJKXX0htb5TRY21gxtgly2ut6HHgyolFnMQRWgMx8nFK12UX101n1WMjSwjGVq4OwLF
+         I6nQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=zwAAZtoe5JzXwMl3BpwlMJNUPbe45ZpYwTmRl3QO43w=;
-        b=cFLru1fStFL7cO9yUDFbN8l5U/0gzzqEcaMhN7Hp1lsQUQ3TY6g5HN5/VxfZydTRXD
-         ZyW0FX/ldN6LNxdb6xBlXRqy1XtvolOQiVRLcobFf70g6W3iLcztATjU6jJeeZmDNw1y
-         8Eg45psL+oWM2D/6QA9AGr/A0b1wEH/0nX8ONDrP5qX1FoRv7RkUpCQSM0jbJEltPzaA
-         agRTPilbm8lj34hkgD6KzdqoBFoXP4MijZRDWuLuUhjq54UnAoda88K1yBnmOFM9zfHj
-         TLwz3YXxQ7iHV1KdU6/wKdR5drtzJL7KEplGeixoUE5TaTgmtZyM8NdvMY05BRGL6STL
-         Ym+w==
-X-Gm-Message-State: AOAM5317Ui2zpdOXe5AMoR0IeP4hTWRe7uI7khazcHCszk8RMTW4HXkI
-        VfYTGKlaqPn0MpAFcIP80vBhRw==
-X-Google-Smtp-Source: ABdhPJyVQTbfG9RhsYLnIylFbyKXtxpwHw5fl0AlD3S8iXZsHrnAongcdTGdp4UUnPg/Reiwo5lAUQ==
-X-Received: by 2002:a05:6402:440e:: with SMTP id y14mr28963676eda.38.1628501707726;
-        Mon, 09 Aug 2021 02:35:07 -0700 (PDT)
-Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
-        by smtp.gmail.com with ESMTPSA id c8sm1989732ejp.124.2021.08.09.02.35.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Aug 2021 02:35:07 -0700 (PDT)
-From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
-Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        illusionist.neo@gmail.com, zlim.lnx@gmail.com,
-        paulburton@kernel.org, naveen.n.rao@linux.ibm.com,
-        sandipan@linux.ibm.com, luke.r.nels@gmail.com, bjorn@kernel.org,
-        iii@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        davem@davemloft.net, udknight@gmail.com,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Subject: [PATCH bpf-next 0/7] Fix MAX_TAIL_CALL_CNT handling in eBPF JITs
-Date:   Mon,  9 Aug 2021 11:34:30 +0200
-Message-Id: <20210809093437.876558-1-johan.almbladh@anyfinetworks.com>
-X-Mailer: git-send-email 2.25.1
+        bh=vjxCT+VJ0iUMgOfKLV2Avr5JuRXfNiXW4v7j2+9ljXo=;
+        b=LfC/cjhet7IuapOII513nuYE3PxI3sd1C6XoRqvyKgANTv4+IHhlDNlQ6wh07W9M4X
+         fYV4XxVdVQ1gjA9y/i0nqds6xtOYbNWkCqZWqhmZKB+T95AZUs5Eme+pkQp80W+fNmtE
+         8DPGyPKArPmqiuHxMxO8QYwMgNoiKGgw3L+SLMZOB2z8wNdN0Rl6LeezP70E0Ep/lJTx
+         u+DzXmzEd+Kx63wlaP6ICaFBK5YbslWgaqo0UH1GSBsQKaChHLypaQQCBi91M+45sosu
+         sErpQ9aJ4cmFai/LBRi+hHFnB8f3e/G9LRUQOTEtCFDSIT4dPkjbVITg1226Nbs6112o
+         Z2XQ==
+X-Gm-Message-State: AOAM533YtfkVdtF9K7uCDM/tq/J2ESplTdqbngZbeeqrhUvAB/GjDms2
+        3/fLz/YXKTiy/D9Lv+JK6gzsSh0VQ8w=
+X-Google-Smtp-Source: ABdhPJwJcUz69IuHP2soEK1Z4uum8Tr5ERBWvoVNlAmm+OyO3YcRONVXA8ElkmBRUXzzsLEVnjTgVw==
+X-Received: by 2002:adf:8287:: with SMTP id 7mr7428804wrc.360.1628501675820;
+        Mon, 09 Aug 2021 02:34:35 -0700 (PDT)
+Received: from [10.0.0.18] ([37.165.146.152])
+        by smtp.gmail.com with ESMTPSA id n10sm1651671wmq.3.2021.08.09.02.34.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 Aug 2021 02:34:34 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: sock: add the case if sk is NULL
+To:     yajun.deng@linux.dev, Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210806061136.54e6926e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210806063815.21541-1-yajun.deng@linux.dev>
+ <489e6f1ce9f8de6fd8765d82e1e47827@linux.dev>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <79e7c9a8-526c-ae9c-8273-d1d4d6170b69@gmail.com>
+Date:   Mon, 9 Aug 2021 11:34:31 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <489e6f1ce9f8de6fd8765d82e1e47827@linux.dev>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A new test of tail call count limiting revealed that the interpreter
-did in fact allow up to MAX_TAIL_CALL_CNT + 1 tail calls, whereas the
-x86 JITs stopped at the intended MAX_TAIL_CALL_CNT. The interpreter was
-fixed in commit b61a28cf11d61f512172e673b8f8c4a6c789b425 ("bpf: Fix
-off-by-one in tail call count limiting"). This patch set fixes all
-arch-specific JITs except for RISC-V.
 
-For each of the affected JITs, the incorrect behaviour was verified
-by running the test_bpf test suite in QEMU. After the fixes, the JITs
-pass the tail call count limiting test.
 
-I have not been able to test the RISC-V JITs due to the lack of a
-working toolchain and QEMU setup. It is likely that the RISC-V JITs
-have the off-by-one behaviour too. I have not verfied any of the NIC JITs.
+On 8/9/21 8:12 AM, yajun.deng@linux.dev wrote:
+> August 6, 2021 9:11 PM, "Jakub Kicinski" <kuba@kernel.org> wrote:
+> 
+>> On Fri, 6 Aug 2021 14:38:15 +0800 Yajun Deng wrote:
+>>
+>>> Add the case if sk is NULL in sock_{put, hold},
+>>> The caller is free to use it.
+>>>
+>>> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+>>
+>> The obvious complaint about this patch (and your previous netdev patch)
+>> is that you're spraying branches everywhere in the code. Sure, it may
+> 
+> Sorry for that, I'll be more normative in later submission.
+>> be okay for free(), given how expensive of an operation that is but
+>> is having refcounting functions accept NULL really the best practice?
+>>
+>> Can you give us examples in the kernel where that's the case?
+> 
+> 0   include/net/neighbour.h         neigh_clone()
+> 1   include/linux/cgroup.h          get_cgroup_ns() and put_cgroup_ns()  (This is very similar to my submission)
+> 2   include/linux/ipc_namespace.h   get_ipc_ns()
+> 3   include/linux/posix_acl.h       posix_acl_dup()
+> 4   include/linux/pid.h             get_pid()
+> 5   include/linux/user_namespace.h  get_user_ns()
+> 
 
-Link: https://lore.kernel.org/bpf/20210728164741.350370-1-johan.almbladh@anyfinetworks.com/
+These helpers might be called with NULL pointers by design.
 
-Johan Almbladh (7):
-  arm: bpf: Fix off-by-one in tail call count limiting
-  arm64: bpf: Fix off-by-one in tail call count limiting
-  powerpc: bpf: Fix off-by-one in tail call count limiting
-  s390: bpf: Fix off-by-one in tail call count limiting
-  sparc: bpf: Fix off-by-one in tail call count limiting
-  mips: bpf: Fix off-by-one in tail call count limiting
-  x86: bpf: Fix comments on tail call count limiting
+sock_put() and sock_hold() are never called with NULL.
 
- arch/arm/net/bpf_jit_32.c         | 6 +++---
- arch/arm64/net/bpf_jit_comp.c     | 4 ++--
- arch/mips/net/ebpf_jit.c          | 4 ++--
- arch/powerpc/net/bpf_jit_comp32.c | 4 ++--
- arch/powerpc/net/bpf_jit_comp64.c | 4 ++--
- arch/s390/net/bpf_jit_comp.c      | 6 +++---
- arch/sparc/net/bpf_jit_comp_64.c  | 2 +-
- arch/x86/net/bpf_jit_comp32.c     | 6 +++---
- 8 files changed, 18 insertions(+), 18 deletions(-)
+Same for put_page() and hundreds of other functions.
 
--- 
-2.25.1
+By factorizing a conditional in the function, hoping to remove one in few callers,
+we add more conditional branches (and increase code size)
 
