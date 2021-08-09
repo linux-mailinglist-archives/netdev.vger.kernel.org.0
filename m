@@ -2,88 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7621D3E4E02
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 22:39:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A6003E4E27
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 22:53:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236256AbhHIUjn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 16:39:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45914 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233500AbhHIUjn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 16:39:43 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B113C0613D3;
-        Mon,  9 Aug 2021 13:39:22 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1mDC3I-0002rF-E2; Mon, 09 Aug 2021 22:39:16 +0200
-Date:   Mon, 9 Aug 2021 22:39:16 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     syzbot <syzbot+649e339fa6658ee623d3@syzkaller.appspotmail.com>,
-        coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        kadlec@netfilter.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] KASAN: use-after-free Write in nft_ct_tmpl_put_pcpu
-Message-ID: <20210809203916.GP607@breakpoint.cc>
-References: <000000000000b720b705c8f8599f@google.com>
- <cdb5f0c9-1ad9-dd9d-b24d-e127928ada98@gmail.com>
+        id S236345AbhHIUx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 16:53:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43218 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234454AbhHIUx4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Aug 2021 16:53:56 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 13A0961019;
+        Mon,  9 Aug 2021 20:53:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628542415;
+        bh=VxjNPYWZUiQJduiJINk5u08LoDlzM1BFYtxKoZ0PqjE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Le3Wg2uSqGKjxozUllFPAR1ZeOOpaHLAwVQlCmBSdTkf+E2jAgiw+otWdZTVQFvWi
+         mlJ/el8KlkKThkDJIbpFKajmf3TjfLeDZ6iKpt7wRX9WZkPHBRHdfBoM8odaT9B4hl
+         zYJNbLsZQ9ea3F7n08WoQ6xKUUnwe9ZXhaKG+yMk93Ax4Jz7aAALoy0PZk7hqOEMxJ
+         /3j3mxW0xKfgFJHXdgkwI3A19eifzSCZiZhLkCsB4j9YpbV6D/9R8JUi4ot35BilmW
+         9I0BdNR6QvMR4fb8hSe9QzoP4BfrVHHBB0J2OMNw4+uMXsGCLm7VyeHZneH15UqIIz
+         l4kqKLj/h7ifA==
+Date:   Mon, 9 Aug 2021 13:53:34 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Rocco Yue <rocco.yue@mediatek.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <rocco.yue@gmail.com>,
+        <chao.song@mediatek.com>, <zhuoliang.zhang@mediatek.com>
+Subject: Re: [PATCH net-next v3] ipv6: add IFLA_INET6_RA_MTU to expose mtu
+ value in the RA message
+Message-ID: <20210809135334.79f000e2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210809140109.32595-1-rocco.yue@mediatek.com>
+References: <20210809140109.32595-1-rocco.yue@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cdb5f0c9-1ad9-dd9d-b24d-e127928ada98@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pavel Skripkin <paskripkin@gmail.com> wrote:
-> I think, there a missing lock in this function:
-> 
-> 	for_each_possible_cpu(cpu) {
-> 		ct = per_cpu(nft_ct_pcpu_template, cpu);
-> 		if (!ct)
-> 			break;
-> 		nf_ct_put(ct);
-> 		per_cpu(nft_ct_pcpu_template, cpu) = NULL;
-> 		
-> 	}
-> 
-> Syzbot hit a UAF in nft_ct_tmpl_put_pcpu() (*), but freed template should be
-> NULL.
-> 
-> So I suspect following scenario:
-> 
-> 
-> CPU0:			CPU1:
-> = per_cpu()
-> 			= per_cpu()
-> 
-> nf_ct_put
-> per_cpu = NULL
-> 			nf_ct_put()
-> 			* UAF *
+On Mon, 9 Aug 2021 22:01:09 +0800 Rocco Yue wrote:
+> +static inline size_t inet6_iframtu_msgsize(void)
+> +{
+> +	return NLMSG_ALIGN(sizeof(struct ifinfomsg))
+> +	     + nla_total_size(IFNAMSIZ)	/* IFLA_IFNAME */
+> +	     + nla_total_size(4);	/* IFLA_INET6_RA_MTU */
+> +}
 
-Yes and no.  The above is fine since pcpu will return different pointers
-for cpu 0 and 1.
-
-The race is between two different net namespaces that race when
-changing nft_ct_pcpu_template_refcnt.
-This happens since
-
-commit f102d66b335a417d4848da9441f585695a838934
-netfilter: nf_tables: use dedicated mutex to guard transactions
-
-Before this, all transactions were serialized by a global mutex,
-now we only serialize transactions in the same netns.
-
-Its probably best to add
-DEFINE_MUTEX(nft_ct_pcpu_mutex) and then acquire that when we need to
-inc/dec the nft_ct_pcpu_template_refcnt so we can't have two distinct
-cpus hitting a zero refcount.
-
-Would you send a patch for this?
-
-Thanks.
+Please don't use 'static inline' in C sources, static is enough
