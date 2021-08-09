@@ -2,167 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A7D83E4ACC
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 19:26:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F5683E4ADF
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 19:31:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234224AbhHIR1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 13:27:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34584 "EHLO mail.kernel.org"
+        id S234331AbhHIRbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 13:31:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38996 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233919AbhHIR1N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Aug 2021 13:27:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3FF0560E76;
-        Mon,  9 Aug 2021 17:26:52 +0000 (UTC)
+        id S233996AbhHIRbf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Aug 2021 13:31:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CE141604DC;
+        Mon,  9 Aug 2021 17:31:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628530012;
-        bh=buSTqTbG/oBGoxhf5x4r6tPBmWExFvWrwgCPeuyzVRA=;
+        s=k20201202; t=1628530275;
+        bh=eDy1pEzRt6RUJc3M+OdmFDgeBpFyrnusEt6fYQvnavU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=RdXER6CuicO2+Qz3/v5QyKQcchBRfHZUC1NC8bfPRuE8ayJCKOTjkt7BhBFjTy1Zz
-         wOqttt3Axc0FMVgPEJEpFT7Swj0jUFY6dXmZVtw8GsO0gX4Y9Bk/vwk5dG5LoMwZu/
-         785pGTXVe/Z1Nk6cZ3bpI8PuuAx5zoOY2LOinHQ4kgttGt19xHrtgONTFL09ZpXpK8
-         mRUTT9Ck0niVoMSrxHcLUXKmMtMy9oD1FD8K0XtwEUar0hd/ht83glwFY1lBoLf3xe
-         6Cz8m8S4Te+ykv8zWxIR83Y22zJ4uvcsNAv5Q0ZM8kNpFlDKhWx2tetlTeqqX/97kd
-         or/qqwDAZB9hQ==
-Date:   Mon, 9 Aug 2021 12:26:50 -0500
+        b=B0Wi30G8/HhJIylJTtEL4v1GoqNPI0mOQgVd8xULg+NA5dfVLS5RUhnsbTSycKp3v
+         +EbkHHiTStAXkfj6/q19uu6IrSUOK3lARbC+PhKsjLZlg2l7aZ7VMZWCeKHYY5H2Ye
+         +h1lmR9iwsyGwjDTD+vqmEzXkWSUc/WElw7QQZKoPhFj1vSFfMlRfr/1W2QOxEfiKH
+         Z0ufkojNh3NEPeyjm71P08YzGnoHm4QnonbSlDdqANHzVyVyjkQR6QQh6GyvMFwgzu
+         t+Rl6ewTdRJ15Z97FQ5dKB9gjzoCSTPzo4FPyySFozRG4rtO6nBTA2h+E5qGlPKQvn
+         rNyzEIwhLG5wg==
+Date:   Mon, 9 Aug 2021 12:31:13 -0500
 From:   Bjorn Helgaas <helgaas@kernel.org>
 To:     Dongdong Liu <liudongdong3@huawei.com>
 Cc:     hch@infradead.org, kw@linux.com, logang@deltatee.com,
         leon@kernel.org, linux-pci@vger.kernel.org, rajur@chelsio.com,
         hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: Re: [PATCH V7 6/9] PCI: Enable 10-Bit Tag support for PCIe RP devices
-Message-ID: <20210809172650.GA1897893@bjorn-Precision-5520>
+Subject: Re: [PATCH V7 9/9] PCI/P2PDMA: Add a 10-Bit Tag check in P2PDMA
+Message-ID: <20210809173113.GA2166744@bjorn-Precision-5520>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d2e8b035-42c1-9eb6-986f-1de78cffeef0@huawei.com>
+In-Reply-To: <11f98331-cc39-ee37-85f7-185fdd1ccea5@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 05, 2021 at 04:25:23PM +0800, Dongdong Liu wrote:
-> On 2021/8/5 7:38, Bjorn Helgaas wrote:
-> > On Wed, Aug 04, 2021 at 09:47:05PM +0800, Dongdong Liu wrote:
-> > > PCIe spec 5.0r1.0 section 2.2.6.2 implementation note, In configurations
-> > > where a Requester with 10-Bit Tag Requester capability needs to target
-> > > multiple Completers, one needs to ensure that the Requester sends 10-Bit
-> > > Tag Requests only to Completers that have 10-Bit Tag Completer capability.
-> > > So we enable 10-Bit Tag Requester for root port only when the devices
-> > > under the root port support 10-Bit Tag Completer.
+On Sat, Aug 07, 2021 at 03:11:34PM +0800, Dongdong Liu wrote:
+> 
+> On 2021/8/6 2:12, Bjorn Helgaas wrote:
+> > On Wed, Aug 04, 2021 at 09:47:08PM +0800, Dongdong Liu wrote:
+> > > Add a 10-Bit Tag check in the P2PDMA code to ensure that a device with
+> > > 10-Bit Tag Requester doesn't interact with a device that does not
+> > > support 10-BIT Tag Completer. Before that happens, the kernel should
+> > > emit a warning. "echo 0 > /sys/bus/pci/devices/.../10bit_tag" to
+> > > disable 10-BIT Tag Requester for PF device.
+> > > "echo 0 > /sys/bus/pci/devices/.../sriov_vf_10bit_tag_ctl" to disable
+> > > 10-BIT Tag Requester for VF device.
 > > 
-> > Fix quoting.  I can't tell what is from the spec and what you wrote.
+> > s/10-BIT/10-Bit/ several times.
+> Will fix.
+> > 
+> > Add blank lines between paragraphs.
 > Will fix.
 > > 
 > > > Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
 > > > ---
-> > >  drivers/pci/pcie/portdrv_pci.c | 69 ++++++++++++++++++++++++++++++++++++++++++
-> > >  1 file changed, 69 insertions(+)
+> > >  drivers/pci/p2pdma.c | 40 ++++++++++++++++++++++++++++++++++++++++
+> > >  1 file changed, 40 insertions(+)
 > > > 
-> > > diff --git a/drivers/pci/pcie/portdrv_pci.c b/drivers/pci/pcie/portdrv_pci.c
-> > > index c7ff1ee..2382cd2 100644
-> > > --- a/drivers/pci/pcie/portdrv_pci.c
-> > > +++ b/drivers/pci/pcie/portdrv_pci.c
-> > > @@ -90,6 +90,72 @@ static const struct dev_pm_ops pcie_portdrv_pm_ops = {
-> > >  #define PCIE_PORTDRV_PM_OPS	NULL
-> > >  #endif /* !PM */
+> > > diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
+> > > index 50cdde3..948f2be 100644
+> > > --- a/drivers/pci/p2pdma.c
+> > > +++ b/drivers/pci/p2pdma.c
+> > > @@ -19,6 +19,7 @@
+> > >  #include <linux/random.h>
+> > >  #include <linux/seq_buf.h>
+> > >  #include <linux/xarray.h>
+> > > +#include "pci.h"
 > > > 
-> > > +static int pci_10bit_tag_comp_support(struct pci_dev *dev, void *data)
-> > > +{
-> > > +	bool *support = (bool *)data;
-> > > +
-> > > +	if (!pci_is_pcie(dev)) {
-> > > +		*support = false;
-> > > +		return 1;
-> > > +	}
-> > > +
-> > > +	/*
-> > > +	 * PCIe spec 5.0r1.0 section 2.2.6.2 implementation note.
-> > > +	 * For configurations where a Requester with 10-Bit Tag Requester
-> > > +	 * capability targets Completers where some do and some do not have
-> > > +	 * 10-Bit Tag Completer capability, how the Requester determines which
-> > > +	 * NPRs include 10-Bit Tags is outside the scope of this specification.
-> > > +	 * So we do not consider hotplug scenario.
-> > > +	 */
-> > > +	if (dev->is_hotplug_bridge) {
-> > > +		*support = false;
-> > > +		return 1;
-> > > +	}
-> > > +
-> > > +	if (!(dev->pcie_devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_COMP)) {
-> > > +		*support = false;
-> > > +		return 1;
-> > > +	}
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +static void pci_configure_rp_10bit_tag(struct pci_dev *dev)
-> > > +{
-> > > +	bool support = true;
-> > > +
-> > > +	if (dev->subordinate == NULL)
-> > > +		return;
-> > > +
-> > > +	/* If no devices under the root port, no need to enable 10-Bit Tag. */
-> > > +	if (list_empty(&dev->subordinate->devices))
-> > > +		return;
-> > > +
-> > > +	pci_10bit_tag_comp_support(dev, &support);
-> > > +	if (!support)
-> > > +		return;
-> > > +
-> > > +	/*
-> > > +	 * PCIe spec 5.0r1.0 section 2.2.6.2 implementation note.
-> > > +	 * In configurations where a Requester with 10-Bit Tag Requester
-> > > +	 * capability needs to target multiple Completers, one needs to ensure
-> > > +	 * that the Requester sends 10-Bit Tag Requests only to Completers
-> > > +	 * that have 10-Bit Tag Completer capability. So we enable 10-Bit Tag
-> > > +	 * Requester for root port only when the devices under the root port
-> > > +	 * support 10-Bit Tag Completer.
-> > > +	 */
-> > > +	pci_walk_bus(dev->subordinate, pci_10bit_tag_comp_support, &support);
-> > > +	if (!support)
-> > > +		return;
-> > > +
-> > > +	if (!(dev->pcie_devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_REQ))
-> > > +		return;
-> > > +
-> > > +	pci_dbg(dev, "enabling 10-Bit Tag Requester\n");
-> > > +	pcie_capability_set_word(dev, PCI_EXP_DEVCTL2,
-> > > +				 PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN);
-> > > +}
-> > > +
-> > >  /*
-> > >   * pcie_portdrv_probe - Probe PCI-Express port devices
-> > >   * @dev: PCI-Express port device being probed
-> > > @@ -111,6 +177,9 @@ static int pcie_portdrv_probe(struct pci_dev *dev,
-> > >  	     (type != PCI_EXP_TYPE_RC_EC)))
-> > >  		return -ENODEV;
+> > >  enum pci_p2pdma_map_type {
+> > >  	PCI_P2PDMA_MAP_UNKNOWN = 0,
+> > > @@ -410,6 +411,41 @@ static unsigned long map_types_idx(struct pci_dev *client)
+> > >  		(client->bus->number << 8) | client->devfn;
+> > >  }
 > > > 
-> > > +	if (type == PCI_EXP_TYPE_ROOT_PORT)
-> > > +		pci_configure_rp_10bit_tag(dev);
+> > > +static bool check_10bit_tags_vaild(struct pci_dev *a, struct pci_dev *b,
 > > 
-> > I don't think this has anything to do with the portdrv, so all this
-> > should go somewhere else.
->
-> Yes, any suggestion where to put the code?
+> > s/vaild/valid/
+> > 
+> > Or maybe s/valid/safe/ or s/valid/supported/, since "valid" isn't
+> > quite the right word here.  We want to know whether the source is
+> > enabled to generate 10-bit tags, and if so, whether the destination
+> > can handle them.
+> > 
+> > "if (check_10bit_tags_valid())" does not make sense because
+> > "check_10bit_tags_valid()" is not a question with a yes/no answer.
+> > 
+> > "10bit_tags_valid()" *might* be, because "if (10bit_tags_valid())"
+> > makes sense.  But I don't think you can start with a digit.
+> > 
+> > Or maybe you want to invert the sense, e.g.,
+> > "10bit_tags_unsupported()", since that avoids negation at the caller:
+> > 
+> >   if (10bit_tags_unsupported(a, b) ||
+> >       10bit_tags_unsupported(b, a))
+> >         map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
+> Good suggestion. add a pci_ prefix.
+> 
+> if (pci_10bit_tags_unsupported(a, b) ||
+>     pci_10bit_tags_unsupported(b, a))
+> 	map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
 
-It seems similar to pci_configure_ltr(), pci_configure_eetlp_prefix(),
-and other things in drivers/pci/probe.c, so maybe there?
-
-Or, if this is more of a theoretical advantage than a demonstrated
-performance improvement, we could just hold off on doing it until it
-becomes important.  I can't tell if you have a scenario that actually
-benefits from this yet.
-
-> > Out of curiosity, IIUC this enables 10-bit tags for MMIO transactions
-> > from the root port toward the device, i.e., traffic that originates
-> > from a CPU.  Is that a significant benefit?  I would expect high-speed
-> > devices would primarily operate via DMA with relatively little MMIO
-> > traffic.
->
-> The benefits of 10-Bit Tag for EP are obvious.
-> There are few RP scenarios. Unless there are two:
-> 1. RC has its own DMA.
-> 2. The P2P tag is replaced at the RP when the P2PDMA go through RP.
-
+This treats both directions as equally important.  I don't know P2PDMA
+very well, but that doesn't seem like it would necessarily be the
+case.  I would think a common case would be device A doing DMA to B,
+but B *not* doing DMA to A.  So can you tell which direction you're
+setting up here, and can you take advantage of any asymmetry, e.g., by
+enabling 10-bit tags in the direction that supports it even if the
+other direction does not?
