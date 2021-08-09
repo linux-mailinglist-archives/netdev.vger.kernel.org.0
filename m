@@ -2,87 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 190663E4520
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 13:57:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F90A3E452B
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 14:03:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234368AbhHIL55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 07:57:57 -0400
-Received: from mail-ua1-f49.google.com ([209.85.222.49]:33538 "EHLO
-        mail-ua1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231478AbhHIL54 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 07:57:56 -0400
-Received: by mail-ua1-f49.google.com with SMTP id x21so2890446uau.0;
-        Mon, 09 Aug 2021 04:57:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VBNbNuQv/m4wBsB08WozEoy/8Rk+r8DMYH5TxndeZhY=;
-        b=uNRpKs/L6A0ZSgbczLf/GV/I0ZkBzXF8D1FbdljfXN9eAhElpEzrl/Y/jn1V0wj+/B
-         NML0N8WdgSIOJWtOBvzRzMPKxwcNSQ4R3ZmRQ9yUCRrojoDpjkkINuuzKnks8ii98yGG
-         yCu6+e0yFvy9uB9lmjSI/VbPurwilBFIqYzve71LE02Qnd+BToehESwOq3RTyOZDIO06
-         0OYdzcwtuZ1Pdn42aQK2t2338g9OhyX4yxFxUSR7hzR60A3ee9WOHf/67GnoeVOgF2vf
-         ZQkqouhZBwut2Vi1vpMvgxDOnW7eXoGuGNl7TbL62WddCKQhqzZDKGZzx6qIpSA1V/r+
-         GiNQ==
-X-Gm-Message-State: AOAM531arvnZ6m4ExZGVNknIhMHM5iAC44O2SE0HolpraVE4hSlE1NkK
-        xwQKjUlvT0ahx2jEVgxMsAe6B2SdfUguNLNjO6E=
-X-Google-Smtp-Source: ABdhPJwOCjf/9mPFdoWJ6Xb7pANJTPsyeXf35S+1hqASqv8jKlv95vcogQkNOp4yKI7NSjf5sFnOy0vGeDmOVJus4AE=
-X-Received: by 2002:ab0:6710:: with SMTP id q16mr14937054uam.106.1628510255863;
- Mon, 09 Aug 2021 04:57:35 -0700 (PDT)
+        id S235148AbhHIMDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 08:03:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48884 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231327AbhHIMDp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Aug 2021 08:03:45 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2C56760BD3;
+        Mon,  9 Aug 2021 12:03:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628510604;
+        bh=i1SSaMqLK/t9+a8jBYbUL9UO1xunMtUISULJwZHB5kc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WMRjwqSuh/4TCq7UOhgFdpZ7z9unosGxuc8a6qoAcOg3U7PEeem9GDS2A/HmQuA64
+         d/4nqYPUoPzl4UXbJ3xDF8O//5C09bOfvTubSmQzdnvPxWAyjzHcGv/9TP3YFm4ac2
+         b90hpt6utsyZixoTRaRSwwzFgUS0KVw9bVG+m8+DJLDTNfwxkKA+AnZfK+5iAKNRRX
+         J5q0Q7y/SkxEzSKkKE62UQuKtdXWbYJzjXlOA71h6e624oGb+HBfo8ULhI9+maKf99
+         EphV2Wd9bW0seqet2fmntkxoOgrmm/JVYf0c5a/ZympyYgwsGq7o2TskD0mq2DUmMR
+         XhNvCcH458ZIw==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leonro@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH net-next] devlink: Fix port_type_set function pointer check
+Date:   Mon,  9 Aug 2021 15:03:19 +0300
+Message-Id: <97f68683b3b6c7ea8420c64817771cdedfded7ae.1628510543.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210807145619.832-1-caihuoqing@baidu.com> <05a5ddb5-1c51-8679-60a3-a74e0688b72d@gmail.com>
-In-Reply-To: <05a5ddb5-1c51-8679-60a3-a74e0688b72d@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 9 Aug 2021 13:57:24 +0200
-Message-ID: <CAMuHMdXzZfX_mZe==-J52kaUCuM0t-zvFw5aqJTgy8TKJ9Xmvw@mail.gmail.com>
-Subject: Re: [PATCH 0/2] net: ethernet: Remove the 8390 network drivers
-To:     Michael Schmitz <schmitzmic@gmail.com>
-Cc:     Cai Huoqing <caihuoqing@baidu.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 8, 2021 at 12:50 AM Michael Schmitz <schmitzmic@gmail.com> wrote:
-> a number of the 8390 drivers are still in active use on legacy
-> architectures. These drivers get occasional updates (not just bugfixes,
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Exactly.
+Fix a typo when checking existence of port_type_set function pointer.
 
-> but support for 'new' network cards - I have a patch to add X-Surf 500
-> support somewhere in the pipline).
+Fixes: 82564f6c706a ("devlink: Simplify devlink port API calls")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ net/core/devlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-According to the picture on [1], the X-Surf 500 is from 2018.
-The ASIX AX88796B[2] it is based on seems to be readily available,
-so new designs may still use the "obsolete" 8390.
-
-[1] https://icomp.de/shop-icomp/en/produkt-details/product/x-surf-500.html
-[2] https://www.asix.com.tw/en/product/EmbeddedEthernet/1-Port_Ethernet/AX88796B
-
-> Am 08.08.2021 um 02:56 schrieb Cai Huoqing:
-> > commit <0cf445ceaf43> ("<netdev: Update status of 8390 based drivers>")
-> > indicated the 8390 network drivers as orphan/obsolete in Jan 2011,
-> > updated in the MAINTAINERS file.
-> >
-> > now, after being exposed for 10 years to refactoring and
-> > no one has become its maintainer for the past 10 years,
-> > so to remove the 8390 network drivers for good.
-> >
-> > additionally, 8390 is a kind of old ethernet chip based on
-> > ISA interface which is hard to find in the market.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index d3b16dd9f64e..b02d54ab59ac 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -1274,7 +1274,7 @@ static int devlink_port_type_set(struct devlink_port *devlink_port,
+ {
+ 	int err;
+ 
+-	if (devlink_port->devlink->ops->port_type_set)
++	if (!devlink_port->devlink->ops->port_type_set)
+ 		return -EOPNOTSUPP;
+ 
+ 	if (port_type == devlink_port->type)
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.31.1
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
