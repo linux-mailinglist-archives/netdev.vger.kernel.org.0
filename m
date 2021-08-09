@@ -2,154 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCC6F3E3E12
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 05:02:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB9373E3E2E
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 05:14:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232730AbhHIDCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 23:02:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:54790 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231168AbhHIDCu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 23:02:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1628478150;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=uzJfGi+bn65wQAzcYSyrR66QtQeU9ro2TX6RJdvd7hI=;
-        b=dowr7nn4xo7ZJMn2kyX0/34pfaQByGjXzfgNIob6DdfmUZ6NmW6EHH/DcWpF+9//tmYi/g
-        NhB4KORPH7E3eGStuWl/DEcFzBzsQjtHgqWkrCo4bMDuYNJjfh0IORY64NTtAq3fWvY2lK
-        IX2VyB/jNM47qcykMKuQhTxLKp/ab58=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-529-T1frE71cOmGJGIlGDrh5mw-1; Sun, 08 Aug 2021 23:02:27 -0400
-X-MC-Unique: T1frE71cOmGJGIlGDrh5mw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S232803AbhHIDOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 23:14:42 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:39475 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229942AbhHIDOl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 8 Aug 2021 23:14:41 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 146AD18C8C00;
-        Mon,  9 Aug 2021 03:02:25 +0000 (UTC)
-Received: from Laptop-X1.redhat.com (ovpn-13-124.pek2.redhat.com [10.72.13.124])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id A86C910016F8;
-        Mon,  9 Aug 2021 03:02:20 +0000 (UTC)
-From:   Hangbin Liu <haliu@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Jarod Wilson <jarod@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>, David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv2 iproute2-next] ip/bond: add lacp active support
-Date:   Mon,  9 Aug 2021 11:01:53 +0800
-Message-Id: <20210809030153.10851-1-haliu@redhat.com>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Gjh546hDXz9sWX;
+        Mon,  9 Aug 2021 13:14:16 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1628478857;
+        bh=PBjj26Hp+FfI8m2spcLYZvozmryRWtrKTxfF7Ad3WGA=;
+        h=Date:From:To:Cc:Subject:From;
+        b=VcmIWNspdC6lAnHMNrVYxF5y4Li4iJPbB4YRQyhyQJog1Ou2qprvIEscmhdDWaPmz
+         JiBB8nY+aBJ1xtWqjw8Rr0t5AwBjovweJnopKJQpMJ5WsZIbCVtoWaCwsv6fDCHvKg
+         d0T+3g1muWJbO4CwQEsYyH6iCcQhu4q91DjNn7Qg/v1JgbYtmms8maelSfIFg3yp8N
+         nIPWJwt5lHU8nVj5hBnRnnQyYSnOlmAv3fKit9toI8eB3Xfb7tk8qM6RxQPoIn0M4S
+         xpzpQZ52EnSmP/t3fyQ9Tvbz3lzqh+YbADotUjyos01LD0/b3It8QZ/mHu5NGMxYo4
+         lKiXW3emL7AvA==
+Date:   Mon, 9 Aug 2021 13:14:13 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20210809131413.5a77ef8c@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: multipart/signed; boundary="Sig_/mP7danhSHhkkwqeqiQ08ZYV";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+--Sig_/mP7danhSHhkkwqeqiQ08ZYV
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-lacp_active specifies whether to send LACPDU frames periodically.
-If set on, the LACPDU frames are sent along with the configured lacp_rate
-setting. If set off, the LACPDU frames acts as "speak when spoken to".
+Hi all,
 
-v2: use strcmp instead of match for new options.
+Today's linux-next merge of the net-next tree got a conflict in:
 
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- include/uapi/linux/if_link.h |  1 +
- ip/iplink_bond.c             | 26 +++++++++++++++++++++++++-
- 2 files changed, 26 insertions(+), 1 deletion(-)
+  drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 5195ed93..a60dbb96 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -853,6 +853,7 @@ enum {
- 	IFLA_BOND_AD_ACTOR_SYSTEM,
- 	IFLA_BOND_TLB_DYNAMIC_LB,
- 	IFLA_BOND_PEER_NOTIF_DELAY,
-+	IFLA_BOND_AD_LACP_ACTIVE,
- 	__IFLA_BOND_MAX,
- };
- 
-diff --git a/ip/iplink_bond.c b/ip/iplink_bond.c
-index d45845bd..b01f69a5 100644
---- a/ip/iplink_bond.c
-+++ b/ip/iplink_bond.c
-@@ -74,6 +74,12 @@ static const char *xmit_hash_policy_tbl[] = {
- 	NULL,
- };
- 
-+static const char *lacp_active_tbl[] = {
-+	"off",
-+	"on",
-+	NULL,
-+};
-+
- static const char *lacp_rate_tbl[] = {
- 	"slow",
- 	"fast",
-@@ -139,6 +145,7 @@ static void print_explain(FILE *f)
- 		"                [ packets_per_slave PACKETS_PER_SLAVE ]\n"
- 		"                [ tlb_dynamic_lb TLB_DYNAMIC_LB ]\n"
- 		"                [ lacp_rate LACP_RATE ]\n"
-+		"                [ lacp_active LACP_ACTIVE]\n"
- 		"                [ ad_select AD_SELECT ]\n"
- 		"                [ ad_user_port_key PORTKEY ]\n"
- 		"                [ ad_actor_sys_prio SYSPRIO ]\n"
-@@ -150,6 +157,7 @@ static void print_explain(FILE *f)
- 		"PRIMARY_RESELECT := always|better|failure\n"
- 		"FAIL_OVER_MAC := none|active|follow\n"
- 		"XMIT_HASH_POLICY := layer2|layer2+3|layer3+4|encap2+3|encap3+4|vlan+srcmac\n"
-+		"LACP_ACTIVE := off|on\n"
- 		"LACP_RATE := slow|fast\n"
- 		"AD_SELECT := stable|bandwidth|count\n"
- 	);
-@@ -165,7 +173,7 @@ static int bond_parse_opt(struct link_util *lu, int argc, char **argv,
- {
- 	__u8 mode, use_carrier, primary_reselect, fail_over_mac;
- 	__u8 xmit_hash_policy, num_peer_notif, all_slaves_active;
--	__u8 lacp_rate, ad_select, tlb_dynamic_lb;
-+	__u8 lacp_active, lacp_rate, ad_select, tlb_dynamic_lb;
- 	__u16 ad_user_port_key, ad_actor_sys_prio;
- 	__u32 miimon, updelay, downdelay, peer_notify_delay, arp_interval, arp_validate;
- 	__u32 arp_all_targets, resend_igmp, min_links, lp_interval;
-@@ -323,6 +331,13 @@ static int bond_parse_opt(struct link_util *lu, int argc, char **argv,
- 
- 			lacp_rate = get_index(lacp_rate_tbl, *argv);
- 			addattr8(n, 1024, IFLA_BOND_AD_LACP_RATE, lacp_rate);
-+		} else if (strcmp(*argv, "lacp_active") == 0) {
-+			NEXT_ARG();
-+			if (get_index(lacp_active_tbl, *argv) < 0)
-+				invarg("invalid lacp_active", *argv);
-+
-+			lacp_active = get_index(lacp_active_tbl, *argv);
-+			addattr8(n, 1024, IFLA_BOND_AD_LACP_ACTIVE, lacp_active);
- 		} else if (matches(*argv, "ad_select") == 0) {
- 			NEXT_ARG();
- 			if (get_index(ad_select_tbl, *argv) < 0)
-@@ -561,6 +576,15 @@ static void bond_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- 			   "packets_per_slave %u ",
- 			   rta_getattr_u32(tb[IFLA_BOND_PACKETS_PER_SLAVE]));
- 
-+	if (tb[IFLA_BOND_AD_LACP_ACTIVE]) {
-+		const char *lacp_active = get_name(lacp_active_tbl,
-+						   rta_getattr_u8(tb[IFLA_BOND_AD_LACP_ACTIVE]));
-+		print_string(PRINT_ANY,
-+			     "ad_lacp_active",
-+			     "lacp_active %s ",
-+			     lacp_active);
-+	}
-+
- 	if (tb[IFLA_BOND_AD_LACP_RATE]) {
- 		const char *lacp_rate = get_name(lacp_rate_tbl,
- 						 rta_getattr_u8(tb[IFLA_BOND_AD_LACP_RATE]));
--- 
-2.31.1
+between commit:
 
+  9e26680733d5 ("bnxt_en: Update firmware call to retrieve TX PTP timestamp=
+")
+
+from the net tree and commits:
+
+  9e518f25802c ("bnxt_en: 1PPS functions to configure TSIO pins")
+  099fdeda659d ("bnxt_en: Event handler for PPS events")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
+index 524f1c272054,cc3cdbaab6cf..000000000000
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
+@@@ -19,9 -19,58 +19,59 @@@
+ =20
+  #define BNXT_PTP_QTS_TIMEOUT	1000
+  #define BNXT_PTP_QTS_TX_ENABLES	(PORT_TS_QUERY_REQ_ENABLES_PTP_SEQ_ID |	\
+ -				 PORT_TS_QUERY_REQ_ENABLES_TS_REQ_TIMEOUT)
+ +				 PORT_TS_QUERY_REQ_ENABLES_TS_REQ_TIMEOUT | \
+ +				 PORT_TS_QUERY_REQ_ENABLES_PTP_HDR_OFFSET)
+ =20
++ struct pps_pin {
++ 	u8 event;
++ 	u8 usage;
++ 	u8 state;
++ };
++=20
++ #define TSIO_PIN_VALID(pin) ((pin) < (BNXT_MAX_TSIO_PINS))
++=20
++ #define EVENT_DATA2_PPS_EVENT_TYPE(data2)				\
++ 	((data2) & ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA2_EVENT_TYPE)
++=20
++ #define EVENT_DATA2_PPS_PIN_NUM(data2)					\
++ 	(((data2) &							\
++ 	  ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA2_PIN_NUMBER_MASK) >>\
++ 	 ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA2_PIN_NUMBER_SFT)
++=20
++ #define BNXT_DATA2_UPPER_MSK						\
++ 	ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA2_PPS_TIMESTAMP_UPPER_MASK
++=20
++ #define BNXT_DATA2_UPPER_SFT						\
++ 	(32 -								\
++ 	 ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA2_PPS_TIMESTAMP_UPPER_SFT)
++=20
++ #define BNXT_DATA1_LOWER_MSK						\
++ 	ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA1_PPS_TIMESTAMP_LOWER_MASK
++=20
++ #define BNXT_DATA1_LOWER_SFT						\
++ 	  ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA1_PPS_TIMESTAMP_LOWER_SFT
++=20
++ #define EVENT_PPS_TS(data2, data1)					\
++ 	(((u64)((data2) & BNXT_DATA2_UPPER_MSK) << BNXT_DATA2_UPPER_SFT) |\
++ 	 (((data1) & BNXT_DATA1_LOWER_MSK) >> BNXT_DATA1_LOWER_SFT))
++=20
++ #define BNXT_PPS_PIN_DISABLE	0
++ #define BNXT_PPS_PIN_ENABLE	1
++ #define BNXT_PPS_PIN_NONE	0
++ #define BNXT_PPS_PIN_PPS_IN	1
++ #define BNXT_PPS_PIN_PPS_OUT	2
++ #define BNXT_PPS_PIN_SYNC_IN	3
++ #define BNXT_PPS_PIN_SYNC_OUT	4
++=20
++ #define BNXT_PPS_EVENT_INTERNAL	1
++ #define BNXT_PPS_EVENT_EXTERNAL	2
++=20
++ struct bnxt_pps {
++ 	u8 num_pins;
++ #define BNXT_MAX_TSIO_PINS	4
++ 	struct pps_pin pins[BNXT_MAX_TSIO_PINS];
++ };
++=20
+  struct bnxt_ptp_cfg {
+  	struct ptp_clock_info	ptp_info;
+  	struct ptp_clock	*ptp_clock;
+@@@ -76,7 -125,9 +127,9 @@@ do {					=09
+  	((dst) =3D READ_ONCE(src))
+  #endif
+ =20
+ -int bnxt_ptp_parse(struct sk_buff *skb, u16 *seq_id);
+ +int bnxt_ptp_parse(struct sk_buff *skb, u16 *seq_id, u16 *hdr_off);
++ void bnxt_ptp_pps_event(struct bnxt *bp, u32 data1, u32 data2);
++ void bnxt_ptp_reapply_pps(struct bnxt *bp);
+  int bnxt_hwtstamp_set(struct net_device *dev, struct ifreq *ifr);
+  int bnxt_hwtstamp_get(struct net_device *dev, struct ifreq *ifr);
+  int bnxt_get_tx_ts_p5(struct bnxt *bp, struct sk_buff *skb);
+
+--Sig_/mP7danhSHhkkwqeqiQ08ZYV
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmEQnYUACgkQAVBC80lX
+0GwPcQgAjpAQ3xfm4l/f2SuChIkPXRVFfLQHyOGIupdka5B/lK8695b/ZwwBsQTo
+Iar0UG00IpjFNaVYAlENMrBoeD6tJL1jNwopzsbYr7XAXi3/VIKE3sqz7TheNb1C
+H22lGYtZPZm/Sco0A53zXmVrFelC6yNJ4JMbJL3G0kA6miCBGr42EHRmW26v+0hM
+Nlb0lt7Obgyr4KxQwV6iWBhtIbBNPkXbzcvnUa4Vn0ntHRK4x1xDz0zFc5Yk7VWd
+kAr34aA72qfl6YLBP+wGqZY7h0L3V4dZSEMzKqBdV/ZdPPChKaZUmU+cfZwALGdf
+XXbOIHgSrRWCKVN6f+wwqCOgrtU6Ew==
+=RaU7
+-----END PGP SIGNATURE-----
+
+--Sig_/mP7danhSHhkkwqeqiQ08ZYV--
