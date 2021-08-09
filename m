@@ -2,230 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62AC53E4804
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 16:54:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 553FA3E486A
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 17:15:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234237AbhHIOyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 10:54:50 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:7813 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234275AbhHIOyr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 10:54:47 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Gjzch36SKzYmc9;
-        Mon,  9 Aug 2021 22:54:12 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Mon, 9 Aug 2021 22:54:25 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Mon, 9 Aug 2021 22:54:24 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 4/4] net: hns3: add support ethtool extended link state
-Date:   Mon, 9 Aug 2021 22:50:42 +0800
-Message-ID: <1628520642-30839-5-git-send-email-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1628520642-30839-1-git-send-email-huangguangbin2@huawei.com>
-References: <1628520642-30839-1-git-send-email-huangguangbin2@huawei.com>
+        id S235345AbhHIPPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 11:15:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37648 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234075AbhHIPPw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Aug 2021 11:15:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 19FCE60F11;
+        Mon,  9 Aug 2021 15:15:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628522132;
+        bh=UsgdSVtypHPDXHWt0l4nRtfQCNMgQ+tKCWPtUY6fvQM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TEQoBhRzIfInMZC6f1hCPJlOBVQuPh5jS+8Z7dw1KMPloWztnrKWfPZBocZj3cwAt
+         3e4nXWVFBWVvbmyoMA8x2C3qood/bgHHL8Iy1VTx8o6Zc743iZ7NRbTKySelqcgifl
+         A6DjSJB9A02YbLuklhwlI/Lc5tMuoswJVIKgbM2YNepJanHNF3UiWFbBT7jqJc7SXp
+         zPcLOaE032NMvCYK6HjG204ADxFB756DAJwDan4+O/wEIeSonUPrmNSHfiy6tHI33h
+         sdssnpN/+KKUYwdT85GaGppKiUoRnvB3YVn2isXOrJ4JowJVOkHltWw6NaeWeaIHAF
+         WTcrMpMUyGPfw==
+Received: by pali.im (Postfix)
+        id C2169C7C; Mon,  9 Aug 2021 17:15:29 +0200 (CEST)
+Date:   Mon, 9 Aug 2021 17:15:29 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Martin Zaharinov <micron10@gmail.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: Re: Urgent  Bug report: PPPoE ioctl(PPPIOCCONNECT): Transport
+ endpoint is not connected
+Message-ID: <20210809151529.ymbq53f633253loz@pali>
+References: <7EE80F78-6107-4C6E-B61D-01752D44155F@gmail.com>
+ <YQy9JKgo+BE3G7+a@kroah.com>
+ <08EC1CDD-21C4-41AB-B6A8-1CC2D40F5C05@gmail.com>
+ <20210808152318.6nbbaj3bp6tpznel@pali>
+ <8BDDA0B3-0BEE-4E80-9686-7F66CF58B069@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8BDDA0B3-0BEE-4E80-9686-7F66CF58B069@gmail.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to know the reason of link up failure, add supporting ethtool
-extended link state. Driver reads the link status code from firmware if
-in link down state and converts it to ethtool extended link state.
+On Sunday 08 August 2021 18:29:30 Martin Zaharinov wrote:
+> Hi Pali
+> 
+> Kernel 5.13.8
+> 
+> 
+> The problem is from kernel 5.8 > I try all major update 5.9, 5.10, 5.11 ,5.12
+> 
+> I use accel-pppd daemon (not pppd) .
 
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  2 +
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 66 ++++++++++++++++++++++
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h |  6 ++
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  3 +
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 27 +++++++++
- 5 files changed, 104 insertions(+)
+I'm not using accel-pppd, so cannot help here.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index e0b7c3c44e7b..848bed866193 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -718,6 +718,8 @@ struct hnae3_ae_ops {
- 			    u32 nsec, u32 sec);
- 	int (*get_ts_info)(struct hnae3_handle *handle,
- 			   struct ethtool_ts_info *info);
-+	int (*get_link_diagnosis_info)(struct hnae3_handle *handle,
-+				       u32 *status_code);
- };
- 
- struct hnae3_dcb_ops {
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index b7ba5f780c5e..931168a33092 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -1657,6 +1657,71 @@ static int hns3_get_ts_info(struct net_device *netdev,
- 	return ethtool_op_get_ts_info(netdev, info);
- }
- 
-+static const struct hns3_ethtool_link_ext_state_mapping
-+hns3_link_ext_state_map[] = {
-+	{1, ETHTOOL_LINK_EXT_STATE_AUTONEG,
-+		ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_HCD},
-+	{2, ETHTOOL_LINK_EXT_STATE_AUTONEG,
-+		ETHTOOL_LINK_EXT_SUBSTATE_AN_ACK_NOT_RECEIVED},
-+
-+	{256, ETHTOOL_LINK_EXT_STATE_LINK_TRAINING_FAILURE,
-+		ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_LINK_INHIBIT_TIMEOUT},
-+	{257, ETHTOOL_LINK_EXT_STATE_LINK_TRAINING_FAILURE,
-+		ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_LINK_PARTNER_DID_NOT_SET_RECEIVER_READY},
-+	{512, ETHTOOL_LINK_EXT_STATE_LINK_TRAINING_FAILURE,
-+		ETHTOOL_LINK_EXT_SUBSTATE_LT_REMOTE_FAULT},
-+
-+	{513, ETHTOOL_LINK_EXT_STATE_LINK_LOGICAL_MISMATCH,
-+		ETHTOOL_LINK_EXT_SUBSTATE_LLM_PCS_DID_NOT_ACQUIRE_BLOCK_LOCK},
-+	{515, ETHTOOL_LINK_EXT_STATE_LINK_LOGICAL_MISMATCH,
-+		ETHTOOL_LINK_EXT_SUBSTATE_LLM_FC_FEC_IS_NOT_LOCKED},
-+	{516, ETHTOOL_LINK_EXT_STATE_LINK_LOGICAL_MISMATCH,
-+		ETHTOOL_LINK_EXT_SUBSTATE_LLM_RS_FEC_IS_NOT_LOCKED},
-+
-+	{768, ETHTOOL_LINK_EXT_STATE_BAD_SIGNAL_INTEGRITY,
-+		ETHTOOL_LINK_EXT_SUBSTATE_BSI_LARGE_NUMBER_OF_PHYSICAL_ERRORS},
-+	{769, ETHTOOL_LINK_EXT_STATE_BAD_SIGNAL_INTEGRITY,
-+		ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_REFERENCE_CLOCK_LOST},
-+	{770, ETHTOOL_LINK_EXT_STATE_BAD_SIGNAL_INTEGRITY,
-+		ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_ALOS},
-+
-+	{1024, ETHTOOL_LINK_EXT_STATE_NO_CABLE, 0},
-+	{1025, ETHTOOL_LINK_EXT_STATE_CABLE_ISSUE,
-+		ETHTOOL_LINK_EXT_SUBSTATE_CI_UNSUPPORTED_CABLE},
-+
-+	{1026, ETHTOOL_LINK_EXT_STATE_EEPROM_ISSUE, 0},
-+};
-+
-+static int hns3_get_link_ext_state(struct net_device *netdev,
-+				   struct ethtool_link_ext_state_info *info)
-+{
-+	const struct hns3_ethtool_link_ext_state_mapping *map;
-+	struct hnae3_handle *h = hns3_get_handle(netdev);
-+	u32 status_code, i;
-+	int ret;
-+
-+	if (netif_carrier_ok(netdev))
-+		return -ENODATA;
-+
-+	if (!h->ae_algo->ops->get_link_diagnosis_info)
-+		return -EOPNOTSUP;
-+
-+	ret = h->ae_algo->ops->get_link_diagnosis_info(h, &status_code);
-+	if (ret)
-+		return ret;
-+
-+	for (i = 0; i < ARRAY_SIZE(hns3_link_ext_state_map); i++) {
-+		map = &hns3_link_ext_state_map[i];
-+		if (map->status_code == status_code) {
-+			info->link_ext_state = map->link_ext_state;
-+			info->__link_ext_substate = map->link_ext_substate;
-+			return 0;
-+		}
-+	}
-+
-+	return -ENODATA;
-+}
-+
- static const struct ethtool_ops hns3vf_ethtool_ops = {
- 	.supported_coalesce_params = HNS3_ETHTOOL_COALESCE,
- 	.get_drvinfo = hns3_get_drvinfo,
-@@ -1726,6 +1791,7 @@ static const struct ethtool_ops hns3_ethtool_ops = {
- 	.get_ts_info = hns3_get_ts_info,
- 	.get_tunable = hns3_get_tunable,
- 	.set_tunable = hns3_set_tunable,
-+	.get_link_ext_state = hns3_get_link_ext_state,
- };
- 
- void hns3_ethtool_set_ops(struct net_device *netdev)
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h
-index 2f186607c6e0..822d6fcbc73b 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h
-@@ -22,4 +22,10 @@ struct hns3_pflag_desc {
- 	void (*handler)(struct net_device *netdev, bool enable);
- };
- 
-+struct hns3_ethtool_link_ext_state_mapping {
-+	u32 status_code;
-+	enum ethtool_link_ext_state link_ext_state;
-+	u8 link_ext_substate;
-+};
-+
- #endif
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-index 18bde77ef944..8e5be127909b 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-@@ -316,6 +316,9 @@ enum hclge_opcode_type {
- 	/* PHY command */
- 	HCLGE_OPC_PHY_LINK_KSETTING	= 0x7025,
- 	HCLGE_OPC_PHY_REG		= 0x7026,
-+
-+	/* Query link diagnosis info command */
-+	HCLGE_OPC_QUERY_LINK_DIAGNOSIS	= 0x702A,
- };
- 
- #define HCLGE_TQP_REG_OFFSET		0x80000
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index f15d76ec0068..70167ade234e 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -12837,6 +12837,32 @@ static int hclge_get_module_eeprom(struct hnae3_handle *handle, u32 offset,
- 	return 0;
- }
- 
-+static int hclge_get_link_diagnosis_info(struct hnae3_handle *handle,
-+					 u32 *status_code)
-+{
-+	struct hclge_vport *vport = hclge_get_vport(handle);
-+	struct hclge_dev *hdev = vport->back;
-+	struct hclge_desc desc;
-+	int ret;
-+
-+	if (hdev->ae_dev->dev_version <= HNAE3_DEVICE_VERSION_V2) {
-+		dev_err(&hdev->pdev->dev,
-+			"unsupported to get link diagnosis info\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_QUERY_LINK_DIAGNOSIS, true);
-+	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
-+	if (ret) {
-+		dev_err(&hdev->pdev->dev,
-+			"failed to query link diagnosis info, ret = %d\n", ret);
-+		return ret;
-+	}
-+
-+	*status_code = le32_to_cpu(desc.data[0]);
-+	return 0;
-+}
-+
- static const struct hnae3_ae_ops hclge_ops = {
- 	.init_ae_dev = hclge_init_ae_dev,
- 	.uninit_ae_dev = hclge_uninit_ae_dev,
-@@ -12937,6 +12963,7 @@ static const struct hnae3_ae_ops hclge_ops = {
- 	.set_tx_hwts_info = hclge_ptp_set_tx_info,
- 	.get_rx_hwts = hclge_ptp_get_rx_hwts,
- 	.get_ts_info = hclge_ptp_get_ts_info,
-+	.get_link_diagnosis_info = hclge_get_link_diagnosis_info,
- };
- 
- static struct hnae3_ae_algo ae_algo = {
--- 
-2.8.1
+I would suggest to try "git bisect" kernel version which started to be
+problematic for accel-pppd.
 
+Providing state of ppp channels and ppp units could help to debug this
+issue, but I'm not sure if accel-pppd has this debug feature. IIRC only
+process which has ppp file descriptors can retrieve and dump this
+information.
+
+> And yes after users started to connecting .
+> 
+> When system boot and connect first time all user connect without any problem .
+> In time of work user disconnect and connect (power cut , fiber cut or other problem in network) , but in time of spike (may be make lock or other problem ) disconnect ~ 400-500 users  and affect other users. Process go to load over 100% and In statistic I see many finishing connection and many start connection. 
+> And in this time in log get many lines with   ioctl(PPPIOCCONNECT): Transport endpoint is not connected. After finish (unlock or other) stop to see this error and system is back to normal. And connect all disconnected users.
+> 
+> Martin
+> 
+> > On 8 Aug 2021, at 18:23, Pali Rohár <pali@kernel.org> wrote:
+> > 
+> > Hello!
+> > 
+> > On Sunday 08 August 2021 18:14:09 Martin Zaharinov wrote:
+> >> Add Pali Rohár,
+> >> 
+> >> If have any idea .
+> >> 
+> >> Martin
+> >> 
+> >>> On 6 Aug 2021, at 7:40, Greg KH <gregkh@linuxfoundation.org> wrote:
+> >>> 
+> >>> On Thu, Aug 05, 2021 at 11:53:50PM +0300, Martin Zaharinov wrote:
+> >>>> Hi Net dev team
+> >>>> 
+> >>>> 
+> >>>> Please check this error :
+> >>>> Last time I write for this problem : https://www.spinics.net/lists/netdev/msg707513.html
+> >>>> 
+> >>>> But not find any solution.
+> >>>> 
+> >>>> Config of server is : Bonding port channel (LACP)  > Accel PPP server > Huawei switch.
+> >>>> 
+> >>>> Server is work fine users is down/up 500+ users .
+> >>>> But in one moment server make spike and affect other vlans in same server .
+> > 
+> > When this error started to happen? After kernel upgrade? After pppd
+> > upgrade? Or after system upgrade? Or when more users started to
+> > connecting?
+> > 
+> >>>> And in accel I see many row with this error.
+> >>>> 
+> >>>> Is there options to find and fix this bug.
+> >>>> 
+> >>>> With accel team I discus this problem  and they claim it is kernel bug and need to find solution with Kernel dev team.
+> >>>> 
+> >>>> 
+> >>>> [2021-08-05 13:52:05.294] vlan912: 24b205903d09718e: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:05.298] vlan912: 24b205903d097162: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:05.626] vlan641: 24b205903d09711b: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:11.000] vlan912: 24b205903d097105: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:17.852] vlan912: 24b205903d0971ae: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:21.113] vlan641: 24b205903d09715b: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:27.963] vlan912: 24b205903d09718d: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:30.249] vlan496: 24b205903d097184: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:30.992] vlan420: 24b205903d09718a: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:33.937] vlan640: 24b205903d0971cd: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:40.032] vlan912: 24b205903d097182: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:40.420] vlan912: 24b205903d0971d5: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:42.799] vlan912: 24b205903d09713a: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:42.799] vlan614: 24b205903d0971e5: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:43.102] vlan912: 24b205903d097190: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:43.850] vlan479: 24b205903d097153: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:43.850] vlan479: 24b205903d097141: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:43.852] vlan912: 24b205903d097198: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:43.977] vlan637: 24b205903d097148: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> [2021-08-05 13:52:44.528] vlan637: 24b205903d0971c3: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>> 
+> >>> These are userspace error messages, not kernel messages.
+> >>> 
+> >>> What kernel version are you using?
+> > 
+> > Yes, we need to know, what kernel version are you using.
+> > 
+> >>> thanks,
+> >>> 
+> >>> greg k-h
+> >> 
+> > 
+> > And also another question, what version of pppd daemon are you using?
+> > 
+> > Also, are you able to dump state of ppp channels and ppp units? It is
+> > needed to know to which tty device, file descriptor (or socket
+> > extension) is (or should be) particular ppp channel bounded.
+> 
