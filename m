@@ -2,97 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF69F3E4A75
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 19:04:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D78A63E4A88
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 19:10:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233616AbhHIRE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 13:04:26 -0400
-Received: from smtprelay0153.hostedemail.com ([216.40.44.153]:49616 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229877AbhHIREY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 13:04:24 -0400
-Received: from omf20.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id DC724180A68C0;
-        Mon,  9 Aug 2021 17:04:02 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf20.hostedemail.com (Postfix) with ESMTPA id 11EC518A616;
-        Mon,  9 Aug 2021 17:04:01 +0000 (UTC)
-Message-ID: <1f99c69f4e640accaf7459065e6625e73ec0f8d4.camel@perches.com>
-Subject: [PATCH] netlink: NL_SET_ERR_MSG - remove local static array
-From:   Joe Perches <joe@perches.com>
-To:     netdev <netdev@vger.kernel.org>
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Date:   Mon, 09 Aug 2021 10:04:00 -0700
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.0-1 
+        id S233700AbhHIRLE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 13:11:04 -0400
+Received: from mga01.intel.com ([192.55.52.88]:27772 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229877AbhHIRLB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Aug 2021 13:11:01 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10070"; a="236736368"
+X-IronPort-AV: E=Sophos;i="5.84,308,1620716400"; 
+   d="scan'208";a="236736368"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2021 10:10:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,308,1620716400"; 
+   d="scan'208";a="570519339"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga004.jf.intel.com with ESMTP; 09 Aug 2021 10:10:39 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
+Subject: [PATCH net 0/4][pull request] Intel Wired LAN Driver Updates 2021-08-09
+Date:   Mon,  9 Aug 2021 10:13:58 -0700
+Message-Id: <20210809171402.17838-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Queue-Id: 11EC518A616
-X-Spam-Status: No, score=-0.97
-X-Stat-Signature: 1joi1f56hq7xsayp5qa835uknjh8widb
-X-Rspamd-Server: rspamout02
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX191vkcQB2Zva/2bFrMkOeuGf5dbTCrBcK4=
-X-HE-Tag: 1628528641-360961
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The want was to have some separate object section for netlink messages
-so all netlink messages could be specifically listed by some tool but
-the effect is duplicating static const char arrays in the object code.
+This series contains updates to ice and iavf drivers.
 
-It seems unused presently so change the macro to avoid the local static
-declarations until such time as these actually are wanted and used.
+Ani prevents the ice driver from accidentally being probed to a virtual
+function and stops processing of VF messages when VFs are being torn
+down.
 
-This reduces object size ~8KB in an x86-64 defconfig without modules.
+Brett prevents the ice driver from deleting is own MAC address.
 
-$ size vmlinux.o*
-   text	   data	    bss	    dec	    hex	filename
-20110471	3460344	 741760	24312575	172faff	vmlinux.o.new
-20119444	3460344	 741760	24321548	1731e0c	vmlinux.o.old
+Fahad ensures the RSS LUT and key are always set following reset for
+iavf.
 
-Signed-off-by: Joe Perches <joe@perches.com>
----
- include/linux/netlink.h | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+The following are changes since commit d09c548dbf3b31cb07bba562e0f452edfa01efe3:
+  net: sched: act_mirred: Reset ct info when mirror/redirect skb
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 100GbE
 
-diff --git a/include/linux/netlink.h b/include/linux/netlink.h
-index 61b1c7fcc401e..4bb32ae134aa8 100644
---- a/include/linux/netlink.h
-+++ b/include/linux/netlink.h
-@@ -89,13 +89,12 @@ struct netlink_ext_ack {
-  * to the lack of an output buffer.)
-  */
- #define NL_SET_ERR_MSG(extack, msg) do {		\
--	static const char __msg[] = msg;		\
- 	struct netlink_ext_ack *__extack = (extack);	\
- 							\
--	do_trace_netlink_extack(__msg);			\
-+	do_trace_netlink_extack(msg);			\
- 							\
- 	if (__extack)					\
--		__extack->_msg = __msg;			\
-+		__extack->_msg = msg;			\
- } while (0)
- 
- #define NL_SET_ERR_MSG_MOD(extack, msg)			\
-@@ -111,13 +110,12 @@ struct netlink_ext_ack {
- #define NL_SET_BAD_ATTR(extack, attr) NL_SET_BAD_ATTR_POLICY(extack, attr, NULL)
- 
- #define NL_SET_ERR_MSG_ATTR_POL(extack, attr, pol, msg) do {	\
--	static const char __msg[] = msg;			\
- 	struct netlink_ext_ack *__extack = (extack);		\
- 								\
--	do_trace_netlink_extack(__msg);				\
-+	do_trace_netlink_extack(msg);				\
- 								\
- 	if (__extack) {						\
--		__extack->_msg = __msg;				\
-+		__extack->_msg = msg;				\
- 		__extack->bad_attr = (attr);			\
- 		__extack->policy = (pol);			\
- 	}							\
+Anirudh Venkataramanan (2):
+  ice: Prevent probing virtual functions
+  ice: Stop processing VF messages during teardown
 
+Brett Creeley (1):
+  ice: don't remove netdev->dev_addr from uc sync list
+
+Md Fahad Iqbal Polash (1):
+  iavf: Set RSS LUT and key in reset handle path
+
+ drivers/net/ethernet/intel/iavf/iavf_main.c   | 13 +++++----
+ drivers/net/ethernet/intel/ice/ice.h          |  1 +
+ drivers/net/ethernet/intel/ice/ice_main.c     | 28 +++++++++++++------
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |  7 +++++
+ 4 files changed, 36 insertions(+), 13 deletions(-)
+
+-- 
+2.26.2
 
