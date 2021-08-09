@@ -2,46 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CFCB3E4229
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 11:10:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D08EA3E422B
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 11:10:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234183AbhHIJKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 05:10:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59054 "EHLO mail.kernel.org"
+        id S234239AbhHIJKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 05:10:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59062 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234227AbhHIJKZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234228AbhHIJKZ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 9 Aug 2021 05:10:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8B4A661078;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9BE51610A1;
         Mon,  9 Aug 2021 09:10:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1628500205;
-        bh=h+XEUfaFQsQxuoURSDe7j2eiWVZJtbFulXijWl864cs=;
+        bh=kOMjeOeuoHIp5vo536DSDYcDMzK4/C49kDFG/VxXCnk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tiym9iTmDA7/SE70AfWEiKBWBIvB8MynQkYpWyuz4BwpgV6LA1AKEIT2v32fHyVC+
-         JfOP2z5WUv6X/YTMwGxkX99W+99Na2HU6rFY7lvIGun1eY6pwblpDMqySR39n15fXY
-         AD1VWUAxv1zopIfgQVbrN0lYn18OwQfK4/ESfzBlZ5XZ5xZXbJu8zmgETrv1yP1wZG
-         KVup06dO9oFkYka5dIBdMoB6RL5Vd2PCzTDJoKhcSVCh6QTR2kjcntwlizV456zdhE
-         bLacJxl5gJZ+x6fEQ5aQ6Al/AKVQD4MeFZ4nv4Ws212sV9vwMjh694w0czyTi5CMF2
-         kKwaFc1m35bEA==
+        b=jbKQqvUA6HjQd1nXpEhBTwDM+OEprCEe/R0K6zo5o9q6wVWv4bibHpz6rrcvhg7IC
+         J0kvFVEGQGOO5huGLLWS8pbUGIgDHjCY2MTDeVlPBSQJT2us2sA5UWTpwcijpo/lQ5
+         5aQEWt4yRy10yXf83Ryjn1Wqt3c62Z14yU5wSOKXNvpkHEawsvOyvxqzFVMCHtJkTq
+         1mYdR911Q1lqDThgFoV+3l5HRzQeuD8qfry0kru99DEZZE6k6wRWif78Sl6zI4fHbS
+         OQfRMD3ys/ZXeetWwwnLssR8aisGJJseRnYTwA5sEyqq/knEJpoTD6UVvkx+xLq6qi
+         CkhBcYY/bq50g==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7D7EF60A12;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 89E4060A24;
         Mon,  9 Aug 2021 09:10:05 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net V2] page_pool: mask the page->signature before the
- checking
+Subject: Re: [PATCH -net] dccp: add do-while-0 stubs for dccp_pr_debug macros
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162850020550.22991.7583122589223288921.git-patchwork-notify@kernel.org>
+Message-Id: <162850020556.22991.14180369324728108258.git-patchwork-notify@kernel.org>
 Date:   Mon, 09 Aug 2021 09:10:05 +0000
-References: <1628213947-39384-1-git-send-email-linyunsheng@huawei.com>
-In-Reply-To: <1628213947-39384-1-git-send-email-linyunsheng@huawei.com>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
-        ilias.apalodimas@linaro.org, mcroce@microsoft.com,
-        willy@infradead.org, alexander.duyck@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxarm@openeuler.org, chenhao288@hisilicon.com
+References: <20210808230440.15784-1-rdunlap@infradead.org>
+In-Reply-To: <20210808230440.15784-1-rdunlap@infradead.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     netdev@vger.kernel.org, dccp@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org, gerrit@erg.abdn.ac.uk
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -50,22 +46,24 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Fri, 6 Aug 2021 09:39:07 +0800 you wrote:
-> As mentioned in commit c07aea3ef4d4 ("mm: add a signature in
-> struct page"):
-> "The page->signature field is aliased to page->lru.next and
-> page->compound_head."
+On Sun,  8 Aug 2021 16:04:40 -0700 you wrote:
+> GCC complains about empty macros in an 'if' statement, so convert
+> them to 'do {} while (0)' macros.
 > 
-> And as the comment in page_is_pfmemalloc():
-> "lru.next has bit 1 set if the page is allocated from the
-> pfmemalloc reserves. Callers may simply overwrite it if they
-> do not need to preserve that information."
+> Fixes these build warnings:
+> 
+> net/dccp/output.c: In function 'dccp_xmit_packet':
+> ../net/dccp/output.c:283:71: warning: suggest braces around empty body in an 'if' statement [-Wempty-body]
+>   283 |                 dccp_pr_debug("transmit_skb() returned err=%d\n", err);
+> net/dccp/ackvec.c: In function 'dccp_ackvec_update_old':
+> ../net/dccp/ackvec.c:163:80: warning: suggest braces around empty body in an 'else' statement [-Wempty-body]
+>   163 |                                               (unsigned long long)seqno, state);
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,V2] page_pool: mask the page->signature before the checking
-    https://git.kernel.org/netdev/net/c/0fa32ca438b4
+  - [-net] dccp: add do-while-0 stubs for dccp_pr_debug macros
+    https://git.kernel.org/netdev/net/c/86aab09a4870
 
 You are awesome, thank you!
 --
