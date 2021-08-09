@@ -2,127 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42D123E3D8C
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 03:31:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 665663E3DBB
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 03:40:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232642AbhHIBcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 21:32:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53945 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232635AbhHIBcD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 21:32:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1628472703;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6AtH3MREBeTH78AEq1clPuVC+0bJN9ncER27UcApork=;
-        b=W3gapVLSBcx2yl+zS6Lfxv7CxjT03RiaECN9r560CyJv87tKs944U0o3mFtS4pQB2Gxvwm
-        g9uEy+rTc0FYBe8/xMCNv1Ff01TxvzcmTOgqKRY9LrckU9+WXJTPhhCkw6HZmFWhWFAQRz
-        QRlASRdFiMCBzL0k+PDweT9vMuTv8p0=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-137-zrZvywSsOOmHaKkB74VnZg-1; Sun, 08 Aug 2021 21:31:42 -0400
-X-MC-Unique: zrZvywSsOOmHaKkB74VnZg-1
-Received: by mail-qv1-f72.google.com with SMTP id t9-20020a0562140c69b029033e8884d712so11421777qvj.18
-        for <netdev@vger.kernel.org>; Sun, 08 Aug 2021 18:31:42 -0700 (PDT)
+        id S232657AbhHIBlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 21:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231324AbhHIBlG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 21:41:06 -0400
+Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98210C061757;
+        Sun,  8 Aug 2021 18:40:45 -0700 (PDT)
+Received: by mail-oo1-xc2f.google.com with SMTP id b25-20020a4ac2990000b0290263aab95660so3941214ooq.13;
+        Sun, 08 Aug 2021 18:40:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=l6laj60gF3EBJJf37/HSy0mFR0yiQYrPH8paT5cifVc=;
+        b=PE9uHRpOY1P83cQ2hvR2ffdRd8QYhA/QCQGXlf0XNi9HScWL10UfLVELo9OElLoVKJ
+         guUr6ubqcBYENkIxJyhURG7z9aOfuhCVXnBxr+ueFEZwA4jNYSOfF6GmuFh2J8dWxjR6
+         gn7DCDMxUj4iSw8XOpdD0q+pGqEGeyrv67TgFNCLTQb1YaYfefVqRIBM0erRfXIqM9cq
+         Go8TAaxVkg9yDG4MFnpNoXfLK8Y5UrbOW9WNX3jAs0RCmrnuO9avgRADQW1QbQgCk8vi
+         cTG2cz8I3v97hOvYQg/85a4XQYSZ0Xz0gNB9bYD+oceRThPLq2TtrTJQ3oyqfaoqAeBA
+         yJLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6AtH3MREBeTH78AEq1clPuVC+0bJN9ncER27UcApork=;
-        b=I37VqDAF46ApHU3VGadvy/gZALVgZL/95JFD74K2afTK9QvPnAjONL5xtno/A6kcV7
-         BJszqq9a19aBfrXE6QKSwS95W6Tuj7R+XSdEZSOsWeOwaA7/j5SicU9RmhzWPvUTH86v
-         QlE6Kltyo6YDVbUh8JxCqlGPRkJgVCe2uoNWig/EGOjHiCIJvO2U4BaW1WYlNVdSPMl0
-         Y1Qq9g8JFC8rF1EuyvsSV6Boh9HK/e0WnBKb1yEriGnHPcldol9gEedCOataInQMXn6B
-         C+5O9+xdaNEz5BuxT3bUaTAuTPpPQ4NvSpQ74Deu6X8XPm3puWDAjuTv+IcMtWYq6DmH
-         H2Sg==
-X-Gm-Message-State: AOAM530ShdwImNWb7wOTpkz0L2Dft+Hxa4Zq4U3CuE40e+erMJOJP8lC
-        M+i6c4lwtGubaDJ8U+EUoGo6shKZMbnrKGs6STOXLFOJsn0390X/NsedsR2EdtH0eK4+IewcOGk
-        r2S7BPd6pdt7jw9uT
-X-Received: by 2002:a0c:8525:: with SMTP id n34mr10231135qva.19.1628472701751;
-        Sun, 08 Aug 2021 18:31:41 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwIgCfPcKGMpHmQj25TTlQWsuOBm7l+AJ4fYG5P+sKutKG0eNQ0jB01NZo4YhWBaN4jVjul/g==
-X-Received: by 2002:a0c:8525:: with SMTP id n34mr10231126qva.19.1628472701572;
-        Sun, 08 Aug 2021 18:31:41 -0700 (PDT)
-Received: from jtoppins.rdu.csb ([107.15.110.69])
-        by smtp.gmail.com with ESMTPSA id h2sm8768555qkf.106.2021.08.08.18.31.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 Aug 2021 18:31:41 -0700 (PDT)
-Subject: Re: bonding: link state question
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     Jay Vosburgh <jay.vosburgh@canonical.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <020577f3-763d-48fd-73ce-db38c3c7fdf9@redhat.com>
- <22626.1628376134@famine> <d2dfeba3-6cd6-1760-0abb-6005659ac125@redhat.com>
- <20210808044912.GA10092@1wt.eu>
-From:   Jonathan Toppins <jtoppins@redhat.com>
-Message-ID: <79019b7e-1c2e-7186-4908-cf085b33fb59@redhat.com>
-Date:   Sun, 8 Aug 2021 21:31:39 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=l6laj60gF3EBJJf37/HSy0mFR0yiQYrPH8paT5cifVc=;
+        b=JCMtzu4EuAs3jWiUavuccAUEesnPgUz+tHTuJ7wc8h5PONlrDEQo2uIzHHSvGNDC/W
+         LiEVaFrTp/jQb8Agf2R1943K3Q+wAYVDeKjaS6U7zMU34VIbI1X/oUXXyI12q9Al9nmU
+         d2FsNip1+aNkJ9CwKWt1L6LpnN2qIf7xbJ8oUwL1RH2COptnrg/CQ6GnhI0Pl4IFBiMm
+         m9/H+75NjVbuhGyOZxD3HHOMqCe0a88Kmhn8mpcHnYtNBRZbVKtX+xFznITddsTT6ELk
+         9sGcG+USAQGog2Vqj33zvQP4AtA1k0sdmNpHqsyhzHbb8WZW/YZia1saPyMCgw2/lbGP
+         O85A==
+X-Gm-Message-State: AOAM531EhogJ6JfqffyKJqX8Ak+6U/D4HXJ7sdGrOzPif0HlHMcrtpMr
+        x0H9xTXyeumZF7gQRemNCfA=
+X-Google-Smtp-Source: ABdhPJxmYGx4zWxL0fvSC8obf6Owik82jL1rJv6TpMkpJSNz9YpFtbBh/bwCdkpsgL/mIdLLfcypaw==
+X-Received: by 2002:a4a:b98c:: with SMTP id e12mr13534396oop.67.1628473245038;
+        Sun, 08 Aug 2021 18:40:45 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id l13sm3020531oii.11.2021.08.08.18.40.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Aug 2021 18:40:44 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Sun, 8 Aug 2021 18:40:43 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        andrew@lunn.ch, netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-imx@nxp.com
+Subject: Re: [PATCH V1 4/5] net: fec: add eee mode tx lpi support
+Message-ID: <20210809014043.GA3712165@roeck-us.net>
+References: <20210709075355.27218-1-qiangqing.zhang@nxp.com>
+ <20210709075355.27218-5-qiangqing.zhang@nxp.com>
 MIME-Version: 1.0
-In-Reply-To: <20210808044912.GA10092@1wt.eu>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210709075355.27218-5-qiangqing.zhang@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/8/21 12:49 AM, Willy Tarreau wrote:
-> On Sat, Aug 07, 2021 at 08:09:31PM -0400, Jonathan Toppins wrote:
->> setting miimon = 100 does appear to fix it.
->>
->> It is interesting that there is no link monitor on by default. For example
->> when I enslave enp0s31f6 to a new bond with miimon == 0, enp0s31f6 starts
->> admin down and will never de-assert NO-CARRIER the bond always results in an
->> operstate of up. It seems like miimon = 100 should be the default since some
->> modes cannot use arpmon.
+On Fri, Jul 09, 2021 at 03:53:54PM +0800, Joakim Zhang wrote:
+> From: Fugang Duan <fugang.duan@nxp.com>
 > 
-> Historically when miimon was implemented, not all NICs nor drivers had
-> support for link state checking at all! In addition, there are certain
-> deployments where you could rely on many devices by having a bond device
-> on top of a vlan or similar device, and where monitoring could cost a
-> lot of resources and you'd prefer to rely on external monitoring to set
-> all of them up or down at once.
+> The i.MX8MQ ENET version support IEEE802.3az eee mode, add
+> eee mode tx lpi enable to support ethtool interface.
 > 
-> I do think however that there remains a case with a missing state
-> transition in the driver: on my laptop I have a bond interface attached
-> to eth0, and I noticed that if I suspend the laptop with the link up,
-> when I wake it up with no interface connected, the bond will not turn
-> down, regardless of miimon. I have not looked closer yet, but I
-> suspect that we're relying too much on a state change between previous
-> and current and that one historically impossible transition does not
-> exist there and/or used to work because it was handled as part of
-> another change. I'll eventually have a look.
+> usage:
+> 1. set sleep and wake timer to 5ms:
+> ethtool --set-eee eth0 eee on tx-lpi on tx-timer 5000
+> 2. check the eee mode:
+> ~# ethtool --show-eee eth0
+> EEE Settings for eth0:
+>         EEE status: enabled - active
+>         Tx LPI: 5000 (us)
+>         Supported EEE link modes:  100baseT/Full
+>                                    1000baseT/Full
+>         Advertised EEE link modes:  100baseT/Full
+>                                     1000baseT/Full
+>         Link partner advertised EEE link modes:  100baseT/Full
 > 
-> Willy
+> Note: For realtime case and IEEE1588 ptp case, it should disable
+> EEE mode.
 > 
+> Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 
-I am likely very wrong but the lack of a recalculation of the bond 
-carrier state after a lower notifies of an up/down event seemed 
-incorrect. Maybe a place to start?
+This patch results in:
 
-diff --git i/drivers/net/bonding/bond_main.c 
-w/drivers/net/bonding/bond_main.c
-index 9018fcc59f78..2b2c4b937142 100644
---- i/drivers/net/bonding/bond_main.c
-+++ w/drivers/net/bonding/bond_main.c
-@@ -3308,6 +3308,7 @@ static int bond_slave_netdev_event(unsigned long 
-event,
-                  */
-                 if (bond_mode_can_use_xmit_hash(bond))
-                         bond_update_slave_arr(bond, NULL);
-+               bond_set_carrier(bond);
-                 break;
-         case NETDEV_CHANGEMTU:
-                 /* TODO: Should slaves be allowed to
+drivers/net/ethernet/freescale/fec_main.c: In function 'fec_enet_eee_mode_set':
+drivers/net/ethernet/freescale/fec_main.c:2801:40: error: 'FEC_LPI_SLEEP' undeclared
+drivers/net/ethernet/freescale/fec_main.c:2802:39: error: 'FEC_LPI_WAKE' undeclared
 
+when building m68k:m5272c3_defconfig.
+
+Guenter
