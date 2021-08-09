@@ -2,312 +2,355 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96C973E4AE8
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 19:33:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2D773E4AEB
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 19:33:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234388AbhHIRdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 13:33:45 -0400
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:7224 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234208AbhHIRdl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 13:33:41 -0400
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 179HV34x003567;
-        Mon, 9 Aug 2021 17:32:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=4Dh6JzZzbnyt05DwDSucryAXc7HHgWFMtLWPMWXr//c=;
- b=eAdrywGsbd+Fjz6dmL2xAMAxDq7yF7PS+srXTWcVVkXvgnlZWhb7CMkzg0FHSPMKe3RT
- I30TQmAk2guqHDGrKbY3kpFXlPlAeGgodAVi9k6C5fn6S/VdFC+44xcoD8Pr8JbTgwym
- z7DOhYh+h8CJSi8I1qQWzx9NSvAS2kpx+FXVvOxMLShupTkElDWn/sk/xlxscmgqYbzB
- Ht7TfNCh3vDhvsDVEbPtYPc2GA2cmOzDZUJNqpLEB3FD+Ql4DOZ5z4/x348d3/WgWpsN
- w4lVhksUgEVTsOQWlzdUqd73oBqoJx+mavxAs3r1OB0hXZiBUuJt1pSUpXOe6EcpQJnl kQ== 
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2020-01-29;
- bh=4Dh6JzZzbnyt05DwDSucryAXc7HHgWFMtLWPMWXr//c=;
- b=JSrEs7lu3pfiFnbCyk2oUJTubiV+CLJQLSWhR+m+oJ90a7pUdR3VTN0DoG2DWn+Iu+zg
- g93CwiysFEh2lmKRE6xPgpXzMMNFx7w8Tpsl2lz/cNL1MPK0/NxJEKhphh4ZNvQjYdhk
- GfXHjmvZjxZ7bphnV0N2TJG0Lom+ioAauWXfEDF4ALjdfGqaiCdVwrW4s5gMjFoi6rNP
- NHJptHW5yBUddxeRCp6OL525k7vi2+FjRIHRPUjZRScYOespXquesXmD9uvJe8EUL1Ln
- jhOOdoPsahqGuk3/c+59wXMeSFxqNQt7gPU4/eX5jv1u4RwICziXFRbLkmMjPID2QMZE rQ== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3aaqmusxmf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 09 Aug 2021 17:32:55 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 179HJ7CR125637;
-        Mon, 9 Aug 2021 17:32:54 GMT
-Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2174.outbound.protection.outlook.com [104.47.59.174])
-        by aserp3030.oracle.com with ESMTP id 3aa8qrpmpk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 09 Aug 2021 17:32:54 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oYwZtQbS3+9qkBJt6a+jxx0u/6rSraCNaXMdxG8+dZfvhweOM8SxfohF6rUWXhuf8eHdJpy/5IlhJbcD8myOukVU7H0gZrmjwVQlIiIJT3NLKke6hN9igk/7qJR50/78fWLQ8/cWwedWVNWV/4qBYIK8L4K8x5tNKDxCM8uA4Lenlv3jS92Y6Tc8SeLrJs85nGvE/5ksVMx5O0OACHIIzQXMQ2li1xQ7EwKLG/Jk9Xd+wStmmWxYQcvCFDKAO8NtVB+CSRO3oVd7b2oGwMJoI7jjCdl5NDBD9lPcfayF/nIJRAnlhLnZuYAL2J96K9o8bY0YkqppRAScLHC2yBBqLA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4Dh6JzZzbnyt05DwDSucryAXc7HHgWFMtLWPMWXr//c=;
- b=Y/fXcaFVaXKF9f6/9SZkHx2YHd34kAm8A3ZyRUYEOonrVkKn6p5HAQdSyehDozY9HC+f1SrbKBFkSlmw/ZXSskNgmHIp6v6HOdwaeShRmGxjL8HbFhBg0ZrlIr8+gxyU3MIf0WS1sYSbsIeQxgv0e1kcjIfXJZNSD1A1CNt7laV78/FYCBvxztpbb1D9QjIOMKYBBHwp3V8vPiYu3LvVcTy0T4z0UVJpVIDkzLofPnmlYMs+u+1341qDzrxYSZOApiABMCduLFvrABO1UZw/BPBe2RHN0Emzd0KqUpinyHKoUmzRNis2/k8UcDoD5jZXwxkiW3Zu7Rhwpno66tLHlA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        id S234411AbhHIReA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 13:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59426 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234208AbhHIRd7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 13:33:59 -0400
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23FD5C0613D3;
+        Mon,  9 Aug 2021 10:33:39 -0700 (PDT)
+Received: by mail-il1-x133.google.com with SMTP id i4so2949755ila.1;
+        Mon, 09 Aug 2021 10:33:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4Dh6JzZzbnyt05DwDSucryAXc7HHgWFMtLWPMWXr//c=;
- b=pqwdY2mTXBXV488EZLr3S4bOr0wTpwXM3LOuEzl73mmzOLnXg4foXLkzLlkJGLy5BAPdr9ogKEBtotIn5jXK9QPyvCHC4igfBVHcOrsV/mXyzUg/w29CWmNJsqI5W4OX87k9JO39lymyTIExeb38dD+kxjHDW7UMnkwyXm8lvg8=
-Authentication-Results: fb.com; dkim=none (message not signed)
- header.d=none;fb.com; dmarc=none action=none header.from=oracle.com;
-Received: from SJ0PR10MB4494.namprd10.prod.outlook.com (2603:10b6:a03:2d4::12)
- by BYAPR10MB3333.namprd10.prod.outlook.com (2603:10b6:a03:14e::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.21; Mon, 9 Aug
- 2021 17:32:52 +0000
-Received: from SJ0PR10MB4494.namprd10.prod.outlook.com
- ([fe80::588f:a774:17de:1d1b]) by SJ0PR10MB4494.namprd10.prod.outlook.com
- ([fe80::588f:a774:17de:1d1b%3]) with mapi id 15.20.4394.023; Mon, 9 Aug 2021
- 17:32:52 +0000
-Subject: Re: [syzbot] BUG: sleeping function called from invalid context in
- _copy_to_iter
-To:     syzbot <syzbot+8760ca6c1ee783ac4abd@syzkaller.appspotmail.com>,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        christian.brauner@ubuntu.com, cong.wang@bytedance.com,
-        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
-        jamorris@linux.microsoft.com, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, shuah@kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk,
-        yhs@fb.com
-References: <0000000000006bd0b305c914c3dc@google.com>
-From:   Shoaib Rao <rao.shoaib@oracle.com>
-Message-ID: <0c106e6c-672f-474e-5815-97b65596139d@oracle.com>
-Date:   Mon, 9 Aug 2021 10:32:46 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
-In-Reply-To: <0000000000006bd0b305c914c3dc@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=Y/d9AEuDn9qTIXjnP+ytDxS2xGEJLagZM3xlSNM+4j8=;
+        b=IpF41HUgHnX2VhabmkwUEJqAngPVn+hrOGQdHIYkBkxrPMarA5OQJLeci/dAv2vM5z
+         6Dv8oiFKWB9c7fwPAJKfskDU54kRG5h9p6iyc8aSIOVrlYgLHdjH65x2hu0YV1riGoHc
+         nQCAn8rZ8NhskaNsahNAPAL7BOn4KMhLetSadqDBGuDswbezUNdQFyAHjGwfVhtI5UFX
+         R8Fa0oYXaqiduj4BPM42Cy29cDCib08xzZp5iH7o2gW3ywUbq8s/Bjm2qKA8fNrPOF++
+         qbJimQkNOs0bx+SYJap+RjYehKaZUtizGE845D9F3dNDNZopvwCu5ek3NMB113B+fHFX
+         ub7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=Y/d9AEuDn9qTIXjnP+ytDxS2xGEJLagZM3xlSNM+4j8=;
+        b=LdzJYtcrTBjFe+Ou1i5RRAGCe8hkh9fJ6DBLh6nMe03IrMbKRSGA/8u4w0UVx7cUiI
+         9WUTuAc68hgd5vRdthSpwip9kh456QDqmRyWkrPW1IirokUKLZPLf1Z6lb7iHGtggjUx
+         V2W6xqAUS8xUeY34FUK5KCYhu3wRbuAUTfkZLfUc3MjSm/msPcnsU4/tUrRQFImbPe2d
+         rkd7v2f3StH830vHTVzC9oVLhtI2RdlJVKG1l3LIcJXhNTa36zK/n/+/jVLHmrPzwWtu
+         O01N+FrpWU+iwxk5zJ18U6CBxncM2rnOg5VuDFHMpvnjLb0RZeY60XBO/PtwoNzyIWxR
+         cioA==
+X-Gm-Message-State: AOAM531hr2IpyzpslnMJSpgUAdnNmfi8JJS5kV8edMdWWoWLZyzAw35C
+        7NW5Y0yI2NLN999UHJsqNkY=
+X-Google-Smtp-Source: ABdhPJwx5OLOWTY0EkR9mEy6IFt7WbzlDn7QJftTmgUJlw3TMB3IEsxc9uUcs6mF8G9iOF6Hat6Wrw==
+X-Received: by 2002:a92:db4b:: with SMTP id w11mr309ilq.297.1628530418466;
+        Mon, 09 Aug 2021 10:33:38 -0700 (PDT)
+Received: from localhost ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id r19sm4424932ilj.33.2021.08.09.10.33.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Aug 2021 10:33:37 -0700 (PDT)
+Date:   Mon, 09 Aug 2021 10:33:28 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        linux-stable <stable@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Sasha Levin <sashal@kernel.org>, lkft-triage@lists.linaro.org,
+        Netdev <netdev@vger.kernel.org>
+Message-ID: <611166e8929db_2f710208a8@john-XPS-13-9370.notmuch>
+In-Reply-To: <CA+G9fYuH=KQaCpbBuYV0EEXtVcF7hTr+x6C5zmyUeNqVwLneYQ@mail.gmail.com>
+References: <20210806081113.718626745@linuxfoundation.org>
+ <20210806081113.920577986@linuxfoundation.org>
+ <CA+G9fYuH=KQaCpbBuYV0EEXtVcF7hTr+x6C5zmyUeNqVwLneYQ@mail.gmail.com>
+Subject: Re: [PATCH 5.13 06/35] bpf, sockmap: On cleanup we additionally need
+ to remove cached skb
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-ClientProxiedBy: SN2PR01CA0028.prod.exchangelabs.com (2603:10b6:804:2::38)
- To SJ0PR10MB4494.namprd10.prod.outlook.com (2603:10b6:a03:2d4::12)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2606:b400:400:744d:8000::918] (2606:b400:8301:1010::16aa) by SN2PR01CA0028.prod.exchangelabs.com (2603:10b6:804:2::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.16 via Frontend Transport; Mon, 9 Aug 2021 17:32:48 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 77d546bd-eb4f-4c2e-b184-08d95b5bb6c5
-X-MS-TrafficTypeDiagnostic: BYAPR10MB3333:
-X-Microsoft-Antispam-PRVS: <BYAPR10MB333341679325D23C126C5CF2EFF69@BYAPR10MB3333.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: L+pqkmUCH76tx5M5N5SNEnru9R0fwb3uDacc5BXzdDSj56dF25fgN5n3qo307PdgVE3aMCRDonaiXJ5pusRges5PONIzaYRYqLb8v3IM4vCO/xQC3+s9FrnT1wUFyV3ukLUCBrbf94Co9ASkjt46AH8WY883nSa/5IDxBK8+AM7rNU4MyvVDo+UvlE5S4CRvoiHFMQvNzZ13vGMTjHZBcCKU3YD1Duq3iivFPs5yj+IhxRSX9qHwtj+ilQJdPqwYjf0Xt5LfZabfc2synKmi1gZ7lAnpK2anwtTzMgmorgslI6/k1l9GtHwZD/RPx0vGiXYu/0F8v0V7DJy6zHeQZdvzRmtDhET3PT6hq3CfisJqyjNTOYuASVXRJ1sxAUos6kgZkTO+mkpTDVxNeQDZnAqnocZwHsRUA5XzDlx9Go3ZcTwEukKlYIojzWgVGOI52rqmnyvBZ1S/rDS9rk0DuJtx9b0Ec7FiXNKuheUL15u95hEYTHAOfTD3jG1itHYGIMwy1r3bxV50m2J6oT+K0fbUaoTlxx6A7rbsGLXWjbWxIkwhba1cQxlcXivknhp5QJPfN1EtR76cAXHrTBnSQxMWK+MqBuxz4S7tFuTEKOVWH8ErwhBtae4h8C98VMhxHQ2XCwoxhyB2/rP8KjXKq7NnFrxRNt3Mt07zF4iGsuO1/j5xITJ+YLKTcHJObKdn6otRoraX5BhmSUAFmFyApBKcqNkQ+BjL9ERsjSlxRqp9jq0KUhsPaQIlUefXGzOXFXAu4En93YhgltUh3wfDupuhiWmkqj9Pu71P5RsVGVI9wf3VJKQBeVTUrw7RW+VyKOWa6rWRc/BGpPLtPQAeFA1Wg8Xe/7yWsJEa+PWR/SI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR10MB4494.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(376002)(396003)(136003)(39860400002)(366004)(31696002)(966005)(83380400001)(316002)(66476007)(66556008)(86362001)(36756003)(31686004)(8936002)(8676002)(6486002)(38100700002)(66946007)(2906002)(478600001)(2616005)(5660300002)(7416002)(921005)(53546011)(186003)(99710200001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?T0F3Y2tJL1V4R0lmNnF1RnVuMUx6MmlvMWY5MDE2NEdzVXpJN1pmUmJpSjNh?=
- =?utf-8?B?citkR1BuRDU4N1M4NEgyMHo3TDkyZEwrWFNZQ2ZiYkZVMGxvbk03a3VqRHZa?=
- =?utf-8?B?Zm5zMEJrQ2pVcDBTeVdTRlFFaFY2Zy80alloeUZvM1laTW1MZTNoMUZFQWhn?=
- =?utf-8?B?cUJCdi9IRHZObjBPVG1LRVU5QmFMRHVJVlZ5NWszeC81dGdPa0g2SlRnbGRa?=
- =?utf-8?B?SjNmOXE3R0s2TFFHRDRvS0RsZmxVV3ZHL0lsOVVBZDM2dUQ5bUxQbThJZi9D?=
- =?utf-8?B?TS9rL3dFWStkUkFsOHpySHpjVllkeDRHWlM0SEVFRHQ4RlpLZ0U4b2JjUGpm?=
- =?utf-8?B?anJaNkpUdkhBUGJ6YXRCWTYxc2VMaHVKVVRCTXA2SGFSdnFEdUwydVBwVk1L?=
- =?utf-8?B?TVBkQjZDbkpkU1MvR0RuYWhVRHFCWDFXaFdxMDNYZ2xzTzdRM0YrVmhtelo3?=
- =?utf-8?B?eXR3N2hRU1RGTFJxcVl2THBydWtlRzJXY0NnNTdqK0xrKzRhSE84VmtnL2Vv?=
- =?utf-8?B?V0ExMHJ3R1ZRT2ozbUxjYTkvUGlCV2tkYzBudGVYU2tMeUtEM1UyQXRaOWRP?=
- =?utf-8?B?MDVkOVJnWkFWRWtkaTYzWGUwMnF2MlVtcU8xRlFSTHU2bGVoc1pBc09vQysv?=
- =?utf-8?B?VVUybk4wMUVaUTFtS0ZCRk1IRHFReVljOTVvTlNIc2tLUCt3T2h0MEk5UXhn?=
- =?utf-8?B?NlhmVXBuQWxWZExJdTd1NVJmVHlyeDVFU2dGSU93MU9ENjVmRjI4MW9wazlv?=
- =?utf-8?B?OXVYbVdPdHF3ajFCdnhLbUZpcndPdVA4OGpUbkhuZUN4RDJoVExyczVIRlha?=
- =?utf-8?B?VG96SFl5WXBpTUdFOUN6WGVyMGIvemMxcDFOb2NEWFM2TjY4WC9VLyt2N3Jz?=
- =?utf-8?B?WHluOFlNcGQzMHRnMkQvaTZjdHd5TTkreFdwZUs2OUtyZHdnUDBtenVkeFdM?=
- =?utf-8?B?WEZrWmNmdVByR0Q0allIbGw5M3VPcnZzL2ViNHlsRCtia2xtUEtLUlVLcDJR?=
- =?utf-8?B?Q1Rqdytxd1NDUElHODRrNWs1dGVvVUhnUzZLb0ZGaG8yVWNwaFJORjZKZ3Z6?=
- =?utf-8?B?bkVKYklmbThkMXVuK2R3TE40SzFWVWVkVml5eDlUR2lMamlwQytLZnAybDRj?=
- =?utf-8?B?amdrYmJ0V1dzT0F0TEhzT2JTZmJ4KytEOXIxNGNoWlFlNFYxdDl4WFBXaCtG?=
- =?utf-8?B?dmNPVzVIOUdCZ1F6dFludTRQK2RTSVpRS2hWY2xHcmMxS2kvTDA2cUxIQ0tx?=
- =?utf-8?B?TWd1Ris0ZzZPTWVqem10c3M3UnZnSkE4NGhpVE91UGtGbEJLdHVrNEZqUmZz?=
- =?utf-8?B?VU1tRWpUT1ZPNmQwS0NIOS90ZjJMRlk0RWFzdmVlTzNLdWlSUEVMRWVuRmtF?=
- =?utf-8?B?L0xMK3BKMTRjdE56VGpwNm9Na2tWN3lTeXNUUjZyUDlvdjdla3MzZ0ZuVitj?=
- =?utf-8?B?cER1bXF2QzRycUZqTGdEZ2hQNlk1bDBhd3V0M0ZtMm1oWGVZam4rbUhPSnMw?=
- =?utf-8?B?M24yRVdUdkZzV1JVNmcxckhtbmo1czRxc1JJODFBZzJkdk9JT09DSjBsVGFD?=
- =?utf-8?B?RHdFZzhNTFNVaEdwSFJWaDVBaUR1M1U1QU1TZ2hEa3QyOHp1eDdsM1Rwc1Q5?=
- =?utf-8?B?REEyaHlMMHdRK3J2RXprb3k0WGxlenk4cXg5UG0zazliOGQrOWNHc0tCL1gv?=
- =?utf-8?B?cjduTG5aUE5Ed3ozOFpoVDVNRGQwR1JGOEVTNWRuWld6QjNKSmNraFZVSVRE?=
- =?utf-8?B?dkVhcHduSmprNUpoYmZpekQyZlMvNWtieDdiRUJyMFRZdHpERGtNNXYwZUlD?=
- =?utf-8?B?b1cxUjlCUmtqNDdqdko2UT09?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77d546bd-eb4f-4c2e-b184-08d95b5bb6c5
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR10MB4494.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2021 17:32:51.9372
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7HszehdxbcrhL00ujL9j/4umt5ONM2PHse+7Vy5iLm9YKtgv7+yMZk3b6bltnKT+2MAgoyOnlZcz+TaocuMCWw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB3333
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10071 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 phishscore=0 mlxscore=0
- spamscore=0 adultscore=0 bulkscore=0 malwarescore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2107140000
- definitions=main-2108090123
-X-Proofpoint-GUID: 4mLSC1kwf-WSWlBmwUEw4KQ_jG01e3_s
-X-Proofpoint-ORIG-GUID: 4mLSC1kwf-WSWlBmwUEw4KQ_jG01e3_s
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This seems like a false positive. 1) The function will not sleep because 
-it only calls copy routine if the byte is present. 2). There is no 
-difference between this new call and the older calls in 
-unix_stream_read_generic().
+Naresh Kamboju wrote:
+> While running packetdrill test suite on qemu aarch64 the following warning
+> noticed with stable-rc 5.13.9-rc1 kernel intermittently.
+> 
+> On Fri, 6 Aug 2021 at 13:52, Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > From: John Fastabend <john.fastabend@gmail.com>
+> >
+> > [ Upstream commit 476d98018f32e68e7c5d4e8456940cf2b6d66f10 ]
+> 
+> <trim>
+> 
+> > With this fix we no longer see this warning splat from tcp side on
+> > socket close when we hit the above case with redirect to ingress self.
+> >
+> > [224913.935822] WARNING: CPU: 3 PID: 32100 at net/core/stream.c:208 sk_stream_kill_queues+0x212/0x220
+> > [224913.935841] Modules linked in: fuse overlay bpf_preload x86_pkg_temp_thermal intel_uncore wmi_bmof squashfs sch_fq_codel efivarfs ip_tables x_tables uas xhci_pci ixgbe mdio xfrm_algo xhci_hcd wmi
+> > [224913.935897] CPU: 3 PID: 32100 Comm: fgs-bench Tainted: G          I       5.14.0-rc1alu+ #181
+> > [224913.935908] Hardware name: Dell Inc. Precision 5820 Tower/002KVM, BIOS 1.9.2 01/24/2019
+> > [224913.935914] RIP: 0010:sk_stream_kill_queues+0x212/0x220
+> 
+> 
+> steps to reproduce:
+> -------------------
+> # boot qemu aarch64 with stable-rc 5.13.9-rc1 kernel
+> # /usr/bin/qemu-system-aarch64 -cpu max -machine virt,accel=kvm
+> -nographic -net nic,model=virtio,macaddr=BC:DD:AD:CC:09:01 -net tap -m
+> 4096 -monitor none -kernel kernel/Image.gz --append "console=ttyAMA0
+> root=/dev/vda rw" -hda
+> rpb-console-image-lkft-juno-20210525221209.rootfs.ext4 -m 4096 -smp 4
+> -nographic
+> 
+> # Run test
+> #  cd ./automated/linux/packetdrill/
+> #  ./configure
+> #  make all
+> #  python3 ./packetdrill/run_all.py -v -l -L
+> 
+> ## Build
+> * kernel: 5.13.9-rc1
+> * git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+> * git branch: linux-5.13.y
+> * git commit: 1eb1590ab470d5f73dd2d20a7196bca35fa3d3e7
+> * git describe: v5.13.8-36-g1eb1590ab470
+> * test details:
+> https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.13.y/build/v5.13.8-36-g1eb1590ab470
 
-Shoaib
+Hi Naresh,
 
-On 8/8/21 4:38 PM, syzbot wrote:
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    c2eecaa193ff pktgen: Remove redundant clone_skb override
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=12e3a69e300000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=aba0c23f8230e048
-> dashboard link: https://syzkaller.appspot.com/bug?extid=8760ca6c1ee783ac4abd
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15c5b104300000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10062aaa300000
->
-> The issue was bisected to:
->
-> commit 314001f0bf927015e459c9d387d62a231fe93af3
-> Author: Rao Shoaib <rao.shoaib@oracle.com>
-> Date:   Sun Aug 1 07:57:07 2021 +0000
->
->      af_unix: Add OOB support
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10765f8e300000
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=12765f8e300000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=14765f8e300000
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+8760ca6c1ee783ac4abd@syzkaller.appspotmail.com
-> Fixes: 314001f0bf92 ("af_unix: Add OOB support")
->
-> BUG: sleeping function called from invalid context at lib/iov_iter.c:619
-> in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 8443, name: syz-executor700
-> 2 locks held by syz-executor700/8443:
->   #0: ffff888028fa0d00 (&u->iolock){+.+.}-{3:3}, at: unix_stream_read_generic+0x16c6/0x2190 net/unix/af_unix.c:2501
->   #1: ffff888028fa0df0 (&u->lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:354 [inline]
->   #1: ffff888028fa0df0 (&u->lock){+.+.}-{2:2}, at: unix_stream_read_generic+0x16d0/0x2190 net/unix/af_unix.c:2502
-> Preemption disabled at:
-> [<0000000000000000>] 0x0
-> CPU: 1 PID: 8443 Comm: syz-executor700 Not tainted 5.14.0-rc3-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->   __dump_stack lib/dump_stack.c:88 [inline]
->   dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
->   ___might_sleep.cold+0x1f1/0x237 kernel/sched/core.c:9154
->   __might_fault+0x6e/0x180 mm/memory.c:5258
->   _copy_to_iter+0x199/0x1600 lib/iov_iter.c:619
->   copy_to_iter include/linux/uio.h:139 [inline]
->   simple_copy_to_iter+0x4c/0x70 net/core/datagram.c:519
->   __skb_datagram_iter+0x10f/0x770 net/core/datagram.c:425
->   skb_copy_datagram_iter+0x40/0x50 net/core/datagram.c:533
->   skb_copy_datagram_msg include/linux/skbuff.h:3620 [inline]
->   unix_stream_read_actor+0x78/0xc0 net/unix/af_unix.c:2701
->   unix_stream_recv_urg net/unix/af_unix.c:2433 [inline]
->   unix_stream_read_generic+0x17cd/0x2190 net/unix/af_unix.c:2504
->   unix_stream_recvmsg+0xb1/0xf0 net/unix/af_unix.c:2717
->   sock_recvmsg_nosec net/socket.c:944 [inline]
->   sock_recvmsg net/socket.c:962 [inline]
->   sock_recvmsg net/socket.c:958 [inline]
->   ____sys_recvmsg+0x2c4/0x600 net/socket.c:2622
->   ___sys_recvmsg+0x127/0x200 net/socket.c:2664
->   do_recvmmsg+0x24d/0x6d0 net/socket.c:2758
->   __sys_recvmmsg net/socket.c:2837 [inline]
->   __do_sys_recvmmsg net/socket.c:2860 [inline]
->   __se_sys_recvmmsg net/socket.c:2853 [inline]
->   __x64_sys_recvmmsg+0x20b/0x260 net/socket.c:2853
->   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->   entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x43ef39
-> Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007ffca8776d68 EFLAGS: 00000246 ORIG_RAX: 000000000000012b
-> RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043ef39
-> RDX: 0000000000000700 RSI: 0000000020001140 RDI: 0000000000000004
-> RBP: 0000000000402f20 R08: 0000000000000000 R09: 0000000000400488
-> R10: 0000000000000007 R11: 0000000000000246 R12: 0000000000402fb0
-> R13: 0000000000000000 R14: 00000000004ac018 R15: 0000000000400488
->
-> =============================
-> [ BUG: Invalid wait context ]
-> 5.14.0-rc3-syzkaller #0 Tainted: G        W
-> -----------------------------
-> syz-executor700/8443 is trying to lock:
-> ffff8880212b6a28 (&mm->mmap_lock#2){++++}-{3:3}, at: __might_fault+0xa3/0x180 mm/memory.c:5260
-> other info that might help us debug this:
-> context-{4:4}
-> 2 locks held by syz-executor700/8443:
->   #0: ffff888028fa0d00 (&u->iolock){+.+.}-{3:3}, at: unix_stream_read_generic+0x16c6/0x2190 net/unix/af_unix.c:2501
->   #1: ffff888028fa0df0 (&u->lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:354 [inline]
->   #1: ffff888028fa0df0 (&u->lock){+.+.}-{2:2}, at: unix_stream_read_generic+0x16d0/0x2190 net/unix/af_unix.c:2502
-> stack backtrace:
-> CPU: 1 PID: 8443 Comm: syz-executor700 Tainted: G        W         5.14.0-rc3-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->   __dump_stack lib/dump_stack.c:88 [inline]
->   dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
->   print_lock_invalid_wait_context kernel/locking/lockdep.c:4666 [inline]
->   check_wait_context kernel/locking/lockdep.c:4727 [inline]
->   __lock_acquire.cold+0x213/0x3ab kernel/locking/lockdep.c:4965
->   lock_acquire kernel/locking/lockdep.c:5625 [inline]
->   lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5590
->   __might_fault mm/memory.c:5261 [inline]
->   __might_fault+0x106/0x180 mm/memory.c:5246
->   _copy_to_iter+0x199/0x1600 lib/iov_iter.c:619
->   copy_to_iter include/linux/uio.h:139 [inline]
->   simple_copy_to_iter+0x4c/0x70 net/core/datagram.c:519
->   __skb_datagram_iter+0x10f/0x770 net/core/datagram.c:425
->   skb_copy_datagram_iter+0x40/0x50 net/core/datagram.c:533
->   skb_copy_datagram_msg include/linux/skbuff.h:3620 [inline]
->   unix_stream_read_actor+0x78/0xc0 net/unix/af_unix.c:2701
->   unix_stream_recv_urg net/unix/af_unix.c:2433 [inline]
->   unix_stream_read_generic+0x17cd/0x2190 net/unix/af_unix.c:2504
->   unix_stream_recvmsg+0xb1/0xf0 net/unix/af_unix.c:2717
->   sock_recvmsg_nosec net/socket.c:944 [inline]
->   sock_recvmsg net/socket.c:962 [inline]
->   sock_recvmsg net/socket.c:958 [inline]
->   ____sys_recvmsg+0x2c4/0x600 net/socket.c:2622
->   ___sys_recvmsg+0x127/0x200 net/socket.c:2664
->   do_recvmmsg+0x24d/0x6d0 net/socket.c:2758
->   __sys_recvmmsg net/socket.c:2837 [inline]
->   __do_sys_recvmmsg net/socket.c:2860 [inline]
->   __se_sys_recvmmsg net/socket.c:2853 [inline]
->   __x64_sys_recvmmsg+0x20b/0x260 net/socket.c:2853
->   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->   entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x43ef39
-> Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007ffca8776d68 EFLAGS: 00000246 ORIG_RAX: 000000000000012b
-> RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043ef39
-> RDX: 0000000000000700 RSI: 0000000020001140 RDI: 0000000000000004
-> RBP: 0000000000402f20 R08: 0000000000000000 R09: 0000000000400488
-> R10: 0000000000000007 R11: 0000000000000246 R12: 0000
->
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> syzbot can test patches for this issue, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
+The fix here should only be visible with sockmap BPF programs running. The
+trace below doesn't seem to have any of the BPF calls. I tried to parse
+the test details, but I didn't see how packetdrill and the BPF tests
+are related. The test that would be relevant linked here seems to be
+passing in your case.
+
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.13.y/build/v5.13.8-36-g1eb1590ab470/testrun/5382761/suite/kselftest-bpf/test/bpf.test_sockmap/details/
+
+Am I correct in assuming that you bisected to this patch somehow, but
+did not have any BPF programs running?
+
+Thanks,
+John
+
+> 
+> 
+> Crash log:
+> -----------
+> INFO: Skip installing package dependency for packetdrill
+> /opt/packetdrill /lava-3242370/0/tests/1_packetdrill/automated/linux/packetdrill
+> [   11.329564] tun: Universal TUN/TAP device driver, 1.6
+> [   14.801347] TCP: tun0: Driver has suspect GRO implementation, TCP
+> performance may be compromised.
+> [   15.113626] ------------[ cut here ]------------
+> [   15.115380] WARNING: CPU: 3 PID: 671 at net/core/stream.c:207
+> sk_stream_kill_queues+0x104/0x130
+> [   15.118527] Modules linked in: tun crct10dif_ce rfkill fuse
+> [   15.120361] CPU: 3 PID: 671 Comm: packetdrill Not tainted 5.13.9-rc1 #1
+> [   15.122587] Hardware name: linux,dummy-virt (DT)
+> [   15.124123] pstate: 80000005 (Nzcv daif -PAN -UAO -TCO BTYPE=--)
+> [   15.126117] pc : sk_stream_kill_queues+0x104/0x130
+> [   15.127764] lr : inet_csk_destroy_sock+0x68/0x130
+> [   15.129326] sp : ffff8000109f36d0
+> [   15.130484] x29: ffff8000109f36d0 x28: 0000000000000005 x27: fffffffffffffff2
+> [   15.132807] x26: 0000000000000001 x25: ffffa05141000900 x24: ffff6f1e0b51dc40
+> [   15.136643] x23: 0000000000000000 x22: 0000000000000000 x21: ffff6f1e11e7e054
+> [   15.139117] x20: ffff6f1e08a0dd30 x19: ffff6f1e08a0dc80 x18: 0000000000000000
+> [   15.141494] x17: 0000000000000000 x16: 0000000000000000 x15: 00000000238ecea0
+> [   15.143903] x14: 0000000000000000 x13: 000000000000dd86 x12: 000000007ffff000
+> [   15.146292] x11: 0000000000000004 x10: 0000000000000000 x9 : ffffa051410d5148
+> [   15.148660] x8 : 0000000000000000 x7 : ffffffffd3039400 x6 : 0000000000000202
+> [   15.151071] x5 : ffff6f1e08a0dd00 x4 : 0000000000000004 x3 : 0000000000000007
+> [   15.153435] x2 : ffff6f1e08a0e560 x1 : 0000000000000180 x0 : 00000000fffffe80
+> [   15.155835] Call trace:
+> [   15.156675]  sk_stream_kill_queues+0x104/0x130
+> [   15.163667]  inet_csk_destroy_sock+0x68/0x130
+> [   15.165139]  tcp_done+0x120/0x1b0
+> [   15.166274]  tcp_reset+0x74/0x130
+> [   15.167445]  tcp_validate_incoming+0x394/0x510
+> [   15.168953]  tcp_rcv_state_process+0x2d8/0x15c0
+> [   15.170512]  tcp_v4_do_rcv+0x15c/0x2d4
+> [   15.171798]  tcp_v4_rcv+0x9c0/0xaa4
+> [   15.173009]  ip_protocol_deliver_rcu+0x4c/0x184
+> [   15.174597]  ip_local_deliver_finish+0x74/0x90
+> [   15.176103]  ip_local_deliver+0x88/0x130
+> [   15.177429]  ip_rcv+0x7c/0x130
+> [   15.178512]  __netif_receive_skb_one_core+0x60/0x8c
+> [   15.180143]  __netif_receive_skb+0x20/0x70
+> [   15.181527]  netif_receive_skb+0x48/0x1e0
+> [   15.182930]  tun_get_user+0xbe4/0xd70 [tun]
+> [   15.184368]  tun_chr_write_iter+0x68/0xf0 [tun]
+> [   15.185936]  do_iter_readv_writev+0x100/0x1a4
+> [   15.187448]  do_iter_write+0x98/0x1fc
+> [   15.188735]  vfs_writev+0xb4/0x170
+> [   15.189956]  do_writev+0x7c/0x140
+> [   15.191115]  __arm64_sys_writev+0x2c/0x40
+> [   15.192481]  invoke_syscall+0x50/0x120
+> [   15.193754]  el0_svc_common.constprop.0+0xf4/0x104
+> [   15.195391]  do_el0_svc+0x34/0x9c
+> [   15.196558]  el0_svc+0x2c/0x54
+> [   15.197653]  el0_sync_handler+0xa4/0x130
+> [   15.199054]  el0_sync+0x198/0x1c0
+> [   15.200182] ---[ end trace c9faa1be6c93e4fb ]---
+> [   15.201864] ------------[ cut here ]------------
+> [   15.203404] WARNING: CPU: 3 PID: 671 at net/core/stream.c:208
+> sk_stream_kill_queues+0x110/0x130
+> [   15.206141] Modules linked in: tun crct10dif_ce rfkill fuse
+> [   15.207976] CPU: 3 PID: 671 Comm: packetdrill Tainted: G        W
+>       5.13.9-rc1 #1
+> [   15.210542] Hardware name: linux,dummy-virt (DT)
+> [   15.212029] pstate: 80000005 (Nzcv daif -PAN -UAO -TCO BTYPE=--)
+> [   15.213947] pc : sk_stream_kill_queues+0x110/0x130
+> [   15.215546] lr : inet_csk_destroy_sock+0x68/0x130
+> [   15.217097] sp : ffff8000109f36d0
+> [   15.218204] x29: ffff8000109f36d0 x28: 0000000000000005 x27: fffffffffffffff2
+> [   15.220548] x26: 0000000000000001 x25: ffffa05141000900 x24: ffff6f1e0b51dc40
+> [   15.223012] x23: 0000000000000000 x22: 0000000000000000 x21: ffff6f1e11e7e054
+> [   15.225350] x20: ffff6f1e08a0dd30 x19: ffff6f1e08a0dc80 x18: 0000000000000000
+> [   15.227705] x17: 0000000000000000 x16: 0000000000000000 x15: 00000000238ecea0
+> [   15.230042] x14: 0000000000000000 x13: 000000000000dd86 x12: 000000007ffff000
+> [   15.232454] x11: 0000000000000004 x10: 0000000000000000 x9 : ffffa051410d5148
+> [   15.234896] x8 : 0000000000000000 x7 : ffffffffd3039400 x6 : 0000000000000202
+> [   15.237544] x5 : ffff6f1e08a0dd00 x4 : 0000000000000004 x3 : 0000000000000007
+> [   15.239933] x2 : ffff6f1e08a0e560 x1 : 0000000000000180 x0 : 0000000000000180
+> [   15.242315] Call trace:
+> [   15.243203]  sk_stream_kill_queues+0x110/0x130
+> [   15.244721]  inet_csk_destroy_sock+0x68/0x130
+> [   15.246191]  tcp_done+0x120/0x1b0
+> [   15.247388]  tcp_reset+0x74/0x130
+> [   15.248540]  tcp_validate_incoming+0x394/0x510
+> [   15.250057]  tcp_rcv_state_process+0x2d8/0x15c0
+> [   15.251636]  tcp_v4_do_rcv+0x15c/0x2d4
+> [   15.252908]  tcp_v4_rcv+0x9c0/0xaa4
+> [   15.254095]  ip_protocol_deliver_rcu+0x4c/0x184
+> [   15.255643]  ip_local_deliver_finish+0x74/0x90
+> [   15.257138]  ip_local_deliver+0x88/0x130
+> [   15.258516]  ip_rcv+0x7c/0x130
+> [   15.259573]  __netif_receive_skb_one_core+0x60/0x8c
+> [   15.261561]  __netif_receive_skb+0x20/0x70
+> [   15.263355]  netif_receive_skb+0x48/0x1e0
+> [   15.264721]  tun_get_user+0xbe4/0xd70 [tun]
+> [   15.266110]  tun_chr_write_iter+0x68/0xf0 [tun]
+> [   15.267704]  do_iter_readv_writev+0x100/0x1a4
+> [   15.269162]  do_iter_write+0x98/0x1fc
+> [   15.270721]  vfs_writev+0xb4/0x170
+> [   15.271948]  do_writev+0x7c/0x140
+> [   15.273120]  __arm64_sys_writev+0x2c/0x40
+> [   15.274527]  invoke_syscall+0x50/0x120
+> [   15.275805]  el0_svc_common.constprop.0+0xf4/0x104
+> [   15.277278]  do_el0_svc+0x34/0x9c
+> [   15.278832]  el0_svc+0x2c/0x54
+> [   15.280081]  el0_sync_handler+0xa4/0x130
+> [   15.281614]  el0_sync+0x198/0x1c0
+> [   15.282899] ---[ end trace c9faa1be6c93e4fc ]---
+> [   15.284650] ------------[ cut here ]------------
+> [   15.286116] WARNING: CPU: 3 PID: 671 at net/ipv4/af_inet.c:156
+> inet_sock_destruct+0x190/0x1b0
+> [   15.288999] Modules linked in: tun crct10dif_ce rfkill fuse
+> [   15.290884] CPU: 3 PID: 671 Comm: packetdrill Tainted: G        W
+>       5.13.9-rc1 #1
+> [   15.294511] Hardware name: linux,dummy-virt (DT)
+> [   15.296041] pstate: 60000005 (nZCv daif -PAN -UAO -TCO BTYPE=--)
+> [   15.298073] pc : inet_sock_destruct+0x190/0x1b0
+> [   15.299743] lr : __sk_destruct+0x38/0x23c
+> [   15.301154] sp : ffff8000109f37c0
+> [   15.302291] x29: ffff8000109f37c0 x28: 0000000000000005 x27: fffffffffffffff2
+> [   15.304703] x26: 0000000000000001 x25: ffffa05141000900 x24: ffffa05142a8be80
+> [   15.307100] x23: 0000000000000000 x22: ffff6f1e08a0dd08 x21: ffff6f1e08a0dc80
+> [   15.309419] x20: ffff6f1e08a0dd30 x19: ffff6f1e08a0dc80 x18: 0000000000000000
+> [   15.311764] x17: 0000000000000000 x16: 0000000000000000 x15: 00000000238ecea0
+> [   15.314056] x14: 0000000000000000 x13: 000000000000dd86 x12: 000000007ffff000
+> [   15.316392] x11: 0000000000000004 x10: 0000000000000000 x9 : ffffa05141003acc
+> [   15.318680] x8 : 0000000000000000 x7 : ffffffffd3039400 x6 : ffff6f1e08a0ddbc
+> [   15.320920] x5 : 0000000000000001 x4 : 0000000000000000 x3 : ffffceccfd9db000
+> [   15.323197] x2 : ffff6f1e02c00810 x1 : 0000000000000180 x0 : 00000000fffffe80
+> [   15.325465] Call trace:
+> [   15.326270]  inet_sock_destruct+0x190/0x1b0
+> [   15.327643]  __sk_destruct+0x38/0x23c
+> [   15.328842]  __sk_free+0x80/0x120
+> [   15.329923]  sk_free+0x68/0x90
+> [   15.330941]  sock_put+0x5c/0x80
+> [   15.331963]  tcp_v4_rcv+0xa40/0xaa4
+> [   15.333091]  ip_protocol_deliver_rcu+0x4c/0x184
+> [   15.334585]  ip_local_deliver_finish+0x74/0x90
+> [   15.336000]  ip_local_deliver+0x88/0x130
+> [   15.337273]  ip_rcv+0x7c/0x130
+> [   15.338277]  __netif_receive_skb_one_core+0x60/0x8c
+> [   15.339869]  __netif_receive_skb+0x20/0x70
+> [   15.341221]  netif_receive_skb+0x48/0x1e0
+> [   15.342558]  tun_get_user+0xbe4/0xd70 [tun]
+> [   15.343929]  tun_chr_write_iter+0x68/0xf0 [tun]
+> [   15.345395]  do_iter_readv_writev+0x100/0x1a4
+> [   15.346831]  do_iter_write+0x98/0x1fc
+> [   15.348025]  vfs_writev+0xb4/0x170
+> [   15.349136]  do_writev+0x7c/0x140
+> [   15.350224]  __arm64_sys_writev+0x2c/0x40
+> [   15.351556]  invoke_syscall+0x50/0x120
+> [   15.352789]  el0_svc_common.constprop.0+0xf4/0x104
+> [   15.354335]  do_el0_svc+0x34/0x9c
+> [   15.355451]  el0_svc+0x2c/0x54
+> [   15.356460]  el0_sync_handler+0xa4/0x130
+> [   15.357740]  el0_sync+0x198/0x1c0
+> [   15.358861] ---[ end trace c9faa1be6c93e4fd ]---
+> [   15.360555] ------------[ cut here ]------------
+> [   15.361959] WARNING: CPU: 3 PID: 671 at net/ipv4/af_inet.c:157
+> inet_sock_destruct+0x16c/0x1b0
+> [   15.364603] Modules linked in: tun crct10dif_ce rfkill fuse
+> [   15.366276] CPU: 3 PID: 671 Comm: packetdrill Tainted: G        W
+>       5.13.9-rc1 #1
+> [   15.373031] Hardware name: linux,dummy-virt (DT)
+> [   15.377359] pstate: 60000005 (nZCv daif -PAN -UAO -TCO BTYPE=--)
+> [   15.381502] pc : inet_sock_destruct+0x16c/0x1b0
+> [   15.384348] lr : __sk_destruct+0x38/0x23c
+> [   15.387724] sp : ffff8000109f37c0
+> [   15.388842] x29: ffff8000109f37c0 x28: 0000000000000005 x27: fffffffffffffff2
+> [   15.391840] x26: 0000000000000001 x25: ffffa05141000900 x24: ffffa05142a8be80
+> [   15.394837] x23: 0000000000000000 x22: ffff6f1e08a0dd08 x21: ffff6f1e08a0dc80
+> [   15.398292] x20: ffff6f1e08a0dd30 x19: ffff6f1e08a0dc80 x18: 0000000000000000
+> [   15.401315] x17: 0000000000000000 x16: 0000000000000000 x15: 00000000238ecea0
+> [   15.403655] x14: 0000000000000000 x13: 000000000000dd86 x12: 000000007ffff000
+> [   15.405967] x11: 0000000000000004 x10: 0000000000000000 x9 : ffffa05141003acc
+> [   15.408287] x8 : 0000000000000000 x7 : ffffffffd3039400 x6 : ffff6f1e08a0ddbc
+> [   15.410616] x5 : 0000000000000001 x4 : 0000000000000000 x3 : ffffceccfd9db000
+> [   15.412969] x2 : ffff6f1e02c00810 x1 : 0000000000000180 x0 : 0000000000000180
+> [   15.415332] Call trace:
+> [   15.416187]  inet_sock_destruct+0x16c/0x1b0
+> [   15.417551]  __sk_destruct+0x38/0x23c
+> [   15.418793]  __sk_free+0x80/0x120
+> [   15.419886]  sk_free+0x68/0x90
+> [   15.420916]  sock_put+0x5c/0x80
+> [   15.421974]  tcp_v4_rcv+0xa40/0xaa4
+> [   15.423182]  ip_protocol_deliver_rcu+0x4c/0x184
+> [   15.424649]  ip_local_deliver_finish+0x74/0x90
+> [   15.426214]  ip_local_deliver+0x88/0x130
+> [   15.427869]  ip_rcv+0x7c/0x130
+> [   15.428884]  __netif_receive_skb_one_core+0x60/0x8c
+> [   15.430545]  __netif_receive_skb+0x20/0x70
+> [   15.432679]  netif_receive_skb+0x48/0x1e0
+> [   15.435651]  tun_get_user+0xbe4/0xd70 [tun]
+> [   15.437662]  tun_chr_write_iter+0x68/0xf0 [tun]
+> [   15.439835]  do_iter_readv_writev+0x100/0x1a4
+> [   15.441836]  do_iter_write+0x98/0x1fc
+> [   15.443588]  vfs_writev+0xb4/0x170
+> [   15.445150]  do_writev+0x7c/0x140
+> [   15.446713]  __arm64_sys_writev+0x2c/0x40
+> [   15.448639]  invoke_syscall+0x50/0x120
+> [   15.450373]  el0_svc_common.constprop.0+0xf4/0x104
+> [   15.452642]  do_el0_svc+0x34/0x9c
+> [   15.454230]  el0_svc+0x2c/0x54
+> [   15.455743]  el0_sync_handler+0xa4/0x130
+> [   15.457486]  el0_sync+0x198/0x1c0
+> [   15.458659] ---[ end trace c9faa1be6c93e4fe ]---
+> 
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> 
+> --
+> Linaro LKFT
+> https://lkft.linaro.org
+
+
