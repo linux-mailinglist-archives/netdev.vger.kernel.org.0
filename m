@@ -2,106 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF7A33E45FA
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 14:59:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C43533E4600
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 15:02:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234275AbhHINAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 09:00:05 -0400
-Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:48214
-        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233342AbhHIM77 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 08:59:59 -0400
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        id S234519AbhHINCz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 09:02:55 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:52093 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233614AbhHINCy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 09:02:54 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1628514154; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=KtUqhdxeXHYQtJGeZBIygKhoiIrAgKcUwoMNQMcw69A=; b=sHO0lnukSCa3WYutr3UecqW0x0sssCpJ4FjWl0II7FiArJ7+k1oP9b5by3eqLwsUugw1TN4h
+ JXOCgR1ZnIo+FuNTbJJSmzsca0N3keKXBm66S/TaG8mRq/WJPWE4jnRPE8dL171cCmCNsmkl
+ 5XnD7ZkQ/CWD7KFAmT2jMPWabZA=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
+ 61112735b3873958f56de78e (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 09 Aug 2021 13:01:41
+ GMT
+Sender: luoj=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 150F5C43144; Mon,  9 Aug 2021 13:01:41 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A,SPF_FAIL autolearn=no autolearn_force=no version=3.4.0
+Received: from [10.92.0.248] (unknown [180.166.53.36])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPS id 75E7240643
-        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 12:59:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1628513974;
-        bh=mla47bH2XlgsY9xb0/RbGlrhtAWBEInMxJuEarjH4jk=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=CTtDhpTW4NomweVopcnNqKAimEaqO31EfDDygLiiUaKBlCmDvdKxhBtwB/GuXWySr
-         F4caHA2Q+PPbKhR7FCmnDlE4P6wWF+DIygQ+MDnnDklNqPjmBt/ckbo8r3mLqDJce1
-         FPbduoaDWecZMOuKTYbnBKxtlodXBl3Y0iWCqQ1Jw8jnAw5sPrv5qA1HASJLDf6bnJ
-         +k6JaJI+pmW0MlOZMr2vSLzSKVhdaIi1lNsIp+X5hy+PWe8FQsiH+T0cQ5TuMOAuTi
-         ouRBr14Zi0x/Ap/zfoZIL33hyyZvB/wcBhgVEpDYdYpQmHArTlxAYQgjx5Dd5dzztm
-         rZmWFto+XKmNg==
-Received: by mail-oo1-f72.google.com with SMTP id k18-20020a4a94920000b029026767722880so6149978ooi.7
-        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 05:59:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mla47bH2XlgsY9xb0/RbGlrhtAWBEInMxJuEarjH4jk=;
-        b=N5YO7MfaCUy4gvqDmeJOeht5peRm6ij+7Z4rhiM9Nqg2m8ROci7yyqu39LRL6HFdOB
-         F2WnXu02DBEtFQ8bGBetB+THUQ9OsNTMzkEiaM8o5VVjEr3EA95HDNp8QIhrV4IMwEtk
-         oF3X2DuQcTL7O7k093LahJCrhVBWuAhv7TZ64zruOoaf3BzlW1idryEtwrDU+Lg6eUhV
-         fUbmJ/F6yCH2+HZj+QRE/uE5nFYWx8nY2IqyKvnfRZ806LcFLqGrKoeKwu5F9xf8COOP
-         fW73AcG81JnKLllKTgyVS1b9lIQzPGacaBW2jXnnHukL1qaxtPMErIAxRd1HfXL69RA8
-         /r2Q==
-X-Gm-Message-State: AOAM530t6VvktSz3KhK6Tzgyr1farxGE1hBycu1zg+M4jqD3B+MdBS1e
-        ecYknoywihCHThzkUF68s/DXmFAlu/c7qb+EadOnQqLrBQnkiZvVQ5GYPhQfQU9E5avICSdccJm
-        W6k7+YnltxgSwi4RagTbNkCB/0ocvtr4dlRmhb3dGdlpY8V4sSw==
-X-Received: by 2002:aca:4e94:: with SMTP id c142mr12612602oib.177.1628513973254;
-        Mon, 09 Aug 2021 05:59:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx8wTR6iW/6M137oiAbbAQuYfhW5tbwxIiwM5nGpGeNFDYonikn6VDu2dNMD52R9RIYA2lzQE9VHTz3LCBAGFA=
-X-Received: by 2002:aca:4e94:: with SMTP id c142mr12612591oib.177.1628513972997;
- Mon, 09 Aug 2021 05:59:32 -0700 (PDT)
+        (Authenticated sender: luoj)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 76709C433F1;
+        Mon,  9 Aug 2021 13:01:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 76709C433F1
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=luoj@codeaurora.org
+Subject: Re: [PATCH v1 1/2] net: mdio: Add the reset function for IPQ MDIO
+ driver
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     hkallweit1@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sricharan@codeaurora.org
+References: <20210808072111.8365-1-luoj@codeaurora.org>
+ <20210808072111.8365-2-luoj@codeaurora.org> <YQ/3ycEU9zkn8idJ@lunn.ch>
+From:   Jie Luo <luoj@codeaurora.org>
+Message-ID: <a698552a-0bc2-c0d4-d6f8-0d70c50373bb@codeaurora.org>
+Date:   Mon, 9 Aug 2021 21:01:36 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-References: <20210804151325.86600-1-chris.chiu@canonical.com>
- <26f85a9f-552d-8420-0010-f5cda70d3a00@hqv.ch> <87o8aabvpj.fsf@codeaurora.org>
-In-Reply-To: <87o8aabvpj.fsf@codeaurora.org>
-From:   Chris Chiu <chris.chiu@canonical.com>
-Date:   Mon, 9 Aug 2021 20:59:22 +0800
-Message-ID: <CABTNMG1tZNAZ1FusLjv6+dw9X=nMKYpYnSgNMn9cTxVY-EH6Ug@mail.gmail.com>
-Subject: Re: [PATCH v2] rtl8xxxu: Fix the handling of TX A-MPDU aggregation
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Reto Schneider <rs@hqv.ch>, code@reto-schneider.ch,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        jes.sorensen@gmail.com, davem@davemloft.net, kuba@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <YQ/3ycEU9zkn8idJ@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 6, 2021 at 8:32 PM Kalle Valo <kvalo@codeaurora.org> wrote:
->
-> Reto Schneider <rs@hqv.ch> writes:
->
-> > On 8/4/21 17:13, chris.chiu@canonical.com wrote:
-> >> The TX A-MPDU aggregation is not handled in the driver since the
-> >> ieee80211_start_tx_ba_session has never been started properly.
-> >> Start and stop the TX BA session by tracking the TX aggregation
-> >> status of each TID. Fix the ampdu_action and the tx descriptor
-> >> accordingly with the given TID.
-> >
-> > I'd like to test this but I am not sure what to look for (before and
-> > after applying the patch).
->
-> Thanks, testing feedback is always very much appreciated.
->
-> > What should I look for when looking at the (sniffed) Wireshark traces?
->
 
-If you are able to verify the difference by the air capture, please
-refer to https://imgur.com/a/jcFQTc8. You should see more than 1
-packet aggregated and sent from your wifi adapter's mac address, and
-get the block ack response from the Access Point (also shown in the
-image). If TX aggregation is not enabled, you will only see 1 tx
-packet from your wifi, and get an ack right after from the AP.
-
-Please also help test if there's any possible regression. Thanks so much.
-
-Chris
-
-> From my (maintainer) point of view most important is that there are no
-> regressions visible to users, for example no data stalls, crashes or
-> anything like that.
+On 8/8/2021 11:27 PM, Andrew Lunn wrote:
+>> +static int ipq_mdio_reset(struct mii_bus *bus)
+>> +{
+>> +	struct ipq4019_mdio_data *priv = bus->priv;
+>> +	u32 val;
+>> +	int ret;
+>> +
+>> +	/* To indicate CMN_PLL that ethernet_ldo has been ready if platform resource 1
+>> +	 * is specified in the device tree.
+>> +	 * */
+>> +	if (!IS_ERR(priv->eth_ldo_rdy)) {
+>> +		val = readl(priv->eth_ldo_rdy);
+>> +		val |= BIT(0);
+>> +		writel(val, priv->eth_ldo_rdy);
+>> +		fsleep(IPQ_PHY_SET_DELAY_US);
+>> +	}
+>> +
+>> +	/* Configure MDIO clock source frequency if clock is specified in the device tree */
+>> +	if (!IS_ERR_OR_NULL(priv->mdio_clk)) {
+>> +		ret = clk_set_rate(priv->mdio_clk, IPQ_MDIO_CLK_RATE);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		ret = clk_prepare_enable(priv->mdio_clk);
+>> +		if (ret)
+>> +			return ret;
+>> +	}
+> These !IS_ERR() are pretty ugly. So
 >
-> --
-> https://patchwork.kernel.org/project/linux-wireless/list/
+>> @@ -182,14 +221,22 @@ static int ipq4019_mdio_probe(struct platform_device *pdev)
+>>   		return -ENOMEM;
+>>   
+>>   	priv = bus->priv;
+>> +	priv->eth_ldo_rdy = IOMEM_ERR_PTR(-EINVAL);
+>>   
+>>   	priv->membase = devm_platform_ioremap_resource(pdev, 0);
+>>   	if (IS_ERR(priv->membase))
+>>   		return PTR_ERR(priv->membase);
+>>   
+>> +	priv->mdio_clk = devm_clk_get_optional(&pdev->dev, "gcc_mdio_ahb_clk");
+> If this returns an error, it is a real error. You should not ignore
+> it. Fail the probe returning the error. That then means when the reset
+> function is called priv->mdio_clk contains either a clock, or NULL,
+> which the clk API is happy to take. No need for an if.
 >
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+>
+>> +
+>> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+>> +	if (res)
+>> +		priv->eth_ldo_rdy = devm_ioremap_resource(&pdev->dev, res);
+> platform_get_resource() returns a pointer or NULL. There is no error
+> code. So
+>
+>> +	if (!IS_ERR(priv->eth_ldo_rdy)) {
+> is actually wrong, should simply become
+>
+>> +	if (priv->eth_ldo_rdy) {
+>    Andrew
+
+Hi Andrew,
+
+Thanks for the kindly review and the comments, will follow it in the 
+next patch set.
+
