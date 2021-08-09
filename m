@@ -2,128 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DBFC3E4E7E
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 23:29:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E46923E4E84
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 23:35:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235661AbhHIVaG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 17:30:06 -0400
-Received: from gateway33.websitewelcome.com ([192.185.145.33]:18914 "EHLO
-        gateway33.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233898AbhHIVaF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 17:30:05 -0400
-Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
-        by gateway33.websitewelcome.com (Postfix) with ESMTP id C7A484D969
-        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 16:29:42 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id DCq6mOWgOrJtZDCq6mzIRf; Mon, 09 Aug 2021 16:29:42 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=QgyrrxOHvP7M6fplZ52oJH8CjSBf+T8N9dmFTacakl0=; b=RJ5HVUfwJimK7r90lDMzMJc0bK
-        kSZulCYMs8kEDYXa7fYxujML3b7F4zI94vIbs1yMfALNkuQpPtZ+y4Z7L7KkyZapPQq8str0VuE1d
-        +k13Y54uSLP/mt2btGWXP/lX9b/sPI9IxSNOm5m7SQDUHhyy4vQqu7QHJh8IohRTBTlvNHkhNN3di
-        9D/KDAvDLagoWUYImeYbxAvFmMcich7didzy0Sp8PEwQL0Hrg8xYkeycHQ8v/i1qyEG+UT9/u7yS5
-        WBVSJ4c1OC+Jhbg0+e3jXKXSsu4cz+QB3VEHdDbtKXl/IRRZMGtotuI8tKb0prXVe9bRWIBkQjjEA
-        /ELAzuUw==;
-Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:36120 helo=[192.168.15.8])
-        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1mDCq5-000CXb-UH; Mon, 09 Aug 2021 16:29:41 -0500
-Subject: Re: [PATCH][next] mwifiex: usb: Replace one-element array with
- flexible-array member
-To:     Brian Norris <briannorris@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        id S235655AbhHIVgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 17:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58570 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232334AbhHIVgJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 17:36:09 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0655EC0613D3;
+        Mon,  9 Aug 2021 14:35:47 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id i6so26848384edu.1;
+        Mon, 09 Aug 2021 14:35:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oov78986EG0HSkPUbFnP2N923dA5GdFIRRnoEpZTjxs=;
+        b=VIGZwio8Va+ADneopNaDgHhUeOXbD8xX1skMLq7uX8kLnoHZt04XygNIV4+wCJLZCx
+         HuPs8QNC9p7yXhfde6fYNUO3vpnAyYeBjRQFMSmtaeMRMbc43pHRvGtbU4jLFol3yQBM
+         AhqyAmjEKDIGPNxLO2a4vsaP0vI0qqgKHo+s7228vHagQ89PMjAJdILrea2EOZ4Dtpcq
+         F4vH5lSDgGBRTVEFZRvVtqNsdYwYWxHT9iZYchBR6uaDMGJjwOTI5fQBMCc60wT/wNKc
+         ABcYvGuPDGBt8ZLaYZ9f5yNa1uga1O1avdXNTCottLdSUjpBbIiOwPGq34K65j9LZYdo
+         97Vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oov78986EG0HSkPUbFnP2N923dA5GdFIRRnoEpZTjxs=;
+        b=Vs7xTypPhpdh7tkmLfkAdee/gZGwnwXSB6zrgLtBvIRvKQrBbjnfAU5Em02N9uaHUz
+         /BAT1xWRY3wBQzZPQuxLfNmivKeDdS9YolXaGcXFQN2TygVbpJmC/zuL3bXJMiyFntoz
+         xH3cdz4PORqvYWsUvrbyxXMk2syIvSr71YZWv0U5MNgSuQyXqUJJ2tJF57ySOGVsNJBy
+         XN43rJzs2hg8iamdok1/yUqsp8/OYCFwDCiZzdbTGpL2SZPkdRGqg0vuioyvN/UIPvOx
+         Qwhlis6DQoa26h5x/yIzdzhOEk68JSM2El+05rnmRzHahMRCRc6w1oRfFUMczbfw4bO8
+         bqCw==
+X-Gm-Message-State: AOAM532YJeVO4OnAt47tLFpUUGRxDHog3ujuv/K0bSBx2BIHOwpHIsju
+        RzaJD9GhhmsSZhzFCgvc8bg=
+X-Google-Smtp-Source: ABdhPJxxhRu6xfmDS5OtZm2eAikpQU0cAAj6zF4dEIKzg69KhpcSNJ5IEXyN7ohKVX3RzZrHdIOsrw==
+X-Received: by 2002:a50:f1c2:: with SMTP id y2mr496240edl.64.1628544946517;
+        Mon, 09 Aug 2021 14:35:46 -0700 (PDT)
+Received: from localhost.localdomain ([2a04:241e:502:1d80:688d:23e:82c6:84aa])
+        by smtp.gmail.com with ESMTPSA id v24sm5542932edt.41.2021.08.09.14.35.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Aug 2021 14:35:45 -0700 (PDT)
+From:   Leonard Crestez <cdleonard@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        David Ahern <dsahern@kernel.org>
+Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev@vger.kernel.org,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        linux-hardening@vger.kernel.org
-References: <20210809211134.GA22488@embeddedor>
- <CA+ASDXO+GbP_WWVdO0=Uavh036ZhZiziE8DwGRKP-ooofd2QVw@mail.gmail.com>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Message-ID: <533036d7-1a0e-21e8-5e40-2e807b32a215@embeddedor.com>
-Date:   Mon, 9 Aug 2021 16:32:27 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        Yuchung Cheng <ycheng@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Priyaranjan Jha <priyarjha@google.com>,
+        Menglong Dong <dong.menglong@zte.com.cn>,
+        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [RFCv2 0/9] tcp: Initial support for RFC5925 auth option
+Date:   Tue, 10 Aug 2021 00:35:29 +0300
+Message-Id: <cover.1628544649.git.cdleonard@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <CA+ASDXO+GbP_WWVdO0=Uavh036ZhZiziE8DwGRKP-ooofd2QVw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.31.110
-X-Source-L: No
-X-Exim-ID: 1mDCq5-000CXb-UH
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:36120
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 11
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This is similar to TCP MD5 in functionality but it's sufficiently
+different that userspace interface and wire formats are incompatible.
+Compared to TCP-MD5 more algorithms are supported and multiple keys can
+be used on the same connection but there is still no negotiation
+mechanism. Expected use-case is protecting long-duration BGP/LDP
+connections between routers using pre-shared keys.
+
+This version is mostly functional though more testing is required. Many
+obvious optimizations were skipped in favor of adding functionality.
+Here are several flaws:
+
+* RST and TIMEWAIT are mostly unhandled
+* A lock might be required for tcp_authopt
+* Sequence Number Extension not implemented
+* User is responsible for ensuring keys do not overlap (could be fine)
+* Traffic key is not cached (reducing performance)
+
+Test suite used during development is here: https://github.com/cdleonard/tcp-authopt-test
+Tests are written in python using pytest and scapy and check the API in
+detail and validate packet captures.
+
+Limited kselftest support for tcp_authopt in nettest/fcnal-test.sh is
+also included in this series. Those tests are slow and cover very
+little.
+
+Changes for yabgp are here:
+https://github.com/cdleonard/yabgp/commits/tcp_authopt
+The patched version of yabgp can establish a BGP session protected by
+TCP Authentication Option with a Cisco IOS-XR router.
+
+Changes since RFC:
+* Split into per-topic commits for ease of review. The intermediate
+commits compile with a few "unused function" warnings and don't do
+anything useful by themselves.
+* Add ABI documention including kernel-doc on uapi
+* Fix lockdep warnings from crypto by creating pools with one shash for
+each cpu
+* Accept short options to setsockopt by padding with zeros; this
+approach allows increasing the size of the structs in the future.
+* Support for aes-128-cmac-96
+* Support for binding addresses to keys in a way similar to old tcp_md5
+* Add support for retrieving received keyid/rnextkeyid and controling
+the keyid/rnextkeyid being sent.
+
+The key control support is not based on the requirements of any
+particular app (a routing daemon) but rather the recommendations of
+RFC5925. Several vendors implement key chain management similar to
+RFC8177 but this belongs in userspace.
+
+Previously: https://lore.kernel.org/netdev/01383a8751e97ef826ef2adf93bfde3a08195a43.1626693859.git.cdleonard@gmail.com/
+
+Leonard Crestez (9):
+  tcp: authopt: Initial support and key management
+  docs: Add user documentation for tcp_authopt
+  tcp: authopt: Add crypto initialization
+  tcp: authopt: Compute packet signatures
+  tcp: authopt: Hook into tcp core
+  tcp: authopt: Add key selection controls
+  tcp: authopt: Add snmp counters
+  selftests: Initial TCP-AO support for nettest
+  selftests: Initial TCP-AO support for fcnal-test
+
+ Documentation/networking/index.rst        |    1 +
+ Documentation/networking/tcp_authopt.rst  |   69 ++
+ include/linux/tcp.h                       |    6 +
+ include/net/tcp.h                         |    1 +
+ include/net/tcp_authopt.h                 |  121 +++
+ include/uapi/linux/snmp.h                 |    1 +
+ include/uapi/linux/tcp.h                  |  103 ++
+ net/ipv4/Kconfig                          |   14 +
+ net/ipv4/Makefile                         |    1 +
+ net/ipv4/proc.c                           |    1 +
+ net/ipv4/tcp.c                            |   27 +
+ net/ipv4/tcp_authopt.c                    | 1091 +++++++++++++++++++++
+ net/ipv4/tcp_input.c                      |   17 +
+ net/ipv4/tcp_ipv4.c                       |    5 +
+ net/ipv4/tcp_minisocks.c                  |    2 +
+ net/ipv4/tcp_output.c                     |   56 +-
+ net/ipv6/tcp_ipv6.c                       |    4 +
+ tools/testing/selftests/net/fcnal-test.sh |   22 +
+ tools/testing/selftests/net/nettest.c     |   43 +-
+ 19 files changed, 1583 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/networking/tcp_authopt.rst
+ create mode 100644 include/net/tcp_authopt.h
+ create mode 100644 net/ipv4/tcp_authopt.c
 
 
-On 8/9/21 16:24, Brian Norris wrote:
-> On Mon, Aug 9, 2021 at 2:08 PM Gustavo A. R. Silva
-> <gustavoars@kernel.org> wrote:
->>
->> There is a regular need in the kernel to provide a way to declare having
->> a dynamically sized set of trailing elements in a structure. Kernel code
->> should always use “flexible array members”[1] for these cases. The older
->> style of one-element or zero-length arrays should no longer be used[2].
->>
->> This helps with the ongoing efforts to globally enable -Warray-bounds
->> and get us closer to being able to tighten the FORTIFY_SOURCE routines
->> on memcpy().
->>
->> This issue was found with the help of Coccinelle and audited and fixed,
->> manually.
->>
->> [1] https://en.wikipedia.org/wiki/Flexible_array_member
->> [2] https://www.kernel.org/doc/html/v5.10/process/deprecated.html#zero-length-and-one-element-arrays
->>
->> Link: https://github.com/KSPP/linux/issues/79
->> Link: https://github.com/KSPP/linux/issues/109
->> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> 
-> An important part of your patch rationale should include determining
-> that the 1-length wasn't actually important anywhere. I double checked
-> for you, and nobody seemed to be relying on 'sizeof struct fw_data' at
-> all, so this should be OK:
-
-I always do that. That's the reason why I included this line in the
-changelog text:
-
-"This issue was found with the help of Coccinelle and audited and fixed,
-manually."
-
-Thanks for double-checking, though. :)
-
-> Reviewed-by: Brian Norris <briannorris@chromium.org>
-
-Thanks
---
-Gustavo
+base-commit: 2a2b6e3640c43a808dcb5226963e2cc0669294b1
+-- 
+2.25.1
 
