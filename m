@@ -2,102 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 665663E3DBB
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 03:40:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43A0D3E3DC6
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 03:42:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232657AbhHIBlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 21:41:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231324AbhHIBlG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 21:41:06 -0400
-Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98210C061757;
-        Sun,  8 Aug 2021 18:40:45 -0700 (PDT)
-Received: by mail-oo1-xc2f.google.com with SMTP id b25-20020a4ac2990000b0290263aab95660so3941214ooq.13;
-        Sun, 08 Aug 2021 18:40:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=l6laj60gF3EBJJf37/HSy0mFR0yiQYrPH8paT5cifVc=;
-        b=PE9uHRpOY1P83cQ2hvR2ffdRd8QYhA/QCQGXlf0XNi9HScWL10UfLVELo9OElLoVKJ
-         guUr6ubqcBYENkIxJyhURG7z9aOfuhCVXnBxr+ueFEZwA4jNYSOfF6GmuFh2J8dWxjR6
-         gn7DCDMxUj4iSw8XOpdD0q+pGqEGeyrv67TgFNCLTQb1YaYfefVqRIBM0erRfXIqM9cq
-         Go8TAaxVkg9yDG4MFnpNoXfLK8Y5UrbOW9WNX3jAs0RCmrnuO9avgRADQW1QbQgCk8vi
-         cTG2cz8I3v97hOvYQg/85a4XQYSZ0Xz0gNB9bYD+oceRThPLq2TtrTJQ3oyqfaoqAeBA
-         yJLg==
+        id S232713AbhHIBnL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 21:43:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:27005 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232643AbhHIBnK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 21:43:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1628473370;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9rTF4KN0UK9//z3ziSnguQwQKDmEwhKYc9DW20kNcmw=;
+        b=OHkDR2tzz7F0F+sx4abl4o/dnpCf0gC7ledLKd46AWoGfCnzcO/Ff/zXMUmTItxo7rakU3
+        d4g1lTSnd6bkDUBsy9Vbh++KXxQDZ9ua8CPqHBxJAf187EcuzFPGcr0mI3mm5NJZkKXS/t
+        Xfcei89VGYziu9bFaWK1sB/H/+A8AbM=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-228-BxSZNHHuP1GBi6hMpsVD8w-1; Sun, 08 Aug 2021 21:42:48 -0400
+X-MC-Unique: BxSZNHHuP1GBi6hMpsVD8w-1
+Received: by mail-qk1-f199.google.com with SMTP id h5-20020a05620a0525b02903b861bec838so11519709qkh.7
+        for <netdev@vger.kernel.org>; Sun, 08 Aug 2021 18:42:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=l6laj60gF3EBJJf37/HSy0mFR0yiQYrPH8paT5cifVc=;
-        b=JCMtzu4EuAs3jWiUavuccAUEesnPgUz+tHTuJ7wc8h5PONlrDEQo2uIzHHSvGNDC/W
-         LiEVaFrTp/jQb8Agf2R1943K3Q+wAYVDeKjaS6U7zMU34VIbI1X/oUXXyI12q9Al9nmU
-         d2FsNip1+aNkJ9CwKWt1L6LpnN2qIf7xbJ8oUwL1RH2COptnrg/CQ6GnhI0Pl4IFBiMm
-         m9/H+75NjVbuhGyOZxD3HHOMqCe0a88Kmhn8mpcHnYtNBRZbVKtX+xFznITddsTT6ELk
-         9sGcG+USAQGog2Vqj33zvQP4AtA1k0sdmNpHqsyhzHbb8WZW/YZia1saPyMCgw2/lbGP
-         O85A==
-X-Gm-Message-State: AOAM531EhogJ6JfqffyKJqX8Ak+6U/D4HXJ7sdGrOzPif0HlHMcrtpMr
-        x0H9xTXyeumZF7gQRemNCfA=
-X-Google-Smtp-Source: ABdhPJxmYGx4zWxL0fvSC8obf6Owik82jL1rJv6TpMkpJSNz9YpFtbBh/bwCdkpsgL/mIdLLfcypaw==
-X-Received: by 2002:a4a:b98c:: with SMTP id e12mr13534396oop.67.1628473245038;
-        Sun, 08 Aug 2021 18:40:45 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id l13sm3020531oii.11.2021.08.08.18.40.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Aug 2021 18:40:44 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Sun, 8 Aug 2021 18:40:43 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        andrew@lunn.ch, netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-imx@nxp.com
-Subject: Re: [PATCH V1 4/5] net: fec: add eee mode tx lpi support
-Message-ID: <20210809014043.GA3712165@roeck-us.net>
-References: <20210709075355.27218-1-qiangqing.zhang@nxp.com>
- <20210709075355.27218-5-qiangqing.zhang@nxp.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=9rTF4KN0UK9//z3ziSnguQwQKDmEwhKYc9DW20kNcmw=;
+        b=d1aMHMe/3lUbBEW5R0ni++sa+KDST9hCujc3Y8BDYm4BPYHquQ6w0a4xTUjBr/lunv
+         rEQ/4BO851L4iwPwfNfAucBDMBibuvBneezk07HgXg8GrwOpKZ6RLRVe68k/RlBFByq5
+         GAnu1xQZqAzvFMcehyQ08v/94D5uTKjDzKg6CMR0qaxoiWLHQFrkfUYlfkgi1R6jxeGu
+         ekSDTgSuenxMpmvJo8hrS52O8z1K7Q1FtUrAGq6w1roMjT+6UdyWa51RgAWONhURKa/c
+         m5yjTk7s/zuza2szz4YZyVwAV7+AgLjdA7rhBhfUbyfVAbEbpZkz6OairIp56Wd/fLgm
+         7T7w==
+X-Gm-Message-State: AOAM530mpivPi4gc2IGR9mc0QlGDs6aPc6lelfzkbMyMvNGAIVOMhgps
+        ntm0Wgfs0kjz0jyn1QEKNDR36aKvVf+vUwLCGxhtSVB1F6H2AXC9qQItdP0noaJtf/jKHBErXxG
+        0PXClpc090gMhbXXD
+X-Received: by 2002:a05:6214:c23:: with SMTP id a3mr4360921qvd.46.1628473368291;
+        Sun, 08 Aug 2021 18:42:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwNOCH1+/DEVeooTgguT1SmXYJYQW6XatXCh3aIwd0KlOIOQsDS7Y37EpaJV9y17WfaB9tOCQ==
+X-Received: by 2002:a05:6214:c23:: with SMTP id a3mr4360910qvd.46.1628473368162;
+        Sun, 08 Aug 2021 18:42:48 -0700 (PDT)
+Received: from jtoppins.rdu.csb ([107.15.110.69])
+        by smtp.gmail.com with ESMTPSA id r29sm8463927qkm.43.2021.08.08.18.42.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Aug 2021 18:42:47 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/2] bonding: combine netlink and console error
+ messages
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+References: <cover.1628306392.git.jtoppins@redhat.com>
+ <a36c7639a13963883f49c272ed7993c9625a712a.1628306392.git.jtoppins@redhat.com>
+ <YQ+vDtXPV5DHqruU@unreal>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+Message-ID: <14b506c3-7e8d-f313-b585-4e7ff1a542cf@redhat.com>
+Date:   Sun, 8 Aug 2021 21:42:46 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210709075355.27218-5-qiangqing.zhang@nxp.com>
+In-Reply-To: <YQ+vDtXPV5DHqruU@unreal>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 09, 2021 at 03:53:54PM +0800, Joakim Zhang wrote:
-> From: Fugang Duan <fugang.duan@nxp.com>
+On 8/8/21 6:16 AM, Leon Romanovsky wrote:
+> On Fri, Aug 06, 2021 at 11:30:55PM -0400, Jonathan Toppins wrote:
+>> There seems to be no reason to have different error messages between
+>> netlink and printk. It also cleans up the function slightly.
+>>
+>> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+>> ---
+>>   drivers/net/bonding/bond_main.c | 45 ++++++++++++++++++---------------
+>>   1 file changed, 25 insertions(+), 20 deletions(-)
+>>
+>> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+>> index 3ba5f4871162..46b95175690b 100644
+>> --- a/drivers/net/bonding/bond_main.c
+>> +++ b/drivers/net/bonding/bond_main.c
+>> @@ -1712,6 +1712,16 @@ void bond_lower_state_changed(struct slave *slave)
+>>   	netdev_lower_state_changed(slave->dev, &info);
+>>   }
+>>   
+>> +#define BOND_NL_ERR(bond_dev, extack, errmsg) do {		\
+>> +	NL_SET_ERR_MSG(extack, errmsg);				\
+>> +	netdev_err(bond_dev, "Error: " errmsg "\n");		\
+>> +} while (0)
+>> +
+>> +#define SLAVE_NL_ERR(bond_dev, slave_dev, extack, errmsg) do {	\
+>> +	NL_SET_ERR_MSG(extack, errmsg);				\
+>> +	slave_err(bond_dev, slave_dev, "Error: " errmsg "\n");	\
+>> +} while (0)
 > 
-> The i.MX8MQ ENET version support IEEE802.3az eee mode, add
-> eee mode tx lpi enable to support ethtool interface.
+> I don't think that both extack messages and dmesg prints are needed.
 > 
-> usage:
-> 1. set sleep and wake timer to 5ms:
-> ethtool --set-eee eth0 eee on tx-lpi on tx-timer 5000
-> 2. check the eee mode:
-> ~# ethtool --show-eee eth0
-> EEE Settings for eth0:
->         EEE status: enabled - active
->         Tx LPI: 5000 (us)
->         Supported EEE link modes:  100baseT/Full
->                                    1000baseT/Full
->         Advertised EEE link modes:  100baseT/Full
->                                     1000baseT/Full
->         Link partner advertised EEE link modes:  100baseT/Full
+> They both will be caused by the same source, and both will be seen by
+> the caller, but duplicated.
 > 
-> Note: For realtime case and IEEE1588 ptp case, it should disable
-> EEE mode.
+> IMHO, errors that came from the netlink, should be printed with NL_SET_ERR_MSG(),
+> other errors should use netdev_err/slave_err prints.
 > 
-> Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
-> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 
-This patch results in:
+bond_enslave can be called from two places sysfs and netlink so 
+reporting both a console message and netlink message makes sense to me. 
+So I have to disagree in this case. I am simply making the two paths 
+report the same error in the function so that when using sysfs the same 
+information is reported. In the netlink case the information will be 
+reported twice, once an an error response over netlink and once via printk.
 
-drivers/net/ethernet/freescale/fec_main.c: In function 'fec_enet_eee_mode_set':
-drivers/net/ethernet/freescale/fec_main.c:2801:40: error: 'FEC_LPI_SLEEP' undeclared
-drivers/net/ethernet/freescale/fec_main.c:2802:39: error: 'FEC_LPI_WAKE' undeclared
+-Jon
 
-when building m68k:m5272c3_defconfig.
-
-Guenter
