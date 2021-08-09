@@ -2,115 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC8893E42AC
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 11:30:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A1153E42DB
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 11:35:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234474AbhHIJbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 05:31:10 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:13403 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234338AbhHIJbJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 05:31:09 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GjrMK4MjHzcmHf;
-        Mon,  9 Aug 2021 17:27:09 +0800 (CST)
-Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 9 Aug 2021 17:30:47 +0800
-Received: from [10.174.178.174] (10.174.178.174) by
- dggpeml500017.china.huawei.com (7.185.36.243) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 9 Aug 2021 17:30:46 +0800
-Subject: Re: [PATCH net v2] net: bridge: fix memleak in br_add_if()
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>
-CC:     <roopa@nvidia.com>, <davem@davemloft.net>, <kuba@kernel.org>
-References: <20210809090211.65677-1-yangyingliang@huawei.com>
- <8af55b8a-0844-3fb2-8dd4-f6818c2675db@nvidia.com>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <e3414cc7-b7b3-26b2-95f5-ff92ac73b3ac@huawei.com>
-Date:   Mon, 9 Aug 2021 17:30:46 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S234659AbhHIJfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 05:35:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33980 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234570AbhHIJf3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 05:35:29 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132D0C0613CF
+        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 02:35:09 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id x90so23562016ede.8
+        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 02:35:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zwAAZtoe5JzXwMl3BpwlMJNUPbe45ZpYwTmRl3QO43w=;
+        b=zSx2RwzNsht4f2/bo6VzWdIj65matsW9qhjPPJO3ptc/WjUMzFzad9pwS74bs8z/Mp
+         OhhEkmbLQeK5okI4BmVTCWcL53vpJ936O9hAh7aS4qVo7QWsy5BQ9da+gju7Vab2MB4h
+         5PDAP8t1qehCi1ZYuBJ2nbn9BG6AdMVmrSF20afGRnwr8EshJqQkynsnyiqy/0mRgSMw
+         NODT7sKY4WEjQtwV9UUyASMN+eFtLAQ/MVhIHbKpBTmDMfu1pL0cCg3hapx7otqCpEbB
+         Mkq1GKvayRMAbDts5/7MPm+NvD1lS3h1Vby1rGnzxCOVxBS0VG7QfWw3xpp5jOQmKmHM
+         eWSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zwAAZtoe5JzXwMl3BpwlMJNUPbe45ZpYwTmRl3QO43w=;
+        b=cFLru1fStFL7cO9yUDFbN8l5U/0gzzqEcaMhN7Hp1lsQUQ3TY6g5HN5/VxfZydTRXD
+         ZyW0FX/ldN6LNxdb6xBlXRqy1XtvolOQiVRLcobFf70g6W3iLcztATjU6jJeeZmDNw1y
+         8Eg45psL+oWM2D/6QA9AGr/A0b1wEH/0nX8ONDrP5qX1FoRv7RkUpCQSM0jbJEltPzaA
+         agRTPilbm8lj34hkgD6KzdqoBFoXP4MijZRDWuLuUhjq54UnAoda88K1yBnmOFM9zfHj
+         TLwz3YXxQ7iHV1KdU6/wKdR5drtzJL7KEplGeixoUE5TaTgmtZyM8NdvMY05BRGL6STL
+         Ym+w==
+X-Gm-Message-State: AOAM5317Ui2zpdOXe5AMoR0IeP4hTWRe7uI7khazcHCszk8RMTW4HXkI
+        VfYTGKlaqPn0MpAFcIP80vBhRw==
+X-Google-Smtp-Source: ABdhPJyVQTbfG9RhsYLnIylFbyKXtxpwHw5fl0AlD3S8iXZsHrnAongcdTGdp4UUnPg/Reiwo5lAUQ==
+X-Received: by 2002:a05:6402:440e:: with SMTP id y14mr28963676eda.38.1628501707726;
+        Mon, 09 Aug 2021 02:35:07 -0700 (PDT)
+Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
+        by smtp.gmail.com with ESMTPSA id c8sm1989732ejp.124.2021.08.09.02.35.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Aug 2021 02:35:07 -0700 (PDT)
+From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        illusionist.neo@gmail.com, zlim.lnx@gmail.com,
+        paulburton@kernel.org, naveen.n.rao@linux.ibm.com,
+        sandipan@linux.ibm.com, luke.r.nels@gmail.com, bjorn@kernel.org,
+        iii@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        davem@davemloft.net, udknight@gmail.com,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Subject: [PATCH bpf-next 0/7] Fix MAX_TAIL_CALL_CNT handling in eBPF JITs
+Date:   Mon,  9 Aug 2021 11:34:30 +0200
+Message-Id: <20210809093437.876558-1-johan.almbladh@anyfinetworks.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <8af55b8a-0844-3fb2-8dd4-f6818c2675db@nvidia.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500017.china.huawei.com (7.185.36.243)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+A new test of tail call count limiting revealed that the interpreter
+did in fact allow up to MAX_TAIL_CALL_CNT + 1 tail calls, whereas the
+x86 JITs stopped at the intended MAX_TAIL_CALL_CNT. The interpreter was
+fixed in commit b61a28cf11d61f512172e673b8f8c4a6c789b425 ("bpf: Fix
+off-by-one in tail call count limiting"). This patch set fixes all
+arch-specific JITs except for RISC-V.
 
-On 2021/8/9 17:09, Nikolay Aleksandrov wrote:
-> On 09/08/2021 12:02, Yang Yingliang wrote:
->> I got a memleak report:
->>
->> BUG: memory leak
->> unreferenced object 0x607ee521a658 (size 240):
->> comm "syz-executor.0", pid 955, jiffies 4294780569 (age 16.449s)
->> hex dump (first 32 bytes, cpu 1):
->> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
->> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
->> backtrace:
->> [<00000000d830ea5a>] br_multicast_add_port+0x1c2/0x300 net/bridge/br_multicast.c:1693
->> [<00000000274d9a71>] new_nbp net/bridge/br_if.c:435 [inline]
->> [<00000000274d9a71>] br_add_if+0x670/0x1740 net/bridge/br_if.c:611
->> [<0000000012ce888e>] do_set_master net/core/rtnetlink.c:2513 [inline]
->> [<0000000012ce888e>] do_set_master+0x1aa/0x210 net/core/rtnetlink.c:2487
->> [<0000000099d1cafc>] __rtnl_newlink+0x1095/0x13e0 net/core/rtnetlink.c:3457
->> [<00000000a01facc0>] rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3488
->> [<00000000acc9186c>] rtnetlink_rcv_msg+0x369/0xa10 net/core/rtnetlink.c:5550
->> [<00000000d4aabb9c>] netlink_rcv_skb+0x134/0x3d0 net/netlink/af_netlink.c:2504
->> [<00000000bc2e12a3>] netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
->> [<00000000bc2e12a3>] netlink_unicast+0x4a0/0x6a0 net/netlink/af_netlink.c:1340
->> [<00000000e4dc2d0e>] netlink_sendmsg+0x789/0xc70 net/netlink/af_netlink.c:1929
->> [<000000000d22c8b3>] sock_sendmsg_nosec net/socket.c:654 [inline]
->> [<000000000d22c8b3>] sock_sendmsg+0x139/0x170 net/socket.c:674
->> [<00000000e281417a>] ____sys_sendmsg+0x658/0x7d0 net/socket.c:2350
->> [<00000000237aa2ab>] ___sys_sendmsg+0xf8/0x170 net/socket.c:2404
->> [<000000004f2dc381>] __sys_sendmsg+0xd3/0x190 net/socket.c:2433
->> [<0000000005feca6c>] do_syscall_64+0x37/0x90 arch/x86/entry/common.c:47
->> [<000000007304477d>] entry_SYSCALL_64_after_hwframe+0x44/0xae
->>
->> On error path of br_add_if(), p->mcast_stats allocated in
->> new_nbp() need be freed, or it will be leaked.
->>
->> Fixes: 1080ab95e3c7 ("net: bridge: add support for IGMP/MLD stats and export them via netlink")
->> Reported-by: Hulk Robot <hulkci@huawei.com>
->> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
->> ---
->> v2:
->>    move free_percpu(p->mcast_stats) in release_nbp() and
->>    fix the compile error when CONFIG_BRIDGE_IGMP_SNOOPING
->>    is disabled.
->> ---
->>   net/bridge/br_if.c        | 5 ++++-
->>   net/bridge/br_multicast.c | 1 -
->>   2 files changed, 4 insertions(+), 2 deletions(-)
->>
-> You can add a helper to free mcast stats and use it in the error path.
-> I'd like to keep the port dismantling code as it's currently done, moving
-> multicast stats freeing away from br_multicast_del_port is wrong.
->
-> In fact I think you can directly use br_multicast_del_port() as it's a noop w.r.t the
-> other actions (stopping timers that were never started and walking empty lists).
-> You'll have to test it, of course.
-OK,  I will send a v3 after my testing.
+For each of the affected JITs, the incorrect behaviour was verified
+by running the test_bpf test suite in QEMU. After the fixes, the JITs
+pass the tail call count limiting test.
 
-Thanks,
-Yang
->
-> For this patch:
-> Nacked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
->
-> Thanks,
->   Nik
->
-> .
+I have not been able to test the RISC-V JITs due to the lack of a
+working toolchain and QEMU setup. It is likely that the RISC-V JITs
+have the off-by-one behaviour too. I have not verfied any of the NIC JITs.
+
+Link: https://lore.kernel.org/bpf/20210728164741.350370-1-johan.almbladh@anyfinetworks.com/
+
+Johan Almbladh (7):
+  arm: bpf: Fix off-by-one in tail call count limiting
+  arm64: bpf: Fix off-by-one in tail call count limiting
+  powerpc: bpf: Fix off-by-one in tail call count limiting
+  s390: bpf: Fix off-by-one in tail call count limiting
+  sparc: bpf: Fix off-by-one in tail call count limiting
+  mips: bpf: Fix off-by-one in tail call count limiting
+  x86: bpf: Fix comments on tail call count limiting
+
+ arch/arm/net/bpf_jit_32.c         | 6 +++---
+ arch/arm64/net/bpf_jit_comp.c     | 4 ++--
+ arch/mips/net/ebpf_jit.c          | 4 ++--
+ arch/powerpc/net/bpf_jit_comp32.c | 4 ++--
+ arch/powerpc/net/bpf_jit_comp64.c | 4 ++--
+ arch/s390/net/bpf_jit_comp.c      | 6 +++---
+ arch/sparc/net/bpf_jit_comp_64.c  | 2 +-
+ arch/x86/net/bpf_jit_comp32.c     | 6 +++---
+ 8 files changed, 18 insertions(+), 18 deletions(-)
+
+-- 
+2.25.1
+
