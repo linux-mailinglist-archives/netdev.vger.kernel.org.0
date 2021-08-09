@@ -2,138 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28C0A3E4DC5
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 22:25:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5387A3E4DC8
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 22:27:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236220AbhHIUZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 16:25:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37652 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232730AbhHIUZv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Aug 2021 16:25:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C05A60F25;
-        Mon,  9 Aug 2021 20:25:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628540731;
-        bh=2I41G0pH58F/mXPn0i8CVS7mNLrtnuqoU2jXg6qHdNg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=I+PSbUveNqDrAJwhp1g9LFO32c4xwB7x4MiulYs4q9CpmjWuxbX+0H2JpvsSIWtdN
-         oMCciEDw5EG80J5s0Oz5iXzCUa3TU+XFRB3XUVOj4vCKPDZWt99bk3Qm3KI20GwHxv
-         DmF/F+8mCF1Mq2R1bzc/7YiyHVaCtlgjaChAgF6QUVsQUfmXcGAHPU7riIGBUexZ5f
-         mSNngVzrMKl5klYqoNEe6ctnfrt77iIWJmTt5CpRFsUPsi8NsX2NKkKFAinGzXeO6e
-         3Gk4Jy+nMyG7TdXu1b8Z/y7XVTLwx9Th+nO+ooHAPkCbKDOX2eJcqHTUeVTZnfRmH7
-         o/K1xZ1aa2cug==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, dledford@redhat.com,
-        jgg@ziepe.ca
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: pull-request: mlx5-next 2020-08-9
-Date:   Mon,  9 Aug 2021 13:25:22 -0700
-Message-Id: <20210809202522.316930-1-saeed@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        id S233348AbhHIU2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 16:28:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43182 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232730AbhHIU2M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 16:28:12 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C66C0613D3
+        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 13:27:51 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id o20so25352046oiw.12
+        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 13:27:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=LmOW2GjFn2pnJ/9MbGVyuD34F1hQWFdHnUjyzV5Dj+o=;
+        b=Rerf6klN2V3L+jU7wN3ane2ki0exknVGzBkfGPgBNv5cLJ6RPTiP6T5LIB+CfI/scv
+         yKzfrekUvkg6Aqb/5C1tcnPFqHDmpiCpYWV4OZ0hYhkcz13UsZw9tYcqz1MPk1ImgfOn
+         nV+sCrz3ZGaM3tekNkVpCV2VK599XPJEUvsE+dc5v4v6yCpTvK1JvnNbYdMyEj5lIik8
+         DRmI9xzlxPt4Fxcmn0fw1SMmY4MUyvhvjeSQjulj7krDCKTVTUEgyqVzwXaoNarAg5rV
+         J6+Ylox97cUebw2y9q84LWyF3YD5yLB7aGZ0fW7bOOzl3xV5QjpuY7zoZXP4R1RFKziJ
+         zw6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=LmOW2GjFn2pnJ/9MbGVyuD34F1hQWFdHnUjyzV5Dj+o=;
+        b=Oll/fdVHw2v6lLQUq1J+pSXYbEF1+fjWyiCAf27renJs/mNpQN34pwG/gkjWnPYyJZ
+         nlF7E+ap15hDGQIYJDnmsqjR6nHvOgkEYfTQCodSfmC68b/UiEIGgI1+GYBfXW1yHLQ7
+         K1O4V2kTCpFI5qmjjeNMtn1nhIYfsXOsTdcbA7deqgU3fndhh/4gcYEFAAkVLLkndUH6
+         PdVTYIPVZjv0CQ1RggeVUdpi01ILLZRbPp8TawWe4YD3DDsUa9FggzK7kzB4GFbyt0Yj
+         aIQKrY8Rme12W2abybuuZKb3FcFLPkEBFhPmfr5LPh+wedyj+w2Un0PvHnfYIt4WPdm6
+         nK3Q==
+X-Gm-Message-State: AOAM533pp/SF5HinXnhQ6dU4fQ9Za8eNGeDnbXX+1LIq8tVU8Tr9GMC+
+        CtLyaRZOEjq5RHzDiBTuy+KHptI6kesGhP1vEFY=
+X-Google-Smtp-Source: ABdhPJyXsXlG2ot6WtCPSqJ4GvMl38bAYXEPcutLBsn6YtnYrXl+iAdq5ImAirbe9EsC9Zt1be2AdT6wi1A/v9hg43o=
+X-Received: by 2002:a05:6808:487:: with SMTP id z7mr5057171oid.94.1628540870644;
+ Mon, 09 Aug 2021 13:27:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a05:6839:1b08:0:0:0:0 with HTTP; Mon, 9 Aug 2021 13:27:50
+ -0700 (PDT)
+Reply-To: infoglobasece@gmail.com
+From:   GLOBAL FINANCIAL SECURITY MONITORING UNIT <inforco40@gmail.com>
+Date:   Mon, 9 Aug 2021 21:27:50 +0100
+Message-ID: <CAA_JrZeCfaPQmWkW8P2vvuru1AgJN-jR-aixkUQ=roy9Z4b4=g@mail.gmail.com>
+Subject: We Wait for your response.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave, Jakub and Jason,
+Global Financial Security Monitoring Unit
 
-This pulls mlx5-next branch which includes patches already reviewed on
-net-next and rdma mailing lists.
+24/25, the Shard, 32 London Bridge St, London SE1 9SG, UK
 
-1) mlx5 single E-Switch FDB for lag
 
-2) IB/mlx5: Rename is_apu_thread_cq function to is_apu_cq 
 
-3) Add DCS caps & fields support
 
-[1] https://patchwork.kernel.org/project/netdevbpf/cover/20210803231959.26513-1-saeed@kernel.org/
+       Compensation Approved Sum Of $USD 4.5 million dollars/ Debt
+Reconciliation.
 
-[2] https://patchwork.kernel.org/project/netdevbpf/patch/0e3364dab7e0e4eea5423878b01aa42470be8d36.1626609184.git.leonro@nvidia.com/
 
-[3] https://patchwork.kernel.org/project/netdevbpf/patch/55e1d69bef1fbfa5cf195c0bfcbe35c8019de35e.1624258894.git.leonro@nvidia.com/
+lnvestment Compensation sum of USD$4.5 million dollars have been
+approved through the World Bank Mass Assisted Project Deposit Fund.
+This compensation payment was initiated to assist those who has failed
+prey to fraudulent business / communications in different categories ,
+Inheritance, Contracts, Lottery, Romance Scam, Diplomatic Payment,
+Fraudulent Loan Transactions, Unsuccessful Investment transactions ,
+Those who has also failed victim of BEC Scams also known as Wire ,
+Mass assisted fund was approved to settle failed business, you are
+qualified to receive this approved investment funds as long as you
+have receive fraudulent proposal before, many people have suffered
+untold lost/ hardship in the hands of those unscrupulous elements and
+evil-minded people operating all kinds of fraud just to make a dirty
+living and misery out of innocent souls. You are entitled to receive
+this investment compensation fund as long as you have received a scam
+/fraudulent message through whichever way.
 
-We need this in net-next as multiple features are dependent on the
-single FDB feature.
+NB: Special compensation for victims of COVID -19 through a world mass
+assisted project, we are going to guide you with covid 19 compensation
+process once you respond
+to this message.
 
-Please pull and let me know if there's any problem.
+Attention Please indicate if you have received any compensation before
+now, to the amount of (U.S.D $4.5M) from the New World Bank mass
+assisted project investment
+funds. Your email address was enlisted on the investment compensation
+global manifest booklet submitted by World Bank Project auditors.We
+want to know if you are interested to receive the compensation, in
+this regard, we shall finalize your compensation transaction through
+the appropriate legal means nominated by World Bank auditors.
 
-Thanks,
-Saeed.
+Your response is highly imminent.
 
----
-The following changes since commit e73f0f0ee7541171d89f2e2491130c7771ba58d3:
+Micheal Bricks
 
-  Linux 5.14-rc1 (2021-07-11 15:07:40 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux.git mlx5-next
-
-for you to fetch changes up to 598fe77df855feeeca9dfda2ffe622ac7724e5c3:
-
-  net/mlx5: Lag, Create shared FDB when in switchdev mode (2021-08-05 13:50:52 -0700)
-
-----------------------------------------------------------------
-Ariel Levkovich (1):
-      net/mlx5: E-Switch, set flow source for send to uplink rule
-
-Lior Nahmanson (1):
-      net/mlx5: Add DCS caps & fields support
-
-Mark Bloch (11):
-      net/mlx5: Return mdev from eswitch
-      net/mlx5: Lag, add initial logic for shared FDB
-      RDMA/mlx5: Fill port info based on the relevant eswitch
-      {net, RDMA}/mlx5: Extend send to vport rules
-      RDMA/mlx5: Add shared FDB support
-      net/mlx5: E-Switch, Add event callback for representors
-      net/mlx5: Add send to vport rules on paired device
-      net/mlx5: Lag, properly lock eswitch if needed
-      net/mlx5: Lag, move lag destruction to a workqueue
-      net/mlx5: E-Switch, add logic to enable shared FDB
-      net/mlx5: Lag, Create shared FDB when in switchdev mode
-
-Roi Dayan (2):
-      net/mlx5e: Add an option to create a shared mapping
-      net/mlx5e: Use shared mappings for restoring from metadata
-
-Tal Gilboa (1):
-      IB/mlx5: Rename is_apu_thread_cq function to is_apu_cq
-
- drivers/infiniband/hw/mlx5/cq.c                    |   2 +-
- drivers/infiniband/hw/mlx5/devx.c                  |   7 +-
- drivers/infiniband/hw/mlx5/ib_rep.c                |  77 ++++-
- drivers/infiniband/hw/mlx5/main.c                  |  44 ++-
- drivers/infiniband/hw/mlx5/std_types.c             |  10 +-
- drivers/net/ethernet/mellanox/mlx5/core/cq.c       |   3 +-
- .../net/ethernet/mellanox/mlx5/core/en/mapping.c   |  45 +++
- .../net/ethernet/mellanox/mlx5/core/en/mapping.h   |   5 +
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |   9 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  88 ++++-
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   2 +
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  21 +-
- .../mellanox/mlx5/core/esw/acl/egress_ofld.c       |  16 +
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  |  36 +-
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  38 ++
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 383 ++++++++++++++++++++-
- .../net/ethernet/mellanox/mlx5/core/fpga/conn.c    |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c   |  58 +++-
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.h  |   2 +
- drivers/net/ethernet/mellanox/mlx5/core/lag.c      | 267 ++++++++++++--
- drivers/net/ethernet/mellanox/mlx5/core/lag.h      |   5 +-
- drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c   |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |   5 +-
- .../net/ethernet/mellanox/mlx5/core/mlx5_core.h    |   2 +
- .../ethernet/mellanox/mlx5/core/steering/dr_send.c |   2 +-
- drivers/vdpa/mlx5/net/mlx5_vnet.c                  |   2 +-
- include/linux/mlx5/driver.h                        |   3 +
- include/linux/mlx5/eswitch.h                       |  16 +
- include/linux/mlx5/mlx5_ifc.h                      |  19 +-
- 31 files changed, 1066 insertions(+), 109 deletions(-)
+Consultant agent (FIMS)
