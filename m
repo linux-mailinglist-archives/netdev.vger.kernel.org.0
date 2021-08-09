@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CD113E4FAE
+	by mail.lfdr.de (Postfix) with ESMTP id DAFFC3E4FAF
 	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 01:00:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236996AbhHIXAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 19:00:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49544 "EHLO
+        id S236992AbhHIXAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 19:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234974AbhHIXAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 19:00:21 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F3DC0613D3
-        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 16:00:00 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id d6so27092576edt.7
-        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 16:00:00 -0700 (PDT)
+        with ESMTP id S235623AbhHIXAa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 19:00:30 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CF3C0613D3
+        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 16:00:09 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id k9so9841117edr.10
+        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 16:00:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mind.be; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=ZFAFMdmrH+/a1aLUISnFDqOH+TO/ApDMconZApETk6Q=;
-        b=dXrFg+RoTGioZPjnME/xLm2aa/RVg7f16c8IO7/2HN+NRKK/u49qW0XDZU8yd8KSWi
-         mqkHYZKgUIXQWFyojAvCsueOIZuqRT38MDvnb0i6jKgTE1Q/SdI+jt+DUHO8+B5yaaZO
-         3nvQECOohNzmM/VfIlDV5A4t1ugYysuBb/QBgbvaGIk/Y8CMh3L9a9sXdjXPqPqhTgMv
-         3YeNv6iiVJBRxAH9whHklaU68Ue2JnsZ65s0YdumdGQkuTJVlsstcc+dOhfMMCnoL/6q
-         /et7FezuTXUz83JYNMY/7zqXwLfw/tlPzH5I/TvT/MVVrkaG/YZHTGtGF3+f/r6KxPlG
-         ztyA==
+        bh=NOh/1O8Aw6ygmV6lKbU6J3+Rn+aV91ycDEv4lb7aQdc=;
+        b=EGDPRyp6I3GogJ7QpXQYc8Rn7zYcFiUDCoVgiFpWDEgjd41dsrmJWQeeUgi54tVTmY
+         D/QO9UuUMKh8tRXix+CjM12bcgHbNR+bOPLHrqY0OUY3suOuTqkqpzUGeuBM9W4zcsYZ
+         9XWPMJKYV58XvdOJBkOzfpNIAaCr1Ma9J7ndUP4xp0tOdx8N/pZcf7ncu9dZprG2L0H5
+         gcSZNh4aFAcihDNV/37FJvAPW16MqO8PDdVS5amUp4VEhDir+z75bgKYfc3YOvLa0zqQ
+         F7JfkFjrwl4ufDM7sshKWwTh7Z/J55APsrtq4sk4q9bzq5h5/kfBExcW1r4LoTuzrIuO
+         Aqvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ZFAFMdmrH+/a1aLUISnFDqOH+TO/ApDMconZApETk6Q=;
-        b=BcencARKjFfgSLE5cJispns59WGDagyMO9/2ak1vf3BwYAWGc9QXgewz6VDkWDFyA+
-         4NP3OVKuyXA5/3gsjuEyPwOZ7oQO2yzMggb/usqcHcoM1xI5+wLMNF7FxGWhIwdEFWBl
-         6RINjBgr0qdnJAN+4TQTPSDJ0EthEZckdegjlfaZWVuxwuWbawoUtlCBLvVghzvxUZee
-         dn2O7ID30SBoY82ZWkXBqLc4XnFl9L1dWKK2MIXOTvsHBPqaqjpQhrPHmbdZceabExmY
-         HNip2eB6STgcKa+JJUdb3vEP5ljwLlhS0ygvcowVgXcbSBvx7409/P+ptWj/2WCOqnUO
-         vAuA==
-X-Gm-Message-State: AOAM533OLGUc5bFwwXLfYjvpbcKd/djBrhdp6XX6Voc+2ET+5DvdeUc+
-        IDVlzVERKSzG7xXWq9cVzOzdMg==
-X-Google-Smtp-Source: ABdhPJwr87XKrKk89bByeJnP9Fkt5bt/LR7yUfkeGUXUSMWDlr3KW1W4jN4uinAdUudaoXa55gqClQ==
-X-Received: by 2002:a05:6402:361:: with SMTP id s1mr893442edw.172.1628549999249;
-        Mon, 09 Aug 2021 15:59:59 -0700 (PDT)
+        bh=NOh/1O8Aw6ygmV6lKbU6J3+Rn+aV91ycDEv4lb7aQdc=;
+        b=rwL5Ii6wLs6ObEtVXvQEM2M1dVMy3XkAOB0OtpctQjKE93Uwwwl6Dpb+yfNTL/zuKd
+         E1Pz8EseOZ8wUxmaHEGETJnBlOW1TPSOjMxDuh0BHoCZXvcFz1qVPsNR+asRMAjMtwKZ
+         Faz66M2OSGcgjgtZp/hF7/NoQ3EIGO5mfPqu0ySK19ttPzApHttp/nN23RjkmGVWa9ER
+         gZ643BBwie8Jt5ISYof3A11Uy3I98VLowvPfnlv3CUaArToNXPm2wUJRmsa6DZg/o0pF
+         aortNjDuCIleSk5s889FZrmLKhwsS35sfI6Rl37BbG3MQ81mWjnPDuWPc7bBQvxX+UxF
+         wmZA==
+X-Gm-Message-State: AOAM531svvJJVaT8eS8fNcHUWjjfHDbk8rhxcjK/isgmg2x9BxOHhAA1
+        Rfqz+guwygW0xLaGzkkfaHqKwg==
+X-Google-Smtp-Source: ABdhPJwNALmc/GIkgBUSutVXWqGrCqshy32UNwMnKDwvItSwGtP3eSRdlcR6RtxAdey5d19FrBPssQ==
+X-Received: by 2002:aa7:d593:: with SMTP id r19mr869345edq.372.1628550008337;
+        Mon, 09 Aug 2021 16:00:08 -0700 (PDT)
 Received: from cephalopod (168.7-181-91.adsl-dyn.isp.belgacom.be. [91.181.7.168])
-        by smtp.gmail.com with ESMTPSA id j5sm8616086edv.10.2021.08.09.15.59.58
+        by smtp.gmail.com with ESMTPSA id g10sm6250280ejj.44.2021.08.09.16.00.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Aug 2021 15:59:58 -0700 (PDT)
-Date:   Tue, 10 Aug 2021 00:59:57 +0200
+        Mon, 09 Aug 2021 16:00:08 -0700 (PDT)
+Date:   Tue, 10 Aug 2021 01:00:06 +0200
 From:   Ben Hutchings <ben.hutchings@mind.be>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH net 5/7] net: dsa: microchip: ksz8795: Use software untagging
- on CPU port
-Message-ID: <20210809225956.GF17207@cephalopod>
+Subject: [PATCH net 6/7] net: dsa: microchip: ksz8795: Fix VLAN filtering
+Message-ID: <20210809230005.GG17207@cephalopod>
 References: <20210809225753.GA17207@cephalopod>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -65,41 +64,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On the CPU port, we can support both tagged and untagged VLANs at the
-same time by doing any necessary untagging in software rather than
-hardware.  To enable that, keep the CPU port's Remove Tag flag cleared
-and set the dsa_switch::untag_bridge_pvid flag.
+Currently ksz8_port_vlan_filtering() sets or clears the VLAN Enable
+hardware flag.  That controls discarding of packets with a VID that
+has not been enabled for any port on the switch.
+
+Since it is a global flag, set the dsa_switch::vlan_filtering_is_global
+flag so that the DSA core understands this can't be controlled per
+port.
+
+When VLAN filtering is enabled, the switch should also discard packets
+with a VID that's not enabled on the ingress port.  Set or clear each
+external port's VLAN Ingress Filter flag in ksz8_port_vlan_filtering()
+to make that happen.
 
 Fixes: e66f840c08a2 ("net: dsa: ksz: Add Microchip KSZ8795 DSA driver")
 Signed-off-by: Ben Hutchings <ben.hutchings@mind.be>
 ---
- drivers/net/dsa/microchip/ksz8795.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/net/dsa/microchip/ksz8795.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
 diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 7a3d0d137ed1..ddfe9cd6b7bd 100644
+index ddfe9cd6b7bd..891eaeb62ad0 100644
 --- a/drivers/net/dsa/microchip/ksz8795.c
 +++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1150,8 +1150,10 @@ static int ksz8_port_vlan_add(struct dsa_switch *ds, int port,
- 	/* If a VLAN is added with untagged flag different from the
- 	 * port's Remove Tag flag, we need to change the latter.
- 	 * Ignore VID 0, which is always untagged.
-+	 * Ignore CPU port, which will always be tagged.
+@@ -1119,8 +1119,14 @@ static int ksz8_port_vlan_filtering(struct dsa_switch *ds, int port, bool flag,
+ 	if (ksz_is_ksz88x3(dev))
+ 		return -ENOTSUPP;
+ 
++	/* Discard packets with VID not enabled on the switch */
+ 	ksz_cfg(dev, S_MIRROR_CTRL, SW_VLAN_ENABLE, flag);
+ 
++	/* Discard packets with VID not enabled on the ingress port */
++	for (port = 0; port < dev->phy_port_cnt; ++port)
++		ksz_port_cfg(dev, port, REG_PORT_CTRL_2, PORT_INGRESS_FILTER,
++			     flag);
++
+ 	return 0;
+ }
+ 
+@@ -1774,6 +1780,11 @@ static int ksz8_switch_init(struct ksz_device *dev)
  	 */
--	if (untagged != p->remove_tag && vlan->vid != 0) {
-+	if (untagged != p->remove_tag && vlan->vid != 0 &&
-+	    port != dev->cpu_port) {
- 		unsigned int vid;
+ 	dev->ds->untag_bridge_pvid = true;
  
- 		/* Reject attempts to add a VLAN that requires the
-@@ -1767,6 +1769,11 @@ static int ksz8_switch_init(struct ksz_device *dev)
- 	/* set the real number of ports */
- 	dev->ds->num_ports = dev->port_cnt;
- 
-+	/* We rely on software untagging on the CPU port, so that we
-+	 * can support both tagged and untagged VLANs
++	/* VLAN filtering is partly controlled by the global VLAN
++	 * Enable flag
 +	 */
-+	dev->ds->untag_bridge_pvid = true;
++	dev->ds->vlan_filtering_is_global = true;
 +
  	return 0;
  }
