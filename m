@@ -2,131 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B06E23E412B
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 09:54:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21C233E4142
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 09:59:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233664AbhHIHyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 03:54:45 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:54985 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233653AbhHIHyn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 03:54:43 -0400
-Received: by mail-io1-f71.google.com with SMTP id 81-20020a6b02540000b02905824a68848bso11384753ioc.21
-        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 00:54:23 -0700 (PDT)
+        id S233729AbhHIH7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 03:59:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39822 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233724AbhHIH7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 03:59:40 -0400
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C32B1C061796;
+        Mon,  9 Aug 2021 00:59:17 -0700 (PDT)
+Received: by mail-qk1-x736.google.com with SMTP id az7so17440822qkb.5;
+        Mon, 09 Aug 2021 00:59:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yZGwaoW+74yOYe7AWTee01O7ZajaTQrxGSp7Oi3hbfk=;
+        b=Sd9ib6YPdjx7zYxuYPXDWNAWapxYFrhQ7GaLVqFkwbgYz1yKsgeDeAhpfV7DRE12wQ
+         FC0kN9mfn8J+PvgwvEeNNzmE8o8o01NO8shIaQPc7YiVnrvH3xNqB8MLlLqEUOFGgkyG
+         MJU07wM1byXc05jYW6kjKbSQt4IlqWhdisib0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=8QI5/Ow9wqoi4wS1cgAAg/FGKAVs9yNR1XeA3INMSiI=;
-        b=Ea1m+IyVv2295oVEqJd5xCOggCeDVI6TyXUJ/A/fu+ceFu2cXdsnJ2rltSZYJwHULf
-         7SSjfSZjUQMMtggosme/LrFVFaB3cFBsM+uGNmQ2RMtbnWIYSDmKqa8wiCH+XzkvparN
-         V6n2feL4K+t2WbtV4escFm+bbyolK21BECkObqDfnWs+7X8QKb1it7BuyzWbewFIEXjY
-         tfUYxBx3TXoYseDy7rpzNxWV1xltAwkcj2F4g8zhr9gH+hd5ItcostVEY9iqVaHNuEoA
-         /ITQDEam23M3sPaLrZWxXnDUZLvT/aZoGCw3dh01E11vcBoXaajythfjXidzW0dJfh3D
-         WnBg==
-X-Gm-Message-State: AOAM533aV/0cn0ZlUSavEm+Prur44oJ1VeDNXgURSMz5xdUC7CRUwF5Y
-        xfGI9dbx0Jn1G/CKq2+NcIf+/zfVFaSiSgasinFdPABFY6bu
-X-Google-Smtp-Source: ABdhPJzDTxXN99MnJc7AwyZ3LSbWPzB44Tpctll5ZoYah9KsWRfMfr1x8ws3pfWMST+ETOzo7j30x+Y7r2qnja6UlBgBeNp8RmeT
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yZGwaoW+74yOYe7AWTee01O7ZajaTQrxGSp7Oi3hbfk=;
+        b=PFcwshiF1pKaL1blPQwV1fpABIVwZcrVNURVNNeAX8o4+h1X1hih5dVFtPaEvPhXgg
+         gelLj6vlEBvBSB2PbJHPhPhZ/DIa/PHPT9JgHo9niTkP9UcjMeTotX+NFA/i9lU93cGx
+         TvqvDE7DDgWfwo0FKbj8L7VPspPYlz2UmfwGyhLV43Yb7mk7JAzcv6xTz5Eoi+gaHJZR
+         d6AF6V3YcUCxJ39OlTIWKnqmcpRQKyviPf1WLNPy0++ePpsmsJPyi98DMXCBU7+7adUV
+         7WyMcdgjjZ9duIwJDt9dGi2qWRfQ+Iblk8I8bzH1xxEw/jbM2P2yczw5Y6Jvzum6sXLt
+         GQEA==
+X-Gm-Message-State: AOAM531196eayj8r4AKCu92OSOBpecUhcceqLrDD8jiq6MODOEx2PZzN
+        G+UA7hTzUfExzXqvbOxhA1AJ4PZipQGbiJ9PFtg=
+X-Google-Smtp-Source: ABdhPJwLEOCQ5lbLi4Tznra9/LzTGpXcz9WmNQUddJipFMnMKm8yq9gpXeFX5iVT/d1ZsuyvsYrhaN+GCEPWi7A/6rY=
+X-Received: by 2002:ae9:e704:: with SMTP id m4mr14345023qka.465.1628495956905;
+ Mon, 09 Aug 2021 00:59:16 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a92:da4a:: with SMTP id p10mr138371ilq.290.1628495662787;
- Mon, 09 Aug 2021 00:54:22 -0700 (PDT)
-Date:   Mon, 09 Aug 2021 00:54:22 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000007faf7505c91bb19d@google.com>
-Subject: [syzbot] general protection fault in hwsim_new_edge_nl
-From:   syzbot <syzbot+fafb46da3f65fdbacd16@syzkaller.appspotmail.com>
-To:     alex.aring@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, stefan@datenfreihafen.org,
-        syzkaller-bugs@googlegroups.com
+References: <20210806054904.534315-1-joel@jms.id.au> <20210806054904.534315-2-joel@jms.id.au>
+ <YQ7ZXu7hHTCNBwNz@lunn.ch>
+In-Reply-To: <YQ7ZXu7hHTCNBwNz@lunn.ch>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Mon, 9 Aug 2021 07:59:05 +0000
+Message-ID: <CACPK8XdKi3f60h2PNjuWsEiw5Rz+F7Ngtw0yF0ZOg+N3kOy0tQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: net: Add bindings for LiteETH
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stafford Horne <shorne@gmail.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Anton Blanchard <anton@ozlabs.org>,
+        Gabriel Somlo <gsomlo@gmail.com>, David Shah <dave@ds0.me>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sat, 7 Aug 2021 at 19:05, Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Fri, Aug 06, 2021 at 03:19:03PM +0930, Joel Stanley wrote:
+> > LiteETH is a small footprint and configurable Ethernet core for FPGA
+> > based system on chips.
+> >
+> > Signed-off-by: Joel Stanley <joel@jms.id.au>
+> > ---
+> >  .../bindings/net/litex,liteeth.yaml           | 62 +++++++++++++++++++
+> >  1 file changed, 62 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/net/litex,liteeth.yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/net/litex,liteeth.yaml b/Documentation/devicetree/bindings/net/litex,liteeth.yaml
+> > new file mode 100644
+> > index 000000000000..e2a837dbfdaa
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/net/litex,liteeth.yaml
+> > @@ -0,0 +1,62 @@
+> > +# SPDX-License-Identifier: GPL-2.0-or-later OR BSD-2-Clause
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/net/litex,liteeth.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: LiteX LiteETH ethernet device
+> > +
+> > +maintainers:
+> > +  - Joel Stanley <joel@jms.id.au>
+> > +
+> > +description: |
+> > +  LiteETH is a small footprint and configurable Ethernet core for FPGA based
+> > +  system on chips.
+> > +
+> > +  The hardware source is Open Source and can be found on at
+> > +  https://github.com/enjoy-digital/liteeth/.
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: litex,liteeth
+> > +
+> > +  reg:
+> > +    minItems: 3
+> > +    items:
+> > +      - description: MAC registers
+> > +      - description: MDIO registers
+> > +      - description: Packet buffer
+>
+> Hi Joel
+>
+> How configurable is the synthesis? Can the MDIO bus be left out? You
+> can have only the MDIO bus and no MAC?
+>
+> I've not looked at the driver yet, but if the MDIO bus has its own
+> address space, you could consider making it a standalone
+> device. Somebody including two or more LiteETH blocks could then have
+> one shared MDIO bus. That is a supported Linux architecture.
 
-syzbot found the following issue on:
+It's currently integrated as one device. If you instatined two blocks,
+you would end up with two mdio controllers, each inside those two
+liteeth blocks.
 
-HEAD commit:    c2eecaa193ff pktgen: Remove redundant clone_skb override
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1226099a300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=aba0c23f8230e048
-dashboard link: https://syzkaller.appspot.com/bug?extid=fafb46da3f65fdbacd16
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+Obviously being software someone could change that. We've had a few
+discussions about the infinite possibilities of a soft SoC and what
+that means for adding driver support to mainline. I think having some
+basic driver support is useful, particularly as we then get close
+review as Jakub provided.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+The liteeth block has seen a lot of use under Linux by risc-v
+(vexriscv), powerpc (microwatt), and openrisc (mor1k) designs. The
+microwatt and or1k designs have mainline support, making them easy to
+test. This driver will support the normal configurations of those
+platforms.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+fafb46da3f65fdbacd16@syzkaller.appspotmail.com
+As the soft core project evolves, we can revisit what goes in
+mainline, how flexible that driver support needs to be, and how best
+to manage that.
 
-general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 1 PID: 1403 Comm: syz-executor.2 Not tainted 5.14.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:nla_len include/net/netlink.h:1148 [inline]
-RIP: 0010:nla_parse_nested_deprecated include/net/netlink.h:1231 [inline]
-RIP: 0010:hwsim_new_edge_nl+0xf4/0x8c0 drivers/net/ieee802154/mac802154_hwsim.c:425
-Code: 00 0f 85 76 07 00 00 4d 85 ed 48 8b 5b 10 0f 84 5e 05 00 00 e8 0d f2 40 fc 48 89 da 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <0f> b6 14 02 48 89 d8 83 e0 07 83 c0 01 38 d0 7c 08 84 d2 0f 85 87
-RSP: 0018:ffffc90009a47568 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc9000dd59000
-RDX: 0000000000000000 RSI: ffffffff8534ab43 RDI: ffff88801c2b44d0
-RBP: ffffc90009a47678 R08: 0000000000000001 R09: ffffc90009a476a8
-R10: fffff52001348ed6 R11: 0000000000000000 R12: ffffc90009a47698
-R13: ffff888025945c14 R14: ffff888071f0cdc0 R15: 0000000000000000
-FS:  00007f8448923700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000032f4708 CR3: 0000000033eed000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:731
- genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:792
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
- netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
- netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2403
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2457
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2486
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x4665e9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f8448923188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000056bf80 RCX: 00000000004665e9
-RDX: 0000000000000000 RSI: 0000000020001ac0 RDI: 0000000000000004
-RBP: 00000000004bfcc4 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf80
-R13: 00007ffd8ac8e60f R14: 00007f8448923300 R15: 0000000000022000
-Modules linked in:
----[ end trace d1679fe789931133 ]---
-RIP: 0010:nla_len include/net/netlink.h:1148 [inline]
-RIP: 0010:nla_parse_nested_deprecated include/net/netlink.h:1231 [inline]
-RIP: 0010:hwsim_new_edge_nl+0xf4/0x8c0 drivers/net/ieee802154/mac802154_hwsim.c:425
-Code: 00 0f 85 76 07 00 00 4d 85 ed 48 8b 5b 10 0f 84 5e 05 00 00 e8 0d f2 40 fc 48 89 da 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <0f> b6 14 02 48 89 d8 83 e0 07 83 c0 01 38 d0 7c 08 84 d2 0f 85 87
-RSP: 0018:ffffc90009a47568 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc9000dd59000
-RDX: 0000000000000000 RSI: ffffffff8534ab43 RDI: ffff88801c2b44d0
-RBP: ffffc90009a47678 R08: 0000000000000001 R09: ffffc90009a476a8
-R10: fffff52001348ed6 R11: 0000000000000000 R12: ffffc90009a47698
-R13: ffff888025945c14 R14: ffff888071f0cdc0 R15: 0000000000000000
-FS:  00007f8448923700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055bb2ea2f160 CR3: 0000000033eed000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +
+> > +  rx-fifo-depth:
+> > +    description: Receive FIFO size, in units of 2048 bytes
+> > +
+> > +  tx-fifo-depth:
+> > +    description: Transmit FIFO size, in units of 2048 bytes
+> > +
+> > +  mac-address:
+> > +    description: MAC address to use
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - interrupts
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    mac: ethernet@8020000 {
+> > +        compatible = "litex,liteeth";
+> > +        reg = <0x8021000 0x100
+> > +               0x8020800 0x100
+> > +               0x8030000 0x2000>;
+> > +        rx-fifo-depth = <2>;
+> > +        tx-fifo-depth = <2>;
+> > +        interrupts = <0x11 0x1>;
+> > +    };
+>
+> You would normally expect to see some MDIO properties here, a link to
+> the standard MDIO yaml, etc.
 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Do you have a favourite example that I could follow?
