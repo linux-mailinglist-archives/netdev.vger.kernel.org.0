@@ -2,187 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB3F43E448B
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 13:18:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 783283E449D
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 13:23:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235045AbhHILTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 07:19:07 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:42818
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235026AbhHILTG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 07:19:06 -0400
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id 10FA63F351
-        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 11:18:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1628507925;
-        bh=CLVtGv+u1VQk6WuBK3njmzUEUjHOf3FsmIGUOKSLR2c=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=US5WFfJSVnxWHIeADWP/59l29kuI9s/2WnCVpa0QBjuv5iGZqQ9by7UU0OJ4woj3e
-         AT8+ZxInQo9N92+4ul79UzgIWSWd8OrxCoG6Urnozew5TXqoXdKE2iwV8nqsu3Q7xW
-         lslgZWsuHM2AYLXsDq278iyE93EIQghWSN5XfTD/8cXbuD9DYfMIOWVGI1RWCxZlyV
-         fWL8MtDz5lLfYA+kxa0iLoHDthep6LTIRM1moZy0ammy79/deoiPpQGMMv17USMyvQ
-         YzA7MokWKzVGowm5XsQOGwd2b/nxZejdYmMwBti6AytXGn9p1/1GhW5PyH3Ng9w+oG
-         OkCFOBMLDPxLw==
-Received: by mail-ej1-f72.google.com with SMTP id kf21-20020a17090776d5b02905af6ad96f02so664520ejc.12
-        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 04:18:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CLVtGv+u1VQk6WuBK3njmzUEUjHOf3FsmIGUOKSLR2c=;
-        b=FjHkcVxwnPGnkLCpu1QSBd+Tjlv0+IKM27aevGKQTpiI24CR1ldzwRif5T471+4JtO
-         WSd39gYgVlnyg2wydwucRCzatgFNSwp6wCCqEAGjhf0sDV3oDI8TaxDdl0ClGLOKnW5n
-         N20NMWcM2NK6GHKUYybLgWtRD/B8t5D64Qt6H6FVNlnQulCxMeRZ69g4mdX17JNN7ON+
-         EzZXJ2w7RirzzYyqSU+hVKXWEbhxY+yHUOZG63XDxw376vcNbWdCBiOY6MVpxJVieoYw
-         KU3U3OIDCM0Y6b/PLpQG/0hxXUeZpdcb9oXjYdUgbsdOVtWEXdnJOyXDDWOn5hOpltVC
-         L6cw==
-X-Gm-Message-State: AOAM532Qm6FzawXdd17sAMl6pII4HuqdxPVF1/GId7ImfvP2w6uEzVmB
-        ujsg/Z4oQT8U+niBOEzESr5cTdGsfVJmPZUX5/FS9eRJsSo0xobN+pUX/M4CKB0ASM5/zHsAAit
-        31Bfp/1ziA5Yq4w9si5cQeC3x0owkyywO90AW8atLw3liPs5n2Q==
-X-Received: by 2002:a17:907:3345:: with SMTP id yr5mr21818518ejb.542.1628507924656;
-        Mon, 09 Aug 2021 04:18:44 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJycuL4QVPtW9Ha3wNg63K1CxnOthluT58wCPPOTjs6+P7J22mf4vw1/w5gMnLWCnqZuK7LX3MJ2w5v9vau/myQ=
-X-Received: by 2002:a17:907:3345:: with SMTP id yr5mr21818498ejb.542.1628507924382;
- Mon, 09 Aug 2021 04:18:44 -0700 (PDT)
+        id S235108AbhHILXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 07:23:45 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:34390 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235007AbhHILXo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 07:23:44 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 6D8F421ED4;
+        Mon,  9 Aug 2021 11:23:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1628508202;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XEHaigBd+p4Kdq3FOyfyiQahnEWWgwrbyI9p3sYy9Jg=;
+        b=FUJg+QaU7zw3qTf6t8q9Qr96X0Utqfsl+nS4wyhc9/5vWZMS539Of9T5SM02pWzim1Cnda
+        RMrFBB4C9IiCbCzLy7hKe0Nw5kCTqLiYUG2RwoYyBydeMv59tIlgL5Vpa/xsWEDauKkWvj
+        09N1MMAWFSlJkFOi7ijKkWYVWovvXhs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1628508202;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XEHaigBd+p4Kdq3FOyfyiQahnEWWgwrbyI9p3sYy9Jg=;
+        b=4VeRarVySJZv/AlngzeBW/O6mbVTRAHHGwmwBsPvaCbeLhv85RY/VfIGPtUkorqnnpUTKq
+        o+aHpptVRlTrrwAw==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 53C44A3B8E;
+        Mon,  9 Aug 2021 11:23:22 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id BAE5EDA880; Mon,  9 Aug 2021 13:20:30 +0200 (CEST)
+Date:   Mon, 9 Aug 2021 13:20:30 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-hardening@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Keith Packard <keithpac@amazon.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH 47/64] btrfs: Use memset_after() to clear end of struct
+Message-ID: <20210809112030.GM5047@suse.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Kees Cook <keescook@chromium.org>,
+        linux-hardening@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Keith Packard <keithpac@amazon.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
+References: <20210727205855.411487-1-keescook@chromium.org>
+ <20210727205855.411487-48-keescook@chromium.org>
+ <20210728094215.GX5047@twin.jikos.cz>
+ <202107281455.2A0753F5@keescook>
+ <20210729103337.GS5047@suse.cz>
+ <202107310822.31BEB6E543@keescook>
 MIME-Version: 1.0
-References: <20210803152823.515849-1-kai.heng.feng@canonical.com> <6a5f26e7-48a2-49c8-035e-19e9497c12a7@gmail.com>
-In-Reply-To: <6a5f26e7-48a2-49c8-035e-19e9497c12a7@gmail.com>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Mon, 9 Aug 2021 19:18:33 +0800
-Message-ID: <CAAd53p6Z-J989BCDdgW-hYHqthqUHAUaG66-3iQ9=Popb3d3sw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] r8169: Implement dynamic ASPM mechanism
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     nic_swsd <nic_swsd@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:8169 10/100/1000 GIGABIT ETHERNET DRIVER" 
-        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202107310822.31BEB6E543@keescook>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 7, 2021 at 2:47 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
->
-> On 03.08.2021 17:28, Kai-Heng Feng wrote:
-> > r8169 NICs on some platforms have abysmal speed when ASPM is enabled.
-> > Same issue can be observed with older vendor drivers.
-> >
-> > The issue is however solved by the latest vendor driver. There's a new
-> > mechanism, which disables r8169's internal ASPM when the NIC has
-> > substantial network traffic, and vice versa.
-> >
-> > So implement the same mechanism here to resolve the issue.
-> >
-> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> > ---
-> >  drivers/net/ethernet/realtek/r8169_main.c | 36 +++++++++++++++++++++++
-> >  1 file changed, 36 insertions(+)
-> >
-> > diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> > index c7af5bc3b8af..e257d3cd885e 100644
-> > --- a/drivers/net/ethernet/realtek/r8169_main.c
-> > +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> > @@ -624,6 +624,10 @@ struct rtl8169_private {
-> >
-> >       unsigned supports_gmii:1;
-> >       unsigned aspm_manageable:1;
-> > +     unsigned aspm_enabled:1;
-> > +     struct timer_list aspm_timer;
-> > +     u32 aspm_packet_count;
-> > +
-> >       dma_addr_t counters_phys_addr;
-> >       struct rtl8169_counters *counters;
-> >       struct rtl8169_tc_offsets tc_offset;
-> > @@ -2671,6 +2675,8 @@ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
-> >               RTL_W8(tp, Config5, RTL_R8(tp, Config5) & ~ASPM_en);
-> >       }
-> >
-> > +     tp->aspm_enabled = enable;
-> > +
-> >       udelay(10);
-> >  }
-> >
-> > @@ -4408,6 +4414,7 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
-> >
-> >       dirty_tx = tp->dirty_tx;
-> >
-> > +     tp->aspm_packet_count += tp->cur_tx - dirty_tx;
-> >       while (READ_ONCE(tp->cur_tx) != dirty_tx) {
-> >               unsigned int entry = dirty_tx % NUM_TX_DESC;
-> >               u32 status;
-> > @@ -4552,6 +4559,8 @@ static int rtl_rx(struct net_device *dev, struct rtl8169_private *tp, int budget
-> >               rtl8169_mark_to_asic(desc);
-> >       }
-> >
-> > +     tp->aspm_packet_count += count;
-> > +
-> >       return count;
-> >  }
-> >
-> > @@ -4659,8 +4668,31 @@ static int r8169_phy_connect(struct rtl8169_private *tp)
-> >       return 0;
-> >  }
-> >
-> > +#define ASPM_PACKET_THRESHOLD 10
-> > +#define ASPM_TIMER_INTERVAL 1000
-> > +
-> > +static void rtl8169_aspm_timer(struct timer_list *timer)
-> > +{
-> > +     struct rtl8169_private *tp = from_timer(tp, timer, aspm_timer);
-> > +     bool enable;
-> > +
-> > +     enable = tp->aspm_packet_count <= ASPM_PACKET_THRESHOLD;
-> > +
-> > +     if (tp->aspm_enabled != enable) {
-> > +             rtl_unlock_config_regs(tp);
-> > +             rtl_hw_aspm_clkreq_enable(tp, enable);
-> > +             rtl_lock_config_regs(tp);
-> > +     }
-> > +
-> > +     tp->aspm_packet_count = 0;
-> > +
-> > +     mod_timer(timer, jiffies + msecs_to_jiffies(ASPM_TIMER_INTERVAL));
-> > +}
-> > +
-> >  static void rtl8169_down(struct rtl8169_private *tp)
-> >  {
-> > +     del_timer_sync(&tp->aspm_timer);
-> > +
-> >       /* Clear all task flags */
-> >       bitmap_zero(tp->wk.flags, RTL_FLAG_MAX);
-> >
-> > @@ -4687,6 +4719,10 @@ static void rtl8169_up(struct rtl8169_private *tp)
-> >       rtl_reset_work(tp);
-> >
-> >       phy_start(tp->phydev);
-> > +
-> > +     timer_setup(&tp->aspm_timer, rtl8169_aspm_timer, 0);
-> > +     mod_timer(&tp->aspm_timer,
-> > +               jiffies + msecs_to_jiffies(ASPM_TIMER_INTERVAL));
-> >  }
-> >
-> >  static int rtl8169_close(struct net_device *dev)
-> >
->
-> I have one more question / concern regarding this workaround:
-> If bigger traffic starts and results in a congestion (let's call it like that
-> because we don't know in detail what happens in the chip), then it may take
-> up to a second until ASPM gets disabled and traffic gets back to normal.
-> This second is good enough to prevent that the timeout watchdog fires.
-> However in this second supposedly traffic is very limited, if possible at all.
-> Means if we have a network traffic pattern with alternating quiet and busy
-> periods then we may see a significant impact on performance.
-> Is this something that you tested?
+On Sat, Jul 31, 2021 at 08:25:51AM -0700, Kees Cook wrote:
+> On Thu, Jul 29, 2021 at 12:33:37PM +0200, David Sterba wrote:
+> > On Wed, Jul 28, 2021 at 02:56:31PM -0700, Kees Cook wrote:
+> > > On Wed, Jul 28, 2021 at 11:42:15AM +0200, David Sterba wrote:
+> > > > On Tue, Jul 27, 2021 at 01:58:38PM -0700, Kees Cook wrote:
+> > > > >  	}
+> > > > >  	if (need_reset) {
+> > > > > -		memset(&item->generation_v2, 0,
+> > > > > -			sizeof(*item) - offsetof(struct btrfs_root_item,
+> > > > > -					generation_v2));
+> > > > > -
+> > > > 
+> > > > Please add
+> > > > 		/* Clear all members from generation_v2 onwards */
+> > > > 
+> > > > > +		memset_after(item, 0, level);
+> > > 
+> > > Perhaps there should be another helper memset_starting()? That would
+> > > make these cases a bit more self-documenting.
+> > 
+> > That would be better, yes.
+> > 
+> > > +		memset_starting(item, 0, generation_v2);
+> > 
+> > memset_from?
+> 
+> For v2, I bikeshed this to "memset_startat" since "from" is semantically
+> close to "source" which I thought might be confusing. (I, too, did not
+> like "starting".) :)
 
-No, we didn't test this scenario.
-Realtek told us that dynamic ASPM is also used by Windows driver, but
-I don't know the interval used by Windows driver.
-For now I think it's better to stick with vendor defined value.
-
-Kai-Heng
+memset_startat works for me, thanks.
