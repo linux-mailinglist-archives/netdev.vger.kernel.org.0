@@ -2,108 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 714FA3E42D5
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 11:34:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C89043E42DF
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 11:35:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234664AbhHIJfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 05:35:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33826 "EHLO
+        id S234690AbhHIJfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 05:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234669AbhHIJe6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 05:34:58 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74FECC061796;
-        Mon,  9 Aug 2021 02:34:37 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id l18so20532868wrv.5;
-        Mon, 09 Aug 2021 02:34:37 -0700 (PDT)
+        with ESMTP id S234650AbhHIJfa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 05:35:30 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 677D5C061799
+        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 02:35:10 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id oz16so11633280ejc.7
+        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 02:35:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vjxCT+VJ0iUMgOfKLV2Avr5JuRXfNiXW4v7j2+9ljXo=;
-        b=jIcKNRea72ZTofO1kxXWEISoqgUDKhrkqztw/Fm1UPM4Cyy6wKBo5pUxaM5c8m2xTF
-         CpaE9PaIVutrEbligPqYOq+fxBSz4h+ph3u3sd36VceBkqOCraoPb8HaLl9RGaIWBfZV
-         YlpSAZzuAnOyXYd4TbS7RRoC4xSZqF9QP4RxxSqsOQdqTyvnPJECum35Xc8eYbBZa2Kr
-         zvQWgV30Dy8DIB4zVUyn1p7U1JrcPJwtLN2u6cxfMDtc0ViOw9Ip8U0GAHlBp1mtJLLw
-         euJKXX0htb5TRY21gxtgly2ut6HHgyolFnMQRWgMx8nFK12UX101n1WMjSwjGVq4OwLF
-         I6nQ==
+        d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=OOjKYdZ56IxXdoddh6gT5LzULhq+XYbTvDzYpe88OIo=;
+        b=vh8Jsgh2G7NoqCxPcJvq2CcBOKUpX6sbGNCrktfTlKggrxMbxRfwrIFyRELsPPTT5+
+         L8h7YoO9fbeyvSg1sGrZvEc1o4qKaKwNyupBkQzTOc8evJ559OqpkUp4acXv78yKmJeN
+         QduLtlsVaPTKoerVl1Qdz6ZZ4Z5vW6npEJyX+VXvfU0MiNwe7iirU+WGPtcx1I5DTt4M
+         hn2Cr11+T5mueHpd3IwA/HUis33q/q7CxFFMJbLwo65aerYGnyTBLh8NsJI3SjOCq114
+         idvCnNbCGknR5s6Pzhq8Afz1zce3ZJUd9XoB9QbwRBUcBLEsMVFjwBhq8iPt1EHx8zZL
+         r1EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vjxCT+VJ0iUMgOfKLV2Avr5JuRXfNiXW4v7j2+9ljXo=;
-        b=LfC/cjhet7IuapOII513nuYE3PxI3sd1C6XoRqvyKgANTv4+IHhlDNlQ6wh07W9M4X
-         fYV4XxVdVQ1gjA9y/i0nqds6xtOYbNWkCqZWqhmZKB+T95AZUs5Eme+pkQp80W+fNmtE
-         8DPGyPKArPmqiuHxMxO8QYwMgNoiKGgw3L+SLMZOB2z8wNdN0Rl6LeezP70E0Ep/lJTx
-         u+DzXmzEd+Kx63wlaP6ICaFBK5YbslWgaqo0UH1GSBsQKaChHLypaQQCBi91M+45sosu
-         sErpQ9aJ4cmFai/LBRi+hHFnB8f3e/G9LRUQOTEtCFDSIT4dPkjbVITg1226Nbs6112o
-         Z2XQ==
-X-Gm-Message-State: AOAM533YtfkVdtF9K7uCDM/tq/J2ESplTdqbngZbeeqrhUvAB/GjDms2
-        3/fLz/YXKTiy/D9Lv+JK6gzsSh0VQ8w=
-X-Google-Smtp-Source: ABdhPJwJcUz69IuHP2soEK1Z4uum8Tr5ERBWvoVNlAmm+OyO3YcRONVXA8ElkmBRUXzzsLEVnjTgVw==
-X-Received: by 2002:adf:8287:: with SMTP id 7mr7428804wrc.360.1628501675820;
-        Mon, 09 Aug 2021 02:34:35 -0700 (PDT)
-Received: from [10.0.0.18] ([37.165.146.152])
-        by smtp.gmail.com with ESMTPSA id n10sm1651671wmq.3.2021.08.09.02.34.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Aug 2021 02:34:34 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: sock: add the case if sk is NULL
-To:     yajun.deng@linux.dev, Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210806061136.54e6926e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210806063815.21541-1-yajun.deng@linux.dev>
- <489e6f1ce9f8de6fd8765d82e1e47827@linux.dev>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <79e7c9a8-526c-ae9c-8273-d1d4d6170b69@gmail.com>
-Date:   Mon, 9 Aug 2021 11:34:31 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=OOjKYdZ56IxXdoddh6gT5LzULhq+XYbTvDzYpe88OIo=;
+        b=LcGbYy4BOZNlXjhACHOcJk4Ss07Xk6W4mM2LoLaOzxX3s4KaXj6tPCDC8hgYNHVEjO
+         w5ljtPemw1hj0UmRRVwNABxITPaQ3oQQrZbAlY7PvHQ8Os4k1yYpbUxzJH0lLxQHIt70
+         ZUSevf0VZMTiMaDgpmTjl/EX/Sj4X+o8aKYjx+8OEnkgFR0eon2aupWnB4TiZVB40PKp
+         E+3aUboiD7C3p+YEAuZmpvUTR8TlWR/q/uu3N9KiFWE5ZfslfeKC7rom/ud5M+15WDaO
+         TmzPW8K8zXdHYE+aTOc9gsm8MKU+DJTP67LHlnw3gnGq5G5TusSe1y5GI1051LM2Imvd
+         bdwA==
+X-Gm-Message-State: AOAM532b3jmA19XGDtuY1cwVQevJosQ3fjHk2RUUM2W5jPTAh1iIsTTC
+        0qXatiTUKF1jt/S8KDQMYLrlDA==
+X-Google-Smtp-Source: ABdhPJwhg7f58AKgn5rt8ouratg49c6RPKgI1rtqXIbF4oM0hO3q9Q9GtqLPX2lLO7wZe9l7ogPH+w==
+X-Received: by 2002:a17:906:aac7:: with SMTP id kt7mr2976221ejb.4.1628501709060;
+        Mon, 09 Aug 2021 02:35:09 -0700 (PDT)
+Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
+        by smtp.gmail.com with ESMTPSA id c8sm1989732ejp.124.2021.08.09.02.35.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Aug 2021 02:35:08 -0700 (PDT)
+From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        illusionist.neo@gmail.com, zlim.lnx@gmail.com,
+        paulburton@kernel.org, naveen.n.rao@linux.ibm.com,
+        sandipan@linux.ibm.com, luke.r.nels@gmail.com, bjorn@kernel.org,
+        iii@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        davem@davemloft.net, udknight@gmail.com,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Subject: [PATCH bpf-next 1/7] arm: bpf: Fix off-by-one in tail call count limiting
+Date:   Mon,  9 Aug 2021 11:34:31 +0200
+Message-Id: <20210809093437.876558-2-johan.almbladh@anyfinetworks.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210809093437.876558-1-johan.almbladh@anyfinetworks.com>
+References: <20210809093437.876558-1-johan.almbladh@anyfinetworks.com>
 MIME-Version: 1.0
-In-Reply-To: <489e6f1ce9f8de6fd8765d82e1e47827@linux.dev>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Before, the eBPF JIT allowed up to MAX_TAIL_CALL_CNT + 1 tail calls.
+Now, precisely MAX_TAIL_CALL_CNT is allowed, which is in line with the
+behaviour of the interpreter. Verified with the test_bpf test suite
+on qemu-system-arm.
 
+Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+---
+ arch/arm/net/bpf_jit_32.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-On 8/9/21 8:12 AM, yajun.deng@linux.dev wrote:
-> August 6, 2021 9:11 PM, "Jakub Kicinski" <kuba@kernel.org> wrote:
-> 
->> On Fri, 6 Aug 2021 14:38:15 +0800 Yajun Deng wrote:
->>
->>> Add the case if sk is NULL in sock_{put, hold},
->>> The caller is free to use it.
->>>
->>> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
->>
->> The obvious complaint about this patch (and your previous netdev patch)
->> is that you're spraying branches everywhere in the code. Sure, it may
-> 
-> Sorry for that, I'll be more normative in later submission.
->> be okay for free(), given how expensive of an operation that is but
->> is having refcounting functions accept NULL really the best practice?
->>
->> Can you give us examples in the kernel where that's the case?
-> 
-> 0   include/net/neighbour.h         neigh_clone()
-> 1   include/linux/cgroup.h          get_cgroup_ns() and put_cgroup_ns()  (This is very similar to my submission)
-> 2   include/linux/ipc_namespace.h   get_ipc_ns()
-> 3   include/linux/posix_acl.h       posix_acl_dup()
-> 4   include/linux/pid.h             get_pid()
-> 5   include/linux/user_namespace.h  get_user_ns()
-> 
-
-These helpers might be called with NULL pointers by design.
-
-sock_put() and sock_hold() are never called with NULL.
-
-Same for put_page() and hundreds of other functions.
-
-By factorizing a conditional in the function, hoping to remove one in few callers,
-we add more conditional branches (and increase code size)
+diff --git a/arch/arm/net/bpf_jit_32.c b/arch/arm/net/bpf_jit_32.c
+index a951276f0547..200ae9d24205 100644
+--- a/arch/arm/net/bpf_jit_32.c
++++ b/arch/arm/net/bpf_jit_32.c
+@@ -1180,12 +1180,12 @@ static int emit_bpf_tail_call(struct jit_ctx *ctx)
+ 
+ 	/* tmp2[0] = array, tmp2[1] = index */
+ 
+-	/* if (tail_call_cnt > MAX_TAIL_CALL_CNT)
++	/* if (tail_call_cnt >= MAX_TAIL_CALL_CNT)
+ 	 *	goto out;
+ 	 * tail_call_cnt++;
+ 	 */
+-	lo = (u32)MAX_TAIL_CALL_CNT;
+-	hi = (u32)((u64)MAX_TAIL_CALL_CNT >> 32);
++	lo = (u32)(MAX_TAIL_CALL_CNT - 1);
++	hi = (u32)((u64)(MAX_TAIL_CALL_CNT - 1) >> 32);
+ 	tc = arm_bpf_get_reg64(tcc, tmp, ctx);
+ 	emit(ARM_CMP_I(tc[0], hi), ctx);
+ 	_emit(ARM_COND_EQ, ARM_CMP_I(tc[1], lo), ctx);
+-- 
+2.25.1
 
