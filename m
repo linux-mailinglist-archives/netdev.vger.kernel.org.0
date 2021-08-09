@@ -2,89 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22E793E460B
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 15:05:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 044443E460C
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 15:05:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234285AbhHINFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 09:05:39 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:20055 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234207AbhHINFb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Aug 2021 09:05:31 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1628514310; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=LAQRtP7j9ghQHXta768r1JJ4i+LsERs04nmNlxYwUoU=; b=Q5z7ilHb7glMeu1g5jSloaMfU/r2Fe4KWRMhX7ABa1MpbjRQIYUl8kuwP85iz0QlWLOW6DYv
- R/pVjPsDpPapnl/pom3vDpApPWnXyFMMoFTD4FYjIhzbTANMt6tpjzUx3JWIrTSYdA78JFP+
- ZUimkdk/jSrEA4T/KZNsJAZFkLg=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 611127d791487ad520bb3c2b (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 09 Aug 2021 13:04:23
- GMT
-Sender: luoj=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 0CDC0C4338A; Mon,  9 Aug 2021 13:04:23 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL autolearn=no autolearn_force=no version=3.4.0
-Received: from [10.92.0.248] (unknown [180.166.53.36])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: luoj)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 05C5CC43217;
-        Mon,  9 Aug 2021 13:04:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 05C5CC43217
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=luoj@codeaurora.org
-Subject: Re: [Resend v1 0/2] net: mdio: Add IPQ MDIO reset related function
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sricharan@codeaurora.org
-References: <20210808120018.2480-1-luoj@codeaurora.org>
- <YQ/6xmRplrWUUQB/@lunn.ch>
-From:   Jie Luo <luoj@codeaurora.org>
-Message-ID: <32542ee7-bba6-ae76-18e9-323b24086bd5@codeaurora.org>
-Date:   Mon, 9 Aug 2021 21:04:19 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S234787AbhHINFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 09:05:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53962 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234749AbhHINFp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 09:05:45 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37302C061799
+        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 06:05:24 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id kk23so8210229qvb.6
+        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 06:05:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=blegdSx1GNY1kZ/BTfTNwYLedKQJMtRqMFiwOm5ZRFA=;
+        b=S8lRl/xEd1bxfjSAjbXsWhXxVaOK88XpGLw3VbtL9d2Bw7WyZ1vyncEzsXwI4InrBH
+         JifqB8w8DTfNooLeseQ0s4owzGeIMTAVPmRe9nX37qmOn+bnBPdXAOswfXirzw5sLbDF
+         2IOeDzfioSO4Jsaqhjh4BUfWU2vdE+0YjnZU6IoeGiaNjTa5/4xgsvhIUdgZayieQuB1
+         /ewo3Vuqg/SCjhmdjs5Az34IwrZG0sif+WeF/HG/Ka+7eOxwcADzcarDdx/k2w5WbWXo
+         iGDhX4vo5vDcteJH+gS5I5UF8q24xc0yaPyhhKpqGu2k4HRcC/VU3PWXCDRdYWPT72xV
+         EsPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=blegdSx1GNY1kZ/BTfTNwYLedKQJMtRqMFiwOm5ZRFA=;
+        b=T7R8TBEx4EN3Wbq7qAJMJ+MlZgqr+VuGSvwNYDdZLIrjqLVnFdF70HV1amNGBZ50LA
+         dF68RfF+fYuMDHqmd1N/n7YMNDIuiFjsWSG8DGyS92T1mZJ88xwDYS1rS8cYmK+fVRkV
+         HP8wpKzdoBCw+125HIrpkw+z1GvWm+ysypfAnhFILZ8ZvlXSx1PVlO4+WCXfK9EiqvXw
+         twvQsY1bYAKvJc5NkbAZSQr5ulvFBt0x8bwLcyo0T1jGGY4Eyy5BDzRAMCaXnKPKKywP
+         CUBMjMjI/a1GY4+NHi4SD41vwBt5I/CuFlxIWIWM/stsHSKezmtWEKSUPCg4uAzYe+EC
+         DmcQ==
+X-Gm-Message-State: AOAM531Ys+1H53j97/oPMLRiA1VRLdoa/V2BmGqpWnEH7NL8mItWKRJe
+        gRP/bZ1Dwe22KKzCHovqn1OnBlhl/lXKXWHVbSk=
+X-Google-Smtp-Source: ABdhPJwyJ3/lJZgpEi+7RCnjUT9sVd1sUShoGVnAmdXKywP2WsDcCdthMJtD5HJt9RGI5gw+Ay3cfj6cO7uojhDnxgA=
+X-Received: by 2002:ad4:5884:: with SMTP id dz4mr23327881qvb.34.1628514323373;
+ Mon, 09 Aug 2021 06:05:23 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <YQ/6xmRplrWUUQB/@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Received: by 2002:a05:6214:27eb:0:0:0:0 with HTTP; Mon, 9 Aug 2021 06:05:22
+ -0700 (PDT)
+Reply-To: jtmkba@gmail.com
+From:   Juliet Mekaba <robertadolf1965@gmail.com>
+Date:   Mon, 9 Aug 2021 14:05:22 +0100
+Message-ID: <CAK48iza=1P_JQw54vxWBKYEWTwuhQ4ag8YuqfZWOk5sniEwfNw@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--=20
+Hallo,
 
-On 8/8/2021 11:39 PM, Andrew Lunn wrote:
-> On Sun, Aug 08, 2021 at 08:00:16PM +0800, Luo Jie wrote:
->> This patch series add the MDIO reset features, which includes
->> configuring MDIO clock source frequency and indicating CMN_PLL that
->> ethernet LDO has been ready, this ethernet LDO is dedicated in the
->> IPQ5018 platform.
->>
->> Specify more chipset IPQ40xx, IPQ807x, IPQ60xx and IPQ50xx supported by
->> this MDIO driver.
->>
->> The PHY reset with GPIO and PHY reset with reset controller are covered
->> by the phylib code, so remove the PHY reset related code from the
->> initial patch series.
-> Why did you resend?
->
-> To the patchbot: I replied with comments on the first send. Do not
-> merge.
->
-> 	Andrew
+Ich habe mich entschieden, Sie zu kontaktieren, weil bei mir vor
+kurzem Lungenkrebs diagnostiziert wurde und der Arzt sagte, dass ich
+weniger als 6 Wochen zu leben habe. Seit mir diese pl=C3=B6tzliche
+Nachricht bekannt wurde, denke ich =C3=BCber mein Leben in der
+Vergangenheit nach. Es ist schmerzlich, dass wir nach =C3=BCber 26 Jahren
+friedlicher Ehe mit meinem verstorbenen Ehemann Makeba das einzige
+Kind verloren haben, das unseren zahlreichen Reichtum geerbt h=C3=A4tte. In
+der Vergangenheit habe ich angemessene Spenden an die Opfer des
+Erdbebens in Haiti und k=C3=BCrzlich an dieselben Opfer in Japan und
+Thailand geleistet. Jetzt, wo sich mein Gesundheitszustand allm=C3=A4hlich
+verschlechtert, kann ich all dies nicht mehr alleine tun. Ich habe den
+starken Wunsch, den Armen und Bed=C3=BCrftigen die Hand zu reichen, aber
+ich w=C3=BCrde es vorziehen, dies mit der Hilfe einer freundlichen Person
+fortzusetzen. Ich m=C3=B6chte, dass Sie die folgenden Fragen beantworten:
+(1) Wenn ich Ihnen 15 Millionen f=C3=BCnfhunderttausend US-Dollar spende
+(15,500,000.00), k=C3=B6nnen Sie diese dann sinnvoll einsetzen, um meinen
+Herzenswunsch zu erf=C3=BCllen, arme Menschen um Sie herum zu unterst=C3=BC=
+tzen?
+(2) Werden Sie im Namen meines Mannes und mir eine
+Wohlt=C3=A4tigkeitsstiftung gr=C3=BCnden? Ich m=C3=B6chte, dass Sie in mein=
+er
+Erinnerung ein Heim f=C3=BCr mutterlose Babys einrichten, wenn ich weg bin,
+und dann 40 % f=C3=BCr Ihre Bem=C3=BChungen behalten. Bitte antworten Sie m=
+ir so
+schnell wie m=C3=B6glich, um Ihnen weitere Details mitzuteilen.
 
-Hi Andrew,
-
-     i resent the patch series for fixing some format warning.
-
+Gott segne dich.
+Frau Julia Makeba.
