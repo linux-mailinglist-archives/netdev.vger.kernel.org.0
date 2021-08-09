@@ -2,159 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B2CD3E427A
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 11:20:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB4363E427F
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 11:20:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234422AbhHIJUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 05:20:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58410 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234320AbhHIJUH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 05:20:07 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2B0C0613CF
-        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 02:19:47 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id i10-20020a05600c354ab029025a0f317abfso14024404wmq.3
-        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 02:19:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=5e4PmsQRlGxMmgnJTg6Pkw2CO7JWPy14wJKAd7YTXoA=;
-        b=hvypfmlDzIEtp+RFWIZ+IAjKcCtsgxKQl29O4edQD4OfnlIuLLtj86o1+LqmYpxp/h
-         9oNOkiI8Xus0N+SNEypAy9rrWnVHtWNWODgQBxfn9gW1l0bQ4XPa2rcb8BrefO7rdFB5
-         ZDeA9L/kpX7bTSYJ3fyLZBwdAeHINJLTZqUnQ7y1jGt2voEYnbPqOtnB8JbkgKn3KTA3
-         wlKbLIzE3mEq1e8hxWRssPrUZPcxwoj0OStCUmQKwrVisDtQV7xi10kPqPZFvHQw3eEH
-         M84+KkhL06mssoHFLZjPndCTjYbxp2wgoS4szLGzGFwhs4mFXZjSEBM4D4iE03K9qQ/+
-         h+wA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=5e4PmsQRlGxMmgnJTg6Pkw2CO7JWPy14wJKAd7YTXoA=;
-        b=bXIbP8zPRFWMLJyOP3V0Q1kJHT1dh9d/U3f3gwDFSUiQ6wuzn0ro08EozjLLzmqJsI
-         ivxsmPIEgnESIkUGqnJO1hTCFlm+G36K9Be0RpGTA5rYYTJszshXQp1q+ImLsgLDjKfr
-         vNNQ2xwhec4HcAB3NwOVHyJEfxOjPvKYF3hemRWASE62mTpN6zdMZT+xCpIqRr4KUfg+
-         5/OSq4AxrRnfKAUAkOZhZKZkzCmJngE3nlmr2/vH+YQTRPTz7auXhmXL7RVsGaXwF/md
-         Kg3OJoWVbrNJI0cSjOgcmV4JjKtKuDNT+vOttrUN3Z4gwStLDJtXJGwm7kYYRxYaIm5m
-         IoRw==
-X-Gm-Message-State: AOAM532POskzhtkiSWzJC2C1Y0VHvgQc//gtC8BmlJ3N4scU0EnB0e5Q
-        KnI8whvnPpT3edXkuLgxEmcLYw==
-X-Google-Smtp-Source: ABdhPJw9QL++xee1pGp15c5K3+y5HzRSDMKeZ3dhMUZEKX8fIkOyo+0wjtLG1eTf8hBJjB/DZlCY0w==
-X-Received: by 2002:a7b:c204:: with SMTP id x4mr15613475wmi.70.1628500785673;
-        Mon, 09 Aug 2021 02:19:45 -0700 (PDT)
-Received: from localhost ([2a01:cb19:826e:8e00:ef10:98d1:78e3:9e80])
-        by smtp.gmail.com with ESMTPSA id r129sm16719560wmr.7.2021.08.09.02.19.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Aug 2021 02:19:45 -0700 (PDT)
-From:   Mattijs Korpershoek <mkorpershoek@baylibre.com>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        "open list:BLUETOOTH SUBSYSTEM" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] Bluetooth: Shutdown controller after workqueues are
- flushed or cancelled
-In-Reply-To: <CAAd53p7BU2=GwmyLUECKZfGhD830UQUk12mxU2y9HsXv=F_AfA@mail.gmail.com>
-References: <20210514071452.25220-1-kai.heng.feng@canonical.com>
- <576B26FD-81F8-4632-82F6-57C4A7C096C4@holtmann.org>
- <8735ryk0o7.fsf@baylibre.com>
- <CAAd53p7Zc3Zk21rwj_x1BLgf8tWRxaKBmXARkM6d7Kpkb+fDZA@mail.gmail.com>
- <87y29o58su.fsf@baylibre.com>
- <CAAd53p4Ss1Z-7CB4g=_xZYxo1xDz6ih6GHUuMcgncy+yNAfU4w@mail.gmail.com>
- <87a6lzx7jf.fsf@baylibre.com>
- <CAAd53p6T_K67CPthLPObF=OWWCEChW4pMFMwuq87qWmTmzP2VA@mail.gmail.com>
- <87bl6cnzy2.fsf@baylibre.com>
- <CAAd53p5TVJk3G4cArS_UO7cgUpJLONNGVHnpezXy0XTYoXd_uw@mail.gmail.com>
- <87tuk3j6rh.fsf@baylibre.com>
- <CAAd53p7BU2=GwmyLUECKZfGhD830UQUk12mxU2y9HsXv=F_AfA@mail.gmail.com>
-Date:   Mon, 09 Aug 2021 11:19:43 +0200
-Message-ID: <875ywfnff4.fsf@baylibre.com>
+        id S234406AbhHIJU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 05:20:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36354 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234298AbhHIJUZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Aug 2021 05:20:25 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 576E161055;
+        Mon,  9 Aug 2021 09:20:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628500805;
+        bh=3zRG7v/waZcxAgmTqiGZs19GVAjU11ZNwz9T0OMd2pc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=c5ySM2xe1N9Z1UkysGSk1Giax4WGu+jOG2kUOZyOW9ViOI8O7fTYJNSE+RtTSWrqo
+         c40Da9cVxoGQ6EN7BFp3ueXjiNT0o3DkAbk8DlGY8tssJJJ7pExrokaCugXb1/yf2T
+         83QJO08iqFWq1xQ+AuaJif+AzAA4sEMG4hcmJ+igvd0rBnweGrTNq63+FIsej/lB1V
+         eQGL5/zq0ueqAxpCdkd7ykYIrhyDAS1jDMtvMHFt+qBH2AwmwZOp7TBp0j+PLyP4mc
+         OZbhX/zoFydbRGnc60GZhy+t5Vhoun+rjqypAzy3lq91RYmqawmhDlES7M7HHTCLsU
+         k9XOcDRCa6A1w==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 47841609B8;
+        Mon,  9 Aug 2021 09:20:05 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2] net: ethernet: ti: cpsw: fix min eth packet size for
+ non-switch use-cases
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162850080528.12236.16924791752972517567.git-patchwork-notify@kernel.org>
+Date:   Mon, 09 Aug 2021 09:20:05 +0000
+References: <20210805145511.12016-1-grygorii.strashko@ti.com>
+In-Reply-To: <20210805145511.12016-1-grygorii.strashko@ti.com>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        ben.hutchings@essensium.com, linux-kernel@vger.kernel.org,
+        vigneshr@ti.com, linux-omap@vger.kernel.org, lokeshvutla@ti.com,
+        stable@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kai-Heng,
+Hello:
 
-Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
+This patch was applied to netdev/net.git (refs/heads/master):
 
-> Hi Mattijs,
->
->> [snipped]
->
-> Thanks for your testing. I think I finally got it:
-> btmtksdio_shutdown()
-> -> mtk_hci_wmt_sync()
->  -> __hci_cmd_send()
->   then waiting for BTMTKSDIO_TX_WAIT_VND_EVT, which is cleared in
-> btmtksdio_recv_event():
-> btmtksdio_recv_event()
-> -> hci_recv_frame()
->  -> queue_work(hdev->workqueue, &hdev->rx_work);
->
-> That means it has to be done before the following drain_workqueue() call.
-> Can you please see if moving the ->shutdown() part right before
-> drain_workqueue() can fix the issue?
-I've tested the following patch:
+On Thu, 5 Aug 2021 17:55:11 +0300 you wrote:
+> The CPSW switchdev driver inherited fix from commit 9421c9015047 ("net:
+> ethernet: ti: cpsw: fix min eth packet size") which changes min TX packet
+> size to 64bytes (VLAN_ETH_ZLEN, excluding ETH_FCS). It was done to fix HW
+> packed drop issue when packets are sent from Host to the port with PVID and
+> un-tagging enabled. Unfortunately this breaks some other non-switch
+> specific use-cases, like:
+> - [1] CPSW port as DSA CPU port with DSA-tag applied at the end of the
+> packet
+> - [2] Some industrial protocols, which expects min TX packet size 60Bytes
+> (excluding FCS).
+> 
+> [...]
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 2560ed2f144d..131e69a9a66a 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -1757,6 +1757,14 @@ int hci_dev_do_close(struct hci_dev *hdev)
-                        cancel_delayed_work_sync(&adv_instance->rpa_expired_cb);
-        }
- 
-+       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
-+           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
-+           test_bit(HCI_UP, &hdev->flags)) {
-+               /* Execute vendor specific shutdown routine */
-+               if (hdev->shutdown)
-+                       hdev->shutdown(hdev);
-+       }
-+
-        /* Avoid potential lockdep warnings from the *_flush() calls by
-         * ensuring the workqueue is empty up front.
-         */
-@@ -1798,14 +1806,6 @@ int hci_dev_do_close(struct hci_dev *hdev)
-                clear_bit(HCI_INIT, &hdev->flags);
-        }
- 
--       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
--           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
--           test_bit(HCI_UP, &hdev->flags)) {
--               /* Execute vendor specific shutdown routine */
--               if (hdev->shutdown)
--                       hdev->shutdown(hdev);
--       }
--
-        /* flush cmd  work */
-        flush_work(&hdev->cmd_work);
+Here is the summary with links:
+  - [net,v2] net: ethernet: ti: cpsw: fix min eth packet size for non-switch use-cases
+    https://git.kernel.org/netdev/net/c/acc68b8d2a11
 
-It does not seem to fix the issue.
-Adding the bits in btmtksdio_flush() does not change the result of the
-above patch.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Here are the logs. These are just with the above patch (not with the
-btmtksdio_flush() changes.
 
-dmesg: https://pastebin.com/FZZBkqGC
-btmtksdio_ftrace: https://pastebin.com/JQ0UWenY
-
-Mattijs
->
-> Kai-Heng
->
->>
->> Mattijs
->>
->> >
->> > Kai-Heng
