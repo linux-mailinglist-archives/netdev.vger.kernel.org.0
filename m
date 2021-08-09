@@ -2,220 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8F2B3E4EA7
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 23:41:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 648623E4EAC
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 23:41:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234588AbhHIVl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 17:41:28 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:49171 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230039AbhHIVl0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Aug 2021 17:41:26 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1628545265; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=f2tkS2Mofmv3XLFarN8UyJyv3rXNIvO7YZsDauoNs3Y=;
- b=H/5pgjr3Nr4CsjgqWgppJkNDwz4xQqcW2hDQIaLd92sDV2JgHGZGF8kJ+gkkShJ9V2dCAchB
- g4nIx44NHJpw007QDPZvpLIuNjfLTzaQXjxy9Tpt5cC8yAOEihV+Dg0WwtJn4kX+MdGwGkj2
- JiLgN5gen+dOUESfNxQ7+zr8KFQ=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
- 6111a0db91487ad520934d62 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 09 Aug 2021 21:40:43
- GMT
-Sender: subashab=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 87AA0C433F1; Mon,  9 Aug 2021 21:40:42 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: subashab)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A6837C433F1;
-        Mon,  9 Aug 2021 21:40:41 +0000 (UTC)
+        id S235833AbhHIVlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 17:41:51 -0400
+Received: from zeniv-ca.linux.org.uk ([142.44.231.140]:60482 "EHLO
+        zeniv-ca.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234846AbhHIVls (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 17:41:48 -0400
+Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mDD1L-009NHX-Gh; Mon, 09 Aug 2021 21:41:19 +0000
+Date:   Mon, 9 Aug 2021 21:41:19 +0000
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Shoaib Rao <rao.shoaib@oracle.com>
+Cc:     Dmitry Vyukov <dvyukov@google.com>,
+        syzbot <syzbot+8760ca6c1ee783ac4abd@syzkaller.appspotmail.com>,
+        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        christian.brauner@ubuntu.com, cong.wang@bytedance.com,
+        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
+        jamorris@linux.microsoft.com, john.fastabend@gmail.com,
+        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, shuah@kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Subject: Re: [syzbot] BUG: sleeping function called from invalid context in
+ _copy_to_iter
+Message-ID: <YRGg/yTXTAL/1whP@zeniv-ca.linux.org.uk>
+References: <0000000000006bd0b305c914c3dc@google.com>
+ <0c106e6c-672f-474e-5815-97b65596139d@oracle.com>
+ <CACT4Y+bK61B3r5Rx150FwKt5WJ8T-q-X0nC-r=oH7x4ZU5vdVw@mail.gmail.com>
+ <e99cc036-2f83-ff9e-ea68-3eeb19bd4147@oracle.com>
+ <CACT4Y+bFLFg9WUiGWq=8ubKFug47=XNjqQJkTX3v1Hos0r+Z_A@mail.gmail.com>
+ <2901262f-1ba7-74c0-e5fc-394b65414d12@oracle.com>
+ <YRGKWP7/n7+st7Ko@zeniv-ca.linux.org.uk>
+ <YRGNIduUvw/kCLIU@zeniv-ca.linux.org.uk>
+ <c1ec22f6-ed3b-fe70-2c7e-38a534f01d2b@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 09 Aug 2021 15:40:41 -0600
-From:   subashab@codeaurora.org
-To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
-        Aleksander Morgado <aleksander@aleksander.es>,
-        Daniele Palmas <dnlplm@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Sean Tranchetti <stranche@codeaurora.org>
-Subject: Re: RMNET QMAP data aggregation with size greater than 16384
-In-Reply-To: <87sfzlplr2.fsf@miraculix.mork.no>
-References: <CAAP7ucKuS9p_hkR5gMWiM984Hvt09iNQEt32tCFDCT5p0fqg4Q@mail.gmail.com>
- <c0e14605e9bc650aca26b8c3920e9aba@codeaurora.org>
- <CAAP7ucK7EeBPJHt9XFp7bd5cGXtH5w2VGgh3yD7OA9SYd5JkJw@mail.gmail.com>
- <77b850933d9af8ddbc21f5908ca0764d@codeaurora.org>
- <CAAP7ucJRbg58Yqcx-qFFUuu=_=3Ss1HE1ZW4XGrm0KsSXnwdmA@mail.gmail.com>
- <13972ac97ffe7a10fd85fe03dc84dc02@codeaurora.org>
- <87bl6aqrat.fsf@miraculix.mork.no>
- <CAAP7ucLDFPMG08syrcnKKrX-+MS4_-tpPzZSfMOD6_7G-zq4gQ@mail.gmail.com>
- <2c2d1204842f457bb0d0b2c4cd58847d@codeaurora.org>
- <87sfzlplr2.fsf@miraculix.mork.no>
-Message-ID: <394353d6f31303c64b0d26bc5268aca7@codeaurora.org>
-X-Sender: subashab@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c1ec22f6-ed3b-fe70-2c7e-38a534f01d2b@oracle.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> No need for () around a constant, is there?
+On Mon, Aug 09, 2021 at 01:37:08PM -0700, Shoaib Rao wrote:
+
+> > +#if IS_ENABLED(CONFIG_AF_UNIX_OOB)
+> > +               mutex_lock(&u->iolock);
+> > +               unix_state_lock(sk);
+> > +
+> > +               err = unix_stream_recv_urg(state);
+> > +
+> > +               unix_state_unlock(sk);
+> > +               mutex_unlock(&u->iolock);
+> > +#endif
+> > 
+> > is 100% broken, since you *are* attempting to copy data to userland between
+> > spin_lock(&unix_sk(s)->lock) and spin_unlock(&unix_sk(s)->lock).
 > 
-> Either I'm blind, or you don't actuelly change the rx_urb_size for the
-> mux and pass through modes?
+> Yes, but why are we calling it unix_state_lock() why not
+> unix_state_spinlock() ?
+
+We'd never bothered with such naming conventions; keep in mind that
+locking rules can and do change from time to time, and encoding the
+nature of locking primitive into the name would result in tons of
+noise.
+
+> I have tons of experience doing kernel coding and you can never ever cover
+> everything, that is why I wanted to root cause the issue instead of just
+> turning off the check.
 > 
+> Imagine you or Eric make a mistake and break the kernel, how would you guys
+> feel if I were to write a similar email?
 
-I seem to have missed this and the other stuff you have pointed out.
-Can you please review this update-
+Moderately embarrassed, at a guess, but what would that have to do with
+somebody pointing the bug out?  Bonehead mistakes happen, they are embarrassing
+no matter who catches them - trust me, it's no less unpleasant when you end
+up being one who finds your own bug months after it went into the tree.  Been
+there, done that...
 
-> 
-> I'd also prefer this to reset back to syncing with hard_mtu if/when
-> muxing or passthrough is disabled.  Calling usbnet_change_mtu() won't 
-> do
-> that. It doesn't touch rx_urb_size if it is different from hard_mtu.
-> 
-> I also think that it might be useful to keep the mtu/hard_mtu control,
-> wouldn't it?
-> 
-> 
-> Something like
-> 
->    old_rx_urb_size = dev->rx_urb_size;
->    if (mux|passthrough)
->        dev->rx_urb_size = MAP_DL_URB_SIZE;
->    else
->        dev->rx_urb_size = dev->hard_mtu;
->    if (dev->rx_urb_size > old_rx_urb_size)
->        unlink_urbs etc;
->    return usbnet_change_mtu(net, new_mtu);
-> 
-> should do that, I think.  Completely untested....
-> 
-> And add it to the (!qmimux_has_slaves(dev)) cas in del_mux_store() too.
-> 
+Since you asked, as far as my reactions normally go:
+	* I made a mistake that ended up screwing people over => can be
+hideously embarrassing, no matter what.  No cause for that in your case,
+AFAICS - it hadn't even gone into mainline yet.
+	* I made a dumb mistake that got caught (again, doesn't matter
+by whom) => unpleasant; shit happens (does it ever), but that's not
+a tragedy.  Ought to look for the ways to catch the same kind of mistakes
+and see if I have stepped into the same problem anywhere else - often
+enough the blind spots strike more than once.  If the method of catching
+the same kind of crap ends up being something like 'grep for <pattern>,
+manually check the instances to weed out the false positive'... might
+be worth running over the tree; often enough the blind spots are shared.
+Would be partially applicable in your case ("if using an unfamiliar locking
+helper, check what it does"), but not easily greppable.
+	* I kept looking at bug report, missing the relevant indicators
+despite the increasingly direct references to those by other people =>
+mildly embarrassing (possibly more than mildly, if that persists for long).
+Ought to get some coffee, wake up properly (if applicable, that is) and make
+notes for myself re what to watch out for.  Partially applicable here;
+I'm no telepath, but at a guess you missed the list of locks in the report
+_and_ missed repeated references to some spinlock being involved.
+Since the call chain had not (AFAICS) been missed, the question
+"which spinlock do they keep blathering about?" wouldn't have been hard.
+Might be useful to make note of, for the next time you have to deal with
+such reports.
+	* Somebody starts asking whether I bloody understand something
+trivial => figure out what does that have to do with the situation at
+hand, reply with the description of what I'd missed (again, quite possibly
+the answer will be "enough coffee") and move on to figuring out how to
+fix the damn bug.  Not exactly applicable here - the closest I can see
+is Eric's question regarding the difference between mutex and spinlock.
+In similar situation I'd go with something along the lines of "Sorry,
+hadn't spotted the spinlock in question"; your reply had been a bit
+more combative than that, but that's a matter of taste.  None of my
+postings would fit into that class, AFAICS...
+	* Somebody explains (in painful details) what's wrong with the
+code => more or less the same as above, only with less temptation (for
+me) to get defensive.  Reactions vary - some folks find it more offensive
+than the previous one, but essentially it's the same thing.
 
-Assuming this patch doesn't have too many other issues, can I request
-Aleksander / Daniele to try this out.
-
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 6a2e4f8..4676544 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -75,6 +75,8 @@ struct qmimux_priv {
-         u8 mux_id;
-  };
-
-+#define MAP_DL_URB_SIZE 32768
-+
-  static int qmimux_open(struct net_device *dev)
-  {
-         struct qmimux_priv *priv = netdev_priv(dev);
-@@ -303,6 +305,39 @@ static void qmimux_unregister_device(struct 
-net_device *dev,
-         dev_put(real_dev);
-  }
-
-+static int qmi_wwan_change_mtu(struct net_device *net, int new_mtu)
-+{
-+       struct usbnet *dev = netdev_priv(net);
-+       struct qmi_wwan_state *info = (void *)&dev->data;
-+       int old_rx_urb_size = dev->rx_urb_size;
-+
-+       /* mux and pass through modes use a fixed rx_urb_size and the 
-value
-+        * is independent of mtu
-+        */
-+       if (info->flags & (QMI_WWAN_FLAG_MUX | 
-QMI_WWAN_FLAG_PASS_THROUGH)) {
-+               if (old_rx_urb_size == MAP_DL_URB_SIZE)
-+                       return 0;
-+
-+               if (old_rx_urb_size < MAP_DL_URB_SIZE) {
-+                       dev->rx_urb_size = MAP_DL_URB_SIZE;
-+
-+                       usbnet_pause_rx(dev);
-+                       usbnet_unlink_rx_urbs(dev);
-+                       usbnet_resume_rx(dev);
-+                       usbnet_update_max_qlen(dev);
-+               }
-+
-+               return 0;
-+       }
-+
-+       /* rawip mode uses existing logic of setting rx_urb_size based 
-on mtu.
-+        * rx_urb_size will be updated within usbnet_change_mtu only if 
-it is
-+        * equal to existing hard_mtu
-+        */
-+       dev->rx_urb_size = dev->hard_mtu;
-+       return usbnet_change_mtu(net, new_mtu);
-+}
-+
-  static void qmi_wwan_netdev_setup(struct net_device *net)
-  {
-         struct usbnet *dev = netdev_priv(net);
-@@ -326,7 +361,7 @@ static void qmi_wwan_netdev_setup(struct net_device 
-*net)
-         }
-
-         /* recalculate buffers after changing hard_header_len */
--       usbnet_change_mtu(net, net->mtu);
-+       qmi_wwan_change_mtu(net, net->mtu);
-  }
-
-  static ssize_t raw_ip_show(struct device *d, struct device_attribute 
-*attr, char *buf)
-@@ -433,6 +468,7 @@ static ssize_t add_mux_store(struct device *d,  
-struct device_attribute *attr, c
-         if (!ret) {
-                 info->flags |= QMI_WWAN_FLAG_MUX;
-                 ret = len;
-+               qmi_wwan_change_mtu(dev->net, dev->net->mtu);
-         }
-  err:
-         rtnl_unlock();
-@@ -466,8 +502,11 @@ static ssize_t del_mux_store(struct device *d,  
-struct device_attribute *attr, c
-         }
-         qmimux_unregister_device(del_dev, NULL);
-
--       if (!qmimux_has_slaves(dev))
-+       if (!qmimux_has_slaves(dev)) {
-                 info->flags &= ~QMI_WWAN_FLAG_MUX;
-+               qmi_wwan_change_mtu(dev->net, dev->net->mtu);
-+       }
-+
-         ret = len;
-  err:
-         rtnl_unlock();
-@@ -514,6 +553,8 @@ static ssize_t pass_through_store(struct device *d,
-         else
-                 info->flags &= ~QMI_WWAN_FLAG_PASS_THROUGH;
-
-+       qmi_wwan_change_mtu(dev->net, dev->net->mtu);
-+
-         return len;
-  }
-
-@@ -643,7 +684,7 @@ static const struct net_device_ops 
-qmi_wwan_netdev_ops = {
-         .ndo_stop               = usbnet_stop,
-         .ndo_start_xmit         = usbnet_start_xmit,
-         .ndo_tx_timeout         = usbnet_tx_timeout,
--       .ndo_change_mtu         = usbnet_change_mtu,
-+       .ndo_change_mtu         = qmi_wwan_change_mtu,
-         .ndo_get_stats64        = dev_get_tstats64,
-         .ndo_set_mac_address    = qmi_wwan_mac_addr,
-         .ndo_validate_addr      = eth_validate_addr,
+	The above describes my reactions, in case it's not obvious -
+I'm not saying that everyone should react the same way, but you've
+asked how would I (or Eric) react in such-and-such case.  And I can't
+speak for Eric, obviously...
