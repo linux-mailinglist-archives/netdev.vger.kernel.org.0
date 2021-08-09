@@ -2,105 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC13E3E3E07
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 04:55:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCC6F3E3E12
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 05:02:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232729AbhHIC4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 22:56:11 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:13250 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232650AbhHICz7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 22:55:59 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GjggJ6G3pz1CTqN;
-        Mon,  9 Aug 2021 10:55:24 +0800 (CST)
-Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 9 Aug 2021 10:55:36 +0800
-Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
- (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 9 Aug 2021
- 10:55:35 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>
-CC:     <roopa@nvidia.com>, <nikolay@nvidia.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-Subject: [PATCH net] net: bridge: fix memleak in br_add_if()
-Date:   Mon, 9 Aug 2021 11:01:35 +0800
-Message-ID: <20210809030135.2445844-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S232730AbhHIDCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 23:02:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:54790 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231168AbhHIDCu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 23:02:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1628478150;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=uzJfGi+bn65wQAzcYSyrR66QtQeU9ro2TX6RJdvd7hI=;
+        b=dowr7nn4xo7ZJMn2kyX0/34pfaQByGjXzfgNIob6DdfmUZ6NmW6EHH/DcWpF+9//tmYi/g
+        NhB4KORPH7E3eGStuWl/DEcFzBzsQjtHgqWkrCo4bMDuYNJjfh0IORY64NTtAq3fWvY2lK
+        IX2VyB/jNM47qcykMKuQhTxLKp/ab58=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-529-T1frE71cOmGJGIlGDrh5mw-1; Sun, 08 Aug 2021 23:02:27 -0400
+X-MC-Unique: T1frE71cOmGJGIlGDrh5mw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 146AD18C8C00;
+        Mon,  9 Aug 2021 03:02:25 +0000 (UTC)
+Received: from Laptop-X1.redhat.com (ovpn-13-124.pek2.redhat.com [10.72.13.124])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id A86C910016F8;
+        Mon,  9 Aug 2021 03:02:20 +0000 (UTC)
+From:   Hangbin Liu <haliu@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jarod Wilson <jarod@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>, David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv2 iproute2-next] ip/bond: add lacp active support
+Date:   Mon,  9 Aug 2021 11:01:53 +0800
+Message-Id: <20210809030153.10851-1-haliu@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500017.china.huawei.com (7.185.36.243)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I got a memleak report:
+From: Hangbin Liu <liuhangbin@gmail.com>
 
-BUG: memory leak
-unreferenced object 0x607ee521a658 (size 240):
-comm "syz-executor.0", pid 955, jiffies 4294780569 (age 16.449s)
-hex dump (first 32 bytes, cpu 1):
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
-backtrace:
-[<00000000d830ea5a>] br_multicast_add_port+0x1c2/0x300 net/bridge/br_multicast.c:1693
-[<00000000274d9a71>] new_nbp net/bridge/br_if.c:435 [inline]
-[<00000000274d9a71>] br_add_if+0x670/0x1740 net/bridge/br_if.c:611
-[<0000000012ce888e>] do_set_master net/core/rtnetlink.c:2513 [inline]
-[<0000000012ce888e>] do_set_master+0x1aa/0x210 net/core/rtnetlink.c:2487
-[<0000000099d1cafc>] __rtnl_newlink+0x1095/0x13e0 net/core/rtnetlink.c:3457
-[<00000000a01facc0>] rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3488
-[<00000000acc9186c>] rtnetlink_rcv_msg+0x369/0xa10 net/core/rtnetlink.c:5550
-[<00000000d4aabb9c>] netlink_rcv_skb+0x134/0x3d0 net/netlink/af_netlink.c:2504
-[<00000000bc2e12a3>] netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
-[<00000000bc2e12a3>] netlink_unicast+0x4a0/0x6a0 net/netlink/af_netlink.c:1340
-[<00000000e4dc2d0e>] netlink_sendmsg+0x789/0xc70 net/netlink/af_netlink.c:1929
-[<000000000d22c8b3>] sock_sendmsg_nosec net/socket.c:654 [inline]
-[<000000000d22c8b3>] sock_sendmsg+0x139/0x170 net/socket.c:674
-[<00000000e281417a>] ____sys_sendmsg+0x658/0x7d0 net/socket.c:2350
-[<00000000237aa2ab>] ___sys_sendmsg+0xf8/0x170 net/socket.c:2404
-[<000000004f2dc381>] __sys_sendmsg+0xd3/0x190 net/socket.c:2433
-[<0000000005feca6c>] do_syscall_64+0x37/0x90 arch/x86/entry/common.c:47
-[<000000007304477d>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+lacp_active specifies whether to send LACPDU frames periodically.
+If set on, the LACPDU frames are sent along with the configured lacp_rate
+setting. If set off, the LACPDU frames acts as "speak when spoken to".
 
-On error path of br_add_if(), p->mcast_stats allocated in
-new_nbp() need be freed, or it will be leaked.
+v2: use strcmp instead of match for new options.
 
-Fixes: 1080ab95e3c7 ("net: bridge: add support for IGMP/MLD stats and export them via netlink")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- net/bridge/br_if.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/uapi/linux/if_link.h |  1 +
+ ip/iplink_bond.c             | 26 +++++++++++++++++++++++++-
+ 2 files changed, 26 insertions(+), 1 deletion(-)
 
-diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
-index 6e4a32354a13..e2867547d303 100644
---- a/net/bridge/br_if.c
-+++ b/net/bridge/br_if.c
-@@ -616,6 +616,7 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 5195ed93..a60dbb96 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -853,6 +853,7 @@ enum {
+ 	IFLA_BOND_AD_ACTOR_SYSTEM,
+ 	IFLA_BOND_TLB_DYNAMIC_LB,
+ 	IFLA_BOND_PEER_NOTIF_DELAY,
++	IFLA_BOND_AD_LACP_ACTIVE,
+ 	__IFLA_BOND_MAX,
+ };
  
- 	err = dev_set_allmulti(dev, 1);
- 	if (err) {
-+		free_percpu(p->mcast_stats);
- 		kfree(p);	/* kobject not yet init'd, manually free */
- 		goto err1;
- 	}
-@@ -729,6 +730,7 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
- err3:
- 	sysfs_remove_link(br->ifobj, p->dev->name);
- err2:
-+	free_percpu(p->mcast_stats);
- 	kobject_put(&p->kobj);
- 	dev_set_allmulti(dev, -1);
- err1:
+diff --git a/ip/iplink_bond.c b/ip/iplink_bond.c
+index d45845bd..b01f69a5 100644
+--- a/ip/iplink_bond.c
++++ b/ip/iplink_bond.c
+@@ -74,6 +74,12 @@ static const char *xmit_hash_policy_tbl[] = {
+ 	NULL,
+ };
+ 
++static const char *lacp_active_tbl[] = {
++	"off",
++	"on",
++	NULL,
++};
++
+ static const char *lacp_rate_tbl[] = {
+ 	"slow",
+ 	"fast",
+@@ -139,6 +145,7 @@ static void print_explain(FILE *f)
+ 		"                [ packets_per_slave PACKETS_PER_SLAVE ]\n"
+ 		"                [ tlb_dynamic_lb TLB_DYNAMIC_LB ]\n"
+ 		"                [ lacp_rate LACP_RATE ]\n"
++		"                [ lacp_active LACP_ACTIVE]\n"
+ 		"                [ ad_select AD_SELECT ]\n"
+ 		"                [ ad_user_port_key PORTKEY ]\n"
+ 		"                [ ad_actor_sys_prio SYSPRIO ]\n"
+@@ -150,6 +157,7 @@ static void print_explain(FILE *f)
+ 		"PRIMARY_RESELECT := always|better|failure\n"
+ 		"FAIL_OVER_MAC := none|active|follow\n"
+ 		"XMIT_HASH_POLICY := layer2|layer2+3|layer3+4|encap2+3|encap3+4|vlan+srcmac\n"
++		"LACP_ACTIVE := off|on\n"
+ 		"LACP_RATE := slow|fast\n"
+ 		"AD_SELECT := stable|bandwidth|count\n"
+ 	);
+@@ -165,7 +173,7 @@ static int bond_parse_opt(struct link_util *lu, int argc, char **argv,
+ {
+ 	__u8 mode, use_carrier, primary_reselect, fail_over_mac;
+ 	__u8 xmit_hash_policy, num_peer_notif, all_slaves_active;
+-	__u8 lacp_rate, ad_select, tlb_dynamic_lb;
++	__u8 lacp_active, lacp_rate, ad_select, tlb_dynamic_lb;
+ 	__u16 ad_user_port_key, ad_actor_sys_prio;
+ 	__u32 miimon, updelay, downdelay, peer_notify_delay, arp_interval, arp_validate;
+ 	__u32 arp_all_targets, resend_igmp, min_links, lp_interval;
+@@ -323,6 +331,13 @@ static int bond_parse_opt(struct link_util *lu, int argc, char **argv,
+ 
+ 			lacp_rate = get_index(lacp_rate_tbl, *argv);
+ 			addattr8(n, 1024, IFLA_BOND_AD_LACP_RATE, lacp_rate);
++		} else if (strcmp(*argv, "lacp_active") == 0) {
++			NEXT_ARG();
++			if (get_index(lacp_active_tbl, *argv) < 0)
++				invarg("invalid lacp_active", *argv);
++
++			lacp_active = get_index(lacp_active_tbl, *argv);
++			addattr8(n, 1024, IFLA_BOND_AD_LACP_ACTIVE, lacp_active);
+ 		} else if (matches(*argv, "ad_select") == 0) {
+ 			NEXT_ARG();
+ 			if (get_index(ad_select_tbl, *argv) < 0)
+@@ -561,6 +576,15 @@ static void bond_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ 			   "packets_per_slave %u ",
+ 			   rta_getattr_u32(tb[IFLA_BOND_PACKETS_PER_SLAVE]));
+ 
++	if (tb[IFLA_BOND_AD_LACP_ACTIVE]) {
++		const char *lacp_active = get_name(lacp_active_tbl,
++						   rta_getattr_u8(tb[IFLA_BOND_AD_LACP_ACTIVE]));
++		print_string(PRINT_ANY,
++			     "ad_lacp_active",
++			     "lacp_active %s ",
++			     lacp_active);
++	}
++
+ 	if (tb[IFLA_BOND_AD_LACP_RATE]) {
+ 		const char *lacp_rate = get_name(lacp_rate_tbl,
+ 						 rta_getattr_u8(tb[IFLA_BOND_AD_LACP_RATE]));
 -- 
-2.25.1
+2.31.1
 
