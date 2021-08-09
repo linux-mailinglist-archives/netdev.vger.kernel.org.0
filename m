@@ -1,109 +1,97 @@
 Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5024A3E464E
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 15:14:41 +0200 (CEST)
+Received: from vger.kernel.org (unknown [23.128.96.18])
+	by mail.lfdr.de (Postfix) with ESMTP id DAC533E466B
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 15:22:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235165AbhHINO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 09:14:58 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:13405 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234207AbhHINO5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 09:14:57 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GjxKX3D6Zzcm59;
-        Mon,  9 Aug 2021 21:10:56 +0800 (CST)
-Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 9 Aug 2021 21:14:34 +0800
-Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
- (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 9 Aug 2021
- 21:14:33 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>
-CC:     <roopa@nvidia.com>, <nikolay@nvidia.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-Subject: [PATCH net v3] net: bridge: fix memleak in br_add_if()
-Date:   Mon, 9 Aug 2021 21:20:23 +0800
-Message-ID: <20210809132023.978546-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S235325AbhHINWk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 09:22:40 -0400
+Received: from mout.kundenserver.de ([212.227.17.10]:48199 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234597AbhHINWX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 09:22:23 -0400
+Received: from mail-wr1-f47.google.com ([209.85.221.47]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1N0WLC-1n0o5p203g-00wTwj; Mon, 09 Aug 2021 15:21:57 +0200
+Received: by mail-wr1-f47.google.com with SMTP id z4so21434557wrv.11;
+        Mon, 09 Aug 2021 06:21:57 -0700 (PDT)
+X-Gm-Message-State: AOAM532BvkF3fCxklp8+n4ewXggk/INBd2ipbzViDrFrLKXJ8xS/FRYd
+        TCjRh3kvdEHDinpJ8PdFHjtbPlKoy6q5OuJOQuk=
+X-Google-Smtp-Source: ABdhPJy16990ho4qpaTAmbDTUFeqQ/A0wIjvh9as86tRp9Mkq8co1Vb/ON23QRD87IMks8uku7CxYKSzhHKXaR/99pw=
+X-Received: by 2002:adf:a309:: with SMTP id c9mr7600369wrb.99.1628515317048;
+ Mon, 09 Aug 2021 06:21:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500017.china.huawei.com (7.185.36.243)
-X-CFilter-Loop: Reflected
+References: <20210809202046.596dad87@canb.auug.org.au>
+In-Reply-To: <20210809202046.596dad87@canb.auug.org.au>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 9 Aug 2021 15:21:41 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a103SSaMmFEKehPQO0p9idVwhfck-OX5t1_3-gW4ox2tw@mail.gmail.com>
+Message-ID: <CAK8P3a103SSaMmFEKehPQO0p9idVwhfck-OX5t1_3-gW4ox2tw@mail.gmail.com>
+Subject: Re: linux-next: build failure after merge of the net-next tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:nRo0NssWTaHIckkiOOW6M6iRtbxvF9MxcMIP4z3c/ABpnuJNra4
+ SYOatWYBUamU60cy+ljuBDmYQitchtOAiDL2fLXOhIjdykDDo59yIFGc6XuY8Xmw4oOqU2o
+ x7fQPXJEAbHS5Aj0Bz2S3cYbADxLkJjQrhc2MlTRWMLh/vDZmd0eglWwsWnu8+fae/M7ZHm
+ VLbPxx9a1Y9tctUruqalA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:x/xcfGnN9Mc=:jBHmHL/MQhSZ4mnIDnIhx+
+ s5HMze53RsAAvrWcmHuYbNoKqf3xYe1bqP2fSaxEWzOA+BzYm72pANl/vfUhcBynU3LZ+aoju
+ 1MQIUXYroZgM/pgb8Kz9pH9CKDqC9Dui2YE1JgY1FQrZYkpHQAdv9GO+ooVw7OcwFySPMxeH9
+ ek1EWRqgmKiF3ZARwdFIDbZkihCSOAJAW1OfNRjbOtz9/jWjYPLsO5PW5KsAS21upiZNW53oa
+ z5qDqNJ10ZdhNXd41dzLby4a6w7RcgUDJtUVGyp9ep8Vgaodah9gTWjEkqxSic2pZBGwGN5w0
+ UN4bEPs8dPrQBbxzrskio0GikvJ8RxIA69K4Hvv48GLA/824JyA5DuhMGl/aqgjbzCVDtQZRp
+ 1zO9dW+RDFKHhW4JZd3KbhgC7OZaAQHQURoaJPSseKHrY+MNm1ZyoYR5XpU6JddF79wGj7SOM
+ AYRtuH5xtgU/y1mZ/bDz/QjNFouToOWvqT5AIAX84BA0OFPKUE9EOiGefLe+ijdbRMQP5vHwO
+ s40bjgBmsJTM25bkSO8j3+du6THpapBYccgisE1PKv4ZC7bYQYgAMLgZwHrnIDQIM44THe8RG
+ S3cEEr1Encivn4ilGxtGGwLNYU6wx1jXYSRvkf52WIuwMyobDRUdhBxnRFedX9wA8trQuOXIg
+ /kFVe5Kg/Xyj5CI1o5IupXpJjt9Qwdqq3jkugzkC0pkFIeyi2g7WAsjbGiVLkV3gvlxHi47Ff
+ +vsoLM6xdPFBzZsCVnDlYAUylblJXEw0EYjRVFdLHOyeJOzm2W5eHGve9RVCKvH9N7vSAhK7E
+ eZQaXuctUFutRUFnHhkzJdApg/JwV2gSRlk/6fORuKZNnHObD4lkQ/q/DCR75RpaC+jnX5i
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I got a memleak report:
+On Mon, Aug 9, 2021 at 12:20 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi all,
+>
+> After merging the net-next tree, today's linux-next build (powerpc
+> allyesconfig) failed like this:
+>
+> drivers/net/ethernet/cirrus/cs89x0.c: In function 'net_open':
+> drivers/net/ethernet/cirrus/cs89x0.c:897:20: error: implicit declaration of function 'isa_virt_to_bus' [-Werror=implicit-function-declaration]
+>   897 |     (unsigned long)isa_virt_to_bus(lp->dma_buff));
+>       |                    ^~~~~~~~~~~~~~~
 
-BUG: memory leak
-unreferenced object 0x607ee521a658 (size 240):
-comm "syz-executor.0", pid 955, jiffies 4294780569 (age 16.449s)
-hex dump (first 32 bytes, cpu 1):
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
-backtrace:
-[<00000000d830ea5a>] br_multicast_add_port+0x1c2/0x300 net/bridge/br_multicast.c:1693
-[<00000000274d9a71>] new_nbp net/bridge/br_if.c:435 [inline]
-[<00000000274d9a71>] br_add_if+0x670/0x1740 net/bridge/br_if.c:611
-[<0000000012ce888e>] do_set_master net/core/rtnetlink.c:2513 [inline]
-[<0000000012ce888e>] do_set_master+0x1aa/0x210 net/core/rtnetlink.c:2487
-[<0000000099d1cafc>] __rtnl_newlink+0x1095/0x13e0 net/core/rtnetlink.c:3457
-[<00000000a01facc0>] rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3488
-[<00000000acc9186c>] rtnetlink_rcv_msg+0x369/0xa10 net/core/rtnetlink.c:5550
-[<00000000d4aabb9c>] netlink_rcv_skb+0x134/0x3d0 net/netlink/af_netlink.c:2504
-[<00000000bc2e12a3>] netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
-[<00000000bc2e12a3>] netlink_unicast+0x4a0/0x6a0 net/netlink/af_netlink.c:1340
-[<00000000e4dc2d0e>] netlink_sendmsg+0x789/0xc70 net/netlink/af_netlink.c:1929
-[<000000000d22c8b3>] sock_sendmsg_nosec net/socket.c:654 [inline]
-[<000000000d22c8b3>] sock_sendmsg+0x139/0x170 net/socket.c:674
-[<00000000e281417a>] ____sys_sendmsg+0x658/0x7d0 net/socket.c:2350
-[<00000000237aa2ab>] ___sys_sendmsg+0xf8/0x170 net/socket.c:2404
-[<000000004f2dc381>] __sys_sendmsg+0xd3/0x190 net/socket.c:2433
-[<0000000005feca6c>] do_syscall_64+0x37/0x90 arch/x86/entry/common.c:47
-[<000000007304477d>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+Thank you for the report! I already sent a patch for m68knommu running into
+this issue, but it seems there are other architectures that still have it.
 
-On error path of br_add_if(), p->mcast_stats allocated in
-new_nbp() need be freed, or it will be leaked.
+The driver checks CONFIG_ISA_DMA_API at compile time to determine
+whether isa_virt_to_bus(), set_dma_mode(), set_dma_addr(), ... are all
+defined.
 
-Fixes: 1080ab95e3c7 ("net: bridge: add support for IGMP/MLD stats and export them via netlink")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
-v3:
-  use br_multicast_del_port() to free mcast_stats
----
- net/bridge/br_if.c | 2 ++
- 1 file changed, 2 insertions(+)
+It seems that isa_virt_to_bus() is only implemented on most of the
+architectures that set ISA_DMA_API: alpha, arm, mips, parisc and x86,
+but not on m68k/coldfire and powerpc.
 
-diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
-index 5aa508a08a691..b5fb2b682e191 100644
---- a/net/bridge/br_if.c
-+++ b/net/bridge/br_if.c
-@@ -604,6 +604,7 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
- 
- 	err = dev_set_allmulti(dev, 1);
- 	if (err) {
-+		br_multicast_del_port(p);
- 		kfree(p);	/* kobject not yet init'd, manually free */
- 		goto err1;
- 	}
-@@ -708,6 +709,7 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
- err3:
- 	sysfs_remove_link(br->ifobj, p->dev->name);
- err2:
-+	br_multicast_del_port(p);
- 	kobject_put(&p->kobj);
- 	dev_set_allmulti(dev, -1);
- err1:
--- 
-2.25.1
+Before my patch, the platform driver could only be built on ARM,
+so maybe we should just go back to that dependency or something
+like
 
+         depends on ARM || ((X86 || !ISA_DMA_API) && COMPILE_TEST)
+
+for extra build coverage. Then again, it's hard to find any machine
+actually using these: we have a couple of s3c24xx machines that
+use the wrong device name, so the device never gets probed, the imx
+machines that used to work are gone, and the ep7211-edb7211.dts
+is missing a device node for it. Most likely, neither the platform nor
+the ISA driver are actually used by anyone.
+
+     Arnd
