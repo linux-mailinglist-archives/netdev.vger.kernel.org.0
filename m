@@ -2,154 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 553FA3E486A
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 17:15:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E19BC3E487A
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 17:16:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235345AbhHIPPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 11:15:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37648 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234075AbhHIPPw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Aug 2021 11:15:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 19FCE60F11;
-        Mon,  9 Aug 2021 15:15:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628522132;
-        bh=UsgdSVtypHPDXHWt0l4nRtfQCNMgQ+tKCWPtUY6fvQM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TEQoBhRzIfInMZC6f1hCPJlOBVQuPh5jS+8Z7dw1KMPloWztnrKWfPZBocZj3cwAt
-         3e4nXWVFBWVvbmyoMA8x2C3qood/bgHHL8Iy1VTx8o6Zc743iZ7NRbTKySelqcgifl
-         A6DjSJB9A02YbLuklhwlI/Lc5tMuoswJVIKgbM2YNepJanHNF3UiWFbBT7jqJc7SXp
-         zPcLOaE032NMvCYK6HjG204ADxFB756DAJwDan4+O/wEIeSonUPrmNSHfiy6tHI33h
-         sdssnpN/+KKUYwdT85GaGppKiUoRnvB3YVn2isXOrJ4JowJVOkHltWw6NaeWeaIHAF
-         WTcrMpMUyGPfw==
-Received: by pali.im (Postfix)
-        id C2169C7C; Mon,  9 Aug 2021 17:15:29 +0200 (CEST)
-Date:   Mon, 9 Aug 2021 17:15:29 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Martin Zaharinov <micron10@gmail.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: Urgent  Bug report: PPPoE ioctl(PPPIOCCONNECT): Transport
- endpoint is not connected
-Message-ID: <20210809151529.ymbq53f633253loz@pali>
-References: <7EE80F78-6107-4C6E-B61D-01752D44155F@gmail.com>
- <YQy9JKgo+BE3G7+a@kroah.com>
- <08EC1CDD-21C4-41AB-B6A8-1CC2D40F5C05@gmail.com>
- <20210808152318.6nbbaj3bp6tpznel@pali>
- <8BDDA0B3-0BEE-4E80-9686-7F66CF58B069@gmail.com>
+        id S235521AbhHIPQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 11:16:52 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:53429 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233058AbhHIPQv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 11:16:51 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 0BD8E580E2C;
+        Mon,  9 Aug 2021 11:16:30 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Mon, 09 Aug 2021 11:16:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=1pYqGa
+        x3qSXnNTucika/IABBjCeQ22ESG6fuRy15h2s=; b=S0HfUGCCFMNYaWu6zatInR
+        6cI4qb55LV3zeq/ewdvnVH056olR0BWLNBPwfe7UJwTpogsD3fD2/cQL/wEAp3cl
+        nxKthDD4fyRdv+2IV6Qoo7dhdBFzgeh2gqTKAso7T1Evb9SnOsFh2B4zYhOUprJP
+        EO5VljpUmoAzyggHCkHjUDOSMr5LbQw2X+cN5RdswfF6B30UnI03EJSQI+SwijQ/
+        0x2Iryu5RFRJmkRZnyY1vFtTJg0yVcmKoPeCwCPPe+pHtKqp6dDUMdTjCaqRnZWY
+        FW/KwPpuZZm17f/6Rg3yrjlX9ksK1UhH8mdDL05f+6cvCMZOoEtuLDu5lYq9d2gw
+        ==
+X-ME-Sender: <xms:zEYRYbQGIB9xEo6RjeSyH3E8NY09nJwCspeVGW5W-yMjMHQNMgDsSA>
+    <xme:zEYRYcyujpQS1ixEjvubTlM3VtCQcUugk9praYbP03PyyYdFPe_jkz2UKaT4fre7x
+    Pc-hTDz3fOUwQY>
+X-ME-Received: <xmr:zEYRYQ0NPHWoCFj6XeaojIAkTME5G5A7eJHf_TENk2L322TP61EGCMHTJrfWShVJbxspvI5I1k7GnMJfPT1yRqc_qAqD2Q>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrjeejgdekiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtrodttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnhepgfejvefhvdegiedukeetudevgeeujeefffeffeetkeekueeuheejudeltdejuedu
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:zEYRYbCoKnFM3-wbngpBiRANyAE74_M6BRFtxmZn0MeoSG0Seer_6w>
+    <xmx:zEYRYUi3O-H3V-73BR0dBJ5TWNLcDT8xw6fD72Fr6bfl100ClsZkHQ>
+    <xmx:zEYRYfpVXnT9M1cEBDkJR9UmWcWow8uAEW-0lVAaA4aelNcO50dZfQ>
+    <xmx:zkYRYZtwN-jWS7CS3-M_vUcqkyT-ZsNniU37JzRiF6CtsFtdEXqIaQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 9 Aug 2021 11:16:27 -0400 (EDT)
+Date:   Mon, 9 Aug 2021 18:16:23 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Jianbo Liu <jianbol@nvidia.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
+        linux-s390@vger.kernel.org
+Subject: Re: [PATCH net] net: switchdev: zero-initialize struct
+ switchdev_notifier_fdb_info emitted by drivers towards the bridge
+Message-ID: <YRFGxxkNyJDxoGWu@shredder>
+References: <20210809131152.509092-1-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8BDDA0B3-0BEE-4E80-9686-7F66CF58B069@gmail.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20210809131152.509092-1-vladimir.oltean@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sunday 08 August 2021 18:29:30 Martin Zaharinov wrote:
-> Hi Pali
+On Mon, Aug 09, 2021 at 04:11:52PM +0300, Vladimir Oltean wrote:
+> The blamed commit a new field to struct switchdev_notifier_fdb_info, but
+> did not make sure that all call paths set it to something valid. For
+> example, a switchdev driver may emit a SWITCHDEV_FDB_ADD_TO_BRIDGE
+> notifier, and since the 'is_local' flag is not set, it contains junk
+> from the stack, so the bridge might interpret those notifications as
+> being for local FDB entries when that was not intended.
 > 
-> Kernel 5.13.8
+> To avoid that now and in the future, zero-initialize all
+> switchdev_notifier_fdb_info structures created by drivers such that all
+> newly added fields to not need to touch drivers again.
 > 
-> 
-> The problem is from kernel 5.8 > I try all major update 5.9, 5.10, 5.11 ,5.12
-> 
-> I use accel-pppd daemon (not pppd) .
+> Fixes: 2c4eca3ef716 ("net: bridge: switchdev: include local flag in FDB notifications")
+> Reported-by: Ido Schimmel <idosch@idosch.org>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-I'm not using accel-pppd, so cannot help here.
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Ido Schimmel <idosch@nvidia.com>
 
-I would suggest to try "git bisect" kernel version which started to be
-problematic for accel-pppd.
-
-Providing state of ppp channels and ppp units could help to debug this
-issue, but I'm not sure if accel-pppd has this debug feature. IIRC only
-process which has ppp file descriptors can retrieve and dump this
-information.
-
-> And yes after users started to connecting .
-> 
-> When system boot and connect first time all user connect without any problem .
-> In time of work user disconnect and connect (power cut , fiber cut or other problem in network) , but in time of spike (may be make lock or other problem ) disconnect ~ 400-500 users  and affect other users. Process go to load over 100% and In statistic I see many finishing connection and many start connection. 
-> And in this time in log get many lines with   ioctl(PPPIOCCONNECT): Transport endpoint is not connected. After finish (unlock or other) stop to see this error and system is back to normal. And connect all disconnected users.
-> 
-> Martin
-> 
-> > On 8 Aug 2021, at 18:23, Pali Rohár <pali@kernel.org> wrote:
-> > 
-> > Hello!
-> > 
-> > On Sunday 08 August 2021 18:14:09 Martin Zaharinov wrote:
-> >> Add Pali Rohár,
-> >> 
-> >> If have any idea .
-> >> 
-> >> Martin
-> >> 
-> >>> On 6 Aug 2021, at 7:40, Greg KH <gregkh@linuxfoundation.org> wrote:
-> >>> 
-> >>> On Thu, Aug 05, 2021 at 11:53:50PM +0300, Martin Zaharinov wrote:
-> >>>> Hi Net dev team
-> >>>> 
-> >>>> 
-> >>>> Please check this error :
-> >>>> Last time I write for this problem : https://www.spinics.net/lists/netdev/msg707513.html
-> >>>> 
-> >>>> But not find any solution.
-> >>>> 
-> >>>> Config of server is : Bonding port channel (LACP)  > Accel PPP server > Huawei switch.
-> >>>> 
-> >>>> Server is work fine users is down/up 500+ users .
-> >>>> But in one moment server make spike and affect other vlans in same server .
-> > 
-> > When this error started to happen? After kernel upgrade? After pppd
-> > upgrade? Or after system upgrade? Or when more users started to
-> > connecting?
-> > 
-> >>>> And in accel I see many row with this error.
-> >>>> 
-> >>>> Is there options to find and fix this bug.
-> >>>> 
-> >>>> With accel team I discus this problem  and they claim it is kernel bug and need to find solution with Kernel dev team.
-> >>>> 
-> >>>> 
-> >>>> [2021-08-05 13:52:05.294] vlan912: 24b205903d09718e: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:05.298] vlan912: 24b205903d097162: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:05.626] vlan641: 24b205903d09711b: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:11.000] vlan912: 24b205903d097105: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:17.852] vlan912: 24b205903d0971ae: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:21.113] vlan641: 24b205903d09715b: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:27.963] vlan912: 24b205903d09718d: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:30.249] vlan496: 24b205903d097184: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:30.992] vlan420: 24b205903d09718a: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:33.937] vlan640: 24b205903d0971cd: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:40.032] vlan912: 24b205903d097182: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:40.420] vlan912: 24b205903d0971d5: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:42.799] vlan912: 24b205903d09713a: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:42.799] vlan614: 24b205903d0971e5: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:43.102] vlan912: 24b205903d097190: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:43.850] vlan479: 24b205903d097153: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:43.850] vlan479: 24b205903d097141: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:43.852] vlan912: 24b205903d097198: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:43.977] vlan637: 24b205903d097148: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>>> [2021-08-05 13:52:44.528] vlan637: 24b205903d0971c3: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> >>> 
-> >>> These are userspace error messages, not kernel messages.
-> >>> 
-> >>> What kernel version are you using?
-> > 
-> > Yes, we need to know, what kernel version are you using.
-> > 
-> >>> thanks,
-> >>> 
-> >>> greg k-h
-> >> 
-> > 
-> > And also another question, what version of pppd daemon are you using?
-> > 
-> > Also, are you able to dump state of ppp channels and ppp units? It is
-> > needed to know to which tty device, file descriptor (or socket
-> > extension) is (or should be) particular ppp channel bounded.
-> 
+Thanks
