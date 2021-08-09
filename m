@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB4473E4208
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 11:06:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 255743E420B
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 11:06:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234154AbhHIJG1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 05:06:27 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:57152 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S234127AbhHIJG0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 05:06:26 -0400
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17993uXO136812;
-        Mon, 9 Aug 2021 05:06:03 -0400
+        id S234167AbhHIJG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 05:06:29 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:40742 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234150AbhHIJG1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 05:06:27 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17994Nm5022301;
+        Mon, 9 Aug 2021 05:06:04 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=IEwu7FdvUkdM3tmFDCMn/hiuvkOwr7o1bjIvBVHeH7k=;
- b=Jdp5X8PgfdXWGJ1sCoWbrzAgQmSfUFiDOGRuvQHzL8Ghb3Xlcigui0Fz34+8J6Wy3EdX
- 5NOYclpT0WZtoRQ5OM1PwKwT4FCajSSisvLbgTm6tTri2G9977ssYIydo3Z0xosJyV49
- XUB/iSU9GHtT2cCwq563xEmwW9JZySAXDyesrFq1nSeLVtuzrYIVxK3EPJCqBaUpNjXx
- 9pfbtzQbQGmX91HK1iTt8CjA2YCmfGzoQDC0ZX0G26z1DHyIO+sXXux7aX/QxApwRF+9
- gQcznomxqSw5PjhyDvelbu1zf1mj7en5st/v13yrZMhft9KDSCJiu/wrNFSbRg19njUI zQ== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3aa78b8cj9-1
+ bh=UKcEiWTqbdOmBDR1x3yFZ+64e9nU+Ve9o//VKZalSFs=;
+ b=WC5ri0sm/1VvJmnna2nz2fh4t8CLSiN2xX4YwFJu5Y3HA6hTJHPK7saASLz2AG15KgxQ
+ R/VgXJbYa06mD2A8CA6vnEnoHuR3WGfHSFyW+TB9Rcn7/bQxh6k3ijVVFW0sfmr1UgJP
+ AMSzwMl10TUmIo9h1PUvrzqCdnlHRJI61ke3X7BSgEroCu2iMWg3ndGjx/cxPnJIwELC
+ BGuohs/93PikCw5BY35bQJSDAdPdZFyhkBeK0olktRReemq69SlVSdjcrbdhRJIzuNMl
+ mnlcpqG3OngI8dm3OFLPWC6YRYGnbr5EmaVTJ0lAQXSYZ6enU7w5HhXPZwOrKs8P9A4v 0A== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3aaa1qqe8h-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Mon, 09 Aug 2021 05:06:03 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 179930wS024568;
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 17994G38022955;
         Mon, 9 Aug 2021 09:06:02 GMT
 Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3a9ht8upn4-1
+        by ppma04ams.nl.ibm.com with ESMTP id 3a9ht8up07-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 09 Aug 2021 09:06:01 +0000
+        Mon, 09 Aug 2021 09:06:02 +0000
 Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 17992new56951272
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 17992nRt58065364
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Mon, 9 Aug 2021 09:02:49 GMT
 Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5FF024C05A;
+        by IMSVA (Postfix) with ESMTP id B9BF54C040;
         Mon,  9 Aug 2021 09:05:58 +0000 (GMT)
 Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 160D14C058;
+        by IMSVA (Postfix) with ESMTP id 6F2B74C046;
         Mon,  9 Aug 2021 09:05:58 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
@@ -53,193 +53,85 @@ To:     David Miller <davem@davemloft.net>,
 Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
         Heiko Carstens <hca@linux.ibm.com>,
         Karsten Graul <kgraul@linux.ibm.com>
-Subject: [PATCH net 1/2] net/smc: fix wait on already cleared link
-Date:   Mon,  9 Aug 2021 11:05:56 +0200
-Message-Id: <20210809090557.3121288-2-guvenc@linux.ibm.com>
+Subject: [PATCH net 2/2] net/smc: Correct smc link connection counter in case of smc client
+Date:   Mon,  9 Aug 2021 11:05:57 +0200
+Message-Id: <20210809090557.3121288-3-guvenc@linux.ibm.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210809090557.3121288-1-guvenc@linux.ibm.com>
 References: <20210809090557.3121288-1-guvenc@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 7s1QMCfY97S3iM11_j-chRapwC7BAo5u
-X-Proofpoint-GUID: 7s1QMCfY97S3iM11_j-chRapwC7BAo5u
+X-Proofpoint-GUID: Uc6qMgD90ffEpCF9dnHfgdaqyjfJd4zF
+X-Proofpoint-ORIG-GUID: Uc6qMgD90ffEpCF9dnHfgdaqyjfJd4zF
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
  definitions=2021-08-09_01:2021-08-06,2021-08-09 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 adultscore=0
- priorityscore=1501 suspectscore=0 clxscore=1015 spamscore=0 phishscore=0
- malwarescore=0 lowpriorityscore=0 mlxscore=0 mlxlogscore=999 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2107140000
- definitions=main-2108090073
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ mlxlogscore=999 mlxscore=0 clxscore=1015 spamscore=0 priorityscore=1501
+ suspectscore=0 malwarescore=0 bulkscore=0 adultscore=0 impostorscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2107140000 definitions=main-2108090073
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Karsten Graul <kgraul@linux.ibm.com>
+SMC clients may be assigned to a different link after the initial
+connection between two peers was established. In such a case,
+the connection counter was not correctly set.
 
-There can be a race between the waiters for a tx work request buffer
-and the link down processing that finally clears the link. Although
-all waiters are woken up before the link is cleared there might be
-waiters which did not yet get back control and are still waiting.
-This results in an access to a cleared wait queue head.
+Update the connection counter correctly when a smc client connection
+is assigned to a different smc link.
 
-Fix this by introducing atomic reference counting around the wait calls,
-and wait with the link clear processing until all waiters have finished.
-Move the work request layer related calls into smc_wr.c and set the
-link state to INACTIVE before calling smcr_link_clear() in
-smc_llc_srv_add_link().
-
-Fixes: 15e1b99aadfb ("net/smc: no WR buffer wait for terminating link group")
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
+Fixes: 07d51580ff65 ("net/smc: Add connection counters for links")
 Signed-off-by: Guvenc Gulce <guvenc@linux.ibm.com>
+Tested-by: Karsten Graul <kgraul@linux.ibm.com>
 ---
- net/smc/smc_core.h |  2 ++
- net/smc/smc_llc.c  | 10 ++++------
- net/smc/smc_tx.c   | 18 +++++++++++++++++-
- net/smc/smc_wr.c   | 10 ++++++++++
- 4 files changed, 33 insertions(+), 7 deletions(-)
+ net/smc/af_smc.c   | 2 +-
+ net/smc/smc_core.c | 4 ++--
+ net/smc/smc_core.h | 2 ++
+ 3 files changed, 5 insertions(+), 3 deletions(-)
 
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 898389611ae8..c038efc23ce3 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -795,7 +795,7 @@ static int smc_connect_rdma(struct smc_sock *smc,
+ 			reason_code = SMC_CLC_DECL_NOSRVLINK;
+ 			goto connect_abort;
+ 		}
+-		smc->conn.lnk = link;
++		smc_switch_link_and_count(&smc->conn, link);
+ 	}
+ 
+ 	/* create send buffer and rmb */
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index cd0d7c908b2a..c160ff50c053 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -917,8 +917,8 @@ static int smc_switch_cursor(struct smc_sock *smc, struct smc_cdc_tx_pend *pend,
+ 	return rc;
+ }
+ 
+-static void smc_switch_link_and_count(struct smc_connection *conn,
+-				      struct smc_link *to_lnk)
++void smc_switch_link_and_count(struct smc_connection *conn,
++			       struct smc_link *to_lnk)
+ {
+ 	atomic_dec(&conn->lnk->conn_cnt);
+ 	conn->lnk = to_lnk;
 diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-index 6d6fd1397c87..64d86298e4df 100644
+index 64d86298e4df..c043ecdca5c4 100644
 --- a/net/smc/smc_core.h
 +++ b/net/smc/smc_core.h
-@@ -97,6 +97,7 @@ struct smc_link {
- 	unsigned long		*wr_tx_mask;	/* bit mask of used indexes */
- 	u32			wr_tx_cnt;	/* number of WR send buffers */
- 	wait_queue_head_t	wr_tx_wait;	/* wait for free WR send buf */
-+	atomic_t		wr_tx_refcnt;	/* tx refs to link */
- 
- 	struct smc_wr_buf	*wr_rx_bufs;	/* WR recv payload buffers */
- 	struct ib_recv_wr	*wr_rx_ibs;	/* WR recv meta data */
-@@ -109,6 +110,7 @@ struct smc_link {
- 
- 	struct ib_reg_wr	wr_reg;		/* WR register memory region */
- 	wait_queue_head_t	wr_reg_wait;	/* wait for wr_reg result */
-+	atomic_t		wr_reg_refcnt;	/* reg refs to link */
- 	enum smc_wr_reg_state	wr_reg_state;	/* state of wr_reg request */
- 
- 	u8			gid[SMC_GID_SIZE];/* gid matching used vlan id*/
-diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
-index 273eaf1bfe49..2e7560eba981 100644
---- a/net/smc/smc_llc.c
-+++ b/net/smc/smc_llc.c
-@@ -888,6 +888,7 @@ int smc_llc_cli_add_link(struct smc_link *link, struct smc_llc_qentry *qentry)
- 	if (!rc)
- 		goto out;
- out_clear_lnk:
-+	lnk_new->state = SMC_LNK_INACTIVE;
- 	smcr_link_clear(lnk_new, false);
- out_reject:
- 	smc_llc_cli_add_link_reject(qentry);
-@@ -1184,6 +1185,7 @@ int smc_llc_srv_add_link(struct smc_link *link)
- 		goto out_err;
- 	return 0;
- out_err:
-+	link_new->state = SMC_LNK_INACTIVE;
- 	smcr_link_clear(link_new, false);
- 	return rc;
- }
-@@ -1286,10 +1288,8 @@ static void smc_llc_process_cli_delete_link(struct smc_link_group *lgr)
- 	del_llc->reason = 0;
- 	smc_llc_send_message(lnk, &qentry->msg); /* response */
- 
--	if (smc_link_downing(&lnk_del->state)) {
--		if (smc_switch_conns(lgr, lnk_del, false))
--			smc_wr_tx_wait_no_pending_sends(lnk_del);
--	}
-+	if (smc_link_downing(&lnk_del->state))
-+		smc_switch_conns(lgr, lnk_del, false);
- 	smcr_link_clear(lnk_del, true);
- 
- 	active_links = smc_llc_active_link_count(lgr);
-@@ -1805,8 +1805,6 @@ void smc_llc_link_clear(struct smc_link *link, bool log)
- 				    link->smcibdev->ibdev->name, link->ibport);
- 	complete(&link->llc_testlink_resp);
- 	cancel_delayed_work_sync(&link->llc_testlink_wrk);
--	smc_wr_wakeup_reg_wait(link);
--	smc_wr_wakeup_tx_wait(link);
- }
- 
- /* register a new rtoken at the remote peer (for all links) */
-diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
-index 289025cd545a..c79361dfcdfb 100644
---- a/net/smc/smc_tx.c
-+++ b/net/smc/smc_tx.c
-@@ -496,7 +496,7 @@ static int smc_tx_rdma_writes(struct smc_connection *conn,
- /* Wakeup sndbuf consumers from any context (IRQ or process)
-  * since there is more data to transmit; usable snd_wnd as max transmit
-  */
--static int smcr_tx_sndbuf_nonempty(struct smc_connection *conn)
-+static int _smcr_tx_sndbuf_nonempty(struct smc_connection *conn)
- {
- 	struct smc_cdc_producer_flags *pflags = &conn->local_tx_ctrl.prod_flags;
- 	struct smc_link *link = conn->lnk;
-@@ -550,6 +550,22 @@ static int smcr_tx_sndbuf_nonempty(struct smc_connection *conn)
- 	return rc;
- }
- 
-+static int smcr_tx_sndbuf_nonempty(struct smc_connection *conn)
-+{
-+	struct smc_link *link = conn->lnk;
-+	int rc = -ENOLINK;
-+
-+	if (!link)
-+		return rc;
-+
-+	atomic_inc(&link->wr_tx_refcnt);
-+	if (smc_link_usable(link))
-+		rc = _smcr_tx_sndbuf_nonempty(conn);
-+	if (atomic_dec_and_test(&link->wr_tx_refcnt))
-+		wake_up_all(&link->wr_tx_wait);
-+	return rc;
-+}
-+
- static int smcd_tx_sndbuf_nonempty(struct smc_connection *conn)
- {
- 	struct smc_cdc_producer_flags *pflags = &conn->local_tx_ctrl.prod_flags;
-diff --git a/net/smc/smc_wr.c b/net/smc/smc_wr.c
-index cbc73a7e4d59..a419e9af36b9 100644
---- a/net/smc/smc_wr.c
-+++ b/net/smc/smc_wr.c
-@@ -322,9 +322,12 @@ int smc_wr_reg_send(struct smc_link *link, struct ib_mr *mr)
- 	if (rc)
- 		return rc;
- 
-+	atomic_inc(&link->wr_reg_refcnt);
- 	rc = wait_event_interruptible_timeout(link->wr_reg_wait,
- 					      (link->wr_reg_state != POSTED),
- 					      SMC_WR_REG_MR_WAIT_TIME);
-+	if (atomic_dec_and_test(&link->wr_reg_refcnt))
-+		wake_up_all(&link->wr_reg_wait);
- 	if (!rc) {
- 		/* timeout - terminate link */
- 		smcr_link_down_cond_sched(link);
-@@ -566,10 +569,15 @@ void smc_wr_free_link(struct smc_link *lnk)
- 		return;
- 	ibdev = lnk->smcibdev->ibdev;
- 
-+	smc_wr_wakeup_reg_wait(lnk);
-+	smc_wr_wakeup_tx_wait(lnk);
-+
- 	if (smc_wr_tx_wait_no_pending_sends(lnk))
- 		memset(lnk->wr_tx_mask, 0,
- 		       BITS_TO_LONGS(SMC_WR_BUF_CNT) *
- 						sizeof(*lnk->wr_tx_mask));
-+	wait_event(lnk->wr_reg_wait, (!atomic_read(&lnk->wr_reg_refcnt)));
-+	wait_event(lnk->wr_tx_wait, (!atomic_read(&lnk->wr_tx_refcnt)));
- 
- 	if (lnk->wr_rx_dma_addr) {
- 		ib_dma_unmap_single(ibdev, lnk->wr_rx_dma_addr,
-@@ -728,7 +736,9 @@ int smc_wr_create_link(struct smc_link *lnk)
- 	memset(lnk->wr_tx_mask, 0,
- 	       BITS_TO_LONGS(SMC_WR_BUF_CNT) * sizeof(*lnk->wr_tx_mask));
- 	init_waitqueue_head(&lnk->wr_tx_wait);
-+	atomic_set(&lnk->wr_tx_refcnt, 0);
- 	init_waitqueue_head(&lnk->wr_reg_wait);
-+	atomic_set(&lnk->wr_reg_refcnt, 0);
- 	return rc;
- 
- dma_unmap:
+@@ -446,6 +446,8 @@ void smc_core_exit(void);
+ int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
+ 		   u8 link_idx, struct smc_init_info *ini);
+ void smcr_link_clear(struct smc_link *lnk, bool log);
++void smc_switch_link_and_count(struct smc_connection *conn,
++			       struct smc_link *to_lnk);
+ int smcr_buf_map_lgr(struct smc_link *lnk);
+ int smcr_buf_reg_lgr(struct smc_link *lnk);
+ void smcr_lgr_set_type(struct smc_link_group *lgr, enum smc_lgr_type new_type);
 -- 
 2.25.1
 
