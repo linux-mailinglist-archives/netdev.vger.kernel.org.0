@@ -2,92 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BFD93E4EBE
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 23:52:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 573293E4ECD
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 23:57:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236095AbhHIVw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 17:52:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34158 "EHLO
+        id S236474AbhHIV5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 17:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232193AbhHIVwx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 17:52:53 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3659CC0613D3;
-        Mon,  9 Aug 2021 14:52:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=KaMCWRlr/ASepwlmVfaesE6d3p8eFAZJ8++WT6RE5fg=; b=SviCN2OLkJcomgD3WQoDogkksR
-        1QAh3HMIWThmPcVoPw/JHjFwp89kxrilMJsj3qqmDaT9Q/d6G3tTxYQ1DcnkNCvLZLC2oGohfohWU
-        kadHOpjzrHRwz26VBMnqMUoACoAXM5zpor6/cLettkTxtxGe7/lIESm1Kswckrevmh9+rrsi48QOx
-        4/G3SPp8gi9YgUcPTEqruV5i4lImc747nanKfqRm3JHD7AFoza3U0JQ9Nituqg+QkkMPaTrHi7TeE
-        6It1rxqi5Y5P+l8MLHNtrLTpH2FuYLTUJfW0kvKySubV5+iPYEam7PVwOuh082JxlUX9w5gkALDGP
-        luNK3qMw==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mDDCB-00224L-0W; Mon, 09 Aug 2021 21:52:31 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     netdev@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org
-Subject: [PATCH] bpf: core: fix kernel-doc notation
-Date:   Mon,  9 Aug 2021 14:52:29 -0700
-Message-Id: <20210809215229.7556-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S235126AbhHIV5m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 17:57:42 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DFB7C0613D3
+        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 14:57:21 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id q10so72795wro.2
+        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 14:57:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=i6r1YDsft4PMj0Q8J5QEQRpw7a88njvmVwr10GKJnUE=;
+        b=kAkq6gm13RT/x8amBshy7/N2YQ7u2CyJuJX7SbarPzZa/v+V/wnKB8lFChxjes+Us+
+         WoovD1EKNMX+UVxVM89qWSak1Ufj6DwcccONqn3eg0x8+03ffXmPl6sBRRvaDvi8ycUg
+         yS1jJjxm9k4LM7Gc1oe6NwEthm99B4s5sUsdp+V+xDKfxSxeHTX/l15bfGymghd2Wmli
+         wwSMjaYzubdeTOiSzeCAbx328JVf0C4a6Y3HHbILSuLCxDD7Z9Jxx6MipN+Robktws6m
+         Naqxz0izIYmFhdw7h++KPCZpKsuF7T/EcFJPPwU6ofRKU4LHG/vybpXwN/Ds4qZZQcbP
+         nW+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=i6r1YDsft4PMj0Q8J5QEQRpw7a88njvmVwr10GKJnUE=;
+        b=WxxZK8tp1nIZsGExcSV86JhFF90ssxMbe9s0A1sML8PpC0TrxEM/KCe5u95V9fhpZG
+         iRgFLdETsqOsKzDT8ZTOe0KOssWSZKUeOkrp3cVef7towwr2AyHRxzpSc2j//NwxKmXt
+         NTh4i5j99nn/IqRlfmf0UeBMty95nAotplki1jQcnDBqiMaq2KfgmEBoD4+OjJTjC5XR
+         bVCzZWYAms/42x4lkAM8ssHz1wnh6Qtz927AmpepcICyjuLjxHPl/iZQCHlxRZxn+ess
+         Oviokyf5V0380D/osWbZaZjS7SoUk1TENKrOMq6w7YN6njNH7dbk9uNQkRmqe3hkjqLI
+         PgpA==
+X-Gm-Message-State: AOAM531LMT1W7fKvGKJ2Kd6g+nvIRRaiq6gyE9ntWuJSb/NIO3URSjQm
+        kheF+IHHa2VIIuXsbB2eBOpK0mPE0KP5RBjgqE7BRA==
+X-Google-Smtp-Source: ABdhPJxRzhCsy1l4UMk0AkoUOnNRd2nZ6qMMfi9hjs7tSccocS2oHTUwv1I2SEBndqbyWs0p9niWl9YJf87+MXKqZJU=
+X-Received: by 2002:adf:ba4d:: with SMTP id t13mr5834797wrg.424.1628546239802;
+ Mon, 09 Aug 2021 14:57:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210809185314.38187-1-tom@herbertland.com>
+In-Reply-To: <20210809185314.38187-1-tom@herbertland.com>
+From:   Yuchung Cheng <ycheng@google.com>
+Date:   Mon, 9 Aug 2021 14:56:42 -0700
+Message-ID: <CAK6E8=eV9KgcvXRGH1E6eK2NQGRUfpKLH4xmkyj-CjydVZfKXQ@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 0/3] txhash: Make hash rethink configurable
+ and change the default
+To:     Tom Herbert <tom@herbertland.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, brakmo@fb.com,
+        eric.dumazet@gmail.com, a.e.azimov@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix kernel-doc warnings in kernel/bpf/core.c (found by
-scripts/kernel-doc and W=1 builds).
+On Mon, Aug 9, 2021 at 11:53 AM Tom Herbert <tom@herbertland.com> wrote:
+>
+> Alexander Azimov performed some nice analysis of the feature in Linux
+> stack where the IPv6 flow label is changed when the stack detects a
+> connection is failing. The idea of the algorithm is to try to find a
+> better path. His reults are quite impressive, and show that this form
+> of source routing can work effectively.
+>
+> Alex raised an issue in that if the server endpoint is an IP anycast
+> address, the connection might break if the flow label changes routing
+> of packets on the connection. Anycast is known to be susceptible to
+> route changes, not just those caused be flow label. The concern is that
+> flow label modulation might increases the chances that anycast
+> connections might break, especially if the rethink occurs after just
+> one RTO which is the current behavior.
+>
+> This patch set makes the rethink behavior granular and configurable.
+> It allows control of when to do the hash rethink: upon negative advice,
+> at RTO in SYN state, at RTO when not in SYN state. The behavior can
+> be configured by sysctl and by a socket option.
+>
+> This patch set the defautl rethink behavior to be to do a rethink only
+> on negative advice. This is reverts back to the original behavior of
+> the hash rethink mechanism. This less aggressive with the intent of
+Thanks for offering knobs to the txhash mechanism.
 
-Correct a function name in a comment and add return descriptions
-for 2 functions.
+Any reason why reverting the default behavior (that was changed in
+2013) is necessary? systems now rely on this RTO tx-rehash to work
+around link failures will now have to manually re-enable it. Some
+users may have to learn from higher connection failures to eventually
+identify this kernel change.
 
-Fixes these kernel-doc warnings:
-
-kernel/bpf/core.c:1372: warning: expecting prototype for __bpf_prog_run(). Prototype was for ___bpf_prog_run() instead
-kernel/bpf/core.c:1372: warning: No description found for return value of '___bpf_prog_run'
-kernel/bpf/core.c:1883: warning: No description found for return value of 'bpf_prog_select_runtime'
-
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Cc: bpf@vger.kernel.org
----
- kernel/bpf/core.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
---- linux-next-20210806.orig/kernel/bpf/core.c
-+++ linux-next-20210806/kernel/bpf/core.c
-@@ -1362,11 +1362,13 @@ u64 __weak bpf_probe_read_kernel(void *d
- }
- 
- /**
-- *	__bpf_prog_run - run eBPF program on a given context
-+ *	___bpf_prog_run - run eBPF program on a given context
-  *	@regs: is the array of MAX_BPF_EXT_REG eBPF pseudo-registers
-  *	@insn: is the array of eBPF instructions
-  *
-  * Decode and execute eBPF instructions.
-+ *
-+ * Return: whatever value is in %BPF_R0 at program exit
-  */
- static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
- {
-@@ -1878,6 +1880,9 @@ static void bpf_prog_select_func(struct
-  *
-  * Try to JIT eBPF program, if JIT is not available, use interpreter.
-  * The BPF program will be executed via BPF_PROG_RUN() macro.
-+ *
-+ * Return: the &fp argument along with &err set to 0 for success or
-+ * a negative errno code on failure
-  */
- struct bpf_prog *bpf_prog_select_runtime(struct bpf_prog *fp, int *err)
- {
+> mitigating potentail breakages when anycast addresses are present.> For those users that are benefitting from changing the hash at the
+> first RTO, they would retain that behavior by setting the sysctl.
+> *** BLURB HERE ***
+>
+> Tom Herbert (3):
+>   txhash: Make rethinking txhash behavior configurable via sysctl
+>   txhash: Add socket option to control TX hash rethink behavior
+>   txhash: Change default rethink behavior to be less aggressive
+>
+>  arch/alpha/include/uapi/asm/socket.h  |  2 ++
+>  arch/mips/include/uapi/asm/socket.h   |  2 ++
+>  arch/parisc/include/uapi/asm/socket.h |  2 ++
+>  arch/sparc/include/uapi/asm/socket.h  |  3 ++-
+>  include/net/netns/core.h              |  2 ++
+>  include/net/sock.h                    | 32 +++++++++++++++++++--------
+>  include/uapi/asm-generic/socket.h     |  2 ++
+>  include/uapi/linux/socket.h           | 13 +++++++++++
+>  net/core/net_namespace.c              |  4 ++++
+>  net/core/sock.c                       | 16 ++++++++++++++
+>  net/core/sysctl_net_core.c            |  7 ++++++
+>  net/ipv4/tcp_input.c                  |  2 +-
+>  net/ipv4/tcp_timer.c                  |  5 ++++-
+>  13 files changed, 80 insertions(+), 12 deletions(-)
+>
+> --
+> 2.25.1
+>
