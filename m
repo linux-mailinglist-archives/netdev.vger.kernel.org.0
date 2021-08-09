@@ -2,181 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21C233E4142
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 09:59:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05BE43E4164
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 10:10:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233729AbhHIH7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 03:59:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39822 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233724AbhHIH7k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 03:59:40 -0400
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C32B1C061796;
-        Mon,  9 Aug 2021 00:59:17 -0700 (PDT)
-Received: by mail-qk1-x736.google.com with SMTP id az7so17440822qkb.5;
-        Mon, 09 Aug 2021 00:59:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yZGwaoW+74yOYe7AWTee01O7ZajaTQrxGSp7Oi3hbfk=;
-        b=Sd9ib6YPdjx7zYxuYPXDWNAWapxYFrhQ7GaLVqFkwbgYz1yKsgeDeAhpfV7DRE12wQ
-         FC0kN9mfn8J+PvgwvEeNNzmE8o8o01NO8shIaQPc7YiVnrvH3xNqB8MLlLqEUOFGgkyG
-         MJU07wM1byXc05jYW6kjKbSQt4IlqWhdisib0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yZGwaoW+74yOYe7AWTee01O7ZajaTQrxGSp7Oi3hbfk=;
-        b=PFcwshiF1pKaL1blPQwV1fpABIVwZcrVNURVNNeAX8o4+h1X1hih5dVFtPaEvPhXgg
-         gelLj6vlEBvBSB2PbJHPhPhZ/DIa/PHPT9JgHo9niTkP9UcjMeTotX+NFA/i9lU93cGx
-         TvqvDE7DDgWfwo0FKbj8L7VPspPYlz2UmfwGyhLV43Yb7mk7JAzcv6xTz5Eoi+gaHJZR
-         d6AF6V3YcUCxJ39OlTIWKnqmcpRQKyviPf1WLNPy0++ePpsmsJPyi98DMXCBU7+7adUV
-         7WyMcdgjjZ9duIwJDt9dGi2qWRfQ+Iblk8I8bzH1xxEw/jbM2P2yczw5Y6Jvzum6sXLt
-         GQEA==
-X-Gm-Message-State: AOAM531196eayj8r4AKCu92OSOBpecUhcceqLrDD8jiq6MODOEx2PZzN
-        G+UA7hTzUfExzXqvbOxhA1AJ4PZipQGbiJ9PFtg=
-X-Google-Smtp-Source: ABdhPJwLEOCQ5lbLi4Tznra9/LzTGpXcz9WmNQUddJipFMnMKm8yq9gpXeFX5iVT/d1ZsuyvsYrhaN+GCEPWi7A/6rY=
-X-Received: by 2002:ae9:e704:: with SMTP id m4mr14345023qka.465.1628495956905;
- Mon, 09 Aug 2021 00:59:16 -0700 (PDT)
+        id S233794AbhHIIKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 04:10:46 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:29118 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233588AbhHIIKp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 04:10:45 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17984Mu5192191;
+        Mon, 9 Aug 2021 04:10:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=z/1V6zpO3b2HNkotnhSRQQdekA6mDtijQKwjLTOyvno=;
+ b=ECi1gHP/94PVzLQcRRM5I9rr09kuXRckHnWM/YiSfimrte/+D6VpsJTFxbxA3Q6delps
+ uIpsMEz2v0kWsADVJbHnGJnNzLnnpaE7Wro+6TTQi8BWvX6S/IHVH17hZOf7Qdf0dtJc
+ gmDyPrbaHaZ/msWIt+vJJMsxXCarXCYkzgOn9eaHi2AmQBisJPZfXxcQwzHcuZPgYKyW
+ BEfpsHzZuby+frc/f3Lv7I5layWmUYxVffDAgbCJzq4LJoA/al5iU+QD3/itJ8JjfCkR
+ LZLGWbuMh2p7sBfUAARqSJPL47l7DuNY3BbAmftpguMAmQc4v6I7/uQ4hRa7nWfBjDzJ og== 
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3aaa1qp3vc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 09 Aug 2021 04:10:21 -0400
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 17982Gtn029942;
+        Mon, 9 Aug 2021 08:10:20 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03fra.de.ibm.com with ESMTP id 3a9ht8k84v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 09 Aug 2021 08:10:20 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1798AFBw57737684
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 9 Aug 2021 08:10:16 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BDE2AA4065;
+        Mon,  9 Aug 2021 08:10:15 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3738DA4054;
+        Mon,  9 Aug 2021 08:10:15 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  9 Aug 2021 08:10:15 +0000 (GMT)
+From:   Guvenc Gulce <guvenc@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>
+Subject: [PATCH net-next] net/smc: Allow SMC-D 1MB DMB allocations
+Date:   Mon,  9 Aug 2021 10:10:14 +0200
+Message-Id: <20210809081014.2300149-1-guvenc@linux.ibm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210806054904.534315-1-joel@jms.id.au> <20210806054904.534315-2-joel@jms.id.au>
- <YQ7ZXu7hHTCNBwNz@lunn.ch>
-In-Reply-To: <YQ7ZXu7hHTCNBwNz@lunn.ch>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Mon, 9 Aug 2021 07:59:05 +0000
-Message-ID: <CACPK8XdKi3f60h2PNjuWsEiw5Rz+F7Ngtw0yF0ZOg+N3kOy0tQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: net: Add bindings for LiteETH
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Stafford Horne <shorne@gmail.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Anton Blanchard <anton@ozlabs.org>,
-        Gabriel Somlo <gsomlo@gmail.com>, David Shah <dave@ds0.me>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Tn_C2SNlL4p4mz5L2GsUJ6-U6zk8kRoU
+X-Proofpoint-ORIG-GUID: Tn_C2SNlL4p4mz5L2GsUJ6-U6zk8kRoU
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-08-09_01:2021-08-06,2021-08-09 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ mlxlogscore=999 mlxscore=0 clxscore=1011 spamscore=0 priorityscore=1501
+ suspectscore=0 malwarescore=0 bulkscore=0 adultscore=0 impostorscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2107140000 definitions=main-2108090065
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 7 Aug 2021 at 19:05, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Fri, Aug 06, 2021 at 03:19:03PM +0930, Joel Stanley wrote:
-> > LiteETH is a small footprint and configurable Ethernet core for FPGA
-> > based system on chips.
-> >
-> > Signed-off-by: Joel Stanley <joel@jms.id.au>
-> > ---
-> >  .../bindings/net/litex,liteeth.yaml           | 62 +++++++++++++++++++
-> >  1 file changed, 62 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/net/litex,liteeth.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/net/litex,liteeth.yaml b/Documentation/devicetree/bindings/net/litex,liteeth.yaml
-> > new file mode 100644
-> > index 000000000000..e2a837dbfdaa
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/net/litex,liteeth.yaml
-> > @@ -0,0 +1,62 @@
-> > +# SPDX-License-Identifier: GPL-2.0-or-later OR BSD-2-Clause
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/net/litex,liteeth.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: LiteX LiteETH ethernet device
-> > +
-> > +maintainers:
-> > +  - Joel Stanley <joel@jms.id.au>
-> > +
-> > +description: |
-> > +  LiteETH is a small footprint and configurable Ethernet core for FPGA based
-> > +  system on chips.
-> > +
-> > +  The hardware source is Open Source and can be found on at
-> > +  https://github.com/enjoy-digital/liteeth/.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: litex,liteeth
-> > +
-> > +  reg:
-> > +    minItems: 3
-> > +    items:
-> > +      - description: MAC registers
-> > +      - description: MDIO registers
-> > +      - description: Packet buffer
->
-> Hi Joel
->
-> How configurable is the synthesis? Can the MDIO bus be left out? You
-> can have only the MDIO bus and no MAC?
->
-> I've not looked at the driver yet, but if the MDIO bus has its own
-> address space, you could consider making it a standalone
-> device. Somebody including two or more LiteETH blocks could then have
-> one shared MDIO bus. That is a supported Linux architecture.
+From: Stefan Raspl <raspl@linux.ibm.com>
 
-It's currently integrated as one device. If you instatined two blocks,
-you would end up with two mdio controllers, each inside those two
-liteeth blocks.
+Commit a3fe3d01bd0d7 ("net/smc: introduce sg-logic for RMBs") introduced
+a restriction for RMB allocations as used by SMC-R. However, SMC-D does
+not use scatter-gather lists to back its DMBs, yet it was limited by
+this restriction, still.
+This patch exempts SMC, but limits allocations to the maximum RMB/DMB
+size respectively.
 
-Obviously being software someone could change that. We've had a few
-discussions about the infinite possibilities of a soft SoC and what
-that means for adding driver support to mainline. I think having some
-basic driver support is useful, particularly as we then get close
-review as Jakub provided.
+Signed-off-by: Stefan Raspl <raspl@linux.ibm.com>
+Signed-off-by: Guvenc Gulce <guvenc@linux.ibm.com>
+---
+ net/smc/smc_core.c | 31 ++++++++++++++++---------------
+ 1 file changed, 16 insertions(+), 15 deletions(-)
 
-The liteeth block has seen a lot of use under Linux by risc-v
-(vexriscv), powerpc (microwatt), and openrisc (mor1k) designs. The
-microwatt and or1k designs have mainline support, making them easy to
-test. This driver will support the normal configurations of those
-platforms.
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index cd0d7c908b2a..edc8962364f3 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -1752,21 +1752,30 @@ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini)
+ 	return rc;
+ }
+ 
+-/* convert the RMB size into the compressed notation - minimum 16K.
++#define SMCD_DMBE_SIZES		6 /* 0 -> 16KB, 1 -> 32KB, .. 6 -> 1MB */
++#define SMCR_RMBE_SIZES		5 /* 0 -> 16KB, 1 -> 32KB, .. 5 -> 512KB */
++
++/* convert the RMB size into the compressed notation (minimum 16K, see
++ * SMCD/R_DMBE_SIZES.
+  * In contrast to plain ilog2, this rounds towards the next power of 2,
+  * so the socket application gets at least its desired sndbuf / rcvbuf size.
+  */
+-static u8 smc_compress_bufsize(int size)
++static u8 smc_compress_bufsize(int size, bool is_smcd, bool is_rmb)
+ {
++	const unsigned int max_scat = SG_MAX_SINGLE_ALLOC * PAGE_SIZE;
+ 	u8 compressed;
+ 
+ 	if (size <= SMC_BUF_MIN_SIZE)
+ 		return 0;
+ 
+-	size = (size - 1) >> 14;
+-	compressed = ilog2(size) + 1;
+-	if (compressed >= SMC_RMBE_SIZES)
+-		compressed = SMC_RMBE_SIZES - 1;
++	size = (size - 1) >> 14;  /* convert to 16K multiple */
++	compressed = min_t(u8, ilog2(size) + 1,
++			   is_smcd ? SMCD_DMBE_SIZES : SMCR_RMBE_SIZES);
++
++	if (!is_smcd && is_rmb)
++		/* RMBs are backed by & limited to max size of scatterlists */
++		compressed = min_t(u8, compressed, ilog2(max_scat >> 14));
++
+ 	return compressed;
+ }
+ 
+@@ -1982,17 +1991,12 @@ static int smcr_buf_map_usable_links(struct smc_link_group *lgr,
+ 	return rc;
+ }
+ 
+-#define SMCD_DMBE_SIZES		6 /* 0 -> 16KB, 1 -> 32KB, .. 6 -> 1MB */
+-
+ static struct smc_buf_desc *smcd_new_buf_create(struct smc_link_group *lgr,
+ 						bool is_dmb, int bufsize)
+ {
+ 	struct smc_buf_desc *buf_desc;
+ 	int rc;
+ 
+-	if (smc_compress_bufsize(bufsize) > SMCD_DMBE_SIZES)
+-		return ERR_PTR(-EAGAIN);
+-
+ 	/* try to alloc a new DMB */
+ 	buf_desc = kzalloc(sizeof(*buf_desc), GFP_KERNEL);
+ 	if (!buf_desc)
+@@ -2041,9 +2045,8 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+ 		/* use socket send buffer size (w/o overhead) as start value */
+ 		sk_buf_size = smc->sk.sk_sndbuf / 2;
+ 
+-	for (bufsize_short = smc_compress_bufsize(sk_buf_size);
++	for (bufsize_short = smc_compress_bufsize(sk_buf_size, is_smcd, is_rmb);
+ 	     bufsize_short >= 0; bufsize_short--) {
+-
+ 		if (is_rmb) {
+ 			lock = &lgr->rmbs_lock;
+ 			buf_list = &lgr->rmbs[bufsize_short];
+@@ -2052,8 +2055,6 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+ 			buf_list = &lgr->sndbufs[bufsize_short];
+ 		}
+ 		bufsize = smc_uncompress_bufsize(bufsize_short);
+-		if ((1 << get_order(bufsize)) > SG_MAX_SINGLE_ALLOC)
+-			continue;
+ 
+ 		/* check for reusable slot in the link group */
+ 		buf_desc = smc_buf_get_slot(bufsize_short, lock, buf_list);
+-- 
+2.25.1
 
-As the soft core project evolves, we can revisit what goes in
-mainline, how flexible that driver support needs to be, and how best
-to manage that.
-
->
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +  rx-fifo-depth:
-> > +    description: Receive FIFO size, in units of 2048 bytes
-> > +
-> > +  tx-fifo-depth:
-> > +    description: Transmit FIFO size, in units of 2048 bytes
-> > +
-> > +  mac-address:
-> > +    description: MAC address to use
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - interrupts
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    mac: ethernet@8020000 {
-> > +        compatible = "litex,liteeth";
-> > +        reg = <0x8021000 0x100
-> > +               0x8020800 0x100
-> > +               0x8030000 0x2000>;
-> > +        rx-fifo-depth = <2>;
-> > +        tx-fifo-depth = <2>;
-> > +        interrupts = <0x11 0x1>;
-> > +    };
->
-> You would normally expect to see some MDIO properties here, a link to
-> the standard MDIO yaml, etc.
-
-Do you have a favourite example that I could follow?
