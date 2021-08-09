@@ -2,104 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68F133E496C
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 18:06:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 616F13E496F
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 18:06:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231751AbhHIQGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 12:06:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50402 "EHLO mail.kernel.org"
+        id S232130AbhHIQHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 12:07:13 -0400
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:34772 "EHLO 1wt.eu"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229456AbhHIQGj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Aug 2021 12:06:39 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 044BB60F56;
-        Mon,  9 Aug 2021 16:06:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628525179;
-        bh=+5/Y9P/eIIGPo/tVm7vmNewM1ZvHkw3Lisdlnp9j9PU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=novI017mbiCI3gHlv9eV1IAefmm1s+AWi9G2DCHEehIDESUgpkh1B6cRFOX1RmRc3
-         ITbzvChwICa88Yh7VwISQli68BUtyRMjhfKOYlqMF9BDcKg0IKVRVVsxgiLhBjpHKN
-         uybdioZ2Zqr9aAUX7828CPIOJpTsLFOU+G/V3OjpKGu1KAc1LiUhi3eCfD53Ra3cGH
-         2R2PtHouptwXRNkswf67eCG7JoQsz4yllIQqq38zHpqh6KljY8S/wpgyh06hqNXhFP
-         7M2eyi0Gnd+90gxhbVQZr0V3/LsqrNrXorQNXTic0SLhXBPikmfJdxgPzVP8sd+ab0
-         ndeNvy1oXFD6w==
-Date:   Mon, 9 Aug 2021 12:06:17 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        gushengxian <gushengxian@yulong.com>,
-        gushengxian <13145886936@163.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.13 184/189] flow_offload: action should not be
- NULL when it is referenced
-Message-ID: <YRFSebqqB7HM7lsK@sashalap>
-References: <20210706111409.2058071-1-sashal@kernel.org>
- <20210706111409.2058071-184-sashal@kernel.org>
- <caf751a7-ef2d-e31d-85e9-801e748b70dc@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <caf751a7-ef2d-e31d-85e9-801e748b70dc@gmail.com>
+        id S229456AbhHIQHM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Aug 2021 12:07:12 -0400
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 179G6fVI022669;
+        Mon, 9 Aug 2021 18:06:41 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     netdev@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Willy Tarreau <w@1wt.eu>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH net] net: linkwatch: fix failure to restore device state across suspend/resume
+Date:   Mon,  9 Aug 2021 18:06:28 +0200
+Message-Id: <20210809160628.22623-1-w@1wt.eu>
+X-Mailer: git-send-email 2.17.5
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 06, 2021 at 11:30:04AM +0200, Eric Dumazet wrote:
->On 7/6/21 1:14 PM, Sasha Levin wrote:
->> From: gushengxian <gushengxian@yulong.com>
->>
->> [ Upstream commit 9ea3e52c5bc8bb4a084938dc1e3160643438927a ]
->>
->> "action" should not be NULL when it is referenced.
->>
->> Signed-off-by: gushengxian <13145886936@163.com>
->> Signed-off-by: gushengxian <gushengxian@yulong.com>
->> Signed-off-by: David S. Miller <davem@davemloft.net>
->> Signed-off-by: Sasha Levin <sashal@kernel.org>
->> ---
->>  include/net/flow_offload.h | 12 +++++++-----
->>  1 file changed, 7 insertions(+), 5 deletions(-)
->>
->> diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
->> index dc5c1e69cd9f..69c9eabf8325 100644
->> --- a/include/net/flow_offload.h
->> +++ b/include/net/flow_offload.h
->> @@ -319,12 +319,14 @@ flow_action_mixed_hw_stats_check(const struct flow_action *action,
->>  	if (flow_offload_has_one_action(action))
->>  		return true;
->>
->> -	flow_action_for_each(i, action_entry, action) {
->> -		if (i && action_entry->hw_stats != last_hw_stats) {
->> -			NL_SET_ERR_MSG_MOD(extack, "Mixing HW stats types for actions is not supported");
->> -			return false;
->> +	if (action) {
->> +		flow_action_for_each(i, action_entry, action) {
->> +			if (i && action_entry->hw_stats != last_hw_stats) {
->> +				NL_SET_ERR_MSG_MOD(extack, "Mixing HW stats types for actions is not supported");
->> +				return false;
->> +			}
->> +			last_hw_stats = action_entry->hw_stats;
->>  		}
->> -		last_hw_stats = action_entry->hw_stats;
->>  	}
->>  	return true;
->>  }
->>
->
->This patch makes no sense really.
->
->If action is NULL, a crash would happen earlier anyway in
->
->if (flow_offload_has_one_action(action))
->    return true;
->
->Also, I wonder why it has been backported to stable version,
->there was no Fixes: tag in the submission.
+After migrating my laptop from 4.19-LTS to 5.4-LTS a while ago I noticed
+that my Ethernet port to which a bond and a VLAN interface are attached
+appeared to remain up after resuming from suspend with the cable unplugged
+(and that problem still persists with 5.10-LTS).
 
-That's the AUTOSEL logic: it will attempt to find fixes in commits that
-don't have a fixes: tag. Those get longer review times and aren't
-backported as quickly as commits with a stable tag or a fixes tag.
+It happens that the following happens:
 
+  - the network driver (e1000e here) prepares to suspend, calls e1000e_down()
+    which calls netif_carrier_off() to signal that the link is going down.
+  - netif_carrier_off() adds a link_watch event to the list of events for
+    this device
+  - the device is completely stopped.
+  - the machine suspends
+  - the cable is unplugged and the machine brought to another location
+  - the machine is resumed
+  - the queued linkwatch events are processed for the device
+  - the device doesn't yet have the __LINK_STATE_PRESENT bit and its events
+    are silently dropped
+  - the device is resumed with its link down
+  - the upper VLAN and bond interfaces are never notified that the link had
+    been turned down and remain up
+  - the only way to provoke a change is to physically connect the machine
+    to a port and possibly unplug it.
+
+The state after resume looks like this:
+  $ ip -br li | egrep 'bond|eth'
+  bond0            UP             e8:6a:64:64:64:64 <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP>
+  eth0             DOWN           e8:6a:64:64:64:64 <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP>
+  eth0.2@eth0      UP             e8:6a:64:64:64:64 <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP>
+
+Placing an explicit call to netdev_state_change() either in the suspend
+or the resume code in the NIC driver worked around this but the solution
+is not satisfying.
+
+The issue in fact really is in link_watch that loses events while it
+ought not to. It happens that the test for the device being present was
+added by commit 124eee3f6955 ("net: linkwatch: add check for netdevice
+being present to linkwatch_do_dev") in 4.20 to avoid an access to
+devices that are not present.
+
+Instead of dropping events, this patch proceeds slightly differently by
+postponing their handling so that they happen after the device is fully
+resumed.
+
+Fixes: 124eee3f6955 ("net: linkwatch: add check for netdevice being present to linkwatch_do_dev") 
+Link: https://lists.openwall.net/netdev/2018/03/15/62
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+---
+
+Note: I've been wondering if instead we shouldn't simply teach
+      netdev_state_change() not to call rtmsg_ifinfo() when the
+      device is not present, since this is exactly the problem that
+      Geert met in the discussion above and that was attempted to be
+      addressed by Heiner's initial patch. At least this patch deals
+      with the issue where it was introduced but I'm fine with
+      modifying netdev_state_change() instead if that's preferred.
+
+
+ net/core/link_watch.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/core/link_watch.c b/net/core/link_watch.c
+index 75431ca9300f..1a455847da54 100644
+--- a/net/core/link_watch.c
++++ b/net/core/link_watch.c
+@@ -158,7 +158,7 @@ static void linkwatch_do_dev(struct net_device *dev)
+ 	clear_bit(__LINK_STATE_LINKWATCH_PENDING, &dev->state);
+ 
+ 	rfc2863_policy(dev);
+-	if (dev->flags & IFF_UP && netif_device_present(dev)) {
++	if (dev->flags & IFF_UP) {
+ 		if (netif_carrier_ok(dev))
+ 			dev_activate(dev);
+ 		else
+@@ -204,7 +204,8 @@ static void __linkwatch_run_queue(int urgent_only)
+ 		dev = list_first_entry(&wrk, struct net_device, link_watch_list);
+ 		list_del_init(&dev->link_watch_list);
+ 
+-		if (urgent_only && !linkwatch_urgent_event(dev)) {
++		if (!netif_device_present(dev) ||
++		    (urgent_only && !linkwatch_urgent_event(dev))) {
+ 			list_add_tail(&dev->link_watch_list, &lweventlist);
+ 			continue;
+ 		}
 -- 
-Thanks,
-Sasha
+2.28.0
+
