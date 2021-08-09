@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69C023E4C9F
+	by mail.lfdr.de (Postfix) with ESMTP id B2B5A3E4CA0
 	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 21:04:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235931AbhHITED (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 15:04:03 -0400
-Received: from mail-am6eur05on2046.outbound.protection.outlook.com ([40.107.22.46]:48992
+        id S235957AbhHITEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 15:04:06 -0400
+Received: from mail-am6eur05on2069.outbound.protection.outlook.com ([40.107.22.69]:47936
         "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235497AbhHITEB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Aug 2021 15:04:01 -0400
+        id S235918AbhHITED (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Aug 2021 15:04:03 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NGgCPg8B7pnV7cnRaWE+VwtcM+7UMqM/fntu0KK/913+U0LWPONOI9v10QYf0QsYgaICS2joxjdIIsN3XWWxaUNGXX5+Crx0Cq3/LEhNLVTeY0dU6pSJciQ1Yy8LQjuyMziw7W87bOCM7gxs4qTuFtVZIMa+ouFtwPobLZChB1xWK+NDBWY57DgbDZb6NHuTcIrVVCAUu8Qx1oneeEMb5mg75K1EM7gHPTjHDb3KCqbqC3KuXjiVBwdQThXX7gcNzQJPLSX6jTRNqg1e5BH7L1MSXcl81fD/3k14WtZNDlndsVueyJ/XYPjLL8OmO5n/+INcwsvKT9wsZs5bDyRvdA==
+ b=VaIZIE4abPLTCACxR4cUtU8CW0i5f+YunCtMRBSwDJcsp8y9DKONzRqkaIypkbcLl+5zIj6lk3wteNTl6VxVmD95dYoHMLUCV79mRgkCd+y/vonYhAQ9d4pl7SmFnVanwmziWUKsvug8pyovSPcYaiaH7iFITotaGyVrAxXdGX3chHSM6nrpTRqlHqka4kjrXR2MKYp13Oy4jWa/JjU8SuDuy082IE2QsGGs1zqrAnMqOV+10SZIKU+nhsk5g6pZHRoF1srr8hmNOzDOOO6xyx4tDZmRWLOis6+8DmwGIj+Lt2n19IVUh4QXK/Kjm3KxwP0KKR+C9jPRiEFydBO9aQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3wHhcKMXwD8bwyrU8K19896+yWgutF0dcDOazq2/iA8=;
- b=dMlSEDwW47C1nH21CY8/CDz6PTKS8/ySAo8FVbHDVyALhZsflXufyLR0cNJl+HMvLpoi82mdi3y0lwbL3RMMRPZNH9KNyVGTgjZYrAZMblo3veFiOV8GiG0jfWKg3znxy2gOHvjIi3IInFQ3FMjsVJGeYUbY9dtb6Vf+uUwVseqGzQne8s2u+eRj5K3IchcX3wfhkOIVKTmPItrmU60ivuN4K81t2XlZDaWOGPab+8MxGdD7w5TGUdVEJufYNYvZNMINn336JCd6I1MnpyFl+5VsR5FKRDC9clgP/spRifj5eqW+QAy5TNBXs2xsob0jeaIQyxugzUTXBagNEfeb7Q==
+ bh=wKBsjeJT/luaHdgLZtLmt3nDc/Z5kIMo+OWL8trOMPA=;
+ b=TLlOfzS0Pi3w6+ZhpKOMTGMiN0OthvRqhLauiN09IHfFl6cbbyq7hOxoOKxWXpOKIsP04m86QgWFWZ0i9inpOqwVUMOpBnrsHkVrnLtf6JB84i8hPNLiXEY2DfHLoDSqR4pvjEWtBUqrjl0+w/ZeJZxZq9iRYMN6dCOeZw10zpj/GHbHNmOpbJuOEfQZ5N7xqacluUD0fHcRGWhcdlDxW5jh8qsdQ/7U3PWt0WWJQwYj2r8cSrCQc8g5UtUfI0Cl1otWNhauTY0i6HY/xchi+jIW2Z5Q/oxE/NfiYoAtPaIGHMd2F6g8l2AYVjoYibfyARKICBILY1vHJRcVoEPsRQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3wHhcKMXwD8bwyrU8K19896+yWgutF0dcDOazq2/iA8=;
- b=W2XDTPpUf4Shy2ih+fBlMtpxG6N6dp8bqHplZdD9PO/WtiQO826XjpShnthbRBUe+jV8HOqqlXU2DxFMLKKYyK9pyDfLqZUrL+Pcpmh0HgnDQwmAC/aQNBS4G632taonlgZHA56Lk3LxEHo9JwrzdOL+t3Ku79YH51VY8oTBKxg=
+ bh=wKBsjeJT/luaHdgLZtLmt3nDc/Z5kIMo+OWL8trOMPA=;
+ b=BZ91XsIfkjt/8iuAT+bQXca0W1ypESLctzsDbb/RT1/xWwpfzqLnMmFNbgskOrWmaqeovGJfdvrwAiPYVtcOLBLp/AZGq42omH9c0i16Eljt7WsTEwD4O1b1AecrQaD/DqxFzp0GW1XakFETREF0sZ8aOevZGHpQrutMrLL/5Vc=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR04MB5501.eurprd04.prod.outlook.com (2603:10a6:803:d3::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.16; Mon, 9 Aug
- 2021 19:03:39 +0000
+ 2021 19:03:40 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4394.023; Mon, 9 Aug 2021
- 19:03:39 +0000
+ 19:03:40 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -53,9 +53,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         George McCollister <george.mccollister@gmail.com>
-Subject: [RFC PATCH net-next 1/4] net: dsa: introduce a dsa_port_is_unused helper
-Date:   Mon,  9 Aug 2021 22:03:17 +0300
-Message-Id: <20210809190320.1058373-2-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 2/4] net: dsa: remove the "dsa_to_port in a loop" antipattern from the core
+Date:   Mon,  9 Aug 2021 22:03:18 +0300
+Message-Id: <20210809190320.1058373-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210809190320.1058373-1-vladimir.oltean@nxp.com>
 References: <20210809190320.1058373-1-vladimir.oltean@nxp.com>
@@ -66,83 +66,401 @@ X-ClientProxiedBy: AM0PR04CA0057.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.144.60) by AM0PR04CA0057.eurprd04.prod.outlook.com (2603:10a6:208:1::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15 via Frontend Transport; Mon, 9 Aug 2021 19:03:37 +0000
+Received: from localhost.localdomain (188.25.144.60) by AM0PR04CA0057.eurprd04.prod.outlook.com (2603:10a6:208:1::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15 via Frontend Transport; Mon, 9 Aug 2021 19:03:39 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1810338e-d21c-45dc-49d6-08d95b686581
+X-MS-Office365-Filtering-Correlation-Id: caf0d3af-291b-4a2d-f2e4-08d95b686678
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5501:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB5501733C0A06DAA1C0170009E0F69@VI1PR04MB5501.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2201;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB55016BB984DCE369FCFB3101E0F69@VI1PR04MB5501.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: inzlA+B//0GOOhRUkMeGOYLZqQAbahVeLaUs/dRPM/XMpW0CAHF9drE/LK6S1JMNifGnFmDFUhTE3E06+qd3AqehS7HjljmmDbDZwhhoOnEm1qiHtQb+Isvbh9UG/x/DaH/40qog7IDrCCh9rXrCPgPcVz1tEdRIYAslmfoU6SxkrGrg9xc68yXHYkP7CFdhIry5HmTVnuhOI+Ryc96SctJHFZLPxPKvemWLbvSayNzrra+oojcSKCuPqspW1c1pnFiaGbqeBCorDIeL2fraKz64YwlxfPIxKMMaerqdPoW9KzyIUff3UOJj0uGC09efaPBxGfmfhR2rar7q4xBTAMlAulzzD4yUW17coaGwifJhQQwY3JXlwe2+R777JBgOCASGeU1ZX219VXzGOK1CKs9psaBES+hYdEiA9Rlk4c8vDrWCvg7pjwTKC7dAi8sEDvMJZCPL0SmwezJbui1rnNoOqanKojN93qjeiM/OgEH8kjYNfzpzJcmmdlzZWBZZRtK4A7O3PypqVCmPLvWr1wXnhyyLXc9r+lg8uS8EmDjZEDCoxA8FWRMhSQzV4rDrCXA3x6gXCSMtNwJ1s45pUUO7XHmUwTq0QV9Se91p3JK7DeMKuFDEDwu1GnMnJqmN+Y2OTRMOQpelggmSikFTpomQ19a77O7TiAWRrnplVT2sfm7XniW8k2Q1Pvbe4rtr175jaRMPDfHpidNN60kG9g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39850400004)(136003)(366004)(396003)(376002)(5660300002)(66946007)(66476007)(66556008)(7416002)(4326008)(6506007)(44832011)(54906003)(52116002)(6512007)(6486002)(38100700002)(2616005)(1076003)(4744005)(956004)(110136005)(6666004)(38350700002)(86362001)(186003)(36756003)(8676002)(8936002)(478600001)(26005)(2906002)(316002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: qzn4UuFtaBgzc66wMIyILV2EmJ7XA3x4ccO9XWxWJEUQ3tAJLQXhZpobkAF9oPyskGA6N+x6wuzACgBtNHeZyJWJ/WX//dH9oIcOPM4X9+TyUbIc5TOl5PQOfAIOq99+EJO95+P03KGKKeBFfm/sp6DPaGpsPqN6IKwwcHKdIjTz4f5ldIiCRcYT4vcHuTYrO7Gex62isfvMxyMHktxI9ti0TSucBgi+qaxj7OmuZJv3bmjGm1NyJ7ivG6LeBracv6PohtUfamtTy8BOgVuYBJZesiD94M6hNdnyPobPwW3SVLzxv6/y37EHVkqgi1Ddoai4L8BbPWKr7S4nmfk/k1bE+hpTMPD64Gdw/MKpvmyn0EkeFLnsksSny0mhICvMR5k+9lSQ5kywZ20xo+wYtX/0D8nbfwM6MjBPvdqhKvJyFlTVPP+CPDpv/xQmvnmGzgukfJ+wyFFX+PvbJcF5fVusDJeXrEzuwMEh5fbpx63BWfTDkqpx+axn1UJksFanuYYWDJoeRXW0t01RDHjK4b6T4vu9EvLQ5UvcUJQnMcRB9SYKgcdLybL9GTa2q30HhreI6HHkZqjJuedeLCrtxsblnksIz0G7FTZyp5KGTiFMsDrJbInC/U5G49yka/hNvNOw4xKYF5gDb5BJizbkR0fjXHFOF/T0R6huIRUgsA/jeDPzxdm+oVtA+nqIY1kfYSPShPXOBN4NCK1RjA3fnQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39850400004)(136003)(366004)(396003)(376002)(5660300002)(66946007)(66476007)(66556008)(7416002)(4326008)(6506007)(44832011)(54906003)(52116002)(6512007)(6486002)(38100700002)(2616005)(1076003)(956004)(110136005)(30864003)(6666004)(38350700002)(86362001)(186003)(36756003)(8676002)(83380400001)(8936002)(478600001)(26005)(2906002)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hRYlZwzJFq1wsaEeH2k6CLGK4WPGOxwcy/SXh/2Xv05fMe9fTwJI1yl7Ny5I?=
- =?us-ascii?Q?iNj1HEtsVTaCqyxwHdfyyXl0CzQq58HIQqBKoRtP0O2FTEdRcaSYDC3W58bS?=
- =?us-ascii?Q?djcaUUvvXVHcb0DsRTvH9LxKvLShuJrX6YQ3uibKOnYlRgoopFUuMloEzmen?=
- =?us-ascii?Q?HIvmWfevCjfVqmchDrDvFfw4i7rb/pnpW1sWUfJczg8eiHuomFZr2nWmNaN0?=
- =?us-ascii?Q?t/Bg9Ds9jPZr3+SCHUHCkh3u0DEJ5FppykT0nISJxPhEC6+6iaZxyooXMqJf?=
- =?us-ascii?Q?4osRlfe+1NdJPGRhBG0/Xi9BbIZzgXJO+aA9FhpRyc8x9FZOpbURMz/DhOOw?=
- =?us-ascii?Q?8XxYEqAui+F22jqZNcYQSRe5i+tsqHum2nXKmr9AD36Cw/zv0MbyWGKuwsj4?=
- =?us-ascii?Q?H4GvKZJgUhpavMdlqobGx/ixRf3hB7bawCvO7XwtuwcW9IT7n0upPk/Xz4Ur?=
- =?us-ascii?Q?ADwM+K5a6PrnkDfZzfjOufg7ODUhX5PubejKWbMkoSKO/25BmyCRZ9ZnkFz4?=
- =?us-ascii?Q?ceQ8dI0/S3ODo+mVweKM3nXhgwa1t5COBn/80VhCrfBTvxOue047AHNVKynk?=
- =?us-ascii?Q?wX/nAC2yMnr5xPHIU2TdHRaRMlGYf1I0CfZ/cmQIcKDmBSgRiPPUfLxhm30V?=
- =?us-ascii?Q?bKje/rh0/DhbdQqwFd1oZpmy1pE19yVboAGSyO3mT8ApPSstQGnlxDWot+zx?=
- =?us-ascii?Q?vrdcs8qijHwQr0oIF7NJ6L7862936iKKFfYmGGb9CilTPKB24e+R6yODCXfr?=
- =?us-ascii?Q?95esAekpe6NuSBvjJdQTE3SKZZqaJZqQ4nRHiFRhlYDaNfmZlu+F4VVYZUBS?=
- =?us-ascii?Q?AcMemOd2Q4FqleKsam5hkICraUdMVrVqOgU9kXLXNWu75Lq+TpP8hIvyMkx5?=
- =?us-ascii?Q?/iCgVP9G79DaVMHuKXoNp15VQ0sKh71XG4Ii8N/OcX/ccCkTg+Dx0QhCLWHP?=
- =?us-ascii?Q?A4eXl4tIBKIHxe8vYGf6WHeecqWyz42OHG2pvrYLykiivJe6jCS/gyPFHce9?=
- =?us-ascii?Q?xAEzCTq1LjwrA6xfjbg/thwyUve9tuwG8TsNSdtA54ufxx0bAjkQHidwpU7B?=
- =?us-ascii?Q?aT9e9FuCYfcPu7rEj5ZkTLu67edC3GU1m/w+9QJQGouYFgFtbv3OhruNa6lj?=
- =?us-ascii?Q?2Zoak1WLteCWmtEkiee7bDS4XMCFQp/tjdqfYQ8Q9YPXf1/WZ92LX/3T7pkp?=
- =?us-ascii?Q?dOB4X2MdF8mteZjCMPSWLmgy3TMbyVjB11LZJsogCmdSgfBF9idXP/jferts?=
- =?us-ascii?Q?ubNm3Zhx72MT28+Tjc+snjz3sWqpEJq0YClB3IcR+QllYWmZxmZPdaDPsxSh?=
- =?us-ascii?Q?lPzxe8eI4jv4GADPNwTPgZe3?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?aimhS9Gvo36wTEN3+lwyROGUcbnu67NjiFljfopW455lCQ6NjyYHmxDavqzB?=
+ =?us-ascii?Q?wprAz5o4SsspQUqeP30dCm8oE2T0f2OwcX22aOE2pTlf6fuUDFqJbGDMlVyj?=
+ =?us-ascii?Q?qYVkpnNv2Vnhp0UAmVtCLPNbTNSRQ7jQEo+jzi5gQGhX4LzQe48eCz+gahos?=
+ =?us-ascii?Q?YA0Iyh2Eu6o1UectAAyyU3EPiOEXwOpiulp/Zxm7d2jfALe+NDKRKgsmbRDY?=
+ =?us-ascii?Q?9+6u0r2HLbvj+UkKi4m1iyjtok/QPKGuL0crNDclIMVLrMe74KtvKRZBCusm?=
+ =?us-ascii?Q?lC/UAO6l5Rdq3cnS97tKTEJtcg4W6y0dUDcVdTrpmg0zqPQpXDz3eL+MACLE?=
+ =?us-ascii?Q?2Y9OhuJlo73UUd9427nO4f067MRQcc8dmBSeU3/ap7xALYxuMOt2RMhXH+7J?=
+ =?us-ascii?Q?FHffg5DF1tPEO3LExoSocl0Uj5akbHC52SFeeTDcs7vzlzBfSsazJJ9euSUC?=
+ =?us-ascii?Q?Cw/WtTGz4Zi6M1ze9oKumV/IaBd97x96qQ08aEJm4iX+WfiC7nc+JJPKvppp?=
+ =?us-ascii?Q?Zgg+k0OV0iFiBKMpwgcIOhL0HPL4SpgwPk9W5yDNN3/4ahY0xTy8DkAC1DG3?=
+ =?us-ascii?Q?CXzWoZZIWFgFCzgfKhvEAACj1NLwvwQtcURkDA3VOWLpGtbI2Td2HpT1ooGj?=
+ =?us-ascii?Q?7SB+SsW0VIYm1sXwM4s2lKVp+6kO8dkeMnvm8w0aZCfSr01XZyGBKLO1L2dq?=
+ =?us-ascii?Q?ltyWjVaoMZnNJ48YENVpCtpLB6rf1asvAWjvfoh/Wijfi8WxxTAAsBNNrjH1?=
+ =?us-ascii?Q?hTNGHvlJBGo0V5Ir0JIDGptjLMMYIvUDYroxrB54FSw10isdE8LkZUGZJE61?=
+ =?us-ascii?Q?MQgq0ULvY1gXNuKCX6ISyp9774hKHvl7OQUkm0s9nkJu4kisDkSvbEaHj/oD?=
+ =?us-ascii?Q?RSn3dUwuW/X5hKnXpVX9PlqOAIGdpeQgxHUTakKB3VIC+Tlj+x1pX3LGAg6z?=
+ =?us-ascii?Q?OQwcw6FCXiymQ2TNB8LebOcITm3aFuTmOejF/gKXBv0zrhp7/hHxsmZ9XrqE?=
+ =?us-ascii?Q?vXzxDrxsT0u6t99h+hFFU2hJklwrTkMcGjQMyKI+HGl3FcrYCfxFjnz0TmV2?=
+ =?us-ascii?Q?nlINjofmDDDYogeWJkkIhS+OlEgG1es1dMVD+cMxD41QUe1kcWC4v3nCE1wS?=
+ =?us-ascii?Q?evTdhAG7aETK2x39B4PshwNIXWrF/xRzg8N6loSgS+68YZQ7nreVsvkaCkXA?=
+ =?us-ascii?Q?2c8MgmuoRFIU3KLJ9WRGqhdXHA7j0BMZna+fdj07Wbx2iNzsa65tIg0NZutS?=
+ =?us-ascii?Q?pEMWe5PK5nfHS2QLxg2yc0XXh5TJc+FMJHnBzrtwIqkmN5kpYF5C+oBOyQQ2?=
+ =?us-ascii?Q?ZmT/Dbn63ALHcgl8ecpmEsSW?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1810338e-d21c-45dc-49d6-08d95b686581
+X-MS-Exchange-CrossTenant-Network-Message-Id: caf0d3af-291b-4a2d-f2e4-08d95b686678
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2021 19:03:38.9732
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2021 19:03:40.5263
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: m8hP26IVPkfTmWD0RLSZGMUOcoUelDoioijEMRDpXewVyw1QOB/j5XD8N/O0ASfIs4NPFxlgfkA9lEmHpNkgEg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: WyJhFj52GTWi4ugtMunkZDjX89kxVN89Bn0enugQS39eJioJXut71L35DRC8+w0/tyinRPy3Owo5Xz3ExlQiJQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5501
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to the existing dsa_port_is_{cpu,user,dsa} helpers which operate
-directly on a struct dsa_port *dp, let's introduce the equivalent of
-dsa_is_unused_port. We will use this to create a more efficient iterator
-over the available ports of a switch.
+Ever since Vivien's conversion of the ds->ports array into a dst->ports
+list, and the introduction of dsa_to_port, iterations through the ports
+of a switch became quadratic whenever dsa_to_port was needed.
+
+dsa_to_port can either be called directly, or indirectly through the
+dsa_is_{user,cpu,dsa,unused}_port helpers.
+
+Introduce a basic switch port iterator macro, dsa_switch_for_each_port,
+that works with the iterator variable being a struct dsa_port *dp
+directly, and not an int i. It is an expensive variable to go from i to
+dp, but cheap to go from dp to i.
+
+This macro iterates through the entire ds->dst->ports list and filters
+by the ports belonging just to the switch provided as argument.
+
+While at it, provide some more flavors of that macro which filter for
+specific types of ports: at the moment just user ports and CPU ports.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- include/net/dsa.h | 5 +++++
- 1 file changed, 5 insertions(+)
+ include/net/dsa.h   | 19 +++++++++++++++----
+ net/dsa/dsa.c       | 22 +++++++++++-----------
+ net/dsa/dsa2.c      | 11 +++++------
+ net/dsa/port.c      |  7 ++++---
+ net/dsa/switch.c    | 41 ++++++++++++++++++-----------------------
+ net/dsa/tag_8021q.c | 29 +++++++++++++----------------
+ 6 files changed, 66 insertions(+), 63 deletions(-)
 
 diff --git a/include/net/dsa.h b/include/net/dsa.h
-index cd7dc74d0d4c..d05c71a92715 100644
+index d05c71a92715..4639a82bab66 100644
 --- a/include/net/dsa.h
 +++ b/include/net/dsa.h
-@@ -431,6 +431,11 @@ static inline struct dsa_port *dsa_to_port(struct dsa_switch *ds, int p)
- 	return NULL;
+@@ -471,14 +471,25 @@ static inline bool dsa_is_user_port(struct dsa_switch *ds, int p)
+ 	return dsa_to_port(ds, p)->type == DSA_PORT_TYPE_USER;
  }
  
-+static inline bool dsa_port_is_unused(struct dsa_port *port)
-+{
-+	return port->type == DSA_PORT_TYPE_UNUSED;
-+}
++#define dsa_switch_for_each_port(_dp, _ds) \
++	list_for_each_entry((_dp), &(_ds)->dst->ports, list) \
++		if ((_dp)->ds == (_ds))
 +
- static inline bool dsa_port_is_dsa(struct dsa_port *port)
++#define dsa_switch_for_each_user_port(_dp, _ds) \
++	dsa_switch_for_each_port((_dp), (_ds)) \
++		if (dsa_port_is_user((_dp)))
++
++#define dsa_switch_for_each_cpu_port(_dp, _ds) \
++	dsa_switch_for_each_port((_dp), (_ds)) \
++		if (dsa_port_is_cpu((_dp)))
++
+ static inline u32 dsa_user_ports(struct dsa_switch *ds)
  {
- 	return port->type == DSA_PORT_TYPE_DSA;
++	struct dsa_port *dp;
+ 	u32 mask = 0;
+-	int p;
+ 
+-	for (p = 0; p < ds->num_ports; p++)
+-		if (dsa_is_user_port(ds, p))
+-			mask |= BIT(p);
++	dsa_switch_for_each_user_port(dp, ds)
++		mask |= BIT(dp->index);
+ 
+ 	return mask;
+ }
+diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
+index 5e73332a9707..8104f2382988 100644
+--- a/net/dsa/dsa.c
++++ b/net/dsa/dsa.c
+@@ -280,23 +280,22 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
+-static bool dsa_is_port_initialized(struct dsa_switch *ds, int p)
++static bool dsa_port_is_initialized(const struct dsa_port *dp)
+ {
+-	const struct dsa_port *dp = dsa_to_port(ds, p);
+-
+ 	return dp->type == DSA_PORT_TYPE_USER && dp->slave;
+ }
+ 
+ int dsa_switch_suspend(struct dsa_switch *ds)
+ {
+-	int i, ret = 0;
++	struct dsa_port *dp;
++	int ret = 0;
+ 
+ 	/* Suspend slave network devices */
+-	for (i = 0; i < ds->num_ports; i++) {
+-		if (!dsa_is_port_initialized(ds, i))
++	dsa_switch_for_each_port(dp, ds) {
++		if (!dsa_port_is_initialized(dp))
+ 			continue;
+ 
+-		ret = dsa_slave_suspend(dsa_to_port(ds, i)->slave);
++		ret = dsa_slave_suspend(dp->slave);
+ 		if (ret)
+ 			return ret;
+ 	}
+@@ -310,7 +309,8 @@ EXPORT_SYMBOL_GPL(dsa_switch_suspend);
+ 
+ int dsa_switch_resume(struct dsa_switch *ds)
+ {
+-	int i, ret = 0;
++	struct dsa_port *dp;
++	int ret = 0;
+ 
+ 	if (ds->ops->resume)
+ 		ret = ds->ops->resume(ds);
+@@ -319,11 +319,11 @@ int dsa_switch_resume(struct dsa_switch *ds)
+ 		return ret;
+ 
+ 	/* Resume slave network devices */
+-	for (i = 0; i < ds->num_ports; i++) {
+-		if (!dsa_is_port_initialized(ds, i))
++	dsa_switch_for_each_port(dp, ds) {
++		if (!dsa_port_is_initialized(dp))
+ 			continue;
+ 
+-		ret = dsa_slave_resume(dsa_to_port(ds, i)->slave);
++		ret = dsa_slave_resume(dp->slave);
+ 		if (ret)
+ 			return ret;
+ 	}
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index 8150e16aaa55..13794578a1d0 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -707,16 +707,15 @@ static int dsa_switch_setup_tag_protocol(struct dsa_switch *ds)
+ {
+ 	const struct dsa_device_ops *tag_ops = ds->dst->tag_ops;
+ 	struct dsa_switch_tree *dst = ds->dst;
+-	int port, err;
++	struct dsa_port *cpu_dp;
++	int err;
+ 
+ 	if (tag_ops->proto == dst->default_proto)
+ 		return 0;
+ 
+-	for (port = 0; port < ds->num_ports; port++) {
+-		if (!dsa_is_cpu_port(ds, port))
+-			continue;
+-
+-		err = ds->ops->change_tag_protocol(ds, port, tag_ops->proto);
++	dsa_switch_for_each_cpu_port(cpu_dp, ds) {
++		err = ds->ops->change_tag_protocol(ds, cpu_dp->index,
++						   tag_ops->proto);
+ 		if (err) {
+ 			dev_err(ds->dev, "Unable to use tag protocol \"%s\": %pe\n",
+ 				tag_ops->name, ERR_PTR(err));
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index eedd9881e1ba..05b902d69863 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -540,7 +540,8 @@ static bool dsa_port_can_apply_vlan_filtering(struct dsa_port *dp,
+ 					      struct netlink_ext_ack *extack)
+ {
+ 	struct dsa_switch *ds = dp->ds;
+-	int err, i;
++	struct dsa_port *other_dp;
++	int err;
+ 
+ 	/* VLAN awareness was off, so the question is "can we turn it on".
+ 	 * We may have had 8021q uppers, those need to go. Make sure we don't
+@@ -582,10 +583,10 @@ static bool dsa_port_can_apply_vlan_filtering(struct dsa_port *dp,
+ 	 * different ports of the same switch device and one of them has a
+ 	 * different setting than what is being requested.
+ 	 */
+-	for (i = 0; i < ds->num_ports; i++) {
++	dsa_switch_for_each_port(other_dp, ds) {
+ 		struct net_device *other_bridge;
+ 
+-		other_bridge = dsa_to_port(ds, i)->bridge_dev;
++		other_bridge = other_dp->bridge_dev;
+ 		if (!other_bridge)
+ 			continue;
+ 		/* If it's the same bridge, it also has same
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index fd1a1c6bf9cf..5ddcf37ecfa5 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -17,14 +17,11 @@
+ static unsigned int dsa_switch_fastest_ageing_time(struct dsa_switch *ds,
+ 						   unsigned int ageing_time)
+ {
+-	int i;
+-
+-	for (i = 0; i < ds->num_ports; ++i) {
+-		struct dsa_port *dp = dsa_to_port(ds, i);
++	struct dsa_port *dp;
+ 
++	dsa_switch_for_each_port(dp, ds)
+ 		if (dp->ageing_time && dp->ageing_time < ageing_time)
+ 			ageing_time = dp->ageing_time;
+-	}
+ 
+ 	return ageing_time;
+ }
+@@ -117,7 +114,8 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
+ 	bool unset_vlan_filtering = br_vlan_enabled(info->br);
+ 	struct dsa_switch_tree *dst = ds->dst;
+ 	struct netlink_ext_ack extack = {0};
+-	int err, port;
++	struct dsa_port *dp;
++	int err;
+ 
+ 	if (dst->index == info->tree_index && ds->index == info->sw_index &&
+ 	    ds->ops->port_bridge_leave)
+@@ -138,10 +136,10 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
+ 	 * VLAN-aware bridge.
+ 	 */
+ 	if (unset_vlan_filtering && ds->vlan_filtering_is_global) {
+-		for (port = 0; port < ds->num_ports; port++) {
++		dsa_switch_for_each_port(dp, ds) {
+ 			struct net_device *bridge_dev;
+ 
+-			bridge_dev = dsa_to_port(ds, port)->bridge_dev;
++			bridge_dev = dp->bridge_dev;
+ 
+ 			if (bridge_dev && br_vlan_enabled(bridge_dev)) {
+ 				unset_vlan_filtering = false;
+@@ -566,38 +564,35 @@ static int dsa_switch_change_tag_proto(struct dsa_switch *ds,
+ 				       struct dsa_notifier_tag_proto_info *info)
+ {
+ 	const struct dsa_device_ops *tag_ops = info->tag_ops;
+-	int port, err;
++	struct dsa_port *dp, *cpu_dp;
++	int err;
+ 
+ 	if (!ds->ops->change_tag_protocol)
+ 		return -EOPNOTSUPP;
+ 
+ 	ASSERT_RTNL();
+ 
+-	for (port = 0; port < ds->num_ports; port++) {
+-		if (!dsa_is_cpu_port(ds, port))
+-			continue;
+-
+-		err = ds->ops->change_tag_protocol(ds, port, tag_ops->proto);
++	dsa_switch_for_each_cpu_port(cpu_dp, ds) {
++		err = ds->ops->change_tag_protocol(ds, cpu_dp->index,
++						   tag_ops->proto);
+ 		if (err)
+ 			return err;
+ 
+-		dsa_port_set_tag_protocol(dsa_to_port(ds, port), tag_ops);
++		dsa_port_set_tag_protocol(cpu_dp, tag_ops);
+ 	}
+ 
+ 	/* Now that changing the tag protocol can no longer fail, let's update
+ 	 * the remaining bits which are "duplicated for faster access", and the
+ 	 * bits that depend on the tagger, such as the MTU.
+ 	 */
+-	for (port = 0; port < ds->num_ports; port++) {
+-		if (dsa_is_user_port(ds, port)) {
+-			struct net_device *slave;
++	dsa_switch_for_each_user_port(dp, ds) {
++		struct net_device *slave;
+ 
+-			slave = dsa_to_port(ds, port)->slave;
+-			dsa_slave_setup_tagger(slave);
++		slave = dp->slave;
++		dsa_slave_setup_tagger(slave);
+ 
+-			/* rtnl_mutex is held in dsa_tree_change_tag_proto */
+-			dsa_slave_change_mtu(slave, slave->mtu);
+-		}
++		/* rtnl_mutex is held in dsa_tree_change_tag_proto */
++		dsa_slave_change_mtu(slave, slave->mtu);
+ 	}
+ 
+ 	return 0;
+diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
+index 654697ebb6f3..b29f4eb9aed1 100644
+--- a/net/dsa/tag_8021q.c
++++ b/net/dsa/tag_8021q.c
+@@ -322,15 +322,13 @@ int dsa_switch_tag_8021q_vlan_del(struct dsa_switch *ds,
+  * +-+-----+-+-----+-+-----+-+-----+-+    +-+-----+-+-----+-+-----+-+-----+-+
+  *   swp0    swp1    swp2    swp3           swp0    swp1    swp2    swp3
+  */
+-static bool dsa_tag_8021q_bridge_match(struct dsa_switch *ds, int port,
++static bool dsa_tag_8021q_bridge_match(struct dsa_port *dp,
+ 				       struct dsa_notifier_bridge_info *info)
+ {
+-	struct dsa_port *dp = dsa_to_port(ds, port);
+-
+ 	/* Don't match on self */
+-	if (ds->dst->index == info->tree_index &&
+-	    ds->index == info->sw_index &&
+-	    port == info->port)
++	if (dp->ds->dst->index == info->tree_index &&
++	    dp->ds->index == info->sw_index &&
++	    dp->index == info->port)
+ 		return false;
+ 
+ 	if (dsa_port_is_user(dp))
+@@ -344,8 +342,9 @@ int dsa_tag_8021q_bridge_join(struct dsa_switch *ds,
+ {
+ 	struct dsa_switch *targeted_ds;
+ 	struct dsa_port *targeted_dp;
++	struct dsa_port *dp;
+ 	u16 targeted_rx_vid;
+-	int err, port;
++	int err;
+ 
+ 	if (!ds->tag_8021q_ctx)
+ 		return 0;
+@@ -354,11 +353,10 @@ int dsa_tag_8021q_bridge_join(struct dsa_switch *ds,
+ 	targeted_dp = dsa_to_port(targeted_ds, info->port);
+ 	targeted_rx_vid = dsa_8021q_rx_vid(targeted_ds, info->port);
+ 
+-	for (port = 0; port < ds->num_ports; port++) {
+-		struct dsa_port *dp = dsa_to_port(ds, port);
+-		u16 rx_vid = dsa_8021q_rx_vid(ds, port);
++	dsa_switch_for_each_port(dp, ds) {
++		u16 rx_vid = dsa_8021q_rx_vid(ds, dp->index);
+ 
+-		if (!dsa_tag_8021q_bridge_match(ds, port, info))
++		if (!dsa_tag_8021q_bridge_match(dp, info))
+ 			continue;
+ 
+ 		/* Install the RX VID of the targeted port in our VLAN table */
+@@ -380,8 +378,8 @@ int dsa_tag_8021q_bridge_leave(struct dsa_switch *ds,
+ {
+ 	struct dsa_switch *targeted_ds;
+ 	struct dsa_port *targeted_dp;
++	struct dsa_port *dp;
+ 	u16 targeted_rx_vid;
+-	int port;
+ 
+ 	if (!ds->tag_8021q_ctx)
+ 		return 0;
+@@ -390,11 +388,10 @@ int dsa_tag_8021q_bridge_leave(struct dsa_switch *ds,
+ 	targeted_dp = dsa_to_port(targeted_ds, info->port);
+ 	targeted_rx_vid = dsa_8021q_rx_vid(targeted_ds, info->port);
+ 
+-	for (port = 0; port < ds->num_ports; port++) {
+-		struct dsa_port *dp = dsa_to_port(ds, port);
+-		u16 rx_vid = dsa_8021q_rx_vid(ds, port);
++	dsa_switch_for_each_port(dp, ds) {
++		u16 rx_vid = dsa_8021q_rx_vid(ds, dp->index);
+ 
+-		if (!dsa_tag_8021q_bridge_match(ds, port, info))
++		if (!dsa_tag_8021q_bridge_match(dp, info))
+ 			continue;
+ 
+ 		/* Remove the RX VID of the targeted port from our VLAN table */
 -- 
 2.25.1
 
