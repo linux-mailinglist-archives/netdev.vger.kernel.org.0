@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24C093E480A
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 16:54:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FF413E480B
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 16:54:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234478AbhHIOys (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 10:54:48 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:7812 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234237AbhHIOyr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 10:54:47 -0400
+        id S235048AbhHIOy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 10:54:58 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:13257 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231478AbhHIOyt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 10:54:49 -0400
 Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Gjzcg6DXLzYcrv;
-        Mon,  9 Aug 2021 22:54:11 +0800 (CST)
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Gjzch1YtHz1CTdM;
+        Mon,  9 Aug 2021 22:54:12 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
  dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
@@ -26,10 +26,12 @@ From:   Guangbin Huang <huangguangbin2@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 0/4] net: hns3: add support ethtool extended link state
-Date:   Mon, 9 Aug 2021 22:50:38 +0800
-Message-ID: <1628520642-30839-1-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 1/4] docs: ethtool: Add two link extended substates of bad signal integrity
+Date:   Mon, 9 Aug 2021 22:50:39 +0800
+Message-ID: <1628520642-30839-2-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
+In-Reply-To: <1628520642-30839-1-git-send-email-huangguangbin2@huawei.com>
+References: <1628520642-30839-1-git-send-email-huangguangbin2@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.67.165.24]
@@ -40,25 +42,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds support for ethtool extended link state in the HNS3
-ethernet driver.
+Add documentation for two bad signal integrity substates:
+ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_REFERENCE_CLOCK_LOST
+ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_ALOS.
 
-Guangbin Huang (4):
-  docs: ethtool: Add two link extended substates of bad signal integrity
-  ethtool: add two link extended substates of bad signal integrity
-  net: hns3: add header file hns3_ethtoo.h
-  net: hns3: add support ethtool extended link state
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+---
+ Documentation/networking/ethtool-netlink.rst | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
- Documentation/networking/ethtool-netlink.rst       |  8 +++
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  2 +
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 82 ++++++++++++++++++----
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h | 31 ++++++++
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  3 +
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 27 +++++++
- include/uapi/linux/ethtool.h                       |  2 +
- 7 files changed, 140 insertions(+), 15 deletions(-)
- create mode 100644 drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h
-
+diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+index c86628e6a235..c690bb37430d 100644
+--- a/Documentation/networking/ethtool-netlink.rst
++++ b/Documentation/networking/ethtool-netlink.rst
+@@ -595,6 +595,14 @@ Link extended substates:
+                                                                        that is not formally
+                                                                        supported, which led to
+                                                                        signal integrity issues
++
++  ``ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_REFERENCE_CLOCK_LOST``        The external clock signal for
++                                                                       SerDes is too weak or
++                                                                       unavailable.
++
++  ``ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_ALOS``                        The received signal for
++                                                                       SerDes is too weak because
++                                                                       analog loss of signal.
+   =================================================================    =============================
+ 
+   Cable issue substates:
 -- 
 2.8.1
 
