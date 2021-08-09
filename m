@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85A753E4277
+	by mail.lfdr.de (Postfix) with ESMTP id CE2473E4278
 	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 11:20:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234375AbhHIJUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 05:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58068 "EHLO
+        id S234402AbhHIJUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 05:20:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234312AbhHIJTE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 05:19:04 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92C16C061796
-        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 02:18:44 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id k9so6250090edr.10
-        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 02:18:44 -0700 (PDT)
+        with ESMTP id S234320AbhHIJTF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 05:19:05 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9956DC0613CF
+        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 02:18:45 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id g21so23561444edb.4
+        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 02:18:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qhJU/1ad/ZW3iZ05XUZhhQ+cb6MRN1NcaxmyJCG/h/Y=;
-        b=du9Bj+nd1yctokvLRgNa8UZWXabh49I6ukxEghF+aZOCFluOGwzKHImMdRi0oQhIyD
-         dHOOpEfJgIoH1YgBuJ+L7t6IaSUgBVwWUDdV3ltsOwzrbV8CljUUHbIK97JMiu7FSL4o
-         3skrIm3Y0gM9GbSvsYpZRByNpDjA1hNEXE8yP29k/XokESaSNF0o8NBtxj5MhgdJc7Eo
-         QSV8kE0SrE9+ciKZOltcLJ54QoY5mTwfbtE96KytE0RbhLBH1pL6p5y/auWZyIyRtF2k
-         p6HU3DTXTZ1Vdg094FlxxztodH3vcl92efbg8xapd87YQUhYMIMNXNNxxAw0fHNgWFNL
-         tvYQ==
+        bh=x3pxYYbBi2/gCRXiNDi9wFrI7NW3X0/LftzkQPFp/tw=;
+        b=EcRLp3ibEwyiVsOCzHV8J7tfQaim3Z0otyWH3ncyOBDOzcSpYCkhrP0ijhwLRUDJZ7
+         DVmTmDk5AHXM/ENVNWGaY6fYwhykrnKhIG4iPu+73eQX21k5aH8WDzJStUpO1Kd0bt3v
+         ADbBaw7XWCCvc03HLNpUrMePRcx/ZQTpphKAzBC0gCw40OsABd/G9YARJk5VJ/oF4bZR
+         eC+RH1B4se6hSMZTZzaChHUUGDvDFCxuyuP8LfGpUA89T05OcB5tPdgLnI2Rr87uIJSt
+         sDdX1+4ywXc61Ev2Dhg/B/XBRvrY3VJXCI06z3M4kjXod5/mP3wzeVpatorVYLVT1VQ0
+         mfAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qhJU/1ad/ZW3iZ05XUZhhQ+cb6MRN1NcaxmyJCG/h/Y=;
-        b=Ms3Cuffdwt+gqaIzqC+TQMYQsJB5L1ZTeunReCfkAv6bkyiYXcBHtru/J2I6zEGnpb
-         0jPOiYU2+Jc/fmBOhAvRlvm+gHFoYz1O99S0dbvkV7FZjpdb3ThmRQcZcqNv2bjyDSdf
-         4v9Q1AWyVzhWVpJUdki4Svkf+Q1lgepAsmxqQfdp4jVYulcH+zDvU2MAD+Pt02g1OpKW
-         S+ZYDw2or+7fOGiwqyNOaAP0FJHzryaxnDs2ZSnhhVsmV3hpv2gJK6rSeX2DvtgHj2G2
-         p55CpHhlLMf7U8t2mMQvV91BbPs5nlSiRdeOmh16AvlTN8NuYw2tKewr/ty7NYafTTiD
-         8waw==
-X-Gm-Message-State: AOAM532QVv7LGFVRKT2sSWEPwAEe1AY5+96rwKZWK+3yliLlg6fC7fAA
-        7szidzQTW02ToDq+gW1pz1Jdng==
-X-Google-Smtp-Source: ABdhPJyHNU/Oqc1arIj7/7asJ73vEnN3Wa7W4gtFcIQEgM+T+Ocw+p2U/nJ5+tDyNAY3Ef2kn5rkfw==
-X-Received: by 2002:a50:a455:: with SMTP id v21mr11006484edb.369.1628500723253;
-        Mon, 09 Aug 2021 02:18:43 -0700 (PDT)
+        bh=x3pxYYbBi2/gCRXiNDi9wFrI7NW3X0/LftzkQPFp/tw=;
+        b=dYyKuC5LZm0g6Bu0U1HwJRhmVwZDpddGN4OSNaBqPTJV9piSW5Ei1+bqo6fbtRUkhS
+         UnUR26wcWG4VZOGGl+1bRTlLcL3yJKKCBkFGos1mUh6RzDol+9SQ8I7iWLJTyYgwbgCV
+         3ap6aLQoav5p8Mi35SRiMPSD2q6T4WX1t6daAszmfPAYzA0UoAEUOhGkl3Av7VzZ5UbI
+         1lnI9uBURuxIBJc8AyxIjY2mrdMpnuVifcuUu0p+ddojwhwEGqhXat6ZtVOP0lLWhQYE
+         dJ1985T/lJ1t/mTslTEJ3O7ZAaVttckq5ixP2f7Vm9PQUDj8gP2KbnExd2dJCKnFzWkL
+         Zv0A==
+X-Gm-Message-State: AOAM532kf+PWRY3H8fgbHWv9+5FsZKUGABcaq53cm8KfuOCKT6qatspf
+        myXnm/BtACPVdh6bUbnKigw9Ew==
+X-Google-Smtp-Source: ABdhPJxiprle9EhCPKpr+EFj5Rc+DUDMJSVjuV8X9txhqcqgJpnX8IjnwmBp6NH4AzAesXZrwileCA==
+X-Received: by 2002:a05:6402:2217:: with SMTP id cq23mr7976883edb.56.1628500724280;
+        Mon, 09 Aug 2021 02:18:44 -0700 (PDT)
 Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
-        by smtp.gmail.com with ESMTPSA id dg24sm1234250edb.6.2021.08.09.02.18.42
+        by smtp.gmail.com with ESMTPSA id dg24sm1234250edb.6.2021.08.09.02.18.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Aug 2021 02:18:42 -0700 (PDT)
+        Mon, 09 Aug 2021 02:18:43 -0700 (PDT)
 From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
 Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
@@ -54,9 +54,9 @@ Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         Tony.Ambardar@gmail.com, netdev@vger.kernel.org,
         bpf@vger.kernel.org,
         Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Subject: [PATCH bpf-next v2 02/14] bpf/tests: Add BPF_MOV tests for zero and sign extension
-Date:   Mon,  9 Aug 2021 11:18:17 +0200
-Message-Id: <20210809091829.810076-3-johan.almbladh@anyfinetworks.com>
+Subject: [PATCH bpf-next v2 03/14] bpf/tests: Fix typos in test case descriptions
+Date:   Mon,  9 Aug 2021 11:18:18 +0200
+Message-Id: <20210809091829.810076-4-johan.almbladh@anyfinetworks.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210809091829.810076-1-johan.almbladh@anyfinetworks.com>
 References: <20210809091829.810076-1-johan.almbladh@anyfinetworks.com>
@@ -66,120 +66,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tests for ALU32 and ALU64 MOV with different sizes of the immediate
-value. Depending on the immediate field width of the native CPU
-instructions, a JIT may generate code differently depending on the
-immediate value. Test that zero or sign extension is performed as
-expected. Mainly for JIT testing.
+This patch corrects the test description in a number of cases where
+the description differed from what was actually tested and expected.
 
 Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
 Acked-by: Yonghong Song <yhs@fb.com>
 ---
- lib/test_bpf.c | 84 ++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 84 insertions(+)
+ lib/test_bpf.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-index 377e866764cb..450984433140 100644
+index 450984433140..ec36a8bfa3f9 100644
 --- a/lib/test_bpf.c
 +++ b/lib/test_bpf.c
-@@ -2360,6 +2360,48 @@ static struct bpf_test tests[] = {
- 		{ },
- 		{ { 0, 0x1 } },
+@@ -3537,7 +3537,7 @@ static struct bpf_test tests[] = {
+ 		{ { 0, 0xffffffff } },
  	},
-+	{
-+		"ALU_MOV_K: small negative",
-+		.u.insns_int = {
-+			BPF_ALU32_IMM(BPF_MOV, R0, -123),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, -123 } }
-+	},
-+	{
-+		"ALU_MOV_K: small negative zero extension",
-+		.u.insns_int = {
-+			BPF_ALU32_IMM(BPF_MOV, R0, -123),
-+			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, 0 } }
-+	},
-+	{
-+		"ALU_MOV_K: large negative",
-+		.u.insns_int = {
-+			BPF_ALU32_IMM(BPF_MOV, R0, -123456789),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, -123456789 } }
-+	},
-+	{
-+		"ALU_MOV_K: large negative zero extension",
-+		.u.insns_int = {
-+			BPF_ALU32_IMM(BPF_MOV, R0, -123456789),
-+			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, 0 } }
-+	},
  	{
- 		"ALU64_MOV_K: dst = 2",
+-		"ALU64_AND_K: 0x0000ffffffff0000 & 0x0 = 0x0000ffff00000000",
++		"ALU64_AND_K: 0x0000ffffffff0000 & 0x0 = 0x0000000000000000",
  		.u.insns_int = {
-@@ -2412,6 +2454,48 @@ static struct bpf_test tests[] = {
- 		{ },
+ 			BPF_LD_IMM64(R2, 0x0000ffffffff0000LL),
+ 			BPF_LD_IMM64(R3, 0x0000000000000000LL),
+@@ -3553,7 +3553,7 @@ static struct bpf_test tests[] = {
  		{ { 0, 0x1 } },
  	},
-+	{
-+		"ALU64_MOV_K: small negative",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, -123),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, -123 } }
-+	},
-+	{
-+		"ALU64_MOV_K: small negative sign extension",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, -123),
-+			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, 0xffffffff } }
-+	},
-+	{
-+		"ALU64_MOV_K: large negative",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, -123456789),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, -123456789 } }
-+	},
-+	{
-+		"ALU64_MOV_K: large negative sign extension",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, -123456789),
-+			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, 0xffffffff } }
-+	},
- 	/* BPF_ALU | BPF_ADD | BPF_X */
  	{
- 		"ALU_ADD_X: 1 + 2 = 3",
+-		"ALU64_AND_K: 0x0000ffffffff0000 & -1 = 0x0000ffffffffffff",
++		"ALU64_AND_K: 0x0000ffffffff0000 & -1 = 0x0000ffffffff0000",
+ 		.u.insns_int = {
+ 			BPF_LD_IMM64(R2, 0x0000ffffffff0000LL),
+ 			BPF_LD_IMM64(R3, 0x0000ffffffff0000LL),
+@@ -3679,7 +3679,7 @@ static struct bpf_test tests[] = {
+ 		{ { 0, 0xffffffff } },
+ 	},
+ 	{
+-		"ALU64_OR_K: 0x0000ffffffff0000 | 0x0 = 0x0000ffff00000000",
++		"ALU64_OR_K: 0x0000ffffffff0000 | 0x0 = 0x0000ffffffff0000",
+ 		.u.insns_int = {
+ 			BPF_LD_IMM64(R2, 0x0000ffffffff0000LL),
+ 			BPF_LD_IMM64(R3, 0x0000ffffffff0000LL),
+@@ -3810,7 +3810,7 @@ static struct bpf_test tests[] = {
+ 		{ { 0, 3 } },
+ 	},
+ 	{
+-		"ALU64_XOR_K: 1 & 0xffffffff = 0xfffffffe",
++		"ALU64_XOR_K: 1 ^ 0xffffffff = 0xfffffffe",
+ 		.u.insns_int = {
+ 			BPF_LD_IMM64(R0, 1),
+ 			BPF_ALU64_IMM(BPF_XOR, R0, 0xffffffff),
 -- 
 2.25.1
 
