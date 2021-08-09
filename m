@@ -2,136 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 255743E420B
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 11:06:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9D213E4211
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 11:07:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234167AbhHIJG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 05:06:29 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:40742 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234150AbhHIJG1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 05:06:27 -0400
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17994Nm5022301;
-        Mon, 9 Aug 2021 05:06:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=UKcEiWTqbdOmBDR1x3yFZ+64e9nU+Ve9o//VKZalSFs=;
- b=WC5ri0sm/1VvJmnna2nz2fh4t8CLSiN2xX4YwFJu5Y3HA6hTJHPK7saASLz2AG15KgxQ
- R/VgXJbYa06mD2A8CA6vnEnoHuR3WGfHSFyW+TB9Rcn7/bQxh6k3ijVVFW0sfmr1UgJP
- AMSzwMl10TUmIo9h1PUvrzqCdnlHRJI61ke3X7BSgEroCu2iMWg3ndGjx/cxPnJIwELC
- BGuohs/93PikCw5BY35bQJSDAdPdZFyhkBeK0olktRReemq69SlVSdjcrbdhRJIzuNMl
- mnlcpqG3OngI8dm3OFLPWC6YRYGnbr5EmaVTJ0lAQXSYZ6enU7w5HhXPZwOrKs8P9A4v 0A== 
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3aaa1qqe8h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 09 Aug 2021 05:06:03 -0400
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 17994G38022955;
-        Mon, 9 Aug 2021 09:06:02 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3a9ht8up07-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 09 Aug 2021 09:06:02 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 17992nRt58065364
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 9 Aug 2021 09:02:49 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B9BF54C040;
-        Mon,  9 Aug 2021 09:05:58 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6F2B74C046;
-        Mon,  9 Aug 2021 09:05:58 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  9 Aug 2021 09:05:58 +0000 (GMT)
-From:   Guvenc Gulce <guvenc@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>
-Subject: [PATCH net 2/2] net/smc: Correct smc link connection counter in case of smc client
-Date:   Mon,  9 Aug 2021 11:05:57 +0200
-Message-Id: <20210809090557.3121288-3-guvenc@linux.ibm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210809090557.3121288-1-guvenc@linux.ibm.com>
-References: <20210809090557.3121288-1-guvenc@linux.ibm.com>
+        id S234168AbhHIJH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 05:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55424 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234062AbhHIJHz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 05:07:55 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77326C0613D3
+        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 02:07:33 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id c9so20365092wri.8
+        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 02:07:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/ZPOlrNFMpNUTPbgUazrf5s5awBfvFWEx4XOmYGlmFM=;
+        b=xuTbN9NL08Xcyq4YkCIGhzlEKVrVctUgSIIhVBnkaX8eBSEHaFOlZ6xhpHC8lMNFIe
+         dwmLzw6HSzfSkmDyldkyO4cF/B4FSaQ+R0e3imf9Uqwu/s1kxF6cO7lgFBnp2CQiHQZb
+         ptygmaW+KOYy2Vg86ysWX42PDO7BrZXZJ2slJRdSO2oCp1BIbrBre/fMom8tMKlqVz0H
+         YgsuS74yevpikRF9h2yy5vlV8pLKC5hbNzRmJXeGnXWlCyldErZ0DwkZjzAc6HNz0Ks0
+         do7m4j3JuvYi7N6B2LzEz8XuzVlzUZp+/3EnES80Duj6XTL4TcUfvLUOpI6PI0+bVEHc
+         haRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/ZPOlrNFMpNUTPbgUazrf5s5awBfvFWEx4XOmYGlmFM=;
+        b=lbOM/8KWtDAR6FommvYBuPVVrgo9N2ZzAbgDcEVgu3FlsQW2kifm9i9M8mtqYbLOWM
+         UJYJ5FtREWZHD9N+lAWpYqNvB9t5hKGKYfg8D1O+fFbnK7Lr7B5AC2+SlI5Ae6mJehvj
+         Tb1FWU/BrH9AuSoG0WxK8jNfodXIxU8XcScwuzGynyTrTGtGNkFCRgkzyvEWatIffzvw
+         FMmu+x8X6Asd7ntqriJcphxQkMExNGqKMniuzcviKuYPAy/ZYqC9MOjuPYZzGsCs2Cli
+         BKkPCn+EoRXcyoKvC4NaFgmNTs2BF1k3rEofAVCq9aU5qmQTDKDDrsXFHn9y8gMCg5tC
+         teSg==
+X-Gm-Message-State: AOAM530jJWbNHNJ+V8bv1ST6Z93WcBQXO1Zivmdn2byqFe3Ay1NAh/LZ
+        dUCoCrvKvbZPS8B06cTUMwovzg==
+X-Google-Smtp-Source: ABdhPJyLRv8OWaU2rJjJ7UBftQqOajWt7JIwvnGbG61bADURpPUKgdSk4u6IhZ36haGe/OcsoLIAnw==
+X-Received: by 2002:a05:6000:1106:: with SMTP id z6mr24270092wrw.296.1628500051979;
+        Mon, 09 Aug 2021 02:07:31 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id v17sm18937438wrt.87.2021.08.09.02.07.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Aug 2021 02:07:31 -0700 (PDT)
+Date:   Mon, 9 Aug 2021 11:07:30 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>, Ariel Elior <aelior@marvell.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Derek Chickles <dchickles@marvell.com>, drivers@pensando.io,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        hariprasad <hkelam@marvell.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-staging@lists.linux.dev, Manish Chopra <manishc@marvell.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        netdev@vger.kernel.org, oss-drivers@corigine.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Simon Horman <simon.horman@corigine.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>
+Subject: Re: [PATCH net-next] devlink: Set device as early as possible
+Message-ID: <YRDwUrOK1YHsK7CE@nanopsycho>
+References: <6859503f7e3e6cd706bf01ef06f1cae8c0b0970b.1628449004.git.leonro@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Uc6qMgD90ffEpCF9dnHfgdaqyjfJd4zF
-X-Proofpoint-ORIG-GUID: Uc6qMgD90ffEpCF9dnHfgdaqyjfJd4zF
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-08-09_01:2021-08-06,2021-08-09 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- mlxlogscore=999 mlxscore=0 clxscore=1015 spamscore=0 priorityscore=1501
- suspectscore=0 malwarescore=0 bulkscore=0 adultscore=0 impostorscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2107140000 definitions=main-2108090073
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6859503f7e3e6cd706bf01ef06f1cae8c0b0970b.1628449004.git.leonro@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SMC clients may be assigned to a different link after the initial
-connection between two peers was established. In such a case,
-the connection counter was not correctly set.
+Sun, Aug 08, 2021 at 08:57:43PM CEST, leon@kernel.org wrote:
+>From: Leon Romanovsky <leonro@nvidia.com>
+>
+>All kernel devlink implementations call to devlink_alloc() during
+>initialization routine for specific device which is used later as
+>a parent device for devlink_register().
+>
+>Such late device assignment causes to the situation which requires us to
+>call to device_register() before setting other parameters, but that call
+>opens devlink to the world and makes accessible for the netlink users.
+>
+>Any attempt to move devlink_register() to be the last call generates the
+>following error due to access to the devlink->dev pointer.
+>
+>[    8.758862]  devlink_nl_param_fill+0x2e8/0xe50
+>[    8.760305]  devlink_param_notify+0x6d/0x180
+>[    8.760435]  __devlink_params_register+0x2f1/0x670
+>[    8.760558]  devlink_params_register+0x1e/0x20
+>
+>The simple change of API to set devlink device in the devlink_alloc()
+>instead of devlink_register() fixes all this above and ensures that
+>prior to call to devlink_register() everything already set.
+>
+>Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
-Update the connection counter correctly when a smc client connection
-is assigned to a different smc link.
-
-Fixes: 07d51580ff65 ("net/smc: Add connection counters for links")
-Signed-off-by: Guvenc Gulce <guvenc@linux.ibm.com>
-Tested-by: Karsten Graul <kgraul@linux.ibm.com>
----
- net/smc/af_smc.c   | 2 +-
- net/smc/smc_core.c | 4 ++--
- net/smc/smc_core.h | 2 ++
- 3 files changed, 5 insertions(+), 3 deletions(-)
-
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 898389611ae8..c038efc23ce3 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -795,7 +795,7 @@ static int smc_connect_rdma(struct smc_sock *smc,
- 			reason_code = SMC_CLC_DECL_NOSRVLINK;
- 			goto connect_abort;
- 		}
--		smc->conn.lnk = link;
-+		smc_switch_link_and_count(&smc->conn, link);
- 	}
- 
- 	/* create send buffer and rmb */
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index cd0d7c908b2a..c160ff50c053 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -917,8 +917,8 @@ static int smc_switch_cursor(struct smc_sock *smc, struct smc_cdc_tx_pend *pend,
- 	return rc;
- }
- 
--static void smc_switch_link_and_count(struct smc_connection *conn,
--				      struct smc_link *to_lnk)
-+void smc_switch_link_and_count(struct smc_connection *conn,
-+			       struct smc_link *to_lnk)
- {
- 	atomic_dec(&conn->lnk->conn_cnt);
- 	conn->lnk = to_lnk;
-diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-index 64d86298e4df..c043ecdca5c4 100644
---- a/net/smc/smc_core.h
-+++ b/net/smc/smc_core.h
-@@ -446,6 +446,8 @@ void smc_core_exit(void);
- int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
- 		   u8 link_idx, struct smc_init_info *ini);
- void smcr_link_clear(struct smc_link *lnk, bool log);
-+void smc_switch_link_and_count(struct smc_connection *conn,
-+			       struct smc_link *to_lnk);
- int smcr_buf_map_lgr(struct smc_link *lnk);
- int smcr_buf_reg_lgr(struct smc_link *lnk);
- void smcr_lgr_set_type(struct smc_link_group *lgr, enum smc_lgr_type new_type);
--- 
-2.25.1
-
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
