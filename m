@@ -2,274 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51E213E4AA9
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 19:17:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F03F43E4AB5
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 19:22:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233979AbhHIRRm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 13:17:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:20619 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233472AbhHIRRi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 13:17:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1628529437;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=onvqB4qwnIUYnLkEvoLyUq1WbCsTad0akxGJbuTe7Qg=;
-        b=TYcsgMRHwnspjUeTbpX6dIWnuH2aA9zSVbPlhgzWDO7iIhzF3xngt9/B0RdQUifoMkFMrG
-        LRmQNPg4LmDXvvMKkgLwDPEs6B/T9z7d3i2E0ltQ8EZHKSiF8maVEDROH35X9Ux5TVIOEi
-        LQK/d847eMJvruddXy58Sn6nx4FAyt0=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-587-Zpn7uW2QMK-n1dar-dts9A-1; Mon, 09 Aug 2021 13:17:16 -0400
-X-MC-Unique: Zpn7uW2QMK-n1dar-dts9A-1
-Received: by mail-qv1-f71.google.com with SMTP id w10-20020a0cfc4a0000b0290335dd22451dso13155059qvp.5
-        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 10:17:16 -0700 (PDT)
+        id S234091AbhHIRW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 13:22:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56824 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233656AbhHIRW5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 13:22:57 -0400
+Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D426C0613D3
+        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 10:22:37 -0700 (PDT)
+Received: by mail-qv1-xf4a.google.com with SMTP id z25-20020a0ca9590000b029033ba243ffa1so13193745qva.0
+        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 10:22:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Xcvol7SaEf5nEJ4TIhNgU4+/eKyMOxhUuZoxthy3jEs=;
+        b=fYl/S4P1NIh2MYIlfqgl72NRDM0lxRXloBDtiD8Qa+o8CfCffKEeMu8z+6YjTeuFN8
+         8D/m2Nq4EXJEZTGw6m+Q4v3riPs2kKn1W49g3pQZ1ySREQ/ej7BwSfwZ/esSbTvAFRjd
+         BjMdI7Na4vj4+/eOfGLZ6qnA7o6//dvDRj8Z+4AGm/WpYqXKOh1yS4M1hCrjh39j4oOW
+         rgDIMZIhNlh3aW5gdMsVnfXJLp8ElGk7DPwRhbcTGyk+4W1XvvFuMFu7npurnmMQzeUy
+         yecTyiRF8c1Ct8aMNXdGSiqCn3h+p6F2aQEEct7TbMLsVU40xyrBKLJnFwIGe4+NFcyS
+         vZXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=onvqB4qwnIUYnLkEvoLyUq1WbCsTad0akxGJbuTe7Qg=;
-        b=C3j7DHlui5cGupIOSjKVEaf+7Ja9M2TDN2dmJq9oFXz0aHP+/lM/hSNtspBS5zvNzu
-         AJQxoUZ12d1gvafpDXvJdv+nfqchjHtg+YzGtLPMHDlNI6GVrZzQ0GquAGbule2SvwOn
-         PRuB4V0+nj9gU0FLpX1kQNE5tjsf5G09qzd2tcr0OjQfp5Ht7wiTDpTe2rZP2pE8NgZD
-         lfqsxkL01qhJhgApVPYh5EItbZ0TD5lscMe8fOyPcFu3+U9amuwInoRPKXM2q3u4YJdn
-         skC/XYysnewPJbGOqkMa1pI49qF8Xz3aFfM/87fJo6HqS96KHhXzurQttOlb7D60owmB
-         369A==
-X-Gm-Message-State: AOAM53147Pg65GtFeK4P453VppKVsFVrsLLJ86IMC6opPs1LDCSCZTQj
-        7u+/v4VobDWgD12v/Gpt0vtenwfdyc2ZNWOijkNxMCeOq+z87qpAHUyPu0PBsDh3y7wgkFXhTsl
-        TLAYtFxMyZXyF2uo0
-X-Received: by 2002:a05:620a:1022:: with SMTP id a2mr24914637qkk.136.1628529435479;
-        Mon, 09 Aug 2021 10:17:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz2YZUhj1moOCap9bMoUky0hAjdppfzdqLZcHyPP5I4F6tQlVpTe5b/ISqU3wg4OkBV+yIoeg==
-X-Received: by 2002:a05:620a:1022:: with SMTP id a2mr24914615qkk.136.1628529435236;
-        Mon, 09 Aug 2021 10:17:15 -0700 (PDT)
-Received: from jtoppins.rdu.csb ([107.15.110.69])
-        by smtp.gmail.com with ESMTPSA id 62sm4107787qkf.76.2021.08.09.10.17.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Aug 2021 10:17:14 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/2] bonding: combine netlink and console error
- messages
-To:     Joe Perches <joe@perches.com>, netdev@vger.kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-References: <cover.1628306392.git.jtoppins@redhat.com>
- <a36c7639a13963883f49c272ed7993c9625a712a.1628306392.git.jtoppins@redhat.com>
- <37c7bbbb01ede99974fc9ce3c3f5dad4845df9ee.camel@perches.com>
- <f519f9eb-aefd-4d0a-01ce-4ed37b7930ef@redhat.com>
- <745ab8a85430ad4268a86b0957aa690c1a7a6d0f.camel@perches.com>
- <b384c564-8467-1504-026c-5a437cad1a14@redhat.com>
- <686044636dbf886e7eedb626ca1569e82eac1a64.camel@perches.com>
-From:   Jonathan Toppins <jtoppins@redhat.com>
-Message-ID: <4553213d-47ea-a139-5a4a-7720abd08968@redhat.com>
-Date:   Mon, 9 Aug 2021 13:17:13 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
-MIME-Version: 1.0
-In-Reply-To: <686044636dbf886e7eedb626ca1569e82eac1a64.camel@perches.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Xcvol7SaEf5nEJ4TIhNgU4+/eKyMOxhUuZoxthy3jEs=;
+        b=j38pgd2JegUmhZ0EEJ6buZo0ectbuP+dIpuePK861f5a3GUHkCrdwVDsy7lEROtpWV
+         zo5lq3R72jeN0O7LLgGpZDCeQmk0tZXNPmBRHS7FbR9JgFRX7yLJakP8ZYhqFFivNmLj
+         g7RY/Wavtr5riEY5gzaM6GLFu9N9BUytzpEs41T4dFZyQ9jQS5JpDBP9R94fjdAN7c8A
+         P5lXXKxwBOB2eexXWxHOVTtwWLOHFKK5TVscZOvGh67psBy2UabqBiugQi/TitKs06KE
+         LAWydEJXu39Ao1ZGZbuw4xp1Rq0kRPkwMpltNXT9/NlTEvBxouJEMq3uuhB3FDK/KSA7
+         h3Eg==
+X-Gm-Message-State: AOAM5326hy8uqgmkm1WXG4yeFdFoZ7QI4cjVl0oTf95F9MuZdxwk16lX
+        Xg2iCw49yA+AeBfwyxF3LPXw7X9O+VhyrUQTgGieVw==
+X-Google-Smtp-Source: ABdhPJx4Y6ZEwN5YeJJLko9DVHdYfNRD0QB2UZW2bQjvIauG2uZeJC3L2Tg6y4dLnB919OKLgKb8wKCH7o60FyM+hfqiEQ==
+X-Received: from mustash.c.googlers.com ([fda3:e722:ac3:cc00:14:4d90:c0a8:337b])
+ (user=richardsonnick job=sendgmr) by 2002:ad4:498a:: with SMTP id
+ t10mr6749325qvx.8.1628529756242; Mon, 09 Aug 2021 10:22:36 -0700 (PDT)
+Date:   Mon,  9 Aug 2021 17:22:01 +0000
+Message-Id: <20210809172207.3890697-1-richardsonnick@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.32.0.605.g8dce9f2422-goog
+Subject: [PATCH 0/3] Add IMIX mode
+From:   Nicholas Richardson <richardsonnick@google.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     nrrichar@ncsu.edu, arunkaly@google.com,
+        Nick Richardson <richardsonnick@google.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Yejune Deng <yejune.deng@gmail.com>,
+        Di Zhu <zhudi21@huawei.com>, Ye Bin <yebin10@huawei.com>,
+        Leesoo Ahn <dev@ooseel.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/9/21 1:05 AM, Joe Perches wrote:
-> On Sun, 2021-08-08 at 22:07 -0400, Jonathan Toppins wrote:
->> On 8/8/21 6:02 AM, Joe Perches wrote:
->>> On Sat, 2021-08-07 at 17:54 -0400, Jonathan Toppins wrote:
->>>> On 8/6/21 11:52 PM, Joe Perches wrote:
->>>>> On Fri, 2021-08-06 at 23:30 -0400, Jonathan Toppins wrote:
->>>>>> There seems to be no reason to have different error messages between
->>>>>> netlink and printk. It also cleans up the function slightly.
->>>>> []
->>>>>> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
->>>>> []
->>>>>> +#define BOND_NL_ERR(bond_dev, extack, errmsg) do {		\
->>>>>> +	NL_SET_ERR_MSG(extack, errmsg);				\
->>>>>> +	netdev_err(bond_dev, "Error: " errmsg "\n");		\
->>>>>> +} while (0)
->>>>>> +
->>>>>> +#define SLAVE_NL_ERR(bond_dev, slave_dev, extack, errmsg) do {	\
->>>>>> +	NL_SET_ERR_MSG(extack, errmsg);				\
->>>>>> +	slave_err(bond_dev, slave_dev, "Error: " errmsg "\n");	\
->>>>>> +} while (0)
->>>>>
->>>>> If you are doing this, it's probably smaller object code to use
->>>>> 	"%s", errmsg
->>>>> as the errmsg string can be reused
->>>>>
->>>>> #define BOND_NL_ERR(bond_dev, extack, errmsg)			\
->>>>> do {								\
->>>>> 	NL_SET_ERR_MSG(extack, errmsg);				\
->>>>> 	netdev_err(bond_dev, "Error: %s\n", errmsg);		\
->>>>> } while (0)
->>>>>
->>>>> #define SLAVE_NL_ERR(bond_dev, slave_dev, extack, errmsg)	\
->>>>> do {								\
->>>>> 	NL_SET_ERR_MSG(extack, errmsg);				\
->>>>> 	slave_err(bond_dev, slave_dev, "Error: %s\n", errmsg);	\
->>>>> } while (0)
->>>>>
->>>>>
->>>>
->>>> I like the thought and would agree if not for how NL_SET_ERR_MSG is
->>>> coded. Unfortunately it does not appear as though doing the above change
->>>> actually generates smaller object code. Maybe I have incorrectly
->>>> interpreted something?
->>>
->>> No, it's because you are compiling allyesconfig or equivalent.
->>> Try defconfig with bonding.
->>>
->>>
->>
->> $ git clean -dxf
->> $ git log -1 -p
->> commit 8985f8d3fa38bca5f5384f9210ed735d58fd94f2 (HEAD ->
->> upstream-bonding-cleanup)
->> Author: Jonathan Toppins <jtoppins@redhat.com>
->> Date:   Sun Aug 8 21:45:14 2021 -0400
->>
->>       object code optimization
->>
->> diff --git a/drivers/net/bonding/bond_main.c
->> b/drivers/net/bonding/bond_main.c
->> index 46b95175690b..e2903ae7cdab 100644
->> --- a/drivers/net/bonding/bond_main.c
->> +++ b/drivers/net/bonding/bond_main.c
->> @@ -1714,12 +1714,12 @@ void bond_lower_state_changed(struct slave *slave)
->>
->>    #define BOND_NL_ERR(bond_dev, extack, errmsg) do {             \
->>           NL_SET_ERR_MSG(extack, errmsg);                         \
->> -       netdev_err(bond_dev, "Error: " errmsg "\n");            \
->> +       netdev_err(bond_dev, "Error: %s\n", errmsg);            \
->>    } while (0)
->>
->>    #define SLAVE_NL_ERR(bond_dev, slave_dev, extack, errmsg) do { \
->>           NL_SET_ERR_MSG(extack, errmsg);                         \
->> -       slave_err(bond_dev, slave_dev, "Error: " errmsg "\n");  \
->> +       slave_err(bond_dev, slave_dev, "Error: %s\n", errmsg);  \
->>    } while (0)
->>
->>    /* enslave device <slave> to bond device <master> */
->> $ git log --oneline -2
->> 8985f8d3fa38 (HEAD -> upstream-bonding-cleanup) object code optimization
->> e326bf8fd30f bonding: combine netlink and console error messages
->> $ make defconfig
->>     HOSTCC  scripts/basic/fixdep
->> [...]
->> *** Default configuration is based on 'x86_64_defconfig'
->> #
->> # configuration written to .config
->> #
->> $ grep "BONDING" .config
->> # CONFIG_BONDING is not set
->> $ make menuconfig
->>     UPD     scripts/kconfig/mconf-cfg
->> [...]
->> configuration written to .config
->>
->> *** End of the configuration.
->> *** Execute 'make' to start the build or try 'make help'.
->>
->> $ grep "BONDING" .config
->> CONFIG_BONDING=m
->> $ git rebase -i --exec "make drivers/net/bonding/bond_main.o; ls -l
->> drivers/net/bonding/bond_main.o" HEAD^^
->> Executing: make drivers/net/bonding/bond_main.o; ls -l
->> drivers/net/bonding/bond_main.o
->>     SYNC    include/config/auto.conf.cmd
->> [...]
->>     CC      /home/jtoppins/projects/linux-rhel7/tools/objtool/librbtree.o
->>     LD      /home/jtoppins/projects/linux-rhel7/tools/objtool/objtool-in.o
->>     LINK    /home/jtoppins/projects/linux-rhel7/tools/objtool/objtool
->>     CC [M]  drivers/net/bonding/bond_main.o
->> -rw-r--r--. 1 jtoppins jtoppins 131800 Aug  8 21:47
->> drivers/net/bonding/bond_main.o
->> Executing: make drivers/net/bonding/bond_main.o; ls -l
->> drivers/net/bonding/bond_main.o
->>     CALL    scripts/checksyscalls.sh
->>     CALL    scripts/atomic/check-atomics.sh
->>     DESCEND objtool
->>     CC [M]  drivers/net/bonding/bond_main.o
->> -rw-r--r--. 1 jtoppins jtoppins 131928 Aug  8 21:47
-> 
-> Your size is significantly different than mine (x86-64 defconfig w/ bonding)
-> 
-> $ gcc --version
-> gcc (Ubuntu 10.3.0-1ubuntu1) 10.3.0
-> Copyright (C) 2020 Free Software Foundation, Inc.
-> This is free software; see the source for copying conditions.  There is NO
-> warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-> 
-> Original:
-> 
-> $ git log -1
-> commit 7999516e20bd9bb5d1f7351cbd05ca529a3a8d60 (HEAD, tag: next-20210806, origin/master, origin/HEAD)
-> Author: Mark Brown <broonie@kernel.org>
-> Date:   Fri Aug 6 17:52:53 2021 +0100
-> 
->      Add linux-next specific files for 20210806
->      
->      Signed-off-by: Mark Brown <broonie@kernel.org>
-> 
-> $ size drivers/net/bonding/built-in.a -t
->     text	   data	    bss	    dec	    hex	filename
->    59630	    399	    460	  60489	   ec49	drivers/net/bonding/bond_main.o (ex drivers/net/bonding/built-in.a)
->    16790	     14	      2	  16806	   41a6	drivers/net/bonding/bond_3ad.o (ex drivers/net/bonding/built-in.a)
->    17101	     50	      0	  17151	   42ff	drivers/net/bonding/bond_alb.o (ex drivers/net/bonding/built-in.a)
->     7116	   1516	      0	   8632	   21b8	drivers/net/bonding/bond_sysfs.o (ex drivers/net/bonding/built-in.a)
->     1411	     72	      0	   1483	    5cb	drivers/net/bonding/bond_sysfs_slave.o (ex drivers/net/bonding/built-in.a)
->      165	      0	      0	    165	     a5	drivers/net/bonding/bond_debugfs.o (ex drivers/net/bonding/built-in.a)
->     6971	    232	      0	   7203	   1c23	drivers/net/bonding/bond_netlink.o (ex drivers/net/bonding/built-in.a)
->    15889	     74	      0	  15963	   3e5b	drivers/net/bonding/bond_options.o (ex drivers/net/bonding/built-in.a)
->     4769	      0	      0	   4769	   12a1	drivers/net/bonding/bond_procfs.o (ex drivers/net/bonding/built-in.a)
->   129842	   2357	    462	 132661	  20635	(TOTALS)
-> 
-> Then with your 2 patches:
-> 
-> $ size -t drivers/net/bonding/built-in.a
->     text	   data	    bss	    dec	    hex	filename
->    59590	    399	    460	  60449	   ec21	drivers/net/bonding/bond_main.o (ex drivers/net/bonding/built-in.a)
->    16790	     14	      2	  16806	   41a6	drivers/net/bonding/bond_3ad.o (ex drivers/net/bonding/built-in.a)
->    17101	     50	      0	  17151	   42ff	drivers/net/bonding/bond_alb.o (ex drivers/net/bonding/built-in.a)
->     7116	   1516	      0	   8632	   21b8	drivers/net/bonding/bond_sysfs.o (ex drivers/net/bonding/built-in.a)
->     1411	     72	      0	   1483	    5cb	drivers/net/bonding/bond_sysfs_slave.o (ex drivers/net/bonding/built-in.a)
->      165	      0	      0	    165	     a5	drivers/net/bonding/bond_debugfs.o (ex drivers/net/bonding/built-in.a)
->     6971	    232	      0	   7203	   1c23	drivers/net/bonding/bond_netlink.o (ex drivers/net/bonding/built-in.a)
->    15889	     74	      0	  15963	   3e5b	drivers/net/bonding/bond_options.o (ex drivers/net/bonding/built-in.a)
->     4769	      0	      0	   4769	   12a1	drivers/net/bonding/bond_procfs.o (ex drivers/net/bonding/built-in.a)
->   129802	   2357	    462	 132621	  2060d	(TOTALS)
-> 
-> Then with my suggestion:
-> 
-> $ size -t drivers/net/bonding/built-in.a
->     text	   data	    bss	    dec	    hex	filename
->    59561	    399	    460	  60420	   ec04	drivers/net/bonding/bond_main.o (ex drivers/net/bonding/built-in.a)
->    16790	     14	      2	  16806	   41a6	drivers/net/bonding/bond_3ad.o (ex drivers/net/bonding/built-in.a)
->    17101	     50	      0	  17151	   42ff	drivers/net/bonding/bond_alb.o (ex drivers/net/bonding/built-in.a)
->     7116	   1516	      0	   8632	   21b8	drivers/net/bonding/bond_sysfs.o (ex drivers/net/bonding/built-in.a)
->     1411	     72	      0	   1483	    5cb	drivers/net/bonding/bond_sysfs_slave.o (ex drivers/net/bonding/built-in.a)
->      165	      0	      0	    165	     a5	drivers/net/bonding/bond_debugfs.o (ex drivers/net/bonding/built-in.a)
->     6971	    232	      0	   7203	   1c23	drivers/net/bonding/bond_netlink.o (ex drivers/net/bonding/built-in.a)
->    15889	     74	      0	  15963	   3e5b	drivers/net/bonding/bond_options.o (ex drivers/net/bonding/built-in.a)
->     4769	      0	      0	   4769	   12a1	drivers/net/bonding/bond_procfs.o (ex drivers/net/bonding/built-in.a)
->   129773	   2357	    462	 132592	  205f0	(TOTALS)
-> 
-> cheers, Joe
-> 
+From: Nick Richardson <richardsonnick@google.com>
 
-Humm I was just building the .o of the one compilation unit. I wonder if 
-there is further optimization later. Will post a v2 with yours and 
-Leon's changes later this evening.
+Adds internet mix (IMIX) mode to pktgen. Internet mix is
+included in many user-space network perf testing tools. It allows
+for the user to specify a distribution of discrete packet sizes to be
+generated. This type of test is common among vendors when perf testing 
+their devices.
+[RFC link: https://datatracker.ietf.org/doc/html/rfc2544#section-9.1]
 
-Appreciate the suggestions.
+This allows users to get a
+more complete picture of how their device will perform in the
+real-world.
 
--Jon
+This feature adds a command that allows users to specify an imix
+distribution in the following format:
+  imix_weights size_1,weight_1 size_2,weight_2 ... size_n,weight_n
+
+The distribution of packets with size_i will be 
+(weight_i / total_weights) where
+total_weights = weight_1 + weight_2 + ... + weight_n
+
+For example:
+  imix_weights 40,7 576,4 1500,1
+
+The pkt_size "40" will account for 7 / (7 + 4 + 1) = ~58% of the total
+packets sent.
+
+This patch was tested with the following:
+1. imix_weights = 40,7 576,4 1500,1
+2. imix_weights = 0,7 576,4 1500,1
+  - Packet size of 0 is resized to the minimum, 42
+3. imix_weights = 40,7 576,4 1500,1 count = 0
+  - Zero count.
+  - Runs until user stops pktgen.
+Invalid Configurations
+1. clone_skb = 200 imix_weights = 40,7 576,4 1500,1
+    - Returns error code -524 (-ENOTSUPP) when setting imix_weights
+2. len(imix_weights) > MAX_IMIX_ENTRIES
+    - Returns -7 (-E2BIG)
+
+This patch is split into three parts, each provide different aspects of
+required functionality:
+  1. Parse internet mix input.
+  2. Add IMIX Distribution representation.
+  3. Process and output IMIX results.
+
+Nick Richardson (3):
+  pktgen: Parse internet mix (imix) input
+  pktgen: Add imix distribution bins
+  pktgen: Add output for imix results
+
+ net/core/pktgen.c | 163 +++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 162 insertions(+), 1 deletion(-)
+
+-- 
+2.32.0.605.g8dce9f2422-goog
 
