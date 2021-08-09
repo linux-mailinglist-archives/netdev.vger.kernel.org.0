@@ -2,86 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F04193E3D71
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 03:15:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42D123E3D8C
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 03:31:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232587AbhHIBPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Aug 2021 21:15:51 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:16995 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229977AbhHIBPv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 21:15:51 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GjdMr1gwJzZyth;
-        Mon,  9 Aug 2021 09:11:52 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 9 Aug 2021 09:15:10 +0800
-Received: from [10.174.177.243] (10.174.177.243) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 9 Aug 2021 09:15:09 +0800
-Subject: Re: [PATCH v2] once: Fix panic when module unload
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <hannes@stressinduktion.org>, <davem@davemloft.net>,
-        <akpm@linux-foundation.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        Minmin chen <chenmingmin@huawei.com>
-References: <20210806082124.96607-1-wangkefeng.wang@huawei.com>
- <20210806064328.1b54a7f0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YQ0+Yz+cWC0nh4uB@kroah.com>
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-Message-ID: <a783f15a-5657-787e-fdbd-88f9e3645571@huawei.com>
-Date:   Mon, 9 Aug 2021 09:15:09 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S232642AbhHIBcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Aug 2021 21:32:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53945 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232635AbhHIBcD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Aug 2021 21:32:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1628472703;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6AtH3MREBeTH78AEq1clPuVC+0bJN9ncER27UcApork=;
+        b=W3gapVLSBcx2yl+zS6Lfxv7CxjT03RiaECN9r560CyJv87tKs944U0o3mFtS4pQB2Gxvwm
+        g9uEy+rTc0FYBe8/xMCNv1Ff01TxvzcmTOgqKRY9LrckU9+WXJTPhhCkw6HZmFWhWFAQRz
+        QRlASRdFiMCBzL0k+PDweT9vMuTv8p0=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-137-zrZvywSsOOmHaKkB74VnZg-1; Sun, 08 Aug 2021 21:31:42 -0400
+X-MC-Unique: zrZvywSsOOmHaKkB74VnZg-1
+Received: by mail-qv1-f72.google.com with SMTP id t9-20020a0562140c69b029033e8884d712so11421777qvj.18
+        for <netdev@vger.kernel.org>; Sun, 08 Aug 2021 18:31:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6AtH3MREBeTH78AEq1clPuVC+0bJN9ncER27UcApork=;
+        b=I37VqDAF46ApHU3VGadvy/gZALVgZL/95JFD74K2afTK9QvPnAjONL5xtno/A6kcV7
+         BJszqq9a19aBfrXE6QKSwS95W6Tuj7R+XSdEZSOsWeOwaA7/j5SicU9RmhzWPvUTH86v
+         QlE6Kltyo6YDVbUh8JxCqlGPRkJgVCe2uoNWig/EGOjHiCIJvO2U4BaW1WYlNVdSPMl0
+         Y1Qq9g8JFC8rF1EuyvsSV6Boh9HK/e0WnBKb1yEriGnHPcldol9gEedCOataInQMXn6B
+         C+5O9+xdaNEz5BuxT3bUaTAuTPpPQ4NvSpQ74Deu6X8XPm3puWDAjuTv+IcMtWYq6DmH
+         H2Sg==
+X-Gm-Message-State: AOAM530ShdwImNWb7wOTpkz0L2Dft+Hxa4Zq4U3CuE40e+erMJOJP8lC
+        M+i6c4lwtGubaDJ8U+EUoGo6shKZMbnrKGs6STOXLFOJsn0390X/NsedsR2EdtH0eK4+IewcOGk
+        r2S7BPd6pdt7jw9uT
+X-Received: by 2002:a0c:8525:: with SMTP id n34mr10231135qva.19.1628472701751;
+        Sun, 08 Aug 2021 18:31:41 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwIgCfPcKGMpHmQj25TTlQWsuOBm7l+AJ4fYG5P+sKutKG0eNQ0jB01NZo4YhWBaN4jVjul/g==
+X-Received: by 2002:a0c:8525:: with SMTP id n34mr10231126qva.19.1628472701572;
+        Sun, 08 Aug 2021 18:31:41 -0700 (PDT)
+Received: from jtoppins.rdu.csb ([107.15.110.69])
+        by smtp.gmail.com with ESMTPSA id h2sm8768555qkf.106.2021.08.08.18.31.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Aug 2021 18:31:41 -0700 (PDT)
+Subject: Re: bonding: link state question
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     Jay Vosburgh <jay.vosburgh@canonical.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <020577f3-763d-48fd-73ce-db38c3c7fdf9@redhat.com>
+ <22626.1628376134@famine> <d2dfeba3-6cd6-1760-0abb-6005659ac125@redhat.com>
+ <20210808044912.GA10092@1wt.eu>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+Message-ID: <79019b7e-1c2e-7186-4908-cf085b33fb59@redhat.com>
+Date:   Sun, 8 Aug 2021 21:31:39 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <YQ0+Yz+cWC0nh4uB@kroah.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20210808044912.GA10092@1wt.eu>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-X-Originating-IP: [10.174.177.243]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 8/8/21 12:49 AM, Willy Tarreau wrote:
+> On Sat, Aug 07, 2021 at 08:09:31PM -0400, Jonathan Toppins wrote:
+>> setting miimon = 100 does appear to fix it.
+>>
+>> It is interesting that there is no link monitor on by default. For example
+>> when I enslave enp0s31f6 to a new bond with miimon == 0, enp0s31f6 starts
+>> admin down and will never de-assert NO-CARRIER the bond always results in an
+>> operstate of up. It seems like miimon = 100 should be the default since some
+>> modes cannot use arpmon.
+> 
+> Historically when miimon was implemented, not all NICs nor drivers had
+> support for link state checking at all! In addition, there are certain
+> deployments where you could rely on many devices by having a bond device
+> on top of a vlan or similar device, and where monitoring could cost a
+> lot of resources and you'd prefer to rely on external monitoring to set
+> all of them up or down at once.
+> 
+> I do think however that there remains a case with a missing state
+> transition in the driver: on my laptop I have a bond interface attached
+> to eth0, and I noticed that if I suspend the laptop with the link up,
+> when I wake it up with no interface connected, the bond will not turn
+> down, regardless of miimon. I have not looked closer yet, but I
+> suspect that we're relying too much on a state change between previous
+> and current and that one historically impossible transition does not
+> exist there and/or used to work because it was handled as part of
+> another change. I'll eventually have a look.
+> 
+> Willy
+> 
 
-On 2021/8/6 21:51, Greg KH wrote:
-> On Fri, Aug 06, 2021 at 06:43:28AM -0700, Jakub Kicinski wrote:
->> On Fri, 6 Aug 2021 16:21:24 +0800 Kefeng Wang wrote:
->>> DO_ONCE
->>> DEFINE_STATIC_KEY_TRUE(___once_key);
->>> __do_once_done
->>>    once_disable_jump(once_key);
->>>      INIT_WORK(&w->work, once_deferred);
->>>      struct once_work *w;
->>>      w->key = key;
->>>      schedule_work(&w->work);                     module unload
->>>                                                     //*the key is
->>> destroy*
->>> process_one_work
->>>    once_deferred
->>>      BUG_ON(!static_key_enabled(work->key));
->>>         static_key_count((struct static_key *)x)    //*access key, crash*
->>>
->>> When module uses DO_ONCE mechanism, it could crash due to the above
->>> concurrency problem, we could reproduce it with link[1].
->>>
->>> Fix it by add/put module refcount in the once work process.
->>>
->>> [1] https://lore.kernel.org/netdev/eaa6c371-465e-57eb-6be9-f4b16b9d7cbf@huawei.com/
->> Seems reasonable. Greg does it look good to you?
-> Me?  I was not paying attention to this at all, sorry...
->
->> I think we can take it thru networking since nobody cared to pick up v1.
-Thanks all ;)
-> Sure, I trust you :)
-> .
->
+I am likely very wrong but the lack of a recalculation of the bond 
+carrier state after a lower notifies of an up/down event seemed 
+incorrect. Maybe a place to start?
+
+diff --git i/drivers/net/bonding/bond_main.c 
+w/drivers/net/bonding/bond_main.c
+index 9018fcc59f78..2b2c4b937142 100644
+--- i/drivers/net/bonding/bond_main.c
++++ w/drivers/net/bonding/bond_main.c
+@@ -3308,6 +3308,7 @@ static int bond_slave_netdev_event(unsigned long 
+event,
+                  */
+                 if (bond_mode_can_use_xmit_hash(bond))
+                         bond_update_slave_arr(bond, NULL);
++               bond_set_carrier(bond);
+                 break;
+         case NETDEV_CHANGEMTU:
+                 /* TODO: Should slaves be allowed to
+
