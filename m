@@ -2,86 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B77A83E4D7D
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 21:59:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F7E53E4D88
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 22:00:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233032AbhHIT7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 15:59:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36686 "EHLO
+        id S235505AbhHIUBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 16:01:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235725AbhHIT7v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 15:59:51 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42F44C061798
-        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 12:59:30 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id f3so7135282plg.3
-        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 12:59:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mb5JbXTBEjTbuAmtTDmolVgyxWNhGMSJyE6HjiEsyL0=;
-        b=Qa837eeUOfPNPzyv2nakd0+Rnsk3FQZRcz8Jgge0ZIW59X/LeY5og57tHh+J2omnbD
-         pKyqM/A+hhSp1UwHp8+iyMlGfCgzOD5vHcITOti5v5QZnjhx1f47dwQNT/ISaEzQy2pg
-         5e5IYulQkng6VnGCeL/DQciSj3H95sO5hUdX62K6MClwoqGROt80+mYiw7pqzsYDNnML
-         k3XUk2URDH6MkcNQ20sx8S1N32AVYEZ4SA+30W4xaKr+9Jq1zVOzRq2eQPowsixAH/Kt
-         bvigVJUj4ISN47RnEiRUyIZjOmYeCkOi3S/6yApldR+Kr0sG6MLIJoKSYziiAFfvZ0LN
-         An8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mb5JbXTBEjTbuAmtTDmolVgyxWNhGMSJyE6HjiEsyL0=;
-        b=rekY3fT9bsI/P6oN26Zasq8SLGbc1Ccd/q+jbQtxyOPadL/BFPcBK56HPBmw94kDk8
-         mkkPJsT9qQtCgrx1YRgLcnvgV5CLa51W3uGXSeTOhaJCBdIucPKiXS9gwWrpuxWlJggs
-         Ir3dACb6+Zx9kqa/AH9rfBa/LuetCOmzGCQDTCAp6FKz68UR96+oEQQGm640e2o7r/E7
-         NKQYl6KDXzbp7KGfbG8fThWXJeIyhXKfHIY1EsXgfa4NtFQA8tEOanf20a1A7bvMY1UZ
-         T0pnofkUUonjPJ/u7ritBz12IpLJnhXUttgLgeu8uXbwd+/30LN9MmfThwQu3cwqVQjq
-         JMKA==
-X-Gm-Message-State: AOAM5337qBWkt6pH1z7P7k7iV1GWOaWntaT5vJRKw3XIxtRDsZQWyodb
-        7qacS6ECK1IgdCWBTGckb9MoIZbaVMOI2p5ntXk=
-X-Google-Smtp-Source: ABdhPJwEYwfNSiwn11SsG8zFge/d/P9geCwoOzvHffeNguNpAkDfHV33/su4E/VPm+ajMIc0iMyOKwn8D/dt3/FBkoc=
-X-Received: by 2002:a62:ea1a:0:b029:329:a95a:fab with SMTP id
- t26-20020a62ea1a0000b0290329a95a0fabmr20135074pfh.31.1628539169712; Mon, 09
- Aug 2021 12:59:29 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210729231214.22762-1-xiyou.wangcong@gmail.com>
- <YQ/wWkRmmKh5/bVA@shredder> <bf87ea8b-5650-6b4d-1968-0eec83b7185d@nvidia.com>
-In-Reply-To: <bf87ea8b-5650-6b4d-1968-0eec83b7185d@nvidia.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 9 Aug 2021 12:59:18 -0700
-Message-ID: <CAM_iQpWntEBV3msNct=vH=SsypBLco1epGRA0ywF1g-5yXezDg@mail.gmail.com>
-Subject: Re: [PATCH RESEND net-next] net_sched: refactor TC action init API
-To:     Mark Bloch <mbloch@nvidia.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, Vlad Buslov <vladbu@nvidia.com>,
-        netdev@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
+        with ESMTP id S235812AbhHIUBH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 16:01:07 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157FFC061798;
+        Mon,  9 Aug 2021 13:00:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=Om3EEuXdHWjYj9gS/+HAJ1lLyTQFKGdm9B9GiLl+f8Y=;
+        t=1628539246; x=1629748846; b=DaCNr5SrePeGkwD19tm3CVKB3cEUTAUuL1sDroRaaSmLFFY
+        S+alGsOVFMBS1TtyTKqNAQIz9jaKCo9kc965iX8EMgNfhWq7Yl/Bq0t6Re2VT9tEQkTD4U9JGUr1I
+        ucglAaL0JP/CDmBoFsc+QtMwogYxO+X/xepDddxrWh+XtC7F7N5YA/zz+Sz8rL26i09+xyVyDYDx2
+        VqOJgs7nj9Y70RwmFavLngn1QnTQCbjHZ7pjcoAZtYSG8oZvn8bB8bHqCNn6hTg39NycIsAFye/Hr
+        5tNfJ74MCfgamAe4g0O7k3obTG87lm+H9DWXqGGXDUz9OwM8KRH/3FTxUNXFtpkQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94.2)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1mDBPI-008GAP-OL; Mon, 09 Aug 2021 22:00:35 +0200
+Message-ID: <d61f3947cddec660cbb2a59e2424d2bd8c01346a.camel@sipsolutions.net>
+Subject: Re: [PATCH RFC v1 3/7] rtw88: Use rtw_iterate_stas where the
+ iterator reads or writes registers
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Pkshih <pkshih@realtek.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Date:   Mon, 09 Aug 2021 22:00:34 +0200
+In-Reply-To: <981001e2981346ada4dcc08558b87a18@realtek.com>
+References: <20210717204057.67495-1-martin.blumenstingl@googlemail.com>
+         <20210717204057.67495-4-martin.blumenstingl@googlemail.com>
+         <27d8246ef3c9755b3e6e908188ca36f7b0fab3fc.camel@sipsolutions.net>
+         <CAFBinCAzoPmtvH1Wn9dY4pFsERQ5N+0xXRG=UB1eEGe_qTf+6w@mail.gmail.com>
+         <981001e2981346ada4dcc08558b87a18@realtek.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 8, 2021 at 8:01 AM Mark Bloch <mbloch@nvidia.com> wrote:
-> Hi Ido,
->
-> We hit the same issue, I have the bellow patch and it solved the issue for us:
->
-> From e4f9b7f0b067bf17fd0f17d6e2b912d4f348718b Mon Sep 17 00:00:00 2001
-> From: Mark Bloch <mbloch@nvidia.com>
-> Date: Sun, 8 Aug 2021 13:23:08 +0000
-> Subject: [PATCH] net/sched: cls_api, reset flags on replay
->
-> tc_new_tfilter() can replay a request if it got EAGAIN. The cited commit
-> didn't account for this when it converted TC action ->init() API
-> to use flags instead of parameters. This can lead to passing stale flags
-> down the call chain which results in trying to lock rtnl when it's
-> already locked, deadlocking the entire system.
->
-> Fix by making sure to reset flags on each replay.
+> 
+> I am thinking rtw88 needs to maintain sta and vif lists itself, 
 
-I think this is the right fix. I clearly missed the replay case.
+I would tend to prefer drivers do not maintain separate lists - that's
+just duplicated book-keeping and prone to state mismatch errors?
 
-Acked-by: Cong Wang <cong.wang@bytedance.com>
+But OTOH the locking does make things complex.
 
-Thanks for catching it!
+johannes
+
