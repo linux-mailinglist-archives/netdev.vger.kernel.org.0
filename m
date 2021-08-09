@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5ECEC3E4523
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 13:57:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 895223E4524
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 13:57:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234753AbhHIL6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 07:58:14 -0400
+        id S234854AbhHIL6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 07:58:15 -0400
 Received: from mail-eopbgr40056.outbound.protection.outlook.com ([40.107.4.56]:40885
         "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234818AbhHIL6J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Aug 2021 07:58:09 -0400
+        id S235148AbhHIL6N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Aug 2021 07:58:13 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AEsQMmg05860Y3wam+bqx+4LhUOSnZuJeKXJrNPfGkhtZ8E3dq0xK3sogS3nHiqVQ6B4iwKI4HYdfwbAbueLbNbG9VkaEBZx4iO4wdVnF2i/FWKfM7Cc2mL0oHhG/Fnm4YKR3vYeT1VYPn7XgOwasa3SunQwPyACEEiX0ZdUz9h+qwxDFobKPUiGn7b17Z3n7F5sORCfuURHK2Mr76+3xVl7U6V2HvesTl9exBomc3wHyEHxF1VCQ5ExdW/uVNV8rf3q/0DoUGvlKS1/BbP7OqD1nxI2i//5Vm2gRLNsC5tIYgWsLiSNlsilqGvNqa68nqOu5QZ7TBx70T+sn2+y+g==
+ b=UO3ysSBH+YaRP6ylIcj15Uf4g4A6ycJxtRa2qQ3NY1hws0Eoxr/hKW3Hu1v1PjQnbejCu2f8T5rqk/qvammUiUomBcy+U2L6hlrFu3LoWBM4BxpnXPEtW2WcsZXeLWxEgT1bF3mmrlv77LWcDi9zF2+rDs1Gnb/iW4XDTbIKbTY3Z/qyrQ+LsiCEUWZsR/1J5rrswnyPLCwStLyL85V25wZ3rTQFl6PkduBzmpX5u6G8M4vDGhEJHZaVRRhgtrsqK2Ol5SykXVt8IrQISKdI9437Vf+ii5A9CZ3Vj9RkNTBNAWvgZjCoR/Y7u2UPzc9XqwxvAq1ne8Wm1mRIPvjPLg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PpVbRLxD+YGj/DI5JeUoTiZsiRwexZ1F5OjlAbewWt0=;
- b=DnWVPxwd8YJbwpqieo6gKmxor7LzXnpVkV2C4iP0PiqItsws+lJ86enRLa1pBBhyScdXUxxpOljbysD4ZCm7eiPhR8XaPqd9rNzDN76MDeUC9EdOEKXMQHG3nVMXEbo2M6+RQoZ9toOlZB8yx2qYTs005lw5xOlg1L4hRI+zcROseK3Zh80IVJpRbIQZVoWmSejPJoXU7mIb3yAO/UUhLu0N7VZ3hJH0nJVD6nyurg9E6MJD7y23/wLAVGHh03KfDTkFqvwELfi+XuC9X/dGhOyLwUPxSlSZTBSq1maHwrzNwNg4ubc3g1/RRjnzyg+KiqCpShNSDOoHfBpbSYzDOw==
+ bh=0fRf5iVzoHiLMjdx+tXdiEL1+iucDTN9QEFL9/Sj0Cs=;
+ b=MJVth7c+FydcXTcb7A+jJ6KPu0/HcWIehxySaiuM7L5onbmU4686Wb2iOzcAjsNpu2Dcsx49+eF2vQW1JW+gbeQ2/w3Pp1Ega4+P61OZwISMU6Bn9KdSTdefWxeGLkZJ+7ji8HLcUc+Bybc4g8v+7QjMUGMgl1xPEXli2tpGlGTfNreOqiavEgC6r2QK4X1ptQFZkOyBHCdyTJE0lqpswBmilXhMRZC3ltnrTgARQ4gAhowBkNr04lGqAVRChb1yjLyjZzxpWfBiVBLTzdKPxPDnKgu0sEWF7vJ86wMUd7x7hBIPpON5gN0q7ZpfCjWUv5jwJYZq9XOvwF2Ygm8y0A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PpVbRLxD+YGj/DI5JeUoTiZsiRwexZ1F5OjlAbewWt0=;
- b=QCBmsbnbmQgnAR0wmrA+byY0bMBmE1tdf8tYB/eDYaOwDyKrmnJkMMooZntfuufMIMfj+Nsso5QBsFddlhSF205F0B6caZwznqNQbcKVPF0+N1EOYiLP+AqMoL63XlAqmRSInxOtMHcw9yCL4IjmeDJdUBiVUvah7WDSF5dQjNE=
+ bh=0fRf5iVzoHiLMjdx+tXdiEL1+iucDTN9QEFL9/Sj0Cs=;
+ b=eKcpavOWAX0B78f6YVwgCS2EDMoUo6IO8P33tpi5JyGC7Hc7JxzXsfIPo88sjX5Rx7VVvH9KpmjAucR+KV491QSASKkWUJea23vzpXdgqi81SBYD27xzEZnVkjsrIZbJ5smoktM+baLL6A4bINFrRuLBtolqWiHCbKymyjL+dHM=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0402MB3712.eurprd04.prod.outlook.com (2603:10a6:803:1c::25) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.17; Mon, 9 Aug
- 2021 11:57:45 +0000
+ 2021 11:57:46 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4394.023; Mon, 9 Aug 2021
- 11:57:45 +0000
+ 11:57:46 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -49,9 +49,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         John Crispin <john@phrozen.org>,
         Sean Wang <sean.wang@mediatek.com>,
         Landen Chao <Landen.Chao@mediatek.com>
-Subject: [RFC PATCH net-next 2/4] net: dsa: create a helper which allocates space for EtherType DSA headers
-Date:   Mon,  9 Aug 2021 14:57:20 +0300
-Message-Id: <20210809115722.351383-3-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 3/4] net: dsa: create a helper for locating EtherType DSA headers on RX
+Date:   Mon,  9 Aug 2021 14:57:21 +0300
+Message-Id: <20210809115722.351383-4-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210809115722.351383-1-vladimir.oltean@nxp.com>
 References: <20210809115722.351383-1-vladimir.oltean@nxp.com>
@@ -64,222 +64,212 @@ MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 Received: from localhost.localdomain (188.25.144.60) by VE1PR03CA0012.eurprd03.prod.outlook.com (2603:10a6:802:a0::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15 via Frontend Transport; Mon, 9 Aug 2021 11:57:45 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4d7c872a-57a5-47c3-445f-08d95b2ce69e
+X-MS-Office365-Filtering-Correlation-Id: be7eff2d-f383-4f1c-e6f5-08d95b2ce6fb
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB3712:
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB37127F23376B25273528A37BE0F69@VI1PR0402MB3712.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB37125C63E98A1933606B46BBE0F69@VI1PR0402MB3712.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uatR86fPpyT7l/1Hh7e5Cll2hizbGJMjgGleyJ5cLJPLSB5zm7ZVu21mLJxuOe9P5NrSR8nZlKi12ybXZY8+foyyhuo2cyTVV8FPvNJY02vsNpGtdNP1tGmgpLF22HJKBqIK5WuQ6H473c3WKhO5MbHV0IurLyCOmBFYNFKzDoAdMYbtznILdrfNbM+sQFu0YAzqDipUDCyDAUrkQitV6GU3OjDCbNjbTi0CL2emoIZ+6+fpBa7nB8b0zTN4zfw/5pFNx4CvnMA+ArbpXvgpgA1IDkL2KK7YRbPgsgAXB/6pTUgQyS6bX4GmfcskpeczmCsUDZZuYqzqpm6DrzEctpvxxmUTFJgqkPGNb64mDjSBRlWDTLRZwu2o11seOhsORjE3Fd/bjqsquXVLW0jcpIe45mZSDGMBVejafqPmkKmkqYKOmshBeoSWi1g5H+E3j+Px2rf9wSwc6sPlmn0vEGNTdQOHtzX4/bHGsIV6k6jjiboSDY+b6GG9e4f1hg1hRB1lluBiy2XBa0WKPm/LecTtBw/1tbJGBEsQp+8K/pOBAP+xLIgOP/5GpVt/jTqefr4ZQQVtYRvWA//nulkE3xmr1bZy6TVfV8judprt0CZtHnERrW08ng9BSSUufhGxDW0J1X31L77xeSfWb6NhRqdib23OMPcrHW1ZjjrZvIyszDMGVFc31DILbn8SCyj7d8dH6g/+5nd4mabjM0kQuw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(396003)(136003)(39860400002)(366004)(346002)(44832011)(6486002)(6666004)(5660300002)(36756003)(52116002)(38350700002)(4326008)(38100700002)(2616005)(86362001)(956004)(66556008)(66476007)(7416002)(6512007)(316002)(66946007)(26005)(110136005)(2906002)(54906003)(6506007)(1076003)(8676002)(8936002)(83380400001)(478600001)(186003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: JhgxT/9eOGQgAe5fkZ2vrD18AjlDwMrBdVkW7ZTC+i65B1YvzC1/QD8c94ctWqOP8F0wcTP95y1r7ODTMN3KxI4zG541rrf3m/MvQk55t08qvBJsFJsC11nMVA0KkgSVilYst8dTLkChhhgKF/MCgM+TD1bIVS0JDXC3bvN9Am8U6wgH5vCnQTzVlKtzSRq1huzXNKrVC6tZDa6cVlAzJqKFnbomDdT+dVZL4B3A0QNfFbSLKqSS3HshKigBUjalZvWbBzeZPW/7JdkPwvwhKXrOWR7J7PmDeqQx9e/K1b4GbHeSdh8ra6jF/vzvuTdJFJv4foXBP0CIQeENiqycgelAIsHkeBhUHqBHTymsimpNFF2RacR8DAQeHSGT0xnXRXqiXeAwI6gKDJ0qzAwKSzE2x4vw3ldubM9I9tHPpkH3JULpGE/4otX590nLtbFBTraqzjbVS15g6Art14VnI2TnXCgliUudmykESk9t8R/wejPbVLn5wkVEAH1ggQ/1M0MDL9aCCp1uj7NnsrbfvzK1gug157bJa7Zp3k5P8VJzQO3Blzzm0w0/+rJWhkYiduWoL151lvFOdlIpqL+78yJWRY9cXUKHf3eUMNrjt7bTCucQ/I82yJZ4TJmvfOvF8lqjoB0TdcE9+WysIIryEeTkzbZbCN74G/SkyY4jw4ATglqzH5MVpaTAg4pZWPm+wCGrurHT6hMVDIfNNyTao3vNxvQxZFT9NvtnbdSw/uc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(396003)(136003)(39860400002)(366004)(346002)(44832011)(6486002)(6666004)(5660300002)(36756003)(52116002)(38350700002)(4326008)(38100700002)(2616005)(86362001)(956004)(66556008)(66476007)(7416002)(6512007)(316002)(66946007)(26005)(110136005)(2906002)(54906003)(6506007)(1076003)(8676002)(8936002)(83380400001)(478600001)(186003)(83323001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?gG0bSAjZgEM6a1/QNoDkAfvZdstrGOPrly1+WurFhy9N2rq8EAO+cR1skP7z?=
- =?us-ascii?Q?BaO1U45olisVHqlsD4TiR+SdIkCf9E1HQgcGQmxgomhwWc27wB8Mw0GtFCbj?=
- =?us-ascii?Q?HJpArOOMKl5kMpUxUisobcL2S5zJGeTs0gsuuHANfZtW4bLrcxhkVgkZBNIp?=
- =?us-ascii?Q?4MRMI9QLQYx+hkqK5IlgGhh7JLttORc34iKWjBRqw/RrotrnxbEqVoKAPm+e?=
- =?us-ascii?Q?SGWsAQ9EYzjoQtmM+rUX59YA16PFmovxG85zKkgXUOHxNpiBIffrqhTWcIgc?=
- =?us-ascii?Q?mJAHeGophJThdy41goNpIq3uiOwtjtXNH3j+aLidU1XAf2q+avLK2a/XcreJ?=
- =?us-ascii?Q?tufe+9dUqWKNNvs2cI9HO/5CcbPKS9e/qSqy5ra6UmcvSojchNCqihW+i0WB?=
- =?us-ascii?Q?zzonwtiTHnYo/PpbDPCCodi3zQYefrMyhBF9maZv0GH5sKiGNg2aKJ0CqXsp?=
- =?us-ascii?Q?NXseckrlL1Rq6OQ2AxWUwi7c9vNe2ba5hQFY0i2myIncrpMiRMDKB2Gpqw2V?=
- =?us-ascii?Q?4uN9tD9x9u4df23lnuI4zPm+pHfER1tmFTA6NB62wAcKrrAwRQMj3aBAaM7u?=
- =?us-ascii?Q?HvY8GPyjCYjnrU2iT4jaUCwi0JyXrYNI7ayFyTq2iUbO5BV4t9lVP8belyOp?=
- =?us-ascii?Q?Y9K3P/JtSJKSqZvHazVzap2hrwWBbzpqs6n8kFfRrkT31OastL7qkoqsTMqH?=
- =?us-ascii?Q?lry6Jx6bNoAjbafnFJp67ogkUqCcNYmC0ZmBbYpO7umpcMDAO4K3tp2VIPxB?=
- =?us-ascii?Q?4mrnyukAA5E2BFpj7Lmwn0JpG30BpI8J35dLVb/Aya3ESxNXBOj7mIbNUaMn?=
- =?us-ascii?Q?L7zcA/cxOeYmWTL1VYoJrbVcjGpKONMs4GvjqrxtiXR2Ins0WSDzVbnEZdBH?=
- =?us-ascii?Q?1pXL+zRHGadleV3nD+dBuUdbk7hW+zTfNKxsteoNuyqSobQoXWGDMWVgAQCf?=
- =?us-ascii?Q?cJhcnkFT5arOCLGrmSrcSGqZTqACbVKBQGv7lCO6+zltEUcfm8JnR3kAVOdc?=
- =?us-ascii?Q?RiM/4X05S2muJ4hhh5Cv/CkpfDn0SG4qT4IsnU3SEaLMY2JqrpCU3a6KVtWw?=
- =?us-ascii?Q?5LmtgdXDqb+88DiqKFIm9jFrFTUThzKGxJRxE3HEgT+mE8sgtvwdrHEalrcR?=
- =?us-ascii?Q?iQDP7QTqAZVIMhoh7BaWjvUlMbjf+MiExUVO4N97VCwJOZBRCFFNoCvGIsC/?=
- =?us-ascii?Q?GQ4BCiBdyLJn3F8yz1Wionxtl7uY3mGKwsVOUNLKoM5yXUERCcKJi+nwIXPn?=
- =?us-ascii?Q?0cPuu7fyFEk67JumpPu7OEEPh7tPAyKXCyP7ynWW6ucEoPuyzIS8+0bqnsrL?=
- =?us-ascii?Q?fuapQAPC3z543RCWSzAqKP0g?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?oRxE9TuvXxbAvvWZcyQGjJyO2jIpml+7CdcvLu3sv1Hhh6LGewDSjQuLQLFW?=
+ =?us-ascii?Q?8p5zOhWZlxS2njO3ehm7qcgkZLNqdYb7hX04OjZNVse3Z7PKDrW7V0RnF2/7?=
+ =?us-ascii?Q?+1UBaW+7XMj7wE/j4rS5NAvW0NJ76Qsg6RZ7NI2cQjXpaF3V9Zq0AU1z22gJ?=
+ =?us-ascii?Q?zOJm79ChTaLmoHihq5+Y6EA/BJBvRXoh15bPdrfffItLKKjyrcyGWIRUrjZq?=
+ =?us-ascii?Q?N09l3xqYZKa2c7R8v33VJPsuG4cAsl+yLYGsOdUz5tSmq+BIElbSFGBYWMFf?=
+ =?us-ascii?Q?Ll7RE5CoIgjnEeT7ku0yIDKQTO2xYthxzep2HgTGUXX8Vo81wBGbI/VGrfwT?=
+ =?us-ascii?Q?q6yVbW3Y/z4RUmlnMJj9okLnsbUD6bdb9PIXgMRgWvNvS9a/5p7wFXn9qfn1?=
+ =?us-ascii?Q?fFFrmtgpgTVF0HZGmUu8IMdAHH5un+NN6FCs+0ktJsRE7BLs6YS/5oscccAL?=
+ =?us-ascii?Q?q81b/RUyZpJ8i107DwhTpTI8SvWminhN5ikMHmeVOMUezRxhOmBq4wu2vl6H?=
+ =?us-ascii?Q?KtRU6DewdJxQtX/3l01AOjDfJbAXg2Xz0mET8Mp0YWEXl1GDewi9rJVOOVlY?=
+ =?us-ascii?Q?Icn48idu30j25lx61b74cIJSVt+HS1tRAb37yxoJj3Nfzn4WePXSR7gpfLWN?=
+ =?us-ascii?Q?QVCP9jrCMZmr+c12QXxPiaSq9742sie7SkLkzTrtyJsr+uPnl+VJfJZEV4ju?=
+ =?us-ascii?Q?h43ooFbAh21KaxG/m5C1JWGjv3jikjygDhIaW3rPTfJJoouEHlePJQ4ObbzZ?=
+ =?us-ascii?Q?JEoHA88yaQsoWjf9Nxy78delhxWekcD/Vp1dwFAltxmBHKTxEbw/lgK33GTx?=
+ =?us-ascii?Q?Us3vN4wk89zfWtY1Qo3jeLX1fNJK0YDBJJCwvmSrl76axp8lNj5TJus6pbNk?=
+ =?us-ascii?Q?cWL3GdtWswoZzM86eJKhPH1xZra8qhb3SYvRlyr85iCugmL0SvKffcmIIP/t?=
+ =?us-ascii?Q?Tf3wdBulpMb0YD6u4b6mDITE4uIcA/PNaNAa3mDvoYcABPstr+Jf/blB2PXj?=
+ =?us-ascii?Q?IRR+TuR1vQ3Ih14piD3Ng2cgYzkKDpUOBVLk8XDT803lbvKau3f4/NPYaL0R?=
+ =?us-ascii?Q?7LpI3UdfOiFyjyN8B6j7BzLV9zCwrCfr9cbyrIFH/pIqX+MTSQF+WD6JWOI5?=
+ =?us-ascii?Q?pTeql7jmlxIBHnjnbCoLFwBOYe8lclmCJwsBleWiVOFdQihh69rjcvKKsRec?=
+ =?us-ascii?Q?MK91TNWDhIOT4bgdcc+2973Onebv+3hpPpvvrUS4fIs+hS7gUB0WzxhpswJE?=
+ =?us-ascii?Q?PSZxA2Xp6KpPKMapNaJ686hMCh/u0lxV6t3uO2kCD0Vy/J8gANa8SJDRa2d0?=
+ =?us-ascii?Q?iY/rRtNbJh6VlcMT3I5vnnH6?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4d7c872a-57a5-47c3-445f-08d95b2ce69e
+X-MS-Exchange-CrossTenant-Network-Message-Id: be7eff2d-f383-4f1c-e6f5-08d95b2ce6fb
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2021 11:57:45.6895
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2021 11:57:46.2822
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Biq4k4cE9DGHdqgFsG9T79OhNAaVglPdYG9CW9ZsUT2rkbys21HuQK3W4QXX2OqT+7++U1dDkKvHqDKmHrKTmQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: G+SmtxRDfhsFOfRkBZ3KUVJZEITV6aCUNIYwOSDg/mylyj/OkWo+ms86hHWtBWTNrG74CsGjw5GaROkWy47jVw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3712
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hide away the memmove used by DSA EtherType header taggers to shift the
-MAC SA and DA to the left to make room for the header, after they've
-called skb_push(). The call to skb_push() is still left explicit in
-drivers, to be symmetric with dsa_strip_etype_header, and because not
-all callers can be refactored to do it (for example, brcm_tag_xmit_ll
-has common code for a pre-Ethernet DSA tag and an EtherType DSA tag).
+It seems that protocol tagging driver writers are always surprised about
+the formula they use to reach their EtherType header on RX, which
+becomes apparent from the fact that there are comments in multiple
+drivers that mention the same information.
+
+Create a helper that returns a void pointer to skb->data - 2, as well as
+centralize the explanation why that is the case.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/dsa_priv.h    | 29 +++++++++++++++++++++++++++++
- net/dsa/tag_brcm.c    |  4 ++--
- net/dsa/tag_dsa.c     |  4 ++--
- net/dsa/tag_lan9303.c |  2 +-
- net/dsa/tag_mtk.c     |  2 +-
- net/dsa/tag_qca.c     |  2 +-
- net/dsa/tag_rtl4_a.c  |  2 +-
- net/dsa/tag_sja1105.c |  3 +--
- 8 files changed, 38 insertions(+), 10 deletions(-)
+ net/dsa/dsa_priv.h    | 14 ++++++++++++++
+ net/dsa/tag_brcm.c    |  2 +-
+ net/dsa/tag_dsa.c     |  2 +-
+ net/dsa/tag_lan9303.c |  8 +-------
+ net/dsa/tag_mtk.c     |  6 +-----
+ net/dsa/tag_qca.c     |  6 +-----
+ net/dsa/tag_rtl4_a.c  |  7 +------
+ net/dsa/tag_sja1105.c |  2 +-
+ 8 files changed, 21 insertions(+), 26 deletions(-)
 
 diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 8a12ec1f9d21..28e1fbe64ee0 100644
+index 28e1fbe64ee0..ee194df68902 100644
 --- a/net/dsa/dsa_priv.h
 +++ b/net/dsa/dsa_priv.h
-@@ -478,6 +478,35 @@ static inline void dsa_strip_etype_header(struct sk_buff *skb, int len)
- 	memmove(skb->data - ETH_HLEN, skb->data - ETH_HLEN - len, 2 * ETH_ALEN);
+@@ -507,6 +507,20 @@ static inline void dsa_alloc_etype_header(struct sk_buff *skb, int len)
+ 	memmove(skb->data, skb->data + len, 2 * ETH_ALEN);
  }
  
-+/* Helper for creating space for DSA header tags in TX path packets.
-+ * Must not be called before skb_push(len).
-+ *
-+ * Before:
-+ *
-+ *       <<<<<<<   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
-+ * ^     <<<<<<<   +-----------------------+-----------------------+-------+
-+ * |     <<<<<<<   |    Destination MAC    |      Source MAC       | EType |
-+ * |               +-----------------------+-----------------------+-------+
-+ * <----- len ----->
-+ * |
-+ * |
-+ * skb->data
-+ *
-+ * After:
-+ *
-+ * |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
-+ * +-----------------------+-----------------------+---------------+-------+
-+ * |    Destination MAC    |      Source MAC       |  DSA header   | EType |
-+ * +-----------------------+-----------------------+---------------+-------+
-+ * ^                                               |               |
-+ * |                                               <----- len ----->
-+ * skb->data
++/* On RX, eth_type_trans() on the DSA master pulls ETH_HLEN bytes starting from
++ * skb_mac_header(skb), which leaves skb->data pointing at the first byte after
++ * what the DSA master perceives as the EtherType (the beginning of the L3
++ * protocol). Since DSA EtherType header taggers treat the EtherType as part of
++ * the DSA tag itself, and the EtherType is 2 bytes in length, the DSA header
++ * is located 2 bytes behind skb->data. Note that EtherType in this context
++ * means the first 2 bytes of the DSA header, not the encapsulated EtherType
++ * that will become visible after the DSA header is stripped.
 + */
-+static inline void dsa_alloc_etype_header(struct sk_buff *skb, int len)
++static inline void *dsa_etype_header_pos_rx(struct sk_buff *skb)
 +{
-+	memmove(skb->data, skb->data + len, 2 * ETH_ALEN);
++	return skb->data - 2;
 +}
 +
  /* switch.c */
  int dsa_switch_register_notifier(struct dsa_switch *ds);
  void dsa_switch_unregister_notifier(struct dsa_switch *ds);
 diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
-index 2fc546b31ad8..c62a89bb8de3 100644
+index c62a89bb8de3..96dbb8ee2fee 100644
 --- a/net/dsa/tag_brcm.c
 +++ b/net/dsa/tag_brcm.c
-@@ -99,7 +99,7 @@ static struct sk_buff *brcm_tag_xmit_ll(struct sk_buff *skb,
- 	skb_push(skb, BRCM_TAG_LEN);
+@@ -254,7 +254,7 @@ static struct sk_buff *brcm_leg_tag_rcv(struct sk_buff *skb,
+ 	if (unlikely(!pskb_may_pull(skb, BRCM_LEG_PORT_ID)))
+ 		return NULL;
  
- 	if (offset)
--		memmove(skb->data, skb->data + BRCM_TAG_LEN, offset);
-+		dsa_alloc_etype_header(skb, BRCM_TAG_LEN);
+-	brcm_tag = skb->data - 2;
++	brcm_tag = dsa_etype_header_pos_rx(skb);
  
- 	brcm_tag = skb->data + offset;
- 
-@@ -228,7 +228,7 @@ static struct sk_buff *brcm_leg_tag_xmit(struct sk_buff *skb,
- 
- 	skb_push(skb, BRCM_LEG_TAG_LEN);
- 
--	memmove(skb->data, skb->data + BRCM_LEG_TAG_LEN, 2 * ETH_ALEN);
-+	dsa_alloc_etype_header(skb, BRCM_LEG_TAG_LEN);
- 
- 	brcm_tag = skb->data + 2 * ETH_ALEN;
+ 	source_port = brcm_tag[5] & BRCM_LEG_PORT_ID;
  
 diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
-index ad9c841c998f..ab2c63859d12 100644
+index ab2c63859d12..2eeabab27078 100644
 --- a/net/dsa/tag_dsa.c
 +++ b/net/dsa/tag_dsa.c
-@@ -166,7 +166,7 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 	if (skb->protocol == htons(ETH_P_8021Q)) {
- 		if (extra) {
- 			skb_push(skb, extra);
--			memmove(skb->data, skb->data + extra, 2 * ETH_ALEN);
-+			dsa_alloc_etype_header(skb, extra);
- 		}
+@@ -205,7 +205,7 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+ 	u8 *dsa_header;
  
- 		/* Construct tagged DSA tag from 802.1Q tag. */
-@@ -181,7 +181,7 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 		}
- 	} else {
- 		skb_push(skb, DSA_HLEN + extra);
--		memmove(skb->data, skb->data + DSA_HLEN + extra, 2 * ETH_ALEN);
-+		dsa_alloc_etype_header(skb, DSA_HLEN + extra);
+ 	/* The ethertype field is part of the DSA header. */
+-	dsa_header = skb->data - 2;
++	dsa_header = dsa_etype_header_pos_rx(skb);
  
- 		/* Construct untagged DSA tag. */
- 		dsa_header = skb->data + 2 * ETH_ALEN + extra;
+ 	cmd = dsa_header[0] >> 6;
+ 	switch (cmd) {
 diff --git a/net/dsa/tag_lan9303.c b/net/dsa/tag_lan9303.c
-index af13c0a9cb41..e8ad3727433e 100644
+index e8ad3727433e..d06951273127 100644
 --- a/net/dsa/tag_lan9303.c
 +++ b/net/dsa/tag_lan9303.c
-@@ -62,7 +62,7 @@ static struct sk_buff *lan9303_xmit(struct sk_buff *skb, struct net_device *dev)
- 	skb_push(skb, LAN9303_TAG_LEN);
- 
- 	/* make room between MACs and Ether-Type */
--	memmove(skb->data, skb->data + LAN9303_TAG_LEN, 2 * ETH_ALEN);
-+	dsa_alloc_etype_header(skb, LAN9303_TAG_LEN);
- 
- 	lan9303_tag = (__be16 *)(skb->data + 2 * ETH_ALEN);
- 	tag = lan9303_xmit_use_arl(dp, skb->data) ?
-diff --git a/net/dsa/tag_mtk.c b/net/dsa/tag_mtk.c
-index 6a78e9f146e5..06d1cfc6d19b 100644
---- a/net/dsa/tag_mtk.c
-+++ b/net/dsa/tag_mtk.c
-@@ -41,7 +41,7 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
- 	default:
- 		xmit_tpid = MTK_HDR_XMIT_UNTAGGED;
- 		skb_push(skb, MTK_HDR_LEN);
--		memmove(skb->data, skb->data + MTK_HDR_LEN, 2 * ETH_ALEN);
-+		dsa_alloc_etype_header(skb, MTK_HDR_LEN);
+@@ -86,13 +86,7 @@ static struct sk_buff *lan9303_rcv(struct sk_buff *skb, struct net_device *dev)
+ 		return NULL;
  	}
  
- 	mtk_tag = skb->data + 2 * ETH_ALEN;
+-	/* '->data' points into the middle of our special VLAN tag information:
+-	 *
+-	 * ~ MAC src   | 0x81 | 0x00 | 0xyy | 0xzz | ether type
+-	 *                           ^
+-	 *                        ->data
+-	 */
+-	lan9303_tag = (__be16 *)(skb->data - 2);
++	lan9303_tag = dsa_etype_header_pos_rx(skb);
+ 
+ 	if (lan9303_tag[0] != htons(ETH_P_8021Q)) {
+ 		dev_warn_ratelimited(&dev->dev, "Dropping packet due to invalid VLAN marker\n");
+diff --git a/net/dsa/tag_mtk.c b/net/dsa/tag_mtk.c
+index 06d1cfc6d19b..a75f99e5fbe3 100644
+--- a/net/dsa/tag_mtk.c
++++ b/net/dsa/tag_mtk.c
+@@ -70,11 +70,7 @@ static struct sk_buff *mtk_tag_rcv(struct sk_buff *skb, struct net_device *dev)
+ 	if (unlikely(!pskb_may_pull(skb, MTK_HDR_LEN)))
+ 		return NULL;
+ 
+-	/* The MTK header is added by the switch between src addr
+-	 * and ethertype at this point, skb->data points to 2 bytes
+-	 * after src addr so header should be 2 bytes right before.
+-	 */
+-	phdr = (__be16 *)(skb->data - 2);
++	phdr = dsa_etype_header_pos_rx(skb);
+ 	hdr = ntohs(*phdr);
+ 
+ 	/* Remove MTK tag and recalculate checksum. */
 diff --git a/net/dsa/tag_qca.c b/net/dsa/tag_qca.c
-index f9fc881da591..c68a814188e7 100644
+index c68a814188e7..79a81569d7ec 100644
 --- a/net/dsa/tag_qca.c
 +++ b/net/dsa/tag_qca.c
-@@ -36,7 +36,7 @@ static struct sk_buff *qca_tag_xmit(struct sk_buff *skb, struct net_device *dev)
+@@ -58,11 +58,7 @@ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
+ 	if (unlikely(!pskb_may_pull(skb, QCA_HDR_LEN)))
+ 		return NULL;
  
- 	skb_push(skb, QCA_HDR_LEN);
+-	/* The QCA header is added by the switch between src addr and Ethertype
+-	 * At this point, skb->data points to ethertype so header should be
+-	 * right before
+-	 */
+-	phdr = (__be16 *)(skb->data - 2);
++	phdr = dsa_etype_header_pos_rx(skb);
+ 	hdr = ntohs(*phdr);
  
--	memmove(skb->data, skb->data + QCA_HDR_LEN, 2 * ETH_ALEN);
-+	dsa_alloc_etype_header(skb, QCA_HDR_LEN);
- 	phdr = (__be16 *)(skb->data + 2 * ETH_ALEN);
- 
- 	/* Set the version field, and set destination port information */
+ 	/* Make sure the version is correct */
 diff --git a/net/dsa/tag_rtl4_a.c b/net/dsa/tag_rtl4_a.c
-index ff8707ff0c5b..06e901eda298 100644
+index 06e901eda298..947247d2124e 100644
 --- a/net/dsa/tag_rtl4_a.c
 +++ b/net/dsa/tag_rtl4_a.c
-@@ -47,7 +47,7 @@ static struct sk_buff *rtl4a_tag_xmit(struct sk_buff *skb,
- 		   dp->index);
- 	skb_push(skb, RTL4_A_HDR_LEN);
+@@ -76,12 +76,7 @@ static struct sk_buff *rtl4a_tag_rcv(struct sk_buff *skb,
+ 	if (unlikely(!pskb_may_pull(skb, RTL4_A_HDR_LEN)))
+ 		return NULL;
  
--	memmove(skb->data, skb->data + RTL4_A_HDR_LEN, 2 * ETH_ALEN);
-+	dsa_alloc_etype_header(skb, RTL4_A_HDR_LEN);
- 	tag = skb->data + 2 * ETH_ALEN;
- 
- 	/* Set Ethertype */
+-	/* The RTL4 header has its own custom Ethertype 0x8899 and that
+-	 * starts right at the beginning of the packet, after the src
+-	 * ethernet addr. Apparently skb->data always points 2 bytes in,
+-	 * behind the Ethertype.
+-	 */
+-	tag = skb->data - 2;
++	tag = dsa_etype_header_pos_rx(skb);
+ 	p = (__be16 *)tag;
+ 	etype = ntohs(*p);
+ 	if (etype != RTL4_A_ETHERTYPE) {
 diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
-index 5e8234079d08..939161822f31 100644
+index 939161822f31..34f3212a6703 100644
 --- a/net/dsa/tag_sja1105.c
 +++ b/net/dsa/tag_sja1105.c
-@@ -245,8 +245,7 @@ static struct sk_buff *sja1110_xmit(struct sk_buff *skb,
+@@ -481,11 +481,11 @@ static struct sk_buff *sja1105_rcv(struct sk_buff *skb,
  
- 	skb_push(skb, SJA1110_HEADER_LEN);
- 
--	/* Move Ethernet header to the left, making space for DSA tag */
--	memmove(skb->data, skb->data + SJA1110_HEADER_LEN, 2 * ETH_ALEN);
-+	dsa_alloc_etype_header(skb, SJA1110_HEADER_LEN);
- 
- 	trailer_pos = skb->len;
+ static struct sk_buff *sja1110_rcv_meta(struct sk_buff *skb, u16 rx_header)
+ {
++	u8 *buf = dsa_etype_header_pos_rx(skb) + SJA1110_HEADER_LEN;
+ 	int switch_id = SJA1110_RX_HEADER_SWITCH_ID(rx_header);
+ 	int n_ts = SJA1110_RX_HEADER_N_TS(rx_header);
+ 	struct net_device *master = skb->dev;
+ 	struct dsa_port *cpu_dp;
+-	u8 *buf = skb->data + 2;
+ 	struct dsa_switch *ds;
+ 	int i;
  
 -- 
 2.25.1
