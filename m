@@ -2,67 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72A5D3E4F29
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 00:27:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4C1B3E4F44
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 00:30:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236674AbhHIW1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 18:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41900 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233660AbhHIW1o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 18:27:44 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4410C0613D3;
-        Mon,  9 Aug 2021 15:27:23 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id o7-20020a05600c5107b0290257f956e02dso490974wms.1;
-        Mon, 09 Aug 2021 15:27:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:from:mime-version:content-transfer-encoding
-         :content-description:subject:to:date:reply-to;
-        bh=5NTJSky9UX3JbuB9riY3wCYfXDpCwy2c7hzO0kF4AHA=;
-        b=T9CVn4B3EbbMGcnO1AU5wqcQcpb0tQ5LH9fRYZaJKi+82sEjgmu6fE93vJvxRB74AZ
-         g+mLp+yoYEfHT9LYe3fE1IcYiC6cZ/2VZJB1bZ4dpOQv2kX3HkKsvGqQbxtzUO8OFhrH
-         omfekMWXfxgsqwExp3WuYGlCT1kzsLiIi6EAHoKU+Xou4X+SQdG7Iitmp6Mx3RGbFpKW
-         U4jUEeYQL7eYku6T/x+/QN5BUfJLOsTDZgZRKDYfvHnvNI90CAFIQO5/aayz1zN5jzOT
-         1tXp0/iJbkh19qVfqCGwfPQldLql6kOFGUQ0AX3RlDOqd32+Q98bOpOTbKB5TAS9FfFW
-         1nHw==
+        id S236725AbhHIWa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 18:30:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51440 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231793AbhHIWa6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 18:30:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1628548236;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BjH3lVoue/JL4btoApF2k0x+vF5e5YSb7pGpRSYghz4=;
+        b=S4Z9kfVRVKSrl58elQHd88VMjyS448HjrxXXSeitZg8Z7R0cd2WmNamwFQgQd0JnfjkPSY
+        R04IsLlwaKNM1hLJpPNP49B31IzVE2wdkzgTkVcXZOM/lsGLpMGuuW2Ul6fOXj3TRecM2Y
+        DylNkmBCSvgEQ11HFDtug3UoTEjXCZQ=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-261-zkvRKcIWPImOgePQZZ8REw-1; Mon, 09 Aug 2021 18:30:35 -0400
+X-MC-Unique: zkvRKcIWPImOgePQZZ8REw-1
+Received: by mail-qk1-f200.google.com with SMTP id q11-20020a05620a05abb02903ca17a8eef8so10780464qkq.10
+        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 15:30:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:from:mime-version
-         :content-transfer-encoding:content-description:subject:to:date
-         :reply-to;
-        bh=5NTJSky9UX3JbuB9riY3wCYfXDpCwy2c7hzO0kF4AHA=;
-        b=P/ZMhzT+OyiGS7cKltG5wJ8tgQ9cUQOka1a2S3NK3IikG9gdWWgZnStCq9P5gmEmTe
-         /RRoDNaU4KOMN9rkcZ2BhlamZdfuVbxmWB1UAxa5LxBP9JbEqPwQuQuZO7FEigY8NTD2
-         QAkQCGiarPlddt0BWDi80ZDg/etY4mFyM1W+uBut/Q+Go82IadG9EAjVllIFqgRXE+TK
-         AWPtnlynODarChetB7IDY4d4tVQmPk9JqFr5npC9ed5CMmclqnvg3aMIa1nfFFOwubSO
-         hrTAQG+yF88k59RqfY+nis0ojV1fRT0Gx9+UxDC4XWqzNvkw4uBPhufon02yemS5q3YJ
-         mm0Q==
-X-Gm-Message-State: AOAM531NlblAehxeVvnNu6OsA4nhciIFbIFJtnvwGAvWvpjKyQbj/zjO
-        tbKqflirLGSrlJX+SQggxDo=
-X-Google-Smtp-Source: ABdhPJwO3S+QbUSf4MsX925O2tFZCneo+LHwa5uyb5fImBml5m6s6N/lCY3YDL1LfexaiuQFBSJ5dg==
-X-Received: by 2002:a7b:c30f:: with SMTP id k15mr1300333wmj.128.1628548042376;
-        Mon, 09 Aug 2021 15:27:22 -0700 (PDT)
-Received: from [192.168.1.70] ([102.64.223.208])
-        by smtp.gmail.com with ESMTPSA id j4sm18778506wmi.4.2021.08.09.15.27.06
-        (version=TLS1 cipher=AES128-SHA bits=128/128);
-        Mon, 09 Aug 2021 15:27:21 -0700 (PDT)
-Message-ID: <6111abc9.1c69fb81.8b5d4.7653@mx.google.com>
-From:   Vanina curth <curtisvani0020@gmail.com>
-X-Google-Original-From: Vanina  curth
-Content-Type: text/plain; charset="iso-8859-1"
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=BjH3lVoue/JL4btoApF2k0x+vF5e5YSb7pGpRSYghz4=;
+        b=Qt9kCtwU+62l0/E9BJZURiXBeOA8LfiybX6DM9ZBAvSgznANt+qtML+H4+2HCfDcEj
+         6k6WRNBM+nzqH2/lXtM2Mv17hdaxchCMNa8zeX0LKa9PZxQKCZEaDIf8Hc5pv/wbVzRj
+         0TLVbthBHUTdvDRArXllfX9CE4oLTw2D8P/KdtvTvkQ6AdVwXdY6Zc7VDBqHtDfcPDIx
+         L9/C7FI0dyS/MWkulQtnDN4yVRXKg3BlEFpZEbd3twzLvGMNsTZvBz3rPeH4n6Ew7Ajp
+         WSkgHzz7/ztvrGYR5wgpB9sI5ghYo1TdK2j1ScMHk90sgoJ1Kkvt8Wpztu8FFrFriH9f
+         q8kQ==
+X-Gm-Message-State: AOAM530shK7GvwdkXRP/q1pBCmYxlhvY1BdYN8/DCBnlIiaPvbhGh5XY
+        rUo3VKCiYssmv4odGR9VHgSPxBquJsQJqy7Mg2uhH4v110AdxL+YZhAPgVSWHss/JtbhHAxI7GJ
+        miLN4ixhGlWm7nYBj
+X-Received: by 2002:ad4:5f09:: with SMTP id fo9mr14663288qvb.35.1628548235172;
+        Mon, 09 Aug 2021 15:30:35 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJys63neYYC0CsWGSSBTnSkVTM1U47S3lEOoT7cddDJABMx3HwrVAydq7pk663/OgQKN+d7p4Q==
+X-Received: by 2002:ad4:5f09:: with SMTP id fo9mr14663273qvb.35.1628548234963;
+        Mon, 09 Aug 2021 15:30:34 -0700 (PDT)
+Received: from jtoppins.rdu.csb ([107.15.110.69])
+        by smtp.gmail.com with ESMTPSA id v19sm5439662qta.60.2021.08.09.15.30.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 Aug 2021 15:30:34 -0700 (PDT)
+Subject: Re: [PATCH] netlink: NL_SET_ERR_MSG - remove local static array
+To:     Joe Perches <joe@perches.com>, netdev <netdev@vger.kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <1f99c69f4e640accaf7459065e6625e73ec0f8d4.camel@perches.com>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+Message-ID: <c32a4a3c-c7df-cb8d-ecb4-7c1738cfd15c@redhat.com>
+Date:   Mon, 9 Aug 2021 18:30:33 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: Dear
-To:     Recipients <Vanina@vger.kernel.org>
-Date:   Mon, 09 Aug 2021 22:26:25 +0000
-Reply-To: curtisvani9008@gmail.com
+In-Reply-To: <1f99c69f4e640accaf7459065e6625e73ec0f8d4.camel@perches.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-How are you? I'm Vanina. I'm interested to know you and I would like to kno=
-w more about you and establish relationship with you. i will wait for your =
-response. thank you.
+On 8/9/21 1:04 PM, Joe Perches wrote:
+> The want was to have some separate object section for netlink messages
+> so all netlink messages could be specifically listed by some tool but
+> the effect is duplicating static const char arrays in the object code.
+> 
+> It seems unused presently so change the macro to avoid the local static
+> declarations until such time as these actually are wanted and used.
+> 
+> This reduces object size ~8KB in an x86-64 defconfig without modules.
+> 
+> $ size vmlinux.o*
+>     text	   data	    bss	    dec	    hex	filename
+> 20110471	3460344	 741760	24312575	172faff	vmlinux.o.new
+> 20119444	3460344	 741760	24321548	1731e0c	vmlinux.o.old
+> 
+> Signed-off-by: Joe Perches <joe@perches.com>
+
+Seems reasonable.
+
+Acked-by: Jonathan Toppins <jtoppins@redhat.com>
+
