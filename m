@@ -2,106 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DBA03E3F84
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 08:04:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 547D53E3F91
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 08:13:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233194AbhHIGES (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 02:04:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35068 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233045AbhHIGER (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Aug 2021 02:04:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 21CB260C3E;
-        Mon,  9 Aug 2021 06:03:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628489037;
-        bh=sWAw75zZz3G5utbaawNJ9M8XWQpHCfrrFx10QMwrBM4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YVi+9IZ56hb1Yrk0bQgyiFjceH3/LV1yycjXzre9VzjdCzGrX62pSWhsusO6nbY/l
-         MBU345akzBmRay09rI7LBFMR92VLwGxZs+/s2roSNi14kf2d9hB5p4CEMIrvseezVH
-         UucrWtXLq5sMNbAdiPfZo/YVw0iV9xQ6maz0gVS8ObZC8cCPFzlqQpGUd0PO/X6eJZ
-         /slIgcWiabRDvvzYt3twZ4+ce6sizPvzR9Gg/QRCoJ9qyL2FzBUfE4kJWY1JoYej0m
-         ESZOGBFJ1Zb+YpuFuv3RT5A1j4/Ety+q99WdUwn4cn4+xwYBP35gEx7GZ4qixk2Hzp
-         eTUdj1lBQ1IYg==
-Date:   Mon, 9 Aug 2021 09:03:53 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jonathan Toppins <jtoppins@redhat.com>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 2/2] bonding: combine netlink and console error
- messages
-Message-ID: <YRDFSbxtN9uYBMbK@unreal>
-References: <cover.1628306392.git.jtoppins@redhat.com>
- <a36c7639a13963883f49c272ed7993c9625a712a.1628306392.git.jtoppins@redhat.com>
- <YQ+vDtXPV5DHqruU@unreal>
- <14b506c3-7e8d-f313-b585-4e7ff1a542cf@redhat.com>
+        id S233095AbhHIGNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 02:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44132 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233018AbhHIGNR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 02:13:17 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6D04C0613CF;
+        Sun,  8 Aug 2021 23:12:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <14b506c3-7e8d-f313-b585-4e7ff1a542cf@redhat.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1628489575;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/3NW6B5sTs1+9zEsjoZtRxYM/tR7SbDBK3k+Xfo1Di0=;
+        b=mS/qsNH3n9HXTzHpjXxWUxHgdUmpUBwaYZxkfIakWrbHFVL7BnOUGmLMS/4Twq2hRgU4w7
+        00Ii9iLS8432iBV8JFZecrBCJlgQdpmBcklkRE0R/MZZ9+SuLJCoJZoJH7wi6Ws2KHlAe2
+        DfXK/J/RqcSgympSnC22hmUXRnvnaAw=
+Date:   Mon, 09 Aug 2021 06:12:55 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   yajun.deng@linux.dev
+Message-ID: <489e6f1ce9f8de6fd8765d82e1e47827@linux.dev>
+Subject: Re: [PATCH net-next] net: sock: add the case if sk is NULL
+To:     "Jakub Kicinski" <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20210806061136.54e6926e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210806061136.54e6926e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210806063815.21541-1-yajun.deng@linux.dev>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: yajun.deng@linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 08, 2021 at 09:42:46PM -0400, Jonathan Toppins wrote:
-> On 8/8/21 6:16 AM, Leon Romanovsky wrote:
-> > On Fri, Aug 06, 2021 at 11:30:55PM -0400, Jonathan Toppins wrote:
-> > > There seems to be no reason to have different error messages between
-> > > netlink and printk. It also cleans up the function slightly.
-> > > 
-> > > Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
-> > > ---
-> > >   drivers/net/bonding/bond_main.c | 45 ++++++++++++++++++---------------
-> > >   1 file changed, 25 insertions(+), 20 deletions(-)
-> > > 
-> > > diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> > > index 3ba5f4871162..46b95175690b 100644
-> > > --- a/drivers/net/bonding/bond_main.c
-> > > +++ b/drivers/net/bonding/bond_main.c
-> > > @@ -1712,6 +1712,16 @@ void bond_lower_state_changed(struct slave *slave)
-> > >   	netdev_lower_state_changed(slave->dev, &info);
-> > >   }
-> > > +#define BOND_NL_ERR(bond_dev, extack, errmsg) do {		\
-> > > +	NL_SET_ERR_MSG(extack, errmsg);				\
-> > > +	netdev_err(bond_dev, "Error: " errmsg "\n");		\
-> > > +} while (0)
-> > > +
-> > > +#define SLAVE_NL_ERR(bond_dev, slave_dev, extack, errmsg) do {	\
-> > > +	NL_SET_ERR_MSG(extack, errmsg);				\
-> > > +	slave_err(bond_dev, slave_dev, "Error: " errmsg "\n");	\
-> > > +} while (0)
-> > 
-> > I don't think that both extack messages and dmesg prints are needed.
-> > 
-> > They both will be caused by the same source, and both will be seen by
-> > the caller, but duplicated.
-> > 
-> > IMHO, errors that came from the netlink, should be printed with NL_SET_ERR_MSG(),
-> > other errors should use netdev_err/slave_err prints.
-> > 
-> 
-> bond_enslave can be called from two places sysfs and netlink so reporting
-> both a console message and netlink message makes sense to me. So I have to
-> disagree in this case. I am simply making the two paths report the same
-> error in the function so that when using sysfs the same information is
-> reported. In the netlink case the information will be reported twice, once
-> an an error response over netlink and once via printk.
-
-There is no need to print any errors twice, just add "if (extack)" to you
-macros, something like that:
-
-+#define SLAVE_NL_ERR(bond_dev, slave_dev, extack, errmsg) do { 
-*       if (extack) 						\
-+       	NL_SET_ERR_MSG(extack, errmsg);                 \
-+       else 							\
-+       	slave_err(bond_dev, slave_dev, "Error: " errmsg "\n");  \
-+} while (0)
-
-Thanks
-
-> 
-> -Jon
-> 
+August 6, 2021 9:11 PM, "Jakub Kicinski" <kuba@kernel.org> wrote:=0A=0A> =
+On Fri, 6 Aug 2021 14:38:15 +0800 Yajun Deng wrote:=0A> =0A>> Add the cas=
+e if sk is NULL in sock_{put, hold},=0A>> The caller is free to use it.=
+=0A>> =0A>> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>=0A> =0A> The=
+ obvious complaint about this patch (and your previous netdev patch)=0A> =
+is that you're spraying branches everywhere in the code. Sure, it may=0A=
+=0ASorry for that, I'll be more normative in later submission.=0A> be oka=
+y for free(), given how expensive of an operation that is but=0A> is havi=
+ng refcounting functions accept NULL really the best practice?=0A> =0A> C=
+an you give us examples in the kernel where that's the case?=0A=0A0   inc=
+lude/net/neighbour.h         neigh_clone()=0A1   include/linux/cgroup.h  =
+        get_cgroup_ns() and put_cgroup_ns()  (This is very similar to my =
+submission)=0A2   include/linux/ipc_namespace.h   get_ipc_ns()=0A3   incl=
+ude/linux/posix_acl.h       posix_acl_dup()=0A4   include/linux/pid.h    =
+         get_pid()=0A5   include/linux/user_namespace.h  get_user_ns()
