@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 547D53E3F91
-	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 08:13:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 417133E4059
+	for <lists+netdev@lfdr.de>; Mon,  9 Aug 2021 08:43:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233095AbhHIGNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 02:13:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44132 "EHLO
+        id S233397AbhHIGnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 02:43:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233018AbhHIGNR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 02:13:17 -0400
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6D04C0613CF;
-        Sun,  8 Aug 2021 23:12:57 -0700 (PDT)
+        with ESMTP id S233234AbhHIGnU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 02:43:20 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF58C0613CF
+        for <netdev@vger.kernel.org>; Sun,  8 Aug 2021 23:43:00 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id y12so22982328edo.6
+        for <netdev@vger.kernel.org>; Sun, 08 Aug 2021 23:43:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=zjuQKULORI9R5i6tcWiiTf7fRBA5dqYiPgnVfOlS+wQ=;
+        b=FfrBbrAkSnkZVBIyUehMVptQohDAtwMSNm8sBPvrF/6R+DeTbK4SN0jwClUUv5aycQ
+         ZhtbRx0r3MwyhjT9dht9hkrM4rKqvDkT/HA4J2hfrZM9UcC15tYXiUURG9vKtvYxGmiI
+         OejQtWmOd64j1nBjRwCgfgC/TlBIj8iSjeTNnItcjCDT8MLF5/mU0+2BSlZ4My4nvcdO
+         5KP0p3ZvJhVVEX2byhyOw5YMgdJovZmsNk6XopGBzLF7m9Gq796lRbDT8zlkzgQ6Qet8
+         OGxefZsDlnxspc5N5qQODlxxAiLSzXFS4rFoz4Fez0V8uqXapZnqCrnkwIob9KQvLrsO
+         vg8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=zjuQKULORI9R5i6tcWiiTf7fRBA5dqYiPgnVfOlS+wQ=;
+        b=QKw6u3Mtn/NR8CcrgT3Qa8rsiHh3/pAj8Bzo7S6xJQdXvXm7Q+Xqul/7X7ldyWHFgm
+         cVWxn7kd/2uABYsdHfCuTnHnkC1SnFCNcwePZUDLaJ9dh2RSFPTv3XsszwTrGlaH2nFt
+         DMYsyW3sHTZ/W44z3Kp/R6yS1poQftkjfuk+6Yx7wG63pnwmL+k8tw5XPd9QBDCZKsjx
+         hK5J7HnXThCVuGfK7kgwilJhtvmKvgMQegM/TKq6r8Rx/WakSPDsMenEHre5zXXCHTju
+         +uS3T4PGwQGOIZiOVwgwbXFtxKHIJL6t0EpzbKMZ0Hcuj5WIju9ihQAs2Ob60VFwGkEb
+         F5rw==
+X-Gm-Message-State: AOAM533crlKrCesdhirZvChqqLA+YS3EQ60t3HvZwSTHlsTWaY2HQ1XV
+        +4JPE5FMKl+7349/7R2a+bvgkk8wu4NMGDbxcP8=
+X-Google-Smtp-Source: ABdhPJxfIHHYEeLcOciG3XTyBa3nNRVLD6kBO8LF4aWtfYnRfjfAdUwQ8wQRYfxZe6iY/GT1Jyvb5w2ZyIjgUt2+5Jw=
+X-Received: by 2002:a05:6402:c01:: with SMTP id co1mr5019918edb.156.1628491379067;
+ Sun, 08 Aug 2021 23:42:59 -0700 (PDT)
 MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1628489575;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/3NW6B5sTs1+9zEsjoZtRxYM/tR7SbDBK3k+Xfo1Di0=;
-        b=mS/qsNH3n9HXTzHpjXxWUxHgdUmpUBwaYZxkfIakWrbHFVL7BnOUGmLMS/4Twq2hRgU4w7
-        00Ii9iLS8432iBV8JFZecrBCJlgQdpmBcklkRE0R/MZZ9+SuLJCoJZoJH7wi6Ws2KHlAe2
-        DfXK/J/RqcSgympSnC22hmUXRnvnaAw=
-Date:   Mon, 09 Aug 2021 06:12:55 +0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   yajun.deng@linux.dev
-Message-ID: <489e6f1ce9f8de6fd8765d82e1e47827@linux.dev>
-Subject: Re: [PATCH net-next] net: sock: add the case if sk is NULL
-To:     "Jakub Kicinski" <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20210806061136.54e6926e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20210806061136.54e6926e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210806063815.21541-1-yajun.deng@linux.dev>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yajun.deng@linux.dev
+Received: by 2002:a17:906:906:0:0:0:0 with HTTP; Sun, 8 Aug 2021 23:42:58
+ -0700 (PDT)
+Reply-To: katiehiggins034@gmail.com
+From:   katie <salamatouayindo176@gmail.com>
+Date:   Mon, 9 Aug 2021 06:42:58 +0000
+Message-ID: <CAKO11TzLEErEQKL7WqqrgOjzQc3aZHnoZU3AE0fXWh30GJgcxQ@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-August 6, 2021 9:11 PM, "Jakub Kicinski" <kuba@kernel.org> wrote:=0A=0A> =
-On Fri, 6 Aug 2021 14:38:15 +0800 Yajun Deng wrote:=0A> =0A>> Add the cas=
-e if sk is NULL in sock_{put, hold},=0A>> The caller is free to use it.=
-=0A>> =0A>> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>=0A> =0A> The=
- obvious complaint about this patch (and your previous netdev patch)=0A> =
-is that you're spraying branches everywhere in the code. Sure, it may=0A=
-=0ASorry for that, I'll be more normative in later submission.=0A> be oka=
-y for free(), given how expensive of an operation that is but=0A> is havi=
-ng refcounting functions accept NULL really the best practice?=0A> =0A> C=
-an you give us examples in the kernel where that's the case?=0A=0A0   inc=
-lude/net/neighbour.h         neigh_clone()=0A1   include/linux/cgroup.h  =
-        get_cgroup_ns() and put_cgroup_ns()  (This is very similar to my =
-submission)=0A2   include/linux/ipc_namespace.h   get_ipc_ns()=0A3   incl=
-ude/linux/posix_acl.h       posix_acl_dup()=0A4   include/linux/pid.h    =
-         get_pid()=0A5   include/linux/user_namespace.h  get_user_ns()
+LS0gDQpEb2Jyw70gZGXFiCwgbcO0xb5ldGUgbWkgcHJvc8OtbSBuYXDDrXNhxaUuDQo=
