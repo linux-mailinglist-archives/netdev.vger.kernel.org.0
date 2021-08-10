@@ -2,138 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CD8F3E5A84
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 14:56:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2EED3E5A95
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 14:59:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240996AbhHJM47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 08:56:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41994 "EHLO
+        id S241049AbhHJM77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 08:59:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240971AbhHJM47 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 08:56:59 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A3C0C0613D3
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 05:56:37 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mDRIs-0004SR-8w; Tue, 10 Aug 2021 14:56:22 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mDRIp-0005Hh-Qu; Tue, 10 Aug 2021 14:56:19 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Marek Vasut <marex@denx.de>, David Jander <david@protonic.nl>,
-        linux-hwmon@vger.kernel.org
-Subject: [PATCH net-next v1] net: phy: nxp-tja11xx: log critical health state
-Date:   Tue, 10 Aug 2021 14:56:18 +0200
-Message-Id: <20210810125618.20255-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S239188AbhHJM77 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 08:59:59 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3175CC0613D3;
+        Tue, 10 Aug 2021 05:59:37 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id m9so28921624ljp.7;
+        Tue, 10 Aug 2021 05:59:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=C8ukQa3sXo+DBl8G/r0rlRb+zkXrtXj0fbs8AcpdmLM=;
+        b=BeR0m3pZrkVng8z/cHE1HhRzPFWun7v6JeIPJr7i2Y0ic0pnr5hNFoZdBlYDJL0Xg+
+         RoM7hPyLnx0zqG27UL1O7qbP3yuUFooPWRR77qltiO/ij40qu7ZMsF8Mpa0Lw+/jdrQ/
+         fji0Tzfl/hUi1cU9j/u0iptIowVN2aNGLtqe7WzwL58Tu4aI83G5mGeJBzxrO7GkyjdE
+         wR4IB0POHiMTq6k2wTVyjghI9zGVJPRxWwmb7PbulzaU3YcwvLAUZvZSDEApQVWyvvp8
+         sawq7BSsw+rr64tuzNRMlSJQdgFQB68FAg3Kkq7vHCcApuV0zocldjj0uPpVts2MAh7j
+         1h9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=C8ukQa3sXo+DBl8G/r0rlRb+zkXrtXj0fbs8AcpdmLM=;
+        b=fjeSbIHsOI9jEWIwwTHn4CtpOLUJ3Jxy8jbsV6wNlq3pjxCStOOgtTp+uF3gMsrjGr
+         Q7Xu6koICRGM/8NaYvzFOzBvsUgIjsiIBWHBJ3O8NrjJ7PpHy41WjPXthRdsopyOaodO
+         K5YkMJQN+IflPtuL/4KNoqwWH1uZuYGibIhzYYAJ8F5a+EmRpCw0MMHfnluH+IwQarE6
+         rZNz8egvY2x+SWxTt8d7+9DI/zpV+dXP93ye6Di3OJsTx3ZPMoW79XAQ/4xYTFLmGB0b
+         0uxJclebv+f5tbaAPS09Iw7oVV/mGYuQEFhiI9SmdsmXUE2su5zZyG1DECpntROGqvHm
+         Lb3w==
+X-Gm-Message-State: AOAM531IjXpLRn0Oh/jMO56gYoBo4gK/4C34oCgZlmrI4x1z4YkAdPWp
+        7qaZ2Wqmw24A78CqV5tuGqc=
+X-Google-Smtp-Source: ABdhPJyXKs6dOhzi+KmIRhTXSLCqmlcLAcEQglehQFPDp/eginYv8FRijzR7lGhqlXzh/oYaSjmoog==
+X-Received: by 2002:a2e:8250:: with SMTP id j16mr19645493ljh.164.1628600375545;
+        Tue, 10 Aug 2021 05:59:35 -0700 (PDT)
+Received: from localhost.localdomain ([46.235.67.232])
+        by smtp.gmail.com with ESMTPSA id m12sm2039397lfh.182.2021.08.10.05.59.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Aug 2021 05:59:35 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        davem@davemloft.net
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+649e339fa6658ee623d3@syzkaller.appspotmail.com
+Subject: [PATCH v2] netfilter: protect nft_ct_pcpu_template_refcnt with mutex
+Date:   Tue, 10 Aug 2021 15:59:20 +0300
+Message-Id: <20210810125920.23187-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210810125523.15312-1-paskripkin@gmail.com>
+References: <20210810125523.15312-1-paskripkin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TJA1102 provides interrupt notification for the critical health states
-like overtemperature and undervoltage.
+Syzbot hit use-after-free in nf_tables_dump_sets. The problem was in
+missing lock protection for nft_ct_pcpu_template_refcnt.
 
-The overtemperature bit is set if package temperature is beyond 155C°.
-This functionality was tested by heating the package up to 200C°
+Before commit f102d66b335a ("netfilter: nf_tables: use dedicated
+mutex to guard transactions") all transactions were serialized by global
+mutex, but then global mutex was changed to local per netnamespace
+commit_mutex.
 
-The undervoltage bit is set if supply voltage drops beyond some critical
-threshold. Currently not tested.
+This change causes use-after-free bug, when 2 netnamespaces concurently
+changing nft_ct_pcpu_template_refcnt without proper locking. Fix it by
+adding nft_ct_pcpu_mutex and protect all nft_ct_pcpu_template_refcnt
+changes with it.
 
-In a typical use case, both of this events should be logged and stored
-(or send to some remote system) for further investigations.
-
-To make testing and troubleshooting more easier, other bits are exported
-over the ethtool phy stats interface:
-- level of overtemperature. There is no access to thermal sensor.
-- power supply line where undervoltage was detected
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Fixes: f102d66b335a ("netfilter: nf_tables: use dedicated mutex to guard transactions")
+Reported-and-tested-by: syzbot+649e339fa6658ee623d3@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 ---
- drivers/net/phy/nxp-tja11xx.c | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
-index afd7afa1f498..4c37b427a53b 100644
---- a/drivers/net/phy/nxp-tja11xx.c
-+++ b/drivers/net/phy/nxp-tja11xx.c
-@@ -47,12 +47,14 @@
- #define MII_INTSRC_LINK_FAIL		BIT(10)
- #define MII_INTSRC_LINK_UP		BIT(9)
- #define MII_INTSRC_MASK			(MII_INTSRC_LINK_FAIL | MII_INTSRC_LINK_UP)
--#define MII_INTSRC_TEMP_ERR		BIT(1)
- #define MII_INTSRC_UV_ERR		BIT(3)
-+#define MII_INTSRC_TEMP_ERR		BIT(1)
+Changes in v2:
+	Fixed typo in title: netfiler -> netfilter
+
+---
+ net/netfilter/nft_ct.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/net/netfilter/nft_ct.c b/net/netfilter/nft_ct.c
+index 337e22d8b40b..99b1de14ff7e 100644
+--- a/net/netfilter/nft_ct.c
++++ b/net/netfilter/nft_ct.c
+@@ -41,6 +41,7 @@ struct nft_ct_helper_obj  {
+ #ifdef CONFIG_NF_CONNTRACK_ZONES
+ static DEFINE_PER_CPU(struct nf_conn *, nft_ct_pcpu_template);
+ static unsigned int nft_ct_pcpu_template_refcnt __read_mostly;
++static DEFINE_MUTEX(nft_ct_pcpu_mutex);
+ #endif
  
- #define MII_INTEN			22
- #define MII_INTEN_LINK_FAIL		BIT(10)
- #define MII_INTEN_LINK_UP		BIT(9)
-+#define MII_INTEN_UV_ERR		BIT(3)
-+#define MII_INTEN_TEMP_ERR		BIT(1)
- 
- #define MII_COMMSTAT			23
- #define MII_COMMSTAT_LINK_UP		BIT(15)
-@@ -89,6 +91,12 @@ static struct tja11xx_phy_stats tja11xx_hw_stats[] = {
- 	{ "phy_polarity_detect", 25, 6, BIT(6) },
- 	{ "phy_open_detect", 25, 7, BIT(7) },
- 	{ "phy_short_detect", 25, 8, BIT(8) },
-+	{ "phy_temp_warn (temp > 155C°)", 25, 9, BIT(9) },
-+	{ "phy_temp_high (temp > 180C°)", 25, 10, BIT(10) },
-+	{ "phy_uv_vddio", 25, 11, BIT(11) },
-+	{ "phy_uv_vddd_1v8", 25, 13, BIT(13) },
-+	{ "phy_uv_vdda_3v3", 25, 14, BIT(14) },
-+	{ "phy_uv_vddd_3v3", 25, 15, BIT(15) },
- 	{ "phy_rem_rcvr_count", 26, 0, GENMASK(7, 0) },
- 	{ "phy_loc_rcvr_count", 26, 8, GENMASK(15, 8) },
- };
-@@ -607,7 +615,8 @@ static int tja11xx_config_intr(struct phy_device *phydev)
- 		if (err)
- 			return err;
- 
--		value = MII_INTEN_LINK_FAIL | MII_INTEN_LINK_UP;
-+		value = MII_INTEN_LINK_FAIL | MII_INTEN_LINK_UP |
-+			MII_INTEN_UV_ERR | MII_INTEN_TEMP_ERR;
- 		err = phy_write(phydev, MII_INTEN, value);
- 	} else {
- 		err = phy_write(phydev, MII_INTEN, value);
-@@ -622,6 +631,7 @@ static int tja11xx_config_intr(struct phy_device *phydev)
- 
- static irqreturn_t tja11xx_handle_interrupt(struct phy_device *phydev)
- {
-+	struct device *dev = &phydev->mdio.dev;
- 	int irq_status;
- 
- 	irq_status = phy_read(phydev, MII_INTSRC);
-@@ -630,6 +640,11 @@ static irqreturn_t tja11xx_handle_interrupt(struct phy_device *phydev)
- 		return IRQ_NONE;
- 	}
- 
-+	if (irq_status & MII_INTSRC_TEMP_ERR)
-+		dev_err(dev, "Overtemperature error detected (temp > 155C°).\n");
-+	if (irq_status & MII_INTSRC_UV_ERR)
-+		dev_err(dev, "Undervoltage error detected.\n");
-+
- 	if (!(irq_status & MII_INTSRC_MASK))
- 		return IRQ_NONE;
- 
+ static u64 nft_ct_get_eval_counter(const struct nf_conn_counter *c,
+@@ -525,8 +526,10 @@ static void __nft_ct_set_destroy(const struct nft_ctx *ctx, struct nft_ct *priv)
+ #endif
+ #ifdef CONFIG_NF_CONNTRACK_ZONES
+ 	case NFT_CT_ZONE:
++		mutex_lock(&nft_ct_pcpu_mutex);
+ 		if (--nft_ct_pcpu_template_refcnt == 0)
+ 			nft_ct_tmpl_put_pcpu();
++		mutex_unlock(&nft_ct_pcpu_mutex);
+ 		break;
+ #endif
+ 	default:
+@@ -564,9 +567,13 @@ static int nft_ct_set_init(const struct nft_ctx *ctx,
+ #endif
+ #ifdef CONFIG_NF_CONNTRACK_ZONES
+ 	case NFT_CT_ZONE:
+-		if (!nft_ct_tmpl_alloc_pcpu())
++		mutex_lock(&nft_ct_pcpu_mutex);
++		if (!nft_ct_tmpl_alloc_pcpu()) {
++			mutex_unlock(&nft_ct_pcpu_mutex);
+ 			return -ENOMEM;
++		}
+ 		nft_ct_pcpu_template_refcnt++;
++		mutex_unlock(&nft_ct_pcpu_mutex);
+ 		len = sizeof(u16);
+ 		break;
+ #endif
 -- 
-2.30.2
+2.32.0
 
