@@ -2,94 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E2143E5AF3
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 15:19:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F6083E5B09
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 15:21:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241176AbhHJNUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 09:20:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47386 "EHLO
+        id S241216AbhHJNVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 09:21:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239451AbhHJNUF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 09:20:05 -0400
-Received: from mail-oo1-xc2b.google.com (mail-oo1-xc2b.google.com [IPv6:2607:f8b0:4864:20::c2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC4FC0613D3
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 06:19:43 -0700 (PDT)
-Received: by mail-oo1-xc2b.google.com with SMTP id t1-20020a4a54010000b02902638ef0f883so5312362ooa.11
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 06:19:43 -0700 (PDT)
+        with ESMTP id S238234AbhHJNVL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 09:21:11 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB200C0613D3;
+        Tue, 10 Aug 2021 06:20:49 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id t3so20923475plg.9;
+        Tue, 10 Aug 2021 06:20:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8MKgAV3kZhkvYRnrj21h52f/VrcDvj7Cx0QoPmBMVcs=;
-        b=n56CD6a3qlTT80gC5UK4sUmbXtiYSzMGpesaFRfRAQ9u+7kaNEUQYsfWUvA0tIk8Jz
-         MZ9ofwiUi1U1Eos9mzmpymbmRK1wMlWmpaXU7gb42OlTu/69UU20+WH0DN8Vo3mGia4d
-         QOZhp17/0N4/rMSvwQMIxayDvzwBvIDOItFMA/4HakfsykeiNT9QteMHmg1KTh6pHnlq
-         Nmh84hUTTUxPa5u5nfMAmPjmOsXRV3Msiq1r7aYO0aGM3QgFwDnKedKEYm8BoXsy2Szn
-         IH1FenFDn4BHuba9ZSzHLWObyRPpBsaMNjiaOPMAUpGqz2UsAwvozGP8kK3uYsIqzZc8
-         8CPw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SX74JVl12Ur/MSUH0EdL9xrO+WJ2AVt5+Tteuxj1iUE=;
+        b=ZhPaZuwFIGrAHCxFjgMdx8S9KUmp6xSb6B0FbPA/mWapTqlnPJMTh6DehZh5D/JDQY
+         2UCY8yhkpFC3QaZXwKOSyB36+p5WlZM8+3iIvBakUdOYDCR2P3XDPSuRA79NpbwLFwkR
+         egAhSwRa8UnENnklifmNtWWec7Us8sFTihiJ6CW53D1tk8GVKn9uuiVUfN9oJOgokMFB
+         DEKBgLD9W3ECSRaiVkBX1YsDweATsShalR1ws4wOfGh2UKqTx1a2UvxJ/N9K/LGVNTqA
+         Mi72SnOhfwmqqAEIOcfPTGZfzhjTzsQP6dLXrgXHFDQolUrKgvfU1u1TIme93aXan1bV
+         4C4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=8MKgAV3kZhkvYRnrj21h52f/VrcDvj7Cx0QoPmBMVcs=;
-        b=j8PwoFlZHpBcV4Dzx7lLSGUwTYVqTNGitc5KiOBLnLiKTy9QmS+gTgibgBFEq/jnw/
-         9avXIhiJxofDJZ85/Jxb6DI8fiw9ZjhoMMb7XDDJ3vE8OnDcWORsKjeGL7hYT43xYgX9
-         gYA2a6aNr78InYJbMBOYzepMRT375fdONgG+nZpdy9Tq/3OR2F0evf1K+P/vKhCTSk7R
-         bK30cZw61i/ijc/Q9QjW7gnZQZ0U1s7aVuriVmeYyE9SmHk9n6RDyI33P0uVJLpPrfDT
-         Q22uFank3smixzcjRFP5YccJ0dl1+9rbCzHLq8jJIg1WPoU5a/wfWZcghIkzLfEyJ2OF
-         nzhQ==
-X-Gm-Message-State: AOAM5321bSm7MgYEPwrtPtXMXL8akj5yHPAMhBwJlJ+KWQ09ftHorvwK
-        fnYfJArAv/11bTXTU3cNL5w=
-X-Google-Smtp-Source: ABdhPJwJym+0ygO58BqDx50YnlyNKk34fdELnKYglKj6G856r1ZC5NKorLQCufjEaO3pbn1aEVLXuw==
-X-Received: by 2002:a4a:d634:: with SMTP id n20mr4735638oon.27.1628601582973;
-        Tue, 10 Aug 2021 06:19:42 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.45])
-        by smtp.googlemail.com with ESMTPSA id x14sm3901656oiv.4.2021.08.10.06.19.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Aug 2021 06:19:42 -0700 (PDT)
-Subject: Re: [PATCH net-next v3] net: Support filtering interfaces on no
- master
-To:     Lahav Schlesinger <lschlesinger@drivenets.com>,
-        netdev@vger.kernel.org
-Cc:     dsahern@kernel.org, davem@davemloft.net, kuba@kernel.org
-References: <20210810090658.2778960-1-lschlesinger@drivenets.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <1bdd4d76-5448-42a4-6f24-16a6b2134b4a@gmail.com>
-Date:   Tue, 10 Aug 2021 07:19:41 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
+        bh=SX74JVl12Ur/MSUH0EdL9xrO+WJ2AVt5+Tteuxj1iUE=;
+        b=ImdnCEn9+jpOj0AffxB8jvLxR9q0JjuDOd/+zwFFvZ9asFUw65T7uamO2QD9U1yiCh
+         t5kvcfoviSUZdxZQT3e+o5a2+IyksW7yScMsEAgZhqBYwGr460H8kLc4FTUaiwUWiHde
+         3X2Si60j5aFO1j5b364HDb+jyqAEj+Ia32lK2Ucrsde7jEABH0AStcusiHSKLUCPBwVZ
+         3ACjWNB9HfCka/4v55wMtb0BnurwVj6k7IBf9/pGcMQvDWknHB4JnYjuhfwUKoJQLYXg
+         DMBdzh+2hRApi9hYDTDWr+bpzjWbjfiD5SqsrwVvWtBeZ+mJ3wAn/cwacjd4mzdxH0hg
+         KYkg==
+X-Gm-Message-State: AOAM532ltx9Y29rFnwKKPJVvLEqeslOqzN3oGRN2sxwfKrqsZO+SZWTP
+        iQ8S1TH04F7E8klMTe8PEi0=
+X-Google-Smtp-Source: ABdhPJx/6lEyuHm6rBEtovKxgRhP6PBxVM7h8vp0TYEaBFVR627ybgDFXrKOrR3RClXkvqTksDYjSw==
+X-Received: by 2002:a17:902:dcd5:b029:12d:219f:6c04 with SMTP id t21-20020a170902dcd5b029012d219f6c04mr10190091pll.7.1628601649245;
+        Tue, 10 Aug 2021 06:20:49 -0700 (PDT)
+Received: from localhost.localdomain ([45.135.186.40])
+        by smtp.gmail.com with ESMTPSA id c23sm24208897pfn.140.2021.08.10.06.20.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Aug 2021 06:20:48 -0700 (PDT)
+From:   Tuo Li <islituo@gmail.com>
+To:     ericvh@gmail.com, lucho@ionkov.net, asmadeus@codewreck.org,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, baijiaju1990@gmail.com,
+        Tuo Li <islituo@gmail.com>, TOTE Robot <oslab@tsinghua.edu.cn>
+Subject: [PATCH] net: 9p: Fix possible null-pointer dereference in p9_cm_event_handler()
+Date:   Tue, 10 Aug 2021 06:20:07 -0700
+Message-Id: <20210810132007.296008-1-islituo@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20210810090658.2778960-1-lschlesinger@drivenets.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/10/21 3:06 AM, Lahav Schlesinger wrote:
-> Currently there's support for filtering neighbours/links for interfaces
-> which have a specific master device (using the IFLA_MASTER/NDA_MASTER
-> attributes).
-> 
-> This patch adds support for filtering interfaces/neighbours dump for
-> interfaces that *don't* have a master.
-> 
-> Signed-off-by: Lahav Schlesinger <lschlesinger@drivenets.com>
-> Cc: David Ahern <dsahern@kernel.org>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> ---
-> v2 -> v3
->  - Change the way 'master' is checked for being non NULL
-> v1 -> v2
->  - Change from filtering just for non VRF slaves to non slaves at all
-> 
->  net/core/neighbour.c | 7 +++++++
->  net/core/rtnetlink.c | 7 +++++++
->  2 files changed, 14 insertions(+)
-> 
+The variable rdma is checked when event->event is equal to 
+RDMA_CM_EVENT_DISCONNECTED:
+  if (rdma)
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+This indicates that it can be NULL. If so, a null-pointer dereference will 
+occur when calling complete():
+  complete(&rdma->cm_done);
+
+To fix this possible null-pointer dereference, calling complete() only 
+when rdma is not NULL.
+
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Tuo Li <islituo@gmail.com>
+---
+ net/9p/trans_rdma.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/9p/trans_rdma.c b/net/9p/trans_rdma.c
+index af0a8a6cd3fd..fb3435dfd071 100644
+--- a/net/9p/trans_rdma.c
++++ b/net/9p/trans_rdma.c
+@@ -285,7 +285,8 @@ p9_cm_event_handler(struct rdma_cm_id *id, struct rdma_cm_event *event)
+ 	default:
+ 		BUG();
+ 	}
+-	complete(&rdma->cm_done);
++	if (rdma)
++		complete(&rdma->cm_done);
+ 	return 0;
+ }
+ 
+-- 
+2.25.1
 
