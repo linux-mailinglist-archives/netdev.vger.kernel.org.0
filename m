@@ -2,273 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CD583E82EC
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 20:22:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88BB23E82D2
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 20:19:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238014AbhHJSWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 14:22:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33182 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237506AbhHJSWg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 14:22:36 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F12CC0817CD
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 11:06:12 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id i32-20020a25b2200000b02904ed415d9d84so21659645ybj.0
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 11:06:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=6WnPzluv1zSHK7f5mcMZrKm+IWLtHDL7ra8NXePPBdA=;
-        b=o+ztxxfjR11xTKNi/icw21q6p5qhS/UVudcRgfuAQ8Ub3PosKGwugnqfbMFQ9wUVoK
-         IkTFVFWngBgPV0QIcG2wpt1GxTQgMZsA/yTEH6HzkPHHcoen3NetF7sGOo1A7+z6aVn4
-         yN6kZPZz71lAzTSRWRwYQXsnTycXwk59Xwo2fep6p7t+lylNqVRFimtx0llwqI9iA+Ez
-         6kVFBvm7yacW7RTX7BL0TIDsoWvFtI8n/XR/2jwixJl2jHdzuJmL9RUPA+up3St+cOKQ
-         2ekXsJaYbem3dmjfzCGtb36LDFKUP+Y5okQmjwmzb+0WJBdL482WVXX/GGgUeVskpGEP
-         KGqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=6WnPzluv1zSHK7f5mcMZrKm+IWLtHDL7ra8NXePPBdA=;
-        b=VynO+PAPCYzChsPqf9Yp2xcpzjxenZq/PZgBTP3nEKpaQdQwAvk+vxEZN9RbkqAO0u
-         bTF9f+0gC3IlrfV2fRncvqXujiGi+VK8Q4pf1pOI5KhvCf3Zel1OImg4uGDjTtlmEfnj
-         bVqO+iP+E5pdVDq+Hh+FJft/l6mEq4lXyrFzS1bkH4C9f5SJs1mDx3E4TsTFrnai3sOd
-         QdegAtrW2EL0c3kVChjMkHvGnDQDaZOL5i7uq9+yJ65YGwMVub0qmBpeliiUn6knWwfU
-         zQS6CUH75LTmwCkTNNRMZNkwfCMLJlzLVPLLS6cYEqtUl0BQ6jtpiyKVFNX0JwJOtODe
-         u0mA==
-X-Gm-Message-State: AOAM532QEOxDCnCViT9zwRcb0kJlFu6UJngbwBIjzq1YMONQfodQRvyL
-        8mvEwJFtPZcAeXD6j9WbcdB3kilqSAQDbe8fRDoNjD6iy3PVYuZ73I+lNKk6Df8D30jX85EI4MU
-        bMXJGa/mhR/6fA11gTKNvqcR5fi0qHdsONQr3xdJ7XODywwhzxMQK8F0qcC/Ofg==
-X-Google-Smtp-Source: ABdhPJzYGvCk29ZJEZwFImUUSMGVm/0/sshHWDHhiPIjlsSuEuRyT55Fs0V4+jKLmmOc6m79gDWx5CjOqgw=
-X-Received: from haoluo.svl.corp.google.com ([2620:15c:2cd:202:bb43:3980:e4ee:1b54])
- (user=haoluo job=sendgmr) by 2002:a25:d1c2:: with SMTP id i185mr40881010ybg.466.1628618771645;
- Tue, 10 Aug 2021 11:06:11 -0700 (PDT)
-Date:   Tue, 10 Aug 2021 11:06:08 -0700
-Message-Id: <20210810180608.1858888-1-haoluo@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.32.0.605.g8dce9f2422-goog
-Subject: [PATCH bpf-next v2] libbpf: support weak typed ksyms.
-From:   Hao Luo <haoluo@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Hao Luo <haoluo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S238010AbhHJSSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 14:18:40 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:54877 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240580AbhHJSQQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 14:16:16 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 4C5615C01B4;
+        Tue, 10 Aug 2021 14:15:52 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Tue, 10 Aug 2021 14:15:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=Vp6gWF
+        MbQEIBadV8a2hMEDPaqd1wy67mvLkVxiuGd70=; b=VfxsTNxJWhb9/KlGKp231j
+        NmPXc9pfh4NMqybuagjZQ/Jp1zdTbdco9CqUJOeub6V6QJDkcW90WsL8pWay+tUZ
+        fObsf+Pm29eHB0E164FTfzAgFWVT6YuSm+cUCNlS22B1KL9b84VPLwMGyRy3Mu6u
+        U1UQYES9b/1K4YQGJ7Sui0MAxU+ZRgeLVJFCHsYBe+DDZ1fWXicp1nV8XnVfwxNq
+        oUJnWj1hxCjqb5I7YvMYxY/J8AuU/iC5GN/zrvuOFjkibwCGXjyud0+c6PWf7/TJ
+        Yn1O9oGhEoci79MD16QYKrUmgIp51Zq+ac+en/2Vyyu5bnHdIXCwobrrN1UhRGzA
+        ==
+X-ME-Sender: <xms:V8ISYUxIRIlZ_9C8N4GyX8BVzUQk_F8gzD7ilzMBmfrLCRDdZsldAg>
+    <xme:V8ISYYQsDaGr86dWK4jyrqkBmycwHi8bRSagb9EUlVM-mTPWjWf9VkaeI3fmxsdTd
+    bEYbtpTkw8YfN4>
+X-ME-Received: <xmr:V8ISYWXkquHVyG7dmMkCgygzggGxFit736L-5_28OTeQzBUSnqqWyRvY7CZq0xbQ2hvFny6tYPRPf_9MdZIvjCBiX6fxRA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrjeelgdduvdegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:V8ISYShp9QZynrEZNw3S6Xc8bJEaTPJFEBJWOEQui4BV056M9AiN-A>
+    <xmx:V8ISYWB6G1BOgoerYdZLqWEAsdh4gGIjOKTv5fpB-w7St7dg553S2g>
+    <xmx:V8ISYTL3C12OLngKIJKdKN3Gv5YL0WNP-Qm5BpfyPaJ75pBvtwRPSQ>
+    <xmx:WMISYY1YxFA4fTYvHsh6u-R60yJ0Qp2U_Dx_dkQsDQhhuxdNj5SGoA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 10 Aug 2021 14:15:50 -0400 (EDT)
+Date:   Tue, 10 Aug 2021 21:15:45 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        davem@davemloft.net, mkubecek@suse.cz, pali@kernel.org,
+        vadimp@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 2/8] ethtool: Add ability to reset
+ transceiver modules
+Message-ID: <YRLCUc8NZnRZFUFs@shredder>
+References: <20210809102152.719961-1-idosch@idosch.org>
+ <20210809102152.719961-3-idosch@idosch.org>
+ <YRF+a6C/wHa7+2Gs@lunn.ch>
+ <YRJ5g/W11V0mjKHs@shredder>
+ <20210810065423.076e3b0d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210810065423.076e3b0d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently weak typeless ksyms have default value zero, when they don't
-exist in the kernel. However, weak typed ksyms are rejected by libbpf
-if they can not be resolved. This means that if a bpf object contains
-the declaration of a nonexistent weak typed ksym, it will be rejected
-even if there is no program that references the symbol.
+On Tue, Aug 10, 2021 at 06:54:23AM -0700, Jakub Kicinski wrote:
+> On Tue, 10 Aug 2021 16:05:07 +0300 Ido Schimmel wrote:
+> > > Again, i'm wondering, why is user space doing the reset? Can you think
+> > > of any other piece of hardware where Linux relies on user space
+> > > performing a reset before the kernel can properly use it?
+> > > 
+> > > How long does a reset take? Table 10-1 says the reset pulse must be
+> > > 10uS and table 10-2 says the reset should not take longer than
+> > > 2000ms.  
+> > 
+> > Takes about 1.5ms to get an ACK on the reset request and another few
+> > seconds to ensure module is in a valid operational state (will remove
+> > RTNL in next version).
+> 
+> Hm. RTNL-lock-less ethtool ops are a little concerning. The devlink
+> locking was much complicated by the unclear locking rules. Can we keep
+> ethtool simple and put this functionality in a different API or make
+> the reset async?
 
-Nonexistent weak typed ksyms can also default to zero just like
-typeless ones. This allows programs that access weak typed ksyms to be
-accepted by verifier, if the accesses are guarded. For example,
+I thought there are already RTNL-lock-less ethtool ops, but maybe I
+imagined it. Given that we also want to support firmware update on
+modules and that user space might want to update several modules
+simultaneously, do you have a suggestion on how to handle it from
+locking perspective? The ethtool netlink backend has parallel ops, but
+RTNL is a problem. Firmware flashing is currently synchronous in both
+ethtool and devlink, but the latter does not hold RTNL.
 
-extern const int bpf_link_fops3 __ksym __weak;
+> 
+> > > So maybe reset it on ifup if it is in a bad state?  
+> > 
+> > We can have multiple ports (split) using the same module and in CMIS
+> > each data path is controlled by a different state machine. Given the
+> > complexity of these modules and possible faults, it is possible to
+> > imagine a situation in which a few ports are fine and the rest are
+> > unable to obtain a carrier.
+> > 
+> > Resetting the module on ifup of swp1s0 is not intuitive and it shouldn't
+> > affect other split ports (e.g., swp1s1). With the dedicated reset
+> > command we have the ability to enforce all the required restrictions
+> > from the start instead of changing the behavior of existing commands.
+> 
+> Sounds similar to what ethtool --reset was trying to address (upper
+> 16 bits). Could we reuse that? Whether its a SFP or other part of the
+> port being reset may not be entirely important to the user, so perhaps
+> it's not a bad idea to abstract that away and stick to "reset levels"?
 
-/* then in BPF program */
+Wasn't aware of this API. Looks like it is only implemented by a few
+drivers, but man page says "phy    Transceiver/PHY", so I think we can
+reuse it.
 
-if (&bpf_link_fops3) {
-   /* use bpf_link_fops3 */
-}
+What do you mean by "reset levels"? The split between shared /
+dedicated?
 
-If actual use of nonexistent typed ksym is not guarded properly,
-verifier would see that register is not PTR_TO_BTF_ID and wouldn't
-allow to use it for direct memory reads or passing it to BPF helpers.
+Just to make sure I understand, you suggest the following semantics?
 
-Signed-off-by: Hao Luo <haoluo@google.com>
----
-Changes since v1:
- - Weak typed symbols default to zero, as suggested by Andrii.
- - Use ASSERT_XXX() for tets.
+# ethtool --reset swp1s0 phy
+Error since module is used by several ports (split)
 
- tools/lib/bpf/libbpf.c                        | 17 ++++--
- .../selftests/bpf/prog_tests/ksyms_btf.c      | 25 ++++++++
- .../selftests/bpf/progs/test_ksyms_weak.c     | 57 +++++++++++++++++++
- 3 files changed, 94 insertions(+), 5 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_weak.c
+# ethtool --reset swp1s0 phy-shared
+OK
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index cb106e8c42cb..e7547a2967cf 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -5277,11 +5277,11 @@ bpf_object__relocate_data(struct bpf_object *obj, struct bpf_program *prog)
- 				}
- 				insn[1].imm = ext->kcfg.data_off;
- 			} else /* EXT_KSYM */ {
--				if (ext->ksym.type_id) { /* typed ksyms */
-+				if (ext->ksym.type_id && ext->is_set) { /* typed ksyms */
- 					insn[0].src_reg = BPF_PSEUDO_BTF_ID;
- 					insn[0].imm = ext->ksym.kernel_btf_id;
- 					insn[1].imm = ext->ksym.kernel_btf_obj_fd;
--				} else { /* typeless ksyms */
-+				} else { /* typeless ksyms or unresolved typed ksyms */
- 					insn[0].imm = (__u32)ext->ksym.addr;
- 					insn[1].imm = ext->ksym.addr >> 32;
- 				}
-@@ -6584,7 +6584,7 @@ static int bpf_object__read_kallsyms_file(struct bpf_object *obj)
- }
- 
- static int find_ksym_btf_id(struct bpf_object *obj, const char *ksym_name,
--			    __u16 kind, struct btf **res_btf,
-+			    __u16 kind, bool is_weak, struct btf **res_btf,
- 			    int *res_btf_fd)
- {
- 	int i, id, btf_fd, err;
-@@ -6608,6 +6608,9 @@ static int find_ksym_btf_id(struct bpf_object *obj, const char *ksym_name,
- 				break;
- 		}
- 	}
-+	if (is_weak && id == -ENOENT)
-+		return 0;
-+
- 	if (id <= 0) {
- 		pr_warn("extern (%s ksym) '%s': failed to find BTF ID in kernel BTF(s).\n",
- 			__btf_kind_str(kind), ksym_name);
-@@ -6627,11 +6630,15 @@ static int bpf_object__resolve_ksym_var_btf_id(struct bpf_object *obj,
- 	const char *targ_var_name;
- 	int id, btf_fd = 0, err;
- 	struct btf *btf = NULL;
-+	bool is_weak = ext->is_weak;
- 
--	id = find_ksym_btf_id(obj, ext->name, BTF_KIND_VAR, &btf, &btf_fd);
-+	id = find_ksym_btf_id(obj, ext->name, BTF_KIND_VAR, is_weak, &btf, &btf_fd);
- 	if (id < 0)
- 		return id;
- 
-+	if (is_weak && id == 0)
-+		return 0;
-+
- 	/* find local type_id */
- 	local_type_id = ext->ksym.type_id;
- 
-@@ -6676,7 +6683,7 @@ static int bpf_object__resolve_ksym_func_btf_id(struct bpf_object *obj,
- 
- 	local_func_proto_id = ext->ksym.type_id;
- 
--	kfunc_id = find_ksym_btf_id(obj, ext->name, BTF_KIND_FUNC,
-+	kfunc_id = find_ksym_btf_id(obj, ext->name, BTF_KIND_FUNC, false,
- 				    &kern_btf, &kern_btf_fd);
- 	if (kfunc_id < 0) {
- 		pr_warn("extern (func ksym) '%s': not found in kernel BTF\n",
-diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c b/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
-index 67bebd324147..6bd60902f200 100644
---- a/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
-@@ -6,6 +6,7 @@
- #include <bpf/btf.h>
- #include "test_ksyms_btf.skel.h"
- #include "test_ksyms_btf_null_check.skel.h"
-+#include "test_ksyms_weak.skel.h"
- 
- static int duration;
- 
-@@ -81,6 +82,27 @@ static void test_null_check(void)
- 	test_ksyms_btf_null_check__destroy(skel);
- }
- 
-+static void test_weak_syms(void)
-+{
-+	struct test_ksyms_weak *skel;
-+	struct test_ksyms_weak__data *data;
-+
-+	skel = test_ksyms_weak__open_and_load();
-+	if (CHECK(!skel, "test_ksyms_weak__open_and_load", "failed\n"))
-+		return;
-+
-+	/* trigger tracepoint */
-+	usleep(1);
-+
-+	data = skel->data;
-+	ASSERT_EQ(data->out__existing_typed, 0, "existing typed ksym");
-+	ASSERT_NEQ(data->out__existing_typeless, -1, "existing typeless ksym");
-+	ASSERT_EQ(data->out__non_existent_typeless, 0, "nonexistent typeless ksym");
-+	ASSERT_EQ(data->out__non_existent_typed, 0, "nonexistent typed ksym");
-+
-+	test_ksyms_weak__destroy(skel);
-+}
-+
- void test_ksyms_btf(void)
- {
- 	int percpu_datasec;
-@@ -105,4 +127,7 @@ void test_ksyms_btf(void)
- 
- 	if (test__start_subtest("null_check"))
- 		test_null_check();
-+
-+	if (test__start_subtest("weak_ksyms"))
-+		test_weak_syms();
- }
-diff --git a/tools/testing/selftests/bpf/progs/test_ksyms_weak.c b/tools/testing/selftests/bpf/progs/test_ksyms_weak.c
-new file mode 100644
-index 000000000000..8a7d69ddd89a
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_ksyms_weak.c
-@@ -0,0 +1,57 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Test weak ksyms.
-+ *
-+ * Copyright (c) 2021 Google
-+ */
-+
-+#include "vmlinux.h"
-+
-+#include <bpf/bpf_helpers.h>
-+
-+int out__existing_typed = -1;
-+__u64 out__existing_typeless = -1;
-+
-+__u64 out__non_existent_typeless = -1;
-+__u64 out__non_existent_typed = -1;
-+
-+/* existing weak symbols */
-+
-+/* test existing weak symbols can be resolved. */
-+extern const struct rq runqueues __ksym __weak; /* typed */
-+extern const void bpf_prog_active __ksym __weak; /* typeless */
-+
-+
-+/* non-existent weak symbols. */
-+
-+/* typeless symbols, default to zero. */
-+extern const void bpf_link_fops1 __ksym __weak;
-+
-+/* typed symbols, default to zero. */
-+extern const int bpf_link_fops2 __ksym __weak;
-+
-+/* typed symbols, pass if not referenced. */
-+extern const int bpf_link_fops3 __ksym __weak;
-+
-+SEC("raw_tp/sys_enter")
-+int pass_handler(const void *ctx)
-+{
-+	/* tests existing symbols. */
-+	struct rq *rq = (struct rq *)bpf_per_cpu_ptr(&runqueues, 0);
-+	if (rq)
-+		out__existing_typed = rq->cpu;
-+	out__existing_typeless = (__u64)&bpf_prog_active;
-+
-+	/* tests non-existent symbols. */
-+	out__non_existent_typeless = (__u64)&bpf_link_fops1;
-+
-+	/* tests non-existent symbols. */
-+	out__non_existent_typed = (__u64)&bpf_link_fops2;
-+
-+	if (&bpf_link_fops2) /* can't happen */
-+		out__non_existent_typed = (__u64)bpf_per_cpu_ptr(&bpf_link_fops2, 0);
-+
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
--- 
-2.32.0.605.g8dce9f2422-goog
+# ethtool --reset swp1 phy
+OK (no split)
 
+# ethtool --reset swp1 phy-shared
+OK
