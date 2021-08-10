@@ -2,89 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24DE53E5CA4
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 16:13:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE9893E5CBE
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 16:15:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242161AbhHJONT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 10:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60458 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240580AbhHJONS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 10:13:18 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECEBFC0613C1;
-        Tue, 10 Aug 2021 07:12:55 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1628604774;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TiJmA3POi9FctASNMfUPbhLh0CEUmHRjBKpCXOyY61A=;
-        b=xw6VoRMG1YZcz3aozL3rahY9dAgQCn2l2vSKWQ7AJbhWgF1WEQElAieDb5A4aNl7402Qsz
-        18wBjGzofgKkIqVGF+Am6JDlxKcY14fJ3VnQ7kCgJ/LW5gmusLivzK/5hG4ULV1FCkbt32
-        ASnzYiElDNcoKLgD5q2H3d3Ikg1jC2+5R0TKlTcc1vHHCD1QCr/MduHydq3d01zGmQP+ml
-        UprbxgVqN/3BuDNKcJNe3ICWt4W27vwS1AJ7rptufqF+2dXIm5bfE0QsnPIXt/os19v67K
-        FSFbIsYZDqDc6z8mH42Q/O0UpznkQmgwfK66EF8aptdUuausjNFyFXHySKiPXg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1628604774;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TiJmA3POi9FctASNMfUPbhLh0CEUmHRjBKpCXOyY61A=;
-        b=GQvIEL30+f0CmUBjLBwLCPb4AcR0xsmoX9poarHYh0pPPFV7tZGOlFa5JPgHk3z0qSKufX
-        HAUHoYCIkXRo0NDA==
-To:     Shung-Hsi Yu <shung-hsi.yu@suse.com>, linux-kernel@vger.kernel.org,
-        linux-api@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Nitesh Lal <nilal@redhat.com>
-Subject: Re: [RFC] genirq: Add effective CPU index retrieving interface
-In-Reply-To: <YL3LrgAzMNI2hp5i@syu-laptop>
-References: <YL3LrgAzMNI2hp5i@syu-laptop>
-Date:   Tue, 10 Aug 2021 16:12:53 +0200
-Message-ID: <874kbxs80q.ffs@tglx>
+        id S242250AbhHJOPi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 10:15:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50878 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242201AbhHJOPd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 10:15:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CCDD760F02;
+        Tue, 10 Aug 2021 14:15:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628604911;
+        bh=l3tXfFxjH3YDOLrwS73W639NpIt4rX6vnRziL3Pjj1k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=k8iotNzmxUWKyimZT4NdHpZUAuqK/mCTQyYrKdgGUmAMYxnyjHb82+JviZ9cyhrwQ
+         wn/10Tb2SbfZ+8keWezt1KTvytNZHnVhawmXb6o2oiSySkgAzUKS3pTtB7g7Wb79dw
+         r4oMejxeQAUDL9jsH6oh7mSGweKFx8TNnbJR8oqV9EqTup5Tyd9OD1AKGUPQT9plu3
+         FZ1P+kDxbJvwuAepsYFITMVbrHWn3ZQjXuGef99cRD/EzjjBYQV5+2xKN9PbAtM1To
+         YNWuPteDJk+eAR/E6pgshf2CYPnbxT3Y57311hiZSneXrpwQdNRoG6j765JhEAbU5O
+         vDcaEJjrhRRzw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Harshvardhan Jha <harshvardhan.jha@oracle.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 04/24] net: xfrm: Fix end of loop tests for list_for_each_entry
+Date:   Tue, 10 Aug 2021 10:14:45 -0400
+Message-Id: <20210810141505.3117318-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210810141505.3117318-1-sashal@kernel.org>
+References: <20210810141505.3117318-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 07 2021 at 15:33, Shung-Hsi Yu wrote:
-> Most driver's IRQ spreading scheme is naive compared to the IRQ spreading
-> scheme introduced since IRQ subsystem rework, so it better to rely
-> request_irq() to spread IRQ out.
->
-> However, drivers that care about performance enough also tends to try
-> allocating memory on the same NUMA node on which the IRQ handler will run.
-> For such driver to rely on request_irq() for IRQ spreading, we also need to
-> provide an interface to retrieve the CPU index after calling
-> request_irq().
+From: Harshvardhan Jha <harshvardhan.jha@oracle.com>
 
-So if you are interested in the resulting NUMA node, then why exposing a
-random CPU out of the affinity mask instead of exposing a function to
-retrieve the NUMA node?
-  
-> +/**
-> + * irq_get_effective_cpu - Retrieve the effective CPU index
-> + * @irq:	Target interrupt to retrieve effective CPU index
-> + *
-> + * When the effective affinity cpumask has multiple CPU toggled, it just
-> + * returns the first CPU in the cpumask.
-> + */
-> +int irq_get_effective_cpu(unsigned int irq)
-> +{
-> +	struct irq_data *data = irq_get_irq_data(irq);
+[ Upstream commit 480e93e12aa04d857f7cc2e6fcec181c0d690404 ]
 
-This can be NULL.
+The list_for_each_entry() iterator, "pos" in this code, can never be
+NULL so the warning will never be printed.
 
-> +	struct cpumask *m;
-> +
-> +	m = irq_data_get_effective_affinity_mask(data);
-> +	return cpumask_first(m);
-> +}
+Signed-off-by: Harshvardhan Jha <harshvardhan.jha@oracle.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/xfrm/xfrm_ipcomp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
+diff --git a/net/xfrm/xfrm_ipcomp.c b/net/xfrm/xfrm_ipcomp.c
+index 2e8afe078d61..cb40ff0ff28d 100644
+--- a/net/xfrm/xfrm_ipcomp.c
++++ b/net/xfrm/xfrm_ipcomp.c
+@@ -241,7 +241,7 @@ static void ipcomp_free_tfms(struct crypto_comp * __percpu *tfms)
+ 			break;
+ 	}
+ 
+-	WARN_ON(!pos);
++	WARN_ON(list_entry_is_head(pos, &ipcomp_tfms_list, list));
+ 
+ 	if (--pos->users)
+ 		return;
+-- 
+2.30.2
 
-        tglx
