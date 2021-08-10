@@ -2,82 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCD943E5A5C
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 14:49:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60AD33E5A7A
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 14:55:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240907AbhHJMtY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 08:49:24 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:8391 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240877AbhHJMtX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 08:49:23 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GkXjC0Ckjz828j;
-        Tue, 10 Aug 2021 20:45:03 +0800 (CST)
-Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 10 Aug 2021 20:48:59 +0800
-Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
- (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 10 Aug
- 2021 20:48:58 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <richardcochran@gmail.com>, <davem@davemloft.net>
-Subject: [PATCH -next] ptp: ocp: Fix missing pci_disable_device() on error in ptp_ocp_probe()
-Date:   Tue, 10 Aug 2021 20:54:53 +0800
-Message-ID: <20210810125453.2182835-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S239010AbhHJMzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 08:55:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41694 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233590AbhHJMzt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 08:55:49 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED71C0613D3;
+        Tue, 10 Aug 2021 05:55:27 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id g13so41263944lfj.12;
+        Tue, 10 Aug 2021 05:55:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4rViaCUp03F0sOMlLIrr/48hOom8gf9ywmMtY7hOCEw=;
+        b=QhDrGZLyjbA+pSrCNOia22rq2ksofFcAAHQdCK9zOvnrwjwdvm8gX4oUvEzmyfEb+e
+         wiTutgnsFTzVv1Bi6DqP1lenvA2AEqpS83J1C+i4EaBai8teuEnfETejvbRfk+/RGWjf
+         JXe4+npxD9GWeetIrXD5uN2AKxaa3uvSCJzZ+ZU+UtEODLVifkAVYPSLgKeTAgXyjrKb
+         eAkTYnSjrkuMej/bG4d7vIHR4QVu0dfgUYs+/ZiR3Mxak1wSu4CnJCMI/9cZPWzrJtsL
+         Y7o+1TYR+rYMc4eaJD1TioIawKlGr+l5l8iGo5qV4ytqaGrkVuD3vPostkfucpRHHIsm
+         NGVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4rViaCUp03F0sOMlLIrr/48hOom8gf9ywmMtY7hOCEw=;
+        b=uCQQwnvYG+BQLMMRIAwv7oZ90U2gWBc9HvHh37VwlsYKQxxOr1uexu9SKugfLwrIYN
+         xvFX6v3iuLDyZ3yVzAS2v46QoATs90nKabkGRvRy6BQOu9Dskew3qkO65f4P/kSSkiZO
+         cbZYz0+wzLM00xGSmPxhnaH/WIBwlXb/Nh5biKHnt6TsVme31wqS3B9WMm5dv8FCkyry
+         TGUqWb+UyNitMkoUEt6A9pY8F7dPD8uy2+jNil9t8AHVX0W+0p+Rvj8FTTu+HTcfAHkl
+         aTueXhdO8ZumzMY4VuqrLOEbcq3LNU2En2MUwQYhcqqYPdgtTA9TPQ1TDmEFN4YBeBWv
+         1WIg==
+X-Gm-Message-State: AOAM5337At97m+ZVWVeLAqJvOi/VGk7QMGD7h0PXQf6liQi+8t75AjXd
+        vthTljka3Wul5d9JZUOnNuI=
+X-Google-Smtp-Source: ABdhPJxVRsKFgx2m5ReTxzKsAj+BWBLyWiKUWBNi+p/47kWiw91JrwzOve3y9nUUzr9UpTQYPMXCPg==
+X-Received: by 2002:a05:6512:470:: with SMTP id x16mr22072229lfd.497.1628600125867;
+        Tue, 10 Aug 2021 05:55:25 -0700 (PDT)
+Received: from localhost.localdomain ([46.235.67.232])
+        by smtp.gmail.com with ESMTPSA id k17sm1873341ljm.7.2021.08.10.05.55.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Aug 2021 05:55:25 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        davem@davemloft.net
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+649e339fa6658ee623d3@syzkaller.appspotmail.com
+Subject: [PATCH] netfiler: protect nft_ct_pcpu_template_refcnt with mutex
+Date:   Tue, 10 Aug 2021 15:55:23 +0300
+Message-Id: <20210810125523.15312-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500017.china.huawei.com (7.185.36.243)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If ptp_ocp_device_init() fails, pci_disable_device() need be
-called, fix this by using pcim_enable_device().
+Syzbot hit use-after-free in nf_tables_dump_sets. The problem was in
+missing lock protection for nft_ct_pcpu_template_refcnt.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Before commit f102d66b335a ("netfilter: nf_tables: use dedicated
+mutex to guard transactions") all transactions were serialized by global
+mutex, but then global mutex was changed to local per netnamespace
+commit_mutex.
+
+This change causes use-after-free bug, when 2 netnamespaces concurently
+changing nft_ct_pcpu_template_refcnt without proper locking. Fix it by
+adding nft_ct_pcpu_mutex and protect all nft_ct_pcpu_template_refcnt
+changes with it.
+
+Fixes: f102d66b335a ("netfilter: nf_tables: use dedicated mutex to guard transactions")
+Reported-and-tested-by: syzbot+649e339fa6658ee623d3@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 ---
- drivers/ptp/ptp_ocp.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ net/netfilter/nft_ct.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index 92edf772feed..04cce8d3b1f6 100644
---- a/drivers/ptp/ptp_ocp.c
-+++ b/drivers/ptp/ptp_ocp.c
-@@ -1429,7 +1429,7 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	if (err)
- 		goto out_free;
+diff --git a/net/netfilter/nft_ct.c b/net/netfilter/nft_ct.c
+index 337e22d8b40b..99b1de14ff7e 100644
+--- a/net/netfilter/nft_ct.c
++++ b/net/netfilter/nft_ct.c
+@@ -41,6 +41,7 @@ struct nft_ct_helper_obj  {
+ #ifdef CONFIG_NF_CONNTRACK_ZONES
+ static DEFINE_PER_CPU(struct nf_conn *, nft_ct_pcpu_template);
+ static unsigned int nft_ct_pcpu_template_refcnt __read_mostly;
++static DEFINE_MUTEX(nft_ct_pcpu_mutex);
+ #endif
  
--	err = pci_enable_device(pdev);
-+	err = pcim_enable_device(pdev);
- 	if (err) {
- 		dev_err(&pdev->dev, "pci_enable_device\n");
- 		goto out_unregister;
-@@ -1476,7 +1476,6 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 
- out:
- 	ptp_ocp_detach(bp);
--	pci_disable_device(pdev);
- 	pci_set_drvdata(pdev, NULL);
- out_unregister:
- 	devlink_unregister(devlink);
-@@ -1493,7 +1492,6 @@ ptp_ocp_remove(struct pci_dev *pdev)
- 	struct devlink *devlink = priv_to_devlink(bp);
- 
- 	ptp_ocp_detach(bp);
--	pci_disable_device(pdev);
- 	pci_set_drvdata(pdev, NULL);
- 
- 	devlink_unregister(devlink);
+ static u64 nft_ct_get_eval_counter(const struct nf_conn_counter *c,
+@@ -525,8 +526,10 @@ static void __nft_ct_set_destroy(const struct nft_ctx *ctx, struct nft_ct *priv)
+ #endif
+ #ifdef CONFIG_NF_CONNTRACK_ZONES
+ 	case NFT_CT_ZONE:
++		mutex_lock(&nft_ct_pcpu_mutex);
+ 		if (--nft_ct_pcpu_template_refcnt == 0)
+ 			nft_ct_tmpl_put_pcpu();
++		mutex_unlock(&nft_ct_pcpu_mutex);
+ 		break;
+ #endif
+ 	default:
+@@ -564,9 +567,13 @@ static int nft_ct_set_init(const struct nft_ctx *ctx,
+ #endif
+ #ifdef CONFIG_NF_CONNTRACK_ZONES
+ 	case NFT_CT_ZONE:
+-		if (!nft_ct_tmpl_alloc_pcpu())
++		mutex_lock(&nft_ct_pcpu_mutex);
++		if (!nft_ct_tmpl_alloc_pcpu()) {
++			mutex_unlock(&nft_ct_pcpu_mutex);
+ 			return -ENOMEM;
++		}
+ 		nft_ct_pcpu_template_refcnt++;
++		mutex_unlock(&nft_ct_pcpu_mutex);
+ 		len = sizeof(u16);
+ 		break;
+ #endif
 -- 
-2.25.1
+2.32.0
 
