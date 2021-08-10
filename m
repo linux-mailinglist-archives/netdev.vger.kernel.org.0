@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 856063E5CE5
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 16:16:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6C463E5CFC
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 16:16:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242511AbhHJOQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 10:16:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52664 "EHLO mail.kernel.org"
+        id S241860AbhHJOQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 10:16:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53438 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242389AbhHJOPx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Aug 2021 10:15:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7FDC961019;
-        Tue, 10 Aug 2021 14:15:30 +0000 (UTC)
+        id S242490AbhHJOQH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 10:16:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7F063610A4;
+        Tue, 10 Aug 2021 14:15:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628604931;
-        bh=JaQQDWTDJD/juKy/Yq5YS5zSjfP6vGiSD6Awz3BvaR0=;
+        s=k20201202; t=1628604944;
+        bh=iD9D/k5aNOEcdSZegmyuiigYvh4NINWH+mB9toJlgiI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hMtDA/LdPdxJecikyIqDvtfrL4CmI7T5Kh6wy2vXLGOGGiKZaQpA89t/k01chhCou
-         16gOMlGedivlfHcZ+4k1e0SLYyWD6cHtPomK9dtF65mf/TIwMOR+uhJkuxIqyfpNxg
-         /0E2gg8pwVSTMHrEft2E8xznltAia1aAOtlESetZmKXCcAIyIyOKRuC0bu4kJ8czn+
-         Mj1zSxBJ63hCTgz/eK+OzZdyqZlNRaOd+N1NMI+YYe25FP/wSXdf8dfJ0VLqB16lbG
-         KHU5xyp9UK8r4Lpw9/VCbkEiM0MOIynIsYMACtb3S2vrA9yHWwFiIh5IrjMCdifY3W
-         l+ON29erTmEhg==
+        b=Oru6hWTAM+gaYYbgkmtvAxoDMB3brMgrKrQ3/qugXJsHEjQv/ta31Gy+m41ssQ5ad
+         lP1Ivfa+yvkFfqwHWQKs5TnBQ5PFWusQbH64Y51LS/0gD7nJ7sho5iGugf/61jJk+r
+         4toVIQcYZQIKU54YsNd2VFlCbnE6AU1qbtV3PCIrjLRLLCQcccnanIwiCbmbPyPl9r
+         J6iOlRnmawwwp0GJ+VLeJccRX7YsqSvNvtYMGmbjN6SB65H8cFEA48CA0hzdGUtV93
+         02nnMl3GG9hCRcoFe0G/V17GYCsQNZtLUxBCx41SnAALeopoy6KZNrkzwsId+/I8+R
+         u7R44kqdQh27w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Ivan T. Ivanov" <iivanov@suse.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 19/24] net: usb: lan78xx: don't modify phy_device state concurrently
-Date:   Tue, 10 Aug 2021 10:15:00 -0400
-Message-Id: <20210810141505.3117318-19-sashal@kernel.org>
+Cc:     Harshvardhan Jha <harshvardhan.jha@oracle.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 04/20] net: xfrm: Fix end of loop tests for list_for_each_entry
+Date:   Tue, 10 Aug 2021 10:15:22 -0400
+Message-Id: <20210810141538.3117707-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210810141505.3117318-1-sashal@kernel.org>
-References: <20210810141505.3117318-1-sashal@kernel.org>
+In-Reply-To: <20210810141538.3117707-1-sashal@kernel.org>
+References: <20210810141538.3117707-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,77 +42,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Ivan T. Ivanov" <iivanov@suse.de>
+From: Harshvardhan Jha <harshvardhan.jha@oracle.com>
 
-[ Upstream commit 6b67d4d63edece1033972214704c04f36c5be89a ]
+[ Upstream commit 480e93e12aa04d857f7cc2e6fcec181c0d690404 ]
 
-Currently phy_device state could be left in inconsistent state shown
-by following alert message[1]. This is because phy_read_status could
-be called concurrently from lan78xx_delayedwork, phy_state_machine and
-__ethtool_get_link. Fix this by making sure that phy_device state is
-updated atomically.
+The list_for_each_entry() iterator, "pos" in this code, can never be
+NULL so the warning will never be printed.
 
-[1] lan78xx 1-1.1.1:1.0 eth0: No phy led trigger registered for speed(-1)
-
-Signed-off-by: Ivan T. Ivanov <iivanov@suse.de>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Harshvardhan Jha <harshvardhan.jha@oracle.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/lan78xx.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ net/xfrm/xfrm_ipcomp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
-index 02bce40a67e5..c46a66ea32eb 100644
---- a/drivers/net/usb/lan78xx.c
-+++ b/drivers/net/usb/lan78xx.c
-@@ -1154,7 +1154,7 @@ static int lan78xx_link_reset(struct lan78xx_net *dev)
- {
- 	struct phy_device *phydev = dev->net->phydev;
- 	struct ethtool_link_ksettings ecmd;
--	int ladv, radv, ret;
-+	int ladv, radv, ret, link;
- 	u32 buf;
+diff --git a/net/xfrm/xfrm_ipcomp.c b/net/xfrm/xfrm_ipcomp.c
+index 4d422447aadc..0814320472f1 100644
+--- a/net/xfrm/xfrm_ipcomp.c
++++ b/net/xfrm/xfrm_ipcomp.c
+@@ -250,7 +250,7 @@ static void ipcomp_free_tfms(struct crypto_comp * __percpu *tfms)
+ 			break;
+ 	}
  
- 	/* clear LAN78xx interrupt status */
-@@ -1162,9 +1162,12 @@ static int lan78xx_link_reset(struct lan78xx_net *dev)
- 	if (unlikely(ret < 0))
- 		return -EIO;
+-	WARN_ON(!pos);
++	WARN_ON(list_entry_is_head(pos, &ipcomp_tfms_list, list));
  
-+	mutex_lock(&phydev->lock);
- 	phy_read_status(phydev);
-+	link = phydev->link;
-+	mutex_unlock(&phydev->lock);
- 
--	if (!phydev->link && dev->link_on) {
-+	if (!link && dev->link_on) {
- 		dev->link_on = false;
- 
- 		/* reset MAC */
-@@ -1177,7 +1180,7 @@ static int lan78xx_link_reset(struct lan78xx_net *dev)
- 			return -EIO;
- 
- 		del_timer(&dev->stat_monitor);
--	} else if (phydev->link && !dev->link_on) {
-+	} else if (link && !dev->link_on) {
- 		dev->link_on = true;
- 
- 		phy_ethtool_ksettings_get(phydev, &ecmd);
-@@ -1466,9 +1469,14 @@ static int lan78xx_set_eee(struct net_device *net, struct ethtool_eee *edata)
- 
- static u32 lan78xx_get_link(struct net_device *net)
- {
-+	u32 link;
-+
-+	mutex_lock(&net->phydev->lock);
- 	phy_read_status(net->phydev);
-+	link = net->phydev->link;
-+	mutex_unlock(&net->phydev->lock);
- 
--	return net->phydev->link;
-+	return link;
- }
- 
- static void lan78xx_get_drvinfo(struct net_device *net,
+ 	if (--pos->users)
+ 		return;
 -- 
 2.30.2
 
