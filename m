@@ -2,113 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9007D3E84F9
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 23:09:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11E383E8533
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 23:22:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234035AbhHJVJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 17:09:52 -0400
-Received: from mail3.marcant.net ([217.14.160.188]:41901 "EHLO
-        mail3.marcant.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234026AbhHJVJs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 17:09:48 -0400
-X-Greylist: delayed 13281 seconds by postgrey-1.27 at vger.kernel.org; Tue, 10 Aug 2021 17:09:47 EDT
-Received: from [192.168.180.1] (port=47516 helo=admins.marcant.net)
-        by mail3.marcant.net with esmtp (Exim 4.94.2)
-        (envelope-from <avalentin@marcant.net>)
-        id 1mDYzk-0004gh-25; Tue, 10 Aug 2021 23:09:08 +0200
-Received: from vmh.kalnet.hooya.de (unknown [192.168.203.15])
-        by admins.marcant.net (Postfix) with ESMTPA id 0B71B2809A2;
-        Tue, 10 Aug 2021 23:09:08 +0200 (CEST)
-Subject: Re: [RFC net-next 2/3] net: dsa: qca8k: enable assisted learning on
- CPU port
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        Jonathan McDowell <noodles@earth.li>,
-        =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <vokac.m@gmail.com>,
-        Christian Lamparter <chunkeey@gmail.com>,
-        Nishka Dasgupta <nishkadg.linux@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Stefan Lippers-Hollmann <s.l-h@gmx.de>,
-        Hannu Nyman <hannu.nyman@iki.fi>,
-        Imran Khan <gururug@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Nick Lowe <nick.lowe@gmail.com>
-References: <20210807120726.1063225-1-dqfext@gmail.com>
- <20210807120726.1063225-3-dqfext@gmail.com>
- <20210807222555.y6r7qxhdyy6d3esx@skbuf>
- <20210808160503.227880-1-dqfext@gmail.com>
- <0072b721-7520-365d-26ef-a2ad70117ac2@marcant.net>
- <20210810175324.ijodmycvxfnwu4yf@skbuf>
-From:   Andre Valentin <avalentin@marcant.net>
-Organization: MarcanT AG
-Message-ID: <7af5c79e-fe18-a6fa-4282-1aa2bee187d6@marcant.net>
-Date:   Tue, 10 Aug 2021 23:09:07 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S234621AbhHJVW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 17:22:29 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:43622 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229582AbhHJVW1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 17:22:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=W6o+a88KX8S17yLaD9qwMRTThGtlPc7M3bg2X4oO3Cg=; b=qfuMHkn2fMD7Bk7Lqa3qlfzaxe
+        rLfnzvo12k/fiARMtydRsyilNEcYrlofgKQYlVOxDDSfjT2ewZpQv9V2n8g/iRWYYjU29jR/3NN9g
+        c3JjasFXfmvclz6mpKwfT7db008Mdo0kmKSYqUyfMwXeTFuYhNrvA2ojg0x8piqBSw9g=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mDZC6-00GygC-9A; Tue, 10 Aug 2021 23:21:54 +0200
+Date:   Tue, 10 Aug 2021 23:21:54 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Pavel Machek <pavel@ucw.cz>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Michael Walle <michael@walle.cc>, anthony.l.nguyen@intel.com,
+        bigeasy@linutronix.de, davem@davemloft.net,
+        dvorax.fuxbrumer@linux.intel.com, f.fainelli@gmail.com,
+        jacek.anaszewski@gmail.com, kuba@kernel.org, kurt@linutronix.de,
+        linux-leds@vger.kernel.org, netdev@vger.kernel.org,
+        sasha.neftin@intel.com, vinicius.gomes@intel.com,
+        vitaly.lifshits@intel.com
+Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
+Message-ID: <YRLt8p3UI5IC0Nm5@lunn.ch>
+References: <YP9n+VKcRDIvypes@lunn.ch>
+ <20210727081528.9816-1-michael@walle.cc>
+ <20210727165605.5c8ddb68@thinkpad>
+ <c56fd3dbe1037a5c2697b311f256b3d8@walle.cc>
+ <20210727172828.1529c764@thinkpad>
+ <8edcc387025a6212d58fe01865725734@walle.cc>
+ <20210727183213.73f34141@thinkpad>
+ <25d3e798-09f5-56b5-5764-c60435109dd2@gmail.com>
+ <20210810172927.GB3302@amd>
+ <25800302-9c02-ffb2-2887-f0cb23ad1893@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210810175324.ijodmycvxfnwu4yf@skbuf>
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <25800302-9c02-ffb2-2887-f0cb23ad1893@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 10.08.21 um 19:53 schrieb Vladimir Oltean:
-> On Tue, Aug 10, 2021 at 07:27:05PM +0200, Andre Valentin wrote:
->> On Sun, Aug 08, 2021 at 1805, DENG Qingfang wrote:
->>> On Sun, Aug 08, 2021 at 01:25:55AM +0300, Vladimir Oltean wrote:
->>>> On Sat, Aug 07, 2021 at 08:07:25PM +0800, DENG Qingfang wrote:
->>>>> Enable assisted learning on CPU port to fix roaming issues.
->>>>
->>>> 'roaming issues' implies to me it suffered from blindness to MAC
->>>> addresses learned on foreign interfaces, which appears to not be true
->>>> since your previous patch removes hardware learning on the CPU port
->>>> (=> hardware learning on the CPU port was supported, so there were no
->>>> roaming issues)
->>
->> The issue is with a wifi AP bridged into dsa and previously learned
->> addresses.
->>
->> Test setup:
->> We have to wifi APs a and b(with qca8k). Client is on AP a.
->>
->> The qca8k switch in AP b sees also the broadcast traffic from the client
->> and takes the address into its fdb.
->>
->> Now the client roams to AP b.
->> The client starts DHCP but does not get an IP. With tcpdump, I see the
->> packets going through the switch (ap->cpu port->ethernet port) and they
->> arrive at the DHCP server. It responds, the response packet reaches the
->> ethernet port of the qca8k, and is not forwarded.
->>
->> After about 3 minutes the fdb entry in the qca8k on AP b is
->> "cleaned up" and the client can immediately get its IP from the DHCP server.
->>
->> I hope this helps understanding the background.
-> 
-> How does this differ from what is described in commit d5f19486cee7
-> ("net: dsa: listen for SWITCHDEV_{FDB,DEL}_ADD_TO_DEVICE on foreign
-> bridge neighbors")?
-> 
-I lost a bit, It is a bit different.
+> A challenge here would be unique numbering if there are multiple
+> network interfaces with LED support (especially if the interfaces
+> use different drivers). So the numbering service would have to be
+> in LED subsystem core or network subsystem core.
 
-I've been also working a bit on the ipq807x device with such a switch on
-OpenWRT. There is a backport of that commit. To fix the problems described
-by d5f19486cee7, I enabled assisted_learning on qca8k. And it solves the
-problem.
+Yes, it needs to be somewhere common.
 
-But initially, the device was unreachable until I created traffic from the device
-to a client (cpu port->ethernet). At first, I did not notice this because a wifi client
-with it's traffic immediately solved the issue automatically.
-Later I verified this in detail.
+We also need to document that the number is meaningless and
+arbitrary. It can change from boot to boot. Also, LEDs from the same
+PHY or MAC are not guaranteed to be contiguous, since multiple
+PHYs/MACs can be enumerating their LEDs at the same time.
 
-Hopefully DENG Qingfang patches help. But I cannot proove atm.
+     Andrew
+
