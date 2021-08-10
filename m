@@ -2,80 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B4C13E5482
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 09:41:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5757B3E5484
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 09:44:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236709AbhHJHmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 03:42:04 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:52567 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236673AbhHJHmD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 03:42:03 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.nyi.internal (Postfix) with ESMTP id 76FE55C00DE;
-        Tue, 10 Aug 2021 03:41:40 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Tue, 10 Aug 2021 03:41:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=ryfUFJ
-        8xGMP5jeGmnWIsAmzwu4B1shpQA2kdVca51uI=; b=qDc1KvDMgVgovomGI6E7Bm
-        AwP5QOnXXuFH7Z1WjrZNb76zl0Iwu9HldPF4rxyHwL2tVjQAaZBcvMzw+0RQSPJ6
-        y540o01VcHH7qKCwExt52IFoneLWEb0C5ttPhz8qc6WlIqAlfA/ULBMLQiPu2Gkt
-        vpzYeCot5pyVBVUgR3aatjfx0taai58iieHJ9+yKxI48VWXlpNNBWmoY1f4hmSm1
-        oovS8jd4zJI/PLo7hJ7IBLK4GCWTGwiSwWN2tK3Yfl/aonfwIRYalbArpKu++y90
-        JfV4VB70/o35w9PuGyQOqxqwqjP9rK5y6u8M4954wOovlLDFlVZQalY4gmDEWhEg
-        ==
-X-ME-Sender: <xms:sy0SYTlduxDjuXRpiUd98hiqL_qIg3BRGpq95b85ntAaCOfhJ5_nIw>
-    <xme:sy0SYW0DChxEUkAWHRo12gIL_ga5b8dLNpVEHDrpQRJ-9BmNjoC15sImfvg7aguZA
-    B_p_K1xut-K_OM>
-X-ME-Received: <xmr:sy0SYZq7M5Xm6AgtRySJ8Kb6Ienh924YHv26lENXJ4xHX3EiRfexIrEsafkhMshRN004PO8b_IXIxW8VlTmXdu4FGaLKgg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrjeekgdduvdefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:sy0SYbmobsScdCgbDMFPO2be245vWIsR4-GU6I3uAY1-MWQpQdn3pQ>
-    <xmx:sy0SYR3Rg0MtoPuirRW9rW-4dZv8-cN0Uk0icTzRp7oMADCWxm_BsQ>
-    <xmx:sy0SYauzopqaIxxT0WNsvX7mMlf5S3A7FG-TWxNhJ3JXVnHqfOu2GQ>
-    <xmx:tC0SYcR3Bimjo2aS9CYTixtemo9MKN4PT6vE1TEFbs7SIGeBX1qBzA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 10 Aug 2021 03:41:38 -0400 (EDT)
-Date:   Tue, 10 Aug 2021 10:41:34 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Mark Bloch <mbloch@nvidia.com>
-Cc:     netdev@vger.kernel.org, xiyou.wangcong@gmail.com,
-        vladbu@nvidia.com, cong.wang@bytedance.com, jhs@mojatatu.com,
-        jiri@resnulli.us
-Subject: Re: [net-next PATCH v2] net/sched: cls_api, reset flags on replay
-Message-ID: <YRItrkt3capthkUE@shredder>
-References: <20210810034305.63997-1-mbloch@nvidia.com>
+        id S235070AbhHJHod (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 03:44:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53126 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234967AbhHJHoa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 03:44:30 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B99EC0613D3
+        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 00:44:08 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id e19so33717650ejs.9
+        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 00:44:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=elqUT9stw2J3iR2l4RxHnGypplqsV8TkYIJkIMW8hsY=;
+        b=Dw2anpOlrs9rV2RbKN404Zn18rw9HV6mvfkE8M1kGMV2Ah+OI2rfEhpzsA9qdOawIF
+         k8THbB9AABfuNY1MbNdd0AcLrxpPD246ArW/bPUC+pr03hqytJJD7OFvzo3N0q/tpZGO
+         tH48kCvdWiYFfAcIV1f5yS5oQiNePxkq4fi3pXrnB2oNtBTWdXNxRQpFSbu0OmyXCusR
+         +W05Ly+4a2nE2bv8/HwAQbH8fmJcv8+1juWLj995sdhCvh4wbwIAVnm3NRBqnxRlLOyy
+         KEmSTLyK4NbrCSV7j939f/4v7zlRHpFqgOALTvOj2N1xjrfa63r8X64WZ/4zirZ1FwSG
+         ug5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=elqUT9stw2J3iR2l4RxHnGypplqsV8TkYIJkIMW8hsY=;
+        b=h0NCcf+96eiofw359f0uwJ+Sa8KfwzgrKHtChGQ6zW1k6OEiuxprn8AAdwiPs+mFwN
+         wDk0/ZPSvCWSSlhpDCDe6V6634YP5CHNycY805Yr2UsawqJY6QHCUSkIoVcWB9Jg5BQD
+         kjzHJYQNzyD1t0HO8TAi/IVpOHBPHPQDwq/U85iSTtAnQWv2UkTeqlm2k5fBF44DWbDw
+         le3652lanjEm3mEXQz3qFWw3DxrUxJeI1sHkOHUyCQur32dpfBT0+4Q5QpDb80w/sGOG
+         lVHHrt3TFdAJvA8YusOf2wirTjWCwDVhjszvXrJz9ZRn2TLZqPDPh+d458gdbaTca0cN
+         F9hw==
+X-Gm-Message-State: AOAM532Fg228L1IJGjIijL+uhzyjK2NIQBdtxfJlpkTliotFxWfsf854
+        pVB2hTc6QjyfsbYCzAOvSWg9tLhlGdc/Ayy4Sj66
+X-Google-Smtp-Source: ABdhPJx/TbMGjhieQzq1YqRjJBN7a9WTaXbFyhJM7EzEX+MXvLMAXR31L8+X5gM3dqLz8GqZFLUy0w3uIoYuvmPOUqE=
+X-Received: by 2002:a17:906:8606:: with SMTP id o6mr26642389ejx.247.1628581447154;
+ Tue, 10 Aug 2021 00:44:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210810034305.63997-1-mbloch@nvidia.com>
+References: <20210729073503.187-1-xieyongji@bytedance.com> <20210729073503.187-2-xieyongji@bytedance.com>
+ <43d88942-1cd3-c840-6fec-4155fd544d80@redhat.com> <CACycT3vcpwyA3xjD29f1hGnYALyAd=-XcWp8+wJiwSqpqUu00w@mail.gmail.com>
+ <6e05e25e-e569-402e-d81b-8ac2cff1c0e8@arm.com> <CACycT3sm2r8NMMUPy1k1PuSZZ3nM9aic-O4AhdmRRCwgmwGj4Q@mail.gmail.com>
+ <417ce5af-4deb-5319-78ce-b74fb4dd0582@arm.com> <CACycT3vARzvd4-dkZhDHqUkeYoSxTa2ty0z0ivE1znGti+n1-g@mail.gmail.com>
+ <8c381d3d-9bbd-73d6-9733-0f0b15c40820@redhat.com> <CACycT3steXFeg7NRbWpo2J59dpYcumzcvM2zcPJAVe40-EvvEg@mail.gmail.com>
+ <b427cf12-2ff6-e5cd-fe6a-3874d8622a29@redhat.com>
+In-Reply-To: <b427cf12-2ff6-e5cd-fe6a-3874d8622a29@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Tue, 10 Aug 2021 15:43:56 +0800
+Message-ID: <CACycT3vuBdmWdu4X9wjCO0hm+O0xH2Uf0S2ZTk4O_pL2jX6Y5g@mail.gmail.com>
+Subject: Re: [PATCH v10 01/17] iova: Export alloc_iova_fast() and free_iova_fast()
+To:     Jason Wang <jasowang@redhat.com>,
+        Robin Murphy <robin.murphy@arm.com>
+Cc:     kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Liu Xiaodong <xiaodong.liu@intel.com>,
+        Joe Perches <joe@perches.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
+        He Zhe <zhe.he@windriver.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        iommu@lists.linux-foundation.org, bcrl@kvack.org,
+        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 10, 2021 at 03:43:05AM +0000, Mark Bloch wrote:
-> tc_new_tfilter() can replay a request if it got EAGAIN. The cited commit
-> didn't account for this when it converted TC action ->init() API
-> to use flags instead of parameters. This can lead to passing stale flags
-> down the call chain which results in trying to lock rtnl when it's
-> already locked, deadlocking the entire system.
-> 
-> Fix by making sure to reset flags on each replay.
+On Tue, Aug 10, 2021 at 11:02 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2021/8/9 =E4=B8=8B=E5=8D=881:56, Yongji Xie =E5=86=99=E9=81=93:
+> > On Thu, Aug 5, 2021 at 9:31 PM Jason Wang <jasowang@redhat.com> wrote:
+> >>
+> >> =E5=9C=A8 2021/8/5 =E4=B8=8B=E5=8D=888:34, Yongji Xie =E5=86=99=E9=81=
+=93:
+> >>>> My main point, though, is that if you've already got something else
+> >>>> keeping track of the actual addresses, then the way you're using an
+> >>>> iova_domain appears to be something you could do with a trivial bitm=
+ap
+> >>>> allocator. That's why I don't buy the efficiency argument. The main
+> >>>> design points of the IOVA allocator are to manage large address spac=
+es
+> >>>> while trying to maximise spatial locality to minimise the underlying
+> >>>> pagetable usage, and allocating with a flexible limit to support
+> >>>> multiple devices with different addressing capabilities in the same
+> >>>> address space. If none of those aspects are relevant to the use-case=
+ -
+> >>>> which AFAICS appears to be true here - then as a general-purpose
+> >>>> resource allocator it's rubbish and has an unreasonably massive memo=
+ry
+> >>>> overhead and there are many, many better choices.
+> >>>>
+> >>> OK, I get your point. Actually we used the genpool allocator in the
+> >>> early version. Maybe we can fall back to using it.
+> >>
+> >> I think maybe you can share some perf numbers to see how much
+> >> alloc_iova_fast() can help.
+> >>
+> > I did some fio tests[1] with a ram-backend vduse block device[2].
+> >
+> > Following are some performance data:
+> >
+> >                              numjobs=3D1   numjobs=3D2    numjobs=3D4  =
+ numjobs=3D8
+> > iova_alloc_fast    145k iops      265k iops      514k iops      758k io=
+ps
+> >
+> > iova_alloc            137k iops     170k iops      128k iops      113k =
+iops
+> >
+> > gen_pool_alloc   143k iops      270k iops      458k iops      521k iops
+> >
+> > The iova_alloc_fast() has the best performance since we always hit the
+> > per-cpu cache. Regardless of the per-cpu cache, the genpool allocator
+> > should be better than the iova allocator.
+>
+>
+> I think we see convincing numbers for using iova_alloc_fast() than the
+> gen_poll_alloc() (45% improvement on job=3D8).
+>
 
-[...]
+Yes, so alloc_iova_fast() still seems to be the best choice based on
+performance considerations.
 
-> Fixes: 695176bfe5de ("net_sched: refactor TC action init API")
-> Signed-off-by: Mark Bloch <mbloch@nvidia.com>
-> Reviewed-by: Vlad Buslov <vladbu@nvidia.com>
+Hi Robin, any comments?
 
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Tested-by: Ido Schimmel <idosch@nvidia.com>
+Thanks,
+Yongji
