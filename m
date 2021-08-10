@@ -2,207 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 386043E80E6
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 19:53:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DF913E82A9
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 20:17:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235192AbhHJRx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 13:53:29 -0400
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:51510 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233214AbhHJRvX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 13:51:23 -0400
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17AHg3mR007895;
-        Tue, 10 Aug 2021 17:50:37 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=eN2BQawkt9QNtAxQiZ79iRjmP2eTOqXfaUA7hUwDJEA=;
- b=udAdIoz1TrhI/DLmsBi7qPTw8P3keFfWwaZt8T3c7itDv15TDCT6etooVcGvODFhOK17
- Br1tZxmSiJ4ztlGnH0yP5/3WL5MNCSwWrJDToHTr6HSsoaIpvWgzmCPLlfb06l0/fn85
- REvPk8u3CNRtA2wwg29zD5Rvmp7jLOh8ncr7/KYOEvLNk0EEXnYmVKuWPFlEqYj1TP4n
- GGcWT+C45+tKrO2L/TRaQ0wPeYy5O8dw++NFW+smx1TB3n1lkFI0xGL+PfWZNoFXISgo
- cYqDmAu/DqfzbG/xC/AafnddFvzFeBfRHhHhFV0hW3EctvQw5QPtqFBmCNPGUK5LfPCo dw== 
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2020-01-29;
- bh=eN2BQawkt9QNtAxQiZ79iRjmP2eTOqXfaUA7hUwDJEA=;
- b=XozoLAVIaeOqbS0zsUV5O1XdeK1MyxFtyXlEpy/Yza3eGNkl55MpgeWly29F/29B1L5L
- Hx2beGi14acDQZzNBaonCw0GSO20pfdms08cgz2hSjvfG7+1DbWXWj/ff7Ys3eQOVZOp
- Cy8mfazdI4D+PC5UTiegAlndXqlZ2BmXHAFvgTNPUhjF7fxr7MYbJeOAmoXDEv7xy4z2
- RW5a6pilxJ8qoQlksARF9jq+/Rf6UM+0kitiqxPIWadbOt/AQHMazQj0O9Ek+lf0gp+W
- MrqhTF6sKhNOPWsEz65bwDz4IxROfkDEJg4l898HO27QiuJYasZM3Iff7TCh775l+TgX Xw== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3aay0fvhwx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 10 Aug 2021 17:50:36 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 17AHoTQA165548;
-        Tue, 10 Aug 2021 17:50:34 GMT
-Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1anam02lp2042.outbound.protection.outlook.com [104.47.57.42])
-        by aserp3030.oracle.com with ESMTP id 3abx3u8d5g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 10 Aug 2021 17:50:33 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CGFEmKxks6HpeueyZFgpcDUiH1Gvi9x2jau/Dp0dP5ZeLnMiWVPsBA+D1m1O5pRqwg92a/WslGnk2VQs17yaRftBnJhT8ltsZrSdF5BtEZifpovVBiv/bKQmHFSnxAwLhoeR5vYExtBnBeHdLqsfbmhFX36q+yq153f0HUyPi8LMOuUWDMpAkyfU/fvjYo1jLGgHB1y0YfrpLGAMqCjETa+X3O1hiiywU72pDPAcjPXdup/HdQU4QhVdGbEyQ7NJES0/i2VRQcp+7xBzaZqjrGh5Vgu2meEho2I0SL3gtl9VYcMO36prwkWPmp9I1HdOJph7rqthazueMeo/aNEfaw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eN2BQawkt9QNtAxQiZ79iRjmP2eTOqXfaUA7hUwDJEA=;
- b=VS+iEWSbb8AoP3pvT2YG/23f9XLoVC3lF9eg1wTCtLWps1kcnXShvo2WiJq7XFo+ash5+gp1DwYn1ydzs3Sa40KRimI+WFtBo2BdYwYO1nI4PRT/xMZGCjRjxBYcNVdfh32dGmE/fkh/joTpWcS65Ta7W0Olpf9w9AHwdZ3BNHSAx909zQWyU4O4lAbaP4jIn/wo6FTHKSR/k4FV4UnsvvgH6Hxk1Z9YABM/rIHDK2hmM/rYNESsUugScLrEvBES4GrnjEniaoOq0gfagMLyGafWpmEwJaR2rCYZhnGkYXkZnCyV/G9DvYQumauPEya1GTYj2vnlb9520tOqdk3r0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        id S237732AbhHJSRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 14:17:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238209AbhHJSOn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 14:14:43 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE711C03388C;
+        Tue, 10 Aug 2021 10:45:22 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id s22-20020a17090a1c16b0290177caeba067so5428270pjs.0;
+        Tue, 10 Aug 2021 10:45:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eN2BQawkt9QNtAxQiZ79iRjmP2eTOqXfaUA7hUwDJEA=;
- b=oS0Aj9yO/NV0L4oyCsi84sl4HBa8fDjkPQQ08E/cw7QOvdNA0j/YotnqmMmYLtrhluzS0HJ4bRiHCLb376az5DDqbxc+ggTH2HUFsNTDIB2bOc3l9aF0sRLhs4GG4QE0JX/Rf40/vt33jP1O5qgdvCZfgDcTgpYtaQV8Fcx5ecM=
-Authentication-Results: fb.com; dkim=none (message not signed)
- header.d=none;fb.com; dmarc=none action=none header.from=oracle.com;
-Received: from SJ0PR10MB4494.namprd10.prod.outlook.com (2603:10b6:a03:2d4::12)
- by BYAPR10MB2710.namprd10.prod.outlook.com (2603:10b6:a02:b5::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.21; Tue, 10 Aug
- 2021 17:50:31 +0000
-Received: from SJ0PR10MB4494.namprd10.prod.outlook.com
- ([fe80::588f:a774:17de:1d1b]) by SJ0PR10MB4494.namprd10.prod.outlook.com
- ([fe80::588f:a774:17de:1d1b%3]) with mapi id 15.20.4394.023; Tue, 10 Aug 2021
- 17:50:31 +0000
-Subject: Re: [syzbot] BUG: sleeping function called from invalid context in
- _copy_to_iter
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Dmitry Vyukov <dvyukov@google.com>,
-        syzbot <syzbot+8760ca6c1ee783ac4abd@syzkaller.appspotmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        jamorris@linux.microsoft.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>, kpsingh@kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Al Viro <viro@zeniv.linux.org.uk>, Yonghong Song <yhs@fb.com>
-References: <0000000000006bd0b305c914c3dc@google.com>
- <0c106e6c-672f-474e-5815-97b65596139d@oracle.com>
- <CACT4Y+bK61B3r5Rx150FwKt5WJ8T-q-X0nC-r=oH7x4ZU5vdVw@mail.gmail.com>
- <e99cc036-2f83-ff9e-ea68-3eeb19bd4147@oracle.com>
- <CACT4Y+bFLFg9WUiGWq=8ubKFug47=XNjqQJkTX3v1Hos0r+Z_A@mail.gmail.com>
- <2901262f-1ba7-74c0-e5fc-394b65414d12@oracle.com>
- <CANn89iKcSvJ5U37q1Jz2gVYxVS=_ydNmDuTRZuAW=YvB+jGChg@mail.gmail.com>
- <CANn89iKqv4Ca8A1DmQsjvOqKvgay3-5j9gKPJKwRkwtUkmETYg@mail.gmail.com>
- <ca6a188a-6ce4-782b-9700-9ae4ac03f83e@oracle.com>
- <66417ce5-a0f0-9012-6c2e-7c8f1b161cff@gmail.com>
-From:   Shoaib Rao <rao.shoaib@oracle.com>
-Message-ID: <583beba4-2595-5f4c-49a8-f8d999f0ebe7@oracle.com>
-Date:   Tue, 10 Aug 2021 10:50:29 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=qPru0sCmL8DtJv7eFS70iXmqGyt6Q3lHX79vcTkPn7w=;
+        b=eQmIw8OQtAqgaPX//R3JZ7dIbxySX6+e8LwelnFgLV4/nZugjxZWjSb63/1KKc45mv
+         jCG07W4PL2MAkVBilPeziSyW0U7lrmx8mgN1HNhEZMetkFtG35YxDYHh8VG7lIAfPgd2
+         F6Ba3SgDHoAXNwSp0DWSXs92qW9dA4Be+yu7fhZMgLEgIUk/EgN2AEv8CQtZ2SpJsO5t
+         VLAunCXPgjq0rRmmaMZlzdEM/SyykU7anrZTJz9CAg3hxBofkj6riN4NveBxkZV7qicV
+         UaQLdFrHbozABqF3wHUstrSwkJeIf6FlEefOlPkfVG6+t5oKknmY2LvE+4iSUWmU2Wkv
+         okEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=qPru0sCmL8DtJv7eFS70iXmqGyt6Q3lHX79vcTkPn7w=;
+        b=YODJsLIdC7pz095GuTlapkJtvGaQOROIGfSFR2GFOWbcA5nsr6BdxMEMoXumQecJBD
+         q+KyL9bG6bBXaolSJy3Gpm90IfplIrJWVPmLPGREU+mNepyl4RRKTOL+/R4PVzjrEXum
+         wW/ffregu7/hihPlsM57pKid50HxErlInUhl7esf2X++y7hXdrVgTYU3mDFFQAuN22uH
+         gOnhJ1atNnkzlzCBci6hK6IH8TBY/7h+CPTauVghEGfi6oLbZL7PdsEI4POW7f1nbk6q
+         gYyOK2aTiKjloxKzK9VBCIe5RYg4O4a9R+P8KJvTvb5wv/CkobMJWXikf3Gga0YhJWaB
+         VkcA==
+X-Gm-Message-State: AOAM530ghG8cVfLIMHIyTSOOR3A0zwkJb/i06zrncwJvwB/MZGuWnCsO
+        LnILjwdDPrFU4jfGr7uSuvc=
+X-Google-Smtp-Source: ABdhPJwP7p+a+pvC2sYjAD5cAdkngEEdQx2aG/5pgBqZMKP3gLWqBXOag+PGTAiIrhChyeUq3jgE6w==
+X-Received: by 2002:a63:5641:: with SMTP id g1mr373182pgm.33.1628617522136;
+        Tue, 10 Aug 2021 10:45:22 -0700 (PDT)
+Received: from [192.168.1.22] (amarseille-551-1-7-65.w92-145.abo.wanadoo.fr. [92.145.152.65])
+        by smtp.gmail.com with ESMTPSA id nr6sm3625453pjb.39.2021.08.10.10.45.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Aug 2021 10:45:21 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/3] dt-bindings: net: fsl, fec: add "fsl,
+ wakeup-irq" property
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
+Cc:     "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+References: <20210805074615.29096-1-qiangqing.zhang@nxp.com>
+ <20210805074615.29096-2-qiangqing.zhang@nxp.com>
+ <2e1a14bf-2fa8-ed39-d133-807c4e14859c@gmail.com>
+ <DB8PR04MB67950F6863A8FEE6745CBC68E6F69@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <498f3cee-8f37-2ab1-93c4-5472572ecc37@gmail.com>
+ <DB8PR04MB6795DC35D0387637052E64A1E6F79@DB8PR04MB6795.eurprd04.prod.outlook.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <90af8051-512d-1230-72a7-8bbcee984939@gmail.com>
+Date:   Tue, 10 Aug 2021 10:45:16 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.12.0
-In-Reply-To: <66417ce5-a0f0-9012-6c2e-7c8f1b161cff@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-ClientProxiedBy: BYAPR08CA0002.namprd08.prod.outlook.com
- (2603:10b6:a03:100::15) To SJ0PR10MB4494.namprd10.prod.outlook.com
- (2603:10b6:a03:2d4::12)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.7] (73.170.87.114) by BYAPR08CA0002.namprd08.prod.outlook.com (2603:10b6:a03:100::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.17 via Frontend Transport; Tue, 10 Aug 2021 17:50:30 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 73f2a6a9-e083-49d3-10ac-08d95c2758c8
-X-MS-TrafficTypeDiagnostic: BYAPR10MB2710:
-X-Microsoft-Antispam-PRVS: <BYAPR10MB27107546AC2B2904D05B262DEFF79@BYAPR10MB2710.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FMlGVoTw2+rmHu7fz7DlVLjumNsBdsz+S8XK8cBjpITtJFPVneSdcy1DrcCS6fCJWdMLNgh+jLmHP14nYLFHuGJruS5fG86JYV+1B0RD/1obbKNqA3lAs+hHLN9TkJiN39NSXK21BUYAc+B+/F48Cm1ZL9xoV7zvvvzTL2gtbjnpsAZj68581FoCStSqDhMkX6/Job41FjqdjAjc4aY/GUb8FHIm81RwgnUKkO0f0w/4ErGNaykVXGykK9f6sfdaYTv+vXNF0zl6l/rFexoewDwK5uDG2pb4fYfMC0+kZ1hRKucu9Hn7EldU6msrEsVaRJjX7hefNg7sgHiFe7aEHxNCRBD0EpGmvKc8PBqlgYryML7fwjgptBWSphbOK59pvaH7eQGeRNXn6A8Lxj0SMVWgXRYQKOsOUANfvZy+2W/LYBkQIm3Yyau+e+Ut+Fv3Ws/LqchvCeql2q3g1XAP16uqHBUyaUJCmmJnhcQo3xMykW1T2kqXzT1vrCKDM8Q2zhQTbzjzb9HdWxNk+cMT2/RapyrLkDLsf32aPEJ3fru5Y6izPs0Vf/QP9iC+b139Xh21oaokOKhnFUiMzIMLC1vkzWiItMg828LO/VyphmriJ4lcDOBkXKJ3mS0ITvF/ab35czEZaUmn/9VgyDM46hKaFMW9k2K7SKGE03t0F/Pm+D8fn0koXanNXaDTLqqfYOjPirlgvDrydD0SmBqPKaHXIjDZtX/LEv9qM5DlIM4huVg5caY921QTgpAROwEu
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR10MB4494.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(136003)(346002)(39860400002)(396003)(376002)(4326008)(8676002)(2906002)(86362001)(110136005)(54906003)(316002)(16576012)(6486002)(478600001)(26005)(7416002)(5660300002)(66946007)(53546011)(83380400001)(956004)(8936002)(31696002)(2616005)(4744005)(66476007)(66556008)(38100700002)(31686004)(186003)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?M2xuUnRnZnVjVVFBVGFTMW9tbjRFcnBoMEtpamdXdnNVU1hIQjk0NkpUbGNw?=
- =?utf-8?B?YnFveU01Q3F1Sjd2TEhJTzI5V0taMDhWR1FuVFdKcE93d2dNVm81Zmk0Ympr?=
- =?utf-8?B?R3g3UG82LzRacC91UlFlaEpMc2MrMWx5TWt4bzY5cnQzY1F6QTRsRmRCOWFx?=
- =?utf-8?B?RXJ3WVJRWHVab0FOY0RBOEdxVlMrVHRybE1Gb0szcmhEMTREdk1lVnVmVTM3?=
- =?utf-8?B?Ny8rNk9RSzI4K1RteXZpUjB1Q3Jlc3Yzd3hTR3dicGpFZ3hwdlNGS1RYNUtC?=
- =?utf-8?B?WVFDMis4L2ZuTFErbE13UzkzWDN4VVphRnNDbS9peDVwN1ZZVnhKRzYwTE5J?=
- =?utf-8?B?ZGU4RFI1MnQ0K05HYnMzRnhndFdsQ3JpZlloQXdsMmJZVmtuNUY4bnRrcXMy?=
- =?utf-8?B?aTN5Ym9JV2s3MTRHaEdHdTJEZkhNYU1sY3A4MVJ5Y2FlM3VTaDdaa1JlajNS?=
- =?utf-8?B?aEYzT0ZQeVBXS0JqT2p2NmM4QXJVZERmMDRDcmt6STBtaFcxYWYybUJSK005?=
- =?utf-8?B?ZHNSMHlYcG5nbFAzQ3YyTzZtcTg2M3lldnhjN2VlTG9mOUpNWnRRTGIrL0Vu?=
- =?utf-8?B?NVUwbHdVTUZUOW43R1lEL3dOc2xET2c1WlBDbE5RRXBWUGtyT3BSa1RHRVYr?=
- =?utf-8?B?ZDNYQ1JBK0J0dXBsV29qbUsvcXZqVWQ5MVRicG1vYnJHOG15YzMvU2VWOFJV?=
- =?utf-8?B?MWR2OGtkQjVZQXRHVGJqZVdoejNEczVuTktLV3JmWnFoYW1mSUZZcjZaVEh5?=
- =?utf-8?B?WDQ4U0JFUmNRQnZTQnp3Tkw3YkZIb2I2djNmVWhUZ1QxVHc3a082ZVhXaWpq?=
- =?utf-8?B?YUlwQkE4TmR4N3pUZUNPeWlJMHlDcDYzVzk0ZmMrMERISUQzOFV2c3pkcHM5?=
- =?utf-8?B?TmozMEMzTGVlYzNhcWhicldDZThhSkRWck5OWW9vSmlZK21kb2crL05HU2R2?=
- =?utf-8?B?SzQ5ai9VL05CSFNPbnFMelZPVCtDODNZTUhiZUthQkhVay9mRzN0ak0wTzBa?=
- =?utf-8?B?Tm4xRnNONzlOM2pOLytuQ2ZtWW5EelZmZ2dHYWhrckZBS0dMNDlHNHlpTGJp?=
- =?utf-8?B?NFV5TzBZYllJajkyb0J5QnkyU01weUpETDNDZXNaUHZBLzhxTit4aUhscjh4?=
- =?utf-8?B?bXhuNGJFVDNwbHRvQjR4ZHY4allnZEw0ZTlaVFF5U01ndVZWRElYdGk2Mitp?=
- =?utf-8?B?S3RCV1FYM2xxd2RwVlVNbkNJaWxCL3VncUpqdUsxcjgxZ3U4UlJVeUdRZng5?=
- =?utf-8?B?WXBqVGxUczJKdmw3WWs0eUpKREF2T2tMdkV0eUo2SkNLRCtFbDJ1RTBXbXRj?=
- =?utf-8?B?TlJOdmhsRXhKWXlrcEJnMWhOVzdzamFwWkJ3Q1hPRkJsQTVPZlFDMXNtbVFq?=
- =?utf-8?B?MFB0WFAzeVFDdjZjQUNEVFhJOW1EQWwxVzNKT2FJUEt3U0FseU12VThYM21v?=
- =?utf-8?B?ZzNWblY1Rm1KK0V0THRUYUNqZERjOHp2cXdhd0JNRFN4S2FCdEhpRk8wUGpE?=
- =?utf-8?B?VXVoSmcyWUpGbDVxanptbEdTSjVwakpFQUNUYk9TUkVRSFpFck0rYTJ3ZS8r?=
- =?utf-8?B?M1pON3MvYWVGRzBOcGlnczVNdUNGbFVlZDNuYjlHZEozaXpyYUxEcnF3MTE5?=
- =?utf-8?B?SHdPc2V0V1RlTko3UmxjZ0V3THErR2lmNFYwenlwcjBBeEVCTVJUa09zT3Zl?=
- =?utf-8?B?NGJlc3l0bzd0SE5WZlNKYTFJOHVSU3cwbThKRVVuWGNjTm5Pb21Nd0wzd0RV?=
- =?utf-8?Q?7bd7gwv/rw64aF5agxDPfhCITl/zoOs3z+8K/3s?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 73f2a6a9-e083-49d3-10ac-08d95c2758c8
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR10MB4494.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2021 17:50:31.3926
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QMLtKrPKmIL1ykkQGajeuTphvCnptZNqyXIalM08Z8MpO584CJWqzWWFfJlmGuGHDiay0wtGQyRcsnnowbS4Aw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB2710
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10072 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxscore=0 bulkscore=0
- spamscore=0 phishscore=0 mlxlogscore=999 suspectscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2107140000
- definitions=main-2108100117
-X-Proofpoint-ORIG-GUID: 33pQ869YOUqEcK-ANgr5q1rD0Ia3lU23
-X-Proofpoint-GUID: 33pQ869YOUqEcK-ANgr5q1rD0Ia3lU23
+In-Reply-To: <DB8PR04MB6795DC35D0387637052E64A1E6F79@DB8PR04MB6795.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 8/10/21 2:19 AM, Eric Dumazet wrote:
->
-> On 8/9/21 10:31 PM, Shoaib Rao wrote:
->> On 8/9/21 1:09 PM, Eric Dumazet wrote:
->>> I am guessing that even your test would trigger the warning,
->>> if you make sure to include CONFIG_DEBUG_ATOMIC_SLEEP=y in your kernel build.
->> Eric,
+
+On 8/9/2021 7:21 PM, Joakim Zhang wrote:
+> 
+> Hi Florian,
+> 
+>> -----Original Message-----
+>> From: Florian Fainelli <f.fainelli@gmail.com>
+>> Sent: 2021年8月10日 2:40
+>> To: Joakim Zhang <qiangqing.zhang@nxp.com>; davem@davemloft.net;
+>> kuba@kernel.org; robh+dt@kernel.org; shawnguo@kernel.org;
+>> s.hauer@pengutronix.de; festevam@gmail.com; andrew@lunn.ch
+>> Cc: kernel@pengutronix.de; dl-linux-imx <linux-imx@nxp.com>;
+>> netdev@vger.kernel.org; devicetree@vger.kernel.org;
+>> linux-kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org
+>> Subject: Re: [PATCH net-next 1/3] dt-bindings: net: fsl, fec: add "fsl,
+>> wakeup-irq" property
 >>
->> Thanks for the pointer, have you ever over looked at something when coding?
 >>
-> I _think_ I was trying to help, not shaming you in any way.
-How did the previous email help? I did not get any reply when I asked 
-what could be the cause.
->
-> My question about spinlock/mutex was not sarcastic, you authored
-> 6 official linux patches, there is no evidence for linux kernel expertise.
+>>
+>> On 8/8/2021 10:08 PM, Joakim Zhang wrote:
+>>>
+>>> Hi Florian,
+>>>
+>>>> -----Original Message-----
+>>>> From: Florian Fainelli <f.fainelli@gmail.com>
+>>>> Sent: 2021年8月5日 17:18
+>>>> To: Joakim Zhang <qiangqing.zhang@nxp.com>; davem@davemloft.net;
+>>>> kuba@kernel.org; robh+dt@kernel.org; shawnguo@kernel.org;
+>>>> s.hauer@pengutronix.de; festevam@gmail.com; andrew@lunn.ch
+>>>> Cc: kernel@pengutronix.de; dl-linux-imx <linux-imx@nxp.com>;
+>>>> netdev@vger.kernel.org; devicetree@vger.kernel.org;
+>>>> linux-kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org
+>>>> Subject: Re: [PATCH net-next 1/3] dt-bindings: net: fsl, fec: add
+>>>> "fsl, wakeup-irq" property
+>>>>
+>>>>
+>>>>
+>>>> On 8/5/2021 12:46 AM, Joakim Zhang wrote:
+>>>>> Add "fsl,wakeup-irq" property for FEC controller to select wakeup
+>>>>> irq source.
+>>>>>
+>>>>> Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+>>>>> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+>>>>
+>>>> Why are not you making use of the standard interrupts-extended
+>>>> property which allows different interrupt lines to be originating
+>>>> from different interrupt controllers, e.g.:
+>>>>
+>>>> interrupts-extended = <&gic GIC_SPI 112 4>, <&wakeup_intc 0>;
+>>>
+>>> Thanks.
+>>>
+>>> AFAIK, interrupts-extended should be used instead of interrupts when a
+>>> device is connected to multiple interrupt controllers as it encodes a
+>>> parent phandle with each interrupt specifier. However, for FEC controller, all
+>> interrupt lines are originating from the same interrupt controllers.
+>>
+>> OK, so why this custom property then?
+>>
+>>>
+>>> 1) FEC controller has up to 4 interrupt lines and all of these are routed to GIC
+>> interrupt controller.
+>>> 2) FEC has a wakeup interrupt signal and always are mixed with other
+>> interrupt signals, and then output to one interrupt line.
+>>> 3) For legacy SoCs, wakeup interrupt are mixed to int0 line, but for i.MX8M
+>> serials, are mixed to int2 line.
+>>> 4) Now driver treat int0 as the wakeup source by default, it is broken for
+>> i.MX8M.
+>>
+>> I don't really know what to make of your response, it seems to me that you are
+>> carrying some legacy Device Tree properties that were invented when
+>> interrupts-extended did not exist and we did not know any better.
+> 
+> As I described in former mail, it is not related to interrupts-extended property.
+> 
+> Let's take a look, e.g.
+> 
+> 1) arch/arm/boot/dts/imx7d.dtsi
+> interrupts = <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
+> 		<GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>,
+> 		<GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>,
+> 		<GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>;
+> interrupt-names = "int0", "int1", "int2", "pps";
+> 
+> For these 4 interrupts are originating from GIC interrupt controller, "int0" for queue 0 and other interrupt signals, containing wakeup;
+> "int1" for queue 1; "int2" for queue 2.
+> 
+> 2) arch/arm64/boot/dts/freescale/imx8mq.dtsi
+> interrupts = <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>,
+> 	<GIC_SPI 119 IRQ_TYPE_LEVEL_HIGH>,
+> 	<GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>,
+> 	<GIC_SPI 121 IRQ_TYPE_LEVEL_HIGH>;
+> interrupt-names = "int0", "int1", "int2", "pps";
+> 
+> For these 4 interrupts are also originating from GIC interrupt controller, "int0" for queue 0; "int1" for queue 1; "int2" for queue 2 and other
+> interrupt signals, containing wakeup.
+> 
+> If we want to use WoL feature, we need invoke enable_irq_wake() to let this specific interrupt line be a wakeup source. For FEC driver now,
+> it treats "int0" as wakeup interrupt by default. Obviously it's not fine for i.MX8M serials, since SoC mix wakeup interrupt signal into "int2",
+> so I add this "fsl,wakeup-irq" custom property to indicate which interrupt line contains wakeup signal.
+> 
+> Not sure if I have explained it clearly enough, from my point of view, I think interrupts-extended property can't fix this issue, right?
 
-That is no measure of someones understanding. There are other OS's as 
-well. I have worked on Solaris and other *unix* OS's for over 20+ years. 
-This was an oversight on my part and I apologize, but instead of 
-questioning my expertise it would have been helpful to say what might 
-have caused it.
+This is clearer, and indeed interrupts-extended won't fix that, however 
+it seems to me that this is a problem that ought to be fixed at the 
+interrupt controller/irq_chip level which should know and be told which 
+interrupt lines can be made wake-up interrupts or not. From there on, 
+the driver can test with enable_irq_wake() whether this has a chance of 
+working or not.
 
-Shoaib
+It seems to me that the 'fsl,wakeup-irq' property ought to be within the 
+interrupt controller Device Tree node (where it would be easier to 
+validate that the specific interrupt line is correct) as opposed to 
+within the consumer (FEC) Device Tree node.
 
+> 
+> If there is any common properties can be used for it, please let me know. Or any other better solutions also be appreciated. Thanks.
+
+There is a standard 'wakeup-source' boolean property that can be added 
+to any Device Tree node to indicate it can be a wake-up source, but what 
+you need here is a bitmask, so introducing a custom property may be 
+appropriate here.
+-- 
+Florian
