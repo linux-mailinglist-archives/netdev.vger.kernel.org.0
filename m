@@ -2,125 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B17E13E5BDF
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 15:38:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8591F3E5C0E
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 15:45:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241699AbhHJNip (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 09:38:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48854 "EHLO mail.kernel.org"
+        id S241809AbhHJNpr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 09:45:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51782 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241647AbhHJNiQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Aug 2021 09:38:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B20C36101E;
-        Tue, 10 Aug 2021 13:37:53 +0000 (UTC)
+        id S240192AbhHJNpq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 09:45:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0AEC561075;
+        Tue, 10 Aug 2021 13:45:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628602674;
-        bh=TvoQojqsY59TCrvQ8l2JACkOs5SoYXc6V5jqqVTGCQc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tDXm4IgUlJoezrUCuAzKv0mLdZjMaHw3eemrJSton4hIxatOqfX/HztjxyHagWG7G
-         Vx4yuhqYBegEORxsgnnxjW7fJ8jvLfwdtxNaTg8ayepFGtau3zB7UVfyl1JJymtSHf
-         208YurRn9eFewDC1axQRco32NLl1gbc2ply5FHSIkxWoUijmWrEMDgsE2BJ52BM5Rs
-         5JcVsRpNkogkQ9umAiflG7n3ZHBfIHGEinH3x//myCUvGMsBNiky3Mxw68HTpw1XrD
-         KeBjsYRV0tuHd/b2UTvYDyqmsZX7gXog2GVirYWB8xTgOujg6eOlAoeikySJdJtkHs
-         keFvigv/0CFuQ==
+        s=k20201202; t=1628603124;
+        bh=Glql89CKaEO2bKO5D0IqlIuTd5q4oxJ9Hn2ZSRZr+6k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=W3pWCgta7DCxFxMKzABYUZSAlENjwlFpfuHFoXXv2Eit9eMl2Z+UCcO5Dc43YQQMt
+         WTVNyQ8MROBG3w8rJQO0Vcp2otFrz65A5789N/iQ/b/3s13ylFpmZfF1fcAyaedt3N
+         ovC4qeJXiHZ331CjANyr3NzVzEvoZfFX9lJQHWfWjQT7fe/rRrKM6xabrSL4pAwcGO
+         WAsrZtoEL2msoqVQ9ZFYcuNKnb/5PkDkqbuYEJEXJF/iG5535KgIcyS7mmOTgv7IMD
+         CA0tzZ8OzXMMcuEEsgbziGo3jbol8i+tLifnzLmNjQRUT3CMMibJPFoNQ8K7rON1B/
+         /tR/laAwFJygA==
+Date:   Tue, 10 Aug 2021 16:45:20 +0300
 From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org,
-        Michael Guralnik <michaelgur@mellanox.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+To:     Prabhakar Kushwaha <prabhakar.pkin@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>, Ariel Elior <aelior@marvell.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Derek Chickles <dchickles@marvell.com>, drivers@pensando.io,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        hariprasad <hkelam@marvell.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-omap@vger.kernel.org, linux-staging@lists.linux.dev,
+        Manish Chopra <manishc@marvell.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        netdev@vger.kernel.org, oss-drivers@corigine.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Salil Mehta <salil.mehta@huawei.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Simon Horman <simon.horman@corigine.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
         Tariq Toukan <tariqt@nvidia.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
         Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Yufeng Mo <moyufeng@huawei.com>
-Subject: [PATCH net-next 5/5] netdevsim: Delay user access till probe is finished
-Date:   Tue, 10 Aug 2021 16:37:35 +0300
-Message-Id: <e7d4e11aaa8c5ddef0c50081bbf2b543117660de.1628599239.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1628599239.git.leonro@nvidia.com>
-References: <cover.1628599239.git.leonro@nvidia.com>
+        Prabhakar Kushwaha <pkushwaha@marvell.com>,
+        Shai Malin <malin1024@gmail.com>,
+        Shai Malin <smalin@marvell.com>, rtoshniwal@marvell.com,
+        Omkar Kulkarni <okulkarni@marvell.com>
+Subject: Re: [PATCH net-next] devlink: Set device as early as possible
+Message-ID: <YRKC8NKClMyaQOmt@unreal>
+References: <6859503f7e3e6cd706bf01ef06f1cae8c0b0970b.1628449004.git.leonro@nvidia.com>
+ <CAJ2QiJLJk73RDS_XwQ0FY0ODq9qXbmiEZ2Y8Fkz9vVheK4he8g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJ2QiJLJk73RDS_XwQ0FY0ODq9qXbmiEZ2Y8Fkz9vVheK4he8g@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On Tue, Aug 10, 2021 at 06:08:51PM +0530, Prabhakar Kushwaha wrote:
+> Hi Leon,
 
-Don't publish supported user space accessible ops till probe is finished.
+<...>
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/net/netdevsim/dev.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+> >  struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
+> > -                                size_t priv_size, struct net *net)
+> > +                                size_t priv_size, struct net *net,
+> > +                                struct device *dev)
+> >  {
+> >         struct devlink *devlink;
+> >
+> > -       if (WARN_ON(!ops))
+> > -               return NULL;
+> > -
+> > +       WARN_ON(!ops || !dev);
+> >         if (!devlink_reload_actions_valid(ops))
+> >                 return NULL;
+> >
+> >         devlink = kzalloc(sizeof(*devlink) + priv_size, GFP_KERNEL);
+> >         if (!devlink)
+> >                 return NULL;
+> > +
+> > +       devlink->dev = dev;
+> >         devlink->ops = ops;
+> >         xa_init_flags(&devlink->snapshot_ids, XA_FLAGS_ALLOC);
+> >         write_pnet(&devlink->_net, net);
+> > @@ -8810,12 +8812,9 @@ EXPORT_SYMBOL_GPL(devlink_alloc_ns);
+> >   *     devlink_register - Register devlink instance
+> >   *
+> >   *     @devlink: devlink
+> > - *     @dev: parent device
+> >   */
+> 
+> This patch is converting devlink_alloc() to devlink_alloc_register().
+> 
+> There are 2 APIs: devlink_alloc() and devlink_register().
+> Both APIs can be used in a scenario,
+>               Where devlink_alloc() can be done by code written around
+> one struct dev and used by another struct dev.
+> or
+> This scenario is not even a valid scenario?
 
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 54313bd57797..181258bd72f2 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -1470,14 +1470,10 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
- 	if (err)
- 		goto err_devlink_free;
- 
--	err = devlink_register(devlink);
--	if (err)
--		goto err_resources_unregister;
--
- 	err = devlink_params_register(devlink, nsim_devlink_params,
- 				      ARRAY_SIZE(nsim_devlink_params));
- 	if (err)
--		goto err_dl_unregister;
-+		goto err_resources_unregister;
- 	nsim_devlink_set_params_init_values(nsim_dev, devlink);
- 
- 	err = nsim_dev_dummy_region_init(nsim_dev, devlink);
-@@ -1515,10 +1511,17 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
- 		goto err_psample_exit;
- 
- 	devlink_params_publish(devlink);
--	devlink_reload_enable(devlink);
- 	nsim_dev->esw_mode = DEVLINK_ESWITCH_MODE_LEGACY;
-+	err = devlink_register(devlink);
-+	if (err)
-+		goto err_port_del_all;
-+
-+	devlink_reload_enable(devlink);
- 	return 0;
- 
-+err_port_del_all:
-+	devlink_params_unpublish(devlink);
-+	nsim_dev_port_del_all(nsim_dev);
- err_psample_exit:
- 	nsim_dev_psample_exit(nsim_dev);
- err_bpf_dev_exit:
-@@ -1536,8 +1539,6 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
- err_params_unregister:
- 	devlink_params_unregister(devlink, nsim_devlink_params,
- 				  ARRAY_SIZE(nsim_devlink_params));
--err_dl_unregister:
--	devlink_unregister(devlink);
- err_resources_unregister:
- 	devlink_resources_unregister(devlink, NULL);
- err_devlink_free:
-@@ -1573,6 +1574,7 @@ void nsim_dev_remove(struct nsim_bus_dev *nsim_bus_dev)
- 	struct devlink *devlink = priv_to_devlink(nsim_dev);
- 
- 	devlink_reload_disable(devlink);
-+	devlink_unregister(devlink);
- 
- 	nsim_dev_reload_destroy(nsim_dev);
- 
-@@ -1580,7 +1582,6 @@ void nsim_dev_remove(struct nsim_bus_dev *nsim_bus_dev)
- 	nsim_dev_debugfs_exit(nsim_dev);
- 	devlink_params_unregister(devlink, nsim_devlink_params,
- 				  ARRAY_SIZE(nsim_devlink_params));
--	devlink_unregister(devlink);
- 	devlink_resources_unregister(devlink, NULL);
- 	devlink_free(devlink);
- }
--- 
-2.31.1
+devlink_alloc() is used to allocated netdev structures for newly
+initialized device, it is not possible to share same devlink instance
+between different devices.
 
+> 
+> > -int devlink_register(struct devlink *devlink, struct device *dev)
+> > +int devlink_register(struct devlink *devlink)
+> >  {
+> > -       WARN_ON(devlink->dev);
+> > -       devlink->dev = dev;
+> >         mutex_lock(&devlink_mutex);
+> >         list_add_tail(&devlink->list, &devlink_list);
+> >         devlink_notify(devlink, DEVLINK_CMD_NEW);
+> 
+> Considering device registration has been moved to devlink_alloc().
+> Can the remaining code of devlink_register() be also moved in devlink_alloc()?
+
+The line "list_add_tail(&devlink->list, &devlink_list);" makes the
+devlink instance visible to the devlink netlink users. We need to be
+sure that it is happening when the device is already initialized, while
+devlink_alloc() is performed usually as first line in .probe() routine.
+
+This means that we can't combine alloc an register and
+devlink_alloc_register() can't be valid scenario.
+
+Thanks
+
+> 
+> --pk
