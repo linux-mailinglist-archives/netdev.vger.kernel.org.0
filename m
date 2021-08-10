@@ -2,147 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 829703E51CE
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 06:11:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C892C3E51D8
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 06:17:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236861AbhHJELV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 00:11:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33534 "EHLO
+        id S237003AbhHJERX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 00:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235513AbhHJELN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 00:11:13 -0400
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5276C061798
-        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 21:10:52 -0700 (PDT)
-Received: by mail-io1-xd35.google.com with SMTP id a13so30430151iol.5
-        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 21:10:52 -0700 (PDT)
+        with ESMTP id S233018AbhHJERW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 00:17:22 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED22C0613D3;
+        Mon,  9 Aug 2021 21:17:01 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id d17so19208653plr.12;
+        Mon, 09 Aug 2021 21:17:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Np0f18ZFlXmVe8dVpMu2fWUn3OdUUMnRBlt9eEUVc9Q=;
-        b=FDo82R3+gzErO0YtuHji4oPRmykg+aMaEAbpRX3sfZ+CtijaZIq6cFmI3nEWa1CLkC
-         aLTcILu+RnmFNIalWVJt+DIOqPpx7BEZ6j4sTvR35w7Fu0mqEogBIlsVEwcPGFF1xKpZ
-         uFPAVHDVYdFrtpHh+HnUg5OMXXP+NuywtVu0w=
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Q4nrj3q8Waey/7IrkEtGabSQMyYHkF1rQSDCNTh8Q9w=;
+        b=UpNw8UUXY9Hr5q8gB9F/+Umm8LD6F20RYlPHfn8zb7widsdkaXdQjYKKZApHYCXI6Y
+         n9U3SBM7xFiVpFebhz5+90v1fo1Ek9T3DX+TeU8EssijpoE/dEmc+03ir/7lzcTkwC7u
+         /35C6Dp03oSHLa9DRWkSgTpKsFH4pmv4O1ON3lj5GlgTpUHFrEfgm/IWBeozZ/yVPVLT
+         MVOtU76loWsEAYL8VrmiwstVXhXPuaiVp280mcdLTqSsgYDMPNSiwUZMz8U68UJ+XCtS
+         ZcrENRvfqPz5hbIJDyzviyHdP2y0uoApnVvBJkHbwr+WQecYHGllZi/yjr5YDBd4k7Zj
+         glEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Np0f18ZFlXmVe8dVpMu2fWUn3OdUUMnRBlt9eEUVc9Q=;
-        b=a98421CqmRoJXHHmSWYyjKY9osJLIHCx2LNQTPdKH4Q8vqQ3ZrOBVrSQ3j2riFK00R
-         OdAWZmOVsmDtp/aLZzVVPemQCMVnxLhDjVKdBYZ9dQ0pIIJMJcpXkt8dKx4VPbH5qhmg
-         jmthsXSh2uqwqnBHZFBx3rWl+2x2eyaZwGisXD2iQWPdX1PPtqXlukwvn+1ffhzeSeqG
-         ucrj6q8o42NR3X67uY3NQdzU3EVEgHIzgOVfGm3MrFJuX+l5oAmDuV9UlrD1qBMmQhIt
-         DC/zuFr1wC8gL0cU6ASna6C6lCDQ8RO3f140M0+LHhudzW5CxAKpEBu6ZWFARAzxXiZY
-         PFAg==
-X-Gm-Message-State: AOAM532IlVNP3487XI2i4VUt9L/qIyaALE/7ra59iHgbXvfC77gQksG4
-        j1EWcT1TsHsRBW+PPTciHl7wRZ4alQP2oHhdI4uk9g==
-X-Google-Smtp-Source: ABdhPJzYf1vzSJMUvVEiRjXqWv755BGtmDOWeEqcFFW1Hkb6cR15tyNXtYbCSlAXc4WwGaHefqQGTWIZ7YlVY7tGORw=
-X-Received: by 2002:a5d:938a:: with SMTP id c10mr114512iol.0.1628568651827;
- Mon, 09 Aug 2021 21:10:51 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Q4nrj3q8Waey/7IrkEtGabSQMyYHkF1rQSDCNTh8Q9w=;
+        b=qubre/cGzS3iANkO3puf5sjFAKy56697WZwOkUzAaHOwErqZnkZ/AX1yxhb80oYYwk
+         mOyDEicFCnNMBR1PrIfvpukn6iUnt1j773IcXipMnfcNnhsQDeXnnugqG0S+5z2PWRqI
+         qJy5ol4rrNYK5YSxMl+/L3UxvOc5atBdtd1P+2bJ4rb29FJWW20QgYMSzJhGeW9fPATt
+         2CpiZXTchr+wZ5QWObLU1oIEQJVs+aMghfGysPllsumLz4yMxItiRogTa2K0LK/Dge7C
+         37Bhl3HXQIXGCPZI3YHoHnwX03puRb9JGo5rD9SRPj+bixXNdGvngxzKEX+/5cWLMcG3
+         8jGg==
+X-Gm-Message-State: AOAM530dMvHnYmPEJ15uYXso2jMUUoEDb5qbmCoyTqY6BlFrdVzRb7gZ
+        om6H0jZ8D4vjUwCZk84Z3lI=
+X-Google-Smtp-Source: ABdhPJxRWtB1Cs89xuEEhFINXS3HafPHK4xUJexggFUkX/NwxSNbJx6HhCvsZbqAqtBRRTKMjs8xvg==
+X-Received: by 2002:a63:da0a:: with SMTP id c10mr156685pgh.255.1628569021104;
+        Mon, 09 Aug 2021 21:17:01 -0700 (PDT)
+Received: from localhost.localdomain ([118.200.190.93])
+        by smtp.gmail.com with ESMTPSA id b8sm20132478pjo.51.2021.08.09.21.16.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Aug 2021 21:17:00 -0700 (PDT)
+From:   Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, sudipm.mukherjee@gmail.com
+Cc:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, skhan@linuxfoundation.org,
+        gregkh@linuxfoundation.org,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: [PATCH v6 0/6] Bluetooth: fix locking and socket killing in SCO and RFCOMM
+Date:   Tue, 10 Aug 2021 12:14:04 +0800
+Message-Id: <20210810041410.142035-1-desmondcheongzx@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210809174358.163525-1-kai.heng.feng@canonical.com>
-In-Reply-To: <20210809174358.163525-1-kai.heng.feng@canonical.com>
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-Date:   Tue, 10 Aug 2021 12:10:26 +0800
-Message-ID: <CAJMQK-gNk8LmguOQ+iDxGtJCwCUcM3rPQ0CJs=kRZzv81nso4g@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: Move shutdown callback before flushing tx and
- rx queue
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:BLUETOOTH SUBSYSTEM" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 10, 2021 at 1:44 AM Kai-Heng Feng
-<kai.heng.feng@canonical.com> wrote:
->
-> Commit 0ea9fd001a14 ("Bluetooth: Shutdown controller after workqueues
-> are flushed or cancelled") introduced a regression that makes mtkbtsdio
-> driver stops working:
-> [   36.593956] Bluetooth: hci0: Firmware already downloaded
-> [   46.814613] Bluetooth: hci0: Execution of wmt command timed out
-> [   46.814619] Bluetooth: hci0: Failed to send wmt func ctrl (-110)
->
-> The shutdown callback depends on the result of hdev->rx_work, so we
-> should call it before flushing rx_work:
-> -> btmtksdio_shutdown()
->  -> mtk_hci_wmt_sync()
->   -> __hci_cmd_send()
->    -> wait for BTMTKSDIO_TX_WAIT_VND_EVT gets cleared
->
-> -> btmtksdio_recv_event()
->  -> hci_recv_frame()
->   -> queue_work(hdev->workqueue, &hdev->rx_work)
->    -> clears BTMTKSDIO_TX_WAIT_VND_EVT
->
-> So move the shutdown callback before flushing TX/RX queue to resolve the
-> issue.
->
-> Reported-and-tested-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
-> Tested-by: Hsin-Yi Wang <hsinyi@chromium.org>
+Hi,
 
-Hello,
+This patch series started out as a fix for "inconsistent lock state in
+sco_sock_timeout" reported by Syzbot [1].
 
-Sorry for confusion, but the version I tested is this one:
-https://lkml.org/lkml/2021/8/4/486 (shutdown is prior to the
-test_and_clear HCI_UP)
-I tested this version and still see the error I've seen before.
+Patch 1 is sufficient to fix this error. This was also confirmed by the
+reproducer for "BUG: corrupted list in kobject_add_internal (3)" [2]
+which consistently hits the inconsistent lock state error.
 
+However, while testing the proposed fix, the reproducer for [1] would
+randomly return a human-unreadable error [3]. After further
+investigation, this bug seems to be caused by an unrelated error with
+forking [4].
 
+While trying to fix the mysterious error, additional fixes were added,
+such as switching to lock_sock and serializing _{set,clear}_timer.
 
+Additionally, as the reproducer kept hitting the oom-killer, a fix for
+SCO socket killing was also added.
 
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Fixes: 0ea9fd001a14 ("Bluetooth: Shutdown controller after workqueues are flushed or cancelled")
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
->  net/bluetooth/hci_core.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
->
-> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> index cb2e9e513907..8da04c899197 100644
-> --- a/net/bluetooth/hci_core.c
-> +++ b/net/bluetooth/hci_core.c
-> @@ -1735,6 +1735,14 @@ int hci_dev_do_close(struct hci_dev *hdev)
->
->         hci_leds_update_powered(hdev, false);
->
-> +       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
-> +           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
-> +           test_bit(HCI_UP, &hdev->flags)) {
-> +               /* Execute vendor specific shutdown routine */
-> +               if (hdev->shutdown)
-> +                       hdev->shutdown(hdev);
-> +       }
-> +
->         /* Flush RX and TX works */
->         flush_work(&hdev->tx_work);
->         flush_work(&hdev->rx_work);
-> @@ -1798,14 +1806,6 @@ int hci_dev_do_close(struct hci_dev *hdev)
->                 clear_bit(HCI_INIT, &hdev->flags);
->         }
->
-> -       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
-> -           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
-> -           test_bit(HCI_UP, &hdev->flags)) {
-> -               /* Execute vendor specific shutdown routine */
-> -               if (hdev->shutdown)
-> -                       hdev->shutdown(hdev);
-> -       }
-> -
->         /* flush cmd  work */
->         flush_work(&hdev->cmd_work);
->
-> --
-> 2.31.1
->
+The reproducer for [1] was robust enough to catch errors with these
+additional fixes, hence all the patches in this series were squashed then
+tested with the reproducer for [1].
+
+Overall, this series makes the following changes:
+
+- Patch 1: Schedule SCO sock timeouts with delayed_work to avoid
+inconsistent lock usage (removes SOFTIRQs from SCO)
+
+- Patch 2: Avoid a circular dependency between hci_dev_lock and
+lock_sock (enables the switch to lock_sock)
+
+- Patch 3: Switch to lock_sock in SCO now that SOFTIRQs and potential
+deadlocks are removed
+
+- Patch 4: Serialize calls to sco_sock_{set,clear}_timer
+
+- Patch 5: Switch to lock_sock in RFCOMM
+
+- Patch 6: fix SCO socket killing
+
+v5 -> v6:
+- Removed hard tab characters from patch 2's commit message. As
+suggested by the Bluez test bot.
+- Removed unnecessary dedicated variables for struct delayed_work* in
+sco_sock_{set,clear}_timer as suggested by Luiz Augusto von Dentz.
+
+v4 -> v5:
+- Renamed the delayed_work variable, moved checks for sco_pi(sk)->conn
+into sco_sock_{clear,set}_timer, as suggested by Luiz Augusto von Dentz
+and Marcel Holtmann.
+- Added check for conn->sk in sco_sock_timeout, accompanied by a
+sock_hold to avoid UAF errors.
+- Added check to flush work items before freeing conn.
+- Avoid a circular dependency between hci_dev_lock and lock_sock.
+- Switch to lock_sock in SCO, as suggested by Marcel Holtmann.
+- Serial calls to sco_sock_{set,clear}_timer.
+- Switch to lock_sock in RFCOMM, as suggested by Marcel Holtmann.
+- Add a fix for SCO socket killing.
+
+v3 -> v4:
+- Switch to using delayed_work to schedule SCO sock timeouts instead
+of using local_bh_disable. As suggested by Luiz Augusto von Dentz.
+
+v2 -> v3:
+- Split SCO and RFCOMM code changes, as suggested by Luiz Augusto von
+Dentz.
+- Simplify local bh disabling in SCO by using local_bh_disable/enable
+inside sco_chan_del since local_bh_disable/enable pairs are reentrant.
+
+v1 -> v2:
+- Instead of pulling out the clean-up code out from sco_chan_del and
+using it directly in sco_conn_del, disable local softirqs for relevant
+sections.
+- Disable local softirqs more thoroughly for instances of
+bh_lock_sock/bh_lock_sock_nested in the bluetooth subsystem.
+Specifically, the calls in af_bluetooth.c and rfcomm/sock.c are now made
+with local softirqs disabled as well.
+
+Link: https://syzkaller.appspot.com/bug?id=9089d89de0502e120f234ca0fc8a703f7368b31e [1]
+
+Link: https://syzkaller.appspot.com/bug?extid=66264bf2fd0476be7e6c [2]
+
+Link: https://syzkaller.appspot.com/text?tag=CrashReport&x=172d819a300000 [3]
+
+Link: https://syzkaller.appspot.com/bug?id=e1bf7ba90d8dafcf318666192aba1cfd65507377 [4]
+
+Best wishes,
+Desmond
+
+Desmond Cheong Zhi Xi (6):
+  Bluetooth: schedule SCO timeouts with delayed_work
+  Bluetooth: avoid circular locks in sco_sock_connect
+  Bluetooth: switch to lock_sock in SCO
+  Bluetooth: serialize calls to sco_sock_{set,clear}_timer
+  Bluetooth: switch to lock_sock in RFCOMM
+  Bluetooth: fix repeated calls to sco_sock_kill
+
+ net/bluetooth/rfcomm/sock.c |   8 +--
+ net/bluetooth/sco.c         | 101 ++++++++++++++++++++----------------
+ 2 files changed, 60 insertions(+), 49 deletions(-)
+
+-- 
+2.25.1
+
