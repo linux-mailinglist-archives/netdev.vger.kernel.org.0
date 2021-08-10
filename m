@@ -2,200 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC2743E550F
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 10:25:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83F8E3E5511
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 10:25:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237527AbhHJIZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 04:25:52 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:50778 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237358AbhHJIZt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 04:25:49 -0400
-Received: by mail-io1-f70.google.com with SMTP id e18-20020a5d92520000b029057d0eab404aso14056931iol.17
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 01:25:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=DTBo3khEZOU+h0oQTiTa1/X9B14yYY7SYQPoR8l9cKU=;
-        b=Wg2AEFGDgar4TMgW6t3Gd5Vid4igvW5SMxOGg9scTzelr3C55PoNB5DG4IN73ikIVm
-         zkzeGATJGCEoCr7uNmvI2vqQG5ALMhQx/mJZkxSF9Cjwp5qqW8RAT4Bxj7bWzPHI3qG1
-         buSg/LGK/KsmyQsksnAcnjtZOwS5m3U05UUL5IhXDithhhikNegDGbzFuCeFTMoreLsq
-         Zz6Gj/eweGkN64Y19TlEkDkhwVpXon/qrdllmNvallFBoN+rJmjbbSsbrOVzG6IjjbsM
-         KI3i0R/h7DPcACjng3NyTXX7WG+J4j9RTam9eqYNpBRaSCMNCVMO4eSC931QV7s2urIF
-         ec6A==
-X-Gm-Message-State: AOAM532vYgkqhC7aRN4N4xaIRq1/ip9o4qAqHLwt1gH/8sETUtS8UJn8
-        NDEYHvASQe+z/Xt+CjEYL7bKfmHE2La5IbjNPMQUhcvsyGL8
-X-Google-Smtp-Source: ABdhPJxSL822WJcCgEbOO8zBDc7ubIaooAsY9ZVzeKi/C7SZFs4XhU60TfzMZrMZfxNgN2jJJwohzAP36i8gzJ6IZ9/CkOYBTXw2
+        id S238108AbhHJIZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 04:25:55 -0400
+Received: from mail-eopbgr60087.outbound.protection.outlook.com ([40.107.6.87]:54116
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S237542AbhHJIZx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 04:25:53 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=leEMsuicpOOlf1F/vVaS53LzkUg3ghRGwnDFw6HDQBY1dmgOBvgCS1ta+PNnWOjr1nmTnmn/tTNyN4qALqm9aPnKwprLKYx+qFvaAYv7XWbh5y4xRY9BfxCFargjfY/2o11IC5c3lWv/DeU7A8bc/A/59UBmZWxLYZSamCQhQysjWBjse6jbVvYgKwaiSarg6otfST5xh9l1dChY7r5Ird4Ywr0EPyRMSbCBxwKjFJ9IUsjqBxYPBnK6kBnSqHfJMIsFeW1mSxO5fJpWcNb9k8qoI/lZCQX9Xhdvn42VkYix7o0GEXXdcARzneQ+mKeI/c7oirzu8KCeZSKt3tf/oA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=38JoN34xqgLlL7laiJg64AKB0mAJh8k61jXzy1IpwtA=;
+ b=SsGgS6H72Ik+lOdz+JJbVWrSf7Tt+zE4Z7umR2IXLmXN3DcM0+ge+9N8e6PE2gfIbfbbIznWb3rqA9OK7qEn88X5njE00YyVwPjnTuIzlQqoM0bP0CsJKDxcf2ky7b5d2qpvtNrPGaYDqr0les0za7sqEc+JCtICgpgipHkKEZj6mEY9K+O3zpgFNlDWWirxHE3VXbq7DVHOSuCVAv6tpiIQeAQ2GIdHV9GG6v3SVX6grD4uW/TEpH6Ina2lRdfEVM0jx7q+Ps1lh4rV8m6X0BmqbCQSTAuVPAMHaObChueIpkxn2JUTnCUhBQJnm1T7iSIuWhgegIt+YTFxiVnLsA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=38JoN34xqgLlL7laiJg64AKB0mAJh8k61jXzy1IpwtA=;
+ b=KGi/Q89o/fbWPx4ZwAcraIT6Z1AlQ31lkHtcF5yvFghLOfvJHHjd/eXQwMAxqhH0tJLrqQpWwuxjmp0tBZVBtudV1lSxCEAhqA/MQcS158D30Hqv/MfHBq0cO8h0deNrkXDnw+vzKWRg56nhgcUlLvI0033gCqcVKLwyrOiZUj0=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB3070.eurprd04.prod.outlook.com (2603:10a6:802:4::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.21; Tue, 10 Aug
+ 2021 08:25:29 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4394.023; Tue, 10 Aug 2021
+ 08:25:29 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Wong Vee Khee <vee.khee.wong@linux.intel.com>
+CC:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net 1/1] net: dsa: sja1105: fix error handling on NULL
+ returned by xpcs_create()
+Thread-Topic: [PATCH net 1/1] net: dsa: sja1105: fix error handling on NULL
+ returned by xpcs_create()
+Thread-Index: AQHXjbEf97MxzK96ykqwDh6cpjl/jatsZyoA
+Date:   Tue, 10 Aug 2021 08:25:29 +0000
+Message-ID: <20210810082528.rff3aembgge62pd6@skbuf>
+References: <20210810063513.1757614-1-vee.khee.wong@linux.intel.com>
+In-Reply-To: <20210810063513.1757614-1-vee.khee.wong@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: linux.intel.com; dkim=none (message not signed)
+ header.d=none;linux.intel.com; dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 10e379a5-b813-4edc-3185-08d95bd86993
+x-ms-traffictypediagnostic: VI1PR04MB3070:
+x-microsoft-antispam-prvs: <VI1PR04MB3070C82811589257ABB65A7FE0F79@VI1PR04MB3070.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: IPb/8EmFcCFjtccDKXaDsM2Y2hDXuiAO7uj2Qrf1K6gDminE9FqPRM+smDGBfa85mE7thJ3T/u8t72XS3ZiDzSNH5gPYT7Bu8IO3pruzti1yi+9J0zuo6xpe21UEFUV0abM/h4dFyVc4IaIrvchB2kTZBJp/mz/BB7nTkmVsqSf5jAZaxHO4MgA4OqLxJXSjYM7001FGknRGxobdI4BaFa/ZZ7buf7KMGQONOAuTVRLPPf6KXrC5Mi1Bubjn4bV3Ja5/uHi9j0cZ976mAW+zKbeTMMig+yWXUF8dq9Msz168jWPLJCGtyV5dO2rWQVF1JeD+Qk5BZh39ZUCBpSodq7TX635FuTmP6Cb+HcBReD9YHr1PEVIJ1gEuu/ve5T1bgbD6VqEVD6gNc4PzZScEzYxri8yQocjwbiQwmf0sub/AACvUWpwWxpS5jZ12vQ5aNu4PZyIC/RYzAw37pJqpIbcO7phgNbFzieuF88N+ih6JRs2UhaSBoF+oyhCVTe7fbOpGUIPcgeP2eM5QBHQwmc3H/HVcalGRzQ/lL5lihlPnbi4RTxLG9tG9yfj8C2u/wzneIxAobRxAKNRnWrDwqa16/duhl/YKULrV1zQpaaNzl3vTpnuxmm7RmMFn9S7ZaaandQcxom9p40jdB/coBotLY85UMpArIoNIOB4enzkKE3T61/VmlQ7Oo75OlSkDt+HcN0cpk9g7m/DNadG0ww==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(376002)(136003)(396003)(39850400004)(366004)(346002)(66946007)(64756008)(86362001)(91956017)(66446008)(8936002)(66556008)(66476007)(6916009)(76116006)(316002)(478600001)(33716001)(38100700002)(83380400001)(122000001)(54906003)(4326008)(6506007)(8676002)(6512007)(9686003)(6486002)(38070700005)(44832011)(5660300002)(26005)(71200400001)(186003)(2906002)(1076003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?X/f6qE3UsAN4HepdB7yh9m3eMXVhG0I14nAIwTyYnptJ53MB+KdlI0Pe/4lD?=
+ =?us-ascii?Q?TbmKkaSN7U0oVNOjZZb9kaA429NZv196cyxfiEsZj/cODuZvh16+9pthRBFy?=
+ =?us-ascii?Q?K+HHrrVHeU7FOdO54jKXvfVURb7EynEAAAgYGfxGEERvHZ+pxJU/ZIn+bXUu?=
+ =?us-ascii?Q?sxY/vOfqOdXTbiOHn0Ay0/c+VmNp/6pktLtg7736JJazKK4nrjqTombq4DdW?=
+ =?us-ascii?Q?uatamDbQN+bfOWQqDj2wXwSaJrYrsyFAmXGCk6mJILAVAHjicWxfvb+Oa802?=
+ =?us-ascii?Q?BUKOzXcf3FLM3IjB/7cFF7032HDqYVSLZ4xW4e+1KNxSUEwi0h61spG7KzC/?=
+ =?us-ascii?Q?a7s5oxXb47z+u1mw/ytjqRGfXQoltrv7LTCV3wdqKM/PdIDZd4zFyCu7DimN?=
+ =?us-ascii?Q?JKc/qtT7bYRq3FvpGwQYEbVeJkHTE2rC1oWNz+aR72Kckgk+ZT+IOc0XYLEv?=
+ =?us-ascii?Q?kpYaMQzkJRmz6QC1HweiRG+A+Jf5ux0cf9oE5F6t1SWNH9MvraeaS+mEsLEC?=
+ =?us-ascii?Q?lKv+Hxg0mnjoSBVdAsO6GDGMXAKToMuSXSgk02om/SmlRtCQdiprGTsdVvKT?=
+ =?us-ascii?Q?/AH9eSYP7kk1DTFCymik49aZGSChSqc9e8pon0h0gSEgWohc9KTEDwWLVo0e?=
+ =?us-ascii?Q?hOMucllFVM4/TjuN2gSVzcR1aFM7gXD73VF06FnbJY8ouc2VueFyDhWLPENB?=
+ =?us-ascii?Q?NS6IQjiNrWFUupBgEbHtfIB/oX1dtxlHkMvEfzsfFOON8Q6BlAwcFnoVWQXB?=
+ =?us-ascii?Q?gfib0wz0Tu+GZKeDpRF13EtdB7m4WEuyZnO/fhFptetdlzJIPeuqVngbXdw5?=
+ =?us-ascii?Q?Pzer+ygxi3C/jL83eER5/IJ0HpzCF7amBXQ2QXaKyLogv6QmxK5hOoEjqCys?=
+ =?us-ascii?Q?NRkxUNOpmW6Mq1uyC43ahSoKa5HBuP4H0GDL3tJnGihAhmmzdZ47QgVPfa3e?=
+ =?us-ascii?Q?u89yR6N3KV5XTTwuhJ5e3+9N2hiC7tyvvyNaf5qSGXnLbu8rVn5y5gH0I/tU?=
+ =?us-ascii?Q?x8C9u9BUcyAoTNmBattsIUiZ169shR4ZYB524+RQJAcXdvbZ4B46jAhfMeD9?=
+ =?us-ascii?Q?uuOgrUCa0+TWgS6VysMLd6+cChFajA5RuCLicPrRhcm5lt15gRdbzPmNg4iH?=
+ =?us-ascii?Q?+oS3bjm+Ws9LT6N4E87vzwyE+vAuKNTauCr3/lLfjXQau/DHEAc8L50EOP0R?=
+ =?us-ascii?Q?8hvTE0YYeK57o875l5VYRikvxT+FKlAgs3EHxVJtegmH7kXqDoUmExkZ2ltH?=
+ =?us-ascii?Q?ntosqv3Yo5985AXLtgI1GTMryWzkPpHuMLpaHnXi97mvXeKFuDQ9+/4RdwZi?=
+ =?us-ascii?Q?sRpnW9miJITp3FEThXFB2Rc6?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <04C31B26DBAD834F8DC02C5439A0482C@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:b43:: with SMTP id f3mr409047ilu.94.1628583926914;
- Tue, 10 Aug 2021 01:25:26 -0700 (PDT)
-Date:   Tue, 10 Aug 2021 01:25:26 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000007365d805c9303e63@google.com>
-Subject: [syzbot] KMSAN: uninit-value in crc_ccitt
-From:   syzbot <syzbot+6d38e380afc486ec44a1@syzkaller.appspotmail.com>
-To:     alex.aring@gmail.com, davem@davemloft.net, glider@google.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        stefan@datenfreihafen.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 10e379a5-b813-4edc-3185-08d95bd86993
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Aug 2021 08:25:29.1144
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 4/qxEFluWh2k9pMI6WmWOGuuOk4WlfC/mM+UFn0bzVpTJ0fRqPkHbWm8IxRRztZAxvzes1svxYY1jRldC9u/ng==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3070
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi VK,
 
-syzbot found the following issue on:
+On Tue, Aug 10, 2021 at 02:35:13PM +0800, Wong Vee Khee wrote:
+> There is a possibility xpcs_create() returned a NULL and this is not
+> handled properly in the sja1105 driver.
+>=20
+> Fixed this by using IS_ERR_ON_NULL() instead of IS_ERR().
+>=20
+> Fixes: 3ad1d171548e ("net: dsa: sja1105: migrate to xpcs for SGMII")
+> Cc: Vladimir Olten <vladimir.oltean@nxp.com>
+> Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+> ---
+>  drivers/net/dsa/sja1105/sja1105_mdio.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/net/dsa/sja1105/sja1105_mdio.c b/drivers/net/dsa/sja=
+1105/sja1105_mdio.c
+> index 19aea8fb76f6..2c69a759ce6e 100644
+> --- a/drivers/net/dsa/sja1105/sja1105_mdio.c
+> +++ b/drivers/net/dsa/sja1105/sja1105_mdio.c
+> @@ -438,7 +438,7 @@ static int sja1105_mdiobus_pcs_register(struct sja110=
+5_private *priv)
+>  		}
+> =20
+>  		xpcs =3D xpcs_create(mdiodev, priv->phy_mode[port]);
+> -		if (IS_ERR(xpcs)) {
+> +		if (IS_ERR_OR_NULL(xpcs)) {
+>  			rc =3D PTR_ERR(xpcs);
+>  			goto out_pcs_free;
+>  		}
+> --=20
+> 2.25.1
+>=20
 
-HEAD commit:    ee9407ea37bf kmsan: core: massage include/linux/sched.h
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=1656babe300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=92983a87b2ce6cdb
-dashboard link: https://syzkaller.appspot.com/bug?extid=6d38e380afc486ec44a1
-compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.1
-userspace arch: i386
+I think posting to 'net' is a bit drastic for this patch. I agree it is
+an issue but it has bothered absolutely nobody so far, and if sending
+this patch to 'net' means you'll be blocked with your patches until the
+'net'->'net-next' merge, I'm not sure it's worth it.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Anyway, I don't think that PTR_ERR(xpcs) does the right thing when
+IS_NULL(xpcs). So how about you make this change:
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+6d38e380afc486ec44a1@syzkaller.appspotmail.com
-
-=====================================================
-BUG: KMSAN: uninit-value in crc_ccitt_byte include/linux/crc-ccitt.h:15 [inline]
-BUG: KMSAN: uninit-value in crc_ccitt+0x364/0x3f0 lib/crc-ccitt.c:102
-CPU: 1 PID: 9742 Comm: syz-executor.4 Not tainted 5.13.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x24c/0x2e0 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/report.c:121
- __msan_warning+0xd7/0x160 mm/kmsan/instrumentation.c:201
- crc_ccitt_byte include/linux/crc-ccitt.h:15 [inline]
- crc_ccitt+0x364/0x3f0 lib/crc-ccitt.c:102
- ieee802154_tx+0x300/0x800 net/mac802154/tx.c:72
- ieee802154_subif_start_xmit+0x16a/0x250 net/mac802154/tx.c:132
- __netdev_start_xmit include/linux/netdevice.h:4944 [inline]
- netdev_start_xmit include/linux/netdevice.h:4958 [inline]
- xmit_one+0x2b6/0x760 net/core/dev.c:3654
- dev_hard_start_xmit+0x196/0x420 net/core/dev.c:3670
- sch_direct_xmit+0x554/0x1b90 net/sched/sch_generic.c:336
- qdisc_restart net/sched/sch_generic.c:401 [inline]
- __qdisc_run+0x35b/0x490 net/sched/sch_generic.c:409
- qdisc_run include/net/pkt_sched.h:131 [inline]
- __dev_xmit_skb net/core/dev.c:3857 [inline]
- __dev_queue_xmit+0x1e3f/0x5440 net/core/dev.c:4214
- dev_queue_xmit+0x4b/0x60 net/core/dev.c:4279
- dgram_sendmsg+0x1142/0x15d0 net/ieee802154/socket.c:682
- ieee802154_sock_sendmsg+0xec/0x130 net/ieee802154/socket.c:97
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg net/socket.c:674 [inline]
- ____sys_sendmsg+0xcfc/0x12f0 net/socket.c:2337
- ___sys_sendmsg net/socket.c:2391 [inline]
- __sys_sendmsg+0x714/0x830 net/socket.c:2420
- __compat_sys_sendmsg net/compat.c:347 [inline]
- __do_compat_sys_sendmsg net/compat.c:354 [inline]
- __se_compat_sys_sendmsg net/compat.c:351 [inline]
- __ia32_compat_sys_sendmsg+0xed/0x130 net/compat.c:351
- do_syscall_32_irqs_on arch/x86/entry/common.c:84 [inline]
- __do_fast_syscall_32+0x132/0x1b0 arch/x86/entry/common.c:149
- do_fast_syscall_32+0x77/0xd0 arch/x86/entry/common.c:179
- do_SYSENTER_32+0x73/0x90 arch/x86/entry/common.c:222
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-RIP: 0023:0xf7fa3549
-Code: 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d b4 26 00 00 00 00 8d b4 26 00 00 00 00
-RSP: 002b:00000000f559d5fc EFLAGS: 00000296 ORIG_RAX: 0000000000000172
-RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 0000000020000880
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-
-Uninit was stored to memory at:
- kmsan_save_stack_with_flags mm/kmsan/core.c:106 [inline]
- kmsan_internal_chain_origin+0xab/0x120 mm/kmsan/core.c:244
- kmsan_memmove_metadata+0x23b/0x2c0 mm/kmsan/core.c:192
- __msan_memcpy+0x5e/0x90 mm/kmsan/instrumentation.c:111
- ieee802154_hdr_push+0xcd7/0xdd0 net/ieee802154/header_ops.c:117
- ieee802154_header_create+0xd07/0x1070 net/mac802154/iface.c:404
- wpan_dev_hard_header include/net/cfg802154.h:374 [inline]
- dgram_sendmsg+0xf4b/0x15d0 net/ieee802154/socket.c:670
- ieee802154_sock_sendmsg+0xec/0x130 net/ieee802154/socket.c:97
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg net/socket.c:674 [inline]
- ____sys_sendmsg+0xcfc/0x12f0 net/socket.c:2337
- ___sys_sendmsg net/socket.c:2391 [inline]
- __sys_sendmsg+0x714/0x830 net/socket.c:2420
- __compat_sys_sendmsg net/compat.c:347 [inline]
- __do_compat_sys_sendmsg net/compat.c:354 [inline]
- __se_compat_sys_sendmsg net/compat.c:351 [inline]
- __ia32_compat_sys_sendmsg+0xed/0x130 net/compat.c:351
- do_syscall_32_irqs_on arch/x86/entry/common.c:84 [inline]
- __do_fast_syscall_32+0x132/0x1b0 arch/x86/entry/common.c:149
- do_fast_syscall_32+0x77/0xd0 arch/x86/entry/common.c:179
- do_SYSENTER_32+0x73/0x90 arch/x86/entry/common.c:222
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-
-Uninit was stored to memory at:
- kmsan_save_stack_with_flags mm/kmsan/core.c:106 [inline]
- kmsan_internal_chain_origin+0xab/0x120 mm/kmsan/core.c:244
- kmsan_memmove_metadata+0x23b/0x2c0 mm/kmsan/core.c:192
- __msan_memcpy+0x5e/0x90 mm/kmsan/instrumentation.c:111
- ieee802154_hdr_push_addr net/ieee802154/header_ops.c:35 [inline]
- ieee802154_hdr_push+0x2b0/0xdd0 net/ieee802154/header_ops.c:89
- ieee802154_header_create+0xd07/0x1070 net/mac802154/iface.c:404
- wpan_dev_hard_header include/net/cfg802154.h:374 [inline]
- dgram_sendmsg+0xf4b/0x15d0 net/ieee802154/socket.c:670
- ieee802154_sock_sendmsg+0xec/0x130 net/ieee802154/socket.c:97
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg net/socket.c:674 [inline]
- ____sys_sendmsg+0xcfc/0x12f0 net/socket.c:2337
- ___sys_sendmsg net/socket.c:2391 [inline]
- __sys_sendmsg+0x714/0x830 net/socket.c:2420
- __compat_sys_sendmsg net/compat.c:347 [inline]
- __do_compat_sys_sendmsg net/compat.c:354 [inline]
- __se_compat_sys_sendmsg net/compat.c:351 [inline]
- __ia32_compat_sys_sendmsg+0xed/0x130 net/compat.c:351
- do_syscall_32_irqs_on arch/x86/entry/common.c:84 [inline]
- __do_fast_syscall_32+0x132/0x1b0 arch/x86/entry/common.c:149
- do_fast_syscall_32+0x77/0xd0 arch/x86/entry/common.c:179
- do_SYSENTER_32+0x73/0x90 arch/x86/entry/common.c:222
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-
-Uninit was stored to memory at:
- kmsan_save_stack_with_flags mm/kmsan/core.c:106 [inline]
- kmsan_internal_chain_origin+0xab/0x120 mm/kmsan/core.c:244
- kmsan_memmove_metadata+0x23b/0x2c0 mm/kmsan/core.c:192
- __msan_memcpy+0x5e/0x90 mm/kmsan/instrumentation.c:111
- ieee802154_header_create+0xcd1/0x1070 net/mac802154/iface.c:402
- wpan_dev_hard_header include/net/cfg802154.h:374 [inline]
- dgram_sendmsg+0xf4b/0x15d0 net/ieee802154/socket.c:670
- ieee802154_sock_sendmsg+0xec/0x130 net/ieee802154/socket.c:97
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg net/socket.c:674 [inline]
- ____sys_sendmsg+0xcfc/0x12f0 net/socket.c:2337
- ___sys_sendmsg net/socket.c:2391 [inline]
- __sys_sendmsg+0x714/0x830 net/socket.c:2420
- __compat_sys_sendmsg net/compat.c:347 [inline]
- __do_compat_sys_sendmsg net/compat.c:354 [inline]
- __se_compat_sys_sendmsg net/compat.c:351 [inline]
- __ia32_compat_sys_sendmsg+0xed/0x130 net/compat.c:351
- do_syscall_32_irqs_on arch/x86/entry/common.c:84 [inline]
- __do_fast_syscall_32+0x132/0x1b0 arch/x86/entry/common.c:149
- do_fast_syscall_32+0x77/0xd0 arch/x86/entry/common.c:179
- do_SYSENTER_32+0x73/0x90 arch/x86/entry/common.c:222
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-
-Local variable ----dst_addr@dgram_sendmsg created at:
- dgram_sendmsg+0x8a/0x15d0 net/ieee802154/socket.c:607
- dgram_sendmsg+0x8a/0x15d0 net/ieee802154/socket.c:607
-=====================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+-----------------------------[ cut here ]-----------------------------
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/ne=
+t/ethernet/stmicro/stmmac/stmmac_mdio.c
+index a5d150c5f3d8..ca12bf986d4d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+@@ -415,7 +415,7 @@ int stmmac_xpcs_setup(struct mii_bus *bus)
+ 			continue;
+=20
+ 		xpcs =3D xpcs_create(mdiodev, mode);
+-		if (IS_ERR_OR_NULL(xpcs)) {
++		if (IS_ERR(xpcs)) {
+ 			mdio_device_free(mdiodev);
+ 			continue;
+ 		}
+diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
+index 63fda3fc40aa..4bd61339823c 100644
+--- a/drivers/net/pcs/pcs-xpcs.c
++++ b/drivers/net/pcs/pcs-xpcs.c
+@@ -1089,7 +1089,7 @@ struct dw_xpcs *xpcs_create(struct mdio_device *mdiod=
+ev,
+=20
+ 	xpcs =3D kzalloc(sizeof(*xpcs), GFP_KERNEL);
+ 	if (!xpcs)
+-		return NULL;
++		return ERR_PTR(-ENOMEM);
+=20
+ 	xpcs->mdiodev =3D mdiodev;
+=20
+-----------------------------[ cut here ]-----------------------------=
