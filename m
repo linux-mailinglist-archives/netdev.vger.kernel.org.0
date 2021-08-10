@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A959C3E5D22
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 16:17:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D8C33E5D25
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 16:17:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242956AbhHJORa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 10:17:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53390 "EHLO mail.kernel.org"
+        id S241907AbhHJORj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 10:17:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54222 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242503AbhHJOQX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Aug 2021 10:16:23 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 44F546101E;
-        Tue, 10 Aug 2021 14:16:00 +0000 (UTC)
+        id S242604AbhHJOQY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 10:16:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9DD1660F41;
+        Tue, 10 Aug 2021 14:16:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628604961;
-        bh=CU/QFcwVoy09irlJKb8oM5GtgslsHMAw8RAZRjaQ/no=;
+        s=k20201202; t=1628604962;
+        bh=vdCoQFinasDrNqaAIIz/5VvSW3/Gy8DmHu0ewj45oTs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Crgi1VDAixdpfn3D9FbaMpzhqTeyyUt2YrZM6heOIlej3MvcsxWCv4LbnJk+Xl7wy
-         8fVYDWfp85MqaFxddrOuncurNz+r43FK8yk7nK5Guw+sLecz41SsjFB8CAY3XViQd9
-         sh7ZjK202Zm7nq+UhmXx5nb5XGw7qZaQTnP0YEvsmD8Ja8uehtjOf7Qn6U9BCAs1LJ
-         X0Kl7EHIe2lvmzn2SQTiN9KfRls9HKUSASq1IGkwBJYUtsb2bnQp6Y3zqTPF3aUunt
-         Y5LPhu/eWR4j3PJ63IB/6Rds4AL95KQ9cthBa8HIt9eXFviUjg38IBpPNRPF9DtmUL
-         EYxCnlXuLLKvw==
+        b=psqXsk82Ua5fImIgc4odv86PXRqb1nfDJ2xXhjwXTTgZfo7bIPSa5Y8JPSg0Cf4Q/
+         i9byoFEiTtGcGTjcoBUFK2+/J8p/W2gAdZl0DDILab+ZkMPkN6J+w/78xkTdCf+IgW
+         gC8jiNi9vOJ8bRJ6VuisoOK1wNDWpsokp24NoSQArZ3owlePTfWnrAxYP7IrAoY2po
+         O5xRC9VWBGiEKrTyG8jUYLZbjyU0xG9+G6IPkknKS/T98FzAEYpx/4bPQBpCrIzeRK
+         /YbYpo9kSdviPgCTTFpbIfQhWW4oAEnF1XDGuotSWmdNzgicPcPm25l7g57/a1FpZy
+         eN5xaX4WBC9Hg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Petko Manolov <petkan@nucleusys.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
+Cc:     "Ivan T. Ivanov" <iivanov@suse.de>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 17/20] net: usb: pegasus: Check the return value of get_geristers() and friends;
-Date:   Tue, 10 Aug 2021 10:15:35 -0400
-Message-Id: <20210810141538.3117707-17-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 18/20] net: usb: lan78xx: don't modify phy_device state concurrently
+Date:   Tue, 10 Aug 2021 10:15:36 -0400
+Message-Id: <20210810141538.3117707-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210810141538.3117707-1-sashal@kernel.org>
 References: <20210810141538.3117707-1-sashal@kernel.org>
@@ -44,312 +43,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petko Manolov <petkan@nucleusys.com>
+From: "Ivan T. Ivanov" <iivanov@suse.de>
 
-[ Upstream commit 8a160e2e9aeb8318159b48701ad8a6e22274372d ]
+[ Upstream commit 6b67d4d63edece1033972214704c04f36c5be89a ]
 
-Certain call sites of get_geristers() did not do proper error handling.  This
-could be a problem as get_geristers() typically return the data via pointer to a
-buffer.  If an error occurred the code is carelessly manipulating the wrong data.
+Currently phy_device state could be left in inconsistent state shown
+by following alert message[1]. This is because phy_read_status could
+be called concurrently from lan78xx_delayedwork, phy_state_machine and
+__ethtool_get_link. Fix this by making sure that phy_device state is
+updated atomically.
 
-Signed-off-by: Petko Manolov <petkan@nucleusys.com>
-Reviewed-by: Pavel Skripkin <paskripkin@gmail.com>
+[1] lan78xx 1-1.1.1:1.0 eth0: No phy led trigger registered for speed(-1)
+
+Signed-off-by: Ivan T. Ivanov <iivanov@suse.de>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/pegasus.c | 108 ++++++++++++++++++++++++++------------
- 1 file changed, 75 insertions(+), 33 deletions(-)
+ drivers/net/usb/lan78xx.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
-index 32e1335c94ad..fd033891810f 100644
---- a/drivers/net/usb/pegasus.c
-+++ b/drivers/net/usb/pegasus.c
-@@ -132,9 +132,15 @@ static int get_registers(pegasus_t *pegasus, __u16 indx, __u16 size, void *data)
- static int set_registers(pegasus_t *pegasus, __u16 indx, __u16 size,
- 			 const void *data)
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 65b315bc60ab..a5cd42bae962 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -1159,7 +1159,7 @@ static int lan78xx_link_reset(struct lan78xx_net *dev)
  {
--	return usb_control_msg_send(pegasus->usb, 0, PEGASUS_REQ_SET_REGS,
-+	int ret;
+ 	struct phy_device *phydev = dev->net->phydev;
+ 	struct ethtool_link_ksettings ecmd;
+-	int ladv, radv, ret;
++	int ladv, radv, ret, link;
+ 	u32 buf;
+ 
+ 	/* clear LAN78xx interrupt status */
+@@ -1167,9 +1167,12 @@ static int lan78xx_link_reset(struct lan78xx_net *dev)
+ 	if (unlikely(ret < 0))
+ 		return -EIO;
+ 
++	mutex_lock(&phydev->lock);
+ 	phy_read_status(phydev);
++	link = phydev->link;
++	mutex_unlock(&phydev->lock);
+ 
+-	if (!phydev->link && dev->link_on) {
++	if (!link && dev->link_on) {
+ 		dev->link_on = false;
+ 
+ 		/* reset MAC */
+@@ -1182,7 +1185,7 @@ static int lan78xx_link_reset(struct lan78xx_net *dev)
+ 			return -EIO;
+ 
+ 		del_timer(&dev->stat_monitor);
+-	} else if (phydev->link && !dev->link_on) {
++	} else if (link && !dev->link_on) {
+ 		dev->link_on = true;
+ 
+ 		phy_ethtool_ksettings_get(phydev, &ecmd);
+@@ -1471,9 +1474,14 @@ static int lan78xx_set_eee(struct net_device *net, struct ethtool_eee *edata)
+ 
+ static u32 lan78xx_get_link(struct net_device *net)
+ {
++	u32 link;
 +
-+	ret = usb_control_msg_send(pegasus->usb, 0, PEGASUS_REQ_SET_REGS,
- 				    PEGASUS_REQT_WRITE, 0, indx, data, size,
- 				    1000, GFP_NOIO);
-+	if (ret < 0)
-+		netif_dbg(pegasus, drv, pegasus->net, "%s failed with %d\n", __func__, ret);
-+
-+	return ret;
++	mutex_lock(&net->phydev->lock);
+ 	phy_read_status(net->phydev);
++	link = net->phydev->link;
++	mutex_unlock(&net->phydev->lock);
+ 
+-	return net->phydev->link;
++	return link;
  }
  
- /*
-@@ -145,10 +151,15 @@ static int set_registers(pegasus_t *pegasus, __u16 indx, __u16 size,
- static int set_register(pegasus_t *pegasus, __u16 indx, __u8 data)
- {
- 	void *buf = &data;
-+	int ret;
- 
--	return usb_control_msg_send(pegasus->usb, 0, PEGASUS_REQ_SET_REG,
-+	ret = usb_control_msg_send(pegasus->usb, 0, PEGASUS_REQ_SET_REG,
- 				    PEGASUS_REQT_WRITE, data, indx, buf, 1,
- 				    1000, GFP_NOIO);
-+	if (ret < 0)
-+		netif_dbg(pegasus, drv, pegasus->net, "%s failed with %d\n", __func__, ret);
-+
-+	return ret;
- }
- 
- static int update_eth_regs_async(pegasus_t *pegasus)
-@@ -188,10 +199,9 @@ static int update_eth_regs_async(pegasus_t *pegasus)
- 
- static int __mii_op(pegasus_t *p, __u8 phy, __u8 indx, __u16 *regd, __u8 cmd)
- {
--	int i;
--	__u8 data[4] = { phy, 0, 0, indx };
-+	int i, ret;
- 	__le16 regdi;
--	int ret = -ETIMEDOUT;
-+	__u8 data[4] = { phy, 0, 0, indx };
- 
- 	if (cmd & PHY_WRITE) {
- 		__le16 *t = (__le16 *) & data[1];
-@@ -207,12 +217,15 @@ static int __mii_op(pegasus_t *p, __u8 phy, __u8 indx, __u16 *regd, __u8 cmd)
- 		if (data[0] & PHY_DONE)
- 			break;
- 	}
--	if (i >= REG_TIMEOUT)
-+	if (i >= REG_TIMEOUT) {
-+		ret = -ETIMEDOUT;
- 		goto fail;
-+	}
- 	if (cmd & PHY_READ) {
- 		ret = get_registers(p, PhyData, 2, &regdi);
-+		if (ret < 0)
-+			goto fail;
- 		*regd = le16_to_cpu(regdi);
--		return ret;
- 	}
- 	return 0;
- fail:
-@@ -235,9 +248,13 @@ static int write_mii_word(pegasus_t *pegasus, __u8 phy, __u8 indx, __u16 *regd)
- static int mdio_read(struct net_device *dev, int phy_id, int loc)
- {
- 	pegasus_t *pegasus = netdev_priv(dev);
-+	int ret;
- 	u16 res;
- 
--	read_mii_word(pegasus, phy_id, loc, &res);
-+	ret = read_mii_word(pegasus, phy_id, loc, &res);
-+	if (ret < 0)
-+		return ret;
-+
- 	return (int)res;
- }
- 
-@@ -251,10 +268,9 @@ static void mdio_write(struct net_device *dev, int phy_id, int loc, int val)
- 
- static int read_eprom_word(pegasus_t *pegasus, __u8 index, __u16 *retdata)
- {
--	int i;
--	__u8 tmp = 0;
-+	int ret, i;
- 	__le16 retdatai;
--	int ret;
-+	__u8 tmp = 0;
- 
- 	set_register(pegasus, EpromCtrl, 0);
- 	set_register(pegasus, EpromOffset, index);
-@@ -262,21 +278,25 @@ static int read_eprom_word(pegasus_t *pegasus, __u8 index, __u16 *retdata)
- 
- 	for (i = 0; i < REG_TIMEOUT; i++) {
- 		ret = get_registers(pegasus, EpromCtrl, 1, &tmp);
-+		if (ret < 0)
-+			goto fail;
- 		if (tmp & EPROM_DONE)
- 			break;
--		if (ret == -ESHUTDOWN)
--			goto fail;
- 	}
--	if (i >= REG_TIMEOUT)
-+	if (i >= REG_TIMEOUT) {
-+		ret = -ETIMEDOUT;
- 		goto fail;
-+	}
- 
- 	ret = get_registers(pegasus, EpromData, 2, &retdatai);
-+	if (ret < 0)
-+		goto fail;
- 	*retdata = le16_to_cpu(retdatai);
- 	return ret;
- 
- fail:
--	netif_warn(pegasus, drv, pegasus->net, "%s failed\n", __func__);
--	return -ETIMEDOUT;
-+	netif_dbg(pegasus, drv, pegasus->net, "%s failed\n", __func__);
-+	return ret;
- }
- 
- #ifdef	PEGASUS_WRITE_EEPROM
-@@ -324,10 +344,10 @@ static int write_eprom_word(pegasus_t *pegasus, __u8 index, __u16 data)
- 	return ret;
- 
- fail:
--	netif_warn(pegasus, drv, pegasus->net, "%s failed\n", __func__);
-+	netif_dbg(pegasus, drv, pegasus->net, "%s failed\n", __func__);
- 	return -ETIMEDOUT;
- }
--#endif				/* PEGASUS_WRITE_EEPROM */
-+#endif	/* PEGASUS_WRITE_EEPROM */
- 
- static inline int get_node_id(pegasus_t *pegasus, u8 *id)
- {
-@@ -367,19 +387,21 @@ static void set_ethernet_addr(pegasus_t *pegasus)
- 	return;
- err:
- 	eth_hw_addr_random(pegasus->net);
--	dev_info(&pegasus->intf->dev, "software assigned MAC address.\n");
-+	netif_dbg(pegasus, drv, pegasus->net, "software assigned MAC address.\n");
- 
- 	return;
- }
- 
- static inline int reset_mac(pegasus_t *pegasus)
- {
-+	int ret, i;
- 	__u8 data = 0x8;
--	int i;
- 
- 	set_register(pegasus, EthCtrl1, data);
- 	for (i = 0; i < REG_TIMEOUT; i++) {
--		get_registers(pegasus, EthCtrl1, 1, &data);
-+		ret = get_registers(pegasus, EthCtrl1, 1, &data);
-+		if (ret < 0)
-+			goto fail;
- 		if (~data & 0x08) {
- 			if (loopback)
- 				break;
-@@ -402,22 +424,29 @@ static inline int reset_mac(pegasus_t *pegasus)
- 	}
- 	if (usb_dev_id[pegasus->dev_index].vendor == VENDOR_ELCON) {
- 		__u16 auxmode;
--		read_mii_word(pegasus, 3, 0x1b, &auxmode);
-+		ret = read_mii_word(pegasus, 3, 0x1b, &auxmode);
-+		if (ret < 0)
-+			goto fail;
- 		auxmode |= 4;
- 		write_mii_word(pegasus, 3, 0x1b, &auxmode);
- 	}
- 
- 	return 0;
-+fail:
-+	netif_dbg(pegasus, drv, pegasus->net, "%s failed\n", __func__);
-+	return ret;
- }
- 
- static int enable_net_traffic(struct net_device *dev, struct usb_device *usb)
- {
--	__u16 linkpart;
--	__u8 data[4];
- 	pegasus_t *pegasus = netdev_priv(dev);
- 	int ret;
-+	__u16 linkpart;
-+	__u8 data[4];
- 
--	read_mii_word(pegasus, pegasus->phy, MII_LPA, &linkpart);
-+	ret = read_mii_word(pegasus, pegasus->phy, MII_LPA, &linkpart);
-+	if (ret < 0)
-+		goto fail;
- 	data[0] = 0xc8; /* TX & RX enable, append status, no CRC */
- 	data[1] = 0;
- 	if (linkpart & (ADVERTISE_100FULL | ADVERTISE_10FULL))
-@@ -435,11 +464,16 @@ static int enable_net_traffic(struct net_device *dev, struct usb_device *usb)
- 	    usb_dev_id[pegasus->dev_index].vendor == VENDOR_LINKSYS2 ||
- 	    usb_dev_id[pegasus->dev_index].vendor == VENDOR_DLINK) {
- 		u16 auxmode;
--		read_mii_word(pegasus, 0, 0x1b, &auxmode);
-+		ret = read_mii_word(pegasus, 0, 0x1b, &auxmode);
-+		if (ret < 0)
-+			goto fail;
- 		auxmode |= 4;
- 		write_mii_word(pegasus, 0, 0x1b, &auxmode);
- 	}
- 
-+	return 0;
-+fail:
-+	netif_dbg(pegasus, drv, pegasus->net, "%s failed\n", __func__);
- 	return ret;
- }
- 
-@@ -447,9 +481,9 @@ static void read_bulk_callback(struct urb *urb)
- {
- 	pegasus_t *pegasus = urb->context;
- 	struct net_device *net;
-+	u8 *buf = urb->transfer_buffer;
- 	int rx_status, count = urb->actual_length;
- 	int status = urb->status;
--	u8 *buf = urb->transfer_buffer;
- 	__u16 pkt_len;
- 
- 	if (!pegasus)
-@@ -999,8 +1033,7 @@ static int pegasus_ioctl(struct net_device *net, struct ifreq *rq, int cmd)
- 		data[0] = pegasus->phy;
- 		fallthrough;
- 	case SIOCDEVPRIVATE + 1:
--		read_mii_word(pegasus, data[0], data[1] & 0x1f, &data[3]);
--		res = 0;
-+		res = read_mii_word(pegasus, data[0], data[1] & 0x1f, &data[3]);
- 		break;
- 	case SIOCDEVPRIVATE + 2:
- 		if (!capable(CAP_NET_ADMIN))
-@@ -1034,22 +1067,25 @@ static void pegasus_set_multicast(struct net_device *net)
- 
- static __u8 mii_phy_probe(pegasus_t *pegasus)
- {
--	int i;
-+	int i, ret;
- 	__u16 tmp;
- 
- 	for (i = 0; i < 32; i++) {
--		read_mii_word(pegasus, i, MII_BMSR, &tmp);
-+		ret = read_mii_word(pegasus, i, MII_BMSR, &tmp);
-+		if (ret < 0)
-+			goto fail;
- 		if (tmp == 0 || tmp == 0xffff || (tmp & BMSR_MEDIA) == 0)
- 			continue;
- 		else
- 			return i;
- 	}
--
-+fail:
- 	return 0xff;
- }
- 
- static inline void setup_pegasus_II(pegasus_t *pegasus)
- {
-+	int ret;
- 	__u8 data = 0xa5;
- 
- 	set_register(pegasus, Reg1d, 0);
-@@ -1061,7 +1097,9 @@ static inline void setup_pegasus_II(pegasus_t *pegasus)
- 		set_register(pegasus, Reg7b, 2);
- 
- 	set_register(pegasus, 0x83, data);
--	get_registers(pegasus, 0x83, 1, &data);
-+	ret = get_registers(pegasus, 0x83, 1, &data);
-+	if (ret < 0)
-+		goto fail;
- 
- 	if (data == 0xa5)
- 		pegasus->chip = 0x8513;
-@@ -1076,6 +1114,10 @@ static inline void setup_pegasus_II(pegasus_t *pegasus)
- 		set_register(pegasus, Reg81, 6);
- 	else
- 		set_register(pegasus, Reg81, 2);
-+
-+	return;
-+fail:
-+	netif_dbg(pegasus, drv, pegasus->net, "%s failed\n", __func__);
- }
- 
- static void check_carrier(struct work_struct *work)
+ static void lan78xx_get_drvinfo(struct net_device *net,
 -- 
 2.30.2
 
