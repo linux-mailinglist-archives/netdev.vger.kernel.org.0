@@ -2,144 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3EB83E51EA
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 06:18:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71C4B3E5246
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 06:37:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237539AbhHJESV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 00:18:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35046 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237242AbhHJER4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 00:17:56 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 350CEC0613D3;
-        Mon,  9 Aug 2021 21:17:33 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id d17so19210145plr.12;
-        Mon, 09 Aug 2021 21:17:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OIcoax9PQR0R3OnS5s26gNkuo62hz7EbqgNWPiTkgQM=;
-        b=lAH95ClMQCGVsVezjaAKFYn2KOwKLL38WigaMEuHcmdwKJrXLdhdlfBf+6mNuxQv2D
-         G5+p2a0jm3H+rBVWMN5ojVgcHbBG87vq+KGdk/R9FUVvQNKcAXw8PauG+f+8pnhMTiHw
-         uxjHra7w5+S39KfkMVk8Bw5/Cte+uKXNLg5c67WAy6OBxK92uOHn7QgfxNgYgvlLpUA5
-         S4qEXAWVpWQFwIOaj5iKii0jGzQJeEu7v44R7B9cofNeG8RNuinzGld7YNqQqGRvG7XD
-         UVNetqQlFPfbe+voiQZRr/gEkXHH7JTdYuW5u/J0YaxcRo2RCdeMYvyryjG8qdNprQbh
-         FXyw==
+        id S237032AbhHJEiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 00:38:08 -0400
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:51940
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235432AbhHJEiH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 00:38:07 -0400
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id BBFDB3F360
+        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 04:37:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1628570254;
+        bh=8UxNrUeLSStMldoAcFeW2Lw3XcfaO3qq0rvI+4obbHY=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=txpVeGXxE2HzkqnAVq18fD6kOdKypVbQKbelYe472IO7pUNOyaSBZsBypxKOU5wK/
+         nv1nBaRaFz6+r5/PBu1YHnGdYXug+SeLjjmVwQUtOsjnIDlzflycVb3CUFGo4MzK0z
+         Vc00OhzSi5fVuqepwOnE155stbequDrgWwEeu3WYFQ2DuhVhSRsAOL1uatrSfU9eCE
+         0zS/eMqcKYbRtPUUznhXLCrxfCYwmvDNWACXWUy2I5ZgIbR2pGoqXU5N2FO6k6QrhG
+         27YqRrYr4gA4vSJGxGD+KM3bmFj10c41wHulmqcvI9sBGah2IaUdGYf4FkmWJ5ZKjL
+         Dh1CCw+emxzDg==
+Received: by mail-ed1-f70.google.com with SMTP id de5-20020a0564023085b02903bb92fd182eso10203964edb.8
+        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 21:37:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OIcoax9PQR0R3OnS5s26gNkuo62hz7EbqgNWPiTkgQM=;
-        b=G00zuEMTMf3Hln5Mt+lQ+JnXiiiM6TZG2qQ/urLlDo3YtS8zTsMK+o9fIDoksuVN/M
-         Ppx/yOJck3mKnyCtFgEiOOxtko7u4rO5zaqdYH/I1jFdx9eUZ22xnLs4LMPvsvQPz9XW
-         QzcaDQNPVMpzykOTDNgq8XVV5rZq+9KQG+5gzFGnQ5xOn2SRztvsrC+BAAFHBW1Fcx4j
-         osiW3tcld5kTzyMWsLuqSRpF6+oM622B35v6zABNJigdijCmuXrqmg6LQixa9ntf+pA7
-         dMkKf/O+zDrxoozAqO0GeU1sBx7bmKNM7rTFt5B/6K7gJteg6gE/6hQOSWmefe6fEiXN
-         cAPQ==
-X-Gm-Message-State: AOAM530lueWELQbu8TCacKpik8pUOd7f4DgCvDl76ZGrV5McFCdDiWP1
-        VJBphrgSRGjvPcJKmqcuQx4=
-X-Google-Smtp-Source: ABdhPJwfTlSiybFidKyx8OGCgRRGpma1nh/Zbq4L8DCNiIjmWbxmyUIYmQeEEzzwGsDYHxZXCKVe9Q==
-X-Received: by 2002:a63:8ac2:: with SMTP id y185mr159072pgd.179.1628569052608;
-        Mon, 09 Aug 2021 21:17:32 -0700 (PDT)
-Received: from localhost.localdomain ([118.200.190.93])
-        by smtp.gmail.com with ESMTPSA id b8sm20132478pjo.51.2021.08.09.21.17.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Aug 2021 21:17:32 -0700 (PDT)
-From:   Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
-To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, sudipm.mukherjee@gmail.com
-Cc:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, skhan@linuxfoundation.org,
-        gregkh@linuxfoundation.org,
-        linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [PATCH v6 6/6] Bluetooth: fix repeated calls to sco_sock_kill
-Date:   Tue, 10 Aug 2021 12:14:10 +0800
-Message-Id: <20210810041410.142035-7-desmondcheongzx@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210810041410.142035-1-desmondcheongzx@gmail.com>
-References: <20210810041410.142035-1-desmondcheongzx@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8UxNrUeLSStMldoAcFeW2Lw3XcfaO3qq0rvI+4obbHY=;
+        b=rEe7c5w3bfVN+tuaUDr4nQXFmNgkVcivIp8lFpmlKdHSi7BOic1Xqps49cpnGxFC6e
+         swrhJOY2OKIjBRKu+vAvnJ9g+GKOo0RQ5SjaIW3/f5wglAeMNp9W4SDtphB/eGhw+E1H
+         RblaeJAl0fB+rsig/dFBt4zfMIhq7zFFuQcfHezGhoA8/e2i8I1nYsl4uRqnPZQxh+MY
+         LQn4rbNlRoOx4jx1osHi6Wn2xwDHLPgwRe3P9DIEmo283NbKYLf9rpkrRhK1Q7AmYYJ2
+         ueAsNWPjENfBaKAKce0ddgYycbo3Loz8fijwSXH1r+JGo2xQbcm2hILAVvx0jkN6tfid
+         M72Q==
+X-Gm-Message-State: AOAM533ONKEpbRvhj6bD9Cv8GT/lHpM4cKk9lf+pm6gRsYO7FIwtpePF
+        9sR4hRh9PNBcMNMf+MOh4U6er8herfrMPqpFm+bAiVPNtRtkdm2gqUCTiXvDueyAhZdaDaUw4AT
+        oLaC9mbzXCipAD4xHM8OGTg07SoViQUv8toxgUUjvSBTcyN03iQ==
+X-Received: by 2002:aa7:d14b:: with SMTP id r11mr2544056edo.259.1628570254394;
+        Mon, 09 Aug 2021 21:37:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyXpRpqG2cNYzvU/k8PphD5FhvLU0fkLgntOuFcGb0LqjPXaDLngJqdPiYstnPz3rkAxqMs87SH/fbW9Bj+VPY=
+X-Received: by 2002:aa7:d14b:: with SMTP id r11mr2544039edo.259.1628570254182;
+ Mon, 09 Aug 2021 21:37:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210809174358.163525-1-kai.heng.feng@canonical.com> <CAJMQK-gNk8LmguOQ+iDxGtJCwCUcM3rPQ0CJs=kRZzv81nso4g@mail.gmail.com>
+In-Reply-To: <CAJMQK-gNk8LmguOQ+iDxGtJCwCUcM3rPQ0CJs=kRZzv81nso4g@mail.gmail.com>
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Tue, 10 Aug 2021 12:37:22 +0800
+Message-ID: <CAAd53p712ndn=DHGNwHZQ97GkUC--XG1wjc1DqSWBm85QxkFgA@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: Move shutdown callback before flushing tx and
+ rx queue
+To:     Hsin-Yi Wang <hsinyi@chromium.org>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:BLUETOOTH SUBSYSTEM" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In commit 4e1a720d0312 ("Bluetooth: avoid killing an already killed
-socket"), a check was added to sco_sock_kill to skip killing a socket
-if the SOCK_DEAD flag was set.
+On Tue, Aug 10, 2021 at 12:10 PM Hsin-Yi Wang <hsinyi@chromium.org> wrote:
+>
+> On Tue, Aug 10, 2021 at 1:44 AM Kai-Heng Feng
+> <kai.heng.feng@canonical.com> wrote:
+> >
+> > Commit 0ea9fd001a14 ("Bluetooth: Shutdown controller after workqueues
+> > are flushed or cancelled") introduced a regression that makes mtkbtsdio
+> > driver stops working:
+> > [   36.593956] Bluetooth: hci0: Firmware already downloaded
+> > [   46.814613] Bluetooth: hci0: Execution of wmt command timed out
+> > [   46.814619] Bluetooth: hci0: Failed to send wmt func ctrl (-110)
+> >
+> > The shutdown callback depends on the result of hdev->rx_work, so we
+> > should call it before flushing rx_work:
+> > -> btmtksdio_shutdown()
+> >  -> mtk_hci_wmt_sync()
+> >   -> __hci_cmd_send()
+> >    -> wait for BTMTKSDIO_TX_WAIT_VND_EVT gets cleared
+> >
+> > -> btmtksdio_recv_event()
+> >  -> hci_recv_frame()
+> >   -> queue_work(hdev->workqueue, &hdev->rx_work)
+> >    -> clears BTMTKSDIO_TX_WAIT_VND_EVT
+> >
+> > So move the shutdown callback before flushing TX/RX queue to resolve the
+> > issue.
+> >
+> > Reported-and-tested-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+> > Tested-by: Hsin-Yi Wang <hsinyi@chromium.org>
+>
+> Hello,
+>
+> Sorry for confusion, but the version I tested is this one:
+> https://lkml.org/lkml/2021/8/4/486 (shutdown is prior to the
+> test_and_clear HCI_UP)
+> I tested this version and still see the error I've seen before.
 
-This was done after a trace for a use-after-free bug showed that the
-same sock pointer was being killed twice.
+Ah, sorry for causing your trouble, I am the one who got confused :(
+HCI_UP is obviously required for hci_req_sync() to work.
 
-Unfortunately, this check prevents sco_sock_kill from running on any
-socket. sco_sock_kill kills a socket only if it's zapped and orphaned,
-however sock_orphan announces that the socket is dead before detaching
-it. i.e., orphaned sockets have the SOCK_DEAD flag set.
+Let me resend one, and sorry again!
 
-To fix this, we remove the check for SOCK_DEAD, and avoid repeated
-calls to sco_sock_kill by removing incorrect calls in:
+Kai-Heng
 
-1. sco_sock_timeout. The socket should not be killed on timeout as
-further processing is expected to be done. For example,
-sco_sock_connect sets the timer then waits for the socket to be
-connected or for an error to be returned.
-
-2. sco_conn_del. This function should clean up resources for the
-connection, but the socket itself should be cleaned up in
-sco_sock_release.
-
-3. sco_sock_close. Calls to sco_sock_close in sco_sock_cleanup_listen
-and sco_sock_release are followed by sco_sock_kill. Hence the
-duplicated call should be removed.
-
-Fixes: 4e1a720d0312 ("Bluetooth: avoid killing an already killed socket")
-Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
----
- net/bluetooth/sco.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
-
-diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
-index 77490338f4fa..98a881586512 100644
---- a/net/bluetooth/sco.c
-+++ b/net/bluetooth/sco.c
-@@ -97,8 +97,6 @@ static void sco_sock_timeout(struct work_struct *work)
- 	sk->sk_err = ETIMEDOUT;
- 	sk->sk_state_change(sk);
- 	release_sock(sk);
--
--	sco_sock_kill(sk);
- 	sock_put(sk);
- }
- 
-@@ -197,7 +195,6 @@ static void sco_conn_del(struct hci_conn *hcon, int err)
- 		sco_sock_clear_timer(sk);
- 		sco_chan_del(sk, err);
- 		release_sock(sk);
--		sco_sock_kill(sk);
- 		sock_put(sk);
- 
- 		/* Ensure no more work items will run before freeing conn. */
-@@ -404,8 +401,7 @@ static void sco_sock_cleanup_listen(struct sock *parent)
-  */
- static void sco_sock_kill(struct sock *sk)
- {
--	if (!sock_flag(sk, SOCK_ZAPPED) || sk->sk_socket ||
--	    sock_flag(sk, SOCK_DEAD))
-+	if (!sock_flag(sk, SOCK_ZAPPED) || sk->sk_socket)
- 		return;
- 
- 	BT_DBG("sk %p state %d", sk, sk->sk_state);
-@@ -457,7 +453,6 @@ static void sco_sock_close(struct sock *sk)
- 	sco_sock_clear_timer(sk);
- 	__sco_sock_close(sk);
- 	release_sock(sk);
--	sco_sock_kill(sk);
- }
- 
- static void sco_skb_put_cmsg(struct sk_buff *skb, struct msghdr *msg,
--- 
-2.25.1
-
+>
+>
+>
+>
+> > Cc: Guenter Roeck <linux@roeck-us.net>
+> > Fixes: 0ea9fd001a14 ("Bluetooth: Shutdown controller after workqueues are flushed or cancelled")
+> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> > ---
+> >  net/bluetooth/hci_core.c | 16 ++++++++--------
+> >  1 file changed, 8 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+> > index cb2e9e513907..8da04c899197 100644
+> > --- a/net/bluetooth/hci_core.c
+> > +++ b/net/bluetooth/hci_core.c
+> > @@ -1735,6 +1735,14 @@ int hci_dev_do_close(struct hci_dev *hdev)
+> >
+> >         hci_leds_update_powered(hdev, false);
+> >
+> > +       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
+> > +           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
+> > +           test_bit(HCI_UP, &hdev->flags)) {
+> > +               /* Execute vendor specific shutdown routine */
+> > +               if (hdev->shutdown)
+> > +                       hdev->shutdown(hdev);
+> > +       }
+> > +
+> >         /* Flush RX and TX works */
+> >         flush_work(&hdev->tx_work);
+> >         flush_work(&hdev->rx_work);
+> > @@ -1798,14 +1806,6 @@ int hci_dev_do_close(struct hci_dev *hdev)
+> >                 clear_bit(HCI_INIT, &hdev->flags);
+> >         }
+> >
+> > -       if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
+> > -           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
+> > -           test_bit(HCI_UP, &hdev->flags)) {
+> > -               /* Execute vendor specific shutdown routine */
+> > -               if (hdev->shutdown)
+> > -                       hdev->shutdown(hdev);
+> > -       }
+> > -
+> >         /* flush cmd  work */
+> >         flush_work(&hdev->cmd_work);
+> >
+> > --
+> > 2.31.1
+> >
