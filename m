@@ -2,125 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA23F3E5673
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 11:12:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1013A3E56A0
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 11:18:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237812AbhHJJNR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 05:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45892 "EHLO
+        id S237928AbhHJJSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 05:18:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232897AbhHJJNO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 05:13:14 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A89FC0613D3;
-        Tue, 10 Aug 2021 02:12:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=8vt89Y6r+9GV+oFHjxZBGO2/Fiby2OsZ3MlYOti3J4Y=; b=UugJXkM0/kCE0nZHIyj6L438t
-        iCcuNqHh0+zzKlCRxGss8klqt2RqaFkXhpOESSTrJxE9fbquLbrg0H7Kt6zDWE6+WT4YrMWErzNXD
-        FD5VCM/8yqJNZP7ODUXQ+nik+cFY6xf/VAoQyPxXxYMhZR5frmK1eGn7NlWHE9mXWKFTjv8xMqUs9
-        t9o1fbtAaBRWx8VYdKtkb6j4LDd2eNAvjCJOnWPuplmaCdM7VZGf4RGnnfI/irfj5t5zo3UtfLaCN
-        f9v7C+qiPBJ1ABNYQ5ey6qeKq2dgVwIOeyZpJfTQptYUpA0TFDqb88QVEOKhfEwq08hFLh3+OKvUv
-        kyDXxh3OQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47142)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mDNoR-0006oG-7K; Tue, 10 Aug 2021 10:12:43 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mDNoM-00023a-V5; Tue, 10 Aug 2021 10:12:38 +0100
-Date:   Tue, 10 Aug 2021 10:12:38 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Jianbo Liu <jianbol@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        Ido Schimmel <idosch@idosch.org>
-Subject: Re: [PATCH net] net: switchdev: zero-initialize struct
- switchdev_notifier_fdb_info emitted by drivers towards the bridge
-Message-ID: <20210810091238.GB1343@shell.armlinux.org.uk>
-References: <20210809131152.509092-1-vladimir.oltean@nxp.com>
- <YRIhwQ3ji8eqPQOQ@unreal>
- <20210810081616.wjx6jnlh3qxqsfm2@skbuf>
+        with ESMTP id S237320AbhHJJSp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 05:18:45 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67DFBC061799;
+        Tue, 10 Aug 2021 02:18:24 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id u16so20151068ple.2;
+        Tue, 10 Aug 2021 02:18:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w+XOmb9EKTUysSLlZUkv3LmEhzI+OrIVJ3S44VA1yDo=;
+        b=corIsdxSFyN7QcwU9IowkhXaEYzWaCYQjd/rt+eGl7DB/oby6g5Tk6+IEW+amdTKf/
+         7ev3yYjnd1m6WgPzbZr13U1M2J8sv4xlQJ5RHuOGeu4XJzas7SbTcGY1vbyApklVl8Tt
+         I7gxzpvYi++OMmtAMf3HhycHVUbcjXeTBPF2XADmn+JynjVbrxDrKzWMHdQZdgNqIiNO
+         YN5C9CCOETRD+JGjsCgsteP4M+knjMNQHi1iPTXVhcqwzzD1NpmryFcWf2McEBbf8QpK
+         UzN3kdrRGaCBjAk3zDnIYVNCItikepEcBz3Iibgx3CVog2iw26cN66kCOLTeKe4QYARI
+         hrMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w+XOmb9EKTUysSLlZUkv3LmEhzI+OrIVJ3S44VA1yDo=;
+        b=WYi+Q73ZFCdeNsxZ0OoGBNIaiulxX3gsbgs/b4iPleJ5RZEbdYhzNlcV4T6e+DyoNA
+         kuu0EYoNyhnZdcg21EPSsoCD9SWbI6iCEqgQ2YAu1ueYXm2p0ojCOZsTJN01r931OJ5l
+         IIcRQHqWWb7VwYmg/l9sRcGSCn6zD1u7ksVjHD0xxk/wVSRGsTCg9dqDjW2Hs0BZb4jP
+         +tXr3wTaCvxZZixIEdezBCqv61ZqlIQBOgaHHXB1YU9dI/1Vm1jCZQO3U4yM85gVXTWR
+         wG+GGlDUAZIe89W18TCA8OnQO6KXNhvZzIGhrrBF9MpXj+x7JTIEdBY9TNtpwaezy3CG
+         Dy6g==
+X-Gm-Message-State: AOAM531b8r5Bfax1LrGfoAXmYwyZ0SCyzrOGH+lRgAdvH9iERSWCqQ1t
+        mAQzPODsqj2fW8gp0Q/X6EM=
+X-Google-Smtp-Source: ABdhPJznUQMbjUf5j9hsDN3vDvvQ9YB0D2WEhdHvBC4TfnelnS19szODZs9Te4i0BiGtx0L8QFXU1w==
+X-Received: by 2002:a17:90b:296:: with SMTP id az22mr3854614pjb.79.1628587103929;
+        Tue, 10 Aug 2021 02:18:23 -0700 (PDT)
+Received: from localhost.localdomain ([45.135.186.40])
+        by smtp.gmail.com with ESMTPSA id k6sm2252089pjl.55.2021.08.10.02.18.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Aug 2021 02:18:23 -0700 (PDT)
+From:   Tuo Li <islituo@gmail.com>
+To:     sridhar.samudrala@intel.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        baijiaju1990@gmail.com, Tuo Li <islituo@gmail.com>,
+        TOTE Robot <oslab@tsinghua.edu.cn>
+Subject: [PATCH] net: core: Fix possible null-pointer dereference in failover_slave_register()
+Date:   Tue, 10 Aug 2021 02:18:00 -0700
+Message-Id: <20210810091800.291272-1-islituo@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210810081616.wjx6jnlh3qxqsfm2@skbuf>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 10, 2021 at 08:16:17AM +0000, Vladimir Oltean wrote:
-> Hi Leon,
-> 
-> On Tue, Aug 10, 2021 at 09:50:41AM +0300, Leon Romanovsky wrote:
-> > > +	memset(&send_info, 0, sizeof(send_info));
-> > 
-> > This can be written simpler.
-> > struct switchdev_notifier_fdb_info send_info = {};
-> > 
-> > In all places.
-> 
-> Because the structure contains a sub-structure, I believe that a
-> compound literal initializer would require additional braces for the
-> initialization of its sub-objects too. At least I know that expressions
-> like that have attracted the attention of clang people in the past:
-> https://patchwork.ozlabs.org/project/netdev/patch/20190506202447.30907-1-natechancellor@gmail.com/
-> So I went for the 'unambiguous' path.
+The variable fops is checked in:
+  if (fops && fops->slave_pre_register &&
+    fops->slave_pre_register(slave_dev, failover_dev))
 
-There's a difference between:
+This indicates that it can be NULL.
+However, it is dereferenced when calling netdev_rx_handler_register():
+  err = netdev_rx_handler_register(slave_dev, fops->slave_handle_frame,
+                    failover_dev);
 
-	struct foo bar = { 0 };
+To fix this possible null-pointer dereference, check fops first, and if 
+it is NULL, assign -EINVAL to err.
 
-and
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Tuo Li <islituo@gmail.com>
+---
+ net/core/failover.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-	struct foo bar = { };
-
-The former tells the compiler that you wish to set the first member of
-struct foo, which will be an integer type, to zero. The latter is an
-empty initialiser where all members and sub-members of the structure
-default to a zero value.
-
-You should have no problem with the latter. You will encounter problems
-with the former if the first member of struct foo is not an integer
-type.
-
+diff --git a/net/core/failover.c b/net/core/failover.c
+index b5cd3c727285..113a4dacdf48 100644
+--- a/net/core/failover.c
++++ b/net/core/failover.c
+@@ -63,8 +63,11 @@ static int failover_slave_register(struct net_device *slave_dev)
+ 	    fops->slave_pre_register(slave_dev, failover_dev))
+ 		goto done;
+ 
+-	err = netdev_rx_handler_register(slave_dev, fops->slave_handle_frame,
++	if (fops)
++		err = netdev_rx_handler_register(slave_dev, fops->slave_handle_frame,
+ 					 failover_dev);
++	else
++		err = -EINVAL;
+ 	if (err) {
+ 		netdev_err(slave_dev, "can not register failover rx handler (err = %d)\n",
+ 			   err);
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.25.1
+
