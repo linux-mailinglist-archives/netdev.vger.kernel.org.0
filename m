@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 756AC3E5942
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 13:40:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF8803E5944
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 13:41:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240217AbhHJLlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 07:41:12 -0400
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:28096 "EHLO
+        id S240233AbhHJLle (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 07:41:34 -0400
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:28317 "EHLO
         mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236424AbhHJLlK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 07:41:10 -0400
+        with ESMTP id S238242AbhHJLld (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 07:41:33 -0400
 Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 7198276364;
-        Tue, 10 Aug 2021 14:40:46 +0300 (MSK)
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id CEF8775956;
+        Tue, 10 Aug 2021 14:41:09 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1628595646;
-        bh=QsVEldM8waRzbUnKSVHZ3KHdviozNSlYENPsfZsIV44=;
+        s=mail202102; t=1628595669;
+        bh=ryDfW+J/VW9hKhGCsjMSOFxd88HMnpxcIzleRIVZO2g=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=SluGX/nNGrP6LkYECLZOTNBqlNU+8WT0QXYuXtnLjFtMwWnIXjnaGbo0cqIdYdrKr
-         WoVizj99DwbphA1e/v/OdIcpcIB4VeCHjxuljISyzT8pKkSu0qX3nM030b5KVKWUqb
-         wbMlegUADbrHsh8ukI2nfz4GVrvgrlsJctbDq1GhYVDdCr9x19WeW4mf7S3n0a0oYQ
-         RECtdXY6+VWjwCR+Z/sW5rUz5Xy2P1aj/7mXxTG44tg4TTVDrD11AQMxAh+nnfnXQo
-         RyA6o2gp2+dw1FCNXB1MVxgamqF4THCC/J7VntuO88Se97BsgiJUfvD0lTDtlWak1x
-         c3hYQjbuA7m9Q==
+        b=SjoyFdi44pts2O7SRZ7Bv6K6XbUYN/JoUxZPQvTOdvNZOJXyp7/EyGxc+PIskqMJ4
+         kJLUYeuFK5Znp/VLt1m1z2C0rHeZzvVBw7Y3t2tGFRY6dGiyK9jV129dIsxE6jkVQ4
+         FPRrSDWDil00ghH64eO/mhfCB4OpRefNTTEOfwfwu9dQROEi0PgIKtJvAzRawTvYfp
+         IhZ0dfrEqXV589l5enBYI6840czDeWAGMDh9lEsrahM62Ng44XisVjhcnF2stCOgxC
+         E5UjyNOWtj714LFxQ4CjuvcfiT7RMIZ42qWWxedLk/uO5Pow4Ll5e/ddgdjQ7ioQP4
+         H1t0bMjv2Ujow==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id B39AF761F5;
-        Tue, 10 Aug 2021 14:40:45 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.64.121) by hqmailmbx3.avp.ru
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 993C67593B;
+        Tue, 10 Aug 2021 14:41:09 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.68.129) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 10
- Aug 2021 14:40:42 +0300
+ Aug 2021 14:41:09 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -47,17 +47,17 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <stsp2@yandex.ru>, <oxffffaa@gmail.com>
-Subject: [RFC PATCH v2 3/5] virito/vsock: support MSG_EOR bit processing
-Date:   Tue, 10 Aug 2021 14:40:32 +0300
-Message-ID: <20210810114035.1214740-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v2 4/5] af_vsock: rename variables in receive loop
+Date:   Tue, 10 Aug 2021 14:41:00 +0300
+Message-ID: <20210810114103.1214897-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210810113901.1214116-1-arseny.krasnov@kaspersky.com>
 References: <20210810113901.1214116-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.64.64.121]
-X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
+X-Originating-IP: [10.64.68.129]
+X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -97,41 +97,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If packet has 'EOR' bit - set MSG_EOR in 'recvmsg()' flags.
+Record is supported via MSG_EOR flag, while current logic operates
+with message, so rename variables from 'record' to 'message'.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 ---
- net/vmw_vsock/virtio_transport_common.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ net/vmw_vsock/af_vsock.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index 4d5a93beceb0..59ee1be5a6dd 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -76,8 +76,12 @@ virtio_transport_alloc_pkt(struct virtio_vsock_pkt_info *info,
- 			goto out;
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index 3e02cc3b24f8..e2c0cfb334d2 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -2014,7 +2014,7 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
+ {
+ 	const struct vsock_transport *transport;
+ 	struct vsock_sock *vsk;
+-	ssize_t record_len;
++	ssize_t msg_len;
+ 	long timeout;
+ 	int err = 0;
+ 	DEFINE_WAIT(wait);
+@@ -2028,9 +2028,9 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
+ 	if (err <= 0)
+ 		goto out;
  
- 		if (msg_data_left(info->msg) == 0 &&
--		    info->type == VIRTIO_VSOCK_TYPE_SEQPACKET)
-+		    info->type == VIRTIO_VSOCK_TYPE_SEQPACKET) {
- 			pkt->hdr.flags |= cpu_to_le32(VIRTIO_VSOCK_SEQ_EOM);
-+
-+			if (info->msg->msg_flags & MSG_EOR)
-+				pkt->hdr.flags |= cpu_to_le32(VIRTIO_VSOCK_SEQ_EOR);
-+		}
+-	record_len = transport->seqpacket_dequeue(vsk, msg, flags);
++	msg_len = transport->seqpacket_dequeue(vsk, msg, flags);
+ 
+-	if (record_len < 0) {
++	if (msg_len < 0) {
+ 		err = -ENOMEM;
+ 		goto out;
+ 	}
+@@ -2044,14 +2044,14 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
+ 		 * packet.
+ 		 */
+ 		if (flags & MSG_TRUNC)
+-			err = record_len;
++			err = msg_len;
+ 		else
+ 			err = len - msg_data_left(msg);
+ 
+ 		/* Always set MSG_TRUNC if real length of packet is
+ 		 * bigger than user's buffer.
+ 		 */
+-		if (record_len > len)
++		if (msg_len > len)
+ 			msg->msg_flags |= MSG_TRUNC;
  	}
  
- 	trace_virtio_transport_alloc_pkt(src_cid, src_port,
-@@ -460,6 +464,9 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
- 		if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOM) {
- 			msg_ready = true;
- 			vvs->msg_count--;
-+
-+			if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOR)
-+				msg->msg_flags |= MSG_EOR;
- 		}
- 
- 		virtio_transport_dec_rx_pkt(vvs, pkt);
 -- 
 2.25.1
 
