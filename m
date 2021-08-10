@@ -2,182 +2,337 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F20F63E596E
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 13:49:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 233003E5971
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 13:50:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237391AbhHJLtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 07:49:42 -0400
-Received: from mail-bn7nam10on2048.outbound.protection.outlook.com ([40.107.92.48]:9952
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        id S237791AbhHJLvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 07:51:04 -0400
+Received: from mail-eopbgr30048.outbound.protection.outlook.com ([40.107.3.48]:17390
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234975AbhHJLtl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Aug 2021 07:49:41 -0400
+        id S234975AbhHJLvC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 07:51:02 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Jd4FioUb7MbV79A6qafNXg3ENnPRIkKPzUrG6VuFGT89zHCUvgxyDy9+AtTOQ4Hq+04Ejlf3RjuzauFWrhKcKnpCTKczXfYGr81oU7qHvFlhCsroQnXe5U4AJf0bP/jKvoC2EXWiOPS2pH6owGrqgVQLz6K/zzzW6WBwxwWg6wfEI2x6ryyUjC9t8nCTi4rA3q66duKbaom8Ep9Gy9OJNMMjC7nZhDYKaJq2RnDvuvanraBNjq2+6uTQB1Ofx4nuwVPcO1sODDh9UYMAYeM1IebgoiKuMhSdChi9dRmW2S1i494xxyfAhL48ekYzW7h3kAqn/yofIeNjDqWpEvoOiA==
+ b=n1JfGAFSl84SmslV2b5pTJdpvsKzrD5c0Smpq+YTErn6f2yNoziq46IM+a6fJB6F6mKqTdqPjCCSLo9gC3YRYDmxZrXTTMN0PGwAcB8mGgRt+Ha0eVD5t+w4rdae5ys3cY2z7V8OqZ4e4SCqzCkEtdeVwa0BIQI0qwzJktiK4CjVm7SS2Yj+JL9QGu2vgZb3iSSvA90rgY7+WdEjphEZsXv7VsuvDizpI7lc/+h/44IVwtYy2jw+VU6ra4hO6nj3AGgW/LZANcjrApfcUuGQreHN9i1JFnjZ5f1r8miY3LzGB2HSiRp03aDh5mYJ9wHf34YFWxkgeIbW/rEX7X4T/w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7RX9nL6LwSjAAGy76AoDI41C0uRwASaL7z6EUYCi9F8=;
- b=KGh85JFsPfezipQUT82Recho8AKytQ9v+TC7L8K97MSvZq72pX1T/ICvLFfwnUojm2TS92b6XotczDqAOF5Dkqd3WsEMzV23QWlQ3ZnPwMh/LHUhzWKiZC2IRfH5foMgsY3xXamHIw/qHz1jPBhCrzTsTxMmJhnL88p11RzFZzfOVYBC/AcHs8Jl587P7zj51EzOeiv3Cj7zOSOgYou2i2pGx25E5V805S/7RBPq0TwO2DbMywHNt+UcVTgTaTFPbk4J/P+FLrm30U/9JGRDPtuKJAeJIuFR0PqRf9YA9Zy2/W3MnPouDtaL+1Dr6wDeltmBLPFZDwfyrvQ390y+FA==
+ bh=Rp78oVL7S1vqc2mkZWkh8pbR4xD1LuPn5XunSdx1m50=;
+ b=X7WpgvoR4pBTHX0JtabaA0LuUm4qR2051UXOF+GtIzvGBFv5NgcqtCwdpe57lECbORRvtOJY7st3eltJ993HEOPRZjg1JlKuAFiIOtHEkPolA6ocfd1xcosI/YEiUzXTxM4BBUx36Kkqth3simmopJHXm7mT1Bbhvd1ls+/Jk0S4RqOCAOYRa1vFgcH2TJXcUOqskkgKQYzPrcnVWBurz282MVDIWk98VyaiiYwkdY690nxGnCpLEKReUIPg85/naowUqWKL0SsHr6Vi/iN0LA3kPbngPjHp1g8QbX46T5hQQ1+6UI95vrh5GyST6Vm3mUx332qat97D3N0kgD7e4g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7RX9nL6LwSjAAGy76AoDI41C0uRwASaL7z6EUYCi9F8=;
- b=gUZkQroo/ZDEVt4uxztyhF9VjNLMHHZ7iWXHVuX1pCORqCl2+E+sbmel5v7V2hxRhfPwaMTC23e9uyRhJi/aYuHlaOFPqQ1wfPxt4huUYO6Dy7UzlA2dmVu3H4zY6zxEw2QAZSma/pHPaiVUhpu9Zekbni3psdNCCxRG0/czHpUch6uNQ/CYrYuGPrD4ZVEOFBJa3V6VbXogDajkP5WB6DS2ThviSEvtgK3DTD8Jl0OzWJlBaI30nQym7YhWxitKJ272TzdVlFNJN4FGkwEJviUen/5if/63PXv9dAzAjapx7/+n2k7IKcVckYhQewqCU8yDJcfTDIuR3A+qArwB8A==
-Received: from PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15)
- by PH0PR12MB5500.namprd12.prod.outlook.com (2603:10b6:510:ef::8) with
+ bh=Rp78oVL7S1vqc2mkZWkh8pbR4xD1LuPn5XunSdx1m50=;
+ b=nzsf8oP3mG7LYc7XThxV0xhCh9OqZrRzM8VB4PYyFU+e1EbTLE2fKpyOhQjgIfjVeKfteNrZECTy+T5qdFc92nzBKosDQVMudq8KNug4Y3d7UqG8qa7pu/HYXP6jxD0oKLgaAOpZRVuE3X4qt9dzl8/wknFsr1pROGTzYHA3lxg=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR0401MB2510.eurprd04.prod.outlook.com (2603:10a6:800:54::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.17; Tue, 10 Aug
- 2021 11:49:18 +0000
-Received: from PH0PR12MB5481.namprd12.prod.outlook.com
- ([fe80::249d:884d:4c20:ed29]) by PH0PR12MB5481.namprd12.prod.outlook.com
- ([fe80::249d:884d:4c20:ed29%4]) with mapi id 15.20.4394.023; Tue, 10 Aug 2021
- 11:49:18 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "dsahern@kernel.org" <dsahern@kernel.org>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>
-CC:     Jiri Pirko <jiri@nvidia.com>
-Subject: RE: [PATCH iproute2-next] devlink: Show port state values in man page
- and in the help command
-Thread-Topic: [PATCH iproute2-next] devlink: Show port state values in man
- page and in the help command
-Thread-Index: AQHXf9Kc8/l2o5ruJkWZP85tSCRlK6tsu66w
-Date:   Tue, 10 Aug 2021 11:49:17 +0000
-Message-ID: <PH0PR12MB5481796816B64C41F8230E0ADCF79@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20210723145359.282030-1-parav@nvidia.com>
-In-Reply-To: <20210723145359.282030-1-parav@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 99e8821e-469b-4a8d-5598-08d95bf4e28b
-x-ms-traffictypediagnostic: PH0PR12MB5500:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <PH0PR12MB550098E6534C6964ACECEEF9DCF79@PH0PR12MB5500.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: iBmjELDf3cUZ0vu2T7JZzAIunW8E8sXnz0BQfxrG2421oeFR3NmTQpDQdyuhxMac8zmtyaigYKsAHTpaw0ng3+C9cYcp+LjCpS54V73ip1O+e1SWyPWXm9Vr4dS1Td16gQneAwX6NFBdHtEogy+pyoJXywA3I/7Q+Jjg3gvRNORcxfnvuo1Q//mTjop9EAt4kAwFF6I5pv3PReAsgfUAtlmUPZVz/RlhgrQtNTsmBIRQ3XKCFbN/ALuGuDBj1dCP0z4bwpKqG/A5hc97900wwcYw9O4iyPOlgNRDUC0eXBdWQYfsU7gOWCnFC1UTQW9hz07pbxeDMKsS5mj8XXMEGGr8Ueh3dVvOvAupRi2aA8rNB96HH6om6Q+6uVeq9aqN8IeVyb7sZmV7WWoG3H1FAfnKqIwR29HTehrB3T5KI+505PH0Gcm+bI/2Uf6kREFmswAfA5Xa+u/DA5zLgtZ3Cb8HNjx2K2EoqRmmr63l3Rdlt3uZUChl5F/GbOM0JWabwDPy09d0NZ466iAbaFE0eMPRclQ9hRF3YEeB2ZRCwx2xiGDzNq/Mi9TAJWWx9dt/sOsABMFfPPnJ7+uwBjOUbuiL/gL6VkpHMimolskgU/d0zn/Sh+V3Vz0oUGX/U4us7IAf1WOE6nCxOVpgs69kPpnUM8Ek6cMoWduPuHXmlKCQFKN3WwlhaRsgCVxjUlResQ4f+fZ6N1wB0cV17uS49Q==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(39860400002)(376002)(136003)(346002)(26005)(478600001)(2906002)(316002)(52536014)(38070700005)(66946007)(5660300002)(66446008)(66476007)(66556008)(38100700002)(64756008)(7696005)(122000001)(55016002)(4326008)(76116006)(186003)(9686003)(8936002)(33656002)(107886003)(71200400001)(6506007)(55236004)(110136005)(86362001)(8676002)(83380400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?XszPkS2zFAk5gZrwV3YyeVbppQ++1z49MQqmr7edw8HmtvFTsBg/87cBEnr8?=
- =?us-ascii?Q?H3dau/HRErYAlg9Yjt+EEMX+RVb7iWbtHQKN32mCZwpvbwBk0tgssVQIXH3h?=
- =?us-ascii?Q?TTL6L4c69h4Dr/8SQjSNDLaQ/rtu0KxRGqn/BEwzgAr1vDDB7bq2tIoYdavm?=
- =?us-ascii?Q?1Gc9dmXineU5XYtSTFPWACAXRfFv2rbULyPY0Q3msVB4kgsU3DtxroYBolKw?=
- =?us-ascii?Q?U6jP18FpiQga99XJyPMjZAFjx7CFKwwPjfx3G4/KghhHAoA+BJH0TzzTdzbB?=
- =?us-ascii?Q?18BmaDWTq7eljEL2TnHa2EXaFHRvjXPCGUz4N+y6LyuCz/qTsj9qcWVVRmZ3?=
- =?us-ascii?Q?2AVFFed7Wgq+4gdWJU+jkhAcnQCc2TpQBqB41soqXsF2o/8F0br/5bFDeTrC?=
- =?us-ascii?Q?CAtLhs922chDcKC7oGXwLUBNW0c0AQuUgWq8ekqcKqwbnVBEcDiG/1IoFEMZ?=
- =?us-ascii?Q?FlK6PQe5Ld7r6KEFqh6Wrz4eH0cZllrgcB94dgNfyEvSXAXzwKpVo+smNsYw?=
- =?us-ascii?Q?FWufSQGNISxhhhEkrs27AeeZZe0O5KR0G5iQO5ZjJKnrTqBl5dFwqxq4iMil?=
- =?us-ascii?Q?YfEKmmqfvdPTXBt3q4rcZd3mG4zYAOLzHzzwEpjFMZtCJs20o1tLC+WWOt+r?=
- =?us-ascii?Q?IXO+irfCT+8kJKEb3fbGF8DSxhvcvjinvJ7U8nwIB0jjWRCEiH4QK1xTwiVN?=
- =?us-ascii?Q?NRHi5zhHmYUfe1btOe57+OHgkzhtDzfaXhi91maUX5E/1ASIiqkrIulw6l4s?=
- =?us-ascii?Q?VfYZu12bag1lE9xN/dIIDUUfbtjXTFLaZ9QJPZ2SBKD5zmYeK27eWIXMdTbV?=
- =?us-ascii?Q?ua4n+GTpOTeUrgYXblBp0NuqR4i6BBGFRCfn9VTaO663rCH8LzC4D29JMXnT?=
- =?us-ascii?Q?JuigM6eWWsLEIKBR3UQhfEzm+Yyiep1Cl1oWfQcEO13W8ZEg17Nh8LFOXjXB?=
- =?us-ascii?Q?I4+OCCIkwDDnm2lFBJMjcrNyVZqdSDxxbUCVeOlgM1mKvoqeQ1voJXuH/J8U?=
- =?us-ascii?Q?sWj3+mOu9HHGk+eSaiYXShNleqwhaVlriln1RrvHalw0I4PJfzFIBhAWNLaz?=
- =?us-ascii?Q?tMBh7OsUYvScG+qpuyKcXyklPTT8XKf9C2KJzNuanuf+oIj92jhL0PWQjgWO?=
- =?us-ascii?Q?Puoy+7UDDFI9Kuoa7MDTzh1aFUnHr/cFhhBjIWx7CR2wc5RsGCD6gClyrs6L?=
- =?us-ascii?Q?kQI2zqh1QBQ0sxDa6Ot3DWgRegodak0fmaYz8HJ563e5ZWEH2iku02RzKxvE?=
- =?us-ascii?Q?AGkU8CPMhXvyeSKqv2EMn8Fgf/lNjTsUQ4H6Qd9XCeXVoaYEetFwqjWt3SbK?=
- =?us-ascii?Q?DI0HuaR73ys4aQGRIs2WGbsC?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.21; Tue, 10 Aug
+ 2021 11:50:37 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4394.023; Tue, 10 Aug 2021
+ 11:50:37 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Jianbo Liu <jianbol@nvidia.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
+        linux-s390@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        Ido Schimmel <idosch@idosch.org>
+Subject: [PATCH v2 net] net: switchdev: zero-initialize struct switchdev_notifier_fdb_info emitted by drivers towards the bridge
+Date:   Tue, 10 Aug 2021 14:50:24 +0300
+Message-Id: <20210810115024.1629983-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: FR0P281CA0014.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:15::19) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (188.25.144.60) by FR0P281CA0014.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:15::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.5 via Frontend Transport; Tue, 10 Aug 2021 11:50:34 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d132849b-0c2d-4412-38c2-08d95bf51170
+X-MS-TrafficTypeDiagnostic: VI1PR0401MB2510:
+X-Microsoft-Antispam-PRVS: <VI1PR0401MB25102B10FBF3A7597AE523B8E0F79@VI1PR0401MB2510.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2733;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: UgY0ZSliPpSjxz5Zc/SZ8Ucr7owktTPAIggxVAI9i6n+79jqMZMuHIKbs3ZhpCBbyiMOBEB56v7lO51XTIVC+gBLnf2W+pEQ5TAkr71mDu2lGLGikOZrKmTjGq3EX+rQ3R6GJWi/2BXw5rC2orZkzXlPTOFlvYlDtGvDwAGU2a0bl4DJBOALPyaRsQS+9heDeyZuvp6v8ThFcE06JDr6koke1wWnPgp/5bY7Scx3nvos9aN3SlzWb+TnJkxpaqJ/DraRzzHdRIWmIg9OMSHN52oKFe01y+gOut0vMnNvmR+x2vYKBTIRMtXM3Bdlu7H6p5h6wbqSeL7f3LxakZsKkZv54C9omegSD0oksz9u4zTc/YqMxtDy4neKPpHcBl9cSeTtzw8MVF/1cT97/Fedao9+5HNANJNJLxjeOyiHr8Q059QKMZGbKzkoAsmRDtpjRSxIax6b/0uCQ+dFa+NZ/gtQdm+AcVlMeFpNfyb2TIfWvS3qDWJcuEhXHF09HXf7jgtJhRtOFG++kePxPrpj38rLFo9Hv1TipvvZXg9FjjavIIoslGkMHtr83vnDZnF5Ep5UhRGcRiQk131aoF8f265m13IPI2U4EsYghRpWTgyWHXdHVxji368K99XUhsuJ1cSwEvOenYu4h+0a54H18yrLyzCUgOtAmykwltgKtJOfD9/mWOBleWZpdDIDKO85I0hM27cWBlMFgBRZAboOzg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(376002)(366004)(346002)(39860400002)(36756003)(66574015)(8936002)(26005)(186003)(86362001)(6506007)(2906002)(4326008)(316002)(6666004)(956004)(44832011)(7416002)(7406005)(2616005)(66946007)(52116002)(54906003)(38100700002)(478600001)(38350700002)(66476007)(1076003)(83380400001)(6512007)(110136005)(5660300002)(66556008)(8676002)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?I5qR3VlFoQt4I2qX6LqjQ655lKjgP5Q4ZUCHNWjDnOBakcOLVLzhSsw71Ha+?=
+ =?us-ascii?Q?4OdiYuF+skUzHvlrCdIpjmTHvfAtNzlQ4b/y9hP8c9QgAF9DBzKsxL+3UXnR?=
+ =?us-ascii?Q?h9rikHf9uhv3fU/F21PBU4lzKyd20iZwF1CKnEkM7A4hY60ao0prUx4Tjyu/?=
+ =?us-ascii?Q?PFCziukKpKs7x0SWfMyq4FmcUOnw5at7zcKBfEj+wWwX3lx/hKJrG3TwFIn3?=
+ =?us-ascii?Q?99gbZug38CV2195Ir0gAfHikBP8JL7YsBROYavMNuaKNPAWXj2OyRsm3ftTd?=
+ =?us-ascii?Q?vZq2u59O05yJW9nN8ujvhgMa65H4MhOsCdccV+0k6MrHOG0kmok35X6g9KIr?=
+ =?us-ascii?Q?VvTckedGA5oNytM0C5RcZLVqzEtHFs8bKBeEESKUBctxDQBMwtdLFZD9uCWJ?=
+ =?us-ascii?Q?ZWrn/ZO1yOzvBgDRfIP9BzhyCsYQp+Gcx4LfcjBx2hMdZiUsMWto3pQZTY1K?=
+ =?us-ascii?Q?njhMmQYJaS4CEFU9XOnLe8O30uu5usHCY78gECXndd4othhyMMCSbCfQMtTn?=
+ =?us-ascii?Q?0fyoMgac2sVFmOcO+DEARVKZcepzXVK7+DBTnrE3GZ5shOZr46VRUbyoidtS?=
+ =?us-ascii?Q?xaANmRSk5HFmpxjV2nyinKL6LV57m7AoQJFmYvKPNv4EZxDBVbgvHNl/1B59?=
+ =?us-ascii?Q?kNDBgRidzxMLTyyHG9VucTAxTl/aXh4AAp5Htb9w+1H3vmthiTZTpcxJ31a1?=
+ =?us-ascii?Q?1q8/PH739La3CIhoX30+SfvM13NDQqINFj/v/H6kJrf80nMTwLHE3JdhKX7x?=
+ =?us-ascii?Q?zKm4pRDx4EECUCQol7aF2v4B6Tp0Rqv0T8gbjvr3li32v3VVD/iUpHJv9o9i?=
+ =?us-ascii?Q?tTcK/mf2WnDlAb30JPLDA0MNLdUXzzdlTqiZ9jzhC4ICSZTg1Fc/QShmHpQM?=
+ =?us-ascii?Q?64xwkHnK6SYbNnlsn2eOjJjhnxIyFlI/urdtkdKOnYlqXAKMxhKD/CFask5R?=
+ =?us-ascii?Q?4TUt6j8rym9GR62jB/dJwQjqxVX9j30z6B7p3RXdMyScHJdrZOfYEXjsJRs7?=
+ =?us-ascii?Q?4rAfetgDKdgwY/LTFgrQlv8NbytWFNP1abazxvcA2F7Y5usgxxvrSeRW4Ov6?=
+ =?us-ascii?Q?8PGvd2WWhio9iLEwBIel9VDFeMbwofyCs0xxRRk+YlhXAAeDJ2wcae+CGI0l?=
+ =?us-ascii?Q?QWe54jDAQ1wceorOTcRIAT2BcAHR/Qtch40glCk6Gg4QlErEe8MWJTLyA/NS?=
+ =?us-ascii?Q?NaqGXeGueNwc8P1KZPPOUxl/4ZyGJK34qjZNi1Z2Bd0k12Bh8V5MEmobnvGG?=
+ =?us-ascii?Q?f2LB5SeFHoRd4wQ+ONZdJ98+3lGsEUXVSDXV95mLtd17DoRwb0aSzDwN0+jt?=
+ =?us-ascii?Q?W5h3jTsrWeRb0Z3cbp4TxrgK?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d132849b-0c2d-4412-38c2-08d95bf51170
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 99e8821e-469b-4a8d-5598-08d95bf4e28b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Aug 2021 11:49:17.9440
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2021 11:50:36.8807
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: VgmCW6uVjEZ955uHcyc+mdvl1NNrEnaSjbrbA/5CVbMKXhRHsh63qbsQ4VeXCUkJcrmYWe5pWoKs4zCt130Iuw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5500
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: eFwF+uuAfXLlX7zgvEIphgiXf6X7EirVWRtwDjjYC6Jw8I9IB7efmD5hgSEcfmEz703SmObqV88XOJMEpyaEpw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2510
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, Stephen,
+The blamed commit a new field to struct switchdev_notifier_fdb_info, but
+did not make sure that all call paths set it to something valid. For
+example, a switchdev driver may emit a SWITCHDEV_FDB_ADD_TO_BRIDGE
+notifier, and since the 'is_local' flag is not set, it contains junk
+from the stack, so the bridge might interpret those notifications as
+being for local FDB entries when that was not intended.
 
-> From: Parav Pandit <parav@nvidia.com>
-> Sent: Friday, July 23, 2021 8:24 PM
->=20
-> Port function state can have either of the two values - active or inactiv=
-e.
-> Update the documentation and help command for these two values to tell
-> user about it.
->=20
-> With the introduction of state, hw_addr and state are optional.
-> Hence mark them as optional in man page that also aligns with the help
-> command output.
->=20
-> Fixes: bdfb9f1bd61a ("devlink: Support set of port function state")
-> Signed-off-by: Parav Pandit <parav@nvidia.com>
-> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-> ---
->  devlink/devlink.c       |  2 +-
->  man/man8/devlink-port.8 | 10 +++++-----
->  2 files changed, 6 insertions(+), 6 deletions(-)
->=20
-Can you please review this short fix?
+To avoid that now and in the future, zero-initialize all
+switchdev_notifier_fdb_info structures created by drivers such that all
+newly added fields to not need to touch drivers again.
 
+Fixes: 2c4eca3ef716 ("net: bridge: switchdev: include local flag in FDB notifications")
+Reported-by: Ido Schimmel <idosch@idosch.org>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Ido Schimmel <idosch@nvidia.com>
+---
+v1->v2: use an empty struct initializer as opposed to memset, as
+        suggested by Leon Romanovsky
 
-> diff --git a/devlink/devlink.c b/devlink/devlink.c index b294fcd8..cf723e=
-1b
-> 100644
-> --- a/devlink/devlink.c
-> +++ b/devlink/devlink.c
-> @@ -3988,7 +3988,7 @@ static void cmd_port_help(void)
->  	pr_err("       devlink port set DEV/PORT_INDEX [ type { eth | ib | auto=
-}
-> ]\n");
->  	pr_err("       devlink port split DEV/PORT_INDEX count COUNT\n");
->  	pr_err("       devlink port unsplit DEV/PORT_INDEX\n");
-> -	pr_err("       devlink port function set DEV/PORT_INDEX [ hw_addr
-> ADDR ] [ state STATE ]\n");
-> +	pr_err("       devlink port function set DEV/PORT_INDEX [ hw_addr
-> ADDR ] [ state { active | inactive } ]\n");
->  	pr_err("       devlink port function rate { help | show | add | del | s=
-et
-> }\n");
->  	pr_err("       devlink port param set DEV/PORT_INDEX name
-> PARAMETER value VALUE cmode { permanent | driverinit | runtime }\n");
->  	pr_err("       devlink port param show [DEV/PORT_INDEX name
-> PARAMETER]\n");
-> diff --git a/man/man8/devlink-port.8 b/man/man8/devlink-port.8 index
-> 053db7a1..12ccc47e 100644
-> --- a/man/man8/devlink-port.8
-> +++ b/man/man8/devlink-port.8
-> @@ -67,12 +67,12 @@ devlink-port \- devlink port configuration  .ti -8  .=
-BR
-> "devlink port function set "
->  .IR DEV/PORT_INDEX
-> -.RI "{ "
-> +.RI "[ "
->  .BR "hw_addr "
-> -.RI "ADDR }"
-> -.RI "{ "
-> -.BR "state"
-> -.RI "STATE }"
-> +.RI "ADDR ]"
-> +.RI "[ "
-> +.BR state " { " active " | " inactive " }"
-> +.RI "]"
->=20
->  .ti -8
->  .BR "devlink port function rate "
-> --
-> 2.26.2
+ drivers/net/ethernet/marvell/prestera/prestera_switchdev.c | 4 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c       | 2 +-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c      | 4 ++--
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c   | 2 +-
+ drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c    | 2 +-
+ drivers/net/ethernet/rocker/rocker_main.c                  | 2 +-
+ drivers/net/ethernet/rocker/rocker_ofdpa.c                 | 2 +-
+ drivers/net/ethernet/ti/am65-cpsw-switchdev.c              | 2 +-
+ drivers/net/ethernet/ti/cpsw_switchdev.c                   | 2 +-
+ drivers/s390/net/qeth_l2_main.c                            | 4 ++--
+ net/dsa/slave.c                                            | 2 +-
+ 11 files changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
+index 0b3e8f2db294..9a309169dbae 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
+@@ -748,7 +748,7 @@ static void
+ prestera_fdb_offload_notify(struct prestera_port *port,
+ 			    struct switchdev_notifier_fdb_info *info)
+ {
+-	struct switchdev_notifier_fdb_info send_info;
++	struct switchdev_notifier_fdb_info send_info = {};
+ 
+ 	send_info.addr = info->addr;
+ 	send_info.vid = info->vid;
+@@ -1123,7 +1123,7 @@ static int prestera_switchdev_blk_event(struct notifier_block *unused,
+ static void prestera_fdb_event(struct prestera_switch *sw,
+ 			       struct prestera_event *evt, void *arg)
+ {
+-	struct switchdev_notifier_fdb_info info;
++	struct switchdev_notifier_fdb_info info = {};
+ 	struct net_device *dev = NULL;
+ 	struct prestera_port *port;
+ 	struct prestera_lag *lag;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
+index f3f56f32e435..69a3630818d7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
+@@ -69,7 +69,7 @@ static void
+ mlx5_esw_bridge_fdb_offload_notify(struct net_device *dev, const unsigned char *addr, u16 vid,
+ 				   unsigned long val)
+ {
+-	struct switchdev_notifier_fdb_info send_info;
++	struct switchdev_notifier_fdb_info send_info = {};
+ 
+ 	send_info.addr = addr;
+ 	send_info.vid = vid;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 7e221ef01437..f69cbb3852d5 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -9079,7 +9079,7 @@ mlxsw_sp_rif_fid_fid_get(struct mlxsw_sp_rif *rif,
+ 
+ static void mlxsw_sp_rif_fid_fdb_del(struct mlxsw_sp_rif *rif, const char *mac)
+ {
+-	struct switchdev_notifier_fdb_info info;
++	struct switchdev_notifier_fdb_info info = {};
+ 	struct net_device *dev;
+ 
+ 	dev = br_fdb_find_port(rif->dev, mac, 0);
+@@ -9127,8 +9127,8 @@ mlxsw_sp_rif_vlan_fid_get(struct mlxsw_sp_rif *rif,
+ 
+ static void mlxsw_sp_rif_vlan_fdb_del(struct mlxsw_sp_rif *rif, const char *mac)
+ {
++	struct switchdev_notifier_fdb_info info = {};
+ 	u16 vid = mlxsw_sp_fid_8021q_vid(rif->fid);
+-	struct switchdev_notifier_fdb_info info;
+ 	struct net_device *br_dev;
+ 	struct net_device *dev;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
+index c5ef9aa64efe..8f90cd323d5f 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
+@@ -2508,7 +2508,7 @@ mlxsw_sp_fdb_call_notifiers(enum switchdev_notifier_type type,
+ 			    const char *mac, u16 vid,
+ 			    struct net_device *dev, bool offloaded)
+ {
+-	struct switchdev_notifier_fdb_info info;
++	struct switchdev_notifier_fdb_info info = {};
+ 
+ 	info.addr = mac;
+ 	info.vid = vid;
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c b/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
+index 0443f66b5550..9a8e4f201eb1 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
+@@ -277,7 +277,7 @@ static void sparx5_fdb_call_notifiers(enum switchdev_notifier_type type,
+ 				      const char *mac, u16 vid,
+ 				      struct net_device *dev, bool offloaded)
+ {
+-	struct switchdev_notifier_fdb_info info;
++	struct switchdev_notifier_fdb_info info = {};
+ 
+ 	info.addr = mac;
+ 	info.vid = vid;
+diff --git a/drivers/net/ethernet/rocker/rocker_main.c b/drivers/net/ethernet/rocker/rocker_main.c
+index a46633606cae..1f06b92ee5bb 100644
+--- a/drivers/net/ethernet/rocker/rocker_main.c
++++ b/drivers/net/ethernet/rocker/rocker_main.c
+@@ -2715,7 +2715,7 @@ static void
+ rocker_fdb_offload_notify(struct rocker_port *rocker_port,
+ 			  struct switchdev_notifier_fdb_info *recv_info)
+ {
+-	struct switchdev_notifier_fdb_info info;
++	struct switchdev_notifier_fdb_info info = {};
+ 
+ 	info.addr = recv_info->addr;
+ 	info.vid = recv_info->vid;
+diff --git a/drivers/net/ethernet/rocker/rocker_ofdpa.c b/drivers/net/ethernet/rocker/rocker_ofdpa.c
+index 967a634ee9ac..e33a9d283a4e 100644
+--- a/drivers/net/ethernet/rocker/rocker_ofdpa.c
++++ b/drivers/net/ethernet/rocker/rocker_ofdpa.c
+@@ -1822,7 +1822,7 @@ static void ofdpa_port_fdb_learn_work(struct work_struct *work)
+ 		container_of(work, struct ofdpa_fdb_learn_work, work);
+ 	bool removing = (lw->flags & OFDPA_OP_FLAG_REMOVE);
+ 	bool learned = (lw->flags & OFDPA_OP_FLAG_LEARNED);
+-	struct switchdev_notifier_fdb_info info;
++	struct switchdev_notifier_fdb_info info = {};
+ 
+ 	info.addr = lw->addr;
+ 	info.vid = lw->vid;
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-switchdev.c b/drivers/net/ethernet/ti/am65-cpsw-switchdev.c
+index 9c29b363e9ae..599708a3e81d 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-switchdev.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-switchdev.c
+@@ -358,7 +358,7 @@ static int am65_cpsw_port_obj_del(struct net_device *ndev, const void *ctx,
+ static void am65_cpsw_fdb_offload_notify(struct net_device *ndev,
+ 					 struct switchdev_notifier_fdb_info *rcv)
+ {
+-	struct switchdev_notifier_fdb_info info;
++	struct switchdev_notifier_fdb_info info = {};
+ 
+ 	info.addr = rcv->addr;
+ 	info.vid = rcv->vid;
+diff --git a/drivers/net/ethernet/ti/cpsw_switchdev.c b/drivers/net/ethernet/ti/cpsw_switchdev.c
+index f7fb6e17dadd..a7d97d429e06 100644
+--- a/drivers/net/ethernet/ti/cpsw_switchdev.c
++++ b/drivers/net/ethernet/ti/cpsw_switchdev.c
+@@ -368,7 +368,7 @@ static int cpsw_port_obj_del(struct net_device *ndev, const void *ctx,
+ static void cpsw_fdb_offload_notify(struct net_device *ndev,
+ 				    struct switchdev_notifier_fdb_info *rcv)
+ {
+-	struct switchdev_notifier_fdb_info info;
++	struct switchdev_notifier_fdb_info info = {};
+ 
+ 	info.addr = rcv->addr;
+ 	info.vid = rcv->vid;
+diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
+index 2abf86c104d5..d7cdd9cfe485 100644
+--- a/drivers/s390/net/qeth_l2_main.c
++++ b/drivers/s390/net/qeth_l2_main.c
+@@ -279,7 +279,7 @@ static void qeth_l2_set_pnso_mode(struct qeth_card *card,
+ 
+ static void qeth_l2_dev2br_fdb_flush(struct qeth_card *card)
+ {
+-	struct switchdev_notifier_fdb_info info;
++	struct switchdev_notifier_fdb_info info = {};
+ 
+ 	QETH_CARD_TEXT(card, 2, "fdbflush");
+ 
+@@ -679,7 +679,7 @@ static void qeth_l2_dev2br_fdb_notify(struct qeth_card *card, u8 code,
+ 				      struct net_if_token *token,
+ 				      struct mac_addr_lnid *addr_lnid)
+ {
+-	struct switchdev_notifier_fdb_info info;
++	struct switchdev_notifier_fdb_info info = {};
+ 	u8 ntfy_mac[ETH_ALEN];
+ 
+ 	ether_addr_copy(ntfy_mac, addr_lnid->mac);
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 532085da8d8f..23be8e01026b 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -2291,8 +2291,8 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
+ static void
+ dsa_fdb_offload_notify(struct dsa_switchdev_event_work *switchdev_work)
+ {
++	struct switchdev_notifier_fdb_info info = {};
+ 	struct dsa_switch *ds = switchdev_work->ds;
+-	struct switchdev_notifier_fdb_info info;
+ 	struct dsa_port *dp;
+ 
+ 	if (!dsa_is_user_port(ds, switchdev_work->port))
+-- 
+2.25.1
 
