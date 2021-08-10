@@ -2,183 +2,299 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6268E3E86B0
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 01:47:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9C433E86B5
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 01:51:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235456AbhHJXrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 19:47:32 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46980 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235501AbhHJXrb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 19:47:31 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17ANkmgc001619;
-        Tue, 10 Aug 2021 16:46:54 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=YLtYe+/cd8i27L54ShrA17+jVIR8QfpJ00M1FHcDAGc=;
- b=daVsg4ajGS/NRs62irP6dXUt0hGbkeZshp9l3eq2xQr75dTD1b4hQoISl72ds4DGyD5Q
- 8T0rVxo0zzeTPnDbnOWaTMYiqeCXGwvJY4XIOTq4SHLRI6Lrl3ZDUrt26KWps8SlHod4
- ZdG2RJqPFbh0ZSNa2/+s33DxQUIksUq/fW0= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3aby5v9q6j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 10 Aug 2021 16:46:53 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.228) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 10 Aug 2021 16:46:53 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DoUDjnjvNt67i1D+aqVdOIRedQt8JBpMB70Wrz5LwgBE8CKyQ5vy6lbIjutOOMZFsEiLiDwbVFp1fE9w3ldhWkpiRt8U2EQ3Fwl3r14ssMJJXjnIb5anprQtrJCY4qvtrEkrZQkog29LEnJTUshnNA7drIUo2KTRaObIethktrOcrzgoHd99/KrEzQcQ+4jnkyyIxkLEvtAh6Ij2p+TtrZnUakJ9LjLZ6xTiBjiBjTUjbAmf7QDvwR19tvfbYq10WDNaFr408Ca0UxCQrOS2aDsa1/P99vRJXq7xtcCRa6/sLIM+3dZKOtFDNfIs27mkxq2WQskYdjcb5aMmE8QnXQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y85xpa3i4Svx3jTih6o5jAUY3qbMaqeNqdcxvs2WM+c=;
- b=OhzWZiPVan7YwZhfaJW5dopWddX5l4ggFnGVmUhEUGA7a9+qcRLQBOR7aQMN3SUPasm6L7YcEWZ433FAIZgixBgDOtp/n87Pou6dO4cpvBPF/j+gxmOQBIWDsS2XoCh5lCjy7sC0RbKCC1G6bf3GHvOjsBoLPdakWKdoSUSC2ejyCvCtzN6mgFPPzjcjDSTq+mL3mMZ1zn359Z0rhMgk2m+qIoxt5fAjTm7z7/ZPs7Wc/NhMdbZBDPgOhAMAAYRaaIKpAlf7HKOEvQocM4m4Ai97p28U+g9VOJ9a7mzC2WDVLumhNSspFE8PklfJimA6+5T35Yw4F0Zzxq5z1J019Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by SA0PR15MB3903.namprd15.prod.outlook.com (2603:10b6:806:8a::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.14; Tue, 10 Aug
- 2021 23:46:52 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::c143:fac2:85b4:14cb]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::c143:fac2:85b4:14cb%7]) with mapi id 15.20.4394.023; Tue, 10 Aug 2021
- 23:46:52 +0000
-Subject: Re: [PATCH v4 bpf-next 3/3] selftest/bpf: Implement sample UNIX
- domain socket iterator program.
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S235493AbhHJXvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 19:51:18 -0400
+Received: from mga04.intel.com ([192.55.52.120]:29803 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235374AbhHJXvO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 19:51:14 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10072"; a="213164725"
+X-IronPort-AV: E=Sophos;i="5.84,311,1620716400"; 
+   d="scan'208";a="213164725"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2021 16:50:49 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,311,1620716400"; 
+   d="scan'208";a="516087340"
+Received: from linux.intel.com ([10.54.29.200])
+  by FMSMGA003.fm.intel.com with ESMTP; 10 Aug 2021 16:50:49 -0700
+Received: from linux.intel.com (vwong3-iLBPG3.png.intel.com [10.88.229.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id D25E95808D9;
+        Tue, 10 Aug 2021 16:50:44 -0700 (PDT)
+Date:   Wed, 11 Aug 2021 07:50:41 +0800
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-CC:     Benjamin Herrenschmidt <benh@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-References: <20210810092807.13190-1-kuniyu@amazon.co.jp>
- <20210810092807.13190-4-kuniyu@amazon.co.jp>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <6ef818ee-ee75-b2f0-5532-7cc3fa4eb68e@fb.com>
-Date:   Tue, 10 Aug 2021 16:46:49 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
-In-Reply-To: <20210810092807.13190-4-kuniyu@amazon.co.jp>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-X-ClientProxiedBy: SJ0PR03CA0152.namprd03.prod.outlook.com
- (2603:10b6:a03:338::7) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21d6::1572] (2620:10d:c090:400::5:d180) by SJ0PR03CA0152.namprd03.prod.outlook.com (2603:10b6:a03:338::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.17 via Frontend Transport; Tue, 10 Aug 2021 23:46:51 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e82c8372-be4a-4fa2-1123-08d95c5920d8
-X-MS-TrafficTypeDiagnostic: SA0PR15MB3903:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SA0PR15MB3903815CB17DC03747058D58D3F79@SA0PR15MB3903.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: f82g+i/c+nJTpvQcKGDsQSBzn+UuySaykdlk8VBgFJqDHp/xp9euXLcN7WFlT5VXOzpG8i1pCY4sE0An0d2OLyZQ0LIwgTZkSfQQtsr8LnV6pD6sAkfLP6VLL0f3Z5pb8v63u2qomxwbOAHEwSipNi3RLnhOTgVOoYKnJ5dwsvOmciogDizWtRC7iUe74OdRJe6nubrBfYzUOx4OrgZl+V/qjTOoLr5/vr87ufAxLULSpuEld27gaWfC7mjtQEsSpUvlcNXCDRjop9WVO1Cz+pKu3s22f7TmrnhEA0PX4ruU7YOsuoI1FtQLRkVo8TXC54lnYNz0sOdos+8rcjBBQkBwJGCzxSxvY6u7dbZbptL+Z04Z6X25lbsd4Cq8vaBHSoCzwk2PcNjBjdwCQsSU6kXsZBzuQCbADEQYJZPD0JsX4E2tvfROMXqO5XRxhkNMAhF5UJ8elWJlrnMnTJx4+LlPoEDKbFy9uqMoq3P2M/IHBzvQOptfSHKNQ/F19IyjpNz6GRrh0F2kJ5uoJo+06Ngi1nx5V3C0MnuQXiO3NngiMkFm7BkPeHgFOCUhT23om8jNv78gbY85JT4qhqhLVss4vRwK2luHl8IDoXb6spptIQG28AMvFAc32+AHHZROI+VMOsLdCIlFQY+3ACtaCw3i2J0Ny4GCWvC6on9TkYeTQbZksfFqG16bE7bjAD/1AMgz5lIjBoB7m8v3mPUXaefIcF0SmV+qjG8U+mkfkF2Y20KCLk5F4tJmGdD7tjb8sG8rlkD7V+Mt8VZEIk2l2fgljqrPzBma74cwu0RFgbABi3+2C4q/FwD0Y6j2XR5MqmoUifKdCpp/oTug0NmHkA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(66946007)(66556008)(66476007)(86362001)(36756003)(921005)(31696002)(2616005)(4326008)(2906002)(54906003)(8676002)(6486002)(110136005)(31686004)(316002)(7416002)(52116002)(508600001)(53546011)(186003)(8936002)(966005)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YkV5SDJFSCtlUWVkK2RJMGtrRHQ3UGtkZEg5TlZIYUFxZnpDMXRxVzVyQko4?=
- =?utf-8?B?amZ1SkRxVUNzVDVlQlQ4N0RuajU2YjVBOTN0OHRBSktNVFlpOGhBMzBaNmhi?=
- =?utf-8?B?cks1dGFDVjBOUnpXQjd4VjVsQ0NWTVBLVXorMUxORUZiUjNwTEE5RTNyZkNv?=
- =?utf-8?B?eVhkSks2ZmppczAzdE1tdlBhdmpTN3hyVmIwOG9XbUtLV3BMbWNJRUZ0clNP?=
- =?utf-8?B?bTRaSXZHRllQS243U09jRkt6ci85TXoyREpsYmFRWXZBSXhrMXFqdzNIWTVT?=
- =?utf-8?B?VzJ4RGZ4WU5CbDJCeTI4THlaZnowbWR3cWs0UEY3WDNhVVJOMzJMRWc1VkQ4?=
- =?utf-8?B?UmhoWTBiVmhSWkplVUMwNXJoOUFiMjlyWHA3cGJIbXNYcEcveHV2RGtYbHJJ?=
- =?utf-8?B?Y1pOcElUNTZ3VThkd2FDcy91YUJmWWRySFNNMFFzeXROSndYeUpSNy9iTVNI?=
- =?utf-8?B?emxxZ3ZSN0FnQVpFbXpseTRha2dxSEorWHFNRmszL3VPOE90Z1Y3RDM1M2RK?=
- =?utf-8?B?VTNDT2ZCMm5LR1FCMDI1Z0oxRnlFb2tqV0xSZ3JuS3l6T3dlaURNTVdsd2xo?=
- =?utf-8?B?cTJ6TXlSYy9oMWxMZC9rTUQ5dUJXRUtIeGlVUUNtbUZyWlNJdDN4cHhGU0RC?=
- =?utf-8?B?T3Q4RUozQmp5UW1DUUZGaFJWMWxFWm5vUUZaT0p3OGc5MVl2UDQrdEJqVnBH?=
- =?utf-8?B?V0ZhZUlCWWh2RUcrU2xxenBobzRLT0dYYTM1ZDBjRHlZdXBRU2t5QnNsUFBw?=
- =?utf-8?B?aUs1aGZBS0VRNHBGb2g5bHVjNzRrcS9zcjNOZlFLVEoxRDBlTDBKc1E1Mzh3?=
- =?utf-8?B?Q0NmdEJmVnZrcnRERTVUQ0N1YVNZcWZTYXEwRlVJc0VyTk8rWkJNQmhQVHhZ?=
- =?utf-8?B?bnZZQ0F5ODQvbGJ1WjdnZFVzdEtDMS83cU1HdTJaMU1iSkJ2V1Z1Y2xuVHBn?=
- =?utf-8?B?V3hLa3VxbG0rd3hDK051SHVibDd0TVJWQTQ0VC9LNXNJV0NrV3Vnd2ovc2RT?=
- =?utf-8?B?NDBrNGsyVWtGTHBnaXhEbXlRcE9abXphRHdrV0R4S0J1L2VSdFlLRVdzUmIr?=
- =?utf-8?B?c1RsVXZNNWpWaGVXTmJ6QmJ3OXZUK1BQQXZZbi8wd3hLWERhZnF6bEdDcVNq?=
- =?utf-8?B?dmpMWEo5M1RmWkdvZTZSUjNoYVB1N3dvUXlvL3NyNWVNRWluL2xseXRiaUhi?=
- =?utf-8?B?RWZPUElKSjF0Z0ZvM2hYVXVLTldaSE9LTi9GTHgvUVUvZ0ZCWkp5cFFudlZQ?=
- =?utf-8?B?MzRPelNidkVvVGQwUElJdk1CczNzM0J0Z1c0aXFXWWxoeWNsdVJrSTgwTlkr?=
- =?utf-8?B?YmRWQ0w4aXRzd2lBQkFpYUdXenBLY1A4cW5XYTlvcVVYL2JlRGJhdXdOa0M2?=
- =?utf-8?B?czFsSUhZUTY5M25YVXFoYldFdlVacE5qRk82WUFMQWRneVprTWJseEo2TGZC?=
- =?utf-8?B?QVo5aVozQ3p0a05iZ3czMTM2YVhKSWdSb0hKUDIySTZFdk56SVpXVjF0MzZn?=
- =?utf-8?B?aVAvN3hZSGcweWdvZGQwT0llYllPandWUU4wSnZRUFFtdVFJZTFBenp1TEo0?=
- =?utf-8?B?eVVlSjVLY0JpdWhvMTVPcDdFR3U1eVFidjJnRVlKN0xTOWllaWNydGdlanpl?=
- =?utf-8?B?NFN4a3BDYWFNY2JVTW5jV041NWo0TnRmTzM5aUJHS0QyM000dUloa2tlSGdm?=
- =?utf-8?B?eENwdU1sTDF4cUE5dGVDVEUyRlgrdmFidXkwM0JIWnNPSEN0dGpDdzI5d0lM?=
- =?utf-8?B?OWc3dVNMTDdqdGNWdjdjZTBzb3RoeVJ6VUNsVTIwczVoSm5PRERXMW9WN0Uw?=
- =?utf-8?Q?u884s/GQGKL099NUdN7Z0S/eKrI2aGmD1Q9Pc=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: e82c8372-be4a-4fa2-1123-08d95c5920d8
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2021 23:46:52.3990
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8BbPWlpYohzd8s1xsmr1ziVfyxqzr7tzcTWUON3iLQHinxiz1vKah4ZJvpKCfcUi
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR15MB3903
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: 0imHxm5LdvveSwm22ResnbFDB7cS7Wyd
-X-Proofpoint-ORIG-GUID: 0imHxm5LdvveSwm22ResnbFDB7cS7Wyd
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 1 URL was un-rewritten
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/2] net: pcs: xpcs: enable skip xPCS soft reset
+Message-ID: <20210810235041.GA30818@linux.intel.com>
+References: <20210809102229.933748-1-vee.khee.wong@linux.intel.com>
+ <20210809102229.933748-2-vee.khee.wong@linux.intel.com>
+ <20210809110626.4kfkegwixiualq2x@skbuf>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-08-10_08:2021-08-10,2021-08-10 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015 bulkscore=0
- adultscore=0 suspectscore=0 impostorscore=0 phishscore=0 spamscore=0
- mlxscore=0 malwarescore=0 mlxlogscore=612 lowpriorityscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2107140000 definitions=main-2108100155
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210809110626.4kfkegwixiualq2x@skbuf>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 8/10/21 2:28 AM, Kuniyuki Iwashima wrote:
-> The iterator can output the same result compared to /proc/net/unix.
+On Mon, Aug 09, 2021 at 02:06:26PM +0300, Vladimir Oltean wrote:
+> Hi VK,
 > 
->    # cat /sys/fs/bpf/unix
->    Num       RefCount Protocol Flags    Type St Inode Path
->    ffff9ab7122db000: 00000002 00000000 00010000 0001 01 10623 private/defer
-
-There seems a misalignment between header line and data line.
-I know /proc/net/unix having this issue as well. But can we adjust 
-spacing in bpf program to make header/data properly aligned?
-
->    ffff9fca0023d000: 00000002 00000000 00000000 0001 01 11058 @Hello@World@
+> On Mon, Aug 09, 2021 at 06:22:28PM +0800, Wong Vee Khee wrote:
+> > diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
+> > index 63fda3fc40aa..c7a3aa862079 100644
+> > --- a/drivers/net/pcs/pcs-xpcs.c
+> > +++ b/drivers/net/pcs/pcs-xpcs.c
+> > @@ -1081,7 +1081,8 @@ static const struct phylink_pcs_ops xpcs_phylink_ops = {
+> >  };
+> >  
+> >  struct dw_xpcs *xpcs_create(struct mdio_device *mdiodev,
+> > -			    phy_interface_t interface)
+> > +			    phy_interface_t interface,
+> > +			    bool skip_reset)
+> >  {
+> >  	struct dw_xpcs *xpcs;
+> >  	u32 xpcs_id;
+> > @@ -1113,9 +1114,16 @@ struct dw_xpcs *xpcs_create(struct mdio_device *mdiodev,
+> >  		xpcs->pcs.ops = &xpcs_phylink_ops;
+> >  		xpcs->pcs.poll = true;
+> >  
+> > -		ret = xpcs_soft_reset(xpcs, compat);
+> > -		if (ret)
+> > -			goto out;
+> > +		if (!skip_reset) {
+> > +			dev_info(&xpcs->mdiodev->dev, "%s: xPCS soft reset\n",
+> > +				 __func__);
+> > +			ret = xpcs_soft_reset(xpcs, compat);
+> > +			if (ret)
+> > +				goto out;
+> > +		} else {
+> > +			dev_info(&xpcs->mdiodev->dev,
+> > +				 "%s: skip xpcs soft reset\n", __func__);
+> > +		}
 > 
->    # cat /proc/net/unix
->    Num       RefCount Protocol Flags    Type St Inode Path
->    ffff9ab7122db000: 00000002 00000000 00010000 0001 01 10623 private/defer
->    ffff9fca0023d000: 00000002 00000000 00000000 0001 01 11058 @Hello@World@
-> 
-> Note that this prog requires the patch ([0]) for LLVM code gen.  Thanks to
-> Yonghong Song for analysing and fixing.
-> 
-> [0] https://reviews.llvm.org/D107483
-> 
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> I don't feel like the prints are really necessary.
 
-LGTM. Thanks!
+Sounds good to me. I'll remove these.
 
-Acked-by: Yonghong Song <yhs@fb.com>
+> 
+> >  
+> >  		return xpcs;
+> >  	}
+> > diff --git a/include/linux/pcs/pcs-xpcs.h b/include/linux/pcs/pcs-xpcs.h
+> > index add077a81b21..0c05a63f3446 100644
+> > --- a/include/linux/pcs/pcs-xpcs.h
+> > +++ b/include/linux/pcs/pcs-xpcs.h
+> > @@ -36,7 +36,8 @@ void xpcs_validate(struct dw_xpcs *xpcs, unsigned long *supported,
+> >  int xpcs_config_eee(struct dw_xpcs *xpcs, int mult_fact_100ns,
+> >  		    int enable);
+> >  struct dw_xpcs *xpcs_create(struct mdio_device *mdiodev,
+> > -			    phy_interface_t interface);
+> > +			    phy_interface_t interface,
+> > +			    bool xpcs_reset);
+> >  void xpcs_destroy(struct dw_xpcs *xpcs);
+> >  
+> 
+> How about exporting the reset functionality as a separate function, and
+> the Intel Alder Lake stmmac shim just won't call it? Like this:
+> 
+> -----------------------------[ cut here ]-----------------------------
+> diff --git a/drivers/net/dsa/sja1105/sja1105_mdio.c b/drivers/net/dsa/sja1105/sja1105_mdio.c
+> index 19aea8fb76f6..5acf6742da4d 100644
+> --- a/drivers/net/dsa/sja1105/sja1105_mdio.c
+> +++ b/drivers/net/dsa/sja1105/sja1105_mdio.c
+> @@ -437,13 +437,17 @@ static int sja1105_mdiobus_pcs_register(struct sja1105_private *priv)
+>  			goto out_pcs_free;
+>  		}
+>  
+> -		xpcs = xpcs_create(mdiodev, priv->phy_mode[port]);
+> +		xpcs = xpcs_create(mdiodev);
+>  		if (IS_ERR(xpcs)) {
+>  			rc = PTR_ERR(xpcs);
+>  			goto out_pcs_free;
+>  		}
+>  
+>  		priv->xpcs[port] = xpcs;
+> +
+> +		rc = xpcs_reset(xpcs, priv->phy_mode[port]);
+> +		if (rc)
+> +			goto out_pcs_free;
+>  	}
+>  
+>  	priv->mdio_pcs = bus;
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+> index a5d150c5f3d8..81a145009488 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+> @@ -401,12 +401,15 @@ int stmmac_xpcs_setup(struct mii_bus *bus)
+>  {
+>  	struct net_device *ndev = bus->priv;
+>  	struct mdio_device *mdiodev;
+> +	bool skip_xpcs_soft_reset;
+>  	struct stmmac_priv *priv;
+>  	struct dw_xpcs *xpcs;
+>  	int mode, addr;
+> +	int err;
+>  
+>  	priv = netdev_priv(ndev);
+>  	mode = priv->plat->phy_interface;
+> +	skip_xpcs_soft_reset = priv->plat->skip_xpcs_soft_reset;
+>  
+>  	/* Try to probe the XPCS by scanning all addresses. */
+>  	for (addr = 0; addr < PHY_MAX_ADDR; addr++) {
+> @@ -414,12 +417,21 @@ int stmmac_xpcs_setup(struct mii_bus *bus)
+>  		if (IS_ERR(mdiodev))
+>  			continue;
+>  
+> -		xpcs = xpcs_create(mdiodev, mode);
+> +		xpcs = xpcs_create(mdiodev);
+>  		if (IS_ERR_OR_NULL(xpcs)) {
+>  			mdio_device_free(mdiodev);
+>  			continue;
+>  		}
+>  
+> +		if (!skip_xpcs_soft_reset) {
+> +			err = xpcs_reset(xpcs, mode);
+> +			if (err) {
+> +				xpcs_destroy(xpcs);
+> +				mdio_device_free(mdiodev);
+> +				continue;
+> +			}
+> +		}
+> +
+>  		priv->hw->xpcs = xpcs;
+>  		break;
+>  	}
+> diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
+> index 63fda3fc40aa..2e721e57bee4 100644
+> --- a/drivers/net/pcs/pcs-xpcs.c
+> +++ b/drivers/net/pcs/pcs-xpcs.c
+> @@ -248,6 +248,18 @@ static int xpcs_soft_reset(struct dw_xpcs *xpcs,
+>  	return xpcs_poll_reset(xpcs, dev);
+>  }
+>  
+> +int xpcs_reset(struct dw_xpcs *xpcs, phy_interface_t interface)
+> +{
+> +	const struct xpcs_compat *compat;
+> +
+> +	compat = xpcs_find_compat(xpcs->id, interface);
+> +	if (!compat)
+> +		return -ENODEV;
+> +
+> +	return xpcs_soft_reset(xpcs, compat);
+> +}
+> +EXPORT_SYMBOL_GPL(xpcs_reset);
+> +
+>  #define xpcs_warn(__xpcs, __state, __args...) \
+>  ({ \
+>  	if ((__state)->link) \
+> @@ -1080,12 +1092,11 @@ static const struct phylink_pcs_ops xpcs_phylink_ops = {
+>  	.pcs_link_up = xpcs_link_up,
+>  };
+>  
+> -struct dw_xpcs *xpcs_create(struct mdio_device *mdiodev,
+> -			    phy_interface_t interface)
+> +struct dw_xpcs *xpcs_create(struct mdio_device *mdiodev)
+>  {
+>  	struct dw_xpcs *xpcs;
+>  	u32 xpcs_id;
+> -	int i, ret;
+> +	int i;
+>  
+>  	xpcs = kzalloc(sizeof(*xpcs), GFP_KERNEL);
+>  	if (!xpcs)
+> @@ -1097,35 +1108,18 @@ struct dw_xpcs *xpcs_create(struct mdio_device *mdiodev,
+>  
+>  	for (i = 0; i < ARRAY_SIZE(xpcs_id_list); i++) {
+>  		const struct xpcs_id *entry = &xpcs_id_list[i];
+> -		const struct xpcs_compat *compat;
+>  
+>  		if ((xpcs_id & entry->mask) != entry->id)
+>  			continue;
+>  
+>  		xpcs->id = entry;
+> -
+> -		compat = xpcs_find_compat(entry, interface);
+> -		if (!compat) {
+> -			ret = -ENODEV;
+> -			goto out;
+> -		}
+> -
+>  		xpcs->pcs.ops = &xpcs_phylink_ops;
+>  		xpcs->pcs.poll = true;
+>  
+> -		ret = xpcs_soft_reset(xpcs, compat);
+> -		if (ret)
+> -			goto out;
+> -
+>  		return xpcs;
+>  	}
+>  
+> -	ret = -ENODEV;
+> -
+> -out:
+> -	kfree(xpcs);
+> -
+> -	return ERR_PTR(ret);
+> +	return ERR_PTR(-ENODEV);
+>  }
+>  EXPORT_SYMBOL_GPL(xpcs_create);
+>  
+> diff --git a/include/linux/pcs/pcs-xpcs.h b/include/linux/pcs/pcs-xpcs.h
+> index add077a81b21..d841f55f12cc 100644
+> --- a/include/linux/pcs/pcs-xpcs.h
+> +++ b/include/linux/pcs/pcs-xpcs.h
+> @@ -35,8 +35,8 @@ void xpcs_validate(struct dw_xpcs *xpcs, unsigned long *supported,
+>  		   struct phylink_link_state *state);
+>  int xpcs_config_eee(struct dw_xpcs *xpcs, int mult_fact_100ns,
+>  		    int enable);
+> -struct dw_xpcs *xpcs_create(struct mdio_device *mdiodev,
+> -			    phy_interface_t interface);
+> +int xpcs_reset(struct dw_xpcs *xpcs, phy_interface_t interface);
+> +struct dw_xpcs *xpcs_create(struct mdio_device *mdiodev);
+>  void xpcs_destroy(struct dw_xpcs *xpcs);
+>  
+>  #endif /* __LINUX_PCS_XPCS_H */
+> diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
+> index a6f03b36fc4f..0f901773c5e4 100644
+> --- a/include/linux/stmmac.h
+> +++ b/include/linux/stmmac.h
+> @@ -268,5 +268,6 @@ struct plat_stmmacenet_data {
+>  	int msi_rx_base_vec;
+>  	int msi_tx_base_vec;
+>  	bool use_phy_wol;
+> +	bool skip_xpcs_soft_reset;
+>  };
+>  #endif
+> -----------------------------[ cut here ]-----------------------------
+> 
+> I also gave this patch a run on sja1105 and it still works.
+
+Thanks for the suggestion. I tested it out on stmmac and it works.
+I will use this as it looks neater. :)
+
+Regards,
+ VK
+
