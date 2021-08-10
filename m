@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7DB03E5955
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 13:46:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78B093E5956
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 13:46:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240194AbhHJLrD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 07:47:03 -0400
-Received: from mail-bn8nam11on2072.outbound.protection.outlook.com ([40.107.236.72]:58529
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        id S240254AbhHJLrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 07:47:06 -0400
+Received: from mail-dm6nam12on2082.outbound.protection.outlook.com ([40.107.243.82]:27233
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233534AbhHJLrC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Aug 2021 07:47:02 -0400
+        id S240121AbhHJLrD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 07:47:03 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R01P5wlsde9vnR0QhItQPJyPvFLl2rlUFNfWtr47ZHR4j1ve3n0OjgTyhx1hNKb20T98D4VcsKko3IOw2nrx5yHxr/fsJc1tm5kCb8iGvX2EpNo730GCnBmUe+6HB/pkZDQ077RMAzCfEFOGy4eIfOkjdNOCZNrUwaXCqdeyAG3lGXpV5fZGEn7Va6A3zjwrqvYAPqDNUuKekw5gULRBvkekgyeX5Y5CPPp605PEtwCMnEya7TLF335un4iXggclX+NgbTmxzv0G48QUuc501n/2WX6CRLFQOLwlLtUU9mBupAFc0KO+gQ48NA4xav54Qc6M2MNXKMwKQvEeoRsF+g==
+ b=iUWtkk7HTzpBeOX48syeC4mEW6OJ1qBD4ZCNPniz6y/a2Co+5h9CSK7aDl6hGqN1mV09PLL6LxxVYid+QuFimp6LMjdyQA8it8hn0kW6X/LD4qc6xUL6Lxiw7hEkYiAQSM6UqLIoJ3DLAKu3mL01KD90hMVTzumTbRRXg+dHeC7KeRyCgFyBaswSE5wtkLds157eoFi5FHB1Ix7SBKwZb0zwvw+G6S1BNeR0Gru7a5Cnorv/6QpYQyKNEc+VYe5Z4VIN3u1lF1+HKItNoQFFvWmJG8QlR938AH7/oZ3XT2YxKEmMqqGsMSp7zIeHB+ywI2Tu6kW4SosFgMVr0U88cA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ucsQipBWhfn8p1v19fYk1ba8LLdehNnjXA23LrWumeY=;
- b=NK9pmOAUkvoMbd54ataIfu1ZSJJ47yZ6ETmLTBomnKKRkL5YMIwYfs2UW1SZM2h8uKkkWxzgrjkPZCE5O15cJoQkrIVGcc+xnwonEDapq8BmbqCwWq+bVlYW80KyPrvKM6U2d8sdeYRfqI4xJ4sk7JOjcB2coG8td7DoFU8n/Lx6Zio1CuvErn0nhm6DsB9WfL84iWJvL1Tgqky2gUvFxJ2wgFZCdmS1pY0/I+1OiG5vZFtxjBYSahhG1MxA8K2huCm0YCOnBo1KT+pmCxn1RBBFBqkKj5s4LAoD2vGK3CbEJcUok8xsz+KSGi0+Rb0Vn+4DKwYUTGKCc4iFQ9DWug==
+ bh=/4TP67xCYbvJGydxqx01Hd7b5IUy0HkbZU1Dxdmel6g=;
+ b=Z3KWhDxvFrTFq+wxPAVWKAdA9/tPCgVarg3n0X8pMgUecHKkiUfObmBYsREDnasE3tsl3XRfWPMv6qAGLiV8Cq6WFgIXhY4PzaQh4Lowsaczl6CfAR5jwtskA7VzgRIuQGPknBfZctma7tU0ShewZZMc10GeLOehJLXpH0sh5h9rR6WAIv8QufapQ9FE//75PR1uXB8GcJHDo/n40znGoCxeRzR0g5rR/xRjPMIsDOnDW4oABsvqNJvqzMXwJU5j/j8pXx0SEsacGLO0jMigMhok5pzcWk6PgsyKbsrJk9xVBYBRCh3nrx94jChhwklgSmTj8+UyOrnPleRb7dBQvQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
@@ -26,18 +26,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ucsQipBWhfn8p1v19fYk1ba8LLdehNnjXA23LrWumeY=;
- b=CaUsHP5dQI9FuzOXS2ReCVz7KHGUp6Y8uHL6knkO1QkO51uLSeimFHo6FinB234nETrBvfJkaV5ch7vKi79mcYuTSztaagOFBMHI0aDZI5XHjdaiNFqWej8ci5BMRQ8GGrl+mPGgA1j5ecV3TbKHzVsCJR/8dtddP4Retv9nr/v6jh0t9iM6LWBdKD4f/zX5pgrAYHpRrVp5GWrSTIW1A7T8jQepuLq+BvXyLL7PwPja3wGpq8CjxBsxoZKZIn17dvDJUKR6ysnT6GQFyYyKJ8vHvp/m+htzEgaVYZzVxIhn40VleLuGXpJBOWDKlF1TlpJ9vNAaAwIBga0erd2bDA==
-Received: from BN9P222CA0012.NAMP222.PROD.OUTLOOK.COM (2603:10b6:408:10c::17)
- by BL0PR12MB4964.namprd12.prod.outlook.com (2603:10b6:208:1c7::18) with
+ bh=/4TP67xCYbvJGydxqx01Hd7b5IUy0HkbZU1Dxdmel6g=;
+ b=rOdQEr6zAr6AydMZhUqi2ctMtY+qj0zg1R5CkIJnfhuxGPCkofx1tUTJF/cdzEJC1PxTyiR0OXuK4bf5af36v0lSuHMHpdv4PZtDZkONFGPLlhtAc0GzAEonDyHyaD0ZWlBXssh9ByaufUQFxVVRhD2eXaPkOFjxiqcPU27OUvSd/IY3MWfLFqWiHpYqjX2XnCSYckW1Bgbxb6jiNaedf3PYeZP9kITbzhH0zudFQ2ooahPiQjsCWcnHEUiXReoTu8iAmcMfK8HGK5MC00ajWu8ip4Pa9kENNAwjuEoGWqEYNL9XdsQD96UdMBfao5hXMpBHJpil4Q4A5ixfyib1hg==
+Received: from BN9P222CA0004.NAMP222.PROD.OUTLOOK.COM (2603:10b6:408:10c::9)
+ by BL1PR12MB5046.namprd12.prod.outlook.com (2603:10b6:208:313::24) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.14; Tue, 10 Aug
- 2021 11:46:39 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.17; Tue, 10 Aug
+ 2021 11:46:40 +0000
 Received: from BN8NAM11FT064.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:10c:cafe::cd) by BN9P222CA0012.outlook.office365.com
- (2603:10b6:408:10c::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15 via Frontend
- Transport; Tue, 10 Aug 2021 11:46:39 +0000
+ (2603:10b6:408:10c:cafe::39) by BN9P222CA0004.outlook.office365.com
+ (2603:10b6:408:10c::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.16 via Frontend
+ Transport; Tue, 10 Aug 2021 11:46:40 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
@@ -55,9 +55,9 @@ From:   Parav Pandit <parav@nvidia.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
 CC:     Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
         "Leon Romanovsky" <leonro@nvidia.com>
-Subject: [PATCH net-next 01/10] devlink: Add new "enable_eth" generic device param
-Date:   Tue, 10 Aug 2021 14:46:11 +0300
-Message-ID: <20210810114620.8397-2-parav@nvidia.com>
+Subject: [PATCH net-next 02/10] devlink: Add new "enable_rdma" generic device param
+Date:   Tue, 10 Aug 2021 14:46:12 +0300
+Message-ID: <20210810114620.8397-3-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210810114620.8397-1-parav@nvidia.com>
 References: <20210810114620.8397-1-parav@nvidia.com>
@@ -69,42 +69,42 @@ X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
  HQMAIL107.nvidia.com (172.20.187.13)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 280cfcbe-edd1-4224-4d1b-08d95bf48429
-X-MS-TrafficTypeDiagnostic: BL0PR12MB4964:
-X-Microsoft-Antispam-PRVS: <BL0PR12MB4964812F22E2ABD7322CAED7DCF79@BL0PR12MB4964.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Office365-Filtering-Correlation-Id: 263b60d5-d122-43ca-a42c-08d95bf48462
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5046:
+X-Microsoft-Antispam-PRVS: <BL1PR12MB5046D6BCC6EB72F6023DCA98DCF79@BL1PR12MB5046.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aXU/OAudK7UusV/kVACg7qJEiNoXSowsPrkYyxZY2F2/H2y9BfWNh0PAgGlq0ybw5AHu5A7do2zvgd6oVJEpXGN/XJWoSUCBT0HQgHZGvhrnWbwcSvPMolC3SfbJadXwQNpDiaP1SHO2vzHyRiIvnZRvse9jgFVRjGSTJaFxSQpIILlcrQ78Fe+wQEF2TP47SJ84R3QyiG3EXZIq8XqpLMW55t7CTp5WG4alPe0Orio7JkaCvMbfjqt0Q68C3n2sobs+FE0nD2STugy01uG5I1UF5RQh9LAEekFBuOjgMzqpCAN9jpnu+hejkKToQmsmiDMTTzP4ZjLO0YYaZAJ+I2C+aACWBnxt7fOSLp6DVMPOQ9lgeVK7oqivLRltNXexG9ki7Wy3npkmk4lihCpks65wSqye+zTdsSy7bFpgUC/AsdHzCvelFzCh5pgNIfZyb+r3aq3dczWy5KEowpBY2sbBW5WCG3Cymqkr6lLzbBlpQWSPZD5rUitaSZSR5OzkxoCx7tZqwS0t3yJYTrO0AF8YRh02KJ7vEgPH+mpM30B3qBIJUuIAhdwcQs6kIwg/zsuaXqgnziTaYxKS925o32mfwZs68X5B12pbHt3QitnO9FGdePabVlBS+YGVUt9T9QXM9EbuDrk4Lyl5+UpseW1kNu03Ch3H806V/QVZiTUVMUtIj9GThgwUikCUyofLlMGse36loQ3rh1FoASwKk9p6pv6hHEC9RbhuXsZ/Z40=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(346002)(376002)(136003)(39860400002)(36840700001)(46966006)(6666004)(336012)(36906005)(356005)(1076003)(54906003)(110136005)(316002)(7636003)(82740400003)(16526019)(8676002)(478600001)(186003)(26005)(8936002)(107886003)(36756003)(70206006)(83380400001)(5660300002)(36860700001)(70586007)(47076005)(2616005)(4326008)(426003)(82310400003)(2906002)(86362001)(41533002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: OsWHGpzq6deRYBYDhiswpMDDz/Y1uyQ9Dif978BjJDMYeJgRJA+KX2hAqwEtE0b/PMmciDrrpEZXNMlTUF9eNKlivrhdjPKmb8/RnOrsupkrCN6/dNUaURbBTlU5TDj/Ix9H2zZtVXGma0LamO5H8G3enREMZWHS5KAZCAcnd6mHAT3+fnvS7L+Pxfg5qWgMwKxguas103xq+AcLSu26xyojTS2xq6R0BPDnIfiWxX9vU218z1B4hQ/1FxB/mC9QgS7Upnly9DMowEmlTyrW86kSrfQNxuaIj7uvjozoLXES+P6vqKqFIH7hIyNcnaATPsZWYb0S5kwWvw6Rsjg7X90YdQpei7jisroDwCkB5d8pOmJAYv2JsfnzWemecA8uTFi21PLwHARgzpyp/NhWlfuV+NNgHW63fbhlWFocy8vPjI1CkutUcMii7tn2WKYexVKmneZ5yt5UX3vMd+yMxavmw3Zj6qw9SOAytWplrU86LpNbFjNptXxMqZSAAw5kOM2aWVaj8Zbo47566eZ+YOedgox3BavFiNxzQgx/WPoOdVJK4ke8rVuKmnhFxOqnSkD6fo/bhOocNcfteKZbEA11MChsVKRYDj/atg4JWff9BcX8XiSLWn+rmfr94ZAOEyoedS1w7Osd9XlAixN1xTRzluSOqG9dYXAjktD+3qlBZWhkmUmQHMHohx6OUAS0L0DgZeNpCKB+UNUuQwknOBfJixGsZzP3naMhJnYVOis=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(396003)(39860400002)(346002)(376002)(46966006)(36840700001)(107886003)(2906002)(36906005)(7636003)(82740400003)(16526019)(6666004)(8676002)(316002)(186003)(36756003)(110136005)(4326008)(83380400001)(356005)(82310400003)(70206006)(70586007)(26005)(426003)(54906003)(478600001)(86362001)(36860700001)(336012)(2616005)(47076005)(1076003)(8936002)(5660300002)(41533002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2021 11:46:39.5064
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2021 11:46:39.9311
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 280cfcbe-edd1-4224-4d1b-08d95bf48429
+X-MS-Exchange-CrossTenant-Network-Message-Id: 263b60d5-d122-43ca-a42c-08d95bf48462
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT064.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4964
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5046
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Add new device generic parameter to enable/disable creation of
-Ethernet auxiliary device and associated device functionality
+RDMA auxiliary device and associated device functionality
 in the devlink instance.
 
 User who prefers to disable such functionality can disable it using below
 example.
 
 $ devlink dev param set pci/0000:06:00.0 \
-              name enable_eth value false cmode driverinit
+              name enable_rdma value false cmode driverinit
 $ devlink dev reload pci/0000:06:00.0
 
 At this point devlink instance do not create auxiliary device for the
-Ethernet functionality.
+RDMA functionality.
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
@@ -116,54 +116,54 @@ Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
  3 files changed, 13 insertions(+)
 
 diff --git a/Documentation/networking/devlink/devlink-params.rst b/Documentation/networking/devlink/devlink-params.rst
-index 54c9f107c4b0..219c1272f2d6 100644
+index 219c1272f2d6..a49da0b049b6 100644
 --- a/Documentation/networking/devlink/devlink-params.rst
 +++ b/Documentation/networking/devlink/devlink-params.rst
-@@ -97,6 +97,10 @@ own name.
-    * - ``enable_roce``
+@@ -101,6 +101,10 @@ own name.
       - Boolean
-      - Enable handling of RoCE traffic in the device.
-+   * - ``enable_eth``
+      - When enabled, the device driver will instantiate Ethernet specific
+        auxiliary device of the devlink device.
++   * - ``enable_rdma``
 +     - Boolean
-+     - When enabled, the device driver will instantiate Ethernet specific
++     - When enabled, the device driver will instantiate RDMA specific
 +       auxiliary device of the devlink device.
     * - ``internal_err_reset``
       - Boolean
       - When enabled, the device driver will reset the device on internal
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 0236c77f2fd0..1e3e183bb2c2 100644
+index 1e3e183bb2c2..6f4f0416e598 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -519,6 +519,7 @@ enum devlink_param_generic_id {
- 	DEVLINK_PARAM_GENERIC_ID_RESET_DEV_ON_DRV_PROBE,
+@@ -520,6 +520,7 @@ enum devlink_param_generic_id {
  	DEVLINK_PARAM_GENERIC_ID_ENABLE_ROCE,
  	DEVLINK_PARAM_GENERIC_ID_ENABLE_REMOTE_DEV_RESET,
-+	DEVLINK_PARAM_GENERIC_ID_ENABLE_ETH,
+ 	DEVLINK_PARAM_GENERIC_ID_ENABLE_ETH,
++	DEVLINK_PARAM_GENERIC_ID_ENABLE_RDMA,
  
  	/* add new param generic ids above here*/
  	__DEVLINK_PARAM_GENERIC_ID_MAX,
-@@ -559,6 +560,9 @@ enum devlink_param_generic_id {
- #define DEVLINK_PARAM_GENERIC_ENABLE_REMOTE_DEV_RESET_NAME "enable_remote_dev_reset"
- #define DEVLINK_PARAM_GENERIC_ENABLE_REMOTE_DEV_RESET_TYPE DEVLINK_PARAM_TYPE_BOOL
+@@ -563,6 +564,9 @@ enum devlink_param_generic_id {
+ #define DEVLINK_PARAM_GENERIC_ENABLE_ETH_NAME "enable_eth"
+ #define DEVLINK_PARAM_GENERIC_ENABLE_ETH_TYPE DEVLINK_PARAM_TYPE_BOOL
  
-+#define DEVLINK_PARAM_GENERIC_ENABLE_ETH_NAME "enable_eth"
-+#define DEVLINK_PARAM_GENERIC_ENABLE_ETH_TYPE DEVLINK_PARAM_TYPE_BOOL
++#define DEVLINK_PARAM_GENERIC_ENABLE_RDMA_NAME "enable_rdma"
++#define DEVLINK_PARAM_GENERIC_ENABLE_RDMA_TYPE DEVLINK_PARAM_TYPE_BOOL
 +
  #define DEVLINK_PARAM_GENERIC(_id, _cmodes, _get, _set, _validate)	\
  {									\
  	.id = DEVLINK_PARAM_GENERIC_ID_##_id,				\
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index b02d54ab59ac..9a59f45c8bf9 100644
+index 9a59f45c8bf9..b68d6921d34f 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -4277,6 +4277,11 @@ static const struct devlink_param devlink_param_generic[] = {
- 		.name = DEVLINK_PARAM_GENERIC_ENABLE_REMOTE_DEV_RESET_NAME,
- 		.type = DEVLINK_PARAM_GENERIC_ENABLE_REMOTE_DEV_RESET_TYPE,
+@@ -4282,6 +4282,11 @@ static const struct devlink_param devlink_param_generic[] = {
+ 		.name = DEVLINK_PARAM_GENERIC_ENABLE_ETH_NAME,
+ 		.type = DEVLINK_PARAM_GENERIC_ENABLE_ETH_TYPE,
  	},
 +	{
-+		.id = DEVLINK_PARAM_GENERIC_ID_ENABLE_ETH,
-+		.name = DEVLINK_PARAM_GENERIC_ENABLE_ETH_NAME,
-+		.type = DEVLINK_PARAM_GENERIC_ENABLE_ETH_TYPE,
++		.id = DEVLINK_PARAM_GENERIC_ID_ENABLE_RDMA,
++		.name = DEVLINK_PARAM_GENERIC_ENABLE_RDMA_NAME,
++		.type = DEVLINK_PARAM_GENERIC_ENABLE_RDMA_TYPE,
 +	},
  };
  
