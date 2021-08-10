@@ -2,98 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D692B3E539D
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 08:37:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0B003E53AD
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 08:40:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234613AbhHJGhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 02:37:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37756 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233690AbhHJGhb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 02:37:31 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7FCC061796
-        for <netdev@vger.kernel.org>; Mon,  9 Aug 2021 23:37:10 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mDLNs-0005xB-68
-        for netdev@vger.kernel.org; Tue, 10 Aug 2021 08:37:08 +0200
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 03E87663C96
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 06:37:07 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id A9ECD663C88;
-        Tue, 10 Aug 2021 06:37:05 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 9b78e67d;
-        Tue, 10 Aug 2021 06:37:03 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Hussein Alasadi <alasadi@arecs.eu>,
-        Torin Cooper-Bennun <torin@maxiluxsystems.com>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net 2/2] can: m_can: m_can_set_bittiming(): fix setting M_CAN_DBTP register
-Date:   Tue, 10 Aug 2021 08:37:02 +0200
-Message-Id: <20210810063702.350109-3-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210810063702.350109-1-mkl@pengutronix.de>
-References: <20210810063702.350109-1-mkl@pengutronix.de>
+        id S236805AbhHJGkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 02:40:46 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:35891 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236694AbhHJGkn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 02:40:43 -0400
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
+        by mailout.nyi.internal (Postfix) with ESMTP id 87F3D5C0175;
+        Tue, 10 Aug 2021 02:40:21 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Tue, 10 Aug 2021 02:40:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=FwHr25
+        vlNTA1qSgWCXpq5c5oS2rISuP06w9MQl5CjFg=; b=B9AhNV7LA/M5WPYItG6GYX
+        42r8HI3De58FWC7IWog4S1XKmSrAIj6F1bUP8U0xsRqCNkrOZhiAHmcCGgeecM4O
+        MotfRwhCd8ofe23M8ac2yzfsg4HqIuSQfW3PcQc8AuV5McYTjBoncOPsF1S99ZRg
+        StnuBAstWmy6oiR1gkT5Pw6lgS+6MzaOpUcHhadhDvL6XfKPj0FPcYnEK3vZpary
+        U0UbyyYN9iWNLgjG9ar4zinfw+0/wxxjHP3FqZnmeNYKiRTYwAvLyNPrg9qoH1kt
+        B9aoyEMrMHWbs8f/I3pXZ8BCAQ0zhk2Slu0B2+ROH6R5OAmfTyk8RAwlcqZqrJrQ
+        ==
+X-ME-Sender: <xms:VB8SYXsfalemizMBOcwWcbG-V2lkZjV0OU4Pdbq_VIunAcPF_Bnh_A>
+    <xme:VB8SYYcF0oc12gqWIJiRQ4UWggAEpkPKVMQ0RD3jWXIDmGaYLDPe62IxUvDHzNVh7
+    KcBkzOmnOA_dC4>
+X-ME-Received: <xmr:VB8SYaz8N6eToyN3-443brMtvuT2iFri3ZUTYfE9i4AtJv6DIVQgt3wii0mWGBczWYDS7je_WecxQxbHFVJ4WtSpEZ4SwQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrjeekgdduudduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:VB8SYWOJTNts7SmnsA5omASnqMVHAQZ4MA0pVVgnK6Al6bIgxHRNZA>
+    <xmx:VB8SYX81jeBqUgXBlCjez1iTug3zFWPsi6yvBMtJ5uPnFRxV5hJSIQ>
+    <xmx:VB8SYWV9Km6NiUToslzRgR2vg94v_rJhuxrCDQWuF6O2eK0A0b_Qqw>
+    <xmx:VR8SYYP_8zNVRT7Oz-O9072rgTm7vxjqRoB-mIB8u1ch8nv3xm_dIA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 10 Aug 2021 02:40:19 -0400 (EDT)
+Date:   Tue, 10 Aug 2021 09:40:15 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@resnulli.us>, Roopa Prabhu <roopa@nvidia.com>,
+        bridge@lists.linux-foundation.org,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        syzbot+9ba1174359adba5a5b7c@syzkaller.appspotmail.com
+Subject: Re: [PATCH net] net: bridge: validate the NUD_PERMANENT bit when
+ adding an extern_learn FDB entry
+Message-ID: <YRIfT6vLL16hr+7p@shredder>
+References: <20210801231730.7493-1-vladimir.oltean@nxp.com>
+ <YREcqAdU+6IpT0+w@shredder>
+ <da3ddeb1-eef1-a755-dfa0-737e32065d67@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <da3ddeb1-eef1-a755-dfa0-737e32065d67@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hussein Alasadi <alasadi@arecs.eu>
+On Mon, Aug 09, 2021 at 06:33:30PM +0300, Nikolay Aleksandrov wrote:
+> TBH, I want to keep that error so middle ground would be to handle NUD_PERMANENT only
+> when used with !p and keep it. :) WDYT ?
 
-This patch fixes the setting of the M_CAN_DBTP register contents:
-- use DBTP_ (the data bitrate macros) instead of NBTP_ which area used
-  for the nominal bitrate
-- do not overwrite possibly-existing DBTP_TDC flag by ORing reg_btp
-  instead of overwriting
+Yes, works for me
 
-Link: https://lore.kernel.org/r/FRYP281MB06140984ABD9994C0AAF7433D1F69@FRYP281MB0614.DEUP281.PROD.OUTLOOK.COM
-Fixes: 20779943a080 ("can: m_can: use bits.h macros for all regmasks")
-Cc: Torin Cooper-Bennun <torin@maxiluxsystems.com>
-Cc: Chandrasekar Ramakrishnan <rcsekar@samsung.com>
-Signed-off-by: Hussein Alasadi <alasadi@arecs.eu>
-[mkl: update patch description, update indention]
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/m_can/m_can.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> Solution which forces BR_FDB_LOCAL for !p calls (completely untested):
 
-diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index bba2a449ac70..43bca315a66c 100644
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -1164,10 +1164,10 @@ static int m_can_set_bittiming(struct net_device *dev)
- 				    FIELD_PREP(TDCR_TDCO_MASK, tdco));
- 		}
- 
--		reg_btp = FIELD_PREP(NBTP_NBRP_MASK, brp) |
--			  FIELD_PREP(NBTP_NSJW_MASK, sjw) |
--			  FIELD_PREP(NBTP_NTSEG1_MASK, tseg1) |
--			  FIELD_PREP(NBTP_NTSEG2_MASK, tseg2);
-+		reg_btp |= FIELD_PREP(DBTP_DBRP_MASK, brp) |
-+			FIELD_PREP(DBTP_DSJW_MASK, sjw) |
-+			FIELD_PREP(DBTP_DTSEG1_MASK, tseg1) |
-+			FIELD_PREP(DBTP_DTSEG2_MASK, tseg2);
- 
- 		m_can_write(cdev, M_CAN_DBTP, reg_btp);
- 	}
--- 
-2.30.2
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Ido Schimmel <idosch@nvidia.com>
 
-
+> diff --git a/net/bridge/br.c b/net/bridge/br.c
+> index c8ae823aa8e7..d3a32c6813e0 100644
+> --- a/net/bridge/br.c
+> +++ b/net/bridge/br.c
+> @@ -166,8 +166,7 @@ static int br_switchdev_event(struct notifier_block *unused,
+>         case SWITCHDEV_FDB_ADD_TO_BRIDGE:
+>                 fdb_info = ptr;
+>                 err = br_fdb_external_learn_add(br, p, fdb_info->addr,
+> -                                               fdb_info->vid,
+> -                                               fdb_info->is_local, false);
+> +                                               fdb_info->vid, false);
+>                 if (err) {
+>                         err = notifier_from_errno(err);
+>                         break;
+> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+> index b8e22057f680..4e3b1b66f132 100644
+> --- a/net/bridge/br_fdb.c
+> +++ b/net/bridge/br_fdb.c
+> @@ -1255,15 +1255,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
+>                 rcu_read_unlock();
+>                 local_bh_enable();
+>         } else if (ndm->ndm_flags & NTF_EXT_LEARNED) {
+> -               if (!p && !(ndm->ndm_state & NUD_PERMANENT)) {
+> -                       NL_SET_ERR_MSG_MOD(extack,
+> -                                          "FDB entry towards bridge must be permanent");
+> -                       return -EINVAL;
+> -               }
+> -
+> -               err = br_fdb_external_learn_add(br, p, addr, vid,
+> -                                               ndm->ndm_state & NUD_PERMANENT,
+> -                                               true);
+> +               err = br_fdb_external_learn_add(br, p, addr, vid, true);
+>         } else {
+>                 spin_lock_bh(&br->hash_lock);
+>                 err = fdb_add_entry(br, p, addr, ndm, nlh_flags, vid, nfea_tb);
+> @@ -1491,7 +1483,7 @@ void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p)
+>  }
+>  
+>  int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+> -                             const unsigned char *addr, u16 vid, bool is_local,
+> +                             const unsigned char *addr, u16 vid,
+>                               bool swdev_notify)
+>  {
+>         struct net_bridge_fdb_entry *fdb;
+> @@ -1509,7 +1501,7 @@ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+>                 if (swdev_notify)
+>                         flags |= BIT(BR_FDB_ADDED_BY_USER);
+>  
+> -               if (is_local)
+> +               if (!p)
+>                         flags |= BIT(BR_FDB_LOCAL);
+>  
+>                 fdb = fdb_create(br, p, addr, vid, flags);
+> @@ -1538,7 +1530,7 @@ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+>                 if (swdev_notify)
+>                         set_bit(BR_FDB_ADDED_BY_USER, &fdb->flags);
+>  
+> -               if (is_local)
+> +               if (!p)
+>                         set_bit(BR_FDB_LOCAL, &fdb->flags);
+>  
+>                 if (modified)
+> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+> index 86969d1bd036..907e5742b392 100644
+> --- a/net/bridge/br_private.h
+> +++ b/net/bridge/br_private.h
+> @@ -778,7 +778,7 @@ int br_fdb_get(struct sk_buff *skb, struct nlattr *tb[], struct net_device *dev,
+>  int br_fdb_sync_static(struct net_bridge *br, struct net_bridge_port *p);
+>  void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p);
+>  int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+> -                             const unsigned char *addr, u16 vid, bool is_local,
+> +                             const unsigned char *addr, u16 vid,
+>                               bool swdev_notify);
+>  int br_fdb_external_learn_del(struct net_bridge *br, struct net_bridge_port *p,
+>                               const unsigned char *addr, u16 vid,
+> 
+> 
