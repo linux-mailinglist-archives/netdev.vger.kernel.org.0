@@ -2,76 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D1BF3E7E02
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 19:08:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47B923E7E14
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 19:16:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231650AbhHJRJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 13:09:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45152 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229474AbhHJRJR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 13:09:17 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3A40C0613D3
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 10:08:54 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id c6so11712814qtv.5
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 10:08:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=M0nMc32VdYeoROakqfdUuqdNeVnekYQ4hd5V8oDaN7M=;
-        b=pgVJN2i7UW0gnI9xKl+qd1+UJbk1gvKBllUJjNMc9eYv01CFtXlOZsejG/mBg46Ka3
-         dwcU/JR6gTtc2oO744Ojs2krSWB+9aCLGX7V9pCMRZUiM7nY94G383Ld3gWk3/ohKNPL
-         LgJ68mkfhYBUVKQKLqvUoyp/t6SQNRmFbK6v2iBiVy20ZoaYz9LchiaSJWCEa6+wdn/i
-         A+oWfBv7lw74wxLsb8Enfw0AGpgVlLcFzSB7j3YnN4KsTF/99dfKNfZM+pvbj16zNZij
-         +WX0Qv/KN398U+DH/170VpHbZb2kdkzc8IDwI9xTGVLjdvS/g+RcmFo42B2NyLMRKOse
-         esqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=M0nMc32VdYeoROakqfdUuqdNeVnekYQ4hd5V8oDaN7M=;
-        b=r4DKE5IRqvqZsTbdD1KTiHj3jejoMHyMcQ8Sdfa4o4kDNwx2d95jE/Pc/yJOD9z/47
-         nNxcGprE4ECFAdAgRAT+gFUmr1TCJHzXyDg5V3Faq28HLvny3iG992yRFkn7lCMHYGvb
-         UI7Py6BzxbRolj/pWObeb1lYUIzMZpPoKoGwkcBD/IGzJKY+a9btXlhNZUqs8dYA3joa
-         XL2793iB6fyUf4+/E+e5WDfbeUc8ubipnAP+in1QauJOEcHroY3W3ddEVyIS1kTgt88q
-         0Ayn8gZvhMVNf417EaEFHonsxj72PlsdDnrSJifKelj6/tizd3IeavM9vv09HR59RkTo
-         QOAg==
-X-Gm-Message-State: AOAM531KWzqdosc8K1MPQ8TthTy7Y7jBeaxEpHFzsrRzLBrpfHgFzU0y
-        2D908umb1RC37mOvvE7CQgX6iOUIG0tgjg==
-X-Google-Smtp-Source: ABdhPJxKPrfTZqcK0gHuLOcyLYaxjm3Jy4sYYs8ctATrBZ7Mwl/gg2kJDtdAgx2mpAz7DsuayNYgEA==
-X-Received: by 2002:ac8:73c9:: with SMTP id v9mr13551051qtp.12.1628615333996;
-        Tue, 10 Aug 2021 10:08:53 -0700 (PDT)
-Received: from [192.168.1.171] (bras-base-kntaon1617w-grc-28-184-148-47-47.dsl.bell.ca. [184.148.47.47])
-        by smtp.googlemail.com with ESMTPSA id c69sm2442113qkg.1.2021.08.10.10.08.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Aug 2021 10:08:53 -0700 (PDT)
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-To:     people <people@netdevconf.org>
-Cc:     lwn@lwn.net, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        netfilter-devel@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        lartc@vger.kernel.org
-Subject: Netdevconf 0x15 slides and papers up
-Message-ID: <64ae0651-61b7-7a40-2eb4-8f1cb6dda87e@mojatatu.com>
-Date:   Tue, 10 Aug 2021 13:08:52 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S232622AbhHJRRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 13:17:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40642 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232046AbhHJRQz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 13:16:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4ABD360EBD;
+        Tue, 10 Aug 2021 17:16:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628615792;
+        bh=JSZL0e4NclyDFSNzNmGpeWxp9VO4KgNeNMmFx3jjGG8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lsWcNocO2695V/zQ5Q1GCglj67pSLVKLTwpLXBfjTbRp9EdMmoMOTfCR2YXazuQ4o
+         VPgtJvmKYpv6QwpprDHJ779acSLSRLe57UOWu4AGV0b+1M1EUhX83p91nR1xhKP9T9
+         7R4lXvbY34G75bvLALefPTws1SUTkKjwTR2GL7RLAOA+AKWWo6fXYShD5/XqToBIBk
+         QbAvCp3GNekDfnIxnnRAQlVQG0huqSFdWyaiasQ4Vx5efVhsmJOR4yTjhVYvgJpkDB
+         z8/visefC3Y3AtKmYSHOtuMB6RxVIaPy6hLV/ObubZQKH/zxkjCwJysgUhVjPvCX4w
+         MUWSgKn3ODg5A==
+Received: by pali.im (Postfix)
+        id 9C19082D; Tue, 10 Aug 2021 19:16:26 +0200 (CEST)
+Date:   Tue, 10 Aug 2021 19:16:26 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Chris Fowler <cfowler@outpostsentinel.com>
+Cc:     Guillaume Nault <gnault@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-ppp@vger.kernel.org" <linux-ppp@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ppp: Add rtnl attribute IFLA_PPP_UNIT_ID for specifying
+ ppp unit id
+Message-ID: <20210810171626.z6bgvizx4eaafrbb@pali>
+References: <20210807163749.18316-1-pali@kernel.org>
+ <20210809122546.758e41de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210809193109.mw6ritfdu27uhie7@pali>
+ <20210810153941.GB14279@pc-32.home>
+ <BN0P223MB0327A247724B7AE211D2E84EA7F79@BN0P223MB0327.NAMP223.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <BN0P223MB0327A247724B7AE211D2E84EA7F79@BN0P223MB0327.NAMP223.PROD.OUTLOOK.COM>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi folks,
+On Tuesday 10 August 2021 16:38:32 Chris Fowler wrote:
+> Isn't the UNIT ID the interface number?  As in 'unit 100' will give me ppp100?
 
-The slides and papers are now up. The videos will come after.
+If you do not specify pppd 'ifname' argument then pppd argument 'unit 100'
+will cause that interface name would be ppp100.
 
-Check the session pages for the links to the slides and papers
-https://netdevconf.info/0x15/accepted-sessions.html
+But you are free to rename interface to any string which you like, even
+to "ppp99".
 
-cheers,
-jamal
+But this ppp unit id is not interface number. Interface number is
+another number which has nothing with ppp unit id and is assigned to
+every network interface (even loopback). You can see them as the first
+number in 'ip -o l' output. Or you can retrieve it via if_nametoindex()
+function in C.
+
+
+... So if people are really using pppd's 'unit' argument then I think it
+really make sense to support it also in new rtnl interface.
+
+> I have it running on over 1000 interfaces.  I use PPP in a P-t-P VPN scenario between a central server and remote network devices.  Iuse the unit id to identify a primary key in a database for that connection.  This is calculated as 1000+N = UNIT ID.
+> 
+> I use 1000 because I've also used PPP on the same system with modem boards for demand dial PPP connections.  The up and down scripts executed by PPP are written in C and allow a system where if the VPN link is down, the remote can dial and obtain the same IP addressing via modem.  We don't use modems that often now due to reliability issues.  It has been harder obtaining clean lines in the US.
+> 
+> The C program also applies routes that are defined in the database.  That search is based on the IP assigned, not the unit id.
+> 
+> Chris
+> 
+> ________________________________
+> From: Guillaume Nault <gnault@redhat.com>
+> Sent: Tuesday, August 10, 2021 11:39 AM
+> To: Pali Rohár <pali@kernel.org>
+> Cc: Jakub Kicinski <kuba@kernel.org>; Paul Mackerras <paulus@samba.org>; David S. Miller <davem@davemloft.net>; linux-ppp@vger.kernel.org <linux-ppp@vger.kernel.org>; netdev@vger.kernel.org <netdev@vger.kernel.org>; linux-kernel@vger.kernel.org <linux-kernel@vger.kernel.org>
+> Subject: Re: [PATCH] ppp: Add rtnl attribute IFLA_PPP_UNIT_ID for specifying ppp unit id
+> 
+> On Mon, Aug 09, 2021 at 09:31:09PM +0200, Pali Rohár wrote:
+> > Better to wait. I would like hear some comments / review on this patch
+> > if this is the correct approach as it adds a new API/ABI for userspace.
+> 
+> Personally I don't understand the use case for setting the ppp unit at
+> creation time. I didn't implement it on purpose when creating the
+> netlink interface, as I didn't have any use case.
+> 
+> On the other hand, adding the ppp unit in the netlink dump is probably
+> useful.
+> 
