@@ -2,117 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E86F3E5893
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 12:49:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 879373E58AB
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 12:56:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239923AbhHJKuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 06:50:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40920 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239920AbhHJKuA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 06:50:00 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BC78C0613D3;
-        Tue, 10 Aug 2021 03:49:37 -0700 (PDT)
-Received: from [192.168.178.156] (unknown [80.156.89.84])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id BEE9CC0353;
-        Tue, 10 Aug 2021 12:49:27 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1628592568;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=M0qF+o2AoVk5F58x/KmSY20curOZrhbNqe7IPSM3OJA=;
-        b=n+fHjMvtfN0LwKThosvhFKpTysHYNz3y05ebgbmXczVeSF2/Hpk8w0xIviQW0d4t9/2R8H
-        4CbkvT3toZe0uFnRDjHD8eFsNfj15HjXpPFettkL3f1U/Yk4mV3jtNuv1VGhK6xKeqFBzy
-        sU+dO+33KeSZ/trhYO8ULtLjvyVs6RyfInzyAy995ZoZW3AsXOjwt7z67FRZXLqBy7rHpf
-        0DLDZOzeQWPmbinKCCT3+vA4wrZaEBhleqOOk9aEZ/SGzDzCAyzJpeluaHFY2Pg8+Kpnjz
-        glKyjnOTwSo58vfq8m/C9ctC0VqL6lDpnAkTrW3Hfd+kX2F7Rgyvv2RG/PmLxw==
-Subject: Re: [PATCH net] net: Fix memory leak in ieee802154_raw_deliver
-To:     Alexander Aring <alex.aring@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Takeshi Misawa <jeliantsurux@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>
-References: <20210805075414.GA15796@DESKTOP>
- <20210805065022.574e0691@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAB_54W4DK3uo+q7vRC2Vzrs5BENq2L_ukkkewiSXMNaSBiTsEQ@mail.gmail.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-Message-ID: <47581b9b-4def-40be-88cb-6357516f9eb3@datenfreihafen.org>
-Date:   Tue, 10 Aug 2021 12:49:26 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S239957AbhHJK4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 06:56:35 -0400
+Received: from mail-wm1-f52.google.com ([209.85.128.52]:44796 "EHLO
+        mail-wm1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236095AbhHJK4e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 06:56:34 -0400
+Received: by mail-wm1-f52.google.com with SMTP id d131-20020a1c1d890000b02902516717f562so2213359wmd.3;
+        Tue, 10 Aug 2021 03:56:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=M8c678fNnsGLoOeW7UexhiEvWyA8c3/gcsG+wSE2ct8=;
+        b=YCI+qtGD/0L1xixPkuKTCC9Y8GQEW84XhzIUrfCXbiM5lACxef/iVs8OaZUE8vlfWz
+         wb9Q27CJyNtk7GkL9WoCerNfoPpW1jXOkHFFUwggNVxvFMs/0WbeccPAEZshTMpnsHK8
+         2XXUvydEAATjFYZtx4hXnUeKXMHyR7AMBnViRjwy5UVEJiVODi4evvd4u5W7c4ngbSNr
+         6SbbZobe51y/833k1QCUM8izOTg6PPK04cOTm5CwqkQ4Aa4CB3LIEGOLEJNTGGWiukx4
+         HJP+JSHQhsZUxxooZK5jUmoub4YR/rJz4jS5zC84guG0sxcTIqR7+ySXAzsDYBiEckYY
+         +KAA==
+X-Gm-Message-State: AOAM532uc1vxVQawPdccOCemU10J7dvdUsgvNr4g+KFPB+vUNigtNZ6k
+        Njjo1fGMRMwwzASB+USy4NA=
+X-Google-Smtp-Source: ABdhPJz2yF8WcgnnZUSV/YZcts24nqVnzunX66Xx60m+tHd6RHQnGzum63lk7AYwHZ32aACM7/ys3w==
+X-Received: by 2002:a1c:7dd0:: with SMTP id y199mr2862006wmc.23.1628592971259;
+        Tue, 10 Aug 2021 03:56:11 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id x18sm20028730wmc.17.2021.08.10.03.56.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Aug 2021 03:56:10 -0700 (PDT)
+Date:   Tue, 10 Aug 2021 10:56:09 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Tianyu Lan <ltykernel@gmail.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
+        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
+        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
+        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, ardb@kernel.org,
+        Tianyu.Lan@microsoft.com, pgonda@google.com,
+        martin.b.radev@gmail.com, akpm@linux-foundation.org,
+        kirill.shutemov@linux.intel.com, rppt@kernel.org,
+        sfr@canb.auug.org.au, saravanand@fb.com,
+        krish.sadhukhan@oracle.com, aneesh.kumar@linux.ibm.com,
+        xen-devel@lists.xenproject.org, rientjes@google.com,
+        hannes@cmpxchg.org, tj@kernel.org, michael.h.kelley@microsoft.com,
+        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, parri.andrea@gmail.com, dave.hansen@intel.com
+Subject: Re: [PATCH V3 01/13] x86/HV: Initialize GHCB page in Isolation VM
+Message-ID: <20210810105609.soi67eg2us5w7yuq@liuwe-devbox-debian-v2>
+References: <20210809175620.720923-1-ltykernel@gmail.com>
+ <20210809175620.720923-2-ltykernel@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAB_54W4DK3uo+q7vRC2Vzrs5BENq2L_ukkkewiSXMNaSBiTsEQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210809175620.720923-2-ltykernel@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+On Mon, Aug 09, 2021 at 01:56:05PM -0400, Tianyu Lan wrote:
+[...]
+>  static int hv_cpu_init(unsigned int cpu)
+>  {
+>  	union hv_vp_assist_msr_contents msr = { 0 };
+> @@ -85,6 +111,8 @@ static int hv_cpu_init(unsigned int cpu)
+>  		}
+>  	}
+>  
+> +	hyperv_init_ghcb();
+> +
 
-On 09.08.21 15:06, Alexander Aring wrote:
-> Hi,
-> 
-> On Thu, 5 Aug 2021 at 09:50, Jakub Kicinski <kuba@kernel.org> wrote:
->>
->> On Thu, 5 Aug 2021 16:54:14 +0900 Takeshi Misawa wrote:
->>> If IEEE-802.15.4-RAW is closed before receive skb, skb is leaked.
->>> Fix this, by freeing sk_receive_queue in sk->sk_destruct().
->>>
->>> syzbot report:
->>> BUG: memory leak
->>> unreferenced object 0xffff88810f644600 (size 232):
->>>    comm "softirq", pid 0, jiffies 4294967032 (age 81.270s)
->>>    hex dump (first 32 bytes):
->>>      10 7d 4b 12 81 88 ff ff 10 7d 4b 12 81 88 ff ff  .}K......}K.....
->>>      00 00 00 00 00 00 00 00 40 7c 4b 12 81 88 ff ff  ........@|K.....
->>>    backtrace:
->>>      [<ffffffff83651d4a>] skb_clone+0xaa/0x2b0 net/core/skbuff.c:1496
->>>      [<ffffffff83fe1b80>] ieee802154_raw_deliver net/ieee802154/socket.c:369 [inline]
->>>      [<ffffffff83fe1b80>] ieee802154_rcv+0x100/0x340 net/ieee802154/socket.c:1070
->>>      [<ffffffff8367cc7a>] __netif_receive_skb_one_core+0x6a/0xa0 net/core/dev.c:5384
->>>      [<ffffffff8367cd07>] __netif_receive_skb+0x27/0xa0 net/core/dev.c:5498
->>>      [<ffffffff8367cdd9>] netif_receive_skb_internal net/core/dev.c:5603 [inline]
->>>      [<ffffffff8367cdd9>] netif_receive_skb+0x59/0x260 net/core/dev.c:5662
->>>      [<ffffffff83fe6302>] ieee802154_deliver_skb net/mac802154/rx.c:29 [inline]
->>>      [<ffffffff83fe6302>] ieee802154_subif_frame net/mac802154/rx.c:102 [inline]
->>>      [<ffffffff83fe6302>] __ieee802154_rx_handle_packet net/mac802154/rx.c:212 [inline]
->>>      [<ffffffff83fe6302>] ieee802154_rx+0x612/0x620 net/mac802154/rx.c:284
->>>      [<ffffffff83fe59a6>] ieee802154_tasklet_handler+0x86/0xa0 net/mac802154/main.c:35
->>>      [<ffffffff81232aab>] tasklet_action_common.constprop.0+0x5b/0x100 kernel/softirq.c:557
->>>      [<ffffffff846000bf>] __do_softirq+0xbf/0x2ab kernel/softirq.c:345
->>>      [<ffffffff81232f4c>] do_softirq kernel/softirq.c:248 [inline]
->>>      [<ffffffff81232f4c>] do_softirq+0x5c/0x80 kernel/softirq.c:235
->>>      [<ffffffff81232fc1>] __local_bh_enable_ip+0x51/0x60 kernel/softirq.c:198
->>>      [<ffffffff8367a9a4>] local_bh_enable include/linux/bottom_half.h:32 [inline]
->>>      [<ffffffff8367a9a4>] rcu_read_unlock_bh include/linux/rcupdate.h:745 [inline]
->>>      [<ffffffff8367a9a4>] __dev_queue_xmit+0x7f4/0xf60 net/core/dev.c:4221
->>>      [<ffffffff83fe2db4>] raw_sendmsg+0x1f4/0x2b0 net/ieee802154/socket.c:295
->>>      [<ffffffff8363af16>] sock_sendmsg_nosec net/socket.c:654 [inline]
->>>      [<ffffffff8363af16>] sock_sendmsg+0x56/0x80 net/socket.c:674
->>>      [<ffffffff8363deec>] __sys_sendto+0x15c/0x200 net/socket.c:1977
->>>      [<ffffffff8363dfb6>] __do_sys_sendto net/socket.c:1989 [inline]
->>>      [<ffffffff8363dfb6>] __se_sys_sendto net/socket.c:1985 [inline]
->>>      [<ffffffff8363dfb6>] __x64_sys_sendto+0x26/0x30 net/socket.c:1985
->>>
->>> Fixes: 9ec767160357 ("net: add IEEE 802.15.4 socket family implementation")
->>> Reported-and-tested-by: syzbot+1f68113fa907bf0695a8@syzkaller.appspotmail.com
->>> Signed-off-by: Takeshi Misawa <jeliantsurux@gmail.com>
-> 
-> Acked-by: Alexander Aring <aahringo@redhat.com>
+Why is the return value not checked here? If that's not required, can
+you leave a comment?
 
-
-This patch has been applied to the wpan tree and will be
-part of the next pull request to net. Thanks!
-
-regards
-Stefan Schmidt
+Wei.
