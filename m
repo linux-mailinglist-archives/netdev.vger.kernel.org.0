@@ -2,98 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F7E33E5DDF
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 16:28:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 336A43E5DD8
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 16:25:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238288AbhHJO2J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 10:28:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35358 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239377AbhHJO2E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 10:28:04 -0400
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B9CC08EB54;
-        Tue, 10 Aug 2021 07:21:07 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 21117C01C; Tue, 10 Aug 2021 16:20:57 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1628605257; bh=+lxGWE04vsIl7HgIEAsQCH6l43miRMDU9SmcVipHZmU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DSdcRZJClJzoHeCsRKsYgAbo4gY6cRZlS7KZYZc1aisTcrT++BesFqVU8njHm4SHL
-         ah0S1F+SvgZmFBoz/U8zompPeoa3auMpusw2887PBONp06Pb+Gd315zsOLq1ANd9iM
-         XCe2+kYzDVLiTQhyrKyAMcbmRg4kvDkttMVU/CpRfl2BY0CvsH56zWppzE6p+ItSiw
-         hlKtek37jR39aTuaNkHAQvtSC6CDiHR0VTEq6SQ85aWQ64hrIr/GZp5gQ8KX280/G7
-         CFV9cCkJoHVEITSFw3zVNdEXa9Pdiy0ZHwQvu43Hi88XIWs5N45MYzngz5cYYMyOjH
-         qTD2XBLUjM1GQ==
-X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on nautica.notk.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
-        autolearn=unavailable version=3.3.2
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id C441EC009;
-        Tue, 10 Aug 2021 16:20:43 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1628605246; bh=+lxGWE04vsIl7HgIEAsQCH6l43miRMDU9SmcVipHZmU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cS15lj54HNrLb9Y9VUGw09SD+QSbNFVIL+CNdJPXc8TPNxnw5Ii5hHp3YC+HUUo+8
-         RDue9JehcUoIoRV8Ur9mayr1TzaosMzddPCBADLRsl41I9ng6vEqoKw1/DldpbN4n3
-         mgVBJAT6uBiqpET9PJGOdL+8RIEcsgzHaORtKuPEgKSVl+cy1zJrOMXc1dXQS0qgBQ
-         UgVTC8dm4mgtbn7tPDQgPv5Pl78vPcoOjxfwoRMHu6iY22j2QbWtraniQ8yDgcMhN6
-         krtHobNUExnVBLd0DYIrNwT7r4ZgYVAcYjImW1y1os1kTEvtSMVYeotChP+dtRw42+
-         gPBG/aPZjAWNA==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 4abb812f;
-        Tue, 10 Aug 2021 14:20:39 +0000 (UTC)
-Date:   Tue, 10 Aug 2021 23:20:24 +0900
-From:   asmadeus@codewreck.org
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Tuo Li <islituo@gmail.com>, ericvh@gmail.com, lucho@ionkov.net,
-        davem@davemloft.net, kuba@kernel.org,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, baijiaju1990@gmail.com,
-        TOTE Robot <oslab@tsinghua.edu.cn>
-Subject: Re: [PATCH] net: 9p: Fix possible null-pointer dereference in
- p9_cm_event_handler()
-Message-ID: <YRKLKGtxVZAbKVG5@codewreck.org>
-References: <20210810132007.296008-1-islituo@gmail.com>
- <YRKFXpilGXnKZ2yH@unreal>
+        id S241755AbhHJOZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 10:25:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58376 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243565AbhHJOYU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 10:24:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1628605438;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=F7NGeCuOaubYuz/1ug/TSUdVrfsBtP6E2aZrsDudCso=;
+        b=Ms/028kDqtyKBiPIQEdFIQQHSNmtl3cdIeGGZDXDBiVXMqhyOjnUGpjOl5p/mGc2ppMsV6
+        26dJ9GylDnzVIuJd5dnmG/VbcFctKbnTyXmLFAKvk1S3NL+c1z3WOf8o3tYLe3qNj3bO8Q
+        EOjc0TlSrpjO4ZUpKNlfUppD3Du+mAg=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-367-Ey5NKgTkM6ulFBo6j4lCBg-1; Tue, 10 Aug 2021 10:23:57 -0400
+X-MC-Unique: Ey5NKgTkM6ulFBo6j4lCBg-1
+Received: by mail-wr1-f70.google.com with SMTP id k15-20020a5d628f0000b029015501bab520so723536wru.16
+        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 07:23:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:cc:subject:to:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=F7NGeCuOaubYuz/1ug/TSUdVrfsBtP6E2aZrsDudCso=;
+        b=R5vn/TOEmHtkU3VQQkeXbIv0AW52/n3n/5oMwXWA3qXDndbPIRgQWwuofAV4S4ZyMf
+         XK7DnT5HzFbW+c8+Sq/zRerYswaGjlTPdMnejXHFkWwSUQgvbRMYjOU/9TJgba6SHU7a
+         Vphynr6uYqPljhD/4jPUQ9jmiQdZedlm5HPh98qrjkfXv8+c+XMrkwbHXLjhlRtya6jp
+         PVMn4KuKcRGbIEF5Vf0IyXrNXOWIvu0MdsLY/InwMJE/HR7mVRsd0GCqApu5r2epIWo1
+         C4/Eax4vld4Zq2uH0kPwLMhz6BsBK+milz9e61ukBhXY6s/q2AAxczhniHWmiCREVWqo
+         HxcQ==
+X-Gm-Message-State: AOAM533i/AFic4jojkHpCqPiDvcSf7LRYhlmm31LhYi94BnNY8BWWZft
+        z+0/wIsijWCmzNli8LsBWyIZ45Ael/Iv33h582EW2YrROGQgezCSl1i0tPISOZPAfrOUw85X4k/
+        jpI9+3tgduYUnTqx0
+X-Received: by 2002:adf:f4c5:: with SMTP id h5mr31939774wrp.292.1628605435929;
+        Tue, 10 Aug 2021 07:23:55 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxU5KywGRiCQymuIhkLmnRCVk61+rHhGXtUMqK/2zRivVoqzIKMeSsCmj59NACGItvmK39weg==
+X-Received: by 2002:adf:f4c5:: with SMTP id h5mr31939741wrp.292.1628605435752;
+        Tue, 10 Aug 2021 07:23:55 -0700 (PDT)
+Received: from [192.168.42.238] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
+        by smtp.gmail.com with ESMTPSA id d4sm9044243wrc.34.2021.08.10.07.23.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Aug 2021 07:23:55 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     brouer@redhat.com, davem@davemloft.net, alexander.duyck@gmail.com,
+        linux@armlinux.org.uk, mw@semihalf.com, linuxarm@openeuler.org,
+        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        thomas.petazzoni@bootlin.com, hawk@kernel.org,
+        ilias.apalodimas@linaro.org, ast@kernel.org, daniel@iogearbox.net,
+        john.fastabend@gmail.com, akpm@linux-foundation.org,
+        peterz@infradead.org, will@kernel.org, willy@infradead.org,
+        vbabka@suse.cz, fenghua.yu@intel.com, guro@fb.com,
+        peterx@redhat.com, feng.tang@intel.com, jgg@ziepe.ca,
+        mcroce@microsoft.com, hughd@google.com, jonathan.lemon@gmail.com,
+        alobakin@pm.me, willemb@google.com, wenxu@ucloud.cn,
+        cong.wang@bytedance.com, haokexin@gmail.com, nogikh@google.com,
+        elver@google.com, yhs@fb.com, kpsingh@kernel.org,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, chenhao288@hisilicon.com,
+        Linux-MM <linux-mm@kvack.org>
+Subject: Re: [PATCH net-next v2 0/4] add frag page support in page pool
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Yunsheng Lin <linyunsheng@huawei.com>
+References: <1628217982-53533-1-git-send-email-linyunsheng@huawei.com>
+ <20210810070159.367e680e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Message-ID: <1eb903a5-a954-e405-6088-9b9209703f5e@redhat.com>
+Date:   Tue, 10 Aug 2021 16:23:52 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YRKFXpilGXnKZ2yH@unreal>
+In-Reply-To: <20210810070159.367e680e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Leon Romanovsky wrote on Tue, Aug 10, 2021 at 04:55:42PM +0300:
-> On Tue, Aug 10, 2021 at 06:20:07AM -0700, Tuo Li wrote:
-> > The variable rdma is checked when event->event is equal to 
-> > RDMA_CM_EVENT_DISCONNECTED:
-> >   if (rdma)
-> > 
-> > This indicates that it can be NULL. If so, a null-pointer dereference will 
-> > occur when calling complete():
-> >   complete(&rdma->cm_done);
-> > 
-> > To fix this possible null-pointer dereference, calling complete() only 
-> > when rdma is not NULL.
+
+
+On 10/08/2021 16.01, Jakub Kicinski wrote:
+> On Fri, 6 Aug 2021 10:46:18 +0800 Yunsheng Lin wrote:
+>> enable skb's page frag recycling based on page pool in
+>> hns3 drvier.
 > 
-> You need to explain how is it possible and blindly set if () checks.
-> I would say first "if (rdma)" is not needed, but don't know for sure.
+> Applied, thanks!
 
-Sounds like static analysis because there's a if (rdma) check in
-RDMA_CM_EVENT_DISCONNECTED above, so if that needed check then it will
-bug right afterwards
+I had hoped to see more acks / reviewed-by before this got applied.
+E.g. from MM-people as this patchset changes struct page and page_pool 
+(that I'm marked as maintainer of).  And I would have appreciated an 
+reviewed-by credit to/from Alexander as he did a lot of work in the RFC 
+patchset for the split-page tricks.
 
-I'd tend to agree I don't think it's possible client->trans is null
-there (it's filled right after rdma_create_id which defines the handler,
-there might be a window where the callback is called before? But as I
-understand it shouldn't be called until we resolve address and connect
-then later disconnect)
+p.s. I just returned from vacation today, and have not had time to 
+review, sorry.
 
-So, I agree with Leon - unless you have a backtrace of a real bug
-let's remove the other 'if' if you want to cleanup something for your
-robot.
+--Jesper
 
--- 
-Dominique
+(relevant struct page changes for MM-people to review)
+
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 52bbd2b..7f8ee09 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -103,11 +103,19 @@ struct page {
+  			unsigned long pp_magic;
+  			struct page_pool *pp;
+  			unsigned long _pp_mapping_pad;
+-			/**
+-			 * @dma_addr: might require a 64-bit value on
+-			 * 32-bit architectures.
+-			 */
+-			unsigned long dma_addr[2];
++			unsigned long dma_addr;
++			union {
++				/**
++				 * dma_addr_upper: might require a 64-bit
++				 * value on 32-bit architectures.
++				 */
++				unsigned long dma_addr_upper;
++				/**
++				 * For frag page support, not supported in
++				 * 32-bit architectures with 64-bit DMA.
++				 */
++				atomic_long_t pp_frag_count;
++			};
+  		};
+  		struct {	/* slab, slob and slub */
+
