@@ -2,129 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D0E73E7D8E
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 18:35:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FF363E7D8F
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 18:36:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235257AbhHJQgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 12:36:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37528 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbhHJQf7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 12:35:59 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E71BC0613C1
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 09:35:37 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id d6so31078686edt.7
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 09:35:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ad8kzRHEvMyXrK+cBglwvgIkG+uk5OMXJrBwXcYdeNo=;
-        b=GupTUGVpxdaiukjMuV6rO9Czv1EmNrlBujhdze5L2IaurfTd5BgtrC2PUqZ6Ybte0I
-         wyXjXhraPSsae3MjX6yLjQG2+yDApMGGYRYHKStQMUQUSyZmWsA7tJhW8ukz4Fo/SIfK
-         lLSDwVrzUp6LHNL3NZH57IIMzkJuzdyqwTITX9+Drx25vK9s5OOXHl02yys+xWPzAdFj
-         5/uYHJx7Bx5RnEtn74bgImfiBC7MkduDbGPur5wb3b1TB2SP4oUxoU2t+9PAQM5Meabp
-         v1u2/sjZ3U2rsKvMBkzGvKZ+BOhJ8tJszLlATEersrbUTQbqFWdmuvjojTxC7S7HGqoE
-         E7sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ad8kzRHEvMyXrK+cBglwvgIkG+uk5OMXJrBwXcYdeNo=;
-        b=bMdW8J75BOpbq8LApoF7jfq/pr+7nn+fAErIu8jfjAeGwkqUo9u7p59xeHyBdhjsD0
-         e3IHVfwriyc/HiLfJyDOxDUwkv59EiFNgDBJmgt2/9kpoxvYvtxTA9KMIce8qSl7jfTf
-         71Eaq9rIq0jG+5JsA+GgTmwb3PuFwTNGmkPHS+AQhEBf0uG1cjqoNhF5rz/PGNLDXyW9
-         o6hQocModtjO0JCqfw4kJ5WJSvLQvuu5/hGKP7NTv/csdvANSqyl2Ak8NjpArREmpoU/
-         69/SXVGRIj7thHytlKYow20mXmcKK3QvCrOG2M9LJ2YHXTYU6N8+q3B3K1X5GOwzB/+s
-         nyyQ==
-X-Gm-Message-State: AOAM531AVwpCN03xT3vkMDIMpwyFIqyMITDHwRLvhueMwkQWZ9GMdIO8
-        lzPsVPD9+vGtQCVaOrpWrHk=
-X-Google-Smtp-Source: ABdhPJyEE3dDyCtjwdxrdivvkAqckqMNjwDUV12ivKIZuqFPRTvEshVNuySI+9ATg36iudtyMndfwg==
-X-Received: by 2002:a50:9b03:: with SMTP id o3mr3964385edi.203.1628613335612;
-        Tue, 10 Aug 2021 09:35:35 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id u4sm7034332eje.81.2021.08.10.09.35.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Aug 2021 09:35:35 -0700 (PDT)
-Date:   Tue, 10 Aug 2021 19:35:33 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     DENG Qingfang <dqfext@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        George McCollister <george.mccollister@gmail.com>
-Subject: Re: [RFC PATCH net-next 2/4] net: dsa: remove the "dsa_to_port in a
- loop" antipattern from the core
-Message-ID: <20210810163533.bn7zq2dzcilfm6o5@skbuf>
-References: <20210809190320.1058373-1-vladimir.oltean@nxp.com>
- <20210809190320.1058373-3-vladimir.oltean@nxp.com>
- <20210810033339.1232663-1-dqfext@gmail.com>
- <dec1d0a7-b0b3-b3e0-3bfa-0201858b11d1@gmail.com>
- <20210810113532.tvu5dk5g7lbnrdjn@skbuf>
+        id S235749AbhHJQgi convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 10 Aug 2021 12:36:38 -0400
+Received: from lixid.tarent.de ([193.107.123.118]:57409 "EHLO mail.lixid.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233274AbhHJQgh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 12:36:37 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.lixid.net (MTA) with ESMTP id 25E5E140F0B;
+        Tue, 10 Aug 2021 18:36:14 +0200 (CEST)
+Received: from mail.lixid.net ([127.0.0.1])
+        by localhost (mail.lixid.net [127.0.0.1]) (MFA, port 10024) with LMTP
+        id 19XXeJS4oXlb; Tue, 10 Aug 2021 18:36:07 +0200 (CEST)
+Received: from tglase-nb.lan.tarent.de (vpn-172-34-0-14.dynamic.tarent.de [172.34.0.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.lixid.net (MTA) with ESMTPS id C55FD14020D;
+        Tue, 10 Aug 2021 18:36:07 +0200 (CEST)
+Received: by tglase-nb.lan.tarent.de (Postfix, from userid 1000)
+        id 7C96F52086B; Tue, 10 Aug 2021 18:36:07 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by tglase-nb.lan.tarent.de (Postfix) with ESMTP id 7971A5205FC;
+        Tue, 10 Aug 2021 18:36:07 +0200 (CEST)
+Date:   Tue, 10 Aug 2021 18:36:07 +0200 (CEST)
+From:   Thorsten Glaser <t.glaser@tarent.de>
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+cc:     Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
+        brouer@redhat.com
+Subject: Re: Intro into qdisc writing?
+In-Reply-To: <da23ab42-6b99-4981-97f0-3cd7a76c96b8@redhat.com>
+Message-ID: <c9abbcd-c351-2a51-3c7d-232c9ef3ff2@tarent.de>
+References: <1e2625bd-f0e5-b5cf-8f57-c58968a0d1e5@tarent.de> <d14be9a8-85b2-010e-16f3-cae1587f8471@gmail.com> <da23ab42-6b99-4981-97f0-3cd7a76c96b8@redhat.com>
+Content-Language: de-DE-1901
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210810113532.tvu5dk5g7lbnrdjn@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 10, 2021 at 02:35:32PM +0300, Vladimir Oltean wrote:
-> On Tue, Aug 10, 2021 at 02:41:07AM -0700, Florian Fainelli wrote:
-> > On 8/9/2021 8:33 PM, DENG Qingfang wrote:
-> > > On Mon, Aug 09, 2021 at 10:03:18PM +0300, Vladimir Oltean wrote:
-> > > > Ever since Vivien's conversion of the ds->ports array into a dst->ports
-> > > > list, and the introduction of dsa_to_port, iterations through the ports
-> > > > of a switch became quadratic whenever dsa_to_port was needed.
-> > > 
-> > > So, what is the benefit of a linked list here? Do we allow users to
-> > > insert/delete a dsa_port at runtime? If not, how about using a
-> > > dynamically allocated array instead?
-> > 
-> > The goal was to flatten the space while doing cross switch operations, which
-> > would have otherwise required iterating over dsa_switch instances within a
-> > dsa_switch_tree, and then over dsa_port within each dsa_switch.
-> 
-> To expand on that: technically dsa_port_touch() _does_ happen at
-> runtime, since multiple switches in a cross-chip tree probe
-> asynchronously. To use a dynamically allocated array would mean to
-> preallocate the sum of all DSA switch ports' worth of memory, and to
-> preallocate an index for each DSA switch within that single array.
-> Overall a list is simpler.
+On Tue, 10 Aug 2021, Jesper Dangaard Brouer wrote:
 
-If I were to guess where Qingfang was hinting at, is that the receive
-path now needs to iterate over a list, whereas before it simply indexed
-an array:
+> > Instead of writing a new qdisc, you could simply use FQ packet scheduler,
+> > and a eBPF program adjusting skb->tstamp depending on your needs.
 
-static inline struct net_device *dsa_master_find_slave(struct net_device *dev,
-						       int device, int port)
-{
-	struct dsa_port *cpu_dp = dev->dsa_ptr;
-	struct dsa_switch_tree *dst = cpu_dp->dst;
-	struct dsa_port *dp;
+Hmm, this opens another magnitude of complexity I’m not sure I’m ready
+to tackle right now. So let me explain the specific scenarios more (I
+had hoped to get more general advice first):
 
-	list_for_each_entry(dp, &dst->ports, list)
-		if (dp->ds->index == device && dp->index == port &&
-		    dp->type == DSA_PORT_TYPE_USER)
-			return dp->slave;
+There are two operation modes. One uses netem to limit bandwidth and
+introduce latency. The other, which I’ve been working on, uses htb to
+limit bandwidth (not my part until now) with a sub-qdisc fq_codel to
+do ECN CE marking. (As you might have seen from the other link, those
+ECN markings are what we’re actually after, not so much the traffic
+behaviour.) I forked fq_codel into something else to change the way it
+does the ECN marking, to match the scenario we’re modelling more closely.
 
-	return NULL;
-}
+There’s a controlling application running on the router which sets up
+these qdiscs. It also changes the htb qdisc to increase or reduce the
+bandwidth available to the fq_codel fork, currently every second or so,
+but the goal is to do this every 10ms or so (that’s a ton of tc(8) in‐
+vocations, I know…); this is, again, not my department.
 
-I will try in the following days to make a prototype implementation of
-converting back the linked list into an array and see if there is any
-justifiable performance improvement.
+There are two more specific delays to be introduced now. I think they
+need to be introduced to both scenarios (and I was told netem doesn’t
+play with fq_codel; I’m not sure if the netem scenario also uses htb to
+control bandwidth or not).
 
-[ even if this would make the "multiple CPU ports in LAG" implementation
-  harder ]
+One is that “on command” all traffic needs to stop for, say 20, 30 ms.
+I was thinking of adding a flag to htb that, when set on tc, does this
+(oneshot), since tc is called to reconfigure htb often enough anyway.
+This doesn’t happen often, maybe once every few minutes.
+
+The other is a running counter over the packets sent out, and every
+n-th packet must be delayed by an additional x ms. Every n*n-th packet
+by 2*x ms even. I was considering putting those aside, sending out the
+next packets that arrive, or if none, returning NULL from the dequeue
+function, but when I do that I need to be called again in x ms, so I
+need the watchdog, right?
+
+So this is all very static, and I’m familiar enough with C to implement
+things there, but not with BPF let alone Linux’ eBPF. I’m also not sure
+how to get the “on command” thing done there.
+
+Perhaps the entire “playlist” of network behaviour could be moved there,
+but there is, again, much more involved than I am even familiar with or
+told about. There is, at least, limiting bandwidth, then either introducing
+latency (with jitter) or doing the ECN marking, then introducing additional
+“dead times” for individual packets or all traffic, and there probably will
+be more. We’re approaching this piece by piece as we’re learning about the
+to-be-modelled environment, which in itself is *also* still under develop‐
+ment (with feedback from the simulator to the environment as well). I’m
+just the one C guy involved ☺
+
+> > https://legacy.netdevconf.info/0x14/session.html?talk-replacing-HTB-with-EDT-and-BPF
+
+> If you want to see some code doing this via BPF see:
+> https://github.com/xdp-project/bpf-examples/blob/master/traffic-pacing-edt/
+
+> The comments in the code and scripts should hopefully be enough for you to
+> understand the concept. Eric's slides describe the overall concept and
+> background.
+
+I’ll definitely look into them, but…
+
+> > > Similarily, is there an intro of sorts for qdisc writing, the things
+> > > to know, concepts, locking, whatever is needed?
+
+… is there something more general for starters?
+
+Ah Eric, did you even see my earlier mail about the fq_codel undocumented
+flag? I wrote up what I could gather from the code and some websites about
+fq_codel and documented that (as part of documenting the changed version)
+in https://github.com/tarent/sch_jens/blob/master/man/man8/tc-jens.8 and
+was thinking of isolating the fq_codel part and submitting it as replacement
+for the current tc-fq_codel(8) manpage; review of that (for correctness of
+the documentation) would be welcome if you’re available…
+
+//mirabilos
+-- 
+Infrastrukturexperte • tarent solutions GmbH
+Am Dickobskreuz 10, D-53121 Bonn • http://www.tarent.de/
+Telephon +49 228 54881-393 • Fax: +49 228 54881-235
+HRB AG Bonn 5168 • USt-ID (VAT): DE122264941
+Geschäftsführer: Dr. Stefan Barth, Kai Ebenrett, Boris Esser, Alexander Steeg
+
+*************************************************
+
+Mit dem tarent-Newsletter nichts mehr verpassen: www.tarent.de/newsletter
+
+*************************************************
