@@ -2,109 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 212DE3E55A3
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 10:39:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C09B3E55B8
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 10:41:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229942AbhHJIj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 04:39:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55648 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229480AbhHJIj5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Aug 2021 04:39:57 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AE5726056C;
-        Tue, 10 Aug 2021 08:39:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628584775;
-        bh=2bt2C+W2KdWRP1/JdlrOPS/C7CuHdjweWjr0Up5QFpE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iJ1F+ghywFyvh2MnErnsKDlH7HPD8XsktKXnZLvf7L8PaqMkgwfYdTVsraq3BbEe5
-         rTHrAhSgPyXLRwqbGDNw5v0/jruk38SgNQfiG7anYd2hVU2Ut7P0m5k4vtrQFwTIth
-         oQaNecJ4K+6jgduXmFUedsf+j3V8ehc5PjTDdLYB70SDzSQDBTaCcgDnwOeQvVIG39
-         GSD5qXWh3VbY4lB7zZagpuj60Pov6+NryjAYvOG4DRZEN5FzUQTX4P7PLfQMCGiS+c
-         O9CEiDu/dZJlSxyZtpW01McxCrH0Njd/evuero88fFATDpjxvVdVEGeoTo0ONpXKti
-         5O5U9qN8xhd/A==
-Date:   Tue, 10 Aug 2021 11:39:31 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Lahav Schlesinger <lschlesinger@drivenets.com>
-Cc:     netdev@vger.kernel.org, dsahern@kernel.org, davem@davemloft.net,
-        kuba@kernel.org
-Subject: Re: [PATCH net-next v3] net: Support filtering interfaces on no
- master
-Message-ID: <YRI7Q19LDFlTecob@unreal>
-References: <20210810072743.2778562-1-lschlesinger@drivenets.com>
+        id S233833AbhHJIl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 04:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38448 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231326AbhHJIlz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 04:41:55 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A427FC0613D3;
+        Tue, 10 Aug 2021 01:41:33 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id f11so31047535ioj.3;
+        Tue, 10 Aug 2021 01:41:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xB1ACiy7Io0kW/dBZ3duTDNb8SeLXwDQNctKQur/fh8=;
+        b=WyyT1rbehAfV2SiLbf+Z59W37jcNL2wHrtZIEBmyJEHmeMTEWOEp121p7nNWgkGLkl
+         g5/AEobroGqP7YelCTbTmT2PDz1oaj/AVhItZ+lV/KiIOoDigWZ6kbqlviZT1CDUPsww
+         i5uJsPFRi0q65h2vtyFju/j0s+KuZPztx2oxUF4QjHfh3T+PZWOtGmnB28iAvVaZLeG8
+         Bfy9KYqPbp6wmnb9lJi1Wlxo/Z0JRex4P5Qxc+ZJG5ebPx+LoqqID9A6tv7FWYs+DCSV
+         3S177aikTY8CxPH79pcmhgng3GWUJdZseBrPRL/vlHCWWYpSW6Xp39ETr4MlfhZ+LrFY
+         3zzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xB1ACiy7Io0kW/dBZ3duTDNb8SeLXwDQNctKQur/fh8=;
+        b=KOhaZpTGEEA46Zne0N6E+j5ac4Yz57AwB8KNMfcFgUTZGONbyPb925ubS8x7DfhEQu
+         /ROTlkP2AIolc3AfNIdwxX2fJRPDmUgWCUlrWvCDx5dQPl5HFRpWc9JzSbB6JXM94nhV
+         J49gZ1H+8D4uk6a7GVSdRKf7l79zbz2QSIzWa5CxkLH+tr/+cANigXhrPa+NMOiQoF22
+         Gmo5pqswmpE7vvaTcURBkY/uazBnJpYspomxJ6y4SnLYBe0swzsPZbz/lGLalKjjt0/s
+         KMOsyQsR8U4EHeTutAWc2jNlEu3Bz7Rmc/XCra5DMsU8xgThnZeJVg2lpSnJirqdkNXg
+         ozlQ==
+X-Gm-Message-State: AOAM530q3uHaI+CXUMd1S3GBzMCtK9mJI1KfUZUCQi68bcOsvb+NVgNj
+        vAQAe+MLYIqJdiCQztrBZ0KiV9FyNVRPtC8hds0=
+X-Google-Smtp-Source: ABdhPJzqMo9V5pQJsK+5D81gy4SX3IpJ5wO1t4vb+Ak3Z2jc9b20h2i1IYQY/j+sZtJZiGv/rULFj5j6VVw6UMdP/Jo=
+X-Received: by 2002:a05:6602:24d9:: with SMTP id h25mr2370ioe.11.1628584893196;
+ Tue, 10 Aug 2021 01:41:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210810072743.2778562-1-lschlesinger@drivenets.com>
+References: <20210727133022.634-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20210727133022.634-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <CAMuHMdU7-AahJmKLabba_ZF2bcPwktU00Q_uBOYm+AdiBVGyTA@mail.gmail.com>
+ <CA+V-a8vfnnfgK1cY8dqsPJUwotK7SZZu5MjeGuJTa--+qaN4gg@mail.gmail.com> <20210810083925.weikjhpnzmq77oeh@pengutronix.de>
+In-Reply-To: <20210810083925.weikjhpnzmq77oeh@pengutronix.de>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Tue, 10 Aug 2021 09:41:07 +0100
+Message-ID: <CA+V-a8uVrzyOhdJFU+vy9Bpp8GuZrZAq4gnfZ-YfisJBPNwmmA@mail.gmail.com>
+Subject: Re: [PATCH v4 2/3] can: rcar_canfd: Add support for RZ/G2L family
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 10, 2021 at 07:27:43AM +0000, Lahav Schlesinger wrote:
-> Currently there's support for filtering neighbours/links for interfaces
-> which have a specific master device (using the IFLA_MASTER/NDA_MASTER
-> attributes).
-> 
-> This patch adds support for filtering interfaces/neighbours dump for
-> interfaces that *don't* have a master.
-> 
-> I have a patch for iproute2 ready for adding this support in userspace.
+On Tue, Aug 10, 2021 at 9:39 AM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+>
+> On 10.08.2021 09:36:50, Lad, Prabhakar wrote:
+> > > > +static void rcar_canfd_handle_global_recieve(struct rcar_canfd_global *gpriv, u32 ch)
+> > >
+> > > receive (everywhere)
+> > >
+> > Ouch, I'll respin with the typo's fixed.
+>
+> No need, I've fixed it here.
+>
+Thanks Marc.
 
-This line should be removed too.
+Cheers,
+Prabhakar
 
-Thanks
-
-> 
-> Signed-off-by: Lahav Schlesinger <lschlesinger@drivenets.com>
-> Cc: David Ahern <dsahern@kernel.org>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> ---
-> v2 -> v3
->  - Change the way 'master' is checked for being non NULL
-> v1 -> v2
->  - Change from filtering just for non VRF slaves to non slaves at all
-> 
->  net/core/neighbour.c | 7 +++++++
->  net/core/rtnetlink.c | 7 +++++++
->  2 files changed, 14 insertions(+)
-> 
-> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> index b963d6b02c4f..2d5bc3a75fae 100644
-> --- a/net/core/neighbour.c
-> +++ b/net/core/neighbour.c
-> @@ -2528,6 +2528,13 @@ static bool neigh_master_filtered(struct net_device *dev, int master_idx)
->  		return false;
->  
->  	master = dev ? netdev_master_upper_dev_get(dev) : NULL;
-> +
-> +	/* 0 is already used to denote NDA_MASTER wasn't passed, therefore need another
-> +	 * invalid value for ifindex to denote "no master".
-> +	 */
-> +	if (master_idx == -1)
-> +		return !!master;
-> +
->  	if (!master || master->ifindex != master_idx)
->  		return true;
->  
-> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> index 7c9d32cfe607..2dcf1c084b20 100644
-> --- a/net/core/rtnetlink.c
-> +++ b/net/core/rtnetlink.c
-> @@ -1959,6 +1959,13 @@ static bool link_master_filtered(struct net_device *dev, int master_idx)
->  		return false;
->  
->  	master = netdev_master_upper_dev_get(dev);
-> +
-> +	/* 0 is already used to denote IFLA_MASTER wasn't passed, therefore need
-> +	 * another invalid value for ifindex to denote "no master".
-> +	 */
-> +	if (master_idx == -1)
-> +		return !!master;
-> +
->  	if (!master || master->ifindex != master_idx)
->  		return true;
->  
-> -- 
-> 2.25.1
-> 
+> Marc
+>
+> --
+> Pengutronix e.K.                 | Marc Kleine-Budde           |
+> Embedded Linux                   | https://www.pengutronix.de  |
+> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
