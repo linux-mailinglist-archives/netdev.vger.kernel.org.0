@@ -2,61 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94FF43E5599
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 10:37:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20A0E3E55AC
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 10:40:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233366AbhHJIhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 04:37:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37382 "EHLO
+        id S233366AbhHJIkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 04:40:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbhHJIhi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 04:37:38 -0400
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81DCDC0613D3;
-        Tue, 10 Aug 2021 01:37:16 -0700 (PDT)
-Received: by mail-io1-xd2e.google.com with SMTP id s184so31204658ios.2;
-        Tue, 10 Aug 2021 01:37:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gnPKMaU00UCLHLbaCu25WvQfF+nVyh7mG8iqPJwCTtU=;
-        b=LLX2raXKGwA6gdGvRan7ZiuFcTgG877fDwmf9h56Rs9Qf1zP4xt0q1LEra87wWG2hg
-         V7vJNWfsnwOgeco9xREfHgpzGBR1aAo1CvaP4y5wwYXbWgG6iC0PHyDyEwfBOfPAfTVT
-         /ueM/ru81L6l3OHAr3hljOKA4XyaHSoDMvq5RHIv2BsV384ZCuSq3X0q32LEY2lWd0Mb
-         gNTLj2FbxKC8N3L0c3iRxklk6ghnkuXUu4UBflJ9kpr6gShdpLYktjRjrNkW+aXwZAz/
-         rsbQLF1BVLk1PXwmd43veJBpoIakkhA5TUTMwfRM9SAL8T0WVFwMivZoJiJ7ZuKW93j5
-         lLqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gnPKMaU00UCLHLbaCu25WvQfF+nVyh7mG8iqPJwCTtU=;
-        b=bTkiR9oj5Nq6mhoCczyio6fUNuX0oOVJodDbniWbFmKIldnMc0GgRKjLyYrLzoDUc+
-         zSL5TEhgcBwNjR2Q8rycIv6et0aWIeUxy1UCCTcnyGv6TRQxWfkotISf4IMG+hm5274B
-         ZWrC1hGn3EHuxbT4NyKBenfZ29RuG4QxCuPMisP5bZA0fdfa40KFFKjGdAPWRDSK4sG6
-         zrOuwzMh/uCOLjLQLnn07kkiGSHG3LTbw8Rq9msOY5h8l0DQDx9OY7LnicU2LhjjqIq0
-         wglAw7gWBQi+++2i25cL1qL8XEBbdHU/ZgHa3oxUgDJgbyho44mvLuQpDAxnTd2/UGfY
-         4xlQ==
-X-Gm-Message-State: AOAM533qzLEZ+/AHMu75dV6jfcqIPF9zFjBjguLpAtqrubefQ3yCMoQ3
-        MAHehrwIevupsWV8IhbyR44n3A/nPLh7ywKPINY=
-X-Google-Smtp-Source: ABdhPJz98UAvW3cm4tAjUP6zMkqSFBjRXQqCbocrq/OaqFGiue2x2yrK24wrwSM4UiaeeTqgVmwdzGbsY7Xbo/bgII0=
-X-Received: by 2002:a05:6638:329d:: with SMTP id f29mr26485952jav.140.1628584636021;
- Tue, 10 Aug 2021 01:37:16 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210727133022.634-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20210727133022.634-3-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdU7-AahJmKLabba_ZF2bcPwktU00Q_uBOYm+AdiBVGyTA@mail.gmail.com>
-In-Reply-To: <CAMuHMdU7-AahJmKLabba_ZF2bcPwktU00Q_uBOYm+AdiBVGyTA@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Tue, 10 Aug 2021 09:36:50 +0100
-Message-ID: <CA+V-a8vfnnfgK1cY8dqsPJUwotK7SZZu5MjeGuJTa--+qaN4gg@mail.gmail.com>
-Subject: Re: [PATCH v4 2/3] can: rcar_canfd: Add support for RZ/G2L family
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        with ESMTP id S230228AbhHJIkM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 04:40:12 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B65BC06179A
+        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 01:39:51 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1mDNIK-0005c9-Hf; Tue, 10 Aug 2021 10:39:32 +0200
+Received: from pengutronix.de (unknown [IPv6:2a02:810a:8940:aa0:3e5f:f87b:aeb2:97cf])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 2CADF6644FB;
+        Tue, 10 Aug 2021 08:39:28 +0000 (UTC)
+Date:   Tue, 10 Aug 2021 10:39:25 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         Rob Herring <robh+dt@kernel.org>,
         Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
         Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Magnus Damm <magnus.damm@gmail.com>,
@@ -67,53 +44,62 @@ Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
         Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH v4 2/3] can: rcar_canfd: Add support for RZ/G2L family
+Message-ID: <20210810083925.weikjhpnzmq77oeh@pengutronix.de>
+References: <20210727133022.634-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20210727133022.634-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <CAMuHMdU7-AahJmKLabba_ZF2bcPwktU00Q_uBOYm+AdiBVGyTA@mail.gmail.com>
+ <CA+V-a8vfnnfgK1cY8dqsPJUwotK7SZZu5MjeGuJTa--+qaN4gg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="vkropsazvj3b2glc"
+Content-Disposition: inline
+In-Reply-To: <CA+V-a8vfnnfgK1cY8dqsPJUwotK7SZZu5MjeGuJTa--+qaN4gg@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Geert,
 
-On Tue, Aug 10, 2021 at 9:27 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Prabhakar,
->
-> On Tue, Jul 27, 2021 at 3:30 PM Lad Prabhakar
-> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> > CANFD block on RZ/G2L SoC is almost identical to one found on
-> > R-Car Gen3 SoC's. On RZ/G2L SoC interrupt sources for each channel
-> > are split into different sources and the IP doesn't divide (1/2)
-> > CANFD clock within the IP.
+--vkropsazvj3b2glc
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On 10.08.2021 09:36:50, Lad, Prabhakar wrote:
+> > > +static void rcar_canfd_handle_global_recieve(struct rcar_canfd_globa=
+l *gpriv, u32 ch)
 > >
-> > This patch adds compatible string for RZ/G2L family and splits
-> > the irq handlers to accommodate both RZ/G2L and R-Car Gen3 SoC's.
+> > receive (everywhere)
 > >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
->
-> Thanks for your patch!
->
-> I've just noticed a set of silly typos:
->
-> > --- a/drivers/net/can/rcar/rcar_canfd.c
-> > +++ b/drivers/net/can/rcar/rcar_canfd.c
->
-> > +static void rcar_canfd_handle_global_recieve(struct rcar_canfd_global *gpriv, u32 ch)
->
-> receive (everywhere)
->
-Ouch, I'll respin with the typo's fixed.
+> Ouch, I'll respin with the typo's fixed.
 
-Cheers,
-Prabhakar
+No need, I've fixed it here.
 
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--vkropsazvj3b2glc
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmESOzsACgkQqclaivrt
+76kzEgf/e8P5d8gzJH9hFLmHPfxAeSlOqHCR1gaFp6wdOsEHL0aPmn7S9dENHVvG
+6dikjk204VjmfslEGv9Nk/A1IJACHKCqkqd99O5vMYsYD/5N29KPjrncpBWN3YAC
+KoT7Yu3X4HWHBDXPEi/Dpj/hrx3cKNYToMawObcZ2QOtK5IbNjWX+pYx5uxwHYG1
+p42/qKGr3JPBXFJtaMt91bhiMMA//uhdi6KsMlxq1KXD4yKf+bEoUJmQYx6WEif5
+IZ/LO/q/DoQzAm/AfiBxhga9cbB9RLFX7m+YlDYwJJKpGD7auJeNjjEdVBm8W8ox
+w+nsTjcuf1nac9ZYH51KDBUFMTSVYQ==
+=6kXf
+-----END PGP SIGNATURE-----
+
+--vkropsazvj3b2glc--
