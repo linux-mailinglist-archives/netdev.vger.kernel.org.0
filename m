@@ -2,104 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DEED3E593A
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 13:39:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECCAC3E593D
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 13:40:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240172AbhHJLkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 07:40:04 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:42768 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240148AbhHJLkD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 07:40:03 -0400
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1628595577;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ai1xUUohOrACSIkJA4EAUYNYo7YzS+l8J/LQLw8S0xI=;
-        b=Lxv4uKlVYeytE4o605Z43tP2XGLvFa4Eoe7YuxzW7q9IWLLVB7foN7UyTFOXhpagsDnHFN
-        O3i6IS1oIJOrmTqsrPw7hkKqOgSu6VNKQsbIL+iLCS52owXoEYZdGMX2mrEn0cDhPeCUl1
-        wVfT08lbEu2K0v3/23f7dkVeEVi6s8xeY49+tfU4ejA6dyRiGBnflP8015+021a/8UHTz1
-        7F/Abx31fC+bhe4hj3LNaGvUwX/jv1PheJDqzIQW7ZUU3+7KCyPyi/u1tTn7/78Qjfq2pl
-        cLZtjFyOZq4/EkUFmtf1GaP10bxvTYDv6Xg+GUsrWCuWP5rpxHQPLs1/tZlrBg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1628595577;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ai1xUUohOrACSIkJA4EAUYNYo7YzS+l8J/LQLw8S0xI=;
-        b=y7v1CvBCMDbWH2ExHC5hAmJX1isNQ2YVOPkOMBBewm9TEmwtzdZAZMGnIypqlz2DKADLk4
-        wyD0jRx5ZKQpMJCw==
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        id S240180AbhHJLke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 07:40:34 -0400
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:12040 "EHLO
+        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236424AbhHJLkd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 07:40:33 -0400
+Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 0E779520FC9;
+        Tue, 10 Aug 2021 14:40:10 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail202102; t=1628595610;
+        bh=hjb2uZ2Fjqyy8K7/b3XOw0wHhIoB2WTMVW8sQLvHqZ0=;
+        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
+        b=5KWQPuKnX6AgiV/oyfSycf7M2W+emTU8peNSdado4ufFEUvGZTI8mONBAUfK0+y5n
+         Y3xIp37C0iQoUvTsAESHEy9yoBdMdHSrFYEyS3SbuktzAuJf79HdVPY9fbRnvqc+UV
+         lBbHz1cf8wyjeHHpsa9x3SluKoD7CEjQLno+iBopeg15eRRtRrczxiG1fm/F/8p+JK
+         Mq+8ihM3R5P3J3LHanrUCanknG83VD19FNIu1ZDfG+djweAHcuihgKdzWbQRHTTlmP
+         AYm+kN3wkDQjD0IG+FxkP3v/wvcie8FyPDrEzjeaEAPwCWcGEy6i9pvXH6MjtySr/1
+         yRkOVQdTMEwBw==
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id B5862520FE1;
+        Tue, 10 Aug 2021 14:40:09 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.64.121) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 10
+ Aug 2021 14:40:08 +0300
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Egil Hjelmeland <privat@egil-hjelmeland.no>
-Subject: Re: [PATCH net 1/4] net: dsa: hellcreek: fix broken backpressure in
- .port_fdb_dump
-In-Reply-To: <20210810111956.1609499-2-vladimir.oltean@nxp.com>
-References: <20210810111956.1609499-1-vladimir.oltean@nxp.com>
- <20210810111956.1609499-2-vladimir.oltean@nxp.com>
-Date:   Tue, 10 Aug 2021 13:39:36 +0200
-Message-ID: <87wnotle9z.fsf@kurt>
+        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>
+CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <stsp2@yandex.ru>, <oxffffaa@gmail.com>
+Subject: [RFC PATCH v2 1/5] virtio/vsock: add 'VIRTIO_VSOCK_SEQ_EOM' bit
+Date:   Tue, 10 Aug 2021 14:39:53 +0300
+Message-ID: <20210810113956.1214463-1-arseny.krasnov@kaspersky.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210810113901.1214116-1-arseny.krasnov@kaspersky.com>
+References: <20210810113901.1214116-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.64.64.121]
+X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 08/10/2021 11:22:08
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 165493 [Aug 10 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: LuaCore: 454 454 39c6e442fd417993330528e7f9d13ac1bf7fdf8c
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: kaspersky.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;arseniy-pc.avp.ru:7.1.1;127.0.0.199:7.1.2
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 08/10/2021 11:24:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 10.08.2021 6:55:00
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/08/10 08:09:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/08/10 05:40:00 #17007547
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+This bit is used to mark end of messages('EOM' - end of message), while
+'VIRIO_VSOCK_SEQ_EOR' is used to pass MSG_EOR. Also rename 'record' to
+'message' in implementation as it is different things.
 
-On Tue Aug 10 2021, Vladimir Oltean wrote:
-> rtnl_fdb_dump() has logic to split a dump of PF_BRIDGE neighbors into
-> multiple netlink skbs if the buffer provided by user space is too small
-> (one buffer will typically handle a few hundred FDB entries).
->
-> When the current buffer becomes full, nlmsg_put() in
-> dsa_slave_port_fdb_do_dump() returns -EMSGSIZE and DSA saves the index
-> of the last dumped FDB entry, returns to rtnl_fdb_dump() up to that
-> point, and then the dump resumes on the same port with a new skb, and
-> FDB entries up to the saved index are simply skipped.
->
-> Since dsa_slave_port_fdb_do_dump() is pointed to by the "cb" passed to
-> drivers, then drivers must check for the -EMSGSIZE error code returned
-> by it. Otherwise, when a netlink skb becomes full, DSA will no longer
-> save newly dumped FDB entries to it, but the driver will continue
-> dumping. So FDB entries will be missing from the dump.
->
-> Fix the broken backpressure by propagating the "cb" return code and
-> allow rtnl_fdb_dump() to restart the FDB dump with a new skb.
->
-> Fixes: e4b27ebc780f ("net: dsa: Add DSA driver for Hirschmann Hellcreek switches")
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+---
+ drivers/vhost/vsock.c                   | 12 ++++++------
+ include/uapi/linux/virtio_vsock.h       |  3 ++-
+ net/vmw_vsock/virtio_transport_common.c | 14 +++++++-------
+ 3 files changed, 15 insertions(+), 14 deletions(-)
 
-Acked-by: Kurt Kanzenbach <kurt@linutronix.de>
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index f249622ef11b..feaf650affbe 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -178,15 +178,15 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+ 			 * small rx buffers, headers of packets in rx queue are
+ 			 * created dynamically and are initialized with header
+ 			 * of current packet(except length). But in case of
+-			 * SOCK_SEQPACKET, we also must clear record delimeter
+-			 * bit(VIRTIO_VSOCK_SEQ_EOR). Otherwise, instead of one
+-			 * packet with delimeter(which marks end of record),
++			 * SOCK_SEQPACKET, we also must clear message delimeter
++			 * bit(VIRTIO_VSOCK_SEQ_EOM). Otherwise, instead of one
++			 * packet with delimeter(which marks end of message),
+ 			 * there will be sequence of packets with delimeter
+ 			 * bit set. After initialized header will be copied to
+ 			 * rx buffer, this bit will be restored.
+ 			 */
+-			if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOR) {
+-				pkt->hdr.flags &= ~cpu_to_le32(VIRTIO_VSOCK_SEQ_EOR);
++			if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOM) {
++				pkt->hdr.flags &= ~cpu_to_le32(VIRTIO_VSOCK_SEQ_EOM);
+ 				restore_flag = true;
+ 			}
+ 		}
+@@ -225,7 +225,7 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+ 		 */
+ 		if (pkt->off < pkt->len) {
+ 			if (restore_flag)
+-				pkt->hdr.flags |= cpu_to_le32(VIRTIO_VSOCK_SEQ_EOR);
++				pkt->hdr.flags |= cpu_to_le32(VIRTIO_VSOCK_SEQ_EOM);
+ 
+ 			/* We are queueing the same virtio_vsock_pkt to handle
+ 			 * the remaining bytes, and we want to deliver it
+diff --git a/include/uapi/linux/virtio_vsock.h b/include/uapi/linux/virtio_vsock.h
+index 3dd3555b2740..64738838bee5 100644
+--- a/include/uapi/linux/virtio_vsock.h
++++ b/include/uapi/linux/virtio_vsock.h
+@@ -97,7 +97,8 @@ enum virtio_vsock_shutdown {
+ 
+ /* VIRTIO_VSOCK_OP_RW flags values */
+ enum virtio_vsock_rw {
+-	VIRTIO_VSOCK_SEQ_EOR = 1,
++	VIRTIO_VSOCK_SEQ_EOM = 1,
++	VIRTIO_VSOCK_SEQ_EOR = 2,
+ };
+ 
+ #endif /* _UAPI_LINUX_VIRTIO_VSOCK_H */
+diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+index 081e7ae93cb1..4d5a93beceb0 100644
+--- a/net/vmw_vsock/virtio_transport_common.c
++++ b/net/vmw_vsock/virtio_transport_common.c
+@@ -77,7 +77,7 @@ virtio_transport_alloc_pkt(struct virtio_vsock_pkt_info *info,
+ 
+ 		if (msg_data_left(info->msg) == 0 &&
+ 		    info->type == VIRTIO_VSOCK_TYPE_SEQPACKET)
+-			pkt->hdr.flags |= cpu_to_le32(VIRTIO_VSOCK_SEQ_EOR);
++			pkt->hdr.flags |= cpu_to_le32(VIRTIO_VSOCK_SEQ_EOM);
+ 	}
+ 
+ 	trace_virtio_transport_alloc_pkt(src_cid, src_port,
+@@ -457,7 +457,7 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
+ 				dequeued_len += pkt_len;
+ 		}
+ 
+-		if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOR) {
++		if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOM) {
+ 			msg_ready = true;
+ 			vvs->msg_count--;
+ 		}
+@@ -1029,7 +1029,7 @@ virtio_transport_recv_enqueue(struct vsock_sock *vsk,
+ 		goto out;
+ 	}
+ 
+-	if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOR)
++	if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOM)
+ 		vvs->msg_count++;
+ 
+ 	/* Try to copy small packets into the buffer of last packet queued,
+@@ -1044,12 +1044,12 @@ virtio_transport_recv_enqueue(struct vsock_sock *vsk,
+ 
+ 		/* If there is space in the last packet queued, we copy the
+ 		 * new packet in its buffer. We avoid this if the last packet
+-		 * queued has VIRTIO_VSOCK_SEQ_EOR set, because this is
+-		 * delimiter of SEQPACKET record, so 'pkt' is the first packet
+-		 * of a new record.
++		 * queued has VIRTIO_VSOCK_SEQ_EOM set, because this is
++		 * delimiter of SEQPACKET message, so 'pkt' is the first packet
++		 * of a new message.
+ 		 */
+ 		if ((pkt->len <= last_pkt->buf_len - last_pkt->len) &&
+-		    !(le32_to_cpu(last_pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOR)) {
++		    !(le32_to_cpu(last_pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOM)) {
+ 			memcpy(last_pkt->buf + last_pkt->len, pkt->buf,
+ 			       pkt->len);
+ 			last_pkt->len += pkt->len;
+-- 
+2.25.1
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQJHBAEBCgAxFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmESZXgTHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRB5KluBy5jwpofHD/9l2h1VIocpbLfrW5LBlLYsrwC09LKz
-EN4xd8r3tPaGB/yQbmaepC6VJfVvX7Uv7PK16UzV7+kcUaB/pGkmQdKxIdcpVyn3
-PP8ZZ7KayXcacoBvXQQUoTcEcwgws0+Bdz2jCu5jd+HZ2Ny6J/gl6Wnz3sP3xkXg
-BlkCWEJH67DXmJA3G9CAIIwfjYwxD1HZ2/23wgGTUTHgpOvV7ILx/JheX9EbOBus
-USiOIltjkzyypELScfkbFK1AiUXdpi+7K+gLdho6t+GxoPp6D6eEq0qliRo4Hk3L
-F1OPfvJFzw8q4c+SLoCr250elzth1IdF7t77oUFBrFPYne4z6EQqTpnn/yv7vvjD
-uApU5NuuVZbnI+gRMZGNgrd1ApMadMI4VGzmi+NftgQvB5uRzY6eBnMWKt1i+MyE
-OOowfrTHb4UwaIVvhpzptUAsPIImWdhGxSMFfrolHKqlqD4SAoHsJUArV6/BIt5t
-o230xUQF2n1FCYcex5o2Ul/tsKQBV8sYbxzXoQ5MYKo4u89XUztFvG0KWbuRqUSh
-QxxW+K3JTVrw5FvKnQIf0DgQrLOHBn9ohTQKVie3Hu9193fUFe0dJNqaUX7kbafd
-Yoq9u/qkadTKNALcKyEbvY30Lunsmw7mwMRKuz+tZxuRrAiE6Tca+bNMQ7nK53al
-XpZrMp4hVt53uQ==
-=w8A1
------END PGP SIGNATURE-----
---=-=-=--
