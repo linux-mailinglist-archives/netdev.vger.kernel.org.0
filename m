@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5EF13E7C4C
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 17:30:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27F953E7C4D
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 17:30:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243259AbhHJPa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 11:30:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50370 "EHLO
+        id S243170AbhHJPa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 11:30:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243091AbhHJPaU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 11:30:20 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 867B2C06179E
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 08:29:57 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id n11so13341476wmd.2
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 08:29:57 -0700 (PDT)
+        with ESMTP id S243099AbhHJPaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 11:30:21 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F931C0617A1
+        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 08:29:58 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id u1so3353784wmm.0
+        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 08:29:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=8QwqQleoGxCM0RtBR5+pJ1/nVkcUoQV4qf01skg7xRo=;
-        b=vJdgSvHwBiANNhd65pdgBC6j5ySWEnDsF1VM5x1cWF7dwvbhOjDqQH7UY9n9thW8m5
-         nHadsKPqBjFkVfke5OgXGg7vpkcstkZp+3KlYbjn1viyXU6EaIj15BqdEt3NO6AE3VC4
-         TUe++h1+0BSlqqfN3J7yIAq8Di4qKoVKycLYtfwXdfY2S8hMYgTsX9a91PFjR9e+mX4f
-         9N4BWGQIitrpbFsJj+b+UtOI5uumGTaFdOPw9inijm0CHCzSj49iY5qvKS/JcH6L0i2n
-         01mSqDr04cwoWMh1PK8W+xZD0R6tWWPEvt7sd6TcpXiITSh03PdIoC+M9ye7UBQNc2Ri
-         EDew==
+        bh=LAscvoBUzbxYWL/Sw9h/x/xIRZsYobJ3NT1ExxgA3/4=;
+        b=MErF5S0FLDij7jscT7QSyChFZL/eAutFn8KvtXlWUw4Dl9Vpy4M9QoO4QsCI01Ivex
+         LcvGqqLweumx0pde8PGo6ZdlGDgIgVVlxmuvV2SpmH+0Ysj+RcpaX63UQMJm+Buv9jVK
+         T3AyGXDNxqOq4fo6WY1eAQ5IERVqa1aaebjzhwbiTeeC07IMnmF+ZizutIPpOYUs36vP
+         gTosucaqv0ER7msfugwAbiYk0ktDkwqUZdGKo7AD2gWBkEjAwxyRES7jKvlw81mgBvAq
+         dVwJIog2I+R+ANmKUNFzOVoC6vrA2wg4o36F+A7oMk9f62KmE6fEilsYXxXWkIalBIAa
+         CsKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=8QwqQleoGxCM0RtBR5+pJ1/nVkcUoQV4qf01skg7xRo=;
-        b=p5u5biiP9XxRPvZvkfvAdHsp2ol/gMT57ixGigIo/BadrD5xp2VK+fUcwsAi2iEeRD
-         BzCzaxVJ6RjFFjZzdgnmv/dNwlSiMTCEibLuakn0vjwmFbOTam1XJP8Ah1Csx7Cp6TdW
-         MwFYWGrLFJLwKXwb5kgxiss8LhJQPZRkLzhmZ7uB9l7decj/bxDLTOOfnPAcL5JKCpPw
-         AO5RHfpKMU9oN+DQAja2GRwq66tyPec+rC47DQU8YZdyZ02YLEtrBAMKvblaQlQqHQE6
-         9b5JAyP1+EychJu5yvShslH+US+Gw/3d34/rR6mpFSMZdnld1NWoLYyhtXJyK5AVsgfR
-         xhaw==
-X-Gm-Message-State: AOAM5319oLM+0iAEcQ2oAke7Gwry2/lCTNcfWFSCoLECClugI59crP5N
-        Rab5UUIN5zrs7EPlK895jP5B1x8gglwaeVRe
-X-Google-Smtp-Source: ABdhPJz/PcyT3sy+RM6YjnW5MhmEj0w+zbXRqCSLP6ZjLF8qUIvQ2VMEvd/6s29yUwo840XgXbmhLw==
-X-Received: by 2002:a05:600c:3b91:: with SMTP id n17mr5246420wms.72.1628609395810;
-        Tue, 10 Aug 2021 08:29:55 -0700 (PDT)
+        bh=LAscvoBUzbxYWL/Sw9h/x/xIRZsYobJ3NT1ExxgA3/4=;
+        b=ONKpZE5Tn9Q3Ovas+vFk4rmfnY1HISjH3+S0m6xATvPt+y5IfdnWbzh0rVS8TwfLOS
+         IhC5rCOqX1PCnvpqJCStr2Vh7aSmFoNF1wkqczsMSt6+yyT+LrZaQfq3R2N3gGTK5LuH
+         azDp/BXGin0nGuOcl9eHh/hPpGKvQtaEw5LFA+BjsIJtWqayAKQGfAKX89AWPB/jjxn5
+         sgf5KP+61jPjzW8LV4luxYzml3BWq6xVNCBvPT6DFYbPnc70cmOYFx3NZRxm46Mc2fWk
+         EcwWKtHjT0K4KZpRy9c9FR86ILX32OmffdGrMxwTk/1hges1U7ZUK0O/WWk5/X3IRkqM
+         sTAg==
+X-Gm-Message-State: AOAM531uWW0XVFMvotGa7TrOS62SEO9AJGbco46+B/z4ukn2skqm967q
+        Kyc5yjGbmbxWNP7R9RBXwTARgV5iPC/n8jk0
+X-Google-Smtp-Source: ABdhPJykpJVLt3NbzY65NUKuFSJDSNQYZIT0/jgQup8cN9GyqWFxpNf5AALAGebvXjtuyZF1s8C8fQ==
+X-Received: by 2002:a05:600c:4145:: with SMTP id h5mr4810953wmm.7.1628609396835;
+        Tue, 10 Aug 2021 08:29:56 -0700 (PDT)
 Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
         by smtp.gmail.com with ESMTPSA id f15sm22848219wrp.12.2021.08.10.08.29.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Aug 2021 08:29:55 -0700 (PDT)
+        Tue, 10 Aug 2021 08:29:56 -0700 (PDT)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
         Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net-next 11/15] net: bridge: mcast: querier and query state affect only current context type
-Date:   Tue, 10 Aug 2021 18:29:29 +0300
-Message-Id: <20210810152933.178325-12-razor@blackwall.org>
+Subject: [PATCH net-next 12/15] net: bridge: vlan: add support for mcast querier global option
+Date:   Tue, 10 Aug 2021 18:29:30 +0300
+Message-Id: <20210810152933.178325-13-razor@blackwall.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210810152933.178325-1-razor@blackwall.org>
 References: <20210810152933.178325-1-razor@blackwall.org>
@@ -65,87 +65,182 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-It is a minor optimization and better behaviour to make sure querier and
-query sending routines affect only the matching multicast context
-depending if vlan snooping is enabled (vlan ctx vs bridge ctx).
-It also avoids sending unnecessary extra query packets.
+Add support to change and retrieve global vlan multicast querier state.
+We just need to pass multicast context to br_multicast_set_querier
+instead of bridge device and the rest of the logic remains the same.
 
 Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 ---
- net/bridge/br_multicast.c | 14 +++++++++-----
- net/bridge/br_private.h   | 11 +++++++++++
- 2 files changed, 20 insertions(+), 5 deletions(-)
+ include/uapi/linux/if_bridge.h |  1 +
+ net/bridge/br_multicast.c      |  7 +++----
+ net/bridge/br_netlink.c        |  5 +++--
+ net/bridge/br_private.h        |  5 +++--
+ net/bridge/br_sysfs_br.c       |  4 ++--
+ net/bridge/br_vlan_options.c   | 15 ++++++++++++++-
+ 6 files changed, 26 insertions(+), 11 deletions(-)
 
+diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
+index ea8773cce9e9..ee691a0bc067 100644
+--- a/include/uapi/linux/if_bridge.h
++++ b/include/uapi/linux/if_bridge.h
+@@ -560,6 +560,7 @@ enum {
+ 	BRIDGE_VLANDB_GOPTS_MCAST_QUERY_INTVL,
+ 	BRIDGE_VLANDB_GOPTS_MCAST_QUERY_RESPONSE_INTVL,
+ 	BRIDGE_VLANDB_GOPTS_MCAST_STARTUP_QUERY_INTVL,
++	BRIDGE_VLANDB_GOPTS_MCAST_QUERIER,
+ 	__BRIDGE_VLANDB_GOPTS_MAX
+ };
+ #define BRIDGE_VLANDB_GOPTS_MAX (__BRIDGE_VLANDB_GOPTS_MAX - 1)
 diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index fe1482efd59c..f30c2e5d3142 100644
+index f30c2e5d3142..a780ad8aca37 100644
 --- a/net/bridge/br_multicast.c
 +++ b/net/bridge/br_multicast.c
-@@ -1628,7 +1628,8 @@ static void __br_multicast_send_query(struct net_bridge_mcast *brmctx,
- 	struct sk_buff *skb;
- 	u8 igmp_type;
- 
--	if (!br_multicast_ctx_should_use(brmctx, pmctx))
-+	if (!br_multicast_ctx_should_use(brmctx, pmctx) ||
-+	    !br_multicast_ctx_matches_vlan_snooping(brmctx))
- 		return;
- 
- again_under_lmqt:
-@@ -3875,9 +3876,9 @@ void br_multicast_open(struct net_bridge *br)
- 					__br_multicast_open(&vlan->br_mcast_ctx);
- 			}
- 		}
-+	} else {
-+		__br_multicast_open(&br->multicast_ctx);
- 	}
--
--	__br_multicast_open(&br->multicast_ctx);
+@@ -4297,14 +4297,13 @@ bool br_multicast_router(const struct net_device *dev)
  }
+ EXPORT_SYMBOL_GPL(br_multicast_router);
  
- static void __br_multicast_stop(struct net_bridge_mcast *brmctx)
-@@ -4028,9 +4029,9 @@ void br_multicast_stop(struct net_bridge *br)
- 					__br_multicast_stop(&vlan->br_mcast_ctx);
- 			}
- 		}
-+	} else {
-+		__br_multicast_stop(&br->multicast_ctx);
- 	}
--
--	__br_multicast_stop(&br->multicast_ctx);
- }
- 
- void br_multicast_dev_del(struct net_bridge *br)
-@@ -4175,6 +4176,9 @@ static void br_multicast_start_querier(struct net_bridge_mcast *brmctx,
+-int br_multicast_set_querier(struct net_bridge *br, unsigned long val)
++int br_multicast_set_querier(struct net_bridge_mcast *brmctx, unsigned long val)
  {
- 	struct net_bridge_port *port;
+-	struct net_bridge_mcast *brmctx = &br->multicast_ctx;
+ 	unsigned long max_delay;
  
-+	if (!br_multicast_ctx_matches_vlan_snooping(brmctx))
-+		return;
-+
- 	__br_multicast_open_query(brmctx->br, query);
+ 	val = !!val;
  
- 	rcu_read_lock();
+-	spin_lock_bh(&br->multicast_lock);
++	spin_lock_bh(&brmctx->br->multicast_lock);
+ 	if (brmctx->multicast_querier == val)
+ 		goto unlock;
+ 
+@@ -4327,7 +4326,7 @@ int br_multicast_set_querier(struct net_bridge *br, unsigned long val)
+ #endif
+ 
+ unlock:
+-	spin_unlock_bh(&br->multicast_lock);
++	spin_unlock_bh(&brmctx->br->multicast_lock);
+ 
+ 	return 0;
+ }
+diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+index 92c79eb16905..1d8ff9bbbd2f 100644
+--- a/net/bridge/br_netlink.c
++++ b/net/bridge/br_netlink.c
+@@ -1372,7 +1372,8 @@ static int br_changelink(struct net_device *brdev, struct nlattr *tb[],
+ 	if (data[IFLA_BR_MCAST_QUERIER]) {
+ 		u8 mcast_querier = nla_get_u8(data[IFLA_BR_MCAST_QUERIER]);
+ 
+-		err = br_multicast_set_querier(br, mcast_querier);
++		err = br_multicast_set_querier(&br->multicast_ctx,
++					       mcast_querier);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -1645,7 +1646,7 @@ static int br_fill_info(struct sk_buff *skb, const struct net_device *brdev)
+ 	    nla_put_u8(skb, IFLA_BR_MCAST_QUERY_USE_IFADDR,
+ 		       br_opt_get(br, BROPT_MULTICAST_QUERY_USE_IFADDR)) ||
+ 	    nla_put_u8(skb, IFLA_BR_MCAST_QUERIER,
+-		       READ_ONCE(br->multicast_ctx.multicast_querier)) ||
++		       br->multicast_ctx.multicast_querier) ||
+ 	    nla_put_u8(skb, IFLA_BR_MCAST_STATS_ENABLED,
+ 		       br_opt_get(br, BROPT_MULTICAST_STATS_ENABLED)) ||
+ 	    nla_put_u32(skb, IFLA_BR_MCAST_HASH_ELASTICITY, RHT_ELASTICITY) ||
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 50f38d6f586d..25db6b02b042 100644
+index 25db6b02b042..76adb729e58c 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -1209,6 +1209,17 @@ br_multicast_ctx_options_equal(const struct net_bridge_mcast *brmctx1,
- #endif
- 	       true;
+@@ -894,7 +894,7 @@ int br_multicast_set_router(struct net_bridge *br, unsigned long val);
+ int br_multicast_set_port_router(struct net_bridge_port *p, unsigned long val);
+ int br_multicast_toggle(struct net_bridge *br, unsigned long val,
+ 			struct netlink_ext_ack *extack);
+-int br_multicast_set_querier(struct net_bridge *br, unsigned long val);
++int br_multicast_set_querier(struct net_bridge_mcast *brmctx, unsigned long val);
+ int br_multicast_set_hash_max(struct net_bridge *br, unsigned long val);
+ int br_multicast_set_igmp_version(struct net_bridge_mcast *brmctx,
+ 				  unsigned long val);
+@@ -1041,7 +1041,7 @@ __br_multicast_querier_exists(struct net_bridge_mcast *brmctx,
+ {
+ 	bool own_querier_enabled;
+ 
+-	if (READ_ONCE(brmctx->multicast_querier)) {
++	if (brmctx->multicast_querier) {
+ 		if (is_ipv6 && !br_opt_get(brmctx->br, BROPT_HAS_IPV6_ADDR))
+ 			own_querier_enabled = false;
+ 		else
+@@ -1203,6 +1203,7 @@ br_multicast_ctx_options_equal(const struct net_bridge_mcast *brmctx1,
+ 	       brmctx2->multicast_query_response_interval &&
+ 	       brmctx1->multicast_startup_query_interval ==
+ 	       brmctx2->multicast_startup_query_interval &&
++	       brmctx1->multicast_querier == brmctx2->multicast_querier &&
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	       brmctx1->multicast_mld_version ==
+ 	       brmctx2->multicast_mld_version &&
+diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
+index 570edfd391f4..e1234bd8d5a0 100644
+--- a/net/bridge/br_sysfs_br.c
++++ b/net/bridge/br_sysfs_br.c
+@@ -447,13 +447,13 @@ static ssize_t multicast_querier_show(struct device *d,
+ 				      char *buf)
+ {
+ 	struct net_bridge *br = to_bridge(d);
+-	return sprintf(buf, "%d\n", READ_ONCE(br->multicast_ctx.multicast_querier));
++	return sprintf(buf, "%d\n", br->multicast_ctx.multicast_querier);
  }
+ 
+ static int set_multicast_querier(struct net_bridge *br, unsigned long val,
+ 				 struct netlink_ext_ack *extack)
+ {
+-	return br_multicast_set_querier(br, val);
++	return br_multicast_set_querier(&br->multicast_ctx, val);
+ }
+ 
+ static ssize_t multicast_querier_store(struct device *d,
+diff --git a/net/bridge/br_vlan_options.c b/net/bridge/br_vlan_options.c
+index 7b8dfd138045..0d0db8ddae45 100644
+--- a/net/bridge/br_vlan_options.c
++++ b/net/bridge/br_vlan_options.c
+@@ -294,7 +294,9 @@ bool br_vlan_global_opts_fill(struct sk_buff *skb, u16 vid, u16 vid_range,
+ 	    nla_put_u32(skb, BRIDGE_VLANDB_GOPTS_MCAST_LAST_MEMBER_CNT,
+ 			v_opts->br_mcast_ctx.multicast_last_member_count) ||
+ 	    nla_put_u32(skb, BRIDGE_VLANDB_GOPTS_MCAST_STARTUP_QUERY_CNT,
+-			v_opts->br_mcast_ctx.multicast_startup_query_count))
++			v_opts->br_mcast_ctx.multicast_startup_query_count) ||
++	    nla_put_u8(skb, BRIDGE_VLANDB_GOPTS_MCAST_QUERIER,
++		       v_opts->br_mcast_ctx.multicast_querier))
+ 		goto out_err;
+ 
+ 	clockval = jiffies_to_clock_t(v_opts->br_mcast_ctx.multicast_last_member_interval);
+@@ -355,6 +357,7 @@ static size_t rtnl_vlan_global_opts_nlmsg_size(void)
+ 		+ nla_total_size(sizeof(u64)) /* BRIDGE_VLANDB_GOPTS_MCAST_QUERY_INTVL */
+ 		+ nla_total_size(sizeof(u64)) /* BRIDGE_VLANDB_GOPTS_MCAST_QUERY_RESPONSE_INTVL */
+ 		+ nla_total_size(sizeof(u64)) /* BRIDGE_VLANDB_GOPTS_MCAST_STARTUP_QUERY_INTVL */
++		+ nla_total_size(sizeof(u8)) /* BRIDGE_VLANDB_GOPTS_MCAST_QUERIER */
+ #endif
+ 		+ nla_total_size(sizeof(u16)); /* BRIDGE_VLANDB_GOPTS_RANGE */
+ }
+@@ -485,6 +488,15 @@ static int br_vlan_process_global_one_opts(const struct net_bridge *br,
+ 		v->br_mcast_ctx.multicast_startup_query_interval = clock_t_to_jiffies(val);
+ 		*changed = true;
+ 	}
++	if (tb[BRIDGE_VLANDB_GOPTS_MCAST_QUERIER]) {
++		u8 val;
 +
-+static inline bool
-+br_multicast_ctx_matches_vlan_snooping(const struct net_bridge_mcast *brmctx)
-+{
-+	bool vlan_snooping_enabled;
-+
-+	vlan_snooping_enabled = !!br_opt_get(brmctx->br,
-+					     BROPT_MCAST_VLAN_SNOOPING_ENABLED);
-+
-+	return !!(vlan_snooping_enabled == br_multicast_ctx_is_vlan(brmctx));
-+}
- #else
- static inline int br_multicast_rcv(struct net_bridge_mcast **brmctx,
- 				   struct net_bridge_mcast_port **pmctx,
++		val = nla_get_u8(tb[BRIDGE_VLANDB_GOPTS_MCAST_QUERIER]);
++		err = br_multicast_set_querier(&v->br_mcast_ctx, val);
++		if (err)
++			return err;
++		*changed = true;
++	}
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	if (tb[BRIDGE_VLANDB_GOPTS_MCAST_MLD_VERSION]) {
+ 		u8 ver;
+@@ -507,6 +519,7 @@ static const struct nla_policy br_vlan_db_gpol[BRIDGE_VLANDB_GOPTS_MAX + 1] = {
+ 	[BRIDGE_VLANDB_GOPTS_MCAST_SNOOPING]	= { .type = NLA_U8 },
+ 	[BRIDGE_VLANDB_GOPTS_MCAST_MLD_VERSION]	= { .type = NLA_U8 },
+ 	[BRIDGE_VLANDB_GOPTS_MCAST_QUERY_INTVL]	= { .type = NLA_U64 },
++	[BRIDGE_VLANDB_GOPTS_MCAST_QUERIER]	= { .type = NLA_U8 },
+ 	[BRIDGE_VLANDB_GOPTS_MCAST_IGMP_VERSION]	= { .type = NLA_U8 },
+ 	[BRIDGE_VLANDB_GOPTS_MCAST_LAST_MEMBER_CNT]	= { .type = NLA_U32 },
+ 	[BRIDGE_VLANDB_GOPTS_MCAST_STARTUP_QUERY_CNT]	= { .type = NLA_U32 },
 -- 
 2.31.1
 
