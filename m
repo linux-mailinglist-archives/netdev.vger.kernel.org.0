@@ -2,321 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D004A3E5E45
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 16:46:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EB483E5E79
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 16:58:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241736AbhHJOrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 10:47:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40224 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241321AbhHJOrR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 10:47:17 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07146C0613C1;
-        Tue, 10 Aug 2021 07:46:55 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id d1so21348514pll.1;
-        Tue, 10 Aug 2021 07:46:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=wFe4BczhXR3k/+mmFy5lD0VLxMw5jgWEOO680ak8REI=;
-        b=lq5uqTUrCf1zhHo2WCLOu5K4XkyHKwAL91OTcrYf5JLS1QqGnBnh4ZslqlwGHtrvm3
-         xKsAa0YxD2bnD1bBZdvB527pGbadW1OQ4IWVebZAJ4qybZjynEdjz0UOdga7D3kYHy6A
-         d40KfwsOcvLZ/XmE69uvtGgMaMG3IcPod1z9isiQh9XHgbRFKuCCn+9WR51oLIB7CinM
-         j3MYrDj0JX3fhiNR9qeMf531Y9GcfLaUKuNelDZ3yZZQIrbn6CFAP6/pbSBhN1bAmuJ5
-         QdhF6NvKmrYYHRKY7vyv+O/YkAZnqxUznvVvmE+LDgUhpJYSpbDHldaGTXJ3dmQTK6MN
-         X8ow==
+        id S236686AbhHJO6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 10:58:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:22848 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240466AbhHJO6c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 10:58:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1628607490;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NUy18vQWFqEpKaLHVXakl3mPB08V6UfeF611fK9Gam0=;
+        b=auCFZZnICRKnNndaplnFO4oWsqH9mDTNL6HPn8iExgOwtrZRNoMUW/I0uTddleyKdlVW10
+        X98Oq5UiFNhisczmZEodUIyC11a4EmUhn/jmTb42vsawu535LFChx52cZcz5dW/ddx7p1n
+        /0syrcmKVqHoseQKeRay7mkLNHQFdxw=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-400-Pp5mbBpgMvmxwyQA0baRNQ-1; Tue, 10 Aug 2021 10:58:09 -0400
+X-MC-Unique: Pp5mbBpgMvmxwyQA0baRNQ-1
+Received: by mail-wr1-f69.google.com with SMTP id o4-20020a5d47c40000b0290154ad228388so6462751wrc.9
+        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 07:58:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=wFe4BczhXR3k/+mmFy5lD0VLxMw5jgWEOO680ak8REI=;
-        b=j6gOMK++d0CW6h0MuZIqjqNcU7tmHZuJZmgJSvpbpBdny4ZTRmbsAvkR3HWTanME0E
-         On/YYQkqTeL19Ah4cmsUCuevX3PSVefHz7zzTHVbRxGxnA714j1iLaP6xBCeWSsEfm0N
-         jwGTwPqEv/U4rDFTquEB4UUEa8mVw6ZxXcqNpntf81XI3Dgm0R1wt72a8j0D5A3eOpzR
-         XGpd8D3q6HtgcfZPxnxk8zV0D7KmTAUFkVcVD4jVDnRC0vIRS6Ddob/9HL50eiQO2J/J
-         Vv/GVEZnL9D7po4jrXvHDggJQ+0kZOAq6YGY+oW+nO+9DS9NedssyN4rMCy4tC2JvVPb
-         3+Ig==
-X-Gm-Message-State: AOAM532EStBv7JcaYFl4+QLIfKwMefI+tb5E1M9J+jFc1BlKurIBCkmR
-        ssWCcPEvrVnp8JTYbP0kiw3eyieMgvORN1pL
-X-Google-Smtp-Source: ABdhPJzdvZxjlWRwL7McZjfZOAoXUYwFYCRKyUnKpa6GcY5o8JXYs1dmPLML/KRZdf6OvCoSzExdJQ==
-X-Received: by 2002:a17:90a:fa3:: with SMTP id 32mr5564938pjz.68.1628606814326;
-        Tue, 10 Aug 2021 07:46:54 -0700 (PDT)
-Received: from localhost.localdomain ([123.20.118.31])
-        by smtp.gmail.com with ESMTPSA id y4sm3479034pjg.9.2021.08.10.07.46.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Aug 2021 07:46:54 -0700 (PDT)
-From:   Bui Quang Minh <minhquangbui99@gmail.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, willemb@google.com, pabeni@redhat.com,
-        avagin@gmail.com, alexander@mihalicyn.com,
-        minhquangbui99@gmail.com, lesedorucalin01@gmail.com
-Subject: [PATCH 2/2] selftests: Add udp_repair test
-Date:   Tue, 10 Aug 2021 21:45:50 +0700
-Message-Id: <20210810144550.40546-1-minhquangbui99@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:from:cc:subject:to:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NUy18vQWFqEpKaLHVXakl3mPB08V6UfeF611fK9Gam0=;
+        b=ZGNik/5GOLrtNcSkZzPMqJAYPCRzOVVVkQY8+UsE0B/Q5k7pI/q79spZaYw4Vv7wDa
+         uaLKMFq2n0p+Dvnq19ie3dtr4QCBNjk/MgPyPjCBD9VwVg9GjFlMZontcurP+pcgB+tR
+         EiYWE9H7ILUWrZjBE/xS2PHhH8BsPOu73FIYYAPcdyQ73B/CboeRvPpWkdzOSlobG6zU
+         x+km/Xxcwf2Thnxgz+b3xZXfZ4QsBmHiKpOT7SqIitqR1vh7UFTcyvpGuPpCYvoDDhcy
+         AgRin7vG7UODdCyVi1zvHao7Te8D11a9s580jQTPqSrSEcFLcx94+iwT8XjZ6ViDAVsm
+         2nSA==
+X-Gm-Message-State: AOAM533o1BZtafT8f6hNWpxER/t+WdmG/pPmxzWoQ7LyAUmayBZ58Kt6
+        OnRu+7vp5U9m4qerMkQM3LK8Ktx3dgus6g8G9hbzmQwOdQibTyhj0EflQ2To487jkNhl80f980l
+        6TaaOYk35Uw+aHZIX
+X-Received: by 2002:a5d:6146:: with SMTP id y6mr30881274wrt.278.1628607488037;
+        Tue, 10 Aug 2021 07:58:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxevabhjt95IKMjXAm2nrxG7HgOUYrBPOJkvsPqoKg1v208UM0XWcPZ+fLqKciWDPkHANY1qw==
+X-Received: by 2002:a5d:6146:: with SMTP id y6mr30881232wrt.278.1628607487862;
+        Tue, 10 Aug 2021 07:58:07 -0700 (PDT)
+Received: from [192.168.42.238] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
+        by smtp.gmail.com with ESMTPSA id g5sm2883361wmh.31.2021.08.10.07.58.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Aug 2021 07:58:07 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     brouer@redhat.com, alexander.duyck@gmail.com,
+        linux@armlinux.org.uk, mw@semihalf.com, linuxarm@openeuler.org,
+        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        thomas.petazzoni@bootlin.com, hawk@kernel.org,
+        ilias.apalodimas@linaro.org, ast@kernel.org, daniel@iogearbox.net,
+        john.fastabend@gmail.com, akpm@linux-foundation.org,
+        peterz@infradead.org, will@kernel.org, willy@infradead.org,
+        vbabka@suse.cz, fenghua.yu@intel.com, guro@fb.com,
+        peterx@redhat.com, feng.tang@intel.com, jgg@ziepe.ca,
+        mcroce@microsoft.com, hughd@google.com, jonathan.lemon@gmail.com,
+        alobakin@pm.me, willemb@google.com, wenxu@ucloud.cn,
+        cong.wang@bytedance.com, haokexin@gmail.com, nogikh@google.com,
+        elver@google.com, yhs@fb.com, kpsingh@kernel.org,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, chenhao288@hisilicon.com,
+        Linux-MM <linux-mm@kvack.org>
+Subject: Re: [PATCH net-next v2 2/4] page_pool: add interface to manipulate
+ frag count in page pool
+To:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org
+References: <1628217982-53533-1-git-send-email-linyunsheng@huawei.com>
+ <1628217982-53533-3-git-send-email-linyunsheng@huawei.com>
+Message-ID: <a3999ff2-2385-41a6-c3f5-ccd6cf67badf@redhat.com>
+Date:   Tue, 10 Aug 2021 16:58:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <1628217982-53533-3-git-send-email-linyunsheng@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a simple test for UDP_REPAIR in 3 cases:
- - Socket is an udp4 socket
- - Socket is an udp6 socket with pending ipv4 packets
- - Socket is an udp6 socket with pending ipv6 packets
 
-Signed-off-by: Bui Quang Minh <minhquangbui99@gmail.com>
----
- tools/testing/selftests/net/.gitignore   |   1 +
- tools/testing/selftests/net/Makefile     |   1 +
- tools/testing/selftests/net/udp_repair.c | 218 +++++++++++++++++++++++
- 3 files changed, 220 insertions(+)
- create mode 100644 tools/testing/selftests/net/udp_repair.c
 
-diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
-index 19deb9cdf72f..c9daab1721d5 100644
---- a/tools/testing/selftests/net/.gitignore
-+++ b/tools/testing/selftests/net/.gitignore
-@@ -31,3 +31,4 @@ rxtimestamp
- timestamping
- txtimestamp
- so_netns_cookie
-+udp_repair
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 79c9eb0034d5..cd20eae9275c 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -38,6 +38,7 @@ TEST_GEN_FILES += hwtstamp_config rxtimestamp timestamping txtimestamp
- TEST_GEN_FILES += ipsec
- TEST_GEN_PROGS = reuseport_bpf reuseport_bpf_cpu reuseport_bpf_numa
- TEST_GEN_PROGS += reuseport_dualstack reuseaddr_conflict tls
-+TEST_GEN_PROGS += udp_repair
- 
- TEST_FILES := settings
- 
-diff --git a/tools/testing/selftests/net/udp_repair.c b/tools/testing/selftests/net/udp_repair.c
-new file mode 100644
-index 000000000000..1b2c53129c71
---- /dev/null
-+++ b/tools/testing/selftests/net/udp_repair.c
-@@ -0,0 +1,218 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <pthread.h>
-+#include <string.h>
-+#include <unistd.h>
-+#include <error.h>
-+#include <errno.h>
-+#include <sys/socket.h>
-+#include <arpa/inet.h>
-+#include <netinet/udp.h>
-+
-+#define PORT 5000
-+#define BUF_SIZE 256
-+
-+#define UDP_REPAIR	2
-+
-+char send_buf[BUF_SIZE];
-+struct udp_dump {
-+	union {
-+		struct sockaddr_in addr_v4;
-+		struct sockaddr_in6 addr_v6;
-+	};
-+	char buf[BUF_SIZE];
-+};
-+
-+struct sockaddr_in addr_v4;
-+struct sockaddr_in6 addr_v6;
-+
-+int udp_server(int is_udp4)
-+{
-+	int sock, ret;
-+	unsigned short family;
-+	struct sockaddr *server_addr;
-+	unsigned int addr_len;
-+
-+	if (is_udp4) {
-+		family = AF_INET;
-+		server_addr = (struct sockaddr *) &addr_v4;
-+		addr_len = sizeof(addr_v4);
-+	} else {
-+		family = AF_INET6;
-+		server_addr = (struct sockaddr *) &addr_v6;
-+		addr_len = sizeof(addr_v6);
-+	}
-+
-+	sock = socket(family, SOCK_DGRAM, IPPROTO_UDP);
-+	if (sock < 0)
-+		error(1, errno, "socket server");
-+
-+	ret = bind(sock, server_addr, addr_len);
-+	if (ret < 0)
-+		error(1, errno, "bind server socket");
-+
-+	return sock;
-+}
-+
-+void server_recv(int sock)
-+{
-+	char recv_buf[BUF_SIZE];
-+	int ret;
-+
-+	ret = recv(sock, recv_buf, sizeof(recv_buf), 0);
-+	if (ret < 0)
-+		error(1, errno, "recv in server");
-+
-+	if (memcmp(recv_buf, send_buf, BUF_SIZE))
-+		error(1, 0, "recv: data mismatch");
-+}
-+
-+int create_corked_udp_client(int is_udp4)
-+{
-+	int sock, ret, val = 1;
-+	unsigned short family = is_udp4 ? AF_INET : AF_INET6;
-+
-+	sock = socket(family, SOCK_DGRAM, IPPROTO_UDP);
-+	if (sock < 0)
-+		error(1, errno, "socket client");
-+
-+	ret = setsockopt(sock, SOL_UDP, UDP_CORK, &val, sizeof(val));
-+	if (ret < 0)
-+		error(1, errno, "setsockopt cork udp");
-+
-+	return sock;
-+}
-+
-+struct udp_dump *checkpoint(int sock, int is_udp4)
-+{
-+	int ret, val;
-+	unsigned int addr_len;
-+	struct udp_dump *dump;
-+	struct sockaddr *addr;
-+
-+	dump = malloc(sizeof(*dump));
-+	if (!dump)
-+		error(1, 0, "malloc");
-+
-+	if (is_udp4) {
-+		addr = (struct sockaddr *) &dump->addr_v4;
-+		addr_len = sizeof(dump->addr_v4);
-+	} else {
-+		addr = (struct sockaddr *) &dump->addr_v6;
-+		addr_len = sizeof(dump->addr_v6);
-+	}
-+
-+	val = 1;
-+	ret = setsockopt(sock, SOL_UDP, UDP_REPAIR, &val, sizeof(val));
-+	if (ret < 0)
-+		error(1, errno, "setsockopt udp_repair");
-+
-+	val = 0;
-+	ret = setsockopt(sock, SOL_SOCKET, SO_PEEK_OFF, &val, sizeof(val));
-+	if (ret < 0)
-+		error(1, errno, "setsockopt so_peek_off");
-+
-+	ret = recvfrom(sock, dump->buf, BUF_SIZE / 2, MSG_PEEK,
-+		       addr, &addr_len);
-+	if (ret < 0)
-+		error(1, errno, "dumping send queue");
-+
-+	ret = recvfrom(sock, dump->buf + BUF_SIZE / 2,
-+		       BUF_SIZE - BUF_SIZE / 2, MSG_PEEK,
-+		       addr, &addr_len);
-+	if (ret < 0)
-+		error(1, errno, "dumping send queue");
-+
-+	if (memcmp(dump->buf, send_buf, BUF_SIZE))
-+		error(1, 0, "dump: data mismatch");
-+
-+	return dump;
-+}
-+
-+void restore(int sock, struct udp_dump *dump, int is_udp4)
-+{
-+	struct sockaddr *addr;
-+	int val;
-+	unsigned int addr_len;
-+
-+	if (is_udp4) {
-+		addr = (struct sockaddr *) &dump->addr_v4;
-+		addr_len = sizeof(dump->addr_v4);
-+	} else {
-+		addr = (struct sockaddr *) &dump->addr_v6;
-+		addr_len = sizeof(dump->addr_v6);
-+	}
-+
-+	if (sendto(sock, dump->buf, BUF_SIZE, 0, addr, addr_len) < 0)
-+		error(1, errno, "send data");
-+
-+	val = 0;
-+	if (setsockopt(sock, SOL_UDP, UDP_CORK, &val, sizeof(val)) < 0)
-+		error(1, errno, "setsockopt un-cork udp");
-+}
-+
-+void run_test(int is_udp4_sock, int is_udp4_packet)
-+{
-+	int server_sock, client_sock, ret, val;
-+	struct udp_dump *dump;
-+	struct sockaddr *addr;
-+	unsigned int addr_len;
-+
-+	if (is_udp4_packet) {
-+		addr = (struct sockaddr *) &addr_v4;
-+		addr_len = sizeof(addr_v4);
-+	} else {
-+		addr = (struct sockaddr *) &addr_v6;
-+		addr_len = sizeof(addr_v6);
-+	}
-+
-+	server_sock = udp_server(is_udp4_packet);
-+	client_sock = create_corked_udp_client(is_udp4_sock);
-+
-+	ret = sendto(client_sock, send_buf, sizeof(send_buf), 0,
-+	       addr, addr_len);
-+	if (ret < 0)
-+		error(1, errno, "send data");
-+
-+	dump = checkpoint(client_sock, is_udp4_sock);
-+	close(client_sock);
-+
-+	client_sock = create_corked_udp_client(is_udp4_sock);
-+	restore(client_sock, dump, is_udp4_sock);
-+
-+	val = 0;
-+	setsockopt(client_sock, SOL_UDP, UDP_CORK, &val, sizeof(val));
-+	server_recv(server_sock);
-+
-+	close(server_sock);
-+	close(client_sock);
-+}
-+
-+void init(void)
-+{
-+	addr_v4.sin_family	= AF_INET;
-+	addr_v4.sin_port	= htons(PORT);
-+	addr_v4.sin_addr.s_addr	= inet_addr("127.0.0.1");
-+
-+	addr_v6.sin6_family	= AF_INET6;
-+	addr_v6.sin6_port	= htons(PORT);
-+	inet_pton(AF_INET6, "::1", &addr_v6.sin6_addr);
-+
-+	memset(send_buf, 'A', BUF_SIZE / 2);
-+	memset(send_buf + BUF_SIZE / 2, 'B', BUF_SIZE - BUF_SIZE / 2);
-+}
-+
-+int main(void)
-+{
-+	init();
-+	fprintf(stderr, "Test udp4 socket\n");
-+	run_test(1, 1);
-+	fprintf(stderr, "Test udp6 socket sending udp4 packet\n");
-+	run_test(0, 1);
-+	fprintf(stderr, "Test udp6 socket sending udp6 packet\n");
-+	run_test(0, 0);
-+	fprintf(stderr, "Ok\n");
-+	return 0;
-+}
--- 
-2.17.1
+On 06/08/2021 04.46, Yunsheng Lin wrote:
+> For 32 bit systems with 64 bit dma, dma_addr[1] is used to
+> store the upper 32 bit dma addr, those system should be rare
+> those days.
+> 
+> For normal system, the dma_addr[1] in 'struct page' is not
+> used, so we can reuse dma_addr[1] for storing frag count,
+> which means how many frags this page might be splited to.
+> 
+> In order to simplify the page frag support in the page pool,
+> the PAGE_POOL_DMA_USE_PP_FRAG_COUNT macro is added to indicate
+> the 32 bit systems with 64 bit dma, and the page frag support
+> in page pool is disabled for such system.
+> 
+> The newly added page_pool_set_frag_count() is called to reserve
+> the maximum frag count before any page frag is passed to the
+> user. The page_pool_atomic_sub_frag_count_return() is called
+> when user is done with the page frag.
+> 
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> ---
+>   include/linux/mm_types.h | 18 +++++++++++++-----
+>   include/net/page_pool.h  | 46 +++++++++++++++++++++++++++++++++++++++-------
+>   net/core/page_pool.c     |  4 ++++
+>   3 files changed, 56 insertions(+), 12 deletions(-)
+> 
+> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+> index 52bbd2b..7f8ee09 100644
+> --- a/include/linux/mm_types.h
+> +++ b/include/linux/mm_types.h
+> @@ -103,11 +103,19 @@ struct page {
+>   			unsigned long pp_magic;
+>   			struct page_pool *pp;
+>   			unsigned long _pp_mapping_pad;
+> -			/**
+> -			 * @dma_addr: might require a 64-bit value on
+> -			 * 32-bit architectures.
+> -			 */
+> -			unsigned long dma_addr[2];
+> +			unsigned long dma_addr;
+> +			union {
+> +				/**
+> +				 * dma_addr_upper: might require a 64-bit
+> +				 * value on 32-bit architectures.
+> +				 */
+> +				unsigned long dma_addr_upper;
+> +				/**
+> +				 * For frag page support, not supported in
+> +				 * 32-bit architectures with 64-bit DMA.
+> +				 */
+> +				atomic_long_t pp_frag_count;
+> +			};
+>   		};
+>   		struct {	/* slab, slob and slub */
+>   			union {
+> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> index 8d7744d..42e6997 100644
+> --- a/include/net/page_pool.h
+> +++ b/include/net/page_pool.h
+> @@ -45,7 +45,10 @@
+>   					* Please note DMA-sync-for-CPU is still
+>   					* device driver responsibility
+>   					*/
+> -#define PP_FLAG_ALL		(PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV)
+> +#define PP_FLAG_PAGE_FRAG	BIT(2) /* for page frag feature */
+> +#define PP_FLAG_ALL		(PP_FLAG_DMA_MAP |\
+> +				 PP_FLAG_DMA_SYNC_DEV |\
+> +				 PP_FLAG_PAGE_FRAG)
+>   
+>   /*
+>    * Fast allocation side cache array/stack
+> @@ -198,19 +201,48 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
+>   	page_pool_put_full_page(pool, page, true);
+>   }
+>   
+> +#define PAGE_POOL_DMA_USE_PP_FRAG_COUNT	\
+> +		(sizeof(dma_addr_t) > sizeof(unsigned long))
+> +
+>   static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
+>   {
+> -	dma_addr_t ret = page->dma_addr[0];
+> -	if (sizeof(dma_addr_t) > sizeof(unsigned long))
+> -		ret |= (dma_addr_t)page->dma_addr[1] << 16 << 16;
+> +	dma_addr_t ret = page->dma_addr;
+> +
+> +	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
+> +		ret |= (dma_addr_t)page->dma_addr_upper << 16 << 16;
+
+I find the macro name confusing.
+
+I think it would be easier to read the code, if it was called:
+  PAGE_POOL_DMA_CANNOT_USE_PP_FRAG_COUNT
+
+> +
+>   	return ret;
+>   }
+>   
+>   static inline void page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
+>   {
+> -	page->dma_addr[0] = addr;
+> -	if (sizeof(dma_addr_t) > sizeof(unsigned long))
+> -		page->dma_addr[1] = upper_32_bits(addr);
+> +	page->dma_addr = addr;
+> +	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
+> +		page->dma_addr_upper = upper_32_bits(addr);
+> +}
+> +
+> +static inline void page_pool_set_frag_count(struct page *page, long nr)
+> +{
+> +	atomic_long_set(&page->pp_frag_count, nr);
+> +}
+> +
+> +static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
+> +							  long nr)
+> +{
+> +	long ret;
+> +
+> +	/* As suggested by Alexander, atomic_long_read() may cover up the
+> +	 * reference count errors, so avoid calling atomic_long_read() in
+> +	 * the cases of freeing or draining the page_frags, where we would
+> +	 * not expect it to match or that are slowpath anyway.
+> +	 */
+> +	if (__builtin_constant_p(nr) &&
+> +	    atomic_long_read(&page->pp_frag_count) == nr)
+> +		return 0;
+> +
+> +	ret = atomic_long_sub_return(nr, &page->pp_frag_count);
+> +	WARN_ON(ret < 0);
+> +	return ret;
+>   }
+>   
+>   static inline bool is_page_pool_compiled_in(void)
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 78838c6..68fab94 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -67,6 +67,10 @@ static int page_pool_init(struct page_pool *pool,
+>   		 */
+>   	}
+>   
+> +	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT &&
+> +	    pool->p.flags & PP_FLAG_PAGE_FRAG)
+> +		return -EINVAL;
+
+I read this as: if the page_pool use pp_frag_count and have flag set, 
+then it is invalid/no-allowed, which seems wrong.
+
+I find this code more intuitive to read:
+
+  +	if (PAGE_POOL_DMA_CANNOT_USE_PP_FRAG_COUNT &&
+  +	    pool->p.flags & PP_FLAG_PAGE_FRAG)
+  +		return -EINVAL;
+
+--Jesper
 
