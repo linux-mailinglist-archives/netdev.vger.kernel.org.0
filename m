@@ -2,98 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 409913E5AB7
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 15:08:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67D903E5ABB
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 15:09:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240697AbhHJNIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 09:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44722 "EHLO
+        id S241056AbhHJNJy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 09:09:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238793AbhHJNIs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 09:08:48 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B935AC0613D3;
-        Tue, 10 Aug 2021 06:08:26 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id e19so35299192ejs.9;
-        Tue, 10 Aug 2021 06:08:26 -0700 (PDT)
+        with ESMTP id S238793AbhHJNJx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 09:09:53 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B94DDC0613D3;
+        Tue, 10 Aug 2021 06:09:31 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id mq2-20020a17090b3802b0290178911d298bso5285565pjb.1;
+        Tue, 10 Aug 2021 06:09:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xs/+O7rAz0hyKzsctUcio2WQZUKn46iac13X1YxyLOs=;
-        b=HCCl7rgFmcy3zKwIxkaZ/SBUd8zqPrb094075z1tmOI4VPtPFJxydk1aoQ4B2mcRJ2
-         cQbJUQDbzcm1dkhCvmLco8Me5ubngY8nbgtYF0sJ4eL85zbQyFqLGyp/ySVX1oMF/iSG
-         vbjIbxMCaeikvl+bgs/I6KvQSlwON8h6QIJ/y4JkTJzU3UePnUxBhQOh1L7I7o6lC6Va
-         ajSBOfrGIA0UG06ic10DngwwBxhWDA2POkbpQH93j60p7JEWn4jt32GvxfG2iNSy4hfj
-         yyCxV6P1vKnmRiuGGEdWGMZQPJ5OaIGrTF36KT7jCgkXxKcljAlP0sCWBR/x3nM56IYM
-         tq6Q==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=66KGVVLHGJOMxSHzgJj6VDCRB8/apj3sR/Ynuos6wU8=;
+        b=pt4Qw4Gt2cFRP884fMrdBTfJzkwL2gx6Mo1qS6xvvDhfSdIustLAFX7++VkRY1h4um
+         tTehujaFm9rbEjIEwB0Xu4QM2VZRfXhLGrMo8JNp/sDj6XoPD9WPfZ8v2F3qn2rH9A9d
+         OGCnPFdaPpTRfjqukxIeWiIpd6XfYc4MZvSVh7tbwIwGO2vT6u6skC56ab4LGrfYsBku
+         cbFUdZZjMM6VnimGAjkoLRcPks9PLwbJP0vFH3G0Hbv47WNqW4yslC4eCkDCDu113c9j
+         ijT0klWyzKut4iQ2YBiKGjugVqCFd+8zcrAniUpAohoQSh6qC1V2Qr33L9WPJqBDjAdX
+         IuxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xs/+O7rAz0hyKzsctUcio2WQZUKn46iac13X1YxyLOs=;
-        b=H3uO4uX3kTzkyDqsI6ddJbwdtQ5lQL+5yR9AaGTABOvQqiWqC6881CxtuyfW90vwKg
-         Pd0xAdu9HKfusKypLX2RTIba4WeYUe3t8Z62/85XeXxQzvHm6Jz6TIpJacgJD1ajaIAt
-         F/pHvixOkWZS0d1D+Pcn0dgDKh81sB1l7hkGe1ayWUjhgQbX5CaTGSmurI4epFQ8iSXb
-         JjD/cvQgJuA5MG991EpQBD2WYeA/9egyxS3e4R4Ze/SCuTWlYBg4RI07ZWdteNON15Il
-         rDMQwPiBRqIIK85oTQ2uY//atSLvBBxT677/Sg9TGtMdapQSnuO+hHj0h/a3q+EAFkwI
-         nltA==
-X-Gm-Message-State: AOAM531SegdyiacFQIUb8leS8bsyYS9U3zWeZTbi8FvEUBrZSiM/Rwxk
-        cb3VbqIMO/h8EQl1SNToMLE=
-X-Google-Smtp-Source: ABdhPJwUr/73rEkMhaIveh98iMIskFOJfJbfcePSx7fWzOrGY6Gd0FewqY2WalFFgiQ4kd1+ecE4PA==
-X-Received: by 2002:a17:906:dfe5:: with SMTP id lc5mr27153744ejc.20.1628600905375;
-        Tue, 10 Aug 2021 06:08:25 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id b25sm9645288edv.9.2021.08.10.06.08.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Aug 2021 06:08:24 -0700 (PDT)
-Date:   Tue, 10 Aug 2021 16:08:21 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Jianbo Liu <jianbol@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-s390@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        Ido Schimmel <idosch@idosch.org>
-Subject: Re: [PATCH v2 net] net: switchdev: zero-initialize struct
- switchdev_notifier_fdb_info emitted by drivers towards the bridge
-Message-ID: <20210810130821.7gdngordzzxkpws3@skbuf>
-References: <20210810115024.1629983-1-vladimir.oltean@nxp.com>
- <dfa98bf7-cab4-4076-ef5f-880a8baa89ee@linux.ibm.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=66KGVVLHGJOMxSHzgJj6VDCRB8/apj3sR/Ynuos6wU8=;
+        b=frCKtQI1YS38Xm+X5OX3SvlTItm+3OFg53bIjvJol3QyTBtKAao5HDsf05rra10xEQ
+         3LhKLa+5kDdYs5rD482BLg0VjVRwc2LJREAVoertWp35Vjs/bF1bvOV99jACjCf6tQA0
+         rAsLeXQy3Ust2M+EdzDFZnSannd+fOtYzW/EHx2qrzVaHA9ATVEg9dC0BZG66IZ+l7rT
+         789gTMysdJz7yuPsNNQ/n7Ft3IJVvnA0Vq/gVKOKgHM4rE6hHZ0jbPzJrRKDfYjGuvya
+         iMoV/SUgOZv+VWMmLQlY3KVPKgtK0pK26E0F7YqNzAO7ZCQ6G2Vb9c7p3Y4FhVcWBBwN
+         ojTA==
+X-Gm-Message-State: AOAM530pX6KVNFGpGSsSsjx0Qv3es1RvOd0h8P5UcbcPtRHUvwcZlCS/
+        9bhRKUw293Oa0hs/5RNSppk=
+X-Google-Smtp-Source: ABdhPJzfPih5Ybmexq3iu0hKNG6YxeEAVSzL4u+nolQ/+flfaaM1LfzobnQ7JyAdR0R5YSEGRoeWmg==
+X-Received: by 2002:aa7:8f05:0:b029:3b4:ff54:9a10 with SMTP id x5-20020aa78f050000b02903b4ff549a10mr29132627pfr.29.1628600971342;
+        Tue, 10 Aug 2021 06:09:31 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:18:efec::4b1])
+        by smtp.gmail.com with ESMTPSA id c9sm22240121pgq.58.2021.08.10.06.09.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Aug 2021 06:09:30 -0700 (PDT)
+Subject: Re: [PATCH V3 03/13] x86/HV: Add new hvcall guest address host
+ visibility support
+To:     Dave Hansen <dave.hansen@intel.com>, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
+        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
+        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
+        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, ardb@kernel.org,
+        Tianyu.Lan@microsoft.com, pgonda@google.com,
+        martin.b.radev@gmail.com, akpm@linux-foundation.org,
+        kirill.shutemov@linux.intel.com, rppt@kernel.org,
+        sfr@canb.auug.org.au, saravanand@fb.com,
+        krish.sadhukhan@oracle.com, aneesh.kumar@linux.ibm.com,
+        xen-devel@lists.xenproject.org, rientjes@google.com,
+        hannes@cmpxchg.org, tj@kernel.org, michael.h.kelley@microsoft.com
+Cc:     iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, parri.andrea@gmail.com
+References: <20210809175620.720923-1-ltykernel@gmail.com>
+ <20210809175620.720923-4-ltykernel@gmail.com>
+ <a0499916-38e2-0b1e-f2b9-ef760f6d4d92@intel.com>
+From:   Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <3f09c505-3e4d-3b06-e92a-db6fd3e50d0c@gmail.com>
+Date:   Tue, 10 Aug 2021 21:09:16 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <dfa98bf7-cab4-4076-ef5f-880a8baa89ee@linux.ibm.com>
+In-Reply-To: <a0499916-38e2-0b1e-f2b9-ef760f6d4d92@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 10, 2021 at 02:41:48PM +0200, Karsten Graul wrote:
-> On 10/08/2021 13:50, Vladimir Oltean wrote:
-> > The blamed commit a new field to struct switchdev_notifier_fdb_info, but
->                   ^^^ added?
+On 8/10/2021 6:12 AM, Dave Hansen wrote:
+> On 8/9/21 10:56 AM, Tianyu Lan wrote:
+>> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+>>
+>> Add new hvcall guest address host visibility support to mark
+>> memory visible to host. Call it inside set_memory_decrypted
+>> /encrypted(). Add HYPERVISOR feature check in the
+>> hv_is_isolation_supported() to optimize in non-virtualization
+>> environment.
+> 
+>  From an x86/mm perspective:
+> 
+> Acked-by: Dave Hansen <dave.hansen@intel.com>
+> 
 
-yes. but I won't send a v3 just for that. thanks for noticing.
+Thanks for your ACK.
+
+
+> A tiny nit:
+> 
+>> diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+>> index 0bb4d9ca7a55..b3683083208a 100644
+>> --- a/arch/x86/hyperv/hv_init.c
+>> +++ b/arch/x86/hyperv/hv_init.c
+>> @@ -607,6 +607,12 @@ EXPORT_SYMBOL_GPL(hv_get_isolation_type);
+>>   
+>>   bool hv_is_isolation_supported(void)
+>>   {
+>> +	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
+>> +		return 0;
+>> +
+>> +	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV))
+>> +		return 0;
+>> +
+>>   	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
+>>   }
+> This might be worthwhile to move to a header.  That ensures that
+> hv_is_isolation_supported() use can avoid even a function call.  But, I
+> see this is used in modules and its use here is also in a slow path, so
+> it's not a big deal
+> 
+
+I will move it to header in the following version.
+
+
+Thanks.
