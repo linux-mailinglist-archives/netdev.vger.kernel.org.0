@@ -2,167 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70C413E5A99
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 15:00:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA7FC3E5A9E
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 15:02:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241059AbhHJNBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 09:01:08 -0400
-Received: from www62.your-server.de ([213.133.104.62]:40162 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237490AbhHJNBE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 09:01:04 -0400
-Received: from 65.47.5.85.dynamic.wline.res.cust.swisscom.ch ([85.5.47.65] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mDRN1-0009eP-Bd; Tue, 10 Aug 2021 15:00:39 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, andrii.nakryiko@gmail.com,
-        ast@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf-next 2021-08-10
-Date:   Tue, 10 Aug 2021 15:00:38 +0200
-Message-Id: <20210810130038.16927-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S240830AbhHJNDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 09:03:12 -0400
+Received: from mail-eopbgr110129.outbound.protection.outlook.com ([40.107.11.129]:28991
+        "EHLO GBR01-CWL-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S237619AbhHJNDK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 09:03:10 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZEM1ImzeMOgDCU9DqsJ7BsGv5Z6DGDQEKybftX6CybEHHgR7vUBrcWNyjmYHnRCUvZL1tH0Z7Gfmr0fDaYKUySqbI/m9Fzjc+h6mVN/0ryQsXSK/0JeHTpHUhQK499pCKYPznAvwGGpHYePAI6KoVzo1HALLRyeZnL4pYNg50FATlyamaPEhWOxFu1pqU45AAHQ6J8wgADXWqEmz97Ph5abiTloAMA4xz1p6EEJH4aF/zIcw6mTQyr2iWXUPTM5A+TjiCjb3NbN3oZ7O17d1norMbw41U7J3D/YKaqolRZNV/LIrvApKIxmD0zaW28CtVGtoedLC/dRQXJ4ra3xiNg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CeBV0AVLwJbLtHf5fcTXSWEAK4znScxJFLKElGUOMLI=;
+ b=b7lagZeeEjw9JJet8Jp+zkoIcNML69o2BREdK/xK6uDMdh3R1vpXlIMHc51kSU8KHdP8PmTVhcsy+h6HOHPkiX9jKva6s9+6hcb/ZW119t/QAVoikJA6E6iKEiXqa5gPqLW1owim4K1V/btQvqCHU+iNzZowJZFitUgOOTbUU5TaCueDvfows51oauHhl9VSG4Tk1Nim07EbdGyt4nQlZAO7Uqof11hp4AVP7mtv65ij8/3cJ3P49gIuXr0+ZyTtc0A3eFkDrJc9pwxsSr3VknJk5PTp7HC4sm3suTcfb2QPjS+60gziEVmp67E7oiiEH4ZuM/fpy8Mm0D1KvjQWwA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=purelifi.com; dmarc=pass action=none header.from=purelifi.com;
+ dkim=pass header.d=purelifi.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=purevlc.onmicrosoft.com; s=selector2-purevlc-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CeBV0AVLwJbLtHf5fcTXSWEAK4znScxJFLKElGUOMLI=;
+ b=elRv8b0VYex9cWZK3392ilbDpp4RKoJf5iYK1XJZHUUIk2a9sGmAvZuzoj35L4pWeQSaWAj7mBQsfzK9oPhzv+EuSGri4nNiF49VffCW33Jncmy9NXdaXEPKbs6j7QEnvYlUgqfkd4iCrioLhcSJqYbo+R6ItAQGNh8Dy/yjYmg=
+Received: from CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:bb::9) by
+ CWLP265MB2482.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:95::10) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4394.21; Tue, 10 Aug 2021 13:02:46 +0000
+Received: from CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::b867:2f6b:483e:62e3]) by CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::b867:2f6b:483e:62e3%9]) with mapi id 15.20.4415.014; Tue, 10 Aug 2021
+ 13:02:46 +0000
+From:   Srinivasan Raju <srini.raju@purelifi.com>
+CC:     Mostafa Afgani <mostafa.afgani@purelifi.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS (WIRELESS)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] [v14] wireless: Initial driver submission for pureLiFi
+ STA devices
+Thread-Topic: [PATCH] [v14] wireless: Initial driver submission for pureLiFi
+ STA devices
+Thread-Index: AQHXDECYN+cbMaQkH0qr/5BknxpUK6q8C0kQgLGrifM=
+Date:   Tue, 10 Aug 2021 13:02:46 +0000
+Message-ID: <CWLP265MB321782CCA0CC2130A2D59A53E0F79@CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM>
+References: <20200928102008.32568-1-srini.raju@purelifi.com>
+ <20210226130810.119216-1-srini.raju@purelifi.com>
+ <CWLP265MB17945FD418D1D242756B2AC4E0499@CWLP265MB1794.GBRP265.PROD.OUTLOOK.COM>
+In-Reply-To: <CWLP265MB17945FD418D1D242756B2AC4E0499@CWLP265MB1794.GBRP265.PROD.OUTLOOK.COM>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: purelifi.com; dkim=none (message not signed)
+ header.d=none;purelifi.com; dmarc=none action=none header.from=purelifi.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9735bf62-b6c4-4d25-3cb3-08d95bff264a
+x-ms-traffictypediagnostic: CWLP265MB2482:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CWLP265MB24829DE9C3537E26FF4069A2E0F79@CWLP265MB2482.GBRP265.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: e5lTTHdYDp9i2BgIVaqJu4N6k6ctVrI3YnsIeuBFh++mAKXaGcsqxmnnoYl/CWl7qHGr1z281AEzZZeqgUN2vkuZhcqXEEjxknQuppao1h5O12B+rDs9ZWTpfpp6mJLRYj+3/hVoUcbNI0X3nOo+7ZBJVY4vFwpIjaqX4y77IjgW8yX1Ycb17u8bhaI2BU0pOtoPoWoYLdgp5HSUFLJ2ZVNnUWX4WiLe2ZHnfCZzuLT0hj7MaQI+IFzzYkcz3YfpM3NisxJoieC5hFpljSjDgK8zXB9SyJ8jR+M5L9UtryRVt5uXxzJH7agqPikQRWcNO8qBaMu0b0a5u0nUb7ec6K9sIrfxkiclt4gleKmm4T9chjICErxhTkC78QO6tIfXMi6kKrcnAkOU6XqJODbnY2ssdNsKIGbqjk9tifYbq+QHufPuNLHJ6TZ9Z9zDtYsBLSBj6aWACosweuUxRThYmBcZwb/ZTXyfjNZRum0vh9GgCpJU+WAMLjEDqKQ2Rfj27nQckmLIGr1el7lDybt6vutJn4wMSj5nmiGIuY5IY0XEtxmPienanZcqpIKRw9aLtlVby9uLeXa2Nal/f3d5cBuuiYzIUQttzibe1jmsPgyCRXkjmdycKHTv58yjZ5JlmCgBBGQIcaoiUoOm+p3PDPO88aEQRS2q1Q5ShFY3/iD3tC+ybe7R2fKJVZEL6rj2+/7rpPwP7sSqWIgzPpxyk4p69oW4fgFBeZZaWhptJAI83I2l1h18m3b2Ig2Nn4uuT/vp3HMUIxr8zZllQ+k6u0Ee8SyKj/mOGOqHZjmusX8=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(6029001)(4636009)(136003)(376002)(39830400003)(366004)(346002)(396003)(64756008)(66446008)(86362001)(66946007)(91956017)(8936002)(66476007)(66556008)(52536014)(76116006)(316002)(38100700002)(4326008)(478600001)(83380400001)(122000001)(54906003)(2906002)(55016002)(7696005)(33656002)(8676002)(9686003)(109986005)(38070700005)(966005)(5660300002)(6506007)(186003)(26005)(71200400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?H9YV+ZgdwF/VdP56J1WGMnUmRKUluysZGa6agauhSkqhjteOKb3mxDdi9x?=
+ =?iso-8859-1?Q?71U3U88lTJwECppLh/5X3CrCsqnOwi2i2g1fmc/lrOl8QuAM2n9ZJcmyFd?=
+ =?iso-8859-1?Q?6loz18tvbKAzOJ866wqmexclcxnyoSRappt3b7OnG1ihJjnchxFv6SgQyn?=
+ =?iso-8859-1?Q?atqZnBAByuDHiyvJWmPDOhsPjkNFtgSjU6L/CZUHXsgDVIhCmf9yz+2br0?=
+ =?iso-8859-1?Q?/RJlofPgarwHoyRBhaehU8T8JJvQFAGwoGEUrkA2KZdNJS62I+I7GjZarm?=
+ =?iso-8859-1?Q?yLg8a2Yvcfy6GZEnQ2VMtKFH53sbCFNzQ3gVUKvfnm7fXxmge040Smc5x7?=
+ =?iso-8859-1?Q?W59jNLyeCbzH8K7mP0RJFAsjlJ/dtNR19kml1hbIxdGZ5o4thBppu9fUoq?=
+ =?iso-8859-1?Q?1pFr/N8DC2NnTLrbdJ1KGozekV9bhYbVl6cin0gwuN4jhSmpwrRZjXhvyF?=
+ =?iso-8859-1?Q?GHjJPDRrl29Qc3j8Wl2VFzR5dniatfA3eIbl7/raRkud9QsuoBsH3W8xMa?=
+ =?iso-8859-1?Q?wtB8DQe1K6jm5wlbxodi9oFpv4b6Gdx8Kb2N5SdQ4p0gKBctb1BVsmX4CJ?=
+ =?iso-8859-1?Q?ivSF8qZcXrxjlFj5u8n3uxUm6MvY15/g4kozLF45Buc5VPnmfbOYm8xQG9?=
+ =?iso-8859-1?Q?/oIIxsAEXf362WrT49qil2aoK8G/pkpbCvef6qcy1qArs7YMDjEbrLGfAj?=
+ =?iso-8859-1?Q?p7Qwg6jsvZG6LOEZSa8AyBG2150DYeJXDk4n9PG1MCK8pCcm9EX9bMoZnh?=
+ =?iso-8859-1?Q?al0taxh/SyhpFOAe5JyvmzdHxwcc3XSRIAoDmynjT2MLlxWkjiEkIA/9mC?=
+ =?iso-8859-1?Q?YDdBe2Dg88jF0Eg6zWKSxEcnK+0zEgPa7WDavqApWq52dRU4F1uvhfGZLW?=
+ =?iso-8859-1?Q?tW/ZaB+IoQ3qlJN31glWg04uIQtyB2Gd0OWejB7ItxnHVW/Wo9PZmIEn1U?=
+ =?iso-8859-1?Q?q/Kp9OuW/ko/IH2FnoecjnvodWaweOXsTzfhFeTGUuT9+y1a7RbecZSZes?=
+ =?iso-8859-1?Q?nC9QuV3Yf2wLVLLcvxswDzvt/q09LGTo18vgkmZbpnzakvUJlr5vYtXIfR?=
+ =?iso-8859-1?Q?MvCYI4z6KPNXI0otSz50CSEMs8OTqXTeHvy02cyjlIUyhJa9xJgUu2Lf3w?=
+ =?iso-8859-1?Q?qucntay80CloDbHZRiP4DcBviVO/9NDefGHQ4PgFvOl0jAJfLwSvqbI1fV?=
+ =?iso-8859-1?Q?lnqXi9C1IYmkE8m/0wwgtZ3lj3wglMxdodsQRJviKSjWlnWisSJkpWiqQY?=
+ =?iso-8859-1?Q?xg0FWk2jhvTcY2B6tCTYMtj/kXOOPnoqS3qQgeJ64bMKkFo224nkk5vl0I?=
+ =?iso-8859-1?Q?wtlbbqEJ3DypoQVLLw1pBD2FUY5+mq3gtHuJvak9d4sQTeQ=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26259/Tue Aug 10 10:19:56 2021)
+X-OriginatorOrg: purelifi.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9735bf62-b6c4-4d25-3cb3-08d95bff264a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Aug 2021 13:02:46.5937
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5cf4eba2-7b8f-4236-bed4-a2ac41f1a6dc
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: iyakYH+l+ak2CiiGkZEz/LGOhCcnlNCWSa7QuLJ4UtY+n4s4QqBQmyqHHEbfvhBl1BSUs+51cKno6JD4g816Fg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CWLP265MB2482
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub,
-
-The following pull-request contains BPF updates for your *net-next* tree.
-
-We've added 31 non-merge commits during the last 8 day(s) which contain
-a total of 28 files changed, 3644 insertions(+), 519 deletions(-).
-
-The main changes are:
-
-1) Native XDP support for bonding driver & related BPF selftests, from Jussi Maki.
-
-2) Large batch of new BPF JIT tests for test_bpf.ko that came out as a result from
-   32-bit MIPS JIT development, from Johan Almbladh.
-
-3) Rewrite of netcnt BPF selftest and merge into test_progs, from Stanislav Fomichev.
-
-4) Fix XDP bpf_prog_test_run infra after net to net-next merge, from Andrii Nakryiko.
-
-5) Follow-up fix in unix_bpf_update_proto() to enforce socket type, from Cong Wang.
-
-6) Fix bpf-iter-tcp4 selftest to print the correct dest IP, from Jose Blanquicet.
-
-7) Various misc BPF XDP sample improvements, from Niklas Söderlund, Matthew Cover,
-   and Muhammad Falak R Wani.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Andrii Nakryiko, Daniel Borkmann, Jakub Sitnicki, Louis Peens, Yonghong 
-Song
-
-----------------------------------------------------------------
-
-The following changes since commit 7cdd0a89ec70ce6a720171f1f7817ee9502b134c:
-
-  net/mlx4: make the array states static const, makes object smaller (2021-08-02 15:02:13 -0700)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
-
-for you to fetch changes up to 874be05f525e87768daf0f47b494dc83b9537243:
-
-  bpf, tests: Add tail call test suite (2021-08-10 11:33:37 +0200)
-
-----------------------------------------------------------------
-Andrii Nakryiko (3):
-      bpf: Fix bpf_prog_test_run_xdp logic after incorrect merge resolution
-      selftests/bpf: Rename reference_tracking BPF programs
-      Merge branch 'samples/bpf: xdpsock: Minor enhancements'
-
-Cong Wang (1):
-      bpf, unix: Check socket type in unix_bpf_update_proto()
-
-Johan Almbladh (15):
-      bpf: Fix off-by-one in tail call count limiting
-      bpf, tests: Add BPF_JMP32 test cases
-      bpf, tests: Add BPF_MOV tests for zero and sign extension
-      bpf, tests: Fix typos in test case descriptions
-      bpf, tests: Add more tests of ALU32 and ALU64 bitwise operations
-      bpf, tests: Add more ALU32 tests for BPF_LSH/RSH/ARSH
-      bpf, tests: Add more BPF_LSH/RSH/ARSH tests for ALU64
-      bpf, tests: Add more ALU64 BPF_MUL tests
-      bpf, tests: Add tests for ALU operations implemented with function calls
-      bpf, tests: Add word-order tests for load/store of double words
-      bpf, tests: Add branch conversion JIT test
-      bpf, tests: Add test for 32-bit context pointer argument passing
-      bpf, tests: Add tests for atomic operations
-      bpf, tests: Add tests for BPF_CMPXCHG
-      bpf, tests: Add tail call test suite
-
-Jose Blanquicet (1):
-      selftests/bpf: Fix bpf-iter-tcp4 test to print correctly the dest IP
-
-Jussi Maki (7):
-      net, bonding: Refactor bond_xmit_hash for use with xdp_buff
-      net, core: Add support for XDP redirection to slave device
-      net, bonding: Add XDP support to the bonding driver
-      bpf, devmap: Exclude XDP broadcast to master device
-      net, core: Allow netdev_lower_get_next_private_rcu in bh context
-      selftests/bpf: Fix xdp_tx.c prog section name
-      selftests/bpf: Add tests for XDP bonding
-
-Matthew Cover (1):
-      bpf, samples: Add missing mprog-disable to xdp_redirect_cpu's optstring
-
-Muhammad Falak R Wani (1):
-      samples, bpf: Add an explict comment to handle nested vlan tagging.
-
-Niklas Söderlund (2):
-      samples/bpf: xdpsock: Make the sample more useful outside the tree
-      samples/bpf: xdpsock: Remove forward declaration of ip_fast_csum()
-
-Stanislav Fomichev (1):
-      selftests/bpf: Move netcnt test under test_progs
-
- drivers/net/bonding/bond_main.c                    |  454 +++-
- include/linux/filter.h                             |   13 +-
- include/linux/netdevice.h                          |    6 +
- include/net/bonding.h                              |    1 +
- kernel/bpf/core.c                                  |    2 +-
- kernel/bpf/devmap.c                                |   69 +-
- lib/test_bpf.c                                     | 2743 ++++++++++++++++++--
- net/bpf/test_run.c                                 |    3 +-
- net/core/dev.c                                     |   15 +-
- net/core/filter.c                                  |   25 +
- net/unix/unix_bpf.c                                |    3 +
- samples/bpf/xdp1_kern.c                            |    2 +
- samples/bpf/xdp2_kern.c                            |    2 +
- samples/bpf/xdp_redirect_cpu_user.c                |    2 +-
- samples/bpf/xdpsock_user.c                         |   20 +-
- tools/testing/selftests/bpf/.gitignore             |    1 -
- tools/testing/selftests/bpf/Makefile               |    3 +-
- tools/testing/selftests/bpf/network_helpers.c      |   12 +
- tools/testing/selftests/bpf/network_helpers.h      |    1 +
- tools/testing/selftests/bpf/prog_tests/netcnt.c    |   82 +
- .../selftests/bpf/prog_tests/reference_tracking.c  |    4 +-
- .../testing/selftests/bpf/prog_tests/tc_redirect.c |   12 -
- .../testing/selftests/bpf/prog_tests/xdp_bonding.c |  520 ++++
- tools/testing/selftests/bpf/progs/bpf_iter_tcp4.c  |    2 +-
- .../selftests/bpf/progs/test_sk_lookup_kern.c      |   14 +-
- tools/testing/selftests/bpf/progs/xdp_tx.c         |    2 +-
- tools/testing/selftests/bpf/test_netcnt.c          |  148 --
- tools/testing/selftests/bpf/test_xdp_veth.sh       |    2 +-
- 28 files changed, 3644 insertions(+), 519 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/netcnt.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
- delete mode 100644 tools/testing/selftests/bpf/test_netcnt.c
+Hi,=0A=
+=0A=
+> From: Srinivasan Raju <srini.raju@purelifi.com> =0A=
+> Sent: 26 February 2021 13:09=0A=
+> This introduces the pureLiFi LiFi driver for LiFi-X, LiFi-XC=0A=
+> and LiFi-XL USB devices.=0A=
+> =0A=
+> This driver implementation has been based on the zd1211rw driver.=0A=
+> =0A=
+> Driver is based on 802.11 softMAC Architecture and uses=0A=
+> native 802.11 for configuration and management.=0A=
+> =0A=
+> The driver is compiled and tested in ARM, x86 architectures and=0A=
+> compiled in powerpc architecture.=0A=
+>=0A=
+> Signed-off-by: Srinivasan Raju <srini.raju@purelifi.com>=0A=
+>=0A=
+> ---=0A=
+> v14:=0A=
+=A0> - Endianess comments addressed=0A=
+=A0> - Sparse checked and fixed warnings=0A=
+=A0> - Firmware files renamed to lowercase=0A=
+=A0> - All other review comments in v13 addressed=0A=
+=0A=
+Could you please review this patch and let us know if there are any comment=
+s.=0A=
+And please let us know if any changes has to be made to the driver for gett=
+ing into wireless-next. =0A=
+We have already submitted the firmware for review as well. The patch is in =
+"Awaiting Upstream" state for a long time. =0A=
+Please let us know.=0A=
+=0A=
+https://patchwork.kernel.org/project/netdevbpf/patch/20210226130810.119216-=
+1-srini.raju@purelifi.com/=0A=
+=0A=
+Thanks=0A=
+Srini=
