@@ -2,93 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 877DE3E8367
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 21:06:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8A273E8369
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 21:07:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231557AbhHJTHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 15:07:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44380 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229788AbhHJTHA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 15:07:00 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 803D4C0613C1;
-        Tue, 10 Aug 2021 12:06:38 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id t3so22560131plg.9;
-        Tue, 10 Aug 2021 12:06:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=Lv9Kbnrsoc3CJsd1J3pEd+P6FWJYORyGFYJTnBATrls=;
-        b=BrWfZA50uBVToYTNrjxQkjbkc3gkOoAx0a6Mq+epudkH3U7mIQ/m4XSzY6mLdMtmYw
-         dqChATm0PezvZU5B9LGEYiquniYRm1vYkE4NQjfNt5SNrb7n9hEnZZISQNgKdFonvstz
-         6gqH4KnzGzFKwVpC2RkQUc9jE7v+cz6gnc6oBT/wMy3WL7V49+Z/UQI5dJUC/nKA85q7
-         sk9M7iaztISmwYkI5C0ByJJgRPW/aCuOpq1YIWxHQi9/gSNd7PYDAQSMOgttZ7w/uxj6
-         wBtvwmIPBjj8WkIFQcrdYYdLxc4ltMbZ5LbbvOIs11ZnFbtUMVzywkiWoWuJhn/42FVY
-         qYEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=Lv9Kbnrsoc3CJsd1J3pEd+P6FWJYORyGFYJTnBATrls=;
-        b=k1vy06XbcJqlMivNNCxFcHHyWbydS2RiGKa3G8JmXYAAByxDpLfZMRf9TOpQG3vs5s
-         S15kt7VaNG0/VXZK3TCuI+OX8W5rvrmJSyYb6XdvNSoHfzNezC0nG3hWONv2dabEOyqj
-         z1IDhxZvsX7K2GqPaE9y9sVVq/dMq6ASK5kIzPEfz2hSQcUg1ENpm+jn9QxhgH6bCffE
-         mdIEi8ulKxR3yCEnA1i4X981WexCFi4cXhDVsnLtkUGhrVWk5ZQAF2nvluWCTpBP48Xb
-         r26jAD9MXijvUaUK64mehHs3miL1Qs9ZZ2VJezbtqT/tYgTgU9PpUfoO0tt20r3ZIvG6
-         8PVg==
-X-Gm-Message-State: AOAM532ILR1aX8Fh2iJr4PhfvHmXALgQgJoR+9KyxW5cuLQi2/Sgohbo
-        +ZcqjuyLt6qFQKojSVrRBjA=
-X-Google-Smtp-Source: ABdhPJz9UPo/Gn5SSIodiFawy9+MMaapuWqFWlTa7yV5t1SFB9v8GLoRg9Rof8ZejnuJerDWgu4aRA==
-X-Received: by 2002:a63:6d3:: with SMTP id 202mr447772pgg.420.1628622397952;
-        Tue, 10 Aug 2021 12:06:37 -0700 (PDT)
-Received: from fedora ([2405:201:6008:6ce2:9fb0:9db:90a4:39e2])
-        by smtp.gmail.com with ESMTPSA id q5sm3441292pfu.185.2021.08.10.12.06.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Aug 2021 12:06:37 -0700 (PDT)
-Date:   Wed, 11 Aug 2021 00:36:30 +0530
-From:   Shreyansh Chouhan <chouhan.shreyansh630@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        willemb@google.com, xie.he.0141@gmail.com, gustavoars@kernel.org,
-        wanghai38@huawei.com, tannerlove@google.com, eyal.birger@gmail.com,
-        rsanger@wand.net.nz, jiapeng.chong@linux.alibaba.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Can a valid vnet header have both csum_start and csum_offset 0?
-Message-ID: <YRLONiYsdqKLeja3@fedora>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        id S231862AbhHJTIO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 15:08:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37320 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229788AbhHJTIM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 15:08:12 -0400
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6ED6960F38;
+        Tue, 10 Aug 2021 19:07:50 +0000 (UTC)
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1mDX6K-0049YK-Cu; Tue, 10 Aug 2021 20:07:48 +0100
+Date:   Tue, 10 Aug 2021 20:07:47 +0100
+Message-ID: <871r71azjw.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Matteo Croce <mcroce@linux.microsoft.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        thierry reding <thierry.reding@gmail.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Will Deacon <will@kernel.org>
+Subject: Re: [PATCH net-next] stmmac: align RX buffers
+In-Reply-To: <20210614022504.24458-1-mcroce@linux.microsoft.com>
+References: <20210614022504.24458-1-mcroce@linux.microsoft.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: mcroce@linux.microsoft.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, peppe.cavallaro@st.com, alexandre.torgue@foss.st.com, davem@davemloft.net, kuba@kernel.org, palmer@dabbelt.com, paul.walmsley@sifive.com, drew@beagleboard.org, kernel@esmil.dk, thierry.reding@gmail.com, jonathanh@nvidia.com, will@kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi all,
 
-When parsing the vnet header in __packet_snd_vnet_parse[1], we do not
-check for if the values of csum_start and csum_offset given in the
-header are both 0.
+[adding Thierry, Jon and Will to the fun]
 
-Having both these values 0, however, causes a crash[2] further down the
-gre xmit code path. In the function ipgre_xmit, we pull the ip header
-and gre header from skb->data, this results in an invalid
-skb->csum_start which was calculated from the vnet header. The
-skb->csum_start offset in this case turns out to be lower than
-skb->transport_header. This causes us to pass a negative number as an
-argument to csum_partial[3] and eventually to do_csum[4], which then causes
-a kernel oops in the while loop.
+On Mon, 14 Jun 2021 03:25:04 +0100,
+Matteo Croce <mcroce@linux.microsoft.com> wrote:
+> 
+> From: Matteo Croce <mcroce@microsoft.com>
+> 
+> On RX an SKB is allocated and the received buffer is copied into it.
+> But on some architectures, the memcpy() needs the source and destination
+> buffers to have the same alignment to be efficient.
+> 
+> This is not our case, because SKB data pointer is misaligned by two bytes
+> to compensate the ethernet header.
+> 
+> Align the RX buffer the same way as the SKB one, so the copy is faster.
+> An iperf3 RX test gives a decent improvement on a RISC-V machine:
+> 
+> before:
+> [ ID] Interval           Transfer     Bitrate         Retr
+> [  5]   0.00-10.00  sec   733 MBytes   615 Mbits/sec   88             sender
+> [  5]   0.00-10.01  sec   730 MBytes   612 Mbits/sec                  receiver
+> 
+> after:
+> [ ID] Interval           Transfer     Bitrate         Retr
+> [  5]   0.00-10.00  sec  1.10 GBytes   942 Mbits/sec    0             sender
+> [  5]   0.00-10.00  sec  1.09 GBytes   940 Mbits/sec                  receiver
+> 
+> And the memcpy() overhead during the RX drops dramatically.
+> 
+> before:
+> Overhead  Shared O  Symbol
+>   43.35%  [kernel]  [k] memcpy
+>   33.77%  [kernel]  [k] __asm_copy_to_user
+>    3.64%  [kernel]  [k] sifive_l2_flush64_range
+> 
+> after:
+> Overhead  Shared O  Symbol
+>   45.40%  [kernel]  [k] __asm_copy_to_user
+>   28.09%  [kernel]  [k] memcpy
+>    4.27%  [kernel]  [k] sifive_l2_flush64_range
+> 
+> Signed-off-by: Matteo Croce <mcroce@microsoft.com>
 
-I do not understand what should the correct behavior be in this
-scenario, should we consider this vnet header as invalid? (Which I think
-is the most likely solution, however I do not have experience with
-networking.) Or should we rather accomodate for both csum_start
-and csum_offset values to be 0 in ipgre_xmit?
+This patch completely breaks my Jetson TX2 system, composed of 2
+Nvidia Denver and 4 Cortex-A57, in a very "funny" way.
 
-Regards,
-Shreyansh Chouhan
+Any significant amount of traffic result in all sort of corruption
+(ssh connections get dropped, Debian packages downloaded have the
+wrong checksums) if any Denver core is involved in any significant way
+(packet processing, interrupt handling). And it is all triggered by
+this very change.
 
---
+The only way I have to make it work on a Denver core is to route the
+interrupt to that particular core and taskset the workload to it. Any
+other configuration involving a Denver CPU results in some sort of
+corruption. On their own, the A57s are fine.
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/net/packet/af_packet.c#n2480
-[2] https://syzkaller.appspot.com/bug?id=c391f74aac26dd8311c45743ae618f9d5e38b674
-[3] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/skbuff.h#n4662
-[4] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/x86/lib/csum-partial_64.c#n35
+This smells of memory ordering going really wrong, which this change
+would expose. I haven't had a chance to dig into the driver yet (it
+took me long enough to bisect it), but if someone points me at what is
+supposed to synchronise the DMA when receiving an interrupt, I'll have
+a look.
+
+Thanks,
+
+	M.
+
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> index b6cd43eda7ac..04bdb3950d63 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> @@ -338,9 +338,9 @@ static inline bool stmmac_xdp_is_enabled(struct stmmac_priv *priv)
+>  static inline unsigned int stmmac_rx_offset(struct stmmac_priv *priv)
+>  {
+>  	if (stmmac_xdp_is_enabled(priv))
+> -		return XDP_PACKET_HEADROOM;
+> +		return XDP_PACKET_HEADROOM + NET_IP_ALIGN;
+>  
+> -	return 0;
+> +	return NET_SKB_PAD + NET_IP_ALIGN;
+>  }
+>  
+>  void stmmac_disable_rx_queue(struct stmmac_priv *priv, u32 queue);
+> -- 
+> 2.31.1
+> 
+> 
+
+-- 
+Without deviation from the norm, progress is not possible.
