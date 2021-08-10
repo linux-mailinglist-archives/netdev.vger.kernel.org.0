@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 074B33E5083
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 03:07:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9D1B3E5085
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 03:09:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236938AbhHJBIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 21:08:17 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41122 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233980AbhHJBIQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Aug 2021 21:08:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=bvmo5UfwiQpHA6brdftMr04aULt0QksCI0h/EbuT6FU=; b=c3m1HjJ7xG9lDa2reQbJIb2kQY
-        1wx4wWN+Ks2muBcNELCr8uBfgeYs93Ek8tnk9O/gc4wRpLUhZpXKVpmgQkLUkngtN3cR1Vwm2JjmT
-        RYcfPEpKVrd4ORepnxaFND+JrGB96ZX239YdWVJY2UKcssbaHk/KtzSb/Af13tZeaFsI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mDGFD-00Go8O-Fq; Tue, 10 Aug 2021 03:07:51 +0200
-Date:   Tue, 10 Aug 2021 03:07:51 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        DENG Qingfang <dqfext@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>
-Subject: Re: [RFC PATCH net-next 4/4] net: dsa: create a helper for locating
- EtherType DSA headers on TX
-Message-ID: <YRHRZ0rLWPfSnzWt@lunn.ch>
-References: <20210809115722.351383-1-vladimir.oltean@nxp.com>
- <20210809115722.351383-5-vladimir.oltean@nxp.com>
+        id S237181AbhHJBJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 21:09:20 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:8385 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233980AbhHJBJT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 21:09:19 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GkF9S4TYMz85nH;
+        Tue, 10 Aug 2021 09:05:00 +0800 (CST)
+Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Tue, 10 Aug 2021 09:08:56 +0800
+Received: from [10.67.102.67] (10.67.102.67) by dggemi759-chm.china.huawei.com
+ (10.1.198.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 10
+ Aug 2021 09:08:56 +0800
+Subject: Re: [PATCH net-next 4/4] net: hns3: add support ethtool extended link
+ state
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <lipeng321@huawei.com>
+References: <1628520642-30839-1-git-send-email-huangguangbin2@huawei.com>
+ <1628520642-30839-5-git-send-email-huangguangbin2@huawei.com>
+ <20210809135456.397129f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
+Message-ID: <15810974-d1da-2a43-7a69-45dffff653a2@huawei.com>
+Date:   Tue, 10 Aug 2021 09:08:56 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210809115722.351383-5-vladimir.oltean@nxp.com>
+In-Reply-To: <20210809135456.397129f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.67]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggemi759-chm.china.huawei.com (10.1.198.145)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 09, 2021 at 02:57:22PM +0300, Vladimir Oltean wrote:
-> Create a similar helper for locating the offset to the DSA header
-> relative to skb->data, and make the existing EtherType header taggers to
-> use it.
+
+
+On 2021/8/10 4:54, Jakub Kicinski wrote:
+> On Mon, 9 Aug 2021 22:50:42 +0800 Guangbin Huang wrote:
+>> +	if (!h->ae_algo->ops->get_link_diagnosis_info)
+>> +		return -EOPNOTSUP;
 > 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+> Missing a P at the end here, this patch does not build.
+> .
+> 
+I am very sorry, I will modify this fault and pay attentiaon to it later.
