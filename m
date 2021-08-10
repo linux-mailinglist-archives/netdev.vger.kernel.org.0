@@ -2,104 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A86393E59D0
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 14:23:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 033A13E59E2
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 14:25:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232523AbhHJMXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 08:23:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33944 "EHLO
+        id S240544AbhHJMZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 08:25:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229764AbhHJMXT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 08:23:19 -0400
-Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97BF2C0613D3
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 05:22:57 -0700 (PDT)
-Received: by mail-vs1-xe44.google.com with SMTP id d20so9540437vso.8
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 05:22:57 -0700 (PDT)
+        with ESMTP id S240271AbhHJMZ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 08:25:58 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA82C0613D3;
+        Tue, 10 Aug 2021 05:25:37 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id lw7-20020a17090b1807b029017881cc80b7so4045256pjb.3;
+        Tue, 10 Aug 2021 05:25:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=oZoJVjBidnvPVFvMpPWZppXKGeyyaDUB3Ugu5JUsoak=;
-        b=qIQDlA/gUyoRPh3kgWXZkiUaIb3qcyb8TOW9CKWJmmvFsvyfJMbRJp97WbmjhiyjOC
-         mnkqXMdci14i5YX4fThGwDaNhtdgPMl8QQ8GLzA5/V9qqqAzJ2NLeBpHSjhBA1ooWd55
-         WeVyQrZ2PJ7RGF/EEuO1LLzR/VQDKZVroky6UJ61cynK0Eo94rDW747aK3HA0LXMhHGU
-         xhOtH2jUuSvyZ83LKIVMrj/75HQaoJekDOmAqRJ3FdZhxc01OFjIoZ01kJzqwRlczBQg
-         n/Y8yYRcIL3K9gNw4KexSGWkiGY0LAmH3clUKgzisOPSOWaG8GJ5gml2PjPymIK6vVN1
-         1g+Q==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=KL/EO4tx0TgX51zBlp9/CRNMvpFlpR97J3ss4EOthZ4=;
+        b=Ku17ZPCf0pl6UbjbC+OHRNn+ACNBAQsVDchdBbllR6na7JEZVKeCa/0V92DnHTF4iu
+         ltIgOtvQG3ChEWFKQGS+ZCmo2X5SwNpdvKDzPZ6w0gyO5dvGz4wCAvWk5byjwwrwUcRC
+         5GXqtBHSfAX3q8Kpy97hYWlFUn1WyjEzTjjzbz4eIMRpPJ/3pBUQT0IeP+6w+Os/n12x
+         G3057aJUPMJ9DEYkyOBYuaABfzqFcCP+cS+hRvjLg1IN1XmahkLLELPX+1i2xq4zJ7oh
+         O3GJi71MYUghn8gllMllI0c3neKMWm0JGzHgfC7goYCwLqZcdx+lapv2oLk7A8os2kge
+         ueiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=oZoJVjBidnvPVFvMpPWZppXKGeyyaDUB3Ugu5JUsoak=;
-        b=rmbPAQ3mSDOgqYmFw2bVzjE1hxIThgTATfiQWjmI+csmO8PvuKfUv0Nxl9iRRnsz98
-         /x1xjBZZys5jm8P/lrsqDUwktq8Ek/HSBoz+4UxYgQJbmf5gSjyFF00hVz0CWKuMv6I8
-         Om2s5kBw4KiLpgQstQ6wfv2odvsQhKR8Qt52jXmlRyUXE/4rI9zBAfoDuNdjWXsqcL8S
-         C5+6PDxJTt8J1ritVm/Hn7OtzN1f1/Wiz5C1/J9VdaWIpkzv+Dr2SOZLzdo3WwoEXJyE
-         K58t2gsJFslVNwMbXkEsl1xqYIbOqPBbJLkLKjRCc14GABZEfdiOlVsv+pLzhFlktSzT
-         e1EQ==
-X-Gm-Message-State: AOAM530w+Y6g0IHpsIS4zlMbQQzeknWNOttHk/NNe05NUjGQdpi7IZvp
-        W/ie+jxlIbvoBIR4q0miHbYvgSA1sMbUjyvK6js=
-X-Google-Smtp-Source: ABdhPJyBu8sk/AoiYFwRL1z/MPSFVE4uHzMzZwuiKkbEBHa2/PyMxqxCeR62vN3HESRqSgro6T+hSWYJlKWrblPZj/E=
-X-Received: by 2002:a05:6102:3047:: with SMTP id w7mr20462751vsa.6.1628598176633;
- Tue, 10 Aug 2021 05:22:56 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=KL/EO4tx0TgX51zBlp9/CRNMvpFlpR97J3ss4EOthZ4=;
+        b=E0JZUG4q36mSikq5Ex9Cbju8Wb0OSef/1tbuDcBfHD4016KgnE1Elpgbx2k2kuAJok
+         nZ45W5Dn4EfSwngwo/aEx8WXEgJ0LSvf1wYuoNlzlc2dCrSTJ5jx8vt02t6GWFfg6LyT
+         +T4ww2nSo23VXQ05QrG5F2P0+LQ3xF2jMh8sjpaEDixld5RKYfCI1Zn6/spMvSkDujsr
+         ysr8RkpZ3iXAD25zEXvXZgPNzEYHVa1EFpUWZhSomQcgURvnXteqs3nxFxqwWP/aIi+y
+         Da2dyHx76YGd0Z93SW1q9LXduuL9he6Hxs5q213ZCccrSNJblWbTl8eM0ozBTOFuRMpU
+         Ztww==
+X-Gm-Message-State: AOAM5317Ehxq4bjpl4shswiO7XMrA51+ebpja3YVwFQRd+26RO0aPYW/
+        pnW+2OQvrIPGNIpS2keZqxw=
+X-Google-Smtp-Source: ABdhPJxebFlgnG0NPPgyE6OjM0zu1XGnchtqFN1rLMZ/uNLQlKSp1bY7DCu3pvqaqyd/DJ1LphsUcQ==
+X-Received: by 2002:a63:e116:: with SMTP id z22mr254278pgh.361.1628598336671;
+        Tue, 10 Aug 2021 05:25:36 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:1a:efea::4b1])
+        by smtp.gmail.com with ESMTPSA id c14sm27323452pgv.86.2021.08.10.05.25.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Aug 2021 05:25:35 -0700 (PDT)
+Subject: Re: [PATCH V3 03/13] x86/HV: Add new hvcall guest address host
+ visibility support
+To:     Wei Liu <wei.liu@kernel.org>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
+        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
+        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
+        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, ardb@kernel.org,
+        Tianyu.Lan@microsoft.com, pgonda@google.com,
+        martin.b.radev@gmail.com, akpm@linux-foundation.org,
+        kirill.shutemov@linux.intel.com, rppt@kernel.org,
+        sfr@canb.auug.org.au, saravanand@fb.com,
+        krish.sadhukhan@oracle.com, aneesh.kumar@linux.ibm.com,
+        xen-devel@lists.xenproject.org, rientjes@google.com,
+        hannes@cmpxchg.org, tj@kernel.org, michael.h.kelley@microsoft.com,
+        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, parri.andrea@gmail.com, dave.hansen@intel.com
+References: <20210809175620.720923-1-ltykernel@gmail.com>
+ <20210809175620.720923-4-ltykernel@gmail.com>
+ <20210810110359.i4qodw7h36zrsicp@liuwe-devbox-debian-v2>
+From:   Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <3a888810-69cf-fa4d-b374-2053432e1e56@gmail.com>
+Date:   Tue, 10 Aug 2021 20:25:20 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Reply-To: mrsdaniella.kyle@yandex.com
-Sender: munasalemmustapha@gmail.com
-Received: by 2002:ab0:279a:0:0:0:0:0 with HTTP; Tue, 10 Aug 2021 05:22:55
- -0700 (PDT)
-From:   Mrs Daniella Kyle <mrsdaniellakyle6@gmail.com>
-Date:   Tue, 10 Aug 2021 05:22:55 -0700
-X-Google-Sender-Auth: zMAEyhPwkCthbLxT_cHTxvFLOJo
-Message-ID: <CAKASgyKUQ9Zzy5G8kQFVmpKm12k20z6zUOHM-2qN3oxC3VP9-A@mail.gmail.com>
-Subject: ATM Visa card compensation, Thanks for your past effort
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210810110359.i4qodw7h36zrsicp@liuwe-devbox-debian-v2>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 8/10/2021 7:03 PM, Wei Liu wrote:
+>> diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+>> index 0bb4d9ca7a55..b3683083208a 100644
+>> --- a/arch/x86/hyperv/hv_init.c
+>> +++ b/arch/x86/hyperv/hv_init.c
+>> @@ -607,6 +607,12 @@ EXPORT_SYMBOL_GPL(hv_get_isolation_type);
+>>   
+>>   bool hv_is_isolation_supported(void)
+>>   {
+>> +	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
+>> +		return 0;
+> Nit: false instead of 0.
+> 
 
-Good Day, This message may actually come to you as surprises today, To
-be very honest with you, It is a joyful moment for me and my family
-right now, so therefore am using this opportunity to inform you that
-have successfully move to Vietnam where am currently living with my
-business partner who assisted me to complete the transfer, but due to
-the willingness and acceptance you showed during my pain have decided
-to willingly compensated you and show my gratitude to you with these
-sum of $950,000.00 Nine Hundred and fifty Thousand US Dollars).
+OK. Will fix in the next version.
 
-I want you to accept this amount it=E2=80=99s from the bottom of my heart,
-have issued the check and instructed the bank to roll the fund on a
-master card for security reasons, you can use the card to withdraw
-money from any ATM machine worldwide with a maximum of US$10,000 per
-day.
+>> +int hv_mark_gpa_visibility(u16 count, const u64 pfn[],
+>> +			   enum hv_mem_host_visibility visibility)
+>> +{
+>> +	struct hv_gpa_range_for_visibility **input_pcpu, *input;
+>> +	u16 pages_processed;
+>> +	u64 hv_status;
+>> +	unsigned long flags;
+>> +
+>> +	/* no-op if partition isolation is not enabled */
+>> +	if (!hv_is_isolation_supported())
+>> +		return 0;
+>> +
+>> +	if (count > HV_MAX_MODIFY_GPA_REP_COUNT) {
+>> +		pr_err("Hyper-V: GPA count:%d exceeds supported:%lu\n", count,
+>> +			HV_MAX_MODIFY_GPA_REP_COUNT);
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	local_irq_save(flags);
+>> +	input_pcpu = (struct hv_gpa_range_for_visibility **)
+>> +			this_cpu_ptr(hyperv_pcpu_input_arg);
+>> +	input = *input_pcpu;
+>> +	if (unlikely(!input)) {
+>> +		local_irq_restore(flags);
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	input->partition_id = HV_PARTITION_ID_SELF;
+>> +	input->host_visibility = visibility;
+>> +	input->reserved0 = 0;
+>> +	input->reserved1 = 0;
+>> +	memcpy((void *)input->gpa_page_list, pfn, count * sizeof(*pfn));
+>> +	hv_status = hv_do_rep_hypercall(
+>> +			HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY, count,
+>> +			0, input, &pages_processed);
+>> +	local_irq_restore(flags);
+>> +
+>> +	if (!(hv_status & HV_HYPERCALL_RESULT_MASK))
+>> +		return 0;
+>> +
+>> +	return hv_status & HV_HYPERCALL_RESULT_MASK;
+> Joseph introduced a few helper functions in 753ed9c95c37d. They will
+> make the code simpler.
 
-My bank account manager said you can receive the card and use it
-anywhere in this global world. Go ahead contact the Global ATM
-Alliance directly with this below information. Email Address: .....
-maastercarddeptme20@yahoo.com
+OK. Will update in the next version.
 
- Name: ........... ....... Global Alliance Burkina Faso
-Office Address; ...... 01BP 23 Rue Des Grands Moulins.Ouagadougou, Burkina =
-Faso
-Email Address: ..... [maastercarddeptme20@yahoo.com]
-Name of Manager In charge: Mrs Zoure Gueratou
-
-Presently, I am very busy here in Vietnam because of the investment
-projects which I and my new partner are having at hand, I have given
-instructions to the ATM Visa card office on your behalf to release the
-ATM card which I gave to you as compensation. Therefore feel free and
-get in touch with her and she will send the card and the pin code to
-you in your location in order for you to start withdrawing the
-compensation money without delay.
-
-My family wishes you best of luck in whatever business you shall
-invest this money into. Kindly let me know as soon you received the
-card together with the pin code.
-
-Thank you
-Yours Sincerely
-Daniela Angelo Kyle
+Thanks.
