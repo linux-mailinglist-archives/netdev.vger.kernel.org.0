@@ -2,136 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8D253E5117
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 04:38:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F2823E513B
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 04:59:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234323AbhHJCjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 22:39:14 -0400
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:39938 "EHLO
-        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232599AbhHJCjN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 22:39:13 -0400
-Received: by codeconstruct.com.au (Postfix, from userid 10000)
-        id 56A5620135; Tue, 10 Aug 2021 10:38:51 +0800 (AWST)
-From:   Jeremy Kerr <jk@codeconstruct.com.au>
-To:     netdev@vger.kernel.org
-Cc:     Matt Johnston <matt@codeconstruct.com.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2] mctp: Specify route types, require rtm_type in RTM_*ROUTE messages
-Date:   Tue, 10 Aug 2021 10:38:34 +0800
-Message-Id: <20210810023834.2231088-1-jk@codeconstruct.com.au>
-X-Mailer: git-send-email 2.30.2
+        id S236243AbhHJC7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 22:59:34 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:54957 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235717AbhHJC7d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 22:59:33 -0400
+Received: by mail-il1-f199.google.com with SMTP id x7-20020a92b0070000b0290223c30afe67so1974184ilh.21
+        for <netdev@vger.kernel.org>; Mon, 09 Aug 2021 19:59:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=zSDHB+ayhUP7TZd1PkK8NdiovuFeNlca3xDJ9hzYst8=;
+        b=ThgViIkbhgXQ7NMSPPvvyWeU40BJISskbnRn4scNsx9msSdtpPSTWsO3d5PGFWUVQb
+         KTV+KExJX9UmUFFzdBDeAQswt/76aEa96XmyistjzOiQ67utpWiYXe9wGH9jLzfAIlLg
+         bze5Ro/EKC6kVDiy2JEspZxKwPQw5y3VYiu2RRc7foIsnAzZtDwx8YrVDOXA+RAS7gTw
+         hMYcSaCbKy/P9S8JIoVSHRJfUxc8Kys9MSmTkVKfFNBM9yL4n5fs9gIrXrZSqnK50MZ4
+         verCRVVUFX9Z/vyjVvtXjRHEjq4aquA0/OZhIklr48OyjvXQccbo0WLGmO2k76aafu3I
+         Lblw==
+X-Gm-Message-State: AOAM532FsSJ+QwOp2b/1lieWsZFr4GfVPWfSzmmK5krVXQiov5l3lo+9
+        CmgkYt5KcwuujU8NHx3LBDsaqFIbcPBRXYZMg+lq0IY3C3oz
+X-Google-Smtp-Source: ABdhPJyoTs63fvUgB/PD0YFzIx5H5r0vIF78rjKjUU7N6tcNhKKLeo3uHMOY2kdPn1GwjV88Drz92txjVgxJ4E6WMBtVLETc9sqe
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6e02:1d89:: with SMTP id h9mr12236ila.46.1628564351925;
+ Mon, 09 Aug 2021 19:59:11 -0700 (PDT)
+Date:   Mon, 09 Aug 2021 19:59:11 -0700
+In-Reply-To: <cdb5f0c9-1ad9-dd9d-b24d-e127928ada98@gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b0cbde05c92baf05@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Write in nft_ct_tmpl_put_pcpu
+From:   syzbot <syzbot+649e339fa6658ee623d3@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        paskripkin@gmail.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change adds a 'type' attribute to routes, which can be parsed from
-a RTM_NEWROUTE message. This will help to distinguish local vs. peer
-routes in a future change.
+Hello,
 
-This means userspace will need to set a correct rtm_type in RTM_NEWROUTE
-and RTM_DELROUTE messages; we currently only accept RTN_UNICAST.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
+Reported-and-tested-by: syzbot+649e339fa6658ee623d3@syzkaller.appspotmail.com
 
----
-v2:
- - specify net-next as base branch
+Tested on:
 
----
- include/net/mctp.h |  1 +
- net/mctp/route.c   | 27 ++++++++++++++++++++++-----
- 2 files changed, 23 insertions(+), 5 deletions(-)
+commit:         9a73fa37 Merge branch 'for-5.14-fixes' of git://git.ke..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e3a20bae04b96ccd
+dashboard link: https://syzkaller.appspot.com/bug?extid=649e339fa6658ee623d3
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=153511fa300000
 
-diff --git a/include/net/mctp.h b/include/net/mctp.h
-index 54bbe042c973..a824d47c3c6d 100644
---- a/include/net/mctp.h
-+++ b/include/net/mctp.h
-@@ -173,6 +173,7 @@ struct mctp_route {
- 
- 	struct mctp_dev		*dev;
- 	unsigned int		mtu;
-+	unsigned char		type;
- 	int			(*output)(struct mctp_route *route,
- 					  struct sk_buff *skb);
- 
-diff --git a/net/mctp/route.c b/net/mctp/route.c
-index 960c85039eae..fc77337f4870 100644
---- a/net/mctp/route.c
-+++ b/net/mctp/route.c
-@@ -710,8 +710,9 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- /* route management */
- static int mctp_route_add(struct mctp_dev *mdev, mctp_eid_t daddr_start,
- 			  unsigned int daddr_extent, unsigned int mtu,
--			  bool is_local)
-+			  unsigned char type)
- {
-+	int (*rtfn)(struct mctp_route *rt, struct sk_buff *skb);
- 	struct net *net = dev_net(mdev->dev);
- 	struct mctp_route *rt, *ert;
- 
-@@ -721,6 +722,17 @@ static int mctp_route_add(struct mctp_dev *mdev, mctp_eid_t daddr_start,
- 	if (daddr_extent > 0xff || daddr_start + daddr_extent >= 255)
- 		return -EINVAL;
- 
-+	switch (type) {
-+	case RTN_LOCAL:
-+		rtfn = mctp_route_input;
-+		break;
-+	case RTN_UNICAST:
-+		rtfn = mctp_route_output;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
- 	rt = mctp_route_alloc();
- 	if (!rt)
- 		return -ENOMEM;
-@@ -730,7 +742,8 @@ static int mctp_route_add(struct mctp_dev *mdev, mctp_eid_t daddr_start,
- 	rt->mtu = mtu;
- 	rt->dev = mdev;
- 	dev_hold(rt->dev->dev);
--	rt->output = is_local ? mctp_route_input : mctp_route_output;
-+	rt->type = type;
-+	rt->output = rtfn;
- 
- 	ASSERT_RTNL();
- 	/* Prevent duplicate identical routes. */
-@@ -777,7 +790,7 @@ static int mctp_route_remove(struct mctp_dev *mdev, mctp_eid_t daddr_start,
- 
- int mctp_route_add_local(struct mctp_dev *mdev, mctp_eid_t addr)
- {
--	return mctp_route_add(mdev, addr, 0, 0, true);
-+	return mctp_route_add(mdev, addr, 0, 0, RTN_LOCAL);
- }
- 
- int mctp_route_remove_local(struct mctp_dev *mdev, mctp_eid_t addr)
-@@ -939,7 +952,11 @@ static int mctp_newroute(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	/* TODO: parse mtu from nlparse */
- 	mtu = 0;
- 
--	rc = mctp_route_add(mdev, daddr_start, rtm->rtm_dst_len, mtu, false);
-+	if (rtm->rtm_type != RTN_UNICAST)
-+		return -EINVAL;
-+
-+	rc = mctp_route_add(mdev, daddr_start, rtm->rtm_dst_len, mtu,
-+			    rtm->rtm_type);
- 	return rc;
- }
- 
-@@ -988,7 +1005,7 @@ static int mctp_fill_rtinfo(struct sk_buff *skb, struct mctp_route *rt,
- 	hdr->rtm_table = RT_TABLE_DEFAULT;
- 	hdr->rtm_protocol = RTPROT_STATIC; /* everything is user-defined */
- 	hdr->rtm_scope = RT_SCOPE_LINK; /* TODO: scope in mctp_route? */
--	hdr->rtm_type = RTN_ANYCAST; /* TODO: type from route */
-+	hdr->rtm_type = rt->type;
- 
- 	if (nla_put_u8(skb, RTA_DST, rt->min))
- 		goto cancel;
--- 
-2.30.2
-
+Note: testing is done by a robot and is best-effort only.
