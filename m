@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B17003E5B63
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 15:25:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ABC43E5B67
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 15:25:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241390AbhHJNZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 09:25:11 -0400
-Received: from mail-bn8nam11on2067.outbound.protection.outlook.com ([40.107.236.67]:43478
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        id S241408AbhHJNZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 09:25:12 -0400
+Received: from mail-dm6nam12on2077.outbound.protection.outlook.com ([40.107.243.77]:12129
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S241338AbhHJNZF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S241352AbhHJNZF (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 10 Aug 2021 09:25:05 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JSAJHiBPHL+1hkZe5wTLgNpBXJLna4x+jJNgMdnuEOHE/W/8VedcsQPFVHCl3MHmu6l6FpgoctABVePFiZHYCXoaEEQ/MUmheuTz6jhTejrfKiLgBVONGnRvK5LjD66oamFGmD8+0BCD1v+24Uk2bAisTIiF94l6uZvX8TFDdg5gzNJ+nPFXL8fIn/IjVrQT/km9mdp6es4mng/LeF/fXc4XGyZkFc9m2hU6UULb8DE8em6HfGUFBkLtrANzQM74xUuMrD/vl7yC/hxeCslkw7uBsOwxHhcemol7gtYhuom5PaRmimbhYL+7vymj876pmtTKhaz+2JVz+Q/TOFoxOQ==
+ b=REnZPelCuqpl6LqxCPGCJOQT4vUxRdQMXBl3gkYXPpLfV7M53EKQb8VEex9P4vz9Zt7zohbuq1Ltn6iixOh00lcHDfYMlI1pFs1ZzAt7VEAeGhoFAkRMY53H6t04rnynxCKAbTYwUNA2Zb0d1Lveqop6QXtpLneoxR/jcGiKCMl9cj96IOMuW/Adr3VPuyPfRJeyjCGYxMUALjiC4hbGKjJ6eg0rGcoo5JYkVXfZWR5omga+a+PCtRsrM6TJ8K0VYwU3u173JFoXWmLQZIJ6sNB2Ekg4AM5jVKetEm9+GkgQ1ZYvO801Nwg7HpTmzKojtfj5yJjLFV4zP3XGFYD4jQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w4/S67V7WOYwqMo9/yFokbt27R1+xYcr9QtOyrtDXIQ=;
- b=TsEAY44ZrMkDxg20KolzLaqf0FbaIPckdJgc1EqTaEdV85WaI8ppHQOU2R3lWpHvNWyfqNvUWXenGLf0rCA/nMeXfGk7L8puydrSb4wX1W51vFsmRsaanXseGp1wA9h7mPiR6AILvJa9H2Mwf039zTE5dKJxwgWGWc6zBiaSLiZbQWFq70lUVHZhJvTRnoo9ltOhrvd0DuVDJV/GupBvKS3Euh3MOYWeUQ4mpgIv0N6oQP45ZIsn8JibKeyvdSUTmbFCuxUPzv9sW08xRw16XGjmJZ0OYCcc7HJfS47UokoRmbwHp1MboURzzuQ2kBogK2p6H48VvvXygwlXGa60Gw==
+ bh=lMMYImPDjzX3tlIYCUsUxidRBJpfw8dwpK6xM3+B8nQ=;
+ b=MPMqMKkwoC4+TqyKoynS50qEWWe4xPE625dImkskNmYlGMZWRkpD6t+WDiyQhg6fZ/ORN5iwbueKIcSpyo9w6g919fDS2W2gEV6DWk7makr1tubASc89SzDVZZHME4XnJQcrkuYd8DwvljZj2tWo0Ck66xYpUAMA5MHtQO//Ft59NqXOGcRvrAIL4cjPUZCCk28qsCmYV/85mMnBK5GymNmmiWXwgzridxhC26Di5fcWF8DKJG0u/LfVLNB7+O8P4VsWF9lU3v+irSxFFog98Avc2cAbQiTDAJ3aQ3jhqFIr0HSxD+/qqTz84V0L4Z2BxxoFs0HrvwWut6fDEg4t/Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
@@ -26,18 +26,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w4/S67V7WOYwqMo9/yFokbt27R1+xYcr9QtOyrtDXIQ=;
- b=Cq/ToheyhhH5EEBx0gjhzE603391DHItPV3xj57veRkesYhuYjzkIlME5TxVSnS51ZR+AG2+3a7QHKIIS0lflnoT5tvdQS0c2E+H2271m8UjE5ZTxzCx/F3GhIRGQZkJy9/6uDPlGYfeg76tcozJNogmwfac3r1C+99yZghn4aMDHrD96zEDHpjbVEl6Uevpbdu0JLyV3MPJ+JIzWzvyEwk3iBWkknQRDWjroccq/v6KnISSyKxLH/2qSXzdW4SXUIoSpF9mCAbcfrxmAMrLLY1hm7PfyAa8qCqWukKcJlnBgzrVJmQ1bJnKnskGUJUh8reA5lHi8AV4kJq3EDY3Qw==
-Received: from MW4PR03CA0017.namprd03.prod.outlook.com (2603:10b6:303:8f::22)
- by DM6PR12MB2796.namprd12.prod.outlook.com (2603:10b6:5:50::23) with
+ bh=lMMYImPDjzX3tlIYCUsUxidRBJpfw8dwpK6xM3+B8nQ=;
+ b=gXGDLBI2Sv3t+48JzYmyUruhO/Vn7AYmBO2WznBvpj/k1ld8pJFzyMVv/7477L39QZTvzbjmUpOQ7PuuyfW09RwB/QfOBUgd75rq8g38JVE8brnzNZrOaIhv2ir3lLkflJGudP9cS2d3/9S8/PI9hSNeMNDmOmp3lUzFdW2i5ZnKzsQD3e7uQ3y60bUYYpV3c890skq2tZwMnyuPHAs7WfwH0g3DFYcZnlXfNl7uvrChX5ns1YEnes7ExTzFRjbiPbfyOO9ir6iXvyoU/FX04n1KmNpwoh/RuGNwA1yG0X5rAHyw0qStVUBGdmGu30H0g2dbCtWLM73owLeDXnPaiQ==
+Received: from MW4PR03CA0028.namprd03.prod.outlook.com (2603:10b6:303:8f::33)
+ by DM6PR12MB3738.namprd12.prod.outlook.com (2603:10b6:5:1c7::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.19; Tue, 10 Aug
- 2021 13:24:40 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.13; Tue, 10 Aug
+ 2021 13:24:42 +0000
 Received: from CO1NAM11FT017.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8f:cafe::20) by MW4PR03CA0017.outlook.office365.com
- (2603:10b6:303:8f::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.17 via Frontend
- Transport; Tue, 10 Aug 2021 13:24:40 +0000
+ (2603:10b6:303:8f:cafe::56) by MW4PR03CA0028.outlook.office365.com
+ (2603:10b6:303:8f::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.16 via Frontend
+ Transport; Tue, 10 Aug 2021 13:24:42 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
@@ -47,19 +47,19 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
 Received: from mail.nvidia.com (216.228.112.34) by
  CO1NAM11FT017.mail.protection.outlook.com (10.13.175.108) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4394.16 via Frontend Transport; Tue, 10 Aug 2021 13:24:40 +0000
+ 15.20.4394.16 via Frontend Transport; Tue, 10 Aug 2021 13:24:41 +0000
 Received: from sw-mtx-036.mtx.labs.mlnx (172.20.187.5) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 10 Aug
- 2021 13:24:39 +0000
+ 2021 13:24:40 +0000
 From:   Parav Pandit <parav@nvidia.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
 CC:     <linux-rdma@vger.kernel.org>,
         <virtualization@lists.linux-foundation.org>,
         Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
         "Leon Romanovsky" <leonro@nvidia.com>
-Subject: [PATCH RESEND net-next 03/10] devlink: Add new "enable_vnet" generic device param
-Date:   Tue, 10 Aug 2021 16:24:17 +0300
-Message-ID: <20210810132424.9129-4-parav@nvidia.com>
+Subject: [PATCH RESEND net-next 04/10] devlink: Create a helper function for one parameter registration
+Date:   Tue, 10 Aug 2021 16:24:18 +0300
+Message-ID: <20210810132424.9129-5-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210810132424.9129-1-parav@nvidia.com>
 References: <20210810132424.9129-1-parav@nvidia.com>
@@ -71,105 +71,82 @@ X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
  HQMAIL107.nvidia.com (172.20.187.13)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8a75ade7-7867-419d-7170-08d95c023599
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2796:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB2796B0247F623B4695437882DCF79@DM6PR12MB2796.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-MS-Office365-Filtering-Correlation-Id: ea05471f-88e9-4b64-0d5c-08d95c023651
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3738:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB3738AED47E382E02A3E0B4CCDCF79@DM6PR12MB3738.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:597;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yeZeYQdFxdGwJ1Q5bJN+1NL+kdPvgDYk8A6EoconSDw42hfl0Ty1drrgAdhZBFMuUUYdSGbxCODPnjWMVFeJRoHcRIgOi7+XNkIjkrulw0h0E3EqLbndoPNmUiTnZkAfcgQrE8feB2/lDVfplsma97pfZv4CyFgcSLdfTV5sCh6MGTmZWuN7UcSivRzyCTrcnsca9vEh4BBfcv0cSQqeIbF8ZXtlSFEFIjBCW97OFi173vfS0Anyc4Yzd8xYdDX1pPfU8SWQcVRAsAmdRgTI/yQemlLB5PcSgt4rSJmrQdB52UY0NufG+q0bTRsmdo8QVIft/GTzRlnwREOUVNNlpmfLijRl9O+sW68T32+MRmuCQyJeWm11fs2tq2vysY7pn/OAn+5vajKUTEYAoUxeA6GVR4Vg0WMSFYIks79w/H5MCGT0VCZkwFjt2GIu8m1RBF8jPqroxaWvDHM0GOQbJHoVA2ylxwjyZGVbCrmjUMHewQkX39GItmUsYYXlyFG9XpnIgYGEFL9y5l7GQhPJngR4wxV/Q+jfcWGmEG1UI2zSNdan77/halN5ylBIfCINIWTjHMdUzFMHKa9SbT+ibluyqpWJOihFq7iyMPiDMqfMGrrWMRiMLyRzcwWS8lsXGJdHnmlCcGnzS2WNbpAs7jr8DSnMhZWJar70eq4xZAt8A6BbCSs8QPCHYVImuw5YhnYqwjmEVBv0N7nF31f6Rw5pO1Ej0UdjujT9QQ/t2nU=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(346002)(376002)(39860400002)(136003)(46966006)(36840700001)(4326008)(478600001)(70206006)(2906002)(1076003)(426003)(70586007)(7636003)(8936002)(5660300002)(336012)(186003)(82310400003)(26005)(36756003)(356005)(16526019)(47076005)(82740400003)(6666004)(86362001)(110136005)(54906003)(8676002)(316002)(36860700001)(36906005)(107886003)(2616005)(83380400001)(41533002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: ABp869X4oxi+hpwgEeNYw8FFrIb14PR/7tOZYyQMR3XIShi+goYyP/SL3pEsqGuzxurjWpOor2GqT1gO9dgZIcr/cPKUb55EyYZObvMQfqQDjPfAQgvgjNC3McE5lO5pRcKX+rcZVODO4HfCC6XsmqlJp3LjuuqawPQD2Fx3KFeRI47W4PJBPuIXRGbyIxFmj5Pl9PAOuojBoART/aDvgYh9AXsfXvz1deqp2py0fdI7+UCvU+a0hpA4v2+kjhegJpiYFc116Zd48dtTUUq9CNNAhvIynBd/3Pj0HB6NDbvczn4nMG1emT54P3qnbFHC2QlwUpEcBhG2ot6s59bvaRNrNtQ1cYUT238mxT1mfB1S+ubqPQ2RU+t7O9La5oScHZMPTOgtov6Ocq7wPUcH+UKXeJrqfbzVcVPWlqpHTNiWQM8IxJX2xID0sk3fizWWgW7mf6E+lxBrMageEUms4oRr17/Jl4KeMxawdv8boBdD8+hUgBZp8hFin00sZi4M9d25Z16TuhTUOD2NhgdLR44zdvCbpxzD63b3XNNchrdUETgIYln6jqqVQponIDh9RSJ3gbtQ5Kjhq/7KX525gcsXXSW5Ks9N1mqtTyKmjovXXsM2tR8iP4J2pWzpbGlRfmomLMg4kkshZtI1zFJMmtARz9st/7k/NoAEIxSO5bSpHMMQg0PAllG4E/S2gxuBa+9xpEt4su+CrGsp4gEx6Q==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(136003)(39860400002)(376002)(396003)(46966006)(36840700001)(7636003)(70586007)(1076003)(16526019)(54906003)(426003)(70206006)(478600001)(8936002)(186003)(36860700001)(82310400003)(107886003)(2906002)(82740400003)(36906005)(47076005)(8676002)(316002)(36756003)(86362001)(336012)(110136005)(26005)(83380400001)(4326008)(356005)(6666004)(2616005)(5660300002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2021 13:24:40.7464
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2021 13:24:41.9487
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a75ade7-7867-419d-7170-08d95c023599
+X-MS-Exchange-CrossTenant-Network-Message-Id: ea05471f-88e9-4b64-0d5c-08d95c023651
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT017.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2796
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3738
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add new device generic parameter to enable/disable creation of
-VDPA net auxiliary device and associated device functionality
-in the devlink instance.
-
-User who prefers to disable such functionality can disable it using below
-example.
-
-$ devlink dev param set pci/0000:06:00.0 \
-              name enable_vnet value false cmode driverinit
-$ devlink dev reload pci/0000:06:00.0
-
-At this point devlink instance do not create auxiliary device for the
-VDPA net functionality.
+Create and use a helper function for one parameter registration.
+Subsequent patch also will reuse this for driver facing routine to
+register a single parameter.
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- Documentation/networking/devlink/devlink-params.rst | 4 ++++
- include/net/devlink.h                               | 4 ++++
- net/core/devlink.c                                  | 5 +++++
- 3 files changed, 13 insertions(+)
+ net/core/devlink.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/networking/devlink/devlink-params.rst b/Documentation/networking/devlink/devlink-params.rst
-index a49da0b049b6..4878907e9232 100644
---- a/Documentation/networking/devlink/devlink-params.rst
-+++ b/Documentation/networking/devlink/devlink-params.rst
-@@ -105,6 +105,10 @@ own name.
-      - Boolean
-      - When enabled, the device driver will instantiate RDMA specific
-        auxiliary device of the devlink device.
-+   * - ``enable_vnet``
-+     - Boolean
-+     - When enabled, the device driver will instantiate VDPA networking
-+       specific auxiliary device of the devlink device.
-    * - ``internal_err_reset``
-      - Boolean
-      - When enabled, the device driver will reset the device on internal
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 6f4f0416e598..0a0becbcdc49 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -521,6 +521,7 @@ enum devlink_param_generic_id {
- 	DEVLINK_PARAM_GENERIC_ID_ENABLE_REMOTE_DEV_RESET,
- 	DEVLINK_PARAM_GENERIC_ID_ENABLE_ETH,
- 	DEVLINK_PARAM_GENERIC_ID_ENABLE_RDMA,
-+	DEVLINK_PARAM_GENERIC_ID_ENABLE_VNET,
- 
- 	/* add new param generic ids above here*/
- 	__DEVLINK_PARAM_GENERIC_ID_MAX,
-@@ -567,6 +568,9 @@ enum devlink_param_generic_id {
- #define DEVLINK_PARAM_GENERIC_ENABLE_RDMA_NAME "enable_rdma"
- #define DEVLINK_PARAM_GENERIC_ENABLE_RDMA_TYPE DEVLINK_PARAM_TYPE_BOOL
- 
-+#define DEVLINK_PARAM_GENERIC_ENABLE_VNET_NAME "enable_vnet"
-+#define DEVLINK_PARAM_GENERIC_ENABLE_VNET_TYPE DEVLINK_PARAM_TYPE_BOOL
-+
- #define DEVLINK_PARAM_GENERIC(_id, _cmodes, _get, _set, _validate)	\
- {									\
- 	.id = DEVLINK_PARAM_GENERIC_ID_##_id,				\
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index b68d6921d34f..867ae7e39788 100644
+index 867ae7e39788..050dd7271a45 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -4287,6 +4287,11 @@ static const struct devlink_param devlink_param_generic[] = {
- 		.name = DEVLINK_PARAM_GENERIC_ENABLE_RDMA_NAME,
- 		.type = DEVLINK_PARAM_GENERIC_ENABLE_RDMA_TYPE,
- 	},
-+	{
-+		.id = DEVLINK_PARAM_GENERIC_ID_ENABLE_VNET,
-+		.name = DEVLINK_PARAM_GENERIC_ENABLE_VNET_NAME,
-+		.type = DEVLINK_PARAM_GENERIC_ENABLE_VNET_TYPE,
-+	},
- };
+@@ -9800,6 +9800,22 @@ static int devlink_param_verify(const struct devlink_param *param)
+ 		return devlink_param_driver_verify(param);
+ }
  
- static int devlink_param_generic_verify(const struct devlink_param *param)
++static int __devlink_param_register_one(struct devlink *devlink,
++					unsigned int port_index,
++					struct list_head *param_list,
++					const struct devlink_param *param,
++					enum devlink_command reg_cmd)
++{
++	int err;
++
++	err = devlink_param_verify(param);
++	if (err)
++		return err;
++
++	return devlink_param_register_one(devlink, port_index,
++					  param_list, param, reg_cmd);
++}
++
+ static int __devlink_params_register(struct devlink *devlink,
+ 				     unsigned int port_index,
+ 				     struct list_head *param_list,
+@@ -9814,12 +9830,8 @@ static int __devlink_params_register(struct devlink *devlink,
+ 
+ 	mutex_lock(&devlink->lock);
+ 	for (i = 0; i < params_count; i++, param++) {
+-		err = devlink_param_verify(param);
+-		if (err)
+-			goto rollback;
+-
+-		err = devlink_param_register_one(devlink, port_index,
+-						 param_list, param, reg_cmd);
++		err = __devlink_param_register_one(devlink, port_index,
++						   param_list, param, reg_cmd);
+ 		if (err)
+ 			goto rollback;
+ 	}
 -- 
 2.26.2
 
