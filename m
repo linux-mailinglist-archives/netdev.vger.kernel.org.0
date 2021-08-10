@@ -2,104 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA7CF3E5A0D
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 14:36:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BEB53E5A3F
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 14:43:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240604AbhHJMhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 08:37:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40336 "EHLO mail.kernel.org"
+        id S239161AbhHJMnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 08:43:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41850 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236886AbhHJMhK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Aug 2021 08:37:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1F7E7604DC;
-        Tue, 10 Aug 2021 12:36:47 +0000 (UTC)
+        id S240743AbhHJMnc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 08:43:32 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D39B860F11;
+        Tue, 10 Aug 2021 12:43:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628599008;
-        bh=65wwyZ1PzsTjVVRVB8uytBblEiEgZgMvnsoHRtYi+4s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=h+LM/Sc5HKau/FXlituogSJez40C0Za87secHQ8Y8xGr/etTL57hF7STihj5eAEW0
-         vWUwYtq5tUkpP/H1I5WeMU55oAeiPWkFGDVXM31alULgQbOZpKXBhkxd3T6Q2/wZbg
-         2F71pgzZ9VKXCO1isfwKcxdmLzQFrEpaWmGQtL3C/ZIj6CU2Yg54lzKMiw8MzaxAql
-         EGWA5SKO4EOac5sQZteftPIKBVaOeP03Abs8CqasWtkaTrSOVOSFq5SYa8BZJndS0P
-         NJcx8D4d2NfiIxOH7VU1V/kwIITuIXNnOoy2DpGy7c+JJqUJqmHzlmzv1o+bFX3Eke
-         BUV0HfJy2xujA==
-Date:   Tue, 10 Aug 2021 15:36:44 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Jianbo Liu <jianbol@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-s390@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        Ido Schimmel <idosch@idosch.org>
-Subject: Re: [PATCH v2 net] net: switchdev: zero-initialize struct
- switchdev_notifier_fdb_info emitted by drivers towards the bridge
-Message-ID: <YRJy3F6lXuKNQIpl@unreal>
-References: <20210810115024.1629983-1-vladimir.oltean@nxp.com>
+        s=k20201202; t=1628599390;
+        bh=h/pZwe4kS1lvORPnndJtW5PYC2ztaMiHB+g7Oizo944=;
+        h=From:To:Cc:Subject:Date:From;
+        b=KkjsMW+AgOyz4NhRG9XLXbIA1KTrcM7s4yCZLGD7+bqYgc7DicAldKi8H7kv2C5Ev
+         o6rooevZHtmPP+4/dslq6MJ65YnJcuui4oOF6j3V+4dL7/GHrOegBlQF9ryJvRLnuX
+         vU+fxXZoD05Vt/CDyl7bCavSCoYEMFQalIHtGIAlT0x/PXJBCjX1zSzRQakCCbzfon
+         Mdc9DC+3T4TEmfNr/27KnDtdqAnI2+iojug+MhnhNM3Y/MLp/alnvikDweeFkSjlA/
+         Z9rJHB7KovDemJwqdNuzCIqWKBRCGhIkRtPUJYQHcLu04IESX0WYnN0FTH98H87Rm9
+         sAuosB8otzYMg==
+From:   Mark Brown <broonie@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     UNGLinuxDriver@microchip.com,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH] net: mscc: Fix non-GPL export of regmap APIs
+Date:   Tue, 10 Aug 2021 13:37:48 +0100
+Message-Id: <20210810123748.47871-1-broonie@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210810115024.1629983-1-vladimir.oltean@nxp.com>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3235; h=from:subject; bh=h/pZwe4kS1lvORPnndJtW5PYC2ztaMiHB+g7Oizo944=; b=owEBbQGS/pANAwAKASTWi3JdVIfQAcsmYgBhEnIQTkOVjrMAfs1YYhX7rKXAqm7nAPKRXinsDr42 a5FYnueJATMEAAEKAB0WIQSt5miqZ1cYtZ/in+ok1otyXVSH0AUCYRJyEAAKCRAk1otyXVSH0NzRB/ wM6+JIEWPUtf8QhM90PEg4sVamYC4BtHf+7oapFdn+QtyJpdtc+h+O5PtzFu7Wfh+kO/e5gnqQOMjf JgWn+lXjABx+ETF9G3AT3dPCJWk1H0uI59hfrM7LzEVBWsdxWAEeSbynD9A1K9jz0McdIkgGx3aW62 ReZIe+3rjBqpvW6jh3NHMiYW5sfM9ahWexSOJAa5GLCXEKnsrt46BSLuhF8JPxsH8DERjA/bQY3P/l Crw/7YGgR/rbp3O73S8p8Fn9Zqh7FAVrabAgQTtcA0ICWIy7SA0M19GFyoNt60n1XIncgqKyBvh98X As7/jUh+DaXmbYL9jl8ZaSACb/iZaa
+X-Developer-Key: i=broonie@kernel.org; a=openpgp; fpr=3F2568AAC26998F9E813A1C5C3F436CA30F5D8EB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 10, 2021 at 02:50:24PM +0300, Vladimir Oltean wrote:
-> The blamed commit a new field to struct switchdev_notifier_fdb_info, but
-> did not make sure that all call paths set it to something valid. For
-> example, a switchdev driver may emit a SWITCHDEV_FDB_ADD_TO_BRIDGE
-> notifier, and since the 'is_local' flag is not set, it contains junk
-> from the stack, so the bridge might interpret those notifications as
-> being for local FDB entries when that was not intended.
-> 
-> To avoid that now and in the future, zero-initialize all
-> switchdev_notifier_fdb_info structures created by drivers such that all
-> newly added fields to not need to touch drivers again.
-> 
-> Fixes: 2c4eca3ef716 ("net: bridge: switchdev: include local flag in FDB notifications")
-> Reported-by: Ido Schimmel <idosch@idosch.org>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-> Tested-by: Ido Schimmel <idosch@nvidia.com>
-> ---
-> v1->v2: use an empty struct initializer as opposed to memset, as
->         suggested by Leon Romanovsky
-> 
->  drivers/net/ethernet/marvell/prestera/prestera_switchdev.c | 4 ++--
->  drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c       | 2 +-
->  drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c      | 4 ++--
->  drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c   | 2 +-
->  drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c    | 2 +-
->  drivers/net/ethernet/rocker/rocker_main.c                  | 2 +-
->  drivers/net/ethernet/rocker/rocker_ofdpa.c                 | 2 +-
->  drivers/net/ethernet/ti/am65-cpsw-switchdev.c              | 2 +-
->  drivers/net/ethernet/ti/cpsw_switchdev.c                   | 2 +-
->  drivers/s390/net/qeth_l2_main.c                            | 4 ++--
->  net/dsa/slave.c                                            | 2 +-
->  11 files changed, 14 insertions(+), 14 deletions(-)
-> 
+The ocelot driver makes use of regmap, wrapping it with driver specific
+operations that are thin wrappers around the core regmap APIs. These are
+exported with EXPORT_SYMBOL, dropping the _GPL from the core regmap
+exports which is frowned upon. Add _GPL suffixes to at least the APIs that
+are doing register I/O.
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ drivers/net/ethernet/mscc/ocelot_io.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/ethernet/mscc/ocelot_io.c b/drivers/net/ethernet/mscc/ocelot_io.c
+index ea4e83410fe4..7390fa3980ec 100644
+--- a/drivers/net/ethernet/mscc/ocelot_io.c
++++ b/drivers/net/ethernet/mscc/ocelot_io.c
+@@ -21,7 +21,7 @@ u32 __ocelot_read_ix(struct ocelot *ocelot, u32 reg, u32 offset)
+ 		    ocelot->map[target][reg & REG_MASK] + offset, &val);
+ 	return val;
+ }
+-EXPORT_SYMBOL(__ocelot_read_ix);
++EXPORT_SYMBOL_GPL(__ocelot_read_ix);
+ 
+ void __ocelot_write_ix(struct ocelot *ocelot, u32 val, u32 reg, u32 offset)
+ {
+@@ -32,7 +32,7 @@ void __ocelot_write_ix(struct ocelot *ocelot, u32 val, u32 reg, u32 offset)
+ 	regmap_write(ocelot->targets[target],
+ 		     ocelot->map[target][reg & REG_MASK] + offset, val);
+ }
+-EXPORT_SYMBOL(__ocelot_write_ix);
++EXPORT_SYMBOL_GPL(__ocelot_write_ix);
+ 
+ void __ocelot_rmw_ix(struct ocelot *ocelot, u32 val, u32 mask, u32 reg,
+ 		     u32 offset)
+@@ -45,7 +45,7 @@ void __ocelot_rmw_ix(struct ocelot *ocelot, u32 val, u32 mask, u32 reg,
+ 			   ocelot->map[target][reg & REG_MASK] + offset,
+ 			   mask, val);
+ }
+-EXPORT_SYMBOL(__ocelot_rmw_ix);
++EXPORT_SYMBOL_GPL(__ocelot_rmw_ix);
+ 
+ u32 ocelot_port_readl(struct ocelot_port *port, u32 reg)
+ {
+@@ -58,7 +58,7 @@ u32 ocelot_port_readl(struct ocelot_port *port, u32 reg)
+ 	regmap_read(port->target, ocelot->map[target][reg & REG_MASK], &val);
+ 	return val;
+ }
+-EXPORT_SYMBOL(ocelot_port_readl);
++EXPORT_SYMBOL_GPL(ocelot_port_readl);
+ 
+ void ocelot_port_writel(struct ocelot_port *port, u32 val, u32 reg)
+ {
+@@ -69,7 +69,7 @@ void ocelot_port_writel(struct ocelot_port *port, u32 val, u32 reg)
+ 
+ 	regmap_write(port->target, ocelot->map[target][reg & REG_MASK], val);
+ }
+-EXPORT_SYMBOL(ocelot_port_writel);
++EXPORT_SYMBOL_GPL(ocelot_port_writel);
+ 
+ void ocelot_port_rmwl(struct ocelot_port *port, u32 val, u32 mask, u32 reg)
+ {
+@@ -77,7 +77,7 @@ void ocelot_port_rmwl(struct ocelot_port *port, u32 val, u32 mask, u32 reg)
+ 
+ 	ocelot_port_writel(port, (cur & (~mask)) | val, reg);
+ }
+-EXPORT_SYMBOL(ocelot_port_rmwl);
++EXPORT_SYMBOL_GPL(ocelot_port_rmwl);
+ 
+ u32 __ocelot_target_read_ix(struct ocelot *ocelot, enum ocelot_target target,
+ 			    u32 reg, u32 offset)
+@@ -128,7 +128,7 @@ int ocelot_regfields_init(struct ocelot *ocelot,
+ 
+ 	return 0;
+ }
+-EXPORT_SYMBOL(ocelot_regfields_init);
++EXPORT_SYMBOL_GPL(ocelot_regfields_init);
+ 
+ static struct regmap_config ocelot_regmap_config = {
+ 	.reg_bits	= 32,
+@@ -148,4 +148,4 @@ struct regmap *ocelot_regmap_init(struct ocelot *ocelot, struct resource *res)
+ 
+ 	return devm_regmap_init_mmio(ocelot->dev, regs, &ocelot_regmap_config);
+ }
+-EXPORT_SYMBOL(ocelot_regmap_init);
++EXPORT_SYMBOL_GPL(ocelot_regmap_init);
+-- 
+2.20.1
+
