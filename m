@@ -2,136 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0E213E59F3
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 14:31:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4C7A3E5A04
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 14:35:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240573AbhHJMb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 08:31:56 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:17001 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238518AbhHJMbz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 08:31:55 -0400
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GkXKN6PHnzb0VN;
-        Tue, 10 Aug 2021 20:27:52 +0800 (CST)
-Received: from [10.67.103.235] (10.67.103.235) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Tue, 10 Aug 2021 20:31:31 +0800
-Subject: Re: [PATCH V7 9/9] PCI/P2PDMA: Add a 10-Bit Tag check in P2PDMA
-To:     Bjorn Helgaas <helgaas@kernel.org>
-References: <20210809173113.GA2166744@bjorn-Precision-5520>
-CC:     <hch@infradead.org>, <kw@linux.com>, <logang@deltatee.com>,
-        <leon@kernel.org>, <linux-pci@vger.kernel.org>,
-        <rajur@chelsio.com>, <hverkuil-cisco@xs4all.nl>,
-        <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
-From:   Dongdong Liu <liudongdong3@huawei.com>
-Message-ID: <d113a3f3-6098-314b-32d3-b944daf1186c@huawei.com>
-Date:   Tue, 10 Aug 2021 20:31:30 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        id S240586AbhHJMf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 08:35:57 -0400
+Received: from mailgw02.mediatek.com ([210.61.82.184]:47416 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S236886AbhHJMfz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 08:35:55 -0400
+X-UUID: 6f4aa03e1f494d4284d2cd45b99e0a48-20210810
+X-UUID: 6f4aa03e1f494d4284d2cd45b99e0a48-20210810
+Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw02.mediatek.com
+        (envelope-from <rocco.yue@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1365449332; Tue, 10 Aug 2021 20:35:30 +0800
+Received: from mtkcas07.mediatek.inc (172.21.101.84) by
+ mtkmbs05n1.mediatek.inc (172.21.101.15) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 10 Aug 2021 20:35:28 +0800
+Received: from localhost.localdomain (10.15.20.246) by mtkcas07.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 10 Aug 2021 20:35:27 +0800
+From:   Rocco Yue <rocco.yue@mediatek.com>
+To:     David Ahern <dsahern@gmail.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <rocco.yue@gmail.com>,
+        <chao.song@mediatek.com>, <zhuoliang.zhang@mediatek.com>,
+        Rocco Yue <rocco.yue@mediatek.com>
+Subject: Re: [PATCH net-next v3] ipv6: add IFLA_INET6_RA_MTU to expose mtu value in the RA message
+Date:   Tue, 10 Aug 2021 20:33:27 +0800
+Message-ID: <20210810123327.15998-1-rocco.yue@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <c0a6f817-0225-c863-722c-19c798daaa4b@gmail.com>
+References: <c0a6f817-0225-c863-722c-19c798daaa4b@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210809173113.GA2166744@bjorn-Precision-5520>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.103.235]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 2021-08-09 at 16:43 -0600, David Ahern wrote:
+> On 8/9/21 8:01 AM, Rocco Yue wrote:
 
+> +
+>>  #ifdef CONFIG_SYSCTL
+>>  
+>>  static int addrconf_sysctl_forward(struct ctl_table *ctl, int write,
+>> diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
+>> index c467c6419893..a04164cbd77f 100644
+>> --- a/net/ipv6/ndisc.c
+>> +++ b/net/ipv6/ndisc.c
+>> @@ -1496,6 +1496,12 @@ static void ndisc_router_discovery(struct sk_buff *skb)
+>>  		memcpy(&n, ((u8 *)(ndopts.nd_opts_mtu+1))+2, sizeof(mtu));
+>>  		mtu = ntohl(n);
+>>  
+>> +		if (in6_dev->ra_mtu != mtu) {
+>> +			in6_dev->ra_mtu = mtu;
+>> +			inet6_iframtu_notify(in6_dev);
+>> +			ND_PRINTK(2, info, "update ra_mtu to %d\n", in6_dev->ra_mtu);
+>> +		}
+>> +
+>>  		if (mtu < IPV6_MIN_MTU || mtu > skb->dev->mtu) {
+>>  			ND_PRINTK(2, warn, "RA: invalid mtu: %d\n", mtu);
+>>  		} else if (in6_dev->cnf.mtu6 != mtu) {
+> 
+> Since this MTU is getting reported via af_info infrastructure,
+> rtmsg_ifinfo should be sufficient.
+> 
+> From there use 'ip monitor' to make sure you are not generating multiple
+> notifications; you may only need this on the error path.
 
-On 2021/8/10 1:31, Bjorn Helgaas wrote:
-> On Sat, Aug 07, 2021 at 03:11:34PM +0800, Dongdong Liu wrote:
->>
->> On 2021/8/6 2:12, Bjorn Helgaas wrote:
->>> On Wed, Aug 04, 2021 at 09:47:08PM +0800, Dongdong Liu wrote:
->>>> Add a 10-Bit Tag check in the P2PDMA code to ensure that a device with
->>>> 10-Bit Tag Requester doesn't interact with a device that does not
->>>> support 10-BIT Tag Completer. Before that happens, the kernel should
->>>> emit a warning. "echo 0 > /sys/bus/pci/devices/.../10bit_tag" to
->>>> disable 10-BIT Tag Requester for PF device.
->>>> "echo 0 > /sys/bus/pci/devices/.../sriov_vf_10bit_tag_ctl" to disable
->>>> 10-BIT Tag Requester for VF device.
->>>
->>> s/10-BIT/10-Bit/ several times.
->> Will fix.
->>>
->>> Add blank lines between paragraphs.
->> Will fix.
->>>
->>>> Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
->>>> ---
->>>>  drivers/pci/p2pdma.c | 40 ++++++++++++++++++++++++++++++++++++++++
->>>>  1 file changed, 40 insertions(+)
->>>>
->>>> diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
->>>> index 50cdde3..948f2be 100644
->>>> --- a/drivers/pci/p2pdma.c
->>>> +++ b/drivers/pci/p2pdma.c
->>>> @@ -19,6 +19,7 @@
->>>>  #include <linux/random.h>
->>>>  #include <linux/seq_buf.h>
->>>>  #include <linux/xarray.h>
->>>> +#include "pci.h"
->>>>
->>>>  enum pci_p2pdma_map_type {
->>>>  	PCI_P2PDMA_MAP_UNKNOWN = 0,
->>>> @@ -410,6 +411,41 @@ static unsigned long map_types_idx(struct pci_dev *client)
->>>>  		(client->bus->number << 8) | client->devfn;
->>>>  }
->>>>
->>>> +static bool check_10bit_tags_vaild(struct pci_dev *a, struct pci_dev *b,
->>>
->>> s/vaild/valid/
->>>
->>> Or maybe s/valid/safe/ or s/valid/supported/, since "valid" isn't
->>> quite the right word here.  We want to know whether the source is
->>> enabled to generate 10-bit tags, and if so, whether the destination
->>> can handle them.
->>>
->>> "if (check_10bit_tags_valid())" does not make sense because
->>> "check_10bit_tags_valid()" is not a question with a yes/no answer.
->>>
->>> "10bit_tags_valid()" *might* be, because "if (10bit_tags_valid())"
->>> makes sense.  But I don't think you can start with a digit.
->>>
->>> Or maybe you want to invert the sense, e.g.,
->>> "10bit_tags_unsupported()", since that avoids negation at the caller:
->>>
->>>   if (10bit_tags_unsupported(a, b) ||
->>>       10bit_tags_unsupported(b, a))
->>>         map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
->> Good suggestion. add a pci_ prefix.
->>
->> if (pci_10bit_tags_unsupported(a, b) ||
->>     pci_10bit_tags_unsupported(b, a))
->> 	map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
->
-> This treats both directions as equally important.  I don't know P2PDMA
-> very well, but that doesn't seem like it would necessarily be the
-> case.  I would think a common case would be device A doing DMA to B,
-> but B *not* doing DMA to A.  So can you tell which direction you're
-> setting up here, and can you take advantage of any asymmetry, e.g., by
-> enabling 10-bit tags in the direction that supports it even if the
-> other direction does not?
+Hi David,
 
-Documentation/driver-api/pci/p2pdma.rst
-* Provider - A driver which provides or publishes P2P resources like
-   memory or doorbell registers to other drivers.
-* Client - A driver which makes use of a resource by setting up a
-   DMA transaction to or from it.
+To avoid generating multiple notifications, I added a separate ramtu notify
+function in this patch, and I added RTNLGRP_IPV6_IFINFO nl_mgrp to the ipmonitor.c
+to verify this patch was as expected.
 
-So we may just check as below.
-if (10bit_tags_unsupported(client, provider, verbose)
-	map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
+I look at the rtmsg_ifinfo code, it should be appropriate and I will use it and
+verify it.
 
-@Logan What's your opinion?
+But there's one thing, I'm sorry I didn't fully understand the meaning of this
+sentence "you may only need this on the error path". Honestly, I'm not sure what
+the error patch refers to, do you mean "if (mtu < IPV6_MIN_MTU || mtu > skb->dev->mtu)" ?
 
-Thanks,
-Dongdong
-> .
->
+Thanks
+Rocco
