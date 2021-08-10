@@ -2,85 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 833873E83F9
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 21:53:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 590593E8447
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 22:25:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232239AbhHJTyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 15:54:00 -0400
-Received: from jabberwock.ucw.cz ([46.255.230.98]:38190 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230077AbhHJTyA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 15:54:00 -0400
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 086F41C0B77; Tue, 10 Aug 2021 21:53:36 +0200 (CEST)
-Date:   Tue, 10 Aug 2021 21:53:35 +0200
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Michael Walle <michael@walle.cc>, andrew@lunn.ch,
-        anthony.l.nguyen@intel.com, bigeasy@linutronix.de,
-        davem@davemloft.net, dvorax.fuxbrumer@linux.intel.com,
-        f.fainelli@gmail.com, jacek.anaszewski@gmail.com, kuba@kernel.org,
-        kurt@linutronix.de, linux-leds@vger.kernel.org,
-        netdev@vger.kernel.org, sasha.neftin@intel.com,
-        vinicius.gomes@intel.com, vitaly.lifshits@intel.com
-Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
-Message-ID: <20210810195335.GA7659@duo.ucw.cz>
-References: <YP9n+VKcRDIvypes@lunn.ch>
- <20210727081528.9816-1-michael@walle.cc>
- <20210727165605.5c8ddb68@thinkpad>
- <c56fd3dbe1037a5c2697b311f256b3d8@walle.cc>
- <20210727172828.1529c764@thinkpad>
- <8edcc387025a6212d58fe01865725734@walle.cc>
- <20210727183213.73f34141@thinkpad>
- <25d3e798-09f5-56b5-5764-c60435109dd2@gmail.com>
- <20210810172927.GB3302@amd>
- <20210810195550.261189b3@thinkpad>
+        id S233077AbhHJU0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 16:26:18 -0400
+Received: from mxout04.lancloud.ru ([45.84.86.114]:59678 "EHLO
+        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232989AbhHJU0Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 16:26:16 -0400
+X-Greylist: delayed 516 seconds by postgrey-1.27 at vger.kernel.org; Tue, 10 Aug 2021 16:26:15 EDT
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 76A1720CBC74
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+To:     <netdev@vger.kernel.org>
+CC:     <linux-renesas-soc@vger.kernel.org>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Subject: [PATCH] MAINTAINERS: switch to my OMP email for Renesas Ethernet
+ drivers
+Organization: Open Mobile Platform
+Message-ID: <9c212711-a0d7-39cd-7840-ff7abf938da1@omp.ru>
+Date:   Tue, 10 Aug 2021 23:17:12 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="h31gzZEtNLTqOjlF"
-Content-Disposition: inline
-In-Reply-To: <20210810195550.261189b3@thinkpad>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+I'm still going to continue looking after the Renesas Ethernet drivers and
+device tree bindings. Now my new employer, Open Mobile Platform (OMP), will
+pay for all my upstream work. Let's switch to my OMP email for the reviews.
 
---h31gzZEtNLTqOjlF
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-Hi!
+---
+ MAINTAINERS |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > So "r8159-0300:green:activity" would be closer to the naming we want,
-> > but lets not do that, we really want this to be similar to what others
-> > are doing, and that probably means "ethphy3:green:activity" AFAICT.
->=20
-> Pavel, one point of the discussion is that in this case the LED is
-> controlled by MAC, not PHY. So the question is whether we want to do
-> "ethmacN" (in addition to "ethphyN").
-
-Sorry, I missed that. I guess that yes, ethmacX is okay, too.
-
-Even better would be to find common term that could be used for both
-ethmacN and ethphyN and just use that. (Except that we want to avoid
-ethX). Maybe "ethportX" would be suitable?
-
-Best regards,
-								Pavel
---=20
-http://www.livejournal.com/~pavelmachek
-
---h31gzZEtNLTqOjlF
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYRLZPwAKCRAw5/Bqldv6
-8sdjAKCkAKuAMaqBPjpUyAOgAZjoOmL/oACgocl7dFzICwE5ufhlQTgqYj76Mco=
-=HcHL
------END PGP SIGNATURE-----
-
---h31gzZEtNLTqOjlF--
+Index: net/MAINTAINERS
+===================================================================
+--- net.orig/MAINTAINERS
++++ net/MAINTAINERS
+@@ -15803,7 +15803,7 @@ F:	Documentation/devicetree/bindings/i2c
+ F:	drivers/i2c/busses/i2c-emev2.c
+ 
+ RENESAS ETHERNET DRIVERS
+-R:	Sergei Shtylyov <sergei.shtylyov@gmail.com>
++R:	Sergey Shtylyov <s.shtylyov@omp.ru>
+ L:	netdev@vger.kernel.org
+ L:	linux-renesas-soc@vger.kernel.org
+ F:	Documentation/devicetree/bindings/net/renesas,*.yaml
