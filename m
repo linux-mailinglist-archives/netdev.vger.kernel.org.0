@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 684B33E5111
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 04:34:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8D253E5117
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 04:38:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233444AbhHJCez (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Aug 2021 22:34:55 -0400
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:39922 "EHLO
+        id S234323AbhHJCjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Aug 2021 22:39:14 -0400
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:39938 "EHLO
         codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230048AbhHJCey (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 22:34:54 -0400
+        with ESMTP id S232599AbhHJCjN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Aug 2021 22:39:13 -0400
 Received: by codeconstruct.com.au (Postfix, from userid 10000)
-        id 6D28920135; Tue, 10 Aug 2021 10:34:31 +0800 (AWST)
+        id 56A5620135; Tue, 10 Aug 2021 10:38:51 +0800 (AWST)
 From:   Jeremy Kerr <jk@codeconstruct.com.au>
 To:     netdev@vger.kernel.org
 Cc:     Matt Johnston <matt@codeconstruct.com.au>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH] mctp: Specify route types, require rtm_type in RTM_*ROUTE messages
-Date:   Tue, 10 Aug 2021 10:34:22 +0800
-Message-Id: <20210810023422.2229863-1-jk@codeconstruct.com.au>
+Subject: [PATCH net-next v2] mctp: Specify route types, require rtm_type in RTM_*ROUTE messages
+Date:   Tue, 10 Aug 2021 10:38:34 +0800
+Message-Id: <20210810023834.2231088-1-jk@codeconstruct.com.au>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -36,6 +36,11 @@ This means userspace will need to set a correct rtm_type in RTM_NEWROUTE
 and RTM_DELROUTE messages; we currently only accept RTN_UNICAST.
 
 Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
+
+---
+v2:
+ - specify net-next as base branch
+
 ---
  include/net/mctp.h |  1 +
  net/mctp/route.c   | 27 ++++++++++++++++++++++-----
