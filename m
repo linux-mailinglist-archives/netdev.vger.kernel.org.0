@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7F083E5BDA
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 15:38:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4800B3E5BDB
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 15:38:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241623AbhHJNiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 09:38:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48672 "EHLO mail.kernel.org"
+        id S241691AbhHJNi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 09:38:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48724 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241584AbhHJNiG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Aug 2021 09:38:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B113360FDA;
-        Tue, 10 Aug 2021 13:37:43 +0000 (UTC)
+        id S241610AbhHJNiJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 09:38:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1521360EE9;
+        Tue, 10 Aug 2021 13:37:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628602664;
-        bh=M7YYC86V3snE++Hi6R8B+ecf16khmRjxEgwHZa+z11c=;
+        s=k20201202; t=1628602667;
+        bh=3F30XzjiCuima9za1pGO/IygpzGxwpDwxQ6IcD1Gfqg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k3kgXJCoVnKNB9I7tS2aPTM3rtoAWdciNOGImREzupykz2gaoIyIibSPySBOc4o58
-         V+VHZbGINFzGVO2mpOkOq5X0WeTyOF1/rDIFVBEL50lmuaSiJBtWrKS1X99hA/Q4zY
-         auXe7P0mt9RnNrhf1rnbvh8RqzdCKkeax4OGrvnpBZUqHYfjWedLgmtPf1rzyKxq/8
-         PSMANImC+0lmao5bMa9XF1t7PSP06wfYn53xNRJ+kotlFb4CkA2339WvAAGi7WlVdU
-         cqxgOuwXtAjAs3tSnYca3MV1WgK5xMdreEkxwtza8mO0vQ2lEERAcY7wqmLbJwXCPM
-         DDGHA3NJxRP0A==
+        b=d54uKdcqBwcVwNJbDlLrnz2TlsCXGwlG8wR4ZEm2SsHEPFrNjJrAV85HQO1ZXwQL0
+         OQe1UZ9LMq4XIBhyot87XoiSlofZayKJIBbt2ZczO97lIJiO7/Gp1NGRFO0DfpVMIH
+         QSTt0jQKq0E+HdZAlGIHX6uyv2ebM2G2UJijsgCq77edwgtKEsCs93uin6hna/HSQC
+         gS3c60cHuxKepUazPDccTAtfhFyHhE6RGDzbDq/GZvynZ2irVLJob/QMp6DQej3k7V
+         PlhuWK0P1e5e3tC8PnbaWMK4jeIOak50QhFi405pn5NXy4Kr0EWA3GzNbxZlcAUGnY
+         T1wpFedrQ4eoQ==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -36,9 +36,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Tariq Toukan <tariqt@nvidia.com>,
         Yisen Zhuang <yisen.zhuang@huawei.com>,
         Yufeng Mo <moyufeng@huawei.com>
-Subject: [PATCH net-next 1/5] net: hns3: remove always exist devlink pointer check
-Date:   Tue, 10 Aug 2021 16:37:31 +0300
-Message-Id: <2340cee7b177bf7c8825f61b9798034c77baec32.1628599239.git.leonro@nvidia.com>
+Subject: [PATCH net-next 2/5] net/mlx4: Move devlink_register to be the last initialization command
+Date:   Tue, 10 Aug 2021 16:37:32 +0300
+Message-Id: <9fe3b30cc86f80881e4a1fa161dc58d4a6a2a9f1.1628599239.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1628599239.git.leonro@nvidia.com>
 References: <cover.1628599239.git.leonro@nvidia.com>
@@ -50,89 +50,110 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-The devlink pointer always exists after hclge_devlink_init() succeed.
-Remove that check together with NULL setting after release and ensure
-that devlink_register is last command prior to call to devlink_reload_enable().
+Refactor the code to make sure that devlink_register() is the last
+command during initialization stage.
 
-Fixes: b741269b2759 ("net: hns3: add support for registering devlink for PF")
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c    | 8 +-------
- .../net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c  | 8 +-------
- 2 files changed, 2 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/mellanox/mlx4/main.c | 38 ++++++++++++++++-------
+ 1 file changed, 27 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
-index 448f29aa4e6b..e4aad695abcc 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
-@@ -118,6 +118,7 @@ int hclge_devlink_init(struct hclge_dev *hdev)
+diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
+index 7267c6c6d2e2..7005c32195a3 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/main.c
++++ b/drivers/net/ethernet/mellanox/mlx4/main.c
+@@ -3996,6 +3996,8 @@ static const struct devlink_ops mlx4_devlink_ops = {
+ 	.reload_up	= mlx4_devlink_reload_up,
+ };
  
- 	priv = devlink_priv(devlink);
- 	priv->hdev = hdev;
-+	hdev->devlink = devlink;
- 
- 	ret = devlink_register(devlink);
- 	if (ret) {
-@@ -126,8 +127,6 @@ int hclge_devlink_init(struct hclge_dev *hdev)
- 		goto out_reg_fail;
- 	}
- 
--	hdev->devlink = devlink;
--
- 	devlink_reload_enable(devlink);
- 
- 	return 0;
-@@ -141,14 +140,9 @@ void hclge_devlink_uninit(struct hclge_dev *hdev)
++static void _mlx4_remove_one(struct pci_dev *pdev);
++
+ static int mlx4_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
  {
- 	struct devlink *devlink = hdev->devlink;
+ 	struct devlink *devlink;
+@@ -4024,28 +4026,29 @@ static int mlx4_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	mutex_init(&dev->persist->interface_state_mutex);
+ 	mutex_init(&dev->persist->pci_status_mutex);
  
--	if (!devlink)
--		return;
--
- 	devlink_reload_disable(devlink);
+-	ret = devlink_register(devlink);
+-	if (ret)
+-		goto err_persist_free;
+ 	ret = devlink_params_register(devlink, mlx4_devlink_params,
+ 				      ARRAY_SIZE(mlx4_devlink_params));
+ 	if (ret)
+-		goto err_devlink_unregister;
++		goto err_persist_free;
+ 	mlx4_devlink_set_params_init_values(devlink);
+ 	ret =  __mlx4_init_one(pdev, id->driver_data, priv);
+ 	if (ret)
+ 		goto err_params_unregister;
  
- 	devlink_unregister(devlink);
- 
- 	devlink_free(devlink);
--
--	hdev->devlink = NULL;
- }
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
-index 1e6061fb8ed4..f478770299c6 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
-@@ -120,6 +120,7 @@ int hclgevf_devlink_init(struct hclgevf_dev *hdev)
- 
- 	priv = devlink_priv(devlink);
- 	priv->hdev = hdev;
-+	hdev->devlink = devlink;
- 
- 	ret = devlink_register(devlink);
- 	if (ret) {
-@@ -128,8 +129,6 @@ int hclgevf_devlink_init(struct hclgevf_dev *hdev)
- 		goto out_reg_fail;
- 	}
- 
--	hdev->devlink = devlink;
--
- 	devlink_reload_enable(devlink);
- 
+ 	devlink_params_publish(devlink);
+-	devlink_reload_enable(devlink);
+ 	pci_save_state(pdev);
++
++	ret = devlink_register(devlink);
++	if (ret) {
++		_mlx4_remove_one(pdev);
++		return ret;
++	}
++	devlink_reload_enable(devlink);
  	return 0;
-@@ -143,14 +142,9 @@ void hclgevf_devlink_uninit(struct hclgevf_dev *hdev)
- {
- 	struct devlink *devlink = hdev->devlink;
  
--	if (!devlink)
--		return;
--
- 	devlink_reload_disable(devlink);
- 
- 	devlink_unregister(devlink);
- 
- 	devlink_free(devlink);
--
--	hdev->devlink = NULL;
+ err_params_unregister:
+ 	devlink_params_unregister(devlink, mlx4_devlink_params,
+ 				  ARRAY_SIZE(mlx4_devlink_params));
+-err_devlink_unregister:
+-	devlink_unregister(devlink);
+ err_persist_free:
+ 	kfree(dev->persist);
+ err_devlink_free:
+@@ -4141,7 +4144,7 @@ static void mlx4_unload_one(struct pci_dev *pdev)
+ 	priv->removed = 1;
  }
+ 
+-static void mlx4_remove_one(struct pci_dev *pdev)
++static void _mlx4_remove_one(struct pci_dev *pdev)
+ {
+ 	struct mlx4_dev_persistent *persist = pci_get_drvdata(pdev);
+ 	struct mlx4_dev  *dev  = persist->dev;
+@@ -4149,8 +4152,6 @@ static void mlx4_remove_one(struct pci_dev *pdev)
+ 	struct devlink *devlink = priv_to_devlink(priv);
+ 	int active_vfs = 0;
+ 
+-	devlink_reload_disable(devlink);
+-
+ 	if (mlx4_is_slave(dev))
+ 		persist->interface_state |= MLX4_INTERFACE_STATE_NOWAIT;
+ 
+@@ -4185,11 +4186,26 @@ static void mlx4_remove_one(struct pci_dev *pdev)
+ 	mlx4_pci_disable_device(dev);
+ 	devlink_params_unregister(devlink, mlx4_devlink_params,
+ 				  ARRAY_SIZE(mlx4_devlink_params));
+-	devlink_unregister(devlink);
+ 	kfree(dev->persist);
+ 	devlink_free(devlink);
+ }
+ 
++static void mlx4_remove_one(struct pci_dev *pdev)
++{
++	struct mlx4_dev_persistent *persist = pci_get_drvdata(pdev);
++	struct devlink *devlink;
++	struct mlx4_priv *priv;
++	struct mlx4_dev *dev;
++
++	dev = persist->dev;
++	priv = mlx4_priv(dev);
++	devlink = priv_to_devlink(priv);
++
++	devlink_reload_disable(devlink);
++	devlink_unregister(devlink);
++	_mlx4_remove_one(pdev);
++}
++
+ static int restore_current_port_types(struct mlx4_dev *dev,
+ 				      enum mlx4_port_type *types,
+ 				      enum mlx4_port_type *poss_types)
 -- 
 2.31.1
 
