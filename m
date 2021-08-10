@@ -2,165 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 570863E5434
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 09:21:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 001F03E5448
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 09:26:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231625AbhHJHWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 03:22:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47880 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbhHJHWK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 03:22:10 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09789C0613D3
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 00:21:49 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id y7so28758604eda.5
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 00:21:48 -0700 (PDT)
+        id S232954AbhHJH0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 03:26:53 -0400
+Received: from dispatch1-eu1.ppe-hosted.com ([185.183.29.32]:8682 "EHLO
+        dispatch1-eu1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232973AbhHJH0l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 03:26:41 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05lp2105.outbound.protection.outlook.com [104.47.18.105])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-eu1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 99E866C0076;
+        Tue, 10 Aug 2021 07:26:16 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=P3W0xzMQ7CSX5HEF7H2YDArHLijC8eB7MxmXUaaLPQ6zuQksb6k3XA34IthRO/6Pc6AUo5UHQFyrtSDaDmDvfDAYQ3gnnDtv5u8RchH2106+c5pjf7lI8mq50aS/DCoi/krkfTgZtnFiONLFvDF7jpRRS5fg5aKd2kIjeYSkTt6Y0T0V7ko0NhzpcBd+gocxjvMhviglgV9kY+Oz+M9U7ZLPZ2qWxGHViLTP5+j7n9KbQ+d3vMqEW2o1K5sdf+QmsCCUnBsZeGAt/Nar8w498hw+zl83FMOF7r6c7kXqV2RyZs2DBmYtHZuMpgFkcAqYu21r5QhvAPYuFwodCv7K+A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=k0Bjt7mIuC5bLBMdViuOUdMGqptp28vU1M8VhFWloRQ=;
+ b=WSzAJ1Y1A6IabjRZp+fR9OhHUzWYZlbKwbXSmWz88FYOL//PnphnkstA4kZi1nE/tcTJKREevg9yhF/WFz5SC3nWqtmbP/VNmZNZGUldw+5SHkuFxV9wlARxKvUXUwI6HB7VwuI6PpICZUU7kLNZRBKqn9kEQyyufEf08m5/HQXsMFeWpmTIAQ7d+TDKK/OBa1Vza1zbHAXcZgV/OaHwneJQV1f9+E8+/rk+IFttEG3NRcgykAwFa67xcHMO//PA3Pd2HpCORwNb5vZ/fxMnFL3JpF8FbOMQ5yt1huxy+PiuxSoqtlzZYFPZuYlA01Jd4kZEK/ZIQvacNK3YK0xqzg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=drivenets.com; dmarc=pass action=none
+ header.from=drivenets.com; dkim=pass header.d=drivenets.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=up+eew742X9QXmow643XmONFSJDHCmQiISaU60otKWY=;
-        b=Hj6XIanI3u2F1shNBA3Vyc+8RWLtizk9WYkfA1YQliwp9LxB8743ERNDZ1NOhwS5NO
-         c/FXufFGrZ0A9Ttt4tNCMet0B6blA8q3DDcGog5oL0gLLHpuHYrncXmkNyxHNfamrFUB
-         f94yI+jcT93NbNFUP1XRjXxW6oGJypqX+f6kZ4CAJiuw5hvImbJdLu00Dd7BrlUpoxrP
-         IYRA2gxyT0rrX3ybz58u2qpfDjC0MxkwNcvkAFNQoSugDDBts+jV6arlHnpXUejU/GlM
-         T88EZEDQAk9F/M/dWDAuO4WkOAZZXO4qKFtttU8adSRuQit6myk/xka7e+++ODKgdxBR
-         bd1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=up+eew742X9QXmow643XmONFSJDHCmQiISaU60otKWY=;
-        b=Q7je3AMQ5h6dpJ3qVYWV1RbROzf/Ar4HOYqjB17hPKwFH3wJuVr+oZ7FnqmMcDvUJv
-         hyap3qCCRTdVoiFszqM+aPzgyO9m3MGJmMOKF6HgcCERIceCcm445BAX5eWwd9FhdU7r
-         msjrB9tNYdGlwyJjPCxu0L9rxm5LAxnguODpCJTTqzZK+AYPSWpsC1+XnyedDg3G3nsy
-         6c2Q0MGFN1u3xJEH0IyCxOYzCGmBblmHgAelXzDgf7AlBrh+G4YJ/drfB70dtJAikOhV
-         kLISHS58sTMhnVDWN7RNyByrKctnGnuIzaGCqAyl0GZTsoqWhfjcLYAgWiuO6L7CXa6q
-         bZmg==
-X-Gm-Message-State: AOAM5311IlGTi0yJBM+QeibGz2ePzHW8h3jhmoh44A0wzTxSd/7TYXo4
-        9O9jiCCtRvOBFCSy7WtQSt2OFWt9+CIDY2u9
-X-Google-Smtp-Source: ABdhPJzyiED0fEl+efvYe4jeXCQUt5Op8b4nYFC7UVLWft2HvFbF4JCi+uojgtNHGlrhWtFUeJ6n+Q==
-X-Received: by 2002:a05:6402:1514:: with SMTP id f20mr3303243edw.336.1628580107222;
-        Tue, 10 Aug 2021 00:21:47 -0700 (PDT)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id f26sm9141725edu.4.2021.08.10.00.21.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Aug 2021 00:21:46 -0700 (PDT)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
-        vladimir.oltean@nxp.com, Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net] net: bridge: fix flags interpretation for extern learn fdb entries
-Date:   Tue, 10 Aug 2021 10:21:39 +0300
-Message-Id: <20210810072139.1597621-1-razor@blackwall.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <YRIfT6vLL16hr+7p@shredder>
-References: <YRIfT6vLL16hr+7p@shredder>
+ d=drivenets.onmicrosoft.com; s=selector2-drivenets-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=k0Bjt7mIuC5bLBMdViuOUdMGqptp28vU1M8VhFWloRQ=;
+ b=jjowi8F1c5hDcpdL65PaUWJ8bjR6P+/F0vJaLtcd4RbDJjr/EmBye5v/NgOcsw4VmkqDJCquGhqfxlqQ/dJ0t2lRXzFKzec8olvOlGopXCtT8nwGONBOrehNxwREtZcQihyezKBxaHgVvBpNoG1uyyBt6X6mweA1o+ZvqD52X7U=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=drivenets.com;
+Received: from VI1PR08MB3518.eurprd08.prod.outlook.com (2603:10a6:803:7a::23)
+ by VI1PR08MB3246.eurprd08.prod.outlook.com (2603:10a6:803:4b::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.16; Tue, 10 Aug
+ 2021 07:26:15 +0000
+Received: from VI1PR08MB3518.eurprd08.prod.outlook.com
+ ([fe80::cdfb:774a:b053:7b]) by VI1PR08MB3518.eurprd08.prod.outlook.com
+ ([fe80::cdfb:774a:b053:7b%6]) with mapi id 15.20.4394.023; Tue, 10 Aug 2021
+ 07:26:15 +0000
+Date:   Tue, 10 Aug 2021 10:26:08 +0300
+From:   Lahav Schlesinger <lschlesinger@drivenets.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     netdev@vger.kernel.org, dsahern@kernel.org, davem@davemloft.net,
+        kuba@kernel.org
+Subject: Re: [PATCH net-next v3] net: Support filtering interfaces on no
+ master
+Message-ID: <20210810072608.haanbwgpijyfxgjl@kgollan-pc>
+References: <20210810064943.2778030-1-lschlesinger@drivenets.com>
+ <YRIm1deoDLl37V8n@unreal>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YRIm1deoDLl37V8n@unreal>
+User-Agent: NeoMutt/20171215
+X-ClientProxiedBy: LO4P123CA0007.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:150::12) To VI1PR08MB3518.eurprd08.prod.outlook.com
+ (2603:10a6:803:7a::23)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kgollan-pc (82.166.105.36) by LO4P123CA0007.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:150::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15 via Frontend Transport; Tue, 10 Aug 2021 07:26:14 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e0525d00-164f-4843-a7e3-08d95bd02360
+X-MS-TrafficTypeDiagnostic: VI1PR08MB3246:
+X-Microsoft-Antispam-PRVS: <VI1PR08MB3246B8252D57E8740C392BA4CCF79@VI1PR08MB3246.eurprd08.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:751;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: C3ulo2z7z8WGJ5GAqeBcLdiZiDc79oDmttxKZuR1ownh9JJfbngcUodNmqnV5ABMjcsMVQoYBtHJmAfDaZRUk7q3GAJeLTgzmKGSvL9E9wYQxY4Pln8EmgkqOF5FCx80OMbGjUK3z/wvX9khWopAZ2w0xlGtsJTvkLq+JZ3eDKxip+IG93CvzIESlAH/K1P3e4AeBwUqqWb151zcdF3rBofn0TpSenVPU1T+GEIzrggTNZ2yUw6N++txtC2Mb3U5aZRCDYVvAQ6ZfxZ8SkbqrPtajT9KOPf35CvaAlvwJKs29+e6jmD52OQRcL3pX+Dsi0xgsXhJdTS0Q6wvkOMiVG/OC+hrEdPMBAUBRcd/yMGSuO678KUUdLOi2Oi76EHOb2r7sYTdoztXakLu9jnvdTML7FPHU3FfxPFEBNME0pvsUSE57906xeM8SQXkjTI5uVR/+uIibvGoceUa8kMif9KrUOwwZC64ZpT6cWnQY8t3JT3mesUjyxvTpZM+TTwlcD/lPUXV6Dx3l9Aneh9U01UpYJ+MPv6k6FIY6TTrzetambMwrSjU/7ii2ahEvvuF0O5Us799OjY0jOBkoE03uF3CGtfcCv/JLO1YL4Cy7fkZRTyWilpkWmA+dIBzWqXPrVALiqvpE0lCBzWWJSKVd/Qfq0Ikt1H7uH5DhYhR8li/PNJXe9IWE3pP90KDON3JLh0xved1Hls0v8N+vt+VD+dAwUgsR7I2ALY0PVjBzGCoQiU6od9cmh+IHszxJM33Z37UeRvIrwfOnl6VA0CBHA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR08MB3518.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(136003)(376002)(366004)(39830400003)(346002)(38350700002)(55016002)(52116002)(1076003)(6496006)(9686003)(478600001)(33716001)(956004)(83380400001)(26005)(38100700002)(86362001)(316002)(6666004)(8936002)(66946007)(66476007)(66556008)(3716004)(2906002)(4326008)(8676002)(186003)(6916009)(5660300002)(16060500005)(309714004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?gy3Dt2I36t+ql0ifn5nFfFQv8ZZByZkHBARhflOXpm0Pjg3+RKpLVTFHgafw?=
+ =?us-ascii?Q?thAQzBWThLAaQbjbOyPR1RTzZbSbQ6PnEjKS9q35lzCNUIldCzWlGKGUt9Bh?=
+ =?us-ascii?Q?MjcrFeMYOvMCla4+yV9jvpUQo18nR6JbC5AH3ZJkR5JLZsKnUNetqxHbCNXg?=
+ =?us-ascii?Q?spd820jspGvrwokmeiBioLdj5ooScYTN7RtWb4KDrXttlYO+Yu9S0kaeMcvg?=
+ =?us-ascii?Q?TwUCnZrnBU2+F+x6UlOM/1uHDm4pHDrOBntYItHV3GtIsvOTD50cxf9t6UEt?=
+ =?us-ascii?Q?8IpZrXm8R4QJx1mWWbkeLnjZA8TsGwsdOA8pIx/1wAOUBHYnFhk9i9nu4l2T?=
+ =?us-ascii?Q?N0hGTc94ij9Z4537fZKesr03xparJLF9QwsgFveq1yaGHhkg48I4s/0DKBRu?=
+ =?us-ascii?Q?KeuOW8/oUH7j7yanNv9mWPjS3vlVghP/wAua8wy+uv37btQcx5jQ2AXSflr+?=
+ =?us-ascii?Q?7qKCkw2QvEmpVj51nMjzgVuJ6AL3ER2v3W/kf3+Q9Cp2v9z+MSxP8u45oJqj?=
+ =?us-ascii?Q?w6ChYbc8foTwZJAQwNRz+J/T5r5WpIiZEdI2Mb+yDsFM139JAwiaywv567/o?=
+ =?us-ascii?Q?3yWrvtQrCTi9QTyLqn6GLmTOC5qr9SP4NgS39Ji7r5TzgpzECpRiCCYGHmxr?=
+ =?us-ascii?Q?lq9bfXIbOxTeRDSMmRIMh8ZYrUQCtHNVEJrHG9JpA80eAzMZxfQXIqWJEpKz?=
+ =?us-ascii?Q?6pXg9Y++XIuovN5MY6xAlezDWAIjMyDtiQPMqlpgjZGxPJKSpIcHd91VzCP6?=
+ =?us-ascii?Q?V8Ku5peOUOJpXYLVAFqF7xNUaDdIw9b64IwGIKbl6awmqHyObeAawohuosLw?=
+ =?us-ascii?Q?bRsHoqy476+MKXwLv55VKtXOU4x+MNABUHvBZq/dOTSuN3iGlie52+Lj6rsT?=
+ =?us-ascii?Q?JxHNkrM8322NHABHg4DihmaWilkMHjEduSfcKcMdKqLZb1pvg1NXDDwL+b83?=
+ =?us-ascii?Q?6+bVDOPL1qq/WFz4sFefSjnW2G8VYZYsngYWt4nE581vvRsIZfW6BSf9vhEw?=
+ =?us-ascii?Q?k06MPiEoCXeaJylF+0krheZ2LCjKw6xixBmdLHj5hfh4pTwy2XlCehPmuiGs?=
+ =?us-ascii?Q?I9n08RMAJLYoow5Arjy0am9AiFwhZ7rxMngxF5CTbRodbnM+QDqfDWrxd/vg?=
+ =?us-ascii?Q?wfA1P1m8IvXMG+qaGRcydlRONRHekvSI78WuxdPjl3E8lUayDOb7HgPcxVrW?=
+ =?us-ascii?Q?GmIXDKgezveopu6ZZNXKZ0pydJj4wZ0z9bEXxywGCdD0C+talMUWZI1pq+ny?=
+ =?us-ascii?Q?SBhW9xh+3lhBMp3189my4pPfbnJXyhL1QhlzzMhGQx+C87cQxAFsU65Vdr9t?=
+ =?us-ascii?Q?Gl3Gcq1ZiLgv1BPrB/YD3zoS?=
+X-OriginatorOrg: drivenets.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e0525d00-164f-4843-a7e3-08d95bd02360
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR08MB3518.eurprd08.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2021 07:26:15.5497
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 662f82da-cf45-4bdf-b295-33b083f5d229
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: H4h6m2ndYRNgpikaDQicMtT9qSGVyU0ZrTr7ySNrZeJfNtr/cw2kYc3jIxeO3Q7/ce2RwZ2iqFXKABvWV9wkbCDNttixXus4da6aMymQmxw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR08MB3246
+X-MDID: 1628580377-4XkBUZGjySIC
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@nvidia.com>
+On Tue, Aug 10, 2021 at 10:12:21AM +0300, Leon Romanovsky wrote:
+> On Tue, Aug 10, 2021 at 06:49:43AM +0000, Lahav Schlesinger wrote:
+> > Currently there's support for filtering neighbours/links for interfaces
+> > which have a specific master device (using the IFLA_MASTER/NDA_MASTER
+> > attributes).
+> >
+> > This patch adds support for filtering interfaces/neighbours dump for
+> > interfaces that *don't* have a master.
+> >
+>
+> .....
+>
+> > I have a patch for iproute2 ready for adding this support in userspace.
+> >
+> > v2 -> v3
+> >  - Change the way 'master' is checked for being non NULL
+> > v1 -> v2
+> >  - Change from filtering just for non VRF slaves to non slaves at all
+> >
+>
+> The above lines don't belong to commit message. Please put them under "---"
+>
+> Thanks
+>
 
-Ignore fdb flags when adding port extern learn entries and always set
-BR_FDB_LOCAL flag when adding bridge extern learn entries. This is
-closest to the behaviour we had before and avoids breaking any use cases
-which were allowed.
+Oops, sorry about that!
 
-This patch fixes iproute2 calls which assume NUD_PERMANENT and were
-allowed before, example:
-$ bridge fdb add 00:11:22:33:44:55 dev swp1 extern_learn
-
-Extern learn entries are allowed to roam, but do not expire, so static
-or dynamic flags make no sense for them.
-
-Fixes: eb100e0e24a2 ("net: bridge: allow to add externally learned entries from user-space")
-Fixes: 0541a6293298 ("net: bridge: validate the NUD_PERMANENT bit when adding an extern_learn FDB entry")
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Tested-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
----
-As discussed I decided to keep the error for !p and !NUD_PERMANENT case.
-
- net/bridge/br.c         |  3 +--
- net/bridge/br_fdb.c     | 11 ++++-------
- net/bridge/br_private.h |  2 +-
- 3 files changed, 6 insertions(+), 10 deletions(-)
-
-diff --git a/net/bridge/br.c b/net/bridge/br.c
-index bbab9984f24e..ef743f94254d 100644
---- a/net/bridge/br.c
-+++ b/net/bridge/br.c
-@@ -166,8 +166,7 @@ static int br_switchdev_event(struct notifier_block *unused,
- 	case SWITCHDEV_FDB_ADD_TO_BRIDGE:
- 		fdb_info = ptr;
- 		err = br_fdb_external_learn_add(br, p, fdb_info->addr,
--						fdb_info->vid,
--						fdb_info->is_local, false);
-+						fdb_info->vid, false);
- 		if (err) {
- 			err = notifier_from_errno(err);
- 			break;
-diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index 835cec1e5a03..5dee30966ed3 100644
---- a/net/bridge/br_fdb.c
-+++ b/net/bridge/br_fdb.c
-@@ -1044,10 +1044,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
- 					   "FDB entry towards bridge must be permanent");
- 			return -EINVAL;
- 		}
--
--		err = br_fdb_external_learn_add(br, p, addr, vid,
--						ndm->ndm_state & NUD_PERMANENT,
--						true);
-+		err = br_fdb_external_learn_add(br, p, addr, vid, true);
- 	} else {
- 		spin_lock_bh(&br->hash_lock);
- 		err = fdb_add_entry(br, p, addr, ndm, nlh_flags, vid, nfea_tb);
-@@ -1275,7 +1272,7 @@ void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p)
- }
- 
- int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
--			      const unsigned char *addr, u16 vid, bool is_local,
-+			      const unsigned char *addr, u16 vid,
- 			      bool swdev_notify)
- {
- 	struct net_bridge_fdb_entry *fdb;
-@@ -1293,7 +1290,7 @@ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
- 		if (swdev_notify)
- 			flags |= BIT(BR_FDB_ADDED_BY_USER);
- 
--		if (is_local)
-+		if (!p)
- 			flags |= BIT(BR_FDB_LOCAL);
- 
- 		fdb = fdb_create(br, p, addr, vid, flags);
-@@ -1322,7 +1319,7 @@ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
- 		if (swdev_notify)
- 			set_bit(BR_FDB_ADDED_BY_USER, &fdb->flags);
- 
--		if (is_local)
-+		if (!p)
- 			set_bit(BR_FDB_LOCAL, &fdb->flags);
- 
- 		if (modified)
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index aa64d8d63ca3..2b48b204205e 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -711,7 +711,7 @@ int br_fdb_get(struct sk_buff *skb, struct nlattr *tb[], struct net_device *dev,
- int br_fdb_sync_static(struct net_bridge *br, struct net_bridge_port *p);
- void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p);
- int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
--			      const unsigned char *addr, u16 vid, bool is_local,
-+			      const unsigned char *addr, u16 vid,
- 			      bool swdev_notify);
- int br_fdb_external_learn_del(struct net_bridge *br, struct net_bridge_port *p,
- 			      const unsigned char *addr, u16 vid,
--- 
-2.31.1
-
+> > Signed-off-by: Lahav Schlesinger <lschlesinger@drivenets.com>
+> > Cc: David Ahern <dsahern@kernel.org>
+> > Cc: David S. Miller <davem@davemloft.net>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > ---
+> >  net/core/neighbour.c | 7 +++++++
+> >  net/core/rtnetlink.c | 7 +++++++
+> >  2 files changed, 14 insertions(+)
+> >
+> > diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+> > index b963d6b02c4f..2d5bc3a75fae 100644
+> > --- a/net/core/neighbour.c
+> > +++ b/net/core/neighbour.c
+> > @@ -2528,6 +2528,13 @@ static bool neigh_master_filtered(struct net_device *dev, int master_idx)
+> >  		return false;
+> >
+> >  	master = dev ? netdev_master_upper_dev_get(dev) : NULL;
+> > +
+> > +	/* 0 is already used to denote NDA_MASTER wasn't passed, therefore need another
+> > +	 * invalid value for ifindex to denote "no master".
+> > +	 */
+> > +	if (master_idx == -1)
+> > +		return !!master;
+> > +
+> >  	if (!master || master->ifindex != master_idx)
+> >  		return true;
+> >
+> > diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+> > index 7c9d32cfe607..2dcf1c084b20 100644
+> > --- a/net/core/rtnetlink.c
+> > +++ b/net/core/rtnetlink.c
+> > @@ -1959,6 +1959,13 @@ static bool link_master_filtered(struct net_device *dev, int master_idx)
+> >  		return false;
+> >
+> >  	master = netdev_master_upper_dev_get(dev);
+> > +
+> > +	/* 0 is already used to denote IFLA_MASTER wasn't passed, therefore need
+> > +	 * another invalid value for ifindex to denote "no master".
+> > +	 */
+> > +	if (master_idx == -1)
+> > +		return !!master;
+> > +
+> >  	if (!master || master->ifindex != master_idx)
+> >  		return true;
+> >
+> > --
+> > 2.25.1
+> >
