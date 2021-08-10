@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 959173E5BD6
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 15:37:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7F083E5BDA
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 15:38:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241574AbhHJNiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 09:38:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48628 "EHLO mail.kernel.org"
+        id S241623AbhHJNiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 09:38:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48672 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239995AbhHJNiC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Aug 2021 09:38:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2B1A760EE7;
-        Tue, 10 Aug 2021 13:37:39 +0000 (UTC)
+        id S241584AbhHJNiG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 09:38:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B113360FDA;
+        Tue, 10 Aug 2021 13:37:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628602660;
-        bh=HWvZTnnrllbHGHUXGdqF6NSoDHL8HLBiKeeVTy8+v34=;
-        h=From:To:Cc:Subject:Date:From;
-        b=uAJa/yG49KKMj3g9dPc1nCVeL1+ngogqOjicad0oEhTpte9d+L7mdXfoJ4XSMfWeb
-         kuIukZm1aM5cz8TDJB8+Nahr7xXQW9+X/Jo74R09CWGWGYjkr3nqZRZ0dFVkgp0oO4
-         pgenQ5Y/UXiCVZAnyHMAEs+KWU/dIGox7kFsmUAJ2ICQFLXkSM9U8AExqDrkxrnA8D
-         UXyy8nF+sfZcOaiiZVB7Gx3nGxDPyXBTYY7vK/uhgtvKAVdMsCqgz5BDQhf21XiOHI
-         XT7u9K60wRGE/cfVI5j05iRlARxJF7vNHFWULPj64diwhswkvhZQWYbP/lGIbku+ja
-         4gBW72s1lPmsA==
+        s=k20201202; t=1628602664;
+        bh=M7YYC86V3snE++Hi6R8B+ecf16khmRjxEgwHZa+z11c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=k3kgXJCoVnKNB9I7tS2aPTM3rtoAWdciNOGImREzupykz2gaoIyIibSPySBOc4o58
+         V+VHZbGINFzGVO2mpOkOq5X0WeTyOF1/rDIFVBEL50lmuaSiJBtWrKS1X99hA/Q4zY
+         auXe7P0mt9RnNrhf1rnbvh8RqzdCKkeax4OGrvnpBZUqHYfjWedLgmtPf1rzyKxq/8
+         PSMANImC+0lmao5bMa9XF1t7PSP06wfYn53xNRJ+kotlFb4CkA2339WvAAGi7WlVdU
+         cqxgOuwXtAjAs3tSnYca3MV1WgK5xMdreEkxwtza8mO0vQ2lEERAcY7wqmLbJwXCPM
+         DDGHA3NJxRP0A==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -36,10 +36,12 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Tariq Toukan <tariqt@nvidia.com>,
         Yisen Zhuang <yisen.zhuang@huawei.com>,
         Yufeng Mo <moyufeng@huawei.com>
-Subject: [PATCH net-next 0/5] Move devlink_register to be near devlink_reload_enable
-Date:   Tue, 10 Aug 2021 16:37:30 +0300
-Message-Id: <cover.1628599239.git.leonro@nvidia.com>
+Subject: [PATCH net-next 1/5] net: hns3: remove always exist devlink pointer check
+Date:   Tue, 10 Aug 2021 16:37:31 +0300
+Message-Id: <2340cee7b177bf7c8825f61b9798034c77baec32.1628599239.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <cover.1628599239.git.leonro@nvidia.com>
+References: <cover.1628599239.git.leonro@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -48,57 +50,89 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Hi Dave and Jakub,
+The devlink pointer always exists after hclge_devlink_init() succeed.
+Remove that check together with NULL setting after release and ensure
+that devlink_register is last command prior to call to devlink_reload_enable().
 
-This series prepares code to remove devlink_reload_enable/_disable API
-and in order to do, we move all devlink_register() calls to be right
-before devlink_reload_enable().
+Fixes: b741269b2759 ("net: hns3: add support for registering devlink for PF")
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c    | 8 +-------
+ .../net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c  | 8 +-------
+ 2 files changed, 2 insertions(+), 14 deletions(-)
 
-The best place for such a call should be right before exiting from
-the probe().
-
-This is done because devlink_register() opens devlink netlink to the
-users and gives them a venue to issue commands before initialization
-is finished.
-
-1. Some drivers were aware of such "functionality" and tried to protect
-themselves with extra locks, state machines and devlink_reload_enable().
-Let's assume that it worked for them, but I'm personally skeptical about
-it.
-
-2. Some drivers copied that pattern, but without locks and state
-machines. That protected them from reload flows, but not from any _set_
-routines.
-
-3. And all other drivers simply didn't understand the implications of early
-devlink_register() and can be seen as "broken".
-
-In this series, we focus on items #1 and #2.
-
-Please share your opinion if I should change ALL other drivers to make
-sure that devlink_register() is the last command or leave them in an
-as-is state.
-
-Thanks
-
-Leon Romanovsky (5):
-  net: hns3: remove always exist devlink pointer check
-  net/mlx4: Move devlink_register to be the last initialization command
-  mlxsw: core: Refactor code to publish devlink ops when device is ready
-  net/mlx5: Accept devlink user input after driver initialization
-    complete
-  netdevsim: Delay user access till probe is finished
-
- .../hisilicon/hns3/hns3pf/hclge_devlink.c     |  8 +---
- .../hisilicon/hns3/hns3vf/hclgevf_devlink.c   |  8 +---
- drivers/net/ethernet/mellanox/mlx4/main.c     | 38 +++++++++++++------
- .../net/ethernet/mellanox/mlx5/core/devlink.c | 10 +----
- .../net/ethernet/mellanox/mlx5/core/main.c    | 13 ++++++-
- .../mellanox/mlx5/core/sf/dev/driver.c        | 12 +++++-
- drivers/net/ethernet/mellanox/mlxsw/core.c    | 27 +++++++------
- drivers/net/netdevsim/dev.c                   | 19 +++++-----
- 8 files changed, 76 insertions(+), 59 deletions(-)
-
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
+index 448f29aa4e6b..e4aad695abcc 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
+@@ -118,6 +118,7 @@ int hclge_devlink_init(struct hclge_dev *hdev)
+ 
+ 	priv = devlink_priv(devlink);
+ 	priv->hdev = hdev;
++	hdev->devlink = devlink;
+ 
+ 	ret = devlink_register(devlink);
+ 	if (ret) {
+@@ -126,8 +127,6 @@ int hclge_devlink_init(struct hclge_dev *hdev)
+ 		goto out_reg_fail;
+ 	}
+ 
+-	hdev->devlink = devlink;
+-
+ 	devlink_reload_enable(devlink);
+ 
+ 	return 0;
+@@ -141,14 +140,9 @@ void hclge_devlink_uninit(struct hclge_dev *hdev)
+ {
+ 	struct devlink *devlink = hdev->devlink;
+ 
+-	if (!devlink)
+-		return;
+-
+ 	devlink_reload_disable(devlink);
+ 
+ 	devlink_unregister(devlink);
+ 
+ 	devlink_free(devlink);
+-
+-	hdev->devlink = NULL;
+ }
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
+index 1e6061fb8ed4..f478770299c6 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
+@@ -120,6 +120,7 @@ int hclgevf_devlink_init(struct hclgevf_dev *hdev)
+ 
+ 	priv = devlink_priv(devlink);
+ 	priv->hdev = hdev;
++	hdev->devlink = devlink;
+ 
+ 	ret = devlink_register(devlink);
+ 	if (ret) {
+@@ -128,8 +129,6 @@ int hclgevf_devlink_init(struct hclgevf_dev *hdev)
+ 		goto out_reg_fail;
+ 	}
+ 
+-	hdev->devlink = devlink;
+-
+ 	devlink_reload_enable(devlink);
+ 
+ 	return 0;
+@@ -143,14 +142,9 @@ void hclgevf_devlink_uninit(struct hclgevf_dev *hdev)
+ {
+ 	struct devlink *devlink = hdev->devlink;
+ 
+-	if (!devlink)
+-		return;
+-
+ 	devlink_reload_disable(devlink);
+ 
+ 	devlink_unregister(devlink);
+ 
+ 	devlink_free(devlink);
+-
+-	hdev->devlink = NULL;
+ }
 -- 
 2.31.1
 
