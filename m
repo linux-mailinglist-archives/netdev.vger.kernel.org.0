@@ -2,96 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A2513E5E0B
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 16:33:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32D173E5E10
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 16:34:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240276AbhHJOdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 10:33:35 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42928 "EHLO vps0.lunn.ch"
+        id S239555AbhHJOes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 10:34:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54730 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240212AbhHJOdb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Aug 2021 10:33:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=3FxL/4S4YmrQ+IWKQjnrpQVFunMNvpe9IajSsBJ9+jM=; b=xmpRAlZqaHdbLxX7ChgXsuhmse
-        zrIYeTvO9v6JolQjUytMTEX+UmMI1Jedhxl2nz6zjt2z1DCEGQM1xkwSCJLQGieLeZVKpE5t418DV
-        rVVBRsXnuhng9//M+3v6h7BEvl9Z6nrPeln1nAmwSV5ENgjSD7gv4a43zGbzLqTAyfVM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mDSoM-00Gv7f-0A; Tue, 10 Aug 2021 16:32:58 +0200
-Date:   Tue, 10 Aug 2021 16:32:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH net-next 1/3] dt-bindings: net: fsl, fec: add "fsl,
- wakeup-irq" property
-Message-ID: <YRKOGYwx1uVdsKoF@lunn.ch>
-References: <20210805074615.29096-1-qiangqing.zhang@nxp.com>
- <20210805074615.29096-2-qiangqing.zhang@nxp.com>
- <2e1a14bf-2fa8-ed39-d133-807c4e14859c@gmail.com>
- <DB8PR04MB67950F6863A8FEE6745CBC68E6F69@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <498f3cee-8f37-2ab1-93c4-5472572ecc37@gmail.com>
- <DB8PR04MB6795DC35D0387637052E64A1E6F79@DB8PR04MB6795.eurprd04.prod.outlook.com>
+        id S239178AbhHJOes (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 10:34:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B8C7060E9B;
+        Tue, 10 Aug 2021 14:34:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628606065;
+        bh=oQ/VZBKja9t/3FYjXT+fwYul2R+R/fZdM9SCN0q4XLg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mN53ePwtgs8yV8bi0iT/nw4K4upeEsMp8ScR+lG4uo5sO1eaL768o/Muh6FTEVdNT
+         Jj91Cy0KN1kdFzYAGwyBOesS9/92ULtFWf2CS/HsWU37GlCzSey7POUY/OtmJu6zAN
+         B7oUiOpNFGwqaKCqTQeHw2rGAnoXEgiJJ5WGgwYhXG2BvQLuEFDE/cDDdMzJTj349g
+         lRfi/6VdCVgfraR+TOjXr8SKmMEpf99u9mmbyNx0YbJLHsB8GINUqWVzfPrOskIOsk
+         j74Fg+ZpyVOJrhdtYzM/dNVQfr2Xo/3P8r58zzftXLMi5elGfCEMUrqaaPdM6GzorO
+         YNQiY2ov30++w==
+Date:   Tue, 10 Aug 2021 15:34:06 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] net: mscc: Fix non-GPL export of regmap APIs
+Message-ID: <20210810143406.GC4704@sirena.org.uk>
+References: <20210810123748.47871-1-broonie@kernel.org>
+ <20210810125536.edr64jhzgr7rdnmd@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="7qSK/uQB79J36Y4o"
 Content-Disposition: inline
-In-Reply-To: <DB8PR04MB6795DC35D0387637052E64A1E6F79@DB8PR04MB6795.eurprd04.prod.outlook.com>
+In-Reply-To: <20210810125536.edr64jhzgr7rdnmd@skbuf>
+X-Cookie: Who is John Galt?
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > 1) FEC controller has up to 4 interrupt lines and all of these are routed to GIC
-> > interrupt controller.
-> > > 2) FEC has a wakeup interrupt signal and always are mixed with other
-> > interrupt signals, and then output to one interrupt line.
-> > > 3) For legacy SoCs, wakeup interrupt are mixed to int0 line, but for i.MX8M
-> > serials, are mixed to int2 line.
 
-So you need to know which of the interrupts listed is the wake up
-interrupt.
+--7qSK/uQB79J36Y4o
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-I can see a few ways to do this:
+On Tue, Aug 10, 2021 at 12:55:37PM +0000, Vladimir Oltean wrote:
+> On Tue, Aug 10, 2021 at 01:37:48PM +0100, Mark Brown wrote:
 
-The FEC driver already has quirks. Add a quirk to fec_imx8mq_info and
-fec_imx8qm_info to indicate these should use int2.
+> > The ocelot driver makes use of regmap, wrapping it with driver specific
+> > operations that are thin wrappers around the core regmap APIs. These are
+> > exported with EXPORT_SYMBOL, dropping the _GPL from the core regmap
+> > exports which is frowned upon. Add _GPL suffixes to at least the APIs that
+> > are doing register I/O.
 
-or
+> Stupid question: is this enough? We also have order-two symbols exported
+> as non-GPL, which call one of {__ocelot_read_ix, __ocelot_write_ix,
+> __ocelot_rmw_ix, ocelot_port_writel, ocelot_port_rmwl, ocelot_regfields_init,
+> ocelot_regmap_init}, and therefore indirectly call regmap. In fact, I
+> think that all symbols exported by ocelot do that.
 
-Documentation/devicetree/bindings/interrupt-controller/interrupts.txt 
+Yes, that'd be much better I think - I have to confess I didn't look at
+the driver in too much detail beyond these most obvious examples to
+figure out how exactly they slotted in structurally.
 
-  b) two cells
-  ------------
-  The #interrupt-cells property is set to 2 and the first cell defines the
-  index of the interrupt within the controller, while the second cell is used
-  to specify any of the following flags:
-    - bits[3:0] trigger type and level flags
-        1 = low-to-high edge triggered
-        2 = high-to-low edge triggered
-        4 = active high level-sensitive
-        8 = active low level-sensitive
+--7qSK/uQB79J36Y4o
+Content-Type: application/pgp-signature; name="signature.asc"
 
-You could add
+-----BEGIN PGP SIGNATURE-----
 
-       18 = wakeup source
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmESjl4ACgkQJNaLcl1U
+h9C81Af/TywMfTPfp+HQnN/as2GSg00ICmokLW5KfW8Buvty6oOdBnIJ9Inp/L9i
+WalF2aTKAjSGdj6fotgAZXiX5w2oZlvZsziS2I3+dkyvrCVwi05Fn9qkLTEYEI/q
+oLPm0HQnUt+7F2c3Ay/bU8Qr26/S1QpXVkW8Le7LmAp1QRYHdvDYAmZKSuQNr/ay
+CT9Vk/0SjpxXjxXGBrfg7vcq3oqHOs/Hi8Um4sZiNWM3BAejCi5EAz2XDtvWVKG2
++93ER1ynOiKbczwYc4vbi1u3eOHY26jm0F/KHG4eahqi3MimqkssG50p1Fl+zrOW
+OVUlWDW9mqmQRevIId2tZ39SgCO4Kw==
+=9K/C
+-----END PGP SIGNATURE-----
 
-and extend to core to either do all the work for you, or tell you this
-interrupt is flagged as being a wakeup source. This solution has the
-advantage of it should be usable in other drivers.
-
-	  Andrew
+--7qSK/uQB79J36Y4o--
