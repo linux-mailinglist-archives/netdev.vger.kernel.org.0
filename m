@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECFA13E595D
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 13:47:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6809B3E595C
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 13:47:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240284AbhHJLr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 07:47:27 -0400
-Received: from mail-bn8nam11on2085.outbound.protection.outlook.com ([40.107.236.85]:24129
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        id S240334AbhHJLrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 07:47:25 -0400
+Received: from mail-dm6nam11on2085.outbound.protection.outlook.com ([40.107.223.85]:12481
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S240266AbhHJLrI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Aug 2021 07:47:08 -0400
+        id S240267AbhHJLrJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 07:47:09 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kiItoetZsKfT0pyifLfwtrc8GL3dquFElZwFF/HVQHpuCxfoxtc+JhpciqpvdPwY/TF/3hnXZ5X98s57HJys4s7MwTCl8Nx+KUFQ2RdtEfe0xtmHHvL0XrpK60gMJPW3proHa0trgdhKsmJYjyPbNatSY3fdj3gcoEGAprfi+IVfcq41VOk9LCoyX/yogvN+YHG+yWWK3ImWet4YlGoFzjvTJZzsWtDtnPbp6x/WaeB3s5m0ajSVB6FMszWoqacpYcKZ6WZTbLhaK2DufKa0g+WiV/9Dhh3zHYSh/IQsMTGrWzA2YMPWzWEg956msNM3p/9+wLPeIVSaDylP3jNX8A==
+ b=kxPZ2Y19yNZ0W/kJciLRU8h6jY2SAkUhrqkdNDVgZ9B9tEQHF0S4vo9OR9c2WasUyoqaOEpZ3mt1gwM/ogrV3KDFOCgK/XAfRcpKwemxwtIaUH55/usfh7+5RYi/UE8JJZeABQEED6z7GJ9zCeeFg/qwTsG7J7jqHanQfisk/mRezgxE7yPtca8VpxwHwCglpsYAzcquzD6Cmu8bp2BfHL03P/va/1dFLlWuCGuzhG44SsKWHklA6Ktt23XlKAWoNOyhUlLduBUq5ETsoUz4bH4uLgAKMl8cHyyH2uduKyqnHlPOy+igNknvbBA+hx6XrS+rooTeE3oHU+bH8Zi5rA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=U1HicVjzcJPAfyQKAKYqTxta5g8FHZk/th/PL0AvTeg=;
- b=ZwvR0yH8/gfbr17cKeuj3fBcQbdmFuE7LPe1+eDL/JPKMtVKOSyyhokv1qCIG21tMrrVL28LB0qd2eA/U+PCjDgBlW27AcgVpFRK/5P1T3EuWG6Zl5cKJHOgUHP+U6c11RV9Wlb6FIMYk0ldCKsK5Rxylq8sXeGsFrwM+gpSZO465bppboeTXofMV8suQy/TqcKShpa+QvvfLV39wZUjTaSe6NW2wjKJhd5PmPVhF8wc9pfai4ZDYLF9HNPe2/nQFkQNmtFBLSfcwIh815PDCvyjXPqrMFbzLwoFj9b37xL81zKa1JBTPcn3nTU8QlDDFWQa8J5VOEeWdwmLcijrtg==
+ bh=2iXo4z2/Ri5/oZGcxg8c8pCO+V3MDICBW3Ltzca7OPw=;
+ b=HEm9PNt/cx/AxVePZsoB/MNspnT28ay4U4BCc+zJGnPtPeeu5LYdqLy60PUPUONXkIMtDU0yPHSVIdD9Cr3tcvL/NBeTbBbQwF+dMayVsklJb6QgTnPgsD98X6rkaQmcivQ6YqXqy8Hnk4oPmHBmr01vz146neCXLSHKnDeGdK85MlJrxxr/0m/ayaNC+GbsZyg9fN8beUvpjzisrAjpIxB4cGmJzQhGHIhQ5N56kgoCeYE9bMYqbnZF3/3OcbcejCgjBomgP+1abZsIOu+k8nHoTZf7HNjDDc3Mh9eosQohSk1MiqPeD6cMJYwXb2FT6jJk0PNpkc8J093BY5mwGA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
@@ -26,17 +26,17 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=U1HicVjzcJPAfyQKAKYqTxta5g8FHZk/th/PL0AvTeg=;
- b=PdfFs3IoKW0+Egmag/IWewv7KXHhOUaBlJ4sJFGSwMV37kXdhwF5AHGa09zrXau+1el4twsTXKWAFvEMbnGJsF43Shw+d0un6oxdETWk5W6zoykbBXRXKM522KGmqGBIJWXtACW2VLkC4m3x7AMPfMu2WPaHB2L63ikqWDSwpAdbLBsV/WVavvzzH53B/YYQsfkTpjKTjItppDLVFAEh6LLgFrSMZhrpxs+AsAG9lc6+KyyqcA21smTnSkBjKg+boku/ZSy7Rpm7vfFLWhryU+WhkuLlbxVEygmODpiJ0I0gQt64KesAjHqqJHBv+mAcCFiQAsl2fL6tT4jdX/4ilA==
-Received: from BN9P222CA0006.NAMP222.PROD.OUTLOOK.COM (2603:10b6:408:10c::11)
- by BN9PR12MB5068.namprd12.prod.outlook.com (2603:10b6:408:135::21) with
+ bh=2iXo4z2/Ri5/oZGcxg8c8pCO+V3MDICBW3Ltzca7OPw=;
+ b=nzVlBk0tkGBelk4hu5il6K3Tvy2tsZDjHhGmGEEhJYVWo/neyRLQvv+LRFIvNAjz3NOuOy33e50Kle/CskW8oalCVqdq0Q3HqXiBU/vWBgTc2/2iIK9uCwy/LtxQ9lzP0vYbsg2vDhYnEFvgQBOQA6chieauAymPSyIDz0dMsN+gjy+23zt++Z3QQgIuRsaylTC3sKyarQkUxC4vo2YSygCTcVYlZ1bQGmbSjqsa0cDUmVYf0C0UARJtnqyufmZMp/QMJRaN2DZ0j3SjDDRoexVSSxKzu3xnoaaJ/5mzhDFsVXEddVo/ZKIkHFATORQGLnMJyTgMbXoNR40Crpovzw==
+Received: from BN9P222CA0026.NAMP222.PROD.OUTLOOK.COM (2603:10b6:408:10c::31)
+ by BYAPR12MB2998.namprd12.prod.outlook.com (2603:10b6:a03:dd::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.18; Tue, 10 Aug
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15; Tue, 10 Aug
  2021 11:46:45 +0000
 Received: from BN8NAM11FT064.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:10c:cafe::fc) by BN9P222CA0006.outlook.office365.com
- (2603:10b6:408:10c::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.14 via Frontend
+ (2603:10b6:408:10c:cafe::1) by BN9P222CA0026.outlook.office365.com
+ (2603:10b6:408:10c::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.16 via Frontend
  Transport; Tue, 10 Aug 2021 11:46:45 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
@@ -55,9 +55,9 @@ From:   Parav Pandit <parav@nvidia.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
 CC:     Parav Pandit <parav@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>
-Subject: [PATCH net-next 08/10] net/mlx5: Support enable_eth devlink dev param
-Date:   Tue, 10 Aug 2021 14:46:18 +0300
-Message-ID: <20210810114620.8397-9-parav@nvidia.com>
+Subject: [PATCH net-next 09/10] net/mlx5: Support enable_rdma devlink dev param
+Date:   Tue, 10 Aug 2021 14:46:19 +0300
+Message-ID: <20210810114620.8397-10-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210810114620.8397-1-parav@nvidia.com>
 References: <20210810114620.8397-1-parav@nvidia.com>
@@ -69,245 +69,182 @@ X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
  HQMAIL107.nvidia.com (172.20.187.13)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4e970e71-38f7-4014-6409-08d95bf48775
-X-MS-TrafficTypeDiagnostic: BN9PR12MB5068:
-X-Microsoft-Antispam-PRVS: <BN9PR12MB5068B3C8DB23FE1717EE9902DCF79@BN9PR12MB5068.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3383;
+X-MS-Office365-Filtering-Correlation-Id: 90dadf90-df67-4a0e-ea74-08d95bf487b3
+X-MS-TrafficTypeDiagnostic: BYAPR12MB2998:
+X-Microsoft-Antispam-PRVS: <BYAPR12MB2998F646F7469E6164D56AE7DCF79@BYAPR12MB2998.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gwOFOS5WGS3dSHeLr9/LuSs5WY/Grk/8leI42dKLCniikIuZl+P016aOZ62h7WnPUqs/o1zBwxdV9VOXmJBJcJI5W/zaphf+ciB42SuuvJyHNZC98KKxA4sqFEcb+RhfA4/GSaJcFVRHcRZ4LKbhEt7BUbXIj07MIQ944yOggUbDyqbEuBnOJjwcltK7CJzhY56W+Z4pPY1itDoTIR8NI1xxj+BfrPQ1WZoUXsnz2We5iFwjnKas0ld3UXRibnFKsZdAam3K83l2s/NHtkGzNaxSK1XeHo6jS9l18nmvh/4qIqZLyDMED4kftktMCbVoz+THJAjvroKewJTw/DJ/+zAPGcV9jGDXk6CvhMqiaS+iZBbSjobFnhFlx2JUHa2DBqIL/TGegvDQkJ7T47/300NttTX4J7jeHYVmiLSIZTlTtl9Ujpw+AsEzhWcMJA+Q+XJLpUXlYjhHsTm7UWDHIx8tsLQYsBGLUObl+iTs9eGff64cAFtWDrwEl3lpORF8TtVLQg7c8lZC+WO5+JJe4t4ftvBy4ADTnIN5cOnSzq7PZ6UReu9QwHXD/b3DvHmWksQYQPsYahxZErzM9slwqB1HzWJ2FCaU0GR7QlUBJt57n6U/004pwU3LWQNrqyrNe0RRtQlbmXxVjt8+0KorYGZhGVpanmU3JHX2b63fHzlfqPfHomqcxOkm6gpI/3SjPGmG60TC6OSBKSJq3nmAkg==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(376002)(39860400002)(346002)(396003)(36840700001)(46966006)(7636003)(36906005)(2906002)(316002)(86362001)(82740400003)(26005)(36756003)(336012)(82310400003)(36860700001)(83380400001)(107886003)(1076003)(2616005)(70206006)(47076005)(110136005)(54906003)(16526019)(4326008)(186003)(6666004)(356005)(8936002)(5660300002)(8676002)(478600001)(426003)(70586007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: wXzlcJCqd0s5juT4ay7iHmNZCqLiDrp2isc3bONfFbAgtMBgX81yeQKHMKSdF+YKe8y4c8xnnt/R2TKyPsPdxoTJjjZpEhiyyhAXCfGvJLFfckbms1p2NE7apNhBnpxQY6VkosuswgxuHDwWy6KmfWSrkoBqsJYINr1H0hubdsJKWfrOJUpSsZBa2U3u0T3gu03Gpdx1N3yu3ttA8Rykosm70QGn4DF8OQASbuBZexTczoLq33xBHbfCSHfYAOntpLn+juUcG0qJyZ7r0VM7K13OS8lt6RMeW8wjbENmem8GdAfRQw+/XcPwi2F0IN+wBH1jQZWBplTwhzCvrMAJXGaRQJaT0+PxmdU/vgjjeYJFkFFGKrNjTvVKOyjOdWRlMf0x4LBw2C4tHK2e2xaeq4vlBvTQCwoPpg2ZWk7w94hDn3AQS05QRonxAqHa2JMvwuBXajENhvO+VkQAFynWXvaPTJtbPc77eFdcPack7xO+7qoxPLb+m5155TpGTvbavotwxyja5N3OjGWG9hiDEzwnALFlqebOwZbWAVzHFflzXM4wMQr4EZUuSoqY+2KFNrEIh6C/j+nTLBa5nwcZpmwD1nTo8FzQKIG0vMOXYw/Pntx+fkCRLbr8h/aoCmuLY0SE0s+Astln5uQ35FfxX+dCCXan5KSC71Yi6wKq+6SHC/AkhGr6C9Uzbp4XjjGPNwK54OV8qBkKosk/i2Uiyg==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(39860400002)(346002)(376002)(136003)(46966006)(36840700001)(36860700001)(86362001)(26005)(36756003)(8676002)(82740400003)(4326008)(336012)(8936002)(478600001)(7636003)(36906005)(1076003)(6666004)(16526019)(5660300002)(83380400001)(316002)(110136005)(54906003)(47076005)(2616005)(356005)(70206006)(186003)(426003)(70586007)(107886003)(2906002)(82310400003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2021 11:46:45.0792
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2021 11:46:45.4859
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4e970e71-38f7-4014-6409-08d95bf48775
+X-MS-Exchange-CrossTenant-Network-Message-Id: 90dadf90-df67-4a0e-ea74-08d95bf487b3
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT064.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5068
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2998
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enable user to disable Ethernet auxiliary device so that when it is not
+Enable user to disable RDMA auxiliary device so that when it is not
 required, user can disable it.
 
 For example,
 
 $ devlink dev param set pci/0000:06:00.0 \
-              name enable_eth value false cmode driverinit
+              name enable_rdma value false cmode driverinit
 $ devlink dev reload pci/0000:06:00.0
 
-At this point devlink instance do not create mlx5_core.eth.2 auxiliary
-device for the Ethernet functionality.
+At this point devlink instance do not create auxiliary device
+mlx5_core.rdma.2 for the RDMA functionality.
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/dev.c | 42 ++++++++++++++-
- .../net/ethernet/mellanox/mlx5/core/devlink.c | 53 +++++++++++++++++++
- .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  3 ++
- 3 files changed, 96 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/dev.c | 16 ++++-
+ .../net/ethernet/mellanox/mlx5/core/devlink.c | 65 ++++++++++++++++++-
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  1 +
+ 3 files changed, 79 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-index def2156e50ee..10c4309f29be 100644
+index 10c4309f29be..cb86844099c0 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/dev.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-@@ -53,7 +53,7 @@ static bool is_eth_rep_supported(struct mlx5_core_dev *dev)
+@@ -181,7 +181,7 @@ static bool is_mp_supported(struct mlx5_core_dev *dev)
  	return true;
  }
  
--static bool is_eth_supported(struct mlx5_core_dev *dev)
-+bool mlx5_eth_supported(struct mlx5_core_dev *dev)
+-static bool is_ib_supported(struct mlx5_core_dev *dev)
++bool mlx5_rdma_supported(struct mlx5_core_dev *dev)
  {
- 	if (!IS_ENABLED(CONFIG_MLX5_CORE_EN))
+ 	if (!IS_ENABLED(CONFIG_MLX5_INFINIBAND))
  		return false;
-@@ -105,6 +105,17 @@ static bool is_eth_supported(struct mlx5_core_dev *dev)
+@@ -198,6 +198,17 @@ static bool is_ib_supported(struct mlx5_core_dev *dev)
  	return true;
  }
  
-+static bool is_eth_enabled(struct mlx5_core_dev *dev)
++static bool is_ib_enabled(struct mlx5_core_dev *dev)
 +{
 +	union devlink_param_value val;
 +	int err;
 +
 +	err = devlink_param_driverinit_value_get(priv_to_devlink(dev),
-+						 DEVLINK_PARAM_GENERIC_ID_ENABLE_ETH,
++						 DEVLINK_PARAM_GENERIC_ID_ENABLE_RDMA,
 +						 &val);
 +	return err ? false : val.vbool;
 +}
 +
- static bool is_vnet_supported(struct mlx5_core_dev *dev)
- {
- 	if (!IS_ENABLED(CONFIG_MLX5_VDPA_NET))
-@@ -201,13 +212,15 @@ enum {
- static const struct mlx5_adev_device {
- 	const char *suffix;
- 	bool (*is_supported)(struct mlx5_core_dev *dev);
-+	bool (*is_enabled)(struct mlx5_core_dev *dev);
- } mlx5_adev_devices[] = {
+ enum {
+ 	MLX5_INTERFACE_PROTOCOL_ETH,
+ 	MLX5_INTERFACE_PROTOCOL_ETH_REP,
+@@ -217,7 +228,8 @@ static const struct mlx5_adev_device {
  	[MLX5_INTERFACE_PROTOCOL_VNET] = { .suffix = "vnet",
  					   .is_supported = &is_vnet_supported },
  	[MLX5_INTERFACE_PROTOCOL_IB] = { .suffix = "rdma",
- 					 .is_supported = &is_ib_supported },
+-					 .is_supported = &is_ib_supported },
++					 .is_supported = &mlx5_rdma_supported,
++					 .is_enabled = &is_ib_enabled },
  	[MLX5_INTERFACE_PROTOCOL_ETH] = { .suffix = "eth",
--					  .is_supported = &is_eth_supported },
-+					  .is_supported = &mlx5_eth_supported,
-+					  .is_enabled = &is_eth_enabled },
- 	[MLX5_INTERFACE_PROTOCOL_ETH_REP] = { .suffix = "eth-rep",
- 					   .is_supported = &is_eth_rep_supported },
- 	[MLX5_INTERFACE_PROTOCOL_IB_REP] = { .suffix = "rdma-rep",
-@@ -308,6 +321,14 @@ int mlx5_attach_device(struct mlx5_core_dev *dev)
- 		if (!priv->adev[i]) {
- 			bool is_supported = false;
- 
-+			if (mlx5_adev_devices[i].is_enabled) {
-+				bool enabled;
-+
-+				enabled = mlx5_adev_devices[i].is_enabled(dev);
-+				if (!enabled)
-+					continue;
-+			}
-+
- 			if (mlx5_adev_devices[i].is_supported)
- 				is_supported = mlx5_adev_devices[i].is_supported(dev);
- 
-@@ -360,6 +381,14 @@ void mlx5_detach_device(struct mlx5_core_dev *dev)
- 		if (!priv->adev[i])
- 			continue;
- 
-+		if (mlx5_adev_devices[i].is_enabled) {
-+			bool enabled;
-+
-+			enabled = mlx5_adev_devices[i].is_enabled(dev);
-+			if (!enabled)
-+				goto skip_suspend;
-+		}
-+
- 		adev = &priv->adev[i]->adev;
- 		/* Auxiliary driver was unbind manually through sysfs */
- 		if (!adev->dev.driver)
-@@ -447,12 +476,21 @@ static void delete_drivers(struct mlx5_core_dev *dev)
- 		if (!priv->adev[i])
- 			continue;
- 
-+		if (mlx5_adev_devices[i].is_enabled) {
-+			bool enabled;
-+
-+			enabled = mlx5_adev_devices[i].is_enabled(dev);
-+			if (!enabled)
-+				goto del_adev;
-+		}
-+
- 		if (mlx5_adev_devices[i].is_supported && !delete_all)
- 			is_supported = mlx5_adev_devices[i].is_supported(dev);
- 
- 		if (is_supported)
- 			continue;
- 
-+del_adev:
- 		del_adev(&priv->adev[i]->adev);
- 		priv->adev[i] = NULL;
- 	}
+ 					  .is_supported = &mlx5_eth_supported,
+ 					  .is_enabled = &is_eth_enabled },
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index 0ec446d0fd6a..557973c9212f 100644
+index 557973c9212f..f247ffb325a9 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -596,6 +596,52 @@ static void mlx5_devlink_set_params_init_values(struct devlink *devlink)
- #endif
+@@ -632,13 +632,76 @@ static void mlx5_devlink_eth_param_unregister(struct devlink *devlink)
+ 	devlink_param_unregister(devlink, &enable_eth_param);
  }
  
-+static const struct devlink_param enable_eth_param =
-+	DEVLINK_PARAM_GENERIC(ENABLE_ETH, BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
-+			      NULL, NULL, NULL);
++static int mlx5_devlink_enable_rdma_validate(struct devlink *devlink, u32 id,
++					     union devlink_param_value val,
++					     struct netlink_ext_ack *extack)
++{
++	struct mlx5_core_dev *dev = devlink_priv(devlink);
++	bool new_state = val.vbool;
 +
-+static int mlx5_devlink_eth_param_register(struct devlink *devlink)
++	if (new_state && !mlx5_rdma_supported(dev))
++		return -EOPNOTSUPP;
++	return 0;
++}
++
++static const struct devlink_param enable_rdma_param =
++	DEVLINK_PARAM_GENERIC(ENABLE_RDMA, BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
++			      NULL, NULL, mlx5_devlink_enable_rdma_validate);
++
++static int mlx5_devlink_rdma_param_register(struct devlink *devlink)
 +{
 +	struct mlx5_core_dev *dev = devlink_priv(devlink);
 +	union devlink_param_value value;
 +	int err;
 +
-+	if (!mlx5_eth_supported(dev))
++	if (!IS_ENABLED(CONFIG_MLX5_INFINIBAND) || MLX5_ESWITCH_MANAGER(dev))
 +		return 0;
 +
-+	err = devlink_param_register(devlink, &enable_eth_param);
++	err = devlink_param_register(devlink, &enable_rdma_param);
 +	if (err)
 +		return err;
 +
 +	value.vbool = true;
 +	devlink_param_driverinit_value_set(devlink,
-+					   DEVLINK_PARAM_GENERIC_ID_ENABLE_ETH,
++					   DEVLINK_PARAM_GENERIC_ID_ENABLE_RDMA,
 +					   value);
-+	devlink_param_publish(devlink, &enable_eth_param);
++	devlink_param_publish(devlink, &enable_rdma_param);
 +	return 0;
 +}
 +
-+static void mlx5_devlink_eth_param_unregister(struct devlink *devlink)
++static void mlx5_devlink_rdma_param_unregister(struct devlink *devlink)
 +{
 +	struct mlx5_core_dev *dev = devlink_priv(devlink);
 +
-+	if (!mlx5_eth_supported(dev))
++	if (!IS_ENABLED(CONFIG_MLX5_INFINIBAND) || MLX5_ESWITCH_MANAGER(dev))
 +		return;
 +
-+	devlink_param_unpublish(devlink, &enable_eth_param);
-+	devlink_param_unregister(devlink, &enable_eth_param);
++	devlink_param_unpublish(devlink, &enable_rdma_param);
++	devlink_param_unregister(devlink, &enable_rdma_param);
 +}
 +
-+static int mlx5_devlink_auxdev_params_register(struct devlink *devlink)
-+{
-+	return mlx5_devlink_eth_param_register(devlink);
-+}
-+
-+static void mlx5_devlink_auxdev_params_unregister(struct devlink *devlink)
-+{
-+	mlx5_devlink_eth_param_unregister(devlink);
-+}
-+
- #define MLX5_TRAP_DROP(_id, _group_id)					\
- 	DEVLINK_TRAP_GENERIC(DROP, DROP, _id,				\
- 			     DEVLINK_TRAP_GROUP_GENERIC_ID_##_group_id, \
-@@ -654,6 +700,10 @@ int mlx5_devlink_register(struct devlink *devlink)
- 	mlx5_devlink_set_params_init_values(devlink);
- 	devlink_params_publish(devlink);
- 
-+	err = mlx5_devlink_auxdev_params_register(devlink);
-+	if (err)
-+		goto auxdev_reg_err;
-+
- 	err = mlx5_devlink_traps_register(devlink);
- 	if (err)
- 		goto traps_reg_err;
-@@ -661,6 +711,8 @@ int mlx5_devlink_register(struct devlink *devlink)
- 	return 0;
- 
- traps_reg_err:
-+	mlx5_devlink_auxdev_params_unregister(devlink);
-+auxdev_reg_err:
- 	devlink_params_unregister(devlink, mlx5_devlink_params,
- 				  ARRAY_SIZE(mlx5_devlink_params));
- params_reg_err:
-@@ -671,6 +723,7 @@ int mlx5_devlink_register(struct devlink *devlink)
- void mlx5_devlink_unregister(struct devlink *devlink)
+ static int mlx5_devlink_auxdev_params_register(struct devlink *devlink)
  {
- 	mlx5_devlink_traps_unregister(devlink);
-+	mlx5_devlink_auxdev_params_unregister(devlink);
- 	devlink_params_unpublish(devlink);
- 	devlink_params_unregister(devlink, mlx5_devlink_params,
- 				  ARRAY_SIZE(mlx5_devlink_params));
+-	return mlx5_devlink_eth_param_register(devlink);
++	int err;
++
++	err = mlx5_devlink_eth_param_register(devlink);
++	if (err)
++		return err;
++
++	err = mlx5_devlink_rdma_param_register(devlink);
++	if (err)
++		goto rdma_err;
++
++	return 0;
++
++rdma_err:
++	mlx5_devlink_eth_param_unregister(devlink);
++	return err;
+ }
+ 
+ static void mlx5_devlink_auxdev_params_unregister(struct devlink *devlink)
+ {
++	mlx5_devlink_rdma_param_unregister(devlink);
+ 	mlx5_devlink_eth_param_unregister(devlink);
+ }
+ 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-index 343807ac2036..b3dfecf4f433 100644
+index b3dfecf4f433..b36fbcdc048e 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-@@ -270,4 +270,7 @@ static inline u32 mlx5_sriov_get_vf_total_msix(struct pci_dev *pdev)
- 
- 	return MLX5_CAP_GEN_MAX(dev, num_total_dynamic_vf_msix);
+@@ -272,5 +272,6 @@ static inline u32 mlx5_sriov_get_vf_total_msix(struct pci_dev *pdev)
  }
-+
-+bool mlx5_eth_supported(struct mlx5_core_dev *dev);
-+
+ 
+ bool mlx5_eth_supported(struct mlx5_core_dev *dev);
++bool mlx5_rdma_supported(struct mlx5_core_dev *dev);
+ 
  #endif /* __MLX5_CORE_H__ */
 -- 
 2.26.2
