@@ -2,133 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2EED3E5A95
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 14:59:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70C413E5A99
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 15:00:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241049AbhHJM77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 08:59:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42720 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239188AbhHJM77 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 08:59:59 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3175CC0613D3;
-        Tue, 10 Aug 2021 05:59:37 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id m9so28921624ljp.7;
-        Tue, 10 Aug 2021 05:59:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=C8ukQa3sXo+DBl8G/r0rlRb+zkXrtXj0fbs8AcpdmLM=;
-        b=BeR0m3pZrkVng8z/cHE1HhRzPFWun7v6JeIPJr7i2Y0ic0pnr5hNFoZdBlYDJL0Xg+
-         RoM7hPyLnx0zqG27UL1O7qbP3yuUFooPWRR77qltiO/ij40qu7ZMsF8Mpa0Lw+/jdrQ/
-         fji0Tzfl/hUi1cU9j/u0iptIowVN2aNGLtqe7WzwL58Tu4aI83G5mGeJBzxrO7GkyjdE
-         wR4IB0POHiMTq6k2wTVyjghI9zGVJPRxWwmb7PbulzaU3YcwvLAUZvZSDEApQVWyvvp8
-         sawq7BSsw+rr64tuzNRMlSJQdgFQB68FAg3Kkq7vHCcApuV0zocldjj0uPpVts2MAh7j
-         1h9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=C8ukQa3sXo+DBl8G/r0rlRb+zkXrtXj0fbs8AcpdmLM=;
-        b=fjeSbIHsOI9jEWIwwTHn4CtpOLUJ3Jxy8jbsV6wNlq3pjxCStOOgtTp+uF3gMsrjGr
-         Q7Xu6koICRGM/8NaYvzFOzBvsUgIjsiIBWHBJ3O8NrjJ7PpHy41WjPXthRdsopyOaodO
-         K5YkMJQN+IflPtuL/4KNoqwWH1uZuYGibIhzYYAJ8F5a+EmRpCw0MMHfnluH+IwQarE6
-         rZNz8egvY2x+SWxTt8d7+9DI/zpV+dXP93ye6Di3OJsTx3ZPMoW79XAQ/4xYTFLmGB0b
-         0uxJclebv+f5tbaAPS09Iw7oVV/mGYuQEFhiI9SmdsmXUE2su5zZyG1DECpntROGqvHm
-         Lb3w==
-X-Gm-Message-State: AOAM531IjXpLRn0Oh/jMO56gYoBo4gK/4C34oCgZlmrI4x1z4YkAdPWp
-        7qaZ2Wqmw24A78CqV5tuGqc=
-X-Google-Smtp-Source: ABdhPJyXKs6dOhzi+KmIRhTXSLCqmlcLAcEQglehQFPDp/eginYv8FRijzR7lGhqlXzh/oYaSjmoog==
-X-Received: by 2002:a2e:8250:: with SMTP id j16mr19645493ljh.164.1628600375545;
-        Tue, 10 Aug 2021 05:59:35 -0700 (PDT)
-Received: from localhost.localdomain ([46.235.67.232])
-        by smtp.gmail.com with ESMTPSA id m12sm2039397lfh.182.2021.08.10.05.59.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Aug 2021 05:59:35 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
-        davem@davemloft.net
-Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+649e339fa6658ee623d3@syzkaller.appspotmail.com
-Subject: [PATCH v2] netfilter: protect nft_ct_pcpu_template_refcnt with mutex
-Date:   Tue, 10 Aug 2021 15:59:20 +0300
-Message-Id: <20210810125920.23187-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210810125523.15312-1-paskripkin@gmail.com>
-References: <20210810125523.15312-1-paskripkin@gmail.com>
+        id S241059AbhHJNBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 09:01:08 -0400
+Received: from www62.your-server.de ([213.133.104.62]:40162 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237490AbhHJNBE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 09:01:04 -0400
+Received: from 65.47.5.85.dynamic.wline.res.cust.swisscom.ch ([85.5.47.65] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mDRN1-0009eP-Bd; Tue, 10 Aug 2021 15:00:39 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, andrii.nakryiko@gmail.com,
+        ast@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf-next 2021-08-10
+Date:   Tue, 10 Aug 2021 15:00:38 +0200
+Message-Id: <20210810130038.16927-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26259/Tue Aug 10 10:19:56 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzbot hit use-after-free in nf_tables_dump_sets. The problem was in
-missing lock protection for nft_ct_pcpu_template_refcnt.
+Hi David, hi Jakub,
 
-Before commit f102d66b335a ("netfilter: nf_tables: use dedicated
-mutex to guard transactions") all transactions were serialized by global
-mutex, but then global mutex was changed to local per netnamespace
-commit_mutex.
+The following pull-request contains BPF updates for your *net-next* tree.
 
-This change causes use-after-free bug, when 2 netnamespaces concurently
-changing nft_ct_pcpu_template_refcnt without proper locking. Fix it by
-adding nft_ct_pcpu_mutex and protect all nft_ct_pcpu_template_refcnt
-changes with it.
+We've added 31 non-merge commits during the last 8 day(s) which contain
+a total of 28 files changed, 3644 insertions(+), 519 deletions(-).
 
-Fixes: f102d66b335a ("netfilter: nf_tables: use dedicated mutex to guard transactions")
-Reported-and-tested-by: syzbot+649e339fa6658ee623d3@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
+The main changes are:
 
-Changes in v2:
-	Fixed typo in title: netfiler -> netfilter
+1) Native XDP support for bonding driver & related BPF selftests, from Jussi Maki.
 
----
- net/netfilter/nft_ct.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+2) Large batch of new BPF JIT tests for test_bpf.ko that came out as a result from
+   32-bit MIPS JIT development, from Johan Almbladh.
 
-diff --git a/net/netfilter/nft_ct.c b/net/netfilter/nft_ct.c
-index 337e22d8b40b..99b1de14ff7e 100644
---- a/net/netfilter/nft_ct.c
-+++ b/net/netfilter/nft_ct.c
-@@ -41,6 +41,7 @@ struct nft_ct_helper_obj  {
- #ifdef CONFIG_NF_CONNTRACK_ZONES
- static DEFINE_PER_CPU(struct nf_conn *, nft_ct_pcpu_template);
- static unsigned int nft_ct_pcpu_template_refcnt __read_mostly;
-+static DEFINE_MUTEX(nft_ct_pcpu_mutex);
- #endif
- 
- static u64 nft_ct_get_eval_counter(const struct nf_conn_counter *c,
-@@ -525,8 +526,10 @@ static void __nft_ct_set_destroy(const struct nft_ctx *ctx, struct nft_ct *priv)
- #endif
- #ifdef CONFIG_NF_CONNTRACK_ZONES
- 	case NFT_CT_ZONE:
-+		mutex_lock(&nft_ct_pcpu_mutex);
- 		if (--nft_ct_pcpu_template_refcnt == 0)
- 			nft_ct_tmpl_put_pcpu();
-+		mutex_unlock(&nft_ct_pcpu_mutex);
- 		break;
- #endif
- 	default:
-@@ -564,9 +567,13 @@ static int nft_ct_set_init(const struct nft_ctx *ctx,
- #endif
- #ifdef CONFIG_NF_CONNTRACK_ZONES
- 	case NFT_CT_ZONE:
--		if (!nft_ct_tmpl_alloc_pcpu())
-+		mutex_lock(&nft_ct_pcpu_mutex);
-+		if (!nft_ct_tmpl_alloc_pcpu()) {
-+			mutex_unlock(&nft_ct_pcpu_mutex);
- 			return -ENOMEM;
-+		}
- 		nft_ct_pcpu_template_refcnt++;
-+		mutex_unlock(&nft_ct_pcpu_mutex);
- 		len = sizeof(u16);
- 		break;
- #endif
--- 
-2.32.0
+3) Rewrite of netcnt BPF selftest and merge into test_progs, from Stanislav Fomichev.
 
+4) Fix XDP bpf_prog_test_run infra after net to net-next merge, from Andrii Nakryiko.
+
+5) Follow-up fix in unix_bpf_update_proto() to enforce socket type, from Cong Wang.
+
+6) Fix bpf-iter-tcp4 selftest to print the correct dest IP, from Jose Blanquicet.
+
+7) Various misc BPF XDP sample improvements, from Niklas Söderlund, Matthew Cover,
+   and Muhammad Falak R Wani.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Andrii Nakryiko, Daniel Borkmann, Jakub Sitnicki, Louis Peens, Yonghong 
+Song
+
+----------------------------------------------------------------
+
+The following changes since commit 7cdd0a89ec70ce6a720171f1f7817ee9502b134c:
+
+  net/mlx4: make the array states static const, makes object smaller (2021-08-02 15:02:13 -0700)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
+
+for you to fetch changes up to 874be05f525e87768daf0f47b494dc83b9537243:
+
+  bpf, tests: Add tail call test suite (2021-08-10 11:33:37 +0200)
+
+----------------------------------------------------------------
+Andrii Nakryiko (3):
+      bpf: Fix bpf_prog_test_run_xdp logic after incorrect merge resolution
+      selftests/bpf: Rename reference_tracking BPF programs
+      Merge branch 'samples/bpf: xdpsock: Minor enhancements'
+
+Cong Wang (1):
+      bpf, unix: Check socket type in unix_bpf_update_proto()
+
+Johan Almbladh (15):
+      bpf: Fix off-by-one in tail call count limiting
+      bpf, tests: Add BPF_JMP32 test cases
+      bpf, tests: Add BPF_MOV tests for zero and sign extension
+      bpf, tests: Fix typos in test case descriptions
+      bpf, tests: Add more tests of ALU32 and ALU64 bitwise operations
+      bpf, tests: Add more ALU32 tests for BPF_LSH/RSH/ARSH
+      bpf, tests: Add more BPF_LSH/RSH/ARSH tests for ALU64
+      bpf, tests: Add more ALU64 BPF_MUL tests
+      bpf, tests: Add tests for ALU operations implemented with function calls
+      bpf, tests: Add word-order tests for load/store of double words
+      bpf, tests: Add branch conversion JIT test
+      bpf, tests: Add test for 32-bit context pointer argument passing
+      bpf, tests: Add tests for atomic operations
+      bpf, tests: Add tests for BPF_CMPXCHG
+      bpf, tests: Add tail call test suite
+
+Jose Blanquicet (1):
+      selftests/bpf: Fix bpf-iter-tcp4 test to print correctly the dest IP
+
+Jussi Maki (7):
+      net, bonding: Refactor bond_xmit_hash for use with xdp_buff
+      net, core: Add support for XDP redirection to slave device
+      net, bonding: Add XDP support to the bonding driver
+      bpf, devmap: Exclude XDP broadcast to master device
+      net, core: Allow netdev_lower_get_next_private_rcu in bh context
+      selftests/bpf: Fix xdp_tx.c prog section name
+      selftests/bpf: Add tests for XDP bonding
+
+Matthew Cover (1):
+      bpf, samples: Add missing mprog-disable to xdp_redirect_cpu's optstring
+
+Muhammad Falak R Wani (1):
+      samples, bpf: Add an explict comment to handle nested vlan tagging.
+
+Niklas Söderlund (2):
+      samples/bpf: xdpsock: Make the sample more useful outside the tree
+      samples/bpf: xdpsock: Remove forward declaration of ip_fast_csum()
+
+Stanislav Fomichev (1):
+      selftests/bpf: Move netcnt test under test_progs
+
+ drivers/net/bonding/bond_main.c                    |  454 +++-
+ include/linux/filter.h                             |   13 +-
+ include/linux/netdevice.h                          |    6 +
+ include/net/bonding.h                              |    1 +
+ kernel/bpf/core.c                                  |    2 +-
+ kernel/bpf/devmap.c                                |   69 +-
+ lib/test_bpf.c                                     | 2743 ++++++++++++++++++--
+ net/bpf/test_run.c                                 |    3 +-
+ net/core/dev.c                                     |   15 +-
+ net/core/filter.c                                  |   25 +
+ net/unix/unix_bpf.c                                |    3 +
+ samples/bpf/xdp1_kern.c                            |    2 +
+ samples/bpf/xdp2_kern.c                            |    2 +
+ samples/bpf/xdp_redirect_cpu_user.c                |    2 +-
+ samples/bpf/xdpsock_user.c                         |   20 +-
+ tools/testing/selftests/bpf/.gitignore             |    1 -
+ tools/testing/selftests/bpf/Makefile               |    3 +-
+ tools/testing/selftests/bpf/network_helpers.c      |   12 +
+ tools/testing/selftests/bpf/network_helpers.h      |    1 +
+ tools/testing/selftests/bpf/prog_tests/netcnt.c    |   82 +
+ .../selftests/bpf/prog_tests/reference_tracking.c  |    4 +-
+ .../testing/selftests/bpf/prog_tests/tc_redirect.c |   12 -
+ .../testing/selftests/bpf/prog_tests/xdp_bonding.c |  520 ++++
+ tools/testing/selftests/bpf/progs/bpf_iter_tcp4.c  |    2 +-
+ .../selftests/bpf/progs/test_sk_lookup_kern.c      |   14 +-
+ tools/testing/selftests/bpf/progs/xdp_tx.c         |    2 +-
+ tools/testing/selftests/bpf/test_netcnt.c          |  148 --
+ tools/testing/selftests/bpf/test_xdp_veth.sh       |    2 +-
+ 28 files changed, 3644 insertions(+), 519 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/netcnt.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
+ delete mode 100644 tools/testing/selftests/bpf/test_netcnt.c
