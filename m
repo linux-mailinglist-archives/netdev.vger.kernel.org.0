@@ -2,109 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0B003E7C58
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 17:32:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FE5A3E7C60
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 17:34:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243107AbhHJPdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 11:33:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51112 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242999AbhHJPdJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 11:33:09 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F051C0613C1
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 08:32:47 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id e186so5347692ybf.5
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 08:32:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=STlAk/b/f0LpPovE74ryizrpNARzyKm/YpNaLA2VYmk=;
-        b=uuxW83covCpBOgYrNItfUjynmk6J0fK1Tt3t6epNmBLsRYB/UC4lVbur3XIcenc6rd
-         SwgT8rr9R+jgTalY2+o71x/F+2fDOHhMqlvpy/20lKXc4FNIS8aOmV7tEM3cvCR1hUkT
-         QfpcITAevlphNYO13U6jqo/pnib5EtpPpgIL3MQMmdzmaUF7vm9OdO3JHk7tyXhHGYbY
-         RH/FUQ+4JjIge366dk55ktkmWiLGIglHZrXEbTnF+oDp6i0x3KjKstloX889rKGupD6g
-         2bvePxYZ3/R6RopGU56nnTvwFDeFRi0vEpUp+c6rYBoG3m87Uw0CxNHobjxeehjfYqfF
-         tMxw==
+        id S243240AbhHJPfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 11:35:12 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:44017 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243246AbhHJPfA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 11:35:00 -0400
+Received: by mail-io1-f71.google.com with SMTP id 123-20020a6b14810000b029058718ca54cfso10827006iou.10
+        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 08:34:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=STlAk/b/f0LpPovE74ryizrpNARzyKm/YpNaLA2VYmk=;
-        b=MhFooKBMhiZubFpb234KX6CA7yzDKW+MM3gFCBIFUl0LVBjrlv5d+CGHcKCAnrT6m7
-         J9PGRmYfP4xTSVLNRHwR//IUV0fuotCK2p1eMJ8cdGObqyDL88s5YsqvWeIDhxKSC6ly
-         D5ENPlQvBHxLiIDCJ4EVKIJsAZYc4nakxrMr8XThzbuzh/iY+U/EHrZu0iP8M4HXXVZk
-         Bytxxl47GbIQRe4twHTJM/ZJC1eOl7cH/NrUdy/hKB4DvywcMmr2Hkt45W7VPcqikefW
-         7gmCpI5KoM+oEQQ/MSjgX9ChEshQlRwPbidzmPspXW63YTlC0Vw/8xdT6rxYYEwSIz3Z
-         jnVw==
-X-Gm-Message-State: AOAM532oSAab/CRJVj7TfuhMEV/KtOs28VhyJHsiyOl5ybGTEi+hJe9s
-        Jkmd4hBOerAcMw4q+D9fueTt+3oCc/A71/5bEtw=
-X-Google-Smtp-Source: ABdhPJwaPZjtoLpKux9QuIxnwH7HRrXySI7TRwnvUYJif8mvKofK5MNsDqP3g7G2QA6ZpvfNzsXYmPISYCanlUMrTUk=
-X-Received: by 2002:a25:49c2:: with SMTP id w185mr35596720yba.294.1628609566743;
- Tue, 10 Aug 2021 08:32:46 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=ezvPuPtMzOuRLqecX2VTZ2ztz0IyxYGYWNq3bM8LvCs=;
+        b=sgWXHqBT3UUoo14ZOiagUeSme3+xDCtxNuam7VIBKGvXGQ0j4y/R8JPuJyx8wx1u3H
+         +b8yBHRfR2Ifw7Gw1erjwU332i6RJD0F+OO4Q6t+Yix/jXRKg4yk6g2YdTCgyM7RuGAg
+         Cn4hDCJzK7DlFgm9y5Zhbk3F+9PXQQcSs78SuyLrCS4sy/sN3bqVERiAONslPXqVnSdR
+         yga+tpH8o3ZFgX2Oiv5Alva0Twtv1RNFW9SSH1U7TN2R5tsIq4prP+ezmn2kF6UlombV
+         CDQSywXfrR79nKA9vYeF9QFh8oTQrpLL3TYDWo3WyOWV6Crbgmp0DplnPkJLOJmWjJDG
+         SmYQ==
+X-Gm-Message-State: AOAM531xB0xIlODucSfyQBV7dev9YnBtfjo9s0KSIsOPPYTKLY7eXJ3j
+        kUEuqmgj7wQ2yYfk2T0wCmpy0iw/h6Uqp8mZ3sCsJpIVim1d
+X-Google-Smtp-Source: ABdhPJxUNwqzmK5BP4xy5zYm2dHKjVhr9kXAul5tmQWBzbKn7f/vtTtKsjuaPj76egcfQsjLcONIB+8s6JEZ9u6yEHxs1CkpszEd
 MIME-Version: 1.0
-Sender: fdsgdgfdhydgdhdvd@gmail.com
-Received: by 2002:a05:7108:629b:0:0:0:0 with HTTP; Tue, 10 Aug 2021 08:32:46
- -0700 (PDT)
-From:   Mrs Francisca John Carlsen <franciscacarlsen20@gmail.com>
-Date:   Tue, 10 Aug 2021 16:32:46 +0100
-X-Google-Sender-Auth: SXPyFJXsbgnu4iTLIh-RLqpHbIg
-Message-ID: <CAL0Q5Mi1nhX4HikEmH1ReHz7mt6Yc35G1s=kxG+u_n9BDJ1=3w@mail.gmail.com>
-Subject: Written From Hospital.
-To:     undisclosed-recipients:;
+X-Received: by 2002:a5d:9ac1:: with SMTP id x1mr16641ion.191.1628609652476;
+ Tue, 10 Aug 2021 08:34:12 -0700 (PDT)
+Date:   Tue, 10 Aug 2021 08:34:12 -0700
+In-Reply-To: <0000000000007faf7505c91bb19d@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d04e9b05c9363bf1@google.com>
+Subject: Re: [syzbot] general protection fault in hwsim_new_edge_nl
+From:   syzbot <syzbot+fafb46da3f65fdbacd16@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, alex.aring@gmail.com, bp@alien8.de,
+        davem@davemloft.net, frederic@kernel.org, hpa@zytor.com,
+        jmattson@google.com, joro@8bytes.org, kuba@kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-wpan@vger.kernel.org, mark.rutland@arm.com,
+        masahiroy@kernel.org, mingo@redhat.com, mudongliangabcd@gmail.com,
+        netdev@vger.kernel.org, npiggin@gmail.com, pbonzini@redhat.com,
+        peterz@infradead.org, rafael.j.wysocki@intel.com,
+        rostedt@goodmis.org, seanjc@google.com, sedat.dilek@gmail.com,
+        stefan@datenfreihafen.org, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de, vitor@massaru.org, vkuznets@redhat.com,
+        wanpengli@tencent.com, will@kernel.org, x86@kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Written From Hospital.
+syzbot has bisected this issue to:
 
-    I know that this message may be a very big surprise to you,
-Please do not feel disturbed for contacting  you in this regards, It
-was based on the critical health condition I find mine self.  My names
-are Mrs. Francisca John  Carlsen from Denmark wife of late Mr John
-Carlsen, a widow and I=E2=80=99m suffering from brain tumor disease and thi=
-s
-illness has gotten to a very bad stage, I married my husband for Ten
-years without any family members and no child.
+commit 997acaf6b4b59c6a9c259740312a69ea549cc684
+Author: Mark Rutland <mark.rutland@arm.com>
+Date:   Mon Jan 11 15:37:07 2021 +0000
 
-My husband died after a brief illness that lasted for few  days. Since
-the death of my husband, I decided not to remarry again, When my late
-husband was alive he deposited the sum of ($11.000.000 Eleven million
-dollars.) with the Bank. Presently this money is still in bank. And My
- Doctor told me that I don't have much time to live because my illness
-has gotten to a very bad stage, Having known my condition,I decided to
-donate this fund to a good person that will utilize it the way i am
-going to instruct herein. I need a very honest and God fearing person
-who can claim this money and use it for Charity works, for orphanages,
-widows and also build schools for less privileges that will be named
-after my late husband if possible and to promote the word of God and
-the effort that the house of God is maintained.
+    lockdep: report broken irq restoration
 
-However all I need and required from you is your sincerity and ability
-to carry out the transaction successfully and fulfill my final wish in
-implementing the charitable project as it requires absolute trust and
-devotion without any failure and I will be glad to see that the bank
-finally release and transfer the fund into your bank account in your
-country even before I die here in the hospital, because my present
-health condition is very critical at the moment everything needs to be
-proccess rapidly as soon as possible.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13927981300000
+start commit:   d09c548dbf3b net: sched: act_mirred: Reset ct info when mi..
+git tree:       net
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=10527981300000
+console output: https://syzkaller.appspot.com/x/log.txt?x=17927981300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=343fd21f6f4da2d6
+dashboard link: https://syzkaller.appspot.com/bug?extid=fafb46da3f65fdbacd16
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=152ee39e300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15946ff1300000
 
-It will be my pleasure to compensate you as my Investment
-Manager/Partner with 35 % percent of the total fund for your effort in
-handling the transaction, 5 % percent for any expenses or processing
-charges fee that will involve during this process while 60% of the
-fund will be Invested into the charity project there in your country
-for the mutual benefit of the orphans and the less privileges ones.
+Reported-by: syzbot+fafb46da3f65fdbacd16@syzkaller.appspotmail.com
+Fixes: 997acaf6b4b5 ("lockdep: report broken irq restoration")
 
-Meanwhile I am waiting for your prompt respond, if only you are
-interested for further details of the transaction and execution of
-this  humanitarian project for the glory and honor of God the merciful
-compassionate.
-
-May God bless you and your family.
-
-Best Regards,
-Mrs. Francisca John  Carlsen
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
