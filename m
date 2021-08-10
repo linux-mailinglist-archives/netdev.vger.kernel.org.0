@@ -2,68 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEAB93E845D
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 22:30:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3827B3E845E
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 22:31:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233281AbhHJUbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 16:31:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40128 "EHLO mail.kernel.org"
+        id S233097AbhHJUbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 16:31:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40410 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233336AbhHJUa3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Aug 2021 16:30:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5977461077;
-        Tue, 10 Aug 2021 20:30:07 +0000 (UTC)
+        id S233150AbhHJUbV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 16:31:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 07E99606A5;
+        Tue, 10 Aug 2021 20:30:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628627407;
-        bh=2AwFYQxJdwxq3i7RIcJRev+u9CYYBnmaGOexvJXWbKE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=nFOupEXbIWFiDYeV0qARarqNqM3IDlp9n0iCntQZyn7K0nPCAOh22VTWXeurbqOF6
-         q/S9CexK0QPeU0tBchDcOrbuXdPm9agBcYZlPcCKLoGk+neRhpY47kZO6ng4nhs562
-         X5l4HQrffUmG/hbf20hlfL8f3YeJkIgCj04m5JOqyVwSKWCgDrP+IHe3eakvs+Elqu
-         LGW3n4qLvy6Eh/FEtINjhJxHliDbB6YGaVPeME9hVM0Zu5PDa5Itm+/9me2fEoNHP0
-         9bIBHnWCk1b/Ljdm3xEv1kJbyzpEVqrsCHfMyy+0i9lTcDSB5A0YWdTAlyQSAcpo10
-         GZC8JPEgwvU8Q==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 52F4860986;
-        Tue, 10 Aug 2021 20:30:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1628627459;
+        bh=pYabKjpxjyymLr6W69svkIvkf/KxoZYS7a6A8PWPyms=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TSu2lZ7pnWQM9H8LazKoJA2fYFpIdFBdGBZhco1kw8w/8jQ8Wp78kIgWqwcqTt5hz
+         16QqodwCAEo8HdjtrJCPoFyqRPCb45ZDQ5Qz9/zPGNBjONoKJqUl6jaluFW+fYU5uM
+         USWRe8gA0v1lN2ZqsnASrGujG+nyYBhKhWdn5qQr8x7MBGpH0L7Bi9vzxbSplaXSmb
+         5wK9yf3pVPjRvnQdmcZy+DNBqOqFalWa8A5dYHLvxbDwEtkDMyYmWvQ7jswj0WRVF3
+         Q1Kd3N88MLc0jlgvREjq/y3fC+tysm7AXO0qS82nZo8SzInKtIT+xyqwvp77aJfvLK
+         7O5qgMcAwPrQA==
+Date:   Tue, 10 Aug 2021 13:30:58 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Joe Perches <joe@perches.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] netlink: NL_SET_ERR_MSG - remove local static array
+Message-ID: <20210810133058.0c7f0736@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1f99c69f4e640accaf7459065e6625e73ec0f8d4.camel@perches.com>
+References: <1f99c69f4e640accaf7459065e6625e73ec0f8d4.camel@perches.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: mlx5-next 2020-08-9
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162862740733.16281.6609347684228513996.git-patchwork-notify@kernel.org>
-Date:   Tue, 10 Aug 2021 20:30:07 +0000
-References: <20210809202522.316930-1-saeed@kernel.org>
-In-Reply-To: <20210809202522.316930-1-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, dledford@redhat.com,
-        jgg@ziepe.ca, leonro@nvidia.com, jgg@nvidia.com,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This pull request was applied to netdev/net-next.git (refs/heads/master):
-
-On Mon,  9 Aug 2021 13:25:22 -0700 you wrote:
-> Hi Dave, Jakub and Jason,
+On Mon, 09 Aug 2021 10:04:00 -0700 Joe Perches wrote:
+> The want was to have some separate object section for netlink messages
+> so all netlink messages could be specifically listed by some tool but
+> the effect is duplicating static const char arrays in the object code.
 > 
-> This pulls mlx5-next branch which includes patches already reviewed on
-> net-next and rdma mailing lists.
+> It seems unused presently so change the macro to avoid the local static
+> declarations until such time as these actually are wanted and used.
 > 
-> 1) mlx5 single E-Switch FDB for lag
+> This reduces object size ~8KB in an x86-64 defconfig without modules.
 > 
-> [...]
+> $ size vmlinux.o*
+>    text	   data	    bss	    dec	    hex	filename
+> 20110471	3460344	 741760	24312575	172faff	vmlinux.o.new
+> 20119444	3460344	 741760	24321548	1731e0c	vmlinux.o.old
+> 
+> Signed-off-by: Joe Perches <joe@perches.com>
 
-Here is the summary with links:
-  - pull-request: mlx5-next 2020-08-9
-    https://git.kernel.org/netdev/net-next/c/ebd0d30cc5e4
+I guess we can bring it back when it's needed.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> diff --git a/include/linux/netlink.h b/include/linux/netlink.h
+> index 61b1c7fcc401e..4bb32ae134aa8 100644
+> --- a/include/linux/netlink.h
+> +++ b/include/linux/netlink.h
+> @@ -89,13 +89,12 @@ struct netlink_ext_ack {
+>   * to the lack of an output buffer.)
+>   */
+>  #define NL_SET_ERR_MSG(extack, msg) do {		\
+> -	static const char __msg[] = msg;		\
+>  	struct netlink_ext_ack *__extack = (extack);	\
+>  							\
+> -	do_trace_netlink_extack(__msg);			\
+> +	do_trace_netlink_extack(msg);			\
+>  							\
+>  	if (__extack)					\
+> -		__extack->_msg = __msg;			\
+> +		__extack->_msg = msg;			\
+>  } while (0)
 
+But you've made us evaluate msg multiple times now.
+Given extack is carefully evaluated only once this stands out.
 
+>  #define NL_SET_ERR_MSG_MOD(extack, msg)			\
+> @@ -111,13 +110,12 @@ struct netlink_ext_ack {
+>  #define NL_SET_BAD_ATTR(extack, attr) NL_SET_BAD_ATTR_POLICY(extack, attr, NULL)
+>  
+>  #define NL_SET_ERR_MSG_ATTR_POL(extack, attr, pol, msg) do {	\
+> -	static const char __msg[] = msg;			\
+>  	struct netlink_ext_ack *__extack = (extack);		\
+>  								\
+> -	do_trace_netlink_extack(__msg);				\
+> +	do_trace_netlink_extack(msg);				\
+>  								\
+>  	if (__extack) {						\
+> -		__extack->_msg = __msg;				\
+> +		__extack->_msg = msg;				\
+>  		__extack->bad_attr = (attr);			\
+>  		__extack->policy = (pol);			\
+
+Same here.
