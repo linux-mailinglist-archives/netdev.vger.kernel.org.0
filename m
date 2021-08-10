@@ -2,90 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1A9F3E86CB
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 01:53:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 230F13E86DE
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 01:55:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235627AbhHJXxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 19:53:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58168 "EHLO mail.kernel.org"
+        id S235774AbhHJX4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 19:56:02 -0400
+Received: from mga06.intel.com ([134.134.136.31]:23916 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235242AbhHJXxm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Aug 2021 19:53:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9387560F38;
-        Tue, 10 Aug 2021 23:53:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628639600;
-        bh=Q5guoRN1yQDj+60Z+Dgg/ukOwCqoMx/EGLhf5mLyiGs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=r1pWaQNTblIxJYz59sv6mCoqpj+uajcaFH5TKH32XgAd8KDvpvgUZdx4kToW8uroj
-         ywsUT3wxedtfOx4efWyXiv/omDBgEpgf4PNqC/ktljjFjrjVIXuRH1NvgsXd1k40pU
-         +cNdmXyDdFgMPTlFrf5DUxi8kgA8LMa2Bm8cFUkcsjG7iDWmgsFlDEtRZzhloSEpII
-         WVuRRRSD5cApHLCsG6xdbhAESlz27Eup8JuDBiqffR06e5IIYA1p70dy4nAR5VSMHC
-         zVgg7Ao2dCw+PLxuuhfGvlVSqkCHq/Le9lzVYSY6QdP1WL5hOKlT7E7/B18t+aeU5P
-         akNaONJtmCX6A==
-Date:   Tue, 10 Aug 2021 16:53:18 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org,
-        Michael Guralnik <michaelgur@mellanox.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Yufeng Mo <moyufeng@huawei.com>
-Subject: Re: [PATCH net-next 0/5] Move devlink_register to be near
- devlink_reload_enable
-Message-ID: <20210810165318.323eae24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <cover.1628599239.git.leonro@nvidia.com>
-References: <cover.1628599239.git.leonro@nvidia.com>
+        id S235502AbhHJX4B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 19:56:01 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10072"; a="276054952"
+X-IronPort-AV: E=Sophos;i="5.84,311,1620716400"; 
+   d="scan'208";a="276054952"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2021 16:55:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,311,1620716400"; 
+   d="scan'208";a="421996902"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga003.jf.intel.com with ESMTP; 10 Aug 2021 16:55:36 -0700
+Received: from linux.intel.com (vwong3-iLBPG3.png.intel.com [10.88.229.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 42F28580922;
+        Tue, 10 Aug 2021 16:55:32 -0700 (PDT)
+Date:   Wed, 11 Aug 2021 07:55:29 +0800
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/2] net: pcs: xpcs: enable skip xPCS soft reset
+Message-ID: <20210810235529.GB30818@linux.intel.com>
+References: <20210809102229.933748-1-vee.khee.wong@linux.intel.com>
+ <20210809102229.933748-2-vee.khee.wong@linux.intel.com>
+ <YREvDRkiuScyN8Ws@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YREvDRkiuScyN8Ws@lunn.ch>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Aug 2021 16:37:30 +0300 Leon Romanovsky wrote:
-> This series prepares code to remove devlink_reload_enable/_disable API
-> and in order to do, we move all devlink_register() calls to be right
-> before devlink_reload_enable().
+Hi Andrew,
+On Mon, Aug 09, 2021 at 03:35:09PM +0200, Andrew Lunn wrote:
+> On Mon, Aug 09, 2021 at 06:22:28PM +0800, Wong Vee Khee wrote:
+> > From: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+> > 
+> > Unlike any other platforms, Intel AlderLake-S uses Synopsys SerDes where
+> > all the SerDes PLL configurations are controlled by the xPCS at the BIOS
+> > level. If the driver perform a xPCS soft reset on initialization, these
+> > settings will be switched back to the power on reset values.
+> > 
+> > This changes the xpcs_create function to take in an additional argument
+> > to check if the platform request to skip xPCS soft reset during device
+> > initialization.
 > 
-> The best place for such a call should be right before exiting from
-> the probe().
+> Why not just call into the BIOS and ask it to configure the SERDES?
+> Isn't that what ACPI is all about, hiding the details from the OS? Or
+> did the BIOS writers not add a control method to do this?
 > 
-> This is done because devlink_register() opens devlink netlink to the
-> users and gives them a venue to issue commands before initialization
-> is finished.
-> 
-> 1. Some drivers were aware of such "functionality" and tried to protect
-> themselves with extra locks, state machines and devlink_reload_enable().
-> Let's assume that it worked for them, but I'm personally skeptical about
-> it.
-> 
-> 2. Some drivers copied that pattern, but without locks and state
-> machines. That protected them from reload flows, but not from any _set_
-> routines.
-> 
-> 3. And all other drivers simply didn't understand the implications of early
-> devlink_register() and can be seen as "broken".
+>     Andrew
 
-What are those implications for drivers which don't implement reload?
-Depending on which parts of devlink the drivers implement there may well
-be nothing to worry about.
+BIOS does configured the SerDes. The problem here is that all the
+configurations done by BIOS are being reset at xpcs_create().
 
-Plus devlink instances start out with reload disabled. Could you please
-take a step back and explain why these changes are needed.
+We would want user of the pcs-xpcs module (stmmac, sja1105) to have
+control whether or not we need to perform to the soft reset in the
+xpcs_create() call.
 
-> In this series, we focus on items #1 and #2.
-> 
-> Please share your opinion if I should change ALL other drivers to make
-> sure that devlink_register() is the last command or leave them in an
-> as-is state.
+Hope that explained.
 
-Can you please share the output of devlink monitor and ip monitor link
-before and after?  The modified drivers will not register ports before
-they register the devlink instance itself.
+Regards,
+ VK
