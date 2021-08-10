@@ -2,136 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FF363E7D8F
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 18:36:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95ABB3E7DF1
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 19:04:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235749AbhHJQgi convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 10 Aug 2021 12:36:38 -0400
-Received: from lixid.tarent.de ([193.107.123.118]:57409 "EHLO mail.lixid.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233274AbhHJQgh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Aug 2021 12:36:37 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.lixid.net (MTA) with ESMTP id 25E5E140F0B;
-        Tue, 10 Aug 2021 18:36:14 +0200 (CEST)
-Received: from mail.lixid.net ([127.0.0.1])
-        by localhost (mail.lixid.net [127.0.0.1]) (MFA, port 10024) with LMTP
-        id 19XXeJS4oXlb; Tue, 10 Aug 2021 18:36:07 +0200 (CEST)
-Received: from tglase-nb.lan.tarent.de (vpn-172-34-0-14.dynamic.tarent.de [172.34.0.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.lixid.net (MTA) with ESMTPS id C55FD14020D;
-        Tue, 10 Aug 2021 18:36:07 +0200 (CEST)
-Received: by tglase-nb.lan.tarent.de (Postfix, from userid 1000)
-        id 7C96F52086B; Tue, 10 Aug 2021 18:36:07 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by tglase-nb.lan.tarent.de (Postfix) with ESMTP id 7971A5205FC;
-        Tue, 10 Aug 2021 18:36:07 +0200 (CEST)
-Date:   Tue, 10 Aug 2021 18:36:07 +0200 (CEST)
-From:   Thorsten Glaser <t.glaser@tarent.de>
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-cc:     Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
-        brouer@redhat.com
-Subject: Re: Intro into qdisc writing?
-In-Reply-To: <da23ab42-6b99-4981-97f0-3cd7a76c96b8@redhat.com>
-Message-ID: <c9abbcd-c351-2a51-3c7d-232c9ef3ff2@tarent.de>
-References: <1e2625bd-f0e5-b5cf-8f57-c58968a0d1e5@tarent.de> <d14be9a8-85b2-010e-16f3-cae1587f8471@gmail.com> <da23ab42-6b99-4981-97f0-3cd7a76c96b8@redhat.com>
-Content-Language: de-DE-1901
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        id S229474AbhHJRE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 13:04:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44164 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230042AbhHJREz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 13:04:55 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99B52C0613C1;
+        Tue, 10 Aug 2021 10:04:32 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id x10so22301982iop.13;
+        Tue, 10 Aug 2021 10:04:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=qKjLpOXK2E4x5JMD/1Vmmi19gIauGt4KxUD98Wehp14=;
+        b=C4k686O0v0ff0siTcVNGZOuwLSM9CxMC+GGzNAZIMG+utS3u3kiHTh31vLukr29RXO
+         c9Wcx6YEZvD5T9uFjJd6IUA4q4nhL100ZC6GgjEWFCC9vktBdRuUhK6tR69PgBAmGL+g
+         G9oSwkdrBIc59hYur/Z0ZFwMdcV7Mhi3HigxDgaspa/RiufWazatGolkskySoFxaUtuC
+         +ve1tybj23pShl3zzDb0PaBxAqu75SLfDCBbG+aidT1kT+KZ77auR9xYz9b0lkMDmfbj
+         10TKDKZziGNF8oAuy/uD8ixlW8TSP8WE/Lq+3Ghmf4Ac8Dp7/wbXo7bDJVj+i3lG1tpt
+         pZhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=qKjLpOXK2E4x5JMD/1Vmmi19gIauGt4KxUD98Wehp14=;
+        b=HhpSfXh8EcM7da5EU6nOkOBvo48x71PA9LW0MOc5B3cUKttqqH6fyFWSXB1nhRS6E1
+         cVgIr5wkhoe5pbJL7Cd2MumrpHvlfTzK2Jv9ZAMUyOskNF+0YJJ8DnUXkBHr8V1KZO/u
+         Wyae5VrMxgwk+WM37Zx1O1TESf21rhC8NP55+Sphbq9tcLlyYbbHh72IwVLK88XIQUGp
+         qhFTM4xM9ov7FhxLsXctni8+3L9/Ik4xlysJOb0Ly+GWNRFAuGrUkqEZ7XRdIefjFUjQ
+         km6dz14ngUTbww9TfOYVa2pBtWu+tVKuWjD/3X/vrjAtYK5098qRWGvnJMQQzg/38I5i
+         zu1w==
+X-Gm-Message-State: AOAM531bIpQ1TDgbJ6D0b35DQpDCHggAGqiJ8vcxlbfNSdtNBMbCy7wU
+        XaQNLPudZVq8GQdH3op42xM=
+X-Google-Smtp-Source: ABdhPJx7vGesJitEUC/rVgfxeFrtliJzvWzTg2gRC8q71LZvPzBhsGoM1kiiTTVevxkjfPFdVcWymQ==
+X-Received: by 2002:a5d:9bcf:: with SMTP id d15mr65210ion.88.1628615072105;
+        Tue, 10 Aug 2021 10:04:32 -0700 (PDT)
+Received: from localhost ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id l5sm2607191iln.13.2021.08.10.10.04.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Aug 2021 10:04:31 -0700 (PDT)
+Date:   Tue, 10 Aug 2021 10:04:26 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Jiang Wang <jiang.wang@bytedance.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "Cong Wang ." <cong.wang@bytedance.com>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        xieyongji@bytedance.com, chaiwen.cc@bytedance.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Message-ID: <6112b19a30160_1c2c820888@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAM_iQpXiqhfL9M04x1hvJ_6zCCUoDAv1_ywysu=O7wnCUuJaTw@mail.gmail.com>
+References: <20210727001252.1287673-1-jiang.wang@bytedance.com>
+ <20210727001252.1287673-3-jiang.wang@bytedance.com>
+ <6100363add8a9_199a412089@john-XPS-13-9370.notmuch>
+ <CAM_iQpVedTzRbf-bC7WuGMFYF=qnUxbnUdqJ9+FaxrTAn5DkTw@mail.gmail.com>
+ <6101a56bf2a11_1e1ff620813@john-XPS-13-9370.notmuch>
+ <CAM_iQpXiqhfL9M04x1hvJ_6zCCUoDAv1_ywysu=O7wnCUuJaTw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 2/5] af_unix: add unix_stream_proto for
+ sockmap
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Aug 2021, Jesper Dangaard Brouer wrote:
+Cong Wang wrote:
+> On Wed, Jul 28, 2021 at 11:44 AM John Fastabend
+> <john.fastabend@gmail.com> wrote:
+> >
+> > Cong Wang wrote:
+> > > On Tue, Jul 27, 2021 at 9:37 AM John Fastabend <john.fastabend@gmail.com> wrote:
+> > > > Do we really need an unhash hook for unix_stream? I'm doing some testing
+> > > > now to pull it out of TCP side as well. It seems to be an artifact of old
+> > > > code that is no longer necessary. On TCP side at least just using close()
+> > > > looks to be enough now.
+> > >
+> > > How do you handle the disconnection from remote without ->unhash()?
+> >
+> > Would close() not work for stream/dgram sockets?
+> 
+> close() is called when the local closes the sockets, but when the remote
+> closes or disconnects it, unhash() is called. This is why TCP calls unhash()
+> to remove the socket from established socket hash table. unhash() itself
+> might not make much sense for AF_UNIX as it probably does not need a
+> hash table to track established ones, however, the idea is the same, that
+> is, we have to handle remote disconnections here.
 
-> > Instead of writing a new qdisc, you could simply use FQ packet scheduler,
-> > and a eBPF program adjusting skb->tstamp depending on your needs.
+Following up on this series. Leaving a socket in the sockmap until close()
+happens is not paticularly problematic, but does consume space in the map
+so unhash() is slightly better I guess. Thanks.
 
-Hmm, this opens another magnitude of complexity I’m not sure I’m ready
-to tackle right now. So let me explain the specific scenarios more (I
-had hoped to get more general advice first):
+> 
+> Thanks.
 
-There are two operation modes. One uses netem to limit bandwidth and
-introduce latency. The other, which I’ve been working on, uses htb to
-limit bandwidth (not my part until now) with a sub-qdisc fq_codel to
-do ECN CE marking. (As you might have seen from the other link, those
-ECN markings are what we’re actually after, not so much the traffic
-behaviour.) I forked fq_codel into something else to change the way it
-does the ECN marking, to match the scenario we’re modelling more closely.
 
-There’s a controlling application running on the router which sets up
-these qdiscs. It also changes the htb qdisc to increase or reduce the
-bandwidth available to the fq_codel fork, currently every second or so,
-but the goal is to do this every 10ms or so (that’s a ton of tc(8) in‐
-vocations, I know…); this is, again, not my department.
-
-There are two more specific delays to be introduced now. I think they
-need to be introduced to both scenarios (and I was told netem doesn’t
-play with fq_codel; I’m not sure if the netem scenario also uses htb to
-control bandwidth or not).
-
-One is that “on command” all traffic needs to stop for, say 20, 30 ms.
-I was thinking of adding a flag to htb that, when set on tc, does this
-(oneshot), since tc is called to reconfigure htb often enough anyway.
-This doesn’t happen often, maybe once every few minutes.
-
-The other is a running counter over the packets sent out, and every
-n-th packet must be delayed by an additional x ms. Every n*n-th packet
-by 2*x ms even. I was considering putting those aside, sending out the
-next packets that arrive, or if none, returning NULL from the dequeue
-function, but when I do that I need to be called again in x ms, so I
-need the watchdog, right?
-
-So this is all very static, and I’m familiar enough with C to implement
-things there, but not with BPF let alone Linux’ eBPF. I’m also not sure
-how to get the “on command” thing done there.
-
-Perhaps the entire “playlist” of network behaviour could be moved there,
-but there is, again, much more involved than I am even familiar with or
-told about. There is, at least, limiting bandwidth, then either introducing
-latency (with jitter) or doing the ECN marking, then introducing additional
-“dead times” for individual packets or all traffic, and there probably will
-be more. We’re approaching this piece by piece as we’re learning about the
-to-be-modelled environment, which in itself is *also* still under develop‐
-ment (with feedback from the simulator to the environment as well). I’m
-just the one C guy involved ☺
-
-> > https://legacy.netdevconf.info/0x14/session.html?talk-replacing-HTB-with-EDT-and-BPF
-
-> If you want to see some code doing this via BPF see:
-> https://github.com/xdp-project/bpf-examples/blob/master/traffic-pacing-edt/
-
-> The comments in the code and scripts should hopefully be enough for you to
-> understand the concept. Eric's slides describe the overall concept and
-> background.
-
-I’ll definitely look into them, but…
-
-> > > Similarily, is there an intro of sorts for qdisc writing, the things
-> > > to know, concepts, locking, whatever is needed?
-
-… is there something more general for starters?
-
-Ah Eric, did you even see my earlier mail about the fq_codel undocumented
-flag? I wrote up what I could gather from the code and some websites about
-fq_codel and documented that (as part of documenting the changed version)
-in https://github.com/tarent/sch_jens/blob/master/man/man8/tc-jens.8 and
-was thinking of isolating the fq_codel part and submitting it as replacement
-for the current tc-fq_codel(8) manpage; review of that (for correctness of
-the documentation) would be welcome if you’re available…
-
-//mirabilos
--- 
-Infrastrukturexperte • tarent solutions GmbH
-Am Dickobskreuz 10, D-53121 Bonn • http://www.tarent.de/
-Telephon +49 228 54881-393 • Fax: +49 228 54881-235
-HRB AG Bonn 5168 • USt-ID (VAT): DE122264941
-Geschäftsführer: Dr. Stefan Barth, Kai Ebenrett, Boris Esser, Alexander Steeg
-
-*************************************************
-
-Mit dem tarent-Newsletter nichts mehr verpassen: www.tarent.de/newsletter
-
-*************************************************
