@@ -2,121 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B98283E82AF
-	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 20:17:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A2733E825B
+	for <lists+netdev@lfdr.de>; Tue, 10 Aug 2021 20:07:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236178AbhHJSRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 14:17:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59408 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240411AbhHJSPz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 14:15:55 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9A33C04E093;
-        Tue, 10 Aug 2021 10:53:28 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id b7so31495027edu.3;
-        Tue, 10 Aug 2021 10:53:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QM3H90oSp2wbFz4Ss9RbrFJEXcRByIUH4Fe/bMzcbEo=;
-        b=e32YB+FaC/fXHtxLd1eNUxJjJoNjb9C1/YiTwNqROQinvJ5rS9lTSl/+XQBe1A6aVc
-         Kb/kjt4JvmpHNxJht9Ryk6VjP+CXBrBB6hJ0PV+fDL/PQh3OLg+3G5QWdBqf10mhsvRh
-         V6TPxLoSi35sUuT5+KuDFDow62iqXGA8skm7R8NfOCG049S06UkWo9n4w+uA3n0P+vb5
-         HvgOiGRzGi/pZA+U7X2azFxArlYIvbB6AhjbPO6ED5bhr8PxnbG6DHwOdMsSlPPBqXCv
-         6K34V67xddauYia8uA4cbFU1RD315q+BHqzn4oLGrrxz3rd+t8tjZbmXF8HLEmNPTaGH
-         Ma6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QM3H90oSp2wbFz4Ss9RbrFJEXcRByIUH4Fe/bMzcbEo=;
-        b=UVFRb3PACIt0c2dz0ybQmLTlu52oKWd9PAAUnvBMUFqwCApDTl4f+TEBquzg/Bxh3F
-         2VidK8QAuWodW0x8YqdEp7SNgpVpcwFxePaRMFrADKYziZEnpM/a+LnPxP5ak6+v4Owa
-         PbM02JipG1mYn/NxoEeZIhixbmhhkdCZYTEXIT5zsDAbxmtnDv9BV3tfxVPBONGMxDZO
-         W1rjWkuuA9b7ZUxs6m1ATAljGgZJF/ETfIHnolTB4O4t8mNgMDG4o+NMW3BatFyUVvOA
-         slAOOT5Y9rFsgs0oX9qgdLzOsXEwhzJJzJox4p3x9k9PCfFpYz8Z/irATWECgoqNuTEa
-         ix1Q==
-X-Gm-Message-State: AOAM530gzEAeoYVSOanAzE2amZxHDVbzqknJR1rWS7z9JTWa7o85AFlQ
-        Y/21VotY+ZZmh/sHCSg6qIM=
-X-Google-Smtp-Source: ABdhPJxOTqCMoM0wWJ0eO0tUOMox8i4MBJbE5kqat3SnZ1/q69HKWPJeRayBdf48ZJkNl3Dg5YBxBA==
-X-Received: by 2002:a50:8fe1:: with SMTP id y88mr6326667edy.101.1628618007322;
-        Tue, 10 Aug 2021 10:53:27 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id nb39sm7106805ejc.95.2021.08.10.10.53.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Aug 2021 10:53:26 -0700 (PDT)
-Date:   Tue, 10 Aug 2021 20:53:24 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Andre Valentin <avalentin@marcant.net>
-Cc:     DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        Jonathan McDowell <noodles@earth.li>,
-        Michal =?utf-8?B?Vm9rw6HEjQ==?= <vokac.m@gmail.com>,
-        Christian Lamparter <chunkeey@gmail.com>,
-        Nishka Dasgupta <nishkadg.linux@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Stefan Lippers-Hollmann <s.l-h@gmx.de>,
-        Hannu Nyman <hannu.nyman@iki.fi>,
-        Imran Khan <gururug@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Nick Lowe <nick.lowe@gmail.com>
-Subject: Re: [RFC net-next 2/3] net: dsa: qca8k: enable assisted learning on
- CPU port
-Message-ID: <20210810175324.ijodmycvxfnwu4yf@skbuf>
-References: <20210807120726.1063225-1-dqfext@gmail.com>
- <20210807120726.1063225-3-dqfext@gmail.com>
- <20210807222555.y6r7qxhdyy6d3esx@skbuf>
- <20210808160503.227880-1-dqfext@gmail.com>
- <0072b721-7520-365d-26ef-a2ad70117ac2@marcant.net>
+        id S232742AbhHJSHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 14:07:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37564 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239319AbhHJSFI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Aug 2021 14:05:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5A07860C3F;
+        Tue, 10 Aug 2021 17:55:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628618167;
+        bh=hTphWofcwmhv4y/QPpL80leJAprSLTNgUO0Meevwp1o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dcYVwzswX3e/hXHRTOnSU/F+s2Bd68cqknKcsPoh8p55uMJGMcItNIHBcTHosXaSa
+         YNwlWYFIOKxdS7Zg4p/iR7/36IQmJiBSPad5oawJycY4E9tQLQgrwsIFNOPFUPgOWF
+         3OXJ35rXVoftRxPNjIEa0Jx1ziqBXxyuXrpRS4sutSGNmh6I+tnMTNbn6SQqt4NBfq
+         ojZF9lkTddGTcCG1R679M6ifkVpONX3Wgj5NMaP53/nSJP36M1UL6R2+RhEU18tAco
+         ctfmkgpOIBBtboANW2sUW6l6MbX7IsDJZ/v7ejSvkM8j8yh/IaizdZopPWCedMiYQ1
+         uh9/eYexRGDBQ==
+Date:   Tue, 10 Aug 2021 19:55:50 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Michael Walle <michael@walle.cc>, andrew@lunn.ch,
+        anthony.l.nguyen@intel.com, bigeasy@linutronix.de,
+        davem@davemloft.net, dvorax.fuxbrumer@linux.intel.com,
+        f.fainelli@gmail.com, jacek.anaszewski@gmail.com, kuba@kernel.org,
+        kurt@linutronix.de, linux-leds@vger.kernel.org,
+        netdev@vger.kernel.org, sasha.neftin@intel.com,
+        vinicius.gomes@intel.com, vitaly.lifshits@intel.com
+Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
+Message-ID: <20210810195550.261189b3@thinkpad>
+In-Reply-To: <20210810172927.GB3302@amd>
+References: <YP9n+VKcRDIvypes@lunn.ch>
+        <20210727081528.9816-1-michael@walle.cc>
+        <20210727165605.5c8ddb68@thinkpad>
+        <c56fd3dbe1037a5c2697b311f256b3d8@walle.cc>
+        <20210727172828.1529c764@thinkpad>
+        <8edcc387025a6212d58fe01865725734@walle.cc>
+        <20210727183213.73f34141@thinkpad>
+        <25d3e798-09f5-56b5-5764-c60435109dd2@gmail.com>
+        <20210810172927.GB3302@amd>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0072b721-7520-365d-26ef-a2ad70117ac2@marcant.net>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 10, 2021 at 07:27:05PM +0200, Andre Valentin wrote:
-> On Sun, Aug 08, 2021 at 1805, DENG Qingfang wrote:
-> > On Sun, Aug 08, 2021 at 01:25:55AM +0300, Vladimir Oltean wrote:
-> >> On Sat, Aug 07, 2021 at 08:07:25PM +0800, DENG Qingfang wrote:
-> >>> Enable assisted learning on CPU port to fix roaming issues.
-> >>
-> >> 'roaming issues' implies to me it suffered from blindness to MAC
-> >> addresses learned on foreign interfaces, which appears to not be true
-> >> since your previous patch removes hardware learning on the CPU port
-> >> (=> hardware learning on the CPU port was supported, so there were no
-> >> roaming issues)
->
-> The issue is with a wifi AP bridged into dsa and previously learned
-> addresses.
->
-> Test setup:
-> We have to wifi APs a and b(with qca8k). Client is on AP a.
->
-> The qca8k switch in AP b sees also the broadcast traffic from the client
-> and takes the address into its fdb.
->
-> Now the client roams to AP b.
-> The client starts DHCP but does not get an IP. With tcpdump, I see the
-> packets going through the switch (ap->cpu port->ethernet port) and they
-> arrive at the DHCP server. It responds, the response packet reaches the
-> ethernet port of the qca8k, and is not forwarded.
->
-> After about 3 minutes the fdb entry in the qca8k on AP b is
-> "cleaned up" and the client can immediately get its IP from the DHCP server.
->
-> I hope this helps understanding the background.
+On Tue, 10 Aug 2021 19:29:27 +0200
+Pavel Machek <pavel@ucw.cz> wrote:
 
-How does this differ from what is described in commit d5f19486cee7
-("net: dsa: listen for SWITCHDEV_{FDB,DEL}_ADD_TO_DEVICE on foreign
-bridge neighbors")?
+> So "r8159-0300:green:activity" would be closer to the naming we want,
+> but lets not do that, we really want this to be similar to what others
+> are doing, and that probably means "ethphy3:green:activity" AFAICT.
+
+Pavel, one point of the discussion is that in this case the LED is
+controlled by MAC, not PHY. So the question is whether we want to do
+"ethmacN" (in addition to "ethphyN").
+
+Marek
