@@ -2,121 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 498123E8BE6
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 10:37:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AC803E8BE7
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 10:37:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236106AbhHKIhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 04:37:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58192 "EHLO
+        id S236156AbhHKIhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 04:37:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233112AbhHKIhY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 04:37:24 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09872C061765;
-        Wed, 11 Aug 2021 01:37:01 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id 203-20020a1c00d40000b02902e6a4e244e4so1374173wma.4;
-        Wed, 11 Aug 2021 01:37:00 -0700 (PDT)
+        with ESMTP id S229679AbhHKIh3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 04:37:29 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 766A5C061765
+        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 01:37:06 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id e19so1702494pla.10
+        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 01:37:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=r2N2lJNtd9ZVoClfrfgh876Vfdtyeq7ZHkyk/68V1gA=;
-        b=dSYtxaXDCl25xHC0RUhzvW1jjtWK0C461gFRD7NdUbEikkzJ0Fq2JFdLgvgeZTSYPt
-         vGbHkLazdljjkjZgnlAOEJPz90n7dwcNji7tOWR2r0zV8KjMQiNCMQeZiHbhafyPm4e2
-         HbdN7bYSWTwGCaLzlZAjivjzq536vg0oBvWAeflq9zyo7rzP9ZliT8rW5e1rAh+jI+y0
-         qm1Z3ltM8zkefRQ9DwenwuOH+arhQ526i2rxdWGu5ooK7ns/Ov5Vmd/xUp06ZurBOKcK
-         HyTVfTQvaae4haJmjC8Mt65Ha7htxJoCWH4ZIJ6dY4e0ytXFv70jJC2XLg9BqvWLvxJ/
-         ROBg==
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=+yiW5kHotNOIsCP88n2IGTFzXnmxVlt5DhvJ4aiUAJ8=;
+        b=ADgs2+HHUb6cc2yw9nwe81BuS/VggS/Qhyg7o8RRJt2KwJn1NHpmyc1GFtv5kHKHpV
+         61OnNwVjZJi3+B0f+mUO1Fye6Gxwxc84zWK7Jrhk41VNL/s1N7aYF6biriwNbdmqamhA
+         +hTv3fDCCQdQRwYNekQK7sRIG8bkUsc9T4mrzpOcUjlQgKTMX9E3BLAG/GkvKAArJsp+
+         kA34hwoXo29cg64aDW0/Ad6kx/wlGGIoRfgqV4xVfXwdSsJNfKtryicw3z6J2TE6u0WZ
+         wv6DejdcjXjPjkWA36A7J4E+N3nanlLPpOH9ckVDCrVMuZrg7eCI27SUWYti7T2GBgkR
+         bEtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=r2N2lJNtd9ZVoClfrfgh876Vfdtyeq7ZHkyk/68V1gA=;
-        b=Cmytka3+Zyi/vuO+Ra4yYnd3C782al4JvHephR/AbnXnUsCGOPaDkKYdsg4h7et/9y
-         AX+7m6a1N96ljBCQNRnJ6yugWyPk1ygWEG7+8TAkFkdlgDNV8Q3h7Y7B7lzuKsuNLDWK
-         TpwuBSinOSXgGAIHxoAgKq2GitP/zX+hzH9b1p607+6KBcyzg5X3xqz2Qsjw9reoLvEr
-         03SSJHVIAs+J/WfoB9K6SoeT42371wrzk0wk8pavOuAWm/5cuXt2MHYhxIhbzVHcZyPq
-         c8+BMnCqqPwmUbkyAA/P9NWZWmc66jpk0zud/SJfj6kafNrmRSGdONyBCMIkoz1SkaUq
-         Fqjg==
-X-Gm-Message-State: AOAM530/a8cnvULKsDvnkoLL1BHXVOkO+ZWE8DZFQvYBi0PuHxwRzxFF
-        a/Cjdk0PKKcDeEr+lLBjuiNq7hUkkSkXdw==
-X-Google-Smtp-Source: ABdhPJx+Bhx60Go2TR/I/ARqxGl4Pjqxf0dXF/m8YuYGiTNSgcVyZOkKXRwpDNnxmKXEbaUEtP7BXA==
-X-Received: by 2002:a1c:ed03:: with SMTP id l3mr25447530wmh.56.1628671019135;
-        Wed, 11 Aug 2021 01:36:59 -0700 (PDT)
-Received: from ?IPv6:2a01:cb05:8192:e700:90a4:fe44:d3d1:f079? (2a01cb058192e70090a4fe44d3d1f079.ipv6.abo.wanadoo.fr. [2a01:cb05:8192:e700:90a4:fe44:d3d1:f079])
-        by smtp.gmail.com with ESMTPSA id u6sm11308532wrp.83.2021.08.11.01.36.58
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
+        bh=+yiW5kHotNOIsCP88n2IGTFzXnmxVlt5DhvJ4aiUAJ8=;
+        b=deDkSGvaFCgVE8uQjyifjtOtL/xGSygB12tSascMboF7ZDBlCNiSzPmmwBae3Kd5cV
+         wbV89Pf3bEuYtDMUbyQp7UTPSwKrssr7KZbfgJD0sFlpJrJzec8ibmmaFKs6ccpk7H5o
+         XPph3jOcSZqP2JZN7mMiwkQxE3Ck7hUcI5N60X4YK0IfACjT+sRuqaR+Z+yaGWXwDeHw
+         wTmpIf90xSdtb5DbweWSipwJXfuVkLyzFYcFJpgNXwX8SrH9b2F8l9kKCbRR52GCXh/A
+         6ME80crc3IHm4+3ksbBPxCCuXKfeUbh8LjlfaVDd0GHaJY8cARbyN+R59IEq+jbq4Idu
+         d4jA==
+X-Gm-Message-State: AOAM531e0qhpCgq0Ef5XEmirAnp8FTTCCybId7/1sjQjk8Z6UxOa+gpf
+        wKWAIR2Yzeh9bElrPMRBqHQ=
+X-Google-Smtp-Source: ABdhPJz57biCNmaV9Sj3JbA6WLm9ACJx0ybtEPGhwEU82uA72fT8EW9Mbqi9OY2mw5Q2pNlVCt8S4Q==
+X-Received: by 2002:a17:902:6507:b029:12d:2292:f750 with SMTP id b7-20020a1709026507b029012d2292f750mr13725680plk.54.1628671025978;
+        Wed, 11 Aug 2021 01:37:05 -0700 (PDT)
+Received: from [192.168.255.10] ([103.7.29.31])
+        by smtp.gmail.com with ESMTPSA id j1sm2212141pfc.97.2021.08.11.01.37.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Aug 2021 01:36:58 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/2] net: pcs: xpcs: enable skip xPCS soft reset
-To:     Wong Vee Khee <vee.khee.wong@linux.intel.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210809102229.933748-1-vee.khee.wong@linux.intel.com>
- <20210809102229.933748-2-vee.khee.wong@linux.intel.com>
- <YREvDRkiuScyN8Ws@lunn.ch> <20210810235529.GB30818@linux.intel.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <f2a1f135-b77a-403d-5d2e-c497efc99df7@gmail.com>
-Date:   Wed, 11 Aug 2021 01:36:56 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        Wed, 11 Aug 2021 01:37:05 -0700 (PDT)
+Subject: Re: [PATCH] net:sched fix array-index-out-of-bounds in taprio_change
+To:     Eric Dumazet <eric.dumazet@gmail.com>, vinicius.gomes@intel.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     Haimin Zhang <tcs_kernel@tencent.com>
+References: <1628658609-1208-1-git-send-email-tcs_kernel@tencent.com>
+ <303b095e-3342-9461-16ae-86d0923b7dc7@gmail.com>
+From:   Haimin Zhang <tcs.kernel@gmail.com>
+Message-ID: <e965fed3-89c3-ff58-a678-dd715a2b9fcd@gmail.com>
+Date:   Wed, 11 Aug 2021 16:36:57 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <20210810235529.GB30818@linux.intel.com>
+In-Reply-To: <303b095e-3342-9461-16ae-86d0923b7dc7@gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 8/10/2021 4:55 PM, Wong Vee Khee wrote:
-> Hi Andrew,
-> On Mon, Aug 09, 2021 at 03:35:09PM +0200, Andrew Lunn wrote:
->> On Mon, Aug 09, 2021 at 06:22:28PM +0800, Wong Vee Khee wrote:
->>> From: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
->>>
->>> Unlike any other platforms, Intel AlderLake-S uses Synopsys SerDes where
->>> all the SerDes PLL configurations are controlled by the xPCS at the BIOS
->>> level. If the driver perform a xPCS soft reset on initialization, these
->>> settings will be switched back to the power on reset values.
->>>
->>> This changes the xpcs_create function to take in an additional argument
->>> to check if the platform request to skip xPCS soft reset during device
->>> initialization.
->>
->> Why not just call into the BIOS and ask it to configure the SERDES?
->> Isn't that what ACPI is all about, hiding the details from the OS? Or
->> did the BIOS writers not add a control method to do this?
->>
->>      Andrew
+在 2021/8/11 15:44, Eric Dumazet 写道:
 > 
-> BIOS does configured the SerDes. The problem here is that all the
-> configurations done by BIOS are being reset at xpcs_create().
 > 
-> We would want user of the pcs-xpcs module (stmmac, sja1105) to have
-> control whether or not we need to perform to the soft reset in the
-> xpcs_create() call.
+> On 8/11/21 7:10 AM, tcs.kernel@gmail.com wrote:
+>> From: Haimin Zhang <tcs_kernel@tencent.com>
+>>
+>> syzbot report an array-index-out-of-bounds in taprio_change
+>> index 16 is out of range for type '__u16 [16]'
+>> that's because mqprio->num_tc is lager than TC_MAX_QUEUE,so we check
+>> the return value of netdev_set_num_tc.
+>>
+>> Reported-by: syzbot+2b3e5fb6c7ef285a94f6@syzkaller.appspotmail.com
+>> Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
+>> ---
+>>   net/sched/sch_taprio.c | 4 +++-
+>>   1 file changed, 3 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+>> index 9c79374..1ab2fc9 100644
+>> --- a/net/sched/sch_taprio.c
+>> +++ b/net/sched/sch_taprio.c
+>> @@ -1513,7 +1513,9 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+>>   	taprio_set_picos_per_byte(dev, q);
+>>   
+>>   	if (mqprio) {
+>> -		netdev_set_num_tc(dev, mqprio->num_tc);
+>> +		err = netdev_set_num_tc(dev, mqprio->num_tc);
+>> +		if (err)
+>> +			goto free_sched;
+>>   		for (i = 0; i < mqprio->num_tc; i++)
+>>   			netdev_set_tc_queue(dev, i,
+>>   					    mqprio->count[i],
+>>
+> 
+> When was the bug added ?
+> 
+> Hint: Please provide a Fixes: tag
+> 
+> taprio_parse_mqprio_opt() already checks :
+> 
+> /* Verify num_tc is not out of max range */
+> if (qopt->num_tc > TC_MAX_QUEUE) {
+>      NL_SET_ERR_MSG(extack, "Number of traffic classes is outside valid range");
+>      return -EINVAL;
+> }
+> 
+> So what is happening exactly ?
+> 
+> 
+> 
+> 
+syzkaller reported this problem,the log shows mqprio->count[16] is accessed.
+here is the log
+https://syzkaller.appspot.com/bug?id=3a3677d4e7539ec5e671a81e32882ad40b5f7b64
 
-I understood Andrew's response as suggesting to introduce the ability 
-for xpcs_create() to make a BIOS call which would configure the SerDes 
-after xpcs_soft_reset(). That way the current xpcs_create() signature 
-would remain the same, but you could easily hook any post-reset 
-initialization by making an appropriate BIOS call.
--- 
-Florian
+the added check logic is hurtlessness,and netdev_set_num_tc does have a 
+return value.
