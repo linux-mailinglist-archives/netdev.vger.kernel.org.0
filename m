@@ -2,117 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2C923E9AED
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 00:27:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 229093E9AF1
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 00:31:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232539AbhHKW2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 18:28:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232570AbhHKW2T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 18:28:19 -0400
-Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3444BC0613D5
-        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 15:27:55 -0700 (PDT)
-Received: by mail-qt1-x84a.google.com with SMTP id m22-20020a05622a1196b029026549e62339so2135311qtk.1
-        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 15:27:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=FKmBhBBmRifwAw1wud9HfRzter1UnR4c92xc+2b6/5s=;
-        b=KtorBMIjMc7PRX+Eu8q9UZfgz7ozjZS/YIQxhZ4KL2/4npw/Ogxow4rDpoky8ge4wv
-         GshTjP/p/8DWUfc0HZ0Y+Y4ouTaLdunkIN62NhsetlQ3m6MJ94G9o87D9Bm22V193IzH
-         31YGKStXfGLmoTo+khXW+88VsRbjHBxAuF4Hp96MM/EzVXEuHdn6gAuQm1Xj4tDdmueY
-         0eXLXctdGi/e+K3LxI4858JIrEa+lnb5ywM5jMd8Nc73ZKL5CLgZ5957OdyDbR9PM6ET
-         +9bc1Gpucb7t5QEBxooDyIXpHAWE27/4h1D5vXWwiab1J0GYLfyrygDL+Vvw+Rzf+jmn
-         JzWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=FKmBhBBmRifwAw1wud9HfRzter1UnR4c92xc+2b6/5s=;
-        b=Pea5eE8dbbYAgxK1jKE36vWmbYvBpT1wVu1oB2CUjmXo51Y3DB4DRAwV7OQaGh2UNK
-         kOfp6KP7DMmJZkgglazTqV+rvJySRTswVJ13N3rNqRg8gUfaSzaPBaCG/Fmq9LUGr1Ep
-         Re3wRHNrCmo7doTSLd/hV8eVqPwMdC8YFe/iRi8FyWxdnjrqKiXI/VMHDiSBfWEzPLVf
-         I7NzgObi++o4DLkgGvQlyDu+cJsyF3+0UgTE0djRIVyF70b2AmODdlOl00wtEObBhqiY
-         fkX0ZHlReVJoEE0n/U6458V/kg6qmBnrL6MhHTLq1Yu2STV0ZoehO2xmRfTbbx5aB4bM
-         9+gQ==
-X-Gm-Message-State: AOAM530jV3TXky8TcT5s4Zh+boFO07hoheSx+D5hqySd8xLwBtBp00hd
-        sAdbEwUjo6GYWmnyuy4AE2BqhLC1ytD7FZVMddtxke+/L8CNlHAD0465kRjjGTUHmcCSbSFwgFm
-        lNkD7FS/jv9cXDVi/H62A1pKZKJSo0em2k9zO5DTDq8XUt6ivQ1n4uA==
-X-Google-Smtp-Source: ABdhPJwLgIPSwzO3YGooos4qruEZJUyvIjVnraAgI9++Ha844zvdXoIktyQ1NnwmY8hMo+rSbaGgx68=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:c78e:f5dc:8780:ed29])
- (user=sdf job=sendgmr) by 2002:a0c:a321:: with SMTP id u30mr846227qvu.57.1628720874259;
- Wed, 11 Aug 2021 15:27:54 -0700 (PDT)
-Date:   Wed, 11 Aug 2021 15:27:47 -0700
-In-Reply-To: <20210811222747.3041445-1-sdf@google.com>
-Message-Id: <20210811222747.3041445-3-sdf@google.com>
-Mime-Version: 1.0
-References: <20210811222747.3041445-1-sdf@google.com>
-X-Mailer: git-send-email 2.33.0.rc1.237.g0d66db33f3-goog
-Subject: [PATCH bpf-next 2/2] selftests/bpf: verify bpf_get_netns_cookie in BPF_PROG_TYPE_CGROUP_SOCKOPT
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S232606AbhHKWb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 18:31:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51922 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232456AbhHKWb6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Aug 2021 18:31:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 87ED26023F;
+        Wed, 11 Aug 2021 22:31:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628721093;
+        bh=cbLZhMCunRftN+0qtTxXu/Neje1zHLSrfulBju4+9Ks=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tTST61q4nb7YrADf99RiMpwdCqt0SRL6PLbj85WQP67Zr2jxaKlnmCS4b8sNF9zXS
+         BS1ABZrNYcNS1iUUUK3yQNenN76qMvNnQr9VW4z2Ou5pxVml9DFisEnhTFbb17ZB+z
+         asQfhVeB9Eel65oXIx0FJ0Dj9IylvuInMa1TUqlJWAdwcyRwuUWpV2ToAkS9tl5lTS
+         8TXNd3CYrXjgu1Hx2JH871Ovyf0CLGf6w3LrPQj6mHAyRvW0fjaV/M/LuWksIY3iML
+         E6+x4l1ZdPBFEOHpCHS82zMFUdxHxj1vE9B1viPp3eIfW/ccieFIF9Y5VXrm4Vv/6i
+         6JD0LwkdWzxdQ==
+Date:   Wed, 11 Aug 2021 15:31:32 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [PATCH net-next 1/2] net: sparx5: switchdev: adding frame DMA
+ functionality
+Message-ID: <20210811153132.63480934@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210811075909.543633-2-steen.hegelund@microchip.com>
+References: <20210811075909.543633-1-steen.hegelund@microchip.com>
+        <20210811075909.543633-2-steen.hegelund@microchip.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add verifier ctx test to call bpf_get_netns_cookie from
-cgroup/setsockopt.
+On Wed, 11 Aug 2021 09:59:08 +0200 Steen Hegelund wrote:
+> This add frame DMA functionality to the Sparx5 platform.
+>=20
+> Ethernet frames can be extracted or injected autonomously to or from the
+> device=E2=80=99s DDR3/DDR3L memory and/or PCIe memory space. Linked list =
+data
+> structures in memory are used for injecting or extracting Ethernet frames.
+> The FDMA generates interrupts when frame extraction or injection is done
+> and when the linked lists need updating.
 
-  #269/p pass ctx or null check, 1: ctx Did not run the program (not supported) OK
-  #270/p pass ctx or null check, 2: null Did not run the program (not supported) OK
-  #271/p pass ctx or null check, 3: 1 OK
-  #272/p pass ctx or null check, 4: ctx - const OK
-  #273/p pass ctx or null check, 5: null (connect) Did not run the program (not supported) OK
-  #274/p pass ctx or null check, 6: null (bind) Did not run the program (not supported) OK
-  #275/p pass ctx or null check, 7: ctx (bind) Did not run the program (not supported) OK
-  #276/p pass ctx or null check, 8: null (bind) OK
-  #277/p pass ctx or null check, 9: ctx (cgroup/setsockopt) Did not run the program (not supported) OK
-  #278/p pass ctx or null check, 10: null (cgroup/setsockopt) Did not run the program (not supported) OK
+Something to fix:
 
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- tools/testing/selftests/bpf/verifier/ctx.c | 25 ++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
-
-diff --git a/tools/testing/selftests/bpf/verifier/ctx.c b/tools/testing/selftests/bpf/verifier/ctx.c
-index 23080862aafd..3e7fdbf898b1 100644
---- a/tools/testing/selftests/bpf/verifier/ctx.c
-+++ b/tools/testing/selftests/bpf/verifier/ctx.c
-@@ -195,3 +195,28 @@
- 	.result = REJECT,
- 	.errstr = "R1 type=inv expected=ctx",
- },
-+{
-+	"pass ctx or null check, 9: ctx (cgroup/setsockopt)",
-+	.insns = {
-+		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,
-+			     BPF_FUNC_get_netns_cookie),
-+		BPF_MOV64_IMM(BPF_REG_0, 0),
-+		BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_CGROUP_SOCKOPT,
-+	.expected_attach_type = BPF_CGROUP_SETSOCKOPT,
-+	.result = ACCEPT,
-+},
-+{
-+	"pass ctx or null check, 10: null (cgroup/setsockopt)",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_1, 0),
-+		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,
-+			     BPF_FUNC_get_netns_cookie),
-+		BPF_MOV64_IMM(BPF_REG_0, 0),
-+		BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_CGROUP_SOCKOPT,
-+	.expected_attach_type = BPF_CGROUP_SETSOCKOPT,
-+	.result = ACCEPT,
-+},
--- 
-2.33.0.rc1.237.g0d66db33f3-goog
-
+drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c: In function =E2=80=98s=
+parx5_fdma_start=E2=80=99:
+drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c:544:6: warning: variabl=
+e =E2=80=98proc_ctrl=E2=80=99 set but not used [-Wunused-but-set-variable]
+  544 |  u32 proc_ctrl;
+      |      ^~~~~~~~~
