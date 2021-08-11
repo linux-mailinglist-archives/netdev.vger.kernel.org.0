@@ -2,100 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 741133E91DC
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 14:49:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDF6B3E91E3
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 14:49:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230340AbhHKMtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 08:49:23 -0400
-Received: from mga06.intel.com ([134.134.136.31]:3753 "EHLO mga06.intel.com"
+        id S230415AbhHKMtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 08:49:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49146 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230178AbhHKMtU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Aug 2021 08:49:20 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10072"; a="276150146"
-X-IronPort-AV: E=Sophos;i="5.84,313,1620716400"; 
-   d="scan'208";a="276150146"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2021 05:48:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,313,1620716400"; 
-   d="scan'208";a="445916469"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga007.fm.intel.com with ESMTP; 11 Aug 2021 05:48:54 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 4FC46142; Wed, 11 Aug 2021 15:48:53 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Loic Poulain <loic.poulain@linaro.org>, netdev@vger.kernel.org,
+        id S229989AbhHKMtm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Aug 2021 08:49:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C58976056C;
+        Wed, 11 Aug 2021 12:49:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628686159;
+        bh=uVK2r72Kdo771r0eBjABRDmj6TjTuVDRF7ffm6kFzkw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Y+w3d+FndGpxn3c0N0AgGHVo4U4EspeAH9f8jFW2EHsOLOu15zaLUh+jvY4gZ9wJA
+         jiOVDbjH8dLklPkkFM0jGOLuRgHasdjzXCJOpBLKH2eYia29Ut3itBqksJYFvjAyz+
+         2jpMWKW4duIQD18KUL64dkgmjb+U5E2bu6uytjJulBCM4fVOp+t8iQXKSXNolgaTvV
+         WlJCXwlTAyzjysxfcl12f66sjYF4QvuS/2tZ2v8POHqIHJbm2yDXczlmFr8Un2Jn3j
+         NWThV09P060VUNkTF9119P88siLHm58TFqSoQDa9F39TfMFBEKaBzhRJ0bxWwMN9Mo
+         1srC7s53Xmewg==
+Date:   Wed, 11 Aug 2021 05:49:17 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Joe Perches <joe@perches.com>
+Cc:     Jonathan Toppins <jtoppins@redhat.com>, netdev@vger.kernel.org,
+        leon@kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
         linux-kernel@vger.kernel.org
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v3 net 1/1] wwan: core: Avoid returning NULL from wwan_create_dev()
-Date:   Wed, 11 Aug 2021 15:48:45 +0300
-Message-Id: <20210811124845.10955-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
+Subject: Re: [PATCH net-next v2 2/2] bonding: combine netlink and console
+ error messages
+Message-ID: <20210811054917.722bd988@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <d5e1aada694465fd62f57695e264259815e60746.camel@perches.com>
+References: <cover.1628650079.git.jtoppins@redhat.com>
+        <e6b78ce8f5904a5411a809cf4205d745f8af98cb.1628650079.git.jtoppins@redhat.com>
+        <d5e1aada694465fd62f57695e264259815e60746.camel@perches.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make wwan_create_dev() to return either valid or error pointer,
-In some cases it may return NULL. Prevent this by converting
-it to the respective error pointer.
+On Tue, 10 Aug 2021 20:27:01 -0700 Joe Perches wrote:
+> > +#define BOND_NL_ERR(bond_dev, extack, errmsg) do {		\
+> > +	if (extack)						\
+> > +		NL_SET_ERR_MSG(extack, errmsg);			\
+> > +	else							\
+> > +		netdev_err(bond_dev, "Error: %s\n", errmsg);	\
+> > +} while (0)
+> > +
+> > +#define SLAVE_NL_ERR(bond_dev, slave_dev, extack, errmsg) do {		\
+> > +	if (extack)							\
+> > +		NL_SET_ERR_MSG(extack, errmsg);				\
+> > +	else								\
+> > +		slave_err(bond_dev, slave_dev, "Error: %s\n", errmsg);	\
+> > +} while (0)  
+> 
+> Ideally both of these would be static functions and not macros.
 
-Fixes: 9a44c1cc6388 ("net: Add a WWAN subsystem")
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
----
-v3: split from original series with fixed subject (Sergey)
-
- drivers/net/wwan/wwan_core.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
-index 674a81d79db3..35ece98134c0 100644
---- a/drivers/net/wwan/wwan_core.c
-+++ b/drivers/net/wwan/wwan_core.c
-@@ -164,11 +164,14 @@ static struct wwan_device *wwan_create_dev(struct device *parent)
- 		goto done_unlock;
- 
- 	id = ida_alloc(&wwan_dev_ids, GFP_KERNEL);
--	if (id < 0)
-+	if (id < 0) {
-+		wwandev = ERR_PTR(id);
- 		goto done_unlock;
-+	}
- 
- 	wwandev = kzalloc(sizeof(*wwandev), GFP_KERNEL);
- 	if (!wwandev) {
-+		wwandev = ERR_PTR(-ENOMEM);
- 		ida_free(&wwan_dev_ids, id);
- 		goto done_unlock;
- 	}
-@@ -182,7 +185,8 @@ static struct wwan_device *wwan_create_dev(struct device *parent)
- 	err = device_register(&wwandev->dev);
- 	if (err) {
- 		put_device(&wwandev->dev);
--		wwandev = NULL;
-+		wwandev = ERR_PTR(err);
-+		goto done_unlock;
- 	}
- 
- done_unlock:
-@@ -1014,8 +1018,8 @@ int wwan_register_ops(struct device *parent, const struct wwan_ops *ops,
- 		return -EINVAL;
- 
- 	wwandev = wwan_create_dev(parent);
--	if (!wwandev)
--		return -ENOMEM;
-+	if (IS_ERR(wwandev))
-+		return PTR_ERR(wwandev);
- 
- 	if (WARN_ON(wwandev->ops)) {
- 		wwan_remove_dev(wwandev);
--- 
-2.30.2
-
+That may break our ability for NL_SET_ERR_MSG to place strings 
+back in a static buffer, no?
