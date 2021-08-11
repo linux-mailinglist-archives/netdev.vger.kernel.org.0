@@ -2,159 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0D5B3E9746
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 20:06:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9A863E976D
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 20:18:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230137AbhHKSGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 14:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52132 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbhHKSGW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 14:06:22 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36DACC061765;
-        Wed, 11 Aug 2021 11:05:58 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id t128so5892121oig.1;
-        Wed, 11 Aug 2021 11:05:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=HxY/WUTgeQY0+6YEwdFvZK8RANC+Nq5/hbFGvTroIBM=;
-        b=p81Yc26djxFQaFJ7NCFX+EPjY/jGcWPm7G7gzBeo8h2Quj/TIkPrGw+tCco45s5uGo
-         8GE7rTun/3e5fHaqqTXPhObCbK/GLHMUabdwENh1i6TMXc0SATjhRCgOpoIod4kBEyq9
-         f4gPXpOGlQM/BnIDHDhWzVIWx2h9xLTcbTdIo2gK2Rt2EnNKDPExVAJx8NKLeKD9eNuP
-         MLWNFOc7ODFeFkGxIsU7NcbbNXUsaDxQpKgTNMxv7+YmT8ynmhRTK3OgXlFxpscdsNrg
-         nBXvFHNOPMJMceHBKUdbd8cc/HofHj7MSrlV24pSxRftwLeqapLuSbf2EmCWeJ5R0ziX
-         KVZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=HxY/WUTgeQY0+6YEwdFvZK8RANC+Nq5/hbFGvTroIBM=;
-        b=k62esMWrrsNwySrloanYrQeIxoKR7WqSLzz/PLzuxS8InMc40wKbwLCQ3N2zVR4LGr
-         YcWmBp9wMNbCgeCdVuZAz7MYlU9F9GjBUkRfGt+ZWvFS3cSYyD9MdMAVZLC47vWY92KV
-         DeE/3fnvg1lrk64mHjzb0cKlFqSQ7eU4x7T8RfgRLi83KmrKEex+OxYcRtjq3PuwBUyj
-         Cm9Cixel8KEzkBkvfnB2FeFblys49k9V9JgAuioNeq3vc0mGn7FdHupuC2XVhHBOXLRs
-         oS8y7GoSsuOqb/xBkOMrAE1MbMuG+Z8k83b4TzzfLswgpsOF7gNQ4yyerTdguIRjbpml
-         Gkiw==
-X-Gm-Message-State: AOAM530kHGGrhElzloi+lyVF08ElKPId8F+7rpmdPsBSYGM6jnhcZ4VI
-        RZA/9prYKawlXcUJCVjqIa0=
-X-Google-Smtp-Source: ABdhPJy/5AUXtuljNkc5tzk/CAVNEAidUYBLMgUS5IwUQjZNN0/xFCqRkgygQxR5lzENJkC/vuG+tA==
-X-Received: by 2002:a05:6808:905:: with SMTP id w5mr5155632oih.27.1628705157682;
-        Wed, 11 Aug 2021 11:05:57 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.45])
-        by smtp.googlemail.com with ESMTPSA id e10sm2790673oig.42.2021.08.11.11.05.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Aug 2021 11:05:57 -0700 (PDT)
-Subject: Re: [PATCH net-next v3] ipv6: add IFLA_INET6_RA_MTU to expose mtu
- value in the RA message
-From:   David Ahern <dsahern@gmail.com>
-To:     Rocco Yue <rocco.yue@mediatek.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, rocco.yue@gmail.com,
-        chao.song@mediatek.com, zhuoliang.zhang@mediatek.com
-References: <c0a6f817-0225-c863-722c-19c798daaa4b@gmail.com>
- <20210810123327.15998-1-rocco.yue@mediatek.com>
- <25dcf6e8-cdd6-6339-f499-5c3100a7d8c4@gmail.com>
-Message-ID: <4624cc10-1fc8-12cd-e9e1-9585f5b496a0@gmail.com>
-Date:   Wed, 11 Aug 2021 12:05:54 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
+        id S229938AbhHKSSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 14:18:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52116 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229703AbhHKSSf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Aug 2021 14:18:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5A5CA60E78;
+        Wed, 11 Aug 2021 18:18:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628705891;
+        bh=3xXGwjBJ6ulV3QyYak5gODw0UvFmWyFgsQ56VQL2Urs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WIdffP3akJpPttpQlRRPZ7IjyCtyp7fImcpa+ClTIaJqI9jPaLI/Ruh2f22FkB+6X
+         A+WVfAArCT9Da6wIYiOrnbSZH8+DxIPLH8TUAQqO+5XD6xmia4lo46P5GwPOmN5Lmt
+         1njEIHwEm5gJFm/Y+hUGQTSCC9iqZLjOcncdSAY3O32YqOzFzDeubZzZiHCPDjYJtB
+         UduZH6pc0n10z9f05OeYkPxOfhTBaqm+RERe6LT/2IB5lh2eCnM4jlP+hJh+ZE1lUJ
+         FOjN3cYvmYFRRbhIK76JSxTCR+Q0MMqRB+xjSSGoJ++ISw/EB1rG6+g5kmdILBUTBz
+         b/pM9YCrm4JIg==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next 00/12] mlx5 updates 2021-08-11
+Date:   Wed, 11 Aug 2021 11:16:46 -0700
+Message-Id: <20210811181658.492548-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <25dcf6e8-cdd6-6339-f499-5c3100a7d8c4@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/11/21 7:56 AM, David Ahern wrote:
-> On 8/10/21 6:33 AM, Rocco Yue wrote:
->> On Mon, 2021-08-09 at 16:43 -0600, David Ahern wrote:
->>> On 8/9/21 8:01 AM, Rocco Yue wrote:
->>
->>> +
->>>>  #ifdef CONFIG_SYSCTL
->>>>  
->>>>  static int addrconf_sysctl_forward(struct ctl_table *ctl, int write,
->>>> diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
->>>> index c467c6419893..a04164cbd77f 100644
->>>> --- a/net/ipv6/ndisc.c
->>>> +++ b/net/ipv6/ndisc.c
->>>> @@ -1496,6 +1496,12 @@ static void ndisc_router_discovery(struct sk_buff *skb)
->>>>  		memcpy(&n, ((u8 *)(ndopts.nd_opts_mtu+1))+2, sizeof(mtu));
->>>>  		mtu = ntohl(n);
->>>>  
->>>> +		if (in6_dev->ra_mtu != mtu) {
->>>> +			in6_dev->ra_mtu = mtu;
->>>> +			inet6_iframtu_notify(in6_dev);
->>>> +			ND_PRINTK(2, info, "update ra_mtu to %d\n", in6_dev->ra_mtu);
->>>> +		}
->>>> +
->>>>  		if (mtu < IPV6_MIN_MTU || mtu > skb->dev->mtu) {
->>>>  			ND_PRINTK(2, warn, "RA: invalid mtu: %d\n", mtu);
->>>>  		} else if (in6_dev->cnf.mtu6 != mtu) {
->>>
->>> Since this MTU is getting reported via af_info infrastructure,
->>> rtmsg_ifinfo should be sufficient.
->>>
->>> From there use 'ip monitor' to make sure you are not generating multiple
->>> notifications; you may only need this on the error path.
->>
->> Hi David,
->>
->> To avoid generating multiple notifications, I added a separate ramtu notify
->> function in this patch, and I added RTNLGRP_IPV6_IFINFO nl_mgrp to the ipmonitor.c
->> to verify this patch was as expected.
->>
->> I look at the rtmsg_ifinfo code, it should be appropriate and I will use it and
->> verify it.
->>
->> But there's one thing, I'm sorry I didn't fully understand the meaning of this
->> sentence "you may only need this on the error path". Honestly, I'm not sure what
->> the error patch refers to, do you mean "if (mtu < IPV6_MIN_MTU || mtu > skb->dev->mtu)" ?
->>
-> 
-> looks like nothing under:
->     if (ndopts.nd_opts_mtu && in6_dev->cnf.accept_ra_mtu) {
-> 
->     }
-> 
-> is going to send a link notification so you can just replace
-> inet6_iframtu_notify with rtmsg_ifinfo in your proposed change.
-> 
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Taking a deeper dive on the code, you do not need to call rtmsg_ifinfo.
-Instead, the existing:
+Hi Dave, Jakub,
 
-        /*
-         *      Send a notify if RA changed managed/otherconf flags or
-timer settings
-         */
-        if (send_ifinfo_notify)
-                inet6_ifinfo_notify(RTM_NEWLINK, in6_dev);
+This series provides misc updates to mlx5.
+For more information please see tag log below.
 
-is called too early. For one the RA can change the MTU and that is done
-after this notify.
+Please pull and let me know if there is any problem.
 
-I think if you moved this down to the out:
+Thanks,
+Saeed.
 
-out:
-        /*
-         *      Send a notify if RA changed managed/otherconf flags or
-timer settings
-         */
-        if (send_ifinfo_notify)
-                inet6_ifinfo_notify(RTM_NEWLINK, in6_dev);
+---
+The following changes since commit 88be3263490514854a1445ae95560585601ff160:
 
-and then set send_ifinfo_notify when the mtu is *changed* by the RA you
-should be good.
+  Merge branch 'dsa-tagger-helpers' (2021-08-11 14:44:59 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-08-11
+
+for you to fetch changes up to 61b6a6c395d6a5d15a85c7c6613d4bd6ffc547ff:
+
+  net/mlx5e: Make use of netdev_warn() (2021-08-11 11:14:34 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2021-08-11
+
+Misc. cleanup for mlx5.
+
+1) Typos and use of netdev_warn()
+2) smatch cleanup
+3) Minor fix to inner TTC table creation
+4) Dynamic capability cache allocation
+
+----------------------------------------------------------------
+Cai Huoqing (2):
+      net/mlx5: Fix typo in comments
+      net/mlx5e: Make use of netdev_warn()
+
+Eran Ben Elisha (1):
+      net/mlx5: Fix variable type to match 64bit
+
+Leon Romanovsky (1):
+      net/mlx5: Delete impossible dev->state checks
+
+Maor Gottlieb (1):
+      net/mlx5: Fix inner TTC table creation
+
+Parav Pandit (4):
+      net/mlx5: SF, use recent sysfs api
+      net/mlx5: Reorganize current and maximal capabilities to be per-type
+      net/mlx5: Allocate individual capability
+      net/mlx5: Initialize numa node for all core devices
+
+Shay Drory (3):
+      net/mlx5: Align mlx5_irq structure
+      net/mlx5: Change SF missing dedicated MSI-X err message to dbg
+      net/mlx5: Refcount mlx5_irq with integer
+
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c      |  8 +--
+ .../net/ethernet/mellanox/mlx5/core/en/tc_tun.c    |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.c |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_common.c    |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_fs.c    |  3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 13 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/events.c   |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/fpga/ipsec.c   |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |  4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/health.c   |  6 +-
+ .../net/ethernet/mellanox/mlx5/core/lib/clock.c    |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/lib/vxlan.c    |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     | 80 ++++++++++++++++++----
+ drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c  | 75 +++++++++++++-------
+ .../net/ethernet/mellanox/mlx5/core/sf/dev/dev.c   |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/sf/devlink.c   |  2 +-
+ include/linux/mlx5/device.h                        | 71 ++++++++++---------
+ include/linux/mlx5/driver.h                        | 15 ++--
+ 20 files changed, 190 insertions(+), 107 deletions(-)
