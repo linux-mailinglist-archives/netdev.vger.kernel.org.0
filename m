@@ -2,86 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4DA03E88FF
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 05:47:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 106243E8914
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 06:07:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233446AbhHKDsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 23:48:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49740 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233250AbhHKDsU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 23:48:20 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91FA3C061765
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 20:47:56 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id a8so1302058pjk.4
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 20:47:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ihJriyzNh7RpVGgztA38kimYOBRznG2XIWoRCGHPFP4=;
-        b=sPlKWskfeZJm6vKBAAShF0RqAs4IUsWOVRPtm4IcS983xUJGBxKDF3f7fFVDdgxS4p
-         eM+5E757JNXTd4ojotwdXkroruMZVXbiPhTcKEuOGApbzqPjhNq/R2Xu9dABB6/RwhAJ
-         zmNRry6eo08U88QFrilDqLSKbeU3/qKyTBjG5YJxgu86tVzC3ppUU9iKO6af5kCr7WDw
-         4FjXTFhB1MPQrMO55/ZqeG284KVFbOA8zfL701ZtF/TPqjCGPw9gfDerGpFlUeR/QXt4
-         iojoTw5v9B1QiRCMSa5uStOV6IX5JNYv3MomlYk2gcQsK/ufyOEOLJwch+2iBUJMPH+M
-         wkdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ihJriyzNh7RpVGgztA38kimYOBRznG2XIWoRCGHPFP4=;
-        b=tyTuh4livobg5fh0sO41PpgSi61rdvK+xozKovmFAoviMAj5gHYPsdJrvC0ns9hPYK
-         fpMLsmmfqs33wDEsWACo2x9R5WwtpPKtqkLwgtJbIxXLd0K52icTZvnGkRmfK2ah3xhk
-         O6lcdScP681UW3X/9pk4H06xq1rUqVEvaA3KXEc/QkoNqasAQnrkn3ivxrzXccpiL/KY
-         4r1LwpPfFTGDhCeoWENOXqbKkXVTtYIfxz7WpbWIGW+jdekboqy5cm5yIDazViULxUUH
-         1V95c1001zZL5mqgO08YvxOO6KcITdo2LGnckvc1Y67sSTqFODuXGOC8i/u3IiV/2uIF
-         +W3g==
-X-Gm-Message-State: AOAM533vI4HYvak7/g1BxDFwd2BcvQwqpa+iLPYU9ogFwrTCd0hoCRh9
-        ZNgKqkzqnRSgL/wE8f6PeePmeA==
-X-Google-Smtp-Source: ABdhPJzBS+tdox/+EUaPyKk8R7M5IVJ1ZRdbjjLp1EM1Pn57BmFvToSz1+VS2J3amIpRLMtnuQCD8g==
-X-Received: by 2002:aa7:9f5b:0:b029:3be:2a1f:ca58 with SMTP id h27-20020aa79f5b0000b02903be2a1fca58mr26303529pfr.46.1628653676138;
-        Tue, 10 Aug 2021 20:47:56 -0700 (PDT)
-Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id v14sm4478482pjd.35.2021.08.10.20.47.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Aug 2021 20:47:55 -0700 (PDT)
-Date:   Tue, 10 Aug 2021 20:47:53 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Justin Iurman <justin.iurman@uliege.be>, netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2-next v2 1/3] Add, show, link, remove IOAM
- namespaces and schemas
-Message-ID: <20210810204753.546c151d@hermes.local>
-In-Reply-To: <dbec63c4-8d05-b476-f508-b43eac749810@gmail.com>
-References: <20210724172108.26524-1-justin.iurman@uliege.be>
-        <20210724172108.26524-2-justin.iurman@uliege.be>
-        <54514656-7e71-6071-a5b2-d6aa8eed6275@gmail.com>
-        <506325411.28069607.1627552295593.JavaMail.zimbra@uliege.be>
-        <6c6b379e-cf9e-d6a8-c009-3e1dbbafb257@gmail.com>
-        <1693729071.28416702.1627576900833.JavaMail.zimbra@uliege.be>
-        <dbec63c4-8d05-b476-f508-b43eac749810@gmail.com>
+        id S229787AbhHKEHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 00:07:35 -0400
+Received: from smtprelay0095.hostedemail.com ([216.40.44.95]:34382 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229554AbhHKEHe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 00:07:34 -0400
+Received: from omf11.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay07.hostedemail.com (Postfix) with ESMTP id B2245181CC1B7;
+        Wed, 11 Aug 2021 04:07:09 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf11.hostedemail.com (Postfix) with ESMTPA id B927C20A296;
+        Wed, 11 Aug 2021 04:07:08 +0000 (UTC)
+Message-ID: <c8b69905c995ab887633ef11862705ee66c60aad.camel@perches.com>
+Subject: Re: [PATCH] netlink: NL_SET_ERR_MSG - remove local static array
+From:   Joe Perches <joe@perches.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Date:   Tue, 10 Aug 2021 21:07:07 -0700
+In-Reply-To: <20210810133058.0c7f0736@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <1f99c69f4e640accaf7459065e6625e73ec0f8d4.camel@perches.com>
+         <20210810133058.0c7f0736@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.82
+X-Rspamd-Server: rspamout04
+X-Rspamd-Queue-Id: B927C20A296
+X-Stat-Signature: erbj8ue88trry6nswhxoahbaokjr61fi
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+6DgYlB/FaT7vkiYsQX+R3g2pF1EQooxU=
+X-HE-Tag: 1628654828-659544
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Jul 2021 08:39:50 -0600
-David Ahern <dsahern@gmail.com> wrote:
-
-> On 7/29/21 10:41 AM, Justin Iurman wrote:
-> > I see. But, in that case, I'm wondering if it wouldn't be better to directly modify "matches" internally so that we keep consistency between modules without changing everything.
+On Tue, 2021-08-10 at 13:30 -0700, Jakub Kicinski wrote:
+> On Mon, 09 Aug 2021 10:04:00 -0700 Joe Perches wrote:
+> > The want was to have some separate object section for netlink messages
+> > so all netlink messages could be specifically listed by some tool but
+> > the effect is duplicating static const char arrays in the object code.
 > > 
-> > Thoughts?  
+> > It seems unused presently so change the macro to avoid the local static
+> > declarations until such time as these actually are wanted and used.
+> > 
+> > This reduces object size ~8KB in an x86-64 defconfig without modules.
+[]
+> > diff --git a/include/linux/netlink.h b/include/linux/netlink.h
+[]
+> > @@ -89,13 +89,12 @@ struct netlink_ext_ack {
+> >   * to the lack of an output buffer.)
+> >   */
+> >  #define NL_SET_ERR_MSG(extack, msg) do {		\
+> > -	static const char __msg[] = msg;		\
+> >  	struct netlink_ext_ack *__extack = (extack);	\
+> >  							\
+> > -	do_trace_netlink_extack(__msg);			\
+> > +	do_trace_netlink_extack(msg);			\
+> >  							\
+> >  	if (__extack)					\
+> > -		__extack->_msg = __msg;			\
+> > +		__extack->_msg = msg;			\
+> >  } while (0)
 > 
-> matches() can not be changed.
-> 
-> iproute_lwtunnel code uses full strcmp. The  new ioam command can start
-> off the same way.
+> But you've made us evaluate msg multiple times now.
+> Given extack is carefully evaluated only once this stands out.
 
-Agreed.
-Although "ip l s" is cool to impress people it is a maintenance nightmare
-as more things get added.
+msg is always a const char array so no evaluation is done.
+It's just a pointer.
+
+In fact, this could either become a static inline or a
+simple function call to reduce object size even further.
+
+For instance:
+
+$ size vmlinux.o.nl_func.*
+   text	   data	    bss	    dec	    hex	filename
+19974564	3457991	 741312	24173867	170dd2b	vmlinux.o.nl_func.new
+19992097	3457967	 741312	24191376	1712190	vmlinux.o.nl_func.old
+
+---
+ include/linux/netlink.h  | 29 ++++++++++-------------------
+ net/netlink/af_netlink.c | 13 +++++++++++++
+ 2 files changed, 23 insertions(+), 19 deletions(-)
+
+diff --git a/include/linux/netlink.h b/include/linux/netlink.h
+index 61b1c7fcc401e..fe80c2704cc23 100644
+--- a/include/linux/netlink.h
++++ b/include/linux/netlink.h
+@@ -82,21 +82,16 @@ struct netlink_ext_ack {
+ 	u8 cookie_len;
+ };
+ 
++void netlink_set_err_msg(struct netlink_ext_ack *extack, const char *msg);
+ /* Always use this macro, this allows later putting the
+  * message into a separate section or such for things
+  * like translation or listing all possible messages.
+  * Currently string formatting is not supported (due
+  * to the lack of an output buffer.)
+  */
+-#define NL_SET_ERR_MSG(extack, msg) do {		\
+-	static const char __msg[] = msg;		\
+-	struct netlink_ext_ack *__extack = (extack);	\
+-							\
+-	do_trace_netlink_extack(__msg);			\
+-							\
+-	if (__extack)					\
+-		__extack->_msg = __msg;			\
+-} while (0)
++
++#define NL_SET_ERR_MSG(extack, msg)		\
++	netlink_set_err_msg(extack, msg)
+ 
+ #define NL_SET_ERR_MSG_MOD(extack, msg)			\
+ 	NL_SET_ERR_MSG((extack), KBUILD_MODNAME ": " msg)
+@@ -110,16 +105,12 @@ struct netlink_ext_ack {
+ 
+ #define NL_SET_BAD_ATTR(extack, attr) NL_SET_BAD_ATTR_POLICY(extack, attr, NULL)
+ 
+-#define NL_SET_ERR_MSG_ATTR_POL(extack, attr, pol, msg) do {	\
+-	static const char __msg[] = msg;			\
+-	struct netlink_ext_ack *__extack = (extack);		\
+-								\
+-	do_trace_netlink_extack(__msg);				\
+-								\
+-	if (__extack) {						\
+-		__extack->_msg = __msg;				\
+-		__extack->bad_attr = (attr);			\
+-		__extack->policy = (pol);			\
++#define NL_SET_ERR_MSG_ATTR_POL(extack, attr, pol, msg)		\
++do {								\
++	netlink_set_err_msg(extack, msg);			\
++	if (extack) {						\
++		extack->bad_attr = (attr);			\
++		extack->policy = (pol);				\
+ 	}							\
+ } while (0)
+ 
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 24b7cf447bc55..b6d035f0d343b 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -2561,6 +2561,19 @@ int nlmsg_notify(struct sock *sk, struct sk_buff *skb, u32 portid,
+ }
+ EXPORT_SYMBOL(nlmsg_notify);
+ 
++/**
++ * nl_set_err_msg - 
++ */
++
++void netlink_set_err_msg(struct netlink_ext_ack *extack, const char *msg)
++{
++	do_trace_netlink_extack(msg);
++
++	if (extack)
++		extack->_msg = msg;
++}
++EXPORT_SYMBOL(netlink_set_err_msg);
++
+ #ifdef CONFIG_PROC_FS
+ struct nl_seq_iter {
+ 	struct seq_net_private p;
+
+
