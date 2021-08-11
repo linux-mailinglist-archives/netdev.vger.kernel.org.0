@@ -2,164 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A3A43E935E
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 16:15:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61DF73E9362
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 16:16:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232308AbhHKOPi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 10:15:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56836 "EHLO mail.kernel.org"
+        id S232136AbhHKOQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 10:16:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57956 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232183AbhHKOPh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Aug 2021 10:15:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7E55A60FE6;
-        Wed, 11 Aug 2021 14:15:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628691314;
-        bh=f0kjizqLd+VD5lUdM35um/vxIp7TzPw1x4ZK2OqnNug=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JN2WE7a0kboVHSMf63qQ75o9rN7Xzb2fvuUftnVn3ncu65jiGPJgQImbl9zLR7gt2
-         ECj23AOp5M3U5AjEM3WKGPlqRG8reoGCZUYQ5MTDS4R10KSSoecDL3lHmSG+3GsvEs
-         4fntepYz8A2PCXBEQvXlUS8d3pYJerRtsBn1POuEreuEP8PmrOrPW97XhXV2cCY6mQ
-         meHMdidxWiIuhapyTbfmHSIJd+vzCao2WWR+LQq34ugOn2Ar9m2c1oAeVrYuGu3LqT
-         Mj/wH9T2lRCDgc8YfdeaJD5udteM+B7LB4H8xjHVgrc8O8DOukTwvKuKJW0MgfU8f+
-         y5fow2jbCISsg==
-Date:   Wed, 11 Aug 2021 17:15:09 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org,
-        Michael Guralnik <michaelgur@mellanox.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Yufeng Mo <moyufeng@huawei.com>
-Subject: Re: [PATCH net-next 0/5] Move devlink_register to be near
- devlink_reload_enable
-Message-ID: <YRPbbeXPNcLTvbTE@unreal>
-References: <cover.1628599239.git.leonro@nvidia.com>
- <20210810165318.323eae24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YRNp6Zmh99N3kJVa@unreal>
- <20210811062732.0f569b9a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YRPYMKxPHUkegEhj@unreal>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YRPYMKxPHUkegEhj@unreal>
+        id S231872AbhHKOQo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Aug 2021 10:16:44 -0400
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7BFA760FE6;
+        Wed, 11 Aug 2021 14:16:20 +0000 (UTC)
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1mDp1m-004LwJ-Id; Wed, 11 Aug 2021 15:16:18 +0100
+Date:   Wed, 11 Aug 2021 15:16:18 +0100
+Message-ID: <87o8a49idp.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Matteo Croce <mcroce@linux.microsoft.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Will Deacon <will@kernel.org>
+Subject: Re: [PATCH net-next] stmmac: align RX buffers
+In-Reply-To: <202417ef-f8ae-895d-4d07-1f9f3d89b4a4@gmail.com>
+References: <20210614022504.24458-1-mcroce@linux.microsoft.com>
+        <871r71azjw.wl-maz@kernel.org>
+        <YROmOQ+4Kqukgd6z@orome.fritz.box>
+        <202417ef-f8ae-895d-4d07-1f9f3d89b4a4@gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: eric.dumazet@gmail.com, thierry.reding@gmail.com, mcroce@linux.microsoft.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, peppe.cavallaro@st.com, alexandre.torgue@foss.st.com, davem@davemloft.net, kuba@kernel.org, palmer@dabbelt.com, paul.walmsley@sifive.com, drew@beagleboard.org, kernel@esmil.dk, jonathanh@nvidia.com, will@kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 11, 2021 at 05:01:20PM +0300, Leon Romanovsky wrote:
-> On Wed, Aug 11, 2021 at 06:27:32AM -0700, Jakub Kicinski wrote:
-> > On Wed, 11 Aug 2021 09:10:49 +0300 Leon Romanovsky wrote:
-> > > On Tue, Aug 10, 2021 at 04:53:18PM -0700, Jakub Kicinski wrote:
-> > > > On Tue, 10 Aug 2021 16:37:30 +0300 Leon Romanovsky wrote:  
-> > > > > This series prepares code to remove devlink_reload_enable/_disable API
-> > > > > and in order to do, we move all devlink_register() calls to be right
-> > > > > before devlink_reload_enable().
-> > > > > 
-> > > > > The best place for such a call should be right before exiting from
-> > > > > the probe().
-> > > > > 
-> > > > > This is done because devlink_register() opens devlink netlink to the
-> > > > > users and gives them a venue to issue commands before initialization
-> > > > > is finished.
-> > > > > 
-> > > > > 1. Some drivers were aware of such "functionality" and tried to protect
-> > > > > themselves with extra locks, state machines and devlink_reload_enable().
-> > > > > Let's assume that it worked for them, but I'm personally skeptical about
-> > > > > it.
-> > > > > 
-> > > > > 2. Some drivers copied that pattern, but without locks and state
-> > > > > machines. That protected them from reload flows, but not from any _set_
-> > > > > routines.
-> > > > > 
-> > > > > 3. And all other drivers simply didn't understand the implications of early
-> > > > > devlink_register() and can be seen as "broken".  
-> > > > 
-> > > > What are those implications for drivers which don't implement reload?
-> > > > Depending on which parts of devlink the drivers implement there may well
-> > > > be nothing to worry about.
-> > > > 
-> > > > Plus devlink instances start out with reload disabled. Could you please
-> > > > take a step back and explain why these changes are needed.  
-> > > 
-> > > The problem is that devlink_register() adds new devlink instance to the
-> > > list of visible devlinks (devlink_list). It means that all devlink_*_dumpit()
-> > > will try to access devices during their initialization, before they are ready.
-> > > 
-> > > The more troublesome case is that devlink_list is iterated in the
-> > > devlink_get_from_attrs() and it is used in devlink_nl_pre_doit(). The
-> > > latter function will return to the caller that new devlink is valid and
-> > > such caller will be able to proceed to *_set_doit() functions.
-> > > 
-> > > Just as an example:
-> > >  * user sends netlink message
-> > >   * devlink_nl_cmd_eswitch_set_doit()
-> > >    * ops->eswitch_mode_set()
-> > >     * Are you sure that all drivers protected here?
-> > >       I remind that driver is in the middle of its probe().
-> > > 
-> > > Someone can argue that drivers and devlink are protected from anything
-> > > harmful with their global (devlink_mutex and devlink->lock) and internal
-> > > (device->lock, e.t.c.) locks. However it is impossible to prove for all
-> > > drivers and prone to errors.
-> > > 
-> > > Reload enable/disable gives false impression that the problem exists in
-> > > that flow only, which is not true.
-> > > 
-> > > devlink_reload_enable() is a duct tape because reload flows much easier
-> > > to hit.
+On Wed, 11 Aug 2021 13:53:59 +0100,
+Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> 
+> 
+> 
+> On 8/11/21 12:28 PM, Thierry Reding wrote:
+> > On Tue, Aug 10, 2021 at 08:07:47PM +0100, Marc Zyngier wrote:
+> >> Hi all,
+> >>
+> >> [adding Thierry, Jon and Will to the fun]
+> >>
+> >> On Mon, 14 Jun 2021 03:25:04 +0100,
+> >> Matteo Croce <mcroce@linux.microsoft.com> wrote:
+> >>>
+> >>> From: Matteo Croce <mcroce@microsoft.com>
+> >>>
+> >>> On RX an SKB is allocated and the received buffer is copied into it.
+> >>> But on some architectures, the memcpy() needs the source and destination
+> >>> buffers to have the same alignment to be efficient.
+> >>>
+> >>> This is not our case, because SKB data pointer is misaligned by two bytes
+> >>> to compensate the ethernet header.
+> >>>
+> >>> Align the RX buffer the same way as the SKB one, so the copy is faster.
+> >>> An iperf3 RX test gives a decent improvement on a RISC-V machine:
+> >>>
+> >>> before:
+> >>> [ ID] Interval           Transfer     Bitrate         Retr
+> >>> [  5]   0.00-10.00  sec   733 MBytes   615 Mbits/sec   88             sender
+> >>> [  5]   0.00-10.01  sec   730 MBytes   612 Mbits/sec                  receiver
+> >>>
+> >>> after:
+> >>> [ ID] Interval           Transfer     Bitrate         Retr
+> >>> [  5]   0.00-10.00  sec  1.10 GBytes   942 Mbits/sec    0             sender
+> >>> [  5]   0.00-10.00  sec  1.09 GBytes   940 Mbits/sec                  receiver
+> >>>
+> >>> And the memcpy() overhead during the RX drops dramatically.
+> >>>
+> >>> before:
+> >>> Overhead  Shared O  Symbol
+> >>>   43.35%  [kernel]  [k] memcpy
+> >>>   33.77%  [kernel]  [k] __asm_copy_to_user
+> >>>    3.64%  [kernel]  [k] sifive_l2_flush64_range
+> >>>
+> >>> after:
+> >>> Overhead  Shared O  Symbol
+> >>>   45.40%  [kernel]  [k] __asm_copy_to_user
+> >>>   28.09%  [kernel]  [k] memcpy
+> >>>    4.27%  [kernel]  [k] sifive_l2_flush64_range
+> >>>
+> >>> Signed-off-by: Matteo Croce <mcroce@microsoft.com>
+> >>
+> >> This patch completely breaks my Jetson TX2 system, composed of 2
+> >> Nvidia Denver and 4 Cortex-A57, in a very "funny" way.
+> >>
+> >> Any significant amount of traffic result in all sort of corruption
+> >> (ssh connections get dropped, Debian packages downloaded have the
+> >> wrong checksums) if any Denver core is involved in any significant way
+> >> (packet processing, interrupt handling). And it is all triggered by
+> >> this very change.
+> >>
+> >> The only way I have to make it work on a Denver core is to route the
+> >> interrupt to that particular core and taskset the workload to it. Any
+> >> other configuration involving a Denver CPU results in some sort of
+> >> corruption. On their own, the A57s are fine.
+> >>
+> >> This smells of memory ordering going really wrong, which this change
+> >> would expose. I haven't had a chance to dig into the driver yet (it
+> >> took me long enough to bisect it), but if someone points me at what is
+> >> supposed to synchronise the DMA when receiving an interrupt, I'll have
+> >> a look.
 > > 
-> > Right :/
+> > I recall that Jon was looking into a similar issue recently, though I
+> > think the failure mode was slightly different. I also vaguely recall
+> > that CPU frequency was impacting this to some degree (lower CPU
+> > frequencies would increase the chances of this happening).
 > > 
-> > > > > In this series, we focus on items #1 and #2.
-> > > > > 
-> > > > > Please share your opinion if I should change ALL other drivers to make
-> > > > > sure that devlink_register() is the last command or leave them in an
-> > > > > as-is state.  
-> > > > 
-> > > > Can you please share the output of devlink monitor and ip monitor link
-> > > > before and after?  The modified drivers will not register ports before
-> > > > they register the devlink instance itself.  
-> > > 
-> > > Not really, they will register but won't be accessible from the user space.
-> > > The only difference is the location of "[dev,new] ..." notification.
+> > Jon's currently out of office, but let me try and dig up the details
+> > on this.
 > > 
-> > Is that because of mlx5's use of auxdev, or locking? I don't see
-> > anything that should prevent the port notification from coming out.
-> 
-> And it is ok, kernel can (and does) send notifications, because we left
-> devlink_ops assignment to be in devlink_alloc(). It ensures that all
-> flows that worked before will continue to work without too much changes.
-> 
+> > Thierry
 > > 
-> > I think the notifications need to get straightened out, we can't notify
-> > about sub-objects until the object is registered, since they are
-> > inaccessible.
+> >>
+> >> Thanks,
+> >>
+> >> 	M.
+> >>
+> >>> ---
+> >>>  drivers/net/ethernet/stmicro/stmmac/stmmac.h | 4 ++--
+> >>>  1 file changed, 2 insertions(+), 2 deletions(-)
+> >>>
+> >>> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> >>> index b6cd43eda7ac..04bdb3950d63 100644
+> >>> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> >>> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> >>> @@ -338,9 +338,9 @@ static inline bool stmmac_xdp_is_enabled(struct stmmac_priv *priv)
+> >>>  static inline unsigned int stmmac_rx_offset(struct stmmac_priv *priv)
+> >>>  {
+> >>>  	if (stmmac_xdp_is_enabled(priv))
+> >>> -		return XDP_PACKET_HEADROOM;
+> >>> +		return XDP_PACKET_HEADROOM + NET_IP_ALIGN;
+> >>>  
+> >>> -	return 0;
+> >>> +	return NET_SKB_PAD + NET_IP_ALIGN;
+> >>>  }
+> >>>  
+> >>>  void stmmac_disable_rx_queue(struct stmmac_priv *priv, u32 queue);
+> >>> -- 
+> >>> 2.31.1
+> >>>
+> >>>
+> >>
+> >> -- 
+> >> Without deviation from the norm, progress is not possible.
 > 
-> I'm not sure about that. You present the case where kernel and user
-> space races against each other and historically kernel doesn't protect
-> from such flows. 
+> Are you sure you do not need to adjust stmmac_set_bfsize(), 
+> stmmac_rx_buf1_len() and stmmac_rx_buf2_len() ?
 > 
-> For example, you can randomly remove and add kernel modules. At some
-> point of time, you will get "missing symbols errors", just because
-> one module tries to load and it depends on already removed one.
+> Presumably DEFAULT_BUFSIZE also want to be increased by NET_SKB_PAD
 > 
-> We must protect kernel and this is what I do. User shouldn't access
-> devlink instance before he sees "dev name" notification.
+> Patch for stmmac_rx_buf1_len() :
 > 
-> Of course, we can move various iterators to devlink_register(), but it
-> will make code much complex, because we have objects that can be
-> registered at any time (IMHO. trap is one of them) and I will need to 
-> implement notification logic that separate objects that were created
-> before devlink_register and after.
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index 7b8404a21544cf29668e8a14240c3971e6bce0c3..041a74e7efca3436bfe3e17f972dd156173957a9 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -4508,12 +4508,12 @@ static unsigned int stmmac_rx_buf1_len(struct stmmac_priv *priv,
+>  
+>         /* First descriptor, not last descriptor and not split header */
+>         if (status & rx_not_ls)
+> -               return priv->dma_buf_sz;
+> +               return priv->dma_buf_sz - NET_SKB_PAD - NET_IP_ALIGN;
+>  
+>         plen = stmmac_get_rx_frame_len(priv, p, coe);
+>  
+>         /* First descriptor and last descriptor and not split header */
+> -       return min_t(unsigned int, priv->dma_buf_sz, plen);
+> +       return min_t(unsigned int, priv->dma_buf_sz - NET_SKB_PAD - NET_IP_ALIGN, plen);
+>  }
+>  
+>  static unsigned int stmmac_rx_buf2_len(struct stmmac_priv *priv,
 
-Bottom line,
-I'm trying to make code simpler, not opposite :).
+Feels like a major deficiency of the original patch. Happy to test a
+more complete patch if/when you have one.
 
-> 
-> Thanks
+Thanks,
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
