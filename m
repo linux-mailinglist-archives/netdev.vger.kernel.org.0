@@ -2,80 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B2BB3E927C
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 15:24:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9FAF3E9296
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 15:25:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230418AbhHKNYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 09:24:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41518 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231140AbhHKNYL (ORCPT
+        id S231829AbhHKN0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 09:26:14 -0400
+Received: from smtprelay0160.hostedemail.com ([216.40.44.160]:44116 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231405AbhHKNYL (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 09:24:11 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5532AC06179F
-        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 06:23:37 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id p38so5833294lfa.0
-        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 06:23:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=G1DS3dhDnQ4urDmNfj/USqiCFClTi+Z5dRNYG0dYe2E=;
-        b=NChTj9NxKFObAclXn2BntB3aw+Vd0IDfRn7Dvu3PGrTC8DEKz5eBR6UJ/LdvBm55ZX
-         NlYb/Up9TurVBBTwJ3jC1OjeOfZ7fHVLoxd0OXcA0p1zrytca8apsPvlZxjnfkNXqa8O
-         o9PBGGgPC4SAuYxiAfWzybxgwYUhUpb62FRnnagJ5uFhODDmQiQ5X7b9sPaGPKoormtt
-         XhSr4UIPjO0iUgierg6TBTiHqQortcyJHfP0fvYMDXSlz41oXgdsgZi5PgEGaM9e1GQl
-         U9sCNMpacMUXW4q6L7+mXu1kX5Pyom/75OtpDHsQN1erGp5QCi89SJ3pSbWJjUU9/m1Z
-         C2QQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=G1DS3dhDnQ4urDmNfj/USqiCFClTi+Z5dRNYG0dYe2E=;
-        b=n+QW0zWgkKEPgD8p1XRdMjstOzKV3lrMvjyKn4TgUFQosam1GbiZvwBZhkuWX0vDnO
-         0a5yV12sykWKdjyX3UjFhYezQHL0azOPov1ZvSQcN0kiNkCs7VDwJMMIRXga4AimpwX4
-         bPM06JBO24+iJtbh07SUuvatC3kyzJYgWbltRv9sskCywH3jCGREbrMg4SPWTPLDph1X
-         Mmyy/4TLqDtzrfQBotiZ2VXkSHAiGWmM/klOCGNGgaeTQbPQT4vy9jillQJIfoik2NFH
-         z4p9O2EDtKWuxOhinvUTC2eZNSuooRVDcfkw7DEgqTMdtRYAIqDNNDTKOkM3ThpS9GgE
-         cuUQ==
-X-Gm-Message-State: AOAM531NtFRdjJNcX8Cw636AxHTgJpfiJXKV8HPL85xd0xUkPxLhU5c8
-        wufQ/mwA0u8Ruwqhhi43AhokAJBN4B6hzDidAkYJeQ==
-X-Google-Smtp-Source: ABdhPJwWpOc+d0W3TyHMjyV5Kph+JZTz5Jpkx4yqIwZ8hoblgm4D3kS4sVUrpfWLOjpOX17ADZ4iXbTCSx9iVp3Tpsc=
-X-Received: by 2002:a05:6512:1084:: with SMTP id j4mr26289074lfg.586.1628688215624;
- Wed, 11 Aug 2021 06:23:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210809115722.351383-1-vladimir.oltean@nxp.com> <20210809115722.351383-2-vladimir.oltean@nxp.com>
-In-Reply-To: <20210809115722.351383-2-vladimir.oltean@nxp.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 11 Aug 2021 15:23:24 +0200
-Message-ID: <CACRpkda5tpUgfJbTzgugC=Mmfsjfj1VM29-vLCW0-fnS4R6=YQ@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next 1/4] net: dsa: create a helper that strips
- EtherType DSA headers on RX
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+Received: from omf08.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay04.hostedemail.com (Postfix) with ESMTP id DB3C91807F217;
+        Wed, 11 Aug 2021 13:23:44 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf08.hostedemail.com (Postfix) with ESMTPA id 593651A29FE;
+        Wed, 11 Aug 2021 13:23:43 +0000 (UTC)
+Message-ID: <c296dd2f66e97ad38d5456c0fab4e0ff99b14634.camel@perches.com>
+Subject: Re: [PATCH net-next v2 2/2] bonding: combine netlink and console
+ error messages
+From:   Joe Perches <joe@perches.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jonathan Toppins <jtoppins@redhat.com>, netdev@vger.kernel.org,
+        leon@kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
         "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
+        linux-kernel@vger.kernel.org
+Date:   Wed, 11 Aug 2021 06:23:41 -0700
+In-Reply-To: <20210811054917.722bd988@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <cover.1628650079.git.jtoppins@redhat.com>
+         <e6b78ce8f5904a5411a809cf4205d745f8af98cb.1628650079.git.jtoppins@redhat.com>
+         <d5e1aada694465fd62f57695e264259815e60746.camel@perches.com>
+         <20210811054917.722bd988@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.0-1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Rspamd-Server: rspamout05
+X-Rspamd-Queue-Id: 593651A29FE
+X-Spam-Status: No, score=1.56
+X-Stat-Signature: 4djjjcjq8kkr7c1aewnaurrx6cw1hctk
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1/EeNUAF09QPTMPt+4vmd/b8cehfzKAmU8=
+X-HE-Tag: 1628688223-324698
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 9, 2021 at 1:57 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+On Wed, 2021-08-11 at 05:49 -0700, Jakub Kicinski wrote:
+> On Tue, 10 Aug 2021 20:27:01 -0700 Joe Perches wrote:
+> > > +#define BOND_NL_ERR(bond_dev, extack, errmsg) do {		\
+> > > +	if (extack)						\
+> > > +		NL_SET_ERR_MSG(extack, errmsg);			\
+> > > +	else							\
+> > > +		netdev_err(bond_dev, "Error: %s\n", errmsg);	\
+> > > +} while (0)
+> > > +
+> > > +#define SLAVE_NL_ERR(bond_dev, slave_dev, extack, errmsg) do {		\
+> > > +	if (extack)							\
+> > > +		NL_SET_ERR_MSG(extack, errmsg);				\
+> > > +	else								\
+> > > +		slave_err(bond_dev, slave_dev, "Error: %s\n", errmsg);	\
+> > > +} while (0)  
+> > 
+> > Ideally both of these would be static functions and not macros.
+> 
+> That may break our ability for NL_SET_ERR_MSG to place strings 
+> back in a static buffer, no?
 
-> All header taggers open-code a memmove that is fairly not all that
-> obvious, and we can hide the details behind a helper function, since the
-> only thing specific to the driver is the length of the header tag.
->
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Not really.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+The most common way to place things in a particular section is to
+use __section("whatever")
 
-yours,
-Linus Walleij
+It's pretty trivial to mark these errmsg strings as above.
+
+
+
