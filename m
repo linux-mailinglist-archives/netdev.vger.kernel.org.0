@@ -2,394 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 962743E8A0A
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 08:09:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28D7E3E8A10
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 08:10:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234594AbhHKGKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 02:10:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52742 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234449AbhHKGKD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 02:10:03 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54DA5C061765
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 23:09:40 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id u15so1110354wmj.1
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 23:09:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=iTgVgxmlS7OJwHAVaPtE7zMlq2gOo4iq/cZLVrIBxkA=;
-        b=h1vkLoWbvML+4hCbJJ7g0GK+4BcZ9Gx4y9+Px7lZnsvC48T5HYS73J1Ja4YjA06viT
-         J6pVMR5XTmReLShquu9Z8X8KCbYduQHFEPBp9EHXdTtRSZZh+6dvbygmuO7BZLcuQMuY
-         oanW0rjXCNtD9BrTZcOj8Yy+w4WHXG6nDN1IGMAi98oLuew70A9iyKnNg/pByVC8+Ni8
-         wTD+/lF9Ua2wp+JQA0R61EhwM7xiB58MW/BCnkP/vcokECbP633r9fZii8kyeK1rtdbt
-         y4vb0ClKd34bcCkzyytGq7TD6ahWi7PxPHHFDAtKvgvG7r48sMHtuNYTsrT+i4y0nZo6
-         zZcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=iTgVgxmlS7OJwHAVaPtE7zMlq2gOo4iq/cZLVrIBxkA=;
-        b=UEAC0aA+nxyWmUg2l26f+8sE7OYm+eWQbiThwDlMt/BNhNAABeuWALoeWzX7e0Ni/W
-         vm1l6BT5U7zKUWiobmfYtM0B6Lwa0VvBOXBrBgSJt9Vxtl5t0nX6YB7GHHhl6mOdfJ+i
-         D4XTE02t+s7zM5xJyGU7NxICKIf+YfK0d+zl5kb6NRX1wMZ3YzEkKeyYp8Zu3lFJYm5K
-         AdVpTmH6jQ21cfFMh0f0umnzxBfVdAHYcmDWszwWmktwm3dMI+iN+gJgmTCpMcV8cWqa
-         dJtdHUN8D4q7Ms6F7hpkGhz6frnMDG3q3hpufoe8RXlgrP730ijjbDB8AHpPAhKRUrHO
-         YqfQ==
-X-Gm-Message-State: AOAM532XGSKZqSVth7bfLBKSuBBPxScrwYtT0N090/KvO50WDu98dXb0
-        7lLXhDkcy/xR7MRwBG20FwE=
-X-Google-Smtp-Source: ABdhPJz2uUew8smUGWQuicYUlCfpl+uFSRIKGbJodmUN+tykdf4P85H46Y22hBXTQznXJUjKb5AR/w==
-X-Received: by 2002:a7b:c041:: with SMTP id u1mr25264872wmc.95.1628662178849;
-        Tue, 10 Aug 2021 23:09:38 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f10:c200:ec01:df4:624e:9852? (p200300ea8f10c200ec010df4624e9852.dip0.t-ipconnect.de. [2003:ea:8f10:c200:ec01:df4:624e:9852])
-        by smtp.googlemail.com with ESMTPSA id i5sm26292215wrs.85.2021.08.10.23.09.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Aug 2021 23:09:38 -0700 (PDT)
-To:     ljakku77@gmail.com
-Cc:     Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
-        nic_swsd@realtek.com
-References: <4bc0fc0c-1437-fc41-1c50-38298214ec75@gmail.com>
- <20200413105838.GK334007@unreal>
- <dc2de414-0e6e-2531-0131-0f3db397680f@gmail.com>
- <20200413113430.GM334007@unreal>
- <03d9f8d9-620c-1f8b-9c58-60b824fa626c@gmail.com>
- <d3adc7f2-06bb-45bc-ab02-3d443999cefd@gmail.com>
- <f143b58d-4caa-7c9b-b98b-806ba8d2be99@gmail.com>
- <0415fc0d-1514-0d79-c1d8-52984973cca5@gmail.com>
- <3e3b4402-3b6f-7d26-10f3-8e2b18eb65c4@gmail.com>
- <eb4b6c25-539a-9a94-27a4-398031725709@gmail.com>
- <efe87588-e480-ebc9-32d7-a1489b25f45a@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: NET: r8168/r8169 identifying fix
-Message-ID: <60619b13-fdd4-e9f9-2b80-0807c381a247@gmail.com>
-Date:   Wed, 11 Aug 2021 08:09:29 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S234698AbhHKGLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 02:11:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59708 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234468AbhHKGLQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Aug 2021 02:11:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2840C60F41;
+        Wed, 11 Aug 2021 06:10:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628662252;
+        bh=AKwTurEJzTx7U40tBTzGKeANm+iVMkeeFGKfRLV6toc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Bw7bdqJhsZvuUoyFRRqt7VzbA22+hLjUJb/VctHnEC2eRxDYdTv001GU0L7+McjWG
+         zgCvbIIleLYtIYX2JrHqrGY3ngWqtESh64nkJLktfUDLPM9txKwxJrk9x+lpcuiEmK
+         dyw4KjwtiYeEWCkTQ3R0GqMku46c/5Dsc/UQFBftUJlm2bUeno+7j2csjvn8vYOYxS
+         S2+K/KZ5EQheTMO3xSk976tWfnlCV2sdBjiuPbG+KQFFEjH1jnoAaVTH/j+/eIu1sk
+         Yj3zaux0Dg60EpwSvDqc/1hodllYInFhHWLV1B7px5aPMQ401gTg5ScvnauVch7s5c
+         t7IOiuE0d73jg==
+Date:   Wed, 11 Aug 2021 09:10:49 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        linux-kernel@vger.kernel.org,
+        Michael Guralnik <michaelgur@mellanox.com>,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Yufeng Mo <moyufeng@huawei.com>
+Subject: Re: [PATCH net-next 0/5] Move devlink_register to be near
+ devlink_reload_enable
+Message-ID: <YRNp6Zmh99N3kJVa@unreal>
+References: <cover.1628599239.git.leonro@nvidia.com>
+ <20210810165318.323eae24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <efe87588-e480-ebc9-32d7-a1489b25f45a@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210810165318.323eae24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10.08.2021 23:50, Late @ Gmail wrote:
-> Hi,
+On Tue, Aug 10, 2021 at 04:53:18PM -0700, Jakub Kicinski wrote:
+> On Tue, 10 Aug 2021 16:37:30 +0300 Leon Romanovsky wrote:
+> > This series prepares code to remove devlink_reload_enable/_disable API
+> > and in order to do, we move all devlink_register() calls to be right
+> > before devlink_reload_enable().
+> > 
+> > The best place for such a call should be right before exiting from
+> > the probe().
+> > 
+> > This is done because devlink_register() opens devlink netlink to the
+> > users and gives them a venue to issue commands before initialization
+> > is finished.
+> > 
+> > 1. Some drivers were aware of such "functionality" and tried to protect
+> > themselves with extra locks, state machines and devlink_reload_enable().
+> > Let's assume that it worked for them, but I'm personally skeptical about
+> > it.
+> > 
+> > 2. Some drivers copied that pattern, but without locks and state
+> > machines. That protected them from reload flows, but not from any _set_
+> > routines.
+> > 
+> > 3. And all other drivers simply didn't understand the implications of early
+> > devlink_register() and can be seen as "broken".
 > 
-> Now I solved the reloading issue, and r8169 driver works line charm.
+> What are those implications for drivers which don't implement reload?
+> Depending on which parts of devlink the drivers implement there may well
+> be nothing to worry about.
 > 
+> Plus devlink instances start out with reload disabled. Could you please
+> take a step back and explain why these changes are needed.
 
-This patch is a complete hack and and in parts simply wrong.
-In addition it misses the basics of how to submit a patch.
-Quality hasn't improved since your first attempt, so better stop
-trying to submit this to mainline.
+The problem is that devlink_register() adds new devlink instance to the
+list of visible devlinks (devlink_list). It means that all devlink_*_dumpit()
+will try to access devices during their initialization, before they are ready.
 
-> Patch:
+The more troublesome case is that devlink_list is iterated in the
+devlink_get_from_attrs() and it is used in devlink_nl_pre_doit(). The
+latter function will return to the caller that new devlink is valid and
+such caller will be able to proceed to *_set_doit() functions.
+
+Just as an example:
+ * user sends netlink message
+  * devlink_nl_cmd_eswitch_set_doit()
+   * ops->eswitch_mode_set()
+    * Are you sure that all drivers protected here?
+      I remind that driver is in the middle of its probe().
+
+Someone can argue that drivers and devlink are protected from anything
+harmful with their global (devlink_mutex and devlink->lock) and internal
+(device->lock, e.t.c.) locks. However it is impossible to prove for all
+drivers and prone to errors.
+
+Reload enable/disable gives false impression that the problem exists in
+that flow only, which is not true.
+
+devlink_reload_enable() is a duct tape because reload flows much easier
+to hit.
+
 > 
-> From: Lauri Jakku <lja@lja.fi>
-> Date: Mon, 9 Aug 2021 21:44:53 +0300
-> Subject: [PATCH] net:realtek:r8169 driver load fix
+> > In this series, we focus on items #1 and #2.
+> > 
+> > Please share your opinion if I should change ALL other drivers to make
+> > sure that devlink_register() is the last command or leave them in an
+> > as-is state.
 > 
->    net:realtek:r8169 driver load fix
-> 
->      Problem:
-> 
->        The problem is that (1st load) fails, but there is valid
->        HW found (the ID is known) and this patch is applied, the second
->        time of loading module works ok, and network is connected ok
->        etc.
-> 
->      Solution:
-> 
->        The driver will trust the HW that reports valid ID and then make
->        re-loading of the module as it would being reloaded manually.
-> 
->        I do check that if the HW id is read ok from the HW, then pass
->        -EAGAIN ja try to load 5 times, sleeping 250ms in between.
-> 
-> Signed-off-by: Lauri Jakku <lja@lja.fi>
-> diff --git a/linux-5.14-rc4/drivers/net/ethernet/realtek/r8169_main.c b/linux-5.14-rc4/drivers/net/ethernet/realtek/r8169_main.c
-> index c7af5bc3b..d8e602527 100644
-> --- a/linux-5.14-rc4/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/linux-5.14-rc4/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -634,6 +634,8 @@ struct rtl8169_private {
->      struct rtl_fw *rtl_fw;
->  
->      u32 ocp_base;
-> +
-> +    int retry_probeing;
->  };
->  
->  typedef void (*rtl_generic_fct)(struct rtl8169_private *tp);
-> @@ -5097,13 +5099,16 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
->      tp->phydev = mdiobus_get_phy(new_bus, 0);
->      if (!tp->phydev) {
->          return -ENODEV;
-> -    } else if (!tp->phydev->drv) {
-> -        /* Most chip versions fail with the genphy driver.
-> -         * Therefore ensure that the dedicated PHY driver is loaded.
-> +    } else if (tp->phydev->phy_id != RTL_GIGA_MAC_NONE) {
+> Can you please share the output of devlink monitor and ip monitor link
+> before and after?  The modified drivers will not register ports before
+> they register the devlink instance itself.
 
-You compare two completely different things here. The phy_id has nothing
-to do with the chip version enum.
+Not really, they will register but won't be accessible from the user space.
+The only difference is the location of "[dev,new] ..." notification.
 
-> +        /* Most chip versions fail with the genphy driver, BUT do rerport valid IW
-> +         * ID. Re-starting the module seem to fix the issue of non-functional driver.
->           */
-> -        dev_err(&pdev->dev, "no dedicated PHY driver found for PHY ID 0x%08x, maybe realtek.ko needs to be added to initramfs?\n",
-> +        dev_err(&pdev->dev,
-> +            "no dedicated driver, but HW found: PHY PHY ID 0x%08x\n",
->              tp->phydev->phy_id);
-> -        return -EUNATCH;
-> +
-> +        dev_err(&pdev->dev, "trying re-probe few times..\n");
-> +
->      }
->  
->      tp->phydev->mac_managed_pm = 1;
-> @@ -5250,6 +5255,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->      enum mac_version chipset;
->      struct net_device *dev;
->      u16 xid;
-> +    int savederr = 0;
->  
->      dev = devm_alloc_etherdev(&pdev->dev, sizeof (*tp));
->      if (!dev)
-> @@ -5261,6 +5267,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->      tp->dev = dev;
->      tp->pci_dev = pdev;
->      tp->supports_gmii = ent->driver_data == RTL_CFG_NO_GBIT ? 0 : 1;
-> +    tp->retry_probeing = 0;
->      tp->eee_adv = -1;
->      tp->ocp_base = OCP_STD_PHY_BASE;
->  
-> @@ -5410,7 +5417,15 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  
->      pci_set_drvdata(pdev, tp);
->  
-> -    rc = r8169_mdio_register(tp);
-> +    savederr = r8169_mdio_register(tp);
-> +
-> +    if (
-> +        (tp->retry_probeing > 0) &&
-> +        (savederr == -EAGAIN)
-> +       ) {
-> +        netdev_info(dev, " retry of probe requested..............");
-> +    }
-> +
->      if (rc)
->          return rc;
->  
-> @@ -5435,6 +5450,14 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->      if (pci_dev_run_wake(pdev))
->          pm_runtime_put_sync(&pdev->dev);
->  
-> +    if (
-> +        (tp->retry_probeing > 0) &&
-> +        (savederr == -EAGAIN)
-> +       ) {
-> +        netdev_info(dev, " retry of probe requested..............");
-> +        return savederr;
+[leonro@vm ~]$ sudo modprobe mlx5_core
+[  105.575790] mlx5_core 0000:00:09.0: firmware version: 4.8.9999
+[  105.576349] mlx5_core 0000:00:09.0: 0.000 Gb/s available PCIe bandwidth (8.0 GT/s PCIe x255 link)
+[  105.686217] pps pps0: new PPS source ptp0
+[  105.688144] mlx5_core 0000:00:09.0: E-Switch: Total vports 2, per vport: max uc(32768) max mc(32768)
+[  105.717736] mlx5_core 0000:00:09.0: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+[  106.957028] mlx5_core 0000:00:09.0 eth1: Link down
+[  106.960379] mlx5_core 0000:00:09.0 eth1: Link up
+[  106.967916] IPv6: ADDRCONF(NETDEV_CHANGE): eth1: link becomes ready
+================================================================================================
+Before:
+[leonro@vm ~]$ sudo devlink monitor
+[dev,new] pci/0000:00:09.0
+[param,new] pci/0000:00:09.0: name flow_steering_mode type driver-specific
+  values:
+[param,new] pci/0000:00:09.0: name esw_port_metadata type driver-specific
+  values:
+[param,new] pci/0000:00:09.0: name enable_remote_dev_reset type generic
+  values:
+[param,new] pci/0000:00:09.0: name enable_roce type generic
+  values:
+    cmode driverinit value true
+[param,new] pci/0000:00:09.0: name fdb_large_groups type driver-specific
+  values:
+    cmode driverinit value 15
+[param,new] pci/0000:00:09.0: name flow_steering_mode type driver-specific
+  values:
+    cmode runtime value dmfs
+[param,new] pci/0000:00:09.0: name enable_roce type generic
+  values:
+    cmode driverinit value true
+[param,new] pci/0000:00:09.0: name fdb_large_groups type driver-specific
+  values:
+    cmode driverinit value 15
+[param,new] pci/0000:00:09.0: name esw_port_metadata type driver-specific
+  values:
+    cmode runtime value true
+[param,new] pci/0000:00:09.0: name enable_remote_dev_reset type generic
+  values:
+    cmode runtime value true
+[trap-group,new] pci/0000:00:09.0: name l2_drops generic true
+[trap,new] pci/0000:00:09.0: name ingress_vlan_filter type drop generic true action drop group l2_drops
+[trap,new] pci/0000:00:09.0: name dmac_filter type drop generic true action drop group l2_drops
+[port,new] pci/0000:00:09.0/131071: type notset flavour physical port 0 splittable false
+[port,new] pci/0000:00:09.0/131071: type eth netdev eth1 flavour physical port 0 splittable false
 
-You can not simply return here. You have to clean up.
+[leonro@vm ~]$ sudo ip monitor
+inet eth1 forwarding off rp_filter loose mc_forwarding off proxy_neigh off ignore_routes_with_linkdown off 
+inet6 eth1 forwarding off mc_forwarding off proxy_neigh off ignore_routes_with_linkdown off 
+4: eth1: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default 
+    link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+4: eth1: <NO-CARRIER,BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state DOWN group default 
+    link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+multicast ff00::/8 dev eth1 table local proto kernel metric 256 pref medium
+fe80::/64 dev eth1 proto kernel metric 256 pref medium
+4: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default 
+    link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+4: eth1    inet6 fe80::5054:ff:fe12:3456/64 scope link 
+       valid_lft forever preferred_lft forever
+local fe80::5054:ff:fe12:3456 dev eth1 table local proto kernel metric 0 pref medium
 
-> +    }
-> +
->      return 0;
->  }
->  
-> diff --git a/linux-5.14-rc4/drivers/net/phy/phy_device.c b/linux-5.14-rc4/drivers/net/phy/phy_device.c
-> index 5d5f9a9ee..59c6ac031 100644
+===========================================================================================================
+After:
+[leonro@vm ~]$ sudo devlink monitor
+[param,new] pci/0000:00:09.0: name flow_steering_mode type driver-specific
+  values:
+[param,new] pci/0000:00:09.0: name esw_port_metadata type driver-specific
+  values:
+[param,new] pci/0000:00:09.0: name enable_remote_dev_reset type generic
+  values:
+[param,new] pci/0000:00:09.0: name enable_roce type generic
+  values:
+    cmode driverinit value true
+[param,new] pci/0000:00:09.0: name fdb_large_groups type driver-specific
+  values:
+    cmode driverinit value 15
+[param,new] pci/0000:00:09.0: name flow_steering_mode type driver-specific
+  values:
+    cmode runtime value dmfs
+[param,new] pci/0000:00:09.0: name enable_roce type generic
+  values:
+    cmode driverinit value true
+[param,new] pci/0000:00:09.0: name fdb_large_groups type driver-specific
+  values:
+    cmode driverinit value 15
+[param,new] pci/0000:00:09.0: name esw_port_metadata type driver-specific
+  values:
+    cmode runtime value true
+[param,new] pci/0000:00:09.0: name enable_remote_dev_reset type generic
+  values:
+    cmode runtime value true
+[trap-group,new] pci/0000:00:09.0: name l2_drops generic true
+[trap,new] pci/0000:00:09.0: name ingress_vlan_filter type drop generic true action drop group l2_drops
+[trap,new] pci/0000:00:09.0: name dmac_filter type drop generic true action drop group l2_drops
+[dev,new] pci/0000:00:09.0
+[port,new] pci/0000:00:09.0/131071: type notset flavour physical port 0 splittable false
+[port,new] pci/0000:00:09.0/131071: type eth netdev eth1 flavour physical port 0 splittable false
 
-No mixing of changes in phylib and drivers.
-
-> --- a/linux-5.14-rc4/drivers/net/phy/phy_device.c
-> +++ b/linux-5.14-rc4/drivers/net/phy/phy_device.c
-> @@ -2980,6 +2980,9 @@ struct fwnode_handle *fwnode_get_phy_node(struct fwnode_handle *fwnode)
->  }
->  EXPORT_SYMBOL_GPL(fwnode_get_phy_node);
->  
-> +
-> +static int phy_remove(struct device *dev);
-> +
-
-No forward declarations.
-
->  /**
->   * phy_probe - probe and init a PHY device
->   * @dev: device to probe and init
-> @@ -2988,13 +2991,22 @@ EXPORT_SYMBOL_GPL(fwnode_get_phy_node);
->   *   set the state to READY (the driver's init function should
->   *   set it to STARTING if needed).
->   */
-> +#define REDO_PROBE_TIMES    5
->  static int phy_probe(struct device *dev)
->  {
->      struct phy_device *phydev = to_phy_device(dev);
->      struct device_driver *drv = phydev->mdio.dev.driver;
->      struct phy_driver *phydrv = to_phy_driver(drv);
-> +    int again = 0;
-> +    int savederr = 0;
-> +again_retry:
->      int err = 0;
->  
-> +    if (again > 0) {
-> +        pr_err("%s: Re-probe %d of driver.....\n",
-> +               phydrv->name, again);
-> +    }
-> +
->      phydev->drv = phydrv;
->  
->      /* Disable the interrupt if the PHY doesn't support it
-> @@ -3013,6 +3025,17 @@ static int phy_probe(struct device *dev)
->  
->      if (phydev->drv->probe) {
->          err = phydev->drv->probe(phydev);
-> +
-> +        /* If again requested. */
-> +        if (err == -EAGAIN) {
-
-This doesn't make sense. You check the PHY driver probe return code,
-mixing it up with the MAC driver return code.
-
-> +            again++;
-> +            savederr = err;
-> +            err = 0;
-> +
-> +            pr_info("%s: EAGAIN: %d ...\n",
-> +                phydrv->name, again);
-> +        }
-> +
->          if (err)
->              goto out;
->      }
-> @@ -3081,6 +3104,20 @@ static int phy_probe(struct device *dev)
->  
->      mutex_unlock(&phydev->lock);
->  
-> +    if ((savederr == -EAGAIN) &&
-> +        ((again > 0) && (again < REDO_PROBE_TIMES))
-> +       ) {
-> +        pr_err("%s: Retry removal driver..\n",
-> +            phydrv->name);
-> +
-> +        phy_remove(dev);
-> +
-> +        pr_err("%s: Re-probe driver..\n",
-> +            phydrv->name);
-> +        savederr = 0;
-> +        goto again_retry;
-> +    }
-> +
->      return err;
->  }
->  
-> @@ -3108,6 +3145,7 @@ static int phy_remove(struct device *dev)
->      return 0;
->  }
->  
-> +
->  static void phy_shutdown(struct device *dev)
->  {
->      struct phy_device *phydev = to_phy_device(dev);
-> 
-> 
-> 
-> On 11.3.2021 18.43, gmail wrote:
->>
->> Heiner Kallweit kirjoitti 11.3.2021 klo 18.23:
->>> On 11.03.2021 17:00, gmail wrote:
->>>> 15. huhtik. 2020, 19.18, Heiner Kallweit <hkallweit1@gmail.com <mailto:hkallweit1@gmail.com>> kirjoitti:
->>>>
->>>>     On 15.04.2020 16:39, Lauri Jakku wrote:
->>>>
->>>>         Hi, There seems to he Something odd problem, maybe timing
->>>>         related. Stripped version not workingas expected. I get back to
->>>>         you, when  i have it working.
->>>>
->>>>     There's no point in working on your patch. W/o proper justification it
->>>>     isn't acceptable anyway. And so far we still don't know which problem
->>>>     you actually have.
->>>>     FIRST please provide the requested logs and explain the actual problem
->>>>     (incl. the commit that caused the regression).
->>>>
->>>>
->>>>              13. huhtik. 2020, 14.46, Lauri Jakku <ljakku77@gmail.com
->>>>         <mailto:ljakku77@gmail.com>> kirjoitti: Hi, Fair enough, i'll
->>>>         strip them. -lja On 2020-04-13 14:34, Leon Romanovsky wrote: On
->>>>         Mon, Apr 13, 2020 at 02:02:01PM +0300, Lauri Jakku wrote: Hi,
->>>>         Comments inline. On 2020-04-13 13:58, Leon Romanovsky wrote: On
->>>>         Mon, Apr 13, 2020 at 01:30:13PM +0300, Lauri Jakku wrote: From
->>>>         2d41edd4e6455187094f3a13d58c46eeee35aa31 Mon Sep 17 00:00:00
->>>>         2001 From: Lauri Jakku <lja@iki.fi> Date: Mon, 13 Apr 2020
->>>>         13:18:35 +0300 Subject: [PATCH] NET: r8168/r8169 identifying fix
->>>>         The driver installation determination made properly by checking
->>>>         PHY vs DRIVER id's. ---
->>>>         drivers/net/ethernet/realtek/r8169_main.c | 70
->>>>         ++++++++++++++++++++--- drivers/net/phy/mdio_bus.c | 11 +++- 2
->>>>         files changed, 72 insertions(+), 9 deletions(-) I would say that
->>>>         most of the code is debug prints. I tought that they are helpful
->>>>         to keep, they are using the debug calls, so they are not visible
->>>>         if user does not like those. You are missing the point of who
->>>>         are your users. Users want to have working device and the code.
->>>>         They don't need or like to debug their kernel. Thanks
->>>>
->>>>     Hi, now i got time to tackle with this again :) .. I know the proposed fix is quite hack, BUT it does give a clue what is wrong.
->>>>
->>>>     Something in subsystem is not working at the first time, but it needs to be reloaded to work ok (second time). So what I will do
->>>>     is that I try out re-do the module load within the module, if there is known HW id available but driver is not available, that
->>>>     would be much nicer and user friendly way.
->>>>
->>>>
->>>>     When the module setup it self nicely on first load, then can be the hunt for late-init of subsystem be checked out. Is the HW
->>>>     not brought up correct way during first time, or does the HW need time to brough up, or what is the cause.
->>>>
->>>>     The justification is the same as all HW driver bugs, the improvement is always better to take in. Or do this patch have some-
->>>>     thing what other patches do not?
->>>>
->>>>     Is there legit reason why NOT to improve something, that is clearly issue for others also than just me ? I will take on the
->>>>     task to fiddle with the module to get it more-less hacky and fully working version. Without the need for user to do something
->>>>     for the module to work.
->>>>
->>>>         --Lauri J.
->>>>
->>>>
->>> I have no clue what you're trying to say. The last patch wasn't acceptable at all.
->>> If you want to submit a patch:
->>>
->>> - Follow kernel code style
->>> - Explain what the exact problem is, what the root cause is, and how your patch fixes it
->>> - Explain why you're sure that it doesn't break processing on other chip versions
->>>    and systems.
->>>
->> Ok, i'll make nice patch that has in comment what is the problem and how does the patch help the case at hand.
->>
->> I don't know the rootcause, but something in subsystem that possibly is initializing bit slowly, cause the reloading
->>
->> of the module provides working network connection, when done via insmod cycle. I'm not sure is it just a timing
->>
->> issue or what. I'd like to check where is the driver pointer populated, and put some debugs to see if the issue is just
->>
->> timing, let's see.
->>
->>
->> The problem is that (1st load) fails, but there is valid HW found (the ID is known), when the hacky patch of mine
->>
->> is applied, the second time of loading module works ok, and network is connected ok etc.
->>
->>
->> I make the change so that when the current HEAD code is going to return failure, i do check that if the HW id is read ok
->>
->> from the HW, then pass -EAGAIN ja try to load 5 times, sleeping 250ms in between.
->>
->>
->> --Lauri J.
->>
->>
->>
->>
-
+[leonro@vm ~]$ sudo ip monitor
+inet eth1 forwarding off rp_filter loose mc_forwarding off proxy_neigh off ignore_routes_with_linkdown off 
+inet6 eth1 forwarding off mc_forwarding off proxy_neigh off ignore_routes_with_linkdown off 
+4: eth1: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default 
+    link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+4: eth1: <NO-CARRIER,BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state DOWN group default 
+    link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+multicast ff00::/8 dev eth1 table local proto kernel metric 256 pref medium
+fe80::/64 dev eth1 proto kernel metric 256 pref medium
+4: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default 
+    link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+4: eth1    inet6 fe80::5054:ff:fe12:3456/64 scope link 
+       valid_lft forever preferred_lft forever
+local fe80::5054:ff:fe12:3456 dev eth1 table local proto kernel metric 0 pref medium
