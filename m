@@ -2,79 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9FAF3E9296
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 15:25:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7798F3E9288
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 15:24:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231829AbhHKN0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 09:26:14 -0400
-Received: from smtprelay0160.hostedemail.com ([216.40.44.160]:44116 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231405AbhHKNYL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 09:24:11 -0400
-Received: from omf08.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id DB3C91807F217;
-        Wed, 11 Aug 2021 13:23:44 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf08.hostedemail.com (Postfix) with ESMTPA id 593651A29FE;
-        Wed, 11 Aug 2021 13:23:43 +0000 (UTC)
-Message-ID: <c296dd2f66e97ad38d5456c0fab4e0ff99b14634.camel@perches.com>
-Subject: Re: [PATCH net-next v2 2/2] bonding: combine netlink and console
- error messages
-From:   Joe Perches <joe@perches.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jonathan Toppins <jtoppins@redhat.com>, netdev@vger.kernel.org,
-        leon@kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 11 Aug 2021 06:23:41 -0700
-In-Reply-To: <20210811054917.722bd988@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <cover.1628650079.git.jtoppins@redhat.com>
-         <e6b78ce8f5904a5411a809cf4205d745f8af98cb.1628650079.git.jtoppins@redhat.com>
-         <d5e1aada694465fd62f57695e264259815e60746.camel@perches.com>
-         <20210811054917.722bd988@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.0-1 
+        id S231756AbhHKNZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 09:25:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41718 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231740AbhHKNZB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 09:25:01 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D35C061765
+        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 06:24:35 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id g13so5626092lfj.12
+        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 06:24:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Hepg0rNNghmUr1sfvzx9UE/hmpBIZIRNybqE5ozw90s=;
+        b=t/osFBq57w3GdoBWbzZU1r7INz1N4b2LqTNcHJOVE70cLZqO7wLx+Ua6g3PhpAIBBG
+         zCkz+mH1kCoV+sDyZnHWKEfGUfbmsFBj2rjkDx1PBS2AZLVuc3tZK5rs1PLSs7QGz75F
+         p/z268wE8CURaAhC1x/ox1f2cyA4nBUcswi5BIPgUtMiR1oZtpVMHxRcmeRH1xHyxRS/
+         +iU2zEZGLrDp0keoWik43PkELVQ8Qm9BgQof6m9VSyYdiYpUWK/5Ttiklw5Ves424PTR
+         iKkRK1GWNyi+DLYnvagLb+NNCLaAzscLjInn6m9TkNmWWChkNesgPodHXeREsVEdnRW0
+         lRQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Hepg0rNNghmUr1sfvzx9UE/hmpBIZIRNybqE5ozw90s=;
+        b=cAA3y/gKFGF494OkO0pApoNQzLuUmwl5OYLo8DCSr7kIDidPiFmzMIH9Qji++USBNR
+         yM2mygsEW7xbetE0fc7VoDoE9QzWUCJZzTKv7rr81gOVQMgDzIoGmODqvR7lS7zAHcrJ
+         fe/b6lTy/55s5Q3VFhIUtdrlTq2rlZzI4RoRUnq25evfMK611IqDA9nsadLXN1a3zu9Q
+         qUJo50zPVSOsFj9rFV1Fuo2gdtX6Xt1VYOgxkDlaYFLS+iy0odhe2TVeUM5rGIC1xH2+
+         vz4tK8R0HJYX69NVjCkADlF4Q9eiWjBUfhIxuoAF4fo0k3NIOo4W54q8Z35jKluNf8y7
+         7GZw==
+X-Gm-Message-State: AOAM530Q2J5L/e2mVvTUq5SeKx3A9iX8EggOrRiKlaUOHm+eDSvrjeRq
+        vPNp0tWfe5DDzudlwBPb0tY0pKmCBDk3lNlLzo8M0g==
+X-Google-Smtp-Source: ABdhPJyFjHD6TCxNQFpPEnI5V6HC3ibMLT5APRmYI95t01BOAQ6mOYZxp124jFsL0p3/0NCDm58NfKiei7mvPok3KnY=
+X-Received: by 2002:a05:6512:32a3:: with SMTP id q3mr13969531lfe.157.1628688273576;
+ Wed, 11 Aug 2021 06:24:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Server: rspamout05
-X-Rspamd-Queue-Id: 593651A29FE
-X-Spam-Status: No, score=1.56
-X-Stat-Signature: 4djjjcjq8kkr7c1aewnaurrx6cw1hctk
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1/EeNUAF09QPTMPt+4vmd/b8cehfzKAmU8=
-X-HE-Tag: 1628688223-324698
+References: <20210809115722.351383-1-vladimir.oltean@nxp.com> <20210809115722.351383-3-vladimir.oltean@nxp.com>
+In-Reply-To: <20210809115722.351383-3-vladimir.oltean@nxp.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 11 Aug 2021 15:24:22 +0200
+Message-ID: <CACRpkdZMyJ4ZnyKrMgEpBmGh0=8vTjkMn0r2xkdBnF2D7Xwc_Q@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 2/4] net: dsa: create a helper which
+ allocates space for EtherType DSA headers
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-08-11 at 05:49 -0700, Jakub Kicinski wrote:
-> On Tue, 10 Aug 2021 20:27:01 -0700 Joe Perches wrote:
-> > > +#define BOND_NL_ERR(bond_dev, extack, errmsg) do {		\
-> > > +	if (extack)						\
-> > > +		NL_SET_ERR_MSG(extack, errmsg);			\
-> > > +	else							\
-> > > +		netdev_err(bond_dev, "Error: %s\n", errmsg);	\
-> > > +} while (0)
-> > > +
-> > > +#define SLAVE_NL_ERR(bond_dev, slave_dev, extack, errmsg) do {		\
-> > > +	if (extack)							\
-> > > +		NL_SET_ERR_MSG(extack, errmsg);				\
-> > > +	else								\
-> > > +		slave_err(bond_dev, slave_dev, "Error: %s\n", errmsg);	\
-> > > +} while (0)  
-> > 
-> > Ideally both of these would be static functions and not macros.
-> 
-> That may break our ability for NL_SET_ERR_MSG to place strings 
-> back in a static buffer, no?
+On Mon, Aug 9, 2021 at 1:57 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
 
-Not really.
+> Hide away the memmove used by DSA EtherType header taggers to shift the
+> MAC SA and DA to the left to make room for the header, after they've
+> called skb_push(). The call to skb_push() is still left explicit in
+> drivers, to be symmetric with dsa_strip_etype_header, and because not
+> all callers can be refactored to do it (for example, brcm_tag_xmit_ll
+> has common code for a pre-Ethernet DSA tag and an EtherType DSA tag).
+>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The most common way to place things in a particular section is to
-use __section("whatever")
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-It's pretty trivial to mark these errmsg strings as above.
-
-
-
+Yours,
+Linus Walleij
