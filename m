@@ -2,93 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB56D3E8B5D
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 10:00:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47CD93E8B89
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 10:09:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236035AbhHKIAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 04:00:32 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:36821 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235974AbhHKH7s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 03:59:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1628668765; x=1660204765;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=doHf05BSxz8JLwdETceKQtVg12HvxaXyUfWGoXfYgEA=;
-  b=vPsfUtoHt+jYwod7AT9nICRIdARVNah9pkaDZd4qipgcHbeQuZxeetRR
-   ZMEfv1/lI3QEoQEy1tJ78OMmC2dVxtjhXpwlLA07//eZjnhgWQT4N1uYb
-   72cOcsxsFsI58k+9pBM8C4ZHhEGCWjWCY1/WYjW2u9vHvIVYbiQ2zB56O
-   45aM5sflBtmwGHF7+GHBoN8/s2LiA+ZNQ4U7yqjxLeFhehYF6BBo2R1RF
-   d2griXzTk8xzuRTQlscSUaXaBeDa3gYo9E090zYSCaER72jWGYIB9E/wB
-   fXedlF/sjLxZdhFehKbw/ooGmfE7R+QH3eCtnlUdZ28Bd8Z3QGtTIQand
-   g==;
-IronPort-SDR: 8v/81hvEQo/ok5ajM0wlH2A4qZDYrYFK5jTt0Y+kgJsqhmzf9u2wKCrrAfIsnqNsAAPuk4HvQt
- 8v/QyY5dWz8vvau4CTzR3wzh8N6TgnsCe6Dz6NY0L1nzqyTVY7RkRRg+ONVxDb4vnfu41afrYn
- zoslRWpMD7hGmRz1h81FShsQDGHqYJ22/enw4NOmMQoEVtl4B3Um8aDQYDU7HU83slIuss2XbE
- MVvk+UKvw5NSwnT7dEolv0I+MBbHA5D34/z67e4Wjkn6gtjMfbmp0M54/PTU8ZVhbo62A005NC
- R7tI9RxYXU3nW6YZqgajyPdW
-X-IronPort-AV: E=Sophos;i="5.84,311,1620716400"; 
-   d="scan'208";a="132373660"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Aug 2021 00:59:20 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 11 Aug 2021 00:59:20 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Wed, 11 Aug 2021 00:59:18 -0700
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+        id S236527AbhHKIJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 04:09:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51464 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236161AbhHKIIY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 04:08:24 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA31C0617A1
+        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 01:07:52 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mDjGA-0000yl-5I; Wed, 11 Aug 2021 10:06:46 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mDjG4-0000O2-Lw; Wed, 11 Aug 2021 10:06:40 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mDjG4-0002vI-Id; Wed, 11 Aug 2021 10:06:40 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>,
+        linux-pci@vger.kernel.org, kernel@pengutronix.de,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Fiona Trahe <fiona.trahe@intel.com>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ido Schimmel <idosch@nvidia.com>,
+        Ingo Molnar <mingo@redhat.com>, Jack Xu <jack.xu@intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, "Rob Herring" <robh+dt@kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     Steen Hegelund <steen.hegelund@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH net-next 2/2] arm64: dts: sparx5: Add the Sparx5 switch frame DMA support
-Date:   Wed, 11 Aug 2021 09:59:09 +0200
-Message-ID: <20210811075909.543633-3-steen.hegelund@microchip.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210811075909.543633-1-steen.hegelund@microchip.com>
-References: <20210811075909.543633-1-steen.hegelund@microchip.com>
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiri Olsa <jolsa@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
+        Juergen Gross <jgross@suse.com>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Marco Chiappero <marco.chiappero@intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Michael Buesch <m@bues.ch>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Namhyung Kim <namhyung@kernel.org>,
+        "Oliver O'Halloran" <oohall@gmail.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>,
+        Russell Currey <ruscur@russell.cc>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Sathya Prakash <sathya.prakash@broadcom.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tomaszx Kowalik <tomaszx.kowalik@intel.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Wojciech Ziemba <wojciech.ziemba@intel.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Zhou Wang <wangzhou1@hisilicon.com>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com,
+        netdev@vger.kernel.org, oss-drivers@corigine.com,
+        qat-linux@intel.com, x86@kernel.org, xen-devel@lists.xenproject.org
+Subject: [PATCH v3 0/8] PCI: Drop duplicated tracking of a pci_dev's bound driver
+Date:   Wed, 11 Aug 2021 10:06:29 +0200
+Message-Id: <20210811080637.2596434-1-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds the interrupt for the Sparx5 Frame DMA.
+From: Uwe Kleine-König <uwe@kleine-koenig.org>
 
-If this configuration is present the Sparx5 SwitchDev driver will use the
-Frame DMA feature, and if not it will use register based injection and
-extraction for sending and receiving frames to the CPU.
+Hello,
 
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
----
- arch/arm64/boot/dts/microchip/sparx5.dtsi | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Today the following is always true for a struct pci_dev *pdev:
 
-diff --git a/arch/arm64/boot/dts/microchip/sparx5.dtsi b/arch/arm64/boot/dts/microchip/sparx5.dtsi
-index ad07fff40544..787ebcec121d 100644
---- a/arch/arm64/boot/dts/microchip/sparx5.dtsi
-+++ b/arch/arm64/boot/dts/microchip/sparx5.dtsi
-@@ -471,8 +471,9 @@ switch: switch@0x600000000 {
- 				<0x6 0x10004000 0x7fc000>,
- 				<0x6 0x11010000 0xaf0000>;
- 			reg-names = "cpu", "dev", "gcb";
--			interrupt-names = "xtr";
--			interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "xtr", "fdma";
-+			interrupts =	<GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 25 IRQ_TYPE_LEVEL_HIGH>;
- 			resets = <&reset 0>;
- 			reset-names = "switch";
- 		};
---
-2.32.0
+	pdev->driver ==
+		pdev->dev.driver ? to_pci_driver(pdev->dev.driver) : NULL
+
+This series is about getting rid of struct pci_dev::driver. The first
+three patches are unmodified compared to v2 (apart from an added
+Reviewed-by tag) and are just minor cleanups.
+
+Patch #4 replaces all usages of pci_dev::driver->name by
+dev_driver_string().
+
+Patch #5 simplifies struct mpt_pci_driver by dropping an unused
+parameter from a function callback. The calculation of this parameter
+made use of struct pci_dev::driver.
+
+Patch #6 simplifies adf_enable_aer() and moves one assignment done in
+that function to the initializer of the respective static data.
+
+Patch #7 then modifies all remaining users of struct pci_dev::driver to
+use to_pci_driver(pdev->dev.driver) instead and finally patch #8 gets
+rid of the driver member.
+
+Note this series is only build tested.
+
+Theoretically patches #4 and #7 could be split by subsystem, there are
+no dependencies, but I'd prefer that all patches go in together via the
+pci tree to simplify the procedure. If you don't agree please speak up.
+
+Best regards
+Uwe
+
+Uwe Kleine-König (8):
+  PCI: Simplify pci_device_remove()
+  PCI: Drop useless check from pci_device_probe()
+  xen/pci: Drop some checks that are always true
+  PCI: replace pci_dev::driver usage that gets the driver name
+  scsi: message: fusion: Remove unused parameter of mpt_pci driver's
+    probe()
+  crypto: qat - simplify adf_enable_aer()
+  PCI: Replace pci_dev::driver usage by pci_dev::dev.driver
+  PCI: Drop duplicated tracking of a pci_dev's bound driver
+
+ arch/powerpc/include/asm/ppc-pci.h            |  7 ++-
+ arch/powerpc/kernel/eeh_driver.c              | 10 +--
+ arch/x86/events/intel/uncore.c                |  2 +-
+ arch/x86/kernel/probe_roms.c                  |  2 +-
+ drivers/bcma/host_pci.c                       |  7 ++-
+ drivers/crypto/hisilicon/qm.c                 |  2 +-
+ drivers/crypto/qat/qat_4xxx/adf_drv.c         |  7 +--
+ drivers/crypto/qat/qat_c3xxx/adf_drv.c        |  7 +--
+ drivers/crypto/qat/qat_c62x/adf_drv.c         |  7 +--
+ drivers/crypto/qat/qat_common/adf_aer.c       | 10 +--
+ .../crypto/qat/qat_common/adf_common_drv.h    |  2 +-
+ drivers/crypto/qat/qat_dh895xcc/adf_drv.c     |  7 +--
+ drivers/message/fusion/mptbase.c              |  7 +--
+ drivers/message/fusion/mptbase.h              |  2 +-
+ drivers/message/fusion/mptctl.c               |  4 +-
+ drivers/message/fusion/mptlan.c               |  2 +-
+ drivers/misc/cxl/guest.c                      | 24 ++++---
+ drivers/misc/cxl/pci.c                        | 30 +++++----
+ .../ethernet/hisilicon/hns3/hns3_ethtool.c    |  2 +-
+ .../ethernet/marvell/prestera/prestera_pci.c  |  2 +-
+ drivers/net/ethernet/mellanox/mlxsw/pci.c     |  2 +-
+ .../ethernet/netronome/nfp/nfp_net_ethtool.c  |  2 +-
+ drivers/pci/iov.c                             | 25 +++++---
+ drivers/pci/pci-driver.c                      | 45 ++++++-------
+ drivers/pci/pci.c                             |  4 +-
+ drivers/pci/pcie/err.c                        | 36 ++++++-----
+ drivers/pci/xen-pcifront.c                    | 63 +++++++++----------
+ drivers/ssb/pcihost_wrapper.c                 |  8 ++-
+ drivers/usb/host/xhci-pci.c                   |  2 +-
+ include/linux/pci.h                           |  1 -
+ 30 files changed, 164 insertions(+), 167 deletions(-)
+
+base-commit: 2734d6c1b1a089fb593ef6a23d4b70903526fe0c
+-- 
+2.30.2
 
