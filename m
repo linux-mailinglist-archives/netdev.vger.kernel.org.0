@@ -2,83 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEA443E977E
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 20:18:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8FA33E9797
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 20:23:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231207AbhHKSSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 14:18:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52282 "EHLO mail.kernel.org"
+        id S230320AbhHKSXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 14:23:37 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45600 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230364AbhHKSSm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Aug 2021 14:18:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 052B46101D;
-        Wed, 11 Aug 2021 18:18:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628705898;
-        bh=sWAuoEeYx/5xlwvB5MUcECk/0PuLofApRJn7R+l4CA0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hyIjbmrrCVqlFb94z8ojLsh9w3Blt4BJHvee951VJs2XfQSUgdMAOqcJ+BAR17Chy
-         O4cIKs5lmIA99sb/L+q+jPpf/I3kDKVfWWFlkKsECzkrEjn4DL8j50f/SUreABCP2U
-         CDVS7qPT8sn3oGEobdmk7GMECM024Jfb3L6QHuttMfzElu4ztDX3j98iWojWeDA0IW
-         dNiezJApMG2113ajdprhZdqUl8O2cpopuADgTZk+JwDp6bR5c0NEx7M8FPxCOICwnv
-         WXlitr9/mNgf73rEc0xJNfZ3pgCZfzj+biu352+OEccXGA945mhDqKZa+lzF/YZPKF
-         Rn8CsbY8TYHeA==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 12/12] net/mlx5e: Make use of netdev_warn()
-Date:   Wed, 11 Aug 2021 11:16:58 -0700
-Message-Id: <20210811181658.492548-13-saeed@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210811181658.492548-1-saeed@kernel.org>
-References: <20210811181658.492548-1-saeed@kernel.org>
+        id S229655AbhHKSXh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Aug 2021 14:23:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=TRGj6dbMSGqJuo7VxARfKcBHrtxIRic/Swrh3n8R1HQ=; b=FqA2X11gyQK+MEJpDWdYCnPv0z
+        +kqPkJHc1CvigeD3ZdDaBpTSIcuitwui3fuPJVr1jb8QgWd5FGf7vDSzHHmp8t+q2QmxCwfWYllpz
+        henqDrmmnwYtlScLXQVh8OgmbB56rum3KIlkdh9ZdCZESAW2hqn+ozeKLObVsZh4Aic4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mDssa-00HAB2-Eo; Wed, 11 Aug 2021 20:23:04 +0200
+Date:   Wed, 11 Aug 2021 20:23:04 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        netdev@vger.kernel.org, robh+dt@kernel.org,
+        UNGLinuxDriver@microchip.com, Woojung.Huh@microchip.com,
+        hkallweit1@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 05/10] net: dsa: microchip: add DSA support
+ for microchip lan937x
+Message-ID: <YRQViFYGsoG3OUCc@lunn.ch>
+References: <49678cce02ac03edc6bbbd1afb5f67606ac3efc2.camel@microchip.com>
+ <20210802121550.gqgbipqdvp5x76ii@skbuf>
+ <YQfvXTEbyYFMLH5u@lunn.ch>
+ <20210802135911.inpu6khavvwsfjsp@skbuf>
+ <50eb24a1e407b651eda7aeeff26d82d3805a6a41.camel@microchip.com>
+ <20210803235401.rctfylazg47cjah5@skbuf>
+ <20210804095954.GN22278@shell.armlinux.org.uk>
+ <20210804104625.d2qw3gr7algzppz5@skbuf>
+ <YQ6pc6EZRLftmRh3@lunn.ch>
+ <20191b895a56e2a29f7fee8063d9cc0900f55bfe.camel@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191b895a56e2a29f7fee8063d9cc0900f55bfe.camel@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cai Huoqing <caihuoqing@baidu.com>
+> I hope that using "*-internal-delay-ps" for Mac would be the right option.
+> Shall i include these changes as we discussed in next revision of the patch? 
 
-to replace printk(KERN_WARNING ...) with netdev_warn() kindly
+Yes, that seems sensible. But please limit them to the CPU port. Maybe
+return -EINVAL for other ports.
 
-Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index d6ad7328f298..9465a51b6e66 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -2702,7 +2702,9 @@ static int offload_pedit_fields(struct mlx5e_priv *priv,
- 		if (s_mask && a_mask) {
- 			NL_SET_ERR_MSG_MOD(extack,
- 					   "can't set and add to the same HW field");
--			printk(KERN_WARNING "mlx5: can't set and add to the same HW field (%x)\n", f->field);
-+			netdev_warn(priv->netdev,
-+				    "mlx5: can't set and add to the same HW field (%x)\n",
-+				    f->field);
- 			return -EOPNOTSUPP;
- 		}
- 
-@@ -2741,8 +2743,9 @@ static int offload_pedit_fields(struct mlx5e_priv *priv,
- 		if (first < next_z && next_z < last) {
- 			NL_SET_ERR_MSG_MOD(extack,
- 					   "rewrite of few sub-fields isn't supported");
--			printk(KERN_WARNING "mlx5: rewrite of few sub-fields (mask %lx) isn't offloaded\n",
--			       mask);
-+			netdev_warn(priv->netdev,
-+				    "mlx5: rewrite of few sub-fields (mask %lx) isn't offloaded\n",
-+				    mask);
- 			return -EOPNOTSUPP;
- 		}
- 
--- 
-2.31.1
-
+     Andrew
