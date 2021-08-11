@@ -2,99 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7643A3E9378
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 16:19:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F8AF3E9394
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 16:21:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232483AbhHKOTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 10:19:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56150 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232386AbhHKOTu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 10:19:50 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6335DC061765;
-        Wed, 11 Aug 2021 07:19:26 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id o7-20020a05600c5107b0290257f956e02dso4565640wms.1;
-        Wed, 11 Aug 2021 07:19:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=AkaVV/B4zm1StBccEJF79FiDT5uYQrDcCQSV22VX30I=;
-        b=VfQwWxYc0BAYDB88MDFCVEmvIdX9iQ1okd2lUzkvZAUKxLhodeWXj2o6islzuiy7lP
-         0dfmE4G1gwNVraO8e2AAJ0jlW2KPNZ1onr3TNS7bRch+9x2O99UuJ3eUnC8ZiiQxXnvI
-         q5exULF23j+tflRYFnePUjh4+mneigS/bIDmteVlI9B99QJlLjcCXU/cHCKiYBz4Yupt
-         6KOwDSrN9slR2dpNY8kEjSuVZDrkHkVoZl0J6i+sBK5Ac32XWhHpdfh/LBXH2HbwBoXy
-         ExqwbOrVdMV7dpQCqope71pFW7HI9uyb2lGncxySBVDLyLsgPdo1aTKaxmgqbfTCZ0Ie
-         11bA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=AkaVV/B4zm1StBccEJF79FiDT5uYQrDcCQSV22VX30I=;
-        b=LAjDeH+4/LfPW95U9L1n3maATVSQsbEqsI+Km05J+V1wI70uRseq7nC4nBWx+nbJCT
-         1/ZK8n2x8RtK4GFWvMtuFLbw6/2I5vYGR9GMYQg1IEtI+GnYhj8E0ps1oPYnxc5EVYTp
-         qUe+JCWlX/6fCngr71qX2ZmK7UbSdKDfHkupN9iyz/DdqtOe5PdwW6LdXkJmY2MjFSxC
-         zgLILIbZ+ilW/SoRyfQ1PHDE+aK1TtiX5hcqzZI4LB/iRaBbm3QPaTHEHcgO1oRYYON6
-         FJqwCQCuTn5VBCSqSaWUKxKaQUWbjxB5fCSyia0p65ubJsoZz4JrxV//pw4B8SH6Eldl
-         ykMA==
-X-Gm-Message-State: AOAM531kuUillw5KTNG346hkrdTvVQr634OXIRa8yxxzOObrUYoOg6up
-        trUV1yPtTLpuNF2vhe078AY=
-X-Google-Smtp-Source: ABdhPJythbVeqVlxRPbfuIJIg7664unWUee9J/dNSZXJFYo5PpsLdnPwGPhEvhKPMEuHjDkJ9LebLg==
-X-Received: by 2002:a05:600c:4101:: with SMTP id j1mr27882935wmi.110.1628691564973;
-        Wed, 11 Aug 2021 07:19:24 -0700 (PDT)
-Received: from [10.0.0.18] ([37.165.41.250])
-        by smtp.gmail.com with ESMTPSA id y14sm15510450wrs.29.2021.08.11.07.19.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Aug 2021 07:19:24 -0700 (PDT)
-Subject: Re: [PATCH -next] net/ipv4/tcp.c: remove superfluous header file in
- tcp.c
-To:     Mianhan Liu <liumh1@shanghaitech.edu.cn>,
-        Eric Dumazet <edumazet@google.com>,
+        id S232638AbhHKOVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 10:21:55 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45150 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232341AbhHKOVy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Aug 2021 10:21:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=hKc2VUZOlUn7+9qhTayubrmJeEFnKYw+IpcOlyGgPPk=; b=PbyC/yxQGYgnOdQZDAa0h8cp6m
+        Qlzmv+ahlLg98NOGhtKsPTjc5n4pywyf0RD2mgvwWFJpCpJOwSLsu/y58jWtQNZO5bTSbHSy3cQS3
+        4PsgXxyKHPz9IbUkdqdRUBChsNzWnr6T2OhDC2hLQDR7n57+YaDf/GW9w/bBFFq6NEbY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mDp6G-00H7vb-PU; Wed, 11 Aug 2021 16:20:56 +0200
+Date:   Wed, 11 Aug 2021 16:20:56 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Wong Vee Khee <vee.khee.wong@linux.intel.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Matthew <Wilcoxwilly@infradead.org>
-References: <20210811133305.14640-1-liumh1@shanghaitech.edu.cn>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <6240ae70-3a50-2570-a115-c61ef09286a6@gmail.com>
-Date:   Wed, 11 Aug 2021 16:19:20 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        Jakub Kicinski <kuba@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/2] net: pcs: xpcs: enable skip xPCS soft reset
+Message-ID: <YRPcyHTc2FJeEoqk@lunn.ch>
+References: <20210809102229.933748-1-vee.khee.wong@linux.intel.com>
+ <20210809102229.933748-2-vee.khee.wong@linux.intel.com>
+ <YREvDRkiuScyN8Ws@lunn.ch>
+ <20210810235529.GB30818@linux.intel.com>
+ <f2a1f135-b77a-403d-5d2e-c497efc99df7@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210811133305.14640-1-liumh1@shanghaitech.edu.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f2a1f135-b77a-403d-5d2e-c497efc99df7@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 8/11/21 3:33 PM, Mianhan Liu wrote:
-> nr_free_buffer_pages could be exposed through mm.h instead of swap.h,
-> and then tcp.c wouldn't need swap.h. Moreover, after preprocessing
-> all the files that use nr_free_buffer_pages, it turns out that those files
-> have already included mm.h.
-> Thus, we can move nr_free_buffer_pages from swap.h to mm.h safely
-> so as to reduce the obsolete includes.
+> > BIOS does configured the SerDes. The problem here is that all the
+> > configurations done by BIOS are being reset at xpcs_create().
+> > 
+> > We would want user of the pcs-xpcs module (stmmac, sja1105) to have
+> > control whether or not we need to perform to the soft reset in the
+> > xpcs_create() call.
 > 
-> Signed-off-by: MianHan Liu <liumh1@shanghaitech.edu.cn>
+> I understood Andrew's response as suggesting to introduce the ability for
+> xpcs_create() to make a BIOS call which would configure the SerDes after
+> xpcs_soft_reset().
 
-Not sure why tcp gets a special treatment.
-Patch title does not match changelog at all.
+Yes. Exactly. That is what ACPI is for, so we should use it for this.
 
-You should submit a pure mm patch, then eventually one networking follow up.
-
-# git grep -n linux/swap.h -- net
-net/9p/trans_virtio.c:34:#include <linux/swap.h>
-net/ipv4/sysctl_net_ipv4.c:18:#include <linux/swap.h>
-net/ipv4/tcp.c:263:#include <linux/swap.h>
-net/ipv4/udp.c:81:#include <linux/swap.h>
-net/netfilter/ipvs/ip_vs_ctl.c:27:#include <linux/swap.h>
-net/openvswitch/meter.c:15:#include <linux/swap.h>
-net/sctp/protocol.c:36:#include <linux/swap.h>
-
+     Andrew
