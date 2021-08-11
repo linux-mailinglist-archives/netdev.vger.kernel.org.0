@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 963AC3E9772
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 20:18:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EC663E9773
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 20:18:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230312AbhHKSSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 14:18:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52156 "EHLO mail.kernel.org"
+        id S230400AbhHKSSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 14:18:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52188 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229802AbhHKSSi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230089AbhHKSSi (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 11 Aug 2021 14:18:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6DB216108C;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 00E0060FE6;
         Wed, 11 Aug 2021 18:18:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628705893;
-        bh=SASyCz5oOjrzGahpVoJzbFyGP3nFJg1LNkcyfYhDoz8=;
+        s=k20201202; t=1628705894;
+        bh=89YPJ4EGHPXCq7j7fHVHeUCtMT9wTa+xUI56NX7e0Vg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=su8j8Wll8QViMzj89lvgSWT2Wo+VdTVS6XXopLUkmaSallLbzM84PBBsyCrDM150e
-         SZaWPgHfwazlpbMa7n5CE4VLDapmTKgaJXz6jPtEfO4tG2HQMKv8AkMlHkJHAQEYIq
-         X0r7k1B0SG3KJ4yXDRW0LLsmrbNkVL59PrP8VHRFKTNUn63SMg39L2GdKvvyUQ3CSq
-         QjRjWOcQaZWcvkVEIzisOSh5eAe0Ao0EfN4B+O+zm2KnY4gHhwKUp/pFkqw9+vI8uw
-         AhjnDXiFNxyGCQeDaR4pDbfGEza0pzVs2Q9Rpi65bs8A2JGxqhrbMqvr73IYAEXbPu
-         jEPhZDOXWotDA==
+        b=XlF+T2F+XylpVXEgGcPBd7W94DTJm3+s1m+ERH2A5vpibmgJNAfNgVk8b2fK3+8zg
+         FhvGUeWIv/lkXODcClwPhsBqcP78zT5MHp9Hlp+5bHEkbIRpbLl1+NxXP3uQ11kZLl
+         qkQCZb5UGrffxB/EbKpn00CO/DF9g839z0PrNX2Bn+SEFQBU2I+dvALkQ0R4mGYEsv
+         Pv7QWFPlTPFSTTOWVEB4EboEHFQYeau3tM3V9aBegbH2hda1XBh1UukE/afS0Nck6i
+         Dbq1hE+roYbjsydb54akTsHuMJS0ZjPYXjlRfDfaWYLtmgeheZhZNgbKPGAzXJ61ah
+         uKX2HQQXtxQ0w==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -30,9 +30,9 @@ Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>,
         Shay Drory <shayd@nvidia.com>, Parav Pandit <parav@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 04/12] net/mlx5: Align mlx5_irq structure
-Date:   Wed, 11 Aug 2021 11:16:50 -0700
-Message-Id: <20210811181658.492548-5-saeed@kernel.org>
+Subject: [net-next 05/12] net/mlx5: Change SF missing dedicated MSI-X err message to dbg
+Date:   Wed, 11 Aug 2021 11:16:51 -0700
+Message-Id: <20210811181658.492548-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210811181658.492548-1-saeed@kernel.org>
 References: <20210811181658.492548-1-saeed@kernel.org>
@@ -44,54 +44,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Shay Drory <shayd@nvidia.com>
 
-mlx5_irq structure have holes due to incorrect position of fields in it.
-Make them naturally align.
-
-pahole output after alignment:
-struct mlx5_irq {
-        struct atomic_notifier_head nh;                  /*     0    72 */
-        /* --- cacheline 1 boundary (64 bytes) was 8 bytes ago --- */
-        cpumask_var_t              mask;                 /*    72     8 */
-        char                       name[32];             /*    80    32 */
-        struct mlx5_irq_pool *     pool;                 /*   112     8 */
-        struct kref                kref;                 /*   120     4 */
-        u32                        index;                /*   124     4 */
-        /* --- cacheline 2 boundary (128 bytes) --- */
-        int                        irqn;                 /*   128     4 */
-
-        /* size: 136, cachelines: 3, members: 7 */
-        /* padding: 4 */
-        /* last cacheline: 8 bytes */
-
-};
+When MSI-X vectors allocated are not enough for SFs to have dedicated,
+MSI-X, kernel log buffer has too many entries.
+Hence only enable such log with debug level.
 
 Signed-off-by: Shay Drory <shayd@nvidia.com>
 Reviewed-by: Parav Pandit <parav@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-index 9fb75d79bf08..a4f6ba0c91da 100644
+index a4f6ba0c91da..717b9f1850ac 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-@@ -28,13 +28,13 @@
- #define MLX5_EQ_REFS_PER_IRQ (2)
+@@ -479,7 +479,7 @@ static int irq_pools_init(struct mlx5_core_dev *dev, int sf_vec, int pf_vec)
+ 	if (!mlx5_sf_max_functions(dev))
+ 		return 0;
+ 	if (sf_vec < MLX5_IRQ_VEC_COMP_BASE_SF) {
+-		mlx5_core_err(dev, "Not enough IRQs for SFs. SF may run at lower performance\n");
++		mlx5_core_dbg(dev, "Not enught IRQs for SFs. SF may run at lower performance\n");
+ 		return 0;
+ 	}
  
- struct mlx5_irq {
--	u32 index;
- 	struct atomic_notifier_head nh;
- 	cpumask_var_t mask;
- 	char name[MLX5_MAX_IRQ_NAME];
-+	struct mlx5_irq_pool *pool;
- 	struct kref kref;
-+	u32 index;
- 	int irqn;
--	struct mlx5_irq_pool *pool;
- };
- 
- struct mlx5_irq_pool {
 -- 
 2.31.1
 
