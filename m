@@ -2,88 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 199113E88CC
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 05:27:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 776B23E88D2
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 05:29:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233231AbhHKD1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 23:27:32 -0400
-Received: from smtprelay0157.hostedemail.com ([216.40.44.157]:48640 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S232795AbhHKD13 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 23:27:29 -0400
-Received: from omf16.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id A12421802B564;
-        Wed, 11 Aug 2021 03:27:03 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf16.hostedemail.com (Postfix) with ESMTPA id 3358D2550F6;
-        Wed, 11 Aug 2021 03:27:02 +0000 (UTC)
-Message-ID: <d5e1aada694465fd62f57695e264259815e60746.camel@perches.com>
-Subject: Re: [PATCH net-next v2 2/2] bonding: combine netlink and console
- error messages
-From:   Joe Perches <joe@perches.com>
-To:     Jonathan Toppins <jtoppins@redhat.com>, netdev@vger.kernel.org,
-        leon@kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Date:   Tue, 10 Aug 2021 20:27:01 -0700
-In-Reply-To: <e6b78ce8f5904a5411a809cf4205d745f8af98cb.1628650079.git.jtoppins@redhat.com>
-References: <cover.1628650079.git.jtoppins@redhat.com>
-         <e6b78ce8f5904a5411a809cf4205d745f8af98cb.1628650079.git.jtoppins@redhat.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.0-1 
+        id S233291AbhHKDaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 23:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45664 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232625AbhHKDaO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 23:30:14 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57BF9C061765;
+        Tue, 10 Aug 2021 20:29:51 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id gz13-20020a17090b0ecdb0290178c0e0ce8bso4683932pjb.1;
+        Tue, 10 Aug 2021 20:29:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-transfer-encoding:content-language;
+        bh=jkh8MdBd+5xRfDGap7m8dlGwadMn0qsFS4+s/qO2eG4=;
+        b=rhiUyBRmbmOzo52u0m963KeCQ/FWF9Tl38u5WFbzQ6IfCDO2yNpJIdIShEBZHTfzI+
+         R3A47nKzPNlNIiuMachh5u4bm0wKjqnjYVClShici5GXbySc3x+/C14X9CZm15d+isG3
+         PA5KsoHTHy2LTVK8hIqbP4lP13x4K8rpTnMOwEuyLdCBLwQYRTJwuGXois6rqtiePbW0
+         OMDetOvW80BYMd5IGHzcDS6lVIhk73L7Kz/wU1FG09sL1h8EmOF5qlwAJX7voyvQF3je
+         cyKuYmFaYWdCUaNMoa7fqzHs+0x5gfa4ktWFna7uATFxVJwEwiN+SPUWhgfe7GRS54bp
+         ysBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-transfer-encoding:content-language;
+        bh=jkh8MdBd+5xRfDGap7m8dlGwadMn0qsFS4+s/qO2eG4=;
+        b=Ng1U+D5jsiqRyJcrBVQBi0476aqzwOjtXPGQsKVj8OutGRwJxM1M8fdUtsCntN3fjB
+         AZaenfa+EMG+o2u2S2vCybCh3pUPgA4Cul//d+9ZiWHAyJyF+zvgyjk4cwfG4Juev/QJ
+         fBJu2zbvXYj0KYG0WekbA3Dmx1rQIPUVsIZ5xB1Qr5XCodRIy1WglSWpebnLkXt7Jqie
+         EuGYI+D0XJSRmI6KhUGDQgJ6Aiazy7f5DmB/tfp14VFHfAkD+iVhxNb/8rDez+GTOh0n
+         q41pBVnVnbpTJzZDyB57iwDq62WFRI61XEU/jnaWTITnw8cylRq8CbVhwmgpje0+Ex6v
+         W1Ng==
+X-Gm-Message-State: AOAM531jln1cDG7zcg0rdOx48ctrKc7f5gvQ3HdDSwOW+2JeklBYG99l
+        H+EtxLFFU7ZprW/SPdRJ2SKf9ltE4iEszCI4FxY=
+X-Google-Smtp-Source: ABdhPJxcHLx2WGY5X793Y1A3LBXlruDQHcT7/hg1RaF3/2EAafKiAJS3+kC9dDldlCvChUhMC0DGCQ==
+X-Received: by 2002:a17:90a:1b2e:: with SMTP id q43mr11056326pjq.217.1628652590918;
+        Tue, 10 Aug 2021 20:29:50 -0700 (PDT)
+Received: from [10.178.0.78] ([85.203.23.37])
+        by smtp.gmail.com with ESMTPSA id t8sm4689152pja.41.2021.08.10.20.29.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Aug 2021 20:29:50 -0700 (PDT)
+To:     aelior@marvell.com, GR-everest-linux-l2@marvell.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        "baijiaju1990@gmail.com" <baijiaju1990@gmail.com>
+From:   Tuo Li <islituo@gmail.com>
+Subject: [BUG] net: qed: possible null-pointer dereference in
+ qed_rdma_create_qp()
+Message-ID: <36bc2872-5b1f-ca1f-86c3-1a13cadcad2c@gmail.com>
+Date:   Wed, 11 Aug 2021 11:29:47 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=1.21
-X-Rspamd-Server: rspamout04
-X-Rspamd-Queue-Id: 3358D2550F6
-X-Stat-Signature: 75qa5r47bkii4bat47q8hn5j747o34s3
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1/2GfxExur2gZjwWpoFAdVLKZaN4FmBi38=
-X-HE-Tag: 1628652422-415181
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-08-10 at 22:53 -0400, Jonathan Toppins wrote:
-> There seems to be no reason to have different error messages between
-> netlink and printk. It also cleans up the function slightly.
-> 
-> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
-> ---
-> 
-> Notes:
->     v2:
->      - changed the printks to reduce object code slightly
->      - emit a single error message based on if netlink or sysfs is
->        attempting to enslave
->      - rebase on top of net-next/master and convert additional
->        instances added by XDP additions
-> 
->  drivers/net/bonding/bond_main.c | 69 ++++++++++++++++++---------------
->  1 file changed, 37 insertions(+), 32 deletions(-)
-> 
-> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-[]
-> @@ -1725,6 +1725,20 @@ void bond_lower_state_changed(struct slave *slave)
->  	netdev_lower_state_changed(slave->dev, &info);
->  }
-> 
-> +#define BOND_NL_ERR(bond_dev, extack, errmsg) do {		\
-> +	if (extack)						\
-> +		NL_SET_ERR_MSG(extack, errmsg);			\
-> +	else							\
-> +		netdev_err(bond_dev, "Error: %s\n", errmsg);	\
-> +} while (0)
-> +
-> +#define SLAVE_NL_ERR(bond_dev, slave_dev, extack, errmsg) do {		\
-> +	if (extack)							\
-> +		NL_SET_ERR_MSG(extack, errmsg);				\
-> +	else								\
-> +		slave_err(bond_dev, slave_dev, "Error: %s\n", errmsg);	\
-> +} while (0)
+Hello,
 
-Ideally both of these would be static functions and not macros.
+Our static analysis tool finds a possible null-pointer dereference in 
+qed_rdma.c in Linux 5.14.0-rc3:
 
+The variable rdma_cxt is assigned to p_hwfn, and rdma_cxt is checked in:
+1286:Â Â Â  if (!rdma_cxt || !in_params || !out_params || 
+!p_hwfn->p_rdma_info->active)
 
+This indicates that both rdma_cxt and p_hwfn can be NULL. If so, a 
+null-pointer dereference will occur:
+1288:Â Â Â  DP_ERR(p_hwfn->cdev, ...);
+
+I am not quite sure whether this possible null-pointer dereference is 
+real and how to fix it if it is real.
+Any feedback would be appreciated, thanks!
+
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+
+Best wishes,
+Tuo Li
