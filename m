@@ -2,69 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B35D83E9957
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 22:04:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0419B3E9961
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 22:08:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231176AbhHKUE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 16:04:59 -0400
-Received: from proxima.lasnet.de ([78.47.171.185]:42000 "EHLO
-        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229655AbhHKUE6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 16:04:58 -0400
-Received: from fedora.fritz.box (unknown [80.156.89.81])
+        id S231700AbhHKUJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 16:09:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52302 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229655AbhHKUJJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 16:09:09 -0400
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29101C061765;
+        Wed, 11 Aug 2021 13:08:45 -0700 (PDT)
+Received: from [192.168.178.156] (unknown [80.156.89.81])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        (Authenticated sender: stefan@sostec.de)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 34FCEC028E;
-        Wed, 11 Aug 2021 22:04:33 +0200 (CEST)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 6D6ABC028E;
+        Wed, 11 Aug 2021 22:08:40 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1628712522;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PVzr+AKnU0TDCUnsw7r28VS4KgC9/neTogcSFZCDwyo=;
+        b=rrg+/npCAfebx+ScgG4wr6eelaF29kdK2FWSQf8rk60T2vPpQAkIi4F88kXu7DZ66iLWW0
+        Sx/zsp4K5OWruqibWkz6eByLcs6Su8IU3ItV3eRhDvP83KO/yfTpJCTZ8LV+1RhwjrwuA5
+        D6r45M9tcf7AoSbiU25ri1KMRGuF03pkab0IZf34Lpx5DKFAkJ0H0jNK5tIHae71uWHlRn
+        hS5wHtC6SoxZICtPK1FedGMWG5lfYG1zeD+JyNh6hbgoaxNnpH2LDFxFX01jFNiVQ/jOCQ
+        AniLUhL3HprwdjzcYFeHXEXkB73lxUfmUp7pMX3SrcW0DtEKxwdtTeGKuXl91Q==
+Subject: Re: [PATCH] ieee802154: hwsim: fix possible null-pointer dereference
+ in mac802154_hwsim.c
+To:     Tuo Li <islituo@gmail.com>, alex.aring@gmail.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, baijiaju1990@gmail.com,
+        TOTE Robot <oslab@tsinghua.edu.cn>
+References: <20210811023654.2971-1-islituo@gmail.com>
 From:   Stefan Schmidt <stefan@datenfreihafen.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wpan@vger.kernel.org, alex.aring@gmail.com,
-        netdev@vger.kernel.org
-Subject: pull-request: ieee802154 for net 2021-08-11
-Date:   Wed, 11 Aug 2021 22:04:17 +0200
-Message-Id: <20210811200417.1662917-1-stefan@datenfreihafen.org>
-X-Mailer: git-send-email 2.31.1
+Message-ID: <7f799a83-0709-d81a-6b45-88f8fafa3b3a@datenfreihafen.org>
+Date:   Wed, 11 Aug 2021 22:08:39 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210811023654.2971-1-islituo@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dave, Jakub.
+Hello.
 
-An update from ieee802154 for your *net* tree.
+On 11.08.21 04:36, Tuo Li wrote:
+> In hwsim_new_edge_nl() and hwsim_set_edge_lqi(), if only one of the two
+> info->attrs is NULL, the functions will not return.
+>    if (!info->attrs[MAC802154_HWSIM_ATTR_RADIO_ID] &&
+>        !info->attrs[MAC802154_HWSIM_ATTR_RADIO_EDGE])
+> 	  return -EINVAL;
+> 
+> However, both of them may be dereferenced in the function
+> nla_parse_nested_deprecated(), causing a null-pointer dereference.
+> To fix this possible null-pointer dereference, the function returns
+> -EINVAL if any info_attr is NULL.
+> 
+> Similarly, in hwsim_set_edge_lqi(), if only one of the two edge_attrs is
+> NULL, both nla_get_u32() and nla_get_u8() will be called, causing a
+> null-pointer dereference.
+> Also, to fix this possible null-pointer dereference, the function returns
+> -EINVAL if any edge_attr is NULL.
+> 
+> Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
+> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+> Signed-off-by: Tuo Li <islituo@gmail.com>
 
-Mostly fixes coming from bot reports. Dongliang Mu tackled some syzkaller
-reports in hwsim again and Takeshi Misawa a memory leak  in  ieee802154 raw.
+Thanks for your patch. This has already been fixed with patches in the 
+wpan tree.
+https://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan.git/
+
+I just sent a pull request including them to get pulled into net.
 
 regards
 Stefan Schmidt
-
-The following changes since commit 37c86c4a0bfc2faaf0ed959db9de814c85797f09:
-
-  Merge branch 'ks8795-vlan-fixes' (2021-08-10 09:58:15 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan.git tags/ieee802154-for-davem-2021-08-11
-
-for you to fetch changes up to e48599df715793053407dcc2352ff6ba210b0869:
-
-  Merge remote-tracking branch 'net/master' into merge-test (2021-08-10 12:45:20 +0200)
-
-----------------------------------------------------------------
-Dongliang Mu (2):
-      ieee802154: hwsim: fix GPF in hwsim_set_edge_lqi
-      ieee802154: hwsim: fix GPF in hwsim_new_edge_nl
-
-Stefan Schmidt (1):
-      Merge remote-tracking branch 'net/master' into merge-test
-
-Takeshi Misawa (1):
-      net: Fix memory leak in ieee802154_raw_deliver
-
- drivers/net/ieee802154/mac802154_hwsim.c | 6 +++---
- net/ieee802154/socket.c                  | 7 ++++++-
- 2 files changed, 9 insertions(+), 4 deletions(-)
