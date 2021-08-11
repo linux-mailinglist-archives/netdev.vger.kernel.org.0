@@ -2,99 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40E7F3E92F9
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 15:46:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AE303E930B
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 15:50:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231959AbhHKNrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 09:47:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48024 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231778AbhHKNrA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 09:47:00 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA02C0613D5;
-        Wed, 11 Aug 2021 06:46:36 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id y18so4650945oiv.3;
-        Wed, 11 Aug 2021 06:46:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=F37GbdbG8x6zZxW7E2S3oSydVR8XSIKpd+BuclgvdbI=;
-        b=SkxDevPBNuYsMKmuMYu+kEpJ6cqAOdNJ0RImVUlmKNthWkAlhNILqnn8DXAGrBDWdQ
-         JBGGhw2htCUCV1BuDdFbj17o/+tR863Z+UvemckllRTjiq1Pe2H/yr0k/3ySZGFIYTqw
-         /aIt9FurFbCfbF+M2fRVp0ge9TWScvH980EUvc48AINQhF0ZuFjPCaQKCZV18ddmMjT6
-         1pfSmIgtTjhxFmqZYmW7Y5vUiSEYCD5aiqZm3L67bArHXYfgyvczcXgJkn/yUcLRn3kd
-         93wlloy6NjfhpDHRfX+KPQ7aakBn0urF0rF0bq5zaBsB4Jyz3CbYsj4RIszCZU5zbiiX
-         rUIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=F37GbdbG8x6zZxW7E2S3oSydVR8XSIKpd+BuclgvdbI=;
-        b=eGTWVw6KiyuuUFdOOBsaJ+pu8kqLcR7Z2EmtIhznHHIwEBC9kkxmF4mo2DQClw/64F
-         0oBV3iHO+97V+4J4EPft86S0hY8pwklHzN6p2551jXGGJ0csu2vdSQwmguBVVWoYxSc+
-         txvn29GZG5cWgV8rvCXGlnaCNOYkYEs1sd3fwu8ssDTUxO/nPoQVQQdeYDk78qVn08JG
-         i3XBdCOWTXleavIb85e6BZWCUjmfuEdj6+Arxk/6ukumfVJ5T5uWvfFBaIL9vXLg5pnM
-         PdYPqQv5GEpVgsf4iDPSdjvED2Mf9jpyJ3mHUZgaAC61FKRbdTljFcLgIeBr6edOn6rz
-         srzQ==
-X-Gm-Message-State: AOAM530sgjBohIFntuj35ArLezOLssMwgnlXGNq0BR5GTnkA03PUQXoZ
-        M60Sr8kVF9eOCMxymz/Di8yub8hoVj4=
-X-Google-Smtp-Source: ABdhPJwNaWgAjCJvhVgTSEpjECrVL7hm2bY6OJrVg/EXEj+tg2XnvneMZyOL2PK/LpennKz9IFj1Cw==
-X-Received: by 2002:a05:6808:c4:: with SMTP id t4mr10938837oic.150.1628689595631;
-        Wed, 11 Aug 2021 06:46:35 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.45])
-        by smtp.googlemail.com with ESMTPSA id q13sm3993576oov.6.2021.08.11.06.46.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Aug 2021 06:46:35 -0700 (PDT)
-Subject: Re: [RFCv2 9/9] selftests: Initial TCP-AO support for fcnal-test
-To:     Leonard Crestez <cdleonard@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        David Ahern <dsahern@kernel.org>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        Ivan Delalande <colona@arista.com>,
-        Priyaranjan Jha <priyarjha@google.com>,
-        Menglong Dong <dong.menglong@zte.com.cn>,
-        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <cover.1628544649.git.cdleonard@gmail.com>
- <3f6d654c1c36f489b471e2892c9231d6fa8fad7a.1628544649.git.cdleonard@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <57493709-02c0-d77b-0b82-121894b58a49@gmail.com>
-Date:   Wed, 11 Aug 2021 07:46:33 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
+        id S231992AbhHKNuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 09:50:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57462 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231971AbhHKNui (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Aug 2021 09:50:38 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 44D2460FD9;
+        Wed, 11 Aug 2021 13:50:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628689806;
+        bh=lSL3dflXDcop78QQbgt5YREWZaF7eJtgc9q4xMZ4ZAo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=GO4Lngxbaue2jMZrVr40APuB5ACNKPykvShclPuoVHQaFpCgwDEBWC5zto+QsOB9t
+         QeFTv7cCk9REBVZzVriReVCeD0wgkKANWd1FBKtLPuIYD3OHhd5TgIzixUDtvGiX8G
+         z0VOximqHlzw6MUpOWwfhc3aCeZ2CJrDqGmy79hTGgYd3CaXXFCBR6kwaVvTDRcQqu
+         /v+44jI3zomLfhG86Qf7+E8eYopVHIZEJQeBRp/WpgU2oz4DXUOQIYw2SNY/TI+4XF
+         rkOex3NCI6qNKOZGVZbTgh2XTPsL2fYf9sL5lhlYW3lR1ZAKuuVMsvqWdAix685xp1
+         PV1Cdi4uXAXBQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 37B60609AD;
+        Wed, 11 Aug 2021 13:50:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <3f6d654c1c36f489b471e2892c9231d6fa8fad7a.1628544649.git.cdleonard@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net-next 0/4] DSA tagger helpers
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162868980622.21914.6083734913988771919.git-patchwork-notify@kernel.org>
+Date:   Wed, 11 Aug 2021 13:50:06 +0000
+References: <20210810131356.1655069-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20210810131356.1655069-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        olteanv@gmail.com, linus.walleij@linaro.org, dqfext@gmail.com,
+        john@phrozen.org, sean.wang@mediatek.com, Landen.Chao@mediatek.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/9/21 3:35 PM, Leonard Crestez wrote:
-> Just test that a correct password is required.
+Hello:
+
+This series was applied to netdev/net-next.git (refs/heads/master):
+
+On Tue, 10 Aug 2021 16:13:52 +0300 you wrote:
+> The goal of this series is to minimize the use of memmove and skb->data
+> in the DSA tagging protocol drivers. Unfiltered access to this level of
+> information is not very friendly to drive-by contributors, and sometimes
+> is also not the easiest to review.
 > 
+> For starters, I have converted the most common form of DSA tagging
+> protocols: the DSA headers which are placed where the EtherType is.
+> 
+> [...]
 
-This test suite needs to be comprehensive that the UAPI works as
-designed and fails when it should - cleanly and with an extack message
-as to why some config option fails. Tests should cover the datapath -
-that it works properly when it should and fails cleanly when it should
-not. If addresses are involved in the configuration, then the tests need
-to be written for non VRFs, with VRFs and default VRF since addresses
-are relative.
+Here is the summary with links:
+  - [v2,net-next,1/4] net: dsa: create a helper that strips EtherType DSA headers on RX
+    https://git.kernel.org/netdev/net-next/c/f1dacd7aea34
+  - [v2,net-next,2/4] net: dsa: create a helper which allocates space for EtherType DSA headers
+    https://git.kernel.org/netdev/net-next/c/6bef794da6d3
+  - [v2,net-next,3/4] net: dsa: create a helper for locating EtherType DSA headers on RX
+    https://git.kernel.org/netdev/net-next/c/5d928ff48656
+  - [v2,net-next,4/4] net: dsa: create a helper for locating EtherType DSA headers on TX
+    https://git.kernel.org/netdev/net-next/c/a72808b65834
 
-Also, in tree test suites are best for the maintenance of this code
-going forward.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
