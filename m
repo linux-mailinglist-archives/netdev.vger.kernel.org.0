@@ -2,234 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 371653E9B4C
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 01:42:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B0C43E9B73
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 02:00:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232856AbhHKXmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 19:42:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44244 "EHLO
+        id S232944AbhHLAAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 20:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232803AbhHKXmX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 19:42:23 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4032C061765;
-        Wed, 11 Aug 2021 16:41:58 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id m193so7976059ybf.9;
-        Wed, 11 Aug 2021 16:41:58 -0700 (PDT)
+        with ESMTP id S232704AbhHLAAd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 20:00:33 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65316C061765;
+        Wed, 11 Aug 2021 17:00:09 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id nt11so6342790pjb.2;
+        Wed, 11 Aug 2021 17:00:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=L0BwPmqvnJeUSMek9XOHFkeNmYhH90EdLiuOpsd4a7o=;
-        b=ado0EwCxiRdwaN/R3l3MPUqT9mDGeTrKAocYenqwORuEWaQCkKT/ftXeKzZK0wp4hE
-         VsHT+OgqOEWH9U+EqvTJb5ms6GEh0Gk+yrjHl4Bxvp6DMQXpLIEo/OrzUp0yyytoiXFL
-         CH1B1GT2Pd9B+txqLf9Ur/5C4lodhSkC9+d6+2KOmEPctcLUm/BKUIC0dvi2is9pWzgl
-         expo6a+gUp5qauuZMhWQqOPfZTk/EaofIXC1vix9Yc9aKJG8VXic4kV80g2oc3X35AlU
-         gGwO81zXZ6VaBloSIFlJIqlP0lyxPu0O7CVv4PXlLH0QQdLBwmtHjeJc4fZqfYNlWRIk
-         NHnA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KgEdvsrca1SF5BWDushaiKJ06kC9hIpnUAyfu0HpOFc=;
+        b=B7VkmiO3h2XR7G2FVqaGzhMv0Ps38Udsf8F2g8R1NG7Pvhf+P+bINWGWULZtfpx1Dy
+         plQ9otZwDXIeW/ZVQyZtbRsgUhJE5XIAYMoPmJuDrse9IBrcnqTKA9JGwHlwWTIUvgUH
+         y4w4KZV9GZA40CBWma/k3Z0B0H3M5DQe16EluXTuK5G8bOH5JsZJcP+W2AwpAHewaHIt
+         OwLPNGc8oBpich8fe+E/Ibjd2Ze4bX5RNBZ8HZG4BRmiqUGxJ/crF5kcZkGxiB96pMX1
+         8JwVGxRHMGaNHACwT7exfKZ3is2m1gc/ltB2ksflk1LqbB5iJhz5m2eYDwwHn2YGz20C
+         AZUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=L0BwPmqvnJeUSMek9XOHFkeNmYhH90EdLiuOpsd4a7o=;
-        b=EnLzugZPfge+6x+Sx8FKksX21h/48kVBlSKbwfBlWJ4bBH2cfdoKaXYINy7gmMALPj
-         OOcr76Yb1wLepiyfLSlukCUk6Rotb53UAzUjJpcciT+J96n6pkkdIGwYXA8upUqjZt0t
-         yC15AE/skutqVCmA4ST9b6+td9Xi4feuzs2Zaewr/3/9NnDMqbIj8kRzED5JZijb0lE6
-         ikPgOKPSsRPlSVExMRFMaBfynQO9PewRPnsVJYRYZjVfdfeBy6xubyg42gULuqEivh56
-         eYqCrhaKgDoUAAVw3ENlXBfZ4rP6X78sH8NiH5FazL4PNHp09U77Tatj2Bx0DOrzDwnQ
-         3K5Q==
-X-Gm-Message-State: AOAM53298pNuLvm07Uz1rdGFU6hF1lyg1TDFtIIGChswyvIO0VJxY9Y7
-        7ZtErUNLMbRkgo/3Jba5z4EAnylIbRp+bhho+VA=
-X-Google-Smtp-Source: ABdhPJz7Wdlh0mO70JYQcCq9U3Q49TV8QUMsySdSgOi5cWxSofN8oP+uhBsHi7pvAI1seNSkiqp6qipTp6s09bLipqU=
-X-Received: by 2002:a5b:648:: with SMTP id o8mr706314ybq.260.1628725318158;
- Wed, 11 Aug 2021 16:41:58 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KgEdvsrca1SF5BWDushaiKJ06kC9hIpnUAyfu0HpOFc=;
+        b=hZQHRnfO5B39AfkTuH+rCy02fE2VUroq452v9D2z5D8IJDWxgFgMovNINlE4fZv+xd
+         39dcYpEJwpnZcSrVci6ovuJhXp07pr2Pj1y0LWbB1FMsSIEvCO35O85wFEP1OLVN5VJ+
+         DQN1NvSpFQjWS87VtA5CMpH0eS2lLqJgRSWP1/IlfrDXcbzc7Epg4SSxYcidNWUmh501
+         8VGDJ1C+Io8tXwNW7zYEBneGyBeTPvhWo7neia0pkl+fWTH8jz/xh9n9kWO7MjrklkwF
+         V4wARHjWzc3Vwr2bl6k1T4+2rr9rLAtZ0ON9+09UL2w/ehMRex1RgoZNJamOLFT/hGVO
+         voXw==
+X-Gm-Message-State: AOAM532+rqLh9iGG3LnQ7msyJ3326QTftt2zHE09uZGi84Uwmk4sVyWX
+        tOnNhUCF0LcHnP8xX7sDZL8td3Rr8CBBrAyF
+X-Google-Smtp-Source: ABdhPJxK4Nh5mOO6hzUscxWSTVLCtL+5kfxQU0/wJbk06HcMAQ5tA/jGj108pcu3I4KEs98kq18G8Q==
+X-Received: by 2002:a17:90b:3802:: with SMTP id mq2mr1215768pjb.19.1628726408807;
+        Wed, 11 Aug 2021 17:00:08 -0700 (PDT)
+Received: from localhost.localdomain (bb42-60-144-185.singnet.com.sg. [42.60.144.185])
+        by smtp.gmail.com with ESMTPSA id g14sm762359pfr.31.2021.08.11.17.00.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Aug 2021 17:00:08 -0700 (PDT)
+From:   Nguyen Dinh Phi <phind.uet@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org, edumazet@google.com, atenart@kernel.org,
+        alobakin@pm.me, weiwan@google.com, ap420073@gmail.com,
+        bjorn@kernel.org, memxor@gmail.com
+Cc:     Nguyen Dinh Phi <phind.uet@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+989efe781c74de1ddb54@syzkaller.appspotmail.com
+Subject: [PATCH] net: drop skbs in napi->rx_list when removing the napi context.
+Date:   Thu, 12 Aug 2021 07:59:59 +0800
+Message-Id: <20210811235959.1099333-1-phind.uet@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210811224036.2416308-1-haoluo@google.com>
-In-Reply-To: <20210811224036.2416308-1-haoluo@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 11 Aug 2021 16:41:47 -0700
-Message-ID: <CAEf4BzYX8Vg1YBHwGxj7cs+6FjsxnnYfxp1NKViZzO3nm=xudA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] libbpf: support weak typed ksyms.
-To:     Hao Luo <haoluo@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 11, 2021 at 3:40 PM Hao Luo <haoluo@google.com> wrote:
->
-> Currently weak typeless ksyms have default value zero, when they don't
-> exist in the kernel. However, weak typed ksyms are rejected by libbpf
-> if they can not be resolved. This means that if a bpf object contains
-> the declaration of a nonexistent weak typed ksym, it will be rejected
-> even if there is no program that references the symbol.
->
-> Nonexistent weak typed ksyms can also default to zero just like
-> typeless ones. This allows programs that access weak typed ksyms to be
-> accepted by verifier, if the accesses are guarded. For example,
->
-> extern const int bpf_link_fops3 __ksym __weak;
->
-> /* then in BPF program */
->
-> if (&bpf_link_fops3) {
->    /* use bpf_link_fops3 */
-> }
->
-> If actual use of nonexistent typed ksym is not guarded properly,
-> verifier would see that register is not PTR_TO_BTF_ID and wouldn't
-> allow to use it for direct memory reads or passing it to BPF helpers.
->
-> Signed-off-by: Hao Luo <haoluo@google.com>
-> ---
->  Changes since v1:
->   - Weak typed symbols default to zero, as suggested by Andrii.
->   - Use ASSERT_XXX() for tests.
->
->  tools/lib/bpf/libbpf.c                        | 17 ++++--
->  .../selftests/bpf/prog_tests/ksyms_btf.c      | 31 ++++++++++
->  .../selftests/bpf/progs/test_ksyms_weak.c     | 57 +++++++++++++++++++
->  3 files changed, 100 insertions(+), 5 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_weak.c
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index cb106e8c42cb..e7547a2967cf 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -5277,11 +5277,11 @@ bpf_object__relocate_data(struct bpf_object *obj, struct bpf_program *prog)
->                                 }
->                                 insn[1].imm = ext->kcfg.data_off;
->                         } else /* EXT_KSYM */ {
-> -                               if (ext->ksym.type_id) { /* typed ksyms */
-> +                               if (ext->ksym.type_id && ext->is_set) { /* typed ksyms */
->                                         insn[0].src_reg = BPF_PSEUDO_BTF_ID;
->                                         insn[0].imm = ext->ksym.kernel_btf_id;
->                                         insn[1].imm = ext->ksym.kernel_btf_obj_fd;
-> -                               } else { /* typeless ksyms */
-> +                               } else { /* typeless ksyms or unresolved typed ksyms */
->                                         insn[0].imm = (__u32)ext->ksym.addr;
->                                         insn[1].imm = ext->ksym.addr >> 32;
->                                 }
-> @@ -6584,7 +6584,7 @@ static int bpf_object__read_kallsyms_file(struct bpf_object *obj)
->  }
->
->  static int find_ksym_btf_id(struct bpf_object *obj, const char *ksym_name,
-> -                           __u16 kind, struct btf **res_btf,
-> +                           __u16 kind, bool is_weak, struct btf **res_btf,
+The napi->rx_list is used to hold the GRO_NORMAL skbs before passing
+them to the stack, these skbs only passed to stack at the flush time or
+when the list's weight matches the predefined condition. In case the
+rx_list contains pending skbs when we remove the napi context, we need
+to clean out this list, otherwise, a memory leak will happen.
 
-instead of teaching find_ksym_btf_id() about weak symbol, just handle
--ESRCH in bpf_object__resolve_ksym_var_btf_id (you already are
-special-handling it anyway). Just move the pr_warn from
-find_ksym_btf_id into bpf_object__resolve_ksym_var_btf_id.
-bpf_object__resolve_ksym_func_btf_id() already has a relevant pr_warn,
-which duplicates the one in find_ksym_btf_id.
+Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
+Reported-by: syzbot+989efe781c74de1ddb54@syzkaller.appspotmail.com
+---
+ net/core/dev.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
->                             int *res_btf_fd)
->  {
->         int i, id, btf_fd, err;
-> @@ -6608,6 +6608,9 @@ static int find_ksym_btf_id(struct bpf_object *obj, const char *ksym_name,
->                                 break;
->                 }
->         }
-> +       if (is_weak && id == -ENOENT)
-> +               return 0;
-> +
+diff --git a/net/core/dev.c b/net/core/dev.c
+index b51e41d0a7fe..319fffc62ce6 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -7038,6 +7038,13 @@ void __netif_napi_del(struct napi_struct *napi)
+ 	list_del_rcu(&napi->dev_list);
+ 	napi_free_frags(napi);
 
-so this is not needed
++	if (napi->rx_count) {
++		struct sk_buff *skb, *n;
++
++		list_for_each_entry_safe(skb, n, &napi->rx_list, list)
++			kfree_skb(skb);
++	}
++
+ 	flush_gro_hash(napi);
+ 	napi->gro_bitmask = 0;
 
->         if (id <= 0) {
->                 pr_warn("extern (%s ksym) '%s': failed to find BTF ID in kernel BTF(s).\n",
->                         __btf_kind_str(kind), ksym_name);
+--
+2.25.1
 
-and this will be moved out to not emit unnecessary warnings for weak symbols
-
-> @@ -6627,11 +6630,15 @@ static int bpf_object__resolve_ksym_var_btf_id(struct bpf_object *obj,
->         const char *targ_var_name;
->         int id, btf_fd = 0, err;
->         struct btf *btf = NULL;
-> +       bool is_weak = ext->is_weak;
->
-> -       id = find_ksym_btf_id(obj, ext->name, BTF_KIND_VAR, &btf, &btf_fd);
-> +       id = find_ksym_btf_id(obj, ext->name, BTF_KIND_VAR, is_weak, &btf, &btf_fd);
->         if (id < 0)
->                 return id;
->
-> +       if (is_weak && id == 0)
-> +               return 0;
-> +
-
-and this will handle ESRCH + is_weak as a special case
-
->         /* find local type_id */
->         local_type_id = ext->ksym.type_id;
->
-> @@ -6676,7 +6683,7 @@ static int bpf_object__resolve_ksym_func_btf_id(struct bpf_object *obj,
->
->         local_func_proto_id = ext->ksym.type_id;
->
-> -       kfunc_id = find_ksym_btf_id(obj, ext->name, BTF_KIND_FUNC,
-> +       kfunc_id = find_ksym_btf_id(obj, ext->name, BTF_KIND_FUNC, false,
->                                     &kern_btf, &kern_btf_fd);
->         if (kfunc_id < 0) {
->                 pr_warn("extern (func ksym) '%s': not found in kernel BTF\n",
-
-[...]
-
-> +/* existing weak symbols */
-> +
-> +/* test existing weak symbols can be resolved. */
-> +extern const struct rq runqueues __ksym __weak; /* typed */
-> +extern const void bpf_prog_active __ksym __weak; /* typeless */
-> +
-> +
-> +/* non-existent weak symbols. */
-> +
-> +/* typeless symbols, default to zero. */
-> +extern const void bpf_link_fops1 __ksym __weak;
-> +
-> +/* typed symbols, default to zero. */
-> +extern const int bpf_link_fops2 __ksym __weak;
-> +
-> +/* typed symbols, pass if not referenced. */
-> +extern const int bpf_link_fops3 __ksym __weak;
-> +
-
-this will be compiled out by compiler, you are not really testing
-anything with that (libbpf doesn't even know about bpf_link_fops3).
-Just drop bpf_link_fops3, bpf_link_fops2 is testing everything anyway.
-
-> +SEC("raw_tp/sys_enter")
-> +int pass_handler(const void *ctx)
-> +{
-> +       /* tests existing symbols. */
-> +       struct rq *rq = (struct rq *)bpf_per_cpu_ptr(&runqueues, 0);
-
-empty line between variable declaration and statements (better declare
-and initialize rq separately, with empty line between those two)
-
-> +       if (rq)
-> +               out__existing_typed = rq->cpu;
-> +       out__existing_typeless = (__u64)&bpf_prog_active;
-> +
-> +       /* tests non-existent symbols. */
-> +       out__non_existent_typeless = (__u64)&bpf_link_fops1;
-> +
-> +       /* tests non-existent symbols. */
-> +       out__non_existent_typed = (__u64)&bpf_link_fops2;
-> +
-> +       if (&bpf_link_fops2) /* can't happen */
-> +               out__non_existent_typed = (__u64)bpf_per_cpu_ptr(&bpf_link_fops2, 0);
-> +
-> +       return 0;
-> +}
-> +
-> +char _license[] SEC("license") = "GPL";
-> --
-> 2.32.0.605.g8dce9f2422-goog
->
