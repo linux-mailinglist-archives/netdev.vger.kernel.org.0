@@ -2,120 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 358573E8A42
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 08:37:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 509253E8B34
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 09:44:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234871AbhHKGhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 02:37:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58958 "EHLO
+        id S235701AbhHKHpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 03:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234760AbhHKGhu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 02:37:50 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ABD6C061765
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 23:37:27 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mDhrY-0007l8-5V; Wed, 11 Aug 2021 08:37:16 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mDhrV-00058b-EE; Wed, 11 Aug 2021 08:37:13 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Marek Vasut <marex@denx.de>, David Jander <david@protonic.nl>,
-        linux-hwmon@vger.kernel.org
-Subject: [PATCH net-next v2 1/1] net: phy: nxp-tja11xx: log critical health state
-Date:   Wed, 11 Aug 2021 08:37:12 +0200
-Message-Id: <20210811063712.19695-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S233182AbhHKHpM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 03:45:12 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DFDC061765
+        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 00:44:48 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id h13so1759018wrp.1
+        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 00:44:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zaBsxBQ5BELN++izmX2i8k+1VdLUPtmFKDmfWeEsYNw=;
+        b=RG01cEUiJLFKO6Vo1OXzaaYysLuYpdF0+NVUdIhGzBGJ31npXIgOBJGZHmpVz4jUgv
+         UwE6NBXzBTARigtNDF+gBZ60UJ9oy34H1E3tXk6qEZEGGvTxe6Y/qG31Qdle0uw98me1
+         WQTIuNhEgIQp471Zy4qjr2QPOulrT5vBTCOLNyoQ8DLl8E+6j95EpIqxNywQB/Nt81+t
+         YdfvEV/fBT8/FXnvqqSCsl6ffzVa3hOD//+RoWHvzoLNLx+GS1TBOKhhMai+XhwG8dOB
+         bBon1BaYhMWCGK2DjKX97yUbmM1xHISX9SJMVCwH6y9Uig5YzGhCIsNb3Gthv1bwfNb7
+         ndBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zaBsxBQ5BELN++izmX2i8k+1VdLUPtmFKDmfWeEsYNw=;
+        b=ihK7Z1wANsIkqkf1hpo2vQm3xkw8NJ+KJ2pAkFTgc4yULlahLg5kbPrgrbIjk7my7H
+         p5z4Yvqrx/7PXYQzaKTqdKzdvjQP4uZzQVHCazq9Gz/7x+YgYYrCQ0n0IAd5LAp9FPRY
+         o2vpgg6VMR6kRf9btM2cVzSVGgBVDHv5FSYk+We3m2AH24pqOaKAahhDReJMhs6zYGVc
+         gAY/cAqb+2CUtD6XLDd0xN00Ke7/cQd6ipnxmZDa0HIROUG/iDP7ng0w5R7LrPT3T0pJ
+         UiFFRdwz+XJJZEkngrN4nDNtYTw0Dqre8+6ZYfgH/kkASWXmfPffQ+4YAtJOVaGHyvI9
+         yMCQ==
+X-Gm-Message-State: AOAM5336u4eQybjQM30be1i+pMZIFsSJF8nK5l8Wanrngexy6kNexnBR
+        V+whyf7SmzZdCAdDdO+nJ8o=
+X-Google-Smtp-Source: ABdhPJxG1B2L4Ttid0Dqh/IW2zOUhQ9qw8BOGMh7tE8t8vX32DyIXLYcpOxbY9uwXfDfnCN6kYjqjg==
+X-Received: by 2002:a5d:6186:: with SMTP id j6mr36323880wru.115.1628667887266;
+        Wed, 11 Aug 2021 00:44:47 -0700 (PDT)
+Received: from [10.0.0.18] ([37.165.193.81])
+        by smtp.gmail.com with ESMTPSA id z17sm26445240wrt.47.2021.08.11.00.44.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 Aug 2021 00:44:46 -0700 (PDT)
+Subject: Re: [PATCH] net:sched fix array-index-out-of-bounds in taprio_change
+To:     tcs.kernel@gmail.com, vinicius.gomes@intel.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org
+Cc:     Haimin Zhang <tcs_kernel@tencent.com>
+References: <1628658609-1208-1-git-send-email-tcs_kernel@tencent.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <303b095e-3342-9461-16ae-86d0923b7dc7@gmail.com>
+Date:   Wed, 11 Aug 2021 09:44:41 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <1628658609-1208-1-git-send-email-tcs_kernel@tencent.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TJA1102 provides interrupt notification for the critical health states
-like overtemperature and undervoltage.
 
-The overtemperature bit is set if package temperature is beyond 155C°.
-This functionality was tested by heating the package up to 200C°
 
-The undervoltage bit is set if supply voltage drops beyond some critical
-threshold. Currently not tested.
+On 8/11/21 7:10 AM, tcs.kernel@gmail.com wrote:
+> From: Haimin Zhang <tcs_kernel@tencent.com>
+> 
+> syzbot report an array-index-out-of-bounds in taprio_change
+> index 16 is out of range for type '__u16 [16]'
+> that's because mqprio->num_tc is lager than TC_MAX_QUEUE,so we check
+> the return value of netdev_set_num_tc.
+> 
+> Reported-by: syzbot+2b3e5fb6c7ef285a94f6@syzkaller.appspotmail.com
+> Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
+> ---
+>  net/sched/sch_taprio.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+> index 9c79374..1ab2fc9 100644
+> --- a/net/sched/sch_taprio.c
+> +++ b/net/sched/sch_taprio.c
+> @@ -1513,7 +1513,9 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+>  	taprio_set_picos_per_byte(dev, q);
+>  
+>  	if (mqprio) {
+> -		netdev_set_num_tc(dev, mqprio->num_tc);
+> +		err = netdev_set_num_tc(dev, mqprio->num_tc);
+> +		if (err)
+> +			goto free_sched;
+>  		for (i = 0; i < mqprio->num_tc; i++)
+>  			netdev_set_tc_queue(dev, i,
+>  					    mqprio->count[i],
+> 
 
-In a typical use case, both of this events should be logged and stored
-(or send to some remote system) for further investigations.
+When was the bug added ?
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/phy/nxp-tja11xx.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+Hint: Please provide a Fixes: tag
 
-diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
-index afd7afa1f498..9944cc501806 100644
---- a/drivers/net/phy/nxp-tja11xx.c
-+++ b/drivers/net/phy/nxp-tja11xx.c
-@@ -47,12 +47,14 @@
- #define MII_INTSRC_LINK_FAIL		BIT(10)
- #define MII_INTSRC_LINK_UP		BIT(9)
- #define MII_INTSRC_MASK			(MII_INTSRC_LINK_FAIL | MII_INTSRC_LINK_UP)
--#define MII_INTSRC_TEMP_ERR		BIT(1)
- #define MII_INTSRC_UV_ERR		BIT(3)
-+#define MII_INTSRC_TEMP_ERR		BIT(1)
- 
- #define MII_INTEN			22
- #define MII_INTEN_LINK_FAIL		BIT(10)
- #define MII_INTEN_LINK_UP		BIT(9)
-+#define MII_INTEN_UV_ERR		BIT(3)
-+#define MII_INTEN_TEMP_ERR		BIT(1)
- 
- #define MII_COMMSTAT			23
- #define MII_COMMSTAT_LINK_UP		BIT(15)
-@@ -607,7 +609,8 @@ static int tja11xx_config_intr(struct phy_device *phydev)
- 		if (err)
- 			return err;
- 
--		value = MII_INTEN_LINK_FAIL | MII_INTEN_LINK_UP;
-+		value = MII_INTEN_LINK_FAIL | MII_INTEN_LINK_UP |
-+			MII_INTEN_UV_ERR | MII_INTEN_TEMP_ERR;
- 		err = phy_write(phydev, MII_INTEN, value);
- 	} else {
- 		err = phy_write(phydev, MII_INTEN, value);
-@@ -622,6 +625,7 @@ static int tja11xx_config_intr(struct phy_device *phydev)
- 
- static irqreturn_t tja11xx_handle_interrupt(struct phy_device *phydev)
- {
-+	struct device *dev = &phydev->mdio.dev;
- 	int irq_status;
- 
- 	irq_status = phy_read(phydev, MII_INTSRC);
-@@ -630,6 +634,11 @@ static irqreturn_t tja11xx_handle_interrupt(struct phy_device *phydev)
- 		return IRQ_NONE;
- 	}
- 
-+	if (irq_status & MII_INTSRC_TEMP_ERR)
-+		dev_warn(dev, "Overtemperature error detected (temp > 155C°).\n");
-+	if (irq_status & MII_INTSRC_UV_ERR)
-+		dev_warn(dev, "Undervoltage error detected.\n");
-+
- 	if (!(irq_status & MII_INTSRC_MASK))
- 		return IRQ_NONE;
- 
--- 
-2.30.2
+taprio_parse_mqprio_opt() already checks :
+
+/* Verify num_tc is not out of max range */
+if (qopt->num_tc > TC_MAX_QUEUE) {
+    NL_SET_ERR_MSG(extack, "Number of traffic classes is outside valid range");
+    return -EINVAL;
+}
+
+So what is happening exactly ?
+
+
+
 
