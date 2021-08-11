@@ -2,101 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C4BA3E91E6
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 14:50:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52E8F3E91EA
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 14:50:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229820AbhHKMuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 08:50:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49510 "EHLO mail.kernel.org"
+        id S230109AbhHKMuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 08:50:40 -0400
+Received: from mga04.intel.com ([192.55.52.120]:44140 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229707AbhHKMub (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Aug 2021 08:50:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0386260FA0;
-        Wed, 11 Aug 2021 12:50:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628686208;
-        bh=okMH6cOcp67xeZ4zRwpdQavn1PSzVxWv5rvITGDEiHw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=X5pP+kVY5cC/D9D7KWsGO5VaGMsAl9cMRGJdDYwYnFOrW+UcDc2dQ740JBDcgeKUf
-         YmNUSeNV13mEKvZDxoySJmpZN8rBbu8+AjEoquT29RFOIrnDrz2Anw+qYsvtQvd5rf
-         aJBkEA5+ZAuNUCygpXdplGzZXWpUb7vYLYee2SpleZ7IFHXGMRCf0BlzyyZxsgC2s8
-         4xAc5H0KXV+Hl6GWEelsvtzu9qnoCVDXZ+Rw01W+3JJGybMIA9Rb0mBRZXfgrYP2YP
-         lIyy3Pziqe+1qLQBLVubXq9f0CMeYB2Ms80gAm9WC4cHkGPtM34KVQN/Jay4sWZVZB
-         iAeiSVs7NTXpg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E47C460A54;
-        Wed, 11 Aug 2021 12:50:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230182AbhHKMuk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Aug 2021 08:50:40 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10072"; a="213262055"
+X-IronPort-AV: E=Sophos;i="5.84,313,1620716400"; 
+   d="scan'208";a="213262055"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2021 05:50:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,313,1620716400"; 
+   d="scan'208";a="503485833"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga001.jf.intel.com with ESMTP; 11 Aug 2021 05:50:12 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 3C2EE142; Wed, 11 Aug 2021 15:50:12 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Loic Poulain <loic.poulain@linaro.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 net-next 1/1] wwan: core: Unshadow error code returned by ida_alloc_range))
+Date:   Wed, 11 Aug 2021 15:50:10 +0300
+Message-Id: <20210811125010.11167-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/15] net: bridge: vlan: add global mcast options
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162868620793.25774.11675995682393129413.git-patchwork-notify@kernel.org>
-Date:   Wed, 11 Aug 2021 12:50:07 +0000
-References: <20210810152933.178325-1-razor@blackwall.org>
-In-Reply-To: <20210810152933.178325-1-razor@blackwall.org>
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     netdev@vger.kernel.org, roopa@nvidia.com,
-        bridge@lists.linux-foundation.org, nikolay@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+ida_alloc_range() may return other than -ENOMEM error code.
+Unshadow it in the wwan_create_port().
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+---
+v3: split from original series with fixed subject and typo in body (Sergey)
 
-On Tue, 10 Aug 2021 18:29:18 +0300 you wrote:
-> From: Nikolay Aleksandrov <nikolay@nvidia.com>
-> 
-> Hi,
-> This is the first follow-up set after the support for per-vlan multicast
-> contexts which extends global vlan options to support bridge's multicast
-> config per-vlan, it enables user-space to change and dump the already
-> existing bridge vlan multicast context options. The global option patches
-> (01 - 09 and 12-13) follow a similar pattern of changing current mcast
-> functions to take multicast context instead of a port/bridge directly.
-> Option equality checks have been added for dumping vlan range compression.
-> The last 2 patches extend the mcast router dump support so it can be
-> re-used when dumping vlan config.
-> 
-> [...]
+ drivers/net/wwan/wwan_core.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Here is the summary with links:
-  - [net-next,01/15] net: bridge: vlan: add support for mcast igmp/mld version global options
-    https://git.kernel.org/netdev/net-next/c/df271cd641f1
-  - [net-next,02/15] net: bridge: vlan: add support for mcast last member count global option
-    https://git.kernel.org/netdev/net-next/c/931ba87d2017
-  - [net-next,03/15] net: bridge: vlan: add support for mcast startup query count global option
-    https://git.kernel.org/netdev/net-next/c/50725f6e6b21
-  - [net-next,04/15] net: bridge: vlan: add support for mcast last member interval global option
-    https://git.kernel.org/netdev/net-next/c/77f6ababa299
-  - [net-next,05/15] net: bridge: vlan: add support for mcast membership interval global option
-    https://git.kernel.org/netdev/net-next/c/2da0aea21f1c
-  - [net-next,06/15] net: bridge: vlan: add support for mcast querier interval global option
-    https://git.kernel.org/netdev/net-next/c/cd9269d46310
-  - [net-next,07/15] net: bridge: vlan: add support for mcast query interval global option
-    https://git.kernel.org/netdev/net-next/c/d6c08aba4f29
-  - [net-next,08/15] net: bridge: vlan: add support for mcast query response interval global option
-    https://git.kernel.org/netdev/net-next/c/425214508b1b
-  - [net-next,09/15] net: bridge: vlan: add support for mcast startup query interval global option
-    https://git.kernel.org/netdev/net-next/c/941121ee22a6
-  - [net-next,10/15] net: bridge: mcast: move querier state to the multicast context
-    https://git.kernel.org/netdev/net-next/c/4d5b4e84c724
-  - [net-next,11/15] net: bridge: mcast: querier and query state affect only current context type
-    https://git.kernel.org/netdev/net-next/c/cb486ce99576
-  - [net-next,12/15] net: bridge: vlan: add support for mcast querier global option
-    https://git.kernel.org/netdev/net-next/c/62938182c359
-  - [net-next,13/15] net: bridge: vlan: add support for mcast router global option
-    https://git.kernel.org/netdev/net-next/c/a97df080b6a8
-  - [net-next,14/15] net: bridge: mcast: use the proper multicast context when dumping router ports
-    https://git.kernel.org/netdev/net-next/c/e04d377ff6ce
-  - [net-next,15/15] net: bridge: vlan: use br_rports_fill_info() to export mcast router ports
-    https://git.kernel.org/netdev/net-next/c/dc002875c22b
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
+index 35ece98134c0..d293ab688044 100644
+--- a/drivers/net/wwan/wwan_core.c
++++ b/drivers/net/wwan/wwan_core.c
+@@ -359,8 +359,8 @@ struct wwan_port *wwan_create_port(struct device *parent,
+ {
+ 	struct wwan_device *wwandev;
+ 	struct wwan_port *port;
+-	int minor, err = -ENOMEM;
+ 	char namefmt[0x20];
++	int minor, err;
+ 
+ 	if (type > WWAN_PORT_MAX || !ops)
+ 		return ERR_PTR(-EINVAL);
+@@ -374,11 +374,14 @@ struct wwan_port *wwan_create_port(struct device *parent,
+ 
+ 	/* A port is exposed as character device, get a minor */
+ 	minor = ida_alloc_range(&minors, 0, WWAN_MAX_MINORS - 1, GFP_KERNEL);
+-	if (minor < 0)
++	if (minor < 0) {
++		err = minor;
+ 		goto error_wwandev_remove;
++	}
+ 
+ 	port = kzalloc(sizeof(*port), GFP_KERNEL);
+ 	if (!port) {
++		err = -ENOMEM;
+ 		ida_free(&minors, minor);
+ 		goto error_wwandev_remove;
+ 	}
+-- 
+2.30.2
 
