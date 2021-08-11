@@ -2,86 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4563F3E9590
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 18:08:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 380403E959B
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 18:12:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229644AbhHKQIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 12:08:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53248 "EHLO
+        id S229571AbhHKQMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 12:12:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbhHKQIo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 12:08:44 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6291C061765
-        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 09:08:19 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id s22-20020a17090a1c16b0290177caeba067so10456006pjs.0
-        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 09:08:19 -0700 (PDT)
+        with ESMTP id S229473AbhHKQMX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 12:12:23 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1194EC061765;
+        Wed, 11 Aug 2021 09:11:59 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id i10-20020a05600c354ab029025a0f317abfso4825361wmq.3;
+        Wed, 11 Aug 2021 09:11:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=K6DsowF4AXsH3BFFA3k6Be+XAx2AtPHFs6GabMLgMxY=;
-        b=jpLDNLf0Who2ZcMaRDYORzQfKNNj26HnhIVDr/xXhKX1k4KZORlnISeFIChldsTElc
-         nDkPTO/uOrJEXWqsgaDVnawEzlKddFhalBxN0DpfTyhnlSviuE228Xs8HPizYvWmhjHa
-         lk4BLK/6JGb9E9ojYGOEUnSh3Efwo4x4qW6kDvFd2VOpfa4Ti0Pa3uwAbqqilHuFqsBI
-         NmH4MmdRSjakPYskdCa599e47jBfVUaxPlMMmkpFbPSm7DT3DUHqbHgf19cqV1hfy3Xs
-         hiCzgXUsv5L8SD89uJw5MB4bPjVUbslXwju+dVwBGABq6exzztwgiVzrQwj89d/ZNv0t
-         UXhQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MPha9OXmqtN1vnQ4nGyj7vziUXy5Fz1Un6xPWG/5xZg=;
+        b=V8PsfhB+l+7C9qMv82uJWMQaXtRVpahlowl+XF2x+TBlW8aQ52CKjJTh1YTlseo2eP
+         v8C60TWLc/LYhHmQI8n/+unYTKEJUD8C1eDAAkQnUxblc1KJMr3V4A8zYhKtqW0iOB/5
+         km61REWqRtW9kSLmwSfEVMO8NaVHgNYcHRQVuM3CTUyEprY6vCcgpcY7eO9d3eE+2oTT
+         wU6KzrxwVqUFmga/p87zY0TcafdQNJSA6ZdHROlMiuWtftfRGkAlJXGitFb1Nf+3EXUe
+         eVww3yZBU/mhLFzckDWpOTMF6oJbF+pNKejbPQYV/oIngz96yZRFZSm3LM266S6Ljwy4
+         plLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=K6DsowF4AXsH3BFFA3k6Be+XAx2AtPHFs6GabMLgMxY=;
-        b=Z3u7VUjHNMz09ReDxAeTA0SLCHrU31KJ6DbCTeV3CaiZxtRRRYRfe3R/Sjy4ss5cx4
-         /ADe5TGenYnrbcXK/wkXpOvswsIQ8mytPo+xNESI+X7mm/NRonlBVVyqhffX/nTLfuah
-         1Nx5gO7JPZf0/pCwhEccPv9ziXkcEH+Iheu55CIydad02D9NCY1tLssSFqbWQuIJXtha
-         eXirvLK9czKWMTSjMud1rrfVLJHCmvUAgK7F1UpPNEQe+4ZQHBDb9gmoAP5kcjonAbIT
-         DYxOj9zAoxqFjxioZxUXebgQspxEFr0VNkXzC6q4sMtwWmmO0+ssIyKhzNYpeX+3X4Fp
-         fOVA==
-X-Gm-Message-State: AOAM5301I+mYqPWK5756iFuGlZyDRJqOKyj2pmz/WAwWsJSitz5sQLeL
-        rNlBRsA0ehyvUYRNrm4KSz0Q7w==
-X-Google-Smtp-Source: ABdhPJzN5Plj/ZcjaQDhV4yDMOQKPYG2udnnS9lV7XAZDbv1fKAjOOvQThsXTjt2PA6UDuWIDnzLFA==
-X-Received: by 2002:a05:6a00:16d6:b029:32a:ffe9:76a with SMTP id l22-20020a056a0016d6b029032affe9076amr35205366pfc.60.1628698099350;
-        Wed, 11 Aug 2021 09:08:19 -0700 (PDT)
-Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id t8sm7297513pja.41.2021.08.11.09.08.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Aug 2021 09:08:18 -0700 (PDT)
-Date:   Wed, 11 Aug 2021 09:08:15 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Andrea Claudi <aclaudi@redhat.com>
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com, haliu@redhat.com
-Subject: Re: [PATCH iproute2] lib: bpf_glue: remove useless assignment
-Message-ID: <20210811090815.0a6363db@hermes.local>
-In-Reply-To: <YROUi1WhHneQR/qz@renaissance-vector>
-References: <25ea92f064e11ba30ae696b176df9d6b0aaaa66a.1628352013.git.aclaudi@redhat.com>
-        <20210810200048.27099697@hermes.local>
-        <YROUi1WhHneQR/qz@renaissance-vector>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MPha9OXmqtN1vnQ4nGyj7vziUXy5Fz1Un6xPWG/5xZg=;
+        b=IH3zg7KUDA83Fk2a/CqdwflVJGdo2FMxHkR4ipELRCr1bwb4dfPPGMLggKT4UU8C8o
+         CNO8wmKcX7+jmEWcGkXRowqImjJdeLEvYtdjMsIAzkJFbo4G3jdGFBpOwFCOQUS+NVjx
+         iPCmO3jIymTuYZl+y6Nrx3NdjUcfQJvNgZxksN7I1CLOwwjkNddbdVpUg8KQ0a1RxNYi
+         fvSse4c2if+WRI5Xm/9hB9cuYAI5tNRjg0v5y7voLtgdFmuzkTu32R5DAvAYy7O627Cx
+         RWIam9o07SnRnM4V8bkhU8SIU/Dd8WT19xVxa/c5vP+jKC2aVIDVvMQAmQil0o5JNhe3
+         gHkw==
+X-Gm-Message-State: AOAM530y7FOooatSuok5MBQEmz0Yj+wuNVYVwFx6AY3DJRn+hyiSnRVB
+        fbga92f8yfH+qrbIaQlW5yxjXSX//wo=
+X-Google-Smtp-Source: ABdhPJxFqOdo6jahNaXOT3zt0F0F41DBu5XuyUzk6p92SetxMgBZ2wfS+hrEODyJ0jzFNnNMHDN2xA==
+X-Received: by 2002:a05:600c:2290:: with SMTP id 16mr3017785wmf.26.1628698317391;
+        Wed, 11 Aug 2021 09:11:57 -0700 (PDT)
+Received: from [10.0.0.18] ([37.165.41.250])
+        by smtp.gmail.com with ESMTPSA id y6sm7572690wrh.8.2021.08.11.09.11.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 Aug 2021 09:11:56 -0700 (PDT)
+Subject: Re: [PATCH v2 2/2] net: return early for possible invalid uaddr
+To:     Wen Yang <wenyang@linux.alibaba.com>, davem@davemloft.net,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210811152431.66426-1-wenyang@linux.alibaba.com>
+ <20210811152431.66426-2-wenyang@linux.alibaba.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <247c8272-0e26-87ab-d492-140047d4abc4@gmail.com>
+Date:   Wed, 11 Aug 2021 18:11:52 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210811152431.66426-2-wenyang@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Aug 2021 11:12:43 +0200
-Andrea Claudi <aclaudi@redhat.com> wrote:
 
-> On Tue, Aug 10, 2021 at 08:00:48PM -0700, Stephen Hemminger wrote:
-> > On Sat,  7 Aug 2021 18:58:02 +0200
-> > Andrea Claudi <aclaudi@redhat.com> wrote:
-> >   
-> > > -	while ((s = fgets(buf, sizeof(buf), fp)) != NULL) {
-> > > +	while (fgets(buf, sizeof(buf), fp) != NULL) {
-> > >  		if ((s = strstr(buf, "libbpf.so.")) != NULL) {  
-> > 
-> > Ok. but it would be good to get rid of the unnecessary assignment in conditional as well.
-> >   
-> Hi Stephen,
-> That's not unnecessary, s is used as the second parameter in the following strncpy().
+
+On 8/11/21 5:24 PM, Wen Yang wrote:
+> The inet_dgram_connect() first calls inet_autobind() to select an
+> ephemeral port, then checks uaddr in udp_pre_connect() or
+> __ip4_datagram_connect(), but the port is not released until the socket
+> is closed. This could cause performance issues or even exhaust ephemeral
+> ports if a malicious user makes a large number of UDP connections with
+> invalid uaddr and/or addr_len.
 > 
+>  
 
+This is a big patch.
 
-It is bad style in C to do assignment in a conditional.
-It causes errors, and is not anymore efficient.
+Can the malicious user still use a large number of UDP sockets,
+with valid uaddr/add_len and consequently exhaust ephemeral ports ?
 
+If yes, it does not seem your patch is helping.
+
+If no, have you tried instead to undo the autobind, if the connect fails ?
