@@ -2,97 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B593B3E88F0
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 05:41:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BD273E88F8
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 05:46:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233299AbhHKDlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 23:41:52 -0400
-Received: from out4436.biz.mail.alibaba.com ([47.88.44.36]:27303 "EHLO
-        out4436.biz.mail.alibaba.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232795AbhHKDlv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 23:41:51 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R701e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=wenyang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Uied3FN_1628653275;
-Received: from IT-C02W23QPG8WN.local(mailfrom:wenyang@linux.alibaba.com fp:SMTPD_---0Uied3FN_1628653275)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 11 Aug 2021 11:41:16 +0800
-Subject: Re: [PATCH] ipv4: return early for possible invalid uaddr
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, David Ahern <dsahern@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Baoyou Xie <baoyou.xie@alibaba-inc.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210807171938.38501-1-wenyang@linux.alibaba.com>
- <20210809153251.4c51c3cd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Wen Yang <wenyang@linux.alibaba.com>
-Message-ID: <72dd5ee4-d7f3-576c-c7b9-3f8f4980faf3@linux.alibaba.com>
-Date:   Wed, 11 Aug 2021 11:41:15 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        id S233301AbhHKDqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 23:46:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49356 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232625AbhHKDqk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 23:46:40 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C795C061765
+        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 20:46:17 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id a5so923108plh.5
+        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 20:46:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=mJ/CqbansfBHGDXiLc+SyJeedo7o8DtFnix8gxOZZTY=;
+        b=tbT+zBMv+rNkA7V69zPPQ7bvemhnVSQTmP31g3SeVAJhLgMv7YINeFJQuN7LnnJBf6
+         eFQqb5CXoLBQBkywND3Rq+DVyqzjYmHT/H3GNcBjk2gGD8H7amEN0jvPWW2p5l7dQtYj
+         +ae0xOnuOfK2zl6z1fqCRdV6FokiyAoVJms9V4BGZb2S/8Et00/GUI3t+1z5yM38Dlll
+         X+3oDOnHmt/g+0DU7H71D0H12Ot10B6/TzcuND1BFVdSOC5K0JDTgpnq6z1JsCTA7wCP
+         IYPRHn3OJoO7DMwX5v9f2kUXtWYgMVq6e2POf+53YVviJCD8uHDesILbCXG00zsv1SKx
+         aMGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=mJ/CqbansfBHGDXiLc+SyJeedo7o8DtFnix8gxOZZTY=;
+        b=nL7lI/Fz0pNnuYvukMB+BjT0cTFGz+kvxulBTc2vRsritoGBaVQMPO0DRTnK4YFSwq
+         vH85K9rs4G7X4uy6hoEFFG+/oEnuEjmo5sKg7vJoeDxPatLHqYv/WTPgDY8lXAqK2e7h
+         jem1qSHw/Ql0TQ/hidSnpmRPqKUQh7HerMntf9DfBfrcMySCIxZmdUMzKkIZ6NR02OT1
+         ewCRQaJi8qKYFEIKTVreR5PnNKRU6qj36BCQHFe0WWi9UgizjCyZz6Mrm1r4Lc9V5cXG
+         y8/uDiX82EunI0uHbJ3DGMH1A1NIyo9hTCESgjBc7aYhZGqHovDR4c1Q9XJqoas5H4f9
+         vayw==
+X-Gm-Message-State: AOAM533hiXUfZQMWN53HrTiq4qR+Doin7msz7mGDdjrWXpkEY9KEf7Ou
+        VkkRqGwJ/qNRoJ2Z1R1RQ/bpKoSNVYqRiw==
+X-Google-Smtp-Source: ABdhPJxucTEaLeQLOlOcqS5RklZKvjI8SfVAASjJihpMtec4PyGZ4dVIf5NAQkuJSvS9xIYb4Z7vBg==
+X-Received: by 2002:a63:fc20:: with SMTP id j32mr372288pgi.283.1628653576882;
+        Tue, 10 Aug 2021 20:46:16 -0700 (PDT)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id h6sm27246589pfe.177.2021.08.10.20.46.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Aug 2021 20:46:16 -0700 (PDT)
+Date:   Tue, 10 Aug 2021 20:46:13 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Justin Iurman <justin.iurman@uliege.be>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2-next v2 1/3] Add, show, link, remove IOAM
+ namespaces and schemas
+Message-ID: <20210810204613.1b61aae1@hermes.local>
+In-Reply-To: <20210724172108.26524-2-justin.iurman@uliege.be>
+References: <20210724172108.26524-1-justin.iurman@uliege.be>
+        <20210724172108.26524-2-justin.iurman@uliege.be>
 MIME-Version: 1.0
-In-Reply-To: <20210809153251.4c51c3cd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, 24 Jul 2021 19:21:06 +0200
+Justin Iurman <justin.iurman@uliege.be> wrote:
 
+> +	print_null(PRINT_ANY, "", "\n", NULL);
 
-ÔÚ 2021/8/10 ÉÏÎç6:32, Jakub Kicinski Ð´µÀ:
-> On Sun,  8 Aug 2021 01:19:38 +0800 Wen Yang wrote:
->> The inet_dgram_connect() first calls inet_autobind() to select an
->> ephemeral port, then checks uaddr in udp_pre_connect() or
->> __ip4_datagram_connect(), but the port is not released until the socket
->> is closed.
->>
->> We should return early for invalid uaddr to improve performance and
->> simplify the code a bit,
-> 
-> The performance improvement would be if the benchmark is calling
-> connect with invalid arguments? That seems like an extremely rare
-> scenario in real life.
-> 
-
-Thanks for your comments.
-
-On the one hand, it is the performance impact, but we also found that it
-may cause DoS: simulate a scenario where udp connect is frequently
-performed (illegal addrlen, and the socket is not closed), the local
-ports will be exhausted quickly.
-
->> and also switch from a mix of tabs and spaces to just tabs.
-> 
-> Please never mix unrelated whitespace cleanup into patches making real
-> code changes.
->
-OK.
-
->> diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
->> index 5464818..97b6fc4 100644
->> --- a/net/ipv4/af_inet.c
->> +++ b/net/ipv4/af_inet.c
->> @@ -569,6 +569,11 @@ int inet_dgram_connect(struct socket *sock, struct sockaddr *uaddr,
->>   	if (uaddr->sa_family == AF_UNSPEC)
->>   		return sk->sk_prot->disconnect(sk, flags);
->>   
->> +	if (uaddr->sa_family != AF_INET)
->> +		return -EAFNOSUPPORT;
-> 
-> And what about IPv6 which also calls this function?
-> 
-
-Sorry that currently only ipv4 has been modified, we will continue to 
-improve, and the v2 patch will be submitted later, thank you.
-
-
--- 
-Best wishes£¬
-Wen
-
-
->> +	if (addr_len < sizeof(struct sockaddr_in))
->> +		return -EINVAL;
->> +
->>   	if (BPF_CGROUP_PRE_CONNECT_ENABLED(sk)) {
->>   		err = sk->sk_prot->pre_connect(sk, uaddr, addr_len);
->>   		if (err)
+Use print_nl() since it handles the case of oneline output.
+Plus in JSON the newline is meaningless.
