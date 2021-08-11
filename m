@@ -2,140 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 933D33E996F
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 22:14:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 443EC3E9976
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 22:14:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231702AbhHKUOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 16:14:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53510 "EHLO
+        id S232027AbhHKUOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 16:14:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229655AbhHKUOX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 16:14:23 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED0ADC061765
-        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 13:13:59 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id k65so6961439yba.13
-        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 13:13:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u+HEwVE2h6EoXNkQ9h0qH6PYXrhFQild+sFaHXOY9kI=;
-        b=XMxA2B/D7RDRfSgA8nxbJElMjvXuarvNNnxSWpgAMLGLtTw2f4D3Zf1gGWdVmn8ZZN
-         iJrIhJns9KCW2FIAVUh11DIg0Y276EecZbvi9HpE9SC9Fdcqz01nLTkRY2/A4D8LSVPh
-         SDa3wJfFz4Jiv6TPQ6tV4mTvemuNU839Wzhug=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u+HEwVE2h6EoXNkQ9h0qH6PYXrhFQild+sFaHXOY9kI=;
-        b=VZDoJK/iqeAOi5UIUf+hplYbpA8+bccnmBQpPutAaljX+3qRFoszIllt/KqU4HNVma
-         lh8PATCKYjg/to1JtY14rZmlyQb4+yV3s1i9Kp2bTm7tN9Y59FFgYIUXjvIQbCTcFCsQ
-         AiJOl1p11+kaDLCfFq5hyLd2LEbnIZfNZKBPXG5/Bim3wNaHrrAkqYkNGUIlkmMqW9fY
-         j3BuHBEMyCd+eNQwghTA3ghmtLTI4CDUoDWlkzW8joKdHByk2lSySQwlsZm/Vs4CxNJ2
-         XFmeHDTFBewQ11+QacFUnjmUySi7VbCuUV6jCcteayylfVsfvPpmttPjSkIl3HwOQ0NB
-         G73Q==
-X-Gm-Message-State: AOAM530qFARU5gJ97j1fJBhpsEPFyiLUDnG3Ysvj1vY1aqHlIGOd1A3J
-        UBzHKf3QHR7NqXIAoQ6ZqcNw3V9x2eLPurU09v3f3w==
-X-Google-Smtp-Source: ABdhPJwTJe8JT59DUTqZKNtqmV/D6pYWLYyNPMNcEZ002/haODay4E4hPF7oVM80OPrFTTAYvi7phY05y668+LuwclA=
-X-Received: by 2002:a25:65c4:: with SMTP id z187mr291934ybb.400.1628712838924;
- Wed, 11 Aug 2021 13:13:58 -0700 (PDT)
+        with ESMTP id S231983AbhHKUOn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 16:14:43 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 163DDC0613D3;
+        Wed, 11 Aug 2021 13:14:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=DxXYmFyCedGjNLebnBkN8LwcOkYVcNvOV6z+Sc6qpk4=; b=WsC2HfFE29tY6CIwnLVvhoDay
+        sCJQ3Kn52B8XpXqa/B56Hp2OC+c4q1bJUr1wK9xpFp41mbmdoOtJmX+LPJxlWlTnYhztsWls147RE
+        KhyYmBfEHy1j40+28t3XUfqRGAIomA1RcfETieCCHSMr2dGVByKTPBRW5c5H4RK5b2ZPTHxmqv2tu
+        km3hEck2cWj/4ztQfXywxjTwFWM5ZWROsAPArv0RBN5IT1PK99P/bxIZHe7QoJ+FNNJjF0g7pJ8bd
+        T4w0TTVcY4VLp3EUUJ+vcWraZAZHiFxJr4SI8Oiw9VjbKj8udShRLVpIPjRhqKQTbnsVbDp03ZTEl
+        s4LD4IBhw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47196)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mDucC-00016i-30; Wed, 11 Aug 2021 21:14:16 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mDucA-0003S4-Gm; Wed, 11 Aug 2021 21:14:14 +0100
+Date:   Wed, 11 Aug 2021 21:14:14 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
+        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        robh+dt@kernel.org, UNGLinuxDriver@microchip.com,
+        Woojung.Huh@microchip.com, hkallweit1@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 05/10] net: dsa: microchip: add DSA support
+ for microchip lan937x
+Message-ID: <20210811201414.GX22278@shell.armlinux.org.uk>
+References: <20210802121550.gqgbipqdvp5x76ii@skbuf>
+ <YQfvXTEbyYFMLH5u@lunn.ch>
+ <20210802135911.inpu6khavvwsfjsp@skbuf>
+ <50eb24a1e407b651eda7aeeff26d82d3805a6a41.camel@microchip.com>
+ <20210803235401.rctfylazg47cjah5@skbuf>
+ <20210804095954.GN22278@shell.armlinux.org.uk>
+ <20210804104625.d2qw3gr7algzppz5@skbuf>
+ <YQ6pc6EZRLftmRh3@lunn.ch>
+ <20191b895a56e2a29f7fee8063d9cc0900f55bfe.camel@microchip.com>
+ <YRQViFYGsoG3OUCc@lunn.ch>
 MIME-Version: 1.0
-References: <20210811193239.3155396-1-kuba@kernel.org> <20210811193239.3155396-2-kuba@kernel.org>
-In-Reply-To: <20210811193239.3155396-2-kuba@kernel.org>
-From:   Edwin Peer <edwin.peer@broadcom.com>
-Date:   Wed, 11 Aug 2021 13:13:22 -0700
-Message-ID: <CAKOOJTzO+QCZevo=LikLE-0tpkCZUWM3=zS3dpTbQS4dNtzhAQ@mail.gmail.com>
-Subject: Re: [PATCH net 1/4] bnxt: don't lock the tx queue from napi poll
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Jeffrey Huang <huangjw@broadcom.com>,
-        Eddie Wai <eddie.wai@broadcom.com>,
-        Prashant Sreedharan <prashant@broadcom.com>,
-        Andrew Gospodarek <gospo@broadcom.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YRQViFYGsoG3OUCc@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 11, 2021 at 12:32 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> We can't take the tx lock from the napi poll routine, because
-> netpoll can poll napi at any moment, including with the tx lock
-> already held.
->
-> It seems that the tx lock is only protecting against the disable
-> path, appropriate barriers are already in place to make sure
-> cleanup can safely run concurrently with start_xmit. I don't see
-> any other reason why 'stopped && avail > thresh' needs to be
-> re-checked under the lock.
->
-> Remove the tx lock and use synchronize_net() to make sure
-> closing the device does not race we restarting the queues.
-> Annotate accesses to dev_state against data races.
->
-> Fixes: c0c050c58d84 ("bnxt_en: New Broadcom ethernet driver.")
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  drivers/net/ethernet/broadcom/bnxt/bnxt.c | 21 ++++++++++-----------
->  1 file changed, 10 insertions(+), 11 deletions(-)
->
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> index 865fcb8cf29f..07827d6b0fec 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> @@ -730,15 +730,10 @@ static void bnxt_tx_int(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts)
->          */
->         smp_mb();
->
-> -       if (unlikely(netif_tx_queue_stopped(txq)) &&
-> -           (bnxt_tx_avail(bp, txr) > bp->tx_wake_thresh)) {
-> -               __netif_tx_lock(txq, smp_processor_id());
-> -               if (netif_tx_queue_stopped(txq) &&
-> -                   bnxt_tx_avail(bp, txr) > bp->tx_wake_thresh &&
-> -                   txr->dev_state != BNXT_DEV_STATE_CLOSING)
-> -                       netif_tx_wake_queue(txq);
-> -               __netif_tx_unlock(txq);
-> -       }
-> +       if (netif_tx_queue_stopped(txq) &&
+On Wed, Aug 11, 2021 at 08:23:04PM +0200, Andrew Lunn wrote:
+> > I hope that using "*-internal-delay-ps" for Mac would be the right option.
+> > Shall i include these changes as we discussed in next revision of the patch? 
+> 
+> Yes, that seems sensible. But please limit them to the CPU port. Maybe
+> return -EINVAL for other ports.
 
-Probably worth retaining the unlikely() that the original outer check had.
+Hmm. Don't we want ports that are "MAC like" to behave "MAC like" ?
+In other words, shouldn't a DSA port that can be connected to an
+external PHY should accept the same properties as a conventional
+Ethernet MAC e.g. in a SoC device?
 
-> +           bnxt_tx_avail(bp, txr) > bp->tx_wake_thresh &&
-> +           READ_ONCE(txr->dev_state) != BNXT_DEV_STATE_CLOSING)
-> +               netif_tx_wake_queue(txq);
->  }
->
->  static struct page *__bnxt_alloc_rx_page(struct bnxt *bp, dma_addr_t *mapping,
-> @@ -9264,9 +9259,11 @@ void bnxt_tx_disable(struct bnxt *bp)
->         if (bp->tx_ring) {
->                 for (i = 0; i < bp->tx_nr_rings; i++) {
->                         txr = &bp->tx_ring[i];
-> -                       txr->dev_state = BNXT_DEV_STATE_CLOSING;
-> +                       WRITE_ONCE(txr->dev_state, BNXT_DEV_STATE_CLOSING);
->                 }
->         }
-> +       /* Make sure napi polls see @dev_state change */
-> +       synchronize_net();
->         /* Drop carrier first to prevent TX timeout */
->         netif_carrier_off(bp->dev);
->         /* Stop all TX queues */
-> @@ -9280,8 +9277,10 @@ void bnxt_tx_enable(struct bnxt *bp)
->
->         for (i = 0; i < bp->tx_nr_rings; i++) {
->                 txr = &bp->tx_ring[i];
-> -               txr->dev_state = 0;
-> +               WRITE_ONCE(txr->dev_state, 0);
->         }
-> +       /* Make sure napi polls see @dev_state change */
-> +       synchronize_net();
->         netif_tx_wake_all_queues(bp->dev);
->         if (bp->link_info.link_up)
->                 netif_carrier_on(bp->dev);
-> --
-> 2.31.1
-
-Regards,
-Edwin Peer
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
