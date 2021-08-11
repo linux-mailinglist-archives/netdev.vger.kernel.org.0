@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 793183E8E95
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 12:26:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F119B3E8ED6
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 12:39:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237114AbhHKK0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 06:26:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55990 "EHLO
+        id S236894AbhHKKkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 06:40:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236818AbhHKK0K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 06:26:10 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F56C061765;
-        Wed, 11 Aug 2021 03:25:46 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id q11so2304055wrr.9;
-        Wed, 11 Aug 2021 03:25:46 -0700 (PDT)
+        with ESMTP id S232644AbhHKKkB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 06:40:01 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F13DC061765;
+        Wed, 11 Aug 2021 03:39:38 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id c129-20020a1c35870000b02902e6b6135279so153712wma.0;
+        Wed, 11 Aug 2021 03:39:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=poD4yJ/4qKvPMZwA0eL/IpVknURnkw2HP2HyOGJX1/c=;
-        b=VRwUa98g/jNOHgolhsmWJpnp+3HHGhuSlXN42pvWXGXqplB8zie7xRIWvAsfQMo0fm
-         4PqjDRpmFZxGLxtEFzTdocajMqV9+Nw7ZLdDHVNU0EXEKpJHhDlSFPrC+l7yDPf2MKop
-         pzp0v+15tQnayMq+CZn0HxepBxFhbz6CCF4utUiQDy96UOBtG52JGa15iOF6oJo/85fW
-         KVcQZUf5j0S8LcAZqmFRqqKIa3lYdRNrjXKeXU25g2ZmXHs7DNFXv850FHrqMbUmVeSg
-         ZXr2vDnx4BlODPy3PAk9kD0soFm3IESoZ2ZjcgLswFRCRMGJuxU3EdvMiWd1V4L4nPMK
-         2HrA==
+        bh=ymQA2hHz+rJD9SJ7VV0dm8wNzfeebhRbADCOnx38kfE=;
+        b=ha0y0LkvLGzSCID92+weZcfSCpO2QSCBqSBF8ngmenW6aNq8uEOFeN/SWmOJXM9q6L
+         HzNEM0XRm+T/6a8cDfdSIm9l96X9V5JMJAKj48n2Et0m81QeGMOKWzfaYf6VZqE0U1vE
+         uPoyL9B4zhZ0LKC6D8w43W7i+klOHrTDfYoxPi+z6eyeq3Ii/2hkRxLqdrTvtYx2bJb5
+         e0O65+n+Z0T2u8PORVYA1Ra9RzmUB32ESDJZwbIBVU2R6/VD48VsUYcO0b+/xiFCeDkX
+         TdJxmCl5WXpgXGWYarhTVUzDsxlb2HhwTBh0tTxo/Qy2inYN23egtf3evgkFuNE6+pRD
+         nwHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=poD4yJ/4qKvPMZwA0eL/IpVknURnkw2HP2HyOGJX1/c=;
-        b=M6YtTFGxbemVgqsdUObb2SBqMfLeMcnVCyIq9mSba9BPEx7FrxTgbatwINr4WVDKnP
-         jWURNDw+J4ScRuwKr6f5ZX5RuaauNb5j+CdLSLYd5o1pImuqPDNagDYiaTi686Laj0HO
-         71xFPerbJ1HmDqdsWJTkkkTgW18wU4cfRb6VDfsfdJI6UYv9WV/7BTkCzpYRdu3bEaMa
-         Q/YrJmzNxsz0pOsSujIcW0MKlywlsN8Nz2RCPmm4qbjchvu+EpLTuSk9PZHmnBVZF2LT
-         9Eh95ScClwZcrEqba4hdzmxkWgwPRjhFsuEED0afFVW4gt+AERwE2aDlAoVOWm+z1JC2
-         gjMg==
-X-Gm-Message-State: AOAM5328odRn21i25GhY2LpaJKP68c9nVS9oPGMP2v571y4qbsXc3YwP
-        iKZj9ydnTKnyh9g6wClK5DM=
-X-Google-Smtp-Source: ABdhPJx/OVwCCR5GEZWwYZdFNS936Tx9PO+z20xUhoLro+EHeMqsO7igz7VXtNuz1NJ7/oOjKyIV0Q==
-X-Received: by 2002:adf:e0d1:: with SMTP id m17mr35220361wri.233.1628677545106;
-        Wed, 11 Aug 2021 03:25:45 -0700 (PDT)
+        bh=ymQA2hHz+rJD9SJ7VV0dm8wNzfeebhRbADCOnx38kfE=;
+        b=t/epGDvSwuMs9wDJgIRlzmN8VYugERganvH+fR9yD0bk+UwrOKX0G2/57bSrSAlLwH
+         7bGaBkI2JNjA/9/1R5GlSNtCTV/NwQ/0vFH/Y2dkvwWm7cnXjyszApdLkE/z3DEzU2gJ
+         VJzqloibQrP9Q0z0vHpcHt0cPkFzeOaW9SvQg3SEp/mD7uh461lFL1kcemBY5is/Y+Cn
+         jSh6JMc0+RF8+3KNhklWWBnxx9NEnp7VOMhWlRTIQaR59RZRqaC3Qt+t9Od3iSDxjRPu
+         BR3gwgmzHjsID4Hw3CVW6BVn8Byw3HlTnVvKKIXV1K2dmBXwumdVnc2HW/oS16BWzkNy
+         hoqg==
+X-Gm-Message-State: AOAM532vbMkxTlE6O2NeHThhpmdzZL8mGStJ0TsmvP0lYzJVqaT3k2++
+        oFUyu9VqLe5PFEP7wsoMFlc=
+X-Google-Smtp-Source: ABdhPJwnHXcd2JgwGMgS0CK0TG6AlpvrBdA68ua69ts8fe3ees0AYc9r8yx7FLdaRYbdsNmGF5pJDw==
+X-Received: by 2002:a05:600c:4ed2:: with SMTP id g18mr4664530wmq.140.1628678376110;
+        Wed, 11 Aug 2021 03:39:36 -0700 (PDT)
 Received: from localhost ([217.111.27.204])
-        by smtp.gmail.com with ESMTPSA id 9sm23757021wmf.34.2021.08.11.03.25.43
+        by smtp.gmail.com with ESMTPSA id k186sm6726628wme.45.2021.08.11.03.39.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Aug 2021 03:25:43 -0700 (PDT)
-Date:   Wed, 11 Aug 2021 12:28:09 +0200
+        Wed, 11 Aug 2021 03:39:34 -0700 (PDT)
+Date:   Wed, 11 Aug 2021 12:41:59 +0200
 From:   Thierry Reding <thierry.reding@gmail.com>
 To:     Marc Zyngier <maz@kernel.org>
 Cc:     Matteo Croce <mcroce@linux.microsoft.com>, netdev@vger.kernel.org,
@@ -63,12 +63,12 @@ Cc:     Matteo Croce <mcroce@linux.microsoft.com>, netdev@vger.kernel.org,
         Jon Hunter <jonathanh@nvidia.com>,
         Will Deacon <will@kernel.org>
 Subject: Re: [PATCH net-next] stmmac: align RX buffers
-Message-ID: <YROmOQ+4Kqukgd6z@orome.fritz.box>
+Message-ID: <YROpd450N+n6hYt2@orome.fritz.box>
 References: <20210614022504.24458-1-mcroce@linux.microsoft.com>
  <871r71azjw.wl-maz@kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="LpFoc4PPAZtVVu++"
+        protocol="application/pgp-signature"; boundary="w9GKWoBivj0rdXcy"
 Content-Disposition: inline
 In-Reply-To: <871r71azjw.wl-maz@kernel.org>
 User-Agent: Mutt/2.1.1 (e2a89abc) (2021-07-12)
@@ -77,7 +77,7 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---LpFoc4PPAZtVVu++
+--w9GKWoBivj0rdXcy
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
@@ -153,21 +153,39 @@ eceiver
 > supposed to synchronise the DMA when receiving an interrupt, I'll have
 > a look.
 
-I recall that Jon was looking into a similar issue recently, though I
-think the failure mode was slightly different. I also vaguely recall
-that CPU frequency was impacting this to some degree (lower CPU
-frequencies would increase the chances of this happening).
+One other thing that kind of rings a bell when reading DMA and
+interrupts is a recent report (and attempt to fix this) where upon
+resume from system suspend, the DMA descriptors would get corrupted.
 
-Jon's currently out of office, but let me try and dig up the details
-on this.
+I don't think we ever figured out what exactly the problem was, but
+interestingly the fix for the issue immediately caused things to go
+haywire on... Jetson TX2.
+
+I recall looking at this a bit and couldn't find where exactly the DMA
+was being synchronized on suspend/resume, or what the mechanism was to
+ensure that (in transit) packets were not received after the suspension
+of the Ethernet device. Some information about this can be found here:
+
+	https://lore.kernel.org/netdev/708edb92-a5df-ecc4-3126-5ab36707e275@nvidia=
+=2Ecom/
+
+It's interesting that this happens only on Jetson TX2. Apparently on the
+newer Jetson AGX Xavier this problem does not occur. I think Jon also
+narrowed this down to being related to the IOMMU being enabled on Jetson
+TX2, whereas Jetson AGX Xavier didn't have it enabled. I wasn't able to
+find any notes on whether disabling the IOMMU on Jetson TX2 did anything
+to improve on this, so perhaps that's something worth trying.
+
+We have since enabled the IOMMU on Jetson AGX Xavier, and I haven't seen
+any test reports indicating that this is causing issues. So I don't
+think this has anything directly to do with the IOMMU support.
+
+That said, if these problems are all exclusive to Jetson TX2, or rather
+Tegra186, that could indicate that we're missing something at a more
+fundamental level (maybe some cache maintenance quirk?).
 
 Thierry
 
->=20
-> Thanks,
->=20
-> 	M.
->=20
 > > ---
 > >  drivers/net/ethernet/stmicro/stmmac/stmmac.h | 4 ++--
 > >  1 file changed, 2 insertions(+), 2 deletions(-)
@@ -198,24 +216,24 @@ mac_priv *priv)
 > --=20
 > Without deviation from the norm, progress is not possible.
 
---LpFoc4PPAZtVVu++
+--w9GKWoBivj0rdXcy
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmETpjYACgkQ3SOs138+
-s6FzpRAAqwF1hrrbcKXot3GUKC45t/3TCFrELCjzW4CqTpHhhxWPhEA1F7P7TKiU
-iTOLQO2Gj68Lek6KaistNi6hPdmRdh91mr1qLi8ORq94uquX9j+2Vgq7Iwb+qltE
-eKtaNUoSc5bnh5xUvKj87UVMSn690+LelT6lRiyIzghdk8Pt0RcM9UWbtL5g1VVq
-paYq7o96j3xkiY/QO+SXOObhMH4yH8ew2cQiIvUBYQnQGN7bi1jqvK11MVvZhpFq
-YyxO6SNacXjqKYUL3UDQ2o4k7dMX3HeLBDG/VTOG5FSGcSWZ5eNdaJhRc4Muy70h
-NewtkD6tAAqXjv/LugbgL2BiPt0PyZFiyACVTbClunCn+70yvpRdTSCHw2dzC1d3
-HYK3Um2yVrL6NLBEZaaSb6rX6CM6qom8OzbRPZcNQo3Xho0Cav+Ng2fRaR6a0zc7
-+tvKZ9dSxsQy2SvLaeMvF/ECc0M1Kwv98nhpXMhrPKuZCvC2UM/nrqqkm5EyQguT
-xezuFk1x63wDH5oBBeyzEniD9sa+Uht1ehoTwiw0tI+CAFSlqv0ySljWhnn6MNqO
-zwR/WPmZE1zjgqjcKUJ2NnQ97ua3DSs6H6yQK+24KEFJr9wbOmQWOanYYscWIZNf
-4GiAvgpNP4z3f2QJ8wxlesr/oGLvhDVvmcXl9x2zmrAFHz7xLA0=
-=PCp2
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmETqXQACgkQ3SOs138+
+s6FahhAAwUgDWNskZhlCOE5XS+z1+QlxbTaxOr/oMQPnrcgSs9v7Fq3qOnY+bPy7
+Xp15CY5aHjKFStZTuS/3jOkt8tdqzHdgfDoOM9OJ45csUXjj6opR3Loc/aq4W5Xe
+/TAiJfjp3HZtn0GGJfrxaYKFDyyR25lGvouWDlT6W2+DKODu0KA5Yx99FytBXVi0
+rtjzSUtJftG0sQM3t53tB8Z8hjjcimwNFmvv3DDmHbLfQFFtvb6HUKOT3XiXxhqE
+O7bQzxtUuzWs5U4OG9pTUTyTKbXIrdL8zNad2SGFbi/nA1OVSD0t2FKEbvAzewqv
+r69ZOmqg+GnpXgtOCx+tqYkWc4PX65pFnb1ES6tTENb+bOCxyrzTbcAtHZf03gFf
+cjanvPZXo3jZqdmscRblcRM9iwO48KYtZqoi/ZEP1iLOV/z99TILd9RST0E1Lmsa
+gHmdjpe7kQ/6uGu0OXN2CUqqpBycT7MVX7S9If+IgmNx04biVJlR+azfD7W3yoU5
+y7HqFqR4OShCDh4bVzkBzPqCv8TQUH/qD78LbGkmtARQNj679D7QkHNPzjv/QMrU
+sDCt7idaOWZXz0GaKn9/Uv55lNdfagrLkNG/WIhiwCUEPsbXuHgKcZVlxABq9t/V
+ua5XmcI5wHo5nr4jlUxZG9YPgR0H6GWXMRa4q3hpeUaeq34KhSw=
+=BYku
 -----END PGP SIGNATURE-----
 
---LpFoc4PPAZtVVu++--
+--w9GKWoBivj0rdXcy--
