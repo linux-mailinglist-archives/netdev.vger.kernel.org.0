@@ -2,144 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A1FD3E95A8
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 18:14:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0BAF3E95AA
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 18:14:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229779AbhHKQOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 12:14:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54550 "EHLO
+        id S229742AbhHKQPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 12:15:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbhHKQOe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 12:14:34 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1083FC061765
-        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 09:14:11 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id b11so3842673wrx.6
-        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 09:14:10 -0700 (PDT)
+        with ESMTP id S229481AbhHKQPC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 12:15:02 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDEDC061765;
+        Wed, 11 Aug 2021 09:14:38 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id b13so3858085wrs.3;
+        Wed, 11 Aug 2021 09:14:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=CGiZ94qAlcTwKTJSlwkI+NTv+u0kYtm6eFxBBXeJGT0=;
-        b=cE7rgLNezmd/igRyVlN6zPlFrASUdrFxy+1o7hmLlcB39Gmo1f8ouGk0/uMHfBKCdn
-         gOj8XaKHa6ukZZwUpbhxWZPeaHJPlYHq92GMrDlfl4lEH/78RbZzR/KdFUj15wQeX2Dq
-         /zwtSSQf/5hASZpOIC+VtZrTBp9AAPJZulLJGVnr3jAE1TPAp9McxmaWO2s5Ak0JO+77
-         7Lq75Icqb3zG8ejCFpg3pgIFkgPmo6f9lgTqc7cExYieJVmdkvT3zn1tUhCeiBO4haOS
-         /IHqXHHPDf21DIyrtN1ujwE8Y2XDnXOohqY3d5sTNdMMYFmopzk51wD5zCUinM27jfoq
-         jNvw==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xRSonHUB76cwySV9QVwkKSX6+w6/+JDvdoHOcSKZR4M=;
+        b=F0cociQNYrT7puu4c1/C+wfpMCP80ApBT/f0BZp+HQ4erk9nDnPgwmnMqFVstS9Z77
+         FLqQfEhgLlD2uI8hmdLKWSqyUwr7/Ll1y7dxRRha074BCWKapCEzkDWDYP6yo33m6Q69
+         KR52Sz+nfZi8ZPiQd/Ox8PTdKzpgHAQMNIiRxS4hbWuFUCpkQOSuEn4a4UnZk92dj62i
+         1ru3PzA5PGU7ZsW1XxBZRT7QtcLNDflKVX4whbSDxSWMm0/ay0n/in42KgA4fgS8ekNy
+         EcMTRHzK2UuqSlwJKi0rMgjAi198tsds7lVOyuYRTDfVkRH+rolmv76PuYBQRdvuS4nx
+         FW9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=CGiZ94qAlcTwKTJSlwkI+NTv+u0kYtm6eFxBBXeJGT0=;
-        b=hhxcn/2p4CzzRzqBOsnJNQ869G4bMJCJvv25vj5wOplkRvc/MUI+hM7GNRptlIAk9Y
-         dEgNQ9X+SrUpmaXKXTTxkL5fup/IElNmaQwFx775uQX5GRA4qcoLv6cWmkfy2vjosGIw
-         h5MYqbR6HVS660d9W3IuOfejTwDXFK8HgP7zTPhDwGJUP13RcwgKEwcrr6g/ktxme1Dg
-         crJTVymdypeXB8UtEgE4guxRYb8hxKdbFDXron4NMvl/z1SNHFHR41TX0LHUZd/Zxa4E
-         6vcuXQcgK5KnkgjNHTLrSlrRsek1eFJWJUFbq+DPcixexTbDt5y/CFFtJ8ZdSg3mzfwu
-         TPQg==
-X-Gm-Message-State: AOAM5328Rt+aspLg6vLXXth8QYDSORFehQnd5neJ3xfBl6BljZOAFBO/
-        qiGiWwC/axSzWhY74d3YHJXcVk+EcVQ3xA==
-X-Google-Smtp-Source: ABdhPJyWUZjb46oQIuWJDFddGaT8NycTSMkuothck8JcfAY36iIEZv8qsngsPeSw9IUJ3UyEarJmNw==
-X-Received: by 2002:adf:fc45:: with SMTP id e5mr23227064wrs.127.1628698449658;
-        Wed, 11 Aug 2021 09:14:09 -0700 (PDT)
-Received: from ?IPv6:2a01:e0a:410:bb00:a120:810a:2aba:99fe? ([2a01:e0a:410:bb00:a120:810a:2aba:99fe])
-        by smtp.gmail.com with ESMTPSA id r12sm28532561wrn.31.2021.08.11.09.14.08
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xRSonHUB76cwySV9QVwkKSX6+w6/+JDvdoHOcSKZR4M=;
+        b=Nb0QjhAabFXHVterZJUvcJr7FgVhlomeg3SWUAaVtNA72Ji8UnVfQXIT7PRBOgFWHv
+         2V5TwJJ/KZEPt5CdOZkPnJGkP4uKtiudNsrKGKtk38gY9Jz7y8oM1ERcdGF8TYsANs4G
+         jv698ViuxTGCbwAOnW28qFZE7vY2uc6WAx+oYmQkAw/0sK0YLkojovPoLjPx0LTJGUtX
+         44UaJYzSCyzGMSGUDkKReO72fwlBgRZGO5g8Ex6RgliTrHFvzEeuvtiZwTWmnzCDiuXv
+         bI7u/qpyr7L+OdHEAZCwtFgXsmll3JtjXZ4qfg0Bzvd0E+nICMvIOQ2TXvt0JaSn0W0D
+         4c2A==
+X-Gm-Message-State: AOAM530R/H7/+2c1DRtkZC4pWsq7efcd6t1Eytnav0nU/TMdxInmLbUC
+        f2zBvOAl0vXqXeczM9SemMc=
+X-Google-Smtp-Source: ABdhPJw0gwM4sw04NtRODYD+oOwfpchF+tu0Q0WP+S9Cv2BHqohhAtUWyuRJo4R6DM+gI/3nKFVN1w==
+X-Received: by 2002:a5d:6451:: with SMTP id d17mr20741206wrw.154.1628698477050;
+        Wed, 11 Aug 2021 09:14:37 -0700 (PDT)
+Received: from [10.0.0.18] ([37.165.41.250])
+        by smtp.gmail.com with ESMTPSA id l2sm14152724wme.28.2021.08.11.09.14.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Aug 2021 09:14:09 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH v2 ipsec-next] xfrm: Add possibility to set the default to
- block if we have no policy
-To:     antony.antony@secunet.com,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Christian Langrock <christian.langrock@secunet.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-References: <20210331144843.GA25749@moon.secunet.de>
- <fc1364604051d6be5c4c14817817a004aba539eb.1626592022.git.antony.antony@secunet.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <e0c347a0-f7d4-e1ef-51a8-2d8b65bccbbc@6wind.com>
-Date:   Wed, 11 Aug 2021 18:14:08 +0200
+        Wed, 11 Aug 2021 09:14:36 -0700 (PDT)
+Subject: Re: [PATCH v2 1/2] udp: UDP socket send queue repair
+To:     Bui Quang Minh <minhquangbui99@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, willemb@google.com, pabeni@redhat.com,
+        avagin@gmail.com, alexander@mihalicyn.com,
+        lesedorucalin01@gmail.com
+References: <20210811154557.6935-1-minhquangbui99@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <721a2e32-c930-ad6b-5055-631b502ed11b@gmail.com>
+Date:   Wed, 11 Aug 2021 18:14:30 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <fc1364604051d6be5c4c14817817a004aba539eb.1626592022.git.antony.antony@secunet.com>
+In-Reply-To: <20210811154557.6935-1-minhquangbui99@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 18/07/2021 à 09:11, Antony Antony a écrit :
-> From: Steffen Klassert <steffen.klassert@secunet.com>
-Sorry for my late reply, I was off.
 
+
+On 8/11/21 5:45 PM, Bui Quang Minh wrote:
+> In this patch, I implement UDP_REPAIR sockoption and a new path in
+> udp_recvmsg for dumping the corked packet in UDP socket's send queue.
 > 
-> As the default we assume the traffic to pass, if we have no
-> matching IPsec policy. With this patch, we have a possibility to
-> change this default from allow to block. It can be configured
-> via netlink. Each direction (input/output/forward) can be
-> configured separately. With the default to block configuered,
-> we need allow policies for all packet flows we accept.
-> We do not use default policy lookup for the loopback device.
+> A userspace program can use recvmsg syscall to get the packet's data and
+> the msg_name information of the packet. Currently, other related
+> information in inet_cork that are set in cmsg are not dumped.
 > 
-
-[snip]
-
-> diff --git a/include/net/netns/xfrm.h b/include/net/netns/xfrm.h
-> index e946366e8ba5..88c647302977 100644
-> --- a/include/net/netns/xfrm.h
-> +++ b/include/net/netns/xfrm.h
-> @@ -65,6 +65,13 @@ struct netns_xfrm {
->  	u32			sysctl_aevent_rseqth;
->  	int			sysctl_larval_drop;
->  	u32			sysctl_acq_expires;
-> +
-> +	u8			policy_default;
-> +#define XFRM_POL_DEFAULT_IN	1
-> +#define XFRM_POL_DEFAULT_OUT	2
-> +#define XFRM_POL_DEFAULT_FWD	4
-> +#define XFRM_POL_DEFAULT_MASK	7
-> +
-
-[snip]
-
-> diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
-> index ffc6a5391bb7..6e8095106192 100644
-> --- a/include/uapi/linux/xfrm.h
-> +++ b/include/uapi/linux/xfrm.h
-> @@ -213,6 +213,11 @@ enum {
->  	XFRM_MSG_GETSPDINFO,
->  #define XFRM_MSG_GETSPDINFO XFRM_MSG_GETSPDINFO
-> 
-> +	XFRM_MSG_SETDEFAULT,
-> +#define XFRM_MSG_SETDEFAULT XFRM_MSG_SETDEFAULT
-> +	XFRM_MSG_GETDEFAULT,
-> +#define XFRM_MSG_GETDEFAULT XFRM_MSG_GETDEFAULT
-> +
->  	XFRM_MSG_MAPPING,
->  #define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
->  	__XFRM_MSG_MAX
-> @@ -508,6 +513,11 @@ struct xfrm_user_offload {
->  #define XFRM_OFFLOAD_IPV6	1
->  #define XFRM_OFFLOAD_INBOUND	2
-> 
-> +struct xfrm_userpolicy_default {
-> +	__u8				dirmask;
-> +	__u8				action;
-> +};
-> +
-Should XFRM_POL_DEFAULT_* be moved in the uapi?
-How can a user knows what value is expected in dirmask?
-
-Same question for action. We should avoid magic values. 0 means drop or accept?
-Maybe renaming this field to 'drop' is enough.
+> While working on this, I was aware of Lese Doru Calin's patch and got some
+> ideas from it.
 
 
-Regards,
-Nicolas
+What is the use case for this feature, adding a test in UDP fast path ?
+
+CORKed UDP is hardly used nowadays.
+
+IMO, TCP_REPAIR hijacking standard system calls was a design error,
+we should have added new system calls.
+
