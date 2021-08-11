@@ -2,131 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 600843E973D
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 20:04:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0D5B3E9746
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 20:06:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbhHKSE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 14:04:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46692 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229473AbhHKSE1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Aug 2021 14:04:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9E68560FE6;
-        Wed, 11 Aug 2021 18:04:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628705043;
-        bh=nvsohcaswZIumN4BvfcFYqFhze4+0DHB6Lx2u4YSDmA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nj1IblsG7PtpC7nauaCOmZ/9nq1P2VMe7lI91RlDvw0KBaKeXF4Iu84neU1rI6F6V
-         dSNsuRNiiz1N5eFBYsLdY82eq9vBJuwllJAh8TU5XfapcG1ZCC4U1FTgl8+DLGQwqq
-         ZlbMiE3DnEHA0waWWMjaFtTcHiUTGqVHO200dqcDhCjQIlxLruegXezWyB53ATtgxr
-         LfB6dt6/i5SBj3/nMmMh23I5mLnkp3OwwwkrVvPwzmDOkobPG863uM43us0xc6ZRV0
-         hIx/QkeE7Hpu3bG89WjX5LyKWZCgUoj2mtWvypliqgz3pcJFYff9+UK/bSYpE7osad
-         6CiBfXc+0uvFw==
-Received: by pali.im (Postfix)
-        id 3FA547AE; Wed, 11 Aug 2021 20:04:01 +0200 (CEST)
-Date:   Wed, 11 Aug 2021 20:04:01 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     James Carlson <carlsonj@workingcode.com>,
-        Chris Fowler <cfowler@outpostsentinel.com>,
+        id S230137AbhHKSGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 14:06:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52132 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229554AbhHKSGW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 14:06:22 -0400
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36DACC061765;
+        Wed, 11 Aug 2021 11:05:58 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id t128so5892121oig.1;
+        Wed, 11 Aug 2021 11:05:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=HxY/WUTgeQY0+6YEwdFvZK8RANC+Nq5/hbFGvTroIBM=;
+        b=p81Yc26djxFQaFJ7NCFX+EPjY/jGcWPm7G7gzBeo8h2Quj/TIkPrGw+tCco45s5uGo
+         8GE7rTun/3e5fHaqqTXPhObCbK/GLHMUabdwENh1i6TMXc0SATjhRCgOpoIod4kBEyq9
+         f4gPXpOGlQM/BnIDHDhWzVIWx2h9xLTcbTdIo2gK2Rt2EnNKDPExVAJx8NKLeKD9eNuP
+         MLWNFOc7ODFeFkGxIsU7NcbbNXUsaDxQpKgTNMxv7+YmT8ynmhRTK3OgXlFxpscdsNrg
+         nBXvFHNOPMJMceHBKUdbd8cc/HofHj7MSrlV24pSxRftwLeqapLuSbf2EmCWeJ5R0ziX
+         KVZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=HxY/WUTgeQY0+6YEwdFvZK8RANC+Nq5/hbFGvTroIBM=;
+        b=k62esMWrrsNwySrloanYrQeIxoKR7WqSLzz/PLzuxS8InMc40wKbwLCQ3N2zVR4LGr
+         YcWmBp9wMNbCgeCdVuZAz7MYlU9F9GjBUkRfGt+ZWvFS3cSYyD9MdMAVZLC47vWY92KV
+         DeE/3fnvg1lrk64mHjzb0cKlFqSQ7eU4x7T8RfgRLi83KmrKEex+OxYcRtjq3PuwBUyj
+         Cm9Cixel8KEzkBkvfnB2FeFblys49k9V9JgAuioNeq3vc0mGn7FdHupuC2XVhHBOXLRs
+         oS8y7GoSsuOqb/xBkOMrAE1MbMuG+Z8k83b4TzzfLswgpsOF7gNQ4yyerTdguIRjbpml
+         Gkiw==
+X-Gm-Message-State: AOAM530kHGGrhElzloi+lyVF08ElKPId8F+7rpmdPsBSYGM6jnhcZ4VI
+        RZA/9prYKawlXcUJCVjqIa0=
+X-Google-Smtp-Source: ABdhPJy/5AUXtuljNkc5tzk/CAVNEAidUYBLMgUS5IwUQjZNN0/xFCqRkgygQxR5lzENJkC/vuG+tA==
+X-Received: by 2002:a05:6808:905:: with SMTP id w5mr5155632oih.27.1628705157682;
+        Wed, 11 Aug 2021 11:05:57 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.45])
+        by smtp.googlemail.com with ESMTPSA id e10sm2790673oig.42.2021.08.11.11.05.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 Aug 2021 11:05:57 -0700 (PDT)
+Subject: Re: [PATCH net-next v3] ipv6: add IFLA_INET6_RA_MTU to expose mtu
+ value in the RA message
+From:   David Ahern <dsahern@gmail.com>
+To:     Rocco Yue <rocco.yue@mediatek.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paul Mackerras <paulus@samba.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "linux-ppp@vger.kernel.org" <linux-ppp@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ppp: Add rtnl attribute IFLA_PPP_UNIT_ID for specifying
- ppp unit id
-Message-ID: <20210811180401.owgmie36ydx62iep@pali>
-References: <20210807163749.18316-1-pali@kernel.org>
- <20210809122546.758e41de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210809193109.mw6ritfdu27uhie7@pali>
- <20210810153941.GB14279@pc-32.home>
- <BN0P223MB0327A247724B7AE211D2E84EA7F79@BN0P223MB0327.NAMP223.PROD.OUTLOOK.COM>
- <20210810171626.z6bgvizx4eaafrbb@pali>
- <2f10b64e-ba50-d8a5-c40a-9b9bd4264155@workingcode.com>
- <20210811173811.GE15488@pc-32.home>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, rocco.yue@gmail.com,
+        chao.song@mediatek.com, zhuoliang.zhang@mediatek.com
+References: <c0a6f817-0225-c863-722c-19c798daaa4b@gmail.com>
+ <20210810123327.15998-1-rocco.yue@mediatek.com>
+ <25dcf6e8-cdd6-6339-f499-5c3100a7d8c4@gmail.com>
+Message-ID: <4624cc10-1fc8-12cd-e9e1-9585f5b496a0@gmail.com>
+Date:   Wed, 11 Aug 2021 12:05:54 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
+In-Reply-To: <25dcf6e8-cdd6-6339-f499-5c3100a7d8c4@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210811173811.GE15488@pc-32.home>
-User-Agent: NeoMutt/20180716
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday 11 August 2021 19:38:11 Guillaume Nault wrote:
-> On Tue, Aug 10, 2021 at 02:11:11PM -0400, James Carlson wrote:
-> > On 8/10/21 1:16 PM, Pali Rohár wrote:
-> > > On Tuesday 10 August 2021 16:38:32 Chris Fowler wrote:
-> > > > Isn't the UNIT ID the interface number?  As in 'unit 100' will give me ppp100?
-> > > 
-> > > If you do not specify pppd 'ifname' argument then pppd argument 'unit 100'
-> > > will cause that interface name would be ppp100.
-> > > 
-> > > But you are free to rename interface to any string which you like, even
-> > > to "ppp99".
-> > > 
-> > > But this ppp unit id is not interface number. Interface number is
-> > > another number which has nothing with ppp unit id and is assigned to
-> > > every network interface (even loopback). You can see them as the first
-> > > number in 'ip -o l' output. Or you can retrieve it via if_nametoindex()
-> > > function in C.
-> > 
-> > Correct; completely unrelated to the notion of "interface index."
-> > 
-> > > ... So if people are really using pppd's 'unit' argument then I think it
-> > > really make sense to support it also in new rtnl interface.
-> > 
-> > The pppd source base is old.  It dates to the mid-80's.  So it predates not
-> > just rename-able interfaces in Linux but Linux itself.
-> > 
-> > I recall supported platforms in the past (BSD-derived) that didn't support
-> > allowing the user to specify the unit number.  In general, on those
-> > platforms, the option was accepted and just ignored, and there were either
-> > release notes or man page updates (on that platform) that indicated that
-> > "unit N" wouldn't work there.
-> > 
-> > Are there users on Linux who make use of the "unit" option and who would
-> > mourn its loss?  Nobody really knows.  It's an ancient feature that was
-> > originally intended to deal with systems that couldn't rename interfaces
-> > (where one had to make sure that the actual interface selected matched up
-> > with pre-configured filtering rules or static routes or the like), and to
-> > make life nice for administrators (e.g., making sure that serial port 1 maps
-> > to ppp1, port 2 is ppp2, and so on).
-> > 
-> > I would think and hope most users reach for the more-flexible "ifname"
-> > option first, but I certainly can't guarantee it.  It could be buried in a
-> > script somewhere or (god forbid) some kind of GUI or "usability" tool.
-> > 
-> > If I were back at Sun, I'd probably call it suitable only for a "Major"
-> > release, as it removes a publicly documented feature.  But I don't know what
-> > the considerations are here.  Maybe it's just a "don't really care."
+On 8/11/21 7:56 AM, David Ahern wrote:
+> On 8/10/21 6:33 AM, Rocco Yue wrote:
+>> On Mon, 2021-08-09 at 16:43 -0600, David Ahern wrote:
+>>> On 8/9/21 8:01 AM, Rocco Yue wrote:
+>>
+>>> +
+>>>>  #ifdef CONFIG_SYSCTL
+>>>>  
+>>>>  static int addrconf_sysctl_forward(struct ctl_table *ctl, int write,
+>>>> diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
+>>>> index c467c6419893..a04164cbd77f 100644
+>>>> --- a/net/ipv6/ndisc.c
+>>>> +++ b/net/ipv6/ndisc.c
+>>>> @@ -1496,6 +1496,12 @@ static void ndisc_router_discovery(struct sk_buff *skb)
+>>>>  		memcpy(&n, ((u8 *)(ndopts.nd_opts_mtu+1))+2, sizeof(mtu));
+>>>>  		mtu = ntohl(n);
+>>>>  
+>>>> +		if (in6_dev->ra_mtu != mtu) {
+>>>> +			in6_dev->ra_mtu = mtu;
+>>>> +			inet6_iframtu_notify(in6_dev);
+>>>> +			ND_PRINTK(2, info, "update ra_mtu to %d\n", in6_dev->ra_mtu);
+>>>> +		}
+>>>> +
+>>>>  		if (mtu < IPV6_MIN_MTU || mtu > skb->dev->mtu) {
+>>>>  			ND_PRINTK(2, warn, "RA: invalid mtu: %d\n", mtu);
+>>>>  		} else if (in6_dev->cnf.mtu6 != mtu) {
+>>>
+>>> Since this MTU is getting reported via af_info infrastructure,
+>>> rtmsg_ifinfo should be sufficient.
+>>>
+>>> From there use 'ip monitor' to make sure you are not generating multiple
+>>> notifications; you may only need this on the error path.
+>>
+>> Hi David,
+>>
+>> To avoid generating multiple notifications, I added a separate ramtu notify
+>> function in this patch, and I added RTNLGRP_IPV6_IFINFO nl_mgrp to the ipmonitor.c
+>> to verify this patch was as expected.
+>>
+>> I look at the rtmsg_ifinfo code, it should be appropriate and I will use it and
+>> verify it.
+>>
+>> But there's one thing, I'm sorry I didn't fully understand the meaning of this
+>> sentence "you may only need this on the error path". Honestly, I'm not sure what
+>> the error patch refers to, do you mean "if (mtu < IPV6_MIN_MTU || mtu > skb->dev->mtu)" ?
+>>
 > 
-> I'm pretty sure someone, somewhere, would hate us if we broke the
-> "unit" option. The old PPP ioctl API has been there for so long,
-> there certainly remains tons of old tools, scripts and config files
-> that "just work" without anybody left to debug or upgrade them.
+> looks like nothing under:
+>     if (ndopts.nd_opts_mtu && in6_dev->cnf.accept_ra_mtu) {
 > 
-> We can't just say, "starting from kernel x.y.z the unit option is a
-> noop, use ifname instead" as affected people surely won't get the
-> message (and there are other tools beyond pppd that may use this
-> kernel API).
+>     }
 > 
-> But for the netlink API, we don't have to repeat the same mistake.
+> is going to send a link notification so you can just replace
+> inet6_iframtu_notify with rtmsg_ifinfo in your proposed change.
+> 
 
-ifname is not atomic (first it creates ppp<id> interface and later it is
-renamed) and have issues. Due to bug described here:
-https://lore.kernel.org/netdev/20210807160050.17687-1-pali@kernel.org/
-you may get your kernel into state in which it is not possible to create
-a new ppp interface. And this issue does not happen when using "unit"
-argument.
+Taking a deeper dive on the code, you do not need to call rtmsg_ifinfo.
+Instead, the existing:
 
-To fix above issue it is needed to migrate pppd from ioctl API to rtnl.
-But this would be possible only after rtnl API starts providing all
-features, including specifying custom "unit" argument...
+        /*
+         *      Send a notify if RA changed managed/otherconf flags or
+timer settings
+         */
+        if (send_ifinfo_notify)
+                inet6_ifinfo_notify(RTM_NEWLINK, in6_dev);
 
-I hit above problem, so now I'm migrating all pppd setups from "ifname"
-to "unit" option.
+is called too early. For one the RA can change the MTU and that is done
+after this notify.
+
+I think if you moved this down to the out:
+
+out:
+        /*
+         *      Send a notify if RA changed managed/otherconf flags or
+timer settings
+         */
+        if (send_ifinfo_notify)
+                inet6_ifinfo_notify(RTM_NEWLINK, in6_dev);
+
+and then set send_ifinfo_notify when the mtu is *changed* by the RA you
+should be good.
