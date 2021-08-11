@@ -2,89 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 776B23E88D2
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 05:29:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B593B3E88F0
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 05:41:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233291AbhHKDaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Aug 2021 23:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45664 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232625AbhHKDaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 23:30:14 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57BF9C061765;
-        Tue, 10 Aug 2021 20:29:51 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id gz13-20020a17090b0ecdb0290178c0e0ce8bso4683932pjb.1;
-        Tue, 10 Aug 2021 20:29:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-transfer-encoding:content-language;
-        bh=jkh8MdBd+5xRfDGap7m8dlGwadMn0qsFS4+s/qO2eG4=;
-        b=rhiUyBRmbmOzo52u0m963KeCQ/FWF9Tl38u5WFbzQ6IfCDO2yNpJIdIShEBZHTfzI+
-         R3A47nKzPNlNIiuMachh5u4bm0wKjqnjYVClShici5GXbySc3x+/C14X9CZm15d+isG3
-         PA5KsoHTHy2LTVK8hIqbP4lP13x4K8rpTnMOwEuyLdCBLwQYRTJwuGXois6rqtiePbW0
-         OMDetOvW80BYMd5IGHzcDS6lVIhk73L7Kz/wU1FG09sL1h8EmOF5qlwAJX7voyvQF3je
-         cyKuYmFaYWdCUaNMoa7fqzHs+0x5gfa4ktWFna7uATFxVJwEwiN+SPUWhgfe7GRS54bp
-         ysBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-transfer-encoding:content-language;
-        bh=jkh8MdBd+5xRfDGap7m8dlGwadMn0qsFS4+s/qO2eG4=;
-        b=Ng1U+D5jsiqRyJcrBVQBi0476aqzwOjtXPGQsKVj8OutGRwJxM1M8fdUtsCntN3fjB
-         AZaenfa+EMG+o2u2S2vCybCh3pUPgA4Cul//d+9ZiWHAyJyF+zvgyjk4cwfG4Juev/QJ
-         fBJu2zbvXYj0KYG0WekbA3Dmx1rQIPUVsIZ5xB1Qr5XCodRIy1WglSWpebnLkXt7Jqie
-         EuGYI+D0XJSRmI6KhUGDQgJ6Aiazy7f5DmB/tfp14VFHfAkD+iVhxNb/8rDez+GTOh0n
-         q41pBVnVnbpTJzZDyB57iwDq62WFRI61XEU/jnaWTITnw8cylRq8CbVhwmgpje0+Ex6v
-         W1Ng==
-X-Gm-Message-State: AOAM531jln1cDG7zcg0rdOx48ctrKc7f5gvQ3HdDSwOW+2JeklBYG99l
-        H+EtxLFFU7ZprW/SPdRJ2SKf9ltE4iEszCI4FxY=
-X-Google-Smtp-Source: ABdhPJxcHLx2WGY5X793Y1A3LBXlruDQHcT7/hg1RaF3/2EAafKiAJS3+kC9dDldlCvChUhMC0DGCQ==
-X-Received: by 2002:a17:90a:1b2e:: with SMTP id q43mr11056326pjq.217.1628652590918;
-        Tue, 10 Aug 2021 20:29:50 -0700 (PDT)
-Received: from [10.178.0.78] ([85.203.23.37])
-        by smtp.gmail.com with ESMTPSA id t8sm4689152pja.41.2021.08.10.20.29.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Aug 2021 20:29:50 -0700 (PDT)
-To:     aelior@marvell.com, GR-everest-linux-l2@marvell.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        "baijiaju1990@gmail.com" <baijiaju1990@gmail.com>
-From:   Tuo Li <islituo@gmail.com>
-Subject: [BUG] net: qed: possible null-pointer dereference in
- qed_rdma_create_qp()
-Message-ID: <36bc2872-5b1f-ca1f-86c3-1a13cadcad2c@gmail.com>
-Date:   Wed, 11 Aug 2021 11:29:47 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S233299AbhHKDlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Aug 2021 23:41:52 -0400
+Received: from out4436.biz.mail.alibaba.com ([47.88.44.36]:27303 "EHLO
+        out4436.biz.mail.alibaba.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232795AbhHKDlv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Aug 2021 23:41:51 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R701e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=wenyang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Uied3FN_1628653275;
+Received: from IT-C02W23QPG8WN.local(mailfrom:wenyang@linux.alibaba.com fp:SMTPD_---0Uied3FN_1628653275)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 11 Aug 2021 11:41:16 +0800
+Subject: Re: [PATCH] ipv4: return early for possible invalid uaddr
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, David Ahern <dsahern@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Baoyou Xie <baoyou.xie@alibaba-inc.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210807171938.38501-1-wenyang@linux.alibaba.com>
+ <20210809153251.4c51c3cd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Wen Yang <wenyang@linux.alibaba.com>
+Message-ID: <72dd5ee4-d7f3-576c-c7b9-3f8f4980faf3@linux.alibaba.com>
+Date:   Wed, 11 Aug 2021 11:41:15 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20210809153251.4c51c3cd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=gbk; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-Our static analysis tool finds a possible null-pointer dereference in 
-qed_rdma.c in Linux 5.14.0-rc3:
 
-The variable rdma_cxt is assigned to p_hwfn, and rdma_cxt is checked in:
-1286:Â Â Â  if (!rdma_cxt || !in_params || !out_params || 
-!p_hwfn->p_rdma_info->active)
+ÔÚ 2021/8/10 ÉÏÎç6:32, Jakub Kicinski Ð´µÀ:
+> On Sun,  8 Aug 2021 01:19:38 +0800 Wen Yang wrote:
+>> The inet_dgram_connect() first calls inet_autobind() to select an
+>> ephemeral port, then checks uaddr in udp_pre_connect() or
+>> __ip4_datagram_connect(), but the port is not released until the socket
+>> is closed.
+>>
+>> We should return early for invalid uaddr to improve performance and
+>> simplify the code a bit,
+> 
+> The performance improvement would be if the benchmark is calling
+> connect with invalid arguments? That seems like an extremely rare
+> scenario in real life.
+> 
 
-This indicates that both rdma_cxt and p_hwfn can be NULL. If so, a 
-null-pointer dereference will occur:
-1288:Â Â Â  DP_ERR(p_hwfn->cdev, ...);
+Thanks for your comments.
 
-I am not quite sure whether this possible null-pointer dereference is 
-real and how to fix it if it is real.
-Any feedback would be appreciated, thanks!
+On the one hand, it is the performance impact, but we also found that it
+may cause DoS: simulate a scenario where udp connect is frequently
+performed (illegal addrlen, and the socket is not closed), the local
+ports will be exhausted quickly.
 
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+>> and also switch from a mix of tabs and spaces to just tabs.
+> 
+> Please never mix unrelated whitespace cleanup into patches making real
+> code changes.
+>
+OK.
 
-Best wishes,
-Tuo Li
+>> diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+>> index 5464818..97b6fc4 100644
+>> --- a/net/ipv4/af_inet.c
+>> +++ b/net/ipv4/af_inet.c
+>> @@ -569,6 +569,11 @@ int inet_dgram_connect(struct socket *sock, struct sockaddr *uaddr,
+>>   	if (uaddr->sa_family == AF_UNSPEC)
+>>   		return sk->sk_prot->disconnect(sk, flags);
+>>   
+>> +	if (uaddr->sa_family != AF_INET)
+>> +		return -EAFNOSUPPORT;
+> 
+> And what about IPv6 which also calls this function?
+> 
+
+Sorry that currently only ipv4 has been modified, we will continue to 
+improve, and the v2 patch will be submitted later, thank you.
+
+
+-- 
+Best wishes£¬
+Wen
+
+
+>> +	if (addr_len < sizeof(struct sockaddr_in))
+>> +		return -EINVAL;
+>> +
+>>   	if (BPF_CGROUP_PRE_CONNECT_ENABLED(sk)) {
+>>   		err = sk->sk_prot->pre_connect(sk, uaddr, addr_len);
+>>   		if (err)
