@@ -2,76 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B78963E999F
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 22:22:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3CE73E99A4
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 22:24:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231825AbhHKUWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 16:22:53 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45798 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229655AbhHKUWx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Aug 2021 16:22:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=LDjEdO9P0ODxsLGsG2JcyGHngVPH34DX96d4EXhJCzg=; b=GOQk2HR6UcDpW3ZKkS7Hcwo0SW
-        8yP0ywd6OorJGYKHJaETX6+mJ8G6r5Auj19zbSywz8JJEUWNinRa7iVOylK0hvKC8eKb1fHouxEzG
-        lp5FQ5S5m2Lh4fqNlSyEX/oy0INEcgt36Ah5bQT+aKCl1uD9m1D/pOdItj7c2Kt3oakA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mDuk0-00HBEE-9l; Wed, 11 Aug 2021 22:22:20 +0200
-Date:   Wed, 11 Aug 2021 22:22:20 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
-        netdev@vger.kernel.org, robh+dt@kernel.org,
-        UNGLinuxDriver@microchip.com, Woojung.Huh@microchip.com,
-        hkallweit1@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 05/10] net: dsa: microchip: add DSA support
- for microchip lan937x
-Message-ID: <YRQxfJT/RjpL8JOZ@lunn.ch>
-References: <20210802135911.inpu6khavvwsfjsp@skbuf>
- <50eb24a1e407b651eda7aeeff26d82d3805a6a41.camel@microchip.com>
- <20210803235401.rctfylazg47cjah5@skbuf>
- <20210804095954.GN22278@shell.armlinux.org.uk>
- <20210804104625.d2qw3gr7algzppz5@skbuf>
- <YQ6pc6EZRLftmRh3@lunn.ch>
- <20191b895a56e2a29f7fee8063d9cc0900f55bfe.camel@microchip.com>
- <YRQViFYGsoG3OUCc@lunn.ch>
- <20210811201414.GX22278@shell.armlinux.org.uk>
- <20210811202019.seskua7bzagxis7u@skbuf>
+        id S231785AbhHKUYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 16:24:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55964 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229655AbhHKUYT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 16:24:19 -0400
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA9CFC061765;
+        Wed, 11 Aug 2021 13:23:55 -0700 (PDT)
+Received: by mail-oi1-x236.google.com with SMTP id bj40so6477393oib.6;
+        Wed, 11 Aug 2021 13:23:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=s+f+4MX2HmyiNsKxDkCt5V/RaI2cWZb37FwnlbVo/jE=;
+        b=eUxw0T9IKgcPXbhrsmyjy4aDmWDoefgFWeeZD4RDrjTUuqw+/gWNg8Yu/aAvbMxwff
+         1h2TS2Oljy/vpW4RVfkmjqIhm6poXAcDQJi2gA4v9zX7JpHL5+u1AsHFkv29hY4R0S4u
+         Cr1rFalTQSDwjKruWYmU8cCZ5Po3V9a0n+M+qTYsjP5yp1M/CqRcOkN4+yCe4eJV5Ydb
+         my1XlMknuobvZpg64bQ7OZcXbosvKy0ECno/jrcdF8yvKaWrWnKUiKUiS/huBlMgmDoR
+         FnNXtM26m4X6go0ybI3/D5vCPAz1zoRcVs8JiPVRo5dARry4xu/ziwtRl5bKzRWdh9jt
+         S6OQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=s+f+4MX2HmyiNsKxDkCt5V/RaI2cWZb37FwnlbVo/jE=;
+        b=RDUZ3HNDMNsvAkUTXu6FOpS+cwlpyQL/C76fQCygiy08OMfAlBOwhTt7nMKGj+LJjf
+         a31GWZt1A8Y1d9FinzDpF8mVfginpfK5Mfa5DvL0EV3t80kS9OnptSZkCwsVU7Ud/xYS
+         WfJGkrcN8P8cjyIs1XdwPsjnXKw16JNLluDZ5NgJUwiYrnGPW+xaodoggFd0NikBiy+c
+         2RzWZKz8ajqQ3RAlEiwEkNHR0kmSRg6lLstZLyDzyOWEoMCnpnGX4zWgOAwtDRiXsMGf
+         OzvAOCY9whWZxdxEeInSzvLy/SVRoXgJdDZM4gAE2nrHA+072AD0Kiu8LnQRPH4BIWdh
+         1FKw==
+X-Gm-Message-State: AOAM532Oku8g/uGpjK11DNQlMwj9SQCqanh51NtzIZz3xnj293AcTzrG
+        wrW6dfe4Da3hxrAWsrMezAU=
+X-Google-Smtp-Source: ABdhPJxOT093VGyIM/8I+Qq+/qtGwKgnC2OTFGMDVkJAYqzIJx6SQ9HjCHZ5uCVZojJiBX+OgrcfJA==
+X-Received: by 2002:a05:6808:181a:: with SMTP id bh26mr9075974oib.113.1628713435132;
+        Wed, 11 Aug 2021 13:23:55 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.45])
+        by smtp.googlemail.com with ESMTPSA id t3sm125779otm.28.2021.08.11.13.23.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 Aug 2021 13:23:54 -0700 (PDT)
+Subject: Re: [RFCv2 1/9] tcp: authopt: Initial support and key management
+To:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        Leonard Crestez <cdleonard@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        David Ahern <dsahern@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Priyaranjan Jha <priyarjha@google.com>,
+        Menglong Dong <dong.menglong@zte.com.cn>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-crypto@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        Dmitry Safonov <dima@arista.com>
+References: <cover.1628544649.git.cdleonard@gmail.com>
+ <67c1471683200188b96a3f712dd2e8def7978462.1628544649.git.cdleonard@gmail.com>
+ <CAJwJo6aicw_KGQSM5U1=0X11QfuNf2dMATErSymytmpf75W=tA@mail.gmail.com>
+ <1e2848fb-1538-94aa-0431-636fa314a36d@gmail.com>
+ <68749e37-8e29-7a51-2186-7692f5fd6a79@gmail.com>
+ <ac911d47-eef7-c97b-9a77-f386546b56e8@gmail.com>
+ <2c39e02b-1da5-7a62-512e-67f008fe15fc@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <89dae60c-7310-40a9-0ddb-566068799a58@gmail.com>
+Date:   Wed, 11 Aug 2021 14:23:52 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210811202019.seskua7bzagxis7u@skbuf>
+In-Reply-To: <2c39e02b-1da5-7a62-512e-67f008fe15fc@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 11, 2021 at 11:20:19PM +0300, Vladimir Oltean wrote:
-> On Wed, Aug 11, 2021 at 09:14:14PM +0100, Russell King (Oracle) wrote:
-> > On Wed, Aug 11, 2021 at 08:23:04PM +0200, Andrew Lunn wrote:
-> > > > I hope that using "*-internal-delay-ps" for Mac would be the right option.
-> > > > Shall i include these changes as we discussed in next revision of the patch? 
-> > > 
-> > > Yes, that seems sensible. But please limit them to the CPU port. Maybe
-> > > return -EINVAL for other ports.
-> > 
-> > Hmm. Don't we want ports that are "MAC like" to behave "MAC like" ?
-> > In other words, shouldn't a DSA port that can be connected to an
-> > external PHY should accept the same properties as a conventional
-> > Ethernet MAC e.g. in a SoC device?
+On 8/11/21 2:12 PM, Dmitry Safonov wrote:
+> Hi David,
 > 
-> +1, I thought the whole purpose of the discussion was to stop singling
-> out the CPU port as being special in any way w.r.t. RGMII delays.
+> On 8/11/21 6:15 PM, David Ahern wrote:
+>> On 8/11/21 8:31 AM, Dmitry Safonov wrote:
+>>> On 8/11/21 9:29 AM, Leonard Crestez wrote:
+>>>> On 8/10/21 11:41 PM, Dmitry Safonov wrote:
+> [..]
+>>>>> I'm pretty sure it's not a good choice to write partly tcp_authopt.
+>>>>> And a user has no way to check what's the correct len on this kernel.
+>>>>> Instead of len = min_t(unsigned int, len, sizeof(info)), it should be
+>>>>> if (len != sizeof(info))
+>>>>>      return -EINVAL;
+>>>>
+>>>> Purpose is to allow sockopts to grow as md5 has grown.
+>>>
+>>> md5 has not grown. See above.
+>>
+>> MD5 uapi has - e.g., 8917a777be3ba and  6b102db50cdde. We want similar
+>> capabilities for growth with this API.
+> 
+> So, you mean adding a new setsockopt when the struct has to be extended?
+> Like TCP_AUTHOPT_EXT?
 
-Yes, sorry.
+uh, no. That was needed because of failures with the original
+implementation wrt checking that all unused bits are 0. If checking is
+not done from day 1, that field can never be used in the future.
 
-What we don't want is it acting upon phy-mode.
+My point here was only that MD5 uapi was extended.
 
-     Andrew
+My second point is more relevant to Leonard as a very recent example of
+how to build an extendable struct.
+
+
+>>
+>> Look at how TCP_ZEROCOPY_RECEIVE has grown over releases as an example
+>> of how to properly handle this.
+> 
+> Exactly.
+> 
+> : switch (len) {
+> :		case offsetofend(...)
+> :		case offsetofend(...)
+> 
+> And than also:
+> :		if (unlikely(len > sizeof(zc))) {
+> :			err = check_zeroed_user(optval + sizeof(zc),
+> :						len - sizeof(zc));
+> 
+> Does it sound similar to what I've written in my ABI review?
+> And what the LWN article has in it.
+> Please, look again at the patch I replied to.
+> 
+> Thanks,
+>          Dmitry
+> 
+
