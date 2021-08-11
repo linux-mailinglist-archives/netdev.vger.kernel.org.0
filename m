@@ -2,139 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 914333E95EC
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 18:30:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 432223E9632
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 18:40:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229539AbhHKQaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 12:30:22 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:12838 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229484AbhHKQaM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 12:30:12 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17BGGjYL010654;
-        Wed, 11 Aug 2021 09:29:16 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=ftxWIFFouAL26OQNZKsfHrFAzJ5LCVo9bfxEm7isRJY=;
- b=bjXuMnJGyer5eEEw/CiBdv/Xee1cO8P0b1X6g0T4u3N8+eny0QhtrnDCtCC5Jv4y7fT5
- TIxTlgbOObPRZpE+T4AexdfRZJB/mjY7DHROhWEMcIpa47/lf9Us+bio/nsKROtaE6IL
- a9+V8OJpGoX1FP44vnzqTJm3YL3U+cV2Qnwsb46np1+NyoCIjE9uc4es3mKrE1UU8TRX
- n1reO5CT2zNMGoHoWtuBVRUEJUXDAT+3U9Y1ISOJyc43rjzkPyzipw2sItX5goqlzpgl
- oJxMWJqA8BISUGUc/WhYIwwDMDSydVy2Fq8HQq0VsZgLsLnxRmfKFl5NirrJAC0IeXxI 3g== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 3acc8g9cam-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 11 Aug 2021 09:29:16 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 11 Aug
- 2021 09:29:13 -0700
-Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
- DC5-EXCH02.marvell.com (10.69.176.39) with Microsoft SMTP Server id
- 15.0.1497.18 via Frontend Transport; Wed, 11 Aug 2021 09:29:12 -0700
-From:   Shai Malin <smalin@marvell.com>
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <aelior@marvell.com>, <smalin@marvell.com>, <malin1024@gmail.com>
-Subject: [PATCH] qed: qed ll2 race condition fixes
-Date:   Wed, 11 Aug 2021 19:28:55 +0300
-Message-ID: <20210811162855.6746-1-smalin@marvell.com>
-X-Mailer: git-send-email 2.16.6
+        id S230013AbhHKQkc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 12:40:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:60097 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229819AbhHKQkb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 12:40:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1628700007;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=u63HNp6/QtMaAR+WssqnWCaQvdnhIjzKRkK0ogRXtPU=;
+        b=My8UfjJI13ecirHrXyGwEDR8tsgDvyt4YefiCDeKeibE53D2UMc0NDo+qq7s4HzjMSHmwN
+        pJ3/nYsBGAXDUs+DGOdcRJI8lVvWt8C+o7N9GpMtwFGQy9IH0nnQBQyEIZ82LzCbncsA0s
+        XgbpoiGGus+cZnM0W6tdZQJjmKOUXOA=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-48-rVrurOkNOAqtc7AZKxoQgg-1; Wed, 11 Aug 2021 12:40:05 -0400
+X-MC-Unique: rVrurOkNOAqtc7AZKxoQgg-1
+Received: by mail-wm1-f72.google.com with SMTP id b196-20020a1c80cd0000b02902e677003785so2271395wmd.7
+        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 09:40:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=u63HNp6/QtMaAR+WssqnWCaQvdnhIjzKRkK0ogRXtPU=;
+        b=GGxlGJ/p2H+lQOCt+hr/aV94XTRJzBZHtUpD9aoz+Pore52MZUoWe6z6lh90yEodIk
+         ztGRehjj0kCXOxH8/pA1TwRq6awmuS9OZS79E9RG7GsdyFcmaYOINhzm9rpwc7f4g3Ym
+         PXGLATLMkJYvRq9c5J6TBj0psMQW1fvgNzmuv07r7xXIsCZ+cYifbo3RMLvtMXfJy5gS
+         s15yLSe8yQj9koKRpNKTOLOMXHA4SdEZPln83lxv0BuYMPlBa9DmMbl80EZsGmskDbra
+         t4XvYUZ7zeSquM54woP87gWA8wZ+hrM6ZVk+zEib0SphNz/Cx6yXB0YGJiKIxyRYhw+6
+         KzCA==
+X-Gm-Message-State: AOAM532tsu5mdiYaOPmeFXgSO4efHmbh9nXDjgf6/z+Ke/q3rUX33n4D
+        dHzEuWq4r4XR6ygLRt3bDzesNC0hgxrfIJfMJogFLrHRJZZye3a0hL+wF+fr0SLXt7mSguaEE3t
+        JQUqCiIEM1gBOhhD9
+X-Received: by 2002:a1c:751a:: with SMTP id o26mr12895397wmc.94.1628700004400;
+        Wed, 11 Aug 2021 09:40:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxiBajL2VPPdnqoTAGj/QWW0XxOnsvTNG6Yb6XPrvxaWyyvFStg6KW79RXml6rjkVRMfDw4ew==
+X-Received: by 2002:a1c:751a:: with SMTP id o26mr12895386wmc.94.1628700004238;
+        Wed, 11 Aug 2021 09:40:04 -0700 (PDT)
+Received: from pc-32.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id z126sm21647754wmc.11.2021.08.11.09.40.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Aug 2021 09:40:03 -0700 (PDT)
+Date:   Wed, 11 Aug 2021 18:40:01 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Martin Zaharinov <micron10@gmail.com>
+Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: Re: Urgent  Bug report: PPPoE ioctl(PPPIOCCONNECT): Transport
+ endpoint is not connected
+Message-ID: <20210811164001.GA15488@pc-32.home>
+References: <7EE80F78-6107-4C6E-B61D-01752D44155F@gmail.com>
+ <YQy9JKgo+BE3G7+a@kroah.com>
+ <08EC1CDD-21C4-41AB-B6A8-1CC2D40F5C05@gmail.com>
+ <20210808152318.6nbbaj3bp6tpznel@pali>
+ <8BDDA0B3-0BEE-4E80-9686-7F66CF58B069@gmail.com>
+ <20210809151529.ymbq53f633253loz@pali>
+ <2B54E919-1263-4AD2-B37C-6B1F24211D77@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: C9hYEgPPhsN7HqmpEPATU41dYU5l1B8V
-X-Proofpoint-ORIG-GUID: C9hYEgPPhsN7HqmpEPATU41dYU5l1B8V
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-08-11_05:2021-08-11,2021-08-11 signatures=0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2B54E919-1263-4AD2-B37C-6B1F24211D77@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Avoiding qed ll2 race condition and NULL pointer dereference as part
-of the remove and recovery flows.
+On Tue, Aug 10, 2021 at 09:27:14PM +0300, Martin Zaharinov wrote:
+> Add Guillaume Nault
+> 
+> > On 9 Aug 2021, at 18:15, Pali Rohár <pali@kernel.org> wrote:
+> > 
+> > On Sunday 08 August 2021 18:29:30 Martin Zaharinov wrote:
+> >>>>>> [2021-08-05 13:52:05.294] vlan912: 24b205903d09718e: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:05.298] vlan912: 24b205903d097162: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:05.626] vlan641: 24b205903d09711b: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:11.000] vlan912: 24b205903d097105: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:17.852] vlan912: 24b205903d0971ae: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:21.113] vlan641: 24b205903d09715b: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:27.963] vlan912: 24b205903d09718d: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:30.249] vlan496: 24b205903d097184: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:30.992] vlan420: 24b205903d09718a: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:33.937] vlan640: 24b205903d0971cd: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:40.032] vlan912: 24b205903d097182: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:40.420] vlan912: 24b205903d0971d5: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:42.799] vlan912: 24b205903d09713a: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:42.799] vlan614: 24b205903d0971e5: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:43.102] vlan912: 24b205903d097190: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:43.850] vlan479: 24b205903d097153: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:43.850] vlan479: 24b205903d097141: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:43.852] vlan912: 24b205903d097198: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:43.977] vlan637: 24b205903d097148: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>>>> [2021-08-05 13:52:44.528] vlan637: 24b205903d0971c3: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
 
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: Shai Malin <smalin@marvell.com>
----
- drivers/net/ethernet/qlogic/qed/qed_ll2.c | 23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+The PPPIOCCONNECT ioctl returns -ENOTCONN if the ppp channel has been
+unregistered.
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_ll2.c b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
-index 02a4610d9330..927e163cc9d6 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_ll2.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
-@@ -327,6 +327,9 @@ static int qed_ll2_txq_completion(struct qed_hwfn *p_hwfn, void *p_cookie)
- 	unsigned long flags;
- 	int rc = -EINVAL;
- 
-+	if (!p_ll2_conn)
-+		return rc;
-+
- 	spin_lock_irqsave(&p_tx->lock, flags);
- 	if (p_tx->b_completing_packet) {
- 		rc = -EBUSY;
-@@ -500,7 +503,16 @@ static int qed_ll2_rxq_completion(struct qed_hwfn *p_hwfn, void *cookie)
- 	unsigned long flags = 0;
- 	int rc = 0;
- 
-+	if (!p_ll2_conn)
-+		return rc;
-+
- 	spin_lock_irqsave(&p_rx->lock, flags);
-+
-+	if (!QED_LL2_RX_REGISTERED(p_ll2_conn)) {
-+		spin_unlock_irqrestore(&p_rx->lock, flags);
-+		return 0;
-+	}
-+
- 	cq_new_idx = le16_to_cpu(*p_rx->p_fw_cons);
- 	cq_old_idx = qed_chain_get_cons_idx(&p_rx->rcq_chain);
- 
-@@ -821,6 +833,9 @@ static int qed_ll2_lb_rxq_completion(struct qed_hwfn *p_hwfn, void *p_cookie)
- 	struct qed_ll2_info *p_ll2_conn = (struct qed_ll2_info *)p_cookie;
- 	int rc;
- 
-+	if (!p_ll2_conn)
-+		return 0;
-+
- 	if (!QED_LL2_RX_REGISTERED(p_ll2_conn))
- 		return 0;
- 
-@@ -844,6 +859,9 @@ static int qed_ll2_lb_txq_completion(struct qed_hwfn *p_hwfn, void *p_cookie)
- 	u16 new_idx = 0, num_bds = 0;
- 	int rc;
- 
-+	if (!p_ll2_conn)
-+		return 0;
-+
- 	if (!QED_LL2_TX_REGISTERED(p_ll2_conn))
- 		return 0;
- 
-@@ -1728,6 +1746,8 @@ int qed_ll2_post_rx_buffer(void *cxt,
- 	if (!p_ll2_conn)
- 		return -EINVAL;
- 	p_rx = &p_ll2_conn->rx_queue;
-+	if (p_rx->set_prod_addr == NULL)
-+		return -EIO;
- 
- 	spin_lock_irqsave(&p_rx->lock, flags);
- 	if (!list_empty(&p_rx->free_descq))
-@@ -1742,7 +1762,7 @@ int qed_ll2_post_rx_buffer(void *cxt,
- 		}
- 	}
- 
--	/* If we're lacking entires, let's try to flush buffers to FW */
-+	/* If we're lacking entries, let's try to flush buffers to FW */
- 	if (!p_curp || !p_curb) {
- 		rc = -EBUSY;
- 		p_curp = NULL;
-@@ -2589,7 +2609,6 @@ static int qed_ll2_start(struct qed_dev *cdev, struct qed_ll2_params *params)
- 			DP_NOTICE(cdev, "Failed to add an LLH filter\n");
- 			goto err3;
- 		}
--
- 	}
- 
- 	ether_addr_copy(cdev->ll2_mac_address, params->ll2_mac_address);
--- 
-2.22.0
+From a user space point of view, this means that accel-ppp establishes
+PPPoE sessions, starts negociating PPP connection parameters on top of
+them (LCP and authentication) and finally the PPPoE sessions get
+disconnected before accel-ppp connects them to ppp units (units are
+roughly the "pppX" network devices).
+
+Unregistration of PPPoE channels can happen for the following reasons:
+
+  * Changing some parameters of the network interface used by the
+    PPPoE connection: MAC address, MTU, bringing the device down.
+
+  * Reception of a PADT (PPPoE disconnection message sent from the peer).
+
+  * Closing the PPPoE socket.
+
+  * Re-connecting a PPPoE socket with a different session ID (this
+    unregisters the previous channel and creates a new one, so that
+    shouldn't be the problem you're facing here).
+
+Given that this seems to affect all PPPoE connections, I guess
+something happened to the underlying network interface (1st bullet
+point).
 
