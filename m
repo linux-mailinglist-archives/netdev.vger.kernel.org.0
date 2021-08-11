@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43AAD3E99A9
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 22:26:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D5FF3E99AC
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 22:26:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231705AbhHKU0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 16:26:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56486 "EHLO
+        id S231953AbhHKU0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 16:26:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229655AbhHKU0g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 16:26:36 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E69C061765;
-        Wed, 11 Aug 2021 13:26:12 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id r6so4813090wrt.4;
-        Wed, 11 Aug 2021 13:26:12 -0700 (PDT)
+        with ESMTP id S231898AbhHKU0n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 16:26:43 -0400
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676E4C061798;
+        Wed, 11 Aug 2021 13:26:19 -0700 (PDT)
+Received: by mail-ot1-x331.google.com with SMTP id e13-20020a9d63cd0000b02904fa42f9d275so4907078otl.1;
+        Wed, 11 Aug 2021 13:26:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=PUymzAPy9+RGPI1MfFiOxLUq7b/PCMvHPop/Ne0C+2E=;
-        b=B+11Xijs+LVrqBYXLRUgRkfmi6+Rwmin9BX04XpS9E8lubzunip13nCr105W8osWyZ
-         6OmV3xCdoGPh0ei4S4Q6K04Po/FMfg9bx4NMdxzuwcKqKucaYDyH+tCfYNJgf/cRYR9A
-         J1V0UVYNP03hFQ0qzr0bVPQcYzfuEzzjOwYHDoAjVXahLyv54H4+ysnGCZhtKzl8z6lj
-         sS51+3UxkWOv8Mf+haxXIyge3QI9CrajCmuoh6Hq5FtpkAlA8EvLCcNEwIt7WhVgzBv7
-         MBR73AkS6WXuVOwrmuRh+aGgJFreGlskxDGNO1U9y5ZNYf9aPGSweeqD5LfhUl4q1xQo
-         cvhw==
+        bh=atRMPRk585kmp44EvPA3njvOqwijO8Eqicy1Yu6AAtQ=;
+        b=Q97XczwR/juRLDn9dwsMuPhyHXhXU0rvySK5IWGPhmUxJ4qSMK7LuQPOom4f7rGpHO
+         +25MIyMB5aLbcGhCfKhdya07r2jMdCb0lCk66o61c4yMiCUKOy5fQzjXdhf+uT8txTlx
+         UGS7kszAbFCtVkyRDbTzDOT9aVhQH+CXxJ0d+WhFJ3Cs9Aju3WKdNcebCSM9Z4zk3oTG
+         RUqetLF9CmOZmB840TXmbQpbORSeXhc629ZOmqmyQ/mBRnuG9xLk/IbsIeHRoBIoXd3g
+         li3ZULq2luitfh90XD43tNXyHRoPzpRHTpPWkRu4AX/pwKXYhIeR66pxBIpLE5NKG56R
+         ldfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=PUymzAPy9+RGPI1MfFiOxLUq7b/PCMvHPop/Ne0C+2E=;
-        b=VrGz8ITATuLYKsWn3by3mG2Wmk3lctQVyq+zuKZ9acnWE4l0zYFA+GEiKVpofD249A
-         MCUbvk9hC90OjrjfDwHTSQWIp7BzKkIGa/qduKnlGKlEQRiAaWb5cuBIV8zhoJK4hPWk
-         h7xwm7lEGXv99kMny6tzUmQJUMMuPXBO8267xOnOchAn51A9DLiAm0JxHVRrkKxoeXLy
-         k/Fqb4oK4ri1JoMENTx/yz5PW5MY1icaUEf+c+FBhyB0cWJKq4dBwZoyczPuI+OAgaDv
-         Y5sD08epkJJZ5l3+JPlL9bzalP0ZGkCvQxpPRMYB5sLeaKUYADcp1jyW1wNt/voePbW6
-         A/xQ==
-X-Gm-Message-State: AOAM532xoyH31snb0MU1V6ostwVvJuqEuTnF0J9OYBfE6xndXuxbS3ca
-        oLYCaZ5aYs7Jz80gu8mJvLs=
-X-Google-Smtp-Source: ABdhPJy/+AnDqNaO4uAXA+X6qBPIet5kjOOJkclBQSBvY1/sj9UTtmzIjdj1SHtJAZOZFaN9EfDGFQ==
-X-Received: by 2002:a05:6000:128e:: with SMTP id f14mr238461wrx.167.1628713570994;
-        Wed, 11 Aug 2021 13:26:10 -0700 (PDT)
-Received: from ?IPv6:2a02:8084:e84:2480:228:f8ff:fe6f:83a8? ([2a02:8084:e84:2480:228:f8ff:fe6f:83a8])
-        by smtp.gmail.com with ESMTPSA id p4sm422859wrq.81.2021.08.11.13.26.09
+        bh=atRMPRk585kmp44EvPA3njvOqwijO8Eqicy1Yu6AAtQ=;
+        b=qGomJlXc2Nxyvzf0YmTyJAMsRvlcxirsXtrc8b9/1VDKvA5OCsHehc8YWOXPi07s2M
+         iGqyUoYFKHsQUll0ahRU76BHHD/xUAO8dL6OD6btOA54/IBF7qT2kDv9lkjd2Cb6k9bU
+         xBlJ09mZ80jDl4JtVjAKNYFllXp1lUqoV2i6XEoLlWUJ4ez8bCaenVfodvvItQyuSDIj
+         p1RPOimYPAB6k//J+JHHqTwmscn+6lRLL5CGZyLpChf7zXvz/Rk/Gzr0bKB0BkzcD5hS
+         8j+DMxJ1v4uvrBirDpzDOtCIh2uf05ALKgltkDlrRIuYskLeQG6x2rYMOmwi5IOvSWiN
+         nJMQ==
+X-Gm-Message-State: AOAM530qaKkXCgAG1dzIVJOWEbFqDjHSYaxbftN939SGwcHOv9G429UN
+        jGwL91qRajJIjBv9KXEJPCk=
+X-Google-Smtp-Source: ABdhPJxsJ2wTOZZoyxVZgWNPbr2iVGNKDqDKvoq9Kv4gQWd/CTC0v3dXn2SEbTBkZA8S9BezlSsNxQ==
+X-Received: by 2002:a9d:1c85:: with SMTP id l5mr607195ota.5.1628713578770;
+        Wed, 11 Aug 2021 13:26:18 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.45])
+        by smtp.googlemail.com with ESMTPSA id t1sm48279ooa.42.2021.08.11.13.26.17
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Aug 2021 13:26:10 -0700 (PDT)
+        Wed, 11 Aug 2021 13:26:18 -0700 (PDT)
 Subject: Re: [RFCv2 1/9] tcp: authopt: Initial support and key management
 To:     Leonard Crestez <cdleonard@gmail.com>,
-        David Ahern <dsahern@gmail.com>
+        Dmitry Safonov <0x7f454c46@gmail.com>
 Cc:     Eric Dumazet <edumazet@google.com>,
         "David S. Miller" <davem@davemloft.net>,
         Herbert Xu <herbert@gondor.apana.org.au>,
@@ -75,29 +75,57 @@ References: <cover.1628544649.git.cdleonard@gmail.com>
  <1e2848fb-1538-94aa-0431-636fa314a36d@gmail.com>
  <8d656f85-6f66-6c40-c4af-b05c6639b9ab@gmail.com>
  <18235a42-72ad-8471-c940-c70b476cf0e0@gmail.com>
-From:   Dmitry Safonov <0x7f454c46@gmail.com>
-Message-ID: <2b392d8d-ee6d-01d1-a308-cf65ff527952@gmail.com>
-Date:   Wed, 11 Aug 2021 21:26:09 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <c268842b-c699-8d83-6b48-a2205fbf8f21@gmail.com>
+Date:   Wed, 11 Aug 2021 14:26:16 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
 In-Reply-To: <18235a42-72ad-8471-c940-c70b476cf0e0@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/11/21 8:11 PM, Leonard Crestez wrote:
+On 8/11/21 1:11 PM, Leonard Crestez wrote:
 > On 11.08.2021 16:42, David Ahern wrote:
-[..]
+>> On 8/11/21 2:29 AM, Leonard Crestez wrote:
+>>> On 8/10/21 11:41 PM, Dmitry Safonov wrote:
+>>>> Hi Leonard,
+>>>>
+>>>> On Tue, 10 Aug 2021 at 02:50, Leonard Crestez <cdleonard@gmail.com>
+>>>> wrote:
+>>>> [..]
+>>>>> +/* Representation of a Master Key Tuple as per RFC5925 */
+>>>>> +struct tcp_authopt_key_info {
+>>>>> +       struct hlist_node node;
+>>>>> +       /* Local identifier */
+>>>>> +       u32 local_id;
+>>>>
+>>>> There is no local_id in RFC5925, what's that?
+>>>> An MKT is identified by (send_id, recv_id), together with
+>>>> (src_addr/src_port, dst_addr/dst_port).
+>>>> Why introducing something new to already complicated RFC?
+>>>
+>>> It was there to simplify user interface and initial implementation.
+>>>
+>>> But it seems that BGP listeners already needs to support multiple
+>>> keychains for different peers so identifying the key by (send_id,
+>>> recv_id, binding) is easier for userspace to work with. Otherwise they
+>>> need to create their own local_id mapping internally.
+>>>
 >>
 >> any proposed simplification needs to be well explained and how it
 >> relates to the RFC spec.
 > 
 > The local_id only exists between userspace and kernel so it's not really
 > covered by the RFC.
+
+My point is that you need to document the uapi (however it ends up) and
+how it is used to achieve the intent of the RFC.
+
 > 
 > There are objections to this and it seems to be unhelpful for userspace
 > zo I will replace it with match by binding.
@@ -108,10 +136,8 @@ On 8/11/21 8:11 PM, Leonard Crestez wrote:
 > connections will just start failing.
 > 
 > It's arguably fine to allow userspace misconfiguration to cause failures.
+> 
+> -- 
+> Regards,
+> Leonard
 
-I think it's fine. But worth documenting. Also, keep in mind that
-someone in userspace with his funny ideas might start relying on such
-behavior in future.
-
-Thanks,
-        Dmitry
