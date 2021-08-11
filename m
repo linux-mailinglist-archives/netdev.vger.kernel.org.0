@@ -2,126 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C14183E936A
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 16:18:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D9183E936C
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 16:18:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232291AbhHKOSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 10:18:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231661AbhHKOS3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 10:18:29 -0400
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 600ECC061765
-        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 07:18:05 -0700 (PDT)
-Received: by mail-il1-x12f.google.com with SMTP id i13so2972182ilm.11
-        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 07:18:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LDWP9qisBxFdueMqiOTeG0NsmbdU+x+l/xp0sQwGHd4=;
-        b=WO/JfNQFytTyy9YMRuVLi7YfkL9EWNVf3vMlugzUjYyHGImqe/zrP0msZjp+R5UMaI
-         Z6txHSWra1O3C49h3bR+/FF0q5h1BqlUHJch1M3gsDr89UR+QTGYsp7zLSe1dGyOQl8T
-         IJHiaVDTmiWd5W39HhEIkGc9sv1houRJnCGLBDtxQ2fJO2Me0u2hhGg8h4bJC1+D/ytZ
-         evCDTbYjpWTP/Vbn+yc/ZFcOKtKOq+uBsKFOion6GeNbXcAnL+hr7sRPpC37ClE00aD6
-         DGZxWwWLRKv9/1FFAUbTts0ae9JVwnqgrG9rrX2Rcl1uexKhpBlKQ6HGzAdVuWny1+lp
-         3+gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LDWP9qisBxFdueMqiOTeG0NsmbdU+x+l/xp0sQwGHd4=;
-        b=UKX9Zyxjtn2NwWSciYhwIuPvcqj0VRGK/bn0poHibQWmT17ErZaNFnSDoWuewKJdNM
-         9sG0nbAnX5WR/xe9jU+cwZUVCy0YJbYb8X5dnD0KW1QZEKDEr0Ji28LF/d4Ib8Vy+EGj
-         FRPryk/Ebw3usLVVesT6b2kNDt1vc1TSsLkvRelKMz7YkhpKSg8MAhvcoeCswhMHYUIz
-         FtAf2U/pjrEr/WMEi05txWPZygUzZl+X1OCQ8eq1Hy85jXEHF7yl6oKxbzJfzxuDBPwb
-         5TDh2iLl6tFjP+FLAjuOCJDrGZxq8kmfUPRybiZjNQo/GhnaMsXIuvlVymfAKhNgqu4J
-         GFJw==
-X-Gm-Message-State: AOAM532opHaZ5zln+JHP6oWLJXYkwPA4Cs0tielX91CPcr6PeLxjiQMw
-        l8Q4dP/vvNTXEv5BD3JFbvTi3Q==
-X-Google-Smtp-Source: ABdhPJzce3iTAAaoGtIR+QNCm0uokAhIEHbadQJi8RMqBWXFTFRUmUPU3BgJvyPd+jOeEnePjMAmww==
-X-Received: by 2002:a92:c601:: with SMTP id p1mr73562ilm.284.1628691484831;
-        Wed, 11 Aug 2021 07:18:04 -0700 (PDT)
-Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id m184sm14287014ioa.17.2021.08.11.07.18.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Aug 2021 07:18:04 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     robh+dt@kernel.org, bjorn.andersson@linaro.org, agross@kernel.org,
-        evgreen@chromium.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v4] dt-bindings: net: qcom,ipa: make imem interconnect optional
-Date:   Wed, 11 Aug 2021 09:18:02 -0500
-Message-Id: <20210811141802.2635424-1-elder@linaro.org>
-X-Mailer: git-send-email 2.27.0
+        id S232374AbhHKOSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 10:18:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59996 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232362AbhHKOSm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Aug 2021 10:18:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7508A6101D;
+        Wed, 11 Aug 2021 14:18:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628691498;
+        bh=A3EZZeZItWRPMBQpoZ2TUaotGzdYhODaB5KkWGuvd9Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SHY+wZa7RFwh4POJk5z6pKi5TvQYV7AtuZkya/T0+M+Y2sf295hgdDhhkFkvXLjDA
+         3KbcOYR/tviR5WgTtmsO2bThyUI6EuD/YZqqXf+on/TDyCwuprYpJwgMnuRUEH/U2O
+         Wk0EUJm3rjQDk8tKmcWcIWcpjwrv4qomY25InECaFXM2aRr57eiPlp6VWGgEJnq22F
+         lct7Ok5fu9T628A1WNAuMT0AjD6giMonajdrQgT+F9bJeK2S/SVVIaxOFUV4VLbRQH
+         +m04hWfQ1a144r6cazig361AhCV88YfNs7pRwfHls0oAFyCgN6Ok9FwuU8699hT6GP
+         QRauuYbtGCAkA==
+Date:   Wed, 11 Aug 2021 07:18:17 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        linux-kernel@vger.kernel.org,
+        Michael Guralnik <michaelgur@mellanox.com>,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Yufeng Mo <moyufeng@huawei.com>
+Subject: Re: [PATCH net-next 0/5] Move devlink_register to be near
+ devlink_reload_enable
+Message-ID: <20210811071817.4af5ab34@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YRPYMKxPHUkegEhj@unreal>
+References: <cover.1628599239.git.leonro@nvidia.com>
+        <20210810165318.323eae24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YRNp6Zmh99N3kJVa@unreal>
+        <20210811062732.0f569b9a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YRPYMKxPHUkegEhj@unreal>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On some newer SoCs, the interconnect between IPA and SoC internal
-memory (imem) is not used.  Update the binding to indicate that
-having just the memory and config interconnects is another allowed
-configuration.
+On Wed, 11 Aug 2021 17:01:20 +0300 Leon Romanovsky wrote:
+> > > Not really, they will register but won't be accessible from the user space.
+> > > The only difference is the location of "[dev,new] ..." notification.  
+> > 
+> > Is that because of mlx5's use of auxdev, or locking? I don't see
+> > anything that should prevent the port notification from coming out.  
+> 
+> And it is ok, kernel can (and does) send notifications, because we left
+> devlink_ops assignment to be in devlink_alloc(). It ensures that all
+> flows that worked before will continue to work without too much changes.
+> 
+> > I think the notifications need to get straightened out, we can't notify
+> > about sub-objects until the object is registered, since they are
+> > inaccessible.  
+> 
+> I'm not sure about that. You present the case where kernel and user
+> space races against each other and historically kernel doesn't protect
+> from such flows. 
+> 
+> For example, you can randomly remove and add kernel modules. At some
+> point of time, you will get "missing symbols errors", just because
+> one module tries to load and it depends on already removed one.
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
-v4: Hopefully I included all the right addressees this time.
-v3: Based on net-next/master; sending for inclusion in net-next.
-v2: Based on linux-next/master.
+Sure. But there is a difference between an error because another
+actor did something conflicting, asynchronously, and API which by design
+sends notifications which can't be acted upon until later point in time,
+because kernel sent them too early.
 
-An earlier version was sent with some DTS updates and was accepted
-into the net-next/master branch, but later reverted.  Bjorn accepted
-the re-sent DTS patches into the Qualcomm repository; this patch
-should go (by itself) via the net-next repository.
+> We must protect kernel and this is what I do. User shouldn't access
+> devlink instance before he sees "dev name" notification.
 
-					-Alex
+Which is a new rule, and therefore a uAPI change..
 
- .../devicetree/bindings/net/qcom,ipa.yaml     | 24 ++++++++++++-------
- 1 file changed, 16 insertions(+), 8 deletions(-)
+> Of course, we can move various iterators to devlink_register(), but it
+> will make code much complex, because we have objects that can be
+> registered at any time (IMHO. trap is one of them) and I will need to 
+> implement notification logic that separate objects that were created
+> before devlink_register and after.
 
-diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-index ed88ba4b94df5..b8a0b392b24ea 100644
---- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-+++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-@@ -87,16 +87,24 @@ properties:
-       - const: ipa-setup-ready
- 
-   interconnects:
--    items:
--      - description: Interconnect path between IPA and main memory
--      - description: Interconnect path between IPA and internal memory
--      - description: Interconnect path between IPA and the AP subsystem
-+    oneOf:
-+      - items:
-+          - description: Path leading to system memory
-+          - description: Path between the AP and IPA config space
-+      - items:
-+          - description: Path leading to system memory
-+          - description: Path leading to internal memory
-+          - description: Path between the AP and IPA config space
- 
-   interconnect-names:
--    items:
--      - const: memory
--      - const: imem
--      - const: config
-+    oneOf:
-+      - items:
-+          - const: memory
-+          - const: config
-+      - items:
-+          - const: memory
-+          - const: imem
-+          - const: config
- 
-   qcom,smem-states:
-     $ref: /schemas/types.yaml#/definitions/phandle-array
--- 
-2.27.0
-
+I appreciate it's a PITA but it is the downside of a solution where
+registration of co-dependent objects exposed via devlink is reordered 
+in the kernel.
