@@ -2,108 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C676C3E8D8C
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 11:50:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A251B3E8DFB
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 12:01:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236680AbhHKJvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 05:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47422 "EHLO
+        id S236860AbhHKKBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 06:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236432AbhHKJvR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 05:51:17 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA6EC061765;
-        Wed, 11 Aug 2021 02:50:54 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id bo18so2583300pjb.0;
-        Wed, 11 Aug 2021 02:50:54 -0700 (PDT)
+        with ESMTP id S236784AbhHKKBv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 06:01:51 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F8FAC061765;
+        Wed, 11 Aug 2021 03:01:27 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id u3so3191265ejz.1;
+        Wed, 11 Aug 2021 03:01:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yfHklEjyVi0y+D9Q59Efd19/lK1Au76MfVqK/YYAw3w=;
-        b=XlizxdegGChhgE9pvc1tXR0HauVwKnoNvrOgyr1hg5QGzCS1Xko59TMF+7HgYTCBkr
-         f/KvF4ijJ6/19OPNn7gsdShJrdIjly0QW52BSb8+S5rY464qk17ejMF9cZ3sjRhKcDKR
-         XwPB7W0C0rKqlk8lLClWs05Rihz/TZ6BggXleBKi60MKJqwv5XJLC5z4riwzDzvzdHnC
-         JvMJpJyLgNyr56BP8sHcun2V+X2Wlyb8j0YFzupn8lA2QeYLUnyh7JUuEchVmyoxMe8f
-         tVsYxF2LCIEAuZzaQnaBQqoLhdfJ0Jwy0mtbDy7PBTpNGLVnHAdXY4u2oel+84JMu+ce
-         iDfg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=t8sJsXG1L+yGCSNJaMEQAUetNo1GZzFfdSMSXPDTu2E=;
+        b=PPudw5ZgG0aCGpmGeDrDKZ/ZHM3K/7UqkCEiBQFKDtRj4weR3ZrcL+WJhalo7r8kS6
+         12GeBqpaX0H5Q3GTSOy5xAWrDn7pwuaYmJR3K34wzYAlcqIzMTCw6ImMcGBrtvCDS6L7
+         dbzBnXspZjflJ+ovhtjtlCVA7VBSGMao1AKGnyC5xH11+CTqJTUzTOcwRVC9oMFHEHoN
+         MmwWMVQrzYHBHGWIiBBgSmlVT/o1JbP7LD6KYRy03LF+KIKkBB4WbHqz7bnd6CXeXJJg
+         rgW5ZO1YkNjgYO+Rj/q5/aaYbCGdiaSq/M+NrVGhkDHOhIHb+J2jipve7aFh0MezQ4CV
+         xijQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yfHklEjyVi0y+D9Q59Efd19/lK1Au76MfVqK/YYAw3w=;
-        b=dX+A42VA43SVNGB7rKMxzLxs6ir7WA2fDwApO/Lcut2qMvdXpMUsJWGvWyadYKmnNR
-         QSsHjCuTBPsSKqm9GUZpgis6KWbNICTIqNS68DYaKI+U0OEe2YJ3clUSVARR8pgU+q+o
-         996PkISi9/6aVqg3D5v2Bme8+RME/gqXzGDYmj49cVZfSjx9JFeHLySxkcSjaxfpSlR5
-         ytCNRx39tyXkyPi7it2yh9NubxWHak2e4V3uHg/OBFLm5SypZnheQqJncq5g+6bs62Mg
-         X7evA/atPLh4MJtN3lByDf/FDX4b+5CT+9SaR189BZsx7hpAurDlJ+GswzAJupd0BH9v
-         ViFA==
-X-Gm-Message-State: AOAM531BPMF+lRhmFn7FnNMslvIRvtnpQehK+aSVVxjunZcu2yArvKLq
-        452YTn0xqKKLmu9pp5t9ngc=
-X-Google-Smtp-Source: ABdhPJwaEw3SWt45M/YhnzJ5ndLJ5GVSKuftH9DwwoBOMkP0IR7KqL5Xph22uT1EEw6SE9e2ohkbOg==
-X-Received: by 2002:a63:4f54:: with SMTP id p20mr64577pgl.437.1628675453594;
-        Wed, 11 Aug 2021 02:50:53 -0700 (PDT)
-Received: from haswell-ubuntu20.lan ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id w82sm2472502pff.112.2021.08.11.02.50.47
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=t8sJsXG1L+yGCSNJaMEQAUetNo1GZzFfdSMSXPDTu2E=;
+        b=BUH247KXBI30dzOne/ov18M/scDJOHm5C4+ffNaOmQK7Xv5phpMGzy8DK9K0QeNWu+
+         uXJZV7L+bJ4cV5h1VmMrMVxHIUMTi3ENvvzEE8ahCooFiffMy1M2S60doh1tdNXj3GjN
+         NOoyO6QuH95oA3O/9Xm33zAGKKkDHAAI4WjmV+BXSa4HZ3r1qqkgNUBptMjoS6rJ1pIg
+         vXgeLL6wkg+90eBZb6uutmAVV+WhwpRXno4+6OqMsln0QrOoWNZe6VktZP0PhbY9dt1h
+         09DfEoOmsEuqDdr7oW+6HLkA3Tlx0A8g07Bfq1mNwqZz/cW7EhCl1ek+gDyn7SOhtKMp
+         2rXQ==
+X-Gm-Message-State: AOAM531vtb0gO01DGJT176RZVU1eOCmeZJ+VjqsXkjluvjaoBXcauNsi
+        IUumjpowjlTxOUfqCwItLcw=
+X-Google-Smtp-Source: ABdhPJz6CsfiRG/zGTl51wJCCX5mI5lhmvKxJB40wv/D8tnS2ztUadRA6z97LpY3pSMzT1Ms1cuP7A==
+X-Received: by 2002:a17:907:1c01:: with SMTP id nc1mr2772945ejc.504.1628676086179;
+        Wed, 11 Aug 2021 03:01:26 -0700 (PDT)
+Received: from skbuf ([188.25.144.60])
+        by smtp.gmail.com with ESMTPSA id z10sm7889853ejg.3.2021.08.11.03.01.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Aug 2021 02:50:52 -0700 (PDT)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     Sean Wang <sean.wang@mediatek.com>,
+        Wed, 11 Aug 2021 03:01:25 -0700 (PDT)
+Date:   Wed, 11 Aug 2021 13:01:22 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
         Landen Chao <Landen.Chao@mediatek.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Matthias Brugger <matthias.bgg@gmail.com>,
         Philipp Zabel <p.zabel@pengutronix.de>,
         Russell King <linux@armlinux.org.uk>,
-        netdev@vger.kernel.org (open list:MEDIATEK SWITCH DRIVER),
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Mediatek SoC
-        support),
-        linux-mediatek@lists.infradead.org (moderated list:ARM/Mediatek SoC
-        support), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next] net: dsa: mt7530: fix VLAN traffic leaks again
-Date:   Wed, 11 Aug 2021 17:50:43 +0800
-Message-Id: <20210811095043.1700061-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        "open list:MEDIATEK SWITCH DRIVER" <netdev@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: dsa: mt7530: fix VLAN traffic leaks again
+Message-ID: <20210811100122.hntia6od6qdc6dvd@skbuf>
+References: <20210811095043.1700061-1-dqfext@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210811095043.1700061-1-dqfext@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a port leaves a VLAN-aware bridge, the current code does not clear
-other ports' matrix field bit. If the bridge is later set to VLAN-unaware
-mode, traffic in the bridge may leak to that port.
+On Wed, Aug 11, 2021 at 05:50:43PM +0800, DENG Qingfang wrote:
+> When a port leaves a VLAN-aware bridge, the current code does not clear
+> other ports' matrix field bit. If the bridge is later set to VLAN-unaware
+> mode, traffic in the bridge may leak to that port.
+> 
+> Remove the VLAN filtering check in mt7530_port_bridge_leave.
+> 
+> Fixes: 474a2ddaa192 ("net: dsa: mt7530: fix VLAN traffic leaks")
+> Fixes: 83163f7dca56 ("net: dsa: mediatek: add VLAN support for MT7530")
+> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> ---
 
-Remove the VLAN filtering check in mt7530_port_bridge_leave.
+That hunk looked indeed very strange when I went over it with commit
+'net: dsa: remove the "dsa_to_port in a loop" antipattern from drivers',
+so I'm happy to see it go away.
 
-Fixes: 474a2ddaa192 ("net: dsa: mt7530: fix VLAN traffic leaks")
-Fixes: 83163f7dca56 ("net: dsa: mediatek: add VLAN support for MT7530")
-Signed-off-by: DENG Qingfang <dqfext@gmail.com>
----
- drivers/net/dsa/mt7530.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 53e6150e95b6..77e0205e4e59 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -1315,11 +1315,8 @@ mt7530_port_bridge_leave(struct dsa_switch *ds, int port,
- 		/* Remove this port from the port matrix of the other ports
- 		 * in the same bridge. If the port is disabled, port matrix
- 		 * is kept and not being setup until the port becomes enabled.
--		 * And the other port's port matrix cannot be broken when the
--		 * other port is still a VLAN-aware port.
- 		 */
--		if (dsa_is_user_port(ds, i) && i != port &&
--		   !dsa_port_is_vlan_filtering(dsa_to_port(ds, i))) {
-+		if (dsa_is_user_port(ds, i) && i != port) {
- 			if (dsa_to_port(ds, i)->bridge_dev != bridge)
- 				continue;
- 			if (priv->ports[i].enable)
--- 
-2.25.1
-
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
