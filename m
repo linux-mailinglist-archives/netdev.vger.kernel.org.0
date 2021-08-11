@@ -2,91 +2,394 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBFFB3E8998
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 07:10:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 962743E8A0A
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 08:09:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234246AbhHKFKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 01:10:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39622 "EHLO
+        id S234594AbhHKGKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 02:10:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233813AbhHKFKt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 01:10:49 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08597C061765
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 22:10:27 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id u13-20020a17090abb0db0290177e1d9b3f7so7801013pjr.1
-        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 22:10:27 -0700 (PDT)
+        with ESMTP id S234449AbhHKGKD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 02:10:03 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54DA5C061765
+        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 23:09:40 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id u15so1110354wmj.1
+        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 23:09:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=fiESui1KRzGljhyjmIcy4FRTOq44ThwYFlFuxizW2lc=;
-        b=BF/EmllYctMgkfqhWD8G3Y89Qb3wMRII5alVeEHzN/NzKsOiao6s65Oo4pEcBzuuvr
-         Ax+NMROkHj+XU6OAwhaww4rRbm+eFS0T1ZgrficUT8JomQgIGkNdW5I3mgiD471FvrAu
-         UO3r8Q/EDfstBmd2nNLIHCFtUx5HHxz2ELrzPORWB1bMvDDB19n2AU2yITAIIhGicaiq
-         RGjv36cPLrVd1ACJ9gslQAnn7oLXP+JJhRgkLni92k8zRfKpM0+2A//Duo+ncmmQgfJW
-         gCRXG5A5znZoov9CsjqVvsU+pZ8wd2bjwquhI3/ZBAU/6XDNfM/0nlv/DSDswb6VDBcN
-         Txgg==
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=iTgVgxmlS7OJwHAVaPtE7zMlq2gOo4iq/cZLVrIBxkA=;
+        b=h1vkLoWbvML+4hCbJJ7g0GK+4BcZ9Gx4y9+Px7lZnsvC48T5HYS73J1Ja4YjA06viT
+         J6pVMR5XTmReLShquu9Z8X8KCbYduQHFEPBp9EHXdTtRSZZh+6dvbygmuO7BZLcuQMuY
+         oanW0rjXCNtD9BrTZcOj8Yy+w4WHXG6nDN1IGMAi98oLuew70A9iyKnNg/pByVC8+Ni8
+         wTD+/lF9Ua2wp+JQA0R61EhwM7xiB58MW/BCnkP/vcokECbP633r9fZii8kyeK1rtdbt
+         y4vb0ClKd34bcCkzyytGq7TD6ahWi7PxPHHFDAtKvgvG7r48sMHtuNYTsrT+i4y0nZo6
+         zZcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=fiESui1KRzGljhyjmIcy4FRTOq44ThwYFlFuxizW2lc=;
-        b=Tr9/ZOLN9UUj8pmGC7ZcpR4uguEvdpdh5hf7svdEUvpDLN0/MDh0mHq07ChA22xQ58
-         wkdI2CpcqYyMEysTem3Z4MetyaG/dEpH/FQEpQ1ML0VDKBuzQwJXrTFCXVUBkIPAUeXx
-         cj7sLdWUoaqYNH1dVXNlPuBDTqYV8G1d9UX7+bhByHMQX+gf99l/Ooq06HnlKwDdaHpJ
-         gqMfKOPNzRc52P975toyBWkCERhp7Qcy5FEQEjxY9+QMv6HQBuydt4/Won2vG48d0GrN
-         ZKDYJcibuN5ri13dsUVsEM8MPh+/AXp1AAyKFQbLZIPQFk0AbQvDdNxvXhJSp119dP7f
-         iZCQ==
-X-Gm-Message-State: AOAM531tnWOAeQfL3lbKLad8XGI/T4xhcPH98xQ/w/VdZP5BTzj8yPCv
-        9dGi3ASFn4TsEkozTBRGXOQ=
-X-Google-Smtp-Source: ABdhPJw1GLogG7nsUYu+qOomZaL/u0mYiSJ7K5Sb3oKq2TxDPMlJ2d/gmUBseNb+1rucuw/5gifjKg==
-X-Received: by 2002:a17:90b:3604:: with SMTP id ml4mr8693218pjb.82.1628658626678;
-        Tue, 10 Aug 2021 22:10:26 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.39])
-        by smtp.gmail.com with ESMTPSA id d20sm6161980pfu.36.2021.08.10.22.10.24
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 10 Aug 2021 22:10:26 -0700 (PDT)
-From:   tcs.kernel@gmail.com
-X-Google-Original-From: tcs_kernel@tencent.com
-To:     vinicius.gomes@intel.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org
-Cc:     Haimin Zhang <tcs_kernel@tencent.com>
-Subject: [PATCH] net:sched fix array-index-out-of-bounds in taprio_change
-Date:   Wed, 11 Aug 2021 13:10:09 +0800
-Message-Id: <1628658609-1208-1-git-send-email-tcs_kernel@tencent.com>
-X-Mailer: git-send-email 1.8.3.1
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=iTgVgxmlS7OJwHAVaPtE7zMlq2gOo4iq/cZLVrIBxkA=;
+        b=UEAC0aA+nxyWmUg2l26f+8sE7OYm+eWQbiThwDlMt/BNhNAABeuWALoeWzX7e0Ni/W
+         vm1l6BT5U7zKUWiobmfYtM0B6Lwa0VvBOXBrBgSJt9Vxtl5t0nX6YB7GHHhl6mOdfJ+i
+         D4XTE02t+s7zM5xJyGU7NxICKIf+YfK0d+zl5kb6NRX1wMZ3YzEkKeyYp8Zu3lFJYm5K
+         AdVpTmH6jQ21cfFMh0f0umnzxBfVdAHYcmDWszwWmktwm3dMI+iN+gJgmTCpMcV8cWqa
+         dJtdHUN8D4q7Ms6F7hpkGhz6frnMDG3q3hpufoe8RXlgrP730ijjbDB8AHpPAhKRUrHO
+         YqfQ==
+X-Gm-Message-State: AOAM532XGSKZqSVth7bfLBKSuBBPxScrwYtT0N090/KvO50WDu98dXb0
+        7lLXhDkcy/xR7MRwBG20FwE=
+X-Google-Smtp-Source: ABdhPJz2uUew8smUGWQuicYUlCfpl+uFSRIKGbJodmUN+tykdf4P85H46Y22hBXTQznXJUjKb5AR/w==
+X-Received: by 2002:a7b:c041:: with SMTP id u1mr25264872wmc.95.1628662178849;
+        Tue, 10 Aug 2021 23:09:38 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f10:c200:ec01:df4:624e:9852? (p200300ea8f10c200ec010df4624e9852.dip0.t-ipconnect.de. [2003:ea:8f10:c200:ec01:df4:624e:9852])
+        by smtp.googlemail.com with ESMTPSA id i5sm26292215wrs.85.2021.08.10.23.09.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Aug 2021 23:09:38 -0700 (PDT)
+To:     ljakku77@gmail.com
+Cc:     Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
+        nic_swsd@realtek.com
+References: <4bc0fc0c-1437-fc41-1c50-38298214ec75@gmail.com>
+ <20200413105838.GK334007@unreal>
+ <dc2de414-0e6e-2531-0131-0f3db397680f@gmail.com>
+ <20200413113430.GM334007@unreal>
+ <03d9f8d9-620c-1f8b-9c58-60b824fa626c@gmail.com>
+ <d3adc7f2-06bb-45bc-ab02-3d443999cefd@gmail.com>
+ <f143b58d-4caa-7c9b-b98b-806ba8d2be99@gmail.com>
+ <0415fc0d-1514-0d79-c1d8-52984973cca5@gmail.com>
+ <3e3b4402-3b6f-7d26-10f3-8e2b18eb65c4@gmail.com>
+ <eb4b6c25-539a-9a94-27a4-398031725709@gmail.com>
+ <efe87588-e480-ebc9-32d7-a1489b25f45a@gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: NET: r8168/r8169 identifying fix
+Message-ID: <60619b13-fdd4-e9f9-2b80-0807c381a247@gmail.com>
+Date:   Wed, 11 Aug 2021 08:09:29 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
+MIME-Version: 1.0
+In-Reply-To: <efe87588-e480-ebc9-32d7-a1489b25f45a@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Haimin Zhang <tcs_kernel@tencent.com>
+On 10.08.2021 23:50, Late @ Gmail wrote:
+> Hi,
+> 
+> Now I solved the reloading issue, and r8169 driver works line charm.
+> 
 
-syzbot report an array-index-out-of-bounds in taprio_change
-index 16 is out of range for type '__u16 [16]'
-that's because mqprio->num_tc is lager than TC_MAX_QUEUE,so we check
-the return value of netdev_set_num_tc.
+This patch is a complete hack and and in parts simply wrong.
+In addition it misses the basics of how to submit a patch.
+Quality hasn't improved since your first attempt, so better stop
+trying to submit this to mainline.
 
-Reported-by: syzbot+2b3e5fb6c7ef285a94f6@syzkaller.appspotmail.com
-Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
----
- net/sched/sch_taprio.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+> Patch:
+> 
+> From: Lauri Jakku <lja@lja.fi>
+> Date: Mon, 9 Aug 2021 21:44:53 +0300
+> Subject: [PATCH] net:realtek:r8169 driver load fix
+> 
+>    net:realtek:r8169 driver load fix
+> 
+>      Problem:
+> 
+>        The problem is that (1st load) fails, but there is valid
+>        HW found (the ID is known) and this patch is applied, the second
+>        time of loading module works ok, and network is connected ok
+>        etc.
+> 
+>      Solution:
+> 
+>        The driver will trust the HW that reports valid ID and then make
+>        re-loading of the module as it would being reloaded manually.
+> 
+>        I do check that if the HW id is read ok from the HW, then pass
+>        -EAGAIN ja try to load 5 times, sleeping 250ms in between.
+> 
+> Signed-off-by: Lauri Jakku <lja@lja.fi>
+> diff --git a/linux-5.14-rc4/drivers/net/ethernet/realtek/r8169_main.c b/linux-5.14-rc4/drivers/net/ethernet/realtek/r8169_main.c
+> index c7af5bc3b..d8e602527 100644
+> --- a/linux-5.14-rc4/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/linux-5.14-rc4/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -634,6 +634,8 @@ struct rtl8169_private {
+>      struct rtl_fw *rtl_fw;
+>  
+>      u32 ocp_base;
+> +
+> +    int retry_probeing;
+>  };
+>  
+>  typedef void (*rtl_generic_fct)(struct rtl8169_private *tp);
+> @@ -5097,13 +5099,16 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
+>      tp->phydev = mdiobus_get_phy(new_bus, 0);
+>      if (!tp->phydev) {
+>          return -ENODEV;
+> -    } else if (!tp->phydev->drv) {
+> -        /* Most chip versions fail with the genphy driver.
+> -         * Therefore ensure that the dedicated PHY driver is loaded.
+> +    } else if (tp->phydev->phy_id != RTL_GIGA_MAC_NONE) {
 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 9c79374..1ab2fc9 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -1513,7 +1513,9 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 	taprio_set_picos_per_byte(dev, q);
- 
- 	if (mqprio) {
--		netdev_set_num_tc(dev, mqprio->num_tc);
-+		err = netdev_set_num_tc(dev, mqprio->num_tc);
-+		if (err)
-+			goto free_sched;
- 		for (i = 0; i < mqprio->num_tc; i++)
- 			netdev_set_tc_queue(dev, i,
- 					    mqprio->count[i],
--- 
-1.8.3.1
+You compare two completely different things here. The phy_id has nothing
+to do with the chip version enum.
+
+> +        /* Most chip versions fail with the genphy driver, BUT do rerport valid IW
+> +         * ID. Re-starting the module seem to fix the issue of non-functional driver.
+>           */
+> -        dev_err(&pdev->dev, "no dedicated PHY driver found for PHY ID 0x%08x, maybe realtek.ko needs to be added to initramfs?\n",
+> +        dev_err(&pdev->dev,
+> +            "no dedicated driver, but HW found: PHY PHY ID 0x%08x\n",
+>              tp->phydev->phy_id);
+> -        return -EUNATCH;
+> +
+> +        dev_err(&pdev->dev, "trying re-probe few times..\n");
+> +
+>      }
+>  
+>      tp->phydev->mac_managed_pm = 1;
+> @@ -5250,6 +5255,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>      enum mac_version chipset;
+>      struct net_device *dev;
+>      u16 xid;
+> +    int savederr = 0;
+>  
+>      dev = devm_alloc_etherdev(&pdev->dev, sizeof (*tp));
+>      if (!dev)
+> @@ -5261,6 +5267,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>      tp->dev = dev;
+>      tp->pci_dev = pdev;
+>      tp->supports_gmii = ent->driver_data == RTL_CFG_NO_GBIT ? 0 : 1;
+> +    tp->retry_probeing = 0;
+>      tp->eee_adv = -1;
+>      tp->ocp_base = OCP_STD_PHY_BASE;
+>  
+> @@ -5410,7 +5417,15 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  
+>      pci_set_drvdata(pdev, tp);
+>  
+> -    rc = r8169_mdio_register(tp);
+> +    savederr = r8169_mdio_register(tp);
+> +
+> +    if (
+> +        (tp->retry_probeing > 0) &&
+> +        (savederr == -EAGAIN)
+> +       ) {
+> +        netdev_info(dev, " retry of probe requested..............");
+> +    }
+> +
+>      if (rc)
+>          return rc;
+>  
+> @@ -5435,6 +5450,14 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>      if (pci_dev_run_wake(pdev))
+>          pm_runtime_put_sync(&pdev->dev);
+>  
+> +    if (
+> +        (tp->retry_probeing > 0) &&
+> +        (savederr == -EAGAIN)
+> +       ) {
+> +        netdev_info(dev, " retry of probe requested..............");
+> +        return savederr;
+
+You can not simply return here. You have to clean up.
+
+> +    }
+> +
+>      return 0;
+>  }
+>  
+> diff --git a/linux-5.14-rc4/drivers/net/phy/phy_device.c b/linux-5.14-rc4/drivers/net/phy/phy_device.c
+> index 5d5f9a9ee..59c6ac031 100644
+
+No mixing of changes in phylib and drivers.
+
+> --- a/linux-5.14-rc4/drivers/net/phy/phy_device.c
+> +++ b/linux-5.14-rc4/drivers/net/phy/phy_device.c
+> @@ -2980,6 +2980,9 @@ struct fwnode_handle *fwnode_get_phy_node(struct fwnode_handle *fwnode)
+>  }
+>  EXPORT_SYMBOL_GPL(fwnode_get_phy_node);
+>  
+> +
+> +static int phy_remove(struct device *dev);
+> +
+
+No forward declarations.
+
+>  /**
+>   * phy_probe - probe and init a PHY device
+>   * @dev: device to probe and init
+> @@ -2988,13 +2991,22 @@ EXPORT_SYMBOL_GPL(fwnode_get_phy_node);
+>   *   set the state to READY (the driver's init function should
+>   *   set it to STARTING if needed).
+>   */
+> +#define REDO_PROBE_TIMES    5
+>  static int phy_probe(struct device *dev)
+>  {
+>      struct phy_device *phydev = to_phy_device(dev);
+>      struct device_driver *drv = phydev->mdio.dev.driver;
+>      struct phy_driver *phydrv = to_phy_driver(drv);
+> +    int again = 0;
+> +    int savederr = 0;
+> +again_retry:
+>      int err = 0;
+>  
+> +    if (again > 0) {
+> +        pr_err("%s: Re-probe %d of driver.....\n",
+> +               phydrv->name, again);
+> +    }
+> +
+>      phydev->drv = phydrv;
+>  
+>      /* Disable the interrupt if the PHY doesn't support it
+> @@ -3013,6 +3025,17 @@ static int phy_probe(struct device *dev)
+>  
+>      if (phydev->drv->probe) {
+>          err = phydev->drv->probe(phydev);
+> +
+> +        /* If again requested. */
+> +        if (err == -EAGAIN) {
+
+This doesn't make sense. You check the PHY driver probe return code,
+mixing it up with the MAC driver return code.
+
+> +            again++;
+> +            savederr = err;
+> +            err = 0;
+> +
+> +            pr_info("%s: EAGAIN: %d ...\n",
+> +                phydrv->name, again);
+> +        }
+> +
+>          if (err)
+>              goto out;
+>      }
+> @@ -3081,6 +3104,20 @@ static int phy_probe(struct device *dev)
+>  
+>      mutex_unlock(&phydev->lock);
+>  
+> +    if ((savederr == -EAGAIN) &&
+> +        ((again > 0) && (again < REDO_PROBE_TIMES))
+> +       ) {
+> +        pr_err("%s: Retry removal driver..\n",
+> +            phydrv->name);
+> +
+> +        phy_remove(dev);
+> +
+> +        pr_err("%s: Re-probe driver..\n",
+> +            phydrv->name);
+> +        savederr = 0;
+> +        goto again_retry;
+> +    }
+> +
+>      return err;
+>  }
+>  
+> @@ -3108,6 +3145,7 @@ static int phy_remove(struct device *dev)
+>      return 0;
+>  }
+>  
+> +
+>  static void phy_shutdown(struct device *dev)
+>  {
+>      struct phy_device *phydev = to_phy_device(dev);
+> 
+> 
+> 
+> On 11.3.2021 18.43, gmail wrote:
+>>
+>> Heiner Kallweit kirjoitti 11.3.2021 klo 18.23:
+>>> On 11.03.2021 17:00, gmail wrote:
+>>>> 15. huhtik. 2020, 19.18, Heiner Kallweit <hkallweit1@gmail.com <mailto:hkallweit1@gmail.com>> kirjoitti:
+>>>>
+>>>>     On 15.04.2020 16:39, Lauri Jakku wrote:
+>>>>
+>>>>         Hi, There seems to he Something odd problem, maybe timing
+>>>>         related. Stripped version not workingas expected. I get back to
+>>>>         you, when  i have it working.
+>>>>
+>>>>     There's no point in working on your patch. W/o proper justification it
+>>>>     isn't acceptable anyway. And so far we still don't know which problem
+>>>>     you actually have.
+>>>>     FIRST please provide the requested logs and explain the actual problem
+>>>>     (incl. the commit that caused the regression).
+>>>>
+>>>>
+>>>>              13. huhtik. 2020, 14.46, Lauri Jakku <ljakku77@gmail.com
+>>>>         <mailto:ljakku77@gmail.com>> kirjoitti: Hi, Fair enough, i'll
+>>>>         strip them. -lja On 2020-04-13 14:34, Leon Romanovsky wrote: On
+>>>>         Mon, Apr 13, 2020 at 02:02:01PM +0300, Lauri Jakku wrote: Hi,
+>>>>         Comments inline. On 2020-04-13 13:58, Leon Romanovsky wrote: On
+>>>>         Mon, Apr 13, 2020 at 01:30:13PM +0300, Lauri Jakku wrote: From
+>>>>         2d41edd4e6455187094f3a13d58c46eeee35aa31 Mon Sep 17 00:00:00
+>>>>         2001 From: Lauri Jakku <lja@iki.fi> Date: Mon, 13 Apr 2020
+>>>>         13:18:35 +0300 Subject: [PATCH] NET: r8168/r8169 identifying fix
+>>>>         The driver installation determination made properly by checking
+>>>>         PHY vs DRIVER id's. ---
+>>>>         drivers/net/ethernet/realtek/r8169_main.c | 70
+>>>>         ++++++++++++++++++++--- drivers/net/phy/mdio_bus.c | 11 +++- 2
+>>>>         files changed, 72 insertions(+), 9 deletions(-) I would say that
+>>>>         most of the code is debug prints. I tought that they are helpful
+>>>>         to keep, they are using the debug calls, so they are not visible
+>>>>         if user does not like those. You are missing the point of who
+>>>>         are your users. Users want to have working device and the code.
+>>>>         They don't need or like to debug their kernel. Thanks
+>>>>
+>>>>     Hi, now i got time to tackle with this again :) .. I know the proposed fix is quite hack, BUT it does give a clue what is wrong.
+>>>>
+>>>>     Something in subsystem is not working at the first time, but it needs to be reloaded to work ok (second time). So what I will do
+>>>>     is that I try out re-do the module load within the module, if there is known HW id available but driver is not available, that
+>>>>     would be much nicer and user friendly way.
+>>>>
+>>>>
+>>>>     When the module setup it self nicely on first load, then can be the hunt for late-init of subsystem be checked out. Is the HW
+>>>>     not brought up correct way during first time, or does the HW need time to brough up, or what is the cause.
+>>>>
+>>>>     The justification is the same as all HW driver bugs, the improvement is always better to take in. Or do this patch have some-
+>>>>     thing what other patches do not?
+>>>>
+>>>>     Is there legit reason why NOT to improve something, that is clearly issue for others also than just me ? I will take on the
+>>>>     task to fiddle with the module to get it more-less hacky and fully working version. Without the need for user to do something
+>>>>     for the module to work.
+>>>>
+>>>>         --Lauri J.
+>>>>
+>>>>
+>>> I have no clue what you're trying to say. The last patch wasn't acceptable at all.
+>>> If you want to submit a patch:
+>>>
+>>> - Follow kernel code style
+>>> - Explain what the exact problem is, what the root cause is, and how your patch fixes it
+>>> - Explain why you're sure that it doesn't break processing on other chip versions
+>>>    and systems.
+>>>
+>> Ok, i'll make nice patch that has in comment what is the problem and how does the patch help the case at hand.
+>>
+>> I don't know the rootcause, but something in subsystem that possibly is initializing bit slowly, cause the reloading
+>>
+>> of the module provides working network connection, when done via insmod cycle. I'm not sure is it just a timing
+>>
+>> issue or what. I'd like to check where is the driver pointer populated, and put some debugs to see if the issue is just
+>>
+>> timing, let's see.
+>>
+>>
+>> The problem is that (1st load) fails, but there is valid HW found (the ID is known), when the hacky patch of mine
+>>
+>> is applied, the second time of loading module works ok, and network is connected ok etc.
+>>
+>>
+>> I make the change so that when the current HEAD code is going to return failure, i do check that if the HW id is read ok
+>>
+>> from the HW, then pass -EAGAIN ja try to load 5 times, sleeping 250ms in between.
+>>
+>>
+>> --Lauri J.
+>>
+>>
+>>
+>>
 
