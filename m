@@ -2,172 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 106243E8914
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 06:07:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97A923E891B
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 06:10:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbhHKEHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 00:07:35 -0400
-Received: from smtprelay0095.hostedemail.com ([216.40.44.95]:34382 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229554AbhHKEHe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 00:07:34 -0400
-Received: from omf11.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id B2245181CC1B7;
-        Wed, 11 Aug 2021 04:07:09 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf11.hostedemail.com (Postfix) with ESMTPA id B927C20A296;
-        Wed, 11 Aug 2021 04:07:08 +0000 (UTC)
-Message-ID: <c8b69905c995ab887633ef11862705ee66c60aad.camel@perches.com>
-Subject: Re: [PATCH] netlink: NL_SET_ERR_MSG - remove local static array
-From:   Joe Perches <joe@perches.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Date:   Tue, 10 Aug 2021 21:07:07 -0700
-In-Reply-To: <20210810133058.0c7f0736@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <1f99c69f4e640accaf7459065e6625e73ec0f8d4.camel@perches.com>
-         <20210810133058.0c7f0736@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.0-1 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.82
-X-Rspamd-Server: rspamout04
-X-Rspamd-Queue-Id: B927C20A296
-X-Stat-Signature: erbj8ue88trry6nswhxoahbaokjr61fi
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1+6DgYlB/FaT7vkiYsQX+R3g2pF1EQooxU=
-X-HE-Tag: 1628654828-659544
+        id S233485AbhHKEKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 00:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54652 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229481AbhHKEKr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 00:10:47 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A1CC061765
+        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 21:10:24 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id s22-20020a17090a1c16b0290177caeba067so7678229pjs.0
+        for <netdev@vger.kernel.org>; Tue, 10 Aug 2021 21:10:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=ksvdQcHuI+ph2peHhF1/XC324UmhQU9A7omBaZGHaf8=;
+        b=e94Ot4F9VK//dQKPbCT6NhBSUHd07IREz/EE0+cp2nZSM2x3uycdomE0jrdAYZNJp8
+         iYBZclHzvGzhTa48rr1iqyrWVkeFEtzArCrgmyLGyn24nH3ecnJAKx9UZAkzZ62Igdio
+         p3pwdyxn9Qqu9w3j1jwVz7c6cbeLPqF2zAOdxQzvnLDmx5cVAbwOTVyXpqf6uHU+Xnjw
+         ujGtlhmmzRlrvIIT0cnMEOY503q9P1rRISyKvbFbpSkF/r5u9NoYSpAGXmHUg4/YD4Ie
+         h+hElNMELiPhOU1WfVDgGvC4cI0FVWz6rXTcZZSH9p/Bl59/Lz7xZmXRixwC0xMgXElk
+         8WFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ksvdQcHuI+ph2peHhF1/XC324UmhQU9A7omBaZGHaf8=;
+        b=VU+Tio86wTPDnhED1zFyUTLV7iYkQYpK9Nf7VVAifpOK1HEiSznVF3Py5V/aN2zdsw
+         JnusJohhUuWtxy5Wu0CQodGzB4SdZwgx2DhHnxD/vHCPTWRndWeklvCeKilCXsEVxYEV
+         WpLz2bfrA2OjkAEDF5r1FeGXa6Csl5hFQcA4XZgZCQnP9UzFVIy66EVaKCtqjKaKZQ2m
+         NO2d91A2K44PsYsQ4Lkk+qROtuANyB2rOjk7tBYAPjubSRYJn0QykwaatdTmmQz9bYUd
+         R9SooOVs8KLrKPhGmQs7K5qmlI6wg2SlEUZafUhVPaXQJSOJ3xbpc7sR7RCaqOWdogbF
+         NE5g==
+X-Gm-Message-State: AOAM530ilUuse9/VdY2FpXjaZjjLVCnwyijUbttIixYRJaG0dPbHaywM
+        a7A5sdH9E8bcgs+aINGilL8=
+X-Google-Smtp-Source: ABdhPJwrJ4ZmbO0g8te04Mevy9sv246W+kSWzvQ6doTX2FC3GXBVAHl7+LbGeHq5c1SVobqanRDVbg==
+X-Received: by 2002:a65:52ca:: with SMTP id z10mr43988pgp.176.1628655023437;
+        Tue, 10 Aug 2021 21:10:23 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.39])
+        by smtp.gmail.com with ESMTPSA id 129sm21358144pfg.50.2021.08.10.21.10.21
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 10 Aug 2021 21:10:23 -0700 (PDT)
+From:   tcs.kernel@gmail.com
+X-Google-Original-From: tcs_kernel@tencent.com
+To:     vinicius.gomes@intel.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org
+Cc:     Haimin Zhang <tcs_kernel@tencent.com>
+Subject: [PATCH] net:sched fix array-index-out-of-bounds in taprio_change
+Date:   Wed, 11 Aug 2021 12:09:51 +0800
+Message-Id: <1628654991-24406-1-git-send-email-tcs_kernel@tencent.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-08-10 at 13:30 -0700, Jakub Kicinski wrote:
-> On Mon, 09 Aug 2021 10:04:00 -0700 Joe Perches wrote:
-> > The want was to have some separate object section for netlink messages
-> > so all netlink messages could be specifically listed by some tool but
-> > the effect is duplicating static const char arrays in the object code.
-> > 
-> > It seems unused presently so change the macro to avoid the local static
-> > declarations until such time as these actually are wanted and used.
-> > 
-> > This reduces object size ~8KB in an x86-64 defconfig without modules.
-[]
-> > diff --git a/include/linux/netlink.h b/include/linux/netlink.h
-[]
-> > @@ -89,13 +89,12 @@ struct netlink_ext_ack {
-> >   * to the lack of an output buffer.)
-> >   */
-> >  #define NL_SET_ERR_MSG(extack, msg) do {		\
-> > -	static const char __msg[] = msg;		\
-> >  	struct netlink_ext_ack *__extack = (extack);	\
-> >  							\
-> > -	do_trace_netlink_extack(__msg);			\
-> > +	do_trace_netlink_extack(msg);			\
-> >  							\
-> >  	if (__extack)					\
-> > -		__extack->_msg = __msg;			\
-> > +		__extack->_msg = msg;			\
-> >  } while (0)
-> 
-> But you've made us evaluate msg multiple times now.
-> Given extack is carefully evaluated only once this stands out.
+From: Haimin Zhang <tcs_kernel@tencent.com>
 
-msg is always a const char array so no evaluation is done.
-It's just a pointer.
-
-In fact, this could either become a static inline or a
-simple function call to reduce object size even further.
-
-For instance:
-
-$ size vmlinux.o.nl_func.*
-   text	   data	    bss	    dec	    hex	filename
-19974564	3457991	 741312	24173867	170dd2b	vmlinux.o.nl_func.new
-19992097	3457967	 741312	24191376	1712190	vmlinux.o.nl_func.old
-
+Reported-by: syzbot+2b3e5fb6c7ef285a94f6@syzkaller.appspotmail.com
+Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
 ---
- include/linux/netlink.h  | 29 ++++++++++-------------------
- net/netlink/af_netlink.c | 13 +++++++++++++
- 2 files changed, 23 insertions(+), 19 deletions(-)
+ net/sched/sch_taprio.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/netlink.h b/include/linux/netlink.h
-index 61b1c7fcc401e..fe80c2704cc23 100644
---- a/include/linux/netlink.h
-+++ b/include/linux/netlink.h
-@@ -82,21 +82,16 @@ struct netlink_ext_ack {
- 	u8 cookie_len;
- };
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 9c79374..1ab2fc9 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -1513,7 +1513,9 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 	taprio_set_picos_per_byte(dev, q);
  
-+void netlink_set_err_msg(struct netlink_ext_ack *extack, const char *msg);
- /* Always use this macro, this allows later putting the
-  * message into a separate section or such for things
-  * like translation or listing all possible messages.
-  * Currently string formatting is not supported (due
-  * to the lack of an output buffer.)
-  */
--#define NL_SET_ERR_MSG(extack, msg) do {		\
--	static const char __msg[] = msg;		\
--	struct netlink_ext_ack *__extack = (extack);	\
--							\
--	do_trace_netlink_extack(__msg);			\
--							\
--	if (__extack)					\
--		__extack->_msg = __msg;			\
--} while (0)
-+
-+#define NL_SET_ERR_MSG(extack, msg)		\
-+	netlink_set_err_msg(extack, msg)
- 
- #define NL_SET_ERR_MSG_MOD(extack, msg)			\
- 	NL_SET_ERR_MSG((extack), KBUILD_MODNAME ": " msg)
-@@ -110,16 +105,12 @@ struct netlink_ext_ack {
- 
- #define NL_SET_BAD_ATTR(extack, attr) NL_SET_BAD_ATTR_POLICY(extack, attr, NULL)
- 
--#define NL_SET_ERR_MSG_ATTR_POL(extack, attr, pol, msg) do {	\
--	static const char __msg[] = msg;			\
--	struct netlink_ext_ack *__extack = (extack);		\
--								\
--	do_trace_netlink_extack(__msg);				\
--								\
--	if (__extack) {						\
--		__extack->_msg = __msg;				\
--		__extack->bad_attr = (attr);			\
--		__extack->policy = (pol);			\
-+#define NL_SET_ERR_MSG_ATTR_POL(extack, attr, pol, msg)		\
-+do {								\
-+	netlink_set_err_msg(extack, msg);			\
-+	if (extack) {						\
-+		extack->bad_attr = (attr);			\
-+		extack->policy = (pol);				\
- 	}							\
- } while (0)
- 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index 24b7cf447bc55..b6d035f0d343b 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -2561,6 +2561,19 @@ int nlmsg_notify(struct sock *sk, struct sk_buff *skb, u32 portid,
- }
- EXPORT_SYMBOL(nlmsg_notify);
- 
-+/**
-+ * nl_set_err_msg - 
-+ */
-+
-+void netlink_set_err_msg(struct netlink_ext_ack *extack, const char *msg)
-+{
-+	do_trace_netlink_extack(msg);
-+
-+	if (extack)
-+		extack->_msg = msg;
-+}
-+EXPORT_SYMBOL(netlink_set_err_msg);
-+
- #ifdef CONFIG_PROC_FS
- struct nl_seq_iter {
- 	struct seq_net_private p;
-
+ 	if (mqprio) {
+-		netdev_set_num_tc(dev, mqprio->num_tc);
++		err = netdev_set_num_tc(dev, mqprio->num_tc);
++		if (err)
++			goto free_sched;
+ 		for (i = 0; i < mqprio->num_tc; i++)
+ 			netdev_set_tc_queue(dev, i,
+ 					    mqprio->count[i],
+-- 
+1.8.3.1
 
