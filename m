@@ -2,236 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D113D3E8F53
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 13:16:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A71D83E8F7C
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 13:33:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237265AbhHKLQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 07:16:50 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:37801 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237224AbhHKLQt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 07:16:49 -0400
-Received: by mail-il1-f198.google.com with SMTP id a2-20020a9266020000b0290222005f354cso1118140ilc.4
-        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 04:16:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=HmEDS0FYLEJ/zcVv7Q2EVhnsR4cbjcf4BbnPzxZ83Rw=;
-        b=jxIhQkZK3xjp2Si1A6h5QS6x2hfE6s0BBsKbSujq/74zeB5IiW0iGjJ2CoF+hekuJ5
-         Yvojx3nY6pl1lJqX/a67tbMC7sdVLb1YApiNnvzTg5waErHUEtZ5ywrrjV11TluPpjgl
-         b9GraT3ChSOfKTxOeBtTnVo3/oUzWAmX+yn9i2NdKPO7eA4JH6M/PE8vs6Lsp8dHDPx9
-         vo+TTdbVvLg0CQ5i3L0xnxNNgO/fRZizBP1T5gSaj5mVwZR2zCwXv/B++kT+kbMUd4OH
-         KmOy2Q17m3qV3d9Fx5K672aNIy5dxcZQK2W5FUOWlWt1i4UwxvBUWY9KEDybN5g6DzL+
-         BLFQ==
-X-Gm-Message-State: AOAM530+ySnFsV6vG9IvGr1dqdj0M27gCgKU95fyD1fIEquTSpeTNhIn
-        x5uPEI+WdRS8VitwoozCY60SlvnlKS0GsfwW+mzhw8zEyVnE
-X-Google-Smtp-Source: ABdhPJz5bRKBsEFIZ00tSCnIQTrzNeX1W6f8tFhgOJV9+8/AqH7aqa5YMrxC5cDMEiInVELG6+nj2+mr8D8kLtAdmvidcUOALt+D
+        id S237334AbhHKLdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 07:33:36 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:33769 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237279AbhHKLdg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 07:33:36 -0400
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 5AE8E5C0110;
+        Wed, 11 Aug 2021 07:33:12 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Wed, 11 Aug 2021 07:33:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=ozgImg
+        yU0rlvuqOdnXitCz5fP8pOuEYfkJSfl9hkmuA=; b=aTRCn3CJhUcnIQY7KEX9lC
+        1q1prm5u59n/7MdD0qRe1FML9uT3boTZMnwWxcuozwiwmPZcIGPIRliR1FyWlELb
+        uT4P4MvDIg8ktQ0v7mLrLjjFfdlDAQJapmY8GjO/9BHwOpWagJgHiXWre+SWVPWw
+        f7BJcUjYqurPLUh+mAbHtw1UNacJp3JFn7nQpXKZ4u/mrb9nccd44CRngl4rialO
+        Dpk/Gn+7pj9WZvIRmsmk38Jzh9gWjMh7aU05iCKwoW13ob58Eo8pi4YauiqmJeo5
+        OrSb0nDV9ANuYIPRAqNRzmVWfu7SSP5Nw3ezCJJYw8g5GUsVqeAgEULnE3PJORhw
+        ==
+X-ME-Sender: <xms:drUTYUWLLhlnuNrTvExQwB8msnwPVzcQHAlAsjbGA_7fkQYHeIXpVA>
+    <xme:drUTYYlmgwvFbJBP1SBS22hiqzkAdgJ-mcB_d_0CqFCPprNZxV20CUzcN7reaLsoa
+    UcVXYGOifnr_Qg>
+X-ME-Received: <xmr:drUTYYYWvkCEbmgNAgAShnezMb52ut8hYkKaHYOpobu1wbJUWVJm3lFOJNY6YI8FB7dke_qB-eZjh7WSCX1Ai42jh3YKuw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrkedugdegtdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnhepjeehudefleekfeevkeeiieeifeefteejieegudevieekvdetieelkefghffgledv
+    necuffhomhgrihhnpehmvghllhgrnhhogidrtghomhenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:drUTYTVnl5XIx95Uupoozt9Kl2h1cN1gAGRec1lF5u6NdZS3TCV-YA>
+    <xmx:drUTYelTUA8NOoJ1bc1iojxEHyD7BfunItHS5J7lFy7M3GhtEP9mSA>
+    <xmx:drUTYYesSZpd5jChFAw7ZTxgvXrm22Sbor0EqT4u8A8Jz1szoll6vA>
+    <xmx:eLUTYQWlp7tZ67tUWPp-oFLCMTs0935Hi196XxVdB-XCybzc4TzT1Q>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 11 Aug 2021 07:33:09 -0400 (EDT)
+Date:   Wed, 11 Aug 2021 14:33:06 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, mkubecek@suse.cz,
+        pali@kernel.org, vadimp@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 1/8] ethtool: Add ability to control
+ transceiver modules' low power mode
+Message-ID: <YRO1ck4HYWTH+74S@shredder>
+References: <20210809102152.719961-1-idosch@idosch.org>
+ <20210809102152.719961-2-idosch@idosch.org>
+ <YRE7kNndxlGQr+Hw@lunn.ch>
+ <YRIqOZrrjS0HOppg@shredder>
+ <YRKElHYChti9EeHo@lunn.ch>
+ <20210810065954.68036568@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YRLlpCutXmthqtOg@shredder>
+ <20210810150544.3fec5086@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1c2a:: with SMTP id m10mr188481ilh.114.1628680585872;
- Wed, 11 Aug 2021 04:16:25 -0700 (PDT)
-Date:   Wed, 11 Aug 2021 04:16:25 -0700
-In-Reply-To: <00000000000000410c05c8e29289@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c60fd605c946bfe2@google.com>
-Subject: Re: [syzbot] KASAN: invalid-free in bdev_free_inode (2)
-From:   syzbot <syzbot+5fa698422954b6b9307b@syzkaller.appspotmail.com>
-To:     axboe@kernel.dk, linux-block@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210810150544.3fec5086@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+On Tue, Aug 10, 2021 at 03:05:44PM -0700, Jakub Kicinski wrote:
+> On Tue, 10 Aug 2021 23:46:28 +0300 Ido Schimmel wrote:
+> > On Tue, Aug 10, 2021 at 06:59:54AM -0700, Jakub Kicinski wrote:
+> > > On Tue, 10 Aug 2021 15:52:20 +0200 Andrew Lunn wrote:  
+> > > > O.K. Thanks for the better explanation. Some of this should go into
+> > > > the commit message.
+> > > > 
+> > > > I suggest it gets a different name and semantics, to avoid
+> > > > confusion. I think we should consider this the default power mode for
+> > > > when the link is administratively down, rather than direct control
+> > > > over the modules power mode. The driver should transition the module
+> > > > to this setting on link down, be it high power or low power. That
+> > > > saves a lot of complexity, since i assume you currently need a udev
+> > > > script or something which sets it to low power mode on link down,
+> > > > where as you can avoid this be configuring the default and let the
+> > > > driver do it.  
+> > > 
+> > > Good point. And actually NICs have similar knobs, exposed via ethtool
+> > > priv flags today. Intel NICs for example. Maybe we should create a
+> > > "really power the port down policy" API?  
+> > 
+> > See below about Intel. I'm not sure it's the same thing...
+> > 
+> > I'm against adding a vague "really power the port down policy" API. The
+> > API proposed in the patch is well-defined, its implementation is
+> > documented in standards, its implications are clear and we offer APIs
+> > that give user space full observability into its operation.
+> > 
+> > A vague API means that it is going to be abused and user space will get
+> > different results over different implementations. After reading the
+> > *commit messages* about the private flags, I'm not sure what the flags
+> > really do, what is their true motivation, implications or how do I get
+> > observability into their operation. I'm not too hopeful about the user
+> > documentation.
+> > 
+> > Also, like I mentioned in the cover letter, given the complexity of
+> > these modules and as they become more common, it is likely that we will
+> > need to extend the API to control more parameters and expose more
+> > diagnostic information. I would really like to keep it clean and
+> > contained in 'ETHTOOL_MSG_MODULE_*' messages and not spread it over
+> > different APIs.
+> 
+> The patch is well defined but it doesn't provide user with the answer
+> to the question "why is the SFP still up if I asked it to be down?"
 
-HEAD commit:    d3432bf10f17 net: Support filtering interfaces on no master
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=14fd894e300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8075b2614f3db143
-dashboard link: https://syzkaller.appspot.com/bug?extid=5fa698422954b6b9307b
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=174ebaf6300000
+But you didn't ask the module to be "down", you asked the MAC. See more
+below.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+5fa698422954b6b9307b@syzkaller.appspotmail.com
+> It's good to match specs closely but Linux may need to reconcile
+> multiple policies.
+> 
+> IIUC if Intel decides to keep the SFP up for "other" reasons the
+> situation will look like this:
 
-==================================================================
-BUG: KASAN: double-free or invalid-free in slab_free mm/slub.c:3210 [inline]
-BUG: KASAN: double-free or invalid-free in kfree+0xe4/0x530 mm/slub.c:4264
+Intel did not decide to keep the module "up", it decided to keep both
+the MAC and the module up. If one of them was down, the peer would
+notice it, but it didn't (according to Jake's reply). This is a very
+problematic behavior as you are telling your peer that everything is
+fine, but in practice you are dropping all of its packets. I hit the
+exact same issue with mlx5 a few years ago and when I investigated the
+reason for this behavior I was referred to multi-host systems where you
+don't want one host to take down the shared link for all the rest. See:
 
-CPU: 1 PID: 11043 Comm: syz-executor.1 Not tainted 5.14.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
- print_address_description.constprop.0.cold+0x6c/0x309 mm/kasan/report.c:233
- kasan_report_invalid_free+0x51/0x80 mm/kasan/report.c:358
- ____kasan_slab_free mm/kasan/common.c:346 [inline]
- __kasan_slab_free+0x120/0x130 mm/kasan/common.c:374
- kasan_slab_free include/linux/kasan.h:230 [inline]
- slab_free_hook mm/slub.c:1625 [inline]
- slab_free_freelist_hook+0xdf/0x240 mm/slub.c:1650
- slab_free mm/slub.c:3210 [inline]
- kfree+0xe4/0x530 mm/slub.c:4264
- bdev_free_inode+0xe0/0x110 fs/block_dev.c:816
- i_callback+0x3f/0x70 fs/inode.c:222
- rcu_do_batch kernel/rcu/tree.c:2550 [inline]
- rcu_core+0x7ab/0x1380 kernel/rcu/tree.c:2785
- __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
- invoke_softirq kernel/softirq.c:432 [inline]
- __irq_exit_rcu+0x16e/0x1c0 kernel/softirq.c:636
- irq_exit_rcu+0x5/0x20 kernel/softirq.c:648
- sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1100
- </IRQ>
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:638
-RIP: 0010:preempt_count arch/x86/include/asm/preempt.h:27 [inline]
-RIP: 0010:check_kcov_mode kernel/kcov.c:163 [inline]
-RIP: 0010:__sanitizer_cov_trace_pc+0x0/0x60 kernel/kcov.c:197
-Code: 01 f0 4d 89 03 e9 63 fd ff ff b9 ff ff ff ff ba 08 00 00 00 4d 8b 03 48 0f bd ca 49 8b 45 00 48 63 c9 e9 64 ff ff ff 0f 1f 00 <65> 8b 05 f9 41 8c 7e 89 c1 48 8b 34 24 81 e1 00 01 00 00 65 48 8b
-RSP: 0018:ffffc9000dccf1d8 EFLAGS: 00000293
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff88801c27d4c0 RSI: ffffffff815d5923 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff8fceb8a7
-R10: ffffffff815d5919 R11: 0000000000000000 R12: ffffffff84c5a900
-R13: 0000000000000200 R14: dffffc0000000000 R15: ffffc9000dccf238
- console_unlock+0x7c9/0xc40 kernel/printk/printk.c:2653
- vprintk_emit+0x1ca/0x560 kernel/printk/printk.c:2174
- vprintk+0x8d/0x260 kernel/printk/printk_safe.c:392
- printk+0xba/0xed kernel/printk/printk.c:2216
- nbd_genl_connect.cold+0x157/0x16f drivers/block/nbd.c:1852
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:731
- genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:792
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
- netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
- netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2403
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2457
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2486
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x4665e9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f69709a7188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000056c038 RCX: 00000000004665e9
-RDX: 0000000000000000 RSI: 0000000020000540 RDI: 0000000000000006
-RBP: 00000000004bfcc4 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056c038
-R13: 00007ffca6ecd5bf R14: 00007f69709a7300 R15: 0000000000022000
+https://www.mellanox.com/sites/default/files/doc-2020/sb-externally-connected-multi-host.pdf
 
-Allocated by task 11042:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:46 [inline]
- set_alloc_info mm/kasan/common.c:434 [inline]
- ____kasan_kmalloc mm/kasan/common.c:513 [inline]
- ____kasan_kmalloc mm/kasan/common.c:472 [inline]
- __kasan_kmalloc+0x9b/0xd0 mm/kasan/common.c:522
- kmalloc_node include/linux/slab.h:609 [inline]
- kzalloc_node include/linux/slab.h:732 [inline]
- __alloc_disk_node+0x4e/0x380 block/genhd.c:1246
- __blk_mq_alloc_disk+0xec/0x190 block/blk-mq.c:3145
- nbd_dev_add+0x2a9/0x940 drivers/block/nbd.c:1703
- nbd_genl_connect+0x551/0x1820 drivers/block/nbd.c:1842
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:731
- genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:792
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
- netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
- netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2403
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2457
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2486
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+>  $ ethtool --show-module eth0
+>  Module parameters for eth0:
+>  low-power true
+> 
+>  # ethtool -m eth0
+>  Module State                              : 0x03 (ModuleReady)
+>  LowPwrAllowRequestHW                      : Off
+>  LowPwrRequestSW                           : Off
 
-Freed by task 11042:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_set_track+0x1c/0x30 mm/kasan/common.c:46
- kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:360
- ____kasan_slab_free mm/kasan/common.c:366 [inline]
- ____kasan_slab_free mm/kasan/common.c:328 [inline]
- __kasan_slab_free+0xfb/0x130 mm/kasan/common.c:374
- kasan_slab_free include/linux/kasan.h:230 [inline]
- slab_free_hook mm/slub.c:1625 [inline]
- slab_free_freelist_hook+0xdf/0x240 mm/slub.c:1650
- slab_free mm/slub.c:3210 [inline]
- kfree+0xe4/0x530 mm/slub.c:4264
- __alloc_disk_node+0x2e8/0x380 block/genhd.c:1271
- __blk_mq_alloc_disk+0xec/0x190 block/blk-mq.c:3145
- nbd_dev_add+0x2a9/0x940 drivers/block/nbd.c:1703
- nbd_genl_connect+0x551/0x1820 drivers/block/nbd.c:1842
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:731
- genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:792
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
- netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
- netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2403
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2457
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2486
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+This output is wrong. In Intel's case "ip link show" will report the
+link as down (according to Jake's reply) despite the MAC being up. On
+the other hand, the output of "ethtool --show-module eth0" will show
+that the module is not in low power mode and it will be correct.
 
-The buggy address belongs to the object at ffff888016977000
- which belongs to the cache kmalloc-512 of size 512
-The buggy address is located 0 bytes inside of
- 512-byte region [ffff888016977000, ffff888016977200)
-The buggy address belongs to the page:
-page:ffffea00005a5d00 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x16974
-head:ffffea00005a5d00 order:2 compound_mapcount:0 compound_pincount:0
-flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000010200 ffffea0001164f00 0000000500000005 ffff888010841c80
-raw: 0000000000000000 0000000000100010 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 2, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 824, ts 2603409140, free_ts 0
- prep_new_page mm/page_alloc.c:2436 [inline]
- get_page_from_freelist+0xa72/0x2f80 mm/page_alloc.c:4169
- __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5391
- alloc_pages+0x18c/0x2a0 mm/mempolicy.c:2244
- alloc_slab_page mm/slub.c:1688 [inline]
- allocate_slab+0x32e/0x4b0 mm/slub.c:1828
- new_slab mm/slub.c:1891 [inline]
- new_slab_objects mm/slub.c:2637 [inline]
- ___slab_alloc+0x473/0x7b0 mm/slub.c:2800
- __slab_alloc.constprop.0+0xa7/0xf0 mm/slub.c:2840
- slab_alloc_node mm/slub.c:2922 [inline]
- slab_alloc mm/slub.c:2964 [inline]
- kmem_cache_alloc_trace+0x30f/0x3c0 mm/slub.c:2981
- kmalloc include/linux/slab.h:591 [inline]
- kzalloc include/linux/slab.h:721 [inline]
- alloc_bprm+0x51/0x8f0 fs/exec.c:1501
- kernel_execve+0x55/0x460 fs/exec.c:1941
- call_usermodehelper_exec_async+0x2e3/0x580 kernel/umh.c:112
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-page_owner free stack trace missing
+> 
+> 
+> IOW the low-power mode is a way for user to express preference to
+> shut down/keep up the SFP,
 
-Memory state around the buggy address:
- ffff888016976f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff888016976f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->ffff888016977000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                   ^
- ffff888016977080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff888016977100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
+Yes, it controls the module, not the MAC. If you want to get a carrier,
+both the module and the MAC need to be operational. See following
+example where swp13 and swp14 are connected to each other:
 
+$ ip link show dev swp13
+127: swp13: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+    link/ether 1c:34:da:18:55:49 brd ff:ff:ff:ff:ff:ff
+
+$ ip link show dev swp14
+128: swp14: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+    link/ether 1c:34:da:18:55:4d brd ff:ff:ff:ff:ff:ff
+
+# ip link set dev swp13 down
+
+# ethtool --set-module swp13 low-power on
+
+$ ethtool --show-module swp13
+Module parameters for swp13:
+low-power true
+
+# ip link set dev swp13 up
+
+$ ip link show dev swp13
+127: swp13: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc fq_codel state DOWN mode DEFAULT group default qlen 1000
+    link/ether 1c:34:da:18:55:49 brd ff:ff:ff:ff:ff:ff
+
+$ ip link show dev swp14
+128: swp14: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc fq_codel state DOWN mode DEFAULT group default qlen 1000
+    link/ether 1c:34:da:18:55:4d brd ff:ff:ff:ff:ff:ff
+
+# ip link set dev swp13 down
+
+# ethtool --set-module swp13 low-power off
+
+$ ethtool --show-module swp13
+Module parameters for swp13:
+low-power false
+
+# ip link set dev swp13 up
+
+$ ip link show dev swp13
+127: swp13: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+    link/ether 1c:34:da:18:55:49 brd ff:ff:ff:ff:ff:ff
+
+$ ip link show dev swp14
+128: swp14: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+    link/ether 1c:34:da:18:55:4d brd ff:ff:ff:ff:ff:ff
+
+> but it's not necessarily going to be the only "policy" that matters.
+> If other policies (e.g. NC-SI) express preference to keep the
+> interface up it will stay up, right?
+> 
+> The LowPwrRequestSW is not directly controlled by low-power && IF_UP.
+> 
+> What I had in mind was something along the lines of a bitmap of reasons
+> which are allowed to keep the interface up, and for your use case
+> the reason would be something like SFP_ALWAYS_ON, but other reasons
+> (well defined) may also keep the ifc up.
+> 
+> That's just to explain what I meant, if it's going to be clear to
+> everyone that low-power != LowPwrRequestSW I'm fine either way.
+
+I think we mixed two different use cases here. The first is a way to
+make sure the link is fully operational (both MAC and module). In this
+case, contrary to the expected behavior, "ip link set dev eth0 down"
+will not take the MAC down and the peer will not lose its carrier. This
+is most likely motivated by special hardware designs or exotic use cases
+like I mentioned above.
+
+The use case for this patch is completely different. Today, when you do
+"ip link set dev eth0 up" you expect to gain a carrier which means that
+both the MAC and the module are operational. The latter can be made
+operational following the user request (e.g., SFP driver) or as soon as
+it was plugged-in, by the device's firmware.
+
+When you do "ip link set dev eth0 down" you expect the reverse to happen
+and this is what happens today. In implementations where the module is
+always operational, it stays in high power mode and continues to get
+warm and consume unnecessary amount of power.
+
+Some users might not be OK with that and would like more control, which
+is exactly what this patch is doing. This patch does not change existing
+behavior, the API has clear semantics and implications and user space
+has full observability into its operation.
+
+If in the future someone sees the need to add 'protoup', it can be done:
+
+# ip link set dev eth0 up  # MAC and module are operational
+# ip link set dev eth0 protoup on
+# ip link set dev eth0 down # returns an error / ignore
+# ethtool --set-module eth0 low-power on # returns an error because of admin up
+
+You can obviously engineer situations that do not make any sense. Like
+this:
+
+# ethtool --set-module eth0 low-power on
+# ip link set dev eth0 up
+# ip link set dev eth0 protoup on
+
+The MAC is operational and you can't take it down, but you will never
+get a carrier because you explicitly asked the module to stay in low
+power mode.
