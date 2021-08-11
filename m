@@ -2,112 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A7BB3E9714
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 19:52:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 820033E971A
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 19:54:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229881AbhHKRxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 13:53:04 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:21027 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbhHKRxD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 13:53:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1628704359; x=1660240359;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YvLsHg/EptJ2LvMJ2mhuOEkSOGfZFINShOVVjydMfTQ=;
-  b=dMshmNB00YL5incch5ZmboUUEd8VU0p5IA6LvVNgZTHo2rA0tFsxhw+n
-   xz8rGgQdDfOkPelAxDgckZA0ymZhyz95udWmoiwVBd703xv6bYPTA0HL6
-   6lk2LNKsYbUii0+PRvk9cZ5IrvdSul2uvFicGxp91U/Fu7h6t4bQMIhxN
-   GPSLcHG92tP3TgplqrSTxVAenLGSaWlmNxyPIwv8A0RnNo/LvcxwV5vJ0
-   rfqimYCt5PTTKhvpl2sqm0/4/nuIgdHF15/zsWkpYW+4Lz6wQdt7e8o0o
-   UPYgrNMSizT5RpDsKG3YBx0AjgEZtuEoeRflrmP3xI4nPOCoQpUJGSUDI
-   A==;
-IronPort-SDR: qNGjdwFKDI+SOaSLk7ptUluxc82Y00Tu9YHqtBifeHUfu5wKOjdpccBkExuEdPnuf8r/dv4A8Q
- K1yrVn8cpvPCJ1wSCfkJNXN3mWXEr3/GxRJeDesnHVdgm6kHAATIEKU/uP9tP6MGyB7YeQZa9y
- hfxrevvgLWhnGFVTAUpJxasRLStirZSssSXUD+6HCamhu18I9q3EbtN1IUmydhc6hiTTcrIsSv
- 2lXW4Huv22qv4/i9wg+WZL+E+fdmzL0fGG8iH9TLJhH/w4ZTyEBVTV0mWwIOVDNJMTFsapU9ZO
- OI4wvxLekKig6HpddjPEZw8i
-X-IronPort-AV: E=Sophos;i="5.84,313,1620716400"; 
-   d="scan'208";a="132446740"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Aug 2021 10:52:38 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 11 Aug 2021 10:52:38 -0700
-Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Wed, 11 Aug 2021 10:52:33 -0700
-Message-ID: <90899ba866a198ce60ac02f990200f0335759446.camel@microchip.com>
-Subject: Re: [PATCH v3 net-next 03/10] net: phy: Add support for LAN937x T1
- phy driver
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <olteanv@gmail.com>,
-        <robh+dt@kernel.org>, <UNGLinuxDriver@microchip.com>,
-        <Woojung.Huh@microchip.com>, <hkallweit1@gmail.com>,
-        <linux@armlinux.org.uk>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Date:   Wed, 11 Aug 2021 23:22:32 +0530
-In-Reply-To: <20210723173108.459770-4-prasanna.vengateshan@microchip.com>
-References: <20210723173108.459770-1-prasanna.vengateshan@microchip.com>
-         <20210723173108.459770-4-prasanna.vengateshan@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.1-1 
+        id S229959AbhHKRzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 13:55:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43778 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229535AbhHKRzQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Aug 2021 13:55:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 737686104F;
+        Wed, 11 Aug 2021 17:54:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628704492;
+        bh=adqAfFr5cwHzD3SzTDPHfxQw9t4Aa0NDSBYToUt4zMo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PE05bnber9ANzF/IxHh2YHTEVansP5JavcYg1U0iQUpZFabCLfuYrV78H2SkVT8NQ
+         aZWScv+Yp+CpUO/08GvJ8C0NAyjTfoi1PS5McN5hr+76Pc3q7opNO+0e2D3zLy5Ul5
+         MreUVCfpo1zSSi90r3kxgsBQYd2+Moe7o6ei+cX0uHnjwSjZ8y7g8zV9IM/JV0N5U1
+         kkVXSy1cJ3ziC3K6mDTn7/i1r5u3B7PARMwA7GRIe0W7GX41Afx/jVMgpTGLSUoqzO
+         ofTeia0rvfLY7RxUkP8/sbAp75XBCc9TtAyTeivFCNq0O6FElHmqwvNk7xrsoSKGE/
+         zkybhiIzceaEQ==
+Received: by pali.im (Postfix)
+        id EE1EA7AE; Wed, 11 Aug 2021 19:54:49 +0200 (CEST)
+Date:   Wed, 11 Aug 2021 19:54:49 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "David S. Miller" <davem@davemloft.net>, linux-ppp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ppp: Add rtnl attribute IFLA_PPP_UNIT_ID for specifying
+ ppp unit id
+Message-ID: <20210811175449.5hrwoevw7xv2jxxn@pali>
+References: <20210807163749.18316-1-pali@kernel.org>
+ <20210809122546.758e41de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210809193109.mw6ritfdu27uhie7@pali>
+ <20210810153941.GB14279@pc-32.home>
+ <20210810160450.eluiktsp7oentxo3@pali>
+ <20210811171918.GD15488@pc-32.home>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210811171918.GD15488@pc-32.home>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew,
-
-On Fri, 2021-07-23 at 23:01 +0530, Prasanna Vengateshan wrote:
-> Added support for Microchip LAN937x T1 phy driver. The sequence of
-> initialization is used commonly for both LAN87xx and LAN937x
-> drivers. The new initialization sequence is an improvement to
-> existing LAN87xx and it is shared with LAN937x.
+On Wednesday 11 August 2021 19:19:18 Guillaume Nault wrote:
+> On Tue, Aug 10, 2021 at 06:04:50PM +0200, Pali Rohár wrote:
+> > On Tuesday 10 August 2021 17:39:41 Guillaume Nault wrote:
+> > > On Mon, Aug 09, 2021 at 09:31:09PM +0200, Pali Rohár wrote:
+> > > > Better to wait. I would like hear some comments / review on this patch
+> > > > if this is the correct approach as it adds a new API/ABI for userspace.
+> > > 
+> > > Personally I don't understand the use case for setting the ppp unit at
+> > > creation time.
+> > 
+> > I know about two use cases:
+> > 
+> > * ppp unit id is used for generating network interface name. So if you
+> >   want interface name ppp10 then you request for unit id 10. It is
+> >   somehow common that when ppp interface has prefix "ppp" in its name
+> >   then it is followed by unit id. Seems that existing ppp applications
+> >   which use "ppp<num>" naming expects this. But of course you do not
+> >   have to use this convention and rename interfaces as you want.
 > 
-> Also relevant comments are added in the existing code and existing
-> soft-reset customized code has been replaced with
-> genphy_soft_reset().
+> Really, with the netlink API, the interface name has to be set with
+> IFLA_IFNAME. There's no point in adding a new attribute just to have a
+> side effect on the device name.
+
+Yes, if you set IFLA_IFNAME then interface has name which you set. But
+if IFLA_IFNAME is not set then there is already API/ABI behavior how
+this interface name is generated. And all existing ppp software depends
+on it.
+
+> > * Some of ppp ioctls use unit id. So you may want to use some specific
+> >   number for some network interface. So e.g. unit id 1 will be always
+> >   for /dev/ttyUSB1.
 > 
-> access_ereg_clr_poll_timeout() API is introduced for polling phy
-> bank write and this is linked with PHYACC_ATTR_MODE_POLL.
+> But what's the point of forcing unit id 1 for a particular interface?
+> One can easily get the assigned unit id with ioctl(PPPIOCGUNIT).
+
+Same point as ability to assign any other id to objects. It is
+identifier and you may want to use specific identifier for specific
+objects.
+
+Old ioctl API provides a way how to set this custom unit id. Why should
+somebody use new rtnl API if it provides only half of features? Existing
+software already use this feature to allow users / administrators to
+specify ids as they want.
+
+> > > I didn't implement it on purpose when creating the
+> > > netlink interface, as I didn't have any use case.
+> > > 
+> > > On the other hand, adding the ppp unit in the netlink dump is probably
+> > > useful.
+> > 
+> > Yes, this could be really useful as currently if you ask netlink to
+> > create a new ppp interface you have to use ioctl to retrieve this unit
+> > id. But ppp currently does not provide netlink dump operation.
+> > 
+> > Also it could be useful for this "bug":
+> > https://lore.kernel.org/netdev/20210807132703.26303-1-pali@kernel.org/t/#u
 > 
-> Finally introduced function table for LAN937X_T1_PHY_ID along with
-> microchip_t1_phy_driver struct.
+> This patch itself makes sense, but how is that related to unit id?
+
+Now I see, it does not help in this unit id scenario...
+
+> > And with unit id there also another issue:
+> > https://lore.kernel.org/netdev/20210807160050.17687-1-pali@kernel.org/t/#u
 > 
-> Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-> ---
->  drivers/net/phy/microchip_t1.c | 319 +++++++++++++++++++++++++++------
->  1 file changed, 260 insertions(+), 59 deletions(-)
+> This patch shows why linking unit id and interface name are a bad idea.
+
+Yea... It is not a good idea, but it is how ppp is implemented in
+kernel since beginning. And it affects both ioctl and rtnl APIs. So we
+cannot do anything with it due to backward compatibility :-(
+
+> Instead of adding more complexity with unit id, I'd prefer to have a
+> new netlink attribute that says "don't generate the interface name
+> based on the unit id". That's how the original implementation worked by
+> the way and I'm really sad I accepted to change it...
+
+Main issue there is that kernel currently does not provide any way how
+to retrieve interface which was created by rtnl call. So matching
+interface name by string "ppp" followed by unit id is currently the only
+option.
+
+I must admit that ppp rtnl API was designed incorrectly. If it was able
+to solve this issue since beginning then this unit id <--> interface
+mapping did not have to been implemented in rtnl code path.
+
+But it is too late now, if rtnl API has to be backward compatible then
+its behavior needs to be as it is currently.
+
+> > But due to how it is used we probably have to deal with it how ppp unit
+> > id are defined and assigned...
+> > 
 > 
-> diff --git a/drivers/net/phy/microchip_t1.c b/drivers/net/phy/microchip_t1.c
-> index 4dc00bd5a8d2..a3f1b5d123ce 100644
-> --- a/drivers/net/phy/microchip_t1.c
-> +++ b/drivers/net/phy/microchip_t1.c
-> @@ -30,15 +30,53 @@
->  #define        PHYACC_ATTR_MODE_READ           0
->  #define        PHYACC_ATTR_MODE_WRITE          1
->  #define        PHYACC_ATTR_MODE_MODIFY         2
-> +#define        PHYACC_ATTR_MODE_POLL           3
->  
->  #define        PHYACC_ATTR_BANK_SMI            0
->  #define        PHYACC_ATTR_BANK_MISC           1
->  #define        PHYACC_ATTR_BANK_PCS            2
->  #define        PHYACC_ATTR_BANK_AFE            3
-> +#define        PHYACC_ATTR_BANK_DSP            4
->  #define        PHYACC_ATTR_BANK_MAX            7
- 
-
-Are there any items that need a change in this patch? It will be helpful for me
-to include them in the next version. Thanks.
-
-
-Prasanna V 
-
-
