@@ -2,61 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8FA33E9797
-	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 20:23:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D12BE3E979E
+	for <lists+netdev@lfdr.de>; Wed, 11 Aug 2021 20:28:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230320AbhHKSXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 14:23:37 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45600 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229655AbhHKSXh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Aug 2021 14:23:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=TRGj6dbMSGqJuo7VxARfKcBHrtxIRic/Swrh3n8R1HQ=; b=FqA2X11gyQK+MEJpDWdYCnPv0z
-        +kqPkJHc1CvigeD3ZdDaBpTSIcuitwui3fuPJVr1jb8QgWd5FGf7vDSzHHmp8t+q2QmxCwfWYllpz
-        henqDrmmnwYtlScLXQVh8OgmbB56rum3KIlkdh9ZdCZESAW2hqn+ozeKLObVsZh4Aic4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mDssa-00HAB2-Eo; Wed, 11 Aug 2021 20:23:04 +0200
-Date:   Wed, 11 Aug 2021 20:23:04 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        netdev@vger.kernel.org, robh+dt@kernel.org,
-        UNGLinuxDriver@microchip.com, Woojung.Huh@microchip.com,
-        hkallweit1@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 05/10] net: dsa: microchip: add DSA support
- for microchip lan937x
-Message-ID: <YRQViFYGsoG3OUCc@lunn.ch>
-References: <49678cce02ac03edc6bbbd1afb5f67606ac3efc2.camel@microchip.com>
- <20210802121550.gqgbipqdvp5x76ii@skbuf>
- <YQfvXTEbyYFMLH5u@lunn.ch>
- <20210802135911.inpu6khavvwsfjsp@skbuf>
- <50eb24a1e407b651eda7aeeff26d82d3805a6a41.camel@microchip.com>
- <20210803235401.rctfylazg47cjah5@skbuf>
- <20210804095954.GN22278@shell.armlinux.org.uk>
- <20210804104625.d2qw3gr7algzppz5@skbuf>
- <YQ6pc6EZRLftmRh3@lunn.ch>
- <20191b895a56e2a29f7fee8063d9cc0900f55bfe.camel@microchip.com>
+        id S229921AbhHKS3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 14:29:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57286 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229846AbhHKS3B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 14:29:01 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A49C061765
+        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 11:28:37 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id r17-20020a0568302371b0290504f3f418fbso4403202oth.12
+        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 11:28:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UTnDnEFzbHdsylY3V2WWZ1+POdKahK+hzSDlICSpspM=;
+        b=T8ZTCEA7dCsgxJxE+r3bN0OQAonMsd+VW7S3rZnrL6tTcCO8W9u4YF2Beik7aBGxnu
+         KjADm7smwxRYQy7utApM1GL/1oRX+tOgTlXrxfXHeG7Wf+NUSLSCvQAItmyo50EsnYSC
+         01t8G5pmxxbADl+7mAAPZG0UcV5sD1CWZ30BaulQBZmPpuJrxoJYcfT7iED7XS+Z+SEy
+         8fNJ8NuRxD6xB3CSU4Us+t6fa7uBLdNZ7FsOrjCAfBhknDOZhpvRwOv4ICVjT+6ZNiDQ
+         1S16B5feRFDtEIR/NjzcMamYu82bPQY7CmOyi3xpCxj5NF3/RAN1jeMubdeM5aLQq+CE
+         /PXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UTnDnEFzbHdsylY3V2WWZ1+POdKahK+hzSDlICSpspM=;
+        b=B7ARDMWnv7T8GpzjJIifq035OpFNou7xshBk0byqpesFex8qWLYH1oxaczhKsG3lWB
+         E4EVZLUBl8hWI5fUH7Xe+qgB5NrMMfJS/d8sLlLQWy/0vdiUkQco7cZ1waIkN+mE70gb
+         +CeOMmO/sT3jnS/m0478+9/5/z50Hk53sUTy+gvoMLDxdLICzY4uVqjPoeY5/8sJaH+d
+         7L1cPfu09qpNs7OU0WsRDmK+0XNYItQx/cfEHsYXdOQGFlloIffx8LyBTVdMKJZWZRVP
+         I4lhjjXzIevYmbsszkfTgCv5jAjTOfZycxnW9QKDf77a8HWXOx1t4FyvuIiN7CeUeN+O
+         mM8A==
+X-Gm-Message-State: AOAM5314nG5tisxZk8BIMUDZJmhWPwuE3OxKXW2hVVMmuul+ux5JTjta
+        nEoILf/DpIEu9+0MgXPsIM8=
+X-Google-Smtp-Source: ABdhPJxln6+pIy3pPe3B5S07ujq0MiZEM5M55FvpauK0uQuIX/z3jAy/R5asNItnl2p4BFtlCUnAQw==
+X-Received: by 2002:a9d:37c9:: with SMTP id x67mr273457otb.2.1628706516618;
+        Wed, 11 Aug 2021 11:28:36 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.45])
+        by smtp.googlemail.com with ESMTPSA id r15sm58678oth.7.2021.08.11.11.28.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 Aug 2021 11:28:36 -0700 (PDT)
+Subject: Re: [PATCHv2 iproute2-next] ip/bond: add lacp active support
+To:     Hangbin Liu <haliu@redhat.com>, netdev@vger.kernel.org
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jarod Wilson <jarod@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>, David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Hangbin Liu <liuhangbin@gmail.com>
+References: <20210809030153.10851-1-haliu@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <b933d5df-71d9-4d99-7737-d3a682ec3403@gmail.com>
+Date:   Wed, 11 Aug 2021 12:28:33 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191b895a56e2a29f7fee8063d9cc0900f55bfe.camel@microchip.com>
+In-Reply-To: <20210809030153.10851-1-haliu@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I hope that using "*-internal-delay-ps" for Mac would be the right option.
-> Shall i include these changes as we discussed in next revision of the patch? 
+On 8/8/21 9:01 PM, Hangbin Liu wrote:
+> From: Hangbin Liu <liuhangbin@gmail.com>
+> 
+> lacp_active specifies whether to send LACPDU frames periodically.
+> If set on, the LACPDU frames are sent along with the configured lacp_rate
+> setting. If set off, the LACPDU frames acts as "speak when spoken to".
+> 
+> v2: use strcmp instead of match for new options.
+> 
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
+>  include/uapi/linux/if_link.h |  1 +
+>  ip/iplink_bond.c             | 26 +++++++++++++++++++++++++-
+>  2 files changed, 26 insertions(+), 1 deletion(-)
+> 
 
-Yes, that seems sensible. But please limit them to the CPU port. Maybe
-return -EINVAL for other ports.
+applied to iproute2-next
 
-     Andrew
