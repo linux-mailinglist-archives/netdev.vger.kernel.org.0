@@ -2,38 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2887F3EA9CE
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 19:53:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BEE03EA9D9
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 20:01:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237128AbhHLRxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 13:53:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55116 "EHLO mail.kernel.org"
+        id S237210AbhHLSAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 14:00:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57458 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229851AbhHLRxs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Aug 2021 13:53:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 86C726023D;
-        Thu, 12 Aug 2021 17:53:22 +0000 (UTC)
+        id S231547AbhHLSAO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Aug 2021 14:00:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E47E960EFE;
+        Thu, 12 Aug 2021 17:59:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628790802;
-        bh=+DBNYMHW9C8tmDuzsVD2IYotEdpsRD+WdJebzOTS63s=;
+        s=k20201202; t=1628791189;
+        bh=5NlNRK7GbGfOxlxibHmrBh/2i8xLoUExwx+XWk8jif4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jegYsXtcbMNzdIvbEX3MZpK2NVdUzHdJu+ngI7qnFJKyEpRaB/KrJiYn5rm390eRn
-         01SmHrk+QiH51VQDxIilpnkWJS8HDLDOadV4cBADDuGfMVc1daizdGdawOQmg6J8Vj
-         yXHPlBLP4y+6FvTkBFUKWYUscaUsZ2j50K0dIeEP2sHpmR79NAIpYE9SbXsR/g8gd5
-         MluWNMM381PicRbSvkXOrwwDi+5WL0o5ztKSt7KYUtmvdLjneI0IIZhJQ8Pu0Ox2Ia
-         AF5IRvRjJlnEzTkhv2w7jE/BvKXt4DnzBRUMI68oVV23nliy+VXfUAVk5ouJBE9qgA
-         xc8JbWMD6FZ6Q==
-Date:   Thu, 12 Aug 2021 10:53:21 -0700
+        b=b4gFh/vNbIpYfa+B9kFQ5iwm47A44iZiC5sZJGmAHZBp5Vm0/Zf+IcoOcw5IKKJnH
+         Gv6sOPCzAmERu+D5U05I2GR9KhYtZfB+HvlvYFochnj2PHEMGH/IGmxhdp1ZX01lpa
+         0q85A+07Q3Ffa29iVp7tAUB8warzmSt8AZdygnSUhMXbyCkTAXISx6yhNhPduYSC9q
+         Q4n50MG2dSN+iN9LvW104M/FJHYON3S+G24gH072Sx/i+ZwT8TfjnR/eRtKUl4kzww
+         GqOvocImKM4nOOadr16eodPgbye4Q/809dsMkCnYpuHJ+ueJ5eoIYZfxzbnbOqPegq
+         dDUGn0AtYvxsQ==
+Date:   Thu, 12 Aug 2021 10:59:48 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     tcs.kernel@gmail.com, vinicius.gomes@intel.com
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        Haimin Zhang <tcs_kernel@tencent.com>
-Subject: Re: [PATCH] net:sched fix array-index-out-of-bounds in
- taprio_change
-Message-ID: <20210812105321.0de11e3e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1628658609-1208-1-git-send-email-tcs_kernel@tencent.com>
-References: <1628658609-1208-1-git-send-email-tcs_kernel@tencent.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     "Longpeng(Mike)" <longpeng2@huawei.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        arei.gonglei@huawei.com, linux-kernel@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH resend] vsock/virtio: avoid potential deadlock when
+ vsock device remove
+Message-ID: <20210812105948.013eb67e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210812080332.o4vxw72gn5uuqtik@steredhat>
+References: <20210812053056.1699-1-longpeng2@huawei.com>
+        <20210812080332.o4vxw72gn5uuqtik@steredhat>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -41,43 +44,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Aug 2021 13:10:09 +0800 tcs.kernel@gmail.com wrote:
-> From: Haimin Zhang <tcs_kernel@tencent.com>
-> 
-> syzbot report an array-index-out-of-bounds in taprio_change
-> index 16 is out of range for type '__u16 [16]'
-> that's because mqprio->num_tc is lager than TC_MAX_QUEUE,so we check
-> the return value of netdev_set_num_tc.
-> 
-> Reported-by: syzbot+2b3e5fb6c7ef285a94f6@syzkaller.appspotmail.com
-> Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
-> ---
->  net/sched/sch_taprio.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-> index 9c79374..1ab2fc9 100644
-> --- a/net/sched/sch_taprio.c
-> +++ b/net/sched/sch_taprio.c
-> @@ -1513,7 +1513,9 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
->  	taprio_set_picos_per_byte(dev, q);
->  
->  	if (mqprio) {
-> -		netdev_set_num_tc(dev, mqprio->num_tc);
-> +		err = netdev_set_num_tc(dev, mqprio->num_tc);
-> +		if (err)
-> +			goto free_sched;
+On Thu, 12 Aug 2021 10:03:32 +0200 Stefano Garzarella wrote:
+> On Thu, Aug 12, 2021 at 01:30:56PM +0800, Longpeng(Mike) wrote:
+> >There's a potential deadlock case when remove the vsock device or
+> >process the RESET event:
+> >
+> >  vsock_for_each_connected_socket:
+> >      spin_lock_bh(&vsock_table_lock) ----------- (1)
+> >      ...
+> >          virtio_vsock_reset_sock:
+> >              lock_sock(sk) --------------------- (2)
+> >      ...
+> >      spin_unlock_bh(&vsock_table_lock)
+> >
+> >lock_sock() may do initiative schedule when the 'sk' is owned by
+> >other thread at the same time, we would receivce a warning message
+> >that "scheduling while atomic".
+> >
+> >Even worse, if the next task (selected by the scheduler) try to
+> >release a 'sk', it need to request vsock_table_lock and the deadlock
+> >occur, cause the system into softlockup state.
+> >  Call trace:
+> >   queued_spin_lock_slowpath
+> >   vsock_remove_bound
+> >   vsock_remove_sock
+> >   virtio_transport_release
+> >   __vsock_release
+> >   vsock_release
+> >   __sock_release
+> >   sock_close
+> >   __fput
+> >   ____fput
+> >
+> >So we should not require sk_lock in this case, just like the behavior
+> >in vhost_vsock or vmci.  
+>
+> We should add:
+> Fixes: 0ea9e1d3a9e3 ("VSOCK: Introduce virtio_transport.ko")
 
-taprio_set_picos_per_byte() already got called and applied some of the
-changes. It seems like the early return from taprio_parse_mqprio_opt()
-if dev->num_tc is non-zero is incorrect. That function is supposed to
-validate that mqprio_opt() is correct AFAIU. That would mean:
+Added.
 
-Fixes: a3d43c0d56f1 ("taprio: Add support adding an admin schedule")
+> Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-Vinicius - WDYT?
-
->  		for (i = 0; i < mqprio->num_tc; i++)
->  			netdev_set_tc_queue(dev, i,
->  					    mqprio->count[i],
-
+And applied, thanks!
