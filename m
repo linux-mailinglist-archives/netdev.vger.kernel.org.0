@@ -2,31 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB82B3EA811
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 17:55:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C5B23EA813
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 17:55:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238511AbhHLPzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 11:55:13 -0400
-Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:38248
+        id S238530AbhHLPzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 11:55:18 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:38260
         "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238351AbhHLPzM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 11:55:12 -0400
+        by vger.kernel.org with ESMTP id S238351AbhHLPzQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 11:55:16 -0400
 Received: from localhost.localdomain (1.general.khfeng.us.vpn [10.172.68.174])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 9B2223F361;
-        Thu, 12 Aug 2021 15:54:43 +0000 (UTC)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 35D924066E;
+        Thu, 12 Aug 2021 15:54:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1628783686;
-        bh=g7fffiyI+X9n230LWqj+hlksotyPWg3/QPgjjGTFyIQ=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=QjMFiNlWSA8ciPbMCVp9ulCkLwFDDYkt0BtlolB13eOGjiF7ezJjmrQId7xig+Y1l
-         tOicONzOc2mc7iS7BQg2F0DHu0EdYahxWK05CfIIbpGBMTiBOkKIw/GQUMqvgDJDRm
-         M/WHYZSoIbQlZ8Z6HX0JXhOdtIH8YAp4nt4vSjbfuRylVFHkp4kSGU4alp3UpL/fvp
-         C6iNeHX88tbfPcDbOUNTTWfy5RaYHLNxQA5lFGkm0cT9dOj1GmC8Xx5Sc+8cN82fUk
-         TMj8XJmp07rfsQvmd1iuFA/mFt5oCUVlMLDJ3+ly1xogdHHH9iNZidGlVdHyc4fV6K
-         we15bpwmOKF6g==
+        s=20210705; t=1628783689;
+        bh=hm5usQHds3jqJtmeH0GnYjRAm9cckUb+ezp56NfmWYc=;
+        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=emmByG5Dd3F09bGy+cXN572tmbpYGs4FiSzZsvpJpeZzDsuuH+yFYjJ3o8ALXByAs
+         utEzb0de2+zukawkQ2QOHqsx/us9IMwVwT4pKFTXYYIk3NzMWasYM0qRGxPpZKxgm4
+         eAdlkGaDorxuJAlMVTTVFks0KoascKMcX9Cc8oY7sV3QsJnDU+WDyJ5oYyDDQrtPU1
+         6YX4vlpk3teumqqsvhizCJb6X5JFa16XnITphDb/HS2BqG5Ji4Snv/ls8JcZg2aqDI
+         ohJgjcg8JxLbUThamFwwEI1L6mszuAAaABpj+8sU4YpqZzDyTGU/7nFeTRLB+G2DXx
+         0fsQ6qRX5PrfQ==
 From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
 To:     hkallweit1@gmail.com, nic_swsd@realtek.com
 Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
@@ -34,137 +35,99 @@ Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
         Jakub Kicinski <kuba@kernel.org>,
         netdev@vger.kernel.org (open list:8169 10/100/1000 GIGABIT ETHERNET
         DRIVER), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2 1/2] r8169: Implement dynamic ASPM mechanism
-Date:   Thu, 12 Aug 2021 23:53:40 +0800
-Message-Id: <20210812155341.817031-1-kai.heng.feng@canonical.com>
+Subject: [PATCH v2 2/2] r8169: Enable ASPM for selected NICs
+Date:   Thu, 12 Aug 2021 23:53:41 +0800
+Message-Id: <20210812155341.817031-2-kai.heng.feng@canonical.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210812155341.817031-1-kai.heng.feng@canonical.com>
+References: <20210812155341.817031-1-kai.heng.feng@canonical.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-r8169 NICs on some platforms have abysmal speed when ASPM is enabled.
-Same issue can be observed with older vendor drivers.
+The latest vendor driver enables ASPM for more recent r8168 NICs, do the
+same here to match the behavior.
 
-The issue is however solved by the latest vendor driver. There's a new
-mechanism, which disables r8169's internal ASPM when the NIC traffic has
-more than 10 packets, and vice versa.
-
-Realtek confirmed that all their PCIe LAN NICs, r8106, r8168 and r8125
-use dynamic ASPM under Windows. So implement the same mechanism here to
-resolve the issue.
+In addition, pci_disable_link_state() is only used for RTL8168D/8111D in
+vendor driver, also match that.
 
 Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 ---
-v2: 
- - Use delayed_work instead of timer_list to avoid interrupt context
- - Use mutex to serialize packet counter read/write
- - Wording change
+v2:
+ - No change
 
- drivers/net/ethernet/realtek/r8169_main.c | 45 +++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
+ drivers/net/ethernet/realtek/r8169_main.c | 34 +++++++++++++++++------
+ 1 file changed, 26 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index c7af5bc3b8af..7ab2e841dc69 100644
+index 7ab2e841dc69..caa29e72a21a 100644
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -624,6 +624,11 @@ struct rtl8169_private {
+@@ -623,7 +623,7 @@ struct rtl8169_private {
+ 	} wk;
  
  	unsigned supports_gmii:1;
- 	unsigned aspm_manageable:1;
-+	unsigned aspm_enabled:1;
-+	struct delayed_work aspm_toggle;
-+	struct mutex aspm_mutex;
-+	u32 aspm_packet_count;
-+
- 	dma_addr_t counters_phys_addr;
- 	struct rtl8169_counters *counters;
- 	struct rtl8169_tc_offsets tc_offset;
-@@ -2671,6 +2676,8 @@ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
- 		RTL_W8(tp, Config5, RTL_R8(tp, Config5) & ~ASPM_en);
- 	}
+-	unsigned aspm_manageable:1;
++	unsigned aspm_supported:1;
+ 	unsigned aspm_enabled:1;
+ 	struct delayed_work aspm_toggle;
+ 	struct mutex aspm_mutex;
+@@ -2667,8 +2667,11 @@ static void rtl_pcie_state_l2l3_disable(struct rtl8169_private *tp)
  
-+	tp->aspm_enabled = enable;
+ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
+ {
++	if (!tp->aspm_supported)
++		return;
 +
- 	udelay(10);
+ 	/* Don't enable ASPM in the chip if OS can't control ASPM */
+-	if (enable && tp->aspm_manageable) {
++	if (enable) {
+ 		RTL_W8(tp, Config5, RTL_R8(tp, Config5) | ASPM_en);
+ 		RTL_W8(tp, Config2, RTL_R8(tp, Config2) | ClkReqEn);
+ 	} else {
+@@ -5284,6 +5287,21 @@ static void rtl_init_mac_address(struct rtl8169_private *tp)
+ 	rtl_rar_set(tp, mac_addr);
  }
  
-@@ -4408,6 +4415,9 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
- 
- 	dirty_tx = tp->dirty_tx;
- 
-+	mutex_lock(&tp->aspm_mutex);
-+	tp->aspm_packet_count += tp->cur_tx - dirty_tx;
-+	mutex_unlock(&tp->aspm_mutex);
- 	while (READ_ONCE(tp->cur_tx) != dirty_tx) {
- 		unsigned int entry = dirty_tx % NUM_TX_DESC;
- 		u32 status;
-@@ -4552,6 +4562,10 @@ static int rtl_rx(struct net_device *dev, struct rtl8169_private *tp, int budget
- 		rtl8169_mark_to_asic(desc);
- 	}
- 
-+	mutex_lock(&tp->aspm_mutex);
-+	tp->aspm_packet_count += count;
-+	mutex_unlock(&tp->aspm_mutex);
-+
- 	return count;
- }
- 
-@@ -4659,8 +4673,33 @@ static int r8169_phy_connect(struct rtl8169_private *tp)
- 	return 0;
- }
- 
-+#define ASPM_PACKET_THRESHOLD 10
-+#define ASPM_TOGGLE_INTERVAL 1000
-+
-+static void rtl8169_aspm_toggle(struct work_struct *work)
++static int rtl_hw_aspm_supported(struct rtl8169_private *tp)
 +{
-+	struct rtl8169_private *tp = container_of(work, struct rtl8169_private,
-+						  aspm_toggle.work);
-+	bool enable;
++	switch (tp->mac_version) {
++	case RTL_GIGA_MAC_VER_32 ... RTL_GIGA_MAC_VER_36:
++	case RTL_GIGA_MAC_VER_38:
++	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_42:
++	case RTL_GIGA_MAC_VER_44 ... RTL_GIGA_MAC_VER_46:
++	case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_63:
++		return 1;
 +
-+	mutex_lock(&tp->aspm_mutex);
-+	enable = tp->aspm_packet_count <= ASPM_PACKET_THRESHOLD;
-+	tp->aspm_packet_count = 0;
-+	mutex_unlock(&tp->aspm_mutex);
-+
-+	if (tp->aspm_enabled != enable) {
-+		rtl_unlock_config_regs(tp);
-+		rtl_hw_aspm_clkreq_enable(tp, enable);
-+		rtl_lock_config_regs(tp);
++	default:
++		return 0;
 +	}
-+
-+	schedule_delayed_work(&tp->aspm_toggle, ASPM_TOGGLE_INTERVAL);
 +}
 +
- static void rtl8169_down(struct rtl8169_private *tp)
+ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
  {
-+	cancel_delayed_work_sync(&tp->aspm_toggle);
+ 	struct rtl8169_private *tp;
+@@ -5315,12 +5333,12 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if (rc)
+ 		return rc;
+ 
+-	/* Disable ASPM completely as that cause random device stop working
+-	 * problems as well as full system hangs for some PCIe devices users.
+-	 */
+-	rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S |
+-					  PCIE_LINK_STATE_L1);
+-	tp->aspm_manageable = !rc;
++	if (tp->mac_version == RTL_GIGA_MAC_VER_25)
++		pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S |
++				       PCIE_LINK_STATE_L1 |
++				       PCIE_LINK_STATE_CLKPM);
 +
- 	/* Clear all task flags */
- 	bitmap_zero(tp->wk.flags, RTL_FLAG_MAX);
++	tp->aspm_supported = rtl_hw_aspm_supported(tp);
  
-@@ -4687,6 +4726,8 @@ static void rtl8169_up(struct rtl8169_private *tp)
- 	rtl_reset_work(tp);
- 
- 	phy_start(tp->phydev);
-+
-+	schedule_delayed_work(&tp->aspm_toggle, ASPM_TOGGLE_INTERVAL);
- }
- 
- static int rtl8169_close(struct net_device *dev)
-@@ -5347,6 +5388,10 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	INIT_WORK(&tp->wk.work, rtl_task);
- 
-+	INIT_DELAYED_WORK(&tp->aspm_toggle, rtl8169_aspm_toggle);
-+
-+	mutex_init(&tp->aspm_mutex);
-+
- 	rtl_init_mac_address(tp);
- 
- 	dev->ethtool_ops = &rtl8169_ethtool_ops;
+ 	/* enable device (incl. PCI PM wakeup and hotplug setup) */
+ 	rc = pcim_enable_device(pdev);
 -- 
 2.32.0
 
