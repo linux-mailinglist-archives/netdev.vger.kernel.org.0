@@ -2,95 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC1463EA0AD
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 10:38:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C61433EA0B2
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 10:38:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235387AbhHLIi5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 04:38:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51578 "EHLO
+        id S235289AbhHLIiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 04:38:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235263AbhHLIix (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 04:38:53 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBCC1C0613D5;
-        Thu, 12 Aug 2021 01:38:27 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id q18so241787wrm.6;
-        Thu, 12 Aug 2021 01:38:27 -0700 (PDT)
+        with ESMTP id S235263AbhHLIit (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 04:38:49 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC3C5C0613D3
+        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 01:38:23 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id q18so241533wrm.6
+        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 01:38:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=1G6L3GSRVFiRjFplhDibF/A1i3r5+cB+7jxsSGpzJV0=;
-        b=JwWbf6hH4SOkZPTDZCuG2zbLx1DgYxV6e28Hu6AQpX8kff8TEIHJ2ueSFk5t366goi
-         z3M6oEtoAU8VACit7gUg0/0QyyIy9vpJCTdtUG57y5KWXhdgzLEdXz0DUIEkxGMNKTY/
-         NEseMX4y7tPoPLETtxtl79ae1jElfHdpBb5X1WLKrAqeI+sr9g9x82EaluuLq7JCA6G3
-         5JctG+dstbkisNBAqIQ/MUXTexksYM7qdPUGkWHcxAw0Gy5lsvBv2mzd2Ehb+dWiJrdW
-         Q5ONcQIK0M/xtCapRtftr5QB9z4unWKh9mbEezg4u3zDA9OfYMneShA2uxgSP4QXBmwv
-         ePYw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=9Ssid/NE8KDjJqY6onCXht5Qn1Jv0AK+U0Nic+jj0uw=;
+        b=YG4Rt0UR1QH3/E5WPBY4AeAKCRlQgHUZhkOEADpYjPufk9F9oqJY59EkvYLo/gQX/0
+         MM4IOAshJdiktzNq/jR5yp7GfPD/GcH1ChVKcqq8ka/5moebU0k2QDSBo9FBUHe5V1Et
+         zSg481kgUCZtx7uuwO8Ralmj7LofvADlzcy5rPJlhtCK10yHTw6NZ1pjhHZCQicafyA4
+         byZnkr5YRw3UM6hFnKNsECACedw22s6NlzXAdTGdqZoThKXx8Xijnaujra8nzh3LA6vC
+         IhsYEEsyPJO3A0iwvqLTFU+mHqZIZWXJTfgv5FZaF9NvSQwuJJCTdTQBcfgyJkWeYmk7
+         tMtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=1G6L3GSRVFiRjFplhDibF/A1i3r5+cB+7jxsSGpzJV0=;
-        b=V+3AzPZvWLMoJcWgfRpsjQQAPJAYCUs9b461a3j6TAR22wuOu8ETxnI0CjUW6B8zpZ
-         /+z/nju7EWGcFs6vuPy+mLABTvJUBZYUuZjKXuDdyEwjtay6UoziVCWX6IISqGKZuKC0
-         phjxRiEgfSaySvnPX3u0CC4L8cETfNw1u7vMBZF39A+V3nMKm2g1BK81Z2QSGvPiNE+h
-         WkAZtohVOp7n+MbcOwFsRYvU5+VF7vADmpx7bVHlHKf2ZibYswV6Nl0cKdzlrNlcwDnb
-         BC3LqXanKc7sNvi4GKzaBo+mrkUmznH1uN/KJ1wOLeUZkOQvqy0qbVlk9ODbCFuAQgl7
-         VU+Q==
-X-Gm-Message-State: AOAM530mXYZPvcax4+qswlGC1TNEYMopuaMjSZYc49yqJX3UcJ+E+ceJ
-        xd0g+i+wWqQIPINh2BJzo+M=
-X-Google-Smtp-Source: ABdhPJxMydluqcgS+I18WfKFr/telCFVDx9//iw7sXEL4Tj2VlfO+2ZGfNDBRm/4cVmIt5JnetV14g==
-X-Received: by 2002:a5d:4cc6:: with SMTP id c6mr2594134wrt.383.1628757506484;
-        Thu, 12 Aug 2021 01:38:26 -0700 (PDT)
-Received: from felia.fritz.box ([2001:16b8:2d76:9600:40d6:1b8e:9bb5:afdf])
-        by smtp.gmail.com with ESMTPSA id 9sm1830324wmf.34.2021.08.12.01.38.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Aug 2021 01:38:26 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH 3/3] net: dpaa_eth: remove dead select in menuconfig FSL_DPAA_ETH
-Date:   Thu, 12 Aug 2021 10:38:06 +0200
-Message-Id: <20210812083806.28434-4-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210812083806.28434-1-lukas.bulwahn@gmail.com>
-References: <20210812083806.28434-1-lukas.bulwahn@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=9Ssid/NE8KDjJqY6onCXht5Qn1Jv0AK+U0Nic+jj0uw=;
+        b=HScCYHwUSxX7421tH6lBWyLTPxfOIhd2G+a8n9DzPFhc54fqcJBdnLLAWdoqP/iBeE
+         /jZMwwCAYL/Y81UHspAl2Fx3PUuXhz7D/+WB2O0kEuCMFB8sd5xrt6zGlaAJcEE7QlCk
+         GM8YVlUI8n4I5VroJB1FQRG1AydYskV+ia3rA88dOjlLuLTz8N2iXspCiOURGuZn26LC
+         mIhysjpwMnNF9NohLiLIw/MQAtRccfBskBKa7gYjy67WdDik32TJvupCAjlsSSb5h27e
+         qvrait9pnlcWcNg5bSUZ+HgZkMM0E6ChhxH51A8Ery2OfLaDpwEhrOyIp/WKpw0p0G+u
+         QCWw==
+X-Gm-Message-State: AOAM531LjMBiyEo+YNxLbF9HFH1FiUmSQRd8GtmTf6CQwh+q2ZQGWxIk
+        Ur3sHrTz2ix1fw5ppwTgibM=
+X-Google-Smtp-Source: ABdhPJwm2P/3CdLeD31TN58eama9huBbFKPfGtWglI7n4eS798zhefmsae8lSDZTs1u0hyjp2EdJXw==
+X-Received: by 2002:a05:6000:100a:: with SMTP id a10mr2751620wrx.42.1628757502243;
+        Thu, 12 Aug 2021 01:38:22 -0700 (PDT)
+Received: from ?IPv6:2a01:cb05:8192:e700:90a4:fe44:d3d1:f079? (2a01cb058192e70090a4fe44d3d1f079.ipv6.abo.wanadoo.fr. [2a01:cb05:8192:e700:90a4:fe44:d3d1:f079])
+        by smtp.gmail.com with ESMTPSA id f10sm2148056wrx.40.2021.08.12.01.38.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Aug 2021 01:38:21 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/2] net: dsa: tag_8021q: don't broadcast during
+ setup/teardown
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+References: <20210811134606.2777146-1-vladimir.oltean@nxp.com>
+ <20210811134606.2777146-3-vladimir.oltean@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <c08d8fac-708f-64e8-f002-0c98a0fb1888@gmail.com>
+Date:   Thu, 12 Aug 2021 01:38:19 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
+MIME-Version: 1.0
+In-Reply-To: <20210811134606.2777146-3-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The menuconfig FSL_DPAA_ETH selects config FSL_FMAN_MAC, but the config
-FSL_FMAN_MAC never existed in the kernel tree.
 
-Hence, ./scripts/checkkconfigsymbols.py warns:
 
-FSL_FMAN_MAC
-Referencing files: drivers/net/ethernet/freescale/dpaa/Kconfig
+On 8/11/2021 6:46 AM, Vladimir Oltean wrote:
+> Currently, on my board with multiple sja1105 switches in disjoint trees
+> described in commit f66a6a69f97a ("net: dsa: permit cross-chip bridging
+> between all trees in the system"), rebooting the board triggers the
+> following benign warnings:
+> 
+> [   12.345566] sja1105 spi2.0: port 0 failed to notify tag_8021q VLAN 1088 deletion: -ENOENT
+> [   12.353804] sja1105 spi2.0: port 0 failed to notify tag_8021q VLAN 2112 deletion: -ENOENT
+> [   12.362019] sja1105 spi2.0: port 1 failed to notify tag_8021q VLAN 1089 deletion: -ENOENT
+> [   12.370246] sja1105 spi2.0: port 1 failed to notify tag_8021q VLAN 2113 deletion: -ENOENT
+> [   12.378466] sja1105 spi2.0: port 2 failed to notify tag_8021q VLAN 1090 deletion: -ENOENT
+> [   12.386683] sja1105 spi2.0: port 2 failed to notify tag_8021q VLAN 2114 deletion: -ENOENT
+> 
+> Basically switch 1 calls dsa_tag_8021q_unregister, and switch 1's TX and
+> RX VLANs cannot be found on switch 2's CPU port.
+> 
+> But why would switch 2 even attempt to delete switch 1's TX and RX
+> tag_8021q VLANs from its CPU port? Well, because we use dsa_broadcast,
+> and it is supposed that it had added those VLANs in the first place
+> (because in dsa_port_tag_8021q_vlan_match, all CPU ports match
+> regardless of their tree index or switch index).
+> 
+> The two trees probe asynchronously, and when switch 1 probed, it called
+> dsa_broadcast which did not notify the tree of switch 2, because that
+> didn't probe yet. But during unbind, switch 2's tree _is_ probed, so it
+> _is_ notified of the deletion.
+> 
+> Before jumping to introduce a synchronization mechanism between the
+> probing across disjoint switch trees, let's take a step back and see
+> whether we _need_ to do that in the first place.
+> 
+> The RX and TX VLANs of switch 1 would be needed on switch 2's CPU port
+> only if switch 1 and 2 were part of a cross-chip bridge. And
+> dsa_tag_8021q_bridge_join takes care precisely of that (but if probing
+> was synchronous, the bridge_join would just end up bumping the VLANs'
+> refcount, because they are already installed by the setup path).
+> 
+> Since by the time the ports are bridged, all DSA trees are already set
+> up, and we don't need the tag_8021q VLANs of one switch installed on the
+> other switches during probe time, the answer is that we don't need to
+> fix the synchronization issue.
+> 
+> So make the setup and teardown code paths call dsa_port_notify, which
+> notifies only the local tree, and the bridge code paths call
+> dsa_broadcast, which let the other trees know as well.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Remove this dead select in menuconfig FSL_DPAA_ETH.
-
-Fixes: 9ad1a3749333 ("dpaa_eth: add support for DPAA Ethernet")
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
- drivers/net/ethernet/freescale/dpaa/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa/Kconfig b/drivers/net/ethernet/freescale/dpaa/Kconfig
-index 626ec58a0afc..0e1439fd00bd 100644
---- a/drivers/net/ethernet/freescale/dpaa/Kconfig
-+++ b/drivers/net/ethernet/freescale/dpaa/Kconfig
-@@ -4,7 +4,6 @@ menuconfig FSL_DPAA_ETH
- 	depends on FSL_DPAA && FSL_FMAN
- 	select PHYLIB
- 	select FIXED_PHY
--	select FSL_FMAN_MAC
- 	help
- 	  Data Path Acceleration Architecture Ethernet driver,
- 	  supporting the Freescale QorIQ chips.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.17.1
-
+Florian
