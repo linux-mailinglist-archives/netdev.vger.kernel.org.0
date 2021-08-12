@@ -2,160 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C53323EA042
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 10:05:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 284FD3EA05E
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 10:13:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235106AbhHLIGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 04:06:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:48321 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235160AbhHLIEV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 04:04:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1628755417;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VNcc4FKKgeh1x9olC7E03PuQx1nzor6Qv2O5Zs+wmJk=;
-        b=Sf6Yikze2SB5zWc7S+RxoPEJejWvB6o+cAOzpKrwXSxN5aGpJr6evPRps168OBX5iSMU/4
-        O+D62emJdqBKyer12IieSCYam4iSTsAoDWTPMj8PV92ZFkF8z2pFiS7/LZ/n/yR7vvs7mB
-        Kxz56V2Zfipxnawki/74wTxTgCYcCFo=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-373-d8k8F3DsP-W1gIh229tE3w-1; Thu, 12 Aug 2021 04:03:36 -0400
-X-MC-Unique: d8k8F3DsP-W1gIh229tE3w-1
-Received: by mail-ej1-f72.google.com with SMTP id j15-20020a17090643cfb02905b87bd5d2d0so869748ejn.16
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 01:03:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VNcc4FKKgeh1x9olC7E03PuQx1nzor6Qv2O5Zs+wmJk=;
-        b=ftO6PnDSP/hGzF4HAH9b7/x4soytGyY8gHZeJLLmGpwos0Ggs5Hab60Au3cLAlHuLs
-         peFmMm387Mx853ofJER/qUMegxZybSsFWhLVzB1wLnaKOQHaPPqthcO/PYZh8AvhCzqB
-         O54lbGHpeOaX/Tf1EHBvOgo3YhPkCn/EYhlwvaxUob1j7uuwgvuL5Y5t8OJqi/T8fl3K
-         EjnIMhD7RDri7bhy1Y8ORT9ecLFsQm288QUsHD7e61oTrEnj0svCpZFZoI8Ojgmy+WhF
-         51dYMgKA/i8fFgyRh8LG7wCmMXj01qRwFNxUqWBqYhygH/GwpSu0CwdCybRx+I9YJGeR
-         EF9w==
-X-Gm-Message-State: AOAM532HUp36Pe/Yekn7TP9gwK9ax57An8/LdU6nP7nZ/gz1tdMHCCYr
-        J2pZNRpa7Z63NDM88dgO2gx6YT1wRMHNTQ4VOGAwQSJnvqOti/HnyQO0qj/KmkWngvnhzizetGA
-        6dAAU2FUyfrNo4iNj
-X-Received: by 2002:a17:906:4750:: with SMTP id j16mr2439920ejs.26.1628755414867;
-        Thu, 12 Aug 2021 01:03:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxU2tcTx6Y7xB9zzU+HQALuAB5KSTmssapC5dM7OHV8xYFOQBEDoFPmmXvbwzdWXnsrrWl5+w==
-X-Received: by 2002:a17:906:4750:: with SMTP id j16mr2439913ejs.26.1628755414694;
-        Thu, 12 Aug 2021 01:03:34 -0700 (PDT)
-Received: from steredhat (host-79-36-51-142.retail.telecomitalia.it. [79.36.51.142])
-        by smtp.gmail.com with ESMTPSA id k18sm752908edo.62.2021.08.12.01.03.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Aug 2021 01:03:34 -0700 (PDT)
-Date:   Thu, 12 Aug 2021 10:03:32 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Longpeng(Mike)" <longpeng2@huawei.com>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, arei.gonglei@huawei.com,
-        linux-kernel@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH resend] vsock/virtio: avoid potential deadlock when vsock
- device remove
-Message-ID: <20210812080332.o4vxw72gn5uuqtik@steredhat>
-References: <20210812053056.1699-1-longpeng2@huawei.com>
+        id S235020AbhHLINs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 04:13:48 -0400
+Received: from mail-eopbgr1400119.outbound.protection.outlook.com ([40.107.140.119]:6639
+        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234573AbhHLINr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Aug 2021 04:13:47 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=K+dk5j+1hIc/WDZjvWsPpdo/3Cvm1QWHQUpTnP1dr8fAumzEnPtr6LBn3QD7dZDfA9y5z9EPMF+1PqSQWCHqqnaKrfKNI1TPeCvLr0XvaXyXRL6jVhOkpGe4nwv7yg1Nxp9bgBMxEIc7YQTat5daIibT3HLGWOaX5YZoXZkl9eiQLntYKD5Q4DuHYy5WJMk76fXsVC2nD4b8wcNHb6xSsO0u9dgFnV45tuLjpJVHkxAmXvPH05JNV+3OMoqhlBZWEMvOrHv3lrJJoW7mv/BhWcpMlCcXbg9SrxmimIUvkDUePS32mIxtPenlR0OKr5aA6n03MlDvL2h8jT0oFOFO4w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NyM3GD7TTCl6QsujV4VfjEDixTkXGZOQVUVxx+VktyI=;
+ b=O0Nudea3JlDVuRBnX3BslhoUL1qgR2BLJB7f+2JQQDv9cXb3IrAEKLznpj4V9OBYJhVHYKRLMAIGFN+vVAnq3ZiW47+ZE+i61eLazM6a9duuWseiPd8sTbVhqw7s32lg2HI0/tliVFQlKawnlAVpBvwtX2FF38OUN8QSvXmwUgvzAzjf98IONyme/84Okf8/RVhxutweI8Ey4ujAIODknIfWmADMO2Uvk6KlKPLeR4GtKhAxlRy1X3BEoYceeOBYaNq9pda203xeApgFwMQlwon+ndC6w4sIO90JJ7pZqYKfh5SBvow/tAlqDdt9ubqQ9ehfk2o0sMGG/N+xLWKk5g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NyM3GD7TTCl6QsujV4VfjEDixTkXGZOQVUVxx+VktyI=;
+ b=YWVEL48ALt6qQbqS4A4zFcYIiC58VJQYCS6H5SWnUbs31evVcB4BXillqExCUijjxHQyj3PFQO6A4wv55uhvKbeJ8sVTDHX4fQr/aiICJ8R3dvgGW1soeh/v04MGndBiAb0Mn5nZuTsesYhRRWLxqQOasAfhGY/0oOhrlR8mv14=
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
+ by OSAPR01MB2708.jpnprd01.prod.outlook.com (2603:1096:603:38::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.14; Thu, 12 Aug
+ 2021 08:13:18 +0000
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::c6f:e31f:eaa9:60fe]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::c6f:e31f:eaa9:60fe%9]) with mapi id 15.20.4415.017; Thu, 12 Aug 2021
+ 08:13:18 +0000
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: RE: [PATCH net-next v2 1/8] ravb: Add struct ravb_hw_info to driver
+ data
+Thread-Topic: [PATCH net-next v2 1/8] ravb: Add struct ravb_hw_info to driver
+ data
+Thread-Index: AQHXh4j0+2cGRDLtLUyHm25tLRdYvKtrHuUAgARm9NCAAArSgIAAA4CA
+Date:   Thu, 12 Aug 2021 08:13:17 +0000
+Message-ID: <OS0PR01MB5922C336CBB008F9D7DA36B786F99@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+References: <20210802102654.5996-1-biju.das.jz@bp.renesas.com>
+ <20210802102654.5996-2-biju.das.jz@bp.renesas.com>
+ <CAMuHMdWuoLFDRbJZqpvT48q1zbH05tqerWMs50aFDa6pR+ecAg@mail.gmail.com>
+ <OS0PR01MB5922BF48F95DD5576A79994F86F99@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <CAMuHMdVCyMD6u2KxKb_c2LR8DGAY86F69=TSRDK0C5GPwrO7Eg@mail.gmail.com>
+In-Reply-To: <CAMuHMdVCyMD6u2KxKb_c2LR8DGAY86F69=TSRDK0C5GPwrO7Eg@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: linux-m68k.org; dkim=none (message not signed)
+ header.d=none;linux-m68k.org; dmarc=none action=none
+ header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 12adca23-87dc-4118-24f9-08d95d690aa4
+x-ms-traffictypediagnostic: OSAPR01MB2708:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <OSAPR01MB27082B9D685E244F7554AB1C86F99@OSAPR01MB2708.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Y40CVplX44AKOt72HfJuANnc6l0DJb+WEXRvXpM4sp/mIBzL3nAx76dwhJQWF5ToTlI4RfA9U0ksoYmvy6IeeqFMW5oCbtedv2J9gxfo3ETrxlEobGYnY8jAWOPHdQd3vGm9mKL0XG68/jCqRMsbRGdyxA1EnGh2/Z5bwa8gNSEnnrq6pTUp8BkJjSAFjnLX585T+xRj7QfPhleGMv26t+U9syu2xtiTJen1c7IwOAkw+TXVQaFv0VpDLKTVr0/U2jcI0vkC5k2//qEv+qwwrbmN7BrchqB66JZfTKzsiEMXQxGKgGjLeAU+72qlPSGg+vtuzF1wfutGodmD/aYlDdWhKLAjDoaO75cUVyiOOsPBU7oEgn6RYwtPJQKx2tIujaQZFCCHB0mEpo7Cn+YVB/M1MhqEgBNDtd2gDWQXkeWRRU03sBpUcnHP3F9wxGlS7Mc2IhVC908wQPJoIJl4UFNoqYyJO9YrULFQWo4qkUy/rF/9N3Nv8PbFfnwva4T4+xHiHzQAI4WdYqLkh+L8IYngBinp1UWufTBBYRAUCmeY4XC4rRUixLPCz5FW6q2xrf0Q1iCQb2KXe/AsO1eDqsnZfjssbNI6sbdll3HSteFiiabjXtaF9GEtI2mMn51q6+pvRHzD6Crruo7azLDs26HG0tWIpEuHlsHVhOc7XtqOicNGKf54L6NBDkB+Lsxv68Jn1fnPwi+T6OtI4Qr4mg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(346002)(366004)(136003)(396003)(376002)(83380400001)(86362001)(55016002)(7416002)(110136005)(26005)(107886003)(38100700002)(122000001)(9686003)(186003)(66556008)(33656002)(5660300002)(4326008)(71200400001)(76116006)(52536014)(8936002)(54906003)(66446008)(64756008)(8676002)(478600001)(66946007)(7696005)(6506007)(316002)(53546011)(2906002)(38070700005)(66476007);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?aU9yKzNMeC9aYnJEOTFxQ1pmVlI3ZkVkUDFsNWJBaFhDU1JncDRQNlJ2cEh4?=
+ =?utf-8?B?eUl2WSsxRVc2czQyN0JGMENBSnJxYlk0RzRwNUlGRjcvSHR1aHgreUNnTFF6?=
+ =?utf-8?B?RWwwK0Y4RUh1L2hmZDRhTmp6RUtWMGxmNzZPWHVtUUd1ZENqTVZJb1QxRjFU?=
+ =?utf-8?B?bWNNN3hiRDdUelZjVk1WZHh5TldpWDhDV010dU1razN1UnVaNk41ZHhXVlFJ?=
+ =?utf-8?B?UUZWNXJaTTJCOVh1aG9yQXFnalJuajBoUEx1RWphelNMYjR0SjBIcy93YjZq?=
+ =?utf-8?B?Tm1BNmV5Mjk2a0ZLK2FFL2k2M2lEaVJoQitqb1lSdm43azdpYVpXL3VLR25n?=
+ =?utf-8?B?dVltcHVoUTNUbFNQK2F3dnRqcEVOdENTRy95Qlg5RTVFYmJHMmNURVJIN29o?=
+ =?utf-8?B?RHdzdEhnL0E5QkJmU1o0UmxzZFErbVZsVDJaK1NSY2wyZ0JLTXUwY3pyeWdx?=
+ =?utf-8?B?V1lRYlBrSzVhN2hFZGN4amRaVytHRGs4MmVuVHRHTGltMGhZU2UrUVNscHZY?=
+ =?utf-8?B?U3lqVGU4d3ptNjhoUEFpdFhxWWhtNVhMemR1N1hDdGxuV3IwVHkvQVVSV25l?=
+ =?utf-8?B?Vmk3TVBPeUZ4M3ZqVGpGVlVmM3RZZFptcHpxK0ludmxqR21NandEWGtNaWdK?=
+ =?utf-8?B?bDdPanVBbHJMS0hhL1lHK3ZNMm5iUWkwYy8yWmRsQnFQL0tmNkhjNGdiaVN5?=
+ =?utf-8?B?WFdSd0M0a1lKWXUxdW5kRHMzMzNaZkIxQklzSHBoRkZ6R0NmdTVoeVNDMkFQ?=
+ =?utf-8?B?MnZBTjdFRUxBUFVnMVpFUmhhZW9BeU5FNm9rYUxaV0Z6Qi9KTSt6OVRQeVcv?=
+ =?utf-8?B?bkhLc3NsUGNiOHhYV0UzMGo3SW5TZVBrNVBqcHVBaWdMRnFxZUdPSEJxUzFH?=
+ =?utf-8?B?RllMNDhMUnhPK0NFS3ZaNVZsaTgzQlNTWUpTd09haldBdUUzbXJpTjN3Vmdl?=
+ =?utf-8?B?blFrMEFabW1JQVo2U1N3OGt1akVJc01uVmVhQWdyT0R0N1h2VGI0THFGOWZv?=
+ =?utf-8?B?MEVEazBWUDRQeWlnanRUVmV6ZFR3RnhqeFpINjdVclN0eUsxd2VVZmo2UTdj?=
+ =?utf-8?B?dlEvZDQ5eUx0eGx1WkV0UTJGVnZXcGVwQUNoNEliVWlyVkczNktqaDU2Vyti?=
+ =?utf-8?B?SUhKU0pGMUxjaDJGVUxrM0lYeVA0czJjS0MwMG13QUtWUTN5U2VIZVhtU3RT?=
+ =?utf-8?B?eXlKdHJ3UkJmQXNNZnBBc0o5TmRPdjFJN2V3Rnc1M1FGME44eUw0Z3ZDVGtB?=
+ =?utf-8?B?dFVVZS9sVjJWeWx4MXJSbkJKVm1BNU9QeGVmak5salUxZlRDK0hhdzExMjE3?=
+ =?utf-8?B?TUQrME9yTDlKMFJQUUpETk1kclBSNXVjNWo5eVg1MExraVkwN245ekhqd1pP?=
+ =?utf-8?B?cHVBYzQ4d2xOTXNtZ3hjZm9wbVZmNXZCMXcraDNLV3ZrbE95THQ1OVpSY2R6?=
+ =?utf-8?B?RTFCWlpWeUpaT09adVVmeWpsZGRyUlBGMUZidE52K0taWmZnUnVwNzY2cnBt?=
+ =?utf-8?B?a0RpNXIycE5oc2lXcURCN2JVbXhtZDN0bmxMMUxGUzI4U3JkS1JIVXhRMzBp?=
+ =?utf-8?B?NXRTUGg5YjlFQkNNWVRuSG5TNFlaLzU1Rk1vT1U3ZWgwanRDVkVXUURrTlgx?=
+ =?utf-8?B?K3pWRlFzZnJrWUhkc09hbjFoaFhiVS9BZzVlVVBnRjR2d05NWDZsb3g2SDRu?=
+ =?utf-8?B?L2JzUzdKVHRYWDBOdnFYZGJ0UEVGdysvV2lJZks5QjBJc1gyQ3NBQW1jWldQ?=
+ =?utf-8?Q?9MAPPq2v1oWmmEL2/cmve13DA4EOWBbWwawSSFD?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210812053056.1699-1-longpeng2@huawei.com>
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 12adca23-87dc-4118-24f9-08d95d690aa4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Aug 2021 08:13:17.9636
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: VdXuWLMrXM0p1+929l5GMbK8ob2NhmDS/zjgXsec7tSaXA1twjqLeu1yfWknUN0kI4jOBjTAruteMxessSCH9RsgDabLTwo5ZYIglrdMJHk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB2708
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 12, 2021 at 01:30:56PM +0800, Longpeng(Mike) wrote:
->There's a potential deadlock case when remove the vsock device or
->process the RESET event:
->
->  vsock_for_each_connected_socket:
->      spin_lock_bh(&vsock_table_lock) ----------- (1)
->      ...
->          virtio_vsock_reset_sock:
->              lock_sock(sk) --------------------- (2)
->      ...
->      spin_unlock_bh(&vsock_table_lock)
->
->lock_sock() may do initiative schedule when the 'sk' is owned by
->other thread at the same time, we would receivce a warning message
->that "scheduling while atomic".
->
->Even worse, if the next task (selected by the scheduler) try to
->release a 'sk', it need to request vsock_table_lock and the deadlock
->occur, cause the system into softlockup state.
->  Call trace:
->   queued_spin_lock_slowpath
->   vsock_remove_bound
->   vsock_remove_sock
->   virtio_transport_release
->   __vsock_release
->   vsock_release
->   __sock_release
->   sock_close
->   __fput
->   ____fput
->
->So we should not require sk_lock in this case, just like the behavior
->in vhost_vsock or vmci.
-
-The difference with vhost_vsock is that here we call it also when we 
-receive an event in the event queue (for example because we are 
-migrating the VM).
-
-I think the idea of this lock was to prevent concurrency with RX loop, 
-but actually if a socket is connected, it can only change state to 
-TCP_CLOSING/TCP_CLOSE.
-
-I don't think there is any problem not to take the lock, at most we 
-could take the rx_lock in virtio_vsock_event_handle(), but I'm not sure 
-it's necessary.
-
->
->Cc: Stefan Hajnoczi <stefanha@redhat.com>
->Cc: Stefano Garzarella <sgarzare@redhat.com>
->Cc: "David S. Miller" <davem@davemloft.net>
->Cc: Jakub Kicinski <kuba@kernel.org>
-
-We should add:
-Fixes: 0ea9e1d3a9e3 ("VSOCK: Introduce virtio_transport.ko")
->Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
->---
-> net/vmw_vsock/virtio_transport.c | 7 +++++--
-> 1 file changed, 5 insertions(+), 2 deletions(-)
->
->diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
->index e0c2c99..4f7c99d 100644
->--- a/net/vmw_vsock/virtio_transport.c
->+++ b/net/vmw_vsock/virtio_transport.c
->@@ -357,11 +357,14 @@ static void virtio_vsock_event_fill(struct virtio_vsock *vsock)
->
-> static void virtio_vsock_reset_sock(struct sock *sk)
-> {
->-	lock_sock(sk);
->+	/* vmci_transport.c doesn't take sk_lock here either.  At least we're
->+	 * under vsock_table_lock so the sock cannot disappear while 
->we're
->+	 * executing.
->+	 */
->+
-> 	sk->sk_state = TCP_CLOSE;
-> 	sk->sk_err = ECONNRESET;
-> 	sk_error_report(sk);
->-	release_sock(sk);
-> }
->
-> static void virtio_vsock_update_guest_cid(struct virtio_vsock *vsock)
->-- 
->1.8.3.1
->
-
-With the Fixes tag added:
-
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-
+SGkgR2VlcnQsDQoNClRoYW5rcyBmb3IgdGhlIGZlZWRiYWNrLg0KDQo+IFN1YmplY3Q6IFJlOiBb
+UEFUQ0ggbmV0LW5leHQgdjIgMS84XSByYXZiOiBBZGQgc3RydWN0IHJhdmJfaHdfaW5mbyB0bw0K
+PiBkcml2ZXIgZGF0YQ0KPiANCj4gSGkgQmlqdSwNCj4gDQo+IE9uIFRodSwgQXVnIDEyLCAyMDIx
+IGF0IDk6MjYgQU0gQmlqdSBEYXMgPGJpanUuZGFzLmp6QGJwLnJlbmVzYXMuY29tPg0KPiB3cm90
+ZToNCj4gPiA+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gPiBPbiBNb24sIEF1ZyAy
+LCAyMDIxIGF0IDEyOjI3IFBNIEJpanUgRGFzDQo+ID4gPiA8YmlqdS5kYXMuanpAYnAucmVuZXNh
+cy5jb20+DQo+ID4gPiB3cm90ZToNCj4gPiA+ID4gVGhlIERNQUMgYW5kIEVNQUMgYmxvY2tzIG9m
+IEdpZ2FiaXQgRXRoZXJuZXQgSVAgZm91bmQgb24gUlovRzJMDQo+ID4gPiA+IFNvQyBhcmUgc2lt
+aWxhciB0byB0aGUgUi1DYXIgRXRoZXJuZXQgQVZCIElQLiBXaXRoIGEgZmV3IGNoYW5nZXMNCj4g
+PiA+ID4gaW4gdGhlIGRyaXZlciB3ZSBjYW4gc3VwcG9ydCBib3RoIElQcy4NCj4gPiA+ID4NCj4g
+PiA+ID4gQ3VycmVudGx5IGEgcnVudGltZSBkZWNpc2lvbiBiYXNlZCBvbiB0aGUgY2hpcCB0eXBl
+IGlzIHVzZWQgdG8NCj4gPiA+ID4gZGlzdGluZ3Vpc2ggdGhlIEhXIGRpZmZlcmVuY2VzIGJldHdl
+ZW4gdGhlIFNvQyBmYW1pbGllcy4NCj4gPiA+ID4NCj4gPiA+ID4gVGhlIG51bWJlciBvZiBUWCBk
+ZXNjcmlwdG9ycyBmb3IgUi1DYXIgR2VuMyBpcyAxIHdoZXJlYXMgb24gUi1DYXINCj4gPiA+ID4g
+R2VuMiBhbmQgUlovRzJMIGl0IGlzIDIuIEZvciBjYXNlcyBsaWtlIHRoaXMgaXQgaXMgYmV0dGVy
+IHRvDQo+ID4gPiA+IHNlbGVjdCB0aGUgbnVtYmVyIG9mIFRYIGRlc2NyaXB0b3JzIGJ5IHVzaW5n
+IGEgc3RydWN0dXJlIHdpdGggYQ0KPiA+ID4gPiB2YWx1ZSwgcmF0aGVyIHRoYW4gYSBydW50aW1l
+IGRlY2lzaW9uIGJhc2VkIG9uIHRoZSBjaGlwIHR5cGUuDQo+ID4gPiA+DQo+ID4gPiA+IFRoaXMg
+cGF0Y2ggYWRkcyB0aGUgbnVtX3R4X2Rlc2MgdmFyaWFibGUgdG8gc3RydWN0IHJhdmJfaHdfaW5m
+bw0KPiA+ID4gPiBhbmQgYWxzbyByZXBsYWNlcyB0aGUgZHJpdmVyIGRhdGEgY2hpcCB0eXBlIHdp
+dGggc3RydWN0DQo+ID4gPiA+IHJhdmJfaHdfaW5mbyBieSBtb3ZpbmcgY2hpcCB0eXBlIHRvIGl0
+Lg0KPiA+ID4gPg0KPiA+ID4gPiBTaWduZWQtb2ZmLWJ5OiBCaWp1IERhcyA8YmlqdS5kYXMuanpA
+YnAucmVuZXNhcy5jb20+DQo+ID4gPiA+IFJldmlld2VkLWJ5OiBMYWQgUHJhYmhha2FyDQo+ID4g
+PiA+IDxwcmFiaGFrYXIubWFoYWRldi1sYWQucmpAYnAucmVuZXNhcy5jb20+DQo+ID4gPg0KPiA+
+ID4gVGhhbmtzIGZvciB5b3VyIHBhdGNoIQ0KPiA+ID4NCj4gPiA+ID4gLS0tIGEvZHJpdmVycy9u
+ZXQvZXRoZXJuZXQvcmVuZXNhcy9yYXZiLmgNCj4gPiA+ID4gKysrIGIvZHJpdmVycy9uZXQvZXRo
+ZXJuZXQvcmVuZXNhcy9yYXZiLmgNCj4gPiA+ID4gQEAgLTk4OCw2ICs5ODgsMTEgQEAgZW51bSBy
+YXZiX2NoaXBfaWQgew0KPiA+ID4gPiAgICAgICAgIFJDQVJfR0VOMywNCj4gPiA+ID4gIH07DQo+
+ID4gPiA+DQo+ID4gPiA+ICtzdHJ1Y3QgcmF2Yl9od19pbmZvIHsNCj4gPiA+ID4gKyAgICAgICBl
+bnVtIHJhdmJfY2hpcF9pZCBjaGlwX2lkOw0KPiA+ID4gPiArICAgICAgIGludCBudW1fdHhfZGVz
+YzsNCj4gPiA+DQo+ID4gPiBXaHkgbm90ICJ1bnNpZ25lZCBpbnQiPyAuLi4NCj4gPiA+IFRoaXMg
+Y29tbWVudCBhcHBsaWVzIHRvIGEgZmV3IG1vcmUgc3Vic2VxdWVudCBwYXRjaGVzLg0KPiA+DQo+
+ID4gVG8gYXZvaWQgc2lnbmVkIGFuZCB1bnNpZ25lZCBjb21wYXJpc29uIHdhcm5pbmdzLg0KPiA+
+DQo+ID4gPg0KPiA+ID4gPiArfTsNCj4gPiA+ID4gKw0KPiA+ID4gPiAgc3RydWN0IHJhdmJfcHJp
+dmF0ZSB7DQo+ID4gPiA+ICAgICAgICAgc3RydWN0IG5ldF9kZXZpY2UgKm5kZXY7DQo+ID4gPiA+
+ICAgICAgICAgc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldjsgQEAgLTEwNDAsNiArMTA0NSw4
+IEBAIHN0cnVjdA0KPiA+ID4gPiByYXZiX3ByaXZhdGUgew0KPiA+ID4gPiAgICAgICAgIHVuc2ln
+bmVkIHR4Y2lkbToxOyAgICAgICAgICAgICAgLyogVFggQ2xvY2sgSW50ZXJuYWwgRGVsYXkNCj4g
+TW9kZQ0KPiA+ID4gKi8NCj4gPiA+ID4gICAgICAgICB1bnNpZ25lZCByZ21paV9vdmVycmlkZTox
+OyAgICAgIC8qIERlcHJlY2F0ZWQgcmdtaWktKmlkDQo+IGJlaGF2aW9yDQo+ID4gPiAqLw0KPiA+
+ID4gPiAgICAgICAgIGludCBudW1fdHhfZGVzYzsgICAgICAgICAgICAgICAgLyogVFggZGVzY3Jp
+cHRvcnMgcGVyIHBhY2tldA0KPiAqLw0KPiA+ID4NCj4gPiA+IC4uLiBvaCwgaGVyZSdzIHRoZSBv
+cmlnaW5hbCBjdWxwcml0Lg0KPiA+DQo+ID4gRXhhY3RseSwgdGhpcyB0aGUgcmVhc29uLg0KPiA+
+DQo+ID4gRG8geW91IHdhbnQgbWUgdG8gY2hhbmdlIHRoaXMgaW50byB1bnNpZ25lZCBpbnQ/IFBs
+ZWFzZSBsZXQgbWUga25vdy4NCj4gDQo+IFVwIHRvIHlvdSAob3IgdGhlIG1haW50YWluZXI/IDst
+KQ0KPiANCj4gRm9yIG5ldyBmaWVsZHMgKGluIHRoZSBvdGhlciBwYXRjaGVzKSwgSSB3b3VsZCB1
+c2UgdW5zaWduZWQgZm9yIGFsbA0KPiB1bnNpZ25lZCB2YWx1ZXMuICBTaWduZWQgdmFsdWVzIGhh
+dmUgbW9yZSBwaXRmYWxscyByZWxhdGVkIHRvIHVuZGVmaW5lZA0KPiBiZWhhdmlvci4NCg0KU2Vy
+Z2VpLCBXaGF0IGlzIHlvdXIgdGhvdWdodHMgaGVyZT8gUGxlYXNlIGxldCBtZSBrbm93Lg0KDQpD
+aGVlcnMsDQpCaWp1DQo=
