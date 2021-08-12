@@ -2,111 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D49393E9F3B
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 09:09:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 098A03E9F34
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 09:07:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234601AbhHLHJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 03:09:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59190 "EHLO
+        id S234546AbhHLHID (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 03:08:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234626AbhHLHJQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 03:09:16 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36E3CC061765;
-        Thu, 12 Aug 2021 00:08:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=B2gGP1VQRHCk6MX5le6+GSdI6v6K4Z0HHWZKFL10rE0=; b=KWqNs2MzE3TrEoFEQpnBVNyN0g
-        3jwYoTV2xVF97Q4jfnPDewLohje/W5KP+UVtzf70pRbNyVa0L9JR/HRVX++AjDpqrnODvsCq3iI6s
-        s5hWoJJ7ZlojfvWMh/XXqY102KCc4s+2CULMGqM9r9FaqMI/S9tVa1ufKTY3vmbMdC+GxCI/13mMB
-        m5AdxVnPALV6Jdrsa+eStgqDvqaVf+z0JdxyAI+Vm+PhT8v18Xohd1mTScUog28GAzhZYHaRa8eH8
-        1bRc8324eOnZjmhS5fyzGdF12l4kFva4VJYN6JiZH4nOA3O5IbcKjh1RosqC6FmXil2UqOXUOVEK3
-        /vMn+JfQ==;
-Received: from hch by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mE4oC-00EGqD-Lh; Thu, 12 Aug 2021 07:07:34 +0000
-Date:   Thu, 12 Aug 2021 08:07:20 +0100
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Uwe Kleine-K??nig <u.kleine-koenig@pengutronix.de>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-pci@vger.kernel.org, kernel@pengutronix.de,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Rafa?? Mi??ecki <zajec5@gmail.com>,
-        Zhou Wang <wangzhou1@hisilicon.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Michael Buesch <m@bues.ch>,
-        Oliver O'Halloran <oohall@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-crypto@vger.kernel.org,
-        netdev@vger.kernel.org, oss-drivers@corigine.com
-Subject: Re: [PATCH v3 4/8] PCI: replace pci_dev::driver usage that gets the
- driver name
-Message-ID: <YRTIqGm5Dr8du7a7@infradead.org>
-References: <20210811080637.2596434-1-u.kleine-koenig@pengutronix.de>
- <20210811080637.2596434-5-u.kleine-koenig@pengutronix.de>
+        with ESMTP id S229956AbhHLHIC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 03:08:02 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA399C061765
+        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 00:07:37 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id o126so1569148ybo.7
+        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 00:07:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qNbadYpEdJVuH8IgME6HLnqMP9VEAKKImPC7HomiMdE=;
+        b=EZh5Vi7dnJV+CsZFIWmVlgH8ElUJ+2gtNAZh5NOT7HwuyPBTzLSN1M5eX/k0PSey87
+         E3sObwmwcGZaXoaW1c8/RW7SUPRYJbu6iL6EwjeP0wTiE24/siJnc7Lhj5CF/KeZVCtP
+         fBaG66NmQ6h6FTRheBv+pz1Tu0n1reibJy9QdvO4uOxnrwxf2AO/MMafwAJNWVT/ocxX
+         2Tiz3AWP8qeJ8JlFry8IvgiW1h2wTtZl4Bp3qULM2EbcWtU7EHOfVtnPuoeaVNe988l6
+         4LXMPCrCBPTynZFuDZf6q03wNx+20itUZrEcihJ9TQNSkaq/GIDEyeeoy0+90D3egGDn
+         6Nhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qNbadYpEdJVuH8IgME6HLnqMP9VEAKKImPC7HomiMdE=;
+        b=riIuaEMmVWZBtx+rD5s1cEZJkyqUAufSGG71evObJdhnmk1PmsTno9zfQ6ITxMD7BR
+         79nTqctJb/zKIOmdUsDJO5n4d6tRSx/tCpRRv30rlf/NSZCIdYc3Q/Yn33b4Fj5njDOP
+         PrajeirroHO3+ziUTMitsTc6NHnNOyYClbULJThuthfrBx0B9GrEeGrm6NwJsE54eOem
+         YaqOCf7DPNeqK5WJMTx2jO5ttm/P6JBA5HWRBOlpFScprMXbKN8Y3CKJkSuzTGwzm5Db
+         OecxzmLlpWzun0O5L36rbsWGRzHM3tofn6lldWT5MJ5rVhAR6b6LUP4A78AjIoSL2Tp9
+         C2Qg==
+X-Gm-Message-State: AOAM533g+EVbAQJRKyaRulTJUpmGYCpHRNKQ9kyovc8pBEuYE9llpG/j
+        r0nPHUU3mTLGfAezdBmpo9KenSpGslHYCgGVN23Dxw==
+X-Google-Smtp-Source: ABdhPJz4R9WwiWRLBaxIdLeSpTQe1Orbq+PuyORfqX/1JHJwCICUFP6LIBDpoLgZ9L+Z5WysNNJSVOWKhNAHK6H7dZo=
+X-Received: by 2002:a25:ea51:: with SMTP id o17mr2748444ybe.253.1628752056761;
+ Thu, 12 Aug 2021 00:07:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210811080637.2596434-5-u.kleine-koenig@pengutronix.de>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+References: <20210811235959.1099333-1-phind.uet@gmail.com>
+In-Reply-To: <20210811235959.1099333-1-phind.uet@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 12 Aug 2021 09:07:25 +0200
+Message-ID: <CANn89iLQj4Xm-6Bcygtkd5QqDzmJBDALznL8mEJrF1Fh_W32iQ@mail.gmail.com>
+Subject: Re: [PATCH] net: drop skbs in napi->rx_list when removing the napi context.
+To:     Nguyen Dinh Phi <phind.uet@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        kpsingh@kernel.org, Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Wei Wang <weiwan@google.com>, Taehee Yoo <ap420073@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        memxor@gmail.com, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+989efe781c74de1ddb54@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 11, 2021 at 10:06:33AM +0200, Uwe Kleine-K??nig wrote:
->  static inline const char *eeh_driver_name(struct pci_dev *pdev)
->  {
-> -	return (pdev && pdev->driver) ? pdev->driver->name : "<null>";
-> +	const char *drvstr = pdev ? dev_driver_string(&pdev->dev) : "";
+On Thu, Aug 12, 2021 at 2:00 AM Nguyen Dinh Phi <phind.uet@gmail.com> wrote:
+>
+> The napi->rx_list is used to hold the GRO_NORMAL skbs before passing
+> them to the stack, these skbs only passed to stack at the flush time or
+> when the list's weight matches the predefined condition. In case the
+> rx_list contains pending skbs when we remove the napi context, we need
+> to clean out this list, otherwise, a memory leak will happen.
+>
+> Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
+> Reported-by: syzbot+989efe781c74de1ddb54@syzkaller.appspotmail.com
+
+Thank you for working on this.
+
+Please add a Fixes: tag, otherwise you are asking maintainers and
+stable teams to find the original bug,
+while you are in a much better position, since you spent time on
+fixing the issue.
+
+Also I object to this fix.
+
+If packets have been stored temporarily in GRO, they should be
+released at some point,
+normally at the end of a napi poll.
+
+By released, I mean that these packets should reach the upper stack,
+instead of being dropped without
+any notification.
+
+It seems a call to gro_normal_list() is missing somewhere.
+
+Can you find where ?
+
+Thanks !
+
+> ---
+>  net/core/dev.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+>
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index b51e41d0a7fe..319fffc62ce6 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -7038,6 +7038,13 @@ void __netif_napi_del(struct napi_struct *napi)
+>         list_del_rcu(&napi->dev_list);
+>         napi_free_frags(napi);
+>
+> +       if (napi->rx_count) {
+> +               struct sk_buff *skb, *n;
 > +
-> +	if (*drvstr == '\0')
-> +		return "<null>";
+> +               list_for_each_entry_safe(skb, n, &napi->rx_list, list)
+> +                       kfree_skb(skb);
+> +       }
 > +
-> +	return drvstr;
-
-This looks rather obsfucated due to the fact that dev_driver_string
-never returns '\0', and due to the strange mix of a tenary operation
-and the if on a related condition.
-
-
->  }
->  
->  #endif /* CONFIG_EEH */
-> diff --git a/drivers/bcma/host_pci.c b/drivers/bcma/host_pci.c
-> index 69c10a7b7c61..dc2ffa686964 100644
-> --- a/drivers/bcma/host_pci.c
-> +++ b/drivers/bcma/host_pci.c
-> @@ -175,9 +175,10 @@ static int bcma_host_pci_probe(struct pci_dev *dev,
->  	if (err)
->  		goto err_kfree_bus;
->  
-> -	name = dev_name(&dev->dev);
-> -	if (dev->driver && dev->driver->name)
-> -		name = dev->driver->name;
-> +	name = dev_driver_string(&dev->dev);
-> +	if (*name == '\0')
-> +		name = dev_name(&dev->dev);
-
-Where does this '\0' check come from?
-
-> +
-> +	name = dev_driver_string(&dev->dev);
-> +	if (*name == '\0')
-> +		name = dev_name(&dev->dev);
-> +
-
-More of this weirdness.
+>         flush_gro_hash(napi);
+>         napi->gro_bitmask = 0;
+>
+> --
+> 2.25.1
+>
