@@ -2,134 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92ED13EA008
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 09:58:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C53323EA042
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 10:05:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234795AbhHLH7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 03:59:20 -0400
-Received: from mail-ot1-f49.google.com ([209.85.210.49]:37764 "EHLO
-        mail-ot1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234761AbhHLH7T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 03:59:19 -0400
-Received: by mail-ot1-f49.google.com with SMTP id n1-20020a9d1e810000b0290514da4485e4so3970877otn.4;
-        Thu, 12 Aug 2021 00:58:55 -0700 (PDT)
+        id S235106AbhHLIGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 04:06:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:48321 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235160AbhHLIEV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 04:04:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1628755417;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VNcc4FKKgeh1x9olC7E03PuQx1nzor6Qv2O5Zs+wmJk=;
+        b=Sf6Yikze2SB5zWc7S+RxoPEJejWvB6o+cAOzpKrwXSxN5aGpJr6evPRps168OBX5iSMU/4
+        O+D62emJdqBKyer12IieSCYam4iSTsAoDWTPMj8PV92ZFkF8z2pFiS7/LZ/n/yR7vvs7mB
+        Kxz56V2Zfipxnawki/74wTxTgCYcCFo=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-373-d8k8F3DsP-W1gIh229tE3w-1; Thu, 12 Aug 2021 04:03:36 -0400
+X-MC-Unique: d8k8F3DsP-W1gIh229tE3w-1
+Received: by mail-ej1-f72.google.com with SMTP id j15-20020a17090643cfb02905b87bd5d2d0so869748ejn.16
+        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 01:03:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=h/ncPUMWRzuoT6QJYELKwlU0BgmoIDJcS93owKa4aQw=;
-        b=fcwncY2XChnbHL8+g9CtjWFdN8J3Y0ZGJNeFRV0f4+W2oIs87zIM0XWkXY50CGgpi+
-         wnWr0IuPF32FUA1pb6VI/rTVyLCR/qSryOLdecMxzdWRZ588Hm+AfzS4l5xcbeU9POkr
-         4TBBY9d4f6ZTGr0XWU61OiIkEKaNq3WUa2lGuCHuUulen8V5Np3dvu3lKYO0R1nKY414
-         QbDwW/NYNWtxSj1y0xjIsmdz8cVPkEF69C/XxR1O3Kpmd+UKcjiJgUMObROIEJVn8Yd1
-         H90tXswW5DwocP0uXQcGI5z5a2RO/2FLlizpL8hI48TiX9DYbUVGridB0PyrRXZhYzBH
-         Ey/Q==
-X-Gm-Message-State: AOAM533P91RpccxiyDwNrxwGbjYU6Wkr5xKq3w1G01cImgKSL36lim/6
-        eba+taKaLHarIeO/Z8Wv9/czhukCubuo1dARUJo=
-X-Google-Smtp-Source: ABdhPJzRx4DoSQmjlMVEFvIED3P2QiAjTjTCsI3NUK0wpsGFqXc7wZ7wC82ke5ZGw8/LLBBp+dw87XThevOJQQAhuxA=
-X-Received: by 2002:a9d:86e:: with SMTP id 101mr2608555oty.114.1628755134711;
- Thu, 12 Aug 2021 00:58:54 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VNcc4FKKgeh1x9olC7E03PuQx1nzor6Qv2O5Zs+wmJk=;
+        b=ftO6PnDSP/hGzF4HAH9b7/x4soytGyY8gHZeJLLmGpwos0Ggs5Hab60Au3cLAlHuLs
+         peFmMm387Mx853ofJER/qUMegxZybSsFWhLVzB1wLnaKOQHaPPqthcO/PYZh8AvhCzqB
+         O54lbGHpeOaX/Tf1EHBvOgo3YhPkCn/EYhlwvaxUob1j7uuwgvuL5Y5t8OJqi/T8fl3K
+         EjnIMhD7RDri7bhy1Y8ORT9ecLFsQm288QUsHD7e61oTrEnj0svCpZFZoI8Ojgmy+WhF
+         51dYMgKA/i8fFgyRh8LG7wCmMXj01qRwFNxUqWBqYhygH/GwpSu0CwdCybRx+I9YJGeR
+         EF9w==
+X-Gm-Message-State: AOAM532HUp36Pe/Yekn7TP9gwK9ax57An8/LdU6nP7nZ/gz1tdMHCCYr
+        J2pZNRpa7Z63NDM88dgO2gx6YT1wRMHNTQ4VOGAwQSJnvqOti/HnyQO0qj/KmkWngvnhzizetGA
+        6dAAU2FUyfrNo4iNj
+X-Received: by 2002:a17:906:4750:: with SMTP id j16mr2439920ejs.26.1628755414867;
+        Thu, 12 Aug 2021 01:03:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxU2tcTx6Y7xB9zzU+HQALuAB5KSTmssapC5dM7OHV8xYFOQBEDoFPmmXvbwzdWXnsrrWl5+w==
+X-Received: by 2002:a17:906:4750:: with SMTP id j16mr2439913ejs.26.1628755414694;
+        Thu, 12 Aug 2021 01:03:34 -0700 (PDT)
+Received: from steredhat (host-79-36-51-142.retail.telecomitalia.it. [79.36.51.142])
+        by smtp.gmail.com with ESMTPSA id k18sm752908edo.62.2021.08.12.01.03.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Aug 2021 01:03:34 -0700 (PDT)
+Date:   Thu, 12 Aug 2021 10:03:32 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Longpeng(Mike)" <longpeng2@huawei.com>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, arei.gonglei@huawei.com,
+        linux-kernel@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH resend] vsock/virtio: avoid potential deadlock when vsock
+ device remove
+Message-ID: <20210812080332.o4vxw72gn5uuqtik@steredhat>
+References: <20210812053056.1699-1-longpeng2@huawei.com>
 MIME-Version: 1.0
-References: <20210802102654.5996-1-biju.das.jz@bp.renesas.com>
- <20210802102654.5996-2-biju.das.jz@bp.renesas.com> <CAMuHMdWuoLFDRbJZqpvT48q1zbH05tqerWMs50aFDa6pR+ecAg@mail.gmail.com>
- <OS0PR01MB5922BF48F95DD5576A79994F86F99@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-In-Reply-To: <OS0PR01MB5922BF48F95DD5576A79994F86F99@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 12 Aug 2021 09:58:43 +0200
-Message-ID: <CAMuHMdVCyMD6u2KxKb_c2LR8DGAY86F69=TSRDK0C5GPwrO7Eg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/8] ravb: Add struct ravb_hw_info to driver data
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210812053056.1699-1-longpeng2@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Biju,
-
-On Thu, Aug 12, 2021 at 9:26 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > -----Original Message-----
-> > On Mon, Aug 2, 2021 at 12:27 PM Biju Das <biju.das.jz@bp.renesas.com>
-> > wrote:
-> > > The DMAC and EMAC blocks of Gigabit Ethernet IP found on RZ/G2L SoC
-> > > are similar to the R-Car Ethernet AVB IP. With a few changes in the
-> > > driver we can support both IPs.
-> > >
-> > > Currently a runtime decision based on the chip type is used to
-> > > distinguish the HW differences between the SoC families.
-> > >
-> > > The number of TX descriptors for R-Car Gen3 is 1 whereas on R-Car Gen2
-> > > and RZ/G2L it is 2. For cases like this it is better to select the
-> > > number of TX descriptors by using a structure with a value, rather
-> > > than a runtime decision based on the chip type.
-> > >
-> > > This patch adds the num_tx_desc variable to struct ravb_hw_info and
-> > > also replaces the driver data chip type with struct ravb_hw_info by
-> > > moving chip type to it.
-> > >
-> > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > > Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> >
-> > Thanks for your patch!
-> >
-> > > --- a/drivers/net/ethernet/renesas/ravb.h
-> > > +++ b/drivers/net/ethernet/renesas/ravb.h
-> > > @@ -988,6 +988,11 @@ enum ravb_chip_id {
-> > >         RCAR_GEN3,
-> > >  };
-> > >
-> > > +struct ravb_hw_info {
-> > > +       enum ravb_chip_id chip_id;
-> > > +       int num_tx_desc;
-> >
-> > Why not "unsigned int"? ...
-> > This comment applies to a few more subsequent patches.
+On Thu, Aug 12, 2021 at 01:30:56PM +0800, Longpeng(Mike) wrote:
+>There's a potential deadlock case when remove the vsock device or
+>process the RESET event:
 >
-> To avoid signed and unsigned comparison warnings.
+>  vsock_for_each_connected_socket:
+>      spin_lock_bh(&vsock_table_lock) ----------- (1)
+>      ...
+>          virtio_vsock_reset_sock:
+>              lock_sock(sk) --------------------- (2)
+>      ...
+>      spin_unlock_bh(&vsock_table_lock)
 >
-> >
-> > > +};
-> > > +
-> > >  struct ravb_private {
-> > >         struct net_device *ndev;
-> > >         struct platform_device *pdev;
-> > > @@ -1040,6 +1045,8 @@ struct ravb_private {
-> > >         unsigned txcidm:1;              /* TX Clock Internal Delay Mode
-> > */
-> > >         unsigned rgmii_override:1;      /* Deprecated rgmii-*id behavior
-> > */
-> > >         int num_tx_desc;                /* TX descriptors per packet */
-> >
-> > ... oh, here's the original culprit.
+>lock_sock() may do initiative schedule when the 'sk' is owned by
+>other thread at the same time, we would receivce a warning message
+>that "scheduling while atomic".
 >
-> Exactly, this the reason.
+>Even worse, if the next task (selected by the scheduler) try to
+>release a 'sk', it need to request vsock_table_lock and the deadlock
+>occur, cause the system into softlockup state.
+>  Call trace:
+>   queued_spin_lock_slowpath
+>   vsock_remove_bound
+>   vsock_remove_sock
+>   virtio_transport_release
+>   __vsock_release
+>   vsock_release
+>   __sock_release
+>   sock_close
+>   __fput
+>   ____fput
 >
-> Do you want me to change this into unsigned int? Please let me know.
+>So we should not require sk_lock in this case, just like the behavior
+>in vhost_vsock or vmci.
 
-Up to you (or the maintainer? ;-)
+The difference with vhost_vsock is that here we call it also when we 
+receive an event in the event queue (for example because we are 
+migrating the VM).
 
-For new fields (in the other patches), I would use unsigned for all
-unsigned values.  Signed values have more pitfalls related to
-undefined behavior.
+I think the idea of this lock was to prevent concurrency with RX loop, 
+but actually if a socket is connected, it can only change state to 
+TCP_CLOSING/TCP_CLOSE.
 
-Gr{oetje,eeting}s,
+I don't think there is any problem not to take the lock, at most we 
+could take the rx_lock in virtio_vsock_event_handle(), but I'm not sure 
+it's necessary.
 
-                        Geert
+>
+>Cc: Stefan Hajnoczi <stefanha@redhat.com>
+>Cc: Stefano Garzarella <sgarzare@redhat.com>
+>Cc: "David S. Miller" <davem@davemloft.net>
+>Cc: Jakub Kicinski <kuba@kernel.org>
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+We should add:
+Fixes: 0ea9e1d3a9e3 ("VSOCK: Introduce virtio_transport.ko")
+>Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
+>---
+> net/vmw_vsock/virtio_transport.c | 7 +++++--
+> 1 file changed, 5 insertions(+), 2 deletions(-)
+>
+>diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+>index e0c2c99..4f7c99d 100644
+>--- a/net/vmw_vsock/virtio_transport.c
+>+++ b/net/vmw_vsock/virtio_transport.c
+>@@ -357,11 +357,14 @@ static void virtio_vsock_event_fill(struct virtio_vsock *vsock)
+>
+> static void virtio_vsock_reset_sock(struct sock *sk)
+> {
+>-	lock_sock(sk);
+>+	/* vmci_transport.c doesn't take sk_lock here either.  At least we're
+>+	 * under vsock_table_lock so the sock cannot disappear while 
+>we're
+>+	 * executing.
+>+	 */
+>+
+> 	sk->sk_state = TCP_CLOSE;
+> 	sk->sk_err = ECONNRESET;
+> 	sk_error_report(sk);
+>-	release_sock(sk);
+> }
+>
+> static void virtio_vsock_update_guest_cid(struct virtio_vsock *vsock)
+>-- 
+>1.8.3.1
+>
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+With the Fixes tag added:
+
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+
