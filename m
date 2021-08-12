@@ -2,227 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1B063EA451
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 14:12:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF8EC3EA45F
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 14:17:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237358AbhHLMMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 08:12:55 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:13309 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236349AbhHLMMt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 08:12:49 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Gllmp6JGCz85Lp;
-        Thu, 12 Aug 2021 20:07:22 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Thu, 12 Aug 2021 20:12:22 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Thu, 12 Aug 2021 20:12:21 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH V2 net-next 4/4] net: hns3: add support ethtool extended link state
-Date:   Thu, 12 Aug 2021 20:08:38 +0800
-Message-ID: <1628770118-18714-5-git-send-email-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1628770118-18714-1-git-send-email-huangguangbin2@huawei.com>
-References: <1628770118-18714-1-git-send-email-huangguangbin2@huawei.com>
-MIME-Version: 1.0
+        id S235165AbhHLMRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 08:17:54 -0400
+Received: from mail-eopbgr40052.outbound.protection.outlook.com ([40.107.4.52]:28109
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234942AbhHLMRx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Aug 2021 08:17:53 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=daUMr1cumvGJTggyE/aUSDjzZUHmZwCQH61TvEhevJZVXncLw4wPH5bgrCp0AESm8DwESBHPy3Mu5C3dUXxyWFJ7zqWrD/I2FUfyHjHNU7Rc84HVhI7RsVRbyhiSjlUeDjusOFvN8nva735Gz1+XJ+iIu8TQtNhA0tzaBKbvqaNEZKnXF3lDWYIkDNPLpiQ2R9qhnhhIGMWXbXWkS3dFvjN3gzwPVT0w8snOv91fjmGE01z4bZuEkkxZANHV76ejQJW/Mf1XAdR92vbpxag88fw3TaCStndgYOt8hpFxVU0xxwRE5MkxCXAMUpBzD9KWIta1vf0k+fJpz1sVmPFnCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bdc9H/XTV3M9kZvLnKLntrgGZcGbIMf+8vlu7qbcfsM=;
+ b=bKLhH+RjucVW2fulbZP8IDcvB4ID/b/GvbLKyHrPyXRdmPduoLPOhq+xDCTAsZVEISrrpg0WQirnyy7Vn72jDjSLoTdG4FE477alWnZkdo3EWF9JmlaKS0Pombg99yK5a18dvCOgHJz+K558eYgX4XinVoxa18DQCW3A/owCFlzWwsLYNX05H5CndkgauP5O2q4b7mSr3DW1NEViNFhlCcp5uTGZWEbutzqZS4cKrnKO7CDMkCQsWgkqUHE5pQTHRr1xuDyhl1eHd6jllxkUXOoV5YhG3xQOXmhRsoxF+wogFHHg91D13RFAU5cYDToTONi8oietAqgJ8av9MYucOA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bdc9H/XTV3M9kZvLnKLntrgGZcGbIMf+8vlu7qbcfsM=;
+ b=BDAZo1ZA+AS63okRWuY1RO5ulvh2fjn3SXHB5+ZncI0ilngveNvEl+Gc80uQxwjCAQho5gaylBzIjAWdzzNw/faqUmXZ2pKNsMqSvwBxc1ZHdz3trc4ske+uFJQaZdzFeV6AUZ1Gkocsw6isX+bCrzmXHTl/cpGCM1MKGRtgYTs=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR0401MB2687.eurprd04.prod.outlook.com (2603:10a6:800:57::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.14; Thu, 12 Aug
+ 2021 12:17:26 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4415.018; Thu, 12 Aug 2021
+ 12:17:26 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        UNGLinuxDriver@microchip.com,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Marek Behun <kabel@blackhole.sk>,
+        DENG Qingfang <dqfext@gmail.com>
+Subject: [RFC PATCH net-next] net: bridge: switchdev: expose the port hwdom as a netlink attribute
+Date:   Thu, 12 Aug 2021 15:17:03 +0300
+Message-Id: <20210812121703.3461228-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+X-ClientProxiedBy: AM3PR04CA0131.eurprd04.prod.outlook.com (2603:10a6:207::15)
+ To VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (188.25.144.60) by AM3PR04CA0131.eurprd04.prod.outlook.com (2603:10a6:207::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.14 via Frontend Transport; Thu, 12 Aug 2021 12:17:24 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7f8a5b3f-a985-4f3b-0621-08d95d8b256c
+X-MS-TrafficTypeDiagnostic: VI1PR0401MB2687:
+X-Microsoft-Antispam-PRVS: <VI1PR0401MB26877E3816CD2892ACE7477AE0F99@VI1PR0401MB2687.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: z5t5RK8hDLALVOXNi8eIwDFwsmr6+Ob598ugca5XAZwYOrbcxfnadxr9oQN/34bf2bF5cWlBKiDP8ztxBtMyc6hBWv8qHduZhTX0vlomgu+7dlGFvGTvqkhwjNnu1gbkdFQ76M3g1spQMEmabvp9qEzMeh9DEEkOGeEqdZdV5DgDW4w7pw7guW6PUQwTxWOGV1pGWYpCzlDpFdfBw7pOpwmgcp6MkIpUbi1LX1oQSwuIlxRiBgWFRWMBZkWIrCDXnmxSuZNJeoYzxKVGUWRoQhnr9gmYCErOm49PV0TpN3L1qoqjQ+UAHRp2LMkCnq+dPusuA9N2T+AqerbQGl8Vgl1xbxxfjBbcbuRNFOYCj0IqvUvFv8bv09isajSYiPPGSNYSWg455nEsKXhRrHZL0zQyAo1ca+B4WtrdKG1fFvXnUMCkvGcN0BNESYjygordXs3mvPXU8HVuSX71hE2Qo49QD7Cq4fMMQxpwtdTkqT++Xld9VAGufUN7Yybt5LjVIiOAW3vDNWbESi8st0joFut0QgNQxCkc+Epu9fLXI+iGnQw2MnP+jQc/qM1tOslTtV+tk/su0JCtiflB35uqtIwW3wgN5HtnGI76Wt4Vk21/i73W5T+DNW6Tw0tPymliSdyFavh9r8ZKPXFX3G/SNYaQIrXs2hDF3ljlstd4BJo7Z+7PNRhYyHc4hKlQfUmlrAX9E7KChM+Bs9c5tIYKvw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(136003)(366004)(39860400002)(396003)(346002)(36756003)(52116002)(1076003)(8936002)(2906002)(6512007)(478600001)(6486002)(6506007)(7416002)(316002)(66556008)(66476007)(83380400001)(5660300002)(66946007)(38100700002)(38350700002)(4326008)(186003)(8676002)(86362001)(44832011)(54906003)(2616005)(956004)(66574015)(110136005)(6666004)(26005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?gmtGl8ydcG2/TnBNSZTCqCq6uGvud/cREWUmA9FVyDRzImb6pyniPdJT8Aqu?=
+ =?us-ascii?Q?nnjzmV9ApIEY7n7Lhw+f7Nq3J/c/ioAdQST+A1jUl5nyI8nv1zPVwxf1FKEp?=
+ =?us-ascii?Q?WMOax+jTrHuZl0pu93cB5DamM5GyEWEnFqUBGwDwW2NMYJXGRF6jEZNReUMF?=
+ =?us-ascii?Q?ExIWB9hvFPy2EvZi0fTk+Y7esXBd6DJ45kRnOqduAUecpg4Q/9hkjGq/QPTX?=
+ =?us-ascii?Q?7vmwvqPD7egOq0QMhaVV34fhrxYsj2g9Kl5E/iUVy33LoLIEVWG6r2fkMgqi?=
+ =?us-ascii?Q?+4s57ih9vki8zOH4IGrs/rw1U3zVqTRa2k62ti3t8sDalx6OcFhdN6IiFZ66?=
+ =?us-ascii?Q?bOYu+2AtI+cFqyKc/lSi+KZLvcaAZ1GPMWdT3OWh2QlLtflXIjzecalE1DJs?=
+ =?us-ascii?Q?yIxZDCGSZgAq/USt3l+sUsWN0cXxH9361T+mLpsT2FdagsejDWu2Td7xYWmZ?=
+ =?us-ascii?Q?drIoeCISnM0cLpQEB7IF3SDly1zXKvttoB2Yu8u/DJekS5Anuh6w+v4tV9JE?=
+ =?us-ascii?Q?ljP5NFjkwSFsAdnBgFU5Hk0qygca6dHUG2d7so4AhHIMvAqE9Z4nadz3WwDS?=
+ =?us-ascii?Q?IDLnQZty6uGzzVahM1sCWfWX+vjXQJipnKigxgldmTfKcT7nWuqpARb85fBH?=
+ =?us-ascii?Q?omBi1y8oQBO8Lnr5iEXwnggGla4cTLAajU2eNLUlS/F4k1s9UD5LM3EPUjVV?=
+ =?us-ascii?Q?aCl9wrfzStm4HAjROcajkFL/FPFUp2M/JEj16bpT4LU1wt42sk6RThS7/ySA?=
+ =?us-ascii?Q?HYGNEmon9Pe/DHQKEeRFL1PCAQbYalPLf4kvnXgYbloDllpRyDByZN4yl5FB?=
+ =?us-ascii?Q?p2oDZGwefdMsrcwizDOH/9zOhPsaQxUvvdJhirgqMnNyx+D4vyhfsV0kQ8sg?=
+ =?us-ascii?Q?5NxLrO9RQ3n5878DO7ko64I+yRb/q5ILz1bC8vjrRQywGDHd2APInbviWmRD?=
+ =?us-ascii?Q?+TWNWGey+byW+ClszjgffAZliTTrjvWdiwDthxaJ6OjtIlazP1m1TrWoSf8z?=
+ =?us-ascii?Q?zLG3a9y8QjCU+HIvy6NHfcv5wbHINQgmDY6qNkBPbjUAjVvA1Hh3VBe4RsTz?=
+ =?us-ascii?Q?i2XQ+w6UmeV6PCSl37iKen3kh8p9fk0EAB2bE4szzokNWrxYVo8Y2f8tne8K?=
+ =?us-ascii?Q?PXGyWpQnod7gUUvqvxttiF1Gs28x+KOBpJ9z2ImTo5xE6aNLLXN3Qr+oLbCB?=
+ =?us-ascii?Q?OS/HdAbx04Yj/DMgfTwCU05jPel9COQDGBZ5Xk/mXshZ6z+5h6l6iSAywE98?=
+ =?us-ascii?Q?FFJC43+f/XNzE8gqynAS7jbp5tU0xGRew6DppwWDgQ9OSDE97NSdctPZSMy4?=
+ =?us-ascii?Q?fCNoweqMp2XT0VWLkBl960AW?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7f8a5b3f-a985-4f3b-0621-08d95d8b256c
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Aug 2021 12:17:26.1358
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: GK3GbkJVzkJ+3LY3YlFCf/lDIUdJP6z3/5ABcyCZrHbWzEfqUlBsWUUOxB4NFZbVbSyudOOhPLG4vmup+uxvKw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2687
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to know the reason of link up failure, add supporting ethtool
-extended link state. Driver reads the link status code from firmware if
-in link down state and converts it to ethtool extended link state.
+It is useful for a user to see whether a bridge port is offloaded or
+not, and sometimes this may depend on hardware capability.
 
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+For example, a switchdev driver might be able to offload bonding/team
+interfaces as bridge ports, but only for certain xmit hash policies.
+When running into that situation, DSA for example prints a warning
+extack that the interface is not offloaded, but not all drivers do that.
+In fact, since the recent bridge switchdev explicit offloading API, all
+switchdev drivers should be able to fall back to software LAGs being
+bridge ports without having any explicit code to handle them. So they
+don't have the warning extack printed anywhere.
+
+Or alternatively, we might want in the future to patch individual
+switchdev drivers to implement something like:
+
+	ethtool -K sw0p2 l2-fwd-offload off
+
+since that is now possible and easy (the driver just needs to not call
+switchdev_bridge_port_offload). This might be helpful when installing
+deep packet inspection firewall rules on a bridge port which must be
+executed in software, so the port should not forward the packets
+autonomously but send them to the CPU.
+
+With this change, the "hardware domain" concept becomes UAPI. It is a
+read-only link attribute which is zero for non-offloaded bridge ports,
+and has a non-zero value that is unique per bridge otherwise (i.e. two
+different bridge ports, in two different bridges, might have a hwdom of
+1 and they are still different hardware domains).
+
+./ip -d link
+13: sw1p3@swp2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue master br0
+		state LOWERLAYERDOWN mode DEFAULT group default qlen 1000
+    link/ether 00:04:9f:0a:0b:0c brd ff:ff:ff:ff:ff:ff promiscuity 1 minmtu 68
+    maxmtu 2021 bridge_slave state disabled priority 32 cost 100 hairpin off guard off
+    root_block off fastleave off learning on flood on port_id 0x8007 port_no 0x7
+    designated_port 32775 designated_cost 0 designated_bridge 8000.0:4:9f:a:b:c
+    designated_root 8000.0:4:9f:a:b:c hold_timer    0.00 message_age_timer    0.00
+    forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off
+    proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on
+    mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0
+    vlan_tunnel off isolated off hwdom 2 addrgenmode none numtxqueues 8 numrxqueues 1
+    gso_max_size 65536 gso_max_segs 65535 portname p3 switchid 02000000 parentbus spi
+    parentdev spi2.1
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  2 +
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 66 ++++++++++++++++++++++
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h |  6 ++
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  3 +
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 24 ++++++++
- 5 files changed, 101 insertions(+)
+ include/uapi/linux/if_link.h | 1 +
+ net/bridge/br_netlink.c      | 5 +++++
+ net/bridge/br_private.h      | 6 ++++++
+ net/bridge/br_switchdev.c    | 5 +++++
+ 4 files changed, 17 insertions(+)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index e0b7c3c44e7b..848bed866193 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -718,6 +718,8 @@ struct hnae3_ae_ops {
- 			    u32 nsec, u32 sec);
- 	int (*get_ts_info)(struct hnae3_handle *handle,
- 			   struct ethtool_ts_info *info);
-+	int (*get_link_diagnosis_info)(struct hnae3_handle *handle,
-+				       u32 *status_code);
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 5310003523ce..498041ffd65f 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -534,6 +534,7 @@ enum {
+ 	IFLA_BRPORT_MRP_IN_OPEN,
+ 	IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT,
+ 	IFLA_BRPORT_MCAST_EHT_HOSTS_CNT,
++	IFLA_BRPORT_HWDOM,
+ 	__IFLA_BRPORT_MAX
  };
- 
- struct hnae3_dcb_ops {
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 167721b647ad..835105015763 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -1711,6 +1711,71 @@ static int hns3_get_ts_info(struct net_device *netdev,
- 	return ethtool_op_get_ts_info(netdev, info);
+ #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
+diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+index 8ae026fa2ad7..4299625f52dc 100644
+--- a/net/bridge/br_netlink.c
++++ b/net/bridge/br_netlink.c
+@@ -203,6 +203,7 @@ static inline size_t br_port_info_size(void)
+ 		+ nla_total_size(sizeof(u8))	/* IFLA_BRPORT_MRP_IN_OPEN */
+ 		+ nla_total_size(sizeof(u32))	/* IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT */
+ 		+ nla_total_size(sizeof(u32))	/* IFLA_BRPORT_MCAST_EHT_HOSTS_CNT */
++		+ nla_total_size(sizeof(u32))	/* IFLA_BRPORT_HWDOM */
+ 		+ 0;
  }
  
-+static const struct hns3_ethtool_link_ext_state_mapping
-+hns3_link_ext_state_map[] = {
-+	{1, ETHTOOL_LINK_EXT_STATE_AUTONEG,
-+		ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_HCD},
-+	{2, ETHTOOL_LINK_EXT_STATE_AUTONEG,
-+		ETHTOOL_LINK_EXT_SUBSTATE_AN_ACK_NOT_RECEIVED},
-+
-+	{256, ETHTOOL_LINK_EXT_STATE_LINK_TRAINING_FAILURE,
-+		ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_LINK_INHIBIT_TIMEOUT},
-+	{257, ETHTOOL_LINK_EXT_STATE_LINK_TRAINING_FAILURE,
-+		ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_LINK_PARTNER_DID_NOT_SET_RECEIVER_READY},
-+	{512, ETHTOOL_LINK_EXT_STATE_LINK_TRAINING_FAILURE,
-+		ETHTOOL_LINK_EXT_SUBSTATE_LT_REMOTE_FAULT},
-+
-+	{513, ETHTOOL_LINK_EXT_STATE_LINK_LOGICAL_MISMATCH,
-+		ETHTOOL_LINK_EXT_SUBSTATE_LLM_PCS_DID_NOT_ACQUIRE_BLOCK_LOCK},
-+	{514, ETHTOOL_LINK_EXT_STATE_LINK_LOGICAL_MISMATCH,
-+		ETHTOOL_LINK_EXT_SUBSTATE_LLM_FC_FEC_IS_NOT_LOCKED},
-+	{515, ETHTOOL_LINK_EXT_STATE_LINK_LOGICAL_MISMATCH,
-+		ETHTOOL_LINK_EXT_SUBSTATE_LLM_RS_FEC_IS_NOT_LOCKED},
-+
-+	{768, ETHTOOL_LINK_EXT_STATE_BAD_SIGNAL_INTEGRITY,
-+		ETHTOOL_LINK_EXT_SUBSTATE_BSI_LARGE_NUMBER_OF_PHYSICAL_ERRORS},
-+	{769, ETHTOOL_LINK_EXT_STATE_BAD_SIGNAL_INTEGRITY,
-+		ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_REFERENCE_CLOCK_LOST},
-+	{770, ETHTOOL_LINK_EXT_STATE_BAD_SIGNAL_INTEGRITY,
-+		ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_ALOS},
-+
-+	{1024, ETHTOOL_LINK_EXT_STATE_NO_CABLE, 0},
-+	{1025, ETHTOOL_LINK_EXT_STATE_CABLE_ISSUE,
-+		ETHTOOL_LINK_EXT_SUBSTATE_CI_UNSUPPORTED_CABLE},
-+
-+	{1026, ETHTOOL_LINK_EXT_STATE_EEPROM_ISSUE, 0},
-+};
-+
-+static int hns3_get_link_ext_state(struct net_device *netdev,
-+				   struct ethtool_link_ext_state_info *info)
-+{
-+	const struct hns3_ethtool_link_ext_state_mapping *map;
-+	struct hnae3_handle *h = hns3_get_handle(netdev);
-+	u32 status_code, i;
-+	int ret;
-+
-+	if (netif_carrier_ok(netdev))
-+		return -ENODATA;
-+
-+	if (!h->ae_algo->ops->get_link_diagnosis_info)
-+		return -EOPNOTSUPP;
-+
-+	ret = h->ae_algo->ops->get_link_diagnosis_info(h, &status_code);
-+	if (ret)
-+		return ret;
-+
-+	for (i = 0; i < ARRAY_SIZE(hns3_link_ext_state_map); i++) {
-+		map = &hns3_link_ext_state_map[i];
-+		if (map->status_code == status_code) {
-+			info->link_ext_state = map->link_ext_state;
-+			info->__link_ext_substate = map->link_ext_substate;
-+			return 0;
-+		}
-+	}
-+
-+	return -ENODATA;
-+}
-+
- static const struct ethtool_ops hns3vf_ethtool_ops = {
- 	.supported_coalesce_params = HNS3_ETHTOOL_COALESCE,
- 	.get_drvinfo = hns3_get_drvinfo,
-@@ -1782,6 +1847,7 @@ static const struct ethtool_ops hns3_ethtool_ops = {
- 	.get_tunable = hns3_get_tunable,
- 	.set_tunable = hns3_set_tunable,
- 	.reset = hns3_set_reset,
-+	.get_link_ext_state = hns3_get_link_ext_state,
- };
- 
- void hns3_ethtool_set_ops(struct net_device *netdev)
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h
-index 2f186607c6e0..822d6fcbc73b 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h
-@@ -22,4 +22,10 @@ struct hns3_pflag_desc {
- 	void (*handler)(struct net_device *netdev, bool enable);
- };
- 
-+struct hns3_ethtool_link_ext_state_mapping {
-+	u32 status_code;
-+	enum ethtool_link_ext_state link_ext_state;
-+	u8 link_ext_substate;
-+};
-+
+@@ -295,6 +296,9 @@ static int br_port_fill_attrs(struct sk_buff *skb,
+ 		return -EMSGSIZE;
  #endif
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-index 18bde77ef944..8e5be127909b 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-@@ -316,6 +316,9 @@ enum hclge_opcode_type {
- 	/* PHY command */
- 	HCLGE_OPC_PHY_LINK_KSETTING	= 0x7025,
- 	HCLGE_OPC_PHY_REG		= 0x7026,
+ 
++	if (nla_put_u32(skb, IFLA_BRPORT_HWDOM, nbp_switchdev_get_hwdom(p)))
++		return -EMSGSIZE;
 +
-+	/* Query link diagnosis info command */
-+	HCLGE_OPC_QUERY_LINK_DIAGNOSIS	= 0x702A,
+ 	/* we might be called only with br->lock */
+ 	rcu_read_lock();
+ 	backup_p = rcu_dereference(p->backup_port);
+@@ -829,6 +833,7 @@ static const struct nla_policy br_port_policy[IFLA_BRPORT_MAX + 1] = {
+ 	[IFLA_BRPORT_ISOLATED]	= { .type = NLA_U8 },
+ 	[IFLA_BRPORT_BACKUP_PORT] = { .type = NLA_U32 },
+ 	[IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT] = { .type = NLA_U32 },
++	[IFLA_BRPORT_HWDOM] = { .type = NLA_U32 },
  };
  
- #define HCLGE_TQP_REG_OFFSET		0x80000
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 9fd15287986f..8779a63d51b3 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -12843,6 +12843,29 @@ static int hclge_get_module_eeprom(struct hnae3_handle *handle, u32 offset,
- 	return 0;
+ /* Change the state of the port and notify spanning tree */
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 32c218aa3f36..c3f0a44abc14 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -1969,6 +1969,7 @@ void nbp_switchdev_frame_mark(const struct net_bridge_port *p,
+ 			      struct sk_buff *skb);
+ bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
+ 				  const struct sk_buff *skb);
++int nbp_switchdev_get_hwdom(const struct net_bridge_port *p);
+ int br_switchdev_set_port_flag(struct net_bridge_port *p,
+ 			       unsigned long flags,
+ 			       unsigned long mask,
+@@ -2035,6 +2036,11 @@ static inline bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
+ 	return true;
  }
  
-+static int hclge_get_link_diagnosis_info(struct hnae3_handle *handle,
-+					 u32 *status_code)
++static inline int nbp_switchdev_get_hwdom(const struct net_bridge_port *p)
 +{
-+	struct hclge_vport *vport = hclge_get_vport(handle);
-+	struct hclge_dev *hdev = vport->back;
-+	struct hclge_desc desc;
-+	int ret;
-+
-+	if (hdev->ae_dev->dev_version <= HNAE3_DEVICE_VERSION_V2)
-+		return -EOPNOTSUPP;
-+
-+	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_QUERY_LINK_DIAGNOSIS, true);
-+	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
-+	if (ret) {
-+		dev_err(&hdev->pdev->dev,
-+			"failed to query link diagnosis info, ret = %d\n", ret);
-+		return ret;
-+	}
-+
-+	*status_code = le32_to_cpu(desc.data[0]);
 +	return 0;
 +}
 +
- static const struct hnae3_ae_ops hclge_ops = {
- 	.init_ae_dev = hclge_init_ae_dev,
- 	.uninit_ae_dev = hclge_uninit_ae_dev,
-@@ -12943,6 +12966,7 @@ static const struct hnae3_ae_ops hclge_ops = {
- 	.set_tx_hwts_info = hclge_ptp_set_tx_info,
- 	.get_rx_hwts = hclge_ptp_get_rx_hwts,
- 	.get_ts_info = hclge_ptp_get_ts_info,
-+	.get_link_diagnosis_info = hclge_get_link_diagnosis_info,
- };
+ static inline int br_switchdev_set_port_flag(struct net_bridge_port *p,
+ 					     unsigned long flags,
+ 					     unsigned long mask,
+diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
+index 6bf518d78f02..01858607c7e4 100644
+--- a/net/bridge/br_switchdev.c
++++ b/net/bridge/br_switchdev.c
+@@ -60,6 +60,11 @@ void nbp_switchdev_frame_mark(const struct net_bridge_port *p,
+ 		BR_INPUT_SKB_CB(skb)->src_hwdom = p->hwdom;
+ }
  
- static struct hnae3_ae_algo ae_algo = {
++int nbp_switchdev_get_hwdom(const struct net_bridge_port *p)
++{
++	return p->hwdom;
++}
++
+ bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
+ 				  const struct sk_buff *skb)
+ {
 -- 
-2.8.1
+2.25.1
 
