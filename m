@@ -2,104 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C6B53EA910
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 19:03:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DC483EA93F
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 19:16:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234362AbhHLRDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 13:03:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:39053 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234251AbhHLRDg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 13:03:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1628787791;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=J954MLxa9gOHhPQ2vkkolUzmWyf9ox971ksqXH7Ids8=;
-        b=Ni4RRz1vU1qQK6G1HgX1rbmCgcvho08HeLR98oiUQLqLM9zDN3uMoxyvYbXz6Fdepj90oY
-        TDgu+Vwzjy9bfqfZCjvoP76yP9BGICY8Va+1ncP2DYxLJnQ11GuJCaXgZECQPTxX1LDv1j
-        DWImDrzeB9Dx2Z5O2dCUhDqZN6JIOHE=
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
- [209.85.167.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-513-wgasWdoTMY-ryYczZR233A-1; Thu, 12 Aug 2021 13:03:09 -0400
-X-MC-Unique: wgasWdoTMY-ryYczZR233A-1
-Received: by mail-oi1-f199.google.com with SMTP id o5-20020a0568080bc5b029025cbda427bbso3179656oik.5
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 10:03:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=J954MLxa9gOHhPQ2vkkolUzmWyf9ox971ksqXH7Ids8=;
-        b=RMghKYtdV4RZwfeNlV5aidvgoq2zpX/bfqnwZC1PNjrTlGxtdlkIL4+jh5rxhBy9tW
-         70GJg0XjtISDA6MXVy7ANy2VY2MMBi2IsmkyiJC3O9IXeesU9YekEZHqeuSvA4bne3C+
-         /c0ub156dgzfknLQOfh05MlX0bfx7AQS7EE3zxW7MSG9wGRhHS/v7v9dFH2WBYIbvF4K
-         nNRw7J1sAYNtG/P6QGRPfJ3fWj07DmJSnutbuWuDKzBDjx16GC5J8vmz8mxooYW0esBl
-         C98X1Ibt7DKoYnSuxzW3CBJ0tsTPdsd8it4QrpDFmYW1p4Xfwm4/FlIB+YIByEO0cSur
-         p7sA==
-X-Gm-Message-State: AOAM533cCEinvomaVbRjSCmfLv5paXgcv7uZXcUzuxKidhiKQvUOm24S
-        omvb5SWR1d6og/tt4XVlinOgXjeq/lxlXg4WiDNzMEUxnv3pumJ72wu5ej+yZPNxJpA222cxgSo
-        G5hwjAa1p4nE0W0rz
-X-Received: by 2002:a05:6830:11d4:: with SMTP id v20mr4113228otq.358.1628787789318;
-        Thu, 12 Aug 2021 10:03:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJykzvJTl7IgT9ugEjGH3GRxKniSCfzdb1tXmDjHVTSGHXjRu3xi7zcEhXGhRmIzmuNwDKlWyw==
-X-Received: by 2002:a05:6830:11d4:: with SMTP id v20mr4113216otq.358.1628787789169;
-        Thu, 12 Aug 2021 10:03:09 -0700 (PDT)
-Received: from localhost.localdomain.com (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id g20sm733386otj.9.2021.08.12.10.03.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Aug 2021 10:03:08 -0700 (PDT)
-From:   trix@redhat.com
-To:     aspriel@gmail.com, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com, chi-hsien.lin@infineon.com,
-        wright.feng@infineon.com, chung-hsien.hsu@infineon.com,
-        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        zhengyongjun3@huawei.com, linus.walleij@linaro.org,
-        lee.jones@linaro.org
-Cc:     linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] brcmfmac: Fix fallback logic to use firmware's canonical path
-Date:   Thu, 12 Aug 2021 10:03:00 -0700
-Message-Id: <20210812170300.1047330-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        id S234892AbhHLRP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 13:15:57 -0400
+Received: from mga07.intel.com ([134.134.136.100]:9088 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232326AbhHLRP4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Aug 2021 13:15:56 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10074"; a="279145547"
+X-IronPort-AV: E=Sophos;i="5.84,316,1620716400"; 
+   d="scan'208";a="279145547"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2021 10:15:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,316,1620716400"; 
+   d="scan'208";a="446620647"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga007.fm.intel.com with ESMTP; 12 Aug 2021 10:15:29 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Ken Cox <jkc@redhat.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com,
+        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+        Marek Szlosek <marek.szlosek@intel.com>
+Subject: [PATCH net 1/1] ixgbe: Add locking to prevent panic when setting sriov_numvfs to zero
+Date:   Thu, 12 Aug 2021 10:18:56 -0700
+Message-Id: <20210812171856.1867667-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Ken Cox <jkc@redhat.com>
 
-Static analysis reports this problem
-firmware.c:709:6: warning: Branch condition evaluates to a garbage value
-        if (ret) {
-            ^~~
+It is possible to disable VFs while the PF driver is processing requests
+from the VF driver.  This can result in a panic.
 
-In brcmf_fw_get_firmwares(), ret is only set if the alt_path control
-flow is taken.  Initialize ret to -1, so the canonical path is taken
-if alt_path is not.
+BUG: unable to handle kernel paging request at 000000000000106c
+PGD 0 P4D 0
+Oops: 0000 [#1] SMP NOPTI
+CPU: 8 PID: 0 Comm: swapper/8 Kdump: loaded Tainted: G          I      --------- -  -
+Hardware name: Dell Inc. PowerEdge R740/06WXJT, BIOS 2.8.2 08/27/2020
+RIP: 0010:ixgbe_msg_task+0x4c8/0x1690 [ixgbe]
+Code: 00 00 48 8d 04 40 48 c1 e0 05 89 7c 24 24 89 fd 48 89 44 24 10 83 ff 01 0f 84 b8 04 00 00 4c 8b 64 24 10 4d 03 a5 48 22 00 00 <41> 80 7c 24 4c 00 0f 84 8a 03 00 00 0f b7 c7 83 f8 08 0f 84 8f 0a
+RSP: 0018:ffffb337869f8df8 EFLAGS: 00010002
+RAX: 0000000000001020 RBX: 0000000000000000 RCX: 000000000000002b
+RDX: 0000000000000002 RSI: 0000000000000008 RDI: 0000000000000006
+RBP: 0000000000000006 R08: 0000000000000002 R09: 0000000000029780
+R10: 00006957d8f42832 R11: 0000000000000000 R12: 0000000000001020
+R13: ffff8a00e8978ac0 R14: 000000000000002b R15: ffff8a00e8979c80
+FS:  0000000000000000(0000) GS:ffff8a07dfd00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000000000106c CR3: 0000000063e10004 CR4: 00000000007726e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+PKRU: 55555554
+Call Trace:
+ <IRQ>
+ ? ttwu_do_wakeup+0x19/0x140
+ ? try_to_wake_up+0x1cd/0x550
+ ? ixgbevf_update_xcast_mode+0x71/0xc0 [ixgbevf]
+ ixgbe_msix_other+0x17e/0x310 [ixgbe]
+ __handle_irq_event_percpu+0x40/0x180
+ handle_irq_event_percpu+0x30/0x80
+ handle_irq_event+0x36/0x53
+ handle_edge_irq+0x82/0x190
+ handle_irq+0x1c/0x30
+ do_IRQ+0x49/0xd0
+ common_interrupt+0xf/0xf
 
-Fixes: 5ff013914c62 ("brcmfmac: firmware: Allow per-board firmware binaries")
-Signed-off-by: Tom Rix <trix@redhat.com>
+This can be eventually be reproduced with the following script:
+
+while :
+do
+	echo 63 > /sys/class/net/ens3f0/device/sriov_numvfs
+	sleep 1
+	echo 0 > /sys/class/net/ens3f0/device/sriov_numvfs
+        sleep 1
+done
+
+Fixes: da36b64736cf ("ixgbe: Implement PCI SR-IOV sysfs callback operation")
+Signed-off-by: Ken Cox <jkc@redhat.com>
+Acked-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+Tested-by: Marek Szlosek <marek.szlosek@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h       | 1 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c | 8 ++++++++
+ 2 files changed, 9 insertions(+)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-index adfdfc654b104..e11f1a3a38a59 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-@@ -680,7 +680,7 @@ int brcmf_fw_get_firmwares(struct device *dev, struct brcmf_fw_request *req,
- 	struct brcmf_fw_item *first = &req->items[0];
- 	struct brcmf_fw *fwctx;
- 	char *alt_path;
--	int ret;
-+	int ret = -1;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+index a604552fa634..696bb2a61ea7 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+@@ -807,6 +807,7 @@ enum ixgbe_state_t {
+ 	__IXGBE_PTP_RUNNING,
+ 	__IXGBE_PTP_TX_IN_PROGRESS,
+ 	__IXGBE_RESET_REQUESTED,
++	__IXGBE_DISABLING_VFS,
+ };
  
- 	brcmf_dbg(TRACE, "enter: dev=%s\n", dev_name(dev));
- 	if (!fw_cb)
+ struct ixgbe_cb {
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+index 214a38de3f41..0a1a8756f1fd 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+@@ -206,8 +206,12 @@ int ixgbe_disable_sriov(struct ixgbe_adapter *adapter)
+ 	unsigned int num_vfs = adapter->num_vfs, vf;
+ 	int rss;
+ 
++	while (test_and_set_bit(__IXGBE_DISABLING_VFS, &adapter->state))
++		usleep_range(1000, 2000);
++
+ 	/* set num VFs to 0 to prevent access to vfinfo */
+ 	adapter->num_vfs = 0;
++	clear_bit(__IXGBE_DISABLING_VFS, &adapter->state);
+ 
+ 	/* put the reference to all of the vf devices */
+ 	for (vf = 0; vf < num_vfs; ++vf) {
+@@ -1307,6 +1311,9 @@ void ixgbe_msg_task(struct ixgbe_adapter *adapter)
+ 	struct ixgbe_hw *hw = &adapter->hw;
+ 	u32 vf;
+ 
++	if (test_and_set_bit(__IXGBE_DISABLING_VFS, &adapter->state))
++		return;
++
+ 	for (vf = 0; vf < adapter->num_vfs; vf++) {
+ 		/* process any reset requests */
+ 		if (!ixgbe_check_for_rst(hw, vf))
+@@ -1320,6 +1327,7 @@ void ixgbe_msg_task(struct ixgbe_adapter *adapter)
+ 		if (!ixgbe_check_for_ack(hw, vf))
+ 			ixgbe_rcv_ack_from_vf(adapter, vf);
+ 	}
++	clear_bit(__IXGBE_DISABLING_VFS, &adapter->state);
+ }
+ 
+ void ixgbe_disable_tx_rx(struct ixgbe_adapter *adapter)
 -- 
-2.26.3
+2.26.2
 
