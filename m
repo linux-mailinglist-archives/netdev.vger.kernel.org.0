@@ -2,73 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F61F3EA482
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 14:21:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36D3D3EA4A0
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 14:27:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235911AbhHLMVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 08:21:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46924 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237517AbhHLMVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 08:21:12 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 061A2C061765
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 05:20:45 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id q18so1156572wrm.6
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 05:20:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=YmL0IRxeWrFbh0vlXgRwXxoaH3pPmHoURYabIlp2Hi0=;
-        b=bSnIkyUoZGPs7xUZxVNCjg4HzwbX+4HuU9gcjHKkS+rDiPnRE5lcxsm35j07cO3wfb
-         pnFbbs3r1g4HKat9JjEnNAW3oitS3pbgGERI1UntBz5fx/BjjRfLdKiKd6RjU1bhGw39
-         wc2YHhXnN8zUyEwJVAmqZXEIrBm9BLji5idJz2an857eDVvv8N7qe1HLusS3IW6uYTeJ
-         3X4icT4hqVWnqGIJuSCas7aAtfuP92YGDbuNtix36auCdnsyuaYNiEH3AEUmNEIi0Vjz
-         1I5Tkg9bf/ugcv2FNjUfh2W3M3RAcyreQdjKMbq4eppO4jAqzGX8OAuSkzMmTtIAx/oL
-         321Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=YmL0IRxeWrFbh0vlXgRwXxoaH3pPmHoURYabIlp2Hi0=;
-        b=HaecRobzmy4IcFWLYTdLouPaGAEXx4xHtO1dx13TDB1LHXe3Zwgu93uwbDGU5bVX4I
-         GG8eOvON8uv2t77rXW1ovCkg1BK1EoL0Kqcc0nVrYXW5Zhn7fhUcBNrTzMYj8XS5WqZO
-         Ig4yVPIuCNxsb9+NEZbyLUDguauIla8XQAmDowWmrTs3qW9OSMp/UETg5bGV0LarDCk0
-         ZU4kk1P7Z6qXvLglbD1maueeNc2DXnQHfgm9xo3/tLRYoqdXGaPxrwFZs/D06Tt8P3H4
-         EWvZoKPkehUsJFxr6KX9x/ambQ9ehxrTdJs+NFZJ0zWKFRqlkVsQ0B37lKgXuGyYJFkb
-         Ifuw==
-X-Gm-Message-State: AOAM531bXk4YD8oC8S9us2WrStEjNRqQhl5KM1wmU1Cjems2mv4GK1bG
-        sm289B1n3/wBhUmSKQcGwHkcjccfgufZHfRsov0=
-X-Google-Smtp-Source: ABdhPJyEkf8Ml+izyhcyV8kumiAHWsYTblnKmOZZA2+4VCCdFv4fMnoIjoMBrwv5T7ylUiOVqD+YEBVIykMxzjURK4o=
-X-Received: by 2002:a5d:69c3:: with SMTP id s3mr3707332wrw.393.1628770843684;
- Thu, 12 Aug 2021 05:20:43 -0700 (PDT)
+        id S236827AbhHLM13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 08:27:29 -0400
+Received: from verein.lst.de ([213.95.11.211]:44135 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236519AbhHLM11 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Aug 2021 08:27:27 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 97D3B68B05; Thu, 12 Aug 2021 14:26:57 +0200 (CEST)
+Date:   Thu, 12 Aug 2021 14:26:57 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Tianyu Lan <ltykernel@gmail.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
+        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
+        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
+        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, ardb@kernel.org,
+        Tianyu.Lan@microsoft.com, pgonda@google.com,
+        martin.b.radev@gmail.com, akpm@linux-foundation.org,
+        kirill.shutemov@linux.intel.com, rppt@kernel.org,
+        sfr@canb.auug.org.au, saravanand@fb.com,
+        krish.sadhukhan@oracle.com, aneesh.kumar@linux.ibm.com,
+        xen-devel@lists.xenproject.org, rientjes@google.com,
+        hannes@cmpxchg.org, tj@kernel.org, michael.h.kelley@microsoft.com,
+        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, parri.andrea@gmail.com, dave.hansen@intel.com
+Subject: Re: [PATCH V3 09/13] DMA: Add
+ dma_map_decrypted/dma_unmap_encrypted() function
+Message-ID: <20210812122657.GB19050@lst.de>
+References: <20210809175620.720923-1-ltykernel@gmail.com> <20210809175620.720923-10-ltykernel@gmail.com>
 MIME-Version: 1.0
-Received: by 2002:a5d:4e43:0:0:0:0:0 with HTTP; Thu, 12 Aug 2021 05:20:43
- -0700 (PDT)
-Reply-To: ms.lisahugh000@gmail.com
-From:   MS LISA HUGH <felly.newton1@gmail.com>
-Date:   Thu, 12 Aug 2021 14:20:43 +0200
-Message-ID: <CAJwqh3v9rXdMVSOk-L2-E_A3RY9__oEP34PdBAb62KfuKN4daw@mail.gmail.com>
-Subject: MASSAGE OF THE BUSINESS.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210809175620.720923-10-ltykernel@gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+On Mon, Aug 09, 2021 at 01:56:13PM -0400, Tianyu Lan wrote:
+> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> 
+> In Hyper-V Isolation VM with AMD SEV, swiotlb boucne buffer
+> needs to be mapped into address space above vTOM and so
+> introduce dma_map_decrypted/dma_unmap_encrypted() to map/unmap
+> bounce buffer memory. The platform can populate man/unmap callback
+> in the dma memory decrypted ops.
 
-I am Ms Lisa Hugh, work in the department of Audit and accounting
-manager here in the Bank.
-
-I need Your help for the transfer of this fund amount ($4,500,000,00
-,U.S.DOLLARS)to your bank account with your co-operation.
-
-Please send the follow below, 1)AGE....2)TELEPHONE
-NUMBER,,,,,...,3)COUNTRY.....4)OCCUPATION......
-
-Note. reply me ( ms.lisahugh000@gmail.com )
-
-Thanks.
-
-Ms Lisa Hugh,
+Nothing here looks actually DMA related, and the names are horribly
+confusing vs the actual dma_map_* calls.
