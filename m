@@ -2,87 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB1013EA7AE
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 17:38:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96EC63EA7FE
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 17:51:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237976AbhHLPjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 11:39:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36358 "EHLO
+        id S238282AbhHLPv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 11:51:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234287AbhHLPjJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 11:39:09 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB17C061756;
-        Thu, 12 Aug 2021 08:38:43 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id d1so7837491pll.1;
-        Thu, 12 Aug 2021 08:38:43 -0700 (PDT)
+        with ESMTP id S238365AbhHLPvd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 11:51:33 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C076C061756;
+        Thu, 12 Aug 2021 08:51:08 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id z9so8893918wrh.10;
+        Thu, 12 Aug 2021 08:51:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JDlSeWOgXcTARSX0Sb/7iqT+nIM3mRl7e9seVpJTDsQ=;
-        b=eKwdoqgzbDwCSyrgnVW4fQAzUSWeoRx/kyQpFmKK+Fp7BDnr2/nHtS2A8lP7dy74pV
-         DhjbUbYBUBvR9ptLkWXPFGdb66asLd49SRfdmf9wxKJzWqlZ8T7NSu4mDDdOyr8QYGjC
-         0lNFiTw2Utqsdhq+i1tE7yKdLkrhwYJ4GcUjf5y7cP+4awTK44NJV01YV+BxlT3oQexu
-         0CRKAKLjxtq43dNgpQlyRzLdedFvCS41p+H+3bYjSaKBrgs7oVUsW9kyJWLlM734zPxy
-         UEVzFvb9jP9wMt2dE2D+cHyIUPC4b4v/Fn8lr0Ong2WornEq8pHks9kPtVFyDLYSburS
-         y7eQ==
+        bh=7Ox8EA3msfn26kOfs3nfK6Ep7YttC7NK9mJ+afKsxEI=;
+        b=YUkvhqc+QAdePDaPdTt5Xjix4FY9Jwr63o0QwfgpzV/9lxY3A6Bzc6nuZ6tPeV+v3u
+         OnjDVGVxM/w/6yskm+0Hn3Lyt8V6CPVcn1AiuVgwLLh3dCnDwAprTdwaFnIIVoFIXuuL
+         mVoTcYnD4NTTNckm/Fzu/JJwELPRNV3wzxAOBtF8Q79ejWkfPhbKfbgtRoIGPLapOeXP
+         g6Ayk+eQR0uTWEoQaq1mMb8EU5SwMRFPFfvF+pYOndn79fsqIh8kEHl3ltpyy86G+VbU
+         j06cjJbGocqrZI28bKvAH1oV3xrrvU7ec8QvhjFs3Vko7Twm5625aM4r+lFqw3sl6Lhn
+         IiyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=JDlSeWOgXcTARSX0Sb/7iqT+nIM3mRl7e9seVpJTDsQ=;
-        b=hJM2eKZLuZWUGB1ZtYM8wIiGMxjrCxMiW8u7lE1hFTvrP8+0ra24mXUBHibngk+tEl
-         VQ5BjEmaA/xjwH1pnIA8isw4jKFnHG9NR1BnFQLkQvBmwb/oe45twLb22dqWGeuJtLF2
-         EzK7E5Yan3jWQkbmv5bPeK4HK9dHKtYKW3YjSdIeLwCvu3U7M4EM/QRmoIqxnMiI9Kob
-         /jyyw4/zqn0DkARto5BXYYHE6GJofaBpqbOmsJr/MuQ1loD9veIqsNgctoZ7Hbcin3Py
-         OSNla+20BPGXPB/3duAIOSw+aeRJMlj8hW5QZyTlexSg0GYhb+xYlafuGHhrm/ULzryv
-         whog==
-X-Gm-Message-State: AOAM531lCJB/VtPrvzReAuDOevNIq+02KskgqcOvIJR24csxf9ar/okT
-        pKeCX4OOPOMDqeI3EMSzdxI=
-X-Google-Smtp-Source: ABdhPJzM/sI+FsioyGJB+Q38ExsQyZIIBjJUHCnSB8L/yQaI33b3CkRfajWOppoDj5zZgXKq84mYaQ==
-X-Received: by 2002:a17:90a:648b:: with SMTP id h11mr5000375pjj.141.1628782723341;
-        Thu, 12 Aug 2021 08:38:43 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:1a:efea::4b1])
-        by smtp.gmail.com with ESMTPSA id y7sm4139094pfp.102.2021.08.12.08.38.29
+        bh=7Ox8EA3msfn26kOfs3nfK6Ep7YttC7NK9mJ+afKsxEI=;
+        b=Shg5XT+88fBr0ZsyAECe0y+1MXnpvVEdh/OSaTTmZYQGnh0j4xQzzTlBhytBoaoeRJ
+         UsYG3OPGR5QknHd3vzVPsMAmuWiyIWz9UXSwYhjloDeMwCtrC2ca2kLrse78/KCtlPI/
+         4VHU1jwhkHYyGpoQ12ucmipBxn7cH1oAgxiZgN1l86/iFA10GpVpZndXXeiZI7uQFmeI
+         wh543gKSPAmONAI36ggn5qtjjsMtczcdPNNAk5M7cXM57KDwL64uwVpHHCgTaNZyEosm
+         ePtyWdGpgthBZwLs+3aw4KKq2J7UT03hrhw6R1VTc4pSPZWMKuNwenFbi/Y0H/lkW4xZ
+         Dv4Q==
+X-Gm-Message-State: AOAM5322mzKZfi+dkucSxEp312KMXcqMcKZg9YpiRp6QcPG/Ls9RWmSO
+        8MVVEFFqRwQvNGnJ5reilRU=
+X-Google-Smtp-Source: ABdhPJzU5U5q4HQPY2Oh41ABzfk7GiiE8EOLu5Cy8IDSivIXWs+NS58kEtMKu+EAGKATFuxDupyQ8A==
+X-Received: by 2002:a5d:42c2:: with SMTP id t2mr4772060wrr.49.1628783466985;
+        Thu, 12 Aug 2021 08:51:06 -0700 (PDT)
+Received: from [10.0.0.18] ([37.165.40.60])
+        by smtp.gmail.com with ESMTPSA id y14sm3397044wrs.29.2021.08.12.08.51.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Aug 2021 08:38:42 -0700 (PDT)
-Subject: Re: [PATCH V3 09/13] DMA: Add dma_map_decrypted/dma_unmap_encrypted()
- function
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
-        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
-        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, ardb@kernel.org,
-        Tianyu.Lan@microsoft.com, pgonda@google.com,
-        martin.b.radev@gmail.com, akpm@linux-foundation.org,
-        kirill.shutemov@linux.intel.com, rppt@kernel.org,
-        sfr@canb.auug.org.au, saravanand@fb.com,
-        krish.sadhukhan@oracle.com, aneesh.kumar@linux.ibm.com,
-        xen-devel@lists.xenproject.org, rientjes@google.com,
-        hannes@cmpxchg.org, tj@kernel.org, michael.h.kelley@microsoft.com,
-        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, parri.andrea@gmail.com, dave.hansen@intel.com
-References: <20210809175620.720923-1-ltykernel@gmail.com>
- <20210809175620.720923-10-ltykernel@gmail.com>
- <20210812122657.GB19050@lst.de>
-From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <0598906d-9a47-34a9-16bf-4bacff7fa058@gmail.com>
-Date:   Thu, 12 Aug 2021 23:38:27 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Thu, 12 Aug 2021 08:51:06 -0700 (PDT)
+Subject: Re: [PATCH v2 1/2] udp: UDP socket send queue repair
+To:     Bui Quang Minh <minhquangbui99@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, willemb@google.com, pabeni@redhat.com,
+        avagin@gmail.com, alexander@mihalicyn.com,
+        lesedorucalin01@gmail.com
+References: <20210811154557.6935-1-minhquangbui99@gmail.com>
+ <721a2e32-c930-ad6b-5055-631b502ed11b@gmail.com>
+ <7f3ecbaf-7759-88ae-53d3-2cc5b1623aff@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <489f0200-b030-97de-cf3a-2d715b07dfa4@gmail.com>
+Date:   Thu, 12 Aug 2021 17:51:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <20210812122657.GB19050@lst.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <7f3ecbaf-7759-88ae-53d3-2cc5b1623aff@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -91,18 +75,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 8/12/2021 8:26 PM, Christoph Hellwig wrote:
-> On Mon, Aug 09, 2021 at 01:56:13PM -0400, Tianyu Lan wrote:
->> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+On 8/12/21 3:46 PM, Bui Quang Minh wrote:
+> 
+> 
+> On 8/11/2021 11:14 PM, Eric Dumazet wrote:
 >>
->> In Hyper-V Isolation VM with AMD SEV, swiotlb boucne buffer
->> needs to be mapped into address space above vTOM and so
->> introduce dma_map_decrypted/dma_unmap_encrypted() to map/unmap
->> bounce buffer memory. The platform can populate man/unmap callback
->> in the dma memory decrypted ops.
+>>
+>> On 8/11/21 5:45 PM, Bui Quang Minh wrote:
+>>> In this patch, I implement UDP_REPAIR sockoption and a new path in
+>>> udp_recvmsg for dumping the corked packet in UDP socket's send queue.
+>>>
+>>> A userspace program can use recvmsg syscall to get the packet's data and
+>>> the msg_name information of the packet. Currently, other related
+>>> information in inet_cork that are set in cmsg are not dumped.
+>>>
+>>> While working on this, I was aware of Lese Doru Calin's patch and got some
+>>> ideas from it.
+>>
+>>
+>> What is the use case for this feature, adding a test in UDP fast path ?
 > 
-> Nothing here looks actually DMA related, and the names are horribly
-> confusing vs the actual dma_map_* calls.
-> 
+> This feature is used to help CRIU to dump CORKed UDP packet in send queue. I'm sorry for being not aware of the performance perspective here.
 
-OK. So this still need to keep in the set_memory.c file.
+UDP is not reliable.
+
+I find a bit strange we add so many lines of code
+for a feature trying very hard to to drop _one_ packet.
+
+I think a much better changelog would be welcomed.
+
+> 
+>> IMO, TCP_REPAIR hijacking standard system calls was a design error,
+>> we should have added new system calls.
+> 
+> You are right that adding new system calls is a better approach. What do you think about adding a new option in getsockopt approach?
+> 
+> Thanks,
+> Quang Minh.
