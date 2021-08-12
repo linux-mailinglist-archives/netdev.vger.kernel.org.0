@@ -2,161 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71DFC3EAB21
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 21:39:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A73493EAB41
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 21:46:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235067AbhHLTjn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 15:39:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35642 "EHLO
+        id S235681AbhHLTrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 15:47:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234700AbhHLTjj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 15:39:39 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63865C061756;
-        Thu, 12 Aug 2021 12:39:13 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id x10so3556368wrt.8;
-        Thu, 12 Aug 2021 12:39:13 -0700 (PDT)
+        with ESMTP id S235552AbhHLTrS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 15:47:18 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50888C061756;
+        Thu, 12 Aug 2021 12:46:52 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id o23so13757381ejc.3;
+        Thu, 12 Aug 2021 12:46:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
+        h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=f1OrkRg0MF6p8RbuM8DdPW5HI5cmNqC1aOfIeyX1J90=;
-        b=UFBI1TqkKQ4TymtNrwUPyNvNb3z5McUTExypR9qoMlOeauluqGRpCiufV2xKSEroXR
-         Ol2Tc+YNv1gVEqEqsJ83BLwLLN/8XNCMFIqlyXOW1hM9/LqKyM9FRQB/1egy7Gj0w9RT
-         Tkx/uTJDTB3HjLUsq0X/s/5A5raAO2fUu6Bi34z0DofxLkqdpFw0WQt7rXTyDNItCf4h
-         svVOHmCJShL2MB8BBJY5ULGuIMvGmY67pEZiwzYCyYxPpcpAUNDbh3pptQ1pOMKLDexB
-         z3uNjyyXeVd8Jcb7GvH5jnEkBkl0cQm7k8qoFnyTgGMXiM51wamMSmfuMKfIbCaxYXv4
-         Lelw==
+        bh=6XdIleat91/MzDpJVOaU1YmXdU4k0zkjMEY+D2f+xKw=;
+        b=dahg+GkWwhEV28eqPZ3i2PFQsLbWgFaJdtqZjD2IGS0L+hxOi48mD6O8LrKZ4fveXk
+         P0olEAvOB8dyDFW5cQ//s5ei9wn/SATCD9RP3/bmnjI/4YnBnjV4jkKuoBHVg7iX4ghw
+         lbdkP2JUVT2P4FanbFg7f8oeySrP1jJ5gC+D9N34z4l7350VvZWn018q1s5bdHYm3WkD
+         v5AqJwYVJKsK8IWjZmhScMQJAOd7zQQLeo2ZwDy9dG/87bvflKNO8V3dlcObb7Dv89er
+         lqHlKBkiQoqijhT0RLs17rDrCqsWsIYT8vM1hAa5FuaLKHfHbjRIENer+4qTPTrYv92J
+         /8Jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=f1OrkRg0MF6p8RbuM8DdPW5HI5cmNqC1aOfIeyX1J90=;
-        b=WIVp0MpI6WyqobJKPmvyZNSaUp9uIBGl2z7fAe68RfeXF1YclQsew7ON0SSVJ8CrkE
-         BiY+3tojaHZpX91d0sXZgLo+ogpa68TbQ0jnFf0vNZrdf0H5ozn2F154LPSjpbtgo085
-         dcINVDNF3dQaCHfX7uwlBtwbKr+O0HOtW3lgifZxfw//t3AUoPxzuiyf90pVhX6fkdIH
-         8Mhvi28G925R0MbLXCeWQEi2sawVpxEi8x42c7jCYOsxENniMqi1Gr38W674jLMCd7EQ
-         nofdprN7smbP4fQhrYrH2TQz2/UIf7z5cKXzj96op3744ILJyiU+YZRmlLikaCIvKnVN
-         3IBQ==
-X-Gm-Message-State: AOAM5314HUMzkVJ33tny4+MM0/Vr3gqryO1GkL+1m7R6hYcYVkPWRuTV
-        f7uwS/shrSbnIchyer7ZGq+wxWm2ixEaDw==
-X-Google-Smtp-Source: ABdhPJy3rGMRziZwzbsIQERT/xkaEYLK8vRvyhMT8U68I3LFXoFPmjS2nNsvN1m1Bn5mDY4TvKZpPQ==
-X-Received: by 2002:a5d:4bca:: with SMTP id l10mr4706634wrt.187.1628797151800;
-        Thu, 12 Aug 2021 12:39:11 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f10:c200:5c12:d692:d13:24d5? (p200300ea8f10c2005c12d6920d1324d5.dip0.t-ipconnect.de. [2003:ea:8f10:c200:5c12:d692:d13:24d5])
-        by smtp.googlemail.com with ESMTPSA id i9sm4901658wre.36.2021.08.12.12.39.08
+        bh=6XdIleat91/MzDpJVOaU1YmXdU4k0zkjMEY+D2f+xKw=;
+        b=diSFbtlfg+4y8lynNCXrhHLhoSNrqMqPHYoSPLomaxJ/BUZ1A/Z8Y1G+i7ck3KSkqj
+         CofE7o4Zc32hrJAmRO3W4n1nggr4dFR7OepBGZLkan3dKteDWIIANHWXsGm8fzATeKx6
+         YRyfmWUQ9Efyf5hAnXoAEB/pR/RkMD6zkm8MpB/8TiHsCp2h30EfyxO76trJ8x+zvrHE
+         5BbG0zGzEASIicnt1OkbhZeCjR1PhVedn2ih8PnQ++I0s+ZzPII1+tPeXYqnIJvnO5Ku
+         s2lpFLhl69OOBMTHTQ1TvF5kBEN4/Ve+XVMTycE+wyP+fH++zLqkPCTloGk0lfKR3do9
+         9x7g==
+X-Gm-Message-State: AOAM532nP0ynfaqPj8MbX9qqCo+bgLyE0Bg8zsKQPWasZCXhLLY0DBGH
+        6H+cABXgJL2E2MZdPe8ulqQ=
+X-Google-Smtp-Source: ABdhPJwxasy2FDyr6WDV2CLwLaZmO8zjwsGax0+745qwOTIAVFsE566ZPIVNbpJZ5fiX7nnZSaAh8A==
+X-Received: by 2002:a17:907:9602:: with SMTP id gb2mr5335995ejc.119.1628797610905;
+        Thu, 12 Aug 2021 12:46:50 -0700 (PDT)
+Received: from ?IPv6:2a04:241e:502:1d80:f865:21f3:80af:d6db? ([2a04:241e:502:1d80:f865:21f3:80af:d6db])
+        by smtp.gmail.com with ESMTPSA id b11sm1174848eja.104.2021.08.12.12.46.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Aug 2021 12:39:11 -0700 (PDT)
-Subject: Re: [PATCH v2 2/2] r8169: Enable ASPM for selected NICs
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>, nic_swsd@realtek.com
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        Thu, 12 Aug 2021 12:46:50 -0700 (PDT)
+Subject: Re: [RFCv2 1/9] tcp: authopt: Initial support and key management
+From:   Leonard Crestez <cdleonard@gmail.com>
+To:     Dmitry Safonov <0x7f454c46@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        David Ahern <dsahern@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        "open list:8169 10/100/1000 GIGABIT ETHERNET DRIVER" 
-        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-References: <20210812155341.817031-1-kai.heng.feng@canonical.com>
- <20210812155341.817031-2-kai.heng.feng@canonical.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <3633f984-8dd6-f81b-85f9-6083420b4516@gmail.com>
-Date:   Thu, 12 Aug 2021 21:38:51 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Yuchung Cheng <ycheng@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Priyaranjan Jha <priyarjha@google.com>,
+        Menglong Dong <dong.menglong@zte.com.cn>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-crypto@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        Dmitry Safonov <dima@arista.com>
+References: <cover.1628544649.git.cdleonard@gmail.com>
+ <67c1471683200188b96a3f712dd2e8def7978462.1628544649.git.cdleonard@gmail.com>
+ <CAJwJo6aicw_KGQSM5U1=0X11QfuNf2dMATErSymytmpf75W=tA@mail.gmail.com>
+ <1e2848fb-1538-94aa-0431-636fa314a36d@gmail.com>
+Message-ID: <785d945e-c0d2-fee5-39d8-99dc06a074f1@gmail.com>
+Date:   Thu, 12 Aug 2021 22:46:48 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210812155341.817031-2-kai.heng.feng@canonical.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1e2848fb-1538-94aa-0431-636fa314a36d@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12.08.2021 17:53, Kai-Heng Feng wrote:
-> The latest vendor driver enables ASPM for more recent r8168 NICs, do the
-> same here to match the behavior.
+On 8/11/21 11:29 AM, Leonard Crestez wrote:
+> On 8/10/21 11:41 PM, Dmitry Safonov wrote:
+>> On Tue, 10 Aug 2021 at 02:50, Leonard Crestez <cdleonard@gmail.com> 
+>>> +       /* If an old value exists for same local_id it is deleted */
+>>> +       key_info = __tcp_authopt_key_info_lookup(sk, info, 
+>>> opt.local_id);
+>>> +       if (key_info)
+>>> +               tcp_authopt_key_del(sk, info, key_info);
+>>> +       key_info = sock_kmalloc(sk, sizeof(*key_info), GFP_KERNEL | 
+>>> __GFP_ZERO);
+>>> +       if (!key_info)
+>>> +               return -ENOMEM;
+>>
+>> 1. You don't need sock_kmalloc() together with tcp_authopt_key_del().
+>>      It just frees the memory and allocates it back straight away - no
+>> sense in doing that.
 > 
-> In addition, pci_disable_link_state() is only used for RTL8168D/8111D in
-> vendor driver, also match that.
+> The list is scanned in multiple places in later commits using nothing 
+> but an rcu_read_lock, this means that keys can't be updated in-place.
 > 
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
-> v2:
->  - No change
+>> 2. I think RFC says you must not allow a user to change an existing key:
+>>> MKT parameters are not changed. Instead, new MKTs can be installed, 
+>>> and a connection
+>>> can change which MKT it uses.
+>>
+>> IIUC, it means that one can't just change an existing MKT, but one can
+>> remove and later
+>> add MKT with the same (send_id, recv_id, src_addr/port, dst_addr/port).
+>>
+>> So, a reasonable thing to do:
+>> if (key_info)
+>>      return -EEXIST.
 > 
->  drivers/net/ethernet/realtek/r8169_main.c | 34 +++++++++++++++++------
->  1 file changed, 26 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index 7ab2e841dc69..caa29e72a21a 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -623,7 +623,7 @@ struct rtl8169_private {
->  	} wk;
->  
->  	unsigned supports_gmii:1;
-> -	unsigned aspm_manageable:1;
-> +	unsigned aspm_supported:1;
->  	unsigned aspm_enabled:1;
->  	struct delayed_work aspm_toggle;
->  	struct mutex aspm_mutex;
-> @@ -2667,8 +2667,11 @@ static void rtl_pcie_state_l2l3_disable(struct rtl8169_private *tp)
->  
->  static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
->  {
-> +	if (!tp->aspm_supported)
-> +		return;
-> +
->  	/* Don't enable ASPM in the chip if OS can't control ASPM */
-> -	if (enable && tp->aspm_manageable) {
-> +	if (enable) {
->  		RTL_W8(tp, Config5, RTL_R8(tp, Config5) | ASPM_en);
->  		RTL_W8(tp, Config2, RTL_R8(tp, Config2) | ClkReqEn);
->  	} else {
-> @@ -5284,6 +5287,21 @@ static void rtl_init_mac_address(struct rtl8169_private *tp)
->  	rtl_rar_set(tp, mac_addr);
->  }
->  
-> +static int rtl_hw_aspm_supported(struct rtl8169_private *tp)
-> +{
-> +	switch (tp->mac_version) {
-> +	case RTL_GIGA_MAC_VER_32 ... RTL_GIGA_MAC_VER_36:
-> +	case RTL_GIGA_MAC_VER_38:
-> +	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_42:
-> +	case RTL_GIGA_MAC_VER_44 ... RTL_GIGA_MAC_VER_46:
-> +	case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_63:
+> You're right, making the user delete keys explicitly is better.
 
-This shouldn't be needed because ASPM support is announced the
-standard PCI way. Max a blacklist should be needed if there are
-chip versions that announce ASPM support whilst in reality they
-do not support it (or support is completely broken).
+On a second thought this might be required to mark keys as "send-only" 
+and "recv-only" atomically.
 
-> +		return 1;
-> +
-> +	default:
-> +		return 0;
-> +	}
-> +}
-> +
->  static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  {
->  	struct rtl8169_private *tp;
-> @@ -5315,12 +5333,12 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	if (rc)
->  		return rc;
->  
-> -	/* Disable ASPM completely as that cause random device stop working
-> -	 * problems as well as full system hangs for some PCIe devices users.
-> -	 */
-> -	rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S |
-> -					  PCIE_LINK_STATE_L1);
-> -	tp->aspm_manageable = !rc;
-> +	if (tp->mac_version == RTL_GIGA_MAC_VER_25)
-> +		pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S |
-> +				       PCIE_LINK_STATE_L1 |
-> +				       PCIE_LINK_STATE_CLKPM);
-> +
-> +	tp->aspm_supported = rtl_hw_aspm_supported(tp);
->  
->  	/* enable device (incl. PCI PM wakeup and hotplug setup) */
->  	rc = pcim_enable_device(pdev);
-> 
+Separately from RFC5925 some vendors implement a "keychain" model based 
+on RFC8177 where each key has a distinct "accept-lifetime" and a 
+"send-lifetime". This could be implemented by adding flags 
+"expired_for_send" and "expired_for_recv" but requires the ability to 
+set an expiration mark without the key ever being deleted.
 
+--
+Regards,
+Leonard
