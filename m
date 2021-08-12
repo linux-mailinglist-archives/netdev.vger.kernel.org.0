@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36D3D3EA4A0
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 14:27:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5DD63EA4A6
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 14:27:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236827AbhHLM13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 08:27:29 -0400
-Received: from verein.lst.de ([213.95.11.211]:44135 "EHLO verein.lst.de"
+        id S237468AbhHLM2K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 08:28:10 -0400
+Received: from verein.lst.de ([213.95.11.211]:44164 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236519AbhHLM11 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Aug 2021 08:27:27 -0400
+        id S236519AbhHLM2J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Aug 2021 08:28:09 -0400
 Received: by verein.lst.de (Postfix, from userid 2407)
-        id 97D3B68B05; Thu, 12 Aug 2021 14:26:57 +0200 (CEST)
-Date:   Thu, 12 Aug 2021 14:26:57 +0200
+        id 9A64768B05; Thu, 12 Aug 2021 14:27:41 +0200 (CEST)
+Date:   Thu, 12 Aug 2021 14:27:41 +0200
 From:   Christoph Hellwig <hch@lst.de>
 To:     Tianyu Lan <ltykernel@gmail.com>
 Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
@@ -37,27 +37,18 @@ Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
         vkuznets@redhat.com, parri.andrea@gmail.com, dave.hansen@intel.com
-Subject: Re: [PATCH V3 09/13] DMA: Add
- dma_map_decrypted/dma_unmap_encrypted() function
-Message-ID: <20210812122657.GB19050@lst.de>
-References: <20210809175620.720923-1-ltykernel@gmail.com> <20210809175620.720923-10-ltykernel@gmail.com>
+Subject: Re: [PATCH V3 10/13] x86/Swiotlb: Add Swiotlb bounce buffer remap
+ function for HV IVM
+Message-ID: <20210812122741.GC19050@lst.de>
+References: <20210809175620.720923-1-ltykernel@gmail.com> <20210809175620.720923-11-ltykernel@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210809175620.720923-10-ltykernel@gmail.com>
+In-Reply-To: <20210809175620.720923-11-ltykernel@gmail.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 09, 2021 at 01:56:13PM -0400, Tianyu Lan wrote:
-> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> 
-> In Hyper-V Isolation VM with AMD SEV, swiotlb boucne buffer
-> needs to be mapped into address space above vTOM and so
-> introduce dma_map_decrypted/dma_unmap_encrypted() to map/unmap
-> bounce buffer memory. The platform can populate man/unmap callback
-> in the dma memory decrypted ops.
-
-Nothing here looks actually DMA related, and the names are horribly
-confusing vs the actual dma_map_* calls.
+This is still broken.  You need to make sure the actual DMA allocations
+do have struct page backing.
