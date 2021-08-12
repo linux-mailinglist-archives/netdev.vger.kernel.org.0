@@ -2,338 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 442303EA9F9
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 20:12:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F14C3EAA37
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 20:26:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237495AbhHLSNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 14:13:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44076 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbhHLSNR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 14:13:17 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E1BC061756
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 11:12:52 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id u13so11813461lje.5
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 11:12:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3IBmrG9EcDzssiR9dY8YvqnK3/P6vQnXnwNHy7NXG/k=;
-        b=PlfAVLvuNc6jHEPbPFgM44WkQ88pFCwSTly6DaMvO6LslArYLa2GXaxCOLdDQCvoRR
-         oqnnON+xFf8WVTINtLj9fl2ez+E2jHjru57cMVZdicymTW/pXF+lzSr80TmaP2xi3Ldc
-         GJBLnMqM/hBw5kmRFdzgG92f+EoOQ/f6StlfQ2pQyA1nai6B+kiKBmDO9D6qBGBuOU+5
-         8OZNsWirzY7N6CQ1UJjW1kJypmfPITQkJU6BS9/p0KHNF7pr9OsP/V8mKGHblbJVWFk+
-         9TPQGuZiKzKkBYVreW4RHw8Q3j1RJngjJsRVtC6H3c1PFl5n8QLPpmm6oZdStlh7dp8f
-         U3kw==
+        id S233226AbhHLS1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 14:27:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27864 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232844AbhHLS1Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 14:27:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1628792810;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qYXg2tlqyoci4gGaxK6MgW8sEbsOw0KF5DADu56IPRk=;
+        b=e2R/mriG6jPVtz69UHOwQBzZMW6wNyW1VQYDCjq65lj17epvSBDkkdBZeW9ywPLzlTTge/
+        5xmn7p7eencF+UvLdJU494NXn7MeSUSlGmq24uvjfG+dtp4hrvlIgM0Js9Gu9kERdudMMF
+        tVhChB0dBbwn7rTXsPxc116rMNA3YTs=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-567-MI9VsZRcOzWDYu_QhsRBpw-1; Thu, 12 Aug 2021 14:26:49 -0400
+X-MC-Unique: MI9VsZRcOzWDYu_QhsRBpw-1
+Received: by mail-wr1-f71.google.com with SMTP id l12-20020a5d6d8c0000b029015488313d96so2116188wrs.15
+        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 11:26:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3IBmrG9EcDzssiR9dY8YvqnK3/P6vQnXnwNHy7NXG/k=;
-        b=gcRJWRuGx7vVstYkV5cEHtn+xCM3V5y4kYq5yJ6uVTE2U9HKtUe7X5daYocNwyDsii
-         KUIOUwoJ7t1x5ilQFpMTGSe05wEv4xsZIRDWX1VdgNOCGlNlzzjbE6kDpzR2m1a0ofQS
-         QdHqGL2HC3Y/ielSsaIFa7GsgVlx8lW+Hm+UWA0aFkfu/4wAj0elliY014pC9SeTXpPK
-         gBLSW78OxxD2fHy70KxOrl+m5VKZX8ajN2aM+Cd58MfCpOH2OtKMhj51/+c2HaQc50FB
-         iOgKDSpC2+sTgPCJt8kDGwHNaMT/yxVVoPhDEjfhLRKZlLY1/iS+fRnaxfMyVGhmd141
-         W5EA==
-X-Gm-Message-State: AOAM530g7PCcXqlEYQ0A1lTbx1FdYLI7056KHInOvJhDXaBRy5ntl1iN
-        mUvyTUra2x5NLLEg9nFDSzme4M4nNSprR37vFkT2FA==
-X-Google-Smtp-Source: ABdhPJwNIbPyauYgPanl0IavUisSfmfdQnkFz6j64zcXJ2xb6P6xRGL05iZxUjPfhmk91DMZ52lczsPQKghAqZCCCrU=
-X-Received: by 2002:a2e:b0d1:: with SMTP id g17mr3914413ljl.153.1628791969964;
- Thu, 12 Aug 2021 11:12:49 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=qYXg2tlqyoci4gGaxK6MgW8sEbsOw0KF5DADu56IPRk=;
+        b=dSUvtbmwgQ9Prhru1g2leVo40c0GQpTlkb9RyyEPxWrazZeOnmDQ9qGbxdHk3Qr1F2
+         T+B4VHjYhGWgdbvmKWXVfIrZaSjEl4Se4m/TIzetQEbKw/rkRR1EQkitUOS6zD8gqyNZ
+         41Rg82lRrLCKudD3j261eYagrfDCbPfZq7lfuG/G0W7Bw06stDX9cjGkjzS83RfqOnCQ
+         A1SF6v9/+wCudKcSgaGCaL2NVv4h2gMku+LUN8qIImMMIl3kZbylf2ckDL44xUkS+TNN
+         U6G3pPv7D6Rmn62ASYwCJNPR9ThLRI5plkh32//MixevmDLH9Po+jZhIcaiPyHuqSdKU
+         bn2A==
+X-Gm-Message-State: AOAM53135tPjNSf/qWcx3B70I9pi/PItX5/ftrXLT7vtCK9PbN3oeAt6
+        Sj5LWWwF7gz+ZyOGT6lE04nx1y7c9VUs0Dw1r0OwFLm1r6xXAG+d9i/lpCNB0KPC8jcTgzfuUjF
+        jdftI40iNT0Ztc3Ph
+X-Received: by 2002:adf:b350:: with SMTP id k16mr5508896wrd.37.1628792808611;
+        Thu, 12 Aug 2021 11:26:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyI8bjv53j2gMWyLBTbdBlwhit3AlIGikq1BbrwBmCe4oPno7y2Y8w6UodzIx+Snr43nhZqLA==
+X-Received: by 2002:adf:b350:: with SMTP id k16mr5508882wrd.37.1628792808350;
+        Thu, 12 Aug 2021 11:26:48 -0700 (PDT)
+Received: from pc-23.home (2a01cb058d01b600c841afd12834a14e.ipv6.abo.wanadoo.fr. [2a01:cb05:8d01:b600:c841:afd1:2834:a14e])
+        by smtp.gmail.com with ESMTPSA id w29sm4035148wra.88.2021.08.12.11.26.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Aug 2021 11:26:47 -0700 (PDT)
+Date:   Thu, 12 Aug 2021 20:26:45 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     James Carlson <carlsonj@workingcode.com>,
+        Chris Fowler <cfowler@outpostsentinel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-ppp@vger.kernel.org" <linux-ppp@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ppp: Add rtnl attribute IFLA_PPP_UNIT_ID for specifying
+ ppp unit id
+Message-ID: <20210812182645.GA10725@pc-23.home>
+References: <20210809122546.758e41de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210809193109.mw6ritfdu27uhie7@pali>
+ <20210810153941.GB14279@pc-32.home>
+ <BN0P223MB0327A247724B7AE211D2E84EA7F79@BN0P223MB0327.NAMP223.PROD.OUTLOOK.COM>
+ <20210810171626.z6bgvizx4eaafrbb@pali>
+ <2f10b64e-ba50-d8a5-c40a-9b9bd4264155@workingcode.com>
+ <20210811173811.GE15488@pc-32.home>
+ <20210811180401.owgmie36ydx62iep@pali>
+ <20210812092847.GB3525@pc-23.home>
+ <20210812134845.npj3m3vzkrmhx6uy@pali>
 MIME-Version: 1.0
-References: <20210809172207.3890697-1-richardsonnick@google.com>
- <20210809172207.3890697-2-richardsonnick@google.com> <20210809140505.30388445@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210809140505.30388445@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Nick Richardson <richardsonnick@google.com>
-Date:   Thu, 12 Aug 2021 14:12:38 -0400
-Message-ID: <CAGr-3gkzarg=1sqYJ+T-grcGFA_sfR8aWNp0i38rUUHZWns94A@mail.gmail.com>
-Subject: Re: [PATCH 1/3] pktgen: Parse internet mix (imix) input
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, nrrichar@ncsu.edu,
-        Arun Kalyanasundaram <arunkaly@google.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Yejune Deng <yejune.deng@gmail.com>,
-        Di Zhu <zhudi21@huawei.com>, Ye Bin <yebin10@huawei.com>,
-        Leesoo Ahn <dev@ooseel.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Philip Romanov <promanov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210812134845.npj3m3vzkrmhx6uy@pali>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey Jakub, thanks for the quick response!
+On Thu, Aug 12, 2021 at 03:48:45PM +0200, Pali Rohár wrote:
+> On Thursday 12 August 2021 11:28:47 Guillaume Nault wrote:
+> > On Wed, Aug 11, 2021 at 08:04:01PM +0200, Pali Rohár wrote:
+> > > ifname is not atomic (first it creates ppp<id> interface and later it is
+> > > renamed) and have issues. Due to bug described here:
+> > > https://lore.kernel.org/netdev/20210807160050.17687-1-pali@kernel.org/
+> > > you may get your kernel into state in which it is not possible to create
+> > > a new ppp interface. And this issue does not happen when using "unit"
+> > > argument.
+> > 
+> > This is specific to the ioctl api. Netlink doesn't have this problem.
+> 
+> netlink does not have problem with implementing ifname option
+> atomically. That is why I started looking at netlink how to avoid
+> problems with renaming. As on some systems I see that some udev rules or
+> NetworkManager tries to query newly created interfaces, but based on
+> name (not id). So early renaming cause issues to these tools...
+> 
+> But netlink is affected by above bug when "ifname" is not specified.
 
-> > +
-> > +             len = num_arg(&buffer[i], max_digits, &size);
-> > +             if (len < 0)
-> > +                     return len;
-> > +             i += len;
-> > +             if (get_user(c, &buffer[i]))
-> > +                     return -EFAULT;
-> > +             /* Check for comma between size_i and weight_i */
-> > +             if (c != ',')
-> > +                     return -EINVAL;
-> > +             i++;
-> > +
-> > +             if (size < 14 + 20 + 8)
-> > +                     size = 14 + 20 + 8;
->
-> Why overwrite instead of rejecting?
+As disscussed in another part of the thread, let's fix that with a new
+netlink attribute.
 
-I overwrite here to keep behavior similar to when pkt_size is set directly.
-When the pkt_size command is used the size value is overwritten to the
-minimum packet size (14 + 8 + 20).
-See the pkt_size section in pktgen_if_write().
+> > > To fix above issue it is needed to migrate pppd from ioctl API to rtnl.
+> > 
+> > It would have helped a lot if you had explained that before.
+> > 
+> > > But this would be possible only after rtnl API starts providing all
+> > > features, including specifying custom "unit" argument...
+> > 
+> > You can already simulate the "unit" option by setting the interface
+> > name as "ppp${unit}" and retrieving the kernel assigned id with
+> > ioctl(PPPIOCGUNIT). What's wrong with that?
+> 
+> This is possible to implement. But then unit part from "ppp${unit}"
+> would not match PPPIOCGUNIT number - like it is currently. And it is
+> something which applications expect. Basically there is no difference
+> between ppp interface created by ioctl and ppp interface created by
+> rtnl. You can use other rtnl commands on ppp interface created by ioctl
+> and also you can use other ppp ioctls on ppp interface created by rtnl.
 
->
-> > +             len = num_arg(&buffer[i], max_digits, &weight);
-> > +             if (len < 0)
-> > +                     return len;
-> > +             if (weight <= 0)
-> > +                     return -EINVAL;
-> > +
-> > +             pkt_dev->imix_entries[pkt_dev->n_imix_entries].size = size;
-> > +             pkt_dev->imix_entries[pkt_dev->n_imix_entries].weight = weight;
-> > +
-> > +             i += len;
-> > +             if (get_user(c, &buffer[i]))
-> > +                     return -EFAULT;
->
-> What if this is the last entry?
+But the application knows if it created the ppp device with a specified
+unit id or not. So it knows if an ioctl(PPPIOCGUNIT) call is necessary
+to get the unit id. And if we allow the interface name to be unrelated
+to the unit id, the application will also know that, because it
+explicitely requested it.
 
-If this is the last entry then the line terminating character is read.
-Similar code can be found in the get_labels() function in pktgen.c
+> But I understand your arguments. You are looking at ppp unit id as some
+> internal kernel number; which should probably stay in kernel.
 
+Well, it has to be exported, but it should be opaque to user space
+(appart from the ioctl() api which is established behaviour).
 
-On Mon, Aug 9, 2021 at 5:05 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon,  9 Aug 2021 17:22:02 +0000 Nicholas Richardson wrote:
-> > From: Nick Richardson <richardsonnick@google.com>
-> >
-> > Adds "imix_weights" command for specifying internet mix distribution.
-> >
-> > The command is in this format:
-> > "imix_weights size_1,weight_1 size_2,weight_2 ... size_n,weight_n"
-> > where the probability that packet size_i is picked is:
-> > weight_i / (weight_1 + weight_2 + .. + weight_n)
-> >
-> > The user may provide up to 20 imix entries (size_i,weight_i) in this
-> > command.
-> >
-> > The user specified imix entries will be displayed in the "Params"
-> > section of the interface output.
-> >
-> > Values for clone_skb > 0 is not supported in IMIX mode.
-> >
-> > Summary of changes:
-> > Add flag for enabling internet mix mode.
-> > Add command (imix_weights) for internet mix input.
-> > Return -ENOTSUPP when clone_skb > 0 in IMIX mode.
-> > Display imix_weights in Params.
-> > Create data structures to store imix entries and distribution.
-> >
-> > Signed-off-by: Nick Richardson <richardsonnick@google.com>
-> > ---
-> >  net/core/pktgen.c | 95 +++++++++++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 95 insertions(+)
-> >
-> > diff --git a/net/core/pktgen.c b/net/core/pktgen.c
-> > index 7e258d255e90..83c83e1b5f28 100644
-> > --- a/net/core/pktgen.c
-> > +++ b/net/core/pktgen.c
-> > @@ -175,6 +175,8 @@
-> >  #define IP_NAME_SZ 32
-> >  #define MAX_MPLS_LABELS 16 /* This is the max label stack depth */
-> >  #define MPLS_STACK_BOTTOM htonl(0x00000100)
-> > +/* Max number of internet mix entries that can be specified in imix_weights. */
-> > +#define MAX_IMIX_ENTRIES 20
-> >
-> >  #define func_enter() pr_debug("entering %s\n", __func__);
-> >
-> > @@ -242,6 +244,12 @@ static char *pkt_flag_names[] = {
-> >  #define VLAN_TAG_SIZE(x) ((x)->vlan_id == 0xffff ? 0 : 4)
-> >  #define SVLAN_TAG_SIZE(x) ((x)->svlan_id == 0xffff ? 0 : 4)
-> >
-> > +struct imix_pkt {
-> > +     __u64 size;
-> > +     __u64 weight;
-> > +     __u64 count_so_far;
->
-> no need for the __ prefix outside of uAPI.
->
-> > +};
-> > +
-> >  struct flow_state {
-> >       __be32 cur_daddr;
-> >       int count;
-> > @@ -343,6 +351,10 @@ struct pktgen_dev {
-> >       __u8 traffic_class;  /* ditto for the (former) Traffic Class in IPv6
-> >                               (see RFC 3260, sec. 4) */
-> >
-> > +     /* IMIX */
-> > +     unsigned int n_imix_entries;
-> > +     struct imix_pkt imix_entries[MAX_IMIX_ENTRIES];
-> > +
-> >       /* MPLS */
-> >       unsigned int nr_labels; /* Depth of stack, 0 = no MPLS */
-> >       __be32 labels[MAX_MPLS_LABELS];
-> > @@ -552,6 +564,16 @@ static int pktgen_if_show(struct seq_file *seq, void *v)
-> >                  (unsigned long long)pkt_dev->count, pkt_dev->min_pkt_size,
-> >                  pkt_dev->max_pkt_size);
-> >
-> > +     if (pkt_dev->n_imix_entries > 0) {
-> > +             seq_printf(seq, "     imix_weights: ");
-> > +             for (i = 0; i < pkt_dev->n_imix_entries; i++) {
-> > +                     seq_printf(seq, "%llu,%llu ",
-> > +                                pkt_dev->imix_entries[i].size,
-> > +                                pkt_dev->imix_entries[i].weight);
-> > +             }
-> > +             seq_printf(seq, "\n");
->
-> seq_puts()
->
-> > +     }
-> > +
-> >       seq_printf(seq,
-> >                  "     frags: %d  delay: %llu  clone_skb: %d  ifname: %s\n",
-> >                  pkt_dev->nfrags, (unsigned long long) pkt_dev->delay,
-> > @@ -792,6 +814,61 @@ static int strn_len(const char __user * user_buffer, unsigned int maxlen)
-> >       return i;
-> >  }
-> >
-> > +static ssize_t get_imix_entries(const char __user *buffer,
-> > +                             struct pktgen_dev *pkt_dev)
-> > +{
-> > +     /* Parses imix entries from user buffer.
-> > +      * The user buffer should consist of imix entries separated by spaces
-> > +      * where each entry consists of size and weight delimited by commas.
-> > +      * "size1,weight_1 size2,weight_2 ... size_n,weight_n" for example.
-> > +      */
->
-> This comments belongs before the function.
->
-> > +     long len;
-> > +     char c;
-> > +     int i = 0;
-> > +     const int max_digits = 10;
->
-> Please order these lines longest to shortest (reverse xmas tree).
->
-> > +     pkt_dev->n_imix_entries = 0;
-> > +
-> > +     do {
-> > +             unsigned long size;
-> > +             unsigned long weight;
->
-> same
->
-> > +
-> > +             len = num_arg(&buffer[i], max_digits, &size);
-> > +             if (len < 0)
-> > +                     return len;
-> > +             i += len;
-> > +             if (get_user(c, &buffer[i]))
-> > +                     return -EFAULT;
-> > +             /* Check for comma between size_i and weight_i */
-> > +             if (c != ',')
-> > +                     return -EINVAL;
-> > +             i++;
-> > +
-> > +             if (size < 14 + 20 + 8)
-> > +                     size = 14 + 20 + 8;
->
-> Why overwrite instead of rejecting?
->
-> > +             len = num_arg(&buffer[i], max_digits, &weight);
-> > +             if (len < 0)
-> > +                     return len;
-> > +             if (weight <= 0)
-> > +                     return -EINVAL;
-> > +
-> > +             pkt_dev->imix_entries[pkt_dev->n_imix_entries].size = size;
-> > +             pkt_dev->imix_entries[pkt_dev->n_imix_entries].weight = weight;
-> > +
-> > +             i += len;
-> > +             if (get_user(c, &buffer[i]))
-> > +                     return -EFAULT;
->
-> What if this is the last entry?
->
-> > +             i++;
-> > +             pkt_dev->n_imix_entries++;
-> > +
-> > +             if (pkt_dev->n_imix_entries > MAX_IMIX_ENTRIES)
-> > +                     return -E2BIG;
-> > +     } while (c == ' ');
->
-> empty line here
->
-> > +     return i;
-> > +}
-> > +
-> >  static ssize_t get_labels(const char __user *buffer, struct pktgen_dev *pkt_dev)
-> >  {
-> >       unsigned int n = 0;
-> > @@ -960,6 +1037,18 @@ static ssize_t pktgen_if_write(struct file *file,
-> >               return count;
-> >       }
-> >
-> > +     if (!strcmp(name, "imix_weights")) {
-> > +             if (pkt_dev->clone_skb > 0)
-> > +                     return -ENOTSUPP;
->
-> ENOTSUPP should not be returned to user space, please use a different
-> one.
->
-> > +             len = get_imix_entries(&user_buffer[i], pkt_dev);
-> > +             if (len < 0)
-> > +                     return len;
-> > +
-> > +             i += len;
-> > +             return count;
-> > +     }
-> > +
-> >       if (!strcmp(name, "debug")) {
-> >               len = num_arg(&user_buffer[i], 10, &value);
-> >               if (len < 0)
-> > @@ -1082,10 +1171,16 @@ static ssize_t pktgen_if_write(struct file *file,
-> >               len = num_arg(&user_buffer[i], 10, &value);
-> >               if (len < 0)
-> >                       return len;
-> > +             /* clone_skb is not supported for netif_receive xmit_mode and
-> > +              * IMIX mode.
-> > +              */
-> >               if ((value > 0) &&
-> >                   ((pkt_dev->xmit_mode == M_NETIF_RECEIVE) ||
-> >                    !(pkt_dev->odev->priv_flags & IFF_TX_SKB_SHARING)))
-> >                       return -ENOTSUPP;
-> > +             if (value > 0 && pkt_dev->n_imix_entries > 0)
-> > +                     return -ENOTSUPP;
->
-> ditto
->
-> >               i += len;
-> >               pkt_dev->clone_skb = value;
-> >
->
+> My point of view is that this is legacy identifier bound to the every
+> ppp network interface, and which is exported to userspace. And because
+> there is API for userspace how userspace can force particular id for
+> particular ppp interface, it means that userspace have full control how
+> these ids are generated. Even it is "internal" kernel number. And it
+> does not matter how are ppp interfaces created, via which method. It is
+> bounded to every ppp interface independently how ppp was created.
+> 
+> By this design, userspace application may choose to create mapping
+> between /dev/ttyUSB<N> and ppp unit <id> by having <N> == <id>.
+> 
+> This ppp unit id is used for some operations, so it is required to know
+> it. And if application is doing e.g. above assumption (it does not use
+> PPPIOCGUNIT, but derive ppp unit id from /dev/ttyUSB* name) which
+> current ioctl API allows, then this application cannot be migrated from
+> ioctl to rtnl API without rewriting code which uses above assumption.
 
+Migrating such application requires writing the netlink code for the new
+api. How could a simple ioctl(PPPIOCGUNIT) call prevent such migration?
+BTW, using PPPIOCGUNIT is much cleaner an more robust that parsing the
+device name, so it's a win in any case. And the application is still
+able to name the ppp interface ppp<N> to keep things simple for its
+users.
 
--- 
+> I'm not saying if this is a good or bad idea, just I'm describing what
+> ioctl API allows and what does not. (And yes, in my opinion it is a bad
+> idea, but ppp is designed to allow it).
+> 
+> If I was designing ppp again, I would have probably used interface id as
+> ppp unit id...
 
+With all the building blocks we have now in the Linux kernel, there's
+much more that I'd change. But the landscape and constraints were
+obviously very different at the time.
 
+> > > I hit above problem, so now I'm migrating all pppd setups from "ifname"
+> > > to "unit" option.
+> > 
+> > Why did you write 3125f26c51482 ("ppp: Fix generating ppp unit id when
+> > ifname is not specified") then?
+> 
+> Well, I hope that this kernel fix propagates into kernels used on
+> affected machines. But it will take some time. And until it happens this
+> migration is needed. Lets say it is workaround for unspecific time
+> period.
 
+Makes sense.
 
-
-Nick Richardson (he/him/his)
-
-SWE Intern
-
-1 (919) 410 3510
-
-careers.google.com/students
-
-
-|Learn more about our candidate privacy policy.|
