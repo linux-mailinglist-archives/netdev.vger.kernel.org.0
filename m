@@ -2,64 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FB0E3E9DE2
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 07:19:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3CA73E9DED
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 07:29:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234270AbhHLFTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 01:19:36 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:46663 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234232AbhHLFTf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 01:19:35 -0400
-Received: by mail-io1-f71.google.com with SMTP id r14-20020a6b440e0000b029057f73c98d95so2818588ioa.13
-        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 22:19:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=vAYClqij0nGxn6pQX2zV5X7oi626A4U9/u4hsAbCSsk=;
-        b=driJvolWP/a5qTT/NF7PaYCkCyjemNRXOy2Yr4bfKOkVrCSNfPE1kpmyRfax4uuD8c
-         lTGO6s3oFIXOJRGF4jG1JPWTZcGX9ZLh3uRxlGnv0/5AgCuALBe4huIX+t7MLWqZj/b1
-         HV7xpGd372B9UZhjGlam0AvnqxVD9FtWQsKRNpR3EejN832yhb+QzFdDbYSXt44oWn6G
-         2melaeg10NEJf5wt6qU8oHmXg7x5s5tF5SWt4P+CxC3ex7nc9qPiPe0RRiNz0RqUFxNC
-         jTml7l1BCpM9TQE7FHPURcI8WqNTzLBWIxLs+w9yvMv83Gw84fZprV4RFfAda8H8Yrvh
-         Szcw==
-X-Gm-Message-State: AOAM532cp4DF9RrWAMJXoi+EZP1mLeIWH4Huk8LaJap9HrAHzb39wyEn
-        mxcVsjvLHFy6Xbpqi7VwZmbMJUHha2xFrSR6FrKkGxuxaU7K
-X-Google-Smtp-Source: ABdhPJwKnImalox7HdHKi7x9YHaW3z1Q/MyGYUO2gKpwVxsARpknotR0UEuiqgT7eCH1tXhs/b0QjX8Urm5c+ETchZAr4asAvYIr
-MIME-Version: 1.0
-X-Received: by 2002:a92:b308:: with SMTP id p8mr1541359ilh.296.1628745550454;
- Wed, 11 Aug 2021 22:19:10 -0700 (PDT)
-Date:   Wed, 11 Aug 2021 22:19:10 -0700
-In-Reply-To: <20210812045047.2548-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f6e6b305c955dff5@google.com>
-Subject: Re: [syzbot] memory leak in packet_sendmsg
-From:   syzbot <syzbot+989efe781c74de1ddb54@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        phind.uet@gmail.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+        id S234338AbhHLFaE convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 12 Aug 2021 01:30:04 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:34894 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233763AbhHLF3x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 01:29:53 -0400
+Received: from smtpclient.apple (tmo-100-163.customers.d1-online.com [80.187.100.163])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 059AECECDD;
+        Thu, 12 Aug 2021 07:29:22 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.100.0.2.22\))
+Subject: Re: [PATCH] Bluetooth: msft: add a bluetooth parameter, msft_enable
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20210812042305.277642-1-koba.ko@canonical.com>
+Date:   Thu, 12 Aug 2021 07:29:21 +0200
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        BlueZ <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Archie Pusaka <apusaka@google.com>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <4374EE78-86B9-43BF-B387-8C51C15CB943@holtmann.org>
+References: <20210812042305.277642-1-koba.ko@canonical.com>
+To:     Koba Ko <koba.ko@canonical.com>
+X-Mailer: Apple Mail (2.3654.100.0.2.22)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Koba,
 
-syzbot tried to test the proposed patch but the build/boot failed:
+> With Intel AC9560, follow this scenario and can't turn on bt since.
+> 1. turn off BT
+> 2. then suspend&resume multiple times
+> 3. turn on BT
+> 
+> Get this error message after turn on bt.
+> [ 877.194032] Bluetooth: hci0: urb 0000000061b9a002 failed to resubmit (113)
+> [ 886.941327] Bluetooth: hci0: Failed to read MSFT supported features (-110)
+> 
+> Remove msft from compilation would be helpful.
+> Turn off msft would be also helpful.
+> 
+> Because msft is enabled as default and can't turn off without
+> compliation,
+> Introduce a bluetooth parameter, msft_enable, to control.
+> 
+> Signed-off-by: Koba Ko <koba.ko@canonical.com>
+> ---
+> include/net/bluetooth/hci_core.h |  1 +
+> net/bluetooth/hci_core.c         | 16 ++++++++++++++++
+> net/bluetooth/msft.c             | 30 +++++++++++++++++++++++++++++-
+> 3 files changed, 46 insertions(+), 1 deletion(-)
 
-failed to apply patch:
-checking file net/core/dev.c
-patch: **** unexpected end of file in patch
+NAK.
 
+This is for the Intel guys to figure out. Otherwise I am going to disable MSFT extension for AC9560 completely. What is your hw_variant for that hardware?
 
+Regards
 
-Tested on:
-
-commit:         761c6d7e Merge tag 'arc-5.14-rc6' of git://git.kernel...
-git tree:       upstream
-dashboard link: https://syzkaller.appspot.com/bug?extid=989efe781c74de1ddb54
-compiler:       
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=147a5779300000
+Marcel
 
