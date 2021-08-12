@@ -2,117 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B76D63EA794
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 17:30:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA05D3EA7A0
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 17:35:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238115AbhHLPas (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 11:30:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34470 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238055AbhHLPap (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 11:30:45 -0400
-Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDC45C0613D9
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 08:30:19 -0700 (PDT)
-Received: by mail-qt1-x84a.google.com with SMTP id 12-20020ac8570c0000b029029624d5a057so3394365qtw.12
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 08:30:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=FKmBhBBmRifwAw1wud9HfRzter1UnR4c92xc+2b6/5s=;
-        b=rYggVfve59E5l2FDPgU103fdU6dGEbIyX1IJmrjbutp2ueeWXsTlxMMgmjKTKLjEkU
-         8JsKv+B0lzkMkVIRiPQBgcqZUq0sCgIF6S4yUSvI+gAmJeynz0HhZceseIhff9OOOLgq
-         cygHt2ctYoa716ivGpuO8rCicHfyDoJYW8dlRnDXEGjl4oghw9cQqUIpffGj1z18txzi
-         yWMH/FUQq///zwLHKeJ8WYF4/ckKMPiAuoDgnJW0YpEz0Hyc5jei54I9gBc6cNsppZ/0
-         TF1OPc7T1e9yXx4Y96aKLIygPpqFru5aoTnC8gXnzL9pp69rTqD1kP5L9hLHCzRZcVor
-         1RgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=FKmBhBBmRifwAw1wud9HfRzter1UnR4c92xc+2b6/5s=;
-        b=ZcUKNVq3ukEEc5l/4NqQUuKQSUGNqs/FWNdPICU7zm0Mmv26DA5LFEoIfY2GmQ0BBq
-         sIFTXZFnTi2fXYpcOiC1crMVGBysPX30q5KkUYgqc1rpLvfhKuY31RmRuVRvKbhOWVDU
-         v+0la5z7ZdH6K/7YYGl8ywZ53DbG/V7zT0mRXCZBNu8sV5UWU+6MkIF+Qi9z/EKLO1Eg
-         I9BiSFW8LQ1qeJrt+lWgn91s+PUt+pWdjUS0O2/lsWxkNqKiRMZ78yDxcnasdnQvns7e
-         zneq4TEkoreqArTdnNkmM+eZX0gQ6cYaXfp+T3UdyWk53sBwx4YQ1z7qWAMQy2pKsMFI
-         9WbA==
-X-Gm-Message-State: AOAM5313ozdCXS1lG5U10PTm/2mEolUP4fw6TQJJhh6CqKg1QC8eDQhu
-        JeCb6r8yOSEA1zNnFwQO3Vb+0MoUMbl3HSaYgwyLem8CgH8D/Y6zQxE+PnuL8cQl8CD8CewqigN
-        DAkB5XDJ6IriL+itkFUmaa1jn9fwI+74IP8eSyZ/kNaCzH/593gBpzg==
-X-Google-Smtp-Source: ABdhPJyl20Z+uSrL5WekJdVuznMqlTbOmdP6c3tP7LTydERHeX7PQVn4yaU7xEawZH9kEzN2gTkEW/M=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:fa15:8621:e6d2:7ad4])
- (user=sdf job=sendgmr) by 2002:a0c:c441:: with SMTP id t1mr4375766qvi.25.1628782218847;
- Thu, 12 Aug 2021 08:30:18 -0700 (PDT)
-Date:   Thu, 12 Aug 2021 08:30:11 -0700
-In-Reply-To: <20210812153011.983006-1-sdf@google.com>
-Message-Id: <20210812153011.983006-3-sdf@google.com>
-Mime-Version: 1.0
-References: <20210812153011.983006-1-sdf@google.com>
-X-Mailer: git-send-email 2.33.0.rc1.237.g0d66db33f3-goog
-Subject: [PATCH bpf-next v2 2/2] selftests/bpf: verify bpf_get_netns_cookie in BPF_PROG_TYPE_CGROUP_SOCKOPT
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S235158AbhHLPgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 11:36:11 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:43677 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231960AbhHLPf7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 11:35:59 -0400
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 14744580CA8;
+        Thu, 12 Aug 2021 11:35:22 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Thu, 12 Aug 2021 11:35:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=VsCOGT
+        8d3nyjdUYPfzFA5unKj0z9YloCYPBsM1uACu4=; b=THza58owx9DxO3Xfg2myXz
+        HEAG2e1Wlx1KExQx9FvLZi02xOi232O/H9GBjWt2LzqnJzQwy3gz2dponEd+vEBY
+        nwSiDFzAmm0Qz83WkKHgNRMaJWSuJxMcmY0LHWKUEQGu3ezXjl76nlkiS+JvcRj0
+        8kTuPU6Ldb5tfSELs203e2LflxPMjIV4T6F4NNrIeHesxx8Cm/Wi4c3mJKRTY79b
+        eHhRZqx0WSEHXjCXjneVff+kv2PBIRq8CaZNbtLXxiS3hvtn48pOn+sMI7teZ5gX
+        AjeqsxwQPrn8l8AbxE8Fivht3X4Gc6YxY7ux64Eecla0HoJM1Id+qFASFZ4jMK0A
+        ==
+X-ME-Sender: <xms:uD8VYcLcdhO7Rp9sbf_F2OcynrGCsZ2phWyCbzNNzYUBm1dmIf07pw>
+    <xme:uD8VYcJmwBr32lG2zqQWeQ5loP0mUfqGPGYRdExZaoOP6GXmOLgqttC1WyVkZVtUD
+    TJ1R9mLDw7ucyU>
+X-ME-Received: <xmr:uD8VYctkdi6e73MZGzFW_uHLEBZ9lWgDxfemZmjGmO2zQCiAI0cGmahNW0aWo9y7s0oG2-k3ZFCI3G0b6PHIPCYBi5Gfcw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrkeefgdeklecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:uD8VYZa4_mAaIzBz8HKvmU65l-5HqNdopze1UxZC7D08CNxnIqm05w>
+    <xmx:uD8VYTYg16AdF-icli2CbxGzc7i6w_c3GLIEvfq4JWgnzRnbsUgKXw>
+    <xmx:uD8VYVDXN8m-xP612sqWYEFD-DUebgAFFOPcM9Rh2OUdXcFC8nJuIA>
+    <xmx:uj8VYUIje8Bj9qk3jv8Nf6jA9V1Ii23AfaLANIMVJ_7V5TsKOZa_Cw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 12 Aug 2021 11:35:19 -0400 (EDT)
+Date:   Thu, 12 Aug 2021 18:35:15 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        UNGLinuxDriver@microchip.com,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Marek Behun <kabel@blackhole.sk>,
+        DENG Qingfang <dqfext@gmail.com>
+Subject: Re: [RFC PATCH net-next] net: bridge: switchdev: expose the port
+ hwdom as a netlink attribute
+Message-ID: <YRU/s7Zfl67FhI7+@shredder>
+References: <20210812121703.3461228-1-vladimir.oltean@nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210812121703.3461228-1-vladimir.oltean@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add verifier ctx test to call bpf_get_netns_cookie from
-cgroup/setsockopt.
+On Thu, Aug 12, 2021 at 03:17:03PM +0300, Vladimir Oltean wrote:
+> It is useful for a user to see whether a bridge port is offloaded or
+> not, and sometimes this may depend on hardware capability.
+> 
+> For example, a switchdev driver might be able to offload bonding/team
+> interfaces as bridge ports, but only for certain xmit hash policies.
+> When running into that situation, DSA for example prints a warning
+> extack that the interface is not offloaded, but not all drivers do that.
+> In fact, since the recent bridge switchdev explicit offloading API, all
+> switchdev drivers should be able to fall back to software LAGs being
+> bridge ports without having any explicit code to handle them. So they
+> don't have the warning extack printed anywhere.
 
-  #269/p pass ctx or null check, 1: ctx Did not run the program (not supported) OK
-  #270/p pass ctx or null check, 2: null Did not run the program (not supported) OK
-  #271/p pass ctx or null check, 3: 1 OK
-  #272/p pass ctx or null check, 4: ctx - const OK
-  #273/p pass ctx or null check, 5: null (connect) Did not run the program (not supported) OK
-  #274/p pass ctx or null check, 6: null (bind) Did not run the program (not supported) OK
-  #275/p pass ctx or null check, 7: ctx (bind) Did not run the program (not supported) OK
-  #276/p pass ctx or null check, 8: null (bind) OK
-  #277/p pass ctx or null check, 9: ctx (cgroup/setsockopt) Did not run the program (not supported) OK
-  #278/p pass ctx or null check, 10: null (cgroup/setsockopt) Did not run the program (not supported) OK
+[...]
 
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- tools/testing/selftests/bpf/verifier/ctx.c | 25 ++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+> With this change, the "hardware domain" concept becomes UAPI. It is a
+> read-only link attribute which is zero for non-offloaded bridge ports,
+> and has a non-zero value that is unique per bridge otherwise (i.e. two
+> different bridge ports, in two different bridges, might have a hwdom of
+> 1 and they are still different hardware domains).
+> 
+> ./ip -d link
+> 13: sw1p3@swp2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue master br0
+> 		state LOWERLAYERDOWN mode DEFAULT group default qlen 1000
+>     link/ether 00:04:9f:0a:0b:0c brd ff:ff:ff:ff:ff:ff promiscuity 1 minmtu 68
+>     maxmtu 2021 bridge_slave state disabled priority 32 cost 100 hairpin off guard off
+>     root_block off fastleave off learning on flood on port_id 0x8007 port_no 0x7
+>     designated_port 32775 designated_cost 0 designated_bridge 8000.0:4:9f:a:b:c
+>     designated_root 8000.0:4:9f:a:b:c hold_timer    0.00 message_age_timer    0.00
+>     forward_delay_timer    0.00 topology_change_ack 0 config_pending 0 proxy_arp off
+>     proxy_arp_wifi off mcast_router 1 mcast_fast_leave off mcast_flood on
+>     mcast_to_unicast off neigh_suppress off group_fwd_mask 0 group_fwd_mask_str 0x0
+>     vlan_tunnel off isolated off hwdom 2 addrgenmode none numtxqueues 8 numrxqueues 1
+>     gso_max_size 65536 gso_max_segs 65535 portname p3 switchid 02000000 parentbus spi
+>     parentdev spi2.1
 
-diff --git a/tools/testing/selftests/bpf/verifier/ctx.c b/tools/testing/selftests/bpf/verifier/ctx.c
-index 23080862aafd..3e7fdbf898b1 100644
---- a/tools/testing/selftests/bpf/verifier/ctx.c
-+++ b/tools/testing/selftests/bpf/verifier/ctx.c
-@@ -195,3 +195,28 @@
- 	.result = REJECT,
- 	.errstr = "R1 type=inv expected=ctx",
- },
-+{
-+	"pass ctx or null check, 9: ctx (cgroup/setsockopt)",
-+	.insns = {
-+		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,
-+			     BPF_FUNC_get_netns_cookie),
-+		BPF_MOV64_IMM(BPF_REG_0, 0),
-+		BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_CGROUP_SOCKOPT,
-+	.expected_attach_type = BPF_CGROUP_SETSOCKOPT,
-+	.result = ACCEPT,
-+},
-+{
-+	"pass ctx or null check, 10: null (cgroup/setsockopt)",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_1, 0),
-+		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,
-+			     BPF_FUNC_get_netns_cookie),
-+		BPF_MOV64_IMM(BPF_REG_0, 0),
-+		BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_CGROUP_SOCKOPT,
-+	.expected_attach_type = BPF_CGROUP_SETSOCKOPT,
-+	.result = ACCEPT,
-+},
--- 
-2.33.0.rc1.237.g0d66db33f3-goog
+Makes sense to me. Gives us further insight into the offload process. I
+vaguely remember discussing this with Nik in the past. The
+hwdom/fwd_mark is in the tree for long enough to be considered a stable
+and useful concept.
 
+You are saying that it is useful to expose despite already having
+"switchid" exposed because you can have interfaces with the same
+"switchid" that are not member in the same hardware domain? E.g., the
+LAG example. If so, might be worth explicitly spelling it out in the
+commit message.
