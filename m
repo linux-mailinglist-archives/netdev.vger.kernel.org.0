@@ -2,82 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 816173EA5BA
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 15:32:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DEC43EA5EC
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 15:46:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237178AbhHLNcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 09:32:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35126 "EHLO
+        id S237740AbhHLNqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 09:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234975AbhHLNco (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 09:32:44 -0400
+        with ESMTP id S236152AbhHLNqy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 09:46:54 -0400
 Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7BC7C0613D9
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 06:32:19 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id nt11so9581398pjb.2
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 06:32:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A492C061756;
+        Thu, 12 Aug 2021 06:46:29 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id lw7-20020a17090b1807b029017881cc80b7so15254793pjb.3;
+        Thu, 12 Aug 2021 06:46:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=pN8gn6XDJx8X4O5FCMjgKbbXidE6R/vdaeWWGFTiI50=;
-        b=W8YI8H/hnSbUW8vndQz73VUJvpgzszAc7mMX59M0eDUBjXJsQAeT/cIpJ3nJxn/Hsb
-         QEGacGy3Z0qUIn/tdG8zmV847TXoBhK8VjH9xhUk8OEqcAvoQw2HwQeVKf0rk3O9EJ4O
-         edW4zXX3oAgqRRraXbpWn1x3A6QTqIsWUxCwXNpyPbuiY8R3hSWe3YzDnBTDpoTKDjHy
-         iFvVAYFk3kDynXbIjBhIY7qapDVc8f5oLfn5Nnz9q5TyesEiGL220EeS31RaqtqlmbHC
-         SS/Os6bJCZDd53Jxsmx6Nr/AQhxqEToW6DFPjkkqEHD+hdAYeOs385Iu4wv9UCzT43V9
-         phrg==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=WB183lguWhFDS87ehCBje+Fiih0eLoDWXJwZXtQEnJM=;
+        b=uxNPl+KgSeMlqAvP5yRaL+ww+r/qKjI+e/T18nAzB9BdKlmsaeGO4YU0LXLmSIVPDt
+         9ANube2JoOKKjr/A0f14gNfi8CZND8GrwCDiHzE1nIIvhMjs9ZIXmyPG0DUYzlgwoKkP
+         iS7zLVoY4UZ35o5rPxmH32dLT4JFMnF8isS+6t2D2k9JjjK65+mZjQgLvY0vCzUujcxU
+         KXuZUY5mjZeE7Ec/jF1WFvQvTKA+hvji1CfTWE/5T2ldGD93DnRZtMhLMaen5iMKs0Jr
+         Eb4wsKH4WP9pBBbERhElUz5co64a3iWP1TeMxiXDAjjcFTt8uiSfVSiMyYveMiw7BbhZ
+         YFBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=pN8gn6XDJx8X4O5FCMjgKbbXidE6R/vdaeWWGFTiI50=;
-        b=kv0bv+qfCJ/MWyHDEIM58+jx6jJEyKorcvLJT2OQOi8HbCxLUAfBaoxHA/LWSVD1kp
-         wN1od/cv6bG536NaXalp+PN8TzMwcpHJxE6u0yKhkMawwoX+c9BiDxf70WvvFcFYmh/j
-         /zPzLDvLYGM+uSVfh+BHfQvZsojxHo/lLl3u2zXJQner0wR+W6LD84Sz2I/3t2R0bGjH
-         8fyvMEC5U8FSKyzdmyBiQLUlzImHn0anZyggeyl668YIGGwV7UN08wZu7/EY8Z2hN+V7
-         xl3zgZQNQifHtAvjChmy4yKN/Pb86lnQ+WCiwLNvGxl1JIlMEIjIiII6DBRiP+y6jvs0
-         utKg==
-X-Gm-Message-State: AOAM5329q5mRUc2Bq3FPlTGgrRjtp5BjES0ecld9ByfZtfVALh0uqVXM
-        RifhemMbl6qaPjJGSbfcSaEN
-X-Google-Smtp-Source: ABdhPJwLPHcmKKCvzEOp8J0CQ2RxkJ31f47XgenwLO2Jq4zYxBMA8pGHIGfgky6xC9N/7X6hkeJ4FA==
-X-Received: by 2002:a17:90a:3fcc:: with SMTP id u12mr15580048pjm.5.1628775139259;
-        Thu, 12 Aug 2021 06:32:19 -0700 (PDT)
-Received: from workstation ([120.138.12.52])
-        by smtp.gmail.com with ESMTPSA id j19sm3468141pfr.82.2021.08.12.06.32.17
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 12 Aug 2021 06:32:18 -0700 (PDT)
-Date:   Thu, 12 Aug 2021 19:02:15 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     kuba@kernel.org, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, richard.laing@alliedtelesis.co.nz,
-        linux-arm-msm@vger.kernel.org
-Subject: [RESEND] Conflict between char-misc and netdev
-Message-ID: <20210812133215.GB7897@workstation>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=WB183lguWhFDS87ehCBje+Fiih0eLoDWXJwZXtQEnJM=;
+        b=ezJH7wmlkAo8wer1VuJ2l1hIhClIHgC4UhZChsp6xonEKRCPzddKhN2EelMPGNfhmk
+         ePU9mp2yD8JHuxzumQnKh3tycrODy3BgU+dnndq3HoI7wb8Uh5WMB49NTwrMIyiHESJf
+         Bofx3rhkaEULpKgMz9+9vSNXICgq1C/XK9x29t+LQGFguC9Xk/62F91tO5k9Avc/t4is
+         q6Vs2tJsBtJH2XJkYul3R0oUDa4boNKuXRoLR/O0EjtncHUc3KZSYCD6rr5+f0qhOccP
+         b94QDFQ6cpxabfqnRa8lzR5DoNv/YcUPN0XqrIQ+evzCO3tsFMNwrwvkN0V9wg8FPS/T
+         HDDA==
+X-Gm-Message-State: AOAM532Yg7Wi7S/PpEorPVTdR7+i7Zn1XngcdnOJHpWqtUgroMuzyzI7
+        8mUOHsWMKdCbqoSQaRjxvVY=
+X-Google-Smtp-Source: ABdhPJzoKVXyZ/PTFLUw2x1Er7mVePAz6u27KJTyu05oXW4WKzqoD0b1ImRigJ1gmfSsl+lX18NOqA==
+X-Received: by 2002:a05:6a00:84e:b029:3ae:5c9:a48d with SMTP id q14-20020a056a00084eb02903ae05c9a48dmr4332754pfk.20.1628775988875;
+        Thu, 12 Aug 2021 06:46:28 -0700 (PDT)
+Received: from [192.168.0.109] ([123.20.118.31])
+        by smtp.gmail.com with ESMTPSA id g10sm3589100pfh.120.2021.08.12.06.46.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Aug 2021 06:46:28 -0700 (PDT)
+Subject: Re: [PATCH v2 1/2] udp: UDP socket send queue repair
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, willemb@google.com, pabeni@redhat.com,
+        avagin@gmail.com, alexander@mihalicyn.com,
+        lesedorucalin01@gmail.com
+References: <20210811154557.6935-1-minhquangbui99@gmail.com>
+ <721a2e32-c930-ad6b-5055-631b502ed11b@gmail.com>
+From:   Bui Quang Minh <minhquangbui99@gmail.com>
+Message-ID: <7f3ecbaf-7759-88ae-53d3-2cc5b1623aff@gmail.com>
+Date:   Thu, 12 Aug 2021 20:46:23 +0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <721a2e32-c930-ad6b-5055-631b502ed11b@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub, Dave,
 
-Due to the below commit in netdev there is a conflict between char-misc
-and netdev trees:
 
-5c2c85315948 ("bus: mhi: pci-generic: configurable network interface MRU")
+On 8/11/2021 11:14 PM, Eric Dumazet wrote:
+> 
+> 
+> On 8/11/21 5:45 PM, Bui Quang Minh wrote:
+>> In this patch, I implement UDP_REPAIR sockoption and a new path in
+>> udp_recvmsg for dumping the corked packet in UDP socket's send queue.
+>>
+>> A userspace program can use recvmsg syscall to get the packet's data and
+>> the msg_name information of the packet. Currently, other related
+>> information in inet_cork that are set in cmsg are not dumped.
+>>
+>> While working on this, I was aware of Lese Doru Calin's patch and got some
+>> ideas from it.
+> 
+> 
+> What is the use case for this feature, adding a test in UDP fast path ?
 
-Jakub, I noticed that you fixed the conflict locally in netdev:
+This feature is used to help CRIU to dump CORKed UDP packet in send queue. I'm 
+sorry for being not aware of the performance perspective here.
 
-d2e11fd2b7fc ("Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net")
+> IMO, TCP_REPAIR hijacking standard system calls was a design error,
+> we should have added new system calls.
 
-But the commit touches the MHI bus and it should've been merged into mhi
-tree then it goes via char-misc. It was unfortunate that neither
-linux-arm-msm nor me were CCed to the patch :/
-
-Could you please revert the commit?
+You are right that adding new system calls is a better approach. What do you 
+think about adding a new option in getsockopt approach?
 
 Thanks,
-Mani
+Quang Minh.
