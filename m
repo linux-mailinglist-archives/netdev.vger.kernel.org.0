@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC2233EA44D
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 14:12:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 600053EA455
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 14:12:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237214AbhHLMMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 08:12:49 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:17010 "EHLO
+        id S237292AbhHLMMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 08:12:52 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:17012 "EHLO
         szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234909AbhHLMMs (ORCPT
+        with ESMTP id S235734AbhHLMMs (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 08:12:48 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GllpK6p5bzZwwB;
-        Thu, 12 Aug 2021 20:08:41 +0800 (CST)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GllpL0Zggzb0jZ;
+        Thu, 12 Aug 2021 20:08:42 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
  dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
@@ -26,10 +26,12 @@ From:   Guangbin Huang <huangguangbin2@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH V2 net-next 0/4] net: hns3: add support ethtool extended link state
-Date:   Thu, 12 Aug 2021 20:08:34 +0800
-Message-ID: <1628770118-18714-1-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH V2 net-next 1/4] docs: ethtool: Add two link extended substates of bad signal integrity
+Date:   Thu, 12 Aug 2021 20:08:35 +0800
+Message-ID: <1628770118-18714-2-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
+In-Reply-To: <1628770118-18714-1-git-send-email-huangguangbin2@huawei.com>
+References: <1628770118-18714-1-git-send-email-huangguangbin2@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.67.165.24]
@@ -40,33 +42,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds support for ethtool extended link state in the HNS3
-ethernet driver to add one additional information for user to know
-why a link is not up.
+Add documentation for two bad signal integrity substates:
+ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_REFERENCE_CLOCK_LOST
+ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_ALOS.
 
-change log:
-V1 -> V2:
-1. fix missing a P for "-EOPNOTSUP".
-2. delete unnecessary error log of this feature is not supported by
-   devices of earlier version.
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+---
+ Documentation/networking/ethtool-netlink.rst | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-
-Guangbin Huang (4):
-  docs: ethtool: Add two link extended substates of bad signal integrity
-  ethtool: add two link extended substates of bad signal integrity
-  net: hns3: add header file hns3_ethtoo.h
-  net: hns3: add support ethtool extended link state
-
- Documentation/networking/ethtool-netlink.rst       |  8 +++
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  2 +
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 82 ++++++++++++++++++----
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h | 31 ++++++++
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  3 +
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 24 +++++++
- include/uapi/linux/ethtool.h                       |  2 +
- 7 files changed, 137 insertions(+), 15 deletions(-)
- create mode 100644 drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h
-
+diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+index c86628e6a235..c690bb37430d 100644
+--- a/Documentation/networking/ethtool-netlink.rst
++++ b/Documentation/networking/ethtool-netlink.rst
+@@ -595,6 +595,14 @@ Link extended substates:
+                                                                        that is not formally
+                                                                        supported, which led to
+                                                                        signal integrity issues
++
++  ``ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_REFERENCE_CLOCK_LOST``        The external clock signal for
++                                                                       SerDes is too weak or
++                                                                       unavailable.
++
++  ``ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_ALOS``                        The received signal for
++                                                                       SerDes is too weak because
++                                                                       analog loss of signal.
+   =================================================================    =============================
+ 
+   Cable issue substates:
 -- 
 2.8.1
 
