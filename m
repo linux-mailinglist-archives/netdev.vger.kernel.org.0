@@ -2,101 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A0F33EA2E6
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 12:19:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83E0B3EA2E9
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 12:19:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236220AbhHLKRd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 06:17:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46960 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234093AbhHLKRc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 06:17:32 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F47C061765;
-        Thu, 12 Aug 2021 03:17:07 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id u3so10555340ejz.1;
-        Thu, 12 Aug 2021 03:17:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QKSZMx3tYUS3bL0IF6JnGJC/q4lllMMZybPbkde8fbY=;
-        b=uKS8E3WYxYhuLOuJuTONzYsxliI8X8JiM9JMzHFbTpTHKW/S23UfEzKgb63Nfq0dMc
-         5VTwTGgUUTsloLIAGMIupEqq4WhD3NnG023l4d9RtwNSxiJqyFzeCLqUFchwGo0U/gXo
-         BRkalXCiFJELZ0eS13IYNrdFuuUZDRT7gDITAbFZFm9fX3ZNGjixYHD3xRFCo4xqXtq7
-         CReob6vyHWlZhJ8+unXnpbmqKOSCXgW+m5Pfug9dmg9tWufViCzLaP2o9mRGL2OdhxSr
-         EdtXav5bsBmGero1Xk2SKjI/n28hpL0M9YcduNbD5rWbzuHh8h23f11leebnUt35XMla
-         KjMQ==
+        id S236364AbhHLKTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 06:19:13 -0400
+Received: from mail-ej1-f50.google.com ([209.85.218.50]:42820 "EHLO
+        mail-ej1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234700AbhHLKTK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 06:19:10 -0400
+Received: by mail-ej1-f50.google.com with SMTP id b10so2025170eju.9;
+        Thu, 12 Aug 2021 03:18:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QKSZMx3tYUS3bL0IF6JnGJC/q4lllMMZybPbkde8fbY=;
-        b=fPxg9g9e4On/5CHKyHDIFbKQfh4PczFrRbutkR35yaGb4x1GrmLD4N2sl6/tYBdeSQ
-         kQRVA3u2gFWljSM/gt+Vp3sUoLQO7OEm4c+iFgqdIVLCMhDnaR1/utaevUS+nlOF8sHh
-         6d3gysZhEAX/SPETp41i1x3Z7M9X1886jWH5fhOZ6cF//VcY9dgSG5hK0ih9Rv1ePCfG
-         +fisrL7NWjLZQ152lAGiBnaMBdWoceSg381lNW8Z6yYxktaFAMsQ5DZ5Fj+jTXXWhDJ8
-         HjWZlsXybShamc3LXFceSV+7gqVZR6tvb+wOCYhBpeeIKeJRtz5kFJ+7YQ5mIcyGyM6y
-         CXEg==
-X-Gm-Message-State: AOAM531Num3E/Fs6DZdu29S5vMjl9QKAW1g+DwJnKbOIyI6JEVLJIJ9/
-        QXSfDcBHYKKeCawoPBvHhFw=
-X-Google-Smtp-Source: ABdhPJw58nbLNRoQwhOvpBchfzaiXBu3AdywPlliVWiuXvXz0Km6IEDviegJ37Ul4ALHnTu55V33Ug==
-X-Received: by 2002:a17:906:9b1:: with SMTP id q17mr2894045eje.546.1628763425870;
-        Thu, 12 Aug 2021 03:17:05 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id q14sm898222edr.0.2021.08.12.03.17.03
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=jlLf7LVJcFztLZ92Y0qUp+62Jebh0x2mMopBOsuvZCM=;
+        b=VfvxhBKVDrD0+pv4ziVjMQ6fYdbRuJeczW/qSt9X8SNiO4g2uqrAd4jFdCR6KltZAh
+         nV6agx/TZazDj0fJX0Ch15jc4BgQGTJuoQTdAndXI9mODQoKpaupEgJQZpSvmvA9VcWZ
+         w2t1GZQ11CjEG//yALKLEKtiKKC0p39hLD2CU6qnMSH8n09Ozw+XjPvvAItHIui8lQmU
+         FZjo64aatDaFOX7meI8iKk93zw6dZGAXN/89tirsZBXFgBF6p139hPPaEcLlAoba8ruB
+         H9+fXo0rzFZicJLCjabOe6ObZi+fIFU1yz/llyJSqGONeVyq/gp1+96jnWNFmbG+MRnx
+         wixw==
+X-Gm-Message-State: AOAM533k0ZYdLqlLskb+hrTzXY6EwaklYLPJZbwUFsUNFgoPySCONSmT
+        +seidejfhZf8N2z3dPAMgZg=
+X-Google-Smtp-Source: ABdhPJxrojONErshEKQ2stXf5CAL+MErvhdOhsoNga4qy9qKlhoYnj3TD0k5G0P/u2bfvRsreyJNMQ==
+X-Received: by 2002:a17:906:6d85:: with SMTP id h5mr2905829ejt.305.1628763523696;
+        Thu, 12 Aug 2021 03:18:43 -0700 (PDT)
+Received: from localhost (host-87-19-134-225.retail.telecomitalia.it. [87.19.134.225])
+        by smtp.gmail.com with ESMTPSA id a60sm912472edf.59.2021.08.12.03.18.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Aug 2021 03:17:04 -0700 (PDT)
-Date:   Thu, 12 Aug 2021 13:17:03 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Thu, 12 Aug 2021 03:18:43 -0700 (PDT)
+Date:   Thu, 12 Aug 2021 12:18:35 +0200
+From:   Matteo Croce <mcroce@linux.microsoft.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Marc Zyngier <maz@kernel.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>,
-        "open list:ETHERNET BRIDGE" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH net-next] net: bridge: switchdev: allow port isolation to
- be offloaded
-Message-ID: <20210812101703.lwp7y7dq6pnmnj3b@skbuf>
-References: <20210811135247.1703496-1-dqfext@gmail.com>
- <YRRDcGWaWHgBkNhQ@shredder>
- <20210811214506.4pf5t3wgabs5blqj@skbuf>
- <YRRGsL60WeDGQOnv@shredder>
- <20210811215833.yst5tzgfvih2q4y2@skbuf>
- <20210812060410.1848228-1-dqfext@gmail.com>
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Will Deacon <will@kernel.org>
+Subject: Re: [PATCH net-next] stmmac: align RX buffers
+Message-ID: <20210812121835.405d2e37@linux.microsoft.com>
+In-Reply-To: <fe5f99c8-5655-7fbb-a64e-b5f067c3273c@gmail.com>
+References: <20210614022504.24458-1-mcroce@linux.microsoft.com>
+        <871r71azjw.wl-maz@kernel.org>
+        <YROmOQ+4Kqukgd6z@orome.fritz.box>
+        <202417ef-f8ae-895d-4d07-1f9f3d89b4a4@gmail.com>
+        <87o8a49idp.wl-maz@kernel.org>
+        <fe5f99c8-5655-7fbb-a64e-b5f067c3273c@gmail.com>
+Organization: Microsoft
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210812060410.1848228-1-dqfext@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 12, 2021 at 02:04:10PM +0800, DENG Qingfang wrote:
-> On Thu, Aug 12, 2021 at 12:58:33AM +0300, Vladimir Oltean wrote:
-> > On Thu, Aug 12, 2021 at 12:52:48AM +0300, Ido Schimmel wrote:
-> > >
-> > > If the purpose is correctness, then this is not the only flag that was
-> > > missed. BR_HAIRPIN_MODE is also relevant for the data path, for example.
-> >
-> > I never wanted to suggest that I'm giving a comprehensive answer, I just
-> > answered Qingfang's punctual question here:
-> > https://lore.kernel.org/netdev/CALW65jbotyW0MSOd-bd1TH_mkiBWhhRCQ29jgn+d12rXdj2pZA@mail.gmail.com/
-> >
-> > Tobias also pointed out the same issue about BR_MULTICAST_TO_UNICAST in
-> > conjunction with tx_fwd_offload (although the same is probably true even
-> > without it):
-> > https://patchwork.kernel.org/project/netdevbpf/cover/20210426170411.1789186-1-tobias@waldekranz.com/
-> >
-> > > Anyway, the commit message needs to be reworded to reflect the true
-> > > purpose of the patch.
-> >
-> > Agree, and potentially extended with all the bridge port flags which are
-> > broken without switchdev driver intervention.
->
-> So, what else flags should be added to BR_PORT_FLAGS_HW_OFFLOAD?
+On Thu, 12 Aug 2021 10:48:03 +0200
+Eric Dumazet <eric.dumazet@gmail.com> wrote:
 
-I can't think of others beside these 3, BR_ISOLATED, BR_HAIRPIN_MODE and BR_MULTICAST_TO_UNICAST.
+> 
+> 
+> On 8/11/21 4:16 PM, Marc Zyngier wrote:
+> > On Wed, 11 Aug 2021 13:53:59 +0100,
+> > Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> >
+> >> Are you sure you do not need to adjust stmmac_set_bfsize(), 
+> >> stmmac_rx_buf1_len() and stmmac_rx_buf2_len() ?
+> >>
+> >> Presumably DEFAULT_BUFSIZE also want to be increased by NET_SKB_PAD
+> >>
+> >> Patch for stmmac_rx_buf1_len() :
+> >>
+> >> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> >> b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c index
+> >> 7b8404a21544cf29668e8a14240c3971e6bce0c3..041a74e7efca3436bfe3e17f972dd156173957a9
+> >> 100644 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c +++
+> >> b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c @@ -4508,12
+> >> +4508,12 @@ static unsigned int stmmac_rx_buf1_len(struct
+> >> stmmac_priv *priv, /* First descriptor, not last descriptor and
+> >> not split header */ if (status & rx_not_ls)
+> >> -               return priv->dma_buf_sz;
+> >> +               return priv->dma_buf_sz - NET_SKB_PAD -
+> >> NET_IP_ALIGN; 
+> >>         plen = stmmac_get_rx_frame_len(priv, p, coe);
+> >>  
+> >>         /* First descriptor and last descriptor and not split
+> >> header */
+> >> -       return min_t(unsigned int, priv->dma_buf_sz, plen);
+> >> +       return min_t(unsigned int, priv->dma_buf_sz - NET_SKB_PAD
+> >> - NET_IP_ALIGN, plen); }
+> >>  
+> >>  static unsigned int stmmac_rx_buf2_len(struct stmmac_priv *priv,
+> > 
+> > Feels like a major deficiency of the original patch. Happy to test a
+> > more complete patch if/when you have one.
+> 
+> I wont have time in the immediate future.
+> 
+> Matteo, if you do not work on a fix, I suggest we revert
+>  a955318fe67ec0d962760b5ee58e74bffaf649b8 stmmac: align RX buffers
+> 
+> before a more polished version can be submitted.
+> 
+
+Better to use stmmac_rx_offset() so to have the correct length when
+using XDP. Also, when XDP is enabled, the offset was
+XDP_PACKET_HEADROOM (i.e. 256 bytes) even before the change, so it
+could be already broken. Mark, can you try on the Jetson TX2 by
+attaching an XDP program and see if it works without my change?
+
+A possible fix, which takes in account also the XDP headroom for
+stmmac_rx_buf1_len() only could be (only compile tested, I don't have
+the hardware now):
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 7b8404a21544..b205f43f849a 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -93,7 +93,7 @@ static int tc = TC_DEFAULT;
+ module_param(tc, int, 0644);
+ MODULE_PARM_DESC(tc, "DMA threshold control value");
+ 
+-#define	DEFAULT_BUFSIZE	1536
++#define	DEFAULT_BUFSIZE	1536 + XDP_PACKET_HEADROOM + NET_IP_ALIGN
+ static int buf_sz = DEFAULT_BUFSIZE;
+ module_param(buf_sz, int, 0644);
+ MODULE_PARM_DESC(buf_sz, "DMA buffer size");
+@@ -4508,12 +4508,12 @@ static unsigned int stmmac_rx_buf1_len(struct stmmac_priv *priv,
+ 
+ 	/* First descriptor, not last descriptor and not split header */
+ 	if (status & rx_not_ls)
+-		return priv->dma_buf_sz;
++		return priv->dma_buf_sz - stmmac_rx_offset(priv);
+ 
+ 	plen = stmmac_get_rx_frame_len(priv, p, coe);
+ 
+ 	/* First descriptor and last descriptor and not split header */
+-	return min_t(unsigned int, priv->dma_buf_sz, plen);
++	return min_t(unsigned int, priv->dma_buf_sz - stmmac_rx_offset(priv), plen);
+ }
+ 
+ static unsigned int stmmac_rx_buf2_len(struct stmmac_priv *priv,
+
+
+-- 
+per aspera ad upstream
