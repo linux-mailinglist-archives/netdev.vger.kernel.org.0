@@ -2,133 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6764A3E9F31
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 09:07:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D49393E9F3B
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 09:09:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232999AbhHLHHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 03:07:47 -0400
-Received: from mail-dm6nam11on2083.outbound.protection.outlook.com ([40.107.223.83]:23616
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229956AbhHLHHq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Aug 2021 03:07:46 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WSrZTrk9v2GHQC7ZGvYc4v5b+K682UgYEdGaffaOi+mJQHM1Y/i7ChTyDxe4tUzdVMEc5CnnVnSj+2Mxdq10lnw8gqY8IRrMKauyAJjnO6vLcrK8HGWygcq5C/+EBSvWbqhm+74khIrimxUN8/hOMSeLuwbMP1wdmX/4KSwJm2FgQohmWIlkNRyZ3QiW9+Nd7hSQqQ5LKW4QecAas3+NZfgzG4p3XdZEeWx2txuqvLy7co+X2GIzDQJeU6IXHSVz1chO6S4J0HoDV6wgtBWflijJGsAPUwD+WKfqKrRqASVZcnLBUuTXA92ZbH7otE6ntwYXqRe64w+dYgM/1pSzKg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Okle2DfjHlcnWxY8zJrKaQluELYr6iyqYP8zw5hsPCE=;
- b=I9HeIIqhuzHyNIRO9pQvEwMXgsIu09rnfl08tg9LviWPeZ2ScmCbSXP4veIfzWd50LX84jYKdVB48y+0UOD5R6JI8NyFilXec9Q5NozzeAtSi5RierCaZzTCGmPuqJbIrA1AsJrVVleXFv9EEQU96hq3oQj0aslY/8CRR+KwcQ7xOKWOcHVNaEd1psyvo+MUVWhi81EXWwMn7Ts+PsPBblKq6h/Xl8HuWMT7BpE0ft6VMlPjFMXZxQvbb9LfoqA5lhC45+NNzjOAzvNnoXU0SR49i3G4UB1ZqcYfWO6z0jF5FGFKPqUSWGHUSgslSWH4137KrvgvhmEjx3c3M5k6IQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Okle2DfjHlcnWxY8zJrKaQluELYr6iyqYP8zw5hsPCE=;
- b=Iyw9pmCfzIZZCVAaB5ibA4GSLulrzFkTiUE8RgsTVYSlIm/Y95MyBwlEDczo2NohOQoNxY6q0j1uqs5JC8hgDN1esAvJ4dd9QSi0ZV+ynsCNnlgYrjEi1C8DoC/34lpdKZ9y7oWy0n6vytfcCfMZE0J1NI9FgUXrC33QitABhbpxt/JrYOSxCqXTl/3WcJhBSMWczBn/WvhnvUECV8G/9VMXwJpYnw7CQdfMreVtYFgd5t826NO1IxTWt5ugfTgvTmPdlkqqIQCx6EDW8K1urFgSKsjppvzvHc7ePK6NrVp24WKQo9v/qBXckpEkLfe3dWZK2LvhNqD5tqNWTBjx4A==
-Received: from MWHPR19CA0008.namprd19.prod.outlook.com (2603:10b6:300:d4::18)
- by MWHPR1201MB0077.namprd12.prod.outlook.com (2603:10b6:301:55::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.14; Thu, 12 Aug
- 2021 07:07:20 +0000
-Received: from CO1NAM11FT066.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:d4:cafe::f7) by MWHPR19CA0008.outlook.office365.com
- (2603:10b6:300:d4::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.15 via Frontend
- Transport; Thu, 12 Aug 2021 07:07:20 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT066.mail.protection.outlook.com (10.13.175.18) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4415.16 via Frontend Transport; Thu, 12 Aug 2021 07:07:20 +0000
-Received: from localhost (172.20.187.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 12 Aug
- 2021 07:07:19 +0000
-Date:   Thu, 12 Aug 2021 10:07:15 +0300
-From:   Leon Romanovsky <leonro@nvidia.com>
-To:     Saeed Mahameed <saeed@kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Shay Drory <shayd@nvidia.com>, Parav Pandit <parav@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [net-next 05/12] net/mlx5: Change SF missing dedicated MSI-X err
- message to dbg
-Message-ID: <YRTIo8Op1MuHL6Am@unreal>
-References: <20210811181658.492548-1-saeed@kernel.org>
- <20210811181658.492548-6-saeed@kernel.org>
+        id S234601AbhHLHJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 03:09:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59190 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234626AbhHLHJQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 03:09:16 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36E3CC061765;
+        Thu, 12 Aug 2021 00:08:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=B2gGP1VQRHCk6MX5le6+GSdI6v6K4Z0HHWZKFL10rE0=; b=KWqNs2MzE3TrEoFEQpnBVNyN0g
+        3jwYoTV2xVF97Q4jfnPDewLohje/W5KP+UVtzf70pRbNyVa0L9JR/HRVX++AjDpqrnODvsCq3iI6s
+        s5hWoJJ7ZlojfvWMh/XXqY102KCc4s+2CULMGqM9r9FaqMI/S9tVa1ufKTY3vmbMdC+GxCI/13mMB
+        m5AdxVnPALV6Jdrsa+eStgqDvqaVf+z0JdxyAI+Vm+PhT8v18Xohd1mTScUog28GAzhZYHaRa8eH8
+        1bRc8324eOnZjmhS5fyzGdF12l4kFva4VJYN6JiZH4nOA3O5IbcKjh1RosqC6FmXil2UqOXUOVEK3
+        /vMn+JfQ==;
+Received: from hch by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mE4oC-00EGqD-Lh; Thu, 12 Aug 2021 07:07:34 +0000
+Date:   Thu, 12 Aug 2021 08:07:20 +0100
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Uwe Kleine-K??nig <u.kleine-koenig@pengutronix.de>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-pci@vger.kernel.org, kernel@pengutronix.de,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Rafa?? Mi??ecki <zajec5@gmail.com>,
+        Zhou Wang <wangzhou1@hisilicon.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Michael Buesch <m@bues.ch>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-crypto@vger.kernel.org,
+        netdev@vger.kernel.org, oss-drivers@corigine.com
+Subject: Re: [PATCH v3 4/8] PCI: replace pci_dev::driver usage that gets the
+ driver name
+Message-ID: <YRTIqGm5Dr8du7a7@infradead.org>
+References: <20210811080637.2596434-1-u.kleine-koenig@pengutronix.de>
+ <20210811080637.2596434-5-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210811181658.492548-6-saeed@kernel.org>
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fa75df9f-3100-4daa-4709-08d95d5fd3c1
-X-MS-TrafficTypeDiagnostic: MWHPR1201MB0077:
-X-Microsoft-Antispam-PRVS: <MWHPR1201MB00777F5A056A3BE1B6DF21FBBDF99@MWHPR1201MB0077.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:257;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zdSbqDdLV/c4AETjnef75BmWsRQ/ceNNEDd9cFpTU0Z5V9yweqDhlyn8CqxyOl8AaZ0jEOcXG0LE1hfe3U5HG1ajfQwZyi1Y47GLSMz7hJpl348vdD5YE4RehLL1rtWr7YE3bVQzc7AlfgDH4qpWHgK1054OpHwoAYo+gE/pFJ79AvWvbJDjYk0vS7FurygfZoKrmQCQAHPKhDPBe6kB3De6Hy6qtfslJzrVMSRtfdq9NsSlGUWpgOpv5+n98Vl4DyoXQNP4zEvsEAcbj+qYUAsAdPnMXJI8tzCV214FB2WXBNUS7NGE4zYrKjhjWcbVTMPEw3kc2kQ+SVLFXDMXeN/T0gyaEVa56seRCkB6QKNMEMN4T9tvTmL9YRJpXpSUDLw8MDPCefTedy9dCIRiYyBd5dZM4mtuURz2GbUGUMqw856gxlXfgkk+B50p81s3SEw/SwSTV+MK3g/4hjsz70JCvUp4EtnaxizYVM3nmIhBq7ptoVDbDeNdGhB5D6Zs+PrzzTY9VztW349pQTCw8PG8CEeCB4IqBnW7hjZ5vcVj4cSG3antOdl/v6UN3IqUSx+L03+rjmbsS9JQINi6OKGa3CA8STqgSdstQFzfH6m0jEMg6vsfLDAo6lwMMZu/yGmmiRZZBSzYF/hSlC0jDSEC5ghESrZ6qtyZcltGl+L5Z3ywRhgZeVrE6PjTFwMZaIiMN5DK1ug6oUrd8fNl/A==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(7916004)(4636009)(346002)(136003)(376002)(39860400002)(396003)(36840700001)(46966006)(70586007)(16526019)(186003)(9686003)(70206006)(356005)(7636003)(33716001)(26005)(336012)(8936002)(4326008)(47076005)(86362001)(8676002)(6666004)(478600001)(5660300002)(36860700001)(82740400003)(82310400003)(83380400001)(36906005)(15650500001)(316002)(2906002)(54906003)(6916009)(426003)(107886003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Aug 2021 07:07:20.3722
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fa75df9f-3100-4daa-4709-08d95d5fd3c1
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT066.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1201MB0077
+In-Reply-To: <20210811080637.2596434-5-u.kleine-koenig@pengutronix.de>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 11, 2021 at 11:16:51AM -0700, Saeed Mahameed wrote:
-> From: Shay Drory <shayd@nvidia.com>
-> 
-> When MSI-X vectors allocated are not enough for SFs to have dedicated,
-> MSI-X, kernel log buffer has too many entries.
-> Hence only enable such log with debug level.
+On Wed, Aug 11, 2021 at 10:06:33AM +0200, Uwe Kleine-K??nig wrote:
+>  static inline const char *eeh_driver_name(struct pci_dev *pdev)
+>  {
+> -	return (pdev && pdev->driver) ? pdev->driver->name : "<null>";
+> +	const char *drvstr = pdev ? dev_driver_string(&pdev->dev) : "";
+> +
+> +	if (*drvstr == '\0')
+> +		return "<null>";
+> +
+> +	return drvstr;
 
-Please invest extra time in the commit message.
+This looks rather obsfucated due to the fact that dev_driver_string
+never returns '\0', and due to the strange mix of a tenary operation
+and the if on a related condition.
 
-> 
-> Signed-off-by: Shay Drory <shayd@nvidia.com>
-> Reviewed-by: Parav Pandit <parav@nvidia.com>
-> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-> index a4f6ba0c91da..717b9f1850ac 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-> @@ -479,7 +479,7 @@ static int irq_pools_init(struct mlx5_core_dev *dev, int sf_vec, int pf_vec)
->  	if (!mlx5_sf_max_functions(dev))
->  		return 0;
->  	if (sf_vec < MLX5_IRQ_VEC_COMP_BASE_SF) {
-> -		mlx5_core_err(dev, "Not enough IRQs for SFs. SF may run at lower performance\n");
-> +		mlx5_core_dbg(dev, "Not enught IRQs for SFs. SF may run at lower performance\n");
 
-enught -> enough
-
->  		return 0;
->  	}
+>  }
 >  
-> -- 
-> 2.31.1
-> 
+>  #endif /* CONFIG_EEH */
+> diff --git a/drivers/bcma/host_pci.c b/drivers/bcma/host_pci.c
+> index 69c10a7b7c61..dc2ffa686964 100644
+> --- a/drivers/bcma/host_pci.c
+> +++ b/drivers/bcma/host_pci.c
+> @@ -175,9 +175,10 @@ static int bcma_host_pci_probe(struct pci_dev *dev,
+>  	if (err)
+>  		goto err_kfree_bus;
+>  
+> -	name = dev_name(&dev->dev);
+> -	if (dev->driver && dev->driver->name)
+> -		name = dev->driver->name;
+> +	name = dev_driver_string(&dev->dev);
+> +	if (*name == '\0')
+> +		name = dev_name(&dev->dev);
+
+Where does this '\0' check come from?
+
+> +
+> +	name = dev_driver_string(&dev->dev);
+> +	if (*name == '\0')
+> +		name = dev_name(&dev->dev);
+> +
+
+More of this weirdness.
