@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 383463EA728
+	by mail.lfdr.de (Postfix) with ESMTP id 817463EA729
 	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 17:09:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238368AbhHLPIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 11:08:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57542 "EHLO
+        id S237871AbhHLPI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 11:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237871AbhHLPIw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 11:08:52 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C28C3C061756
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 08:08:26 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id f3so7687080plg.3
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 08:08:26 -0700 (PDT)
+        with ESMTP id S238375AbhHLPIz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 11:08:55 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AEACC0613D9
+        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 08:08:30 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id n12so7021886plf.4
+        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 08:08:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=eI+1Gi3tygC8R88SAAyvbOaVXcrKCPR0ycNoBn4sLbc=;
-        b=fFiphyJ0gcmi/5F8ixcDMYBwZrTq66J8Ln4XXtdCfm0EtWrK7YwK+JYd15Q+TsKI9S
-         tEaKK6YpsN6cv0DmMWV9ekhOYGvbeF2VYfgNFqFkA4d6KB2Lw64A3zzEY/qFZqjrrSfl
-         UxUsSCFAOm8gyW6UT44DA1dT9AxBMwUl7EQbONFIbNQqA5IBrcZLUs3wVUSa8PeuvamQ
-         nmevyhz5b3jOoyAt/nXPKTUuXd2IPnMcrlGEOYUBH4OvNE4WHj4oGFLBzmxPiZWLAMyn
-         V9s4kUBm00p3SX3qd7Gw82vd+wwBSg0HkEJYcWIZo1u1YtHDDkBvZ+q4kNpwOurPJZ6X
-         h3uA==
+        bh=jqs4O3v7cLO7mth15lIh47ggmIf8qUdBLrOa/zfjQ7M=;
+        b=Qo5mq7jeValO8oUpdJxN/rE298JUfAii4Fcmnvym/3rdP1Zc9bDIgeSYb0OnQbcKwV
+         ZaRq15YmHDn+Pf234AIV2SnEDNWcS2x0wEwkETDVU8bIE0nY8QAc5HFcDECjP+k8/S8n
+         pIxIThZO/JsK4nynYhuZPvuTykqZm8CdeE9ozzE20FCQVQqnzEwJj3mFnDO58sQQBJWJ
+         I9pnBoIhpA0aaphIleszIDbcKOKgNK4e4rjbt6K6syqIS+KP1m1zAzUWqOyS1aATZ+sH
+         0WSh0NUuLk2qBEUB3SiFzP822zrm8UnwTVjBTudvs/Xp/MeC4gHa/Xy3dY2aW0JG/x9A
+         eLaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=eI+1Gi3tygC8R88SAAyvbOaVXcrKCPR0ycNoBn4sLbc=;
-        b=jvHbLyFZP2Odq4h7RSuU+fMUAdGUtvZQZSEgYjdEYZbmstK0GxKUkTxnX75ZXA0rYI
-         mq0moagRn+a5lc/b1sRWy4Go60PoqLJkY5dQUpkkvb6kWxL3irBIHB1xr1TJC2rVG04Z
-         vJlwpjY8osGjQFVmZl0G1oGo3pcHsVOyRSae07qigrALVpGRKcp6y5qqm97Cq9xuZqNv
-         y/3tN/0xe0Yk0W41sr2InMBH96HyCZTpsp2XE1iL3txgius911PJxCbXpU86UyAxXFHe
-         VEs6BAPYVh+whm2GEgsluYuWSNu9oh1AhTtOg/4I6BW6OOCoebRsj0CPIRgIKoFJa+5P
-         Bs3A==
-X-Gm-Message-State: AOAM532OIfvnlA7tS/Md/N21UgpOhAcw10VDXTeGD5vIFLgl+GZ/ccXL
-        +CRlpaxSnJtAzzm9Glwrd9c=
-X-Google-Smtp-Source: ABdhPJyBczaZB7T2ahW2c63PJ5xEojmJmLvJ7XfO89MRR619tWpd3/Z0+6Qzi06mPscJ0iXNkfyxnw==
-X-Received: by 2002:a17:90a:ce88:: with SMTP id g8mr4287248pju.116.1628780906285;
-        Thu, 12 Aug 2021 08:08:26 -0700 (PDT)
+        bh=jqs4O3v7cLO7mth15lIh47ggmIf8qUdBLrOa/zfjQ7M=;
+        b=H2BMJUtqiGkjtRzwEkQKkR8INTEeAQwGT0/dI2rEkusd7mxzPzBsRH6yYivhuHbJdW
+         JeSbJGKv6C+vXeo6OvkabF71CUhPhVQ1ujRTacT9BjIbZlFcGIyOkrgyamBJvHJVkcDW
+         myfFWYLxHZYindYuHq6ztnX6iUAyHk2MaXV0fR8TJDxl+EkkyKTRBTN3aR05DSJ4gGbX
+         DtzzP6KS/2+1Bd+CuEqLsgqubXgBgphVCi1sMDcMDPGVOzdDd+11fYvXmj762C6VneSD
+         EULE+XOnkzs0NzlG49PKvUbVeyjdx8HfYkzOOMe4csupTJA2+C00Na/n3j/gMYY6JHkd
+         CEDQ==
+X-Gm-Message-State: AOAM530ZupeFe3nJc32I6W1//1xvHg/QeIxe25CS6kNCjBI6J+5rfNGm
+        8EGOBWnpCcuObMqaTXFmLzs=
+X-Google-Smtp-Source: ABdhPJx2ju29vjOiNr5sw2dwY47xJr+WmK9tX/0f3zNzPNXpc4+7Wa4j+ip5mlgbie5hXkF+2mTHtQ==
+X-Received: by 2002:a17:902:b193:b029:11a:a179:453a with SMTP id s19-20020a170902b193b029011aa179453amr3832717plr.69.1628780909846;
+        Thu, 12 Aug 2021 08:08:29 -0700 (PDT)
 Received: from MASTER.. ([58.76.185.115])
-        by smtp.gmail.com with ESMTPSA id w130sm3914261pfd.118.2021.08.12.08.08.24
+        by smtp.gmail.com with ESMTPSA id w130sm3914261pfd.118.2021.08.12.08.08.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Aug 2021 08:08:26 -0700 (PDT)
+        Thu, 12 Aug 2021 08:08:29 -0700 (PDT)
 From:   Juhee Kang <claudiajkang@gmail.com>
 To:     hawk@kernel.org, brouer@redhat.com, davem@davemloft.net,
         toke@redhat.com, toke@toke.dk
 Cc:     netdev@vger.kernel.org, Juhee Kang <claudiajkang@gmail.com>
-Subject: [PATCH net-next 1/2] samples: pktgen: pass the environment variable of normal user to sudo
-Date:   Fri, 13 Aug 2021 00:08:12 +0900
-Message-Id: <20210812150813.53124-2-claudiajkang@gmail.com>
+Subject: [PATCH net-next 2/2] samples: pktgen: add missing IPv6 option to pktgen scripts
+Date:   Fri, 13 Aug 2021 00:08:13 +0900
+Message-Id: <20210812150813.53124-3-claudiajkang@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210812150813.53124-1-claudiajkang@gmail.com>
 References: <20210812150813.53124-1-claudiajkang@gmail.com>
@@ -63,47 +63,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All pktgen samples can use the environment variable instead of option
-parameters(eg. $DEV is able to use instead of '-i' option).
+Currently, "sample04" and "sample05" are not working properly when
+running with an IPv6 option("-6"). The commit 0f06a6787e05 ("samples:
+Add an IPv6 "-6" option to the pktgen scripts") has omitted the addition
+of this option at "sample04" and "sample05".
 
-This is results of running sample as root and user:
+In order to support IPv6 option, this commit adds logic related to IPv6
+option.
 
-    // running as root
-    # DEV=eth0 DEST_IP=10.1.0.1 DST_MAC=00:11:22:33:44:55 ./pktgen_sample01_simple.sh -v -n 1
-    Running... ctrl^C to stop
-
-    // running as normal user
-    $ DEV=eth0 DEST_IP=10.1.0.1 DST_MAC=00:11:22:33:44:55 ./pktgen_sample01_simple.sh -v -n 1
-    [...]
-    ERROR: Please specify output device
-
-This results show the sample doesn't work properly when the sample runs
-as normal user. Because the sample is restarted by the function
-(root_check_run_with_sudo) to run with sudo. In this process, the
-environment variable of normal user doesn't propagate to sudo.
-
-It can be solved by using "-E"(--preserve-env) option of "sudo", which
-preserve normal user's existing environment variables. So this commit
-adds "-E" option in the function (root_check_run_with_sudo).
+Fixes: 0f06a6787e05 ("samples: Add an IPv6 "-6" option to the pktgen scripts")
 
 Signed-off-by: Juhee Kang <claudiajkang@gmail.com>
 ---
- samples/pktgen/functions.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ samples/pktgen/pktgen_sample04_many_flows.sh      | 12 +++++++-----
+ samples/pktgen/pktgen_sample05_flow_per_thread.sh | 12 +++++++-----
+ 2 files changed, 14 insertions(+), 10 deletions(-)
 
-diff --git a/samples/pktgen/functions.sh b/samples/pktgen/functions.sh
-index a335393157eb..933194257a24 100644
---- a/samples/pktgen/functions.sh
-+++ b/samples/pktgen/functions.sh
-@@ -123,7 +123,7 @@ function root_check_run_with_sudo() {
-     if [ "$EUID" -ne 0 ]; then
- 	if [ -x $0 ]; then # Directly executable use sudo
- 	    info "Not root, running with sudo"
--            sudo "$0" "$@"
-+            sudo -E "$0" "$@"
-             exit $?
- 	fi
- 	err 4 "cannot perform sudo run of $0"
+diff --git a/samples/pktgen/pktgen_sample04_many_flows.sh b/samples/pktgen/pktgen_sample04_many_flows.sh
+index 56c5f5af350f..cff51f861506 100755
+--- a/samples/pktgen/pktgen_sample04_many_flows.sh
++++ b/samples/pktgen/pktgen_sample04_many_flows.sh
+@@ -13,13 +13,15 @@ root_check_run_with_sudo "$@"
+ # Parameter parsing via include
+ source ${basedir}/parameters.sh
+ # Set some default params, if they didn't get set
+-[ -z "$DEST_IP" ]   && DEST_IP="198.18.0.42"
++if [ -z "$DEST_IP" ]; then
++    [ -z "$IP6" ] && DEST_IP="198.18.0.42" || DEST_IP="FD00::1"
++fi
+ [ -z "$DST_MAC" ]   && DST_MAC="90:e2:ba:ff:ff:ff"
+ [ -z "$CLONE_SKB" ] && CLONE_SKB="0"
+ [ -z "$COUNT" ]     && COUNT="0" # Zero means indefinitely
+ if [ -n "$DEST_IP" ]; then
+-    validate_addr $DEST_IP
+-    read -r DST_MIN DST_MAX <<< $(parse_addr $DEST_IP)
++    validate_addr${IP6} $DEST_IP
++    read -r DST_MIN DST_MAX <<< $(parse_addr${IP6} $DEST_IP)
+ fi
+ if [ -n "$DST_PORT" ]; then
+     read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
+@@ -62,8 +64,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
+
+     # Single destination
+     pg_set $dev "dst_mac $DST_MAC"
+-    pg_set $dev "dst_min $DST_MIN"
+-    pg_set $dev "dst_max $DST_MAX"
++    pg_set $dev "dst${IP6}_min $DST_MIN"
++    pg_set $dev "dst${IP6}_max $DST_MAX"
+
+     if [ -n "$DST_PORT" ]; then
+ 	# Single destination port or random port range
+diff --git a/samples/pktgen/pktgen_sample05_flow_per_thread.sh b/samples/pktgen/pktgen_sample05_flow_per_thread.sh
+index 6e0effabca59..3578d0aa4ac5 100755
+--- a/samples/pktgen/pktgen_sample05_flow_per_thread.sh
++++ b/samples/pktgen/pktgen_sample05_flow_per_thread.sh
+@@ -17,14 +17,16 @@ root_check_run_with_sudo "$@"
+ # Parameter parsing via include
+ source ${basedir}/parameters.sh
+ # Set some default params, if they didn't get set
+-[ -z "$DEST_IP" ]   && DEST_IP="198.18.0.42"
++if [ -z "$DEST_IP" ]; then
++    [ -z "$IP6" ] && DEST_IP="198.18.0.42" || DEST_IP="FD00::1"
++fi
+ [ -z "$DST_MAC" ]   && DST_MAC="90:e2:ba:ff:ff:ff"
+ [ -z "$CLONE_SKB" ] && CLONE_SKB="0"
+ [ -z "$BURST" ]     && BURST=32
+ [ -z "$COUNT" ]     && COUNT="0" # Zero means indefinitely
+ if [ -n "$DEST_IP" ]; then
+-    validate_addr $DEST_IP
+-    read -r DST_MIN DST_MAX <<< $(parse_addr $DEST_IP)
++    validate_addr${IP6} $DEST_IP
++    read -r DST_MIN DST_MAX <<< $(parse_addr${IP6} $DEST_IP)
+ fi
+ if [ -n "$DST_PORT" ]; then
+     read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
+@@ -52,8 +54,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
+
+     # Single destination
+     pg_set $dev "dst_mac $DST_MAC"
+-    pg_set $dev "dst_min $DST_MIN"
+-    pg_set $dev "dst_max $DST_MAX"
++    pg_set $dev "dst${IP6}_min $DST_MIN"
++    pg_set $dev "dst${IP6}_max $DST_MAX"
+
+     if [ -n "$DST_PORT" ]; then
+ 	# Single destination port or random port range
 --
 2.30.2
 
