@@ -2,276 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD7EB3EA1BE
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 11:16:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 104523EA1DB
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 11:19:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235887AbhHLJQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 05:16:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60892 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235886AbhHLJQq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 05:16:46 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65475C06179B
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 02:16:20 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id a8so8355911pjk.4
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 02:16:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=lzQ8SYd5xoD7ZjCc74sE3sPqOr3plpNsma2dJtShdJY=;
-        b=hJHhJcj0ho1G9SiTqnED2eceKYv7a9ymAHb+5I4OQ9erFUQtogomplbHFiAZQGQZK5
-         biBfPITgFU4gig1R5WJXdGT/E0m86BnzmJNSaFHzugyV1vCDZvwY5XurnbCgwIFiNKFP
-         Gqx3TCPgDgJik3GeCukzw0mxTDJZn1z2QTVns=
+        id S235559AbhHLJUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 05:20:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38650 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235376AbhHLJUM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 05:20:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1628759986;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6uptNExuKEIuNgoc8EcEJuQBa/x6m5qowXa+uwaPt9E=;
+        b=BC+YwdqYstmXnLI0lr4/yof/DDAQu10BLLS00NXv0pCxidVN5SiLfe9x6B3d6Z2NKArbZw
+        tjsvkFl/o3OlRAmeeBwZs5iDveyKcY0atCQz1/avgGJcC+g0GAbHy84ZI1tYbuqEqNF2oQ
+        D+HlIB86mui1qciAz0wiB9cQaoT81V8=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-26-WpouOwRwP0-USc1ZxTDo9w-1; Thu, 12 Aug 2021 05:19:44 -0400
+X-MC-Unique: WpouOwRwP0-USc1ZxTDo9w-1
+Received: by mail-wm1-f69.google.com with SMTP id b3-20020a1c80030000b02902e6a7296cb3so1633954wmd.5
+        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 02:19:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=lzQ8SYd5xoD7ZjCc74sE3sPqOr3plpNsma2dJtShdJY=;
-        b=e6hVkRASrBLcSTY6zCTX0AduZrrp1i680yAO0AWY//R2eBO7bStsMxVEgwblaYIgCu
-         66qgFQQydDf27g3rSgs7rRWmXZd3VRxe2ToB6FClLknxtEDnKIc+8blE0XrsU97GbCtP
-         Iw8pHqQLcOogYTS5ULmtpoxvPseCuKjqIIpJapXaEEB+k+IdO8T5iWFbLNaP/IZsSEGD
-         QHXOUpKBdR0p/cKCEBW34aWiFo0D9PtyaOtrH7fGrH7832UOyaM6sRdT+9Y/4pKzgx0L
-         ZYQFQBTltdEQDqggu9Sy0RYf/UoQ57jT/pT4YrtQa1Zg4/41kZerII739lzH2dHuSF30
-         XsXQ==
-X-Gm-Message-State: AOAM533nb/COnwVLuBnmpRQEj2gvn4gV183p1nUNte029gAPMPkNYfLO
-        zodbuo4w36k3qAdhTqncf57H8Q==
-X-Google-Smtp-Source: ABdhPJzUiGtIhhRaVdoh8CfX32hialeiRBITm3U0Rzro3fBd0yNpt/AnBOrlpXH9SZXTjLLwP02E+A==
-X-Received: by 2002:a17:90a:d595:: with SMTP id v21mr3503880pju.50.1628759779997;
-        Thu, 12 Aug 2021 02:16:19 -0700 (PDT)
-Received: from josephsih-z840.tpe.corp.google.com ([2401:fa00:1:10:8f67:7d0e:97df:b4b4])
-        by smtp.gmail.com with ESMTPSA id n32sm2563966pgl.69.2021.08.12.02.16.17
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=6uptNExuKEIuNgoc8EcEJuQBa/x6m5qowXa+uwaPt9E=;
+        b=Sq439WjymrOJ9jfN9uHQBt7j5wa35G8Oq57N5EWmaiKQ8/qbK8L7PUoF5tPovfIS3Y
+         zLXdtApvQykHSNmm9cAquelYQ/Ne7aBmhcvOJz47+n6g2ie6C3Qf+NK12LBt9UcyUnnh
+         6SFOvm8Vp8CJC6WR5F/lMg+jMmiq819FeOEMn2Fb8LR+yt03k4jeRPBRvLpEFF0jpvFC
+         DAgdjQrXKLxKjbZ1ooiR4yUEHcHStQMVLZ5iREOqwsjDZvZ+F3ItrvfsbcQrDKdI0ruj
+         wJuIaLzKZdmVsI5WtS9yXu8kDtMkJt+WczJzf8UscOgc5EdJhFTECSO1llqRApwoXAKM
+         x+Fg==
+X-Gm-Message-State: AOAM530n2y8wFo5V0XQUiP2uC9UgsLIVBY20zUxzXE2JsVrmknPzZa9a
+        nBLnsDU9F4/sSHXdeDapv9aBXwX6PpeKhjRSinaID3IvLweLNU+x3Qd/40PH68ccMBwovCC65S/
+        M6p2icuwOjjZab5pq
+X-Received: by 2002:a5d:4ac5:: with SMTP id y5mr2932787wrs.125.1628759983697;
+        Thu, 12 Aug 2021 02:19:43 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxBFx0oSmW5sgQYRFuFDFnUpMMCJ5QwPr8hMO8QynVlV2y6epDdIA01tsvcamaxfJPRDC0IOw==
+X-Received: by 2002:a5d:4ac5:: with SMTP id y5mr2932774wrs.125.1628759983518;
+        Thu, 12 Aug 2021 02:19:43 -0700 (PDT)
+Received: from pc-23.home (2a01cb058d01b600c841afd12834a14e.ipv6.abo.wanadoo.fr. [2a01:cb05:8d01:b600:c841:afd1:2834:a14e])
+        by smtp.gmail.com with ESMTPSA id e25sm2712231wra.90.2021.08.12.02.19.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Aug 2021 02:16:19 -0700 (PDT)
-From:   Joseph Hwang <josephsih@chromium.org>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        luiz.dentz@gmail.com, pali@kernel.org
-Cc:     josephsih@google.com, chromeos-bluetooth-upstreaming@chromium.org,
-        Joseph Hwang <josephsih@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v7 4/4] Bluetooth: Support the quality report events
-Date:   Thu, 12 Aug 2021 17:16:01 +0800
-Message-Id: <20210812171533.v7.4.I20c79eef4f36c4a3802e1068e59ec4a9f4ded940@changeid>
-X-Mailer: git-send-email 2.32.0.605.g8dce9f2422-goog
-In-Reply-To: <20210812171533.v7.1.I41aec59e65ffd3226d368dabeb084af13cc133c8@changeid>
-References: <20210812171533.v7.1.I41aec59e65ffd3226d368dabeb084af13cc133c8@changeid>
+        Thu, 12 Aug 2021 02:19:43 -0700 (PDT)
+Date:   Thu, 12 Aug 2021 11:19:41 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "David S. Miller" <davem@davemloft.net>, linux-ppp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ppp: Add rtnl attribute IFLA_PPP_UNIT_ID for specifying
+ ppp unit id
+Message-ID: <20210812091941.GA3525@pc-23.home>
+References: <20210807163749.18316-1-pali@kernel.org>
+ <20210809122546.758e41de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210809193109.mw6ritfdu27uhie7@pali>
+ <20210810153941.GB14279@pc-32.home>
+ <20210810160450.eluiktsp7oentxo3@pali>
+ <20210811171918.GD15488@pc-32.home>
+ <20210811175449.5hrwoevw7xv2jxxn@pali>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210811175449.5hrwoevw7xv2jxxn@pali>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch allows a user space process to enable/disable the quality
-report events dynamically through the set experimental feature mgmt
-interface if CONFIG_BT_FEATURE_QUALITY_REPORT is enabled.
+On Wed, Aug 11, 2021 at 07:54:49PM +0200, Pali Rohár wrote:
+> On Wednesday 11 August 2021 19:19:18 Guillaume Nault wrote:
+> > On Tue, Aug 10, 2021 at 06:04:50PM +0200, Pali Rohár wrote:
+> > > On Tuesday 10 August 2021 17:39:41 Guillaume Nault wrote:
+> > > > On Mon, Aug 09, 2021 at 09:31:09PM +0200, Pali Rohár wrote:
+> > > > > Better to wait. I would like hear some comments / review on this patch
+> > > > > if this is the correct approach as it adds a new API/ABI for userspace.
+> > > > 
+> > > > Personally I don't understand the use case for setting the ppp unit at
+> > > > creation time.
+> > > 
+> > > I know about two use cases:
+> > > 
+> > > * ppp unit id is used for generating network interface name. So if you
+> > >   want interface name ppp10 then you request for unit id 10. It is
+> > >   somehow common that when ppp interface has prefix "ppp" in its name
+> > >   then it is followed by unit id. Seems that existing ppp applications
+> > >   which use "ppp<num>" naming expects this. But of course you do not
+> > >   have to use this convention and rename interfaces as you want.
+> > 
+> > Really, with the netlink API, the interface name has to be set with
+> > IFLA_IFNAME. There's no point in adding a new attribute just to have a
+> > side effect on the device name.
+> 
+> Yes, if you set IFLA_IFNAME then interface has name which you set. But
+> if IFLA_IFNAME is not set then there is already API/ABI behavior how
+> this interface name is generated. And all existing ppp software depends
+> on it.
 
-Since the quality report feature needs to invoke the callback function
-provided by the driver, i.e., hdev->set_quality_report, a valid
-controller index is required.
+They depend on the ioctl api, which is not going to change.
+The netlink api on the other hand is free to avoid propagating mistakes
+from the past.
 
-Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
-Signed-off-by: Joseph Hwang <josephsih@chromium.org>
----
+> > > * Some of ppp ioctls use unit id. So you may want to use some specific
+> > >   number for some network interface. So e.g. unit id 1 will be always
+> > >   for /dev/ttyUSB1.
+> > 
+> > But what's the point of forcing unit id 1 for a particular interface?
+> > One can easily get the assigned unit id with ioctl(PPPIOCGUNIT).
+> 
+> Same point as ability to assign any other id to objects. It is
+> identifier and you may want to use specific identifier for specific
+> objects.
 
-Changes in v7:
-- Rebase on Tedd's patches that moved functionality from btusb to
-  btintel.
+Again, what's the use case? Unit ids are kernel internal identifiers.
+The only purpose of setting them from user space was to influence the
+name of the ppp device for legacy systems that couldn't do that in a
+clean way. But any system with the netlink interface won't need this
+work around.
 
-Changes in v5:
-- Removed CONFIG_BT_FEATURE_QUALITY_REPORT since there was no
-  large size impact.
+> Old ioctl API provides a way how to set this custom unit id. Why should
+> somebody use new rtnl API if it provides only half of features?
 
- include/net/bluetooth/hci.h      |   1 +
- include/net/bluetooth/hci_core.h |   2 +
- net/bluetooth/mgmt.c             | 110 ++++++++++++++++++++++++++++++-
- 3 files changed, 112 insertions(+), 1 deletion(-)
+You still haven't provided any use case for setting the unit id in user
+space, appart for influencing the interface name. Netlink also allows
+to set the interface name and provides much more features (like
+creating the device in a different netns).
 
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index b80415011dcd..bb6b7398f490 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -330,6 +330,7 @@ enum {
- 	HCI_ENABLE_LL_PRIVACY,
- 	HCI_CMD_PENDING,
- 	HCI_FORCE_NO_MITM,
-+	HCI_QUALITY_REPORT,
- 
- 	__HCI_NUM_FLAGS,
- };
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index a7d06d7da602..7e9ae36b2582 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -606,6 +606,7 @@ struct hci_dev {
- 	int (*set_bdaddr)(struct hci_dev *hdev, const bdaddr_t *bdaddr);
- 	void (*cmd_timeout)(struct hci_dev *hdev);
- 	bool (*prevent_wake)(struct hci_dev *hdev);
-+	int (*set_quality_report)(struct hci_dev *hdev, bool enable);
- };
- 
- #define HCI_PHY_HANDLE(handle)	(handle & 0xff)
-@@ -759,6 +760,7 @@ extern struct mutex hci_cb_list_lock;
- 		hci_dev_clear_flag(hdev, HCI_LE_ADV);		\
- 		hci_dev_clear_flag(hdev, HCI_LL_RPA_RESOLUTION);\
- 		hci_dev_clear_flag(hdev, HCI_PERIODIC_INQ);	\
-+		hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);	\
- 	} while (0)
- 
- /* ----- HCI interface to upper protocols ----- */
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 1e21e014efd2..358250862720 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -3791,6 +3791,12 @@ static const u8 debug_uuid[16] = {
- };
- #endif
- 
-+/* 330859bc-7506-492d-9370-9a6f0614037f */
-+static const u8 quality_report_uuid[16] = {
-+	0x7f, 0x03, 0x14, 0x06, 0x6f, 0x9a, 0x70, 0x93,
-+	0x2d, 0x49, 0x06, 0x75, 0xbc, 0x59, 0x08, 0x33,
-+};
-+
- /* 671b10b5-42c0-4696-9227-eb28d1b049d6 */
- static const u8 simult_central_periph_uuid[16] = {
- 	0xd6, 0x49, 0xb0, 0xd1, 0x28, 0xeb, 0x27, 0x92,
-@@ -3806,7 +3812,7 @@ static const u8 rpa_resolution_uuid[16] = {
- static int read_exp_features_info(struct sock *sk, struct hci_dev *hdev,
- 				  void *data, u16 data_len)
- {
--	char buf[62];	/* Enough space for 3 features */
-+	char buf[82];   /* Enough space for 4 features: 2 + 20 * 4 */
- 	struct mgmt_rp_read_exp_features_info *rp = (void *)buf;
- 	u16 idx = 0;
- 	u32 flags;
-@@ -3850,6 +3856,24 @@ static int read_exp_features_info(struct sock *sk, struct hci_dev *hdev,
- 		idx++;
- 	}
- 
-+	if (hdev) {
-+		if (hdev->set_quality_report) {
-+			/* BIT(0): indicating if set_quality_report is
-+			 * supported by controller.
-+			 */
-+			flags = BIT(0);
-+
-+			/* BIT(1): indicating if the feature is enabled. */
-+			if (hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
-+				flags |= BIT(1);
-+		} else {
-+			flags = 0;
-+		}
-+		memcpy(rp->features[idx].uuid, quality_report_uuid, 16);
-+		rp->features[idx].flags = cpu_to_le32(flags);
-+		idx++;
-+	}
-+
- 	rp->feature_count = cpu_to_le16(idx);
- 
- 	/* After reading the experimental features information, enable
-@@ -3892,6 +3916,21 @@ static int exp_debug_feature_changed(bool enabled, struct sock *skip)
- }
- #endif
- 
-+static int exp_quality_report_feature_changed(bool enabled, struct sock *skip)
-+{
-+	struct mgmt_ev_exp_feature_changed ev;
-+
-+	BT_INFO("enabled %d", enabled);
-+
-+	memset(&ev, 0, sizeof(ev));
-+	memcpy(ev.uuid, quality_report_uuid, 16);
-+	ev.flags = cpu_to_le32(enabled ? BIT(0) : 0);
-+
-+	return mgmt_limited_event(MGMT_EV_EXP_FEATURE_CHANGED, NULL,
-+				  &ev, sizeof(ev),
-+				  HCI_MGMT_EXP_FEATURE_EVENTS, skip);
-+}
-+
- static int set_exp_feature(struct sock *sk, struct hci_dev *hdev,
- 			   void *data, u16 data_len)
- {
-@@ -4038,6 +4077,75 @@ static int set_exp_feature(struct sock *sk, struct hci_dev *hdev,
- 		return err;
- 	}
- 
-+	if (!memcmp(cp->uuid, quality_report_uuid, 16)) {
-+		bool val, changed;
-+		int err;
-+
-+		/* Command requires to use a valid controller index */
-+		if (!hdev)
-+			return mgmt_cmd_status(sk, MGMT_INDEX_NONE,
-+					       MGMT_OP_SET_EXP_FEATURE,
-+					       MGMT_STATUS_INVALID_INDEX);
-+
-+		/* Parameters are limited to a single octet */
-+		if (data_len != MGMT_SET_EXP_FEATURE_SIZE + 1)
-+			return mgmt_cmd_status(sk, hdev->id,
-+					       MGMT_OP_SET_EXP_FEATURE,
-+					       MGMT_STATUS_INVALID_PARAMS);
-+
-+		/* Only boolean on/off is supported */
-+		if (cp->param[0] != 0x00 && cp->param[0] != 0x01)
-+			return mgmt_cmd_status(sk, hdev->id,
-+					       MGMT_OP_SET_EXP_FEATURE,
-+					       MGMT_STATUS_INVALID_PARAMS);
-+
-+		hci_req_sync_lock(hdev);
-+
-+		val = !!cp->param[0];
-+		changed = (val != hci_dev_test_flag(hdev, HCI_QUALITY_REPORT));
-+
-+		if (!hdev->set_quality_report) {
-+			BT_INFO("quality report not supported");
-+			err = mgmt_cmd_status(sk, hdev->id,
-+					      MGMT_OP_SET_EXP_FEATURE,
-+					      MGMT_STATUS_NOT_SUPPORTED);
-+			goto unlock_quality_report;
-+		}
-+
-+		if (changed) {
-+			err = hdev->set_quality_report(hdev, val);
-+			if (err) {
-+				BT_ERR("set_quality_report value %d err %d",
-+				       val, err);
-+				err = mgmt_cmd_status(sk, hdev->id,
-+						      MGMT_OP_SET_EXP_FEATURE,
-+						      MGMT_STATUS_FAILED);
-+				goto unlock_quality_report;
-+			}
-+			if (val)
-+				hci_dev_set_flag(hdev, HCI_QUALITY_REPORT);
-+			else
-+				hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);
-+		}
-+
-+		BT_INFO("quality report enable %d changed %d",
-+			val, changed);
-+
-+		memcpy(rp.uuid, quality_report_uuid, 16);
-+		rp.flags = cpu_to_le32(val ? BIT(0) : 0);
-+		hci_sock_set_flag(sk, HCI_MGMT_EXP_FEATURE_EVENTS);
-+		err = mgmt_cmd_complete(sk, hdev->id,
-+					MGMT_OP_SET_EXP_FEATURE, 0,
-+					&rp, sizeof(rp));
-+
-+		if (changed)
-+			exp_quality_report_feature_changed(val, sk);
-+
-+unlock_quality_report:
-+		hci_req_sync_unlock(hdev);
-+		return err;
-+	}
-+
- 	return mgmt_cmd_status(sk, hdev ? hdev->id : MGMT_INDEX_NONE,
- 			       MGMT_OP_SET_EXP_FEATURE,
- 			       MGMT_STATUS_NOT_SUPPORTED);
--- 
-2.32.0.605.g8dce9f2422-goog
+> Existing
+> software already use this feature to allow users / administrators to
+> specify ids as they want.
+
+And that was a mistake, as you realised when working on
+https://lore.kernel.org/netdev/20210807160050.17687-1-pali@kernel.org/t/#u.
+
+> > > And with unit id there also another issue:
+> > > https://lore.kernel.org/netdev/20210807160050.17687-1-pali@kernel.org/t/#u
+> > 
+> > This patch shows why linking unit id and interface name are a bad idea.
+> 
+> Yea... It is not a good idea, but it is how ppp is implemented in
+> kernel since beginning. And it affects both ioctl and rtnl APIs. So we
+> cannot do anything with it due to backward compatibility :-(
+
+Sorry, but I still hardly see the problem with the netlink api.
+I shouldn't have accepted to let the unit id influence the interface
+name, true. But that doesn't seem to be what you're complaining about.
+Also, it could be useful to add the unit id in netlink dumps. But we
+already agreed on that.
+
+> > Instead of adding more complexity with unit id, I'd prefer to have a
+> > new netlink attribute that says "don't generate the interface name
+> > based on the unit id". That's how the original implementation worked by
+> > the way and I'm really sad I accepted to change it...
+> 
+> Main issue there is that kernel currently does not provide any way how
+> to retrieve interface which was created by rtnl call. So matching
+> interface name by string "ppp" followed by unit id is currently the only
+> option.
+
+Yes, that's an old limitation of rtnl. But it's a much more general
+problem. A work around is to set the interface name in the netlink
+request. I can't see how forcing the unit id could ever help.
+
+> I must admit that ppp rtnl API was designed incorrectly. If it was able
+> to solve this issue since beginning then this unit id <--> interface
+> mapping did not have to been implemented in rtnl code path.
+
+As I already proposed, we can add an attribute to make the interface
+name independant from the unit id.
+
+> But it is too late now, if rtnl API has to be backward compatible then
+> its behavior needs to be as it is currently.
+
+Adding a new attribute is always possible.
+
+> > > But due to how it is used we probably have to deal with it how ppp unit
+> > > id are defined and assigned...
+> > > 
+> > 
+> 
 
