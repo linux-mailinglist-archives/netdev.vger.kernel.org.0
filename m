@@ -2,132 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C5B23EA813
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 17:55:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4669F3EA850
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 18:14:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238530AbhHLPzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 11:55:18 -0400
-Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:38260
-        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238351AbhHLPzQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 11:55:16 -0400
-Received: from localhost.localdomain (1.general.khfeng.us.vpn [10.172.68.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 35D924066E;
-        Thu, 12 Aug 2021 15:54:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1628783689;
-        bh=hm5usQHds3jqJtmeH0GnYjRAm9cckUb+ezp56NfmWYc=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=emmByG5Dd3F09bGy+cXN572tmbpYGs4FiSzZsvpJpeZzDsuuH+yFYjJ3o8ALXByAs
-         utEzb0de2+zukawkQ2QOHqsx/us9IMwVwT4pKFTXYYIk3NzMWasYM0qRGxPpZKxgm4
-         eAdlkGaDorxuJAlMVTTVFks0KoascKMcX9Cc8oY7sV3QsJnDU+WDyJ5oYyDDQrtPU1
-         6YX4vlpk3teumqqsvhizCJb6X5JFa16XnITphDb/HS2BqG5Ji4Snv/ls8JcZg2aqDI
-         ohJgjcg8JxLbUThamFwwEI1L6mszuAAaABpj+8sU4YpqZzDyTGU/7nFeTRLB+G2DXx
-         0fsQ6qRX5PrfQ==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     hkallweit1@gmail.com, nic_swsd@realtek.com
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org (open list:8169 10/100/1000 GIGABIT ETHERNET
-        DRIVER), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2 2/2] r8169: Enable ASPM for selected NICs
-Date:   Thu, 12 Aug 2021 23:53:41 +0800
-Message-Id: <20210812155341.817031-2-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210812155341.817031-1-kai.heng.feng@canonical.com>
-References: <20210812155341.817031-1-kai.heng.feng@canonical.com>
+        id S232194AbhHLQO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 12:14:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51240 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230370AbhHLQNH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Aug 2021 12:13:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CAA5160C40;
+        Thu, 12 Aug 2021 16:12:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628784734;
+        bh=ShLu6Cs04YmBeKmkwQLOjS/QsIIdAUMptYKQV6l+USc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PIbnWDU9+tVkFGSk+SsT8aRzl4TmQ1gsQK0u7VqzJnha39c+PbwnkITtOgXk5nMKq
+         jsfD1kCATv5U0JJinwVuWw+EIFDYnMELzvOyaKE17RIyycANwn7b0HVYl9AAg7FI4Y
+         wS2CRj+KuRSC3TtcXq+f35/8QT1m6vSivSfudXDRPrSdguVz3rosw2VF39fvXBy1AN
+         mxxCGh3Fmh2QerI9ny3lB4LNr74cEp75OciMj+oLx33J3a1B3Azl5nDz5fs10l5mI4
+         3JPjQZMSoyyHUN+71RnNBRR8KZyKDhI4LF+VpOc/WyBqKQxtQzBvgi9DINZSR+tPV6
+         TSZ/TdQRA7KLg==
+Date:   Thu, 12 Aug 2021 09:12:12 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        richard.laing@alliedtelesis.co.nz, linux-arm-msm@vger.kernel.org
+Subject: Re: [RESEND] Conflict between char-misc and netdev
+Message-ID: <20210812091212.0034a81c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210812140518.GC7897@workstation>
+References: <20210812133215.GB7897@workstation>
+        <20210812065113.04cc1a66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210812140518.GC7897@workstation>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The latest vendor driver enables ASPM for more recent r8168 NICs, do the
-same here to match the behavior.
+On Thu, 12 Aug 2021 19:35:18 +0530 Manivannan Sadhasivam wrote:
+> > About the situation at hand - is the commit buggy? Or is there work
+> > that's pending in char-misc that's going to conflict in a major way? 
+> > Any chance you could just merge the same patch into mhi and git will 
+> > do its magic?  
+> 
+> I'm not happy with the MHI change and I do have a comment about the
+> variable "mru_default". So it'd be good if we revert the commit
+> entirely!
 
-In addition, pci_disable_link_state() is only used for RTL8168D/8111D in
-vendor driver, also match that.
-
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
-v2:
- - No change
-
- drivers/net/ethernet/realtek/r8169_main.c | 34 +++++++++++++++++------
- 1 file changed, 26 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 7ab2e841dc69..caa29e72a21a 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -623,7 +623,7 @@ struct rtl8169_private {
- 	} wk;
- 
- 	unsigned supports_gmii:1;
--	unsigned aspm_manageable:1;
-+	unsigned aspm_supported:1;
- 	unsigned aspm_enabled:1;
- 	struct delayed_work aspm_toggle;
- 	struct mutex aspm_mutex;
-@@ -2667,8 +2667,11 @@ static void rtl_pcie_state_l2l3_disable(struct rtl8169_private *tp)
- 
- static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
- {
-+	if (!tp->aspm_supported)
-+		return;
-+
- 	/* Don't enable ASPM in the chip if OS can't control ASPM */
--	if (enable && tp->aspm_manageable) {
-+	if (enable) {
- 		RTL_W8(tp, Config5, RTL_R8(tp, Config5) | ASPM_en);
- 		RTL_W8(tp, Config2, RTL_R8(tp, Config2) | ClkReqEn);
- 	} else {
-@@ -5284,6 +5287,21 @@ static void rtl_init_mac_address(struct rtl8169_private *tp)
- 	rtl_rar_set(tp, mac_addr);
- }
- 
-+static int rtl_hw_aspm_supported(struct rtl8169_private *tp)
-+{
-+	switch (tp->mac_version) {
-+	case RTL_GIGA_MAC_VER_32 ... RTL_GIGA_MAC_VER_36:
-+	case RTL_GIGA_MAC_VER_38:
-+	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_42:
-+	case RTL_GIGA_MAC_VER_44 ... RTL_GIGA_MAC_VER_46:
-+	case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_63:
-+		return 1;
-+
-+	default:
-+		return 0;
-+	}
-+}
-+
- static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- {
- 	struct rtl8169_private *tp;
-@@ -5315,12 +5333,12 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (rc)
- 		return rc;
- 
--	/* Disable ASPM completely as that cause random device stop working
--	 * problems as well as full system hangs for some PCIe devices users.
--	 */
--	rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S |
--					  PCIE_LINK_STATE_L1);
--	tp->aspm_manageable = !rc;
-+	if (tp->mac_version == RTL_GIGA_MAC_VER_25)
-+		pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S |
-+				       PCIE_LINK_STATE_L1 |
-+				       PCIE_LINK_STATE_CLKPM);
-+
-+	tp->aspm_supported = rtl_hw_aspm_supported(tp);
- 
- 	/* enable device (incl. PCI PM wakeup and hotplug setup) */
- 	rc = pcim_enable_device(pdev);
--- 
-2.32.0
-
+Would you mind rendering that comment you're referring to as a commit
+message and sending a fix-up or a revert patch against net-next?
+I wouldn't be able to do it justice.
