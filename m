@@ -2,306 +2,338 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12E143EA9EB
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 20:07:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 442303EA9F9
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 20:12:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237353AbhHLSHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 14:07:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42750 "EHLO
+        id S237495AbhHLSNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 14:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbhHLSH3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 14:07:29 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FF9C061756;
-        Thu, 12 Aug 2021 11:07:03 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id c5so380405ybn.5;
-        Thu, 12 Aug 2021 11:07:03 -0700 (PDT)
+        with ESMTP id S229508AbhHLSNR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 14:13:17 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E1BC061756
+        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 11:12:52 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id u13so11813461lje.5
+        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 11:12:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=v/ZIQda58F/GXonfyitBlnxjAa7bu/RGEkUZMUU4FQ8=;
-        b=Ik1t3PfRsXqB/kml83byWnsCDNYAI7ZM+gq5vk2CljphYddlAXpJMcXDJAMp4GlhLK
-         KyeFVB2NZTWtvtZWWQUBtXQ5UQVURfM2bxYDikoEXExaucLKXwDemXFaKXVFEyGQIK5L
-         jh6mif+STi3naknobM7tgJkF7fq6SqQ2ddsC9fLfjLZZvlma9IG86LVY84v9Z5tiBU6U
-         PA7BPCwPOZaKo12OT3SU6i1IuLE+DdEo9AzJ9G61TNb0bE9YLkAcaR5A1t+LdXw0dqAu
-         4S6JhR8Po+S4rOJwhrHm7KZttHdOaFV95GVQ5cBYWoUdl9bhh4oz9jZsGOggOIj/aKDI
-         zAmA==
+        bh=3IBmrG9EcDzssiR9dY8YvqnK3/P6vQnXnwNHy7NXG/k=;
+        b=PlfAVLvuNc6jHEPbPFgM44WkQ88pFCwSTly6DaMvO6LslArYLa2GXaxCOLdDQCvoRR
+         oqnnON+xFf8WVTINtLj9fl2ez+E2jHjru57cMVZdicymTW/pXF+lzSr80TmaP2xi3Ldc
+         GJBLnMqM/hBw5kmRFdzgG92f+EoOQ/f6StlfQ2pQyA1nai6B+kiKBmDO9D6qBGBuOU+5
+         8OZNsWirzY7N6CQ1UJjW1kJypmfPITQkJU6BS9/p0KHNF7pr9OsP/V8mKGHblbJVWFk+
+         9TPQGuZiKzKkBYVreW4RHw8Q3j1RJngjJsRVtC6H3c1PFl5n8QLPpmm6oZdStlh7dp8f
+         U3kw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=v/ZIQda58F/GXonfyitBlnxjAa7bu/RGEkUZMUU4FQ8=;
-        b=d5l0rj/DduGLWZmV2ZzGIcFw0DjTHP/AiY5QX4skmhz1D7k4MQN63v/mDyYNf3dNrE
-         91fC5pruiOWg+SgPHQtk3ttgSnl4NG0K3YM/AwmhRD7ArDME6OGDP9TzXIP4j2GP60pu
-         wIOQd6hEnwLTbcE9cLI+4dxgbkI5180O8V62diM/8DKLEEUdbHzYN5aMNl/yZWpAwIwo
-         5aPnUOih4OP6bs6dwlLNdak2glvowZaRPgxtRP5b7zA5jZf1F2WJfdPhCiJ8/VDhIjYQ
-         pcAQ6sh14SyAITtIeDTQr4FuYuWy9faGQYrEQq2jo0SCa7Z+P5/Ah9P7CfpW8yni/flA
-         uPvg==
-X-Gm-Message-State: AOAM530qEpVSVLftlIQCQXCnJTUWZZqfeAYI7cKBH3eQDzAGsjz64GhM
-        RmDMViiEgNEBsk44E3ycNpOO+MiAIKoISiaqthE=
-X-Google-Smtp-Source: ABdhPJyk/P9T/CTZQaTpG5PMBm5Mjlnnulj+SOKCP08ov221u6MCgJK+/k6TuirHQW181s5/+DKj283DmQckm3SxyPI=
-X-Received: by 2002:a25:9b03:: with SMTP id y3mr5708965ybn.264.1628791622828;
- Thu, 12 Aug 2021 11:07:02 -0700 (PDT)
+        bh=3IBmrG9EcDzssiR9dY8YvqnK3/P6vQnXnwNHy7NXG/k=;
+        b=gcRJWRuGx7vVstYkV5cEHtn+xCM3V5y4kYq5yJ6uVTE2U9HKtUe7X5daYocNwyDsii
+         KUIOUwoJ7t1x5ilQFpMTGSe05wEv4xsZIRDWX1VdgNOCGlNlzzjbE6kDpzR2m1a0ofQS
+         QdHqGL2HC3Y/ielSsaIFa7GsgVlx8lW+Hm+UWA0aFkfu/4wAj0elliY014pC9SeTXpPK
+         gBLSW78OxxD2fHy70KxOrl+m5VKZX8ajN2aM+Cd58MfCpOH2OtKMhj51/+c2HaQc50FB
+         iOgKDSpC2+sTgPCJt8kDGwHNaMT/yxVVoPhDEjfhLRKZlLY1/iS+fRnaxfMyVGhmd141
+         W5EA==
+X-Gm-Message-State: AOAM530g7PCcXqlEYQ0A1lTbx1FdYLI7056KHInOvJhDXaBRy5ntl1iN
+        mUvyTUra2x5NLLEg9nFDSzme4M4nNSprR37vFkT2FA==
+X-Google-Smtp-Source: ABdhPJwNIbPyauYgPanl0IavUisSfmfdQnkFz6j64zcXJ2xb6P6xRGL05iZxUjPfhmk91DMZ52lczsPQKghAqZCCCrU=
+X-Received: by 2002:a2e:b0d1:: with SMTP id g17mr3914413ljl.153.1628791969964;
+ Thu, 12 Aug 2021 11:12:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210812171533.v7.1.I41aec59e65ffd3226d368dabeb084af13cc133c8@changeid>
- <20210812171533.v7.4.I20c79eef4f36c4a3802e1068e59ec4a9f4ded940@changeid>
-In-Reply-To: <20210812171533.v7.4.I20c79eef4f36c4a3802e1068e59ec4a9f4ded940@changeid>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Thu, 12 Aug 2021 11:06:52 -0700
-Message-ID: <CABBYNZLPe6TkQkyjZW2sdvOkWGb-K16Wgbc-rbpG6h3ACxaMqg@mail.gmail.com>
-Subject: Re: [PATCH v7 4/4] Bluetooth: Support the quality report events
-To:     Joseph Hwang <josephsih@chromium.org>
-Cc:     "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
-        Joseph Hwang <josephsih@google.com>,
-        ChromeOS Bluetooth Upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+References: <20210809172207.3890697-1-richardsonnick@google.com>
+ <20210809172207.3890697-2-richardsonnick@google.com> <20210809140505.30388445@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210809140505.30388445@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Nick Richardson <richardsonnick@google.com>
+Date:   Thu, 12 Aug 2021 14:12:38 -0400
+Message-ID: <CAGr-3gkzarg=1sqYJ+T-grcGFA_sfR8aWNp0i38rUUHZWns94A@mail.gmail.com>
+Subject: Re: [PATCH 1/3] pktgen: Parse internet mix (imix) input
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, nrrichar@ncsu.edu,
+        Arun Kalyanasundaram <arunkaly@google.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Yejune Deng <yejune.deng@gmail.com>,
+        Di Zhu <zhudi21@huawei.com>, Ye Bin <yebin10@huawei.com>,
+        Leesoo Ahn <dev@ooseel.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Philip Romanov <promanov@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Joseph,
+Hey Jakub, thanks for the quick response!
 
-On Thu, Aug 12, 2021 at 2:16 AM Joseph Hwang <josephsih@chromium.org> wrote:
+> > +
+> > +             len = num_arg(&buffer[i], max_digits, &size);
+> > +             if (len < 0)
+> > +                     return len;
+> > +             i += len;
+> > +             if (get_user(c, &buffer[i]))
+> > +                     return -EFAULT;
+> > +             /* Check for comma between size_i and weight_i */
+> > +             if (c != ',')
+> > +                     return -EINVAL;
+> > +             i++;
+> > +
+> > +             if (size < 14 + 20 + 8)
+> > +                     size = 14 + 20 + 8;
 >
-> This patch allows a user space process to enable/disable the quality
-> report events dynamically through the set experimental feature mgmt
-> interface if CONFIG_BT_FEATURE_QUALITY_REPORT is enabled.
->
-> Since the quality report feature needs to invoke the callback function
-> provided by the driver, i.e., hdev->set_quality_report, a valid
-> controller index is required.
->
-> Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
-> Signed-off-by: Joseph Hwang <josephsih@chromium.org>
-> ---
->
-> Changes in v7:
-> - Rebase on Tedd's patches that moved functionality from btusb to
->   btintel.
->
-> Changes in v5:
-> - Removed CONFIG_BT_FEATURE_QUALITY_REPORT since there was no
->   large size impact.
->
->  include/net/bluetooth/hci.h      |   1 +
->  include/net/bluetooth/hci_core.h |   2 +
->  net/bluetooth/mgmt.c             | 110 ++++++++++++++++++++++++++++++-
->  3 files changed, 112 insertions(+), 1 deletion(-)
->
-> diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-> index b80415011dcd..bb6b7398f490 100644
-> --- a/include/net/bluetooth/hci.h
-> +++ b/include/net/bluetooth/hci.h
-> @@ -330,6 +330,7 @@ enum {
->         HCI_ENABLE_LL_PRIVACY,
->         HCI_CMD_PENDING,
->         HCI_FORCE_NO_MITM,
-> +       HCI_QUALITY_REPORT,
+> Why overwrite instead of rejecting?
 
-Hmm, 3/4 actually makes use of HCI_QUALITY_REPORT so this should
-actually appear before it (3/4 4/4 should be swapped) otherwise we
-break the likes of bisect, I usually recommend using git rebase -i
-origin/master --exec make to check if each and every change build
-properly.
+I overwrite here to keep behavior similar to when pkt_size is set directly.
+When the pkt_size command is used the size value is overwritten to the
+minimum packet size (14 + 8 + 20).
+See the pkt_size section in pktgen_if_write().
 
 >
->         __HCI_NUM_FLAGS,
->  };
-> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-> index a7d06d7da602..7e9ae36b2582 100644
-> --- a/include/net/bluetooth/hci_core.h
-> +++ b/include/net/bluetooth/hci_core.h
-> @@ -606,6 +606,7 @@ struct hci_dev {
->         int (*set_bdaddr)(struct hci_dev *hdev, const bdaddr_t *bdaddr);
->         void (*cmd_timeout)(struct hci_dev *hdev);
->         bool (*prevent_wake)(struct hci_dev *hdev);
-> +       int (*set_quality_report)(struct hci_dev *hdev, bool enable);
->  };
+> > +             len = num_arg(&buffer[i], max_digits, &weight);
+> > +             if (len < 0)
+> > +                     return len;
+> > +             if (weight <= 0)
+> > +                     return -EINVAL;
+> > +
+> > +             pkt_dev->imix_entries[pkt_dev->n_imix_entries].size = size;
+> > +             pkt_dev->imix_entries[pkt_dev->n_imix_entries].weight = weight;
+> > +
+> > +             i += len;
+> > +             if (get_user(c, &buffer[i]))
+> > +                     return -EFAULT;
 >
->  #define HCI_PHY_HANDLE(handle) (handle & 0xff)
-> @@ -759,6 +760,7 @@ extern struct mutex hci_cb_list_lock;
->                 hci_dev_clear_flag(hdev, HCI_LE_ADV);           \
->                 hci_dev_clear_flag(hdev, HCI_LL_RPA_RESOLUTION);\
->                 hci_dev_clear_flag(hdev, HCI_PERIODIC_INQ);     \
-> +               hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);   \
->         } while (0)
->
->  /* ----- HCI interface to upper protocols ----- */
-> diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-> index 1e21e014efd2..358250862720 100644
-> --- a/net/bluetooth/mgmt.c
-> +++ b/net/bluetooth/mgmt.c
-> @@ -3791,6 +3791,12 @@ static const u8 debug_uuid[16] = {
->  };
->  #endif
->
-> +/* 330859bc-7506-492d-9370-9a6f0614037f */
-> +static const u8 quality_report_uuid[16] = {
-> +       0x7f, 0x03, 0x14, 0x06, 0x6f, 0x9a, 0x70, 0x93,
-> +       0x2d, 0x49, 0x06, 0x75, 0xbc, 0x59, 0x08, 0x33,
-> +};
-> +
->  /* 671b10b5-42c0-4696-9227-eb28d1b049d6 */
->  static const u8 simult_central_periph_uuid[16] = {
->         0xd6, 0x49, 0xb0, 0xd1, 0x28, 0xeb, 0x27, 0x92,
-> @@ -3806,7 +3812,7 @@ static const u8 rpa_resolution_uuid[16] = {
->  static int read_exp_features_info(struct sock *sk, struct hci_dev *hdev,
->                                   void *data, u16 data_len)
->  {
-> -       char buf[62];   /* Enough space for 3 features */
-> +       char buf[82];   /* Enough space for 4 features: 2 + 20 * 4 */
->         struct mgmt_rp_read_exp_features_info *rp = (void *)buf;
->         u16 idx = 0;
->         u32 flags;
-> @@ -3850,6 +3856,24 @@ static int read_exp_features_info(struct sock *sk, struct hci_dev *hdev,
->                 idx++;
->         }
->
-> +       if (hdev) {
-> +               if (hdev->set_quality_report) {
-> +                       /* BIT(0): indicating if set_quality_report is
-> +                        * supported by controller.
-> +                        */
-> +                       flags = BIT(0);
-> +
-> +                       /* BIT(1): indicating if the feature is enabled. */
-> +                       if (hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
-> +                               flags |= BIT(1);
-> +               } else {
-> +                       flags = 0;
-> +               }
-> +               memcpy(rp->features[idx].uuid, quality_report_uuid, 16);
-> +               rp->features[idx].flags = cpu_to_le32(flags);
-> +               idx++;
-> +       }
-> +
->         rp->feature_count = cpu_to_le16(idx);
->
->         /* After reading the experimental features information, enable
-> @@ -3892,6 +3916,21 @@ static int exp_debug_feature_changed(bool enabled, struct sock *skip)
->  }
->  #endif
->
-> +static int exp_quality_report_feature_changed(bool enabled, struct sock *skip)
-> +{
-> +       struct mgmt_ev_exp_feature_changed ev;
-> +
-> +       BT_INFO("enabled %d", enabled);
-> +
-> +       memset(&ev, 0, sizeof(ev));
-> +       memcpy(ev.uuid, quality_report_uuid, 16);
-> +       ev.flags = cpu_to_le32(enabled ? BIT(0) : 0);
-> +
-> +       return mgmt_limited_event(MGMT_EV_EXP_FEATURE_CHANGED, NULL,
-> +                                 &ev, sizeof(ev),
-> +                                 HCI_MGMT_EXP_FEATURE_EVENTS, skip);
-> +}
-> +
->  static int set_exp_feature(struct sock *sk, struct hci_dev *hdev,
->                            void *data, u16 data_len)
->  {
-> @@ -4038,6 +4077,75 @@ static int set_exp_feature(struct sock *sk, struct hci_dev *hdev,
->                 return err;
->         }
+> What if this is the last entry?
 
-Perhaps it would be a good idea to have a function table e.g:
+If this is the last entry then the line terminating character is read.
+Similar code can be found in the get_labels() function in pktgen.c
 
-struct mgmt_exp_feature {
-  const char *uuid;
-  int (func*)(...)
-} exp_features[] = {
-...
-};
 
-That way we don't have to add such changes directly into
-set_exp_feature just in the table and implement its callback.
-
-> +       if (!memcmp(cp->uuid, quality_report_uuid, 16)) {
-> +               bool val, changed;
-> +               int err;
-> +
-> +               /* Command requires to use a valid controller index */
-> +               if (!hdev)
-> +                       return mgmt_cmd_status(sk, MGMT_INDEX_NONE,
-> +                                              MGMT_OP_SET_EXP_FEATURE,
-> +                                              MGMT_STATUS_INVALID_INDEX);
-> +
-> +               /* Parameters are limited to a single octet */
-> +               if (data_len != MGMT_SET_EXP_FEATURE_SIZE + 1)
-> +                       return mgmt_cmd_status(sk, hdev->id,
-> +                                              MGMT_OP_SET_EXP_FEATURE,
-> +                                              MGMT_STATUS_INVALID_PARAMS);
-> +
-> +               /* Only boolean on/off is supported */
-> +               if (cp->param[0] != 0x00 && cp->param[0] != 0x01)
-> +                       return mgmt_cmd_status(sk, hdev->id,
-> +                                              MGMT_OP_SET_EXP_FEATURE,
-> +                                              MGMT_STATUS_INVALID_PARAMS);
-> +
-> +               hci_req_sync_lock(hdev);
-> +
-> +               val = !!cp->param[0];
-> +               changed = (val != hci_dev_test_flag(hdev, HCI_QUALITY_REPORT));
-> +
-> +               if (!hdev->set_quality_report) {
-> +                       BT_INFO("quality report not supported");
-> +                       err = mgmt_cmd_status(sk, hdev->id,
-> +                                             MGMT_OP_SET_EXP_FEATURE,
-> +                                             MGMT_STATUS_NOT_SUPPORTED);
-> +                       goto unlock_quality_report;
-> +               }
-> +
-> +               if (changed) {
-> +                       err = hdev->set_quality_report(hdev, val);
-> +                       if (err) {
-> +                               BT_ERR("set_quality_report value %d err %d",
-> +                                      val, err);
-> +                               err = mgmt_cmd_status(sk, hdev->id,
-> +                                                     MGMT_OP_SET_EXP_FEATURE,
-> +                                                     MGMT_STATUS_FAILED);
-> +                               goto unlock_quality_report;
-> +                       }
-> +                       if (val)
-> +                               hci_dev_set_flag(hdev, HCI_QUALITY_REPORT);
-> +                       else
-> +                               hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);
-> +               }
-> +
-> +               BT_INFO("quality report enable %d changed %d",
-> +                       val, changed);
-> +
-> +               memcpy(rp.uuid, quality_report_uuid, 16);
-> +               rp.flags = cpu_to_le32(val ? BIT(0) : 0);
-> +               hci_sock_set_flag(sk, HCI_MGMT_EXP_FEATURE_EVENTS);
-> +               err = mgmt_cmd_complete(sk, hdev->id,
-> +                                       MGMT_OP_SET_EXP_FEATURE, 0,
-> +                                       &rp, sizeof(rp));
-> +
-> +               if (changed)
-> +                       exp_quality_report_feature_changed(val, sk);
-> +
-> +unlock_quality_report:
-> +               hci_req_sync_unlock(hdev);
-> +               return err;
-> +       }
-> +
->         return mgmt_cmd_status(sk, hdev ? hdev->id : MGMT_INDEX_NONE,
->                                MGMT_OP_SET_EXP_FEATURE,
->                                MGMT_STATUS_NOT_SUPPORTED);
-> --
-> 2.32.0.605.g8dce9f2422-goog
+On Mon, Aug 9, 2021 at 5:05 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon,  9 Aug 2021 17:22:02 +0000 Nicholas Richardson wrote:
+> > From: Nick Richardson <richardsonnick@google.com>
+> >
+> > Adds "imix_weights" command for specifying internet mix distribution.
+> >
+> > The command is in this format:
+> > "imix_weights size_1,weight_1 size_2,weight_2 ... size_n,weight_n"
+> > where the probability that packet size_i is picked is:
+> > weight_i / (weight_1 + weight_2 + .. + weight_n)
+> >
+> > The user may provide up to 20 imix entries (size_i,weight_i) in this
+> > command.
+> >
+> > The user specified imix entries will be displayed in the "Params"
+> > section of the interface output.
+> >
+> > Values for clone_skb > 0 is not supported in IMIX mode.
+> >
+> > Summary of changes:
+> > Add flag for enabling internet mix mode.
+> > Add command (imix_weights) for internet mix input.
+> > Return -ENOTSUPP when clone_skb > 0 in IMIX mode.
+> > Display imix_weights in Params.
+> > Create data structures to store imix entries and distribution.
+> >
+> > Signed-off-by: Nick Richardson <richardsonnick@google.com>
+> > ---
+> >  net/core/pktgen.c | 95 +++++++++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 95 insertions(+)
+> >
+> > diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+> > index 7e258d255e90..83c83e1b5f28 100644
+> > --- a/net/core/pktgen.c
+> > +++ b/net/core/pktgen.c
+> > @@ -175,6 +175,8 @@
+> >  #define IP_NAME_SZ 32
+> >  #define MAX_MPLS_LABELS 16 /* This is the max label stack depth */
+> >  #define MPLS_STACK_BOTTOM htonl(0x00000100)
+> > +/* Max number of internet mix entries that can be specified in imix_weights. */
+> > +#define MAX_IMIX_ENTRIES 20
+> >
+> >  #define func_enter() pr_debug("entering %s\n", __func__);
+> >
+> > @@ -242,6 +244,12 @@ static char *pkt_flag_names[] = {
+> >  #define VLAN_TAG_SIZE(x) ((x)->vlan_id == 0xffff ? 0 : 4)
+> >  #define SVLAN_TAG_SIZE(x) ((x)->svlan_id == 0xffff ? 0 : 4)
+> >
+> > +struct imix_pkt {
+> > +     __u64 size;
+> > +     __u64 weight;
+> > +     __u64 count_so_far;
+>
+> no need for the __ prefix outside of uAPI.
+>
+> > +};
+> > +
+> >  struct flow_state {
+> >       __be32 cur_daddr;
+> >       int count;
+> > @@ -343,6 +351,10 @@ struct pktgen_dev {
+> >       __u8 traffic_class;  /* ditto for the (former) Traffic Class in IPv6
+> >                               (see RFC 3260, sec. 4) */
+> >
+> > +     /* IMIX */
+> > +     unsigned int n_imix_entries;
+> > +     struct imix_pkt imix_entries[MAX_IMIX_ENTRIES];
+> > +
+> >       /* MPLS */
+> >       unsigned int nr_labels; /* Depth of stack, 0 = no MPLS */
+> >       __be32 labels[MAX_MPLS_LABELS];
+> > @@ -552,6 +564,16 @@ static int pktgen_if_show(struct seq_file *seq, void *v)
+> >                  (unsigned long long)pkt_dev->count, pkt_dev->min_pkt_size,
+> >                  pkt_dev->max_pkt_size);
+> >
+> > +     if (pkt_dev->n_imix_entries > 0) {
+> > +             seq_printf(seq, "     imix_weights: ");
+> > +             for (i = 0; i < pkt_dev->n_imix_entries; i++) {
+> > +                     seq_printf(seq, "%llu,%llu ",
+> > +                                pkt_dev->imix_entries[i].size,
+> > +                                pkt_dev->imix_entries[i].weight);
+> > +             }
+> > +             seq_printf(seq, "\n");
+>
+> seq_puts()
+>
+> > +     }
+> > +
+> >       seq_printf(seq,
+> >                  "     frags: %d  delay: %llu  clone_skb: %d  ifname: %s\n",
+> >                  pkt_dev->nfrags, (unsigned long long) pkt_dev->delay,
+> > @@ -792,6 +814,61 @@ static int strn_len(const char __user * user_buffer, unsigned int maxlen)
+> >       return i;
+> >  }
+> >
+> > +static ssize_t get_imix_entries(const char __user *buffer,
+> > +                             struct pktgen_dev *pkt_dev)
+> > +{
+> > +     /* Parses imix entries from user buffer.
+> > +      * The user buffer should consist of imix entries separated by spaces
+> > +      * where each entry consists of size and weight delimited by commas.
+> > +      * "size1,weight_1 size2,weight_2 ... size_n,weight_n" for example.
+> > +      */
+>
+> This comments belongs before the function.
+>
+> > +     long len;
+> > +     char c;
+> > +     int i = 0;
+> > +     const int max_digits = 10;
+>
+> Please order these lines longest to shortest (reverse xmas tree).
+>
+> > +     pkt_dev->n_imix_entries = 0;
+> > +
+> > +     do {
+> > +             unsigned long size;
+> > +             unsigned long weight;
+>
+> same
+>
+> > +
+> > +             len = num_arg(&buffer[i], max_digits, &size);
+> > +             if (len < 0)
+> > +                     return len;
+> > +             i += len;
+> > +             if (get_user(c, &buffer[i]))
+> > +                     return -EFAULT;
+> > +             /* Check for comma between size_i and weight_i */
+> > +             if (c != ',')
+> > +                     return -EINVAL;
+> > +             i++;
+> > +
+> > +             if (size < 14 + 20 + 8)
+> > +                     size = 14 + 20 + 8;
+>
+> Why overwrite instead of rejecting?
+>
+> > +             len = num_arg(&buffer[i], max_digits, &weight);
+> > +             if (len < 0)
+> > +                     return len;
+> > +             if (weight <= 0)
+> > +                     return -EINVAL;
+> > +
+> > +             pkt_dev->imix_entries[pkt_dev->n_imix_entries].size = size;
+> > +             pkt_dev->imix_entries[pkt_dev->n_imix_entries].weight = weight;
+> > +
+> > +             i += len;
+> > +             if (get_user(c, &buffer[i]))
+> > +                     return -EFAULT;
+>
+> What if this is the last entry?
+>
+> > +             i++;
+> > +             pkt_dev->n_imix_entries++;
+> > +
+> > +             if (pkt_dev->n_imix_entries > MAX_IMIX_ENTRIES)
+> > +                     return -E2BIG;
+> > +     } while (c == ' ');
+>
+> empty line here
+>
+> > +     return i;
+> > +}
+> > +
+> >  static ssize_t get_labels(const char __user *buffer, struct pktgen_dev *pkt_dev)
+> >  {
+> >       unsigned int n = 0;
+> > @@ -960,6 +1037,18 @@ static ssize_t pktgen_if_write(struct file *file,
+> >               return count;
+> >       }
+> >
+> > +     if (!strcmp(name, "imix_weights")) {
+> > +             if (pkt_dev->clone_skb > 0)
+> > +                     return -ENOTSUPP;
+>
+> ENOTSUPP should not be returned to user space, please use a different
+> one.
+>
+> > +             len = get_imix_entries(&user_buffer[i], pkt_dev);
+> > +             if (len < 0)
+> > +                     return len;
+> > +
+> > +             i += len;
+> > +             return count;
+> > +     }
+> > +
+> >       if (!strcmp(name, "debug")) {
+> >               len = num_arg(&user_buffer[i], 10, &value);
+> >               if (len < 0)
+> > @@ -1082,10 +1171,16 @@ static ssize_t pktgen_if_write(struct file *file,
+> >               len = num_arg(&user_buffer[i], 10, &value);
+> >               if (len < 0)
+> >                       return len;
+> > +             /* clone_skb is not supported for netif_receive xmit_mode and
+> > +              * IMIX mode.
+> > +              */
+> >               if ((value > 0) &&
+> >                   ((pkt_dev->xmit_mode == M_NETIF_RECEIVE) ||
+> >                    !(pkt_dev->odev->priv_flags & IFF_TX_SKB_SHARING)))
+> >                       return -ENOTSUPP;
+> > +             if (value > 0 && pkt_dev->n_imix_entries > 0)
+> > +                     return -ENOTSUPP;
+>
+> ditto
+>
+> >               i += len;
+> >               pkt_dev->clone_skb = value;
+> >
 >
 
 
 -- 
-Luiz Augusto von Dentz
+
+
+
+
+
+Nick Richardson (he/him/his)
+
+SWE Intern
+
+1 (919) 410 3510
+
+careers.google.com/students
+
+
+|Learn more about our candidate privacy policy.|
