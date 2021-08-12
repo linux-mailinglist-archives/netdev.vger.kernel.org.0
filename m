@@ -2,72 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 828323EA321
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 12:50:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0FB23EA341
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 13:05:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236253AbhHLKug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 06:50:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60992 "EHLO mail.kernel.org"
+        id S236708AbhHLLGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 07:06:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42062 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235696AbhHLKue (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Aug 2021 06:50:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id E407161038;
-        Thu, 12 Aug 2021 10:50:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628765406;
-        bh=FSUtACLYiKxoll3t4Ko12AmXZnlvpt1Ac2LswSg3a+I=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZGUlFh66RczBfcV4YIW9tGrUPH6XcQMmsK9tlKHkbmQqfMc0/ohh9SP/wZ2/OrxKG
-         C15oB9jl9lK2TgyNg9pyTtL6JkK89bEX/QSrJZoHy3vNQYPJH//oHb7K87M4w4F5Wd
-         uIRYEoH4kinrOZHxpX5crftYRlCpeR9n6Vo+8AzVXISyRELY8AJnuih3OfWk7uNJAy
-         ITbooRcwv16fQBWD7OH2ShzDf/8wY2FXvermHEfLHHAgzo2ouYTDuQ41E4B1HLv5qz
-         +2fGLpQ5seT9AOZTdWPZmeRjZ5SXt28ABwJTIYXWHIEsl3Kc7FpgRwTZ55M1VrZ9gF
-         XZ4I5i+Hgptkw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D766060A54;
-        Thu, 12 Aug 2021 10:50:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] Improvements to the DSA tag_8021q cross-chip
- notifiers
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162876540687.30325.3975541979440020703.git-patchwork-notify@kernel.org>
-Date:   Thu, 12 Aug 2021 10:50:06 +0000
-References: <20210811134606.2777146-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20210811134606.2777146-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        olteanv@gmail.com
+        id S231667AbhHLLGF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Aug 2021 07:06:05 -0400
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9ECFD60EE2;
+        Thu, 12 Aug 2021 11:05:40 +0000 (UTC)
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1mE8Wo-004XFv-JM; Thu, 12 Aug 2021 12:05:38 +0100
+Date:   Thu, 12 Aug 2021 12:05:38 +0100
+Message-ID: <874kbuapod.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Matteo Croce <mcroce@linux.microsoft.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Will Deacon <will@kernel.org>
+Subject: Re: [PATCH net-next] stmmac: align RX buffers
+In-Reply-To: <20210812121835.405d2e37@linux.microsoft.com>
+References: <20210614022504.24458-1-mcroce@linux.microsoft.com>
+        <871r71azjw.wl-maz@kernel.org>
+        <YROmOQ+4Kqukgd6z@orome.fritz.box>
+        <202417ef-f8ae-895d-4d07-1f9f3d89b4a4@gmail.com>
+        <87o8a49idp.wl-maz@kernel.org>
+        <fe5f99c8-5655-7fbb-a64e-b5f067c3273c@gmail.com>
+        <20210812121835.405d2e37@linux.microsoft.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: mcroce@linux.microsoft.com, eric.dumazet@gmail.com, thierry.reding@gmail.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, peppe.cavallaro@st.com, alexandre.torgue@foss.st.com, davem@davemloft.net, kuba@kernel.org, palmer@dabbelt.com, paul.walmsley@sifive.com, drew@beagleboard.org, kernel@esmil.dk, jonathanh@nvidia.com, will@kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Wed, 11 Aug 2021 16:46:04 +0300 you wrote:
-> This series improves cross-chip notifier error messages and addresses a
-> benign error message seen during reboot on a system with disjoint DSA
-> trees.
+On Thu, 12 Aug 2021 11:18:35 +0100,
+Matteo Croce <mcroce@linux.microsoft.com> wrote:
 > 
-> Vladimir Oltean (2):
->   net: dsa: print more information when a cross-chip notifier fails
->   net: dsa: tag_8021q: don't broadcast during setup/teardown
+> On Thu, 12 Aug 2021 10:48:03 +0200
+> Eric Dumazet <eric.dumazet@gmail.com> wrote:
 > 
-> [...]
+> > 
+> > 
+> > On 8/11/21 4:16 PM, Marc Zyngier wrote:
+> > > On Wed, 11 Aug 2021 13:53:59 +0100,
+> > > Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> > >
+> > >> Are you sure you do not need to adjust stmmac_set_bfsize(), 
+> > >> stmmac_rx_buf1_len() and stmmac_rx_buf2_len() ?
+> > >>
+> > >> Presumably DEFAULT_BUFSIZE also want to be increased by NET_SKB_PAD
+> > >>
+> > >> Patch for stmmac_rx_buf1_len() :
+> > >>
+> > >> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> > >> b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c index
+> > >> 7b8404a21544cf29668e8a14240c3971e6bce0c3..041a74e7efca3436bfe3e17f972dd156173957a9
+> > >> 100644 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c +++
+> > >> b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c @@ -4508,12
+> > >> +4508,12 @@ static unsigned int stmmac_rx_buf1_len(struct
+> > >> stmmac_priv *priv, /* First descriptor, not last descriptor and
+> > >> not split header */ if (status & rx_not_ls)
+> > >> -               return priv->dma_buf_sz;
+> > >> +               return priv->dma_buf_sz - NET_SKB_PAD -
+> > >> NET_IP_ALIGN; 
+> > >>         plen = stmmac_get_rx_frame_len(priv, p, coe);
+> > >>  
+> > >>         /* First descriptor and last descriptor and not split
+> > >> header */
+> > >> -       return min_t(unsigned int, priv->dma_buf_sz, plen);
+> > >> +       return min_t(unsigned int, priv->dma_buf_sz - NET_SKB_PAD
+> > >> - NET_IP_ALIGN, plen); }
+> > >>  
+> > >>  static unsigned int stmmac_rx_buf2_len(struct stmmac_priv *priv,
+> > > 
+> > > Feels like a major deficiency of the original patch. Happy to test a
+> > > more complete patch if/when you have one.
+> > 
+> > I wont have time in the immediate future.
+> > 
+> > Matteo, if you do not work on a fix, I suggest we revert
+> >  a955318fe67ec0d962760b5ee58e74bffaf649b8 stmmac: align RX buffers
+> > 
+> > before a more polished version can be submitted.
+> > 
+> 
+> Better to use stmmac_rx_offset() so to have the correct length when
+> using XDP. Also, when XDP is enabled, the offset was
+> XDP_PACKET_HEADROOM (i.e. 256 bytes) even before the change, so it
+> could be already broken. Mark, can you try on the Jetson TX2 by
+> attaching an XDP program and see if it works without my change?
 
-Here is the summary with links:
-  - [net-next,1/2] net: dsa: print more information when a cross-chip notifier fails
-    https://git.kernel.org/netdev/net-next/c/ab97462beb18
-  - [net-next,2/2] net: dsa: tag_8021q: don't broadcast during setup/teardown
-    https://git.kernel.org/netdev/net-next/c/724395f4dc95
+Sorry, you'll have to hold my hand here, as I know exactly nothing
+about XDP....
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> A possible fix, which takes in account also the XDP headroom for
+> stmmac_rx_buf1_len() only could be (only compile tested, I don't have
+> the hardware now):
 
+However, this doesn't fix my issue. I still get all sort of
+corruption. Probably stmmac_rx_buf2_len() also need adjusting (it has
+a similar logic as its buf1 counterpart...)
 
+Unless you can fix it very quickly, and given that we're towards the
+end of the cycle, I'd be more comfortable if we reverted this patch.
+
+Thanks,
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
