@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A07D3EA0A5
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 10:38:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67BA83EA0A9
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 10:38:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235230AbhHLIiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 04:38:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51520 "EHLO
+        id S235313AbhHLIix (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 04:38:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234768AbhHLIin (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 04:38:43 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 725C6C061765;
-        Thu, 12 Aug 2021 01:38:18 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id g138so3868579wmg.4;
-        Thu, 12 Aug 2021 01:38:18 -0700 (PDT)
+        with ESMTP id S235247AbhHLIit (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 04:38:49 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBDA2C0613D5;
+        Thu, 12 Aug 2021 01:38:23 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id h13so7141070wrp.1;
+        Thu, 12 Aug 2021 01:38:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=MFE2kJwSYNLGR3mvNEkobybd41Blz6kFxxuAlCZNTv4=;
-        b=mCMKNG0oTCn8Jm+EOR5k7O6zFs/dVw6YRt/UHr6yGEdss+vyZjkBpsGpRCSvrmu+e2
-         8K3SSKzZxK7YDBC4Q5E5T4vunRDDPasN4vqaWYs0yNGlLeN/1Hbjm8nebHlvkHCZ5g4l
-         iHPi6HgULqYCAkLJ4jwjCHaVE2l/HIVolwiHdbXKjaLUiuxxNdxgnDXafab0VhyYoX4R
-         //7ddPcvA0x8N/2ZZdZuCvDEPfHinmVKpFMK7JgIwDloCXxqsMLaUbqpvt7VMQwN8aeh
-         IzMu6zZV/hpiU14WDvgtc6cqHEVky9dDz76mme9kwBfiyfdiVo/bwBDag/CImo8MuoGw
-         ugxg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=zG8CdNNvqHHVEI+imY7GJhpyF+5b/m1TaPLnVkRpMPY=;
+        b=qbLEoN3MSHi8qfD22ELdZb4rTK6zzCXx8cdPw71/EQl3l5hpR4rQ91CUK3YO9nJ/uk
+         CE3esjlMICSTQNlzZfhDYMb/k0PgWI37rIxt9H7m9IW/0I1SQKRpNya9D6emH83q9Bcl
+         T8irvdGvFzWVoXP4pA+U8r8dIMcaG4xjFufbZqJUSvx+BYhXobU1hCshHIm5EkuvQT3c
+         mIVpQkNH5SK5HNzQqbOgyiKh+VIC0n1Sjs9YBhkwzCCTTXmnXaCWpN30uq4PiihDLAS/
+         GMMx09ckNMBUQx8o3/AdakPIQWiqbC2CblbTihQTr9M46dI2egGUt2Xa/aXUXCgZBZbY
+         rkgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=MFE2kJwSYNLGR3mvNEkobybd41Blz6kFxxuAlCZNTv4=;
-        b=o4JWJgaqiQR7AH8QAypd9uQ462DbS/Q3h5ABt0H64/GppQGnM+/gMJ005QdtI9wbcC
-         V+DI/a2Aaq8/sMwZPnMo4pGsA+8yE3YwWlZxTOMhxDWRJ2niUvQvHyr8gtVdaxxxt7hI
-         Qz2AHwyziJK28Md4iEBIhYa/ktYlMi11QmTSakx5VPmHuIVavxicCNIOv0lhxD6NyJei
-         KRtvAh25ki7WCnMR1hTPSqCTu2rHsLXT1gQ7/rffjKN+YpNyodahpRVOEyzS5gaMu66M
-         enJHYd9AtNvmmc3Q7GH4wtrqVhDmV511tFbuMqOvFzYzUVaTqknzQQT3+jkcw9ImYpUM
-         LHmw==
-X-Gm-Message-State: AOAM530i6KxSdikwG9tHbOOnPxO5sZuhoazwZcvI6hwyM1vuza76qUd+
-        inD5FeY//5GU2Og+PQYZUqw=
-X-Google-Smtp-Source: ABdhPJzI3+337f1gcbPRpmT6E074LVtjLXVw/p5D0LDSEy7yZrvsZQgSrlVolfgEAyDsGClNHZzekw==
-X-Received: by 2002:a1c:cc05:: with SMTP id h5mr14287909wmb.5.1628757496949;
-        Thu, 12 Aug 2021 01:38:16 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=zG8CdNNvqHHVEI+imY7GJhpyF+5b/m1TaPLnVkRpMPY=;
+        b=SicbB0KKXWPeLXCgP1HaMl07aFXiqRdfn/J/LAQSgwEC2IEs/gDAedW9odIZRtsQck
+         g76G17ASK7zATVnGzQCZYZpLOYi8xEVDGd35o6fVOCLOkhKU1T7TAzXvCyNWmV+4I5My
+         yAx2qlP48DKK6fhWgtDVnLqXLVDXK3FaRwQ+Qoogyb/oMYTaGvTgF64qF2/xmj8iKFeU
+         Q78pCzXCGscGzAmH9lBQ7uXZBRDK5kINPRhS855Nno2q0OJ63vTHv7QxCKYVf/lR0SyN
+         YJQRMyOnhOFJ3VfjRwaynjuf9/bHT7d8D6ueJQvBS7lAvnxsRY0qey136MayQ21mV9ER
+         Sb1g==
+X-Gm-Message-State: AOAM533ryj0lIyIY1012C0AYLP74hWiAaD+ZsDhxD4rTk9r4VRSawPO1
+        bJF67Ml9LsxdzhNs1XJr0Ls=
+X-Google-Smtp-Source: ABdhPJzYq2upS6IKKGECmqHjZlXKawReQsLlpqMrQ8Prfrat+xhWGZ9N/lpHvAwlZyqGGDiUlAns1A==
+X-Received: by 2002:a5d:58da:: with SMTP id o26mr2778639wrf.140.1628757502050;
+        Thu, 12 Aug 2021 01:38:22 -0700 (PDT)
 Received: from felia.fritz.box ([2001:16b8:2d76:9600:40d6:1b8e:9bb5:afdf])
-        by smtp.gmail.com with ESMTPSA id 9sm1830324wmf.34.2021.08.12.01.38.15
+        by smtp.gmail.com with ESMTPSA id 9sm1830324wmf.34.2021.08.12.01.38.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Aug 2021 01:38:16 -0700 (PDT)
+        Thu, 12 Aug 2021 01:38:21 -0700 (PDT)
 From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -52,51 +53,43 @@ Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
         Randy Dunlap <rdunlap@infradead.org>,
         kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
         Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH 0/3] Kconfig symbol clean-up on net
-Date:   Thu, 12 Aug 2021 10:38:03 +0200
-Message-Id: <20210812083806.28434-1-lukas.bulwahn@gmail.com>
+Subject: [PATCH 1/3] net: Kconfig: remove obsolete reference to config MICROBLAZE_64K_PAGES
+Date:   Thu, 12 Aug 2021 10:38:04 +0200
+Message-Id: <20210812083806.28434-2-lukas.bulwahn@gmail.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210812083806.28434-1-lukas.bulwahn@gmail.com>
+References: <20210812083806.28434-1-lukas.bulwahn@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear David, dear Jakub,
+Commit 05cdf457477d ("microblaze: Remove noMMU code") removes config
+MICROBLAZE_64K_PAGES in arch/microblaze/Kconfig. However, there is still
+a reference to MICROBLAZE_64K_PAGES in the config VMXNET3 in
+./drivers/net/Kconfig.
 
-The script ./scripts/checkkconfigsymbols.py warns on invalid references to
-Kconfig symbols (often, minor typos, name confusions or outdated references).
+Remove this obsolete reference to config MICROBLAZE_64K_PAGES.
 
-This patch series addresses all issues reported by
-./scripts/checkkconfigsymbols.py in ./net/ and ./drivers/net/ for Kconfig
-and Makefile files. Issues in the Kconfig and Makefile files indicate some
-shortcomings in the overall build definitions, and often are true actionable
-issues to address.
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+ drivers/net/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-These issues can be identified and filtered by:
-
-  ./scripts/checkkconfigsymbols.py \
-  | grep -E "(drivers/)?net/.*(Kconfig|Makefile)" -B 1 -A 1
-
-After applying this patch series on linux-next (next-20210811), the command
-above yields no further issues to address.
-
-Please pick this patch series into your net-next tree.
-
-Best regards,
-
-Lukas
-
-Lukas Bulwahn (3):
-  net: Kconfig: remove obsolete reference to config MICROBLAZE_64K_PAGES
-  net: 802: remove dead leftover after ipx driver removal
-  net: dpaa_eth: remove dead select in menuconfig FSL_DPAA_ETH
-
- drivers/net/Kconfig                         |  4 +-
- drivers/net/ethernet/freescale/dpaa/Kconfig |  1 -
- net/802/Makefile                            |  1 -
- net/802/p8023.c                             | 60 ---------------------
- 4 files changed, 2 insertions(+), 64 deletions(-)
- delete mode 100644 net/802/p8023.c
-
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index 995c613086aa..f37b1c56f7c4 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -551,8 +551,8 @@ config VMXNET3
+ 	tristate "VMware VMXNET3 ethernet driver"
+ 	depends on PCI && INET
+ 	depends on !(PAGE_SIZE_64KB || ARM64_64K_PAGES || \
+-		     IA64_PAGE_SIZE_64KB || MICROBLAZE_64K_PAGES || \
+-		     PARISC_PAGE_SIZE_64KB || PPC_64K_PAGES)
++		     IA64_PAGE_SIZE_64KB || PARISC_PAGE_SIZE_64KB || \
++		     PPC_64K_PAGES)
+ 	help
+ 	  This driver supports VMware's vmxnet3 virtual ethernet NIC.
+ 	  To compile this driver as a module, choose M here: the
 -- 
 2.17.1
 
