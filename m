@@ -2,157 +2,376 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 142993EAAAD
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 21:13:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71D5A3EAAB4
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 21:15:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232744AbhHLTN3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 15:13:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43150 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230424AbhHLTN2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 15:13:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1628795583;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7cS3BPbsqKnOYb42Mhut/iF8oyajtsumJDuTzp4/dis=;
-        b=ZtTw59KhZEJByrJSU+K6Q87koIf4cEUVOMOoAIOHdb0WMlgr629MkPvH/s52HZxR+VvJYz
-        MoLJEJaK/SdNne2yjYMms2InOVix5cCWxeKa+8zJCMCC8Lnk2z1WaYT7nlqtkM8/TGv89o
-        1yXpBGdgMM8GMtGrkw9i+YiG8HkcXcM=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-314-0R8qnZCxPe-XMVBvuZaghA-1; Thu, 12 Aug 2021 15:13:01 -0400
-X-MC-Unique: 0R8qnZCxPe-XMVBvuZaghA-1
-Received: by mail-wm1-f70.google.com with SMTP id l19-20020a05600c4f13b029025b036c91c6so2131179wmq.2
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 12:13:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=7cS3BPbsqKnOYb42Mhut/iF8oyajtsumJDuTzp4/dis=;
-        b=D8xV5PbgW9kpzlnHwCJtZAe7e3VY71TfNwIWZ8S8VBSJXKEgzD0HCWF1y2gxLBRbbt
-         Kj0g7UKwWv5YvZ53RtOXuJzxjchDJLXI6axaOrq+KTWqsfe5brvhXmX18P9B8FzGxmAS
-         u6BCUBHGK2qZSPh27hJLoXDNDI2YNM4T+NfKw8Ay+IJhOs55kmF8UTaffnhwg7jOG28w
-         APf1hM77N975EJyWAcApL4i+E9i+WebqEhYHckE6eVevMYgxhHcSi3aSc28bFTqvinUk
-         OH32D5tDGA4SIepanDofaHVznrDkWWV5uAOYWs6cKdeltWbPM+v3X8uyb5Cv3eU8NUST
-         rVxg==
-X-Gm-Message-State: AOAM531GV7BYCbRxiihasz9/Bg8w/25UkOztcgzCIPDPwvy7Mfnl0B3b
-        MCrlNW43n2mu8inXKnJDDHExaYyU67jFK9Wp4L2WG6zqnctRVhjxg51v6VYxgygqTSGml71aMvU
-        RituTG/YFi5J7JxkB
-X-Received: by 2002:a05:600c:3590:: with SMTP id p16mr50574wmq.33.1628795580305;
-        Thu, 12 Aug 2021 12:13:00 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw32p2/am0ZJ06W9UE/TEcfIPIgdiBvMFsnUFpCT9QrohG/fN16OhxFpBe+HXUWxiCgfqywTQ==
-X-Received: by 2002:a05:600c:3590:: with SMTP id p16mr50556wmq.33.1628795580060;
-        Thu, 12 Aug 2021 12:13:00 -0700 (PDT)
-Received: from pc-23.home (2a01cb058d01b600c841afd12834a14e.ipv6.abo.wanadoo.fr. [2a01:cb05:8d01:b600:c841:afd1:2834:a14e])
-        by smtp.gmail.com with ESMTPSA id k17sm11902206wmj.0.2021.08.12.12.12.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Aug 2021 12:12:59 -0700 (PDT)
-Date:   Thu, 12 Aug 2021 21:12:57 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Paul Mackerras <paulus@samba.org>,
-        "David S. Miller" <davem@davemloft.net>, linux-ppp@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ppp: Add rtnl attribute IFLA_PPP_UNIT_ID for specifying
- ppp unit id
-Message-ID: <20210812191257.GB10725@pc-23.home>
-References: <20210807163749.18316-1-pali@kernel.org>
- <20210809122546.758e41de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210809193109.mw6ritfdu27uhie7@pali>
- <20210810153941.GB14279@pc-32.home>
- <20210810160450.eluiktsp7oentxo3@pali>
- <20210811171918.GD15488@pc-32.home>
- <20210811175449.5hrwoevw7xv2jxxn@pali>
- <20210812091941.GA3525@pc-23.home>
- <20210812140918.lfll55przd4ajtc7@pali>
+        id S233101AbhHLTPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 15:15:30 -0400
+Received: from mail-dm6nam11on2090.outbound.protection.outlook.com ([40.107.223.90]:36627
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229607AbhHLTP2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Aug 2021 15:15:28 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XoNYOIx8mL8Q0zXc4H/tpK2UjuuQWJd/TLI8X5tXOVOzasgZYTv2cFOOejs7re+zxJ/B1+4okdzGzwGi9iyDz3uPwfMWMcugmgnAG7Hf1YCpPiY76UF61aJ0mkfEVFRUqrXGbipmw49si2hO5qpk3BshGQ/r9KTegZj70nQLNm9L7lf69YOzsIZXcHHlQpA9MEn1g5d6z0jYQ/auw0/CJMjgRTpty6HeC9FI8Tc7OC1YKQ50JVJZKybD+fn63ttyemj5w2edujf7EnlZkVrTH6odPUwdPAc64moVU1Vr+yIQA824GyoMgUNR+7Otr2bkDbvVdcssaQ2GPWAci2q3Og==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Gpuys++vcODbpsGWQB3uRlx1IdhYOTtNFDrliIJ2G1M=;
+ b=jpNpNIB50R7wxjmxlcO75VvEtK3X9yiHPsnEyIkgB+a9BXgcZvpfkNepO84mzCZKAoQv4b/IbVX2oPwPU9zUH6mO/lqR27fShUPsFcBACEklTh7pCc/KmExFd4RfyHNQKroW91ki2pqw8ihBdmUYNP14vXgkETCnhFnrPl+MzYgCTPGBJxfCnuchjWtMloeCW8pzudhu56sOKhfWN7oyHyEABysoM5fXziPuNpMCmdBH4sYD2t+FTrnABWpFCVSOA0pCXKMoX5kmy76mYpqvMyXDxVpai50d2jmnOwpAKx14YWEsaHSsz29IUXWZ/ulaLnu4r176nR21rTu5vQPtzg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Gpuys++vcODbpsGWQB3uRlx1IdhYOTtNFDrliIJ2G1M=;
+ b=abE98PLm6OZPm1OQ5pzOqnitEm2AusVKl7dyz4ig24zxA81NIASpgwR84oD6hvPpOKMohWx59HKw5+3KnBCU3FyMCAfjHM5qn9HnIMdQBm4qrHs0OqjCU6cM/3D6Vo8EwFe9uBihQWIFjEDimR9tuchm2yQjIKIVq9Z4RHYfAMw=
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
+ by CO1PR21MB1283.namprd21.prod.outlook.com (2603:10b6:303:162::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.1; Thu, 12 Aug
+ 2021 19:14:58 +0000
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::e8f7:b582:9e2d:ba55]) by MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::e8f7:b582:9e2d:ba55%2]) with mapi id 15.20.4436.012; Thu, 12 Aug 2021
+ 19:14:58 +0000
+From:   Michael Kelley <mikelley@microsoft.com>
+To:     Tianyu Lan <ltykernel@gmail.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "will@kernel.org" <will@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "pgonda@google.com" <pgonda@google.com>,
+        "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "rppt@kernel.org" <rppt@kernel.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "saravanand@fb.com" <saravanand@fb.com>,
+        "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
+        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "rientjes@google.com" <rientjes@google.com>,
+        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
+        "tj@kernel.org" <tj@kernel.org>
+CC:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        vkuznets <vkuznets@redhat.com>,
+        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+        "dave.hansen@intel.com" <dave.hansen@intel.com>
+Subject: RE: [PATCH V3 01/13] x86/HV: Initialize GHCB page in Isolation VM
+Thread-Topic: [PATCH V3 01/13] x86/HV: Initialize GHCB page in Isolation VM
+Thread-Index: AQHXjUfh3L5oGAIB0EmHDBGVrpI9rKtwO+iQ
+Date:   Thu, 12 Aug 2021 19:14:58 +0000
+Message-ID: <MWHPR21MB1593BDFA4A71CE6882E25400D7F99@MWHPR21MB1593.namprd21.prod.outlook.com>
+References: <20210809175620.720923-1-ltykernel@gmail.com>
+ <20210809175620.720923-2-ltykernel@gmail.com>
+In-Reply-To: <20210809175620.720923-2-ltykernel@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=3bfdd0db-44ef-4cc1-aacb-5c4b1161b694;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-08-12T18:52:44Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ed154913-3150-4242-52eb-08d95dc579f5
+x-ms-traffictypediagnostic: CO1PR21MB1283:
+x-ms-exchange-transport-forked: True
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <CO1PR21MB12831F14641653FFE1CF4DD0D7F99@CO1PR21MB1283.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: zAD0zptds3QUECqmDgLegJBW91ZPMlqGKdut1uA3XaBDTuKO0q/qQQ7g2mD1MHD3ZFTOeVKv1/DKxLqzfz7VokK1yy+5UN94nBv04f5p1mogCXwu+YSfxURVo0LD7lZmG6RFUwOjZVTNxwEJ3JbpmAwn3EpR2rvpMiOXbDMA6rrqaRdOehSBgGpW47NqaPZ6D5vp7zOUfhxDOHovn9OCSin+kAEXgJVAkwFKCeCjY3W4XX09Aa3hFIihwdJl26RiW27Evt4pL+mL4159hu81PhFj1TlAXYE2C0uRJWE2OC6+lzptfHflK00YA6sr6JW3SE4GBuD75abFn1r1pywwGij05foKb1l31IMoM+MsZB7TkDLi+41dOaMfdE9QvsZkAtsvIjVF2tTtcbPyXd47vU1qwwuY2ngsUcl/nowv74x8ROmoX7OR3qFZ4zTck0pwwodqAWOTz3IN+EYVjedb1CYxenFzbAJFdWejTWMfqBEPPNigeblgv7HdW932U6HWZpX3vsDPfAbdPFH8ntZNZGV7eKwSyC6AIjU3qkEm+DcinAzYpsgClpzPQDk7dlhwOvwHa22BFFXgyZ/8/zaaLEaliGortWoZa+MaMO/Lxxit55VCvtCRdy77zqkuUxk/aRenSvzCsw9f8ojjj6aBY1UWiwqdDqQmbBjGOwGijptlYXgX+BNdvy3JZ/O5zsBxyb2vrTLytVSkKjKx1sd+aR9x2H4rhHVH89Ig4mGMRSg=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR21MB1593.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(53546011)(82950400001)(6506007)(82960400001)(71200400001)(2906002)(921005)(10290500003)(7696005)(508600001)(86362001)(26005)(186003)(4326008)(7416002)(122000001)(7406005)(54906003)(8676002)(8936002)(9686003)(110136005)(5660300002)(66446008)(64756008)(76116006)(66946007)(33656002)(83380400001)(55016002)(38070700005)(316002)(52536014)(8990500004)(38100700002)(66476007)(66556008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?JJx9OHqprqGIl6IOQ06tKcKLUkeM5tuZVvsOA81J8By+5kpUL0nipy9GsNcN?=
+ =?us-ascii?Q?5ruSTsR6FxEmDqS/fS3yDQc5pmqEfYJpvZSVJ3t1+MRTckQr/x2NN42qEN0L?=
+ =?us-ascii?Q?CvluYUEBQuc+Y8Dl5Sc8drYd6tWKU2tT4sBt2oZn97e3olXJCBP8LP00nSzL?=
+ =?us-ascii?Q?P3Xr1h9pz2LdsbEMsDkqe8KzLOgtSyRWL1u0flhe2vwGKaHOypt+jMZvFuKB?=
+ =?us-ascii?Q?zmYoNJc5rcBF/PL8gmVMA6IwGLm0xvXSZoDks4LyHBnNrJvHjqmKKaXRYm84?=
+ =?us-ascii?Q?augBx89owdqlUQMCQC9EKLRn468uWOtb9rQE6eWcvCl8ZqXnTZrwI9aOef0+?=
+ =?us-ascii?Q?TMl1d66HAXSyS5iK1HLIVhCP8VoTezEwQjxChUplQyeFeO2bwJBjGmgZLQ2t?=
+ =?us-ascii?Q?BAcOvICD9tmk+mz393k5Rgr0GQ0Ly4CPUx0xv8ubisbezSJutl93DNMdHN1p?=
+ =?us-ascii?Q?SXy89DGHocXm9OgHjMgT0mTSrDNjnYnVMe0o5VsdMqzONiKa9ay9M2A7NhPu?=
+ =?us-ascii?Q?SgsuvOicCFLQA+cdGuWW1skgu9g/wF8e8Yz8pnaFjz3mv0mepSv1fgohRw88?=
+ =?us-ascii?Q?ja+XVY3mNhznPC2vmJvr5W/7M4Vp5Kt0wUFtNeYbPxVGIIjV8MWvjTRCiQSt?=
+ =?us-ascii?Q?566SGD8uYnLq4o6MqAMnVhVelgE26P8GH/BgFvKq7kycD1wUIB13l35eXYso?=
+ =?us-ascii?Q?DlTwqZUNJnexg9YqPY3HEx2eqmdbYSckkYRk5jlvbMtuXx5i37xROwl2G0QV?=
+ =?us-ascii?Q?V9nCZCrXpILARBJui6q+bzi5dBD7VHwjCiDn4VxGNnmOQHcjcTKEnjl8dyrz?=
+ =?us-ascii?Q?c7MqJPIfFMDkrtKORQRiYbaFPAteMDjwQGYFeOEedXg7Oqym8yHrD3/ufVLz?=
+ =?us-ascii?Q?eBUfTCAuZGoOD7KwP+AsFaZZfEd3F0XnI0ecnVXjC2dGMOmoBEsvKZvwRCdU?=
+ =?us-ascii?Q?KSgz+kPUez9irY8hbPcIT8rlTPzArb2b2qfJa7yh/nMlwQ6Yd3V93nGoSkL6?=
+ =?us-ascii?Q?XnDbXhJ8kO//i9u5gD5INOGZHQqAEUUAGXxrAGSjbDf739/3b2nZ8UiUBiL7?=
+ =?us-ascii?Q?P3jhMa8vYddnJvSIqxXeISLCpcnlLe+hT4YRil/i7mj4B5jAkaYT+Wytd5OR?=
+ =?us-ascii?Q?crmKwkYg0oXxfa+K09H23q+V9DzkRUaeqpmvkAy/ngCMSK3njXATmDv48qNW?=
+ =?us-ascii?Q?RpY2+hh6oeRm30nWS1APOtaaqFrhxsk8+AOSLqk5eZOv+cLFgw6YW7PWzJP9?=
+ =?us-ascii?Q?Ubv9mCSuj3O3I7/I/9edQWRw+dj9lOkFjrdOBQ+sYovZJSbYCMZCUg9OL2aC?=
+ =?us-ascii?Q?6fTVaFauNRWI+qF0gCQ993/h?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210812140918.lfll55przd4ajtc7@pali>
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed154913-3150-4242-52eb-08d95dc579f5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Aug 2021 19:14:58.4607
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: HdbeV510yJExLu5WL5x/AdyPokhvnPDxIsh21pCyfFEUrpXKjFBQDx+vb1GTCUcx2gk+5xk8zIUmI4i3mFL+7OqPgZbtGl5JsNZCtLQuibc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR21MB1283
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 12, 2021 at 04:09:18PM +0200, Pali Rohár wrote:
-> The problem is that ppp from rtnl is of the same class as ppp from
-> ioctl. And if you want to use ppp, you still have to use lot of ioctl
-> calls as rtnl does not implement them. And these ioctl calls use ppp
-> unit id, not interface id / interface name.
+From: Tianyu Lan <ltykernel@gmail.com> Sent: Monday, August 9, 2021 10:56 A=
+M
+> Subject: [PATCH V3 01/13] x86/HV: Initialize GHCB page in Isolation VM
 
-Indeed, the netlink api only replaces ioctl(PPPIOCNEWUNIT). It's
-technically feasible to implement other ppp unit ioctls with netlink,
-but I didn't do that because:
-  * some of them make no sense,
-  * netlink wouldn't bring any advantage over ioctl() for these cases
-    (and ppp is ioctl-centric anyway, so users will have to write
-    ioctl() calls no matter what).
+The subject line tag on patches under arch/x86/hyperv is generally "x86/hyp=
+erv:".
+There's some variation in the spelling of "hyperv", but let's go with the a=
+ll
+lowercase "hyperv".
 
-If there was a bright future for ppp in sight, I'd certainly work on a
-new modern ioctl-less api. But in the current situation, that'd be just
-feature duplication and code churn.
+>=20
+> Hyper-V exposes GHCB page via SEV ES GHCB MSR for SNP guest
+> to communicate with hypervisor. Map GHCB page for all
+> cpus to read/write MSR register and submit hvcall request
+> via GHCB.
+>=20
+> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> ---
+>  arch/x86/hyperv/hv_init.c       | 66 +++++++++++++++++++++++++++++++--
+>  arch/x86/include/asm/mshyperv.h |  2 +
+>  include/asm-generic/mshyperv.h  |  2 +
+>  3 files changed, 66 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+> index 708a2712a516..0bb4d9ca7a55 100644
+> --- a/arch/x86/hyperv/hv_init.c
+> +++ b/arch/x86/hyperv/hv_init.c
+> @@ -20,6 +20,7 @@
+>  #include <linux/kexec.h>
+>  #include <linux/version.h>
+>  #include <linux/vmalloc.h>
+> +#include <linux/io.h>
+>  #include <linux/mm.h>
+>  #include <linux/hyperv.h>
+>  #include <linux/slab.h>
+> @@ -42,6 +43,31 @@ static void *hv_hypercall_pg_saved;
+>  struct hv_vp_assist_page **hv_vp_assist_page;
+>  EXPORT_SYMBOL_GPL(hv_vp_assist_page);
+>=20
+> +static int hyperv_init_ghcb(void)
+> +{
+> +	u64 ghcb_gpa;
+> +	void *ghcb_va;
+> +	void **ghcb_base;
+> +
+> +	if (!ms_hyperv.ghcb_base)
+> +		return -EINVAL;
+> +
+> +	/*
+> +	 * GHCB page is allocated by paravisor. The address
+> +	 * returned by MSR_AMD64_SEV_ES_GHCB is above shared
+> +	 * ghcb boundary and map it here.
+> +	 */
+> +	rdmsrl(MSR_AMD64_SEV_ES_GHCB, ghcb_gpa);
+> +	ghcb_va =3D memremap(ghcb_gpa, HV_HYP_PAGE_SIZE, MEMREMAP_WB);
+> +	if (!ghcb_va)
+> +		return -ENOMEM;
+> +
+> +	ghcb_base =3D (void **)this_cpu_ptr(ms_hyperv.ghcb_base);
+> +	*ghcb_base =3D ghcb_va;
+> +
+> +	return 0;
+> +}
+> +
+>  static int hv_cpu_init(unsigned int cpu)
+>  {
+>  	union hv_vp_assist_msr_contents msr =3D { 0 };
+> @@ -85,6 +111,8 @@ static int hv_cpu_init(unsigned int cpu)
+>  		}
+>  	}
+>=20
+> +	hyperv_init_ghcb();
+> +
+>  	return 0;
+>  }
+>=20
+> @@ -177,6 +205,14 @@ static int hv_cpu_die(unsigned int cpu)
+>  {
+>  	struct hv_reenlightenment_control re_ctrl;
+>  	unsigned int new_cpu;
+> +	void **ghcb_va =3D NULL;
 
-> So in the end you can use RTM_NEWLINK and then control ppp via ioctls.
-> And for controlling you have to known that ppp unit id.
-> 
-> If you are using ppp over serial devices, you can "simplify" it by
-> forcing mapping that serial number device matches ppp unit id. And then
-> you do not have to use dynamic ids (and need for call PPPIOCGUNIT).
+I'm not seeing any reason why this needs to be initialized.
 
-How is dropping a single PPPIOCGUNIT call going to simplify the code
-while you have to write netlink message handlers?
+> +
+> +	if (ms_hyperv.ghcb_base) {
+> +		ghcb_va =3D (void **)this_cpu_ptr(ms_hyperv.ghcb_base);
+> +		if (*ghcb_va)
+> +			memunmap(*ghcb_va);
+> +		*ghcb_va =3D NULL;
+> +	}
+>=20
+>  	hv_common_cpu_die(cpu);
+>=20
+> @@ -383,9 +419,19 @@ void __init hyperv_init(void)
+>  			VMALLOC_END, GFP_KERNEL, PAGE_KERNEL_ROX,
+>  			VM_FLUSH_RESET_PERMS, NUMA_NO_NODE,
+>  			__builtin_return_address(0));
+> -	if (hv_hypercall_pg =3D=3D NULL) {
+> -		wrmsrl(HV_X64_MSR_GUEST_OS_ID, 0);
+> -		goto remove_cpuhp_state;
+> +	if (hv_hypercall_pg =3D=3D NULL)
+> +		goto clean_guest_os_id;
+> +
+> +	if (hv_isolation_type_snp()) {
+> +		ms_hyperv.ghcb_base =3D alloc_percpu(void *);
+> +		if (!ms_hyperv.ghcb_base)
+> +			goto clean_guest_os_id;
+> +
+> +		if (hyperv_init_ghcb()) {
+> +			free_percpu(ms_hyperv.ghcb_base);
+> +			ms_hyperv.ghcb_base =3D NULL;
+> +			goto clean_guest_os_id;
+> +		}
 
-> With dynamic unit id allocation (which is currently the only option when
-> creating ppp via rtnl) for single ppp connection you need to know:
-> * id of serial tty device
-> * id of channel bound to tty device
-> * id of network interface
-> * id of ppp unit bound to network interface
+Having the GHCB setup code here splits the hypercall page setup into
+two parts, which is unexpected.  First the memory is allocated
+for the hypercall page, then the GHCB stuff is done, then the hypercall
+MSR is setup.  Is there a need to do this split?  Also, if the GHCB stuff
+fails and you goto clean_guest_os_id, the memory allocated for the
+hypercall page is never freed.
 
-I see you're not working with L2TPv2 :). A few more things you'd need
-to add to the list:
- * a UDP socket,
- * a tunnel id,
- * a session id,
- * a tunnel file descriptor,
- * a session file descriptor,
- * a new ioctl() to figure out which channel id is assigned to your
-   L2TP session,
- * a bunch of setsockopt() to configure the whole thing,
- * ...
-(and I'm not counting the ioctl() calls necessary to set up the channel,
-which also apply to your use case).
+It's also unexpected to have hyperv_init_ghcb() called here and called
+in hv_cpu_init().  Wouldn't it be possible to setup ghcb_base *before*
+cpu_setup_state() is called, so that hv_cpu_init() would take care of
+calling hyperv_init_ghcb() for the boot CPU?  That's the pattern used
+by the VP assist page, the percpu input page, etc.
 
-Really, I'm sorry, but the possibility to drop a single PPPIOCGUNIT
-call isn't going to simplify the ppp landscape.
+>  	}
+>=20
+>  	rdmsrl(HV_X64_MSR_HYPERCALL, hypercall_msr.as_uint64);
+> @@ -456,7 +502,8 @@ void __init hyperv_init(void)
+>  	hv_query_ext_cap(0);
+>  	return;
+>=20
+> -remove_cpuhp_state:
+> +clean_guest_os_id:
+> +	wrmsrl(HV_X64_MSR_GUEST_OS_ID, 0);
+>  	cpuhp_remove_state(cpuhp);
+>  free_vp_assist_page:
+>  	kfree(hv_vp_assist_page);
+> @@ -484,6 +531,9 @@ void hyperv_cleanup(void)
+>  	 */
+>  	hv_hypercall_pg =3D NULL;
+>=20
+> +	if (ms_hyperv.ghcb_base)
+> +		free_percpu(ms_hyperv.ghcb_base);
+> +
 
-> > As I already proposed, we can add an attribute to make the interface
-> > name independant from the unit id.
-> 
-> I agree, that above proposal with a new attribute which makes interface
-> name independent from the ppp unit id is a good idea. Probably it should
-> have been default rtnl behavior (but now it is too late for changing
-> default behavior).
+I don't think this cleanup is necessary.  The primary purpose of
+hyperv_cleanup() is to ensure that things like overlay pages are
+properly reset in Hyper-V before doing a kexec(), or before
+panic'ing and running the kdump kernel.  There's no need to do
+general memory free'ing in Linux.  Doing so just adds to the risk
+that the panic path could itself fail.
 
-Well, it was the default, until a collegue complained and I accepted to
-align the default device name with the original ioctl() behaviour. But
-the beauty of netlink is that we can revise this behaviour without
-breaking compatibility.
+>  	/* Reset the hypercall page */
+>  	hypercall_msr.as_uint64 =3D 0;
+>  	wrmsrl(HV_X64_MSR_HYPERCALL, hypercall_msr.as_uint64);
+> @@ -559,3 +609,11 @@ bool hv_is_isolation_supported(void)
+>  {
+>  	return hv_get_isolation_type() !=3D HV_ISOLATION_TYPE_NONE;
+>  }
+> +
+> +DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
+> +
+> +bool hv_isolation_type_snp(void)
+> +{
+> +	return static_branch_unlikely(&isolation_type_snp);
+> +}
+> +EXPORT_SYMBOL_GPL(hv_isolation_type_snp);
+> diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyp=
+erv.h
+> index adccbc209169..6627cfd2bfba 100644
+> --- a/arch/x86/include/asm/mshyperv.h
+> +++ b/arch/x86/include/asm/mshyperv.h
+> @@ -11,6 +11,8 @@
+>  #include <asm/paravirt.h>
+>  #include <asm/mshyperv.h>
+>=20
+> +DECLARE_STATIC_KEY_FALSE(isolation_type_snp);
+> +
+>  typedef int (*hyperv_fill_flush_list_func)(
+>  		struct hv_guest_mapping_flush_list *flush,
+>  		void *data);
+> diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyper=
+v.h
+> index c1ab6a6e72b5..4269f3174e58 100644
+> --- a/include/asm-generic/mshyperv.h
+> +++ b/include/asm-generic/mshyperv.h
+> @@ -36,6 +36,7 @@ struct ms_hyperv_info {
+>  	u32 max_lp_index;
+>  	u32 isolation_config_a;
+>  	u32 isolation_config_b;
+> +	void  __percpu **ghcb_base;
 
-> But prior adding this attribute, we first need a way how to retrieve
-> interface name of newly created interface. Which we agreed that
-> NLM_F_ECHO for RTM_NEWLINK/NLM_F_CREATE is needed.
+This doesn't feel like the right place to put this pointer.  The other
+fields in the ms_hyperv_info structure are just fixed values obtained
+from the CPUID instruction.   The existing patterns similar to ghcb_base
+are the VP assist page and the percpu input and output args.  They are
+all based on standalone global variables.  It would be more consistent
+to do the same with the ghcb_base.
 
-Yes, that'd be ideal. That might require quite some work though (I
-haven't looked in detail). At last resort, if adding NLM_F_ECHO
-support to rtnl proves too hard, it might be possible to add a call to
-get the device name associated to a ppp unit file descriptor.
-
-At least know I understand why we had this conversation about
-NLM_F_ECHO :).
+>  };
+>  extern struct ms_hyperv_info ms_hyperv;
+>=20
+> @@ -237,6 +238,7 @@ bool hv_is_hyperv_initialized(void);
+>  bool hv_is_hibernation_supported(void);
+>  enum hv_isolation_type hv_get_isolation_type(void);
+>  bool hv_is_isolation_supported(void);
+> +bool hv_isolation_type_snp(void);
+>  void hyperv_cleanup(void);
+>  bool hv_query_ext_cap(u64 cap_query);
+>  #else /* CONFIG_HYPERV */
+> --
+> 2.25.1
 
