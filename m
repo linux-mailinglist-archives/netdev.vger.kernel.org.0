@@ -2,155 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FB7E3E9BE6
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 03:22:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27A1C3E9C28
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 04:15:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233278AbhHLBWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Aug 2021 21:22:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38398 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbhHLBWr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 21:22:47 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEAA8C061765
-        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 18:22:22 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id h2so7865042lji.6
-        for <netdev@vger.kernel.org>; Wed, 11 Aug 2021 18:22:22 -0700 (PDT)
+        id S233592AbhHLCQC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Aug 2021 22:16:02 -0400
+Received: from smtp-fw-80007.amazon.com ([99.78.197.218]:32248 "EHLO
+        smtp-fw-80007.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229851AbhHLCPz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Aug 2021 22:15:55 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=prestigetransportation-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YgmCb/M36G7y/F9n7pqOEX0jUkjwsODoD9HmSF/j27M=;
-        b=Z8wLcIgju1YXAogPl4GXFufU95L35sHnKOrG6YRyJonvs80+KjOVokDMr1y/Y4yWPq
-         76lkI74Wk6/frOe9Qqv+RyXfSiA6UvlzeUXm87zF30RPpey9fc/KWmE07Gb6IgLN5N9V
-         GAXp+4g7+ISAPVmdIVOri98PGfmJOn9/rhpZqZSV/89QGSpoZoFLBNreI7nuiCqr5lsv
-         CNexvlefGKhwqvfnpDjtJ+k700kaJzkmNkzmQEDln3HaS5nAG9KbSspj/XddIG/fqVRi
-         Xi81qUxaLNGdCXKHuX1+YcEALa7lWIr/uQ2c/8Cd6Az/oNvvEWDAaxOMcnk7X1PCccMB
-         qIkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YgmCb/M36G7y/F9n7pqOEX0jUkjwsODoD9HmSF/j27M=;
-        b=RvISpBKdHrlYRcTUmBls0ktUQIAH2UiC8rjRKkT4omHLcVT4BZJma42/iDRo9m3T0F
-         sPuzR6SKiqyBXjjzZIweeHCgJj06jtmJY/gzewVUJkdd/wROa2GEEDIq6akGU4Bdfepr
-         1HXkqA8lnfc2TRcgCLKTms3qFvsmOGGGb5VvDli7jc/5FZ8izJxZGwnSItvLR6b+K2lP
-         0UV4dcFJDyaf8YVBuKBMYy5HfNcRdIYkSdgkSZG9rWEJT8GtJ77cidVzYobEbGKxBie8
-         e0FNX/p2GfQRwD/C7L8n2bBx4lodLbZMz35YqwQUBWt84ZPkgtxvjaOCCtmWO6rOnSHb
-         ifMw==
-X-Gm-Message-State: AOAM532VetZ9H7MLZ7wG0Uo2Q3x1jSOqM0YYOdNMCsNy1TcLODUnrGWh
-        f2cY0f9Wg/nT6nLsEnt9YMjfb/rT4YKHLspDuEQWDA==
-X-Google-Smtp-Source: ABdhPJyk5iqyFP+Bcouz1m9nylkSZB5oddh7QHUWidMhBkm9ZyQVFp9l5u3C17ylQCvqvO7UAcKs8nN4ZkPemdMLQfU=
-X-Received: by 2002:a2e:7a0e:: with SMTP id v14mr693188ljc.324.1628731341207;
- Wed, 11 Aug 2021 18:22:21 -0700 (PDT)
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1628734531; x=1660270531;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=RTy5lVmp/IOgnUGWV4V3jVdC4iVR+O644060Oaq+9s0=;
+  b=JOTT1tndk/ia+mKR0Dk2KlzpkUsiND2KKWWlRUXh7PZGqz+uwXEbwHUQ
+   Eezcch5xQPnE6C7bcFHClasYygkLtzFrFqrd/6tiJXldUkx0VEqEbpW5D
+   6sV/6r/x6usug5jRMVE5GSdA3VgMYj2/rwYxw0ZIUKghT85WpLz78oHBv
+   Y=;
+X-IronPort-AV: E=Sophos;i="5.84,314,1620691200"; 
+   d="scan'208";a="18716084"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-2b-8cc5d68b.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 12 Aug 2021 02:15:31 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-2b-8cc5d68b.us-west-2.amazon.com (Postfix) with ESMTPS id 6E254A0691;
+        Thu, 12 Aug 2021 02:15:30 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.23; Thu, 12 Aug 2021 02:15:29 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.186) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.23; Thu, 12 Aug 2021 02:15:24 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <andrii.nakryiko@gmail.com>
+CC:     <andrii@kernel.org>, <ast@kernel.org>, <benh@amazon.com>,
+        <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
+        <davem@davemloft.net>, <john.fastabend@gmail.com>, <kafai@fb.com>,
+        <kpsingh@kernel.org>, <kuba@kernel.org>, <kuni1840@gmail.com>,
+        <kuniyu@amazon.co.jp>, <netdev@vger.kernel.org>,
+        <songliubraving@fb.com>, <yhs@fb.com>
+Subject: Re: [PATCH v4 bpf-next 2/3] bpf: Support "%c" in bpf_bprintf_prepare().
+Date:   Thu, 12 Aug 2021 11:15:21 +0900
+Message-ID: <20210812021521.91494-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CAEf4BzZBxA2+nNtbOVEyMXDG9i_3zfxm78=--ssjrX4ESC_ixA@mail.gmail.com>
+References: <CAEf4BzZBxA2+nNtbOVEyMXDG9i_3zfxm78=--ssjrX4ESC_ixA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210811081623.9832-1-jasowang@redhat.com>
-In-Reply-To: <20210811081623.9832-1-jasowang@redhat.com>
-From:   ivan <ivan@prestigetransportation.com>
-Date:   Wed, 11 Aug 2021 20:20:03 -0500
-Message-ID: <CACFia2dOarWzZ-FfOgA-n3Puxhw4zacdEPtabzbbveyeuV3YBA@mail.gmail.com>
-Subject: Re: [RFC PATCH] virtio-net: use NETIF_F_GRO_HW instead of NETIF_F_LRO
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Ivan <ivan@prestigetransportation.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.186]
+X-ClientProxiedBy: EX13D45UWA002.ant.amazon.com (10.43.160.38) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 11, 2021 at 3:16 AM Jason Wang <jasowang@redhat.com> wrote:
->
-> Commit a02e8964eaf92 ("virtio-net: ethtool configurable LRO") tries to
-> advertise LRO on behalf of the guest offloading features and allow the
-> administrator to enable and disable those features via ethtool.
->
-> This may lead several issues:
->
-> - For the device that doesn't support control guest offloads, the
->   "LRO" can't be disabled so we will get a warn in the
->   dev_disable_lro()
-> - For the device that have the control guest offloads, the guest
->   offloads were disabled in the case of bridge etc which may slow down
->   the traffic.
->
-> Try to fix this by using NETIF_F_GRO_HW instead so we're not
-> guaranteed to be re-segmented as original. Or we may want a new netdev
-> feature like RX_GSO since the guest offloads for virtio-net is
-> actually to receive GSO packet.
->
-> Or we can try not advertise LRO is control guest offloads is not
-> enabled. This solves the warning but will still slow down the traffic.
->
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
->  drivers/net/virtio_net.c | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 0416a7e00914..10c382b08bce 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -63,7 +63,7 @@ static const unsigned long guest_offloads[] = {
->         VIRTIO_NET_F_GUEST_CSUM
->  };
->
-> -#define GUEST_OFFLOAD_LRO_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
-> +#define GUEST_OFFLOAD_GRO_HW_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
->                                 (1ULL << VIRTIO_NET_F_GUEST_TSO6) | \
->                                 (1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
->                                 (1ULL << VIRTIO_NET_F_GUEST_UFO))
-> @@ -2481,7 +2481,7 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
->                 virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_ECN) ||
->                 virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO) ||
->                 virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_CSUM))) {
-> -               NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing LRO/CSUM, disable LRO/CSUM first");
-> +               NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing GRO_HW/CSUM, disable GRO_HW/CSUM first");
->                 return -EOPNOTSUPP;
->         }
->
-> @@ -2612,15 +2612,15 @@ static int virtnet_set_features(struct net_device *dev,
->         u64 offloads;
->         int err;
->
-> -       if ((dev->features ^ features) & NETIF_F_LRO) {
-> +       if ((dev->features ^ features) & NETIF_F_GRO_HW) {
->                 if (vi->xdp_enabled)
->                         return -EBUSY;
->
-> -               if (features & NETIF_F_LRO)
-> +               if (features & NETIF_F_GRO_HW)
->                         offloads = vi->guest_offloads_capable;
->                 else
->                         offloads = vi->guest_offloads_capable &
-> -                                  ~GUEST_OFFLOAD_LRO_MASK;
-> +                                  ~GUEST_OFFLOAD_GRO_HW_MASK;
->
->                 err = virtnet_set_guest_offloads(vi, offloads);
->                 if (err)
-> @@ -3100,9 +3100,9 @@ static int virtnet_probe(struct virtio_device *vdev)
->                 dev->features |= NETIF_F_RXCSUM;
->         if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
->             virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
-> -               dev->features |= NETIF_F_LRO;
-> +               dev->features |= NETIF_F_GRO_HW;
->         if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
-> -               dev->hw_features |= NETIF_F_LRO;
-> +               dev->hw_features |= NETIF_F_GRO_HW;
->
->         dev->vlan_features = dev->features;
->
-> --
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 11 Aug 2021 14:15:50 -0700
+> On Tue, Aug 10, 2021 at 2:29 AM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
+> >
+> > /proc/net/unix uses "%c" to print a single-byte character to escape '\0' in
+> > the name of the abstract UNIX domain socket.  The following selftest uses
+> > it, so this patch adds support for "%c".  Note that it does not support
+> > wide character ("%lc" and "%llc") for simplicity.
+> >
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> > ---
+> >  kernel/bpf/helpers.c | 14 ++++++++++++++
+> >  1 file changed, 14 insertions(+)
+> >
+> > diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+> > index 15746f779fe1..6d3aaf94e9ac 100644
+> > --- a/kernel/bpf/helpers.c
+> > +++ b/kernel/bpf/helpers.c
+> > @@ -907,6 +907,20 @@ int bpf_bprintf_prepare(char *fmt, u32 fmt_size, const u64 *raw_args,
+> >                         tmp_buf += err;
+> >                         num_spec++;
+> >
+> > +                       continue;
+> > +               } else if (fmt[i] == 'c') {
+> 
+> you are adding new features to printk-like helpers, please add
+> corresponding tests as well. I'm particularly curious how something
+> like "% 9c" (which is now allowed, along with a few other unusual
+> combinations) will work.
 
-I applied this patch, recompiled the kernel, and tested it.
-The warning messages are gone. Network speed is normal.
-I can now enable forwarding, and nothing bad happens.
-So far, so good.
+I see. I'll add a test.
+I'm now thinking of test like:
+  1. pin the bpf prog that outputs "% 9c" and other format strings.
+  2. read and validate it
 
-Thank you.
+Is there any related test ?
+and is there other complicated fomat strings to test ?
+
+Also, "% 9c" worked as is :)
+
+---8<---
+$ sudo ./tools/bpftool/bpftool iter pin ./bpf_iter_unix.o /sys/fs/bpf/unix
+$ sudo cat /sys/fs/bpf/unix | head -n 1
+        a
+$ git diff
+diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_unix.c b/tools/testing/selftests/bpf/progs/bpf_iter_unix.c
+index ad397e2962cf..8a7d5aa4c054 100644
+--- a/tools/testing/selftests/bpf/progs/bpf_iter_unix.c
++++ b/tools/testing/selftests/bpf/progs/bpf_iter_unix.c
+@@ -34,8 +34,10 @@ int dump_unix(struct bpf_iter__unix *ctx)
+ 
+        seq = ctx->meta->seq;
+        seq_num = ctx->meta->seq_num;
+-       if (seq_num == 0)
++       if (seq_num == 0) {
++               BPF_SEQ_PRINTF(seq, "% 9c\n", 'a');
+                BPF_SEQ_PRINTF(seq, "Num               RefCount Protocol Flags    Type St Inode    Path\n");
++       }
+ 
+        BPF_SEQ_PRINTF(seq, "%pK: %08X %08X %08X %04X %02X %8lu",
+                       unix_sk,
+---8<---
+
+
+
+> 
+> > +                       if (!tmp_buf)
+> > +                               goto nocopy_fmt;
+> > +
+> > +                       if (tmp_buf_end == tmp_buf) {
+> > +                               err = -ENOSPC;
+> > +                               goto out;
+> > +                       }
+> > +
+> > +                       *tmp_buf = raw_args[num_spec];
+> > +                       tmp_buf++;
+> > +                       num_spec++;
+> > +
+> >                         continue;
+> >                 }
+> >
+> > --
+> > 2.30.2
