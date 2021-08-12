@@ -2,113 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96EC63EA7FE
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 17:51:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB82B3EA811
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 17:55:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238282AbhHLPv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 11:51:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39348 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238365AbhHLPvd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 11:51:33 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C076C061756;
-        Thu, 12 Aug 2021 08:51:08 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id z9so8893918wrh.10;
-        Thu, 12 Aug 2021 08:51:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7Ox8EA3msfn26kOfs3nfK6Ep7YttC7NK9mJ+afKsxEI=;
-        b=YUkvhqc+QAdePDaPdTt5Xjix4FY9Jwr63o0QwfgpzV/9lxY3A6Bzc6nuZ6tPeV+v3u
-         OnjDVGVxM/w/6yskm+0Hn3Lyt8V6CPVcn1AiuVgwLLh3dCnDwAprTdwaFnIIVoFIXuuL
-         mVoTcYnD4NTTNckm/Fzu/JJwELPRNV3wzxAOBtF8Q79ejWkfPhbKfbgtRoIGPLapOeXP
-         g6Ayk+eQR0uTWEoQaq1mMb8EU5SwMRFPFfvF+pYOndn79fsqIh8kEHl3ltpyy86G+VbU
-         j06cjJbGocqrZI28bKvAH1oV3xrrvU7ec8QvhjFs3Vko7Twm5625aM4r+lFqw3sl6Lhn
-         IiyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7Ox8EA3msfn26kOfs3nfK6Ep7YttC7NK9mJ+afKsxEI=;
-        b=Shg5XT+88fBr0ZsyAECe0y+1MXnpvVEdh/OSaTTmZYQGnh0j4xQzzTlBhytBoaoeRJ
-         UsYG3OPGR5QknHd3vzVPsMAmuWiyIWz9UXSwYhjloDeMwCtrC2ca2kLrse78/KCtlPI/
-         4VHU1jwhkHYyGpoQ12ucmipBxn7cH1oAgxiZgN1l86/iFA10GpVpZndXXeiZI7uQFmeI
-         wh543gKSPAmONAI36ggn5qtjjsMtczcdPNNAk5M7cXM57KDwL64uwVpHHCgTaNZyEosm
-         ePtyWdGpgthBZwLs+3aw4KKq2J7UT03hrhw6R1VTc4pSPZWMKuNwenFbi/Y0H/lkW4xZ
-         Dv4Q==
-X-Gm-Message-State: AOAM5322mzKZfi+dkucSxEp312KMXcqMcKZg9YpiRp6QcPG/Ls9RWmSO
-        8MVVEFFqRwQvNGnJ5reilRU=
-X-Google-Smtp-Source: ABdhPJzU5U5q4HQPY2Oh41ABzfk7GiiE8EOLu5Cy8IDSivIXWs+NS58kEtMKu+EAGKATFuxDupyQ8A==
-X-Received: by 2002:a5d:42c2:: with SMTP id t2mr4772060wrr.49.1628783466985;
-        Thu, 12 Aug 2021 08:51:06 -0700 (PDT)
-Received: from [10.0.0.18] ([37.165.40.60])
-        by smtp.gmail.com with ESMTPSA id y14sm3397044wrs.29.2021.08.12.08.51.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Aug 2021 08:51:06 -0700 (PDT)
-Subject: Re: [PATCH v2 1/2] udp: UDP socket send queue repair
-To:     Bui Quang Minh <minhquangbui99@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, willemb@google.com, pabeni@redhat.com,
-        avagin@gmail.com, alexander@mihalicyn.com,
-        lesedorucalin01@gmail.com
-References: <20210811154557.6935-1-minhquangbui99@gmail.com>
- <721a2e32-c930-ad6b-5055-631b502ed11b@gmail.com>
- <7f3ecbaf-7759-88ae-53d3-2cc5b1623aff@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <489f0200-b030-97de-cf3a-2d715b07dfa4@gmail.com>
-Date:   Thu, 12 Aug 2021 17:51:00 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S238511AbhHLPzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 11:55:13 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:38248
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238351AbhHLPzM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 11:55:12 -0400
+Received: from localhost.localdomain (1.general.khfeng.us.vpn [10.172.68.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 9B2223F361;
+        Thu, 12 Aug 2021 15:54:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1628783686;
+        bh=g7fffiyI+X9n230LWqj+hlksotyPWg3/QPgjjGTFyIQ=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=QjMFiNlWSA8ciPbMCVp9ulCkLwFDDYkt0BtlolB13eOGjiF7ezJjmrQId7xig+Y1l
+         tOicONzOc2mc7iS7BQg2F0DHu0EdYahxWK05CfIIbpGBMTiBOkKIw/GQUMqvgDJDRm
+         M/WHYZSoIbQlZ8Z6HX0JXhOdtIH8YAp4nt4vSjbfuRylVFHkp4kSGU4alp3UpL/fvp
+         C6iNeHX88tbfPcDbOUNTTWfy5RaYHLNxQA5lFGkm0cT9dOj1GmC8Xx5Sc+8cN82fUk
+         TMj8XJmp07rfsQvmd1iuFA/mFt5oCUVlMLDJ3+ly1xogdHHH9iNZidGlVdHyc4fV6K
+         we15bpwmOKF6g==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     hkallweit1@gmail.com, nic_swsd@realtek.com
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org (open list:8169 10/100/1000 GIGABIT ETHERNET
+        DRIVER), linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v2 1/2] r8169: Implement dynamic ASPM mechanism
+Date:   Thu, 12 Aug 2021 23:53:40 +0800
+Message-Id: <20210812155341.817031-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-In-Reply-To: <7f3ecbaf-7759-88ae-53d3-2cc5b1623aff@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+r8169 NICs on some platforms have abysmal speed when ASPM is enabled.
+Same issue can be observed with older vendor drivers.
 
+The issue is however solved by the latest vendor driver. There's a new
+mechanism, which disables r8169's internal ASPM when the NIC traffic has
+more than 10 packets, and vice versa.
 
-On 8/12/21 3:46 PM, Bui Quang Minh wrote:
-> 
-> 
-> On 8/11/2021 11:14 PM, Eric Dumazet wrote:
->>
->>
->> On 8/11/21 5:45 PM, Bui Quang Minh wrote:
->>> In this patch, I implement UDP_REPAIR sockoption and a new path in
->>> udp_recvmsg for dumping the corked packet in UDP socket's send queue.
->>>
->>> A userspace program can use recvmsg syscall to get the packet's data and
->>> the msg_name information of the packet. Currently, other related
->>> information in inet_cork that are set in cmsg are not dumped.
->>>
->>> While working on this, I was aware of Lese Doru Calin's patch and got some
->>> ideas from it.
->>
->>
->> What is the use case for this feature, adding a test in UDP fast path ?
-> 
-> This feature is used to help CRIU to dump CORKed UDP packet in send queue. I'm sorry for being not aware of the performance perspective here.
+Realtek confirmed that all their PCIe LAN NICs, r8106, r8168 and r8125
+use dynamic ASPM under Windows. So implement the same mechanism here to
+resolve the issue.
 
-UDP is not reliable.
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+v2: 
+ - Use delayed_work instead of timer_list to avoid interrupt context
+ - Use mutex to serialize packet counter read/write
+ - Wording change
 
-I find a bit strange we add so many lines of code
-for a feature trying very hard to to drop _one_ packet.
+ drivers/net/ethernet/realtek/r8169_main.c | 45 +++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
 
-I think a much better changelog would be welcomed.
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index c7af5bc3b8af..7ab2e841dc69 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -624,6 +624,11 @@ struct rtl8169_private {
+ 
+ 	unsigned supports_gmii:1;
+ 	unsigned aspm_manageable:1;
++	unsigned aspm_enabled:1;
++	struct delayed_work aspm_toggle;
++	struct mutex aspm_mutex;
++	u32 aspm_packet_count;
++
+ 	dma_addr_t counters_phys_addr;
+ 	struct rtl8169_counters *counters;
+ 	struct rtl8169_tc_offsets tc_offset;
+@@ -2671,6 +2676,8 @@ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
+ 		RTL_W8(tp, Config5, RTL_R8(tp, Config5) & ~ASPM_en);
+ 	}
+ 
++	tp->aspm_enabled = enable;
++
+ 	udelay(10);
+ }
+ 
+@@ -4408,6 +4415,9 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
+ 
+ 	dirty_tx = tp->dirty_tx;
+ 
++	mutex_lock(&tp->aspm_mutex);
++	tp->aspm_packet_count += tp->cur_tx - dirty_tx;
++	mutex_unlock(&tp->aspm_mutex);
+ 	while (READ_ONCE(tp->cur_tx) != dirty_tx) {
+ 		unsigned int entry = dirty_tx % NUM_TX_DESC;
+ 		u32 status;
+@@ -4552,6 +4562,10 @@ static int rtl_rx(struct net_device *dev, struct rtl8169_private *tp, int budget
+ 		rtl8169_mark_to_asic(desc);
+ 	}
+ 
++	mutex_lock(&tp->aspm_mutex);
++	tp->aspm_packet_count += count;
++	mutex_unlock(&tp->aspm_mutex);
++
+ 	return count;
+ }
+ 
+@@ -4659,8 +4673,33 @@ static int r8169_phy_connect(struct rtl8169_private *tp)
+ 	return 0;
+ }
+ 
++#define ASPM_PACKET_THRESHOLD 10
++#define ASPM_TOGGLE_INTERVAL 1000
++
++static void rtl8169_aspm_toggle(struct work_struct *work)
++{
++	struct rtl8169_private *tp = container_of(work, struct rtl8169_private,
++						  aspm_toggle.work);
++	bool enable;
++
++	mutex_lock(&tp->aspm_mutex);
++	enable = tp->aspm_packet_count <= ASPM_PACKET_THRESHOLD;
++	tp->aspm_packet_count = 0;
++	mutex_unlock(&tp->aspm_mutex);
++
++	if (tp->aspm_enabled != enable) {
++		rtl_unlock_config_regs(tp);
++		rtl_hw_aspm_clkreq_enable(tp, enable);
++		rtl_lock_config_regs(tp);
++	}
++
++	schedule_delayed_work(&tp->aspm_toggle, ASPM_TOGGLE_INTERVAL);
++}
++
+ static void rtl8169_down(struct rtl8169_private *tp)
+ {
++	cancel_delayed_work_sync(&tp->aspm_toggle);
++
+ 	/* Clear all task flags */
+ 	bitmap_zero(tp->wk.flags, RTL_FLAG_MAX);
+ 
+@@ -4687,6 +4726,8 @@ static void rtl8169_up(struct rtl8169_private *tp)
+ 	rtl_reset_work(tp);
+ 
+ 	phy_start(tp->phydev);
++
++	schedule_delayed_work(&tp->aspm_toggle, ASPM_TOGGLE_INTERVAL);
+ }
+ 
+ static int rtl8169_close(struct net_device *dev)
+@@ -5347,6 +5388,10 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	INIT_WORK(&tp->wk.work, rtl_task);
+ 
++	INIT_DELAYED_WORK(&tp->aspm_toggle, rtl8169_aspm_toggle);
++
++	mutex_init(&tp->aspm_mutex);
++
+ 	rtl_init_mac_address(tp);
+ 
+ 	dev->ethtool_ops = &rtl8169_ethtool_ops;
+-- 
+2.32.0
 
-> 
->> IMO, TCP_REPAIR hijacking standard system calls was a design error,
->> we should have added new system calls.
-> 
-> You are right that adding new system calls is a better approach. What do you think about adding a new option in getsockopt approach?
-> 
-> Thanks,
-> Quang Minh.
