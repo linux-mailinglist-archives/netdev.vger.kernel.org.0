@@ -2,69 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97C053EAA88
-	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 21:00:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4132C3EAA91
+	for <lists+netdev@lfdr.de>; Thu, 12 Aug 2021 21:04:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235082AbhHLTAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 15:00:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58816 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234360AbhHLTAb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Aug 2021 15:00:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id D22D06109D;
-        Thu, 12 Aug 2021 19:00:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628794805;
-        bh=w8jGFJAdclqZ92GLirMs1mh9yihdQRVzuj3pKIj6b+I=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=nohEsS/aeplCw1ozqrAVquKWJ47sERQaMitg02WS6/8v0pfxEvrEE9Ij0nDs6t4n+
-         8FpzMZMgnMSYbaAq8uC19GNukCrFtT9XUtPJrZqnhUzcSD9AuTnm7PrcS/iqb1tYzP
-         7h1IrOj3rqR699E7DHqBkLPVX9yUK7htgCiMHc79f7An2lonMcARyRcB2RYf4i92XI
-         90+HpSF8gdin/qb3SgvkG7VRACtOoQrN+RDSi64SpGGZhZ0ucsVWYrsQB4MWzMzPCk
-         KL75QxUTLvwyIt//s/Ju9RoKOBk9QxolJuhUIoSBoGuT/p6uvi33UlrqHKl73DVhV1
-         xPJOwDUtaRScw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C5D0060A69;
-        Thu, 12 Aug 2021 19:00:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S235404AbhHLTEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 15:04:49 -0400
+Received: from mout.kundenserver.de ([212.227.17.13]:43745 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231898AbhHLTEt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 15:04:49 -0400
+Received: from mail-wr1-f44.google.com ([209.85.221.44]) by
+ mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1M7sM0-1mAONY0pLm-004xUp; Thu, 12 Aug 2021 21:04:22 +0200
+Received: by mail-wr1-f44.google.com with SMTP id x10so3418903wrt.8;
+        Thu, 12 Aug 2021 12:04:22 -0700 (PDT)
+X-Gm-Message-State: AOAM530ZPDXRS+I333rSnecsu4DBcfnLBbdy4ZdhfjZ8BQfy0DMT6pZ7
+        t6/gb/Wyd7/HQSdNAOC9fUiydZ2AOt2mYHS5DiU=
+X-Google-Smtp-Source: ABdhPJwBocUi3IG3QsUz224NwVKkev4OE6vxz7Ij4AkaNFb1lK+hCfJT6oe6ooopUT7Q+AcNXTWPi+MoDVi3X3dAUSc=
+X-Received: by 2002:a05:6000:46:: with SMTP id k6mr5826569wrx.105.1628795061835;
+ Thu, 12 Aug 2021 12:04:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: ieee802154 for net 2021-08-12 v2
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162879480580.7983.10412295435937743215.git-patchwork-notify@kernel.org>
-Date:   Thu, 12 Aug 2021 19:00:05 +0000
-References: <20210812183912.1663996-1-stefan@datenfreihafen.org>
-In-Reply-To: <20210812183912.1663996-1-stefan@datenfreihafen.org>
-To:     Stefan Schmidt <stefan@datenfreihafen.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-wpan@vger.kernel.org,
-        alex.aring@gmail.com, netdev@vger.kernel.org
+References: <20210812183509.1362782-1-arnd@kernel.org>
+In-Reply-To: <20210812183509.1362782-1-arnd@kernel.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 12 Aug 2021 21:04:06 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1p3pXUj+baf=eqnL9_rRF7sJ0=YwmrL=XvS51uP6PR6w@mail.gmail.com>
+Message-ID: <CAK8P3a1p3pXUj+baf=eqnL9_rRF7sJ0=YwmrL=XvS51uP6PR6w@mail.gmail.com>
+Subject: Re: [PATCH] ethernet: fix PTP_1588_CLOCK dependencies
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Shannon Nelson <snelson@pensando.io>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:OMFCTCcAdV7BnzwJqPXPrGFrLO+rG/yxxFvtzA1gab3ip3elix5
+ wsOTsZvIVpu4DoBepDNTTuD+1S5Q/Q5UIUkNcelqrXQZsQl8QfZk+e6upVRGlcH+3KcieAR
+ wT+wds6vhLK7wKkhA4Mh7YQL3ySpj7L7ZT3tJSvh38HLnEKS8FB0WnTB0hsCB/LsOlaDX93
+ 6CbbTGRkSlZoHTjrQ4AmA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Xk8EzanSYjg=:+WdZANwZvad1zwHpktqLwe
+ nX1B5jOWgCJVVGwGfd/Vr96O+CWWNR+YpQAUBNvuXU49/a5Uc1pL9q5TQnbZ5avIGaU/i22Yt
+ eTi1Hlk5xcUqY5EBSTvzSzb19/j3BtrH+ZQdHTMGJPGsTRjVWVqC3+8InVgo7J/Qeoaoa7ppm
+ HVlrJb7ZChcuTIE5Qnbllzu1L/saJa+nBK7FCX6XfTg4Bjpe117CbFtT00HJbu4TbTSZemkdB
+ +sPBBfpM9vJa4xakCXfaPPR5usRbPf7YDfSPz3I7NiNfVODME2saAROIY8l4xM39pcyheXdaM
+ tHMYcdc07jGM8iBlLPrYOCUH8Lhl9bfbhtwgupHG7OadAVLXt0gThIP9a5huahgKpUKa4R6tS
+ gIeA5+FaGHQMcjy5rvJ2uqgyygdXfwfzTdS3jDanR40B4DtadjWf44v8WsstBOTg6pyqYdtRP
+ 65x/SzTiBOxvjmiQ0iIbym9GbnA+wVbL5smdnD/eW/jnc2/vmHOOy2B3xtV6b5H2fME0YCUPK
+ 1fqD4wvJp+6024MGf+x1vj/dZXBWTeGxdU9+EDnCeNOfwoahpnCOsL//M+QT1vTuiAnurA4j7
+ PWbtnso7qrmtRduQ8nQSv0jun5mcQxPWgDUpv//C/R9Oo1Hxrh6YfZgj9/6/0nsIk+PFs6Ich
+ JRfhe2VKvyRzimJol/vK2ReIL9op6Vml3sDU9mcGHwNKOFFdFpfus1B9EpKXjbi0iuHRvem5G
+ bFhj/+H+6UyUzWCpN2/MzH3xvWpVd18LHSuXRLqau8oFk9dQLxRJJCcE4/58dEMB+hzJ1p3Kh
+ QC2WRrJ0CZkvd8iDOegKEFeVHMqCMaXi35KbEj1oP27WXDJAri0t1DffOYVzAjkUEnkpeXFIo
+ DT8zxmKTiY0KSK15P7Z7SPvU/fFHvtdLR3yo8NDq4wgEBVWOE1oxTWmdijudgt9Hs1QM8QVm9
+ t/vfLxwmJTNna+dqAKhzOYzT/dF6ulV/6pE7I8ldW959iyBRpfkKs
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, Aug 12, 2021 at 8:33 PM Arnd Bergmann <arnd@kernel.org> wrote:
+>
+> Fixes: 06c16d89d2cb ("ice: register 1588 PTP clock device object for E810 devices")
+> Link: https://lore.kernel.org/netdev/20210804121318.337276-1-arnd@kernel.org/
+> Link: https://lore.kernel.org/netdev/CAK8P3a06enZOf=XyZ+zcAwBczv41UuCTz+=0FMf2gBz1_cOnZQ@mail.gmail.com/
+> Link: https://lore.kernel.org/netdev/CAK8P3a3=eOxE-K25754+fB_-i_0BZzf9a9RfPTX3ppSwu9WZXw@mail.gmail.com/
+> Link: https://lore.kernel.org/netdev/20210726084540.3282344-1-arnd@kernel.org/
+> Acked-by: Shannon Nelson <snelson@pensando.io>
+> Acked-by: Jacob Keller <jacob.e.keller@intel.com>
+> Acked-by: Richard Cochran <richardcochran@gmail.com>
+> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+> Changes in v6:
+> - remove an unneeded dependency in MSCC_OCELOT_SWITCH_LIB
 
-This pull request was applied to netdev/net.git (refs/heads/master):
+I just noticed I messed up the subject line, it should have been
 
-On Thu, 12 Aug 2021 20:39:12 +0200 you wrote:
-> Hello Dave, Jakub.
-> 
-> An update from ieee802154 for your *net* tree.
-> 
-> This is a v2 with the merge commit elided.
-> 
-> Mostly fixes coming from bot reports. Dongliang Mu tackled some syzkaller
-> reports in hwsim again and Takeshi Misawa a memory leak  in  ieee802154 raw.
-> 
-> [...]
+[PATCH v6 net-next] ethernet: fix PTP_1588_CLOCK dependencies
 
-Here is the summary with links:
-  - pull-request: ieee802154 for net 2021-08-12 v2
-    https://git.kernel.org/netdev/net/c/a9a507013a6f
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+      Arnd
