@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47DDD3EB2F6
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 10:53:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 796363EB2FA
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 10:53:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239845AbhHMIwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 04:52:33 -0400
-Received: from mga02.intel.com ([134.134.136.20]:46852 "EHLO mga02.intel.com"
+        id S239854AbhHMIxD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 04:53:03 -0400
+Received: from mga14.intel.com ([192.55.52.115]:2002 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239327AbhHMIwb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Aug 2021 04:52:31 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10074"; a="202720766"
+        id S239452AbhHMIxC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Aug 2021 04:53:02 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10074"; a="215257493"
 X-IronPort-AV: E=Sophos;i="5.84,318,1620716400"; 
-   d="scan'208";a="202720766"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2021 01:52:05 -0700
+   d="scan'208";a="215257493"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2021 01:52:35 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,318,1620716400"; 
-   d="scan'208";a="422174640"
+   d="scan'208";a="639759669"
 Received: from siang-ilbpg0.png.intel.com ([10.88.227.28])
-  by orsmga006.jf.intel.com with ESMTP; 13 Aug 2021 01:52:02 -0700
+  by orsmga005.jf.intel.com with ESMTP; 13 Aug 2021 01:52:33 -0700
 From:   Song Yoong Siang <yoong.siang.song@intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
+To:     Russell King <linux@armlinux.org.uk>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Song Yoong Siang <yoong.siang.song@intel.com>
-Subject: [PATCH net-next 1/1] net: phy: marvell: Add WAKE_PHY support to WOL event
-Date:   Fri, 13 Aug 2021 16:45:08 +0800
-Message-Id: <20210813084508.182333-1-yoong.siang.song@intel.com>
+Subject: [PATCH net-next 1/1] net: phy: marvell10g: Add WAKE_PHY support to WOL event
+Date:   Fri, 13 Aug 2021 16:45:36 +0800
+Message-Id: <20210813084536.182381-1-yoong.siang.song@intel.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -39,26 +40,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Wake-on-PHY feature support by enabling the Link Up Event.
+Add Wake-on-PHY feature support by enabling the Link Status Changed
+interrupt.
 
 Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
 ---
- drivers/net/phy/marvell.c | 39 ++++++++++++++++++++++++++++++++++++---
- 1 file changed, 36 insertions(+), 3 deletions(-)
+ drivers/net/phy/marvell10g.c | 33 ++++++++++++++++++++++++++++++++-
+ 1 file changed, 32 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 3de93c9f2744..415e2a01c151 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -155,6 +155,7 @@
+diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+index 0b7cae118ad7..d46761c225f0 100644
+--- a/drivers/net/phy/marvell10g.c
++++ b/drivers/net/phy/marvell10g.c
+@@ -76,6 +76,11 @@ enum {
+ 	MV_PCS_CSSR1_SPD2_2500	= 0x0004,
+ 	MV_PCS_CSSR1_SPD2_10000	= 0x0000,
  
- #define MII_88E1318S_PHY_WOL_CTRL				0x10
- #define MII_88E1318S_PHY_WOL_CTRL_CLEAR_WOL_STATUS		BIT(12)
-+#define MII_88E1318S_PHY_WOL_CTRL_LINK_UP_ENABLE		BIT(13)
- #define MII_88E1318S_PHY_WOL_CTRL_MAGIC_PACKET_MATCH_ENABLE	BIT(14)
++	/* Copper Specific Interrupt registers */
++	MV_PCS_INTR_ENABLE	= 0x8010,
++	MV_PCS_INTR_ENABLE_LSC	= BIT(10),
++	MV_PCS_INTR_STS		= 0x8011,
++
+ 	/* Temperature read register (88E2110 only) */
+ 	MV_PCS_TEMP		= 0x8042,
  
- #define MII_PHY_LED_CTRL	        16
-@@ -1746,13 +1747,19 @@ static void m88e1318_get_wol(struct phy_device *phydev,
+@@ -1036,7 +1041,7 @@ static void mv3110_get_wol(struct phy_device *phydev,
  {
  	int ret;
  
@@ -66,70 +72,47 @@ index 3de93c9f2744..415e2a01c151 100644
 +	wol->supported = WAKE_MAGIC | WAKE_PHY;
  	wol->wolopts = 0;
  
- 	ret = phy_read_paged(phydev, MII_MARVELL_WOL_PAGE,
- 			     MII_88E1318S_PHY_WOL_CTRL);
--	if (ret >= 0 && ret & MII_88E1318S_PHY_WOL_CTRL_MAGIC_PACKET_MATCH_ENABLE)
+ 	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_WOL_CTRL);
+@@ -1045,6 +1050,13 @@ static void mv3110_get_wol(struct phy_device *phydev,
+ 
+ 	if (ret & MV_V2_WOL_CTRL_MAGIC_PKT_EN)
+ 		wol->wolopts |= WAKE_MAGIC;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_INTR_ENABLE);
 +	if (ret < 0)
 +		return;
 +
-+	if (ret & MII_88E1318S_PHY_WOL_CTRL_MAGIC_PACKET_MATCH_ENABLE)
- 		wol->wolopts |= WAKE_MAGIC;
-+
-+	if (ret & MII_88E1318S_PHY_WOL_CTRL_LINK_UP_ENABLE)
++	if (ret & MV_PCS_INTR_ENABLE_LSC)
 +		wol->wolopts |= WAKE_PHY;
  }
  
- static int m88e1318_set_wol(struct phy_device *phydev,
-@@ -1764,7 +1771,7 @@ static int m88e1318_set_wol(struct phy_device *phydev,
- 	if (oldpage < 0)
- 		goto error;
- 
--	if (wol->wolopts & WAKE_MAGIC) {
-+	if (wol->wolopts & (WAKE_MAGIC | WAKE_PHY)) {
- 		/* Explicitly switch to page 0x00, just to be sure */
- 		err = marvell_write_page(phydev, MII_MARVELL_COPPER_PAGE);
- 		if (err < 0)
-@@ -1796,7 +1803,9 @@ static int m88e1318_set_wol(struct phy_device *phydev,
- 				   MII_88E1318S_PHY_LED_TCR_INT_ACTIVE_LOW);
- 		if (err < 0)
- 			goto error;
-+	}
- 
-+	if (wol->wolopts & WAKE_MAGIC) {
- 		err = marvell_write_page(phydev, MII_MARVELL_WOL_PAGE);
- 		if (err < 0)
- 			goto error;
-@@ -1837,6 +1846,30 @@ static int m88e1318_set_wol(struct phy_device *phydev,
- 			goto error;
+ static int mv3110_set_wol(struct phy_device *phydev,
+@@ -1099,6 +1111,25 @@ static int mv3110_set_wol(struct phy_device *phydev,
+ 			return ret;
  	}
  
 +	if (wol->wolopts & WAKE_PHY) {
-+		err = marvell_write_page(phydev, MII_MARVELL_WOL_PAGE);
-+		if (err < 0)
-+			goto error;
++		/* Enable the link status changed interrupt */
++		ret = phy_set_bits_mmd(phydev, MDIO_MMD_PCS,
++				       MV_PCS_INTR_ENABLE,
++				       MV_PCS_INTR_ENABLE_LSC);
++		if (ret < 0)
++			return ret;
 +
-+		/* Clear WOL status and enable link up event */
-+		err = __phy_modify(phydev, MII_88E1318S_PHY_WOL_CTRL, 0,
-+				   MII_88E1318S_PHY_WOL_CTRL_CLEAR_WOL_STATUS |
-+				   MII_88E1318S_PHY_WOL_CTRL_LINK_UP_ENABLE);
-+		if (err < 0)
-+			goto error;
++		/* Clear the interrupt status register */
++		ret = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_INTR_STS);
 +	} else {
-+		err = marvell_write_page(phydev, MII_MARVELL_WOL_PAGE);
-+		if (err < 0)
-+			goto error;
-+
-+		/* Clear WOL status and disable link up event */
-+		err = __phy_modify(phydev, MII_88E1318S_PHY_WOL_CTRL,
-+				   MII_88E1318S_PHY_WOL_CTRL_LINK_UP_ENABLE,
-+				   MII_88E1318S_PHY_WOL_CTRL_CLEAR_WOL_STATUS);
-+		if (err < 0)
-+			goto error;
++		/* Disable the link status changed interrupt */
++		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_PCS,
++					 MV_PCS_INTR_ENABLE,
++					 MV_PCS_INTR_ENABLE_LSC);
++		if (ret < 0)
++			return ret;
 +	}
 +
- error:
- 	return phy_restore_page(phydev, oldpage, err);
- }
+ 	/* Reset the clear WOL status bit as it does not self-clear */
+ 	return phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2,
+ 				  MV_V2_WOL_CTRL,
 -- 
 2.25.1
 
