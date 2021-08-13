@@ -2,89 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4296A3EB2B4
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 10:36:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47DDD3EB2F6
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 10:53:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239218AbhHMIgO convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 13 Aug 2021 04:36:14 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:56111 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231127AbhHMIgN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 04:36:13 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-65-jWRYdI9NNEi-T8lGlFwTcQ-1; Fri, 13 Aug 2021 09:35:41 +0100
-X-MC-Unique: jWRYdI9NNEi-T8lGlFwTcQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.23; Fri, 13 Aug 2021 09:35:39 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.023; Fri, 13 Aug 2021 09:35:39 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Jakub Kicinski' <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
-        "huangjw@broadcom.com" <huangjw@broadcom.com>,
-        "eddie.wai@broadcom.com" <eddie.wai@broadcom.com>,
-        "prashant@broadcom.com" <prashant@broadcom.com>,
-        "gospo@broadcom.com" <gospo@broadcom.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "edwin.peer@broadcom.com" <edwin.peer@broadcom.com>
-Subject: RE: [PATCH net v2 3/4] bnxt: make sure xmit_more + errors does not
- miss doorbells
-Thread-Topic: [PATCH net v2 3/4] bnxt: make sure xmit_more + errors does not
- miss doorbells
-Thread-Index: AQHXjvk54dUBDCjz6UWQZn0dScb/IKtxHcpg
-Date:   Fri, 13 Aug 2021 08:35:39 +0000
-Message-ID: <0d4efdfc3b394ec2bf411dd8036c259e@AcuMS.aculab.com>
-References: <20210811213749.3276687-1-kuba@kernel.org>
- <20210811213749.3276687-4-kuba@kernel.org>
-In-Reply-To: <20210811213749.3276687-4-kuba@kernel.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S239845AbhHMIwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 04:52:33 -0400
+Received: from mga02.intel.com ([134.134.136.20]:46852 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239327AbhHMIwb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Aug 2021 04:52:31 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10074"; a="202720766"
+X-IronPort-AV: E=Sophos;i="5.84,318,1620716400"; 
+   d="scan'208";a="202720766"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2021 01:52:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,318,1620716400"; 
+   d="scan'208";a="422174640"
+Received: from siang-ilbpg0.png.intel.com ([10.88.227.28])
+  by orsmga006.jf.intel.com with ESMTP; 13 Aug 2021 01:52:02 -0700
+From:   Song Yoong Siang <yoong.siang.song@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Song Yoong Siang <yoong.siang.song@intel.com>
+Subject: [PATCH net-next 1/1] net: phy: marvell: Add WAKE_PHY support to WOL event
+Date:   Fri, 13 Aug 2021 16:45:08 +0800
+Message-Id: <20210813084508.182333-1-yoong.siang.song@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski
-> Sent: 11 August 2021 22:38
-> 
-> skbs are freed on error and not put on the ring. We may, however,
-> be in a situation where we're freeing the last skb of a batch,
-> and there is a doorbell ring pending because of xmit_more() being
-> true earlier. Make sure we ring the door bell in such situations.
-> 
-> Since errors are rare don't pay attention to xmit_more() and just
-> always flush the pending frames.
-> 
-...
-> +tx_free:
->  	dev_kfree_skb_any(skb);
-> +tx_kick_pending:
-> +	tx_buf->skb = NULL;
-> +	if (txr->kick_pending)
-> +		bnxt_txr_db_kick(bp, txr, txr->tx_prod);
->  	return NETDEV_TX_OK;
+Add Wake-on-PHY feature support by enabling the Link Up Event.
 
-Is this case actually so unlikely that the 'kick' can be
-done unconditionally?
-Then all the conditionals can be removed from the hot path.
+Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
+---
+ drivers/net/phy/marvell.c | 39 ++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 36 insertions(+), 3 deletions(-)
 
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index 3de93c9f2744..415e2a01c151 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -155,6 +155,7 @@
+ 
+ #define MII_88E1318S_PHY_WOL_CTRL				0x10
+ #define MII_88E1318S_PHY_WOL_CTRL_CLEAR_WOL_STATUS		BIT(12)
++#define MII_88E1318S_PHY_WOL_CTRL_LINK_UP_ENABLE		BIT(13)
+ #define MII_88E1318S_PHY_WOL_CTRL_MAGIC_PACKET_MATCH_ENABLE	BIT(14)
+ 
+ #define MII_PHY_LED_CTRL	        16
+@@ -1746,13 +1747,19 @@ static void m88e1318_get_wol(struct phy_device *phydev,
+ {
+ 	int ret;
+ 
+-	wol->supported = WAKE_MAGIC;
++	wol->supported = WAKE_MAGIC | WAKE_PHY;
+ 	wol->wolopts = 0;
+ 
+ 	ret = phy_read_paged(phydev, MII_MARVELL_WOL_PAGE,
+ 			     MII_88E1318S_PHY_WOL_CTRL);
+-	if (ret >= 0 && ret & MII_88E1318S_PHY_WOL_CTRL_MAGIC_PACKET_MATCH_ENABLE)
++	if (ret < 0)
++		return;
++
++	if (ret & MII_88E1318S_PHY_WOL_CTRL_MAGIC_PACKET_MATCH_ENABLE)
+ 		wol->wolopts |= WAKE_MAGIC;
++
++	if (ret & MII_88E1318S_PHY_WOL_CTRL_LINK_UP_ENABLE)
++		wol->wolopts |= WAKE_PHY;
+ }
+ 
+ static int m88e1318_set_wol(struct phy_device *phydev,
+@@ -1764,7 +1771,7 @@ static int m88e1318_set_wol(struct phy_device *phydev,
+ 	if (oldpage < 0)
+ 		goto error;
+ 
+-	if (wol->wolopts & WAKE_MAGIC) {
++	if (wol->wolopts & (WAKE_MAGIC | WAKE_PHY)) {
+ 		/* Explicitly switch to page 0x00, just to be sure */
+ 		err = marvell_write_page(phydev, MII_MARVELL_COPPER_PAGE);
+ 		if (err < 0)
+@@ -1796,7 +1803,9 @@ static int m88e1318_set_wol(struct phy_device *phydev,
+ 				   MII_88E1318S_PHY_LED_TCR_INT_ACTIVE_LOW);
+ 		if (err < 0)
+ 			goto error;
++	}
+ 
++	if (wol->wolopts & WAKE_MAGIC) {
+ 		err = marvell_write_page(phydev, MII_MARVELL_WOL_PAGE);
+ 		if (err < 0)
+ 			goto error;
+@@ -1837,6 +1846,30 @@ static int m88e1318_set_wol(struct phy_device *phydev,
+ 			goto error;
+ 	}
+ 
++	if (wol->wolopts & WAKE_PHY) {
++		err = marvell_write_page(phydev, MII_MARVELL_WOL_PAGE);
++		if (err < 0)
++			goto error;
++
++		/* Clear WOL status and enable link up event */
++		err = __phy_modify(phydev, MII_88E1318S_PHY_WOL_CTRL, 0,
++				   MII_88E1318S_PHY_WOL_CTRL_CLEAR_WOL_STATUS |
++				   MII_88E1318S_PHY_WOL_CTRL_LINK_UP_ENABLE);
++		if (err < 0)
++			goto error;
++	} else {
++		err = marvell_write_page(phydev, MII_MARVELL_WOL_PAGE);
++		if (err < 0)
++			goto error;
++
++		/* Clear WOL status and disable link up event */
++		err = __phy_modify(phydev, MII_88E1318S_PHY_WOL_CTRL,
++				   MII_88E1318S_PHY_WOL_CTRL_LINK_UP_ENABLE,
++				   MII_88E1318S_PHY_WOL_CTRL_CLEAR_WOL_STATUS);
++		if (err < 0)
++			goto error;
++	}
++
+ error:
+ 	return phy_restore_page(phydev, oldpage, err);
+ }
+-- 
+2.25.1
 
