@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A44923EB384
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 11:47:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBCFE3EB399
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 11:54:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239923AbhHMJrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 05:47:35 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:35200
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239866AbhHMJre (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 05:47:34 -0400
+        id S239491AbhHMJzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 05:55:02 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:42898
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239357AbhHMJzB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 05:55:01 -0400
 Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id 3082F40661
-        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 09:47:07 +0000 (UTC)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPS id F06C141281
+        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 09:54:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1628848027;
-        bh=kuDUT5t1e04YMCIk4a4teOdbNpRD8/S5RQDYcDNhlw0=;
+        s=20210705; t=1628848473;
+        bh=SrdDpuT8eQb6Wl4YhAW94RUzTcb218gwtO8WiF/FcKc=;
         h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
          To:Cc:Content-Type;
-        b=EJyRv6WCNYqwVkkvpy4czA5Lp0b+ILfqYlMSjITmOzS+6dUIbxIP3s0TnTQK8z85E
-         HG1nK1kuw3go5E21wQ1ZqlcjIiHYAkqwMcmkGcphIHRg4iV1qO5YIhE4V+11z4/Ktc
-         yFdWoGix4q3wPQoWt6Ye72jYIYo1DaMp77tGq23ovDk3p50Q5qm3UJOrZpjWhUjhgo
-         vjj26rWxMOShrrKn3+osHcN1op72jQ0Gw1vMVytZ8u+cw1Nr8VHkLF+zIQLXB/OSL6
-         H8Vw4hI4sWB/Iu4rJisq3EmfDcj5bz3KRwNy4e0kug0XogXCFsPrpErE+o/Nk9jqki
-         1P9waEqHrLtHA==
-Received: by mail-ej1-f71.google.com with SMTP id ke4-20020a17090798e4b02905b869727055so2222351ejc.11
-        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 02:47:07 -0700 (PDT)
+        b=fjoUp9FaEARxFo6ddm0rXiegWvuh1BJy68gqZpqmMUxNMr8W6ElJluOLQ1wqRSvT0
+         qfr1Iwj1aJMOgUkEag9WY/V4JatJNXoxcHIIlB3lOkmPL9EnsQihzpNwNiSz7toKtj
+         7OC6xXIMVzQ0i70a026VJi7PEHhaRVKXQMtT9grf6snygnUgxeRJZle5OOl8rPi3kC
+         C56xViuhxKyNo3oiAcLatn7nn1Evx4Hs5TNZINa2MJOLRobUeEharzgqsFFHLzTwYk
+         //3l7zEE6WRyujLehSwy6adPS7u6UHi021lKWFEQVCV1/BMNmxrVfkyHHlPhscCtP5
+         Zh/tKGJSGQkEQ==
+Received: by mail-ej1-f71.google.com with SMTP id ju25-20020a17090798b9b029058c24b55273so2784152ejc.8
+        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 02:54:33 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=kuDUT5t1e04YMCIk4a4teOdbNpRD8/S5RQDYcDNhlw0=;
-        b=IuM6pqWtq1ltZeP8t3IZYPCnfveKPbJaPVTcszC7WDlfD4LvMuoc578Jw5zWpHs057
-         UZYehCBhcjlAvTHGVScegKFb7uB0/efDd+g+rMH/hf8Bsut22hTAWZsIP5G0AMUX9e1x
-         ymT5LJ0S9fjOByQJApm4HSWJs8jtrIPES/M6/43CUTqv6HSVH5o6Y2/QMl5MToloxolX
-         BwrjkiiCO6RmwGVq6BTdkLu043kB4xe2tnDlO7xdc21FO68MSZrVmTBna4VMf/of7Qj8
-         qa2sKtA1FO3ElwNMUPXVtvrZuQJXLbkRNrOF31AmNhjD/bGrJlN6CTTJaHPvznOPvpcm
-         mkrg==
-X-Gm-Message-State: AOAM532eLTgZD/jGF0Okh7E6Xwm1PIDijiPTG/+phOKAmIP5qV/zZFFt
-        sLkBSAVjdL503H/VOPzfn9/jfq8aRHY+2gFqlkmBZHeRoFQey7u9qCZLi0wE5D8cyec5OsUY6k0
-        uFnHo3qly3ugh+IeT/GCZFMNaHs2JK5yVmZctaMfuBN90QmjrLA==
-X-Received: by 2002:a17:907:7609:: with SMTP id jx9mr1623641ejc.432.1628848026823;
-        Fri, 13 Aug 2021 02:47:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxoS9nfDcjQVnCHb4VR8ordSgOFPR3gCyp+ddvhSZqKiWoatM4yvS/rrgGtgWS2L8suVPS5dpiDTUC0xpX0iRU=
-X-Received: by 2002:a17:907:7609:: with SMTP id jx9mr1623617ejc.432.1628848026482;
- Fri, 13 Aug 2021 02:47:06 -0700 (PDT)
+        bh=SrdDpuT8eQb6Wl4YhAW94RUzTcb218gwtO8WiF/FcKc=;
+        b=BDJLjf1BoBZKctgVjO52eMLKOelCJbwJo6+YJRe3pWPWKmbjiPSjAnTtIkmOjDZyrS
+         u9Yl+lhaHRA1uIXo1K3y3k3KwW99JRukOyNkt7cUwpdAlMqrjRWsPFFkuEpng4wSdVTt
+         wDQPhegGlUo57nYfVOvPPn+7hO9Bam4Rf3/2xCl0ef0jqWtFg7E6b6k+zKUB5zItx6Rh
+         wqRsu3OwpgvyjqvtFtOcXIM08Z7B1eC0R/hZDOGVikgiWwlGyWFwGag2yyir7Ybii/QF
+         zqxehIHyyo2upQIsH5IdXtEWTeBIJW4mHeQC+GVme5MFyHzdNGCN6ZdKYXcIJFPvpO02
+         mb3A==
+X-Gm-Message-State: AOAM531Hkb1uAOIQfyJL9YjiHVPli0AuRYHCbOBcHtgxEtZqsZ1MkKwO
+        H9d2uIywD8rvdHEd2d/wDmWTXH4RK7Cp0jN4D6Z4fbaVXgH4AKq32fE8f/P+Nkt5/w/jnmW+iHZ
+        +6Wa3R0hhtSp/XoUNlvA09QIFclMTMSVzcG3OqRP/HOdm4Oj4Tg==
+X-Received: by 2002:a17:907:7b81:: with SMTP id ne1mr1689010ejc.192.1628848473468;
+        Fri, 13 Aug 2021 02:54:33 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyhtmRHEIM0AOuAW6KIwZLRxkresgcPMt0enq+AjL0KoOp3FkiU2OeK1EVxtEBkcKOWfl8ctlTUjrIdlE11Nhk=
+X-Received: by 2002:a17:907:7b81:: with SMTP id ne1mr1688994ejc.192.1628848473182;
+ Fri, 13 Aug 2021 02:54:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210812155341.817031-1-kai.heng.feng@canonical.com> <875e7304-20a1-0bca-ee07-41b16f07152a@gmail.com>
-In-Reply-To: <875e7304-20a1-0bca-ee07-41b16f07152a@gmail.com>
+References: <20210812155341.817031-1-kai.heng.feng@canonical.com> <631a47b7-f068-7770-65f4-bdfedc4b7d6c@gmail.com>
+In-Reply-To: <631a47b7-f068-7770-65f4-bdfedc4b7d6c@gmail.com>
 From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Fri, 13 Aug 2021 17:46:54 +0800
-Message-ID: <CAAd53p41RWp6weA2uXmZvKiVajehYkuC6cmHDeLxtJU_gsxCFA@mail.gmail.com>
+Date:   Fri, 13 Aug 2021 17:54:20 +0800
+Message-ID: <CAAd53p7qVcnwLL-73J4J_QvEfca2Y=Mjr=G-7LaBPMX2FzRCFw@mail.gmail.com>
 Subject: Re: [PATCH v2 1/2] r8169: Implement dynamic ASPM mechanism
 To:     Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     nic_swsd <nic_swsd@realtek.com>,
@@ -67,9 +67,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-j
-
-On Fri, Aug 13, 2021 at 3:39 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+On Fri, Aug 13, 2021 at 2:49 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
 >
 > On 12.08.2021 17:53, Kai-Heng Feng wrote:
 > > r8169 NICs on some platforms have abysmal speed when ASPM is enabled.
@@ -80,50 +78,30 @@ On Fri, Aug 13, 2021 at 3:39 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
 > > more than 10 packets, and vice versa.
 > >
 > > Realtek confirmed that all their PCIe LAN NICs, r8106, r8168 and r8125
+>
+> As we have Realtek in this mail thread:
+
+Is it still in active use? I always think it's just a dummy address...
+
+> Typically hw issues affect 1-3 chip versions only. The ASPM problems seem
+> to have been existing for at least 15 years now, in every chip version.
+> It seems that even the new RTL8125 chip generation still has broken ASPM.
+
+Is there a bug report for that?
+
+> Why was this never fixed? ASPM not considered to be relevant? HW design
+> too broken?
+
+IIUC, ASPM is extremely relevant to pass EU/US power consumption
+regulation. So I really don't know why the situation under Linux is so
+dire.
+
+Kai-Heng
+
+>
 > > use dynamic ASPM under Windows. So implement the same mechanism here to
 > > resolve the issue.
 > >
-> Realtek using something in their Windows drivers isn't really a proof of
-> quality.
-
-I agree. So it'll be great if Realtek can work with us here.
-
-> Still my concerns haven't been addressed. If ASPM is enabled and
-> there's a congestion in the chip it may take up to a second until ASPM
-> gets disabled. In this second traffic very likely is heavily affected.
-> Who takes care in case of problem reports?
-
-I think we'll know that once the patch is merged in downstream kernel.
-
->
-> This is a massive change for basically all chip versions. And experience
-> shows that in case of problem reports Realtek never cares, even though
-> they are listed as maintainers. All I see is that they copy more and more
-> code from r8169 into their own drivers. This seems to indicate that they
-> consider quality of their own drivers as not sufficient.
-
-I wonder why they don't want to put their efforts to r8169...
-Obviously they are doing a great job for rtw88 and r8152.
-
->
-> Still my proposal: Apply this downstream, and if there are no complaints
-> after a few months it may be considered for mainline.
-
-Yes that's my plan. But I'd still like it to be reviewed before
-putting it to the downstream kernel.
-
->
-> Last but not least the formal issues:
-> - no cover letter
-
-Will write it up once it's tested dowstream.
-
-> - no net/net-next annotation
-
-Does it mean put "net/net-next" in the subject line?
-
-
->
 > > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 > > ---
 > > v2:
@@ -164,13 +142,6 @@ Does it mean put "net/net-next" in the subject line?
 > >       dirty_tx = tp->dirty_tx;
 > >
 > > +     mutex_lock(&tp->aspm_mutex);
->
-> We are in soft irq context here, therefore you shouldn't sleep.
-
-I thought napi_poll is not using softirq, apparent I was wrong. Will
-correct it too.
-
->
 > > +     tp->aspm_packet_count += tp->cur_tx - dirty_tx;
 > > +     mutex_unlock(&tp->aspm_mutex);
 > >       while (READ_ONCE(tp->cur_tx) != dirty_tx) {
@@ -227,15 +198,6 @@ correct it too.
 > >       phy_start(tp->phydev);
 > > +
 > > +     schedule_delayed_work(&tp->aspm_toggle, ASPM_TOGGLE_INTERVAL);
->
-> In the first version you used msecs_to_jiffies(ASPM_TIMER_INTERVAL).
-> Now you use 1000 jiffies what is a major difference.
-
-msecs_to_jiffies() was omitted. Will correct it.
-
-Kai-Heng
-
->
 > >  }
 > >
 > >  static int rtl8169_close(struct net_device *dev)
