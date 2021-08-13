@@ -2,104 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 012EE3EB9AE
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 18:01:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED6953EB9CB
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 18:08:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241422AbhHMQBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 12:01:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58406 "EHLO
+        id S233076AbhHMQJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 12:09:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241152AbhHMQBn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 12:01:43 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E200C061756;
-        Fri, 13 Aug 2021 09:01:16 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id t9so20717784lfc.6;
-        Fri, 13 Aug 2021 09:01:16 -0700 (PDT)
+        with ESMTP id S229677AbhHMQJQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 12:09:16 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37ED7C061756
+        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 09:08:49 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id hv22-20020a17090ae416b0290178c579e424so16653061pjb.3
+        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 09:08:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kSDrdDBPEfymGaxqgpjg+gjYzyh9YbFBDk0EflsFaxk=;
-        b=szxgNzGL4CLPZmsplFwjXdvcTewQCWKnSbJuBqXT0kH5iofyoYqtohDvr7aG4d9PkV
-         quqdZt/4Fl3S0bovkolR0qtaBXLVREe9MmYPCy46q1uC1EGwX9Io+Ed7AUAYot1qmmMB
-         n8koog7GrmwudNfXKeU2ee//LGF5qDTXtbXqSW5zuTjS8EKOl7Jv8oKhbpdn+k7L4DTU
-         XkLEtQji79VJ5UNo/scDMIn6aAJMWZCJAYGro+vabiYaVKQiSA9PdjymAt8D+gMmiWrC
-         qt3g/dYQGVMnBqypsj+oCSrtigcAi0fWVFwKxSPvkkWunN9kEXsCY16uJ8KzNJxpKFQH
-         OFgA==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Zb6hESOPAPpsYQTxj6uunL70me57Ohn5RtlRGa2hRIU=;
+        b=bt0deawY8VgLg78fejbazYxtQGqnJJ+YkSz5IoTYnQ5LuF//jd0UR5Pt6RCob2ruwg
+         L7XvtJcs+LMzfCUDh81Ba+1wBbHDlsnlh6IiZoditm2+zMGPr5c1K/absUN+/4ZuN2lB
+         hqNu9nLcRyjmucoSbEUpC/VFf1vXe3dcafsIk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kSDrdDBPEfymGaxqgpjg+gjYzyh9YbFBDk0EflsFaxk=;
-        b=cCxud1pbmHxT4l2qKEKdcP7G4UQpX4/HpqA6KUdzgUGSUWm3CjA4l5nG756MWNNiM7
-         CD4dFaq6dfbKlNmSbZauY4p3Yylr6H/FlNRnxdxao7vQXbtUOD6eyfjXyKYyDI/5PJFx
-         m4X52pNpj6ivVPE0HJvNFNLXJWk++E5Lw5HiB3L14ZMEt5inybcJh8XUaR90YJo6np6f
-         q7zDn8JQKNn7ogGow9w7EiB7C8/Wnh04RvdTdzhOlUT7RUqMB9N551OdjqyBmkTNb6T+
-         KeMbRjS3S0SHbxhoTELnlL+2sodBL7L4r35n0t0GbfTl5FXBaw9C3vRc117e1iDXzoQY
-         ulLw==
-X-Gm-Message-State: AOAM533xwATu+4jtMB0FJuk/P4fe8QD6N7DtdTZiYgwg6ccgDdpl2QHZ
-        HV0YZuB0kjWyydkRJcF3vKI=
-X-Google-Smtp-Source: ABdhPJx6sAK4DfFqt63A5qYw0JPrdLLcHOqs50aLX0msPRmFYku9fblCnCzQ3ZTIv0U//xRl2L/74Q==
-X-Received: by 2002:a19:7510:: with SMTP id y16mr2122006lfe.191.1628870473605;
-        Fri, 13 Aug 2021 09:01:13 -0700 (PDT)
-Received: from localhost.localdomain ([46.235.67.232])
-        by smtp.gmail.com with ESMTPSA id c2sm207158lji.57.2021.08.13.09.01.12
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Zb6hESOPAPpsYQTxj6uunL70me57Ohn5RtlRGa2hRIU=;
+        b=btLq2zcPROHmyCsOkiCFu630nZsSnnTgMlgdOlsI9S6dKjtSxpVwB5T7LoC1PwT9ts
+         I1s2seiEKGmDn3lwrJ6s9rbUD31qhK5kkDS5t5aP8aGfq+yO0jiGXNIpDG/9AK56PLmQ
+         0vkKnE6l6+hJRMsP9WUqKHmQ26gfEmGQEA0H2hTJQ47u0Whjl6Ztayp8wLMzHLRzN14b
+         aK3f5F3G/eQhXG18VhW1KezDSkImaPrWkfwnlA0qBLnA0c73RmfokgCUkSPunKSmdaod
+         Aaa7vKei+MXxaXOPFRFdpXJxhxGiFJc5A+FSm+gKZcsTcZPjXuS8jDID1UQylWaviPzI
+         OLkg==
+X-Gm-Message-State: AOAM53154WHZtZjs7d9hQ+IUUyWkLGWDBIULRWC1Zu2zOVVWHhaAmCgw
+        oxsenbvIHuW+/FiQtpTya4jJ6A==
+X-Google-Smtp-Source: ABdhPJzO/EBStKGp8NBzLlcdP5+lTA2rI0q06EsQcV9US+8Rtvv2vMu7llrU0u1jr9BMG5zMLdkcVQ==
+X-Received: by 2002:a05:6a00:1803:b029:3cd:d5c1:f718 with SMTP id y3-20020a056a001803b02903cdd5c1f718mr3121899pfa.22.1628870928766;
+        Fri, 13 Aug 2021 09:08:48 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id y64sm3224461pgy.32.2021.08.13.09.08.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Aug 2021 09:01:13 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux@rempel-privat.de,
-        himadrispandya@gmail.com, andrew@lunn.ch
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+a631ec9e717fb0423053@syzkaller.appspotmail.com
-Subject: [PATCH] net: asix: fix uninit value in asix_mdio_read
-Date:   Fri, 13 Aug 2021 19:01:08 +0300
-Message-Id: <20210813160108.17534-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        Fri, 13 Aug 2021 09:08:48 -0700 (PDT)
+Date:   Fri, 13 Aug 2021 09:08:47 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Keith Packard <keithpac@amazon.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 39/64] mac80211: Use memset_after() to clear tx status
+Message-ID: <202108130907.FD09C6B@keescook>
+References: <20210727205855.411487-1-keescook@chromium.org>
+ <20210727205855.411487-40-keescook@chromium.org>
+ <202107310852.551B66EE32@keescook>
+ <bb01e784dddf6a297025981a2a000a4d3fdaf2ba.camel@sipsolutions.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bb01e784dddf6a297025981a2a000a4d3fdaf2ba.camel@sipsolutions.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzbot reported uninit-value in asix_mdio_read(). The problem was in
-missing error handling. asix_read_cmd() should initialize passed stack
-variable smsr, but it can fail in some cases. Then while condidition
-checks possibly uninit smsr variable.
+On Fri, Aug 13, 2021 at 09:40:07AM +0200, Johannes Berg wrote:
+> On Sat, 2021-07-31 at 08:55 -0700, Kees Cook wrote:
+> > On Tue, Jul 27, 2021 at 01:58:30PM -0700, Kees Cook wrote:
+> > > In preparation for FORTIFY_SOURCE performing compile-time and run-time
+> > > field bounds checking for memset(), avoid intentionally writing across
+> > > neighboring fields.
+> > > 
+> > > Use memset_after() so memset() doesn't get confused about writing
+> > > beyond the destination member that is intended to be the starting point
+> > > of zeroing through the end of the struct.
+> > > 
+> > > Note that the common helper, ieee80211_tx_info_clear_status(), does NOT
+> > > clear ack_signal, but the open-coded versions do. All three perform
+> > > checks that the ack_signal position hasn't changed, though.
+> > 
+> > Quick ping on this question: there is a mismatch between the common
+> > helper and the other places that do this. Is there a bug here?
+> 
+> Yes.
+> 
+> The common helper should also clear ack_signal, but that was broken by
+> commit e3e1a0bcb3f1 ("mac80211: reduce IEEE80211_TX_MAX_RATES"), because
+> that commit changed the order of the fields and updated carl9170 and p54
+> properly but not the common helper...
 
-Since smsr is uninitialized stack variable, driver can misbehave,
-because smsr will be random in case of asix_read_cmd() failure.
-Fix it by adding error cheking and just continue the loop instead of
-checking uninit value.
+It looks like p54 actually uses the rates, which is why it does this
+manually. I can't see why carl9170 does this manually, though.
 
-Fixes: 8a46f665833a ("net: asix: Avoid looping when the device is disconnected")
-Reported-and-tested-by: syzbot+a631ec9e717fb0423053@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
- drivers/net/usb/asix_common.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+> It doesn't actually matter much because ack_signal is normally filled in
+> afterwards, and even if it isn't, it's just for statistics.
+> 
+> The correct thing to do here would be to
+> 
+> 	memset_after(&info->status, 0, rates);
 
-diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
-index ac92bc52a85e..572ca3077f8f 100644
---- a/drivers/net/usb/asix_common.c
-+++ b/drivers/net/usb/asix_common.c
-@@ -479,7 +479,13 @@ int asix_mdio_read(struct net_device *netdev, int phy_id, int loc)
- 		usleep_range(1000, 1100);
- 		ret = asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG,
- 				    0, 0, 1, &smsr, 0);
--	} while (!(smsr & AX_HOST_EN) && (i++ < 30) && (ret != -ENODEV));
-+		if (ret == -ENODEV) {
-+			break;
-+		} else if (ret < 0) {
-+			++i;
-+			continue;
-+		}
-+	} while (!(smsr & AX_HOST_EN) && (i++ < 30));
- 	if (ret == -ENODEV || ret == -ETIMEDOUT) {
- 		mutex_unlock(&dev->phy_mutex);
- 		return ret;
+Sounds good; I will adjust these (and drop the BULID_BUG_ONs, as you
+suggest in the next email).
+
+Thanks!
+
+-Kees
+
 -- 
-2.32.0
-
+Kees Cook
