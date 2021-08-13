@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D44D3EB4CB
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 13:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CA703EB4CD
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 13:50:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240409AbhHMLuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 07:50:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45102 "EHLO mail.kernel.org"
+        id S239863AbhHMLue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 07:50:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45148 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240402AbhHMLua (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Aug 2021 07:50:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5233A6109D;
-        Fri, 13 Aug 2021 11:50:00 +0000 (UTC)
+        id S240402AbhHMLud (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Aug 2021 07:50:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D3223610CF;
+        Fri, 13 Aug 2021 11:50:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628855403;
-        bh=uA8e89A9EOUoHsqgL4hRl0K5t1+QUBk1Z8qvo763/zs=;
+        s=k20201202; t=1628855407;
+        bh=84sSvFXd8Y1Jq+lTMAsFr6VKOdT7jcf3yW42UfsvSSc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g4JrNetJNgUngg4YLa+q5v2/J7zw0nt8nbrY4jKuT4M7s4EBO1579hDdLu7PBT4Pl
-         ymtwWqK6vNJQbsogFB3X7GM/DuMbYM7L6csnPXC1+t9u97RKEeTlDvOjtjxZ06Blyb
-         RAcGSPPTw0N7oWI+O2k3+lG9g7U97sYKUkT5L5W4m28N+U9LvrIu/rgQ1qQ+PqS/K/
-         g0X371q+13AABjrIBqPkSmsC/jocnHlsJdNe/+fdtHI3Wl8SdWNg1BRc+wkd2RmEXW
-         EEAAn2LQgj3lgpDkm2XMr5+YhsCNrDLEe7HhMR12cbXFxIk20DVDgV/4ki4l6wbLLV
-         zl7L+mAmtp0Kw==
+        b=d9OFgsv6IchSEclXxZYMM+SMdriOZ7njcph7EMk9CPjhw31aWMx1HpSKD7Y8NHyNA
+         neVrrOKpzak0c2GvUOZhEmWQHoSAIJB4/8z2eI62R+VyzpzIC4tZW+bYK+HF9XigMh
+         Y99BipsrKgLmmZPhLnMfU0YMHA9jUMVCJavsOOxWwlXP1vU9EOJzGcPYmcn65jxKld
+         dzcHTFkp7psRxkYSM64V5pkHDsnxH6H6YThWC1ABVrADcizeoP9BTI68dKzF55uJ2S
+         RQBCY7ydL02pj1q+WkmuG+KiFpp0SxHcB6zLj4TKSoWDmhWPeSFKIXApph0iVN6G8Q
+         IXS1H6era923A==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
@@ -32,9 +32,9 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: [PATCH v11 bpf-next 12/18] bpf: add multi-buffer support to xdp copy helpers
-Date:   Fri, 13 Aug 2021 13:47:53 +0200
-Message-Id: <83865a79491e892e43c5e299291d6a2a5757bcf4.1628854454.git.lorenzo@kernel.org>
+Subject: [PATCH v11 bpf-next 13/18] bpf: move user_size out of bpf_test_init
+Date:   Fri, 13 Aug 2021 13:47:54 +0200
+Message-Id: <544641e40fcca602edfbc8cea40e40a592f8f3fe.1628854454.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1628854454.git.lorenzo@kernel.org>
 References: <cover.1628854454.git.lorenzo@kernel.org>
@@ -44,347 +44,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eelco Chaudron <echaudro@redhat.com>
+Rely on data_size_in in bpf_test_init routine signature. This is a
+preliminary patch to introduce xdp multi-buff selftest
 
-This patch adds support for multi-buffer for the following helpers:
-  - bpf_xdp_output()
-  - bpf_perf_event_output()
-
-Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- kernel/trace/bpf_trace.c                      |   3 +
- net/core/filter.c                             |  68 +++++++-
- .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    | 151 +++++++++++++-----
- .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   2 +-
- 4 files changed, 180 insertions(+), 44 deletions(-)
+ net/bpf/test_run.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index c5e0b6a64091..054d42b6d080 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -1390,6 +1390,7 @@ static const struct bpf_func_proto bpf_perf_event_output_proto_raw_tp = {
- 
- extern const struct bpf_func_proto bpf_skb_output_proto;
- extern const struct bpf_func_proto bpf_xdp_output_proto;
-+extern const struct bpf_func_proto bpf_xdp_get_buff_len_trace_proto;
- 
- BPF_CALL_3(bpf_get_stackid_raw_tp, struct bpf_raw_tracepoint_args *, args,
- 	   struct bpf_map *, map, u64, flags)
-@@ -1487,6 +1488,8 @@ tracing_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_sock_from_file_proto;
- 	case BPF_FUNC_get_socket_cookie:
- 		return &bpf_get_socket_ptr_cookie_proto;
-+	case BPF_FUNC_xdp_get_buff_len:
-+		return &bpf_xdp_get_buff_len_trace_proto;
- #endif
- 	case BPF_FUNC_seq_printf:
- 		return prog->expected_attach_type == BPF_TRACE_ITER ?
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 93ce775eaadf..d67b952730e8 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -3805,6 +3805,15 @@ const struct bpf_func_proto bpf_xdp_get_buff_len_proto = {
- 	.arg1_type	= ARG_PTR_TO_CTX,
- };
- 
-+BTF_ID_LIST_SINGLE(bpf_xdp_get_buff_len_bpf_ids, struct, xdp_buff)
-+
-+const struct bpf_func_proto bpf_xdp_get_buff_len_trace_proto = {
-+	.func		= bpf_xdp_get_buff_len,
-+	.gpl_only	= false,
-+	.arg1_type	= ARG_PTR_TO_BTF_ID,
-+	.arg1_btf_id	= &bpf_xdp_get_buff_len_bpf_ids[0],
-+};
-+
- static unsigned long xdp_get_metalen(const struct xdp_buff *xdp)
- {
- 	return xdp_data_meta_unsupported(xdp) ? 0 :
-@@ -4619,10 +4628,52 @@ static const struct bpf_func_proto bpf_sk_ancestor_cgroup_id_proto = {
- };
- #endif
- 
--static unsigned long bpf_xdp_copy(void *dst_buff, const void *src_buff,
-+static unsigned long bpf_xdp_copy(void *dst_buff, const void *ctx,
- 				  unsigned long off, unsigned long len)
- {
--	memcpy(dst_buff, src_buff + off, len);
-+	unsigned long base_len, copy_len, frag_off_total;
-+	struct xdp_buff *xdp = (struct xdp_buff *)ctx;
-+	struct skb_shared_info *sinfo;
-+	int i;
-+
-+	if (likely(!xdp_buff_is_mb(xdp))) {
-+		memcpy(dst_buff, xdp->data + off, len);
-+		return 0;
-+	}
-+
-+	base_len = xdp->data_end - xdp->data;
-+	frag_off_total = base_len;
-+	sinfo = xdp_get_shared_info_from_buff(xdp);
-+
-+	/* If we need to copy data from the base buffer do it */
-+	if (off < base_len) {
-+		copy_len = min(len, base_len - off);
-+		memcpy(dst_buff, xdp->data + off, copy_len);
-+
-+		off += copy_len;
-+		len -= copy_len;
-+		dst_buff += copy_len;
-+	}
-+
-+	/* Copy any remaining data from the fragments */
-+	for (i = 0; len && i < sinfo->nr_frags; i++) {
-+		skb_frag_t *frag = &sinfo->frags[i];
-+		unsigned long frag_len, frag_off;
-+
-+		frag_len = skb_frag_size(frag);
-+		frag_off = off - frag_off_total;
-+		if (frag_off < frag_len) {
-+			copy_len = min(len, frag_len - frag_off);
-+			memcpy(dst_buff,
-+			       skb_frag_address(frag) + frag_off, copy_len);
-+
-+			off += copy_len;
-+			len -= copy_len;
-+			dst_buff += copy_len;
-+		}
-+		frag_off_total += frag_len;
-+	}
-+
- 	return 0;
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index 335e1d8c17f8..362e020631b3 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -245,11 +245,10 @@ bool bpf_prog_test_check_kfunc_call(u32 kfunc_id)
+ 	return btf_id_set_contains(&test_sk_kfunc_ids, kfunc_id);
  }
  
-@@ -4634,10 +4685,19 @@ BPF_CALL_5(bpf_xdp_event_output, struct xdp_buff *, xdp, struct bpf_map *, map,
- 	if (unlikely(flags & ~(BPF_F_CTXLEN_MASK | BPF_F_INDEX_MASK)))
+-static void *bpf_test_init(const union bpf_attr *kattr, u32 size,
+-			   u32 headroom, u32 tailroom)
++static void *bpf_test_init(const union bpf_attr *kattr, u32 user_size,
++			   u32 size, u32 headroom, u32 tailroom)
+ {
+ 	void __user *data_in = u64_to_user_ptr(kattr->test.data_in);
+-	u32 user_size = kattr->test.data_size_in;
+ 	void *data;
+ 
+ 	if (size < ETH_HLEN || size > PAGE_SIZE - headroom - tailroom)
+@@ -570,7 +569,8 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
+ 	if (kattr->test.flags || kattr->test.cpu)
  		return -EINVAL;
- 	if (unlikely(!xdp ||
--		     xdp_size > (unsigned long)(xdp->data_end - xdp->data)))
-+		     (likely(!xdp_buff_is_mb(xdp)) &&
-+		      xdp_size > (unsigned long)(xdp->data_end - xdp->data))))
- 		return -EFAULT;
-+	if (unlikely(xdp_buff_is_mb(xdp))) {
-+		struct skb_shared_info *sinfo;
-+
-+		sinfo = xdp_get_shared_info_from_buff(xdp);
-+		if (unlikely(xdp_size > ((int)(xdp->data_end - xdp->data) +
-+					 sinfo->xdp_frags_size)))
-+			return -EFAULT;
-+	}
  
--	return bpf_event_output(map, flags, meta, meta_size, xdp->data,
-+	return bpf_event_output(map, flags, meta, meta_size, xdp,
- 				xdp_size, bpf_xdp_copy);
- }
+-	data = bpf_test_init(kattr, size, NET_SKB_PAD + NET_IP_ALIGN,
++	data = bpf_test_init(kattr, kattr->test.data_size_in,
++			     size, NET_SKB_PAD + NET_IP_ALIGN,
+ 			     SKB_DATA_ALIGN(sizeof(struct skb_shared_info)));
+ 	if (IS_ERR(data))
+ 		return PTR_ERR(data);
+@@ -781,7 +781,8 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
+ 	/* XDP have extra tailroom as (most) drivers use full page */
+ 	max_data_sz = 4096 - headroom - tailroom;
  
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c b/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
-index 3bd5904b4db5..fe279c1c0e48 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
-@@ -10,11 +10,20 @@ struct meta {
- 	int pkt_len;
- };
+-	data = bpf_test_init(kattr, max_data_sz, headroom, tailroom);
++	data = bpf_test_init(kattr, kattr->test.data_size_in,
++			     max_data_sz, headroom, tailroom);
+ 	if (IS_ERR(data)) {
+ 		ret = PTR_ERR(data);
+ 		goto free_ctx;
+@@ -865,7 +866,7 @@ int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
+ 	if (size < ETH_HLEN)
+ 		return -EINVAL;
  
-+struct test_ctx_s {
-+	bool passed;
-+	int pkt_size;
-+};
-+
-+struct test_ctx_s test_ctx;
-+
- static void on_sample(void *ctx, int cpu, void *data, __u32 size)
- {
--	int duration = 0;
- 	struct meta *meta = (struct meta *)data;
- 	struct ipv4_packet *trace_pkt_v4 = data + sizeof(*meta);
-+	unsigned char *raw_pkt = data + sizeof(*meta);
-+	struct test_ctx_s *tst_ctx = ctx;
-+	int duration = 0;
+-	data = bpf_test_init(kattr, size, 0, 0);
++	data = bpf_test_init(kattr, kattr->test.data_size_in, size, 0, 0);
+ 	if (IS_ERR(data))
+ 		return PTR_ERR(data);
  
- 	if (CHECK(size < sizeof(pkt_v4) + sizeof(*meta),
- 		  "check_size", "size %u < %zu\n",
-@@ -25,25 +34,114 @@ static void on_sample(void *ctx, int cpu, void *data, __u32 size)
- 		  "meta->ifindex = %d\n", meta->ifindex))
- 		return;
- 
--	if (CHECK(meta->pkt_len != sizeof(pkt_v4), "check_meta_pkt_len",
--		  "meta->pkt_len = %zd\n", sizeof(pkt_v4)))
-+	if (CHECK(meta->pkt_len != tst_ctx->pkt_size, "check_meta_pkt_len",
-+		  "meta->pkt_len = %d\n", tst_ctx->pkt_size))
- 		return;
- 
- 	if (CHECK(memcmp(trace_pkt_v4, &pkt_v4, sizeof(pkt_v4)),
- 		  "check_packet_content", "content not the same\n"))
- 		return;
- 
--	*(bool *)ctx = true;
-+	if (meta->pkt_len > sizeof(pkt_v4)) {
-+		for (int i = 0; i < (meta->pkt_len - sizeof(pkt_v4)); i++) {
-+			if (raw_pkt[i + sizeof(pkt_v4)] != (unsigned char)i) {
-+				CHECK(true, "check_packet_content",
-+				      "byte %zu does not match %u != %u\n",
-+				      i + sizeof(pkt_v4),
-+				      raw_pkt[i + sizeof(pkt_v4)],
-+				      (unsigned char)i);
-+				break;
-+			}
-+		}
-+	}
-+
-+	tst_ctx->passed = true;
- }
- 
--void test_xdp_bpf2bpf(void)
-+#define BUF_SZ	9000
-+
-+static int run_xdp_bpf2bpf_pkt_size(int pkt_fd, struct perf_buffer *pb,
-+				    struct test_xdp_bpf2bpf *ftrace_skel,
-+				    int pkt_size)
- {
- 	__u32 duration = 0, retval, size;
--	char buf[128];
-+	__u8 *buf, *buf_in;
-+	int err, ret = 0;
-+
-+	if (pkt_size > BUF_SZ || pkt_size < sizeof(pkt_v4))
-+		return -EINVAL;
-+
-+	buf_in = malloc(BUF_SZ);
-+	if (CHECK(!buf_in, "buf_in malloc()", "error:%s\n", strerror(errno)))
-+		return -ENOMEM;
-+
-+	buf = malloc(BUF_SZ);
-+	if (CHECK(!buf, "buf malloc()", "error:%s\n", strerror(errno))) {
-+		ret = -ENOMEM;
-+		goto free_buf_in;
-+	}
-+
-+	test_ctx.passed = false;
-+	test_ctx.pkt_size = pkt_size;
-+
-+	memcpy(buf_in, &pkt_v4, sizeof(pkt_v4));
-+	if (pkt_size > sizeof(pkt_v4)) {
-+		for (int i = 0; i < (pkt_size - sizeof(pkt_v4)); i++)
-+			buf_in[i + sizeof(pkt_v4)] = i;
-+	}
-+
-+	/* Run test program */
-+	err = bpf_prog_test_run(pkt_fd, 1, buf_in, pkt_size,
-+				buf, &size, &retval, &duration);
-+
-+	if (CHECK(err || retval != XDP_PASS || size != pkt_size,
-+		  "ipv4", "err %d errno %d retval %d size %d\n",
-+		  err, errno, retval, size)) {
-+		ret = err ? err : -EINVAL;
-+		goto free_buf;
-+	}
-+
-+	/* Make sure bpf_xdp_output() was triggered and it sent the expected
-+	 * data to the perf ring buffer.
-+	 */
-+	err = perf_buffer__poll(pb, 100);
-+	if (CHECK(err <= 0, "perf_buffer__poll", "err %d\n", err)) {
-+		ret = -EINVAL;
-+		goto free_buf;
-+	}
-+
-+	if (CHECK_FAIL(!test_ctx.passed)) {
-+		ret = -EINVAL;
-+		goto free_buf;
-+	}
-+
-+	/* Verify test results */
-+	if (CHECK(ftrace_skel->bss->test_result_fentry != if_nametoindex("lo"),
-+		  "result", "fentry failed err %llu\n",
-+		  ftrace_skel->bss->test_result_fentry)) {
-+		ret = -EINVAL;
-+		goto free_buf;
-+	}
-+
-+	if (CHECK(ftrace_skel->bss->test_result_fexit != XDP_PASS, "result",
-+		  "fexit failed err %llu\n",
-+		  ftrace_skel->bss->test_result_fexit))
-+		ret = -EINVAL;
-+
-+free_buf:
-+	free(buf);
-+free_buf_in:
-+	free(buf_in);
-+
-+	return ret;
-+}
-+
-+void test_xdp_bpf2bpf(void)
-+{
- 	int err, pkt_fd, map_fd;
--	bool passed = false;
--	struct iphdr *iph = (void *)buf + sizeof(struct ethhdr);
--	struct iptnl_info value4 = {.family = AF_INET};
-+	__u32 duration = 0;
-+	int pkt_sizes[] = {sizeof(pkt_v4), 1024, 4100, 8200};
-+	struct iptnl_info value4 = {.family = AF_INET6};
- 	struct test_xdp *pkt_skel = NULL;
- 	struct test_xdp_bpf2bpf *ftrace_skel = NULL;
- 	struct vip key4 = {.protocol = 6, .family = AF_INET};
-@@ -87,40 +185,15 @@ void test_xdp_bpf2bpf(void)
- 
- 	/* Set up perf buffer */
- 	pb_opts.sample_cb = on_sample;
--	pb_opts.ctx = &passed;
-+	pb_opts.ctx = &test_ctx;
- 	pb = perf_buffer__new(bpf_map__fd(ftrace_skel->maps.perf_buf_map),
--			      1, &pb_opts);
-+			      8, &pb_opts);
- 	if (!ASSERT_OK_PTR(pb, "perf_buf__new"))
- 		goto out;
- 
--	/* Run test program */
--	err = bpf_prog_test_run(pkt_fd, 1, &pkt_v4, sizeof(pkt_v4),
--				buf, &size, &retval, &duration);
--
--	if (CHECK(err || retval != XDP_TX || size != 74 ||
--		  iph->protocol != IPPROTO_IPIP, "ipv4",
--		  "err %d errno %d retval %d size %d\n",
--		  err, errno, retval, size))
--		goto out;
--
--	/* Make sure bpf_xdp_output() was triggered and it sent the expected
--	 * data to the perf ring buffer.
--	 */
--	err = perf_buffer__poll(pb, 100);
--	if (CHECK(err < 0, "perf_buffer__poll", "err %d\n", err))
--		goto out;
--
--	CHECK_FAIL(!passed);
--
--	/* Verify test results */
--	if (CHECK(ftrace_skel->bss->test_result_fentry != if_nametoindex("lo"),
--		  "result", "fentry failed err %llu\n",
--		  ftrace_skel->bss->test_result_fentry))
--		goto out;
--
--	CHECK(ftrace_skel->bss->test_result_fexit != XDP_TX, "result",
--	      "fexit failed err %llu\n", ftrace_skel->bss->test_result_fexit);
--
-+	for (int i = 0; i < ARRAY_SIZE(pkt_sizes); i++)
-+		run_xdp_bpf2bpf_pkt_size(pkt_fd, pb, ftrace_skel,
-+					 pkt_sizes[i]);
- out:
- 	if (pb)
- 		perf_buffer__free(pb);
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c b/tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
-index a038e827f850..902b54190377 100644
---- a/tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
-@@ -49,7 +49,7 @@ int BPF_PROG(trace_on_entry, struct xdp_buff *xdp)
- 	void *data = (void *)(long)xdp->data;
- 
- 	meta.ifindex = xdp->rxq->dev->ifindex;
--	meta.pkt_len = data_end - data;
-+	meta.pkt_len = bpf_xdp_get_buff_len((struct xdp_md *)xdp);
- 	bpf_xdp_output(xdp, &perf_buf_map,
- 		       ((__u64) meta.pkt_len << 32) |
- 		       BPF_F_CURRENT_CPU,
 -- 
 2.31.1
 
