@@ -2,139 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EBE13EBEC0
-	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 01:27:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 276563EBEC2
+	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 01:28:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235718AbhHMX1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 19:27:55 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:44308 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235330AbhHMX1y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 19:27:54 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17DNEgnt000531;
-        Fri, 13 Aug 2021 16:27:13 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=nW/sljCTJTz52oZkslJtEtWB+p3fRfe1ux5I5HMSgbE=;
- b=gXz4MRf8labAlD2yU//bL12f0R9WsO6UrSYnj8Jre5mBDh0xaRjQia8Arz+I/sDMSKHZ
- xDcmI/eWKX1pUIhN4/sdYK46AACIDW+lsssyzEookQOJSq9jyicZ9t4wNprz4gPLnZmr
- TKI1LlKQRm8KKG6lkbR37Ljx+15xAyWq8do= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3adyxbgsba-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 13 Aug 2021 16:27:12 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 13 Aug 2021 16:27:11 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=miCV4HqQBKOuBaTTnruuLLd9SZEdzT8JPGdNOiyfeSEzpDmtczCaja0Y/mghBVn1fQmKbCVAZWRXpOuXGoiUbKg6HLDVF+sjMYXscx+W5nct7ZybiBF7+bB4GRV5tcfxKKDNhXWv5GgXWu4fWqy8zBqQQVlcknprHeQw2q+ju+lO41ojXloEPcxIijCagXSKm+L1dXLsFjRxYSsRXRoIhVXTt/NoOmx/67KipFbxYDrjAyVxqtY6rlauHbzKR7L/LM40PEJk33n5rrwgNHpVGbz8fQlwABIno5wXm8kAy4kCDV390/6R5mt0i7BpzvE0P63kCy0rE6LLd+Zg0+QgWA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nW/sljCTJTz52oZkslJtEtWB+p3fRfe1ux5I5HMSgbE=;
- b=V91AFOAByCPUPU9Le6Ac9ujvyVEMDDc04/uh3TssqYPXvfeK3EUYvgdR3rVLtIvbFrBmjlFZ0oDR7ecxZjBXbBHvV8St6wmLdDLWSC62E6iEaH8lBfCYT1Vp9LM5jVDTY9lFWZYnO1EV2hUoNdljrTDvM3YXqsImLImSeNWwqywNa07uEPTB11cTtXrJmsWqHkZKQx0jq4Ja+iEDNACA0CwRe3pLfWD6mMhtbd3stIJCjpS8SSwpCECFgmWGc5DhxfqaOkUHXUXYYCsP/q9S4r35FAD3m21C7tvvjSB15hUz7VTd3N2bqHWxE6KXC5Bk2IUUP9lpsvZVySMl45kTEA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: google.com; dkim=none (message not signed)
- header.d=none;google.com; dmarc=none action=none header.from=fb.com;
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
- by SN6PR15MB2302.namprd15.prod.outlook.com (2603:10b6:805:19::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.15; Fri, 13 Aug
- 2021 23:27:09 +0000
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::293f:b717:a8a9:a48f]) by SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::293f:b717:a8a9:a48f%4]) with mapi id 15.20.4415.019; Fri, 13 Aug 2021
- 23:27:09 +0000
-Date:   Fri, 13 Aug 2021 16:27:07 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Stanislav Fomichev <sdf@google.com>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <andrii@kernel.org>
-Subject: Re: [PATCH bpf-next v3 0/2] bpf: Allow bpf_get_netns_cookie in
- BPF_PROG_TYPE_CGROUP_SOCKOPT
-Message-ID: <20210813232707.kk5l5ksirbgtr6pc@kafai-mbp>
-References: <20210813230530.333779-1-sdf@google.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210813230530.333779-1-sdf@google.com>
-X-ClientProxiedBy: SJ0PR13CA0148.namprd13.prod.outlook.com
- (2603:10b6:a03:2c6::33) To SA1PR15MB5016.namprd15.prod.outlook.com
- (2603:10b6:806:1db::19)
+        id S235570AbhHMX2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 19:28:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47806 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235330AbhHMX2q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 19:28:46 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69469C061756;
+        Fri, 13 Aug 2021 16:28:19 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id w17so21747581ybl.11;
+        Fri, 13 Aug 2021 16:28:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=P+SltoyU/N2j1xguB2Et8FTVeM8VFa3dNugcyncKwts=;
+        b=AqoOfTR9+NMWIvtEsraBvCF6VCLvvgG0mDIwq+0xnPWnumDH4CqaDpW/K83qR5EB4f
+         XgRJfs3G2edvXO32bnplnodVeTjWKd9i0IRwXTZjqk5B3TdR+2lfkReelJ7NL3CJynbw
+         966WioGcporq1+9n5NoYmw73L9pYC66rRcWPmdVXVnSL/z00sPlfDgKMuPWeEpLLZuIZ
+         GgXw6M9YjDivQ5Ts71qAdjAyV+U/9dLL5W0vBJpqtqMqaCcCS1p3CLfPaADfF60VA/Wv
+         MY88leTm8gM8whKGtd3l7NfKgV5epccTn7DQJCC26rrNcR7PtUlbc54nPgFyvlcZgktX
+         DrdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=P+SltoyU/N2j1xguB2Et8FTVeM8VFa3dNugcyncKwts=;
+        b=oxfrv8ess7tgxP65cCGqsbDqyU+lzidOLQ0urSyApkhn8LpCrxe5u9mFT5+srHxoEs
+         7MALMU987ZJyWd3lZR5w8vx15mIi9Sc7pxkUTJnqmkqBICr8HFO5Ac9SZlfoBVQxdnqh
+         51xMNnVRAcNWeZ56sfmjVnvVu++rnCzqyEpENYu3cnmoihMaiD8yDLK/O7kATS4FEFHo
+         IsX47oswU/z6VwHXlP+/bni0EGDsqJKQ6R2a9hPXjlwPL9v0GJkMuSyYF/Y2eoa/GHuI
+         Aq5LTNgwzs1KetzSTvw5IPvyBZTluRrtnR/Jv7Nw7BlyVmwsZ84GNzOAU6fbxWlwkjZq
+         ZIWA==
+X-Gm-Message-State: AOAM532YGpZSt7yK3rNNBslcmu/Pco4j9VfOA9pnV390yr42UuD1vbUV
+        c4OgltclDXkEHz1mNpTm3kOiIkU8AqQpdutMP/0=
+X-Google-Smtp-Source: ABdhPJxLeaBwdc2P5ltaOYpztf7v5DCTlXlVHUbepH5U8Uq0/MjKGoLush4LrMPazomyhCwq9oLBFi48AMG97tgL9Qs=
+X-Received: by 2002:a25:d691:: with SMTP id n139mr6096531ybg.27.1628897298709;
+ Fri, 13 Aug 2021 16:28:18 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp (2620:10d:c090:400::5:e0ad) by SJ0PR13CA0148.namprd13.prod.outlook.com (2603:10b6:a03:2c6::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.9 via Frontend Transport; Fri, 13 Aug 2021 23:27:09 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 95beb225-fb08-40be-9a8d-08d95eb1df33
-X-MS-TrafficTypeDiagnostic: SN6PR15MB2302:
-X-Microsoft-Antispam-PRVS: <SN6PR15MB2302673322605EEB68394CFAD5FA9@SN6PR15MB2302.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Mt9AFTXD3330qlG78WN6hykE8jd2zX02dPGV9gjQmG6Z7AFRIAm2YkrxehHsIJsZusIt7Wy9qqz4XJCtZBMLt04HnXbyazT0VSYN+IZvUYUvd2O/47Bkybn1YHBEjwLgx7V6Nryv0fdTQuIgBE8vVFigNWM1Vctej4h+k1gdMJXYdSQvUcp2+I79TGN5G5TXatF4WBFtM8tzk9JJS/tzX2JdNcZSkPSB1sOuxPkO1iqixwH4ew1nIHKu3katvabLsr+YUGi4y3rsxIIPoCYw0mKsu8gLMPlGXr70wGsbrwYj9c9oD67c3p1+xJqxDqK2+dQHXQSW/q6+TO65wSuqQEVoKEoYSr0rilmdtoAY9sNcmN/MiJq/DEhAH/sEtIiOOifpHkoQYZQNfF8v8OGXUnsBNEy8u7zwgyRhMgg74bv3F9FjH4x2GTvmLsS6XDDykAlTWSAZFxJkIZMh/O92N+FYIJwql9lN/i9MHei2TtnpmMUS/tBFqD80Bii9tyuTo/iTnT252lUNVzzcAi1APrdHYTJ0DRMPSMVP01WPj362T5+rY4thMbIf4Lx3s5RTIPUaBdgWyqv+xFGYvww3nDXr+zJU9TBlx6OJfzxmZuhp50dx8wOM9THdWQTYhn7GnQEq/rCna8RJLuYy3gTHIg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(39860400002)(376002)(346002)(396003)(136003)(8936002)(52116002)(6496006)(6916009)(2906002)(4326008)(33716001)(8676002)(86362001)(83380400001)(316002)(38100700002)(5660300002)(1076003)(186003)(9686003)(478600001)(4744005)(66556008)(66946007)(55016002)(66476007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?83foHMVnKIgYBafx8v1fW63G/0mauk6slU3lFNOP8AMjr8QegfkNRwRY/qcQ?=
- =?us-ascii?Q?G4r+JvBZ8bUWf348KYBEICMpK5Vv6XAQukW1rwlHNlfg20GYdiGLANLo0447?=
- =?us-ascii?Q?dBWOBStY4xkOo+H8v6kfUkQ1RxZxaNypqB94GJNDUjeUjSvTT7F9clO4x2kL?=
- =?us-ascii?Q?+kWYKSqfjOd1vsu2s6MI04ngVNU/EmrAGjKOBP5sEzI9ZT/BsofNv5vDzfR7?=
- =?us-ascii?Q?NigHUicz+YDka+dpQzdy8cX28v8ZIf7werffWIh3aYMD6VzhP/ZPAE254HYX?=
- =?us-ascii?Q?fVSitpA2ZDO8wD1Tef6eyUKX1jnMqQgEG5Pz6k+xdWNTb7HIa2fw92OtXMfE?=
- =?us-ascii?Q?a5QrUAUcvisuG/hletf9vM0jwUwy02bRwBsBdlQVtxu3tNmiheZbC+2oM//g?=
- =?us-ascii?Q?hCR4Jq2sD6itfii/VLdfqMXsxkeVEclYxImdrqeAR217iedDHtnXycdaG520?=
- =?us-ascii?Q?YiWZOhWhFUrpLEkoz4vAzBTgmkIoRDRgo8CJJQuDq+9yPaW755IxBwMRGRTo?=
- =?us-ascii?Q?2aGt+hR8Siy3Bn9SatYDbNbyr7HDFZ70oNtXRJlQlYUop3EONkLCrlGDYpUw?=
- =?us-ascii?Q?c5OEKB5Io5uv9vI06DeZPffvqkc32PzclUmr6nS0vrBiBOUQkgG6M8rUiCVY?=
- =?us-ascii?Q?YJzyTBYhpa9LKH71nnZHjiJXN5bNOJxHZb9EAdxJTOXnRKvD4e22pBVLIyJE?=
- =?us-ascii?Q?U3tJW5nZRyEWecf84BWWJjcGJO5fOH7PZGtsuOMo0rRgBB78o3VBUSI0/Wza?=
- =?us-ascii?Q?y1aMXzUfFMy8/KW4AJlvzt4JBgO8Zx+E3B0PPplZb1vfkTbC3bm9u+hT6uvv?=
- =?us-ascii?Q?WNuNCf+WQVK4S8c6YisfWljgIQRFpMdkOKKfwN8N2jtUHswJV9JNLRkr8HSF?=
- =?us-ascii?Q?TXZTiAT3QH1Q+8NhefcoctOZpM8l/3d9TOd5gSfCzAVjDwnn/R8USsCVtwlC?=
- =?us-ascii?Q?vNU0D4cLCTQAVuXswHx+MLo/yLaWJ0SqhP4AOCd79SRWAyvFJMJuoWXeEyh1?=
- =?us-ascii?Q?5K3vMTmpYtTj1M10E2fmPC9jGCSphf1vaUh97PhWJpHLo0OtgMKBx3OeY6Dw?=
- =?us-ascii?Q?PpfYGRZD9IR4KczM4HxdwFDLN2jhyi+aLHMcOzvSY0hFhOk/Xh2DSrsSp81H?=
- =?us-ascii?Q?SuTJE0bCWe65f+vT4SM4mUnO+qwajhmJJOWZbVoMo9FWs1+uw7abwsE8KK82?=
- =?us-ascii?Q?pIXpZNbUyz06nNhy7VjRbbI+6mXXX08Ao8YEBOI54F6C2KwTzFLjdZRWxr20?=
- =?us-ascii?Q?Oe4ZfZ8HHC/P4rL/Ictm57V5TC2wHoOYTt1Zav7Joa4nUTs6fIY+rffpbpMg?=
- =?us-ascii?Q?+MleJ+Cel/GkYtg0vEVoEmv5eYTJgrS3OM9D0PBI9vSSaA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 95beb225-fb08-40be-9a8d-08d95eb1df33
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Aug 2021 23:27:09.7166
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: A4J5/ikN61i0woXokqaPVmhW3YP5gLW6DUvRW+1ypbobHLbTMaCbr4pUQ2bh4FOO
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR15MB2302
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: yHeNZJzEi4HFTvW-0rn0uiXl-M3uOmnm
-X-Proofpoint-GUID: yHeNZJzEi4HFTvW-0rn0uiXl-M3uOmnm
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-08-13_09:2021-08-13,2021-08-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=484
- clxscore=1015 impostorscore=0 priorityscore=1501 bulkscore=0
- suspectscore=0 phishscore=0 malwarescore=0 mlxscore=0 lowpriorityscore=0
- adultscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2107140000 definitions=main-2108130138
-X-FB-Internal: deliver
+References: <20210812164557.79046-1-kuniyu@amazon.co.jp> <20210812164557.79046-5-kuniyu@amazon.co.jp>
+In-Reply-To: <20210812164557.79046-5-kuniyu@amazon.co.jp>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 13 Aug 2021 16:28:07 -0700
+Message-ID: <CAEf4BzbJC7J9=p9Fh8D7OYPoKMHKg5WyaJUyTkngDcpUhOB_0g@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 4/4] selftest/bpf: Extend the bpf_snprintf()
+ test for "%c".
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 13, 2021 at 04:05:28PM -0700, Stanislav Fomichev wrote:
-> We'd like to be able to identify netns from setsockopt hooks
-> to be able to do the enforcement of some options only in the
-> "initial" netns (to give users the ability to create clear/isolated
-> sandboxes if needed without any enforcement by doing unshare(net)).
-> 
-> v3:
-> - remove extra 'ctx->skb == NULL' check (Martin KaFai Lau)
-> - rework test to make sure the helper is really called, not just
->   verified
-Acked-by: Martin KaFai Lau <kafai@fb.com>
+On Thu, Aug 12, 2021 at 9:47 AM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
+>
+> This patch adds a "positive" pattern for "%c", which intentionally uses a
+> __u32 value (0x64636261, "dbca") to print a single character "a".  If the
+> implementation went wrong, other 3 bytes might show up as the part of the
+> latter "%+05s".
+>
+> Also, this patch adds two "negative" patterns for wide character.
+>
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> ---
+>  tools/testing/selftests/bpf/prog_tests/snprintf.c | 4 +++-
+>  tools/testing/selftests/bpf/progs/test_snprintf.c | 7 ++++---
+>  2 files changed, 7 insertions(+), 4 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/snprintf.c b/tools/testing/selftests/bpf/prog_tests/snprintf.c
+> index dffbcaa1ec98..f77d7def7fed 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/snprintf.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/snprintf.c
+> @@ -19,7 +19,7 @@
+>  #define EXP_ADDR_OUT "0000000000000000 ffff00000add4e55 "
+>  #define EXP_ADDR_RET sizeof(EXP_ADDR_OUT "unknownhashedptr")
+>
+> -#define EXP_STR_OUT  "str1 longstr"
+> +#define EXP_STR_OUT  "str1         a longstr"
+>  #define EXP_STR_RET  sizeof(EXP_STR_OUT)
+>
+>  #define EXP_OVER_OUT "%over"
+> @@ -114,6 +114,8 @@ void test_snprintf_negative(void)
+>         ASSERT_ERR(load_single_snprintf("%"), "invalid specifier 3");
+>         ASSERT_ERR(load_single_snprintf("%12345678"), "invalid specifier 4");
+>         ASSERT_ERR(load_single_snprintf("%--------"), "invalid specifier 5");
+> +       ASSERT_ERR(load_single_snprintf("%lc"), "invalid specifier 6");
+> +       ASSERT_ERR(load_single_snprintf("%llc"), "invalid specifier 7");
+>         ASSERT_ERR(load_single_snprintf("\x80"), "non ascii character");
+>         ASSERT_ERR(load_single_snprintf("\x1"), "non printable character");
+>  }
+> diff --git a/tools/testing/selftests/bpf/progs/test_snprintf.c b/tools/testing/selftests/bpf/progs/test_snprintf.c
+> index e2ad26150f9b..afc2c583125b 100644
+> --- a/tools/testing/selftests/bpf/progs/test_snprintf.c
+> +++ b/tools/testing/selftests/bpf/progs/test_snprintf.c
+> @@ -40,6 +40,7 @@ int handler(const void *ctx)
+>         /* Convenient values to pretty-print */
+>         const __u8 ex_ipv4[] = {127, 0, 0, 1};
+>         const __u8 ex_ipv6[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+> +       const __u32 chr1 = 0x64636261; /* dcba */
+>         static const char str1[] = "str1";
+>         static const char longstr[] = "longstr";
+>
+> @@ -59,9 +60,9 @@ int handler(const void *ctx)
+>         /* Kernel pointers */
+>         addr_ret = BPF_SNPRINTF(addr_out, sizeof(addr_out), "%pK %px %p",
+>                                 0, 0xFFFF00000ADD4E55, 0xFFFF00000ADD4E55);
+> -       /* Strings embedding */
+> -       str_ret  = BPF_SNPRINTF(str_out, sizeof(str_out), "%s %+05s",
+> -                               str1, longstr);
+> +       /* Strings and single-byte character embedding */
+> +       str_ret  = BPF_SNPRINTF(str_out, sizeof(str_out), "%s % 9c %+05s",
+> +                               str1, chr1, longstr);
+
+
+Why this hackery with __u32? You are making an endianness assumption
+(it will break on big-endian), and you'd never write real code like
+that. Just pass 'a', what's wrong with that?
+
+>         /* Overflow */
+>         over_ret = BPF_SNPRINTF(over_out, sizeof(over_out), "%%overflow");
+>         /* Padding of fixed width numbers */
+> --
+> 2.30.2
+>
