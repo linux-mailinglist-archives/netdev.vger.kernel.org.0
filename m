@@ -2,83 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3510E3EB5E5
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 15:00:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5671A3EB5E7
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 15:00:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240514AbhHMNAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 09:00:44 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:52077 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240078AbhHMNAn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 09:00:43 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-13-UP7cVO8XN0iuisRl0gXJrA-1; Fri, 13 Aug 2021 14:00:14 +0100
-X-MC-Unique: UP7cVO8XN0iuisRl0gXJrA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.23; Fri, 13 Aug 2021 14:00:12 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.023; Fri, 13 Aug 2021 14:00:12 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Bui Quang Minh' <minhquangbui99@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
-        "dsahern@kernel.org" <dsahern@kernel.org>,
-        "willemb@google.com" <willemb@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "avagin@gmail.com" <avagin@gmail.com>,
-        "alexander@mihalicyn.com" <alexander@mihalicyn.com>,
-        "lesedorucalin01@gmail.com" <lesedorucalin01@gmail.com>
-Subject: RE: [PATCH v2 1/2] udp: UDP socket send queue repair
-Thread-Topic: [PATCH v2 1/2] udp: UDP socket send queue repair
-Thread-Index: AQHXkDOQyvhyTnb6/kiYjIjj7jj0n6txZU8g
-Date:   Fri, 13 Aug 2021 13:00:12 +0000
-Message-ID: <29dc7ac9781344f1a57e16c14900a7da@AcuMS.aculab.com>
-References: <20210811154557.6935-1-minhquangbui99@gmail.com>
- <721a2e32-c930-ad6b-5055-631b502ed11b@gmail.com>
- <7f3ecbaf-7759-88ae-53d3-2cc5b1623aff@gmail.com>
- <489f0200-b030-97de-cf3a-2d715b07dfa4@gmail.com>
- <3f861c1d-bd33-f074-8ef3-eede9bff73c1@gmail.com>
-In-Reply-To: <3f861c1d-bd33-f074-8ef3-eede9bff73c1@gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S240526AbhHMNBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 09:01:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44686 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240137AbhHMNBA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 09:01:00 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B10D1C0617AD
+        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 06:00:32 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id 28-20020a17090a031cb0290178dcd8a4d1so11034394pje.0
+        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 06:00:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nNkuij8yUE1tIId8iqJQ6kzgmpwCYF7ujjVAfXSGs24=;
+        b=ytr74bAALHy2VuJNKNKVS3wpLJz+g9XIGMjOXTTqex2kkTCg1DM3wTPEwhaOjiSDdL
+         quGnQZK7QdiDcJtrn7gfX3j+l7RvUmrjb1RazsDWY/e9cPmVNIcUcUJQ/x9CnD91KfQI
+         LqLl5sREMreRvrUa+cZIYT7iahS0LNm1JAa5Ouk9ZPQ4eg6+6AwUeRz1sS4fmT2XOf8H
+         qzi1NFyz5+owg9q+SRpwvJGBFVlzDIiE8zk00l69vCmaodNW3lL9vR0h5IeMK0pgKaZH
+         XFwSFh8q//3axn8vFZQ/uRecLIgxVR/9cbx4CXLtfaLE1fBM9SvK/ZHL0jTFoZ5JLM6Z
+         oJog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nNkuij8yUE1tIId8iqJQ6kzgmpwCYF7ujjVAfXSGs24=;
+        b=PSUljIaVDmTlCQgqtcyXKroRy3hbGF8ju52qKCz2z6NIrFTMDToHTc7CPnw9WVQM9G
+         Q02bu7mxj0TuaW05xkJROC9Ldm04rWgAjWgwA4PoWc+2K49Ah0DyE9IHNSRVs5B1mA+T
+         8FpI2nf8wInBS+R/NZK3iAQo/7Im8e39coLuY+j4uy5dYs9tjGqC+GJc778PZwlIjjYX
+         WE3HnNf4h44iEdnXPEkORfYBfiUGnPMkFV31P0NmMNT9tp33PdJFCK0aNBB3UbgXiYO3
+         Kmki17p69XO8DaWG37/JIyI/OP2ZqHU2H3tNHdjSP/pgwV7/+EBmGXyHJ/fj4lX/2tDl
+         pNBg==
+X-Gm-Message-State: AOAM530DnxqCuGDl7bn5ZEQfZQv/oXo34w0iqIRQXzVw5FsS3ccX7Vsb
+        8cUfv2x1NjRDQRneoA1dit8v
+X-Google-Smtp-Source: ABdhPJzhwS9a/AXYvM9PIXi5Ct03LWk8VWsJot4sp7f8DWpDHo/eEQmKQh268wsj5w5lenJpavrnog==
+X-Received: by 2002:aa7:8d54:0:b029:3cd:6ce7:bec6 with SMTP id s20-20020aa78d540000b02903cd6ce7bec6mr2295933pfe.69.1628859632121;
+        Fri, 13 Aug 2021 06:00:32 -0700 (PDT)
+Received: from localhost.localdomain ([2409:4072:6d88:db48:973:4d84:d444:9ae4])
+        by smtp.gmail.com with ESMTPSA id r16sm1993735pje.10.2021.08.13.06.00.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Aug 2021 06:00:31 -0700 (PDT)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     kuba@kernel.org, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Richard.Laing@alliedtelesis.co.nz, loic.poulain@linaro.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH] Revert "bus: mhi: pci-generic: configurable network interface MRU"
+Date:   Fri, 13 Aug 2021 18:30:14 +0530
+Message-Id: <20210813130014.6822-1-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogQnVpIFF1YW5nIE1pbmgNCj4gU2VudDogMTMgQXVndXN0IDIwMjEgMTI6MDgNCi4uLg0K
-PiBUaGUgcmVhc29uIHdlIHdhbnQgdG8gZHVtcCB0aGUgcGFja2V0IGluIHNlbmQgcXVldWUgaXMg
-dG8gbWFrZSB0byBzdGF0ZSBvZiB0aGUNCj4gYXBwbGljYXRpb24gY29uc2lzdGVudC4gVGhlIHNj
-ZW5hcmlvIGlzIHRoYXQgd2hlbiBhbiBhcHBsaWNhdGlvbiBzZW5kcyBVRFANCj4gcGFja2V0cyB2
-aWEgVURQX0NPUksgc29ja2V0IG9yIHdpdGggTVNHX01PUkUsIENSSVUgY29tZXMgYW5kIGNoZWNr
-cG9pbnRzIHRoZQ0KPiBhcHBsaWNhdGlvbi4gSWYgd2UgZHJvcCB0aGUgZGF0YSBpbiBzZW5kIHF1
-ZXVlLCB3aGVuIGFwcGxpY2F0aW9uIHJlc3RvcmVzLCBpdA0KPiBzZW5kcyBzb21lIG1vcmUgZGF0
-YSB0aGVuIHR1cm5zIG9mZiB0aGUgY29yayBhbmQgYWN0dWFsbHkgc2VuZHMgYSBwYWNrZXQuIFRo
-ZQ0KPiByZWNlaXZpbmcgc2lkZSBtYXkgZ2V0IHRoYXQgcGFja2V0IGJ1dCBpdCdzIHVudXN1YWwg
-dGhhdCB0aGUgZmlyc3QgcGFydCBvZiB0aGF0DQo+IHBhY2tldCBpcyBtaXNzaW5nIGJlY2F1c2Ug
-d2UgZHJvcCBpdC4gU28gd2UgdHJ5IHRvIHNvbHZlIHRoaXMgcHJvYmxlbSB3aXRoIHNvbWUNCj4g
-aGVscCBmcm9tIHRoZSBMaW51eCBrZXJuZWwuDQoNClBhdGllbnQ6IEl0IGh1cnRzIGlmIEkgZG8g
-eHh4Lg0KRG9jdG9yOiBEb24ndCBkbyB4eHggdGhlbi4NCg0KSXQgaGFzIHRvIGJlIG1vcmUgZWZm
-aWNpZW50IHRvIGJ1ZmZlciBwYXJ0aWFsIFVEUCBwYWNrZXRzDQppbiB1c2Vyc3BhY2UgYW5kIG9u
-bHkgc2VuZCB3aGVuIGFsbCB0aGUgcGFja2V0IGlzIGF2YWlsYWJsZS4NCg0KCURhdmlkDQoNCi0N
-ClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBN
-aWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxl
-cykNCg==
+This reverts commit 5c2c85315948c42c6c0258cf9bad596acaa79043.
+
+First this commit should go via the MHI tree as the "pci_generic" driver
+belongs to MHI bus.
+
+Then from the review point of view, the commit uses "mru_default"
+variable to hold the MRU size for the MHI device. The term default
+doesn't make much sense since there is no way to override this value
+anywhere. So the author should just use "mru" in mhi_pci_dev_info
+struct.
+
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
+ drivers/bus/mhi/pci_generic.c | 4 ----
+ drivers/net/mhi_net.c         | 1 -
+ include/linux/mhi.h           | 2 --
+ 3 files changed, 7 deletions(-)
+
+diff --git a/drivers/bus/mhi/pci_generic.c b/drivers/bus/mhi/pci_generic.c
+index b33b9d75e8af..4dd1077354af 100644
+--- a/drivers/bus/mhi/pci_generic.c
++++ b/drivers/bus/mhi/pci_generic.c
+@@ -32,7 +32,6 @@
+  * @edl: emergency download mode firmware path (if any)
+  * @bar_num: PCI base address register to use for MHI MMIO register space
+  * @dma_data_width: DMA transfer word size (32 or 64 bits)
+- * @mru_default: default MRU size for MBIM network packets
+  * @sideband_wake: Devices using dedicated sideband GPIO for wakeup instead
+  *		   of inband wake support (such as sdx24)
+  */
+@@ -43,7 +42,6 @@ struct mhi_pci_dev_info {
+ 	const char *edl;
+ 	unsigned int bar_num;
+ 	unsigned int dma_data_width;
+-	unsigned int mru_default;
+ 	bool sideband_wake;
+ };
+ 
+@@ -274,7 +272,6 @@ static const struct mhi_pci_dev_info mhi_qcom_sdx55_info = {
+ 	.config = &modem_qcom_v1_mhiv_config,
+ 	.bar_num = MHI_PCI_DEFAULT_BAR_NUM,
+ 	.dma_data_width = 32,
+-	.mru_default = 32768,
+ 	.sideband_wake = false,
+ };
+ 
+@@ -667,7 +664,6 @@ static int mhi_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	mhi_cntrl->status_cb = mhi_pci_status_cb;
+ 	mhi_cntrl->runtime_get = mhi_pci_runtime_get;
+ 	mhi_cntrl->runtime_put = mhi_pci_runtime_put;
+-	mhi_cntrl->mru = info->mru_default;
+ 
+ 	if (info->sideband_wake) {
+ 		mhi_cntrl->wake_get = mhi_pci_wake_get_nop;
+diff --git a/drivers/net/mhi_net.c b/drivers/net/mhi_net.c
+index 975f7f9bdf4c..a577bff82fe1 100644
+--- a/drivers/net/mhi_net.c
++++ b/drivers/net/mhi_net.c
+@@ -312,7 +312,6 @@ static int mhi_net_newlink(struct mhi_device *mhi_dev, struct net_device *ndev)
+ 	mhi_netdev->ndev = ndev;
+ 	mhi_netdev->mdev = mhi_dev;
+ 	mhi_netdev->skbagg_head = NULL;
+-	mhi_netdev->mru = mhi_dev->mhi_cntrl->mru;
+ 
+ 	INIT_DELAYED_WORK(&mhi_netdev->rx_refill, mhi_net_rx_refill_work);
+ 	u64_stats_init(&mhi_netdev->stats.rx_syncp);
+diff --git a/include/linux/mhi.h b/include/linux/mhi.h
+index c493a80cb453..5e08468854db 100644
+--- a/include/linux/mhi.h
++++ b/include/linux/mhi.h
+@@ -356,7 +356,6 @@ struct mhi_controller_config {
+  * @fbc_download: MHI host needs to do complete image transfer (optional)
+  * @wake_set: Device wakeup set flag
+  * @irq_flags: irq flags passed to request_irq (optional)
+- * @mru: the default MRU for the MHI device
+  *
+  * Fields marked as (required) need to be populated by the controller driver
+  * before calling mhi_register_controller(). For the fields marked as (optional)
+@@ -449,7 +448,6 @@ struct mhi_controller {
+ 	bool fbc_download;
+ 	bool wake_set;
+ 	unsigned long irq_flags;
+-	u32 mru;
+ };
+ 
+ /**
+-- 
+2.25.1
 
