@@ -2,77 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0EF83EB91E
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 17:27:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 266343EB925
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 17:27:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242852AbhHMPVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 11:21:52 -0400
-Received: from mga04.intel.com ([192.55.52.120]:49165 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242861AbhHMPTK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Aug 2021 11:19:10 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10075"; a="213723622"
-X-IronPort-AV: E=Sophos;i="5.84,319,1620716400"; 
-   d="scan'208";a="213723622"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2021 08:13:30 -0700
-X-IronPort-AV: E=Sophos;i="5.84,319,1620716400"; 
-   d="scan'208";a="674442754"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2021 08:13:27 -0700
-Received: from andy by smile with local (Exim 4.94.2)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1mEYs5-009HGN-S5; Fri, 13 Aug 2021 18:13:21 +0300
-Date:   Fri, 13 Aug 2021 18:13:21 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kbuild-all@lists.01.org, Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [PATCH v1 net-next 4/7] ptp_pch: Switch to use
- module_pci_driver() macro
-Message-ID: <YRaMEfTvOCsi40Je@smile.fi.intel.com>
-References: <20210813122932.46152-4-andriy.shevchenko@linux.intel.com>
- <202108132237.jJSESPou-lkp@intel.com>
+        id S242986AbhHMPWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 11:22:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244164AbhHMPUx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 11:20:53 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D896BC034028;
+        Fri, 13 Aug 2021 08:14:38 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id a7so16054071ljq.11;
+        Fri, 13 Aug 2021 08:14:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=qGBykzUHvO+mc7m2ZKZa337KSvPaPnpDZaAGPG4FlFk=;
+        b=QKxeBCKrnNdm3R2q7WeaN94xWSbe/WNi98zc2dW9Dj7KtQVa27JD8wo4H5X9Aqh9CC
+         9QGXM8FajTygobcNOOPNr0pi1Jjbb2arclodxpqb5+mCclK3iFunzvvbnZv9Y3xT4Pi9
+         4dEwSEIDIJyVw4+8GpMQClxB/wVjYBGWKSngLnnTlXhaLFJZMpiOiy5OluO2FUL8jkpv
+         1uVFeyuNokLgq6xtIReFGKVeIaG4iYCEvdd0LkkmBLt96R4LaK2QADx5i8XJMCm9XlaF
+         67G65ecQjJvM7BT6VUpAYblvcfdIO/ULZ30zllGle568EeF3oACnKBz4+ZIJgv6MO8pF
+         fYSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=qGBykzUHvO+mc7m2ZKZa337KSvPaPnpDZaAGPG4FlFk=;
+        b=MUJOvd+v+Ozuq7Vo50S8V4x1PP8AoxXg5uYJQhz5Xbgyr9HbqoGkkfW4A2+uqCOwqB
+         38qqXisZgYHNgngE82yLg/IckirmekcResFkEuGConrBbH7VgQa6oQGTNFXyURFIrOas
+         BTB34uWH8dvwIozskvZiXpt7ugV8OyVhgENkLkbwQkpLOoTpXexhdJ+AUd0XBWMLKJD3
+         H/vhvK98WmfM56f4RkCVqfTk5x8sPRDT+LhNhxGDYDP2yW0V7Fx3Xhl/Hwn84vjnxzlS
+         wLbIZS+hyB9h2pW2AVMFdPqEcVmzzzCmYoaS36ffxEVYUjtCJmC+12q42BHbPkAM1tgz
+         T93w==
+X-Gm-Message-State: AOAM532JrxX0xLgsoKKxEfxKJw20q/OOrZ/vg9td/29ZxSYbcCWZG/lK
+        EBHCbuLvC/VqTVsaN5vMxVs=
+X-Google-Smtp-Source: ABdhPJza/AsXX9Eah14o12B8iPtsO7VrEukozhO9ruzowumVxbf/75KPyBAePWh5VdfNtCwKP0+IcQ==
+X-Received: by 2002:a05:651c:49c:: with SMTP id s28mr2150046ljc.189.1628867677175;
+        Fri, 13 Aug 2021 08:14:37 -0700 (PDT)
+Received: from localhost.localdomain ([46.235.67.232])
+        by smtp.gmail.com with ESMTPSA id q16sm180788lfg.102.2021.08.13.08.14.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Aug 2021 08:14:36 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     ajk@comnets.uni-bremen.de, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dan.carpenter@oracle.com,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+fc8cd9a673d4577fb2e4@syzkaller.appspotmail.com
+Subject: [PATCH v2] net: 6pack: fix slab-out-of-bounds in decode_data
+Date:   Fri, 13 Aug 2021 18:14:33 +0300
+Message-Id: <20210813151433.22493-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210813145834.GC1931@kadam>
+References: <20210813145834.GC1931@kadam>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202108132237.jJSESPou-lkp@intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 13, 2021 at 10:34:17PM +0800, kernel test robot wrote:
-> Hi Andy,
-> 
-> I love your patch! Yet something to improve:
-> 
-> [auto build test ERROR on net-next/master]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Andy-Shevchenko/ptp_pch-use-mac_pton/20210813-203135
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git b769cf44ed55f4b277b89cf53df6092f0c9082d0
-> config: nios2-randconfig-r023-20210813 (attached as .config)
-> compiler: nios2-linux-gcc (GCC) 11.2.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/0day-ci/linux/commit/6c1fff5c80fe8f1a12c20bac2d28ebfa5960bde7
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Andy-Shevchenko/ptp_pch-use-mac_pton/20210813-203135
->         git checkout 6c1fff5c80fe8f1a12c20bac2d28ebfa5960bde7
->         # save the attached .config to linux build tree
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross ARCH=nios2 
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
+Syzbot reported slab-out-of bounds write in decode_data().
+The problem was in missing validation checks.
 
-Thanks!
+Syzbot's reproducer generated malicious input, which caused
+decode_data() to be called a lot in sixpack_decode(). Since
+rx_count_cooked is only 400 bytes and noone reported before,
+that 400 bytes is not enough, let's just check if input is malicious
+and complain about buffer overrun.
 
-Definitely I have compiled it in my local branch. I'll check what is the root
-cause of this.
+Fail log:
+==================================================================
+BUG: KASAN: slab-out-of-bounds in drivers/net/hamradio/6pack.c:843
+Write of size 1 at addr ffff888087c5544e by task kworker/u4:0/7
 
+CPU: 0 PID: 7 Comm: kworker/u4:0 Not tainted 5.6.0-rc3-syzkaller #0
+...
+Workqueue: events_unbound flush_to_ldisc
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x197/0x210 lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
+ __kasan_report.cold+0x1b/0x32 mm/kasan/report.c:506
+ kasan_report+0x12/0x20 mm/kasan/common.c:641
+ __asan_report_store1_noabort+0x17/0x20 mm/kasan/generic_report.c:137
+ decode_data.part.0+0x23b/0x270 drivers/net/hamradio/6pack.c:843
+ decode_data drivers/net/hamradio/6pack.c:965 [inline]
+ sixpack_decode drivers/net/hamradio/6pack.c:968 [inline]
+
+Reported-and-tested-by: syzbot+fc8cd9a673d4577fb2e4@syzkaller.appspotmail.com
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
+
+Changes in v2:
+	+ 3 -> +2 (Reported by Dan Carpenter)
+
+---
+ drivers/net/hamradio/6pack.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+index fcf3af76b6d7..8fe8887d506a 100644
+--- a/drivers/net/hamradio/6pack.c
++++ b/drivers/net/hamradio/6pack.c
+@@ -827,6 +827,12 @@ static void decode_data(struct sixpack *sp, unsigned char inbyte)
+ 		return;
+ 	}
+ 
++	if (sp->rx_count_cooked + 2 >= sizeof(sp->cooked_buf)) {
++		pr_err("6pack: cooked buffer overrun, data loss\n");
++		sp->rx_count = 0;
++		return;
++	}
++
+ 	buf = sp->raw_buf;
+ 	sp->cooked_buf[sp->rx_count_cooked++] =
+ 		buf[0] | ((buf[1] << 2) & 0xc0);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.32.0
 
