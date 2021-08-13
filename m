@@ -2,119 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A96DD3EB463
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 13:08:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01AF83EB490
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 13:29:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240249AbhHMLJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 07:09:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47186 "EHLO
+        id S240336AbhHML3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 07:29:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbhHMLJB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 07:09:01 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637AEC061756;
-        Fri, 13 Aug 2021 04:08:34 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id a20so11502970plm.0;
-        Fri, 13 Aug 2021 04:08:34 -0700 (PDT)
+        with ESMTP id S240335AbhHML32 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 07:29:28 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11E3C0613A4;
+        Fri, 13 Aug 2021 04:28:59 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id a7so15149966ljq.11;
+        Fri, 13 Aug 2021 04:28:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+MEtveFkdOd+h/+N1vdHSRea+1UGQzxyyqVSqe8XsTI=;
-        b=TnR5VAgs+WjVCuR/ln4UwTjYImgIev0hseQb/dL/xkKv+3HhdB19WXo8XqAB80miYf
-         a93Nk2wFJWgirNymllqYDCKzND1IHsES1zVrJmdPjYI1nxalJjd3AMDZ1dqZ1ewOe8zg
-         dlRDYhNL7TEsf19rlYGyao6p+tni487AVru69OhhU6Qgls/zYWpM2lrkUR05rSuDs2mk
-         gIvr/kHic2M5FhmBS9R2s1FNjgBNx27wIHyXY1G6iTVmOTg1Ke5Rq+RJE0M6br9XjejN
-         Piy9NXtpo9ZytPx2rfxcN6wn+QHIOhWQ/tLnF4F9/gWjri74qCrxhzH9F83+Rb54yZnB
-         xGkQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ACKfswNNvHRBBpNemW++qzxjOqdIX0HI3XRS7XVqFYw=;
+        b=oUkhvc5gv8BZBW5FLmApDisWxSrrMdPvdrSD3FPpvW3oNA4LTa+G3AkccS251UuOpJ
+         YCihrqpl0EFV/Md1ONntGnIJ8dyvKNUZr8yHd4VymjFQJbQj7lexQALWYDch+Tkge0xZ
+         RhotYnORed/zVVBO5E+LLej/tlMNtZteuNyTQ0EUbaAYva5rcLAougQjwDzoB682WinD
+         NR11eozp63Mkn8eQxqptaiHxoQlx02abVzc6kvQIAV7IcClT7ZC+j37rWvBqwOBx1Gei
+         fwecd4IyjLIUmxO4VH9ROi395Utmp93f3cJlAOtFsVSXwPQnEq1YWj5COxIQ/8Q5uU2e
+         HoXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=+MEtveFkdOd+h/+N1vdHSRea+1UGQzxyyqVSqe8XsTI=;
-        b=SmBYEkUwNE27xl8HN3tzO53McekVi+qmEzloEhwpTPQRuq7f3uxmuOii1KsEVSu4IT
-         2UUrqf2FZp4Da636R4bNkNDTDqlkbCv7JI7Ach+c3TEbERZRl3QVgdZPFEgswxcuIhZP
-         b4eRIaVOvbvZxKot8Q/kBvpaom98173ko47T3VnTlHk18eCHARDVvUMO7bR9RyvOFGZZ
-         ALoJ/M3DtAdkuwqaaKZV0IhAYGvqh9Rk4E8/5JepkbszVSddNiK/OGoz6LxmHG1Mm1S5
-         9KfiEF2sIE7d7WmI0s1GATfrGmzRldX+/gQCKrt7DOgqEWR+lN8dow7+1AkBWzKFjpE/
-         W7tQ==
-X-Gm-Message-State: AOAM530Y/ebHgIT9jFutRJGpTINMIZBYm1CEVGMzciVUKms92IQmMWGN
-        dl6GfEO8qk2mgpV41RXot/s=
-X-Google-Smtp-Source: ABdhPJwDu1mMWjdXxr4u1Iw6jOPGjz0PDjJS6gkHk0nxjEQ/DP+CKE8YP+jW0mpe5JVOSWYzZd6X7w==
-X-Received: by 2002:a17:90b:1c8c:: with SMTP id oo12mr2137167pjb.170.1628852913856;
-        Fri, 13 Aug 2021 04:08:33 -0700 (PDT)
-Received: from [192.168.0.109] ([123.20.118.31])
-        by smtp.gmail.com with ESMTPSA id y13sm1618552pjn.34.2021.08.13.04.08.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Aug 2021 04:08:33 -0700 (PDT)
-Subject: Re: [PATCH v2 1/2] udp: UDP socket send queue repair
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, willemb@google.com, pabeni@redhat.com,
-        avagin@gmail.com, alexander@mihalicyn.com,
-        lesedorucalin01@gmail.com
-References: <20210811154557.6935-1-minhquangbui99@gmail.com>
- <721a2e32-c930-ad6b-5055-631b502ed11b@gmail.com>
- <7f3ecbaf-7759-88ae-53d3-2cc5b1623aff@gmail.com>
- <489f0200-b030-97de-cf3a-2d715b07dfa4@gmail.com>
-From:   Bui Quang Minh <minhquangbui99@gmail.com>
-Message-ID: <3f861c1d-bd33-f074-8ef3-eede9bff73c1@gmail.com>
-Date:   Fri, 13 Aug 2021 18:08:28 +0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        bh=ACKfswNNvHRBBpNemW++qzxjOqdIX0HI3XRS7XVqFYw=;
+        b=qWSvh72phNa+xcCkrY+D2CjEv5Qg0xCgiH+ToOgm50njcIpnNMDY4d35u1Y2bkt8DK
+         dSO1XwWnK8QJMPkowbnRbfg+IukSPh7XI8rcBhnttjxC/4bXReUsTpETQRu7UM4qjyVI
+         8Z20hCTnB+u27p4chDJop/mNPAV2QlmgZmPiQBJ1enUZn1YFu7/iRwHlgaN86sP7cQJ5
+         Hhdvw1gv9pl0acxQ29KITivHDALMwxodVlqdWrn8zLPEKHXClSod/E3lsQxBP/v4cXQ6
+         hD/mCflKUFpl2kpVbq6INXOn7cYifLWB/r9AmQwO36btzFZrjmGxxgn2FYQvUhywYFLy
+         kokQ==
+X-Gm-Message-State: AOAM532j9yQ6vC6s2tzv1NNPW7NSTekaVnnSvjFI+UKl5gddTt+bNw0V
+        eCiUzeI3fNNi02CXMgcoZ40=
+X-Google-Smtp-Source: ABdhPJxZcizFKCHScyg2ZDtVHg+jRD89Fo/wQcR8aM/5ZaKSYKHB+K8rGqUqjzLsoGXXWaBsoVg5uw==
+X-Received: by 2002:a2e:b60d:: with SMTP id r13mr1484935ljn.218.1628854138037;
+        Fri, 13 Aug 2021 04:28:58 -0700 (PDT)
+Received: from localhost.localdomain ([46.235.67.232])
+        by smtp.gmail.com with ESMTPSA id d24sm142979lfs.80.2021.08.13.04.28.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Aug 2021 04:28:57 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     ajk@comnets.uni-bremen.de, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+fc8cd9a673d4577fb2e4@syzkaller.appspotmail.com
+Subject: [PATCH] net: 6pack: fix slab-out-of-bounds in decode_data
+Date:   Fri, 13 Aug 2021 14:28:55 +0300
+Message-Id: <20210813112855.11170-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-In-Reply-To: <489f0200-b030-97de-cf3a-2d715b07dfa4@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Syzbot reported slab-out-of bounds write in decode_data().
+The problem was in missing validation checks.
 
+Syzbot's reproducer generated malicious input, which caused
+decode_data() to be called a lot in sixpack_decode(). Since
+rx_count_cooked is only 400 bytes and noone reported before,
+that 400 bytes is not enough, let's just check if input is malicious
+and complain about buffer overrun.
 
-On 8/12/2021 10:51 PM, Eric Dumazet wrote:
-> 
-> 
-> On 8/12/21 3:46 PM, Bui Quang Minh wrote:
->>
->>
->> On 8/11/2021 11:14 PM, Eric Dumazet wrote:
->>>
->>>
->>> On 8/11/21 5:45 PM, Bui Quang Minh wrote:
->>>> In this patch, I implement UDP_REPAIR sockoption and a new path in
->>>> udp_recvmsg for dumping the corked packet in UDP socket's send queue.
->>>>
->>>> A userspace program can use recvmsg syscall to get the packet's data and
->>>> the msg_name information of the packet. Currently, other related
->>>> information in inet_cork that are set in cmsg are not dumped.
->>>>
->>>> While working on this, I was aware of Lese Doru Calin's patch and got some
->>>> ideas from it.
->>>
->>>
->>> What is the use case for this feature, adding a test in UDP fast path ?
->>
->> This feature is used to help CRIU to dump CORKed UDP packet in send queue. I'm sorry for being not aware of the performance perspective here.
-> 
-> UDP is not reliable.
-> 
-> I find a bit strange we add so many lines of code
-> for a feature trying very hard to to drop _one_ packet.
-> 
-> I think a much better changelog would be welcomed.
+Fail log:
+==================================================================
+BUG: KASAN: slab-out-of-bounds in drivers/net/hamradio/6pack.c:843
+Write of size 1 at addr ffff888087c5544e by task kworker/u4:0/7
 
-The reason we want to dump the packet in send queue is to make to state of the 
-application consistent. The scenario is that when an application sends UDP 
-packets via UDP_CORK socket or with MSG_MORE, CRIU comes and checkpoints the 
-application. If we drop the data in send queue, when application restores, it 
-sends some more data then turns off the cork and actually sends a packet. The 
-receiving side may get that packet but it's unusual that the first part of that 
-packet is missing because we drop it. So we try to solve this problem with some 
-help from the Linux kernel.
+CPU: 0 PID: 7 Comm: kworker/u4:0 Not tainted 5.6.0-rc3-syzkaller #0
+...
+Workqueue: events_unbound flush_to_ldisc
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x197/0x210 lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
+ __kasan_report.cold+0x1b/0x32 mm/kasan/report.c:506
+ kasan_report+0x12/0x20 mm/kasan/common.c:641
+ __asan_report_store1_noabort+0x17/0x20 mm/kasan/generic_report.c:137
+ decode_data.part.0+0x23b/0x270 drivers/net/hamradio/6pack.c:843
+ decode_data drivers/net/hamradio/6pack.c:965 [inline]
+ sixpack_decode drivers/net/hamradio/6pack.c:968 [inline]
 
-Thanks,
-Quang Minh.
+Reported-and-tested-by: syzbot+fc8cd9a673d4577fb2e4@syzkaller.appspotmail.com
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
+ drivers/net/hamradio/6pack.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+index fcf3af76b6d7..f4ffc2a80ab7 100644
+--- a/drivers/net/hamradio/6pack.c
++++ b/drivers/net/hamradio/6pack.c
+@@ -827,6 +827,12 @@ static void decode_data(struct sixpack *sp, unsigned char inbyte)
+ 		return;
+ 	}
+ 
++	if (sp->rx_count_cooked + 3 >= sizeof(sp->cooked_buf)) {
++		pr_err("6pack: cooked buffer overrun, data loss\n");
++		sp->rx_count = 0;
++		return;
++	}
++
+ 	buf = sp->raw_buf;
+ 	sp->cooked_buf[sp->rx_count_cooked++] =
+ 		buf[0] | ((buf[1] << 2) & 0xc0);
+-- 
+2.32.0
+
