@@ -2,128 +2,291 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07AFB3EAE1C
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 03:24:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDE873EAE43
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 03:49:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238109AbhHMBZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 21:25:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56630 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233641AbhHMBZH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 21:25:07 -0400
-Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F732C061756;
-        Thu, 12 Aug 2021 18:24:41 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Gm5Sh1Bwxz9sWc;
-        Fri, 13 Aug 2021 11:24:35 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1628817876;
-        bh=eMs3ptdq9UyugAHdDJt8wv8D3zogP2gKf9SdJuEW8IU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=AfgJ49lAj8zegj8CkfBe+JGJgIKJ9ArDGzdw5bhKiU+cUOMHb7PYxg+sjeYHWusSr
-         vGQTNIHpBSLvKlGkPVYp5l7a3l8QUxZz4YlEdhf9xgrT8luzhK6WZa4ABy7HkOxEgx
-         d59+Lv0xk5eR31I3kYptPdoNVm9QE+f76nCoTLIUi4/KjD3ASjP5drIPoGmD0Z67zy
-         /etVLAyywPJjEatPvNP/wG3HpGEC/tmCp/VjH6F1+nY2KAhMxZO2B9AeTwlpJRDpk/
-         qc70WCih+WpWV3hJSBOfxtQt3zXszCa4NaVz1/mn10Bbhgv5qgU9S9xtsHR/h7JMjh
-         lzqmbfc7UBDPw==
-Date:   Fri, 13 Aug 2021 11:24:32 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Shay Drory <shayd@nvidia.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20210813112432.07a6de8b@canb.auug.org.au>
+        id S238366AbhHMBts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 21:49:48 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:8014 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238309AbhHMBtq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 21:49:46 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Gm60r1G6szYp3R;
+        Fri, 13 Aug 2021 09:49:00 +0800 (CST)
+Received: from dggpeml500024.china.huawei.com (7.185.36.10) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 13 Aug 2021 09:49:17 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 13 Aug 2021 09:49:17 +0800
+From:   Yufeng Mo <moyufeng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <shenjian15@huawei.com>,
+        <lipeng321@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linyunsheng@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>, <salil.mehta@huawei.com>,
+        <moyufeng@huawei.com>, <linuxarm@huawei.com>,
+        <linuxarm@openeuler.org>, <dledford@redhat.com>, <jgg@ziepe.ca>,
+        <netanel@amazon.com>, <akiyano@amazon.com>,
+        <thomas.lendacky@amd.com>, <irusskikh@marvell.com>,
+        <michael.chan@broadcom.com>, <edwin.peer@broadcom.com>,
+        <rohitm@chelsio.com>, <jacob.e.keller@intel.com>,
+        <ioana.ciornei@nxp.com>, <vladimir.oltean@nxp.com>,
+        <sgoutham@marvell.com>, <sbhatta@marvell.com>, <saeedm@nvidia.com>,
+        <ecree.xilinx@gmail.com>, <grygorii.strashko@ti.com>,
+        <merez@codeaurora.org>, <kvalo@codeaurora.org>,
+        <linux-wireless@vger.kernel.org>
+Subject: [RFC V3 net-next 0/4] ethtool: extend coalesce uAPI
+Date:   Fri, 13 Aug 2021 09:45:25 +0800
+Message-ID: <1628819129-23332-1-git-send-email-moyufeng@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/5ZEM9E+bDKf2fYF.W7mhSOQ";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500024.china.huawei.com (7.185.36.10)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/5ZEM9E+bDKf2fYF.W7mhSOQ
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+In order to support some configuration in coalesce uAPI, this RFC
+extends coalesce uAPI and add support for CQE mode.
 
-Hi all,
+Below is some test result with HNS3 driver:
+1. old ethtool(ioctl) + new kernel:
+estuary:/$ ethtool -c eth0
+Coalesce parameters for eth0:
+Adaptive RX: on  TX: on
+stats-block-usecs: 0
+sample-interval: 0
+pkt-rate-low: 0
+pkt-rate-high: 0
 
-Today's linux-next merge of the net-next tree got a conflict in:
+rx-usecs: 20
+rx-frames: 0
+rx-usecs-irq: 0
+rx-frames-irq: 0
 
-  drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
+tx-usecs: 20
+tx-frames: 0
+tx-usecs-irq: 0
+tx-frames-irq: 0
 
-between commit:
+rx-usecs-low: 0
+rx-frame-low: 0
+tx-usecs-low: 0
+tx-frame-low: 0
 
-  5957cc557dc5 ("net/mlx5: Set all field of mlx5_irq before inserting it to=
- the xarray")
+rx-usecs-high: 0
+rx-frame-high: 0
+tx-usecs-high: 0
+tx-frame-high: 0
 
-from the net tree and commit:
+2. ethtool(netlink with cqe mode) + kernel without cqe mode:
+estuary:/$ ethtool -c eth0
+Coalesce parameters for eth0:
+Adaptive RX: on  TX: on
+stats-block-usecs: n/a
+sample-interval: n/a
+pkt-rate-low: n/a
+pkt-rate-high: n/a
 
-  2d0b41a37679 ("net/mlx5: Refcount mlx5_irq with integer")
+rx-usecs: 20
+rx-frames: 0
+rx-usecs-irq: n/a
+rx-frames-irq: n/a
 
-from the net-next tree.
+tx-usecs: 20
+tx-frames: 0
+tx-usecs-irq: n/a
+tx-frames-irq: n/a
 
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
+rx-usecs-low: n/a
+rx-frame-low: n/a
+tx-usecs-low: n/a
+tx-frame-low: n/a
 
---=20
-Cheers,
-Stephen Rothwell
+rx-usecs-high: 0
+rx-frame-high: n/a
+tx-usecs-high: 0
+tx-frame-high: n/a
 
-diff --cc drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-index 3465b363fc2f,60bfcad1873c..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-@@@ -214,8 -234,7 +234,8 @@@ static struct mlx5_irq *irq_request(str
-  		err =3D -ENOMEM;
-  		goto err_cpumask;
-  	}
- +	irq->pool =3D pool;
-- 	kref_init(&irq->kref);
-+ 	irq->refcount =3D 1;
-  	irq->index =3D i;
-  	err =3D xa_err(xa_store(&pool->irqs, irq->index, irq, GFP_KERNEL));
-  	if (err) {
-@@@ -459,10 -475,13 +478,14 @@@ static void irq_pool_free(struct mlx5_i
-  	struct mlx5_irq *irq;
-  	unsigned long index;
- =20
-+ 	/* There are cases in which we are destrying the irq_table before
-+ 	 * freeing all the IRQs, fast teardown for example. Hence, free the irqs
-+ 	 * which might not have been freed.
-+ 	 */
-  	xa_for_each(&pool->irqs, index, irq)
-- 		irq_release(&irq->kref);
-+ 		irq_release(irq);
-  	xa_destroy(&pool->irqs);
- +	mutex_destroy(&pool->lock);
-  	kvfree(pool);
-  }
- =20
+CQE mode RX: n/a  TX: n/a
 
---Sig_/5ZEM9E+bDKf2fYF.W7mhSOQ
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+3. ethool(netlink with cqe mode) + kernel with cqe mode:
+estuary:/$ ethtool -c eth0
+Coalesce parameters for eth0:
+Adaptive RX: on  TX: on
+stats-block-usecs: n/a
+sample-interval: n/a
+pkt-rate-low: n/a
+pkt-rate-high: n/a
 
------BEGIN PGP SIGNATURE-----
+rx-usecs: 20
+rx-frames: 0
+rx-usecs-irq: n/a
+rx-frames-irq: n/a
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmEVydEACgkQAVBC80lX
-0GyZ9gf/Q4g9AyLnZPeMzb1M7wl05yPwA0hyLLyMey1EFFZprgHJmaQn6q2cCf+z
-cJ3XBcDsDs6wZPOU5cYSLKQ5n7JUzpNL7klOcYKBxrD59QIRPrb7oXf807P0U95R
-clvI+w7wLmAR42AZwRMn0PqKWOmRxdU6/wNGOQ6h1hw2SqacT+P1eoCGDMMCPtM8
-Gpnm4YOeh8pUL+LZ+JE15kx85uBxL4XENhq7j6cjbHEX+vRSMJ7Sk+4CH/VXbKo3
-iJMvnaYMJMGVdjGsZI6x0Nsz/WSteTOgw7tl/FA+hmY3xiCJRD7SdLSepCBZf5y9
-kXhRnGOrdmhRshXcLpbvX0OjfdMvUw==
-=P/FL
------END PGP SIGNATURE-----
+tx-usecs: 20
+tx-frames: 0
+tx-usecs-irq: n/a
+tx-frames-irq: n/a
 
---Sig_/5ZEM9E+bDKf2fYF.W7mhSOQ--
+rx-usecs-low: n/a
+rx-frame-low: n/a
+tx-usecs-low: n/a
+tx-frame-low: n/a
+
+rx-usecs-high: 0
+rx-frame-high: n/a
+tx-usecs-high: 0
+tx-frame-high: n/a
+
+CQE mode RX: off  TX: off
+
+4. ethool(netlink without cqe mode) + kernel with cqe mode:
+estuary:/$ ethtool -c eth0
+Coalesce parameters for eth0:
+Adaptive RX: on  TX: on
+stats-block-usecs: n/a
+sample-interval: n/a
+pkt-rate-low: n/a
+pkt-rate-high: n/a
+
+rx-usecs: 20
+rx-frames: 0
+rx-usecs-irq: n/a
+rx-frames-irq: n/a
+
+tx-usecs: 20
+tx-frames: 0
+tx-usecs-irq: n/a
+tx-frames-irq: n/a
+
+rx-usecs-low: n/a
+rx-frame-low: n/a
+tx-usecs-low: n/a
+tx-frame-low: n/a
+
+rx-usecs-high: 0
+rx-frame-high: n/a
+tx-usecs-high: 0
+tx-frame-high: n/a
+
+Change log:
+V2 -> V3:
+         1. split #1 into adding new parameter and adding new attributes.
+         2. use NLA_POLICY_MAX(NLA_U8, 1) instead of NLA_U8.
+         3. modify the description of CQE in Document. 
+
+V1 -> V2:
+         refactor #1&#2 in V1 suggestted by Jakub Kicinski.
+
+Yufeng Mo (4):
+  ethtool: add two coalesce attributes for CQE mode
+  ethtool: extend coalesce setting uAPI with CQE mode
+  net: hns3: add support for EQE/CQE mode configuration
+  net: hns3: add ethtool support for CQE/EQE mode configuration
+
+ Documentation/networking/ethtool-netlink.rst       |  8 ++++
+ drivers/infiniband/ulp/ipoib/ipoib_ethtool.c       |  8 +++-
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c      |  8 +++-
+ drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c       |  8 +++-
+ .../net/ethernet/aquantia/atlantic/aq_ethtool.c    |  8 +++-
+ drivers/net/ethernet/broadcom/bcmsysport.c         |  8 +++-
+ drivers/net/ethernet/broadcom/bnx2.c               | 12 ++++--
+ .../net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c    |  8 +++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c  |  8 +++-
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c     |  8 +++-
+ drivers/net/ethernet/broadcom/tg3.c                | 10 ++++-
+ drivers/net/ethernet/brocade/bna/bnad_ethtool.c    | 12 ++++--
+ drivers/net/ethernet/cavium/liquidio/lio_ethtool.c |  8 +++-
+ .../net/ethernet/cavium/thunder/nicvf_ethtool.c    |  4 +-
+ drivers/net/ethernet/chelsio/cxgb/cxgb2.c          |  8 +++-
+ drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c    |  8 +++-
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c |  8 +++-
+ .../net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c    |  8 +++-
+ drivers/net/ethernet/cisco/enic/enic_ethtool.c     |  8 +++-
+ drivers/net/ethernet/cortina/gemini.c              |  8 +++-
+ drivers/net/ethernet/emulex/benet/be_ethtool.c     |  8 +++-
+ drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c |  8 +++-
+ .../net/ethernet/freescale/enetc/enetc_ethtool.c   |  8 +++-
+ drivers/net/ethernet/freescale/fec_main.c          | 14 ++++---
+ drivers/net/ethernet/freescale/gianfar_ethtool.c   |  8 +++-
+ drivers/net/ethernet/hisilicon/hip04_eth.c         |  8 +++-
+ drivers/net/ethernet/hisilicon/hns/hns_ethtool.c   |  8 +++-
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  1 +
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 49 +++++++++++++++++++++-
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    | 11 +++++
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 26 ++++++++++--
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |  1 +
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  1 +
+ drivers/net/ethernet/huawei/hinic/hinic_ethtool.c  |  8 +++-
+ drivers/net/ethernet/intel/e1000/e1000_ethtool.c   |  8 +++-
+ drivers/net/ethernet/intel/e1000e/ethtool.c        |  8 +++-
+ drivers/net/ethernet/intel/fm10k/fm10k_ethtool.c   |  8 +++-
+ drivers/net/ethernet/intel/i40e/i40e_ethtool.c     |  8 +++-
+ drivers/net/ethernet/intel/iavf/iavf_ethtool.c     |  8 +++-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c       | 12 ++++--
+ drivers/net/ethernet/intel/igb/igb_ethtool.c       |  8 +++-
+ drivers/net/ethernet/intel/igbvf/ethtool.c         |  8 +++-
+ drivers/net/ethernet/intel/igc/igc_ethtool.c       |  8 +++-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c   |  8 +++-
+ drivers/net/ethernet/intel/ixgbevf/ethtool.c       |  8 +++-
+ drivers/net/ethernet/jme.c                         | 12 ++++--
+ drivers/net/ethernet/marvell/mv643xx_eth.c         | 12 ++++--
+ drivers/net/ethernet/marvell/mvneta.c              | 14 +++++--
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c    | 14 +++++--
+ .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  |  8 +++-
+ drivers/net/ethernet/marvell/skge.c                |  8 +++-
+ drivers/net/ethernet/marvell/sky2.c                |  8 +++-
+ drivers/net/ethernet/mellanox/mlx4/en_ethtool.c    |  8 +++-
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  8 +++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  8 +++-
+ .../ethernet/mellanox/mlx5/core/ipoib/ethtool.c    |  8 +++-
+ drivers/net/ethernet/myricom/myri10ge/myri10ge.c   | 12 ++++--
+ .../net/ethernet/netronome/nfp/nfp_net_ethtool.c   |  8 +++-
+ drivers/net/ethernet/ni/nixge.c                    | 14 +++++--
+ .../net/ethernet/pensando/ionic/ionic_ethtool.c    |  8 +++-
+ .../ethernet/qlogic/netxen/netxen_nic_ethtool.c    |  8 +++-
+ drivers/net/ethernet/qlogic/qede/qede.h            |  4 +-
+ drivers/net/ethernet/qlogic/qede/qede_ethtool.c    |  8 +++-
+ .../net/ethernet/qlogic/qlcnic/qlcnic_ethtool.c    |  8 +++-
+ drivers/net/ethernet/realtek/r8169_main.c          | 10 ++++-
+ drivers/net/ethernet/samsung/sxgbe/sxgbe_ethtool.c |  8 +++-
+ drivers/net/ethernet/sfc/ethtool.c                 |  8 +++-
+ drivers/net/ethernet/sfc/falcon/ethtool.c          |  8 +++-
+ drivers/net/ethernet/socionext/netsec.c            | 10 +++--
+ .../net/ethernet/stmicro/stmmac/stmmac_ethtool.c   |  8 +++-
+ drivers/net/ethernet/synopsys/dwc-xlgmac-ethtool.c | 14 +++++--
+ drivers/net/ethernet/tehuti/tehuti.c               | 12 ++++--
+ drivers/net/ethernet/ti/cpsw.c                     |  2 +-
+ drivers/net/ethernet/ti/cpsw_ethtool.c             |  8 +++-
+ drivers/net/ethernet/ti/cpsw_new.c                 |  2 +-
+ drivers/net/ethernet/ti/cpsw_priv.h                |  8 +++-
+ drivers/net/ethernet/ti/davinci_emac.c             |  8 +++-
+ drivers/net/ethernet/via/via-velocity.c            |  8 +++-
+ drivers/net/ethernet/xilinx/ll_temac_main.c        | 14 +++++--
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c  | 14 +++++--
+ drivers/net/netdevsim/ethtool.c                    |  8 +++-
+ drivers/net/tun.c                                  |  8 +++-
+ drivers/net/usb/r8152.c                            |  8 +++-
+ drivers/net/virtio_net.c                           |  8 +++-
+ drivers/net/vmxnet3/vmxnet3_ethtool.c              | 12 ++++--
+ drivers/net/wireless/ath/wil6210/ethtool.c         | 14 +++++--
+ drivers/s390/net/qeth_ethtool.c                    |  4 +-
+ drivers/staging/qlge/qlge_ethtool.c                | 10 ++++-
+ include/linux/ethtool.h                            | 22 ++++++++--
+ include/uapi/linux/ethtool_netlink.h               |  2 +
+ net/ethtool/coalesce.c                             | 29 ++++++++++---
+ net/ethtool/ioctl.c                                | 15 +++++--
+ net/ethtool/netlink.h                              |  2 +-
+ 93 files changed, 671 insertions(+), 208 deletions(-)
+
+-- 
+2.8.1
+
