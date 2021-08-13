@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 132923EAE49
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 03:49:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0872F3EAE46
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 03:49:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238480AbhHMBtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 21:49:53 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:8407 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238310AbhHMBtq (ORCPT
+        id S238419AbhHMBtu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 21:49:50 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:17013 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238315AbhHMBtq (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 12 Aug 2021 21:49:46 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Gm5wb5G6pz86yr;
-        Fri, 13 Aug 2021 09:45:19 +0800 (CST)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Gm5wx6l2Dzb0hx;
+        Fri, 13 Aug 2021 09:45:37 +0800 (CST)
 Received: from dggpeml500024.china.huawei.com (7.185.36.10) by
  dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -39,9 +39,9 @@ CC:     <netdev@vger.kernel.org>, <shenjian15@huawei.com>,
         <ecree.xilinx@gmail.com>, <grygorii.strashko@ti.com>,
         <merez@codeaurora.org>, <kvalo@codeaurora.org>,
         <linux-wireless@vger.kernel.org>
-Subject: [RFC V3 net-next 3/4] net: hns3: add support for EQE/CQE mode configuration
-Date:   Fri, 13 Aug 2021 09:45:28 +0800
-Message-ID: <1628819129-23332-4-git-send-email-moyufeng@huawei.com>
+Subject: [RFC V3 net-next 4/4] net: hns3: add ethtool support for CQE/EQE mode configuration
+Date:   Fri, 13 Aug 2021 09:45:29 +0800
+Message-ID: <1628819129-23332-5-git-send-email-moyufeng@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1628819129-23332-1-git-send-email-moyufeng@huawei.com>
 References: <1628819129-23332-1-git-send-email-moyufeng@huawei.com>
@@ -55,166 +55,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For device whose version is above V3(include V3), the GL can
-select EQE or CQE mode, so adds support for it.
-
-In CQE mode, the coalesced timer will restart when the first new
-completion occurs, while in EQE mode, the timer will not restart.
+Add support in ethtool for switching EQE/CQE mode.
 
 Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  1 +
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 49 +++++++++++++++++++++-
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  8 ++++
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |  1 +
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  1 +
- 5 files changed, 58 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  6 +++---
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  3 +++
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 18 +++++++++++++++++-
+ 3 files changed, 23 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index e0b7c3c..e08fd33 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -772,6 +772,7 @@ struct hnae3_knic_private_info {
- 
- 	u16 int_rl_setting;
- 	enum pkt_hash_types rss_type;
-+	void __iomem *io_base;
- };
- 
- struct hnae3_roce_private_info {
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index cb8d5da..47fe6d2 100644
+index 47fe6d2..d9f697b 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -4434,9 +4434,7 @@ static void hns3_tx_dim_work(struct work_struct *work)
- static void hns3_nic_init_dim(struct hns3_enet_tqp_vector *tqp_vector)
- {
- 	INIT_WORK(&tqp_vector->rx_group.dim.work, hns3_rx_dim_work);
--	tqp_vector->rx_group.dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_EQE;
- 	INIT_WORK(&tqp_vector->tx_group.dim.work, hns3_tx_dim_work);
--	tqp_vector->tx_group.dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_EQE;
- }
- 
- static int hns3_nic_init_vector_data(struct hns3_nic_priv *priv)
-@@ -4954,6 +4952,48 @@ static void hns3_info_show(struct hns3_nic_priv *priv)
- 	dev_info(priv->dev, "Max mtu size: %u\n", priv->netdev->max_mtu);
- }
- 
-+static void hns3_set_cq_period_mode(struct hns3_nic_priv *priv,
-+				    enum dim_cq_period_mode mode, bool is_tx)
-+{
-+	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(priv->ae_handle->pdev);
-+	struct hnae3_handle *handle = priv->ae_handle;
-+	int i;
-+
-+	if (is_tx) {
-+		priv->tx_cqe_mode = mode;
-+
-+		for (i = 0; i < priv->vector_num; i++)
-+			priv->tqp_vector[i].tx_group.dim.mode = mode;
-+	} else {
-+		priv->rx_cqe_mode = mode;
-+
-+		for (i = 0; i < priv->vector_num; i++)
-+			priv->tqp_vector[i].rx_group.dim.mode = mode;
-+	}
-+
-+	/* only device version above V3(include V3), GL can switch CQ/EQ
-+	 * period mode.
-+	 */
-+	if (ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V3) {
-+		u32 new_mode;
-+		u64 reg;
-+
-+		new_mode = (mode == DIM_CQ_PERIOD_MODE_START_FROM_CQE) ?
-+			HNS3_CQ_MODE_CQE : HNS3_CQ_MODE_EQE;
-+		reg = is_tx ? HNS3_GL1_CQ_MODE_REG : HNS3_GL0_CQ_MODE_REG;
-+
-+		writel(new_mode, handle->kinfo.io_base + reg);
-+	}
-+}
-+
-+static void hns3_cq_period_mode_init(struct hns3_nic_priv *priv,
-+				     enum dim_cq_period_mode tx_mode,
-+				     enum dim_cq_period_mode rx_mode)
-+{
-+	hns3_set_cq_period_mode(priv, tx_mode, true);
-+	hns3_set_cq_period_mode(priv, rx_mode, false);
-+}
-+
- static int hns3_client_init(struct hnae3_handle *handle)
- {
- 	struct pci_dev *pdev = handle->pdev;
-@@ -5021,6 +5061,9 @@ static int hns3_client_init(struct hnae3_handle *handle)
- 		goto out_init_ring;
+@@ -4986,9 +4986,9 @@ static void hns3_set_cq_period_mode(struct hns3_nic_priv *priv,
  	}
+ }
  
-+	hns3_cq_period_mode_init(priv, DIM_CQ_PERIOD_MODE_START_FROM_EQE,
-+				 DIM_CQ_PERIOD_MODE_START_FROM_EQE);
-+
- 	ret = hns3_init_phy(netdev);
- 	if (ret)
- 		goto out_init_phy;
-@@ -5353,6 +5396,8 @@ static int hns3_reset_notify_init_enet(struct hnae3_handle *handle)
- 	if (ret)
- 		goto err_uninit_vector;
- 
-+	hns3_cq_period_mode_init(priv, priv->tx_cqe_mode, priv->rx_cqe_mode);
-+
- 	/* the device can work without cpu rmap, only aRFS needs it */
- 	ret = hns3_set_rx_cpu_rmap(netdev);
- 	if (ret)
+-static void hns3_cq_period_mode_init(struct hns3_nic_priv *priv,
+-				     enum dim_cq_period_mode tx_mode,
+-				     enum dim_cq_period_mode rx_mode)
++void hns3_cq_period_mode_init(struct hns3_nic_priv *priv,
++			      enum dim_cq_period_mode tx_mode,
++			      enum dim_cq_period_mode rx_mode)
+ {
+ 	hns3_set_cq_period_mode(priv, tx_mode, true);
+ 	hns3_set_cq_period_mode(priv, rx_mode, false);
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index 15af3d9..9cb59f7 100644
+index 9cb59f7..30891fb 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -201,6 +201,12 @@ enum hns3_nic_state {
+@@ -710,4 +710,7 @@ void hns3_dbg_register_debugfs(const char *debugfs_dir_name);
+ void hns3_dbg_unregister_debugfs(void);
+ void hns3_shinfo_pack(struct skb_shared_info *shinfo, __u32 *size);
+ u16 hns3_get_max_available_channels(struct hnae3_handle *h);
++void hns3_cq_period_mode_init(struct hns3_nic_priv *priv,
++			      enum dim_cq_period_mode tx_mode,
++			      enum dim_cq_period_mode rx_mode);
+ #endif
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index 6470bba..4a27f17 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -1163,6 +1163,11 @@ static int hns3_get_coalesce(struct net_device *netdev,
+ 	cmd->tx_max_coalesced_frames = tx_coal->int_ql;
+ 	cmd->rx_max_coalesced_frames = rx_coal->int_ql;
  
- #define HNS3_RING_EN_B				0
- 
-+#define HNS3_GL0_CQ_MODE_REG			0x20d00
-+#define HNS3_GL1_CQ_MODE_REG			0x20d04
-+#define HNS3_GL2_CQ_MODE_REG			0x20d08
-+#define HNS3_CQ_MODE_EQE			1U
-+#define HNS3_CQ_MODE_CQE			0U
++	kernel_coal->use_cqe_mode_tx = (priv->tx_cqe_mode ==
++					DIM_CQ_PERIOD_MODE_START_FROM_CQE);
++	kernel_coal->use_cqe_mode_rx = (priv->rx_cqe_mode ==
++					DIM_CQ_PERIOD_MODE_START_FROM_CQE);
 +
- enum hns3_pkt_l2t_type {
- 	HNS3_L2_TYPE_UNICAST,
- 	HNS3_L2_TYPE_MULTICAST,
-@@ -569,6 +575,8 @@ struct hns3_nic_priv {
+ 	return 0;
+ }
  
- 	unsigned long state;
+@@ -1332,6 +1337,8 @@ static int hns3_set_coalesce(struct net_device *netdev,
+ 	struct hns3_enet_coalesce *tx_coal = &priv->tx_coal;
+ 	struct hns3_enet_coalesce *rx_coal = &priv->rx_coal;
+ 	u16 queue_num = h->kinfo.num_tqps;
++	enum dim_cq_period_mode tx_mode;
++	enum dim_cq_period_mode rx_mode;
+ 	int ret;
+ 	int i;
  
-+	enum dim_cq_period_mode tx_cqe_mode;
-+	enum dim_cq_period_mode rx_cqe_mode;
- 	struct hns3_enet_coalesce tx_coal;
- 	struct hns3_enet_coalesce rx_coal;
- 	u32 tx_copybreak;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index f15d76e..74dc390 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -1814,6 +1814,7 @@ static int hclge_vport_setup(struct hclge_vport *vport, u16 num_tqps)
- 	nic->pdev = hdev->pdev;
- 	nic->ae_algo = &ae_algo;
- 	nic->numa_node_mask = hdev->numa_node_mask;
-+	nic->kinfo.io_base = hdev->hw.io_base;
+@@ -1357,6 +1364,14 @@ static int hns3_set_coalesce(struct net_device *netdev,
+ 	for (i = 0; i < queue_num; i++)
+ 		hns3_set_coalesce_per_queue(netdev, cmd, i);
  
- 	ret = hclge_knic_setup(vport, num_tqps,
- 			       hdev->num_tx_desc, hdev->num_rx_desc);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index 3a19f08..ff65173 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -539,6 +539,7 @@ static int hclgevf_set_handle_info(struct hclgevf_dev *hdev)
- 	nic->pdev = hdev->pdev;
- 	nic->numa_node_mask = hdev->numa_node_mask;
- 	nic->flags |= HNAE3_SUPPORT_VF;
-+	nic->kinfo.io_base = hdev->hw.io_base;
++	tx_mode = kernel_coal->use_cqe_mode_tx ?
++		  DIM_CQ_PERIOD_MODE_START_FROM_CQE :
++		  DIM_CQ_PERIOD_MODE_START_FROM_EQE;
++	rx_mode = kernel_coal->use_cqe_mode_rx ?
++		  DIM_CQ_PERIOD_MODE_START_FROM_CQE :
++		  DIM_CQ_PERIOD_MODE_START_FROM_EQE;
++	hns3_cq_period_mode_init(priv, tx_mode, rx_mode);
++
+ 	return 0;
+ }
  
- 	ret = hclgevf_knic_setup(hdev);
- 	if (ret)
+@@ -1662,7 +1677,8 @@ static int hns3_set_tunable(struct net_device *netdev,
+ 				 ETHTOOL_COALESCE_USE_ADAPTIVE |	\
+ 				 ETHTOOL_COALESCE_RX_USECS_HIGH |	\
+ 				 ETHTOOL_COALESCE_TX_USECS_HIGH |	\
+-				 ETHTOOL_COALESCE_MAX_FRAMES)
++				 ETHTOOL_COALESCE_MAX_FRAMES |		\
++				 ETHTOOL_COALESCE_USE_CQE)
+ 
+ static int hns3_get_ts_info(struct net_device *netdev,
+ 			    struct ethtool_ts_info *info)
 -- 
 2.8.1
 
