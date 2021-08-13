@@ -2,354 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2513F3EB967
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 17:46:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C78023EB97B
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 17:49:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241278AbhHMPrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 11:47:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54974 "EHLO
+        id S241324AbhHMPth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 11:49:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236818AbhHMPrD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 11:47:03 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6A9C061756;
-        Fri, 13 Aug 2021 08:46:37 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id l11so12496463plk.6;
-        Fri, 13 Aug 2021 08:46:37 -0700 (PDT)
+        with ESMTP id S241152AbhHMPtg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 11:49:36 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64EF3C0617AD
+        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 08:49:09 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id a20so12558608plm.0
+        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 08:49:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wKFFzJ6O/UU/EGmVRS4t6oCyritoPh4g9td5WczAyTo=;
-        b=gpOB0Y8XQiqz1aLvaU6jIg9RPMX5OaDCdWoo9W0/Q2q+kzIydjrOBlFyjP7UzB3kKu
-         pKC5fQKwcstAd0YQI+OOMc+Hph81qJBcgd6a6j/eZV4DZzaRXi8P0eE9TkqFFEfuP6Fs
-         nqc3F+blWCYXnhrDhS5Xax0X9UD9UA1rqQ97e73U530OMewKqtQ32RmFCPlsK9QLyJDd
-         JzDYB4UO2udw85z6h2dZ4RGC4/E80VSb0OqYVuR0Ko6CkL954JcBoU8gKe0yErZye0/l
-         hpIPQs5WrePOhscpt5NogL/l9EEbPoUJkMopea8nPd8pJVwp5GuAwu7eXpiJmMd23C80
-         v3rQ==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=wwWCtmitPIziHrsVDs3e/WXMsT5Htg5FsOmnBCodSj8=;
+        b=IYdotH9NOHI+p6YKBepbynbdJfSmXJkJybgDCe1TtlsZi9d8s2ARhtWMwxaW4OtCLq
+         bFaaxwtms7kw7v0QGyAhrDtCCioiCLcGglpFR8y2So3ynzX/1/r1QDH+OpSsyD4XSNXW
+         e09KeqUi7PPKNy3dHFxjXD1hHHD+rZWpC+hMA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wKFFzJ6O/UU/EGmVRS4t6oCyritoPh4g9td5WczAyTo=;
-        b=fZWoB17GaTa4GCnBfHifAwb+TTx6ktWabYM6mAyZnCEI63dBVeRCup5DuEoyERKd6+
-         L/jgF71woHzWFrxFFV2lzUAmnpE2Q2OsH5IzbX7xQBZHeLCCBjZtnHMPJOhB3OXAcA2g
-         hsuCsebXjfG024uoxWo61Oul/9lh8+bf7fsco38Tb/ZhUTk7FxxHNJemumE9R76YPiYp
-         75sy8gaoDX8V0fo075g/0XTgbP/ofeS3Ye+ZfkEuUaBaezc0AUaqhDUSgfrFhLtWOv8S
-         jQRb9CXB/AVEBkBiwIIuGqgmbGBCRty76+8IoloTTv46tONTxByc2J0stesk7HRHkGqJ
-         wjag==
-X-Gm-Message-State: AOAM532nE3efJ2fiypn7We4Hg7Lu5vEzzfwPCnmufeUJe0G1+5SP1aM6
-        7uA/CG0nUw3jAL3nFbh0hwc=
-X-Google-Smtp-Source: ABdhPJzk13A/+fCbnakCVSOwZJNHKGdKPt2T4sFIbI1aKCvZDK2x7JFoHkEcCMPEgs+3McCqxtRHYw==
-X-Received: by 2002:a65:6894:: with SMTP id e20mr2777702pgt.419.1628869596537;
-        Fri, 13 Aug 2021 08:46:36 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
-        by smtp.gmail.com with ESMTPSA id g26sm3345160pgb.45.2021.08.13.08.46.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Aug 2021 08:46:36 -0700 (PDT)
-From:   Tianyu Lan <ltykernel@gmail.com>
-Subject: Re: [PATCH V3 01/13] x86/HV: Initialize GHCB page in Isolation VM
-To:     Michael Kelley <mikelley@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "joro@8bytes.org" <joro@8bytes.org>,
-        "will@kernel.org" <will@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "ardb@kernel.org" <ardb@kernel.org>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "pgonda@google.com" <pgonda@google.com>,
-        "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "rppt@kernel.org" <rppt@kernel.org>,
-        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "saravanand@fb.com" <saravanand@fb.com>,
-        "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
-        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "rientjes@google.com" <rientjes@google.com>,
-        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
-        "tj@kernel.org" <tj@kernel.org>
-Cc:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        vkuznets <vkuznets@redhat.com>,
-        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
-        "dave.hansen@intel.com" <dave.hansen@intel.com>
-References: <20210809175620.720923-1-ltykernel@gmail.com>
- <20210809175620.720923-2-ltykernel@gmail.com>
- <MWHPR21MB1593BDFA4A71CE6882E25400D7F99@MWHPR21MB1593.namprd21.prod.outlook.com>
-Message-ID: <ec1b8b47-46b7-910e-df87-584bce585999@gmail.com>
-Date:   Fri, 13 Aug 2021 23:46:20 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=wwWCtmitPIziHrsVDs3e/WXMsT5Htg5FsOmnBCodSj8=;
+        b=pIhvNcNFoeBoIDTJc3qJ/WHSOIQxcSuKvibcsJfBYzgmmEWJ20V1/aXZSuHSCH5sOz
+         YbXp1grRRtbCSXyMx9t0u35hA+8+XAswdKbUWvZv6TmyXzhKOb+78FhJJqnpkHx8Q7DY
+         cFGdT/sThwtAU1crn2nfA3Z9mLXYM+EzRRobvfyoHdL4UVJWFrzc0SQ7BG1ieM16vKNM
+         MsUma/3XSWiW9M+9GmJ/HXRyV+SQKGRnfnC0r0pnrfZ2jgLrsXqXGR3jc7Q9Hv1bL+OT
+         w0t6tleDQk6fWMF3JdayCMLT35O6AARsVhZmDlafDYifCXe9C8CkajHEXQLDDV+mfRYL
+         PoqQ==
+X-Gm-Message-State: AOAM532j9Xxvp9ku0Fwq/b4h07qPyDDAWhf120x19xFwSPXyDSJgNtRe
+        vJdMX79AWQ2JkcWTB9tFh8e4Kw==
+X-Google-Smtp-Source: ABdhPJyv0yGI/+CjV3WSksJoELQp2QfXxshGvk60ssRFFyGXixHmNtvKKEOi+49tFIULL6ceroPwFw==
+X-Received: by 2002:a05:6a00:150d:b029:3c8:e86e:79ec with SMTP id q13-20020a056a00150db02903c8e86e79ecmr3123596pfu.62.1628869748959;
+        Fri, 13 Aug 2021 08:49:08 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id u21sm2725385pfh.163.2021.08.13.08.49.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Aug 2021 08:49:08 -0700 (PDT)
+Date:   Fri, 13 Aug 2021 08:49:07 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     linux-hardening@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Keith Packard <keithpac@amazon.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH 10/64] lib80211: Use struct_group() for memcpy() region
+Message-ID: <202108130846.EC339BCA@keescook>
+References: <20210727205855.411487-1-keescook@chromium.org>
+ <20210727205855.411487-11-keescook@chromium.org>
+ <a9c8ae9e05cfe2679cd8a7ef0ab20b66cf38b930.camel@sipsolutions.net>
 MIME-Version: 1.0
-In-Reply-To: <MWHPR21MB1593BDFA4A71CE6882E25400D7F99@MWHPR21MB1593.namprd21.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <a9c8ae9e05cfe2679cd8a7ef0ab20b66cf38b930.camel@sipsolutions.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael:
-      Thanks for your review.
-
-On 8/13/2021 3:14 AM, Michael Kelley wrote:
-> From: Tianyu Lan <ltykernel@gmail.com> Sent: Monday, August 9, 2021 10:56 AM
->> Subject: [PATCH V3 01/13] x86/HV: Initialize GHCB page in Isolation VM
+On Fri, Aug 13, 2021 at 10:04:09AM +0200, Johannes Berg wrote:
+> On Tue, 2021-07-27 at 13:58 -0700, Kees Cook wrote:
+> > 
+> > +++ b/include/linux/ieee80211.h
+> > @@ -297,9 +297,11 @@ static inline u16 ieee80211_sn_sub(u16 sn1, u16 sn2)
+> >  struct ieee80211_hdr {
+> >  	__le16 frame_control;
+> >  	__le16 duration_id;
+> > -	u8 addr1[ETH_ALEN];
+> > -	u8 addr2[ETH_ALEN];
+> > -	u8 addr3[ETH_ALEN];
+> > +	struct_group(addrs,
+> > +		u8 addr1[ETH_ALEN];
+> > +		u8 addr2[ETH_ALEN];
+> > +		u8 addr3[ETH_ALEN];
+> > +	);
+> >  	__le16 seq_ctrl;
+> >  	u8 addr4[ETH_ALEN];
+> >  } __packed __aligned(2);
 > 
-> The subject line tag on patches under arch/x86/hyperv is generally "x86/hyperv:".
-> There's some variation in the spelling of "hyperv", but let's go with the all
-> lowercase "hyperv".
-
-OK. Will update.
-
+> This file isn't really just lib80211, it's also used by everyone else
+> for 802.11, but I guess that's OK - after all, this doesn't really
+> result in any changes here.
 > 
->>
->> Hyper-V exposes GHCB page via SEV ES GHCB MSR for SNP guest
->> to communicate with hypervisor. Map GHCB page for all
->> cpus to read/write MSR register and submit hvcall request
->> via GHCB.
->>
->> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
->> ---
->>   arch/x86/hyperv/hv_init.c       | 66 +++++++++++++++++++++++++++++++--
->>   arch/x86/include/asm/mshyperv.h |  2 +
->>   include/asm-generic/mshyperv.h  |  2 +
->>   3 files changed, 66 insertions(+), 4 deletions(-)
->>
->> diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
->> index 708a2712a516..0bb4d9ca7a55 100644
->> --- a/arch/x86/hyperv/hv_init.c
->> +++ b/arch/x86/hyperv/hv_init.c
->> @@ -20,6 +20,7 @@
->>   #include <linux/kexec.h>
->>   #include <linux/version.h>
->>   #include <linux/vmalloc.h>
->> +#include <linux/io.h>
->>   #include <linux/mm.h>
->>   #include <linux/hyperv.h>
->>   #include <linux/slab.h>
->> @@ -42,6 +43,31 @@ static void *hv_hypercall_pg_saved;
->>   struct hv_vp_assist_page **hv_vp_assist_page;
->>   EXPORT_SYMBOL_GPL(hv_vp_assist_page);
->>
->> +static int hyperv_init_ghcb(void)
->> +{
->> +	u64 ghcb_gpa;
->> +	void *ghcb_va;
->> +	void **ghcb_base;
->> +
->> +	if (!ms_hyperv.ghcb_base)
->> +		return -EINVAL;
->> +
->> +	/*
->> +	 * GHCB page is allocated by paravisor. The address
->> +	 * returned by MSR_AMD64_SEV_ES_GHCB is above shared
->> +	 * ghcb boundary and map it here.
->> +	 */
->> +	rdmsrl(MSR_AMD64_SEV_ES_GHCB, ghcb_gpa);
->> +	ghcb_va = memremap(ghcb_gpa, HV_HYP_PAGE_SIZE, MEMREMAP_WB);
->> +	if (!ghcb_va)
->> +		return -ENOMEM;
->> +
->> +	ghcb_base = (void **)this_cpu_ptr(ms_hyperv.ghcb_base);
->> +	*ghcb_base = ghcb_va;
->> +
->> +	return 0;
->> +}
->> +
->>   static int hv_cpu_init(unsigned int cpu)
->>   {
->>   	union hv_vp_assist_msr_contents msr = { 0 };
->> @@ -85,6 +111,8 @@ static int hv_cpu_init(unsigned int cpu)
->>   		}
->>   	}
->>
->> +	hyperv_init_ghcb();
->> +
->>   	return 0;
->>   }
->>
->> @@ -177,6 +205,14 @@ static int hv_cpu_die(unsigned int cpu)
->>   {
->>   	struct hv_reenlightenment_control re_ctrl;
->>   	unsigned int new_cpu;
->> +	void **ghcb_va = NULL;
+> > +++ b/net/wireless/lib80211_crypt_ccmp.c
+> > @@ -136,7 +136,8 @@ static int ccmp_init_iv_and_aad(const struct ieee80211_hdr *hdr,
+> >  	pos = (u8 *) hdr;
+> >  	aad[0] = pos[0] & 0x8f;
+> >  	aad[1] = pos[1] & 0xc7;
+> > -	memcpy(aad + 2, hdr->addr1, 3 * ETH_ALEN);
+> > +	BUILD_BUG_ON(sizeof(hdr->addrs) != 3 * ETH_ALEN);
+> > +	memcpy(aad + 2, &hdr->addrs, ETH_ALEN);
 > 
-> I'm not seeing any reason why this needs to be initialized.
 > 
->> +
->> +	if (ms_hyperv.ghcb_base) {
->> +		ghcb_va = (void **)this_cpu_ptr(ms_hyperv.ghcb_base);
->> +		if (*ghcb_va)
->> +			memunmap(*ghcb_va);
->> +		*ghcb_va = NULL;
->> +	}
->>
->>   	hv_common_cpu_die(cpu);
->>
->> @@ -383,9 +419,19 @@ void __init hyperv_init(void)
->>   			VMALLOC_END, GFP_KERNEL, PAGE_KERNEL_ROX,
->>   			VM_FLUSH_RESET_PERMS, NUMA_NO_NODE,
->>   			__builtin_return_address(0));
->> -	if (hv_hypercall_pg == NULL) {
->> -		wrmsrl(HV_X64_MSR_GUEST_OS_ID, 0);
->> -		goto remove_cpuhp_state;
->> +	if (hv_hypercall_pg == NULL)
->> +		goto clean_guest_os_id;
->> +
->> +	if (hv_isolation_type_snp()) {
->> +		ms_hyperv.ghcb_base = alloc_percpu(void *);
->> +		if (!ms_hyperv.ghcb_base)
->> +			goto clean_guest_os_id;
->> +
->> +		if (hyperv_init_ghcb()) {
->> +			free_percpu(ms_hyperv.ghcb_base);
->> +			ms_hyperv.ghcb_base = NULL;
->> +			goto clean_guest_os_id;
->> +		}
+> However, how is it you don't need the same change in net/mac80211/wpa.c?
 > 
-> Having the GHCB setup code here splits the hypercall page setup into
-> two parts, which is unexpected.  First the memory is allocated
-> for the hypercall page, then the GHCB stuff is done, then the hypercall
-> MSR is setup.  Is there a need to do this split?  Also, if the GHCB stuff
-> fails and you goto clean_guest_os_id, the memory allocated for the
-> hypercall page is never freed.
-
-
-Just not enable hypercall when fails to setup ghcb. Otherwise, we need 
-to disable hypercall in the failure code path.
-
-Yesï¼Œhypercall page should be freed in the clean_guest_os_id path.
-
+> We have three similar instances:
 > 
-> It's also unexpected to have hyperv_init_ghcb() called here and called
-> in hv_cpu_init().  Wouldn't it be possible to setup ghcb_base *before*
-> cpu_setup_state() is called, so that hv_cpu_init() would take care of
-> calling hyperv_init_ghcb() for the boot CPU?  That's the pattern used
-> by the VP assist page, the percpu input page, etc.
-
-I will have a try and report back. Thanks for suggestion.
-
+>         /* AAD (extra authenticate-only data) / masked 802.11 header
+>          * FC | A1 | A2 | A3 | SC | [A4] | [QC] */
+>         put_unaligned_be16(len_a, &aad[0]);
+>         put_unaligned(mask_fc, (__le16 *)&aad[2]);
+>         memcpy(&aad[4], &hdr->addr1, 3 * ETH_ALEN);
 > 
->>   	}
->>
->>   	rdmsrl(HV_X64_MSR_HYPERCALL, hypercall_msr.as_uint64);
->> @@ -456,7 +502,8 @@ void __init hyperv_init(void)
->>   	hv_query_ext_cap(0);
->>   	return;
->>
->> -remove_cpuhp_state:
->> +clean_guest_os_id:
->> +	wrmsrl(HV_X64_MSR_GUEST_OS_ID, 0);
->>   	cpuhp_remove_state(cpuhp);
->>   free_vp_assist_page:
->>   	kfree(hv_vp_assist_page);
->> @@ -484,6 +531,9 @@ void hyperv_cleanup(void)
->>   	 */
->>   	hv_hypercall_pg = NULL;
->>
->> +	if (ms_hyperv.ghcb_base)
->> +		free_percpu(ms_hyperv.ghcb_base);
->> +
 > 
-> I don't think this cleanup is necessary.  The primary purpose of
-> hyperv_cleanup() is to ensure that things like overlay pages are
-> properly reset in Hyper-V before doing a kexec(), or before
-> panic'ing and running the kdump kernel.  There's no need to do
-> general memory free'ing in Linux.  Doing so just adds to the risk
-> that the panic path could itself fail.
+> and
+> 
+>         memcpy(&aad[4], &hdr->addr1, 3 * ETH_ALEN);
+> 
+> and
+> 
+>         memcpy(aad + 2, &hdr->addr1, 3 * ETH_ALEN);
+> 
+> so those should also be changed, it seems?
 
-Nice catch. I will remove this.
+Ah! Yes, thanks for pointing this out. During earlier development I split
+the "cross-field write" changes from the "cross-field read" changes, and
+it looks like I missed moving lib80211_crypt_ccmp.c into that portion of
+the series (which I haven't posted nor finished -- it's lower priority
+than fixing the cross-field writes).
 
-> 
->>   	/* Reset the hypercall page */
->>   	hypercall_msr.as_uint64 = 0;
->>   	wrmsrl(HV_X64_MSR_HYPERCALL, hypercall_msr.as_uint64);
->> @@ -559,3 +609,11 @@ bool hv_is_isolation_supported(void)
->>   {
->>   	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
->>   }
->> +
->> +DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
->> +
->> +bool hv_isolation_type_snp(void)
->> +{
->> +	return static_branch_unlikely(&isolation_type_snp);
->> +}
->> +EXPORT_SYMBOL_GPL(hv_isolation_type_snp);
->> diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
->> index adccbc209169..6627cfd2bfba 100644
->> --- a/arch/x86/include/asm/mshyperv.h
->> +++ b/arch/x86/include/asm/mshyperv.h
->> @@ -11,6 +11,8 @@
->>   #include <asm/paravirt.h>
->>   #include <asm/mshyperv.h>
->>
->> +DECLARE_STATIC_KEY_FALSE(isolation_type_snp);
->> +
->>   typedef int (*hyperv_fill_flush_list_func)(
->>   		struct hv_guest_mapping_flush_list *flush,
->>   		void *data);
->> diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
->> index c1ab6a6e72b5..4269f3174e58 100644
->> --- a/include/asm-generic/mshyperv.h
->> +++ b/include/asm-generic/mshyperv.h
->> @@ -36,6 +36,7 @@ struct ms_hyperv_info {
->>   	u32 max_lp_index;
->>   	u32 isolation_config_a;
->>   	u32 isolation_config_b;
->> +	void  __percpu **ghcb_base;
-> 
-> This doesn't feel like the right place to put this pointer.  The other
-> fields in the ms_hyperv_info structure are just fixed values obtained
-> from the CPUID instruction.   The existing patterns similar to ghcb_base
-> are the VP assist page and the percpu input and output args.  They are
-> all based on standalone global variables.  It would be more consistent
-> to do the same with the ghcb_base.
+> In which case I'd probably prefer to do this separately from the staging
+> drivers ...
 
-OK. I will update in the next version.
+Agreed. Sorry for the noise on that part. I will double-check the other
+patches.
 
-> 
->>   };
->>   extern struct ms_hyperv_info ms_hyperv;
->>
->> @@ -237,6 +238,7 @@ bool hv_is_hyperv_initialized(void);
->>   bool hv_is_hibernation_supported(void);
->>   enum hv_isolation_type hv_get_isolation_type(void);
->>   bool hv_is_isolation_supported(void);
->> +bool hv_isolation_type_snp(void);
->>   void hyperv_cleanup(void);
->>   bool hv_query_ext_cap(u64 cap_query);
->>   #else /* CONFIG_HYPERV */
->> --
->> 2.25.1
-> 
+-- 
+Kees Cook
