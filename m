@@ -2,71 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91BBA3EBEA1
-	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 01:20:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD6D03EBEAF
+	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 01:24:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235504AbhHMXUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 19:20:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33000 "EHLO mail.kernel.org"
+        id S235658AbhHMXZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 19:25:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33666 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235330AbhHMXUe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Aug 2021 19:20:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id BC112610CF;
-        Fri, 13 Aug 2021 23:20:06 +0000 (UTC)
+        id S235330AbhHMXZI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Aug 2021 19:25:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 79A3E60230;
+        Fri, 13 Aug 2021 23:24:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628896806;
-        bh=T2A21R94Fzcz0y7VLVrd8w/ME4Ih2eGUotIe/d4lqnM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ScXVnwYQPmfDFTf7eq09z3qUgspNCmhluxoTkOCcJ8OuCS9ZCMOik70fQRsQnKzbO
-         7yAU//lXumyf60KP6BCKM3S/4e4c6VdIVmk21df//gDHdtM+5R68OwLdUGgw5FDW4W
-         gJaZBJjOs1pai78ieWGxMA55ifhaUaIBopRcXTF+cU+YuKCHmT3ycm2jUe29IJq5qW
-         bC9ZhvOquJ0Xn9DU5R6eNrDwQX6MigcASyEeH7pwQqCNe1R4Cza93Qj1yT+ohCVWc6
-         XtiiLlU8CMj1MCIvtsB2Ii72IC0Q0AlU6pVeXlYWBSJBi/7PQ81ywSTaBQn6eGhVQj
-         ZHzCd5Ycmjgqg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AD44060A9E;
-        Fri, 13 Aug 2021 23:20:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1628897080;
+        bh=VNBCMbuXdLAiF1wcrCYDIMMMtxoYtb8j99FAxFhqMQc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YKD3pasHdkXskbpxrooVBA++dVkrO08X/WTciCt+/ztWye3aYNTqzUUOSj/nhCjZU
+         6uKznyZ0iSkB/mhRMU5wLuEIHLrGi/CdKNMKX5NEE6QwWzlLl2j14+8YRUMn+1ME+7
+         wAXsa+sYE+yBXjYXQCmWoh33Mador0oeQuQmOYcg9+zrARrJld5RUxse5TK8nzpxv6
+         6D7LIg2aHNdjrD+v5pC+ulg3WTtwNepHTB6v9JKh+el3UMkMTDc/S7Eqa9uu3+JzUT
+         2erRfQq+Sr9NjyL8cLJbe4ZcPdcUYLsgvj/7Ag7D648E5nMQzCuf47c3hD2KDy5baY
+         cpynXsZOQhR/A==
+Date:   Fri, 13 Aug 2021 16:24:39 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Petko Manolov <petko.manolov@konsulko.com>
+Cc:     netdev@vger.kernel.org, paskripkin@gmail.com,
+        stable@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH] net: usb: pegasus: ignore the return value from
+ set_registers();
+Message-ID: <20210813162439.1779bf63@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210812082351.37966-1-petko.manolov@konsulko.com>
+References: <20210812082351.37966-1-petko.manolov@konsulko.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 1/2] net: macb: Add PTP support for SAMA5D29
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162889680670.8729.9762612075032276005.git-patchwork-notify@kernel.org>
-Date:   Fri, 13 Aug 2021 23:20:06 +0000
-References: <20210812074422.13487-1-Hari.PrasathGE@microchip.com>
-In-Reply-To: <20210812074422.13487-1-Hari.PrasathGE@microchip.com>
-To:     Hari Prasath <Hari.PrasathGE@microchip.com>
-Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
-        davem@davemloft.net, kuba@kernel.org, linux@armlinux.org.uk,
-        palmer@dabbelt.com, paul.walmsley@sifive.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, robh@kernel.org,
-        devicetree@vger.kernel.org, mpuswlinux@microchip.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Thu, 12 Aug 2021 13:14:21 +0530 you wrote:
-> Add PTP capability to the macb config object for sama5d29.
+On Thu, 12 Aug 2021 11:23:51 +0300 Petko Manolov wrote:
+> The return value need to be either ignored or acted upon, otherwise 'deadstore'
+> clang check would yell at us.  I think it's better to just ignore what this
+> particular call of set_registers() returns.  The adapter defaults are sane and
+> it would be operational even if the register write fail.
 > 
-> Signed-off-by: Hari Prasath <Hari.PrasathGE@microchip.com>
+> Signed-off-by: Petko Manolov <petko.manolov@konsulko.com>
 > ---
->  drivers/net/ethernet/cadence/macb_main.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
+>  drivers/net/usb/pegasus.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
+> index 652e9fcf0b77..49cfc720d78f 100644
+> --- a/drivers/net/usb/pegasus.c
+> +++ b/drivers/net/usb/pegasus.c
+> @@ -433,7 +433,7 @@ static int enable_net_traffic(struct net_device *dev, struct usb_device *usb)
+>  	data[2] = loopback ? 0x09 : 0x01;
+>  
+>  	memcpy(pegasus->eth_regs, data, sizeof(data));
+> -	ret = set_registers(pegasus, EthCtrl0, 3, data);
+> +	set_registers(pegasus, EthCtrl0, 3, data);
+>  
+>  	if (usb_dev_id[pegasus->dev_index].vendor == VENDOR_LINKSYS ||
+>  	    usb_dev_id[pegasus->dev_index].vendor == VENDOR_LINKSYS2 ||
 
-Here is the summary with links:
-  - [net-next,1/2] net: macb: Add PTP support for SAMA5D29
-    https://git.kernel.org/netdev/net-next/c/7d13ad501169
-  - [net-next,2/2] dt-bindings: net: macb: add documentation for sama5d29 ethernet interface
-    https://git.kernel.org/netdev/net-next/c/593f8c44cc8b
+This one is not added by the recent changes as I initially thought, 
+the driver has always checked this return value. The recent changes 
+did this:
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+        ret = set_registers(pegasus, EthCtrl0, 3, data);
+ 
+        if (usb_dev_id[pegasus->dev_index].vendor == VENDOR_LINKSYS ||
+            usb_dev_id[pegasus->dev_index].vendor == VENDOR_LINKSYS2 ||
+            usb_dev_id[pegasus->dev_index].vendor == VENDOR_DLINK) {
+                u16 auxmode;
+-               read_mii_word(pegasus, 0, 0x1b, &auxmode);
++               ret = read_mii_word(pegasus, 0, 0x1b, &auxmode);
++               if (ret < 0)
++                       goto fail;
+                auxmode |= 4;
+                write_mii_word(pegasus, 0, 0x1b, &auxmode);
+        }
+ 
++       return 0;
++fail:
++       netif_dbg(pegasus, drv, pegasus->net, "%s failed\n", __func__);
+        return ret;
+}
 
+now the return value of set_registeres() is ignored. 
 
+Seems like  a better fix would be to bring back the error checking, 
+why not?
+
+Please remember to add a fixes tag.
