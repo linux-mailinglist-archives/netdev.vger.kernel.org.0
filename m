@@ -2,167 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 334483EBCE6
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 21:58:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E21F3EBD49
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 22:26:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233874AbhHMT64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 15:58:56 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:53262 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230440AbhHMT6z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 15:58:55 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17DJwFrH021749;
-        Fri, 13 Aug 2021 12:58:15 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=8lAzDh2xjlHbluXgE62CjwDRFhQ0X4KQt0kYDWFKwvs=;
- b=LG+Tv2+z83k80rBoAuGuKrZ+hxj49NeETi9MlQsGlbSZGxcJd55tz+ne63PK7dbbPqA2
- rwj63anLrOMKkwUX3dKZ7mLuY1FaJ0YiqomfA9WSCRXXsJBBd5c0pdpQvoRf26kuei64
- VfgyUqBCpqv3ZjftNrme4UG6vHHKtbtcvwk= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3acy4pkkj1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 13 Aug 2021 12:58:15 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 13 Aug 2021 12:58:05 -0700
+        id S234457AbhHMU0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 16:26:55 -0400
+Received: from mail-dm3nam07on2120.outbound.protection.outlook.com ([40.107.95.120]:12224
+        "EHLO NAM02-DM3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234037AbhHMU0y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Aug 2021 16:26:54 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=el8c9hEW1Amjn+nEYJHH9moB+6BJjorN/ETfN9osu9uj8nGpO9iVhQccxsafufkqy2Ew/5Azf70UKl7ViuT6UFYcXiUFuDqMi+/2PqFV4FTvKVvn1Jg0+i2c+t3qUEnefsMyF97UF9Q0heeRVAqEocZcc1y1W8obbztcwlWDIG6A8XH+chq/FC2hPSOotZcCFK85FP0BnbIRSYUDLp+yYITAbuLwaCK5AM7Qj/1xZxyzPzUwxoL4QJcQfPsKX4bf0pdbr7/9/rXXQJ1BhMN0erei/qtu9OkaNK/DkFsUnDLoA+e0Liev+NTJ0THBUCkBaoPyWezmIvrRPRkQ6PRpcQ==
+ b=A6g6l9cYis25WihgKlGKU/RZDzLQjOKNlvRAHPr3qeWLroP+nVKXkTefKHtCJYvIKHnQmTMlaBXOQ3GRPa6EXXTGKP9Eh1Y7VaMjMsfrY7Acj0/7MMaX2tKAF0EndebJNjhNBk8dIITXIsrtXjz0CbhbSMYhZASakOTK4C3mZ4VOyMl6ldknmeFgY+z6uIqxTCgmY560r3aUrChk0p9AuD1y0rzLFwHqse4WR/OLP5ZYxdqhFlQe54yw/7HvaSpFoGHrzf/MyNZD7SRvKTg2Ao6tJpuh+vNPV1+HFahiTvRUywNJ0SNb5LiWRap7V7sYPKzgm9fzJeUGOj6N3q+PFA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8lAzDh2xjlHbluXgE62CjwDRFhQ0X4KQt0kYDWFKwvs=;
- b=Z+g4EqrDG0QIJauBrKY9J4kKvYF6kJItnWAJ074lM9VwO2NPxs36L3VrTot41dppMOexhOy4FLK5TbUjWQm+YX3FfAX+QxbQRBx5uKAmJtukhruYBljWYOFEFZRgsGW+kzJphl+//sywZ/4hgW+WGjf4Hkv4wJMzYR9NLR/pXK4l01Yuc4KTvUxC3l65OgXkgW+YpJFhGnrhdAgEU6zlM95ONMnU1R2ZOsjPE5eNWFhESFdFSylspXufa3vJSr2kmzA62CAQBSe4XeR2HCrVHjb2cMiHAcdIQS6mkZiXqcDflIeZzvcwLPiJcdDzfx9lUF1YwZh1AsOwElqTBqUyQQ==
+ bh=uSjZFw4IYdkuV55KvpmYCB+d8Z/zYCy0L7lVeoa3LBM=;
+ b=K947ukP0YWv+I2nRFEcIidwNXTLXNVTGv5Z96kLDRrmBSJQJB+pwI7NF4drCuTLNN0Pr61OAhRGh0vR9x5wQBd8fJayjMT4FyNUjfAjvC5spVhH8TyRL8Adr35FZKB5FY4l1U3tkERSWMmJxmOwWzbHEfj6YQbhN6arVypA0PWxCeehLOfMaSAvLCUIxB/KkiUfR+M2APQElmRzCq+0N1VeI7Af9/kQz/tMu7M/QBIHFyfvnTumQV7WBpzVgeNcVj1gCCNeJLx82gnltOaQUa+HU675I+Ig0zV6crusNPtGjcysAULQt5awd8WMavZvY8BTcKcJ/atkjX8XdmtBGag==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: google.com; dkim=none (message not signed)
- header.d=none;google.com; dmarc=none action=none header.from=fb.com;
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
- by SA0PR15MB3807.namprd15.prod.outlook.com (2603:10b6:806:82::21) with
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uSjZFw4IYdkuV55KvpmYCB+d8Z/zYCy0L7lVeoa3LBM=;
+ b=YuF1pqVifVtgz4pRoMPWPtGqUXVt56tmGUa6QHC62OZv/io67f30CvM1oct8P+C9HuodCsF4xqRldBii0gl4lFqJR77IVGToFHvGg9mavvJWDuVktIYy+2yexJ5VMqQdkROw6NZj5gLXpNd8ELUoLbDIEUvZ0jg7xSRC6DScYdU=
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
+ by MW4PR21MB1972.namprd21.prod.outlook.com (2603:10b6:303:7a::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.14; Fri, 13 Aug
- 2021 19:58:05 +0000
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::293f:b717:a8a9:a48f]) by SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::293f:b717:a8a9:a48f%4]) with mapi id 15.20.4415.019; Fri, 13 Aug 2021
- 19:58:04 +0000
-Date:   Fri, 13 Aug 2021 12:58:02 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Stanislav Fomichev <sdf@google.com>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <andrii@kernel.org>
-Subject: Re: [PATCH bpf-next v2 1/2] bpf: Allow bpf_get_netns_cookie in
- BPF_PROG_TYPE_CGROUP_SOCKOPT
-Message-ID: <20210813195802.r67s62f5iwvnlmv4@kafai-mbp>
-References: <20210812153011.983006-1-sdf@google.com>
- <20210812153011.983006-2-sdf@google.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.4; Fri, 13 Aug
+ 2021 20:26:22 +0000
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::e8f7:b582:9e2d:ba55]) by MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::e8f7:b582:9e2d:ba55%2]) with mapi id 15.20.4436.012; Fri, 13 Aug 2021
+ 20:26:22 +0000
+From:   Michael Kelley <mikelley@microsoft.com>
+To:     Tianyu Lan <ltykernel@gmail.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "will@kernel.org" <will@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "pgonda@google.com" <pgonda@google.com>,
+        "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "rppt@kernel.org" <rppt@kernel.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "saravanand@fb.com" <saravanand@fb.com>,
+        "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
+        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "rientjes@google.com" <rientjes@google.com>,
+        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
+        "tj@kernel.org" <tj@kernel.org>
+CC:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        vkuznets <vkuznets@redhat.com>,
+        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+        "dave.hansen@intel.com" <dave.hansen@intel.com>
+Subject: RE: [PATCH V3 05/13] HV: Add Write/Read MSR registers via ghcb page
+Thread-Topic: [PATCH V3 05/13] HV: Add Write/Read MSR registers via ghcb page
+Thread-Index: AQHXjUfuQqXPk5/9iUqTH41i8so9wqtxzWQQgAAaltA=
+Date:   Fri, 13 Aug 2021 20:26:21 +0000
+Message-ID: <MWHPR21MB1593964D1B17870038EC2D2CD7FA9@MWHPR21MB1593.namprd21.prod.outlook.com>
+References: <20210809175620.720923-1-ltykernel@gmail.com>
+ <20210809175620.720923-6-ltykernel@gmail.com>
+ <MWHPR21MB15931FEC5CE9383B385C263CD7FA9@MWHPR21MB1593.namprd21.prod.outlook.com>
+In-Reply-To: <MWHPR21MB15931FEC5CE9383B385C263CD7FA9@MWHPR21MB1593.namprd21.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=d2377fda-39f2-4403-a606-910723ff0f1f;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-08-13T18:49:42Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 4c56698d-081e-41c7-2bc6-08d95e989d80
+x-ms-traffictypediagnostic: MW4PR21MB1972:
+x-ms-exchange-transport-forked: True
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <MW4PR21MB197224FE64D6649E7A5940ECD7FA9@MW4PR21MB1972.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3826;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: w21FqFgu2tAmBXktQZxkbrfccvEy0zOvJN6YSvT1ju7DfH7QkE22lowUbmO4XT2d7T3RLyS7ilggytk6Z1jqEz+VQadXgJm/pA3aNRLVuiV7YKYxf9WbUSgg8VXg9tGX2ccVERe8DE9rM4bIIYzT74X0R+AowG3j7aVCZg1izm9WGwdGY4EH6ItLcJ9h9X+417kzb4tE4lgPkamjzzgfVpT/eEZr/81TaXYiJwbIPXND0yR4magal+2uqWw9gv/MOH6aLo6O6vGGu1N2CTFX3+U5/ZG4c6YHcgVBoA8VMzaWrx2weJcnXwK7OKwQwlI9DSWT2Rwa0ZuqE5D9rWTRNbiFz+7x7+Vz8XSkBW0o1pwmPff3yFoIdR7YMlU+PAMGECfTwJZvorClzv6jV5+gb22Eblc2aRhwQkOaaZwWYq1nYDQ6yspWzxLxZQjDWA/rxhiEMNdC0gUnBsLG6ucebJ96jDhf3ep2tI6Md5CkcLhUN4XIwMIDrUTgRy2lCe2ORlAHvE/lskHzQJC9tX4LmspUEfT1wxtPSL/SQVp72Ylxha5Ac2v6OtkV+Jh6woAqBQtSDQcUUn9ANRfGTTKjjRSGECQUDyDZ7gYUv7WcDHQNC/KYwPDgI8J7qGSnYYv+yPbbh33tm+L4kZ7JH+oTnmg3e247z1rFItDnjSOxV5td3dc3vnnzO84cq2w9kq8aa/sIJb67OhrUHkJvWofW7n4Iad2CGNVf+dddUKh4bx8=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR21MB1593.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(921005)(8990500004)(4326008)(122000001)(8936002)(66946007)(7696005)(52536014)(8676002)(53546011)(7406005)(38100700002)(2940100002)(5660300002)(2906002)(33656002)(6506007)(7416002)(86362001)(316002)(83380400001)(10290500003)(508600001)(9686003)(38070700005)(66446008)(76116006)(186003)(82950400001)(110136005)(55016002)(71200400001)(64756008)(66556008)(26005)(66476007)(82960400001)(54906003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?HHnguf8k2A0ke1C/g43w8Bu1Ts6Hdd2fq+nZyXM2Vlyi6iYPhCNPJdZ1Q/Uf?=
+ =?us-ascii?Q?M7OqArgQBB8UR0o6XdwdodOF7zMgx7z/7jvA98B2OgTJwKCx/lHgcqJLOOVn?=
+ =?us-ascii?Q?RBKnuGZx/E1lp4OzQVoueFJ+5ntLf5oUGdytGG6Su+qy14KLL+7TSyIimCsO?=
+ =?us-ascii?Q?Dc0nd44cU9NeOaE0Q66lZma+ShGkLA48A5EVkWpPsuaXCM912tYb5+QkahF8?=
+ =?us-ascii?Q?zZYN+b4S71rtrj0yRYKpupMa3GSE5S6er3rX88RBRLKOWyq/Tbmk3B6X4PGh?=
+ =?us-ascii?Q?ASYEwimno/wWrvw01ZYctpOut8yEKcP+Z1yuygM6shEo0c0uUeZgn2+rf2xG?=
+ =?us-ascii?Q?8zTCBTM7YMT4PL9uyThSLrpoq7lhBSujoZr2uB/s8IstgDBilTT5QCE2TClT?=
+ =?us-ascii?Q?jEpRlnVG/bmoWLyrYVzn11T/KQJOg1RmbuEN5X+q4TKz/rvmLYB3+aI43Ybb?=
+ =?us-ascii?Q?NzjG+QxU+QZFWBe/st7opXSb5lXVy/DAqWZhjVTFozwNNi14kRWCvZS6s60f?=
+ =?us-ascii?Q?gQ7DDuZCyTP45Kb61VTsWTMfJMfeX8SIlueXnAjKpUzF/3jjhzqfvNcIUQjP?=
+ =?us-ascii?Q?hYNLXf9Lp68p4UfV3W4Zk3gA+EDZ1twkthiCeikHrX0A8zbLOlO+Gx+ib4u2?=
+ =?us-ascii?Q?k1g/+vREUkO6u5gPSErkSYbMuhOyqRSulL8+vOD2JwwobIrFsZlf6dHeGKyW?=
+ =?us-ascii?Q?KE/eDArLWCqKVJgQourBtgdmIBkhdj7t2BMejVSXrueAh50B+hbSr8gZpgvX?=
+ =?us-ascii?Q?tOF+YxFrQ1WFahpo8vBajPAoBNsSKHTMKsGDmx6zvMIB2QYG6UDG2gTFVrC8?=
+ =?us-ascii?Q?GhqhnmeINuvFwbp4vltyTua94yXxQvtRMeJOH82izjCW3mbFhFug2L0rRPEG?=
+ =?us-ascii?Q?gfPji9aAsEUvlOSEIT5zUoRbaZiDUl7xb9Hn9haAoigcdr3SEnimFxQgfZoy?=
+ =?us-ascii?Q?iPRJB0hY1Vds4TI3Mxd7CT1ySfKGGHL3lAjslHbpRcs0LD4rIf+vz7xtJ3L/?=
+ =?us-ascii?Q?xcJlkhRcW9Hw3f7L3XzXFAqA4gS4NZEHAS7oEu2ctO/BoNT8ETdafjMox+S7?=
+ =?us-ascii?Q?MADAs+wgwCVYJJLvmkkrY/W2Wx5TGH2zxBt+t/PkldZI+sjy2+359PLPgoWC?=
+ =?us-ascii?Q?6StwsXBi5D3gdgiM9qQiiGCU+0WxuSMPoRRjX67KvBFf7UgfGkdfrMYfY1kx?=
+ =?us-ascii?Q?MeMdq6Gg24tMu25K7HpB3D6MZrFgF/P+BybXaG7joub9Nmbr6YNzysjwQSd4?=
+ =?us-ascii?Q?OnqrceeUQ5xTAeFtIGsE5ubJ+aYx/S3ngKD9AkK6qOZOL+Igy/NE1z3DQs+U?=
+ =?us-ascii?Q?EbRyAa4Ct1E4YrOoD6q+8ax4?=
 Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210812153011.983006-2-sdf@google.com>
-X-ClientProxiedBy: MW3PR06CA0023.namprd06.prod.outlook.com
- (2603:10b6:303:2a::28) To SA1PR15MB5016.namprd15.prod.outlook.com
- (2603:10b6:806:1db::19)
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp (2620:10d:c090:400::5:e0ad) by MW3PR06CA0023.namprd06.prod.outlook.com (2603:10b6:303:2a::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.14 via Frontend Transport; Fri, 13 Aug 2021 19:58:04 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9a0c212e-a437-44bf-f3ec-08d95e94a9c9
-X-MS-TrafficTypeDiagnostic: SA0PR15MB3807:
-X-Microsoft-Antispam-PRVS: <SA0PR15MB3807F00744DF160909B9AC77D5FA9@SA0PR15MB3807.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:1360;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RhtcubLF0TSWzih6v/o/jZJ9ymDJhXKkfQNEmXczDDs6NglYg1hWymjRU/Z4FDG2wPdKQP0jBRl3Rwt7VcoTmS4T6YTRH4RFQGpDsWUCbm5ydzY7bOsjomJpn0kr2LQ8rpwiEujGxWObORvjf7CknrhP8xLqZDUnKzo/m21xhJun1uCuFgVGllLPlVbBZIZexfwVY4qcOsjZjT3GzWFSyExH/XX95/MlWjCwtyxIZ5aOMlHLO+liakztnUUWKm+xcUYWfnzDMqDnEnSZ5EHgIC0mrA20n3ZhJcARbbsS1aBTU1gs23ZHWHNXjZVETUMV/19KTRhpMGuCYFfye+k8jXIpFBG2plLjXY6FvYTHfkKXkQsA9F/ou2P5c6AMOV55c9vxNikdcS5hIrmIC+GEaBK8WSc46prW4KTB86WopZwikgQrCvhbABHfvwSh/8u/9kuDNrW7kHp4w/d70l0V24KktyaXimDhHR9Q2UerlePv1Kxp3+Lbfetii5CVKZJiiyzz/9RfBVxV+nFURnAakTgizAse6qFtyIZhnxHIYR384kAQv2IVDOGDJ8Sn6XO4Ae8/XRI0ISCHDlV1PbMSfO8wO2M/HCemMjxP7cv/ncz+r/hWe/28FieophQTlrcwaUV0HmQXdXDitzuCEyFsiA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(39860400002)(396003)(346002)(366004)(136003)(186003)(38100700002)(2906002)(8676002)(5660300002)(316002)(86362001)(9686003)(6496006)(66946007)(66476007)(1076003)(8936002)(52116002)(33716001)(478600001)(4326008)(6916009)(66556008)(55016002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vlQsGLnlHM4pHrdsTyGGL6sWGg+Y7EJOZUyNWN9kvHPNvOdTU9/hLtUsYTPa?=
- =?us-ascii?Q?4UJgmmztCbt7AjP8spWmEEqRQZZS8BxM2NMtGvwfE9oudfhmdirIw/IA8XAn?=
- =?us-ascii?Q?5/ePVnkhGfphFY3XC0KE3rZEW9K6ZoBMy8891plloPKniRugM3mHLNGtmaPr?=
- =?us-ascii?Q?qbeohgKo3kmHbnLHk10kT0zYr9kNfO5KaurL90T6EFYgQJc7IAH+BvYjePii?=
- =?us-ascii?Q?CJluM143BGrk5zNKApAdWCAYsotFcoj6XUTgG9lPiFTHI3fiR2CmMK92pzO7?=
- =?us-ascii?Q?gZ7k1EAFEqa67UPprClquQoT+++XhJRBgttzHAQrNClgy9teC2XLHoeJVqZ4?=
- =?us-ascii?Q?rQHkEILlcMbcUDWaK3DveKClsTAJaSpwLcf42WpJpi6/IPaPLF8vV01gf5e8?=
- =?us-ascii?Q?WbL4+WJbTmJcZxSWnHsvwZO7UirWBJAz/klHk+AFE+nkM3kL09dpE1vgTq7R?=
- =?us-ascii?Q?OiSQ8lGU9ImxnPuPSQP7B/VeV5Z0OyRUMWdkp7LNz7wEMJWWDkJ/EGdk/s2f?=
- =?us-ascii?Q?Cpp7sNYjG9q2wtnwfCVq1yrktzDCsFz3bf0m8uKinSDUT+G47TAX8e0mF6aE?=
- =?us-ascii?Q?ZXslQsn3NeTMnd4KMnxpSd/05uBN4XokvdvBQVb6nBUFZaat4lwB2ughAOVA?=
- =?us-ascii?Q?scODycVcFUruTpDdq0FsW4NgfuJ4m0JUukM+BH2noV+mLlLAjckKHFstOk9h?=
- =?us-ascii?Q?bxdW24BB62KM+syGzyTPKL6zd1IfbM2Xr1uJ6TBPn+89iiBhnFarukdo+jN5?=
- =?us-ascii?Q?zrbOzyiexIenDRs0NcQaPDdlQ36HkibopryRfifFbSjxDQtuchySndfuPkI1?=
- =?us-ascii?Q?0tC+4CxoicehaNSBiizEitZ4Vesv/DZfTYHnOLbVZnOQAfIJI3k97AzEIF76?=
- =?us-ascii?Q?htkPHPUlIpMlm8qAOiIIgF1SyveLw5hScBe53zkbu/WvExU+sUdBsdegHwpR?=
- =?us-ascii?Q?FzI1ZlMIIueWy7EGIr9Hn/GDRsrULrEiLYuUYNthWRMOhc4GDy4OZh1Hd5Pr?=
- =?us-ascii?Q?EG8dS0wa0YIsUF3YtdwUvW1VX5ElwwtAccX9RFFd0SQui5veFE/jmh5m2VFP?=
- =?us-ascii?Q?/Pm/b/I4kfG5OZO8JDcgy8F+VvIVh91oAJaVGkbXeQihICM2Z0qFOq/He1xl?=
- =?us-ascii?Q?byHE0Y467w/k9SJPB3RnvbSyIA5qBLudJbr68LJ3Jq/3xU7AsB4VGgG3z/1l?=
- =?us-ascii?Q?y/nlNml8Dxna4EdFMHxlkKCkPOnx4+ZUWHuVgkTA0Nq2j7PVoJ9+NAvcwqSf?=
- =?us-ascii?Q?zCPGh/oejBgoyAPYj8Vu5gCwzVMT/qfKzp1KFyfCYoQrNG92fuxF67D64Iwd?=
- =?us-ascii?Q?IoVjWu8MdhBWDqsBtTUBj2R6/qqKcAaErpPgqJVgFFR2Mg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9a0c212e-a437-44bf-f3ec-08d95e94a9c9
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
+X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Aug 2021 19:58:04.8302
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4c56698d-081e-41c7-2bc6-08d95e989d80
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Aug 2021 20:26:21.8499
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: J+Bcu8qBQrTrcSFB2/3dL0xFFOkSW0QbdjGFWe3N+pvceTQVTgQH86sPdaaMPzUm
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR15MB3807
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: NceA4Yj0u0p8dc5a8NQ800VKp2XQ9xyd
-X-Proofpoint-ORIG-GUID: NceA4Yj0u0p8dc5a8NQ800VKp2XQ9xyd
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-08-13_07:2021-08-13,2021-08-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
- lowpriorityscore=0 mlxlogscore=999 priorityscore=1501 malwarescore=0
- phishscore=0 bulkscore=0 mlxscore=0 spamscore=0 impostorscore=0
- adultscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2107140000 definitions=main-2108130116
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: xzWN79PcQkKD4LoVtmx3Si4TxYUrZymDvPd+0ZpDE3+bJuoVwR5oWB8lLB4IMuKobBU2cozGDSwdWjXw577Uj4mz9rpJqZsucZrCN72tcnk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB1972
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 12, 2021 at 08:30:10AM -0700, Stanislav Fomichev wrote:
-> This is similar to existing BPF_PROG_TYPE_CGROUP_SOCK
-> and BPF_PROG_TYPE_CGROUP_SOCK_ADDR.
-> 
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
->  kernel/bpf/cgroup.c | 19 +++++++++++++++++++
->  1 file changed, 19 insertions(+)
-> 
-> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-> index b567ca46555c..ca5af8852260 100644
-> --- a/kernel/bpf/cgroup.c
-> +++ b/kernel/bpf/cgroup.c
-> @@ -1846,11 +1846,30 @@ const struct bpf_verifier_ops cg_sysctl_verifier_ops = {
->  const struct bpf_prog_ops cg_sysctl_prog_ops = {
->  };
->  
-> +#ifdef CONFIG_NET
-> +BPF_CALL_1(bpf_get_netns_cookie_sockopt, struct bpf_sockopt_kern *, ctx)
-> +{
-> +	struct sock *sk = ctx ? ctx->sk : NULL;
-> +	const struct net *net = sk ? sock_net(sk) : &init_net;
-A nit.
+From: Michael Kelley <mikelley@microsoft.com> Sent: Friday, August 13, 2021=
+ 12:31 PM
+> To: Tianyu Lan <ltykernel@gmail.com>; KY Srinivasan <kys@microsoft.com>; =
+Haiyang Zhang <haiyangz@microsoft.com>;
+> Stephen Hemminger <sthemmin@microsoft.com>; wei.liu@kernel.org; Dexuan Cu=
+i <decui@microsoft.com>;
+> tglx@linutronix.de; mingo@redhat.com; bp@alien8.de; x86@kernel.org; hpa@z=
+ytor.com; dave.hansen@linux.intel.com;
+> luto@kernel.org; peterz@infradead.org; konrad.wilk@oracle.com; boris.ostr=
+ovsky@oracle.com; jgross@suse.com;
+> sstabellini@kernel.org; joro@8bytes.org; will@kernel.org; davem@davemloft=
+.net; kuba@kernel.org; jejb@linux.ibm.com;
+> martin.petersen@oracle.com; arnd@arndb.de; hch@lst.de; m.szyprowski@samsu=
+ng.com; robin.murphy@arm.com;
+> thomas.lendacky@amd.com; brijesh.singh@amd.com; ardb@kernel.org; Tianyu L=
+an <Tianyu.Lan@microsoft.com>;
+> pgonda@google.com; martin.b.radev@gmail.com; akpm@linux-foundation.org; k=
+irill.shutemov@linux.intel.com;
+> rppt@kernel.org; sfr@canb.auug.org.au; saravanand@fb.com; krish.sadhukhan=
+@oracle.com;
+> aneesh.kumar@linux.ibm.com; xen-devel@lists.xenproject.org; rientjes@goog=
+le.com; hannes@cmpxchg.org;
+> tj@kernel.org
+> Cc: iommu@lists.linux-foundation.org; linux-arch@vger.kernel.org; linux-h=
+yperv@vger.kernel.org; linux-
+> kernel@vger.kernel.org; linux-scsi@vger.kernel.org; netdev@vger.kernel.or=
+g; vkuznets <vkuznets@redhat.com>;
+> parri.andrea@gmail.com; dave.hansen@intel.com
+> Subject: RE: [PATCH V3 05/13] HV: Add Write/Read MSR registers via ghcb p=
+age
+>=20
+> From: Tianyu Lan <ltykernel@gmail.com> Sent: Monday, August 9, 2021 10:56=
+ AM
+> > Subject: [PATCH V3 05/13] HV: Add Write/Read MSR registers via ghcb pag=
+e
+>=20
+> See previous comments about tag in the Subject line.
+>=20
+> > Hyper-V provides GHCB protocol to write Synthetic Interrupt
+> > Controller MSR registers in Isolation VM with AMD SEV SNP
+> > and these registers are emulated by hypervisor directly.
+> > Hyper-V requires to write SINTx MSR registers twice. First
+> > writes MSR via GHCB page to communicate with hypervisor
+> > and then writes wrmsr instruction to talk with paravisor
+> > which runs in VMPL0. Guest OS ID MSR also needs to be set
+> > via GHCB.
+> >
+> > Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> > ---
+> > Change since v1:
+> >          * Introduce sev_es_ghcb_hv_call_simple() and share code
+> >            between SEV and Hyper-V code.
+> > ---
+> >  arch/x86/hyperv/hv_init.c       |  33 ++-------
+> >  arch/x86/hyperv/ivm.c           | 110 +++++++++++++++++++++++++++++
+> >  arch/x86/include/asm/mshyperv.h |  78 +++++++++++++++++++-
+> >  arch/x86/include/asm/sev.h      |   3 +
+> >  arch/x86/kernel/cpu/mshyperv.c  |   3 +
+> >  arch/x86/kernel/sev-shared.c    |  63 ++++++++++-------
+> >  drivers/hv/hv.c                 | 121 ++++++++++++++++++++++----------
+> >  include/asm-generic/mshyperv.h  |  12 +++-
+> >  8 files changed, 329 insertions(+), 94 deletions(-)
+> >
+> > diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+> > index b3683083208a..ab0b33f621e7 100644
+> > --- a/arch/x86/hyperv/hv_init.c
+> > +++ b/arch/x86/hyperv/hv_init.c
+> > @@ -423,7 +423,7 @@ void __init hyperv_init(void)
+> >  		goto clean_guest_os_id;
+> >
+> >  	if (hv_isolation_type_snp()) {
+> > -		ms_hyperv.ghcb_base =3D alloc_percpu(void *);
+> > +		ms_hyperv.ghcb_base =3D alloc_percpu(union hv_ghcb __percpu *);
+>=20
+> union hv_ghcb isn't defined.  It is not added until patch 6 of the series=
+.
+>=20
 
-ctx->sk can not be NULL here, so it only depends on ctx is NULL or not.
+Ignore this comment.  My mistake.
 
-If I read it correctly, would it be less convoluted to directly test ctx
-and use ctx->sk here, like:
-
-	const struct net *net = ctx ? sock_net(ctx->sk) : &init_net;
-
-and the previous "struct sock *sk = ctx ? ctx->sk : NULL;" statement
-can also be removed.
-
-> +
-> +	return net->net_cookie;
-> +}
-> +
+Michael
