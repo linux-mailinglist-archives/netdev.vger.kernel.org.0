@@ -2,203 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FE123EBD8D
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 22:43:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1492E3EBDBC
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 23:10:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234689AbhHMUoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 16:44:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39042 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234313AbhHMUn7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 16:43:59 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97DEAC0617AE
-        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 13:43:31 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id n12so17173954edx.8
-        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 13:43:31 -0700 (PDT)
+        id S234775AbhHMVK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 17:10:26 -0400
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:21370 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234547AbhHMVKZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 17:10:25 -0400
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17DL1BTW021149;
+        Fri, 13 Aug 2021 21:09:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=dGXzcssF5FkRLb59x+pQ+esr0VkDnGIDsMpNSdOWyrg=;
+ b=l6h/u4lTA4fYE7ZtgDadWGgyOJbUqdDr8wZa4QsAhyF97TvuCjlFAaDyOExh552cULeI
+ twCDaMlhk/TVC0B8l3Ohgzmoc+ZLOCQxs/0lEM1pNU0VOmcjBCyhn2JH3tgcbyoc0mMW
+ e21ZfDKkJaQ8US4Nzx2fIQK+UCIm3ZtcUIH6HSKqYWi5AW+HWydH5moKtneqzrw70G4f
+ 3U0QaahI4IcEzGYNDqak5u0GppnoEsg+WmcrXxvkZ0DtU3ZZI+sJwmZqYEji62P75REo
+ 6SaYD+POUOkqFm9fA9THqfV7AHelcLQl3Ej5juk6JaYIJB6y3rpLRW7ghtkZ2Z80kVqS hg== 
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2020-01-29;
+ bh=dGXzcssF5FkRLb59x+pQ+esr0VkDnGIDsMpNSdOWyrg=;
+ b=OrIXTcj6lKomVcIPe7o9R6zi88qDtbOwlFTgoc9BB7KAoQsR2hOcqm8a4O7EPOCoPcoo
+ MBVHnPxSzsPf9P/6EsLbnhytRa1F2amm5Bf1ERePgIfrX3mjxkPB7/3pFPlTX9Nhd6Nt
+ Gyy4jvS1zAFvb0hAM/AbSay+gULPhe+By11ejxrdDtbyieDCHynC5ARRy4iPEa+F+VkV
+ +JiTaxlhdNq8wwQ0wIm/qw+MyBvOcRE2TnSESxCi6d+YYmVVhXWCf+8bE0RStQ599fzJ
+ 0DofGXWB0xQKwdN8AHlPkkUyFliAuRSH//G+QaN6vi5sD/G9hcDflCTkKYgaF/K6oSk/ MQ== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3acw9p4ew5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 13 Aug 2021 21:09:50 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 17DL0avA102348;
+        Fri, 13 Aug 2021 21:09:43 GMT
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2175.outbound.protection.outlook.com [104.47.58.175])
+        by userp3020.oracle.com with ESMTP id 3adrmduf3p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 13 Aug 2021 21:09:43 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=afNktRr7sdkt9Owj+Lrc7S6qaWv7QYPh8P6/AyVVKh5DM1w/j1wsXDJMQhv7jsghQ42/PViTLwE5Yv1DRjfn8QrhVI9PwkMKgAfK2g6XjKPXbClTQ/vECgBnMx31D+pTLxPtD/6d55T/Wh6WnkS5YHBYUf7QhBbeKc4rhw/GzuebwdpRAzTkazpZJ3fgoe6Oar/1HzyA4XxcHXG1015HcDaS869d95UEivcKcb2h0roFewzyeElIP2zUUIEiBV6dyXYXkoHr0b2QHU/UaAbHU/rn8aKUCVDsRKCZRmK308p4J7HxSxHwwl1WHYDJLB+xUOaBzPIFjoZyWqgv+vi3JQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dGXzcssF5FkRLb59x+pQ+esr0VkDnGIDsMpNSdOWyrg=;
+ b=BrF8kCBiOdJd38NVEcj86yZ+IZSRPC+R1aO5Rs4y1bErfrNCLP2+m6gHSUl19ygU2gPEVBaJ+uQv3+wd61F0K3CiUNx6MyBDaSAYDMUggdFgdUOlw1IrzHwZosaaX8C+sKzBis5xPUVP4GXA4VDjLhW4K8mj8xavoXqQObRnG/tnSm8YMWTjQwI2bVqr+tC/2tr4oVNGWTGKKuCJ7TgbXNSqcvsnL2LxtfqoshAbG2Y9x95J6gn+4KpAt597p9LIiF+tL2JhngKULoaSVVzkhQ+av8EAm7rkc82h/LhyR46gM0liCYY00fKzxaZ54qQfg/uiCvK0vJYvp4Y+V0WNog==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iRAplBayhxWymKoWiC0WoyTJpbQvWuYgJ79F91VPsGY=;
-        b=AJXHxf6mdypCa42/YwFeu+0Ff51vNI2hZQLJOtmI36BZuel/csiDOA2aXeD2vXyi4d
-         6wdAaPLATieACVpkBz03DOgyyTecO6kBA7tpnJTW/LkLzIp1sfh/lF1uPjVIsPi9xL/E
-         FzDEW8/RWzt4/ZHPAWIuS/V6U8kAIWsTC38r+MmecIj0MH979uAJtFb3YcvA+rzD1dH+
-         nJddGcY6JX41yknjZUr05q5UpIPjre1WgcrpR8WfsxLoPsHKk5cAXEz7tauV2QDDGvd6
-         U99fcfAJmKH3Ay8LkYJYjICks+rZlKX6e7Eef0N1THfeGYfNNxQ5aK7Qo3dWHqHr9eod
-         JWqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iRAplBayhxWymKoWiC0WoyTJpbQvWuYgJ79F91VPsGY=;
-        b=ljOPK+5AjeLzuErWjjqovwAidJa66GCClSRJ9fzf1rBqO4Lo1EO1g8tEcMOseomY4U
-         76G0q/QO8LzNpe3G425pbFcdIess61HeQl3cIG113bmVZDPApNZLAj4b/YOwRgL/drV5
-         tsNSsZyQ8aNLyG0Xu8d5YvqJ9kzNrrpz69+zNz76q57M+g8oyyJwOa2yX55f2y4T7Hh4
-         9+s9mA0klf1KC5z4zDVb0iuuKD5PWeX5Gl7GJ9uU6qnytyV5bbBrom0ngF18Xe6gtsk/
-         7TLp7hybxEnYTrfaBYVWiNJCX4aDB5j+s39Mg76JLphIn9CTNzRMSiLrbmnZlrmKVAdS
-         k+Pg==
-X-Gm-Message-State: AOAM5300VU7nKCT233v5idBT7h5lvwy+OHBBDEkCb4KOJ+BpcuNPIniw
-        fh165+AqdoyBVMqIPkOaFkhCimqiWxsrOzKkjqdJ
-X-Google-Smtp-Source: ABdhPJzuZlbMX/SZdVH8AI8TEUryb01jMYyYASTBqkbdK5gus1OBuQz4ggC/DrTs2bokQflB8Rq6ia+jQ/0sJBH4L2c=
-X-Received: by 2002:aa7:d982:: with SMTP id u2mr5423505eds.164.1628887409671;
- Fri, 13 Aug 2021 13:43:29 -0700 (PDT)
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dGXzcssF5FkRLb59x+pQ+esr0VkDnGIDsMpNSdOWyrg=;
+ b=SV/8NSFohSd7EhMDPkHtq14BNiEHgBfyPqMIGX3sw6c8KwhtO2+OxnLNVh6yNN/biCwahsll6Lk4r+O6o8vNrOW8KSzTm0ud6qp0TOe6/Rx0/kIqOMFA19pLLt46qEd48i4i0gv/EnkzqDeNZBRQirStgfNW6k6o59OuQML9b/U=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=oracle.com;
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by MWHPR10MB1359.namprd10.prod.outlook.com
+ (2603:10b6:300:1f::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.16; Fri, 13 Aug
+ 2021 21:09:40 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::5820:e42b:73d7:4268]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::5820:e42b:73d7:4268%7]) with mapi id 15.20.4415.019; Fri, 13 Aug 2021
+ 21:09:40 +0000
+Date:   Sat, 14 Aug 2021 00:09:22 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     ajk@comnets.uni-bremen.de, davem@davemloft.net, kuba@kernel.org,
+        linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+fc8cd9a673d4577fb2e4@syzkaller.appspotmail.com
+Subject: Re: [PATCH v2] net: 6pack: fix slab-out-of-bounds in decode_data
+Message-ID: <20210813210922.GD1931@kadam>
+References: <20210813145834.GC1931@kadam>
+ <20210813151433.22493-1-paskripkin@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210813151433.22493-1-paskripkin@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNAP275CA0068.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4f::16)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-References: <20210722004758.12371-1-casey@schaufler-ca.com>
- <20210722004758.12371-23-casey@schaufler-ca.com> <CAHC9VhTj2OJ7E6+iSBLNZaiPK-16UY0zSFJikpz+teef3JOosg@mail.gmail.com>
- <ace9d273-3560-3631-33fa-7421a165b038@schaufler-ca.com> <CAHC9VhSSASAL1mVwDo1VS3HcEF7Yb3LTTaoajEtq1HsA-8R+xQ@mail.gmail.com>
- <fba1a123-d6e5-dcb0-3d49-f60b26f65b29@schaufler-ca.com>
-In-Reply-To: <fba1a123-d6e5-dcb0-3d49-f60b26f65b29@schaufler-ca.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Fri, 13 Aug 2021 16:43:18 -0400
-Message-ID: <CAHC9VhQxG+LXxgtczhH=yVdeh9mTO+Xhe=TeQ4eihjtkQ2=3Fw@mail.gmail.com>
-Subject: Re: [PATCH v28 22/25] Audit: Add record for multiple process LSM attributes
-To:     Casey Schaufler <casey@schaufler-ca.com>
-Cc:     casey.schaufler@intel.com, James Morris <jmorris@namei.org>,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-audit@redhat.com, keescook@chromium.org,
-        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
-        Stephen Smalley <sds@tycho.nsa.gov>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kadam (62.8.83.99) by JNAP275CA0068.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4f::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.13 via Frontend Transport; Fri, 13 Aug 2021 21:09:35 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c6f70fe3-7518-4634-f477-08d95e9eaa32
+X-MS-TrafficTypeDiagnostic: MWHPR10MB1359:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <MWHPR10MB1359407B12E1B009D3B991318EFA9@MWHPR10MB1359.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1728;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: cJz8i4mnS7Y1BnkevE8a2fODU1YVcQQK9HcNwvbHPyhJ4pAwo0WMyNsHutMza2Qsrg7qZYx2pwfbcMbRb4qJaMR4ujpbC8v1eSXipSe7SxufdVFlsVMMZjC1BF+y8eQLOr6RGWyvlMT7QHpvW9cMhMEtB8SV9E7zwOMeD8VLmhuQM/KWoLv1mvfWJvsPVRmzv36j4oMJ4Xvrkh4h77RROqehzBfqnC31igggYHVD0jC0qgf+vJHswnLk/PRigNp+lAwUXAeuqllUi+c8PBUdMBassjCKLPqWblE7NwoW+Vv0K1Dpq0yxEjuzb2iOu8YXbxermZkcnvJFCrt2CXCoM/CdCRog/BTJnkt1UT/n5IWqRB2LeTY2FoNWG/OwLBgK1Vyi1GYGe7x8yw49kyaaDOlGeHcl8NogkSeKFt86KWlNrlBVF1lfsoV3/IDYyoF9JcpsHpiaddwMJGK2xhmp/QVYezWCfW1rp+9NJsw6AJBSjkvbGodn4PlR3QyVuqXp75gh7/fHVX1fRy2wPxFIjAB+5fa1/4TE1CQ/sj6y2+yiA9EViVfKiCcpUWA1eS/AwjqYJNlHEVEO7UAJi7qe+p5CBGrkPqGm/dpQWRDGZxw1mn5Ip5LAvDpoYhXsiLXxF0rK5kGtkBmNV+06iGjNozOrsXVrYXlDj/xNVdD+6BmtyGqAgEi62fnM78BBpphVJ+//uOjNYYATozRtRltcjQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(346002)(39860400002)(396003)(136003)(366004)(4326008)(66556008)(66476007)(4270600006)(2906002)(66946007)(9576002)(44832011)(52116002)(33656002)(8676002)(8936002)(956004)(316002)(38100700002)(5660300002)(38350700002)(55016002)(6916009)(33716001)(558084003)(1076003)(6666004)(9686003)(6496006)(86362001)(26005)(478600001)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wOFqPX736GAjbnoek7xeCZIRSs73ygOsHYieRrhfKrVpA+ruSYG+tnyZoaEL?=
+ =?us-ascii?Q?hKtQ/NhBNmDYIdUIqMqR6FNq2jWXMdzlfWRpzW5CnEnnBEBLrPtuwxkOs3zm?=
+ =?us-ascii?Q?s42X9GDj2LRn2OVNO/2vxqesFzEizSUJTgVVnP+JvPk13TLoF6Plcp5hNYFM?=
+ =?us-ascii?Q?NACJSXi0q/R3A/yY3bu0CdlVbffuKgb+btoJAkqSmOEwP5NnWSTDg8Sz1TRv?=
+ =?us-ascii?Q?RsF27ISl6OqeVO21DDlK3etMYBxTmj3OjB12ZFeHoekXc4sSKX+vpkzDi+yS?=
+ =?us-ascii?Q?EiDkib0hfkkjY4Z4FGnOztyRVgRBYsw4ZPW6smcM5IC529m12ijHlTMJIIen?=
+ =?us-ascii?Q?x0qPpa9Bdnk/fgChVHZnElZjfUcVQnZlb4dXOjABal2CU5RKA4gFfEhO1lNG?=
+ =?us-ascii?Q?jUqnSgQ2C/aGZcnUWQuBUPoBdpLolV1ub59E5I3lY/z23QkSr6WdR55kc9YT?=
+ =?us-ascii?Q?kuSkdZLVoNdEhxAYS7QapuO3b+Ia8obUrvVuLcC08P989mtnyXDx5vkW7DvE?=
+ =?us-ascii?Q?QteLysGejSOoAMyV9sQ9VHX6y4Zbr2My6jkaQo195vurq0voGrSsg+3SU2YH?=
+ =?us-ascii?Q?4qRK1MP1khnLR0e8q/GR/M3pIA92RKzXR+LMROUhP0Cnz5L6iIhh2diGreaS?=
+ =?us-ascii?Q?9A2YohyPywGSErWx/ng4ek2oG6fgVANpsxDW7CEHBU14uEiJhSWslU7oB9sC?=
+ =?us-ascii?Q?9nUfXR/s84EHJx2hfDwsqR7jswEupvykfcjZ9aOUZ98lsIhohgRKeo/YtkbK?=
+ =?us-ascii?Q?MAf04lI/wm+Bk+p6UhZimjzEwv667iw57WARfHzjoE14bXQ8QUhlqjb/p8tF?=
+ =?us-ascii?Q?5dfjQ0DYyhpwOTL8jM69obQdlgP1Pr4lXBgccUCDzoo8KnZUBb1/eLdz4Wkx?=
+ =?us-ascii?Q?oW3EnmsON1/d2qt3QtJRsBNKEPcI+SBkAB80WdQOuH4Y0+uctOZSGZYyoBSg?=
+ =?us-ascii?Q?4IP46gonb72mI3eHv3EUiO2ARmVNkqgL0MFYx5hxf5R08n1Hmseo3iVA0+r1?=
+ =?us-ascii?Q?BtW/frdqj2PmyAX4TUdod9xyJ43G82ILvOQcipkX0VL6wBlhT2zqayJKNHsK?=
+ =?us-ascii?Q?C2jIQNhuoPkKUXuqOEB7iwjVnm1HOVPQr+pcJkkQuECVgsVmddKRcA+yRr/l?=
+ =?us-ascii?Q?EjyVr8GB5YOU7zRSjSSzPO8FNf533R8WI9TT9+esUMufD+vMzohVUhZlS45y?=
+ =?us-ascii?Q?juiygKsjzquXGIv6Jd8yU3FDF3obgv/Ch56krxOVq1ztMEKDcru//Bg/9ArS?=
+ =?us-ascii?Q?1GQpUYOV307aBj03WkbDKCfhH4WquLTkheF3FHCypBKWIF4vBZoi6AyRoYjI?=
+ =?us-ascii?Q?NPK5rMz7miSVYRxeSYNu4/z9?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c6f70fe3-7518-4634-f477-08d95e9eaa32
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Aug 2021 21:09:40.4934
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8OPqgTccnqQFuZpCfJGMlY4M9zFPeKo9j9t0JtRG8CatoERyOW2OF5ZJNPyL9yT3mN136pwZgj1IUV1e0K3fVJN11VsEkgfDScg4xVhOmIc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1359
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10075 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0
+ suspectscore=0 mlxscore=0 mlxlogscore=999 phishscore=0 spamscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2107140000 definitions=main-2108130123
+X-Proofpoint-GUID: pbfVlCy1bYUcivwDgIjI24khocDHJvdZ
+X-Proofpoint-ORIG-GUID: pbfVlCy1bYUcivwDgIjI24khocDHJvdZ
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 13, 2021 at 2:48 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
-> On 8/13/2021 8:31 AM, Paul Moore wrote:
-> > On Thu, Aug 12, 2021 at 6:38 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
-> >> On 8/12/2021 1:59 PM, Paul Moore wrote:
-> >>> On Wed, Jul 21, 2021 at 9:12 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
-> >>>> Create a new audit record type to contain the subject information
-> >>>> when there are multiple security modules that require such data.
-> > ...
-> >
-> >>> The local
-> >>> audit context is a hack that is made necessary by the fact that we
-> >>> have to audit things which happen outside the scope of an executing
-> >>> task, e.g. the netfilter audit hooks, it should *never* be used when
-> >>> there is a valid task_struct.
-> >> In the existing audit code a "current context" is only needed for
-> >> syscall events, so that's the only case where it's allocated. Would
-> >> you suggest that I track down the non-syscall events that include
-> >> subj= fields and add allocate a "current context" for them? I looked
-> >> into doing that, and it wouldn't be simple.
-> >
-> > This is why the "local context" was created.  Prior to these stacking
-> > additions, and the audit container ID work, we never needed to group
-> > multiple audit records outside of a syscall context into a single
-> > audit event so passing a NULL context into audit_log_start() was
-> > reasonable.  The local context was designed as a way to generate a
-> > context for use in a local function scope to group multiple records,
-> > however, for reasons I'll get to below I'm now wondering if the local
-> > context approach is really workable ...
->
-> I haven't found a place where it didn't work. What is the concern?
+Great!
 
-The concern is that use of a local context can destroy any hopes of
-linking with other related records, e.g. SYSCALL and PATH records, to
-form a single cohesive event.  If the current task_struct is valid for
-a given function invocation then we *really* should be using current's
-audit_context.
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-However, based on our discussion here it would seem that we may have
-some issues where current->audit_context is not being managed
-correctly.  I'm not surprised, but I will admit to being disappointed.
+regards,
+dan carpenter
 
-> > What does your audit config look like?  Both the kernel command line
-> > and the output of 'auditctl -l' would be helpful.
->
-> On the fedora system:
->
-> BOOT_IMAGE=(hd0,gpt2)/vmlinuz-5.14.0-rc5stack+
-> root=/dev/mapper/fedora-root ro resume=/dev/mapper/fedora-swap
-> rd.lvm.lv=fedora/root rd.lvm.lv=fedora/swap lsm.debug
->
-> -a always,exit -F arch=b64 -S bpf -F key=testsuite-1628714321-EtlWIphW
->
-> On the Ubuntu system:
->
-> BOOT_IMAGE=/boot/vmlinuz-5.14.0-rc1stack+
-> root=UUID=39c25777-d413-4c2e-948c-dfa2bf259049 ro lsm.debug
->
-> No rules
-
-The Fedora system looks to have some audit-testsuite leftovers, but
-that shouldn't have an impact on what we are discussing; in both cases
-I would expect current->audit_context to be allocated and non-NULL.
-
-> > I'm beginning to suspect that you have the default
-> > we-build-audit-into-the-kernel-because-product-management-said-we-have-to-but-we-don't-actually-enable-it-at-runtime
-> > audit configuration that is de rigueur for many distros these days.
->
-> Yes, but I've also fiddled about with it so as to get better event coverage.
-> I've run the audit-testsuite, which has got to fiddle about with the audit
-> configuration.
-
-Yes, it looks like my hunch was wrong.
-
-> > If that is the case, there are many cases where you would not see a
-> > NULL current->audit_context simply because the config never allocated
-> > one, see kernel/auditsc.c:audit_alloc().
->
-> I assume you mean that I *would* see a NULL current->audit_context
-> in the "event not enabled" case.
-
-Yep, typo.
-
-> > Regardless, assuming that is the case we probably need to find an
-> > alternative to the local context approach as it currently works.  For
-> > reasons we already talked about, we don't want to use a local
-> > audit_context if there is the possibility for a proper
-> > current->audit_context, but we need to do *something* so that we can
-> > group these multiple events into a single record.
->
-> I tried a couple things, but neither was satisfactory.
->
-> > Since this is just occurring to me now I need a bit more time to think
-> > on possible solutions - all good ideas are welcome - but the first
-> > thing that pops into my head is that we need to augment
-> > audit_log_end() to potentially generated additional, associated
-> > records similar to what we do on syscall exit in audit_log_exit().
->
-> I looked into that. You need a place to save the timestamp
-> that doesn't disappear. That's the role the audit_context plays
-> now.
-
-Yes, I've spent a few hours staring at the poorly planned struct that
-is audit_context ;)
-
-Regardless, the obvious place for such a thing is audit_buffer; we can
-stash whatever we need in there.
-
-> >  Of
-> > course the audit_log_end() changes would be much more limited than
-> > audit_log_exit(), just the LSM subject and audit container ID info,
-> > and even then we might want to limit that to cases where the ab->ctx
-> > value is NULL and let audit_log_exit() handle it otherwise.  We may
-> > need to store the event type in the audit_buffer during
-> > audit_log_start() so that we can later use that in audit_log_end() to
-> > determine what additional records are needed.
-> >
-> > Regardless, let's figure out why all your current->audit_context
-> > values are NULL
->
-> That's what's maddening, and why I implemented audit_alloc_for_lsm().
-> They aren't all NULL. Sometimes current->audit_context is NULL,
-> sometimes it isn't, for the same event. I thought it might be a
-> question of the netlink interface being treated specially, but
-> that doesn't explain all the cases.
-
-Your netlink changes are exactly what made me think, "this is
-obviously wrong", but now I'm wondering if a previously held
-assumption of "current is valid and points to the calling process" in
-the case of the kernel servicing netlink messages sent from userspace.
-Or rather, perhaps that assumption is still true but something is
-causing current->audit_context to be NULL in that case.
-
-Friday the 13th indeed.
-
--- 
-paul moore
-www.paul-moore.com
