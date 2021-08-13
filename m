@@ -2,102 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CE823EBBC4
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 19:58:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C8BC3EBBC7
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 20:00:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232642AbhHMR7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 13:59:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57788 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232099AbhHMR7O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 13:59:14 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5E70C061756;
-        Fri, 13 Aug 2021 10:58:47 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id bo18so16525411pjb.0;
-        Fri, 13 Aug 2021 10:58:47 -0700 (PDT)
+        id S229944AbhHMSAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 14:00:25 -0400
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:51246 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229607AbhHMSAX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 14:00:23 -0400
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17DHp2sU014126;
+        Fri, 13 Aug 2021 17:59:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=Vu3d5mb3oDlivA5XsSkl4doPRKTTird1VEI59mxVoM4=;
+ b=Yt6t38uibs8PIUssZBn0tLhY3I+fUOrEKQ82FCYh4n09PDXoyj9JB6ZboyswRPA44HzM
+ Fony2Zn29nfXqkWK1CTdUQM/44sCmpNzchKtZSXzWdAuRiJoxbJbhqqhrvnBNbOYVfrP
+ 7cvY9eqHBZ2rHhQ5znYiA1SFPOrolPrxa3LJYoVP+3hXKOGbhrRVzZmt6SL1I3thDZlw
+ HVDysqKKq+FUd867H4x/Te7BDTV0/Hq9p0Wg7FLqXz5lZMp5uqkvqBREr+dSHfA/Dukc
+ ee0jLmRQ1iu0f+rbq+l30evrwNsg1JtQJA0OWQ+ySPPQh6UevDlCGoKKLJqVvYkQU2Ep gg== 
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2020-01-29;
+ bh=Vu3d5mb3oDlivA5XsSkl4doPRKTTird1VEI59mxVoM4=;
+ b=dlbRJOVPG68XlP4WQU/qeeqwWfzGyXRNYBT2LZpBSrcyKMIGESrjhASNHUymh1qfO5Pu
+ 06ZcQKIzhrM9WHchrU/AfotvC0XXretBsVgngN0V31xqyE/r6Rmv40K9hCn/USCKg8q2
+ yNwhDKVZaSKYgNwnDPXXazACA+jQLOHxVsIYrAUW85mVmCPkBFwNptr/N5mcIoWTJyTV
+ 1bP7S7y4NR0GVpJ5142JL4gF/AIUc96e5mgbZ+Mg74ZvlKyk4hm5bI2+SAMluyXiEZXh
+ luYwdlhFM39pZ+58Axh0bqzbqXcsMjkTC+SMG6tNAhD/n7bNBtHIqIx1WEaXu0G7HxCM SQ== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3acw9p40t3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 13 Aug 2021 17:59:55 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 17DHoT0L053097;
+        Fri, 13 Aug 2021 17:59:53 GMT
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2173.outbound.protection.outlook.com [104.47.59.173])
+        by userp3020.oracle.com with ESMTP id 3adrmdj6dm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 13 Aug 2021 17:59:53 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fjOaQ084RH+LTHaHQSA5CggMiLIr4u7N+a/mIlaBFUoRbQBEHAi7UOY7xqxhqA6TlWzKtKJTSQ1HWDBlq8dfLNRZi/tklCBNEy5WR7TwGnQhCQrppUuaPEuYJJuJCO5H9xakGzMy+JDjnN+G1KjG93q7mz1mFV99MRA9LGHxCQXX4CKRMnOdfOg3RkFWo3vPAuYacksPlntKhJDik2LEYDVOlp3Z9owj4KLOsDCtlvUs2Hb+WRVYXxnMxyS39SqbzUB4fdbVAzGHHLYqwjc2i9nqiNCzy3xN3qQV6Hwr5hBz5S00OQ5gEvA4RhfOArt9+u4gGRaZvTmjcniTiJLeXQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Vu3d5mb3oDlivA5XsSkl4doPRKTTird1VEI59mxVoM4=;
+ b=SPETNawzM3bqDFXr16yHwNWk/qDRKAVGCQCQVJWhJnY+HdaQe2uOzYZu8bZMvWaYRUOhbQRdIuU2BOUfP9usnfQCLCVy/AkFlpfvHrrO+6nQ3YpSXiixnlRR/1Qo1mzg/rZhYiPpoOOnHLsqVzjTqrflb2FjH4oLP5WUmY6K0jFo24qfwZ8/oyGqyw+gTR1n8AbP0nJ8+nrM9+3nx0OyPWiAn/IU0bRI0THhhr682nFFHgIBP44wlIRiaZ5cAhGcr0NIUgiRoONaHA5Wsj/4MInFAlSdXwmQZojKDJr3O+LyzsYtRU5xz8FOm5ipu8AA12PaijZk6X1baahbH6dW/Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=di7QngSrp4FnsSGO3LSu9eV65mIJNW5jKf6yiG0+RuU=;
-        b=dQXLqc5X8fIsHbzymW3PLJOTOjlQdK8tcmZqLFzG352erBCZhuDdyQp5dJjpAxQs4B
-         JeaS1pyddkxqdfr1t8ujRcY12W0PqS0hXNNOXZ0wFZF2oaeKK3/1DVpmWTSnCW6zOWzY
-         gqsqTLjc9I8480wq1q6uBW3m6zMSJpXzGOBUxY9waV/oC7JaNorcF8JKXWehHZRJ5RUq
-         g7RNoWhlraHMPVn4DI6/rTvyrmiPeXKT3mG72JAOtuEM7ufjtq62UA9Nz9UYy2mJkzEG
-         NpAl0ATS3TPxm1KRHOuuzcztGTWzT/f9vfWyWDsL/FUIc3fxfMILeA2ztqpuFTME9rw+
-         80RQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=di7QngSrp4FnsSGO3LSu9eV65mIJNW5jKf6yiG0+RuU=;
-        b=XqGMN3QL9I1Hh944IKR1rRB1hOHxrzGNlzKB23+kKOmpyeheFUZGYMdbh4uZ8r1u3r
-         Y1BAXG4NRAAjyXXBnFcqm8Fp0pUzQc+zzhMGR9PDmcQ0mKPxxPDp893h6jG5oDoexUm0
-         UwURPKxEm+X1gymT+KtTW/iwAJXiWaUWFb4BAZn2BlRc9yJqugTOuVr/8WKjERoxW3eI
-         py8wvjuviw178giVV4avC0dkWr0oSz3bcx3bXCssuHlAN0DX4nEm1cFSpm3fyYhtz7ZU
-         PYjXIcCyj18moo41wMh7O4o2r34Bbghs9/PlGynE47s079ubSC9/tcPBC0DUl6ny9ueH
-         Fz/A==
-X-Gm-Message-State: AOAM5334QW6nv2Cnx3R0Ju9eJsqYVoryg5EJKgu6PGSzg+abSURAqq0n
-        G41xhx80pHEJIfLbO98S2YI=
-X-Google-Smtp-Source: ABdhPJwzwumzRBi1BCTF3AFHLjIkjk9cXsbjw6TqqLX1fdRzbRFo7tzsATIv9gSPcOccSh8E3bFC/Q==
-X-Received: by 2002:a63:f749:: with SMTP id f9mr3387048pgk.77.1628877527474;
-        Fri, 13 Aug 2021 10:58:47 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:1a:efea::50b])
-        by smtp.gmail.com with ESMTPSA id 19sm2945794pfw.203.2021.08.13.10.58.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Aug 2021 10:58:47 -0700 (PDT)
-Subject: Re: [PATCH V3 10/13] x86/Swiotlb: Add Swiotlb bounce buffer remap
- function for HV IVM
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
-        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
-        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, ardb@kernel.org,
-        Tianyu.Lan@microsoft.com, pgonda@google.com,
-        martin.b.radev@gmail.com, akpm@linux-foundation.org,
-        kirill.shutemov@linux.intel.com, rppt@kernel.org,
-        sfr@canb.auug.org.au, saravanand@fb.com,
-        krish.sadhukhan@oracle.com, aneesh.kumar@linux.ibm.com,
-        xen-devel@lists.xenproject.org, rientjes@google.com,
-        hannes@cmpxchg.org, tj@kernel.org, michael.h.kelley@microsoft.com,
-        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, parri.andrea@gmail.com, dave.hansen@intel.com
-References: <20210809175620.720923-1-ltykernel@gmail.com>
- <20210809175620.720923-11-ltykernel@gmail.com>
- <20210812122741.GC19050@lst.de>
-From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <d18ae061-6fc2-e69e-fc2c-2e1a1114c4b4@gmail.com>
-Date:   Sat, 14 Aug 2021 01:58:32 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
-MIME-Version: 1.0
-In-Reply-To: <20210812122741.GC19050@lst.de>
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Vu3d5mb3oDlivA5XsSkl4doPRKTTird1VEI59mxVoM4=;
+ b=QgJBs7kF+MNW7JC9hbmNNomdg6fEM1m3wcanBUuHxJuowfrkcIQuSLWX7YMdIarysyC+9AhCRI4waRjuVhIk/znqbJJ+JJbsMGLTmhiVgiorK9fD+cykdgScf0llDCIY7cQgwr65YK2aiG+zANisn5iqbOVlj7v09j7Mdv8fLko=
+Authentication-Results: google.com; dkim=none (message not signed)
+ header.d=none;google.com; dmarc=none action=none header.from=oracle.com;
+Received: from SJ0PR10MB4494.namprd10.prod.outlook.com (2603:10b6:a03:2d4::12)
+ by BYAPR10MB3413.namprd10.prod.outlook.com (2603:10b6:a03:150::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.18; Fri, 13 Aug
+ 2021 17:59:51 +0000
+Received: from SJ0PR10MB4494.namprd10.prod.outlook.com
+ ([fe80::588f:a774:17de:1d1b]) by SJ0PR10MB4494.namprd10.prod.outlook.com
+ ([fe80::588f:a774:17de:1d1b%4]) with mapi id 15.20.4415.020; Fri, 13 Aug 2021
+ 17:59:51 +0000
+Subject: Re: [PATCH] af_unix: fix holding spinlock in oob handling
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, viro@zeniv.linux.org.uk,
+        edumazet@google.com
+References: <20210811220652.567434-1-Rao.Shoaib@oracle.com>
+ <20210813103243.51401dcc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Shoaib Rao <rao.shoaib@oracle.com>
+Message-ID: <22dabc0a-7a2a-db34-5727-f79503594850@oracle.com>
+Date:   Fri, 13 Aug 2021 10:59:50 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
+In-Reply-To: <20210813103243.51401dcc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-ClientProxiedBy: SA9P223CA0026.NAMP223.PROD.OUTLOOK.COM
+ (2603:10b6:806:26::31) To SJ0PR10MB4494.namprd10.prod.outlook.com
+ (2603:10b6:a03:2d4::12)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2606:b400:400:7444:8000::7de] (2606:b400:8301:1010::16aa) by SA9P223CA0026.NAMP223.PROD.OUTLOOK.COM (2603:10b6:806:26::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.17 via Frontend Transport; Fri, 13 Aug 2021 17:59:51 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e3e57a64-cb92-4c0e-6919-08d95e84260c
+X-MS-TrafficTypeDiagnostic: BYAPR10MB3413:
+X-Microsoft-Antispam-PRVS: <BYAPR10MB3413F0C24E2D67DB965B4267EFFA9@BYAPR10MB3413.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1417;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: mI/+tHmcoTb6I8btYm9WoKwxkCnYkgyTeAQUpYpsmxO6GnZKB83IoIfDLsU9H5CgSk2Fagf1TT38CL0ehieTclMpZue/MY7giuS+h3a4lwln0+esgsFunASS6YrnlkRu4Qp1yHgKx/uEGLGw8Bq7qvhNSiUsO0fJnUlm2QjvXepf3x2GrGh37+u5l1pENHZKsP+vS2Wdx/u7L6HoAe7Qphbggk+BORkKkyhktMvdjl4d7j1Nb7ep+od0xdEeVAQRcIYMiDopFA0GYwfKUyq/UPRkc+PxdhNFO+ZZV94dABF0EkUW2QligA/TDAat5uuZaJ2hjnPgAfBEIcmd0PznHwUfsbkTtcgIqEeDci/OUmQtiO98nsnxqaV0YFlTL+md0S22njcdDYowvlGAgfWXM/m2zC46kGEc/AOYWjY6Wf0dbJtVaWE3xb8MaDzfeIzQD6s3K5b7gXe4023qBPa+qSke6HOoMGHiRKiTva3Yab8ZDMD1IxDc5RwlSVayymbNB6Fot0gmO7CFePjBk95whLLfTdvUqd8BJ6EDegTWy2Cjtk7IGfJRYWK2H8JT7Li9oZ7yTmoWDJtLM4RASgP+q1xZiA/Yniy5qaczk/VMpKNt+ELYPrenn5KdWVuqmHlk4Z5Ubxesdd1h6pWpu7oO9wh0SLKnT3sewII/cIM0R/urnWr3/oH8l6rSCRBi+TD5e6nSf5//4G0CGrpUR6/3yVL7hWGRSVa7BH6QtV5WlgehwTYf6Y+rmXuNZRu55KqR
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR10MB4494.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(136003)(396003)(39860400002)(346002)(366004)(316002)(8936002)(4326008)(66476007)(83380400001)(53546011)(36756003)(4744005)(6916009)(66556008)(86362001)(31696002)(66946007)(2906002)(186003)(5660300002)(478600001)(6486002)(2616005)(31686004)(38100700002)(8676002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UDJ2b1Z1cXM4cHMyM2kyUUwwUzhFVHc3NGRnRG40RWxhV0dOdkhLd1poTlZa?=
+ =?utf-8?B?UWxkUVExMU80VlpraStlaUJSdU1URzFSL2huRFJxVG9aM0JEVjhyOTJza0RV?=
+ =?utf-8?B?MXJFK1lSbnpYbUlYOC82cHJabitjcjBRQmk5a29DT3Y2VitSbjQ0KzFxakhX?=
+ =?utf-8?B?dktNUTNoWXMwR0pSUG9pQWxGN1I1VXl0WUVuTU9mY1FqODZncmZYMXZGb1pT?=
+ =?utf-8?B?elRoRHlxVHF0cW5XOFpDakJlMEtTcHZhUWVIVTRUTzZ6UnlDSVVVV1RZdmhs?=
+ =?utf-8?B?OE45ZUEwVUNWQ3FhUGZreXJOKy9sbGRYeDdQTldCaHBOQmI2dWppclprcG1X?=
+ =?utf-8?B?ZFNFL2J6SnN4eFl3NGFxbFNYWVE2RVBIb2VIZlNPZXppY1BvVytkdit3SHMx?=
+ =?utf-8?B?Rk14TC9zOCtXV3RHVytlT1cwdiszaU5xTytteEhMMUxZZktEUmtGZThLL05p?=
+ =?utf-8?B?VUQvZVRtMmlQdWxabmRUZk5wb2JIVHV3c1M3OEhPUDFpeklFQ0g5cWtEWjBZ?=
+ =?utf-8?B?Vk9QTndTR0EvOXF4dkxGSy9GT3Vwc2s4eUd6S2x1clZSLzYzUG1zRVNqUkdy?=
+ =?utf-8?B?YjdaUWVUWnNJSXF5S3BQTk1pekJBak55TjJpc2JVclM2ZCtyb3dzVGlGdkpL?=
+ =?utf-8?B?SHlCY01rOVVoNkNWZnVJVEV5UEJnTlZ6M2FKOVpoTHZKRGN5REZCQVRaTldI?=
+ =?utf-8?B?OFVJclZqa2Z3RXlCdjZHWjd5WmdvZnA5ay9mSzIzOHc5L2pnb3lxNW1id0tP?=
+ =?utf-8?B?VHVIdkJXZHdWTldQYVoyRHBHSHlBTjZZamZ2bDEwOUI2NDZSMld3MmhncTJT?=
+ =?utf-8?B?cm44MVZDNUt5SWhWZVVMTFFhTFE1YVpzTmJmbld6MmErV0FRYnFBQVRkL2lX?=
+ =?utf-8?B?ak5Cbld5YjdGNHl1R0pLelZzb0RpQjdTYm9qQ296WmcwVlBMYmdLMjNYMkZJ?=
+ =?utf-8?B?TGROMmJFWWxneEFhMURaY0dQMmxmYkpvVTQwVmJwSy9lZlYyL29HWkY0NXNX?=
+ =?utf-8?B?cTl0MFNkTWxLb09xb3pPaTdEM1ZHNThCQ3VjQ1J0UXBFb09PaUVYODBTSzJo?=
+ =?utf-8?B?eWFEUUl5TnBNei95VzFtSmFDWnREZ1ZZM3pGU1FrQXYxVHRyVGNOeHVqRDA0?=
+ =?utf-8?B?bGl0RFF1RG9uUWRFdjZmM3FodzJrZkdoNmxNamhoTE5qbExTZGI4cUJEaGZr?=
+ =?utf-8?B?aE5CemU0MEFwbVkyME8xZjhQeUhRdUxCTkR3SG0zZmE4TkNUWFNnc0tWb3lH?=
+ =?utf-8?B?cXJXbCtGVm9Kb2FNV29YQVVrMTJlTkZJRjlYMnhHQktpVzVKd2plNStPL3BM?=
+ =?utf-8?B?VjhCV0huV1RPV3lzbmNDOEVRUERmZkhzVFVlZk1MUUFrajdKNXVLL0NRWnpN?=
+ =?utf-8?B?TEluZ2IvZG1KVE5sUUVCellUNG04Wm8yYUVNMWFlQ3V6YURRcnhEUFVweG1z?=
+ =?utf-8?B?QjBEZmFaNGRHVXBuRWNqQ3o0enVLVzAwNStCMUFKQ1ZzUk1mMHE1dEdsSm9t?=
+ =?utf-8?B?cDdpM2V6Z2F3VFBkRmRoTmp4SWU1UDVJVk1RRU5oeDlKSnl6YTBRNXU4UlUw?=
+ =?utf-8?B?MGU3L09Ub2NhZ1hlOXo3WFpVU3JrU2o1VzRiVFJ0OHlyeHpoZ0Q2dytudHdY?=
+ =?utf-8?B?NFJkcXc2SEcwNzRtUlZRcHhsZjREbkZQcFlIczBrcUIwaldjbStxdy9hVVdB?=
+ =?utf-8?B?cWNEaFBlM0pnQ25Nakd2SFVPQXo4aGRsM1FsNUFSRmpIOGlmdEtmSVNwWStD?=
+ =?utf-8?B?MnQxRWI1VDhyaGpmSVV3MHBndEp2akJLY1h1TXo2eWlWWnBxOER6NkY0L3pV?=
+ =?utf-8?Q?omh/hRaVEDgxK5cSRS/fbg8ixp5rbobJv+86E=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e3e57a64-cb92-4c0e-6919-08d95e84260c
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR10MB4494.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Aug 2021 17:59:51.7812
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ivD7ln4I2bmnmUVRguBL+bolBbozns7Ms1JVZpzEyKloTMuLC/43eW42UA7bxbOvYSpvStTsBMadf42+vcBNVQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB3413
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10075 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0
+ suspectscore=0 mlxscore=0 mlxlogscore=999 phishscore=0 spamscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2107140000 definitions=main-2108130106
+X-Proofpoint-GUID: T1zSm_r1KmXdAgmlAr7OlzuDeo27uXdp
+X-Proofpoint-ORIG-GUID: T1zSm_r1KmXdAgmlAr7OlzuDeo27uXdp
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/12/2021 8:27 PM, Christoph Hellwig wrote:
-> This is still broken.  You need to make sure the actual DMA allocations
-> do have struct page backing.
-> 
+OH, I just sent you a combined patch. I will resend it with just the 
+nits pointed out by Eric.
 
-Hi Christoph:
-      swiotlb_tbl_map_single() still returns PA below vTOM/share_gpa_
-boundary. These PAs has backing pages and belong to system memory.
-In other word, all PAs passed to DMA API have backing pages and these is 
-no difference between Isolation guest and traditional guest for DMA API.
-The new mapped VA for PA above vTOM here is just to access the bounce 
-buffer in the swiotlb code and isn't exposed to outside.
+Shoaib
+
+On 8/13/21 10:32 AM, Jakub Kicinski wrote:
+> On Wed, 11 Aug 2021 15:06:52 -0700 Rao Shoaib wrote:
+>> From: Rao Shoaib <rao.shoaib@oracle.com>
+>>
+>> syzkaller found that OOB code was holding spinlock
+>> while calling a function in which it could sleep.
+>>
+>> Reported-by: syzbot+8760ca6c1ee783ac4abd@syzkaller.appspotmail.com
+>>
+>> Fixes: 314001f0bf92 ("af_unix: Add OOB support")
+>>
+>> Signed-off-by: Rao Shoaib <rao.shoaib@oracle.com>
+> IIUC issues pointed out by Eric are separate so I removed the spacing
+> between the tags and applied, thanks!
