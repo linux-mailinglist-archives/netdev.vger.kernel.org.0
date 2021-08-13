@@ -2,128 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81F1B3EBE48
-	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 00:29:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B99213EBE5F
+	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 00:44:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235196AbhHMW3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 18:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34468 "EHLO
+        id S235379AbhHMWos (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 18:44:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235029AbhHMW3f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 18:29:35 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E628C061756;
-        Fri, 13 Aug 2021 15:29:08 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id n17so22546104lft.13;
-        Fri, 13 Aug 2021 15:29:08 -0700 (PDT)
+        with ESMTP id S235029AbhHMWor (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 18:44:47 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75435C061756;
+        Fri, 13 Aug 2021 15:44:19 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id c12so4789709ljr.5;
+        Fri, 13 Aug 2021 15:44:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nGHiRfHmrc53lFGsCeLT5fWZ/gcwuMxbfBrAvdKDdeY=;
-        b=f6QNQ0tJrL66+L1wjEClV78xcB8ZV9OU30WcUP6/AQkN7LO4qROBuD0Uvdr08vIIVI
-         8eJZVpz5OaZ/8YPsBQ1z1jqCrcL/Tx+bawRMJUX6iwy7vANncATBT5ArzJ6YiSaZ/Z/9
-         tfUyaG30o6rQHEPVPti0hZC4lcKOcr3grSe5YeCfOaAMJoGqR8woJ/+s3R6DHWHRmiJN
-         wrrLkcRErhgiuA6RMUNlNyV3mri1B/uvXXw2R988UfEiI4nmnD+Vq59FGntihda1zq8W
-         WjsswcySEVaI3p6VfGciy9UXLj6UgJGisxsLmVVeSrc+oX/+yLKl6/CnWVM24gXK6kSa
-         0ldQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=UA6o2CCYezR/kHTPRnO3Z0sstg3TXd9hIrBv8hmRn7o=;
+        b=udZHgeAR7SMTHzfd4w96JqJIMPnbpwc/0RAtjKZw8dUUjybQWMXzEjEp2l0XETE8Ra
+         tbIXV/3KDrAQppyWAVPXtvAPu5R/NjKgX2QgJOlEkdiAEfFb4V8nRbUP6V/bWn+Dm1IW
+         Ae7Op2TRQRZXbs1eKogPoOfzyUYRABYWAGcSHBg8GDHDhIQSkMWBQ8TbjqEssZBytmdL
+         wyVjeJa/bvqmN+odBAsQr+nDLyQKcLlITiwkNgH16xqn7Br25Oi6MwA4Gxhoe2dcfYj1
+         le++OYtIixK95VRQeLTJgFlt4+um2jKnx1Igx3ls28KU+nGbiNh60VEtNc3pDTcdGzJH
+         W4xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=nGHiRfHmrc53lFGsCeLT5fWZ/gcwuMxbfBrAvdKDdeY=;
-        b=jcQe49ptRD5PgeUGvrFG9P4t/fNj9dRKNhY/itLwfenPzk9LLQ/fooNy5aBl9dynVt
-         QdPS8LfwQFowa6UTPT/SrEGD76exco43IO3vwBBr7lr/VqsKBtVnwoMJwuiVh9305TPc
-         frYewoHlMIHOD9hjBX4oSW5MERdAfPinJdFJW8REcyiKW/QhmGLLOo2TRsNEa8lu+wi7
-         guUZ8TR4ur18ZsPnPDxn+pDQVsB8ix65ffJIcsaLr1gfnJNIy6SYZDzKCsk7P15D3NGR
-         nd6vcAWvamKPgR0MVe7llLRtcwIDCzYzyejP2i7LseSN4NwxqPYTn8Xf3uL8WUgbSAS5
-         0Kcg==
-X-Gm-Message-State: AOAM530TKhZr1V27OQYYOUFoDNmomlwgfQsWHH4hFIMjBSMcMa/CDYBo
-        J928z+YGZc4zaeZSnnSO8hM=
-X-Google-Smtp-Source: ABdhPJzSWZE378GEaISoBHQh853nqaSCbQK2KADWy/YYqDwPj2t1b5cuGf7voa/JfbDRjH+ZlPGqtA==
-X-Received: by 2002:a05:6512:1597:: with SMTP id bp23mr3068182lfb.189.1628893746456;
-        Fri, 13 Aug 2021 15:29:06 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=UA6o2CCYezR/kHTPRnO3Z0sstg3TXd9hIrBv8hmRn7o=;
+        b=DzMPTK+nAjko1TNy5dTKBrmtQTrv9PrYifVkpBQi5oNIVcUVvgLFHNbKjZtt6Z1y9/
+         WjRy8Su6DhGMPrRuu0gUEP1vZSmfVplW3I3RF4ipspMReEDi8GtqjAN6JkHoIdBYuZsN
+         DwIRgI2O/FQnwBrrdEIgKrPU6ie2Tfh4jGNE3T2BdWLJeSpTcB1Q0cNthgpZyRJiJy36
+         Rpb4ur+l43rT4FjAW8uNk5UaRSldw7+TFp4xOnQO5x6UJ7gN5Q9FqADK7+s5EPtGCDG6
+         pvgjBm4FcJMyzwuTB1kWLmZWKdpFxiU/+k9j6n/wQk0+0M6EpI9gN4YLEwdOSg7E7tGu
+         7g7w==
+X-Gm-Message-State: AOAM530eF3DItG3oCOlPhx0b5suDPorkbqnXI3tGWhUxk7wemJwIWhzh
+        zVOgcx3HpU/4Lm0q9k/6+JA=
+X-Google-Smtp-Source: ABdhPJwD8QzbG+DTZt+H4DZGVFJ3VMOnRmXbhHvHhOeNASdABTbinl9c0w56b3KQG4CpKFc6+Bke2g==
+X-Received: by 2002:a2e:9584:: with SMTP id w4mr3422787ljh.258.1628894657827;
+        Fri, 13 Aug 2021 15:44:17 -0700 (PDT)
 Received: from localhost.localdomain ([46.61.204.59])
-        by smtp.gmail.com with ESMTPSA id p10sm311179ljc.135.2021.08.13.15.29.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Aug 2021 15:29:06 -0700 (PDT)
-Subject: Re: [PATCH] net: asix: fix uninit value in asix_mdio_read
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux@rempel-privat.de,
-        himadrispandya@gmail.com, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+a631ec9e717fb0423053@syzkaller.appspotmail.com
-References: <20210813160108.17534-1-paskripkin@gmail.com>
- <YRbw1psAc8jQu4ob@lunn.ch>
+        by smtp.gmail.com with ESMTPSA id m2sm265538lfu.61.2021.08.13.15.44.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Aug 2021 15:44:17 -0700 (PDT)
 From:   Pavel Skripkin <paskripkin@gmail.com>
-Message-ID: <22130c0e-5966-f76d-5ce1-f92ec4750155@gmail.com>
-Date:   Sat, 14 Aug 2021 01:29:05 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
-MIME-Version: 1.0
+To:     davem@davemloft.net, kuba@kernel.org, linux@rempel-privat.de,
+        himadrispandya@gmail.com, andrew@lunn.ch
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+a631ec9e717fb0423053@syzkaller.appspotmail.com
+Subject: [PATCH v2] net: asix: fix uninit value in asix_mdio_read
+Date:   Sat, 14 Aug 2021 01:42:19 +0300
+Message-Id: <20210813224219.11359-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.32.0
 In-Reply-To: <YRbw1psAc8jQu4ob@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <YRbw1psAc8jQu4ob@lunn.ch>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/14/21 1:23 AM, Andrew Lunn wrote:
-> On Fri, Aug 13, 2021 at 07:01:08PM +0300, Pavel Skripkin wrote:
->> Syzbot reported uninit-value in asix_mdio_read(). The problem was in
->> missing error handling. asix_read_cmd() should initialize passed stack
->> variable smsr, but it can fail in some cases. Then while condidition
->> checks possibly uninit smsr variable.
->> 
->> Since smsr is uninitialized stack variable, driver can misbehave,
->> because smsr will be random in case of asix_read_cmd() failure.
->> Fix it by adding error cheking and just continue the loop instead of
->> checking uninit value.
->> 
->> Fixes: 8a46f665833a ("net: asix: Avoid looping when the device is disconnected")
->> Reported-and-tested-by: syzbot+a631ec9e717fb0423053@syzkaller.appspotmail.com
->> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
->> ---
->>  drivers/net/usb/asix_common.c | 8 +++++++-
->>  1 file changed, 7 insertions(+), 1 deletion(-)
->> 
->> diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
->> index ac92bc52a85e..572ca3077f8f 100644
->> --- a/drivers/net/usb/asix_common.c
->> +++ b/drivers/net/usb/asix_common.c
->> @@ -479,7 +479,13 @@ int asix_mdio_read(struct net_device *netdev, int phy_id, int loc)
->>  		usleep_range(1000, 1100);
->>  		ret = asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG,
->>  				    0, 0, 1, &smsr, 0);
->> -	} while (!(smsr & AX_HOST_EN) && (i++ < 30) && (ret != -ENODEV));
->> +		if (ret == -ENODEV) {
->> +			break;
->> +		} else if (ret < 0) {
->> +			++i;
->> +			continue;
->> +		}
->> +	} while (!(smsr & AX_HOST_EN) && (i++ < 30));
-> 
-> No ret < 0, don't you end up with a double increment of i? So it will
-> only retry 15 times, not 30?
-> 
-> Humm.
-> 
-> If ret < 0 is true, smsr is uninitialized? The continue statement
-> causes a jump into the condition expression, where we evaluate smsr &
-> AX_HOST_EN. Isn't this just as broken as the original version?
-> 
->        Andrew
-> 
+Syzbot reported uninit-value in asix_mdio_read(). The problem was in
+missing error handling. asix_read_cmd() should initialize passed stack
+variable smsr, but it can fail in some cases. Then while condidition
+checks possibly uninit smsr variable.
 
-Yes, you are right, I missed that, sorry. I will rewrote this loop into 
-for loop in v2.
+Since smsr is uninitialized stack variable, driver can misbehave,
+because smsr will be random in case of asix_read_cmd() failure.
+Fix it by adding error cheking and just continue the loop instead of
+checking uninit value.
 
-Im wondering why this wrong patch passed KMSAN testing...
+Fixes: 8a46f665833a ("net: asix: Avoid looping when the device is disconnected")
+Reported-by: syzbot+a631ec9e717fb0423053@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
 
+Changes in v2:
+	1. Fixed previous wrong approach and changed while loop to for loop
+	2. Reported-and-tested-by: tag removed, since KMSAN tests can be
+	   false positive. Used Reported-by instead.
 
+---
+ drivers/net/usb/asix_common.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-With regards,
-Pavel Skripkin
+diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
+index ac92bc52a85e..7019c25e591c 100644
+--- a/drivers/net/usb/asix_common.c
++++ b/drivers/net/usb/asix_common.c
+@@ -468,18 +468,25 @@ int asix_mdio_read(struct net_device *netdev, int phy_id, int loc)
+ 	struct usbnet *dev = netdev_priv(netdev);
+ 	__le16 res;
+ 	u8 smsr;
+-	int i = 0;
++	int i;
+ 	int ret;
+ 
+ 	mutex_lock(&dev->phy_mutex);
+-	do {
++	for (i = 0; i < 30; ++i) {
+ 		ret = asix_set_sw_mii(dev, 0);
+ 		if (ret == -ENODEV || ret == -ETIMEDOUT)
+ 			break;
+ 		usleep_range(1000, 1100);
+ 		ret = asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG,
+ 				    0, 0, 1, &smsr, 0);
+-	} while (!(smsr & AX_HOST_EN) && (i++ < 30) && (ret != -ENODEV));
++		if (ret == -ENODEV)
++			break;
++		else if (ret < 0)
++			continue;
++		else if (smsr & AX_HOST_EN)
++			break;
++	}
++
+ 	if (ret == -ENODEV || ret == -ETIMEDOUT) {
+ 		mutex_unlock(&dev->phy_mutex);
+ 		return ret;
+-- 
+2.32.0
+
