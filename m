@@ -2,50 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E75D3EBDEA
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 23:34:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7ABD3EBDFF
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 23:40:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235008AbhHMVen (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 17:34:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50264 "EHLO mail.kernel.org"
+        id S234997AbhHMVke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 17:40:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52368 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234547AbhHMVen (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Aug 2021 17:34:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7F6C260F51;
-        Fri, 13 Aug 2021 21:34:15 +0000 (UTC)
+        id S234948AbhHMVkd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Aug 2021 17:40:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 29B256109E;
+        Fri, 13 Aug 2021 21:40:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628890455;
-        bh=BZp00286AP4hzYNDCE6b3iG0Q0mGvk4gn11GGgjwHZo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SvdEsnIVfqkzBpCPPFWTugA/Knfr38syWone7Jzrr4KLVCFevYT/SvxwyMC+DQJqa
-         c1GdVNgIk3HdgMDQajtY8id1ucv8TQZqz2GlpbCPn/nt3eHWYPStgSHmCetExX6vNB
-         5PVLaW3vuTtW3zWmRrSekasgvTDOiC3d623jCsgWsjPxrNSi6yadSYKrU5hFjfEb0f
-         v4Le9+aVoawgx62kDhLwS/isC7su08nUYB5ngFS5kCfO0Ew71INaYedRZyQ5s6dkgx
-         vSDKLReTYTaKWxfNEGO4VLTSymhFZGX5zUnwmwS1GjNHIadkit+j974Z6A/oYM47Qu
-         Z8F5x52NoRdYA==
-Date:   Fri, 13 Aug 2021 14:34:14 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v1 net 1/1] ptp_pch: Restore dependency on PCI
-Message-ID: <20210813143414.68eacc9f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210813173328.16512-1-andriy.shevchenko@linux.intel.com>
-References: <20210813173328.16512-1-andriy.shevchenko@linux.intel.com>
+        s=k20201202; t=1628890806;
+        bh=HSPVKgnclFyLgZkIOXt7/FuCg1iZw+X2xBGR+mB0kN0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=uewyeRtFTsDxRgT+nQBbUrNhdbfrH1b3EKGgDgq8hYko/9oWxWCC8YLuj5ptHFhQS
+         rQk/pBgXh9Wlq649jY6+Q5TPb/iWyhH9gvZJUEXn/KKFXcqhsG+x6ll08VNcIAohNd
+         QaV0xQAKT2u3lGnTmrZ2TdSGX3QCHB1RCo5S2nObeBJCZPw3bhSqM46rj8vPmPxhyi
+         2a5X/VmX2Agj2T3oJMAYnhXbXwsSWMpyKSP15jd41BzYKFYgPzzc+Td1ZWRQGWUPGf
+         HHOAoiPEHp6pMh5q/FRplK4iRcCOCrpJ34mk7AXEja3zWWY7/ZopfQ9R//ghxTwRHi
+         JANlQNbxJVMvQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 19C7B60A69;
+        Fri, 13 Aug 2021 21:40:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: in_irq() cleanup
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162889080610.27108.16076576161064219009.git-patchwork-notify@kernel.org>
+Date:   Fri, 13 Aug 2021 21:40:06 +0000
+References: <20210813145749.86512-1-changbin.du@gmail.com>
+In-Reply-To: <20210813145749.86512-1-changbin.du@gmail.com>
+To:     Changbin Du <changbin.du@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        krzysztof.kozlowski@canonical.com, daniel@iogearbox.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 13 Aug 2021 20:33:27 +0300 Andy Shevchenko wrote:
-> During the swap dependency on PCH_GBE to selection PTP_1588_CLOCK_PCH
-> incidentally dropped the implicit dependency on the PCI. Restore it.
-> 
-> Fixes: 18d359ceb044 ("pch_gbe, ptp_pch: Fix the dependency direction between these drivers")
+Hello:
 
-It was breaking build for 9 years and nobody hit it? 
-What's the build failure?
+This patch was applied to netdev/net-next.git (refs/heads/master):
+
+On Fri, 13 Aug 2021 22:57:49 +0800 you wrote:
+> Replace the obsolete and ambiguos macro in_irq() with new
+> macro in_hardirq().
+> 
+> Signed-off-by: Changbin Du <changbin.du@gmail.com>
+> ---
+>  include/linux/netdevice.h | 2 +-
+>  net/core/bpf_sk_storage.c | 4 ++--
+>  net/core/dev.c            | 2 +-
+>  net/core/skbuff.c         | 6 +++---
+>  net/nfc/rawsock.c         | 2 +-
+>  5 files changed, 8 insertions(+), 8 deletions(-)
+
+Here is the summary with links:
+  - net: in_irq() cleanup
+    https://git.kernel.org/netdev/net-next/c/afa79d08c6c8
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
