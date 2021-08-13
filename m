@@ -2,93 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D32083EAFFE
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 08:25:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65F9F3EB093
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 08:49:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238854AbhHMG0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 02:26:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38240 "EHLO
+        id S238959AbhHMGtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 02:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238830AbhHMG0C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 02:26:02 -0400
-Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E021C061756
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 23:25:35 -0700 (PDT)
-Received: from miraculix.mork.no ([IPv6:2a01:799:95f:ef0a:7f0c:624e:2eac:9b4])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 17D6PJ5b008235
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Fri, 13 Aug 2021 08:25:19 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1628835919; bh=bp7pZnR9reEk1Vxp5PGpzCMFuYVD2oMgInso1w7A9ec=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=oC6zEaGd/7yWCn+rL+7wUSJ/+E9YfxAXjUE0ElE3Zw6w+2fER/n+z7E9RSCYrGZnP
-         qSaQ69FIoSmGibiBQNlFenwB9f5uce9zkH9GTmQWA/NUNCC0WuM8VZ0QJrRrPMatDE
-         DsHi1lcOnq1GUiEITm5mkbyTQfH+2CtaF/eJ2bls=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.94.2)
-        (envelope-from <bjorn@mork.no>)
-        id 1mEQd0-000OMT-AH; Fri, 13 Aug 2021 08:25:14 +0200
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     subashab@codeaurora.org
-Cc:     Daniele Palmas <dnlplm@gmail.com>,
-        Aleksander Morgado <aleksander@aleksander.es>,
-        Network Development <netdev@vger.kernel.org>,
-        Sean Tranchetti <stranche@codeaurora.org>
-Subject: Re: RMNET QMAP data aggregation with size greater than 16384
-Organization: m
-References: <CAAP7ucKuS9p_hkR5gMWiM984Hvt09iNQEt32tCFDCT5p0fqg4Q@mail.gmail.com>
-        <c0e14605e9bc650aca26b8c3920e9aba@codeaurora.org>
-        <CAAP7ucK7EeBPJHt9XFp7bd5cGXtH5w2VGgh3yD7OA9SYd5JkJw@mail.gmail.com>
-        <77b850933d9af8ddbc21f5908ca0764d@codeaurora.org>
-        <CAAP7ucJRbg58Yqcx-qFFUuu=_=3Ss1HE1ZW4XGrm0KsSXnwdmA@mail.gmail.com>
-        <13972ac97ffe7a10fd85fe03dc84dc02@codeaurora.org>
-        <87bl6aqrat.fsf@miraculix.mork.no>
-        <CAAP7ucLDFPMG08syrcnKKrX-+MS4_-tpPzZSfMOD6_7G-zq4gQ@mail.gmail.com>
-        <2c2d1204842f457bb0d0b2c4cd58847d@codeaurora.org>
-        <87sfzlplr2.fsf@miraculix.mork.no>
-        <394353d6f31303c64b0d26bc5268aca7@codeaurora.org>
-        <CAGRyCJEekOwNwdtzMoW7LYGzDDcaoDdc-n5L+rJ9LgfbckFzXQ@mail.gmail.com>
-        <7aac9ee90376e4757e5f2ebc4948ebed@codeaurora.org>
-Date:   Fri, 13 Aug 2021 08:25:14 +0200
-In-Reply-To: <7aac9ee90376e4757e5f2ebc4948ebed@codeaurora.org>
-        (subashab@codeaurora.org's message of "Fri, 13 Aug 2021 00:21:21
-        -0600")
-Message-ID: <87tujtamk5.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        with ESMTP id S238766AbhHMGte (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 02:49:34 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CFAEC061756;
+        Thu, 12 Aug 2021 23:49:03 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id g138so6176896wmg.4;
+        Thu, 12 Aug 2021 23:49:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=INEHUFOekANcgjh/QNyWbgLp7c+/Fz6l2Ofc/xXR09E=;
+        b=SIrspxFxR/w19sumP/IHtLuvTXy06D39wSoqMAYJhnfH3rDCJcFsmLHFR94Cm5vol1
+         qRaSCCUlk5cI/p6HP+6ssIPvBqUVdjoaqNXSLvNp40TVdsM2Hna2+50I+or5luE4gNCU
+         vU1MNzUQafnRdM4NGJWaYqpz2Dml3lBCw+TK5y3D13nwF+LQLPSRNDirvFnvW72DN65J
+         rjAdzzAalERQtjIzh9DaFsa4ZimzQLu+anxlp6JKO3JQcvqhlTQWvo1Tu/Sc3I+IxpA+
+         xz8+CLtwZaUTd2MrRWOyNrySZFvq8myl7gwMHZCdWHz4/2f/sHe0sC+Wf+6+da+PucxA
+         Cemw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=INEHUFOekANcgjh/QNyWbgLp7c+/Fz6l2Ofc/xXR09E=;
+        b=U91eOIMRHa6MBufi3bPUBj+C6thAw/NpFSvJmtDKbcViEztWH8CnKMC1LlT/mLgPvr
+         mNwV47UGBtZw5W0nhbCjps8D1iRXxttYeXKdKH690L/jyDLz/kYbnjwZQiz66gNHXQAh
+         g6f3XqSTrkgCq/6LAZtS9c3l7M4zX6aX/OBT5UWvhCFzRFq2v+37zGMAM+pjEbgNChG0
+         YWzuqpEMD2OLEo8zc/uTu3KySNM1rKFUt1y72WBrN5rKUR0sch4KP2lffJUdXK7ZzByC
+         HkjVqAKw1fLuDvyX9g0Kl3BIdj819HsiUJ5JamoJvkTGwJb9zqouzWdnt9nAuZbPOdQF
+         g15Q==
+X-Gm-Message-State: AOAM530OAGMjtTUXXgfxy0J+zoUTBNL0rug5UtTR9h3Q5eAyHmRMWnek
+        iGudMU4P4Wfx7UB9szCIEbEwqSQQOVxd7w==
+X-Google-Smtp-Source: ABdhPJx6rZlwlUtcpSP/hBTHFw8Wb/LvcqVH6mE88QXWkoUWM8FOoT17Kkcy3j9m/7BipFU2SVDbcA==
+X-Received: by 2002:a05:600c:4105:: with SMTP id j5mr1136946wmi.86.1628837341406;
+        Thu, 12 Aug 2021 23:49:01 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f10:c200:ecac:74b8:17cb:429a? (p200300ea8f10c200ecac74b817cb429a.dip0.t-ipconnect.de. [2003:ea:8f10:c200:ecac:74b8:17cb:429a])
+        by smtp.googlemail.com with ESMTPSA id a11sm636647wrq.6.2021.08.12.23.49.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Aug 2021 23:49:00 -0700 (PDT)
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>, nic_swsd@realtek.com
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:8169 10/100/1000 GIGABIT ETHERNET DRIVER" 
+        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+References: <20210812155341.817031-1-kai.heng.feng@canonical.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v2 1/2] r8169: Implement dynamic ASPM mechanism
+Message-ID: <631a47b7-f068-7770-65f4-bdfedc4b7d6c@gmail.com>
+Date:   Fri, 13 Aug 2021 08:48:56 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
+In-Reply-To: <20210812155341.817031-1-kai.heng.feng@canonical.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.2 at canardo
-X-Virus-Status: Clean
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-subashab@codeaurora.org writes:
+On 12.08.2021 17:53, Kai-Heng Feng wrote:
+> r8169 NICs on some platforms have abysmal speed when ASPM is enabled.
+> Same issue can be observed with older vendor drivers.
+> 
+> The issue is however solved by the latest vendor driver. There's a new
+> mechanism, which disables r8169's internal ASPM when the NIC traffic has
+> more than 10 packets, and vice versa.
+> 
+> Realtek confirmed that all their PCIe LAN NICs, r8106, r8168 and r8125
 
->> Just an heads-up that when I proposed that urb size there were doubts
->> about the value (see
->> https://patchwork.ozlabs.org/project/netdev/patch/20200909091302.20992-1=
--dnlplm@gmail.com/#2523774
->> and
->> https://patchwork.ozlabs.org/project/netdev/patch/20200909091302.20992-1=
--dnlplm@gmail.com/#2523958):
->> it is true that this time you are setting the size just when qmap is
->> enabled, but I think that Carl's comment about low-cat chipsets could
->> still apply.
->> Thanks,
->> Daniele
->>=20
->
-> Thanks for bringing this up.
->
-> Looks like a tunable would be needed to satisfy all users.
-> Perhaps we can use 32k as default in mux and passthrough mode but
-> allow for changes
-> there if needed through a sysfs.
+As we have Realtek in this mail thread:
+Typically hw issues affect 1-3 chip versions only. The ASPM problems seem
+to have been existing for at least 15 years now, in every chip version.
+It seems that even the new RTL8125 chip generation still has broken ASPM.
+Why was this never fixed? ASPM not considered to be relevant? HW design
+too broken?
 
-Sounds reasonable to me.
+> use dynamic ASPM under Windows. So implement the same mechanism here to
+> resolve the issue.
+> 
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> ---
+> v2: 
+>  - Use delayed_work instead of timer_list to avoid interrupt context
+>  - Use mutex to serialize packet counter read/write
+>  - Wording change
+> 
+>  drivers/net/ethernet/realtek/r8169_main.c | 45 +++++++++++++++++++++++
+>  1 file changed, 45 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index c7af5bc3b8af..7ab2e841dc69 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -624,6 +624,11 @@ struct rtl8169_private {
+>  
+>  	unsigned supports_gmii:1;
+>  	unsigned aspm_manageable:1;
+> +	unsigned aspm_enabled:1;
+> +	struct delayed_work aspm_toggle;
+> +	struct mutex aspm_mutex;
+> +	u32 aspm_packet_count;
+> +
+>  	dma_addr_t counters_phys_addr;
+>  	struct rtl8169_counters *counters;
+>  	struct rtl8169_tc_offsets tc_offset;
+> @@ -2671,6 +2676,8 @@ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
+>  		RTL_W8(tp, Config5, RTL_R8(tp, Config5) & ~ASPM_en);
+>  	}
+>  
+> +	tp->aspm_enabled = enable;
+> +
+>  	udelay(10);
+>  }
+>  
+> @@ -4408,6 +4415,9 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
+>  
+>  	dirty_tx = tp->dirty_tx;
+>  
+> +	mutex_lock(&tp->aspm_mutex);
+> +	tp->aspm_packet_count += tp->cur_tx - dirty_tx;
+> +	mutex_unlock(&tp->aspm_mutex);
+>  	while (READ_ONCE(tp->cur_tx) != dirty_tx) {
+>  		unsigned int entry = dirty_tx % NUM_TX_DESC;
+>  		u32 status;
+> @@ -4552,6 +4562,10 @@ static int rtl_rx(struct net_device *dev, struct rtl8169_private *tp, int budget
+>  		rtl8169_mark_to_asic(desc);
+>  	}
+>  
+> +	mutex_lock(&tp->aspm_mutex);
+> +	tp->aspm_packet_count += count;
+> +	mutex_unlock(&tp->aspm_mutex);
+> +
+>  	return count;
+>  }
+>  
+> @@ -4659,8 +4673,33 @@ static int r8169_phy_connect(struct rtl8169_private *tp)
+>  	return 0;
+>  }
+>  
+> +#define ASPM_PACKET_THRESHOLD 10
+> +#define ASPM_TOGGLE_INTERVAL 1000
+> +
+> +static void rtl8169_aspm_toggle(struct work_struct *work)
+> +{
+> +	struct rtl8169_private *tp = container_of(work, struct rtl8169_private,
+> +						  aspm_toggle.work);
+> +	bool enable;
+> +
+> +	mutex_lock(&tp->aspm_mutex);
+> +	enable = tp->aspm_packet_count <= ASPM_PACKET_THRESHOLD;
+> +	tp->aspm_packet_count = 0;
+> +	mutex_unlock(&tp->aspm_mutex);
+> +
+> +	if (tp->aspm_enabled != enable) {
+> +		rtl_unlock_config_regs(tp);
+> +		rtl_hw_aspm_clkreq_enable(tp, enable);
+> +		rtl_lock_config_regs(tp);
+> +	}
+> +
+> +	schedule_delayed_work(&tp->aspm_toggle, ASPM_TOGGLE_INTERVAL);
+> +}
+> +
+>  static void rtl8169_down(struct rtl8169_private *tp)
+>  {
+> +	cancel_delayed_work_sync(&tp->aspm_toggle);
+> +
+>  	/* Clear all task flags */
+>  	bitmap_zero(tp->wk.flags, RTL_FLAG_MAX);
+>  
+> @@ -4687,6 +4726,8 @@ static void rtl8169_up(struct rtl8169_private *tp)
+>  	rtl_reset_work(tp);
+>  
+>  	phy_start(tp->phydev);
+> +
+> +	schedule_delayed_work(&tp->aspm_toggle, ASPM_TOGGLE_INTERVAL);
+>  }
+>  
+>  static int rtl8169_close(struct net_device *dev)
+> @@ -5347,6 +5388,10 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  
+>  	INIT_WORK(&tp->wk.work, rtl_task);
+>  
+> +	INIT_DELAYED_WORK(&tp->aspm_toggle, rtl8169_aspm_toggle);
+> +
+> +	mutex_init(&tp->aspm_mutex);
+> +
+>  	rtl_init_mac_address(tp);
+>  
+>  	dev->ethtool_ops = &rtl8169_ethtool_ops;
+> 
 
-
-
-Bj=C3=B8rn
