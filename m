@@ -2,114 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25D783EB741
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 17:00:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D8E33EB752
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 17:01:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241051AbhHMPAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 11:00:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43712 "EHLO
+        id S241102AbhHMPCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 11:02:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241048AbhHMPAp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 11:00:45 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26AF6C0617AE
-        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 08:00:18 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id qk33so18750855ejc.12
-        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 08:00:18 -0700 (PDT)
+        with ESMTP id S241003AbhHMPCD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 11:02:03 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1383C061756;
+        Fri, 13 Aug 2021 08:01:36 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id h2so16054244lji.6;
+        Fri, 13 Aug 2021 08:01:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=aa6aODpsX834V6oU0xZmiqy1nFlZHpElVbhhKZgOhDo=;
-        b=sQEOZPXHoxZtbTNkHHooY4Pumi+oskz2F8ufdb3z6JrWAZa1A6Q72GLJxcN3nWax19
-         vihTl5SF3JYm2heSXB8FQ+QsvGRblKrLsjSWXbJ3D4a3Jx56AIA/ojVZn10ynMIiq/+z
-         gPrEYy752hlctVr60LlMKKuPUpp5v2EoWndmvDAzPKzzHrjNSYltG4+ZWM0oM8hTYAyc
-         RSLASk9DytjL35qgc/9+F0YRWQya24EEjesNUYKL/vELEnZ2KMaRUL60vYConZ7lTUwH
-         nN4zfmFbt0wck+AGDxFMMRYtINkv5fV3oxZG4ePmPGi8X3wOk5YX7FT7pW7Cnpg4+sYF
-         x6sQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=y6YYsoW3o43TzZv2ct50vUJfqFlF+SIH/P40e9oxhyA=;
+        b=XZZhtKyCe9oudkuOpiydMs5XjPD2Tj1CTL3C1vqOg2oc8RHyMoN9G6PPVYo7fNtDS0
+         LJAiFStstYR4QM/RbfSln2cwbSRWqmprEgVVRDWZh1CUmZqkAGVphw942l3CYoMn4bw9
+         8xEtlKl+YSOfHvH5KBbXmD2txWDpmrRHVdKq/hvESZHSw9YMfiTsKWyVZ4+xQRonQOiH
+         pIHUecySSUN5GbrRu1+0Jc9irrUrQrAeIHODwfzQQjXXCIY4+2UQT3YMkd3VyYKW5RG4
+         bCCviRHAJUZLNIMR0Ly35ImEa3uk74fUAfbxE8WUPFiWpDKXKMayRxJFG2TPP+FRlGM+
+         J7yA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=aa6aODpsX834V6oU0xZmiqy1nFlZHpElVbhhKZgOhDo=;
-        b=JLryh/MEMLpSHWfiKYlmKF/AaQj6u8YT1627uA6/5+/SQxCtPi0D/vLB0J3YgXSM7O
-         deDU9+cimAebRkmtvne3ONJX+mOPLjBHQsP8591j3igS+c+WLdc9gvALf9pcs4Z6uVBa
-         j9jDLBdA+6izU9wC5uy9Fu9EWthbm2YNZO8f+M3MVwz9m4x882zXtgRA4DNAQZu63mo1
-         QaC9OG575EjxAnGgi2oHRgp7L2rh7dJgh5/xcx/GJ5fOtunWfUfB6yYLoqR7PXC+JuCh
-         IL5IzGrSeqBdc3tOUHtLzPH41i6q0EsnaBAozk/qHIrbakGhW33KUc8OxawhRGMW9QWE
-         xJXQ==
-X-Gm-Message-State: AOAM531YmqKXgfH+JJpRtTeOJFMzSObEbIY4fAWKPp/R4Ba1gJh4RhSf
-        DKetR07mGHP1k/RUtfnFUxcZGafJi5cLn+O8
-X-Google-Smtp-Source: ABdhPJzFsTMAlozstkoNR1mzooQNgJooaMiRFM9ZbCOcrTg0bzwofyZywtoh6eDuaMoWuHlZvOgzBw==
-X-Received: by 2002:a17:906:c20d:: with SMTP id d13mr2796793ejz.259.1628866816195;
-        Fri, 13 Aug 2021 08:00:16 -0700 (PDT)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id d26sm1015711edp.90.2021.08.13.08.00.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Aug 2021 08:00:15 -0700 (PDT)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net-next 6/6] net: bridge: vlan: dump mcast ctx querier state
-Date:   Fri, 13 Aug 2021 18:00:02 +0300
-Message-Id: <20210813150002.673579-7-razor@blackwall.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210813150002.673579-1-razor@blackwall.org>
-References: <20210813150002.673579-1-razor@blackwall.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=y6YYsoW3o43TzZv2ct50vUJfqFlF+SIH/P40e9oxhyA=;
+        b=TfEfL2VqPhccglo4uzOqyB1Y6azxlm9avVO+rKFy+a1J8/svELJy8Qmfom4JJjWVUB
+         TSXQvjxZra39oZ2L4U/YOzbh6FdWyFoKzOTifknY5yTY8zxU6hK48v/8Nboy56/4cBC4
+         Z783qpDwq+IXx9RfU9CvovGB/V/GKlP78A1GU8scieSkjxm3zkCMeiDSDrYKiJvfMp6k
+         +ouceyncbcT4KGafvAyw/jZYSlYw/nVSZPgNb3cqjxCXclaqV5qTKI4jxS9Sv7ue9ydF
+         zjOc9Ylxwq5JNk+3Na+yfjCZvfo6z53EXkjhWgiXsN6uposEG6oLe2kFWdqM8SfiCHVU
+         1riw==
+X-Gm-Message-State: AOAM530Jv3ztkegR6khIIZgCdgcL5jFD64+ffXbZ1o8/99VWHC8R0NoQ
+        mUnVHLUxRLF5K2TRjxrUHgWxZ6wNlGIvGQ==
+X-Google-Smtp-Source: ABdhPJwNBJVKQlqNyDXJP8slHW7YmYyK15Vl7lUVpajvtB0GPJptVtoGk+uabRRZG2nuhuFHQQYCdg==
+X-Received: by 2002:a05:651c:1785:: with SMTP id bn5mr2258040ljb.18.1628866893518;
+        Fri, 13 Aug 2021 08:01:33 -0700 (PDT)
+Received: from [192.168.1.11] ([46.235.67.232])
+        by smtp.gmail.com with ESMTPSA id u6sm177762lfs.79.2021.08.13.08.01.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 Aug 2021 08:01:33 -0700 (PDT)
+Subject: Re: [PATCH] net: ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+To:     ath9k-devel@qca.qualcomm.com, kvalo@codeaurora.org,
+        davem@davemloft.net, vasanth@atheros.com, senthilkumar@atheros.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
+        linux-kernel@vger.kernel.org
+References: <20210804194841.14544-1-paskripkin@gmail.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+Message-ID: <9e14d6b7-50d0-db97-f6d9-3b84e188e8bd@gmail.com>
+Date:   Fri, 13 Aug 2021 18:01:31 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210804194841.14544-1-paskripkin@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@nvidia.com>
+On 8/4/21 10:48 PM, Pavel Skripkin wrote:
+> Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb(). The
+> problem was in incorrect htc_handle->drv_priv initialization.
+> 
+> Probable call trace which can trigger use-after-free:
+> 
+> ath9k_htc_probe_device()
+>    /* htc_handle->drv_priv = priv; */
+>    ath9k_htc_wait_for_target()      <--- Failed
+>    ieee80211_free_hw()		   <--- priv pointer is freed
+> 
+> <IRQ>
+> ...
+> ath9k_hif_usb_rx_cb()
+>    ath9k_hif_usb_rx_stream()
+>     RX_STAT_INC()		<--- htc_handle->drv_priv access
+> 
+> In order to not add fancy protection for drv_priv we can move
+> htc_handle->drv_priv initialization at the end of the
+> ath9k_htc_probe_device() and add helper macro to make
+> all *_STAT_* macros NULL save.
+> 
+> Also, I made whitespaces clean ups in *_STAT_* macros definitions
+> to make checkpatch.pl happy.
+> 
+> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+> Reported-and-tested-by: syzbot+03110230a11411024147@syzkaller.appspotmail.com
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> ---
+> 
+> Hi, ath9k maintainer/developers!
+> 
+> I know, that you do not like changes, that wasn't tested on real
+> hardware. I really don't access to this one, so I'd like you to test it on
+> real hardware piece, if you have one. At least, this patch was tested by
+> syzbot [1]
+> 
+> [1] https://syzkaller.appspot.com/bug?id=6ead44e37afb6866ac0c7dd121b4ce07cb665f60
+> 
+> ---
 
-Use the new mcast querier state dump infrastructure and export vlans'
-mcast context querier state embedded in attribute
-BRIDGE_VLANDB_GOPTS_MCAST_QUERIER_STATE.
+Btw, this patch also passes this syzbot test
 
-Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
----
- include/uapi/linux/if_bridge.h | 1 +
- net/bridge/br_vlan_options.c   | 5 ++++-
- 2 files changed, 5 insertions(+), 1 deletion(-)
+https://syzkaller.appspot.com/bug?id=b8101ffcec107c0567a0cd8acbbacec91e9ee8de
 
-diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
-index eceaad200bf6..f71a81fdbbc6 100644
---- a/include/uapi/linux/if_bridge.h
-+++ b/include/uapi/linux/if_bridge.h
-@@ -563,6 +563,7 @@ enum {
- 	BRIDGE_VLANDB_GOPTS_MCAST_QUERIER,
- 	BRIDGE_VLANDB_GOPTS_MCAST_ROUTER,
- 	BRIDGE_VLANDB_GOPTS_MCAST_ROUTER_PORTS,
-+	BRIDGE_VLANDB_GOPTS_MCAST_QUERIER_STATE,
- 	__BRIDGE_VLANDB_GOPTS_MAX
- };
- #define BRIDGE_VLANDB_GOPTS_MAX (__BRIDGE_VLANDB_GOPTS_MAX - 1)
-diff --git a/net/bridge/br_vlan_options.c b/net/bridge/br_vlan_options.c
-index b4fd5fa441b7..49dec53a4a74 100644
---- a/net/bridge/br_vlan_options.c
-+++ b/net/bridge/br_vlan_options.c
-@@ -299,7 +299,9 @@ bool br_vlan_global_opts_fill(struct sk_buff *skb, u16 vid, u16 vid_range,
- 	    nla_put_u8(skb, BRIDGE_VLANDB_GOPTS_MCAST_QUERIER,
- 		       v_opts->br_mcast_ctx.multicast_querier) ||
- 	    nla_put_u8(skb, BRIDGE_VLANDB_GOPTS_MCAST_ROUTER,
--		       v_opts->br_mcast_ctx.multicast_router))
-+		       v_opts->br_mcast_ctx.multicast_router) ||
-+	    br_multicast_dump_querier_state(skb, &v_opts->br_mcast_ctx,
-+					    BRIDGE_VLANDB_GOPTS_MCAST_QUERIER_STATE))
- 		goto out_err;
- 
- 	clockval = jiffies_to_clock_t(v_opts->br_mcast_ctx.multicast_last_member_interval);
-@@ -379,6 +381,7 @@ static size_t rtnl_vlan_global_opts_nlmsg_size(void)
- 		+ nla_total_size(sizeof(u64)) /* BRIDGE_VLANDB_GOPTS_MCAST_STARTUP_QUERY_INTVL */
- 		+ nla_total_size(sizeof(u8)) /* BRIDGE_VLANDB_GOPTS_MCAST_QUERIER */
- 		+ nla_total_size(sizeof(u8)) /* BRIDGE_VLANDB_GOPTS_MCAST_ROUTER */
-+		+ br_multicast_querier_state_size() /* BRIDGE_VLANDB_GOPTS_MCAST_QUERIER_STATE */
- #endif
- 		+ nla_total_size(sizeof(u16)); /* BRIDGE_VLANDB_GOPTS_RANGE */
- }
--- 
-2.31.1
 
+With regards,
+Pavel Skripkin
