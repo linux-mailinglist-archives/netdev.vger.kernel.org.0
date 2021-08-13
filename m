@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E32883EB582
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 14:29:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 817EE3EB585
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 14:30:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229474AbhHMMaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 08:30:15 -0400
-Received: from mga18.intel.com ([134.134.136.126]:25646 "EHLO mga18.intel.com"
+        id S240562AbhHMMaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 08:30:19 -0400
+Received: from mga12.intel.com ([192.55.52.136]:18562 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240271AbhHMMaG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Aug 2021 08:30:06 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10074"; a="202711826"
+        id S240525AbhHMMaP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Aug 2021 08:30:15 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10074"; a="195137569"
 X-IronPort-AV: E=Sophos;i="5.84,318,1620716400"; 
-   d="scan'208";a="202711826"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2021 05:29:39 -0700
+   d="scan'208";a="195137569"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2021 05:29:42 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,318,1620716400"; 
-   d="scan'208";a="422219020"
+   d="scan'208";a="674339317"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 13 Aug 2021 05:29:38 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 13 Aug 2021 05:29:38 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 81438B1; Fri, 13 Aug 2021 15:29:37 +0300 (EEST)
+        id 8FE1D238; Fri, 13 Aug 2021 15:29:37 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Richard Cochran <richardcochran@gmail.com>
-Subject: [PATCH v1 net-next 2/7] ptp_pch: Use ioread64_lo_hi() / iowrite64_lo_hi()
-Date:   Fri, 13 Aug 2021 15:29:27 +0300
-Message-Id: <20210813122932.46152-2-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 net-next 3/7] ptp_pch: Use ioread64_hi_lo() / iowrite64_hi_lo()
+Date:   Fri, 13 Aug 2021 15:29:28 +0300
+Message-Id: <20210813122932.46152-3-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210813122932.46152-1-andriy.shevchenko@linux.intel.com>
 References: <20210813122932.46152-1-andriy.shevchenko@linux.intel.com>
@@ -44,111 +44,57 @@ buses, thus we don't need to reinvent the wheel.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/ptp/ptp_pch.c | 46 ++++++++++---------------------------------
- 1 file changed, 10 insertions(+), 36 deletions(-)
+ drivers/ptp/ptp_pch.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/ptp/ptp_pch.c b/drivers/ptp/ptp_pch.c
-index 76ba94f419ff..501155b72b12 100644
+index 501155b72b12..e7e31d4357e7 100644
 --- a/drivers/ptp/ptp_pch.c
 +++ b/drivers/ptp/ptp_pch.c
-@@ -13,6 +13,7 @@
- #include <linux/init.h>
+@@ -14,6 +14,7 @@
  #include <linux/interrupt.h>
  #include <linux/io.h>
-+#include <linux/io-64-nonatomic-lo-hi.h>
+ #include <linux/io-64-nonatomic-lo-hi.h>
++#include <linux/io-64-nonatomic-hi-lo.h>
  #include <linux/irq.h>
  #include <linux/kernel.h>
  #include <linux/module.h>
-@@ -147,28 +148,15 @@ static inline void pch_eth_enable_set(struct pch_dev *chip)
- static u64 pch_systime_read(struct pch_ts_regs __iomem *regs)
- {
- 	u64 ns;
--	u32 lo, hi;
+@@ -298,19 +299,16 @@ static irqreturn_t isr(int irq, void *priv)
+ 	struct pch_dev *pch_dev = priv;
+ 	struct pch_ts_regs __iomem *regs = pch_dev->regs;
+ 	struct ptp_clock_event event;
+-	u32 ack = 0, lo, hi, val;
++	u32 ack = 0, val;
  
--	lo = ioread32(&regs->systime_lo);
--	hi = ioread32(&regs->systime_hi);
-+	ns = ioread64_lo_hi(&regs->systime_lo);
+ 	val = ioread32(&regs->event);
  
--	ns = ((u64) hi) << 32;
--	ns |= lo;
--	ns <<= TICKS_NS_SHIFT;
--
--	return ns;
-+	return ns << TICKS_NS_SHIFT;
- }
- 
- static void pch_systime_write(struct pch_ts_regs __iomem *regs, u64 ns)
- {
--	u32 hi, lo;
--
--	ns >>= TICKS_NS_SHIFT;
--	hi = ns >> 32;
--	lo = ns & 0xffffffff;
--
--	iowrite32(lo, &regs->systime_lo);
--	iowrite32(hi, &regs->systime_hi);
-+	iowrite64_lo_hi(ns >> TICKS_NS_SHIFT, &regs->systime_lo);
- }
- 
- static inline void pch_block_reset(struct pch_dev *chip)
-@@ -234,16 +222,10 @@ u64 pch_rx_snap_read(struct pci_dev *pdev)
- {
- 	struct pch_dev *chip = pci_get_drvdata(pdev);
- 	u64 ns;
--	u32 lo, hi;
- 
--	lo = ioread32(&chip->regs->rx_snap_lo);
--	hi = ioread32(&chip->regs->rx_snap_hi);
-+	ns = ioread64_lo_hi(&chip->regs->rx_snap_lo);
- 
--	ns = ((u64) hi) << 32;
--	ns |= lo;
--	ns <<= TICKS_NS_SHIFT;
--
--	return ns;
-+	return ns << TICKS_NS_SHIFT;
- }
- EXPORT_SYMBOL(pch_rx_snap_read);
- 
-@@ -251,16 +233,10 @@ u64 pch_tx_snap_read(struct pci_dev *pdev)
- {
- 	struct pch_dev *chip = pci_get_drvdata(pdev);
- 	u64 ns;
--	u32 lo, hi;
--
--	lo = ioread32(&chip->regs->tx_snap_lo);
--	hi = ioread32(&chip->regs->tx_snap_hi);
- 
--	ns = ((u64) hi) << 32;
--	ns |= lo;
--	ns <<= TICKS_NS_SHIFT;
-+	ns = ioread64_lo_hi(&chip->regs->tx_snap_lo);
- 
--	return ns;
-+	return ns << TICKS_NS_SHIFT;
- }
- EXPORT_SYMBOL(pch_tx_snap_read);
- 
-@@ -309,8 +285,7 @@ int pch_set_station_address(u8 *addr, struct pci_dev *pdev)
- 	}
- 
- 	dev_dbg(&pdev->dev, "invoking pch_station_set\n");
--	iowrite32(lower_32_bits(mac), &chip->regs->ts_st[0]);
--	iowrite32(upper_32_bits(mac), &chip->regs->ts_st[4]);
-+	iowrite64_lo_hi(mac, &chip->regs->ts_st);
- 	return 0;
- }
- EXPORT_SYMBOL(pch_set_station_address);
-@@ -577,8 +552,7 @@ pch_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	pch_reset(chip);
- 
- 	iowrite32(DEFAULT_ADDEND, &chip->regs->addend);
--	iowrite32(1, &chip->regs->trgt_lo);
--	iowrite32(0, &chip->regs->trgt_hi);
-+	iowrite64_lo_hi(1, &chip->regs->trgt_lo);
- 	iowrite32(PCH_TSE_TTIPEND, &chip->regs->event);
- 
- 	pch_eth_enable_set(chip);
+ 	if (val & PCH_TSE_SNS) {
+ 		ack |= PCH_TSE_SNS;
+ 		if (pch_dev->exts0_enabled) {
+-			hi = ioread32(&regs->asms_hi);
+-			lo = ioread32(&regs->asms_lo);
+ 			event.type = PTP_CLOCK_EXTTS;
+ 			event.index = 0;
+-			event.timestamp = ((u64) hi) << 32;
+-			event.timestamp |= lo;
++			event.timestamp = ioread64_hi_lo(&regs->asms_hi);
+ 			event.timestamp <<= TICKS_NS_SHIFT;
+ 			ptp_clock_event(pch_dev->ptp_clock, &event);
+ 		}
+@@ -319,12 +317,9 @@ static irqreturn_t isr(int irq, void *priv)
+ 	if (val & PCH_TSE_SNM) {
+ 		ack |= PCH_TSE_SNM;
+ 		if (pch_dev->exts1_enabled) {
+-			hi = ioread32(&regs->amms_hi);
+-			lo = ioread32(&regs->amms_lo);
+ 			event.type = PTP_CLOCK_EXTTS;
+ 			event.index = 1;
+-			event.timestamp = ((u64) hi) << 32;
+-			event.timestamp |= lo;
++			event.timestamp = ioread64_hi_lo(&regs->asms_hi);
+ 			event.timestamp <<= TICKS_NS_SHIFT;
+ 			ptp_clock_event(pch_dev->ptp_clock, &event);
+ 		}
 -- 
 2.30.2
 
