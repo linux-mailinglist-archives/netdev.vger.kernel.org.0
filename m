@@ -2,79 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0592E3EAE5E
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 04:06:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 757193EAEC6
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 04:59:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236979AbhHMCGa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Aug 2021 22:06:30 -0400
-Received: from mga18.intel.com ([134.134.136.126]:30899 "EHLO mga18.intel.com"
+        id S238594AbhHMC7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Aug 2021 22:59:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51932 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233641AbhHMCG3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Aug 2021 22:06:29 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10074"; a="202648433"
-X-IronPort-AV: E=Sophos;i="5.84,317,1620716400"; 
-   d="scan'208";a="202648433"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2021 19:06:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,317,1620716400"; 
-   d="scan'208";a="504062317"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga001.jf.intel.com with ESMTP; 12 Aug 2021 19:06:00 -0700
-Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.69])
-        by linux.intel.com (Postfix) with ESMTP id 64DDC580B0E;
-        Thu, 12 Aug 2021 19:05:58 -0700 (PDT)
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        id S238506AbhHMC7x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Aug 2021 22:59:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 764466104F;
+        Fri, 13 Aug 2021 02:59:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628823567;
+        bh=1IRXGyCcsIvGPLVQnv5g03U5IqA4GdNniUiDHAd8Hjs=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=YBXOdXNAVk1ZSCFRMWhXZydSo2jPkXUZyt+MMA0MJxYQ6lfIkPBCpjgyodD81AL91
+         QzE+Y2ntpgTNTqNq/4TWxOm7MhsPHUqRWVgWko9Al2kFtp84xXxwhqsF0muw9qt8/4
+         Y6D+FtoLLYE7qOTwtnvyBIAcNcE3Apwrrf4pQtSuRDZuQv3WjXXbJ69PhORA5FOmNn
+         8FHuUlvEHmFYx6xZ3Cq2tOrxFv93UB2MLiRLgMOFkhWPRqHp+tvLccAwSf+k2YZCSs
+         TjxTLCspAM9qqwyXNTt09+PKrFayK1n2PhFjWGFVss7dT3ez1QLWiqzIrbQbg1dTuS
+         q80PSEKAn0Vdw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7094B608FA;
+        Fri, 13 Aug 2021 02:59:27 +0000 (UTC)
+Subject: Re: [GIT PULL] Networking for 5.14-rc6
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20210812192214.397695-1-kuba@kernel.org>
+References: <20210812192214.397695-1-kuba@kernel.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20210812192214.397695-1-kuba@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.14-rc6
+X-PR-Tracked-Commit-Id: a9a507013a6f98218d1797c8808bd9ba1e79782d
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: f8e6dfc64f6135d1b6c5215c14cd30b9b60a0008
+Message-Id: <162882356745.1107.8677481565467801623.pr-tracker-bot@kernel.org>
+Date:   Fri, 13 Aug 2021 02:59:27 +0000
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/1] net: pcs: xpcs: Add Pause Mode support for SGMII and 2500BaseX
-Date:   Fri, 13 Aug 2021 10:11:29 +0800
-Message-Id: <20210813021129.1141216-1-vee.khee.wong@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGMII/2500BaseX supports Pause frame as defined in the IEEE802.3x
-Flow Control standardization.
+The pull request you sent on Thu, 12 Aug 2021 12:22:14 -0700:
 
-Add this as a supported feature under the xpcs_sgmii_features struct.
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.14-rc6
 
-Cc: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
----
- drivers/net/pcs/pcs-xpcs.c | 4 ++++
- 1 file changed, 4 insertions(+)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/f8e6dfc64f6135d1b6c5215c14cd30b9b60a0008
 
-diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-index 63fda3fc40aa..0930ec201cd4 100644
---- a/drivers/net/pcs/pcs-xpcs.c
-+++ b/drivers/net/pcs/pcs-xpcs.c
-@@ -65,6 +65,9 @@ static const int xpcs_xlgmii_features[] = {
- };
- 
- static const int xpcs_sgmii_features[] = {
-+	ETHTOOL_LINK_MODE_Pause_BIT,
-+	ETHTOOL_LINK_MODE_Asym_Pause_BIT,
-+	ETHTOOL_LINK_MODE_Autoneg_BIT,
- 	ETHTOOL_LINK_MODE_10baseT_Half_BIT,
- 	ETHTOOL_LINK_MODE_10baseT_Full_BIT,
- 	ETHTOOL_LINK_MODE_100baseT_Half_BIT,
-@@ -75,6 +78,7 @@ static const int xpcs_sgmii_features[] = {
- };
- 
- static const int xpcs_2500basex_features[] = {
-+	ETHTOOL_LINK_MODE_Pause_BIT,
- 	ETHTOOL_LINK_MODE_Asym_Pause_BIT,
- 	ETHTOOL_LINK_MODE_Autoneg_BIT,
- 	ETHTOOL_LINK_MODE_2500baseX_Full_BIT,
+Thank you!
+
 -- 
-2.25.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
