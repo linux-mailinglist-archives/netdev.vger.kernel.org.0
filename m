@@ -2,70 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31DA63EAFC4
-	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 07:48:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13BF83EAFF8
+	for <lists+netdev@lfdr.de>; Fri, 13 Aug 2021 08:21:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238764AbhHMFtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 01:49:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58338 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238778AbhHMFtT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 01:49:19 -0400
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87D30C06129D
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 22:48:53 -0700 (PDT)
-Received: by mail-qv1-xf2b.google.com with SMTP id kl2so4625339qvb.11
-        for <netdev@vger.kernel.org>; Thu, 12 Aug 2021 22:48:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=Aauu7gYvMaBruI9Zt1CgTlkxSZ8evQwPBhKOMH6jf8s=;
-        b=Ew8YcVLq5FQAmQt+w/696ZQ+dYhpUxeVp3xpR9y58W5jnIJ/bTgYDm8PFeCBP622sj
-         cLmqU0dpTv7jJ7vv+0dqpqVMfCR548RHr/n9IOvWWpntc/pvMZeU97kztiTlS1UqMroS
-         7AvsbUKC8LmtNEy3lLpTegXfMuclJFIGUiMnm88TMSgDPSsduGuIz7Rs4jHlDdnV/jyy
-         MuycsqQ2AlklMjg2dTe38xZ9LN4CKYP2BqM8+zsLTDIJLQ3ekd8vd1DZlmNAu3ubFXK2
-         kB6kA1HXFh7NyhoZxhtO1P83aaPi2/9x7G2TxxsOMsEPBHbLEQLKC+0VxbOzp+LTEJom
-         P75g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=Aauu7gYvMaBruI9Zt1CgTlkxSZ8evQwPBhKOMH6jf8s=;
-        b=RiBU9BOtT7TgTyghO1GSN4ZcqnlJ7iBYp0CX1OV5nkZuVgQcvA56XoTuDBZyr+8PIA
-         iSuabhFKHLJVG8ic1aNKNRR886rwXFs2JqfFn1c5OqAhVVDSkWRrUsE0InhIoBbD6OO5
-         D3Ukh5wDboceKbCPPkGano0URKNxvHKoDKaB4yNCvNAYg11/1kUYbulWp3s+4WkVE0zC
-         Ad7rU/B38dfstQ1oUqlfq76Szd7Z1yuFDml+daNDTYlqcxJ+yXsb0FGqsrL6Exbg/fz/
-         2nkZM3MqRccBf9yhmf1u+Nj3R5575SecmV6/gDHvRFO5C1fqMP2KToka10aOixnCp93r
-         tbaA==
-X-Gm-Message-State: AOAM530qQm5ySx3vMfeyho5KwHI92zwcsRwkOC/4FYPJw0pRvn5AKaJn
-        R6BtL6t1c529jkALcHzevCxrUMtk1svNIKqD8vM=
-X-Google-Smtp-Source: ABdhPJxwocZTfX7cEEFjgiizN8+XI+djFA4jETjJxLZ9caoS2q5NkJVMtxyKhuZOwamMhjB//mayuxBXZ+rk5W3vlUM=
-X-Received: by 2002:a0c:aa9b:: with SMTP id f27mr901114qvb.7.1628833732583;
- Thu, 12 Aug 2021 22:48:52 -0700 (PDT)
+        id S238662AbhHMGV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 02:21:56 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:32333 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238729AbhHMGVz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Aug 2021 02:21:55 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1628835689; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=4+iKR9+0/pW2ueWFGJTZDLwHoBAxyYuwkXX2P7R2ceY=;
+ b=NPCcKvF2/XPdCxGO5qg9EWydmG6BFEQpBCNMvGphxTH+JD/FzTUFnvYbde2ZSYs8sFVIvLNs
+ KL+Xr9Bdqh02U15kzOir0UFLBXIC2TT6AsshJnpzM2oPir4uhDoi/S1I5j+d63fl5PVR0dm4
+ Bw0cMUOJGRPmSColp90hEDGfADM=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
+ 61160f62b14e7e2ecb40bde9 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 13 Aug 2021 06:21:22
+ GMT
+Sender: subashab=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 90A1FC43460; Fri, 13 Aug 2021 06:21:22 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: subashab)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 189B4C433D3;
+        Fri, 13 Aug 2021 06:21:21 +0000 (UTC)
 MIME-Version: 1.0
-Reply-To: godwinppter@gmail.com
-Sender: maxwelljohn205@gmail.com
-Received: by 2002:ac8:c0e:0:0:0:0:0 with HTTP; Thu, 12 Aug 2021 22:48:51 -0700 (PDT)
-From:   Godwin Pete <godwinnpeter@gmail.com>
-Date:   Fri, 13 Aug 2021 07:48:51 +0200
-X-Google-Sender-Auth: 8CCOlsv1ZDz9h--NQZNIL6lZQ_w
-Message-ID: <CAHiReTyMTA6+j9-AwZAJGqZjVwgWYgT+SNL+vTh=qxKYxBS5ow@mail.gmail.com>
-Subject: I need your response
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Fri, 13 Aug 2021 00:21:21 -0600
+From:   subashab@codeaurora.org
+To:     Daniele Palmas <dnlplm@gmail.com>,
+        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+Cc:     Aleksander Morgado <aleksander@aleksander.es>,
+        Network Development <netdev@vger.kernel.org>,
+        Sean Tranchetti <stranche@codeaurora.org>
+Subject: Re: RMNET QMAP data aggregation with size greater than 16384
+In-Reply-To: <CAGRyCJEekOwNwdtzMoW7LYGzDDcaoDdc-n5L+rJ9LgfbckFzXQ@mail.gmail.com>
+References: <CAAP7ucKuS9p_hkR5gMWiM984Hvt09iNQEt32tCFDCT5p0fqg4Q@mail.gmail.com>
+ <c0e14605e9bc650aca26b8c3920e9aba@codeaurora.org>
+ <CAAP7ucK7EeBPJHt9XFp7bd5cGXtH5w2VGgh3yD7OA9SYd5JkJw@mail.gmail.com>
+ <77b850933d9af8ddbc21f5908ca0764d@codeaurora.org>
+ <CAAP7ucJRbg58Yqcx-qFFUuu=_=3Ss1HE1ZW4XGrm0KsSXnwdmA@mail.gmail.com>
+ <13972ac97ffe7a10fd85fe03dc84dc02@codeaurora.org>
+ <87bl6aqrat.fsf@miraculix.mork.no>
+ <CAAP7ucLDFPMG08syrcnKKrX-+MS4_-tpPzZSfMOD6_7G-zq4gQ@mail.gmail.com>
+ <2c2d1204842f457bb0d0b2c4cd58847d@codeaurora.org>
+ <87sfzlplr2.fsf@miraculix.mork.no>
+ <394353d6f31303c64b0d26bc5268aca7@codeaurora.org>
+ <CAGRyCJEekOwNwdtzMoW7LYGzDDcaoDdc-n5L+rJ9LgfbckFzXQ@mail.gmail.com>
+Message-ID: <7aac9ee90376e4757e5f2ebc4948ebed@codeaurora.org>
+X-Sender: subashab@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My good friend,
+> Just an heads-up that when I proposed that urb size there were doubts
+> about the value (see
+> https://patchwork.ozlabs.org/project/netdev/patch/20200909091302.20992-1-dnlplm@gmail.com/#2523774
+> and
+> https://patchwork.ozlabs.org/project/netdev/patch/20200909091302.20992-1-dnlplm@gmail.com/#2523958):
+> it is true that this time you are setting the size just when qmap is
+> enabled, but I think that Carl's comment about low-cat chipsets could
+> still apply.
+> 
+> Thanks,
+> Daniele
+> 
 
-I just want to know if you, can help me to transfer the amount of
-($6Million). After the transfer we have to share it, 50% for me, and
-50% for you. Please let me know if you can help me for more
-information in regards with the transfer. I hope you can work with me
-honestly?
+Thanks for bringing this up.
 
+Looks like a tunable would be needed to satisfy all users.
+Perhaps we can use 32k as default in mux and passthrough mode but allow 
+for changes
+there if needed through a sysfs.
 
-Thanks.
-
-Godwin Peter,
+--
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
+Forum,
+a Linux Foundation Collaborative Project
