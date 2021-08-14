@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24C643EBFE2
+	by mail.lfdr.de (Postfix) with ESMTP id BA1FA3EBFE4
 	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 04:50:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236944AbhHNCu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 22:50:58 -0400
+        id S237034AbhHNCvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 22:51:01 -0400
 Received: from mail-bn1nam07on2106.outbound.protection.outlook.com ([40.107.212.106]:65089
         "EHLO NAM02-BN1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236562AbhHNCuu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Aug 2021 22:50:50 -0400
+        id S236763AbhHNCuw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Aug 2021 22:50:52 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C6d+tuhvQUs5y2D7EnZ0Heh5ZuceFl2j8jgwCJ5iEJkbnP64PeFXUX1pooDl944a/0d08SC8MyjUW5R2DszKiYjPlJyo+OfbOz9aATXpK3jZgYOOWf8E/pc5oYITgaxKhBOwkUdWF0xj89CsZLYCBsl2uvuUlOBp4B3iuPylPvn/kHEB2BsiwzSfjQYkvHh8jU+k7FNqc/41WaUjLv8fO2hXpA9UUGFa1iXbHbqTpmutmY72+ILGQaGId336HtmVa6ORbWNZtf6RHBiDBw1ab3ojD7G7/8htqOr6pKsJQrZ6kqVIY4e40/ilRyXT3Roxjge9rPWFRDbi4OLcj4lIeg==
+ b=lDnJkiqbvi4kIph6wPQmqObYg65eaDfmZX1txyyMreHaQvCq/3abr+VHSAFNu5dtfZOSn4CpqfcThED/f0S7oXyGNazccGaJUJOm9AQd+XrvvNiAXhwooG+yLBOT+cVoWcAkDE7zRHhaR43IwTWzCxR/Slzbj+LNzE8jBSHDWU57NCJgooc70WDiwVRLcYeYT16HzcbXZQPGlqbwpkWu/enM95CWj/KdGH6+PaBy5oV5DHS7rERJABaOnUWvlfj1xbcOk86Qw8HyrmVrupvTCclfPqD/BHmqw78voaeayj/iN6y9sOdngHxqKppBplz4yYIFPoGdTMO+dYMC1f3mxQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WiSbwUAFI4oRksMWMywyVIYPBIPT9zbCn5sqw74EWAQ=;
- b=jtf3vWGOyfbymWppNtD0ZgXDpu99m7Js1Cys3gaeQ8xW+y4vu7mBLJKs73gcesqZGERQsYhXKmxOHQ9P8lX7L2afxI1wg0t8hNrsALPVUPKK4PxDPqe5JXK+5Zq2yrRLhkDvXsW4ASbrizfQKWsOCju6XZVdC3bjDrQElwyXnCu5hBg9ntzqBxeGWmAf+GrYfIXZdUURBclm1FgR8xlnHS5kyRI+dGg2Meg89QfIf3y6Bhn+eS9VjoF0twPDoSJeKTFQ8BMAIHCS8D+f9SzufQEat15c6aARxjkkWi0+OnBo/GUuTo9w3oSlOiMg4k/PzCqoFMv/gpg9XCcMeMDG+w==
+ bh=nhGYJNnjw3D0fyx0iyJnQmkuk3FqOJlKQNe6ziHHRy4=;
+ b=iwq9XXtqqZ+XX4q4xTpyX1fEgDSr8E5kiPZdmqSaUhG9hp5jEs7NJK3DrdPC+1WSNg4c6zYaGd+qYbewbsUEHwFooF9XSCEEGQ8ViV4irBtggPso2U9DWxhNXMng6mljvaW1fibQwzjkcBI3+caifZkqxILEbHu+5GjDDlZLROt8UtGy0hRzsGBkBRSDQLv2ksO3TCjh+Y97BiCdJdqAWLtdS2FwWWam2SymWpD1FIa2+Sc+BC981BmSrFldnh+0tBfiMZdSHHtv0EAvz4PvdmFiHbpR12fUid81+nXMdtfTYUIvuBBGJ/V27nQxOtpIUoY5eQy0P0FKiN/rarYj1w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=in-advantage.com; dmarc=pass action=none
  header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WiSbwUAFI4oRksMWMywyVIYPBIPT9zbCn5sqw74EWAQ=;
- b=RTFEb8e9dbKkI3gpdSVodRmD5TRGl/XKYR8zsXoSYn9z4Jo3FfZ9Xc6zbjUS2SbLgoWG9Sky7q4qDmk+oFQW8lmrr9FK+iGBMHOMDdaiIakJaOFabSeNhP1e9dcoXqICgL/5KUHgxxobOSVUhVtm1UfEpwIXwRlqxXMVg8pVgxY=
+ bh=nhGYJNnjw3D0fyx0iyJnQmkuk3FqOJlKQNe6ziHHRy4=;
+ b=ZCJAoGNEHznWHshugGGiiiJkg9Jwa5Nd6YSpfG3FLhnz92RYDsFWBtS7Z+yNydcS+tsY34TdtQAb/18kd2ALAhFOlGB1Pd0AsShpaWUzYowqgeKrxNcDQFkkzMXTchILlEY9Fe/BqnDBOam7VEmnK1tOThxQ3PrAOHy5v9lOW5o=
 Authentication-Results: in-advantage.com; dkim=none (message not signed)
  header.d=none;in-advantage.com; dmarc=none action=none
  header.from=in-advantage.com;
@@ -48,9 +48,9 @@ To:     colin.foster@in-advantage.com, andrew@lunn.ch,
         linux@armlinux.org.uk
 Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v3 net-next 04/10] net: dsa: ocelot: felix: Remove requirement for PCS in felix devices
-Date:   Fri, 13 Aug 2021 19:49:57 -0700
-Message-Id: <20210814025003.2449143-5-colin.foster@in-advantage.com>
+Subject: [RFC PATCH v3 net-next 05/10] net: dsa: ocelot: felix: add interface for custom regmaps
+Date:   Fri, 13 Aug 2021 19:49:58 -0700
+Message-Id: <20210814025003.2449143-6-colin.foster@in-advantage.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210814025003.2449143-1-colin.foster@in-advantage.com>
 References: <20210814025003.2449143-1-colin.foster@in-advantage.com>
@@ -61,79 +61,145 @@ X-ClientProxiedBy: MW4P221CA0007.NAMP221.PROD.OUTLOOK.COM
  (2603:10b6:301:35::37)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (67.185.175.147) by MW4P221CA0007.NAMP221.PROD.OUTLOOK.COM (2603:10b6:303:8b::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.14 via Frontend Transport; Sat, 14 Aug 2021 02:50:17 +0000
+Received: from localhost.localdomain (67.185.175.147) by MW4P221CA0007.NAMP221.PROD.OUTLOOK.COM (2603:10b6:303:8b::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.14 via Frontend Transport; Sat, 14 Aug 2021 02:50:18 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a012fac0-e8a5-4d7b-f83c-08d95ece3fed
+X-MS-Office365-Filtering-Correlation-Id: 2ad03900-72b9-4192-abb4-08d95ece4055
 X-MS-TrafficTypeDiagnostic: MWHPR10MB2030:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MWHPR10MB20302FF397D11CA51F089DD7A4FB9@MWHPR10MB2030.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-Microsoft-Antispam-PRVS: <MWHPR10MB2030F937FC62E3A74B3CCA57A4FB9@MWHPR10MB2030.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2150;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: X4poMkRthp0E0h46nUsAryT6uS65fnZhrdJRQ5B9dicyrToH2BtdV/o1ymMzy96EFnfTAxXq7QZxHgftMbTjzXaIsVh8AcfWTRn49xEY52Ywrw/2+tLl/iHg2vqrX7jdGWp3+9iXFWKZPA2OgpknaQZsONj8fdGcy9J2PPsOBKZDgjd6rsp+QYpDgKMS68it+Xjz3avNxbi6dvhV5Yh/dBRpMhd/gxJSyDb7pGh/4PCZH/EvBofVMVxRYjJfUXojAwDwZsdCY0RthHusAS75wGVNkk4dG16uL+Fyaam7Gr14vP6qBwsvEUpJ8Y7TqqLG+IguE8H7p5O5mw8QdkeI8ilnB7egZ5jekhPY7KZSdVkJRIrvQpZ4phBYaRDpNjZE7bBB5sfGrY3tJq0iHm27cd4JFoyUyEl3t4zLmOtzsh32xHnvSn542/W9+AdLdkaVMp1u4OY7oCsIhxgcAyzJ/3ELbfAMdR6cSM8YkDKmcHiHBZ4gfHkE4C1jD4JWObe3AocQ4VGiIrEBvKUV5ETJqiXfzJ89wv71SwHLCXkpn2NJdnu5wC7HPVgVRlRcxaClJk7HhG3jZCeLkTdT0mCgWXQf9Twj908zKQEXY22llIQLAYjXXdnD6aX2cGWyOdr3O3bq2gg/PzmVUUbHGGzZ8XkfcfJKjAzjAigE1hc+b8nurmLp5aJjk3I+yEDsAW1b07y+XgTPLGJBTGX20cKHVQHH/g4jIT0xZPVStqDDfy8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(396003)(346002)(39830400003)(136003)(376002)(186003)(5660300002)(4744005)(316002)(4326008)(8936002)(6486002)(2906002)(52116002)(66476007)(66556008)(44832011)(956004)(2616005)(66946007)(1076003)(921005)(36756003)(83380400001)(38100700002)(38350700002)(6512007)(6506007)(26005)(478600001)(8676002)(86362001)(6666004)(7416002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: dx/PrwJlDEZ6tNsvjL6W4PfDZbg5zm5BIV9TemgVOM4DFYZJMXf/UdT24/B9vegHZpp+rSN0FvimA4n3aXH+lqlF8vEgfn+Y4ZpanTgLsBjGmShQQq+um2X1ekrB/j2qBD/N+vO0kRWitf3zScnWGhLU/5QcvPY+odREzPT0leLt42K1yn4C5vFkybu6XeGEhfk1tXEp0FxIosu3+/b8rEFHL0lmsDdrljD7/cJo2Cntl2o0U9wuw6fi05YUBqdVTlVtpOhjHNurTiBJcGnqjiRCksvffEwz/DuFfyT6rga02/aYwBpLCjvCWlFmqcz3LoJdgqvKxBFiOSUjJy4GkBsVsgA8/eg6SPWLHJFtcj/Kiu4d96Dq5qgFNFEDkC2MWRmLs/KCZRNZXaqet4UsIez2O2nDXKXLSnohonjBeqE1S58SDOdHWg07u0GY70rgHBDRmuSwAqwnnwwFB9suno+9RBqmJm0Zw5FgW6xYsoWT/goV7KR4krbhc2xcFQo2SBz6Ugy4pKFhiIsiOTQ/UhIWBaKxzHBkYG3mPHmMciTI3kbMfIWN2I4k77aG7Ab5rZwl3QSjZjQRioGisG4u7gNZ3ph0fesAc+fU7LYy/1t5/7QtldbQei3QF/kls+wqfl3WZNfv4Yyo/Vv935zH4i725Og010WIbn8eOco3HlkGDE8m8Gn5OMx8PQx6vkKlbt6VC+23XMiMmjGSbr/uY4uxc9+hWtUb40Y+8PvT9NE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(396003)(346002)(39830400003)(136003)(376002)(186003)(5660300002)(316002)(4326008)(8936002)(6486002)(2906002)(52116002)(66476007)(66556008)(44832011)(956004)(2616005)(66946007)(1076003)(921005)(36756003)(83380400001)(38100700002)(38350700002)(6512007)(6506007)(26005)(478600001)(8676002)(86362001)(6666004)(7416002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QOcbCxoxcjKcY4wcwCrXEGLNCDAyuh6jpTmEFinlVfDdRNYi/5NSvf1u/zM/?=
- =?us-ascii?Q?posbO/MWAgIkrh6pZs5JOwTR4UCKgUvyZVtYvU/wwrBVPkVNvWa7eAkCM5F9?=
- =?us-ascii?Q?kF6oxtyjSrmZpPmvZCrx52nJFihV7hJaCwUJ9DQ+qmcZc+RdufrxVQoIc2/T?=
- =?us-ascii?Q?ofiV4J7nTeqRoXM2sTP+70gMtL+NBlwnatJ3XW4H9m2OWxivU/SAWWWbPsoa?=
- =?us-ascii?Q?O5BMCYztmWbCyrssDOZAF13PIQw3yQKBcVkcxKKDw+BLbSYDp1rpoBwFAMfD?=
- =?us-ascii?Q?LtvlCV576gtT8SrQzWJAkc+SnEFthFsFLMl/etYOQobOukXKjd7znxYKHb9e?=
- =?us-ascii?Q?PSbIoRM/teIXJehls8SuwDDMWwVNI/xGJTmmea54o7CT00dDLhcTO/2uLYjz?=
- =?us-ascii?Q?oMLVtC8RXlrPgjES11TyL1KrAHEmRZRUSMmS6fI/fRk8thCpRfVhkhpALPx4?=
- =?us-ascii?Q?QEScmq0kvAiqoPpqWrN2hFtCHNUcVvRV1Dyr8ZKoSR42I2C0QRXJs/iZsC0b?=
- =?us-ascii?Q?SUO77mWloJ/ibpXxzfgSft7X+6JiFLO22pZhaH8tx0Zz+9uts0ZVgi2aYDLr?=
- =?us-ascii?Q?0ang8/ENdbg52Y/KzfDmSSTME8TV5+E6kEKMiR16KjHC8dsCoOMF0H4mT79B?=
- =?us-ascii?Q?oHgOO3FG7OewtMFjGpb85ebjh+xp8rfz9FNOoMyzf1MAjLGdA+DdcLEp2iGA?=
- =?us-ascii?Q?pI9+ydQetq3Jva062t8f/jePGK60rFAAf6FEc+0qB4gWF99o9zUsLeYPwMSa?=
- =?us-ascii?Q?X1yI9qcWFhXvMnuz3mf65oBVaPYKsuMQR1/Rn1Ou3sb6bZUhiWeZy+HAF7+a?=
- =?us-ascii?Q?49xMIycK1pJDyVNH8OiTn6f7EI1YqrwN79XCNFhfNOrRzGpVEpAXSySYmwa1?=
- =?us-ascii?Q?ucTLpLBQeC7w96NwtLzsfcHrukG068GeViR78xq1sYFWm4RvrLtSjzrZGpfs?=
- =?us-ascii?Q?Cw2mNTWox9h08suXd6gEuIbsf7A8fV1VGgKS9Pizr7wQ4Q44mDWX2qk9zrVz?=
- =?us-ascii?Q?bD++aQh/zVVFdHL6ZLN2tg/z4Ea+Fc9XoxDcVnIH3E9EL2nXj2ggm0yTZhJE?=
- =?us-ascii?Q?hQIRYoMySeCh3XUHjgmoIOirMvPC+epp2sq6+/O4T5uqUPdnNiMwvTIA3Sue?=
- =?us-ascii?Q?r8JVl/nhbzA5/wFRgi0ogu7rLgKM9Wn1VKhM4xUFdt7+auI17r1niRea/wVV?=
- =?us-ascii?Q?aSKXHvVL1q8ZWpIERyqgJ7km8AsLD/b3qRL+328WcfY0gdRq68MvatG7ZCAp?=
- =?us-ascii?Q?7NbXxBjuTogiVtkZ2mWiAroNCspDpDkr6QCPVlBcq6hpSfjARgEKh4AjEwp7?=
- =?us-ascii?Q?2FXH2OY14zfyj/kBpUuTRnKE?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?lgqzow7IUYeDzLsnCyMzRYCYzbuZWnEpTlTubNyIi4XrVo7Z9Q7mnMv1yNO9?=
+ =?us-ascii?Q?+NpDr/vBOk7d2oMIauZ6UwB8yEaWsnXhI/jc8c8dewtNJ9HfM42g9g389MjZ?=
+ =?us-ascii?Q?PVbO3kB4+7qbPj0eVzbMCDY2dxo0F5cUquIwf4O9DEdkpKSOwL09JDj1Own0?=
+ =?us-ascii?Q?ht823rLOZgO6xa/jHIv1koIWthPipd+r/0EMLW6v3xyvK65IxxMH6X4cDaxr?=
+ =?us-ascii?Q?x7TxH98oL3YeUzDgDaffa1log7/gwOTZ/q5kYtoqzqzyWv3jPyHjTQenVWbp?=
+ =?us-ascii?Q?TSedlmuJMRaCi8nGiDBIU94CNNnhHXmZG2xl3fOvAkMEQrOjnr7hUNZZ0x0b?=
+ =?us-ascii?Q?O42nuI++42zJ3KtdXPq0zdoRFgFr2iH94Om+Hh6TwCx17RAbmO6BP3HLuAfZ?=
+ =?us-ascii?Q?rE9XS5gD9w460quCASRnXfQfWM8KMPwzevN+UTYVWeceJXysinxYGGXfUZtF?=
+ =?us-ascii?Q?zWskDaLJqwPJZlkaUd9uDh93tKdADR8lwxvEcRp2qHXbJUbXwMJH5G19rcuQ?=
+ =?us-ascii?Q?JxaQq7jWqg+PlnJSTxgO2yot9FEeB5XyaKwHQqx6q2ZycZ3wTZsbWPhlYf6W?=
+ =?us-ascii?Q?U50d7+6vDllGkg2gIPMgesd+75Kxl0cjNXTUswn6LoYi02J3uYX+pZ6gbOal?=
+ =?us-ascii?Q?55XbEbpwapuw1XT9AMXKCjSpMeiKNSmsS1kYIilckvckSTz5aAI/e6T7DWLu?=
+ =?us-ascii?Q?ZjXDhAIcr24yjUXkxllZhPRHMYFM5iXZcufuChTyaL0Wh+WdcQI2Wg2ETMmx?=
+ =?us-ascii?Q?52SJ58zwZ7mg2iUr3m0D/SO8XffJ2aYk2UDOmTYrKlEInGGcfattbAjs+eDA?=
+ =?us-ascii?Q?RJmLouITgXZSCn+gVBFrKAcv0m6n3cnA1YYBRzPBRYvGuotpNHTq9PKu16tq?=
+ =?us-ascii?Q?pmzW6HWz6FHygGW59ko0Zz0XAPJwjLp/A+7fQX+GEFPMQQjvbeDOgUflTp4t?=
+ =?us-ascii?Q?/m6cLKkVecpsICo/N934UHcj/6a8fv3iPZ+CFIGinwCmf/ap1cLDwvrBOHx0?=
+ =?us-ascii?Q?Qc376VC2kKNTo6n3qZdWX79EmGxNsLMBERMTGHOI44+uX66LBFWZmlmKD6gf?=
+ =?us-ascii?Q?R7WM9YEpuYhfds59ZV97Ig2TKJGhyRrx+qPHhpSDZZ0MlZb+D+37uB5rxI+S?=
+ =?us-ascii?Q?bkaZMRGnkgIY/uz8lPv+sta7q8rUqQ3yGrpD4cGdJZioRkmU+DeoRKhmmYmW?=
+ =?us-ascii?Q?hKd+nQ9WyFQ7u+eRWL/6ygZJpL8P16CyhOrMHQH1u3SJtAF6/PRRiiQEHrf5?=
+ =?us-ascii?Q?sEXX+Iq4pWD0lc63iLrfue76rrp+owOWsixjxn5LGOUZBxRS9reYtGMgEiAv?=
+ =?us-ascii?Q?O/E2KIZM2rXMpW/SrQk1157g?=
 X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a012fac0-e8a5-4d7b-f83c-08d95ece3fed
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2ad03900-72b9-4192-abb4-08d95ece4055
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Aug 2021 02:50:18.0538
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Aug 2021 02:50:18.6585
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 72xN17mfP/7jHXkiLMLbMeN39nB9id01Xxd9MfDIkqUFiEaF6cvwp+cqSVIpSl5GrqbHczsEGIPTv8BSluQyR3MNgEdGkcpfOIAa2+hF8+g=
+X-MS-Exchange-CrossTenant-UserPrincipalName: F5JXGbfeIgsy12opPDTnPq8BWk7yFyWQ28IQTV1JEfOLE+4FPx/q3LPJfIyMKpR4+Duj721WVoA+JH4k90v0du66hFS/la+ElTHmBwVBqJo=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB2030
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Existing felix devices all have an initialized pcs array. Future devices
-might not, so running a NULL check on the array before dereferencing it
-will allow those future drivers to not crash at this point
+Add an interface so that non-mmio regmaps can be used
 
 Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 ---
- drivers/net/dsa/ocelot/felix.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/ocelot/felix.c           | 4 ++--
+ drivers/net/dsa/ocelot/felix.h           | 2 ++
+ drivers/net/dsa/ocelot/felix_vsc9959.c   | 6 +++---
+ drivers/net/dsa/ocelot/seville_vsc9953.c | 1 +
+ 4 files changed, 8 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index ce607fbaaa3a..74ae322b2126 100644
+index 74ae322b2126..77644deb4a35 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -852,7 +852,7 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
- 	struct felix *felix = ocelot_to_felix(ocelot);
- 	struct dsa_port *dp = dsa_to_port(ds, port);
+@@ -1124,7 +1124,7 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 		res.start += felix->switch_base;
+ 		res.end += felix->switch_base;
  
--	if (felix->pcs[port])
-+	if (felix->pcs && felix->pcs[port])
- 		phylink_set_pcs(dp->pl, &felix->pcs[port]->pcs);
+-		target = ocelot_regmap_init(ocelot, &res);
++		target = felix->info->init_regmap(ocelot, &res);
+ 		if (IS_ERR(target)) {
+ 			dev_err(ocelot->dev,
+ 				"Failed to map device memory space\n");
+@@ -1161,7 +1161,7 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 		res.start += felix->switch_base;
+ 		res.end += felix->switch_base;
+ 
+-		target = ocelot_regmap_init(ocelot, &res);
++		target = felix->info->init_regmap(ocelot, &res);
+ 		if (IS_ERR(target)) {
+ 			dev_err(ocelot->dev,
+ 				"Failed to map memory space for port %d\n",
+diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
+index 47769dd386db..25f664ef4947 100644
+--- a/drivers/net/dsa/ocelot/felix.h
++++ b/drivers/net/dsa/ocelot/felix.h
+@@ -45,6 +45,8 @@ struct felix_info {
+ 				 enum tc_setup_type type, void *type_data);
+ 	void	(*port_sched_speed_set)(struct ocelot *ocelot, int port,
+ 					u32 speed);
++	struct regmap *(*init_regmap)(struct ocelot *ocelot,
++				      struct resource *res);
+ };
+ 
+ extern const struct dsa_switch_ops felix_switch_ops;
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 182ca749c8e2..a84129d18007 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -17,6 +17,8 @@
+ #include "felix.h"
+ 
+ #define VSC9959_TAS_GCL_ENTRY_MAX	63
++#define VSC9959_SWITCH_PCI_BAR		4
++#define VSC9959_IMDIO_PCI_BAR		0
+ 
+ static const u32 vsc9959_ana_regmap[] = {
+ 	REG(ANA_ADVLEARN,			0x0089a0),
+@@ -1367,6 +1369,7 @@ static const struct felix_info felix_info_vsc9959 = {
+ 	.prevalidate_phy_mode	= vsc9959_prevalidate_phy_mode,
+ 	.port_setup_tc		= vsc9959_port_setup_tc,
+ 	.port_sched_speed_set	= vsc9959_sched_speed_set,
++	.init_regmap		= ocelot_regmap_init,
+ };
+ 
+ static irqreturn_t felix_irq_handler(int irq, void *data)
+@@ -1386,9 +1389,6 @@ static irqreturn_t felix_irq_handler(int irq, void *data)
+ 	return IRQ_HANDLED;
  }
  
+-#define VSC9959_SWITCH_PCI_BAR 4
+-#define VSC9959_IMDIO_PCI_BAR 0
+-
+ static int felix_pci_probe(struct pci_dev *pdev,
+ 			   const struct pci_device_id *id)
+ {
+diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
+index 0e06750db264..540cf5bc9c54 100644
+--- a/drivers/net/dsa/ocelot/seville_vsc9953.c
++++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
+@@ -1089,6 +1089,7 @@ static const struct felix_info seville_info_vsc9953 = {
+ 	.mdio_bus_free		= vsc9953_mdio_bus_free,
+ 	.phylink_validate	= vsc9953_phylink_validate,
+ 	.prevalidate_phy_mode	= vsc9953_prevalidate_phy_mode,
++	.init_regmap		= ocelot_regmap_init,
+ };
+ 
+ static int seville_probe(struct platform_device *pdev)
 -- 
 2.25.1
 
