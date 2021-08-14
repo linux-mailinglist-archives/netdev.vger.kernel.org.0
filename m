@@ -2,70 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 317D23EC4BB
-	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 21:30:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC96B3EC4CE
+	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 21:49:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229985AbhHNTag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Aug 2021 15:30:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44074 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229489AbhHNTae (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 14 Aug 2021 15:30:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id AA65F60F9F;
-        Sat, 14 Aug 2021 19:30:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628969405;
-        bh=34CIw8rTdHGZQQqWjzKu3L/hQZ6AvxI1r7zYiHnEIBc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Jh6gkhkBr+zfvpgzdDs2Grh9U15Ye77iOTxzitOcqgIMY1LYaGAOuhieiOElp2KDy
-         uLqMNoXPxs4oPAMUV9pU/ZrE02Ay4VfKlCLaAc/jG+ndCJKIAPtYOCkGoZdU0YJcbg
-         oVk2C8/0fp8g8MhRyT56XkhsIc8azL+zpI/4XrwZmSdA5yHcxAFL9m1rlCV9+P6jKg
-         zFfBgXXbTSU5SBmb5NC3stP0aOVzlJUAIHXseQXzwwozyQyZytu5zOEen8V5fvD7OD
-         WDCRNXbRabSUHwZ+4wVylLkTjxJTPVZTgEqD0dB3+0IE5oj57Bm6XMB2mPpD6VsWG5
-         osHVcynbtXd5Q==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9E21C609AF;
-        Sat, 14 Aug 2021 19:30:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/2] net: Remove the ipx network layer header files 
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162896940564.11276.8513936095062837252.git-patchwork-notify@kernel.org>
-Date:   Sat, 14 Aug 2021 19:30:05 +0000
-References: <20210813120803.101-1-caihuoqing@baidu.com>
-In-Reply-To: <20210813120803.101-1-caihuoqing@baidu.com>
-To:     Cai Huoqing <caihuoqing@baidu.com>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, netdev@vger.kernel.org,
+        id S232784AbhHNTuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Aug 2021 15:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34390 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229489AbhHNTtz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Aug 2021 15:49:55 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0871EC061764;
+        Sat, 14 Aug 2021 12:49:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=IcLAKSwUaSyWeX8CewShNI1+JQS2DeeaQy6TF7SHBIw=; b=enl4Ym/NxcY+je6Fqd7UkvoKr
+        XBdVoUXrjWEr4rj8aE/9wVgY3aJY4BF7S96smg1b7v585l5gUH4GclOXICEOQK9eF05DYQTstOaay
+        jyEROVuTOsiBVaonHXSI9tvd8hLohARihcUdkaKVSOKgyeNppXtT7Y2VDbMbTdbx5vXGYlKNJDyqC
+        p2i6UN8U7VK6r3sFj+W2Qk2heY6fh9SZlWA08BIg/FmW3aLezwJqCajz072hfJZX8Hb2umsT8lWRq
+        mqnChVltjyik1xxW5i0zleTUv2AFatY8QxDXBMdyOZw0+MqqR1yUlNWvaOBX/uOn5nUFy8wuS4Z7e
+        eNGTFW7og==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47298)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mEzeh-0005Zg-Kp; Sat, 14 Aug 2021 20:49:19 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mEzef-0006Jz-7Y; Sat, 14 Aug 2021 20:49:17 +0100
+Date:   Sat, 14 Aug 2021 20:49:17 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Song Yoong Siang <yoong.siang.song@intel.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/1] net: phy: marvell10g: Add WAKE_PHY support
+ to WOL event
+Message-ID: <20210814194916.GB22278@shell.armlinux.org.uk>
+References: <20210813084536.182381-1-yoong.siang.song@intel.com>
+ <20210814172656.GA22278@shell.armlinux.org.uk>
+ <YRgFxzIB3v8wS4tF@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YRgFxzIB3v8wS4tF@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Sat, Aug 14, 2021 at 08:04:55PM +0200, Andrew Lunn wrote:
+> Agreed. If the interrupt register is being used, i think we need this
+> patchset to add proper interrupt support. Can you recommend a board
+> they can buy off the shelf with the interrupt wired up? Or maybe Intel
+> can find a hardware engineer to add a patch wire to link the interrupt
+> output to a SoC pin that can do interrupts.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+The only board I'm aware of with the 88x3310 interrupt wired is the
+Macchiatobin double-shot. :)
 
-On Fri, 13 Aug 2021 20:08:01 +0800 you wrote:
-> commit <47595e32869f> ("<MAINTAINERS: Mark some staging directories>")
-> indicated the ipx network layer as obsolete in Jan 2018,
-> updated in the MAINTAINERS file.
-> 
-> now, after being exposed for 3 years to refactoring, so to
-> remove the ipx network layer header files
-> 
-> [...]
+I forget why I didn't implement interrupt support though - I probably
+need to revisit that. Sure enough, looking at the code I was tinkering
+with, adding interrupt support would certainly conflict with this
+patch.
 
-Here is the summary with links:
-  - [1/2] net: Remove net/ipx.h and uapi/linux/ipx.h header files
-    https://git.kernel.org/netdev/net-next/c/6c9b40844751
-  - [2/2] MAINTAINERS: Remove the ipx network layer info
-    https://git.kernel.org/netdev/net-next/c/e4637f621203
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
