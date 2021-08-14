@@ -2,90 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 723E53EBF89
-	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 04:02:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2B513EBFBC
+	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 04:25:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236420AbhHNCC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 22:02:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53648 "EHLO
+        id S236552AbhHNCZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 22:25:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236327AbhHNCCZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 22:02:25 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B91E9C061756
-        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 19:01:57 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id n17so23290703lft.13
-        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 19:01:57 -0700 (PDT)
+        with ESMTP id S236466AbhHNCZw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 22:25:52 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33848C061756
+        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 19:25:25 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id z2so12846741iln.0
+        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 19:25:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=7Xq9jb2sUMv3xaNw7Q5Cgt7yCkc3M0xn16Wn4AtIDKI=;
-        b=rQWgP5jArMJ7sTn4mprqLTS4Kz3OIS9ovc6YNgXn+El6BC8t2LAsUDKKc9lEZt8LET
-         /XrxmbC7sQxDRsaYuZzIEmI4OIP0dTYyLVsIi3vO0eDTa9e6Hwk4Nga1oEKsfVfehcOQ
-         YaMUt3VTvsePaBTwrcgQb36uweR2RLuNeGBS0xuMn27c8WOrVidkDSpH/MLgnqex+UOy
-         naB2/vmJ59O4DXzShX3aCGGFF8+0lEAGLE4tv0RHd4VsI/QqEtBv07sp4H2CQjArfmEE
-         Z4HBy6yVuXmpREmRk4qfX+5jqktZJ+xc9qIJgy3zmKoKoKPTEq6vUPqzzBxhE639f3to
-         yvUg==
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=g+h4YdA10rVYLoy91RdRh05aT4UGlm+BaDf29HhFh7M=;
+        b=JrmfQNjDCsooCATbytaYIpJCtaeY7BuUCMpzvndME5z1Xl8ifWHr0gP+uIKxvgGOt/
+         eopFms6IIU7bYWzj3aJNfMR2EHMRPMzlWoL4v6sH3PYFZOARe2Bh2MLM4gTDzv1D7gKO
+         2dk8N3fN6yfK3EAtY2WiDbmOIACaTVTJH1RsJW21b20bu+DLi1+ZmVGLkhY88WiLIrcE
+         0UNQIGqXRaxchmodrll6oOMxqt2A65Tnw2lVLuW2xz+ilTW6LgOaE8EiMVgjqtIns1WK
+         p6J9z7tHpQ0bP6+rRy4vrpMY8oI0ifCtZA568J7TESQQoax2miGv0bEZH5jYKGNokzYb
+         1qHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=7Xq9jb2sUMv3xaNw7Q5Cgt7yCkc3M0xn16Wn4AtIDKI=;
-        b=oB4Vm0SF5OkYU6mo/tIDJesaIRuR05gQW/MU+cAlwWJ9J5KiORJHSWZ2B5TH9vB3OI
-         3Athg5CJLGnzYFV8GVpVWo/YtzawLQJImkOp7jPIdUDBR1Tc9skzclmWbiWQBmGD8dtS
-         Z6S22mQBX8Gnl4veySRBfjmnUi/3vchDSrX03VySyMRSa8Iiy7JdBP/guG3RH5yCfE6L
-         2R9+48SKclXWvWOR6v/DJonMNgNKlt3g/A11i3AP28JRGpiZtSvw1OZPcb8aCxypjy11
-         GKiv4CHsCSWiOf1Nr1DeomFvWaqJxlZEvmU5mu3m9Rc5OMJqxdRM8k5RMu/ZU7tz9uNT
-         aRsg==
-X-Gm-Message-State: AOAM5318e0HFU2ybT/m/hkjQuCPGTjVRtRdtflXO/SwRYAqufJZVBJny
-        GKwnsi05xZIuEl2a6AYF81GjDSzgg3uBb/EqBaE=
-X-Google-Smtp-Source: ABdhPJySd31XwVQxwAIhHI9oqR3DnLQIP0veO7f5qUAvDPBQ8lHXhVh3lC9s4fIVKDSUa1AX0483EvqCKhs7/upwNn8=
-X-Received: by 2002:a05:6512:2342:: with SMTP id p2mr3758837lfu.661.1628906516065;
- Fri, 13 Aug 2021 19:01:56 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=g+h4YdA10rVYLoy91RdRh05aT4UGlm+BaDf29HhFh7M=;
+        b=GajWhKv83CM6GoIjFdQhTqAGQd503PCSCWsLbzKj8uhLK0Y8BSPzfEfAXhNbt/d2PM
+         jYWLpHhrysq2e4Tj6BYAHcAjnxAMKqwTQJZGuljaH78i1udbCxYZLzbDGSG+8KBNk6LC
+         GHM+WhEXuaan1/2eOfcAon5ttfu1hPzpzwgu/qZafRQVPFwgfyuDkAb16emTLwyHjMyj
+         EXIRrH3qaCo9mvb+Nu83T5mX88U9E4FZvyoITyNEgTTXnFxNe2iqo5iKWYNSmbHR+KDt
+         KTBOctZVfOQXs8G7DKHcyl/tiQZUOqa6JZocWTwK+oefZUEme8OPATHbeU1iHYRS5XuA
+         +rlw==
+X-Gm-Message-State: AOAM5338Q9RIgrw1MQtsK4WyqAmYCC50+a+ePlxdaM66obgaAXcq9WCL
+        g2Xz6sCzd9VWtwn0jSSUp88MKg==
+X-Google-Smtp-Source: ABdhPJyiu8IqRevIYCzioaezJsh+oox9gmD3WFSm5hvZ+RUcbZO6D2Cf9Rw/0beInKmSEYDK2wCaog==
+X-Received: by 2002:a05:6e02:1107:: with SMTP id u7mr3622311ilk.39.1628907924549;
+        Fri, 13 Aug 2021 19:25:24 -0700 (PDT)
+Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id w10sm1921603ioc.55.2021.08.13.19.25.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 Aug 2021 19:25:24 -0700 (PDT)
+Subject: Re: [PATCH net-next 4/6] net: ipa: ensure hardware has power in
+ ipa_start_xmit()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, bjorn.andersson@linaro.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210812195035.2816276-1-elder@linaro.org>
+ <20210812195035.2816276-5-elder@linaro.org>
+ <20210813174655.1d13b524@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <3a9e82cc-c09e-62e8-4671-8f16d4f6a35b@linaro.org>
+Date:   Fri, 13 Aug 2021 21:25:23 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Received: by 2002:a05:6520:380d:b029:132:4f79:3ded with HTTP; Fri, 13 Aug 2021
- 19:01:55 -0700 (PDT)
-Reply-To: deedeepaul@yandex.com
-From:   Deedee Paul <deedeepaul212@gmail.com>
-Date:   Sat, 14 Aug 2021 02:01:55 +0000
-Message-ID: <CADS-zP812o86qsfXcbx=MsWfwg4Lqb7LuS4vfM=Y0UoV+TPqaQ@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210813174655.1d13b524@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attention: Beneficiary,
+On 8/13/21 7:46 PM, Jakub Kicinski wrote:
+> On Thu, 12 Aug 2021 14:50:33 -0500 Alex Elder wrote:
+>> +	/* The hardware must be powered for us to transmit */
+>> +	dev = &ipa->pdev->dev;
+>> +	ret = pm_runtime_get(dev);
+>> +	if (ret < 1) {
+>> +		/* If a resume won't happen, just drop the packet */
+>> +		if (ret < 0 && ret != -EINPROGRESS) {
+>> +			pm_runtime_put_noidle(dev);
+>> +			goto err_drop_skb;
+>> +		}
+> 
+> This is racy, what if the pm work gets scheduled on another CPU and
+> calls wake right here (i.e. before you call netif_stop_queue())?
+> The queue may never get woken up?
 
-This is to officially inform you that we have been having meetings for
-the past weeks now which ended Two days ago with Mr. John W. Ashe,
-President of the 68th session of the UN General Assembly, Mr. David
-R.Malpass. the World Bank President and Hon. Mrs. Christine Laggard
-(IMF) Director General, in the meeting we talked about how to
-compensate Scam victim's people and all the people that were affected
-the most by this Coronavirus pandemic.
+I haven't been seeing this happen but I think you may be right.
 
-Your email address was successfully selected for this donation with others.
+I did think about this race, but I think I was relying on the
+PM work queue to somehow avoid the problem.  I need to think
+about this again after a good night's sleep.  I might need
+to add an atomic flag or something.
 
-The United Nations have agreed to compensate you with the sum of
-($150,000.00) One hundred and fifty thousand United States Dollars. We
-have arranged your payment through WORLD ATM MASTERCARD which is the
-latest instruction from the World Bank Group.
+					-Alex
 
-For the collection of your WORLD ATM MASTERCARD contact our
-representative Rev. David Wood, send to him your contact address where
-you want your MASTERCARD to be sent to you, like
+>> +		/* No power (yet).  Stop the network stack from transmitting
+>> +		 * until we're resumed; ipa_modem_resume() arranges for the
+>> +		 * TX queue to be started again.
+>> +		 */
+>> +		netif_stop_queue(netdev);
+>> +
+>> +		(void)pm_runtime_put(dev);
+>> +
+>> +		return NETDEV_TX_BUSY;
 
-1. Your Full Name: .........
-2. Your Country and Your Delivery Home Address: ........
-3. Your Telephone: ..............
-
-His e-mail address: (ddavidwood1@yandex.com) He is a Canadian (UN)
-representative Agent.
-
-Thanks.
-Tel: 1 513 452 4352.
-Mr. Michael M=C3=B8ller Director-General of the United Nations Office
