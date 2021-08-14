@@ -2,107 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EAB63EC49A
-	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 20:49:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1E473EC49B
+	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 20:50:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239042AbhHNSuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Aug 2021 14:50:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49580 "EHLO
+        id S239054AbhHNSua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Aug 2021 14:50:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239048AbhHNSuG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Aug 2021 14:50:06 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F19C061764
-        for <netdev@vger.kernel.org>; Sat, 14 Aug 2021 11:49:37 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id j1so20230345pjv.3
-        for <netdev@vger.kernel.org>; Sat, 14 Aug 2021 11:49:37 -0700 (PDT)
+        with ESMTP id S233256AbhHNSu3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Aug 2021 14:50:29 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3C8FC061764
+        for <netdev@vger.kernel.org>; Sat, 14 Aug 2021 11:50:00 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id j1so20231215pjv.3
+        for <netdev@vger.kernel.org>; Sat, 14 Aug 2021 11:50:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XVTIISucMBWxs2WJrtTjWY7ubr+gY82QjTdDWjm4u84=;
-        b=Bn1wukoEsoYZio0TV7eN2YRN8A6Bp+z9xZ66sbBLT6uiJyXCewmILPac97tRLZgxdD
-         ScEl2qMmpDfa9CmUppXANSrTfN++BcOitlzGLdFGCbc1iGEy8FGmpGlYpN2GzCJSd9hj
-         gpNjKuHvmkSvWGrqMM1mYrqUscp4ivjmAimBp1kI1M1NlHzbxH6g+FOtqpF2pjRIMdOG
-         OJ/qkDuhrH3VEWGQSNa1TtfFNA0t8cGf7nPdjpUo6m6cFXiI1oK8RxK4QlXS6mPliVZ2
-         xzBA58OL1/nMvZWrV/+ApUW0HK+MKmlZ2PBFenrIq3VLiYXbhhsFzMeM3fr7nZ+iUXM9
-         DMyQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=xkpSi38oXZami+XwnhE9QZye75VIwwT4zuGFKimZ9UQ=;
+        b=uIktSVbku+dadRzGT0NaiQI7zgB9CQ1M/2iBlb1NL7gwaI1/C6mag5mdYAHJJ+wOOb
+         2PrD2W/hBqLE5nQMdmxXoIE7aVylJ9X1bcgPubMjtXINrHPdw7iSz0zmY2iV8BlqKsOG
+         SbCqjNYVsTb6BoLBpNaQw41HgCmjihqChpysX+hz0IGfryrVwnjTIKc/LxvhdIsskHsZ
+         Ss8mE/ONSen9y/r5PfWAceJN+DJLnS/z+2Kr8eastirA6EkacbQ/sBpyAUKEBgDS8ZtH
+         /fmk+jXtB2fnApMtI+ZwVQiBxOgb8wE/Fs2vN31H8bGkuFwL6ryv/IMByTM3DEnVn3OV
+         biYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XVTIISucMBWxs2WJrtTjWY7ubr+gY82QjTdDWjm4u84=;
-        b=AA5U9GU2+N2+CZeFOL/ElY8+hZAb0GuBPm22aPkz75586J+aBala61ueEfXbt4Tvxh
-         /a2PlLezGs5kwmr0ic70zbrntz+QHtfzOthrk4iTeMcNsJfSOB3+WFZA+3t8GMyYh6+l
-         0a7Vwgq2SR6PWk7CwRDbxYVcizvTTMrAnXD/OSxw+0LGUm8qKRgIC/p14JpzoQm+YhuA
-         jA94VbkXrzOqZXXLUjxClZUHY/cT3axMUA/XPghNMYwtSJcESsHpBJKJX64yxF/tP66p
-         tEHajtmgnhN4tnhMOi7myE7Pz7Ekud7ytOXskIDE63/aCOtEixiViQ2pdMK//5/2ypDX
-         xaVA==
-X-Gm-Message-State: AOAM532B9TBewPQcSC5L1rjX9HVb1bc1wpqK9hqL4YvCivlPDLh2QYrC
-        tsjTM3iYEr/eq8cwXdqqOwmohND3E4o2ORAE
-X-Google-Smtp-Source: ABdhPJztecyOImW9tG0wxvS6lq3JDa2C92c6TcanZ1ujGVgrcS+KRJiblDPPozejVAC2y/tVgTrCKw==
-X-Received: by 2002:a17:90a:8b81:: with SMTP id z1mr8367852pjn.82.1628966977216;
-        Sat, 14 Aug 2021 11:49:37 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xkpSi38oXZami+XwnhE9QZye75VIwwT4zuGFKimZ9UQ=;
+        b=oEllU7hE5Vcu0z49FyDqcg1Bj4bQ/AXy1WJbZEUrFJzwusVip6mDEkuOT/0fQ70Gsa
+         CFNhkJpILwknO7SsOqXHkenRMBYYpGQyKXWlnwldfJPeXBcUr1KEXA8opWm8qcLu/bGU
+         YSX4g03RSpqhsg4195AywtEmBlnu3v31NuF5AQN+Ah6Q0xru6hcAULeudBMJ0RnXta5S
+         6WzAvZQiVMAkmETrovAfhyAh1PBcedZ1lXC/scVXm9YeDdEJLoaf+aaAlB9dc4fzMVGv
+         4pDY2YWFLNa4YAa8BxLjCuEiRX9NSCk+0sIolBzFZknRpdPKBnCPqLLXA8lMxDuJLtV8
+         sNkA==
+X-Gm-Message-State: AOAM530SvsEtDEZVSjAPMu0hqeREGIRGvVBaW9eCghEjQ5W+WE8+Wa2c
+        wG5To6qz75INvDzdqkb73Xo+KV5MbtrG+h9Y
+X-Google-Smtp-Source: ABdhPJweOte7VJ9qtzz7kA40uijDAZN9IKqz7TQeq8vfnkCOIpP8fWNUWYfQlx0a0oXnfzYSIZ9m6w==
+X-Received: by 2002:a17:90b:104b:: with SMTP id gq11mr8493676pjb.64.1628967000386;
+        Sat, 14 Aug 2021 11:50:00 -0700 (PDT)
 Received: from lattitude.lan ([49.206.113.179])
-        by smtp.googlemail.com with ESMTPSA id r16sm5294736pje.10.2021.08.14.11.49.35
+        by smtp.googlemail.com with ESMTPSA id r16sm5294736pje.10.2021.08.14.11.49.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Aug 2021 11:49:36 -0700 (PDT)
+        Sat, 14 Aug 2021 11:50:00 -0700 (PDT)
 From:   Gokul Sivakumar <gokulkumar792@gmail.com>
 To:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
         Stephen Hemminger <stephen@networkplumber.org>
 Cc:     Gokul Sivakumar <gokulkumar792@gmail.com>
-Subject: [PATCH iproute2-next v2 0/3] bridge: fixes regarding the colorized output
-Date:   Sun, 15 Aug 2021 00:17:24 +0530
-Message-Id: <20210814184727.2405108-1-gokulkumar792@gmail.com>
+Subject: [PATCH iproute2-next v2 1/3] bridge: reorder cmd line arg parsing to let "-c" detected as "color" option
+Date:   Sun, 15 Aug 2021 00:17:25 +0530
+Message-Id: <20210814184727.2405108-2-gokulkumar792@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210814184727.2405108-1-gokulkumar792@gmail.com>
+References: <20210814184727.2405108-1-gokulkumar792@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-v2:
- - Replace the 2 newly introduced fprintf() func calls with print_string()
-   to address Stephen's suggestion.
+As per the man/man8/bridge.8 page, the shorthand cmd line arg "-c" can be
+used to colorize the bridge cmd output. But while parsing the args in while
+loop, matches() detects "-c" as "-compressedvlans" instead of "-color", so
+fix this by doing the check for "-color" option first before checking for
+"-compressedvlans".
 
-For the bridge cmd, the "colorize output" cmd line option's usage and the
-corresponding output does not seem to be consistent with the usage and the
-output of the "ip" cmds.
+Signed-off-by: Gokul Sivakumar <gokulkumar792@gmail.com>
+---
+ bridge/bridge.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Example 1: As per the "colorize output" cmd line option documented in the
-man pages man/man8/ip.8 & man/man8/bridge.8, using "-c" with "ip" or the
-"bridge" should colorize the output. But this is working only with the "ip"
-cmd and for the "bridge" cmd, the option "-col" / "-colo" / "-color" needs
-to be used instead of just "-c".
-
-Example 2: After fixing the inconsistency mentioned in Example 1,
-- Running the cmd "$ ip -c neigh", will give the following output where the
-  "172.16.12.250", "bridge0" & "04:d9:f5:c1:0c:74" fields are highlighted
-  and not the fixed keywords "dev" & "lladdr".
-
-  172.16.12.250 dev bridge0 lladdr 04:d9:f5:c1:0c:74 REACHABLE
-
-- But running the cmd "$ bridge -c fdb", will give the following output
-  where "00:00:00:00:00:00", "dev", "vxlan100", "dst" & "2001:db8:2::1" are
-  highlighted, even though "dev" & "dst" keywords are static.
-
-  00:00:00:00:00:00 dev vxlan100 dst 2001:db8:2::1 self permanent
-
-Also fix a typo in man/man8/bridge.8 to change "-c[lor]" into "-c[olor]".
-
-Gokul Sivakumar (3):
-  bridge: reorder cmd line arg parsing to let "-c" detected as "color"
-    option
-  bridge: fdb: don't colorize the "dev" & "dst" keywords in "bridge -c
-    fdb"
-  man: bridge: fix the typo to change "-c[lor]" into "-c[olor]" in man
-    page
-
- bridge/bridge.c   |  2 +-
- bridge/fdb.c      | 13 ++++++++++---
- man/man8/bridge.8 |  2 +-
- 3 files changed, 12 insertions(+), 5 deletions(-)
-
+diff --git a/bridge/bridge.c b/bridge/bridge.c
+index f7bfe0b5..48b0e7f8 100644
+--- a/bridge/bridge.c
++++ b/bridge/bridge.c
+@@ -149,9 +149,9 @@ main(int argc, char **argv)
+ 			NEXT_ARG();
+ 			if (netns_switch(argv[1]))
+ 				exit(-1);
++		} else if (matches_color(opt, &color)) {
+ 		} else if (matches(opt, "-compressvlans") == 0) {
+ 			++compress_vlans;
+-		} else if (matches_color(opt, &color)) {
+ 		} else if (matches(opt, "-force") == 0) {
+ 			++force;
+ 		} else if (matches(opt, "-json") == 0) {
 -- 
 2.25.1
 
