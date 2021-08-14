@@ -2,165 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7A693EC5E0
-	for <lists+netdev@lfdr.de>; Sun, 15 Aug 2021 01:01:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55A393EC5E9
+	for <lists+netdev@lfdr.de>; Sun, 15 Aug 2021 01:04:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233738AbhHNXBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Aug 2021 19:01:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48218 "EHLO
+        id S234151AbhHNXET (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Aug 2021 19:04:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233223AbhHNXBd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Aug 2021 19:01:33 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E89DAC061764;
-        Sat, 14 Aug 2021 16:01:03 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id v4so11133696wro.12;
-        Sat, 14 Aug 2021 16:01:03 -0700 (PDT)
+        with ESMTP id S233964AbhHNXER (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Aug 2021 19:04:17 -0400
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B8A2C0617AD
+        for <netdev@vger.kernel.org>; Sat, 14 Aug 2021 16:03:48 -0700 (PDT)
+Received: by mail-il1-x130.google.com with SMTP id h18so14711399ilc.5
+        for <netdev@vger.kernel.org>; Sat, 14 Aug 2021 16:03:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
+        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=F0KrfeTE+tsg/Qt+4vIwCwCUxCe3RnVdvTIxQapRRBU=;
-        b=dMdPvC8p2JeXHOlEzWT/VBfYLBlZKoYgwJhgSXighky301sWWQsPXh5thWDg+Sm6ea
-         G08zrwGJgxzNZ7gXPF+YLZRtaELWm+CLu4JjTAJ+dNgR1oT6ukDWxZRGiDC0u4vhZf/V
-         bVF/jBgrLNGSog4aAWBMHjfVuWQLO9kkHGbd5t0BedekIbc5xbA5i/5gdVlDNbBf2uV7
-         A2bNzEmsYRrt1tf5PsGy7cPup7dOPwksn7Vu3O9Ud9s1+I/80NI9UCTod2fYY3jfDBf7
-         oVAm79i3br3F0gDXKpPDTh90KWn7I4ZZZsXHDl5sqMV3oPcBVEa4yZgqklN4veV4ffFo
-         oO0A==
+        bh=qmFkeUHwny/Th4/3e9gJVXZ8p7Kjf4pDQS/FEdz+8YE=;
+        b=kXW9tb0UCZ2N5bGDjQPAvvLu1hM04NlMdl58Yc5hHnWxbLTNABC8DLnuZLyP8kkpz+
+         WjnZyXOM9ffsmeZGLUEl5mp3KWbAwReS7sAIH2Gpos4a9wAeMRA06ErmF/MuYQMLHB7L
+         Z1ud8ayhOxx4MxdkLXxeiL1bruw9kS7vTt+1YOwSZjoTYCUwjNd7lkddkc7WYZYMWK11
+         dNp5DkNmRuoId9uQ4Yz7NYs+MMvMmhGI/gvC5nQ9qj3/NYmmjc7zplg0g5y1JFVBt2lX
+         vgyZMItX9qp4eFQgfSj20PkG8rXNu6bHGdkqbQgUMl5RRnRPH2tLqpUxEnLGPLAhMz1f
+         c3fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=F0KrfeTE+tsg/Qt+4vIwCwCUxCe3RnVdvTIxQapRRBU=;
-        b=Trb9zc6XcLxs00I+Mfvavkrj63p+0iDJL5b2bDCOVQ4B4eJb1z6myyHuarfgjzsAtf
-         eoHkGI0/elNl5tk+XA905cl7mPFf4nKN7BTR3z0+M+ukF0NjywcIhkZToGCmp6Wy4VML
-         FN5xl+JAkYz0LPSGGd93lPhyxp+frrSLArPW3NQCg2gs2RcGL4gPWWmRrBOiPrQb4arD
-         hdxkfRhF6eihlNB3YjZ/w8uyO+A8ob/LKFt+z8USUZz82S8MF/6FsFns5GQcgGTkTkOT
-         6lW1w8viZMNPR+g/786QSb/0iNRKZrPPGPubtTAXZDIcRm1geGNfEF5+NPv0wiNDn0un
-         HzMg==
-X-Gm-Message-State: AOAM532MCpoEBrpns2vFYGgVnobhSK6HzF8VZNq7x8Zaku22ic1TmS2R
-        NIWg3AdaCFA4iDhyaoz5xvHYUz2nA2tALg==
-X-Google-Smtp-Source: ABdhPJz3K5FR014vEjskeLkNH0rB3s1UkF7tzTsyIhxf4LsVJMg2leVTehwZ/aSo9PSoc4VeSg1l2g==
-X-Received: by 2002:adf:df0c:: with SMTP id y12mr10222584wrl.155.1628982062215;
-        Sat, 14 Aug 2021 16:01:02 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f10:c200:1df:469f:59ab:ca40? (p200300ea8f10c20001df469f59abca40.dip0.t-ipconnect.de. [2003:ea:8f10:c200:1df:469f:59ab:ca40])
-        by smtp.googlemail.com with ESMTPSA id t14sm5998262wmj.2.2021.08.14.16.00.59
+        bh=qmFkeUHwny/Th4/3e9gJVXZ8p7Kjf4pDQS/FEdz+8YE=;
+        b=IbPMtzFro3vNN00sSUA8Dxj3z/KgU21M+Krlc8jsmWTDuSKGXXj2FuK5wQ0LkNwLVs
+         /yrB1M+N6F5W/pGPa3aozfUfTiBjE0G16eI1RZQ/S8pcy4+UAyjHfUyc9vj+wkhndYUS
+         0PbJ0/b4o387ZFTbPDMlJAPd6sAEXStuB/YSdi0KJiK54STxMDOrgAP+n2qx+KyPb41k
+         o0B9nKpXx5UV4TgTTFbCXdQfBgOnI8klJvp4y4izzvJHmeQHUtTstcoDfBzlOOjYMDWP
+         H0XsMF48bcEu3eMkn/7DwOnJqHtU3fZIPFSYAo2V926fT4W6/OWvKzXOkoKY9nV5SuwB
+         MWPw==
+X-Gm-Message-State: AOAM530YMCLuUp/3QHJmBAiRkl1WOSA+HwU7Yt178mYRo0bR1XkzOFP2
+        ySK5PPqKOG1wOqFx87YkAwm/BQ==
+X-Google-Smtp-Source: ABdhPJz9JNmQC0uFEVHBIP3yvL3q4yXkIoDBB/M0W13fT7lR0LrtJwhpFT44iJsVz9F098giwQajkw==
+X-Received: by 2002:a92:d7c1:: with SMTP id g1mr6542553ilq.24.1628982227203;
+        Sat, 14 Aug 2021 16:03:47 -0700 (PDT)
+Received: from [192.168.1.116] ([66.219.217.159])
+        by smtp.gmail.com with ESMTPSA id l9sm3054927ilv.31.2021.08.14.16.03.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 14 Aug 2021 16:01:01 -0700 (PDT)
-To:     David Bauer <mail@david-bauer.net>, davem@davemloft.net,
-        kuba@kernel.org, robh+dt@kernel.org, Pavel Machek <pavel@ucw.cz>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>
-References: <20210814181107.138992-1-mail@david-bauer.net>
- <74795336-e3fa-422f-0004-a8cb180d84bc@gmail.com>
- <96f1d554-647b-fc75-8c5c-60bc20d79c80@david-bauer.net>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: net: add RTL8152 binding documentation
-Message-ID: <7a6e07fa-3eaf-8604-f788-2a0f58b88cf3@gmail.com>
-Date:   Sun, 15 Aug 2021 01:00:55 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Sat, 14 Aug 2021 16:03:46 -0700 (PDT)
+Subject: Re: [PATCH v2 0/4] open/accept directly into io_uring fixed file
+ table
+To:     Pavel Begunkov <asml.silence@gmail.com>,
+        Josh Triplett <josh@joshtriplett.org>
+Cc:     io-uring@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Stefan Metzmacher <metze@samba.org>
+References: <cover.1628871893.git.asml.silence@gmail.com>
+ <YRbBYCn29B+kgZcy@localhost> <bcb6f253-41d6-6e0f-5b4b-ea1e02a105bc@gmail.com>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <5cf40313-d151-9d10-3ebd-967eb2f53b1f@kernel.dk>
+Date:   Sat, 14 Aug 2021 17:03:44 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <96f1d554-647b-fc75-8c5c-60bc20d79c80@david-bauer.net>
+In-Reply-To: <bcb6f253-41d6-6e0f-5b4b-ea1e02a105bc@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15.08.2021 00:26, David Bauer wrote:
-> Hi Heiner,
-> 
-> On 8/14/21 8:33 PM, Heiner Kallweit wrote:
->> On 14.08.2021 20:11, David Bauer wrote:
->>> Add binding documentation for the Realtek RTL8152 / RTL8153 USB ethernet
->>> adapters.
+On 8/14/21 6:50 AM, Pavel Begunkov wrote:
+> On 8/13/21 8:00 PM, Josh Triplett wrote:
+>> On Fri, Aug 13, 2021 at 05:43:09PM +0100, Pavel Begunkov wrote:
+>>> Add an optional feature to open/accept directly into io_uring's fixed
+>>> file table bypassing the normal file table. Same behaviour if as the
+>>> snippet below, but in one operation:
 >>>
->>> Signed-off-by: David Bauer <mail@david-bauer.net>
->>> ---
->>>   .../bindings/net/realtek,rtl8152.yaml         | 43 +++++++++++++++++++
->>>   1 file changed, 43 insertions(+)
->>>   create mode 100644 Documentation/devicetree/bindings/net/realtek,rtl8152.yaml
+>>> sqe = prep_[open,accept](...);
+>>> cqe = submit_and_wait(sqe);
+>>> // error handling
+>>> io_uring_register_files_update(uring_idx, (fd = cqe->res));
+>>> // optionally
+>>> close((fd = cqe->res));
 >>>
->>> diff --git a/Documentation/devicetree/bindings/net/realtek,rtl8152.yaml b/Documentation/devicetree/bindings/net/realtek,rtl8152.yaml
->>> new file mode 100644
->>> index 000000000000..ab760000b3a6
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/net/realtek,rtl8152.yaml
->>> @@ -0,0 +1,43 @@
->>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
->>> +%YAML 1.2
->>> +---
->>> +$id: http://devicetree.org/schemas/net/realtek,rtl8152.yaml#
->>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>> +
->>> +title: Realtek RTL8152/RTL8153 series USB ethernet
->>> +
->>> +maintainers:
->>> +  - David Bauer <mail@david-bauer.net>
->>> +
->>> +properties:
->>> +  compatible:
->>> +    oneOf:
->>> +      - items:
->>> +          - enum:
->>> +              - realtek,rtl8152
->>> +              - realtek,rtl8153
->>> +
->>> +  reg:
->>> +    description: The device number on the USB bus
->>> +
->>> +  realtek,led-data:
->>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>> +    description: Value to be written to the LED configuration register.
->>> +
+>>> The idea in pretty old, and was brough up and implemented a year ago
+>>> by Josh Triplett, though haven't sought the light for some reasons.
 >>
->> +Pavel as LED subsystem maintainer
+>> Thank you for working to get this over the finish line!
 >>
->> There's an ongoing discussion (with certain decisions taken already) about
->> how to configure network device LEDs.
-> 
-> Thanks, I didn't knew about this.
-> 
-> Is there any place where i can read up specifics about
-> this topic?
-> 
-
-A recent mail thread about network device LEDs is here:
-https://lore.kernel.org/netdev/20210716212427.821834-6-anthony.l.nguyen@intel.com/
-
-To cut a long story short:
-LED subsystem maintainer has ideas how a unified solution could like,
-and he has some work-in-progress patches. And some statements exist
-how not to do it and what to avoid. But there's still some open
-issues, therefore no solution is available yet. It's not really clear
-how to go on with network device LED support in the meantime.
-
-> Best
-> David
-> 
-Heiner
-
->>
->>> +required:
->>> +  - compatible
->>> +  - reg
->>> +
->>> +examples:
->>> +  - |
->>> +    usb@100 {
->>> +      reg = <0x100 0x100>;
->>> +      #address-cells = <1>;
->>> +      #size-cells = <0>;
->>> +
->>> +      usb-eth@2 {
->>> +        compatible = "realtek,rtl8153";
->>> +        reg = <0x2>;
->>> +        realtek,led-data = <0x87>;
->>> +      };
->>> +    };
+>>> Tested on basic cases, will be sent out as liburing patches later.
 >>>
+>>> A copy paste from 2/2 describing user API and some notes:
+>>>
+>>> The behaviour is controlled by setting sqe->file_index, where 0 implies
+>>> the old behaviour. If non-zero value is specified, then it will behave
+>>> as described and place the file into a fixed file slot
+>>> sqe->file_index - 1. A file table should be already created, the slot
+>>> should be valid and empty, otherwise the operation will fail.
+>>>
+>>> Note 1: we can't use IOSQE_FIXED_FILE to switch between modes, because
+>>> accept takes a file, and it already uses the flag with a different
+>>> meaning.
+>>>
+>>> Note 2: it's u16, where in theory the limit for fixed file tables might
+>>> get increased in the future. If would ever happen so, we'll better
+>>> workaround later, e.g. by making ioprio to represent upper bits 16 bits.
+>>> The layout for open is tight already enough.
 >>
+>> Rather than using sqe->file_index - 1, which feels like an error-prone
+>> interface, I think it makes sense to use a dedicated flag for this, like
+>> IOSQE_OPEN_FIXED. That flag could work for any open-like operation,
+>> including open, accept, and in the future many other operations such as
+>> memfd_create. (Imagine using a single ring submission to open a memfd,
+>> write a buffer into it, seal it, send it over a UNIX socket, and then
+>> close it.)
+>>
+>> The only downside is that you'll need to reject that flag in all
+>> non-open operations. One way to unify that code might be to add a flag
+>> in io_op_def for open-like operations, and then check in common code for
+>> the case of non-open-like operations passing IOSQE_OPEN_FIXED.
+> 
+> io_uring is really thin, and so I absolutely don't want any extra
+> overhead in the generic path, IOW anything affecting
+> reads/writes/sends/recvs.
+> 
+> The other reason is that there are only 2 bits left in sqe->flags,
+> and we may use them for something better, considering that it's
+> only open/accept and not much as this.
+> 
+> I agree that it feels error-prone, but at least it can be wrapped
+> nicely enough in liburing, e.g.
+> 
+> void io_uring_prep_openat_direct(struct io_uring_sqe *sqe, int dfd,
+> 				 const char *path, int flags,
+> 				 mode_t mode, int slot_idx);
+> 
+> 
+>> Also, rather than using a 16-bit index for the fixed file table and
+>> potentially requiring expansion into a different field in the future,
+>> what about overlapping it with the nofile field in the open and accept
+>> requests? If they're not opening a normal file descriptor, they don't
+>> need nofile. And in the original sqe, you can then overlap it with a
+>> 32-bit field like splice_fd_in.
+> 
+> There is no nofile in SQEs, though
+> 
+> req->open.nofile = rlimit(RLIMIT_NOFILE);
+
+What's the plan in terms of limiting the amount of direct descriptors
+(for lack of a better word)? That seems like an important aspect that
+should get sorted out upfront.
+
+Do we include the regular file table max_fds count for creating a new
+direct descriptor, and limit to RLIMIT_NOFILE? That would seem logical,
+but then that also implies that the regular file table should include
+the ctx (potentially several) direct descriptors. And the latter is much
+worse.
+
+Maybe we have a way to size the direct table, which will consume entries
+from the same pool that the regular file table does? That would then
+work both ways, and could potentially just be done dynamically similarly
+to how we expand the regular file table when we exceed its current size.
+
+Anyway, just throwing a few ideas out there, with the intent to spark a
+bit of discussion on this topic. I really like the direct descriptors,
+it'll be a lot more efficient for certain use cases.
+
+-- 
+Jens Axboe
 
