@@ -2,104 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3F513EBF2D
-	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 03:03:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CAC33EBF3C
+	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 03:11:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236056AbhHNBEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 21:04:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40714 "EHLO
+        id S236283AbhHNBLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Aug 2021 21:11:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235870AbhHNBEO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 21:04:14 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1989C061756;
-        Fri, 13 Aug 2021 18:03:46 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id n12so13525487plf.4;
-        Fri, 13 Aug 2021 18:03:46 -0700 (PDT)
+        with ESMTP id S235870AbhHNBLp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Aug 2021 21:11:45 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF73C061756;
+        Fri, 13 Aug 2021 18:11:18 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id v2so7537523edq.10;
+        Fri, 13 Aug 2021 18:11:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0yJYp34jS7HaoczU14zrBhvwWwEhufHlCd1XxfoZIoE=;
-        b=k3vuKjD6AIK+QNGAOsIiDAzgPh6+IW4zRAIrJsFhWiBaOCYmD4D1igV4tlBjss1IwE
-         ZTIpey0xjPbE84lRbz2Qh0ukojdSzdzQaWhmXjtjdePtMLaDZ9eLKaayondv+qQoT+b4
-         HmCVqn3YmFdXvSI37ZE3XlaFCqUVf87FIvdqYpumB9JGJjCKtUnsyguzhvy3lJHCXime
-         Ncsm/ia0YuoTVjGV1XjvbGgy99itmH95yOuAm1KvyZFM0klBUXsKsn5yQgaSHGCFRNII
-         X4M2AsUlpZCSYWj1v76VWmCJ+6NM2x7NKgcLWUPh+Xtsve7Itok2BNr5dLao6ySuPEVf
-         M0CA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=PJhUcsspU97g7E83Bpc3xMjAAqh5e3B1I8VLV04Hlg4=;
+        b=lvQlGkQMovEbhDOLkEx9FfNMFdUym7QHjOg8TV2oep0SJ3tQ8K2y2owZAeCFaow50x
+         2VGtWy4UVBOA5Hgv2Um7p3LyrGWWlhoOMsocXgMiubAK4BqyJ7BiUZK3h2X8Llpv4ZQw
+         k6Gz4suycc94X9lIr3rsjrX+qEQZi/OrloEcd4zZTfo40c/z+ms8sY96+2HI94Hbgyx3
+         8ja3Youg4lK9LB9/A8W/qNaXmqTAfuDxcLGhYNslXyI9Olc4+3JxhEjZpUsjf3teFDlL
+         2oSbRcOpVlSav3/aqavxHG5/c1qX5sqQlWvB+P/I/MrqlkhgtOERuvKS4J1xGnLwyj2w
+         XsQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0yJYp34jS7HaoczU14zrBhvwWwEhufHlCd1XxfoZIoE=;
-        b=bVXHG/AnHbJ10oj3NZEax1chN8u2JjwCU6L5xeKHgxQD+J1fs90n6KiAkdS5AUBVjN
-         PCkc2s3ErzRkXhuD9TcvFLxBr1JLpsg9dXjt6m7+QDbTjrFRgFeTPEAxnhwFPZgkdgR0
-         z7mVyYNH0q66VKMgluQRB1CvNpq4vyGQGDEOD4LBU7xkIZ6SGSshig8+ZWqEecGrkywo
-         NrTH8JXXDwfeB2P02OEEhLNTgX/msP9q+PSfzru0t2MVEBLACF3aWZEflVnn1dfiMuDc
-         8oLm13tzX5OoehKi6MMoCNpqywL/86MSxtCOvS6SlBOAhzykiojmabaJTLxdQv4q6gKt
-         dD6Q==
-X-Gm-Message-State: AOAM533/9Pytw9SqLmVeC55kHVBagwNzFprrgEHWgXmP59xmfUwynpSE
-        QdLGtSVjWiiuZSUtY8IzJas=
-X-Google-Smtp-Source: ABdhPJz483SR0lnCz682BIATmNAGb8xdrQqdDWSF24iul+HZ2k4nvgZVSCXhHmdUwrENK+39pE5rQg==
-X-Received: by 2002:a62:8042:0:b029:3cd:8339:7551 with SMTP id j63-20020a6280420000b02903cd83397551mr4943639pfd.79.1628903026391;
-        Fri, 13 Aug 2021 18:03:46 -0700 (PDT)
-Received: from WRT-WX9.. ([141.164.41.4])
-        by smtp.gmail.com with ESMTPSA id on15sm2776859pjb.19.2021.08.13.18.03.39
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PJhUcsspU97g7E83Bpc3xMjAAqh5e3B1I8VLV04Hlg4=;
+        b=WqsmKrerJZuqN8VK0J1/kSCU66d/MzSAZLLJ0lwIZt8aGg+B3FUQwsKKUcgDX7vxTW
+         5936NEYntcymh7AL5WoKkpcoOh/CK2v7l6S3cWg5bX56MS3qA2rk5hgkQsfXYj3x0F8d
+         8PJlyFthJzpmZKAXs2vVBjFmZ8exM+Kj9ePSjcOZD5yjPsWnRO0RTE9RHzDKy5wNf8Z1
+         xztNZMVpcSezLUmacyTbuueoLb+4FljaBmZIElHIVqpsxN5GsPLtIUYd+1OSCXGrjfqu
+         McOsNBN2JawN/5JZc+l3MoSdXzlWMwi7qVvi4XTEcmBlRL7kMnap6JcO28Fg5NWQ6mys
+         H1PQ==
+X-Gm-Message-State: AOAM533A7AzsjCbYetKfln1CGRUCjbFSPUaIg0sKvzwstR8pk1iDM0Sy
+        lHg/2gN2UgPSNwxJBzFaTso=
+X-Google-Smtp-Source: ABdhPJzbEz1C74QjqaquNCIRacBK6HSghnVyTzV009KuRSd/PsM34mJM8RMUbtWj+RkNCDXH4rnY+w==
+X-Received: by 2002:a05:6402:26c6:: with SMTP id x6mr6754557edd.175.1628903476812;
+        Fri, 13 Aug 2021 18:11:16 -0700 (PDT)
+Received: from skbuf ([188.25.144.60])
+        by smtp.gmail.com with ESMTPSA id q30sm1595434edi.84.2021.08.13.18.11.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Aug 2021 18:03:46 -0700 (PDT)
-From:   Changbin Du <changbin.du@gmail.com>
-To:     Julian Wiedmann <jwi@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Changbin Du <changbin.du@gmail.com>
-Subject: [PATCH] s390/net: replace in_irq() with in_hardirq()
-Date:   Sat, 14 Aug 2021 09:03:34 +0800
-Message-Id: <20210814010334.4075-1-changbin.du@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        Fri, 13 Aug 2021 18:11:16 -0700 (PDT)
+Date:   Sat, 14 Aug 2021 04:11:15 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>,
+        "open list:ETHERNET BRIDGE" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Ido Schimmel <idosch@idosch.org>,
+        Tobias Waldekranz <tobias@waldekranz.com>
+Subject: Re: [PATCH net-next v2] net: bridge: switchdev: pass more port flags
+ to drivers
+Message-ID: <20210814011115.agzyo3cydlupafvy@skbuf>
+References: <20210812142213.2251697-1-dqfext@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210812142213.2251697-1-dqfext@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace the obsolete and ambiguos macro in_irq() with new
-macro in_hardirq().
+On Thu, Aug 12, 2021 at 10:22:12PM +0800, DENG Qingfang wrote:
+> These 3 port flags: BR_HAIRPIN_MODE, BR_MULTICAST_TO_UNICAST, and
+> BR_ISOLATED, affect the data path and should be handled by switchdev
+> drivers.
+> 
+> Add them to BR_PORT_FLAGS_HW_OFFLOAD so they can be passed down to
+> the drivers.
+> 
+> Suggested-by: Vladimir Oltean <olteanv@gmail.com>
+> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> ---
+> v1 -> v2: added more flags
 
-Signed-off-by: Changbin Du <changbin.du@gmail.com>
----
- drivers/s390/net/ctcm_fsms.c | 2 +-
- drivers/s390/net/ctcm_mpc.c  | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/s390/net/ctcm_fsms.c b/drivers/s390/net/ctcm_fsms.c
-index 377e3689d1d4..06281a0a0552 100644
---- a/drivers/s390/net/ctcm_fsms.c
-+++ b/drivers/s390/net/ctcm_fsms.c
-@@ -1444,7 +1444,7 @@ static void ctcmpc_chx_rx(fsm_instance *fi, int event, void *arg)
- 			if (do_debug_ccw)
- 			ctcmpc_dumpit((char *)&ch->ccw[0],
- 					sizeof(struct ccw1) * 3);
--		dolock = !in_irq();
-+		dolock = !in_hardirq();
- 		if (dolock)
- 			spin_lock_irqsave(
- 				get_ccwdev_lock(ch->cdev), saveflags);
-diff --git a/drivers/s390/net/ctcm_mpc.c b/drivers/s390/net/ctcm_mpc.c
-index 19ee91acb89d..f0436f555c62 100644
---- a/drivers/s390/net/ctcm_mpc.c
-+++ b/drivers/s390/net/ctcm_mpc.c
-@@ -1773,7 +1773,7 @@ static void mpc_action_side_xid(fsm_instance *fsm, void *arg, int side)
- 	CTCM_D3_DUMP((char *)ch->xid, XID2_LENGTH);
- 	CTCM_D3_DUMP((char *)ch->xid_id, 4);
- 
--	if (!in_irq()) {
-+	if (!in_hardirq()) {
- 			 /* Such conditional locking is a known problem for
- 			  * sparse because its static undeterministic.
- 			  * Warnings should be ignored here. */
--- 
-2.30.2
-
+If you insist to not write a competent commit message which properly
+explains the motivation for the change, then please remove my
+Suggested-by tag and resend. Thanks
