@@ -2,102 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 932503EC286
-	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 14:02:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 447FA3EC2BA
+	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 14:51:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238365AbhHNMCq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Aug 2021 08:02:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44476 "EHLO
+        id S238457AbhHNMv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Aug 2021 08:51:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238064AbhHNMCn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Aug 2021 08:02:43 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54305C061764;
-        Sat, 14 Aug 2021 05:02:15 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id lo4so23096575ejb.7;
-        Sat, 14 Aug 2021 05:02:15 -0700 (PDT)
+        with ESMTP id S233664AbhHNMvZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Aug 2021 08:51:25 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63006C061764;
+        Sat, 14 Aug 2021 05:50:57 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id k4so8572927wms.3;
+        Sat, 14 Aug 2021 05:50:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=qpQN2aTKtGCMgoh9M7a5uv16Wg9lA0To7j/jpu/dotM=;
-        b=bKS4yGk6Fti2p1kFwiaS16i4xy5dlAA1rLYFW1Zxr+tWuJQwVgl+4zSh02FZ238J1j
-         WcaESiPePl+mM9B6+Z4raxEVXELqC4/r1uiGmtpx12MsAP+4dOmAJDQsMVy4IqRDyGyJ
-         JHPxEa9VwvG4Q/MglkZ6WFXG2QXlIOutehxfvMuowqLY/H0JGQHAqtw0uUsljI7UrJDS
-         pkw449U2HCXW87ukHgh1KeIJR8P5D6d1Gr5ZB8kAZtL6q6N4ytwqlyaLFMTPjqfWQKaS
-         7S21qTLEvcMx4ucd0jlqUuqf6ZtdcaGvqoXAohcsfJaocLZEC+I6RTpXBJiqYyQwYdn/
-         dvpA==
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=soZxiF/fS/bDbNIY5Pv+IiDOKKvkkGO1ADByBRpWDy8=;
+        b=HcJ7wj/lPNp3DOnCJLsFHUL9NnsHMAlUw11LCm/YBqGHkMN1ZPhNy7j10qcaFXFYwY
+         acM1IXXv9ynptXepwBRH93Nwvs5//OEvrtnTcR6lPlCpTSbaoZ0Fsq/H5U9QGDq+VMFl
+         aHTdPvSYn3lsvzy8Z0r9ET3txH0zBZ1dpjlcvnK2O4MnCXEfK4qBfLGxfz8eux0Zddhu
+         QvaYX0HLGDq1Ui2Lo8akYKl31hwuGDJbbrAZVRJfongyhSSciXbfvdBI9ZJzYAq9O4IA
+         7kSOqHm4uWfrp7sJgb/83Kua3vCyJGh5ZXc4WADqtOt7vwFtCtQKSC4WFeR6iAVDtqJM
+         IsSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qpQN2aTKtGCMgoh9M7a5uv16Wg9lA0To7j/jpu/dotM=;
-        b=ii2TRoWRjcplHpxia5s4YyBKRsvQtETDgXPK/ci3bsMxorsq4fsop2SvPJU2TxNzsU
-         LrNAj1gxycHkqREv0ots9b6/CGiLG8RJ0bTRtUoT77okpXhMaOxn3pM89pknkr8DCQTu
-         ZgDnqFjHVo8B/fHGEPkz5AhbDy8vDXfN27SaXuYnviklXV9dRNmOQ5ADNSPClRbV9HK1
-         NR+J14h3xXq1++BdBT9CXUHRgXg32Jb2DfPzlrxMZo9XS8fan3jSpfYi+j/Yy3OTc5UU
-         SdnB14IB8WN+V6td4L+xkSV8yNouO09OpVo9SjU6a8sMHUbvbZDP5+JPan1RlSMdzHA5
-         oFlg==
-X-Gm-Message-State: AOAM532nczJrNnm9AEs1DvAH0ZX//GU0UZveOhFAW+PV3AukwjNHFoJX
-        2acTEX03Yp4E4Aegm3NDats=
-X-Google-Smtp-Source: ABdhPJyCAxqPk9pWqGfFemQsR7dWguvr+DAPui5Ks4oZDkZ9auxKP2h5JpJMabC1Cb/smYB3U+kkRQ==
-X-Received: by 2002:a17:906:13d2:: with SMTP id g18mr7170183ejc.280.1628942533886;
-        Sat, 14 Aug 2021 05:02:13 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id u2sm2172760edd.82.2021.08.14.05.02.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Aug 2021 05:02:13 -0700 (PDT)
-Date:   Sat, 14 Aug 2021 15:02:11 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v3 net-next 09/10] net: dsa: ocelot: felix: add
- support for VSC75XX control over SPI
-Message-ID: <20210814120211.v2qjqgi6l3slnkq2@skbuf>
-References: <20210814025003.2449143-1-colin.foster@in-advantage.com>
- <20210814025003.2449143-10-colin.foster@in-advantage.com>
- <20210814114329.mycpcfwoqpqxzsyl@skbuf>
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=soZxiF/fS/bDbNIY5Pv+IiDOKKvkkGO1ADByBRpWDy8=;
+        b=atrVQivpBpdhqCesxY6DdTgC70Mkx96H0ltnrha9S7CWmb6AqB0YKnwJEzXPz8vCf6
+         /dQIj/4a/yPQgX6qg3tQ5CjB5f4yjqhTbczR/7KUo+5akcN6T/kR2Cx2/+mj7Akd9zn0
+         6H9URTRgl27/EtfXLWlPXXkWsQEKnc1HcOx/TwahSVVS8fvXTdhynIP7s93P6L7nwLw1
+         Kjjapm7ziJrvzgQa3F3BhaPIfu+j81eXjnU3EblsGSlVmd8gL2Ko6UoWkUY3JN5MuHw7
+         C17SIVzHGPhVtDZR9qq0dK1roTxkhLpfr584KV9yfDVfC/95ji39J5TyepQBIrisiDKl
+         phfg==
+X-Gm-Message-State: AOAM532QSKlIK1ot2LmXNTl3iOVArHzzo5iqMIfwzC/IMTJuF7ytxMtM
+        JIlgILa+4bo5PWQMpN1qkFs=
+X-Google-Smtp-Source: ABdhPJydnkBamMX2SjiEWQZK3lfNfaRkXU+iudNL9RKS/t2j5+yfZJC5sGrwEPyIl0vsFOm/dAqVXw==
+X-Received: by 2002:a7b:cd10:: with SMTP id f16mr6957016wmj.104.1628945456055;
+        Sat, 14 Aug 2021 05:50:56 -0700 (PDT)
+Received: from [192.168.8.197] ([148.252.133.97])
+        by smtp.gmail.com with ESMTPSA id u23sm4223047wmc.24.2021.08.14.05.50.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 14 Aug 2021 05:50:55 -0700 (PDT)
+To:     Josh Triplett <josh@joshtriplett.org>
+Cc:     Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Stefan Metzmacher <metze@samba.org>
+References: <cover.1628871893.git.asml.silence@gmail.com>
+ <YRbBYCn29B+kgZcy@localhost>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+Subject: Re: [PATCH v2 0/4] open/accept directly into io_uring fixed file
+ table
+Message-ID: <bcb6f253-41d6-6e0f-5b4b-ea1e02a105bc@gmail.com>
+Date:   Sat, 14 Aug 2021 13:50:24 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210814114329.mycpcfwoqpqxzsyl@skbuf>
+In-Reply-To: <YRbBYCn29B+kgZcy@localhost>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 14, 2021 at 02:43:29PM +0300, Vladimir Oltean wrote:
-> The issue is that the registers for the PCS1G block look nothing like
-> the MDIO clause 22 layout, so anything that tries to map the struct
-> ocelot_pcs over a struct mdio_device is going to look like a horrible
-> shoehorn.
+On 8/13/21 8:00 PM, Josh Triplett wrote:
+> On Fri, Aug 13, 2021 at 05:43:09PM +0100, Pavel Begunkov wrote:
+>> Add an optional feature to open/accept directly into io_uring's fixed
+>> file table bypassing the normal file table. Same behaviour if as the
+>> snippet below, but in one operation:
+>>
+>> sqe = prep_[open,accept](...);
+>> cqe = submit_and_wait(sqe);
+>> // error handling
+>> io_uring_register_files_update(uring_idx, (fd = cqe->res));
+>> // optionally
+>> close((fd = cqe->res));
+>>
+>> The idea in pretty old, and was brough up and implemented a year ago
+>> by Josh Triplett, though haven't sought the light for some reasons.
 > 
-> For that we might need Russell's assistance.
+> Thank you for working to get this over the finish line!
 > 
-> The documentation is at:
-> http://ww1.microchip.com/downloads/en/DeviceDoc/VMDS-10489.pdf
-> search for "Information about the registers for this product is available in the attached file."
-> and then open the PDF embedded within the PDF.
+>> Tested on basic cases, will be sent out as liburing patches later.
+>>
+>> A copy paste from 2/2 describing user API and some notes:
+>>
+>> The behaviour is controlled by setting sqe->file_index, where 0 implies
+>> the old behaviour. If non-zero value is specified, then it will behave
+>> as described and place the file into a fixed file slot
+>> sqe->file_index - 1. A file table should be already created, the slot
+>> should be valid and empty, otherwise the operation will fail.
+>>
+>> Note 1: we can't use IOSQE_FIXED_FILE to switch between modes, because
+>> accept takes a file, and it already uses the flag with a different
+>> meaning.
+>>
+>> Note 2: it's u16, where in theory the limit for fixed file tables might
+>> get increased in the future. If would ever happen so, we'll better
+>> workaround later, e.g. by making ioprio to represent upper bits 16 bits.
+>> The layout for open is tight already enough.
+> 
+> Rather than using sqe->file_index - 1, which feels like an error-prone
+> interface, I think it makes sense to use a dedicated flag for this, like
+> IOSQE_OPEN_FIXED. That flag could work for any open-like operation,
+> including open, accept, and in the future many other operations such as
+> memfd_create. (Imagine using a single ring submission to open a memfd,
+> write a buffer into it, seal it, send it over a UNIX socket, and then
+> close it.)
+> 
+> The only downside is that you'll need to reject that flag in all
+> non-open operations. One way to unify that code might be to add a flag
+> in io_op_def for open-like operations, and then check in common code for
+> the case of non-open-like operations passing IOSQE_OPEN_FIXED.
 
-In fact I do notice now that as long as you don't use any of the
-optional phylink_mii_c22_pcs_* helpers in your PCS driver, then
-struct phylink_pcs has pretty much zero dependency on struct mdio_device,
-which means that I'm wrong and it should be completely within reach to
-write a dedicated PCS driver for this hardware.
+io_uring is really thin, and so I absolutely don't want any extra
+overhead in the generic path, IOW anything affecting
+reads/writes/sends/recvs.
 
-As to how to make the common felix.c work with different implementations
-of struct phylink_pcs, one thing that certainly has to change is that
-struct felix should hold a struct phylink_pcs **pcs and not a
-struct lynx_pcs **pcs.
+The other reason is that there are only 2 bits left in sqe->flags,
+and we may use them for something better, considering that it's
+only open/accept and not much as this.
 
-Does this mean that we should refactor lynx_pcs_create() to return a
-struct phylink_pcs * instead of struct lynx_pcs *, and lynx_pcs_destroy()
-to receive the struct phylink_pcs *, use container_of() and free the
-larger struct lynx_pcs *? Yes, probably.
+I agree that it feels error-prone, but at least it can be wrapped
+nicely enough in liburing, e.g.
 
-If you feel uncomfortable with this, I can try to refactor lynx_pcs to
-make it easier to accomodate a different PCS driver in felix.
+void io_uring_prep_openat_direct(struct io_uring_sqe *sqe, int dfd,
+				 const char *path, int flags,
+				 mode_t mode, int slot_idx);
+
+
+> Also, rather than using a 16-bit index for the fixed file table and
+> potentially requiring expansion into a different field in the future,
+> what about overlapping it with the nofile field in the open and accept
+> requests? If they're not opening a normal file descriptor, they don't
+> need nofile. And in the original sqe, you can then overlap it with a
+> 32-bit field like splice_fd_in.
+
+There is no nofile in SQEs, though
+
+req->open.nofile = rlimit(RLIMIT_NOFILE);
+ 
+> EEXIST seems like the wrong error-code to use if the index is already in
+> use; open can already return EEXIST if you pass O_EXCL. How about EBADF,
+> or better yet EBADSLT which is unlikely to be returned for any other
+> reason?
+
+Sure, sounds better indeed!
+
+-- 
+Pavel Begunkov
