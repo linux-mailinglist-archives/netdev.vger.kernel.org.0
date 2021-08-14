@@ -2,135 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D2F43EC1DE
-	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 11:58:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E21233EC1EF
+	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 12:17:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238399AbhHNJ6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Aug 2021 05:58:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37998 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238141AbhHNJ62 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 14 Aug 2021 05:58:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8484E60F14;
-        Sat, 14 Aug 2021 09:57:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628935079;
-        bh=M7YYC86V3snE++Hi6R8B+ecf16khmRjxEgwHZa+z11c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V9TD8i89tEyt7fAdnOxqyLQEl4CdbSNmDwgUiJqGumySPI/4rvQi25wgI5OPRJ6c/
-         tA3ukyLLE7qmoW1oVVlfbC5bUxidpZWk+Ebqem134SKYpxG1juNfQfuaB4pRK//cQV
-         NRVO3156KNQVkFAwkdvF1NKJ/iWxSSeIf7CUilExE1ZH2CEmrdywZ7HrNCm82xAFCe
-         FUe7bdqnwZ+cUY7gtkC2TeaXaw1y0ly8Y+Dt5j+Dy4DRDEJ8vgBNayrxJVqimyKVnY
-         rCqNhl1ewWgmPKu3wkqctqXRwT3GUZAUaHEuLT8EDv34hDyom0mT2gWNy6D/kCwg1O
-         YVI8Rx3RyuB2A==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Salil Mehta <salil.mehta@huawei.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Yufeng Mo <moyufeng@huawei.com>
-Subject: [PATCH net-next 6/6] net: hns3: remove always exist devlink pointer check
-Date:   Sat, 14 Aug 2021 12:57:31 +0300
-Message-Id: <0dfcfa8b12f29955e0aa48d8532bc829b0903b3c.1628933864.git.leonro@nvidia.com>
+        id S237757AbhHNKSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Aug 2021 06:18:22 -0400
+Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:45377 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237454AbhHNKSS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Aug 2021 06:18:18 -0400
+Received: from tomoyo.flets-east.jp ([114.149.34.46])
+        by mwinf5d19 with ME
+        id hNHf2500A0zjR6y03NHlin; Sat, 14 Aug 2021 12:17:48 +0200
+X-ME-Helo: tomoyo.flets-east.jp
+X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
+X-ME-Date: Sat, 14 Aug 2021 12:17:48 +0200
+X-ME-IP: 114.149.34.46
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        linux-can@vger.kernel.org
+Cc:     =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v5 0/4] iplink_can: cleaning, fixes and adding TDC support.
+Date:   Sat, 14 Aug 2021 19:17:24 +0900
+Message-Id: <20210814101728.75334-1-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1628933864.git.leonro@nvidia.com>
-References: <cover.1628933864.git.leonro@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+The main purpose is to add commandline support for Transmitter Delay
+Compensation (TDC) in iproute. Other issues found during the
+development of this feature also get addressed.
 
-The devlink pointer always exists after hclge_devlink_init() succeed.
-Remove that check together with NULL setting after release and ensure
-that devlink_register is last command prior to call to devlink_reload_enable().
+This patch series contains four patches which respectively:
 
-Fixes: b741269b2759 ("net: hns3: add support for registering devlink for PF")
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c    | 8 +-------
- .../net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c  | 8 +-------
- 2 files changed, 2 insertions(+), 14 deletions(-)
+  1. Correct the bittiming ranges in the print_usage function and add
+  the units to add clarity: some parameters are in milliseconds, some
+  in nano seconds, some in time quantum and the newly TDC parameters
+  introduced in this series would be in clock period.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
-index 448f29aa4e6b..e4aad695abcc 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
-@@ -118,6 +118,7 @@ int hclge_devlink_init(struct hclge_dev *hdev)
- 
- 	priv = devlink_priv(devlink);
- 	priv->hdev = hdev;
-+	hdev->devlink = devlink;
- 
- 	ret = devlink_register(devlink);
- 	if (ret) {
-@@ -126,8 +127,6 @@ int hclge_devlink_init(struct hclge_dev *hdev)
- 		goto out_reg_fail;
- 	}
- 
--	hdev->devlink = devlink;
--
- 	devlink_reload_enable(devlink);
- 
- 	return 0;
-@@ -141,14 +140,9 @@ void hclge_devlink_uninit(struct hclge_dev *hdev)
- {
- 	struct devlink *devlink = hdev->devlink;
- 
--	if (!devlink)
--		return;
--
- 	devlink_reload_disable(devlink);
- 
- 	devlink_unregister(devlink);
- 
- 	devlink_free(devlink);
--
--	hdev->devlink = NULL;
- }
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
-index 1e6061fb8ed4..f478770299c6 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
-@@ -120,6 +120,7 @@ int hclgevf_devlink_init(struct hclgevf_dev *hdev)
- 
- 	priv = devlink_priv(devlink);
- 	priv->hdev = hdev;
-+	hdev->devlink = devlink;
- 
- 	ret = devlink_register(devlink);
- 	if (ret) {
-@@ -128,8 +129,6 @@ int hclgevf_devlink_init(struct hclgevf_dev *hdev)
- 		goto out_reg_fail;
- 	}
- 
--	hdev->devlink = devlink;
--
- 	devlink_reload_enable(devlink);
- 
- 	return 0;
-@@ -143,14 +142,9 @@ void hclgevf_devlink_uninit(struct hclgevf_dev *hdev)
- {
- 	struct devlink *devlink = hdev->devlink;
- 
--	if (!devlink)
--		return;
--
- 	devlink_reload_disable(devlink);
- 
- 	devlink_unregister(devlink);
- 
- 	devlink_free(devlink);
--
--	hdev->devlink = NULL;
- }
+  2. factorize the many print_*(PRINT_JSON, ...) and fprintf
+  occurrences in a single print_*(PRINT_ANY, ...) call and fix the
+  signedness while doing that.
+
+  3. report the value of the bitrate prescalers (brp and dbrp).
+
+  4. adds command line support for the TDC in iproute and goes together
+  with below series in the kernel:
+  https://lore.kernel.org/linux-can/20210814091750.73931-1-mailhol.vincent@wanadoo.fr/T/#t
+
+I am sending this series as RFC because the related patch series on
+the kernel side have yet to be approved. Aside of that, I consider
+this series to be ready. If the can: netlink patch series get accepted,
+I will resend this one as is (just remove the RFC tag).
+
+** Changelog **
+
+From RFC v4 to RFC v5:
+  * Add the unit (bps, tq, ns or ms) in print_usage()
+  * Rewrote void can_print_timing_min_max() to better factorize the
+    code.
+  * Rewrote the commit message of the two last patches (those related
+    to TDC) to either add clarification of fix inacurracies.
+
+From v3 to RFC v4:
+  * Reflect the changes made on the kernel side.
+
+From RFC v2 to v3:
+  * Dropped the RFC tag. Now that the kernel patch reach the testing
+    branch, I am finaly ready.
+  * Regression fix: configuring a link with only nominal bittiming
+    returned -EOPNOTSUPP
+  * Added two more patches to the series:
+      - iplink_can: fix configuration ranges in print_usage()
+      - iplink_can: print brp and dbrp bittiming variables
+  * Other small fixes on formatting.
+
+From RFC v1 to RFC v2:
+  * Add an additional patch to the series to fix the issues reported
+    by Stephen Hemminger
+    Ref: https://lore.kernel.org/linux-can/20210506112007.1666738-1-mailhol.vincent@wanadoo.fr/T/#t
+
+Vincent Mailhol (4):
+  iplink_can: fix configuration ranges in print_usage() and add unit
+  iplink_can: use PRINT_ANY to factorize code and fix signedness
+  iplink_can: print brp and dbrp bittiming variables
+  iplink_can: add new CAN FD bittiming parameters: Transmitter Delay
+    Compensation (TDC)
+
+ include/uapi/linux/can/netlink.h |  30 +-
+ ip/iplink_can.c                  | 460 +++++++++++++++++--------------
+ 2 files changed, 279 insertions(+), 211 deletions(-)
+
 -- 
 2.31.1
 
