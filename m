@@ -2,228 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F2F03EBFEC
-	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 04:51:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86DBE3EC06A
+	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 06:28:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237327AbhHNCvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Aug 2021 22:51:15 -0400
-Received: from mail-bn1nam07on2106.outbound.protection.outlook.com ([40.107.212.106]:10517
-        "EHLO NAM02-BN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236925AbhHNCu7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Aug 2021 22:50:59 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eEkXTCOXum2ROJK1S5/Yg4BQf+lUnKuH1+2NLbaBfAMJktPWNsTyJSdkJyc6lIMz05+R//Z2KkbkRS5n++O4M5yYUabYJJ4xyRLxDrntPWLULYNqDeh93ZbZHEvVtMs4SFHM3iZ+5Hfl/DwIqJPyTIoi24fPEbUOFQcuyTWOqpjG70r0UOBnqrgqCGUQBqrAiuMFHrz657OWMZKEPP5dPfxNwSXsr+fDlajzlLXe3jsU45swPAKjOTIufBFXvsuLIJtWxszc8nMajSGqkie70SlrZtiWpVViVyqX1HNcKJNJ1hf+vZ+1YZyxHL58k76RCDWvoT1l+rZP0S+VJSx42Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l4WWHlzvfyTj70DE+SDbW/HH5KuOTZ4GE0wgFtsR0oU=;
- b=Vs7OIu0akrmYu/VqY8Ly7/imRRq+RJjp49OxdTXi/A0QMfCad66ddqAVUpSIQvoqTPhC2ZK29eFgoURFaHYL3OXA2K3HU3Yu0WrYQdZtwbQorsqwjpR2GGO5R5jaf38cnSjtYF6OnEwSYmlKRFPZEi5BEwn+hAFi/8RPy7eWp67S2XGko+8kEsuV9/946Vx853WUt+jun0d4zzmKiJi7rO4Fbgza8jsDNG7DvI++bUpqqiuzKwB3SkWRtENk1ug3S5ptkPJkaxwPYq+9E45iu4yOXydlfVwQPuxhuxK8QDD6bYRS8tIWR+ffEsjjUvyrRi0oZGFllSkG0LzIDowMpQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+        id S232314AbhHNE2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Aug 2021 00:28:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57418 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229670AbhHNE2c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Aug 2021 00:28:32 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0663BC061756
+        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 21:28:05 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id k2so14536018plk.13
+        for <netdev@vger.kernel.org>; Fri, 13 Aug 2021 21:28:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l4WWHlzvfyTj70DE+SDbW/HH5KuOTZ4GE0wgFtsR0oU=;
- b=nfdDWeTxKoUn66knUSgv079AgQuumzaN5o91K3lLg/R+44YhEWf+HYuM2Jb/sSB996XaXShJuu5t7mON1ZvcVFARGQg67LMsedvgoEOIQ40km+4xV7d9LgLW7SCkG6oFt9Qe2S5seTEnrXGJriI5vdzC1SNTNe5t5zDjYJh4tbA=
-Authentication-Results: in-advantage.com; dkim=none (message not signed)
- header.d=none;in-advantage.com; dmarc=none action=none
- header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by MWHPR10MB2030.namprd10.prod.outlook.com
- (2603:10b6:300:10d::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.14; Sat, 14 Aug
- 2021 02:50:23 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::e81f:cf8e:6ad6:d24d]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::e81f:cf8e:6ad6:d24d%3]) with mapi id 15.20.4415.019; Sat, 14 Aug 2021
- 02:50:23 +0000
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     colin.foster@in-advantage.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v3 net-next 10/10] docs: devicetree: add documentation for the VSC7512 SPI device
-Date:   Fri, 13 Aug 2021 19:50:03 -0700
-Message-Id: <20210814025003.2449143-11-colin.foster@in-advantage.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210814025003.2449143-1-colin.foster@in-advantage.com>
-References: <20210814025003.2449143-1-colin.foster@in-advantage.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MW4P221CA0007.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:303:8b::12) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=98Zw1c+cW5zD1PWqvSDU2uTGAumLzHONU8NOH1AIF5I=;
+        b=Q+n9F+W0iE4jTCL7Mvp/I7AUBl/CYg8DmsQPZ4i6rESsU+NiRwyMPe1ELQzycWiJ8T
+         iggFvHBQbvcCOT6Sua9JJFxeOEd3LtZTdAKpsa4WRUlg7zpCdxLRuqsUlzrS6po9rGfz
+         jXLRF2llxEaxYAf7qGq82p826zRhYLSXo7jzpsFzjGSRy9XakD7ilP5FAmc0ytA/or+0
+         ayZMEL5jOexlgyz9V90nQKpWTqfag//EM49J8A25fBmcfop3KI74YPmFKqU9on4aARwR
+         DwPvMrogbTwjkq67njC4A4Srh9Ct0YAM81FkIadcCcwJ3oOCwbuo0W1MCLLozxCTDrkG
+         +0Qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=98Zw1c+cW5zD1PWqvSDU2uTGAumLzHONU8NOH1AIF5I=;
+        b=RxfdWvAphg7ZKCAB1zI6uide7W6G6kPrTiNqqF1AIUNXdjcjQGdUsmXkIwIlPwH+Sc
+         VSZFmBKGMf0DbsN5CDK4+Rf8M0yeEcMdQ7QPj+n6oZewKlCTtuC0LEYniK9FG6xAeVGD
+         I5UqD8Dsf4Y47PYAghHcH/brifMxJpycht30f6z3PDlE+UDMpMWG2h6dQgcd9AD2eJHd
+         ACIEv9mPRs9IOd9m+9jqykOt6qMAa7b3TsUQwLlmbsMPiFrSVCMOktKMUNU2UHNd9VWk
+         D+YdIvaITYb0XPr8dnctrVPg8RVf1/JUAZX9X8qnixBpnopOVsMyJV8XifdZo/VbluJe
+         /Baw==
+X-Gm-Message-State: AOAM530Y9ctvryKakOkxBcn07dXWT7AZs3njyxYgfQKlVnn7Tw+htfRa
+        6pfbSFyS6tsfmTw7lwH5Eo4INsC6gQbixg==
+X-Google-Smtp-Source: ABdhPJy0AfUvyfScZ2ucRHa6sdvW6SPNRE1ZDCUTnaKBo7EpZklVX/JTPRSeVA0q0AspMMzlCRwnmA==
+X-Received: by 2002:a62:5291:0:b029:397:6587:1af6 with SMTP id g139-20020a6252910000b029039765871af6mr5497726pfb.47.1628915282938;
+        Fri, 13 Aug 2021 21:28:02 -0700 (PDT)
+Received: from ip-10-124-121-13.byted.org (ec2-54-241-92-238.us-west-1.compute.amazonaws.com. [54.241.92.238])
+        by smtp.gmail.com with ESMTPSA id q21sm4420492pgk.71.2021.08.13.21.28.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Aug 2021 21:28:02 -0700 (PDT)
+From:   Jiang Wang <jiang.wang@bytedance.com>
+To:     netdev@vger.kernel.org
+Cc:     cong.wang@bytedance.com, duanxiongchun@bytedance.com,
+        xieyongji@bytedance.com, chaiwen.cc@bytedance.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Rao Shoaib <rao.shoaib@oracle.com>,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH bpf-next v6 0/5] sockmap: add sockmap support for unix stream socket
+Date:   Sat, 14 Aug 2021 04:27:45 +0000
+Message-Id: <20210814042754.3351268-1-jiang.wang@bytedance.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (67.185.175.147) by MW4P221CA0007.NAMP221.PROD.OUTLOOK.COM (2603:10b6:303:8b::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.14 via Frontend Transport; Sat, 14 Aug 2021 02:50:22 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 154a79ee-fb31-41c0-802c-08d95ece428e
-X-MS-TrafficTypeDiagnostic: MWHPR10MB2030:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MWHPR10MB203041E1B7210BA486D2CBE1A4FB9@MWHPR10MB2030.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: n+I/hLRJtdXcC+paLUXUIuQC7+M9fXwYfu3W6IYnPH87PzeW9uZJreUPJIpvrpduKexHHYcZsnK6jzCSiLFf1iVteNCaLFevr5sB8tqAM1QcEkmXGHhm1zagk5YODf1MyKP5rdKvSdwC3r3LfWkCpOjhdpV520lzZVSlnLjx+6tQJFCTpLDt5d6RU5pAqdANhR9IdDJ6O5oL34oVRUfI6av963gYZz5+2NY0s5pi0l8QQB6+KwhEzJ143807EUpFDrwngQYP3ngSYHE2UU+4veZEjLjWsUY/cfxjwS9AOQGfydgjtN2Rdzk+9Njq4af2v4IBLOP4BeUsqEPoJAasDpxknrGpJJ7ct4J2XrXOyAAW3NPGvsUsfUJfwwSr7BWj/y6YoHQktnHoLo/UO09gJU+HyBhueBVGyYqx3567D7qHCCoXJKdfKRvrRKIyuZlb5HoONrMxbOLeg9NuBS4TrGL3gWJ82gbz8aejsQHTWuzkkxw3iVCEagDPgBwKz9pN78329uyApVjCrEqs3iwkm8ILkNI+AXjRQlneayav7m5UlrfNeFN0qsmnyOx++WEcL+pz8qOar1WaXXjOKiU4vzg5ju2B75C4BbXZHkG5CbMUqJeJnvEMVZtK3YMySCcdT9lXJhXC7idG4hz1/9974l7QZ6RDt/DNHstYg/rP7t2dh5XhlwHAGnTI9nbIPw+8buKnh5JgVuUzo1/0bz3Cow==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(396003)(346002)(39830400003)(136003)(376002)(186003)(5660300002)(316002)(4326008)(8936002)(6486002)(2906002)(52116002)(66476007)(66556008)(44832011)(956004)(2616005)(66946007)(1076003)(921005)(36756003)(38100700002)(38350700002)(6512007)(6506007)(26005)(478600001)(8676002)(86362001)(6666004)(7416002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LcEYxJRP/H9bHqvf19TEHTjRvepDiMsebssvBbuTW1ac+0grVxQPphaix4HN?=
- =?us-ascii?Q?KTXmM4a2PWkbSO0MEHeXZ29ex6kkdF4mzMy1NL83niDH3pqTIE5vWlv6NBpQ?=
- =?us-ascii?Q?aozfMfD3XgaoTCKToq8WRMnO1Sx09MvqUet3j4Tn0fvfh8OisQyxHcnWgOPq?=
- =?us-ascii?Q?9Z+AqA9dMpR9XH5NoOx/D/uXBsFOqZPPMuusgMCpMBKerVT1VZGnbo5PI0fU?=
- =?us-ascii?Q?V+ljWuTBQXUT/6gUzNUvxXcr8C8MjopzjVNIFuWv3jg5R0blPL+WWzeps1xD?=
- =?us-ascii?Q?YZcei0dsEddwChb+Wc+/fpZ+Yb/lIVWsxrQ99MFb5zYT/SZRvTIPVH8bpYli?=
- =?us-ascii?Q?Rd1ii1PmZe5k420Lu1IPxJHXQS2cTviS7aSmvg5L3SkRWxI0U+0PTzTnzbFU?=
- =?us-ascii?Q?B/jFe/9KETjYkKjQ9QCaTZgtL7n9e81UY/jSt5h1MKxyx1zf6rfanHCkCj52?=
- =?us-ascii?Q?chbli0WpPJq3baFNw8KQrMPXprVzBj05nA+bbDFsWrRJULCDVoNZjuJDX8t6?=
- =?us-ascii?Q?ER6NoqKgoRlQJ4g0gXymar0/o3157KGRBTetNV1xj5oFLttcQstr4rdytts/?=
- =?us-ascii?Q?M1Vl+EaBBmUoQWVsWXDvEYGOLSkZxGx7adccJA06YzfGwhnb3lXmXiDsW72E?=
- =?us-ascii?Q?ZZp+TftXvy0dAmJ/VO0NMnL3b/W5aPNTRQcHaLi8aB4tKYXP+4YXM/l5UG5r?=
- =?us-ascii?Q?Zfyty0c43YCLsR4gOl6xAf4cUQm17kdRGwn1iMtDw5F53vFgHSBPWG+V6Bz1?=
- =?us-ascii?Q?QB3XVHairUTiy7XcQvVB2KX7IfzxsBxufaFTFM0tnnq8Fo7tmoLjfgFTYZh5?=
- =?us-ascii?Q?MJC0DeOAbVCCqNvEb4II+8BQGKN6uIW3kqs2Ib7WvqiW0Ule+qq/+KuEyWuF?=
- =?us-ascii?Q?+LNgQ0UgIqBbKCfs/w+kv+Dy7nRkTfU/ln2jZMbYQhntidlZE+SficGNBQaF?=
- =?us-ascii?Q?ggaECO4syh/X5FBjvcYS4+prvnq+nkY9Pf4sYA+F0e9E0+g5EubSEFN8DEI5?=
- =?us-ascii?Q?3J8PxwemQZm8eXzxJJNrWOAnIuvHQgREPcLpzNf7tUbm9NSNg3cEeAj0BqcT?=
- =?us-ascii?Q?9JuAVWrn2Wj6KI5xiXcWL7qD8ux9Znkg2XhWMXVSKGOTLfdYTXo04G7b09AH?=
- =?us-ascii?Q?eo57+qmwKXcUsc5P7x7ofPMWsfyHSx3vWyoqzcalg5lo/mtcfFZzajvhFq4/?=
- =?us-ascii?Q?r+ru6k4M9KD+N+JENrbnLI+q5fFp0QMHUC6opq/5rW4T6RaYHxaquh1DQrFf?=
- =?us-ascii?Q?CO4v+OMouSYreVtdj/50vLJIT0PVYVPmLYep5gXrUPJH5ex7QRsHLIHWUODr?=
- =?us-ascii?Q?i2zGXcZdf2/3O13kJ2e75CWi?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 154a79ee-fb31-41c0-802c-08d95ece428e
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Aug 2021 02:50:22.5163
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0kI4dI+2aHDloKhYGdxtRgZpZfHtUiGVJUk/cRliXTYPjidF82URNRg23QHXSh1+DNrD0Y5giweRT8O2P4ZJl+OpTP0S/a0D9A6k0Gdo79U=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB2030
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
----
- .../devicetree/bindings/net/dsa/ocelot.txt    | 92 +++++++++++++++++++
- 1 file changed, 92 insertions(+)
+This patch series add support for unix stream type
+for sockmap. Sockmap already supports TCP, UDP,
+unix dgram types. The unix stream support is similar
+to unix dgram.
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/ocelot.txt b/Documentation/devicetree/bindings/net/dsa/ocelot.txt
-index 7a271d070b72..edf560a50803 100644
---- a/Documentation/devicetree/bindings/net/dsa/ocelot.txt
-+++ b/Documentation/devicetree/bindings/net/dsa/ocelot.txt
-@@ -8,6 +8,7 @@ Currently the switches supported by the felix driver are:
+Also add selftests for unix stream type in sockmap tests.
+
+
+Jiang Wang (5):
+  af_unix: add read_sock for stream socket types
+  af_unix: add unix_stream_proto for sockmap
+  selftest/bpf: add tests for sockmap with unix stream type.
+  selftest/bpf: change udp to inet in some function names
+  selftest/bpf: add new tests in sockmap for unix stream to tcp.
+
+ include/net/af_unix.h                         |  8 +-
+ net/unix/af_unix.c                            | 91 +++++++++++++++---
+ net/unix/unix_bpf.c                           | 93 ++++++++++++++-----
+ .../selftests/bpf/prog_tests/sockmap_listen.c | 48 ++++++----
+ 4 files changed, 187 insertions(+), 53 deletions(-)
+
+v1 -> v2 :
+ - Call unhash in shutdown.
+ - Clean up unix_create1 a bit.
+ - Return -ENOTCONN if socket is not connected.
+
+v2 -> v3 :
+ - check for stream type in update_proto
+ - remove intermediate variable in __unix_stream_recvmsg
+ - fix compile warning in unix_stream_recvmsg
+
+v3 -> v4 :
+ - remove sk_is_unix_stream, just check TCP_ESTABLISHED for UNIX sockets.
+ - add READ_ONCE in unix_dgram_recvmsg
+ - remove type check in unix_stream_bpf_update_proto
+
+v4 -> v5 :
+ - add two missing READ_ONCE for sk_prot.
+
+v5 -> v6 :
+ - fix READ_ONCE by reading to a local variable first.
+
+For the series:
+
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
+
+Also rebased on bpf-next
  
- - VSC9959 (Felix)
- - VSC9953 (Seville)
-+- VSC7511, VSC7512, VSC7513, VSC7514 via SPI
- 
- The VSC9959 switch is found in the NXP LS1028A. It is a PCI device, part of the
- larger ENETC root complex. As a result, the ethernet-switch node is a sub-node
-@@ -211,3 +212,94 @@ Example:
- 		};
- 	};
- };
-+
-+The VSC7513 and VSC7514 switches can be controlled internally via the MIPS
-+processor. The VSC7511 and VSC7512 don't have this internal processor, but all
-+four chips can be controlled externally through SPI with the following required
-+properties:
-+
-+- compatible:
-+	Can be "mscc,vsc7511", "mscc,vsc7512", "mscc,vsc7513", or
-+	"mscc,vsc7514".
-+
-+Supported phy modes for all chips are:
-+
-+* phy_mode = "sgmii": on ports 0, 1, 2, 3
-+
-+The VSC7512 and 7514 also support:
-+
-+* phy_mode = "sgmii": on ports 4, 5, 6, 7
-+* phy_mode = "qsgmii": on ports 7, 8, 10
-+
-+Example for control from a BeagleBone Black
-+
-+&spi0 {
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+
-+	ethernet-switch@0 {
-+		compatible = "mscc,vsc7512";
-+		spi-max-frequency = <250000>;
-+		reg = <0>;
-+
-+		ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@0 {
-+				reg = <0>;
-+				ethernet = <&mac>;
-+				phy-mode = "sgmii";
-+
-+				fixed-link {
-+					speed = <100>;
-+					full-duplex;
-+				};
-+			};
-+
-+			port@1 {
-+				reg = <1>;
-+				label = "swp1";
-+				phy-handle = <&sw_phy1>;
-+				phy-mode = "sgmii";
-+			};
-+
-+			port@2 {
-+				reg = <2>;
-+				label = "swp2";
-+				phy-handle = <&sw_phy2>;
-+				phy-mode = "sgmii";
-+			};
-+
-+			port@3 {
-+				reg = <3>;
-+				label = "swp3";
-+				phy-handle = <&sw_phy3>;
-+				phy-mode = "sgmii";
-+			};
-+		};
-+
-+		mdio {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			sw_phy1: ethernet-phy@1 {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				reg = <0x1>;
-+			};
-+
-+			sw_phy2: ethernet-phy@2 {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				reg = <0x2>;
-+			};
-+
-+			sw_phy3: ethernet-phy@3 {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				reg = <0x3>;
-+			};
-+		};
-+	};
-+};
 -- 
-2.25.1
+2.20.1
 
