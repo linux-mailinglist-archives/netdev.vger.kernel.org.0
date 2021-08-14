@@ -2,311 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C07213EC34B
-	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 16:25:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 006D43EC325
+	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 16:18:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238584AbhHNO0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Aug 2021 10:26:08 -0400
-Received: from mga07.intel.com ([134.134.136.100]:45183 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238624AbhHNOYG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 14 Aug 2021 10:24:06 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10075"; a="279426345"
-X-IronPort-AV: E=Sophos;i="5.84,321,1620716400"; 
-   d="scan'208";a="279426345"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2021 07:23:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,321,1620716400"; 
-   d="scan'208";a="447568518"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga007.fm.intel.com with ESMTP; 14 Aug 2021 07:23:20 -0700
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        anthony.l.nguyen@intel.com, kuba@kernel.org, bjorn@kernel.org,
-        magnus.karlsson@intel.com, jesse.brandeburg@intel.com,
-        alexandr.lobakin@intel.com, joamaki@gmail.com, toke@redhat.com,
-        brett.creeley@intel.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH v5 intel-next 9/9] ice: make use of ice_for_each_* macros
-Date:   Sat, 14 Aug 2021 16:08:12 +0200
-Message-Id: <20210814140812.46632-10-maciej.fijalkowski@intel.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210814140812.46632-1-maciej.fijalkowski@intel.com>
-References: <20210814140812.46632-1-maciej.fijalkowski@intel.com>
+        id S238542AbhHNOSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Aug 2021 10:18:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46082 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231956AbhHNOSP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Aug 2021 10:18:15 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495ADC061764;
+        Sat, 14 Aug 2021 07:17:47 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id p38so25695895lfa.0;
+        Sat, 14 Aug 2021 07:17:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=LmN8AjLyVtZIe0c8A8b2Bofe2fcHgxC16V0C8hTy0RA=;
+        b=GLvRpM7DDVbbViD09WZVyRPPCR9PHvtB3Qgoj65HXazddUlbbgyihC+4bg6jbwIkSz
+         MFCHvmPMM1MUBFGFfKkXl9dxMRwMSMD1LNvlftvLe6wLIsUkUiGauNEej1nphCrYDv4r
+         AlF85v+Rrynvq12W+UK55uQ1oDd3Ko/dmTqzjlFOg/zecaV8pKdcprnEN7aSm+eIMwhx
+         Sh+R3sDVcXBwpkXZOLoOVV3NGP0igG0BSLhwUyR+J8VQg8XA6rHg9UVWVj3/HvCbz88Y
+         BLOiOnp0Am9GF4008pfP64+JcQEATtcrhBl8zfytvilU7+E2Pj9swRUEdvKeqXPe7F13
+         FShA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LmN8AjLyVtZIe0c8A8b2Bofe2fcHgxC16V0C8hTy0RA=;
+        b=YkMImn0Cenjwx5NRv3CNl7byq0KT5Tg2AfZQZXctUnWNFVBqRS+vNc+eKK1uMb1XiW
+         QXDOoZNYnuXqmdMxsiL73n65yEg/PfKCdK9NM/JnPF7W/hJoJ0t7a05gWl7hwhwn8hLQ
+         K7xSWSbogOtf8xyJdG/cite7a6lwFO5Lf69KnMyEAzQ5nVL1SENrulYiYypKWQPFDM96
+         PUZ3e6SgDRrDpgbDehyP10wRZgDU4a052Jnz/kKPmxBf+Zi58IXMRgOQ6kHxeN6OuX73
+         poYB+AOM3YCaB4e1NYrBIzPBa6/J1TM4Bn3SF9WLYnwMHPBzxPDRfkzkepm/syZbuapi
+         PH+A==
+X-Gm-Message-State: AOAM531XBEUaQN8AsFBnODf3oGnKlNGbRJscFDC+gJhe/7ywuEZD2E5N
+        /HMfGXszQTO9dVaNw+sEa/Y=
+X-Google-Smtp-Source: ABdhPJxT+k9E8RhU1d+/0pnEsSkDnVgHOfRoZ9nXTb+8W6/geyg7abLUP823Tnzmd2b5vpHK8WLJFA==
+X-Received: by 2002:a19:610d:: with SMTP id v13mr1650665lfb.641.1628950665530;
+        Sat, 14 Aug 2021 07:17:45 -0700 (PDT)
+Received: from localhost.localdomain ([185.215.60.122])
+        by smtp.gmail.com with ESMTPSA id u2sm426506lfd.43.2021.08.14.07.17.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 14 Aug 2021 07:17:45 -0700 (PDT)
+Subject: Re: [PATCH] net: 6pack: fix slab-out-of-bounds in decode_data
+To:     Kevin Dawson <hal@kd.net.au>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     ajk@comnets.uni-bremen.de, davem@davemloft.net, kuba@kernel.org,
+        linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+fc8cd9a673d4577fb2e4@syzkaller.appspotmail.com
+References: <20210813112855.11170-1-paskripkin@gmail.com>
+ <20210813145834.GC1931@kadam> <20210814002345.GA19994@auricle.kd>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+Message-ID: <1021b8cb-e763-255f-1df9-753ed2934b69@gmail.com>
+Date:   Sat, 14 Aug 2021 17:17:44 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210814002345.GA19994@auricle.kd>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Go through the code base and use ice_for_each_* macros.  While at it,
-introduce ice_for_each_xdp_txq() macro that can be used for looping over
-xdp_rings array.
+On 8/14/21 3:23 AM, Kevin Dawson wrote:
+> On Fri, Aug 13, 2021 at 05:58:34PM +0300, Dan Carpenter wrote:
+>> On Fri, Aug 13, 2021 at 02:28:55PM +0300, Pavel Skripkin wrote:
+>> > Syzbot reported slab-out-of bounds write in decode_data().
+>> > The problem was in missing validation checks.
+>> > 
+>> > Syzbot's reproducer generated malicious input, which caused
+>> > decode_data() to be called a lot in sixpack_decode(). Since
+>> > rx_count_cooked is only 400 bytes and noone reported before,
+>> > that 400 bytes is not enough, let's just check if input is malicious
+>> > and complain about buffer overrun.
+>> > 
+>> > ...
+>> > 
+>> > diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+>> > index fcf3af76b6d7..f4ffc2a80ab7 100644
+>> > --- a/drivers/net/hamradio/6pack.c
+>> > +++ b/drivers/net/hamradio/6pack.c
+>> > @@ -827,6 +827,12 @@ static void decode_data(struct sixpack *sp, unsigned char inbyte)
+>> >  		return;
+>> >  	}
+>> >  
+>> > +	if (sp->rx_count_cooked + 3 >= sizeof(sp->cooked_buf)) {
+>> 
+>> It should be + 2 instead of + 3.
+>> 
+>> We write three bytes.  idx, idx + 1, idx + 2.  Otherwise, good fix!
+> 
+> I would suggest that the statement be:
+> 
+> 	if (sp->rx_count_cooked + 3 > sizeof(sp->cooked_buf)) {
+> 
+> or even, because it's a buffer overrun test:
+> 
+> 	if (sp->rx_count_cooked > sizeof(sp->cooked_buf) - 3) {
+>
 
-Commit is not introducing any new functionality.
+Hmm, I think, it will be more straightforward for someone not aware 
+about driver details.
 
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
----
- drivers/net/ethernet/intel/ice/ice.h         |  5 ++++-
- drivers/net/ethernet/intel/ice/ice_arfs.c    |  2 +-
- drivers/net/ethernet/intel/ice/ice_dcb_lib.c |  4 ++--
- drivers/net/ethernet/intel/ice/ice_ethtool.c | 10 ++++-----
- drivers/net/ethernet/intel/ice/ice_lib.c     | 22 ++++++++++----------
- drivers/net/ethernet/intel/ice/ice_main.c    | 14 ++++++-------
- 6 files changed, 30 insertions(+), 27 deletions(-)
+@Dan, can I add your Reviewed-by tag to v3 and what do you think about 
+Kevin's suggestion?
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 2dc8d408aa26..84dfb07bc865 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -122,10 +122,13 @@
- #define ice_for_each_vsi(pf, i) \
- 	for ((i) = 0; (i) < (pf)->num_alloc_vsi; (i)++)
- 
--/* Macros for each Tx/Rx ring in a VSI */
-+/* Macros for each Tx/Xdp/Rx ring in a VSI */
- #define ice_for_each_txq(vsi, i) \
- 	for ((i) = 0; (i) < (vsi)->num_txq; (i)++)
- 
-+#define ice_for_each_xdp_txq(vsi, i) \
-+	for ((i) = 0; (i) < (vsi)->num_xdp_txq; (i)++)
-+
- #define ice_for_each_rxq(vsi, i) \
- 	for ((i) = 0; (i) < (vsi)->num_rxq; (i)++)
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_arfs.c b/drivers/net/ethernet/intel/ice/ice_arfs.c
-index 88d98c9e5f91..87f630b73b2b 100644
---- a/drivers/net/ethernet/intel/ice/ice_arfs.c
-+++ b/drivers/net/ethernet/intel/ice/ice_arfs.c
-@@ -614,7 +614,7 @@ int ice_set_cpu_rx_rmap(struct ice_vsi *vsi)
- 		return -EINVAL;
- 
- 	base_idx = vsi->base_vector;
--	for (i = 0; i < vsi->num_q_vectors; i++)
-+	ice_for_each_q_vector(vsi, i)
- 		if (irq_cpu_rmap_add(netdev->rx_cpu_rmap,
- 				     pf->msix_entries[base_idx + i].vector)) {
- 			ice_free_cpu_rx_rmap(vsi);
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-index b7519dde4e0d..c03828080b9c 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-@@ -201,11 +201,11 @@ void ice_vsi_cfg_dcb_rings(struct ice_vsi *vsi)
- 
- 	if (!test_bit(ICE_FLAG_DCB_ENA, vsi->back->flags)) {
- 		/* Reset the TC information */
--		for (i = 0; i < vsi->num_txq; i++) {
-+		ice_for_each_txq(vsi, i) {
- 			tx_ring = vsi->tx_rings[i];
- 			tx_ring->dcb_tc = 0;
- 		}
--		for (i = 0; i < vsi->num_rxq; i++) {
-+		ice_for_each_rxq(vsi, i) {
- 			rx_ring = vsi->rx_rings[i];
- 			rx_ring->dcb_tc = 0;
- 		}
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index c1fac0ebf246..d0d98f3ddd56 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -2721,12 +2721,12 @@ ice_set_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring)
- 
- 	/* set for the next time the netdev is started */
- 	if (!netif_running(vsi->netdev)) {
--		for (i = 0; i < vsi->alloc_txq; i++)
-+		ice_for_each_alloc_txq(vsi, i)
- 			vsi->tx_rings[i]->count = new_tx_cnt;
--		for (i = 0; i < vsi->alloc_rxq; i++)
-+		ice_for_each_alloc_rxq(vsi, i)
- 			vsi->rx_rings[i]->count = new_rx_cnt;
- 		if (ice_is_xdp_ena_vsi(vsi))
--			for (i = 0; i < vsi->num_xdp_txq; i++)
-+			ice_for_each_xdp_txq(vsi, i)
- 				vsi->xdp_rings[i]->count = new_tx_cnt;
- 		vsi->num_tx_desc = (u16)new_tx_cnt;
- 		vsi->num_rx_desc = (u16)new_rx_cnt;
-@@ -2775,7 +2775,7 @@ ice_set_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring)
- 		goto free_tx;
- 	}
- 
--	for (i = 0; i < vsi->num_xdp_txq; i++) {
-+	ice_for_each_xdp_txq(vsi, i) {
- 		/* clone ring and setup updated count */
- 		xdp_rings[i] = *vsi->xdp_rings[i];
- 		xdp_rings[i].count = new_tx_cnt;
-@@ -2869,7 +2869,7 @@ ice_set_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring)
- 		}
- 
- 		if (xdp_rings) {
--			for (i = 0; i < vsi->num_xdp_txq; i++) {
-+			ice_for_each_xdp_txq(vsi, i) {
- 				ice_free_tx_ring(vsi->xdp_rings[i]);
- 				*vsi->xdp_rings[i] = xdp_rings[i];
- 			}
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 8d4363fba95a..aacdfd2f1210 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -44,12 +44,12 @@ static int ice_vsi_ctrl_all_rx_rings(struct ice_vsi *vsi, bool ena)
- 	int ret = 0;
- 	u16 i;
- 
--	for (i = 0; i < vsi->num_rxq; i++)
-+	ice_for_each_rxq(vsi, i)
- 		ice_vsi_ctrl_one_rx_ring(vsi, ena, i, false);
- 
- 	ice_flush(&vsi->back->hw);
- 
--	for (i = 0; i < vsi->num_rxq; i++) {
-+	ice_for_each_rxq(vsi, i) {
- 		ret = ice_vsi_wait_one_rx_ring(vsi, ena, i);
- 		if (ret)
- 			break;
-@@ -606,12 +606,12 @@ static void ice_vsi_put_qs(struct ice_vsi *vsi)
- 
- 	mutex_lock(&pf->avail_q_mutex);
- 
--	for (i = 0; i < vsi->alloc_txq; i++) {
-+	ice_for_each_alloc_txq(vsi, i) {
- 		clear_bit(vsi->txq_map[i], pf->avail_txqs);
- 		vsi->txq_map[i] = ICE_INVAL_Q_INDEX;
- 	}
- 
--	for (i = 0; i < vsi->alloc_rxq; i++) {
-+	ice_for_each_alloc_rxq(vsi, i) {
- 		clear_bit(vsi->rxq_map[i], pf->avail_rxqs);
- 		vsi->rxq_map[i] = ICE_INVAL_Q_INDEX;
- 	}
-@@ -1256,7 +1256,7 @@ static void ice_vsi_clear_rings(struct ice_vsi *vsi)
- 	}
- 
- 	if (vsi->tx_rings) {
--		for (i = 0; i < vsi->alloc_txq; i++) {
-+		ice_for_each_alloc_txq(vsi, i) {
- 			if (vsi->tx_rings[i]) {
- 				kfree_rcu(vsi->tx_rings[i], rcu);
- 				WRITE_ONCE(vsi->tx_rings[i], NULL);
-@@ -1264,7 +1264,7 @@ static void ice_vsi_clear_rings(struct ice_vsi *vsi)
- 		}
- 	}
- 	if (vsi->rx_rings) {
--		for (i = 0; i < vsi->alloc_rxq; i++) {
-+		ice_for_each_alloc_rxq(vsi, i) {
- 			if (vsi->rx_rings[i]) {
- 				kfree_rcu(vsi->rx_rings[i], rcu);
- 				WRITE_ONCE(vsi->rx_rings[i], NULL);
-@@ -1285,7 +1285,7 @@ static int ice_vsi_alloc_rings(struct ice_vsi *vsi)
- 
- 	dev = ice_pf_to_dev(pf);
- 	/* Allocate Tx rings */
--	for (i = 0; i < vsi->alloc_txq; i++) {
-+	ice_for_each_alloc_txq(vsi, i) {
- 		struct ice_tx_ring *ring;
- 
- 		/* allocate with kzalloc(), free with kfree_rcu() */
-@@ -1304,7 +1304,7 @@ static int ice_vsi_alloc_rings(struct ice_vsi *vsi)
- 	}
- 
- 	/* Allocate Rx rings */
--	for (i = 0; i < vsi->alloc_rxq; i++) {
-+	ice_for_each_alloc_rxq(vsi, i) {
- 		struct ice_rx_ring *ring;
- 
- 		/* allocate with kzalloc(), free with kfree_rcu() */
-@@ -1815,7 +1815,7 @@ int ice_vsi_cfg_xdp_txqs(struct ice_vsi *vsi)
- 	if (ret)
- 		return ret;
- 
--	for (i = 0; i < vsi->num_xdp_txq; i++)
-+	ice_for_each_xdp_txq(vsi, i)
- 		vsi->xdp_rings[i]->xsk_pool = ice_tx_xsk_pool(vsi->xdp_rings[i]);
- 
- 	return ret;
-@@ -1913,7 +1913,7 @@ void ice_vsi_cfg_msix(struct ice_vsi *vsi)
- 	u16 txq = 0, rxq = 0;
- 	int i, q;
- 
--	for (i = 0; i < vsi->num_q_vectors; i++) {
-+	ice_for_each_q_vector(vsi, i) {
- 		struct ice_q_vector *q_vector = vsi->q_vectors[i];
- 		u16 reg_idx = q_vector->reg_idx;
- 
-@@ -2605,7 +2605,7 @@ static void ice_vsi_release_msix(struct ice_vsi *vsi)
- 	u32 rxq = 0;
- 	int i, q;
- 
--	for (i = 0; i < vsi->num_q_vectors; i++) {
-+	ice_for_each_q_vector(vsi, i) {
- 		struct ice_q_vector *q_vector = vsi->q_vectors[i];
- 
- 		ice_write_intrl(q_vector, 0);
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index aa84f2c988df..ffb24f06ff9f 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -102,7 +102,7 @@ static void ice_check_for_hang_subtask(struct ice_pf *pf)
- 
- 	hw = &vsi->back->hw;
- 
--	for (i = 0; i < vsi->num_txq; i++) {
-+	ice_for_each_txq(vsi, i) {
- 		struct ice_tx_ring *tx_ring = vsi->tx_rings[i];
- 
- 		if (tx_ring && tx_ring->desc) {
-@@ -2372,7 +2372,7 @@ static int ice_xdp_alloc_setup_rings(struct ice_vsi *vsi)
- 	struct ice_tx_desc *tx_desc;
- 	int i, j;
- 
--	for (i = 0; i < vsi->num_xdp_txq; i++) {
-+	ice_for_each_xdp_txq(vsi, i) {
- 		u16 xdp_q_idx = vsi->alloc_txq + i;
- 		struct ice_tx_ring *xdp_ring;
- 
-@@ -2521,7 +2521,7 @@ int ice_prepare_xdp_rings(struct ice_vsi *vsi, struct bpf_prog *prog)
- 
- 	return 0;
- clear_xdp_rings:
--	for (i = 0; i < vsi->num_xdp_txq; i++)
-+	ice_for_each_xdp_txq(vsi, i)
- 		if (vsi->xdp_rings[i]) {
- 			kfree_rcu(vsi->xdp_rings[i], rcu);
- 			vsi->xdp_rings[i] = NULL;
-@@ -2529,7 +2529,7 @@ int ice_prepare_xdp_rings(struct ice_vsi *vsi, struct bpf_prog *prog)
- 
- err_map_xdp:
- 	mutex_lock(&pf->avail_q_mutex);
--	for (i = 0; i < vsi->num_xdp_txq; i++) {
-+	ice_for_each_xdp_txq(vsi, i) {
- 		clear_bit(vsi->txq_map[i + vsi->alloc_txq], pf->avail_txqs);
- 		vsi->txq_map[i + vsi->alloc_txq] = ICE_INVAL_Q_INDEX;
- 	}
-@@ -2574,13 +2574,13 @@ int ice_destroy_xdp_rings(struct ice_vsi *vsi)
- 
- free_qmap:
- 	mutex_lock(&pf->avail_q_mutex);
--	for (i = 0; i < vsi->num_xdp_txq; i++) {
-+	ice_for_each_xdp_txq(vsi, i) {
- 		clear_bit(vsi->txq_map[i + vsi->alloc_txq], pf->avail_txqs);
- 		vsi->txq_map[i + vsi->alloc_txq] = ICE_INVAL_Q_INDEX;
- 	}
- 	mutex_unlock(&pf->avail_q_mutex);
- 
--	for (i = 0; i < vsi->num_xdp_txq; i++)
-+	ice_for_each_xdp_txq(vsi, i)
- 		if (vsi->xdp_rings[i]) {
- 			if (vsi->xdp_rings[i]->desc)
- 				ice_free_tx_ring(vsi->xdp_rings[i]);
-@@ -7040,7 +7040,7 @@ static void ice_tx_timeout(struct net_device *netdev, unsigned int txqueue)
- 	}
- 
- 	/* now that we have an index, find the tx_ring struct */
--	for (i = 0; i < vsi->num_txq; i++)
-+	ice_for_each_txq(vsi, i)
- 		if (vsi->tx_rings[i] && vsi->tx_rings[i]->desc)
- 			if (txqueue == vsi->tx_rings[i]->q_index) {
- 				tx_ring = vsi->tx_rings[i];
--- 
-2.20.1
+
+> This is because if there are three bytes being written, that is the number that should be obvious in the test.
+> 
+> I haven't looked at the surrounding code and there may be some other consideration why the "+ 2 >=" rather than "+ 3 >" (and from the description of "idx, idx + 1, idx + 2", I suspect it's visual consistency), so if that is important, feel free to adjust as required.
+>
+
+
+
+With regards,
+Pavel Skripkin
+
 
