@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70A443EC342
-	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 16:23:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61C6D3EC344
+	for <lists+netdev@lfdr.de>; Sat, 14 Aug 2021 16:23:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238653AbhHNOYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Aug 2021 10:24:08 -0400
-Received: from mga07.intel.com ([134.134.136.100]:45192 "EHLO mga07.intel.com"
+        id S238604AbhHNOYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Aug 2021 10:24:23 -0400
+Received: from mga07.intel.com ([134.134.136.100]:45196 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238651AbhHNOXj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S238654AbhHNOXj (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 14 Aug 2021 10:23:39 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10075"; a="279426318"
+X-IronPort-AV: E=McAfee;i="6200,9189,10075"; a="279426324"
 X-IronPort-AV: E=Sophos;i="5.84,321,1620716400"; 
-   d="scan'208";a="279426318"
+   d="scan'208";a="279426324"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2021 07:23:06 -0700
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2021 07:23:09 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,321,1620716400"; 
-   d="scan'208";a="447568463"
+   d="scan'208";a="447568475"
 Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga007.fm.intel.com with ESMTP; 14 Aug 2021 07:23:03 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 14 Aug 2021 07:23:06 -0700
 From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 To:     intel-wired-lan@lists.osuosl.org
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
@@ -29,9 +29,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
         alexandr.lobakin@intel.com, joamaki@gmail.com, toke@redhat.com,
         brett.creeley@intel.com,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH v5 intel-next 4/9] ice: unify xdp_rings accesses
-Date:   Sat, 14 Aug 2021 16:08:07 +0200
-Message-Id: <20210814140812.46632-5-maciej.fijalkowski@intel.com>
+Subject: [PATCH v5 intel-next 5/9] ice: do not create xdp_frame on XDP_TX
+Date:   Sat, 14 Aug 2021 16:08:08 +0200
+Message-Id: <20210814140812.46632-6-maciej.fijalkowski@intel.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210814140812.46632-1-maciej.fijalkowski@intel.com>
 References: <20210814140812.46632-1-maciej.fijalkowski@intel.com>
@@ -41,64 +41,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There has been a long lasting issue of improper xdp_rings indexing for
-XDP_TX and XDP_REDIRECT actions. Given that currently rx_ring->q_index
-is mixed with smp_processor_id(), there could be a situation where Tx
-descriptors are produced onto XDP Tx ring, but tail is never bumped -
-for example pin a particular queue id to non-matching IRQ line.
-
-Address this problem by ignoring the user ring count setting and always
-initialize the xdp_rings array to be of num_possible_cpus() size. Then,
-always use the smp_processor_id() as an index to xdp_rings array. This
-provides serialization as at given time only a single softirq can run on
-a particular CPU.
+xdp_frame is not needed for XDP_TX data path in ice driver case.
+For this data path cleaning of sent descriptor will not happen anywhere
+outside of the driver, which means that carrying the information about
+the underlying memory model via xdp_frame will not be used. Therefore,
+this conversion can be simply dropped, which would relieve CPU a bit.
 
 Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c      | 2 +-
- drivers/net/ethernet/intel/ice/ice_main.c     | 2 +-
- drivers/net/ethernet/intel/ice/ice_txrx_lib.c | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_txrx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 271999e21631..33b60c2ab1b4 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -3168,7 +3168,7 @@ int ice_vsi_rebuild(struct ice_vsi *vsi, bool init_vsi)
- 
- 		ice_vsi_map_rings_to_vectors(vsi);
- 		if (ice_is_xdp_ena_vsi(vsi)) {
--			vsi->num_xdp_txq = vsi->alloc_rxq;
-+			vsi->num_xdp_txq = num_possible_cpus();
- 			ret = ice_prepare_xdp_rings(vsi, vsi->xdp_prog);
- 			if (ret)
- 				goto err_vectors;
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 30df25862ea7..0886f4ba1940 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -2633,7 +2633,7 @@ ice_xdp_setup_prog(struct ice_vsi *vsi, struct bpf_prog *prog,
- 	}
- 
- 	if (!ice_is_xdp_ena_vsi(vsi) && prog) {
--		vsi->num_xdp_txq = vsi->alloc_rxq;
-+		vsi->num_xdp_txq = num_possible_cpus();
- 		xdp_ring_err = ice_prepare_xdp_rings(vsi, prog);
- 		if (xdp_ring_err)
- 			NL_SET_ERR_MSG_MOD(extack, "Setting up XDP Tx resources failed");
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-index 8ed489420823..3065b5dbe3fc 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-@@ -295,7 +295,7 @@ void ice_finalize_xdp_rx(struct ice_rx_ring *rx_ring, unsigned int xdp_res)
- 
- 	if (xdp_res & ICE_XDP_TX) {
- 		struct ice_tx_ring *xdp_ring =
--			rx_ring->vsi->xdp_rings[rx_ring->q_index];
-+			rx_ring->vsi->xdp_rings[smp_processor_id()];
- 
- 		ice_xdp_ring_update_tail(xdp_ring);
- 	}
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
+index 851a6e68aedf..f2e6a37112d1 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.c
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
+@@ -552,7 +552,7 @@ ice_run_xdp(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp,
+ 		return ICE_XDP_PASS;
+ 	case XDP_TX:
+ 		xdp_ring = rx_ring->vsi->xdp_rings[smp_processor_id()];
+-		result = ice_xmit_xdp_buff(xdp, xdp_ring);
++		result = ice_xmit_xdp_ring(xdp->data, xdp->data_end - xdp->data, xdp_ring);
+ 		if (result == ICE_XDP_CONSUMED)
+ 			goto out_failure;
+ 		return result;
 -- 
 2.20.1
 
