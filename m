@@ -2,293 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB1DA3EC8F0
-	for <lists+netdev@lfdr.de>; Sun, 15 Aug 2021 14:17:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EFC83EC933
+	for <lists+netdev@lfdr.de>; Sun, 15 Aug 2021 15:00:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238223AbhHOMSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Aug 2021 08:18:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52790 "EHLO
+        id S238145AbhHONBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Aug 2021 09:01:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238181AbhHOMSB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Aug 2021 08:18:01 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F643C061764
-        for <netdev@vger.kernel.org>; Sun, 15 Aug 2021 05:17:31 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id a20so17730205plm.0
-        for <netdev@vger.kernel.org>; Sun, 15 Aug 2021 05:17:31 -0700 (PDT)
+        with ESMTP id S235540AbhHONBL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Aug 2021 09:01:11 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C541C061764;
+        Sun, 15 Aug 2021 06:00:41 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id g138so9866240wmg.4;
+        Sun, 15 Aug 2021 06:00:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1BnidaL67kqLmFeYF4qsI4mGVmlTGruYuDifimCpFKs=;
-        b=YzYhLWzipk/457hKtheK78kebrQg/CU0drJ09851D1P40h8BkOHZxkH/FSaMvgS51H
-         2841LaJV4mNZUbwcZk/iFWNMLykPNT5OJ7ng8s12Fzlw6Qf+RKuTREBA//AWVh8Yoyxv
-         xUNRVsjRdAAi4CMDM6RWXEAPpWHah2aNOeH28=
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=srfloInibHXaJl9SxUAGFFuCdBbcpXrXkdFtSsa87so=;
+        b=hReCxcPhsYYuZnNBgAFreot260ud5A7ljdqQ/R3ShO0+hvjppJh3ilfr36w842n+hK
+         mAyqguaj2z060NECIwf0qEZWOTiYMvvNdCjDk1E1pkQTPKGdNzQLE28V/RB9t9894EWt
+         sdrUGd9LKa1mmD8bDAsC4N417udYoXxdq2itlO6/TxyVlHjZ13EFj4+ZrFUO85NQ6UCA
+         bKq7lQRaSdykfs3RjhxN4/L9BJMDUJzChLewkQux1s4U/SlYiE0mzFZmg3J9qXo0szPg
+         +JaLVNBiPU/hCSDmoziG7C/3elLoXj0nYeSNr9kyWj6vJ/tLQ7Z6ScgNil9MZVo8Gqsr
+         j5Lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1BnidaL67kqLmFeYF4qsI4mGVmlTGruYuDifimCpFKs=;
-        b=GtOrj7Qts/hJfGjNb65vhpesrkSM949wDyyKrcziESc+Vxbco9f6fcbfzFRvXqaSgJ
-         7gcL9lZlzxHYJP18Nbhx98DOcE1lTksZb1aFFcffLn6yl7OWzbi7+9VUbU30AFiTPUec
-         GTIIX25iaHFe836LiYiuhZdOXXfhAA4xiTZ1VHJ9PGGFTVIu0lnqzGtxXmlkf/Gcf+kn
-         uD1A9af5EBjydbSrMXrvALs42TmmE5MyjZtOYcXVH7jazFXT7apefI/ZSMxS4k4U+RjB
-         OX/qnvfTRVgUKx/3cZLM0Fee0wiMXux10a8VI98vo8xQM8JLif9Xd9X6GnOU6J+l3erP
-         4l9w==
-X-Gm-Message-State: AOAM532CzL3TvmsHjCWL3dnvcM2IvhCn9dQJS2NHRDZKBvMS6Dy0M2Db
-        Tjk3RB0UoGzDe+xo6oVDAg+X2A==
-X-Google-Smtp-Source: ABdhPJzE00uxrptk9ZTOPJSlvkKA/IPIbFDipdS+LSGQpQvBexJCLFMyD9lapwMW/fqWsP7U2AlbAA==
-X-Received: by 2002:a65:64d1:: with SMTP id t17mr10896334pgv.291.1629029851230;
-        Sun, 15 Aug 2021 05:17:31 -0700 (PDT)
-Received: from josephsih-z840.tpe.corp.google.com ([2401:fa00:1:10:9cee:5877:e805:fe2b])
-        by smtp.gmail.com with ESMTPSA id v20sm9773170pgi.39.2021.08.15.05.17.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Aug 2021 05:17:30 -0700 (PDT)
-From:   Joseph Hwang <josephsih@chromium.org>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        luiz.dentz@gmail.com, pali@kernel.org
-Cc:     josephsih@google.com, chromeos-bluetooth-upstreaming@chromium.org,
-        Joseph Hwang <josephsih@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v9 4/5] Bluetooth: Support the quality report events
-Date:   Sun, 15 Aug 2021 20:17:16 +0800
-Message-Id: <20210815201611.v9.4.I20c79eef4f36c4a3802e1068e59ec4a9f4ded940@changeid>
-X-Mailer: git-send-email 2.33.0.rc1.237.g0d66db33f3-goog
-In-Reply-To: <20210815201611.v9.1.I41aec59e65ffd3226d368dabeb084af13cc133c8@changeid>
-References: <20210815201611.v9.1.I41aec59e65ffd3226d368dabeb084af13cc133c8@changeid>
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=srfloInibHXaJl9SxUAGFFuCdBbcpXrXkdFtSsa87so=;
+        b=kiexqmNkdcy6nz+/NkFqNOYDFXNxEeIigNzPppz6ZaAOMuVxB5NExZ+ScZookvmci4
+         gOpdRkc9dt9gFfcemWpfbcCsmtxARVJND3Knc0SbP0anntfyOV966m0gqN7DpydZcUx8
+         KdvlmkmBDiDB+rTR5Y9Qa/jYajEi1FevLf1KF5nPE4IjMqHvfKkFpwA/lpa1rd1z0DFE
+         w5/cSC06R50Hq11DxiA2eBFLXLhaZKVCX/F1muPJJ1sGpT0i1Jxdkhq9U95SQ6pmyrs9
+         6ft6uhuVH9G7C+WYG98X8Zyu8Q+gGyVrv4Bc3lebbNTIBdLIkgYoyGmwI/bEKnoFugsq
+         YLxw==
+X-Gm-Message-State: AOAM532iMf0XqK3JeUrwD3eza+FkRpCgDAUwGXpntCp8qkN99ZmfErMU
+        QOEytKdktz6X4aY+GbDEJow=
+X-Google-Smtp-Source: ABdhPJyw0FfnJJ1BJ548Tr3Xd5So3JAbslMwlsQ2EOeTqWEokX+x2YBG3Twfwz1soNysIRqNAKQnUw==
+X-Received: by 2002:a05:600c:154b:: with SMTP id f11mr11102098wmg.116.1629032439721;
+        Sun, 15 Aug 2021 06:00:39 -0700 (PDT)
+Received: from [192.168.8.197] ([148.252.133.97])
+        by smtp.gmail.com with ESMTPSA id r1sm3004588wrt.24.2021.08.15.06.00.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 15 Aug 2021 06:00:39 -0700 (PDT)
+To:     Jens Axboe <axboe@kernel.dk>, Josh Triplett <josh@joshtriplett.org>
+Cc:     io-uring@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Stefan Metzmacher <metze@samba.org>
+References: <cover.1628871893.git.asml.silence@gmail.com>
+ <YRbBYCn29B+kgZcy@localhost> <bcb6f253-41d6-6e0f-5b4b-ea1e02a105bc@gmail.com>
+ <5cf40313-d151-9d10-3ebd-967eb2f53b1f@kernel.dk>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+Subject: Re: [PATCH v2 0/4] open/accept directly into io_uring fixed file
+ table
+Message-ID: <0338e4c0-9161-732d-7d3e-c53bdf9fbb0c@gmail.com>
+Date:   Sun, 15 Aug 2021 14:00:08 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
+In-Reply-To: <5cf40313-d151-9d10-3ebd-967eb2f53b1f@kernel.dk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch allows a user space process to enable/disable the quality
-report events dynamically through the set experimental feature mgmt
-interface if CONFIG_BT_FEATURE_QUALITY_REPORT is enabled.
+On 8/15/21 12:03 AM, Jens Axboe wrote:
+> On 8/14/21 6:50 AM, Pavel Begunkov wrote:
+>> On 8/13/21 8:00 PM, Josh Triplett wrote:
+>>> On Fri, Aug 13, 2021 at 05:43:09PM +0100, Pavel Begunkov wrote:
+>>>> Add an optional feature to open/accept directly into io_uring's fixed
+>>>> file table bypassing the normal file table. Same behaviour if as the
+>>>> snippet below, but in one operation:
+>>>>
+>>>> sqe = prep_[open,accept](...);
+>>>> cqe = submit_and_wait(sqe);
+>>>> // error handling
+>>>> io_uring_register_files_update(uring_idx, (fd = cqe->res));
+>>>> // optionally
+>>>> close((fd = cqe->res));
+>>>>
+>>>> The idea in pretty old, and was brough up and implemented a year ago
+>>>> by Josh Triplett, though haven't sought the light for some reasons.
+>>>
+>>> Thank you for working to get this over the finish line!
+>>>
+>>>> Tested on basic cases, will be sent out as liburing patches later.
+>>>>
+>>>> A copy paste from 2/2 describing user API and some notes:
+>>>>
+>>>> The behaviour is controlled by setting sqe->file_index, where 0 implies
+>>>> the old behaviour. If non-zero value is specified, then it will behave
+>>>> as described and place the file into a fixed file slot
+>>>> sqe->file_index - 1. A file table should be already created, the slot
+>>>> should be valid and empty, otherwise the operation will fail.
+>>>>
+>>>> Note 1: we can't use IOSQE_FIXED_FILE to switch between modes, because
+>>>> accept takes a file, and it already uses the flag with a different
+>>>> meaning.
+>>>>
+>>>> Note 2: it's u16, where in theory the limit for fixed file tables might
+>>>> get increased in the future. If would ever happen so, we'll better
+>>>> workaround later, e.g. by making ioprio to represent upper bits 16 bits.
+>>>> The layout for open is tight already enough.
+>>>
+>>> Rather than using sqe->file_index - 1, which feels like an error-prone
+>>> interface, I think it makes sense to use a dedicated flag for this, like
+>>> IOSQE_OPEN_FIXED. That flag could work for any open-like operation,
+>>> including open, accept, and in the future many other operations such as
+>>> memfd_create. (Imagine using a single ring submission to open a memfd,
+>>> write a buffer into it, seal it, send it over a UNIX socket, and then
+>>> close it.)
+>>>
+>>> The only downside is that you'll need to reject that flag in all
+>>> non-open operations. One way to unify that code might be to add a flag
+>>> in io_op_def for open-like operations, and then check in common code for
+>>> the case of non-open-like operations passing IOSQE_OPEN_FIXED.
+>>
+>> io_uring is really thin, and so I absolutely don't want any extra
+>> overhead in the generic path, IOW anything affecting
+>> reads/writes/sends/recvs.
+>>
+>> The other reason is that there are only 2 bits left in sqe->flags,
+>> and we may use them for something better, considering that it's
+>> only open/accept and not much as this.
+>>
+>> I agree that it feels error-prone, but at least it can be wrapped
+>> nicely enough in liburing, e.g.
+>>
+>> void io_uring_prep_openat_direct(struct io_uring_sqe *sqe, int dfd,
+>> 				 const char *path, int flags,
+>> 				 mode_t mode, int slot_idx);
+>>
+>>
+>>> Also, rather than using a 16-bit index for the fixed file table and
+>>> potentially requiring expansion into a different field in the future,
+>>> what about overlapping it with the nofile field in the open and accept
+>>> requests? If they're not opening a normal file descriptor, they don't
+>>> need nofile. And in the original sqe, you can then overlap it with a
+>>> 32-bit field like splice_fd_in.
+>>
+>> There is no nofile in SQEs, though
+>>
+>> req->open.nofile = rlimit(RLIMIT_NOFILE);
+> 
+> What's the plan in terms of limiting the amount of direct descriptors
+> (for lack of a better word)? That seems like an important aspect that
+> should get sorted out upfront.
 
-Since the quality report feature needs to invoke the callback function
-provided by the driver, i.e., hdev->set_quality_report, a valid
-controller index is required.
+As was brought before, agree that it have to be solved. However, don't
+think it holds this feature, as the same problems can be perfectly
+achieved without it.
 
-Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
-Signed-off-by: Joseph Hwang <josephsih@chromium.org>
----
+fd = open();
+io_uring_register(fd);
+close(fd);
 
-(no changes since v8)
+> Do we include the regular file table max_fds count for creating a new
+> direct descriptor, and limit to RLIMIT_NOFILE? That would seem logical,
+> but then that also implies that the regular file table should include
+> the ctx (potentially several) direct descriptors. And the latter is much
+> worse.
 
-Changes in v8:
-- Rebase on the previous patch about refactoring set_exp_feature with
-  a feature table. A standalone set_quality_report_func is implemented
-  instead of adding the logic into set_exp_feature.
+To which object we're binding the counting? To the task that created
+the ring? I'd be afraid of the following case then:
 
-Changes in v7:
-- Rebase on Tedd's patches that moved functionality from btusb to
-  btintel.
+fork(NO_FDTABLE_SHARE, callback -> {
+	ring = create_io_uring();
+	io_uring_register_fds(&ring);
+	pass_ring_to_parent(ring);
+	// e.g. via socket or so.
+	exit();
+});
 
-Changes in v5:
-- Removed CONFIG_BT_FEATURE_QUALITY_REPORT since there was no
-  large size impact.
+Restricting based on user may have been a better option, but as well
+not without problems.
 
- include/net/bluetooth/hci.h      |   1 +
- include/net/bluetooth/hci_core.h |   2 +
- net/bluetooth/mgmt.c             | 113 ++++++++++++++++++++++++++++++-
- 3 files changed, 115 insertions(+), 1 deletion(-)
+Another option, which is too ugly to exist but have to mention,
+is to count number of tasks and io_urings together. Maybe can spark
+some better idea.
 
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index b80415011dcd..bb6b7398f490 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -330,6 +330,7 @@ enum {
- 	HCI_ENABLE_LL_PRIVACY,
- 	HCI_CMD_PENDING,
- 	HCI_FORCE_NO_MITM,
-+	HCI_QUALITY_REPORT,
- 
- 	__HCI_NUM_FLAGS,
- };
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index a7d06d7da602..7e9ae36b2582 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -606,6 +606,7 @@ struct hci_dev {
- 	int (*set_bdaddr)(struct hci_dev *hdev, const bdaddr_t *bdaddr);
- 	void (*cmd_timeout)(struct hci_dev *hdev);
- 	bool (*prevent_wake)(struct hci_dev *hdev);
-+	int (*set_quality_report)(struct hci_dev *hdev, bool enable);
- };
- 
- #define HCI_PHY_HANDLE(handle)	(handle & 0xff)
-@@ -759,6 +760,7 @@ extern struct mutex hci_cb_list_lock;
- 		hci_dev_clear_flag(hdev, HCI_LE_ADV);		\
- 		hci_dev_clear_flag(hdev, HCI_LL_RPA_RESOLUTION);\
- 		hci_dev_clear_flag(hdev, HCI_PERIODIC_INQ);	\
-+		hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);	\
- 	} while (0)
- 
- /* ----- HCI interface to upper protocols ----- */
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 42bd503da20d..2910488bcb3b 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -3791,6 +3791,12 @@ static const u8 debug_uuid[16] = {
- };
- #endif
- 
-+/* 330859bc-7506-492d-9370-9a6f0614037f */
-+static const u8 quality_report_uuid[16] = {
-+	0x7f, 0x03, 0x14, 0x06, 0x6f, 0x9a, 0x70, 0x93,
-+	0x2d, 0x49, 0x06, 0x75, 0xbc, 0x59, 0x08, 0x33,
-+};
-+
- /* 671b10b5-42c0-4696-9227-eb28d1b049d6 */
- static const u8 simult_central_periph_uuid[16] = {
- 	0xd6, 0x49, 0xb0, 0xd1, 0x28, 0xeb, 0x27, 0x92,
-@@ -3806,7 +3812,7 @@ static const u8 rpa_resolution_uuid[16] = {
- static int read_exp_features_info(struct sock *sk, struct hci_dev *hdev,
- 				  void *data, u16 data_len)
- {
--	char buf[62];   /* Enough space for 3 features */
-+	char buf[82];   /* Enough space for 4 features: 2 + 20 * 4 */
- 	struct mgmt_rp_read_exp_features_info *rp = (void *)buf;
- 	u16 idx = 0;
- 	u32 flags;
-@@ -3850,6 +3856,24 @@ static int read_exp_features_info(struct sock *sk, struct hci_dev *hdev,
- 		idx++;
- 	}
- 
-+	if (hdev) {
-+		if (hdev->set_quality_report) {
-+			/* BIT(0): indicating if set_quality_report is
-+			 * supported by controller.
-+			 */
-+			flags = BIT(0);
-+
-+			/* BIT(1): indicating if the feature is enabled. */
-+			if (hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
-+				flags |= BIT(1);
-+		} else {
-+			flags = 0;
-+		}
-+		memcpy(rp->features[idx].uuid, quality_report_uuid, 16);
-+		rp->features[idx].flags = cpu_to_le32(flags);
-+		idx++;
-+	}
-+
- 	rp->feature_count = cpu_to_le16(idx);
- 
- 	/* After reading the experimental features information, enable
-@@ -3892,6 +3916,21 @@ static int exp_debug_feature_changed(bool enabled, struct sock *skip)
- }
- #endif
- 
-+static int exp_quality_report_feature_changed(bool enabled, struct sock *skip)
-+{
-+	struct mgmt_ev_exp_feature_changed ev;
-+
-+	BT_INFO("enabled %d", enabled);
-+
-+	memset(&ev, 0, sizeof(ev));
-+	memcpy(ev.uuid, quality_report_uuid, 16);
-+	ev.flags = cpu_to_le32(enabled ? BIT(0) : 0);
-+
-+	return mgmt_limited_event(MGMT_EV_EXP_FEATURE_CHANGED, NULL,
-+				  &ev, sizeof(ev),
-+				  HCI_MGMT_EXP_FEATURE_EVENTS, skip);
-+}
-+
- #define EXP_FEAT(_uuid, _set_func)	\
- {					\
- 	.uuid = _uuid,			\
-@@ -4046,6 +4085,77 @@ static int set_rpa_resolution_func(struct sock *sk, struct hci_dev *hdev,
- 	return err;
- }
- 
-+static int set_quality_report_func(struct sock *sk, struct hci_dev *hdev,
-+				   struct mgmt_cp_set_exp_feature *cp,
-+				   u16 data_len)
-+{
-+	struct mgmt_rp_set_exp_feature rp;
-+	bool val, changed;
-+	int err;
-+
-+	/* Command requires to use a valid controller index */
-+	if (!hdev)
-+		return mgmt_cmd_status(sk, MGMT_INDEX_NONE,
-+				       MGMT_OP_SET_EXP_FEATURE,
-+				       MGMT_STATUS_INVALID_INDEX);
-+
-+	/* Parameters are limited to a single octet */
-+	if (data_len != MGMT_SET_EXP_FEATURE_SIZE + 1)
-+		return mgmt_cmd_status(sk, hdev->id,
-+				       MGMT_OP_SET_EXP_FEATURE,
-+				       MGMT_STATUS_INVALID_PARAMS);
-+
-+	/* Only boolean on/off is supported */
-+	if (cp->param[0] != 0x00 && cp->param[0] != 0x01)
-+		return mgmt_cmd_status(sk, hdev->id,
-+				       MGMT_OP_SET_EXP_FEATURE,
-+				       MGMT_STATUS_INVALID_PARAMS);
-+
-+	hci_req_sync_lock(hdev);
-+
-+	val = !!cp->param[0];
-+	changed = (val != hci_dev_test_flag(hdev, HCI_QUALITY_REPORT));
-+
-+	if (!hdev->set_quality_report) {
-+		BT_INFO("quality report not supported");
-+		err = mgmt_cmd_status(sk, hdev->id,
-+				      MGMT_OP_SET_EXP_FEATURE,
-+				      MGMT_STATUS_NOT_SUPPORTED);
-+		goto unlock_quality_report;
-+	}
-+
-+	if (changed) {
-+		err = hdev->set_quality_report(hdev, val);
-+		if (err) {
-+			BT_ERR("set_quality_report value %d err %d", val, err);
-+			err = mgmt_cmd_status(sk, hdev->id,
-+					      MGMT_OP_SET_EXP_FEATURE,
-+					      MGMT_STATUS_FAILED);
-+			goto unlock_quality_report;
-+		}
-+		if (val)
-+			hci_dev_set_flag(hdev, HCI_QUALITY_REPORT);
-+		else
-+			hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);
-+	}
-+
-+	BT_INFO("quality report enable %d changed %d", val, changed);
-+
-+	memcpy(rp.uuid, quality_report_uuid, 16);
-+	rp.flags = cpu_to_le32(val ? BIT(0) : 0);
-+	hci_sock_set_flag(sk, HCI_MGMT_EXP_FEATURE_EVENTS);
-+	err = mgmt_cmd_complete(sk, hdev->id,
-+				MGMT_OP_SET_EXP_FEATURE, 0,
-+				&rp, sizeof(rp));
-+
-+	if (changed)
-+		exp_quality_report_feature_changed(val, sk);
-+
-+unlock_quality_report:
-+	hci_req_sync_unlock(hdev);
-+	return err;
-+}
-+
- static const struct mgmt_exp_feature {
- 	const u8 *uuid;
- 	int (*set_func)(struct sock *sk, struct hci_dev *hdev,
-@@ -4056,6 +4166,7 @@ static const struct mgmt_exp_feature {
- 	EXP_FEAT(debug_uuid, set_debug_func),
- #endif
- 	EXP_FEAT(rpa_resolution_uuid, set_rpa_resolution_func),
-+	EXP_FEAT(quality_report_uuid, set_quality_report_func),
- 
- 	/* end with a null feature */
- 	EXP_FEAT(NULL, NULL)
+Also, do we have anything related in cgroups/namespaces?
+
+> Maybe we have a way to size the direct table, which will consume entries
+> from the same pool that the regular file table does? That would then
+> work both ways, and could potentially just be done dynamically similarly
+> to how we expand the regular file table when we exceed its current size.
+> 
+> Anyway, just throwing a few ideas out there, with the intent to spark a
+> bit of discussion on this topic. I really like the direct descriptors,
+> it'll be a lot more efficient for certain use cases.
+> 
+
 -- 
-2.33.0.rc1.237.g0d66db33f3-goog
-
+Pavel Begunkov
