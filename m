@@ -2,145 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83AB23EC832
-	for <lists+netdev@lfdr.de>; Sun, 15 Aug 2021 10:55:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DAB73EC899
+	for <lists+netdev@lfdr.de>; Sun, 15 Aug 2021 12:36:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236646AbhHOIz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Aug 2021 04:55:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36724 "EHLO
+        id S237532AbhHOKhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Aug 2021 06:37:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231274AbhHOIz2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Aug 2021 04:55:28 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6D3C0613CF
-        for <netdev@vger.kernel.org>; Sun, 15 Aug 2021 01:54:58 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id bt14so10480942ejb.3
-        for <netdev@vger.kernel.org>; Sun, 15 Aug 2021 01:54:58 -0700 (PDT)
+        with ESMTP id S237218AbhHOKhP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Aug 2021 06:37:15 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 539EAC061764;
+        Sun, 15 Aug 2021 03:36:45 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id u1so371495plr.1;
+        Sun, 15 Aug 2021 03:36:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=konsulko.com; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=W6ZMorVzkKpkv9QWuIbPmieQrmTuzqC3n4aLplOaHQc=;
-        b=N1bTt8l3NISMpLN4mSHo036NFAp3Ani7WSQ86MDOBlovXUfR/E4VvDmynnvSx7Xrs+
-         JT7NsqjB57U0siAUqc4+zs7qH3LMe9nYmVFQ+9ge+2ApdC+eWU7JvxPNZR19EqFD20gS
-         yVDLNHXbDv5YqE+HKCD25lgcw4KDaQH2yaiws=
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=4mogHWA6QzT7FGmVvV4ib7TduNlR3+X2wSwpcAXlyN4=;
+        b=W6omr8rOLS+SIbhoYWYcUFGTpsMcBUKcXLrG+gjYlUCJux+gBeKcI1vAAhafD0wB2A
+         93LxZ5+ve2YtJFtWDJdDkpDiy6sI582s3PCmSUAw9O9JbB88v+bzkiNLgKZS9qlwdnJV
+         P5UMkyMnoYyEdaJ2hDfB0Do08GnvDVifdOUKh5lXu2p2HEtrUfSOmMwo9MPQoW25whpT
+         a0XwGIYMaPJyLGHNbOAipSJ9xR7e8vVPHGcFsJ4ehyLg+96+ttr90EOad0CgpQv3Hxr+
+         tW6GWiTCPidK7uUMdmVW4i9X0ikauisaj80uPEzwEqNS+ABsT8VQ99OnAk/h0IWK3cEM
+         OLwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=W6ZMorVzkKpkv9QWuIbPmieQrmTuzqC3n4aLplOaHQc=;
-        b=fGKpuXXxxzZA+bu5kcJNYUOY3xWDUMLIpxyX02dT5obTUT1HZl/+TtpDDbA2vah90C
-         rWXYF2lHZqdSUSYQAvHiaV6e+ut3YwVQWuECOn9yROtv2CgVPFMIVQwyGMVMQTzIs9T9
-         ckf8S9mUfBsbdGb4H9lCfpwtoQYhMN00af6P/c75IJ9Lajoun4udX8XdP3Q4I2rynXrR
-         DLNs4mGk+imjdVQAf4uQfZZ93/UxBeXRhDceZinsWPKetTCkLvLfhmnWeB0PkfBPM8Ok
-         cWk5b/oxAmCAOa7gV1xW9DTRCokc8+yf7Wjb5rwQ1F5B3sradugbzb7c/egJaY+V/4x4
-         jc+Q==
-X-Gm-Message-State: AOAM533rMTqco+JeCZp8SSco5TKb8aRIKqsP63UFExspKR0rfFfljun0
-        MIiqIcgI8P5QoOVALub6bStePQ==
-X-Google-Smtp-Source: ABdhPJwE87RFxxVjteM+wj1f2BuIvddB2aeIPNnFUi2TwlW02yJmBDQr+gVMF0Q1agqQh1y4ClrJ4A==
-X-Received: by 2002:a17:907:3d91:: with SMTP id he17mr10800808ejc.355.1629017696710;
-        Sun, 15 Aug 2021 01:54:56 -0700 (PDT)
-Received: from carbon (78-83-68-78.spectrumnet.bg. [78.83.68.78])
-        by smtp.gmail.com with ESMTPSA id cz17sm3199002edb.36.2021.08.15.01.54.56
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=4mogHWA6QzT7FGmVvV4ib7TduNlR3+X2wSwpcAXlyN4=;
+        b=KMkWg0XzeNFvYTTKjzR7EbwGTl9qCtmu6nnmIWvF1YDPrz8H9LDVGoLwR8Apj1i0ju
+         o7ZDXZHTzXQic63n5jbNO6+Bg1TJiDOeE010ULfp+O9xEcfdTmf2LreouzwKDDOcYrDn
+         8rqIq4qqmwdQwp7280PDNUwZXG1/aK3fR3zhNnmzb21Xv+zrxD7YSpMAdSwmu2A6wfpz
+         G3gXdxHWgepOJKkQSJ7VrXkqrmvfQ+VCtbGpoDHUPOBjwaIWPkx7Bhjzdg8UXC0KbnQ+
+         DPvhN6W9qJIuq0qt7u9e2WUYYS0J0vMKv/+emrE+E7Av/07u7Zt7c83DSeQeqhCqmPey
+         N0hg==
+X-Gm-Message-State: AOAM533Fx89osZtLvsh9rmTV3dq5Y+0vvJVYbvN+KL3PFN45mDa9okgc
+        3Pyekc2j2p8P2w+YkrqnWww=
+X-Google-Smtp-Source: ABdhPJxpP3qd297/qpXYquTLhToc/GzsL3OpkN1Nnd0Ea3xfWoxISAPJoelSHZKuQG/uydbXOi8ixQ==
+X-Received: by 2002:a63:d34e:: with SMTP id u14mr10682967pgi.244.1629023804820;
+        Sun, 15 Aug 2021 03:36:44 -0700 (PDT)
+Received: from u18.mshome.net ([167.220.238.196])
+        by smtp.gmail.com with ESMTPSA id j22sm8845515pgb.62.2021.08.15.03.36.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Aug 2021 01:54:56 -0700 (PDT)
-Date:   Sun, 15 Aug 2021 11:54:55 +0300
-From:   Petko Manolov <petko.manolov@konsulko.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, paskripkin@gmail.com,
-        stable@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH] net: usb: pegasus: ignore the return value from
- set_registers();
-Message-ID: <YRjWXzYrQsGZiISc@carbon>
-Mail-Followup-To: Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        paskripkin@gmail.com, stable@vger.kernel.org, davem@davemloft.net
-References: <20210812082351.37966-1-petko.manolov@konsulko.com>
- <20210813162439.1779bf63@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210813162439.1779bf63@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Sun, 15 Aug 2021 03:36:44 -0700 (PDT)
+From:   Muhammad Falak R Wani <falakreyaz@gmail.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Yu Kuai <yukuai3@huawei.com>, linux-perf-users@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Muhammad Falak R Wani <falakreyaz@gmail.com>
+Subject: [PATCH] perflib: deprecate bpf_map__resize in favor of bpf_map_set_max_entries
+Date:   Sun, 15 Aug 2021 16:06:10 +0530
+Message-Id: <20210815103610.27887-1-falakreyaz@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21-08-13 16:24:39, Jakub Kicinski wrote:
-> On Thu, 12 Aug 2021 11:23:51 +0300 Petko Manolov wrote:
-> > The return value need to be either ignored or acted upon, otherwise 'deadstore'
-> > clang check would yell at us.  I think it's better to just ignore what this
-> > particular call of set_registers() returns.  The adapter defaults are sane and
-> > it would be operational even if the register write fail.
-> > 
-> > Signed-off-by: Petko Manolov <petko.manolov@konsulko.com>
-> > ---
-> >  drivers/net/usb/pegasus.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
-> > index 652e9fcf0b77..49cfc720d78f 100644
-> > --- a/drivers/net/usb/pegasus.c
-> > +++ b/drivers/net/usb/pegasus.c
-> > @@ -433,7 +433,7 @@ static int enable_net_traffic(struct net_device *dev, struct usb_device *usb)
-> >  	data[2] = loopback ? 0x09 : 0x01;
-> >  
-> >  	memcpy(pegasus->eth_regs, data, sizeof(data));
-> > -	ret = set_registers(pegasus, EthCtrl0, 3, data);
-> > +	set_registers(pegasus, EthCtrl0, 3, data);
-> >  
-> >  	if (usb_dev_id[pegasus->dev_index].vendor == VENDOR_LINKSYS ||
-> >  	    usb_dev_id[pegasus->dev_index].vendor == VENDOR_LINKSYS2 ||
-> 
-> This one is not added by the recent changes as I initially thought, 
-> the driver has always checked this return value. The recent changes 
-> did this:
-> 
->         ret = set_registers(pegasus, EthCtrl0, 3, data);
->  
->         if (usb_dev_id[pegasus->dev_index].vendor == VENDOR_LINKSYS ||
->             usb_dev_id[pegasus->dev_index].vendor == VENDOR_LINKSYS2 ||
->             usb_dev_id[pegasus->dev_index].vendor == VENDOR_DLINK) {
->                 u16 auxmode;
-> -               read_mii_word(pegasus, 0, 0x1b, &auxmode);
-> +               ret = read_mii_word(pegasus, 0, 0x1b, &auxmode);
-> +               if (ret < 0)
-> +                       goto fail;
->                 auxmode |= 4;
->                 write_mii_word(pegasus, 0, 0x1b, &auxmode);
->         }
->  
-> +       return 0;
-> +fail:
-> +       netif_dbg(pegasus, drv, pegasus->net, "%s failed\n", __func__);
->         return ret;
-> }
-> 
-> now the return value of set_registeres() is ignored. 
-> 
-> Seems like  a better fix would be to bring back the error checking, 
-> why not?
+As a part of libbpf 1.0 plan[0], this patch deprecates use of
+bpf_map__resize in favour of bpf_map__set_max_entries.
 
-Mostly because for this particular adapter checking the read failure makes much
-more sense than write failure.
+Reference: https://github.com/libbpf/libbpf/issues/304
+[0]: https://github.com/libbpf/libbpf/wiki/Libbpf:-the-road-to-v1.0#libbpfh-high-level-apis
 
-Checking the return value of set_register(s) is often usless because device's
-default register values are sane enough to get a working ethernet adapter even
-without much prodding.  There are exceptions, though, one of them being
-set_ethernet_addr().
+Signed-off-by: Muhammad Falak R Wani <falakreyaz@gmail.com>
+---
+ tools/perf/util/bpf_counter.c        | 8 ++++----
+ tools/perf/util/bpf_counter_cgroup.c | 8 ++++----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-You could read the discussing in the netdev ML, but the essence of it is that
-set_ethernet_addr() should not give up if set_register(s) fail.  Instead, the
-driver should assign a valid, even if random, MAC address.
+diff --git a/tools/perf/util/bpf_counter.c b/tools/perf/util/bpf_counter.c
+index ba0f20853651..ced2dac31dcf 100644
+--- a/tools/perf/util/bpf_counter.c
++++ b/tools/perf/util/bpf_counter.c
+@@ -127,9 +127,9 @@ static int bpf_program_profiler_load_one(struct evsel *evsel, u32 prog_id)
+ 
+ 	skel->rodata->num_cpu = evsel__nr_cpus(evsel);
+ 
+-	bpf_map__resize(skel->maps.events, evsel__nr_cpus(evsel));
+-	bpf_map__resize(skel->maps.fentry_readings, 1);
+-	bpf_map__resize(skel->maps.accum_readings, 1);
++	bpf_map__set_max_entries(skel->maps.events, evsel__nr_cpus(evsel));
++	bpf_map__set_max_entries(skel->maps.fentry_readings, 1);
++	bpf_map__set_max_entries(skel->maps.accum_readings, 1);
+ 
+ 	prog_name = bpf_target_prog_name(prog_fd);
+ 	if (!prog_name) {
+@@ -399,7 +399,7 @@ static int bperf_reload_leader_program(struct evsel *evsel, int attr_map_fd,
+ 		return -1;
+ 	}
+ 
+-	bpf_map__resize(skel->maps.events, libbpf_num_possible_cpus());
++	bpf_map__set_max_entries(skel->maps.events, libbpf_num_possible_cpus());
+ 	err = bperf_leader_bpf__load(skel);
+ 	if (err) {
+ 		pr_err("Failed to load leader skeleton\n");
+diff --git a/tools/perf/util/bpf_counter_cgroup.c b/tools/perf/util/bpf_counter_cgroup.c
+index 89aa5e71db1a..cbc6c2bca488 100644
+--- a/tools/perf/util/bpf_counter_cgroup.c
++++ b/tools/perf/util/bpf_counter_cgroup.c
+@@ -65,14 +65,14 @@ static int bperf_load_program(struct evlist *evlist)
+ 
+ 	/* we need one copy of events per cpu for reading */
+ 	map_size = total_cpus * evlist->core.nr_entries / nr_cgroups;
+-	bpf_map__resize(skel->maps.events, map_size);
+-	bpf_map__resize(skel->maps.cgrp_idx, nr_cgroups);
++	bpf_map__set_max_entries(skel->maps.events, map_size);
++	bpf_map__set_max_entries(skel->maps.cgrp_idx, nr_cgroups);
+ 	/* previous result is saved in a per-cpu array */
+ 	map_size = evlist->core.nr_entries / nr_cgroups;
+-	bpf_map__resize(skel->maps.prev_readings, map_size);
++	bpf_map__set_max_entries(skel->maps.prev_readings, map_size);
+ 	/* cgroup result needs all events (per-cpu) */
+ 	map_size = evlist->core.nr_entries;
+-	bpf_map__resize(skel->maps.cgrp_readings, map_size);
++	bpf_map__set_max_entries(skel->maps.cgrp_readings, map_size);
+ 
+ 	set_max_rlimit();
+ 
+-- 
+2.17.1
 
-It is much the same situation with enable_net_traffic() - it should continue
-regardless.  There are two options to resolve this: a) remove the error check
-altogether; b) do the check and print a debug message.  I prefer a), but i am
-also not strongly opposed to b).  Comments?
-
-> Please remember to add a fixes tag.
-
-Will do.
-
-
-cheers,
-Petko
