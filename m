@@ -2,328 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8929F3ECA83
-	for <lists+netdev@lfdr.de>; Sun, 15 Aug 2021 20:11:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 818B93ECA9C
+	for <lists+netdev@lfdr.de>; Sun, 15 Aug 2021 21:10:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbhHOSL6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Aug 2021 14:11:58 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:35540 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229502AbhHOSL5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Aug 2021 14:11:57 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17FI6ZYY028364;
-        Sun, 15 Aug 2021 11:10:56 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=NzBRGqV6580wlcPFBQUVoAp0uFcgzoO/uFTFeR4M8fI=;
- b=lq9cmfu/jXujcbMTZnog3NfDjh9Rub3/xYDqf2iGalZWSdI4nTEF6Ir4SWLUXNULfqeD
- 7i4pkJYWV5Qjs+v4VKyuP2NeS3MyvXsTvzTgRN0uDUCYDTXFSecJtWQ842AnkGPkt5Cb
- a3WEtwShVRZ310cGF1BR7lqEYXQJHOkKLHc= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3aebhnne8g-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Sun, 15 Aug 2021 11:10:55 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Sun, 15 Aug 2021 11:10:54 -0700
+        id S230451AbhHOTLJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Aug 2021 15:11:09 -0400
+Received: from mail-co1nam11on2139.outbound.protection.outlook.com ([40.107.220.139]:20449
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229743AbhHOTLH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 15 Aug 2021 15:11:07 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q1PvUWEUFz/VoPCyorlLFNWNxmEbsHtu2zcH2L1JJDkEmKkmS2bOpl8fPRXIaQ9lWum9wkb+eVrwBIAp74U9gzxCZkbQ5KiabVR599wDd74pXaZeK9Zg7pV3N34smkF9GVi5X1XAcS2OLDLDtpNpJJrKQjt7HRSPchM/C63R8jfWJOxxKF3eEFkypDA/P6Bxx2Pjn0dpxjJ9O3h4vZ6pmNemfZN6L2Yx5TsRY30iECCrCYIx2xjyNvLP8HvkvkDXo4Ub0w5mo7EWNgxMjx89hWnStj7kn/IZvT9Q0LRs0qk2fnbL1U5b7Ah7AxYqOno6SrBbmDj8bOo6OH2w6Lzm+A==
+ b=lQsj0RzutT8fk5jvRtmAdtgs59NCaqt9tle4Mxc4mHRpPOdwVuQZYA2Y8TnQl5j7N1foNuMNYge5fbn2PYl8LHwjdbzXXyXWqDsCMcw+wXgAmIHI4BMi5bNKKN05qMHbE/bSDddCHI6kjHYDl6qqkPhqhv7RJyPr9XkNpcie21D+E1y26K3T3U1jcCBgtvesXRVuy6QvjFDGnGxRC/RTDNJvp630bd6FMHIU9n6PmLwI5gHgXAPXDQJSZIjH7hISowvSW3mLYb9X2LKzY3uBi3gcHS+m+augpBtmJz4UfrM6kWaymWphM2LO4eKtuo2RrVmMPSaV7HSP6fcp0K9CxA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1MAzMiAgp2tTVN8I/1tDHQhEStIlv/lRA8+iF2O6RAY=;
- b=ms3L0WNYXcjAWVMTGeISB9nU5+E6W+sZBNjQWuF8n1UKgqz23muCfZQfRE4SVqBaBxLnOvRnrUzv54yVa4kvje3cQOHe4pZzw5odJRM1Iw8grQGmushrJErfTeaCT/5hyVWsYMz0xUYPeJqRy/fGu77WwjqpaAbeNW3w+DoYjAqD6jGhd10sXbXJNjgtaQ1NwnlWnpY3iC53q73YZ/4FYmukSLqzO+/kR07HAkJNHPaXy8qeNiHA53jfTxBC5lIEGz08mu1AQvQEx2jA8pcF9VHLGBYx/bO4wnfe2uOR9w1OM2C7KvbNRz+g2oWrwnDQ2BmczrOPhuK/IGNT3G1YbQ==
+ bh=EWh6nCUAGjWVtBiQcC78Y+X45XymRqD8YhZd7XEJIEo=;
+ b=IDaXCxT2TQnJ20ZqRx7HVCFLHqLCASrX0UthPrR+G1z6U4e6sI5siynGGCJ1XSLuAzJR/GL5h3ScPYYWWx0GCdZCPIQoWKV4ZTsPjGRpqznb2rvU5fcIU56UOoqWjdzM/OSqlRtBqkTNdTuppkEeBJF4aCK5eT84cY8bhkPnS20TAU8juwNkfFBohlYh5pdfIYEY4gay5YrwB904DETdEG5D7o+KUb8ckZLI/53gReeMN6VKhvW1zvN7dbiv/lJ+aAlnXxFk8tFbVNfay++imn3yBfJ9ibSkJ/0dwdeGyUp4vl4GINVZMqi8RXPiwXH4+wcTnc2CuPm57hNzfBxM0w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by SN6PR15MB2415.namprd15.prod.outlook.com (2603:10b6:805:1c::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.13; Sun, 15 Aug
- 2021 18:10:52 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::c143:fac2:85b4:14cb]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::c143:fac2:85b4:14cb%7]) with mapi id 15.20.4415.022; Sun, 15 Aug 2021
- 18:10:52 +0000
-Subject: Re: [PATCH v5 bpf-next 3/4] selftest/bpf: Implement sample UNIX
- domain socket iterator program.
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        <andrii.nakryiko@gmail.com>
-CC:     <andrii@kernel.org>, <ast@kernel.org>, <benh@amazon.com>,
-        <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
-        <davem@davemloft.net>, <john.fastabend@gmail.com>, <kafai@fb.com>,
-        <kpsingh@kernel.org>, <kuba@kernel.org>, <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, <songliubraving@fb.com>
-References: <CAEf4BzZ3sVx1m1mOCcPcuVPiY6cWEAO=6VGHDiXEs9ZVD-RoLg@mail.gmail.com>
- <20210814002101.33742-1-kuniyu@amazon.co.jp>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <c5b4e17b-97b3-061a-6956-6f21c5ad9581@fb.com>
-Date:   Sun, 15 Aug 2021 11:10:49 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.13.0
-In-Reply-To: <20210814002101.33742-1-kuniyu@amazon.co.jp>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-X-ClientProxiedBy: BYAPR05CA0088.namprd05.prod.outlook.com
- (2603:10b6:a03:e0::29) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EWh6nCUAGjWVtBiQcC78Y+X45XymRqD8YhZd7XEJIEo=;
+ b=wgP8Wt1+LY9+PTnBHHrLd3gfe646qxsRqKz6re9KG84eUh9x3vVIhq9wfkS/OfyeDzl8TeQwJqgF867y8LqunpStZojlYfdpL1Tnb73b6QZ8vcep/DticoftqAmsToeO5QmaEdupEI302Yh3dsWAKJ1bjkEmUw2pRtVPoz4jeTk=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by CO6PR10MB5443.namprd10.prod.outlook.com
+ (2603:10b6:303:13e::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.16; Sun, 15 Aug
+ 2021 19:10:35 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::e81f:cf8e:6ad6:d24d]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::e81f:cf8e:6ad6:d24d%3]) with mapi id 15.20.4415.022; Sun, 15 Aug 2021
+ 19:10:35 +0000
+Date:   Sun, 15 Aug 2021 12:10:29 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v3 net-next 09/10] net: dsa: ocelot: felix: add
+ support for VSC75XX control over SPI
+Message-ID: <20210815191029.GA3328995@euler>
+References: <20210814025003.2449143-1-colin.foster@in-advantage.com>
+ <20210814025003.2449143-10-colin.foster@in-advantage.com>
+ <20210814114329.mycpcfwoqpqxzsyl@skbuf>
+ <20210814120211.v2qjqgi6l3slnkq2@skbuf>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210814120211.v2qjqgi6l3slnkq2@skbuf>
+X-ClientProxiedBy: MWHPR1701CA0024.namprd17.prod.outlook.com
+ (2603:10b6:301:14::34) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
+MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21e8::1013] (2620:10d:c090:400::5:12bf) by BYAPR05CA0088.namprd05.prod.outlook.com (2603:10b6:a03:e0::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.8 via Frontend Transport; Sun, 15 Aug 2021 18:10:50 +0000
+Received: from euler (67.185.175.147) by MWHPR1701CA0024.namprd17.prod.outlook.com (2603:10b6:301:14::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.14 via Frontend Transport; Sun, 15 Aug 2021 19:10:34 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6342fd3a-2430-430a-67a6-08d96018045a
-X-MS-TrafficTypeDiagnostic: SN6PR15MB2415:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SN6PR15MB24156E86CD33C61005A09860D3FC9@SN6PR15MB2415.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:2958;
+X-MS-Office365-Filtering-Correlation-Id: 914ee486-74ac-4807-9ae2-08d960205be0
+X-MS-TrafficTypeDiagnostic: CO6PR10MB5443:
+X-Microsoft-Antispam-PRVS: <CO6PR10MB5443993CA6EF7E96C99A385CA4FC9@CO6PR10MB5443.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jE5plF4S+wH9ShNwnVm8LMs0NKPo7f1Qh1adI+qAL73su7BmvQzCChE9jHM+icnhQE5FdFEljs+Y+m2hOlwnwd8Bphl5Oyey6REESsmU1xLtbEl6wBmrdv8YgPDm2nRGyFUoYoY0pjCbBJG3gAzHAaAfccRdgwfewYSZo1eYoLzjw+pJ+V1CLq0GULwLNXPjZhEJDRETq+QFE8QIODwIFpCyjl7VOKhxUdLy2faLI15SOWr9oYfNCfKW8KpNbCYJ8OTh8lMUa2PHL2LiyrYBCFQvh1vjA7NFVfxqNUoMnda2az9+hVjWPtRP0J8D16AWtGIJ1hRHKgsU18y604NruNBJz9arRDXmEgxqz3c9UaOqae76y9Vn1BlT7DgQGBgzdUc92ykTQRmUGZE97Y3hj2A6Sj0qFn39JdAhe1kkecNUdt084BY9gE95xsmYpQ3m6bYPD+O62iwwtB/LKSEQ0NbtCKzuvcqmSpibBvNvFtBP0IFBg0oG6bqiXcxoB9Wh9zNHa5vgZZMwQU9FZJEHwR3avRtAF7zldlX+bR4KJ1WqvKE+ydVIPjvb396injG7vI6ySCk3INsSlkaOPUkQRb8x/S7blZ2p7Y0k9WvNRloDImYufmmyUWGfu++mXc7Sv2A1pVUypwBATHbSMuwDVwS/1DJU78xc62qHrJBNvYsqZqgWoQ6VjD0DRBcfVq3i9BmHldgwN0/zQjWkGCzljXvfsE7GGSExAeR1iZxyGwtuFUZgNqWU3P4MKl1FxhOXLQ+IfcirTVt/LHLQF0ovKwkcutslLbLWwsbP3rw+zanmy/lhfEofT383h6QQdKYWJfVy6Lb8p3RHOyTHd/wutruTUWkQZgA/NCDtsoSlcPw=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(396003)(39860400002)(136003)(346002)(66556008)(66476007)(66574015)(53546011)(52116002)(66946007)(36756003)(8676002)(31696002)(38100700002)(6486002)(478600001)(8936002)(86362001)(7416002)(186003)(31686004)(2616005)(2906002)(316002)(4326008)(966005)(5660300002)(83380400001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: xI3hLBNO+F4k8JxTjegeEDtIxY4aPM/Pg2mNnzwArnYBfmm+JWKhbJ49n0UldcRrq3mMwGzljaGpgjGNGu28Fozlyk7WeitzwYvGNHI2udXcLubPLZ2bJddlM6EVSwmMyi6CddPoC0kZgwHiZnwzjsQSU+KQ8s4HB52644JUYbxjlk7LFitU8XJ/D//cv5tjT4RMZWU+rGxSfP54oZKsG2R+genqehAkHlb5qUXcUBNRCDOsW6jMOlhXT3CVuLSO2sbVRN1azj/jvzE8s1x58gRZixPEZKEVkUFYc/R5kUGCUr3F6aY4Ir4ASSxvq/vA5CIhJrs5UaZXqBMe4kFUeXt/QboCVKWFoRg17oK4zPuZQSPFxTlZmKcqD8VWdsWwn20tbTXAIkZHW3GPLt2GyT3q2zy29zQcOFPTW84m0+e60yX7olgEa0GK0RQA2MwKm1CiBWxm0/YlY2AERmzFlbEDXy27yerArBFUeORr9Ap8hCjylCZHDcwuV8TUWoXdrwjXptKc+y6PCbe2wIkRVoj+X06V7ExkW6ykMs3Hj+8KdhiCSXKbAjRFGzHqH5QJuNSXX/qrOdsF+3lEJ4QeKwQVsrPznb3bn3ZQm+Abg18kW9jIcOTBNGCxEF7hn9p84G1lWoW73W0CwzZHuaP2AQRmbzvAIZJkJdXAY476XLEpNg5SyC0PHUeJbHkSA9acg7XEFt7HD/zDlaLO+1ZE6JkMWqOlxHSFgB6T3ubmTFqECSgTfXECnyz3QsYEjABVj5XL+rT8oi7e5ElW+xEfAg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(366004)(396003)(136003)(39830400003)(346002)(86362001)(9686003)(9576002)(38350700002)(4326008)(66476007)(66556008)(66946007)(316002)(508600001)(44832011)(33716001)(2906002)(5660300002)(956004)(26005)(33656002)(6666004)(186003)(52116002)(6916009)(7416002)(83380400001)(8936002)(38100700002)(6496006)(1076003)(8676002)(55016002)(966005);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VDFCNE54MitXUnJGSkJRZks1a0oxQ0RsMHFpd0p6d1BYRHpVZmltYllNVjZy?=
- =?utf-8?B?RGRteFNqUkpWR1Jyb0d0NkhVTUoxMnVVYVJwdi9BU2hHOWExSVRwTVA5aUlB?=
- =?utf-8?B?L3MyMUFYSmlrRzU1S2Nsb0ozZENtSWpIMlBjdGxpWTBLY1ZOVjlUbmp4N0Iz?=
- =?utf-8?B?M1ZFSWhhVy9vekpMU25ZUk91QTAxNkJWaFNZV294S1VqbW92bC80amQ2OEQ1?=
- =?utf-8?B?Q3FEZzNrNVluUEJJRFFhZW85U0NRNU1xcUZ0cTFaT1Nyb3krU2p1QkFhbWJL?=
- =?utf-8?B?RFBmSktndGowRVFyVzBjYUdETVJCVklEaGVMdFZrLzNXR2VZaHJzNWJjR2hU?=
- =?utf-8?B?eHA3UFNPUHYzd2FySlRuVVhvOEFJVllMRlUrYlFqOTVjNG1xMHZVem9SODkx?=
- =?utf-8?B?UDdCL2g5SUFXYlhlS3p2S2NZRUdrMHcrUDRXRDFnQTVrMjhWYWRUOW1vdnJo?=
- =?utf-8?B?ZGp3TjZHMlo1d3FXZWFwQitod2RuamJnVVluNnh6TTQ0YzFUcDB2TjhGTjJC?=
- =?utf-8?B?cThHY3R6NG1WNThxQXFRWFBVbFRhaHZTSmIranpEK2tySjlMZDBvZE1jS1N3?=
- =?utf-8?B?WCtqWXBqd3RFS2RxUUV0T1BiazBGZENwSHNlMVdiMFJERHdMalBuTnZJbG16?=
- =?utf-8?B?VkRRRHNobE5pcnQ4M3l3bkdSWWNVMDNCRTVBMmFoOUZ5dU9nemgzWEpXY2Vt?=
- =?utf-8?B?c1hHT2VPRCtBeWlhVURobkVwL3IzbktabERmYTJURWF4VWdkWDdQQkhnNU1G?=
- =?utf-8?B?eWVGakYxRVhVY2dDbXA4VjcxaTgzaWtDcXV6bzhTMWVyNHJrUmI4S3pRK3Zv?=
- =?utf-8?B?a1VUSU9YWTFERDM2aXRnbllaQ2tFNEczUGE5bjg1Y0J6eXVESUlJUG5UZE1O?=
- =?utf-8?B?R2NZTzUySVpGb1BkVmVaUVVsemNqK2k0TGJZTFloMW9rZFhvclFoaTNUVVFa?=
- =?utf-8?B?RHVGOVRlV0kvejJERDcxZUdYTXVFSGl2WGJaUGttbWR3R2JwamNrSkNWeHBS?=
- =?utf-8?B?OGd0bXR4TVlPanZjeWZ1R1U0K3VsOURici9jRUUwUzI1bVplN2VkTjJKcFd3?=
- =?utf-8?B?bHlkbVhaQllCVHhLcFpoYnZQdVhqZjhubEhNbW1UWk11MmpxU0VPall1cTll?=
- =?utf-8?B?L3pXWkZmM1RrcnFNWWNaWkV6a2ZFa3VTWmFXVkV6eTFlWjEvVVg5K1BPV3ZW?=
- =?utf-8?B?cEVRazZVeFl2dmhmSU9xaUJVYWhBSXU0ZkpJK1Q3bk82VGxDa0lqZGNtQXJh?=
- =?utf-8?B?R2JML0c4bGxYcmMrUWNzUWorMjIwc2EralJWbGZOKy9lSDNzQm5hK0hoaUpX?=
- =?utf-8?B?OE9YSGpXM1FmZUpVSitpK3FMQWV4anA1VmZaVWhlMW9rbW5LM25tS3JFOVox?=
- =?utf-8?B?eEU5cEVMNGUyM2JKMUNWZzArSlNmNHRuMUhIWU00WExVQW4xZUFjUzJnNkNS?=
- =?utf-8?B?TmNZeGNOeDBLdVFQT2ZaSzF5WUc0a2hnWnIyaE5WNStacFZBNkFyczV3aVFw?=
- =?utf-8?B?N002c0VHWWZWK25IR3BEQlNMbnpUYUNGeXhzT1hkczFwZ242ZkpBVTZkZHds?=
- =?utf-8?B?S2pGN0JZeFlEUnFueHVlV3JKWG80ODZBTm1KVGJWUFVCc24zL0IxRlROb2VD?=
- =?utf-8?B?R3NQL3k3UzVqS2VlcEoxcG01aEcxeDg3dkl5OTdvVlUzVENhSWV4UHN5ZWFC?=
- =?utf-8?B?RmFiVFl6VFJkaVVDTXkxWDJza0RHSzIyZlFYNXY1K29OUExvZDhOTk1uNk8y?=
- =?utf-8?B?SEIwTG5hMzlydXhacVJ4bFAzdzUyWjhDZ1N2cXErLytyTWFHNVMyMVVXbmNw?=
- =?utf-8?B?cFN5UEtya0ZTMHVVUVZQdz09?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6342fd3a-2430-430a-67a6-08d96018045a
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QdRZkugfpVFZWOazOltSrHBxCo1h21RUWJE/k48fhyCn4ZwE9UCwKyny8/Lw?=
+ =?us-ascii?Q?aaynmyCSraX/SLOkMJaZzOrcjiHVHSpcWUFnodq2G+WRcG1Z02U7AF51maWt?=
+ =?us-ascii?Q?LoLFjExIWdrPsR8z+4DMu07AOfpvn43yG4AIXHtW+fAyK97VQvaZB76deXqd?=
+ =?us-ascii?Q?TbzdtqYoClzTX2iP3mcnT/GogwkfcMnhiw5zATY/JtKEVnOld4HPi6LTAlTF?=
+ =?us-ascii?Q?cY2jQYNoSnELXGGBI8XD1+nynLWuhhlBq6h1TSOW+1b1/YGAuCk2AeNXom9l?=
+ =?us-ascii?Q?Lja1ym1NlO/McynHB/PWMiZxcAmnTq/Riv48sCIJwC31O+TpH97jOQwsGPat?=
+ =?us-ascii?Q?X/l0uWu82mT8oIwrjtyaqUiFYPcRu+YGeTCZx/lQhhBXcEU0tbFswr/earkK?=
+ =?us-ascii?Q?hSNO47Lthsb+QWNV1e3iFdurF3+UawxqsUSOLpguMJRqAhCEM3Hz7FDEkTmK?=
+ =?us-ascii?Q?OHTVBEok6Pj1zllqpypAdJ9/SBJzxupxQMTlvtNc8XuM14b68SNPiqmXQBBO?=
+ =?us-ascii?Q?YoJa/xAPfysPdkbsxqvtTzyyJMd2YWc6mNAKg8/arOAZO2Aqz7tOFq31b++g?=
+ =?us-ascii?Q?XNIwcRHJ3i1QgnyuVr4iGavp6RWK36FvOTRR4LdN1Y3CVEzL24XbdJ9yEOYA?=
+ =?us-ascii?Q?E6kH7d7nEK3HvgY8NkC38/BmP7Tf4PiNWYtitO5A/Ksfas7eq9R0NDZbqBqv?=
+ =?us-ascii?Q?0LjRQbA8oUJPnAWBfbas5pcrxpxw5srbtvkR8F8lRV8afpYhf6Y87jp1/0By?=
+ =?us-ascii?Q?jdmCDcgnBQlzUXILs/SGipiWLWfKtHYzPucg+b2Hu5epDddsoNszSljEZlBK?=
+ =?us-ascii?Q?87vNsnCmtyg9PW3YQk6hplSZN//KruziwvF6qIWPD+ws45ZDzG6UDh7WWw1Q?=
+ =?us-ascii?Q?g5Xtw4EschIWq+6FD2JQVQzy4GtItn5YvcndzW9LuqUfLnFS9OLfSAejLz8f?=
+ =?us-ascii?Q?SGPOoEnOCEG6SZc33IycU23PJGGd6DJ5cf537Qb8E0MFseUYTC+7fK47THDt?=
+ =?us-ascii?Q?LSkexQaheWBA8faidKRcrkeSnAVKYWyWGxNOJ0gKpEVVCjc9djBYpnOyp7Ph?=
+ =?us-ascii?Q?TlfH/zAd7WUtseZs8t8pcNMBr/+3xa3bKK5NLZCnkjrc/fnhdolt8+8ap/S/?=
+ =?us-ascii?Q?DPzbofqGqy4ej2KRODPRd/qrXhrfqMPuckGfSPZ8A8Iydg7HuJRVjGMBms+a?=
+ =?us-ascii?Q?/QYQxCuNfzGOXOwW5T6gfs+IxYK23y07U13TBeJq0ZdJyktCl4aT5PvHh9aD?=
+ =?us-ascii?Q?Y7GzHm70IpamYJD2vSGpCBgpBaCXR/4VfBisk0Aju21/g8VN5MsRjT9IuACO?=
+ =?us-ascii?Q?mGX2Kppi73BiXov13OdIRzqH?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 914ee486-74ac-4807-9ae2-08d960205be0
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2021 18:10:51.9550
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2021 19:10:34.9070
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Tak1JeENAMvkwwbU2yr4CRnBakZMmUWmmq0kBOGUUz/cemIkE3QpxEvK9gjUbupD
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR15MB2415
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: J7SbzyFZXcWL4U4Alho8WTY7TLgpxylb
-X-Proofpoint-GUID: J7SbzyFZXcWL4U4Alho8WTY7TLgpxylb
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 1 URL was un-rewritten
-MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-08-15_06:2021-08-13,2021-08-15 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- phishscore=0 adultscore=0 malwarescore=0 bulkscore=0 mlxscore=0
- impostorscore=0 spamscore=0 clxscore=1015 mlxlogscore=999
- lowpriorityscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2107140000 definitions=main-2108150125
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-UserPrincipalName: PL+3z/xlYyc4B0eTU9ZC9uTdf1gzAmHZZ9df0HILnuT1pmFu5V9m9Xj+uyYBShfDfCeWL0CHrOnjnT6Yk8DgtnL0zrj7AymJWIGG1PxXtNM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR10MB5443
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 8/13/21 5:21 PM, Kuniyuki Iwashima wrote:
-> From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> Date:   Fri, 13 Aug 2021 16:25:53 -0700
->> On Thu, Aug 12, 2021 at 9:46 AM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
->>>
->>> The iterator can output almost the same result compared to /proc/net/unix.
->>> The header line is aligned, and the Inode column uses "%8lu" because "%5lu"
->>> can be easily overflown.
->>>
->>>    # cat /sys/fs/bpf/unix
->>>    Num               RefCount Protocol Flags    Type St Inode    Path
->>
->> It's totally my OCD, but why the column name is not aligned with
->> values? I mean the "Inode" column. It's left aligned, but values
->> (numbers) are right-aligned? I'd fix that while applying, but I can't
->> apply due to selftests failures, so please take a look.
+On Sat, Aug 14, 2021 at 03:02:11PM +0300, Vladimir Oltean wrote:
+> On Sat, Aug 14, 2021 at 02:43:29PM +0300, Vladimir Oltean wrote:
+> > The issue is that the registers for the PCS1G block look nothing like
+> > the MDIO clause 22 layout, so anything that tries to map the struct
+> > ocelot_pcs over a struct mdio_device is going to look like a horrible
+> > shoehorn.
+> > 
+> > For that we might need Russell's assistance.
+> > 
+> > The documentation is at:
+> > http://ww1.microchip.com/downloads/en/DeviceDoc/VMDS-10489.pdf
+> > search for "Information about the registers for this product is available in the attached file."
+> > and then open the PDF embedded within the PDF.
 > 
-> Ah, honestly, I've felt something strange about the column... will fix it!
+> In fact I do notice now that as long as you don't use any of the
+> optional phylink_mii_c22_pcs_* helpers in your PCS driver, then
+> struct phylink_pcs has pretty much zero dependency on struct mdio_device,
+> which means that I'm wrong and it should be completely within reach to
+> write a dedicated PCS driver for this hardware.
 > 
+> As to how to make the common felix.c work with different implementations
+> of struct phylink_pcs, one thing that certainly has to change is that
+> struct felix should hold a struct phylink_pcs **pcs and not a
+> struct lynx_pcs **pcs.
 > 
->>
->>
->>>    ffff963c06689800: 00000002 00000000 00010000 0001 01    18697 private/defer
->>>    ffff963c7c979c00: 00000002 00000000 00000000 0001 01   598245 @Hello@World@
->>>
->>>    # cat /proc/net/unix
->>>    Num       RefCount Protocol Flags    Type St Inode Path
->>>    ffff963c06689800: 00000002 00000000 00010000 0001 01 18697 private/defer
->>>    ffff963c7c979c00: 00000002 00000000 00000000 0001 01 598245 @Hello@World@
->>>
->>> Note that this prog requires the patch ([0]) for LLVM code gen.  Thanks to
->>> Yonghong Song for analysing and fixing.
->>>
->>> [0] https://reviews.llvm.org/D107483
->>>
->>> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
->>> Acked-by: Yonghong Song <yhs@fb.com>
->>> ---
->>
->> This selftests breaks test_progs-no_alu32 ([0], the error log is super
->> long and can freeze browser; it looks like an infinite loop and BPF
->> verifier just keeps reporting it until it runs out of 1mln
->> instructions or something). Please check what's going on there, I
->> can't land it as it is right now.
->>
->>    [0] https://github.com/kernel-patches/bpf/runs/3326071112?check_suite_focus=true#step:6:124288
->>
->>
->>>   tools/testing/selftests/bpf/README.rst        | 38 +++++++++
->>>   .../selftests/bpf/prog_tests/bpf_iter.c       | 16 ++++
->>>   tools/testing/selftests/bpf/progs/bpf_iter.h  |  8 ++
->>>   .../selftests/bpf/progs/bpf_iter_unix.c       | 77 +++++++++++++++++++
->>>   .../selftests/bpf/progs/bpf_tracing_net.h     |  4 +
->>>   5 files changed, 143 insertions(+)
->>>   create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_unix.c
->>>
->>
->> [...]
->>
->>> +                       /* The name of the abstract UNIX domain socket starts
->>> +                        * with '\0' and can contain '\0'.  The null bytes
->>> +                        * should be escaped as done in unix_seq_show().
->>> +                        */
->>> +                       int i, len;
->>> +
->>
->> no_alu32 variant probably isn't happy about using int for this, it
->> probably does << 32, >> 32 dance and loses track of actual value in
->> the loop. You can try using u64 instead.
+> Does this mean that we should refactor lynx_pcs_create() to return a
+> struct phylink_pcs * instead of struct lynx_pcs *, and lynx_pcs_destroy()
+> to receive the struct phylink_pcs *, use container_of() and free the
+> larger struct lynx_pcs *? Yes, probably.
 > 
-> Sorry, I missed the no_alu32 test.
-> Changing int to __u64 fixed the error, thanks!
+> If you feel uncomfortable with this, I can try to refactor lynx_pcs to
+> make it easier to accomodate a different PCS driver in felix.
 
-Indeed for no_alu32, the index has << 32 and >> 32, which makes
-verifier *equivalent* register tracking not effective, see below:
+I think this is pretty straightforward. That seems like the same thing
+I'd done to get regmap working in this patch since my first attempt.
 
-       96:       r1 = r8 
-
-       97:       r1 <<= 32 
-
-       98:       r2 = r1 
-
-       99:       r2 >>= 32 
-
-      100:       if r2 > 109 goto +19 <LBB0_21> 
-
-      101:       r1 s>>= 32 
-
-      102:       if r1 s< 2 goto +17 <LBB0_21> 
-
-      103:       r9 = 1 
-
-      104:       r8 <<= 32 
-
-      105:       r8 >>= 32
-
-Because these shifting, r1/r2/r8 equivalence cannot be
-easily established, so verifier ends with conservative
-r8 and cannot verify program successfully.
-
-Using __u64 for 'i' and 'len', the upper bound is directly
-tested:
-       98:       if r8 > 109 goto +16 <LBB0_21> 
-
-       99:       if r8 < 2 goto +15 <LBB0_21>
-and verifier is very happy with this.
-
-> 
-> 
->>
->>> +                       len = unix_sk->addr->len - sizeof(short);
->>> +
->>> +                       BPF_SEQ_PRINTF(seq, " @");
->>> +
->>> +                       /* unix_mkname() tests this upper bound. */
->>> +                       if (len < sizeof(struct sockaddr_un))
->>> +                               for (i = 1; i < len; i++)
->>
->> if you move above if inside the loop to break out of the loop, does it
->> change how Clang generates code?
->>
->> for (i = 1; i < len i++) {
->>      if (i >= sizeof(struct sockaddr_un))
->>          break;
->>      BPF_SEQ_PRINTF(...);
->> }
-> 
-> Yes, but there seems little defference.
-> Which is preferable?
-> 
-> ---8<---
-> before (for inside if) <- -> after (if inside loop)
->        96:	07 08 00 00 fe ff ff ff	r8 += -2			  |	; 			for (i = 1; i < len; i++) {
-> ; 			if (len < sizeof(struct sockaddr_un))		  |	      97:	bf 81 00 00 00 00 00 00	r1 = r8
->        97:	25 08 10 00 6d 00 00 00	if r8 > 109 goto +16 <LBB0_21>	  |	      98:	07 01 00 00 fc ff ff ff	r1 += -4
-> ; 				for (i = 1; i < len; i++)		  |	      99:	25 01 12 00 6b 00 00 00	if r1 > 107 goto +18 <LBB0_21>
->        98:	a5 08 0f 00 02 00 00 00	if r8 < 2 goto +15 <LBB0_21>	  |	     100:	07 08 00 00 fe ff ff ff	r8 += -2
->        99:	b7 09 00 00 01 00 00 00	r9 = 1				  |	     101:	b7 09 00 00 01 00 00 00	r9 = 1
->       100:	05 00 16 00 00 00 00 00	goto +22 <LBB0_18>		  |	     102:	b7 06 00 00 02 00 00 00	r6 = 2
-> 									  |	     103:	05 00 17 00 00 00 00 00	goto +23 <LBB0_17>
-> ...
->       111:	85 00 00 00 7e 00 00 00	call 126			  |	     113:	b4 05 00 00 08 00 00 00	w5 = 8
-> ; 				for (i = 1; i < len; i++)		  |	     114:	85 00 00 00 7e 00 00 00	call 126
->       112:	07 09 00 00 01 00 00 00	r9 += 1				  |	; 			for (i = 1; i < len; i++) {
->       113:	ad 89 09 00 00 00 00 00	if r9 < r8 goto +9 <LBB0_18>	  |	     115:	25 08 02 00 6d 00 00 00	if r8 > 109 goto +2 <LBB0_21>
-> 									  >	     116:	07 09 00 00 01 00 00 00	r9 += 1
-> 									  >	; 			for (i = 1; i < len; i++) {
-> 									  >	     117:	ad 89 09 00 00 00 00 00	if r9 < r8 goto +9 <LBB0_17>
-> ---8<---
-> 
-> 
->>
->>
->>> +                                       BPF_SEQ_PRINTF(seq, "%c",
->>> +                                                      unix_sk->addr->name->sun_path[i] ?:
->>> +                                                      '@');
->>> +               }
->>> +       }
->>> +
->>> +       BPF_SEQ_PRINTF(seq, "\n");
->>> +
->>> +       return 0;
->>> +}
->>> diff --git a/tools/testing/selftests/bpf/progs/bpf_tracing_net.h b/tools/testing/selftests/bpf/progs/bpf_tracing_net.h
->>> index 3af0998a0623..eef5646ddb19 100644
->>> --- a/tools/testing/selftests/bpf/progs/bpf_tracing_net.h
->>> +++ b/tools/testing/selftests/bpf/progs/bpf_tracing_net.h
->>> @@ -5,6 +5,10 @@
->>>   #define AF_INET                        2
->>>   #define AF_INET6               10
->>>
->>> +#define __SO_ACCEPTCON         (1 << 16)
->>> +#define UNIX_HASH_SIZE         256
->>> +#define UNIX_ABSTRACT(unix_sk) (unix_sk->addr->hash < UNIX_HASH_SIZE)
->>> +
->>>   #define SOL_TCP                        6
->>>   #define TCP_CONGESTION         13
->>>   #define TCP_CA_NAME_MAX                16
->>> --
->>> 2.30.2
->>>
+Should this be a new commit in this patchset or a standalone patch?
