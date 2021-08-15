@@ -2,93 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3441F3ECAD0
+	by mail.lfdr.de (Postfix) with ESMTP id 7D1323ECAD1
 	for <lists+netdev@lfdr.de>; Sun, 15 Aug 2021 22:16:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230444AbhHOUQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Aug 2021 16:16:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43910 "EHLO
+        id S231223AbhHOUQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Aug 2021 16:16:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229582AbhHOUQY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Aug 2021 16:16:24 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2758C061764
-        for <netdev@vger.kernel.org>; Sun, 15 Aug 2021 13:15:53 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id c4so2309140plh.7
-        for <netdev@vger.kernel.org>; Sun, 15 Aug 2021 13:15:53 -0700 (PDT)
+        with ESMTP id S229582AbhHOUQ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Aug 2021 16:16:27 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16CE2C061764
+        for <netdev@vger.kernel.org>; Sun, 15 Aug 2021 13:15:57 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id bo18so23425789pjb.0
+        for <netdev@vger.kernel.org>; Sun, 15 Aug 2021 13:15:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=9/mONj0q27snMY+u1qDGcrbPRL7b9LK06+7DLvHbLjc=;
-        b=alxhxwDCG2Xdgl6g8TjtfZhpZZpJRd9VYispm3J5PCXR6L//f+IQIh4GOwoF0LWsU7
-         Tlrbl1BTC/fmDtMxXBdRyNEROt520IYfF79LWxUG8yUkUYFX8DTeKXNE+Kvv0GtAhxGr
-         2O6fbe9IPS+NTgrZWQNuWQUca9Es71ZcRGybo=
+        bh=q0exBt4B/jgWCBtT3iMRX1mUy0GWZHfoeANY091bjFM=;
+        b=POdwGz0rRoqC3x6ysETWVHgb/eBgXG2GHFya9cn1bA9qmGTgnMpJY7/iDtmgATR90G
+         6NdZ71tW5DljELX2vykiugL5ZwES+9EJgEM1P2mrJdOFHzOEmue8yJcWWqkNWL13RFxG
+         2dkHw2+mcc09af0XA3WhNrzj9H20bcesRCgtk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=9/mONj0q27snMY+u1qDGcrbPRL7b9LK06+7DLvHbLjc=;
-        b=GQdAn3b7tcSNJVkV3Q1fb3hIyljkarV+NlbmbPT7nqOLhLhTWFa/HJHaRV736qzLXO
-         AJM+y0Y+Q4a1lnX9SgMr2VxZ2t6HesyQV7WAMogViGI5/KRjpKvQjLJVnq2BRfAJY4Or
-         SD+yW+LLoY3MWCBA5V+SqVcRKsZOHPCUlxa3fVNBXK15guRsQyVS2DTJstfjyEZzfShw
-         JD5n6hE/hY2fQQ2zmGgUntYAcFff6O2GUpf/8xoluNMFnaEi1/nmRbF/KRz7e+UfEHNT
-         Zr8nJxhGvYrJOAQBjxMUN164ejSsfmpUhbLa70BHq4or1mat63Vs65njTjGQb35H3ibX
-         TLlw==
-X-Gm-Message-State: AOAM531b+hqUfJ1rHczPpuYGhhbx5A32QI4TObqFwLThwL2vm6zbeLzq
-        pNvYFPktWokMM3DrHtYWhM1+Yw==
-X-Google-Smtp-Source: ABdhPJwYpZMwvBWd7X7f0/bsU7yTKi0YSeaBGn2aLBCy3NmyrRC8nhSi3lUFc+617o0KfYMd8LqK4g==
-X-Received: by 2002:aa7:8185:0:b029:3aa:29a2:39d3 with SMTP id g5-20020aa781850000b02903aa29a239d3mr12945863pfi.28.1629058553330;
-        Sun, 15 Aug 2021 13:15:53 -0700 (PDT)
+        bh=q0exBt4B/jgWCBtT3iMRX1mUy0GWZHfoeANY091bjFM=;
+        b=Kl3BxCyWr4ymFZYENnzBEOVCQL1Kpr3A43vgP/nxJ5FtPmJkx0PqyIBFBUAtFFCm3L
+         lScfZuJOE91BWeSmkSx7uF9LO1TZn1X5xpB8pcfQIMiet++u4mqc/411e+5FeTRgeWkK
+         qQx8MCI56LvFxgS/PqO7cfcYHzhX9m8THU4XztH2SQkj4vln55JJtU+9oyFiNXrbQWrj
+         6qu5/5DR5FP8rcxLjhurvEDxWot62dwlyhlr3xQJOZ5QA/gE//tYWsPH3HbKfAXPAesr
+         SznXAV5z8UevgNnaqUSYVTG81fbhiQLGt1xH5c197GcCqHtlv1DjWkdKC1TP1b9MsNK/
+         45ng==
+X-Gm-Message-State: AOAM530sbxhrDkZk+8sYUmh9jOH50WYx00pEh+lQVdfh285cqG5KnFj2
+        DiWUpU/XlMzt996YB5XRypL1ztLmZlwd5A==
+X-Google-Smtp-Source: ABdhPJxg58WQ5rbk5WwvpkmSVoUxrOJky3BUoLp+NRzj4nZ4hP4tsWdvBoykuehEIA6TVYryfghEaw==
+X-Received: by 2002:a63:dc03:: with SMTP id s3mr12834692pgg.88.1629058556401;
+        Sun, 15 Aug 2021 13:15:56 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id n18sm9098510pfu.3.2021.08.15.13.15.50
+        by smtp.gmail.com with ESMTPSA id n18sm9098510pfu.3.2021.08.15.13.15.53
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 15 Aug 2021 13:15:53 -0700 (PDT)
+        Sun, 15 Aug 2021 13:15:56 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net 1/2] bnxt_en: Disable aRFS if running on 212 firmware
-Date:   Sun, 15 Aug 2021 16:15:36 -0400
-Message-Id: <1629058537-23284-2-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 2/2] bnxt_en: Add missing DMA memory barriers
+Date:   Sun, 15 Aug 2021 16:15:37 -0400
+Message-Id: <1629058537-23284-3-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1629058537-23284-1-git-send-email-michael.chan@broadcom.com>
 References: <1629058537-23284-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000006a402505c99ec07e"
+        boundary="00000000000099b16905c99ec007"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000006a402505c99ec07e
+--00000000000099b16905c99ec007
 
-212 firmware broke aRFS, so disable it.  Traffic may stop after ntuple
-filters are inserted and deleted by the 212 firmware.
+Each completion ring entry has a valid bit to indicate that the entry
+contains a valid completion event.  The driver's main poll loop
+__bnxt_poll_work() has the proper dma_rmb() to make sure the valid
+bit of the next entry has been checked before proceeding further.
+But when we call bnxt_rx_pkt() to process the RX event, the RX
+completion event consists of two completion entries and only the
+first entry has been checked to be valid.  We need the same barrier
+after checking the next completion entry.  Add missing dma_rmb()
+barriers in bnxt_rx_pkt() and other similar locations.
 
-Fixes: ae10ae740ad2 ("bnxt_en: Add new hardware RFS mode.")
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Fixes: 67a95e2022c7 ("bnxt_en: Need memory barrier when processing the completion ring.")
+Reported-by: Lance Richardson <lance.richardson@broadcom.com>
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+Reviewed-by: Lance Richardson <lance.richardson@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index dd2d2a5fef15..207ef7dc9bff 100644
+index 207ef7dc9bff..8a97640cdfe7 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -10792,6 +10792,9 @@ static bool bnxt_rfs_supported(struct bnxt *bp)
- 			return true;
- 		return false;
- 	}
-+	/* 212 firmware is broken for aRFS */
-+	if (BNXT_FW_MAJ(bp) == 212)
-+		return false;
- 	if (BNXT_PF(bp) && !BNXT_CHIP_TYPE_NITRO_A0(bp))
- 		return true;
- 	if (bp->flags & BNXT_FLAG_NEW_RSS_CAP)
+@@ -1788,6 +1788,10 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
+ 	if (!RX_CMP_VALID(rxcmp1, tmp_raw_cons))
+ 		return -EBUSY;
+ 
++	/* The valid test of the entry must be done first before
++	 * reading any further.
++	 */
++	dma_rmb();
+ 	prod = rxr->rx_prod;
+ 
+ 	if (cmp_type == CMP_TYPE_RX_L2_TPA_START_CMP) {
+@@ -2010,6 +2014,10 @@ static int bnxt_force_rx_discard(struct bnxt *bp,
+ 	if (!RX_CMP_VALID(rxcmp1, tmp_raw_cons))
+ 		return -EBUSY;
+ 
++	/* The valid test of the entry must be done first before
++	 * reading any further.
++	 */
++	dma_rmb();
+ 	cmp_type = RX_CMP_TYPE(rxcmp);
+ 	if (cmp_type == CMP_TYPE_RX_L2_CMP) {
+ 		rxcmp1->rx_cmp_cfa_code_errors_v2 |=
+@@ -2475,6 +2483,10 @@ static int bnxt_poll_nitroa0(struct napi_struct *napi, int budget)
+ 		if (!TX_CMP_VALID(txcmp, raw_cons))
+ 			break;
+ 
++		/* The valid test of the entry must be done first before
++		 * reading any further.
++		 */
++		dma_rmb();
+ 		if ((TX_CMP_TYPE(txcmp) & 0x30) == 0x10) {
+ 			tmp_raw_cons = NEXT_RAW_CMP(raw_cons);
+ 			cp_cons = RING_CMP(tmp_raw_cons);
 -- 
 2.18.1
 
 
---0000000000006a402505c99ec07e
+--00000000000099b16905c99ec007
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -159,13 +191,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEILIeUnlHOLjEGOcevOMISDVSHN/bfyvq
-Vz5JGV5EgvraMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgx
-NTIwMTU1M1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIFid7b+2DGS4h3713bjcgCuhO6DPLuoH
+1Ih9KSO572a6MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgx
+NTIwMTU1NlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQDEP4+hhGnx4/QYALzQIsYyrc4THX5GlKyEsF5DQShl8Pb6A9Ac
-5j0E93pttpdBC+nH845b2TT+9LSvz4peTiBKYgr0FAZdsyp6ijm0PF0CeXoO8WDwjJP9UH6oo6Pj
-sLiXWldgc4xpKStzUg84jLrSCWNWe7iQGvQKNejh33GZy8lCzrKm6sNFTSXRFsQLq70eDarybyvb
-B6ZAB9D4rnkbONQsIBaTBg2TW7jXzWIXYYC7HjFAJu2Sbmme+GjW7iQ5v7Zr5U7U3j3vEJo3u32J
-VaQz988HEkE2dXosRvrG2Aq8CZqd/0O5RlsoQHrOjbHfBQYFRm7srWscFpWbOHUy
---0000000000006a402505c99ec07e--
+ATANBgkqhkiG9w0BAQEFAASCAQCL5VRDG7HVcfws93RGcyF2nDvXB3d8p2o2Rtwcq09huohqKSwW
+0uZTzRwjoqXFYLD86onzAwj7vjGsJ3JkiXjOkbEwnTCPbWUCI6uMBAvCwYimxI+pd3NtVp9nkT9k
+V+Q/CDhc6pO9aEDbNT3wT6ON43JZ8x+Ab/v3mO+YPpZ3y/bT6YOZcDoZ7HJxWm2RZcz/pBdG5Hv+
+Cp+AhkuK+dxm3uzM6aiWpYL8X/74wjj4uz4CGyPpLVzU9lwMg/wes3iUZaVR8PJAtZ3Uv+uzkliE
+AUdhy7HhNYN9fo1ZC7zC/MloeRGbaeAJAC0v6HUA6vmwLTpeQnpHtqcoJCNbOZkD
+--00000000000099b16905c99ec007--
