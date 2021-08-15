@@ -2,88 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8309E3EC9A9
-	for <lists+netdev@lfdr.de>; Sun, 15 Aug 2021 16:46:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B72F83EC9AD
+	for <lists+netdev@lfdr.de>; Sun, 15 Aug 2021 16:49:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238507AbhHOOqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Aug 2021 10:46:52 -0400
-Received: from mail-ot1-f41.google.com ([209.85.210.41]:34646 "EHLO
-        mail-ot1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232465AbhHOOqv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Aug 2021 10:46:51 -0400
-Received: by mail-ot1-f41.google.com with SMTP id e13-20020a9d63cd0000b02904fa42f9d275so18081164otl.1;
-        Sun, 15 Aug 2021 07:46:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=bN9vbmH+m3Pz3a9oy8BHMNpNJ+l72voM9EutrVxvcfo=;
-        b=hZWOpjmIRcl+UtcKfYrhpZUeLq3VLV49mB2Inx9SONvJJRrvDW1Ie88VOAB/pye6Ts
-         k0csbN8iqTY+wL7G+IsDBsWKim0RkkQCio0Lj7iT6po+AvUfUjtiX3KhbG9S2xVot3Rv
-         h59iIFSHDoG9qpDJFF+lt+nOtRkVEypdzm/qNT6RUFUAyMpXxi/KWlRzx+yIZEiW+/ck
-         cH3zGFvKd45+eDTdgqjnbmxiUE9Jg1bY7rN8gKfK0qSkzOeKjndZOS74/r9nC95zg4IY
-         JzIs5HzGRHXL6nF5Cj0mp+tVr8JB8Kw0nbnodqbMWk9rWyTM8P1/izIynyLgwt8GPfYi
-         Cc0g==
-X-Gm-Message-State: AOAM532jYs3Q9FyDb+VMetAUDrEeMLkc0XMgJGoWOeduh88KTdURtDkG
-        eOxgppNhosoTc9e5dNrHMQ==
-X-Google-Smtp-Source: ABdhPJxOz7S+J5MfxTQeFPjpH1CJlbwBQMlfJvhsU9v1nWWA8PTlFMY7ojPLTzq2Ex737zmQZ7kDDg==
-X-Received: by 2002:a9d:640e:: with SMTP id h14mr9140741otl.119.1629038780992;
-        Sun, 15 Aug 2021 07:46:20 -0700 (PDT)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id o133sm174032oia.10.2021.08.15.07.46.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Aug 2021 07:46:20 -0700 (PDT)
-Received: (nullmailer pid 3706646 invoked by uid 1000);
-        Sun, 15 Aug 2021 14:46:19 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     David Bauer <mail@david-bauer.net>
-Cc:     devicetree@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        robh+dt@kernel.org, netdev@vger.kernel.org
-In-Reply-To: <20210814181107.138992-1-mail@david-bauer.net>
-References: <20210814181107.138992-1-mail@david-bauer.net>
-Subject: Re: [PATCH 1/2] dt-bindings: net: add RTL8152 binding documentation
-Date:   Sun, 15 Aug 2021 09:46:19 -0500
-Message-Id: <1629038779.035202.3706645.nullmailer@robh.at.kernel.org>
+        id S238544AbhHOOuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Aug 2021 10:50:06 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50668 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232179AbhHOOt6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 15 Aug 2021 10:49:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=6PILfRjAPIVbz7yptfJPF9IyZ40Hyv3qB6aT3DV5dp0=; b=ut2RCLnu27XQkRGthBymynOQQZ
+        Xd9ucWfi3PcTak22UjzYxGXAGt7U9J6iHthlTmr6SlbDZT39eIje4WbhY2ZEzJ6pkaJ2/pBNRKPK0
+        ON+VrolZU6G55MJ3K7AKMEb7xLbgA6AQJkfAFWdUI16lItFHaOmMy3hgObykL0iOW5t8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mFHRt-000FOs-IJ; Sun, 15 Aug 2021 16:49:17 +0200
+Date:   Sun, 15 Aug 2021 16:49:17 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Luo Jie <luoj@codeaurora.org>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, davem@davemloft.net,
+        kuba@kernel.org, robh+dt@kernel.org, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, robert.marko@sartura.hr,
+        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sricharan@codeaurora.org
+Subject: Re: [PATCH v3 1/3] net: mdio: Add the reset function for IPQ MDIO
+ driver
+Message-ID: <YRkpbb8e7EP1McjP@lunn.ch>
+References: <20210812100642.1800-1-luoj@codeaurora.org>
+ <20210812100642.1800-2-luoj@codeaurora.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210812100642.1800-2-luoj@codeaurora.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 14 Aug 2021 20:11:06 +0200, David Bauer wrote:
-> Add binding documentation for the Realtek RTL8152 / RTL8153 USB ethernet
-> adapters.
+On Thu, Aug 12, 2021 at 06:06:40PM +0800, Luo Jie wrote:
+> 1. configure the MDIO clock source frequency.
+> 2. the LDO resource is needed to configure the ethernet LDO available
+> for CMN_PLL.
 > 
-> Signed-off-by: David Bauer <mail@david-bauer.net>
-> ---
->  .../bindings/net/realtek,rtl8152.yaml         | 43 +++++++++++++++++++
->  1 file changed, 43 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/realtek,rtl8152.yaml
-> 
+> Signed-off-by: Luo Jie <luoj@codeaurora.org>
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/realtek,rtl8152.yaml: 'additionalProperties' is a required property
-	hint: A schema without a "$ref" to another schema must define all properties and use "additionalProperties"
-	from schema $id: http://devicetree.org/meta-schemas/base.yaml#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/realtek,rtl8152.yaml: ignoring, error in schema: 
-warning: no schema found in file: ./Documentation/devicetree/bindings/net/realtek,rtl8152.yaml
-Documentation/devicetree/bindings/net/realtek,rtl8152.example.dt.yaml:0:0: /example-0/usb@100/usb-eth@2: failed to match any schema with compatible: ['realtek,rtl8153']
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1516862
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+    Andrew
