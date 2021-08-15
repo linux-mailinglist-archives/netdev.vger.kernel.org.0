@@ -2,137 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DAB73EC899
-	for <lists+netdev@lfdr.de>; Sun, 15 Aug 2021 12:36:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 068043EC8A8
+	for <lists+netdev@lfdr.de>; Sun, 15 Aug 2021 12:49:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237532AbhHOKhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Aug 2021 06:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59076 "EHLO
+        id S237270AbhHOKtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Aug 2021 06:49:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237218AbhHOKhP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Aug 2021 06:37:15 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 539EAC061764;
-        Sun, 15 Aug 2021 03:36:45 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id u1so371495plr.1;
-        Sun, 15 Aug 2021 03:36:45 -0700 (PDT)
+        with ESMTP id S231596AbhHOKtu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Aug 2021 06:49:50 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FAB0C061764;
+        Sun, 15 Aug 2021 03:49:20 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id f10so6610751wml.2;
+        Sun, 15 Aug 2021 03:49:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=4mogHWA6QzT7FGmVvV4ib7TduNlR3+X2wSwpcAXlyN4=;
-        b=W6omr8rOLS+SIbhoYWYcUFGTpsMcBUKcXLrG+gjYlUCJux+gBeKcI1vAAhafD0wB2A
-         93LxZ5+ve2YtJFtWDJdDkpDiy6sI582s3PCmSUAw9O9JbB88v+bzkiNLgKZS9qlwdnJV
-         P5UMkyMnoYyEdaJ2hDfB0Do08GnvDVifdOUKh5lXu2p2HEtrUfSOmMwo9MPQoW25whpT
-         a0XwGIYMaPJyLGHNbOAipSJ9xR7e8vVPHGcFsJ4ehyLg+96+ttr90EOad0CgpQv3Hxr+
-         tW6GWiTCPidK7uUMdmVW4i9X0ikauisaj80uPEzwEqNS+ABsT8VQ99OnAk/h0IWK3cEM
-         OLwg==
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1CxQWhhARjoVMY5/tTuJPwWDah4z0FveG0g5iNjB8ZQ=;
+        b=bG5audem24BHB6wJddbcB8i4yYN5vp0jxn5DudeSNMiK0ig+jWQH/8ARzDeHY5kpC4
+         //YqoAzOo3PE6+1z6+CeH8s312iTsTYPP1xlMmCBo3qRhbKW3gb4ER1ilw6keoj8oGpS
+         GobRke+RbE4lqV5zuiYNhZ1hgVTO1z0dLzFeV5QM/h7XJlXlD+S8w/PcJdBiQk/M+c1V
+         fyUxSYd896YV3XZybODobUN4c0G5SFIvK3UOLMFmG6nNPhjrWo+uyB617FCasbwXQ1T/
+         0/44lCiq0Mk4jhElupRouXgBRH4YsxP2RCxbPy61qzzygIcW9a919jGVXfuI/gkD0lNG
+         q5Ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=4mogHWA6QzT7FGmVvV4ib7TduNlR3+X2wSwpcAXlyN4=;
-        b=KMkWg0XzeNFvYTTKjzR7EbwGTl9qCtmu6nnmIWvF1YDPrz8H9LDVGoLwR8Apj1i0ju
-         o7ZDXZHTzXQic63n5jbNO6+Bg1TJiDOeE010ULfp+O9xEcfdTmf2LreouzwKDDOcYrDn
-         8rqIq4qqmwdQwp7280PDNUwZXG1/aK3fR3zhNnmzb21Xv+zrxD7YSpMAdSwmu2A6wfpz
-         G3gXdxHWgepOJKkQSJ7VrXkqrmvfQ+VCtbGpoDHUPOBjwaIWPkx7Bhjzdg8UXC0KbnQ+
-         DPvhN6W9qJIuq0qt7u9e2WUYYS0J0vMKv/+emrE+E7Av/07u7Zt7c83DSeQeqhCqmPey
-         N0hg==
-X-Gm-Message-State: AOAM533Fx89osZtLvsh9rmTV3dq5Y+0vvJVYbvN+KL3PFN45mDa9okgc
-        3Pyekc2j2p8P2w+YkrqnWww=
-X-Google-Smtp-Source: ABdhPJxpP3qd297/qpXYquTLhToc/GzsL3OpkN1Nnd0Ea3xfWoxISAPJoelSHZKuQG/uydbXOi8ixQ==
-X-Received: by 2002:a63:d34e:: with SMTP id u14mr10682967pgi.244.1629023804820;
-        Sun, 15 Aug 2021 03:36:44 -0700 (PDT)
-Received: from u18.mshome.net ([167.220.238.196])
-        by smtp.gmail.com with ESMTPSA id j22sm8845515pgb.62.2021.08.15.03.36.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Aug 2021 03:36:44 -0700 (PDT)
-From:   Muhammad Falak R Wani <falakreyaz@gmail.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Yu Kuai <yukuai3@huawei.com>, linux-perf-users@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Muhammad Falak R Wani <falakreyaz@gmail.com>
-Subject: [PATCH] perflib: deprecate bpf_map__resize in favor of bpf_map_set_max_entries
-Date:   Sun, 15 Aug 2021 16:06:10 +0530
-Message-Id: <20210815103610.27887-1-falakreyaz@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1CxQWhhARjoVMY5/tTuJPwWDah4z0FveG0g5iNjB8ZQ=;
+        b=BCv5pkSrYdxR/yiU+o5PfhRt6XiJyzCohnpjmEqEXooEwwvtEme+x2kTueFpAodAgO
+         yTBk7gWV0MO210C3gCXafZ3TM++Diolo+B9gVFYvL92bdpT/gjgfDCpcjNEuN9zSiiS/
+         irM0qYrjUkIiCtWV/lzzZsWwGRaktGQkYq6SoD+Dr7HvQOUGgxDKzRp8NCIUZNKw26U6
+         RErAhd6Cq8t0KCCTcqS5HCbIHKxD3JI0iQTz8ENJnOEqaC42ElCOOuUBPwv/9QoU7MKc
+         A8fA9oQHjt4qqJOeJdHzdVIX54kUIPNhXVHtUzLQt6TdRPs3Jg7jM8eIFJUXqJu09D9E
+         LHRw==
+X-Gm-Message-State: AOAM533rb8a75h/NQtZ/UTr8hXcB2jVsiMxDm1fyIKp7PQhejJPUujO1
+        znDIRQkv75SY4J+rIBbfTlQ=
+X-Google-Smtp-Source: ABdhPJytWviH22yDk6aTFHkCZwAClH3nHUCl1exKXbol4mRzaTyX4je3koyDhCaPySpZ3QgzgSlIeg==
+X-Received: by 2002:a7b:c5c7:: with SMTP id n7mr10801270wmk.5.1629024559014;
+        Sun, 15 Aug 2021 03:49:19 -0700 (PDT)
+Received: from [192.168.8.197] ([148.252.133.97])
+        by smtp.gmail.com with ESMTPSA id x18sm7677487wrw.19.2021.08.15.03.49.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 15 Aug 2021 03:49:18 -0700 (PDT)
+To:     Josh Triplett <josh@joshtriplett.org>
+Cc:     Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Stefan Metzmacher <metze@samba.org>
+References: <cover.1628871893.git.asml.silence@gmail.com>
+ <YRbBYCn29B+kgZcy@localhost> <bcb6f253-41d6-6e0f-5b4b-ea1e02a105bc@gmail.com>
+ <YRiKg7tV+8oMtXtg@localhost>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+Subject: Re: [PATCH v2 0/4] open/accept directly into io_uring fixed file
+ table
+Message-ID: <c6c0a1ee-2417-6e9d-4206-77f9498a4401@gmail.com>
+Date:   Sun, 15 Aug 2021 11:48:48 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
+MIME-Version: 1.0
+In-Reply-To: <YRiKg7tV+8oMtXtg@localhost>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As a part of libbpf 1.0 plan[0], this patch deprecates use of
-bpf_map__resize in favour of bpf_map__set_max_entries.
+On 8/15/21 4:31 AM, Josh Triplett wrote:
+> On Sat, Aug 14, 2021 at 01:50:24PM +0100, Pavel Begunkov wrote:
+>> On 8/13/21 8:00 PM, Josh Triplett wrote:
+>>> Rather than using sqe->file_index - 1, which feels like an error-prone
+>>> interface, I think it makes sense to use a dedicated flag for this, like
+>>> IOSQE_OPEN_FIXED. That flag could work for any open-like operation,
+>>> including open, accept, and in the future many other operations such as
+>>> memfd_create. (Imagine using a single ring submission to open a memfd,
+>>> write a buffer into it, seal it, send it over a UNIX socket, and then
+>>> close it.)
+>>>
+>>> The only downside is that you'll need to reject that flag in all
+>>> non-open operations. One way to unify that code might be to add a flag
+>>> in io_op_def for open-like operations, and then check in common code for
+>>> the case of non-open-like operations passing IOSQE_OPEN_FIXED.
+>>
+>> io_uring is really thin, and so I absolutely don't want any extra
+>> overhead in the generic path, IOW anything affecting
+>> reads/writes/sends/recvs.
+> 
+> There are already several checks for valid flags in io_init_req. For
+> instance:
 
-Reference: https://github.com/libbpf/libbpf/issues/304
-[0]: https://github.com/libbpf/libbpf/wiki/Libbpf:-the-road-to-v1.0#libbpfh-high-level-apis
+Yes, it's horrible and I don't want to make it any worse.
 
-Signed-off-by: Muhammad Falak R Wani <falakreyaz@gmail.com>
----
- tools/perf/util/bpf_counter.c        | 8 ++++----
- tools/perf/util/bpf_counter_cgroup.c | 8 ++++----
- 2 files changed, 8 insertions(+), 8 deletions(-)
+>         if ((sqe_flags & IOSQE_BUFFER_SELECT) &&
+>             !io_op_defs[req->opcode].buffer_select)
+>                 return -EOPNOTSUPP;
+> It'd be trivial to make io_op_defs have a "valid flags" byte, and one
+> bitwise op tells you if any invalid flags were passed. *Zero* additional
+> overhead for other operations.
 
-diff --git a/tools/perf/util/bpf_counter.c b/tools/perf/util/bpf_counter.c
-index ba0f20853651..ced2dac31dcf 100644
---- a/tools/perf/util/bpf_counter.c
-+++ b/tools/perf/util/bpf_counter.c
-@@ -127,9 +127,9 @@ static int bpf_program_profiler_load_one(struct evsel *evsel, u32 prog_id)
- 
- 	skel->rodata->num_cpu = evsel__nr_cpus(evsel);
- 
--	bpf_map__resize(skel->maps.events, evsel__nr_cpus(evsel));
--	bpf_map__resize(skel->maps.fentry_readings, 1);
--	bpf_map__resize(skel->maps.accum_readings, 1);
-+	bpf_map__set_max_entries(skel->maps.events, evsel__nr_cpus(evsel));
-+	bpf_map__set_max_entries(skel->maps.fentry_readings, 1);
-+	bpf_map__set_max_entries(skel->maps.accum_readings, 1);
- 
- 	prog_name = bpf_target_prog_name(prog_fd);
- 	if (!prog_name) {
-@@ -399,7 +399,7 @@ static int bperf_reload_leader_program(struct evsel *evsel, int attr_map_fd,
- 		return -1;
- 	}
- 
--	bpf_map__resize(skel->maps.events, libbpf_num_possible_cpus());
-+	bpf_map__set_max_entries(skel->maps.events, libbpf_num_possible_cpus());
- 	err = bperf_leader_bpf__load(skel);
- 	if (err) {
- 		pr_err("Failed to load leader skeleton\n");
-diff --git a/tools/perf/util/bpf_counter_cgroup.c b/tools/perf/util/bpf_counter_cgroup.c
-index 89aa5e71db1a..cbc6c2bca488 100644
---- a/tools/perf/util/bpf_counter_cgroup.c
-+++ b/tools/perf/util/bpf_counter_cgroup.c
-@@ -65,14 +65,14 @@ static int bperf_load_program(struct evlist *evlist)
- 
- 	/* we need one copy of events per cpu for reading */
- 	map_size = total_cpus * evlist->core.nr_entries / nr_cgroups;
--	bpf_map__resize(skel->maps.events, map_size);
--	bpf_map__resize(skel->maps.cgrp_idx, nr_cgroups);
-+	bpf_map__set_max_entries(skel->maps.events, map_size);
-+	bpf_map__set_max_entries(skel->maps.cgrp_idx, nr_cgroups);
- 	/* previous result is saved in a per-cpu array */
- 	map_size = evlist->core.nr_entries / nr_cgroups;
--	bpf_map__resize(skel->maps.prev_readings, map_size);
-+	bpf_map__set_max_entries(skel->maps.prev_readings, map_size);
- 	/* cgroup result needs all events (per-cpu) */
- 	map_size = evlist->core.nr_entries;
--	bpf_map__resize(skel->maps.cgrp_readings, map_size);
-+	bpf_map__set_max_entries(skel->maps.cgrp_readings, map_size);
- 
- 	set_max_rlimit();
- 
+Good point
+
+> Alternatively, since there are so few operations that open a file
+> descriptor, you could just add a separate opcode for those few
+> operations. That still seems preferable to overloading a 16-bit index
+> field for this.
+
+I don't think so
+
+> With this new mechanism, I think we're going to want to support more
+> than 65535 fixed-file entries. I can easily imagine wanting to handle
+> hundreds of thousands of files or sockets this way.
+
+May be. What I'm curious about is that the feature doesn't really
+change anything in this regard, but seems I haven't heard people
+asking for larger tables.
+
+>> The other reason is that there are only 2 bits left in sqe->flags,
+>> and we may use them for something better, considering that it's
+>> only open/accept and not much as this.
+> 
+> pipe, dup3, socket, socketpair, pidfds (via either pidfd_open or a
+> ring-based spawn mechanism), epoll_create, inotify, fanotify, signalfd,
+> timerfd, eventfd, memfd_create, userfaultfd, open_tree, fsopen, fsmount,
+> memfd_secret.
+
+We could argue for many of those whether they should be in io_uring,
+and whether there are many benefits having them async and so. It would
+have another story if all the ecosystem was io_uring centric, but
+that's speculations.
+
+> Of those, I personally would *love* to have at least pipe, socket,
+> pidfd, memfd_create, and fsopen/fsmount/open_tree, plus some manner of
+> dup-like operation for moving things between the fixed-file table and
+> file descriptors.
+> 
+> I think this is valuable and versatile enough to merit a flag. It would
+> also be entirely reasonable to create separate operations for these. But
+> either way, I don't think this should just be determined by whether a
+> 16-bit index is non-zero.
+> 
+>> I agree that it feels error-prone, but at least it can be wrapped
+>> nicely enough in liburing, e.g.
+>>
+>> void io_uring_prep_openat_direct(struct io_uring_sqe *sqe, int dfd,
+>> 				 const char *path, int flags,
+>> 				 mode_t mode, int slot_idx);
+> 
+> That wrapper wouldn't be able to handle more than a 16-bit slot index
+> though.
+
+It would. Note, the index is "int" there, so if doesn't fit
+into u16, we can fail it. And do conversion if required.
+
+>>> Also, rather than using a 16-bit index for the fixed file table and
+>>> potentially requiring expansion into a different field in the future,
+>>> what about overlapping it with the nofile field in the open and accept
+>>> requests? If they're not opening a normal file descriptor, they don't
+>>> need nofile. And in the original sqe, you can then overlap it with a
+>>> 32-bit field like splice_fd_in.
+>>
+>> There is no nofile in SQEs, though
+>>
+>> req->open.nofile = rlimit(RLIMIT_NOFILE);
+> 
+> nofile isn't needed for opening into the fixed-file table, so it could
+> be omitted in that case, and another field unioned with it.
+
+There is no problem to place it internally. Moreover, it's at the
+moment uniformly placed inside io_kiocb, but with nofile we'd need
+to find the place on per-op basis.
+
+Not like any matters, it's just bike shedding.
+
+> allow passing a 32-bit fixed-file index into open and accept without
+> growing the size of their structures. I think, with this new capability,
+> we're going to want a large number of fixed files available.
+> 
+> In the SQE, you could overlap it with the splice_fd_in field, which
+> isn't needed by any calls other than splice.
+
+But it doesn't mean it won't be used, as happened with pretty every
+other field in SQE. So, it rather depends on what packing is wanted.
+And reusing almost never used ->buf_index (and potentially ->ioprio),
+sounds reasonable.
+
 -- 
-2.17.1
-
+Pavel Begunkov
