@@ -2,193 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 068043EC8A8
-	for <lists+netdev@lfdr.de>; Sun, 15 Aug 2021 12:49:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3311F3EC8AE
+	for <lists+netdev@lfdr.de>; Sun, 15 Aug 2021 13:10:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237270AbhHOKtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Aug 2021 06:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231596AbhHOKtu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Aug 2021 06:49:50 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FAB0C061764;
-        Sun, 15 Aug 2021 03:49:20 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id f10so6610751wml.2;
-        Sun, 15 Aug 2021 03:49:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1CxQWhhARjoVMY5/tTuJPwWDah4z0FveG0g5iNjB8ZQ=;
-        b=bG5audem24BHB6wJddbcB8i4yYN5vp0jxn5DudeSNMiK0ig+jWQH/8ARzDeHY5kpC4
-         //YqoAzOo3PE6+1z6+CeH8s312iTsTYPP1xlMmCBo3qRhbKW3gb4ER1ilw6keoj8oGpS
-         GobRke+RbE4lqV5zuiYNhZ1hgVTO1z0dLzFeV5QM/h7XJlXlD+S8w/PcJdBiQk/M+c1V
-         fyUxSYd896YV3XZybODobUN4c0G5SFIvK3UOLMFmG6nNPhjrWo+uyB617FCasbwXQ1T/
-         0/44lCiq0Mk4jhElupRouXgBRH4YsxP2RCxbPy61qzzygIcW9a919jGVXfuI/gkD0lNG
-         q5Ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=1CxQWhhARjoVMY5/tTuJPwWDah4z0FveG0g5iNjB8ZQ=;
-        b=BCv5pkSrYdxR/yiU+o5PfhRt6XiJyzCohnpjmEqEXooEwwvtEme+x2kTueFpAodAgO
-         yTBk7gWV0MO210C3gCXafZ3TM++Diolo+B9gVFYvL92bdpT/gjgfDCpcjNEuN9zSiiS/
-         irM0qYrjUkIiCtWV/lzzZsWwGRaktGQkYq6SoD+Dr7HvQOUGgxDKzRp8NCIUZNKw26U6
-         RErAhd6Cq8t0KCCTcqS5HCbIHKxD3JI0iQTz8ENJnOEqaC42ElCOOuUBPwv/9QoU7MKc
-         A8fA9oQHjt4qqJOeJdHzdVIX54kUIPNhXVHtUzLQt6TdRPs3Jg7jM8eIFJUXqJu09D9E
-         LHRw==
-X-Gm-Message-State: AOAM533rb8a75h/NQtZ/UTr8hXcB2jVsiMxDm1fyIKp7PQhejJPUujO1
-        znDIRQkv75SY4J+rIBbfTlQ=
-X-Google-Smtp-Source: ABdhPJytWviH22yDk6aTFHkCZwAClH3nHUCl1exKXbol4mRzaTyX4je3koyDhCaPySpZ3QgzgSlIeg==
-X-Received: by 2002:a7b:c5c7:: with SMTP id n7mr10801270wmk.5.1629024559014;
-        Sun, 15 Aug 2021 03:49:19 -0700 (PDT)
-Received: from [192.168.8.197] ([148.252.133.97])
-        by smtp.gmail.com with ESMTPSA id x18sm7677487wrw.19.2021.08.15.03.49.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 15 Aug 2021 03:49:18 -0700 (PDT)
-To:     Josh Triplett <josh@joshtriplett.org>
-Cc:     Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Stefan Metzmacher <metze@samba.org>
-References: <cover.1628871893.git.asml.silence@gmail.com>
- <YRbBYCn29B+kgZcy@localhost> <bcb6f253-41d6-6e0f-5b4b-ea1e02a105bc@gmail.com>
- <YRiKg7tV+8oMtXtg@localhost>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-Subject: Re: [PATCH v2 0/4] open/accept directly into io_uring fixed file
- table
-Message-ID: <c6c0a1ee-2417-6e9d-4206-77f9498a4401@gmail.com>
-Date:   Sun, 15 Aug 2021 11:48:48 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S230305AbhHOLGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Aug 2021 07:06:18 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:9620 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229469AbhHOLGR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Aug 2021 07:06:17 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 17F6lqYP030054;
+        Sun, 15 Aug 2021 04:05:41 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=rZbWBLQy/lqzWKNOZE4mSTYWfcCCh3ed7BThzcKSGGo=;
+ b=ffjzdfb7txwt8C4u2FFQDS4uaLSCs7LCMKOTlQ+F+2oDgp37CFUhV7sf1DiUpZ3zWuwt
+ 9Ds44I2Yi8mrblF+07SGr7SNjHrKC0m1uepNt/Y075I8NDbC/zWlJDRafGjMDS6kgFrk
+ w8ROMeCorsOrxXnn3f7QznmyHD4z+ycOI3JoYPMT5v69Bs0X/I/RV6vp/fjCHAYFybnF
+ vi7rOnYIyaI6YDq8IcUZw04BErAkt+ajdA3YyaUEskOJML9p7byu0Qh2PxTzaTEW3E1n
+ WNinbHAwxkqETkLGyNlEURVO6gppInVvFNOWLo6O8zjqYBwwYPdF0RHDzECiDkn+frw+ iQ== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 3aedbkj0f1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 15 Aug 2021 04:05:41 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Sun, 15 Aug
+ 2021 04:05:39 -0700
+Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
+ DC5-EXCH02.marvell.com (10.69.176.39) with Microsoft SMTP Server id
+ 15.0.1497.18 via Frontend Transport; Sun, 15 Aug 2021 04:05:37 -0700
+From:   Shai Malin <smalin@marvell.com>
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <aelior@marvell.com>, <smalin@marvell.com>, <malin1024@gmail.com>
+Subject: [PATCH v3] qed: qed ll2 race condition fixes
+Date:   Sun, 15 Aug 2021 14:05:08 +0300
+Message-ID: <20210815110508.19434-1-smalin@marvell.com>
+X-Mailer: git-send-email 2.16.6
 MIME-Version: 1.0
-In-Reply-To: <YRiKg7tV+8oMtXtg@localhost>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: 0I1iKUKElZcQxG3nhpU_3zPgPxyqBlpD
+X-Proofpoint-ORIG-GUID: 0I1iKUKElZcQxG3nhpU_3zPgPxyqBlpD
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-08-15_03,2021-08-13_02,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/15/21 4:31 AM, Josh Triplett wrote:
-> On Sat, Aug 14, 2021 at 01:50:24PM +0100, Pavel Begunkov wrote:
->> On 8/13/21 8:00 PM, Josh Triplett wrote:
->>> Rather than using sqe->file_index - 1, which feels like an error-prone
->>> interface, I think it makes sense to use a dedicated flag for this, like
->>> IOSQE_OPEN_FIXED. That flag could work for any open-like operation,
->>> including open, accept, and in the future many other operations such as
->>> memfd_create. (Imagine using a single ring submission to open a memfd,
->>> write a buffer into it, seal it, send it over a UNIX socket, and then
->>> close it.)
->>>
->>> The only downside is that you'll need to reject that flag in all
->>> non-open operations. One way to unify that code might be to add a flag
->>> in io_op_def for open-like operations, and then check in common code for
->>> the case of non-open-like operations passing IOSQE_OPEN_FIXED.
->>
->> io_uring is really thin, and so I absolutely don't want any extra
->> overhead in the generic path, IOW anything affecting
->> reads/writes/sends/recvs.
-> 
-> There are already several checks for valid flags in io_init_req. For
-> instance:
+Avoiding qed ll2 race condition and NULL pointer dereference as part
+of the remove and recovery flows.
 
-Yes, it's horrible and I don't want to make it any worse.
+Changes form V1:
+- Change (!p_rx->set_prod_addr).
+- qed_ll2.c checkpatch fixes.
 
->         if ((sqe_flags & IOSQE_BUFFER_SELECT) &&
->             !io_op_defs[req->opcode].buffer_select)
->                 return -EOPNOTSUPP;
-> It'd be trivial to make io_op_defs have a "valid flags" byte, and one
-> bitwise op tells you if any invalid flags were passed. *Zero* additional
-> overhead for other operations.
+Change from V2:
+- Revert "qed_ll2.c checkpatch fixes".
 
-Good point
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Signed-off-by: Shai Malin <smalin@marvell.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_ll2.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-> Alternatively, since there are so few operations that open a file
-> descriptor, you could just add a separate opcode for those few
-> operations. That still seems preferable to overloading a 16-bit index
-> field for this.
-
-I don't think so
-
-> With this new mechanism, I think we're going to want to support more
-> than 65535 fixed-file entries. I can easily imagine wanting to handle
-> hundreds of thousands of files or sockets this way.
-
-May be. What I'm curious about is that the feature doesn't really
-change anything in this regard, but seems I haven't heard people
-asking for larger tables.
-
->> The other reason is that there are only 2 bits left in sqe->flags,
->> and we may use them for something better, considering that it's
->> only open/accept and not much as this.
-> 
-> pipe, dup3, socket, socketpair, pidfds (via either pidfd_open or a
-> ring-based spawn mechanism), epoll_create, inotify, fanotify, signalfd,
-> timerfd, eventfd, memfd_create, userfaultfd, open_tree, fsopen, fsmount,
-> memfd_secret.
-
-We could argue for many of those whether they should be in io_uring,
-and whether there are many benefits having them async and so. It would
-have another story if all the ecosystem was io_uring centric, but
-that's speculations.
-
-> Of those, I personally would *love* to have at least pipe, socket,
-> pidfd, memfd_create, and fsopen/fsmount/open_tree, plus some manner of
-> dup-like operation for moving things between the fixed-file table and
-> file descriptors.
-> 
-> I think this is valuable and versatile enough to merit a flag. It would
-> also be entirely reasonable to create separate operations for these. But
-> either way, I don't think this should just be determined by whether a
-> 16-bit index is non-zero.
-> 
->> I agree that it feels error-prone, but at least it can be wrapped
->> nicely enough in liburing, e.g.
->>
->> void io_uring_prep_openat_direct(struct io_uring_sqe *sqe, int dfd,
->> 				 const char *path, int flags,
->> 				 mode_t mode, int slot_idx);
-> 
-> That wrapper wouldn't be able to handle more than a 16-bit slot index
-> though.
-
-It would. Note, the index is "int" there, so if doesn't fit
-into u16, we can fail it. And do conversion if required.
-
->>> Also, rather than using a 16-bit index for the fixed file table and
->>> potentially requiring expansion into a different field in the future,
->>> what about overlapping it with the nofile field in the open and accept
->>> requests? If they're not opening a normal file descriptor, they don't
->>> need nofile. And in the original sqe, you can then overlap it with a
->>> 32-bit field like splice_fd_in.
->>
->> There is no nofile in SQEs, though
->>
->> req->open.nofile = rlimit(RLIMIT_NOFILE);
-> 
-> nofile isn't needed for opening into the fixed-file table, so it could
-> be omitted in that case, and another field unioned with it.
-
-There is no problem to place it internally. Moreover, it's at the
-moment uniformly placed inside io_kiocb, but with nofile we'd need
-to find the place on per-op basis.
-
-Not like any matters, it's just bike shedding.
-
-> allow passing a 32-bit fixed-file index into open and accept without
-> growing the size of their structures. I think, with this new capability,
-> we're going to want a large number of fixed files available.
-> 
-> In the SQE, you could overlap it with the splice_fd_in field, which
-> isn't needed by any calls other than splice.
-
-But it doesn't mean it won't be used, as happened with pretty every
-other field in SQE. So, it rather depends on what packing is wanted.
-And reusing almost never used ->buf_index (and potentially ->ioprio),
-sounds reasonable.
-
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_ll2.c b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
+index 02a4610d9330..c46a7f756ed5 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_ll2.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
+@@ -327,6 +327,9 @@ static int qed_ll2_txq_completion(struct qed_hwfn *p_hwfn, void *p_cookie)
+ 	unsigned long flags;
+ 	int rc = -EINVAL;
+ 
++	if (!p_ll2_conn)
++		return rc;
++
+ 	spin_lock_irqsave(&p_tx->lock, flags);
+ 	if (p_tx->b_completing_packet) {
+ 		rc = -EBUSY;
+@@ -500,7 +503,16 @@ static int qed_ll2_rxq_completion(struct qed_hwfn *p_hwfn, void *cookie)
+ 	unsigned long flags = 0;
+ 	int rc = 0;
+ 
++	if (!p_ll2_conn)
++		return rc;
++
+ 	spin_lock_irqsave(&p_rx->lock, flags);
++
++	if (!QED_LL2_RX_REGISTERED(p_ll2_conn)) {
++		spin_unlock_irqrestore(&p_rx->lock, flags);
++		return 0;
++	}
++
+ 	cq_new_idx = le16_to_cpu(*p_rx->p_fw_cons);
+ 	cq_old_idx = qed_chain_get_cons_idx(&p_rx->rcq_chain);
+ 
+@@ -821,6 +833,9 @@ static int qed_ll2_lb_rxq_completion(struct qed_hwfn *p_hwfn, void *p_cookie)
+ 	struct qed_ll2_info *p_ll2_conn = (struct qed_ll2_info *)p_cookie;
+ 	int rc;
+ 
++	if (!p_ll2_conn)
++		return 0;
++
+ 	if (!QED_LL2_RX_REGISTERED(p_ll2_conn))
+ 		return 0;
+ 
+@@ -844,6 +859,9 @@ static int qed_ll2_lb_txq_completion(struct qed_hwfn *p_hwfn, void *p_cookie)
+ 	u16 new_idx = 0, num_bds = 0;
+ 	int rc;
+ 
++	if (!p_ll2_conn)
++		return 0;
++
+ 	if (!QED_LL2_TX_REGISTERED(p_ll2_conn))
+ 		return 0;
+ 
+@@ -1728,6 +1746,8 @@ int qed_ll2_post_rx_buffer(void *cxt,
+ 	if (!p_ll2_conn)
+ 		return -EINVAL;
+ 	p_rx = &p_ll2_conn->rx_queue;
++	if (!p_rx->set_prod_addr)
++		return -EIO;
+ 
+ 	spin_lock_irqsave(&p_rx->lock, flags);
+ 	if (!list_empty(&p_rx->free_descq))
 -- 
-Pavel Begunkov
+2.22.0
+
