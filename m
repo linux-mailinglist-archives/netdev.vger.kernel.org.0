@@ -2,81 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5CB13ECB77
-	for <lists+netdev@lfdr.de>; Sun, 15 Aug 2021 23:35:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F5313ECB7E
+	for <lists+netdev@lfdr.de>; Sun, 15 Aug 2021 23:40:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230365AbhHOVgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Aug 2021 17:36:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33246 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230077AbhHOVgX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Aug 2021 17:36:23 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3642FC061764;
-        Sun, 15 Aug 2021 14:35:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=lf6ZqlaldTQ8/H5hBqLtGjFsnJoVtCAQJrwngOOoJ8g=; b=zO2ttehAHQMPGuZYqeXF1ccyc
-        QY+ggWdtm2O9v6KjOvr24YtEGBs1xzDOsADsS7j/VnZ/Lk1mOCP4m686+OkJXJUpEXMkdIFoa+hgb
-        6vrjgtmyki5S96XET3rmuIx0DIjKWqpPfrpukY0GmD2+UufX33Wv0xFzjBFtFRjRTPXWFYiOD/QaH
-        P9XC067p0fa5Ml9DCIsde7CK6N+TE1G6+VQNvn5mP27rSfNWrgB0rxZRxwLvOCBW3KqOah4FRl318
-        CU1CUei38d5PVYhNIlK1ViE3o65JjOELuU821ob2fs7oJpB4CPWslnY/drRvZcl3svZ5v9RZ86gTc
-        /51odPzyw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47336)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mFNnA-0006ot-62; Sun, 15 Aug 2021 22:35:40 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mFNn7-0007Ji-Lk; Sun, 15 Aug 2021 22:35:37 +0100
-Date:   Sun, 15 Aug 2021 22:35:37 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Colin Foster <colin.foster@in-advantage.com>, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, hkallweit1@gmail.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v3 net-next 09/10] net: dsa: ocelot: felix: add
- support for VSC75XX control over SPI
-Message-ID: <20210815213537.GC22278@shell.armlinux.org.uk>
-References: <20210814025003.2449143-1-colin.foster@in-advantage.com>
- <20210814025003.2449143-10-colin.foster@in-advantage.com>
- <20210814114329.mycpcfwoqpqxzsyl@skbuf>
- <20210814120211.v2qjqgi6l3slnkq2@skbuf>
+        id S231484AbhHOVkc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Aug 2021 17:40:32 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:59428
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229935AbhHOVkc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Aug 2021 17:40:32 -0400
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net [80.193.200.194])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 722CE3F105;
+        Sun, 15 Aug 2021 21:39:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1629063593;
+        bh=To/roSNPwpACvahNmxSV8eOGz8/vn9OEVd54wbHH0M8=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=IUB08UJ6OCwbikGR7AON9oDovGqBPGO0lbd9y1MW5UqYW0Ql/zq/HdWqAiewu2gkU
+         k1RJHNTpUUhwBd6zu608WCBD6HtIfHi2khOuFmFu/tQYv0I4/Bxi+mNbHycfEa16RC
+         qNxyx2zkhNFpXKv8p7KCajIa47Hteqz0giHSeFgDda++bkUrKnaig4qaTXMA13VDHv
+         viFdqGSq0+fYE2TIPw/C2RkgAE37YJNXEFZNZ4mBIHJ9L1O2B9mK82eC9sXCtUAZLU
+         F2IHzvN/peWiX9feFTaLrmm0UVgsWJwvHWa84ijGjTlmmnOBibqLhigQIXmPpsscnt
+         WseQKPHEUhtdw==
+From:   Colin King <colin.king@canonical.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] bpf, tests: Fix spelling mistake "shoft" -> "shift"
+Date:   Sun, 15 Aug 2021 22:39:50 +0100
+Message-Id: <20210815213950.47751-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210814120211.v2qjqgi6l3slnkq2@skbuf>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 14, 2021 at 03:02:11PM +0300, Vladimir Oltean wrote:
-> In fact I do notice now that as long as you don't use any of the
-> optional phylink_mii_c22_pcs_* helpers in your PCS driver, then
-> struct phylink_pcs has pretty much zero dependency on struct mdio_device,
-> which means that I'm wrong and it should be completely within reach to
-> write a dedicated PCS driver for this hardware.
+From: Colin Ian King <colin.king@canonical.com>
 
-Yes, this was one of the design goals when I created phylink_pcs, as I
-have exactly this situation with my hardware - PCS that do not have a
-MDIO interface and do not conform to MDIO register layouts. So, I
-explicitly ensured that phylink_pcs, just like the rest of phylink,
-is not tied to any particular model of how hardware should look like.
+There is a spelling mistake in a literal string. Fix it.
 
-Glad to see that this design decision is coming in handy for other
-people now. :)
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ lib/test_bpf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/lib/test_bpf.c b/lib/test_bpf.c
+index 44d8197bbffb..77fe6fde56c5 100644
+--- a/lib/test_bpf.c
++++ b/lib/test_bpf.c
+@@ -5163,7 +5163,7 @@ static struct bpf_test tests[] = {
+ 		{ { 0, -1 } }
+ 	},
+ 	{
+-		"ALU64_ARSH_K: Zero shoft",
++		"ALU64_ARSH_K: Zero shift",
+ 		.u.insns_int = {
+ 			BPF_LD_IMM64(R0, 0x8123456789abcdefLL),
+ 			BPF_ALU64_IMM(BPF_ARSH, R0, 0),
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.32.0
+
