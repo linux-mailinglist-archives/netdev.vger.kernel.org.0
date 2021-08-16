@@ -2,134 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55F023EDE8E
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 22:22:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93DFC3EDEA5
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 22:26:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231605AbhHPUXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 16:23:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:23831 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231307AbhHPUXS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 16:23:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1629145366;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Uix71rqb6jp//12514S8vWz8yBNxqhGs/GxTEFr1Nm0=;
-        b=CFiiS2PlJh+GW89Rh4DdACzdntqZ9Ip7Wi7Q8R/XN31uPoSmL4wkZUT5kU8vFmvGL6XSe2
-        nWzin1IabldGVbmqH96/S77UsELW4HTOF4LwYp2/qZ7xKi5kGKgFIHL0yGE62lBmqZIjio
-        My3KKjkFAWVEFyHZCTSbSKyJ8axByGY=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-98-fZobPHhfPg-eBR8h3-cWaA-1; Mon, 16 Aug 2021 16:22:44 -0400
-X-MC-Unique: fZobPHhfPg-eBR8h3-cWaA-1
-Received: by mail-ed1-f70.google.com with SMTP id m16-20020a056402511000b003bead176527so6842795edd.10
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 13:22:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=Uix71rqb6jp//12514S8vWz8yBNxqhGs/GxTEFr1Nm0=;
-        b=qyUnhpEBRBg8kL6a3uzhIZPkopJfAf0wi6YTec2IIKE3d71mdFnHRz4gocZHQ3JzLN
-         PYOR1lH3FibzBVSuX52mJDk6JL8WdYacOJHA0+i7RMgNJ9F8SjVnay/+QWj14S2zVaCM
-         1YoJopCGTk78sVuRqVcWpci+CetteT4PTHRA2LJPIn965nZFI4TbJeHHuhWjgnYLx9ft
-         Akszjet6snyOSu6g6OsXorHMX6DNgCJgxryMl/eMA5t3ZurOQVw+AQn+HuR331XfP4+O
-         twn7VXfw5guZz2UNAXiuAeHYfWhsa21aDS1k8sk0BfJX38p3Fw32Hy15gjA/d4/MDN1U
-         QqOw==
-X-Gm-Message-State: AOAM5319UzNfkR6JdTFTpDgEv7XuDqo8eg0ZBWKMA+0/jS7GuRIGwWXU
-        fMSWF1BAMJNoBZi3MOlMFJvVgBS3t65yZh6W1dnHCh7mLM3/n+8XbPE0iaVeh1Dzyy7t4+iklhb
-        FN4MTtTzxHgX2mMpp
-X-Received: by 2002:aa7:c956:: with SMTP id h22mr404031edt.378.1629145363395;
-        Mon, 16 Aug 2021 13:22:43 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxo9owt0b7kL4PZgVWPNOZz1KLu5CtmxpPSaj6UuHSZKLzsrbiSpQVMnpQHSNAdEQFVuYa/Fw==
-X-Received: by 2002:aa7:c956:: with SMTP id h22mr404008edt.378.1629145363022;
-        Mon, 16 Aug 2021 13:22:43 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id jo17sm106553ejb.40.2021.08.16.13.22.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Aug 2021 13:22:42 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 80C74180608; Mon, 16 Aug 2021 22:22:41 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3 2/8] samples: bpf: Add common infrastructure
- for XDP samples
-In-Reply-To: <6a0ba11a-d2a5-38ec-0462-58212c8a4ca7@iogearbox.net>
-References: <20210728165552.435050-1-memxor@gmail.com>
- <20210728165552.435050-3-memxor@gmail.com>
- <6a0ba11a-d2a5-38ec-0462-58212c8a4ca7@iogearbox.net>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 16 Aug 2021 22:22:41 +0200
-Message-ID: <87pmudywa6.fsf@toke.dk>
+        id S231741AbhHPU0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 16:26:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34842 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231307AbhHPU0j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 16:26:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 409F960D07;
+        Mon, 16 Aug 2021 20:26:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629145567;
+        bh=fgWAjI0DaWa+emARNCzT/HZ9sQ5Rw9p++ET2aIlUCu0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=mSOrpBYvL7C1ML2CNGey8a8e2qwGMV0PYBkywy88rxQ3b2G7upkzccpB2NG3oD6Ta
+         /cs9LlyBjqjVO3iMEwVypC+vUYooKDEOgtRIm7tfMNFzoOpuIpBnER78OXvjY9So/T
+         X2oimZkNNKVq7czxGWbtqwgNnh5NoO+zk6NZz4y0O/uyjQR027T3vnhaJCmrr/mBzu
+         l0jvpxg1Oi8hL4rjmytOkAA+yuX0R2U13BA3ErrvkAGhHuZJ0rcoPyjDf5M+K0D+kZ
+         zbR+lBs6t6meqC5owrU+nIb9GI/nkz91UHp1bMYClKPgMz/1RBlpVGetv2upGtg2qI
+         9D11ZtyOIXQQg==
+Received: by mail-ej1-f47.google.com with SMTP id z20so34066165ejf.5;
+        Mon, 16 Aug 2021 13:26:07 -0700 (PDT)
+X-Gm-Message-State: AOAM530olZMK1eXpDhP9SY7pho/rWDfcWMs8M2WLxUD/NF/c9x3wSX2A
+        16RDpZNJIcXMrqzeHpXEnm6eAIePu0IXsOeGlg==
+X-Google-Smtp-Source: ABdhPJwrW/No0ID/B/GwH1N+YFxWM7GR1BPXyyMT2r1NJDL+dw+DfoFcWqQp3yd/VP+S2ErEyfXCtlaZrTexVxMbtDQ=
+X-Received: by 2002:a17:906:fa92:: with SMTP id lt18mr239851ejb.359.1629145565779;
+ Mon, 16 Aug 2021 13:26:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20210814010139.kzryimmp4rizlznt@skbuf> <9accd63a-961c-4dab-e167-9e2654917a94@gmail.com>
+ <20210816144622.tgslast6sbblclda@skbuf> <4cad28e0-d6b4-800d-787b-936ffaca7be3@gmail.com>
+ <CAL_JsqKYd288Th2cfOp0_HD1C8xtgKjyJfUW4JLpyn0NkGdU5w@mail.gmail.com> <2e98373f-c37c-0d26-5c9a-1f15ade243c1@gmail.com>
+In-Reply-To: <2e98373f-c37c-0d26-5c9a-1f15ade243c1@gmail.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 16 Aug 2021 15:25:53 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqK9+Uf526D6535eD=WpThByKmiDcVPzBuyYjb3rWSLDaA@mail.gmail.com>
+Message-ID: <CAL_JsqK9+Uf526D6535eD=WpThByKmiDcVPzBuyYjb3rWSLDaA@mail.gmail.com>
+Subject: Re: of_node_put() usage is buggy all over drivers/of/base.c?!
+To:     Frank Rowand <frowand.list@gmail.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann <daniel@iogearbox.net> writes:
-
-> On 7/28/21 6:55 PM, Kumar Kartikeya Dwivedi wrote:
->> This file implements some common helpers to consolidate differences in
->> features and functionality between the various XDP samples and give them
->> a consistent look, feel, and reporting capabilities.
->> 
->> Some of the key features are:
->>   * A concise output format accompanied by helpful text explaining its
->>     fields.
->>   * An elaborate output format building upon the concise one, and folding
->>     out details in case of errors and staying out of view otherwise.
->>   * Extended reporting of redirect errors by capturing hits for each
->>     errno and displaying them inline (ENETDOWN, EINVAL, ENOSPC, etc.)
->>     to aid debugging.
->>   * Reporting of each xdp_exception action for all samples that use these
->>     helpers (XDP_ABORTED, etc.) to aid debugging.
->>   * Capturing per ifindex pair devmap_xmit counts for decomposing the
->>     total TX count per devmap redirection.
->>   * Ability to jump to source locations invoking tracepoints.
->>   * Faster retrieval of stats per polling interval using mmap'd eBPF
->>     array map (through .bss).
->>   * Printing driver names for devices redirecting packets.
->>   * Printing summarized total statistics for the entire session.
->>   * Ability to dynamically switch between concise and verbose mode, using
->>     SIGQUIT (Ctrl + \).
->> 
->> The goal is sharing these helpers that most of the XDP samples implement
->> in some form but differently for each, lacking in some respect compared
->> to one another.
->> 
->> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+On Mon, Aug 16, 2021 at 2:57 PM Frank Rowand <frowand.list@gmail.com> wrote:
 >
-> Overall I think it's okay to try to streamline the individual XDP tools, but I
-> also tend to wonder whether we keep going beyond the original purpose of kernel
-> samples where the main goal is to provide small, easy to hack & stand-alone code
-> snippets (like in samples/seccomp ... no doubt we have it more complex in BPF
-> land, but still); things people can take away and extend for their purpose. A big
-> portion of the samples are still better off in selftests so they can be run in CI,
-> and those that are not should generally be simplified for developers to rip out,
-> modify, experiment, and build actual applications on top.
+> On 8/16/21 2:20 PM, Rob Herring wrote:
+> > On Mon, Aug 16, 2021 at 10:14 AM Frank Rowand <frowand.list@gmail.com> wrote:
+> >>
+> >> On 8/16/21 9:46 AM, Vladimir Oltean wrote:
+> >>> Hi Frank,
+> >>>
+> >>> On Mon, Aug 16, 2021 at 09:33:03AM -0500, Frank Rowand wrote:
+> >>>> Hi Vladimir,
+> >>>>
+> >>>> On 8/13/21 8:01 PM, Vladimir Oltean wrote:
+> >>>>> Hi,
+> >>>>>
+> >>>>> I was debugging an RCU stall which happened during the probing of a
+> >>>>> driver. Activating lock debugging, I see:
+> >>>>
+> >>>> I took a quick look at sja1105_mdiobus_register() in v5.14-rc1 and v5.14-rc6.
+> >>>>
+> >>>> Looking at the following stack trace, I did not see any calls to
+> >>>> of_find_compatible_node() in sja1105_mdiobus_register().  I am
+> >>>> guessing that maybe there is an inlined function that calls
+> >>>> of_find_compatible_node().  This would likely be either
+> >>>> sja1105_mdiobus_base_tx_register() or sja1105_mdioux_base_t1_register().
+> >>>
+> >>> Yes, it is sja1105_mdiobus_base_t1_register which is inlined.
+> >>>
+> >>>>>
+> >>>>> [  101.710694] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:938
+> >>>>> [  101.719119] in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 1534, name: sh
+> >>>>> [  101.726763] INFO: lockdep is turned off.
+> >>>>> [  101.730674] irq event stamp: 0
+> >>>>> [  101.733716] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
+> >>>>> [  101.739973] hardirqs last disabled at (0): [<ffffd3ebecb10120>] copy_process+0xa78/0x1a98
+> >>>>> [  101.748146] softirqs last  enabled at (0): [<ffffd3ebecb10120>] copy_process+0xa78/0x1a98
+> >>>>> [  101.756313] softirqs last disabled at (0): [<0000000000000000>] 0x0
+> >>>>> [  101.762569] CPU: 4 PID: 1534 Comm: sh Not tainted 5.14.0-rc5+ #272
+> >>>>> [  101.774558] Call trace:
+> >>>>> [  101.794734]  __might_sleep+0x50/0x88
+> >>>>> [  101.798297]  __mutex_lock+0x60/0x938
+> >>>>> [  101.801863]  mutex_lock_nested+0x38/0x50
+> >>>>> [  101.805775]  kernfs_remove+0x2c/0x50             <---- this takes mutex_lock(&kernfs_mutex);
+> >>>>> [  101.809341]  sysfs_remove_dir+0x54/0x70
+> >>>>
+> >>>> The __kobject_del() occurs only if the refcount on the node
+> >>>> becomes zero.  This should never be true when of_find_compatible_node()
+> >>>> calls of_node_put() unless a "from" node is passed to of_find_compatible_node().
+> >>>
+> >>> I figured that was the assumption, that the of_node_put would never
+> >>> trigger a sysfs file / kobject deletion from there.
+> >>>
+> >>>> In both sja1105_mdiobus_base_tx_register() and sja1105_mdioux_base_t1_register()
+> >>>> a from node ("mdio") is passed to of_find_compatible_node() without first doing an
+> >>>> of_node_get(mdio).  If you add the of_node_get() calls the problem should be fixed.
+> >>>
+> >>> The answer seems simple enough, but stupid question, but why does
+> >>> of_find_compatible_node call of_node_put on "from" in the first place?
+> >>
+> >> Actually a good question.
+> >>
+> >> I do not know why of_find_compatible_node() calls of_node_put() instead of making
+> >> the caller of of_find_compatible_node() responsible.  That pattern was created
+> >> long before I was involved in devicetree and I have not gone back to read the
+> >> review comments of when that code was created.
+> >
+>
+> > Because it is an iterator function and they all drop the ref from the
+> > prior iteration.
+>
+> That is what I was expecting before reading through the code.  But instead
+> I found of_find_compatible_node():
 
-FWIW the idea of improving the samples came from Jesper and myself;
-we've come to rely on them quite a bit for benchmarking, and our QE
-folks run them for testing as well. And I've lost count of the number of
-times I had to redo tests because something wasn't working correctly and
-I didn't notice that the numbers were off. Kumar took the "improve the
-XDP samples" idea and ran with it, and I think the result is much
-improved; having it be immediately obvious when something is off is a
-huge benefit!
+No, I meant of_find_compatible_node() is the iterator for
+for_each_compatible_node().
 
-So while I do share your concern about expanding the samples code too
-much, in this instance I think it's an improvement. I've toyed with the
-idea of also distributing some of the XDP samples with xdp-tools so they
-are easier to install as standalone utilities, but I think that is a
-secondary concern for later.
+>
+>         raw_spin_lock_irqsave(&devtree_lock, flags);
+>         for_each_of_allnodes_from(from, np)
+>                 if (__of_device_is_compatible(np, compatible, type, NULL) &&
+>                     of_node_get(np))
+>                         break;
+>         of_node_put(from);
+>         raw_spin_unlock_irqrestore(&devtree_lock, flags);
+>
+>
+> for_each_of_allnodes_fromir:
+>
+> #define for_each_of_allnodes_from(from, dn) \
+>         for (dn = __of_find_all_nodes(from); dn; dn = __of_find_all_nodes(dn))
 
--Toke
+This is only used internally, so it can rely on the caller holding the
+lock. This should be moved into of_private.h.
 
+> and __of_find_all_nodes() is:
+>
+> struct device_node *__of_find_all_nodes(struct device_node *prev)
+> {
+>         struct device_node *np;
+>         if (!prev) {
+>                 np = of_root;
+>         } else if (prev->child) {
+>                 np = prev->child;
+>         } else {
+>                 /* Walk back up looking for a sibling, or the end of the structure */
+>                 np = prev;
+>                 while (np->parent && !np->sibling)
+>                         np = np->parent;
+>                 np = np->sibling; /* Might be null at the end of the tree */
+>         }
+>         return np;
+> }
+>
+>
+> So the iterator is not using of_node_get() and of_node_put() for each
+> node that is traversed.  The protection against a node disappearing
+> during the iteration is provided by holding devtree_lock.
+
+The lock is for traversing the nodes (i.e. a list lock), not keeping
+nodes around.
+
+>
+> >
+> > I would say any open coded call where from is not NULL is an error.
+>
+> I assume you mean any open coded call of of_find_compatible_node().  There are
+> at least a couple of instances of that.  I did only a partial grep while looking
+> at Vladimir's issue.
+>
+> Doing the full grep now, I see 13 instances of architecture and driver code calling
+> of_find_compatible_node().
+>
+> > It's not reliable because the DT search order is not defined and could
+> > change. Someone want to write a coccinelle script to check that?
+> >
+>
+> > The above code should be using of_get_compatible_child() instead.
+>
+> Yes, of_get_compatible_child() should be used here.  Thanks for pointing
+> that out.
+>
+> There are 13 instances of architecture and driver code calling
+> of_find_compatible_node().  If possible, it would be good to change all of
+> them to of_get_compatible_child().  If we could replace all driver
+> usage of of_find_compatible_node() with a from parameter of NULL to
+> a new wrapper without a from parameter, where the wrapper calls
+> of_find_compatible_node() with the from parameter set to NULL, then
+> we could prevent this problem from recurring.
+
+Patches welcome.
+
+I don't know if all 13 are only looking for child nodes. Could be open
+coding for_each_compatible_node or looking for grandchild nodes in
+addition (for which we don't have helpers).
+
+Rob
