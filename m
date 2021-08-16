@@ -2,142 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F0A73EDA94
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 18:11:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37E313EDAC6
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 18:19:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229726AbhHPQL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 12:11:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36278 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229602AbhHPQLz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 12:11:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1629130280;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iyO2WLAP+aQnJ1jyGofk+6UZ5GOhdTgCKqORoFevXSg=;
-        b=HkwlXCVAs/+d26E9HohhiYxcyrfj4mysosjKJ5gbe8clAo9AxghYipFuit8hR+670n/qxj
-        pG+9k2fKQBlf5Cd707uMJXetYBipeJnKXVm9letfh5YERZMRFM55pOnpaxQwNE4dRvB26D
-        +B/17oGPjBllWRhnvvp9zsyEsrhX7zw=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-409-Jgk41839Nt-tkLLezLC6ow-1; Mon, 16 Aug 2021 12:11:19 -0400
-X-MC-Unique: Jgk41839Nt-tkLLezLC6ow-1
-Received: by mail-ed1-f71.google.com with SMTP id dd25-20020a056402313900b003bed8169691so2827608edb.7
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 09:11:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=iyO2WLAP+aQnJ1jyGofk+6UZ5GOhdTgCKqORoFevXSg=;
-        b=foOhjGqsMxxHQZgJI0Pc1q0OBbfv+Z2Zsah4lOyCfnWtDdT3SPzRrMZheIjVX5HUsQ
-         1GgBe2XNZ3M4oik/5+g9uOacLBp7FlXxM944OFQMKIUJmh867R2a0Tqv4OCW2JeayXgx
-         500ftBiDxpAfj36sbOZ5LmMA0N6cLVY4eFdMN+iklTbH/jdxnjFZIdXOsBGB58kZZDws
-         HaB4fs1njzciwtg00/ulL2T+zHvhrJMu8HEzry6ArvAS7fkncdjJPW9YMZn9VQhyoLxj
-         Pm9gyyclSU0KxyYqAEtK9O1ongING497kHQrSt3YCPDaPkhylNMiXHeXIN1ouLrvn+Wv
-         AgdQ==
-X-Gm-Message-State: AOAM532OD/pLI1eIG3GSf41BAePd5tJis1sKcHaSOwQAOUjpmOcXRwWW
-        /Qfa69DTLpv+rK8tEs04fZ1dUmOAIjpyHJ3XG/xOgnXWEsk7IfCLN7kfza0eFb6QllAL4X6Eri+
-        a/C5KPHnwlXWO5L4z
-X-Received: by 2002:a17:906:c342:: with SMTP id ci2mr17153541ejb.122.1629130277864;
-        Mon, 16 Aug 2021 09:11:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyxqpo77xg0kISTsqOyk/DTvpZ/I0UWK3WDlWTtA6AhJMw6abCgkq43hhVCX1d3SvC1mibOTg==
-X-Received: by 2002:a17:906:c342:: with SMTP id ci2mr17153520ejb.122.1629130277663;
-        Mon, 16 Aug 2021 09:11:17 -0700 (PDT)
-Received: from pc-32.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id r7sm5144990edi.43.2021.08.16.09.11.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Aug 2021 09:11:16 -0700 (PDT)
-Date:   Mon, 16 Aug 2021 18:11:14 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     James Carlson <carlsonj@workingcode.com>,
-        Chris Fowler <cfowler@outpostsentinel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paul Mackerras <paulus@samba.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "linux-ppp@vger.kernel.org" <linux-ppp@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ppp: Add rtnl attribute IFLA_PPP_UNIT_ID for specifying
- ppp unit id
-Message-ID: <20210816161114.GA3611@pc-32.home>
-References: <20210810153941.GB14279@pc-32.home>
- <BN0P223MB0327A247724B7AE211D2E84EA7F79@BN0P223MB0327.NAMP223.PROD.OUTLOOK.COM>
- <20210810171626.z6bgvizx4eaafrbb@pali>
- <2f10b64e-ba50-d8a5-c40a-9b9bd4264155@workingcode.com>
- <20210811173811.GE15488@pc-32.home>
- <20210811180401.owgmie36ydx62iep@pali>
- <20210812092847.GB3525@pc-23.home>
- <20210812134845.npj3m3vzkrmhx6uy@pali>
- <20210812182645.GA10725@pc-23.home>
- <20210812190440.fknfthdk3mazm6px@pali>
+        id S230124AbhHPQTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 12:19:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34014 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231286AbhHPQTA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 12:19:00 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46FBC061796
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 09:18:28 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mFfJg-0002zI-Cx; Mon, 16 Aug 2021 18:18:24 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mFfJe-0000OF-Ih; Mon, 16 Aug 2021 18:18:22 +0200
+Date:   Mon, 16 Aug 2021 18:18:22 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Oleksij Rempel <linux@rempel-privat.de>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: Regression with commit e532a096be0e ("net: usb: asix: ax88772:
+ add phylib support")
+Message-ID: <20210816161822.td7jl4tv7zfbprty@pengutronix.de>
+References: <3904c728-1ea2-9c2b-ec11-296396fd2f7e@linux.intel.com>
+ <20210816081314.3b251d2e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210812190440.fknfthdk3mazm6px@pali>
+In-Reply-To: <20210816081314.3b251d2e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 18:09:23 up 257 days,  6:15, 25 users,  load average: 0.01, 0.04,
+ 0.06
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 12, 2021 at 09:04:40PM +0200, Pali Rohár wrote:
-> The point here is that there is application (pppd) which allows
-> specifying custom unit id as an option argument. Also it allows to call
-> external applications (at some events) with sharing file descriptors.
-> And it is one of the options how to touch part of ppp connection via
-> external scripts / applications. You start pppd for /dev/ttyUSB<N> with
-> unit id <N> and then in external script you use <N> for ioctls. And I do
-> not know if there is a way how to retrieve unit id in those external
-> scripts. There was already discussion about marking all file descriptors
-> in pppd as close-on-exec and it was somehow rejected as it will broke
-> custom scripts / applications which pppd invokes on events. So looks
-> like that people are using these "features" of pppd.
+Hi,
 
-Potential external pppd scripts, that depend on the unit id, may be a
-valid use case for letting the netlink api define this identifier (if
-pppd ever gets netlink support).
-
-> Option "unit" in pppd specifies ppp unit id. And if new API (rtnl) would
-> not provide equivalent for allowing to specify it then migrating pppd
-> from ioctl to rtnl is not possible without breaking compatibility.
+On Mon, Aug 16, 2021 at 08:13:14AM -0700, Jakub Kicinski wrote:
+> On Wed, 11 Aug 2021 17:55:34 +0300 Jarkko Nikula wrote:
+> > Hi
+> > 
+> > Our ASIX USB ethernet adapter stopped working after v5.14-rc1. It 
+> > doesn't get an IP from DHCP.
+> > 
+> > v5.13 works ok. v5.14-rc1 and today's head 761c6d7ec820 ("Merge tag 
+> > 'arc-5.14-rc6' of 
+> > git://git.kernel.org/pub/scm/linux/kernel/git/vgupta/arc") show the 
+> > regression.
+> > 
+> > I bisected regression into e532a096be0e ("net: usb: asix: ax88772: add 
+> > phylib support").
 > 
-> As you already described, we can simulate setting default interface name
-> in pppd application. But above usage or any other which expose pppd API
-> to other application is not possible to simulate.
+> Oleksij, any comments?
 
-If the pppd project is interested in adding support for the netlink
-api, then I'm fine with adding this feature. I just want to make sure
-that it'll have a real world use case.
+sorry, I lost it from radar.
 
-> So I think we need to first decide or solve issue if rtnl ppp API should
-> provide same functionality as ioctl ppp API. If answer is yes, then some
-> kind of specifying custom ppp unit id is required. If answer is no (e.g.
-> because we do not want ppp unit id in rtnl API as it looks legacy and
-> has issues) then rtnl ppp API cannot be used by ppp as it cannot provide
-> all existing / supported features without breaking legacy compatibility.
+> > Here's the dmesg snippet from working and non-working cases:
+> > 
+> > OK:
+> > [    6.115773] asix 1-8:1.0 eth0: register 'asix' at usb-0000:00:14.0-8, 
+> > ASIX AX88772 USB 2.0 Ethernet, 00:10:60:31:d5:f8
+> > [    8.595202] asix 1-8:1.0 eth0: link up, 100Mbps, full-duplex, lpa 0xC1E1
+> > 
+> > NOK:
+> > [    6.511543] asix 1-8:1.0 eth0: register 'asix' at usb-0000:00:14.0-8, 
+> > ASIX AX88772 USB 2.0 Ethernet, 00:10:60:31:d5:f8
+> > [    8.518219] asix 1-8:1.0 eth0: Link is Down
+> > 
+> > lsusb -d 0b95:7720
+> > Bus 001 Device 002: ID 0b95:7720 ASIX Electronics Corp. AX88772
 > 
-> I see pros & cons for both answers. Not supporting legacy code paths in
-> new code/API is the way how to clean up code and prevent repeating old
-> historic issues. But if new code/API is not fully suitable for pppd --
-> which is de-facto standard Linux userspace implementation -- does it
-> make sense to have it? Or does it mean to also implement new userspace
-> part of implementation (e.g. pppd2) to avoid these legacy / historic
-> issues? Or... is not whole ppp protocol just legacy part of our history
-> which should not be used in new modern setups? And for "legacy usage" is
-> current implementation enough and it does not make sense to invest time
-> into this area? I cannot answer to these questions, but I think it is
-> something quite important as it can show what should be direction and
-> future of ppp subsystem.
 
-PPP isn't legacy, but very few people are interested in working on and
-maintaining the code.
+It sounds like issue which was fixed with the patch:
+"net: usb: asix: ax88772: suspend PHY on driver probe"
 
-Do you have plans for adding netlink support to pppd? If so, is the
-project ready to accept such code?
+This patch was taken in to v5.14-rc2. Can you please test it?
 
-BTW, sorry for the delay.
-
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
