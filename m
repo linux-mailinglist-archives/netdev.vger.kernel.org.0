@@ -2,105 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E8633ED224
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 12:41:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D592D3ED240
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 12:48:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235832AbhHPKlg convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 16 Aug 2021 06:41:36 -0400
-Received: from mail-lj1-f173.google.com ([209.85.208.173]:39558 "EHLO
-        mail-lj1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230124AbhHPKlf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 06:41:35 -0400
-Received: by mail-lj1-f173.google.com with SMTP id q21so4892779ljj.6;
-        Mon, 16 Aug 2021 03:41:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=UAgKx9qFimpGqmGeQ3TM0J7Mzn3ZTYhunGpWKj3QW8E=;
-        b=nyexwiSYDeAsM5rhwe390lHcZXxDORt6nUPfzaISmvlk41DyuGEucvb57xenctilfZ
-         +iA02oMlVdWexn0FT3XK+IzBN157tuC0BE0hyeQadaq7rtYDpz1xszCrIZnb8mZAf909
-         rj/sPDK6J9OAxnHEiWb8bh9dz0XCmgDFV19bWeu7hKU96aLLSP0qKJTz8nbK4e+NZgRw
-         iSlqAgeISYZ6PA10HzkZw2XI+6ZLYxfzkDgtCXlwEWtJ2wBl4+tI3RrokeW38iBGD3TJ
-         YDlR8hv5JDVwnQmqaFcB42oj5Qi1rIKqJBfAMXGFcP3m2HcfYe4UgAAgsJDYLAK+n7hc
-         faCQ==
-X-Gm-Message-State: AOAM530Y4xMGAieU3C90nfSMdRQyJ7Ku/OaEZvzfctD8+kfwE+AuJNdd
-        /h5gctffoptOR966ig/t/1lfAxkKnpWbCrVkHLs=
-X-Google-Smtp-Source: ABdhPJxsH8x3EfCOw+pbE7D3sXGxvSvKLrPv+OSgf3ha/r/wegNx+Ubs6UxpEeEqHJoV3c7h3WC3ycTLGRw8+iUhr8g=
-X-Received: by 2002:a05:651c:24a:: with SMTP id x10mr10915127ljn.60.1629110463281;
- Mon, 16 Aug 2021 03:41:03 -0700 (PDT)
+        id S235629AbhHPKsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 06:48:25 -0400
+Received: from mga04.intel.com ([192.55.52.120]:4868 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230250AbhHPKsZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 06:48:25 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10077"; a="213987707"
+X-IronPort-AV: E=Sophos;i="5.84,324,1620716400"; 
+   d="scan'208";a="213987707"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2021 03:47:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,324,1620716400"; 
+   d="scan'208";a="504848340"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga001.jf.intel.com with ESMTP; 16 Aug 2021 03:47:53 -0700
+Received: from linux.intel.com (vwong3-iLBPG3.png.intel.com [10.88.229.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id DF374580866;
+        Mon, 16 Aug 2021 03:47:49 -0700 (PDT)
+Date:   Mon, 16 Aug 2021 18:47:46 +0800
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com, vee.khee.wong@intel.com,
+        weifeng.voon@intel.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/3] net: stmmac: fix INTR TBU status
+ affecting irq count statistic
+Message-ID: <20210816104746.GA9014@linux.intel.com>
+References: <cover.1629092894.git.vijayakannan.ayyathurai@intel.com>
+ <f82f52076841285309a997f849e2786781548538.1629092894.git.vijayakannan.ayyathurai@intel.com>
 MIME-Version: 1.0
-References: <20210814101728.75334-1-mailhol.vincent@wanadoo.fr>
- <20210814101728.75334-5-mailhol.vincent@wanadoo.fr> <20210816081205.7rjdskaui35f3jml@pengutronix.de>
-In-Reply-To: <20210816081205.7rjdskaui35f3jml@pengutronix.de>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Mon, 16 Aug 2021 19:40:52 +0900
-Message-ID: <CAMZ6RqJiAO-snH0+NKi8=+xi9UnU3sJ+1Ze8qYL0qPwG4eRZVg@mail.gmail.com>
-Subject: Re: [PATCH v5 4/4] iplink_can: add new CAN FD bittiming parameters:
- Transmitter Delay Compensation (TDC)
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        linux-can <linux-can@vger.kernel.org>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f82f52076841285309a997f849e2786781548538.1629092894.git.vijayakannan.ayyathurai@intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon. 16 août 2021 at 17:12, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> On 14.08.2021 19:17:28, Vincent Mailhol wrote:
-> > At high bit rates, the propagation delay from the TX pin to the RX pin
-> > of the transceiver causes measurement errors: the sample point on the
-> > RX pin might occur on the previous bit.
-> >
-> > This issue is addressed in ISO 11898-1 section 11.3.3 "Transmitter
-> > delay compensation" (TDC).
-> >
-> > This patch brings command line support to nine TDC parameters which
-> > were recently added to the kernel's CAN netlink interface in order to
-> > implement TDC:
-> >   - IFLA_CAN_TDC_TDCV_MIN: Transmitter Delay Compensation Value
-> >     minimum value
-> >   - IFLA_CAN_TDC_TDCV_MAX: Transmitter Delay Compensation Value
-> >     maximum value
-> >   - IFLA_CAN_TDC_TDCO_MIN: Transmitter Delay Compensation Offset
-> >     minimum value
-> >   - IFLA_CAN_TDC_TDCO_MAX: Transmitter Delay Compensation Offset
-> >     maximum value
-> >   - IFLA_CAN_TDC_TDCF_MIN: Transmitter Delay Compensation Filter
-> >     window minimum value
-> >   - IFLA_CAN_TDC_TDCF_MAX: Transmitter Delay Compensation Filter
-> >     window maximum value
-> >   - IFLA_CAN_TDC_TDCV: Transmitter Delay Compensation Value
-> >   - IFLA_CAN_TDC_TDCO: Transmitter Delay Compensation Offset
-> >   - IFLA_CAN_TDC_TDCF: Transmitter Delay Compensation Filter window
-> >
-> > All those new parameters are nested together into the attribute
-> > IFLA_CAN_TDC.
-> >
-> > A tdc-mode parameter allow to specify how to operate. Valid options
-> > are:
-> >
-> >   * auto: the transmitter automatically measures TDCV. As such, TDCV
-> >     values can not be manually provided. In this mode, the user must
-> >     specify TDCO and may also specify TDCF if supported.
-> >
-> >   * manual: Use the TDCV value provided by the user are used. In this
->                            ^^^^^                      ^^^
->                            singular                   plural
+On Mon, Aug 16, 2021 at 02:15:58PM +0800, Vijayakannan Ayyathurai wrote:
+> From: Voon Weifeng <weifeng.voon@intel.com>
+> 
+> DMA channel status "Transmit buffer unavailable(TBU)" bit is not
+> considered as a successful dma tx. Hence, it should not affect
+> all the irq count statistic.
+>
 
-ACK. I fixed that broken grammar in my local branch. As commented
-before, I will send the next version of the iproute series after
-we agree on the kernel part (unless someone finds a major issue).
-
-FYI, this is the fixed sentence:
-  * manual: use a static TDCV provided by the user. In this mode, the
-    user must specify both TDCV and TDCO and may also specify TDCF if
-    supported.
-
-
-Yours sincerely,
-Vincent
+Acked-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+ 
+> Fixes: 1103d3a5531c ("net: stmmac: dwmac4: Also use TBU interrupt to clean TX path")
+> Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+> Signed-off-by: Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
+> index e63270267578..f83db62938dd 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
+> @@ -172,11 +172,12 @@ int dwmac4_dma_interrupt(void __iomem *ioaddr,
+>  		x->rx_normal_irq_n++;
+>  		ret |= handle_rx;
+>  	}
+> -	if (likely(intr_status & (DMA_CHAN_STATUS_TI |
+> -		DMA_CHAN_STATUS_TBU))) {
+> +	if (likely(intr_status & DMA_CHAN_STATUS_TI)) {
+>  		x->tx_normal_irq_n++;
+>  		ret |= handle_tx;
+>  	}
+> +	if (unlikely(intr_status & DMA_CHAN_STATUS_TBU))
+> +		ret |= handle_tx;
+>  	if (unlikely(intr_status & DMA_CHAN_STATUS_ERI))
+>  		x->rx_early_irq++;
+>  
