@@ -2,69 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6409A3EDEBE
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 22:47:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 346AD3EDECD
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 22:51:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233093AbhHPUrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 16:47:35 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52562 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231618AbhHPUre (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 16:47:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=wM7NLhhRKCLXOkWiW3ssYsySfg/tolxoL+fTJnsYsLY=; b=PAGyO4xvb/aGG1Id4V6YzW2DPE
-        i5NFgO9AZHheDLl8HosrJyIrImmF4yDbWK6MmnhpED3MHgUSbTm+FBEx7NDDDaYhunpSN6CSvLcH+
-        MSkeeD2SJ/eoBtCO/6fim73b+vpnPcJSZEbN98RclZazMqaRuwSTBRNfunZpnBeU2YMA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mFjVU-000R9t-6C; Mon, 16 Aug 2021 22:46:52 +0200
-Date:   Mon, 16 Aug 2021 22:46:52 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Lee Jones <lee.jones@linaro.org>, Marc Zyngier <maz@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        linux-amlogic@lists.infradead.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Android Kernel Team <kernel-team@android.com>
-Subject: Re: [PATCH 1/2] irqchip: irq-meson-gpio: make it possible to build
- as a module
-Message-ID: <YRrOvJBLp3WreEUf@lunn.ch>
-References: <87r1hwwier.wl-maz@kernel.org>
- <7h7diwgjup.fsf@baylibre.com>
- <87im0m277h.wl-maz@kernel.org>
- <CAGETcx9OukoWM_qprMse9aXdzCE=GFUgFEkfhhNjg44YYsOQLw@mail.gmail.com>
- <87sfzpwq4f.wl-maz@kernel.org>
- <CAGETcx95kHrv8wA-O+-JtfH7H9biJEGJtijuPVN0V5dUKUAB3A@mail.gmail.com>
- <CAGETcx8bpWQEnkpJ0YW9GqX8WE0ewT45zqkbWWdZ0ktJBhG4yQ@mail.gmail.com>
- <YQuZ2cKVE+3Os25Z@google.com>
- <YRpeVLf18Z+1R7WE@google.com>
- <CAGETcx-gSJD0Ra=U_55k3Anps11N_3Ev9gEQV6NaXOvqwP0J3g@mail.gmail.com>
+        id S233192AbhHPUwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 16:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41124 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231783AbhHPUwW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 16:52:22 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F072CC061764
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 13:51:50 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id bo18so28571745pjb.0
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 13:51:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QNjLAMi+CxbQNlMbdfMf25HypiSkR+DmhakI6VpxXA0=;
+        b=s7qhenr+bDstqR1GKR+J66HFpXEjg0p/97bIbOkWy9TiVs8Swa9rTHUYH5XbcfMWGB
+         N4JytoFqPSFTaFMiF2SouGgxKFnh8+J2mHntp7WrnSpULymUxwMG80f7+oS+LkutABYQ
+         TThLdLY3bB60UTvmt6bC0HIGnDKn6LNKWFM4ujw1BvPa+cKHMTxKn2y3ArfX12ka+g60
+         tgA/ztqJuREsv+RaAJ1LiODH10sm6EYE6ARECH+xLQ2zxqghjwTbefyCXSiu1CtF9LD/
+         0mu8YZuOslFnqpk0mgYx6wbyKk99okGl/Qm37ZwQ8AmbH3nk3uLyCUxVfv9Sw6fkCbX2
+         XYIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QNjLAMi+CxbQNlMbdfMf25HypiSkR+DmhakI6VpxXA0=;
+        b=C+6k8BQDl2UV3N8ts33X/W3mpD50g4luwgJfdoRm1k6zEfH3VKUb9uYkrzufkeM581
+         71a4RcWsqv5p/HquqzDGQp1OgVQQtnyp5d0hzOLMCQKRi7rKRESImNmns4JL0z6vU8tg
+         LKt5v/r3uJgV5ZOxXVo6OId95pRKBRWWtB1Kw61WQu+wBqPPjfBMqiJAars5VXaoQfB3
+         RtqVrVhXnUXvJR9Y1iPLkhJJMqLa9jtwfeIUuttjp6JwKNexRDZiYuJy+kMa8jkexTMO
+         YZXRtz4LlV2mGuYgZu7XB6q3lDDLqnweisY4/b9m6zcOZ2nqyheI/qRCAjAhQC+BK40R
+         HNGg==
+X-Gm-Message-State: AOAM530JewHkiZ7XhgjDHysinEtKqzcNZ8JsyuaFvdMgIsuvV/7HZ4Al
+        3oKkIKWAefXFZXOgRsUHtDxvM9sgoJaBGA==
+X-Google-Smtp-Source: ABdhPJwFKavWiZ3Dezs+ZOs3vQX53fXnpVkQ+ckap/TcYSIFVSMwhXM3ayD5hsMMV4I+uej00H+O2A==
+X-Received: by 2002:a17:902:9a02:b029:118:307e:a9dd with SMTP id v2-20020a1709029a02b0290118307ea9ddmr51053plp.47.1629147110301;
+        Mon, 16 Aug 2021 13:51:50 -0700 (PDT)
+Received: from lukehsiao.c.googlers.com.com (190.40.105.34.bc.googleusercontent.com. [34.105.40.190])
+        by smtp.gmail.com with ESMTPSA id t30sm64087pgl.47.2021.08.16.13.51.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Aug 2021 13:51:49 -0700 (PDT)
+From:   Luke Hsiao <luke.w.hsiao@gmail.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Luke Hsiao <lukehsiao@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: [PATCH net-next] tcp: enable data-less, empty-cookie SYN with TFO_SERVER_COOKIE_NOT_REQD
+Date:   Mon, 16 Aug 2021 20:51:06 +0000
+Message-Id: <20210816205105.2533289-1-luke.w.hsiao@gmail.com>
+X-Mailer: git-send-email 2.33.0.rc1.237.g0d66db33f3-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGETcx-gSJD0Ra=U_55k3Anps11N_3Ev9gEQV6NaXOvqwP0J3g@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Not that I'm aware of. Andrew added a "Reviewed-by" to all 3 of my
-> proper fix patches. I didn't think I needed to send any newer patches.
-> Is there some reason you that I needed to?
-> https://lore.kernel.org/lkml/20210804214333.927985-1-saravanak@google.com/T/#t
+From: Luke Hsiao <lukehsiao@google.com>
 
-https://patchwork.kernel.org/project/netdevbpf/list/?series=&submitter=&state=*&q=net%3A+mdio-mux%3A+Delete+unnecessary+devm_kfree&archive=both&delegate=
+Since the original TFO server code was implemented in commit
+168a8f58059a22feb9e9a2dcc1b8053dbbbc12ef ("tcp: TCP Fast Open Server -
+main code path") the TFO server code has supported the sysctl bit flag
+TFO_SERVER_COOKIE_NOT_REQD. Currently, when the TFO_SERVER_ENABLE and
+TFO_SERVER_COOKIE_NOT_REQD sysctl bit flags are set, a server connection
+will accept a SYN with N bytes of data (N > 0) that has no TFO cookie,
+create a new fast open connection, process the incoming data in the SYN,
+and make the connection ready for accepting. After accepting, the
+connection is ready for read()/recvmsg() to read the N bytes of data in
+the SYN, ready for write()/sendmsg() calls and data transmissions to
+transmit data.
 
-State Changes Requested. I guess because you got the subject wrong.
+This commit changes an edge case in this feature by changing this
+behavior to apply to (N >= 0) bytes of data in the SYN rather than only
+(N > 0) bytes of data in the SYN. Now, a server will accept a data-less
+SYN without a TFO cookie if TFO_SERVER_COOKIE_NOT_REQD is set.
 
-With netdev, if it has not been merged within three days, you probably
-need to resubmit.
+Caveat! While this enables a new kind of TFO (data-less empty-cookie
+SYN), some firewall rules setup may not work if they assume such packets
+are not legit TFOs and will filter them.
 
-     Andrew
+Signed-off-by: Luke Hsiao <lukehsiao@google.com>
+Acked-by: Neal Cardwell <ncardwell@google.com>
+Acked-by: Yuchung Cheng <ycheng@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/ipv4/tcp_fastopen.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
+index 62ba8d0f2c60..59412d6354a0 100644
+--- a/net/ipv4/tcp_fastopen.c
++++ b/net/ipv4/tcp_fastopen.c
+@@ -368,8 +368,7 @@ struct sock *tcp_try_fastopen(struct sock *sk, struct sk_buff *skb,
+ 		return NULL;
+ 	}
+
+-	if (syn_data &&
+-	    tcp_fastopen_no_cookie(sk, dst, TFO_SERVER_COOKIE_NOT_REQD))
++	if (tcp_fastopen_no_cookie(sk, dst, TFO_SERVER_COOKIE_NOT_REQD))
+ 		goto fastopen;
+
+ 	if (foc->len == 0) {
+--
+2.33.0.rc1.237.g0d66db33f3-goog
+
