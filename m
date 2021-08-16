@@ -2,78 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BEC83EDA87
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 18:07:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 869CE3EDAA4
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 18:17:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230078AbhHPQHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 12:07:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48570 "EHLO mail.kernel.org"
+        id S229780AbhHPQSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 12:18:07 -0400
+Received: from mga09.intel.com ([134.134.136.24]:19482 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229621AbhHPQHd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 12:07:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6C8346056B;
-        Mon, 16 Aug 2021 16:07:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629130021;
-        bh=dQ7YdQ2ihh87LThyE6YAzcRBdsJeA/gOE3NhxEzSMgY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lVfcuZvRIc5hRBNPL9PCCiPON7jp6Ak1mRU0mhJwTdJK0KONo78N3qaCWN9CvUXA4
-         8uGhdt/P9O6QCFDYyzEiGnDoBdVuDwrHsAIbgu4yrAldXNF2WUw3SAfepnUe31Edgm
-         v0WZb2VRhDAGLxMiW9p07N9YUoxQD/sSjIO3gE5U1HfGMqYbXcBR3A+eWqK9Pf0NWj
-         32RjGSAixHY10CnCvOBOUSzn6RflfHnXPZl1h8J+VnkB/GDviL1LOi00pm4m1tIQwg
-         2gtt2YvefCj1eaqCz743ZRH84PbcAP+J2oXlUG37Hfxr5uuiFDc2KzY+uZHooezl8R
-         e552YDmXKOY2A==
-Date:   Mon, 16 Aug 2021 09:07:00 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Salil Mehta <salil.mehta@huawei.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Yufeng Mo <moyufeng@huawei.com>
-Subject: Re: [PATCH net-next 3/6] devlink: Count struct devlink consumers
-Message-ID: <20210816090700.313a54ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YRqKCVbjTZaSrSy+@unreal>
-References: <cover.1628933864.git.leonro@nvidia.com>
-        <d4d59d801f4521e562c9ecf2d8767077aaefb456.1628933864.git.leonro@nvidia.com>
-        <20210816084741.1dd1c415@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YRqKCVbjTZaSrSy+@unreal>
+        id S229556AbhHPQSH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 12:18:07 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10078"; a="215889338"
+X-IronPort-AV: E=Sophos;i="5.84,326,1620716400"; 
+   d="scan'208";a="215889338"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2021 09:17:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,326,1620716400"; 
+   d="scan'208";a="487523670"
+Received: from amlin-018-053.igk.intel.com ([10.102.18.53])
+  by fmsmga008.fm.intel.com with ESMTP; 16 Aug 2021 09:17:31 -0700
+From:   Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+To:     linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, richardcochran@gmail.com,
+        shuah@kernel.org, arkadiusz.kubalewski@intel.com, arnd@arndb.de,
+        nikolay@nvidia.com, cong.wang@bytedance.com,
+        colin.king@canonical.com, gustavoars@kernel.org
+Subject: [RFC net-next 0/7] Add basic SyncE interfaces
+Date:   Mon, 16 Aug 2021 18:07:10 +0200
+Message-Id: <20210816160717.31285-1-arkadiusz.kubalewski@intel.com>
+X-Mailer: git-send-email 2.26.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Aug 2021 18:53:45 +0300 Leon Romanovsky wrote:
-> On Mon, Aug 16, 2021 at 08:47:41AM -0700, Jakub Kicinski wrote:
-> > On Sat, 14 Aug 2021 12:57:28 +0300 Leon Romanovsky wrote:  
-> > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > 
-> > > The struct devlink itself is protected by internal lock and doesn't
-> > > need global lock during operation. That global lock is used to protect
-> > > addition/removal new devlink instances from the global list in use by
-> > > all devlink consumers in the system.
-> > > 
-> > > The future conversion of linked list to be xarray will allow us to
-> > > actually delete that lock, but first we need to count all struct devlink
-> > > users.  
-> > 
-> > Not a problem with this set but to state the obvious the global devlink
-> > lock also protects from concurrent execution of all the ops which don't
-> > take the instance lock (DEVLINK_NL_FLAG_NO_LOCK). You most likely know
-> > this but I thought I'd comment on an off chance it helps.  
-> 
-> The end goal will be something like that:
-> 1. Delete devlink lock
-> 2. Rely on xa_lock() while grabbing devlink instance (past devlink_try_get)
-> 3. Convert devlink->lock to be read/write lock to make sure that we can run
-> get query in parallel.
-> 4. Open devlink netlink to parallel ops, ".parallel_ops = true".
+SyncE - Synchronous Ethernet is defined in ITU-T Rec. G.8264
+(https://www.itu.int/rec/T-REC-G.8264)
 
-IIUC that'd mean setting eswitch mode would hold write lock on 
-the dl instance. What locks does e.g. registering a dl port take 
-then?
+SyncE allows synchronizing the frequency of ethernet PHY clock signal
+(the frequency used to send the data onto wire), to some reference
+clock signal.
+
+Multiple reference clock sources can be available. PHY ports recover
+the frequency at which the transmitter sent the data on the RX side.
+Alternatively, we can use external sources like 1PPS GPS, etc.
+
+This patch series introduces basic interfaces for communication
+with a SyncE capable device.
+
+The first part of the interface allows acquiring the synchronization
+state of DPLL (Digital Phase Locked Loop). DPLL LOCKED state means
+that the frequency generated by it is locked to the input frequency.
+As a result, PHYs connected to it are synchronized to the chosen input
+frequency signal.
+
+The second part can be used to select the port from which the clock
+gets recovered. Each PHY chip can have multiple pins on which the
+recovered clock can be propagated. For example, a SyncE-capable PHY
+can recover the carrier frequency of the first port, divide it
+internally, and output it as a reference clock on PIN 0.
+When such a signal is enabled, the DPLL can LOCK to the frequency
+recovered on PIN 0.
+
+Next steps:
+ - Add CONFIG_SYNCE definition into Kconfig
+ - Add more configuration interfaces. Aiming at devlink, since this
+   would be device-wide configuration
+
+Arkadiusz Kubalewski (7):
+  ptp: Add interface for acquiring DPLL state
+  selftests/ptp: Add usage of PTP_DPLL_GETSTATE ioctl in testptp
+  ice: add get_dpll_state ptp interface usage
+  net: add ioctl interface for recover reference clock on netdev
+  selftests/net: Add test app for SIOC{S|G}SYNCE
+  ice: add SIOC{S|G}SYNCE interface usage to recover reference signal
+  ice: add sysfs interface to configure PHY recovered reference signal
+
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  62 +++++
+ drivers/net/ethernet/intel/ice/ice_common.c   | 101 ++++++++
+ drivers/net/ethernet/intel/ice/ice_common.h   |   9 +
+ drivers/net/ethernet/intel/ice/ice_main.c     |   4 +
+ drivers/net/ethernet/intel/ice/ice_ptp.c      | 234 +++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_ptp.h      |   9 +
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.h   |   6 +
+ drivers/ptp/ptp_chardev.c                     |  15 ++
+ drivers/ptp/ptp_clockmatrix.h                 |  12 -
+ drivers/ptp/ptp_private.h                     |   2 +
+ drivers/ptp/ptp_sysfs.c                       |  48 ++++
+ include/linux/ptp_clock_kernel.h              |   9 +
+ include/uapi/linux/net_synce.h                |  21 ++
+ include/uapi/linux/ptp_clock.h                |  27 ++
+ include/uapi/linux/sockios.h                  |   4 +
+ net/core/dev_ioctl.c                          |   6 +-
+ tools/testing/selftests/net/Makefile          |   1 +
+ tools/testing/selftests/net/phy_ref_clk.c     | 138 +++++++++++
+ tools/testing/selftests/ptp/testptp.c         |  27 +-
+ 19 files changed, 720 insertions(+), 15 deletions(-)
+ create mode 100644 include/uapi/linux/net_synce.h
+ create mode 100644 tools/testing/selftests/net/phy_ref_clk.c
+
+
+base-commit: aba1e4adb54e020d3ca85a4df3ef0f8febe87548
+-- 
+2.24.0
+
