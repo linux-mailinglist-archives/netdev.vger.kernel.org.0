@@ -2,126 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00F4B3ED00B
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 10:12:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78D9D3ED00E
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 10:12:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234872AbhHPIMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 04:12:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33602 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234861AbhHPIMr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 04:12:47 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90FCDC061764
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 01:12:16 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mFXj8-0003Xd-29; Mon, 16 Aug 2021 10:12:10 +0200
-Received: from pengutronix.de (unknown [IPv6:2a02:810a:8940:aa0:3272:cc96:80a9:1a01])
+        id S234898AbhHPIMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 04:12:54 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:36272
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234874AbhHPIMx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 04:12:53 -0400
+Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 3FA99668018;
-        Mon, 16 Aug 2021 08:12:07 +0000 (UTC)
-Date:   Mon, 16 Aug 2021 10:12:05 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        linux-can@vger.kernel.org,
-        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 4/4] iplink_can: add new CAN FD bittiming parameters:
- Transmitter Delay Compensation (TDC)
-Message-ID: <20210816081205.7rjdskaui35f3jml@pengutronix.de>
-References: <20210814101728.75334-1-mailhol.vincent@wanadoo.fr>
- <20210814101728.75334-5-mailhol.vincent@wanadoo.fr>
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 479763F07E;
+        Mon, 16 Aug 2021 08:12:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1629101540;
+        bh=1meRxvtUorxwrfyMm6Zk03gMBP22C437FHsug3+oRuI=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=c6arQCqnlgMW/Wcj3dbCC5M/HPuDyGGM+jf2Jzs/fzMzNMzN2wCOW+2gjvqNFwzfe
+         OIYsvaSEDJLDufKbSAis3mg6CBP+/AET2vyyAKoWehdIpZ+oC1l0Vv5x7Kihp0vpIT
+         SwGLOD/KYtnj4hBchuyRXj5ErR7sQlBQjYlwv/eoixauxqnZxswRRPtq8iiMdyHrP/
+         LsXoCOaDNm4IltcX3Cnmo2YVNsYO57PwfQHyLsuO6AMwKNuimqyoEx8Rwu6mJ1YdNZ
+         5eCegSEe3h4Vzdp63Fgaq1fpFN4HDxF0AEUnA2rrGB+ATEVahrImtFfjzwwvEsHp1Z
+         6v7TPFTffcnqw==
+From:   Colin King <colin.king@canonical.com>
+To:     Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] net/mlx5: Fix spelling mistake "enught" -> "enough"
+Date:   Mon, 16 Aug 2021 09:12:20 +0100
+Message-Id: <20210816081220.5641-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="hiskfds7hw52oih6"
-Content-Disposition: inline
-In-Reply-To: <20210814101728.75334-5-mailhol.vincent@wanadoo.fr>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Colin Ian King <colin.king@canonical.com>
 
---hiskfds7hw52oih6
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+There is a spelling mistake in a mlx5_core_dbg debug message. Fix it.
 
-On 14.08.2021 19:17:28, Vincent Mailhol wrote:
-> At high bit rates, the propagation delay from the TX pin to the RX pin
-> of the transceiver causes measurement errors: the sample point on the
-> RX pin might occur on the previous bit.
->=20
-> This issue is addressed in ISO 11898-1 section 11.3.3 "Transmitter
-> delay compensation" (TDC).
->=20
-> This patch brings command line support to nine TDC parameters which
-> were recently added to the kernel's CAN netlink interface in order to
-> implement TDC:
->   - IFLA_CAN_TDC_TDCV_MIN: Transmitter Delay Compensation Value
->     minimum value
->   - IFLA_CAN_TDC_TDCV_MAX: Transmitter Delay Compensation Value
->     maximum value
->   - IFLA_CAN_TDC_TDCO_MIN: Transmitter Delay Compensation Offset
->     minimum value
->   - IFLA_CAN_TDC_TDCO_MAX: Transmitter Delay Compensation Offset
->     maximum value
->   - IFLA_CAN_TDC_TDCF_MIN: Transmitter Delay Compensation Filter
->     window minimum value
->   - IFLA_CAN_TDC_TDCF_MAX: Transmitter Delay Compensation Filter
->     window maximum value
->   - IFLA_CAN_TDC_TDCV: Transmitter Delay Compensation Value
->   - IFLA_CAN_TDC_TDCO: Transmitter Delay Compensation Offset
->   - IFLA_CAN_TDC_TDCF: Transmitter Delay Compensation Filter window
->=20
-> All those new parameters are nested together into the attribute
-> IFLA_CAN_TDC.
->=20
-> A tdc-mode parameter allow to specify how to operate. Valid options
-> are:
->=20
->   * auto: the transmitter automatically measures TDCV. As such, TDCV
->     values can not be manually provided. In this mode, the user must
->     specify TDCO and may also specify TDCF if supported.
->=20
->   * manual: Use the TDCV value provided by the user are used. In this
-                           ^^^^^                      ^^^
-                           singular                   plural
->     mode, the user must specify both TDCV and TDCO and may also
->     specify TDCF if supported.
->=20
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Marc
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
+index c79a10b3454d..fd735299df84 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
+@@ -506,7 +506,7 @@ static int irq_pools_init(struct mlx5_core_dev *dev, int sf_vec, int pf_vec)
+ 	if (!mlx5_sf_max_functions(dev))
+ 		return 0;
+ 	if (sf_vec < MLX5_IRQ_VEC_COMP_BASE_SF) {
+-		mlx5_core_dbg(dev, "Not enught IRQs for SFs. SF may run at lower performance\n");
++		mlx5_core_dbg(dev, "Not enough IRQs for SFs. SF may run at lower performance\n");
+ 		return 0;
+ 	}
+ 
+-- 
+2.32.0
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---hiskfds7hw52oih6
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEaHdMACgkQqclaivrt
-76kK2gf7ByQgT+oT/maYnG88lnvjMyyv+jPt7G6VOHxu8uc0KpNqzJbUstcfnFVg
-SXcJclJHbFeUj1PFtebuGRARQRTbCiYYC0YF9GcYdQoU7tFmeHEH0kiktmlKdiVu
-JbzcaEwnmmDBMFC8h6Cg1sOnnGpBcluLed1WEoqs/UmqYbY9U9owhzOV7NSbukQq
-TzlbpKPkXsAUZW2q2NBYvbljDubSC+Cb88C0Qxwa25ulQYkDmHnIqsq8HNSEYfsS
-hFVLndgSmtfobUKbDogLlqYN9vYN4bFl7nFeqcaH4ShlC01YefxjnEjBhJYRpXt5
-8wpUiZ5+Jjxr7U3MpsgsQAbLQJClPA==
-=+mR+
------END PGP SIGNATURE-----
-
---hiskfds7hw52oih6--
