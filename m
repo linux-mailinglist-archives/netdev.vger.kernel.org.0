@@ -2,122 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD52D3EDDC3
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 21:20:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 731003EDDC9
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 21:20:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229876AbhHPTU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 15:20:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34748 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229556AbhHPTUx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 15:20:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C1D060F41;
-        Mon, 16 Aug 2021 19:20:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629141621;
-        bh=/scif1mkCBlmZU+0jJuanWocyxDnQnGUxWglfLlEFKY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=XRokmLOLl5aEHn0n/uYcHeCWr8Y1P2RP+CkfGbXWeBpSnmDKiqOVVxuT3i9zz98E/
-         zVNXa759iOQ4K1WrteZ6t2hG9KUL8+i5/2xRjDOUrjx41C4sSufBIledgZK8q2wqSf
-         WQGzdeR1C+/5MfCcIzf5rNCfPy93B7UN2+gqxQbsuiEViflGInEmdYHaOuKpGivwW7
-         DAvbq8ij2x5J5xYnMhecbWwpCbCGnXhUEa4I6VeRSJ9kKU1YHceeXZ+sq8UarREMw8
-         u4kvOVjzkx/Uxn5NRb63VaOQrDIQDeCFEacg2opf1N36KeAKljnFfhb+kT4w4/17rj
-         rp4ev0eKvSuYg==
-Received: by mail-ej1-f50.google.com with SMTP id z20so33738985ejf.5;
-        Mon, 16 Aug 2021 12:20:21 -0700 (PDT)
-X-Gm-Message-State: AOAM532akqLmK/0Dpon/do4G0jaKJ/W28jP8P3c51ZqVAdsFBiEoS7AS
-        QpFHk9enM2Fvz1FtddlIt6TNnGFS5Yw73tgz5w==
-X-Google-Smtp-Source: ABdhPJx8cEr2G1dwVnQKOf4s7ZC1dm+QcfNMleG316aSSHpGdOMw8Euw/KHihuc4Sj8dKo50NQTVwClSZSuFoUYqcDE=
-X-Received: by 2002:a17:906:fa92:: with SMTP id lt18mr7796ejb.359.1629141620181;
- Mon, 16 Aug 2021 12:20:20 -0700 (PDT)
+        id S230253AbhHPTVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 15:21:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48074 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230126AbhHPTVR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 15:21:17 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F3B6C0613C1
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 12:20:45 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id i8so12133704ybt.7
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 12:20:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=m941o/jFjrWB+9ctuoqyaTbWLdVEpdtxf8KbVW3gbIk=;
+        b=HOcq2K66ZKPP31cm6RZHlq56X1yVo3CslldYBgHbHXxxMx7sY6sZ1vLFOOnXHJleKX
+         tO/frA17gCW9yPjK7AVdKkSSiP1Iv0L+nZ+n2/RgX3kRbvp0GdXhR5nLkOslpYafc0JQ
+         PkpSFzwudTgrqTz7HrQPLEjxSpwXHrxHnygXnrp/cESRvJPu7YQInaR1QVgQiTjVYlb6
+         LO1C9EcGr+3h4RXG8tE7aJOXee5qMGNY/lDMu8mvcEzj1PYJgFi/9sfXDlgiVG6X6XBE
+         XVPzgzGnPL63UhqQdsSPZU6LF4cksKdPLlFNzzp8AE8zUYtDedL9BrXBwozgwbwQdNLz
+         m+UA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=m941o/jFjrWB+9ctuoqyaTbWLdVEpdtxf8KbVW3gbIk=;
+        b=VK6LEIJNuk9LIlGd3crG5C8hw5DPrHbx7An/JyT4ErD0lKtk8/bzWC8+sBi/5f08oZ
+         K7oryEd0DpZDBGQ2AbKxud/TvGxBFsfnidCao1C5KG5RMmT1GLnk6sHoWTzYifNt9Ve1
+         dWaHFkKLEdQ32hFZ5X6g7xAlhbVljWQKovkWcV/5+uxquWTfVKTDGi+jXUQJep9gB58z
+         Io8h0TS84sc5ti+blwzbwRkZcA3JTZ2T6OUKCcA6ZZleZauYsKLPglGVsNh/v18cccdy
+         HJBbK9mgHXAElLtlrKDI3pqJfTwQRYDj2RIn9hniycJ99wqL3lANTROuLbcyNY+xwruv
+         iAWQ==
+X-Gm-Message-State: AOAM530f95nBeNPSDl6OmUlngKk5kkuFyZ/Rj1xoDZxX1IsbIDL6+KWI
+        ImjbTg288WHwdy1qzwPZn3okzBJF/Hg9kth1YGydSQ==
+X-Google-Smtp-Source: ABdhPJyZubQxyT6jtWns+tJs06g+ZUE+aT6gqe9sdAyanSPoHdmeju9qXBQYZwQYua2zd6rbCJ4Hw7GA9o7bLCNoPSs=
+X-Received: by 2002:a25:db89:: with SMTP id g131mr23150445ybf.302.1629141644661;
+ Mon, 16 Aug 2021 12:20:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210814010139.kzryimmp4rizlznt@skbuf> <9accd63a-961c-4dab-e167-9e2654917a94@gmail.com>
- <20210816144622.tgslast6sbblclda@skbuf> <4cad28e0-d6b4-800d-787b-936ffaca7be3@gmail.com>
-In-Reply-To: <4cad28e0-d6b4-800d-787b-936ffaca7be3@gmail.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Mon, 16 Aug 2021 14:20:08 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqKYd288Th2cfOp0_HD1C8xtgKjyJfUW4JLpyn0NkGdU5w@mail.gmail.com>
-Message-ID: <CAL_JsqKYd288Th2cfOp0_HD1C8xtgKjyJfUW4JLpyn0NkGdU5w@mail.gmail.com>
-Subject: Re: of_node_put() usage is buggy all over drivers/of/base.c?!
-To:     Frank Rowand <frowand.list@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
+References: <20210816115953.72533-1-andriy.shevchenko@linux.intel.com> <20210816115953.72533-3-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20210816115953.72533-3-andriy.shevchenko@linux.intel.com>
+From:   Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Date:   Mon, 16 Aug 2021 21:20:34 +0200
+Message-ID: <CAMpxmJWrCJb6JJtQVurM3UexPwqz1OuydE9NvxyRwBb5hD=7aQ@mail.gmail.com>
+Subject: Re: [PATCH v1 2/6] gpio: mlxbf2: Drop wrong use of ACPI_PTR()
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     David Thompson <davthompson@nvidia.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-gpio <linux-gpio@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Asmaa Mnebhi <asmaa@nvidia.com>,
+        Liming Sun <limings@nvidia.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 16, 2021 at 10:14 AM Frank Rowand <frowand.list@gmail.com> wrote:
+On Mon, Aug 16, 2021 at 2:00 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
 >
-> On 8/16/21 9:46 AM, Vladimir Oltean wrote:
-> > Hi Frank,
-> >
-> > On Mon, Aug 16, 2021 at 09:33:03AM -0500, Frank Rowand wrote:
-> >> Hi Vladimir,
-> >>
-> >> On 8/13/21 8:01 PM, Vladimir Oltean wrote:
-> >>> Hi,
-> >>>
-> >>> I was debugging an RCU stall which happened during the probing of a
-> >>> driver. Activating lock debugging, I see:
-> >>
-> >> I took a quick look at sja1105_mdiobus_register() in v5.14-rc1 and v5.14-rc6.
-> >>
-> >> Looking at the following stack trace, I did not see any calls to
-> >> of_find_compatible_node() in sja1105_mdiobus_register().  I am
-> >> guessing that maybe there is an inlined function that calls
-> >> of_find_compatible_node().  This would likely be either
-> >> sja1105_mdiobus_base_tx_register() or sja1105_mdioux_base_t1_register().
-> >
-> > Yes, it is sja1105_mdiobus_base_t1_register which is inlined.
-> >
-> >>>
-> >>> [  101.710694] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:938
-> >>> [  101.719119] in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 1534, name: sh
-> >>> [  101.726763] INFO: lockdep is turned off.
-> >>> [  101.730674] irq event stamp: 0
-> >>> [  101.733716] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
-> >>> [  101.739973] hardirqs last disabled at (0): [<ffffd3ebecb10120>] copy_process+0xa78/0x1a98
-> >>> [  101.748146] softirqs last  enabled at (0): [<ffffd3ebecb10120>] copy_process+0xa78/0x1a98
-> >>> [  101.756313] softirqs last disabled at (0): [<0000000000000000>] 0x0
-> >>> [  101.762569] CPU: 4 PID: 1534 Comm: sh Not tainted 5.14.0-rc5+ #272
-> >>> [  101.774558] Call trace:
-> >>> [  101.794734]  __might_sleep+0x50/0x88
-> >>> [  101.798297]  __mutex_lock+0x60/0x938
-> >>> [  101.801863]  mutex_lock_nested+0x38/0x50
-> >>> [  101.805775]  kernfs_remove+0x2c/0x50             <---- this takes mutex_lock(&kernfs_mutex);
-> >>> [  101.809341]  sysfs_remove_dir+0x54/0x70
-> >>
-> >> The __kobject_del() occurs only if the refcount on the node
-> >> becomes zero.  This should never be true when of_find_compatible_node()
-> >> calls of_node_put() unless a "from" node is passed to of_find_compatible_node().
-> >
-> > I figured that was the assumption, that the of_node_put would never
-> > trigger a sysfs file / kobject deletion from there.
-> >
-> >> In both sja1105_mdiobus_base_tx_register() and sja1105_mdioux_base_t1_register()
-> >> a from node ("mdio") is passed to of_find_compatible_node() without first doing an
-> >> of_node_get(mdio).  If you add the of_node_get() calls the problem should be fixed.
-> >
-> > The answer seems simple enough, but stupid question, but why does
-> > of_find_compatible_node call of_node_put on "from" in the first place?
+> ACPI_PTR() is more harmful than helpful. For example, in this case
+> if CONFIG_ACPI=n, the ID table left unused which is not what we want.
 >
-> Actually a good question.
+> Instead of adding ifdeffery here and there, drop ACPI_PTR() and
+> replace acpi.h with mod_devicetable.h.
 >
-> I do not know why of_find_compatible_node() calls of_node_put() instead of making
-> the caller of of_find_compatible_node() responsible.  That pattern was created
-> long before I was involved in devicetree and I have not gone back to read the
-> review comments of when that code was created.
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/gpio/gpio-mlxbf2.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/gpio/gpio-mlxbf2.c b/drivers/gpio/gpio-mlxbf2.c
+> index 68c471c10fa4..c0aa622fef76 100644
+> --- a/drivers/gpio/gpio-mlxbf2.c
+> +++ b/drivers/gpio/gpio-mlxbf2.c
+> @@ -1,6 +1,5 @@
+>  // SPDX-License-Identifier: GPL-2.0
+>
+> -#include <linux/acpi.h>
+>  #include <linux/bitfield.h>
+>  #include <linux/bitops.h>
+>  #include <linux/device.h>
+> @@ -8,6 +7,7 @@
+>  #include <linux/io.h>
+>  #include <linux/ioport.h>
+>  #include <linux/kernel.h>
+> +#include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/pm.h>
+> @@ -307,14 +307,14 @@ static SIMPLE_DEV_PM_OPS(mlxbf2_pm_ops, mlxbf2_gpio_suspend, mlxbf2_gpio_resume)
+>
+>  static const struct acpi_device_id __maybe_unused mlxbf2_gpio_acpi_match[] = {
+>         { "MLNXBF22", 0 },
+> -       {},
+> +       {}
 
-Because it is an iterator function and they all drop the ref from the
-prior iteration.
+Ninja change :) I removed it - send a separate patch for this if you want to.
 
-I would say any open coded call where from is not NULL is an error.
-It's not reliable because the DT search order is not defined and could
-change. Someone want to write a coccinelle script to check that?
+Bart
 
-The above code should be using of_get_compatible_child() instead.
-
-Rob
+>  };
+>  MODULE_DEVICE_TABLE(acpi, mlxbf2_gpio_acpi_match);
+>
+>  static struct platform_driver mlxbf2_gpio_driver = {
+>         .driver = {
+>                 .name = "mlxbf2_gpio",
+> -               .acpi_match_table = ACPI_PTR(mlxbf2_gpio_acpi_match),
+> +               .acpi_match_table = mlxbf2_gpio_acpi_match,
+>                 .pm = &mlxbf2_pm_ops,
+>         },
+>         .probe    = mlxbf2_gpio_probe,
+> --
+> 2.30.2
+>
