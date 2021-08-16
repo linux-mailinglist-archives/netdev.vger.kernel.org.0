@@ -2,155 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7192A3EDD90
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 21:04:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 097233EDDB9
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 21:14:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231444AbhHPTEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 15:04:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44182 "EHLO
+        id S230391AbhHPTPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 15:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231465AbhHPTEd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 15:04:33 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C68BCC0613CF
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 12:04:01 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id u13-20020a17090abb0db0290177e1d9b3f7so336353pjr.1
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 12:04:01 -0700 (PDT)
+        with ESMTP id S229699AbhHPTPW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 15:15:22 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B966C061764
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 12:14:50 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id b15so33642409ejg.10
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 12:14:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=9iqwgQUcM7kXjxKmNPoKYxMsXr+XLcOB8+pWCUZkNe8=;
-        b=khVO0/QBba6vVfRXK6CkZDH6IA77BIoDB/of9b/WaqA/ZZPZl1jwp8lXh/+Q9THe6V
-         V23ugeQ+qALQrViS/23lb6hOfjAHcc0squ2h/uz2O7LHQ/302rXRyuELOzhqyxn+c4T9
-         j8moD3MPTNepuBCMSPp3I/b+AQVIivkGe3p16+tUDMrgjTHf04ImbH9UVN+b1Q3rgpHo
-         swIBWR/0bMgvUajEYIW+mIagnUh/qTMlgWEwnyTUW5Q2i/3lonVdgSFJfmg5GHcbXnAW
-         15kQuMYaDg3RFCZEg/tL3dYlEmpfkcJP6/xxNM5LMjTP22d3TsUsPGVC0SjzH4KvnCRq
-         yU1A==
+        d=konsulko.com; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0o5sAZp9YE4A/3Y6BSyPPjh5Xaj5fcrrsuEACZxp91I=;
+        b=HeQ4TmYpfBzpluzlmeTNHhG1DjPxVGKXqgYWZBBAGJ2jX7q2WW1Ib8/54zlJ4GaRd5
+         c7LPN2/YLDEShFJmT5aYusywOHqJ53gjiEt1UvL2nZcGjmRf5FTyqfkOf4W7DMarOO+e
+         Ic6SXUaeN15/tR/K3Dw4LM4rNDHj6fbmBPyn0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9iqwgQUcM7kXjxKmNPoKYxMsXr+XLcOB8+pWCUZkNe8=;
-        b=I+X54fq+d7HgwZ3Q1gWEQTLsPje2FsSGdUwakNSBnUPxEX6yWHlVz2s0AlWQDxowO2
-         rX4dtFqtaZwwBf5uZFscMTD/nFsavMW7dkRC3FocvB3ThwLDLokXbFtPa8j2DptTbSwa
-         yuYRo86SFCweoLgudUSbZ2h86VCywSORxYmdfDHC9q44uMuku2ZoDTcApMFNZY7ubvp4
-         DTv42QPX6myfbDAbj2YrDTiB8rAdKWA3QvMjX4JpDvl4DHct+OOuJujEsGKnZL3TL1BF
-         dJcy5BQ3sZoYCOjjlE+HH0oVZR2M362PNzZ5NKp+8grASgEZgR+4hGcDi4E+BlZUP88x
-         Ip8w==
-X-Gm-Message-State: AOAM531pWYoUNyKVQPZffSrVCgPASL7/xQsVAnPNkvCyNfwJHY7obkis
-        IlGzCounPQdVr0yUtLobaXAfurJkMr1haQ==
-X-Google-Smtp-Source: ABdhPJwP5XilbEBiiT/DzuRXZWi9rskAyFkTjcs30yOIy91tKBHlgm9bKyxUDjsyXZOKf8fJ6dVUYQ==
-X-Received: by 2002:a17:902:9885:b0:12d:b795:f48e with SMTP id s5-20020a170902988500b0012db795f48emr259320plp.10.1629140641236;
-        Mon, 16 Aug 2021 12:04:01 -0700 (PDT)
-Received: from ip-10-124-121-13.byted.org (ec2-54-241-92-238.us-west-1.compute.amazonaws.com. [54.241.92.238])
-        by smtp.gmail.com with ESMTPSA id t30sm175845pgl.47.2021.08.16.12.03.59
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=0o5sAZp9YE4A/3Y6BSyPPjh5Xaj5fcrrsuEACZxp91I=;
+        b=J59YpPri546Qi+6VvCknkjh6UphP49l4WWTj/SLvvqYGpO2Qpwc9tcm0yzQRjn75us
+         jWK941BeuztCQVIELsjUE0RBZTwWA6bJ9Wsv3zMKcCVxaEUAQngTw8WbVWUAwhvJcqL0
+         404JXfea2ltdo6bthzt3dzg3/pIQcxZJkhoOT4lVVF5keoHDpnlXAiirXoizPRDWN+JE
+         fxQKuT9Txrpe92O5iK2rFVzYa4symyFAxLYWAXKGjjuJaE/tAid4P8Fu1r1ZA/raQ5Tw
+         1V5ydHKHZfMK7KS3XYHfPE7Z4yBeCMGrFHs4nDp8WvlQSNcJYOxcge9r6tDr7GoW8bfM
+         qUNA==
+X-Gm-Message-State: AOAM530YdrMWp6gcH6YYx5pCPB7oKLGYPFcOdXTs45brRKA3sB2Y532X
+        YdKXmxK3O7pEnIgx7X9nUxM8YA==
+X-Google-Smtp-Source: ABdhPJziMLxIL8mQJkTADzU0lrR8wgOKBkymDdB22OmEJ/6H6QFEMiLrk0t1HC+tZwgNBbo2NUBWyg==
+X-Received: by 2002:a17:906:3782:: with SMTP id n2mr19972ejc.368.1629141288739;
+        Mon, 16 Aug 2021 12:14:48 -0700 (PDT)
+Received: from carbon (78-83-68-78.spectrumnet.bg. [78.83.68.78])
+        by smtp.gmail.com with ESMTPSA id m6sm21360edq.22.2021.08.16.12.14.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Aug 2021 12:04:01 -0700 (PDT)
-From:   Jiang Wang <jiang.wang@bytedance.com>
-To:     netdev@vger.kernel.org
-Cc:     cong.wang@bytedance.com, duanxiongchun@bytedance.com,
-        xieyongji@bytedance.com, chaiwen.cc@bytedance.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Rao Shoaib <rao.shoaib@oracle.com>,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf-next v7 5/5] selftest/bpf: add new tests in sockmap for unix stream to tcp.
-Date:   Mon, 16 Aug 2021 19:03:24 +0000
-Message-Id: <20210816190327.2739291-6-jiang.wang@bytedance.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210816190327.2739291-1-jiang.wang@bytedance.com>
-References: <20210816190327.2739291-1-jiang.wang@bytedance.com>
+        Mon, 16 Aug 2021 12:14:48 -0700 (PDT)
+Date:   Mon, 16 Aug 2021 22:14:47 +0300
+From:   Petko Manolov <petko.manolov@konsulko.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, paskripkin@gmail.com,
+        stable@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH] net: usb: pegasus: ignore the return value from
+ set_registers();
+Message-ID: <YRq5JyLbkU8hN/fG@carbon>
+Mail-Followup-To: Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        paskripkin@gmail.com, stable@vger.kernel.org, davem@davemloft.net
+References: <20210812082351.37966-1-petko.manolov@konsulko.com>
+ <20210813162439.1779bf63@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YRjWXzYrQsGZiISc@carbon>
+ <20210816070640.2a7a6f5d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210816070640.2a7a6f5d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add two new test cases in sockmap tests, where unix stream is
-redirected to tcp and vice versa.
+On 21-08-16 07:06:40, Jakub Kicinski wrote:
+> On Sun, 15 Aug 2021 11:54:55 +0300 Petko Manolov wrote:
+> > > > @@ -433,7 +433,7 @@ static int enable_net_traffic(struct net_device *dev, struct usb_device *usb)
+> > > >  	data[2] = loopback ? 0x09 : 0x01;
+> > > >  
+> > > >  	memcpy(pegasus->eth_regs, data, sizeof(data));
+> > > > -	ret = set_registers(pegasus, EthCtrl0, 3, data);
+> > > > +	set_registers(pegasus, EthCtrl0, 3, data);
+> > > >  
+> > > >  	if (usb_dev_id[pegasus->dev_index].vendor == VENDOR_LINKSYS ||
+> > > >  	    usb_dev_id[pegasus->dev_index].vendor == VENDOR_LINKSYS2 ||  
+> > > 
+> > > This one is not added by the recent changes as I initially thought, 
+> > > the driver has always checked this return value. The recent changes 
+> > > did this:
+> > > 
+> > >         ret = set_registers(pegasus, EthCtrl0, 3, data);
+> > >  
+> > >         if (usb_dev_id[pegasus->dev_index].vendor == VENDOR_LINKSYS ||
+> > >             usb_dev_id[pegasus->dev_index].vendor == VENDOR_LINKSYS2 ||
+> > >             usb_dev_id[pegasus->dev_index].vendor == VENDOR_DLINK) {
+> > >                 u16 auxmode;
+> > > -               read_mii_word(pegasus, 0, 0x1b, &auxmode);
+> > > +               ret = read_mii_word(pegasus, 0, 0x1b, &auxmode);
+> > > +               if (ret < 0)
+> > > +                       goto fail;
+> > >                 auxmode |= 4;
+> > >                 write_mii_word(pegasus, 0, 0x1b, &auxmode);
+> > >         }
+> > >  
+> > > +       return 0;
+> > > +fail:
+> > > +       netif_dbg(pegasus, drv, pegasus->net, "%s failed\n", __func__);
+> > >         return ret;
+> > > }
+> > > 
+> > > now the return value of set_registeres() is ignored. 
+> > > 
+> > > Seems like  a better fix would be to bring back the error checking, 
+> > > why not?  
+> > 
+> > Mostly because for this particular adapter checking the read failure makes much
+> > more sense than write failure.
+> 
+> This is not an either-or choice.
+> 
+> > Checking the return value of set_register(s) is often usless because device's
+> > default register values are sane enough to get a working ethernet adapter even
+> > without much prodding.  There are exceptions, though, one of them being
+> > set_ethernet_addr().
+> > 
+> > You could read the discussing in the netdev ML, but the essence of it is that
+> > set_ethernet_addr() should not give up if set_register(s) fail.  Instead, the
+> > driver should assign a valid, even if random, MAC address.
+> > 
+> > It is much the same situation with enable_net_traffic() - it should continue
+> > regardless.  There are two options to resolve this: a) remove the error check
+> > altogether; b) do the check and print a debug message.  I prefer a), but i am
+> > also not strongly opposed to b).  Comments?
+> 
+> c) keep propagating the error like the driver used to.
 
-Signed-off-by: Jiang Wang <jiang.wang@bytedance.com>
-Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
----
- .../selftests/bpf/prog_tests/sockmap_listen.c    | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+If you carefully read the code, which dates back to at least 2005, you'll see
+that on line 436 (v5.14-rc6) 'ret' is assigned with the return value of
+set_registers(), but 'ret' is never evaluated and thus not acted upon.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-index 07ed8081f9ae..afa14fb66f08 100644
---- a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-@@ -1884,7 +1884,7 @@ static void inet_unix_redir_to_connected(int family, int type, int sock_mapfd,
- 	xclose(p0);
- }
- 
--static void udp_unix_skb_redir_to_connected(struct test_sockmap_listen *skel,
-+static void inet_unix_skb_redir_to_connected(struct test_sockmap_listen *skel,
- 					    struct bpf_map *inner_map, int family)
- {
- 	int verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
-@@ -1899,9 +1899,13 @@ static void udp_unix_skb_redir_to_connected(struct test_sockmap_listen *skel,
- 	skel->bss->test_ingress = false;
- 	inet_unix_redir_to_connected(family, SOCK_DGRAM, sock_map, verdict_map,
- 				    REDIR_EGRESS);
-+	inet_unix_redir_to_connected(family, SOCK_STREAM, sock_map, verdict_map,
-+				    REDIR_EGRESS);
- 	skel->bss->test_ingress = true;
- 	inet_unix_redir_to_connected(family, SOCK_DGRAM, sock_map, verdict_map,
- 				    REDIR_INGRESS);
-+	inet_unix_redir_to_connected(family, SOCK_STREAM, sock_map, verdict_map,
-+				    REDIR_INGRESS);
- 
- 	xbpf_prog_detach2(verdict, sock_map, BPF_SK_SKB_VERDICT);
- }
-@@ -1961,7 +1965,7 @@ static void unix_inet_redir_to_connected(int family, int type, int sock_mapfd,
- 
- }
- 
--static void unix_udp_skb_redir_to_connected(struct test_sockmap_listen *skel,
-+static void unix_inet_skb_redir_to_connected(struct test_sockmap_listen *skel,
- 					    struct bpf_map *inner_map, int family)
- {
- 	int verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
-@@ -1976,9 +1980,13 @@ static void unix_udp_skb_redir_to_connected(struct test_sockmap_listen *skel,
- 	skel->bss->test_ingress = false;
- 	unix_inet_redir_to_connected(family, SOCK_DGRAM, sock_map, verdict_map,
- 				     REDIR_EGRESS);
-+	unix_inet_redir_to_connected(family, SOCK_STREAM, sock_map, verdict_map,
-+				     REDIR_EGRESS);
- 	skel->bss->test_ingress = true;
- 	unix_inet_redir_to_connected(family, SOCK_DGRAM, sock_map, verdict_map,
- 				     REDIR_INGRESS);
-+	unix_inet_redir_to_connected(family, SOCK_STREAM, sock_map, verdict_map,
-+				     REDIR_INGRESS);
- 
- 	xbpf_prog_detach2(verdict, sock_map, BPF_SK_SKB_VERDICT);
- }
-@@ -1994,8 +2002,8 @@ static void test_udp_unix_redir(struct test_sockmap_listen *skel, struct bpf_map
- 	snprintf(s, sizeof(s), "%s %s %s", map_name, family_name, __func__);
- 	if (!test__start_subtest(s))
- 		return;
--	udp_unix_skb_redir_to_connected(skel, map, family);
--	unix_udp_skb_redir_to_connected(skel, map, family);
-+	inet_unix_skb_redir_to_connected(skel, map, family);
-+	unix_inet_skb_redir_to_connected(skel, map, family);
- }
- 
- static void run_tests(struct test_sockmap_listen *skel, struct bpf_map *map,
--- 
-2.20.1
+> I don't understand why that's not the most obvious option.
+
+Which part of "this is not a fatal error" you did not understand?
+
+> The driver used to propagate the errors from the set_registers() call in
+> enable_net_traffic() since the beginning of the git era. This is _not_ one of
+> the error checking that you recently added.
+
+The driver hasn't propagated an error at this particular location in the last 16
+years.  So how exactly removing this assignment will make the driver worse than
+it is now?
+
+Anyway, i'll add a warn() and be done with it.
+
+
+		Petko
 
