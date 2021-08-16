@@ -2,185 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B8B83EDA47
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 17:56:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE1133EDA4E
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 17:56:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233381AbhHPP44 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 16 Aug 2021 11:56:56 -0400
-Received: from mail-lf1-f46.google.com ([209.85.167.46]:43830 "EHLO
-        mail-lf1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233342AbhHPP4z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 11:56:55 -0400
-Received: by mail-lf1-f46.google.com with SMTP id i9so14663410lfg.10;
-        Mon, 16 Aug 2021 08:56:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=c9l+YE7WNjbQ5edK008G+h5CMzV9oRtp+Y4bgi0QHY0=;
-        b=bKvlsqM3m6mnY+adcVXlDjBVqzBCbajL0FLmE3hrzCmTFuOXO0U0mOy3WCOVsAPOdD
-         w1DWrwiTDsGHC16n4orvRzbqRHuVpVB5c4NFsRaFOxjBCiN96AH6HpZrg9Ryjqy6kKO2
-         GitiEQEbpv3d9ALa5B8+LtCS9++nIoML/E+Ma5ah/VGCneiNHCskFKlB1GiIEKtAUOj6
-         FJNlPykxmyFwNMRafryp1ytyR2WAdCq1QtD8QnU+Fiz6T33uTK34N0VzKuWe23YxNkJy
-         bWT5W5vX1i8+iOyOktqVor/bnT/Iysa/n8VdOdbgoMNF7Z0+uG7eNCEbCcnXipbpfyWU
-         1LTQ==
-X-Gm-Message-State: AOAM530NKmhc/lQQbuQNxX24DPh9nHt1IHz05quSbzj/0XYZ/wj8+0qK
-        3NAI7KyEs9Dt2UlfBpktVWjJ4MYjDfHGiYb4iQc=
-X-Google-Smtp-Source: ABdhPJzaDdNoQPM2AJ4T551pYOs232Gpl7KZcd8TXogLSorum/PF+ss8KS2j5+K7K2WZvhcMxHg4Ocz5JSffzulF3is=
-X-Received: by 2002:ac2:4e8c:: with SMTP id o12mr12617089lfr.374.1629129382855;
- Mon, 16 Aug 2021 08:56:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210815033248.98111-1-mailhol.vincent@wanadoo.fr>
- <20210815033248.98111-3-mailhol.vincent@wanadoo.fr> <20210816084235.fr7fzau2ce7zl4d4@pengutronix.de>
- <CAMZ6RqK5t62UppiMe9k5jG8EYvnSbFW3doydhCvp72W_X2rXAw@mail.gmail.com>
- <20210816122519.mme272z6tqrkyc6x@pengutronix.de> <79691916e4280970f583a54cd5010ece025a1c53.camel@esd.eu>
-In-Reply-To: <79691916e4280970f583a54cd5010ece025a1c53.camel@esd.eu>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Tue, 17 Aug 2021 00:56:11 +0900
-Message-ID: <CAMZ6Rq+j-x-xHCsPsJyzstLgRy6SLvvONyfaCVexJ6O-0JrQaA@mail.gmail.com>
-Subject: Re: [PATCH v5 2/7] can: bittiming: allow TDC{V,O} to be zero and add can_tdc_const::tdc{v,o,f}_min
-To:     =?UTF-8?Q?Stefan_M=C3=A4tje?= <Stefan.Maetje@esd.eu>
-Cc:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S236920AbhHPP5U convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 16 Aug 2021 11:57:20 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:43791 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236811AbhHPP5U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 11:57:20 -0400
+Received: from smtpclient.apple (p5b3d23f8.dip0.t-ipconnect.de [91.61.35.248])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 13C02CECC8;
+        Mon, 16 Aug 2021 17:56:47 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
+Subject: Re: [syzbot] INFO: task hung in hci_req_sync
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <9365fdfa-3cee-f22e-c53d-6536a96d27ae@gmail.com>
+Date:   Mon, 16 Aug 2021 17:56:46 +0200
+Cc:     syzbot <syzbot+be2baed593ea56c6a84c@syzkaller.appspotmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
 Content-Transfer-Encoding: 8BIT
+Message-Id: <57BAFAA4-3C3D-40C8-9121-44EEF44509B8@holtmann.org>
+References: <000000000000c5482805c956a118@google.com>
+ <9365fdfa-3cee-f22e-c53d-6536a96d27ae@gmail.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+X-Mailer: Apple Mail (2.3654.120.0.1.13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon. 16 Aug 2021 at 22:49, Stefan Mätje <Stefan.Maetje@esd.eu> wrote:
-> Hi Vincent,
->
-> I would like to add some comments below:
->
-> Am Montag, den 16.08.2021, 14:25 +0200 schrieb Marc Kleine-Budde:
-> > On 16.08.2021 19:24:43, Vincent MAILHOL wrote:
-> > > On Mon. 16 Aug 2021 at 17:42, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> > > > On 15.08.2021 12:32:43, Vincent Mailhol wrote:
-> > > > > ISO 11898-1 specifies in section 11.3.3 "Transmitter delay
-> > > > > compensation" that "the configuration range for [the] SSP position
-> > > > > shall be at least 0 to 63 minimum time quanta."
-> > > > >
-> > > > > Because SSP = TDCV + TDCO, it means that we should allow both TDCV and
-> > > > > TDCO to hold zero value in order to honor SSP's minimum possible
-> > > > > value.
-> > > > >
-> > > > > However, current implementation assigned special meaning to TDCV and
-> > > > > TDCO's zero values:
-> > > > >   * TDCV = 0 -> TDCV is automatically measured by the transceiver.
-> > > > >   * TDCO = 0 -> TDC is off.
-> > > > >
-> > > > > In order to allow for those values to really be zero and to maintain
-> > > > > current features, we introduce two new flags:
-> > > > >   * CAN_CTRLMODE_TDC_AUTO indicates that the controller support
-> > > > >     automatic measurement of TDCV.
-> > > > >   * CAN_CTRLMODE_TDC_MANUAL indicates that the controller support
-> > > > >     manual configuration of TDCV. N.B.: current implementation failed
-> > > > >     to provide an option for the driver to indicate that only manual
-> > > > >     mode was supported.
-> > > > >
-> > > > > TDC is disabled if both CAN_CTRLMODE_TDC_AUTO and
-> > > > > CAN_CTRLMODE_TDC_MANUAL flags are off, c.f. the helper function
-> > > > > can_tdc_is_enabled() which is also introduced in this patch.
-> > > >
-> > > > Nitpick: We can only say that TDC is disabled, if the driver supports
-> > > > the TDC interface at all, which is the case if tdc_const is set.
-> > >
-> > > I would argue that saying that a device does not support TDC is
-> > > equivalent to saying that TDC is always disabled for that device.
-> > > Especially, the function can_tdc_is_enabled() can be used even if
-> > > the device does not support TDC (even if there is no benefit
-> > > doing so).
-> > >
-> > > Do you still want me to rephrase this part?
-> > >
-> > > > > Also, this patch adds three fields: tdcv_min, tdco_min and tdcf_min to
-> > > > > struct can_tdc_const. While we are not convinced that those three
-> > > > > fields could be anything else than zero, we can imagine that some
-> > > > > controllers might specify a lower bound on these. Thus, those minimums
-> > > > > are really added "just in case".
-> > > >
-> > > > I'm not sure, if we talked about the mcp251xfd's tcdo, valid values are
-> > > > -64...63.
-> > >
-> > > Yes! Stefan shed some light on this. The mcp251xfd uses a tdco
-> > > value which is relative to the sample point.
-> >
-> > I don't read the documentation this way....
->
-> @Vincent: I have to agree with Marc here. Perhaps my email
-> https://lore.kernel.org/linux-can/094d8a2eab2177e5a5143f96cf745b26897e1793.camel@esd.eu/
-> was also misleading. I also referred there to a MicroChip Excel sheet
-> (https://ww1.microchip.com/downloads/en/DeviceDoc/MCP2517FD%20Bit%20Time%20Calculations%20-%20UG.xlsx)
-> that describes the calculation of the bit timing and the TDCO. The values calculated
-> there correspond to the SPO from the above email. Microchip calculates the TDCO as
-> TDCO = (DPRSEG + DPH1SEG) * DBRP.
-> Thus, as already discussed, negative values are not purposeful.
->
-> Sorry, that that email was misleading. So far I've seen now only the ESDACC
-> controller has a "relative" TDCO register value where a negative value may
-> be sensible.
+Hi Pavel,
 
-So many misleading things on this absolute/relative TDCO topic.
-But be sure of one thing: your help has been precious!
+>> syzbot found the following issue on:
+>> HEAD commit:    c9194f32bfd9 Merge tag 'ext4_for_linus_stable' of git://gi..
+>> git tree:       upstream
+>> console output: https://syzkaller.appspot.com/x/log.txt?x=1488f59e300000
+>> kernel config:  https://syzkaller.appspot.com/x/.config?x=343fd21f6f4da2d6
+>> dashboard link: https://syzkaller.appspot.com/bug?extid=be2baed593ea56c6a84c
+>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15b5afc6300000
+>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15fcd192300000
+>> Bisection is inconclusive: the issue happens on the oldest tested release.
+>> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17dce4fa300000
+>> final oops:     https://syzkaller.appspot.com/x/report.txt?x=143ce4fa300000
+>> console output: https://syzkaller.appspot.com/x/log.txt?x=103ce4fa300000
+>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+>> Reported-by: syzbot+be2baed593ea56c6a84c@syzkaller.appspotmail.com
+>> INFO: task syz-executor446:8489 blocked for more than 143 seconds.
+>>       Not tainted 5.14.0-rc4-syzkaller #0
+>> "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+>> task:syz-executor446 state:D stack:28712 pid: 8489 ppid:  8452 flags:0x00000000
+>> Call Trace:
+>>  context_switch kernel/sched/core.c:4683 [inline]
+>>  __schedule+0x93a/0x26f0 kernel/sched/core.c:5940
+>>  schedule+0xd3/0x270 kernel/sched/core.c:6019
+>>  schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6078
+>>  __mutex_lock_common kernel/locking/mutex.c:1036 [inline]
+>>  __mutex_lock+0x7b6/0x10a0 kernel/locking/mutex.c:1104
+>>  hci_req_sync+0x33/0xd0 net/bluetooth/hci_request.c:276
+>>  hci_inquiry+0x6f4/0x9e0 net/bluetooth/hci_core.c:1357
+>>  hci_sock_ioctl+0x1a7/0x910 net/bluetooth/hci_sock.c:1060
+>>  sock_do_ioctl+0xcb/0x2d0 net/socket.c:1094
+>>  sock_ioctl+0x477/0x6a0 net/socket.c:1221
+>>  vfs_ioctl fs/ioctl.c:51 [inline]
+>>  __do_sys_ioctl fs/ioctl.c:1069 [inline]
+>>  __se_sys_ioctl fs/ioctl.c:1055 [inline]
+>>  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:1055
+>>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+>> RIP: 0033:0x446449
+>> RSP: 002b:00007f36ab8342e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+>> RAX: ffffffffffffffda RBX: 00000000004cb400 RCX: 0000000000446449
+>> RDX: 00000000200000c0 RSI: 00000000800448f0 RDI: 0000000000000004
+>> RBP: 00000000004cb40c R08: 0000000000000000 R09: 0000000000000000
+>> R10: ffffffffffffffff R11: 0000000000000246 R12: 0000000000000003
+>> R13: 0000000000000004 R14: 00007f36ab8346b8 R15: 00000000004cb408
+>> INFO: task syz-executor446:8491 blocked for more than 143 seconds.
+>>       Not tainted 5.14.0-rc4-syzkaller #0
+>> "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+>> task:syz-executor446 state:D stack:28176 pid: 8491 ppid:  8452 flags:0x00000004
+>> Call Trace:
+>>  context_switch kernel/sched/core.c:4683 [inline]
+>>  __schedule+0x93a/0x26f0 kernel/sched/core.c:5940
+>>  schedule+0xd3/0x270 kernel/sched/core.c:6019
+>>  schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6078
+>>  __mutex_lock_common kernel/locking/mutex.c:1036 [inline]
+>>  __mutex_lock+0x7b6/0x10a0 kernel/locking/mutex.c:1104
+>>  hci_req_sync+0x33/0xd0 net/bluetooth/hci_request.c:276
+>>  hci_inquiry+0x6f4/0x9e0 net/bluetooth/hci_core.c:1357
+>>  hci_sock_ioctl+0x1a7/0x910 net/bluetooth/hci_sock.c:1060
+>>  sock_do_ioctl+0xcb/0x2d0 net/socket.c:1094
+>>  sock_ioctl+0x477/0x6a0 net/socket.c:1221
+>>  vfs_ioctl fs/ioctl.c:51 [inline]
+>>  __do_sys_ioctl fs/ioctl.c:1069 [inline]
+>>  __se_sys_ioctl fs/ioctl.c:1055 [inline]
+>>  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:1055
+>>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+>> RIP: 0033:0x446449
+>> RSP: 002b:00007f36ab8342e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+>> RAX: ffffffffffffffda RBX: 00000000004cb400 RCX: 0000000000446449
+>> RDX: 00000000200000c0 RSI: 00000000800448f0 RDI: 0000000000000004
+>> RBP: 00000000004cb40c R08: 0000000000000000 R09: 0000000000000000
+>> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
+>> R13: 0000000000000004 R14: 00007f36ab8346b8 R15: 00000000004cb408
+>> Showing all locks held in the system:
+>> 6 locks held by kworker/u4:0/8:
+>> 1 lock held by khungtaskd/1635:
+>>  #0: ffffffff8b97c180 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:6446
+>> 1 lock held by in:imklog/8352:
+>>  #0: ffff888033e1d4f0 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0xe9/0x100 fs/file.c:974
+>> 1 lock held by syz-executor446/8486:
+>>  #0: ffff8880349c4ff0 (&hdev->req_lock){+.+.}-{3:3}, at: hci_req_sync+0x33/0xd0 net/bluetooth/hci_request.c:276
+>> 1 lock held by syz-executor446/8489:
+>>  #0: ffff8880349c4ff0 (&hdev->req_lock){+.+.}-{3:3}, at: hci_req_sync+0x33/0xd0 net/bluetooth/hci_request.c:276
+>> 1 lock held by syz-executor446/8491:
+>>  #0: ffff8880349c4ff0 (&hdev->req_lock){+.+.}-{3:3}, at: hci_req_sync+0x33/0xd0 net/bluetooth/hci_request.c:276
+> 
+> Looks like too big timeout is passed from ioctl:
+> 
+> 
+> C repro:
+> 
+>    *(uint16_t*)0x200000c0 = 0;
+>    *(uint16_t*)0x200000c2 = 0;
+>    memcpy((void*)0x200000c4, "\xf0\x08\xa7", 3);
+>    *(uint8_t*)0x200000c7 = 0x81;	<- ir.length
+>    *(uint8_t*)0x200000c8 = 0;
+>    syscall(__NR_ioctl, r[0], 0x800448f0, 0x200000c0ul);
+> 
+> 
+> Then ir.length * msecs_to_jiffies(2000) timeout is passed to
+> hci_req_sync(). Task will stuck here
+> 
+> 	err = wait_event_interruptible_timeout(hdev->req_wait_q,
+> 			hdev->req_status != HCI_REQ_PEND, timeout);
+> 
+> for 258 seconds (I guess, it's because of test environment, but, maybe, we should add sanity check for timeout value)
 
-> > > > SSP = TDCV + absolute TDCO
-> > > >     = TDCV + SP + relative TDCO
-> > >
-> > > Consequently:
-> > > > relative TDCO = absolute TDCO - SP
-> >
-> > In the mcp15xxfd family manual
-> > (http://ww1.microchip.com/downloads/en/DeviceDoc/MCP251XXFD-CAN-FD-Controller-Module-Family-Reference-Manual-20005678B.pdf)
-> > in the 2mbit/s data bit rate example in table 3-5 (page 21) it says:
-> >
-> > > DTSEG1  15 DTQ
-> > > DTSEG2   4 DTQ
-> > > TDCO    15 DTQ
-> >
-> > The mcp251xfd driver uses 15, the framework calculates 16 (== Sync Seg+
-> > tseg1, which is correct), and relative tdco would be 0:
-> >
-> > > mcp251xfd_set_bittiming: tdco=15, priv->tdc.tdc=16, relative_tdco=0
-> >
-> > Here the output with the patched ip tool:
-> >
-> > > 4: mcp251xfd0: <NOARP,UP,LOWER_UP,ECHO> mtu 72 qdisc pfifo_fast state UP mode DEFAULT group default qlen 10
-> > >     link/can  promiscuity 0 minmtu 0 maxmtu 0
-> > >     can <FD,TDC_AUTO> state ERROR-ACTIVE (berr-counter tx 0 rx 0) restart-ms 100
-> > >           bitrate 500000 sample-point 0.875
-> > >           tq 25 prop-seg 34 phase-seg1 35 phase-seg2 10 sjw 1 brp 1
-> > >           mcp251xfd: tseg1 2..256 tseg2 1..128 sjw 1..128 brp 1..256 brp_inc 1
-> > >           dbitrate 2000000 dsample-point 0.750
-> > >           dtq 25 dprop-seg 7 dphase-seg1 7 dphase-seg2 5 dsjw 1 dbrp 1
-> > >           tdco 15
-> > >           mcp251xfd: dtseg1 1..32 dtseg2 1..16 dsjw 1..16 dbrp 1..256 dbrp_inc 1
-> > >           tdco 0..127
-> > >           clock 40000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 parentbus spi parentdev spi0.0
-> >
-> >
-> > > Which is also why TDCO can be negative.
-> > >
-> > > I added an helper function can_tdc_get_relative_tdco() in the
-> > > fourth path of this series:
-> > > https://lore.kernel.org/linux-can/20210814091750.73931-5-mailhol.vincent@wanadoo.fr/T/#u
-> > >
-> > > Devices which use the absolute TDCO can directly use
-> > > can_priv->tdc.tdco. Devices which use the relative TDCO such as
-> > > the mcp251xfd should use this helper function instead.
-> >
-> > Don't think so....
->
-> @Vincent: Perhaps you should not implement this helper function as it is only needed
-> for the ESDACC so far.
+I agree. Feel free to send a patch.
 
-Lets first wait for the response from Microchip and if indeed
-mcp25xxfd does not use a relative TDCO, I am fine to remove this
-from the series. In such a case, do not hesitate to steal the patch
-for your ESD driver.
+Regards
 
+Marcel
 
-Yours sincerely,
-Vincent
