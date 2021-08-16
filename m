@@ -2,176 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93E3C3ED7F1
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 15:51:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92E403ED803
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 15:56:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231769AbhHPNv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 09:51:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55498 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231181AbhHPNvw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 09:51:52 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE568C0613C1
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 06:51:20 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mFd1I-0003Ma-Pm; Mon, 16 Aug 2021 15:51:16 +0200
-Received: from pengutronix.de (unknown [IPv6:2a02:810a:8940:aa0:3272:cc96:80a9:1a01])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 07E3F6683A0;
-        Mon, 16 Aug 2021 13:51:14 +0000 (UTC)
-Date:   Mon, 16 Aug 2021 15:51:13 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        linux-can@vger.kernel.org,
-        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 4/4] iplink_can: add new CAN FD bittiming parameters:
- Transmitter Delay Compensation (TDC)
-Message-ID: <20210816135113.gpk3fpafiqnhjbw4@pengutronix.de>
-References: <20210814101728.75334-1-mailhol.vincent@wanadoo.fr>
- <20210814101728.75334-5-mailhol.vincent@wanadoo.fr>
+        id S230340AbhHPN5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 09:57:09 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:51986 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231142AbhHPN5H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 09:57:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=9DiDydqTOPPS0FSwIW26JQmOS6UG6Q0l2zcE2t6QNNs=; b=Xk
+        2akKzRa4a3DHKt1sKHTwCKf2lye6qWjB4aFu+MoYbE8gBAfEmW+iSgk7dkzpDAUX5zu1i0O1+2vkj
+        AMmfKJON6HsnwFFFAQH/HTFI1E2TO+py0xetN2wBc1g/IpEwXnNyozT18PdbUu2WpezEA00j0w8ht
+        32rQl/vKmndPigU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mFd6C-000Oly-Rn; Mon, 16 Aug 2021 15:56:20 +0200
+Date:   Mon, 16 Aug 2021 15:56:20 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Luo Jie <luoj@codeaurora.org>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, sricharan@codeaurora.org
+Subject: Re: [PATCH] net: phy: add qca8081 ethernet phy driver
+Message-ID: <YRpuhIcwN2IsaHzy@lunn.ch>
+References: <20210816113440.22290-1-luoj@codeaurora.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="uw3za2cin73atu2y"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20210814101728.75334-5-mailhol.vincent@wanadoo.fr>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210816113440.22290-1-luoj@codeaurora.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Aug 16, 2021 at 07:34:40PM +0800, Luo Jie wrote:
+> qca8081 is industry’s lowest cost and power 1-port 2.5G/1G Ethernet PHY
+> chip, which implements SGMII/SGMII+ for interface to SoC.
 
---uw3za2cin73atu2y
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi Luo
 
-On 14.08.2021 19:17:28, Vincent Mailhol wrote:
-> At high bit rates, the propagation delay from the TX pin to the RX pin
-> of the transceiver causes measurement errors: the sample point on the
-> RX pin might occur on the previous bit.
->=20
-> This issue is addressed in ISO 11898-1 section 11.3.3 "Transmitter
-> delay compensation" (TDC).
->=20
-> This patch brings command line support to nine TDC parameters which
-> were recently added to the kernel's CAN netlink interface in order to
-> implement TDC:
->   - IFLA_CAN_TDC_TDCV_MIN: Transmitter Delay Compensation Value
->     minimum value
->   - IFLA_CAN_TDC_TDCV_MAX: Transmitter Delay Compensation Value
->     maximum value
->   - IFLA_CAN_TDC_TDCO_MIN: Transmitter Delay Compensation Offset
->     minimum value
->   - IFLA_CAN_TDC_TDCO_MAX: Transmitter Delay Compensation Offset
->     maximum value
->   - IFLA_CAN_TDC_TDCF_MIN: Transmitter Delay Compensation Filter
->     window minimum value
->   - IFLA_CAN_TDC_TDCF_MAX: Transmitter Delay Compensation Filter
->     window maximum value
->   - IFLA_CAN_TDC_TDCV: Transmitter Delay Compensation Value
->   - IFLA_CAN_TDC_TDCO: Transmitter Delay Compensation Offset
->   - IFLA_CAN_TDC_TDCF: Transmitter Delay Compensation Filter window
->=20
-> All those new parameters are nested together into the attribute
-> IFLA_CAN_TDC.
->=20
-> A tdc-mode parameter allow to specify how to operate. Valid options
-> are:
->=20
->   * auto: the transmitter automatically measures TDCV. As such, TDCV
->     values can not be manually provided. In this mode, the user must
->     specify TDCO and may also specify TDCF if supported.
->=20
->   * manual: Use the TDCV value provided by the user are used. In this
->     mode, the user must specify both TDCV and TDCO and may also
->     specify TDCF if supported.
->=20
->   * off: TDC is explicitly disabled.
->=20
->   * tdc-mode parameter omitted (default mode): the kernel decides
->     whether TDC should be enabled or not and if so, it calculates the
->     TDC values. TDC parameters are an expert option and the average
->     user is not expected to provide those, thus the presence of this
->     "default mode".
->=20
-> TDCV is always reported in manual mode. In auto mode, TDCV is reported
-> only if the value is available. Especially, the TDCV might not be
-> available if the controller has no feature to report it or if the
-> value in not yet available (i.e. no data sent yet and measurement did
-> not occur).
->=20
-> TDCF is reported only if tdcf_max is not zero (i.e. if supported by the c=
-ontroller).
->=20
-> For reference, here are a few samples of how the output looks like:
->=20
-> $ ip link set can0 type can bitrate 1000000 dbitrate 8000000 fd on tdco 7=
- tdcf 8 tdc-mode auto
->=20
-> $ ip --details link show can0
-> 1:  can0: <NOARP,ECHO> mtu 72 qdisc noop state DOWN mode DEFAULT group de=
-fault qlen 10
->     link/can  promiscuity 0 minmtu 0 maxmtu 0
->     can <FD,TDC_AUTO> state STOPPED (berr-counter tx 0 rx 0) restart-ms 0
-              ^^^^^^^^
-This is just the supported mode(s), right?
+No Marketing claims in the commit message please. Even if it is
+correct now, it will soon be wrong with newer generations of
+devices.
 
-> 	  bitrate 1000000 sample-point 0.750
-> 	  tq 12 prop-seg 29 phase-seg1 30 phase-seg2 20 sjw 1 brp 1
-> 	  ES582.1/ES584.1: tseg1 2..256 tseg2 2..128 sjw 1..128 brp 1..512 brp_i=
-nc 1
-> 	  dbitrate 8000000 dsample-point 0.700
-> 	  dtq 12 dprop-seg 3 dphase-seg1 3 dphase-seg2 3 dsjw 1 dbrp 1
-> 	  tdco 7 tdcf 8
-> 	  ES582.1/ES584.1: dtseg1 2..32 dtseg2 1..16 dsjw 1..8 dbrp 1..32 dbrp_i=
-nc 1
-> 	  tdco 0..127 tdcf 0..127
-> 	  clock 80000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_=
-segs 65535
+And what is SGMII+? Please reference a document. Is it actually
+2500BaseX?
 
-Is there a way to figure out, which tdc mode is currently active?
+> Signed-off-by: Luo Jie <luoj@codeaurora.org>
+> ---
+>  drivers/net/phy/Kconfig   |   6 +
+>  drivers/net/phy/Makefile  |   1 +
+>  drivers/net/phy/qca808x.c | 573 ++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 580 insertions(+)
+>  create mode 100644 drivers/net/phy/qca808x.c
+> 
+> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> index c56f703ae998..26cb1c2ffd17 100644
+> --- a/drivers/net/phy/Kconfig
+> +++ b/drivers/net/phy/Kconfig
+> @@ -343,3 +343,9 @@ endif # PHYLIB
+>  config MICREL_KS8995MA
+>  	tristate "Micrel KS8995MA 5-ports 10/100 managed Ethernet switch"
+>  	depends on SPI
+> +
+> +config QCA808X_PHY
+> +	tristate "Qualcomm Atheros QCA808X PHYs"
+> +	depends on REGULATOR
+> +	help
+> +	  Currently supports the QCA8081 model
 
-AFAICS just implicitly:
-- tdco + tdcv   -> manual
-- tdco          -> automatic
-- neither       -> off
+This file is sorted on the tristate text. So it should appear directly
+after AT803X_PHY.
 
-correct?
+> diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+> index 172bb193ae6a..9ef477d79588 100644
+> --- a/drivers/net/phy/Makefile
+> +++ b/drivers/net/phy/Makefile
+> @@ -84,3 +84,4 @@ obj-$(CONFIG_STE10XP)		+= ste10Xp.o
+>  obj-$(CONFIG_TERANETICS_PHY)	+= teranetics.o
+>  obj-$(CONFIG_VITESSE_PHY)	+= vitesse.o
+>  obj-$(CONFIG_XILINX_GMII2RGMII) += xilinx_gmii2rgmii.o
+> +obj-$(CONFIG_QCA808X_PHY)	+= qca808x.o
 
-regards,
-Marc
+And this file is sorted by CONFIG_ so should be after
+CONFIG_NXP_TJA11XX_PHY.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+Keeping things sorted reduces the likelyhood of a merge conflict.
 
---uw3za2cin73atu2y
-Content-Type: application/pgp-signature; name="signature.asc"
+> +#include <linux/module.h>
+> +#include <linux/etherdevice.h>
+> +#include <linux/phy.h>
+> +#include <linux/bitfield.h>
+> +
+> +#define QCA8081_PHY_ID					0x004DD101
+> +
+> +/* MII special status */
+> +#define QCA808X_PHY_SPEC_STATUS				0x11
+> +#define QCA808X_STATUS_FULL_DUPLEX			BIT(13)
+> +#define QCA808X_STATUS_LINK_PASS			BIT(10)
+> +#define QCA808X_STATUS_SPEED_MASK			GENMASK(9, 7)
+> +#define QCA808X_STATUS_SPEED_100MBS			1
+> +#define QCA808X_STATUS_SPEED_1000MBS			2
+> +#define QCA808X_STATUS_SPEED_2500MBS			4
+> +
+> +/* MII interrupt enable & status */
+> +#define QCA808X_PHY_INTR_MASK				0x12
+> +#define QCA808X_PHY_INTR_STATUS				0x13
+> +#define QCA808X_INTR_ENABLE_FAST_RETRAIN_FAIL		BIT(15)
+> +#define QCA808X_INTR_ENABLE_SPEED_CHANGED		BIT(14)
+> +#define QCA808X_INTR_ENABLE_DUPLEX_CHANGED		BIT(13)
+> +#define QCA808X_INTR_ENABLE_PAGE_RECEIVED		BIT(12)
+> +#define QCA808X_INTR_ENABLE_LINK_FAIL			BIT(11)
+> +#define QCA808X_INTR_ENABLE_LINK_SUCCESS		BIT(10)
+> +#define QCA808X_INTR_ENABLE_POE				BIT(1)
+> +#define QCA808X_INTR_ENABLE_WOL				BIT(0)
+> +
+> +/* MII DBG address & data */
+> +#define QCA808X_PHY_DEBUG_ADDR				0x1d
+> +#define QCA808X_PHY_DEBUG_DATA				0x1e
+> +
 
------BEGIN PGP SIGNATURE-----
+A lot of these registers look the same as the at803x. So i'm thinking
+you should merge these two drivers. There is a lot of code which is
+identical, or very similar, which you can share.
 
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEabU8ACgkQqclaivrt
-76nQ9wf8DSYrFmAPlYxWQHsv0ovgFow7hrqpCljYwTYqsn4Ft7+s6L/1gcZtX5Uh
-z9L3W4nGFtfC380xQYR9pSLSK0G300ceeN7rdbEa4cYEWPQK6OZNEszqUr+rh5ur
-kbZGuc+pGVrU8ZZ3ru42ntu2Bo/ob7/s5TIdpr/Ujuish1zNLwQmWymnsGw9KQEU
-g0BeZMU/FnjsTsAdr/a9DnczunuuX9AomlwrYIR4R2EdPYm3VxZnZ7ttuecTF2Ri
-9Qq5y8mNaR7jrvWTOHMZc7wAeZJMugtorLUc90kmGwD3TAbjTC2TtARSKSKOLvey
-Qfa0IiiGx0hgEil37JPbfVwWQ4TIHQ==
-=H91n
------END PGP SIGNATURE-----
+> +static int qca808x_get_2500caps(struct phy_device *phydev)
+> +{
+> +	int phy_data;
+> +
+> +	phy_data = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, QCA808X_PHY_MMD1_PMA_CAP_REG);
+> +
+> +	return (phy_data & QCA808X_STATUS_2500T_FD_CAPS) ? 1 : 0;
 
---uw3za2cin73atu2y--
+So the PHY ignores the standard and does not set bit
+MDIO_PMA_NG_EXTABLE_2_5GBT in MDIO_MMD_PMAPMD, MDIO_PMA_NG_EXTABLE ?
+Please compare the registers against the standards. If they are
+actually being followed, please you the linux names for these
+registers, and try to use the generic code.
+
+> +static int qca808x_phy_ms_random_seed_set(struct phy_device *phydev)
+> +{
+> +	u16 seed_value = (prandom_u32() % QCA808X_MASTER_SLAVE_SEED_RANGE) << 2;
+> +
+> +	return qca808x_debug_reg_modify(phydev, QCA808X_PHY_DEBUG_LOCAL_SEED,
+> +			QCA808X_MASTER_SLAVE_SEED_CFG, seed_value);
+> +}
+> +
+> +static int qca808x_phy_ms_seed_enable(struct phy_device *phydev, bool enable)
+> +{
+> +	u16 seed_enable = 0;
+> +
+> +	if (enable)
+> +		seed_enable = QCA808X_MASTER_SLAVE_SEED_ENABLE;
+> +
+> +	return qca808x_debug_reg_modify(phydev, QCA808X_PHY_DEBUG_LOCAL_SEED,
+> +			QCA808X_MASTER_SLAVE_SEED_ENABLE, seed_enable);
+> +}
+
+This is interesting. I've not seen any other PHY does this. is there
+documentation? Is the datasheet available?
+
+> +static int qca808x_soft_reset(struct phy_device *phydev)
+> +{
+> +	int ret;
+> +
+> +	ret = genphy_soft_reset(phydev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (phydev->autoneg == AUTONEG_DISABLE) {
+> +		ret = qca808x_speed_forced(phydev);
+> +		if (ret)
+> +			return ret;
+
+That is unusual. After a reset, you would expect the config_aneg()
+function to be called, and it should set things like this. Why is it
+needed?
+
+I don't see anything handling the host side. Generally, devices like
+this use SGMII for 10/100/1G. When 2.5G is in use they swap their host
+interface to 2500BaseX. See mv3310_update_interface() as an example.
+
+	  Andrew
