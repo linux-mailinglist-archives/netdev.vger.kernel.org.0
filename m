@@ -2,69 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0E153EDEE5
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 23:01:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 730083EDEE9
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 23:01:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233142AbhHPVBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 17:01:36 -0400
-Received: from smtp1.emailarray.com ([65.39.216.14]:63467 "EHLO
-        smtp1.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231783AbhHPVBf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 17:01:35 -0400
-Received: (qmail 1791 invoked by uid 89); 16 Aug 2021 21:01:02 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMQ==) (POLARISLOCAL)  
-  by smtp1.emailarray.com with SMTP; 16 Aug 2021 21:01:02 -0000
-Date:   Mon, 16 Aug 2021 14:01:01 -0700
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [PATCH v1 net-next 1/3] ptp_ocp: Switch to use
- module_pci_driver() macro
-Message-ID: <20210816210101.cnhb4xfifzctr4kj@bsd-mbp.dhcp.thefacebook.com>
-References: <20210813122737.45860-1-andriy.shevchenko@linux.intel.com>
- <20210813111407.0c2288f1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAHp75VeEO+givZ_SvUc2Wu7=iKvoqJEWYnMD=RHZCxKhqsV-9Q@mail.gmail.com>
+        id S233271AbhHPVBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 17:01:42 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:36855 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233194AbhHPVBm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 17:01:42 -0400
+Received: by mail-il1-f199.google.com with SMTP id c20-20020a9294140000b02902141528bc7cso10399196ili.3
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 14:01:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=QdxFVZxxVpsbxj2o+V3LRFIQHQQnZrQkJLl5OL4ggRM=;
+        b=qxpne5AyiHqRTRmAAPjw3W+nNfS+HUJW1+/eNu1izGbDLNS1flxFzlorWh5zDS2J+5
+         DrXwVEiVBALrhwEAWT6nJWWfFhIA/gqQotxSdGHlxZrR/cGzddq3GnPtdUkaxP4+UnM7
+         FRpM+XVih6w9gMXrGuKS0mZgqvbub0fJDGvQESFsVLvAXlPenfhp6QnlMNtFlLbXbrad
+         XH6ZUwsYvxCxpOYy5ZZimyrULrkyV3bDYV5pQwmJ8jmLrCk7eI9sEpW3nm4v34huT4nk
+         G/GnHMjGu7dovFiL3kEZ+jGZmNDEv+eVrYTX7gUklKwcyrRIoFh3D3HU2JHTujVsnyXn
+         ryBQ==
+X-Gm-Message-State: AOAM53057rxK6TnhqScLF3DmcvmLY2Ki9UjU6eiDMUJ9uJ6AlVbxJaFh
+        ynncnM3NtyG5c15pyAPDrOSQiPYchSk0kRYQ4kqAIdQbOJ69
+X-Google-Smtp-Source: ABdhPJwbLG6x/Nim7U+ZAhIBCiDjR+IfP2PInnWonRdz7ac8GlsIVYJT2H3mkthaKYjCFEL1injmoeKZyfkmc6VcPTKerPKls3PN
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75VeEO+givZ_SvUc2Wu7=iKvoqJEWYnMD=RHZCxKhqsV-9Q@mail.gmail.com>
+X-Received: by 2002:a05:6638:33a2:: with SMTP id h34mr513258jav.43.1629147669921;
+ Mon, 16 Aug 2021 14:01:09 -0700 (PDT)
+Date:   Mon, 16 Aug 2021 14:01:09 -0700
+In-Reply-To: <568c354b-6e4b-d15a-613e-3389c99a93a1@gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000027061b05c9b38026@google.com>
+Subject: Re: [syzbot] INFO: task hung in hci_req_sync
+From:   syzbot <syzbot+be2baed593ea56c6a84c@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
+        paskripkin@gmail.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 13, 2021 at 10:30:51PM +0300, Andy Shevchenko wrote:
-> On Fri, Aug 13, 2021 at 9:15 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Fri, 13 Aug 2021 15:27:35 +0300 Andy Shevchenko wrote:
-> > > Eliminate some boilerplate code by using module_pci_driver() instead of
-> > > init/exit, and, if needed, moving the salient bits from init into probe.
-> > >
-> > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> >
-> > Jonathan has a series in flight which is fixing some of the same issues:
-> > https://patchwork.kernel.org/project/netdevbpf/list/?series=530079&state=*
-> >
-> > Please hold off for a day or two so it can get merged, and if you don't
-> > mind double check at that point which of your patches are still needed.
-> 
-> Actually it may be the other way around. Since patch 2 in his series
-> is definitely an unneeded churn here, because my devm conversion will
-> have to effectively revert it.
-> 
-> 
-> > According to patchwork your series does not apply to net-next as of
-> > last night so it'll need a respin anyway.
-> 
-> I hope he will chime in and see what we can do the best.
+Hello,
 
-I'm going to submit a respin of the last patch, I screwed something
-up from all the various trees I'm using.
+syzbot tried to test the proposed patch but the build/boot failed:
 
-Please update to net-next first - the firat patch in your series
-doesn't make any longer, given the current status.
--- 
-Jonathan
+net/bluetooth/hci_core.c:1346:18: error: 'HCI_MAX_TIMEOUT' undeclared (first use in this function); did you mean 'HCI_CMD_TIMEOUT'?
+
+
+Tested on:
+
+commit:         a2824f19 Merge tag 'mtd/fixes-for-5.14-rc7' of git://g..
+git tree:       upstream
+dashboard link: https://syzkaller.appspot.com/bug?extid=be2baed593ea56c6a84c
+compiler:       
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=145874a6300000
+
