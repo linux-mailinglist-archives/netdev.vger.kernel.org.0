@@ -2,121 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FC513EDA80
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 18:04:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BEC83EDA87
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 18:07:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231539AbhHPQFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 12:05:02 -0400
-Received: from mail-lf1-f45.google.com ([209.85.167.45]:38539 "EHLO
-        mail-lf1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231307AbhHPQE7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 12:04:59 -0400
-Received: by mail-lf1-f45.google.com with SMTP id x27so35475170lfu.5;
-        Mon, 16 Aug 2021 09:04:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Yi1rPJlrOI0Zb+qMCwHDNyzTUMLukI8qhEPNSow1wbY=;
-        b=sFF8Uu2ZOMWJ7+vjwIIOorPPjQ8noq6JJdllVDapE1i6mm4hxgC4WUXhYf8s+Czj14
-         5RHaynaA4qUiYEFsbcMFnJiifo4UhACmGCRgi+XQrrdRMjnCnHgFyeyxhvDiBzI0iZrk
-         1K4bHkya/HZfwszp+0kMI2L9YfA/N8WHE4OK9WdbwoAM6O55WOVCfH4Pz6QSnNfLPsNB
-         oQIdr+eR07Tjpl65fcDhhy+7J1OEkCMbr/MUrIas1qdtt/93oBePxkZPB0/rrk2qq/Oi
-         ir/SLcIjCSSpeWKQeXyIqyQckcRAOlT5d1SlCSIQOtaOzAPEVst1Lv5CYiEtJHEZgfoB
-         MNag==
-X-Gm-Message-State: AOAM531b2ICDPwQJ6sSnq3GNXvYYKBbSVK56SDLd6n3SqYBSk/qZz461
-        iImEfefNcTypIJz1Q1QlzizgQ7AxDAcAVNkbQB4=
-X-Google-Smtp-Source: ABdhPJz9GpCD8iLFOj3pDz5tFDSNpELUkrF3i8ie1qxjQMUiA0RH832HypDp5KYle/2ymN2W4EJdOxkv7BayEB6rFSs=
-X-Received: by 2002:ac2:5ec7:: with SMTP id d7mr12001414lfq.234.1629129866802;
- Mon, 16 Aug 2021 09:04:26 -0700 (PDT)
+        id S230078AbhHPQHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 12:07:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48570 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229621AbhHPQHd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 12:07:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6C8346056B;
+        Mon, 16 Aug 2021 16:07:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629130021;
+        bh=dQ7YdQ2ihh87LThyE6YAzcRBdsJeA/gOE3NhxEzSMgY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lVfcuZvRIc5hRBNPL9PCCiPON7jp6Ak1mRU0mhJwTdJK0KONo78N3qaCWN9CvUXA4
+         8uGhdt/P9O6QCFDYyzEiGnDoBdVuDwrHsAIbgu4yrAldXNF2WUw3SAfepnUe31Edgm
+         v0WZb2VRhDAGLxMiW9p07N9YUoxQD/sSjIO3gE5U1HfGMqYbXcBR3A+eWqK9Pf0NWj
+         32RjGSAixHY10CnCvOBOUSzn6RflfHnXPZl1h8J+VnkB/GDviL1LOi00pm4m1tIQwg
+         2gtt2YvefCj1eaqCz743ZRH84PbcAP+J2oXlUG37Hfxr5uuiFDc2KzY+uZHooezl8R
+         e552YDmXKOY2A==
+Date:   Mon, 16 Aug 2021 09:07:00 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Salil Mehta <salil.mehta@huawei.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Yufeng Mo <moyufeng@huawei.com>
+Subject: Re: [PATCH net-next 3/6] devlink: Count struct devlink consumers
+Message-ID: <20210816090700.313a54ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YRqKCVbjTZaSrSy+@unreal>
+References: <cover.1628933864.git.leonro@nvidia.com>
+        <d4d59d801f4521e562c9ecf2d8767077aaefb456.1628933864.git.leonro@nvidia.com>
+        <20210816084741.1dd1c415@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YRqKCVbjTZaSrSy+@unreal>
 MIME-Version: 1.0
-References: <20210815033248.98111-1-mailhol.vincent@wanadoo.fr>
- <20210815033248.98111-3-mailhol.vincent@wanadoo.fr> <20210816084235.fr7fzau2ce7zl4d4@pengutronix.de>
- <CAMZ6RqK5t62UppiMe9k5jG8EYvnSbFW3doydhCvp72W_X2rXAw@mail.gmail.com>
- <20210816122519.mme272z6tqrkyc6x@pengutronix.de> <20210816123309.pfa57tke5hrycqae@pengutronix.de>
- <20210816134342.w3bc5zjczwowcjr4@pengutronix.de> <CAMZ6RqJFxKSZahAMz9Y8hpPJPh858jxDEXsRm1YkTwf4NFAFwg@mail.gmail.com>
-In-Reply-To: <CAMZ6RqJFxKSZahAMz9Y8hpPJPh858jxDEXsRm1YkTwf4NFAFwg@mail.gmail.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Tue, 17 Aug 2021 01:04:15 +0900
-Message-ID: <CAMZ6Rq+ZtN+=ppPEYYm0ykJWP8_LtPNBtOM6gwM1VrpM3idsyw@mail.gmail.com>
-Subject: Re: [PATCH v5 2/7] can: bittiming: allow TDC{V,O} to be zero and add can_tdc_const::tdc{v,o,f}_min
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can <linux-can@vger.kernel.org>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <Stefan.Maetje@esd.eu>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
+On Mon, 16 Aug 2021 18:53:45 +0300 Leon Romanovsky wrote:
+> On Mon, Aug 16, 2021 at 08:47:41AM -0700, Jakub Kicinski wrote:
+> > On Sat, 14 Aug 2021 12:57:28 +0300 Leon Romanovsky wrote:  
+> > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > 
+> > > The struct devlink itself is protected by internal lock and doesn't
+> > > need global lock during operation. That global lock is used to protect
+> > > addition/removal new devlink instances from the global list in use by
+> > > all devlink consumers in the system.
+> > > 
+> > > The future conversion of linked list to be xarray will allow us to
+> > > actually delete that lock, but first we need to count all struct devlink
+> > > users.  
+> > 
+> > Not a problem with this set but to state the obvious the global devlink
+> > lock also protects from concurrent execution of all the ops which don't
+> > take the instance lock (DEVLINK_NL_FLAG_NO_LOCK). You most likely know
+> > this but I thought I'd comment on an off chance it helps.  
+> 
+> The end goal will be something like that:
+> 1. Delete devlink lock
+> 2. Rely on xa_lock() while grabbing devlink instance (past devlink_try_get)
+> 3. Convert devlink->lock to be read/write lock to make sure that we can run
+> get query in parallel.
+> 4. Open devlink netlink to parallel ops, ".parallel_ops = true".
 
-I answered too quickly in one paragraph.
-
-On Tue. 17 Aug 2021 at 00:49, Vincent MAILHOL
-<mailhol.vincent@wanadoo.fr> wrote:
-> On Mon. 16 Aug 2021 at 22:43, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-...
-> > Oh, I just noticed:
-> >
-> > | ip link set dev mcp251xfd0 down; \
-> > | ip link set mcp251xfd0 txqueuelen 10 up type can \
-> > |     sample-point 0.8 bitrate 500000  \
-> > |     dsample-point 0.8 dbitrate 2000000 fd on \
-> > |     tdc-mode manual tdco 11 tdcv 22
-> >
-> > followed by:
-> >
-> > | ip link set dev mcp251xfd0 down; \
-> > | ip link set mcp251xfd0 txqueuelen 10 up type can
-> >
-> > We stay in manual mode:
-> >
-> > | Aug 16 15:27:47 rpi4b8 kernel: mcp251xfd spi0.0 mcp251xfd0: mcp251xfd_set_bittiming: tdco=11 tdcv=22 mode=manual
-> >
-> > | 8: mcp251xfd0: <NOARP,UP,LOWER_UP,ECHO> mtu 72 qdisc pfifo_fast state UP mode DEFAULT group default qlen 10
-> > |     link/can  promiscuity 0 minmtu 0 maxmtu 0
-> > |     can <FD,TDC_AUTO,TDC_MANUAL> state ERROR-ACTIVE (berr-counter tx 0 rx 0) restart-ms 100
->
-> That's a bug. It should be impossible to have both TDC_AUTO and
-> TDC_MANUAL at the same time.
->
-> > |           bitrate 500000 sample-point 0.800
-> > |           tq 25 prop-seg 31 phase-seg1 32 phase-seg2 16 sjw 1 brp 1
-> > |           mcp251xfd: tseg1 2..256 tseg2 1..128 sjw 1..128 brp 1..256 brp_inc 1
-> > |           dbitrate 2000000 dsample-point 0.800
-> > |           dtq 25 dprop-seg 7 dphase-seg1 8 dphase-seg2 4 dsjw 1 dbrp 1
-> > |           tdcv 22 tdco 11
-> > |           mcp251xfd: dtseg1 1..32 dtseg2 1..16 dsjw 1..16 dbrp 1..256 dbrp_inc 1
-> > |           tdcv 0..63 tdco 0..63
-> > |           clock 40000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 parentbus spi parentdev spi0.0
->
-> Sorry, but can I confirm what you did here? You stated that you
-> did those four commands in this order:
->
-> > | ip link set dev mcp251xfd0 down; \
-> > | ip link set mcp251xfd0 txqueuelen 10 up type can \
-> > |     sample-point 0.8 bitrate 500000  \
-> > |     dsample-point 0.8 dbitrate 2000000 fd on \
-> > |     tdc-mode manual tdco 11 tdcv 22
-> > | ip link set dev mcp251xfd0 down; \
-> > | ip link set mcp251xfd0 txqueuelen 10 up type can
->
-> So now, you should be in Classical CAN (fd flag off) but the
-> results of iproute2 shows that FD is on... Is there one missing
-> step?
-
-Please ignore this part. I misread the latest command and thought
-you were configuring it as classical CAN. You just did a network
-down / up.
-
-I will troubleshoot this tomorrow.
-
-> > I have to give "fd on" + the bit timing parameters to go to the full
-> > automatic mode again:
-> >
-> > | Aug 16 15:32:46 rpi4b8 kernel: mcp251xfd spi0.0 mcp251xfd0: mcp251xfd_set_bittiming: tdco=16 tdcv=22 mode=automatic
-
-Yours sincerely,
-Vincent
+IIUC that'd mean setting eswitch mode would hold write lock on 
+the dl instance. What locks does e.g. registering a dl port take 
+then?
