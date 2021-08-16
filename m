@@ -2,104 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37E313EDAC6
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 18:19:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA5813EDADA
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 18:24:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230124AbhHPQTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 12:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34014 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231286AbhHPQTA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 12:19:00 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46FBC061796
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 09:18:28 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mFfJg-0002zI-Cx; Mon, 16 Aug 2021 18:18:24 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mFfJe-0000OF-Ih; Mon, 16 Aug 2021 18:18:22 +0200
-Date:   Mon, 16 Aug 2021 18:18:22 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Oleksij Rempel <linux@rempel-privat.de>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: Regression with commit e532a096be0e ("net: usb: asix: ax88772:
- add phylib support")
-Message-ID: <20210816161822.td7jl4tv7zfbprty@pengutronix.de>
-References: <3904c728-1ea2-9c2b-ec11-296396fd2f7e@linux.intel.com>
- <20210816081314.3b251d2e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S229788AbhHPQYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 12:24:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37982 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229600AbhHPQYa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 12:24:30 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9AA9460C3F;
+        Mon, 16 Aug 2021 16:23:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629131038;
+        bh=DlztwX6oGEQpC8Ajn6PZ26PnFSBBm+842Su7RTqdRKY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Si6+slpIeoPw2dog7qoMFzg6J3sl9xGm8OxFOo3j8Ul6Va2OD2jh8XizOLCR+Mpbt
+         gaanA2Ik5a6e04xh+owwTujAiLdwpD2Xex1Eu1d1mXOjHUG4iewbItPJZ2WZyukk7m
+         5d1LZmd63U39n/tetSOSfSaiSyMnneqkBy8FAAf3YyEwruXlRvd31yVzZn1ez6hD0d
+         ecAc/Dpy1OdiqSvw4k5gQ+h9yv1f5xIKM23xLGG4DcRDvgsHARqED4BT6m+AWUYSmR
+         pElw4xJ8GH6AgBPW8yLIRkw6v7ijKqH4eT4T45AswqszVKi0bCYX4gJYGta6sNKRqR
+         +pyW0FuTSK9SQ==
+Received: by pali.im (Postfix)
+        id E3E24949; Mon, 16 Aug 2021 18:23:55 +0200 (CEST)
+Date:   Mon, 16 Aug 2021 18:23:55 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     James Carlson <carlsonj@workingcode.com>,
+        Chris Fowler <cfowler@outpostsentinel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-ppp@vger.kernel.org" <linux-ppp@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ppp: Add rtnl attribute IFLA_PPP_UNIT_ID for specifying
+ ppp unit id
+Message-ID: <20210816162355.7ssd53lrpclfvuiz@pali>
+References: <BN0P223MB0327A247724B7AE211D2E84EA7F79@BN0P223MB0327.NAMP223.PROD.OUTLOOK.COM>
+ <20210810171626.z6bgvizx4eaafrbb@pali>
+ <2f10b64e-ba50-d8a5-c40a-9b9bd4264155@workingcode.com>
+ <20210811173811.GE15488@pc-32.home>
+ <20210811180401.owgmie36ydx62iep@pali>
+ <20210812092847.GB3525@pc-23.home>
+ <20210812134845.npj3m3vzkrmhx6uy@pali>
+ <20210812182645.GA10725@pc-23.home>
+ <20210812190440.fknfthdk3mazm6px@pali>
+ <20210816161114.GA3611@pc-32.home>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20210816081314.3b251d2e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 18:09:23 up 257 days,  6:15, 25 users,  load average: 0.01, 0.04,
- 0.06
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210816161114.GA3611@pc-32.home>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Mon, Aug 16, 2021 at 08:13:14AM -0700, Jakub Kicinski wrote:
-> On Wed, 11 Aug 2021 17:55:34 +0300 Jarkko Nikula wrote:
-> > Hi
-> > 
-> > Our ASIX USB ethernet adapter stopped working after v5.14-rc1. It 
-> > doesn't get an IP from DHCP.
-> > 
-> > v5.13 works ok. v5.14-rc1 and today's head 761c6d7ec820 ("Merge tag 
-> > 'arc-5.14-rc6' of 
-> > git://git.kernel.org/pub/scm/linux/kernel/git/vgupta/arc") show the 
-> > regression.
-> > 
-> > I bisected regression into e532a096be0e ("net: usb: asix: ax88772: add 
-> > phylib support").
+On Monday 16 August 2021 18:11:14 Guillaume Nault wrote:
+> On Thu, Aug 12, 2021 at 09:04:40PM +0200, Pali Rohár wrote:
+> > The point here is that there is application (pppd) which allows
+> > specifying custom unit id as an option argument. Also it allows to call
+> > external applications (at some events) with sharing file descriptors.
+> > And it is one of the options how to touch part of ppp connection via
+> > external scripts / applications. You start pppd for /dev/ttyUSB<N> with
+> > unit id <N> and then in external script you use <N> for ioctls. And I do
+> > not know if there is a way how to retrieve unit id in those external
+> > scripts. There was already discussion about marking all file descriptors
+> > in pppd as close-on-exec and it was somehow rejected as it will broke
+> > custom scripts / applications which pppd invokes on events. So looks
+> > like that people are using these "features" of pppd.
 > 
-> Oleksij, any comments?
-
-sorry, I lost it from radar.
-
-> > Here's the dmesg snippet from working and non-working cases:
-> > 
-> > OK:
-> > [    6.115773] asix 1-8:1.0 eth0: register 'asix' at usb-0000:00:14.0-8, 
-> > ASIX AX88772 USB 2.0 Ethernet, 00:10:60:31:d5:f8
-> > [    8.595202] asix 1-8:1.0 eth0: link up, 100Mbps, full-duplex, lpa 0xC1E1
-> > 
-> > NOK:
-> > [    6.511543] asix 1-8:1.0 eth0: register 'asix' at usb-0000:00:14.0-8, 
-> > ASIX AX88772 USB 2.0 Ethernet, 00:10:60:31:d5:f8
-> > [    8.518219] asix 1-8:1.0 eth0: Link is Down
-> > 
-> > lsusb -d 0b95:7720
-> > Bus 001 Device 002: ID 0b95:7720 ASIX Electronics Corp. AX88772
+> Potential external pppd scripts, that depend on the unit id, may be a
+> valid use case for letting the netlink api define this identifier (if
+> pppd ever gets netlink support).
 > 
+> > Option "unit" in pppd specifies ppp unit id. And if new API (rtnl) would
+> > not provide equivalent for allowing to specify it then migrating pppd
+> > from ioctl to rtnl is not possible without breaking compatibility.
+> > 
+> > As you already described, we can simulate setting default interface name
+> > in pppd application. But above usage or any other which expose pppd API
+> > to other application is not possible to simulate.
+> 
+> If the pppd project is interested in adding support for the netlink
+> api, then I'm fine with adding this feature. I just want to make sure
+> that it'll have a real world use case.
+> 
+> > So I think we need to first decide or solve issue if rtnl ppp API should
+> > provide same functionality as ioctl ppp API. If answer is yes, then some
+> > kind of specifying custom ppp unit id is required. If answer is no (e.g.
+> > because we do not want ppp unit id in rtnl API as it looks legacy and
+> > has issues) then rtnl ppp API cannot be used by ppp as it cannot provide
+> > all existing / supported features without breaking legacy compatibility.
+> > 
+> > I see pros & cons for both answers. Not supporting legacy code paths in
+> > new code/API is the way how to clean up code and prevent repeating old
+> > historic issues. But if new code/API is not fully suitable for pppd --
+> > which is de-facto standard Linux userspace implementation -- does it
+> > make sense to have it? Or does it mean to also implement new userspace
+> > part of implementation (e.g. pppd2) to avoid these legacy / historic
+> > issues? Or... is not whole ppp protocol just legacy part of our history
+> > which should not be used in new modern setups? And for "legacy usage" is
+> > current implementation enough and it does not make sense to invest time
+> > into this area? I cannot answer to these questions, but I think it is
+> > something quite important as it can show what should be direction and
+> > future of ppp subsystem.
+> 
+> PPP isn't legacy, but very few people are interested in working on and
+> maintaining the code.
+> 
+> Do you have plans for adding netlink support to pppd? If so, is the
+> project ready to accept such code?
 
-It sounds like issue which was fixed with the patch:
-"net: usb: asix: ax88772: suspend PHY on driver probe"
+Yes, I have already some WIP code and I'm planning to send a pull
+request to pppd on github for it. I guess that it could be accepted,
+specially if there still would be backward compatibility via ioctl for
+kernels which do not support rtnl API. One of the argument which can be
+used why rtnl API is better, is fixing issue: atomic creating of
+interface with specific name.
 
-This patch was taken in to v5.14-rc2. Can you please test it?
+But pppd is maintained by Paul (already in loop), so I hope we could
+hear some feedback.
 
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+> BTW, sorry for the delay.
+> 
