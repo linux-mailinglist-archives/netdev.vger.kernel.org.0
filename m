@@ -2,472 +2,547 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F41673EDF3F
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 23:19:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 309CD3EDF48
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 23:28:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233500AbhHPVUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 17:20:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60848 "EHLO mail.kernel.org"
+        id S232144AbhHPV2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 17:28:30 -0400
+Received: from mga09.intel.com ([134.134.136.24]:43823 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233569AbhHPVTm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 17:19:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 115206023B;
-        Mon, 16 Aug 2021 21:19:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629148750;
-        bh=y7UvOBiGzd7M0fSgSVOom5PMgexIZCKnfjw//o9WR0U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U+vtQrGE0+WIVXr0aV6bnQeli2UvhgJmFUU7HE2zhpKWMiOchDIwnsUfUjYcpm9yU
-         bfppXdpIF1LvGMcLg3SC/vRxSpe7VDiPRIPfxuFmq4YcwPhvgYVm+HS4tEhfL+24Qe
-         CKSsRLMFnDgwK3w/VGagChqEqO1Jws5N0x/hki6nlmLFQqXYmps2fikL19t48zNK/E
-         I/BK7zK2tmTUrMKbXD95Cjn4OmEdwvz60FG9DANNWJnDxLoDzkwtFaNWSCO2Reldnb
-         H1hbzyLmCA93UfTddEeOm6/4WM82Q9XIKEN7idSeAgxhIsGktT7WinZgcN58rV2kmD
-         09hboTt6dsGjQ==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
+        id S231316AbhHPV23 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 17:28:29 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10078"; a="215944821"
+X-IronPort-AV: E=Sophos;i="5.84,327,1620716400"; 
+   d="scan'208";a="215944821"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2021 14:27:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,327,1620716400"; 
+   d="scan'208";a="640655685"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga005.jf.intel.com with ESMTP; 16 Aug 2021 14:27:57 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10; Mon, 16 Aug 2021 14:27:56 -0700
+Received: from orsmsx606.amr.corp.intel.com (10.22.229.19) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10; Mon, 16 Aug 2021 14:27:56 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10 via Frontend Transport; Mon, 16 Aug 2021 14:27:56 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.10; Mon, 16 Aug 2021 14:27:55 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OKHinJuOyc71AWrCnVISi2yZyY5MgwIWjtejT7FtfH6GsqdB6KdkCe4WILNqmlCAK5Djo/ocO4gDzCAwrtaiDq02QdfpcU68jN38dNxmwbYhmOOKfM8+Wc8yRIVGnr0nxs4typXcF0jCLCzZKMLPzZY9sqIqda2o30eomANuAM5n2G+gIbeuUeRbLqRs9dg61gZdc6Rf/5wXvRiNf41t1rlZqqK9QgeBXnoFiBVcxyAhFZcxKMGhyQc+ETFNSigvHYynlEsgII6+TQ2fOh+bSO0trX5pH3s9B2neOGbKeBjcbhEFnOHVJVlO9dekhdsZ1sTJiqD2/63jk5/dY9ReOA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AQa4qFTws//pUyGJVuKG6zGQYJPrTpp3Yu6EDOCibn8=;
+ b=E9RrZCo+g5+PEp1XAdk2681CVk1u6gKd7y0sdht/+gE3Y2kmaLQYdUroHhy7QcDwPwL0XZH5CA4Spi7Vp5/PYXE7II0xqIDMZXAPv4XPKgju1ZxW3YEeDVkXGXxtLFI4ALFu0AK4m+CnMOLeunPRgl9lMhFg08T0JADrM6Jufp1lkMQqYolDDS/lJTb50ICCf3PIZOwgSdiwzzdmK/aKWKMcQh0BZYh+D2B4xGn/lDiKQqF2ZEpQquaI5B6Rhf7SJMgWFscHgcqNEdeWz2mwF8P7mETrTfiLCwlkIj/QvqdMWOtM6EyYbraTCflcLmjOqC346Yekf5sH2uWXONgqow==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AQa4qFTws//pUyGJVuKG6zGQYJPrTpp3Yu6EDOCibn8=;
+ b=AJ6pQmEjQ+Dz/BcP4T/wGupjz5gwAamilSGyHY+tBSMrBhEA2syicYS714Hb0TUNdhUH6bdbQK9wDq3c8tt+o293zFUBHTuDEnAZzGj64TBN8c7s33BY/uXHpFX1xwh3ZwqSKJf+rq3SwaU9Voo+PMmxsSSSVL2VTKCYaBReCks=
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
+ by MWHPR11MB1278.namprd11.prod.outlook.com (2603:10b6:300:1d::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.20; Mon, 16 Aug
+ 2021 21:27:54 +0000
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::adef:da48:ea32:5960]) by CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::adef:da48:ea32:5960%4]) with mapi id 15.20.4415.023; Mon, 16 Aug 2021
+ 21:27:54 +0000
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+To:     Leon Romanovsky <leon@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Mark Bloch <mbloch@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 17/17] net/mlx5: Bridge, support LAG
-Date:   Mon, 16 Aug 2021 14:18:47 -0700
-Message-Id: <20210816211847.526937-18-saeed@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210816211847.526937-1-saeed@kernel.org>
-References: <20210816211847.526937-1-saeed@kernel.org>
+CC:     Leon Romanovsky <leonro@nvidia.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Yufeng Mo <moyufeng@huawei.com>
+Subject: RE: [PATCH net-next 4/6] devlink: Use xarray to store devlink
+ instances
+Thread-Topic: [PATCH net-next 4/6] devlink: Use xarray to store devlink
+ instances
+Thread-Index: AQHXkPLbdRN88+IU5E+IidkVhhnEw6t2qDWA
+Date:   Mon, 16 Aug 2021 21:27:54 +0000
+Message-ID: <CO1PR11MB50893EF541863B31DD3139A9D6FD9@CO1PR11MB5089.namprd11.prod.outlook.com>
+References: <cover.1628933864.git.leonro@nvidia.com>
+ <38c969b6f490c2b2c0959c017b4461f69ab96117.1628933864.git.leonro@nvidia.com>
+In-Reply-To: <38c969b6f490c2b2c0959c017b4461f69ab96117.1628933864.git.leonro@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d9fe7710-4045-44ac-c6f2-08d960fcb5a2
+x-ms-traffictypediagnostic: MWHPR11MB1278:
+x-microsoft-antispam-prvs: <MWHPR11MB12786B6B9FF4CF30C189353FD6FD9@MWHPR11MB1278.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:843;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: fvMImWZgCzG+VXFtgbnBp3jvN/UW06/vD3UE3yDJFh0F4gHsaKroBnLQHn9u9whEH2oYTFdBwq5kpUKSkJoelbOr81nv2L7tWNWbSIMRtqcCffoIAIEelE/YXbA9qzqwPvfEF0P6Z8ql848e35FGQaiL4lz6ZztvkkLaaEyTH5FLktIbdU4C/R9RBvT9qQiH+UwiMjN1FsF5xwGMhT3fQWOLbL7IG09of8SOLxc+O79SRV6UEklKzzSCWvIkxiyxjn5BuyJNjAYJ6PfQCLFePZo7X9bSRt+QDHQF5WqkMpYVH1EXcDOpVKkgv7m3Ck7o3+t5SAcL8kB35jCRNYo0ds3P83pOKfD5UUS9sCk+CgPq+RCohQhecj7CaWSrmNnJ8CvaeljbeFPwayfMLvJ5JzGR9xTn5VRSzNZjlyCg6zVEdjLOwKd7HulsIuWISPf1TT+RiUPOSE3alC1OXd9sy+c7/hrIyARJUEy6VIMuFfYuBa5cYHN+k06xqUC17ByRDhNTfDKRzIerJ+yHCVsGiI93payKVvd540D8V6WOeb/C6/H7O+6kE+Kx3etJOXY+PTDwMHmg0JDN1LFRzNJNzMb0jEw6OhP7xQt42iaNHkNYAliSxd5vI5ikpAzhcYoCjGntVohuivAxB2sKZqGqaxiVwOfBEkrs7qU3yCshgjtvLelXy8+RmTKzSoqI6aSIDhVSHmUabvG1F08smXgx8Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(346002)(366004)(376002)(396003)(136003)(110136005)(6506007)(54906003)(316002)(8936002)(38100700002)(186003)(26005)(122000001)(7416002)(52536014)(2906002)(53546011)(5660300002)(8676002)(4326008)(55016002)(7696005)(71200400001)(33656002)(30864003)(83380400001)(38070700005)(86362001)(76116006)(9686003)(66946007)(478600001)(66446008)(64756008)(66556008)(66476007);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ebar/sxe50dcg9OszQpA5FFQT//U30qtRodRi7gHge9hBLHCU6rbJwKOYg2o?=
+ =?us-ascii?Q?81G+/6fKowjPst99FIBobMyUjNmipLB7N02zoLewCtdWBr8bVJBbMG1xx2rC?=
+ =?us-ascii?Q?TAnXRD+vvUl7SD6spQITlqwjIqKWkQ+o1MMUhkuzfz1sm6E2pYWho5I+mXyE?=
+ =?us-ascii?Q?QNKILBlCeHkREvbejGDAfJCfAQbWX0ns71y2ZdKgCqYmsbqTY4wffCJ3Nh+N?=
+ =?us-ascii?Q?QZM74fwLTefSyu3oTWh8fuYuygdNQqMdoJkbBw3eho+Gg7dFqeTf6ByUMcdY?=
+ =?us-ascii?Q?1vk0ZdSFF/rapu3Qenp2bm9/19ULKRrZUn0QW88fOSog/smbFPdqdQMO2vJz?=
+ =?us-ascii?Q?/pQfc5fHhYXymNPi3Rq5Wdy6wCO9VUT7UBrODBe2bdffx6NpToFZaChBOvBc?=
+ =?us-ascii?Q?ACc6E4+K/s+4lIHbyEgouyEI6+stJtY8m511BKFZg3BY0do1FupTUxhRkBsb?=
+ =?us-ascii?Q?C0NsQeAzJHbSecpjEwQoX6mjC/uE1s0z8Y9zyE+kbMLjidwUlUOXFckHwPIe?=
+ =?us-ascii?Q?2/rcftD6ytqBY661RsnfodWFGL3zq7eh3gLUdzVz0f7tNkbe/+jR/NAz3+tT?=
+ =?us-ascii?Q?eHVmrgryHTQByt9ayaQiOlgbiEoeNroDqDkNZsKGXoLm+eHIZvIyaOaYUjRR?=
+ =?us-ascii?Q?Ktoo0GiAtCE30i6jqglhlrb8vPKKgg/FeLX+ieXo6vdkldJkW53G5ddJLxND?=
+ =?us-ascii?Q?wYpWbVb1tKGbPGh1N07tHW3aOJbzJaDd7lgD9vN4qEw19GmwPomc8RPeSrml?=
+ =?us-ascii?Q?G7bvteTiNk3i8xQBjAc9dNCbYmz+kwGU75HaAz1mzjVyj+4gPcwO3B62BaDf?=
+ =?us-ascii?Q?hlVZ/AcBJ/AVFPzJeHNtK9hrB7uZapwKrFSIcsStgZ91k6ncFn/jWXwfEz17?=
+ =?us-ascii?Q?fybw0sR3j9bGWDuSG+GHf8M0Xe0LwtVI5X4hj5ShGp5iCvfGZMi3PQWjwYYy?=
+ =?us-ascii?Q?00i8Hinb+ljnJfpQFbkL3sDhu2Z8dHLjuEUrN0LPXrFdO66u03n3pvmlQyJu?=
+ =?us-ascii?Q?8r8zxLw7dsJHUqZpo05dBzZVToeNgi3fhlJpns5p0nWjl7U38rX+tKvENjt1?=
+ =?us-ascii?Q?6BSAqCAnU+yS49oAGICELErWPGIFwYd0YjHA0oQSvFXrVATLfy5boF5P+bNC?=
+ =?us-ascii?Q?JNsE9r7IdOvI0t5syST8kQ0OgrA8pc3zahTRPIL8Wh2QweUiKSyK12TXDggJ?=
+ =?us-ascii?Q?CVQnH5UU1cYqJD2Rwd8JdAooI/TP3qnAfnJ0x+oNm1NJko0foMPFaorL2YeF?=
+ =?us-ascii?Q?zu+27gg8RZsAnWeD3Yly1wvutOJ5SIyimrUhaJ+D3Du8lqKapGd7XPs9FugW?=
+ =?us-ascii?Q?mF4=3D?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d9fe7710-4045-44ac-c6f2-08d960fcb5a2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Aug 2021 21:27:54.3411
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 3X//QsXRJ12Z5XRQVVz1Zll8IrSG0n/6e94ONCKT1p5x9AQ7ApbrcPKsz+MPTFUfNhMdhCoWWBaUkttaC+cNpAPPxy34FK0mhFf0t73HChI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1278
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vlad Buslov <vladbu@nvidia.com>
 
-Allow adding bond net devices to mlx5 bridge with following changes:
 
-- Modify bridge representor code to obtain uplink represetor that belongs
-to eswitch that is registered for notification. Require representor to be
-in shared FDB mode. If representor is the lag master, then consider its
-port as local, otherwise treat it as peer.
+> -----Original Message-----
+> From: Leon Romanovsky <leon@kernel.org>
+> Sent: Saturday, August 14, 2021 2:57 AM
+> To: David S . Miller <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.o=
+rg>
+> Cc: Leon Romanovsky <leonro@nvidia.com>; Guangbin Huang
+> <huangguangbin2@huawei.com>; Keller, Jacob E <jacob.e.keller@intel.com>; =
+Jiri
+> Pirko <jiri@nvidia.com>; linux-kernel@vger.kernel.org; netdev@vger.kernel=
+.org;
+> Salil Mehta <salil.mehta@huawei.com>; Shannon Nelson
+> <snelson@pensando.io>; Yisen Zhuang <yisen.zhuang@huawei.com>; Yufeng
+> Mo <moyufeng@huawei.com>
+> Subject: [PATCH net-next 4/6] devlink: Use xarray to store devlink instan=
+ces
+>=20
+> From: Leon Romanovsky <leonro@nvidia.com>
+>=20
+> We can use xarray instead of linearly organized linked lists for the
+> devlink instances. This will let us revise the locking scheme in favour
+> of internal xarray locking that protects database.
+>=20
 
-- Use devcom to match on paired eswitch metadata in peer FDB entries. This
-is necessary for shared FDB LAG to function since packets are always
-received on active eswitch instance as opposed to parent eswitch of port.
+Nice. Seems like an xarray makes quite a bit of sense here vs a linked list=
+, and it's resizable. Plus we can use marks to loop over the registered dev=
+links. Ok.
 
-- Support for deleting peer flows when receiving
-SWITCHDEV_FDB_DEL_TO_BRIDGE notification was implemented in one of previous
-patches in series. Now also implement support for handling
-SWITCHDEV_FDB_ADD_TO_BRIDGE which can be generated on peer by bridge update
-workqueue task in LAG configuration. Refresh the flow 'lastuse' timestamp
-to current jiffies when receiving such notification on eswitch that manages
-the local FDB entry. This allows peer entries to prevent ageing of the FDB.
+The conversions to xa interfaces look correct to me.
 
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Mark Bloch <mbloch@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../mellanox/mlx5/core/en/rep/bridge.c        | 125 ++++++++++++------
- .../ethernet/mellanox/mlx5/core/esw/bridge.c  |  79 +++++++++--
- .../ethernet/mellanox/mlx5/core/esw/bridge.h  |   3 +
- 3 files changed, 159 insertions(+), 48 deletions(-)
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
-index 2e6f2bce9083..6590ce5325e7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
-@@ -41,46 +41,88 @@ static bool mlx5_esw_bridge_dev_same_hw(struct net_device *dev, struct mlx5_eswi
- 	return system_guid == esw_system_guid;
- }
- 
--static int mlx5_esw_bridge_vport_num_vhca_id_get(struct net_device *dev, struct mlx5_eswitch *esw,
--						 u16 *vport_num, u16 *esw_owner_vhca_id)
-+static struct net_device *
-+mlx5_esw_bridge_lag_rep_get(struct net_device *dev, struct mlx5_eswitch *esw)
-+{
-+	struct net_device *lower;
-+	struct list_head *iter;
-+
-+	netdev_for_each_lower_dev(dev, lower, iter) {
-+		struct mlx5_core_dev *mdev;
-+		struct mlx5e_priv *priv;
-+
-+		if (!mlx5e_eswitch_rep(lower))
-+			continue;
-+
-+		priv = netdev_priv(lower);
-+		mdev = priv->mdev;
-+		if (mlx5_lag_is_shared_fdb(mdev) && mlx5_esw_bridge_dev_same_esw(lower, esw))
-+			return lower;
-+	}
-+
-+	return NULL;
-+}
-+
-+static struct net_device *
-+mlx5_esw_bridge_rep_vport_num_vhca_id_get(struct net_device *dev, struct mlx5_eswitch *esw,
-+					  u16 *vport_num, u16 *esw_owner_vhca_id)
- {
- 	struct mlx5e_rep_priv *rpriv;
- 	struct mlx5e_priv *priv;
- 
--	if (!mlx5e_eswitch_rep(dev) || !mlx5_esw_bridge_dev_same_hw(dev, esw))
--		return -ENODEV;
-+	if (netif_is_lag_master(dev))
-+		dev = mlx5_esw_bridge_lag_rep_get(dev, esw);
-+
-+	if (!dev || !mlx5e_eswitch_rep(dev) || !mlx5_esw_bridge_dev_same_hw(dev, esw))
-+		return NULL;
- 
- 	priv = netdev_priv(dev);
- 	rpriv = priv->ppriv;
- 	*vport_num = rpriv->rep->vport;
- 	*esw_owner_vhca_id = MLX5_CAP_GEN(priv->mdev, vhca_id);
--	return 0;
-+	return dev;
- }
- 
--static int
-+static struct net_device *
- mlx5_esw_bridge_lower_rep_vport_num_vhca_id_get(struct net_device *dev, struct mlx5_eswitch *esw,
- 						u16 *vport_num, u16 *esw_owner_vhca_id)
- {
- 	struct net_device *lower_dev;
- 	struct list_head *iter;
- 
--	if (mlx5e_eswitch_rep(dev))
--		return mlx5_esw_bridge_vport_num_vhca_id_get(dev, esw, vport_num,
--							     esw_owner_vhca_id);
-+	if (netif_is_lag_master(dev) || mlx5e_eswitch_rep(dev))
-+		return mlx5_esw_bridge_rep_vport_num_vhca_id_get(dev, esw, vport_num,
-+								 esw_owner_vhca_id);
- 
- 	netdev_for_each_lower_dev(dev, lower_dev, iter) {
--		int err;
-+		struct net_device *rep;
- 
- 		if (netif_is_bridge_master(lower_dev))
- 			continue;
- 
--		err = mlx5_esw_bridge_lower_rep_vport_num_vhca_id_get(lower_dev, esw, vport_num,
-+		rep = mlx5_esw_bridge_lower_rep_vport_num_vhca_id_get(lower_dev, esw, vport_num,
- 								      esw_owner_vhca_id);
--		if (!err)
--			return 0;
-+		if (rep)
-+			return rep;
- 	}
- 
--	return -ENODEV;
-+	return NULL;
-+}
-+
-+static bool mlx5_esw_bridge_is_local(struct net_device *dev, struct net_device *rep,
-+				     struct mlx5_eswitch *esw)
-+{
-+	struct mlx5_core_dev *mdev;
-+	struct mlx5e_priv *priv;
-+
-+	if (!mlx5_esw_bridge_dev_same_esw(rep, esw))
-+		return false;
-+
-+	priv = netdev_priv(rep);
-+	mdev = priv->mdev;
-+	if (netif_is_lag_master(dev))
-+		return mlx5_lag_is_shared_fdb(mdev) && mlx5_lag_is_master(mdev);
-+	return true;
- }
- 
- static int mlx5_esw_bridge_port_changeupper(struct notifier_block *nb, void *ptr)
-@@ -90,8 +132,8 @@ static int mlx5_esw_bridge_port_changeupper(struct notifier_block *nb, void *ptr
- 								    netdev_nb);
- 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
- 	struct netdev_notifier_changeupper_info *info = ptr;
-+	struct net_device *upper = info->upper_dev, *rep;
- 	struct mlx5_eswitch *esw = br_offloads->esw;
--	struct net_device *upper = info->upper_dev;
- 	u16 vport_num, esw_owner_vhca_id;
- 	struct netlink_ext_ack *extack;
- 	int ifindex = upper->ifindex;
-@@ -100,20 +142,19 @@ static int mlx5_esw_bridge_port_changeupper(struct notifier_block *nb, void *ptr
- 	if (!netif_is_bridge_master(upper))
- 		return 0;
- 
--	err = mlx5_esw_bridge_vport_num_vhca_id_get(dev, br_offloads->esw, &vport_num,
--						    &esw_owner_vhca_id);
--	if (err)
-+	rep = mlx5_esw_bridge_rep_vport_num_vhca_id_get(dev, esw, &vport_num, &esw_owner_vhca_id);
-+	if (!rep)
- 		return 0;
- 
- 	extack = netdev_notifier_info_to_extack(&info->info);
- 
--	if (mlx5_esw_bridge_dev_same_esw(dev, esw))
-+	if (mlx5_esw_bridge_is_local(dev, rep, esw))
- 		err = info->linking ?
- 			mlx5_esw_bridge_vport_link(ifindex, vport_num, esw_owner_vhca_id,
- 						   br_offloads, extack) :
- 			mlx5_esw_bridge_vport_unlink(ifindex, vport_num, esw_owner_vhca_id,
- 						     br_offloads, extack);
--	else if (mlx5_esw_bridge_dev_same_hw(dev, esw))
-+	else if (mlx5_esw_bridge_dev_same_hw(rep, esw))
- 		err = info->linking ?
- 			mlx5_esw_bridge_vport_peer_link(ifindex, vport_num, esw_owner_vhca_id,
- 							br_offloads, extack) :
-@@ -151,9 +192,8 @@ mlx5_esw_bridge_port_obj_add(struct net_device *dev,
- 	u16 vport_num, esw_owner_vhca_id;
- 	int err;
- 
--	err = mlx5_esw_bridge_vport_num_vhca_id_get(dev, br_offloads->esw, &vport_num,
--						    &esw_owner_vhca_id);
--	if (err)
-+	if (!mlx5_esw_bridge_rep_vport_num_vhca_id_get(dev, br_offloads->esw, &vport_num,
-+						       &esw_owner_vhca_id))
- 		return 0;
- 
- 	port_obj_info->handled = true;
-@@ -178,11 +218,9 @@ mlx5_esw_bridge_port_obj_del(struct net_device *dev,
- 	const struct switchdev_obj *obj = port_obj_info->obj;
- 	const struct switchdev_obj_port_vlan *vlan;
- 	u16 vport_num, esw_owner_vhca_id;
--	int err;
- 
--	err = mlx5_esw_bridge_vport_num_vhca_id_get(dev, br_offloads->esw, &vport_num,
--						    &esw_owner_vhca_id);
--	if (err)
-+	if (!mlx5_esw_bridge_rep_vport_num_vhca_id_get(dev, br_offloads->esw, &vport_num,
-+						       &esw_owner_vhca_id))
- 		return 0;
- 
- 	port_obj_info->handled = true;
-@@ -208,9 +246,8 @@ mlx5_esw_bridge_port_obj_attr_set(struct net_device *dev,
- 	u16 vport_num, esw_owner_vhca_id;
- 	int err;
- 
--	err = mlx5_esw_bridge_lower_rep_vport_num_vhca_id_get(dev, br_offloads->esw, &vport_num,
--							      &esw_owner_vhca_id);
--	if (err)
-+	if (!mlx5_esw_bridge_lower_rep_vport_num_vhca_id_get(dev, br_offloads->esw, &vport_num,
-+							     &esw_owner_vhca_id))
- 		return 0;
- 
- 	port_attr_info->handled = true;
-@@ -284,14 +321,12 @@ static void mlx5_esw_bridge_switchdev_fdb_event_work(struct work_struct *work)
- 	struct net_device *dev = fdb_work->dev;
- 	u16 vport_num, esw_owner_vhca_id;
- 	struct mlx5e_priv *priv;
--	int err;
- 
- 	rtnl_lock();
- 
- 	priv = netdev_priv(dev);
--	err = mlx5_esw_bridge_vport_num_vhca_id_get(dev, br_offloads->esw, &vport_num,
--						    &esw_owner_vhca_id);
--	if (err)
-+	if (!mlx5_esw_bridge_rep_vport_num_vhca_id_get(dev, br_offloads->esw, &vport_num,
-+						       &esw_owner_vhca_id))
- 		goto out;
- 
- 	if (fdb_work->add)
-@@ -345,8 +380,10 @@ static int mlx5_esw_bridge_switchdev_event(struct notifier_block *nb,
- 	struct net_device *dev = switchdev_notifier_info_to_dev(ptr);
- 	struct switchdev_notifier_fdb_info *fdb_info;
- 	struct mlx5_bridge_switchdev_fdb_work *work;
-+	struct mlx5_eswitch *esw = br_offloads->esw;
- 	struct switchdev_notifier_info *info = ptr;
--	struct net_device *upper;
-+	u16 vport_num, esw_owner_vhca_id;
-+	struct net_device *upper, *rep;
- 
- 	if (event == SWITCHDEV_PORT_ATTR_SET) {
- 		int err = mlx5_esw_bridge_port_obj_attr_set(dev, ptr, br_offloads);
-@@ -360,13 +397,25 @@ static int mlx5_esw_bridge_switchdev_event(struct notifier_block *nb,
- 	if (!netif_is_bridge_master(upper))
- 		return NOTIFY_DONE;
- 
--	if (!mlx5e_eswitch_rep(dev))
-+	rep = mlx5_esw_bridge_rep_vport_num_vhca_id_get(dev, esw, &vport_num, &esw_owner_vhca_id);
-+	if (!rep)
- 		return NOTIFY_DONE;
- 
- 	switch (event) {
-+	case SWITCHDEV_FDB_ADD_TO_BRIDGE:
-+		/* only handle the event on native eswtich of representor */
-+		if (!mlx5_esw_bridge_is_local(dev, rep, esw))
-+			break;
-+
-+		fdb_info = container_of(info,
-+					struct switchdev_notifier_fdb_info,
-+					info);
-+		mlx5_esw_bridge_fdb_update_used(dev, vport_num, esw_owner_vhca_id, br_offloads,
-+						fdb_info);
-+		break;
- 	case SWITCHDEV_FDB_DEL_TO_BRIDGE:
--		/* only handle the event when source is on another eswitch */
--		if (mlx5_esw_bridge_dev_same_esw(dev, br_offloads->esw))
-+		/* only handle the event on peers */
-+		if (mlx5_esw_bridge_is_local(dev, rep, esw))
- 			break;
- 		fallthrough;
- 	case SWITCHDEV_FDB_ADD_TO_DEVICE:
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-index 20d44b0ae337..7e221038df8d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-@@ -5,6 +5,7 @@
- #include <linux/notifier.h>
- #include <net/netevent.h>
- #include <net/switchdev.h>
-+#include "lib/devcom.h"
- #include "bridge.h"
- #include "eswitch.h"
- #include "bridge_priv.h"
-@@ -408,9 +409,10 @@ mlx5_esw_bridge_egress_table_cleanup(struct mlx5_esw_bridge *bridge)
- }
- 
- static struct mlx5_flow_handle *
--mlx5_esw_bridge_ingress_flow_create(u16 vport_num, const unsigned char *addr,
--				    struct mlx5_esw_bridge_vlan *vlan, u32 counter_id,
--				    struct mlx5_esw_bridge *bridge)
-+mlx5_esw_bridge_ingress_flow_with_esw_create(u16 vport_num, const unsigned char *addr,
-+					     struct mlx5_esw_bridge_vlan *vlan, u32 counter_id,
-+					     struct mlx5_esw_bridge *bridge,
-+					     struct mlx5_eswitch *esw)
- {
- 	struct mlx5_esw_bridge_offloads *br_offloads = bridge->br_offloads;
- 	struct mlx5_flow_act flow_act = {
-@@ -438,7 +440,7 @@ mlx5_esw_bridge_ingress_flow_create(u16 vport_num, const unsigned char *addr,
- 	MLX5_SET(fte_match_param, rule_spec->match_criteria,
- 		 misc_parameters_2.metadata_reg_c_0, mlx5_eswitch_get_vport_metadata_mask());
- 	MLX5_SET(fte_match_param, rule_spec->match_value, misc_parameters_2.metadata_reg_c_0,
--		 mlx5_eswitch_get_vport_metadata_for_match(br_offloads->esw, vport_num));
-+		 mlx5_eswitch_get_vport_metadata_for_match(esw, vport_num));
- 
- 	if (vlan && vlan->pkt_reformat_push) {
- 		flow_act.action |= MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT;
-@@ -466,6 +468,35 @@ mlx5_esw_bridge_ingress_flow_create(u16 vport_num, const unsigned char *addr,
- 	return handle;
- }
- 
-+static struct mlx5_flow_handle *
-+mlx5_esw_bridge_ingress_flow_create(u16 vport_num, const unsigned char *addr,
-+				    struct mlx5_esw_bridge_vlan *vlan, u32 counter_id,
-+				    struct mlx5_esw_bridge *bridge)
-+{
-+	return mlx5_esw_bridge_ingress_flow_with_esw_create(vport_num, addr, vlan, counter_id,
-+							    bridge, bridge->br_offloads->esw);
-+}
-+
-+static struct mlx5_flow_handle *
-+mlx5_esw_bridge_ingress_flow_peer_create(u16 vport_num, const unsigned char *addr,
-+					 struct mlx5_esw_bridge_vlan *vlan, u32 counter_id,
-+					 struct mlx5_esw_bridge *bridge)
-+{
-+	struct mlx5_devcom *devcom = bridge->br_offloads->esw->dev->priv.devcom;
-+	static struct mlx5_flow_handle *handle;
-+	struct mlx5_eswitch *peer_esw;
-+
-+	peer_esw = mlx5_devcom_get_peer_data(devcom, MLX5_DEVCOM_ESW_OFFLOADS);
-+	if (!peer_esw)
-+		return ERR_PTR(-ENODEV);
-+
-+	handle = mlx5_esw_bridge_ingress_flow_with_esw_create(vport_num, addr, vlan, counter_id,
-+							      bridge, peer_esw);
-+
-+	mlx5_devcom_release_peer_data(devcom, MLX5_DEVCOM_ESW_OFFLOADS);
-+	return handle;
-+}
-+
- static struct mlx5_flow_handle *
- mlx5_esw_bridge_ingress_filter_flow_create(u16 vport_num, const unsigned char *addr,
- 					   struct mlx5_esw_bridge *bridge)
-@@ -679,12 +710,10 @@ static void mlx5_esw_bridge_port_erase(struct mlx5_esw_bridge_port *port,
- 	xa_erase(&br_offloads->ports, mlx5_esw_bridge_port_key(port));
- }
- 
--static void mlx5_esw_bridge_fdb_entry_refresh(unsigned long lastuse,
--					      struct mlx5_esw_bridge_fdb_entry *entry)
-+static void mlx5_esw_bridge_fdb_entry_refresh(struct mlx5_esw_bridge_fdb_entry *entry)
- {
- 	trace_mlx5_esw_bridge_fdb_entry_refresh(entry);
- 
--	entry->lastuse = lastuse;
- 	mlx5_esw_bridge_fdb_offload_notify(entry->dev, entry->key.addr,
- 					   entry->key.vid,
- 					   SWITCHDEV_FDB_ADD_TO_BRIDGE);
-@@ -959,8 +988,11 @@ mlx5_esw_bridge_fdb_entry_init(struct net_device *dev, u16 vport_num, u16 esw_ow
- 	}
- 	entry->ingress_counter = counter;
- 
--	handle = mlx5_esw_bridge_ingress_flow_create(vport_num, addr, vlan, mlx5_fc_id(counter),
--						     bridge);
-+	handle = peer ?
-+		mlx5_esw_bridge_ingress_flow_peer_create(vport_num, addr, vlan,
-+							 mlx5_fc_id(counter), bridge) :
-+		mlx5_esw_bridge_ingress_flow_create(vport_num, addr, vlan,
-+						    mlx5_fc_id(counter), bridge);
- 	if (IS_ERR(handle)) {
- 		err = PTR_ERR(handle);
- 		esw_warn(esw->dev, "Failed to create ingress flow(vport=%u,err=%d)\n",
-@@ -1228,6 +1260,33 @@ void mlx5_esw_bridge_port_vlan_del(u16 vport_num, u16 esw_owner_vhca_id, u16 vid
- 	mlx5_esw_bridge_vlan_cleanup(port, vlan, port->bridge);
- }
- 
-+void mlx5_esw_bridge_fdb_update_used(struct net_device *dev, u16 vport_num, u16 esw_owner_vhca_id,
-+				     struct mlx5_esw_bridge_offloads *br_offloads,
-+				     struct switchdev_notifier_fdb_info *fdb_info)
-+{
-+	struct mlx5_esw_bridge_fdb_entry *entry;
-+	struct mlx5_esw_bridge_fdb_key key;
-+	struct mlx5_esw_bridge_port *port;
-+	struct mlx5_esw_bridge *bridge;
-+
-+	port = mlx5_esw_bridge_port_lookup(vport_num, esw_owner_vhca_id, br_offloads);
-+	if (!port || port->flags & MLX5_ESW_BRIDGE_PORT_FLAG_PEER)
-+		return;
-+
-+	bridge = port->bridge;
-+	ether_addr_copy(key.addr, fdb_info->addr);
-+	key.vid = fdb_info->vid;
-+	entry = rhashtable_lookup_fast(&bridge->fdb_ht, &key, fdb_ht_params);
-+	if (!entry) {
-+		esw_debug(br_offloads->esw->dev,
-+			  "FDB entry with specified key not found (MAC=%pM,vid=%u,vport=%u)\n",
-+			  key.addr, key.vid, vport_num);
-+		return;
-+	}
-+
-+	entry->lastuse = jiffies;
-+}
-+
- void mlx5_esw_bridge_fdb_create(struct net_device *dev, u16 vport_num, u16 esw_owner_vhca_id,
- 				struct mlx5_esw_bridge_offloads *br_offloads,
- 				struct switchdev_notifier_fdb_info *fdb_info)
-@@ -1300,7 +1359,7 @@ void mlx5_esw_bridge_update(struct mlx5_esw_bridge_offloads *br_offloads)
- 				continue;
- 
- 			if (time_after(lastuse, entry->lastuse)) {
--				mlx5_esw_bridge_fdb_entry_refresh(lastuse, entry);
-+				mlx5_esw_bridge_fdb_entry_refresh(entry);
- 			} else if (!(entry->flags & MLX5_ESW_BRIDGE_FLAG_PEER) &&
- 				   time_is_before_jiffies(entry->lastuse + bridge->ageing_time)) {
- 				mlx5_esw_bridge_fdb_del_notify(entry);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.h b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.h
-index a4f04f3f5b11..efc39975226e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.h
-@@ -46,6 +46,9 @@ int mlx5_esw_bridge_vport_peer_link(int ifindex, u16 vport_num, u16 esw_owner_vh
- int mlx5_esw_bridge_vport_peer_unlink(int ifindex, u16 vport_num, u16 esw_owner_vhca_id,
- 				      struct mlx5_esw_bridge_offloads *br_offloads,
- 				      struct netlink_ext_ack *extack);
-+void mlx5_esw_bridge_fdb_update_used(struct net_device *dev, u16 vport_num, u16 esw_owner_vhca_id,
-+				     struct mlx5_esw_bridge_offloads *br_offloads,
-+				     struct switchdev_notifier_fdb_info *fdb_info);
- void mlx5_esw_bridge_fdb_create(struct net_device *dev, u16 vport_num, u16 esw_owner_vhca_id,
- 				struct mlx5_esw_bridge_offloads *br_offloads,
- 				struct switchdev_notifier_fdb_info *fdb_info);
--- 
-2.31.1
+Thanks,
+Jake
+
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  include/net/devlink.h |  2 +-
+>  net/core/devlink.c    | 70 ++++++++++++++++++++++++++++++-------------
+>  2 files changed, 50 insertions(+), 22 deletions(-)
+>=20
+> diff --git a/include/net/devlink.h b/include/net/devlink.h
+> index 4c60d61d92da..154cf0dbca37 100644
+> --- a/include/net/devlink.h
+> +++ b/include/net/devlink.h
+> @@ -32,7 +32,7 @@ struct devlink_dev_stats {
+>  struct devlink_ops;
+>=20
+>  struct devlink {
+> -	struct list_head list;
+> +	u32 index;
+>  	struct list_head port_list;
+>  	struct list_head rate_list;
+>  	struct list_head sb_list;
+> diff --git a/net/core/devlink.c b/net/core/devlink.c
+> index 76f459da6e05..d218f57ad8cf 100644
+> --- a/net/core/devlink.c
+> +++ b/net/core/devlink.c
+> @@ -92,7 +92,8 @@ static const struct nla_policy
+> devlink_function_nl_policy[DEVLINK_PORT_FUNCTION_
+>  				 DEVLINK_PORT_FN_STATE_ACTIVE),
+>  };
+>=20
+> -static LIST_HEAD(devlink_list);
+> +static DEFINE_XARRAY_FLAGS(devlinks, XA_FLAGS_ALLOC);
+> +#define DEVLINK_REGISTERED XA_MARK_1
+>=20
+>  /* devlink_mutex
+>   *
+> @@ -123,6 +124,7 @@ static struct devlink *devlink_get_from_attrs(struct =
+net
+> *net,
+>  					      struct nlattr **attrs)
+>  {
+>  	struct devlink *devlink;
+> +	unsigned long index;
+>  	bool found =3D false;
+>  	char *busname;
+>  	char *devname;
+> @@ -135,7 +137,7 @@ static struct devlink *devlink_get_from_attrs(struct =
+net
+> *net,
+>=20
+>  	lockdep_assert_held(&devlink_mutex);
+>=20
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (strcmp(devlink->dev->bus->name, busname) =3D=3D 0 &&
+>  		    strcmp(dev_name(devlink->dev), devname) =3D=3D 0 &&
+>  		    net_eq(devlink_net(devlink), net)) {
+> @@ -1087,11 +1089,12 @@ static int devlink_nl_cmd_rate_get_dumpit(struct
+> sk_buff *msg,
+>  	struct devlink_rate *devlink_rate;
+>  	struct devlink *devlink;
+>  	int start =3D cb->args[0];
+> +	unsigned long index;
+>  	int idx =3D 0;
+>  	int err =3D 0;
+>=20
+>  	mutex_lock(&devlink_mutex);
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (!devlink_try_get(devlink))
+>  			continue;
+>=20
+> @@ -1189,11 +1192,12 @@ static int devlink_nl_cmd_get_dumpit(struct sk_bu=
+ff
+> *msg,
+>  {
+>  	struct devlink *devlink;
+>  	int start =3D cb->args[0];
+> +	unsigned long index;
+>  	int idx =3D 0;
+>  	int err;
+>=20
+>  	mutex_lock(&devlink_mutex);
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (!devlink_try_get(devlink))
+>  			continue;
+>=20
+> @@ -1251,11 +1255,12 @@ static int devlink_nl_cmd_port_get_dumpit(struct
+> sk_buff *msg,
+>  	struct devlink *devlink;
+>  	struct devlink_port *devlink_port;
+>  	int start =3D cb->args[0];
+> +	unsigned long index;
+>  	int idx =3D 0;
+>  	int err;
+>=20
+>  	mutex_lock(&devlink_mutex);
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (!devlink_try_get(devlink))
+>  			continue;
+>=20
+> @@ -1916,11 +1921,12 @@ static int devlink_nl_cmd_sb_get_dumpit(struct
+> sk_buff *msg,
+>  	struct devlink *devlink;
+>  	struct devlink_sb *devlink_sb;
+>  	int start =3D cb->args[0];
+> +	unsigned long index;
+>  	int idx =3D 0;
+>  	int err;
+>=20
+>  	mutex_lock(&devlink_mutex);
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (!devlink_try_get(devlink))
+>  			continue;
+>=20
+> @@ -2067,11 +2073,12 @@ static int
+> devlink_nl_cmd_sb_pool_get_dumpit(struct sk_buff *msg,
+>  	struct devlink *devlink;
+>  	struct devlink_sb *devlink_sb;
+>  	int start =3D cb->args[0];
+> +	unsigned long index;
+>  	int idx =3D 0;
+>  	int err =3D 0;
+>=20
+>  	mutex_lock(&devlink_mutex);
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (!devlink_try_get(devlink))
+>  			continue;
+>=20
+> @@ -2287,11 +2294,12 @@ static int
+> devlink_nl_cmd_sb_port_pool_get_dumpit(struct sk_buff *msg,
+>  	struct devlink *devlink;
+>  	struct devlink_sb *devlink_sb;
+>  	int start =3D cb->args[0];
+> +	unsigned long index;
+>  	int idx =3D 0;
+>  	int err =3D 0;
+>=20
+>  	mutex_lock(&devlink_mutex);
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (!devlink_try_get(devlink))
+>  			continue;
+>=20
+> @@ -2535,11 +2543,12 @@ devlink_nl_cmd_sb_tc_pool_bind_get_dumpit(struct
+> sk_buff *msg,
+>  	struct devlink *devlink;
+>  	struct devlink_sb *devlink_sb;
+>  	int start =3D cb->args[0];
+> +	unsigned long index;
+>  	int idx =3D 0;
+>  	int err =3D 0;
+>=20
+>  	mutex_lock(&devlink_mutex);
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (!devlink_try_get(devlink))
+>  			continue;
+>=20
+> @@ -4611,11 +4620,12 @@ static int devlink_nl_cmd_param_get_dumpit(struct
+> sk_buff *msg,
+>  	struct devlink_param_item *param_item;
+>  	struct devlink *devlink;
+>  	int start =3D cb->args[0];
+> +	unsigned long index;
+>  	int idx =3D 0;
+>  	int err =3D 0;
+>=20
+>  	mutex_lock(&devlink_mutex);
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (!devlink_try_get(devlink))
+>  			continue;
+>=20
+> @@ -4886,11 +4896,12 @@ static int
+> devlink_nl_cmd_port_param_get_dumpit(struct sk_buff *msg,
+>  	struct devlink_port *devlink_port;
+>  	struct devlink *devlink;
+>  	int start =3D cb->args[0];
+> +	unsigned long index;
+>  	int idx =3D 0;
+>  	int err =3D 0;
+>=20
+>  	mutex_lock(&devlink_mutex);
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (!devlink_try_get(devlink))
+>  			continue;
+>=20
+> @@ -5462,11 +5473,12 @@ static int devlink_nl_cmd_region_get_dumpit(struc=
+t
+> sk_buff *msg,
+>  {
+>  	struct devlink *devlink;
+>  	int start =3D cb->args[0];
+> +	unsigned long index;
+>  	int idx =3D 0;
+>  	int err =3D 0;
+>=20
+>  	mutex_lock(&devlink_mutex);
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (!devlink_try_get(devlink))
+>  			continue;
+>=20
+> @@ -5995,11 +6007,12 @@ static int devlink_nl_cmd_info_get_dumpit(struct
+> sk_buff *msg,
+>  {
+>  	struct devlink *devlink;
+>  	int start =3D cb->args[0];
+> +	unsigned long index;
+>  	int idx =3D 0;
+>  	int err =3D 0;
+>=20
+>  	mutex_lock(&devlink_mutex);
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (!devlink_try_get(devlink))
+>  			continue;
+>=20
+> @@ -7176,11 +7189,12 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct
+> sk_buff *msg,
+>  	struct devlink_port *port;
+>  	struct devlink *devlink;
+>  	int start =3D cb->args[0];
+> +	unsigned long index;
+>  	int idx =3D 0;
+>  	int err;
+>=20
+>  	mutex_lock(&devlink_mutex);
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (!devlink_try_get(devlink))
+>  			continue;
+>=20
+> @@ -7210,7 +7224,7 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct
+> sk_buff *msg,
+>  		devlink_put(devlink);
+>  	}
+>=20
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (!devlink_try_get(devlink))
+>  			continue;
+>=20
+> @@ -7771,11 +7785,12 @@ static int devlink_nl_cmd_trap_get_dumpit(struct
+> sk_buff *msg,
+>  	struct devlink_trap_item *trap_item;
+>  	struct devlink *devlink;
+>  	int start =3D cb->args[0];
+> +	unsigned long index;
+>  	int idx =3D 0;
+>  	int err;
+>=20
+>  	mutex_lock(&devlink_mutex);
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (!devlink_try_get(devlink))
+>  			continue;
+>=20
+> @@ -7997,11 +8012,12 @@ static int
+> devlink_nl_cmd_trap_group_get_dumpit(struct sk_buff *msg,
+>  	u32 portid =3D NETLINK_CB(cb->skb).portid;
+>  	struct devlink *devlink;
+>  	int start =3D cb->args[0];
+> +	unsigned long index;
+>  	int idx =3D 0;
+>  	int err;
+>=20
+>  	mutex_lock(&devlink_mutex);
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (!devlink_try_get(devlink))
+>  			continue;
+>=20
+> @@ -8310,11 +8326,12 @@ static int
+> devlink_nl_cmd_trap_policer_get_dumpit(struct sk_buff *msg,
+>  	u32 portid =3D NETLINK_CB(cb->skb).portid;
+>  	struct devlink *devlink;
+>  	int start =3D cb->args[0];
+> +	unsigned long index;
+>  	int idx =3D 0;
+>  	int err;
+>=20
+>  	mutex_lock(&devlink_mutex);
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (!devlink_try_get(devlink))
+>  			continue;
+>=20
+> @@ -8899,6 +8916,8 @@ struct devlink *devlink_alloc_ns(const struct
+> devlink_ops *ops,
+>  				 struct device *dev)
+>  {
+>  	struct devlink *devlink;
+> +	static u32 last_id;
+> +	int ret;
+>=20
+>  	WARN_ON(!ops || !dev);
+>  	if (!devlink_reload_actions_valid(ops))
+> @@ -8908,6 +8927,13 @@ struct devlink *devlink_alloc_ns(const struct
+> devlink_ops *ops,
+>  	if (!devlink)
+>  		return NULL;
+>=20
+> +	ret =3D xa_alloc_cyclic(&devlinks, &devlink->index, devlink, xa_limit_3=
+1b,
+> +			      &last_id, GFP_KERNEL);
+> +	if (ret < 0) {
+> +		kfree(devlink);
+> +		return NULL;
+> +	}
+> +
+>  	devlink->dev =3D dev;
+>  	devlink->ops =3D ops;
+>  	xa_init_flags(&devlink->snapshot_ids, XA_FLAGS_ALLOC);
+> @@ -8940,7 +8966,7 @@ EXPORT_SYMBOL_GPL(devlink_alloc_ns);
+>  int devlink_register(struct devlink *devlink)
+>  {
+>  	mutex_lock(&devlink_mutex);
+> -	list_add_tail(&devlink->list, &devlink_list);
+> +	xa_set_mark(&devlinks, devlink->index, DEVLINK_REGISTERED);
+>  	devlink_notify(devlink, DEVLINK_CMD_NEW);
+>  	mutex_unlock(&devlink_mutex);
+>  	return 0;
+> @@ -8961,7 +8987,7 @@ void devlink_unregister(struct devlink *devlink)
+>  	WARN_ON(devlink_reload_supported(devlink->ops) &&
+>  		devlink->reload_enabled);
+>  	devlink_notify(devlink, DEVLINK_CMD_DEL);
+> -	list_del(&devlink->list);
+> +	xa_clear_mark(&devlinks, devlink->index, DEVLINK_REGISTERED);
+>  	mutex_unlock(&devlink_mutex);
+>  }
+>  EXPORT_SYMBOL_GPL(devlink_unregister);
+> @@ -9023,6 +9049,7 @@ void devlink_free(struct devlink *devlink)
+>  	WARN_ON(!list_empty(&devlink->port_list));
+>=20
+>  	xa_destroy(&devlink->snapshot_ids);
+> +	xa_erase(&devlinks, devlink->index);
+>=20
+>  	kfree(devlink);
+>  }
+> @@ -11497,13 +11524,14 @@ static void __net_exit
+> devlink_pernet_pre_exit(struct net *net)
+>  {
+>  	struct devlink *devlink;
+>  	u32 actions_performed;
+> +	unsigned long index;
+>  	int err;
+>=20
+>  	/* In case network namespace is getting destroyed, reload
+>  	 * all devlink instances from this namespace into init_net.
+>  	 */
+>  	mutex_lock(&devlink_mutex);
+> -	list_for_each_entry(devlink, &devlink_list, list) {
+> +	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>  		if (!devlink_try_get(devlink))
+>  			continue;
+>=20
+> --
+> 2.31.1
 
