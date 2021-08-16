@@ -2,155 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE1133EDA4E
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 17:56:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FC513EDA80
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 18:04:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236920AbhHPP5U convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 16 Aug 2021 11:57:20 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:43791 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236811AbhHPP5U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 11:57:20 -0400
-Received: from smtpclient.apple (p5b3d23f8.dip0.t-ipconnect.de [91.61.35.248])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 13C02CECC8;
-        Mon, 16 Aug 2021 17:56:47 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
-Subject: Re: [syzbot] INFO: task hung in hci_req_sync
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <9365fdfa-3cee-f22e-c53d-6536a96d27ae@gmail.com>
-Date:   Mon, 16 Aug 2021 17:56:46 +0200
-Cc:     syzbot <syzbot+be2baed593ea56c6a84c@syzkaller.appspotmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Transfer-Encoding: 8BIT
-Message-Id: <57BAFAA4-3C3D-40C8-9121-44EEF44509B8@holtmann.org>
-References: <000000000000c5482805c956a118@google.com>
- <9365fdfa-3cee-f22e-c53d-6536a96d27ae@gmail.com>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-X-Mailer: Apple Mail (2.3654.120.0.1.13)
+        id S231539AbhHPQFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 12:05:02 -0400
+Received: from mail-lf1-f45.google.com ([209.85.167.45]:38539 "EHLO
+        mail-lf1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231307AbhHPQE7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 12:04:59 -0400
+Received: by mail-lf1-f45.google.com with SMTP id x27so35475170lfu.5;
+        Mon, 16 Aug 2021 09:04:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Yi1rPJlrOI0Zb+qMCwHDNyzTUMLukI8qhEPNSow1wbY=;
+        b=sFF8Uu2ZOMWJ7+vjwIIOorPPjQ8noq6JJdllVDapE1i6mm4hxgC4WUXhYf8s+Czj14
+         5RHaynaA4qUiYEFsbcMFnJiifo4UhACmGCRgi+XQrrdRMjnCnHgFyeyxhvDiBzI0iZrk
+         1K4bHkya/HZfwszp+0kMI2L9YfA/N8WHE4OK9WdbwoAM6O55WOVCfH4Pz6QSnNfLPsNB
+         oQIdr+eR07Tjpl65fcDhhy+7J1OEkCMbr/MUrIas1qdtt/93oBePxkZPB0/rrk2qq/Oi
+         ir/SLcIjCSSpeWKQeXyIqyQckcRAOlT5d1SlCSIQOtaOzAPEVst1Lv5CYiEtJHEZgfoB
+         MNag==
+X-Gm-Message-State: AOAM531b2ICDPwQJ6sSnq3GNXvYYKBbSVK56SDLd6n3SqYBSk/qZz461
+        iImEfefNcTypIJz1Q1QlzizgQ7AxDAcAVNkbQB4=
+X-Google-Smtp-Source: ABdhPJz9GpCD8iLFOj3pDz5tFDSNpELUkrF3i8ie1qxjQMUiA0RH832HypDp5KYle/2ymN2W4EJdOxkv7BayEB6rFSs=
+X-Received: by 2002:ac2:5ec7:: with SMTP id d7mr12001414lfq.234.1629129866802;
+ Mon, 16 Aug 2021 09:04:26 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210815033248.98111-1-mailhol.vincent@wanadoo.fr>
+ <20210815033248.98111-3-mailhol.vincent@wanadoo.fr> <20210816084235.fr7fzau2ce7zl4d4@pengutronix.de>
+ <CAMZ6RqK5t62UppiMe9k5jG8EYvnSbFW3doydhCvp72W_X2rXAw@mail.gmail.com>
+ <20210816122519.mme272z6tqrkyc6x@pengutronix.de> <20210816123309.pfa57tke5hrycqae@pengutronix.de>
+ <20210816134342.w3bc5zjczwowcjr4@pengutronix.de> <CAMZ6RqJFxKSZahAMz9Y8hpPJPh858jxDEXsRm1YkTwf4NFAFwg@mail.gmail.com>
+In-Reply-To: <CAMZ6RqJFxKSZahAMz9Y8hpPJPh858jxDEXsRm1YkTwf4NFAFwg@mail.gmail.com>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Tue, 17 Aug 2021 01:04:15 +0900
+Message-ID: <CAMZ6Rq+ZtN+=ppPEYYm0ykJWP8_LtPNBtOM6gwM1VrpM3idsyw@mail.gmail.com>
+Subject: Re: [PATCH v5 2/7] can: bittiming: allow TDC{V,O} to be zero and add can_tdc_const::tdc{v,o,f}_min
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-can <linux-can@vger.kernel.org>,
+        =?UTF-8?Q?Stefan_M=C3=A4tje?= <Stefan.Maetje@esd.eu>,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Pavel,
+Hi Marc,
 
->> syzbot found the following issue on:
->> HEAD commit:    c9194f32bfd9 Merge tag 'ext4_for_linus_stable' of git://gi..
->> git tree:       upstream
->> console output: https://syzkaller.appspot.com/x/log.txt?x=1488f59e300000
->> kernel config:  https://syzkaller.appspot.com/x/.config?x=343fd21f6f4da2d6
->> dashboard link: https://syzkaller.appspot.com/bug?extid=be2baed593ea56c6a84c
->> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
->> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15b5afc6300000
->> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15fcd192300000
->> Bisection is inconclusive: the issue happens on the oldest tested release.
->> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17dce4fa300000
->> final oops:     https://syzkaller.appspot.com/x/report.txt?x=143ce4fa300000
->> console output: https://syzkaller.appspot.com/x/log.txt?x=103ce4fa300000
->> IMPORTANT: if you fix the issue, please add the following tag to the commit:
->> Reported-by: syzbot+be2baed593ea56c6a84c@syzkaller.appspotmail.com
->> INFO: task syz-executor446:8489 blocked for more than 143 seconds.
->>       Not tainted 5.14.0-rc4-syzkaller #0
->> "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
->> task:syz-executor446 state:D stack:28712 pid: 8489 ppid:  8452 flags:0x00000000
->> Call Trace:
->>  context_switch kernel/sched/core.c:4683 [inline]
->>  __schedule+0x93a/0x26f0 kernel/sched/core.c:5940
->>  schedule+0xd3/0x270 kernel/sched/core.c:6019
->>  schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6078
->>  __mutex_lock_common kernel/locking/mutex.c:1036 [inline]
->>  __mutex_lock+0x7b6/0x10a0 kernel/locking/mutex.c:1104
->>  hci_req_sync+0x33/0xd0 net/bluetooth/hci_request.c:276
->>  hci_inquiry+0x6f4/0x9e0 net/bluetooth/hci_core.c:1357
->>  hci_sock_ioctl+0x1a7/0x910 net/bluetooth/hci_sock.c:1060
->>  sock_do_ioctl+0xcb/0x2d0 net/socket.c:1094
->>  sock_ioctl+0x477/0x6a0 net/socket.c:1221
->>  vfs_ioctl fs/ioctl.c:51 [inline]
->>  __do_sys_ioctl fs/ioctl.c:1069 [inline]
->>  __se_sys_ioctl fs/ioctl.c:1055 [inline]
->>  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:1055
->>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->>  entry_SYSCALL_64_after_hwframe+0x44/0xae
->> RIP: 0033:0x446449
->> RSP: 002b:00007f36ab8342e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
->> RAX: ffffffffffffffda RBX: 00000000004cb400 RCX: 0000000000446449
->> RDX: 00000000200000c0 RSI: 00000000800448f0 RDI: 0000000000000004
->> RBP: 00000000004cb40c R08: 0000000000000000 R09: 0000000000000000
->> R10: ffffffffffffffff R11: 0000000000000246 R12: 0000000000000003
->> R13: 0000000000000004 R14: 00007f36ab8346b8 R15: 00000000004cb408
->> INFO: task syz-executor446:8491 blocked for more than 143 seconds.
->>       Not tainted 5.14.0-rc4-syzkaller #0
->> "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
->> task:syz-executor446 state:D stack:28176 pid: 8491 ppid:  8452 flags:0x00000004
->> Call Trace:
->>  context_switch kernel/sched/core.c:4683 [inline]
->>  __schedule+0x93a/0x26f0 kernel/sched/core.c:5940
->>  schedule+0xd3/0x270 kernel/sched/core.c:6019
->>  schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6078
->>  __mutex_lock_common kernel/locking/mutex.c:1036 [inline]
->>  __mutex_lock+0x7b6/0x10a0 kernel/locking/mutex.c:1104
->>  hci_req_sync+0x33/0xd0 net/bluetooth/hci_request.c:276
->>  hci_inquiry+0x6f4/0x9e0 net/bluetooth/hci_core.c:1357
->>  hci_sock_ioctl+0x1a7/0x910 net/bluetooth/hci_sock.c:1060
->>  sock_do_ioctl+0xcb/0x2d0 net/socket.c:1094
->>  sock_ioctl+0x477/0x6a0 net/socket.c:1221
->>  vfs_ioctl fs/ioctl.c:51 [inline]
->>  __do_sys_ioctl fs/ioctl.c:1069 [inline]
->>  __se_sys_ioctl fs/ioctl.c:1055 [inline]
->>  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:1055
->>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->>  entry_SYSCALL_64_after_hwframe+0x44/0xae
->> RIP: 0033:0x446449
->> RSP: 002b:00007f36ab8342e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
->> RAX: ffffffffffffffda RBX: 00000000004cb400 RCX: 0000000000446449
->> RDX: 00000000200000c0 RSI: 00000000800448f0 RDI: 0000000000000004
->> RBP: 00000000004cb40c R08: 0000000000000000 R09: 0000000000000000
->> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
->> R13: 0000000000000004 R14: 00007f36ab8346b8 R15: 00000000004cb408
->> Showing all locks held in the system:
->> 6 locks held by kworker/u4:0/8:
->> 1 lock held by khungtaskd/1635:
->>  #0: ffffffff8b97c180 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:6446
->> 1 lock held by in:imklog/8352:
->>  #0: ffff888033e1d4f0 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0xe9/0x100 fs/file.c:974
->> 1 lock held by syz-executor446/8486:
->>  #0: ffff8880349c4ff0 (&hdev->req_lock){+.+.}-{3:3}, at: hci_req_sync+0x33/0xd0 net/bluetooth/hci_request.c:276
->> 1 lock held by syz-executor446/8489:
->>  #0: ffff8880349c4ff0 (&hdev->req_lock){+.+.}-{3:3}, at: hci_req_sync+0x33/0xd0 net/bluetooth/hci_request.c:276
->> 1 lock held by syz-executor446/8491:
->>  #0: ffff8880349c4ff0 (&hdev->req_lock){+.+.}-{3:3}, at: hci_req_sync+0x33/0xd0 net/bluetooth/hci_request.c:276
-> 
-> Looks like too big timeout is passed from ioctl:
-> 
-> 
-> C repro:
-> 
->    *(uint16_t*)0x200000c0 = 0;
->    *(uint16_t*)0x200000c2 = 0;
->    memcpy((void*)0x200000c4, "\xf0\x08\xa7", 3);
->    *(uint8_t*)0x200000c7 = 0x81;	<- ir.length
->    *(uint8_t*)0x200000c8 = 0;
->    syscall(__NR_ioctl, r[0], 0x800448f0, 0x200000c0ul);
-> 
-> 
-> Then ir.length * msecs_to_jiffies(2000) timeout is passed to
-> hci_req_sync(). Task will stuck here
-> 
-> 	err = wait_event_interruptible_timeout(hdev->req_wait_q,
-> 			hdev->req_status != HCI_REQ_PEND, timeout);
-> 
-> for 258 seconds (I guess, it's because of test environment, but, maybe, we should add sanity check for timeout value)
+I answered too quickly in one paragraph.
 
-I agree. Feel free to send a patch.
+On Tue. 17 Aug 2021 at 00:49, Vincent MAILHOL
+<mailhol.vincent@wanadoo.fr> wrote:
+> On Mon. 16 Aug 2021 at 22:43, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+...
+> > Oh, I just noticed:
+> >
+> > | ip link set dev mcp251xfd0 down; \
+> > | ip link set mcp251xfd0 txqueuelen 10 up type can \
+> > |     sample-point 0.8 bitrate 500000  \
+> > |     dsample-point 0.8 dbitrate 2000000 fd on \
+> > |     tdc-mode manual tdco 11 tdcv 22
+> >
+> > followed by:
+> >
+> > | ip link set dev mcp251xfd0 down; \
+> > | ip link set mcp251xfd0 txqueuelen 10 up type can
+> >
+> > We stay in manual mode:
+> >
+> > | Aug 16 15:27:47 rpi4b8 kernel: mcp251xfd spi0.0 mcp251xfd0: mcp251xfd_set_bittiming: tdco=11 tdcv=22 mode=manual
+> >
+> > | 8: mcp251xfd0: <NOARP,UP,LOWER_UP,ECHO> mtu 72 qdisc pfifo_fast state UP mode DEFAULT group default qlen 10
+> > |     link/can  promiscuity 0 minmtu 0 maxmtu 0
+> > |     can <FD,TDC_AUTO,TDC_MANUAL> state ERROR-ACTIVE (berr-counter tx 0 rx 0) restart-ms 100
+>
+> That's a bug. It should be impossible to have both TDC_AUTO and
+> TDC_MANUAL at the same time.
+>
+> > |           bitrate 500000 sample-point 0.800
+> > |           tq 25 prop-seg 31 phase-seg1 32 phase-seg2 16 sjw 1 brp 1
+> > |           mcp251xfd: tseg1 2..256 tseg2 1..128 sjw 1..128 brp 1..256 brp_inc 1
+> > |           dbitrate 2000000 dsample-point 0.800
+> > |           dtq 25 dprop-seg 7 dphase-seg1 8 dphase-seg2 4 dsjw 1 dbrp 1
+> > |           tdcv 22 tdco 11
+> > |           mcp251xfd: dtseg1 1..32 dtseg2 1..16 dsjw 1..16 dbrp 1..256 dbrp_inc 1
+> > |           tdcv 0..63 tdco 0..63
+> > |           clock 40000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 parentbus spi parentdev spi0.0
+>
+> Sorry, but can I confirm what you did here? You stated that you
+> did those four commands in this order:
+>
+> > | ip link set dev mcp251xfd0 down; \
+> > | ip link set mcp251xfd0 txqueuelen 10 up type can \
+> > |     sample-point 0.8 bitrate 500000  \
+> > |     dsample-point 0.8 dbitrate 2000000 fd on \
+> > |     tdc-mode manual tdco 11 tdcv 22
+> > | ip link set dev mcp251xfd0 down; \
+> > | ip link set mcp251xfd0 txqueuelen 10 up type can
+>
+> So now, you should be in Classical CAN (fd flag off) but the
+> results of iproute2 shows that FD is on... Is there one missing
+> step?
 
-Regards
+Please ignore this part. I misread the latest command and thought
+you were configuring it as classical CAN. You just did a network
+down / up.
 
-Marcel
+I will troubleshoot this tomorrow.
 
+> > I have to give "fd on" + the bit timing parameters to go to the full
+> > automatic mode again:
+> >
+> > | Aug 16 15:32:46 rpi4b8 kernel: mcp251xfd spi0.0 mcp251xfd0: mcp251xfd_set_bittiming: tdco=16 tdcv=22 mode=automatic
+
+Yours sincerely,
+Vincent
