@@ -2,98 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 985823ED8D6
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 16:20:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86B9C3ED8FF
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 16:31:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231714AbhHPOVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 10:21:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34424 "EHLO
+        id S232190AbhHPObb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 10:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230094AbhHPOVO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 10:21:14 -0400
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 912FFC061764
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 07:20:42 -0700 (PDT)
-Received: by mail-il1-x130.google.com with SMTP id u7so18716570ilk.7
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 07:20:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZdY43BmHwJ9DyNYh0fm/33Z4sEPUAt4Lp4aZlFW1GTk=;
-        b=eclCU0gxGJ3rxKvqWVcfExuXe7lG5b3uPcljlc9N5eaKWxp3O4DgzJa1xgfoiZp2Az
-         EAJWZwTWrirfCayp/2mXEsJ+vswEQSV6XiC9NmuG4LrAG+FcUKXftg9fCH9yBDKJWgl1
-         SMCUDHb7FViztLkSYQshvDE8Aikyx324o3E1w+pS9Vyh3DINjDIcElcfKyV2I9G6G4M/
-         HeshVGxdytNlFQbnopKzyhc9w6+FZ9p3/hEOVCm91bMcikEfog7syCAKG2M2JiyqvNsj
-         WaCSosue24Ry73Sa4Hu7WvirxhSOWw451pds+kbUL5EoNGeS5R+XR9OFbxBKokTUYkF/
-         YqLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ZdY43BmHwJ9DyNYh0fm/33Z4sEPUAt4Lp4aZlFW1GTk=;
-        b=JLuTaHHxWWmeXFuoQeaqbLhAZ8/152S13eiScpKVuJYP9Ewb6V38pJmTMiZcFesaVe
-         qOjqDNTmMyk15c7oEmVQrvZ3TAR6OOXBAqbZ1Jv6uicqYxSL4hk0E2zFtuYs5dOQEPvh
-         ywxSxrYH2SxpANxvpfHlThn5YIt8eH3kPNyvhTEceOBseRAXQDowhOYtzxZA4LYLB/YC
-         PhXF9ZSFCdmwqpmcHSq3p2IclmqseBJ4dplFOtUDn6taWS7W6HOOgDknh7EzqyDQlhA0
-         T8kntIy72N/WkgW6C3k5CeUi3PaVj7ux9R5tVUu9+iPoKU2KK2Q1Rs+2qQEgUHMsJ/qn
-         iPOw==
-X-Gm-Message-State: AOAM532CU4X/4upy2oAyoqF1kN40eEc7Wybw1EjRGsYB25dsEE6PdW1x
-        EVU9LmeQ2h5DhlbXDPdeiMc4ew==
-X-Google-Smtp-Source: ABdhPJyqIUq3/7V4EUpMofpmG76jXAnX2+YGuEtx4CO99U4aCIZdMUQE/GkjTd8ViUAifPPJu+RSiA==
-X-Received: by 2002:a05:6e02:2145:: with SMTP id d5mr858660ilv.23.1629123641680;
-        Mon, 16 Aug 2021 07:20:41 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id m26sm3210997ioj.54.2021.08.16.07.20.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Aug 2021 07:20:41 -0700 (PDT)
-Subject: Re: [PATCH net-next 4/6] net: ipa: ensure hardware has power in
- ipa_start_xmit()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, bjorn.andersson@linaro.org,
-        evgreen@chromium.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210812195035.2816276-1-elder@linaro.org>
- <20210812195035.2816276-5-elder@linaro.org>
- <20210813174655.1d13b524@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <3a9e82cc-c09e-62e8-4671-8f16d4f6a35b@linaro.org>
- <20210816071543.39a44815@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <b6b1ca41-36de-bcb1-30ca-6e8d8bfcc5a9@linaro.org>
-Date:   Mon, 16 Aug 2021 09:20:40 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        with ESMTP id S231445AbhHPOba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 10:31:30 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67F99C0613C1
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 07:30:59 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1mFddg-0008S1-5t; Mon, 16 Aug 2021 16:30:56 +0200
+Received: from pengutronix.de (unknown [IPv6:2a02:810a:8940:aa0:3272:cc96:80a9:1a01])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 4EC7A668425;
+        Mon, 16 Aug 2021 14:30:54 +0000 (UTC)
+Date:   Mon, 16 Aug 2021 16:30:52 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     linux-can <linux-can@vger.kernel.org>,
+        Stefan =?utf-8?B?TcOkdGpl?= <Stefan.Maetje@esd.eu>,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5 2/7] can: bittiming: allow TDC{V,O} to be zero and add
+ can_tdc_const::tdc{v,o,f}_min
+Message-ID: <20210816143052.3brm6ny26jy3nbkq@pengutronix.de>
+References: <20210815033248.98111-1-mailhol.vincent@wanadoo.fr>
+ <20210815033248.98111-3-mailhol.vincent@wanadoo.fr>
+ <20210816084235.fr7fzau2ce7zl4d4@pengutronix.de>
+ <CAMZ6RqK5t62UppiMe9k5jG8EYvnSbFW3doydhCvp72W_X2rXAw@mail.gmail.com>
+ <20210816122519.mme272z6tqrkyc6x@pengutronix.de>
+ <20210816123309.pfa57tke5hrycqae@pengutronix.de>
+ <CAMZ6RqK0vTtCkSM7Lim2TQCZyYTYvKYsFVwWDnyNaFghwqToXg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210816071543.39a44815@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="huzcw6f2bihja6yc"
+Content-Disposition: inline
+In-Reply-To: <CAMZ6RqK0vTtCkSM7Lim2TQCZyYTYvKYsFVwWDnyNaFghwqToXg@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/16/21 9:15 AM, Jakub Kicinski wrote:
-> On Fri, 13 Aug 2021 21:25:23 -0500 Alex Elder wrote:
->>> This is racy, what if the pm work gets scheduled on another CPU and
->>> calls wake right here (i.e. before you call netif_stop_queue())?
->>> The queue may never get woken up?
->>
->> I haven't been seeing this happen but I think you may be right.
->>
->> I did think about this race, but I think I was relying on the
->> PM work queue to somehow avoid the problem.  I need to think
->> about this again after a good night's sleep.  I might need
->> to add an atomic flag or something.
-> 
-> Maybe add a spin lock?  Seems like the whole wake up path will be
-> expensive enough for a spin lock to be in the noise. You can always
-> add complexity later.
 
-Exactly what I just decided after trying to work out a
-clever way without using a spinlock...  I'll be sending
-out a fix today.  Thanks.
+--huzcw6f2bihja6yc
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-					-Alex
+On 16.08.2021 23:10:29, Vincent MAILHOL wrote:
+[...]
+> After the discussion I had with Stefan, I assumed mcp251xxfd also
+> used relative TDCO.  However, in the mcp15xxfd family manual,
+> Equation 3-10: "Secondary Sample Point" on page 18 states that:
+>=20
+> | SSP =3D TDCV + TDCO
+>=20
+> As I commented above, this is the formula of the absolute
+> TDCO. Furthermore, in the example you shared, TDCO is
+> 16 (absolute), not 0 (relative).
 
+ACK
+
+> *BUT*, if this is the absolute TDCO, I just do not get how it can
+> be negative (I already elaborated on this in the past: if you
+> subtract from TDCV, you are measuring the previous bit...)
+>=20
+> Another thing which is misleading to me is that the mcp15xxfd
+> family manual lists the min and max values for most of the
+> bittiming parameters but not for TDCO.
+>=20
+> Finally, I did a bit of research and found that:
+> http://ww1.microchip.com/downloads/en/DeviceDoc/Section_56_Controller_Are=
+a_Network_with_Flexible_Data_rate_DS60001549A.pdf
+
+Interesting. This data sheet is older than the one of the mcp2518fd.
+
+> This is *not* the mcp25xxfd datasheet but it is still from
+> Microship and as you will see, it is mostly similar to the
+> mcp25xxfd except for, you guessed it, the TDCO.
+>=20
+> It reads:
+> | TDCMOD<1:0>: Transmitter Delay Compensation Mode bits
+> | Secondary Sample Point (SSP).
+> | 10 =3D Auto; measure delay and add CFDxDBTCFG.TSEG1; add TDCO
+> | 11 =3D Auto; measure delay and add CFDxDBTCFG.TSEG1; add TDCO
+> | 01 =3D Manual; Do not measure, use TDCV plus TDCO from the register
+> | 00 =3D Disable
+>=20
+> | TDCO<6:0>: Transmitter Delay Compensation Offset bits
+> | Secondary Sample Point (SSP). Two's complement; offset can be
+> positive, zero, or negative.
+> | 1111111 =3D -64 x SYSCLK
+> | .
+> | .
+> | .
+> | 0111111 =3D 63 x SYSCLK
+> | .
+> | .
+> | .
+> | 0000000 =3D 0 x SYSCLK
+>=20
+> Here, you can clearly see that the TDCO has the exact same range
+> as the one of the mcp25xxfd but the description of TDCMOD
+> changes, telling us that:
+>=20
+> | SSP =3D TDCV (measured delay) + CFDxDBTCFG.TSEG1 (sample point) + TDCO
+>=20
+> Which means this is a relative TDCO.
+>=20
+> I just do not get how two documents from Microchip can have the
+> TDCO relative range of -64..63 but use a different formula. I am
+> sorry but at that point, I just do not understand what is going
+> on with your controller...
+
+Me neither. I'll ask my microchip contact.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--huzcw6f2bihja6yc
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEadpkACgkQqclaivrt
+76nijQf/f5cgGi+vnS1wIdty9F4nhLbpuwe1ue79JyYYwv+BgvHv7LrERh0Gd6SB
+r8yrq5x7ZTXqmRci1fMH0gQF6DctKaKnzU69MV6P00CbtbOET7uXNDbvtqoX59Y8
+RNNQYgNnaWXXMDgHJJeOQhiJeFzkMlStNJbNENoDU2+HJkGTVag+XAKbtgKxWE2O
+33x6ejiAMRpKiSPNRruLy8HzVVYzpOc7LgGhB7oHyOsJignUiSphSa+ew/oErrqI
+AwGh6CBrsq7lC+trq8GdL+vRWkMaW0YuUbgjz6zRWV4I1aH5d4wmWh9Sr1UzkcGY
+vtP6s1l8k4rnaothQa1caTRRSlekOA==
+=1N+4
+-----END PGP SIGNATURE-----
+
+--huzcw6f2bihja6yc--
