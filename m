@@ -2,70 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 984513EDA1D
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 17:45:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF50B3EDA25
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 17:47:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233439AbhHPPqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 11:46:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54338 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232388AbhHPPqM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 11:46:12 -0400
-Received: from hr2.samba.org (hr2.samba.org [IPv6:2a01:4f8:192:486::2:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A5EC061764;
-        Mon, 16 Aug 2021 08:45:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=samba.org;
-        s=42; h=Date:Message-ID:From:Cc:To;
-        bh=Rp/i5q5qkGZSCwt8ltdnIxxLD/muU+MEfh/mQJtSKYk=; b=CMUQ2oW0we0hxLauspXHyJZiWW
-        sErGYYsqTzE5bkvyt1nTqzUov3X07Z9O32ZKERbiGuMZHWEVvh2Q0WINVoJW+70EuoXk8ZshNtjxs
-        u5EcAJzK7xR7x4ykbjDix8YM2n+zysKzLUTvFtVn+QAXiPISnebfN6CWhhk9RvCkLW+lbpWJXuCC7
-        X2xxZyL8us7mZmi9B3b6qIR5R8Mz3vmOdxt2BePNvNO6Fx0havBwVYrYXbCdZZ/XtWsVIwIusfRGP
-        CPSOF4FHGDAP5sWHQYJsaTRS8A7X4KGc/L16gyccHzKJvCqx0h+99lJc0BIUv+202JkAogMydgYtH
-        mnptBrtgAD5VboxBVBbuyVGWTapAv90aDL0SRXfheREG0Y5/I265sh5FLr/BelrI66DOr4aEC1hOz
-        Vsbq9Sz6iAsTRj+zl3l423T1xXcfsdsvrOO7tNoVP1gRNRS8CXaCj/FXhvv/ViMeb1Te/Y8UdIS9W
-        Ki9cpOM0NvvpN/9hfUogyidW;
-Received: from [127.0.0.2] (localhost [127.0.0.1])
-        by hr2.samba.org with esmtpsa (TLS1.3:ECDHE_SECP256R1__ECDSA_SECP256R1_SHA256__CHACHA20_POLY1305:256)
-        (Exim)
-        id 1mFenw-001ZNp-HV; Mon, 16 Aug 2021 15:45:36 +0000
-To:     Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org,
-        Josh Triplett <josh@joshtriplett.org>
+        id S236670AbhHPPsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 11:48:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41436 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232822AbhHPPsO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 11:48:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EF71B60F42;
+        Mon, 16 Aug 2021 15:47:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629128862;
+        bh=i6mqhZa05bh0/QvKBCg/vqpuUHYgPMxb+O5ZQZYVlwA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Q04xAz38cnz5G+q6BdNTGV+56X2nNyQNbX7kYAv1bZRAJllhYM0aPv8BfAGUOBPde
+         2TaQG/1vjjWj3DX5VjwdbMrFJDiOFexJghkCE9fEkdlo52B3SamAh8zSopudkuUvjV
+         EY0tVxnimj2wC9chonMAf6eUa9m6MNk8x4t/g+eZH7UjL2Z29WcNFGTYgvMiR2HA2H
+         gJ85U3QPjmH+nRo1TwF1PYCIkat63+vycqDerd1LrVni34ATaipOsWly6gYKzgGgxz
+         o3RlRIYHMyk/p1LuI4tThV3IuTLifvL/EfDKrfZtRmRD+SD22xLJQxFq9QeKAEczJC
+         FvseFiXu98g5g==
+Date:   Mon, 16 Aug 2021 08:47:41 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
 Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <cover.1628871893.git.asml.silence@gmail.com>
-From:   Stefan Metzmacher <metze@samba.org>
-Subject: Re: [PATCH v2 0/4] open/accept directly into io_uring fixed file
- table
-Message-ID: <17841c48-093e-af1c-c7c9-aa00859eb1b9@samba.org>
-Date:   Mon, 16 Aug 2021 17:45:36 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        Leon Romanovsky <leonro@nvidia.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Salil Mehta <salil.mehta@huawei.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Yufeng Mo <moyufeng@huawei.com>
+Subject: Re: [PATCH net-next 3/6] devlink: Count struct devlink consumers
+Message-ID: <20210816084741.1dd1c415@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <d4d59d801f4521e562c9ecf2d8767077aaefb456.1628933864.git.leonro@nvidia.com>
+References: <cover.1628933864.git.leonro@nvidia.com>
+        <d4d59d801f4521e562c9ecf2d8767077aaefb456.1628933864.git.leonro@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <cover.1628871893.git.asml.silence@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Pavel,
-
-> The behaviour is controlled by setting sqe->file_index, where 0 implies
-> the old behaviour. If non-zero value is specified, then it will behave
-> as described and place the file into a fixed file slot
-> sqe->file_index - 1. A file table should be already created, the slot
-> should be valid and empty, otherwise the operation will fail.
+On Sat, 14 Aug 2021 12:57:28 +0300 Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
 > 
-> Note 1: we can't use IOSQE_FIXED_FILE to switch between modes, because
-> accept takes a file, and it already uses the flag with a different
-> meaning.
+> The struct devlink itself is protected by internal lock and doesn't
+> need global lock during operation. That global lock is used to protect
+> addition/removal new devlink instances from the global list in use by
+> all devlink consumers in the system.
+> 
+> The future conversion of linked list to be xarray will allow us to
+> actually delete that lock, but first we need to count all struct devlink
+> users.
 
-Would it be hard to support IOSQE_FIXED_FILE for the dirfd of openat*, renameat, unlinkat, statx?
-(And mkdirat, linkat, symlinkat when they arrive)
-renameat and linkat might be trickier as they take two dirfds, but it
-would make the feature more complete and useful.
+Not a problem with this set but to state the obvious the global devlink
+lock also protects from concurrent execution of all the ops which don't
+take the instance lock (DEVLINK_NL_FLAG_NO_LOCK). You most likely know
+this but I thought I'd comment on an off chance it helps.
 
-metze
+> The reference counting provides us a way to ensure that no new user
+> space commands success to grab devlink instance which is going to be
+> destroyed makes it is safe to access it without lock.
+
