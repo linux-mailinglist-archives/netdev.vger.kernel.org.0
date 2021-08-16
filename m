@@ -2,136 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA2BF3ED935
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 16:50:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15B923ED946
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 16:55:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232460AbhHPOvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 10:51:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41424 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230078AbhHPOvO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 10:51:14 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4BBDC061764;
-        Mon, 16 Aug 2021 07:50:42 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id j1so26907625pjv.3;
-        Mon, 16 Aug 2021 07:50:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=WJWFiW1tNTGnEXAY83sW/96pfLutJ+nc92p/dxWLkZg=;
-        b=NXbT1zLrDuMqskh2PkrXNK2vbCTKyrRJCbfTY5Bly9fYQ/XU0SfRcVq5Opg7hJuYPq
-         WAHFOfTPq1K1gGqDqCEl7LfXOVRnVK+Trx+MMYCG7OPlcmQ484293t+hm2eNoNgWwPWn
-         FMa4FwwJpv6nh2ij8bhxvHhBGoaIurIFplj7wnpKTSuRMnyldRdPcAWWcSmd+W7oZuoa
-         90O5BmPR7Iyg7k9vnQyRNKKQWgQWCvIDkqkqBKagNtE87pOxDe8b9ZAS8kRj2RhhMem8
-         RcODv8S8rQQKapLBdjj/yipP4YK2d1vrMKq6Wk4vAH1jeB7D9R7aSg32dzMV4dgTGHNn
-         cHbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=WJWFiW1tNTGnEXAY83sW/96pfLutJ+nc92p/dxWLkZg=;
-        b=fbb1ZaF3MLVycQwQKjbG8tcuwm/EzfPl4vfOeAwIBBIpI5VAHOretXlKvGBNHOafKr
-         J4sliYDv9bM1NJ34ZtWlcNbRQfcnHzCgTsJSjZ0pAbO/Q+ZS9UwLI04fjxxT+t1ulgKB
-         IPPsyL1jDMfRU/xwfVCmRNPq+EgmJqGBCE7H4QBm+3v9G4+J54JJhbaFy3dCu8/Rl3w9
-         7K5pmWB18OdovI59y4YcwLnt6X5UmW2rVsI2M2xXxlqa6WyUhv9ggUES9Q5BEQBjEnks
-         KBjAZ2W/EG6tqNJmH9AiL3oJ2sNgDxByNrP7tGYlYLLOJL3RNWMiejrUZFaa654Spvws
-         dZjg==
-X-Gm-Message-State: AOAM533hjnoppG2uAotsGeSRSsDxViSB6cv8WbrCIyAqlQV10Y3I5ifs
-        bx41x1bQ5oFZapwtaIfmPcA=
-X-Google-Smtp-Source: ABdhPJwwGaWbF5lMH7zWG8CjOdMFhlJFveeUXJRyURV3wu36AAVQm0z4EMghAqWltWQj3nIzdJtriw==
-X-Received: by 2002:a17:90b:3014:: with SMTP id hg20mr17976900pjb.140.1629125442297;
-        Mon, 16 Aug 2021 07:50:42 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
-        by smtp.gmail.com with ESMTPSA id z2sm6264141pgb.33.2021.08.16.07.50.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Aug 2021 07:50:41 -0700 (PDT)
-Subject: Re: [PATCH V3 10/13] x86/Swiotlb: Add Swiotlb bounce buffer remap
- function for HV IVM
-From:   Tianyu Lan <ltykernel@gmail.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
-        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
-        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, ardb@kernel.org,
-        Tianyu.Lan@microsoft.com, pgonda@google.com,
-        martin.b.radev@gmail.com, akpm@linux-foundation.org,
-        kirill.shutemov@linux.intel.com, rppt@kernel.org,
-        sfr@canb.auug.org.au, saravanand@fb.com,
-        krish.sadhukhan@oracle.com, aneesh.kumar@linux.ibm.com,
-        xen-devel@lists.xenproject.org, rientjes@google.com,
-        hannes@cmpxchg.org, tj@kernel.org, michael.h.kelley@microsoft.com,
-        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, parri.andrea@gmail.com, dave.hansen@intel.com
+        id S232579AbhHPO4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 10:56:07 -0400
+Received: from mail-dm6nam11on2121.outbound.protection.outlook.com ([40.107.223.121]:40225
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230078AbhHPO4G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 10:56:06 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cYPZPBrdoT8R74rquah5lgauhnvLokIe1ecH3IW6S3uPQ7n52fbAAJWhapP8+ma3nufYH/vlSCQumPCHEkpB/nzS/63UiVvh5SzzhRTYZ7KMqA94/GZ826qjWBZs8y1wpokliXyyXQRmzBFmEdsoZtnfVNFw1ekFCVTSJQg4UFdmNia2jKW460YHk+MzxZCG2KfPGWvPxF9Dl+t4v4b4kNu1YfEEksuAhX7+97dB5JFJ9N6/Cg1Qib19kkJc1ZLOyCw4R8ITvTCjguAAAIBy/pyuH085twdARrHuWoGgqliQv8SMYwzdWSJdYnX8f73Zwv9l45FKtNP4CzybOheAtw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nKzz6N353kemN5JnE9uEYBWK6Hu8GEiFzCv6Noxw+q0=;
+ b=akUcDZ6JABkJw9sdzpfnYA2FpUiLGIYRBdlkWit/+cUVYR8hQLOiWYy1onjBdVpK1fRzl+2XtN2Q9SJ0WP6ElZ7iGXgOW4VoPS26JFF746HRRpbgDeqJ3CO8Ua66iPENOzeu7dGP9KX/B129//OShLXJh8VH2JfIBUVfo/gGH9dFfO14crQGetxaeD4anGOIxRlqNvIxIi1zljP7CiJrsQ3wTnFV9bLvgFiXQZMvuyhrGPqjbMgnbQZD4LKxJ7ZfsMZz9kyKl8RrmB8JSkIT8FT2lqFiXD9U6LY3YxExdbxDuQ2GOK+F0+wkWhlYFfnPu1aHiX5Aq1I+lBrh2R5BIA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nKzz6N353kemN5JnE9uEYBWK6Hu8GEiFzCv6Noxw+q0=;
+ b=HcdiBg9E3fV94D/anNUZhTlbtIU9eQJ0+IDKiTZCDbyImD183D1Y5vCKfkOwuulkvcPGF+BK/zIna05Hkdr64cFYPjlZ4+macxrAfuX6PmsIQqWSlE+91rJs9SBzEJge9HJsCwHZbfsoyKpG0OIL5OSaN57rPIdrnkhpertJlog=
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
+ by MW4PR21MB1985.namprd21.prod.outlook.com (2603:10b6:303:7a::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.1; Mon, 16 Aug
+ 2021 14:55:31 +0000
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::e8f7:b582:9e2d:ba55]) by MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::e8f7:b582:9e2d:ba55%2]) with mapi id 15.20.4436.012; Mon, 16 Aug 2021
+ 14:55:31 +0000
+From:   Michael Kelley <mikelley@microsoft.com>
+To:     Tianyu Lan <ltykernel@gmail.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "will@kernel.org" <will@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "pgonda@google.com" <pgonda@google.com>,
+        "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "rppt@kernel.org" <rppt@kernel.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "saravanand@fb.com" <saravanand@fb.com>,
+        "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
+        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "rientjes@google.com" <rientjes@google.com>,
+        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
+        "tj@kernel.org" <tj@kernel.org>
+CC:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        vkuznets <vkuznets@redhat.com>,
+        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+        "dave.hansen@intel.com" <dave.hansen@intel.com>
+Subject: RE: [PATCH V3 00/13] x86/Hyper-V: Add Hyper-V Isolation VM support
+Thread-Topic: [PATCH V3 00/13] x86/Hyper-V: Add Hyper-V Isolation VM support
+Thread-Index: AQHXjUfkLHG5EyKjREma0XuJC95pyqt2O57g
+Date:   Mon, 16 Aug 2021 14:55:31 +0000
+Message-ID: <MWHPR21MB1593FFA5FD713BF42D4197F3D7FD9@MWHPR21MB1593.namprd21.prod.outlook.com>
 References: <20210809175620.720923-1-ltykernel@gmail.com>
- <20210809175620.720923-11-ltykernel@gmail.com>
- <20210812122741.GC19050@lst.de>
- <d18ae061-6fc2-e69e-fc2c-2e1a1114c4b4@gmail.com>
-Message-ID: <890e5e21-714a-2db6-f68a-6211a69bebb9@gmail.com>
-Date:   Mon, 16 Aug 2021 22:50:26 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
-MIME-Version: 1.0
-In-Reply-To: <d18ae061-6fc2-e69e-fc2c-2e1a1114c4b4@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20210809175620.720923-1-ltykernel@gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=e5108425-7e30-462e-9c4f-9a4d55c1d719;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-08-16T14:29:15Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5cb51cd8-4e1a-41ad-3182-08d960c5e4da
+x-ms-traffictypediagnostic: MW4PR21MB1985:
+x-ms-exchange-transport-forked: True
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <MW4PR21MB19850244BC52090E5955B0BDD7FD9@MW4PR21MB1985.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: LXdGonL+GQ7wkn9qSGEuLb/pD/790fWt7wYOmALo37wzWnjOcZ/Xc3ZLgvqLlueIWCUOvJ/Rj9RwG5baXYuboLTBAiTq9VN0YmcQohZu/hFb6LWPaPmjxZ3YwNbov78fJn+3BYDWUWHHQbkDPBYY/crte26xqnDFgZw10P71Lb1QHCICOr6xJSELER8qs2n/us2UWUeBy9BSESAOnFLP44sQD1L5PMXNXbap4Ur3mRezoa4GxemwECKudpcuq09Gm4xxZUWdnF9+29xNyqgxF1c1rb90CSpCYxZTprDn9X63Kc16iKNi7k/STajc6QQJZsmRXjn1qwDQCuNMAebIBcaR7wpg5TwESXe+IxE6HBD6JN1RPsIuUYh9b4M4KHuIIKoXhY445PkBPooMOGf61QO6Ph3mQ2vC55sWd74VMpWP79v9grwbm7qRQtGitrP4QkVwlAP8pQSRl2CXefZGgdbnk6St7w+gtS2Fl3peUXTVenTr6EB71e14EY5htt4F43p4tdi81OASxYKn9mWcx5xgiSYGI+M3bxXVCPmcr3mlzqOHZmXp2SvGTG91bmQY86srDiJqQ7uTxC2Vhy0qzPxVjJ0ALnIe9dyz04rLwwFxTEUTASgx7xRY4meCoNI3/PYrg73UVn9+5C2cw3PXCX8akPu9HEqWvnLtkdv83LFpxianauK8ldEx4BY6dE0eJLhU5wIAg3q0KPbdGvVSDu5ZLtDl0KiILMD6vya/RTI=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR21MB1593.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(508600001)(8676002)(8936002)(186003)(86362001)(7696005)(2906002)(26005)(6506007)(9686003)(38100700002)(122000001)(55016002)(71200400001)(82950400001)(10290500003)(82960400001)(33656002)(52536014)(7406005)(83380400001)(66946007)(5660300002)(76116006)(54906003)(316002)(4326008)(7416002)(110136005)(921005)(38070700005)(66446008)(64756008)(66556008)(66476007)(8990500004);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?YkqcmjMKPb3HT/QrqCP4mnZgrNiTeEOLvYLS23s/yWEIohQd7vhVvJ03xobV?=
+ =?us-ascii?Q?DKTG56hOOAlWa63ymtq2rDk05ToSdxbDZMYouS2yvIAnRnthmBikcVWfBr98?=
+ =?us-ascii?Q?2veinR9pm+ofHLqP8xJeL4+QW6y7fQ4iB68wM/K7DdQ0MRPXUQh78Sth4cai?=
+ =?us-ascii?Q?36iqIwM+Q5viDsH9Fu8Snc+IHZSnqiXnNEcEWXbxF0vNN+3Zb7ojwLElTsW8?=
+ =?us-ascii?Q?8jIr3iFEMX29vauhDKff+P/cRiDT9YMsIEk4D3YxPp0KA16svmW5dNZoEPdf?=
+ =?us-ascii?Q?zrETSvhrgKjcS/U6jZCt1b+VoIo3PIlRoU2wAGbI5bVwmISAgYcmqJzzYCP3?=
+ =?us-ascii?Q?pOjjqLKr3LlT4xRk4XYID5gyuKIpjLJXZ0GV+O2bWCsCA9qV1qz275FsAb52?=
+ =?us-ascii?Q?FKHQlr5KA0ME82dyG1phfAukrpY1ZwA2AVsewLqqC+fDu6G/55PQeTzzgor8?=
+ =?us-ascii?Q?7N1mXV+qYHwdzFCQBDH2Bad/4H7WVt24C6oroHjdAangjC1qKltZEMhjOnHL?=
+ =?us-ascii?Q?8/HzWNaRtCCvV187DrMRqvjwYTYPVqveayp3LGU4/tb+A6NBy2DN06oPlmOI?=
+ =?us-ascii?Q?onLsduZx2HmMOJJxA+uGMGERqIvrKlYuHrBqf7vnAQx1eLJ8Ku7yc4gZCqqI?=
+ =?us-ascii?Q?BICj4bMjGS28A9fKQW9/ifwIfpNUa5PqQkKsWC7fwCn1IS5Jv0Rfshv0w7mk?=
+ =?us-ascii?Q?uWqYUc0xUEAhch4TnRDuxCYvDEBKji/TpvziimW/TA8eDRwp8tLA4kRzEdJ/?=
+ =?us-ascii?Q?25XH+ebiDDKC56cm4NITU1AkvAAEF03u+yfsJmHv+957Rk7Hc1JEh3ocwCIm?=
+ =?us-ascii?Q?UyVg2t80I+vIa1v4mzPRJgi4vO3tvc5j6FISY75d/ByjbvfAB4T58nrV0IqA?=
+ =?us-ascii?Q?jFMmhLnJw8iJNky8gzeJKIziWxRGlLLJbq3pE9pe7IjyWZl6Pc4322ZM+S5H?=
+ =?us-ascii?Q?o2zSIsM6KBNBjKR6EX+ZkBJ/NqVEdc+kBfdp2HuOrhhgVE+9nF836hvX6Hb2?=
+ =?us-ascii?Q?czHqpzm26M+r/J/Hk32Asg+TYNVfh6eilGR/jjTFKy78rs61UttZLTYWUu/P?=
+ =?us-ascii?Q?+vuudZFW32MewTRkSgukyZGY0n5if4Di5WuqaLCSdOhI2fpxZHQDg9YiegMr?=
+ =?us-ascii?Q?Hrbw9JAo/k5uiUfOckSeV4qt9XpgeA8Cb7CG85NcqsyqoRAiscRWuyOC2g5v?=
+ =?us-ascii?Q?RfQjq/5HIoh6WG+ex+wqUQ9dGqFsVKzMuxoUxhzSUG2RLATtYnLFc6U/rPHW?=
+ =?us-ascii?Q?B7wJQH4mMHEKj/td+ZupRNwCXEDjy4yX8l/Ap0UZQHcksnbMnXhORIMRqnVI?=
+ =?us-ascii?Q?uwEneH54fAvzvEtP7wrzth2/?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5cb51cd8-4e1a-41ad-3182-08d960c5e4da
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Aug 2021 14:55:31.1315
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mNMDXffLalYM6/VJnYA1mgeiJVxoSvIRZZJOCsjpNwoRTVAC8hlzNEeA3ZwUw1FIB7SuPQJ5Hve6JAKWWDXpfGDppi9IMIpgHtJ4BFsCcR4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB1985
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/14/2021 1:58 AM, Tianyu Lan wrote:
-> On 8/12/2021 8:27 PM, Christoph Hellwig wrote:
->> This is still broken.  You need to make sure the actual DMA allocations
->> do have struct page backing.
->>
-> 
-> Hi Christoph:
->       swiotlb_tbl_map_single() still returns PA below vTOM/share_gpa_ > boundary. These PAs has backing pages and belong to system memory.
-> In other word, all PAs passed to DMA API have backing pages and these is 
-> no difference between Isolation guest and traditional guest for DMA API.
-> The new mapped VA for PA above vTOM here is just to access the bounce 
-> buffer in the swiotlb code and isn't exposed to outside.
+From: Tianyu Lan <ltykernel@gmail.com> Sent: Monday, August 9, 2021 10:56 A=
+M
+>=20
+> Hyper-V provides two kinds of Isolation VMs. VBS(Virtualization-based
+> security) and AMD SEV-SNP unenlightened Isolation VMs. This patchset
+> is to add support for these Isolation VM support in Linux.
+>=20
 
-Hi Christoph:
-       Sorry to bother you.Please double check with these two patches
-" [PATCH V3 10/13] x86/Swiotlb: Add Swiotlb bounce buffer remap function 
-for HV IVM" and "[PATCH V3 09/13] DMA: Add dma_map_decrypted/dma_
-unmap_encrypted() function".
-       The swiotlb bounce buffer in the isolation VM are allocated in the
-low end memory and these memory has struct page backing. All dma address
-returned by swiotlb/DMA API are low end memory and this is as same as 
-what happen in the traditional VM.So this means all PAs passed to DMA 
-API have struct page backing. The difference in Isolation VM is to 
-access bounce buffer via address space above vTOM/shared_guest_memory
-_boundary. To access bounce buffer shared with host, the guest needs to
-mark the memory visible to host via hypercall and map bounce buffer in 
-the extra address space(PA + shared_guest_memory_boundary). The vstart
-introduced in this patch is to store va of extra address space and it's 
-only used to access bounce buffer in the swiotlb_bounce(). The PA in 
-extra space is only in the Hyper-V map function and won't be passed to 
-DMA API or other components.
-       The API dma_map_decrypted() introduced in the patch 9 is to map 
-the bounce buffer in the extra space and these memory in the low end 
-space are used as DMA memory in the driver. Do you prefer these APIs
-still in the set_memory.c? I move the API to dma/mapping.c due to the
-suggested name arch_dma_map_decrypted() in the previous mail
-(https://lore.kernel.org/netdev/20210720135437.GA13554@lst.de/).
-       If there are something unclear, please let me know. Hope this
-still can catch the merge window.
+A general comment about this series:  I have not seen any statements
+made about whether either type of Isolated VM is supported for 32-bit
+Linux guests.   arch/x86/Kconfig has CONFIG_AMD_MEM_ENCRYPT as
+64-bit only, so evidently SEV-SNP Isolated VMs would be 64-bit only.
+But I don't know if VBS VMs are any different.
 
-Thanks.
+I didn't track down what happens if a 32-bit Linux is booted in
+a VM that supports SEV-SNP.  Presumably some kind of message
+is output that no encryption is being done.  But at a slightly
+higher level, the Hyper-V initialization path should probably
+also check for 32-bit and output a clear message that no isolation
+is being provided.  At that point, I don't know if it is possible to
+continue in non-isolated mode or whether the only choice is to
+panic.  Continuing in non-isolated mode might be a bad idea
+anyway since presumably the user has explicitly requested an
+Isolated VM.
 
+Related, I noticed usage of "unsigned long" for holding physical
+addresses, which works when running 64-bit, but not when running
+32-bit.  But even if Isolated VMs are always 64-bit, it would be still be
+better to clean this up and use phys_addr_t instead.  Unfortunately,
+more generic functions like set_memory_encrypted() and
+set_memory_decrypted() have physical address arguments that
+are of type unsigned long.
 
-
-
+Michael
