@@ -2,83 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BD8B3EDF2F
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 23:18:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 177393EDF32
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 23:19:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233302AbhHPVSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 17:18:39 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52650 "EHLO vps0.lunn.ch"
+        id S233673AbhHPVTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 17:19:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60750 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231750AbhHPVSi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 17:18:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=kMWO17uroZoWE99yM+teIahXpEmXjbr7uxr0ADzSYXE=; b=D3CQoKEZpkE+iWTOSXDF/Wa3Dg
-        FkFlm1lBg5bE2FfnmT524cwap7V9GWmojVuwAQ4qWZ2m5W9diaI+gAivl4A49HAtMJHPaLFzXrjRE
-        FaGbLlKVlWAuL//0lxWBujKNc8hPOuV4rBHpU8k3d7djWUHQd18gEIan0lcQQMt0PCOw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mFjzc-000RQB-72; Mon, 16 Aug 2021 23:18:00 +0200
-Date:   Mon, 16 Aug 2021 23:18:00 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Lee Jones <lee.jones@linaro.org>, Marc Zyngier <maz@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        linux-amlogic@lists.infradead.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Android Kernel Team <kernel-team@android.com>
-Subject: Re: [PATCH 1/2] irqchip: irq-meson-gpio: make it possible to build
- as a module
-Message-ID: <YRrWCC1E1nKDsx4N@lunn.ch>
-References: <87im0m277h.wl-maz@kernel.org>
- <CAGETcx9OukoWM_qprMse9aXdzCE=GFUgFEkfhhNjg44YYsOQLw@mail.gmail.com>
- <87sfzpwq4f.wl-maz@kernel.org>
- <CAGETcx95kHrv8wA-O+-JtfH7H9biJEGJtijuPVN0V5dUKUAB3A@mail.gmail.com>
- <CAGETcx8bpWQEnkpJ0YW9GqX8WE0ewT45zqkbWWdZ0ktJBhG4yQ@mail.gmail.com>
- <YQuZ2cKVE+3Os25Z@google.com>
- <YRpeVLf18Z+1R7WE@google.com>
- <CAGETcx-gSJD0Ra=U_55k3Anps11N_3Ev9gEQV6NaXOvqwP0J3g@mail.gmail.com>
- <YRrOvJBLp3WreEUf@lunn.ch>
- <CAGETcx_Q2-7B5RpHSfDu1KB0n+pT8nkCwGsthN20QBvgePcUtQ@mail.gmail.com>
+        id S231750AbhHPVTl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 17:19:41 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F177E6023B;
+        Mon, 16 Aug 2021 21:18:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629148740;
+        bh=kS1h84WZ9QwOq2mzPsBoVr9tr/Q0+7Tvnk4081sYM6c=;
+        h=From:To:Cc:Subject:Date:From;
+        b=UZJlMr49ebAB5OV44GWjXRn6zcf7eiVR66ttqhzWdIkZ9LJBbE3eQmc0pt5DcdA95
+         kXHVk91G2Yh1nnXyW3LhXnqg06ns9+BiZE+JBNXIr2yrSLpsScjAKGwVU+kyTMQ6d5
+         NWNyE21+fD7NptxWlRiTiYEKFCgrwH8qJ+uqnQZrG1qH5GaXJB6Jgqy53OHEh01vOm
+         o0o0HcvPbNvBCAGEtxZi6AAewpzCczWbrcucrUXyuhTdiqJM1stGMDa59xUQepLQhH
+         89ThPV3OxHOfr1vFGcV73kj11kFceE1+tVai9PBwySax9n8WxRGBx2WzdQ7l0JsKHC
+         K+KI60QDFKUVQ==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next 00/17] mlx5 updates 2021-08-16
+Date:   Mon, 16 Aug 2021 14:18:30 -0700
+Message-Id: <20210816211847.526937-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGETcx_Q2-7B5RpHSfDu1KB0n+pT8nkCwGsthN20QBvgePcUtQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 16, 2021 at 02:02:12PM -0700, Saravana Kannan wrote:
-> On Mon, Aug 16, 2021 at 1:46 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > > Not that I'm aware of. Andrew added a "Reviewed-by" to all 3 of my
-> > > proper fix patches. I didn't think I needed to send any newer patches.
-> > > Is there some reason you that I needed to?
-> > > https://lore.kernel.org/lkml/20210804214333.927985-1-saravanak@google.com/T/#t
-> >
-> > https://patchwork.kernel.org/project/netdevbpf/list/?series=&submitter=&state=*&q=net%3A+mdio-mux%3A+Delete+unnecessary+devm_kfree&archive=both&delegate=
-> >
-> > State Changes Requested. I guess because you got the subject wrong.
-> 
-> I'm assuming the prefix is wrong? What should it be? I went by looking
-> at the latest commit in:
-> $ git log --oneline  drivers/net/mdio/
-> ac53c26433b5 net: mdiobus: withdraw fwnode_mdbiobus_register
-> 
-> What prefix do I need to use to be considered correct?
-> net: mdio:?
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html
+Hi Dave and Jakub,
 
-and in particular:
+This series adds the support for TC MQPRIO channel mode and Lag mode for
+mlx5 bridge offloads.
 
-https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html#how-do-i-indicate-which-tree-net-vs-net-next-my-patch-should-be-in
+For more information please see tag log below.
 
-	Andrew
+Please pull and let me know if there is any problem.
+
+Thanks,
+Saeed.
+
+---
+The following changes since commit 1b3f78df6a80932d7deb0155d8b0871e8d3e4bca:
+
+  bonding: improve nl error msg when device can't be enslaved because of IFF_MASTER (2021-08-16 14:03:30 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-08-16
+
+for you to fetch changes up to 833239e1dfb194cb2c4f2085c1c06af570843796:
+
+  net/mlx5: Bridge, support LAG (2021-08-16 14:16:36 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2021-08-16
+
+The following patchset provides two separate mlx5 updates
+1) Ethtool RSS context and MQPRIO channel mode support:
+  1.1) enable mlx5e netdev driver to allow creating Transport Interface RX
+       (TIRs) objects on the fly to be used for ethtool RSS contexts and
+       TX MQPRIO channel mode
+  1.2) Introduce mlx5e_rss object to manage such TIRs.
+  1.3) Ethtool support for RSS context
+  1.4) Support MQPRIO channel mode
+
+2) Bridge offloads Lag support:
+   to allow adding bond net devices to mlx5 bridge
+  2.1) Address bridge port by (vport_num, esw_owner_vhca_id) pair
+       since vport_num is only unique per eswitch and in lag mode we
+       need to manage ports from both eswitches.
+  2.2) Allow connectivity between representors of different eswitch
+       instances that are attached to same bridge
+  2.3) Bridge LAG, Require representors to be in shared FDB mode and
+       introduce local and peer ports representors,
+       match on paired eswitch metadata in peer FDB entries,
+       And finally support addition/deletion and aging of peer flows.
+
+----------------------------------------------------------------
+Tariq Toukan (11):
+      net/mlx5e: Do not try enable RSS when resetting indir table
+      net/mlx5e: Introduce TIR create/destroy API in rx_res
+      net/mlx5e: Introduce abstraction of RSS context
+      net/mlx5e: Convert RSS to a dedicated object
+      net/mlx5e: Dynamically allocate TIRs in RSS contexts
+      net/mlx5e: Support multiple RSS contexts
+      net/mlx5e: Support flow classification into RSS contexts
+      net/mlx5e: Abstract MQPRIO params
+      net/mlx5e: Maintain MQPRIO mode parameter
+      net/mlx5e: Handle errors of netdev_set_num_tc()
+      net/mlx5e: Support MQPRIO channel mode
+
+Vlad Buslov (6):
+      net/mlx5: Bridge, release bridge in same function where it is taken
+      net/mlx5: Bridge, obtain core device from eswitch instead of priv
+      net/mlx5: Bridge, identify port by vport_num+esw_owner_vhca_id pair
+      net/mlx5: Bridge, extract FDB delete notification to function
+      net/mlx5: Bridge, allow merged eswitch connectivity
+      net/mlx5: Bridge, support LAG
+
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |  12 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c   |  18 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/qos.c   |   2 +-
+ .../ethernet/mellanox/mlx5/core/en/rep/bridge.c    | 327 +++++++----
+ .../ethernet/mellanox/mlx5/core/en/reporter_tx.c   |   8 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/rss.c   | 588 ++++++++++++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/en/rss.h   |  49 ++
+ .../net/ethernet/mellanox/mlx5/core/en/rx_res.c    | 603 ++++++++-------------
+ .../net/ethernet/mellanox/mlx5/core/en/rx_res.h    |  20 +-
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  71 ++-
+ .../ethernet/mellanox/mlx5/core/en_fs_ethtool.c    |  99 +++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 176 ++++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |   5 +-
+ .../net/ethernet/mellanox/mlx5/core/esw/bridge.c   | 359 +++++++-----
+ .../net/ethernet/mellanox/mlx5/core/esw/bridge.h   |  46 +-
+ .../ethernet/mellanox/mlx5/core/esw/bridge_priv.h  |   9 +
+ .../mlx5/core/esw/diag/bridge_tracepoint.h         |   9 +-
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |   3 -
+ 19 files changed, 1696 insertions(+), 714 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/rss.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/rss.h
