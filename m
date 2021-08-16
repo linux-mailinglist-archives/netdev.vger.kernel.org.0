@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BE743EE059
+	by mail.lfdr.de (Postfix) with ESMTP id C4FFD3EE05B
 	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 01:22:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234701AbhHPXXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 19:23:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51360 "EHLO mail.kernel.org"
+        id S234912AbhHPXXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 19:23:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51368 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232783AbhHPXXF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234310AbhHPXXF (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 16 Aug 2021 19:23:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AF60760F4B;
-        Mon, 16 Aug 2021 23:22:32 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 41EC560EBD;
+        Mon, 16 Aug 2021 23:22:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1629156153;
-        bh=PNrlXXkH9SVEkuB8du733YpbQF33I1kEC6fT7hwv4C4=;
+        bh=X0uHocF8NYQBE5zuZZ4LdBgEqItyopXIOJLyLNtSXr0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W1gIQI+FaVX+mRRUyBrjJktRNExMQuJI5zW4+4bUZFsjlPQ6OocOdxschnmjN1LGa
-         voPmDSYFT9QiQ0YxpHur/6VscHXMnkX906SD4dlRVfNJ6XS0fgkDVlRRI4ZgnsAeln
-         AP56o519AF5gimjd+B/DuadmwFcCg2PYI8takyrgqXeZXUAmWxeMSP+XqNl4kc7dS6
-         WhjCCO3MMjRMLafZsgI6KK0AwlFBJnNhPVN8kIBiKZ+vCEgoXKAfe1AsLIsz4CgolP
-         YeamJvAKtmqeQU/7rxz5rk2pIquKWso2HMtzR9qeYOMjI0rF38ylje87wn0mKGRNcZ
-         UpJ2npC1yNYzA==
+        b=fQuAqSsYLoD9cgbihUupJbJh9XL40fTPTXQYZHGLuKeKA2QZPNP3a6Mw21cbEH0Tq
+         Rw+KV4dqq7KOENrMwnhT3jNHNmPlpoU/dInRxjGn/1HCRLzSvtFV2MZeGjCInHULzJ
+         O+YIm5htLuSv8EHYtK1YeER3Z0E7HSy7mQA1EIFXWM3sAsTLvTsq6Pq4k3UfitdcMY
+         00Tr7kmqDh0bmCOSKao0xSXpTxMdu5r24YTUlMz38PGGVp9kQRekB6G48ZkUXRSZET
+         lC9Efgx04zRNTnPufTlzqV+r0EzINF2uJI1we04FgeXx9c2eG0QDUPh7cjyQpVod44
+         U66A53QdMVLlw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -30,9 +30,9 @@ Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next V2 07/17] net/mlx5e: Support flow classification into RSS contexts
-Date:   Mon, 16 Aug 2021 16:22:09 -0700
-Message-Id: <20210816232219.557083-8-saeed@kernel.org>
+Subject: [net-next V2 08/17] net/mlx5e: Abstract MQPRIO params
+Date:   Mon, 16 Aug 2021 16:22:10 -0700
+Message-Id: <20210816232219.557083-9-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210816232219.557083-1-saeed@kernel.org>
 References: <20210816232219.557083-1-saeed@kernel.org>
@@ -44,324 +44,293 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tariq Toukan <tariqt@nvidia.com>
 
-Extend the existing flow classification support, to steer
-flows not only directly to a receive ring, but also into
-the new RSS contexts.
-
-Create needed TIR objects on demand, and hold reference
-on the RSS context.
+Abstract the MQPRIO params into a struct.
+Use a getter for DCB mode num_tcs.
 
 Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
 Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/rss.c  | 24 +++++
- .../net/ethernet/mellanox/mlx5/core/en/rss.h  |  5 +
- .../ethernet/mellanox/mlx5/core/en/rx_res.c   | 22 +++++
- .../ethernet/mellanox/mlx5/core/en/rx_res.h   |  2 +
- .../mellanox/mlx5/core/en_fs_ethtool.c        | 99 +++++++++++++++----
- 5 files changed, 131 insertions(+), 21 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |  9 ++++++++-
+ .../net/ethernet/mellanox/mlx5/core/en/ptp.c  | 18 ++++++++++-------
+ .../net/ethernet/mellanox/mlx5/core/en/qos.c  |  2 +-
+ .../mellanox/mlx5/core/en/reporter_tx.c       |  8 ++++----
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 20 +++++++++----------
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  5 +++--
+ 6 files changed, 37 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rss.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rss.c
-index d2c4ace7c8ba..625cd49ef96c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/rss.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rss.c
-@@ -367,6 +367,30 @@ u32 mlx5e_rss_get_tirn(struct mlx5e_rss *rss, enum mlx5_traffic_types tt,
- 	return mlx5e_tir_get_tirn(tir);
- }
- 
-+/* Fill the "tirn" output parameter.
-+ * Create the requested TIR if it's its first usage.
-+ */
-+int mlx5e_rss_obtain_tirn(struct mlx5e_rss *rss,
-+			  enum mlx5_traffic_types tt,
-+			  const struct mlx5e_lro_param *init_lro_param,
-+			  bool inner, u32 *tirn)
-+{
-+	struct mlx5e_tir *tir;
-+
-+	tir = rss_get_tir(rss, tt, inner);
-+	if (!tir) { /* TIR doesn't exist, create one */
-+		int err;
-+
-+		err = mlx5e_rss_create_tir(rss, tt, init_lro_param, inner);
-+		if (err)
-+			return err;
-+		tir = rss_get_tir(rss, tt, inner);
-+	}
-+
-+	*tirn = mlx5e_tir_get_tirn(tir);
-+	return 0;
-+}
-+
- static void mlx5e_rss_apply(struct mlx5e_rss *rss, u32 *rqns, unsigned int num_rqns)
- {
- 	int err;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rss.h b/drivers/net/ethernet/mellanox/mlx5/core/en/rss.h
-index 6f52d78a36da..d522a10dadf3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/rss.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rss.h
-@@ -28,6 +28,11 @@ unsigned int mlx5e_rss_refcnt_read(struct mlx5e_rss *rss);
- 
- u32 mlx5e_rss_get_tirn(struct mlx5e_rss *rss, enum mlx5_traffic_types tt,
- 		       bool inner);
-+int mlx5e_rss_obtain_tirn(struct mlx5e_rss *rss,
-+			  enum mlx5_traffic_types tt,
-+			  const struct mlx5e_lro_param *init_lro_param,
-+			  bool inner, u32 *tirn);
-+
- void mlx5e_rss_enable(struct mlx5e_rss *rss, u32 *rqns, unsigned int num_rqns);
- void mlx5e_rss_disable(struct mlx5e_rss *rss);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.c
-index 432963594b8e..bf0313e2682b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.c
-@@ -245,6 +245,28 @@ int mlx5e_rx_res_rss_cnt(struct mlx5e_rx_res *res)
- 	return cnt;
- }
- 
-+int mlx5e_rx_res_rss_index(struct mlx5e_rx_res *res, struct mlx5e_rss *rss)
-+{
-+	int i;
-+
-+	if (!rss)
-+		return -EINVAL;
-+
-+	for (i = 0; i < MLX5E_MAX_NUM_RSS; i++)
-+		if (rss == res->rss[i])
-+			return i;
-+
-+	return -ENOENT;
-+}
-+
-+struct mlx5e_rss *mlx5e_rx_res_rss_get(struct mlx5e_rx_res *res, u32 rss_idx)
-+{
-+	if (rss_idx >= MLX5E_MAX_NUM_RSS)
-+		return NULL;
-+
-+	return res->rss[rss_idx];
-+}
-+
- /* End of API rx_res_rss_* */
- 
- struct mlx5e_rx_res *mlx5e_rx_res_alloc(void)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.h b/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.h
-index 8248caa36995..4a15942d79f7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.h
-@@ -62,6 +62,8 @@ int mlx5e_rx_res_lro_set_param(struct mlx5e_rx_res *res, struct mlx5e_lro_param
- int mlx5e_rx_res_rss_init(struct mlx5e_rx_res *res, u32 *rss_idx, unsigned int init_nch);
- int mlx5e_rx_res_rss_destroy(struct mlx5e_rx_res *res, u32 rss_idx);
- int mlx5e_rx_res_rss_cnt(struct mlx5e_rx_res *res);
-+int mlx5e_rx_res_rss_index(struct mlx5e_rx_res *res, struct mlx5e_rss *rss);
-+struct mlx5e_rss *mlx5e_rx_res_rss_get(struct mlx5e_rx_res *res, u32 rss_idx);
- 
- /* Workaround for hairpin */
- struct mlx5e_rss_params_hash mlx5e_rx_res_get_current_hash(struct mlx5e_rx_res *res);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c
-index 3d8918f9399e..03693fa74a70 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c
-@@ -35,11 +35,19 @@
- #include "en/params.h"
- #include "en/xsk/pool.h"
- 
-+static int flow_type_to_traffic_type(u32 flow_type);
-+
-+static u32 flow_type_mask(u32 flow_type)
-+{
-+	return flow_type & ~(FLOW_EXT | FLOW_MAC_EXT | FLOW_RSS);
-+}
-+
- struct mlx5e_ethtool_rule {
- 	struct list_head             list;
- 	struct ethtool_rx_flow_spec  flow_spec;
- 	struct mlx5_flow_handle	     *rule;
- 	struct mlx5e_ethtool_table   *eth_ft;
-+	struct mlx5e_rss             *rss;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+index 4f6897c1ea8d..1ddf320af831 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+@@ -248,7 +248,9 @@ struct mlx5e_params {
+ 	u8  rq_wq_type;
+ 	u8  log_rq_mtu_frames;
+ 	u16 num_channels;
+-	u8  num_tc;
++	struct {
++		u8 num_tc;
++	} mqprio;
+ 	bool rx_cqe_compress_def;
+ 	bool tunneled_offload_en;
+ 	struct dim_cq_moder rx_cq_moderation;
+@@ -268,6 +270,11 @@ struct mlx5e_params {
+ 	bool ptp_rx;
  };
  
- static void put_flow_table(struct mlx5e_ethtool_table *eth_ft)
-@@ -66,7 +74,7 @@ static struct mlx5e_ethtool_table *get_flow_table(struct mlx5e_priv *priv,
- 	int table_size;
- 	int prio;
- 
--	switch (fs->flow_type & ~(FLOW_EXT | FLOW_MAC_EXT)) {
-+	switch (flow_type_mask(fs->flow_type)) {
- 	case TCP_V4_FLOW:
- 	case UDP_V4_FLOW:
- 	case TCP_V6_FLOW:
-@@ -329,7 +337,7 @@ static int set_flow_attrs(u32 *match_c, u32 *match_v,
- 					     outer_headers);
- 	void *outer_headers_v = MLX5_ADDR_OF(fte_match_param, match_v,
- 					     outer_headers);
--	u32 flow_type = fs->flow_type & ~(FLOW_EXT | FLOW_MAC_EXT);
-+	u32 flow_type = flow_type_mask(fs->flow_type);
- 
- 	switch (flow_type) {
- 	case TCP_V4_FLOW:
-@@ -397,10 +405,53 @@ static bool outer_header_zero(u32 *match_criteria)
- 						  size - 1);
- }
- 
-+static int flow_get_tirn(struct mlx5e_priv *priv,
-+			 struct mlx5e_ethtool_rule *eth_rule,
-+			 struct ethtool_rx_flow_spec *fs,
-+			 u32 rss_context, u32 *tirn)
++static inline u8 mlx5e_get_dcb_num_tc(struct mlx5e_params *params)
 +{
-+	if (fs->flow_type & FLOW_RSS) {
-+		struct mlx5e_lro_param lro_param;
-+		struct mlx5e_rss *rss;
-+		u32 flow_type;
-+		int err;
-+		int tt;
-+
-+		rss = mlx5e_rx_res_rss_get(priv->rx_res, rss_context);
-+		if (!rss)
-+			return -ENOENT;
-+
-+		flow_type = flow_type_mask(fs->flow_type);
-+		tt = flow_type_to_traffic_type(flow_type);
-+		if (tt < 0)
-+			return -EINVAL;
-+
-+		lro_param = mlx5e_get_lro_param(&priv->channels.params);
-+		err = mlx5e_rss_obtain_tirn(rss, tt, &lro_param, false, tirn);
-+		if (err)
-+			return err;
-+		eth_rule->rss = rss;
-+		mlx5e_rss_refcnt_inc(eth_rule->rss);
-+	} else {
-+		struct mlx5e_params *params = &priv->channels.params;
-+		enum mlx5e_rq_group group;
-+		u16 ix;
-+
-+		mlx5e_qid_get_ch_and_group(params, fs->ring_cookie, &ix, &group);
-+
-+		*tirn = group == MLX5E_RQ_GROUP_XSK ?
-+			mlx5e_rx_res_get_tirn_xsk(priv->rx_res, ix) :
-+			mlx5e_rx_res_get_tirn_direct(priv->rx_res, ix);
-+	}
-+
-+	return 0;
++	return params->mqprio.num_tc;
 +}
 +
- static struct mlx5_flow_handle *
- add_ethtool_flow_rule(struct mlx5e_priv *priv,
-+		      struct mlx5e_ethtool_rule *eth_rule,
- 		      struct mlx5_flow_table *ft,
--		      struct ethtool_rx_flow_spec *fs)
-+		      struct ethtool_rx_flow_spec *fs, u32 rss_context)
+ enum {
+ 	MLX5E_RQ_STATE_ENABLED,
+ 	MLX5E_RQ_STATE_RECOVERING,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+index f479ef31ca40..ee688dec67a9 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+@@ -326,13 +326,14 @@ static int mlx5e_ptp_open_txqsqs(struct mlx5e_ptp *c,
+ 				 struct mlx5e_ptp_params *cparams)
  {
- 	struct mlx5_flow_act flow_act = { .flags = FLOW_ACT_NO_APPEND };
- 	struct mlx5_flow_destination *dst = NULL;
-@@ -419,23 +470,17 @@ add_ethtool_flow_rule(struct mlx5e_priv *priv,
- 	if (fs->ring_cookie == RX_CLS_FLOW_DISC) {
- 		flow_act.action = MLX5_FLOW_CONTEXT_ACTION_DROP;
- 	} else {
--		struct mlx5e_params *params = &priv->channels.params;
--		enum mlx5e_rq_group group;
--		u16 ix;
--
--		mlx5e_qid_get_ch_and_group(params, fs->ring_cookie, &ix, &group);
--
- 		dst = kzalloc(sizeof(*dst), GFP_KERNEL);
- 		if (!dst) {
- 			err = -ENOMEM;
- 			goto free;
- 		}
+ 	struct mlx5e_params *params = &cparams->params;
++	u8 num_tc = mlx5e_get_dcb_num_tc(params);
+ 	int ix_base;
+ 	int err;
+ 	int tc;
  
-+		err = flow_get_tirn(priv, eth_rule, fs, rss_context, &dst->tir_num);
-+		if (err)
-+			goto free;
+-	ix_base = params->num_tc * params->num_channels;
++	ix_base = num_tc * params->num_channels;
+ 
+-	for (tc = 0; tc < params->num_tc; tc++) {
++	for (tc = 0; tc < num_tc; tc++) {
+ 		int txq_ix = ix_base + tc;
+ 
+ 		err = mlx5e_ptp_open_txqsq(c, c->priv->tisn[c->lag_port][tc], txq_ix,
+@@ -365,9 +366,12 @@ static int mlx5e_ptp_open_tx_cqs(struct mlx5e_ptp *c,
+ 	struct mlx5e_create_cq_param ccp = {};
+ 	struct dim_cq_moder ptp_moder = {};
+ 	struct mlx5e_cq_param *cq_param;
++	u8 num_tc;
+ 	int err;
+ 	int tc;
+ 
++	num_tc = mlx5e_get_dcb_num_tc(params);
 +
- 		dst->type = MLX5_FLOW_DESTINATION_TYPE_TIR;
--		if (group == MLX5E_RQ_GROUP_XSK)
--			dst->tir_num = mlx5e_rx_res_get_tirn_xsk(priv->rx_res, ix);
--		else
--			dst->tir_num = mlx5e_rx_res_get_tirn_direct(priv->rx_res, ix);
- 		flow_act.action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
+ 	ccp.node     = dev_to_node(mlx5_core_dma_dev(c->mdev));
+ 	ccp.ch_stats = c->stats;
+ 	ccp.napi     = &c->napi;
+@@ -375,7 +379,7 @@ static int mlx5e_ptp_open_tx_cqs(struct mlx5e_ptp *c,
+ 
+ 	cq_param = &cparams->txq_sq_param.cqp;
+ 
+-	for (tc = 0; tc < params->num_tc; tc++) {
++	for (tc = 0; tc < num_tc; tc++) {
+ 		struct mlx5e_cq *cq = &c->ptpsq[tc].txqsq.cq;
+ 
+ 		err = mlx5e_open_cq(c->priv, ptp_moder, cq_param, &ccp, cq);
+@@ -383,7 +387,7 @@ static int mlx5e_ptp_open_tx_cqs(struct mlx5e_ptp *c,
+ 			goto out_err_txqsq_cq;
  	}
  
-@@ -459,6 +504,8 @@ static void del_ethtool_rule(struct mlx5e_priv *priv,
+-	for (tc = 0; tc < params->num_tc; tc++) {
++	for (tc = 0; tc < num_tc; tc++) {
+ 		struct mlx5e_cq *cq = &c->ptpsq[tc].ts_cq;
+ 		struct mlx5e_ptpsq *ptpsq = &c->ptpsq[tc];
+ 
+@@ -399,7 +403,7 @@ static int mlx5e_ptp_open_tx_cqs(struct mlx5e_ptp *c,
+ out_err_ts_cq:
+ 	for (--tc; tc >= 0; tc--)
+ 		mlx5e_close_cq(&c->ptpsq[tc].ts_cq);
+-	tc = params->num_tc;
++	tc = num_tc;
+ out_err_txqsq_cq:
+ 	for (--tc; tc >= 0; tc--)
+ 		mlx5e_close_cq(&c->ptpsq[tc].txqsq.cq);
+@@ -475,7 +479,7 @@ static void mlx5e_ptp_build_params(struct mlx5e_ptp *c,
+ 	params->num_channels = orig->num_channels;
+ 	params->hard_mtu = orig->hard_mtu;
+ 	params->sw_mtu = orig->sw_mtu;
+-	params->num_tc = orig->num_tc;
++	params->mqprio = orig->mqprio;
+ 
+ 	/* SQ */
+ 	if (test_bit(MLX5E_PTP_STATE_TX, c->state)) {
+@@ -680,7 +684,7 @@ int mlx5e_ptp_open(struct mlx5e_priv *priv, struct mlx5e_params *params,
+ 	c->pdev     = mlx5_core_dma_dev(priv->mdev);
+ 	c->netdev   = priv->netdev;
+ 	c->mkey_be  = cpu_to_be32(priv->mdev->mlx5e_res.hw_objs.mkey.key);
+-	c->num_tc   = params->num_tc;
++	c->num_tc   = mlx5e_get_dcb_num_tc(params);
+ 	c->stats    = &priv->ptp_stats.ch;
+ 	c->lag_port = lag_port;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
+index 5efe3278b0f6..c9ac69f62f21 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
+@@ -132,7 +132,7 @@ static u16 mlx5e_qid_from_qos(struct mlx5e_channels *chs, u16 qid)
+ 	 */
+ 	bool is_ptp = MLX5E_GET_PFLAG(&chs->params, MLX5E_PFLAG_TX_PORT_TS);
+ 
+-	return (chs->params.num_channels + is_ptp) * chs->params.num_tc + qid;
++	return (chs->params.num_channels + is_ptp) * mlx5e_get_dcb_num_tc(&chs->params) + qid;
+ }
+ 
+ int mlx5e_get_txq_by_classid(struct mlx5e_priv *priv, u16 classid)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
+index 9d361efd5ff7..bb682fd751c9 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
+@@ -372,7 +372,7 @@ static int mlx5e_tx_reporter_diagnose(struct devlink_health_reporter *reporter,
+ 	for (i = 0; i < priv->channels.num; i++) {
+ 		struct mlx5e_channel *c = priv->channels.c[i];
+ 
+-		for (tc = 0; tc < priv->channels.params.num_tc; tc++) {
++		for (tc = 0; tc < mlx5e_get_dcb_num_tc(&priv->channels.params); tc++) {
+ 			struct mlx5e_txqsq *sq = &c->sq[tc];
+ 
+ 			err = mlx5e_tx_reporter_build_diagnose_output(fmsg, sq, tc);
+@@ -384,7 +384,7 @@ static int mlx5e_tx_reporter_diagnose(struct devlink_health_reporter *reporter,
+ 	if (!ptp_ch || !test_bit(MLX5E_PTP_STATE_TX, ptp_ch->state))
+ 		goto close_sqs_nest;
+ 
+-	for (tc = 0; tc < priv->channels.params.num_tc; tc++) {
++	for (tc = 0; tc < mlx5e_get_dcb_num_tc(&priv->channels.params); tc++) {
+ 		err = mlx5e_tx_reporter_build_diagnose_output_ptpsq(fmsg,
+ 								    &ptp_ch->ptpsq[tc],
+ 								    tc);
+@@ -494,7 +494,7 @@ static int mlx5e_tx_reporter_dump_all_sqs(struct mlx5e_priv *priv,
+ 	for (i = 0; i < priv->channels.num; i++) {
+ 		struct mlx5e_channel *c = priv->channels.c[i];
+ 
+-		for (tc = 0; tc < priv->channels.params.num_tc; tc++) {
++		for (tc = 0; tc < mlx5e_get_dcb_num_tc(&priv->channels.params); tc++) {
+ 			struct mlx5e_txqsq *sq = &c->sq[tc];
+ 
+ 			err = mlx5e_health_queue_dump(priv, fmsg, sq->sqn, "SQ");
+@@ -504,7 +504,7 @@ static int mlx5e_tx_reporter_dump_all_sqs(struct mlx5e_priv *priv,
+ 	}
+ 
+ 	if (ptp_ch && test_bit(MLX5E_PTP_STATE_TX, ptp_ch->state)) {
+-		for (tc = 0; tc < priv->channels.params.num_tc; tc++) {
++		for (tc = 0; tc < mlx5e_get_dcb_num_tc(&priv->channels.params); tc++) {
+ 			struct mlx5e_txqsq *sq = &ptp_ch->ptpsq[tc].txqsq;
+ 
+ 			err = mlx5e_health_queue_dump(priv, fmsg, sq->sqn, "PTP SQ");
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index e559afc70bff..b2f95cd34622 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -1711,7 +1711,7 @@ static int mlx5e_open_sqs(struct mlx5e_channel *c,
  {
- 	if (eth_rule->rule)
- 		mlx5_del_flow_rules(eth_rule->rule);
-+	if (eth_rule->rss)
-+		mlx5e_rss_refcnt_dec(eth_rule->rss);
- 	list_del(&eth_rule->list);
- 	priv->fs.ethtool.tot_num_rules--;
- 	put_flow_table(eth_rule->eth_ft);
-@@ -619,7 +666,7 @@ static int validate_flow(struct mlx5e_priv *priv,
- 					fs->ring_cookie))
- 			return -EINVAL;
+ 	int err, tc;
  
--	switch (fs->flow_type & ~(FLOW_EXT | FLOW_MAC_EXT)) {
-+	switch (flow_type_mask(fs->flow_type)) {
- 	case ETHER_FLOW:
- 		num_tuples += validate_ethter(fs);
- 		break;
-@@ -668,7 +715,7 @@ static int validate_flow(struct mlx5e_priv *priv,
+-	for (tc = 0; tc < params->num_tc; tc++) {
++	for (tc = 0; tc < mlx5e_get_dcb_num_tc(params); tc++) {
+ 		int txq_ix = c->ix + tc * params->num_channels;
  
- static int
- mlx5e_ethtool_flow_replace(struct mlx5e_priv *priv,
--			   struct ethtool_rx_flow_spec *fs)
-+			   struct ethtool_rx_flow_spec *fs, u32 rss_context)
+ 		err = mlx5e_open_txqsq(c, c->priv->tisn[c->lag_port][tc], txq_ix,
+@@ -1992,7 +1992,7 @@ static int mlx5e_open_channel(struct mlx5e_priv *priv, int ix,
+ 	c->pdev     = mlx5_core_dma_dev(priv->mdev);
+ 	c->netdev   = priv->netdev;
+ 	c->mkey_be  = cpu_to_be32(priv->mdev->mlx5e_res.hw_objs.mkey.key);
+-	c->num_tc   = params->num_tc;
++	c->num_tc   = mlx5e_get_dcb_num_tc(params);
+ 	c->xdp      = !!params->xdp_prog;
+ 	c->stats    = &priv->channel_stats[ix].ch;
+ 	c->aff_mask = irq_get_effective_affinity_mask(irq);
+@@ -2288,7 +2288,7 @@ int mlx5e_update_tx_netdev_queues(struct mlx5e_priv *priv)
+ 	qos_queues = mlx5e_qos_cur_leaf_nodes(priv);
+ 
+ 	nch = priv->channels.params.num_channels;
+-	ntc = priv->channels.params.num_tc;
++	ntc = mlx5e_get_dcb_num_tc(&priv->channels.params);
+ 	num_txqs = nch * ntc + qos_queues;
+ 	if (MLX5E_GET_PFLAG(&priv->channels.params, MLX5E_PFLAG_TX_PORT_TS))
+ 		num_txqs += ntc;
+@@ -2312,7 +2312,7 @@ static int mlx5e_update_netdev_queues(struct mlx5e_priv *priv)
+ 	old_ntc = netdev->num_tc ? : 1;
+ 
+ 	nch = priv->channels.params.num_channels;
+-	ntc = priv->channels.params.num_tc;
++	ntc = mlx5e_get_dcb_num_tc(&priv->channels.params);
+ 	num_rxqs = nch * priv->profile->rq_groups;
+ 
+ 	mlx5e_netdev_set_tcs(netdev, nch, ntc);
+@@ -2387,7 +2387,7 @@ static void mlx5e_build_txq_maps(struct mlx5e_priv *priv)
+ 	int i, ch, tc, num_tc;
+ 
+ 	ch = priv->channels.num;
+-	num_tc = priv->channels.params.num_tc;
++	num_tc = mlx5e_get_dcb_num_tc(&priv->channels.params);
+ 
+ 	for (i = 0; i < ch; i++) {
+ 		for (tc = 0; tc < num_tc; tc++) {
+@@ -2418,7 +2418,7 @@ static void mlx5e_update_num_tc_x_num_ch(struct mlx5e_priv *priv)
  {
- 	struct mlx5e_ethtool_table *eth_ft;
- 	struct mlx5e_ethtool_rule *eth_rule;
-@@ -699,7 +746,7 @@ mlx5e_ethtool_flow_replace(struct mlx5e_priv *priv,
- 		err = -EINVAL;
- 		goto del_ethtool_rule;
- 	}
--	rule = add_ethtool_flow_rule(priv, eth_ft->ft, fs);
-+	rule = add_ethtool_flow_rule(priv, eth_rule, eth_ft->ft, fs, rss_context);
- 	if (IS_ERR(rule)) {
- 		err = PTR_ERR(rule);
- 		goto del_ethtool_rule;
-@@ -745,10 +792,20 @@ mlx5e_ethtool_get_flow(struct mlx5e_priv *priv,
- 		return -EINVAL;
+ 	/* Sync with mlx5e_select_queue. */
+ 	WRITE_ONCE(priv->num_tc_x_num_ch,
+-		   priv->channels.params.num_tc * priv->channels.num);
++		   mlx5e_get_dcb_num_tc(&priv->channels.params) * priv->channels.num);
+ }
  
- 	list_for_each_entry(eth_rule, &priv->fs.ethtool.rules, list) {
--		if (eth_rule->flow_spec.location == location) {
--			info->fs = eth_rule->flow_spec;
-+		int index;
-+
-+		if (eth_rule->flow_spec.location != location)
-+			continue;
-+		if (!info)
- 			return 0;
--		}
-+		info->fs = eth_rule->flow_spec;
-+		if (!eth_rule->rss)
-+			return 0;
-+		index = mlx5e_rx_res_rss_index(priv->rx_res, eth_rule->rss);
-+		if (index < 0)
-+			return index;
-+		info->rss_context = index;
-+		return 0;
+ void mlx5e_activate_priv_channels(struct mlx5e_priv *priv)
+@@ -2870,14 +2870,14 @@ static int mlx5e_setup_tc_mqprio(struct mlx5e_priv *priv,
  	}
  
- 	return -ENOENT;
-@@ -764,7 +821,7 @@ mlx5e_ethtool_get_all_flows(struct mlx5e_priv *priv,
+ 	new_params = priv->channels.params;
+-	new_params.num_tc = tc ? tc : 1;
++	new_params.mqprio.num_tc = tc ? tc : 1;
  
- 	info->data = MAX_NUM_OF_ETHTOOL_RULES;
- 	while ((!err || err == -ENOENT) && idx < info->rule_cnt) {
--		err = mlx5e_ethtool_get_flow(priv, info, location);
-+		err = mlx5e_ethtool_get_flow(priv, NULL, location);
- 		if (!err)
- 			rule_locs[idx++] = location;
- 		location++;
-@@ -887,7 +944,7 @@ int mlx5e_ethtool_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd)
+ 	err = mlx5e_safe_switch_params(priv, &new_params,
+ 				       mlx5e_num_channels_changed_ctx, NULL, true);
  
- 	switch (cmd->cmd) {
- 	case ETHTOOL_SRXCLSRLINS:
--		err = mlx5e_ethtool_flow_replace(priv, &cmd->fs);
-+		err = mlx5e_ethtool_flow_replace(priv, &cmd->fs, cmd->rss_context);
- 		break;
- 	case ETHTOOL_SRXCLSRLDEL:
- 		err = mlx5e_ethtool_flow_remove(priv, cmd->fs.location);
+ out:
+ 	priv->max_opened_tc = max_t(u8, priv->max_opened_tc,
+-				    priv->channels.params.num_tc);
++				    mlx5e_get_dcb_num_tc(&priv->channels.params));
+ 	mutex_unlock(&priv->state_lock);
+ 	return err;
+ }
+@@ -4093,12 +4093,12 @@ void mlx5e_build_nic_params(struct mlx5e_priv *priv, struct mlx5e_xsk *xsk, u16
+ 	params->hard_mtu = MLX5E_ETH_HARD_MTU;
+ 	params->num_channels = min_t(unsigned int, MLX5E_MAX_NUM_CHANNELS / 2,
+ 				     priv->max_nch);
+-	params->num_tc       = 1;
++	params->mqprio.num_tc = 1;
+ 
+ 	/* Set an initial non-zero value, so that mlx5e_select_queue won't
+ 	 * divide by zero if called before first activating channels.
+ 	 */
+-	priv->num_tc_x_num_ch = params->num_channels * params->num_tc;
++	priv->num_tc_x_num_ch = params->num_channels * params->mqprio.num_tc;
+ 
+ 	/* SQ */
+ 	params->log_sq_size = is_kdump_kernel() ?
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+index c54aaef521b7..eb83f27850c7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+@@ -394,7 +394,8 @@ int mlx5e_add_sqs_fwd_rules(struct mlx5e_priv *priv)
+ 	int err = -ENOMEM;
+ 	u32 *sqs;
+ 
+-	sqs = kcalloc(priv->channels.num * priv->channels.params.num_tc, sizeof(*sqs), GFP_KERNEL);
++	sqs = kcalloc(priv->channels.num * mlx5e_get_dcb_num_tc(&priv->channels.params),
++		      sizeof(*sqs), GFP_KERNEL);
+ 	if (!sqs)
+ 		goto out;
+ 
+@@ -611,7 +612,7 @@ static void mlx5e_build_rep_params(struct net_device *netdev)
+ 	params->rx_dim_enabled = MLX5_CAP_GEN(mdev, cq_moderation);
+ 	mlx5e_set_rx_cq_mode_params(params, cq_period_mode);
+ 
+-	params->num_tc                = 1;
++	params->mqprio.num_tc       = 1;
+ 	params->tunneled_offload_en = false;
+ 
+ 	mlx5_query_min_inline(mdev, &params->tx_min_inline_mode);
 -- 
 2.31.1
 
