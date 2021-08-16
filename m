@@ -2,128 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36F423EE03D
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 01:11:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C33A33EE052
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 01:22:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232720AbhHPXM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 19:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44964 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232618AbhHPXM0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 19:12:26 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB877C061764
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 16:11:53 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id c24so37576322lfi.11
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 16:11:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3wqbKr4UPEvs0QNhhWbq71AvFRB1aC289caQoG/Bnjo=;
-        b=jpqGEcDW5jGEVmSGjTSc35pfV2R+d1h01rxbmcwlxHVrH9Pi+z1P6uMdRNkH68jBLO
-         UeQptzeDVo/CGGjmFlrrMHKlmHyKz6K+ifzdMfJVHbjOPhPEQl2gcuBbWIwkAk/NxhVt
-         zXqVSvhEn7s9/t0Yugl27RhWgT7F0Rhq+T3boNB8BPbTGr54NL/KQBmOrsjAf2+QtOdu
-         N34Ku5ZpbQPBTVVBryTOvP9AWrERqv0uK/gtYCWZsGQ2tqvoAjApqWiULiSwfUkFdKND
-         HDHhSjeT9v7I/QR3wORRYsAJLTJStz9C6OaSjo1JxRQwshfEjC+/4+oPC/4h1dHm3PXF
-         G6Gg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3wqbKr4UPEvs0QNhhWbq71AvFRB1aC289caQoG/Bnjo=;
-        b=atNOBLbSUGdPyDcZ+4SVkQHGu5gU+iEIc8xTJESA+xLtpLx9iH7/YpKVSZW57CI/m8
-         VTxoyRjGhI3zHinaHRS3iqYc/ToH109X3ByY9ZTewbe4+HPD26t+525XhxhAYP8iL2wg
-         K2PyWT2lN0c84F+SwVXJsqv1yh05ihl+L26Mcn8C3ZUM8XjlqCz2W5+wOqorpovK1w5r
-         0hF36mG+CM5JOeV/0SLtgBPUbtlo9G+znLHrrqCA2XToiIFP+HuOlBY5kAAjaR9qQlqS
-         puF4PrFn2gc6RS3FT8PlfPMMd0snzBWNDMjiyk6j87sgDypODBVgi7tITul7yViEesyF
-         dfmA==
-X-Gm-Message-State: AOAM531Hv0nDkXx8/4PGREC6ot1R4p/jM4tbJLG2GbtC7qAFYz1oIyig
-        LFTonmDjxP7IIR1xbMAUV6eTqg==
-X-Google-Smtp-Source: ABdhPJzbDsfSQetG4UjSDTJh3jUjVfR+h44KLI4y4am7dtT9DGR3iv0jqQORzJDcfuRbDIVLJEpZsg==
-X-Received: by 2002:a19:6b02:: with SMTP id d2mr149660lfa.522.1629155512033;
-        Mon, 16 Aug 2021 16:11:52 -0700 (PDT)
-Received: from eriador.lan ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id e6sm22846lfr.257.2021.08.16.16.11.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Aug 2021 16:11:51 -0700 (PDT)
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>
-Subject: [PATCH] Revert "Bluetooth: Shutdown controller after workqueues are flushed or cancelled"
-Date:   Tue, 17 Aug 2021 02:11:50 +0300
-Message-Id: <20210816231150.1478727-1-dmitry.baryshkov@linaro.org>
-X-Mailer: git-send-email 2.30.2
+        id S234234AbhHPXXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 19:23:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51290 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232618AbhHPXXB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 19:23:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EAE2B60EBD;
+        Mon, 16 Aug 2021 23:22:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629156149;
+        bh=CH23DsHX/maIqLmtCdJRf9qrVjvoL0tdxW8A0YGUTWA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Xw/jPjikC2WySQMhLoeP6kQZiSgadaJCsLFzhcsw4SeRtj5L/AdoeaGx29qCxnLf2
+         nfmjZOFTlR/GZ7AcQKOl8q0YYCB3MOenk/NcgWQh3JZ0c6zfhq8lieQPCu4vOV5P57
+         /V2Pv4tBuKuNJ7A0ZsobVBn6qhuYUQYolXak1s6zA23gwe6q+0liscxC2FQv+a2bj/
+         zDx5o3ypNXCLkVRuVR1ClRCwXV31CW3HDP6YMh467T7/q9oe36quekYfGB9BQbju/7
+         YbQKqgfx13pd3ctgVvAjo2iTAY4Lt3HR1wM1OjyhB5my14QG1fgwN9YsBC7wpVF4A7
+         9fb77mUnrL9zw==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next V2 00/17] mlx5 updates 2021-08-16
+Date:   Mon, 16 Aug 2021 16:22:02 -0700
+Message-Id: <20210816232219.557083-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 0ea9fd001a14ebc294f112b0361a4e601551d508. It moved
-calling shutdown callback after flushing the queues. In doing so it
-disabled calling the shutdown hook completely: shutdown condition
-tests for HCI_UP in hdev->flags, which gets cleared now before checking
-this condition (see test_and_clear_bit(HCI_UP, ...) call). Thus shutdown
-hook was never called.
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-This would not be a problem itself and could fixed with just removing
-the HCI_UP condition (since if we are this point, we already know that
-the HCI device was up before calling hci_dev_do_close(). However the
-fact that shutdown hook was not called hid the fact that it is not
-proper to call shutdown hook so late in the sequence. The hook would
-usually call __hci_cmd_sync()/__hci_cmd_sync_ev(), which would timeout
-without running queues.
+Hi Dave and Jakub,
 
-Thus I think it is more proper at this moment to revert the commit and
-look for a better solution.
+This series adds the support for TC MQPRIO channel mode and Lag mode for
+mlx5 bridge offloads.
 
-Fixes: 0ea9fd001a14 ("Bluetooth: Shutdown controller after workqueues are flushed or cancelled")
-Cc: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+v1->v2:
+ - Fix variable ‘priv’ set but not used, patch #16.
+
+For more information please see tag log below.
+
+Please pull and let me know if there is any problem.
+
+Thanks,
+Saeed.
+
 ---
- net/bluetooth/hci_core.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+The following changes since commit 1b3f78df6a80932d7deb0155d8b0871e8d3e4bca:
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index e1a545c8a69f..677d880068a4 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -1721,6 +1721,14 @@ int hci_dev_do_close(struct hci_dev *hdev)
- 
- 	BT_DBG("%s %p", hdev->name, hdev);
- 
-+	if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
-+	    !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
-+	    test_bit(HCI_UP, &hdev->flags)) {
-+		/* Execute vendor specific shutdown routine */
-+		if (hdev->shutdown)
-+			hdev->shutdown(hdev);
-+	}
-+
- 	cancel_delayed_work(&hdev->power_off);
- 	cancel_delayed_work(&hdev->ncmd_timer);
- 
-@@ -1798,14 +1806,6 @@ int hci_dev_do_close(struct hci_dev *hdev)
- 		clear_bit(HCI_INIT, &hdev->flags);
- 	}
- 
--	if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
--	    !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
--	    test_bit(HCI_UP, &hdev->flags)) {
--		/* Execute vendor specific shutdown routine */
--		if (hdev->shutdown)
--			hdev->shutdown(hdev);
--	}
--
- 	/* flush cmd  work */
- 	flush_work(&hdev->cmd_work);
- 
--- 
-2.30.2
+  bonding: improve nl error msg when device can't be enslaved because of IFF_MASTER (2021-08-16 14:03:30 +0100)
 
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-08-16
+
+for you to fetch changes up to ff9b7521468bc2909293c1cda66a245a49688f6f:
+
+  net/mlx5: Bridge, support LAG (2021-08-16 16:17:32 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2021-08-16
+
+The following patchset provides two separate mlx5 updates
+1) Ethtool RSS context and MQPRIO channel mode support:
+  1.1) enable mlx5e netdev driver to allow creating Transport Interface RX
+       (TIRs) objects on the fly to be used for ethtool RSS contexts and
+       TX MQPRIO channel mode
+  1.2) Introduce mlx5e_rss object to manage such TIRs.
+  1.3) Ethtool support for RSS context
+  1.4) Support MQPRIO channel mode
+
+2) Bridge offloads Lag support:
+   to allow adding bond net devices to mlx5 bridge
+  2.1) Address bridge port by (vport_num, esw_owner_vhca_id) pair
+       since vport_num is only unique per eswitch and in lag mode we
+       need to manage ports from both eswitches.
+  2.2) Allow connectivity between representors of different eswitch
+       instances that are attached to same bridge
+  2.3) Bridge LAG, Require representors to be in shared FDB mode and
+       introduce local and peer ports representors,
+       match on paired eswitch metadata in peer FDB entries,
+       And finally support addition/deletion and aging of peer flows.
+
+----------------------------------------------------------------
+Tariq Toukan (11):
+      net/mlx5e: Do not try enable RSS when resetting indir table
+      net/mlx5e: Introduce TIR create/destroy API in rx_res
+      net/mlx5e: Introduce abstraction of RSS context
+      net/mlx5e: Convert RSS to a dedicated object
+      net/mlx5e: Dynamically allocate TIRs in RSS contexts
+      net/mlx5e: Support multiple RSS contexts
+      net/mlx5e: Support flow classification into RSS contexts
+      net/mlx5e: Abstract MQPRIO params
+      net/mlx5e: Maintain MQPRIO mode parameter
+      net/mlx5e: Handle errors of netdev_set_num_tc()
+      net/mlx5e: Support MQPRIO channel mode
+
+Vlad Buslov (6):
+      net/mlx5: Bridge, release bridge in same function where it is taken
+      net/mlx5: Bridge, obtain core device from eswitch instead of priv
+      net/mlx5: Bridge, identify port by vport_num+esw_owner_vhca_id pair
+      net/mlx5: Bridge, extract FDB delete notification to function
+      net/mlx5: Bridge, allow merged eswitch connectivity
+      net/mlx5: Bridge, support LAG
+
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |  12 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c   |  18 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/qos.c   |   2 +-
+ .../ethernet/mellanox/mlx5/core/en/rep/bridge.c    | 329 +++++++----
+ .../ethernet/mellanox/mlx5/core/en/reporter_tx.c   |   8 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/rss.c   | 588 ++++++++++++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/en/rss.h   |  49 ++
+ .../net/ethernet/mellanox/mlx5/core/en/rx_res.c    | 603 ++++++++-------------
+ .../net/ethernet/mellanox/mlx5/core/en/rx_res.h    |  20 +-
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  71 ++-
+ .../ethernet/mellanox/mlx5/core/en_fs_ethtool.c    |  99 +++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 176 ++++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |   5 +-
+ .../net/ethernet/mellanox/mlx5/core/esw/bridge.c   | 359 +++++++-----
+ .../net/ethernet/mellanox/mlx5/core/esw/bridge.h   |  46 +-
+ .../ethernet/mellanox/mlx5/core/esw/bridge_priv.h  |   9 +
+ .../mlx5/core/esw/diag/bridge_tracepoint.h         |   9 +-
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |   3 -
+ 19 files changed, 1696 insertions(+), 716 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/rss.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/rss.h
