@@ -2,152 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCD8B3EDD5F
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 20:54:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBFD43EDD4D
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 20:45:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231773AbhHPSys (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 14:54:48 -0400
-Received: from mga18.intel.com ([134.134.136.126]:40800 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230384AbhHPSys (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 14:54:48 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10078"; a="203074599"
-X-IronPort-AV: E=Sophos;i="5.84,326,1620716400"; 
-   d="scan'208";a="203074599"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2021 11:54:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,326,1620716400"; 
-   d="scan'208";a="423658813"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga003.jf.intel.com with ESMTP; 16 Aug 2021 11:54:12 -0700
-Date:   Mon, 16 Aug 2021 20:39:33 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     "Creeley, Brett" <brett.creeley@intel.com>
-Cc:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "bjorn@kernel.org" <bjorn@kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Lobakin, Alexandr" <alexandr.lobakin@intel.com>,
-        "joamaki@gmail.com" <joamaki@gmail.com>,
-        "toke@redhat.com" <toke@redhat.com>
-Subject: Re: [PATCH v5 intel-next 2/9] ice: move ice_container_type onto
- ice_ring_container
-Message-ID: <20210816183933.GA1521@ranger.igk.intel.com>
-References: <20210814140812.46632-1-maciej.fijalkowski@intel.com>
- <20210814140812.46632-3-maciej.fijalkowski@intel.com>
- <CO1PR11MB4835F0FDF2ABA2578B722095F5FD9@CO1PR11MB4835.namprd11.prod.outlook.com>
+        id S230137AbhHPSqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 14:46:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39874 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230084AbhHPSqT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 14:46:19 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD0FDC061764
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 11:45:47 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id c24so36325919lfi.11
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 11:45:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DOC2qH+Gi4fjMQIz9mck49PHMjhmRHhlBc5XPTN/slk=;
+        b=dlWwzGdKnjpZ4WYlLo8WeTdORYWvDWRJjhGZmS+s1OFr5JDoN0EGxsPrhHjxuGQ2uc
+         FG7p+14j3jd3Evx8uDZCVwAtozoUshNqkre3LopUGMLuvXCt4QTC5gXmBUeFG1RdoC19
+         UxqeeP50p9nOccLYj5dbMBjyL9e/5U+xPlzTRwdqpmaSj6eqsL6RHWTFqCQsocV0PIzq
+         UjBbjwNeRBGVYoFFl1jT4rEhw57ro4V7soFL46PVVPDEv/eGdlC7v8iAItpt/CMpdvoz
+         mXIKXmr/In7WrV0I26EN050uHGmlXYkprqhH88wh5KHRZGa/uCNEskK8Mf0aOg7/qTVi
+         gd8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DOC2qH+Gi4fjMQIz9mck49PHMjhmRHhlBc5XPTN/slk=;
+        b=rpqnbbWfcn+13VqDNtFKRU0GreIWfgGrDo5PqhuEFGGo2O5tayRw1pQn4JQEYHy7Lg
+         8dP/6yeuagcN7C7ciKX6mXq8NAlHfb0gUbvjJVZlwevruG2YPuAZQU2j8t46OKIW+k6i
+         mFDS+xePtZg4yETWAWxf/CZT8yOCxY2Gkg/XGWNi+FxQyaSnwTSHJtjViZos415LVI16
+         h92U1FHk28fpXbXVsWJriY0pVWI20nvEkKsA6vNT4n7V+2/1Q9UaHhorMOaEptWegrO7
+         2VrWmMSks90Xdmoi3P9S5MlYMTkN/C1lbbld7cQHW71ITaF/89W+eMyt+dD1ZyY2RIjD
+         y5qw==
+X-Gm-Message-State: AOAM530Of9euyp0cb+PUj1SFuEeOMx5CTrWRYwi/kxGYp6Poaz7qssFK
+        wMNM5J/GmyZacAsyjhjXgJ41UOvctbnqRf3jO01YiA==
+X-Google-Smtp-Source: ABdhPJymwoDPQqlOB+EX5j4gczTEQbJyFmpxxy0jpOPg4mOQagZVz8rvhBzYGr6IYbENYGkyN9TNPwyrWGmpIJJ8je4=
+X-Received: by 2002:a05:6512:3041:: with SMTP id b1mr16693lfb.122.1629139545812;
+ Mon, 16 Aug 2021 11:45:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CO1PR11MB4835F0FDF2ABA2578B722095F5FD9@CO1PR11MB4835.namprd11.prod.outlook.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20210814234248.1755703-1-nathan@kernel.org>
+In-Reply-To: <20210814234248.1755703-1-nathan@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 16 Aug 2021 11:45:34 -0700
+Message-ID: <CAKwvOd=Oo1u9FsHUaMi-pnb=bM0QngYjhBnDU819aetO2OZsvw@mail.gmail.com>
+Subject: Re: [PATCH] iwlwifi: mvm: Fix bitwise vs logical operator in iwl_mvm_scan_fits()
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 16, 2021 at 05:51:06PM +0100, Creeley, Brett wrote:
-> > -----Original Message-----
-> > From: Fijalkowski, Maciej <maciej.fijalkowski@intel.com>
-> > Sent: Saturday, August 14, 2021 7:08 AM
-> > To: intel-wired-lan@lists.osuosl.org
-> > Cc: netdev@vger.kernel.org; bpf@vger.kernel.org; davem@davemloft.net; Nguyen, Anthony L <anthony.l.nguyen@intel.com>;
-> > kuba@kernel.org; bjorn@kernel.org; Karlsson, Magnus <magnus.karlsson@intel.com>; Brandeburg, Jesse
-> > <jesse.brandeburg@intel.com>; Lobakin, Alexandr <alexandr.lobakin@intel.com>; joamaki@gmail.com; toke@redhat.com; Creeley,
-> > Brett <brett.creeley@intel.com>; Fijalkowski, Maciej <maciej.fijalkowski@intel.com>
-> > Subject: [PATCH v5 intel-next 2/9] ice: move ice_container_type onto ice_ring_container
-> >
-> > Currently ice_container_type is scoped only for ice_ethtool.c. Next
-> > commit that will split the ice_ring struct onto Rx/Tx specific ring
-> > structs is going to also modify the type of linked list of rings that is
-> > within ice_ring_container. Therefore, the functions that are taking the
-> > ice_ring_container as an input argument will need to be aware of a ring
-> > type that will be looked up.
-> >
-> > Embed ice_container_type within ice_ring_container and initialize it
-> > properly when allocating the q_vectors.
-> >
-> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > ---
-> >  drivers/net/ethernet/intel/ice/ice_base.c    |  2 ++
-> >  drivers/net/ethernet/intel/ice/ice_ethtool.c | 36 ++++++++------------
-> >  drivers/net/ethernet/intel/ice/ice_txrx.h    |  6 ++++
-> >  3 files changed, 23 insertions(+), 21 deletions(-)
-> 
-> <snip>
-> 
-> > +enum ice_container_type {
-> > +     ICE_RX_CONTAINER,
-> > +     ICE_TX_CONTAINER,
-> > +};
-> > +
-> >  struct ice_ring_container {
-> >       /* head of linked-list of rings */
-> >       struct ice_ring *ring;
-> > @@ -347,6 +352,7 @@ struct ice_ring_container {
-> >       u16 itr_setting:13;
-> >       u16 itr_reserved:2;
-> >       u16 itr_mode:1;
-> > +     enum ice_container_type type;
-> 
-> It may not matter, but should you make sure
-> the size of "type" doesn't negativelly affect this
-> structure?
+On Sat, Aug 14, 2021 at 4:43 PM Nathan Chancellor <nathan@kernel.org> wrote:
+>
+> Clang warns:
+>
+> drivers/net/wireless/intel/iwlwifi/mvm/scan.c:835:3: warning: bitwise
+> and of boolean expressions; did you mean logical and?
+> [-Wbool-operation-and]
+>                 (n_channels <= mvm->fw->ucode_capa.n_scan_channels) &
+>                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>                                                                     &&
+> 1 warning generated.
+>
+> Replace the bitwise AND with a logical one to solve the warning, which
+> is clearly what was intended.
+>
+> Fixes: 999d2568ee0c ("iwlwifi: mvm: combine scan size checks into a common function")
+> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 
-Seems that it doesn't matter.
+Thanks for the patch!
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-Before:
-struct ice_ring_container {
-        struct ice_ring *          ring;                 /*     0     8 */
-        struct dim                 dim;                  /*     8   120 */
-
-        /* XXX last struct has 2 bytes of padding */
-
-        /* --- cacheline 2 boundary (128 bytes) --- */
-        u16                        itr_idx;              /*   128     2 */
-        u16                        itr_setting:13;       /*   130: 0  2 */
-        u16                        itr_reserved:2;       /*   130:13  2 */
-        u16                        itr_mode:1;           /*   130:15  2 */
-
-        /* size: 136, cachelines: 3, members: 6 */
-        /* padding: 4 */
-        /* paddings: 1, sum paddings: 2 */
-        /* last cacheline: 8 bytes */
+> ---
+>  drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+> index 0368b7101222..494379fc9224 100644
+> --- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+> +++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+> @@ -832,7 +832,7 @@ static inline bool iwl_mvm_scan_fits(struct iwl_mvm *mvm, int n_ssids,
+>                                      int n_channels)
+>  {
+>         return ((n_ssids <= PROBE_OPTION_MAX) &&
+> -               (n_channels <= mvm->fw->ucode_capa.n_scan_channels) &
+> +               (n_channels <= mvm->fw->ucode_capa.n_scan_channels) &&
+>                 (ies->common_ie_len +
+>                  ies->len[NL80211_BAND_2GHZ] +
+>                  ies->len[NL80211_BAND_5GHZ] <=
+>
+> base-commit: ba31f97d43be41ca99ab72a6131d7c226306865f
+> --
+> 2.33.0.rc2
+>
 
 
-After:
-struct ice_ring_container {
-        union {
-                struct ice_rx_ring * rx_ring;            /*     0     8 */
-                struct ice_tx_ring * tx_ring;            /*     0     8 */
-        };                                               /*     0     8 */
-        struct dim                 dim;                  /*     8   120 */
-
-        /* XXX last struct has 2 bytes of padding */
-
-        /* --- cacheline 2 boundary (128 bytes) --- */
-        u16                        itr_idx;              /*   128     2 */
-        u16                        itr_setting:13;       /*   130: 0  2 */
-        u16                        itr_reserved:2;       /*   130:13  2 */
-        u16                        itr_mode:1;           /*   130:15  2 */
-        enum ice_container_type    type;                 /*   132     4 */
-
-        /* size: 136, cachelines: 3, members: 7 */
-        /* paddings: 1, sum paddings: 2 */
-        /* last cacheline: 8 bytes */
-
-Still 3 cachelines and same sizes.
-
-
-> 
-> >  };
-> >
-> >  struct ice_coalesce_stored {
-> > --
-> > 2.20.1
-> 
+-- 
+Thanks,
+~Nick Desaulniers
