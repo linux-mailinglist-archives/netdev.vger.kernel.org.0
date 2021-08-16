@@ -2,108 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F16403EE012
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 00:47:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B6EC3EE037
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 01:06:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232580AbhHPWr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 18:47:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39278 "EHLO
+        id S234505AbhHPXHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 19:07:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232444AbhHPWrZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 18:47:25 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19DFEC0613C1
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 15:46:53 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id x5-20020a0569020505b0290592c25b8c59so18263709ybs.18
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 15:46:53 -0700 (PDT)
+        with ESMTP id S232597AbhHPXGu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 19:06:50 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87697C061764
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 16:06:18 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id z2so37688962lft.1
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 16:06:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=go5gEr/LK1ikMjcMOeCWMGgc9H7TA/C/hnBeQvGa1/s=;
-        b=uJYQ3qp1mzmZbNi0iFWt9KGYsrFJHOAvGNqOz5cdMFsESdKF13hc6bITYbqdtObkIk
-         Jovb8zjwNW1AQQcPumXP7YQZ/aUBE3jhZHbI54iCCj/BH2VH+6ZLx96KUplPv5n4NgFS
-         oHDovPjuhfCrhis55Bg45hZG8uBlTDBtT+lTnO40Jru5HlYYuD/liep1TKHoMd80KCh7
-         z7zG55c//RryYp4IL9UvcvYQimk05RVPMzQho+crhmShSUxvynVJy7tLhyErmCILhPOp
-         IIjzVBPlauf0JH6PWsJ28HCYlIPFcE5gMewWF9OWTfeZZQHi884txCrK41W3wGuHt2VC
-         7a+Q==
+        bh=EbLlLwK/VNlS75a/X+hMyEwJqBlLcD/FK1WB01XtTs8=;
+        b=WienlzZurbN/2XsS69sMGjJeCuTkP8yZTjTDnLvBwquenqVStUoFPE+VJqNf35BhxX
+         mUX5EXM5ECSRzpuicp8Xyq+AB6iGK4BRN/VH2jERJLeq/p6F0bCfq/QG3kMrygk6+Mse
+         Mgx06QK1x+AG55F1TUzL3CV+qam1vSP7rYnKOdvLqSDyVqdVrJ5uiVXafkvjlx3ZxWat
+         MIwtvFSm1nLXRsEHEF/3GMeuIHDlu2/ohXjNXxQITdWTTJhnjwde2EmkYSQRM6WViKjj
+         aIMKzqu/2749BDrKfZrFOzUr/CuAZPBB7gSiFjCcQOfxADbG6vZFnP8Zz1hSYnwrSgVO
+         pP8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=go5gEr/LK1ikMjcMOeCWMGgc9H7TA/C/hnBeQvGa1/s=;
-        b=onOCgpErXKCIufX2qjMm2Jkutyo+TcW++HVgH3KmpPvOv5AdOT6O8YGttmpjxgogDh
-         jDprVWZWHRPq/E2v3Djz0cOa8FSA9NHkuQgaaSWfIAIxHzCJ7v+oC6tG1e+imiV5+r4k
-         YAtINn0eY0f1FJBAO4ye0mzll/mXJFD7eKy5BnU/M7UzrHszOIscSJzwZKnXKoS2AZ7F
-         kSr4EaPbc+64Cvx2tP6FdcgRjYSUnjd67iZaQLx13P7jrOejTJFpk9L7NwPNbWZnbzl+
-         Jvhe91bbXx9035o0IWJlj+YvAHGWIAlcX22fACwIQzrieTmdcPtX7Bt4shD1RmIJZL40
-         pzCg==
-X-Gm-Message-State: AOAM533fbbK5ZYR+swLU5+K62WXIy6I0uKDvVkDLQxO1ohIVc/afNGkV
-        u2GCUzpB+f6tm9pMBctY/42u3JY=
-X-Google-Smtp-Source: ABdhPJwO+8jkIUXp40zgAdtCUJmwbqGpOfo9f6s4gIzmSiABgsE2Tfyk6CI/XUbV93YAlWsS6yI4T5I=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:afa2:caa8:d56a:b355])
- (user=sdf job=sendgmr) by 2002:a25:c08a:: with SMTP id c132mr420862ybf.511.1629154012379;
- Mon, 16 Aug 2021 15:46:52 -0700 (PDT)
-Date:   Mon, 16 Aug 2021 15:46:50 -0700
-In-Reply-To: <CAEf4Bzb5A06ZP5k4uDwspBp7KfzY8n3=D7kr9K=6Xbf9cj4-Tw@mail.gmail.com>
-Message-Id: <YRrq2qqIJmY124mq@google.com>
-Mime-Version: 1.0
-References: <20210816164832.1743675-1-sdf@google.com> <1b3cb059-9ecb-a0c9-3c99-805788088d09@iogearbox.net>
- <CAEf4Bzb5A06ZP5k4uDwspBp7KfzY8n3=D7kr9K=6Xbf9cj4-Tw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: use kvmalloc in map_lookup_elem
-From:   sdf@google.com
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EbLlLwK/VNlS75a/X+hMyEwJqBlLcD/FK1WB01XtTs8=;
+        b=NDNKMEF6422KiqSEviCKPTwkTeQvAfTE/Bq/sqR0070tAOil4NPZB3W/XYp7bPCRHp
+         TsbNKKvf8sZG1Se8vo3YvpRnebRczPMBKrI+RgaSSwda4iP6sykHS1Ai8+pDxu4WbV6y
+         GSQ0coT1SqEG3bTq91ElMR0uWQtMbfS7uzDWmC/WI4dvx+zAInV6JkExQrTWOmP546ol
+         lgCFVRs3r3A50uofM18JfsriC/4Od2pZ05bnab+ugswMC+WAOV/gZQ+jLh0bRM5XRUoJ
+         hZZG5N8aLEAtP2H06FYOL+yhXFOzuT7euxtZXCoSl7nh+4GupdNAzG5ZhOFSLxZPPEJT
+         b4UQ==
+X-Gm-Message-State: AOAM531GO8fVGqKBQ+DmgkkpN0N+CfhEoVSgAxWKzdBG1R3LCGlBks8F
+        Q3d2YXIKgJGH2ri2KtQkWmk0Ep+kA1MzeTShZYskATss/QU=
+X-Google-Smtp-Source: ABdhPJw7R9OwquiOsdkg97GqKDA+WvX5FSKJp3noOZ+hKqsy3JBsIb5In/u+bx3VfAzyQP2bkD+lGSMmZ18S6r58HV4=
+X-Received: by 2002:a05:6512:3250:: with SMTP id c16mr113752lfr.465.1629155176951;
+ Mon, 16 Aug 2021 16:06:16 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210816115953.72533-1-andriy.shevchenko@linux.intel.com> <20210816115953.72533-7-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20210816115953.72533-7-andriy.shevchenko@linux.intel.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 17 Aug 2021 01:06:06 +0200
+Message-ID: <CACRpkdavU=_Fo3DQkD_MAT9Ur-RX46v0L-O=tqibpUtdUhe-NA@mail.gmail.com>
+Subject: Re: [PATCH v1 6/6] TODO: net: mellanox: mlxbf_gige: Replace
+ non-standard interrupt handling
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     David Thompson <davthompson@nvidia.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Asmaa Mnebhi <asmaa@nvidia.com>,
+        Liming Sun <limings@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/16, Andrii Nakryiko wrote:
-> On Mon, Aug 16, 2021 at 2:43 PM Daniel Borkmann <daniel@iogearbox.net>  
-> wrote:
-> >
-> > On 8/16/21 6:48 PM, Stanislav Fomichev wrote:
-> > > Use kvmalloc/kvfree for temporary value when looking up a map.
-> > > kmalloc might not be sufficient for percpu maps where the value is  
-> big.
-> > >
-> > > Can be reproduced with netcnt test on qemu with "-smp 255".
-> > >
-> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > ---
-> > >   kernel/bpf/syscall.c | 4 ++--
-> > >   1 file changed, 2 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> > > index 9a2068e39d23..ae0b1c1c8ece 100644
-> > > --- a/kernel/bpf/syscall.c
-> > > +++ b/kernel/bpf/syscall.c
-> > > @@ -1076,7 +1076,7 @@ static int map_lookup_elem(union bpf_attr *attr)
-> > >       value_size = bpf_map_value_size(map);
-> > >
-> > >       err = -ENOMEM;
-> > > -     value = kmalloc(value_size, GFP_USER | __GFP_NOWARN);
-> > > +     value = kvmalloc(value_size, GFP_USER | __GFP_NOWARN);
-> > >       if (!value)
-> > >               goto free_key;
-> >
-> > What about other cases like map_update_elem(), shouldn't they be adapted
-> > similarly?
+On Mon, Aug 16, 2021 at 2:00 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
 
-> And in the same vein (with keys potentially being big as well), should
-> we switch __bpf_copy_key() to use vmemdup_user() instead of
-> memdup_user()?
+> Since GPIO driver supports interrupt handling, replace custom routine with
+> simple IRQ request.
+>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  .../mellanox/mlxbf_gige/mlxbf_gige_gpio.c     | 212 ------------------
 
-Those are good questions :-)
+Don't you also need to remove this file from Makefile?
 
-I'm assuming that whatever is doing kmalloc on top of
-bpf_map_value_size() should definitely use kvmalloc since
-bpf_map_value_size() can blow up the value size. (will resend)
-
-For __bpf_copy_key I'm less sure, but it might be a good idea as well.
-Let me try to look at bit more into it, but feels like there shouldn't
-be any downsides?
+Yours,
+Linus Walleij
