@@ -2,70 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55FDC3EDF67
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 23:40:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70A5A3EDF6E
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 23:41:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233539AbhHPVkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 17:40:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36850 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229987AbhHPVkj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 17:40:39 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id E67F760F39;
-        Mon, 16 Aug 2021 21:40:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629150006;
-        bh=kkqYGdS+bxZFR43v/vsQxRAK647tUeKqoUcTwYIxLnE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ifvc4la4E6+a5Aorpw1WQHb2UaICbqQXdMdlGTI2kns3lAhIg/WJT1uQtKmX9dIC3
-         ofyAXCbeRwwSTCwZZjw6kTRlvnNGq4apLhQUkxlaoKkqFw4t/NxvpZBivdyopn1p5e
-         PAxfo/9UwrGgektCic079xYaAKldNTUSoMXg5yhXK0F1fDAeH1iDPc5IuGcq2htUVq
-         6RtE6HUA/c1RX/yN5XxXQwD+4DpF1VdYBKS1ZTN17m6NiNO5XgLXUmu5GgJQcdpIIl
-         a9ipVSIaYnkMIc+UxeYyKw5gNPGX3XqpsYEE6BfPoi9zjAMFrkJJCha65cpKAuvGTW
-         rh7cKv+A0VAcQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D8769609CF;
-        Mon, 16 Aug 2021 21:40:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233798AbhHPVlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 17:41:40 -0400
+Received: from smtp6.emailarray.com ([65.39.216.46]:28692 "EHLO
+        smtp6.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233258AbhHPVlj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 17:41:39 -0400
+Received: (qmail 29630 invoked by uid 89); 16 Aug 2021 21:41:05 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMQ==) (POLARISLOCAL)  
+  by smtp6.emailarray.com with SMTP; 16 Aug 2021 21:41:05 -0000
+Date:   Mon, 16 Aug 2021 14:41:03 -0700
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     netdev@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>
+Subject: Re: [PATCH] ptp: ocp: don't allow on S390
+Message-ID: <20210816214103.w54pfwcuge4nqevw@bsd-mbp.dhcp.thefacebook.com>
+References: <20210813203026.27687-1-rdunlap@infradead.org>
+ <20210816210914.qkyd4em4rw3thbyg@bsd-mbp.dhcp.thefacebook.com>
+ <16acf1ad-d626-b3a3-1cad-3fa6c61c8a22@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH][next] bpf, tests: Fix spelling mistake "shoft" -> "shift"
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162915000688.3631.14506994484111009318.git-patchwork-notify@kernel.org>
-Date:   Mon, 16 Aug 2021 21:40:06 +0000
-References: <20210815213950.47751-1-colin.king@canonical.com>
-In-Reply-To: <20210815213950.47751-1-colin.king@canonical.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <16acf1ad-d626-b3a3-1cad-3fa6c61c8a22@infradead.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf-next.git (refs/heads/master):
-
-On Sun, 15 Aug 2021 22:39:50 +0100 you wrote:
-> From: Colin Ian King <colin.king@canonical.com>
+On Mon, Aug 16, 2021 at 02:15:51PM -0700, Randy Dunlap wrote:
+> On 8/16/21 2:09 PM, Jonathan Lemon wrote:
+> > On Fri, Aug 13, 2021 at 01:30:26PM -0700, Randy Dunlap wrote:
+> > > There is no 8250 serial on S390. See commit 1598e38c0770.
+> > 
+> > There's a 8250 serial device on the PCI card.   Its been
+> > ages since I've worked on the architecture, but does S390
+> > even support PCI?
 > 
-> There is a spelling mistake in a literal string. Fix it.
+> Yes, it does.
 > 
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->  lib/test_bpf.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > Is this driver useful even without 8250 serial?
+> > 
+> > The FB timecard has an FPGA that will internally parse the
+> > GNSS strings and correct the clock, so the PTP clock will
+> > work even without the serial devices.
+> > 
+> > However, there are userspace tools which want to read the
+> > GNSS signal (for holdolver and leap second indication),
+> > which is why they are exposed.
+> 
+> So what do you recommend here?
 
-Here is the summary with links:
-  - [next] bpf, tests: Fix spelling mistake "shoft" -> "shift"
-    https://git.kernel.org/bpf/bpf-next/c/1bda52f80471
+Looking at 1598e38c0770, it appears the 8250 console is the 
+problem.  Couldn't S390 be fenced by SERIAL_8250_CONSOLE, instead
+of SERIAL_8250, which would make the 8250 driver available?
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+For now, just disabling the driver on S390 sounds reasonable.
+-- 
+Jonathan
