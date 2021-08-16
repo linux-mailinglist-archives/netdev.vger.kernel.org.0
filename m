@@ -2,73 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23D7A3EDF29
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 23:15:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BD8B3EDF2F
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 23:18:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233512AbhHPVQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 17:16:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46778 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231750AbhHPVQY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 17:16:24 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2EFC061764
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 14:15:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=IahjxOjONTR/ookqE8d4dqz7vyXyxyY75ZAKcOKZ4/g=; b=KrjdBp9hPKqCjKkdf9QIyA/8DC
-        A2/8vnyPlskyGmX2CMA5jNYlCfD69t4++k6bzppK2tVLwxmgOu1yqBfTxz5/CcgHMw3ZSF9vxfivu
-        5HCH6pGvltU+InrsBIWe6tOrLTP+v6b5mHGcjYqw3/50W2qBbcln7KPKOMBFpiEJAZrZVkmRQuoDh
-        tGFQJXbEkgZdPuDfCL5I/MMFeLQ5iAZzvZDwafnvMaWpR51RiOl70CFlltljWmjoFD5jX6mtksTHD
-        /kKJf004en4WzF9gjjg7tUWCYUYkVPCaRB1M5G1v2UbdHQsYrQNdjPMgyo+Q70cIbesSKu+Fub2hm
-        2HgzeXaA==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mFjxY-000JHD-5s; Mon, 16 Aug 2021 21:15:52 +0000
-Subject: Re: [PATCH] ptp: ocp: don't allow on S390
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     netdev@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>
-References: <20210813203026.27687-1-rdunlap@infradead.org>
- <20210816210914.qkyd4em4rw3thbyg@bsd-mbp.dhcp.thefacebook.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <16acf1ad-d626-b3a3-1cad-3fa6c61c8a22@infradead.org>
-Date:   Mon, 16 Aug 2021 14:15:51 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S233302AbhHPVSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 17:18:39 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52650 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231750AbhHPVSi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 17:18:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=kMWO17uroZoWE99yM+teIahXpEmXjbr7uxr0ADzSYXE=; b=D3CQoKEZpkE+iWTOSXDF/Wa3Dg
+        FkFlm1lBg5bE2FfnmT524cwap7V9GWmojVuwAQ4qWZ2m5W9diaI+gAivl4A49HAtMJHPaLFzXrjRE
+        FaGbLlKVlWAuL//0lxWBujKNc8hPOuV4rBHpU8k3d7djWUHQd18gEIan0lcQQMt0PCOw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mFjzc-000RQB-72; Mon, 16 Aug 2021 23:18:00 +0200
+Date:   Mon, 16 Aug 2021 23:18:00 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Lee Jones <lee.jones@linaro.org>, Marc Zyngier <maz@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        linux-amlogic@lists.infradead.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Android Kernel Team <kernel-team@android.com>
+Subject: Re: [PATCH 1/2] irqchip: irq-meson-gpio: make it possible to build
+ as a module
+Message-ID: <YRrWCC1E1nKDsx4N@lunn.ch>
+References: <87im0m277h.wl-maz@kernel.org>
+ <CAGETcx9OukoWM_qprMse9aXdzCE=GFUgFEkfhhNjg44YYsOQLw@mail.gmail.com>
+ <87sfzpwq4f.wl-maz@kernel.org>
+ <CAGETcx95kHrv8wA-O+-JtfH7H9biJEGJtijuPVN0V5dUKUAB3A@mail.gmail.com>
+ <CAGETcx8bpWQEnkpJ0YW9GqX8WE0ewT45zqkbWWdZ0ktJBhG4yQ@mail.gmail.com>
+ <YQuZ2cKVE+3Os25Z@google.com>
+ <YRpeVLf18Z+1R7WE@google.com>
+ <CAGETcx-gSJD0Ra=U_55k3Anps11N_3Ev9gEQV6NaXOvqwP0J3g@mail.gmail.com>
+ <YRrOvJBLp3WreEUf@lunn.ch>
+ <CAGETcx_Q2-7B5RpHSfDu1KB0n+pT8nkCwGsthN20QBvgePcUtQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210816210914.qkyd4em4rw3thbyg@bsd-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGETcx_Q2-7B5RpHSfDu1KB0n+pT8nkCwGsthN20QBvgePcUtQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/16/21 2:09 PM, Jonathan Lemon wrote:
-> On Fri, Aug 13, 2021 at 01:30:26PM -0700, Randy Dunlap wrote:
->> There is no 8250 serial on S390. See commit 1598e38c0770.
+On Mon, Aug 16, 2021 at 02:02:12PM -0700, Saravana Kannan wrote:
+> On Mon, Aug 16, 2021 at 1:46 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> >
+> > > Not that I'm aware of. Andrew added a "Reviewed-by" to all 3 of my
+> > > proper fix patches. I didn't think I needed to send any newer patches.
+> > > Is there some reason you that I needed to?
+> > > https://lore.kernel.org/lkml/20210804214333.927985-1-saravanak@google.com/T/#t
+> >
+> > https://patchwork.kernel.org/project/netdevbpf/list/?series=&submitter=&state=*&q=net%3A+mdio-mux%3A+Delete+unnecessary+devm_kfree&archive=both&delegate=
+> >
+> > State Changes Requested. I guess because you got the subject wrong.
 > 
-> There's a 8250 serial device on the PCI card.   Its been
-> ages since I've worked on the architecture, but does S390
-> even support PCI?
-
-Yes, it does.
-
->> Is this driver useful even without 8250 serial?
+> I'm assuming the prefix is wrong? What should it be? I went by looking
+> at the latest commit in:
+> $ git log --oneline  drivers/net/mdio/
+> ac53c26433b5 net: mdiobus: withdraw fwnode_mdbiobus_register
 > 
-> The FB timecard has an FPGA that will internally parse the
-> GNSS strings and correct the clock, so the PTP clock will
-> work even without the serial devices.
-> 
-> However, there are userspace tools which want to read the
-> GNSS signal (for holdolver and leap second indication),
-> which is why they are exposed.
+> What prefix do I need to use to be considered correct?
+> net: mdio:?
 
-So what do you recommend here?
+https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html
 
-thanks.
--- 
-~Randy
+and in particular:
 
+https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html#how-do-i-indicate-which-tree-net-vs-net-next-my-patch-should-be-in
+
+	Andrew
