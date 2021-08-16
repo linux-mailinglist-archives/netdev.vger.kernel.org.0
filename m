@@ -2,69 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF50B3EDA25
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 17:47:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90DEF3EDA2D
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 17:50:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236670AbhHPPsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 11:48:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41436 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232822AbhHPPsO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 11:48:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EF71B60F42;
-        Mon, 16 Aug 2021 15:47:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629128862;
-        bh=i6mqhZa05bh0/QvKBCg/vqpuUHYgPMxb+O5ZQZYVlwA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Q04xAz38cnz5G+q6BdNTGV+56X2nNyQNbX7kYAv1bZRAJllhYM0aPv8BfAGUOBPde
-         2TaQG/1vjjWj3DX5VjwdbMrFJDiOFexJghkCE9fEkdlo52B3SamAh8zSopudkuUvjV
-         EY0tVxnimj2wC9chonMAf6eUa9m6MNk8x4t/g+eZH7UjL2Z29WcNFGTYgvMiR2HA2H
-         gJ85U3QPjmH+nRo1TwF1PYCIkat63+vycqDerd1LrVni34ATaipOsWly6gYKzgGgxz
-         o3RlRIYHMyk/p1LuI4tThV3IuTLifvL/EfDKrfZtRmRD+SD22xLJQxFq9QeKAEczJC
-         FvseFiXu98g5g==
-Date:   Mon, 16 Aug 2021 08:47:41 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Salil Mehta <salil.mehta@huawei.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Yufeng Mo <moyufeng@huawei.com>
-Subject: Re: [PATCH net-next 3/6] devlink: Count struct devlink consumers
-Message-ID: <20210816084741.1dd1c415@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <d4d59d801f4521e562c9ecf2d8767077aaefb456.1628933864.git.leonro@nvidia.com>
-References: <cover.1628933864.git.leonro@nvidia.com>
-        <d4d59d801f4521e562c9ecf2d8767077aaefb456.1628933864.git.leonro@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S237060AbhHPPuK convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 16 Aug 2021 11:50:10 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:53563 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235241AbhHPPuC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 11:50:02 -0400
+Received: from smtpclient.apple (p5b3d23f8.dip0.t-ipconnect.de [91.61.35.248])
+        by mail.holtmann.org (Postfix) with ESMTPSA id D0005CECC8;
+        Mon, 16 Aug 2021 17:49:25 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
+Subject: Re: [PATCH v2] Bluetooth: Move shutdown callback before flushing tx
+ and rx queue
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20210810045315.184383-1-kai.heng.feng@canonical.com>
+Date:   Mon, 16 Aug 2021 17:49:25 +0200
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:BLUETOOTH SUBSYSTEM" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <453AB6D8-9CA8-42B8-9807-5AC249E8618B@holtmann.org>
+References: <20210810045315.184383-1-kai.heng.feng@canonical.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+X-Mailer: Apple Mail (2.3654.120.0.1.13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 14 Aug 2021 12:57:28 +0300 Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> The struct devlink itself is protected by internal lock and doesn't
-> need global lock during operation. That global lock is used to protect
-> addition/removal new devlink instances from the global list in use by
-> all devlink consumers in the system.
-> 
-> The future conversion of linked list to be xarray will allow us to
-> actually delete that lock, but first we need to count all struct devlink
-> users.
+Hi Kai-Heng,
 
-Not a problem with this set but to state the obvious the global devlink
-lock also protects from concurrent execution of all the ops which don't
-take the instance lock (DEVLINK_NL_FLAG_NO_LOCK). You most likely know
-this but I thought I'd comment on an off chance it helps.
+> Commit 0ea9fd001a14 ("Bluetooth: Shutdown controller after workqueues
+> are flushed or cancelled") introduced a regression that makes mtkbtsdio
+> driver stops working:
+> [   36.593956] Bluetooth: hci0: Firmware already downloaded
+> [   46.814613] Bluetooth: hci0: Execution of wmt command timed out
+> [   46.814619] Bluetooth: hci0: Failed to send wmt func ctrl (-110)
+> 
+> The shutdown callback depends on the result of hdev->rx_work, so we
+> should call it before flushing rx_work:
+> -> btmtksdio_shutdown()
+> -> mtk_hci_wmt_sync()
+>  -> __hci_cmd_send()
+>   -> wait for BTMTKSDIO_TX_WAIT_VND_EVT gets cleared
+> 
+> -> btmtksdio_recv_event()
+> -> hci_recv_frame()
+>  -> queue_work(hdev->workqueue, &hdev->rx_work)
+>   -> clears BTMTKSDIO_TX_WAIT_VND_EVT
+> 
+> So move the shutdown callback before flushing TX/RX queue to resolve the
+> issue.
+> 
+> Reported-and-tested-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+> Tested-by: Hsin-Yi Wang <hsinyi@chromium.org>
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Fixes: 0ea9fd001a14 ("Bluetooth: Shutdown controller after workqueues are flushed or cancelled")
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> ---
+> v2: 
+> Move the shutdown callback before clearing HCI_UP, otherwise 1)
+> shutdown callback won't be called and 2) other routines that depend on
+> HCI_UP won't work.
+> 
+> net/bluetooth/hci_core.c | 16 ++++++++--------
+> 1 file changed, 8 insertions(+), 8 deletions(-)
 
-> The reference counting provides us a way to ensure that no new user
-> space commands success to grab devlink instance which is going to be
-> destroyed makes it is safe to access it without lock.
+patch has been applied to bluetooth-next tree.
+
+Regards
+
+Marcel
 
