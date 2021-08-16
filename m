@@ -2,55 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62EA93ED99C
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 17:12:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42DCA3ED9A0
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 17:13:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236731AbhHPPMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 11:12:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58518 "EHLO mail.kernel.org"
+        id S232634AbhHPPNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 11:13:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58732 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236634AbhHPPMl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 11:12:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0952260ED5;
-        Mon, 16 Aug 2021 15:12:09 +0000 (UTC)
+        id S232237AbhHPPNq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 11:13:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BF60C606A5;
+        Mon, 16 Aug 2021 15:13:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629126729;
-        bh=uMo8LGfOpe/Almoc8bvAMBEGmqtUS03nPV5PwNh4VaY=;
+        s=k20201202; t=1629126795;
+        bh=muWpwxiPhJ0hjPwwuNj9+N7/JqofNLtCZB6kojrL6O4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NI4STxOvEvDLYkD7cp4EEsv7L1JSA2zVa86AjYMQEt7F0nAhYRfHwh0nuCLtpE4LR
-         vzJQdTCeVjixYe3wvkbhORrDwIAhUlEmbl1X4tzJv1tWG4+vTy4qnYkmzJgnUY/CKk
-         rTOiYmwPhqQhim0CZVdGtL0BXlsBonMY0aI38U76onGVUblLRHDXk4WL0/i2Ou2tB/
-         yAwZjbwNhzpgiWXDdOGqEtEImzkkNPvL5uCH3lmUP6HpI0GjmhHvZMs8nxeSNDI+R5
-         fvfIO4W375ehpFLSvnh/VKr2FWb1U48j8SbhyNysnYgb+HCe+YVr5PsrfdkOLQraFP
-         KGfhKiozb7CeA==
-Date:   Mon, 16 Aug 2021 08:12:08 -0700
+        b=OgBGiX9S+ojRVF6ymbchD+MaZLos9l+7IKvRZukSGyd3xxSB9MIpTac3kT3r7L8gA
+         43u5XNEiremTDBTRr859MBB4helMXhLltsEGpbk3Jht07K1qapQmIXnIMovG9oa+Fm
+         LNH5Afj2JUYKu9LRhtoah3z2QSJ3LJCBzRKN+FJgZs9AsRMKiCb4itw7y8rzjRU319
+         SdY2IyeB4otPtWKRT1j6L7XisG5ni38AoxeIzXDY+3A2UoQo2oOZmx1n9heoGH2UI5
+         3J6aNSu02cl+VR5VUDQVZxNHP8V8FYI7oLh77YGE36E6/12syBbHWwwnvWWidLeRP1
+         FdvscxNxT+5Gw==
+Date:   Mon, 16 Aug 2021 08:13:14 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Matteo Croce <mcroce@linux.microsoft.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Will Deacon <will@kernel.org>
-Subject: Re: [PATCH net-next] stmmac: align RX buffers
-Message-ID: <20210816081208.522ac47c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <874kbuapod.wl-maz@kernel.org>
-References: <20210614022504.24458-1-mcroce@linux.microsoft.com>
-        <871r71azjw.wl-maz@kernel.org>
-        <YROmOQ+4Kqukgd6z@orome.fritz.box>
-        <202417ef-f8ae-895d-4d07-1f9f3d89b4a4@gmail.com>
-        <87o8a49idp.wl-maz@kernel.org>
-        <fe5f99c8-5655-7fbb-a64e-b5f067c3273c@gmail.com>
-        <20210812121835.405d2e37@linux.microsoft.com>
-        <874kbuapod.wl-maz@kernel.org>
+To:     Oleksij Rempel <linux@rempel-privat.de>
+Cc:     Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: Regression with commit e532a096be0e ("net: usb: asix: ax88772:
+ add phylib support")
+Message-ID: <20210816081314.3b251d2e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <3904c728-1ea2-9c2b-ec11-296396fd2f7e@linux.intel.com>
+References: <3904c728-1ea2-9c2b-ec11-296396fd2f7e@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,17 +41,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Aug 2021 12:05:38 +0100 Marc Zyngier wrote:
-> > A possible fix, which takes in account also the XDP headroom for
-> > stmmac_rx_buf1_len() only could be (only compile tested, I don't have
-> > the hardware now):  
+On Wed, 11 Aug 2021 17:55:34 +0300 Jarkko Nikula wrote:
+> Hi
 > 
-> However, this doesn't fix my issue. I still get all sort of
-> corruption. Probably stmmac_rx_buf2_len() also need adjusting (it has
-> a similar logic as its buf1 counterpart...)
+> Our ASIX USB ethernet adapter stopped working after v5.14-rc1. It 
+> doesn't get an IP from DHCP.
 > 
-> Unless you can fix it very quickly, and given that we're towards the
-> end of the cycle, I'd be more comfortable if we reverted this patch.
+> v5.13 works ok. v5.14-rc1 and today's head 761c6d7ec820 ("Merge tag 
+> 'arc-5.14-rc6' of 
+> git://git.kernel.org/pub/scm/linux/kernel/git/vgupta/arc") show the 
+> regression.
+> 
+> I bisected regression into e532a096be0e ("net: usb: asix: ax88772: add 
+> phylib support").
 
-Any luck investigating this one? The rc6 announcement sounds like there
-may not be that many more rc releases for 5.14.
+Oleksij, any comments?
+
+> Here's the dmesg snippet from working and non-working cases:
+> 
+> OK:
+> [    6.115773] asix 1-8:1.0 eth0: register 'asix' at usb-0000:00:14.0-8, 
+> ASIX AX88772 USB 2.0 Ethernet, 00:10:60:31:d5:f8
+> [    8.595202] asix 1-8:1.0 eth0: link up, 100Mbps, full-duplex, lpa 0xC1E1
+> 
+> NOK:
+> [    6.511543] asix 1-8:1.0 eth0: register 'asix' at usb-0000:00:14.0-8, 
+> ASIX AX88772 USB 2.0 Ethernet, 00:10:60:31:d5:f8
+> [    8.518219] asix 1-8:1.0 eth0: Link is Down
+> 
+> lsusb -d 0b95:7720
+> Bus 001 Device 002: ID 0b95:7720 ASIX Electronics Corp. AX88772
