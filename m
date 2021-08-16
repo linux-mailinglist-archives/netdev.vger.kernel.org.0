@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1D203EDD94
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 21:05:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D513D3EDD9D
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 21:05:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230176AbhHPTEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 15:04:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44040 "EHLO
+        id S229845AbhHPTGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 15:06:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229748AbhHPTEI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 15:04:08 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A578EC0613CF
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 12:03:36 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id u13-20020a17090abb0db0290177e1d9b3f7so334108pjr.1
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 12:03:36 -0700 (PDT)
+        with ESMTP id S230367AbhHPTEN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 15:04:13 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA02CC061796
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 12:03:41 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id om1-20020a17090b3a8100b0017941c44ce4so280840pjb.3
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 12:03:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OQIDgHDinK9G6OVBaqwTHfY5KB000CBp6CpTZGMvcek=;
-        b=WY6mR6quoN2NpyDT0Cs4sZaNedYyZyWYZn7jL4roycAQ1Qc1jPq0YAcYZDJH/ybJld
-         QiUXHBTlLxAXmoJkMctv9/5GoophqAfiAUybaAGW8TcsfRUT2dzVp2Z5xFSQ2PRHzL2G
-         8H4MbrQOkNpPxPLcTRf69OPJcjLMcByxMlYsWOEStHoJ+NK6XPBxYvtAIn2C7CIn0DM0
-         eyLQjg9qBfZywYs19F19KCGSvZq8K0rB/FpWfwVXEdpQ6rupZ0ea9OGIfn1qd86zBQZM
-         IWDl+StJFsIe4ByBgiCZ4tqLVMX0RaltUDab7tEnyME18S8BDQ2GXg6Rzbk6z6OyvNOa
-         X0Ow==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=d6SJ/0BzbhcL/AQI/DdNhZ/xDFhfJbOcXEvb92Bi/wU=;
+        b=YhKFTIVMdZXol9+WB6zelB3uoE23mZzapWVMgXpFtnHW1tBSZsbvGaOxeMLFXUO6v/
+         ZvnBdWAzGkWc+IxojctUGA+IHvWSWGOpB8QaS5uIfmGCbzY7fMXoJ4RQOea9huM6pTPb
+         xyStPpjIp4DtwZxwTT9X++Qc/r0y11cB7qSOOL9atFuPBUgjmjXqk+RZVAu3++Ntnksf
+         poEq2m2M2Gkv14RK8CX7jShnGTkm0aiTLAYQB83c7om8BJXlTRL0p8nd2vYjvPQ+OQ7s
+         DTF1LRGaN7ZEQVKzXzqHVgm6rYyUr56o3doUzSfhcZ99c3jLAKQOmSGzqpyxQq3r1Qtm
+         QJ6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OQIDgHDinK9G6OVBaqwTHfY5KB000CBp6CpTZGMvcek=;
-        b=UPTMkoSgtJ1iH4f8QHIV+WxT4cYoCzoeVwdnINW8YOpsyfBKKQwEsbOCIjYgpoyxCW
-         2M2b7w37YhK+M4zueGJjDsbdnGWS7C1MojWH3WpLgQITg9F4EtP9dzyrn79O8a4oikw+
-         p2kBd9epCNX4bUbDzbZf9JqxpjW4YJW3zfvGkGxV3Dy61y3MlhiC41xufObVVnblUwPA
-         xN1/dXyikzKwZz8LLr4eBttwagZuqJdboZd3n4ceXZmdT5b2IAR4+GeqanTRCmz6kpgT
-         lKz1LRwYJZtO5HQtaXIMjWaScdo3MJLmqgibZQtw2A6/PXmRjPvkc81VvmM68IAVrU1B
-         Zjeg==
-X-Gm-Message-State: AOAM533HK+eHuUZE1Nq6eumb0kDs1ZHzkioAMHhFXGtp3YBKcrng7lDV
-        1xobBUdGIOOvmSx5VI8lz7lvnk1L6T7Oug==
-X-Google-Smtp-Source: ABdhPJzpUs4hGAe1udl/DE9Ky+AbUywHhNGuWdpShcgWqkdr1vSLVsikHzErghPFMfVjwOXtjwgzXw==
-X-Received: by 2002:a17:902:9a02:b029:118:307e:a9dd with SMTP id v2-20020a1709029a02b0290118307ea9ddmr223456plp.47.1629140615950;
-        Mon, 16 Aug 2021 12:03:35 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=d6SJ/0BzbhcL/AQI/DdNhZ/xDFhfJbOcXEvb92Bi/wU=;
+        b=uEea8BGe+/kllOsprsBnTxxoNND55Wff17lGJcoxbL6fMuKrlIFj300UWhWEHMvHOI
+         P/quTtZxmN2E+GfO0LBVXbLaCpj9bHmGXNCa1RFqbi4oruseEB8In5tnY9lRm39vCWvH
+         nFqS8MzzU2iFVpVDxP6ZoYyaYJ94i1RvBOM8eRfGCpWRgEgEPFNCrAC2hV0CNdhYMf0P
+         p57xDIdl52Jha6iIJ5DOUpOa0KnZWLdvlidWfao9AWIdTaAFWTh7gaJ8RPdnxzGO5jBs
+         4iFKSbpWRAjGQYAxI4Wr0eR0RnCeUJG8Zor2FgJe5nKvwmPhAqQSupR1x++i9WPuO8iC
+         72Lg==
+X-Gm-Message-State: AOAM530MnCjaEAzuKMTLjCCCmxWOCqGDxjKlRgPYh2+qnUOWlNg++8Vn
+        XCPzBdgFR3ErHrIrwIweRgNzGPXX4CNHFA==
+X-Google-Smtp-Source: ABdhPJzbu/LrHemYjYM2HNEniQCk3UB1HBWNS3nzBqdpM0QeZp5FewgF1aidGa4Et1T6LevOsD6sAA==
+X-Received: by 2002:a17:90a:ce0a:: with SMTP id f10mr155817pju.52.1629140621130;
+        Mon, 16 Aug 2021 12:03:41 -0700 (PDT)
 Received: from ip-10-124-121-13.byted.org (ec2-54-241-92-238.us-west-1.compute.amazonaws.com. [54.241.92.238])
-        by smtp.gmail.com with ESMTPSA id t30sm175845pgl.47.2021.08.16.12.03.34
+        by smtp.gmail.com with ESMTPSA id t30sm175845pgl.47.2021.08.16.12.03.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Aug 2021 12:03:35 -0700 (PDT)
+        Mon, 16 Aug 2021 12:03:40 -0700 (PDT)
 From:   Jiang Wang <jiang.wang@bytedance.com>
 To:     netdev@vger.kernel.org
 Cc:     cong.wang@bytedance.com, duanxiongchun@bytedance.com,
         xieyongji@bytedance.com, chaiwen.cc@bytedance.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
         Lorenz Bauer <lmb@cloudflare.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
@@ -68,67 +68,65 @@ Cc:     cong.wang@bytedance.com, duanxiongchun@bytedance.com,
         Johan Almbladh <johan.almbladh@anyfinetworks.com>,
         linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
         linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf-next v7 0/5] sockmap: add sockmap support for unix stream socket
-Date:   Mon, 16 Aug 2021 19:03:19 +0000
-Message-Id: <20210816190327.2739291-1-jiang.wang@bytedance.com>
+Subject: [PATCH bpf-next v7 1/5] af_unix: add read_sock for stream socket types
+Date:   Mon, 16 Aug 2021 19:03:20 +0000
+Message-Id: <20210816190327.2739291-2-jiang.wang@bytedance.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210816190327.2739291-1-jiang.wang@bytedance.com>
+References: <20210816190327.2739291-1-jiang.wang@bytedance.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series add support for unix stream type
-for sockmap. Sockmap already supports TCP, UDP,
-unix dgram types. The unix stream support is similar
-to unix dgram.
+To support sockmap for af_unix stream type, implement
+read_sock, which is similar to the read_sock for unix
+dgram sockets.
 
-Also add selftests for unix stream type in sockmap tests.
+Signed-off-by: Jiang Wang <jiang.wang@bytedance.com>
+Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+---
+ net/unix/af_unix.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-
-Jiang Wang (5):
-  af_unix: add read_sock for stream socket types
-  af_unix: add unix_stream_proto for sockmap
-  selftest/bpf: add tests for sockmap with unix stream type.
-  selftest/bpf: change udp to inet in some function names
-  selftest/bpf: add new tests in sockmap for unix stream to tcp.
-
- include/net/af_unix.h                         |  8 +-
- net/core/sock_map.c                           |  1 +
- net/unix/af_unix.c                            | 95 ++++++++++++++++---
- net/unix/unix_bpf.c                           | 93 +++++++++++++-----
- .../selftests/bpf/prog_tests/sockmap_listen.c | 48 ++++++----
- 5 files changed, 191 insertions(+), 54 deletions(-)
-
-v1 -> v2 :
- - Call unhash in shutdown.
- - Clean up unix_create1 a bit.
- - Return -ENOTCONN if socket is not connected.
-
-v2 -> v3 :
- - check for stream type in update_proto
- - remove intermediate variable in __unix_stream_recvmsg
- - fix compile warning in unix_stream_recvmsg
-
-v3 -> v4 :
- - remove sk_is_unix_stream, just check TCP_ESTABLISHED for UNIX sockets.
- - add READ_ONCE in unix_dgram_recvmsg
- - remove type check in unix_stream_bpf_update_proto
-
-v4 -> v5 :
- - add two missing READ_ONCE for sk_prot.
-
-v5 -> v6 :
- - fix READ_ONCE by reading to a local variable first.
-
-v6 -> v7 :
- - fix the following compiler error when CONFIG_UNIX is m.
-   modpost: "sock_map_unhash" [net/unix/unix.ko] undefined!
-
-For the series:
-
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 1c2224f05b51..31061304ccf2 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -678,6 +678,8 @@ static int unix_dgram_sendmsg(struct socket *, struct msghdr *, size_t);
+ static int unix_dgram_recvmsg(struct socket *, struct msghdr *, size_t, int);
+ static int unix_read_sock(struct sock *sk, read_descriptor_t *desc,
+ 			  sk_read_actor_t recv_actor);
++static int unix_stream_read_sock(struct sock *sk, read_descriptor_t *desc,
++				 sk_read_actor_t recv_actor);
+ static int unix_dgram_connect(struct socket *, struct sockaddr *,
+ 			      int, int);
+ static int unix_seqpacket_sendmsg(struct socket *, struct msghdr *, size_t);
+@@ -731,6 +733,7 @@ static const struct proto_ops unix_stream_ops = {
+ 	.shutdown =	unix_shutdown,
+ 	.sendmsg =	unix_stream_sendmsg,
+ 	.recvmsg =	unix_stream_recvmsg,
++	.read_sock =	unix_stream_read_sock,
+ 	.mmap =		sock_no_mmap,
+ 	.sendpage =	unix_stream_sendpage,
+ 	.splice_read =	unix_stream_splice_read,
+@@ -2490,6 +2493,15 @@ static struct sk_buff *manage_oob(struct sk_buff *skb, struct sock *sk,
+ }
+ #endif
+ 
++static int unix_stream_read_sock(struct sock *sk, read_descriptor_t *desc,
++				 sk_read_actor_t recv_actor)
++{
++	if (unlikely(sk->sk_state != TCP_ESTABLISHED))
++		return -ENOTCONN;
++
++	return unix_read_sock(sk, desc, recv_actor);
++}
++
+ static int unix_stream_read_generic(struct unix_stream_read_state *state,
+ 				    bool freezable)
+ {
 -- 
 2.20.1
 
