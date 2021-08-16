@@ -2,62 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70A5A3EDF6E
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 23:41:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C11553EDF6F
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 23:41:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233798AbhHPVlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 17:41:40 -0400
-Received: from smtp6.emailarray.com ([65.39.216.46]:28692 "EHLO
-        smtp6.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233258AbhHPVlj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 17:41:39 -0400
-Received: (qmail 29630 invoked by uid 89); 16 Aug 2021 21:41:05 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMQ==) (POLARISLOCAL)  
-  by smtp6.emailarray.com with SMTP; 16 Aug 2021 21:41:05 -0000
-Date:   Mon, 16 Aug 2021 14:41:03 -0700
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     netdev@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [PATCH] ptp: ocp: don't allow on S390
-Message-ID: <20210816214103.w54pfwcuge4nqevw@bsd-mbp.dhcp.thefacebook.com>
-References: <20210813203026.27687-1-rdunlap@infradead.org>
- <20210816210914.qkyd4em4rw3thbyg@bsd-mbp.dhcp.thefacebook.com>
- <16acf1ad-d626-b3a3-1cad-3fa6c61c8a22@infradead.org>
+        id S233848AbhHPVl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 17:41:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37242 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233490AbhHPVlx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 17:41:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C60F160E09;
+        Mon, 16 Aug 2021 21:41:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629150081;
+        bh=E1z2lX/2TkVTMAvAW68HUSkN7CsSC6SZE1nbGCGI5is=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=o+P74zfMdDfCE1AUgze44n8mYSkcYyWJwTq1luRUtF4ADAQqGsce9dpDdUzBvNlyS
+         zyzJsm4i2oMudgyX+8NJwPsDB6J1wuzGjUQHnaB0C+db21xUMs7b81plyfMnB3t1bc
+         Gj1vPJZjQZ+RRYPoS3IfJG0WeOL6CBGgF/aWoyeZ6FIhLI3gU83PUf16x+WtEb3NMm
+         czf0osq8pHLlKQaed0Z1H0Kn67+V2sYl1OU0wBCXKG5EXEglJzdLCKiLPybohkM6D7
+         55q12kdoFRxKSWum1hpQiNGkn+PWvwJqVmkVK7qgoIgolWETeKDs/D0/E8mOeUl7dh
+         ql90vWuefm4uA==
+Date:   Mon, 16 Aug 2021 14:41:19 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Lahav Schlesinger <lschlesinger@drivenets.com>,
+        netdev@vger.kernel.org, dsahern@kernel.org, davem@davemloft.net
+Subject: Re: [PATCH] vrf: Reset skb conntrack connection on VRF rcv
+Message-ID: <20210816144119.6f4ae667@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <d38916e3-c6d7-d5f4-4815-8877efc50a2a@gmail.com>
+References: <20210815120002.2787653-1-lschlesinger@drivenets.com>
+        <d38916e3-c6d7-d5f4-4815-8877efc50a2a@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <16acf1ad-d626-b3a3-1cad-3fa6c61c8a22@infradead.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 16, 2021 at 02:15:51PM -0700, Randy Dunlap wrote:
-> On 8/16/21 2:09 PM, Jonathan Lemon wrote:
-> > On Fri, Aug 13, 2021 at 01:30:26PM -0700, Randy Dunlap wrote:
-> > > There is no 8250 serial on S390. See commit 1598e38c0770.
-> > 
-> > There's a 8250 serial device on the PCI card.   Its been
-> > ages since I've worked on the architecture, but does S390
-> > even support PCI?
+On Mon, 16 Aug 2021 12:08:00 -0600 David Ahern wrote:
+> On 8/15/21 6:00 AM, Lahav Schlesinger wrote:
+> > To fix the "reverse-NAT" for replies.
 > 
-> Yes, it does.
+> Thanks for the detailed explanation and use case.
 > 
-> > > Is this driver useful even without 8250 serial?
-> > 
-> > The FB timecard has an FPGA that will internally parse the
-> > GNSS strings and correct the clock, so the PTP clock will
-> > work even without the serial devices.
-> > 
-> > However, there are userspace tools which want to read the
-> > GNSS signal (for holdolver and leap second indication),
-> > which is why they are exposed.
-> 
-> So what do you recommend here?
+> Looks correct to me.
+> Reviewed-by: David Ahern <dsahern@kernel.org>
 
-Looking at 1598e38c0770, it appears the 8250 console is the 
-problem.  Couldn't S390 be fenced by SERIAL_8250_CONSOLE, instead
-of SERIAL_8250, which would make the 8250 driver available?
+I get a sense this is a fix.
 
-For now, just disabling the driver on S390 sounds reasonable.
--- 
-Jonathan
+Fixes: 73e20b761acf ("net: vrf: Add support for PREROUTING rules on vrf device")
+?
+
+Or maybe it fixes commit a0f37efa8225 ("net: vrf: Fix NAT within a
+VRF")?
