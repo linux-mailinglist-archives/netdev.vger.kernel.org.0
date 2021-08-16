@@ -2,156 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86B9C3ED8FF
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 16:31:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34A7E3ED902
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 16:33:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232190AbhHPObb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 10:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36842 "EHLO
+        id S232078AbhHPOdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 10:33:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231445AbhHPOba (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 10:31:30 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67F99C0613C1
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 07:30:59 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mFddg-0008S1-5t; Mon, 16 Aug 2021 16:30:56 +0200
-Received: from pengutronix.de (unknown [IPv6:2a02:810a:8940:aa0:3272:cc96:80a9:1a01])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 4EC7A668425;
-        Mon, 16 Aug 2021 14:30:54 +0000 (UTC)
-Date:   Mon, 16 Aug 2021 16:30:52 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     linux-can <linux-can@vger.kernel.org>,
-        Stefan =?utf-8?B?TcOkdGpl?= <Stefan.Maetje@esd.eu>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 2/7] can: bittiming: allow TDC{V,O} to be zero and add
- can_tdc_const::tdc{v,o,f}_min
-Message-ID: <20210816143052.3brm6ny26jy3nbkq@pengutronix.de>
-References: <20210815033248.98111-1-mailhol.vincent@wanadoo.fr>
- <20210815033248.98111-3-mailhol.vincent@wanadoo.fr>
- <20210816084235.fr7fzau2ce7zl4d4@pengutronix.de>
- <CAMZ6RqK5t62UppiMe9k5jG8EYvnSbFW3doydhCvp72W_X2rXAw@mail.gmail.com>
- <20210816122519.mme272z6tqrkyc6x@pengutronix.de>
- <20210816123309.pfa57tke5hrycqae@pengutronix.de>
- <CAMZ6RqK0vTtCkSM7Lim2TQCZyYTYvKYsFVwWDnyNaFghwqToXg@mail.gmail.com>
+        with ESMTP id S229627AbhHPOdh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 10:33:37 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F34FC061764;
+        Mon, 16 Aug 2021 07:33:05 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id t3so19215781qkg.11;
+        Mon, 16 Aug 2021 07:33:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=ohvdkImJtmas5BJ9f24j7URfQFSDqGAKrZu4zufh8Es=;
+        b=Fts5l2TTYQeSTXf5sl+whP+powtc5W2aeL+6GmFNbaRj1VbE98sMv4b5vcC6t2zCRo
+         061M/OG1sA/hb8RXfypLlPaZk+T2Td2BuCXRWEVLhlDO18eZPQHigLn7IHwlbMxc85uB
+         MxluS/F+61Vzr18YNSKgS/B86wwb4v5Ies6LYBzsoa1Wopq3gK/2evF8oRNuZ2EdO8HT
+         ZJAYS9u+gZeqHSSGqqSGhA3eaH9u4aeiGDjVg8cszGygeOOFwmiLWodVR9g+MtXkzI5B
+         oMJUNAuW1SChkWAL6wJJ541qyI3eUYdutVgNykn0Fgid5VAX9D8pXtzu3b70jVocCstz
+         NLAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ohvdkImJtmas5BJ9f24j7URfQFSDqGAKrZu4zufh8Es=;
+        b=tGs5+F3XM30m0d3jdhkCQ+Oa1BlqY9gxgzMhDN9KjGJkUQ/NNQaws4Xv4RopHnREfE
+         uRS7hJHrRbuRgNv41/zmzVzsS26sBy4U8Qv50TN70f9/d3aE+5wHCHWF9aknjaUIOGaL
+         u1OySCoudJaYpShtKnGlJEN1y24H4eIUPM9txHItn6NxNpN7Ilf28yZRuevj7dXeh7NX
+         5iOo2pHXZNJet6kIWQ3Rjd94Ee/Dt9HHjOXXUOHWeTZ4Zy0WWm7EbtxvZgxcjDmUZre0
+         l403YHOu4udoU+bZo2QvLD7oJ587bcp5T4ZM1x/OgnQ6ir86++id5dbuLzQcE77HiH4M
+         yskA==
+X-Gm-Message-State: AOAM531QoJ2+/DfEcto69A2ISs0sbMWADJNSYEfKKxGfqVw8r0kEM0Fc
+        lmFVUAprX+kMg7TB9j+6yTO5lffUDvwU5Q==
+X-Google-Smtp-Source: ABdhPJxL6+B+cS4nBgq0kwRnZpu9AE9yBFeuO45YgAikvQl8xUsG+RrH6zbVezboCFt2uum+qiubcA==
+X-Received: by 2002:a37:c09:: with SMTP id 9mr7605464qkm.73.1629124384590;
+        Mon, 16 Aug 2021 07:33:04 -0700 (PDT)
+Received: from [192.168.1.49] (c-67-187-90-124.hsd1.ky.comcast.net. [67.187.90.124])
+        by smtp.gmail.com with ESMTPSA id c1sm4828177qtj.36.2021.08.16.07.33.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 Aug 2021 07:33:04 -0700 (PDT)
+Subject: Re: of_node_put() usage is buggy all over drivers/of/base.c?!
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20210814010139.kzryimmp4rizlznt@skbuf>
+From:   Frank Rowand <frowand.list@gmail.com>
+Message-ID: <9accd63a-961c-4dab-e167-9e2654917a94@gmail.com>
+Date:   Mon, 16 Aug 2021 09:33:03 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="huzcw6f2bihja6yc"
-Content-Disposition: inline
-In-Reply-To: <CAMZ6RqK0vTtCkSM7Lim2TQCZyYTYvKYsFVwWDnyNaFghwqToXg@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20210814010139.kzryimmp4rizlznt@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Vladimir,
 
---huzcw6f2bihja6yc
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 8/13/21 8:01 PM, Vladimir Oltean wrote:
+> Hi,
+> 
+> I was debugging an RCU stall which happened during the probing of a
+> driver. Activating lock debugging, I see:
 
-On 16.08.2021 23:10:29, Vincent MAILHOL wrote:
-[...]
-> After the discussion I had with Stefan, I assumed mcp251xxfd also
-> used relative TDCO.  However, in the mcp15xxfd family manual,
-> Equation 3-10: "Secondary Sample Point" on page 18 states that:
->=20
-> | SSP =3D TDCV + TDCO
->=20
-> As I commented above, this is the formula of the absolute
-> TDCO. Furthermore, in the example you shared, TDCO is
-> 16 (absolute), not 0 (relative).
+I took a quick look at sja1105_mdiobus_register() in v5.14-rc1 and v5.14-rc6.
 
-ACK
+Looking at the following stack trace, I did not see any calls to
+of_find_compatible_node() in sja1105_mdiobus_register().  I am
+guessing that maybe there is an inlined function that calls
+of_find_compatible_node().  This would likely be either
+sja1105_mdiobus_base_tx_register() or sja1105_mdioux_base_t1_register().
 
-> *BUT*, if this is the absolute TDCO, I just do not get how it can
-> be negative (I already elaborated on this in the past: if you
-> subtract from TDCV, you are measuring the previous bit...)
->=20
-> Another thing which is misleading to me is that the mcp15xxfd
-> family manual lists the min and max values for most of the
-> bittiming parameters but not for TDCO.
->=20
-> Finally, I did a bit of research and found that:
-> http://ww1.microchip.com/downloads/en/DeviceDoc/Section_56_Controller_Are=
-a_Network_with_Flexible_Data_rate_DS60001549A.pdf
+> 
+> [  101.710694] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:938
+> [  101.719119] in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 1534, name: sh
+> [  101.726763] INFO: lockdep is turned off.
+> [  101.730674] irq event stamp: 0
+> [  101.733716] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
+> [  101.739973] hardirqs last disabled at (0): [<ffffd3ebecb10120>] copy_process+0xa78/0x1a98
+> [  101.748146] softirqs last  enabled at (0): [<ffffd3ebecb10120>] copy_process+0xa78/0x1a98
+> [  101.756313] softirqs last disabled at (0): [<0000000000000000>] 0x0
+> [  101.762569] CPU: 4 PID: 1534 Comm: sh Not tainted 5.14.0-rc5+ #272
+> [  101.774558] Call trace:
+> [  101.794734]  __might_sleep+0x50/0x88
+> [  101.798297]  __mutex_lock+0x60/0x938
+> [  101.801863]  mutex_lock_nested+0x38/0x50
+> [  101.805775]  kernfs_remove+0x2c/0x50             <---- this takes mutex_lock(&kernfs_mutex);
+> [  101.809341]  sysfs_remove_dir+0x54/0x70
 
-Interesting. This data sheet is older than the one of the mcp2518fd.
+The __kobject_del() occurs only if the refcount on the node
+becomes zero.  This should never be true when of_find_compatible_node()
+calls of_node_put() unless a "from" node is passed to of_find_compatible_node().
 
-> This is *not* the mcp25xxfd datasheet but it is still from
-> Microship and as you will see, it is mostly similar to the
-> mcp25xxfd except for, you guessed it, the TDCO.
->=20
-> It reads:
-> | TDCMOD<1:0>: Transmitter Delay Compensation Mode bits
-> | Secondary Sample Point (SSP).
-> | 10 =3D Auto; measure delay and add CFDxDBTCFG.TSEG1; add TDCO
-> | 11 =3D Auto; measure delay and add CFDxDBTCFG.TSEG1; add TDCO
-> | 01 =3D Manual; Do not measure, use TDCV plus TDCO from the register
-> | 00 =3D Disable
->=20
-> | TDCO<6:0>: Transmitter Delay Compensation Offset bits
-> | Secondary Sample Point (SSP). Two's complement; offset can be
-> positive, zero, or negative.
-> | 1111111 =3D -64 x SYSCLK
-> | .
-> | .
-> | .
-> | 0111111 =3D 63 x SYSCLK
-> | .
-> | .
-> | .
-> | 0000000 =3D 0 x SYSCLK
->=20
-> Here, you can clearly see that the TDCO has the exact same range
-> as the one of the mcp25xxfd but the description of TDCMOD
-> changes, telling us that:
->=20
-> | SSP =3D TDCV (measured delay) + CFDxDBTCFG.TSEG1 (sample point) + TDCO
->=20
-> Which means this is a relative TDCO.
->=20
-> I just do not get how two documents from Microchip can have the
-> TDCO relative range of -64..63 but use a different formula. I am
-> sorry but at that point, I just do not understand what is going
-> on with your controller...
+In both sja1105_mdiobus_base_tx_register() and sja1105_mdioux_base_t1_register()
+a from node ("mdio") is passed to of_find_compatible_node() without first doing an
+of_node_get(mdio).  If you add the of_node_get() calls the problem should be fixed.
 
-Me neither. I'll ask my microchip contact.
+-Frank
 
-regards,
-Marc
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+> [  101.813166]  __kobject_del+0x3c/0x80
+> [  101.816733]  kobject_put+0xf8/0x108
+> [  101.820211]  of_node_put+0x18/0x28
+> [  101.823602]  of_find_compatible_node+0xa8/0xf8    <--- this takes raw_spin_lock_irqsave(&devtree_lock)
+> [  101.828036]  sja1105_mdiobus_register+0x264/0x7a8
+> 
+> The pattern of calling of_node_put from under the atomic devtree_lock
+> context is pretty widespread in drivers/of/base.c.
+> 
+> Just by inspecting the code, this seems to be an issue since commit:
+> 
+> commit 75b57ecf9d1d1e17d099ab13b8f48e6e038676be
+> Author: Grant Likely <grant.likely@linaro.org>
+> Date:   Thu Feb 20 18:02:11 2014 +0000
+> 
+>     of: Make device nodes kobjects so they show up in sysfs
+> 
+>     Device tree nodes are already treated as objects, and we already want to
+>     expose them to userspace which is done using the /proc filesystem today.
+>     Right now the kernel has to do a lot of work to keep the /proc view in
+>     sync with the in-kernel representation. If device_nodes are switched to
+>     be kobjects then the device tree code can be a whole lot simpler. It
+>     also turns out that switching to using /sysfs from /proc results in
+>     smaller code and data size, and the userspace ABI won't change if
+>     /proc/device-tree symlinks to /sys/firmware/devicetree/base.
+> 
+>     v7: Add missing sysfs_bin_attr_init()
+>     v6: Add __of_add_property() early init fixes from Pantelis
+>     v5: Rename firmware/ofw to firmware/devicetree
+>         Fix updating property values in sysfs
+>     v4: Fixed build error on Powerpc
+>         Fixed handling of dynamic nodes on powerpc
+>     v3: Fixed handling of duplicate attribute and child node names
+>     v2: switch to using sysfs bin_attributes which solve the problem of
+>         reporting incorrect property size.
+> 
+>     Signed-off-by: Grant Likely <grant.likely@secretlab.ca>
+>     Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
+>     Cc: Rob Herring <rob.herring@calxeda.com>
+>     Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+>     Cc: David S. Miller <davem@davemloft.net>
+>     Cc: Nathan Fontenot <nfont@linux.vnet.ibm.com>
+>     Cc: Pantelis Antoniou <panto@antoniou-consulting.com>
+> 
+> because up until that point, of_node_put() was:
+> 
+> void of_node_put(struct device_node *node)
+> {
+> 	if (node)
+> 		kref_put(&node->kref, of_node_release);
+> }
+> 
+> and not:
+> 
+> void of_node_put(struct device_node *node)
+> {
+> 	if (node)
+> 		kobject_put(&node->kobj);
+> }
+> 
+> Either I'm holding it very, very wrong, or this is a very severe
+> oversight that just happened somehow to go unnoticed for 7 years.
+> 
+> Please tell me it's me.
+> 
 
---huzcw6f2bihja6yc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEadpkACgkQqclaivrt
-76nijQf/f5cgGi+vnS1wIdty9F4nhLbpuwe1ue79JyYYwv+BgvHv7LrERh0Gd6SB
-r8yrq5x7ZTXqmRci1fMH0gQF6DctKaKnzU69MV6P00CbtbOET7uXNDbvtqoX59Y8
-RNNQYgNnaWXXMDgHJJeOQhiJeFzkMlStNJbNENoDU2+HJkGTVag+XAKbtgKxWE2O
-33x6ejiAMRpKiSPNRruLy8HzVVYzpOc7LgGhB7oHyOsJignUiSphSa+ew/oErrqI
-AwGh6CBrsq7lC+trq8GdL+vRWkMaW0YuUbgjz6zRWV4I1aH5d4wmWh9Sr1UzkcGY
-vtP6s1l8k4rnaothQa1caTRRSlekOA==
-=1N+4
------END PGP SIGNATURE-----
-
---huzcw6f2bihja6yc--
