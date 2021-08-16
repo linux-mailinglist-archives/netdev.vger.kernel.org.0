@@ -2,175 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3D7D3ED365
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 13:49:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BF563ED378
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 13:59:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236706AbhHPLtj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 07:49:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55380 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236267AbhHPLtX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 07:49:23 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47A4CC0617AD
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 04:48:52 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mFb6j-0004bt-L5; Mon, 16 Aug 2021 13:48:45 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mFb6i-0004Zb-SF; Mon, 16 Aug 2021 13:48:44 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, David Jander <david@protonic.nl>
-Subject: [PATCH v1 3/3] can: dev: provide optional GPIO based termination support
-Date:   Mon, 16 Aug 2021 13:48:40 +0200
-Message-Id: <20210816114840.17502-3-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210816114840.17502-1-o.rempel@pengutronix.de>
-References: <20210816114840.17502-1-o.rempel@pengutronix.de>
+        id S232885AbhHPMAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 08:00:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57897 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229884AbhHPMAK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 08:00:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1629115178;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=JnuIBapx/DIqUD04cPgw31GDRqK+09qdpfB7ZewdXOc=;
+        b=VSJAcvEmCYoEo8JIzg80wxhJYWMA3tqFCJ5kAbT+G7x+d9CNHNgPBwLCfzKMptLmwIfxWG
+        yo6m53I4j6NJpr6VEh2cTU5n8tJUo04jJetV7aVODWgHXt3T9nZLBk4os3x6naOxOhNtZ9
+        A4omtPGokq3INkqZWSPRdhLO6HN92Cg=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-53-jCIOrR_oO8aARdS4pqnafA-1; Mon, 16 Aug 2021 07:59:36 -0400
+X-MC-Unique: jCIOrR_oO8aARdS4pqnafA-1
+Received: by mail-ed1-f69.google.com with SMTP id x24-20020aa7dad8000000b003bed477317eso2593485eds.18
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 04:59:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JnuIBapx/DIqUD04cPgw31GDRqK+09qdpfB7ZewdXOc=;
+        b=eTk8dPI50dX8kCpePN7RqOv/zIfkXjrpcMfr3PI7Fw1APxLWXHBCKD32YPg0GCtVyb
+         TYYBnXWqKK8EhiHhO6j6upb1IrPET5zOQh2F+K2I9704EEm/fvVpJKxOacjRs9vOKkjG
+         3emckDKSM5evTIp1hizM9svNjyvGwrb05UfF0C7MDRcN0bWCWJRFsCUVWzRl+IJRRm5P
+         +DUoLlHICLWa1QN7PnYytRRd63d9MZasCU92Uf1Z60hK4bS9WjHcvt4N02akjToqgq4y
+         1M3B7+Gz3wOtLxWDZetd4WXjtgOe82LsT0Df3gtkWISJbURcSPgGQr8pHtzUv54lYv3x
+         HwDA==
+X-Gm-Message-State: AOAM530AO3sRmO02iAL3ViAg9UrZOwwZCLTDVnB47uVgF/Csz5RE4VTZ
+        jNpA7NAI7EeSN/if2Of5KlBcJHhRiWVgINGzZ8HlNbZTWvDx1mtRt/H0VVi9/p2nJtKAJWkcply
+        QMMiqjMrVOODyOUhA
+X-Received: by 2002:a17:906:f8d5:: with SMTP id lh21mr15409869ejb.6.1629115175644;
+        Mon, 16 Aug 2021 04:59:35 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw3hyTtQS+QPnGyvy7sgct91YG8I8LsQGaYkTACmr0cG34RW2EcT8JUcuLHqeiSdRvz+t1/MA==
+X-Received: by 2002:a17:906:f8d5:: with SMTP id lh21mr15409848ejb.6.1629115175326;
+        Mon, 16 Aug 2021 04:59:35 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id c28sm3595681ejc.102.2021.08.16.04.59.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Aug 2021 04:59:34 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 59D04180185; Mon, 16 Aug 2021 13:59:34 +0200 (CEST)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        cake@lists.bufferbloat.net, Pete Heist <pete@heistp.net>
+Subject: [PATCH net] sch_cake: fix srchost/dsthost hashing mode
+Date:   Mon, 16 Aug 2021 13:59:17 +0200
+Message-Id: <20210816115917.16800-1-toke@redhat.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For CAN buses to work, a termination resistor has to be present at both
-ends of the bus. This resistor is usually 120 Ohms, other values may be
-required for special bus topologies.
+When adding support for using the skb->hash value as the flow hash in CAKE,
+I accidentally introduced a logic error that broke the host-only isolation
+modes of CAKE (srchost and dsthost keywords). Specifically, the flow_hash
+variable should stay initialised to 0 in cake_hash() in pure host-based
+hashing mode. Add a check for this before using the skb->hash value as
+flow_hash.
 
-This patch adds support for a generic GPIO based CAN termination. The
-resistor value has to be specified via device tree, and it can only be
-attached to or detached from the bus. By default the termination is not
-active.
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Fixes: b0c19ed6088a ("sch_cake: Take advantage of skb->hash where appropriate")
+Reported-by: Pete Heist <pete@heistp.net>
+Tested-by: Pete Heist <pete@heistp.net>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- drivers/net/can/dev/dev.c | 54 +++++++++++++++++++++++++++++++++++++++
- include/linux/can/dev.h   |  7 +++++
- 2 files changed, 61 insertions(+)
+ net/sched/sch_cake.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/dev/dev.c b/drivers/net/can/dev/dev.c
-index 311d8564d611..b4a6c7a6fc18 100644
---- a/drivers/net/can/dev/dev.c
-+++ b/drivers/net/can/dev/dev.c
-@@ -15,6 +15,7 @@
- #include <linux/can/dev.h>
- #include <linux/can/skb.h>
- #include <linux/can/led.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/of.h>
- 
- #define MOD_DESC "CAN device driver interface"
-@@ -400,10 +401,57 @@ void close_candev(struct net_device *dev)
- }
- EXPORT_SYMBOL_GPL(close_candev);
- 
-+static int can_set_termination(struct net_device *ndev, u16 term)
-+{
-+	struct can_priv *priv = netdev_priv(ndev);
-+	int set;
-+
-+	if (term == priv->termination_gpio_ohms[CAN_TERMINATION_GPIO_ENABLED])
-+		set = 1;
-+	else
-+		set = 0;
-+
-+	gpiod_set_value(priv->termination_gpio, set);
-+
-+	return 0;
-+}
-+
-+static int can_get_termination(struct net_device *ndev)
-+{
-+	struct can_priv *priv = netdev_priv(ndev);
-+	struct device *dev = ndev->dev.parent;
-+	struct gpio_desc *gpio;
-+	u16 term;
-+	int ret;
-+
-+	/* Disabling termination by default is the safe choice: Else if many
-+	 * bus participants enable it, no communication is possible at all.
-+	 */
-+	gpio = devm_gpiod_get_optional(dev, "termination", GPIOD_OUT_LOW);
-+	if (IS_ERR(gpio))
-+		return dev_err_probe(dev, PTR_ERR(gpio),
-+				     "Cannot get termination-gpios\n");
-+
-+	ret = device_property_read_u16(dev, "termination-ohms", &term);
-+	if (ret)
-+		return ret;
-+
-+	priv->termination_const_cnt = ARRAY_SIZE(priv->termination_gpio_ohms);
-+	priv->termination_const = priv->termination_gpio_ohms;
-+	priv->termination_gpio = gpio;
-+	priv->termination_gpio_ohms[CAN_TERMINATION_GPIO_DISABLED] =
-+		CAN_TERMINATION_DISABLED;
-+	priv->termination_gpio_ohms[CAN_TERMINATION_GPIO_ENABLED] = term;
-+	priv->do_set_termination = can_set_termination;
-+
-+	return 0;
-+}
-+
- /* Register the CAN network device */
- int register_candev(struct net_device *dev)
- {
- 	struct can_priv *priv = netdev_priv(dev);
-+	int err;
- 
- 	/* Ensure termination_const, termination_const_cnt and
- 	 * do_set_termination consistency. All must be either set or
-@@ -419,6 +467,12 @@ int register_candev(struct net_device *dev)
- 	if (!priv->data_bitrate_const != !priv->data_bitrate_const_cnt)
- 		return -EINVAL;
- 
-+	if (!priv->termination_const) {
-+		err = can_get_termination(dev);
-+		if (err)
-+			return err;
-+	}
-+
- 	dev->rtnl_link_ops = &can_link_ops;
- 	netif_carrier_off(dev);
- 
-diff --git a/include/linux/can/dev.h b/include/linux/can/dev.h
-index 27b275e463da..82bdc5b09a3a 100644
---- a/include/linux/can/dev.h
-+++ b/include/linux/can/dev.h
-@@ -32,6 +32,11 @@ enum can_mode {
- 	CAN_MODE_SLEEP
- };
- 
-+enum can_termination_gpio {
-+	CAN_TERMINATION_GPIO_DISABLED = 0,
-+	CAN_TERMINATION_GPIO_ENABLED,
-+};
-+
- /*
-  * CAN common private data
-  */
-@@ -55,6 +60,8 @@ struct can_priv {
- 	unsigned int termination_const_cnt;
- 	const u16 *termination_const;
- 	u16 termination;
-+	struct gpio_desc *termination_gpio;
-+	u16 termination_gpio_ohms[2];
- 
- 	enum can_state state;
- 
+diff --git a/net/sched/sch_cake.c b/net/sched/sch_cake.c
+index 951542843cab..28af8b1e1bb1 100644
+--- a/net/sched/sch_cake.c
++++ b/net/sched/sch_cake.c
+@@ -720,7 +720,7 @@ static u32 cake_hash(struct cake_tin_data *q, const struct sk_buff *skb,
+ skip_hash:
+ 	if (flow_override)
+ 		flow_hash = flow_override - 1;
+-	else if (use_skbhash)
++	else if (use_skbhash && (flow_mode & CAKE_FLOW_FLOWS))
+ 		flow_hash = skb->hash;
+ 	if (host_override) {
+ 		dsthost_hash = host_override - 1;
 -- 
-2.30.2
+2.32.0
 
