@@ -2,389 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33DE83EDC68
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 19:28:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D344E3EDC90
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 19:48:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231527AbhHPR3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 13:29:16 -0400
-Received: from mail-mw2nam10on2135.outbound.protection.outlook.com ([40.107.94.135]:11936
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        id S231211AbhHPRsk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 13:48:40 -0400
+Received: from mail-eopbgr00054.outbound.protection.outlook.com ([40.107.0.54]:61062
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230468AbhHPR3O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 13:29:14 -0400
+        id S229613AbhHPRsj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 13:48:39 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kkDMkuYinqTWXuSGdKjWplTTLVEYvD0n0AeitWm68HT1vey6j7JHipo85rlV/nMKmxxxeqM89noq4tBX4DUdFyekQfcpoDxpfxUaoeaXeWw6ZB1pwtNGtLbycDiD6IGyo2Z7F04Do67d6+U9bTGST+Q6Sx86ZwuzHsg2ZQmpRxRf6L7fktyrIRjAV72WG9DC3B/R7NvQOLPD/+Bvdt2AS3DRJb4/9zFNThUswrRhDaVpqe+u4glsW6TyZlbhbJQ5mplEAj+0by7AElewzldRTWUhNWiViKWLoO/WJ4pnDthRAu7T3UZPLPICKgFCEwwnYG9DGivY0gPZxhspBZxCsw==
+ b=lqHF2IaYcnTT2QmEHnxknO6ZlZZoqu+eOFvExj5dQrWbH/nfIGtZgwQlW9UUVdFrBdKK82a2c6XP1u7mkR4ZGChyxQmXLW5icQzDHpSPzgIZdnZNIDFFhTG2GqvxAaMOHLrj8v/nFDaHQ62fpSEtCJR3fa8xwtgzsCGACAg978YJBqJT8I5OohbDxknPrY/jqdl0ntCGU8D1hEOjIrtPx9OugiUixoavjo6SSsv7gNR9bP5a4M7f9tWv/8nFUePaF5OxKDL/kvZhsagqrKZr29iWG9aKtmyH9QbSewBXX3TaUxIbTEepDsBAAfaBau1kqLLCxYVm8zIBodbSJEZs8g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hHYh+59p26U2UEzCDzT7jwLliJZHyK2g/ne2bVbIPAI=;
- b=VK3flP4Xsefbxbx6oEQvBWLJPos4oPreI9oPA4YhfmI0/NcV19rDwoa1HYHMQfdp3rNLTNwKOUqIwJXiWym/Se+M51DwyeGbXxDcD/LbC73aJrRUoN0v/3ixnD4ApOaHn5u+REjlwSDZoj4j2+hTbpaDtt5OqamqshJ0ySZWIxNo84IoqtX4dWivnxtjfZkxUM/KUq+R+YaoxHTKM9P7bZZaZ9maRTRD3Pfua7YnfLbl5VeeO/+Iqu7wUIbLxGFJHA+mtvtZy4h+KSVVbJjD9QLpO7bLPwtvaG3S5C+d++7Hsfv65f58uFhJHJLKhit//og6igVzvghTPKfK6vEjkQ==
+ bh=xI+4mjfXwXxJcwjO+puhYLTfGQtv11Ru5OHqqqPibKY=;
+ b=YLQJjpOOU6BpFMGH3ID/V1X1fgcqs9+867Dy5j1BejWcBUIOEYNqUwVN6vZ5t04028LUDymh1eaCAbcxYE9Eo5DWFFDeUlOTlqis8SwXuzGmrPWyItFWC6bXE2ewKPKemrhaDQWAXnIKWqsMfpY0lIwaB+vl6BTufos61uUj/ibGXdsDV78UnMiECcGxod8GRHuV/mhc1m4KIjFiEJxulRwtsQxczI2RVLB+jWuPoyCUrXGBGLXz/0SnuJy+6Yb+KlvEHVOVtxfNwps/2REc8DCGJEH+MK8Pd8p3OC5xkZqGyFXLtH3K71+m8GOIfOGJywYZFFZp/LlTBzPP8ZFulA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hHYh+59p26U2UEzCDzT7jwLliJZHyK2g/ne2bVbIPAI=;
- b=Y2wLsNBjtIbhX2b89vDjzy5ketAUC/2M5O/sWgybGg1fgH3/Xk9ADGV2VIBkGQb8Ua831dvUEwT1E+zdc9EfR4zNnveKlGnWcnUpMte9a0I8W+3ep0NUFBjlxZb5jcfRL09PhDj1Aub5LifuwlwV2R51MW6yvpU7jhmJT7Tmh+o=
-Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
- by MW2PR2101MB1820.namprd21.prod.outlook.com (2603:10b6:302:b::32) with
+ bh=xI+4mjfXwXxJcwjO+puhYLTfGQtv11Ru5OHqqqPibKY=;
+ b=XajLAmbwpUZB/2uu//cncTYH33kWJehFEVS23mv8FcmwTueR9oa5M5P5OUbLY9T4KwilSaDvWqTvT/Z/mT2jrqmW/7II8GpwlQruUAVWNlFnMFO1291RvnbTtKzKzf29dS4pjrXcF3CRAIVsct6ssvN/m8CxfEEJTqrfTYnT3CE=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB6272.eurprd04.prod.outlook.com (2603:10a6:803:fe::23) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.7; Mon, 16 Aug
- 2021 17:28:31 +0000
-Received: from MWHPR21MB1593.namprd21.prod.outlook.com
- ([fe80::e8f7:b582:9e2d:ba55]) by MWHPR21MB1593.namprd21.prod.outlook.com
- ([fe80::e8f7:b582:9e2d:ba55%2]) with mapi id 15.20.4436.012; Mon, 16 Aug 2021
- 17:28:31 +0000
-From:   Michael Kelley <mikelley@microsoft.com>
-To:     Tianyu Lan <ltykernel@gmail.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "joro@8bytes.org" <joro@8bytes.org>,
-        "will@kernel.org" <will@kernel.org>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.17; Mon, 16 Aug
+ 2021 17:48:04 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4415.023; Mon, 16 Aug 2021
+ 17:48:04 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Hongbo Wang <hongbo.wang@nxp.com>
+CC:     Andrew Lunn <andrew@lunn.ch>, Hongjun Chen <hongjun.chen@nxp.com>,
+        Po Liu <po.liu@nxp.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        Leo Li <leoyang.li@nxp.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "ardb@kernel.org" <ardb@kernel.org>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "pgonda@google.com" <pgonda@google.com>,
-        "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "rppt@kernel.org" <rppt@kernel.org>,
-        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "saravanand@fb.com" <saravanand@fb.com>,
-        "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
-        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "rientjes@google.com" <rientjes@google.com>,
-        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
-        "tj@kernel.org" <tj@kernel.org>
-CC:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        vkuznets <vkuznets@redhat.com>,
-        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
-        "dave.hansen@intel.com" <dave.hansen@intel.com>
-Subject: RE: [PATCH V3 08/13] HV/Vmbus: Initialize VMbus ring buffer for
- Isolation VM
-Thread-Topic: [PATCH V3 08/13] HV/Vmbus: Initialize VMbus ring buffer for
- Isolation VM
-Thread-Index: AQHXjUfrruzh6q5VrEqe79CjktZwpKt2SJQQ
-Date:   Mon, 16 Aug 2021 17:28:30 +0000
-Message-ID: <MWHPR21MB1593FFD7F3402753751F433CD7FD9@MWHPR21MB1593.namprd21.prod.outlook.com>
-References: <20210809175620.720923-1-ltykernel@gmail.com>
- <20210809175620.720923-9-ltykernel@gmail.com>
-In-Reply-To: <20210809175620.720923-9-ltykernel@gmail.com>
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [EXT] Re: [PATCH v1] arm64: dts: fsl: ls1028a-rdb: Add dts file
+ to choose swp5 as dsa master
+Thread-Topic: [EXT] Re: [PATCH v1] arm64: dts: fsl: ls1028a-rdb: Add dts file
+ to choose swp5 as dsa master
+Thread-Index: AQHXj+75z1qD/BGTVEaJLO5FNXuRQ6txaSUAgAANIYCAAAMJgIAEL8wAgADEv4A=
+Date:   Mon, 16 Aug 2021 17:48:03 +0000
+Message-ID: <20210816174803.k53gqgw45hda7zh2@skbuf>
+References: <20210813030155.23097-1-hongbo.wang@nxp.com>
+ <YRZvItRlSpF2Xf+S@lunn.ch>
+ <VI1PR04MB56773CC01AB86A8AA1A33F9AE1FA9@VI1PR04MB5677.eurprd04.prod.outlook.com>
+ <20210813140745.fwjkmixzgvikvffz@skbuf>
+ <VI1PR04MB56777E60653203A471B9864EE1FD9@VI1PR04MB5677.eurprd04.prod.outlook.com>
+In-Reply-To: <VI1PR04MB56777E60653203A471B9864EE1FD9@VI1PR04MB5677.eurprd04.prod.outlook.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=151d8e1b-315b-4252-a2ea-b7f2a7065a33;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-08-16T15:15:38Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
+authentication-results: nxp.com; dkim=none (message not signed)
+ header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fa5be945-23b3-4ed1-df7c-08d960db447d
-x-ms-traffictypediagnostic: MW2PR2101MB1820:
+x-ms-office365-filtering-correlation-id: 175511aa-bf6a-4b4b-df5f-08d960ddff94
+x-ms-traffictypediagnostic: VI1PR04MB6272:
 x-ms-exchange-transport-forked: True
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <MW2PR2101MB1820F281C0DAC2708EC4E328D7FD9@MW2PR2101MB1820.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4125;
+x-microsoft-antispam-prvs: <VI1PR04MB62723CC59A9E528A96E3CAE8E0FD9@VI1PR04MB6272.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Cy1VRzpxjngCTtD+qEfFJY00HjkGcEaStnVTRNFU6y1O13ZQLFZKFSxdfHf/+QqYgpCedc0SZ1CWAGNTsKy1TBF6x6+lJSLB9mtGeH5K1GtsfLsjB160btEG3867oJNlMTPviOaei9km64uNhBe2HnMiuB33yhkvbgPFODMbJ0BP7Br8DGKtyPgXh1nxwMDdofSDR6YOpRWoNHecKi8DCkfhIwbVJmimFuEoBLw0KCsJyBPtoKYRMSRCKFDxmFL6zwLSfOeIaczASCa1aMJ1sgP3w76hFgc1iV3kmscUEUs8C6owAOzskGO7RfmjMmqjAR3/LkqoHpnc8Z5vdOX/YMoCZB1yTYyWyhM61EMoCuRv6Do/lMcTbYs1ADp22nQ2tG9Pmo5O5JJCRft5XeZjCrulyjqwV5+36dKTZ1z9IVL09SYmGHn8ezW8uqG9UwTETZciM0B4FnNNNiHpgXsmRDFC75EGrHsXIJRM0ZaLP38C7EWsKDSObAeKsfzCjK6IzkXnvNpJCWzGOPGtyh8OT5PWQsm6q3stGP7uqCdI4glnxRvFBZH3nfZ2254yVj1ksQOWOboqhMx5dhsYDfZBE4V6hsYSfyU3LA9sUycKQ6gxO6iWZtURlE4P5//DsX1bQvkYylE2ijry3PKZ0qFwXCHyknwv8Hn3mOSluXPLy1KSplmZWTbBd9DGdxTs+9PC7mUSbBlqyMR7njvxCt2ft/3J+ERcOOEWsYZ+qbXevyQ=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR21MB1593.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6506007)(52536014)(7696005)(55016002)(5660300002)(71200400001)(122000001)(54906003)(8990500004)(38100700002)(110136005)(316002)(8936002)(921005)(8676002)(86362001)(83380400001)(82950400001)(82960400001)(508600001)(10290500003)(7406005)(2906002)(9686003)(7416002)(38070700005)(66946007)(66556008)(66476007)(33656002)(64756008)(26005)(66446008)(4326008)(186003)(76116006);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: jaVSr+SEiDQPhxhZ3IqdvAtuWpHy0UXdNHHqNj8XRYoYniDoy1a5XPyVoWjOLqf/a8pY8G436/anth32TGBxMW6lhHyx5OL2AaZSrUy7YwnYOZ5/wF1ST48sBqKEnK7yzJ+3bsua/xt1+M4np1VUZievU9GFGB3T3NfaqNDakr4Vg9elCYq+3KETN/6lv5jssgCkjgllD/gqLTo+EAmPLM3SWm1sYA9fipm/f5cKNWP2olaXmw0LX9QZflctvx4BR+sEQdR/bpmaHYub1HYQ+bX8yHZo48kUM1LFDzagraz5aYJ/7j/d7bJN9zkSduDCnhe5YAYVIJMNEOthyfgMVaNMqBaraaTtsW4uqKig/bfIMHHWNoMddGIhU3L3Ndng+zhY5NUzgDatseFohWFl/TYrBkopOhnSAS2KhiXhWfxG72wyNg1YFo5KWItOGRTKTS+pOg+jaXf9NHjQlrF3MCYbzzYGHTgGOqtnOxaa/hdE7WPNWmVlsuM0KxEz+5cFWe1ftIBGmjmERbWpYEdtqVCh9bly87swG5Zvx2lYK2BbLtHiy92INFLqj/xeSdrvumfF2l5MXxwc467MP9p8Xh1FRBkPv4i4XYpvL/MQi/9UW+cErdStAc0jzISXsThXaoZwngVov0BTejBrYbSWLdigteJnI1rsvA/QCUmhCUlE7H0haw/mq8gcZi5vE4eVWeibPeYCN9qluWg+bPnPdr9rmAUCduIONZ5YPjkLSAf9EDnXXVUUNIC0at3oqCkZF5XD1obdG5AlKT5DDTHkqfiZ2yFk0tA1F/EvjW8HEv2BWNCKO9B2+7PyavG68wti
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(86362001)(6862004)(33716001)(4326008)(8676002)(8936002)(71200400001)(38100700002)(2906002)(83380400001)(6486002)(26005)(38070700005)(5660300002)(7416002)(6506007)(316002)(54906003)(6636002)(66446008)(1076003)(966005)(9686003)(186003)(508600001)(44832011)(64756008)(122000001)(76116006)(6512007)(66476007)(66556008)(66946007);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ben7dDwl6TZm/A+N/mESE+SLutP1QPFf2Evz2K8zpwOXL+3Fw4+ul9VQ4Byi?=
- =?us-ascii?Q?7Gf+0dYjVak0urDn4bWjGwnmm//jxOh5Cuvt9B3BBX/4hF/P/pq8m6b9Fuvo?=
- =?us-ascii?Q?Y+hXelCN97QDw9MBF4eJkiTZ6BHoox3CUGWhZBoKicY3QRLEU99MN7mb6RDF?=
- =?us-ascii?Q?ItRMBNO/Ih+8+Wq/HbdwnP4chSQaD+v74qs0UnSfgnJX/noEqATo2GZVWzEz?=
- =?us-ascii?Q?zq+8Ty733WGSxfI/w0v8yClegLTL562gLcezYYNwAspfZedQo3i/GZpim/OD?=
- =?us-ascii?Q?kjZ1/nnc12JsPyueFETezNo2QFSjqrCzhhdond423+RvT1fGuVBMo+uKA2a5?=
- =?us-ascii?Q?eVIT/x3YTT9szUYUox6KHY24Cyjp0HM9G62kPuHLcZNjdlbOSvGx6SrwOgGY?=
- =?us-ascii?Q?iFDl9L3uo2IL+OjfmPZjsIeqsBqEiF9IGSqrelaEIG9XQ+8ZRhp/VndPGDC3?=
- =?us-ascii?Q?XBB6kDyUkmzNI6KTqCRsjcnNzz6dzPmBQ3kr+OwOSXjEMfcHWIDNPYllANVY?=
- =?us-ascii?Q?h+h1fk028vIxt+73vPzCngrznAjrnYEJTFKBtNMSdfZS57viSgBMf0hSuysY?=
- =?us-ascii?Q?am2Gl8qESbs9/SHNNwYpIT9yFkApIhsNvdSVEJcNHxMo5DdGdy1+UkB8FaAC?=
- =?us-ascii?Q?R4Bp924wI+MLpwVVfCxylPPIiUz7Qa6WSe8V2eKb9wn6S4i3SAFFfgGkqKwg?=
- =?us-ascii?Q?2OpesXz6Fgo/qsZbxz+VEhLXHQQPFPIuBnOsOT31IVw0BxM76J4gIFOGSDPn?=
- =?us-ascii?Q?KxZFlzvZai8C9rjiLMR4t5tWEmS2fbrVqyUMfvXd+Mah4jieWwnOwUv0sWmW?=
- =?us-ascii?Q?rdMlLRz8lPuoyv6o2FdOt6RNZ5ln2gR3QRdOBiNfaA60xBT/otCkoUO8m5IN?=
- =?us-ascii?Q?0EODYclRNbkRDBt19m32vrgirCZd/5sXQ8SYDUbc5vYY5pSDjC0+A+9h00uE?=
- =?us-ascii?Q?/0x8r6vTDOTaFP4HmeMAkGfHETbt7TwmBEo1S55Pmg9OsWUWFhlXCTUrQE3h?=
- =?us-ascii?Q?VT0V5NcDWrY1fuFfKLIbfFkTOhMBpT11mpdQ/1WsA7xSuyS27AhAUdUWTb/j?=
- =?us-ascii?Q?qCfbkGfmfsZLkiDbvZ0obXWsWPsETqKLNn9r1MNpI3JVrZx2SrzU9jLZmrap?=
- =?us-ascii?Q?4DrRcFfT86vru5OOiFY8brUK+nsNEOclgh6tQwYmcbdaPaH1536wsFI5Gzje?=
- =?us-ascii?Q?nnV4sT41eduDc4Xo5GDjg2+4D9Ll4pngjhtNbmakUwmRpfWkMx3zddtYMhNc?=
- =?us-ascii?Q?/rTCWr6WOk2VpjF1suaymdG3sBEGdsuHVYdJe1en7H7tndS8MJ91SpOE29kf?=
- =?us-ascii?Q?GLDSGqMPurTGO/wsxu9yMAws?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?cn2xbqKCFoZ/YoUqLttsLuomqXC/AKEN8zkqhHadrX5EFrnSjxoyOdKJWTOO?=
+ =?us-ascii?Q?jPMYF7uXa00OREVnwE88UCxFT5RVKkXSlFN11u1gi5vawhcQmemGnTzRQIDs?=
+ =?us-ascii?Q?9z+XihGT9QVfD1Kwaf3r6mbErraiyihIRgVBOeWogbmMOZD/sMYuWbYJzKdO?=
+ =?us-ascii?Q?ZoTPQCEE6VAeB3zTVJOs5B+n28sren/xjBQIyY/qPqPdnocBkqiGBu/m6gBK?=
+ =?us-ascii?Q?dLxITiCYf+Ry3BO9I6o4USuYpMP8O2WTVBxPHTp1BvShlrzJS0MLVDkN6ihQ?=
+ =?us-ascii?Q?3Po4TjOsjigwtE8xyZVkDOYhnleeh5bqyNyTvMK5hh46/ANrT7zlBF0gAlkG?=
+ =?us-ascii?Q?cp8+Vg+1Z2KySthbSf0Nbq62Uo537/8pjXPx+xjTe+CF+cYXbwE5wCezObOa?=
+ =?us-ascii?Q?2IMde6CpaNgOE401Pzy4wbEYqKKkfEeaItmRYKQpBTVeSWg6ECvQriUCB44H?=
+ =?us-ascii?Q?WNjm2j8rEEI2RXmM1qSA4MrhjBWu2jfxzUbiUYPFclX+d9qKg//4qHX9caSH?=
+ =?us-ascii?Q?LSJJnRgY3KKmpb2zkODvG5rcexcn6+4+JJ+E3awl/a9L54xctBKYdwNRH8UB?=
+ =?us-ascii?Q?XfIIK/uZBQdEdL6GUoH12vsAYTtlkj4EtyGqT8EEiElJ9a+ybf+dA1yw3jUY?=
+ =?us-ascii?Q?+wz98R9jujGQvscJmipqPltTRJaTBDvP/3gf6SsKjaBg06baShQ4xKg31KYT?=
+ =?us-ascii?Q?rJ0k67zvNyuJPUZ1W8s2rldYqRpjYIENHSBLSKPKQ4YCwZq7KVi8f9pFzi7a?=
+ =?us-ascii?Q?tHotz7Yf4Bnx/JNkl3VKGg3TaTsX8XhqFR9CrlbF8EvH37zWc8n29xqOZhs7?=
+ =?us-ascii?Q?eF0zlB/AcJ2zegZsOEWrOCvROQ6I6qFrnz4Lu5PENr98JyTw3qtOYpBLIpuo?=
+ =?us-ascii?Q?MF4l6F6B8vbblqXK7Y8eU1ywjhaAgN7+WdqTl31Gwwf7HaigdXgW1ljvd+y+?=
+ =?us-ascii?Q?pKdsrtg8ycUJEpSfIjNmyGdCUGiqoaTSWq6KP5Uv+n+bwpxiMBCyjwKfaR1K?=
+ =?us-ascii?Q?4WmYZ8XtUkTu/9qbIwHMaNa4EG+tYlRywcirmA5SKXaShgGYwZ9gjx/9XIYD?=
+ =?us-ascii?Q?q4KeT8GNSkVtjOIzuvka2CEUqTrMqyZ6vnVqZGNQr11tP3SPN8F9uFp4+NtM?=
+ =?us-ascii?Q?KQEJF+isCKVJKQUNYxEVjF9Vco0KN3cCsmkD+oZJvM5Tj4qQb7sY7IuO2xwH?=
+ =?us-ascii?Q?v/mqdNZ0UJeHJCm1U/ZotPZ+OgIlgw80Ib3D5YokqndTKRVKJjIDhQFf/bMq?=
+ =?us-ascii?Q?otS4BTbr/64dq8eHMIdcLZmbBzKUnLWAJyCZx/HBsXNQk/rhUIP90oej6vwK?=
+ =?us-ascii?Q?ftf9aDkLjf0D4Xg/S6CBrpiG?=
 Content-Type: text/plain; charset="us-ascii"
+Content-ID: <598393336F9D4149A92D2BB84E39700E@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fa5be945-23b3-4ed1-df7c-08d960db447d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Aug 2021 17:28:31.0231
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 175511aa-bf6a-4b4b-df5f-08d960ddff94
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Aug 2021 17:48:03.9812
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: tT+BSF4rsIeFfkzSAY0V79Lyuyb8X0fbhGGUrf8L36tusFWN9emLBabBYYeM164icPiU94iltqVfQ5nefEVEmFVU5KOQeQQLV9kdItNYO6c=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR2101MB1820
+X-MS-Exchange-CrossTenant-userprincipalname: eAW9U1hp9fsO5nEtri8QNeBvecMj1TKLgG8VtkEpjNoc2CNmuXSgk70sxuj5y5G6kKrQbzOhyW4J7gGjQtXPUg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6272
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tianyu Lan <ltykernel@gmail.com> Sent: Monday, August 9, 2021 10:56 A=
-M
->=20
-> VMbus ring buffer are shared with host and it's need to
+On Mon, Aug 16, 2021 at 06:03:52AM +0000, Hongbo Wang wrote:
+> > I was going to suggest as an alternative to define a device tree overla=
+y file with
+> > the changes in the CPU port assignment, instead of defining a wholly ne=
+w DTS
+> > for the LS1028A reference design board. But I am pretty sure that it is=
+ not
+> > possible to specify a /delete-property/ inside a device tree overlay fi=
+le, so that
+> > won't actually work.
+>
+> hi Vladimir,
+>
+>   if don't specify "/delete-property/" in this dts file, the correspondin=
+g dtb will not work well,
+> so I add it to delete 'ethernet' property from mscc_felix_port4 explicitl=
+y.
 
-s/it's need/it needs/
+Judging by the reply, I am not actually sure you've understood what has bee=
+n said.
 
-> be accessed via extra address space of Isolation VM with
-> SNP support. This patch is to map the ring buffer
-> address in extra address space via ioremap(). HV host
+I said:
 
-It's actually using vmap_pfn(), not ioremap().
+There is an option to create a device tree overlay:
 
-> visibility hvcall smears data in the ring buffer and
-> so reset the ring buffer memory to zero after calling
-> visibility hvcall.
->=20
-> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> ---
->  drivers/hv/Kconfig        |  1 +
->  drivers/hv/channel.c      | 10 +++++
->  drivers/hv/hyperv_vmbus.h |  2 +
->  drivers/hv/ring_buffer.c  | 84 ++++++++++++++++++++++++++++++---------
->  4 files changed, 79 insertions(+), 18 deletions(-)
->=20
-> diff --git a/drivers/hv/Kconfig b/drivers/hv/Kconfig
-> index d1123ceb38f3..dd12af20e467 100644
-> --- a/drivers/hv/Kconfig
-> +++ b/drivers/hv/Kconfig
-> @@ -8,6 +8,7 @@ config HYPERV
->  		|| (ARM64 && !CPU_BIG_ENDIAN))
->  	select PARAVIRT
->  	select X86_HV_CALLBACK_VECTOR if X86
-> +	select VMAP_PFN
->  	help
->  	  Select this option to run Linux as a Hyper-V client operating
->  	  system.
-> diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
-> index 4c4717c26240..60ef881a700c 100644
-> --- a/drivers/hv/channel.c
-> +++ b/drivers/hv/channel.c
-> @@ -712,6 +712,16 @@ static int __vmbus_open(struct vmbus_channel *newcha=
-nnel,
->  	if (err)
->  		goto error_clean_ring;
->=20
-> +	err =3D hv_ringbuffer_post_init(&newchannel->outbound,
-> +				      page, send_pages);
-> +	if (err)
-> +		goto error_free_gpadl;
-> +
-> +	err =3D hv_ringbuffer_post_init(&newchannel->inbound,
-> +				      &page[send_pages], recv_pages);
-> +	if (err)
-> +		goto error_free_gpadl;
-> +
->  	/* Create and init the channel open message */
->  	open_info =3D kzalloc(sizeof(*open_info) +
->  			   sizeof(struct vmbus_channel_open_channel),
-> diff --git a/drivers/hv/hyperv_vmbus.h b/drivers/hv/hyperv_vmbus.h
-> index 40bc0eff6665..15cd23a561f3 100644
-> --- a/drivers/hv/hyperv_vmbus.h
-> +++ b/drivers/hv/hyperv_vmbus.h
-> @@ -172,6 +172,8 @@ extern int hv_synic_cleanup(unsigned int cpu);
->  /* Interface */
->=20
->  void hv_ringbuffer_pre_init(struct vmbus_channel *channel);
-> +int hv_ringbuffer_post_init(struct hv_ring_buffer_info *ring_info,
-> +		struct page *pages, u32 page_cnt);
->=20
->  int hv_ringbuffer_init(struct hv_ring_buffer_info *ring_info,
->  		       struct page *pages, u32 pagecnt, u32 max_pkt_size);
-> diff --git a/drivers/hv/ring_buffer.c b/drivers/hv/ring_buffer.c
-> index 2aee356840a2..d4f93fca1108 100644
-> --- a/drivers/hv/ring_buffer.c
-> +++ b/drivers/hv/ring_buffer.c
-> @@ -17,6 +17,8 @@
->  #include <linux/vmalloc.h>
->  #include <linux/slab.h>
->  #include <linux/prefetch.h>
-> +#include <linux/io.h>
-> +#include <asm/mshyperv.h>
->=20
->  #include "hyperv_vmbus.h"
->=20
-> @@ -179,43 +181,89 @@ void hv_ringbuffer_pre_init(struct vmbus_channel *c=
-hannel)
->  	mutex_init(&channel->outbound.ring_buffer_mutex);
->  }
->=20
-> -/* Initialize the ring buffer. */
-> -int hv_ringbuffer_init(struct hv_ring_buffer_info *ring_info,
-> -		       struct page *pages, u32 page_cnt, u32 max_pkt_size)
-> +int hv_ringbuffer_post_init(struct hv_ring_buffer_info *ring_info,
-> +		       struct page *pages, u32 page_cnt)
->  {
-> +	u64 physic_addr =3D page_to_pfn(pages) << PAGE_SHIFT;
-> +	unsigned long *pfns_wraparound;
-> +	void *vaddr;
->  	int i;
-> -	struct page **pages_wraparound;
->=20
-> -	BUILD_BUG_ON((sizeof(struct hv_ring_buffer) !=3D PAGE_SIZE));
-> +	if (!hv_isolation_type_snp())
-> +		return 0;
-> +
-> +	physic_addr +=3D ms_hyperv.shared_gpa_boundary;
->=20
->  	/*
->  	 * First page holds struct hv_ring_buffer, do wraparound mapping for
->  	 * the rest.
->  	 */
-> -	pages_wraparound =3D kcalloc(page_cnt * 2 - 1, sizeof(struct page *),
-> +	pfns_wraparound =3D kcalloc(page_cnt * 2 - 1, sizeof(unsigned long),
->  				   GFP_KERNEL);
-> -	if (!pages_wraparound)
-> +	if (!pfns_wraparound)
->  		return -ENOMEM;
->=20
-> -	pages_wraparound[0] =3D pages;
-> +	pfns_wraparound[0] =3D physic_addr >> PAGE_SHIFT;
->  	for (i =3D 0; i < 2 * (page_cnt - 1); i++)
-> -		pages_wraparound[i + 1] =3D &pages[i % (page_cnt - 1) + 1];
-> -
-> -	ring_info->ring_buffer =3D (struct hv_ring_buffer *)
-> -		vmap(pages_wraparound, page_cnt * 2 - 1, VM_MAP, PAGE_KERNEL);
-> -
-> -	kfree(pages_wraparound);
-> +		pfns_wraparound[i + 1] =3D (physic_addr >> PAGE_SHIFT) +
-> +			i % (page_cnt - 1) + 1;
->=20
-> -
-> -	if (!ring_info->ring_buffer)
-> +	vaddr =3D vmap_pfn(pfns_wraparound, page_cnt * 2 - 1, PAGE_KERNEL_IO);
-> +	kfree(pfns_wraparound);
-> +	if (!vaddr)
->  		return -ENOMEM;
->=20
-> -	ring_info->ring_buffer->read_index =3D
-> -		ring_info->ring_buffer->write_index =3D 0;
-> +	/* Clean memory after setting host visibility. */
-> +	memset((void *)vaddr, 0x00, page_cnt * PAGE_SIZE);
-> +
-> +	ring_info->ring_buffer =3D (struct hv_ring_buffer *)vaddr;
-> +	ring_info->ring_buffer->read_index =3D 0;
-> +	ring_info->ring_buffer->write_index =3D 0;
->=20
->  	/* Set the feature bit for enabling flow control. */
->  	ring_info->ring_buffer->feature_bits.value =3D 1;
->=20
-> +	return 0;
-> +}
-> +
-> +/* Initialize the ring buffer. */
-> +int hv_ringbuffer_init(struct hv_ring_buffer_info *ring_info,
-> +		       struct page *pages, u32 page_cnt, u32 max_pkt_size)
-> +{
-> +	int i;
-> +	struct page **pages_wraparound;
-> +
-> +	BUILD_BUG_ON((sizeof(struct hv_ring_buffer) !=3D PAGE_SIZE));
-> +
-> +	if (!hv_isolation_type_snp()) {
-> +		/*
-> +		 * First page holds struct hv_ring_buffer, do wraparound mapping for
-> +		 * the rest.
-> +		 */
-> +		pages_wraparound =3D kcalloc(page_cnt * 2 - 1, sizeof(struct page *),
-> +					   GFP_KERNEL);
-> +		if (!pages_wraparound)
-> +			return -ENOMEM;
-> +
-> +		pages_wraparound[0] =3D pages;
-> +		for (i =3D 0; i < 2 * (page_cnt - 1); i++)
-> +			pages_wraparound[i + 1] =3D &pages[i % (page_cnt - 1) + 1];
-> +
-> +		ring_info->ring_buffer =3D (struct hv_ring_buffer *)
-> +			vmap(pages_wraparound, page_cnt * 2 - 1, VM_MAP, PAGE_KERNEL);
-> +
-> +		kfree(pages_wraparound);
-> +
-> +		if (!ring_info->ring_buffer)
-> +			return -ENOMEM;
-> +
-> +		ring_info->ring_buffer->read_index =3D
-> +			ring_info->ring_buffer->write_index =3D 0;
-> +
-> +		/* Set the feature bit for enabling flow control. */
-> +		ring_info->ring_buffer->feature_bits.value =3D 1;
-> +	}
-> +
->  	ring_info->ring_size =3D page_cnt << PAGE_SHIFT;
->  	ring_info->ring_size_div10_reciprocal =3D
->  		reciprocal_value(ring_info->ring_size / 10);
-> --
-> 2.25.1
+https://www.kernel.org/doc/html/latest/devicetree/overlay-notes.html
 
-This patch does the following:
+We use these for the riser cards on the LS1028A-QDS boards.
 
-1) The existing ring buffer wrap-around mapping functionality is still
-executed in hv_ringbuffer_init() when not doing SNP isolation.
-This mapping is based on an array of struct page's that describe the
-contiguous physical memory.
+https://source.codeaurora.org/external/qoriq/qoriq-components/linux/tree/ar=
+ch/arm64/boot/dts/freescale/fsl-ls1028a-qds-13bb.dts?h=3DLSDK-20.12-V5.4
 
-2) New ring buffer wrap-around mapping functionality is added in
-hv_ringbuffer_post_init() for the SNP isolation case.  The case is
-handled in hv_ringbuffer_post_init() because it must be done after
-the GPADL is established, since that's where the host visibility
-is set.  What's interesting is that this case is exactly the same
-as #1 above, except that the mapping is based on physical
-memory addresses instead of struct page's.  We have to use physical
-addresses because of applying the GPA boundary, and there are no
-struct page's for those physical addresses.
+They are included as usual in a U-Boot ITB file:
 
-Unfortunately, this duplicates a lot of logic in #1 and #2, except
-for the struct page vs. physical address difference.
+/ {
+	images {
+		/* Base DTB */
+		ls1028aqds-dtb {
+			description =3D "ls1028aqds-dtb";
+			data =3D /incbin/("arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dtb");
+			type =3D "flat_dt";
+			arch =3D "arm64";
+			os =3D "linux";
+			compression =3D "none";
+			load =3D <0x90000000>;
+			hash@1 {
+				algo =3D "crc32";
+			};
+		};
+		/* Overlay */
+		fdt@ls1028aqds-13bb {
+			description =3D "ls1028aqds-13bb";
+			data =3D /incbin/("arch/arm64/boot/dts/freescale/fsl-ls1028a-qds-13bb.dt=
+b");
+			type =3D "flat_dt";
+			arch =3D "arm64";
+			load =3D <0x90010000>;
+		};
+	};
+};
 
-Proposal:  Couldn't we always do #2, even for the normal case
-where SNP isolation is not being used?   The difference would
-only be in whether the GPA boundary is added.  And it looks like
-the normal case could be done after the GPADL is established,
-as setting up the GPADL doesn't have any dependencies on
-having the ring buffer mapped.  This approach would remove
-a lot of duplication.  Just move the calls to hv_ringbuffer_init()
-to after the GPADL is established, and do all the work there for
-both cases.
+In U-Boot, you apply the overlay as following:
 
-Michael
+tftp $kernel_addr_r boot.itb && bootm $kernel_addr_r#ls1028aqds#ls1028aqds-=
+13bb
+
+It would have been nice to have a similar device tree overlay that
+changes the DSA master from eno2 to eno3, and for that overlay to be
+able to be applied (or not) from U-Boot.
+
+But it's _not_ possible, because you cannot put the /delete-property/
+(that you need to have) in the .dtbo file. Or if you put it, it will not
+delete the property from the base dtb.
+
+That's all I said.=
