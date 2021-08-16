@@ -2,115 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA4693ED0C4
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 10:59:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D758B3ED0D4
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 11:06:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235072AbhHPI72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 04:59:28 -0400
-Received: from out2.migadu.com ([188.165.223.204]:59102 "EHLO out2.migadu.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235105AbhHPI7J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 04:59:09 -0400
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1629104288;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=/fHvrj6QnziHGweark6EjJmpxXLuqtNed4j0q6tsVjA=;
-        b=XbKeo3zLiRUkEPxdD/A2OqQ8RiMtzkheOHwDWjq/fazPWb9JPRN7K+thsRL4vpQdY/g/7Y
-        xJ1eUD0jcjX+8qu3mFOo0ueIbKCTwcE4yHMQjjcX0hsWLJnMA/Dtcjv3EfjjzFDY/czYPk
-        rrrlwdANSkZFv0rjdfiuDGvFNGpjX54=
-From:   Yajun Deng <yajun.deng@linux.dev>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yajun Deng <yajun.deng@linux.dev>
-Subject: [PATCH net-next] net: procfs: add seq_puts() statement for dev_mcast
-Date:   Mon, 16 Aug 2021 16:57:57 +0800
-Message-Id: <20210816085757.28166-1-yajun.deng@linux.dev>
+        id S235105AbhHPJG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 05:06:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46056 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235014AbhHPJG0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 05:06:26 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6690FC06179A;
+        Mon, 16 Aug 2021 02:05:55 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id o123so12976302qkf.12;
+        Mon, 16 Aug 2021 02:05:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=i+Rjw8G7sWGeEjQRHiEVKqpPDTMTHAenZZ7LzHx1zLM=;
+        b=n0dydki+IRi5XXhKFKJnIzGKsxUXd1pnSChDV5Ad9Dj3JSxHOER8NkbN54MY8RT1ES
+         /3+2Jgaq2azvcTyqRLKeoz6g5Uqw0zcHhf2x89Tl1Xj/h4dZz3CJjs0BkSSoPcc1F7u0
+         KhEtKV1rSy3XI/979h/5ON32sh4XDTO6XaRm76op4qduF+ZN5uvuuLVBhBCZvlXKP1SU
+         ZY0HHHALvohSZL1pFT78ICbMsUU5sz9OZpFIksV99s/sB63+WdVnqA6h2dHDXTNEbMm8
+         qSbr1JlkX2k0lhmXXtdhht4QjbZHNNl9dhcPTn3XAmHRJmSfUCL7SgXYsu/P2fGePvV0
+         FaWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=i+Rjw8G7sWGeEjQRHiEVKqpPDTMTHAenZZ7LzHx1zLM=;
+        b=dfqoVQxjqjLpl51wx0wxf38JG6o0HPEgPKlQpjSQzGMV3a+14eb4bkJORz80chA/O1
+         hgSjGppOQto9NGjJmRAod+W9O0DBL4pIWWQfl0CkFnyY+kSALriu9wy73VrdFd3LCvZo
+         cCSqUWqprZIAZ93xfou4N37EfGp7OKEJGghkV+qWMt5U5Hz3R9I/EU2y1bcyeopwScyu
+         VjMlwebXJHGVoJx4/cotFn4jCsSBAr9mAmNYyMVVcYE9G/S1dzS0QUdlQIAosllWIMAv
+         PbfYXxJ8IakM3klS3sWjBaKQM14vn9KKyuyJmqHCcYLaNif14oFMkHjfn2XzJrprH5/J
+         r+1g==
+X-Gm-Message-State: AOAM532gsKUtmjX/QqfrtdA/QBmKpUj7ZpysRJozV5dgWRPN++tXw4dg
+        ZSSWvCKPIIMmNEympIvGnlyipfoA1rmc4FjUPw==
+X-Google-Smtp-Source: ABdhPJyewk7jCu6kepnfWE6YURcK1hq/Iy5LxNLdfcjGw44kvuafp3qcRX5m0qUmElGr41pK5qh8JojsCYycptHjHcs=
+X-Received: by 2002:a37:a58b:: with SMTP id o133mr15084238qke.120.1629104754546;
+ Mon, 16 Aug 2021 02:05:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yajun.deng@linux.dev
+References: <20210609135537.1460244-1-joamaki@gmail.com> <20210731055738.16820-1-joamaki@gmail.com>
+ <20210731055738.16820-2-joamaki@gmail.com> <2bb53e7c-0a2f-5895-3d8b-aa43fd03ff52@redhat.com>
+ <CAHn8xckOsLD463JW2rc1LhjjY0FQ-aRNqSif_SJ6GT9bAH7VqQ@mail.gmail.com> <3b0657f0-d7ef-e568-57c2-0db41acea615@redhat.com>
+In-Reply-To: <3b0657f0-d7ef-e568-57c2-0db41acea615@redhat.com>
+From:   Jussi Maki <joamaki@gmail.com>
+Date:   Mon, 16 Aug 2021 11:05:43 +0200
+Message-ID: <CAHn8xcmU8r3-hzm15x5Bu+MaOc7iY82WZh9_6C5SqHx5OKhWrA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v6 1/7] net: bonding: Refactor bond_xmit_hash for
+ use with xdp_buff
+To:     Jonathan Toppins <jtoppins@redhat.com>, jiri@nvidia.com
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, j.vosburgh@gmail.com,
+        Andy Gospodarek <andy@greyhouse.net>, vfalico@gmail.com,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add seq_puts() statement for dev_mcast, make it more readable.
-As also, keep vertical alignment for {dev, ptype, dev_mcast} that
-under /proc/net.
+On Wed, Aug 11, 2021 at 4:05 PM Jonathan Toppins <jtoppins@redhat.com> wrote:
+>
+> On 8/11/21 4:22 AM, Jussi Maki wrote:
+> > Hi Jonathan,
+> >
+> > Thanks for catching this. You're right, this will NULL deref if XDP
+> > bonding is used with the VLAN_SRCMAC xmit policy. I think what
+> > happened was that a very early version restricted the xmit policies
+> > that were applicable, but it got dropped when this was refactored.
+> > I'll look into this today and will add in support (or refuse) the
+> > VLAN_SRCMAC xmit policy and extend the tests to cover this.
+>
+> In support of some customer requests and to stop adding more and more
+> hashing policies I was looking at adding a custom policy that exposes a
+> bitfield so userspace can select which header items should be included
+> in the hash. I was looking at a flow dissector implementation to parse
+> the packet and then generate the hash from the flow data pulled. It
+> looks like the outer hashing functions as they exist now,
+> bond_xmit_hash() and bond_xmit_hash_xdp(), could make the correctly
+> formatted call to __skb_flow_dissect(). We would then pass around the
+> resultant struct flow_keys, or bonding specific one to add MAC header
+> parsing support, and it appears we could avoid making the actual hashing
+> functions know if they need to hash an sk_buff vs xdp_buff. What do you
+> think?
 
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
----
- net/core/net-procfs.c | 24 +++++++++++++-----------
- 1 file changed, 13 insertions(+), 11 deletions(-)
-
-diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
-index d8b9dbabd4a4..eab5fc88a002 100644
---- a/net/core/net-procfs.c
-+++ b/net/core/net-procfs.c
-@@ -77,8 +77,8 @@ static void dev_seq_printf_stats(struct seq_file *seq, struct net_device *dev)
- 	struct rtnl_link_stats64 temp;
- 	const struct rtnl_link_stats64 *stats = dev_get_stats(dev, &temp);
- 
--	seq_printf(seq, "%6s: %7llu %7llu %4llu %4llu %4llu %5llu %10llu %9llu "
--		   "%8llu %7llu %4llu %4llu %4llu %5llu %7llu %10llu\n",
-+	seq_printf(seq, "%9s: %16llu %12llu %4llu %6llu %4llu %5llu %10llu %9llu "
-+		   "%16llu %12llu %4llu %6llu %4llu %5llu %7llu %10llu\n",
- 		   dev->name, stats->rx_bytes, stats->rx_packets,
- 		   stats->rx_errors,
- 		   stats->rx_dropped + stats->rx_missed_errors,
-@@ -103,11 +103,11 @@ static void dev_seq_printf_stats(struct seq_file *seq, struct net_device *dev)
- static int dev_seq_show(struct seq_file *seq, void *v)
- {
- 	if (v == SEQ_START_TOKEN)
--		seq_puts(seq, "Inter-|   Receive                            "
--			      "                    |  Transmit\n"
--			      " face |bytes    packets errs drop fifo frame "
--			      "compressed multicast|bytes    packets errs "
--			      "drop fifo colls carrier compressed\n");
-+		seq_puts(seq, "Interface|                            Receive                   "
-+			      "                    |                                 Transmit\n"
-+			      "         |            bytes      packets errs   drop fifo frame "
-+			      "compressed multicast|            bytes      packets errs "
-+			      "  drop fifo colls carrier compressed\n");
- 	else
- 		dev_seq_printf_stats(seq, v);
- 	return 0;
-@@ -259,14 +259,14 @@ static int ptype_seq_show(struct seq_file *seq, void *v)
- 	struct packet_type *pt = v;
- 
- 	if (v == SEQ_START_TOKEN)
--		seq_puts(seq, "Type Device      Function\n");
-+		seq_puts(seq, "Type      Device      Function\n");
- 	else if (pt->dev == NULL || dev_net(pt->dev) == seq_file_net(seq)) {
- 		if (pt->type == htons(ETH_P_ALL))
- 			seq_puts(seq, "ALL ");
- 		else
- 			seq_printf(seq, "%04x", ntohs(pt->type));
- 
--		seq_printf(seq, " %-8s %ps\n",
-+		seq_printf(seq, "      %-9s   %ps\n",
- 			   pt->dev ? pt->dev->name : "", pt->func);
- 	}
- 
-@@ -327,12 +327,14 @@ static int dev_mc_seq_show(struct seq_file *seq, void *v)
- 	struct netdev_hw_addr *ha;
- 	struct net_device *dev = v;
- 
--	if (v == SEQ_START_TOKEN)
-+	if (v == SEQ_START_TOKEN) {
-+		seq_puts(seq, "Ifindex Interface Refcount Global_use Address\n");
- 		return 0;
-+	}
- 
- 	netif_addr_lock_bh(dev);
- 	netdev_for_each_mc_addr(ha, dev) {
--		seq_printf(seq, "%-4d %-15s %-5d %-5d %*phN\n",
-+		seq_printf(seq, "%-7d %-9s %-8d %-10d %*phN\n",
- 			   dev->ifindex, dev->name,
- 			   ha->refcount, ha->global_use,
- 			   (int)dev->addr_len, ha->addr);
--- 
-2.32.0
-
+That sounds great! I wasn't particularly happy about how it works with
+skb being optional as that was just waiting to break (as it did). The
+team driver does the hashing using a user-space provided bpf program
+and I'm looking to figure out how to support XDP with it. I wonder if
+we could have a single approach that would work for both bonding and
+team (e.g. use bpf to hash). CC'ing Jiri as he wrote the team driver.
