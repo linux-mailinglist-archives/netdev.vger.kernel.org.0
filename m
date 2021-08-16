@@ -2,72 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42DCA3ED9A0
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 17:13:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C0493ED9C6
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 17:20:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232634AbhHPPNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 11:13:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58732 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232237AbhHPPNq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 11:13:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BF60C606A5;
-        Mon, 16 Aug 2021 15:13:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629126795;
-        bh=muWpwxiPhJ0hjPwwuNj9+N7/JqofNLtCZB6kojrL6O4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OgBGiX9S+ojRVF6ymbchD+MaZLos9l+7IKvRZukSGyd3xxSB9MIpTac3kT3r7L8gA
-         43u5XNEiremTDBTRr859MBB4helMXhLltsEGpbk3Jht07K1qapQmIXnIMovG9oa+Fm
-         LNH5Afj2JUYKu9LRhtoah3z2QSJ3LJCBzRKN+FJgZs9AsRMKiCb4itw7y8rzjRU319
-         SdY2IyeB4otPtWKRT1j6L7XisG5ni38AoxeIzXDY+3A2UoQo2oOZmx1n9heoGH2UI5
-         3J6aNSu02cl+VR5VUDQVZxNHP8V8FYI7oLh77YGE36E6/12syBbHWwwnvWWidLeRP1
-         FdvscxNxT+5Gw==
-Date:   Mon, 16 Aug 2021 08:13:14 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Oleksij Rempel <linux@rempel-privat.de>
-Cc:     Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: Regression with commit e532a096be0e ("net: usb: asix: ax88772:
- add phylib support")
-Message-ID: <20210816081314.3b251d2e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <3904c728-1ea2-9c2b-ec11-296396fd2f7e@linux.intel.com>
-References: <3904c728-1ea2-9c2b-ec11-296396fd2f7e@linux.intel.com>
+        id S235483AbhHPPU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 11:20:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48266 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232540AbhHPPUE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 11:20:04 -0400
+X-Greylist: delayed 315 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 16 Aug 2021 08:19:25 PDT
+Received: from edrik.securmail.fr (edrik.securmail.fr [IPv6:2a0e:f41:0:1::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89E65C0613C1
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 08:19:16 -0700 (PDT)
+Received: from irc-clt.no.as208627.net (irc-clt.no.as208627.net [IPv6:2a0e:f42:a::3])
+        (using TLSv1.2 with cipher DHE-RSA-CHACHA20-POLY1305 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: alarig@swordarmor.fr)
+        by edrik.securmail.fr (Postfix) with ESMTPSA id C6F85B0ED2;
+        Mon, 16 Aug 2021 17:13:56 +0200 (CEST)
+Authentication-Results: edrik.securmail.fr/C6F85B0ED2; dmarc=none (p=none dis=none) header.from=swordarmor.fr
+Date:   Mon, 16 Aug 2021 17:13:54 +0200
+From:   Alarig Le Lay <alarig@swordarmor.fr>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "Wong, Vee Khee" <vee.khee.wong@intel.com>,
+        "eric.dumazet@gmail.com" <eric.dumazet@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "syzkaller@googlegroups.com" <syzkaller@googlegroups.com>,
+        "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>
+Subject: Re: [PATCH net-next] sit: proper dev_{hold|put} in ndo_[un]init
+ methods
+Message-ID: <YRqAsjXuKeOOiIU9@irc-clt.no.as208627.net>
+References: <BYAPR11MB2870B0910C71BDDFD328B339AB7C9@BYAPR11MB2870.namprd11.prod.outlook.com>
+ <CANn89iLnzN6n--tF_7_d0Y1tD6sv3Yx=3H+U_iYbeC21=-r92w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CANn89iLnzN6n--tF_7_d0Y1tD6sv3Yx=3H+U_iYbeC21=-r92w@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Aug 2021 17:55:34 +0300 Jarkko Nikula wrote:
-> Hi
-> 
-> Our ASIX USB ethernet adapter stopped working after v5.14-rc1. It 
-> doesn't get an IP from DHCP.
-> 
-> v5.13 works ok. v5.14-rc1 and today's head 761c6d7ec820 ("Merge tag 
-> 'arc-5.14-rc6' of 
-> git://git.kernel.org/pub/scm/linux/kernel/git/vgupta/arc") show the 
-> regression.
-> 
-> I bisected regression into e532a096be0e ("net: usb: asix: ax88772: add 
-> phylib support").
+Hi,
 
-Oleksij, any comments?
+On Wed 31 Mar 2021 07:58:07 GMT, Eric Dumazet wrote:
+> On Wed, Mar 31, 2021 at 2:01 AM Wong, Vee Khee <vee.khee.wong@intel.com> wrote:
+> >
+> > Hi all,
+> >
+> >
+> >
+> > This patch introduced the following massive warnings printouts on a
+> >
+> > Intel x86 Alderlake platform with STMMAC MAC and Marvell 88E2110 PHY.
+> >
+> >
+> >
+> > [  149.674232] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+> 
+> Same answer than the other thread :
+> 
+> Nope, I already have a fix, but it depends on a pending patch.
+> 
+> https://patchwork.kernel.org/project/netdevbpf/patch/20210330064551.545964-1-eric.dumazet@gmail.com/
+> 
+> (I need the patch being merged to add a corresponding Fixes: tag)
+> 
+> You can try the attached patch :
 
-> Here's the dmesg snippet from working and non-working cases:
-> 
-> OK:
-> [    6.115773] asix 1-8:1.0 eth0: register 'asix' at usb-0000:00:14.0-8, 
-> ASIX AX88772 USB 2.0 Ethernet, 00:10:60:31:d5:f8
-> [    8.595202] asix 1-8:1.0 eth0: link up, 100Mbps, full-duplex, lpa 0xC1E1
-> 
-> NOK:
-> [    6.511543] asix 1-8:1.0 eth0: register 'asix' at usb-0000:00:14.0-8, 
-> ASIX AX88772 USB 2.0 Ethernet, 00:10:60:31:d5:f8
-> [    8.518219] asix 1-8:1.0 eth0: Link is Down
-> 
-> lsusb -d 0b95:7720
-> Bus 001 Device 002: ID 0b95:7720 ASIX Electronics Corp. AX88772
+I’ve upgraded some boxes to 4.14.240 which includes the fix, but I have
+> unregister_netdevice: waiting for ip6gre0 to become free. Usage count = -1 
+every ten seconds.
+
+It’s not the same interface name nor the same count, so perhaps there is
+another issue with the patches?
+
+Regards,
+-- 
+Alarig Le Lay
