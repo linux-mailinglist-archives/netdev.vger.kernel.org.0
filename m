@@ -2,552 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 119C93EDD53
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 20:49:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BDF33EDD72
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 20:57:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230435AbhHPSuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 14:50:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40658 "EHLO
+        id S229902AbhHPS5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 14:57:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231150AbhHPSto (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 14:49:44 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958C9C061764
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 11:49:12 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id m24-20020a17090a7f98b0290178b1a81700so1685557pjl.4
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 11:49:12 -0700 (PDT)
+        with ESMTP id S229481AbhHPS5w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 14:57:52 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F4BEC061764
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 11:57:20 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id dj8so20083641edb.2
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 11:57:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wwBD6GrM+SeWCE4FoIebfEBkOghu62Cbc/9nHJPzA7s=;
-        b=b9+g74aydHcTAsyNCmgRRXufwLFIXnNpJ6pqP0JYJdXYI1PnldvgqO8lHl3dGq+Z+H
-         4UXYyq0GRllnXTORQh2qJjXYJB9QSDOWFaPQW+XxouRroh72Nlrvkhr39u29s2ycCRVS
-         EVyVljSre4MypPWkRQNHLD3Fo9/KX8157bRUt6s4F64HBEal1bWJkmJugDjEofV7BqkW
-         41xmdDnsWSsvJL4ytiqph0B4edXgzF+oJAmyoIpU/2GV//CY07uROvO8W5hcunyzWJ3i
-         Ct4ct0ZQe66x+d4H738SX1qBgfADDXZB5exxiSxqZOVzUR4EMYU/866SBRz0PKp9TCIN
-         Rfww==
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=a7ECraBkwCFiPkr0hFOEUiDEhGRF1HGg2NynZZR26r0=;
+        b=1cH3PF0bgyOapqIzhkQDy/yuYUghkYFp3Xv0bsFz/p5R3Jg49CELDbyhGif+6iZ5vR
+         +VMb6GcR/ew8us1qjScyKpF5AF11wv6VPMldyYQFGLcEnMF62Z4x5p9xxuKaYmmBTKVP
+         MBh+VSVh0VJMcuzuOhg635MJrfA9icPiD1sIgNJ1b13X84u7muDyt7zpKe3VzRFHwCHz
+         6/+2hzmSOkLk4GD/aooecAc0FuzjGu3+I1qki4z6xvBpMgReVzbAS3KAnVWIpU1m9ley
+         rs4oebep32bB31B0ViUvECiz8UK2Cs+cIDfxLsD8M/BIcLJw87dFnmIaFHfuzmSgt1Jn
+         BoEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wwBD6GrM+SeWCE4FoIebfEBkOghu62Cbc/9nHJPzA7s=;
-        b=agVSzLH1MLDIebdovGLE1GPuFZwxpimWUiK1nMfTyTMT/PzqII/siPwDpJgdzYR5/P
-         AV3jrO2UbAhTzTDWGEDX/zjQtpPTbTTDk2g00/E+B30E5yP32TKYdA6VMwntHouWAQlS
-         G/7C4pap2PuZYEH9mksjPbLgNx22fze8iQv0IVVP1mC677EtniSXmyw4CusgSW0t5v0i
-         80cfcGW2t+5ghQ3BbHjsp/5/qNKeH5Gfg57eT8SFl003z0ORRnh6ym2Z25fxQ40lAGv3
-         c6YVwIOUDNGfZRL8v+1th07GQFr5WEjz9ZJavnA8mANcMjUgYuznaPz7eDvv8lFfUg7q
-         HcQQ==
-X-Gm-Message-State: AOAM532wXE/Sl0fydWPwbipg65Oi4VwF5HT/c7nlWlwMnk+uoENv3L7h
-        ZnaSsxbNm109aRNXjZmUz/K++bSHhQI=
-X-Google-Smtp-Source: ABdhPJyawg3/O8VAaY0Z6YyMiHf7E0yRB0opMMNldIFES9jOBdMr5Esy15tgzM0/vAjB/CN83WNHVw==
-X-Received: by 2002:a17:90a:4ce2:: with SMTP id k89mr41880pjh.233.1629139751516;
-        Mon, 16 Aug 2021 11:49:11 -0700 (PDT)
-Received: from [192.168.0.4] ([49.173.165.50])
-        by smtp.gmail.com with ESMTPSA id u20sm162192pgm.4.2021.08.16.11.49.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Aug 2021 11:49:10 -0700 (PDT)
-Subject: Re: dst remains in vxlan dst cache
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org
-References: <1628651099.3998537-1-xuanzhuo@linux.alibaba.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Message-ID: <23573b90-d4b9-5e26-2f5d-cf16ab324f78@gmail.com>
-Date:   Tue, 17 Aug 2021 03:49:07 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=a7ECraBkwCFiPkr0hFOEUiDEhGRF1HGg2NynZZR26r0=;
+        b=q9lAE4Kqu3Kl6GO4WuJxQsyPKwQyQcfZirPCff6uHHZs46e2p1IeJ6M9CNgmVZlN9/
+         HxF/a4z0X/0v4fKfMaPaQZwofjGnC3cujLKlhTXk/HvVcUbgTOT0AcFHQ1B0dZcIeeO3
+         t8sj6npp5atgli1O9rBRpSnXyNAmjne3iwBMpfJv7JYIGqxr84lcAngo+l7g6PDGgEH4
+         E2TgLPqd6rkV1hNKrLdta7Vi5BF306TcwbsP7RlHy1eR1xRAQhaLdTJqYcmmLRsv6DPC
+         XqbcwTxQCcxBaJAcZM376RiZFxyRgWYhBJ3xig4QkYSP1ZfkeqTSaUnV0Gk1MBPe2CDS
+         dajQ==
+X-Gm-Message-State: AOAM530tAAruRk/ZklQai4UNUKK5qXPO4X+91cWFtysjri/9x8+9C/RY
+        Wh7ctjfJTg6aR46O5rbo9AMPZuTN5qjYiiyHbITh
+X-Google-Smtp-Source: ABdhPJx0SdTFntxZUuZ5r581q1m85teCQ0nHihV/k5Y2aQb4XAbtmt48WwzHzqw0igGV4mQuMPOfSLw7zqEZzOAoJfc=
+X-Received: by 2002:a05:6402:384:: with SMTP id o4mr57602edv.128.1629140238869;
+ Mon, 16 Aug 2021 11:57:18 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1628651099.3998537-1-xuanzhuo@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210722004758.12371-1-casey@schaufler-ca.com>
+ <20210722004758.12371-23-casey@schaufler-ca.com> <CAHC9VhTj2OJ7E6+iSBLNZaiPK-16UY0zSFJikpz+teef3JOosg@mail.gmail.com>
+ <ace9d273-3560-3631-33fa-7421a165b038@schaufler-ca.com> <CAHC9VhSSASAL1mVwDo1VS3HcEF7Yb3LTTaoajEtq1HsA-8R+xQ@mail.gmail.com>
+ <fba1a123-d6e5-dcb0-3d49-f60b26f65b29@schaufler-ca.com> <CAHC9VhQxG+LXxgtczhH=yVdeh9mTO+Xhe=TeQ4eihjtkQ2=3Fw@mail.gmail.com>
+ <3ebad75f-1887-bb31-db23-353bfc9c0b4a@schaufler-ca.com>
+In-Reply-To: <3ebad75f-1887-bb31-db23-353bfc9c0b4a@schaufler-ca.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Mon, 16 Aug 2021 14:57:07 -0400
+Message-ID: <CAHC9VhQCN2_MsCoXfU7Z-syYHj2o8HaSECf5E62ZFcNZd9_4QA@mail.gmail.com>
+Subject: Re: [PATCH v28 22/25] Audit: Add record for multiple process LSM attributes
+To:     Casey Schaufler <casey@schaufler-ca.com>
+Cc:     casey.schaufler@intel.com, James Morris <jmorris@namei.org>,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-audit@redhat.com, keescook@chromium.org,
+        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
+        Stephen Smalley <sds@tycho.nsa.gov>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Fri, Aug 13, 2021 at 5:47 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
+> On 8/13/2021 1:43 PM, Paul Moore wrote:
+> > On Fri, Aug 13, 2021 at 2:48 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
+> >> On 8/13/2021 8:31 AM, Paul Moore wrote:
+> >>> On Thu, Aug 12, 2021 at 6:38 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
+> >>>> On 8/12/2021 1:59 PM, Paul Moore wrote:
+> >>>>> On Wed, Jul 21, 2021 at 9:12 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
+> >>>>>> Create a new audit record type to contain the subject information
+> >>>>>> when there are multiple security modules that require such data.
+> >>> ...
+> >>>
+> >>>>> The local
+> >>>>> audit context is a hack that is made necessary by the fact that we
+> >>>>> have to audit things which happen outside the scope of an executing
+> >>>>> task, e.g. the netfilter audit hooks, it should *never* be used when
+> >>>>> there is a valid task_struct.
+> >>>> In the existing audit code a "current context" is only needed for
+> >>>> syscall events, so that's the only case where it's allocated. Would
+> >>>> you suggest that I track down the non-syscall events that include
+> >>>> subj= fields and add allocate a "current context" for them? I looked
+> >>>> into doing that, and it wouldn't be simple.
+> >>> This is why the "local context" was created.  Prior to these stacking
+> >>> additions, and the audit container ID work, we never needed to group
+> >>> multiple audit records outside of a syscall context into a single
+> >>> audit event so passing a NULL context into audit_log_start() was
+> >>> reasonable.  The local context was designed as a way to generate a
+> >>> context for use in a local function scope to group multiple records,
+> >>> however, for reasons I'll get to below I'm now wondering if the local
+> >>> context approach is really workable ...
+> >> I haven't found a place where it didn't work. What is the concern?
+> > The concern is that use of a local context can destroy any hopes of
+> > linking with other related records, e.g. SYSCALL and PATH records, to
+> > form a single cohesive event.  If the current task_struct is valid for
+> > a given function invocation then we *really* should be using current's
+> > audit_context.
+> >
+> > However, based on our discussion here it would seem that we may have
+> > some issues where current->audit_context is not being managed
+> > correctly.  I'm not surprised, but I will admit to being disappointed.
+>
+> I'd believe that with syscall audit being a special case for other reasons
+> the multiple record situation got taken care of on a case-by-case basis
+> and no one really paid much attention to generality. It's understandable.
+>
+> >>> What does your audit config look like?  Both the kernel command line
+> >>> and the output of 'auditctl -l' would be helpful.
+> >> On the fedora system:
+> >>
+> >> BOOT_IMAGE=(hd0,gpt2)/vmlinuz-5.14.0-rc5stack+
+> >> root=/dev/mapper/fedora-root ro resume=/dev/mapper/fedora-swap
+> >> rd.lvm.lv=fedora/root rd.lvm.lv=fedora/swap lsm.debug
+> >>
+> >> -a always,exit -F arch=b64 -S bpf -F key=testsuite-1628714321-EtlWIphW
+> >>
+> >> On the Ubuntu system:
+> >>
+> >> BOOT_IMAGE=/boot/vmlinuz-5.14.0-rc1stack+
+> >> root=UUID=39c25777-d413-4c2e-948c-dfa2bf259049 ro lsm.debug
+> >>
+> >> No rules
+> > The Fedora system looks to have some audit-testsuite leftovers, but
+> > that shouldn't have an impact on what we are discussing; in both cases
+> > I would expect current->audit_context to be allocated and non-NULL.
+>
+> As would I.
+>
+>
+> >>> I'm beginning to suspect that you have the default
+> >>> we-build-audit-into-the-kernel-because-product-management-said-we-have-to-but-we-don't-actually-enable-it-at-runtime
+> >>> audit configuration that is de rigueur for many distros these days.
+> >> Yes, but I've also fiddled about with it so as to get better event coverage.
+> >> I've run the audit-testsuite, which has got to fiddle about with the audit
+> >> configuration.
+> > Yes, it looks like my hunch was wrong.
+> >
+> >>> If that is the case, there are many cases where you would not see a
+> >>> NULL current->audit_context simply because the config never allocated
+> >>> one, see kernel/auditsc.c:audit_alloc().
+> >> I assume you mean that I *would* see a NULL current->audit_context
+> >> in the "event not enabled" case.
+> > Yep, typo.
+> >
+> >>> Regardless, assuming that is the case we probably need to find an
+> >>> alternative to the local context approach as it currently works.  For
+> >>> reasons we already talked about, we don't want to use a local
+> >>> audit_context if there is the possibility for a proper
+> >>> current->audit_context, but we need to do *something* so that we can
+> >>> group these multiple events into a single record.
+> >> I tried a couple things, but neither was satisfactory.
+> >>
+> >>> Since this is just occurring to me now I need a bit more time to think
+> >>> on possible solutions - all good ideas are welcome - but the first
+> >>> thing that pops into my head is that we need to augment
+> >>> audit_log_end() to potentially generated additional, associated
+> >>> records similar to what we do on syscall exit in audit_log_exit().
+> >> I looked into that. You need a place to save the timestamp
+> >> that doesn't disappear. That's the role the audit_context plays
+> >> now.
+> > Yes, I've spent a few hours staring at the poorly planned struct that
+> > is audit_context ;)
+> >
+> > Regardless, the obvious place for such a thing is audit_buffer; we can
+> > stash whatever we need in there.
+>
+> I had considered doing that, but was afraid that moving the timestamp
+> out of the audit_context might have dire consequences.
 
-Thank you for your analysis.
-and sorry for the late reply.
+Don't move, copy.  If there is a valid context one would stash the
+timestamp there, if not, we stash it in the audit_buffer.  However,
+before we start messing with that too much I would like to better
+understand why we aren't seeing a valid audit_context in the netlink
+case at the very least.
 
-Generally, I agree with your analysis and the reason for the failure of 
-pmtu.sh.
+> >>>  Of
+> >>> course the audit_log_end() changes would be much more limited than
+> >>> audit_log_exit(), just the LSM subject and audit container ID info,
+> >>> and even then we might want to limit that to cases where the ab->ctx
+> >>> value is NULL and let audit_log_exit() handle it otherwise.  We may
+> >>> need to store the event type in the audit_buffer during
+> >>> audit_log_start() so that we can later use that in audit_log_end() to
+> >>> determine what additional records are needed.
+> >>>
+> >>> Regardless, let's figure out why all your current->audit_context
+> >>> values are NULL
+> >> That's what's maddening, and why I implemented audit_alloc_for_lsm().
+> >> They aren't all NULL. Sometimes current->audit_context is NULL,
+> >> sometimes it isn't, for the same event. I thought it might be a
+> >> question of the netlink interface being treated specially, but
+> >> that doesn't explain all the cases.
+> >
+> > Your netlink changes are exactly what made me think, "this is
+> > obviously wrong", but now I'm wondering if a previously held
+> > assumption of "current is valid and points to the calling process" in
+> > the case of the kernel servicing netlink messages sent from userspace.
+>
+> If that's the case the subject data in the audit record is going
+> to be bogus. From what I've seen that data appears to be correct.
 
-On 8/11/21 12:04 PM, Xuan Zhuo wrote:
- > 1. Problem and test environment description
- >
- > $ tools/testing/selftest/net/pmtu.sh cleanup_ipv6_exception
- > TEST: ipv6: cleanup of cached exceptions - nexthop objects 
-[FAIL]
- >    can't delete veth device in a timely manner, PMTU dst likely leaked
- >
- > This test will create several namespaces. After creation, the ip 
-route and ip
- > addr of ns-A are as follows:
- >
- >      $ ip route
- >      default nhid 41 via 10.0.1.2 dev veth_A-R1
- >      10.0.1.0/24 dev veth_A-R1 proto kernel scope link src 10.0.1.1
- >      10.0.2.0/24 dev veth_A-R2 proto kernel scope link src 10.0.2.1
- >      10.0.4.1 nhid 42 via 10.0.2.2 dev veth_A-R2
- >      192.168.2.0/24 dev vxlan_a proto kernel scope link src 192.168.2.1
- >
- >      $ ip addr
- >      1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN group default 
-qlen 1000
- >          link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
- >      2: veth_A-R1@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 5000 
-qdisc noqueue state UP group default qlen 1000
- >          link/ether e2:41:9d:0e:3c:22 brd ff:ff:ff:ff:ff:ff 
-link-netns ns-R1
- >          inet 10.0.1.1/24 scope global veth_A-R1
- >             valid_lft forever preferred_lft forever
- >          inet6 fc00:1::1/64 scope global
- >             valid_lft forever preferred_lft forever
- >          inet6 fe80::e041:9dff:fe0e:3c22/64 scope link
- >             valid_lft forever preferred_lft forever
- >      3: veth_A-R2@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 
-qdisc noqueue state UP group default qlen 1000
- >          link/ether 0e:96:7b:23:b4:44 brd ff:ff:ff:ff:ff:ff 
-link-netns ns-R2
- >          inet 10.0.2.1/24 scope global veth_A-R2
- >             valid_lft forever preferred_lft forever
- >          inet6 fc00:2::1/64 scope global
- >             valid_lft forever preferred_lft forever
- >          inet6 fe80::c96:7bff:fe23:b444/64 scope link
- >             valid_lft forever preferred_lft forever
- >      4: vxlan_a: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 5000 qdisc 
-noqueue state UNKNOWN group default qlen 1000
- >          link/ether 92:06:b4:f3:21:3e brd ff:ff:ff:ff:ff:ff
- >          inet 192.168.2.1/24 scope global vxlan_a
- >             valid_lft forever preferred_lft forever
- >          inet6 fd00:2::a/64 scope global
- >             valid_lft forever preferred_lft forever
- >          inet6 fe80::9006:b4ff:fef3:213e/64 scope link
- >             valid_lft forever preferred_lft forever
- >
- >      $ ip -d link show vxlan_a
- >      4: vxlan_a: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 5000 qdisc 
-noqueue state UNKNOWN mode DEFAULT group default qlen 1000
- >          link/ether 1a:4c:20:0a:38:38 brd ff:ff:ff:ff:ff:ff 
-promiscuity 0 minmtu 68 maxmtu 65535
- >          vxlan id 1 remote fc00:3::1 local fc00:1::1 srcport 0 0 
-dstport 4789 ttl 64 ageing 300 udpcsum noudp6zerocsumtx noudp6zerocsumrx 
-addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 
-gso_max_segs 65535
- >
- >
- > The points we need to pay attention to are:
- >      1. vxlan device is used
- >      2. vxlan mtu is 5000
- >      3. vxlan local device is veth_A-R1
- >      4. nexthop is used. (If nexthop is not used, this test is no 
-problem.)
- >
- > Finally, the test will delete veth_A-R1 in ns-A.
- >
- >      ${ns_a} ip link del dev veth_A-R1 &
- >
- > Then check whether this operation is completed within 1s.
- >
- > After the following patch, it is very easy to fail.
- >
- >      commit 020ef930b826d21c5446fdc9db80fd72a791bc21
- >      Author: Taehee Yoo <ap420073@gmail.com>
- >      Date:   Sun May 16 14:44:42 2021 +0000
- >
- >          mld: fix panic in mld_newpack()
- >
- >          mld_newpack() doesn't allow to allocate high order page,
- >          only order-0 allocation is allowed.
- >          If headroom size is too large, a kernel panic could occur in 
-skb_put().
- >
- >      ......
- >
- >
- >      diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
- >      index 0d59efb6b49e..d36ef9d25e73 100644
- >      --- a/net/ipv6/mcast.c
- >      +++ b/net/ipv6/mcast.c
- >      @@ -1745,10 +1745,7 @@ static struct sk_buff *mld_newpack(struct 
-inet6_dev *idev, unsigned int mtu)
- >                           IPV6_TLV_PADN, 0 };
- >
- >              /* we assume size > sizeof(ra) here */
- >      -       /* limit our allocations to order-0 page */
- >      -       size = min_t(int, size, SKB_MAX_ORDER(0, 0));
- >              skb = sock_alloc_send_skb(sk, size, 1, &err);
- >      -
- >              if (!skb)
- >                      return NULL;
- >
- >
- > 2. Description of the immediate cause
- >
- > I analyzed the reason. It is because there is a dst in the dst cache 
-of vxlan,
- > which has a reference to veth_A-R1, and the network card cannot be 
-deleted
- > quickly.
- >
- > After requesting to delete veth_A-R1, vxlan will destroy all dst 
-caches, but
- > after that, the DAD mechanism of ipv6 sends a packet, uses the dst 
-cache, and
- > adds a dst to the reinitialized dst cache, this dst references veth_A-R1,
- > resulting in veth_A-R1 cannot be deleted.
- >
- > 	# cat check.bpf
- >
- > 	    kprobe: dst_cache_destroy{printf("dst cache dstroy: cache: 
-%p\n", arg0)}
- >
- > 	    kprobe: dst_cache_get_ip6{printf("dst cache get     cache: %p 
-\n", arg0)}
- > 	    kprobe: dst_cache_set_ip6{printf("dst cache set     cache: %p 
-dst: %p\n", arg0, arg1)}
- >
- > 	    kprobe: dst_cache_init{   printf("dst cache init    cache: 
-%p\n", arg0)}
- >
- > 	# bpftrace check.bpf
- > 	    Attaching 4 probes...
- > 	    dst cache dstroy: cache: 0xffffa09407c1fa10
- > 	    dst cache dstroy: cache: 0xffffa094067cc230
- > 	    dst cache dstroy: cache: 0xffffa094057085f0
- > 	    dst cache dstroy: cache: 0xffffa09405708e30
- > 	    dst cache init    cache: 0xffffa09405708110
- > 	    dst cache init    cache: 0xffffa094025e3350
- > 	    dst cache get     cache: 0xffffa09405708110
- > 	    dst cache set     cache: 0xffffa09405708110 dst: 0xffffa09400f46200
- > 	    dst cache init    cache: 0xffffa094025e34d0
- > 	    dst cache init    cache: 0xffffa094200c1ad0
- > 	    dst cache get     cache: 0xffffa094025e3350
- > 	    dst cache set     cache: 0xffffa094025e3350 dst: 0xffffa09406e07500
- > 	    dst cache get     cache: 0xffffa09405708110
- > 	    dst cache get     cache: 0xffffa094025e3350
- > 	    dst cache set     cache: 0xffffa094025e3350 dst: 0xffffa09461adee00
- > 	    dst cache get     cache: 0xffffa09405708110
- > 	    dst cache get     cache: 0xffffa094025e3350
- >
- >  From the above bpftrace trace, we can find that after re-init 
-0xffffa09405708110
- > in the dst cache of vxlan, a dst will be set soon. I confirmed by 
-adding printk
- > that the dev of the newly cached dst is veth_A-R1.
- >
- > Below is the stack of sending DAD packets and adding cache dst to 
-vxlan dst
- > cache.
- >
- >      [   12.065978]  dump_stack+0x57/0x6a
- >      [   12.065990]  dst_cache_set_ip6+0x29/0xe0
- >      [   12.065997]  vxlan6_get_route+0x21f/0x330 [vxlan]
- >      [   12.066001]  vxlan_xmit_one+0x337/0xe00 [vxlan]
- >      [   12.066005]  ? vxlan_xmit+0x9c2/0xfd0 [vxlan]
- >      [   12.066007]  ? vxlan_find_mac+0xa/0x30 [vxlan]
- >      [   12.066009]  vxlan_xmit+0x9c2/0xfd0 [vxlan]
- >      [   12.066014]  ? __kmalloc_node_track_caller+0x57/0x4a0
- >      [   12.066017]  ? __alloc_skb+0x72/0x190
- >      [   12.066021]  ? dev_hard_start_xmit+0xcc/0x1f0
- >      [   12.066023]  dev_hard_start_xmit+0xcc/0x1f0
- >      [   12.066028]  __dev_queue_xmit+0x786/0x9d0
- >      [   12.066031]  ? ndisc_next_option+0x60/0x60
- >      [   12.066033]  ? ___neigh_create+0x3c5/0x840
- >      [   12.066038]  ? eth_header+0x25/0xc0
- >      [   12.066041]  ? ip6_finish_output2+0x1ba/0x570
- >      [   12.066042]  ip6_finish_output2+0x1ba/0x570
- >      [   12.066047]  ? __slab_alloc+0xe/0x20
- >      [   12.066048]  ? ip6_mtu+0x79/0xa0
- >      [   12.066051]  ? ip6_output+0x60/0x110
- >      [   12.066052]  ip6_output+0x60/0x110
- >      [   12.066054]  ? nf_hook.constprop.28+0x74/0xd0
- >      [   12.066055]  ? icmp6_dst_alloc+0xfa/0x1c0
- >      [   12.066057]  ndisc_send_skb+0x283/0x2f0
- >      [   12.066062]  addrconf_dad_completed+0x125/0x310
- >      [   12.066064]  ? addrconf_dad_work+0x2e8/0x530
- >      [   12.066065]  addrconf_dad_work+0x2e8/0x530
- >      [   12.066068]  ? __switch_to_asm+0x42/0x70
- >      [   12.066072]  ? process_one_work+0x18b/0x350
- >      [   12.066073]  ? addrconf_dad_completed+0x310/0x310
- >      [   12.066074]  process_one_work+0x18b/0x350
- >      [   12.066078]  worker_thread+0x4c/0x380
- >      [   12.066080]  ? rescuer_thread+0x300/0x300
- >      [   12.066082]  kthread+0xfc/0x130
- >      [   12.066084]  ? kthread_create_worker_on_cpu+0x50/0x50
- >      [   12.066086]  ret_from_fork+0x22/0x30
- >
- > This logic is not correct in my opinion. In theory, after vxlan 
-destroys the dst
- > cache, it should not add the dst information of a device that is 
-about to be
- > deleted in the dst cache. At the same time, I don’t understand the 
-DAD too
- > much. Why is it triggered?
- >
- > In the case before patch 020ef930, soon, DAD will send another 
-packet. This
- > time, vxlan's dst cache will be used, and the state of dst will be 
-detected, so
- > dst will be deleted. So before this patch, this test is passable.
- >
- >      [   86.666349]  vxlan_xmit_one+0xaa8/0xe00 [vxlan]
- >      [   86.666352]  ? __alloc_skb+0x72/0x190
- >      [   86.666354]  ? vxlan_xmit+0x9c2/0xfd0 [vxlan]
- >      [   86.666356]  ? vxlan_find_mac+0xa/0x30 [vxlan]
- >      [   86.666359]  vxlan_xmit+0x9c2/0xfd0 [vxlan]
- >      [   86.666361]  ? vxlan_xmit+0x9c2/0xfd0 [vxlan]
- >      [   86.666363]  ? vxlan_find_mac+0xa/0x30 [vxlan]
- >      [   86.666365]  ? __kmalloc_node_track_caller+0x57/0x4a0
- >      [   86.666367]  ? __alloc_skb+0x72/0x190
- >      [   86.666369]  ? __kmalloc_node_track_caller+0x57/0x4a0
- >      [   86.666370]  ? __alloc_skb+0x72/0x190
- >      [   86.666373]  ? dev_hard_start_xmit+0xcc/0x1f0
- >      [   86.666375]  dev_hard_start_xmit+0xcc/0x1f0
- >      [   86.666377]  __dev_queue_xmit+0x786/0x9d0
- >      [   86.666380]  ? ip6_finish_output2+0x27e/0x570
- >      [   86.666381]  ip6_finish_output2+0x27e/0x570
- >      [   86.666383]  ? mld_newpack+0x155/0x1b0
- >      [   86.666385]  ? kmem_cache_alloc+0x28/0x3e0
- >      [   86.666386]  ? ip6_mtu+0x79/0xa0
- >      [   86.666388]  ? ip6_output+0x60/0x110
- >      [   86.666390]  ip6_output+0x60/0x110
- >      [   86.666392]  ? nf_hook.constprop.45+0x74/0xd0
- >      [   86.666393]  ? icmp6_dst_alloc+0xfa/0x1c0
- >      [   86.666395]  mld_sendpack+0x217/0x230
- >      [   86.666398]  mld_ifc_timer_expire+0x192/0x300
- >      [   86.666400]  ? mld_dad_timer_expire+0xa0/0xa0
- >      [   86.666403]  call_timer_fn+0x29/0x100
- >      [   86.666405]  run_timer_softirq+0x1b3/0x3a0
- >      [   86.666407]  ? kvm_clock_get_cycles+0xd/0x10
- >      [   86.666409]  ? ktime_get+0x3e/0xa0
- >      [   86.666410]  ? kvm_sched_clock_read+0xd/0x20
- >      [   86.666413]  ? sched_clock+0x5/0x10
- >      [   86.666415]  __do_softirq+0x101/0x29e
- >      [   86.666418]  asm_call_irq_on_stack+0x12/0x20
- >      [   86.666419]  </IRQ>
- >      [   86.666421]  do_softirq_own_stack+0x37/0x40
- >      [   86.666424]  irq_exit_rcu+0xcb/0xd0
- >      [   86.666426]  sysvec_apic_timer_interrupt+0x34/0x80
- >      [   86.666428]  asm_sysvec_apic_timer_interrupt+0x12/0x20
- >
- > 3. Why after patch 020ef930, dst cannot be deleted by the second DAD 
-package
- >
- > The reason is that the second packet sent by DAD will not use the 
-cache. Because
- > the skb->mark != 0 of the sent packet. In vxlan, if
- > ip_tunnel_dst_cache_usable finds skb->mark != 0, the dst cache will 
-not be used.
- > So this time, it cannot be found that the cached dst should be deleted.
- >
- > The reason for skb->mark != 0 is
- >
- >      static struct sk_buff *mld_newpack(struct inet6_dev *idev, 
-unsigned int mtu)
- >      {
- >
- >          int tlen = dev->needed_tailroom;
- >          unsigned int size = mtu + hlen + tlen;
- >
- >      	sk = net->ipv6.igmp_sk;
- >      	/* we assume size > sizeof(ra) here
- >      	 * Also try to not allocate high-order pages for big MTU
- >      	 */
- >      >   size = min_t(int, size, SKB_MAX_ORDER(0, 0));
- >      	skb = sock_alloc_send_skb(sk, size, 1, &err);
- >      	if (!skb)
- >      		return NULL;
- >
- >      	skb->priority = TC_PRIO_CONTROL;
- >      	skb_reserve(skb, hlen);
- >      >	skb_tailroom_reserve(skb, mtu, tlen);
- >
- >          ......
- >
- >      }
- >
- >
- >      static inline void skb_tailroom_reserve(struct sk_buff *skb, 
-unsigned int mtu,
- >      					unsigned int needed_tailroom)
- >      {
- >      	SKB_LINEAR_ASSERT(skb);
- >      	if (mtu < skb_tailroom(skb) - needed_tailroom)
- >      		/* use at most mtu */
- >      		skb->reserved_tailroom = skb_tailroom(skb) - mtu;
- >      	else
- >      		/* use up to all available space */ate reply.
+Yeah, the thought occurred to me, but we are clearly already in the
+maybe-the-assumptions-are-wrong stage so I'm not going to rely on that
+being 100%.  We definitely need to track this down before we start
+making to many more guesses about what is working and what is not.
 
- >      		skb->reserved_tailroom = needed_tailroom;
- >      }
- >
- > First of all, in my environment, dev->needed_tailroom == 0.
- >
- > The DAD package sent for the second time is allocated by mld_newpack. 
-Here
- > skb_tailroom_reserve(skb, mtu, tlen) will be executed. In the 
-original version,
- > since skb was limited in size, finally
- >
- >      skb->reserved_tailroom = needed_tailroom;
- >
- > In the new version, since size is not limited, and in general, the actual
- > allocated skb size will be larger than size, which leads to
- >
- >          skb->reserved_tailroom = skb_tailroom(skb) - mtu;
- >
- > AND
- >          skb->reserved_tailroom > 0.
- >
- > AND
- >
- >          struct sk_buffer {
- >          ......
- >
- > 	        union {
- > 	        	__u32		mark;
- > 	        	__u32		reserved_tailroom;
- > 	        };
- >          ......
- >
- >          }
- >
- > So skb->mark is also greater than 0, so after this skb enters vxlan, 
-the dst
- > cache cannot be used. Therefore, the data sent by the second DAD 
-cannot be used
- > because the dst cache cannot be used, so the dst of the dst cache 
-cannot be
- > deleted.
- >
+> > Or rather, perhaps that assumption is still true but something is
+> > causing current->audit_context to be NULL in that case.
+>
+> I can imagine someone deciding not to set up audit_context in
+> situations like netlink because they knew that nothing following
+> that would be a syscall event.
 
-Yes, absolutely agree with your analysis.
+*If* the user/kernel transition happens as part of the netlink socket
+send/write/etc. syscall then it *should* have all of the audit syscall
+setup already done ... however, see my earlier comments about
+assumptions :/
 
- > After patch 020ef930b, another patch ffa85b73c3c4 also modified the 
-logic here.
- >
- >      size = min_t(int, mtu, PAGE_SIZE / 2) + hlen + tlen;
- >
- > But as long as mtu is relatively small and not limited by PAGE_SIZE / 
-2, this
- > situation will still occur.
+> I've been looking into the audit
+> userspace and there are assumptions like that all over the place.
 
-I hoped that allocated skb's tailroom is always smaller than mtu.
-But alloc_skb() allocates larger than passed size.
-So that skb_tailroom() can be bigger than mtu.
-So, skb->reserved_tailroom can not be always zero.
+I've made my feelings about audit's design known quite a bit already
+so I'm not going to drag all of that back up, all I'll say is that I
+believe the audit design was tragically and inherently flawed in many
+ways.  We've been working to resolve some of those issues in the
+kernel for a little while now, but the audit userspace remains rooted
+in some of those original design decisions.  Of course, these are just
+my opinions, others clearly feel differently.
 
-I tested,
-1, mtu is 1500 and size is lower than mtu, skb_tailroom(skb) is 1728
-2. mtu is larger than PAGE_SIZE/2, skb_tailroom(skb) is always 3776.
-So, in large mtu cases, there is no problem in the current mld_newpack().
-But this situation will occur in small mtu.
+Regardless, and somewhat independent of our discussion here, now that
+I am back to being able to dedicate a good chunk of my time to
+upstream efforts, one of my priorities is to start repairing audit ...
+however, I need to get past the io_uring mess first.
 
-In order to avoid this situation, we should find size, which will make 
-tailroom not exceed mtu.
-But I'm not sure is this possible yet.
+> > Friday the 13th indeed.
+>
+> I've been banging my head against this for a couple months.
+> My biggest fear is that I may have learned enough about the
+> audit system to make useful contributions.
 
-But I'm not sure that this is really needed and important.
-How about you?
+As the usual refrain goes, "patches are always welcome" ... and I say
+that with equal parts honesty and warning :)
 
- >
- > Finally, the second DAD request did not delete dst, which affected 
-the deletion
- > of veth_A-R1.
- >
- >
- > 3. No matter what, it will eventually be deleted
- >
- > If the second DAD package cannot delete the cached dst, after about 
-2-4s, the rs
- > timer will delete the dst, thus completing the deletion of veth_A-R1.
- >
- >      [  116.793215]  vxlan_xmit_one+0xaa8/0xe00 [vxlan]
- >      [  116.793220]  ? sock_def_readable+0x37/0x70
- >      [  116.793223]  ? vxlan_xmit+0x9c2/0xfd0 [vxlan]
- >      [  116.793225]  ? vxlan_find_mac+0xa/0x30 [vxlan]
- >      [  116.793227]  vxlan_xmit+0x9c2/0xfd0 [vxlan]
- >      [  116.793231]  ? find_match+0x4f/0x330
- >      [  116.793236]  ? __kmalloc_node_track_caller+0x57/0x4a0
- >      [  116.793241]  ? dev_hard_start_xmit+0xcc/0x1f0
- >      [  116.793243]  dev_hard_start_xmit+0xcc/0x1f0
- >      [  116.793245]  __dev_queue_xmit+0x786/0x9d0
- >      [  116.793248]  ? cpumask_next_and+0x1a/0x20
- >      [  116.793252]  ? update_sd_lb_stats.constprop.110+0x100/0x7a0
- >      [  116.793255]  ? ip6_finish_output2+0x27e/0x570
- >      [  116.793257]  ip6_finish_output2+0x27e/0x570
- >      [  116.793260]  ? kmem_cache_alloc+0x28/0x3e0
- >      [  116.793261]  ? ip6_mtu+0x79/0xa0
- >      [  116.793263]  ? ip6_output+0x60/0x110
- >      [  116.793265]  ip6_output+0x60/0x110
- >      [  116.793267]  ? nf_hook.constprop.28+0x74/0xd0
- >      [  116.793269]  ? icmp6_dst_alloc+0xfa/0x1c0
- >      [  116.793271]  ndisc_send_skb+0x283/0x2f0
- >      [  116.793273]  addrconf_rs_timer+0x152/0x220
- >      [  116.793275]  ? ipv6_get_lladdr+0xc0/0xc0
- >      [  116.793278]  ? call_timer_fn+0x29/0x100
- >      [  116.793279]  ? ipv6_get_lladdr+0xc0/0xc0
- >      [  116.793281]  call_timer_fn+0x29/0x100
- >      [  116.793283]  run_timer_softirq+0x1b3/0x3a0
- >      [  116.793287]  ? kvm_clock_get_cycles+0xd/0x10
- >      [  116.793289]  ? ktime_get+0x3e/0xa0
- >      [  116.793290]  ? kvm_sched_clock_read+0xd/0x20
- >      [  116.793294]  ? sched_clock+0x5/0x10
- >      [  116.793298]  __do_softirq+0x101/0x29e
- >      [  116.793301]  asm_call_irq_on_stack+0x12/0x20
- >
- >
- > 4. Finally
- >
- > Although regardless of the version, the network card will be deleted. 
-But I
- > think this logic may still have some problems.
- >
+Even if you aren't comfortable putting together a patch, simply
+root-causing the missing audit_context setup in the netlink case would
+be helpful.
 
-It seems that you're thinking that this situation is actually the 
-following scenario. (right? :) )
-1. interface is being down.
-2. dsts are cleared.
-3. By dad or other work/timer a new dst is created. //problem?
-4. this dst is not cleared by clear logic and it is cleared by timer.
-
-If the above scenario is possible and actually the same as this 
-situation, I think logic should be fixed.
-But I'm sure that this is right because of lack of knowledge of routing 
-infrastructure.
-
- > Moreover, I think that these two patches are not directly related to 
-the problem
- > here.
- >
- > What we should pay attention to is that after veth_A-R1 is required to be
- > deleted, the packets sent by the ipv6 layer should not be cached in 
-the dst
- > cache in vxlan.
- >
- > How should we solve this problem:
- >
- > 1. Ensure that vxlan cleans dst cache after route update?
- > 2. dst cache checks the status of dev when adding cache?
- > 3. ipv6 no longer sends rs or DAD packets when the settings are to be 
-deleted?
- > 4. Nexthop checks the status of dev?
- >
-
-I'm sorry, I'm not an expert on routing infrastructure so that I 
-couldn't provide good insight about it.
-I think the routing experts will help you!
-Also, I will more take a look at DAD and other ipv6 timers.
-
-Thanks a lot
-Taehee Yoo
-
- >
- > Thanks.
+-- 
+paul moore
+www.paul-moore.com
