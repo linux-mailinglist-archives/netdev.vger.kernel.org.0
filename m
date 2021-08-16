@@ -2,118 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 814C33ED923
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 16:46:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 483B03ED92A
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 16:48:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232330AbhHPOq7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 10:46:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40390 "EHLO
+        id S232561AbhHPOs1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 10:48:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231952AbhHPOq7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 10:46:59 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC2FC061764;
-        Mon, 16 Aug 2021 07:46:27 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id bq25so22194418ejb.11;
-        Mon, 16 Aug 2021 07:46:27 -0700 (PDT)
+        with ESMTP id S229586AbhHPOs0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 10:48:26 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46CE2C061764
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 07:47:55 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id bo19so26797527edb.9
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 07:47:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
+        h=from:date:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=5gRcCSfuDiif1weUga1cR6YDto2XU1RGTA+nGmrUzlA=;
-        b=Jng5b8NzqkU23UbDejFxtGjMbUB5GDNcV/64Tit7qlan9nFxUq1TGflKqtaxJTh9US
-         QFSxMvShLT2fvSpnKAomKUYAQ/HU09BbSrRFlxYeXFkZhLB1/htbn44TePJAW9Hh51wq
-         0+k/pNQ85GRc21wu15vaeGyCQs3P/XFEhs+u2KgXXFMFgs+fogBwwo9KCjgbb3QEwkKn
-         /V0sOwFRXQX91njIMyaWLjx4QqDzJqbL7ChWeB4YO/xnEhPOF0+egRiftSURothV3HWC
-         qmsvcdcHkvffvT4ZlrmZ5U8nYW6YMMDtnJfi/eXxYDbBOTAZq7Kat5QCrHfmBwwZVuQ6
-         4klA==
+        bh=K+zhgFRJ+DUqtcgK+lv2D2SibB1ZuiRsKs/d3sTPn9U=;
+        b=BwVAAqXdHJxtuByC1X9t4Y1y6Qb3Jb69SO17LwBbNmq0TnGPIRtitZdcQqJsv8yjIl
+         rhzEiwt74j8UEnR0s2jeXI4gKR1KKts9AbuTYThdwWrj2Tav1FxyQ07uwLRg8zUEot8z
+         fPn5DCxWkJFS2rr/27xPD5TiOJQbJle4/1Gmxz8U1HoMd172xTlrvCcVDtd+KGYUM4bl
+         mqiMPi1M1vN+eZrkV+vyLa9PyKlhYCiqXQx/4EshI/WoVOoMmn1DTc3UujP6ita+uwPU
+         45Vf743n+oFJizf/KKgDydI1CO7VA3jweUc9m+Vcilg5gHJxBehskCJ9iaVAIYmnEfp0
+         W91w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=5gRcCSfuDiif1weUga1cR6YDto2XU1RGTA+nGmrUzlA=;
-        b=qZLrcmXlFoeh8A0MElgCi8ptQJq899/jbRd6L5qP9YXGTI3dKkd1xTfsd3zqhHpb47
-         /SMfe5iO08WL9kJy0jwgGRI+zyAjTjwvN0kdGfeWwJKqvQW4RPFV7KxbKivXOD/qsvH+
-         c75OpK69QXgAi/5xPRm2Cg7NhPkO3cccnFdul7FBKSahc4V+Rt4FMhKGxzbVTqozYNGx
-         jmK4SJ+RNPZ5UU1c2tAPpbdAQutuPDY6n5vxS9L13EKYixRS4MAKLHK+l385DMkjT6aL
-         rCg3PFdNsuBpIk4FYP0g6wkmarLgQmwZBtrP7dGAdwNz1ljanNfX9IH0esyPs4nGoLim
-         0fpg==
-X-Gm-Message-State: AOAM531/QUHr9t5DlntFCEoC/tzBu8JFLnisgtp8mp7ppdvHOg7WF0/U
-        oO82qaa14LcYdhXdloiJ8Ug=
-X-Google-Smtp-Source: ABdhPJyaE3N8N7ro9b3JQPjkfT7sQ1cJVMRUiyqsxaFpKfdR6rd3n0D2wqKpvdpRcTrF2ZcJYEwzJQ==
-X-Received: by 2002:a17:907:7895:: with SMTP id ku21mr7753366ejc.361.1629125186076;
-        Mon, 16 Aug 2021 07:46:26 -0700 (PDT)
+        bh=K+zhgFRJ+DUqtcgK+lv2D2SibB1ZuiRsKs/d3sTPn9U=;
+        b=YpvQdLvv0/+U8QyFEDbjolxqU1YV9RIi2Hh/n2aSjh4PpsJbIKR6r57RhU5JNNNWNx
+         Bu7OwC6UFDdQiN77bJtyoeMLxpfXXA/wgYVdSc4coMO40r/ZPPkOZQXUXjM2zF0VXe6E
+         84/rn0wve8XGxyt+uBCqfshmsEDWeVoDOmWg+iJJwmRemxDtGHkwfIPy9Ebs7rkfQou7
+         g1TlYxjVCtB2bFh20U4x9fpWT8dF4Pr4sVSUFguirhDaNOKsgPatCn3P+57kKLWwEi0I
+         QnTW90VyJFdbLrKt98HE7zBOI+pP2/Rj56MvDf5ilRnIyGs/klWMXb5FE390jfPqH9r6
+         V+5g==
+X-Gm-Message-State: AOAM533A6SF3wb0rD78zRQVnL/HlWLMg2JwCVkPN1Spboy2j57EEYPwC
+        0BWkHfZC2T32Ynr/3MPsQbI=
+X-Google-Smtp-Source: ABdhPJy7BZJcQV1UczxYoH+7lJHiwJahrP1U1VY7BvDleAyvdVMXN2SVZ9OXcASJ8pxFKimivdsXuQ==
+X-Received: by 2002:aa7:c799:: with SMTP id n25mr19935947eds.16.1629125273896;
+        Mon, 16 Aug 2021 07:47:53 -0700 (PDT)
 Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id r2sm4990871edv.78.2021.08.16.07.46.23
+        by smtp.gmail.com with ESMTPSA id c16sm3777941ejm.125.2021.08.16.07.47.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Aug 2021 07:46:25 -0700 (PDT)
-Date:   Mon, 16 Aug 2021 17:46:22 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Frank Rowand <frowand.list@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: of_node_put() usage is buggy all over drivers/of/base.c?!
-Message-ID: <20210816144622.tgslast6sbblclda@skbuf>
-References: <20210814010139.kzryimmp4rizlznt@skbuf>
- <9accd63a-961c-4dab-e167-9e2654917a94@gmail.com>
+        Mon, 16 Aug 2021 07:47:53 -0700 (PDT)
+From:   Ioana Ciornei <ciorneiioana@gmail.com>
+X-Google-Original-From: Ioana Ciornei <ciornei.ioana@gmail.com>
+Date:   Mon, 16 Aug 2021 17:47:52 +0300
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next] net: dpaa2-mac: add support for more ethtool
+ 10G link modes
+Message-ID: <20210816144752.vxliq642uipdsmdd@skbuf>
+References: <E1m5mVT-00032g-Km@rmk-PC.armlinux.org.uk>
+ <YPbU59Kmpk0NvlQH@lunn.ch>
+ <20210720141134.GT22278@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9accd63a-961c-4dab-e167-9e2654917a94@gmail.com>
+In-Reply-To: <20210720141134.GT22278@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Frank,
-
-On Mon, Aug 16, 2021 at 09:33:03AM -0500, Frank Rowand wrote:
-> Hi Vladimir,
-> 
-> On 8/13/21 8:01 PM, Vladimir Oltean wrote:
-> > Hi,
+On Tue, Jul 20, 2021 at 03:11:34PM +0100, Russell King (Oracle) wrote:
+> On Tue, Jul 20, 2021 at 03:51:35PM +0200, Andrew Lunn wrote:
+> > On Tue, Jul 20, 2021 at 10:57:43AM +0100, Russell King wrote:
+> > > Phylink documentation says:
+> > >   Note that the PHY may be able to transform from one connection
+> > >   technology to another, so, eg, don't clear 1000BaseX just
+> > >   because the MAC is unable to BaseX mode. This is more about
+> > >   clearing unsupported speeds and duplex settings. The port modes
+> > >   should not be cleared; phylink_set_port_modes() will help with this.
+> > > 
+> > > So add the missing 10G modes.
 > > 
-> > I was debugging an RCU stall which happened during the probing of a
-> > driver. Activating lock debugging, I see:
-> 
-> I took a quick look at sja1105_mdiobus_register() in v5.14-rc1 and v5.14-rc6.
-> 
-> Looking at the following stack trace, I did not see any calls to
-> of_find_compatible_node() in sja1105_mdiobus_register().  I am
-> guessing that maybe there is an inlined function that calls
-> of_find_compatible_node().  This would likely be either
-> sja1105_mdiobus_base_tx_register() or sja1105_mdioux_base_t1_register().
-
-Yes, it is sja1105_mdiobus_base_t1_register which is inlined.
-
+> > Hi Russell
 > > 
-> > [  101.710694] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:938
-> > [  101.719119] in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 1534, name: sh
-> > [  101.726763] INFO: lockdep is turned off.
-> > [  101.730674] irq event stamp: 0
-> > [  101.733716] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
-> > [  101.739973] hardirqs last disabled at (0): [<ffffd3ebecb10120>] copy_process+0xa78/0x1a98
-> > [  101.748146] softirqs last  enabled at (0): [<ffffd3ebecb10120>] copy_process+0xa78/0x1a98
-> > [  101.756313] softirqs last disabled at (0): [<0000000000000000>] 0x0
-> > [  101.762569] CPU: 4 PID: 1534 Comm: sh Not tainted 5.14.0-rc5+ #272
-> > [  101.774558] Call trace:
-> > [  101.794734]  __might_sleep+0x50/0x88
-> > [  101.798297]  __mutex_lock+0x60/0x938
-> > [  101.801863]  mutex_lock_nested+0x38/0x50
-> > [  101.805775]  kernfs_remove+0x2c/0x50             <---- this takes mutex_lock(&kernfs_mutex);
-> > [  101.809341]  sysfs_remove_dir+0x54/0x70
+> > Would a phylink_set_10g(mask) helper make sense? As you say, it is
+> > about the speed, not the individual modes.
 > 
-> The __kobject_del() occurs only if the refcount on the node
-> becomes zero.  This should never be true when of_find_compatible_node()
-> calls of_node_put() unless a "from" node is passed to of_find_compatible_node().
+> Yes, good point, and that will probably help avoid this in the future.
+> We can't do that for things like e.g. SGMII though, because 1000/half
+> isn't universally supported.
+> 
+> Shall we get this patch merged anyway and then clean it up - as such
+> a change will need to cover multiple drivers anyway?
+> 
 
-I figured that was the assumption, that the of_node_put would never
-trigger a sysfs file / kobject deletion from there.
+This didn't get merged unfortunately.
 
-> In both sja1105_mdiobus_base_tx_register() and sja1105_mdioux_base_t1_register()
-> a from node ("mdio") is passed to of_find_compatible_node() without first doing an
-> of_node_get(mdio).  If you add the of_node_get() calls the problem should be fixed.
+Could you please resend it? Alternatively, I can take a look into adding
+that phylink_set_10g() helper if that is what's keeping it from being
+merged.
 
-The answer seems simple enough, but stupid question, but why does
-of_find_compatible_node call of_node_put on "from" in the first place?
+Ioana
