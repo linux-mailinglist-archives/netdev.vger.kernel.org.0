@@ -2,98 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8A2E3ED25A
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 12:50:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD4B03ED272
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 12:51:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235795AbhHPKvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 06:51:16 -0400
-Received: from mga12.intel.com ([192.55.52.136]:46497 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230250AbhHPKvP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 06:51:15 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10077"; a="195422586"
-X-IronPort-AV: E=Sophos;i="5.84,324,1620716400"; 
-   d="scan'208";a="195422586"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2021 03:50:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,324,1620716400"; 
-   d="scan'208";a="530423882"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga002.fm.intel.com with ESMTP; 16 Aug 2021 03:50:43 -0700
-Received: from linux.intel.com (vwong3-iLBPG3.png.intel.com [10.88.229.80])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id 571FE5808DB;
-        Mon, 16 Aug 2021 03:50:40 -0700 (PDT)
-Date:   Mon, 16 Aug 2021 18:50:37 +0800
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, vee.khee.wong@intel.com,
-        weifeng.voon@intel.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v1 2/3] net: stmmac: add ethtool per-queue
- statistic framework
-Message-ID: <20210816105037.GA11930@linux.intel.com>
-References: <cover.1629092894.git.vijayakannan.ayyathurai@intel.com>
- <b0fd3bf4e5c105e959df60d3c876297721b62ee6.1629092894.git.vijayakannan.ayyathurai@intel.com>
+        id S236265AbhHPKwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 06:52:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42110 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236262AbhHPKwI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 06:52:08 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E1C9C0612A3;
+        Mon, 16 Aug 2021 03:51:22 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id fa24-20020a17090af0d8b0290178bfa69d97so26922525pjb.0;
+        Mon, 16 Aug 2021 03:51:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9WMFUZKDxMfxw44rjP6HLGPmcDMjc9RuKsGPbEWZGyw=;
+        b=UYvfREnOKpTSNXzvJsw3rSEUTwd2nSeqxk9Ml+iR0byJuf/dtLx2+J7omAadkglGr9
+         Tco7kiolV+XZfj0pAAyvoWsXaAM47ev7lQfsq+LZzVzmtIh1j/Zpt2AVBF584CJVZbaM
+         cnqaahavhCO2Bkbms+TMn9KKWb41Dj3cfhaA/vnB6SIGMnCTntgnK0iy2MEWX8dOvlJa
+         7840wvqBn8Yk8LvHgTSLq1BWt45tykhbLEr0XBPYXy8CaUWh315UYn7NMRLjatKn4DTq
+         1rFjnTP5FK5zUYQLhhPoWWo4ze4fx+d+O11VP5FUpbpYKcW5pMygyP7CtzXVttyp7bgL
+         mdsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9WMFUZKDxMfxw44rjP6HLGPmcDMjc9RuKsGPbEWZGyw=;
+        b=X1Z8cWhz3N+zjnzxQxdsVZrUaFRNs9bO4rUuEen7O/jeIJfdFB7N06fK4fR8qahlzP
+         cUfTjBYN4RsC4GKcsc0CqMWjWxM9mnhqgKb1qYwKm9MGHJsP2JmoL3JOS7lZWMqbDHKm
+         0ylniKiDrMEZZJ1lNSCvPHisX5Ksv60bvB2pRLVFCZo1f88a9bXI3sqOl6m+NUhBrWZ1
+         6QoLkvGamUxiFoZa/5beVKoG0O20O0ZDUcHUbavZ0e8z8wnjPsVuwVirJoz6+EEIGKJl
+         YbhFKqNkEH6XCqqtfUCCZj2cf6vvIsMCsVQS8gDONe+cSG8c0/LbGJmatjOyEFVAMWJj
+         Ilrg==
+X-Gm-Message-State: AOAM533m8iF1nJuDJTXcNzaqHMKHJhz2D7kkdQTuwAyyLTub1ZeQfXwX
+        Xl6ghK5jNAjMOiigTCgMClE=
+X-Google-Smtp-Source: ABdhPJxh9IxiulwybsKd7daCC5p/EXFlTi2+ojIXPXkMgDm59ZmdhFNetpiXBVISWMOClTuy3t9TaA==
+X-Received: by 2002:a17:90b:438e:: with SMTP id in14mr16714417pjb.66.1629111082059;
+        Mon, 16 Aug 2021 03:51:22 -0700 (PDT)
+Received: from IRVINGLIU-MB0.tencent.com ([203.205.141.115])
+        by smtp.gmail.com with ESMTPSA id j13sm12685256pgp.29.2021.08.16.03.51.18
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 16 Aug 2021 03:51:21 -0700 (PDT)
+From:   Xu Liu <liuxu623@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xu Liu <liuxu623@gmail.com>
+Subject: [PATCH] bpf: Allow bpf_get_netns_cookie in BPF_PROG_TYPE_SOCK_OPS
+Date:   Mon, 16 Aug 2021 18:51:14 +0800
+Message-Id: <20210816105114.34781-1-liuxu623@gmail.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b0fd3bf4e5c105e959df60d3c876297721b62ee6.1629092894.git.vijayakannan.ayyathurai@intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 16, 2021 at 02:15:59PM +0800, Vijayakannan Ayyathurai wrote:
-> Adding generic ethtool per-queue statistic framework to display the
-> statistics for each rx/tx queue. In future, users can avail it to add
-> more per-queue specific counters. Number of rx/tx queues displayed is
-> depending on the available rx/tx queues in that particular MAC config
-> and this number is limited up to the MTL_MAX_{RX|TX}_QUEUES defined
-> in the driver.
-> 
-> Ethtool per-queue statistic display will look like below, when users
-> start adding more counters.
-> 
-> Example:
->  q0_tx_statA:
->  q0_tx_statB:
->  q0_tx_statC:
->  |
->  q0_tx_statX:
->  .
->  .
->  .
->  qMAX_tx_statA:
->  qMAX_tx_statB:
->  qMAX_tx_statC:
->  |
->  qMAX_tx_statX:
-> 
->  q0_rx_statA:
->  q0_rx_statB:
->  q0_rx_statC:
->  |
->  q0_rx_statX:
->  .
->  .
->  .
->  qMAX_rx_statA:
->  qMAX_rx_statB:
->  qMAX_rx_statC:
->  |
->  qMAX_rx_statX:
-> 
-> In addition, this patch has the support on displaying the number of
-> packets received and transmitted per queue.
->
+We'd like to be able to identify netns from sockops hooks
+to accelerate local process communication form different netns.
 
-Acked-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Signed-off-by: Xu Liu <liuxu623@gmail.com>
+---
+ net/core/filter.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-> Signed-off-by: Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>
-> ---
+diff --git a/net/core/filter.c b/net/core/filter.c
+index d70187ce851b..34938a537931 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -4664,6 +4664,18 @@ static const struct bpf_func_proto bpf_get_netns_cookie_sock_addr_proto = {
+ 	.arg1_type	= ARG_PTR_TO_CTX_OR_NULL,
+ };
+ 
++BPF_CALL_1(bpf_get_netns_cookie_sock_ops, struct bpf_sock_ops_kern *, ctx)
++{
++	return __bpf_get_netns_cookie(ctx ? ctx->sk : NULL);
++}
++
++static const struct bpf_func_proto bpf_get_netns_cookie_sock_ops_proto = {
++	.func		= bpf_get_netns_cookie_sock_ops,
++	.gpl_only	= false,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_PTR_TO_CTX_OR_NULL,
++};
++
+ BPF_CALL_1(bpf_get_socket_uid, struct sk_buff *, skb)
+ {
+ 	struct sock *sk = sk_to_full_sk(skb->sk);
+@@ -7445,6 +7457,8 @@ sock_ops_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_sk_storage_get_proto;
+ 	case BPF_FUNC_sk_storage_delete:
+ 		return &bpf_sk_storage_delete_proto;
++	case BPF_FUNC_get_netns_cookie:
++		return &bpf_get_netns_cookie_sock_ops_proto;
+ #ifdef CONFIG_INET
+ 	case BPF_FUNC_load_hdr_opt:
+ 		return &bpf_sock_ops_load_hdr_opt_proto;
+-- 
+2.28.0
+
