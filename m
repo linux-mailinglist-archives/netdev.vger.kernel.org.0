@@ -2,278 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B6D63ED392
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 14:01:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF9453ED39B
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 14:02:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235405AbhHPMBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 08:01:38 -0400
-Received: from mga14.intel.com ([192.55.52.115]:38495 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233463AbhHPMA5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 08:00:57 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10077"; a="215572761"
-X-IronPort-AV: E=Sophos;i="5.84,324,1620716400"; 
-   d="scan'208";a="215572761"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2021 05:00:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,324,1620716400"; 
-   d="scan'208";a="504864844"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 16 Aug 2021 05:00:07 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 30F076BF; Mon, 16 Aug 2021 15:00:03 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        David Thompson <davthompson@nvidia.com>,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        netdev@vger.kernel.org, linux-acpi@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Asmaa Mnebhi <asmaa@nvidia.com>,
-        Liming Sun <limings@nvidia.com>
-Subject: [PATCH v1 6/6] TODO: net: mellanox: mlxbf_gige: Replace non-standard interrupt handling
-Date:   Mon, 16 Aug 2021 14:59:53 +0300
-Message-Id: <20210816115953.72533-7-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210816115953.72533-1-andriy.shevchenko@linux.intel.com>
-References: <20210816115953.72533-1-andriy.shevchenko@linux.intel.com>
+        id S234294AbhHPMCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 08:02:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58460 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233423AbhHPMC3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 08:02:29 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E924FC061764;
+        Mon, 16 Aug 2021 05:01:57 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id y7so26826460ljp.3;
+        Mon, 16 Aug 2021 05:01:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=r9qun9RBfDRUM5T4sfZ2VeCEDVk102Kw4ULHeddtzpM=;
+        b=sNCk2U79PhKTpz1SMogAaQAC2vqp0InA8igcTnnuPut7N3g/rWMM8yieUDw4nKHqeF
+         LeAnzH90rNv8P1AKfWTOTBAOTFkWmGufH2ynZbCbhRl2M1SKdfvk1ZW2zoH/KRkkdzLF
+         AfxDwiFlwJ1XPzOTLwJ44k9PD3HAD4gSYaUzmPbihSV30jvu7J/EvZthmoAezoiyD8gA
+         x31TjvNxv18VGnDu3aM9WDa6Ku+OBlGZ5jFx4spYE9tx2rGm4bz4lbEm1dl3fI59Hkcr
+         oenXEpYX6sISq5zWzzNbsPcl/W1NG8ASrf/yTjt4Wo9ZUMi8vjpQ4D9aTyRhLTSQTcWA
+         gSMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=r9qun9RBfDRUM5T4sfZ2VeCEDVk102Kw4ULHeddtzpM=;
+        b=Mj+jFldPVit4DLKT7aZS4njkKZ5VzBy5rAiv33JSQhkUYRhzEoOXgSxQ4UyIAQfCDV
+         g2wQpIfux9+c3BlwLW0JImt5oVQukkFBTjrVe7kJL6rld6KMYrj7f5jLYbr38L+q+4eR
+         Yud9KCXHaizHaUK0GZBIfJiLsk/ot5rdxw4xjBRnmISDyNkcuJgQyu2V4vO30umUjcPa
+         AjB1Yugla6NXUX4YFy1Y97+V9hHNdCRz0agWbz/s3Hg2Zk1r+dTh0nJVtQFC4ecBCVL1
+         AA6d5yRsYcyGY+aGOiRfhVzEEByNJocZt8OdZ9ut2lByKEQqFxK8j3s9dFB9nf7M429y
+         n5Yg==
+X-Gm-Message-State: AOAM532Wgp0VMnq2dYm6L/rPvQ1MyQbt0ig6vAoy0JQOMTxzlL3Nbf3O
+        tJZh1LYbwLAHYd07Q+MA1dI=
+X-Google-Smtp-Source: ABdhPJxuYhEPGRg17h72OgDLrTQHor7wWefUEVKkFHjFduPkrGcO9uLTm2NRnsnQPoF3U3HDOEQ2Fw==
+X-Received: by 2002:a2e:a806:: with SMTP id l6mr12775879ljq.91.1629115315306;
+        Mon, 16 Aug 2021 05:01:55 -0700 (PDT)
+Received: from localhost.localdomain ([46.61.204.59])
+        by smtp.gmail.com with ESMTPSA id p3sm928679lfa.228.2021.08.16.05.01.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 Aug 2021 05:01:54 -0700 (PDT)
+Subject: Re: [syzbot] WARNING in __v9fs_get_acl
+To:     syzbot <syzbot+56fdf7f6291d819b9b19@syzkaller.appspotmail.com>,
+        a@unstable.cc, asmadeus@codewreck.org,
+        b.a.t.m.a.n@lists.open-mesh.org, davem@davemloft.net,
+        ericvh@gmail.com, linux-kernel@vger.kernel.org, lucho@ionkov.net,
+        lucien.xin@gmail.com, mareklindner@neomailbox.ch,
+        netdev@vger.kernel.org, nhorman@tuxdriver.com,
+        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com,
+        v9fs-developer@lists.sourceforge.net
+References: <000000000000789bcd05c9aa3d5d@google.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+Message-ID: <d40528c5-aa3c-45ff-ed99-e741b63f6351@gmail.com>
+Date:   Mon, 16 Aug 2021 15:01:52 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <000000000000789bcd05c9aa3d5d@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since GPIO driver supports interrupt handling, replace custom routine with
-simple IRQ request.
+On 8/16/21 12:58 PM, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    761c6d7ec820 Merge tag 'arc-5.14-rc6' of git://git.kernel...
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=11d87ca1300000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=730106bfb5bf8ace
+> dashboard link: https://syzkaller.appspot.com/bug?extid=56fdf7f6291d819b9b19
+> compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.1
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12ca6029300000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13bf42a1300000
+> 
+> The issue was bisected to:
+> 
+> commit 0ac1077e3a549bf8d35971613e2be05bdbb41a00
+> Author: Xin Long <lucien.xin@gmail.com>
+> Date:   Tue Oct 16 07:52:02 2018 +0000
+> 
+>      sctp: get pr_assoc and pr_stream all status with SCTP_PR_SCTP_ALL instead
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16f311fa300000
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=15f311fa300000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=11f311fa300000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+56fdf7f6291d819b9b19@syzkaller.appspotmail.com
+> Fixes: 0ac1077e3a54 ("sctp: get pr_assoc and pr_stream all status with SCTP_PR_SCTP_ALL instead")
+> 
+> ------------[ cut here ]------------
+> WARNING: CPU: 1 PID: 8426 at mm/page_alloc.c:5366 __alloc_pages+0x588/0x5f0 mm/page_alloc.c:5413
+> Modules linked in:
+> CPU: 1 PID: 8426 Comm: syz-executor477 Not tainted 5.14.0-rc5-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:__alloc_pages+0x588/0x5f0 mm/page_alloc.c:5413
+> Code: 00 48 ba 00 00 00 00 00 fc ff df e9 5e fd ff ff 89 f9 80 e1 07 80 c1 03 38 c1 0f 8c 6d fd ff ff e8 bd 62 0a 00 e9 63 fd ff ff <0f> 0b 45 31 e4 e9 7a fd ff ff 48 8d 4c 24 50 80 e1 07 80 c1 03 38
+> RSP: 0018:ffffc90000fff9a0 EFLAGS: 00010246
+> RAX: dffffc0000000000 RBX: 0000000000000014 RCX: 0000000000000000
+> RDX: 0000000000000028 RSI: 0000000000000000 RDI: ffffc90000fffa28
+> RBP: ffffc90000fffaa8 R08: dffffc0000000000 R09: ffffc90000fffa00
+> R10: fffff520001fff45 R11: 0000000000000000 R12: 0000000000040d40
+> R13: ffffc90000fffa00 R14: 1ffff920001fff3c R15: 1ffff920001fff38
+> FS:  000000000148e300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007fa1e9a97740 CR3: 000000003406e000 CR4: 00000000001506f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>   kmalloc_order+0x41/0x170 mm/slab_common.c:955
+>   kmalloc_order_trace+0x15/0x70 mm/slab_common.c:971
+>   kmalloc_large include/linux/slab.h:520 [inline]
+>   __kmalloc+0x292/0x390 mm/slub.c:4101
+>   kmalloc include/linux/slab.h:596 [inline]
+>   kzalloc include/linux/slab.h:721 [inline]
+>   __v9fs_get_acl+0x40/0x110 fs/9p/acl.c:36
+>   v9fs_get_acl+0xa5/0x290 fs/9p/acl.c:71
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- .../mellanox/mlxbf_gige/mlxbf_gige_gpio.c     | 212 ------------------
- 1 file changed, 212 deletions(-)
- delete mode 100644 drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_gpio.c
 
-diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_gpio.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_gpio.c
-deleted file mode 100644
-index a8d966db5715..000000000000
---- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_gpio.c
-+++ /dev/null
-@@ -1,212 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause
--
--/* Initialize and handle GPIO interrupt triggered by INT_N PHY signal.
-- * This GPIO interrupt triggers the PHY state machine to bring the link
-- * up/down.
-- *
-- * Copyright (C) 2021 NVIDIA CORPORATION & AFFILIATES
-- */
--
--#include <linux/acpi.h>
--#include <linux/bitfield.h>
--#include <linux/device.h>
--#include <linux/err.h>
--#include <linux/gpio/driver.h>
--#include <linux/interrupt.h>
--#include <linux/io.h>
--#include <linux/irq.h>
--#include <linux/irqdomain.h>
--#include <linux/irqreturn.h>
--#include <linux/platform_device.h>
--#include <linux/property.h>
--
--#include "mlxbf_gige.h"
--#include "mlxbf_gige_regs.h"
--
--#define MLXBF_GIGE_GPIO_CAUSE_FALL_EN		0x48
--#define MLXBF_GIGE_GPIO_CAUSE_OR_CAUSE_EVTEN0	0x80
--#define MLXBF_GIGE_GPIO_CAUSE_OR_EVTEN0		0x94
--#define MLXBF_GIGE_GPIO_CAUSE_OR_CLRCAUSE	0x98
--
--static void mlxbf_gige_gpio_enable(struct mlxbf_gige *priv)
--{
--	unsigned long flags;
--	u32 val;
--
--	spin_lock_irqsave(&priv->gpio_lock, flags);
--	val = readl(priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_CLRCAUSE);
--	val |= priv->phy_int_gpio_mask;
--	writel(val, priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_CLRCAUSE);
--
--	/* The INT_N interrupt level is active low.
--	 * So enable cause fall bit to detect when GPIO
--	 * state goes low.
--	 */
--	val = readl(priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_FALL_EN);
--	val |= priv->phy_int_gpio_mask;
--	writel(val, priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_FALL_EN);
--
--	/* Enable PHY interrupt by setting the priority level */
--	val = readl(priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_EVTEN0);
--	val |= priv->phy_int_gpio_mask;
--	writel(val, priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_EVTEN0);
--	spin_unlock_irqrestore(&priv->gpio_lock, flags);
--}
--
--static void mlxbf_gige_gpio_disable(struct mlxbf_gige *priv)
--{
--	unsigned long flags;
--	u32 val;
--
--	spin_lock_irqsave(&priv->gpio_lock, flags);
--	val = readl(priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_EVTEN0);
--	val &= ~priv->phy_int_gpio_mask;
--	writel(val, priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_EVTEN0);
--	spin_unlock_irqrestore(&priv->gpio_lock, flags);
--}
--
--static irqreturn_t mlxbf_gige_gpio_handler(int irq, void *ptr)
--{
--	struct mlxbf_gige *priv;
--	u32 val;
--
--	priv = ptr;
--
--	/* Check if this interrupt is from PHY device.
--	 * Return if it is not.
--	 */
--	val = readl(priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_CAUSE_EVTEN0);
--	if (!(val & priv->phy_int_gpio_mask))
--		return IRQ_NONE;
--
--	/* Clear interrupt when done, otherwise, no further interrupt
--	 * will be triggered.
--	 */
--	val = readl(priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_CLRCAUSE);
--	val |= priv->phy_int_gpio_mask;
--	writel(val, priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_CLRCAUSE);
--
--	generic_handle_irq(priv->phy_irq);
--
--	return IRQ_HANDLED;
--}
--
--static void mlxbf_gige_gpio_mask(struct irq_data *irqd)
--{
--	struct mlxbf_gige *priv = irq_data_get_irq_chip_data(irqd);
--
--	mlxbf_gige_gpio_disable(priv);
--}
--
--static void mlxbf_gige_gpio_unmask(struct irq_data *irqd)
--{
--	struct mlxbf_gige *priv = irq_data_get_irq_chip_data(irqd);
--
--	mlxbf_gige_gpio_enable(priv);
--}
--
--static struct irq_chip mlxbf_gige_gpio_chip = {
--	.name			= "mlxbf_gige_phy",
--	.irq_mask		= mlxbf_gige_gpio_mask,
--	.irq_unmask		= mlxbf_gige_gpio_unmask,
--};
--
--static int mlxbf_gige_gpio_domain_map(struct irq_domain *d,
--				      unsigned int irq,
--				      irq_hw_number_t hwirq)
--{
--	irq_set_chip_data(irq, d->host_data);
--	irq_set_chip_and_handler(irq, &mlxbf_gige_gpio_chip, handle_simple_irq);
--	irq_set_noprobe(irq);
--
--	return 0;
--}
--
--static const struct irq_domain_ops mlxbf_gige_gpio_domain_ops = {
--	.map    = mlxbf_gige_gpio_domain_map,
--	.xlate	= irq_domain_xlate_twocell,
--};
--
--#ifdef CONFIG_ACPI
--static int mlxbf_gige_gpio_resources(struct acpi_resource *ares,
--				     void *data)
--{
--	struct acpi_resource_gpio *gpio;
--	u32 *phy_int_gpio = data;
--
--	if (ares->type == ACPI_RESOURCE_TYPE_GPIO) {
--		gpio = &ares->data.gpio;
--		*phy_int_gpio = gpio->pin_table[0];
--	}
--
--	return 1;
--}
--#endif
--
--void mlxbf_gige_gpio_free(struct mlxbf_gige *priv)
--{
--	irq_dispose_mapping(priv->phy_irq);
--	irq_domain_remove(priv->irqdomain);
--}
--
--int mlxbf_gige_gpio_init(struct platform_device *pdev,
--			 struct mlxbf_gige *priv)
--{
--	struct device *dev = &pdev->dev;
--	struct resource *res;
--	u32 phy_int_gpio = 0;
--	int ret;
--
--	LIST_HEAD(resources);
--
--	res = platform_get_resource(pdev, IORESOURCE_MEM, MLXBF_GIGE_RES_GPIO0);
--	if (!res)
--		return -ENODEV;
--
--	priv->gpio_io = devm_ioremap(dev, res->start, resource_size(res));
--	if (!priv->gpio_io)
--		return -ENOMEM;
--
--#ifdef CONFIG_ACPI
--	ret = acpi_dev_get_resources(ACPI_COMPANION(dev),
--				     &resources, mlxbf_gige_gpio_resources,
--				     &phy_int_gpio);
--	acpi_dev_free_resource_list(&resources);
--	if (ret < 0 || !phy_int_gpio) {
--		dev_err(dev, "Error retrieving the gpio phy pin");
--		return -EINVAL;
--	}
--#endif
--
--	priv->phy_int_gpio_mask = BIT(phy_int_gpio);
--
--	mlxbf_gige_gpio_disable(priv);
--
--	priv->hw_phy_irq = platform_get_irq(pdev, MLXBF_GIGE_PHY_INT_N);
--
--	priv->irqdomain = irq_domain_add_simple(NULL, 1, 0,
--						&mlxbf_gige_gpio_domain_ops,
--						priv);
--	if (!priv->irqdomain) {
--		dev_err(dev, "Failed to add IRQ domain\n");
--		return -ENOMEM;
--	}
--
--	priv->phy_irq = irq_create_mapping(priv->irqdomain, 0);
--	if (!priv->phy_irq) {
--		irq_domain_remove(priv->irqdomain);
--		priv->irqdomain = NULL;
--		dev_err(dev, "Error mapping PHY IRQ\n");
--		return -EINVAL;
--	}
--
--	ret = devm_request_irq(dev, priv->hw_phy_irq, mlxbf_gige_gpio_handler,
--			       IRQF_ONESHOT | IRQF_SHARED, "mlxbf_gige_phy", priv);
--	if (ret) {
--		dev_err(dev, "Failed to request PHY IRQ");
--		mlxbf_gige_gpio_free(priv);
--		return ret;
--	}
--
--	return ret;
--}
--- 
-2.30.2
+Looks like syzbot tries to mount malicious image. Easy fix just for 
+thoughts:
 
+diff --git a/fs/9p/acl.c b/fs/9p/acl.c
+index bb1b286c49ae..242a3bc7aaee 100644
+--- a/fs/9p/acl.c
++++ b/fs/9p/acl.c
+@@ -33,7 +33,7 @@ static struct posix_acl *__v9fs_get_acl(struct p9_fid 
+*fid, char *name)
+
+  	size = v9fs_fid_xattr_get(fid, name, NULL, 0);
+  	if (size > 0) {
+-		value = kzalloc(size, GFP_NOFS);
++		value = kzalloc(size, GFP_NOFS | __GFP_NOWARN);
+  		if (!value)
+  			return ERR_PTR(-ENOMEM);
+  		size = v9fs_fid_xattr_get(fid, name, value, size);
+
+
+
+
+With regards,
+Pavel Skripkin
