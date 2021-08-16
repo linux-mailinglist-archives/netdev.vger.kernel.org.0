@@ -2,111 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FCA53EDCAF
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 19:56:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68DE33EDCD4
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 20:08:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231360AbhHPR5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 13:57:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56930 "EHLO
+        id S229866AbhHPSIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 14:08:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbhHPR5O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 13:57:14 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98AC8C061764
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 10:56:42 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id z2so19476871iln.0
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 10:56:42 -0700 (PDT)
+        with ESMTP id S229748AbhHPSIf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 14:08:35 -0400
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B109C061764
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 11:08:03 -0700 (PDT)
+Received: by mail-ot1-x334.google.com with SMTP id u13-20020a9d4d8d0000b02905177c9e0a4aso11400700otk.3
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 11:08:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:from:to:cc:references:message-id:date:user-agent
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=UHeEL37pku4HOreD+wBckxjETJz5QqCAx8V1P9VHsAo=;
-        b=y67JzR4PNZVPGNmW5CuQAyLtq6CodFO0mG0t6TIL/LGVMBenQ8NR3ZQ0XQvqkljkAa
-         ZmTHD3bU3MsZ0Nnhoa4Vqbc36cotlNbRxWWSPbTnpS2TV5O3OKeEt1dx2O5p2FEwjHeB
-         aytyZ2NfnrnATOAMB2BhHvvJrxGrhdtSJDulNFSOLWBO4yiSFhfN8cktU3kY8k8mpTmJ
-         AdbGCVXMFczBCzRmZ/vgt46FIQb90jVwQBnuk8cThYJDDO+NrioXA1YXPvItQ27UJPzQ
-         UHLf447t9SSg+rE9nCgFNNQn+2FKmxMdDqlvQK9Tmzzd4bQRarpYBPWtq8acmwWONW1C
-         41xw==
+        bh=teYtrqn7dj/BovsL10kIVHBSad5wlD0happgIhmtv04=;
+        b=m1TugD7Dde+hruHQxa4bfShaBu3EBeu/xKTBbg5MJ2myCxEqKyuGUoDS37EIqTpLb3
+         wllWzXboutPHNh7vXbwxiiUwavUT/QRpeblWCVTtKfyhAaZ3dIiK9HVhtZqiNk5CmMqV
+         fQRA7ywBeSGmKJJpk4BvcDug8EB/9lkjwZkVFzPgQpeoHZM4cQ+oWTJc1KucnNrqtxH9
+         Js30g8HXf6ggDcPgOBwZ3F0ALJK3yCG4T1mjKsWi0XLjb62SRtWJQ2rLJn7dK1Os9hcZ
+         BesxYl4LUUtcWSP4HfE/aB0p/wyQEvCGxZpgGrzM/l3nrgUD2iQmzZVhgd7FC7fy5j6f
+         eccQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=UHeEL37pku4HOreD+wBckxjETJz5QqCAx8V1P9VHsAo=;
-        b=R28RTq+j04XutzRLc61YBopyLIefrkKquBhxQ2DxM3PDKPb4xdnBlEtb3GnSuWExwe
-         ZtN/3fTTBuaeivtZ8jxnN4Mq3k+RqnKTff5aS+xXpCIqu8B+RZugZy4uyGeUQjZRdjIW
-         FQyuFLZN8Ye/4kiHue+lW6EHwBkXfw8TYXtQQqWYt3xG/1OLe0EWzvxC1sPkiL60dod9
-         oO9nrGFI6O9BLVDOoa3NNuL6kURYdwQRHHfnyyXNWk99v8oeMhc49QM2hI54fJfy9u79
-         x9BRRpxYGBG4j7KsTz54wLEGyY1W16TSlNadMGdlsPL2+Do6T8vjXn7aS4f4q0EoVi6n
-         d8TA==
-X-Gm-Message-State: AOAM533ivZkENCGINK/tSIPL+b+GWluMyclr4cscAddVpMEHmmJrgHwU
-        2pKlEmBdvsMxcSf+fICIgfPEfg==
-X-Google-Smtp-Source: ABdhPJxyuaHbRL2wYCOShCCne37hQw2zTTUJDFAjROgaDdN7zpSQe45H1snJwqFHYtaXBglZsgOo2Q==
-X-Received: by 2002:a92:b711:: with SMTP id k17mr3119ili.247.1629136602006;
-        Mon, 16 Aug 2021 10:56:42 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id z26sm1603739iol.6.2021.08.16.10.56.41
+        bh=teYtrqn7dj/BovsL10kIVHBSad5wlD0happgIhmtv04=;
+        b=r0lHlXZedE2rMTLxvT8EQsVXVtTCwAZLi+DW/jFtR5nHQXwSSEWNKdKLqjKc3NDo++
+         TBLi/ejXVz2497NPLpFMi1IYlH0p/AXw2DmD/EKzHMpgyblKq4qpc+UNhASLyXkEJqFo
+         rQ1O2FZwi6sJVIU8vKONJptOzkHSuvJ7YbCC8VVSys1CZtPtsaeIT0w1NXbrdxUSt7Xo
+         WEogWhByfOjwzpKgwUbPrCpar1NLHQde2HIvzyIYU193vrPhHSQ3TX0PSlVKjrpm5IHT
+         OlhI0l62JwXig5m3dB1aXHixlvb2+ljEO5v5U5AVcjC3Z2Bnx3QkUaKSfIjy1IyF627F
+         lhiA==
+X-Gm-Message-State: AOAM531hhATidaE+ZSaQ2Zdq2ZKKWQF+5rCkvk/jSvuzIDL9Ran6KILq
+        q/8+sP9sUbkN1msaxUoSU/c=
+X-Google-Smtp-Source: ABdhPJyT1lkXaSkRWg0faYC5aw8onhkj/NFQB1Kyn3omyWQrEs+mpocuTFlTDI/IiBT/WNwZpQSwtA==
+X-Received: by 2002:a05:6830:1f54:: with SMTP id u20mr10685oth.320.1629137283014;
+        Mon, 16 Aug 2021 11:08:03 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.45])
+        by smtp.googlemail.com with ESMTPSA id u185sm25480oig.34.2021.08.16.11.08.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Aug 2021 10:56:41 -0700 (PDT)
-Subject: Re: [PATCH net-next 4/6] net: ipa: ensure hardware has power in
- ipa_start_xmit()
-From:   Alex Elder <elder@linaro.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, bjorn.andersson@linaro.org,
-        evgreen@chromium.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210812195035.2816276-1-elder@linaro.org>
- <20210812195035.2816276-5-elder@linaro.org>
- <20210813174655.1d13b524@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <3a9e82cc-c09e-62e8-4671-8f16d4f6a35b@linaro.org>
- <20210816071543.39a44815@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <b6b1ca41-36de-bcb1-30ca-6e8d8bfcc5a9@linaro.org>
-Message-ID: <ebc4e7af-8300-307c-9278-25fdd6bf1e65@linaro.org>
-Date:   Mon, 16 Aug 2021 12:56:40 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        Mon, 16 Aug 2021 11:08:02 -0700 (PDT)
+Subject: Re: [PATCH] vrf: Reset skb conntrack connection on VRF rcv
+To:     Lahav Schlesinger <lschlesinger@drivenets.com>,
+        netdev@vger.kernel.org
+Cc:     dsahern@kernel.org, davem@davemloft.net, kuba@kernel.org
+References: <20210815120002.2787653-1-lschlesinger@drivenets.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <d38916e3-c6d7-d5f4-4815-8877efc50a2a@gmail.com>
+Date:   Mon, 16 Aug 2021 12:08:00 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <b6b1ca41-36de-bcb1-30ca-6e8d8bfcc5a9@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20210815120002.2787653-1-lschlesinger@drivenets.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/16/21 9:20 AM, Alex Elder wrote:
-> On 8/16/21 9:15 AM, Jakub Kicinski wrote:
->> On Fri, 13 Aug 2021 21:25:23 -0500 Alex Elder wrote:
->>>> This is racy, what if the pm work gets scheduled on another CPU and
->>>> calls wake right here (i.e. before you call netif_stop_queue())?
->>>> The queue may never get woken up?
->>>
->>> I haven't been seeing this happen but I think you may be right.
->>>
->>> I did think about this race, but I think I was relying on the
->>> PM work queue to somehow avoid the problem.  I need to think
->>> about this again after a good night's sleep.  I might need
->>> to add an atomic flag or something.
->>
->> Maybe add a spin lock?  Seems like the whole wake up path will be
->> expensive enough for a spin lock to be in the noise. You can always
->> add complexity later.
+On 8/15/21 6:00 AM, Lahav Schlesinger wrote:
+> To fix the "reverse-NAT" for replies.
 > 
-> Exactly what I just decided after trying to work out a
-> clever way without using a spinlock...  I'll be sending
-> out a fix today.  Thanks.
-
-I'm finding this isn't an easy problem to solve (or even think
-about).  While I ponder the best course of action I'm going
-to send out another series (i.e., *before* I send a fix for
-this issue) because I'd like to get everything I have out
-for review this week.  I *will* address this potential race
-one way or another, possibly later today.
-
-					-Alex
-
+> When a packet is sent over a VRF, the POST_ROUTING hooks are called
+> twice: Once from the VRF interface, and once from the "actual"
+> interface the packet will be sent from:
+> 1) First SNAT: l3mdev_l3_out() -> vrf_l3_out() -> .. -> vrf_output_direct()
+>      This causes the POST_ROUTING hooks to run.
+> 2) Second SNAT: 'ip_output()' calls POST_ROUTING hooks again.
 > 
->                      -Alex
+> Similarly for replies, first ip_rcv() calls PRE_ROUTING hooks, and
+> second vrf_l3_rcv() calls them again.
 > 
+> As an example, consider the following SNAT rule:
+>> iptables -t nat -A POSTROUTING -p udp -m udp --dport 53 -j SNAT --to-source 2.2.2.2 -o vrf_1
+> 
+> In this case sending over a VRF will create 2 conntrack entries.
+> The first is from the VRF interface, which performs the IP SNAT.
+> The second will run the SNAT, but since the "expected reply" will remain
+> the same, conntrack randomizes the source port of the packet:
+> e..g With a socket bound to 1.1.1.1:10000, sending to 3.3.3.3:53, the conntrack
+> rules are:
+> udp      17 29 src=2.2.2.2 dst=3.3.3.3 sport=10000 dport=53 packets=1 bytes=68 [UNREPLIED] src=3.3.3.3 dst=2.2.2.2 sport=53 dport=61033 packets=0 bytes=0 mark=0 use=1
+> udp      17 29 src=1.1.1.1 dst=3.3.3.3 sport=10000 dport=53 packets=1 bytes=68 [UNREPLIED] src=3.3.3.3 dst=2.2.2.2 sport=53 dport=10000 packets=0 bytes=0 mark=0 use=1
+> 
+> i.e. First SNAT IP from 1.1.1.1 --> 2.2.2.2, and second the src port is
+> SNAT-ed from 10000 --> 61033.
+> 
+> But when a reply is sent (3.3.3.3:53 -> 2.2.2.2:61033) only the later
+> conntrack entry is matched:
+> udp      17 29 src=2.2.2.2 dst=3.3.3.3 sport=10000 dport=53 packets=1 bytes=68 src=3.3.3.3 dst=2.2.2.2 sport=53 dport=61033 packets=1 bytes=49 mark=0 use=1
+> udp      17 28 src=1.1.1.1 dst=3.3.3.3 sport=10000 dport=53 packets=1 bytes=68 [UNREPLIED] src=3.3.3.3 dst=2.2.2.2 sport=53 dport=10000 packets=0 bytes=0 mark=0 use=1
+> 
+> And a "port 61033 unreachable" ICMP packet is sent back.
+> 
+> The issue is that when PRE_ROUTING hooks are called from vrf_l3_rcv(),
+> the skb already has a conntrack flow attached to it, which means
+> nf_conntrack_in() will not resolve the flow again.
+> 
+> This means only the dest port is "reverse-NATed" (61033 -> 10000) but
+> the dest IP remains 2.2.2.2, and since the socket is bound to 1.1.1.1 it's
+> not received.
+> This can be verified by logging the 4-tuple of the packet in '__udp4_lib_rcv()'.
+> 
+> The fix is then to reset the flow when skb is received on a VRF, to let
+> conntrack resolve the flow again (which now will hit the earlier flow).
+> 
+> To reproduce: (Without the fix "Got pkt_to_nat_port" will not be printed by
+>   running 'bash ./repro'):
+>   $ cat run_in_A1.py
+>   import logging
+>   logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
+>   from scapy.all import *
+>   import argparse
+> 
+>   def get_packet_to_send(udp_dst_port, msg_name):
+>       return Ether(src='11:22:33:44:55:66', dst=iface_mac)/ \
+>           IP(src='3.3.3.3', dst='2.2.2.2')/ \
+>           UDP(sport=53, dport=udp_dst_port)/ \
+>           Raw(f'{msg_name}\x0012345678901234567890')
+> 
+>   parser = argparse.ArgumentParser()
+>   parser.add_argument('-iface_mac', dest="iface_mac", type=str, required=True,
+>                       help="From run_in_A3.py")
+>   parser.add_argument('-socket_port', dest="socket_port", type=str,
+>                       required=True, help="From run_in_A3.py")
+>   parser.add_argument('-v1_mac', dest="v1_mac", type=str, required=True,
+>                       help="From script")
+> 
+>   args, _ = parser.parse_known_args()
+>   iface_mac = args.iface_mac
+>   socket_port = int(args.socket_port)
+>   v1_mac = args.v1_mac
+> 
+>   print(f'Source port before NAT: {socket_port}')
+> 
+>   while True:
+>       pkts = sniff(iface='_v0', store=True, count=1, timeout=10)
+>       if 0 == len(pkts):
+>           print('Something failed, rerun the script :(', flush=True)
+>           break
+>       pkt = pkts[0]
+>       if not pkt.haslayer('UDP'):
+>           continue
+> 
+>       pkt_sport = pkt.getlayer('UDP').sport
+>       print(f'Source port after NAT: {pkt_sport}', flush=True)
+> 
+>       pkt_to_send = get_packet_to_send(pkt_sport, 'pkt_to_nat_port')
+>       sendp(pkt_to_send, '_v0', verbose=False) # Will not be received
+> 
+>       pkt_to_send = get_packet_to_send(socket_port, 'pkt_to_socket_port')
+>       sendp(pkt_to_send, '_v0', verbose=False)
+>       break
+> 
+>   $ cat run_in_A2.py
+>   import socket
+>   import netifaces
+> 
+>   print(f"{netifaces.ifaddresses('e00000')[netifaces.AF_LINK][0]['addr']}",
+>         flush=True)
+>   s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+>   s.setsockopt(socket.SOL_SOCKET, socket.SO_BINDTODEVICE,
+>                str('vrf_1' + '\0').encode('utf-8'))
+>   s.connect(('3.3.3.3', 53))
+>   print(f'{s. getsockname()[1]}', flush=True)
+>   s.settimeout(5)
+> 
+>   while True:
+>       try:
+>           # Periodically send in order to keep the conntrack entry alive.
+>           s.send(b'a'*40)
+>           resp = s.recvfrom(1024)
+>           msg_name = resp[0].decode('utf-8').split('\0')[0]
+>           print(f"Got {msg_name}", flush=True)
+>       except Exception as e:
+>           pass
+> 
+>   $ cat repro.sh
+>   ip netns del A1 2> /dev/null
+>   ip netns del A2 2> /dev/null
+>   ip netns add A1
+>   ip netns add A2
+> 
+>   ip -n A1 link add _v0 type veth peer name _v1 netns A2
+>   ip -n A1 link set _v0 up
+> 
+>   ip -n A2 link add e00000 type bond
+>   ip -n A2 link add lo0 type dummy
+>   ip -n A2 link add vrf_1 type vrf table 10001
+>   ip -n A2 link set vrf_1 up
+>   ip -n A2 link set e00000 master vrf_1
+> 
+>   ip -n A2 addr add 1.1.1.1/24 dev e00000
+>   ip -n A2 link set e00000 up
+>   ip -n A2 link set _v1 master e00000
+>   ip -n A2 link set _v1 up
+>   ip -n A2 link set lo0 up
+>   ip -n A2 addr add 2.2.2.2/32 dev lo0
+> 
+>   ip -n A2 neigh add 1.1.1.10 lladdr 77:77:77:77:77:77 dev e00000
+>   ip -n A2 route add 3.3.3.3/32 via 1.1.1.10 dev e00000 table 10001
+> 
+>   ip netns exec A2 iptables -t nat -A POSTROUTING -p udp -m udp --dport 53 -j \
+> 	SNAT --to-source 2.2.2.2 -o vrf_1
+> 
+>   sleep 5
+>   ip netns exec A2 python3 run_in_A2.py > x &
+>   XPID=$!
+>   sleep 5
+> 
+>   IFACE_MAC=`sed -n 1p x`
+>   SOCKET_PORT=`sed -n 2p x`
+>   V1_MAC=`ip -n A2 link show _v1 | sed -n 2p | awk '{print $2'}`
+>   ip netns exec A1 python3 run_in_A1.py -iface_mac ${IFACE_MAC} -socket_port \
+>           ${SOCKET_PORT} -v1_mac ${SOCKET_PORT}
+>   sleep 5
+> 
+>   kill -9 $XPID
+>   wait $XPID 2> /dev/null
+>   ip netns del A1
+>   ip netns del A2
+>   tail x -n 2
+>   rm x
+>   set +x
+> 
+> Signed-off-by: Lahav Schlesinger <lschlesinger@drivenets.com>
+> ---
+>  drivers/net/vrf.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+
+Thanks for the detailed explanation and use case.
+
+Looks correct to me.
+Reviewed-by: David Ahern <dsahern@kernel.org>
+
+
 
