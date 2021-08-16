@@ -2,64 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56CBD3ED5AA
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 15:12:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82A8C3ED5A5
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 15:12:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236691AbhHPNNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 09:13:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37186 "EHLO mail.kernel.org"
+        id S236703AbhHPNM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 09:12:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37182 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239500AbhHPNLZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S239487AbhHPNLZ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 16 Aug 2021 09:11:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2635961181;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1DDE761163;
         Mon, 16 Aug 2021 13:10:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1629119406;
-        bh=f8cophcSs/xA3I1ru18gymclsTpHCr85CeHZILHlY8M=;
+        bh=OEjXsnwr92JDA8IfjbiPkWnN00OfEKYZhQN0lmo2yBE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MZkZT1/f9OiG8vXlM1LRAHRcx/ag/9UUTDJo9t5nigN/g7LsuoxSAgxG7kkm+vAGZ
-         I1ssWX5WRMK+kllRYSsTaydTtOqSP+OnGlLciWUest34bnK++4ZAwlsfRvt5A0auJI
-         +Ed7L7OsCZw2xRJEvMrJP5eiVH87zu6WJxTsTGrdB+rAmjiTr+D0usR1ozMZHFG9AZ
-         lJPHsJdbH+7QUS1Dq7o305ytIykarzbv9DeJlkFHkItqni4fl8vp88oU7mH+znwzrO
-         +eqJ8a0by+2mwjcOFmtnJfLOzTq0vlvWjqppBgqN9s2J5BeshkBCMjUd+HEdg8lE2v
-         6wWm423/fAPog==
+        b=tJH51f9ARfiLL7RhwEUav5Cy0AiKjsDa43+Vb5SxdNqLRXKEu7VhYv/b0cit6MtYp
+         LLtbW4BFUEptNr/lQaBUJmQQ28UszWzkUOEgrMeQDeg4TsIeVYyGI6LIsFlzv4ocU8
+         O1IPEmeZ8ZAi5cN60gRMLOzKfDynIX6gdnJZAXVk6n/CKV6Ct4HlrCdMjMeOCm8Hi8
+         89ExygZeMFTDzPATZlqYVjQ6M5y30dipW6HTA9SsiI71iCQajFWTxOf9TfvAQFnxFA
+         VWcnUC9dYCkSbfJeEEwszN4YngSs+7EE0hWYgsU18/2cCJToNfW/rMZD0ecqPrs3xX
+         L86fcamltdI8A==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1AA5E604EB;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 107A3609CF;
         Mon, 16 Aug 2021 13:10:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] bonding: improve nl error msg when device can't be
- enslaved because of IFF_MASTER
+Subject: Re: [PATCH net-next 0/3] net: bridge: mcast: fixes for mcast querier
+ state
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162911940610.11903.10568526681617410281.git-patchwork-notify@kernel.org>
+Message-Id: <162911940606.11903.8900804380948796171.git-patchwork-notify@kernel.org>
 Date:   Mon, 16 Aug 2021 13:10:06 +0000
-References: <20210816100828.29252-1-atenart@kernel.org>
-In-Reply-To: <20210816100828.29252-1-atenart@kernel.org>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, netdev@vger.kernel.org
+References: <20210816101134.577413-1-razor@blackwall.org>
+In-Reply-To: <20210816101134.577413-1-razor@blackwall.org>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, roopa@nvidia.com,
+        bridge@lists.linux-foundation.org, nikolay@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Mon, 16 Aug 2021 12:08:28 +0200 you wrote:
-> Use a more user friendly netlink error message when a device can't be
-> enslaved because it has IFF_MASTER, by not referring directly to a
-> kernel internal flag.
+On Mon, 16 Aug 2021 13:11:31 +0300 you wrote:
+> From: Nikolay Aleksandrov <nikolay@nvidia.com>
 > 
-> Signed-off-by: Antoine Tenart <atenart@kernel.org>
-> ---
->  drivers/net/bonding/bond_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Hi,
+> These three fix querier state dumping. The first patch can be considered
+> a minor behaviour improvement, it avoids dumping querier state when mcast
+> snooping is disabled. The second patch was a report of sizeof(0) used
+> for nested netlink attribute size which should be just 0, and the third
+> patch accounts for IPv6 querier state size when allocating skb for
+> notifications.
+> 
+> [...]
 
 Here is the summary with links:
-  - [net-next] bonding: improve nl error msg when device can't be enslaved because of IFF_MASTER
-    https://git.kernel.org/netdev/net-next/c/1b3f78df6a80
+  - [net-next,1/3] net: bridge: mcast: don't dump querier state if snooping is disabled
+    https://git.kernel.org/netdev/net-next/c/f137b7d4ecf8
+  - [net-next,2/3] net: bridge: mcast: drop sizeof for nest attribute's zero size
+    https://git.kernel.org/netdev/net-next/c/cdda378bd8d9
+  - [net-next,3/3] net: bridge: mcast: account for ipv6 size when dumping querier state
+    https://git.kernel.org/netdev/net-next/c/175e66924719
 
 You are awesome, thank you!
 --
