@@ -2,57 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C11553EDF6F
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 23:41:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C5C13EDF73
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 23:43:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233848AbhHPVl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 17:41:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37242 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233490AbhHPVlx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 17:41:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C60F160E09;
-        Mon, 16 Aug 2021 21:41:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629150081;
-        bh=E1z2lX/2TkVTMAvAW68HUSkN7CsSC6SZE1nbGCGI5is=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=o+P74zfMdDfCE1AUgze44n8mYSkcYyWJwTq1luRUtF4ADAQqGsce9dpDdUzBvNlyS
-         zyzJsm4i2oMudgyX+8NJwPsDB6J1wuzGjUQHnaB0C+db21xUMs7b81plyfMnB3t1bc
-         Gj1vPJZjQZ+RRYPoS3IfJG0WeOL6CBGgF/aWoyeZ6FIhLI3gU83PUf16x+WtEb3NMm
-         czf0osq8pHLlKQaed0Z1H0Kn67+V2sYl1OU0wBCXKG5EXEglJzdLCKiLPybohkM6D7
-         55q12kdoFRxKSWum1hpQiNGkn+PWvwJqVmkVK7qgoIgolWETeKDs/D0/E8mOeUl7dh
-         ql90vWuefm4uA==
-Date:   Mon, 16 Aug 2021 14:41:19 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Lahav Schlesinger <lschlesinger@drivenets.com>,
-        netdev@vger.kernel.org, dsahern@kernel.org, davem@davemloft.net
-Subject: Re: [PATCH] vrf: Reset skb conntrack connection on VRF rcv
-Message-ID: <20210816144119.6f4ae667@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <d38916e3-c6d7-d5f4-4815-8877efc50a2a@gmail.com>
-References: <20210815120002.2787653-1-lschlesinger@drivenets.com>
-        <d38916e3-c6d7-d5f4-4815-8877efc50a2a@gmail.com>
+        id S233170AbhHPVn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 17:43:57 -0400
+Received: from www62.your-server.de ([213.133.104.62]:58442 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229987AbhHPVnz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 17:43:55 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mFkO9-000Gll-NU; Mon, 16 Aug 2021 23:43:21 +0200
+Received: from [85.5.47.65] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mFkO9-0009Js-Ie; Mon, 16 Aug 2021 23:43:21 +0200
+Subject: Re: [PATCH bpf-next] bpf: use kvmalloc in map_lookup_elem
+To:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     ast@kernel.org, andrii@kernel.org
+References: <20210816164832.1743675-1-sdf@google.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <1b3cb059-9ecb-a0c9-3c99-805788088d09@iogearbox.net>
+Date:   Mon, 16 Aug 2021 23:43:21 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210816164832.1743675-1-sdf@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26265/Mon Aug 16 10:19:47 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Aug 2021 12:08:00 -0600 David Ahern wrote:
-> On 8/15/21 6:00 AM, Lahav Schlesinger wrote:
-> > To fix the "reverse-NAT" for replies.
+On 8/16/21 6:48 PM, Stanislav Fomichev wrote:
+> Use kvmalloc/kvfree for temporary value when looking up a map.
+> kmalloc might not be sufficient for percpu maps where the value is big.
 > 
-> Thanks for the detailed explanation and use case.
+> Can be reproduced with netcnt test on qemu with "-smp 255".
 > 
-> Looks correct to me.
-> Reviewed-by: David Ahern <dsahern@kernel.org>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>   kernel/bpf/syscall.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index 9a2068e39d23..ae0b1c1c8ece 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -1076,7 +1076,7 @@ static int map_lookup_elem(union bpf_attr *attr)
+>   	value_size = bpf_map_value_size(map);
+>   
+>   	err = -ENOMEM;
+> -	value = kmalloc(value_size, GFP_USER | __GFP_NOWARN);
+> +	value = kvmalloc(value_size, GFP_USER | __GFP_NOWARN);
+>   	if (!value)
+>   		goto free_key;
 
-I get a sense this is a fix.
+What about other cases like map_update_elem(), shouldn't they be adapted
+similarly?
 
-Fixes: 73e20b761acf ("net: vrf: Add support for PREROUTING rules on vrf device")
-?
-
-Or maybe it fixes commit a0f37efa8225 ("net: vrf: Fix NAT within a
-VRF")?
+Thanks,
+Daniel
