@@ -2,237 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A1703ED7DA
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 15:45:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C6163ED7E3
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 15:47:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231665AbhHPNqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 09:46:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52556 "EHLO
+        id S235799AbhHPNre (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 09:47:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239531AbhHPNoY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 09:44:24 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48B4CC0613A3
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 06:43:49 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mFcu1-0002BZ-VC; Mon, 16 Aug 2021 15:43:46 +0200
-Received: from pengutronix.de (unknown [IPv6:2a02:810a:8940:aa0:3272:cc96:80a9:1a01])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 419CC668374;
-        Mon, 16 Aug 2021 13:43:44 +0000 (UTC)
-Date:   Mon, 16 Aug 2021 15:43:42 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     linux-can <linux-can@vger.kernel.org>,
-        Stefan =?utf-8?B?TcOkdGpl?= <Stefan.Maetje@esd.eu>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 2/7] can: bittiming: allow TDC{V,O} to be zero and add
- can_tdc_const::tdc{v,o,f}_min
-Message-ID: <20210816134342.w3bc5zjczwowcjr4@pengutronix.de>
-References: <20210815033248.98111-1-mailhol.vincent@wanadoo.fr>
- <20210815033248.98111-3-mailhol.vincent@wanadoo.fr>
- <20210816084235.fr7fzau2ce7zl4d4@pengutronix.de>
- <CAMZ6RqK5t62UppiMe9k5jG8EYvnSbFW3doydhCvp72W_X2rXAw@mail.gmail.com>
- <20210816122519.mme272z6tqrkyc6x@pengutronix.de>
- <20210816123309.pfa57tke5hrycqae@pengutronix.de>
+        with ESMTP id S235538AbhHPNra (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 09:47:30 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45432C061764
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 06:46:59 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id t190so5721969qke.7
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 06:46:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=kkmPPbITzgKEDZr+vJ9LxXXM4pq4XhnU0LEbA9v9xWQ=;
+        b=IDR8qD+IJjznUeY47zG2JLVati59BuKhrQ5vVjAFLhuXstokSKhmXbghQK/sgDi36o
+         xT5NU0/LxhN8JtwMBMJn7wQT12T29AMucvmBflx1IUeLrwnoCwajpth0W3HWmLDxeOF9
+         J6M1zEf3zT0hsNNIMrkuvQPKefHogzV3jzuQMEKwU5OS/UR7mVIgDKDt9NzfIpOnsX4e
+         kx/dZi38VL7cxb5bGNt9Y9oHFjKK/8gtTkJUthM2+rJQJL/WY9rx4ZkEGB4CSzkJwVlw
+         kccoPkcWvXz2UBB+U4HvxcNI4QACXAx2WxFxBj/dZ+JvsjkW1sAimrnHSYH/NimDzrWX
+         Zf4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=kkmPPbITzgKEDZr+vJ9LxXXM4pq4XhnU0LEbA9v9xWQ=;
+        b=oEZBZx8Lbye7c5KCt++F1T0me/ohJNixsBadmZoHZFNwI99jgeTWCK9Lr41EmyrKG7
+         9wJ43UFlwQ+DWbLTmxiCC9U7xjXEBocXJKbsvtbfmns2zyzGbin20fXhAT+4QUj/Y4T0
+         V7EgZSJ7AmAmiCRViKWcR4Nu1Y+UaMPeUWd//LhMNjVfdHd13HWCwMQvUo20bG9lo+xd
+         5MKWgFNEHaI4fNHhNdcgGy/KRyXdupyGJVlPfowQUbkN/5Vblwn1GMyG25E4M7aK8Jr6
+         zarRnKyYcn62jSFwoeRZ01rJbR/VdXWnEzgOoyt6kn0dZpgSuKRQfKdIhW+5JPXiUopy
+         pXSQ==
+X-Gm-Message-State: AOAM530ecpZPUtkZgJiB6JthSdQNKErCnKSuMcDdhIHfVQ1oGyveENXq
+        BhI/MZmLDDWqltgk4GnEnSKnyqaRVny+dFPNDnI=
+X-Google-Smtp-Source: ABdhPJymPoda+eNMCK36UmRG3gOxjOZlTcq5FpW9ScXl9lpJWA1foyCvBaEvraaCWJxtyMXSuKNYlBxyX6CJC7T3hEk=
+X-Received: by 2002:a37:de13:: with SMTP id h19mr15457114qkj.441.1629121618482;
+ Mon, 16 Aug 2021 06:46:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="b6ihp5r2vxeepeh2"
-Content-Disposition: inline
-In-Reply-To: <20210816123309.pfa57tke5hrycqae@pengutronix.de>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Received: by 2002:ac8:7e88:0:0:0:0:0 with HTTP; Mon, 16 Aug 2021 06:46:58
+ -0700 (PDT)
+Reply-To: alyakonate2002@gmail.com
+From:   ALYA KONATE <jessicajacobs399@gmail.com>
+Date:   Mon, 16 Aug 2021 13:46:58 +0000
+Message-ID: <CAGP0hYtajfOFq7MXDrA-7n4=NHqoEatZY8WZ37JrTHG77SrxCg@mail.gmail.com>
+Subject: Hello dear,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+ It is with profound respect for your time, that I plead to state the
+following few lines for your kind consideration, and I hope you will
+spare some of your valuable minutes to read the following appeal with
+sympathetic mind and understanding.
 
---b6ihp5r2vxeepeh2
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I am Mrs. Alya Akonte I am 59 years long-time. I am dropping this
+short message from my sick bed after been diagnosed from a long-time
+cancer of the blood.
 
-On 16.08.2021 14:33:09, Marc Kleine-Budde wrote:
-> On 16.08.2021 14:25:19, Marc Kleine-Budde wrote:
-> > > > I'm not sure, if we talked about the mcp251xfd's tcdo, valid values=
- are
-> > > > -64...63.
-> > >=20
-> > > Yes! Stefan shed some light on this. The mcp251xfd uses a tdco
-> > > value which is relative to the sample point.
-> >=20
-> > I don't read the documentation this way....
-> >=20
-> > > | SSP =3D TDCV + absolute TDCO
-> > > |     =3D TDCV + SP + relative TDCO
-> > >=20
-> > > Consequently:
-> > > | relative TDCO =3D absolute TDCO - SP
-> >=20
-> > In the mcp15xxfd family manual
-> > (http://ww1.microchip.com/downloads/en/DeviceDoc/MCP251XXFD-CAN-FD-Cont=
-roller-Module-Family-Reference-Manual-20005678B.pdf)
-> > in the 2mbit/s data bit rate example in table 3-5 (page 21) it says:
-> >=20
-> > | DTSEG1  15 DTQ
-> > | DTSEG2   4 DTQ
-> > | TDCO    15 DTQ
-> >=20
-> > The mcp251xfd driver uses 15, the framework calculates 16 (=3D=3D Sync =
-Seg+
-> > tseg1, which is correct), and relative tdco would be 0:
-> >=20
-> > | mcp251xfd_set_bittiming: tdco=3D15, priv->tdc.tdc=3D16, relative_tdco=
-=3D0
-> >=20
-> > Here the output with the patched ip tool:
->=20
-> Sorry, the previous output was not using the sample points of the
-> example in the data sheet, this is the fixed output:
->=20
-> | 6: mcp251xfd0: <NOARP,UP,LOWER_UP,ECHO> mtu 72 qdisc pfifo_fast state U=
-P mode DEFAULT group default qlen 10
-> |     link/can  promiscuity 0 minmtu 0 maxmtu 0=20
-> |     can <FD,TDC_AUTO> state ERROR-ACTIVE (berr-counter tx 0 rx 0) resta=
-rt-ms 100=20
-> |           bitrate 500000 sample-point 0.800
-> |           tq 25 prop-seg 31 phase-seg1 32 phase-seg2 16 sjw 1 brp 1
-> |           mcp251xfd: tseg1 2..256 tseg2 1..128 sjw 1..128 brp 1..256 br=
-p_inc 1
-> |           dbitrate 2000000 dsample-point 0.800
-> |           dtq 25 dprop-seg 7 dphase-seg1 8 dphase-seg2 4 dsjw 1 dbrp 1
-> |           tdco 16
-> |           mcp251xfd: dtseg1 1..32 dtseg2 1..16 dsjw 1..16 dbrp 1..256 d=
-brp_inc 1
-> |           tdco 0..127
-> |           clock 40000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536=
- gso_max_segs 65535 parentbus spi parentdev spi0.0=20
+From all indication my condition is really deteriorating, and my
+doctor has courageously advised that I may not live beyond the next
+two months, this is because the Seriousness of the cancer has reached
+a critical stage. I am looking for a trust and good someone to confide
+on.
 
-The following sequence doesn't clear "tdcv" properly:
+I have a fortune/Project ($4.5M) I want to entrust into your care you
+will use this money to help the needy, motherless, orphans and widows
+because I am one . Please respond to me if you will promise to see
+that my last wish is been accomplish to the Glory of God and humanity.
 
-| ip link set dev mcp251xfd0 down; \
-| ip link set mcp251xfd0 txqueuelen 10 up type can \
-|     sample-point 0.8 bitrate 500000  \
-|     dsample-point 0.8 dbitrate 2000000 fd on \
-|     tdc-mode manual tdco 11 tdcv 22
-|=20
-| ip link set dev mcp251xfd0 down; \
-| ip link set mcp251xfd0 txqueuelen 10 up type can \
-|     sample-point 0.8 bitrate 500000  \
-|     dsample-point 0.8 dbitrate 2000000 fd on
+As soon as I hear from you, I will give you more information on this.
 
-| Aug 16 15:10:43 rpi4b8 kernel: mcp251xfd spi0.0 mcp251xfd0: mcp251xfd_set=
-_bittiming: tdco=3D11 tdcv=3D22 mode=3Dmanual
-| Aug 16 15:10:43 rpi4b8 kernel: IPv6: ADDRCONF(NETDEV_CHANGE): mcp251xfd0:=
- link becomes ready
-| Aug 16 15:10:59 rpi4b8 kernel: mcp251xfd spi0.0 mcp251xfd0: mcp251xfd_set=
-_bittiming: tdco=3D16 tdcv=3D22 mode=3Dautomatic
-| Aug 16 15:10:59 rpi4b8 kernel: IPv6: ADDRCONF(NETDEV_CHANGE): mcp251xfd0:=
- link becomes ready
-
-neither does "tdc-mode off":
-
-| Aug 16 15:12:18 rpi4b8 kernel: mcp251xfd spi0.0 mcp251xfd0: mcp251xfd_set=
-_bittiming: tdco=3D11 tdcv=3D22 mode=3Doff
-| Aug 16 15:12:18 rpi4b8 kernel: IPv6: ADDRCONF(NETDEV_CHANGE): mcp251xfd0:=
- link becomes ready
-
----
-
-We have 4 operations:
-- tdc-mode off                  switch off tdc altogether
-- tdc-mode manual tdco X tdcv Y configure X and Y for tdco and tdcv
-- tdc-mode auto tdco X          configure X tdco and
-                                controller measures tdcv automatically
-- /* nothing */                 configure default value for tdco
-                                controller measures tdcv automatically
-
-The /* nothing */ operation is what the old "ip" tool does, so we're
-backwards compatible here (using the old "ip" tool on an updated
-kernel/driver).
-
-At first glance it's a bit non-intuitive that you have to specify
-nothing for the "full" automatic mode.
-
-Oh, I just noticed:
-
-| ip link set dev mcp251xfd0 down; \
-| ip link set mcp251xfd0 txqueuelen 10 up type can \
-|     sample-point 0.8 bitrate 500000  \
-|     dsample-point 0.8 dbitrate 2000000 fd on \
-|     tdc-mode manual tdco 11 tdcv 22
-
-followed by:
-
-| ip link set dev mcp251xfd0 down; \
-| ip link set mcp251xfd0 txqueuelen 10 up type can
-
-We stay in manual mode:
-
-| Aug 16 15:27:47 rpi4b8 kernel: mcp251xfd spi0.0 mcp251xfd0: mcp251xfd_set=
-_bittiming: tdco=3D11 tdcv=3D22 mode=3Dmanual
-
-| 8: mcp251xfd0: <NOARP,UP,LOWER_UP,ECHO> mtu 72 qdisc pfifo_fast state UP =
-mode DEFAULT group default qlen 10
-|     link/can  promiscuity 0 minmtu 0 maxmtu 0=20
-|     can <FD,TDC_AUTO,TDC_MANUAL> state ERROR-ACTIVE (berr-counter tx 0 rx=
- 0) restart-ms 100=20
-|           bitrate 500000 sample-point 0.800
-|           tq 25 prop-seg 31 phase-seg1 32 phase-seg2 16 sjw 1 brp 1
-|           mcp251xfd: tseg1 2..256 tseg2 1..128 sjw 1..128 brp 1..256 brp_=
-inc 1
-|           dbitrate 2000000 dsample-point 0.800
-|           dtq 25 dprop-seg 7 dphase-seg1 8 dphase-seg2 4 dsjw 1 dbrp 1
-|           tdcv 22 tdco 11
-|           mcp251xfd: dtseg1 1..32 dtseg2 1..16 dsjw 1..16 dbrp 1..256 dbr=
-p_inc 1
-|           tdcv 0..63 tdco 0..63
-|           clock 40000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 g=
-so_max_segs 65535 parentbus spi parentdev spi0.0=20
-
-I have to give "fd on" + the bit timing parameters to go to the full
-automatic mode again:
-
-| Aug 16 15:32:46 rpi4b8 kernel: mcp251xfd spi0.0 mcp251xfd0: mcp251xfd_set=
-_bittiming: tdco=3D16 tdcv=3D22 mode=3Dautomatic
+May God bless you real good Amen.
+Please kindly  reply to    alyakonate2002@gmail.com
 
 
-Does it make sense to let "mode auto" without a tdco value switch the
-controller into full automatic mode and /* nothing */ not tough the tdc
-config at all? If the full automatic mode is power on default mode, then
-new kernel/drivers are compatible with old the old ip tool.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---b6ihp5r2vxeepeh2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEyBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEaa4wACgkQqclaivrt
-76nT3Qf4r1w67xWW1JTwcxdfQ08+yhQ3UCKimU8suYyLsaYM+BLDgIfjJv15Wmiu
-r/rwxVmnSJW1tABVd+fLcKnCVhk25vP73mjhyWVctkgUK3kqa618bXgegM9Cwswd
-GHjVcKsWW9L8vmFs1DknC2C71N1GxVsQxHionJwb8nU5hEDo47Dk0nsiL/0Dlx69
-r7MNlS1Hwy0PJ+/J5b6PY4Yf0FCZFXDpED4WNHWKfra8dCJxZCF8FK6yqg/x5CnQ
-laICro4QDWwcb8ofPVkp+QSdd+dAZrZwJpMhnSpeVdZ3W5aiAjniMXluzIfROtyM
-zLQVrxIALJqLXXsHwm+LdmTOl1eA
-=3qcF
------END PGP SIGNATURE-----
-
---b6ihp5r2vxeepeh2--
+                         Mrs.  Alya  Aknote.
