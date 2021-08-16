@@ -2,108 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D906A3ECE88
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 08:19:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B63103ECEAF
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 08:40:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233481AbhHPGUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 02:20:12 -0400
-Received: from mga04.intel.com ([192.55.52.120]:31229 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233477AbhHPGUL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 02:20:11 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10077"; a="213952983"
-X-IronPort-AV: E=Sophos;i="5.84,324,1620716400"; 
-   d="scan'208";a="213952983"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2021 23:19:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,324,1620716400"; 
-   d="scan'208";a="678986860"
-Received: from vijay.png.intel.com ([10.88.229.73])
-  by fmsmga005.fm.intel.com with ESMTP; 15 Aug 2021 23:19:36 -0700
-From:   Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>
-To:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com
-Cc:     vee.khee.wong@intel.com, weifeng.voon@intel.com,
-        vijayakannan.ayyathurai@intel.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v1 3/3] net: stmmac: add ethtool per-queue irq statistic support
-Date:   Mon, 16 Aug 2021 14:16:00 +0800
-Message-Id: <5c956016465b688a2679bd02da1f751046be189c.1629092894.git.vijayakannan.ayyathurai@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <cover.1629092894.git.vijayakannan.ayyathurai@intel.com>
-References: <cover.1629092894.git.vijayakannan.ayyathurai@intel.com>
-In-Reply-To: <cover.1629092894.git.vijayakannan.ayyathurai@intel.com>
-References: <cover.1629092894.git.vijayakannan.ayyathurai@intel.com>
+        id S233444AbhHPGkc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 02:40:32 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:35153 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230442AbhHPGkb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 02:40:31 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 4245A58042A;
+        Mon, 16 Aug 2021 02:40:00 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Mon, 16 Aug 2021 02:40:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=6XXJ5r
+        tCyGduq0Yu39Vt8fIWGZkz1E0tbLgO3BCRQic=; b=LsqtfPuXLwiz5Gz0UX2YNG
+        9mNrjrnqlDnxVZmT68LIf/ynJxAtS591peoszFYqrpUDmtBKEg8gyYxIH2p3e6H7
+        ngGw9vN/fttjOJCBU6n1peu2DD/aFmxbcc3vJ+BCRHl8yOjgGpwYwvboopQ2vjEj
+        AHMPjvM8S5dIvm8tZYtkHiFOZDrafPSeqmSbrii909GYEM8TLDRN78UYRXM0NJum
+        OuZ43X59+Kz4ZGEhBpsAsIQnRCyiS0vI6WN8Fng2YTFIxwbHWqT1levyu4sFAASp
+        krnzxZi7cs/7R4WQnK3spa7N5BWsBtJUWs+8OnU+XeNl8RP2us91mEempPW2fyPA
+        ==
+X-ME-Sender: <xms:PggaYZHiy6fy0uExBARmwpKQSFVdurnP7QP6gWXy-olPcs0FKvOZqQ>
+    <xme:PggaYeXZ_4LA4kbVUTVg8nW5jduZEAENqVEJnif6UO-WzroESI84VEa2TMR03O2k4
+    Oiwch96DyBF_YM>
+X-ME-Received: <xmr:PggaYbLcLxF2H1tUm4_JNutdZ21UsVIStWqefZBPuuaCFBw_yxjD97yNyWJVPcJtEDyX4KPf47pGLdyehKyvos6C2TVOKg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrledtgdduudduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:PggaYfFPpGac4rvFR_zcG-SneBiTsQN8HwOL3Z2JCsm5Kr9M-yQ02Q>
+    <xmx:PggaYfVTOEA9mnk5QQCDdj8ZrTbphJnKR0OyKFbZNdhL00KMtz-rXA>
+    <xmx:PggaYaN5LFDDkPOlV-eDfUJSRAirld7eeF2S9zOeVm-daUZ9HDe9Xw>
+    <xmx:QAgaYYXepFTG9nfysiNaxQ43Tn1JDz6m4WeqElpsavv-gaq6FsvcNg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 16 Aug 2021 02:39:57 -0400 (EDT)
+Date:   Mon, 16 Aug 2021 09:39:53 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Marek Behun <kabel@blackhole.sk>,
+        DENG Qingfang <dqfext@gmail.com>
+Subject: Re: [RFC PATCH net-next] net: bridge: switchdev: expose the port
+ hwdom as a netlink attribute
+Message-ID: <YRoIOTMsXClsJ06G@shredder>
+References: <20210812121703.3461228-1-vladimir.oltean@nxp.com>
+ <YRU/s7Zfl67FhI7+@shredder>
+ <20210812161648.ncxtaftsoq5txnui@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210812161648.ncxtaftsoq5txnui@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding ethtool per-queue statistics support to show number of interrupts
-generated at DMA tx and DMA rx. All the counters are incremented at
-dwmac4_dma_interrupt function.
+On Thu, Aug 12, 2021 at 04:16:48PM +0000, Vladimir Oltean wrote:
+> On Thu, Aug 12, 2021 at 06:35:15PM +0300, Ido Schimmel wrote:
+> > Makes sense to me. Gives us further insight into the offload process. I
+> > vaguely remember discussing this with Nik in the past. The
+> > hwdom/fwd_mark is in the tree for long enough to be considered a stable
+> > and useful concept.
+> > 
+> > You are saying that it is useful to expose despite already having
+> > "switchid" exposed because you can have interfaces with the same
+> > "switchid" that are not member in the same hardware domain? E.g., the
+> > LAG example. If so, might be worth explicitly spelling it out in the
+> > commit message.
+> 
+> Indeed, the "switchid" is static, whereas the "hwdom" depends upon the
+> current configuration. So it is useful as a debug feature for the
+> reasons you mention, but I am also a bit worried whether we should
+> expose this now, since I am not sure if it will impact future redesigns
+> of the bridge driver or switchdev (the hwdom is a pretty detailed bit of
+> information). Basically the only guarantee we're giving user space is
+> that a hwdom of zero means unoffloaded, and two non-zero and equal
+> integer values can forward between each other without involving the CPU.
+> The numbers themselves are arbitrary, mean nothing and can vary even
+> depending on the port join order into the bridge. That shouldn't impose
+> any restrictions going further, should it?
 
-Signed-off-by: Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/common.h         | 2 ++
- drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c     | 2 ++
- drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c | 2 ++
- 3 files changed, 6 insertions(+)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 79333deef2e2..b6d945ea903d 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -60,10 +60,12 @@
- 
- struct stmmac_txq_stats {
- 	unsigned long tx_pkt_n;
-+	unsigned long tx_normal_irq_n;
- };
- 
- struct stmmac_rxq_stats {
- 	unsigned long rx_pkt_n;
-+	unsigned long rx_normal_irq_n;
- };
- 
- /* Extra statistic and debug information exposed by ethtool */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-index f83db62938dd..9292a1fab7d3 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-@@ -170,10 +170,12 @@ int dwmac4_dma_interrupt(void __iomem *ioaddr,
- 		x->normal_irq_n++;
- 	if (likely(intr_status & DMA_CHAN_STATUS_RI)) {
- 		x->rx_normal_irq_n++;
-+		x->rxq_stats[chan].rx_normal_irq_n++;
- 		ret |= handle_rx;
- 	}
- 	if (likely(intr_status & DMA_CHAN_STATUS_TI)) {
- 		x->tx_normal_irq_n++;
-+		x->txq_stats[chan].tx_normal_irq_n++;
- 		ret |= handle_tx;
- 	}
- 	if (unlikely(intr_status & DMA_CHAN_STATUS_TBU))
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-index 10c0895d0b43..595c3ccdcbb7 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-@@ -263,11 +263,13 @@ static const struct stmmac_stats stmmac_mmc[] = {
- 
- static const char stmmac_qstats_tx_string[][ETH_GSTRING_LEN] = {
- 	"tx_pkt_n",
-+	"tx_irq_n",
- #define STMMAC_TXQ_STATS ARRAY_SIZE(stmmac_qstats_tx_string)
- };
- 
- static const char stmmac_qstats_rx_string[][ETH_GSTRING_LEN] = {
- 	"rx_pkt_n",
-+	"rx_irq_n",
- #define STMMAC_RXQ_STATS ARRAY_SIZE(stmmac_qstats_rx_string)
- };
- 
--- 
-2.17.1
-
+Not that I'm aware. On the other hand, I didn't see a pressing need to
+expose this attribute either so we can wait a bit longer to gain more
+confidence if you want.
