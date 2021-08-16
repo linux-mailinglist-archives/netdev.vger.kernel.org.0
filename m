@@ -2,228 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B1013EDE5C
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 22:01:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9A3C3EDE7F
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 22:18:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231133AbhHPUB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 16:01:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57426 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230026AbhHPUBZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 16:01:25 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBEFC061764;
-        Mon, 16 Aug 2021 13:00:53 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id m21so2539702qkm.13;
-        Mon, 16 Aug 2021 13:00:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=S024hRAwZqlJE/Rl2lsZHRUCOODC0zD4/XZWLet2bQQ=;
-        b=GNIitcpUAd0ASrW8iDAORWU40UX72s1eM3K//3nuYzs0xOvhp1Et0v+nT2GmKO3jxM
-         ZejRh6+ATl07LCdYqfQteLMEfX/OvavaNfGvwXairPq+ajl6F5PHkyvjF1HK/FsbiKC5
-         eGeuO+GVwgBPvT4mr9++G4OwwQDPAJ0rkI60NLZ1bfDx83IEpGCAPt0OL0iLg1f7khoR
-         weX5/cgedfSMtHlJHUUl4CjH0gloLwtGU8C42jAT2xlNYY8Z+LBB2/i2WPBVo4Wmm3FO
-         lzSOFIr6iTmvZYOJwbfI96MpbIjI3VWPIHnbNhCn80C3WP6NGVrxGw7PjwgWYOPvmU6c
-         3BoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=S024hRAwZqlJE/Rl2lsZHRUCOODC0zD4/XZWLet2bQQ=;
-        b=oQwvWTS8q0TfaaEjhzTGRGS4wuVrQHkNruJ9qrHuyTTmzDk8jGe9NSsySZNeJfOiVK
-         5Loi78rYb3a0nwJNQOGobOG/89chPWNS0oVQRhynO9/osVndkMBj23PJFxZdcAqafwR9
-         ukXSi5EMVjVEthbPHI8XRsCpuSigO8ECQKb8wS51cped4twuMm7pCXCSm3nMS+IAh7nc
-         bHte+WUMnm8l3h7w9tTYTqtIetqockAhlp36xZYLa/V6Pv/O97BGMPJoKqG3OR15DCse
-         +mSSqRc9jR0OTmwDqUQ0LQ2H+kGZz6sTZwMoVs4bwgwdJfhR8OZVD3vwgDFvTX6uIxH4
-         YGKg==
-X-Gm-Message-State: AOAM533LKwFGn2oq36t6E/mga7CP+fdjEFvvGxoU1QKJ57aj0eYepIRi
-        yAzGz1YniObtWyLp7dLHOA8=
-X-Google-Smtp-Source: ABdhPJxn+UXtjMPUeak2q65o73HH2b0PfsE6ZbXa0l93A6AVbjbzthMcZDuZiUzsoj/wEzCSM3mRVg==
-X-Received: by 2002:a05:620a:c04:: with SMTP id l4mr60244qki.86.1629144052730;
-        Mon, 16 Aug 2021 13:00:52 -0700 (PDT)
-Received: from [192.168.1.49] (c-67-187-90-124.hsd1.tn.comcast.net. [67.187.90.124])
-        by smtp.gmail.com with ESMTPSA id 75sm126914qko.100.2021.08.16.13.00.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Aug 2021 13:00:52 -0700 (PDT)
-Subject: Re: of_node_put() usage is buggy all over drivers/of/base.c?!
-From:   Frank Rowand <frowand.list@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-References: <20210814010139.kzryimmp4rizlznt@skbuf>
- <9accd63a-961c-4dab-e167-9e2654917a94@gmail.com>
- <20210816144622.tgslast6sbblclda@skbuf>
- <4cad28e0-d6b4-800d-787b-936ffaca7be3@gmail.com>
- <CAL_JsqKYd288Th2cfOp0_HD1C8xtgKjyJfUW4JLpyn0NkGdU5w@mail.gmail.com>
- <2e98373f-c37c-0d26-5c9a-1f15ade243c1@gmail.com>
-Message-ID: <84ccd797-c307-d724-0292-ee74aba43de2@gmail.com>
-Date:   Mon, 16 Aug 2021 15:00:51 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S230496AbhHPUTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 16:19:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50964 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232253AbhHPUSt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 16:18:49 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 575CB60F22;
+        Mon, 16 Aug 2021 20:18:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629145096;
+        bh=q+FNT4fcY/WJmYmPs9nviguHJR8JJ98dFHcdG3N0460=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LqTTuk1/KX24/TiRJlbF34ik6GMQ+2Ewu+4ECkijgFJ/nZmEt6Qjf0j8saRRilC4E
+         6zIsYCDI54q9UKbCF/WJ+Hb3ANFjHaKH2H9xZivw9k6UL+djBaaaMFInkoyAe0Z1af
+         82CFb8GOfIe1l979SVSm087qHArHiN7OAM3kKIMzAY5EYtFln/cHKjrtyMR9Il/zfa
+         syMErHWYmsPXbRxAA0/VSB1L2v7YLs4Ua6HtKZCaNg1RyYfrtz5poiPPYZ/mJEh2Q2
+         wZdtkea7MCuXcJ3bTKtLGajDSMi7jsVWS5oaNs6nV1ySzp0+xbufKwZNNGsid6Ku7A
+         PhzYiSaOUGs/A==
+Date:   Mon, 16 Aug 2021 13:18:15 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Petko Manolov <petko.manolov@konsulko.com>
+Cc:     netdev@vger.kernel.org, paskripkin@gmail.com,
+        stable@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH] net: usb: pegasus: ignore the return value from
+ set_registers();
+Message-ID: <20210816131815.4e4e09de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YRq5JyLbkU8hN/fG@carbon>
+References: <20210812082351.37966-1-petko.manolov@konsulko.com>
+        <20210813162439.1779bf63@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YRjWXzYrQsGZiISc@carbon>
+        <20210816070640.2a7a6f5d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YRq5JyLbkU8hN/fG@carbon>
 MIME-Version: 1.0
-In-Reply-To: <2e98373f-c37c-0d26-5c9a-1f15ade243c1@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 16 Aug 2021 22:14:47 +0300 Petko Manolov wrote:
+> On 21-08-16 07:06:40, Jakub Kicinski wrote:
+> > On Sun, 15 Aug 2021 11:54:55 +0300 Petko Manolov wrote:  
+> > > Mostly because for this particular adapter checking the read failure makes much
+> > > more sense than write failure.  
+> > 
+> > This is not an either-or choice.
+> >   
+> > > Checking the return value of set_register(s) is often usless because device's
+> > > default register values are sane enough to get a working ethernet adapter even
+> > > without much prodding.  There are exceptions, though, one of them being
+> > > set_ethernet_addr().
+> > > 
+> > > You could read the discussing in the netdev ML, but the essence of it is that
+> > > set_ethernet_addr() should not give up if set_register(s) fail.  Instead, the
+> > > driver should assign a valid, even if random, MAC address.
+> > > 
+> > > It is much the same situation with enable_net_traffic() - it should continue
+> > > regardless.  There are two options to resolve this: a) remove the error check
+> > > altogether; b) do the check and print a debug message.  I prefer a), but i am
+> > > also not strongly opposed to b).  Comments?  
+> > 
+> > c) keep propagating the error like the driver used to.  
+> 
+> If you carefully read the code, which dates back to at least 2005, you'll see
+> that on line 436 (v5.14-rc6) 'ret' is assigned with the return value of
+> set_registers(), but 'ret' is never evaluated and thus not acted upon.
 
-Hit send too soon, a couple of cleanups:
+It's no longer evaluated because of your commit 8a160e2e9aeb ("net:
+usb: pegasus: Check the return value of get_geristers() and friends;")
+IOW v5.14-rc6 has your recent patch. Which I quoted earlier in this
+thread. That commit was on Aug 3 2021. The error checking (now
+accidentally removed) was introduced somewhere in 2.6.x days.
 
-On 8/16/21 2:56 PM, Frank Rowand wrote:
-> On 8/16/21 2:20 PM, Rob Herring wrote:
->> On Mon, Aug 16, 2021 at 10:14 AM Frank Rowand <frowand.list@gmail.com> wrote:
->>>
->>> On 8/16/21 9:46 AM, Vladimir Oltean wrote:
->>>> Hi Frank,
->>>>
->>>> On Mon, Aug 16, 2021 at 09:33:03AM -0500, Frank Rowand wrote:
->>>>> Hi Vladimir,
->>>>>
->>>>> On 8/13/21 8:01 PM, Vladimir Oltean wrote:
->>>>>> Hi,
->>>>>>
->>>>>> I was debugging an RCU stall which happened during the probing of a
->>>>>> driver. Activating lock debugging, I see:
->>>>>
->>>>> I took a quick look at sja1105_mdiobus_register() in v5.14-rc1 and v5.14-rc6.
->>>>>
->>>>> Looking at the following stack trace, I did not see any calls to
->>>>> of_find_compatible_node() in sja1105_mdiobus_register().  I am
->>>>> guessing that maybe there is an inlined function that calls
->>>>> of_find_compatible_node().  This would likely be either
->>>>> sja1105_mdiobus_base_tx_register() or sja1105_mdioux_base_t1_register().
->>>>
->>>> Yes, it is sja1105_mdiobus_base_t1_register which is inlined.
->>>>
->>>>>>
->>>>>> [  101.710694] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:938
->>>>>> [  101.719119] in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 1534, name: sh
->>>>>> [  101.726763] INFO: lockdep is turned off.
->>>>>> [  101.730674] irq event stamp: 0
->>>>>> [  101.733716] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
->>>>>> [  101.739973] hardirqs last disabled at (0): [<ffffd3ebecb10120>] copy_process+0xa78/0x1a98
->>>>>> [  101.748146] softirqs last  enabled at (0): [<ffffd3ebecb10120>] copy_process+0xa78/0x1a98
->>>>>> [  101.756313] softirqs last disabled at (0): [<0000000000000000>] 0x0
->>>>>> [  101.762569] CPU: 4 PID: 1534 Comm: sh Not tainted 5.14.0-rc5+ #272
->>>>>> [  101.774558] Call trace:
->>>>>> [  101.794734]  __might_sleep+0x50/0x88
->>>>>> [  101.798297]  __mutex_lock+0x60/0x938
->>>>>> [  101.801863]  mutex_lock_nested+0x38/0x50
->>>>>> [  101.805775]  kernfs_remove+0x2c/0x50             <---- this takes mutex_lock(&kernfs_mutex);
->>>>>> [  101.809341]  sysfs_remove_dir+0x54/0x70
->>>>>
->>>>> The __kobject_del() occurs only if the refcount on the node
->>>>> becomes zero.  This should never be true when of_find_compatible_node()
->>>>> calls of_node_put() unless a "from" node is passed to of_find_compatible_node().
->>>>
->>>> I figured that was the assumption, that the of_node_put would never
->>>> trigger a sysfs file / kobject deletion from there.
->>>>
->>>>> In both sja1105_mdiobus_base_tx_register() and sja1105_mdioux_base_t1_register()
->>>>> a from node ("mdio") is passed to of_find_compatible_node() without first doing an
->>>>> of_node_get(mdio).  If you add the of_node_get() calls the problem should be fixed.
->>>>
->>>> The answer seems simple enough, but stupid question, but why does
->>>> of_find_compatible_node call of_node_put on "from" in the first place?
->>>
->>> Actually a good question.
->>>
->>> I do not know why of_find_compatible_node() calls of_node_put() instead of making
->>> the caller of of_find_compatible_node() responsible.  That pattern was created
->>> long before I was involved in devicetree and I have not gone back to read the
->>> review comments of when that code was created.
->>
-> 
->> Because it is an iterator function and they all drop the ref from the
->> prior iteration.
-> 
-> That is what I was expecting before reading through the code.  But instead
-> I found of_find_compatible_node():
-> 
->         raw_spin_lock_irqsave(&devtree_lock, flags);
->         for_each_of_allnodes_from(from, np)
->                 if (__of_device_is_compatible(np, compatible, type, NULL) &&
->                     of_node_get(np))
->                         break;
->         of_node_put(from);
->         raw_spin_unlock_irqrestore(&devtree_lock, flags);
-> 
-> 
-> for_each_of_allnodes_fromir:
+If you disagree with that please show me the code you're referring to,
+because I just don't see it.
 
-  for_each_of_allnodes_from():
+> > I don't understand why that's not the most obvious option.  
+> 
+> Which part of "this is not a fatal error" you did not understand?
 
-> 
-> #define for_each_of_allnodes_from(from, dn) \
->         for (dn = __of_find_all_nodes(from); dn; dn = __of_find_all_nodes(dn))
-> 
-> 
-> and __of_find_all_nodes() is:
-> 
-> struct device_node *__of_find_all_nodes(struct device_node *prev)
-> {
->         struct device_node *np;
->         if (!prev) {
->                 np = of_root;
->         } else if (prev->child) {
->                 np = prev->child;
->         } else {
->                 /* Walk back up looking for a sibling, or the end of the structure */
->                 np = prev;
->                 while (np->parent && !np->sibling)
->                         np = np->parent;
->                 np = np->sibling; /* Might be null at the end of the tree */
->         }
->         return np;
-> }
-> 
-> 
-> So the iterator is not using of_node_get() and of_node_put() for each
-> node that is traversed.  The protection against a node disappearing
-> during the iteration is provided by holding devtree_lock.
-> 
->>
->> I would say any open coded call where from is not NULL is an error.
-> 
-> I assume you mean any open coded call of of_find_compatible_node().  There are
-> at least a couple of instances of that.  I did only a partial grep while looking
-> at Vladimir's issue.
-> 
-> Doing the full grep now, I see 13 instances of architecture and driver code calling
-> of_find_compatible_node().
+That's not the point. The error checking was removed accidentally, 
+it should be brought back in net to avoid introducing regressions.
+If the error checking is not necessary you can remove it in net-next,
+no problem.
 
-  of_find_compatible_node() with parameter "from" not NULL.
+Perhaps you did not intend commit 8a160e2e9aeb ("net: usb: pegasus:
+Check the return value of get_geristers() and friends;") to be applied 
+as a fix but it was, and it was backported to stable trees if I'm not
+mistaken. 
 
+> > The driver used to propagate the errors from the set_registers() call in
+> > enable_net_traffic() since the beginning of the git era. This is _not_ one of
+> > the error checking that you recently added.  
 > 
->> It's not reliable because the DT search order is not defined and could
->> change. Someone want to write a coccinelle script to check that?
->>
-> 
->> The above code should be using of_get_compatible_child() instead.
-> 
-> Yes, of_get_compatible_child() should be used here.  Thanks for pointing
-> that out.
-> 
-> There are 13 instances of architecture and driver code calling
-> of_find_compatible_node().  If possible, it would be good to change all of
-> them to of_get_compatible_child().  If we could replace all driver
-> usage of of_find_compatible_node() with a from parameter of NULL to
-> a new wrapper without a from parameter, where the wrapper calls
-> of_find_compatible_node() with the from parameter set to NULL, then
-> we could prevent this problem from recurring.
-> 
-> (I did not look at all 13 instances yet, to see if this can be done.)
-> 
->>
->> Rob
->>
-> 
+> The driver hasn't propagated an error at this particular location in the last 16
+> years.  So how exactly removing this assignment will make the driver worse than
+> it is now?
 
+This is the relevant code from v5.13:
+
+static int set_registers(pegasus_t *pegasus, __u16 indx, __u16 size,
+			 const void *data)
+{
+	return usb_control_msg_send(pegasus->usb, 0, PEGASUS_REQ_SET_REGS,
+				    PEGASUS_REQT_WRITE, 0, indx, data, size,
+				    1000, GFP_NOIO);
+}
+
+static int enable_net_traffic(struct net_device *dev, struct usb_device *usb)
+{
+	/* [...] */
+===>	ret = set_registers(pegasus, EthCtrl0, 3, data);
+
+	if (usb_dev_id[pegasus->dev_index].vendor == VENDOR_LINKSYS ||
+	    usb_dev_id[pegasus->dev_index].vendor == VENDOR_LINKSYS2 ||
+	    usb_dev_id[pegasus->dev_index].vendor == VENDOR_DLINK) {
+		u16 auxmode;
+		read_mii_word(pegasus, 0, 0x1b, &auxmode);
+		auxmode |= 4;
+		write_mii_word(pegasus, 0, 0x1b, &auxmode);
+	}
+
+===>	return ret;
+}
+
+
+static int pegasus_open(struct net_device *net)
+{
+	/* [...] */
+===>	res = enable_net_traffic(net, pegasus->usb);
+===>	if (res < 0) {
+		netif_dbg(pegasus, ifup, net,
+			  "can't enable_net_traffic() - %d\n", res);
+===>		res = -EIO;
+		usb_kill_urb(pegasus->rx_urb);
+		usb_kill_urb(pegasus->intr_urb);
+===>		goto exit;
+	}
+	set_carrier(net);
+	netif_start_queue(net);
+	netif_dbg(pegasus, ifup, net, "open\n");
+	res = 0;
+exit:
+===>	return res;
+}
+
+https://elixir.bootlin.com/linux/v5.13/source/drivers/net/usb/pegasus.c
