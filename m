@@ -2,196 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6781C3ECE1C
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 07:40:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 847E93ECE43
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 08:04:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232918AbhHPFkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 01:40:52 -0400
-Received: from mga17.intel.com ([192.55.52.151]:31917 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229523AbhHPFkv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 01:40:51 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10077"; a="196067005"
-X-IronPort-AV: E=Sophos;i="5.84,324,1620716400"; 
-   d="scan'208";a="196067005"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2021 22:40:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,324,1620716400"; 
-   d="scan'208";a="440975370"
-Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
-  by orsmga002.jf.intel.com with ESMTP; 15 Aug 2021 22:40:19 -0700
-Received: from orsmsx605.amr.corp.intel.com (10.22.229.18) by
- ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Sun, 15 Aug 2021 22:40:19 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4
- via Frontend Transport; Sun, 15 Aug 2021 22:40:19 -0700
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.47) by
- edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.10; Sun, 15 Aug 2021 22:40:19 -0700
+        id S233236AbhHPGEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 02:04:31 -0400
+Received: from mail-eopbgr130077.outbound.protection.outlook.com ([40.107.13.77]:6884
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231680AbhHPGE1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 02:04:27 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gYoigG0aOxeR09DuQRwc3JwsYBrqgdYtKOeVnzCb8MXEC/U9zoGnW29RcR9exEHdo3hJHmhfm7Edu3mOuusSuBB7zPDR80rcOWTR3psBrYc2sE85SU8iF/vDy8lIt6zYs3hE0pkUw1dRecuzXOL1SNjgzXWq8OvK+AdeZ7cC4FGNrwqSuFE7MIpTwhon6PT4mBfq8BNGh1NiDOmCoKk9EWk5gN4F1LC1EiJqyG9aNCsYlpYEHdk7QZLhZKQZ+T9XqFQ1XHbgK+sK6ozU7DN1qj0UCdFi0sMWRviaDtXerbY42dAvQzdrw/8sFby1fKdOY8/DWfZ/ZExMbLj1QISlYQ==
+ b=HNQN6VxwztdRm46Bw2YC+vjPnQLSjXItxfCobxzS3NnbFrk2Gqd2W8Ajvwp15BWFuWZ2RD3WJynFgZiFBAQgbcpQZLxcxX8atQVNX1tb1CGsWorE0gG5oxkDgc6HVTtTMxBkqJ9KU3yLV/QWTrK2jAHub7viCuhbSeMGCTITvnrzbjEwgsmaFDBTSITA4BLso/VBQGptnduevIgflrdd4XiX46AHMc1yM8e84pVYEAYSrVaUKJHhH4evKQEWNkHFVWxzNCSRNNk0BWQ9ncmaQ64DuaYFpdG047pxzQtOVCZvKtdtwyXRmEe3/cmSET3kvhOSlt1QH8YPg7yx0pen6g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MLu5uMuIFsinH5i4v250MkmTl0+RXpnbtglsglLBwh4=;
- b=VJyalyiO3dt0M7Dv7j3v0quEeEwPM+cpRcT02aIXiIEqb6KCkIcGkCoPVaI+me9S3fWd5idE+cH41BcCLAKPhqY35QOmIe7lR4e9yEB8P5oVXFjqWkAp3np/1ZvRjSDb41qzJ3CWpDe6tS7ptNF3FsH9GU/QDe6cOdnHtX6Jwo2AIwG30Xf/QGtd/C/FHXC2CLoT0FI4j3KFurnfIfa+6aUsKt6+T34Or4y2F0m1HYcjsX4TYJKy7+2CjhwOy5GkhsWuaHasBwOVeAKcTE4b0hExq2v7pZc6XwrAtnWvAvAj3HH1t1vHCS2wl2X6pTZ8cwN6BGHH4r9yi8sI1qnZMg==
+ bh=pPeSgCjP3AsPBIlLakeypd6PAnH7T19DH2oT8gRy7h4=;
+ b=ogZch9jHFgYTyNWH1FYq8W8Y790y9Mqm7KqM0IQChe971HdPaTEAamqHRIZsLWaM1hyg3BVx+XKGj2fsOqQ04C6i/3IhFa8pWxmYz+oPTsdr/serYBM8qHNlXb4RBqA0jXRnXGkqAuBu8NwK929LzBtP7N6a9H5e6gMufc4BnsHhN6ZZWoSx1WIaOI00mIY5NwoO4/aOEJ4OvMdw9L9O/nBcnDY4EOmjVcQPKu4iv+XucSX2yxf5Nnt1mr2w5xctn9RzqlnDSKBfGXLtMuMKyT1JqpfrRs8MnMkNjN/iG+At6EWovlnBL/KkJpcLY05agmGjx2gijr/tGSyq5rlmuQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MLu5uMuIFsinH5i4v250MkmTl0+RXpnbtglsglLBwh4=;
- b=sKh4hw0dlZl3HGYG8L9E5Jvk8jGgEUkNoY+qsVIryKwfn3EWKWJhA1NTNYwROx1SOYFxY6LoDDBcIkrYBqjrQDpISvFLCc+SXR4iwNEcTc/IPwBByiRb3m0c0xqMV0IehTGSMXOCcAyiYLKC+apf6LezOe2sb/eCOgEQ1FufZGY=
-Received: from PH0PR11MB4950.namprd11.prod.outlook.com (2603:10b6:510:33::20)
- by PH0PR11MB4901.namprd11.prod.outlook.com (2603:10b6:510:3a::8) with
+ bh=pPeSgCjP3AsPBIlLakeypd6PAnH7T19DH2oT8gRy7h4=;
+ b=amFNadkdXN+xyYefPUzEjEOKt7+/gR0rt0hxFKo/0wWZk2sqqLdiPBNF+8WzwfEpuXQ2YFMWJ9BLXqEc2E2gfjfHOYQfonYAFE1JqFVYZR0NngIGbhwS+CV6m2B4Tlj8rj1QArK+gHymtp3IBzULE/FJ/Yw/ZfvtvGsHnjALxqA=
+Received: from VI1PR04MB5677.eurprd04.prod.outlook.com (2603:10a6:803:ed::22)
+ by VI1PR0401MB2654.eurprd04.prod.outlook.com (2603:10a6:800:58::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.16; Mon, 16 Aug
- 2021 05:40:18 +0000
-Received: from PH0PR11MB4950.namprd11.prod.outlook.com
- ([fe80::784e:e2d4:5303:3e0a]) by PH0PR11MB4950.namprd11.prod.outlook.com
- ([fe80::784e:e2d4:5303:3e0a%9]) with mapi id 15.20.4308.026; Mon, 16 Aug 2021
- 05:40:18 +0000
-From:   "Song, Yoong Siang" <yoong.siang.song@intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Russell King <linux@armlinux.org.uk>,
-        =?iso-8859-1?Q?Marek_Beh=FAn?= <kabel@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.13; Mon, 16 Aug
+ 2021 06:03:52 +0000
+Received: from VI1PR04MB5677.eurprd04.prod.outlook.com
+ ([fe80::c7c:1ecc:3ae5:6f23]) by VI1PR04MB5677.eurprd04.prod.outlook.com
+ ([fe80::c7c:1ecc:3ae5:6f23%3]) with mapi id 15.20.4415.023; Mon, 16 Aug 2021
+ 06:03:52 +0000
+From:   Hongbo Wang <hongbo.wang@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+CC:     Andrew Lunn <andrew@lunn.ch>, Hongjun Chen <hongjun.chen@nxp.com>,
+        Po Liu <po.liu@nxp.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        Leo Li <leoyang.li@nxp.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next 1/1] net: phy: marvell10g: Add WAKE_PHY support
- to WOL event
-Thread-Topic: [PATCH net-next 1/1] net: phy: marvell10g: Add WAKE_PHY support
- to WOL event
-Thread-Index: AQHXkCCVH1orffAF2Euk1FyXsMmop6tzQucAgAAKnYCAAB0pgIACCFZwgAAXTQCAABQhQA==
-Date:   Mon, 16 Aug 2021 05:40:18 +0000
-Message-ID: <PH0PR11MB4950F854C789F610ECD88E6ED8FD9@PH0PR11MB4950.namprd11.prod.outlook.com>
-References: <20210813084536.182381-1-yoong.siang.song@intel.com>
- <20210814172656.GA22278@shell.armlinux.org.uk> <YRgFxzIB3v8wS4tF@lunn.ch>
- <20210814194916.GB22278@shell.armlinux.org.uk>
- <PH0PR11MB4950652B4D07C189508767F1D8FD9@PH0PR11MB4950.namprd11.prod.outlook.com>
- <YRnmRp92j7Qpir7N@lunn.ch>
-In-Reply-To: <YRnmRp92j7Qpir7N@lunn.ch>
-Accept-Language: en-US
+Subject: RE: [EXT] Re: [PATCH v1] arm64: dts: fsl: ls1028a-rdb: Add dts file
+ to choose swp5 as dsa master
+Thread-Topic: [EXT] Re: [PATCH v1] arm64: dts: fsl: ls1028a-rdb: Add dts file
+ to choose swp5 as dsa master
+Thread-Index: AQHXj+75u2Pfw5dj90eW5XnXIP17J6txaSUAgAAItjCAAAd1AIAELgBQ
+Date:   Mon, 16 Aug 2021 06:03:52 +0000
+Message-ID: <VI1PR04MB56777E60653203A471B9864EE1FD9@VI1PR04MB5677.eurprd04.prod.outlook.com>
+References: <20210813030155.23097-1-hongbo.wang@nxp.com>
+ <YRZvItRlSpF2Xf+S@lunn.ch>
+ <VI1PR04MB56773CC01AB86A8AA1A33F9AE1FA9@VI1PR04MB5677.eurprd04.prod.outlook.com>
+ <20210813140745.fwjkmixzgvikvffz@skbuf>
+In-Reply-To: <20210813140745.fwjkmixzgvikvffz@skbuf>
+Accept-Language: zh-CN, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=intel.com;
+authentication-results: nxp.com; dkim=none (message not signed)
+ header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1014d9af-bfa5-4840-8c59-08d96078549c
-x-ms-traffictypediagnostic: PH0PR11MB4901:
-x-microsoft-antispam-prvs: <PH0PR11MB49015FB1DA36BDFCB4A76C20D8FD9@PH0PR11MB4901.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1775;
+x-ms-office365-filtering-correlation-id: 0c4f622e-9806-42ca-3744-08d9607b9f85
+x-ms-traffictypediagnostic: VI1PR0401MB2654:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0401MB2654D05BA99DB574480EDA6CE1FD9@VI1PR0401MB2654.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: /HVm6+Ya3q62Z0LaysmH+0yW2OB3Llc1EsrJ7MCRkN387y0cIgPy03QX+vRyhsD5ioxpHdN0g5RKd+gzrREJ17hABzoKBJhpaxIuTKfMlfoVUMfF9EKEeozQacwHnSXoVJBKR/e7iRW1/839MVdHOS7auMkXwgRb4djA3sEruAN5YlZpGpF4qf7RycDuMbP7RmrCQkVIQtgjuTDik6NtPh6sQHuzql6wDLAFqN0EPV8brmNFl71HE7E0f8M78RUPPLoxxaGbTTCD0lcK4ZijM2QYqiA/6w3tFPP1wkxT2epwiJe3F0PJ+/glp/LmaD5vxMm7nKzR7iTauvV0kpiZlplxojXnqSZCB+OxET6u617DCz7HG5lBhu0+km62KYgCb0pKWGXwwttq7GT2acJgUz0riTzFA5mI2qpOEB8DktlH9U/ekNr2ECi/uAnesjAU9oA/Ed3TVVQpTlkrcYUJOD+w6dlSkzeuFS9OMBb2YTesFNmxNq50x6+9tXcxGtuJzkdGz7jIWAaoGo02fHKKTYLX5siM4FfXuueUOMPu/UltyaQfrTsRdWyXRBJJ8y0pe1nBj/kN+Alept1rk7/YxVASpJIYRyIgysdQ/d3jb0F7xYpK1gE/OOxwErhkpO6hlOc8Hs6ad9YSnVlO/ZpHZi7FDLDlnanWKJPhoVC/iuk4XnoaFc0Mz1Iv+5VoRgAJVfJ6w6/2+fOkQSrf/XutrA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4950.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(396003)(39860400002)(376002)(136003)(8936002)(7696005)(66946007)(2906002)(55236004)(52536014)(54906003)(86362001)(55016002)(8676002)(76116006)(38070700005)(6506007)(38100700002)(478600001)(122000001)(64756008)(66556008)(9686003)(33656002)(66476007)(186003)(66446008)(26005)(4326008)(5660300002)(6916009)(316002)(71200400001);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: mk4TAH4pLtMI+3Wr1uerYVJ7pa/dVn+/zK6GO1/OYM/8oWOBFHIP6ialT9pr9YraiIZSIGurJH2FHTwxK/5q0cA7ZnkNbeYB964hpYFEElwT0d2LDCNhj9FmDSNeMifzEylUOjOu/jbCFFa5vdLAOmMZZSB2OPFOkmVbwkcTUuSHVhaKiAEH7JRE3XETGiO8KTDGJIHG4PV6P46ksXWN3+ioenNyk/bOV4sRu3Sk9zCbGPvZVTYc70Y3JWQncGkewW507wUE5YHtFRYp8On8svErW6xlhyeK29aeTmEzeILFz3IkuiOZS9BCsBC56HicXbEQeynm5AfcuhS8Y5epAJDc/E+dtHBMakNkdQKilsmAJx7hKP1qMyVUKUOoW7PUtBzjDgCna61oQGxh0NoksHZ2P4r2nkCIbmA5j01eTUpJ2GpjBp6peuESmuttaIJf+10LhDqrFYTRo9BEtXyqq6orFTlm7vGfa6en9hurF+bZa1XpuUFA3PyQaGPWAnb1yEuaMV5uMCYre/XwziitReqCJ297H6pHjAH2puMyDNZnDVh0a4G4ZDUcQnKI+GrWz/Yq+tuWwFuKA13xeamprOzBH49XjBkekVOhc0xrmHi8msaDsQ1WPP2tNP2IX1BnPeh++XajlAZpB1FT277couFbJ8MaTyJl8W4fN1INvRfGuM/w0ugtjx0MdTCuzM7M1IhXKL9NACHba8HSDGir6Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5677.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6636002)(186003)(71200400001)(6862004)(7416002)(54906003)(26005)(38070700005)(2906002)(5660300002)(83380400001)(316002)(4326008)(8676002)(52536014)(508600001)(9686003)(122000001)(66556008)(66476007)(64756008)(44832011)(7696005)(66946007)(66446008)(8936002)(6506007)(33656002)(76116006)(86362001)(55016002)(38100700002);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?NrfmDUW2L7dHDtMfji9YGge5lLCliVSa8R0cpvc/tN/Yf184z6KASn5bVc?=
- =?iso-8859-1?Q?06ilFcgzjscoIhwUIH3FyN9szdOx7cGSRwrdk/4khzN9sDfeTcbZLuiPzh?=
- =?iso-8859-1?Q?FQRf67o1EUUMEEKgUl7hcHAQtq254SphyjIQsmUYB+lnxEdnaasZgxzu8V?=
- =?iso-8859-1?Q?08XmqGxV05KrUMAszvrps+DEzJbCpKnjcOLh7oAAdvIMGz8bcQn5xCBm72?=
- =?iso-8859-1?Q?9rMNhIahnZWRdFobspkAtRMHNO8eXFpFR8aKCHgzNjbwA//vX/frCmWAXk?=
- =?iso-8859-1?Q?HmUhdxrjkM+WjCocOJHwVixyn3+LLFjgGMDkRJLtCpQ97lwmPVAyntWXoF?=
- =?iso-8859-1?Q?iOQAKaSbRarWYsP2KPpbWnlBFrh9EGIEgGMPe5qG3q/69a/hTXHSRlKd8i?=
- =?iso-8859-1?Q?n2eV2+eXR1Q3FX/QNO5F7GMzLEpgvtyhjXglUFn2taqJ7nczN6bP3myGrr?=
- =?iso-8859-1?Q?6uHPXMDCzt2LyuEO7kePEYW2ZgbGJBm3T3RfLM1CWRXrwhSDbBsxsCFR3r?=
- =?iso-8859-1?Q?DpUNbD9rHvJGUxpHLrAyaOA0Djt7h+BV+MQ00MQSefdmIQkupoJItFYRTO?=
- =?iso-8859-1?Q?gT5ILTESLjtEq4OUbkHyUClXGSG5QSbDLVf6d8Y5x90klRlIDH0DwoEDOB?=
- =?iso-8859-1?Q?TjDxwGtsDAJ3vMbBGXv9x9fey3jf675EyDTm25a0uc8I8BKlynipfzwRWs?=
- =?iso-8859-1?Q?iujuoPUvImACdGjJdPUB6G8kQtJKt92+T0Z8f7ILpwNrqBMw6er77WCSKD?=
- =?iso-8859-1?Q?RiUUGJHEwtkBJNjYAcW0ZUCNbGbbC+jOWB0XaNnMDx0RWfxTXJ4hyStnJv?=
- =?iso-8859-1?Q?4ZyyL8E8dFd5WYo40YeBdO/aApY6NBuqrfymmkFdEEs8ZImI5s8t4oqMtg?=
- =?iso-8859-1?Q?MdBrG4caCGwteMabU9Ks0b0iS0j4tBg9b+fqJZ2gHQEzD50Qn0Oe/sGbjy?=
- =?iso-8859-1?Q?myxVsR5XvtpEsuEN0Xtmhrmpy8MY/a7pyQpPJMyACiM7l493znrrbsCzdw?=
- =?iso-8859-1?Q?e8bEOXrHFlNHhenNCzlBBqikFjKbq++e+2DQ9S0+eRWtNdC/P9lVn4+WDV?=
- =?iso-8859-1?Q?eU5ovA3B3DtlDOHipJDy4/vUlL1fDxt3Um1O7NoB+6FbDCBBH/n5wh7tTz?=
- =?iso-8859-1?Q?jRSMpXb2AWDlkrEGmGk/JNCrqQrOe4wLHTjZqVbd0zbgD0Jpq4J8/tNIFx?=
- =?iso-8859-1?Q?3oSrQ6QFxQM/GHEio5VC0/Z95hF7OUaIFbXIrCsYQOs1G66lQc8g6XDZ0M?=
- =?iso-8859-1?Q?LMNuz+raN9wBElj/JX6pyWZJuM1v7bEZsszIIk4t2awqucrytpk3oLiP10?=
- =?iso-8859-1?Q?tfmfENg3l1ZlbEgtaxkCJZyw28mZ11WTVj5475xbdpmX3CcDJF7zwCfwli?=
- =?iso-8859-1?Q?qz8CvWnj6l?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="iso-8859-1"
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?psAQgs30+UumSRgCxN81wa5nTeK5ewR25l7Xn89zEzWS+Jg7pCuUSS0ehvAo?=
+ =?us-ascii?Q?LimIhPi09l/N43y90nbX12ExwQ3CPlN58oND/nQ8wNyG2jq90SjI0ePVpFBK?=
+ =?us-ascii?Q?uSUqo5u2/UFNC+bZjLnwDY/jDIx1xv+LU7a25pqqjgMRiPR1JVeTi7WFeSVE?=
+ =?us-ascii?Q?cZHY3r+BJXJ/RuMVqSn7uWJJ+dFNHka00pjo/HCRPyA2KRUw+Kn9xMNGqlTf?=
+ =?us-ascii?Q?9vP1u81XsZ2C7gIRfMR8M+IspKUFVZGK4sIsErduqiyaAaJ5nHb3tv2P/T4G?=
+ =?us-ascii?Q?0dXy45c7c2XCCidYRw3if4AlseckGMd0vxDdk1OOzzYH313qXqa709vgXqCJ?=
+ =?us-ascii?Q?kR4Z5Ewbi/6hRMg2UYchJ9uPL5zwXszR2ilJvHmnn7IfSbUUJ6BvexyW9qGF?=
+ =?us-ascii?Q?7UgYoF3FotS9xN0z3UaXjW+h2KIX4g/0Bcef3ndhfJa7jt2FjNiyhcLpFbD8?=
+ =?us-ascii?Q?yBaE3Timsu6omEwBPPh8+/3PtWXtGv/rhveAv9bI8S49yUwqPYmmHUhg/Cdx?=
+ =?us-ascii?Q?GfkrItegCxWTBoaokeplXMrcSw/iaUHTEVZITNKWzFyRq1JNyo5l2/1c/Irg?=
+ =?us-ascii?Q?hiAlX2Bnij0O7KkUoOK7vUK+xYJSt0zuSkwFHckKypLnnWQ/N6X8dvru8RcT?=
+ =?us-ascii?Q?4jV3JVEju5QZH3OdxdgU/zzu5f/S+PzWVoVJ7e0XwKpoJTARN+Cxg+TYrjDC?=
+ =?us-ascii?Q?PracHIdoKgb20wFqoJp0OhsA92tBGKOpMOUA2v6VDuR2yuYVUYJ/7TQE+Yur?=
+ =?us-ascii?Q?A61OXThOENv4r3Pc4ooo2M4ktlcV8/EDEdD6jhUTnTpCtKqbUNVOf/lppyKI?=
+ =?us-ascii?Q?vMgA0NvBNzhCarQXh+GHrgt36PHzWwOdO/wpzKwOFHHW5YdyS/OP4NxLRWj1?=
+ =?us-ascii?Q?f1Ad3uv6iqwxQKTrhWcV4AOL/cM1Y5jleTg8EoG1UUFo1noXO7NMu6XiRGfh?=
+ =?us-ascii?Q?iv04rVefHVjSblsnPgoc+mx4IKkKxNIOtlL3tauAGuqn1QrGRW52DrPo1vmp?=
+ =?us-ascii?Q?XWH9UktmF6ACw2Qq6JGTwErWEvz95NMxbiunWQu9E1S1lSpECnGVoiOBQrx5?=
+ =?us-ascii?Q?9uI0MqGKif/1niNMCajr1HWQfqevW8NQk9phxCtMvfHSmANLii13zn7DWt9L?=
+ =?us-ascii?Q?fI4LOTrjjeTWM7clYBQmImQqjmhW7TVTlW6h3K6tUZtnTy6/+SX6KwoAGeTS?=
+ =?us-ascii?Q?9L7S+02kI7EwLkp5NAlWjy1iaOU3an/EYVedOJxJZgFgOC/SLzdabqaM3QEQ?=
+ =?us-ascii?Q?YuArmy+LuxlFOqjumpA4j7TtDi3t3Z/RiMeojfpMVKdg9jOuJmfI0B0dD6Vr?=
+ =?us-ascii?Q?LbM=3D?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4950.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1014d9af-bfa5-4840-8c59-08d96078549c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Aug 2021 05:40:18.0229
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5677.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c4f622e-9806-42ca-3744-08d9607b9f85
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Aug 2021 06:03:52.1008
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: r/a3F1M5PFmYzxg7A3bQPB2ywK7Zs7eD/OdjIxsf81EQCeji8og+m9kguJSZVJ5OnCIQaNK4nlqciHHFsANMtngTMT7RipRWo3geRVQ9nvU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB4901
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-userprincipalname: xni/9d0aAluZ9Oj5mu8vTdE1MWEKW5+2NUgOilCYjyOWATiLIqNl019hqxKuNegzFDZRCw39fJWNLJYdvJAVFA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2654
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Mon, Aug 16, 2021 at 03:52:06AM +0000, Song, Yoong Siang wrote:
-> > > > Agreed. If the interrupt register is being used, i think we need
-> > > > this patchset to add proper interrupt support. Can you recommend a
-> > > > board they can buy off the shelf with the interrupt wired up? Or
-> > > > maybe Intel can find a hardware engineer to add a patch wire to
-> > > > link the interrupt output to a SoC pin that can do interrupts.
+
+> On Fri, Aug 13, 2021 at 01:56:53PM +0000, Hongbo Wang wrote:
+> > > You will end up with two DT blobs with the same top level
+> > > compatible. This is going to cause confusion. I suggest you add an
+> > > additional top level compatible to make it clear this differs from
+> > > the compatible =3D "fsl,ls1028a-rdb", "fsl,ls1028a" blob.
 > > >
-> > > The only board I'm aware of with the 88x3310 interrupt wired is the
-> > > Macchiatobin double-shot. :)
-> > >
-> > > I forget why I didn't implement interrupt support though - I
-> > > probably need to revisit that. Sure enough, looking at the code I
-> > > was tinkering with, adding interrupt support would certainly conflict=
- with
-> this patch.
+> > >    Andrew
 > >
-> > Hi Russell,
+> > hi Andrew,
 > >
-> > For EHL board, both WoL interrupt and link change interrupt are the sam=
-e
-> pin.
-> > Based on your knowledge, is this common across other platforms?
+> >   thanks for comments.
+> >
+> >   this "fsl-ls1028a-rdb-dsa-swp5-eno3.dts" is also for fsl-ls1028a-rdb
+> > platform, the only difference with "fsl-ls1028a-rdb.dts" is that it
+> > use swp5 as dsa master, not swp4, and it's based on
+> > "fsl-ls1028a-rdb.dts", so I choose this manner, if "fsl-ls1028a-rdb.dts=
+" has
+> some modification for new version, this file don't need be changed.
 >=20
-> Other PHYs? Yes. WoL is just another interrupt, and any interrupt can wak=
-e
-> the system, so longer as the interrupt controller can actually wake the
-> system.
+> I tend to agree with Hongbo. What confusion is it going to cause? It is
+> fundamentally the same board, just an Ethernet port stopped having 'statu=
+s =3D
+> "disabled"' and another changed role, all inside of the SoC with no
+> externally-visible change. If anything, I think that creating a new top-l=
+evel
+> compatible for each small change like this would create a bloat-fest of i=
+ts own.
 >=20
-> > Can we take set wol function as one of the ways to control the
-> > interrupts?
->=20
-> WOl does not control the interrupt, it is an interrupt source. And you ne=
-ed to
-> service it as an interrupt. So long as your PMC is also an interrupt cont=
-roller,
-> it should all work.
->=20
-> 	  Andrew
+> I was going to suggest as an alternative to define a device tree overlay =
+file with
+> the changes in the CPU port assignment, instead of defining a wholly new =
+DTS
+> for the LS1028A reference design board. But I am pretty sure that it is n=
+ot
+> possible to specify a /delete-property/ inside a device tree overlay file=
+, so that
+> won't actually work.
 
-Sorry, I should not use the word "control". Actually what I am trying to sa=
-id was
-"can we take set_wol() as one of the ways to enable/disable link change int=
-errupt?".
-PMC is not an interrupt controller. I guess the confusion here is due to I =
-am
-using polling mode. Let me ask the question differently.
+hi Vladimir,
 
-What is the conflict that will happen when interrupt support is added?=20
-I can help to add config_intr() and handle_interrupt() callback support
-If they will help to solve the conflict.
+  if don't specify "/delete-property/" in this dts file, the corresponding =
+dtb will not work well,
+so I add it to delete 'ethernet' property from mscc_felix_port4 explicitly.
 
-Regards
-Siang
+thanks,
+hongbo
+
+
+
