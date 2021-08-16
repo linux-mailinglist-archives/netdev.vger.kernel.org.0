@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F27143EE058
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 01:22:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BE743EE059
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 01:22:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234800AbhHPXXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 19:23:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51358 "EHLO mail.kernel.org"
+        id S234701AbhHPXXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 19:23:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51360 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234222AbhHPXXE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 19:23:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2C88060FC3;
+        id S232783AbhHPXXF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 19:23:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AF60760F4B;
         Mon, 16 Aug 2021 23:22:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629156152;
-        bh=tJukzY1hP9JSR/ydQ/E8E50KIZoDr1aYhTqApqdCKB0=;
+        s=k20201202; t=1629156153;
+        bh=PNrlXXkH9SVEkuB8du733YpbQF33I1kEC6fT7hwv4C4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VbbcQFxKX3WTPpOYtRdIp6tl2GPWWFrNhtwbFaB6oXQdTsBvZytNWLk74WpAQew0z
-         EBtglAnNNriVGgUy1Mpo4j2aFbauKBGyMYeV1c+cVCSRSveTlg04A1/zT3UYjVkNd+
-         Lb674tQZAxy3gG/BKsQHL6xPYCkVmelCeMRnbcwUZS+smr422z4ej1kkavh9qiZOhO
-         cG5wdpAYlZ/CM2Y9LnOcbZz49Nzoq9GK9soIu1D20fXg/GZ3NhdDfJm99t7zCf+ek/
-         nwk/pwjAX8Pg7jFmTUcdd8P5LonqSBIb3gie5yc7dh+/bJRziOCnwOTOEZKSmq5Kkt
-         Y8DpjXyJj8kOQ==
+        b=W1gIQI+FaVX+mRRUyBrjJktRNExMQuJI5zW4+4bUZFsjlPQ6OocOdxschnmjN1LGa
+         voPmDSYFT9QiQ0YxpHur/6VscHXMnkX906SD4dlRVfNJ6XS0fgkDVlRRI4ZgnsAeln
+         AP56o519AF5gimjd+B/DuadmwFcCg2PYI8takyrgqXeZXUAmWxeMSP+XqNl4kc7dS6
+         WhjCCO3MMjRMLafZsgI6KK0AwlFBJnNhPVN8kIBiKZ+vCEgoXKAfe1AsLIsz4CgolP
+         YeamJvAKtmqeQU/7rxz5rk2pIquKWso2HMtzR9qeYOMjI0rF38ylje87wn0mKGRNcZ
+         UpJ2npC1yNYzA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -30,9 +30,9 @@ Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next V2 06/17] net/mlx5e: Support multiple RSS contexts
-Date:   Mon, 16 Aug 2021 16:22:08 -0700
-Message-Id: <20210816232219.557083-7-saeed@kernel.org>
+Subject: [net-next V2 07/17] net/mlx5e: Support flow classification into RSS contexts
+Date:   Mon, 16 Aug 2021 16:22:09 -0700
+Message-Id: <20210816232219.557083-8-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210816232219.557083-1-saeed@kernel.org>
 References: <20210816232219.557083-1-saeed@kernel.org>
@@ -44,641 +44,324 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tariq Toukan <tariqt@nvidia.com>
 
-Add support to multiple RSS contexts. Resources of the non-default
-RSS contexts are allocated and created on demand. Each RSS context
-can be controlled and configured separately, via the implemented
-ethtool ops. Here we limit the num of total contexts to 16.
+Extend the existing flow classification support, to steer
+flows not only directly to a receive ring, but also into
+the new RSS contexts.
 
-We do not enforce any kind of new limitation over the indirection table
-content. More specifically, two separate contexts can be configured to
-fully or partially point to the same set of receive rings.
-
-The default RSS context (index 0) is created with its full set of TIRs.
-All other contexts are created with an empty set, then TIRs are added
-upon first usage when steering rules are added.
-We use a reference counting mechanism to make sure an RSS context is
-not removed before the rules pointing to it.
-
-Block ethtool set_channels operations when multiple RSS contexts exist,
-as currently the kernel doesn't protect against inconsistent channels
-configs that break non-default RSS contexts.
+Create needed TIR objects on demand, and hold reference
+on the RSS context.
 
 Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
 Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/rss.c  |  51 ++++-
- .../net/ethernet/mellanox/mlx5/core/en/rss.h  |   8 +-
- .../ethernet/mellanox/mlx5/core/en/rx_res.c   | 194 +++++++++++++++---
- .../ethernet/mellanox/mlx5/core/en/rx_res.h   |  12 +-
- .../ethernet/mellanox/mlx5/core/en_ethtool.c  |  59 +++++-
- 5 files changed, 273 insertions(+), 51 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en/rss.c  | 24 +++++
+ .../net/ethernet/mellanox/mlx5/core/en/rss.h  |  5 +
+ .../ethernet/mellanox/mlx5/core/en/rx_res.c   | 22 +++++
+ .../ethernet/mellanox/mlx5/core/en/rx_res.h   |  2 +
+ .../mellanox/mlx5/core/en_fs_ethtool.c        | 99 +++++++++++++++----
+ 5 files changed, 131 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rss.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rss.c
-index 34c5b8f0d100..d2c4ace7c8ba 100644
+index d2c4ace7c8ba..625cd49ef96c 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/rss.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rss.c
-@@ -78,6 +78,7 @@ struct mlx5e_rss {
- 	u32 drop_rqn;
- 	bool inner_ft_support;
- 	bool enabled;
-+	refcount_t refcnt;
- };
- 
- struct mlx5e_rss *mlx5e_rss_alloc(void)
-@@ -281,19 +282,26 @@ static int mlx5e_rss_update_tirs(struct mlx5e_rss *rss)
- 	return retval;
+@@ -367,6 +367,30 @@ u32 mlx5e_rss_get_tirn(struct mlx5e_rss *rss, enum mlx5_traffic_types tt,
+ 	return mlx5e_tir_get_tirn(tir);
  }
  
--int mlx5e_rss_init(struct mlx5e_rss *rss, struct mlx5_core_dev *mdev,
--		   bool inner_ft_support, u32 drop_rqn,
--		   const struct mlx5e_lro_param *init_lro_param)
-+int mlx5e_rss_init_no_tirs(struct mlx5e_rss *rss, struct mlx5_core_dev *mdev,
-+			   bool inner_ft_support, u32 drop_rqn)
- {
--	int err;
--
- 	rss->mdev = mdev;
- 	rss->inner_ft_support = inner_ft_support;
- 	rss->drop_rqn = drop_rqn;
- 
- 	mlx5e_rss_params_init(rss);
-+	refcount_set(&rss->refcnt, 1);
-+
-+	return mlx5e_rqt_init_direct(&rss->rqt, mdev, true, drop_rqn);
-+}
-+
-+int mlx5e_rss_init(struct mlx5e_rss *rss, struct mlx5_core_dev *mdev,
-+		   bool inner_ft_support, u32 drop_rqn,
-+		   const struct mlx5e_lro_param *init_lro_param)
++/* Fill the "tirn" output parameter.
++ * Create the requested TIR if it's its first usage.
++ */
++int mlx5e_rss_obtain_tirn(struct mlx5e_rss *rss,
++			  enum mlx5_traffic_types tt,
++			  const struct mlx5e_lro_param *init_lro_param,
++			  bool inner, u32 *tirn)
 +{
-+	int err;
- 
--	err = mlx5e_rqt_init_direct(&rss->rqt, mdev, true, drop_rqn);
-+	err = mlx5e_rss_init_no_tirs(rss, mdev, inner_ft_support, drop_rqn);
- 	if (err)
- 		goto err_out;
- 
-@@ -317,14 +325,34 @@ int mlx5e_rss_init(struct mlx5e_rss *rss, struct mlx5_core_dev *mdev,
- 	return err;
- }
- 
--void mlx5e_rss_cleanup(struct mlx5e_rss *rss)
-+int mlx5e_rss_cleanup(struct mlx5e_rss *rss)
- {
-+	if (!refcount_dec_if_one(&rss->refcnt))
-+		return -EBUSY;
++	struct mlx5e_tir *tir;
 +
- 	mlx5e_rss_destroy_tirs(rss, false);
- 
- 	if (rss->inner_ft_support)
- 		mlx5e_rss_destroy_tirs(rss, true);
- 
- 	mlx5e_rqt_destroy(&rss->rqt);
++	tir = rss_get_tir(rss, tt, inner);
++	if (!tir) { /* TIR doesn't exist, create one */
++		int err;
 +
++		err = mlx5e_rss_create_tir(rss, tt, init_lro_param, inner);
++		if (err)
++			return err;
++		tir = rss_get_tir(rss, tt, inner);
++	}
++
++	*tirn = mlx5e_tir_get_tirn(tir);
 +	return 0;
 +}
 +
-+void mlx5e_rss_refcnt_inc(struct mlx5e_rss *rss)
-+{
-+	refcount_inc(&rss->refcnt);
-+}
-+
-+void mlx5e_rss_refcnt_dec(struct mlx5e_rss *rss)
-+{
-+	refcount_dec(&rss->refcnt);
-+}
-+
-+unsigned int mlx5e_rss_refcnt_read(struct mlx5e_rss *rss)
-+{
-+	return refcount_read(&rss->refcnt);
- }
- 
- u32 mlx5e_rss_get_tirn(struct mlx5e_rss *rss, enum mlx5_traffic_types tt,
-@@ -384,22 +412,27 @@ int mlx5e_rss_lro_set_param(struct mlx5e_rss *rss, struct mlx5e_lro_param *lro_p
- 		struct mlx5e_tir *tir;
- 
- 		tir = rss_get_tir(rss, tt, false);
-+		if (!tir)
-+			goto inner_tir;
- 		err = mlx5e_tir_modify(tir, builder);
- 		if (err) {
- 			mlx5e_rss_warn(rss->mdev, "Failed to update LRO state of indirect TIR %#x for traffic type %d: err = %d\n",
--				       mlx5e_tir_get_tirn(rss->tir[tt]), tt, err);
-+				       mlx5e_tir_get_tirn(tir), tt, err);
- 			if (!final_err)
- 				final_err = err;
- 		}
- 
-+inner_tir:
- 		if (!rss->inner_ft_support)
- 			continue;
- 
- 		tir = rss_get_tir(rss, tt, true);
-+		if (!tir)
-+			continue;
- 		err = mlx5e_tir_modify(tir, builder);
- 		if (err) {
- 			mlx5e_rss_warn(rss->mdev, "Failed to update LRO state of inner indirect TIR %#x for traffic type %d: err = %d\n",
--				       mlx5e_tir_get_tirn(rss->inner_tir[tt]), tt, err);
-+				       mlx5e_tir_get_tirn(tir), tt, err);
- 			if (!final_err)
- 				final_err = err;
- 		}
+ static void mlx5e_rss_apply(struct mlx5e_rss *rss, u32 *rqns, unsigned int num_rqns)
+ {
+ 	int err;
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rss.h b/drivers/net/ethernet/mellanox/mlx5/core/en/rss.h
-index e71e712ed842..6f52d78a36da 100644
+index 6f52d78a36da..d522a10dadf3 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/rss.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rss.h
-@@ -18,7 +18,13 @@ void mlx5e_rss_free(struct mlx5e_rss *rss);
- int mlx5e_rss_init(struct mlx5e_rss *rss, struct mlx5_core_dev *mdev,
- 		   bool inner_ft_support, u32 drop_rqn,
- 		   const struct mlx5e_lro_param *init_lro_param);
--void mlx5e_rss_cleanup(struct mlx5e_rss *rss);
-+int mlx5e_rss_init_no_tirs(struct mlx5e_rss *rss, struct mlx5_core_dev *mdev,
-+			   bool inner_ft_support, u32 drop_rqn);
-+int mlx5e_rss_cleanup(struct mlx5e_rss *rss);
-+
-+void mlx5e_rss_refcnt_inc(struct mlx5e_rss *rss);
-+void mlx5e_rss_refcnt_dec(struct mlx5e_rss *rss);
-+unsigned int mlx5e_rss_refcnt_read(struct mlx5e_rss *rss);
+@@ -28,6 +28,11 @@ unsigned int mlx5e_rss_refcnt_read(struct mlx5e_rss *rss);
  
  u32 mlx5e_rss_get_tirn(struct mlx5e_rss *rss, enum mlx5_traffic_types tt,
  		       bool inner);
++int mlx5e_rss_obtain_tirn(struct mlx5e_rss *rss,
++			  enum mlx5_traffic_types tt,
++			  const struct mlx5e_lro_param *init_lro_param,
++			  bool inner, u32 *tirn);
++
+ void mlx5e_rss_enable(struct mlx5e_rss *rss, u32 *rqns, unsigned int num_rqns);
+ void mlx5e_rss_disable(struct mlx5e_rss *rss);
+ 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.c
-index 590d94196370..432963594b8e 100644
+index 432963594b8e..bf0313e2682b 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.c
-@@ -5,13 +5,15 @@
- #include "channels.h"
- #include "params.h"
- 
-+#define MLX5E_MAX_NUM_RSS 16
-+
- struct mlx5e_rx_res {
- 	struct mlx5_core_dev *mdev;
- 	enum mlx5e_rx_res_features features;
- 	unsigned int max_nch;
- 	u32 drop_rqn;
- 
--	struct mlx5e_rss *rss;
-+	struct mlx5e_rss *rss[MLX5E_MAX_NUM_RSS];
- 	bool rss_active;
- 	u32 rss_rqns[MLX5E_INDIR_RQT_SIZE];
- 	unsigned int rss_nch;
-@@ -31,86 +33,194 @@ struct mlx5e_rx_res {
- 
- /* API for rx_res_rss_* */
- 
--static int mlx5e_rx_res_rss_init(struct mlx5e_rx_res *res,
--				 const struct mlx5e_lro_param *init_lro_param,
--				 unsigned int init_nch)
-+static int mlx5e_rx_res_rss_init_def(struct mlx5e_rx_res *res,
-+				     const struct mlx5e_lro_param *init_lro_param,
-+				     unsigned int init_nch)
- {
- 	bool inner_ft_support = res->features & MLX5E_RX_RES_FEATURE_INNER_FT;
- 	struct mlx5e_rss *rss;
- 	int err;
- 
-+	if (WARN_ON(res->rss[0]))
-+		return -EINVAL;
-+
- 	rss = mlx5e_rss_alloc();
- 	if (!rss)
- 		return -ENOMEM;
- 
--	res->rss = rss;
-+	err = mlx5e_rss_init(rss, res->mdev, inner_ft_support, res->drop_rqn,
-+			     init_lro_param);
-+	if (err)
-+		goto err_rss_free;
-+
-+	mlx5e_rss_set_indir_uniform(rss, init_nch);
-+
-+	res->rss[0] = rss;
-+
-+	return 0;
-+
-+err_rss_free:
-+	mlx5e_rss_free(rss);
-+	return err;
-+}
-+
-+int mlx5e_rx_res_rss_init(struct mlx5e_rx_res *res, u32 *rss_idx, unsigned int init_nch)
-+{
-+	bool inner_ft_support = res->features & MLX5E_RX_RES_FEATURE_INNER_FT;
-+	struct mlx5e_rss *rss;
-+	int err, i;
-+
-+	for (i = 1; i < MLX5E_MAX_NUM_RSS; i++)
-+		if (!res->rss[i])
-+			break;
-+
-+	if (i == MLX5E_MAX_NUM_RSS)
-+		return -ENOSPC;
-+
-+	rss = mlx5e_rss_alloc();
-+	if (!rss)
-+		return -ENOMEM;
- 
--	err = mlx5e_rss_init(rss, res->mdev, inner_ft_support, res->drop_rqn, init_lro_param);
-+	err = mlx5e_rss_init_no_tirs(rss, res->mdev, inner_ft_support, res->drop_rqn);
- 	if (err)
- 		goto err_rss_free;
- 
- 	mlx5e_rss_set_indir_uniform(rss, init_nch);
-+	if (res->rss_active)
-+		mlx5e_rss_enable(rss, res->rss_rqns, res->rss_nch);
-+
-+	res->rss[i] = rss;
-+	*rss_idx = i;
- 
- 	return 0;
- 
- err_rss_free:
- 	mlx5e_rss_free(rss);
--	res->rss = NULL;
- 	return err;
+@@ -245,6 +245,28 @@ int mlx5e_rx_res_rss_cnt(struct mlx5e_rx_res *res)
+ 	return cnt;
  }
  
--static void mlx5e_rx_res_rss_destroy(struct mlx5e_rx_res *res)
-+static int __mlx5e_rx_res_rss_destroy(struct mlx5e_rx_res *res, u32 rss_idx)
- {
--	struct mlx5e_rss *rss = res->rss;
-+	struct mlx5e_rss *rss = res->rss[rss_idx];
-+	int err;
-+
-+	err = mlx5e_rss_cleanup(rss);
-+	if (err)
-+		return err;
- 
--	mlx5e_rss_cleanup(rss);
- 	mlx5e_rss_free(rss);
--	res->rss = NULL;
-+	res->rss[rss_idx] = NULL;
-+
-+	return 0;
-+}
-+
-+int mlx5e_rx_res_rss_destroy(struct mlx5e_rx_res *res, u32 rss_idx)
-+{
-+	struct mlx5e_rss *rss;
-+
-+	if (rss_idx >= MLX5E_MAX_NUM_RSS)
-+		return -EINVAL;
-+
-+	rss = res->rss[rss_idx];
-+	if (!rss)
-+		return -EINVAL;
-+
-+	return __mlx5e_rx_res_rss_destroy(res, rss_idx);
-+}
-+
-+static void mlx5e_rx_res_rss_destroy_all(struct mlx5e_rx_res *res)
++int mlx5e_rx_res_rss_index(struct mlx5e_rx_res *res, struct mlx5e_rss *rss)
 +{
 +	int i;
 +
-+	for (i = 0; i < MLX5E_MAX_NUM_RSS; i++) {
-+		struct mlx5e_rss *rss = res->rss[i];
-+		int err;
-+
-+		if (!rss)
-+			continue;
-+
-+		err = __mlx5e_rx_res_rss_destroy(res, i);
-+		if (err) {
-+			unsigned int refcount;
-+
-+			refcount = mlx5e_rss_refcnt_read(rss);
-+			mlx5_core_warn(res->mdev,
-+				       "Failed to destroy RSS context %d, refcount = %u, err = %d\n",
-+				       i, refcount, err);
-+		}
-+	}
- }
- 
- static void mlx5e_rx_res_rss_enable(struct mlx5e_rx_res *res)
- {
--	struct mlx5e_rss *rss = res->rss;
-+	int i;
- 
- 	res->rss_active = true;
- 
--	mlx5e_rss_enable(rss, res->rss_rqns, res->rss_nch);
-+	for (i = 0; i < MLX5E_MAX_NUM_RSS; i++) {
-+		struct mlx5e_rss *rss = res->rss[i];
-+
-+		if (!rss)
-+			continue;
-+		mlx5e_rss_enable(rss, res->rss_rqns, res->rss_nch);
-+	}
- }
- 
- static void mlx5e_rx_res_rss_disable(struct mlx5e_rx_res *res)
- {
--	struct mlx5e_rss *rss = res->rss;
-+	int i;
- 
- 	res->rss_active = false;
- 
--	mlx5e_rss_disable(rss);
-+	for (i = 0; i < MLX5E_MAX_NUM_RSS; i++) {
-+		struct mlx5e_rss *rss = res->rss[i];
-+
-+		if (!rss)
-+			continue;
-+		mlx5e_rss_disable(rss);
-+	}
- }
- 
- /* Updates the indirection table SW shadow, does not update the HW resources yet */
- void mlx5e_rx_res_rss_set_indir_uniform(struct mlx5e_rx_res *res, unsigned int nch)
- {
- 	WARN_ON_ONCE(res->rss_active);
--	mlx5e_rss_set_indir_uniform(res->rss, nch);
-+	mlx5e_rss_set_indir_uniform(res->rss[0], nch);
- }
- 
--int mlx5e_rx_res_rss_get_rxfh(struct mlx5e_rx_res *res, u32 *indir, u8 *key, u8 *hfunc)
-+int mlx5e_rx_res_rss_get_rxfh(struct mlx5e_rx_res *res, u32 rss_idx,
-+			      u32 *indir, u8 *key, u8 *hfunc)
- {
--	struct mlx5e_rss *rss = res->rss;
-+	struct mlx5e_rss *rss;
-+
-+	if (rss_idx >= MLX5E_MAX_NUM_RSS)
++	if (!rss)
 +		return -EINVAL;
 +
-+	rss = res->rss[rss_idx];
-+	if (!rss)
-+		return -ENOENT;
- 
- 	return mlx5e_rss_get_rxfh(rss, indir, key, hfunc);
- }
- 
--int mlx5e_rx_res_rss_set_rxfh(struct mlx5e_rx_res *res, const u32 *indir,
--			      const u8 *key, const u8 *hfunc)
-+int mlx5e_rx_res_rss_set_rxfh(struct mlx5e_rx_res *res, u32 rss_idx,
-+			      const u32 *indir, const u8 *key, const u8 *hfunc)
- {
--	struct mlx5e_rss *rss = res->rss;
-+	struct mlx5e_rss *rss;
-+
-+	if (rss_idx >= MLX5E_MAX_NUM_RSS)
-+		return -EINVAL;
-+
-+	rss = res->rss[rss_idx];
-+	if (!rss)
-+		return -ENOENT;
- 
- 	return mlx5e_rss_set_rxfh(rss, indir, key, hfunc, res->rss_rqns, res->rss_nch);
- }
- 
- u8 mlx5e_rx_res_rss_get_hash_fields(struct mlx5e_rx_res *res, enum mlx5_traffic_types tt)
- {
--	struct mlx5e_rss *rss = res->rss;
-+	struct mlx5e_rss *rss = res->rss[0];
- 
- 	return mlx5e_rss_get_hash_fields(rss, tt);
- }
-@@ -118,11 +228,23 @@ u8 mlx5e_rx_res_rss_get_hash_fields(struct mlx5e_rx_res *res, enum mlx5_traffic_
- int mlx5e_rx_res_rss_set_hash_fields(struct mlx5e_rx_res *res, enum mlx5_traffic_types tt,
- 				     u8 rx_hash_fields)
- {
--	struct mlx5e_rss *rss = res->rss;
-+	struct mlx5e_rss *rss = res->rss[0];
- 
- 	return mlx5e_rss_set_hash_fields(rss, tt, rx_hash_fields);
- }
- 
-+int mlx5e_rx_res_rss_cnt(struct mlx5e_rx_res *res)
-+{
-+	int i, cnt;
-+
-+	cnt = 0;
 +	for (i = 0; i < MLX5E_MAX_NUM_RSS; i++)
-+		if (res->rss[i])
-+			cnt++;
++		if (rss == res->rss[i])
++			return i;
 +
-+	return cnt;
++	return -ENOENT;
++}
++
++struct mlx5e_rss *mlx5e_rx_res_rss_get(struct mlx5e_rx_res *res, u32 rss_idx)
++{
++	if (rss_idx >= MLX5E_MAX_NUM_RSS)
++		return NULL;
++
++	return res->rss[rss_idx];
 +}
 +
  /* End of API rx_res_rss_* */
  
  struct mlx5e_rx_res *mlx5e_rx_res_alloc(void)
-@@ -303,7 +425,7 @@ int mlx5e_rx_res_init(struct mlx5e_rx_res *res, struct mlx5_core_dev *mdev,
- 	res->max_nch = max_nch;
- 	res->drop_rqn = drop_rqn;
- 
--	err = mlx5e_rx_res_rss_init(res, init_lro_param, init_nch);
-+	err = mlx5e_rx_res_rss_init_def(res, init_lro_param, init_nch);
- 	if (err)
- 		goto err_out;
- 
-@@ -320,7 +442,7 @@ int mlx5e_rx_res_init(struct mlx5e_rx_res *res, struct mlx5_core_dev *mdev,
- err_channels_destroy:
- 	mlx5e_rx_res_channels_destroy(res);
- err_rss_destroy:
--	mlx5e_rx_res_rss_destroy(res);
-+	__mlx5e_rx_res_rss_destroy(res, 0);
- err_out:
- 	return err;
- }
-@@ -329,7 +451,7 @@ void mlx5e_rx_res_destroy(struct mlx5e_rx_res *res)
- {
- 	mlx5e_rx_res_ptp_destroy(res);
- 	mlx5e_rx_res_channels_destroy(res);
--	mlx5e_rx_res_rss_destroy(res);
-+	mlx5e_rx_res_rss_destroy_all(res);
- }
- 
- void mlx5e_rx_res_free(struct mlx5e_rx_res *res)
-@@ -351,14 +473,14 @@ u32 mlx5e_rx_res_get_tirn_xsk(struct mlx5e_rx_res *res, unsigned int ix)
- 
- u32 mlx5e_rx_res_get_tirn_rss(struct mlx5e_rx_res *res, enum mlx5_traffic_types tt)
- {
--	struct mlx5e_rss *rss = res->rss;
-+	struct mlx5e_rss *rss = res->rss[0];
- 
- 	return mlx5e_rss_get_tirn(rss, tt, false);
- }
- 
- u32 mlx5e_rx_res_get_tirn_rss_inner(struct mlx5e_rx_res *res, enum mlx5_traffic_types tt)
- {
--	struct mlx5e_rss *rss = res->rss;
-+	struct mlx5e_rss *rss = res->rss[0];
- 
- 	return mlx5e_rss_get_tirn(rss, tt, true);
- }
-@@ -503,7 +625,6 @@ int mlx5e_rx_res_xsk_deactivate(struct mlx5e_rx_res *res, unsigned int ix)
- 
- int mlx5e_rx_res_lro_set_param(struct mlx5e_rx_res *res, struct mlx5e_lro_param *lro_param)
- {
--	struct mlx5e_rss *rss = res->rss;
- 	struct mlx5e_tir_builder *builder;
- 	int err, final_err;
- 	unsigned int ix;
-@@ -516,9 +637,16 @@ int mlx5e_rx_res_lro_set_param(struct mlx5e_rx_res *res, struct mlx5e_lro_param
- 
- 	final_err = 0;
- 
--	err = mlx5e_rss_lro_set_param(rss, lro_param);
--	if (err)
--		final_err = final_err ? : err;
-+	for (ix = 0; ix < MLX5E_MAX_NUM_RSS; ix++) {
-+		struct mlx5e_rss *rss = res->rss[ix];
-+
-+		if (!rss)
-+			continue;
-+
-+		err = mlx5e_rss_lro_set_param(rss, lro_param);
-+		if (err)
-+			final_err = final_err ? : err;
-+	}
- 
- 	for (ix = 0; ix < res->max_nch; ix++) {
- 		err = mlx5e_tir_modify(&res->channels[ix].direct_tir, builder);
-@@ -536,5 +664,5 @@ int mlx5e_rx_res_lro_set_param(struct mlx5e_rx_res *res, struct mlx5e_lro_param
- 
- struct mlx5e_rss_params_hash mlx5e_rx_res_get_current_hash(struct mlx5e_rx_res *res)
- {
--	return mlx5e_rss_get_hash(res->rss);
-+	return mlx5e_rss_get_hash(res->rss[0]);
- }
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.h b/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.h
-index af017f516f4a..8248caa36995 100644
+index 8248caa36995..4a15942d79f7 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.h
-@@ -49,14 +49,20 @@ int mlx5e_rx_res_xsk_deactivate(struct mlx5e_rx_res *res, unsigned int ix);
+@@ -62,6 +62,8 @@ int mlx5e_rx_res_lro_set_param(struct mlx5e_rx_res *res, struct mlx5e_lro_param
+ int mlx5e_rx_res_rss_init(struct mlx5e_rx_res *res, u32 *rss_idx, unsigned int init_nch);
+ int mlx5e_rx_res_rss_destroy(struct mlx5e_rx_res *res, u32 rss_idx);
+ int mlx5e_rx_res_rss_cnt(struct mlx5e_rx_res *res);
++int mlx5e_rx_res_rss_index(struct mlx5e_rx_res *res, struct mlx5e_rss *rss);
++struct mlx5e_rss *mlx5e_rx_res_rss_get(struct mlx5e_rx_res *res, u32 rss_idx);
  
- /* Configuration API */
- void mlx5e_rx_res_rss_set_indir_uniform(struct mlx5e_rx_res *res, unsigned int nch);
--int mlx5e_rx_res_rss_get_rxfh(struct mlx5e_rx_res *res, u32 *indir, u8 *key, u8 *hfunc);
--int mlx5e_rx_res_rss_set_rxfh(struct mlx5e_rx_res *res, const u32 *indir,
--			      const u8 *key, const u8 *hfunc);
-+int mlx5e_rx_res_rss_get_rxfh(struct mlx5e_rx_res *res, u32 rss_idx,
-+			      u32 *indir, u8 *key, u8 *hfunc);
-+int mlx5e_rx_res_rss_set_rxfh(struct mlx5e_rx_res *res, u32 rss_idx,
-+			      const u32 *indir, const u8 *key, const u8 *hfunc);
-+
- u8 mlx5e_rx_res_rss_get_hash_fields(struct mlx5e_rx_res *res, enum mlx5_traffic_types tt);
- int mlx5e_rx_res_rss_set_hash_fields(struct mlx5e_rx_res *res, enum mlx5_traffic_types tt,
- 				     u8 rx_hash_fields);
- int mlx5e_rx_res_lro_set_param(struct mlx5e_rx_res *res, struct mlx5e_lro_param *lro_param);
- 
-+int mlx5e_rx_res_rss_init(struct mlx5e_rx_res *res, u32 *rss_idx, unsigned int init_nch);
-+int mlx5e_rx_res_rss_destroy(struct mlx5e_rx_res *res, u32 rss_idx);
-+int mlx5e_rx_res_rss_cnt(struct mlx5e_rx_res *res);
-+
  /* Workaround for hairpin */
  struct mlx5e_rss_params_hash mlx5e_rx_res_get_current_hash(struct mlx5e_rx_res *res);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c
+index 3d8918f9399e..03693fa74a70 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c
+@@ -35,11 +35,19 @@
+ #include "en/params.h"
+ #include "en/xsk/pool.h"
  
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-index 62eef3e7f993..839a753fda32 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-@@ -420,6 +420,7 @@ int mlx5e_ethtool_set_channels(struct mlx5e_priv *priv,
- 	unsigned int count = ch->combined_count;
- 	struct mlx5e_params new_params;
- 	bool arfs_enabled;
-+	int rss_cnt;
- 	bool opened;
- 	int err = 0;
++static int flow_type_to_traffic_type(u32 flow_type);
++
++static u32 flow_type_mask(u32 flow_type)
++{
++	return flow_type & ~(FLOW_EXT | FLOW_MAC_EXT | FLOW_RSS);
++}
++
+ struct mlx5e_ethtool_rule {
+ 	struct list_head             list;
+ 	struct ethtool_rx_flow_spec  flow_spec;
+ 	struct mlx5_flow_handle	     *rule;
+ 	struct mlx5e_ethtool_table   *eth_ft;
++	struct mlx5e_rss             *rss;
+ };
  
-@@ -455,6 +456,17 @@ int mlx5e_ethtool_set_channels(struct mlx5e_priv *priv,
- 		goto out;
+ static void put_flow_table(struct mlx5e_ethtool_table *eth_ft)
+@@ -66,7 +74,7 @@ static struct mlx5e_ethtool_table *get_flow_table(struct mlx5e_priv *priv,
+ 	int table_size;
+ 	int prio;
+ 
+-	switch (fs->flow_type & ~(FLOW_EXT | FLOW_MAC_EXT)) {
++	switch (flow_type_mask(fs->flow_type)) {
+ 	case TCP_V4_FLOW:
+ 	case UDP_V4_FLOW:
+ 	case TCP_V6_FLOW:
+@@ -329,7 +337,7 @@ static int set_flow_attrs(u32 *match_c, u32 *match_v,
+ 					     outer_headers);
+ 	void *outer_headers_v = MLX5_ADDR_OF(fte_match_param, match_v,
+ 					     outer_headers);
+-	u32 flow_type = fs->flow_type & ~(FLOW_EXT | FLOW_MAC_EXT);
++	u32 flow_type = flow_type_mask(fs->flow_type);
+ 
+ 	switch (flow_type) {
+ 	case TCP_V4_FLOW:
+@@ -397,10 +405,53 @@ static bool outer_header_zero(u32 *match_criteria)
+ 						  size - 1);
+ }
+ 
++static int flow_get_tirn(struct mlx5e_priv *priv,
++			 struct mlx5e_ethtool_rule *eth_rule,
++			 struct ethtool_rx_flow_spec *fs,
++			 u32 rss_context, u32 *tirn)
++{
++	if (fs->flow_type & FLOW_RSS) {
++		struct mlx5e_lro_param lro_param;
++		struct mlx5e_rss *rss;
++		u32 flow_type;
++		int err;
++		int tt;
++
++		rss = mlx5e_rx_res_rss_get(priv->rx_res, rss_context);
++		if (!rss)
++			return -ENOENT;
++
++		flow_type = flow_type_mask(fs->flow_type);
++		tt = flow_type_to_traffic_type(flow_type);
++		if (tt < 0)
++			return -EINVAL;
++
++		lro_param = mlx5e_get_lro_param(&priv->channels.params);
++		err = mlx5e_rss_obtain_tirn(rss, tt, &lro_param, false, tirn);
++		if (err)
++			return err;
++		eth_rule->rss = rss;
++		mlx5e_rss_refcnt_inc(eth_rule->rss);
++	} else {
++		struct mlx5e_params *params = &priv->channels.params;
++		enum mlx5e_rq_group group;
++		u16 ix;
++
++		mlx5e_qid_get_ch_and_group(params, fs->ring_cookie, &ix, &group);
++
++		*tirn = group == MLX5E_RQ_GROUP_XSK ?
++			mlx5e_rx_res_get_tirn_xsk(priv->rx_res, ix) :
++			mlx5e_rx_res_get_tirn_direct(priv->rx_res, ix);
++	}
++
++	return 0;
++}
++
+ static struct mlx5_flow_handle *
+ add_ethtool_flow_rule(struct mlx5e_priv *priv,
++		      struct mlx5e_ethtool_rule *eth_rule,
+ 		      struct mlx5_flow_table *ft,
+-		      struct ethtool_rx_flow_spec *fs)
++		      struct ethtool_rx_flow_spec *fs, u32 rss_context)
+ {
+ 	struct mlx5_flow_act flow_act = { .flags = FLOW_ACT_NO_APPEND };
+ 	struct mlx5_flow_destination *dst = NULL;
+@@ -419,23 +470,17 @@ add_ethtool_flow_rule(struct mlx5e_priv *priv,
+ 	if (fs->ring_cookie == RX_CLS_FLOW_DISC) {
+ 		flow_act.action = MLX5_FLOW_CONTEXT_ACTION_DROP;
+ 	} else {
+-		struct mlx5e_params *params = &priv->channels.params;
+-		enum mlx5e_rq_group group;
+-		u16 ix;
+-
+-		mlx5e_qid_get_ch_and_group(params, fs->ring_cookie, &ix, &group);
+-
+ 		dst = kzalloc(sizeof(*dst), GFP_KERNEL);
+ 		if (!dst) {
+ 			err = -ENOMEM;
+ 			goto free;
+ 		}
+ 
++		err = flow_get_tirn(priv, eth_rule, fs, rss_context, &dst->tir_num);
++		if (err)
++			goto free;
++
+ 		dst->type = MLX5_FLOW_DESTINATION_TYPE_TIR;
+-		if (group == MLX5E_RQ_GROUP_XSK)
+-			dst->tir_num = mlx5e_rx_res_get_tirn_xsk(priv->rx_res, ix);
+-		else
+-			dst->tir_num = mlx5e_rx_res_get_tirn_direct(priv->rx_res, ix);
+ 		flow_act.action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
  	}
  
-+	/* Don't allow changing the number of channels if non-default RSS contexts exist,
-+	 * the kernel doesn't protect against set_channels operations that break them.
-+	 */
-+	rss_cnt = mlx5e_rx_res_rss_cnt(priv->rx_res) - 1;
-+	if (rss_cnt) {
-+		err = -EINVAL;
-+		netdev_err(priv->netdev, "%s: Non-default RSS contexts exist (%d), cannot change the number of channels\n",
-+			   __func__, rss_cnt);
-+		goto out;
-+	}
-+
- 	new_params = *cur_params;
- 	new_params.num_channels = count;
- 
-@@ -1194,18 +1206,53 @@ static u32 mlx5e_get_rxfh_indir_size(struct net_device *netdev)
- 	return mlx5e_ethtool_get_rxfh_indir_size(priv);
- }
- 
--int mlx5e_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
--		   u8 *hfunc)
-+static int mlx5e_get_rxfh_context(struct net_device *dev, u32 *indir,
-+				  u8 *key, u8 *hfunc, u32 rss_context)
+@@ -459,6 +504,8 @@ static void del_ethtool_rule(struct mlx5e_priv *priv,
  {
--	struct mlx5e_priv *priv = netdev_priv(netdev);
-+	struct mlx5e_priv *priv = netdev_priv(dev);
- 	int err;
+ 	if (eth_rule->rule)
+ 		mlx5_del_flow_rules(eth_rule->rule);
++	if (eth_rule->rss)
++		mlx5e_rss_refcnt_dec(eth_rule->rss);
+ 	list_del(&eth_rule->list);
+ 	priv->fs.ethtool.tot_num_rules--;
+ 	put_flow_table(eth_rule->eth_ft);
+@@ -619,7 +666,7 @@ static int validate_flow(struct mlx5e_priv *priv,
+ 					fs->ring_cookie))
+ 			return -EINVAL;
  
- 	mutex_lock(&priv->state_lock);
--	err = mlx5e_rx_res_rss_get_rxfh(priv->rx_res, indir, key, hfunc);
-+	err = mlx5e_rx_res_rss_get_rxfh(priv->rx_res, rss_context, indir, key, hfunc);
- 	mutex_unlock(&priv->state_lock);
- 	return err;
- }
+-	switch (fs->flow_type & ~(FLOW_EXT | FLOW_MAC_EXT)) {
++	switch (flow_type_mask(fs->flow_type)) {
+ 	case ETHER_FLOW:
+ 		num_tuples += validate_ethter(fs);
+ 		break;
+@@ -668,7 +715,7 @@ static int validate_flow(struct mlx5e_priv *priv,
  
-+static int mlx5e_set_rxfh_context(struct net_device *dev, const u32 *indir,
-+				  const u8 *key, const u8 hfunc,
-+				  u32 *rss_context, bool delete)
-+{
-+	struct mlx5e_priv *priv = netdev_priv(dev);
-+	int err;
-+
-+	mutex_lock(&priv->state_lock);
-+	if (delete) {
-+		err = mlx5e_rx_res_rss_destroy(priv->rx_res, *rss_context);
-+		goto unlock;
-+	}
-+
-+	if (*rss_context == ETH_RXFH_CONTEXT_ALLOC) {
-+		unsigned int count = priv->channels.params.num_channels;
-+
-+		err = mlx5e_rx_res_rss_init(priv->rx_res, rss_context, count);
-+		if (err)
-+			goto unlock;
-+	}
-+
-+	err = mlx5e_rx_res_rss_set_rxfh(priv->rx_res, *rss_context, indir, key,
-+					hfunc == ETH_RSS_HASH_NO_CHANGE ? NULL : &hfunc);
-+
-+unlock:
-+	mutex_unlock(&priv->state_lock);
-+	return err;
-+}
-+
-+int mlx5e_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
-+		   u8 *hfunc)
-+{
-+	return mlx5e_get_rxfh_context(netdev, indir, key, hfunc, 0);
-+}
-+
- int mlx5e_set_rxfh(struct net_device *dev, const u32 *indir,
- 		   const u8 *key, const u8 hfunc)
+ static int
+ mlx5e_ethtool_flow_replace(struct mlx5e_priv *priv,
+-			   struct ethtool_rx_flow_spec *fs)
++			   struct ethtool_rx_flow_spec *fs, u32 rss_context)
  {
-@@ -1213,7 +1260,7 @@ int mlx5e_set_rxfh(struct net_device *dev, const u32 *indir,
- 	int err;
+ 	struct mlx5e_ethtool_table *eth_ft;
+ 	struct mlx5e_ethtool_rule *eth_rule;
+@@ -699,7 +746,7 @@ mlx5e_ethtool_flow_replace(struct mlx5e_priv *priv,
+ 		err = -EINVAL;
+ 		goto del_ethtool_rule;
+ 	}
+-	rule = add_ethtool_flow_rule(priv, eth_ft->ft, fs);
++	rule = add_ethtool_flow_rule(priv, eth_rule, eth_ft->ft, fs, rss_context);
+ 	if (IS_ERR(rule)) {
+ 		err = PTR_ERR(rule);
+ 		goto del_ethtool_rule;
+@@ -745,10 +792,20 @@ mlx5e_ethtool_get_flow(struct mlx5e_priv *priv,
+ 		return -EINVAL;
  
- 	mutex_lock(&priv->state_lock);
--	err = mlx5e_rx_res_rss_set_rxfh(priv->rx_res, indir, key,
-+	err = mlx5e_rx_res_rss_set_rxfh(priv->rx_res, 0, indir, key,
- 					hfunc == ETH_RSS_HASH_NO_CHANGE ? NULL : &hfunc);
- 	mutex_unlock(&priv->state_lock);
- 	return err;
-@@ -2299,6 +2346,8 @@ const struct ethtool_ops mlx5e_ethtool_ops = {
- 	.get_rxfh_indir_size = mlx5e_get_rxfh_indir_size,
- 	.get_rxfh          = mlx5e_get_rxfh,
- 	.set_rxfh          = mlx5e_set_rxfh,
-+	.get_rxfh_context  = mlx5e_get_rxfh_context,
-+	.set_rxfh_context  = mlx5e_set_rxfh_context,
- 	.get_rxnfc         = mlx5e_get_rxnfc,
- 	.set_rxnfc         = mlx5e_set_rxnfc,
- 	.get_tunable       = mlx5e_get_tunable,
+ 	list_for_each_entry(eth_rule, &priv->fs.ethtool.rules, list) {
+-		if (eth_rule->flow_spec.location == location) {
+-			info->fs = eth_rule->flow_spec;
++		int index;
++
++		if (eth_rule->flow_spec.location != location)
++			continue;
++		if (!info)
+ 			return 0;
+-		}
++		info->fs = eth_rule->flow_spec;
++		if (!eth_rule->rss)
++			return 0;
++		index = mlx5e_rx_res_rss_index(priv->rx_res, eth_rule->rss);
++		if (index < 0)
++			return index;
++		info->rss_context = index;
++		return 0;
+ 	}
+ 
+ 	return -ENOENT;
+@@ -764,7 +821,7 @@ mlx5e_ethtool_get_all_flows(struct mlx5e_priv *priv,
+ 
+ 	info->data = MAX_NUM_OF_ETHTOOL_RULES;
+ 	while ((!err || err == -ENOENT) && idx < info->rule_cnt) {
+-		err = mlx5e_ethtool_get_flow(priv, info, location);
++		err = mlx5e_ethtool_get_flow(priv, NULL, location);
+ 		if (!err)
+ 			rule_locs[idx++] = location;
+ 		location++;
+@@ -887,7 +944,7 @@ int mlx5e_ethtool_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd)
+ 
+ 	switch (cmd->cmd) {
+ 	case ETHTOOL_SRXCLSRLINS:
+-		err = mlx5e_ethtool_flow_replace(priv, &cmd->fs);
++		err = mlx5e_ethtool_flow_replace(priv, &cmd->fs, cmd->rss_context);
+ 		break;
+ 	case ETHTOOL_SRXCLSRLDEL:
+ 		err = mlx5e_ethtool_flow_remove(priv, cmd->fs.location);
 -- 
 2.31.1
 
