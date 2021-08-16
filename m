@@ -2,164 +2,552 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E26723EDD54
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 20:49:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 119C93EDD53
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 20:49:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230473AbhHPSuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 14:50:08 -0400
-Received: from mga06.intel.com ([134.134.136.31]:52328 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230445AbhHPStj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 14:49:39 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10078"; a="276945794"
-X-IronPort-AV: E=Sophos;i="5.84,326,1620716400"; 
-   d="scan'208";a="276945794"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2021 11:49:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,326,1620716400"; 
-   d="scan'208";a="509871736"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga004.fm.intel.com with ESMTP; 16 Aug 2021 11:49:03 -0700
-Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Mon, 16 Aug 2021 11:49:02 -0700
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Mon, 16 Aug 2021 11:49:02 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10 via Frontend Transport; Mon, 16 Aug 2021 11:49:02 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.100)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.10; Mon, 16 Aug 2021 11:49:01 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ISu8QDto4gUrQti2dukDKgEGglCwDEz5nncrapWx3MuVCyAX4Vg9x6dThE2ZDAkRQf76l+k6dlvWdYqlHnqmXqj2ZPTyjOFfGS2S+xyVw+Pi8TmJBlyOFfP6nfSJ8DnCxTeUNTf9J6eWCmisrfhF7Ce0zM2JABtIe8JSQxVcy84vFiS3B3CvYs9d/+vJYBsr9Me+xbM0Ts2d9yNUGN5nn9TmXyFLhwLtFqfMeqhPHYHVteQxiM2CeSG7zh7Ylk7/ijWKz3GYkvWnZOQYQ2w8YutRTONkFCa+Zm1RY6MM5PaCongjL0oSbmzefYFBF8khZgnEV9/wa9s3hkWvSY00uA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oP8MTGrJtJ3RaJF1l4MZbOmvnoAovmBWGLftYCqwAGo=;
- b=BfV9m7ZTzWCiTSmLFlsl2Yqls8zwSH0s4SQPpQ1UFtb8CtnML5Vq1sjil3UZ1qVMDRc7CkdnJx/ZnuhOWb/Mym1jK3vd7X1xkPoxG/dwmWrWeBl8EfCzg/p3DmlXmfX85GIpAtLyHb0gW1uh1uccUarp8GDyXfzIYpL8XREkw0vMPYNb3o/arqKEnOEyumV/UTUuVxaQQZfo+02Pgrg7nAU7JbSPxiWgFmcR6RlTJOnGl9mc2oQbX+LQnAbwDWmOcRGeyxozulVaBdvT9eYrMEe+ifw1JOZg4uzXeys2+SPlHes2hbXtUXIiXG1fMKtNmfBlAiea8FIoEAlws80JBg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oP8MTGrJtJ3RaJF1l4MZbOmvnoAovmBWGLftYCqwAGo=;
- b=eG3JJznlRPRMlws9f9/EIGOwPrhVkrbqkNG3kpT8wRiYq4gmnekA1tt/s47MNKmMtwuGbUPjdGMTyaoSYUmGFXgbOkAZpYSKyyyuS2yWABGshMEOC1QcIHQz/JMUviS31lYdhnK2f46H+DgTpyk/ZFbMHdGitH9q8DPhVibIC4E=
-Authentication-Results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=intel.com;
-Received: from CO1PR11MB4914.namprd11.prod.outlook.com (2603:10b6:303:90::24)
- by MWHPR1101MB2318.namprd11.prod.outlook.com (2603:10b6:301:4e::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.19; Mon, 16 Aug
- 2021 18:49:00 +0000
-Received: from CO1PR11MB4914.namprd11.prod.outlook.com
- ([fe80::45e:286f:64a1:1710]) by CO1PR11MB4914.namprd11.prod.outlook.com
- ([fe80::45e:286f:64a1:1710%9]) with mapi id 15.20.4415.023; Mon, 16 Aug 2021
- 18:49:00 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Stephen Hemminger <stephen@networkplumber.org>,
-        <netdev@vger.kernel.org>,
-        Aleksander Loktionov <aleksandr.loktionov@intel.com>
-References: <20210812092513.3e5ed199@hermes.local>
- <20210816081456.46d2730c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: Re: [Bug 213943] New: Poor network speed with 10G NIC with kernel
- 5.13 (Intel X710-T2L)
-Message-ID: <9507c745-2ccc-1ab3-77c7-e83b309181f6@intel.com>
-Date:   Mon, 16 Aug 2021 11:48:58 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
-In-Reply-To: <20210816081456.46d2730c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Content-Language: en-US
-X-ClientProxiedBy: CO2PR04CA0191.namprd04.prod.outlook.com
- (2603:10b6:104:5::21) To CO1PR11MB4914.namprd11.prod.outlook.com
- (2603:10b6:303:90::24)
+        id S230435AbhHPSuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 14:50:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40658 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231150AbhHPSto (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 14:49:44 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958C9C061764
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 11:49:12 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id m24-20020a17090a7f98b0290178b1a81700so1685557pjl.4
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 11:49:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=wwBD6GrM+SeWCE4FoIebfEBkOghu62Cbc/9nHJPzA7s=;
+        b=b9+g74aydHcTAsyNCmgRRXufwLFIXnNpJ6pqP0JYJdXYI1PnldvgqO8lHl3dGq+Z+H
+         4UXYyq0GRllnXTORQh2qJjXYJB9QSDOWFaPQW+XxouRroh72Nlrvkhr39u29s2ycCRVS
+         EVyVljSre4MypPWkRQNHLD3Fo9/KX8157bRUt6s4F64HBEal1bWJkmJugDjEofV7BqkW
+         41xmdDnsWSsvJL4ytiqph0B4edXgzF+oJAmyoIpU/2GV//CY07uROvO8W5hcunyzWJ3i
+         Ct4ct0ZQe66x+d4H738SX1qBgfADDXZB5exxiSxqZOVzUR4EMYU/866SBRz0PKp9TCIN
+         Rfww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=wwBD6GrM+SeWCE4FoIebfEBkOghu62Cbc/9nHJPzA7s=;
+        b=agVSzLH1MLDIebdovGLE1GPuFZwxpimWUiK1nMfTyTMT/PzqII/siPwDpJgdzYR5/P
+         AV3jrO2UbAhTzTDWGEDX/zjQtpPTbTTDk2g00/E+B30E5yP32TKYdA6VMwntHouWAQlS
+         G/7C4pap2PuZYEH9mksjPbLgNx22fze8iQv0IVVP1mC677EtniSXmyw4CusgSW0t5v0i
+         80cfcGW2t+5ghQ3BbHjsp/5/qNKeH5Gfg57eT8SFl003z0ORRnh6ym2Z25fxQ40lAGv3
+         c6YVwIOUDNGfZRL8v+1th07GQFr5WEjz9ZJavnA8mANcMjUgYuznaPz7eDvv8lFfUg7q
+         HcQQ==
+X-Gm-Message-State: AOAM532wXE/Sl0fydWPwbipg65Oi4VwF5HT/c7nlWlwMnk+uoENv3L7h
+        ZnaSsxbNm109aRNXjZmUz/K++bSHhQI=
+X-Google-Smtp-Source: ABdhPJyawg3/O8VAaY0Z6YyMiHf7E0yRB0opMMNldIFES9jOBdMr5Esy15tgzM0/vAjB/CN83WNHVw==
+X-Received: by 2002:a17:90a:4ce2:: with SMTP id k89mr41880pjh.233.1629139751516;
+        Mon, 16 Aug 2021 11:49:11 -0700 (PDT)
+Received: from [192.168.0.4] ([49.173.165.50])
+        by smtp.gmail.com with ESMTPSA id u20sm162192pgm.4.2021.08.16.11.49.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 Aug 2021 11:49:10 -0700 (PDT)
+Subject: Re: dst remains in vxlan dst cache
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org
+References: <1628651099.3998537-1-xuanzhuo@linux.alibaba.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Message-ID: <23573b90-d4b9-5e26-2f5d-cf16ab324f78@gmail.com>
+Date:   Tue, 17 Aug 2021 03:49:07 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.214] (50.39.107.76) by CO2PR04CA0191.namprd04.prod.outlook.com (2603:10b6:104:5::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.13 via Frontend Transport; Mon, 16 Aug 2021 18:49:00 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fdda9816-2d7a-40f9-36f8-08d960e682c9
-X-MS-TrafficTypeDiagnostic: MWHPR1101MB2318:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MWHPR1101MB231880DDF08C34B241F3D6AE97FD9@MWHPR1101MB2318.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: T36mbYdivz/aR7exN267Q2aDakLgXVUjWc7iRfrhUSc6rn3hAfivPsr7O6ASWK7i5bNJxIbMELDP9giudsPkeV59jSNE5oF3B52PwA26BcNzAwRYAW4c6x6knSGjKoYyKmO98t3Bf4xokMoLxvdDtr2PxD3hpY+sQAT97iuWDDsGbhkphFs0BmzGKY0G2naflB4b+t2UWEnx0rFxl+JHLFE6etHMHitc7+MSN7jT2kNvqPfbSgaI2xdfzdS0rGE7zZdrzU6KNd+/qNGTl4xFPNxxIYKKzhU52lsPKs2tM+lkH0yzWHSSN6Q06E3zY6gCGmc54hWf8wXzgrAhEBHy07PdPzcvd/18eLaXeYEoip5IX6TrKeK4OdxgazLfk5D/5cuMtAjfQU/e9HH7IJlZuaE7dETE56sZIsy7XxwG3Hq++5Q9nWONC2ru5e5Dr0hCmRiqnR13t2d4Qd4Ulgak7ovN/o4k45lJ3z7sRWdilorE6ajpsWc6mmI37oRtTxnd6Q/sBxEJzJmgEVN1eCyNraZxGtRjfarHSzc6reVKy7FV8nJn9M/nTRfQN1buBIx2+GwPinoyXTPsYUgptlKFGLSOKsuJspG0Tu3l9m7qO3iV0LRJ6PdiYsOVG2A4ePe05GAMvuSlhNkvOyQ+KfY90xa6AYjk+wYCf0AzYuxEy29wQwKiNf3QlWfVQ5VhK8R3Y/cSsRIxxUdqLRvgkN4vk/1huCpzUzHZ5z0w1THsSOy9rJRDGphCx9KMNHTMcJWR
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4914.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(136003)(39860400002)(376002)(366004)(31696002)(86362001)(8676002)(8936002)(44832011)(6486002)(316002)(2906002)(16576012)(54906003)(38100700002)(107886003)(4326008)(26005)(4744005)(66946007)(6916009)(2616005)(66476007)(66556008)(5660300002)(186003)(53546011)(31686004)(956004)(36756003)(478600001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bll0aVRiTld1REdxeVdZdkNnV0FTSDBHaGpacGFlZkp0RmJKWHc1MUV0Y0Qz?=
- =?utf-8?B?MFNCVWpEdGFpSHBTNnpsZFNNdHpQLzd4Vm5EVHdBNlNBOXRaT2ZTL1VuRUQx?=
- =?utf-8?B?TDg2ZjBCN0NBcEpLbGkxZk0ybWZWbml5a3BOaDY3Y1MrYWhrekxaeXlYcTBv?=
- =?utf-8?B?N2JQVnNETXhrQ3dielA1RDdIZ3RuNFVuMlFycW1pWmFwemlJZUdiVGVHSG9C?=
- =?utf-8?B?Tll4QlBrd3IvbEJwZ3NFWnF4ZFExZ3ppbFFuWHNLbWxpK0RBcUNtZzdMaUxn?=
- =?utf-8?B?UERPYmF1dGZlUlNvcERSTnNWOXdrZjdRWlpnUjAwMUJXc1dmUEJGWUFBTXZr?=
- =?utf-8?B?Um9NZlhDWmtNaWpLZzJSQ2xra25hZ0lVd0MyY1NRTEZ3ekFjbGlOdVhrcEFr?=
- =?utf-8?B?MXlrL2REYjJCcS9nOXVTUXNLVk41TkJYUTRMeWx1c3p5NGhoVTUwWjdvWTRi?=
- =?utf-8?B?NzBtUzN5eXVyVzJYcDNyMkhkTzdsYXNkYVNQS2lvWEFPMkF5WFFlbmJLMDRj?=
- =?utf-8?B?ejlCUThuZUJTOXhGazh3ait5eDB4bmVJYmZrdmpOa1FwRFlSVlBTOG9rZ3Zz?=
- =?utf-8?B?VVBtRkRaWFJtZTNvZGFvYzRzZUkzVFl3R0ZQeU00VlN6MlFFUlQ2bGEzZEti?=
- =?utf-8?B?TWpObGtnblArUVhWLzJwZmlKMTJudWo0WkRXbFE5MzFGVGZYR2NWbzlDRk55?=
- =?utf-8?B?L3FlZ3RodUJZTzA1OHJQbDZRZGNUUlhtNXlOdUxkdmZFQ3ExanRHSUxXaXl1?=
- =?utf-8?B?WmJwcEVwMzN0RjVrVkUwTG9May9NV2pzQkcxNUxsdmtXdndHcFZTMWxmakZT?=
- =?utf-8?B?OVZrL2hHS3NXb2hQbzBQQ0Z0SkgreGdmQk5xRmZ3QXFwYmVxaUFEb3RWU3NT?=
- =?utf-8?B?d3lNUS9OUkJST2REMU12YmdieTZSYk1kRlN6a1JlbzFSWHZ6U2tja1JpZ0FV?=
- =?utf-8?B?bzl0U0lqN0VONUJFTnlLVUhsZStIUEd6MlpRS01KaHIwOElvdG5QWWNaeGh2?=
- =?utf-8?B?VEJqR20xM243MFFHR0hUOFE5VGxyTUQ4MUo4ajgwT2JENG1XS0FjcXdmd3lB?=
- =?utf-8?B?ZlFmZ2o2NEw0YVNuMWZkQk9GNVdvWmFPWE5kVDdTUXQ5L3JrY3BrTmRPODFk?=
- =?utf-8?B?RlZ5OFFzdEpzN1NFUmthaVlEVS9xQUJzRWZ3TWVMSjh5encwTkVJcUw0dU9m?=
- =?utf-8?B?WkdWWlAyQWY4N0p2blFsWVdwWlgzS2hiTjFmeFBHQ3lsNXBjc0RNc3VUeVI1?=
- =?utf-8?B?WDVibGlzQkluLzZwQk1hQm14aGdIWUdtNC9BYUtseWFtL3pvblFmcGVYRHFh?=
- =?utf-8?B?MENONGJudlh1cE1qR1ZTZTQ0cGV4T0RzSjExZENnVW9tMGUyK21qS2o4UXdn?=
- =?utf-8?B?RlNheUxvNUhpL0VKKzlGUklCaG1MWTQ3L1pETU5VMzhnTkl0cnhRL054VzBX?=
- =?utf-8?B?WDJrUHJPM0pFYlNjallsYVlPeWM1Vkw5SDlhSkVwcFliV3JsQjZBT3lTY1pY?=
- =?utf-8?B?WXllSldpSmd5eTlIa1J2QkJBYUs2ZnZMcjV1TS92Y09OQUZDdXpJUURON09I?=
- =?utf-8?B?L3pDb1QwS3VTWVh0bXUxdWhQOFUySnZnd2w0bUVyYUZUdmlOTytjTUw3TWQ1?=
- =?utf-8?B?aDRnczBQUUtHaUZ6azFYZFFYUE9kWDJhK2xQUHJWbzRLUWJITzJERXRDdVhx?=
- =?utf-8?B?d1JtSm9CVkdRS2lhQkVFNXlMaHFEcFhrRUdsOXpVRTA3WW1JZTlwTmlVU1dq?=
- =?utf-8?Q?XJZudbA/aYOkn5jDnn5jjpgxZ6yj5pUcVy+5WiP?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: fdda9816-2d7a-40f9-36f8-08d960e682c9
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4914.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2021 18:49:00.4487
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zHg7kFFFX7DsEp5+V6X+wYhjlYZQipnhOUzG5S6fwX42jTIrjoozd7fxAhIEwq/lqJRxWijqiHfWPb5RLMsg4hJU6tDLgWjOmnQ7oIhTO2s=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1101MB2318
-X-OriginatorOrg: intel.com
+In-Reply-To: <1628651099.3998537-1-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/16/2021 8:14 AM, Jakub Kicinski wrote:
-> The problem still appear in 5.13.7 (last one at the moment).
-> Jesse, are you aware of anything that could cause this?
+Hi,
 
-Hey! Thanks for copying me on this report. I've added myself to the CC
-and I'll file an internal bug to get attention to the issue.
+Thank you for your analysis.
+and sorry for the late reply.
 
-FWIW, I haven't heard anything about a known issue like this, nor has
-the lead (Aleksander Loktionov) of i40e. So at this point we just need
-to investigate.
+Generally, I agree with your analysis and the reason for the failure of 
+pmtu.sh.
 
-I've also asked the reporter for some extra info in the Bugzilla.
+On 8/11/21 12:04 PM, Xuan Zhuo wrote:
+ > 1. Problem and test environment description
+ >
+ > $ tools/testing/selftest/net/pmtu.sh cleanup_ipv6_exception
+ > TEST: ipv6: cleanup of cached exceptions - nexthop objects 
+[FAIL]
+ >    can't delete veth device in a timely manner, PMTU dst likely leaked
+ >
+ > This test will create several namespaces. After creation, the ip 
+route and ip
+ > addr of ns-A are as follows:
+ >
+ >      $ ip route
+ >      default nhid 41 via 10.0.1.2 dev veth_A-R1
+ >      10.0.1.0/24 dev veth_A-R1 proto kernel scope link src 10.0.1.1
+ >      10.0.2.0/24 dev veth_A-R2 proto kernel scope link src 10.0.2.1
+ >      10.0.4.1 nhid 42 via 10.0.2.2 dev veth_A-R2
+ >      192.168.2.0/24 dev vxlan_a proto kernel scope link src 192.168.2.1
+ >
+ >      $ ip addr
+ >      1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN group default 
+qlen 1000
+ >          link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+ >      2: veth_A-R1@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 5000 
+qdisc noqueue state UP group default qlen 1000
+ >          link/ether e2:41:9d:0e:3c:22 brd ff:ff:ff:ff:ff:ff 
+link-netns ns-R1
+ >          inet 10.0.1.1/24 scope global veth_A-R1
+ >             valid_lft forever preferred_lft forever
+ >          inet6 fc00:1::1/64 scope global
+ >             valid_lft forever preferred_lft forever
+ >          inet6 fe80::e041:9dff:fe0e:3c22/64 scope link
+ >             valid_lft forever preferred_lft forever
+ >      3: veth_A-R2@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 
+qdisc noqueue state UP group default qlen 1000
+ >          link/ether 0e:96:7b:23:b4:44 brd ff:ff:ff:ff:ff:ff 
+link-netns ns-R2
+ >          inet 10.0.2.1/24 scope global veth_A-R2
+ >             valid_lft forever preferred_lft forever
+ >          inet6 fc00:2::1/64 scope global
+ >             valid_lft forever preferred_lft forever
+ >          inet6 fe80::c96:7bff:fe23:b444/64 scope link
+ >             valid_lft forever preferred_lft forever
+ >      4: vxlan_a: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 5000 qdisc 
+noqueue state UNKNOWN group default qlen 1000
+ >          link/ether 92:06:b4:f3:21:3e brd ff:ff:ff:ff:ff:ff
+ >          inet 192.168.2.1/24 scope global vxlan_a
+ >             valid_lft forever preferred_lft forever
+ >          inet6 fd00:2::a/64 scope global
+ >             valid_lft forever preferred_lft forever
+ >          inet6 fe80::9006:b4ff:fef3:213e/64 scope link
+ >             valid_lft forever preferred_lft forever
+ >
+ >      $ ip -d link show vxlan_a
+ >      4: vxlan_a: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 5000 qdisc 
+noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+ >          link/ether 1a:4c:20:0a:38:38 brd ff:ff:ff:ff:ff:ff 
+promiscuity 0 minmtu 68 maxmtu 65535
+ >          vxlan id 1 remote fc00:3::1 local fc00:1::1 srcport 0 0 
+dstport 4789 ttl 64 ageing 300 udpcsum noudp6zerocsumtx noudp6zerocsumrx 
+addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 
+gso_max_segs 65535
+ >
+ >
+ > The points we need to pay attention to are:
+ >      1. vxlan device is used
+ >      2. vxlan mtu is 5000
+ >      3. vxlan local device is veth_A-R1
+ >      4. nexthop is used. (If nexthop is not used, this test is no 
+problem.)
+ >
+ > Finally, the test will delete veth_A-R1 in ns-A.
+ >
+ >      ${ns_a} ip link del dev veth_A-R1 &
+ >
+ > Then check whether this operation is completed within 1s.
+ >
+ > After the following patch, it is very easy to fail.
+ >
+ >      commit 020ef930b826d21c5446fdc9db80fd72a791bc21
+ >      Author: Taehee Yoo <ap420073@gmail.com>
+ >      Date:   Sun May 16 14:44:42 2021 +0000
+ >
+ >          mld: fix panic in mld_newpack()
+ >
+ >          mld_newpack() doesn't allow to allocate high order page,
+ >          only order-0 allocation is allowed.
+ >          If headroom size is too large, a kernel panic could occur in 
+skb_put().
+ >
+ >      ......
+ >
+ >
+ >      diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
+ >      index 0d59efb6b49e..d36ef9d25e73 100644
+ >      --- a/net/ipv6/mcast.c
+ >      +++ b/net/ipv6/mcast.c
+ >      @@ -1745,10 +1745,7 @@ static struct sk_buff *mld_newpack(struct 
+inet6_dev *idev, unsigned int mtu)
+ >                           IPV6_TLV_PADN, 0 };
+ >
+ >              /* we assume size > sizeof(ra) here */
+ >      -       /* limit our allocations to order-0 page */
+ >      -       size = min_t(int, size, SKB_MAX_ORDER(0, 0));
+ >              skb = sock_alloc_send_skb(sk, size, 1, &err);
+ >      -
+ >              if (!skb)
+ >                      return NULL;
+ >
+ >
+ > 2. Description of the immediate cause
+ >
+ > I analyzed the reason. It is because there is a dst in the dst cache 
+of vxlan,
+ > which has a reference to veth_A-R1, and the network card cannot be 
+deleted
+ > quickly.
+ >
+ > After requesting to delete veth_A-R1, vxlan will destroy all dst 
+caches, but
+ > after that, the DAD mechanism of ipv6 sends a packet, uses the dst 
+cache, and
+ > adds a dst to the reinitialized dst cache, this dst references veth_A-R1,
+ > resulting in veth_A-R1 cannot be deleted.
+ >
+ > 	# cat check.bpf
+ >
+ > 	    kprobe: dst_cache_destroy{printf("dst cache dstroy: cache: 
+%p\n", arg0)}
+ >
+ > 	    kprobe: dst_cache_get_ip6{printf("dst cache get     cache: %p 
+\n", arg0)}
+ > 	    kprobe: dst_cache_set_ip6{printf("dst cache set     cache: %p 
+dst: %p\n", arg0, arg1)}
+ >
+ > 	    kprobe: dst_cache_init{   printf("dst cache init    cache: 
+%p\n", arg0)}
+ >
+ > 	# bpftrace check.bpf
+ > 	    Attaching 4 probes...
+ > 	    dst cache dstroy: cache: 0xffffa09407c1fa10
+ > 	    dst cache dstroy: cache: 0xffffa094067cc230
+ > 	    dst cache dstroy: cache: 0xffffa094057085f0
+ > 	    dst cache dstroy: cache: 0xffffa09405708e30
+ > 	    dst cache init    cache: 0xffffa09405708110
+ > 	    dst cache init    cache: 0xffffa094025e3350
+ > 	    dst cache get     cache: 0xffffa09405708110
+ > 	    dst cache set     cache: 0xffffa09405708110 dst: 0xffffa09400f46200
+ > 	    dst cache init    cache: 0xffffa094025e34d0
+ > 	    dst cache init    cache: 0xffffa094200c1ad0
+ > 	    dst cache get     cache: 0xffffa094025e3350
+ > 	    dst cache set     cache: 0xffffa094025e3350 dst: 0xffffa09406e07500
+ > 	    dst cache get     cache: 0xffffa09405708110
+ > 	    dst cache get     cache: 0xffffa094025e3350
+ > 	    dst cache set     cache: 0xffffa094025e3350 dst: 0xffffa09461adee00
+ > 	    dst cache get     cache: 0xffffa09405708110
+ > 	    dst cache get     cache: 0xffffa094025e3350
+ >
+ >  From the above bpftrace trace, we can find that after re-init 
+0xffffa09405708110
+ > in the dst cache of vxlan, a dst will be set soon. I confirmed by 
+adding printk
+ > that the dev of the newly cached dst is veth_A-R1.
+ >
+ > Below is the stack of sending DAD packets and adding cache dst to 
+vxlan dst
+ > cache.
+ >
+ >      [   12.065978]  dump_stack+0x57/0x6a
+ >      [   12.065990]  dst_cache_set_ip6+0x29/0xe0
+ >      [   12.065997]  vxlan6_get_route+0x21f/0x330 [vxlan]
+ >      [   12.066001]  vxlan_xmit_one+0x337/0xe00 [vxlan]
+ >      [   12.066005]  ? vxlan_xmit+0x9c2/0xfd0 [vxlan]
+ >      [   12.066007]  ? vxlan_find_mac+0xa/0x30 [vxlan]
+ >      [   12.066009]  vxlan_xmit+0x9c2/0xfd0 [vxlan]
+ >      [   12.066014]  ? __kmalloc_node_track_caller+0x57/0x4a0
+ >      [   12.066017]  ? __alloc_skb+0x72/0x190
+ >      [   12.066021]  ? dev_hard_start_xmit+0xcc/0x1f0
+ >      [   12.066023]  dev_hard_start_xmit+0xcc/0x1f0
+ >      [   12.066028]  __dev_queue_xmit+0x786/0x9d0
+ >      [   12.066031]  ? ndisc_next_option+0x60/0x60
+ >      [   12.066033]  ? ___neigh_create+0x3c5/0x840
+ >      [   12.066038]  ? eth_header+0x25/0xc0
+ >      [   12.066041]  ? ip6_finish_output2+0x1ba/0x570
+ >      [   12.066042]  ip6_finish_output2+0x1ba/0x570
+ >      [   12.066047]  ? __slab_alloc+0xe/0x20
+ >      [   12.066048]  ? ip6_mtu+0x79/0xa0
+ >      [   12.066051]  ? ip6_output+0x60/0x110
+ >      [   12.066052]  ip6_output+0x60/0x110
+ >      [   12.066054]  ? nf_hook.constprop.28+0x74/0xd0
+ >      [   12.066055]  ? icmp6_dst_alloc+0xfa/0x1c0
+ >      [   12.066057]  ndisc_send_skb+0x283/0x2f0
+ >      [   12.066062]  addrconf_dad_completed+0x125/0x310
+ >      [   12.066064]  ? addrconf_dad_work+0x2e8/0x530
+ >      [   12.066065]  addrconf_dad_work+0x2e8/0x530
+ >      [   12.066068]  ? __switch_to_asm+0x42/0x70
+ >      [   12.066072]  ? process_one_work+0x18b/0x350
+ >      [   12.066073]  ? addrconf_dad_completed+0x310/0x310
+ >      [   12.066074]  process_one_work+0x18b/0x350
+ >      [   12.066078]  worker_thread+0x4c/0x380
+ >      [   12.066080]  ? rescuer_thread+0x300/0x300
+ >      [   12.066082]  kthread+0xfc/0x130
+ >      [   12.066084]  ? kthread_create_worker_on_cpu+0x50/0x50
+ >      [   12.066086]  ret_from_fork+0x22/0x30
+ >
+ > This logic is not correct in my opinion. In theory, after vxlan 
+destroys the dst
+ > cache, it should not add the dst information of a device that is 
+about to be
+ > deleted in the dst cache. At the same time, I don’t understand the 
+DAD too
+ > much. Why is it triggered?
+ >
+ > In the case before patch 020ef930, soon, DAD will send another 
+packet. This
+ > time, vxlan's dst cache will be used, and the state of dst will be 
+detected, so
+ > dst will be deleted. So before this patch, this test is passable.
+ >
+ >      [   86.666349]  vxlan_xmit_one+0xaa8/0xe00 [vxlan]
+ >      [   86.666352]  ? __alloc_skb+0x72/0x190
+ >      [   86.666354]  ? vxlan_xmit+0x9c2/0xfd0 [vxlan]
+ >      [   86.666356]  ? vxlan_find_mac+0xa/0x30 [vxlan]
+ >      [   86.666359]  vxlan_xmit+0x9c2/0xfd0 [vxlan]
+ >      [   86.666361]  ? vxlan_xmit+0x9c2/0xfd0 [vxlan]
+ >      [   86.666363]  ? vxlan_find_mac+0xa/0x30 [vxlan]
+ >      [   86.666365]  ? __kmalloc_node_track_caller+0x57/0x4a0
+ >      [   86.666367]  ? __alloc_skb+0x72/0x190
+ >      [   86.666369]  ? __kmalloc_node_track_caller+0x57/0x4a0
+ >      [   86.666370]  ? __alloc_skb+0x72/0x190
+ >      [   86.666373]  ? dev_hard_start_xmit+0xcc/0x1f0
+ >      [   86.666375]  dev_hard_start_xmit+0xcc/0x1f0
+ >      [   86.666377]  __dev_queue_xmit+0x786/0x9d0
+ >      [   86.666380]  ? ip6_finish_output2+0x27e/0x570
+ >      [   86.666381]  ip6_finish_output2+0x27e/0x570
+ >      [   86.666383]  ? mld_newpack+0x155/0x1b0
+ >      [   86.666385]  ? kmem_cache_alloc+0x28/0x3e0
+ >      [   86.666386]  ? ip6_mtu+0x79/0xa0
+ >      [   86.666388]  ? ip6_output+0x60/0x110
+ >      [   86.666390]  ip6_output+0x60/0x110
+ >      [   86.666392]  ? nf_hook.constprop.45+0x74/0xd0
+ >      [   86.666393]  ? icmp6_dst_alloc+0xfa/0x1c0
+ >      [   86.666395]  mld_sendpack+0x217/0x230
+ >      [   86.666398]  mld_ifc_timer_expire+0x192/0x300
+ >      [   86.666400]  ? mld_dad_timer_expire+0xa0/0xa0
+ >      [   86.666403]  call_timer_fn+0x29/0x100
+ >      [   86.666405]  run_timer_softirq+0x1b3/0x3a0
+ >      [   86.666407]  ? kvm_clock_get_cycles+0xd/0x10
+ >      [   86.666409]  ? ktime_get+0x3e/0xa0
+ >      [   86.666410]  ? kvm_sched_clock_read+0xd/0x20
+ >      [   86.666413]  ? sched_clock+0x5/0x10
+ >      [   86.666415]  __do_softirq+0x101/0x29e
+ >      [   86.666418]  asm_call_irq_on_stack+0x12/0x20
+ >      [   86.666419]  </IRQ>
+ >      [   86.666421]  do_softirq_own_stack+0x37/0x40
+ >      [   86.666424]  irq_exit_rcu+0xcb/0xd0
+ >      [   86.666426]  sysvec_apic_timer_interrupt+0x34/0x80
+ >      [   86.666428]  asm_sysvec_apic_timer_interrupt+0x12/0x20
+ >
+ > 3. Why after patch 020ef930, dst cannot be deleted by the second DAD 
+package
+ >
+ > The reason is that the second packet sent by DAD will not use the 
+cache. Because
+ > the skb->mark != 0 of the sent packet. In vxlan, if
+ > ip_tunnel_dst_cache_usable finds skb->mark != 0, the dst cache will 
+not be used.
+ > So this time, it cannot be found that the cached dst should be deleted.
+ >
+ > The reason for skb->mark != 0 is
+ >
+ >      static struct sk_buff *mld_newpack(struct inet6_dev *idev, 
+unsigned int mtu)
+ >      {
+ >
+ >          int tlen = dev->needed_tailroom;
+ >          unsigned int size = mtu + hlen + tlen;
+ >
+ >      	sk = net->ipv6.igmp_sk;
+ >      	/* we assume size > sizeof(ra) here
+ >      	 * Also try to not allocate high-order pages for big MTU
+ >      	 */
+ >      >   size = min_t(int, size, SKB_MAX_ORDER(0, 0));
+ >      	skb = sock_alloc_send_skb(sk, size, 1, &err);
+ >      	if (!skb)
+ >      		return NULL;
+ >
+ >      	skb->priority = TC_PRIO_CONTROL;
+ >      	skb_reserve(skb, hlen);
+ >      >	skb_tailroom_reserve(skb, mtu, tlen);
+ >
+ >          ......
+ >
+ >      }
+ >
+ >
+ >      static inline void skb_tailroom_reserve(struct sk_buff *skb, 
+unsigned int mtu,
+ >      					unsigned int needed_tailroom)
+ >      {
+ >      	SKB_LINEAR_ASSERT(skb);
+ >      	if (mtu < skb_tailroom(skb) - needed_tailroom)
+ >      		/* use at most mtu */
+ >      		skb->reserved_tailroom = skb_tailroom(skb) - mtu;
+ >      	else
+ >      		/* use up to all available space */ate reply.
 
+ >      		skb->reserved_tailroom = needed_tailroom;
+ >      }
+ >
+ > First of all, in my environment, dev->needed_tailroom == 0.
+ >
+ > The DAD package sent for the second time is allocated by mld_newpack. 
+Here
+ > skb_tailroom_reserve(skb, mtu, tlen) will be executed. In the 
+original version,
+ > since skb was limited in size, finally
+ >
+ >      skb->reserved_tailroom = needed_tailroom;
+ >
+ > In the new version, since size is not limited, and in general, the actual
+ > allocated skb size will be larger than size, which leads to
+ >
+ >          skb->reserved_tailroom = skb_tailroom(skb) - mtu;
+ >
+ > AND
+ >          skb->reserved_tailroom > 0.
+ >
+ > AND
+ >
+ >          struct sk_buffer {
+ >          ......
+ >
+ > 	        union {
+ > 	        	__u32		mark;
+ > 	        	__u32		reserved_tailroom;
+ > 	        };
+ >          ......
+ >
+ >          }
+ >
+ > So skb->mark is also greater than 0, so after this skb enters vxlan, 
+the dst
+ > cache cannot be used. Therefore, the data sent by the second DAD 
+cannot be used
+ > because the dst cache cannot be used, so the dst of the dst cache 
+cannot be
+ > deleted.
+ >
 
-Thanks!
+Yes, absolutely agree with your analysis.
 
-Jesse
+ > After patch 020ef930b, another patch ffa85b73c3c4 also modified the 
+logic here.
+ >
+ >      size = min_t(int, mtu, PAGE_SIZE / 2) + hlen + tlen;
+ >
+ > But as long as mtu is relatively small and not limited by PAGE_SIZE / 
+2, this
+ > situation will still occur.
 
+I hoped that allocated skb's tailroom is always smaller than mtu.
+But alloc_skb() allocates larger than passed size.
+So that skb_tailroom() can be bigger than mtu.
+So, skb->reserved_tailroom can not be always zero.
 
+I tested,
+1, mtu is 1500 and size is lower than mtu, skb_tailroom(skb) is 1728
+2. mtu is larger than PAGE_SIZE/2, skb_tailroom(skb) is always 3776.
+So, in large mtu cases, there is no problem in the current mld_newpack().
+But this situation will occur in small mtu.
 
+In order to avoid this situation, we should find size, which will make 
+tailroom not exceed mtu.
+But I'm not sure is this possible yet.
+
+But I'm not sure that this is really needed and important.
+How about you?
+
+ >
+ > Finally, the second DAD request did not delete dst, which affected 
+the deletion
+ > of veth_A-R1.
+ >
+ >
+ > 3. No matter what, it will eventually be deleted
+ >
+ > If the second DAD package cannot delete the cached dst, after about 
+2-4s, the rs
+ > timer will delete the dst, thus completing the deletion of veth_A-R1.
+ >
+ >      [  116.793215]  vxlan_xmit_one+0xaa8/0xe00 [vxlan]
+ >      [  116.793220]  ? sock_def_readable+0x37/0x70
+ >      [  116.793223]  ? vxlan_xmit+0x9c2/0xfd0 [vxlan]
+ >      [  116.793225]  ? vxlan_find_mac+0xa/0x30 [vxlan]
+ >      [  116.793227]  vxlan_xmit+0x9c2/0xfd0 [vxlan]
+ >      [  116.793231]  ? find_match+0x4f/0x330
+ >      [  116.793236]  ? __kmalloc_node_track_caller+0x57/0x4a0
+ >      [  116.793241]  ? dev_hard_start_xmit+0xcc/0x1f0
+ >      [  116.793243]  dev_hard_start_xmit+0xcc/0x1f0
+ >      [  116.793245]  __dev_queue_xmit+0x786/0x9d0
+ >      [  116.793248]  ? cpumask_next_and+0x1a/0x20
+ >      [  116.793252]  ? update_sd_lb_stats.constprop.110+0x100/0x7a0
+ >      [  116.793255]  ? ip6_finish_output2+0x27e/0x570
+ >      [  116.793257]  ip6_finish_output2+0x27e/0x570
+ >      [  116.793260]  ? kmem_cache_alloc+0x28/0x3e0
+ >      [  116.793261]  ? ip6_mtu+0x79/0xa0
+ >      [  116.793263]  ? ip6_output+0x60/0x110
+ >      [  116.793265]  ip6_output+0x60/0x110
+ >      [  116.793267]  ? nf_hook.constprop.28+0x74/0xd0
+ >      [  116.793269]  ? icmp6_dst_alloc+0xfa/0x1c0
+ >      [  116.793271]  ndisc_send_skb+0x283/0x2f0
+ >      [  116.793273]  addrconf_rs_timer+0x152/0x220
+ >      [  116.793275]  ? ipv6_get_lladdr+0xc0/0xc0
+ >      [  116.793278]  ? call_timer_fn+0x29/0x100
+ >      [  116.793279]  ? ipv6_get_lladdr+0xc0/0xc0
+ >      [  116.793281]  call_timer_fn+0x29/0x100
+ >      [  116.793283]  run_timer_softirq+0x1b3/0x3a0
+ >      [  116.793287]  ? kvm_clock_get_cycles+0xd/0x10
+ >      [  116.793289]  ? ktime_get+0x3e/0xa0
+ >      [  116.793290]  ? kvm_sched_clock_read+0xd/0x20
+ >      [  116.793294]  ? sched_clock+0x5/0x10
+ >      [  116.793298]  __do_softirq+0x101/0x29e
+ >      [  116.793301]  asm_call_irq_on_stack+0x12/0x20
+ >
+ >
+ > 4. Finally
+ >
+ > Although regardless of the version, the network card will be deleted. 
+But I
+ > think this logic may still have some problems.
+ >
+
+It seems that you're thinking that this situation is actually the 
+following scenario. (right? :) )
+1. interface is being down.
+2. dsts are cleared.
+3. By dad or other work/timer a new dst is created. //problem?
+4. this dst is not cleared by clear logic and it is cleared by timer.
+
+If the above scenario is possible and actually the same as this 
+situation, I think logic should be fixed.
+But I'm sure that this is right because of lack of knowledge of routing 
+infrastructure.
+
+ > Moreover, I think that these two patches are not directly related to 
+the problem
+ > here.
+ >
+ > What we should pay attention to is that after veth_A-R1 is required to be
+ > deleted, the packets sent by the ipv6 layer should not be cached in 
+the dst
+ > cache in vxlan.
+ >
+ > How should we solve this problem:
+ >
+ > 1. Ensure that vxlan cleans dst cache after route update?
+ > 2. dst cache checks the status of dev when adding cache?
+ > 3. ipv6 no longer sends rs or DAD packets when the settings are to be 
+deleted?
+ > 4. Nexthop checks the status of dev?
+ >
+
+I'm sorry, I'm not an expert on routing infrastructure so that I 
+couldn't provide good insight about it.
+I think the routing experts will help you!
+Also, I will more take a look at DAD and other ipv6 timers.
+
+Thanks a lot
+Taehee Yoo
+
+ >
+ > Thanks.
