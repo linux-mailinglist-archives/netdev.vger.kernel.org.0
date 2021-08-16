@@ -2,106 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18BB63EDE0D
-	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 21:47:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEDB73EDE4C
+	for <lists+netdev@lfdr.de>; Mon, 16 Aug 2021 21:57:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231342AbhHPTrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 15:47:32 -0400
-Received: from mout.kundenserver.de ([212.227.126.187]:47833 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230420AbhHPTrb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 15:47:31 -0400
-Received: from mail-wr1-f53.google.com ([209.85.221.53]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1Mgebs-1mjJ9y0GM8-00h7Dj; Mon, 16 Aug 2021 21:46:58 +0200
-Received: by mail-wr1-f53.google.com with SMTP id f5so25113196wrm.13;
-        Mon, 16 Aug 2021 12:46:57 -0700 (PDT)
-X-Gm-Message-State: AOAM532zMQY95Ol20MAk/aEKEfAF3jtd6XQqtpewy1CUlWcDs5VI0q+K
-        d5+R2ieIQwwptxh9ywgPlJJjUx5jaGR3wPpzQpI=
-X-Google-Smtp-Source: ABdhPJz5KjKHIA5/4EOwJb7Ma2A00qBnJujFrxAsE6LdiU6qcLYPR0auEFNX3ZzUUJs3kVABWL/CCX9eg5zq7HVAbSw=
-X-Received: by 2002:adf:f202:: with SMTP id p2mr103174wro.361.1629143217650;
- Mon, 16 Aug 2021 12:46:57 -0700 (PDT)
+        id S231196AbhHPT5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 15:57:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56486 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229802AbhHPT5d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 15:57:33 -0400
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD6D2C061764;
+        Mon, 16 Aug 2021 12:57:01 -0700 (PDT)
+Received: by mail-qk1-x730.google.com with SMTP id p22so19224842qki.10;
+        Mon, 16 Aug 2021 12:57:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+saKVJjJalaJDnX4+jNqeDzwSfBJAZWy7Qzg/fGGg+o=;
+        b=k39jaarYdVvbWUg7u8G81x/luF+uLju4OCIi51zoba19TopgGEBfLn6oJgrLWPbOc7
+         irNIPNGJm+shRREK2nr48tqqxvjlm4Cyd+Z7GyZg8vbb6BzQpxia0VvcKw4Ko3XAk2O7
+         r27wPqL2ZFHiIVfIqh3kH1ffLtysGEgHUzM30nGrYumToBfzZ06OOxxGIrWxJYLBJK49
+         sjnPp9ywWqr/wGBVlSCGEnTubninTgDDUHtUKGRN52eKySy5ex85mao+K/HhlewuIQ0n
+         h2vbLYSyDyIbqSf4g0oDuYGAChThRtZwD5LC2dO3A6ro5DeY8mirm7C29ANc6gwql2lp
+         bXYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+saKVJjJalaJDnX4+jNqeDzwSfBJAZWy7Qzg/fGGg+o=;
+        b=c2tily5Lc062XOgJ7ZY46cws5M4mYLGisRPcAhFQo63eUvgWJo9VuvTp+iBdZr3x+f
+         PoV7Dl13cxNDCYNHGUexcQ3apdWu/dPiFqMb7kTs1uGusv9D9WXnZ92y5Rb+i2wmCHWh
+         jlmEMH3uQEz+7Us4tWIeTMnB10vGBFCz9DqnIRx/VW96gK2f3NWDsPOgySG1I9GJozsb
+         F5uBuxwxFXC4/4/fxb1X+M+F61ePnQoq1+6dFZY8xFydknkWEB9oyCgGiSL67Bqsi3gz
+         6LKvvaemrTKFuvVUOdaoE0h30qyzuVbTTUGzCru+hpvjYDGaXuKLUOWrqW+WRcl9IyOX
+         3B8w==
+X-Gm-Message-State: AOAM530zpEkZ+tf1GY4lDPPNUN02k0V1vFtMOklYT7bad21EavpjpVQe
+        T7UYgk/rBgFkj9RbB0+dq80=
+X-Google-Smtp-Source: ABdhPJwBApHwnD8boyyiaKZ51q2yCAGOM3jM9uP2sa0gbej4nZdusRl6UpqCPM9HLD91+0bp0j7THQ==
+X-Received: by 2002:a37:2ec1:: with SMTP id u184mr11129qkh.500.1629143820874;
+        Mon, 16 Aug 2021 12:57:00 -0700 (PDT)
+Received: from [192.168.1.49] (c-67-187-90-124.hsd1.tn.comcast.net. [67.187.90.124])
+        by smtp.gmail.com with ESMTPSA id h17sm112739qkl.46.2021.08.16.12.57.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 Aug 2021 12:57:00 -0700 (PDT)
+Subject: Re: of_node_put() usage is buggy all over drivers/of/base.c?!
+To:     Rob Herring <robh+dt@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     Sascha Hauer <s.hauer@pengutronix.de>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+References: <20210814010139.kzryimmp4rizlznt@skbuf>
+ <9accd63a-961c-4dab-e167-9e2654917a94@gmail.com>
+ <20210816144622.tgslast6sbblclda@skbuf>
+ <4cad28e0-d6b4-800d-787b-936ffaca7be3@gmail.com>
+ <CAL_JsqKYd288Th2cfOp0_HD1C8xtgKjyJfUW4JLpyn0NkGdU5w@mail.gmail.com>
+From:   Frank Rowand <frowand.list@gmail.com>
+Message-ID: <2e98373f-c37c-0d26-5c9a-1f15ade243c1@gmail.com>
+Date:   Mon, 16 Aug 2021 14:56:59 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210816160717.31285-1-arkadiusz.kubalewski@intel.com> <20210816160717.31285-5-arkadiusz.kubalewski@intel.com>
-In-Reply-To: <20210816160717.31285-5-arkadiusz.kubalewski@intel.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 16 Aug 2021 21:46:41 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0N3N3mFvoPj_fkqOY30uudJceox=uwSW+nd0B0kf8-ng@mail.gmail.com>
-Message-ID: <CAK8P3a0N3N3mFvoPj_fkqOY30uudJceox=uwSW+nd0B0kf8-ng@mail.gmail.com>
-Subject: Re: [RFC net-next 4/7] net: add ioctl interface for recover reference
- clock on netdev
-To:     Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Intel Wired LAN <intel-wired-lan@lists.osuosl.org>,
-        Networking <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Shuah Khan <shuah@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        cong.wang@bytedance.com, Colin Ian King <colin.king@canonical.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:yNnIHyXVxaeyxuMJCEkJe9nl/mAlWh6pT6ME1VnoRxlYf2Vy5qv
- UIsW+97Lwg92jh5cdntwIGmC+4+u+Ok/dZp5PIKekDmJThG9xi5pyrgkzbtj+Rq+pJscjTF
- ZfTkZFR5ks8OehgiMvfGKvJclDpIf+AT0jP40YdflB6y/8WYbwYhdlr+s8e4uY3KqPeiB8Y
- BiG7rnkx6n5GLH8ZyiASg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:h12WhL+ACR8=:HprYk9onqHj4BGSFYamkSv
- XZm/1agnx2KVx9NVkBzlTxklhug+eNdwqLizoJmSWM6RxsUrueqluEuTsvyB3PlYGzj3B2IMu
- QipVQjQewAuYr3vf9O3oEumeA/HzNiepDAAyMRoEMzgZGDPkDHE4nwamHoDt8UdDyiNiUjjHU
- dNGj4WOkLCcWoz3XP2geO1J+cF3l4aa/WqX8J7h3yi0HFCW81e6Lpk8wWPn5G/jj1s8snCZXw
- eC+8jSbaXX5y/KhyJXnKnrgNEEc5bS2dUHgy1AiLF2C3AWcyMpjfwV2RPsEfHQZIx9rWxbkVe
- 6CeNN7/D1Vtlg385m5hCofhCIT4LAH0keVX0YyI/1J1oHKtLl6SqI/i9igLP5whirznl+tSNb
- B4ik9NJzIBObN1Z/H9eCJsKKAIqkehuO8t6psRtwnV1b462f7FD9OIP06lJ0uSoA/RwjxikW2
- DNfho9IAawRKD8qBHv4Il1Mj4XVe6QETvvmmLswFHSM/rqT6XiUVdrWWcSisgwdVVEtb+Lsjk
- n/1TP2LIZuz7+nbaY05WUUVKL6R0FT9GhECOA2LKWumv+v0tu7LvJYTnWEutd9S94EwCHpV7c
- 1E61UYHVTdFuaKWzgEV5+yFIMoU5GjyqNtIedb171ycAOdSiCdeNhT6SOlFyRGoWiRgYPWIpO
- eK6of1WFSOGp+M12KqweNFx+O6nOlsIX5XA6p44hK1aMNhc9bfrzviiCo6uJJm7Lrb4xS1V5U
- MYdy/s9+uDwInJ2jEkmnwEb0otqRbSQWB11Qdy0nfGR9vO68quqEJ13ETZBHIiPCtIBS0rScn
- BXeSqKjIsGwrIEsiOKcaZvNNECuPjFhM8RRtHe1v9u0gKC8bh4pn043WnQk4V30azTjK2ec
+In-Reply-To: <CAL_JsqKYd288Th2cfOp0_HD1C8xtgKjyJfUW4JLpyn0NkGdU5w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 16, 2021 at 6:18 PM Arkadiusz Kubalewski
-<arkadiusz.kubalewski@intel.com> wrote:
+On 8/16/21 2:20 PM, Rob Herring wrote:
+> On Mon, Aug 16, 2021 at 10:14 AM Frank Rowand <frowand.list@gmail.com> wrote:
+>>
+>> On 8/16/21 9:46 AM, Vladimir Oltean wrote:
+>>> Hi Frank,
+>>>
+>>> On Mon, Aug 16, 2021 at 09:33:03AM -0500, Frank Rowand wrote:
+>>>> Hi Vladimir,
+>>>>
+>>>> On 8/13/21 8:01 PM, Vladimir Oltean wrote:
+>>>>> Hi,
+>>>>>
+>>>>> I was debugging an RCU stall which happened during the probing of a
+>>>>> driver. Activating lock debugging, I see:
+>>>>
+>>>> I took a quick look at sja1105_mdiobus_register() in v5.14-rc1 and v5.14-rc6.
+>>>>
+>>>> Looking at the following stack trace, I did not see any calls to
+>>>> of_find_compatible_node() in sja1105_mdiobus_register().  I am
+>>>> guessing that maybe there is an inlined function that calls
+>>>> of_find_compatible_node().  This would likely be either
+>>>> sja1105_mdiobus_base_tx_register() or sja1105_mdioux_base_t1_register().
+>>>
+>>> Yes, it is sja1105_mdiobus_base_t1_register which is inlined.
+>>>
+>>>>>
+>>>>> [  101.710694] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:938
+>>>>> [  101.719119] in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 1534, name: sh
+>>>>> [  101.726763] INFO: lockdep is turned off.
+>>>>> [  101.730674] irq event stamp: 0
+>>>>> [  101.733716] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
+>>>>> [  101.739973] hardirqs last disabled at (0): [<ffffd3ebecb10120>] copy_process+0xa78/0x1a98
+>>>>> [  101.748146] softirqs last  enabled at (0): [<ffffd3ebecb10120>] copy_process+0xa78/0x1a98
+>>>>> [  101.756313] softirqs last disabled at (0): [<0000000000000000>] 0x0
+>>>>> [  101.762569] CPU: 4 PID: 1534 Comm: sh Not tainted 5.14.0-rc5+ #272
+>>>>> [  101.774558] Call trace:
+>>>>> [  101.794734]  __might_sleep+0x50/0x88
+>>>>> [  101.798297]  __mutex_lock+0x60/0x938
+>>>>> [  101.801863]  mutex_lock_nested+0x38/0x50
+>>>>> [  101.805775]  kernfs_remove+0x2c/0x50             <---- this takes mutex_lock(&kernfs_mutex);
+>>>>> [  101.809341]  sysfs_remove_dir+0x54/0x70
+>>>>
+>>>> The __kobject_del() occurs only if the refcount on the node
+>>>> becomes zero.  This should never be true when of_find_compatible_node()
+>>>> calls of_node_put() unless a "from" node is passed to of_find_compatible_node().
+>>>
+>>> I figured that was the assumption, that the of_node_put would never
+>>> trigger a sysfs file / kobject deletion from there.
+>>>
+>>>> In both sja1105_mdiobus_base_tx_register() and sja1105_mdioux_base_t1_register()
+>>>> a from node ("mdio") is passed to of_find_compatible_node() without first doing an
+>>>> of_node_get(mdio).  If you add the of_node_get() calls the problem should be fixed.
+>>>
+>>> The answer seems simple enough, but stupid question, but why does
+>>> of_find_compatible_node call of_node_put on "from" in the first place?
+>>
+>> Actually a good question.
+>>
+>> I do not know why of_find_compatible_node() calls of_node_put() instead of making
+>> the caller of of_find_compatible_node() responsible.  That pattern was created
+>> long before I was involved in devicetree and I have not gone back to read the
+>> review comments of when that code was created.
+> 
 
-> +/*
-> + * Structure used for passing data with SIOCSSYNCE and SIOCGSYNCE ioctls
-> + */
-> +struct synce_ref_clk_cfg {
-> +       __u8 pin_id;
-> +       _Bool enable;
-> +};
+> Because it is an iterator function and they all drop the ref from the
+> prior iteration.
 
-I'm not sure if there are any guarantees about the size and alignment of _Bool,
-maybe better use __u8 here as well, if only for clarity.
+That is what I was expecting before reading through the code.  But instead
+I found of_find_compatible_node():
 
-> +#endif /* _NET_SYNCE_H */
-> diff --git a/include/uapi/linux/sockios.h b/include/uapi/linux/sockios.h
-> index 7d1bccbbef78..32c7d4909c31 100644
-> --- a/include/uapi/linux/sockios.h
-> +++ b/include/uapi/linux/sockios.h
-> @@ -153,6 +153,10 @@
->  #define SIOCSHWTSTAMP  0x89b0          /* set and get config           */
->  #define SIOCGHWTSTAMP  0x89b1          /* get config                   */
->
-> +/* synchronous ethernet config per physical function */
-> +#define SIOCSSYNCE     0x89c0          /* set and get config           */
-> +#define SIOCGSYNCE     0x89c1          /* get config                   */
+        raw_spin_lock_irqsave(&devtree_lock, flags);
+        for_each_of_allnodes_from(from, np)
+                if (__of_device_is_compatible(np, compatible, type, NULL) &&
+                    of_node_get(np))
+                        break;
+        of_node_put(from);
+        raw_spin_unlock_irqrestore(&devtree_lock, flags);
 
-I understand that these are traditionally using the old-style 16-bit
-numbers, but is there any reason to keep doing that rather than
-making them modern like this?
 
-#define SIOCSSYNCE     _IOWR(0x89, 0xc0, struct  synce_ref_clk_cfg)
-/* set and get config   */
-#define SIOCGSYNCE     _IOR(0x89, 0xc1, struct  synce_ref_clk_cfg)
-/* get config   */
+for_each_of_allnodes_fromir:
 
-        Arnd
+#define for_each_of_allnodes_from(from, dn) \
+        for (dn = __of_find_all_nodes(from); dn; dn = __of_find_all_nodes(dn))
+
+
+and __of_find_all_nodes() is:
+
+struct device_node *__of_find_all_nodes(struct device_node *prev)
+{
+        struct device_node *np;
+        if (!prev) {
+                np = of_root;
+        } else if (prev->child) {
+                np = prev->child;
+        } else {
+                /* Walk back up looking for a sibling, or the end of the structure */
+                np = prev;
+                while (np->parent && !np->sibling)
+                        np = np->parent;
+                np = np->sibling; /* Might be null at the end of the tree */
+        }
+        return np;
+}
+
+
+So the iterator is not using of_node_get() and of_node_put() for each
+node that is traversed.  The protection against a node disappearing
+during the iteration is provided by holding devtree_lock.
+
+> 
+> I would say any open coded call where from is not NULL is an error.
+
+I assume you mean any open coded call of of_find_compatible_node().  There are
+at least a couple of instances of that.  I did only a partial grep while looking
+at Vladimir's issue.
+
+Doing the full grep now, I see 13 instances of architecture and driver code calling
+of_find_compatible_node().
+
+> It's not reliable because the DT search order is not defined and could
+> change. Someone want to write a coccinelle script to check that?
+> 
+
+> The above code should be using of_get_compatible_child() instead.
+
+Yes, of_get_compatible_child() should be used here.  Thanks for pointing
+that out.
+
+There are 13 instances of architecture and driver code calling
+of_find_compatible_node().  If possible, it would be good to change all of
+them to of_get_compatible_child().  If we could replace all driver
+usage of of_find_compatible_node() with a from parameter of NULL to
+a new wrapper without a from parameter, where the wrapper calls
+of_find_compatible_node() with the from parameter set to NULL, then
+we could prevent this problem from recurring.
+
+(I did not look at all 13 instances yet, to see if this can be done.)
+
+> 
+> Rob
+> 
+
