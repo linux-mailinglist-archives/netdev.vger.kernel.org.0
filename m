@@ -2,95 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20A1F3EEA02
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 11:36:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 357E13EEA19
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 11:40:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235700AbhHQJhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 05:37:19 -0400
-Received: from mga12.intel.com ([192.55.52.136]:53022 "EHLO mga12.intel.com"
+        id S236259AbhHQJkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 05:40:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33802 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235124AbhHQJhS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Aug 2021 05:37:18 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10078"; a="195615318"
-X-IronPort-AV: E=Sophos;i="5.84,328,1620716400"; 
-   d="scan'208";a="195615318"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2021 02:36:45 -0700
-X-IronPort-AV: E=Sophos;i="5.84,328,1620716400"; 
-   d="scan'208";a="676416363"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2021 02:36:43 -0700
-Received: from andy by smile with local (Exim 4.94.2)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1mFvWP-00Ah8m-U8; Tue, 17 Aug 2021 12:36:37 +0300
-Date:   Tue, 17 Aug 2021 12:36:37 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <YRuDJUobH+ULYmZe@smile.fi.intel.com>
-References: <20210817141643.0705a6e9@canb.auug.org.au>
+        id S236133AbhHQJko (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Aug 2021 05:40:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6AEB360F35;
+        Tue, 17 Aug 2021 09:40:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629193211;
+        bh=V9Bku/K/4t7oyt1jzwKixNxdquZRMQx4YUQra0E8/ME=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=DW+nWchzNdunC6g/e4SZfCDN7+hkb70xSwIMrAAy1OE4kk5A9g+vQWkWVoZgWJ0yo
+         7edNw+3MUixJm+Wi/LjH4a0U32nEbmtaugrQvvGAZ7E+cej2vKYcKkTcRzYgHneUyB
+         uVagpa0/J2h9wOyb5xBHrb1oxXeWBAz2ibfWYqQo9xqB7p1yhwcT+Mp5tezu3x5R7e
+         XGsWoIwNp18jws/blTHaVAaNzezRA3/Dsbl0Vg8DMgBDyevWseu2sCVAW320QccZwK
+         D+5el5S3VF4fKTm9GUFqjvIleGpCH0Ym8geLTHvo1P6FsIIFGLS0wpdHG2HELxl0ku
+         HOhkWmWCbl2aA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6043C60A3E;
+        Tue, 17 Aug 2021 09:40:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210817141643.0705a6e9@canb.auug.org.au>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/4] net: bridge: vlan: fixes for vlan mcast contexts
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162919321138.26227.14459978814742770113.git-patchwork-notify@kernel.org>
+Date:   Tue, 17 Aug 2021 09:40:11 +0000
+References: <20210816145707.671901-1-razor@blackwall.org>
+In-Reply-To: <20210816145707.671901-1-razor@blackwall.org>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, roopa@nvidia.com,
+        bridge@lists.linux-foundation.org, nikolay@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 17, 2021 at 02:16:43PM +1000, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Today's linux-next merge of the net-next tree got a conflict in:
-> 
->   drivers/ptp/Kconfig
-> 
-> between commit:
-> 
->   55c8fca1dae1 ("ptp_pch: Restore dependency on PCI")
-> 
-> from the net tree and commit:
-> 
->   e5f31552674e ("ethernet: fix PTP_1588_CLOCK dependencies")
-> 
-> from the net-next tree.
-> 
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
+Hello:
 
-Thanks, the result is correct.
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-> diff --cc drivers/ptp/Kconfig
-> index e085c255da0c,823eae1b4b53..000000000000
-> --- a/drivers/ptp/Kconfig
-> +++ b/drivers/ptp/Kconfig
-> @@@ -90,9 -103,8 +103,9 @@@ config PTP_1588_CLOCK_INE
->   config PTP_1588_CLOCK_PCH
->   	tristate "Intel PCH EG20T as PTP clock"
->   	depends on X86_32 || COMPILE_TEST
->  -	depends on HAS_IOMEM && NET
->  +	depends on HAS_IOMEM && PCI
->  +	depends on NET
-> - 	imply PTP_1588_CLOCK
-> + 	depends on PTP_1588_CLOCK
->   	help
->   	  This driver adds support for using the PCH EG20T as a PTP
->   	  clock. The hardware supports time stamping of PTP packets
+On Mon, 16 Aug 2021 17:57:03 +0300 you wrote:
+> From: Nikolay Aleksandrov <nikolay@nvidia.com>
+> 
+> Hi,
+> These are four fixes for vlan multicast contexts. The first patch enables
+> mcast ctx snooping when adding already existing master vlans to be
+> consistent with the rest of the code. The second patch accounts for the
+> mcast ctx router ports when allocating skb for notification. The third
+> one fixes two suspicious rcu usages due to wrong vlan group helper, and
+> the fourth updates host vlan mcast state along with port mcast state.
+> 
+> [...]
 
+Here is the summary with links:
+  - [net-next,1/4] net: bridge: vlan: enable mcast snooping for existing master vlans
+    https://git.kernel.org/netdev/net-next/c/b92dace38f8f
+  - [net-next,2/4] net: bridge: vlan: account for router port lists when notifying
+    https://git.kernel.org/netdev/net-next/c/05d6f38ec0a5
+  - [net-next,3/4] net: bridge: mcast: use the correct vlan group helper
+    https://git.kernel.org/netdev/net-next/c/3f0d14efe2fa
+  - [net-next,4/4] net: bridge: mcast: toggle also host vlan state in br_multicast_toggle_vlan
+    https://git.kernel.org/netdev/net-next/c/affce9a774ca
 
-
--- 
-With Best Regards,
-Andy Shevchenko
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
