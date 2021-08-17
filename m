@@ -2,59 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9604B3EF562
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 00:05:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADE7A3EF570
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 00:07:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234006AbhHQWFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 18:05:42 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54876 "EHLO vps0.lunn.ch"
+        id S235557AbhHQWIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 18:08:10 -0400
+Received: from mga05.intel.com ([192.55.52.43]:12963 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229700AbhHQWFm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Aug 2021 18:05:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=CtkXoA1rFd57kuhIhdRaLrVe5CCWeDX/zzmbELf0voo=; b=4gLA6nHAz7F5X+aO2Rrv0pjNk+
-        EWtHnQiL/lInfiLSXMtefkKmHItTGCkRJh/K7td5lj6TCG5jj+OP2a/a2+8JkiShTYHq0SBEZOq6f
-        bM9jfqByFUPbmRD+DB/4+EDenIPbDyJgsIFY5N/z3mVRpTny4+fmY4Io1LgxRMpZ+Wp8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mG7Cj-000es2-7b; Wed, 18 Aug 2021 00:05:05 +0200
-Date:   Wed, 18 Aug 2021 00:05:05 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH net] net: dsa: sja1105: fix use-after-free after calling
- of_find_compatible_node, or worse
-Message-ID: <YRwykZONaibo5KKe@lunn.ch>
-References: <20210817145245.3555077-1-vladimir.oltean@nxp.com>
- <cd0d9c40-d07b-e2ab-b068-d0bcb4685d09@bang-olufsen.dk>
+        id S234860AbhHQWII (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Aug 2021 18:08:08 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10079"; a="301788851"
+X-IronPort-AV: E=Sophos;i="5.84,330,1620716400"; 
+   d="scan'208";a="301788851"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2021 15:07:32 -0700
+X-IronPort-AV: E=Sophos;i="5.84,330,1620716400"; 
+   d="scan'208";a="573058341"
+Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.9.45])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2021 15:07:32 -0700
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev, geliangtang@xiaomi.com
+Subject: [PATCH net-next 0/6] mptcp: Add full mesh path manager option
+Date:   Tue, 17 Aug 2021 15:07:21 -0700
+Message-Id: <20210817220727.192198-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cd0d9c40-d07b-e2ab-b068-d0bcb4685d09@bang-olufsen.dk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Do these integrated NXP PHYs use a specific PHY driver, or do they just 
-> use the Generic PHY driver? If the former is the case, do you experience 
-> that the PHY driver fails to get probed during mdiobus registration if 
-> the kernel uses fw_devlink=on?
+The path manager in MPTCP controls the creation of additional subflows
+after the initial connection is created. As each peer advertises
+available endpoints with the ADD_ADDR MPTCP option, the recipient of
+those advertisements must decide which subflows to create from the known
+local and remote interfaces that are available for use by MPTCP.
 
-The Marvell mv88e6xxx driver registers upto two MDIO busses, and the
-PHYs on those busses make use of the marvell PHY driver. I've not
-tested specifically with fw_devlink=on, but in general, the Marvell
-PHY driver does get bound to these devices.
+The existing in-kernel path manager will create one additional subflow
+when an ADD_ADDR is received, or a local address is newly configured for
+MPTCP use. The maximum number of subflows has a configurable limit.
 
-    Andrew
+This patch set adds a MPTCP_PM_ADDR_FLAG_FULLMESH flag to the MPTCP
+netlink API that enables subflows to be created more aggressively. When
+an ADD_ADDR is received from a peer, new subflows are created between
+that address/port and all local addresses configured for MPTCP.
+Similarly, when a new local address is newly configured for use by
+MPTCP, new subflows are created between that local address and all known
+remote addresses for that MPTCP connection. The configurable limit on
+the number of subflows still applies. If the new flag is not used the
+path manager behavior is unchanged.
+
+Patch 1 adds a helper function and refactors another function to prepare
+for the rest of the patch series.
+
+Patches 2 and 3 add two mesh connection capabilities: initiating
+subflows based on added local addresses, or reacting to incoming
+advertisements.
+
+Patches 4-6 add full mesh cases to the self tests.
+
+
+Geliang Tang (6):
+  mptcp: drop flags and ifindex arguments
+  mptcp: remote addresses fullmesh
+  mptcp: local addresses fullmesh
+  selftests: mptcp: set and print the fullmesh flag
+  selftests: mptcp: add fullmesh testcases
+  selftests: mptcp: delete uncontinuous removing ids
+
+ include/uapi/linux/mptcp.h                    |   1 +
+ net/mptcp/pm_netlink.c                        | 154 ++++++++++++++++--
+ net/mptcp/protocol.h                          |   5 +-
+ net/mptcp/subflow.c                           |   7 +-
+ .../testing/selftests/net/mptcp/mptcp_join.sh |  74 ++++++++-
+ tools/testing/selftests/net/mptcp/pm_nl_ctl.c |  16 +-
+ 6 files changed, 231 insertions(+), 26 deletions(-)
+
+
+base-commit: 752be2976405b7499890c0b6bac6d30d34d08bd6
+-- 
+2.33.0
+
