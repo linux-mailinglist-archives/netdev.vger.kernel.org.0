@@ -2,176 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC8D93EE55E
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 06:13:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 361443EE56A
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 06:16:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237518AbhHQENz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 00:13:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56414 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230011AbhHQENw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 00:13:52 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3081DC0617AD
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 21:13:18 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mFqTN-0003Bb-S1; Tue, 17 Aug 2021 06:13:09 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mFqTM-0006ZY-8h; Tue, 17 Aug 2021 06:13:08 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S233855AbhHQERW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 00:17:22 -0400
+Received: from ozlabs.org ([203.11.71.1]:56977 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230335AbhHQERV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Aug 2021 00:17:21 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Gpd5V0zn6z9sT6;
+        Tue, 17 Aug 2021 14:16:45 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1629173807;
+        bh=tfgLEP4cMZdo3hQKMzj/TGceL5CB+32UOGdgMV+sK/8=;
+        h=Date:From:To:Cc:Subject:From;
+        b=eWQggNKUnnM8x/jjpMabEjDlOL/mp88cZulSnoeTGjCELIGLMijM8rIk2tr2M63Cc
+         foJtfx2YO1UsP+PtUUCo2ayOEXlhW1rWYMkuuQLUrgjszHnGOCkWnPXn53TOiJrw/V
+         E0jEXjOwOqduUBkZf6GIcY4K0NxsbLMvAWxRdi4kLZ1A9jPHo2pKaJZ6GsXK+Y69EO
+         gcGaGvchrrxje7mo7Wk+6GZNuLfiPQiHCEBqAhdnrMg/qhIq+sJUzQlked6aHFenEI
+         Npg1hAOYtoVVWo+Wko2mtUOMMHnpLUZ80ssWzp9NJBeKxLhi9l/jXoIPygnH8P87xz
+         hZtEHIDi3qstw==
+Date:   Tue, 17 Aug 2021 14:16:43 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, David Jander <david@protonic.nl>
-Subject: [PATCH v2 3/3] can: dev: provide optional GPIO based termination support
-Date:   Tue, 17 Aug 2021 06:13:06 +0200
-Message-Id: <20210817041306.25185-4-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210817041306.25185-1-o.rempel@pengutronix.de>
-References: <20210817041306.25185-1-o.rempel@pengutronix.de>
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20210817141643.0705a6e9@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: multipart/signed; boundary="Sig_/ZqNnJ3fkGT6yPotlqE_y0qv";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For CAN buses to work, a termination resistor has to be present at both
-ends of the bus. This resistor is usually 120 Ohms, other values may be
-required for special bus topologies.
+--Sig_/ZqNnJ3fkGT6yPotlqE_y0qv
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-This patch adds support for a generic GPIO based CAN termination. The
-resistor value has to be specified via device tree, and it can only be
-attached to or detached from the bus. By default the termination is not
-active.
+Hi all,
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/can/dev/dev.c | 54 +++++++++++++++++++++++++++++++++++++++
- include/linux/can/dev.h   |  8 ++++++
- 2 files changed, 62 insertions(+)
+Today's linux-next merge of the net-next tree got a conflict in:
 
-diff --git a/drivers/net/can/dev/dev.c b/drivers/net/can/dev/dev.c
-index 311d8564d611..b4a6c7a6fc18 100644
---- a/drivers/net/can/dev/dev.c
-+++ b/drivers/net/can/dev/dev.c
-@@ -15,6 +15,7 @@
- #include <linux/can/dev.h>
- #include <linux/can/skb.h>
- #include <linux/can/led.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/of.h>
- 
- #define MOD_DESC "CAN device driver interface"
-@@ -400,10 +401,57 @@ void close_candev(struct net_device *dev)
- }
- EXPORT_SYMBOL_GPL(close_candev);
- 
-+static int can_set_termination(struct net_device *ndev, u16 term)
-+{
-+	struct can_priv *priv = netdev_priv(ndev);
-+	int set;
-+
-+	if (term == priv->termination_gpio_ohms[CAN_TERMINATION_GPIO_ENABLED])
-+		set = 1;
-+	else
-+		set = 0;
-+
-+	gpiod_set_value(priv->termination_gpio, set);
-+
-+	return 0;
-+}
-+
-+static int can_get_termination(struct net_device *ndev)
-+{
-+	struct can_priv *priv = netdev_priv(ndev);
-+	struct device *dev = ndev->dev.parent;
-+	struct gpio_desc *gpio;
-+	u16 term;
-+	int ret;
-+
-+	/* Disabling termination by default is the safe choice: Else if many
-+	 * bus participants enable it, no communication is possible at all.
-+	 */
-+	gpio = devm_gpiod_get_optional(dev, "termination", GPIOD_OUT_LOW);
-+	if (IS_ERR(gpio))
-+		return dev_err_probe(dev, PTR_ERR(gpio),
-+				     "Cannot get termination-gpios\n");
-+
-+	ret = device_property_read_u16(dev, "termination-ohms", &term);
-+	if (ret)
-+		return ret;
-+
-+	priv->termination_const_cnt = ARRAY_SIZE(priv->termination_gpio_ohms);
-+	priv->termination_const = priv->termination_gpio_ohms;
-+	priv->termination_gpio = gpio;
-+	priv->termination_gpio_ohms[CAN_TERMINATION_GPIO_DISABLED] =
-+		CAN_TERMINATION_DISABLED;
-+	priv->termination_gpio_ohms[CAN_TERMINATION_GPIO_ENABLED] = term;
-+	priv->do_set_termination = can_set_termination;
-+
-+	return 0;
-+}
-+
- /* Register the CAN network device */
- int register_candev(struct net_device *dev)
- {
- 	struct can_priv *priv = netdev_priv(dev);
-+	int err;
- 
- 	/* Ensure termination_const, termination_const_cnt and
- 	 * do_set_termination consistency. All must be either set or
-@@ -419,6 +467,12 @@ int register_candev(struct net_device *dev)
- 	if (!priv->data_bitrate_const != !priv->data_bitrate_const_cnt)
- 		return -EINVAL;
- 
-+	if (!priv->termination_const) {
-+		err = can_get_termination(dev);
-+		if (err)
-+			return err;
-+	}
-+
- 	dev->rtnl_link_ops = &can_link_ops;
- 	netif_carrier_off(dev);
- 
-diff --git a/include/linux/can/dev.h b/include/linux/can/dev.h
-index 27b275e463da..2413253e54c7 100644
---- a/include/linux/can/dev.h
-+++ b/include/linux/can/dev.h
-@@ -32,6 +32,12 @@ enum can_mode {
- 	CAN_MODE_SLEEP
- };
- 
-+enum can_termination_gpio {
-+	CAN_TERMINATION_GPIO_DISABLED = 0,
-+	CAN_TERMINATION_GPIO_ENABLED,
-+	CAN_TERMINATION_GPIO_MAX,
-+};
-+
- /*
-  * CAN common private data
-  */
-@@ -55,6 +61,8 @@ struct can_priv {
- 	unsigned int termination_const_cnt;
- 	const u16 *termination_const;
- 	u16 termination;
-+	struct gpio_desc *termination_gpio;
-+	u16 termination_gpio_ohms[CAN_TERMINATION_GPIO_MAX];
- 
- 	enum can_state state;
- 
--- 
-2.30.2
+  drivers/ptp/Kconfig
 
+between commit:
+
+  55c8fca1dae1 ("ptp_pch: Restore dependency on PCI")
+
+from the net tree and commit:
+
+  e5f31552674e ("ethernet: fix PTP_1588_CLOCK dependencies")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/ptp/Kconfig
+index e085c255da0c,823eae1b4b53..000000000000
+--- a/drivers/ptp/Kconfig
++++ b/drivers/ptp/Kconfig
+@@@ -90,9 -103,8 +103,9 @@@ config PTP_1588_CLOCK_INE
+  config PTP_1588_CLOCK_PCH
+  	tristate "Intel PCH EG20T as PTP clock"
+  	depends on X86_32 || COMPILE_TEST
+ -	depends on HAS_IOMEM && NET
+ +	depends on HAS_IOMEM && PCI
+ +	depends on NET
+- 	imply PTP_1588_CLOCK
++ 	depends on PTP_1588_CLOCK
+  	help
+  	  This driver adds support for using the PCH EG20T as a PTP
+  	  clock. The hardware supports time stamping of PTP packets
+
+--Sig_/ZqNnJ3fkGT6yPotlqE_y0qv
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmEbOCsACgkQAVBC80lX
+0Gykngf+K1SL+CKPxp7lDzJuk6nQWkXUnXfbQnvmJAuKlldp+GlKnwJhAJ7KWku6
+KAH1pTlrYVOnFp9i/JCt6zxqtCTcsBdHpV6sRfXvrLSYW3e09hYRfw7k0x2qb0Rz
+jPW2BsEA1rVRqu357jEC1rDWRdp7yxcHFzGUiwz12yGPqdaICuTi+LfYCfOAOBSG
+8XR+cbzgyFCYbOFK4714lUzGh7K4MPFfkotULvUT4FP37+wMEZqiWqYU1VPDMVIa
+efuEcxhHPonvua90yhRemS/jCuYY7K79N5DMh2z2NCeBZp+9PDqmTjxMwGGIy9eU
+TVPqlRAu6+ZPCCYwQ2VRAJ6qY+t4PQ==
+=Rw3E
+-----END PGP SIGNATURE-----
+
+--Sig_/ZqNnJ3fkGT6yPotlqE_y0qv--
