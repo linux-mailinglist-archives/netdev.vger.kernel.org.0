@@ -2,109 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D39973EF3EA
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 22:49:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C21063EF429
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 22:49:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236594AbhHQUWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 16:22:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52662 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235806AbhHQUWn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 16:22:43 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97765C0611BE;
-        Tue, 17 Aug 2021 13:21:44 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id d11so36974eja.8;
-        Tue, 17 Aug 2021 13:21:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=XaaGF88w29zZ2HuLM3UdMK4CiOo1QtnD4rb3xe86sRk=;
-        b=CYfhzeNfGNRGovN0mTdsFysv4R643Vgd636cpygw+on9VbmaZ6jx1UUCAt3Yd9EIYs
-         FqLVU7Zb1FcTMiNfOoRC8ymL9yIwfFpBztsHYgaKxRAkJRwG0PmsKvQgSnWxaMcdz5d8
-         Kr8ejFF1UCJftgGT8B8NXKbDRTfd9AxXDTYEfuEMfXABuOM7cvAlnzWRZokr4hQuVK97
-         t29vWl0yJL6o0cX7NVF3hfQFEk8sazYLEmLoegBHiXMeampNVMoe1zKl5FyU66MN7z5g
-         XChkuJFYQyqPBiGkqLhBKA0fsywmcybI7j2juF2Be5Uy6Z4uw3aDOqZr7YFCwP1TzCUx
-         prsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XaaGF88w29zZ2HuLM3UdMK4CiOo1QtnD4rb3xe86sRk=;
-        b=ddf4vHHXlLIO6AWG92PNlDradWTvdD0IXI10oHi6rr2uXdPIC/RxPh+zaSvTgixcfb
-         j09HOVptQuPyNRkFzo7PevVJlJkkOW12+wltflfTNSnj9PM28URItxQ+PFVQkMU4Yg9X
-         ZY/A/U6VD5hIZeoPvdIQLQS/lfqDfoB2cBC/U/1KamhIdg/XhrI1H+3dad5g2Hr0R1d1
-         gMGP255g9m5G8++KuHXAe6mYigPDwKsIH2vJpzzo0pDoBRKFVnIgW8gE1a2g/Wq6ZI7r
-         IdXAKegzlosCf/1yYV+XeF26NN9B/Cxfxg1hCdheyLNOLCZ+hkxCjEZtgHUzILiomX9A
-         kA+A==
-X-Gm-Message-State: AOAM53334Dg4NHhmuJ4l/o/roQQI9zxpaa1U4dnwvt9SDAAGvybZE7LL
-        2MdhFga36281tB4usNXiO/A=
-X-Google-Smtp-Source: ABdhPJxcK0r5Ivg4E9ad4dmOh22hwIKaihsZd6lXE9T35spwqTlTnXZ4p4jqL5XnU6ObmX/as7VDUA==
-X-Received: by 2002:a17:906:6011:: with SMTP id o17mr5692956ejj.157.1629231703136;
-        Tue, 17 Aug 2021 13:21:43 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id w11sm1426151edc.5.2021.08.17.13.21.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Aug 2021 13:21:42 -0700 (PDT)
-Date:   Tue, 17 Aug 2021 23:21:41 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Aleksander Jan Bajkowski <olek2@wp.pl>
-Cc:     hauke@hauke-m.de, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH] net: dsa: lantiq_gswip: Add 200ms assert delay
-Message-ID: <20210817202141.xddw5c7mypodnqlk@skbuf>
-References: <20210817193207.1038598-1-olek2@wp.pl>
- <20210817194448.tyg723667ql4kjvu@skbuf>
+        id S234833AbhHQUfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 16:35:32 -0400
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:35308
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234248AbhHQUfb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 16:35:31 -0400
+Received: from [192.168.0.209] (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net [80.193.200.194])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id EEB013F09C;
+        Tue, 17 Aug 2021 20:34:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1629232497;
+        bh=aH1+suqq1Y7Z2H6cY/RzQZFaxHT3pbfG5PuomAgbVV4=;
+        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
+         In-Reply-To:Content-Type;
+        b=FRsYyfbzQZ5aditKm7PPjnQvcbU1Cv60zjE1MiSf99L0Hcse9MW6cJ2HbYBwuAsWc
+         ON+nsDipyRwgdMlqVYK1lN3dvSexPWCWdGu/2SDLZl4ebQzDdTA56rOTRdDQv4aoPV
+         eEpzncXktcQtsNHSVhQilN9qHzQdFAAO8UJsqiGScXLFGGhkQ2+2NNXcLSVXzvLndf
+         Sa43ZCoSH1YEHO+f1XzLT4nenT8mQm3lpbLV8BLnfQRmOcNGdlJZJQZQfgC4NgatxZ
+         JBf+rkjM/TIRVMMx/78Ss3T4FxnFo787A8/O43QcAJn0HvgAmrXslS9HctZsJlgeFS
+         abeFH8AbFhDHw==
+Subject: Re: bpf: Implement minimal BPF perf link
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <342670fc-948a-a76e-5a47-b3d44e3e3926@canonical.com>
+ <CAEf4BzYP6OU23D33d6dzgpYyXqSGrQUpenrJStyYFB3L7S93ew@mail.gmail.com>
+From:   Colin Ian King <colin.king@canonical.com>
+Message-ID: <6609e46f-96f2-8a9d-4422-b9af3e64c024@canonical.com>
+Date:   Tue, 17 Aug 2021 21:34:56 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210817194448.tyg723667ql4kjvu@skbuf>
+In-Reply-To: <CAEf4BzYP6OU23D33d6dzgpYyXqSGrQUpenrJStyYFB3L7S93ew@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 17, 2021 at 10:44:48PM +0300, Vladimir Oltean wrote:
-> On Tue, Aug 17, 2021 at 09:32:07PM +0200, Aleksander Jan Bajkowski wrote:
-> > The delay is especially needed by the xRX300 and xRX330 SoCs. Without
-> > this patch, some phys are sometimes not properly detected.
-> > 
-> > Fixes: a09d042b086202735c4ed64 ("net: dsa: lantiq: allow to use all GPHYs on xRX300 and xRX330")
-> > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> > Tested-by: Aleksander Jan Bajkowski <olek2@wp.pl> # tested on DWR966, HH5A
-> > ---
+On 17/08/2021 19:57, Andrii Nakryiko wrote:
+> On Tue, Aug 17, 2021 at 10:36 AM Colin Ian King
+> <colin.king@canonical.com> wrote:
+>>
+>> Hi,
+>>
+>> Static analysis with Coverity on linux-next has detected a potential
+>> issue with the following commit:
+>>
+>> commit b89fbfbb854c9afc3047e8273cc3a694650b802e
+>> Author: Andrii Nakryiko <andrii@kernel.org>
+>> Date:   Sun Aug 15 00:05:57 2021 -0700
+>>
+>>     bpf: Implement minimal BPF perf link
+>>
+>> The analysis is as follows:
+>>
+>> 2936 static int bpf_perf_link_attach(const union bpf_attr *attr, struct
+>> bpf_prog *prog)
+>> 2937 {
+>>
+>>     1. var_decl: Declaring variable link_primer without initializer.
+>>
+>> 2938        struct bpf_link_primer link_primer;
+>> 2939        struct bpf_perf_link *link;
+>> 2940        struct perf_event *event;
+>> 2941        struct file *perf_file;
+>> 2942        int err;
+>> 2943
+>>
+>>     2. Condition attr->link_create.flags, taking false branch.
+>>
+>> 2944        if (attr->link_create.flags)
+>> 2945                return -EINVAL;
+>> 2946
+>> 2947        perf_file = perf_event_get(attr->link_create.target_fd);
+>>
+>>     3. Condition IS_ERR(perf_file), taking false branch.
+>>
+>> 2948        if (IS_ERR(perf_file))
+>> 2949                return PTR_ERR(perf_file);
+>> 2950
+>> 2951        link = kzalloc(sizeof(*link), GFP_USER);
+>>
+>>     4. Condition !link, taking false branch.
+>>
+>> 2952        if (!link) {
+>> 2953                err = -ENOMEM;
+>> 2954                goto out_put_file;
+>> 2955        }
+>> 2956        bpf_link_init(&link->link, BPF_LINK_TYPE_PERF_EVENT,
+>> &bpf_perf_link_lops, prog);
+>> 2957        link->perf_file = perf_file;
+>> 2958
+>> 2959        err = bpf_link_prime(&link->link, &link_primer);
+>>
+>>     5. Condition err, taking false branch.
+>>
+>> 2960        if (err) {
+>> 2961                kfree(link);
+>> 2962                goto out_put_file;
+>> 2963        }
+>> 2964
+>> 2965        event = perf_file->private_data;
+>> 2966        err = perf_event_set_bpf_prog(event, prog,
+>> attr->link_create.perf_event.bpf_cookie);
+>>
+>>     6. Condition err, taking true branch.
+>> 2967        if (err) {
+>>     7. uninit_use_in_call: Using uninitialized value link_primer.fd when
+>> calling bpf_link_cleanup.
+>>     8. uninit_use_in_call: Using uninitialized value link_primer.file
+>> when calling bpf_link_cleanup.
+>>     9. uninit_use_in_call: Using uninitialized value link_primer.id when
+>> calling bpf_link_cleanup.
+>>
+>>    Uninitialized pointer read (UNINIT)
+>>    10. uninit_use_in_call: Using uninitialized value link_primer.link
+>> when calling bpf_link_cleanup.
+>>
+>> 2968                bpf_link_cleanup(&link_primer);
+>> 2969                goto out_put_file;
+>> 2970        }
+>> 2971        /* perf_event_set_bpf_prog() doesn't take its own refcnt on
+>> prog */
+>> 2972        bpf_prog_inc(prog);
+>>
+>> I'm not 100% sure if these are false-positives, but I thought I should
+>> report the issues as potentially there is a pointer access on an
+>> uninitialized pointer on line 2968.
 > 
-> Generally the convention is:
+> Look at bpf_link_prime() implementation. If it succeeds, link_primer
+> is fully initialized. We use this pattern in many places, this is the
+> first time someone reports any potential issues with it. It's a bit
+> strange that Coverity doesn't recognize such a typical output
+> parameter initialization pattern, tbh. Maybe the global nature of
+> bpf_link_prime() throws it off (it assumes it can be "overridden"
+> during linking?) But I double-checked everything twice, all seems to
+> be good. Zero-initializing link_primer would be a total waste.
+
+Yes, in pedantic mode it can throw false positives, it's not perfect.
+Thanks for double checking, and apologies for wasting your valuable time.
+
+Colin
+
 > 
-> From: Patch Author <patch.author@email.com>
-> 
-> Commit description
-> 
-> Signed-off-by: Patch Author <patch.author@email.com>
-> Signed-off-by: Patch Carrier 1 <patch.carrier1@email.com>
-> Signed-off-by: Patch Carrier 2 <patch.carrier2@email.com>
-> Signed-off-by: Patch Carrier 3 <patch.carrier3@email.com>
-> Signed-off-by: Patch Submitter <patch.submitter@email.com>
-> 
-> This patch is clearly not following this model for more than one reason.
+>>
+>> Colin
 
-Let's not even talk about the kilometer-long commit sha1sum.
-This is not even my pet peeve, if this patch gets merged as-is you'll
-get an email titled "linux-next: Fixes tag needs some work in the net tree"
-(google it if you want examples).
-
-Stick this in your ~/.gitconfig and thank me later:
-
-[core]
-	abbrev = 12
-[pretty]
-	fixes = Fixes: %h (\"%s\")
-
-Now run:
-
-git show a09d042b086202735c4ed64 --pretty=fixes
-Fixes: a09d042b0862 ("net: dsa: lantiq: allow to use all GPHYs on xRX300 and xRX330")
-
-Voila!
