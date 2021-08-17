@@ -2,143 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A481A3EEB97
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 13:25:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BB4F3EEB64
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 13:11:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239714AbhHQL0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 07:26:12 -0400
-Received: from mga07.intel.com ([134.134.136.100]:22522 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231515AbhHQL0L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Aug 2021 07:26:11 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10078"; a="279788857"
-X-IronPort-AV: E=Sophos;i="5.84,328,1620716400"; 
-   d="scan'208";a="279788857"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2021 04:25:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,328,1620716400"; 
-   d="scan'208";a="449226687"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga007.fm.intel.com with ESMTP; 17 Aug 2021 04:25:31 -0700
-Date:   Tue, 17 Aug 2021 13:10:47 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Feng zhou <zhoufeng.zf@bytedance.com>
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        jeffrey.t.kirsher@intel.com, magnus.karlsson@intel.com,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        duanxiongchun@bytedance.com, songmuchun@bytedance.com,
-        zhouchengming@bytedance.com, chenying.kernel@bytedance.com,
-        zhengqi.arch@bytedance.com, wangdongdong.6@bytedance.com
-Subject: Re: [PATCH] ixgbe: Fix NULL pointer dereference in ixgbe_xdp_setup
-Message-ID: <20210817111047.GA8143@ranger.igk.intel.com>
-References: <20210817075407.11961-1-zhoufeng.zf@bytedance.com>
+        id S236704AbhHQLMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 07:12:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39300 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236657AbhHQLMQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 07:12:16 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77BEEC061796
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 04:11:43 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <a.fatoum@pengutronix.de>)
+        id 1mFx0L-00021W-6E; Tue, 17 Aug 2021 13:11:37 +0200
+Subject: Re: [PATCH] brcmfmac: pcie: fix oops on failure to resume and reprobe
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>,
+        "brcm80211-dev-list.pdl@broadcom.com" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20210817063521.22450-1-a.fatoum@pengutronix.de>
+ <CAHp75Vfc_T04p95PgVUd+CK+ttPwX2aOC4WPD35Z01WQV1MxKw@mail.gmail.com>
+From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
+Message-ID: <3a9a3789-5a13-7e72-b909-8f0826b8ab86@pengutronix.de>
+Date:   Tue, 17 Aug 2021 13:11:31 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210817075407.11961-1-zhoufeng.zf@bytedance.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <CAHp75Vfc_T04p95PgVUd+CK+ttPwX2aOC4WPD35Z01WQV1MxKw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 17, 2021 at 03:54:07PM +0800, Feng zhou wrote:
-> From: Feng Zhou <zhoufeng.zf@bytedance.com>
+On 17.08.21 13:02, Andy Shevchenko wrote:
+> On Tuesday, August 17, 2021, Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
 > 
-> The ixgbe driver currently generates a NULL pointer dereference with
-> some machine (online cpus < 63). This is due to the fact that the
-> maximum value of num_xdp_queues is nr_cpu_ids. Code is in
-> "ixgbe_set_rss_queues"".
+>> When resuming from suspend, brcmf_pcie_pm_leave_D3 will first attempt a
+>> hot resume and then fall back to removing the PCI device and then
+>> reprobing. If this probe fails, the kernel will oops, because brcmf_err,
+>> which is called to report the failure will dereference the stale bus
+>> pointer. Open code and use the default bus-less brcmf_err to avoid this.
+>>
+>> Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+>> ---
+>> To: Arend van Spriel <aspriel@gmail.com>
+>> To: Franky Lin <franky.lin@broadcom.com>
+>> To: Hante Meuleman <hante.meuleman@broadcom.com>
+>> To: Chi-hsien Lin <chi-hsien.lin@infineon.com>
+>> To: Wright Feng <wright.feng@infineon.com>
+>> To: Chung-hsien Hsu <chung-hsien.hsu@infineon.com>
+>> Cc: SHA-cyfmac-dev-list@infineon.com
+>> Cc: brcm80211-dev-list.pdl@broadcom.com
+>> Cc: netdev@vger.kernel.org
+>> Cc: linux-wireless@vger.kernel.org
+>> Cc: Kalle Valo <kvalo@codeaurora.org>
+>> Cc: Jakub Kicinski <kuba@kernel.org>
+>> Cc: "David S. Miller" <davem@davemloft.net>
+>> Cc: linux-kernel@vger.kernel.org
+>> ---
+>>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+>> b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+>> index 9ef94d7a7ca7..d824bea4b79d 100644
+>> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+>> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+>> @@ -2209,7 +2209,7 @@ static int brcmf_pcie_pm_leave_D3(struct device *dev)
+>>
+>>         err = brcmf_pcie_probe(pdev, NULL);
+>>         if (err)
+>> -               brcmf_err(bus, "probe after resume failed, err=%d\n", err);
+>> +               __brcmf_err(NULL, __func__, "probe after resume failed,
+>> err=%d\n",
+> 
+> 
+> This is weird looking line now. Why can’t you simply use dev_err() /
+> netdev_err()?
 
-That's a good catch, but we should fix set channels callback so that it
-will not allow a setting of queues to be higher than the
-num_online_cpus().
+That's what brcmf_err normally expands to, but in this file the macro
+is overridden to add the extra first argument.
 
-Please also include the tree in the patch subject that you're directing
-the patch to.
+The brcmf_ logging function write to brcmf trace buffers. This is not
+done with netdev_err/dev_err (and replacing the existing logging
+is out of scope for a regression fix anyway).
 
-I'd be also thankful if you Cc me on Intel XDP related patches.
-Thanks!
+Cheers,
+Ahmad
 
 > 
-> Here's how the problem repeats itself:
-> Some machine (online cpus < 63), And user set num_queues to 63 through
-> ethtool. Code is in the "ixgbe_set_channels",
-> adapter->ring_feature[RING_F_FDIR].limit = count;
-> It becames 63.
-> When user use xdp, "ixgbe_set_rss_queues" will set queues num.
-> adapter->num_rx_queues = rss_i;
-> adapter->num_tx_queues = rss_i;
-> adapter->num_xdp_queues = ixgbe_xdp_queues(adapter);
-> And rss_i's value is from
-> f = &adapter->ring_feature[RING_F_FDIR];
-> rss_i = f->indices = f->limit;
-> So "num_rx_queues" > "num_xdp_queues", when run to "ixgbe_xdp_setup",
-> for (i = 0; i < adapter->num_rx_queues; i++)
-> 	if (adapter->xdp_ring[i]->xsk_umem)
-> lead to panic.
-> Call trace:
-> [exception RIP: ixgbe_xdp+368]
-> RIP: ffffffffc02a76a0  RSP: ffff9fe16202f8d0  RFLAGS: 00010297
-> RAX: 0000000000000000  RBX: 0000000000000020  RCX: 0000000000000000
-> RDX: 0000000000000000  RSI: 000000000000001c  RDI: ffffffffa94ead90
-> RBP: ffff92f8f24c0c18   R8: 0000000000000000   R9: 0000000000000000
-> R10: ffff9fe16202f830  R11: 0000000000000000  R12: ffff92f8f24c0000
-> R13: ffff9fe16202fc01  R14: 000000000000000a  R15: ffffffffc02a7530
-> ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
->  7 [ffff9fe16202f8f0] dev_xdp_install at ffffffffa89fbbcc
->  8 [ffff9fe16202f920] dev_change_xdp_fd at ffffffffa8a08808
->  9 [ffff9fe16202f960] do_setlink at ffffffffa8a20235
-> 10 [ffff9fe16202fa88] rtnl_setlink at ffffffffa8a20384
-> 11 [ffff9fe16202fc78] rtnetlink_rcv_msg at ffffffffa8a1a8dd
-> 12 [ffff9fe16202fcf0] netlink_rcv_skb at ffffffffa8a717eb
-> 13 [ffff9fe16202fd40] netlink_unicast at ffffffffa8a70f88
-> 14 [ffff9fe16202fd80] netlink_sendmsg at ffffffffa8a71319
-> 15 [ffff9fe16202fdf0] sock_sendmsg at ffffffffa89df290
-> 16 [ffff9fe16202fe08] __sys_sendto at ffffffffa89e19c8
-> 17 [ffff9fe16202ff30] __x64_sys_sendto at ffffffffa89e1a64
-> 18 [ffff9fe16202ff38] do_syscall_64 at ffffffffa84042b9
-> 19 [ffff9fe16202ff50] entry_SYSCALL_64_after_hwframe at ffffffffa8c0008c
 > 
-> Fixes: 4a9b32f30f80 ("ixgbe: fix potential RX buffer starvation for
-> AF_XDP")
-> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
-> ---
->  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
+>>
+>>         return err;
+>>  }
+>> --
+>> 2.30.2
+>>
+>>
 > 
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> index 14aea40da50f..5db496cc5070 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> @@ -10112,6 +10112,7 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
->  	struct ixgbe_adapter *adapter = netdev_priv(dev);
->  	struct bpf_prog *old_prog;
->  	bool need_reset;
-> +	int num_queues;
->  
->  	if (adapter->flags & IXGBE_FLAG_SRIOV_ENABLED)
->  		return -EINVAL;
-> @@ -10161,11 +10162,14 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
->  	/* Kick start the NAPI context if there is an AF_XDP socket open
->  	 * on that queue id. This so that receiving will start.
->  	 */
-> -	if (need_reset && prog)
-> -		for (i = 0; i < adapter->num_rx_queues; i++)
-> +	if (need_reset && prog) {
-> +		num_queues = min_t(int, adapter->num_rx_queues,
-> +			adapter->num_xdp_queues);
-> +		for (i = 0; i < num_queues; i++)
->  			if (adapter->xdp_ring[i]->xsk_pool)
->  				(void)ixgbe_xsk_wakeup(adapter->netdev, i,
->  						       XDP_WAKEUP_RX);
-> +	}
->  
->  	return 0;
->  }
-> -- 
-> 2.11.0
-> 
+
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
