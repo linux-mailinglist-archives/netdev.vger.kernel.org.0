@@ -2,113 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CFE63EF303
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 22:02:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84B5D3EF317
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 22:11:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233888AbhHQUCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 16:02:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48450 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233583AbhHQUCD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 16:02:03 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CADB7C061764
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 13:01:29 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mG5H4-0008Vq-GQ; Tue, 17 Aug 2021 22:01:26 +0200
-Received: from pengutronix.de (unknown [IPv6:2a02:810a:8940:aa0:4c82:b09e:fec8:3248])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id E577966923E;
-        Tue, 17 Aug 2021 20:01:24 +0000 (UTC)
-Date:   Tue, 17 Aug 2021 22:01:23 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     linux-can <linux-can@vger.kernel.org>,
-        Stefan =?utf-8?B?TcOkdGpl?= <Stefan.Maetje@esd.eu>,
+        id S233902AbhHQULs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 16:11:48 -0400
+Received: from mxout04.lancloud.ru ([45.84.86.114]:48708 "EHLO
+        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229466AbhHQULq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 16:11:46 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 8895520BC0DB
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH net-next v2 1/8] ravb: Add struct ravb_hw_info to driver
+ data
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
         netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 2/7] can: bittiming: allow TDC{V,O} to be zero and add
- can_tdc_const::tdc{v,o,f}_min
-Message-ID: <20210817200123.4wcdwsdfsdjr3ovk@pengutronix.de>
-References: <20210815033248.98111-1-mailhol.vincent@wanadoo.fr>
- <20210815033248.98111-3-mailhol.vincent@wanadoo.fr>
- <20210816084235.fr7fzau2ce7zl4d4@pengutronix.de>
- <CAMZ6RqK5t62UppiMe9k5jG8EYvnSbFW3doydhCvp72W_X2rXAw@mail.gmail.com>
- <20210816122519.mme272z6tqrkyc6x@pengutronix.de>
- <20210816123309.pfa57tke5hrycqae@pengutronix.de>
- <20210816134342.w3bc5zjczwowcjr4@pengutronix.de>
- <CAMZ6RqJFxKSZahAMz9Y8hpPJPh858jxDEXsRm1YkTwf4NFAFwg@mail.gmail.com>
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20210802102654.5996-1-biju.das.jz@bp.renesas.com>
+ <20210802102654.5996-2-biju.das.jz@bp.renesas.com>
+ <CAMuHMdWuoLFDRbJZqpvT48q1zbH05tqerWMs50aFDa6pR+ecAg@mail.gmail.com>
+ <OS0PR01MB5922BF48F95DD5576A79994F86F99@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <CAMuHMdVCyMD6u2KxKb_c2LR8DGAY86F69=TSRDK0C5GPwrO7Eg@mail.gmail.com>
+ <OS0PR01MB5922C336CBB008F9D7DA36B786F99@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <OS0PR01MB5922A841D2C8E38D93A8E95086FE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <071f3fd9-7280-f518-3e38-6456632cc11e@omp.ru>
+Date:   Tue, 17 Aug 2021 23:11:06 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="fgszt33qh4cysmqa"
-Content-Disposition: inline
-In-Reply-To: <CAMZ6RqJFxKSZahAMz9Y8hpPJPh858jxDEXsRm1YkTwf4NFAFwg@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <OS0PR01MB5922A841D2C8E38D93A8E95086FE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 8/17/21 2:24 PM, Biju Das wrote:
 
---fgszt33qh4cysmqa
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+[...]
+>>>>> -----Original Message-----
+>>>>> On Mon, Aug 2, 2021 at 12:27 PM Biju Das
+>>>>> <biju.das.jz@bp.renesas.com>
+>>>>> wrote:
+>>>>>> The DMAC and EMAC blocks of Gigabit Ethernet IP found on RZ/G2L
+>>>>>> SoC are similar to the R-Car Ethernet AVB IP. With a few changes
+>>>>>> in the driver we can support both IPs.
+>>>>>>
+>>>>>> Currently a runtime decision based on the chip type is used to
+>>>>>> distinguish the HW differences between the SoC families.
+>>>>>>
+>>>>>> The number of TX descriptors for R-Car Gen3 is 1 whereas on
+>>>>>> R-Car
+>>>>>> Gen2 and RZ/G2L it is 2. For cases like this it is better to
+>>>>>> select the number of TX descriptors by using a structure with a
+>>>>>> value, rather than a runtime decision based on the chip type.
+>>>>>>
+>>>>>> This patch adds the num_tx_desc variable to struct ravb_hw_info
+>>>>>> and also replaces the driver data chip type with struct
+>>>>>> ravb_hw_info by moving chip type to it.
+>>>>>>
+>>>>>> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+>>>>>> Reviewed-by: Lad Prabhakar
+>>>>>> <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>>>>>
+>>>>> Thanks for your patch!
+>>>>>
+>>>>>> --- a/drivers/net/ethernet/renesas/ravb.h
+>>>>>> +++ b/drivers/net/ethernet/renesas/ravb.h
+>>>>>> @@ -988,6 +988,11 @@ enum ravb_chip_id {
+>>>>>>         RCAR_GEN3,
+>>>>>>  };
+>>>>>>
+>>>>>> +struct ravb_hw_info {
+>>>>>> +       enum ravb_chip_id chip_id;
+>>>>>> +       int num_tx_desc;
+>>>>>
+>>>>> Why not "unsigned int"? ...
+>>>>> This comment applies to a few more subsequent patches.
+>>>>
+>>>> To avoid signed and unsigned comparison warnings.
+>>>>
+>>>>>
+>>>>>> +};
+>>>>>> +
+>>>>>>  struct ravb_private {
+>>>>>>         struct net_device *ndev;
+>>>>>>         struct platform_device *pdev; @@ -1040,6 +1045,8 @@
+>>>>>> struct ravb_private {
+>>>>>>         unsigned txcidm:1;              /* TX Clock Internal Delay
+>>> Mode
+>>>>> */
+>>>>>>         unsigned rgmii_override:1;      /* Deprecated rgmii-*id
+>>> behavior
+>>>>> */
+>>>>>>         int num_tx_desc;                /* TX descriptors per
+>> packet
+>>> */
+>>>>>
+>>>>> ... oh, here's the original culprit.
+>>>>
+>>>> Exactly, this the reason.
+>>>>
+>>>> Do you want me to change this into unsigned int? Please let me know.
+>>>
+>>> Up to you (or the maintainer? ;-)
+>>>
+>>> For new fields (in the other patches), I would use unsigned for all
+>>> unsigned values.  Signed values have more pitfalls related to
+>>> undefined behavior.
+>>
+>> Sergei, What is your thoughts here? Please let me know.
+> 
+> Here is my plan.
+> 
+> I will split this patch into two as Andrew suggested and 
 
-On 17.08.2021 00:49:35, Vincent MAILHOL wrote:
-> > We have 4 operations:
-> > - tdc-mode off                  switch off tdc altogether
-> > - tdc-mode manual tdco X tdcv Y configure X and Y for tdco and tdcv
-> > - tdc-mode auto tdco X          configure X tdco and
-> >                                 controller measures tdcv automatically
-> > - /* nothing */                 configure default value for tdco
-> >                                 controller measures tdcv automatically
->=20
-> The "nothing" does one more thing: it decides whether TDC should
-> be activated or not.
->=20
-> > The /* nothing */ operation is what the old "ip" tool does, so we're
-> > backwards compatible here (using the old "ip" tool on an updated
-> > kernel/driver).
->=20
-> That's true but this isn't the real intent. By doing this design,
-> I wanted the user to be able to transparently use TDC while
-> continuing to use the exact same ip commands she or he is used
-> to using.
+   If you mran changing the ravb_private::num_tx_desc to *unsigned*, it'll be
+a good cleanup. What's would be the 2nd part tho?
 
-Backwards compatibility using an old ip tool on a new kernel/driver must
-work. In case of the mcp251xfd the tdc mode must be activated and tdcv
-set to the automatic calculated value and tdco automatically measured.
+> Then on the second patch will add as info->unaligned_tx as Sergei suggested.
 
-Marc
+   OK.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+> Now the only open point is related to the data type of "int num_tx_desc"
+> and to align with sh_eth driver I will keep int.
 
---fgszt33qh4cysmqa
-Content-Type: application/pgp-signature; name="signature.asc"
+   The sh_eth driver simply doesn't have this -- it always use 1 descriptor.
 
------BEGIN PGP SIGNATURE-----
+> Regards,
+> Biju
 
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEcFZAACgkQqclaivrt
-76kISAgArgGcU281RHaeyZUy9SjeALqqLzwDzBizUD8/TDKXcOCcPAALwCUcvm9x
-bl9gCKZ1o74Fpgy5zWW7j5i45oMSqjZjsc28uCm6jilOufzgFlYF1BZRCBe3RU4h
-kXfhw2QOVFbC4Oj8ms6Ef9rhBy4yZWG6yHXP+kha/DtK2aQYRHJaAUcaZsO0svBI
-24ZUrdpfE/JVzKYSEeyJ+kqPQ1dasfA8YTS+3fUAnrGCNqRSwy+l5airszziNzqn
-IPBK5faP6XsyeHlVDXSGImq51A75TCpYweaNJwuiJTJg9AByOed2G/v2XVOju0UO
-0tedqIa4SpxwS0LtH3xsJmKV6O0l5A==
-=cADg
------END PGP SIGNATURE-----
-
---fgszt33qh4cysmqa--
+MBR, Sergey
