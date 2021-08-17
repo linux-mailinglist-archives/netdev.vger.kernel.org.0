@@ -2,185 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79AB33EEF12
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 17:23:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E5203EEF26
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 17:27:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237871AbhHQPX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 11:23:56 -0400
-Received: from out1.migadu.com ([91.121.223.63]:42403 "EHLO out1.migadu.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232675AbhHQPXs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Aug 2021 11:23:48 -0400
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1629213791;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=YRDIrpoiP2TYN2AF9kIZ6gsIKbpG8tdAdC94qhQeGU4=;
-        b=SJSJxx0/SDXGehEa6vbS1gq2dZe/5Q0+y8vuNpChZK/alzDG/S55UM7AC32QixiwuoFMa6
-        IHr5BBqzBKZrBFQfXhdu5Zc+aWh59/Rd6I6K7StaimCFO9i4Eb062w51GVjiY05PbDCemm
-        kUTWrTGuDD3hEtvF0xtZTvXE3Ht1pMI=
-From:   Yajun Deng <yajun.deng@linux.dev>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yajun Deng <yajun.deng@linux.dev>
-Subject: [PATCH net-next v2] net: net_namespace: Optimize the code
-Date:   Tue, 17 Aug 2021 23:23:00 +0800
-Message-Id: <20210817152300.10698-1-yajun.deng@linux.dev>
+        id S237409AbhHQP2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 11:28:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41442 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230369AbhHQP2R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 11:28:17 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07566C061764
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 08:27:44 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id c4so9050626plh.7
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 08:27:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=HsdIQbU/3hjUWvwAm2oNJ/3VUhF0ItMLeX+m/3GrXoY=;
+        b=h5fnCmXuDXzV3rh9AHCiekkvE2KSWlZsa617ysm71TYjiJEuKaQyV3QtJIfAH7K89r
+         ixq5CNlTsVrBEB9oJ3ua/H0m1SLE95dGTjYPrCtEObV35+C90PP3EmbgJlgafAMcFP06
+         5Xb7No/lrAtp+XU7U9GLdxAXHruuTP5Je5S/YvR/NpC2VvVZ/jn1p2ooqMwGFyqZB0+2
+         /WsUE2oBpqJLZAFNc6oAQUZcVPfE8O1vRp55agSMloKj/iHe1kMyj7DFNhrvC6WyoCfC
+         /BmZ+O+Jrp8Rfu/FfcEaba68JM0bvyDZam0bth7hmxjzJrvpm+VbFaQ68YK/AbIiqbXr
+         mMsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=HsdIQbU/3hjUWvwAm2oNJ/3VUhF0ItMLeX+m/3GrXoY=;
+        b=lGdZ+yw+fAA/Wctz0nsHLEytYFuuUGKGKt6cGckx8zVcMzB94Jlb7FLkkDs3dw7V93
+         4hzlTFv9jktCfFxTNBi8fq1BcluXL5r1PkPkRw+bTxInAWzfgKOae20XJAejw/PFaeju
+         DBn86liCtmuhVZvtUf7deYVHZv6f7WTK2G0oR0CTDsgzBlkAyDgYrcVYLrKDa+HvOO64
+         dyUPqpt7yqRe3RykkgWn8sVP6D5G0QRrt628M5MJ6m/1oD6GWdUsfTUvVKCF7B5eSgnX
+         g8wP/aMC1oF8tGqQI8wNRTT2xg1XqloKGAuv/+HmWinr9QF7vVAfHKojY0+YWQ6bhL3D
+         Qv1A==
+X-Gm-Message-State: AOAM5306wXvNyiea9nIN9Ax948IAmT6JIMwPK47sSLvuUfPFAt6SHG0L
+        A+oJRMarOyy+q/24LD0P0vA5sg==
+X-Google-Smtp-Source: ABdhPJxQNqaxJdC7sK1hcKEnCs/Sm8yQNgB5gIA2JHBzvCRISlRCQd8gjCPcvdGrKbju0RN/RJPcHQ==
+X-Received: by 2002:a17:90a:a42:: with SMTP id o60mr4224230pjo.191.1629214063524;
+        Tue, 17 Aug 2021 08:27:43 -0700 (PDT)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id s26sm3444444pgv.46.2021.08.17.08.27.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Aug 2021 08:27:43 -0700 (PDT)
+Date:   Tue, 17 Aug 2021 08:27:40 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Gokul Sivakumar <gokulkumar792@gmail.com>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>
+Subject: Re: [PATCH iproute2-next v2 2/3] bridge: fdb: don't colorize the
+ "dev" & "dst" keywords in "bridge -c fdb"
+Message-ID: <20210817082740.6be97031@hermes.local>
+In-Reply-To: <20210814184727.2405108-3-gokulkumar792@gmail.com>
+References: <20210814184727.2405108-1-gokulkumar792@gmail.com>
+        <20210814184727.2405108-3-gokulkumar792@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yajun.deng@linux.dev
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is only one caller for ops_free(), so inline it.
-Separate net_drop_ns() and net_free(), so the net_free()
-can be called directly.
-Add free_exit_list() helper function for free net_exit_list.
+On Sun, 15 Aug 2021 00:17:26 +0530
+Gokul Sivakumar <gokulkumar792@gmail.com> wrote:
 
-====================
-v2:
- - v1 does not apply, rebase it.
-====================
+> +		if (!is_json_context())
+> +			print_string(PRINT_FP, NULL, "dev ", NULL);
 
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
----
- net/core/net_namespace.c | 52 +++++++++++++++++++---------------------
- 1 file changed, 24 insertions(+), 28 deletions(-)
-
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index 9b5a767eddd5..a448a9b5bb2d 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -98,7 +98,7 @@ static int net_assign_generic(struct net *net, unsigned int id, void *data)
- 	}
- 
- 	ng = net_alloc_generic();
--	if (ng == NULL)
-+	if (!ng)
- 		return -ENOMEM;
- 
- 	/*
-@@ -148,13 +148,6 @@ static int ops_init(const struct pernet_operations *ops, struct net *net)
- 	return err;
- }
- 
--static void ops_free(const struct pernet_operations *ops, struct net *net)
--{
--	if (ops->id && ops->size) {
--		kfree(net_generic(net, *ops->id));
--	}
--}
--
- static void ops_pre_exit_list(const struct pernet_operations *ops,
- 			      struct list_head *net_exit_list)
- {
-@@ -184,7 +177,7 @@ static void ops_free_list(const struct pernet_operations *ops,
- 	struct net *net;
- 	if (ops->size && ops->id) {
- 		list_for_each_entry(net, net_exit_list, exit_list)
--			ops_free(ops, net);
-+			kfree(net_generic(net, *ops->id));
- 	}
- }
- 
-@@ -433,15 +426,18 @@ static struct net *net_alloc(void)
- 
- static void net_free(struct net *net)
- {
--	kfree(rcu_access_pointer(net->gen));
--	kmem_cache_free(net_cachep, net);
-+	if (refcount_dec_and_test(&net->passive)) {
-+		kfree(rcu_access_pointer(net->gen));
-+		kmem_cache_free(net_cachep, net);
-+	}
- }
- 
- void net_drop_ns(void *p)
- {
--	struct net *ns = p;
--	if (ns && refcount_dec_and_test(&ns->passive))
--		net_free(ns);
-+	struct net *net = (struct net *)p;
-+
-+	if (net)
-+		net_free(net);
- }
- 
- struct net *copy_net_ns(unsigned long flags,
-@@ -479,7 +475,7 @@ struct net *copy_net_ns(unsigned long flags,
- put_userns:
- 		key_remove_domain(net->key_domain);
- 		put_user_ns(user_ns);
--		net_drop_ns(net);
-+		net_free(net);
- dec_ucounts:
- 		dec_net_namespaces(ucounts);
- 		return ERR_PTR(rv);
-@@ -611,7 +607,7 @@ static void cleanup_net(struct work_struct *work)
- 		dec_net_namespaces(net->ucounts);
- 		key_remove_domain(net->key_domain);
- 		put_user_ns(net->user_ns);
--		net_drop_ns(net);
-+		net_free(net);
- 	}
- }
- 
-@@ -1120,6 +1116,14 @@ static int __init net_ns_init(void)
- 
- pure_initcall(net_ns_init);
- 
-+static void free_exit_list(struct pernet_operations *ops, struct list_head *net_exit_list)
-+{
-+	ops_pre_exit_list(ops, net_exit_list);
-+	synchronize_rcu();
-+	ops_exit_list(ops, net_exit_list);
-+	ops_free_list(ops, net_exit_list);
-+}
-+
- #ifdef CONFIG_NET_NS
- static int __register_pernet_operations(struct list_head *list,
- 					struct pernet_operations *ops)
-@@ -1145,10 +1149,7 @@ static int __register_pernet_operations(struct list_head *list,
- out_undo:
- 	/* If I have an error cleanup all namespaces I initialized */
- 	list_del(&ops->list);
--	ops_pre_exit_list(ops, &net_exit_list);
--	synchronize_rcu();
--	ops_exit_list(ops, &net_exit_list);
--	ops_free_list(ops, &net_exit_list);
-+	free_exit_list(ops, &net_exit_list);
- 	return error;
- }
- 
-@@ -1161,10 +1162,8 @@ static void __unregister_pernet_operations(struct pernet_operations *ops)
- 	/* See comment in __register_pernet_operations() */
- 	for_each_net(net)
- 		list_add_tail(&net->exit_list, &net_exit_list);
--	ops_pre_exit_list(ops, &net_exit_list);
--	synchronize_rcu();
--	ops_exit_list(ops, &net_exit_list);
--	ops_free_list(ops, &net_exit_list);
-+
-+	free_exit_list(ops, &net_exit_list);
- }
- 
- #else
-@@ -1187,10 +1186,7 @@ static void __unregister_pernet_operations(struct pernet_operations *ops)
- 	} else {
- 		LIST_HEAD(net_exit_list);
- 		list_add(&init_net.exit_list, &net_exit_list);
--		ops_pre_exit_list(ops, &net_exit_list);
--		synchronize_rcu();
--		ops_exit_list(ops, &net_exit_list);
--		ops_free_list(ops, &net_exit_list);
-+		free_exit_list(ops, &net_exit_list);
- 	}
- }
- 
--- 
-2.32.0
-
+Why not the check for is_json_context is unnecessary here.
+That is what PRINT_FP does.
