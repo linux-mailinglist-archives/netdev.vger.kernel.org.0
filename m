@@ -2,159 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AB8D3EEF3B
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 17:36:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAA1F3EEF58
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 17:46:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237716AbhHQPhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 11:37:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43406 "EHLO
+        id S237423AbhHQPqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 11:46:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231893AbhHQPhL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 11:37:11 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B0F4C061764;
-        Tue, 17 Aug 2021 08:36:38 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id oa17so32662515pjb.1;
-        Tue, 17 Aug 2021 08:36:38 -0700 (PDT)
+        with ESMTP id S231893AbhHQPqc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 11:46:32 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67280C0613C1
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 08:45:59 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id e75-20020a25374e000000b00597165a06d2so1065919yba.6
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 08:45:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jBb72hVOoT632QaKCIWdx6/CC01Jwh36ZqbBo7qR29w=;
-        b=MZ87ScQaeTXUx2zc3QJX8paFfZdkSVdSMUYc0v0LY2+hc8AhlF3aqwldmB/BXXfh/z
-         xVUkX3EuT93f+Ekid/9wOV8vd4VGMuUzHWRKeiBzsSym+hW8V3hELzVo+u+KhQB9PaFI
-         yKaN6w7ws4iHi95okxDvcvyCJdiEqWiExOJPn7Rtxomj/p9ErurP79QsKnpF40UWedHY
-         wXhiv+BXDH0p6Ybpa+matnVITHtpuG4LstcJLEA+MFTvG9pqsO1LvATqA0RHijA20GDK
-         RCmlz/5mC+apSlI/jvD+4R9BoBCU6SvqrbqxGY696R6zje19Bg6nqx+tPpa86481eswl
-         CE+w==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=BfhAh8rwBz608rvr8spcyMFyyewDU7pH/HrVKwG96Tk=;
+        b=WXR3freRDToAp2xl4SDlN3yMdKCjUbEh05+DmAfMKENt527cAuH+l3btY/z5Bn73SS
+         ldMfJ0Tycf9UoIbEbxLYSZyskgEVbhR1UUtrYuFStiBtfY0Y7zj63voOtao4rEQfl/EA
+         7RwCzZf1S9lPQWFV6hZEdJ2FyqWf7CtA1v0yuWaqji8eyBKI+DlanGexREVxFOdujpVa
+         uC+dDYemqb/3FDg9/wRAYzPPW2wLc/lvsyEa0bP1izBuFvFrsjCvwaLXASu4YKxSSkNY
+         fyyDJgKkDIMrynCbwtrLMMMyMmQuos0jopxvFlz5eZYJc9hDdHVtndE5Okf4u8kxnB9l
+         1KKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=jBb72hVOoT632QaKCIWdx6/CC01Jwh36ZqbBo7qR29w=;
-        b=DoKahIvjPv5ERb/sjGq5RyfrvGPaR61WnTwe+BKIzIP7CwBfpmkHKiYD2FyiqSjcHe
-         5LwVegZbsxOVUPKJ5PH/zF6ZH6HqwdkhApKAszY2nDrN7zebfhGfSrs3BJw95i45c3xp
-         6WTBv1jw7IbiGRWhuIbWxkJdBDrymO2fMyqlK1MFuBDLjxySPnqKBMUT5/dklKUtx9TZ
-         vbStajETAWrG0+9+7QXsNGlWuMIfNmPBTB5ZKqJsabJd7XpHMe985tp6NWBsnMh7NWmV
-         g5mPxWHm4aBoLIrADSzi2ifSmxmak32+7rdkCe2kx/JKPIMy7Y4AtZ1yWHnNsHdg9jTV
-         QrWw==
-X-Gm-Message-State: AOAM531g9bNl4Ihuzhsr5pklrb3WVQ+aL+enk7AF2qjRW6K5UOkj7q9W
-        36rehwhwJyPr0nOLCeKMboM=
-X-Google-Smtp-Source: ABdhPJyI43P3qYYJRg0q+cd32Cif7a9Xl5o4vVONB3bqiCMyd2bKoq7nZrIha1ZM+VxRpd1t2YLiqw==
-X-Received: by 2002:a17:903:31c3:b029:ed:6f74:49c7 with SMTP id v3-20020a17090331c3b02900ed6f7449c7mr3321877ple.12.1629214598127;
-        Tue, 17 Aug 2021 08:36:38 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
-        by smtp.gmail.com with ESMTPSA id q68sm3828407pgq.5.2021.08.17.08.36.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Aug 2021 08:36:37 -0700 (PDT)
-Subject: Re: [PATCH V3 08/13] HV/Vmbus: Initialize VMbus ring buffer for
- Isolation VM
-To:     Michael Kelley <mikelley@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "joro@8bytes.org" <joro@8bytes.org>,
-        "will@kernel.org" <will@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "ardb@kernel.org" <ardb@kernel.org>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "pgonda@google.com" <pgonda@google.com>,
-        "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "rppt@kernel.org" <rppt@kernel.org>,
-        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "saravanand@fb.com" <saravanand@fb.com>,
-        "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
-        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "rientjes@google.com" <rientjes@google.com>,
-        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
-        "tj@kernel.org" <tj@kernel.org>
-Cc:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        vkuznets <vkuznets@redhat.com>,
-        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
-        "dave.hansen@intel.com" <dave.hansen@intel.com>
-References: <20210809175620.720923-1-ltykernel@gmail.com>
- <20210809175620.720923-9-ltykernel@gmail.com>
- <MWHPR21MB1593FFD7F3402753751F433CD7FD9@MWHPR21MB1593.namprd21.prod.outlook.com>
-From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <9de7c3ae-8f3f-3fc4-0491-b9df24f03cb6@gmail.com>
-Date:   Tue, 17 Aug 2021 23:36:22 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
-MIME-Version: 1.0
-In-Reply-To: <MWHPR21MB1593FFD7F3402753751F433CD7FD9@MWHPR21MB1593.namprd21.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=BfhAh8rwBz608rvr8spcyMFyyewDU7pH/HrVKwG96Tk=;
+        b=qG6HARwo/hki2E5KB0t8q3TaJCxkhjBsR2y2x1TIzrogw4MRzTdg/NdJv2M0Tuucfh
+         mrVypAK+S3p/CRBBqkSGHWF5UCeV6iU1SmYKu4wXlwqNBALuApjLVTgUEg5d2Muenl61
+         LF7sj+OYXKGsclLxQKwxwdFSqg3yWRKKO39dB0aNcWIpSYxDaPOQ49ERmUByyouscMDO
+         Mp2P6+l4j9fdxj51bvbz1kaTeBfu2Qx0d6j6gfspLS02JW9KnsWC0NiyoIJo+xx51d88
+         97spNQdrhXh4Phc7qRGO+Vl25/xejJU2tNuWZk0eMptdYQmVftEZCNV5oFqs39Rc7tAI
+         yQMQ==
+X-Gm-Message-State: AOAM530wvOD024PJWVGchXsM9YxeyqRJU22nOSg+hwWtNG0xql+tt64K
+        JEaIUKAG2OZ2YiAQeX7EAfTSgooWtI9dRqlYHwJrHN9lUrku6QyRA1pBMU/jtb9rOEz/f8Jseqr
+        uUwQJQ/koGyo25aPEJLq3TuDG+y5hkR/1Wgw4A5DcDwhS4C/D7bmKug==
+X-Google-Smtp-Source: ABdhPJx8Q8iWeacjC/ya0q+3BeFDPPi/z3ckCkUuM9BSZQOrzxR8k32JGqQZoTpIM6zGLeaZfniQums=
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:e3f2:64ab:dda:c30f])
+ (user=sdf job=sendgmr) by 2002:a25:b18e:: with SMTP id h14mr5290749ybj.441.1629215158605;
+ Tue, 17 Aug 2021 08:45:58 -0700 (PDT)
+Date:   Tue, 17 Aug 2021 08:45:55 -0700
+Message-Id: <20210817154556.92901-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.33.0.rc1.237.g0d66db33f3-goog
+Subject: [PATCH bpf-next v2 1/2] bpf: use kvmalloc for map values in syscall
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Use kvmalloc/kvfree for temporary value when manipulating a map via
+syscall. kmalloc might not be sufficient for percpu maps where the value
+is big (and further multiplied by hundreds of CPUs).
 
+Can be reproduced with netcnt test on qemu with "-smp 255".
 
-On 8/17/2021 1:28 AM, Michael Kelley wrote:
-> This patch does the following:
-> 
-> 1) The existing ring buffer wrap-around mapping functionality is still
-> executed in hv_ringbuffer_init() when not doing SNP isolation.
-> This mapping is based on an array of struct page's that describe the
-> contiguous physical memory.
-> 
-> 2) New ring buffer wrap-around mapping functionality is added in
-> hv_ringbuffer_post_init() for the SNP isolation case.  The case is
-> handled in hv_ringbuffer_post_init() because it must be done after
-> the GPADL is established, since that's where the host visibility
-> is set.  What's interesting is that this case is exactly the same
-> as #1 above, except that the mapping is based on physical
-> memory addresses instead of struct page's.  We have to use physical
-> addresses because of applying the GPA boundary, and there are no
-> struct page's for those physical addresses.
-> 
-> Unfortunately, this duplicates a lot of logic in #1 and #2, except
-> for the struct page vs. physical address difference.
-> 
-> Proposal:  Couldn't we always do #2, even for the normal case
-> where SNP isolation is not being used?   The difference would
-> only be in whether the GPA boundary is added.  And it looks like
-> the normal case could be done after the GPADL is established,
-> as setting up the GPADL doesn't have any dependencies on
-> having the ring buffer mapped.  This approach would remove
-> a lot of duplication.  Just move the calls to hv_ringbuffer_init()
-> to after the GPADL is established, and do all the work there for
-> both cases.
-> 
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ kernel/bpf/syscall.c | 28 +++++++++++-----------------
+ 1 file changed, 11 insertions(+), 17 deletions(-)
 
-Hi Michael:
-     Thanks for suggestion. I just keep the original logic in current
-code. I will try combining these two functions and report back.
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 7420e1334ab2..075f650d297a 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -1076,7 +1076,7 @@ static int map_lookup_elem(union bpf_attr *attr)
+ 	value_size = bpf_map_value_size(map);
+ 
+ 	err = -ENOMEM;
+-	value = kmalloc(value_size, GFP_USER | __GFP_NOWARN);
++	value = kvmalloc(value_size, GFP_USER | __GFP_NOWARN);
+ 	if (!value)
+ 		goto free_key;
+ 
+@@ -1091,7 +1091,7 @@ static int map_lookup_elem(union bpf_attr *attr)
+ 	err = 0;
+ 
+ free_value:
+-	kfree(value);
++	kvfree(value);
+ free_key:
+ 	kfree(key);
+ err_put:
+@@ -1137,16 +1137,10 @@ static int map_update_elem(union bpf_attr *attr, bpfptr_t uattr)
+ 		goto err_put;
+ 	}
+ 
+-	if (map->map_type == BPF_MAP_TYPE_PERCPU_HASH ||
+-	    map->map_type == BPF_MAP_TYPE_LRU_PERCPU_HASH ||
+-	    map->map_type == BPF_MAP_TYPE_PERCPU_ARRAY ||
+-	    map->map_type == BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE)
+-		value_size = round_up(map->value_size, 8) * num_possible_cpus();
+-	else
+-		value_size = map->value_size;
++	value_size = bpf_map_value_size(map);
+ 
+ 	err = -ENOMEM;
+-	value = kmalloc(value_size, GFP_USER | __GFP_NOWARN);
++	value = kvmalloc(value_size, GFP_USER | __GFP_NOWARN);
+ 	if (!value)
+ 		goto free_key;
+ 
+@@ -1157,7 +1151,7 @@ static int map_update_elem(union bpf_attr *attr, bpfptr_t uattr)
+ 	err = bpf_map_update_value(map, f, key, value, attr->flags);
+ 
+ free_value:
+-	kfree(value);
++	kvfree(value);
+ free_key:
+ 	kfree(key);
+ err_put:
+@@ -1367,7 +1361,7 @@ int generic_map_update_batch(struct bpf_map *map,
+ 	if (!key)
+ 		return -ENOMEM;
+ 
+-	value = kmalloc(value_size, GFP_USER | __GFP_NOWARN);
++	value = kvmalloc(value_size, GFP_USER | __GFP_NOWARN);
+ 	if (!value) {
+ 		kfree(key);
+ 		return -ENOMEM;
+@@ -1390,7 +1384,7 @@ int generic_map_update_batch(struct bpf_map *map,
+ 	if (copy_to_user(&uattr->batch.count, &cp, sizeof(cp)))
+ 		err = -EFAULT;
+ 
+-	kfree(value);
++	kvfree(value);
+ 	kfree(key);
+ 	return err;
+ }
+@@ -1429,7 +1423,7 @@ int generic_map_lookup_batch(struct bpf_map *map,
+ 	if (!buf_prevkey)
+ 		return -ENOMEM;
+ 
+-	buf = kmalloc(map->key_size + value_size, GFP_USER | __GFP_NOWARN);
++	buf = kvmalloc(map->key_size + value_size, GFP_USER | __GFP_NOWARN);
+ 	if (!buf) {
+ 		kfree(buf_prevkey);
+ 		return -ENOMEM;
+@@ -1492,7 +1486,7 @@ int generic_map_lookup_batch(struct bpf_map *map,
+ 
+ free_buf:
+ 	kfree(buf_prevkey);
+-	kfree(buf);
++	kvfree(buf);
+ 	return err;
+ }
+ 
+@@ -1547,7 +1541,7 @@ static int map_lookup_and_delete_elem(union bpf_attr *attr)
+ 	value_size = bpf_map_value_size(map);
+ 
+ 	err = -ENOMEM;
+-	value = kmalloc(value_size, GFP_USER | __GFP_NOWARN);
++	value = kvmalloc(value_size, GFP_USER | __GFP_NOWARN);
+ 	if (!value)
+ 		goto free_key;
+ 
+@@ -1579,7 +1573,7 @@ static int map_lookup_and_delete_elem(union bpf_attr *attr)
+ 	err = 0;
+ 
+ free_value:
+-	kfree(value);
++	kvfree(value);
+ free_key:
+ 	kfree(key);
+ err_put:
+-- 
+2.33.0.rc1.237.g0d66db33f3-goog
 
-Thanks.
