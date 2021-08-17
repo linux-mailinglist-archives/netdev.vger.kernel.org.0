@@ -2,76 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE0C33EE225
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 03:29:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23D713EE40F
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 04:00:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233322AbhHQBaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 21:30:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230304AbhHQBaA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 21:30:00 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71BA0C061764
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 18:29:28 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id w17so36408773ybl.11
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 18:29:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=iELgCLbQqv5tFsHgMTPz+ef0nc8wwD8GBHZ8BVFl4tE=;
-        b=tue17j1PdvWA0hQaBbf43nUTLXutmapCJg4FYJh3cWlYo+Btc3n7oBWSoZjbJip0WE
-         R+KnUlb3oNw+3pVHUjZ2Yvx9S/1SQ9bytxpVoMJOddGENjk59w2aAul2J1+tKbPO4GPk
-         Wq52CSNf48eBB9sDj2fKBRttzFN2AuUKwR4oFzhMtQEZc7hBIhYPO9gtR2hCwWmO8R5y
-         YqXzsPENwNLLFmXzkHCVgz+29braLBxm/e5wkUUQXcYbgd2nX+Untv1ofRCP9Kn7UhZ6
-         q4fygk0FRknQbqv2wBD6NYLvR6xUZ1wEhM4Xi1K5QyhsO5XUcPSEE9y7A2IKyFGdp2p2
-         92rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=iELgCLbQqv5tFsHgMTPz+ef0nc8wwD8GBHZ8BVFl4tE=;
-        b=se1zMaU/qJASYCU9lyY61z+hM62AQxDB4tb0a9vh1MQOg8EBkTO3wl1tj8BeEFJgfK
-         eLxDh6aDljFxxTxTtpi/83Y7rDsW7EBD1qNH6V0kdcDCs+vPdQywhMiKpupNNt85qaeN
-         9J179fpZi4kC8+kK4n6dBTqgpGJ4BrTzIbyfwPBbblKmuyrhOmMHYnu3Bk/royUAnzxz
-         uaHjLAFFRd4U+0cGzA5Zn1bVXiwJAwnk37Ygnkt48hthC7A+suyFqDXH/W2TqxlPvK8G
-         D1BZ1/jIJh5PsEFe34wRcTw/hm2SJozeQMv1yvkF/JWBztM+m+BrBQZVpxbzl7Z1hp+8
-         73ZQ==
-X-Gm-Message-State: AOAM532kF6eMC7+SYwPvUups9hh2rew1G2cpQGEyQ3V4b6+M/9DTfVls
-        J3FOoM3CAoLZ8ejpDpLyxPSpR2fQaOpbpnXlw/Q=
-X-Google-Smtp-Source: ABdhPJx5JpQUOD6hL8xQ5FKnKRywqShKgMMToIKFkhozmhA46rr5kDoOVnR24pIzeAIZNXp4Pcq8/Xz7j0xhg2OmX2A=
-X-Received: by 2002:a25:a4e5:: with SMTP id g92mr1211223ybi.327.1629163767722;
- Mon, 16 Aug 2021 18:29:27 -0700 (PDT)
+        id S236050AbhHQCAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 22:00:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41706 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233238AbhHQCAj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 22:00:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 084E360F55;
+        Tue, 17 Aug 2021 02:00:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629165607;
+        bh=MVnubLbxEzYHgLlzZ7aRkr3ISMZ+jDiZOyPTzWQo7T0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=uFcUAC5i++kNEHGEf/zN8dR594RJDrxGy8M45/u1jF5u/x/NW0eC1qH2OzH5N4cij
+         UNlt+R+dh2RI+QPiKTNqdPYcbQpM76L3ajsXvbdX1l20gLz9At/aWY7LpWTbOv3VZH
+         cDXf8a+2m2XpsFlLEDOAcrpUEInCa73RfasnzhmqVMtxV25Qn7I6UalGMaRf3i+1MB
+         wlGT9chFOYlX7Rn9jK3doqDErpYSED7m99bzE/WM5ehgsFLeRPTKNI9JTnor9YI+Ap
+         aq/s+liEKnf7UMDjRTzBrlT8mOGTv8H+aQDYx5uk7nPPRyBv5E0H3UPbRuptmrg5yE
+         b48NBWtCYC7hw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EB111609DA;
+        Tue, 17 Aug 2021 02:00:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Received: by 2002:a05:7000:5e1b:0:0:0:0 with HTTP; Mon, 16 Aug 2021 18:29:27
- -0700 (PDT)
-Reply-To: charleswjacksonjr94@outlook.com
-From:   "Charles w.jackson" <powellilluminati666@gmail.com>
-Date:   Mon, 16 Aug 2021 18:29:27 -0700
-Message-ID: <CAC=uWm46MdtWJBdyKdxeA+rymVE5qe6g7LQ5=Q28gaeaZ+L0Mg@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v7 0/5] sockmap: add sockmap support for unix stream
+ socket
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162916560695.26282.3837040617464847653.git-patchwork-notify@kernel.org>
+Date:   Tue, 17 Aug 2021 02:00:06 +0000
+References: <20210816190327.2739291-1-jiang.wang@bytedance.com>
+In-Reply-To: <20210816190327.2739291-1-jiang.wang@bytedance.com>
+To:     Jiang Wang <jiang.wang@bytedance.com>
+Cc:     netdev@vger.kernel.org, cong.wang@bytedance.com,
+        duanxiongchun@bytedance.com, xieyongji@bytedance.com,
+        chaiwen.cc@bytedance.com, john.fastabend@gmail.com,
+        jakub@cloudflare.com, davem@davemloft.net, kuba@kernel.org,
+        daniel@iogearbox.net, lmb@cloudflare.com, ast@kernel.org,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org, shuah@kernel.org, viro@zeniv.linux.org.uk,
+        christian.brauner@ubuntu.com, rao.shoaib@oracle.com,
+        johan.almbladh@anyfinetworks.com, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=20
-Hallo lieber Beg=C3=BCnstigter
+Hello:
 
-Eine Million zweihunderttausend Dollar (1.200.000.000,00 USD) wurden gespen=
-det
-Charles.w.jackson mit einem Power Ball-Jackpot von 344,6 Millionen
-US-Dollar, den er
-in den USA gewonnen. Gehen Sie zur=C3=BCck, um weitere Informationen zu
-Anspr=C3=BCchen zu erhalten:
-charleswjacksonjr94@outlook.com.
+This series was applied to bpf/bpf-next.git (refs/heads/master):
 
-    Es wurde festgestellt, dass, wenn Sie diese E-Mail in Ihrem Spam
-finden, es bitte wissen
-Es wird durch ein schwaches Netzwerk verursacht, das auf Ihre Antwort warte=
-t
+On Mon, 16 Aug 2021 19:03:19 +0000 you wrote:
+> This patch series add support for unix stream type
+> for sockmap. Sockmap already supports TCP, UDP,
+> unix dgram types. The unix stream support is similar
+> to unix dgram.
+> 
+> Also add selftests for unix stream type in sockmap tests.
+> 
+> [...]
 
-Herr Charles.w.jackson.
+Here is the summary with links:
+  - [bpf-next,v7,1/5] af_unix: add read_sock for stream socket types
+    https://git.kernel.org/bpf/bpf-next/c/77462de14a43
+  - [bpf-next,v7,2/5] af_unix: add unix_stream_proto for sockmap
+    https://git.kernel.org/bpf/bpf-next/c/94531cfcbe79
+  - [bpf-next,v7,3/5] selftest/bpf: add tests for sockmap with unix stream type.
+    https://git.kernel.org/bpf/bpf-next/c/9b03152bd469
+  - [bpf-next,v7,4/5] selftest/bpf: change udp to inet in some function names
+    https://git.kernel.org/bpf/bpf-next/c/75e0e27db6cf
+  - [bpf-next,v7,5/5] selftest/bpf: add new tests in sockmap for unix stream to tcp.
+    https://git.kernel.org/bpf/bpf-next/c/31c50aeed5a1
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
