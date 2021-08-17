@@ -2,76 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37E533EEC62
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 14:25:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AA5C3EEC8F
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 14:36:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239882AbhHQMZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 08:25:36 -0400
-Received: from mga18.intel.com ([134.134.136.126]:45836 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237197AbhHQMZf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Aug 2021 08:25:35 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10078"; a="203218621"
-X-IronPort-AV: E=Sophos;i="5.84,328,1620716400"; 
-   d="scan'208";a="203218621"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2021 05:25:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,328,1620716400"; 
-   d="scan'208";a="510446479"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 17 Aug 2021 05:24:58 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id CDDF9FE; Tue, 17 Aug 2021 15:24:58 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 net-next 1/1] ptp_ocp: use bits.h macros for all masks
-Date:   Tue, 17 Aug 2021 15:24:54 +0300
-Message-Id: <20210817122454.50616-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.32.0
+        id S236432AbhHQMgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 08:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58534 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230323AbhHQMgx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 08:36:53 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 702BEC061764
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 05:36:20 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id e15so24705970plh.8
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 05:36:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=Bgbzg68ItNKqgE+D4s054W5bp5jbhjO1CWjzF1+y4+c=;
+        b=G4QhXXNyDakhpuxPp63l7N2YvMHD7fiM1Y42DFaKWxjb0fAp5i753sQOOXVL9VrR6A
+         KcSFyZMQHVm/h4Vrb2EaPpRArH5MMcCdZqfNFOiCVI2SkyfdUv1REcE6jCq4XoPpFJlt
+         VxwsFFZR7TDQGELpUhnxOkb7XGwjMZJ8bDX+7BGeZZqe8bhqylc/yy5fzjF7KJoMpJ4O
+         21SZYT9XoAqBJ6MT9PMKYghIGNIVtN+VRT9EREIiBtOO/g/IESjfhXEmxkNibaA1z9e6
+         2NqmEhXpVUM09BDItt4MB7ahPsE/Jl46YUu2etCSgs/MH+bIzBt5PeMfM9ThfWOBOqj1
+         Q/OA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=Bgbzg68ItNKqgE+D4s054W5bp5jbhjO1CWjzF1+y4+c=;
+        b=dF07rbRMo+SLVdSZzFFz55hH/xtpD9pOdYQ/a9mJH4mAdNpb3nIwpZlNJkWyMU9f42
+         pEIiR3R9utIwFjKdylkh7XnTYwjIZLes5Z+2AG650wB5+6y9FWcYuMjy/wJqNIDpBpdy
+         rBWgbfx7nqMzspdBTqKNpe1odCnBblNbOSb1K+DDIx7nLt9QPTH7GaAjxcGrHwcem/Xw
+         OZOTl43m1uaKsBqje4FOYFhKGAUS6GiBGNXFLRA927DviQWXLmKMAFzLZqBGQrOcuKWm
+         yi4PPR4G0noBnO9QIsS+qEQ8wmw8IvfIKcw5DK4NopzIW6lJuEaLyNDvWxpYJzTCkzfB
+         AdnQ==
+X-Gm-Message-State: AOAM530QQKHAPesAuglX6LiXV/+Xgqwe7gkv73VX9Wvx/O6mwGVCoNrk
+        yUg6GdVvNdjsQFjuw/luv+o0oM8de2ZzECiBxL4=
+X-Google-Smtp-Source: ABdhPJy65cf1tqvxv+3H1Dw+GEK3067pwtX8HKhid1CLSFOTjgsfSzY7KTLsfqBG6rYElAVu3c/EDpCPcbv9C4bL1Ik=
+X-Received: by 2002:a65:68cd:: with SMTP id k13mr3315337pgt.105.1629203780076;
+ Tue, 17 Aug 2021 05:36:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a17:90a:1546:0:0:0:0 with HTTP; Tue, 17 Aug 2021 05:36:19
+ -0700 (PDT)
+Reply-To: donaldcurtis3000@gmail.com
+From:   Donald Curtis <nambouriben@gmail.com>
+Date:   Tue, 17 Aug 2021 13:36:19 +0100
+Message-ID: <CABsiibeJGv3xnbTtb7zWrQ1x4N1887b5bCv_W_DfqZ1-7PraRQ@mail.gmail.com>
+Subject: hi
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently we are using BIT(), but GENMASK(). Make use of the latter one
-as well (far less error-prone, far more concise).
+HALLO,
+Sch=C3=B6nen Tag.
+Bitte best=C3=A4tigen Sie mir, ob dies Ihre richtige E-Mail-Adresse ist und
+kontaktieren Sie mich f=C3=BCr unser Interesse.
+Aufrichtig,
+Donald
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/ptp/ptp_ocp.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index caf9b37c5eb1..922f92637db8 100644
---- a/drivers/ptp/ptp_ocp.c
-+++ b/drivers/ptp/ptp_ocp.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /* Copyright (c) 2020 Facebook */
- 
-+#include <linux/bits.h>
- #include <linux/err.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-@@ -84,10 +85,10 @@ struct tod_reg {
- #define TOD_CTRL_DISABLE_FMT_A	BIT(17)
- #define TOD_CTRL_DISABLE_FMT_B	BIT(16)
- #define TOD_CTRL_ENABLE		BIT(0)
--#define TOD_CTRL_GNSS_MASK	((1U << 4) - 1)
-+#define TOD_CTRL_GNSS_MASK	GENMASK(3, 0)
- #define TOD_CTRL_GNSS_SHIFT	24
- 
--#define TOD_STATUS_UTC_MASK	0xff
-+#define TOD_STATUS_UTC_MASK	GENMASK(7, 0)
- #define TOD_STATUS_UTC_VALID	BIT(8)
- #define TOD_STATUS_LEAP_VALID	BIT(16)
- 
--- 
-2.32.0
-
+HALLO,
+Sch=C3=B6nen Tag.
+Bitte best=C3=A4tigen Sie mir, ob dies Ihre richtige E-Mail-Adresse ist und
+kontaktieren Sie mich f=C3=BCr unser Interesse.
+Aufrichtig,
+Donald
