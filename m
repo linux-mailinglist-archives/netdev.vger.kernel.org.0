@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEF6F3EE9CF
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 11:29:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2A193EE9D9
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 11:30:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239646AbhHQJ3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 05:29:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43626 "EHLO
+        id S239720AbhHQJaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 05:30:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239505AbhHQJ3u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 05:29:50 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13655C06129E;
-        Tue, 17 Aug 2021 02:29:07 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id h13so27634976wrp.1;
-        Tue, 17 Aug 2021 02:29:07 -0700 (PDT)
+        with ESMTP id S239540AbhHQJ3w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 05:29:52 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB0EC0612A3;
+        Tue, 17 Aug 2021 02:29:09 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id v4so20436413wro.12;
+        Tue, 17 Aug 2021 02:29:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=v2G7VaPISORqVkgrkmEmFicS9tj5hklL0AfR8I06gQY=;
-        b=kTW8+G3yKhuKYr0muHLe9pZmoevpfryh596urdwdqn9AqwUY/+iIFE+ZKg+78hZevt
-         4fjyM7lN/ebbRYSyChRzJTAHTM4yRSe/cmnyiRi0wRo2J+fYp8hxaPg98C5cHPgj5ZoM
-         ALrmdHER5otVY0Rt6Byqv6mZXlB5JRBI+9dwNDBo7bkfpQHOAvoL+tTtRhKbqwnp92hX
-         ljqTSHSdfJY6BCde6hEyDKDz50rLHXz8DPKDtSvmfo2XiQ8hSUJQftP4VjWKSnbGq2Fc
-         NIQOIQP5AzPGKkqTgSYEwqcMoWAWBRMJrhT663MnF21aOlnuSa5Uk5y8Usj4p9u2oi3y
-         D0kQ==
+        bh=FkJ6l/1JcnDsZ1+j4Ei1va5lDdBESZYy8Ogo4L7H+ew=;
+        b=B1BNanuh/JAJd8etUfKXIcG+Lu87FXn+7UHdyBomwQ29wBvMO/wc4tWQrV7HcKkSKJ
+         202EVecVizoxAJOfVfKJRrCVqa7yQgSDfnOtBwlaWSghg1GbI1e3OMDJu3RVGWLEdeOd
+         NtG8rS3RdXnZm/p5//27m4be/DPBdYHJzxw7r0UxqI4fODUCwzBqWgArWtkP42VYvqjL
+         Blg3H7WXjKLAnf+4TFqtCXvXNlm7SXwzT8N/l+01NaBzCWV8xgXsDLojiYahji8nFz+A
+         TQygXX1QBK5hfTQa+sddGZMaQobtWSLEVhbrsx6XZt4LlGpskk2RM5dDeg5+KNHRM66g
+         yK+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=v2G7VaPISORqVkgrkmEmFicS9tj5hklL0AfR8I06gQY=;
-        b=Bfe3Lv9Fl6F4K/YKRy54m/2TbkTsLQ/MxbH8Iq+aLgXPkXMCGJe1jodAmh/GtUcLH8
-         LK6BcFz2ykBrdMQl9EgG/OvEXb6tRWyBAc3EvC26QAXcToNMhZa9/VQPecowSRHXgoDZ
-         Nc4m67m6CRVdYgMWKh1/gwYrTPPk6zHn4fPz+h8zJK2/BbrfEddAT92Dd5ba62t9jfkn
-         60iHmN++ibRZVwKeNu3jg8/Yyxw9ePxshWdDzvqg5K2cA/1cV0kTyySoRn73adIjw7A5
-         JN1JyHRCKnNU56Ivv/khgp27Q8XwUxTxWG1a/f4biP7k/7WG5kHYT5clNnAHGvqneFPO
-         VQQg==
-X-Gm-Message-State: AOAM5307x+B9fe3CmcqZo5uRDdGXlVyKRCdJq5Q2eVO8JQYLHU9f9X6m
-        v0pthCaFYBHYY3sByGsZNAQ=
-X-Google-Smtp-Source: ABdhPJxBeIXRyG9/OWZMR/tf4t3xlnI0HrJIMyWGhX8WcOXNoP895UI2g3xwb7QFsqnwNkI69czJXQ==
-X-Received: by 2002:a5d:6451:: with SMTP id d17mr2879604wrw.154.1629192546528;
-        Tue, 17 Aug 2021 02:29:06 -0700 (PDT)
+        bh=FkJ6l/1JcnDsZ1+j4Ei1va5lDdBESZYy8Ogo4L7H+ew=;
+        b=GIfJpLwEOH76Tro4uM5UfCfc3CHpLyVoOct+Dpc/BFiJ5Bfss3LNdBiO9qivF1F+ZZ
+         BkOr//nisv1p6AQaGesdiAQaxuzxXMa2hvSuvWik0kLK+lpwkjYPpA61/eHiOUqHCsoh
+         oqJ/7sUR3pPE9liR0qFUaIBDnDULiMLhTW9rGbfLhk3++NaM2ik6vQ0FO1QaTw39HjAC
+         XFB1EEewE4MoacBwYnKRtj/700ckZ3q4yv5xjz4pKnZCYYo4lq55lgHwr0N4M+Gzw8Bs
+         ogIJuFKScBAH/1g+fnxJJ/QsQspsHWrMZP2E9sjJjyRpKzurbobycl/sjQLZxt8JG/iz
+         ZuhA==
+X-Gm-Message-State: AOAM533uoKiLoJjN4Ug+9U4uULJzTyy6OwNOQLz4gjtTEcO8OocHJOqK
+        l5RSGPTOuYXtbdjFvmYNreo=
+X-Google-Smtp-Source: ABdhPJykQcYExAMLeVzjkCY0KJv5RI4xtENcp1aLNdDsRuX6M/E9YkbQ4Zu41lTYsIpkalRzYpkYzw==
+X-Received: by 2002:a05:6000:184a:: with SMTP id c10mr2894425wri.26.1629192548020;
+        Tue, 17 Aug 2021 02:29:08 -0700 (PDT)
 Received: from localhost.localdomain (h-46-59-47-246.A165.priv.bahnhof.se. [46.59.47.246])
-        by smtp.gmail.com with ESMTPSA id l2sm1462421wme.28.2021.08.17.02.29.05
+        by smtp.gmail.com with ESMTPSA id l2sm1462421wme.28.2021.08.17.02.29.06
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 17 Aug 2021 02:29:06 -0700 (PDT)
+        Tue, 17 Aug 2021 02:29:07 -0700 (PDT)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
         maciej.fijalkowski@intel.com
 Cc:     jonathan.lemon@gmail.com, ciara.loftus@intel.com,
         bpf@vger.kernel.org, yhs@fb.com, andrii@kernel.org
-Subject: [PATCH bpf-next v2 09/16] selftests: xsk: simplify packet validation in xsk tests
-Date:   Tue, 17 Aug 2021 11:27:22 +0200
-Message-Id: <20210817092729.433-10-magnus.karlsson@gmail.com>
+Subject: [PATCH bpf-next v2 10/16] selftests: xsk: validate tx stats on tx thread
+Date:   Tue, 17 Aug 2021 11:27:23 +0200
+Message-Id: <20210817092729.433-11-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20210817092729.433-1-magnus.karlsson@gmail.com>
 References: <20210817092729.433-1-magnus.karlsson@gmail.com>
@@ -67,280 +67,118 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Simplify packet validation in the xsk selftests by performing it at
-once for every packet. The current code performed this per batch and
-did this on copied packet data. Make it simpler and faster by
-validating it at once and on the umem packet data thus skipping the
-copy and the memory allocation for the temprary buffer.
-
-The optional packet dump feature is also simplified in the same
-manner. Memory allocation and copying is removed and the dump is
-performed directly on the umem data.
+Validate the tx stats on the Tx thread instead of the Rx
+tread. Depending on your settings, you might not be allowed to query
+the statistics of a socket you do not own, so better to do this on the
+correct thread to start with.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- tools/testing/selftests/bpf/xdpxceiver.c | 182 ++++++++---------------
- tools/testing/selftests/bpf/xdpxceiver.h |  14 --
- 2 files changed, 65 insertions(+), 131 deletions(-)
+ tools/testing/selftests/bpf/xdpxceiver.c | 55 ++++++++++++++++++------
+ 1 file changed, 41 insertions(+), 14 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index 17956fdeb49e..fe3d281a0575 100644
+index fe3d281a0575..8ff24472ef1e 100644
 --- a/tools/testing/selftests/bpf/xdpxceiver.c
 +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -427,6 +427,70 @@ static void parse_command_line(int argc, char **argv)
- 	}
- }
- 
-+static void pkt_dump(void *pkt, u32 len)
-+{
-+	char s[INET_ADDRSTRLEN];
-+	struct ethhdr *ethhdr;
-+	struct udphdr *udphdr;
-+	struct iphdr *iphdr;
-+	int payload, i;
-+
-+	ethhdr = pkt;
-+	iphdr = pkt + sizeof(*ethhdr);
-+	udphdr = pkt + sizeof(*ethhdr) + sizeof(*iphdr);
-+
-+	/*extract L2 frame */
-+	fprintf(stdout, "DEBUG>> L2: dst mac: ");
-+	for (i = 0; i < ETH_ALEN; i++)
-+		fprintf(stdout, "%02X", ethhdr->h_dest[i]);
-+
-+	fprintf(stdout, "\nDEBUG>> L2: src mac: ");
-+	for (i = 0; i < ETH_ALEN; i++)
-+		fprintf(stdout, "%02X", ethhdr->h_source[i]);
-+
-+	/*extract L3 frame */
-+	fprintf(stdout, "\nDEBUG>> L3: ip_hdr->ihl: %02X\n", iphdr->ihl);
-+	fprintf(stdout, "DEBUG>> L3: ip_hdr->saddr: %s\n",
-+		inet_ntop(AF_INET, &iphdr->saddr, s, sizeof(s)));
-+	fprintf(stdout, "DEBUG>> L3: ip_hdr->daddr: %s\n",
-+		inet_ntop(AF_INET, &iphdr->daddr, s, sizeof(s)));
-+	/*extract L4 frame */
-+	fprintf(stdout, "DEBUG>> L4: udp_hdr->src: %d\n", ntohs(udphdr->source));
-+	fprintf(stdout, "DEBUG>> L4: udp_hdr->dst: %d\n", ntohs(udphdr->dest));
-+	/*extract L5 frame */
-+	payload = *((uint32_t *)(pkt + PKT_HDR_SIZE));
-+
-+	fprintf(stdout, "DEBUG>> L5: payload: %d\n", payload);
-+	fprintf(stdout, "---------------------------------------\n");
-+}
-+
-+static void pkt_validate(void *pkt)
-+{
-+	struct iphdr *iphdr = (struct iphdr *)(pkt + sizeof(struct ethhdr));
-+
-+	/*do not increment pktcounter if !(tos=0x9 and ipv4) */
-+	if (iphdr->version == IP_PKT_VER && iphdr->tos == IP_PKT_TOS) {
-+		u32 payloadseqnum = *((uint32_t *)(pkt + PKT_HDR_SIZE));
-+
-+		if (debug_pkt_dump && test_type != TEST_TYPE_STATS)
-+			pkt_dump(pkt, PKT_SIZE);
-+
-+		if (pkt_counter % num_frames != payloadseqnum) {
-+			ksft_test_result_fail
-+				("ERROR: [%s] expected seqnum [%d], got seqnum [%d]\n",
-+					__func__, pkt_counter, payloadseqnum);
-+			ksft_exit_xfail();
-+		}
-+
-+		if (++pkt_counter == opt_pkt_count)
-+			sigvar = 1;
-+	} else {
-+		ksft_print_msg("Invalid frame received: ");
-+		ksft_print_msg("[IP_PKT_VER: %02X], [IP_PKT_TOS: %02X]\n", iphdr->version,
-+			       iphdr->tos);
-+	}
-+}
-+
- static void kick_tx(struct xsk_socket_info *xsk)
- {
- 	int ret;
-@@ -491,18 +555,7 @@ static void rx_pkt(struct xsk_socket_info *xsk, struct pollfd *fds)
- 		orig = xsk_umem__extract_addr(addr);
- 
- 		addr = xsk_umem__add_offset_to_addr(addr);
--		pkt_node_rx = malloc(sizeof(struct pkt) + PKT_SIZE);
--		if (!pkt_node_rx)
--			exit_with_error(errno);
--
--		pkt_node_rx->pkt_frame = malloc(PKT_SIZE);
--		if (!pkt_node_rx->pkt_frame)
--			exit_with_error(errno);
--
--		memcpy(pkt_node_rx->pkt_frame, xsk_umem__get_data(xsk->umem->buffer, addr),
--		       PKT_SIZE);
--
--		TAILQ_INSERT_HEAD(&head, pkt_node_rx, pkt_nodes);
-+		pkt_validate(xsk_umem__get_data(xsk->umem->buffer, addr));
- 
- 		*xsk_ring_prod__fill_addr(&xsk->umem->fq, idx_fq++) = orig;
- 	}
-@@ -589,48 +642,6 @@ static void tx_only_all(struct ifobject *ifobject)
+@@ -642,23 +642,22 @@ static void tx_only_all(struct ifobject *ifobject)
  	complete_tx_only_all(ifobject);
  }
  
--static void pkt_dump(void)
--{
--	struct ethhdr *ethhdr;
--	struct iphdr *iphdr;
--	struct udphdr *udphdr;
--	char s[128];
--	int payload;
--	void *ptr;
--
--	fprintf(stdout, "---------------------------------------\n");
--	for (int iter = 0; iter < num_frames; iter++) {
--		ptr = pkt_buf[iter]->payload;
--		ethhdr = ptr;
--		iphdr = ptr + sizeof(*ethhdr);
--		udphdr = ptr + sizeof(*ethhdr) + sizeof(*iphdr);
--
--		/*extract L2 frame */
--		fprintf(stdout, "DEBUG>> L2: dst mac: ");
--		for (int i = 0; i < ETH_ALEN; i++)
--			fprintf(stdout, "%02X", ethhdr->h_dest[i]);
--
--		fprintf(stdout, "\nDEBUG>> L2: src mac: ");
--		for (int i = 0; i < ETH_ALEN; i++)
--			fprintf(stdout, "%02X", ethhdr->h_source[i]);
--
--		/*extract L3 frame */
--		fprintf(stdout, "\nDEBUG>> L3: ip_hdr->ihl: %02X\n", iphdr->ihl);
--		fprintf(stdout, "DEBUG>> L3: ip_hdr->saddr: %s\n",
--			inet_ntop(AF_INET, &iphdr->saddr, s, sizeof(s)));
--		fprintf(stdout, "DEBUG>> L3: ip_hdr->daddr: %s\n",
--			inet_ntop(AF_INET, &iphdr->daddr, s, sizeof(s)));
--		/*extract L4 frame */
--		fprintf(stdout, "DEBUG>> L4: udp_hdr->src: %d\n", ntohs(udphdr->source));
--		fprintf(stdout, "DEBUG>> L4: udp_hdr->dst: %d\n", ntohs(udphdr->dest));
--		/*extract L5 frame */
--		payload = *((uint32_t *)(ptr + PKT_HDR_SIZE));
--
--		fprintf(stdout, "DEBUG>> L5: payload: %d\n", payload);
--		fprintf(stdout, "---------------------------------------\n");
--	}
--}
--
- static void stats_validate(struct ifobject *ifobject)
+-static void stats_validate(struct ifobject *ifobject)
++static bool rx_stats_are_valid(struct ifobject *ifobject)
  {
++	u32 xsk_stat = 0, expected_stat = opt_pkt_count;
++	struct xsk_socket *xsk = ifobject->xsk->xsk;
++	int fd = xsk_socket__fd(xsk);
  	struct xdp_statistics stats;
-@@ -673,52 +684,6 @@ static void stats_validate(struct ifobject *ifobject)
+ 	socklen_t optlen;
+ 	int err;
+-	struct xsk_socket *xsk = stat_test_type == STAT_TEST_TX_INVALID ?
+-							ifdict[!ifobject->ifdict_index]->xsk->xsk :
+-							ifobject->xsk->xsk;
+-	int fd = xsk_socket__fd(xsk);
+-	unsigned long xsk_stat = 0, expected_stat = opt_pkt_count;
+-
+-	sigvar = 0;
+ 
+ 	optlen = sizeof(stats);
+ 	err = getsockopt(fd, SOL_XDP, XDP_STATISTICS, &stats, &optlen);
+-	if (err)
+-		return;
++	if (err) {
++		ksft_test_result_fail("ERROR: [%s] getsockopt(XDP_STATISTICS) error %u %s\n",
++				      __func__, -err, strerror(-err));
++		return true;
++	}
+ 
+ 	if (optlen == sizeof(struct xdp_statistics)) {
+ 		switch (stat_test_type) {
+@@ -666,8 +665,7 @@ static void stats_validate(struct ifobject *ifobject)
+ 			xsk_stat = stats.rx_dropped;
+ 			break;
+ 		case STAT_TEST_TX_INVALID:
+-			xsk_stat = stats.tx_invalid_descs;
+-			break;
++			return true;
+ 		case STAT_TEST_RX_FULL:
+ 			xsk_stat = stats.rx_ring_full;
+ 			expected_stat -= RX_FULL_RXQSIZE;
+@@ -680,8 +678,33 @@ static void stats_validate(struct ifobject *ifobject)
+ 		}
+ 
+ 		if (xsk_stat == expected_stat)
+-			sigvar = 1;
++			return true;
++	}
++
++	return false;
++}
++
++static void tx_stats_validate(struct ifobject *ifobject)
++{
++	struct xsk_socket *xsk = ifobject->xsk->xsk;
++	int fd = xsk_socket__fd(xsk);
++	struct xdp_statistics stats;
++	socklen_t optlen;
++	int err;
++
++	optlen = sizeof(stats);
++	err = getsockopt(fd, SOL_XDP, XDP_STATISTICS, &stats, &optlen);
++	if (err) {
++		ksft_test_result_fail("ERROR: [%s] getsockopt(XDP_STATISTICS) error %u %s\n",
++				      __func__, -err, strerror(-err));
++		return;
  	}
++
++	if (stats.tx_invalid_descs == opt_pkt_count)
++		return;
++
++	ksft_test_result_fail("ERROR: [%s] tx_invalid_descs incorrect. Got [%u] expected [%u]\n",
++			      __func__, stats.tx_invalid_descs, opt_pkt_count);
  }
  
--static void pkt_validate(void)
--{
--	u32 payloadseqnum = -2;
--	struct iphdr *iphdr;
--
--	while (1) {
--		pkt_node_rx_q = TAILQ_LAST(&head, head_s);
--		if (!pkt_node_rx_q)
--			break;
--
--		iphdr = (struct iphdr *)(pkt_node_rx_q->pkt_frame + sizeof(struct ethhdr));
--
--		/*do not increment pktcounter if !(tos=0x9 and ipv4) */
--		if (iphdr->version == IP_PKT_VER && iphdr->tos == IP_PKT_TOS) {
--			payloadseqnum = *((uint32_t *)(pkt_node_rx_q->pkt_frame + PKT_HDR_SIZE));
--			if (debug_pkt_dump) {
--				pkt_obj = malloc(sizeof(*pkt_obj));
--				pkt_obj->payload = malloc(PKT_SIZE);
--				memcpy(pkt_obj->payload, pkt_node_rx_q->pkt_frame, PKT_SIZE);
--				pkt_buf[payloadseqnum] = pkt_obj;
--			}
--
--			if (pkt_counter % num_frames != payloadseqnum) {
--				ksft_test_result_fail
--				    ("ERROR: [%s] expected counter [%d], payloadseqnum [%d]\n",
--				     __func__, pkt_counter, payloadseqnum);
--				ksft_exit_xfail();
--			}
--
--			if (++pkt_counter == opt_pkt_count) {
--				sigvar = 1;
--				break;
--			}
--		} else {
--			ksft_print_msg("Invalid frame received: ");
--			ksft_print_msg("[IP_PKT_VER: %02X], [IP_PKT_TOS: %02X]\n", iphdr->version,
--				       iphdr->tos);
--		}
--
--		TAILQ_REMOVE(&head, pkt_node_rx_q, pkt_nodes);
--		free(pkt_node_rx_q->pkt_frame);
--		free(pkt_node_rx_q);
--		pkt_node_rx_q = NULL;
--	}
--}
--
  static void thread_common_ops(struct ifobject *ifobject, void *bufs)
- {
- 	u64 umem_sz = num_frames * XSK_UMEM__DEFAULT_FRAME_SIZE;
-@@ -818,13 +783,6 @@ static void *worker_testapp_validate_rx(void *arg)
- 	if (stat_test_type != STAT_TEST_RX_FILL_EMPTY)
- 		xsk_populate_fill_ring(ifobject->umem);
+@@ -767,6 +790,9 @@ static void *worker_testapp_validate_tx(void *arg)
+ 	print_verbose("Sending %d packets on interface %s\n", opt_pkt_count, ifobject->ifname);
+ 	tx_only_all(ifobject);
  
--	TAILQ_INIT(&head);
--	if (debug_pkt_dump) {
--		pkt_buf = calloc(num_frames, sizeof(*pkt_buf));
--		if (!pkt_buf)
--			exit_with_error(errno);
--	}
--
- 	fds[0].fd = xsk_socket__fd(ifobject->xsk->xsk);
- 	fds[0].events = POLLIN;
- 
-@@ -833,7 +791,6 @@ static void *worker_testapp_validate_rx(void *arg)
- 	while (1) {
++	if (stat_test_type == STAT_TEST_TX_INVALID)
++		tx_stats_validate(ifobject);
++
+ 	testapp_cleanup_xsk_res(ifobject);
+ 	pthread_exit(NULL);
+ }
+@@ -792,7 +818,8 @@ static void *worker_testapp_validate_rx(void *arg)
  		if (test_type != TEST_TYPE_STATS) {
  			rx_pkt(ifobject->xsk, fds);
--			pkt_validate();
  		} else {
- 			stats_validate(ifobject);
+-			stats_validate(ifobject);
++			if (rx_stats_are_valid(ifobject))
++				break;
  		}
-@@ -872,15 +829,6 @@ static void testapp_validate(void)
- 	pthread_join(t1, NULL);
- 	pthread_join(t0, NULL);
- 
--	if (debug_pkt_dump && test_type != TEST_TYPE_STATS) {
--		pkt_dump();
--		for (int iter = 0; iter < num_frames; iter++) {
--			free(pkt_buf[iter]->payload);
--			free(pkt_buf[iter]);
--		}
--		free(pkt_buf);
--	}
--
- 	if (!(test_type == TEST_TYPE_TEARDOWN) && !bidi && !bpf && !(test_type == TEST_TYPE_STATS))
- 		print_ksft_result();
- }
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
-index 131bd998e374..0fb657b505ae 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.h
-+++ b/tools/testing/selftests/bpf/xdpxceiver.h
-@@ -139,18 +139,4 @@ static struct ifobject *ifdict_tx;
- pthread_barrier_t barr;
- pthread_t t0, t1;
- 
--TAILQ_HEAD(head_s, pkt) head = TAILQ_HEAD_INITIALIZER(head);
--struct head_s *head_p;
--struct pkt {
--	char *pkt_frame;
--
--	TAILQ_ENTRY(pkt) pkt_nodes;
--} *pkt_node_rx, *pkt_node_rx_q;
--
--struct pkt_frame {
--	char *payload;
--} *pkt_obj;
--
--struct pkt_frame **pkt_buf;
--
- #endif				/* XDPXCEIVER_H */
+ 		if (sigvar)
+ 			break;
 -- 
 2.29.0
 
