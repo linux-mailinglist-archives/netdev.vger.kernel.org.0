@@ -2,186 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 576403EE0A0
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 02:00:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E6A23EE0A7
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 02:03:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234796AbhHQAAk convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 16 Aug 2021 20:00:40 -0400
-Received: from mail-lf1-f42.google.com ([209.85.167.42]:34362 "EHLO
-        mail-lf1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232470AbhHQAAj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 20:00:39 -0400
-Received: by mail-lf1-f42.google.com with SMTP id z2so37900010lft.1;
-        Mon, 16 Aug 2021 17:00:06 -0700 (PDT)
+        id S235041AbhHQACg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 20:02:36 -0400
+Received: from mail-ej1-f42.google.com ([209.85.218.42]:34518 "EHLO
+        mail-ej1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234958AbhHQACg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 20:02:36 -0400
+Received: by mail-ej1-f42.google.com with SMTP id u3so35039826ejz.1;
+        Mon, 16 Aug 2021 17:02:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=601QTk9x8q1XOYs3oKrDgDv7STyt52GrIGTI0Goheng=;
-        b=rx7wlZvee1Ar4ZYym104Rm1nVY8TvY1O1Qji1a4tWVsYxv7ho+ukeEDx5gwdUDh+6B
-         ZYndH9VSWKY/SCMHwXwSF1AyGx44ffhQb7hFbdzt9FPeYqflHVwQzAyc/pbEZq9uZnK/
-         chB4TLELYS2L5NbSNRZ9JnXbocWcM8uxIRXYf0Sto3Z7hvY2OW04PmQma/w9tjZ66+Fx
-         yeYY9jx/FzYaKHx9xs53mot613h+Ubq+4RcabP+aIpefXKAfOay0gJ9l3u9R5moyCLUF
-         M1YtNPl97g6EZ/LPONpe0gDgCn7C6BXIbvD8KQ3e5H+NU5A+izHNnD/TOXgs0GD6hUzn
-         WbiA==
-X-Gm-Message-State: AOAM530HcJhNKiTEnhPgGkOBlwCl+dO/oa06Ua2gnzPmhorYrqwgWA3q
-        eFv9Q2EnDvVDj6OkRTfAGw2Ba0dSyNhPPvDN+7A=
-X-Google-Smtp-Source: ABdhPJxXKDQqlq7gKz6qrbx8m1xu2lpcJQywJ/BUK6IeoSstTMAqyuNhJj1/VwH/cn54/4LNxST9O1xbSeP7WWSt/ww=
-X-Received: by 2002:ac2:5ec7:: with SMTP id d7mr268462lfq.234.1629158405947;
- Mon, 16 Aug 2021 17:00:05 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=K5wMGZQ9prIRh71CsiF4fL+ypemm9zRUN8YLcm2qyP4=;
+        b=qMvaRCWkcOXithaJVmLXpwuaKAr/0zJSb46S7r+49cY9fGNID9/n5F6XMCaLLZ3x3f
+         ChcWxa8rQiDxsXPNmPV8Iq1QYG9xA7gMHvuKYciWCHYiAmjL2GaW1UKI47/ruJL+og/i
+         tD4Ve7cNaZL70kOKuJER9LgQkAwfZez7N5g60xvmZofdaDGBwtmm4Y1vMXXaajniafHT
+         ZuZfBRaWkZfsXHAkZwQWgDaiYLDqKB15aV88y/3+TVjjZ45HJUTplKK1L7uDwXhHgdIM
+         vYutof6dvYiMQ5moX7xd7dbRKgK9k4oAgAEsb1pDUBPvwafK+ecvSatT7CJqQssKzWBh
+         sCkA==
+X-Gm-Message-State: AOAM5326P889nssQIYFq58gB2nYoNAJFCFPGoN67VkhyKi414kvnx8V1
+        VJDCyKNfbq6IiGb6a+Ef/8o=
+X-Google-Smtp-Source: ABdhPJwbIAStQIsvY6nYd2xafGE+WztwQNp3Byq8JJLV82ISdOqBErzCmeSfzD0xXPsR/3+lGtA1aQ==
+X-Received: by 2002:a17:906:7095:: with SMTP id b21mr705327ejk.131.1629158522789;
+        Mon, 16 Aug 2021 17:02:02 -0700 (PDT)
+Received: from localhost (host-87-16-116-124.retail.telecomitalia.it. [87.16.116.124])
+        by smtp.gmail.com with ESMTPSA id gh23sm83504ejb.27.2021.08.16.17.02.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Aug 2021 17:02:02 -0700 (PDT)
+Date:   Tue, 17 Aug 2021 02:01:57 +0200
+From:   Matteo Croce <mcroce@linux.microsoft.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Will Deacon <will@kernel.org>
+Subject: Re: [PATCH net-next] stmmac: align RX buffers
+Message-ID: <20210817020157.3b9d015e@linux.microsoft.com>
+In-Reply-To: <20210816081208.522ac47c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210614022504.24458-1-mcroce@linux.microsoft.com>
+        <871r71azjw.wl-maz@kernel.org>
+        <YROmOQ+4Kqukgd6z@orome.fritz.box>
+        <202417ef-f8ae-895d-4d07-1f9f3d89b4a4@gmail.com>
+        <87o8a49idp.wl-maz@kernel.org>
+        <fe5f99c8-5655-7fbb-a64e-b5f067c3273c@gmail.com>
+        <20210812121835.405d2e37@linux.microsoft.com>
+        <874kbuapod.wl-maz@kernel.org>
+        <20210816081208.522ac47c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Organization: Microsoft
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-References: <20210814101728.75334-1-mailhol.vincent@wanadoo.fr>
- <20210814101728.75334-5-mailhol.vincent@wanadoo.fr> <20210816135113.gpk3fpafiqnhjbw4@pengutronix.de>
- <CAMZ6RqL8h5U+qZLS23PHCYNZ3Nq+9_sUQ5jTG=G0VRsaYXbbUQ@mail.gmail.com>
-In-Reply-To: <CAMZ6RqL8h5U+qZLS23PHCYNZ3Nq+9_sUQ5jTG=G0VRsaYXbbUQ@mail.gmail.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Tue, 17 Aug 2021 08:59:54 +0900
-Message-ID: <CAMZ6RqJd7Mhg4sJnV+r_1bztiqLAS1oTTzg5cWWEpe4nnupXvw@mail.gmail.com>
-Subject: Re: [PATCH v5 4/4] iplink_can: add new CAN FD bittiming parameters:
- Transmitter Delay Compensation (TDC)
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        linux-can <linux-can@vger.kernel.org>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue.17 Aug 2021 à 01:24, Vincent MAILHOL <mailhol.vincent@wanadoo.fr> wrote:
-> On Mon. 16 Aug. 2021 at 22:51, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> > On 14.08.2021 19:17:28, Vincent Mailhol wrote:
-> > > At high bit rates, the propagation delay from the TX pin to the RX pin
-> > > of the transceiver causes measurement errors: the sample point on the
-> > > RX pin might occur on the previous bit.
-> > >
-> > > This issue is addressed in ISO 11898-1 section 11.3.3 "Transmitter
-> > > delay compensation" (TDC).
-> > >
-> > > This patch brings command line support to nine TDC parameters which
-> > > were recently added to the kernel's CAN netlink interface in order to
-> > > implement TDC:
-> > >   - IFLA_CAN_TDC_TDCV_MIN: Transmitter Delay Compensation Value
-> > >     minimum value
-> > >   - IFLA_CAN_TDC_TDCV_MAX: Transmitter Delay Compensation Value
-> > >     maximum value
-> > >   - IFLA_CAN_TDC_TDCO_MIN: Transmitter Delay Compensation Offset
-> > >     minimum value
-> > >   - IFLA_CAN_TDC_TDCO_MAX: Transmitter Delay Compensation Offset
-> > >     maximum value
-> > >   - IFLA_CAN_TDC_TDCF_MIN: Transmitter Delay Compensation Filter
-> > >     window minimum value
-> > >   - IFLA_CAN_TDC_TDCF_MAX: Transmitter Delay Compensation Filter
-> > >     window maximum value
-> > >   - IFLA_CAN_TDC_TDCV: Transmitter Delay Compensation Value
-> > >   - IFLA_CAN_TDC_TDCO: Transmitter Delay Compensation Offset
-> > >   - IFLA_CAN_TDC_TDCF: Transmitter Delay Compensation Filter window
-> > >
-> > > All those new parameters are nested together into the attribute
-> > > IFLA_CAN_TDC.
-> > >
-> > > A tdc-mode parameter allow to specify how to operate. Valid options
-> > > are:
-> > >
-> > >   * auto: the transmitter automatically measures TDCV. As such, TDCV
-> > >     values can not be manually provided. In this mode, the user must
-> > >     specify TDCO and may also specify TDCF if supported.
-> > >
-> > >   * manual: Use the TDCV value provided by the user are used. In this
-> > >     mode, the user must specify both TDCV and TDCO and may also
-> > >     specify TDCF if supported.
-> > >
-> > >   * off: TDC is explicitly disabled.
-> > >
-> > >   * tdc-mode parameter omitted (default mode): the kernel decides
-> > >     whether TDC should be enabled or not and if so, it calculates the
-> > >     TDC values. TDC parameters are an expert option and the average
-> > >     user is not expected to provide those, thus the presence of this
-> > >     "default mode".
-> > >
-> > > TDCV is always reported in manual mode. In auto mode, TDCV is reported
-> > > only if the value is available. Especially, the TDCV might not be
-> > > available if the controller has no feature to report it or if the
-> > > value in not yet available (i.e. no data sent yet and measurement did
-> > > not occur).
-> > >
-> > > TDCF is reported only if tdcf_max is not zero (i.e. if supported by the controller).
-> > >
-> > > For reference, here are a few samples of how the output looks like:
-> > >
-> > > $ ip link set can0 type can bitrate 1000000 dbitrate 8000000 fd on tdco 7 tdcf 8 tdc-mode auto
-> > >
-> > > $ ip --details link show can0
-> > > 1:  can0: <NOARP,ECHO> mtu 72 qdisc noop state DOWN mode DEFAULT group default qlen 10
-> > >     link/can  promiscuity 0 minmtu 0 maxmtu 0
-> > >     can <FD,TDC_AUTO> state STOPPED (berr-counter tx 0 rx 0) restart-ms 0
-> >               ^^^^^^^^
-> > This is just the supported mode(s), right?
->
-> No, this is the active mode. It should display either TDC_AUTO or
-> TDC_MANUAL. If both are displayed as you previously experienced,
-> it is a bug (I will fix).
->
-> > >         bitrate 1000000 sample-point 0.750
-> > >         tq 12 prop-seg 29 phase-seg1 30 phase-seg2 20 sjw 1 brp 1
-> > >         ES582.1/ES584.1: tseg1 2..256 tseg2 2..128 sjw 1..128 brp 1..512 brp_inc 1
-> > >         dbitrate 8000000 dsample-point 0.700
-> > >         dtq 12 dprop-seg 3 dphase-seg1 3 dphase-seg2 3 dsjw 1 dbrp 1
-> > >         tdco 7 tdcf 8
-> > >         ES582.1/ES584.1: dtseg1 2..32 dtseg2 1..16 dsjw 1..8 dbrp 1..32 dbrp_inc 1
-> > >         tdco 0..127 tdcf 0..127
-> > >         clock 80000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
-> >
-> > Is there a way to figure out, which tdc mode is currently active?
-> >
-> > AFAICS just implicitly:
-> > - tdco + tdcv   -> manual
-> > - tdco          -> automatic
-> > - neither       -> off
-> >
-> > correct?
->
-> If the TDC const values are reported (at least tdco) the controller
-> supports TDC.
->
-> The flags listed between brackets <FD, TDC_AUTO, CC-LEN8-DLC, ...>
-> are the active flags (this is not only true for TDC but also for
-> all other ctrlmodes).
->
-> There is no way to know which of the modes are supported. The
-> reason is that netlink only reports
-> can_priv->ctrlmode (c.f. IFLA_CAN_CTRLMODE), not
-> can_priv->ctrlmode_supported. We would need to add a
-> IFLA_CAN_CTRLMODE_SUPPORTED to the netlink interface in order to
-> confirm the supported mode.
+On Mon, 16 Aug 2021 08:12:08 -0700
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-On a second thought, it is actually possible to deduce some of
-the supported modes (not all) through the can_tdc_const values
-because tdcv_{min,max} are only reported if
-CAN_CTRLMODE_TDC_MANUAL is supported.
-So:
+> On Thu, 12 Aug 2021 12:05:38 +0100 Marc Zyngier wrote:
+> > > A possible fix, which takes in account also the XDP headroom for
+> > > stmmac_rx_buf1_len() only could be (only compile tested, I don't
+> > > have the hardware now):  
+> > 
+> > However, this doesn't fix my issue. I still get all sort of
+> > corruption. Probably stmmac_rx_buf2_len() also need adjusting (it
+> > has a similar logic as its buf1 counterpart...)
+> > 
+> > Unless you can fix it very quickly, and given that we're towards the
+> > end of the cycle, I'd be more comfortable if we reverted this patch.
+> 
+> Any luck investigating this one? The rc6 announcement sounds like
+> there may not be that many more rc releases for 5.14.
 
-  - both tdcv_{min,max} and tdco_{min,max} reported ->
-    CAN_CTRLMODE_TDC_MANUAL is supported for
-    sure. CAN_CTRLMODE_TDC_AUTO might or might not be supported.
+Hi Jackub.
 
-  - only tdco_{min,max} reported -> only CAN_CTRLMODE_TDC_AUTO is
-    supported (that's the case for the es58x device).
+Unfortunately I have only a device with stmmac, and it works fine with
+the patch. It seems that not all hardware suffers from this issue.
 
-  - none reported -> device is not TDC capable.
+Also, using NET_IP_ALIGN on RX is a common pattern, I think that any
+ethernet device is doing the same to align the IPv4 header.
 
-  - tdcf_{min,max} reported -> device supports TDCF and the
-    reverse is also true.
+Anyway, I asked for two tests on the affected device:
+1. Change NET_IP_ALIGN with 8, to see if the DMA has problems in
+   receiving to a non word aligned address
+2. load a nop XDP program (I provided one), to see if the problem is
+   already there when XDP is used
 
-  - other combinations are incorrect and should not be reported.
+I doubt that changing also stmmac_rx_buf2_len would help,
+but it's worth a try, here is a patch:
 
-> Currently, the only ways are to either look at the kernel source
-> code or to test the command and see whether it is supported or
-> not.
->
->
-> Yours sincerely,
-> Vincent
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 7b8404a21544..73d1f0ec66ff 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -93,7 +93,7 @@ static int tc = TC_DEFAULT;
+ module_param(tc, int, 0644);
+ MODULE_PARM_DESC(tc, "DMA threshold control value");
+ 
+-#define	DEFAULT_BUFSIZE	1536
++#define	DEFAULT_BUFSIZE	1536 + XDP_PACKET_HEADROOM + NET_IP_ALIGN
+ static int buf_sz = DEFAULT_BUFSIZE;
+ module_param(buf_sz, int, 0644);
+ MODULE_PARM_DESC(buf_sz, "DMA buffer size");
+@@ -4508,12 +4508,12 @@ static unsigned int stmmac_rx_buf1_len(struct stmmac_priv *priv,
+ 
+ 	/* First descriptor, not last descriptor and not split header */
+ 	if (status & rx_not_ls)
+-		return priv->dma_buf_sz;
++		return priv->dma_buf_sz - stmmac_rx_offset(priv);
+ 
+ 	plen = stmmac_get_rx_frame_len(priv, p, coe);
+ 
+ 	/* First descriptor and last descriptor and not split header */
+-	return min_t(unsigned int, priv->dma_buf_sz, plen);
++	return min_t(unsigned int, priv->dma_buf_sz - stmmac_rx_offset(priv), plen);
+ }
+ 
+ static unsigned int stmmac_rx_buf2_len(struct stmmac_priv *priv,
+@@ -4529,12 +4529,12 @@ static unsigned int stmmac_rx_buf2_len(struct stmmac_priv *priv,
+ 
+ 	/* Not last descriptor */
+ 	if (status & rx_not_ls)
+-		return priv->dma_buf_sz;
++		return priv->dma_buf_sz - stmmac_rx_offset(priv);
+ 
+ 	plen = stmmac_get_rx_frame_len(priv, p, coe);
+ 
+ 	/* Last descriptor */
+-	return plen - len;
++	return plen - len - stmmac_rx_offset(priv);
+ }
+ 
+ static int stmmac_xdp_xmit_xdpf(struct stmmac_priv *priv, int queue,
+
+
+Regards,
+-- 
+per aspera ad upstream
