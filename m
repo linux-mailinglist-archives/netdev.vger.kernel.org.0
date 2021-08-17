@@ -2,154 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84B5D3EF317
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 22:11:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D39973EF3EA
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 22:49:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233902AbhHQULs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 16:11:48 -0400
-Received: from mxout04.lancloud.ru ([45.84.86.114]:48708 "EHLO
-        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229466AbhHQULq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 16:11:46 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 8895520BC0DB
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH net-next v2 1/8] ravb: Add struct ravb_hw_info to driver
- data
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20210802102654.5996-1-biju.das.jz@bp.renesas.com>
- <20210802102654.5996-2-biju.das.jz@bp.renesas.com>
- <CAMuHMdWuoLFDRbJZqpvT48q1zbH05tqerWMs50aFDa6pR+ecAg@mail.gmail.com>
- <OS0PR01MB5922BF48F95DD5576A79994F86F99@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <CAMuHMdVCyMD6u2KxKb_c2LR8DGAY86F69=TSRDK0C5GPwrO7Eg@mail.gmail.com>
- <OS0PR01MB5922C336CBB008F9D7DA36B786F99@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <OS0PR01MB5922A841D2C8E38D93A8E95086FE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <071f3fd9-7280-f518-3e38-6456632cc11e@omp.ru>
-Date:   Tue, 17 Aug 2021 23:11:06 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S236594AbhHQUWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 16:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52662 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235806AbhHQUWn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 16:22:43 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97765C0611BE;
+        Tue, 17 Aug 2021 13:21:44 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id d11so36974eja.8;
+        Tue, 17 Aug 2021 13:21:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XaaGF88w29zZ2HuLM3UdMK4CiOo1QtnD4rb3xe86sRk=;
+        b=CYfhzeNfGNRGovN0mTdsFysv4R643Vgd636cpygw+on9VbmaZ6jx1UUCAt3Yd9EIYs
+         FqLVU7Zb1FcTMiNfOoRC8ymL9yIwfFpBztsHYgaKxRAkJRwG0PmsKvQgSnWxaMcdz5d8
+         Kr8ejFF1UCJftgGT8B8NXKbDRTfd9AxXDTYEfuEMfXABuOM7cvAlnzWRZokr4hQuVK97
+         t29vWl0yJL6o0cX7NVF3hfQFEk8sazYLEmLoegBHiXMeampNVMoe1zKl5FyU66MN7z5g
+         XChkuJFYQyqPBiGkqLhBKA0fsywmcybI7j2juF2Be5Uy6Z4uw3aDOqZr7YFCwP1TzCUx
+         prsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XaaGF88w29zZ2HuLM3UdMK4CiOo1QtnD4rb3xe86sRk=;
+        b=ddf4vHHXlLIO6AWG92PNlDradWTvdD0IXI10oHi6rr2uXdPIC/RxPh+zaSvTgixcfb
+         j09HOVptQuPyNRkFzo7PevVJlJkkOW12+wltflfTNSnj9PM28URItxQ+PFVQkMU4Yg9X
+         ZY/A/U6VD5hIZeoPvdIQLQS/lfqDfoB2cBC/U/1KamhIdg/XhrI1H+3dad5g2Hr0R1d1
+         gMGP255g9m5G8++KuHXAe6mYigPDwKsIH2vJpzzo0pDoBRKFVnIgW8gE1a2g/Wq6ZI7r
+         IdXAKegzlosCf/1yYV+XeF26NN9B/Cxfxg1hCdheyLNOLCZ+hkxCjEZtgHUzILiomX9A
+         kA+A==
+X-Gm-Message-State: AOAM53334Dg4NHhmuJ4l/o/roQQI9zxpaa1U4dnwvt9SDAAGvybZE7LL
+        2MdhFga36281tB4usNXiO/A=
+X-Google-Smtp-Source: ABdhPJxcK0r5Ivg4E9ad4dmOh22hwIKaihsZd6lXE9T35spwqTlTnXZ4p4jqL5XnU6ObmX/as7VDUA==
+X-Received: by 2002:a17:906:6011:: with SMTP id o17mr5692956ejj.157.1629231703136;
+        Tue, 17 Aug 2021 13:21:43 -0700 (PDT)
+Received: from skbuf ([188.25.144.60])
+        by smtp.gmail.com with ESMTPSA id w11sm1426151edc.5.2021.08.17.13.21.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Aug 2021 13:21:42 -0700 (PDT)
+Date:   Tue, 17 Aug 2021 23:21:41 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Aleksander Jan Bajkowski <olek2@wp.pl>
+Cc:     hauke@hauke-m.de, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH] net: dsa: lantiq_gswip: Add 200ms assert delay
+Message-ID: <20210817202141.xddw5c7mypodnqlk@skbuf>
+References: <20210817193207.1038598-1-olek2@wp.pl>
+ <20210817194448.tyg723667ql4kjvu@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <OS0PR01MB5922A841D2C8E38D93A8E95086FE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210817194448.tyg723667ql4kjvu@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/17/21 2:24 PM, Biju Das wrote:
-
-[...]
->>>>> -----Original Message-----
->>>>> On Mon, Aug 2, 2021 at 12:27 PM Biju Das
->>>>> <biju.das.jz@bp.renesas.com>
->>>>> wrote:
->>>>>> The DMAC and EMAC blocks of Gigabit Ethernet IP found on RZ/G2L
->>>>>> SoC are similar to the R-Car Ethernet AVB IP. With a few changes
->>>>>> in the driver we can support both IPs.
->>>>>>
->>>>>> Currently a runtime decision based on the chip type is used to
->>>>>> distinguish the HW differences between the SoC families.
->>>>>>
->>>>>> The number of TX descriptors for R-Car Gen3 is 1 whereas on
->>>>>> R-Car
->>>>>> Gen2 and RZ/G2L it is 2. For cases like this it is better to
->>>>>> select the number of TX descriptors by using a structure with a
->>>>>> value, rather than a runtime decision based on the chip type.
->>>>>>
->>>>>> This patch adds the num_tx_desc variable to struct ravb_hw_info
->>>>>> and also replaces the driver data chip type with struct
->>>>>> ravb_hw_info by moving chip type to it.
->>>>>>
->>>>>> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
->>>>>> Reviewed-by: Lad Prabhakar
->>>>>> <prabhakar.mahadev-lad.rj@bp.renesas.com>
->>>>>
->>>>> Thanks for your patch!
->>>>>
->>>>>> --- a/drivers/net/ethernet/renesas/ravb.h
->>>>>> +++ b/drivers/net/ethernet/renesas/ravb.h
->>>>>> @@ -988,6 +988,11 @@ enum ravb_chip_id {
->>>>>>         RCAR_GEN3,
->>>>>>  };
->>>>>>
->>>>>> +struct ravb_hw_info {
->>>>>> +       enum ravb_chip_id chip_id;
->>>>>> +       int num_tx_desc;
->>>>>
->>>>> Why not "unsigned int"? ...
->>>>> This comment applies to a few more subsequent patches.
->>>>
->>>> To avoid signed and unsigned comparison warnings.
->>>>
->>>>>
->>>>>> +};
->>>>>> +
->>>>>>  struct ravb_private {
->>>>>>         struct net_device *ndev;
->>>>>>         struct platform_device *pdev; @@ -1040,6 +1045,8 @@
->>>>>> struct ravb_private {
->>>>>>         unsigned txcidm:1;              /* TX Clock Internal Delay
->>> Mode
->>>>> */
->>>>>>         unsigned rgmii_override:1;      /* Deprecated rgmii-*id
->>> behavior
->>>>> */
->>>>>>         int num_tx_desc;                /* TX descriptors per
->> packet
->>> */
->>>>>
->>>>> ... oh, here's the original culprit.
->>>>
->>>> Exactly, this the reason.
->>>>
->>>> Do you want me to change this into unsigned int? Please let me know.
->>>
->>> Up to you (or the maintainer? ;-)
->>>
->>> For new fields (in the other patches), I would use unsigned for all
->>> unsigned values.  Signed values have more pitfalls related to
->>> undefined behavior.
->>
->> Sergei, What is your thoughts here? Please let me know.
+On Tue, Aug 17, 2021 at 10:44:48PM +0300, Vladimir Oltean wrote:
+> On Tue, Aug 17, 2021 at 09:32:07PM +0200, Aleksander Jan Bajkowski wrote:
+> > The delay is especially needed by the xRX300 and xRX330 SoCs. Without
+> > this patch, some phys are sometimes not properly detected.
+> > 
+> > Fixes: a09d042b086202735c4ed64 ("net: dsa: lantiq: allow to use all GPHYs on xRX300 and xRX330")
+> > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> > Tested-by: Aleksander Jan Bajkowski <olek2@wp.pl> # tested on DWR966, HH5A
+> > ---
 > 
-> Here is my plan.
+> Generally the convention is:
 > 
-> I will split this patch into two as Andrew suggested and 
+> From: Patch Author <patch.author@email.com>
+> 
+> Commit description
+> 
+> Signed-off-by: Patch Author <patch.author@email.com>
+> Signed-off-by: Patch Carrier 1 <patch.carrier1@email.com>
+> Signed-off-by: Patch Carrier 2 <patch.carrier2@email.com>
+> Signed-off-by: Patch Carrier 3 <patch.carrier3@email.com>
+> Signed-off-by: Patch Submitter <patch.submitter@email.com>
+> 
+> This patch is clearly not following this model for more than one reason.
 
-   If you mran changing the ravb_private::num_tx_desc to *unsigned*, it'll be
-a good cleanup. What's would be the 2nd part tho?
+Let's not even talk about the kilometer-long commit sha1sum.
+This is not even my pet peeve, if this patch gets merged as-is you'll
+get an email titled "linux-next: Fixes tag needs some work in the net tree"
+(google it if you want examples).
 
-> Then on the second patch will add as info->unaligned_tx as Sergei suggested.
+Stick this in your ~/.gitconfig and thank me later:
 
-   OK.
+[core]
+	abbrev = 12
+[pretty]
+	fixes = Fixes: %h (\"%s\")
 
-> Now the only open point is related to the data type of "int num_tx_desc"
-> and to align with sh_eth driver I will keep int.
+Now run:
 
-   The sh_eth driver simply doesn't have this -- it always use 1 descriptor.
+git show a09d042b086202735c4ed64 --pretty=fixes
+Fixes: a09d042b0862 ("net: dsa: lantiq: allow to use all GPHYs on xRX300 and xRX330")
 
-> Regards,
-> Biju
-
-MBR, Sergey
+Voila!
