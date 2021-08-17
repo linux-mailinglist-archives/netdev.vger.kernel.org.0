@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 899293EE11D
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 02:36:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E80743EE122
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 02:36:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236497AbhHQAgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 20:36:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35464 "EHLO mail.kernel.org"
+        id S236237AbhHQAgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 20:36:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35690 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235582AbhHQAg0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 20:36:26 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 14C4860FDA;
-        Tue, 17 Aug 2021 00:35:52 +0000 (UTC)
+        id S236020AbhHQAge (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 20:36:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C025B60F58;
+        Tue, 17 Aug 2021 00:36:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629160553;
-        bh=bshTLC1uJlE+pTmdql1NoWvc/HC9abF6H6tLLErjrck=;
+        s=k20201202; t=1629160561;
+        bh=GUuUlJd+bkg2MUpnqwFsnl2vXaURQF0D8zHYepadehE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TvmCynmk9JeAegWVi82S5u3OdndaKDEaSzmM7YJ+X1EVZIDenuqKwPz+nFiSTacks
-         JznOXtSOqntMAA88q9OpljQ/Bo8+3+jfKtPx5BmUMlBSaM39FRYfJchVx9GYJfJRf3
-         O/oWSBTPv6pFV6ETQcD43z14HWLtD4MHo40cFksTn8JHV/bF1NIBvsPWw8dwmetiTk
-         txbTXaRN0B7aLPPutQb8Ki0piJEEG6pSC5msOWdg6txp8tE4PFvUwOC1lAVRDQb17x
-         B1jJRRmL836tUgzyeIiAcSfZt6ZjGArGPK7xz3dKxy0mMi4SjCFFWpwfMr455WkD2A
-         IpjaEqOqpAHWw==
+        b=lOFZPEe8Avm2tIVRleHLI5URIIwU+CyogyPpWX4IYSvINsPB9d9gTNCtQlz19x3EQ
+         +0Qxxl4x44guZF243szanMaYagT0Eqccq8bpceP5nbsDhWNBYlGnBLWT/32OyTj7Es
+         1pFJfAvLagFh33+aF2cx78wNLrAz1LAuUdkxoxS0q29a+vsfkHaEmB70zu4VhSWiPP
+         n5ZF79Hx+oRCe6nD047CjQG/Hqec/Pb6e0YhRXxfUXE/W2SikSYxIEP5Nphbnt9tK8
+         Ncx1Nx24aa++9+yw5z3AnwUQ5ADECvYJuel3jcgrO/x0ICfwvAlZZM1Qp1YfIoK5Iq
+         1o96T7HQbN1RQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 12/12] net: mscc: Fix non-GPL export of regmap APIs
-Date:   Mon, 16 Aug 2021 20:35:36 -0400
-Message-Id: <20210817003536.83063-12-sashal@kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>, Michal Kubecek <mkubecek@suse.cz>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 5/9] netfilter: conntrack: collect all entries in one cycle
+Date:   Mon, 16 Aug 2021 20:35:50 -0400
+Message-Id: <20210817003554.83213-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210817003536.83063-1-sashal@kernel.org>
-References: <20210817003536.83063-1-sashal@kernel.org>
+In-Reply-To: <20210817003554.83213-1-sashal@kernel.org>
+References: <20210817003554.83213-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,97 +44,182 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 48c812e0327744b4965296f65c23fe2405692afc ]
+[ Upstream commit 4608fdfc07e116f9fc0895beb40abad7cdb5ee3d ]
 
-The ocelot driver makes use of regmap, wrapping it with driver specific
-operations that are thin wrappers around the core regmap APIs. These are
-exported with EXPORT_SYMBOL, dropping the _GPL from the core regmap
-exports which is frowned upon. Add _GPL suffixes to at least the APIs that
-are doing register I/O.
+Michal Kubecek reports that conntrack gc is responsible for frequent
+wakeups (every 125ms) on idle systems.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+On busy systems, timed out entries are evicted during lookup.
+The gc worker is only needed to remove entries after system becomes idle
+after a busy period.
+
+To resolve this, always scan the entire table.
+If the scan is taking too long, reschedule so other work_structs can run
+and resume from next bucket.
+
+After a completed scan, wait for 2 minutes before the next cycle.
+Heuristics for faster re-schedule are removed.
+
+GC_SCAN_INTERVAL could be exposed as a sysctl in the future to allow
+tuning this as-needed or even turn the gc worker off.
+
+Reported-by: Michal Kubecek <mkubecek@suse.cz>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mscc/ocelot_io.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ net/netfilter/nf_conntrack_core.c | 71 ++++++++++---------------------
+ 1 file changed, 22 insertions(+), 49 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_io.c b/drivers/net/ethernet/mscc/ocelot_io.c
-index ea4e83410fe4..7390fa3980ec 100644
---- a/drivers/net/ethernet/mscc/ocelot_io.c
-+++ b/drivers/net/ethernet/mscc/ocelot_io.c
-@@ -21,7 +21,7 @@ u32 __ocelot_read_ix(struct ocelot *ocelot, u32 reg, u32 offset)
- 		    ocelot->map[target][reg & REG_MASK] + offset, &val);
- 	return val;
- }
--EXPORT_SYMBOL(__ocelot_read_ix);
-+EXPORT_SYMBOL_GPL(__ocelot_read_ix);
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index f9f2af26ccb3..54430a34d2f6 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -66,22 +66,17 @@ EXPORT_SYMBOL_GPL(nf_conntrack_hash);
  
- void __ocelot_write_ix(struct ocelot *ocelot, u32 val, u32 reg, u32 offset)
+ struct conntrack_gc_work {
+ 	struct delayed_work	dwork;
+-	u32			last_bucket;
++	u32			next_bucket;
+ 	bool			exiting;
+ 	bool			early_drop;
+-	long			next_gc_run;
+ };
+ 
+ static __read_mostly struct kmem_cache *nf_conntrack_cachep;
+ static DEFINE_SPINLOCK(nf_conntrack_locks_all_lock);
+ static __read_mostly bool nf_conntrack_locks_all;
+ 
+-/* every gc cycle scans at most 1/GC_MAX_BUCKETS_DIV part of table */
+-#define GC_MAX_BUCKETS_DIV	128u
+-/* upper bound of full table scan */
+-#define GC_MAX_SCAN_JIFFIES	(16u * HZ)
+-/* desired ratio of entries found to be expired */
+-#define GC_EVICT_RATIO	50u
++#define GC_SCAN_INTERVAL	(120u * HZ)
++#define GC_SCAN_MAX_DURATION	msecs_to_jiffies(10)
+ 
+ static struct conntrack_gc_work conntrack_gc_work;
+ 
+@@ -1352,17 +1347,13 @@ static bool gc_worker_can_early_drop(const struct nf_conn *ct)
+ 
+ static void gc_worker(struct work_struct *work)
  {
-@@ -32,7 +32,7 @@ void __ocelot_write_ix(struct ocelot *ocelot, u32 val, u32 reg, u32 offset)
- 	regmap_write(ocelot->targets[target],
- 		     ocelot->map[target][reg & REG_MASK] + offset, val);
- }
--EXPORT_SYMBOL(__ocelot_write_ix);
-+EXPORT_SYMBOL_GPL(__ocelot_write_ix);
+-	unsigned int min_interval = max(HZ / GC_MAX_BUCKETS_DIV, 1u);
+-	unsigned int i, goal, buckets = 0, expired_count = 0;
+-	unsigned int nf_conntrack_max95 = 0;
++	unsigned long end_time = jiffies + GC_SCAN_MAX_DURATION;
++	unsigned int i, hashsz, nf_conntrack_max95 = 0;
++	unsigned long next_run = GC_SCAN_INTERVAL;
+ 	struct conntrack_gc_work *gc_work;
+-	unsigned int ratio, scanned = 0;
+-	unsigned long next_run;
+-
+ 	gc_work = container_of(work, struct conntrack_gc_work, dwork.work);
  
- void __ocelot_rmw_ix(struct ocelot *ocelot, u32 val, u32 mask, u32 reg,
- 		     u32 offset)
-@@ -45,7 +45,7 @@ void __ocelot_rmw_ix(struct ocelot *ocelot, u32 val, u32 mask, u32 reg,
- 			   ocelot->map[target][reg & REG_MASK] + offset,
- 			   mask, val);
- }
--EXPORT_SYMBOL(__ocelot_rmw_ix);
-+EXPORT_SYMBOL_GPL(__ocelot_rmw_ix);
+-	goal = nf_conntrack_htable_size / GC_MAX_BUCKETS_DIV;
+-	i = gc_work->last_bucket;
++	i = gc_work->next_bucket;
+ 	if (gc_work->early_drop)
+ 		nf_conntrack_max95 = nf_conntrack_max / 100u * 95u;
  
- u32 ocelot_port_readl(struct ocelot_port *port, u32 reg)
+@@ -1370,22 +1361,21 @@ static void gc_worker(struct work_struct *work)
+ 		struct nf_conntrack_tuple_hash *h;
+ 		struct hlist_nulls_head *ct_hash;
+ 		struct hlist_nulls_node *n;
+-		unsigned int hashsz;
+ 		struct nf_conn *tmp;
+ 
+-		i++;
+ 		rcu_read_lock();
+ 
+ 		nf_conntrack_get_ht(&ct_hash, &hashsz);
+-		if (i >= hashsz)
+-			i = 0;
++		if (i >= hashsz) {
++			rcu_read_unlock();
++			break;
++		}
+ 
+ 		hlist_nulls_for_each_entry_rcu(h, n, &ct_hash[i], hnnode) {
+ 			struct net *net;
+ 
+ 			tmp = nf_ct_tuplehash_to_ctrack(h);
+ 
+-			scanned++;
+ 			if (test_bit(IPS_OFFLOAD_BIT, &tmp->status)) {
+ 				nf_ct_offload_timeout(tmp);
+ 				continue;
+@@ -1393,7 +1383,6 @@ static void gc_worker(struct work_struct *work)
+ 
+ 			if (nf_ct_is_expired(tmp)) {
+ 				nf_ct_gc_expired(tmp);
+-				expired_count++;
+ 				continue;
+ 			}
+ 
+@@ -1425,7 +1414,14 @@ static void gc_worker(struct work_struct *work)
+ 		 */
+ 		rcu_read_unlock();
+ 		cond_resched();
+-	} while (++buckets < goal);
++		i++;
++
++		if (time_after(jiffies, end_time) && i < hashsz) {
++			gc_work->next_bucket = i;
++			next_run = 0;
++			break;
++		}
++	} while (i < hashsz);
+ 
+ 	if (gc_work->exiting)
+ 		return;
+@@ -1436,40 +1432,17 @@ static void gc_worker(struct work_struct *work)
+ 	 *
+ 	 * This worker is only here to reap expired entries when system went
+ 	 * idle after a busy period.
+-	 *
+-	 * The heuristics below are supposed to balance conflicting goals:
+-	 *
+-	 * 1. Minimize time until we notice a stale entry
+-	 * 2. Maximize scan intervals to not waste cycles
+-	 *
+-	 * Normally, expire ratio will be close to 0.
+-	 *
+-	 * As soon as a sizeable fraction of the entries have expired
+-	 * increase scan frequency.
+ 	 */
+-	ratio = scanned ? expired_count * 100 / scanned : 0;
+-	if (ratio > GC_EVICT_RATIO) {
+-		gc_work->next_gc_run = min_interval;
+-	} else {
+-		unsigned int max = GC_MAX_SCAN_JIFFIES / GC_MAX_BUCKETS_DIV;
+-
+-		BUILD_BUG_ON((GC_MAX_SCAN_JIFFIES / GC_MAX_BUCKETS_DIV) == 0);
+-
+-		gc_work->next_gc_run += min_interval;
+-		if (gc_work->next_gc_run > max)
+-			gc_work->next_gc_run = max;
++	if (next_run) {
++		gc_work->early_drop = false;
++		gc_work->next_bucket = 0;
+ 	}
+-
+-	next_run = gc_work->next_gc_run;
+-	gc_work->last_bucket = i;
+-	gc_work->early_drop = false;
+ 	queue_delayed_work(system_power_efficient_wq, &gc_work->dwork, next_run);
+ }
+ 
+ static void conntrack_gc_work_init(struct conntrack_gc_work *gc_work)
  {
-@@ -58,7 +58,7 @@ u32 ocelot_port_readl(struct ocelot_port *port, u32 reg)
- 	regmap_read(port->target, ocelot->map[target][reg & REG_MASK], &val);
- 	return val;
+ 	INIT_DEFERRABLE_WORK(&gc_work->dwork, gc_worker);
+-	gc_work->next_gc_run = HZ;
+ 	gc_work->exiting = false;
  }
--EXPORT_SYMBOL(ocelot_port_readl);
-+EXPORT_SYMBOL_GPL(ocelot_port_readl);
  
- void ocelot_port_writel(struct ocelot_port *port, u32 val, u32 reg)
- {
-@@ -69,7 +69,7 @@ void ocelot_port_writel(struct ocelot_port *port, u32 val, u32 reg)
- 
- 	regmap_write(port->target, ocelot->map[target][reg & REG_MASK], val);
- }
--EXPORT_SYMBOL(ocelot_port_writel);
-+EXPORT_SYMBOL_GPL(ocelot_port_writel);
- 
- void ocelot_port_rmwl(struct ocelot_port *port, u32 val, u32 mask, u32 reg)
- {
-@@ -77,7 +77,7 @@ void ocelot_port_rmwl(struct ocelot_port *port, u32 val, u32 mask, u32 reg)
- 
- 	ocelot_port_writel(port, (cur & (~mask)) | val, reg);
- }
--EXPORT_SYMBOL(ocelot_port_rmwl);
-+EXPORT_SYMBOL_GPL(ocelot_port_rmwl);
- 
- u32 __ocelot_target_read_ix(struct ocelot *ocelot, enum ocelot_target target,
- 			    u32 reg, u32 offset)
-@@ -128,7 +128,7 @@ int ocelot_regfields_init(struct ocelot *ocelot,
- 
- 	return 0;
- }
--EXPORT_SYMBOL(ocelot_regfields_init);
-+EXPORT_SYMBOL_GPL(ocelot_regfields_init);
- 
- static struct regmap_config ocelot_regmap_config = {
- 	.reg_bits	= 32,
-@@ -148,4 +148,4 @@ struct regmap *ocelot_regmap_init(struct ocelot *ocelot, struct resource *res)
- 
- 	return devm_regmap_init_mmio(ocelot->dev, regs, &ocelot_regmap_config);
- }
--EXPORT_SYMBOL(ocelot_regmap_init);
-+EXPORT_SYMBOL_GPL(ocelot_regmap_init);
 -- 
 2.30.2
 
