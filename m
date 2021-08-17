@@ -2,72 +2,304 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39A7B3EF5B0
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 00:21:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A775F3EF5BB
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 00:27:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236028AbhHQWVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 18:21:44 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:34594 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234120AbhHQWVn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 18:21:43 -0400
-Received: by mail-io1-f71.google.com with SMTP id o8-20020a0566021248b029058d0f91164eso54092iou.1
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 15:21:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=umDmu+4hB/JDNHdbTJk5sLucv5/bOLVHY7bndijJFTA=;
-        b=W7goGzCiCKZQpHjuX0RP0KvTTrdqV/Eh3kl2VYrPnjmczYFrpy2Fpy5rathgdCfmww
-         NrOReKxQydTUGmes9HZZb2bbBPWlGjK311e94X1Rq+uMUtxHJkYWUKiqZkabnuG3ur3n
-         QxcVc4S6GKOBwx+nacFCnfcDw4luqYLWmd7Cr6yzDybg/Z2wP2SX+MXOXXBLceyCYqLr
-         a97KWns5IefiDhUU394AxbqPR7Tu2fY8BFrwo0gtdprI9FzUm1Nz5WoGBGjSOh0UcuUw
-         4UaEX4XcQQ5epFTOGrae7uSWSjINEfRtqNrfUnSdfYAwXafyspk7xfaLTvIHBMRWDB8L
-         ulhA==
-X-Gm-Message-State: AOAM533N01hB4/fpbYUA7ZClEYzyJY/P4IzNZ2M24eiyM7m5s0X0/dY7
-        Kz+yc3u2g9Yg3sdD5Btt+t7vYQHUKgZbo08MItq7c5RW/GjH
-X-Google-Smtp-Source: ABdhPJzaDcwt4eaiB4ndqrwZbsMFOJdKO3Yu0KMKfK1Kr5midZbCbjKzgjJY5yO6zqRjKZKrk/3nxoTRvoMMG4XwWaB7JHSI/tXL
+        id S234859AbhHQW1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 18:27:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54406 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232453AbhHQW1p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Aug 2021 18:27:45 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CFB82604AC;
+        Tue, 17 Aug 2021 22:27:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629239232;
+        bh=yL+zHAtB3UEw3Ksld7rKWAvgYILgcAm9dclgUnd/MPA=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=ptVsGcNwnfOKkV5zz3+yKmAtZbByihq56gC4pKkihsGXYu8bELFnd95+CCXtrROVD
+         F6m7vC0rFxYoBXfzmvjsTHSsmgxGot+/zQbPtYKPMc5goZDsRpouiimE0I3a6XPt+O
+         Pdw06aSMUa6SQZwFR/M5Xlfkw5EkJXLYBDuLqAGHQ0DZFc7uh6kPgZT7CPVIPmZf0s
+         YEViBlQXN28m8W7cFDUH9q/mYXlu9qJEfxZDkwcHRlGnx4svtCqI7Nx2RqUeQqc6Q7
+         dYEQGGf1JaYR7lnoyRawv/W6CEiLmm8zccXOfz8EF3RYxNDAsSLK9gJKCyOpJZxdpP
+         6nO76UKSJiEVg==
+Subject: Re: [PATCH v2 2/3] pktgen: Add imix distribution bins
+To:     Nick Richardson <richardsonnick@google.com>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, nrrichar@ncsu.edu,
+        Philip Romanov <promanov@google.com>,
+        Arun Kalyanasundaram <arunkaly@google.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Di Zhu <zhudi21@huawei.com>, Leesoo Ahn <dev@ooseel.net>,
+        Ye Bin <yebin10@huawei.com>,
+        Yejune Deng <yejune.deng@gmail.com>,
+        Netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        lkft-triage@lists.linaro.org, Mark Brown <broonie@kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+References: <20210810190159.4103778-1-richardsonnick@google.com>
+ <20210810190159.4103778-3-richardsonnick@google.com>
+ <CA+G9fYszRMoz-FKDJKzOuw7VkEyy-YQF1NR_0q4dc5Dpvb6ykw@mail.gmail.com>
+ <CAGr-3gmgzr2KGJq5hBUzxEOhFp0_sibpY9HfXS5rMVwtSK16rg@mail.gmail.com>
+From:   Nathan Chancellor <nathan@kernel.org>
+Message-ID: <4135e426-5a6f-c36a-d048-382c07f16b0a@kernel.org>
+Date:   Tue, 17 Aug 2021 15:27:09 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:547:: with SMTP id i7mr3835170ils.102.1629238869490;
- Tue, 17 Aug 2021 15:21:09 -0700 (PDT)
-Date:   Tue, 17 Aug 2021 15:21:09 -0700
-In-Reply-To: <00000000000080486305c9a8f818@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000012030e05c9c8bc85@google.com>
-Subject: Re: [syzbot] KFENCE: use-after-free in kvm_fastop_exception
-From:   syzbot <syzbot+7b938780d5deeaaf938f@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        marcel@holtmann.org, mathew.j.martineau@linux.intel.com,
-        matthieu.baerts@tessares.net, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
-        viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAGr-3gmgzr2KGJq5hBUzxEOhFp0_sibpY9HfXS5rMVwtSK16rg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+On 8/17/2021 3:17 PM, Nick Richardson wrote:
+> On Wed, 11 Aug 2021 at 00:32, Nicholas Richardson
+> <richardsonnick@google.com> wrote:
+>>
+>> From: Nick Richardson <richardsonnick@google.com>
+>>
+>> In order to represent the distribution of imix packet sizes, a
+>> pre-computed data structure is used. It features 100 (IMIX_PRECISION)
+>> "bins". Contiguous ranges of these bins represent the respective
+>> packet size of each imix entry. This is done to avoid the overhead of
+>> selecting the correct imix packet size based on the corresponding weights.
+>>
+>> Example:
+>> imix_weights 40,7 576,4 1500,1
+>> total_weight = 7 + 4 + 1 = 12
+>>
+>> pkt_size 40 occurs 7/total_weight = 58% of the time
+>> pkt_size 576 occurs 4/total_weight = 33% of the time
+>> pkt_size 1500 occurs 1/total_weight = 9% of the time
+>>
+>> We generate a random number between 0-100 and select the corresponding
+>> packet size based on the specified weights.
+>> Eg. random number = 358723895 % 100 = 65
+>> Selects the packet size corresponding to index:65 in the pre-computed
+>> imix_distribution array.
+>> An example of the  pre-computed array is below:
+>>
+>> The imix_distribution will look like the following:
+>> 0        ->  0 (index of imix_entry.size == 40)
+>> 1        ->  0 (index of imix_entry.size == 40)
+>> 2        ->  0 (index of imix_entry.size == 40)
+>> [...]    ->  0 (index of imix_entry.size == 40)
+>> 57       ->  0 (index of imix_entry.size == 40)
+>> 58       ->  1 (index of imix_entry.size == 576)
+>> [...]    ->  1 (index of imix_entry.size == 576)
+>> 90       ->  1 (index of imix_entry.size == 576)
+>> 91       ->  2 (index of imix_entry.size == 1500)
+>> [...]    ->  2 (index of imix_entry.size == 1500)
+>> 99       ->  2 (index of imix_entry.size == 1500)
+>>
+>> Create and use "bin" representation of the imix distribution.
+>>
+>> Signed-off-by: Nick Richardson <richardsonnick@google.com>
+>> ---
+>>   net/core/pktgen.c | 41 +++++++++++++++++++++++++++++++++++++++++
+>>   1 file changed, 41 insertions(+)
+>>
+>> diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+>> index a7e45eaccef7..ac1de15000e2 100644
+>> --- a/net/core/pktgen.c
+>> +++ b/net/core/pktgen.c
+>> @@ -177,6 +177,7 @@
+>>   #define MPLS_STACK_BOTTOM htonl(0x00000100)
+>>   /* Max number of internet mix entries that can be specified in imix_weights. */
+>>   #define MAX_IMIX_ENTRIES 20
+>> +#define IMIX_PRECISION 100 /* Precision of IMIX distribution */
+>>
+>>   #define func_enter() pr_debug("entering %s\n", __func__);
+>>
+>> @@ -354,6 +355,8 @@ struct pktgen_dev {
+>>          /* IMIX */
+>>          unsigned int n_imix_entries;
+>>          struct imix_pkt imix_entries[MAX_IMIX_ENTRIES];
+>> +       /* Maps 0-IMIX_PRECISION range to imix_entry based on probability*/
+>> +       __u8 imix_distribution[IMIX_PRECISION];
+>>
+>>          /* MPLS */
+>>          unsigned int nr_labels; /* Depth of stack, 0 = no MPLS */
+>> @@ -483,6 +486,7 @@ static void pktgen_stop_all_threads(struct pktgen_net *pn);
+>>
+>>   static void pktgen_stop(struct pktgen_thread *t);
+>>   static void pktgen_clear_counters(struct pktgen_dev *pkt_dev);
+>> +static void fill_imix_distribution(struct pktgen_dev *pkt_dev);
+> 
+> Linux next 20210813 tag arm builds failed due to following build errors.
+> 
+> Regressions found on arm:
+> 
+>   - build/gcc-10-ixp4xx_defconfig
+>   - build/gcc-10-orion5x_defconfig
+>   - build/gcc-10-multi_v5_defconfig
+> 
+> net/core/pktgen.c:489:13: warning: 'fill_imix_distribution' used but
+> never defined
+>   static void fill_imix_distribution(struct pktgen_dev *pkt_dev);
+>               ^~~~~~~~~~~~~~~~~~~~~~
+> ERROR: modpost: "fill_imix_distribution" [net/core/pktgen.ko] undefined!
+> make[2]: *** [scripts/Makefile.modpost:150: modules-only.symvers] Error 1
+> make[2]: *** Deleting file 'modules-only.symvers'
+> make[2]: Target '__modpost' not remade because of errors.
+> make[1]: *** [Makefile:1918: modules] Error 2
+> 
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> 
+> Steps to reproduce:
+> 
+> # TuxMake is a command line tool and Python library that provides
+> # portable and repeatable Linux kernel builds across a variety of
+> # architectures, toolchains, kernel configurations, and make targets.
+> #
+> # TuxMake supports the concept of runtimes.
+> # See https://docs.tuxmake.org/runtimes/, for that to work it requires
+> # that you install podman or docker on your system.
+> #
+> # To install tuxmake on your system globally:
+> # sudo pip3 install -U tuxmake
+> #
+> # See https://docs.tuxmake.org/ for complete documentation.
+> 
+> tuxmake --runtime podman --target-arch arm --toolchain gcc-10
+> --kconfig orion5x_defconfig
+> 
+> 
+> On Sat, Aug 14, 2021 at 1:13 AM Naresh Kamboju
+> <naresh.kamboju@linaro.org> wrote:
+>>
+>> On Wed, 11 Aug 2021 at 00:32, Nicholas Richardson
+>> <richardsonnick@google.com> wrote:
+>>>
+>>> From: Nick Richardson <richardsonnick@google.com>
+>>>
+>>> In order to represent the distribution of imix packet sizes, a
+>>> pre-computed data structure is used. It features 100 (IMIX_PRECISION)
+>>> "bins". Contiguous ranges of these bins represent the respective
+>>> packet size of each imix entry. This is done to avoid the overhead of
+>>> selecting the correct imix packet size based on the corresponding weights.
+>>>
+>>> Example:
+>>> imix_weights 40,7 576,4 1500,1
+>>> total_weight = 7 + 4 + 1 = 12
+>>>
+>>> pkt_size 40 occurs 7/total_weight = 58% of the time
+>>> pkt_size 576 occurs 4/total_weight = 33% of the time
+>>> pkt_size 1500 occurs 1/total_weight = 9% of the time
+>>>
+>>> We generate a random number between 0-100 and select the corresponding
+>>> packet size based on the specified weights.
+>>> Eg. random number = 358723895 % 100 = 65
+>>> Selects the packet size corresponding to index:65 in the pre-computed
+>>> imix_distribution array.
+>>> An example of the  pre-computed array is below:
+>>>
+>>> The imix_distribution will look like the following:
+>>> 0        ->  0 (index of imix_entry.size == 40)
+>>> 1        ->  0 (index of imix_entry.size == 40)
+>>> 2        ->  0 (index of imix_entry.size == 40)
+>>> [...]    ->  0 (index of imix_entry.size == 40)
+>>> 57       ->  0 (index of imix_entry.size == 40)
+>>> 58       ->  1 (index of imix_entry.size == 576)
+>>> [...]    ->  1 (index of imix_entry.size == 576)
+>>> 90       ->  1 (index of imix_entry.size == 576)
+>>> 91       ->  2 (index of imix_entry.size == 1500)
+>>> [...]    ->  2 (index of imix_entry.size == 1500)
+>>> 99       ->  2 (index of imix_entry.size == 1500)
+>>>
+>>> Create and use "bin" representation of the imix distribution.
+>>>
+>>> Signed-off-by: Nick Richardson <richardsonnick@google.com>
+>>> ---
+>>>   net/core/pktgen.c | 41 +++++++++++++++++++++++++++++++++++++++++
+>>>   1 file changed, 41 insertions(+)
+>>>
+>>> diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+>>> index a7e45eaccef7..ac1de15000e2 100644
+>>> --- a/net/core/pktgen.c
+>>> +++ b/net/core/pktgen.c
+>>> @@ -177,6 +177,7 @@
+>>>   #define MPLS_STACK_BOTTOM htonl(0x00000100)
+>>>   /* Max number of internet mix entries that can be specified in imix_weights. */
+>>>   #define MAX_IMIX_ENTRIES 20
+>>> +#define IMIX_PRECISION 100 /* Precision of IMIX distribution */
+>>>
+>>>   #define func_enter() pr_debug("entering %s\n", __func__);
+>>>
+>>> @@ -354,6 +355,8 @@ struct pktgen_dev {
+>>>          /* IMIX */
+>>>          unsigned int n_imix_entries;
+>>>          struct imix_pkt imix_entries[MAX_IMIX_ENTRIES];
+>>> +       /* Maps 0-IMIX_PRECISION range to imix_entry based on probability*/
+>>> +       __u8 imix_distribution[IMIX_PRECISION];
+>>>
+>>>          /* MPLS */
+>>>          unsigned int nr_labels; /* Depth of stack, 0 = no MPLS */
+>>> @@ -483,6 +486,7 @@ static void pktgen_stop_all_threads(struct pktgen_net *pn);
+>>>
+>>>   static void pktgen_stop(struct pktgen_thread *t);
+>>>   static void pktgen_clear_counters(struct pktgen_dev *pkt_dev);
+>>> +static void fill_imix_distribution(struct pktgen_dev *pkt_dev);
+>>
+>> Linux next 20210813 tag arm builds failed due to following build errors.
+>>
+>> Regressions found on arm:
+>>
+>>   - build/gcc-10-ixp4xx_defconfig
+>>   - build/gcc-10-orion5x_defconfig
+>>   - build/gcc-10-multi_v5_defconfig
+>>
+>> net/core/pktgen.c:489:13: warning: 'fill_imix_distribution' used but
+>> never defined
+>>   static void fill_imix_distribution(struct pktgen_dev *pkt_dev);
+>>               ^~~~~~~~~~~~~~~~~~~~~~
+>> ERROR: modpost: "fill_imix_distribution" [net/core/pktgen.ko] undefined!
+>> make[2]: *** [scripts/Makefile.modpost:150: modules-only.symvers] Error 1
+>> make[2]: *** Deleting file 'modules-only.symvers'
+>> make[2]: Target '__modpost' not remade because of errors.
+>> make[1]: *** [Makefile:1918: modules] Error 2
+>>
+>> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+>>
+>> Steps to reproduce:
+>>
+>> # TuxMake is a command line tool and Python library that provides
+>> # portable and repeatable Linux kernel builds across a variety of
+>> # architectures, toolchains, kernel configurations, and make targets.
+>> #
+>> # TuxMake supports the concept of runtimes.
+>> # See https://docs.tuxmake.org/runtimes/, for that to work it requires
+>> # that you install podman or docker on your system.
+>> #
+>> # To install tuxmake on your system globally:
+>> # sudo pip3 install -U tuxmake
+>> #
+>> # See https://docs.tuxmake.org/ for complete documentation.
+>>
+>> tuxmake --runtime podman --target-arch arm --toolchain gcc-10
+>> --kconfig orion5x_defconfig
+>>
+>> --
+>> Linaro LKFT
+>> https://lkft.linaro.org
+> 
+> Thanks for the reply Naresh. Do you have any ideas on how to resolve
+> this error? Pktgen already defines a couple of function prototypes
+> before they are declared and that seems to be the cause of this error
+> message.
 
-commit c4512c63b1193c73b3f09c598a6d0a7f88da1dd8
-Author: Matthieu Baerts <matthieu.baerts@tessares.net>
-Date:   Fri Jun 25 21:25:22 2021 +0000
+The problem is that you declare and use fill_imix_distribution() 
+unconditionally in the file but fill_imix_distribution() is only defined 
+if CONFIG_XFRM is set, resulting in this error if CONFIG_XFRM is not set.
 
-    mptcp: fix 'masking a bool' warning
+Should fill_imix_distribution() be moved out of that block or does it 
+truly depend on CONFIG_XFRM? If it does, should the use of 
+fill_imix_distribution() be guarded by CONFIG_XFRM as well?
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=122b0655300000
-start commit:   b9011c7e671d Add linux-next specific files for 20210816
-git tree:       linux-next
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=112b0655300000
-console output: https://syzkaller.appspot.com/x/log.txt?x=162b0655300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a245d1aa4f055cc1
-dashboard link: https://syzkaller.appspot.com/bug?extid=7b938780d5deeaaf938f
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=157a41ee300000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14f78ff9300000
-
-Reported-by: syzbot+7b938780d5deeaaf938f@syzkaller.appspotmail.com
-Fixes: c4512c63b119 ("mptcp: fix 'masking a bool' warning")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Cheers,
+Nathan
