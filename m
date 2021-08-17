@@ -2,64 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCE743EEED7
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 16:57:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EE6F3EEEDA
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 16:57:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238187AbhHQO5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 10:57:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34540 "EHLO
+        id S240137AbhHQO5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 10:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232705AbhHQO5q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 10:57:46 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CEA2C061764
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 07:57:13 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id bj40so32317685oib.6
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 07:57:13 -0700 (PDT)
+        with ESMTP id S239213AbhHQO5t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 10:57:49 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A86FC0613CF
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 07:57:16 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id f3so25164721plg.3
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 07:57:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yv1qYYLhRD1NW2g1uB02R9u05IJGaCnltMYC2697Fak=;
-        b=GZh2duqIOssE/Nr/hBD8CVUbJM823P9lXaHaasoVMkTWcMx6ZpTUYPd0POwEOaD10/
-         bA6obL+moDtkqxs42grgyGIQ8U1iB71DNI1+TMHYXTAQ7asFIFN/wbu7yfz730YKM8Jj
-         WiipyQZFHxKFh4yxD2efDTGG3xBZgFomYSmsi262wakcHzUpBB+OrNINh3/5N13G+gkq
-         OMAucVzXE8lJHSROgOftxdOKqPUPitr+UicAh3acBEs6vzK8YKmO5Ty7huyFXeL5MhZh
-         beNYxWPr3xCCxtKRtRsT5iujLOR3PcnkR/UiyxeGBXQWsAX3MPBQ4mdUchD+w6oUrMBY
-         C80Q==
+        bh=1HdHdFgWWG16f4VwNP1gm3a1IOgD0fTv+SrBh0by7IQ=;
+        b=kIWcguE/I/iMCvSQVpeRfXxGl+9A/JDtLbRLkJ78gUb4+3IGvFXFEISYOyD0qtOoQw
+         PlcIeo5TMWaWuqqIJv0rLLYW5hfNDtC2CFas4gi7MX0tmJWmg6lv2bUGwhA3NAcRCTZ4
+         FNPpuWsl4pTjOPGM0iJsazx0F13+msWdp19otXXzaHQtBrsbMW2CtF1GfA/+91iWF1En
+         83/qwC6pJWPlaH4cgixns7cYJxT9Kdd42q87YiP/sZZcO/rbqrXs/+KkW3Er3o16MIlH
+         fT585xGuubJpw3LigCirvwB2mcq0XpKqqlLYUu9zAmsBJTHD+t8N88xI0Nmd0k6VoCVL
+         tTYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=yv1qYYLhRD1NW2g1uB02R9u05IJGaCnltMYC2697Fak=;
-        b=eDwH6E5J0aBnJuNJ5yVi3zJyxWtK0yYyhsUSGpdwwhDP1JMRJIEbfH6PeKQNlmdxZw
-         oObJXbcgTxT9aVW8crOAQRHBkqA8J2xxnwtrSM5lSH7ihqZf0bThKKfHZDRByLdgriRk
-         8gH74TcBJkcBTl0FFIzCk8hOTUBLVjOZWe7ob70N8bTCzVo9M0Xb/fxCEIVSs2bfSQXV
-         Kg2oi1/WFiSE3jGjUuvYYrkbqk/voo9MYd+WDwxD3+NMQ/n3gIqzc4PeizwA9IKhoj1X
-         WCBWSGu62w6GDzPTMh5iCwblRmcIgl+iMFWjsTaxqX4M+ifeh3A19sKC/U+BlTvxnGkB
-         r9Sw==
-X-Gm-Message-State: AOAM5304FvIKuRo/vHIzV2bRFQ4zXPSzQM4YNarJaiNLEGOUkYUl1loz
-        /srWBIpog13mXGr1grTYFilEdfT4EyY=
-X-Google-Smtp-Source: ABdhPJxu3jWrvMJ4A2a9zk3LDEoiwt5YIpDie4j/7kWA8p2FwSic/wTD4GqYvqwdXK8BO/5O8S9wzg==
-X-Received: by 2002:a05:6808:657:: with SMTP id z23mr2903085oih.113.1629212232577;
-        Tue, 17 Aug 2021 07:57:12 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.6.112.214])
-        by smtp.googlemail.com with ESMTPSA id b11sm463560ooi.0.2021.08.17.07.57.12
+        bh=1HdHdFgWWG16f4VwNP1gm3a1IOgD0fTv+SrBh0by7IQ=;
+        b=MV625QnJIqm13nqjPCaqiF3+fdTEHCxkK47V6TF/2lfwhywUiwveNr7jmn+duVyebZ
+         cNgX5Py6xuvE0O9jj7tVuVXzHDt7mfcL5L35Kx4+g2php8J5ngbDeycTOaKCYMH7ZYkD
+         H5J41pWZQRTbHOSy6UAp/lqOatYNFcHSOCQsWTuIhXy44Q7KuREQ6SBKcD46Aecqwb8d
+         qyoGAT0XzBByw3wkYZNQABBlzh2dZNvKpkF8Wt6xkw9zkgpw9ywLhxEL9cj8XGagBjUT
+         bq5sbAdx3ErGMG7T0VZo8I4UxO/V7YwjsEXDKD63TgWNvw+E4L/uGkMLSovqWvFxCIbY
+         8a5w==
+X-Gm-Message-State: AOAM533fyHomd53TXvdxmED+vS4ZiEEkCQTI396CA9YKvhYY/xMffUNU
+        78NGETFjtCBshXIJPLzuWKIiaTUoT22eWzy4
+X-Google-Smtp-Source: ABdhPJzg+/VFD0aZP/K9KCbnHrNFCT23a+Ea9PjuGgTaDiY94Y7TQdd+JR0IL4r+V2M3pkN2Z6JMQg==
+X-Received: by 2002:a17:90a:1616:: with SMTP id n22mr4140488pja.141.1629212235318;
+        Tue, 17 Aug 2021 07:57:15 -0700 (PDT)
+Received: from [192.168.1.116] ([66.219.217.159])
+        by smtp.gmail.com with ESMTPSA id r3sm2909972pff.119.2021.08.17.07.57.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Aug 2021 07:57:12 -0700 (PDT)
-Subject: Re: ss command not showing raw sockets? (regression)
-To:     Jakub Kicinski <kuba@kernel.org>, Jonas Bechtel <post@jbechtel.de>
-Cc:     netdev@vger.kernel.org
-References: <20210815231738.7b42bad4@mmluhan>
- <20210816150800.28ef2e7c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <1dafd125-cd9f-f05c-a133-80d72b2fe99b@gmail.com>
-Date:   Tue, 17 Aug 2021 08:57:10 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
+        Tue, 17 Aug 2021 07:57:14 -0700 (PDT)
+Subject: Re: [PATCH v2 0/4] open/accept directly into io_uring fixed file
+ table
+To:     Pavel Begunkov <asml.silence@gmail.com>,
+        Stefan Metzmacher <metze@samba.org>, io-uring@vger.kernel.org,
+        Josh Triplett <josh@joshtriplett.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <cover.1628871893.git.asml.silence@gmail.com>
+ <17841c48-093e-af1c-c7c9-aa00859eb1b9@samba.org>
+ <78e2d63a-5d3a-6334-8177-11646d4ec261@gmail.com>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <ab450460-1faa-dea1-f8a3-894a42461597@kernel.dk>
+Date:   Tue, 17 Aug 2021 08:57:13 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210816150800.28ef2e7c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <78e2d63a-5d3a-6334-8177-11646d4ec261@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -67,31 +73,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/16/21 4:08 PM, Jakub Kicinski wrote:
-> On Sun, 15 Aug 2021 23:17:38 +0200 Jonas Bechtel wrote:
->> I've got following installation:
->> * ping 32 bit version
->> * Linux 4.4.0 x86_64 (yes, somewhat ancient)
->> * iproute2  4.9.0 or 4.20.0 or 5.10.0
+On 8/17/21 3:33 AM, Pavel Begunkov wrote:
+> On 8/16/21 4:45 PM, Stefan Metzmacher wrote:
+>> Hi Pavel,
 >>
->> With one ping command active, there are two raw sockets on my system:
->> one for IPv4 and one for IPv6 (just one of those is used).
+>>> The behaviour is controlled by setting sqe->file_index, where 0 implies
+>>> the old behaviour. If non-zero value is specified, then it will behave
+>>> as described and place the file into a fixed file slot
+>>> sqe->file_index - 1. A file table should be already created, the slot
+>>> should be valid and empty, otherwise the operation will fail.
+>>>
+>>> Note 1: we can't use IOSQE_FIXED_FILE to switch between modes, because
+>>> accept takes a file, and it already uses the flag with a different
+>>> meaning.
 >>
->> My problem is that
->>
->> ss -awp
->>
->> shows 
->> * two raw sockets (4.9.0)
->> * any raw socket = bug (4.20.0)
->> * any raw socket = bug (5.10.0)
+>> Would it be hard to support IOSQE_FIXED_FILE for the dirfd of openat*, renameat, unlinkat, statx?
+>> (And mkdirat, linkat, symlinkat when they arrive)
+>> renameat and linkat might be trickier as they take two dirfds, but it
+>> would make the feature more complete and useful.
 > 
-> Could you clarify how the bug manifests itself? Does ss crash?
+> Good idea. There is nothing blocking on the io_uring side, but
+> the fs part may get ugly, e.g. too intrusive. We definitely need
+> to take a look
 
-I take it kernel version is constant and iproute2 version changes,
-correct? Can you download the source and do a git bisect?
+Indeed, the io_uring side is trivial, but the VFS interface would
+require a lot of man handling... That's why I didn't add support for
+fixed files originally.
 
-> 
->> So is this a bug or is this wont-fix (then, if it is related to
->> kernel version, package maintainers may be interested)?
+-- 
+Jens Axboe
 
