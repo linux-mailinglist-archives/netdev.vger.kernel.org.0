@@ -2,100 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19A753EF224
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 20:44:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 581293EF23E
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 20:48:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232769AbhHQSoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 14:44:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59648 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232351AbhHQSoh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Aug 2021 14:44:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 98919604AC;
-        Tue, 17 Aug 2021 18:44:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629225843;
-        bh=tQruhJe1EpgromcFx02JFTrRlU2n72mWHK/gtNw2C+g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XYQnPp2H++Qi7JAE76x3G2dztN48+PlIffrnhsXUF5duc4tvvAhqKEUOrwAl6VTjb
-         mP64DMWSYRr5lsu2UMnxT3Yp0JMYJl+shVbhsZ7eVG5vXjnNEW9yHoomVTutSr3pLE
-         roQpfnappwxwj8oPq3KX5gzFk0rSi+jp4rw2FGeytEeXi55rfv+ZKCJdUv35O0pSYH
-         hhqFF5xyb6yyH96KOZUYatgLVr/VTXvqgWgUMMpyA7UgHyNITViFj4n0hfzEmw+014
-         xvzCkJ04T3XYNcPUEtuJn9cVHNMm9Od8mAhJDPY444TtougG5fYN87plqXKfHslZVd
-         3nP6arA1/++WA==
-Date:   Tue, 17 Aug 2021 11:44:02 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jonas Bechtel <post@jbechtel.de>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: Re: ss command not showing raw sockets? (regression)
-Message-ID: <20210817114402.78463d9d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210817202135.6b42031f@mmluhan>
-References: <20210815231738.7b42bad4@mmluhan>
-        <20210816150800.28ef2e7c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210817080451.34286807@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210817202135.6b42031f@mmluhan>
+        id S233298AbhHQSss (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 14:48:48 -0400
+Received: from mail-oi1-f181.google.com ([209.85.167.181]:44785 "EHLO
+        mail-oi1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230373AbhHQSsp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 14:48:45 -0400
+Received: by mail-oi1-f181.google.com with SMTP id w6so496934oiv.11;
+        Tue, 17 Aug 2021 11:48:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nzIgJMa9X2S8j+5qu6QKB3OfU1LS75XPiAFcEXr7Uv4=;
+        b=tXcZr2FcpGIEQAeUcgFP9nxsCMi79b5mg9wjFcGx21KV7intnrhJLQVQev4rNCk5AP
+         PdUgFOj/SOdlqhjQoxtRD91y/1dX0fTCtqPXVc9/8L93zbGUaXgVVIjInB72MgMz8gex
+         aqBxAopZjPRkJwEgvGK0F3Vib9mLkq3QujYCPzFEq9/+4RKuN+saCoRAtP2hc9KfJ5z/
+         3iqr9yWvWonama2eQmajUUrXrL9l6D0NLg3e22fIkgIeRdPtjLZDvHqVG+FE8e6Nmz/P
+         6XqUj65skFQUc+Z8GD4VVWWoc4sAFq03hrzV6ZhEaYhHVABMx+02FAI2rIvjpixAKKt4
+         dU6Q==
+X-Gm-Message-State: AOAM533KL3d8ScLWrvSStJF6+z0I/hcsQI/KlCrxv4PmVGAuf6QLXfhq
+        P7chOXGqb2/IOJlUgmnbMA==
+X-Google-Smtp-Source: ABdhPJwImY4DZXklw6KIc/1fnibzeDWipJdCH7U+fkrAF8vgvcXjIuK+N7h1N3Uq0nTasi65mtFgAw==
+X-Received: by 2002:a05:6808:81:: with SMTP id s1mr3670441oic.130.1629226091436;
+        Tue, 17 Aug 2021 11:48:11 -0700 (PDT)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id q20sm638233oiw.58.2021.08.17.11.48.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Aug 2021 11:48:10 -0700 (PDT)
+Received: (nullmailer pid 643472 invoked by uid 1000);
+        Tue, 17 Aug 2021 18:48:09 -0000
+Date:   Tue, 17 Aug 2021 13:48:09 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     chaochao2021666@163.com
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Chao Zeng <chao.zeng@siemens.com>
+Subject: Re: [PATCH 1/2] dt-bindings:dp83867:Add binding for the status led
+Message-ID: <YRwEacEuiAuPzA0E@robh.at.kernel.org>
+References: <20210809085213.324129-1-chaochao2021666@163.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210809085213.324129-1-chaochao2021666@163.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 Aug 2021 20:21:35 +0200 Jonas Bechtel wrote:
-> On Tue, 17 Aug 2021 08:04:51 -0700
-> Jakub Kicinski <kuba@kernel.org> wrote with subject
-> > I had a look, I don't see anything out of the ordinary. I checked with
-> > v4.6, I don't have a 4.4 box handy. It seems ss got support for
-> > dumping over netlink in the 4.9. On a 4.4 kernel it should fall back
-> > to using procfs tho, raw_show() calls inet_show_netlink() which
-> > should fails and therefore the code should fall through to the old
-> > procfs stuff.
-> > 
-> > No idea why that doesn't happen for you. Is this vanilla 4.4 or does
-> > it have backports? Is there a /sys/module/raw_diag/ directory on your
-> > system after you run those commands?  
+On Mon, Aug 09, 2021 at 04:52:13PM +0800, chaochao2021666@163.com wrote:
+> From: Chao Zeng <chao.zeng@siemens.com>
 > 
-> It's was Knoppix distributed package. I don't know about the exact
-> contents, there's also no hint in package description. I just know
-> that it works without initrd, as it directly mounts the root disk.
+> The phy status led of each of board maybe different.
+> Provide a method to custom phy status led behavior.
 > 
-> No, there's /sys/module but no /sys/module/raw_diag/ neither before
-> nor after running those commands.
+> Datasheet:
+> http://www.ti.com/product/DP83867IR/datasheet
+> 
+> Signed-off-by: Chao Zeng <chao.zeng@siemens.com>
+> ---
+>  .../devicetree/bindings/net/ti,dp83867.yaml    |  6 ++++++
+>  include/dt-bindings/net/ti-dp83867.h           | 18 ++++++++++++++++++
+>  2 files changed, 24 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/ti,dp83867.yaml b/Documentation/devicetree/bindings/net/ti,dp83867.yaml
+> index 047d757e8d82..a46a437818f2 100644
+> --- a/Documentation/devicetree/bindings/net/ti,dp83867.yaml
+> +++ b/Documentation/devicetree/bindings/net/ti,dp83867.yaml
+> @@ -106,6 +106,12 @@ properties:
+>        Transmitt FIFO depth- see dt-bindings/net/ti-dp83867.h for applicable
+>        values.
+>  
+> +  ti,led-sel:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description: |
+> +      This configure the status led. See dt-bindings/net/ti-dp83867.h
+> +      for different status led settings,select different configures
 
-Hm. Could you share the config for that kernel? I don't know Knoppix
-but there should be a /boot/config-* or /proc/config.gz, hopefully.
+There's ongoing discussions about using the LED bindings/subsystem for 
+this type of LED.
 
-> > Does setting PROC_NET_RAW make the newer iproute version work for
-> > you?
-> > 
-> > $ PROC_NET_RAW=/proc/net/raw ss -awp  
-> 
-> Yes, this did the trick. (And again I was thinking programs were
-> doing something "magical", but in the end it's just a file they
-> access)
-> 
-> 
-> Furthermore I checked with Linux 4.19.0 amd64 RT (Debian package;
-> from package description: "This kernel includes the PREEMPT_RT
-> realtime patch set."). With this kernel there was no need for
-> PROC_NET_RAW. All iproute versions worked out of the box and showed
-> even command name, pid and fd number (that's why ss traverses all
-> /proc/[pids]/fd/ directories?).
-> 
-> 
-> See attached log file, with kernel versions and iproute2 versions
-> printed.
-> 
-> 
-> @kuba With PROC_NET_RAW I consider the problem is found, isn't it? So
-> I will not download/bisect<->build or otherwise investigate the
-> problem until one of you explicitely asks me to do so.
-> 
-> I have now redirected invocation of command with set PROC_NET_RAW on
-> my system, and may (try to) update to Linux 4.19.
-
-I suspect the bisection would end up at the commit which added 
-the netlink dump support, so you can hold off for now, yes.
-
-My best guess right now is that Knoppix has a cut-down kernel 
-config and we don't handle that case correctly.
+Rob
