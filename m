@@ -2,305 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D6D43EF5A6
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 00:17:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A9713EF5AA
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 00:19:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236374AbhHQWSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 18:18:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51640 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236287AbhHQWSP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 18:18:15 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3739BC061764
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 15:17:41 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id f2so1374091ljn.1
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 15:17:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mljevfVZg9W0PLYDtlwlbBEhr+6DfsuJN2uRRXLrTdA=;
-        b=BlNQ0+OPM7VpucPeXAVKTheEGDOKJKISIjmvrHvb2xsF6E7cF0gr65rpm1HkTdmyCW
-         /PaDVAFwU6CnZuYF4AkYyeDyIZ/V2qz5SIkjC8RUccrLzMU/PVRg0ktt4nQoP9fQvM7o
-         F20nrp58qEjRG8/UWa23IdxKak2IZyhUSojIFHEx3YZSLFznUPqJ3e9WVu9MDGAxXuJD
-         hRCDySvAnQKN1lxFLYWFk42iee1GeYWNJlXcgsbTJLnfURgt/Z7DIVtWj5Y5WvzdwA+m
-         qyvlIQE7EcBL92a3HiAyYtA++E4hhFlZ/ckmwA9Vp+dXH6nt82gnFF3bW0MTKr0k9Xqp
-         MibQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mljevfVZg9W0PLYDtlwlbBEhr+6DfsuJN2uRRXLrTdA=;
-        b=R6IojsvwvPsjuObSsMFrq1LiWulR3jzGcdy2pCK6LNpJndsP+KUNlNj8GqtHLfcuqh
-         48YBM3Ath5abdDj/Sg8ACw0nGYLuiKxIpnQ4Mugi0w3soj521+0UujSbPbliPyLCD5v7
-         EWN8lIHPfu/G2Y1EN3b6aiirbqIdyjtg4/rNL5VmuG1jzcBoqFb1hxLI8lnHPIaZu2fX
-         gVN/NQGzWCEq3bNNS8SIKyNwI/eUfSin6P5iSJ1629FqbrEvw5NwkNl/BP+amVlUy1ag
-         TKCjg4Wr7ImiXrI6xRYntixOcNXmjgXjm1muFuCSGBQBQnnazBUgfojXJJHrBBFykNBm
-         sd1w==
-X-Gm-Message-State: AOAM531Qo6i6hLEKSJ0hnIjNE/GbLRaEbzPljw0ig03q13CVNOla0z/j
-        icVUvb3MEAiTH8Qeg8nM8EEznlk7xGeH7y29qNii3A==
-X-Google-Smtp-Source: ABdhPJyOsx6fldPI8jZn+B4589wZE8MEMjiOG+m2SvuPSWP0CMpm4aA/M0awDYuLOkj+sIUI0G9clcH3wZdiN4yinXI=
-X-Received: by 2002:a2e:a4d1:: with SMTP id p17mr5020868ljm.82.1629238658796;
- Tue, 17 Aug 2021 15:17:38 -0700 (PDT)
+        id S234865AbhHQWUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 18:20:02 -0400
+Received: from mail-eopbgr80124.outbound.protection.outlook.com ([40.107.8.124]:10001
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229729AbhHQWUB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Aug 2021 18:20:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hDTt1N6FY3QymBBe1noPw3E4OhR5nncsFaLUkVqqZV0VeDHSVS0zHfx5F5SBegW1gUCQ0v+1fI+OnSZdvurCFj8pTCs6KJ1vxg6Tvih4DFU3LyrFjKPLwGndEAEEwvNg7rqmcooAup9pSgzfaIlKqT2mFuEaFJqksF5OI6bZvW3ExsTBuzRuT0jiJw7hsRDLe2ihks2n8LjGliD1NGQT5y1+EzQ4dhGHkItOh6BAU3UpTBVRwE0bc/sAnRz5VvNos7Oe/pGIfgY9l+f5/ahfefjZhbVktF64TlVYk4Zm050dFjYO9wKenlriqxcJ5Co7Fq3oJl3xcaorwrZQEWKedw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EiOUpcfM32tRviowWAwbwU0BAMmbaoviT3UpAc64atw=;
+ b=FUsNrp31DdYbOHAoMSWnfHf7RrWc6moINvkoXa4k6R1srbZX1JYfAd0Y3Vu2FMFvXW0MrojGUdjzZZ2+dSERfUX3iAytT7x0GS2IDtp8ke0Txx5xnukAHStu8TXIZWKOy3gPQHqSj9oijdfvTb7AM2AP7Ty5U3ug2UYKNpSZgGtxFC326+jPD2jlNzgFWa3fYPdpAsyzPmu2jj5YtBQTtVIoPpIHPi5EOM9KElERSUbPJuyOhXBXB/gWUOTF6+9bEgXwWeSO6QYZr98r1DO7T8ufwmE0B2GoAXam6XHkfJb2Bm0mcIvKMlOpzoA+7gW8PAmvtihi7kYfGklUVuTxdQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bang-olufsen.dk; dmarc=pass action=none
+ header.from=bang-olufsen.dk; dkim=pass header.d=bang-olufsen.dk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bang-olufsen.dk;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EiOUpcfM32tRviowWAwbwU0BAMmbaoviT3UpAc64atw=;
+ b=tivlIe0mGnYMo33bvPNwDpTtDRp4UVJ+btLOMPERKkgat9ZSLXjR9vq51M3brfq0ngTlGeCYnP2ATWs+pic2022Mm6v7EbLq05fpVhGOLHeBpaVADuSrvYhtYVzsDs+N4QURAAUbS010+LDNtAY37x6bXKU4+xzGjqRZii8EcQI=
+Received: from HE1PR03MB3114.eurprd03.prod.outlook.com (2603:10a6:7:60::18) by
+ HE1PR0301MB2489.eurprd03.prod.outlook.com (2603:10a6:3:6b::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4415.20; Tue, 17 Aug 2021 22:19:24 +0000
+Received: from HE1PR03MB3114.eurprd03.prod.outlook.com
+ ([fe80::7cc8:2d4:32b3:320f]) by HE1PR03MB3114.eurprd03.prod.outlook.com
+ ([fe80::7cc8:2d4:32b3:320f%5]) with mapi id 15.20.4415.024; Tue, 17 Aug 2021
+ 22:19:24 +0000
+From:   =?utf-8?B?QWx2aW4gxaBpcHJhZ2E=?= <ALSI@bang-olufsen.dk>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH net] net: dsa: sja1105: fix use-after-free after calling
+ of_find_compatible_node, or worse
+Thread-Topic: [PATCH net] net: dsa: sja1105: fix use-after-free after calling
+ of_find_compatible_node, or worse
+Thread-Index: AQHXk3edAldLqW55BEm1kFydkTRTGqt4NdyAgAALEoCAAAP/gA==
+Date:   Tue, 17 Aug 2021 22:19:24 +0000
+Message-ID: <27140e44-1dfc-4166-9f57-1bbb1ca1dba9@bang-olufsen.dk>
+References: <20210817145245.3555077-1-vladimir.oltean@nxp.com>
+ <cd0d9c40-d07b-e2ab-b068-d0bcb4685d09@bang-olufsen.dk>
+ <YRwykZONaibo5KKe@lunn.ch>
+In-Reply-To: <YRwykZONaibo5KKe@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=bang-olufsen.dk;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f335979f-def8-42e9-a1f1-08d961cd11cf
+x-ms-traffictypediagnostic: HE1PR0301MB2489:
+x-microsoft-antispam-prvs: <HE1PR0301MB2489EF56DA0E540E1182BBD583FE9@HE1PR0301MB2489.eurprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: kh34bcTepG+dWX3MgAtbtH1+LibeqjlA9hHRFNnBfhQwCzGhYSG4E03L1O6rBfJ5Lhm1jcxuZ0bmjoPDA3SGP9zYdhnIZ9sY0Td6PucLnwbfDE8zG9kqFqZOZxEbGIgemgt6XdWRf4Tf/zxduXWQKLq9uYqXytqOciS/g6jvnwPKgzQLryuoH8NgTqU16fyc2W7b+uCg/EN/TnoxtHMxJ/26HY9FB8vyHUwBA0BiuthF2xd3j4doer5qmEVCKpmpd0rxyqfXDmQTxrU0YHOsVx49y+aA27+upi7i1PcirxspzmD5r8NYZe4dXOHuxptt/XVOUHx7PvNBCs9Cu2Oty6J2hI42p9x+TcfGtgbKoUui1y8Dv0F8XBE1U9aV2PCBzhJdppzfMxnl6YpmZGCfYvdRgOGtTBi4hzq/LxCzUuXOPUIgm/o9Zoqt7whKFl1gvYNMF8MSQ7t5ihjq9K0B7k9m87i6DPTYdGyfcCS8ewFfFyWMmSjk4tka51v8NviPVTHHoJpLNCLFZu8QyR/Mv9HEBcbHYjCZ4XPrukLCtRfk1nL5vOUaJyZxZ5E+53FNlDwQGcbUFMcCF/BH2hjdqw32ULB09S4UbpVuM6skL/it37fsw/a2JJv2FMs1MBxS7jzB5qsaaxRb6T9+BvM9N98dMAhTCTx9aMotQWso5U8rwoJ+YEZ9YeBpgzB9YXsFRk+IUjiafhCThZgupWmSMzMQCt+OKv+Y04Zan/BgRKJ7RzAAnSE+UbwFlidk5hiBoWXWqe1kQbiyPPm6bDkKIM65OSHvn129RW+S2K/Vfp4o9ErpcFSoLiClR3wtQDNthNKbo8uGDGczjR4CxNMs2XHpDc5Btv2J0TuVhAk9I2c=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR03MB3114.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(39830400003)(376002)(346002)(136003)(366004)(66946007)(316002)(66476007)(66556008)(64756008)(66446008)(54906003)(91956017)(76116006)(85182001)(8676002)(38070700005)(2906002)(38100700002)(4326008)(6512007)(6916009)(6486002)(478600001)(26005)(71200400001)(2616005)(6506007)(53546011)(186003)(7416002)(85202003)(8936002)(8976002)(31686004)(86362001)(31696002)(966005)(122000001)(5660300002)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?cTJnRXFSWHl5dlZmVGxPZ3Rpa1U5dnRkdHdWRHlaRStzZ20wdzNITmlESi9r?=
+ =?utf-8?B?QnljaDI3OWNFbm1ubzBVWkhmNUFYSWFzZU5iRmFIL28vQjRTOTlua2RSeFZ4?=
+ =?utf-8?B?RUM1MCtJaVNUVWw2Qk9GTndiT2pWU3pEbGRGenFxajFOSmRuSzUzTUFkVlVD?=
+ =?utf-8?B?ZWl3SGh6WTNHMVBJS0xRUWtRZnJ2MkV1MWs4dmppWTNwOFVrZW5ha1V3eThC?=
+ =?utf-8?B?ck5xUDRhdlJhMjBNTFBwQldJRy9VR1pFWTRsaTZ1b2gyNnVJRnl0cTNkKy90?=
+ =?utf-8?B?alhEUkYwMjV3V3BlSW5naUZBNjdyMVNkZjFXSjl3R0c5OUFDek92ZnhwR3ZO?=
+ =?utf-8?B?TmFJM0YwUmY1N3BMR000Y3N0emRzekczNENyZml2dHd6cEhXc2R2dngwV290?=
+ =?utf-8?B?NCsxMWZUVklxWmVQS1FMTVJTN0dqWm5iUWdNeFRaMFd6bjJJanBjMUYzWEQv?=
+ =?utf-8?B?bGRFKzdXSDU2djFzY3g4S3pSMVJPYlJpcjE2MWhiOEF3ZGZobjJpSDdhMWhm?=
+ =?utf-8?B?Z09VQzgxaDdqNEpkakFpRGx4d0RYN3JPSU9GMUVkRnJUeS9ZZS9hYlkxcHVU?=
+ =?utf-8?B?a1RUQWRQUzVRVlB1NkdyekhpK2J4SVViendsampFYktZS2puT1Z3Ly93YTBt?=
+ =?utf-8?B?MnY3Slg3WGZ6WmtCTmp4bVdoRlV4SE9uVmVWWk8yT2Y0dlpGb0U3T1BoVlAw?=
+ =?utf-8?B?VFgyQTlGMkVpeU5aMmJSemcraTh5azU1d1I4ckV2NWYyWFg2TGdNRldma09m?=
+ =?utf-8?B?dGpVTDNGMHNoQVdzZm5aUTdrNnkrV0hxZXF4eWpJMkdESzZNZ0N6aGQ5WFJl?=
+ =?utf-8?B?SDJzb2oyakxENjJQVThpbzRrczBQVk1PV0s2azdzVk1LcGdrVXpFYzdNdElx?=
+ =?utf-8?B?Z3NMNzExR3ZjZ25qdGtZRWJyR1kzOFplcTd6Y2F4UWtBZi81Y0RQbDRzYlNs?=
+ =?utf-8?B?N1lBQXd3Zm85ODFacElwZndUVis3Tkt5WWR0SFBYb25sU3BXbmVka2FFODVm?=
+ =?utf-8?B?a1lqMExvZk10VFg2eVdIRDZJTC9GNktkb1VlNWpvODdBREw4ajlWYlRpeGtx?=
+ =?utf-8?B?NDVqV3I3THBVZDNmS0ZRMFI4NlNZVzVRd2lvd2FGSTRjZis2bjNkS2IzN293?=
+ =?utf-8?B?TEZPWFZiVjhQcDYyQ2lBZW04V1J2eUxhc1I0dy9lT2JiZEhFTkg0TWNCQzVE?=
+ =?utf-8?B?c3pKSVdWL1ZJRWMwdXN1bXNqS3hFaFFZaDcyQnlyQlliUWIwdmhHcmRMUXNK?=
+ =?utf-8?B?Z3VNajRWUGNnY0k2S0YySlFNMmZiQjBGSGF6NlIrWERtd1dkWE5DeGR1eXpQ?=
+ =?utf-8?B?dit1THBUOW02K3BSWFVodHVYRUpOTDMrbUIzTFkrbGhNZHFaUFpIS0ludWtL?=
+ =?utf-8?B?THB6V0tyME1oNXFZb2FYbTl5bURyZ0wrYVppNURQUks3QWNZRUpSVXd0QTVV?=
+ =?utf-8?B?ek5UVUJjK3pzSnVkdVlHdGZLaEt3dml0SnZNdmQ2bU1lN1FpaUJrdDhYVnV2?=
+ =?utf-8?B?Z2UrMWpPcGlhQ1d0d3JXZUo3TXkwamR0WlZSb2NNNzJGaFZsVHlTTTEvOGhn?=
+ =?utf-8?B?TU9KdmtiRWdwMlA3dTY5NUFhTWtNTzBiZTE4T29QemtXOVEzZVBSTDEwcU9x?=
+ =?utf-8?B?VjlRK2xWMEhuaXFISi9XNWdpMWhldjZrMEV6VzZMK2xES3hlem5LOUpFeTJQ?=
+ =?utf-8?B?MlM5QWlqMjJycnNyZjVNdXJaSE9GdXJIV1FMWlRtcy8vdm4vMzM0dUYwZGVz?=
+ =?utf-8?Q?If6/SSBDldyPO3n8C30avEWx6zJiO/yh1NBje2J?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <7BCE7F765A249640A3EE54D37D8E24C5@eurprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20210810190159.4103778-1-richardsonnick@google.com>
- <20210810190159.4103778-3-richardsonnick@google.com> <CA+G9fYszRMoz-FKDJKzOuw7VkEyy-YQF1NR_0q4dc5Dpvb6ykw@mail.gmail.com>
-In-Reply-To: <CA+G9fYszRMoz-FKDJKzOuw7VkEyy-YQF1NR_0q4dc5Dpvb6ykw@mail.gmail.com>
-From:   Nick Richardson <richardsonnick@google.com>
-Date:   Tue, 17 Aug 2021 18:17:23 -0400
-Message-ID: <CAGr-3gmgzr2KGJq5hBUzxEOhFp0_sibpY9HfXS5rMVwtSK16rg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] pktgen: Add imix distribution bins
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, nrrichar@ncsu.edu,
-        Philip Romanov <promanov@google.com>,
-        Arun Kalyanasundaram <arunkaly@google.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Di Zhu <zhudi21@huawei.com>, Leesoo Ahn <dev@ooseel.net>,
-        Ye Bin <yebin10@huawei.com>,
-        Yejune Deng <yejune.deng@gmail.com>,
-        Netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        lkft-triage@lists.linaro.org, Mark Brown <broonie@kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: bang-olufsen.dk
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: HE1PR03MB3114.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f335979f-def8-42e9-a1f1-08d961cd11cf
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Aug 2021 22:19:24.3236
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 210d08b8-83f7-470a-bc96-381193ca14a1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 238jn1fi/e8JQsUqcd5thgRn1i3Ay6Nh5prUMKdUlyFGpV+KM87NH12znBeqhL/vj6u+FhQyVGG+aHnMSkBIKg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0301MB2489
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Aug 2021 at 00:32, Nicholas Richardson
-<richardsonnick@google.com> wrote:
->
-> From: Nick Richardson <richardsonnick@google.com>
->
-> In order to represent the distribution of imix packet sizes, a
-> pre-computed data structure is used. It features 100 (IMIX_PRECISION)
-> "bins". Contiguous ranges of these bins represent the respective
-> packet size of each imix entry. This is done to avoid the overhead of
-> selecting the correct imix packet size based on the corresponding weights.
->
-> Example:
-> imix_weights 40,7 576,4 1500,1
-> total_weight = 7 + 4 + 1 = 12
->
-> pkt_size 40 occurs 7/total_weight = 58% of the time
-> pkt_size 576 occurs 4/total_weight = 33% of the time
-> pkt_size 1500 occurs 1/total_weight = 9% of the time
->
-> We generate a random number between 0-100 and select the corresponding
-> packet size based on the specified weights.
-> Eg. random number = 358723895 % 100 = 65
-> Selects the packet size corresponding to index:65 in the pre-computed
-> imix_distribution array.
-> An example of the  pre-computed array is below:
->
-> The imix_distribution will look like the following:
-> 0        ->  0 (index of imix_entry.size == 40)
-> 1        ->  0 (index of imix_entry.size == 40)
-> 2        ->  0 (index of imix_entry.size == 40)
-> [...]    ->  0 (index of imix_entry.size == 40)
-> 57       ->  0 (index of imix_entry.size == 40)
-> 58       ->  1 (index of imix_entry.size == 576)
-> [...]    ->  1 (index of imix_entry.size == 576)
-> 90       ->  1 (index of imix_entry.size == 576)
-> 91       ->  2 (index of imix_entry.size == 1500)
-> [...]    ->  2 (index of imix_entry.size == 1500)
-> 99       ->  2 (index of imix_entry.size == 1500)
->
-> Create and use "bin" representation of the imix distribution.
->
-> Signed-off-by: Nick Richardson <richardsonnick@google.com>
-> ---
->  net/core/pktgen.c | 41 +++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 41 insertions(+)
->
-> diff --git a/net/core/pktgen.c b/net/core/pktgen.c
-> index a7e45eaccef7..ac1de15000e2 100644
-> --- a/net/core/pktgen.c
-> +++ b/net/core/pktgen.c
-> @@ -177,6 +177,7 @@
->  #define MPLS_STACK_BOTTOM htonl(0x00000100)
->  /* Max number of internet mix entries that can be specified in imix_weights. */
->  #define MAX_IMIX_ENTRIES 20
-> +#define IMIX_PRECISION 100 /* Precision of IMIX distribution */
->
->  #define func_enter() pr_debug("entering %s\n", __func__);
->
-> @@ -354,6 +355,8 @@ struct pktgen_dev {
->         /* IMIX */
->         unsigned int n_imix_entries;
->         struct imix_pkt imix_entries[MAX_IMIX_ENTRIES];
-> +       /* Maps 0-IMIX_PRECISION range to imix_entry based on probability*/
-> +       __u8 imix_distribution[IMIX_PRECISION];
->
->         /* MPLS */
->         unsigned int nr_labels; /* Depth of stack, 0 = no MPLS */
-> @@ -483,6 +486,7 @@ static void pktgen_stop_all_threads(struct pktgen_net *pn);
->
->  static void pktgen_stop(struct pktgen_thread *t);
->  static void pktgen_clear_counters(struct pktgen_dev *pkt_dev);
-> +static void fill_imix_distribution(struct pktgen_dev *pkt_dev);
-
-Linux next 20210813 tag arm builds failed due to following build errors.
-
-Regressions found on arm:
-
- - build/gcc-10-ixp4xx_defconfig
- - build/gcc-10-orion5x_defconfig
- - build/gcc-10-multi_v5_defconfig
-
-net/core/pktgen.c:489:13: warning: 'fill_imix_distribution' used but
-never defined
- static void fill_imix_distribution(struct pktgen_dev *pkt_dev);
-             ^~~~~~~~~~~~~~~~~~~~~~
-ERROR: modpost: "fill_imix_distribution" [net/core/pktgen.ko] undefined!
-make[2]: *** [scripts/Makefile.modpost:150: modules-only.symvers] Error 1
-make[2]: *** Deleting file 'modules-only.symvers'
-make[2]: Target '__modpost' not remade because of errors.
-make[1]: *** [Makefile:1918: modules] Error 2
-
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
-Steps to reproduce:
-
-# TuxMake is a command line tool and Python library that provides
-# portable and repeatable Linux kernel builds across a variety of
-# architectures, toolchains, kernel configurations, and make targets.
-#
-# TuxMake supports the concept of runtimes.
-# See https://docs.tuxmake.org/runtimes/, for that to work it requires
-# that you install podman or docker on your system.
-#
-# To install tuxmake on your system globally:
-# sudo pip3 install -U tuxmake
-#
-# See https://docs.tuxmake.org/ for complete documentation.
-
-tuxmake --runtime podman --target-arch arm --toolchain gcc-10
---kconfig orion5x_defconfig
-
-
-On Sat, Aug 14, 2021 at 1:13 AM Naresh Kamboju
-<naresh.kamboju@linaro.org> wrote:
->
-> On Wed, 11 Aug 2021 at 00:32, Nicholas Richardson
-> <richardsonnick@google.com> wrote:
-> >
-> > From: Nick Richardson <richardsonnick@google.com>
-> >
-> > In order to represent the distribution of imix packet sizes, a
-> > pre-computed data structure is used. It features 100 (IMIX_PRECISION)
-> > "bins". Contiguous ranges of these bins represent the respective
-> > packet size of each imix entry. This is done to avoid the overhead of
-> > selecting the correct imix packet size based on the corresponding weights.
-> >
-> > Example:
-> > imix_weights 40,7 576,4 1500,1
-> > total_weight = 7 + 4 + 1 = 12
-> >
-> > pkt_size 40 occurs 7/total_weight = 58% of the time
-> > pkt_size 576 occurs 4/total_weight = 33% of the time
-> > pkt_size 1500 occurs 1/total_weight = 9% of the time
-> >
-> > We generate a random number between 0-100 and select the corresponding
-> > packet size based on the specified weights.
-> > Eg. random number = 358723895 % 100 = 65
-> > Selects the packet size corresponding to index:65 in the pre-computed
-> > imix_distribution array.
-> > An example of the  pre-computed array is below:
-> >
-> > The imix_distribution will look like the following:
-> > 0        ->  0 (index of imix_entry.size == 40)
-> > 1        ->  0 (index of imix_entry.size == 40)
-> > 2        ->  0 (index of imix_entry.size == 40)
-> > [...]    ->  0 (index of imix_entry.size == 40)
-> > 57       ->  0 (index of imix_entry.size == 40)
-> > 58       ->  1 (index of imix_entry.size == 576)
-> > [...]    ->  1 (index of imix_entry.size == 576)
-> > 90       ->  1 (index of imix_entry.size == 576)
-> > 91       ->  2 (index of imix_entry.size == 1500)
-> > [...]    ->  2 (index of imix_entry.size == 1500)
-> > 99       ->  2 (index of imix_entry.size == 1500)
-> >
-> > Create and use "bin" representation of the imix distribution.
-> >
-> > Signed-off-by: Nick Richardson <richardsonnick@google.com>
-> > ---
-> >  net/core/pktgen.c | 41 +++++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 41 insertions(+)
-> >
-> > diff --git a/net/core/pktgen.c b/net/core/pktgen.c
-> > index a7e45eaccef7..ac1de15000e2 100644
-> > --- a/net/core/pktgen.c
-> > +++ b/net/core/pktgen.c
-> > @@ -177,6 +177,7 @@
-> >  #define MPLS_STACK_BOTTOM htonl(0x00000100)
-> >  /* Max number of internet mix entries that can be specified in imix_weights. */
-> >  #define MAX_IMIX_ENTRIES 20
-> > +#define IMIX_PRECISION 100 /* Precision of IMIX distribution */
-> >
-> >  #define func_enter() pr_debug("entering %s\n", __func__);
-> >
-> > @@ -354,6 +355,8 @@ struct pktgen_dev {
-> >         /* IMIX */
-> >         unsigned int n_imix_entries;
-> >         struct imix_pkt imix_entries[MAX_IMIX_ENTRIES];
-> > +       /* Maps 0-IMIX_PRECISION range to imix_entry based on probability*/
-> > +       __u8 imix_distribution[IMIX_PRECISION];
-> >
-> >         /* MPLS */
-> >         unsigned int nr_labels; /* Depth of stack, 0 = no MPLS */
-> > @@ -483,6 +486,7 @@ static void pktgen_stop_all_threads(struct pktgen_net *pn);
-> >
-> >  static void pktgen_stop(struct pktgen_thread *t);
-> >  static void pktgen_clear_counters(struct pktgen_dev *pkt_dev);
-> > +static void fill_imix_distribution(struct pktgen_dev *pkt_dev);
->
-> Linux next 20210813 tag arm builds failed due to following build errors.
->
-> Regressions found on arm:
->
->  - build/gcc-10-ixp4xx_defconfig
->  - build/gcc-10-orion5x_defconfig
->  - build/gcc-10-multi_v5_defconfig
->
-> net/core/pktgen.c:489:13: warning: 'fill_imix_distribution' used but
-> never defined
->  static void fill_imix_distribution(struct pktgen_dev *pkt_dev);
->              ^~~~~~~~~~~~~~~~~~~~~~
-> ERROR: modpost: "fill_imix_distribution" [net/core/pktgen.ko] undefined!
-> make[2]: *** [scripts/Makefile.modpost:150: modules-only.symvers] Error 1
-> make[2]: *** Deleting file 'modules-only.symvers'
-> make[2]: Target '__modpost' not remade because of errors.
-> make[1]: *** [Makefile:1918: modules] Error 2
->
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
->
-> Steps to reproduce:
->
-> # TuxMake is a command line tool and Python library that provides
-> # portable and repeatable Linux kernel builds across a variety of
-> # architectures, toolchains, kernel configurations, and make targets.
-> #
-> # TuxMake supports the concept of runtimes.
-> # See https://docs.tuxmake.org/runtimes/, for that to work it requires
-> # that you install podman or docker on your system.
-> #
-> # To install tuxmake on your system globally:
-> # sudo pip3 install -U tuxmake
-> #
-> # See https://docs.tuxmake.org/ for complete documentation.
->
-> tuxmake --runtime podman --target-arch arm --toolchain gcc-10
-> --kconfig orion5x_defconfig
->
-> --
-> Linaro LKFT
-> https://lkft.linaro.org
-
-Thanks for the reply Naresh. Do you have any ideas on how to resolve
-this error? Pktgen already defines a couple of function prototypes
-before they are declared and that seems to be the cause of this error
-message.
+SGkgQW5kcmV3LA0KDQpPbiA4LzE4LzIxIDEyOjA1IEFNLCBBbmRyZXcgTHVubiB3cm90ZToNCj4+
+IERvIHRoZXNlIGludGVncmF0ZWQgTlhQIFBIWXMgdXNlIGEgc3BlY2lmaWMgUEhZIGRyaXZlciwg
+b3IgZG8gdGhleSBqdXN0DQo+PiB1c2UgdGhlIEdlbmVyaWMgUEhZIGRyaXZlcj8gSWYgdGhlIGZv
+cm1lciBpcyB0aGUgY2FzZSwgZG8geW91IGV4cGVyaWVuY2UNCj4+IHRoYXQgdGhlIFBIWSBkcml2
+ZXIgZmFpbHMgdG8gZ2V0IHByb2JlZCBkdXJpbmcgbWRpb2J1cyByZWdpc3RyYXRpb24gaWYNCj4+
+IHRoZSBrZXJuZWwgdXNlcyBmd19kZXZsaW5rPW9uPw0KPiANCj4gVGhlIE1hcnZlbGwgbXY4OGU2
+eHh4IGRyaXZlciByZWdpc3RlcnMgdXB0byB0d28gTURJTyBidXNzZXMsIGFuZCB0aGUNCj4gUEhZ
+cyBvbiB0aG9zZSBidXNzZXMgbWFrZSB1c2Ugb2YgdGhlIG1hcnZlbGwgUEhZIGRyaXZlci4gSSd2
+ZSBub3QNCj4gdGVzdGVkIHNwZWNpZmljYWxseSB3aXRoIGZ3X2Rldmxpbms9b24sIGJ1dCBpbiBn
+ZW5lcmFsLCB0aGUgTWFydmVsbA0KPiBQSFkgZHJpdmVyIGRvZXMgZ2V0IGJvdW5kIHRvIHRoZXNl
+IGRldmljZXMuDQoNClRoYW5rcyBmb3IgeW91ciByZXBseS4gSSBzaG91bGQgYWRkIHRoYXQgd2l0
+aCBmd19kZXZsaW5rPXBlcm1pc3NpdmUsIHRoZSANClBIWSBkcml2ZXIgZ2V0cyBwcm9iZWQganVz
+dCBmaW5lLiBJdCdzIG9ubHkgc2luY2UgdjUuMTMgdGhhdCANCmZ3X2Rldmxpbms9b24gaGFzIGJl
+ZW4gdGhlIGRlZmF1bHRbMV0sIHNvIGl0IG1heSBiZSBzb21ldGhpbmcgbmV3IHRvIA0KY2hlY2su
+IEJ1dCBpZiB5b3UgdGhpbmsgaXQncyB3b3JraW5nIGZvciBvdGhlciBkcml2ZXJzIHRoZW4gdGhh
+dCBtZWFucyBJIA0Kd2lsbCBoYXZlIHRvIGxvb2sgaW50byBmdXJ0aGVyIG9uIG15IGVuZC4NCg0K
+S2luZCByZWdhcmRzLA0KQWx2aW4NCg0KWzFdIGVhNzE4YzY5OTA1NSAoIlJldmVydCAiUmV2ZXJ0
+ICJkcml2ZXIgY29yZTogU2V0IGZ3X2Rldmxpbms9b24gYnkgDQpkZWZhdWx0IiIiKQ0KIA0KaHR0
+cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGttbC8yMDIxMDMwMjIxMTEzMy4yMjQ0MjgxLTQtc2FyYXZh
+bmFrQGdvb2dsZS5jb20vDQoNCj4gDQo+ICAgICAgQW5kcmV3DQo+IA0K
