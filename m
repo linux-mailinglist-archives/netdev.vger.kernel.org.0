@@ -2,105 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C70333EE1FA
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 03:13:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D1CF3EE223
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 03:26:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235292AbhHQBN3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 21:13:29 -0400
-Received: from mail-lj1-f181.google.com ([209.85.208.181]:36433 "EHLO
-        mail-lj1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231649AbhHQBN3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 21:13:29 -0400
-Received: by mail-lj1-f181.google.com with SMTP id y7so30218495ljp.3;
-        Mon, 16 Aug 2021 18:12:56 -0700 (PDT)
+        id S235819AbhHQB05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 21:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47102 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233394AbhHQB04 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 21:26:56 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C1B2C061764
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 18:26:24 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id c4so6631381plh.7
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 18:26:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=76lPgHc7eZGNNRAuhJfd9UswjdNIPOmEHv90qlhAJ2c=;
+        b=EOjCJyG+j2gODAmWo6UdntWGvQiVmDXsi77JhHqUfJVtpqpkRLKTjNZLMnrhhQQMWQ
+         9IwyvegyuHJNG2Q3b7DDkz3GSAtOnbMmlbETDS09z5gZrL4CnKdQa71fg5DSOf19AjdW
+         xAzm2FRCxznsXluL5TCS6F1JtfYu+Arch36bwb2Z4kzJCqYEXlWd+1HvYQZB0mbv7HaV
+         3UbQ/LOJMA6BHFRzXn256IAbTaRABAuzPLWBOxvjaKFWYrfx9A3gIyeVOSuv4L443ne9
+         Y6Nc/ADW4DzzyEkSu4CdkXZCzLzCCwS4gm2dNadUWjVHkiJDzmXboXWEoBy52mG6zo5S
+         1jWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LcDb6cdiTT2+/+iDeVpLBBojjo/JZmuIoI4va9to8jg=;
-        b=s7Q58AH41jtWNx+HjVRBO/yPdKIkPd0j99QDF+d1kLGH8a9WkIj8oN3uMfE6DysDdx
-         i52epGrdR3laBwYJfWM12utUDbtC4bNo19N2OuEQOF+67kItMNKGgxUVtzU8oYS9tgov
-         5zboQw/KvHzNBJ0Rl3S3jdB5UGyb46OVLYWl/oOXxD1k79wNcz2mRG9XO99aRKxuckOy
-         zn/lbeUEvV2RhYqdl8YU3TRJ4wx61mlyORs60CcQxR0+IUcdf1lwDyqJO2h+jxGkeq6j
-         HahxL+NfF4WgBjt5iyfBZ57HbggwJHI4RiG4KgDFQ+0aycthTKYoXmoZSwYlSdZp4Ekc
-         SBjQ==
-X-Gm-Message-State: AOAM532YFqDheKFndnegdYjOHI+XfeBzJluAcZgtyfwirV+TGCKalBfl
-        FXh2Jya1WWU6ILGUtEdYpYvzH3RSZrelqyeDX7E=
-X-Google-Smtp-Source: ABdhPJyB1qsxbqnkqQ5jHf1wNevftc7GdUwJ+dkza6fML2jtBsA6lk+NhNU6sw9pR3mYEq+Kk7Onv5EvynhAUIkvzns=
-X-Received: by 2002:a2e:9182:: with SMTP id f2mr820778ljg.57.1629162775444;
- Mon, 16 Aug 2021 18:12:55 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=76lPgHc7eZGNNRAuhJfd9UswjdNIPOmEHv90qlhAJ2c=;
+        b=t+GtnAOCw/l4DNGlXtKoDln9CgIrlssth8fYrBihn1hHjnbLt1X9DEeDg+QgjTi3o0
+         05n6c+C4ehzXz2BwYx4me4dCcOv/cc5KPzyphwCvN2+79fJm4dSw1sKYfV5s0IycXvTn
+         K+H9cuBVfhLPSXPOBiMF49WIBOMTADPTzSKBrTzJLYk707tKFYfRmCFK+0PCJWZyMqcL
+         odJcD4zFCssnPtNRum+CZyj2AVzkPPzRU3Qe6V8P5zCUdIbaaMmp5wmlHNUG+xL3pPHX
+         bcU/Y6aISLZyh5431dk2obDt2tjVsx5+lTIeVdbV8b+ZU0zYs0QmWZVT7wkKkUczDdfv
+         x/Iw==
+X-Gm-Message-State: AOAM531MuGxsbHtFUerDXegnlTUWsEd8AnryzToo3xIPC1U0PMHoZVra
+        0vpRlaJNx2j3YTlOxBZocfiYJw==
+X-Google-Smtp-Source: ABdhPJwac5H2las9VZegsTvgy0pZRN+eTLj3Wro5TfpOWWLmEcWsRohnqGznaDqrHsBXspBHUwAmLg==
+X-Received: by 2002:a17:90b:3708:: with SMTP id mg8mr872256pjb.19.1629163584135;
+        Mon, 16 Aug 2021 18:26:24 -0700 (PDT)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id j23sm319421pjn.12.2021.08.16.18.26.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Aug 2021 18:26:23 -0700 (PDT)
+Date:   Mon, 16 Aug 2021 18:26:20 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH iproute2-next] ip/bond: add arp_validate filter support
+Message-ID: <20210816182620.273bb1e4@hermes.local>
+In-Reply-To: <20210816074905.297294-1-liuhangbin@gmail.com>
+References: <20210816074905.297294-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-References: <20210815033248.98111-1-mailhol.vincent@wanadoo.fr>
- <20210815033248.98111-3-mailhol.vincent@wanadoo.fr> <20210816084235.fr7fzau2ce7zl4d4@pengutronix.de>
- <CAMZ6RqK5t62UppiMe9k5jG8EYvnSbFW3doydhCvp72W_X2rXAw@mail.gmail.com>
- <20210816122519.mme272z6tqrkyc6x@pengutronix.de> <20210816123309.pfa57tke5hrycqae@pengutronix.de>
- <20210816134342.w3bc5zjczwowcjr4@pengutronix.de> <CAMZ6RqJFxKSZahAMz9Y8hpPJPh858jxDEXsRm1YkTwf4NFAFwg@mail.gmail.com>
- <CAMZ6Rq+ZtN+=ppPEYYm0ykJWP8_LtPNBtOM6gwM1VrpM3idsyw@mail.gmail.com>
-In-Reply-To: <CAMZ6Rq+ZtN+=ppPEYYm0ykJWP8_LtPNBtOM6gwM1VrpM3idsyw@mail.gmail.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Tue, 17 Aug 2021 10:12:44 +0900
-Message-ID: <CAMZ6Rq+kQ5+00p_-Pdk7v-h6_8oYA6MPP1SU-AdPH=ux++z-dQ@mail.gmail.com>
-Subject: Re: [PATCH v5 2/7] can: bittiming: allow TDC{V,O} to be zero and add can_tdc_const::tdc{v,o,f}_min
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can <linux-can@vger.kernel.org>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <Stefan.Maetje@esd.eu>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
+On Mon, 16 Aug 2021 15:49:05 +0800
+Hangbin Liu <liuhangbin@gmail.com> wrote:
 
-This patch fixes the bug you just encountered: having both TDC_AUTO
-and TDC_MANUAL set at the same time. I also cleaned all garbage
-data in struct can_tdc because that was trivial.
+> Add arp_validate filter support based on kernel commit 896149ff1b2c
+> ("bonding: extend arp_validate to be able to receive unvalidated arp-only traffic")
+> 
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com
 
-This patch is meant to be squashed into:
-commit ca7200319a90 ("can: netlink: add interface for CAN-FD
-Transmitter Delay Compensation (TDC)")
-
-For now, I am just sharing it here so that you can continue your
-testing. I will resend the full series after we finish current
-ongoing discussion.
-
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
- drivers/net/can/dev/netlink.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/can/dev/netlink.c b/drivers/net/can/dev/netlink.c
-index f05745c96b9c..d8cefe7d354c 100644
---- a/drivers/net/can/dev/netlink.c
-+++ b/drivers/net/can/dev/netlink.c
-@@ -204,6 +204,7 @@ static int can_changelink(struct net_device *dev,
-struct nlattr *tb[],
-         }
-     }
-
-+    priv->ctrlmode &= ~CAN_CTRLMODE_TDC_MASK;
-     if (data[IFLA_CAN_CTRLMODE]) {
-         struct can_ctrlmode *cm;
-         u32 ctrlstatic;
-@@ -239,8 +240,6 @@ static int can_changelink(struct net_device *dev,
-struct nlattr *tb[],
-             dev->mtu = CAN_MTU;
-             memset(&priv->data_bittiming, 0,
-                    sizeof(priv->data_bittiming));
--            memset(&priv->tdc, 0, sizeof(priv->tdc));
--            priv->ctrlmode &= ~CAN_CTRLMODE_TDC_MASK;
-         }
-
-         tdc_mask = cm->mask & CAN_CTRLMODE_TDC_MASK;
-@@ -326,6 +325,7 @@ static int can_changelink(struct net_device *dev,
-struct nlattr *tb[],
-         priv->termination = termval;
-     }
-
-+    memset(&priv->tdc, 0, sizeof(priv->tdc));
-     if (data[IFLA_CAN_TDC]) {
-         /* Use the provided TDC parameters */
-         err = can_tdc_changelink(dev, data[IFLA_CAN_TDC], extack);
--- 
-2.31.1
+Since this has been in since 2014, it can skip going to iproute2-next
