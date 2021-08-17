@@ -2,96 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 576563EF2EF
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 21:57:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 531503EF2F2
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 21:57:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233733AbhHQTzc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 15:55:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46842 "EHLO
+        id S233783AbhHQT4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 15:56:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229649AbhHQTza (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 15:55:30 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08271C061764
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 12:54:57 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id u10so848038oiw.4
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 12:54:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Xob6Ce08HDG/Hsz4D+J2yrYb20flAMFS/yRie6YqXeA=;
-        b=FJ8DpFvlbW/iQ4BLmQOt1rLlmA8GF/h00vhUM5OR0fKhm0owfsupyluAqOrQScIRkL
-         yDxooQgcX4WGD3B+wTDOiWdya+VWW7l7b1/CZFW7D+P1b+zDkD8r37MdSiQ+EHlOCBsq
-         m5wXpRluFvp0yRV7PAZaNF6LdnBVO3VZOamPAQnScZkkb2YYGyhK5JPicQnfDF3Tu1y3
-         2wxRF8nJ8UDzAhoMsKThMB9xEO56VuxaYIffVCL3OfkHHyurSKp94Bs449MzdE6FJdpY
-         L2p8VnQ4LCw4LPKkoGzOxWn8+vFLxsPNrhx/fn/wuTRAgI5JXTb9jKM+jsvQMhFIquKt
-         C8zQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Xob6Ce08HDG/Hsz4D+J2yrYb20flAMFS/yRie6YqXeA=;
-        b=slxhdiDJ7TlED1VWT3OXt0GkZe0DrOTSeo2Sk8JmdoiWjPPe3JQGL9+l3V7wOq4IJ6
-         orxsFRQsqcKDmxwG4aPQro1WBcGAgFbqIKFwX34Jul2Y8zUAfZtuE9gbi25WzOEYQod/
-         5kbWxKYPQoU51enKsyL1TeiwL+qR/HI5roPDuWTcGJi8eixd/BHVPMhO17B/CU6l2vBA
-         j2hKMCaZ6rbx+liRLuiW9H6VfJbXgBQuaf5PMrJd0OIyJm+udr5c0B6aiu985q+AJqcD
-         6p+VrUx5jG+8YCmys8Yc0r45g1b3aVrwvrqFLpr+Vix3GzFavM3mDbrGg0pE4o7t3DRH
-         F4Fg==
-X-Gm-Message-State: AOAM531NfPWzWSyL2+qyECb+5jU2o04FkoFiBuZJboiPC/qtR6WlgMWT
-        eGd5IVYJh2bmC3doMzWbpynRP8kIoNM=
-X-Google-Smtp-Source: ABdhPJz/ViPHM4cefA6I1tAPMbeS96i6+ivY3MAfHCOoxvJCRZI15oPBqnZetmaWLhpFZR8WpeF01w==
-X-Received: by 2002:a05:6808:f94:: with SMTP id o20mr3739259oiw.112.1629230096318;
-        Tue, 17 Aug 2021 12:54:56 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.45])
-        by smtp.googlemail.com with ESMTPSA id j70sm584463otj.38.2021.08.17.12.54.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Aug 2021 12:54:55 -0700 (PDT)
-Subject: Re: ss command not showing raw sockets? (regression)
-To:     Jakub Kicinski <kuba@kernel.org>, Jonas Bechtel <post@jbechtel.de>
-Cc:     netdev@vger.kernel.org
-References: <20210815231738.7b42bad4@mmluhan>
- <20210816150800.28ef2e7c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210817080451.34286807@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210817202135.6b42031f@mmluhan>
- <20210817114402.78463d9d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <af485441-123b-4f50-f01b-cee2612b9218@gmail.com>
-Date:   Tue, 17 Aug 2021 13:54:53 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
+        with ESMTP id S233217AbhHQT4c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 15:56:32 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2E0C061764
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 12:55:58 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1mG5Bj-0007dJ-9H; Tue, 17 Aug 2021 21:55:55 +0200
+Received: from pengutronix.de (unknown [IPv6:2a02:810a:8940:aa0:4c82:b09e:fec8:3248])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 499F1669233;
+        Tue, 17 Aug 2021 19:55:53 +0000 (UTC)
+Date:   Tue, 17 Aug 2021 21:55:51 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     linux-can@vger.kernel.org,
+        Stefan =?utf-8?B?TcOkdGpl?= <Stefan.Maetje@esd.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 5/7] can: netlink: add interface for CAN-FD
+ Transmitter Delay Compensation (TDC)
+Message-ID: <20210817195551.wwgu7dnhb6qyvo7n@pengutronix.de>
+References: <20210815033248.98111-1-mailhol.vincent@wanadoo.fr>
+ <20210815033248.98111-6-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-In-Reply-To: <20210817114402.78463d9d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="femi54sv3tzgjgry"
+Content-Disposition: inline
+In-Reply-To: <20210815033248.98111-6-mailhol.vincent@wanadoo.fr>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/17/21 12:44 PM, Jakub Kicinski wrote:
->> @kuba With PROC_NET_RAW I consider the problem is found, isn't it? So
->> I will not download/bisect<->build or otherwise investigate the
->> problem until one of you explicitely asks me to do so.
->>
->> I have now redirected invocation of command with set PROC_NET_RAW on
->> my system, and may (try to) update to Linux 4.19.
-> 
-> I suspect the bisection would end up at the commit which added 
-> the netlink dump support, so you can hold off for now, yes.
 
-agreed.
-> 
-> My best guess right now is that Knoppix has a cut-down kernel 
-> config and we don't handle that case correctly.
-> 
+--femi54sv3tzgjgry
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-CONFIG_INET_RAW_DIAG (or INET_DIAG) is probably disabled. surprised the
-netlink dump does not return an error and it falls back to the proc file:
+On 15.08.2021 12:32:46, Vincent Mailhol wrote:
+> +static int can_tdc_changelink(struct net_device *dev, const struct nlatt=
+r *nla,
+> +			      struct netlink_ext_ack *extack)
+> +{
+> +	struct nlattr *tb_tdc[IFLA_CAN_TDC_MAX + 1];
+> +	struct can_priv *priv =3D netdev_priv(dev);
+> +	struct can_tdc *tdc =3D &priv->tdc;
+> +	const struct can_tdc_const *tdc_const =3D priv->tdc_const;
+> +	int err;
+> +
+> +	if (!tdc_const || !can_tdc_is_enabled(priv))
+> +		return -EOPNOTSUPP;
+> +
+> +	if (dev->flags & IFF_UP)
+> +		return -EBUSY;
+> +
+> +	err =3D nla_parse_nested(tb_tdc, IFLA_CAN_TDC_MAX, nla,
+> +			       can_tdc_policy, extack);
+> +	if (err)
+> +		return err;
+> +
+> +	if (tb_tdc[IFLA_CAN_TDC_TDCV]) {
+> +		u32 tdcv =3D nla_get_u32(tb_tdc[IFLA_CAN_TDC_TDCV]);
+> +
+> +		if (tdcv < tdc_const->tdcv_min || tdcv > tdc_const->tdcv_max)
+> +			return -EINVAL;
+> +
+> +		tdc->tdcv =3D tdcv;
 
-        if (!getenv("PROC_NET_RAW") && !getenv("PROC_ROOT") &&
-            inet_show_netlink(f, NULL, IPPROTO_RAW) == 0)
-                return 0;
+You have to assign to a temporary struct first, and set the priv->tdc
+after complete validation, otherwise you end up with inconsistent
+values.
 
-can you strace it?
+> +	}
+> +
+> +	if (tb_tdc[IFLA_CAN_TDC_TDCO]) {
+> +		u32 tdco =3D nla_get_u32(tb_tdc[IFLA_CAN_TDC_TDCO]);
+> +
+> +		if (tdco < tdc_const->tdco_min || tdco > tdc_const->tdco_max)
+> +			return -EINVAL;
+> +
+> +		tdc->tdco =3D tdco;
+> +	}
+> +
+> +	if (tb_tdc[IFLA_CAN_TDC_TDCF]) {
+> +		u32 tdcf =3D nla_get_u32(tb_tdc[IFLA_CAN_TDC_TDCF]);
+> +
+> +		if (tdcf < tdc_const->tdcf_min || tdcf > tdc_const->tdcf_max)
+> +			return -EINVAL;
+> +
+> +		tdc->tdcf =3D tdcf;
+> +	}
+> +
+> +	return 0;
+> +}
+
+To reproduce (ip pseudo-code only :D ):
+
+ip down
+ip up tdc-mode manual tdco 111 tdcv 33  # 111 is out of range, 33 is valid
+ip down
+ip up                                   # results in tdco=3D0 tdcv=3D33 mod=
+e=3Dmanual
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--femi54sv3tzgjgry
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEcFEUACgkQqclaivrt
+76nN1ggAr4yOd2SysaDbW1q1G/J0QK6Q8Seymr9AqJ4CpYspWe/iEEipRUQIDmBz
+5iiSt/NnFqMh9wyxL2gmawzZQA9gwv82r+dfFI+3zW4OdEoO+Qw6Z1PNwGB/EDTa
+9FOWJvb+8aE5cdiF47Yl7l4geUWqq2mxeAJ1ULEFqkmNBkmr4WuYIIQWroycl4z6
+O8wG1H//MuoMnCUr7TzKl4jiuwSIamcUhGfmsAzJ8LVPNhoVmg1VQ7acghUhEf8c
+Iet9QLefSIcsuJ2Nfx5FUYlJ4SL5h65ZYZdAYcgRCip2d/J50gS7wEMznqO32LVp
+vh36Inpa5enOTjJvOPo/HXTCtlpAxw==
+=zn8F
+-----END PGP SIGNATURE-----
+
+--femi54sv3tzgjgry--
