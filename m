@@ -2,154 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FCF63EE7D4
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 09:54:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 148EC3EE801
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 10:07:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234977AbhHQHyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 03:54:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49562 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234223AbhHQHyx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 03:54:53 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FCE1C0613C1
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 00:54:20 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id l11so23981222plk.6
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 00:54:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ypyY+Uqc+Z2ZZW93qVfCBhIjoZdHXKViPbFJWksLXyw=;
-        b=zT3Q4BfuKTe1/h5Cue4i0alXI++5/qEOTcetPdbWNDd5BT1u+30szX/nxKKtPTtRYq
-         OyAMbpKI3Pg3UuoEf8zSfz6l9unAlkyNJaeaL3Xtfq1lTw68wHfq2l5ruVozMW+e3H52
-         //iG+wCIP7yoaBRB2Bc+mMrPeNGQPH+vJ2ydbT8NyCMra+lTstYuSk5bYmajOJPHvjwW
-         syFKeRkNKYYmkpMX7lrasN2P2JdkhYdVrOpwCgSRSMGehDR0zc1MIyqbBoYgifWtf5w+
-         Xkad6k7S9ga6IAk/T00DYnvU0m0R+x5RFYEcaAy6pX4GZh6vVWY39lEgGhJivvRbS/TO
-         +IIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ypyY+Uqc+Z2ZZW93qVfCBhIjoZdHXKViPbFJWksLXyw=;
-        b=XSl1dXkiU4ExyIVH7C/jCs6TBJIZgxSLY7gYZPldVVM6GuKJt9lgjwRFB32AT4Zfj0
-         cNuNtx+XwK+WjwH30W2YC6KWOoyOzPL/IY81bCf869N/d6Hv4rU0y0FhfQ/13uokVqTY
-         CINaFBuzq8M+ZG19vFN2OxbF6KlrmF4rKY2CNQDpPollKr5K35hFSlYht5x8CY5qlIb0
-         T5WYHCWype7ybvrWNcVw0YxC4ntQxa1B5IxEFnIKZ1ZbEhuzHSNBu0ZGvU93ZetQRDod
-         oiJYIMoE7XPLipw1m5Rdzoi3urYQkrpJU4HfHxsOMYtnWqphj+xZ74g+3WTGV0ssFzNL
-         74Mg==
-X-Gm-Message-State: AOAM533R8JSdfT1ITWoAtiCLI/7wK0IUF7Bw8i0U/JdbdcB8Bo/yQCMv
-        VSlMLjF0vJMnM6BaWiuBgiSy0A==
-X-Google-Smtp-Source: ABdhPJye1vzAfWWx07/uMcHku/JU3zMK/QgXPEu+ekIr4KWMO6ud6T6xHHof6LTdTXnfKmiOfg5fCw==
-X-Received: by 2002:aa7:800b:0:b029:330:455f:57a8 with SMTP id j11-20020aa7800b0000b0290330455f57a8mr2381541pfi.7.1629186859912;
-        Tue, 17 Aug 2021 00:54:19 -0700 (PDT)
-Received: from FVFX41FWHV2J.bytedance.net ([139.177.225.231])
-        by smtp.gmail.com with ESMTPSA id j6sm1722212pgh.17.2021.08.17.00.54.12
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 17 Aug 2021 00:54:19 -0700 (PDT)
-From:   Feng zhou <zhoufeng.zf@bytedance.com>
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        jeffrey.t.kirsher@intel.com, magnus.karlsson@intel.com
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        duanxiongchun@bytedance.com, songmuchun@bytedance.com,
-        zhouchengming@bytedance.com, chenying.kernel@bytedance.com,
-        zhengqi.arch@bytedance.com, wangdongdong.6@bytedance.com,
-        zhoufeng.zf@bytedance.com
-Subject: [PATCH] ixgbe: Fix NULL pointer dereference in ixgbe_xdp_setup
-Date:   Tue, 17 Aug 2021 15:54:07 +0800
-Message-Id: <20210817075407.11961-1-zhoufeng.zf@bytedance.com>
-X-Mailer: git-send-email 2.27.0
+        id S238873AbhHQIIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 04:08:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43986 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234693AbhHQIHv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 04:07:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1629187638;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=qVcE6UPf0wuZej4sXtxd/Uc1SmN5uwlN7K2SA3aUFHE=;
+        b=cmxmFHSn4oX60oA/ngOIqp+/QcdSyqQ+YHItTLOfsDF1I+nFdRgg3Z4VWe/gxmsBQi/wrU
+        VA4tFJtSoQhqvpNuy0ymVjdbu+/IFK+RjCPvK/HIslCEWl6zYwU8xJndzzF5viz2Aj/Dqw
+        thH/UYeFMsSw8GJ5gGYE1vujBDYodIw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-116-MGS0Ta-MPLayX6UyW_gr_Q-1; Tue, 17 Aug 2021 04:07:13 -0400
+X-MC-Unique: MGS0Ta-MPLayX6UyW_gr_Q-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3CB731008065;
+        Tue, 17 Aug 2021 08:07:12 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-13-175.pek2.redhat.com [10.72.13.175])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 010405C1B4;
+        Tue, 17 Aug 2021 08:07:04 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ivan@prestigetransportation.com,
+        xiangxia.m.yue@gmail.com, willemb@google.com, edumazet@google.com
+Subject: [PATCH V2 net] virtio-net: use NETIF_F_GRO_HW instead of NETIF_F_LRO
+Date:   Tue, 17 Aug 2021 16:06:59 +0800
+Message-Id: <20210817080659.16223-1-jasowang@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Feng Zhou <zhoufeng.zf@bytedance.com>
+Commit a02e8964eaf92 ("virtio-net: ethtool configurable LRO")
+maps LRO to virtio guest offloading features and allows the
+administrator to enable and disable those features via ethtool.
 
-The ixgbe driver currently generates a NULL pointer dereference with
-some machine (online cpus < 63). This is due to the fact that the
-maximum value of num_xdp_queues is nr_cpu_ids. Code is in
-"ixgbe_set_rss_queues"".
+This leads to several issues:
 
-Here's how the problem repeats itself:
-Some machine (online cpus < 63), And user set num_queues to 63 through
-ethtool. Code is in the "ixgbe_set_channels",
-adapter->ring_feature[RING_F_FDIR].limit = count;
-It becames 63.
-When user use xdp, "ixgbe_set_rss_queues" will set queues num.
-adapter->num_rx_queues = rss_i;
-adapter->num_tx_queues = rss_i;
-adapter->num_xdp_queues = ixgbe_xdp_queues(adapter);
-And rss_i's value is from
-f = &adapter->ring_feature[RING_F_FDIR];
-rss_i = f->indices = f->limit;
-So "num_rx_queues" > "num_xdp_queues", when run to "ixgbe_xdp_setup",
-for (i = 0; i < adapter->num_rx_queues; i++)
-	if (adapter->xdp_ring[i]->xsk_umem)
-lead to panic.
-Call trace:
-[exception RIP: ixgbe_xdp+368]
-RIP: ffffffffc02a76a0  RSP: ffff9fe16202f8d0  RFLAGS: 00010297
-RAX: 0000000000000000  RBX: 0000000000000020  RCX: 0000000000000000
-RDX: 0000000000000000  RSI: 000000000000001c  RDI: ffffffffa94ead90
-RBP: ffff92f8f24c0c18   R8: 0000000000000000   R9: 0000000000000000
-R10: ffff9fe16202f830  R11: 0000000000000000  R12: ffff92f8f24c0000
-R13: ffff9fe16202fc01  R14: 000000000000000a  R15: ffffffffc02a7530
-ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
- 7 [ffff9fe16202f8f0] dev_xdp_install at ffffffffa89fbbcc
- 8 [ffff9fe16202f920] dev_change_xdp_fd at ffffffffa8a08808
- 9 [ffff9fe16202f960] do_setlink at ffffffffa8a20235
-10 [ffff9fe16202fa88] rtnl_setlink at ffffffffa8a20384
-11 [ffff9fe16202fc78] rtnetlink_rcv_msg at ffffffffa8a1a8dd
-12 [ffff9fe16202fcf0] netlink_rcv_skb at ffffffffa8a717eb
-13 [ffff9fe16202fd40] netlink_unicast at ffffffffa8a70f88
-14 [ffff9fe16202fd80] netlink_sendmsg at ffffffffa8a71319
-15 [ffff9fe16202fdf0] sock_sendmsg at ffffffffa89df290
-16 [ffff9fe16202fe08] __sys_sendto at ffffffffa89e19c8
-17 [ffff9fe16202ff30] __x64_sys_sendto at ffffffffa89e1a64
-18 [ffff9fe16202ff38] do_syscall_64 at ffffffffa84042b9
-19 [ffff9fe16202ff50] entry_SYSCALL_64_after_hwframe at ffffffffa8c0008c
+- For a device that doesn't support control guest offloads, the "LRO"
+  can't be disabled triggering WARN in dev_disable_lro() when turning
+  off LRO or when enabling forwarding bridging etc.
 
-Fixes: 4a9b32f30f80 ("ixgbe: fix potential RX buffer starvation for
-AF_XDP")
-Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
+- For a device that supports control guest offloads, the guest
+  offloads are disabled in cases of bridging, forwarding etc slowing
+  down the traffic.
+
+Fix this by using NETIF_F_GRO_HW instead. Though the spec does not
+guarantee packets to be re-segmented as the original ones,
+we can add that to the spec, possibly with a flag for devices to
+differentiate between GRO and LRO.
+
+Further, we never advertised LRO historically before a02e8964eaf92
+("virtio-net: ethtool configurable LRO") and so bridged/forwarded
+configs effectively always relied on virtio receive offloads behaving
+like GRO - thus even if this breaks any configs it is at least not
+a regression.
+
+Fixes: a02e8964eaf92 ("virtio-net: ethtool configurable LRO")
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Reported-by: Ivan <ivan@prestigetransportation.com>
+Tested-by: Ivan <ivan@prestigetransportation.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+Changes from V1:
+- Tweak the commit log
+---
+ drivers/net/virtio_net.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 14aea40da50f..5db496cc5070 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -10112,6 +10112,7 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
- 	struct ixgbe_adapter *adapter = netdev_priv(dev);
- 	struct bpf_prog *old_prog;
- 	bool need_reset;
-+	int num_queues;
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 0416a7e00914..10c382b08bce 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -63,7 +63,7 @@ static const unsigned long guest_offloads[] = {
+ 	VIRTIO_NET_F_GUEST_CSUM
+ };
  
- 	if (adapter->flags & IXGBE_FLAG_SRIOV_ENABLED)
- 		return -EINVAL;
-@@ -10161,11 +10162,14 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
- 	/* Kick start the NAPI context if there is an AF_XDP socket open
- 	 * on that queue id. This so that receiving will start.
- 	 */
--	if (need_reset && prog)
--		for (i = 0; i < adapter->num_rx_queues; i++)
-+	if (need_reset && prog) {
-+		num_queues = min_t(int, adapter->num_rx_queues,
-+			adapter->num_xdp_queues);
-+		for (i = 0; i < num_queues; i++)
- 			if (adapter->xdp_ring[i]->xsk_pool)
- 				(void)ixgbe_xsk_wakeup(adapter->netdev, i,
- 						       XDP_WAKEUP_RX);
-+	}
+-#define GUEST_OFFLOAD_LRO_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
++#define GUEST_OFFLOAD_GRO_HW_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
+ 				(1ULL << VIRTIO_NET_F_GUEST_TSO6) | \
+ 				(1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
+ 				(1ULL << VIRTIO_NET_F_GUEST_UFO))
+@@ -2481,7 +2481,7 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+ 	        virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_ECN) ||
+ 		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO) ||
+ 		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_CSUM))) {
+-		NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing LRO/CSUM, disable LRO/CSUM first");
++		NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing GRO_HW/CSUM, disable GRO_HW/CSUM first");
+ 		return -EOPNOTSUPP;
+ 	}
  
- 	return 0;
- }
+@@ -2612,15 +2612,15 @@ static int virtnet_set_features(struct net_device *dev,
+ 	u64 offloads;
+ 	int err;
+ 
+-	if ((dev->features ^ features) & NETIF_F_LRO) {
++	if ((dev->features ^ features) & NETIF_F_GRO_HW) {
+ 		if (vi->xdp_enabled)
+ 			return -EBUSY;
+ 
+-		if (features & NETIF_F_LRO)
++		if (features & NETIF_F_GRO_HW)
+ 			offloads = vi->guest_offloads_capable;
+ 		else
+ 			offloads = vi->guest_offloads_capable &
+-				   ~GUEST_OFFLOAD_LRO_MASK;
++				   ~GUEST_OFFLOAD_GRO_HW_MASK;
+ 
+ 		err = virtnet_set_guest_offloads(vi, offloads);
+ 		if (err)
+@@ -3100,9 +3100,9 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 		dev->features |= NETIF_F_RXCSUM;
+ 	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+ 	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
+-		dev->features |= NETIF_F_LRO;
++		dev->features |= NETIF_F_GRO_HW;
+ 	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
+-		dev->hw_features |= NETIF_F_LRO;
++		dev->hw_features |= NETIF_F_GRO_HW;
+ 
+ 	dev->vlan_features = dev->features;
+ 
 -- 
-2.11.0
+2.25.1
 
