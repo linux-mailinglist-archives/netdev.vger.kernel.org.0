@@ -2,155 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E6A23EE0A7
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 02:03:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDB723EE0B9
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 02:14:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235041AbhHQACg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 20:02:36 -0400
-Received: from mail-ej1-f42.google.com ([209.85.218.42]:34518 "EHLO
-        mail-ej1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234958AbhHQACg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 20:02:36 -0400
-Received: by mail-ej1-f42.google.com with SMTP id u3so35039826ejz.1;
-        Mon, 16 Aug 2021 17:02:03 -0700 (PDT)
+        id S233051AbhHQAPF convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 16 Aug 2021 20:15:05 -0400
+Received: from mail-lj1-f176.google.com ([209.85.208.176]:46988 "EHLO
+        mail-lj1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232903AbhHQAPE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 20:15:04 -0400
+Received: by mail-lj1-f176.google.com with SMTP id h17so29929267ljh.13;
+        Mon, 16 Aug 2021 17:14:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=K5wMGZQ9prIRh71CsiF4fL+ypemm9zRUN8YLcm2qyP4=;
-        b=qMvaRCWkcOXithaJVmLXpwuaKAr/0zJSb46S7r+49cY9fGNID9/n5F6XMCaLLZ3x3f
-         ChcWxa8rQiDxsXPNmPV8Iq1QYG9xA7gMHvuKYciWCHYiAmjL2GaW1UKI47/ruJL+og/i
-         tD4Ve7cNaZL70kOKuJER9LgQkAwfZez7N5g60xvmZofdaDGBwtmm4Y1vMXXaajniafHT
-         ZuZfBRaWkZfsXHAkZwQWgDaiYLDqKB15aV88y/3+TVjjZ45HJUTplKK1L7uDwXhHgdIM
-         vYutof6dvYiMQ5moX7xd7dbRKgK9k4oAgAEsb1pDUBPvwafK+ecvSatT7CJqQssKzWBh
-         sCkA==
-X-Gm-Message-State: AOAM5326P889nssQIYFq58gB2nYoNAJFCFPGoN67VkhyKi414kvnx8V1
-        VJDCyKNfbq6IiGb6a+Ef/8o=
-X-Google-Smtp-Source: ABdhPJwbIAStQIsvY6nYd2xafGE+WztwQNp3Byq8JJLV82ISdOqBErzCmeSfzD0xXPsR/3+lGtA1aQ==
-X-Received: by 2002:a17:906:7095:: with SMTP id b21mr705327ejk.131.1629158522789;
-        Mon, 16 Aug 2021 17:02:02 -0700 (PDT)
-Received: from localhost (host-87-16-116-124.retail.telecomitalia.it. [87.16.116.124])
-        by smtp.gmail.com with ESMTPSA id gh23sm83504ejb.27.2021.08.16.17.02.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Aug 2021 17:02:02 -0700 (PDT)
-Date:   Tue, 17 Aug 2021 02:01:57 +0200
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Marc Zyngier <maz@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Will Deacon <will@kernel.org>
-Subject: Re: [PATCH net-next] stmmac: align RX buffers
-Message-ID: <20210817020157.3b9d015e@linux.microsoft.com>
-In-Reply-To: <20210816081208.522ac47c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20210614022504.24458-1-mcroce@linux.microsoft.com>
-        <871r71azjw.wl-maz@kernel.org>
-        <YROmOQ+4Kqukgd6z@orome.fritz.box>
-        <202417ef-f8ae-895d-4d07-1f9f3d89b4a4@gmail.com>
-        <87o8a49idp.wl-maz@kernel.org>
-        <fe5f99c8-5655-7fbb-a64e-b5f067c3273c@gmail.com>
-        <20210812121835.405d2e37@linux.microsoft.com>
-        <874kbuapod.wl-maz@kernel.org>
-        <20210816081208.522ac47c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Organization: Microsoft
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=aUYJNvXMeoYhVbpAo6wV69kLNEFTWUFAE8fwHbR6xAM=;
+        b=a2kveHiCKAxjgj4czWGqAUx+dhQEdnORiEVnKgUAe4dN0VE+S6yog4nrlC/qoAoKGW
+         rSLfcPTuSBxtcJOXIsb+C0Zp7Q9TYmHmTPEsqkyj8VNAMnfpATwvO7GT0X4BdPpBGGwU
+         A/ArOo4CGyU5p1xXrua1Q6z0kEht1fazo+3i0o1Pti+hSMgpwzIvGeDgIQKYaRjP9Gte
+         qBh8cSYdfMHqXaibCm+4G03vkKi1Kcmp85N+L+Dic+jC4AvKs7iB/xC9Jcs9QR2MXb4g
+         VXThcZYsW3CQkvzvuZYWxZfPgJAUCcjKz4n4vVBShF7+zKM3rEBWw17SY/d2Q/Cm+9AI
+         hNEg==
+X-Gm-Message-State: AOAM5313pTfS+vLPjcAdeEwnLvjSM+2QYL5GfhAhhYGpKz86NdFbtcPV
+        HtibTG0fwEHO4G0Uv+l6OFHba+rOumRa+Kfkgow=
+X-Google-Smtp-Source: ABdhPJxqZMxnMzRffBPsA6F+5jVGKCfmIPI878mZhfF/sMUUj9VQR2ltV6Iijyvkzx7dFlDaVCWkIZTsSs/hIwYj6wg=
+X-Received: by 2002:a2e:9999:: with SMTP id w25mr661622lji.359.1629159271413;
+ Mon, 16 Aug 2021 17:14:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210730173805.3926-1-Stefan.Maetje@esd.eu> <20210730173805.3926-2-Stefan.Maetje@esd.eu>
+ <20210806133125.k7yiz4zood3gvrdc@pengutronix.de> <0a3e198ab0a1d03d0c482c1792fd0c3377477bca.camel@esd.eu>
+In-Reply-To: <0a3e198ab0a1d03d0c482c1792fd0c3377477bca.camel@esd.eu>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Tue, 17 Aug 2021 09:14:20 +0900
+Message-ID: <CAMZ6Rq+O=0oKxqVTiZbX=Nua9CgF=ssi2zUgAm7Q=hZ2hXgX8Q@mail.gmail.com>
+Subject: Re: [PATCH v2 1/1] can: esd: add support for esd GmbH PCIe/402 CAN
+ interface family
+To:     =?UTF-8?Q?Stefan_M=C3=A4tje?= <Stefan.Maetje@esd.eu>
+Cc:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "wg@grandegger.com" <wg@grandegger.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Aug 2021 08:12:08 -0700
-Jakub Kicinski <kuba@kernel.org> wrote:
+Hi Stefan,
 
-> On Thu, 12 Aug 2021 12:05:38 +0100 Marc Zyngier wrote:
-> > > A possible fix, which takes in account also the XDP headroom for
-> > > stmmac_rx_buf1_len() only could be (only compile tested, I don't
-> > > have the hardware now):  
-> > 
-> > However, this doesn't fix my issue. I still get all sort of
-> > corruption. Probably stmmac_rx_buf2_len() also need adjusting (it
-> > has a similar logic as its buf1 counterpart...)
-> > 
-> > Unless you can fix it very quickly, and given that we're towards the
-> > end of the cycle, I'd be more comfortable if we reverted this patch.
-> 
-> Any luck investigating this one? The rc6 announcement sounds like
-> there may not be that many more rc releases for 5.14.
+On Tue. 17 Aug 2021 at 07:04, Stefan Mätje <Stefan.Maetje@esd.eu> wrote:
+> Am Freitag, den 06.08.2021, 15:31 +0200 schrieb Marc Kleine-Budde:
+> > On 30.07.2021 19:38:05, Stefan Mätje wrote:
+...
+> > This device supports HW timestamping. Please don't roll your own
+> > conversion functions. Please make use of the timecounter/cyclecounter
+> > API, have a look at the mcp251xfd driver for example:
+> >
+> > https://elixir.bootlin.com/linux/v5.13/source/drivers/net/can/spi/mcp251xfd/mcp251xfd-timestamp.c#L52
+> >
+> > The idea is that there is a counter of a certain with (here 32 bit) that
+> > has a certain frequency (here: priv->can.clock.freq).
+> >
+> > >     cc->read = mcp251xfd_timestamp_read;
+> > >     cc->mask = CYCLECOUNTER_MASK(32);
+> > >     cc->shift = 1;
+> > >     cc->mult = clocksource_hz2mult(priv->can.clock.freq, cc->shift);
+> >
+> > The conversion from the register value to ns in done with:
+> > > ns = ((reg & mask) * mult) >> shift;
+> > In the above example I'm using a shift of "1" as 1ns is an integer
+> > multiple of the used frequency (which is 20 or 40 MHz).
+> >
+> > To cope with overflows of the cycle counter, read the current timestamp
+> > with timecounter_read() with at least the double frequency of the
+> > overflows happening (plus some slack). The mcp251xfd driver sets up a
+> > worker for this. The mcp251xfd drive does this every 45 seconds, with an
+> > overflow happening every 107s.
+>
+> At the moment I can't see the real benefit of this API. This is because the
+> device delivers the HW timestamp as a 64-bit value with a certain frequency
+> (atm. 80MHz). This timestamp will wrap after(!) the the result in ns of
+> ktime_t.
+>
+> The other devices with 64-bit native timestamps (like etas_58x, peak_canfd.c
+> and kvaser_pciefd.c) also do simple multiplication / division operations on
+> the 64-bit HW timestamp
+>
+> Using the struct cyclecounter to hold the multiplier and divisor in the
+> struct acc_ov (instead of the members ts2ns_numerator and ts2ns_denominator)
+> would result in such an initialization for a struct cyclecounter cc:
+>
+> struct cyclecounter cc = {
+>         .read = NULL,
+>         .mask = CYCLECOUNTER_MASK(64),
+>         .shift = 1,
+>         .mult = clocksource_hz2mult(ov->timestamp_frequency, cc->shift),/* 25 */
+> }
+>
+> Then in acc_ts2ktime() the function cyclecounter_cyc2ns() could be used like this:
+>
+> static ktime_t acc_ts2ktime(struct acc_ov *ov, u64 ts)
+> {
+>         u64 unused_frac;
+>         u64 ns;
+>
+>         ns = cyclecounter_cyc2ns(ov->cc, ts, 0, &unused_frac);
+>
+>         return ns_to_ktime(ns);
+> }
+>
+> One concluding question. Need the HW timestamps be only in ns (since powerup) or should they also be in relation to the kernel time
+> of the startup like it is done in Vincent's etas_58x driver?
 
-Hi Jackub.
+In a nutshell, I converted the hardware timestamps to kernel
+time (UNIX format) because I like to be able to derive the date
+and time from my timestamps. I explained it in more details in
+below message:
 
-Unfortunately I have only a device with stmmac, and it works fine with
-the patch. It seems that not all hardware suffers from this issue.
+https://lore.kernel.org/linux-can/CAMZ6RqL+n4tRy-B-W+fzW5B3QV6Bedrko57pU_0TE023Oxw_5w@mail.gmail.com/
 
-Also, using NET_IP_ALIGN on RX is a common pattern, I think that any
-ethernet device is doing the same to align the IPv4 header.
-
-Anyway, I asked for two tests on the affected device:
-1. Change NET_IP_ALIGN with 8, to see if the DMA has problems in
-   receiving to a non word aligned address
-2. load a nop XDP program (I provided one), to see if the problem is
-   already there when XDP is used
-
-I doubt that changing also stmmac_rx_buf2_len would help,
-but it's worth a try, here is a patch:
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 7b8404a21544..73d1f0ec66ff 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -93,7 +93,7 @@ static int tc = TC_DEFAULT;
- module_param(tc, int, 0644);
- MODULE_PARM_DESC(tc, "DMA threshold control value");
- 
--#define	DEFAULT_BUFSIZE	1536
-+#define	DEFAULT_BUFSIZE	1536 + XDP_PACKET_HEADROOM + NET_IP_ALIGN
- static int buf_sz = DEFAULT_BUFSIZE;
- module_param(buf_sz, int, 0644);
- MODULE_PARM_DESC(buf_sz, "DMA buffer size");
-@@ -4508,12 +4508,12 @@ static unsigned int stmmac_rx_buf1_len(struct stmmac_priv *priv,
- 
- 	/* First descriptor, not last descriptor and not split header */
- 	if (status & rx_not_ls)
--		return priv->dma_buf_sz;
-+		return priv->dma_buf_sz - stmmac_rx_offset(priv);
- 
- 	plen = stmmac_get_rx_frame_len(priv, p, coe);
- 
- 	/* First descriptor and last descriptor and not split header */
--	return min_t(unsigned int, priv->dma_buf_sz, plen);
-+	return min_t(unsigned int, priv->dma_buf_sz - stmmac_rx_offset(priv), plen);
- }
- 
- static unsigned int stmmac_rx_buf2_len(struct stmmac_priv *priv,
-@@ -4529,12 +4529,12 @@ static unsigned int stmmac_rx_buf2_len(struct stmmac_priv *priv,
- 
- 	/* Not last descriptor */
- 	if (status & rx_not_ls)
--		return priv->dma_buf_sz;
-+		return priv->dma_buf_sz - stmmac_rx_offset(priv);
- 
- 	plen = stmmac_get_rx_frame_len(priv, p, coe);
- 
- 	/* Last descriptor */
--	return plen - len;
-+	return plen - len - stmmac_rx_offset(priv);
- }
- 
- static int stmmac_xdp_xmit_xdpf(struct stmmac_priv *priv, int queue,
-
-
-Regards,
--- 
-per aspera ad upstream
+Yours sincerely,
+Vincent
