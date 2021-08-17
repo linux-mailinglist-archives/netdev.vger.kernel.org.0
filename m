@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA5F03EE9C4
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 11:29:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40CFB3EE9C5
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 11:29:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239516AbhHQJ3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 05:29:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43522 "EHLO
+        id S239573AbhHQJ3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 05:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239432AbhHQJ3d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 05:29:33 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5787FC061796;
-        Tue, 17 Aug 2021 02:29:00 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id h13so27634387wrp.1;
-        Tue, 17 Aug 2021 02:29:00 -0700 (PDT)
+        with ESMTP id S239336AbhHQJ3f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 05:29:35 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4864C0613C1;
+        Tue, 17 Aug 2021 02:29:01 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id j12-20020a05600c1c0c00b002e6d80c902dso1675108wms.4;
+        Tue, 17 Aug 2021 02:29:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=RrmKLByNzzoypaDx7zqqevtKRSZED5KqWCuj6czuLk4=;
-        b=p9TFd3qB1iGq+RZ70QVvlsqTWXWuLoXipD8VVxpX5HaExepFllmTRNvTnI8tjybAgU
-         /YjNIaUQEbaa6Cqmm/D+Bkcfuwnmb0sOvoTGUpa7YegJU+j+D4gdA58UwjZ+r7oN/LVV
-         fCCW7p6VXsPx+6/T2hdgUjKdtP7hWPunGcM4Y9H/ofdqh7xTbu5cYvenjRxfzqWfUDYr
-         f6oR4UhG/sf62ItPb06rmdWy9gy2uz5Gz9fGG4CUB29+4lDUqmaDD70VNUZfqLkges7d
-         tt57Mugl72veAvbXnUXToRO3U50g269bS4CpUpZ9NjT+86evtPT2BBNhPFIvn5ur6Wba
-         qqUQ==
+        bh=p1ZV12Wr3LwBHVU+XKp6bzmBy9RlmTyfmIyQtKDzVq4=;
+        b=qAG77GVVar4vVIqyZrx8xFMuTHcwy6YuLc1fB+U6XwXVudiWqYoa1kfE/KFqKUNojs
+         ZQKtPsbByaj5xuJt3HxyqFboyocv7vgeAKrVFVWEfAVzm02IyF/Sj4O5Tr3hYWwhSoOw
+         XqzvXgjK+pMTxDYsuuF7c6BHwZO9U2FqLRCmRM+BejH24aHGwmt0XmI8hqaUXvJbpLZP
+         FqTzCET7rt9gFI99IJlLeV2B5nJyNNeH7feJgUOy8vacOv8j9nrtpkXawoL6DgL+WL6r
+         DWHYYtPnmAc0duy2iE98mtUO6HRIVr2YxEqRNEdLi+1Exfxsg9ARRy6yiBXJI79SABUx
+         Jz5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=RrmKLByNzzoypaDx7zqqevtKRSZED5KqWCuj6czuLk4=;
-        b=Hjpr2ZFhTwiwIW6wzzKc06q+XM00sUYhqPBszQTxj9f2+FK7zyq7o0KfU8Ks3NAmfe
-         Jy6MxXo/mfA6glUlUckUf9sUmgXB1wbCnZyez8UgLZzik7CZ6sEfLH3aiCxMkN55aKFA
-         ikeCq6pdbbcm46xdzaWaIDayKt+v6a+xtr5UIy5/P4nym9TeF68KyHKvIOf4GrPtetgw
-         li3fVt32VrlSxrhU0Zx0GTvJ7Tsl8Vc1ce35y+ACUREjA+7/5pipJBRFK01lhlfGm7Zg
-         rUkZSvymvbxIFAdAcwzfLXKV3ganGF4OxVI8em/h2EQf3sYAOOhcpst+tE5mRV9/RksF
-         Jr4A==
-X-Gm-Message-State: AOAM532HkSjBd8fldP2SYpdfS5FxSsxQnr6pNQZrfHlFM07Jdj7WFq+6
-        FpNMwfjei5JMFReO2eCaLVg=
-X-Google-Smtp-Source: ABdhPJxjlICyJ1En6Xms6UkdmCUREJtyTAGkxVhrJKEJAwwahVzTrxiz4/10BQoE6oNC2i42HqrpnQ==
-X-Received: by 2002:a05:6000:1187:: with SMTP id g7mr2780537wrx.280.1629192538998;
-        Tue, 17 Aug 2021 02:28:58 -0700 (PDT)
+        bh=p1ZV12Wr3LwBHVU+XKp6bzmBy9RlmTyfmIyQtKDzVq4=;
+        b=TZATD2aobDUbipHmjzK/CNWT60q9JRrwIfEvo4otsO77HcnGWoEIt86xZGlGwcJiAT
+         MWtTHbm539FxHUHJZel5CnoEZhkGcw4srtgjs3zTfPjTW/xFoRGcSn2BWDNx2xP0NTPU
+         dgb1CtbgpwH1KE7kh5yZyO7qHNP3Wgcj8iwcrr/RrFj8+VbaCOJirRHuk7y19z8Fojoi
+         LAreIeg+WPtlPKHOCTo75X+iuOE5ABVd0oOIZ9farqEzxZhvvr7krpKlPil5biW0ueqO
+         agA4uvY1Nv8wfcxTmo8rrN/q4aSlI20mT+jKrnUSkF5s8S5aJbNtwnM858x+X31t1iz8
+         CZIg==
+X-Gm-Message-State: AOAM532uTxKPRoAIOZXTgHKDVrKXVpMSj+aQlwLl5TiGBs4xVEJPlw6+
+        WpQJKfKFitHbBxDNr0pdMHo=
+X-Google-Smtp-Source: ABdhPJxhNCBrpcnjtPFsw2jpdMnMR2bbrVbOyKXUK99pTolblnTWUojXYy6PmAIuEfYmYL3JQ6e4NA==
+X-Received: by 2002:a1c:3c8b:: with SMTP id j133mr2400148wma.9.1629192540444;
+        Tue, 17 Aug 2021 02:29:00 -0700 (PDT)
 Received: from localhost.localdomain (h-46-59-47-246.A165.priv.bahnhof.se. [46.59.47.246])
-        by smtp.gmail.com with ESMTPSA id l2sm1462421wme.28.2021.08.17.02.28.57
+        by smtp.gmail.com with ESMTPSA id l2sm1462421wme.28.2021.08.17.02.28.59
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 17 Aug 2021 02:28:58 -0700 (PDT)
+        Tue, 17 Aug 2021 02:29:00 -0700 (PDT)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
         maciej.fijalkowski@intel.com
 Cc:     jonathan.lemon@gmail.com, ciara.loftus@intel.com,
         bpf@vger.kernel.org, yhs@fb.com, andrii@kernel.org
-Subject: [PATCH bpf-next v2 04/16] selftests: xsk: return correct error codes
-Date:   Tue, 17 Aug 2021 11:27:17 +0200
-Message-Id: <20210817092729.433-5-magnus.karlsson@gmail.com>
+Subject: [PATCH bpf-next v2 05/16] selftests: xsk: simplify the retry code
+Date:   Tue, 17 Aug 2021 11:27:18 +0200
+Message-Id: <20210817092729.433-6-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20210817092729.433-1-magnus.karlsson@gmail.com>
 References: <20210817092729.433-1-magnus.karlsson@gmail.com>
@@ -67,58 +67,78 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Return the correct error codes so they can be printed correctly.
+Simplify the retry code and make it more efficient by waiting first,
+instead of trying immediately which always fails due to the
+asynchronous nature of xsk socket close. Also decrease the wait time
+to significantly lower the run-time of the test suite.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- tools/testing/selftests/bpf/xdpxceiver.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ tools/testing/selftests/bpf/xdpxceiver.c | 23 ++++++++++-------------
+ tools/testing/selftests/bpf/xdpxceiver.h |  2 +-
+ 2 files changed, 11 insertions(+), 14 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index 4d8ee636fc24..f221bc5dae17 100644
+index f221bc5dae17..b7d193a96083 100644
 --- a/tools/testing/selftests/bpf/xdpxceiver.c
 +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -270,7 +270,7 @@ static void xsk_configure_umem(struct ifobject *data, void *buffer, int idx)
- 	ret = xsk_umem__create(&umem->umem, buffer, size,
- 			       &umem->fq, &umem->cq, &cfg);
- 	if (ret)
--		exit_with_error(ret);
-+		exit_with_error(-ret);
+@@ -745,24 +745,19 @@ static void thread_common_ops(struct ifobject *ifobject, void *bufs)
+ 	if (bufs == MAP_FAILED)
+ 		exit_with_error(errno);
  
- 	umem->buffer = buffer;
- 
-@@ -284,7 +284,7 @@ static void xsk_populate_fill_ring(struct xsk_umem_info *umem)
- 
- 	ret = xsk_ring_prod__reserve(&umem->fq, XSK_RING_PROD__DEFAULT_NUM_DESCS, &idx);
- 	if (ret != XSK_RING_PROD__DEFAULT_NUM_DESCS)
--		exit_with_error(ret);
-+		exit_with_error(-ret);
- 	for (i = 0; i < XSK_RING_PROD__DEFAULT_NUM_DESCS; i++)
- 		*xsk_ring_prod__fill_addr(&umem->fq, idx++) = i * XSK_UMEM__DEFAULT_FRAME_SIZE;
- 	xsk_ring_prod__submit(&umem->fq, XSK_RING_PROD__DEFAULT_NUM_DESCS);
-@@ -467,7 +467,7 @@ static void rx_pkt(struct xsk_socket_info *xsk, struct pollfd *fds)
- 		if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq)) {
- 			ret = poll(fds, 1, POLL_TMOUT);
- 			if (ret < 0)
--				exit_with_error(ret);
-+				exit_with_error(-ret);
- 		}
- 		return;
- 	}
-@@ -475,11 +475,11 @@ static void rx_pkt(struct xsk_socket_info *xsk, struct pollfd *fds)
- 	ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
- 	while (ret != rcvd) {
- 		if (ret < 0)
--			exit_with_error(ret);
+-	xsk_configure_umem(ifobject, bufs, 0);
+-	ifobject->umem = ifobject->umem_arr[0];
+-	ret = xsk_configure_socket(ifobject, 0);
+-
+-	/* Retry Create Socket if it fails as xsk_socket__create()
+-	 * is asynchronous
+-	 */
+-	while (ret && ctr < SOCK_RECONF_CTR) {
++	while (ctr++ < SOCK_RECONF_CTR) {
+ 		xsk_configure_umem(ifobject, bufs, 0);
+ 		ifobject->umem = ifobject->umem_arr[0];
+ 		ret = xsk_configure_socket(ifobject, 0);
++		if (!ret)
++			break;
++
++		/* Retry Create Socket if it fails as xsk_socket__create() is asynchronous */
+ 		usleep(USLEEP_MAX);
+-		ctr++;
++		if (ctr >= SOCK_RECONF_CTR)
 +			exit_with_error(-ret);
- 		if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq)) {
- 			ret = poll(fds, 1, POLL_TMOUT);
- 			if (ret < 0)
--				exit_with_error(ret);
-+				exit_with_error(-ret);
- 		}
- 		ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
  	}
+ 
+-	if (ctr >= SOCK_RECONF_CTR)
+-		exit_with_error(ret);
+-
+ 	ifobject->umem = ifobject->umem_arr[0];
+ 	ifobject->xsk = ifobject->xsk_arr[0];
+ 
+@@ -1125,8 +1120,10 @@ int main(int argc, char **argv)
+ 	ksft_set_plan(TEST_MODE_MAX * TEST_TYPE_MAX);
+ 
+ 	for (i = 0; i < TEST_MODE_MAX; i++) {
+-		for (j = 0; j < TEST_TYPE_MAX; j++)
++		for (j = 0; j < TEST_TYPE_MAX; j++) {
+ 			run_pkt_test(i, j);
++			usleep(USLEEP_MAX);
++		}
+ 	}
+ 
+ cleanup:
+diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
+index 02b7d0d6f45d..1c94230c351a 100644
+--- a/tools/testing/selftests/bpf/xdpxceiver.h
++++ b/tools/testing/selftests/bpf/xdpxceiver.h
+@@ -35,7 +35,7 @@
+ #define UDP_PKT_SIZE (IP_PKT_SIZE - sizeof(struct iphdr))
+ #define UDP_PKT_DATA_SIZE (UDP_PKT_SIZE - sizeof(struct udphdr))
+ #define EOT (-1)
+-#define USLEEP_MAX 200000
++#define USLEEP_MAX 10000
+ #define SOCK_RECONF_CTR 10
+ #define BATCH_SIZE 64
+ #define POLL_TMOUT 1000
 -- 
 2.29.0
 
