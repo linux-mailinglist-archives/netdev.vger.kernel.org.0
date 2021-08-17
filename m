@@ -2,84 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23D713EE40F
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 04:00:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 955D73EE424
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 04:04:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236050AbhHQCAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 22:00:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41706 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233238AbhHQCAj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 22:00:39 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 084E360F55;
-        Tue, 17 Aug 2021 02:00:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629165607;
-        bh=MVnubLbxEzYHgLlzZ7aRkr3ISMZ+jDiZOyPTzWQo7T0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uFcUAC5i++kNEHGEf/zN8dR594RJDrxGy8M45/u1jF5u/x/NW0eC1qH2OzH5N4cij
-         UNlt+R+dh2RI+QPiKTNqdPYcbQpM76L3ajsXvbdX1l20gLz9At/aWY7LpWTbOv3VZH
-         cDXf8a+2m2XpsFlLEDOAcrpUEInCa73RfasnzhmqVMtxV25Qn7I6UalGMaRf3i+1MB
-         wlGT9chFOYlX7Rn9jK3doqDErpYSED7m99bzE/WM5ehgsFLeRPTKNI9JTnor9YI+Ap
-         aq/s+liEKnf7UMDjRTzBrlT8mOGTv8H+aQDYx5uk7nPPRyBv5E0H3UPbRuptmrg5yE
-         b48NBWtCYC7hw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EB111609DA;
-        Tue, 17 Aug 2021 02:00:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S235953AbhHQCEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 22:04:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30396 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233394AbhHQCE3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 22:04:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1629165837;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Oe74KUoqJHrJWPuwrj1dbWTw7Ns3p122axDxZOz+uFY=;
+        b=CdyHxWdZocNS1El25dlLWmI3hnPYgj2A7TrtMepo0vlksTF6uG9FwBAdZDONA0QTJ9oz/L
+        E2UHlk9E52wvijonaFYi8O1Szwo+hXVx0GnVHETpvWGi4IFUNYmmatz3o0PFcQDfynTXak
+        6TLRfBl0GnW1kPG7UyWj2XD2pVdNmdY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-163-FppgmRmjMhGXea1rNUOKqw-1; Mon, 16 Aug 2021 22:03:55 -0400
+X-MC-Unique: FppgmRmjMhGXea1rNUOKqw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2797687122E;
+        Tue, 17 Aug 2021 02:03:54 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-12-226.pek2.redhat.com [10.72.12.226])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6C78B19C44;
+        Tue, 17 Aug 2021 02:03:46 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     willemb@google.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ivan@prestigetransportation.com, xiangxia.m.yue@gmail.com
+Subject: [PATCH net] virtio-net: use NETIF_F_GRO_HW instead of NETIF_F_LRO
+Date:   Tue, 17 Aug 2021 10:03:38 +0800
+Message-Id: <20210817020338.6400-1-jasowang@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v7 0/5] sockmap: add sockmap support for unix stream
- socket
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162916560695.26282.3837040617464847653.git-patchwork-notify@kernel.org>
-Date:   Tue, 17 Aug 2021 02:00:06 +0000
-References: <20210816190327.2739291-1-jiang.wang@bytedance.com>
-In-Reply-To: <20210816190327.2739291-1-jiang.wang@bytedance.com>
-To:     Jiang Wang <jiang.wang@bytedance.com>
-Cc:     netdev@vger.kernel.org, cong.wang@bytedance.com,
-        duanxiongchun@bytedance.com, xieyongji@bytedance.com,
-        chaiwen.cc@bytedance.com, john.fastabend@gmail.com,
-        jakub@cloudflare.com, davem@davemloft.net, kuba@kernel.org,
-        daniel@iogearbox.net, lmb@cloudflare.com, ast@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, shuah@kernel.org, viro@zeniv.linux.org.uk,
-        christian.brauner@ubuntu.com, rao.shoaib@oracle.com,
-        johan.almbladh@anyfinetworks.com, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Commit a02e8964eaf92 ("virtio-net: ethtool configurable LRO") tries to
+advertise LRO on behalf of the guest offloading features and allow the
+administrator to enable and disable those features via ethtool.
 
-This series was applied to bpf/bpf-next.git (refs/heads/master):
+This may lead several issues:
 
-On Mon, 16 Aug 2021 19:03:19 +0000 you wrote:
-> This patch series add support for unix stream type
-> for sockmap. Sockmap already supports TCP, UDP,
-> unix dgram types. The unix stream support is similar
-> to unix dgram.
-> 
-> Also add selftests for unix stream type in sockmap tests.
-> 
-> [...]
+- For the device that doesn't support control guest offloads, the
+  "LRO" can't be disabled so we will get a warn in the
+  dev_disable_lro()
+- For the device that have the control guest offloads, the guest
+  offloads were disabled in the case of bridge etc which may slow down
+  the traffic.
 
-Here is the summary with links:
-  - [bpf-next,v7,1/5] af_unix: add read_sock for stream socket types
-    https://git.kernel.org/bpf/bpf-next/c/77462de14a43
-  - [bpf-next,v7,2/5] af_unix: add unix_stream_proto for sockmap
-    https://git.kernel.org/bpf/bpf-next/c/94531cfcbe79
-  - [bpf-next,v7,3/5] selftest/bpf: add tests for sockmap with unix stream type.
-    https://git.kernel.org/bpf/bpf-next/c/9b03152bd469
-  - [bpf-next,v7,4/5] selftest/bpf: change udp to inet in some function names
-    https://git.kernel.org/bpf/bpf-next/c/75e0e27db6cf
-  - [bpf-next,v7,5/5] selftest/bpf: add new tests in sockmap for unix stream to tcp.
-    https://git.kernel.org/bpf/bpf-next/c/31c50aeed5a1
+Fixing this by using NETIF_F_GRO_HW instead. Though the spec does not
+guaranteed to be re-segmented as original explicitly now, we can add
+that to the spec and then we can catch the bad configuration and
+setup.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Fixes: a02e8964eaf92 ("virtio-net: ethtool configurable LRO")
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+---
+ drivers/net/virtio_net.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 0416a7e00914..10c382b08bce 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -63,7 +63,7 @@ static const unsigned long guest_offloads[] = {
+ 	VIRTIO_NET_F_GUEST_CSUM
+ };
+ 
+-#define GUEST_OFFLOAD_LRO_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
++#define GUEST_OFFLOAD_GRO_HW_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
+ 				(1ULL << VIRTIO_NET_F_GUEST_TSO6) | \
+ 				(1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
+ 				(1ULL << VIRTIO_NET_F_GUEST_UFO))
+@@ -2481,7 +2481,7 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+ 	        virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_ECN) ||
+ 		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO) ||
+ 		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_CSUM))) {
+-		NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing LRO/CSUM, disable LRO/CSUM first");
++		NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing GRO_HW/CSUM, disable GRO_HW/CSUM first");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+@@ -2612,15 +2612,15 @@ static int virtnet_set_features(struct net_device *dev,
+ 	u64 offloads;
+ 	int err;
+ 
+-	if ((dev->features ^ features) & NETIF_F_LRO) {
++	if ((dev->features ^ features) & NETIF_F_GRO_HW) {
+ 		if (vi->xdp_enabled)
+ 			return -EBUSY;
+ 
+-		if (features & NETIF_F_LRO)
++		if (features & NETIF_F_GRO_HW)
+ 			offloads = vi->guest_offloads_capable;
+ 		else
+ 			offloads = vi->guest_offloads_capable &
+-				   ~GUEST_OFFLOAD_LRO_MASK;
++				   ~GUEST_OFFLOAD_GRO_HW_MASK;
+ 
+ 		err = virtnet_set_guest_offloads(vi, offloads);
+ 		if (err)
+@@ -3100,9 +3100,9 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 		dev->features |= NETIF_F_RXCSUM;
+ 	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+ 	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
+-		dev->features |= NETIF_F_LRO;
++		dev->features |= NETIF_F_GRO_HW;
+ 	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
+-		dev->hw_features |= NETIF_F_LRO;
++		dev->hw_features |= NETIF_F_GRO_HW;
+ 
+ 	dev->vlan_features = dev->features;
+ 
+-- 
+2.25.1
 
