@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98B5D3EE189
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 02:55:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 196FA3EE185
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 02:55:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236302AbhHQAz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 20:55:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40078 "EHLO
+        id S236143AbhHQAzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 20:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235108AbhHQAzt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 20:55:49 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A56C0613A4
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 17:55:16 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id c12so17068083ljr.5
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 17:55:16 -0700 (PDT)
+        with ESMTP id S235772AbhHQAzu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Aug 2021 20:55:50 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79EA4C0612A4
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 17:55:17 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id n6so30065834ljp.9
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 17:55:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=FRhJlspuhr5Q3RAjzuhd5WsagmM/XJE9SdkaJUDZM6w=;
-        b=fdUyAwxHnLCAtikwBEBM1kQZ/KTdfUZVby/xjvc0oz84sCO1fRXVf8wMYh0eDH46MI
-         hnLfx+VkmOKDWTc6caj3PmQd5iIsTOfxfdUsNln2QzfCr2IC0iyZxukbeOtMVYoMejZb
-         pJQJbad63VL5V6LPBtmgYAuJgUv4wQILf5v3mUlkY5pVKc9GqRGAmJNwvRRfA6ZgDOtn
-         uPDaK9T8DWuCu/HDbIVmpZcnkvfEBjBzlqVXs9Xk5oskdhSrGyBCHi03nTIP7P3MZwsq
-         3uQ4yzmHwAKjCjJc0+PLzQ0bycu7LESwTyjYfSgFx4ZZWMVx242Zdy6A2KeejIKHMd0n
-         dDmA==
+        bh=zHW7j8uJ1T5WAhTwDkkfCp9h9wlSajIJoR2TS5WeI4s=;
+        b=M+8JmFaKoyF4Y6sGJg8MksjCPy8KWaLrMoFoU5H/2SMFu13wI0tZayH+k0nGh0OWbx
+         wTjtWcx1quOS5cRy2xvqqRmYvddYA8HJupQ9OTKGLoouVYSG27ky3BLt2PwxHowLqHqm
+         36/rnjAw3GBl9O5C3YC2voq/YPTNQYZSsBWDz+93sPFAwdRc3Ub6BWI/lAQgigJmjz5O
+         lZA0GH8wqBHUmeBfgeAQklXJt62i1xchURucNna7ys6Ol6jpBNdTISUCqeJTXpGRtchh
+         UIfEKvMaMukniWjwHDeeht0jC1S4nB//S1BBEpJHvLeUGnRbdwrhV5/D1PYI75b9IfA7
+         xoEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FRhJlspuhr5Q3RAjzuhd5WsagmM/XJE9SdkaJUDZM6w=;
-        b=RincMasFBtZW0W/eBjwHz3KGPPAc/UTJeI9DfQfp9br0mNPPZ7Oy6Cmll5iu4abzuk
-         kxsUBjbZaYF1UnT3KuR/GV46mZRIGzAwGwRW2OCxp398mCEGYIEtOMxmu4X8k6CSTFc7
-         2yOqi9Fj6dbTd9L0LlwQl0iNgTnpD/zY0NPXb1MmGzTD5aeALAjEfq13nBfHOaZxF2tj
-         0fvRrYhirNFnGbcWPhnYVbgQ/NBgeclA1T1ZKs+ffPUTsE94J+V7gICxlIvc8T6hr45/
-         dwOB8sy3NSQ3ibijQaTWeb58nv2mbSwNsXUgyRsalUSOCjpRY0byRGBdAuFPw/CiDF5B
-         cVEg==
-X-Gm-Message-State: AOAM533+aPt2oQzT3rC9y7mkXV8+41YV/R2wSvCXojMjCbVfx5S6UfE6
-        Ng1efCUfhHFpq81SLkYjAmJ7LA==
-X-Google-Smtp-Source: ABdhPJxTs5QoxsKt8CoEGoLxj8Tx7EmN2XLBfvYLdBTJTU9Eg6vdu8tTkPjB9z2/Vf6240S1i/Rvmg==
-X-Received: by 2002:a2e:a225:: with SMTP id i5mr803806ljm.64.1629161714891;
-        Mon, 16 Aug 2021 17:55:14 -0700 (PDT)
+        bh=zHW7j8uJ1T5WAhTwDkkfCp9h9wlSajIJoR2TS5WeI4s=;
+        b=fJQK6N+Fb4NpAbfrax3hBWW6G3kHl957mUH8AHCtl9C0ehqDIpnH0McBbkpiNGzyqP
+         QqakE5stfNzmVEsukgsyl0mK9MiyJn5soILK/gwEPTs1fX+6e+Y+hvqDuHzV0v6W5IXW
+         NSFIxpQ8O8jKiLwT02lcVHXxyNGtW8et4mrtzMENRj98OUf0Gyi9pPY1O0xboiW5gstu
+         v1bHik/x6RdRYcEqVa1Vl5VaOwuFKiOH0djdElHqMcyRNHK8Q8128VzBEumzYg9A6Rb5
+         mf1I68/JOCPxcNoDfIbjBMc+kpTRxFGJ3yhvsWOBGIy9Q6azjnJ1uv7H0DE145rV3WVO
+         R5EQ==
+X-Gm-Message-State: AOAM533r9scjLeGX43fnXEQtfGzS/kFxkdHRXMDdG9DFujveK3Fipnyh
+        JX/wCD3m8ospis/w7ale7bj7Rg==
+X-Google-Smtp-Source: ABdhPJwzl+6gfIV47ZCHmVz5/wqhiY0aSpqI/1a5FDmoJTan/NZyyOCfBI9EfZad5k9e0Yjfqz8dWg==
+X-Received: by 2002:a05:651c:902:: with SMTP id e2mr790319ljq.198.1629161715773;
+        Mon, 16 Aug 2021 17:55:15 -0700 (PDT)
 Received: from eriador.lan ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id z6sm40719lfb.251.2021.08.16.17.55.14
+        by smtp.gmail.com with ESMTPSA id z6sm40719lfb.251.2021.08.16.17.55.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Aug 2021 17:55:14 -0700 (PDT)
+        Mon, 16 Aug 2021 17:55:15 -0700 (PDT)
 From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -62,9 +62,9 @@ Cc:     linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
         ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [RFC PATCH 02/15] pwrseq: port MMC's pwrseq drivers to new pwrseq subsystem
-Date:   Tue, 17 Aug 2021 03:54:54 +0300
-Message-Id: <20210817005507.1507580-3-dmitry.baryshkov@linaro.org>
+Subject: [RFC PATCH 03/15] mmc: core: switch to new pwrseq subsystem
+Date:   Tue, 17 Aug 2021 03:54:55 +0300
+Message-Id: <20210817005507.1507580-4-dmitry.baryshkov@linaro.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210817005507.1507580-1-dmitry.baryshkov@linaro.org>
 References: <20210817005507.1507580-1-dmitry.baryshkov@linaro.org>
@@ -74,958 +74,352 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Port MMC's all pwrseq drivers to new pwrseq subsystem.
+Drop old MMC pwrseq code and use new pwrseq subsystem instead.
+Individual drivers are already ported to new subsystem.
 
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 ---
- .../pwrseq}/mmc-pwrseq-emmc.yaml              |   0
- .../pwrseq}/mmc-pwrseq-sd8787.yaml            |   0
- .../pwrseq}/mmc-pwrseq-simple.yaml            |   0
- drivers/mmc/core/Kconfig                      |  32 ----
- drivers/mmc/core/Makefile                     |   3 -
- drivers/mmc/core/pwrseq_emmc.c                | 120 -------------
- drivers/mmc/core/pwrseq_sd8787.c              | 107 ------------
- drivers/mmc/core/pwrseq_simple.c              | 164 ------------------
- drivers/power/pwrseq/Kconfig                  |  32 ++++
- drivers/power/pwrseq/Makefile                 |   4 +
- drivers/power/pwrseq/pwrseq_emmc.c            | 118 +++++++++++++
- drivers/power/pwrseq/pwrseq_sd8787.c          |  97 +++++++++++
- drivers/power/pwrseq/pwrseq_simple.c          | 160 +++++++++++++++++
- 13 files changed, 411 insertions(+), 426 deletions(-)
- rename Documentation/devicetree/bindings/{mmc => power/pwrseq}/mmc-pwrseq-emmc.yaml (100%)
- rename Documentation/devicetree/bindings/{mmc => power/pwrseq}/mmc-pwrseq-sd8787.yaml (100%)
- rename Documentation/devicetree/bindings/{mmc => power/pwrseq}/mmc-pwrseq-simple.yaml (100%)
- delete mode 100644 drivers/mmc/core/pwrseq_emmc.c
- delete mode 100644 drivers/mmc/core/pwrseq_sd8787.c
- delete mode 100644 drivers/mmc/core/pwrseq_simple.c
- create mode 100644 drivers/power/pwrseq/pwrseq_emmc.c
- create mode 100644 drivers/power/pwrseq/pwrseq_sd8787.c
- create mode 100644 drivers/power/pwrseq/pwrseq_simple.c
+ drivers/mmc/core/Makefile |   1 -
+ drivers/mmc/core/core.c   |   9 ++-
+ drivers/mmc/core/host.c   |   8 ++-
+ drivers/mmc/core/mmc.c    |   3 +-
+ drivers/mmc/core/pwrseq.c | 117 --------------------------------------
+ drivers/mmc/core/pwrseq.h |  58 -------------------
+ include/linux/mmc/host.h  |   4 +-
+ 7 files changed, 12 insertions(+), 188 deletions(-)
+ delete mode 100644 drivers/mmc/core/pwrseq.c
+ delete mode 100644 drivers/mmc/core/pwrseq.h
 
-diff --git a/Documentation/devicetree/bindings/mmc/mmc-pwrseq-emmc.yaml b/Documentation/devicetree/bindings/power/pwrseq/mmc-pwrseq-emmc.yaml
-similarity index 100%
-rename from Documentation/devicetree/bindings/mmc/mmc-pwrseq-emmc.yaml
-rename to Documentation/devicetree/bindings/power/pwrseq/mmc-pwrseq-emmc.yaml
-diff --git a/Documentation/devicetree/bindings/mmc/mmc-pwrseq-sd8787.yaml b/Documentation/devicetree/bindings/power/pwrseq/mmc-pwrseq-sd8787.yaml
-similarity index 100%
-rename from Documentation/devicetree/bindings/mmc/mmc-pwrseq-sd8787.yaml
-rename to Documentation/devicetree/bindings/power/pwrseq/mmc-pwrseq-sd8787.yaml
-diff --git a/Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.yaml b/Documentation/devicetree/bindings/power/pwrseq/mmc-pwrseq-simple.yaml
-similarity index 100%
-rename from Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.yaml
-rename to Documentation/devicetree/bindings/power/pwrseq/mmc-pwrseq-simple.yaml
-diff --git a/drivers/mmc/core/Kconfig b/drivers/mmc/core/Kconfig
-index ae8b69aee619..cf7df64ce009 100644
---- a/drivers/mmc/core/Kconfig
-+++ b/drivers/mmc/core/Kconfig
-@@ -2,38 +2,6 @@
- #
- # MMC core configuration
- #
--config PWRSEQ_EMMC
--	tristate "HW reset support for eMMC"
--	default y
--	depends on OF
--	help
--	  This selects Hardware reset support aka pwrseq-emmc for eMMC
--	  devices. By default this option is set to y.
--
--	  This driver can also be built as a module. If so, the module
--	  will be called pwrseq_emmc.
--
--config PWRSEQ_SD8787
--	tristate "HW reset support for SD8787 BT + Wifi module"
--	depends on OF && (MWIFIEX || BT_MRVL_SDIO || LIBERTAS_SDIO)
--	help
--	  This selects hardware reset support for the SD8787 BT + Wifi
--	  module. By default this option is set to n.
--
--	  This driver can also be built as a module. If so, the module
--	  will be called pwrseq_sd8787.
--
--config PWRSEQ_SIMPLE
--	tristate "Simple HW reset support for MMC"
--	default y
--	depends on OF
--	help
--	  This selects simple hardware reset support aka pwrseq-simple for MMC
--	  devices. By default this option is set to y.
--
--	  This driver can also be built as a module. If so, the module
--	  will be called pwrseq_simple.
--
- config MMC_BLOCK
- 	tristate "MMC block device driver"
- 	depends on BLOCK
 diff --git a/drivers/mmc/core/Makefile b/drivers/mmc/core/Makefile
-index 6a907736cd7a..322eb69bd00e 100644
+index 322eb69bd00e..a504d873cf8e 100644
 --- a/drivers/mmc/core/Makefile
 +++ b/drivers/mmc/core/Makefile
-@@ -10,9 +10,6 @@ mmc_core-y			:= core.o bus.o host.o \
+@@ -9,7 +9,6 @@ mmc_core-y			:= core.o bus.o host.o \
+ 				   sdio.o sdio_ops.o sdio_bus.o \
  				   sdio_cis.o sdio_io.o sdio_irq.o \
  				   slot-gpio.o regulator.o
- mmc_core-$(CONFIG_OF)		+= pwrseq.o
--obj-$(CONFIG_PWRSEQ_SIMPLE)	+= pwrseq_simple.o
--obj-$(CONFIG_PWRSEQ_SD8787)	+= pwrseq_sd8787.o
--obj-$(CONFIG_PWRSEQ_EMMC)	+= pwrseq_emmc.o
+-mmc_core-$(CONFIG_OF)		+= pwrseq.o
  mmc_core-$(CONFIG_DEBUG_FS)	+= debugfs.o
  obj-$(CONFIG_MMC_BLOCK)		+= mmc_block.o
  mmc_block-objs			:= block.o queue.o
-diff --git a/drivers/mmc/core/pwrseq_emmc.c b/drivers/mmc/core/pwrseq_emmc.c
-deleted file mode 100644
-index f6dde9edd7a3..000000000000
---- a/drivers/mmc/core/pwrseq_emmc.c
-+++ /dev/null
-@@ -1,120 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-only
--/*
-- * Copyright (C) 2015, Samsung Electronics Co., Ltd.
-- *
-- * Author: Marek Szyprowski <m.szyprowski@samsung.com>
-- *
-- * Simple eMMC hardware reset provider
-- */
--#include <linux/delay.h>
--#include <linux/kernel.h>
--#include <linux/init.h>
--#include <linux/platform_device.h>
--#include <linux/module.h>
--#include <linux/slab.h>
--#include <linux/device.h>
--#include <linux/err.h>
--#include <linux/gpio/consumer.h>
--#include <linux/reboot.h>
--
--#include <linux/mmc/host.h>
--
+diff --git a/drivers/mmc/core/core.c b/drivers/mmc/core/core.c
+index 95fedcf56e4a..c468af900a45 100644
+--- a/drivers/mmc/core/core.c
++++ b/drivers/mmc/core/core.c
+@@ -41,7 +41,6 @@
+ #include "bus.h"
+ #include "host.h"
+ #include "sdio_bus.h"
 -#include "pwrseq.h"
--
--struct mmc_pwrseq_emmc {
--	struct mmc_pwrseq pwrseq;
--	struct notifier_block reset_nb;
--	struct gpio_desc *reset_gpio;
--};
--
--#define to_pwrseq_emmc(p) container_of(p, struct mmc_pwrseq_emmc, pwrseq)
--
--static void mmc_pwrseq_emmc_reset(struct mmc_host *host)
--{
--	struct mmc_pwrseq_emmc *pwrseq =  to_pwrseq_emmc(host->pwrseq);
--
--	gpiod_set_value_cansleep(pwrseq->reset_gpio, 1);
--	udelay(1);
--	gpiod_set_value_cansleep(pwrseq->reset_gpio, 0);
--	udelay(200);
--}
--
--static int mmc_pwrseq_emmc_reset_nb(struct notifier_block *this,
--				    unsigned long mode, void *cmd)
--{
--	struct mmc_pwrseq_emmc *pwrseq = container_of(this,
--					struct mmc_pwrseq_emmc, reset_nb);
--	gpiod_set_value(pwrseq->reset_gpio, 1);
--	udelay(1);
--	gpiod_set_value(pwrseq->reset_gpio, 0);
--	udelay(200);
--
--	return NOTIFY_DONE;
--}
--
--static const struct mmc_pwrseq_ops mmc_pwrseq_emmc_ops = {
--	.reset = mmc_pwrseq_emmc_reset,
--};
--
--static int mmc_pwrseq_emmc_probe(struct platform_device *pdev)
--{
--	struct mmc_pwrseq_emmc *pwrseq;
--	struct device *dev = &pdev->dev;
--
--	pwrseq = devm_kzalloc(dev, sizeof(*pwrseq), GFP_KERNEL);
--	if (!pwrseq)
--		return -ENOMEM;
--
--	pwrseq->reset_gpio = devm_gpiod_get(dev, "reset", GPIOD_OUT_LOW);
--	if (IS_ERR(pwrseq->reset_gpio))
--		return PTR_ERR(pwrseq->reset_gpio);
--
--	if (!gpiod_cansleep(pwrseq->reset_gpio)) {
--		/*
--		 * register reset handler to ensure emmc reset also from
--		 * emergency_reboot(), priority 255 is the highest priority
--		 * so it will be executed before any system reboot handler.
--		 */
--		pwrseq->reset_nb.notifier_call = mmc_pwrseq_emmc_reset_nb;
--		pwrseq->reset_nb.priority = 255;
--		register_restart_handler(&pwrseq->reset_nb);
--	} else {
--		dev_notice(dev, "EMMC reset pin tied to a sleepy GPIO driver; reset on emergency-reboot disabled\n");
--	}
--
--	pwrseq->pwrseq.ops = &mmc_pwrseq_emmc_ops;
--	pwrseq->pwrseq.dev = dev;
--	pwrseq->pwrseq.owner = THIS_MODULE;
--	platform_set_drvdata(pdev, pwrseq);
--
--	return mmc_pwrseq_register(&pwrseq->pwrseq);
--}
--
--static int mmc_pwrseq_emmc_remove(struct platform_device *pdev)
--{
--	struct mmc_pwrseq_emmc *pwrseq = platform_get_drvdata(pdev);
--
--	unregister_restart_handler(&pwrseq->reset_nb);
--	mmc_pwrseq_unregister(&pwrseq->pwrseq);
--
--	return 0;
--}
--
--static const struct of_device_id mmc_pwrseq_emmc_of_match[] = {
--	{ .compatible = "mmc-pwrseq-emmc",},
--	{/* sentinel */},
--};
--
--MODULE_DEVICE_TABLE(of, mmc_pwrseq_emmc_of_match);
--
--static struct platform_driver mmc_pwrseq_emmc_driver = {
--	.probe = mmc_pwrseq_emmc_probe,
--	.remove = mmc_pwrseq_emmc_remove,
--	.driver = {
--		.name = "pwrseq_emmc",
--		.of_match_table = mmc_pwrseq_emmc_of_match,
--	},
--};
--
--module_platform_driver(mmc_pwrseq_emmc_driver);
--MODULE_LICENSE("GPL v2");
-diff --git a/drivers/mmc/core/pwrseq_sd8787.c b/drivers/mmc/core/pwrseq_sd8787.c
-deleted file mode 100644
-index 68a826f1c0a1..000000000000
---- a/drivers/mmc/core/pwrseq_sd8787.c
-+++ /dev/null
-@@ -1,107 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-or-later
--/*
-- * pwrseq_sd8787.c - power sequence support for Marvell SD8787 BT + Wifi chip
-- *
-- * Copyright (C) 2016 Matt Ranostay <matt@ranostay.consulting>
-- *
-- * Based on the original work pwrseq_simple.c
-- *  Copyright (C) 2014 Linaro Ltd
-- *  Author: Ulf Hansson <ulf.hansson@linaro.org>
-- */
--
--#include <linux/delay.h>
--#include <linux/init.h>
--#include <linux/kernel.h>
--#include <linux/platform_device.h>
--#include <linux/module.h>
--#include <linux/slab.h>
--#include <linux/device.h>
--#include <linux/err.h>
--#include <linux/gpio/consumer.h>
--
--#include <linux/mmc/host.h>
--
+ 
+ #include "mmc_ops.h"
+ #include "sd_ops.h"
+@@ -1321,7 +1320,7 @@ void mmc_power_up(struct mmc_host *host, u32 ocr)
+ 	if (host->ios.power_mode == MMC_POWER_ON)
+ 		return;
+ 
+-	mmc_pwrseq_pre_power_on(host);
++	pwrseq_pre_power_on(host->pwrseq);
+ 
+ 	host->ios.vdd = fls(ocr) - 1;
+ 	host->ios.power_mode = MMC_POWER_UP;
+@@ -1336,7 +1335,7 @@ void mmc_power_up(struct mmc_host *host, u32 ocr)
+ 	 */
+ 	mmc_delay(host->ios.power_delay_ms);
+ 
+-	mmc_pwrseq_post_power_on(host);
++	pwrseq_power_on(host->pwrseq);
+ 
+ 	host->ios.clock = host->f_init;
+ 
+@@ -1355,7 +1354,7 @@ void mmc_power_off(struct mmc_host *host)
+ 	if (host->ios.power_mode == MMC_POWER_OFF)
+ 		return;
+ 
+-	mmc_pwrseq_power_off(host);
++	pwrseq_power_off(host->pwrseq);
+ 
+ 	host->ios.clock = 0;
+ 	host->ios.vdd = 0;
+@@ -1985,7 +1984,7 @@ EXPORT_SYMBOL(mmc_set_blocklen);
+ 
+ static void mmc_hw_reset_for_init(struct mmc_host *host)
+ {
+-	mmc_pwrseq_reset(host);
++	pwrseq_reset(host->pwrseq);
+ 
+ 	if (!(host->caps & MMC_CAP_HW_RESET) || !host->ops->hw_reset)
+ 		return;
+diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
+index 0475d96047c4..214b9cfda723 100644
+--- a/drivers/mmc/core/host.c
++++ b/drivers/mmc/core/host.c
+@@ -28,7 +28,6 @@
+ #include "crypto.h"
+ #include "host.h"
+ #include "slot-gpio.h"
 -#include "pwrseq.h"
--
--struct mmc_pwrseq_sd8787 {
--	struct mmc_pwrseq pwrseq;
--	struct gpio_desc *reset_gpio;
--	struct gpio_desc *pwrdn_gpio;
--};
--
--#define to_pwrseq_sd8787(p) container_of(p, struct mmc_pwrseq_sd8787, pwrseq)
--
--static void mmc_pwrseq_sd8787_pre_power_on(struct mmc_host *host)
--{
--	struct mmc_pwrseq_sd8787 *pwrseq = to_pwrseq_sd8787(host->pwrseq);
--
--	gpiod_set_value_cansleep(pwrseq->reset_gpio, 1);
--
--	msleep(300);
--	gpiod_set_value_cansleep(pwrseq->pwrdn_gpio, 1);
--}
--
--static void mmc_pwrseq_sd8787_power_off(struct mmc_host *host)
--{
--	struct mmc_pwrseq_sd8787 *pwrseq = to_pwrseq_sd8787(host->pwrseq);
--
--	gpiod_set_value_cansleep(pwrseq->pwrdn_gpio, 0);
--	gpiod_set_value_cansleep(pwrseq->reset_gpio, 0);
--}
--
--static const struct mmc_pwrseq_ops mmc_pwrseq_sd8787_ops = {
--	.pre_power_on = mmc_pwrseq_sd8787_pre_power_on,
--	.power_off = mmc_pwrseq_sd8787_power_off,
--};
--
--static const struct of_device_id mmc_pwrseq_sd8787_of_match[] = {
--	{ .compatible = "mmc-pwrseq-sd8787",},
--	{/* sentinel */},
--};
--MODULE_DEVICE_TABLE(of, mmc_pwrseq_sd8787_of_match);
--
--static int mmc_pwrseq_sd8787_probe(struct platform_device *pdev)
--{
--	struct mmc_pwrseq_sd8787 *pwrseq;
--	struct device *dev = &pdev->dev;
--
--	pwrseq = devm_kzalloc(dev, sizeof(*pwrseq), GFP_KERNEL);
--	if (!pwrseq)
--		return -ENOMEM;
--
--	pwrseq->pwrdn_gpio = devm_gpiod_get(dev, "powerdown", GPIOD_OUT_LOW);
--	if (IS_ERR(pwrseq->pwrdn_gpio))
--		return PTR_ERR(pwrseq->pwrdn_gpio);
--
--	pwrseq->reset_gpio = devm_gpiod_get(dev, "reset", GPIOD_OUT_LOW);
--	if (IS_ERR(pwrseq->reset_gpio))
--		return PTR_ERR(pwrseq->reset_gpio);
--
--	pwrseq->pwrseq.dev = dev;
--	pwrseq->pwrseq.ops = &mmc_pwrseq_sd8787_ops;
--	pwrseq->pwrseq.owner = THIS_MODULE;
--	platform_set_drvdata(pdev, pwrseq);
--
--	return mmc_pwrseq_register(&pwrseq->pwrseq);
--}
--
--static int mmc_pwrseq_sd8787_remove(struct platform_device *pdev)
--{
--	struct mmc_pwrseq_sd8787 *pwrseq = platform_get_drvdata(pdev);
--
--	mmc_pwrseq_unregister(&pwrseq->pwrseq);
--
--	return 0;
--}
--
--static struct platform_driver mmc_pwrseq_sd8787_driver = {
--	.probe = mmc_pwrseq_sd8787_probe,
--	.remove = mmc_pwrseq_sd8787_remove,
--	.driver = {
--		.name = "pwrseq_sd8787",
--		.of_match_table = mmc_pwrseq_sd8787_of_match,
--	},
--};
--
--module_platform_driver(mmc_pwrseq_sd8787_driver);
--MODULE_LICENSE("GPL v2");
-diff --git a/drivers/mmc/core/pwrseq_simple.c b/drivers/mmc/core/pwrseq_simple.c
+ #include "sdio_ops.h"
+ 
+ #define cls_dev_to_mmc_host(d)	container_of(d, struct mmc_host, class_dev)
+@@ -413,7 +412,11 @@ int mmc_of_parse(struct mmc_host *host)
+ 	device_property_read_u32(dev, "post-power-on-delay-ms",
+ 				 &host->ios.power_delay_ms);
+ 
+-	return mmc_pwrseq_alloc(host);
++	host->pwrseq = devm_pwrseq_get_optional(dev, "mmc");
++	if (IS_ERR(host->pwrseq))
++		return PTR_ERR(host->pwrseq);
++
++	return 0;
+ }
+ 
+ EXPORT_SYMBOL(mmc_of_parse);
+@@ -632,7 +635,6 @@ EXPORT_SYMBOL(mmc_remove_host);
+  */
+ void mmc_free_host(struct mmc_host *host)
+ {
+-	mmc_pwrseq_free(host);
+ 	put_device(&host->class_dev);
+ }
+ 
+diff --git a/drivers/mmc/core/mmc.c b/drivers/mmc/core/mmc.c
+index 838726b68ff3..59d0d26bb5c0 100644
+--- a/drivers/mmc/core/mmc.c
++++ b/drivers/mmc/core/mmc.c
+@@ -24,7 +24,6 @@
+ #include "mmc_ops.h"
+ #include "quirks.h"
+ #include "sd_ops.h"
+-#include "pwrseq.h"
+ 
+ #define DEFAULT_CMD6_TIMEOUT_MS	500
+ #define MIN_CACHE_EN_TIMEOUT_MS 1600
+@@ -2220,7 +2219,7 @@ static int _mmc_hw_reset(struct mmc_host *host)
+ 	} else {
+ 		/* Do a brute force power cycle */
+ 		mmc_power_cycle(host, card->ocr);
+-		mmc_pwrseq_reset(host);
++		pwrseq_reset(host->pwrseq);
+ 	}
+ 	return mmc_init_card(host, card->ocr, card);
+ }
+diff --git a/drivers/mmc/core/pwrseq.c b/drivers/mmc/core/pwrseq.c
 deleted file mode 100644
-index ea4d3670560e..000000000000
---- a/drivers/mmc/core/pwrseq_simple.c
+index ef675f364bf0..000000000000
+--- a/drivers/mmc/core/pwrseq.c
 +++ /dev/null
-@@ -1,164 +0,0 @@
+@@ -1,117 +0,0 @@
 -// SPDX-License-Identifier: GPL-2.0-only
 -/*
 - *  Copyright (C) 2014 Linaro Ltd
 - *
 - * Author: Ulf Hansson <ulf.hansson@linaro.org>
 - *
-- *  Simple MMC power sequence management
+- *  MMC power sequence management
 - */
--#include <linux/clk.h>
--#include <linux/init.h>
 -#include <linux/kernel.h>
--#include <linux/platform_device.h>
--#include <linux/module.h>
--#include <linux/slab.h>
--#include <linux/device.h>
 -#include <linux/err.h>
--#include <linux/gpio/consumer.h>
--#include <linux/delay.h>
--#include <linux/property.h>
+-#include <linux/module.h>
+-#include <linux/of.h>
 -
 -#include <linux/mmc/host.h>
 -
 -#include "pwrseq.h"
 -
--struct mmc_pwrseq_simple {
--	struct mmc_pwrseq pwrseq;
--	bool clk_enabled;
--	u32 post_power_on_delay_ms;
--	u32 power_off_delay_us;
--	struct clk *ext_clk;
--	struct gpio_descs *reset_gpios;
--};
+-static DEFINE_MUTEX(pwrseq_list_mutex);
+-static LIST_HEAD(pwrseq_list);
 -
--#define to_pwrseq_simple(p) container_of(p, struct mmc_pwrseq_simple, pwrseq)
--
--static void mmc_pwrseq_simple_set_gpios_value(struct mmc_pwrseq_simple *pwrseq,
--					      int value)
+-int mmc_pwrseq_alloc(struct mmc_host *host)
 -{
--	struct gpio_descs *reset_gpios = pwrseq->reset_gpios;
+-	struct device_node *np;
+-	struct mmc_pwrseq *p;
 -
--	if (!IS_ERR(reset_gpios)) {
--		unsigned long *values;
--		int nvalues = reset_gpios->ndescs;
+-	np = of_parse_phandle(host->parent->of_node, "mmc-pwrseq", 0);
+-	if (!np)
+-		return 0;
 -
--		values = bitmap_alloc(nvalues, GFP_KERNEL);
--		if (!values)
--			return;
+-	mutex_lock(&pwrseq_list_mutex);
+-	list_for_each_entry(p, &pwrseq_list, pwrseq_node) {
+-		if (p->dev->of_node == np) {
+-			if (!try_module_get(p->owner))
+-				dev_err(host->parent,
+-					"increasing module refcount failed\n");
+-			else
+-				host->pwrseq = p;
 -
--		if (value)
--			bitmap_fill(values, nvalues);
--		else
--			bitmap_zero(values, nvalues);
--
--		gpiod_set_array_value_cansleep(nvalues, reset_gpios->desc,
--					       reset_gpios->info, values);
--
--		kfree(values);
--	}
--}
--
--static void mmc_pwrseq_simple_pre_power_on(struct mmc_host *host)
--{
--	struct mmc_pwrseq_simple *pwrseq = to_pwrseq_simple(host->pwrseq);
--
--	if (!IS_ERR(pwrseq->ext_clk) && !pwrseq->clk_enabled) {
--		clk_prepare_enable(pwrseq->ext_clk);
--		pwrseq->clk_enabled = true;
+-			break;
+-		}
 -	}
 -
--	mmc_pwrseq_simple_set_gpios_value(pwrseq, 1);
--}
+-	of_node_put(np);
+-	mutex_unlock(&pwrseq_list_mutex);
 -
--static void mmc_pwrseq_simple_post_power_on(struct mmc_host *host)
--{
--	struct mmc_pwrseq_simple *pwrseq = to_pwrseq_simple(host->pwrseq);
+-	if (!host->pwrseq)
+-		return -EPROBE_DEFER;
 -
--	mmc_pwrseq_simple_set_gpios_value(pwrseq, 0);
--
--	if (pwrseq->post_power_on_delay_ms)
--		msleep(pwrseq->post_power_on_delay_ms);
--}
--
--static void mmc_pwrseq_simple_power_off(struct mmc_host *host)
--{
--	struct mmc_pwrseq_simple *pwrseq = to_pwrseq_simple(host->pwrseq);
--
--	mmc_pwrseq_simple_set_gpios_value(pwrseq, 1);
--
--	if (pwrseq->power_off_delay_us)
--		usleep_range(pwrseq->power_off_delay_us,
--			2 * pwrseq->power_off_delay_us);
--
--	if (!IS_ERR(pwrseq->ext_clk) && pwrseq->clk_enabled) {
--		clk_disable_unprepare(pwrseq->ext_clk);
--		pwrseq->clk_enabled = false;
--	}
--}
--
--static const struct mmc_pwrseq_ops mmc_pwrseq_simple_ops = {
--	.pre_power_on = mmc_pwrseq_simple_pre_power_on,
--	.post_power_on = mmc_pwrseq_simple_post_power_on,
--	.power_off = mmc_pwrseq_simple_power_off,
--};
--
--static const struct of_device_id mmc_pwrseq_simple_of_match[] = {
--	{ .compatible = "mmc-pwrseq-simple",},
--	{/* sentinel */},
--};
--MODULE_DEVICE_TABLE(of, mmc_pwrseq_simple_of_match);
--
--static int mmc_pwrseq_simple_probe(struct platform_device *pdev)
--{
--	struct mmc_pwrseq_simple *pwrseq;
--	struct device *dev = &pdev->dev;
--
--	pwrseq = devm_kzalloc(dev, sizeof(*pwrseq), GFP_KERNEL);
--	if (!pwrseq)
--		return -ENOMEM;
--
--	pwrseq->ext_clk = devm_clk_get(dev, "ext_clock");
--	if (IS_ERR(pwrseq->ext_clk) && PTR_ERR(pwrseq->ext_clk) != -ENOENT)
--		return PTR_ERR(pwrseq->ext_clk);
--
--	pwrseq->reset_gpios = devm_gpiod_get_array(dev, "reset",
--							GPIOD_OUT_HIGH);
--	if (IS_ERR(pwrseq->reset_gpios) &&
--	    PTR_ERR(pwrseq->reset_gpios) != -ENOENT &&
--	    PTR_ERR(pwrseq->reset_gpios) != -ENOSYS) {
--		return PTR_ERR(pwrseq->reset_gpios);
--	}
--
--	device_property_read_u32(dev, "post-power-on-delay-ms",
--				 &pwrseq->post_power_on_delay_ms);
--	device_property_read_u32(dev, "power-off-delay-us",
--				 &pwrseq->power_off_delay_us);
--
--	pwrseq->pwrseq.dev = dev;
--	pwrseq->pwrseq.ops = &mmc_pwrseq_simple_ops;
--	pwrseq->pwrseq.owner = THIS_MODULE;
--	platform_set_drvdata(pdev, pwrseq);
--
--	return mmc_pwrseq_register(&pwrseq->pwrseq);
--}
--
--static int mmc_pwrseq_simple_remove(struct platform_device *pdev)
--{
--	struct mmc_pwrseq_simple *pwrseq = platform_get_drvdata(pdev);
--
--	mmc_pwrseq_unregister(&pwrseq->pwrseq);
+-	dev_info(host->parent, "allocated mmc-pwrseq\n");
 -
 -	return 0;
 -}
 -
--static struct platform_driver mmc_pwrseq_simple_driver = {
--	.probe = mmc_pwrseq_simple_probe,
--	.remove = mmc_pwrseq_simple_remove,
--	.driver = {
--		.name = "pwrseq_simple",
--		.of_match_table = mmc_pwrseq_simple_of_match,
--	},
+-void mmc_pwrseq_pre_power_on(struct mmc_host *host)
+-{
+-	struct mmc_pwrseq *pwrseq = host->pwrseq;
+-
+-	if (pwrseq && pwrseq->ops->pre_power_on)
+-		pwrseq->ops->pre_power_on(host);
+-}
+-
+-void mmc_pwrseq_post_power_on(struct mmc_host *host)
+-{
+-	struct mmc_pwrseq *pwrseq = host->pwrseq;
+-
+-	if (pwrseq && pwrseq->ops->post_power_on)
+-		pwrseq->ops->post_power_on(host);
+-}
+-
+-void mmc_pwrseq_power_off(struct mmc_host *host)
+-{
+-	struct mmc_pwrseq *pwrseq = host->pwrseq;
+-
+-	if (pwrseq && pwrseq->ops->power_off)
+-		pwrseq->ops->power_off(host);
+-}
+-
+-void mmc_pwrseq_reset(struct mmc_host *host)
+-{
+-	struct mmc_pwrseq *pwrseq = host->pwrseq;
+-
+-	if (pwrseq && pwrseq->ops->reset)
+-		pwrseq->ops->reset(host);
+-}
+-
+-void mmc_pwrseq_free(struct mmc_host *host)
+-{
+-	struct mmc_pwrseq *pwrseq = host->pwrseq;
+-
+-	if (pwrseq) {
+-		module_put(pwrseq->owner);
+-		host->pwrseq = NULL;
+-	}
+-}
+-
+-int mmc_pwrseq_register(struct mmc_pwrseq *pwrseq)
+-{
+-	if (!pwrseq || !pwrseq->ops || !pwrseq->dev)
+-		return -EINVAL;
+-
+-	mutex_lock(&pwrseq_list_mutex);
+-	list_add(&pwrseq->pwrseq_node, &pwrseq_list);
+-	mutex_unlock(&pwrseq_list_mutex);
+-
+-	return 0;
+-}
+-EXPORT_SYMBOL_GPL(mmc_pwrseq_register);
+-
+-void mmc_pwrseq_unregister(struct mmc_pwrseq *pwrseq)
+-{
+-	if (pwrseq) {
+-		mutex_lock(&pwrseq_list_mutex);
+-		list_del(&pwrseq->pwrseq_node);
+-		mutex_unlock(&pwrseq_list_mutex);
+-	}
+-}
+-EXPORT_SYMBOL_GPL(mmc_pwrseq_unregister);
+diff --git a/drivers/mmc/core/pwrseq.h b/drivers/mmc/core/pwrseq.h
+deleted file mode 100644
+index f3bb103db9ad..000000000000
+--- a/drivers/mmc/core/pwrseq.h
++++ /dev/null
+@@ -1,58 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-only */
+-/*
+- * Copyright (C) 2014 Linaro Ltd
+- *
+- * Author: Ulf Hansson <ulf.hansson@linaro.org>
+- */
+-#ifndef _MMC_CORE_PWRSEQ_H
+-#define _MMC_CORE_PWRSEQ_H
+-
+-#include <linux/types.h>
+-
+-struct mmc_host;
+-struct device;
+-struct module;
+-
+-struct mmc_pwrseq_ops {
+-	void (*pre_power_on)(struct mmc_host *host);
+-	void (*post_power_on)(struct mmc_host *host);
+-	void (*power_off)(struct mmc_host *host);
+-	void (*reset)(struct mmc_host *host);
 -};
 -
--module_platform_driver(mmc_pwrseq_simple_driver);
--MODULE_LICENSE("GPL v2");
-diff --git a/drivers/power/pwrseq/Kconfig b/drivers/power/pwrseq/Kconfig
-index 8904ec9ed541..36339a456b03 100644
---- a/drivers/power/pwrseq/Kconfig
-+++ b/drivers/power/pwrseq/Kconfig
-@@ -8,4 +8,36 @@ menuconfig PWRSEQ
+-struct mmc_pwrseq {
+-	const struct mmc_pwrseq_ops *ops;
+-	struct device *dev;
+-	struct list_head pwrseq_node;
+-	struct module *owner;
+-};
+-
+-#ifdef CONFIG_OF
+-
+-int mmc_pwrseq_register(struct mmc_pwrseq *pwrseq);
+-void mmc_pwrseq_unregister(struct mmc_pwrseq *pwrseq);
+-
+-int mmc_pwrseq_alloc(struct mmc_host *host);
+-void mmc_pwrseq_pre_power_on(struct mmc_host *host);
+-void mmc_pwrseq_post_power_on(struct mmc_host *host);
+-void mmc_pwrseq_power_off(struct mmc_host *host);
+-void mmc_pwrseq_reset(struct mmc_host *host);
+-void mmc_pwrseq_free(struct mmc_host *host);
+-
+-#else
+-
+-static inline int mmc_pwrseq_register(struct mmc_pwrseq *pwrseq)
+-{
+-	return -ENOSYS;
+-}
+-static inline void mmc_pwrseq_unregister(struct mmc_pwrseq *pwrseq) {}
+-static inline int mmc_pwrseq_alloc(struct mmc_host *host) { return 0; }
+-static inline void mmc_pwrseq_pre_power_on(struct mmc_host *host) {}
+-static inline void mmc_pwrseq_post_power_on(struct mmc_host *host) {}
+-static inline void mmc_pwrseq_power_off(struct mmc_host *host) {}
+-static inline void mmc_pwrseq_reset(struct mmc_host *host) {}
+-static inline void mmc_pwrseq_free(struct mmc_host *host) {}
+-
+-#endif
+-
+-#endif
+diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
+index 0abd47e9ef9b..1673e37f6028 100644
+--- a/include/linux/mmc/host.h
++++ b/include/linux/mmc/host.h
+@@ -16,6 +16,7 @@
+ #include <linux/mmc/pm.h>
+ #include <linux/dma-direction.h>
+ #include <linux/keyslot-manager.h>
++#include <linux/pwrseq/consumer.h>
  
- if PWRSEQ
+ struct mmc_ios {
+ 	unsigned int	clock;			/* clock rate */
+@@ -278,7 +279,6 @@ struct mmc_context_info {
+ };
  
-+config PWRSEQ_EMMC
-+	tristate "HW reset support for eMMC"
-+	default y
-+	depends on OF
-+	help
-+	  This selects Hardware reset support aka pwrseq-emmc for eMMC
-+	  devices. By default this option is set to y.
-+
-+	  This driver can also be built as a module. If so, the module
-+	  will be called pwrseq_emmc.
-+
-+config PWRSEQ_SD8787
-+	tristate "HW reset support for SD8787 BT + Wifi module"
-+	depends on OF
-+	help
-+	  This selects hardware reset support for the SD8787 BT + Wifi
-+	  module. By default this option is set to n.
-+
-+	  This driver can also be built as a module. If so, the module
-+	  will be called pwrseq_sd8787.
-+
-+config PWRSEQ_SIMPLE
-+	tristate "Simple HW reset support"
-+	default y
-+	depends on OF
-+	help
-+	  This selects simple hardware reset support aka pwrseq-simple.
-+	  By default this option is set to y.
-+
-+	  This driver can also be built as a module. If so, the module
-+	  will be called pwrseq_simple.
-+
- endif
-diff --git a/drivers/power/pwrseq/Makefile b/drivers/power/pwrseq/Makefile
-index 108429ff6445..6f359d228843 100644
---- a/drivers/power/pwrseq/Makefile
-+++ b/drivers/power/pwrseq/Makefile
-@@ -4,3 +4,7 @@
- #
+ struct regulator;
+-struct mmc_pwrseq;
  
- obj-$(CONFIG_PWRSEQ) += core.o
-+
-+obj-$(CONFIG_PWRSEQ_EMMC)	+= pwrseq_emmc.o
-+obj-$(CONFIG_PWRSEQ_SD8787)	+= pwrseq_sd8787.o
-+obj-$(CONFIG_PWRSEQ_SIMPLE)	+= pwrseq_simple.o
-diff --git a/drivers/power/pwrseq/pwrseq_emmc.c b/drivers/power/pwrseq/pwrseq_emmc.c
-new file mode 100644
-index 000000000000..a56969e18b1a
---- /dev/null
-+++ b/drivers/power/pwrseq/pwrseq_emmc.c
-@@ -0,0 +1,118 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2015, Samsung Electronics Co., Ltd.
-+ *
-+ * Author: Marek Szyprowski <m.szyprowski@samsung.com>
-+ *
-+ * Simple eMMC hardware reset provider
-+ */
-+#include <linux/delay.h>
-+#include <linux/kernel.h>
-+#include <linux/init.h>
-+#include <linux/platform_device.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/reboot.h>
-+#include <linux/pwrseq/driver.h>
-+
-+struct pwrseq_emmc {
-+	struct notifier_block reset_nb;
-+	struct gpio_desc *reset_gpio;
-+};
-+
-+static void pwrseq_ereset(struct pwrseq *pwrseq)
-+{
-+	struct pwrseq_emmc *pwrseq_emmc = pwrseq_get_data(pwrseq);
-+
-+	gpiod_set_value_cansleep(pwrseq_emmc->reset_gpio, 1);
-+	udelay(1);
-+	gpiod_set_value_cansleep(pwrseq_emmc->reset_gpio, 0);
-+	udelay(200);
-+}
-+
-+static int pwrseq_ereset_nb(struct notifier_block *this,
-+				    unsigned long mode, void *cmd)
-+{
-+	struct pwrseq_emmc *pwrseq_emmc = container_of(this,
-+					struct pwrseq_emmc, reset_nb);
-+	gpiod_set_value(pwrseq_emmc->reset_gpio, 1);
-+	udelay(1);
-+	gpiod_set_value(pwrseq_emmc->reset_gpio, 0);
-+	udelay(200);
-+
-+	return NOTIFY_DONE;
-+}
-+
-+static const struct pwrseq_ops pwrseq_eops = {
-+	.reset = pwrseq_ereset,
-+};
-+
-+static int pwrseq_eprobe(struct platform_device *pdev)
-+{
-+	struct pwrseq_emmc *pwrseq_emmc;
-+	struct pwrseq *pwrseq;
-+	struct pwrseq_provider *provider;
-+	struct device *dev = &pdev->dev;
-+
-+	pwrseq_emmc = devm_kzalloc(dev, sizeof(*pwrseq_emmc), GFP_KERNEL);
-+	if (!pwrseq_emmc)
-+		return -ENOMEM;
-+
-+	pwrseq_emmc->reset_gpio = devm_gpiod_get(dev, "reset", GPIOD_OUT_LOW);
-+	if (IS_ERR(pwrseq_emmc->reset_gpio))
-+		return PTR_ERR(pwrseq_emmc->reset_gpio);
-+
-+	if (!gpiod_cansleep(pwrseq_emmc->reset_gpio)) {
-+		/*
-+		 * register reset handler to ensure emmc reset also from
-+		 * emergency_reboot(), priority 255 is the highest priority
-+		 * so it will be executed before any system reboot handler.
-+		 */
-+		pwrseq_emmc->reset_nb.notifier_call = pwrseq_ereset_nb;
-+		pwrseq_emmc->reset_nb.priority = 255;
-+		register_restart_handler(&pwrseq_emmc->reset_nb);
-+	} else {
-+		dev_notice(dev, "EMMC reset pin tied to a sleepy GPIO driver; reset on emergency-reboot disabled\n");
-+	}
-+
-+	platform_set_drvdata(pdev, pwrseq_emmc);
-+
-+	pwrseq = devm_pwrseq_create(dev, &pwrseq_eops, pwrseq_emmc);
-+	if (IS_ERR(pwrseq))
-+		return PTR_ERR(pwrseq);
-+
-+	provider = devm_of_pwrseq_provider_register(dev, of_pwrseq_xlate_single, pwrseq);
-+
-+	return PTR_ERR_OR_ZERO(provider);
-+}
-+
-+static int pwrseq_eremove(struct platform_device *pdev)
-+{
-+	struct pwrseq_emmc *pwrseq_emmc = platform_get_drvdata(pdev);
-+
-+	unregister_restart_handler(&pwrseq_emmc->reset_nb);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id pwrseq_eof_match[] = {
-+	{ .compatible = "mmc-pwrseq-emmc",},
-+	{/* sentinel */},
-+};
-+
-+MODULE_DEVICE_TABLE(of, pwrseq_eof_match);
-+
-+static struct platform_driver pwrseq_edriver = {
-+	.probe = pwrseq_eprobe,
-+	.remove = pwrseq_eremove,
-+	.driver = {
-+		.name = "pwrseq_emmc",
-+		.of_match_table = pwrseq_eof_match,
-+	},
-+};
-+
-+module_platform_driver(pwrseq_edriver);
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/power/pwrseq/pwrseq_sd8787.c b/drivers/power/pwrseq/pwrseq_sd8787.c
-new file mode 100644
-index 000000000000..7759097dd4d6
---- /dev/null
-+++ b/drivers/power/pwrseq/pwrseq_sd8787.c
-@@ -0,0 +1,97 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * pwrseq_sd8787.c - power sequence support for Marvell SD8787 BT + Wifi chip
-+ *
-+ * Copyright (C) 2016 Matt Ranostay <matt@ranostay.consulting>
-+ *
-+ * Based on the original work pwrseq_sd8787.c
-+ *  Copyright (C) 2014 Linaro Ltd
-+ *  Author: Ulf Hansson <ulf.hansson@linaro.org>
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/init.h>
-+#include <linux/kernel.h>
-+#include <linux/platform_device.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/gpio/consumer.h>
-+
-+#include <linux/pwrseq/driver.h>
-+
-+struct pwrseq_sd8787 {
-+	struct gpio_desc *reset_gpio;
-+	struct gpio_desc *pwrdn_gpio;
-+};
-+
-+static int pwrseq_sd8787_pre_power_on(struct pwrseq *pwrseq)
-+{
-+	struct pwrseq_sd8787 *pwrseq_sd8787 = pwrseq_get_data(pwrseq);
-+
-+	gpiod_set_value_cansleep(pwrseq_sd8787->reset_gpio, 1);
-+
-+	msleep(300);
-+	gpiod_set_value_cansleep(pwrseq_sd8787->pwrdn_gpio, 1);
-+
-+	return 0;
-+}
-+
-+static void pwrseq_sd8787_power_off(struct pwrseq *pwrseq)
-+{
-+	struct pwrseq_sd8787 *pwrseq_sd8787 = pwrseq_get_data(pwrseq);
-+
-+	gpiod_set_value_cansleep(pwrseq_sd8787->pwrdn_gpio, 0);
-+	gpiod_set_value_cansleep(pwrseq_sd8787->reset_gpio, 0);
-+}
-+
-+static const struct pwrseq_ops pwrseq_sd8787_ops = {
-+	.pre_power_on = pwrseq_sd8787_pre_power_on,
-+	.power_off = pwrseq_sd8787_power_off,
-+};
-+
-+static const struct of_device_id pwrseq_sd8787_of_match[] = {
-+	{ .compatible = "mmc-pwrseq-sd8787",},
-+	{/* sentinel */},
-+};
-+MODULE_DEVICE_TABLE(of, pwrseq_sd8787_of_match);
-+
-+static int pwrseq_sd8787_probe(struct platform_device *pdev)
-+{
-+	struct pwrseq_sd8787 *pwrseq_sd8787;
-+	struct pwrseq *pwrseq;
-+	struct pwrseq_provider *provider;
-+	struct device *dev = &pdev->dev;
-+
-+	pwrseq_sd8787 = devm_kzalloc(dev, sizeof(*pwrseq_sd8787), GFP_KERNEL);
-+	if (!pwrseq_sd8787)
-+		return -ENOMEM;
-+
-+	pwrseq_sd8787->pwrdn_gpio = devm_gpiod_get(dev, "powerdown", GPIOD_OUT_LOW);
-+	if (IS_ERR(pwrseq_sd8787->pwrdn_gpio))
-+		return PTR_ERR(pwrseq_sd8787->pwrdn_gpio);
-+
-+	pwrseq_sd8787->reset_gpio = devm_gpiod_get(dev, "reset", GPIOD_OUT_LOW);
-+	if (IS_ERR(pwrseq_sd8787->reset_gpio))
-+		return PTR_ERR(pwrseq_sd8787->reset_gpio);
-+
-+	pwrseq = devm_pwrseq_create(dev, &pwrseq_sd8787_ops, pwrseq_sd8787);
-+	if (IS_ERR(pwrseq))
-+		return PTR_ERR(pwrseq);
-+
-+	provider = devm_of_pwrseq_provider_register(dev, of_pwrseq_xlate_single, pwrseq);
-+
-+	return PTR_ERR_OR_ZERO(provider);
-+}
-+
-+static struct platform_driver pwrseq_sd8787_driver = {
-+	.probe = pwrseq_sd8787_probe,
-+	.driver = {
-+		.name = "pwrseq_sd8787",
-+		.of_match_table = pwrseq_sd8787_of_match,
-+	},
-+};
-+
-+module_platform_driver(pwrseq_sd8787_driver);
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/power/pwrseq/pwrseq_simple.c b/drivers/power/pwrseq/pwrseq_simple.c
-new file mode 100644
-index 000000000000..f8d6e6e077df
---- /dev/null
-+++ b/drivers/power/pwrseq/pwrseq_simple.c
-@@ -0,0 +1,160 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ *  Copyright (C) 2014 Linaro Ltd
-+ *
-+ * Author: Ulf Hansson <ulf.hansson@linaro.org>
-+ *
-+ *  Simple MMC power sequence management
-+ */
-+#include <linux/clk.h>
-+#include <linux/init.h>
-+#include <linux/kernel.h>
-+#include <linux/platform_device.h>
-+#include <linux/module.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/slab.h>
-+#include <linux/err.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/delay.h>
-+#include <linux/property.h>
-+#include <linux/pwrseq/driver.h>
-+
-+struct pwrseq_simple {
-+	bool clk_enabled;
-+	u32 post_power_on_delay_ms;
-+	u32 power_off_delay_us;
-+	struct clk *ext_clk;
-+	struct gpio_descs *reset_gpios;
-+};
-+
-+static int pwrseq_simple_set_gpios_value(struct pwrseq_simple *pwrseq_simple,
-+					 int value)
-+{
-+	struct gpio_descs *reset_gpios = pwrseq_simple->reset_gpios;
-+	unsigned long *values;
-+	int nvalues;
-+	int ret;
-+
-+	if (IS_ERR(reset_gpios))
-+		return PTR_ERR(reset_gpios);
-+
-+	nvalues = reset_gpios->ndescs;
-+
-+	values = bitmap_alloc(nvalues, GFP_KERNEL);
-+	if (!values)
-+		return -ENOMEM;
-+
-+	if (value)
-+		bitmap_fill(values, nvalues);
-+	else
-+		bitmap_zero(values, nvalues);
-+
-+	ret = gpiod_set_array_value_cansleep(nvalues, reset_gpios->desc,
-+				       reset_gpios->info, values);
-+	kfree(values);
-+
-+	return ret;
-+}
-+
-+static int pwrseq_simple_pre_power_on(struct pwrseq *pwrseq)
-+{
-+	struct pwrseq_simple *pwrseq_simple = pwrseq_get_data(pwrseq);
-+
-+	if (!IS_ERR(pwrseq_simple->ext_clk) && !pwrseq_simple->clk_enabled) {
-+		clk_prepare_enable(pwrseq_simple->ext_clk);
-+		pwrseq_simple->clk_enabled = true;
-+	}
-+
-+	return pwrseq_simple_set_gpios_value(pwrseq_simple, 1);
-+}
-+
-+static int pwrseq_simple_power_on(struct pwrseq *pwrseq)
-+{
-+	struct pwrseq_simple *pwrseq_simple = pwrseq_get_data(pwrseq);
-+	int ret;
-+
-+	ret = pwrseq_simple_set_gpios_value(pwrseq_simple, 0);
-+	if (ret)
-+		return ret;
-+
-+	if (pwrseq_simple->post_power_on_delay_ms)
-+		msleep(pwrseq_simple->post_power_on_delay_ms);
-+
-+	return 0;
-+}
-+
-+static void pwrseq_simple_power_off(struct pwrseq *pwrseq)
-+{
-+	struct pwrseq_simple *pwrseq_simple = pwrseq_get_data(pwrseq);
-+
-+	pwrseq_simple_set_gpios_value(pwrseq_simple, 1);
-+
-+	if (pwrseq_simple->power_off_delay_us)
-+		usleep_range(pwrseq_simple->power_off_delay_us,
-+			2 * pwrseq_simple->power_off_delay_us);
-+
-+	if (!IS_ERR(pwrseq_simple->ext_clk) && pwrseq_simple->clk_enabled) {
-+		clk_disable_unprepare(pwrseq_simple->ext_clk);
-+		pwrseq_simple->clk_enabled = false;
-+	}
-+}
-+
-+static const struct pwrseq_ops pwrseq_simple_ops = {
-+	.pre_power_on = pwrseq_simple_pre_power_on,
-+	.power_on = pwrseq_simple_power_on,
-+	.power_off = pwrseq_simple_power_off,
-+};
-+
-+static const struct of_device_id pwrseq_simple_of_match[] = {
-+	{ .compatible = "mmc-pwrseq-simple",}, /* MMC-specific compatible */
-+	{/* sentinel */},
-+};
-+MODULE_DEVICE_TABLE(of, pwrseq_simple_of_match);
-+
-+static int pwrseq_simple_probe(struct platform_device *pdev)
-+{
-+	struct pwrseq_simple *pwrseq_simple;
-+	struct pwrseq *pwrseq;
-+	struct pwrseq_provider *provider;
-+	struct device *dev = &pdev->dev;
-+
-+	pwrseq_simple = devm_kzalloc(dev, sizeof(*pwrseq_simple), GFP_KERNEL);
-+	if (!pwrseq_simple)
-+		return -ENOMEM;
-+
-+	pwrseq_simple->ext_clk = devm_clk_get(dev, "ext_clock");
-+	if (IS_ERR(pwrseq_simple->ext_clk) && PTR_ERR(pwrseq_simple->ext_clk) != -ENOENT)
-+		return PTR_ERR(pwrseq_simple->ext_clk);
-+
-+	pwrseq_simple->reset_gpios = devm_gpiod_get_array(dev, "reset",
-+							GPIOD_OUT_HIGH);
-+	if (IS_ERR(pwrseq_simple->reset_gpios) &&
-+	    PTR_ERR(pwrseq_simple->reset_gpios) != -ENOENT &&
-+	    PTR_ERR(pwrseq_simple->reset_gpios) != -ENOSYS) {
-+		return PTR_ERR(pwrseq_simple->reset_gpios);
-+	}
-+
-+	device_property_read_u32(dev, "post-power-on-delay-ms",
-+				 &pwrseq_simple->post_power_on_delay_ms);
-+	device_property_read_u32(dev, "power-off-delay-us",
-+				 &pwrseq_simple->power_off_delay_us);
-+
-+	pwrseq = devm_pwrseq_create(dev, &pwrseq_simple_ops, pwrseq_simple);
-+	if (IS_ERR(pwrseq))
-+		return PTR_ERR(pwrseq);
-+
-+	provider = devm_of_pwrseq_provider_register(dev, of_pwrseq_xlate_single, pwrseq);
-+
-+	return PTR_ERR_OR_ZERO(provider);
-+}
-+
-+static struct platform_driver pwrseq_simple_driver = {
-+	.probe = pwrseq_simple_probe,
-+	.driver = {
-+		.name = "pwrseq_simple",
-+		.of_match_table = pwrseq_simple_of_match,
-+	},
-+};
-+
-+module_platform_driver(pwrseq_simple_driver);
-+MODULE_LICENSE("GPL v2");
+ struct mmc_supply {
+ 	struct regulator *vmmc;		/* Card power supply */
+@@ -294,7 +294,7 @@ struct mmc_host {
+ 	struct device		class_dev;
+ 	int			index;
+ 	const struct mmc_host_ops *ops;
+-	struct mmc_pwrseq	*pwrseq;
++	struct pwrseq		*pwrseq;
+ 	unsigned int		f_min;
+ 	unsigned int		f_max;
+ 	unsigned int		f_init;
 -- 
 2.30.2
 
