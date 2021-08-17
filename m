@@ -2,74 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E1BE3EE922
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 11:05:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0DAB3EE930
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 11:09:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235551AbhHQJGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 05:06:02 -0400
-Received: from mga01.intel.com ([192.55.52.88]:47808 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235373AbhHQJGA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Aug 2021 05:06:00 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10078"; a="238106986"
-X-IronPort-AV: E=Sophos;i="5.84,328,1620716400"; 
-   d="scan'208";a="238106986"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2021 02:05:23 -0700
-X-IronPort-AV: E=Sophos;i="5.84,328,1620716400"; 
-   d="scan'208";a="471089536"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2021 02:05:20 -0700
-Received: from andy by smile with local (Exim 4.94.2)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1mFv22-00Agg5-H2; Tue, 17 Aug 2021 12:05:14 +0300
-Date:   Tue, 17 Aug 2021 12:05:14 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     David Thompson <davthompson@nvidia.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Asmaa Mnebhi <asmaa@nvidia.com>,
-        Liming Sun <limings@nvidia.com>
-Subject: Re: [PATCH v1 6/6] TODO: net: mellanox: mlxbf_gige: Replace
- non-standard interrupt handling
-Message-ID: <YRt7yqoukWSYmHMg@smile.fi.intel.com>
-References: <20210816115953.72533-1-andriy.shevchenko@linux.intel.com>
- <20210816115953.72533-7-andriy.shevchenko@linux.intel.com>
- <CACRpkdavU=_Fo3DQkD_MAT9Ur-RX46v0L-O=tqibpUtdUhe-NA@mail.gmail.com>
+        id S235525AbhHQJKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 05:10:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38996 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234843AbhHQJKB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 05:10:01 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60036C061764
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 02:09:28 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mFv62-0001lg-F9; Tue, 17 Aug 2021 11:09:22 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mFv60-0000Su-7Z; Tue, 17 Aug 2021 11:09:20 +0200
+Date:   Tue, 17 Aug 2021 11:09:20 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: Regression with commit e532a096be0e ("net: usb: asix: ax88772:
+ add phylib support")
+Message-ID: <20210817090920.7wviv7fsfzyhli5t@pengutronix.de>
+References: <3904c728-1ea2-9c2b-ec11-296396fd2f7e@linux.intel.com>
+ <20210816081314.3b251d2e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210816161822.td7jl4tv7zfbprty@pengutronix.de>
+ <e575a7a9-2645-9ebc-fdea-f0421ecaf0e2@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CACRpkdavU=_Fo3DQkD_MAT9Ur-RX46v0L-O=tqibpUtdUhe-NA@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <e575a7a9-2645-9ebc-fdea-f0421ecaf0e2@linux.intel.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:33:59 up 257 days, 22:40, 27 users,  load average: 0.05, 0.12,
+ 0.10
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 17, 2021 at 01:06:06AM +0200, Linus Walleij wrote:
-> On Mon, Aug 16, 2021 at 2:00 PM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
+On Tue, Aug 17, 2021 at 11:23:40AM +0300, Jarkko Nikula wrote:
+> Hi
 > 
-> > Since GPIO driver supports interrupt handling, replace custom routine with
-> > simple IRQ request.
-> >
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > ---
-> >  .../mellanox/mlxbf_gige/mlxbf_gige_gpio.c     | 212 ------------------
-> 
-> Don't you also need to remove this file from Makefile?
+> On 8/16/21 7:18 PM, Oleksij Rempel wrote:
+> > > > v5.13 works ok. v5.14-rc1 and today's head 761c6d7ec820 ("Merge tag
+> > > > 'arc-5.14-rc6' of
+> > > > git://git.kernel.org/pub/scm/linux/kernel/git/vgupta/arc") show the
+> > > > regression.
+> > > > 
+> > > > I bisected regression into e532a096be0e ("net: usb: asix: ax88772: add
+> > > > phylib support").
+> > > 
+> > It sounds like issue which was fixed with the patch:
+> > "net: usb: asix: ax88772: suspend PHY on driver probe"
+> > 
+> > This patch was taken in to v5.14-rc2. Can you please test it?
+> > 
+> Unfortunately it does not fix and was included in last week head
+> 761c6d7ec820. I tested now also linux-next tag next-20210816 and the issue
+> remains.
 
-Of course, this is simply to show the intention. It's just a hint, I have no
-time to write the code for Mellanox, really :-)
+OK thx, I'll need to your help to debug it:
+- please send me complete log, or at least parts related to the asix
+  (dmesg | grep -i Asix)
+- do the interface is not able to go up at all? For example, it works on
+  hot plug, but is not working on reboot.
+- Can you please test it with other link partners.
 
+Regards,
+Oleksij
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
