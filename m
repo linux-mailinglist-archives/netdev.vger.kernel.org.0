@@ -2,295 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 328363EF097
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 19:05:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5AA93EF099
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 19:07:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231814AbhHQRGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 13:06:05 -0400
-Received: from mail-mw2nam10on2048.outbound.protection.outlook.com ([40.107.94.48]:63233
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231750AbhHQRGD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Aug 2021 13:06:03 -0400
+        id S230261AbhHQRH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 13:07:57 -0400
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:44574 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229700AbhHQRH4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 13:07:56 -0400
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17HH2l6a024901;
+        Tue, 17 Aug 2021 17:07:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=qjZ9ys+JPRFV04GL9odmd6AXaf6kwCL+y4XOZN8uX10=;
+ b=U2or/9J5tlluwqhxSX7WfrA7rPOxaOml6eP1u20exrWAwUuqrrizsuz6GtIWFoMl4dvh
+ Bg3QbmEhT0ZTdgkwLkvJXRTuZxMLQduURGKREwPYERizhaIlpGkp0LUaA+mFiLxo+MR0
+ Y2c9suVI59BUUuXdv0HnhBYOVyX+3NlOHxmdirrEfZJlT0IAXogbfwGC1kSuPJ9d5tnY
+ gSZFAvt7Uk7ScbJzVt/IxA05pZDj8PtSDZ9CGNo+wF6X5fi7ShztU6M8/oYSfXlxoXJS
+ OkUptSJvLAtF3phywOtrDchif1wBRA71PGHmn+ntz7bLdie/eKb3GpEk1UX5Sc4JB/ha +w== 
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=corp-2020-01-29;
+ bh=qjZ9ys+JPRFV04GL9odmd6AXaf6kwCL+y4XOZN8uX10=;
+ b=I1KgiXBPloYlW8yR0ywHzStH+7CdfSfnbjNiR//SAE1dzsLzMjLWhi5GJ8HhaO35EE68
+ sTnIxVq8M9ncL2rNtPYiLiBc2Fovc/4wR3SvG3jwxnLUm1x6n92nh9x7p/gBvd1nMnh7
+ +ZCBsTrl7gKH0OkHd1S+4m3PaxBajci2471F5rhLfWJWbLbs5rHVAGcR8eNgd+zw0Txr
+ 2lt4w2HBqpfo+F5khMDknUj+Tpt+7lL/5wgr/slvx9Ci4q97Ynbg1pkRZRgTldus6Xke
+ N5RB++Yjjgg81uCYTBNn7EP7LiOBL/3K2MSk+GFT8k/IMP9LLJFzxTR47pIAGgScXRo2 VA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3agdnf0qb2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 17 Aug 2021 17:07:22 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 17HH6mAt048303;
+        Tue, 17 Aug 2021 17:07:21 GMT
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2175.outbound.protection.outlook.com [104.47.57.175])
+        by aserp3020.oracle.com with ESMTP id 3ae5n7x0q8-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 17 Aug 2021 17:07:20 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SHh+eEu8GLB6Bn6EO5XPIV7mXoGiaJRQDtzYCJ5RHsZyIRuFnv4E3OIsi0NgI2qLZsgamtzrPV84L8M16Rww3diA9SIKujd9KuhBq97fJZ8EuAPsei/uoBo5jK8rTAEKYWjZYDQEJw37yWHqj1pDHErlFoD44dKS9kU1xD7/+Q1H6scYq9vCr6MVjEhQzjxu3LO5tvwSPoDo9oDHyDhDFB7dJ3IZXEphxr9oD/SR7TbXjG0leN5OW6cv2zFMgvo4AzehVptAsO34qPgEB62GqDI/z3/lEdnqu1tbuikwZfAQx6Tuzu2+juckNUte1t5/b81mETL7QrgktAVqboTSKw==
+ b=mBMaqslzHM0LGfN6w/HYTIzlLKZwG+c7Klbxx+wrhWUowme+Ne671Ok4VR+nXztqyx2vqjtzvVg7U4g5Ka5uoMVUR6Dtp1YBiWmKKXqkU2MIM13xLF4BjZZWlKnri8IDDj1qFPce5tkPMqWwJgTZwpEg48Yi9gIq0tzZnkDLoVVnP6t+DL0rrnvFB28BQkswfHkB8JEtwy7P3mgbb1+mhludgWHc7be2oWbP1t4tqltX3ntzlrX5ofoSBu046QrM5SOdh7jM1ItHKX25UoYcNsyS6iVT5kujdz7dlj9RZ83bZW4MKu0L09hOuzIQivq02vAwDXhgFv1FPN/GMV63xw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7hIlkiZWjz6ySPuq2orPZHVrKK/g7uwU/x1+T7C0jwY=;
- b=ijRPWSPtlQYS6TnzP4ZPPAUmnT4HhI6qNr3Gco/LqYDydnNvijJ6tzh+Ddyq2+3RwlYybnj4jBGtp8vQNLW67qC4WrMUnYPrCSrYbduNOOlFw4OGAfMHKepNkZ2Slqx79GtfqyLxnYH8tCkNBenbDKxII+phwQv/Mhnx1ne22YjKV9qsDaz8WjKP6CeIf0DXuv4CGIpJUbhuz4Ih/kOJrzAhYxR6MV2e2hFAwRtiZppRZo4nSC4Hb13LQDE4Lqm6FHLYlV7i04s02PE6HKgo+024ObW0xZdL31yED0BabZ87tlacgi9fBv1oUv9YAC5/Eg5ok8eNDyyUcmDGGE64aQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=qjZ9ys+JPRFV04GL9odmd6AXaf6kwCL+y4XOZN8uX10=;
+ b=Q5FIDiFw4ny9KSR6L4aPf/wu9rJjitu5eAqUyCQfscba+bIBJBOeH3ZCwaYLNMqh6ujIc6KqlVGtRWTBzWfbtfj9hYgNxuG7v67ltRPTL8GLXwG3riSQ4BzE+59aCnVYQpa6AKvCVsPmbyv1Y1v3Gr03mciZ5kw0C2wC21bChFfUyAWgJ46REwbsipOK/dr+vf9gwwD2rcVQB35TxBnr1AaMDJ0aKOkpJXm4axDSMypDyzYz74SyhIX0gSji38kxAQRv/xeJMgXKQSk+Rz5jIM/1NDttl0cwfKshQYSmdMifeaip4IX3Dz+dvpDjekLWsGNTO3AgoY5fzpmV9F1tsQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7hIlkiZWjz6ySPuq2orPZHVrKK/g7uwU/x1+T7C0jwY=;
- b=AuV6WVj1tr76+ghml+Ym50wfZEg8/u5ba6fkPmk+3SWEnhrKVCkcW/su3tGIQ4yQgUwLLw8XzZYkMa9kebEslBNcn/IbeuxIw+ympOBxWAxoMebO9BnOx9LuKtzUANqoF0wMln5HmKw2va1YcnFqcGKQTyNs4ONUjCSDvQ0cCcfK+vO+tZSJDg8rvZFjjzShZPQukXQIRq+iy38eOJxOiHGdt+oc9T0moPp7zsFrplwCz890xCKV++eAFZedHWZMjooo62sXITyhkjdOorL+xlRVhbmL2tNZ5yyMeEJPmm24S4g23qEsDly7Uvtx93lS2vLhiWbgf2CNshKp2IgiPA==
-Received: from DM6PR07CA0083.namprd07.prod.outlook.com (2603:10b6:5:337::16)
- by BYAPR12MB3238.namprd12.prod.outlook.com (2603:10b6:a03:13b::20) with
+ bh=qjZ9ys+JPRFV04GL9odmd6AXaf6kwCL+y4XOZN8uX10=;
+ b=WdO8xDIN94YVCstnthJDHJ2wfXwndDLEK5PoNbbfuAS158UA2viFodv7owQz2PyaZteuznYkn2AupTJSIUDb7v/8JzjBsDLnI23ua4uPd5NyotCMBB227BuqP50SRnc+B0evDu7cjdXHkOjoZyJitXjPpTw8KF/nFuRDheAsu/U=
+Received: from BYAPR10MB3270.namprd10.prod.outlook.com (2603:10b6:a03:159::25)
+ by BYAPR10MB3032.namprd10.prod.outlook.com (2603:10b6:a03:82::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.19; Tue, 17 Aug
- 2021 17:05:29 +0000
-Received: from DM6NAM11FT067.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:337:cafe::7f) by DM6PR07CA0083.outlook.office365.com
- (2603:10b6:5:337::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.15 via Frontend
- Transport; Tue, 17 Aug 2021 17:05:29 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- DM6NAM11FT067.mail.protection.outlook.com (10.13.172.76) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4415.16 via Frontend Transport; Tue, 17 Aug 2021 17:05:28 +0000
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 17 Aug
- 2021 17:05:28 +0000
-Received: from vdi.nvidia.com (172.20.187.6) by mail.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 17 Aug 2021 10:05:26 -0700
-From:   Eli Cohen <elic@nvidia.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <elic@nvidia.com>,
-        Jiri Pirko <jiri@nvidia.com>
-Subject: [PATCHv2 net-next 2/2] net: Fix offloading indirect devices dependency on qdisc order creation
-Date:   Tue, 17 Aug 2021 20:05:18 +0300
-Message-ID: <20210817170518.378686-3-elic@nvidia.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210817170518.378686-1-elic@nvidia.com>
-References: <20210817170518.378686-1-elic@nvidia.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.15; Tue, 17 Aug
+ 2021 17:07:19 +0000
+Received: from BYAPR10MB3270.namprd10.prod.outlook.com
+ ([fe80::5d51:1350:5264:c4aa]) by BYAPR10MB3270.namprd10.prod.outlook.com
+ ([fe80::5d51:1350:5264:c4aa%5]) with mapi id 15.20.4415.024; Tue, 17 Aug 2021
+ 17:07:19 +0000
+From:   Santosh Shilimkar <santosh.shilimkar@oracle.com>
+To:     Gerd Rausch <gerd.rausch@oracle.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>
+Subject: Re: [PATCH net 1/1] net/rds: dma_map_sg is entitled to merge entries
+Thread-Topic: [PATCH net 1/1] net/rds: dma_map_sg is entitled to merge entries
+Thread-Index: AQHXk4n6vvyaeDsKTk2p1N/6M9JyMKt37ZQA
+Date:   Tue, 17 Aug 2021 17:07:19 +0000
+Message-ID: <30038EA9-7220-4FBC-8601-50D226244722@oracle.com>
+References: <60efc69f-1f35-529d-a7ef-da0549cad143@oracle.com>
+In-Reply-To: <60efc69f-1f35-529d-a7ef-da0549cad143@oracle.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3608.120.23.2.4)
+authentication-results: oracle.com; dkim=none (message not signed)
+ header.d=none;oracle.com; dmarc=none action=none header.from=oracle.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c873c1c4-2bbc-43c3-7165-08d961a178c8
+x-ms-traffictypediagnostic: BYAPR10MB3032:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR10MB30321BAC1729F8DB3F5891EC93FE9@BYAPR10MB3032.namprd10.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:175;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: sIyk2+Cc3yye55hkYIvdk+g+K1Ddgdcu5DtNTQ5D92CAeCsFD8kDaottL25pzbNyvYQyLB8XR+FIT/1olV1lK3E6mWdmkxZH/IYYenCgISEvF48KWWxDq/15mN4ZXU952EVu5N4sa2Wm2XDE+z31OKJFLt2AUlisNmUwP1QNaEO1DozgiDWwEfJh2++sraZdp48jGztn75jIZc+CL2dXc4PVN6G9a4HOI9k7t4pH0Lc6w3xc2b+HMPks3jHgK0qNpZSo6YHvjFl8vt04p+SU3+kduBQb8LeDMTw1xYnhe4XPmAWtc3VTiJcuKR18Tp8Nb6qasQ/sNGZCc0FoQ7RV/PLjRLTfRm+V2qaNDeVEKyCtlIOy2Lae5uRihjo48nyDlmVxKmpDnesojIIX+roIY/5o00Wof5w+fECsYSq8o/XszUiTjKdVK7poe1sZ4nAXvxKF1BqEDnSeHEMU/oJdUN2LBD7BX0CMgdx6kjPkIELCQflaCdnzKPJ5ilKioJMbO6ou8EBtw16ns2HD+cwm7Dp9GrBJTlu3DUOF0GPF6tTOtptV0iWtxc8FeNki4kfrhpLQ36Rr4XbehHO49oLj1hhGzeoiMcAIlU4vwuLyB6yZghqN6E5iKcqDsvZT6DlB19UoKYiydwjN5CTa1G0TlJ8DMf5lLLrIILJZVZusBb14/r1LKi69Z741in03o7XSKpufpQ+TbyZhrnobH7c05QBIZL7+F3SSF8cew0keJsvMKhz6hdzap6a68q1Tmtxs
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB3270.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(346002)(39860400002)(376002)(396003)(366004)(26005)(66556008)(86362001)(66446008)(8936002)(4744005)(66946007)(5660300002)(316002)(4326008)(37006003)(478600001)(186003)(53546011)(66476007)(64756008)(76116006)(2906002)(33656002)(54906003)(38070700005)(8676002)(6862004)(6506007)(83380400001)(6512007)(71200400001)(38100700002)(36756003)(44832011)(6636002)(2616005)(122000001)(107886003)(6486002)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?pswbh7zsYiTFcFz0D67JIda0pkejoeDbLShx6DfLyg5V+KnWgNxfsSnoAORA?=
+ =?us-ascii?Q?7YLn7faI6zA58YiR6AChPBB/Q7rMyiIuiTc/Cbj7MU3Ze/35AfKHTP+D4rlS?=
+ =?us-ascii?Q?VKYsjlPN93DDUWn1PfYO36yh5gYkj2p6IU0jSjwIPRVS3SShBp44C1zpPHOT?=
+ =?us-ascii?Q?D3g7hPZzO3GP5fuH53X5FMhgZwMtRAVe+/y2F9uW4KAN+2plkLMqoD5+BqgK?=
+ =?us-ascii?Q?CAwQ6Fsgm17dtLiEIdd0z5pThaE5KVzk1mNSPMIKRGgVyIJpcWpo4sGq2jGn?=
+ =?us-ascii?Q?p7dFi3mOOwRFRw6nF/MnGCpr1bNTKP7Va4U6Nii+VWf6xGQ7crFPKaEZAMeQ?=
+ =?us-ascii?Q?5PAxdfOkTS4OQLbgV+u81QgJrvYhkvg3KOdT7V8GPhb0o6z3GiohOTylk1uD?=
+ =?us-ascii?Q?4WUtEK3iiEqfQ40OqwcvPTkJO8GIWlV+V8bO55ccDjD6FDntHK1bNkEKtCuv?=
+ =?us-ascii?Q?QN5q0irWOb4RuVQe6RdAcy/lXHGAzgCp1yVI3e6gyHtj4Q3WOsfw70ug8eFA?=
+ =?us-ascii?Q?6c+JrtivemnCpDvP6Cv19veLMttbUq6FRoDPgNdaJYaqbScxcWFs2TVhbYm/?=
+ =?us-ascii?Q?cozCsXJvvU+57JzUuAubD3yd6/soeqXEeigJMwaAWfOqT4NYmYNLlh6USCCr?=
+ =?us-ascii?Q?vIgj3som/9TR5OYRVjoCELiUDRaDcRrCtKmPHKPhUw2jtLAOneWl/FEncle4?=
+ =?us-ascii?Q?/dkt58Ks8sM58/NEJQ5NTSaPVpZISSELO0Z/dTqoUUF7VaeaJO5qzexkeu8N?=
+ =?us-ascii?Q?ryBqP6KiAJc+y+S4MTVVAibcuLNJeVuQmljO7fLauPPDHKxyEHnKIvfejuP/?=
+ =?us-ascii?Q?vDbIrqovLnWSy3ALMOD8BNqde2j3fwgERNZfQQ5WK9LaTd1mAtg0eF6tkxLU?=
+ =?us-ascii?Q?Fql8CpiGA3uAFyg6EzAwKzX/QzllkP2/KyHGLJ5omFKB1ogTJ0gsRhcwTAEU?=
+ =?us-ascii?Q?aWYc++uw3ZgK2P7ZudpOTz6iovPuVTnKi3pA3yojIXPATH2BgPTbUWCElWl6?=
+ =?us-ascii?Q?1oMbUUr4BH6ynTnwc/eICX7G+SaQISvTXqaLfA9zaPDs1Y0XNxOC3Pe7Z7Gh?=
+ =?us-ascii?Q?qiPLBlKXaeBQwtSjDPXBfFYnUQyjdOmXRp42rD/Y6spAn9N/Es4uL0bulUoh?=
+ =?us-ascii?Q?t71pt5oI2vERQ5928IvZA9Ppgc40fh8kdhIQMEcjxXkbkNqFR0uHWjXYpEcl?=
+ =?us-ascii?Q?uB1d8WNknIgdgExjH9aZnVZQ3ch1OamzgbAwKRVBDRKmJArMNzCMqlpP9EsI?=
+ =?us-ascii?Q?ymkrjWJ4GrJ3xqr7PlFBu8zj0UP/FAGqxCx/kiqAcW+jP7RQv6ANFDLEq/dn?=
+ =?us-ascii?Q?3xncXPHhcva7aMT/lfnvZTUgwRpOWl0m8Gftcb7PAKpYeg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <32F2E74157D5E3468121E6173C512D9E@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0555fc74-5cd8-4517-0256-08d961a136fb
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3238:
-X-Microsoft-Antispam-PRVS: <BYAPR12MB323891B793192044E9588E73ABFE9@BYAPR12MB3238.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: THQtj+DRB0FZ3uEfLoWAnRKs6/sRPxaQanr8USJdARxhLi5qVHZ+gMNV5fZSfhSQL5lVtjXB5XoC62ZwCI83F2M/8jDaQzWXR+elv/vwZ1K6I6W+AJCDLuipWHuaxAe0H9jxj/JHMOz77b+AK31GY0v9CsbuoDkObSjdtdaLOyKM9TACmAbegT65nsCSRBxW2dFq8xZA7gf25IU5HbQG2POu8m/z6hVF6ZY439uBibp9g1PmENoa8SqtEyAeRWTV9BXtOzhwUgkg9YUSwidT8FHdUR5JiExCmVAdxH/2JKD/h1QClskMugWr2nYPq4ACJInwpLqk3/YW8joaPZvg1oXUD8blnZwn+zn8r81ywP5baQYHIe/dGGPrs/e0qE7sBPXshAKPXN29NnhlVoTl/Ur2mnH/rbZro54c5IDrDQDf2j1vPYTvAMcOWfDFmn3wdR8EWPLf0EqrSpLolEP3V5MRrx2L+CssLhrbst1VgTVu0blXh9YUf2KOIkPVS94bJzJGQzH5nZ+9gYAb7j21yyLfiWfqvbdk+SX7aE3Jy4wCvyk6jwBVAeBfpJc5n1bkEwjaT3jQnNK8DXrdA80PCf8X/83qNw3JOYqD8u0GWGjWotjvXG6/p4ylZ1h5k6GFx/TXDWg5qM3F9/rR9KbTxWv1on5Q4xbNKrs9ex+qET3Zi2t/soPTU8cUj6+9BDpQ11XW+mK4nRNge2KHrPsmJQ==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(39860400002)(376002)(346002)(396003)(46966006)(36840700001)(82310400003)(8676002)(70586007)(2906002)(36906005)(186003)(110136005)(82740400003)(26005)(8936002)(316002)(107886003)(86362001)(54906003)(70206006)(36860700001)(4326008)(1076003)(47076005)(7696005)(7636003)(426003)(5660300002)(6666004)(478600001)(356005)(2616005)(336012)(36756003)(83380400001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2021 17:05:28.8545
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB3270.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c873c1c4-2bbc-43c3-7165-08d961a178c8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Aug 2021 17:07:19.2387
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0555fc74-5cd8-4517-0256-08d961a136fb
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT067.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3238
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: VAbWYzvDd7L66r/2IKgtyBxw980dk0rsjlCVYjKRQZVWT5cjaMR3FfnF3XbbFcDK8eCKdnIblXeZwqvkm/XxYYAUG9TtQwwe+Z4mtKnkAc0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB3032
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10079 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 adultscore=0 bulkscore=0
+ suspectscore=0 mlxlogscore=999 phishscore=0 mlxscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2107140000
+ definitions=main-2108170106
+X-Proofpoint-GUID: Z0dXkGLbNUI7RHfRpK9ATWW9j2ujshD4
+X-Proofpoint-ORIG-GUID: Z0dXkGLbNUI7RHfRpK9ATWW9j2ujshD4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, when creating an ingress qdisc on an indirect device before
-the driver registered for callbacks, the driver will not have a chance
-to register its filter configuration callbacks.
 
-To fix that, modify the code such that it keeps track of all the ingress
-qdiscs that call flow_indr_dev_setup_offload(). When a driver calls
-flow_indr_dev_register(),  go through the list of tracked ingress qdiscs
-and call the driver callback entry point so as to give it a chance to
-register its callback.
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-Signed-off-by: Eli Cohen <elic@nvidia.com>
----
-v1 -> v2:
-Fix warning - variable set but not used
+> On Aug 17, 2021, at 10:04 AM, Gerd Rausch <gerd.rausch@oracle.com> wrote:
+>=20
+> Function "dma_map_sg" is entitled to merge adjacent entries
+> and return a value smaller than what was passed as "nents".
+>=20
+> Subsequently "ib_map_mr_sg" needs to work with this value ("sg_dma_len")
+> rather than the original "nents" parameter ("sg_len").
+>=20
+> This old RDS bug was exposed and reliably causes kernel panics
+> (using RDMA operations "rds-stress -D") on x86_64 starting with:
+> commit c588072bba6b ("iommu/vt-d: Convert intel iommu driver to the iommu=
+ ops")
+>=20
+> Simply put: Linux 5.11 and later.
+>=20
+> Signed-off-by: Gerd Rausch <gerd.rausch@oracle.com>
+> ---
+> net/rds/ib_frmr.c | 4 ++--
+> 1 file changed, 2 insertions(+), 2 deletions(-)
 
- include/net/flow_offload.h            |  1 +
- net/core/flow_offload.c               | 89 ++++++++++++++++++++++++++-
- net/netfilter/nf_flow_table_offload.c |  1 +
- net/netfilter/nf_tables_offload.c     |  1 +
- net/sched/cls_api.c                   |  1 +
- 5 files changed, 92 insertions(+), 1 deletion(-)
+Looks good to me Gerd. Thanks !!
 
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index f3c2841566a0..5aa27acdb0b3 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -453,6 +453,7 @@ struct flow_block_offload {
- 	struct list_head *driver_block_list;
- 	struct netlink_ext_ack *extack;
- 	struct Qdisc *sch;
-+	struct list_head *cb_list_head;
- };
- 
- enum tc_setup_type;
-diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-index 1da83997e86a..6beaea13564a 100644
---- a/net/core/flow_offload.c
-+++ b/net/core/flow_offload.c
-@@ -321,6 +321,7 @@ EXPORT_SYMBOL(flow_block_cb_setup_simple);
- static DEFINE_MUTEX(flow_indr_block_lock);
- static LIST_HEAD(flow_block_indr_list);
- static LIST_HEAD(flow_block_indr_dev_list);
-+static LIST_HEAD(flow_indir_dev_list);
- 
- struct flow_indr_dev {
- 	struct list_head		list;
-@@ -345,6 +346,33 @@ static struct flow_indr_dev *flow_indr_dev_alloc(flow_indr_block_bind_cb_t *cb,
- 	return indr_dev;
- }
- 
-+struct flow_indir_dev_info {
-+	void *data;
-+	struct net_device *dev;
-+	struct Qdisc *sch;
-+	enum tc_setup_type type;
-+	void (*cleanup)(struct flow_block_cb *block_cb);
-+	struct list_head list;
-+	enum flow_block_command command;
-+	enum flow_block_binder_type binder_type;
-+	struct list_head *cb_list;
-+};
-+
-+static void existing_qdiscs_register(flow_indr_block_bind_cb_t *cb, void *cb_priv)
-+{
-+	struct flow_block_offload bo;
-+	struct flow_indir_dev_info *cur;
-+
-+	list_for_each_entry(cur, &flow_indir_dev_list, list) {
-+		memset(&bo, 0, sizeof(bo));
-+		bo.command = cur->command;
-+		bo.binder_type = cur->binder_type;
-+		INIT_LIST_HEAD(&bo.cb_list);
-+		cb(cur->dev, cur->sch, cb_priv, cur->type, &bo, cur->data, cur->cleanup);
-+		list_splice(&bo.cb_list, cur->cb_list);
-+	}
-+}
-+
- int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv)
- {
- 	struct flow_indr_dev *indr_dev;
-@@ -366,6 +394,7 @@ int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv)
- 	}
- 
- 	list_add(&indr_dev->list, &flow_block_indr_dev_list);
-+	existing_qdiscs_register(cb, cb_priv);
- 	mutex_unlock(&flow_indr_block_lock);
- 
- 	return 0;
-@@ -462,7 +491,59 @@ struct flow_block_cb *flow_indr_block_cb_alloc(flow_setup_cb_t *cb,
- }
- EXPORT_SYMBOL(flow_indr_block_cb_alloc);
- 
--int flow_indr_dev_setup_offload(struct net_device *dev, struct Qdisc *sch,
-+static struct flow_indir_dev_info *find_indir_dev(void *data)
-+{
-+	struct flow_indir_dev_info *cur;
-+
-+	list_for_each_entry(cur, &flow_indir_dev_list, list) {
-+		if (cur->data == data)
-+			return cur;
-+	}
-+	return NULL;
-+}
-+
-+static int indir_dev_add(void *data, struct net_device *dev, struct Qdisc *sch,
-+			 enum tc_setup_type type, void (*cleanup)(struct flow_block_cb *block_cb),
-+			 struct flow_block_offload *bo)
-+{
-+	struct flow_indir_dev_info *info;
-+
-+	info = find_indir_dev(data);
-+	if (info)
-+		return -EEXIST;
-+
-+	info = kzalloc(sizeof(*info), GFP_KERNEL);
-+	if (!info)
-+		return -ENOMEM;
-+
-+	info->data = data;
-+	info->dev = dev;
-+	info->sch = sch;
-+	info->type = type;
-+	info->cleanup = cleanup;
-+	info->command = bo->command;
-+	info->binder_type = bo->binder_type;
-+	info->cb_list = bo->cb_list_head;
-+
-+	list_add(&info->list, &flow_indir_dev_list);
-+	return 0;
-+}
-+
-+static int indir_dev_remove(void *data)
-+{
-+	struct flow_indir_dev_info *info;
-+
-+	info = find_indir_dev(data);
-+	if (!info)
-+		return -ENOENT;
-+
-+	list_del(&info->list);
-+
-+	kfree(info);
-+	return 0;
-+}
-+
-+int flow_indr_dev_setup_offload(struct net_device *dev,	struct Qdisc *sch,
- 				enum tc_setup_type type, void *data,
- 				struct flow_block_offload *bo,
- 				void (*cleanup)(struct flow_block_cb *block_cb))
-@@ -470,6 +551,12 @@ int flow_indr_dev_setup_offload(struct net_device *dev, struct Qdisc *sch,
- 	struct flow_indr_dev *this;
- 
- 	mutex_lock(&flow_indr_block_lock);
-+
-+	if (bo->command == FLOW_BLOCK_BIND)
-+		indir_dev_add(data, dev, sch, type, cleanup, bo);
-+	else if (bo->command == FLOW_BLOCK_UNBIND)
-+		indir_dev_remove(data);
-+
- 	list_for_each_entry(this, &flow_block_indr_dev_list, list)
- 		this->cb(dev, sch, this->cb_priv, type, bo, data, cleanup);
- 
-diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
-index f92006cec94c..cbd9f59098b7 100644
---- a/net/netfilter/nf_flow_table_offload.c
-+++ b/net/netfilter/nf_flow_table_offload.c
-@@ -1097,6 +1097,7 @@ static void nf_flow_table_block_offload_init(struct flow_block_offload *bo,
- 	bo->command	= cmd;
- 	bo->binder_type	= FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
- 	bo->extack	= extack;
-+	bo->cb_list_head = &flowtable->flow_block.cb_list;
- 	INIT_LIST_HEAD(&bo->cb_list);
- }
- 
-diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
-index b58d73a96523..9656c1646222 100644
---- a/net/netfilter/nf_tables_offload.c
-+++ b/net/netfilter/nf_tables_offload.c
-@@ -353,6 +353,7 @@ static void nft_flow_block_offload_init(struct flow_block_offload *bo,
- 	bo->command	= cmd;
- 	bo->binder_type	= FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
- 	bo->extack	= extack;
-+	bo->cb_list_head = &basechain->flow_block.cb_list;
- 	INIT_LIST_HEAD(&bo->cb_list);
- }
- 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index e3e79e9bd706..9b276d14be4c 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -634,6 +634,7 @@ static void tcf_block_offload_init(struct flow_block_offload *bo,
- 	bo->block_shared = shared;
- 	bo->extack = extack;
- 	bo->sch = sch;
-+	bo->cb_list_head = &flow_block->cb_list;
- 	INIT_LIST_HEAD(&bo->cb_list);
- }
- 
--- 
-2.32.0
-
+Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>=
