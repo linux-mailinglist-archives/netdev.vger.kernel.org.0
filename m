@@ -2,250 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5203E3EE840
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 10:16:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F163F3EE848
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 10:18:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234795AbhHQIRP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 04:17:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27193 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239107AbhHQIRN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 04:17:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1629188200;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=e3ctewUOTsKGZENQJgUMk7UI3Zq20LDKQ2q7neygSyw=;
-        b=Ai6LCCr5vJ9hVAmpGvU2a5frn1iZgjiSUAMoeIZ2XIiz+N6PUXzdW2K55o0pz/ONMy3trc
-        S7o1sl+9WLgJawXZni2684UAfvJEeaNWxWulCQRBtPB0KHJ4rWf0Q69W5RiiM62l1aozLv
-        3AJNEsdeo6ZIUJCl+tUdp40CMgDwBAk=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-463-lu31vYqCNSypF9hHaNeTgQ-1; Tue, 17 Aug 2021 04:16:39 -0400
-X-MC-Unique: lu31vYqCNSypF9hHaNeTgQ-1
-Received: by mail-lf1-f70.google.com with SMTP id bu41-20020a05651216a9b02903c171c5bf72so5013699lfb.8
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 01:16:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e3ctewUOTsKGZENQJgUMk7UI3Zq20LDKQ2q7neygSyw=;
-        b=AUDqiFknfGAEH68IL0hFIicdEwMau+MJddiyNmegJgCZOHlzo1/gfb7iIPsaMpzc4Z
-         vUckZzzpxPyqOhHfs5BlljnuKct0+XoylA5GO3OYDhpJ3Uy6J7FRKJWZXEnmgQYUfRUZ
-         qi/gdYSGQgbVRnHXbZCoy4rcMmab7cC+YD9Nslq+21ImSiIa5scj7xaYC5rGqiROvJOh
-         /ytEw1FizkOjtmHj8C3UFiMjh6mqYxXjgRE2G38j2m1vxIrwNTpGkqvHQ0/qO+HTL1Am
-         zUC5Fsof2agyEtrdYKHXq/hCXbOjdfIRefkyYPhIaRou2JaKjyx0wzmzVpH4Qw7Dk3PP
-         ST/w==
-X-Gm-Message-State: AOAM5338Gb5VENDsx/x2lms3hgDhSsrppMGSAGZjpc/GETIRjxz9dSrp
-        qxHv8cQ2m3ilszyhzsbJ6FmvoMhae9fRhzvYfbe/vy7p+3I1utV7LUid3oONuYiVstOwBNDhSBL
-        Yx60WgudjRM7wumZP1troaiRU59b9K+FA
-X-Received: by 2002:a19:e00b:: with SMTP id x11mr1599247lfg.436.1629188197808;
-        Tue, 17 Aug 2021 01:16:37 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxOoc1hi6Z/mta4euyFcXISlA832eI1bKIDzEItOgJ0WuAxvbQdlmufrdPWFKHfL9QeQ+mYV8bZ9lcjd41KHJA=
-X-Received: by 2002:a19:e00b:: with SMTP id x11mr1599225lfg.436.1629188197483;
- Tue, 17 Aug 2021 01:16:37 -0700 (PDT)
+        id S239084AbhHQISj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 04:18:39 -0400
+Received: from relay.smtp-ext.broadcom.com ([192.19.166.231]:58650 "EHLO
+        relay.smtp-ext.broadcom.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234706AbhHQISf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 04:18:35 -0400
+Received: from bld-lvn-bcawlan-34.lvn.broadcom.net (bld-lvn-bcawlan-34.lvn.broadcom.net [10.75.138.137])
+        by relay.smtp-ext.broadcom.com (Postfix) with ESMTP id C118024ACB;
+        Tue, 17 Aug 2021 01:18:00 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 relay.smtp-ext.broadcom.com C118024ACB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
+        s=dkimrelay; t=1629188280;
+        bh=0xZ8pgGrQDUx2DKXZLbQE9+YSyK5bQFM0TkSsIlD0I4=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=f4zQFyzMewT4vwNRW1hNJJ+2dqx6vcMqr6+7/BKKOGLH/SDTsH7i0xGSTi3amDLmo
+         WozdnPtPpuRcmhyarV30t9Fpfn9yjxE7jJzp///i/+V3ck6GWhYUkLDb/N9Nw9Xyo7
+         dbj6OQnablN+MvKXJCTH60BxqKLkq7waH1np6m5Y=
+Received: from [10.230.40.140] (unknown [10.230.40.140])
+        by bld-lvn-bcawlan-34.lvn.broadcom.net (Postfix) with ESMTPSA id B3B5B1874BD;
+        Tue, 17 Aug 2021 01:17:57 -0700 (PDT)
+Subject: Re: 5.10.58 UBSAN from brcmf_sdio_dpc+0xa50/0x128c [brcmfmac]
+To:     Arend van Spriel <aspriel@gmail.com>,
+        Ryutaroh Matsumoto <ryutaroh@ict.e.titech.ac.jp>
+Cc:     linux-rpi-kernel@lists.infradead.org,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, chi-hsien.lin@infineon.com,
+        wright.feng@infineon.com, chung-hsien.hsu@infineon.com,
+        netdev@vger.kernel.org, David Miller <davem@davemloft.net>
+References: <20210816.084210.1700916388797835755.ryutaroh@ict.e.titech.ac.jp>
+ <85b31c5a-eb4a-48a0-ad94-e46db00af016@broadcom.com>
+ <20210817.093658.33467107987117119.ryutaroh@ict.e.titech.ac.jp>
+ <17b52a1ab20.279b.9696ff82abe5fb6502268bdc3b0467d4@gmail.com>
+From:   Arend van Spriel <arend.vanspriel@broadcom.com>
+Message-ID: <56ea3e65-62f4-2496-edd4-e454126abc66@broadcom.com>
+Date:   Tue, 17 Aug 2021 10:17:55 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-References: <20210817020338.6400-1-jasowang@redhat.com> <20210817023118-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20210817023118-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 17 Aug 2021 16:16:26 +0800
-Message-ID: <CACGkMEuYMMBqgmpo25zc1uT2qCB09pjThDWJoWKLCz9GehccFQ@mail.gmail.com>
-Subject: Re: [PATCH net] virtio-net: use NETIF_F_GRO_HW instead of NETIF_F_LRO
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Ivan <ivan@prestigetransportation.com>,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <17b52a1ab20.279b.9696ff82abe5fb6502268bdc3b0467d4@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 17, 2021 at 2:46 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> Patch is good. Suggest some tweaks to the commit log.
->
-> On Tue, Aug 17, 2021 at 10:03:38AM +0800, Jason Wang wrote:
-> > Commit a02e8964eaf92 ("virtio-net: ethtool configurable LRO") tries to
-> > advertise LRO on behalf of the guest offloading features and allow the
->
-> tries to advertise -> advertises
->
-> that part actually works.
->
-> allow -> allows
->
-> on behalf of features is really weird. maybe "maps"?
->
-> > administrator to enable and disable those features via ethtool.
-> >
-> > This may lead several issues:
->
-> may lead->lead to
->
-> >
-> > - For the device that doesn't support control guest offloads, the
-> >   "LRO" can't be disabled so we will get a warn in the
->
-> warn -> warning
->
-> >   dev_disable_lro()
->
-> .. when turning off LRO or when enabling forwarding bridging etc.
->
-> > - For the device that have the control guest offloads, the guest
->
-> have the -> supports
->
-> >   offloads were disabled in the case of bridge etc
->
-> etc -> forwarding etc
->
-> > which may slow down
->
-> were -> are
->
-> may slow -> slows
->
-> >   the traffic.
-> >
-> > Fixing this by using NETIF_F_GRO_HW instead. Though the spec does not
-> > guaranteed to be re-segmented as original explicitly now, we can add
->
-> guaranteed -> guarantee
->
-> > that to the spec
->
-> I would add:
->
-> Further, we never advertised LRO historically before a02e8964eaf92
-> ("virtio-net: ethtool configurable LRO") and so bridged/forwarded
-> configs effectively relied on virtio receive offloads being GRO.
->
->
->
->
-> > and then we can catch the bad configuration and
-> > setup.
->
-> Don't know what does this part mean. How would we catch it?
-> With a new flag? Let's say so.
->
-> >
-> > Fixes: a02e8964eaf92 ("virtio-net: ethtool configurable LRO")
-> > Signed-off-by: Jason Wang <jasowang@redhat.com>
->
->
->
-> Proposed rewritten commit log:
++netdev, +Dave
 
-Agree.
+On 8/17/2021 7:42 AM, Arend van Spriel wrote:
+> Using different email to avoid disclaimers...
+> 
+> 
+> On August 17, 2021 2:39:56 AM Ryutaroh Matsumoto 
+> <ryutaroh@ict.e.titech.ac.jp> wrote:
+> 
+>> Hi Arend, thank you for paying attention to this.
+>>
+>>> Line 2016 in skbuff.h is inline function __skb_queue_before() and as
+>>> far as I can tell brcmfmac is not using that direct or indirect. Maybe
+>>> I am reading the line info incorrectly?
+>>
+>> I am unsure of it. On the other hand, I have also seen somewhat similar
+>> UBSAN from a header file "include/net/flow.h" as reported at
+>> https://lore.kernel.org/netdev/20210813.081908.1574714532738245424.ryutaroh@ict.e.titech.ac.jp/ 
+>>
+>>
+>> All UBSANs that I have seen come from *.h compiled with clang...
+>>
+>>> Would you be able to provide information as to what line
+>>> brcmf_sdio_dpc+0xa50 refers to.
+>>
+>> I'd like to do, but I do not know how to let kernel UBSAN include a 
+>> line number,
+>> though I know it with user-space applications...
+> 
+> If you enable CONFIG_DEBUG_INFO in your kernel .config and recompile 
+> brcmfmac you can load the module in gdb:
+> 
+> gdb> add-symbol-file brcmfmac.ko [address]
+> gdb> l *brcmf_sdio_dpc+0xa50
+> 
+> The [address] is not very important so just fill in a nice value. The 
+> 'l' command should provide the line number.
 
-Post a new version.
+Hi Ryutaroh,
 
-Thanks
+Meanwhile I did some digging in the brcmfmac driver and I think I found 
+the location in brcmf_sdio_sendfromq() where we do a __skb_queue_tail(). 
+So I looked at that and it does following:
 
->
-> ===
-> [PATCH net] virtio-net: use NETIF_F_GRO_HW instead of NETIF_F_LRO
->
-> Commit a02e8964eaf92 ("virtio-net: ethtool configurable LRO")
-> maps LRO to virtio guest offloading features and allows the
-> administrator to enable and disable those features via ethtool.
->
-> This leads to several issues:
->
->
-> - For a device that doesn't support control guest offloads, the "LRO"
->   can't be disabled triggering WARN in dev_disable_lro() when turning
->   off LRO or when enabling forwarding bridging etc.
->
-> - For a device that supports control guest offloads, the guest
->   offloads are disabled in cases of bridging, forwarding etc
->   slowing down the traffic.
->
-> Fix this by using NETIF_F_GRO_HW instead. Though the spec does not
-> guarantee packets to be re-segmented as the original ones,
-> we can add that to the spec, possibly with a flag for devices to
-> differentiate between GRO and LRO.
->
-> Further, we never advertised LRO historically before a02e8964eaf92
-> ("virtio-net: ethtool configurable LRO") and so bridged/forwarded
-> configs effectively always relied on virtio receive offloads behaving
-> like GRO - thus even if this breaks any configs it is at least not
-> a regression.
->
-> Fixes: a02e8964eaf92 ("virtio-net: ethtool configurable LRO")
-> Acked-by: Michael S. Tsirkin <mst@redhat.com>
-> Reported-by: Ivan <ivan@prestigetransportation.com>
-> Tested-by: Ivan <ivan@prestigetransportation.com>
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
->
-> ===
->
->
-> > ---
-> >  drivers/net/virtio_net.c | 14 +++++++-------
-> >  1 file changed, 7 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index 0416a7e00914..10c382b08bce 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -63,7 +63,7 @@ static const unsigned long guest_offloads[] = {
-> >       VIRTIO_NET_F_GUEST_CSUM
-> >  };
-> >
-> > -#define GUEST_OFFLOAD_LRO_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
-> > +#define GUEST_OFFLOAD_GRO_HW_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
-> >                               (1ULL << VIRTIO_NET_F_GUEST_TSO6) | \
-> >                               (1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
-> >                               (1ULL << VIRTIO_NET_F_GUEST_UFO))
-> > @@ -2481,7 +2481,7 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
-> >               virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_ECN) ||
-> >               virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO) ||
-> >               virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_CSUM))) {
-> > -             NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing LRO/CSUM, disable LRO/CSUM first");
-> > +             NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing GRO_HW/CSUM, disable GRO_HW/CSUM first");
-> >               return -EOPNOTSUPP;
-> >       }
-> >
-> > @@ -2612,15 +2612,15 @@ static int virtnet_set_features(struct net_device *dev,
-> >       u64 offloads;
-> >       int err;
-> >
-> > -     if ((dev->features ^ features) & NETIF_F_LRO) {
-> > +     if ((dev->features ^ features) & NETIF_F_GRO_HW) {
-> >               if (vi->xdp_enabled)
-> >                       return -EBUSY;
-> >
-> > -             if (features & NETIF_F_LRO)
-> > +             if (features & NETIF_F_GRO_HW)
-> >                       offloads = vi->guest_offloads_capable;
-> >               else
-> >                       offloads = vi->guest_offloads_capable &
-> > -                                ~GUEST_OFFLOAD_LRO_MASK;
-> > +                                ~GUEST_OFFLOAD_GRO_HW_MASK;
-> >
-> >               err = virtnet_set_guest_offloads(vi, offloads);
-> >               if (err)
-> > @@ -3100,9 +3100,9 @@ static int virtnet_probe(struct virtio_device *vdev)
-> >               dev->features |= NETIF_F_RXCSUM;
-> >       if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-> >           virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
-> > -             dev->features |= NETIF_F_LRO;
-> > +             dev->features |= NETIF_F_GRO_HW;
-> >       if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
-> > -             dev->hw_features |= NETIF_F_LRO;
-> > +             dev->hw_features |= NETIF_F_GRO_HW;
-> >
-> >       dev->vlan_features = dev->features;
-> >
-> > --
-> > 2.25.1
->
+static inline void __skb_queue_tail(struct sk_buff_head *list,
+				   struct sk_buff *newsk)
+{
+	__skb_queue_before(list, (struct sk_buff *)list, newsk);
+}
 
+Your report seems to be coming from the cast that is done here, which is 
+fine as long as sk_buff and sk_buff_head have the same members 'next' 
+and 'prev' at the start, which is true today and hopefully forever ;-) I 
+am inclined to say this is a false report.
+
+Can you please confirm the stack trace indeed points to 
+brcmf_sdio_sendfromq() in your report.
+
+Regards,
+Arend
