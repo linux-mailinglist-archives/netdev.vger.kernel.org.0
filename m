@@ -2,109 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98D9E3EEC28
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 14:07:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 474623EEC37
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 14:12:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239846AbhHQMIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 08:08:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52012 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239876AbhHQMIH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 08:08:07 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FD96C0613C1
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 05:07:34 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1mFxsM-00085S-Dz; Tue, 17 Aug 2021 14:07:26 +0200
-Subject: Re: [PATCH] brcmfmac: pcie: fix oops on failure to resume and reprobe
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     "brcm80211-dev-list.pdl@broadcom.com" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Wright Feng <wright.feng@infineon.com>,
-        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Franky Lin <franky.lin@broadcom.com>
-References: <20210817063521.22450-1-a.fatoum@pengutronix.de>
- <CAHp75Vfc_T04p95PgVUd+CK+ttPwX2aOC4WPD35Z01WQV1MxKw@mail.gmail.com>
- <3a9a3789-5a13-7e72-b909-8f0826b8ab86@pengutronix.de>
- <CAHp75VfahF=_CmS7kw5PbKs46+hXFweweq=sjwd83hccRsrH9g@mail.gmail.com>
- <e59b23ba-7e5b-00e3-e8c9-f5c2bb89b860@pengutronix.de>
-Message-ID: <85e30fb4-ce7d-6402-f93e-09efadbbcd06@pengutronix.de>
-Date:   Tue, 17 Aug 2021 14:07:22 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S239839AbhHQMMc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 08:12:32 -0400
+Received: from smtpbg604.qq.com ([59.36.128.82]:59974 "EHLO smtpbg604.qq.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236113AbhHQMMb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Aug 2021 08:12:31 -0400
+X-QQ-mid: bizesmtp38t1629202296t33kylxn
+Received: from localhost.localdomain (unknown [125.69.42.50])
+        by esmtp6.qq.com (ESMTP) with 
+        id ; Tue, 17 Aug 2021 20:11:35 +0800 (CST)
+X-QQ-SSF: 01000000004000B0C000B00A0000000
+X-QQ-FEAT: OE6UcXCtsg2bsgZj0W0I+9riVp875uiNWEuV337EZEK3Xw6RepVlVn0F8+Wdi
+        apwT6OtZlsFDGiBbGiFZcOxMuyl41G66klyqcrJxUV8qvuUCxVnOvr5h59aYUE8XNTv+ZvL
+        Iun9dS+YT6hSTRdsYaEG6/bS19Da5pO5vBce+YgDsx+H5+fC/2JPHKWVkZMU2EfKeV0Vpnq
+        Yp4LKHmDic7e/chLEVHERGIx9mtruNn0wy/WuXfRWQl4Dk8248m5F0cw0Tf0U3k1VM3JJIh
+        VM6FUn+boif0wq4e+cCZ7uQJDMpysaXEAIEl5LoFfSZVG8XbvR2I69TJ5XS7Dbv6pFB4z6+
+        Nyoz3hwFIwTmQ5wgK8ROmMdU60yDQ==
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     kuba@kernel.org
+Cc:     davem@davemloft.net, tariqt@nvidia.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] net/mlx4: Use ARRAY_SIZE to get an array's size
+Date:   Tue, 17 Aug 2021 20:11:06 +0800
+Message-Id: <20210817121106.44189-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-In-Reply-To: <e59b23ba-7e5b-00e3-e8c9-f5c2bb89b860@pengutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17.08.21 14:03, Ahmad Fatoum wrote:
-> On 17.08.21 13:54, Andy Shevchenko wrote:
->> On Tue, Aug 17, 2021 at 2:11 PM Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
->>> On 17.08.21 13:02, Andy Shevchenko wrote:
->>>> On Tuesday, August 17, 2021, Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
->>
->> ...
->>
->>>>>         err = brcmf_pcie_probe(pdev, NULL);
->>>>>         if (err)
->>>>> -               brcmf_err(bus, "probe after resume failed, err=%d\n", err);
->>>>> +               __brcmf_err(NULL, __func__, "probe after resume failed,
->>>>> err=%d\n",
->>>>
->>>>
->>>> This is weird looking line now. Why can’t you simply use dev_err() /
->>>> netdev_err()?
->>>
->>> That's what brcmf_err normally expands to, but in this file the macro
->>> is overridden to add the extra first argument.
->>
->> So, then the problem is in macro here. You need another portion of
->> macro(s) that will use the dev pointer directly. When you have a valid
->> device, use it. And here it seems the case.
-> 
-> Ah, you mean using pdev instead of the stale bus. Ye, I could do that.
-> Thanks for pointing out.
+The ARRAY_SIZE macro is defined to get an array's size which is
+more compact and more formal in linux source. Thus, we can replace
+the long sizeof(arr)/sizeof(arr[0]) with the compact ARRAY_SIZE.
 
-Ah, not so easy: __brcmf_err accepts a struct brcmf_bus * as first argument,
-but there is none I can pass along. As the whole file uses the brcm_
-logging functions, I'd just leave this one without a device.
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ drivers/net/ethernet/mellanox/mlx4/qp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 
->>
->>> The brcmf_ logging function write to brcmf trace buffers. This is not
->>> done with netdev_err/dev_err (and replacing the existing logging
->>> is out of scope for a regression fix anyway).
->>
->> I see.
->>
-> 
-> 
-
-
+diff --git a/drivers/net/ethernet/mellanox/mlx4/qp.c b/drivers/net/ethernet/mellanox/mlx4/qp.c
+index 2584bc038f94..b149e601f673 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/qp.c
++++ b/drivers/net/ethernet/mellanox/mlx4/qp.c
+@@ -739,7 +739,7 @@ static void mlx4_cleanup_qp_zones(struct mlx4_dev *dev)
+ 		int i;
+ 
+ 		for (i = 0;
+-		     i < sizeof(qp_table->zones_uids)/sizeof(qp_table->zones_uids[0]);
++		     i < ARRAY_SIZE(qp_table->zones_uids);
+ 		     i++) {
+ 			struct mlx4_bitmap *bitmap =
+ 				mlx4_zone_get_bitmap(qp_table->zones,
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.32.0
+
