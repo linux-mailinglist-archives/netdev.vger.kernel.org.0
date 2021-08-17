@@ -2,86 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 581293EF23E
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 20:48:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AE093EF255
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 20:57:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233298AbhHQSss (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 14:48:48 -0400
-Received: from mail-oi1-f181.google.com ([209.85.167.181]:44785 "EHLO
-        mail-oi1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230373AbhHQSsp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 14:48:45 -0400
-Received: by mail-oi1-f181.google.com with SMTP id w6so496934oiv.11;
-        Tue, 17 Aug 2021 11:48:11 -0700 (PDT)
+        id S233575AbhHQS5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 14:57:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33612 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233118AbhHQS5r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 14:57:47 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2C5C061764;
+        Tue, 17 Aug 2021 11:57:13 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id z5so253779ybj.2;
+        Tue, 17 Aug 2021 11:57:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qqGEA6MndaB0p4eKxUV0Iv+ZKsY1XUAaezZQYJCg3PA=;
+        b=fQEEOUoQK8ohP37XutZvh16fKejcIzLl0KucFT/FuE4p9oZ9CZiOE5qzo0sApfevmW
+         trSjkTw6ttgUHhBnXyzCyd/WGiM7kfiGBYXS8IFjVbmgHADtQI5IPufP8/ABs/oVz+Zc
+         9CYB06H9lDhyCAncG7ieRkAgUx5YjHHbZeh3O/0vbWn3WJNjD1g598Zo/TQiy2oFCoFK
+         NqQlpxSLKhitp8I7DYH9kNkE8pSX9lCKRBFlbCoS785KdFbt9PK62l6KjqtQLoPsjhhV
+         P7eC9w844+3d1iqBASNApEWETb+OrECXVOBSlfgnrfXnLzURs2I/I+uhXkQRHO5m6qY4
+         l+xg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nzIgJMa9X2S8j+5qu6QKB3OfU1LS75XPiAFcEXr7Uv4=;
-        b=tXcZr2FcpGIEQAeUcgFP9nxsCMi79b5mg9wjFcGx21KV7intnrhJLQVQev4rNCk5AP
-         PdUgFOj/SOdlqhjQoxtRD91y/1dX0fTCtqPXVc9/8L93zbGUaXgVVIjInB72MgMz8gex
-         aqBxAopZjPRkJwEgvGK0F3Vib9mLkq3QujYCPzFEq9/+4RKuN+saCoRAtP2hc9KfJ5z/
-         3iqr9yWvWonama2eQmajUUrXrL9l6D0NLg3e22fIkgIeRdPtjLZDvHqVG+FE8e6Nmz/P
-         6XqUj65skFQUc+Z8GD4VVWWoc4sAFq03hrzV6ZhEaYhHVABMx+02FAI2rIvjpixAKKt4
-         dU6Q==
-X-Gm-Message-State: AOAM533KL3d8ScLWrvSStJF6+z0I/hcsQI/KlCrxv4PmVGAuf6QLXfhq
-        P7chOXGqb2/IOJlUgmnbMA==
-X-Google-Smtp-Source: ABdhPJwImY4DZXklw6KIc/1fnibzeDWipJdCH7U+fkrAF8vgvcXjIuK+N7h1N3Uq0nTasi65mtFgAw==
-X-Received: by 2002:a05:6808:81:: with SMTP id s1mr3670441oic.130.1629226091436;
-        Tue, 17 Aug 2021 11:48:11 -0700 (PDT)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id q20sm638233oiw.58.2021.08.17.11.48.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Aug 2021 11:48:10 -0700 (PDT)
-Received: (nullmailer pid 643472 invoked by uid 1000);
-        Tue, 17 Aug 2021 18:48:09 -0000
-Date:   Tue, 17 Aug 2021 13:48:09 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     chaochao2021666@163.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chao Zeng <chao.zeng@siemens.com>
-Subject: Re: [PATCH 1/2] dt-bindings:dp83867:Add binding for the status led
-Message-ID: <YRwEacEuiAuPzA0E@robh.at.kernel.org>
-References: <20210809085213.324129-1-chaochao2021666@163.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qqGEA6MndaB0p4eKxUV0Iv+ZKsY1XUAaezZQYJCg3PA=;
+        b=jM71NtbQ5rjdN94GnXtKCe27Z9TPIFgCSHJo9h336wSJL7r4z2OAjMqRaNXIQp5uUz
+         yXtoR2VivM4zRSGciTQjStE9oOjtdl8sUGS1hCmqaVkVDtuNIYz8mVzz+4exHyfgJXxi
+         2sCoHymfSOEyJQ0/z9mbUReB5Xiw3vnBNggJv8b6s8PilWWUOi1P0QVu5bXboDLwJ1PZ
+         s21FEO+hrILc/5KAOoam2qSsGFfLHvgimVGf18GcA7csO1Dhl/Td6CF0M9lvJFSbmgia
+         +RvlDrTzAxvBRtm4owgBV9Y9WS5lKWR9F3R+M/vChvayFiymDk0zE/PtYVPygcz3QcsR
+         umZg==
+X-Gm-Message-State: AOAM5334jESh6Ya1KcQV40+FDVqmuchmRK5WEIsdRswc16rJF+ox/iZA
+        QnUhryRRpNWuUsF1tcxHnhQI2a/1ZCsTwlbCI5g=
+X-Google-Smtp-Source: ABdhPJz7UKl07X/7jPYyxGlrX1lCVDBjaup+e1ccMKel0eNmOcGaoruZx05gxcDdOfVWmybMdLZlRtBnUycacNaWbjE=
+X-Received: by 2002:a25:d691:: with SMTP id n139mr6464105ybg.27.1629226633097;
+ Tue, 17 Aug 2021 11:57:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210809085213.324129-1-chaochao2021666@163.com>
+References: <342670fc-948a-a76e-5a47-b3d44e3e3926@canonical.com>
+In-Reply-To: <342670fc-948a-a76e-5a47-b3d44e3e3926@canonical.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 17 Aug 2021 11:57:02 -0700
+Message-ID: <CAEf4BzYP6OU23D33d6dzgpYyXqSGrQUpenrJStyYFB3L7S93ew@mail.gmail.com>
+Subject: Re: bpf: Implement minimal BPF perf link
+To:     Colin Ian King <colin.king@canonical.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 09, 2021 at 04:52:13PM +0800, chaochao2021666@163.com wrote:
-> From: Chao Zeng <chao.zeng@siemens.com>
-> 
-> The phy status led of each of board maybe different.
-> Provide a method to custom phy status led behavior.
-> 
-> Datasheet:
-> http://www.ti.com/product/DP83867IR/datasheet
-> 
-> Signed-off-by: Chao Zeng <chao.zeng@siemens.com>
-> ---
->  .../devicetree/bindings/net/ti,dp83867.yaml    |  6 ++++++
->  include/dt-bindings/net/ti-dp83867.h           | 18 ++++++++++++++++++
->  2 files changed, 24 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/ti,dp83867.yaml b/Documentation/devicetree/bindings/net/ti,dp83867.yaml
-> index 047d757e8d82..a46a437818f2 100644
-> --- a/Documentation/devicetree/bindings/net/ti,dp83867.yaml
-> +++ b/Documentation/devicetree/bindings/net/ti,dp83867.yaml
-> @@ -106,6 +106,12 @@ properties:
->        Transmitt FIFO depth- see dt-bindings/net/ti-dp83867.h for applicable
->        values.
->  
-> +  ti,led-sel:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: |
-> +      This configure the status led. See dt-bindings/net/ti-dp83867.h
-> +      for different status led settings,select different configures
+On Tue, Aug 17, 2021 at 10:36 AM Colin Ian King
+<colin.king@canonical.com> wrote:
+>
+> Hi,
+>
+> Static analysis with Coverity on linux-next has detected a potential
+> issue with the following commit:
+>
+> commit b89fbfbb854c9afc3047e8273cc3a694650b802e
+> Author: Andrii Nakryiko <andrii@kernel.org>
+> Date:   Sun Aug 15 00:05:57 2021 -0700
+>
+>     bpf: Implement minimal BPF perf link
+>
+> The analysis is as follows:
+>
+> 2936 static int bpf_perf_link_attach(const union bpf_attr *attr, struct
+> bpf_prog *prog)
+> 2937 {
+>
+>     1. var_decl: Declaring variable link_primer without initializer.
+>
+> 2938        struct bpf_link_primer link_primer;
+> 2939        struct bpf_perf_link *link;
+> 2940        struct perf_event *event;
+> 2941        struct file *perf_file;
+> 2942        int err;
+> 2943
+>
+>     2. Condition attr->link_create.flags, taking false branch.
+>
+> 2944        if (attr->link_create.flags)
+> 2945                return -EINVAL;
+> 2946
+> 2947        perf_file = perf_event_get(attr->link_create.target_fd);
+>
+>     3. Condition IS_ERR(perf_file), taking false branch.
+>
+> 2948        if (IS_ERR(perf_file))
+> 2949                return PTR_ERR(perf_file);
+> 2950
+> 2951        link = kzalloc(sizeof(*link), GFP_USER);
+>
+>     4. Condition !link, taking false branch.
+>
+> 2952        if (!link) {
+> 2953                err = -ENOMEM;
+> 2954                goto out_put_file;
+> 2955        }
+> 2956        bpf_link_init(&link->link, BPF_LINK_TYPE_PERF_EVENT,
+> &bpf_perf_link_lops, prog);
+> 2957        link->perf_file = perf_file;
+> 2958
+> 2959        err = bpf_link_prime(&link->link, &link_primer);
+>
+>     5. Condition err, taking false branch.
+>
+> 2960        if (err) {
+> 2961                kfree(link);
+> 2962                goto out_put_file;
+> 2963        }
+> 2964
+> 2965        event = perf_file->private_data;
+> 2966        err = perf_event_set_bpf_prog(event, prog,
+> attr->link_create.perf_event.bpf_cookie);
+>
+>     6. Condition err, taking true branch.
+> 2967        if (err) {
+>     7. uninit_use_in_call: Using uninitialized value link_primer.fd when
+> calling bpf_link_cleanup.
+>     8. uninit_use_in_call: Using uninitialized value link_primer.file
+> when calling bpf_link_cleanup.
+>     9. uninit_use_in_call: Using uninitialized value link_primer.id when
+> calling bpf_link_cleanup.
+>
+>    Uninitialized pointer read (UNINIT)
+>    10. uninit_use_in_call: Using uninitialized value link_primer.link
+> when calling bpf_link_cleanup.
+>
+> 2968                bpf_link_cleanup(&link_primer);
+> 2969                goto out_put_file;
+> 2970        }
+> 2971        /* perf_event_set_bpf_prog() doesn't take its own refcnt on
+> prog */
+> 2972        bpf_prog_inc(prog);
+>
+> I'm not 100% sure if these are false-positives, but I thought I should
+> report the issues as potentially there is a pointer access on an
+> uninitialized pointer on line 2968.
 
-There's ongoing discussions about using the LED bindings/subsystem for 
-this type of LED.
+Look at bpf_link_prime() implementation. If it succeeds, link_primer
+is fully initialized. We use this pattern in many places, this is the
+first time someone reports any potential issues with it. It's a bit
+strange that Coverity doesn't recognize such a typical output
+parameter initialization pattern, tbh. Maybe the global nature of
+bpf_link_prime() throws it off (it assumes it can be "overridden"
+during linking?) But I double-checked everything twice, all seems to
+be good. Zero-initializing link_primer would be a total waste.
 
-Rob
+>
+> Colin
