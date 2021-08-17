@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8579D3EE14D
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 02:38:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A20743EE130
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 02:36:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236410AbhHQAiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Aug 2021 20:38:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35564 "EHLO mail.kernel.org"
+        id S237057AbhHQAhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Aug 2021 20:37:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36346 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236538AbhHQAgo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Aug 2021 20:36:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0D32A60FDA;
-        Tue, 17 Aug 2021 00:36:10 +0000 (UTC)
+        id S236710AbhHQAgw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Aug 2021 20:36:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CB6DE61053;
+        Tue, 17 Aug 2021 00:36:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629160572;
-        bh=gGxucNnX8pzMdaQ2XCm4bfo08ff5RT7RD/vCPls0mXk=;
+        s=k20201202; t=1629160579;
+        bh=UXnPXI1cTXaNjcJpROv7owWl0W840oE9wPlrQJQJ1R8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uBhfIWF8bporl2gU9VdxVM6kxIsY3jZCCmjuxWlP/7ww42ZDqbLL8h7WnGKFSH04H
-         ZibcjDrTou0mFQWDy+pyNMiRO8AirQcUTeEbkfFMJaTqqIyehy3e26dnQpzieHmzc5
-         p3ewvmISG5clYtv163U6k64GhXpyCK3iiOt4FXS6DLOv3fS6GQ4thJ9gEEEyGjqWKK
-         EyE4tEJRIJ4O0QLF1QBz/lVqO6D8qrAf3tursJbtxh483wP9v2MkPQUP9+iz3WH2VK
-         UCZF248wBEno4RDibn2r4I+eip37k+TcxxXnyHOS0QLPZDGQExyvoqs1IyuSHdlTxM
-         zjpuFxp/PU9YQ==
+        b=WiunM/XClrfJN1T7HNGDZxWDRe04ZUKNgDWuaCer+43fK5tT4JG3LFUGeE8RIeNCG
+         pot/5x+6/Wz/SJt9cGQ62Y7+DtHHIpRoHike/zEP6OyksolMGmpxJ+iz+7dwEWEOCu
+         3trQglBeKVW8AJOyFtVBDjzzy+m2Xe44Z1A9viBGAkUDu3L5Vqm2bdLZXSxnAtLBlB
+         RUTx4sWw9EFwPGSFUv46utloPbTtC1dni337TmJWYHqnOoIJsMKWXuGDds13jNZ0nF
+         CgUW1mKAR08fzGze6Je+jgB1B+cL5SS50AL9MGiv+iajR8/53WO4MpuUHHoro0ih4x
+         PuYjHY2HKZhpg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Florian Westphal <fw@strlen.de>, Michal Kubecek <mkubecek@suse.cz>,
@@ -30,12 +30,12 @@ Cc:     Florian Westphal <fw@strlen.de>, Michal Kubecek <mkubecek@suse.cz>,
         Sasha Levin <sashal@kernel.org>,
         netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 3/5] netfilter: conntrack: collect all entries in one cycle
-Date:   Mon, 16 Aug 2021 20:36:05 -0400
-Message-Id: <20210817003607.83340-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 3/4] netfilter: conntrack: collect all entries in one cycle
+Date:   Mon, 16 Aug 2021 20:36:14 -0400
+Message-Id: <20210817003615.83434-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210817003607.83340-1-sashal@kernel.org>
-References: <20210817003607.83340-1-sashal@kernel.org>
+In-Reply-To: <20210817003615.83434-1-sashal@kernel.org>
+References: <20210817003615.83434-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -74,10 +74,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 22 insertions(+), 49 deletions(-)
 
 diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 4a988ce4264c..4bcc36e4b2ef 100644
+index c5590d36b775..a38caf317dbb 100644
 --- a/net/netfilter/nf_conntrack_core.c
 +++ b/net/netfilter/nf_conntrack_core.c
-@@ -66,22 +66,17 @@ EXPORT_SYMBOL_GPL(nf_conntrack_hash);
+@@ -70,10 +70,9 @@ EXPORT_SYMBOL_GPL(nf_conntrack_hash);
  
  struct conntrack_gc_work {
  	struct delayed_work	dwork;
@@ -89,7 +89,8 @@ index 4a988ce4264c..4bcc36e4b2ef 100644
  };
  
  static __read_mostly struct kmem_cache *nf_conntrack_cachep;
- static DEFINE_SPINLOCK(nf_conntrack_locks_all_lock);
+@@ -81,12 +80,8 @@ static __read_mostly spinlock_t nf_conntrack_locks_all_lock;
+ static __read_mostly DEFINE_SPINLOCK(nf_conntrack_locks_all_lock);
  static __read_mostly bool nf_conntrack_locks_all;
  
 -/* every gc cycle scans at most 1/GC_MAX_BUCKETS_DIV part of table */
@@ -103,7 +104,7 @@ index 4a988ce4264c..4bcc36e4b2ef 100644
  
  static struct conntrack_gc_work conntrack_gc_work;
  
-@@ -1226,17 +1221,13 @@ static void nf_ct_offload_timeout(struct nf_conn *ct)
+@@ -1198,17 +1193,13 @@ static void nf_ct_offload_timeout(struct nf_conn *ct)
  
  static void gc_worker(struct work_struct *work)
  {
@@ -125,7 +126,7 @@ index 4a988ce4264c..4bcc36e4b2ef 100644
  	if (gc_work->early_drop)
  		nf_conntrack_max95 = nf_conntrack_max / 100u * 95u;
  
-@@ -1244,22 +1235,21 @@ static void gc_worker(struct work_struct *work)
+@@ -1216,22 +1207,21 @@ static void gc_worker(struct work_struct *work)
  		struct nf_conntrack_tuple_hash *h;
  		struct hlist_nulls_head *ct_hash;
  		struct hlist_nulls_node *n;
@@ -152,7 +153,7 @@ index 4a988ce4264c..4bcc36e4b2ef 100644
  			if (test_bit(IPS_OFFLOAD_BIT, &tmp->status)) {
  				nf_ct_offload_timeout(tmp);
  				continue;
-@@ -1267,7 +1257,6 @@ static void gc_worker(struct work_struct *work)
+@@ -1239,7 +1229,6 @@ static void gc_worker(struct work_struct *work)
  
  			if (nf_ct_is_expired(tmp)) {
  				nf_ct_gc_expired(tmp);
@@ -160,7 +161,7 @@ index 4a988ce4264c..4bcc36e4b2ef 100644
  				continue;
  			}
  
-@@ -1299,7 +1288,14 @@ static void gc_worker(struct work_struct *work)
+@@ -1271,7 +1260,14 @@ static void gc_worker(struct work_struct *work)
  		 */
  		rcu_read_unlock();
  		cond_resched();
@@ -176,7 +177,7 @@ index 4a988ce4264c..4bcc36e4b2ef 100644
  
  	if (gc_work->exiting)
  		return;
-@@ -1310,40 +1306,17 @@ static void gc_worker(struct work_struct *work)
+@@ -1282,40 +1278,17 @@ static void gc_worker(struct work_struct *work)
  	 *
  	 * This worker is only here to reap expired entries when system went
  	 * idle after a busy period.
