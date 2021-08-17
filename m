@@ -2,110 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 396493EE71A
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 09:24:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 688813EE728
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 09:26:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234630AbhHQHYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 03:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42656 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234402AbhHQHYk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 03:24:40 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724E2C0613C1
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 00:24:07 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id i10-20020a05600c354ab029025a0f317abfso1148028wmq.3
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 00:24:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=k1CgOPIa4n8DhcaJK9nsG7rytL7vIVlLDzs67n6AWoM=;
-        b=ESxuGmoejql+KJqudW71YmXAVcpivN8iG3xoY7CrTrTtal9GvssW6TT4vJqxDquKPS
-         ZbpXdNqcJBBLIl6MtVdwC9a/llh3K/FZKm/UPFaPXrA7YUWGKH4PKir9bAOVkidGxVXY
-         KZgb5s5zpGWR+rnCKZWAixf2rB1d64//WrzKKijRZuzN0RDP9gx57b6SvEBgRT4pdvXD
-         X1kSzbupbe/G5T8TEIKJRcKMjhZo3ew5OFpQzcgJ6Q3gCVZIJJfitLrSY1xRLI8EBk0q
-         J2uri7ShGkd+SeV+XM/koxWEK/wKimiUptIJZ14WxLHZYijyn68CW4sxB/4vSV8jlFF4
-         f/5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=k1CgOPIa4n8DhcaJK9nsG7rytL7vIVlLDzs67n6AWoM=;
-        b=TL9OgVnbGHyIS6m/iWwX2GZKtOonIlpmU1e58q/hZ9rO5TCXS4HOBOKSoh3EYwoUwe
-         qI2x18661eMyzhegyHA2eGK1q+8fnOPVhsikSq7Fo1FLnoIBtyIachctxvhApi4nApE7
-         j2nxFmoE+HG7QEuKaMVHveDymn4p/DMmxCL1FjfOxUpRlmTWvEz4vvvQ3WUvHSJ/cTLX
-         agQzD5R8m5slU8gKnNBwvUMECCuIojvUeUGzwbCNUC4ruqWw968sZNYbSyersK3+n7IX
-         5kJbXAy/LWmJF86/OfeOd3eml315alAYQqS72hueNJjtUFEojgvmNCbhCLJniPjBiSjb
-         SoCA==
-X-Gm-Message-State: AOAM531H6E1vMJyEkcFbICyMZDxkn6upGaovwxbzGR6pcrNZi68EywyW
-        tZT3J1rFuYuFOqdB+bPLbUTYrQ==
-X-Google-Smtp-Source: ABdhPJw+7IS45rZ/FJaVYS7tOUDstHuyiASXa0q8qpIY9XfIiWi2zJdF0dx4HuJt2hC+0aOuKnl8SA==
-X-Received: by 2002:a7b:c2f0:: with SMTP id e16mr1880371wmk.144.1629185045975;
-        Tue, 17 Aug 2021 00:24:05 -0700 (PDT)
-Received: from google.com ([2.31.167.59])
-        by smtp.gmail.com with ESMTPSA id v1sm1282927wrt.93.2021.08.17.00.24.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Aug 2021 00:24:05 -0700 (PDT)
-Date:   Tue, 17 Aug 2021 08:24:03 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Marc Zyngier <maz@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        linux-amlogic@lists.infradead.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Android Kernel Team <kernel-team@android.com>
-Subject: Re: [PATCH 1/2] irqchip: irq-meson-gpio: make it possible to build
- as a module
-Message-ID: <YRtkE62O+4EiyzF9@google.com>
-References: <87r1hwwier.wl-maz@kernel.org>
- <7h7diwgjup.fsf@baylibre.com>
- <87im0m277h.wl-maz@kernel.org>
- <CAGETcx9OukoWM_qprMse9aXdzCE=GFUgFEkfhhNjg44YYsOQLw@mail.gmail.com>
- <87sfzpwq4f.wl-maz@kernel.org>
- <CAGETcx95kHrv8wA-O+-JtfH7H9biJEGJtijuPVN0V5dUKUAB3A@mail.gmail.com>
- <CAGETcx8bpWQEnkpJ0YW9GqX8WE0ewT45zqkbWWdZ0ktJBhG4yQ@mail.gmail.com>
- <YQuZ2cKVE+3Os25Z@google.com>
- <YRpeVLf18Z+1R7WE@google.com>
- <CAGETcx-gSJD0Ra=U_55k3Anps11N_3Ev9gEQV6NaXOvqwP0J3g@mail.gmail.com>
+        id S238230AbhHQH1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 03:27:13 -0400
+Received: from mailgw02.mediatek.com ([210.61.82.184]:42204 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S234688AbhHQH1L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 03:27:11 -0400
+X-UUID: 276bcab462b14cb4988800f34bb6f703-20210817
+X-UUID: 276bcab462b14cb4988800f34bb6f703-20210817
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <rocco.yue@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1566255698; Tue, 17 Aug 2021 15:26:32 +0800
+Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
+ mtkmbs02n2.mediatek.inc (172.21.101.101) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 17 Aug 2021 15:26:31 +0800
+Received: from localhost.localdomain (10.15.20.246) by MTKCAS06.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 17 Aug 2021 15:26:30 +0800
+From:   Rocco Yue <rocco.yue@mediatek.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <rocco.yue@gmail.com>,
+        <chao.song@mediatek.com>, <zhuoliang.zhang@mediatek.com>,
+        Rocco Yue <rocco.yue@mediatek.com>
+Subject: [PATCH net-next v4] ipv6: add IFLA_INET6_RA_MTU to expose mtu value in the RA message
+Date:   Tue, 17 Aug 2021 15:26:09 +0800
+Message-ID: <20210817072609.2110-1-rocco.yue@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAGETcx-gSJD0Ra=U_55k3Anps11N_3Ev9gEQV6NaXOvqwP0J3g@mail.gmail.com>
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Aug 2021, Saravana Kannan wrote:
-> > > > I sent out the proper fix as a series:
-> > > > https://lore.kernel.org/lkml/20210804214333.927985-1-saravanak@google.com/T/#t
-> > > >
-> > > > Marc, can you give it a shot please?
-> > > >
-> > > > -Saravana
-> > >
-> > > Superstar!  Thanks for taking the time to rectify this for all of us.
-> >
-> > Just to clarify:
-> >
-> >   Are we waiting on a subsequent patch submission at this point?
-> 
-> Not that I'm aware of. Andrew added a "Reviewed-by" to all 3 of my
-> proper fix patches. I didn't think I needed to send any newer patches.
-> Is there some reason you that I needed to?
+The kernel provides a "/proc/sys/net/ipv6/conf/<iface>/mtu"
+file, which can temporarily record the mtu value of the last
+received RA message when the RA mtu value is lower than the
+interface mtu, but this proc has following limitations:
 
-Actually, I meant *this* patch.
+(1) when the interface mtu (/sys/class/net/<iface>/mtu) is
+updeated, mtu6 (/proc/sys/net/ipv6/conf/<iface>/mtu) will
+be updated to the value of interface mtu;
+(2) mtu6 (/proc/sys/net/ipv6/conf/<iface>/mtu) only affect
+ipv6 connection, and not affect ipv4.
 
-But happy to have unlocked your patches also. :)
+Therefore, when the mtu option is carried in the RA message,
+there will be a problem that the user sometimes cannot obtain
+RA mtu value correctly by reading mtu6.
 
+After this patch set, if a RA message carries the mtu option,
+you can send a netlink msg which nlmsg_type is RTM_GETLINK,
+and then by parsing the attribute of IFLA_INET6_RA_MTU to
+get the mtu value carried in the RA message received on the
+inet6 device. In addition, you can also get a link notification
+when ra_mtu is updated so it doesn't have to poll.
+
+In this way, if the MTU values that the device receives from
+the network in the PCO IPv4 and the RA IPv6 procedures are
+different, the user can obtain the correct ipv6 ra_mtu value
+and compare the value of ra_mtu and ipv4 mtu, then the device
+can use the lower MTU value for both IPv4 and IPv6.
+
+Signed-off-by: Rocco Yue <rocco.yue@mediatek.com>
+---
+ include/net/if_inet6.h             |  2 ++
+ include/uapi/linux/if_link.h       |  1 +
+ net/ipv6/addrconf.c                |  8 ++++++++
+ net/ipv6/ndisc.c                   | 17 +++++++++++------
+ tools/include/uapi/linux/if_link.h |  1 +
+ 5 files changed, 23 insertions(+), 6 deletions(-)
+
+diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
+index 42235c178b06..653e7d0f65cb 100644
+--- a/include/net/if_inet6.h
++++ b/include/net/if_inet6.h
+@@ -210,6 +210,8 @@ struct inet6_dev {
+ 
+ 	unsigned long		tstamp; /* ipv6InterfaceTable update timestamp */
+ 	struct rcu_head		rcu;
++
++	unsigned int		ra_mtu;
+ };
+ 
+ static inline void ipv6_eth_mc_map(const struct in6_addr *addr, char *buf)
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 5310003523ce..957ec9873e70 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -417,6 +417,7 @@ enum {
+ 	IFLA_INET6_ICMP6STATS,	/* statistics (icmpv6)		*/
+ 	IFLA_INET6_TOKEN,	/* device token			*/
+ 	IFLA_INET6_ADDR_GEN_MODE, /* implicit address generator mode */
++	IFLA_INET6_RA_MTU,	/* mtu carried in the RA message */
+ 	__IFLA_INET6_MAX
+ };
+ 
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 8381288a0d6e..3eb957777b31 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -394,6 +394,7 @@ static struct inet6_dev *ipv6_add_dev(struct net_device *dev)
+ 		ndev->cnf.addr_gen_mode = IN6_ADDR_GEN_MODE_STABLE_PRIVACY;
+ 
+ 	ndev->cnf.mtu6 = dev->mtu;
++	ndev->ra_mtu = U32_MIN;
+ 	ndev->nd_parms = neigh_parms_alloc(dev, &nd_tbl);
+ 	if (!ndev->nd_parms) {
+ 		kfree(ndev);
+@@ -5543,6 +5544,7 @@ static inline size_t inet6_ifla6_size(void)
+ 	     + nla_total_size(ICMP6_MIB_MAX * 8) /* IFLA_INET6_ICMP6STATS */
+ 	     + nla_total_size(sizeof(struct in6_addr)) /* IFLA_INET6_TOKEN */
+ 	     + nla_total_size(1) /* IFLA_INET6_ADDR_GEN_MODE */
++	     + nla_total_size(4) /* IFLA_INET6_RA_MTU */
+ 	     + 0;
+ }
+ 
+@@ -5651,6 +5653,9 @@ static int inet6_fill_ifla6_attrs(struct sk_buff *skb, struct inet6_dev *idev,
+ 	if (nla_put_u8(skb, IFLA_INET6_ADDR_GEN_MODE, idev->cnf.addr_gen_mode))
+ 		goto nla_put_failure;
+ 
++	if (nla_put_u32(skb, IFLA_INET6_RA_MTU, idev->ra_mtu))
++		goto nla_put_failure;
++
+ 	return 0;
+ 
+ nla_put_failure:
+@@ -5767,6 +5772,9 @@ static int inet6_set_iftoken(struct inet6_dev *idev, struct in6_addr *token,
+ static const struct nla_policy inet6_af_policy[IFLA_INET6_MAX + 1] = {
+ 	[IFLA_INET6_ADDR_GEN_MODE]	= { .type = NLA_U8 },
+ 	[IFLA_INET6_TOKEN]		= { .len = sizeof(struct in6_addr) },
++	[IFLA_INET6_RA_MTU]		= { .type = NLA_REJECT,
++					    .reject_message =
++						"IFLA_INET6_RA_MTU can't be set" },
+ };
+ 
+ static int check_addr_gen_mode(int mode)
+diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
+index c467c6419893..23e690769857 100644
+--- a/net/ipv6/ndisc.c
++++ b/net/ipv6/ndisc.c
+@@ -1391,12 +1391,6 @@ static void ndisc_router_discovery(struct sk_buff *skb)
+ 		}
+ 	}
+ 
+-	/*
+-	 *	Send a notify if RA changed managed/otherconf flags or timer settings
+-	 */
+-	if (send_ifinfo_notify)
+-		inet6_ifinfo_notify(RTM_NEWLINK, in6_dev);
+-
+ skip_linkparms:
+ 
+ 	/*
+@@ -1496,6 +1490,11 @@ static void ndisc_router_discovery(struct sk_buff *skb)
+ 		memcpy(&n, ((u8 *)(ndopts.nd_opts_mtu+1))+2, sizeof(mtu));
+ 		mtu = ntohl(n);
+ 
++		if (in6_dev->ra_mtu != mtu) {
++			in6_dev->ra_mtu = mtu;
++			send_ifinfo_notify = true;
++		}
++
+ 		if (mtu < IPV6_MIN_MTU || mtu > skb->dev->mtu) {
+ 			ND_PRINTK(2, warn, "RA: invalid mtu: %d\n", mtu);
+ 		} else if (in6_dev->cnf.mtu6 != mtu) {
+@@ -1519,6 +1518,12 @@ static void ndisc_router_discovery(struct sk_buff *skb)
+ 		ND_PRINTK(2, warn, "RA: invalid RA options\n");
+ 	}
+ out:
++	/* Send a notify if RA changed managed/otherconf flags or timer
++	 * settings or ra_mtu value
++	 */
++	if (send_ifinfo_notify)
++		inet6_ifinfo_notify(RTM_NEWLINK, in6_dev);
++
+ 	fib6_info_release(rt);
+ 	if (neigh)
+ 		neigh_release(neigh);
+diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linux/if_link.h
+index eb15f319aa57..b3610fdd1fee 100644
+--- a/tools/include/uapi/linux/if_link.h
++++ b/tools/include/uapi/linux/if_link.h
+@@ -230,6 +230,7 @@ enum {
+ 	IFLA_INET6_ICMP6STATS,	/* statistics (icmpv6)		*/
+ 	IFLA_INET6_TOKEN,	/* device token			*/
+ 	IFLA_INET6_ADDR_GEN_MODE, /* implicit address generator mode */
++	IFLA_INET6_RA_MTU,	/* mtu carried in the RA message */
+ 	__IFLA_INET6_MAX
+ };
+ 
 -- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.18.0
+
