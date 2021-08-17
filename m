@@ -2,152 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C60F23EEBEC
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 13:52:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 578E23EEBF9
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 13:55:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236975AbhHQLxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 07:53:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48488 "EHLO
+        id S239808AbhHQLza (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 07:55:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236713AbhHQLxD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 07:53:03 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA40C061764;
-        Tue, 17 Aug 2021 04:52:30 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id a93so38959242ybi.1;
-        Tue, 17 Aug 2021 04:52:30 -0700 (PDT)
+        with ESMTP id S236693AbhHQLz3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 07:55:29 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A6BBC061764;
+        Tue, 17 Aug 2021 04:54:56 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id qe12-20020a17090b4f8c00b00179321cbae7so5946437pjb.2;
+        Tue, 17 Aug 2021 04:54:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=nN5AyaSU21urRQzFotyZwpm3IJcJTP2sy/JAwDAGWyQ=;
-        b=fxJdGTz6p+q9bv7T1kxaS18/q1FD3s6Cbi6FiiK5ls9ePAQV9UR7mP11PjjzGUWWpn
-         MZz+mt6mQljWGI47eef1sFATjhAj9MLDHP+vAMkImSJh0/Z0OcU1pN3khkPnCnYYpMoH
-         HYZ7K7lUN4gCpk9CtRtlVqyLtKSGuNgDdciz1c3lDI4Tv6wbRWQ1z+BGp5+5LMhp/gFe
-         xdmRkXsWAOVcIgmFw5F/zlovnGXIoYmS33aqJmZRHndA2olmu7A1FCYyJZEYEEU9NFTM
-         0Mply0unFm6qg5PtUAFxZ/mRhJXywgAQdPU/E3xvoskGQgVnC+JA06P86kMk6Ubki/08
-         sYNA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Bgl9uVhNiGx/pTbLvHKqn3TMS3R5Cf8IQxryvvFpcpI=;
+        b=cJInMwbaIXud/uoN6772D3dlVO8hk6wPZwEBc1b20zqCuxPR10o71pegYZ93fdYyvN
+         jmEn+EPbOSCvqRHC3i12bFQAxvbCc3Ve8+z38ya3gSsfBp+osbwJcckMwLZEWnl44ucV
+         8tYt3fVdVOGtxBi8C7lPnL4CNNL3cWQPxfdm8m4QAB357NuIQviUoa8S87jjNI1g15bd
+         h/+vy0sd4SUD5hY2l9c95k6cuJWFgKv6gMIaIGqHkBZ4SkiH7wLoHKM80sRzvPA0mTwq
+         qTjWBpxTPeguzlHG5Z5tngp7J8Ip184D5xC/WMpC1f8j2xQ6/Tu+mxOXq+DAZB3Io4Rs
+         ZndQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=nN5AyaSU21urRQzFotyZwpm3IJcJTP2sy/JAwDAGWyQ=;
-        b=ZKHDEyek/hirIGlnFQHLn/ufGFDX/erjcq6GNdSB49dIpckhRtQkcEZl6Hptzz393a
-         zziAHB/CzkijBF7nq63QvQyKh1J0g/L4pOqeFE3qIwUgEvHfHRVzrvMBFc1pXCJLQCLF
-         MEUeL7mr0D9QUMNBtemf4ZaFVh1H+PouE0aRnnVKRRfgh6IuKtB1JKuA7Hw0Cu47MypK
-         rQh0Kb9T53bGT2qK72ynY3gAl5xfsTZ4J/Y4q4y61fp17YC4vdXlhZDvxJErORWMYqFc
-         DTZdU4dnBAPEgClupDylOvrrGVUUTSQ5kgC5Zj0/RpSFHCenYfN9nEMErzWQnybKY82W
-         j6tw==
-X-Gm-Message-State: AOAM532XnvjQ8YH9Q6SVV10J4YKtwS3FluewgCx+qPkM9ttmm/K+NtfN
-        l0aHbmG/5k9Mw/42CPaRkw6b/VYBoFyKclBx2eJXOV8C4iUDGw==
-X-Google-Smtp-Source: ABdhPJxqvYL2NNwPA+JOksY3X2kV+YRY6QwC8QE7YhszAS3ocKSXLtJLdunPjyJTgErxdvl5tNOoX2VNelTHWhc5fCs=
-X-Received: by 2002:a25:a241:: with SMTP id b59mr3995945ybi.522.1629201149523;
- Tue, 17 Aug 2021 04:52:29 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Bgl9uVhNiGx/pTbLvHKqn3TMS3R5Cf8IQxryvvFpcpI=;
+        b=YXazFWG2lMuUL/HqMsLyWv4BV9MycY3WxLIuxV6Wnhjxb85hlUdVxE+szFMjbxmB9t
+         8fuzKHdNiIP5XJhW70chs0xcFMGoPqgHCax5FL+LlWHxVq6ejiSMr5TcVM1bVxk3zsPT
+         v8OGZRyOPc+XmLzeMM3/5+9KpmLEXdkA+S8aiXMIcYM1CXpG96UbVOR4nIIBVFEin4cm
+         3ry8wXfxBMhnZvn9AxRAYugK8+wGH4S+5CcYGiCZ/qkfKUwBoTmLZNdEAjHHFnuUEd5o
+         OEnHRwEtHNP2hi6x70NfPfbcHRgqa3nlKfqk8Tl+9/rAwv9S2490zdgBZo3UvIajR0BC
+         O5dA==
+X-Gm-Message-State: AOAM5319dHGTNnT/eiaPPzKGdtmA6rKsbpqFBGSy7Wmt0F67bLvVRPFh
+        yVoupnlpp6lQ/N0p0CWONZJh2JwZcjSL77fS3r4=
+X-Google-Smtp-Source: ABdhPJwUnyfxYGu+USswkUnXnwy2QG0hhxlTxixeZifys3CI5PQjx4UNNR+M+K6AuVSGar3L5o3DUlBB09aMOwa10Qg=
+X-Received: by 2002:a17:902:ced0:b029:12d:4ce1:ce3a with SMTP id
+ d16-20020a170902ced0b029012d4ce1ce3amr2608066plg.0.1629201296064; Tue, 17 Aug
+ 2021 04:54:56 -0700 (PDT)
 MIME-Version: 1.0
-From:   butt3rflyh4ck <butterflyhuangxx@gmail.com>
-Date:   Tue, 17 Aug 2021 19:52:19 +0800
-Message-ID: <CAFcO6XOLxfHcRFVNvUTPVNiyQ4FKwZ-x9SDgL7n9EJphoxawxQ@mail.gmail.com>
-Subject: Another out-of-bound Read in qrtr_endpoint_post in net/qrtr/qrtr.c
-To:     mani@kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org
+References: <20210817063521.22450-1-a.fatoum@pengutronix.de>
+ <CAHp75Vfc_T04p95PgVUd+CK+ttPwX2aOC4WPD35Z01WQV1MxKw@mail.gmail.com> <3a9a3789-5a13-7e72-b909-8f0826b8ab86@pengutronix.de>
+In-Reply-To: <3a9a3789-5a13-7e72-b909-8f0826b8ab86@pengutronix.de>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 17 Aug 2021 14:54:16 +0300
+Message-ID: <CAHp75VfahF=_CmS7kw5PbKs46+hXFweweq=sjwd83hccRsrH9g@mail.gmail.com>
+Subject: Re: [PATCH] brcmfmac: pcie: fix oops on failure to resume and reprobe
+To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
+Cc:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>,
+        "brcm80211-dev-list.pdl@broadcom.com" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, there is another out-of-bound read in qrtr_endpoint_post in
-net/qrtr/qrtr.c in 5.14.0-rc6+ and reproduced.
+On Tue, Aug 17, 2021 at 2:11 PM Ahmad Fatoum <a.fatoum@pengutronix.de> wrot=
+e:
+> On 17.08.21 13:02, Andy Shevchenko wrote:
+> > On Tuesday, August 17, 2021, Ahmad Fatoum <a.fatoum@pengutronix.de> wro=
+te:
 
-#analyze
-In qrtr_endpoint_post, it would post incoming data from the user, the
-=E2=80=98len=E2=80=99 is the size of data, the problem is in 'size'.
-```
-case QRTR_PROTO_VER_1:
-if (len < sizeof(*v1))   // just  judge len < sizeof(*v1)
-goto err;
-v1 =3D data;
-hdrlen =3D sizeof(*v1);
-[...]
-size =3D le32_to_cpu(v1->size);
-break;
-```
-If the version of qrtr proto  is QRTR_PROTO_VER_1, hdrlen is
-sizeof(qrtr_hdr_v1) and size is le32_to_cpu(v1->size).
-```
-if (len < sizeof(*v2))  // just judge len < sizeof(*v2)
-goto err;
-v2 =3D data;
-hdrlen =3D sizeof(*v2) + v2->optlen;
-[...]
-size =3D le32_to_cpu(v2->size);
-break;
-```
-if version of qrtr proto is QRTR_PROTO_VER_2, hdrlen is
-sizeof(qrtr_hdr_v2) and size is le32_to_cpu(v2->size).
+...
 
-the code as below can be bypassed.
-```
-if (len !=3D ALIGN(size, 4) + hdrlen)
-goto err;
-```
-if we set size zero and  make 'len' equal to 'hdrlen', the judgement
-is bypassed.
+> >>         err =3D brcmf_pcie_probe(pdev, NULL);
+> >>         if (err)
+> >> -               brcmf_err(bus, "probe after resume failed, err=3D%d\n"=
+, err);
+> >> +               __brcmf_err(NULL, __func__, "probe after resume failed=
+,
+> >> err=3D%d\n",
+> >
+> >
+> > This is weird looking line now. Why can=E2=80=99t you simply use dev_er=
+r() /
+> > netdev_err()?
+>
+> That's what brcmf_err normally expands to, but in this file the macro
+> is overridden to add the extra first argument.
 
-```
-if (cb->type =3D=3D QRTR_TYPE_NEW_SERVER) {
-/* Remote node endpoint can bridge other distant nodes */
-const struct qrtr_ctrl_pkt *pkt =3D data + hdrlen;
+So, then the problem is in macro here. You need another portion of
+macro(s) that will use the dev pointer directly. When you have a valid
+device, use it. And here it seems the case.
 
-qrtr_node_assign(node, le32_to_cpu(pkt->server.node)); //[1]
-}
-```
-*pkt =3D data + hdrlen =3D data + len, so pkt pointer the end of data.
-[1]le32_to_cpu(pkt->server.node) could read out of bound.
+> The brcmf_ logging function write to brcmf trace buffers. This is not
+> done with netdev_err/dev_err (and replacing the existing logging
+> is out of scope for a regression fix anyway).
 
-#crash log:
-[ 2436.657182][ T8433]
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-[ 2436.658615][ T8433] BUG: KASAN: slab-out-of-bounds in
-qrtr_endpoint_post+0x478/0x5b0
-[ 2436.659971][ T8433] Read of size 4 at addr ffff88800ef30a2c by task
-qrtr_endpoint_p/8433
-[ 2436.661476][ T8433]
-[ 2436.661964][ T8433] CPU: 1 PID: 8433 Comm: qrtr_endpoint_p Not
-tainted 5.14.0-rc6+ #7
-[ 2436.663431][ T8433] Hardware name: QEMU Standard PC (i440FX + PIIX,
-1996), BIOS 1.13.0-1ubuntu1 04/01/2014
-[ 2436.665220][ T8433] Call Trace:
-[ 2436.665870][ T8433]  dump_stack_lvl+0x57/0x7d
-[ 2436.666748][ T8433]  print_address_description.constprop.0.cold+0x93/0x3=
-34
-[ 2436.668054][ T8433]  ? qrtr_endpoint_post+0x478/0x5b0
-[ 2436.669072][ T8433]  ? qrtr_endpoint_post+0x478/0x5b0
-[ 2436.669957][ T8433]  kasan_report.cold+0x83/0xdf
-[ 2436.670833][ T8433]  ? qrtr_endpoint_post+0x478/0x5b0
-[ 2436.671780][ T8433]  kasan_check_range+0x14e/0x1b0
-[ 2436.672707][ T8433]  qrtr_endpoint_post+0x478/0x5b0
-[ 2436.673646][ T8433]  qrtr_tun_write_iter+0x8b/0xe0
-[ 2436.674587][ T8433]  new_sync_write+0x245/0x360
-[ 2436.675462][ T8433]  ? new_sync_read+0x350/0x350
-[ 2436.676353][ T8433]  ? policy_view_capable+0x3b0/0x6d0
-[ 2436.677266][ T8433]  ? apparmor_task_setrlimit+0x4d0/0x4d0
-[ 2436.678251][ T8433]  vfs_write+0x344/0x4e0
-[ 2436.679024][ T8433]  ksys_write+0xc4/0x160
-[ 2436.679758][ T8433]  ? __ia32_sys_read+0x40/0x40
-[ 2436.680605][ T8433]  ? syscall_enter_from_user_mode+0x21/0x70
-[ 2436.681661][ T8433]  do_syscall_64+0x35/0xb0
-[ 2436.682445][ T8433]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+I see.
 
-#fix suggestion
-'size' should not be zero, it is length of packet, excluding this
-header or (excluding this header and optlen).
-
-
-Regards,
- butt3rflyh4ck.
---
-Active Defense Lab of Venustech
+--=20
+With Best Regards,
+Andy Shevchenko
