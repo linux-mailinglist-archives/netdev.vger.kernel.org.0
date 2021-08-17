@@ -2,205 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 688813EE728
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 09:26:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FC153EE7C9
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 09:50:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238230AbhHQH1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 03:27:13 -0400
-Received: from mailgw02.mediatek.com ([210.61.82.184]:42204 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S234688AbhHQH1L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 03:27:11 -0400
-X-UUID: 276bcab462b14cb4988800f34bb6f703-20210817
-X-UUID: 276bcab462b14cb4988800f34bb6f703-20210817
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <rocco.yue@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1566255698; Tue, 17 Aug 2021 15:26:32 +0800
-Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- mtkmbs02n2.mediatek.inc (172.21.101.101) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 17 Aug 2021 15:26:31 +0800
-Received: from localhost.localdomain (10.15.20.246) by MTKCAS06.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 17 Aug 2021 15:26:30 +0800
-From:   Rocco Yue <rocco.yue@mediatek.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <rocco.yue@gmail.com>,
-        <chao.song@mediatek.com>, <zhuoliang.zhang@mediatek.com>,
-        Rocco Yue <rocco.yue@mediatek.com>
-Subject: [PATCH net-next v4] ipv6: add IFLA_INET6_RA_MTU to expose mtu value in the RA message
-Date:   Tue, 17 Aug 2021 15:26:09 +0800
-Message-ID: <20210817072609.2110-1-rocco.yue@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        id S234771AbhHQHuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 03:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48586 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234581AbhHQHue (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 03:50:34 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1861FC0613CF
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 00:50:02 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id bo18so30943781pjb.0
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 00:50:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ypyY+Uqc+Z2ZZW93qVfCBhIjoZdHXKViPbFJWksLXyw=;
+        b=y0aUVuz/yeYt7BmPU+7xx60nVGBhKtDUZ9a11XD6NZkbjOQtHktgAm3ilJKzATVNSh
+         kp7TselkFN1llxjWnNzBVylouNVkXFmW2nuLMu4DQ6SFi0HCZkLy5S/rMFHYeBn/tkkL
+         /7A9nep/b/LYXd0C2LiEgCEB+jU0Dq/eR9BK4L9TPW8FI9R0Sj+yQEvHJXEaC5wLELjC
+         iQDlPctshevT/yVtmyyuC2++bSRpt++r7vmP8W+eqHNmVOl7+nLNm0zYlau4hKatmtQS
+         jP9lbL/SzDyNIbOYu40zQfXca5hY8EiLhZwUteFE3/Z5wSR8Z3FtdTbpG8Axb7oJPUgS
+         RdzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ypyY+Uqc+Z2ZZW93qVfCBhIjoZdHXKViPbFJWksLXyw=;
+        b=fUHk7NOiw2BCBT+B3xhepv3cEcyFrePrCVbQh8lMhO1ITUeu8GyvvbgQbAtMivTMpH
+         Mm2v8X3jhc2L/bGIPxQw2pbxm1oHTr/Y03z7t8arSHGYasR+TLC4QTneOyOPMMqbzGcy
+         CxWwQ59K5U7tAVn2hd5mtg+bW/hVfu5nTmNmEVDwW6dIYrFL75aW64mgFvmwLtyuUTX8
+         fzNIhOzoKUmeVQuY6vBYqRW0TCLBrQicibitfGrGyDQr5DP3UoMdvXk9m8P+qGX96jJX
+         /wqhMHF9yrG+4JHMAa9l0kp8JotxWlvKnr1S+gHk3IUDQ6QVBARhsUNJQZMrrAuvR0+g
+         ijzw==
+X-Gm-Message-State: AOAM531wyHLGxO0UIz7Di3UhGiRhGkR7oErJyw/sv9SAzZahEEeAVZnr
+        3l2MwXd2U/d4mFf63B4VnzSzDA==
+X-Google-Smtp-Source: ABdhPJxohB+V28AAX2LBG8ktGbGUI5R9Gw48T01lK5QkYJp9yAH00JBLz/Nio11m9qnfjmBzemzB0g==
+X-Received: by 2002:a62:dd83:0:b029:30f:d69:895f with SMTP id w125-20020a62dd830000b029030f0d69895fmr2400138pff.17.1629186601603;
+        Tue, 17 Aug 2021 00:50:01 -0700 (PDT)
+Received: from FVFX41FWHV2J.bytedance.net ([139.177.225.231])
+        by smtp.gmail.com with ESMTPSA id w3sm1626031pfn.96.2021.08.17.00.49.53
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 17 Aug 2021 00:50:01 -0700 (PDT)
+From:   Feng zhou <zhoufeng.zf@bytedance.com>
+To:     jesse.brandeburg@intel.co, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        jeffrey.t.kirsher@intel.com, magnus.karlsson@intel.com
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        duanxiongchun@bytedance.com, songmuchun@bytedance.com,
+        zhouchengming@bytedance.com, chenying.kernel@bytedance.com,
+        zhengqi.arch@bytedance.com, zhoufeng.zf@bytedance.com
+Subject: [PATCH] ixgbe: Fix NULL pointer dereference in ixgbe_xdp_setup
+Date:   Tue, 17 Aug 2021 15:49:47 +0800
+Message-Id: <20210817074947.11555-1-zhoufeng.zf@bytedance.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The kernel provides a "/proc/sys/net/ipv6/conf/<iface>/mtu"
-file, which can temporarily record the mtu value of the last
-received RA message when the RA mtu value is lower than the
-interface mtu, but this proc has following limitations:
+From: Feng Zhou <zhoufeng.zf@bytedance.com>
 
-(1) when the interface mtu (/sys/class/net/<iface>/mtu) is
-updeated, mtu6 (/proc/sys/net/ipv6/conf/<iface>/mtu) will
-be updated to the value of interface mtu;
-(2) mtu6 (/proc/sys/net/ipv6/conf/<iface>/mtu) only affect
-ipv6 connection, and not affect ipv4.
+The ixgbe driver currently generates a NULL pointer dereference with
+some machine (online cpus < 63). This is due to the fact that the
+maximum value of num_xdp_queues is nr_cpu_ids. Code is in
+"ixgbe_set_rss_queues"".
 
-Therefore, when the mtu option is carried in the RA message,
-there will be a problem that the user sometimes cannot obtain
-RA mtu value correctly by reading mtu6.
+Here's how the problem repeats itself:
+Some machine (online cpus < 63), And user set num_queues to 63 through
+ethtool. Code is in the "ixgbe_set_channels",
+adapter->ring_feature[RING_F_FDIR].limit = count;
+It becames 63.
+When user use xdp, "ixgbe_set_rss_queues" will set queues num.
+adapter->num_rx_queues = rss_i;
+adapter->num_tx_queues = rss_i;
+adapter->num_xdp_queues = ixgbe_xdp_queues(adapter);
+And rss_i's value is from
+f = &adapter->ring_feature[RING_F_FDIR];
+rss_i = f->indices = f->limit;
+So "num_rx_queues" > "num_xdp_queues", when run to "ixgbe_xdp_setup",
+for (i = 0; i < adapter->num_rx_queues; i++)
+	if (adapter->xdp_ring[i]->xsk_umem)
+lead to panic.
+Call trace:
+[exception RIP: ixgbe_xdp+368]
+RIP: ffffffffc02a76a0  RSP: ffff9fe16202f8d0  RFLAGS: 00010297
+RAX: 0000000000000000  RBX: 0000000000000020  RCX: 0000000000000000
+RDX: 0000000000000000  RSI: 000000000000001c  RDI: ffffffffa94ead90
+RBP: ffff92f8f24c0c18   R8: 0000000000000000   R9: 0000000000000000
+R10: ffff9fe16202f830  R11: 0000000000000000  R12: ffff92f8f24c0000
+R13: ffff9fe16202fc01  R14: 000000000000000a  R15: ffffffffc02a7530
+ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+ 7 [ffff9fe16202f8f0] dev_xdp_install at ffffffffa89fbbcc
+ 8 [ffff9fe16202f920] dev_change_xdp_fd at ffffffffa8a08808
+ 9 [ffff9fe16202f960] do_setlink at ffffffffa8a20235
+10 [ffff9fe16202fa88] rtnl_setlink at ffffffffa8a20384
+11 [ffff9fe16202fc78] rtnetlink_rcv_msg at ffffffffa8a1a8dd
+12 [ffff9fe16202fcf0] netlink_rcv_skb at ffffffffa8a717eb
+13 [ffff9fe16202fd40] netlink_unicast at ffffffffa8a70f88
+14 [ffff9fe16202fd80] netlink_sendmsg at ffffffffa8a71319
+15 [ffff9fe16202fdf0] sock_sendmsg at ffffffffa89df290
+16 [ffff9fe16202fe08] __sys_sendto at ffffffffa89e19c8
+17 [ffff9fe16202ff30] __x64_sys_sendto at ffffffffa89e1a64
+18 [ffff9fe16202ff38] do_syscall_64 at ffffffffa84042b9
+19 [ffff9fe16202ff50] entry_SYSCALL_64_after_hwframe at ffffffffa8c0008c
 
-After this patch set, if a RA message carries the mtu option,
-you can send a netlink msg which nlmsg_type is RTM_GETLINK,
-and then by parsing the attribute of IFLA_INET6_RA_MTU to
-get the mtu value carried in the RA message received on the
-inet6 device. In addition, you can also get a link notification
-when ra_mtu is updated so it doesn't have to poll.
-
-In this way, if the MTU values that the device receives from
-the network in the PCO IPv4 and the RA IPv6 procedures are
-different, the user can obtain the correct ipv6 ra_mtu value
-and compare the value of ra_mtu and ipv4 mtu, then the device
-can use the lower MTU value for both IPv4 and IPv6.
-
-Signed-off-by: Rocco Yue <rocco.yue@mediatek.com>
+Fixes: 4a9b32f30f80 ("ixgbe: fix potential RX buffer starvation for
+AF_XDP")
+Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
 ---
- include/net/if_inet6.h             |  2 ++
- include/uapi/linux/if_link.h       |  1 +
- net/ipv6/addrconf.c                |  8 ++++++++
- net/ipv6/ndisc.c                   | 17 +++++++++++------
- tools/include/uapi/linux/if_link.h |  1 +
- 5 files changed, 23 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
-index 42235c178b06..653e7d0f65cb 100644
---- a/include/net/if_inet6.h
-+++ b/include/net/if_inet6.h
-@@ -210,6 +210,8 @@ struct inet6_dev {
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 14aea40da50f..5db496cc5070 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -10112,6 +10112,7 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
+ 	struct ixgbe_adapter *adapter = netdev_priv(dev);
+ 	struct bpf_prog *old_prog;
+ 	bool need_reset;
++	int num_queues;
  
- 	unsigned long		tstamp; /* ipv6InterfaceTable update timestamp */
- 	struct rcu_head		rcu;
-+
-+	unsigned int		ra_mtu;
- };
+ 	if (adapter->flags & IXGBE_FLAG_SRIOV_ENABLED)
+ 		return -EINVAL;
+@@ -10161,11 +10162,14 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
+ 	/* Kick start the NAPI context if there is an AF_XDP socket open
+ 	 * on that queue id. This so that receiving will start.
+ 	 */
+-	if (need_reset && prog)
+-		for (i = 0; i < adapter->num_rx_queues; i++)
++	if (need_reset && prog) {
++		num_queues = min_t(int, adapter->num_rx_queues,
++			adapter->num_xdp_queues);
++		for (i = 0; i < num_queues; i++)
+ 			if (adapter->xdp_ring[i]->xsk_pool)
+ 				(void)ixgbe_xsk_wakeup(adapter->netdev, i,
+ 						       XDP_WAKEUP_RX);
++	}
  
- static inline void ipv6_eth_mc_map(const struct in6_addr *addr, char *buf)
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 5310003523ce..957ec9873e70 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -417,6 +417,7 @@ enum {
- 	IFLA_INET6_ICMP6STATS,	/* statistics (icmpv6)		*/
- 	IFLA_INET6_TOKEN,	/* device token			*/
- 	IFLA_INET6_ADDR_GEN_MODE, /* implicit address generator mode */
-+	IFLA_INET6_RA_MTU,	/* mtu carried in the RA message */
- 	__IFLA_INET6_MAX
- };
- 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 8381288a0d6e..3eb957777b31 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -394,6 +394,7 @@ static struct inet6_dev *ipv6_add_dev(struct net_device *dev)
- 		ndev->cnf.addr_gen_mode = IN6_ADDR_GEN_MODE_STABLE_PRIVACY;
- 
- 	ndev->cnf.mtu6 = dev->mtu;
-+	ndev->ra_mtu = U32_MIN;
- 	ndev->nd_parms = neigh_parms_alloc(dev, &nd_tbl);
- 	if (!ndev->nd_parms) {
- 		kfree(ndev);
-@@ -5543,6 +5544,7 @@ static inline size_t inet6_ifla6_size(void)
- 	     + nla_total_size(ICMP6_MIB_MAX * 8) /* IFLA_INET6_ICMP6STATS */
- 	     + nla_total_size(sizeof(struct in6_addr)) /* IFLA_INET6_TOKEN */
- 	     + nla_total_size(1) /* IFLA_INET6_ADDR_GEN_MODE */
-+	     + nla_total_size(4) /* IFLA_INET6_RA_MTU */
- 	     + 0;
- }
- 
-@@ -5651,6 +5653,9 @@ static int inet6_fill_ifla6_attrs(struct sk_buff *skb, struct inet6_dev *idev,
- 	if (nla_put_u8(skb, IFLA_INET6_ADDR_GEN_MODE, idev->cnf.addr_gen_mode))
- 		goto nla_put_failure;
- 
-+	if (nla_put_u32(skb, IFLA_INET6_RA_MTU, idev->ra_mtu))
-+		goto nla_put_failure;
-+
  	return 0;
- 
- nla_put_failure:
-@@ -5767,6 +5772,9 @@ static int inet6_set_iftoken(struct inet6_dev *idev, struct in6_addr *token,
- static const struct nla_policy inet6_af_policy[IFLA_INET6_MAX + 1] = {
- 	[IFLA_INET6_ADDR_GEN_MODE]	= { .type = NLA_U8 },
- 	[IFLA_INET6_TOKEN]		= { .len = sizeof(struct in6_addr) },
-+	[IFLA_INET6_RA_MTU]		= { .type = NLA_REJECT,
-+					    .reject_message =
-+						"IFLA_INET6_RA_MTU can't be set" },
- };
- 
- static int check_addr_gen_mode(int mode)
-diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index c467c6419893..23e690769857 100644
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -1391,12 +1391,6 @@ static void ndisc_router_discovery(struct sk_buff *skb)
- 		}
- 	}
- 
--	/*
--	 *	Send a notify if RA changed managed/otherconf flags or timer settings
--	 */
--	if (send_ifinfo_notify)
--		inet6_ifinfo_notify(RTM_NEWLINK, in6_dev);
--
- skip_linkparms:
- 
- 	/*
-@@ -1496,6 +1490,11 @@ static void ndisc_router_discovery(struct sk_buff *skb)
- 		memcpy(&n, ((u8 *)(ndopts.nd_opts_mtu+1))+2, sizeof(mtu));
- 		mtu = ntohl(n);
- 
-+		if (in6_dev->ra_mtu != mtu) {
-+			in6_dev->ra_mtu = mtu;
-+			send_ifinfo_notify = true;
-+		}
-+
- 		if (mtu < IPV6_MIN_MTU || mtu > skb->dev->mtu) {
- 			ND_PRINTK(2, warn, "RA: invalid mtu: %d\n", mtu);
- 		} else if (in6_dev->cnf.mtu6 != mtu) {
-@@ -1519,6 +1518,12 @@ static void ndisc_router_discovery(struct sk_buff *skb)
- 		ND_PRINTK(2, warn, "RA: invalid RA options\n");
- 	}
- out:
-+	/* Send a notify if RA changed managed/otherconf flags or timer
-+	 * settings or ra_mtu value
-+	 */
-+	if (send_ifinfo_notify)
-+		inet6_ifinfo_notify(RTM_NEWLINK, in6_dev);
-+
- 	fib6_info_release(rt);
- 	if (neigh)
- 		neigh_release(neigh);
-diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linux/if_link.h
-index eb15f319aa57..b3610fdd1fee 100644
---- a/tools/include/uapi/linux/if_link.h
-+++ b/tools/include/uapi/linux/if_link.h
-@@ -230,6 +230,7 @@ enum {
- 	IFLA_INET6_ICMP6STATS,	/* statistics (icmpv6)		*/
- 	IFLA_INET6_TOKEN,	/* device token			*/
- 	IFLA_INET6_ADDR_GEN_MODE, /* implicit address generator mode */
-+	IFLA_INET6_RA_MTU,	/* mtu carried in the RA message */
- 	__IFLA_INET6_MAX
- };
- 
+ }
 -- 
-2.18.0
+2.11.0
 
