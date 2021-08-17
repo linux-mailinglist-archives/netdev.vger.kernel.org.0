@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26C8C3EE9C8
+	by mail.lfdr.de (Postfix) with ESMTP id 71FCE3EE9C9
 	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 11:29:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239508AbhHQJ3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 05:29:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43550 "EHLO
+        id S239526AbhHQJ3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 05:29:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236012AbhHQJ3g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 05:29:36 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D2DC061764;
-        Tue, 17 Aug 2021 02:29:03 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id f10so10147885wml.2;
-        Tue, 17 Aug 2021 02:29:03 -0700 (PDT)
+        with ESMTP id S239274AbhHQJ3i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 05:29:38 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD0C6C06179A;
+        Tue, 17 Aug 2021 02:29:04 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id x10so21259449wrt.8;
+        Tue, 17 Aug 2021 02:29:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=kgPj7G38SyrgEwWt/WKASQsH5BeWP3MgfM+9IFhFdKc=;
-        b=nOfIT9TB/d9PHYJhEhcQUxURuDAoyU6XYw1bMoqEujaLI43QvtxGDe3zy1yGXHDU/T
-         RLKVNlvBegEu+Nn3TellDQMAOvGM5/iYMqcBXEqqoPvhAqeh3MekiuMqrgn6D9gN2dss
-         77pfLz4ZNzO/NisHI8okevKQT+arhTDt7cemnHh5aM0AmE/lnONzUjphWqrdsLPuMNE0
-         kZu+rTChYLPboA+itbJnrlpIpfho1HjJr0gjlg2OvT1E8tIH68HkCsQUkxvVLHdxKxNK
-         w9lhTnkn4M2nzpz/1XXlImG9zkWWI6/X77aRoL8imNWPVzJVhwYJCUOch8XLN5Wl7lry
-         aCNg==
+        bh=FkSX+q6lNV8RfsiU+JBNPDdX/Xw/Tk761bFEK2gJIzY=;
+        b=FpVLi6qPvx9OkgFE6UIBxN5B5FxsqDpSGF/QFgeD70n+0Wlsetgxr8dJ129/9+qSsB
+         uZidJ5YbiioFK1Bx1Ba/WxRfdcmP0qmjCJ3n+N8C8GFTh7GfAHtWOo8pW5m/Cij4lyOt
+         jdtvX74DmEIUf9sYdsWNjqaVi7/qNcPgg6Acckujw3fbyH/cJSiyACPn+eP/dKdP/su1
+         d3My8o3oddwLJnEQiWMLh4DErHZ1kiLR2/iR0m6pDJZGfpTkZZOq7/aeWR+Oxp+M4IL9
+         jY1IvPJbPvSSZzLGtMexx9/2BOZGWSckRR5A5Ce/2OZABij2zbASZ65WWDlkd3XYKD0q
+         pz2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=kgPj7G38SyrgEwWt/WKASQsH5BeWP3MgfM+9IFhFdKc=;
-        b=txB8k3ki/1mEjlAqGzTPhzTHcHvUxO+uznPML/0xqAerf4zPRCANgQp7J2H3ic4Dp2
-         9Dy+emvFDq87y1x+c+XLKeJf7kTHkEJKnCamkp+kVB/f1690Do1EePkuztczwiAatRwF
-         jIb3oRTGdKZrYXsKaGnptp3aRWTz1VRPN8BKW3ERpdS6Y2u2SMDnGqwMe1BHaylSjHZP
-         T/wSCvOlZGOdnqUbo63IZkdZhjMzYwOdeGaEolMy0Itu3S6KqK+rlZ7av2Zw3JjxKBqd
-         EQCsDcT8ofk1i9HbfOpuUKqO0DAZF63u4GhllXXV3QCnT4S1DlmBh6lf0W+ouIw69xrt
-         NGwA==
-X-Gm-Message-State: AOAM531xwppGK2OdCT38MrOtSkyOqUV9i7N5CspxFQIja1iYKJRp0RLv
-        4KICyLaOpY3i4Wl3MCMWR9U=
-X-Google-Smtp-Source: ABdhPJzy3DxzzUcgk+fRaIDItfvtjXFEnLv62F87dfJxXAjqZEz/qmc8AY/rB2rSEIJHLrVI7tyYVQ==
-X-Received: by 2002:a1c:7e12:: with SMTP id z18mr2324530wmc.60.1629192541924;
-        Tue, 17 Aug 2021 02:29:01 -0700 (PDT)
+        bh=FkSX+q6lNV8RfsiU+JBNPDdX/Xw/Tk761bFEK2gJIzY=;
+        b=YBhOStwuD2RZxqeYvtM8uT6ZUubf2NrIUcGbzrCTPQ0XCWyJnlIqABOVrukXUN9Wk1
+         GHDgf1U+gjcU5ICtbHLPnwMuJyDU8mpfX2ZJZT2pO4Bn3yt7WilrHoqc0VxS2ekQdnuJ
+         wownbaqIvyX1sa1V23cUMq7BkO4zxN2UO/TO21NpEBVWl7Rouh7UMKO+lpAo6mvuuIsr
+         aNqeHICNLdwstybT0N/ZmD0jGHL83UJjT505mAuzyO+XKnnAzgKkunxCRv0K3ZrQ3iBT
+         ElvqqkVIsmbqRTrVVT2g17fnhFTMws9z3AxsitCeCt3ihzmwIY2XW3Mby3lMhE3M00P2
+         9TDw==
+X-Gm-Message-State: AOAM531ZUJr528/Rhu3Uvw3y+AShgaQ3hKNjgnkWwd5XrtjyH59EzFWT
+        AhTipPVm/x+oKy93fEJJEUw=
+X-Google-Smtp-Source: ABdhPJwgtNw5u0soa7O9VF+alhTM1lF3WRTUwi5los7x1h1sjhn/zCif9R7KFZsXZq17G26FzzhNKw==
+X-Received: by 2002:a5d:4d4b:: with SMTP id a11mr2764808wru.411.1629192543447;
+        Tue, 17 Aug 2021 02:29:03 -0700 (PDT)
 Received: from localhost.localdomain (h-46-59-47-246.A165.priv.bahnhof.se. [46.59.47.246])
-        by smtp.gmail.com with ESMTPSA id l2sm1462421wme.28.2021.08.17.02.29.00
+        by smtp.gmail.com with ESMTPSA id l2sm1462421wme.28.2021.08.17.02.29.02
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 17 Aug 2021 02:29:01 -0700 (PDT)
+        Tue, 17 Aug 2021 02:29:03 -0700 (PDT)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
         maciej.fijalkowski@intel.com
 Cc:     jonathan.lemon@gmail.com, ciara.loftus@intel.com,
         bpf@vger.kernel.org, yhs@fb.com, andrii@kernel.org
-Subject: [PATCH bpf-next v2 06/16] selftests: xsk: remove end-of-test packet
-Date:   Tue, 17 Aug 2021 11:27:19 +0200
-Message-Id: <20210817092729.433-7-magnus.karlsson@gmail.com>
+Subject: [PATCH bpf-next v2 07/16] selftests: xsk: disassociate umem size with packets sent
+Date:   Tue, 17 Aug 2021 11:27:20 +0200
+Message-Id: <20210817092729.433-8-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20210817092729.433-1-magnus.karlsson@gmail.com>
 References: <20210817092729.433-1-magnus.karlsson@gmail.com>
@@ -67,162 +67,98 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Get rid of the end-of-test packet and just count the number of packets
-received and quit when the expected number as been
-received. Simplifies the code.
+Disassociate the number of packets sent with the number of buffers in
+the umem. This so we can loop over the umem to test more things. Set
+the size of the umem to be a multiple of 2M. A requirement for huge
+pages that are needed in unaligned mode.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- tools/testing/selftests/bpf/xdpxceiver.c | 42 +++++++-----------------
- tools/testing/selftests/bpf/xdpxceiver.h |  2 --
- 2 files changed, 12 insertions(+), 32 deletions(-)
+ tools/testing/selftests/bpf/xdpxceiver.c | 18 ++++++++----------
+ tools/testing/selftests/bpf/xdpxceiver.h |  2 +-
+ 2 files changed, 9 insertions(+), 11 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index b7d193a96083..b0fee71355bf 100644
+index b0fee71355bf..ebed88c13509 100644
 --- a/tools/testing/selftests/bpf/xdpxceiver.c
 +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -600,7 +600,7 @@ static void worker_pkt_dump(void)
- 	void *ptr;
+@@ -250,7 +250,7 @@ static void gen_eth_frame(struct xsk_umem_info *umem, u64 addr)
+ 	memcpy(xsk_umem__get_data(umem->buffer, addr), pkt_data, PKT_SIZE);
+ }
  
- 	fprintf(stdout, "---------------------------------------\n");
--	for (int iter = 0; iter < num_frames - 1; iter++) {
-+	for (int iter = 0; iter < num_frames; iter++) {
- 		ptr = pkt_buf[iter]->payload;
- 		ethhdr = ptr;
- 		iphdr = ptr + sizeof(*ethhdr);
-@@ -627,11 +627,6 @@ static void worker_pkt_dump(void)
- 		/*extract L5 frame */
- 		payload = *((uint32_t *)(ptr + PKT_HDR_SIZE));
- 
--		if (payload == EOT) {
--			print_verbose("End-of-transmission frame received\n");
--			fprintf(stdout, "---------------------------------------\n");
--			break;
--		}
- 		fprintf(stdout, "DEBUG>> L5: payload: %d\n", payload);
- 		fprintf(stdout, "---------------------------------------\n");
- 	}
-@@ -694,28 +689,24 @@ static void worker_pkt_validate(void)
- 		/*do not increment pktcounter if !(tos=0x9 and ipv4) */
- 		if (iphdr->version == IP_PKT_VER && iphdr->tos == IP_PKT_TOS) {
- 			payloadseqnum = *((uint32_t *)(pkt_node_rx_q->pkt_frame + PKT_HDR_SIZE));
--			if (debug_pkt_dump && payloadseqnum != EOT) {
-+			if (debug_pkt_dump) {
- 				pkt_obj = malloc(sizeof(*pkt_obj));
- 				pkt_obj->payload = malloc(PKT_SIZE);
- 				memcpy(pkt_obj->payload, pkt_node_rx_q->pkt_frame, PKT_SIZE);
- 				pkt_buf[payloadseqnum] = pkt_obj;
- 			}
- 
--			if (payloadseqnum == EOT) {
--				print_verbose("End-of-transmission frame received: PASS\n");
--				sigvar = 1;
--				break;
--			}
--
--			if (prev_pkt + 1 != payloadseqnum) {
-+			if (pkt_counter % num_frames != payloadseqnum) {
- 				ksft_test_result_fail
--				    ("ERROR: [%s] prev_pkt [%d], payloadseqnum [%d]\n",
--				     __func__, prev_pkt, payloadseqnum);
-+				    ("ERROR: [%s] expected counter [%d], payloadseqnum [%d]\n",
-+				     __func__, pkt_counter, payloadseqnum);
- 				ksft_exit_xfail();
- 			}
- 
--			prev_pkt = payloadseqnum;
--			pkt_counter++;
-+			if (++pkt_counter == opt_pkt_count) {
-+				sigvar = 1;
-+				break;
-+			}
- 		} else {
- 			ksft_print_msg("Invalid frame received: ");
- 			ksft_print_msg("[IP_PKT_VER: %02X], [IP_PKT_TOS: %02X]\n", iphdr->version,
-@@ -800,11 +791,7 @@ static void *worker_testapp_validate_tx(void *arg)
- 		thread_common_ops(ifobject, bufs);
- 
- 	for (int i = 0; i < num_frames; i++) {
--		/*send EOT frame */
--		if (i == (num_frames - 1))
--			data.seqnum = -1;
--		else
--			data.seqnum = i;
-+		data.seqnum = i;
- 		gen_udp_hdr(&data, ifobject, udp_hdr);
- 		gen_ip_hdr(ifobject, ip_hdr);
- 		gen_udp_csum(udp_hdr, ip_hdr);
-@@ -812,8 +799,7 @@ static void *worker_testapp_validate_tx(void *arg)
- 		gen_eth_frame(ifobject->umem, i * XSK_UMEM__DEFAULT_FRAME_SIZE);
- 	}
- 
--	print_verbose("Sending %d packets on interface %s\n",
--		      (opt_pkt_count - 1), ifobject->ifname);
-+	print_verbose("Sending %d packets on interface %s\n", opt_pkt_count, ifobject->ifname);
- 	tx_only_all(ifobject);
- 
- 	testapp_cleanup_xsk_res(ifobject);
-@@ -888,7 +874,7 @@ static void testapp_validate(void)
- 
- 	if (debug_pkt_dump && test_type != TEST_TYPE_STATS) {
- 		worker_pkt_dump();
--		for (int iter = 0; iter < num_frames - 1; iter++) {
-+		for (int iter = 0; iter < num_frames; iter++) {
- 			free(pkt_buf[iter]->payload);
- 			free(pkt_buf[iter]);
- 		}
-@@ -905,7 +891,6 @@ static void testapp_teardown(void)
- 
- 	for (i = 0; i < MAX_TEARDOWN_ITER; i++) {
- 		pkt_counter = 0;
--		prev_pkt = -1;
- 		sigvar = 0;
- 		print_verbose("Creating socket\n");
- 		testapp_validate();
-@@ -933,7 +918,6 @@ static void testapp_bidi(void)
+-static void xsk_configure_umem(struct ifobject *data, void *buffer, int idx)
++static void xsk_configure_umem(struct ifobject *data, void *buffer, u64 size, int idx)
  {
- 	for (int i = 0; i < MAX_BIDI_ITER; i++) {
- 		pkt_counter = 0;
--		prev_pkt = -1;
- 		sigvar = 0;
- 		print_verbose("Creating socket\n");
- 		testapp_validate();
-@@ -967,7 +951,6 @@ static void testapp_bpf_res(void)
+ 	struct xsk_umem_config cfg = {
+ 		.fill_size = XSK_RING_PROD__DEFAULT_NUM_DESCS,
+@@ -259,7 +259,6 @@ static void xsk_configure_umem(struct ifobject *data, void *buffer, int idx)
+ 		.frame_headroom = frame_headroom,
+ 		.flags = XSK_UMEM__DEFAULT_FLAGS
+ 	};
+-	int size = num_frames * XSK_UMEM__DEFAULT_FRAME_SIZE;
+ 	struct xsk_umem_info *umem;
+ 	int ret;
  
- 	for (i = 0; i < MAX_BPF_ITER; i++) {
- 		pkt_counter = 0;
--		prev_pkt = -1;
- 		sigvar = 0;
- 		print_verbose("Creating socket\n");
- 		testapp_validate();
-@@ -1043,7 +1026,6 @@ static void run_pkt_test(int mode, int type)
- 	xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
- 	pkt_counter = 0;
- 	second_step = 0;
--	prev_pkt = -1;
- 	sigvar = 0;
- 	stat_test_type = -1;
- 	rxqsize = XSK_RING_CONS__DEFAULT_NUM_DESCS;
+@@ -722,22 +721,23 @@ static void worker_pkt_validate(void)
+ 
+ static void thread_common_ops(struct ifobject *ifobject, void *bufs)
+ {
+-	int umem_sz = num_frames * XSK_UMEM__DEFAULT_FRAME_SIZE;
++	u64 umem_sz = num_frames * XSK_UMEM__DEFAULT_FRAME_SIZE;
++	int mmap_flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE;
++	size_t mmap_sz = umem_sz;
+ 	int ctr = 0;
+ 	int ret;
+ 
+ 	ifobject->ns_fd = switch_namespace(ifobject->nsname);
+ 
+ 	if (test_type == TEST_TYPE_BPF_RES)
+-		umem_sz *= 2;
++		mmap_sz *= 2;
+ 
+-	bufs = mmap(NULL, umem_sz,
+-		    PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
++	bufs = mmap(NULL, mmap_sz, PROT_READ | PROT_WRITE, mmap_flags, -1, 0);
+ 	if (bufs == MAP_FAILED)
+ 		exit_with_error(errno);
+ 
+ 	while (ctr++ < SOCK_RECONF_CTR) {
+-		xsk_configure_umem(ifobject, bufs, 0);
++		xsk_configure_umem(ifobject, bufs, umem_sz, 0);
+ 		ifobject->umem = ifobject->umem_arr[0];
+ 		ret = xsk_configure_socket(ifobject, 0);
+ 		if (!ret)
+@@ -753,7 +753,7 @@ static void thread_common_ops(struct ifobject *ifobject, void *bufs)
+ 	ifobject->xsk = ifobject->xsk_arr[0];
+ 
+ 	if (test_type == TEST_TYPE_BPF_RES) {
+-		xsk_configure_umem(ifobject, (u8 *)bufs + (umem_sz / 2), 1);
++		xsk_configure_umem(ifobject, (u8 *)bufs + umem_sz, umem_sz, 1);
+ 		ifobject->umem = ifobject->umem_arr[1];
+ 		ret = xsk_configure_socket(ifobject, 1);
+ 	}
+@@ -1094,8 +1094,6 @@ int main(int argc, char **argv)
+ 
+ 	parse_command_line(argc, argv);
+ 
+-	num_frames = ++opt_pkt_count;
+-
+ 	init_iface(ifdict[0], MAC1, MAC2, IP1, IP2, UDP_PORT1, UDP_PORT2, tx);
+ 	init_iface(ifdict[1], MAC2, MAC1, IP2, IP1, UDP_PORT2, UDP_PORT1, rx);
+ 
 diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
-index 1c94230c351a..a4371d9e2798 100644
+index a4371d9e2798..131bd998e374 100644
 --- a/tools/testing/selftests/bpf/xdpxceiver.h
 +++ b/tools/testing/selftests/bpf/xdpxceiver.h
-@@ -34,7 +34,6 @@
- #define IP_PKT_TOS 0x9
- #define UDP_PKT_SIZE (IP_PKT_SIZE - sizeof(struct iphdr))
- #define UDP_PKT_DATA_SIZE (UDP_PKT_SIZE - sizeof(struct udphdr))
--#define EOT (-1)
- #define USLEEP_MAX 10000
- #define SOCK_RECONF_CTR 10
- #define BATCH_SIZE 64
-@@ -82,7 +81,6 @@ static u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
- static u32 xdp_bind_flags = XDP_USE_NEED_WAKEUP | XDP_COPY;
- static u8 pkt_data[XSK_UMEM__DEFAULT_FRAME_SIZE];
- static u32 pkt_counter;
--static long prev_pkt = -1;
- static int sigvar;
- static int stat_test_type;
- static u32 rxqsize;
+@@ -70,7 +70,7 @@ enum STAT_TEST_TYPES {
+ 
+ static int configured_mode = TEST_MODE_UNCONFIGURED;
+ static u8 debug_pkt_dump;
+-static u32 num_frames;
++static u32 num_frames = DEFAULT_PKT_CNT / 4;
+ static bool second_step;
+ static int test_type;
+ 
 -- 
 2.29.0
 
