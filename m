@@ -2,166 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 126BB3EEFEE
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 18:05:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 079493EEFF0
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 18:05:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229676AbhHQQFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 12:05:35 -0400
-Received: from mail-eopbgr150053.outbound.protection.outlook.com ([40.107.15.53]:20650
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229460AbhHQQFd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Aug 2021 12:05:33 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bd3HMQF8D/+T8fCrNsL28m+GAGvwt8CnBjUWIH2hPHQyd2kY2jGboybwp/tWMGJ0kMx4AJl5yboTXuZPM3Z8UC4FHLONyDX6uKvgt/dDP8/arhXTB0rXi9oYhDgcmod3lWFYipYypQjaD3hATa8qwwDOQrtMkrLtnPk5Zxb4JR3lbLhnh6NF551MACprVm81DEDetYvaotN8JSC1hv1yMqZQXOYd0dCN3e2qmRp3R7kh3bqpVyeNzECefYcRDgrKEPv73BlvSfLfvSOQ7agRusbBU+S2rC2dKkf8J24BPIUDNBsvxrxGOqw0bHhq9/k4aCcECMtOGHO0qiD8tplO6Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WJCnEm+hhmIYqtLnJ+TKTcYPY3Ta3rYG8GNylduURI8=;
- b=OE3Ural99QfRaGEcC1XSrTKNfWENe0kL/3E1kSDl21pDFYaXUqnbuTCpT7LSbmNS8z18s9OzHeJkeATRLJiTzNbK3cI9XS+lbtamKbQlPrrxfhr9kouRHwVV2DW/3Ls2++0wAfb6LqJmkSSRC6crTq8CMStj4cOv6d1w/iyNUl6+HcTmBd9MYFDKX0oUitI94pO8WF4mBHn+oDaA1j/3Dunr4B5JcAuARAn+sG63sf5fYnNWmXUCK8NUEeZWotviP6fFbrSv7HWylbLOWeA6lPdBQIMC7+2vpT+IyO5B+uB0kkw0AcW55ml0nin9ZXd666njkkj3uZxIRJBo4K68gQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WJCnEm+hhmIYqtLnJ+TKTcYPY3Ta3rYG8GNylduURI8=;
- b=I/+PZ27QM8tfavm7GrRrna06YzRcwXE4O1R7bstkriAHdOtK2uO6DW86rSwTEghqI5Aec8bFQ3/DryQSqxVMpKYa++8TU8S/ajxoRAN1CuA6//zL+NbXniT/UT0vR+ZhTi4ulGtTqXT+0QsitqHHc3KEkPRs4DDsYo4o93C50wg=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VE1PR04MB7471.eurprd04.prod.outlook.com (2603:10a6:800:1a7::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.15; Tue, 17 Aug
- 2021 16:04:58 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4415.024; Tue, 17 Aug 2021
- 16:04:58 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com
-Subject: [PATCH net] net: mscc: ocelot: allow forwarding from bridge ports to the tag_8021q CPU port
-Date:   Tue, 17 Aug 2021 19:04:25 +0300
-Message-Id: <20210817160425.3702809-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR0401CA0011.eurprd04.prod.outlook.com
- (2603:10a6:800:4a::21) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        id S229889AbhHQQGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 12:06:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:25492 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229716AbhHQQGI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 12:06:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1629216333;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9gzzg2YwEyV3U2nBjj+cUEsKQ5qhPEMvgE1ztK9QOzY=;
+        b=RsOsE75chmxexCnrSKGeVmVOk4nzscZ/rsNy3TWTDFvIArtPpwI1h4O1axFXYQBlDlYyR2
+        RBydZX4QgP6VYXE//wjToDyWgUab4qewpgrTrwBOs6WMl3c84s9rvU2fGaNONg2JYx4BAI
+        ituw7vHmI8/2aIr1THAKeZl2gqWnh40=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-562-OZ3emn1vMl2ZTP9iXYpo8g-1; Tue, 17 Aug 2021 12:05:32 -0400
+X-MC-Unique: OZ3emn1vMl2ZTP9iXYpo8g-1
+Received: by mail-ej1-f69.google.com with SMTP id e15-20020a1709061fcf00b005bd9d618ea0so2146439ejt.13
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 09:05:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=9gzzg2YwEyV3U2nBjj+cUEsKQ5qhPEMvgE1ztK9QOzY=;
+        b=aJGWPVpRN6qmlk+wZsQ0wrqB19Y3Sc7AQ3hLjm38kmx+6b+Rju498fkpR/CXswii94
+         4T1iDTVaF6gs744n57xzbZ5H5pX8pEfHl4X1xy0kbGi79DBRltiPxRzDJpHdw3087cwy
+         J2Kb9kXFOt56cLYp5z40/HydC+hoggw7zvQDREdMUjo7G1yl0rCxt+VvnEFUw6ssFTJf
+         zKR/EQnhy4ZBnzDQIgzohDXXY9t4sJz3bYh2ZsRCPQOH0jefUp62tGTwbRZ/3YDEP+G+
+         z1mjSm9UiUo5Pu+v40QJbIK0Gxw2fRMO992WSg3CK1FTBtJwH7WWUPoWuCPvOazaF0jX
+         Z9Eg==
+X-Gm-Message-State: AOAM531M4tNhStacxn4uzd1UX3/sH5Zbp5rg91+B7Vw5AOYzF75EjX9h
+        NzwoJgX3jJqj0neQ3rJF/s2aS+zU/rgwJ7Eebu9fbC8RFlaaFk3bfbfhfTfhU4jFbF8KjOWn9QJ
+        OPxdOqbemgV2mdUn/
+X-Received: by 2002:a17:906:38ce:: with SMTP id r14mr4723480ejd.268.1629216330629;
+        Tue, 17 Aug 2021 09:05:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwR1te4vfIy9M4SfzRe1qI8OFYLHdyH/4WNJ05ExASDPVCnSkyrwvya16nDl/TN1m4q9gXjsg==
+X-Received: by 2002:a17:906:38ce:: with SMTP id r14mr4723459ejd.268.1629216330407;
+        Tue, 17 Aug 2021 09:05:30 -0700 (PDT)
+Received: from pc-32.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id q30sm1286707edi.84.2021.08.17.09.05.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Aug 2021 09:05:27 -0700 (PDT)
+Date:   Tue, 17 Aug 2021 18:05:25 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     James Carlson <carlsonj@workingcode.com>,
+        Chris Fowler <cfowler@outpostsentinel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-ppp@vger.kernel.org" <linux-ppp@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ppp: Add rtnl attribute IFLA_PPP_UNIT_ID for specifying
+ ppp unit id
+Message-ID: <20210817160525.GA20616@pc-32.home>
+References: <20210810171626.z6bgvizx4eaafrbb@pali>
+ <2f10b64e-ba50-d8a5-c40a-9b9bd4264155@workingcode.com>
+ <20210811173811.GE15488@pc-32.home>
+ <20210811180401.owgmie36ydx62iep@pali>
+ <20210812092847.GB3525@pc-23.home>
+ <20210812134845.npj3m3vzkrmhx6uy@pali>
+ <20210812182645.GA10725@pc-23.home>
+ <20210812190440.fknfthdk3mazm6px@pali>
+ <20210816161114.GA3611@pc-32.home>
+ <20210816162355.7ssd53lrpclfvuiz@pali>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.144.60) by VI1PR0401CA0011.eurprd04.prod.outlook.com (2603:10a6:800:4a::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Tue, 17 Aug 2021 16:04:57 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1748f560-8994-4d2c-9637-08d96198c297
-X-MS-TrafficTypeDiagnostic: VE1PR04MB7471:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VE1PR04MB74710078D8EC960512C9DE1AE0FE9@VE1PR04MB7471.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: KK++n8nZ6rn75vqeN5u1EW+eUfhoE0w+ADS0CmkguJE9OFNFpUhlKDWxod0BE4yg4+btlDNkAEd4cXn2bM716cvsGiRXS/rzMhaR1MilLf53D2OHupSSu+6nG3JJmf7aKBhk1g5DzmJ25aW8YVItUy3VFF1Lol8IA9Ea5D2uBKa1RS3qhuU8aaWXylMFw4lGkPBPwpo9gfJfp8hltih76TRh1gg9UJcOFcaWac73HrIEgPtOA96B+t9+YGGnqykZ+3+oMtl1lNSD/42zwvv50rWyUz6Y/uDLCiT3A0P14tJkveJAztCcq4gfR69OqajOfi2qxEKvq0Qg4Ylpq5Vi6jF6c2vtxgGj47MIHafpJuak9Ujid6FPk+KZ0yVh21Teq1z1zoIHzjgM2IDX9h+tTcMlUKzkcJscVYVQ+gBzTqo4Sc1oV1t4w3h6qAyKEdz3h7SY3mWC3knWldnoNppJaatIxcjGJvUsT0SlYad7ThO3U239OscVrOs+plc23KrknVOSb+35B2Q8B+la/VZ6HBYmjkr5LNpqIfUPRlFEs7OI6CTOD5dqpe4Kmxe1mqFMsAiI7ANxp+XHQ0TqN2yXTCrUeXyqoOLAFemA3cvd5f1bzew0HJR4OaXAULYRTR2mZzRwVQ7mRbLrJJFYpm2c1XoYDwc6iAuKMXPRzQhd3vREtbOcOdHWT3ZvftU9C/IyXxrA/1xmwt6wBXvG5CQZ177SBJmq70JW9vL6Gd6sSerAJkJmxW3cXJf2N3+CZmH8srBneDS8OX6lXU0reVUbhasMHahGMOGXUW42CgXrhs/hi493wPYBZ+6cA6WJGPu0
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(136003)(376002)(39850400004)(346002)(110136005)(36756003)(1076003)(52116002)(8676002)(26005)(86362001)(8936002)(54906003)(956004)(2906002)(966005)(186003)(2616005)(6506007)(4326008)(66556008)(66476007)(6512007)(316002)(6666004)(44832011)(478600001)(38350700002)(38100700002)(66946007)(5660300002)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SIruHb/QvGY2TUdtSYYOYR3poXq98MiBFx2peomt1oKpnFte6dOWNIDZsShJ?=
- =?us-ascii?Q?8D2CapoCVA7lWl2iLr/lSw9hs27J55ULRW+/bTfJpPRmvqF2T2Sw2cCjMPML?=
- =?us-ascii?Q?xVQtxyuFE7NjOQBA1WujmoaUpBpgonAVCOP0hCPGv3gMWGfv8SMNSi9xSdLx?=
- =?us-ascii?Q?gkrIXPPclG+LMY+rnfQVhuhZf8jkBe19tIFzLhsWUbbsTZFfMuioJvEgfoFq?=
- =?us-ascii?Q?jizh8dN3TjfFqkgdq1SD22JEPfzmCA66I6Z+bWOMqjyBlhNB4wllp5e7e3pT?=
- =?us-ascii?Q?z48MahApMTBSiDPgZ82eXWRplCoJcYWjNib0nhgvIC124tVcWJo7ZRpR5LLc?=
- =?us-ascii?Q?3x9KU+bRPLXGbLSXcQurjl/Z+FqZeNQz98sEkwkDNE84OailrK8aRZfqC1Pp?=
- =?us-ascii?Q?uZV+4p6fgBQ+IziDYDzoyovKokU/GVT70xj5t5NePH2ctitE6qJs2UNs3IbP?=
- =?us-ascii?Q?wzrEfjpQr8rp+UQYdZrBLl1kxDESkrCIDZEdfZWOQtina2MBYeeLkItKXjDk?=
- =?us-ascii?Q?jVpEqJJzinAC1qs5kdDJT5Tc2s+46SZ3yG6NG49jilOQr8FPIocAZCCm4HKk?=
- =?us-ascii?Q?1KrKtKO81TUVHnOysWIn5+moJxqmbxlKoqaBX612hXINZaTGFxh5N5zXZW+L?=
- =?us-ascii?Q?I+nVyYj0C8Dy/+a/HyoqinvfudggyaADCoD/cNyb6InVEPWzRmjgk4yRK//C?=
- =?us-ascii?Q?At2zaQZFnHQuBMG2GxWW808nyd66HeZKpSO23BwN3qcNjqib91AHramhK0jL?=
- =?us-ascii?Q?ji/aojBscIiLa0uKyVQxrEbo6DiHZSZ2JGwKwG/kcm6vaE079L5BO+uo/ozP?=
- =?us-ascii?Q?VORsE9X9pAh0RWpyg/wlgJreZrGTJL6Uzq0Ari7bjdlYZmM3CJaW6R8yzqQX?=
- =?us-ascii?Q?TVx3S9CQfhV2/px0gQnaBWcylHMjpWCm5lhi7+r6pDUXihG5FuLmxJNMXKJ9?=
- =?us-ascii?Q?Ts2aWnVJOcisBCr/FzEAjD7icssLrPkg7lCGfsHP2d/Sz+Nue+wJk1rUqS2c?=
- =?us-ascii?Q?nbfCujlVHP2yUzHqvoEYjyVoAgadrjKww7cjNsHVe7vIPDkLx4kv2lCdKrsu?=
- =?us-ascii?Q?F90qYTdt8lg7bJIvAc9Z1FtiFDiQJkGmwt9p+d7WCPwHvBsomFNW1dqfB2g+?=
- =?us-ascii?Q?d4eR+Ot+ZFrnvXaihy5T1QEkvZfKQCmFYnU8XXTwLLU21heSndGcwXkNEhTZ?=
- =?us-ascii?Q?bc1GP0F8wmOmUFY9u0THiMop0u+a4M2Q+r1u5kq1NDn7qD3ZQaqreC1QLeoZ?=
- =?us-ascii?Q?08uKUusCxyBr1KmAVRkeiYCv7e/Ad2Qf9xQlg/vzF2zNLmHSMLlXXeS243Vv?=
- =?us-ascii?Q?7RdpJcgyp4hMmbfSrMZtKmmD?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1748f560-8994-4d2c-9637-08d96198c297
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2021 16:04:57.8752
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SK0jHIMZNjxjTkcKKInnRvn302S6HP24KcZlYNc+SjZWGQM8ozxnaVW2dZOcHOqe0gter2xchEav0G/uq555aw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7471
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210816162355.7ssd53lrpclfvuiz@pali>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently we are unable to ping a bridge on top of a felix switch which
-uses the ocelot-8021q tagger. The packets are dropped on the ingress of
-the user port and the 'drop_local' counter increments (the counter which
-denotes drops due to no valid destinations).
+On Mon, Aug 16, 2021 at 06:23:55PM +0200, Pali Rohár wrote:
+> On Monday 16 August 2021 18:11:14 Guillaume Nault wrote:
+> > Do you have plans for adding netlink support to pppd? If so, is the
+> > project ready to accept such code?
+> 
+> Yes, I have already some WIP code and I'm planning to send a pull
+> request to pppd on github for it. I guess that it could be accepted,
 
-Dumping the PGID tables, it becomes clear that the PGID_SRC of the user
-port is zero, so it has no valid destinations.
+I guess you can easily use the netlink api for cases where the "unit"
+option isn't specified and fall back to the ioctl api when it is. If
+all goes well, then we can extend the netlink api to accept a unit id.
 
-But looking at the code, the cpu_fwd_mask (the bit mask of DSA tag_8021q
-ports) is clearly missing from the forwarding mask of ports that are
-under a bridge. So this has always been broken.
+But what about the lack of netlink feedback about the created
+interface? Are you restricted to use netlink only when the "ifname"
+option is provided?
 
-Looking at the version history of the patch, in v7
-https://patchwork.kernel.org/project/netdevbpf/patch/20210125220333.1004365-12-olteanv@gmail.com/
-the code looked like this:
+> specially if there still would be backward compatibility via ioctl for
+> kernels which do not support rtnl API.
 
-	/* Standalone ports forward only to DSA tag_8021q CPU ports */
-	unsigned long mask = cpu_fwd_mask;
+Indeed, I'd expect keeping compatiblitity with old kernels that only
+have the ioctl api to be a must (but I have no experience contributing
+to the pppd project).
 
-(...)
-	} else if (ocelot->bridge_fwd_mask & BIT(port)) {
-		mask |= ocelot->bridge_fwd_mask & ~BIT(port);
+> One of the argument which can be
+> used why rtnl API is better, is fixing issue: atomic creating of
+> interface with specific name.
 
-while in v8 (the merged version)
-https://patchwork.kernel.org/project/netdevbpf/patch/20210129010009.3959398-12-olteanv@gmail.com/
-it looked like this:
-
-	unsigned long mask;
-
-(...)
-	} else if (ocelot->bridge_fwd_mask & BIT(port)) {
-		mask = ocelot->bridge_fwd_mask & ~BIT(port);
-
-So the breakage was introduced between v7 and v8 of the patch.
-
-Fixes: e21268efbe26 ("net: dsa: felix: perform switch setup for tag_8021q")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/ethernet/mscc/ocelot.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index adfb9781799e..2948d731a1c1 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1334,6 +1334,7 @@ void ocelot_apply_bridge_fwd_mask(struct ocelot *ocelot)
- 			struct net_device *bond = ocelot_port->bond;
- 
- 			mask = ocelot_get_bridge_fwd_mask(ocelot, bridge);
-+			mask |= cpu_fwd_mask;
- 			mask &= ~BIT(port);
- 			if (bond) {
- 				mask &= ~ocelot_get_bond_mask(ocelot, bond,
--- 
-2.25.1
+Yes, that looks useful.
 
