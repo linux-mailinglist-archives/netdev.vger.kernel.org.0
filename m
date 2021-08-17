@@ -2,97 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F18193EE5CF
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 06:45:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4A2E3EE5F3
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 06:55:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238017AbhHQEqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 00:46:18 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:50502 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S237753AbhHQEqE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 00:46:04 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 17H2lpri006897;
-        Mon, 16 Aug 2021 21:45:31 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=8OqO2N5MJl3DjxRITkvRf5Rlh6jbiNg9ftdV8SCEeDA=;
- b=Eu7jHHUCZoHQdIe4QnwWleU6v7t4NwMNlGdraRyAveOqkb+vHaigss36UqYrQTdDIuaH
- 0/VzZIFnaS7oCtzre6F8wda+sk0gZhDyur+yxlIzfc7AG3Q8m1nClMnKzqm+4LhM+mcD
- G5eprc+wd4a9u7uwnroXpDBIQOg0ALyNyLAb4U/5IufVmF47AW5J7mqlxBQl+6LXaffW
- J9QqTbnRa/nTXPlv3eYuIDzcZAm0tlJlJTd52dkN1yl9P35w5LkAJ34i7kpOUL9IecTz
- lh2QxXng4kfLPwLS10n0oi1Dsz51sTTviK+QpX8FD9brvZVb3+xOu+Gs6pJSqyr9Qf6l 6Q== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3ag4n0ra5p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 16 Aug 2021 21:45:30 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 16 Aug
- 2021 21:45:29 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Mon, 16 Aug 2021 21:45:29 -0700
-Received: from hyd1358.marvell.com (unknown [10.29.37.11])
-        by maili.marvell.com (Postfix) with ESMTP id 36E613F70AD;
-        Mon, 16 Aug 2021 21:45:26 -0700 (PDT)
-From:   Subbaraya Sundeep <sbhatta@marvell.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     <sgoutham@marvell.com>, <hkelam@marvell.com>, <gakula@marvell.com>,
-        Vidya <vvelumuri@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: [net-next PATCH 11/11] octeontx2-af: configure npc for cn10k to allow packets from cpt
-Date:   Tue, 17 Aug 2021 10:14:53 +0530
-Message-ID: <1629175493-4895-12-git-send-email-sbhatta@marvell.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1629175493-4895-1-git-send-email-sbhatta@marvell.com>
-References: <1629175493-4895-1-git-send-email-sbhatta@marvell.com>
+        id S237260AbhHQEzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 00:55:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37676 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230272AbhHQEzu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 00:55:50 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C522C061764;
+        Mon, 16 Aug 2021 21:55:17 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id j1so30097903pjv.3;
+        Mon, 16 Aug 2021 21:55:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hAXABoom5XY+ws1/jiIFHmNJnWtweNFayiGnrPzUhKo=;
+        b=ewl9OoE2pnxQkOSLm43GnYt9fFJEhFLOIu9grvLJPILw3j5E4dnW+TOZAhmE/Apjxl
+         5x4TGw+X4B63h4YW4rmdCNkAHLi/K/OQdBPhM3czyyqDQOsDBvkISIWyEW0F89azcIvh
+         is5rfYxu6D/cNOpIskVZLvE1i1jfayvBLqf89Rhyf3uChgdMWHiR3j5GxhAxwRD6N3ok
+         Itgf2Mtpzx9yJW2mLZYxyizR9wKa2D7ska7MziSU0Q40+Bwy0k3qgk4ayZ+1UBn5aYNU
+         /qFXjNqV1+ZfB5WVduvwdpUZfAhZToy6gPn4MpWB7d74vvYjKyQO/AX0Avr37ZFT9Uc1
+         KEiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hAXABoom5XY+ws1/jiIFHmNJnWtweNFayiGnrPzUhKo=;
+        b=s3HsaSOqYyyFscYXB6FZYJN+ELCjZbodPdUg95+0JK9f4Bb1b6MfMrPQ39EaUs5kTk
+         0Tjbph6D/BXE5CY0/7DOGlgfjxNyaQ8+F0SDIP8BVoZC2TzrDASyuLR4CJI8nzx4KZiQ
+         MJHqQTjmADGf10Z01iXQjIv1OxUXxoAFue6APYawfCZuuire69K9z5sLp4mN4ZDnpeHH
+         BWh806e0Y9Ce/1Z09C6ED3SwNWj6ajGMA0X1n3+1eQHxGBRPKwjQ0056nvlOldimOLOR
+         AN7zluonsVSqVgw6WfeUrHrcXf32o4PjlxI6t4dIZvIqUwvVoDWofvOp7jzXYMBHskVa
+         Rqlg==
+X-Gm-Message-State: AOAM533HvmLtIMVfGul/L0/zFP8p6BS2tSgYsVhxhvXp1ivixumF0TSx
+        3i96nYQ/xL3lYHPHTddB/EU=
+X-Google-Smtp-Source: ABdhPJxhyhrtsbV/IkVXpjBzLeMLDOgoo0HmIE/UWAfWd+zR3AmkLu53p/slOhIqP2X4sg9Ehnu4fA==
+X-Received: by 2002:a63:7cb:: with SMTP id 194mr1724744pgh.308.1629176115852;
+        Mon, 16 Aug 2021 21:55:15 -0700 (PDT)
+Received: from localhost.localdomain ([1.240.193.107])
+        by smtp.googlemail.com with ESMTPSA id r9sm863091pfh.135.2021.08.16.21.55.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Aug 2021 21:55:15 -0700 (PDT)
+From:   Kangmin Park <l4stpr0gr4m@gmail.com>
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tedd Ho-Jeong An <tedd.an@intel.com>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net] Bluetooth: Fix return value in hci_dev_do_close()
+Date:   Tue, 17 Aug 2021 13:55:10 +0900
+Message-Id: <20210817045510.4479-1-l4stpr0gr4m@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: 8cAM3xHwSLQK8PzxXd2R7BHDj_eRiIMO
-X-Proofpoint-ORIG-GUID: 8cAM3xHwSLQK8PzxXd2R7BHDj_eRiIMO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-08-17_01,2021-08-16_02,2020-04-07_01
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vidya <vvelumuri@marvell.com>
+hci_error_reset() return without calling hci_dev_do_open() when
+hci_dev_do_close() return error value which is not 0.
 
-On CN10K, the higher bits in the channel number represents the CPT
-channel number. Mask out these higher bits in the npc configuration
-to allow packets from cpt for parsing.
+Also, hci_dev_close() return hci_dev_do_close() function's return
+value.
 
-Signed-off-by: Vidya <vvelumuri@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+But, hci_dev_do_close() return always 0 even if hdev->shutdown
+return error value. So, fix hci_dev_do_close() to save and return
+the return value of the hdev->shutdown when it is called.
+
+Fixes: a44fecbd52a4d ("Bluetooth: Add shutdown callback before closing the device")
+Signed-off-by: Kangmin Park <l4stpr0gr4m@gmail.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ net/bluetooth/hci_core.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-index 504dfa5..6f23100 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-@@ -724,7 +724,17 @@ void rvu_npc_install_promisc_entry(struct rvu *rvu, u16 pcifunc,
- 		action.index = pfvf->promisc_mce_idx;
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index e1a545c8a69f..5f3c7515a8f0 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -1718,6 +1718,7 @@ static void hci_pend_le_actions_clear(struct hci_dev *hdev)
+ int hci_dev_do_close(struct hci_dev *hdev)
+ {
+ 	bool auto_off;
++	int ret = 0;
+ 
+ 	BT_DBG("%s %p", hdev->name, hdev);
+ 
+@@ -1730,7 +1731,7 @@ int hci_dev_do_close(struct hci_dev *hdev)
+ 	if (!test_and_clear_bit(HCI_UP, &hdev->flags)) {
+ 		cancel_delayed_work_sync(&hdev->cmd_timer);
+ 		hci_req_sync_unlock(hdev);
+-		return 0;
++		return ret;
  	}
  
--	req.chan_mask = 0xFFFU;
-+	/* For cn10k the upper two bits of the channel number are
-+	 * cpt channel number. with masking out these bits in the
-+	 * mcam entry, same entry used for NIX will allow packets
-+	 * received from cpt for parsing.
-+	 */
-+	if (!is_rvu_otx2(rvu)) {
-+		req.chan_mask = NIX_CHAN_CPT_X2P_MASK;
-+	} else {
-+		req.chan_mask = 0xFFFU;
-+	}
-+
- 	if (chan_cnt > 1) {
- 		if (!is_power_of_2(chan_cnt)) {
- 			dev_err(rvu->dev,
+ 	hci_leds_update_powered(hdev, false);
+@@ -1803,7 +1804,7 @@ int hci_dev_do_close(struct hci_dev *hdev)
+ 	    test_bit(HCI_UP, &hdev->flags)) {
+ 		/* Execute vendor specific shutdown routine */
+ 		if (hdev->shutdown)
+-			hdev->shutdown(hdev);
++			ret = hdev->shutdown(hdev);
+ 	}
+ 
+ 	/* flush cmd  work */
+@@ -1845,7 +1846,7 @@ int hci_dev_do_close(struct hci_dev *hdev)
+ 	hci_req_sync_unlock(hdev);
+ 
+ 	hci_dev_put(hdev);
+-	return 0;
++	return ret;
+ }
+ 
+ int hci_dev_close(__u16 dev)
 -- 
-2.7.4
+2.26.2
 
