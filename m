@@ -2,171 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D10B43EEACE
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 12:20:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B684D3EEAE6
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 12:24:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236615AbhHQKVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 06:21:24 -0400
-Received: from out2.migadu.com ([188.165.223.204]:13895 "EHLO out2.migadu.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235651AbhHQKVK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Aug 2021 06:21:10 -0400
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1629195634;
+        id S236248AbhHQKY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 06:24:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:42667 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234093AbhHQKY1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 06:24:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1629195834;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=oRyPuKKOBakVGi7BzUz0aCZ6qjxSBDTY/WItFLOtqAU=;
-        b=LkfBcz0snirdno7/M/htlIRw+ZadPgi00aa+0mB7opgr2/3lmOqog4nT8ph7zHD2+5rUtN
-        nNWp+bJHrf1JjTlay7rq9gsJ2VAyXpl4O8o/dDMPPrv4e/YY/qAuOOe7vZ9+hb8OM5cRng
-        aFC3yAdprLK8ipIIbcWgKA/bCnphtAI=
-From:   Yajun Deng <yajun.deng@linux.dev>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yajun Deng <yajun.deng@linux.dev>
-Subject: [PATCH net-next] net: net_namespace: Optimize the code
-Date:   Tue, 17 Aug 2021 18:20:01 +0800
-Message-Id: <20210817102001.1125-1-yajun.deng@linux.dev>
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iVL6PjYSm8HZfICGVEGITUmccKxblUq/VlCKoiWTgH8=;
+        b=SFPCHVeEdR6k+TFalmrFV4vYrMAJ0BqEkA6+I0bz96caSf2RtuWYS/9/UbFHURgwF4RAmg
+        dKghrqcUIlM4/BnCrKA/W55FLGmVH+ikMGY8NHyk5OFs52+TbK0EYKyT3/Ag9BRI8FiIy5
+        s0F0lTUZIAyuMqgG6ezqBtf6c3eiTao=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-361-VWnej73RP1igp-7grtt_sQ-1; Tue, 17 Aug 2021 06:23:53 -0400
+X-MC-Unique: VWnej73RP1igp-7grtt_sQ-1
+Received: by mail-qv1-f69.google.com with SMTP id bc19-20020ad45693000000b0035ccbd692a2so6386221qvb.13
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 03:23:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=iVL6PjYSm8HZfICGVEGITUmccKxblUq/VlCKoiWTgH8=;
+        b=PJYbU4cZ79giteEFOCFDUdC3fTQXCm5L3CqpgD651sMW062izSzwrjZczUaz1pgKcu
+         1jN3+9Zl9JKQ8+8t9ppoxd8SrWDoq8hVWr/6fqvF+JcUfmVnChDnFNxR3Oym3U1TlSFu
+         St9vWnU5Voxos4O3EuC4gQ81QHBmHQhTZw/KIJdNl+iZtR8+oe3O/a8aH7qZNm5XrtAD
+         eI4TimVqaNIiwV7N9a3Raae763ntNtB0zRihmUDgq2N56CsjQxKr9aPOoZoi1D06sc8s
+         uN0LPN9oSF0YKzhi4tJJr8rDpLk9hHjVFqSLSZVlwFYsx97JAKSSBPB74DcXaf9oHk/w
+         cuSA==
+X-Gm-Message-State: AOAM531M8BYI3D0ONSYEKsdvihgNJnMOxIwJsBlkzaHmZjPEolOIiEGg
+        w+VVkfqU1ylcZfoTx3X1p2hjokdzLljkRQrV50OJRQdffdQqisE2QSuC0ZlCo50oOvZ8nEbqg0O
+        8980kntVln0yD5xED
+X-Received: by 2002:a37:a20f:: with SMTP id l15mr3011870qke.24.1629195832724;
+        Tue, 17 Aug 2021 03:23:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwcXGANrGGlqmnmshjEjCIVJqTEninhOSb59+o2ZHUR3NYD/Tc3U8C6JMpqxm8Zewl+ER7uBQ==
+X-Received: by 2002:a37:a20f:: with SMTP id l15mr3011852qke.24.1629195832542;
+        Tue, 17 Aug 2021 03:23:52 -0700 (PDT)
+Received: from [192.168.1.121] ([69.73.103.33])
+        by smtp.gmail.com with ESMTPSA id b21sm760035qte.38.2021.08.17.03.23.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 Aug 2021 03:23:52 -0700 (PDT)
+Subject: Re: [PATCH net 1/1] ixgbe: Add locking to prevent panic when setting
+ sriov_numvfs to zero
+To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "kuba@kernel.org" <kuba@kernel.org>
+Cc:     "Szlosek, Marek" <marek.szlosek@intel.com>,
+        "Yang, Lihong" <lihong.yang@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Venkataramanan, Anirudh" <anirudh.venkataramanan@intel.com>
+References: <20210812171856.1867667-1-anthony.l.nguyen@intel.com>
+ <20210813172033.2c5c9101@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <31f33e9ced63115b66ede5ff1e385105be076f15.camel@intel.com>
+From:   Ken Cox <jkc@redhat.com>
+Message-ID: <3176d23e-cc51-2855-7880-ca41779746e4@redhat.com>
+Date:   Tue, 17 Aug 2021 05:23:51 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yajun.deng@linux.dev
+In-Reply-To: <31f33e9ced63115b66ede5ff1e385105be076f15.camel@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Inline ops_free(), becase there is only one caller.
-Separate net_drop_ns() and net_free(), so the net_free() can be
-called directly.
-Add free_exit_list() helper function for free net_exit_list.
 
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
----
- net/core/net_namespace.c | 49 ++++++++++++++++++----------------------
- 1 file changed, 22 insertions(+), 27 deletions(-)
 
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index 9b5a767eddd5..27acbf2df78f 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -148,13 +148,6 @@ static int ops_init(const struct pernet_operations *ops, struct net *net)
- 	return err;
- }
- 
--static void ops_free(const struct pernet_operations *ops, struct net *net)
--{
--	if (ops->id && ops->size) {
--		kfree(net_generic(net, *ops->id));
--	}
--}
--
- static void ops_pre_exit_list(const struct pernet_operations *ops,
- 			      struct list_head *net_exit_list)
- {
-@@ -184,7 +177,7 @@ static void ops_free_list(const struct pernet_operations *ops,
- 	struct net *net;
- 	if (ops->size && ops->id) {
- 		list_for_each_entry(net, net_exit_list, exit_list)
--			ops_free(ops, net);
-+			kfree(net_generic(net, *ops->id));
- 	}
- }
- 
-@@ -433,15 +426,17 @@ static struct net *net_alloc(void)
- 
- static void net_free(struct net *net)
- {
--	kfree(rcu_access_pointer(net->gen));
--	kmem_cache_free(net_cachep, net);
-+	if (refcount_dec_and_test(&net->passive)) {
-+		kfree(rcu_access_pointer(net->gen));
-+		kmem_cache_free(net_cachep, net);
-+	}
- }
- 
- void net_drop_ns(void *p)
- {
--	struct net *ns = p;
--	if (ns && refcount_dec_and_test(&ns->passive))
--		net_free(ns);
-+	struct net *net = (struct net *)p;
+On 8/16/21 12:52 PM, Nguyen, Anthony L wrote:
+> On Fri, 2021-08-13 at 17:20 -0700, Jakub Kicinski wrote:
+>> On Thu, 12 Aug 2021 10:18:56 -0700 Tony Nguyen wrote:
+>>> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+>>> b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+>>> index 214a38de3f41..0a1a8756f1fd 100644
+>>> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+>>> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+>>> @@ -206,8 +206,12 @@ int ixgbe_disable_sriov(struct ixgbe_adapter
+>>> *adapter)
+>>>   	unsigned int num_vfs = adapter->num_vfs, vf;
+>>>   	int rss;
+>>>   
+>>> +	while (test_and_set_bit(__IXGBE_DISABLING_VFS, &adapter-
+>>>> state))
+>>> +		usleep_range(1000, 2000);
+>>> +
+>>>   	/* set num VFs to 0 to prevent access to vfinfo */
+>>>   	adapter->num_vfs = 0;
+>>> +	clear_bit(__IXGBE_DISABLING_VFS, &adapter->state);
+>>>   
+>>>   	/* put the reference to all of the vf devices */
+>>>   	for (vf = 0; vf < num_vfs; ++vf) {
+>>> @@ -1307,6 +1311,9 @@ void ixgbe_msg_task(struct ixgbe_adapter
+>>> *adapter)
+>>>   	struct ixgbe_hw *hw = &adapter->hw;
+>>>   	u32 vf;
+>>>   
+>>> +	if (test_and_set_bit(__IXGBE_DISABLING_VFS, &adapter->state))
+>>> +		return;
+>>> +
+>>>   	for (vf = 0; vf < adapter->num_vfs; vf++) {
+>>>   		/* process any reset requests */
+>>>   		if (!ixgbe_check_for_rst(hw, vf))
+>>> @@ -1320,6 +1327,7 @@ void ixgbe_msg_task(struct ixgbe_adapter
+>>> *adapter)
+>>>   		if (!ixgbe_check_for_ack(hw, vf))
+>>>   			ixgbe_rcv_ack_from_vf(adapter, vf);
+>>>   	}
+>>> +	clear_bit(__IXGBE_DISABLING_VFS, &adapter->state);
+>>
+>> Like I've already said two or three times. No flag based locking.
+> 
+> Ken,
+> 
+> Did you want to make this change or did you want Intel to do it?
 
-+	if (net)
-+		net_free(net);
- }
- 
- struct net *copy_net_ns(unsigned long flags,
-@@ -479,7 +474,7 @@ struct net *copy_net_ns(unsigned long flags,
- put_userns:
- 		key_remove_domain(net->key_domain);
- 		put_user_ns(user_ns);
--		net_drop_ns(net);
-+		net_free(net);
- dec_ucounts:
- 		dec_net_namespaces(ucounts);
- 		return ERR_PTR(rv);
-@@ -611,7 +606,7 @@ static void cleanup_net(struct work_struct *work)
- 		dec_net_namespaces(net->ucounts);
- 		key_remove_domain(net->key_domain);
- 		put_user_ns(net->user_ns);
--		net_drop_ns(net);
-+		net_free(net);
- 	}
- }
- 
-@@ -1120,6 +1115,14 @@ static int __init net_ns_init(void)
- 
- pure_initcall(net_ns_init);
- 
-+static void free_exit_list(struct pernet_operations *ops, struct list_head *net_exit_list)
-+{
-+	ops_pre_exit_list(ops, net_exit_list);
-+	synchronize_rcu();
-+	ops_exit_list(ops, net_exit_list);
-+	ops_free_list(ops, net_exit_list);
-+}
-+
- #ifdef CONFIG_NET_NS
- static int __register_pernet_operations(struct list_head *list,
- 					struct pernet_operations *ops)
-@@ -1145,10 +1148,7 @@ static int __register_pernet_operations(struct list_head *list,
- out_undo:
- 	/* If I have an error cleanup all namespaces I initialized */
- 	list_del(&ops->list);
--	ops_pre_exit_list(ops, &net_exit_list);
--	synchronize_rcu();
--	ops_exit_list(ops, &net_exit_list);
--	ops_free_list(ops, &net_exit_list);
-+	free_exit_list(ops, &net_exit_list);
- 	return error;
- }
- 
-@@ -1161,10 +1161,8 @@ static void __unregister_pernet_operations(struct pernet_operations *ops)
- 	/* See comment in __register_pernet_operations() */
- 	for_each_net(net)
- 		list_add_tail(&net->exit_list, &net_exit_list);
--	ops_pre_exit_list(ops, &net_exit_list);
--	synchronize_rcu();
--	ops_exit_list(ops, &net_exit_list);
--	ops_free_list(ops, &net_exit_list);
-+
-+	free_exit_list(ops, &net_exit_list);
- }
- 
- #else
-@@ -1187,10 +1185,7 @@ static void __unregister_pernet_operations(struct pernet_operations *ops)
- 	} else {
- 		LIST_HEAD(net_exit_list);
- 		list_add(&init_net.exit_list, &net_exit_list);
--		ops_pre_exit_list(ops, &net_exit_list);
--		synchronize_rcu();
--		ops_exit_list(ops, &net_exit_list);
--		ops_free_list(ops, &net_exit_list);
-+		free_exit_list(ops, &net_exit_list);
- 	}
- }
- 
--- 
-2.32.0
+Hi Tony,
+
+It would be great if Intel could make the change for the locking.
+
+Thanks,
+Ken
 
