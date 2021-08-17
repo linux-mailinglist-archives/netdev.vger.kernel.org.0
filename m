@@ -2,51 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A473B3EE5C5
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 06:45:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D66C73EE5C4
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 06:45:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233872AbhHQEpr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 00:45:47 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:13786 "EHLO
+        id S233399AbhHQEpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 00:45:41 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:42628 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S230272AbhHQEpm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 00:45:42 -0400
+        by vger.kernel.org with ESMTP id S230272AbhHQEpk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 00:45:40 -0400
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 17H2lprh006897;
-        Mon, 16 Aug 2021 21:45:09 -0700
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 17H2m19D006952;
+        Mon, 16 Aug 2021 21:45:06 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=SwK+Nu2iWjxnzrQmZpRv+TfoJ0VdMuqFFDQ7WnGfdhk=;
- b=Czu93O7Y1ouNdvzUNlU9Vf86muEiMgmYS9zzh81uIZLoRlZSU1wM+MI3mEHQ4YBKj8m/
- cpUuzuO9PmEjtq21DGX9HqWHC0OWHe93zAYAAPDJl8cPDnVgCxGSt1ajGXc/43no9EHi
- 4bZGT3h96W8vCNT0yl6tvabdkn/BlLi4QRSMkQpJnwZPo2aKQT4Wfea2rtSd/Mk7qrqB
- fDs+GVe4kdUaU4j1JMS8omF7fDQWSnnr1CC7g4onH5T9uANN2l4KJznB0IN9tKLU4wrT
- qBNx4b5paKexKpCZ6vTcudAmNdvLGJ7rL0FOSqX5UilqRKm04ZQ26amc01AECJc/A+Yw oA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3ag4n0ra4h-1
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=svlnJv0LSaHrqusMARLAEk4mXw9g+SWN7Nc8dzpXfxI=;
+ b=kDbZnsLe86LMyy97davbrvjHbVzNxAVblf460HOUwFvjRq3bf4L6uoqenqmwp4TSRNY4
+ BwNlAEhmqojET+QqqxWHWYxzBcXOtEDJKlV2Iz8LvcP8Z0gCoDbUOQnABp80OFPxh0iY
+ 719gYeg1UoI7DwNVLlVzBj+46wIy3oli3qRhxqQfiNCObhb3ENdZl+ZaHtMjZpI9o14F
+ QJOqEcCaDw74Iu3A4/SVkhQEo22j6bUD+Va+SxOFFxYa3ymA60GOavmND1pKJYDNXLjB
+ HsZOaZULmX4DDosQxNTLkDdbGGFTwG7rkg4/0AuR6yn88Ecq2g10CoAA48zzT9PhagWn Hw== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 3ag4n0ra4f-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 16 Aug 2021 21:45:09 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 16 Aug
- 2021 21:45:07 -0700
+        Mon, 16 Aug 2021 21:45:06 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 16 Aug
+ 2021 21:45:04 -0700
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Mon, 16 Aug 2021 21:45:07 -0700
+ Transport; Mon, 16 Aug 2021 21:45:04 -0700
 Received: from hyd1358.marvell.com (unknown [10.29.37.11])
-        by maili.marvell.com (Postfix) with ESMTP id B98903F70A8;
-        Mon, 16 Aug 2021 21:44:57 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 5E5AD3F70A9;
+        Mon, 16 Aug 2021 21:45:00 -0700 (PDT)
 From:   Subbaraya Sundeep <sbhatta@marvell.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
 CC:     <sgoutham@marvell.com>, <hkelam@marvell.com>, <gakula@marvell.com>,
         Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: [net-next PATCH 00/11] octeontx2: Rework MCAM flows management for VFs
-Date:   Tue, 17 Aug 2021 10:14:42 +0530
-Message-ID: <1629175493-4895-1-git-send-email-sbhatta@marvell.com>
+Subject: [net-next PATCH 01/11] octeontx2-af: Modify install flow error codes
+Date:   Tue, 17 Aug 2021 10:14:43 +0530
+Message-ID: <1629175493-4895-2-git-send-email-sbhatta@marvell.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1629175493-4895-1-git-send-email-sbhatta@marvell.com>
+References: <1629175493-4895-1-git-send-email-sbhatta@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-GUID: B20b2seUQF886vXVKwr8-qlkjtLkm2vd
-X-Proofpoint-ORIG-GUID: B20b2seUQF886vXVKwr8-qlkjtLkm2vd
+X-Proofpoint-GUID: WxpqwXC9Orkv4vSHOn6WS_Lcf-OnwQEd
+X-Proofpoint-ORIG-GUID: WxpqwXC9Orkv4vSHOn6WS_Lcf-OnwQEd
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
  definitions=2021-08-17_01,2021-08-16_02,2020-04-07_01
@@ -54,88 +56,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From Octeontx2 hardware point of view there is no
-difference between PFs and VFs. Hence with refactoring
-in driver the packet classification features or offloads
-can be supported by VFs also. This patchset unifies the
-mcam flows management so that VFs can also support
-ntuple filters. Since there are MCAM allocations by
-all PFs and VFs in the system it is required to have
-the ability to modify number of mcam rules count
-for a PF/VF in runtime. This is achieved by using devlink.
-Below is the summary of patches:
+When installing a flow using npc_install_flow
+mailbox there are number of reasons to reject
+the request like caller is not permitted,
+invalid channel specified in request, flow
+not supported in extraction profile and so on.
+Hence define new error codes for npc flows and use
+them instead of generic error codes.
 
-Patch 1,2,3 are trivial patches which helps in debugging
-in case of errors by using custom error codes and
-displaying proper error messages.
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h       |  7 +++++++
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c | 16 ++++++++--------
+ 2 files changed, 15 insertions(+), 8 deletions(-)
 
-Patches 4,5 brings rx-all and ntuple support
-for CGX mapped VFs and LBK VFs.
-
-Patches 6,7,8 brings devlink support to
-PF netdev driver so that mcam entries count
-can be changed at runtime.
-To change mcam rule count at runtime where multiple rule
-allocations are done sorting is required.
-Also both ntuple and TC rules needs to be unified.
-
-Patch 9 is related to AF NPC where a PF
-allocated entries are allocated at bottom(low priority).
-
-On CN10K there is slight change in reading
-NPC counters which is handled by patch 10.
-
-Patch 11 is to allow packets from CPT for
-NPC parsing on CN10K.
-
-
-Thanks,
-Sundeep
-
-
-Hariprasad Kelam (1):
-  octeontx2-af: cn10K: Get NPC counters value
-
-Naveen Mamindlapalli (1):
-  octeontx2-af: add proper return codes for AF mailbox handlers
-
-Rakesh Babu (1):
-  octeontx2-pf: Ntuple filters support for VF netdev
-
-Subbaraya Sundeep (2):
-  octeontx2-af: Modify install flow error codes
-  octeontx2-af: Allocate low priority entries for PF
-
-Sunil Goutham (5):
-  octeontx2-af: Add debug messages for failures
-  octeontx2-pf: Enable NETIF_F_RXALL support for VF driver
-  octeontx2-pf: Sort the allocated MCAM entry indices
-  octeontx2-pf: Unify flow management variables
-  octeontx2-pf: devlink params support to set mcam entry count
-
-Vidya (1):
-  octeontx2-af: configure npc for cn10k to allow packets from cpt
-
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  16 +++
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |  92 +++++++++---
- drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   1 +
- .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |  12 +-
- .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    |  45 ++++--
- .../net/ethernet/marvell/octeontx2/af/rvu_npc.c    |  51 +++++--
- .../net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c |  36 +++--
- .../net/ethernet/marvell/octeontx2/nic/Makefile    |   5 +-
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  32 +++--
- .../ethernet/marvell/octeontx2/nic/otx2_devlink.c  | 156 +++++++++++++++++++++
- .../ethernet/marvell/octeontx2/nic/otx2_devlink.h  |  20 +++
- .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  |  52 ++-----
- .../ethernet/marvell/octeontx2/nic/otx2_flows.c    | 110 +++++++++++----
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  44 +++---
- .../net/ethernet/marvell/octeontx2/nic/otx2_tc.c   |  50 ++++++-
- .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |  36 ++++-
- 16 files changed, 585 insertions(+), 173 deletions(-)
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.h
-
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index 4470933..3ad10a4 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -1078,6 +1078,13 @@ enum npc_af_status {
+ 	NPC_MCAM_ALLOC_DENIED	= -702,
+ 	NPC_MCAM_ALLOC_FAILED	= -703,
+ 	NPC_MCAM_PERM_DENIED	= -704,
++	NPC_FLOW_INTF_INVALID	= -707,
++	NPC_FLOW_CHAN_INVALID	= -708,
++	NPC_FLOW_NO_NIXLF	= -709,
++	NPC_FLOW_NOT_SUPPORTED	= -710,
++	NPC_FLOW_VF_PERM_DENIED	= -711,
++	NPC_FLOW_VF_NOT_INIT	= -712,
++	NPC_FLOW_VF_OVERLAP	= -713,
+ };
+ 
+ struct npc_mcam_alloc_entry_req {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+index 5c01cf4..fd07562 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+@@ -600,7 +600,7 @@ static int npc_check_unsupported_flows(struct rvu *rvu, u64 features, u8 intf)
+ 		dev_info(rvu->dev, "Unsupported flow(s):\n");
+ 		for_each_set_bit(bit, (unsigned long *)&unsupported, 64)
+ 			dev_info(rvu->dev, "%s ", npc_get_field_name(bit));
+-		return NIX_AF_ERR_NPC_KEY_NOT_SUPP;
++		return -EOPNOTSUPP;
+ 	}
+ 
+ 	return 0;
+@@ -1143,10 +1143,10 @@ int rvu_mbox_handler_npc_install_flow(struct rvu *rvu,
+ 	}
+ 
+ 	if (!is_npc_interface_valid(rvu, req->intf))
+-		return -EINVAL;
++		return NPC_FLOW_INTF_INVALID;
+ 
+ 	if (from_vf && req->default_rule)
+-		return NPC_MCAM_PERM_DENIED;
++		return NPC_FLOW_VF_PERM_DENIED;
+ 
+ 	/* Each PF/VF info is maintained in struct rvu_pfvf.
+ 	 * rvu_pfvf for the target PF/VF needs to be retrieved
+@@ -1172,12 +1172,12 @@ int rvu_mbox_handler_npc_install_flow(struct rvu *rvu,
+ 
+ 	err = npc_check_unsupported_flows(rvu, req->features, req->intf);
+ 	if (err)
+-		return err;
++		return NPC_FLOW_NOT_SUPPORTED;
+ 
+ 	/* Skip channel validation if AF is installing */
+ 	if (!is_pffunc_af(req->hdr.pcifunc) &&
+ 	    npc_mcam_verify_channel(rvu, target, req->intf, req->channel))
+-		return -EINVAL;
++		return NPC_FLOW_CHAN_INVALID;
+ 
+ 	pfvf = rvu_get_pfvf(rvu, target);
+ 
+@@ -1195,7 +1195,7 @@ int rvu_mbox_handler_npc_install_flow(struct rvu *rvu,
+ 	/* Proceed if NIXLF is attached or not for TX rules */
+ 	err = nix_get_nixlf(rvu, target, &nixlf, NULL);
+ 	if (err && is_npc_intf_rx(req->intf) && !pf_set_vfs_mac)
+-		return -EINVAL;
++		return NPC_FLOW_NO_NIXLF;
+ 
+ 	/* don't enable rule when nixlf not attached or initialized */
+ 	if (!(is_nixlf_attached(rvu, target) &&
+@@ -1211,7 +1211,7 @@ int rvu_mbox_handler_npc_install_flow(struct rvu *rvu,
+ 
+ 	/* Do not allow requests from uninitialized VFs */
+ 	if (from_vf && !enable)
+-		return -EINVAL;
++		return NPC_FLOW_VF_NOT_INIT;
+ 
+ 	/* PF sets VF mac & VF NIXLF is not attached, update the mac addr */
+ 	if (pf_set_vfs_mac && !enable) {
+@@ -1226,7 +1226,7 @@ int rvu_mbox_handler_npc_install_flow(struct rvu *rvu,
+ 	 */
+ 	if (from_vf && pfvf->def_ucast_rule && is_npc_intf_rx(req->intf) &&
+ 	    pfvf->def_ucast_rule->features & req->features)
+-		return -EINVAL;
++		return NPC_FLOW_VF_OVERLAP;
+ 
+ 	return npc_install_flow(rvu, blkaddr, target, nixlf, pfvf, req, rsp,
+ 				enable, pf_set_vfs_mac);
 -- 
 2.7.4
 
