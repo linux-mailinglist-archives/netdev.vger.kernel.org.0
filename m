@@ -2,122 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 467A73EE6CC
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 08:44:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A65A33EE6D5
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 08:46:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238137AbhHQGou (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 02:44:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33668 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230094AbhHQGot (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 02:44:49 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06AC9C061764;
-        Mon, 16 Aug 2021 23:44:17 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id m24-20020a17090a7f98b0290178b1a81700so4732782pjl.4;
-        Mon, 16 Aug 2021 23:44:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qGW+/u32RfeHULBSPZGyDEkWYbTkSdQ+pj8g3ZZmAtc=;
-        b=mqctxBRs74ZzJjSEeMaWsZHYwP3Sl5ea4IY+Up3swBYWGUCjaNlFTWFWG7ngKe3ZeD
-         dZF3f7KVWbgbItP2LiZHwQIQhTv5eE1MCHNozDIct0ma/qF1j0jYuV6Pzac60PnUOdQh
-         Yc6K4mo15ceBG2vriCuA2q53cCf385HJcZ3gmgFXpDnzqfA6GpO/p5C1OBucHpcDQI/E
-         M6wHd0lueb8i28kR4eYaS9hFT6DVFV20kWeBgRnOhgvqdF7krJ8Ke+Zh0mQYTBb5E4+d
-         XHJpGCbFgGVFwFcJzHKbV6dOcgYvISlFWXumEmXYF4APsSKT88Y6LzIFrZYahjxEYqJw
-         OZAA==
+        id S238147AbhHQGqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 02:46:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35909 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234454AbhHQGqf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 02:46:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1629182761;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lXzAWi/HXh25vel2OolK4VZSzbIL75BQ1OCpFeAQ1hU=;
+        b=ZCe+wHKa9q+XDBSEhGQPeOTBGqdZf9OjwJ3O+DROsXK114p9py6DwvDKjpO9AwnT2GTpbC
+        MEwXLNNbHvzEbAbWCospUV815d9yCkJahdHTZspzmkiunVV0HFcd3yrczm5OhQMBrY2ykl
+        MgGBIrRzXuPt6LdjBkXibSRdaZBaauI=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-185-Opb7qwmmMLGGsFmvix_Q9Q-1; Tue, 17 Aug 2021 02:46:00 -0400
+X-MC-Unique: Opb7qwmmMLGGsFmvix_Q9Q-1
+Received: by mail-ed1-f70.google.com with SMTP id x4-20020a50d9c4000000b003bed5199871so3920567edj.14
+        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 23:46:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qGW+/u32RfeHULBSPZGyDEkWYbTkSdQ+pj8g3ZZmAtc=;
-        b=H7u7+10AItE+C7iZ6gZZL4VmQGQcyU7DZf1bTt4nJvr6N/vz/u4xSmzdZVL8BrExny
-         ds0ZiaRp1eW2NXTipt5nrnrUgxlGy4deHdGBIV+aFjSjJzrNiLGQuZ2qhqZlriPnd0OT
-         cIvG3DBtUhn8wkKBoEgkPxJUVy47SyZZthoiuqhaXO6LhmFvX0OLtJh0WJCnUFoooehn
-         nQA8jvPQ/q5uVI9cqNCWJ/GZtHW2mmrL+lukTS8a59RLruKqcajdhEsA3mgiWdRGF5Bf
-         BmUa+v0JtkPRf7GG9Ev/EHvMG7jZdZe9s1Ip4ipPKJ/nJOuWeMFxI8y8Yc0uQ57jm/8/
-         O8cQ==
-X-Gm-Message-State: AOAM532YIqz8myIT0r9Ld65h9H+QoS9Fzm2HSVlL90LvvGoCDBmW6evf
-        4BS4QUvcTpkTPUYk+UqROsGAUvWboW70c5IvsuI=
-X-Google-Smtp-Source: ABdhPJxYbpn9kCLT1fi4MGjMSaFXdc5Za03AsrYBuk1cjQTNcYjUZigKFjQenBx/bqdN8VorIN51bg==
-X-Received: by 2002:a63:5509:: with SMTP id j9mr2064571pgb.329.1629182656474;
-        Mon, 16 Aug 2021 23:44:16 -0700 (PDT)
-Received: from localhost.localdomain ([1.240.193.107])
-        by smtp.googlemail.com with ESMTPSA id z11sm1301192pfn.69.2021.08.16.23.44.13
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lXzAWi/HXh25vel2OolK4VZSzbIL75BQ1OCpFeAQ1hU=;
+        b=b0K0yFu5E6yB28fFpn5fu5tS4vvZloZV21ZZVDsHxFzrTsy7/W7cFKbPU0Ounqcl/g
+         yveRwVxzenL9xkIwPUnVHL01Zq7bqDu2SoI5GdeU28syr3R3ATyAdxFbn4CQM2FWl3hX
+         UVFR7d0PMEtpxMhzl6zN19wQvYejkYZj5DnFFTDmSXHg5Zcyn/2rKOjhVmmGFBHARBQ+
+         EPumwXd1S7P2Pns7ODcjz+YXwRm+ZTFfazTqctaVd//vQmoflv5mxLbHJduwLnuJDboL
+         N9Y+aXybs6LBqBczwdW4NrJaW9jANZyheqY4R/eg36Wr+YNvstHPrTHDPWHKaluAoDI3
+         uS+Q==
+X-Gm-Message-State: AOAM532rRT0x0bnNT4qLjV5ox1ccg6d0srj8YZzmV0LB1IzIc9gMJx80
+        xwwLe2S/4MGhk34X1J4drlDyTC6MKVmn5J0MfAwWEpbu8ckiTPqQLF+Mq9zw2T+ChK39QAY8tMG
+        3HjTezvuym3iYhLQ0
+X-Received: by 2002:a05:6402:2789:: with SMTP id b9mr2370511ede.44.1629182759255;
+        Mon, 16 Aug 2021 23:45:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzH2wWiYROA/dfLu4hqPoGlGhFo7q8W4+f9VoW35hDbwGSiGiLOK+rAIUjANWYFYXWhk+AKuA==
+X-Received: by 2002:a05:6402:2789:: with SMTP id b9mr2370494ede.44.1629182759049;
+        Mon, 16 Aug 2021 23:45:59 -0700 (PDT)
+Received: from redhat.com ([2.55.150.133])
+        by smtp.gmail.com with ESMTPSA id qh2sm337553ejb.75.2021.08.16.23.45.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Aug 2021 23:44:15 -0700 (PDT)
-From:   Kangmin Park <l4stpr0gr4m@gmail.com>
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tedd Ho-Jeong An <tedd.an@intel.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3] Bluetooth: Fix return value in hci_dev_do_close()
-Date:   Tue, 17 Aug 2021 15:44:11 +0900
-Message-Id: <20210817064411.2378-1-l4stpr0gr4m@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        Mon, 16 Aug 2021 23:45:58 -0700 (PDT)
+Date:   Tue, 17 Aug 2021 02:45:54 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, willemb@google.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ivan@prestigetransportation.com,
+        xiangxia.m.yue@gmail.com
+Subject: Re: [PATCH net] virtio-net: use NETIF_F_GRO_HW instead of NETIF_F_LRO
+Message-ID: <20210817023118-mutt-send-email-mst@kernel.org>
+References: <20210817020338.6400-1-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210817020338.6400-1-jasowang@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hci_error_reset() return without calling hci_dev_do_open() when
-hci_dev_do_close() return error value which is not 0.
+Patch is good. Suggest some tweaks to the commit log.
 
-Also, hci_dev_close() return hci_dev_do_close() function's return
-value.
+On Tue, Aug 17, 2021 at 10:03:38AM +0800, Jason Wang wrote:
+> Commit a02e8964eaf92 ("virtio-net: ethtool configurable LRO") tries to
+> advertise LRO on behalf of the guest offloading features and allow the
 
-But, hci_dev_do_close() return always 0 even if hdev->shutdown
-return error value. So, fix hci_dev_do_close() to save and return
-the return value of the hdev->shutdown when it is called.
+tries to advertise -> advertises
 
-Signed-off-by: Kangmin Park <l4stpr0gr4m@gmail.com>
----
- net/bluetooth/hci_core.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+that part actually works.
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 8622da2d9395..84afc0d693a8 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -1718,6 +1718,7 @@ static void hci_pend_le_actions_clear(struct hci_dev *hdev)
- int hci_dev_do_close(struct hci_dev *hdev)
- {
- 	bool auto_off;
-+	int ret = 0;
+allow -> allows
+
+on behalf of features is really weird. maybe "maps"?
+
+> administrator to enable and disable those features via ethtool.
+> 
+> This may lead several issues:
+
+may lead->lead to
+
+> 
+> - For the device that doesn't support control guest offloads, the
+>   "LRO" can't be disabled so we will get a warn in the
+
+warn -> warning
+
+>   dev_disable_lro()
+
+.. when turning off LRO or when enabling forwarding bridging etc.
+
+> - For the device that have the control guest offloads, the guest
+
+have the -> supports
+
+>   offloads were disabled in the case of bridge etc
+
+etc -> forwarding etc
+
+> which may slow down
+
+were -> are
+
+may slow -> slows
+
+>   the traffic.
+> 
+> Fixing this by using NETIF_F_GRO_HW instead. Though the spec does not
+> guaranteed to be re-segmented as original explicitly now, we can add
+
+guaranteed -> guarantee
+
+> that to the spec
+
+I would add:
+
+Further, we never advertised LRO historically before a02e8964eaf92
+("virtio-net: ethtool configurable LRO") and so bridged/forwarded
+configs effectively relied on virtio receive offloads being GRO.
+
+
+
+
+> and then we can catch the bad configuration and
+> setup.
+
+Don't know what does this part mean. How would we catch it?
+With a new flag? Let's say so.
+
+> 
+> Fixes: a02e8964eaf92 ("virtio-net: ethtool configurable LRO")
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+
+
+
+Proposed rewritten commit log:
+
+===
+[PATCH net] virtio-net: use NETIF_F_GRO_HW instead of NETIF_F_LRO
+
+Commit a02e8964eaf92 ("virtio-net: ethtool configurable LRO")
+maps LRO to virtio guest offloading features and allows the
+administrator to enable and disable those features via ethtool.
  
- 	BT_DBG("%s %p", hdev->name, hdev);
+This leads to several issues:
+
+
+- For a device that doesn't support control guest offloads, the "LRO"
+  can't be disabled triggering WARN in dev_disable_lro() when turning
+  off LRO or when enabling forwarding bridging etc.
+
+- For a device that supports control guest offloads, the guest
+  offloads are disabled in cases of bridging, forwarding etc
+  slowing down the traffic.
  
-@@ -1732,13 +1733,13 @@ int hci_dev_do_close(struct hci_dev *hdev)
- 	    test_bit(HCI_UP, &hdev->flags)) {
- 		/* Execute vendor specific shutdown routine */
- 		if (hdev->shutdown)
--			hdev->shutdown(hdev);
-+			ret = hdev->shutdown(hdev);
- 	}
- 
- 	if (!test_and_clear_bit(HCI_UP, &hdev->flags)) {
- 		cancel_delayed_work_sync(&hdev->cmd_timer);
- 		hci_req_sync_unlock(hdev);
--		return 0;
-+		return ret;
- 	}
- 
- 	hci_leds_update_powered(hdev, false);
-@@ -1845,7 +1846,7 @@ int hci_dev_do_close(struct hci_dev *hdev)
- 	hci_req_sync_unlock(hdev);
- 
- 	hci_dev_put(hdev);
--	return 0;
-+	return ret;
- }
- 
- int hci_dev_close(__u16 dev)
--- 
-2.26.2
+Fix this by using NETIF_F_GRO_HW instead. Though the spec does not
+guarantee packets to be re-segmented as the original ones,
+we can add that to the spec, possibly with a flag for devices to
+differentiate between GRO and LRO.
+
+Further, we never advertised LRO historically before a02e8964eaf92
+("virtio-net: ethtool configurable LRO") and so bridged/forwarded
+configs effectively always relied on virtio receive offloads behaving
+like GRO - thus even if this breaks any configs it is at least not
+a regression.
+
+Fixes: a02e8964eaf92 ("virtio-net: ethtool configurable LRO")
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Reported-by: Ivan <ivan@prestigetransportation.com>
+Tested-by: Ivan <ivan@prestigetransportation.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+
+===
+
+
+> ---
+>  drivers/net/virtio_net.c | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 0416a7e00914..10c382b08bce 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -63,7 +63,7 @@ static const unsigned long guest_offloads[] = {
+>  	VIRTIO_NET_F_GUEST_CSUM
+>  };
+>  
+> -#define GUEST_OFFLOAD_LRO_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
+> +#define GUEST_OFFLOAD_GRO_HW_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
+>  				(1ULL << VIRTIO_NET_F_GUEST_TSO6) | \
+>  				(1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
+>  				(1ULL << VIRTIO_NET_F_GUEST_UFO))
+> @@ -2481,7 +2481,7 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>  	        virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_ECN) ||
+>  		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO) ||
+>  		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_CSUM))) {
+> -		NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing LRO/CSUM, disable LRO/CSUM first");
+> +		NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing GRO_HW/CSUM, disable GRO_HW/CSUM first");
+>  		return -EOPNOTSUPP;
+>  	}
+>  
+> @@ -2612,15 +2612,15 @@ static int virtnet_set_features(struct net_device *dev,
+>  	u64 offloads;
+>  	int err;
+>  
+> -	if ((dev->features ^ features) & NETIF_F_LRO) {
+> +	if ((dev->features ^ features) & NETIF_F_GRO_HW) {
+>  		if (vi->xdp_enabled)
+>  			return -EBUSY;
+>  
+> -		if (features & NETIF_F_LRO)
+> +		if (features & NETIF_F_GRO_HW)
+>  			offloads = vi->guest_offloads_capable;
+>  		else
+>  			offloads = vi->guest_offloads_capable &
+> -				   ~GUEST_OFFLOAD_LRO_MASK;
+> +				   ~GUEST_OFFLOAD_GRO_HW_MASK;
+>  
+>  		err = virtnet_set_guest_offloads(vi, offloads);
+>  		if (err)
+> @@ -3100,9 +3100,9 @@ static int virtnet_probe(struct virtio_device *vdev)
+>  		dev->features |= NETIF_F_RXCSUM;
+>  	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+>  	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
+> -		dev->features |= NETIF_F_LRO;
+> +		dev->features |= NETIF_F_GRO_HW;
+>  	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
+> -		dev->hw_features |= NETIF_F_LRO;
+> +		dev->hw_features |= NETIF_F_GRO_HW;
+>  
+>  	dev->vlan_features = dev->features;
+>  
+> -- 
+> 2.25.1
 
