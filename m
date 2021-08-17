@@ -2,77 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F4703EEEE6
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 17:04:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 437033EEEE9
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 17:05:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237768AbhHQPF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 11:05:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59424 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232705AbhHQPFZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Aug 2021 11:05:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5184060FBF;
-        Tue, 17 Aug 2021 15:04:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629212692;
-        bh=SByw50eAs4QyfClYIcyp6O5ZL5ic9z6TSkIV2b/FWYU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SxE0cWJQk1e2eWRWjKxIkESYwOOvh9EQ8HoAKl2zufhfPAfbWCyLUiivS2YeuPWaq
-         QOLMlHT8vwJh9Bd1vp8y++j+/4MGB89vawJmEvbe6ndVhnrcDDqm+8OnphRsUylKBZ
-         qeaNyBx3GzJ546L9DeBG6oX0jcC78Z5diwqDNnLm5Ujav3F41IbqYh/aH3kQgkyGe9
-         FLgnQpAb3E7SvrHid3pavR9HL/ulZaLE4AHy/GyeMAO/zC25yG2g0N4k53XetLchdg
-         29CyMyWxp/k++C8RnKVHHHarSSqcpZi6VDjfszqproUjKE0UCt6KpMCDNIPJuSvKQ9
-         5tDo+x8W17ZMQ==
-Date:   Tue, 17 Aug 2021 08:04:51 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jonas Bechtel <post@jbechtel.de>
-Cc:     netdev@vger.kernel.org
-Subject: Re: ss command not showing raw sockets? (regression)
-Message-ID: <20210817080451.34286807@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210816150800.28ef2e7c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20210815231738.7b42bad4@mmluhan>
-        <20210816150800.28ef2e7c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S237534AbhHQPGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 11:06:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36464 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232705AbhHQPGN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 11:06:13 -0400
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC79C061764;
+        Tue, 17 Aug 2021 08:05:40 -0700 (PDT)
+Received: by mail-ot1-x333.google.com with SMTP id r16-20020a0568304190b02904f26cead745so25244185otu.10;
+        Tue, 17 Aug 2021 08:05:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=QVfvljS9yxMRLzJtSOULzVoQt76MWkNy0TQqqNBW6Ig=;
+        b=qhGKl1NxybX2OZInj1F15H7pPHUfQ4Dpbv/J38dZIdgu9nN6y5fjjBuZsWVD2SC5fB
+         5bY+gkep8cKcRx0dwj3xV4232jYrbdKEwQoI98+dsQYIC/3FAawJ7t6s+gceuLHmVPTg
+         YI6GkzMQTS2MfY8TDy9168Zsnxb4xnhHCj1NzSI+tA3MIWQDk5ejigGZavGI4/AgQuLd
+         1yC6T2uJSHfKTBhO5y6E7JmQEkcl6hatqrZyj344WBxg9mO6TJoyCEngXkHYGiBaTMV3
+         RdjIGF19V5OdMW+NzFIn4PRHJNZjQ83CI/giVjaHxizaHmfINZgqwQ8+eEHud/1NQY7N
+         Cm8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QVfvljS9yxMRLzJtSOULzVoQt76MWkNy0TQqqNBW6Ig=;
+        b=gF9MG5tsfnDemQLkvUxXDzT8C+M1HMIUY2ugzBr+ztuLNG6xDtmczA+/ZEdPRGyzIv
+         Unj4Xnq74wmUy7GFjixaAGFF8Y+qVAqlygP4D+NRNuDb8YDzSO4iOYlxYnWRvZ1cyN67
+         j1GawdRtVj2lQN9/xSLEhaEHtB/BVf8fKxCyV8GMiNn0BiqnktwZSEhW0/WMvo5G0Dxs
+         igpjASI0TXkoqlCsrS6U8GPK9rIpY6aUckBgpaP7CjW2TnAb28S+qZIC5ZO9Yix6iEyS
+         bxgh8TmdCvo/dbX2bUUFK5b908j6cu03D1i/+p4lNKwzyhst1ndpwznt9qPuY39Iu8U5
+         /v3w==
+X-Gm-Message-State: AOAM532p+W5WPi4GSUBVyhXIgApAsbtw/C9YiI4Ojw7PeA9C3hgoZx82
+        rh8Pt8hHm6bZ6iDeaEOPRU8=
+X-Google-Smtp-Source: ABdhPJwbmBTJXUOlktACFWj/KDoKpiNsYfLOJ16DAofBaApV6Fzby8JQrRKv67PyndRVp7LHyDoxmw==
+X-Received: by 2002:a05:6830:236d:: with SMTP id r13mr3040332oth.130.1629212739821;
+        Tue, 17 Aug 2021 08:05:39 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.6.112.214])
+        by smtp.googlemail.com with ESMTPSA id u14sm425086oth.73.2021.08.17.08.05.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 Aug 2021 08:05:39 -0700 (PDT)
+Subject: Re: [PATCH net-next v4] ipv6: add IFLA_INET6_RA_MTU to expose mtu
+ value in the RA message
+To:     Rocco Yue <rocco.yue@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, rocco.yue@gmail.com,
+        chao.song@mediatek.com, zhuoliang.zhang@mediatek.com
+References: <20210817072609.2110-1-rocco.yue@mediatek.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <ad32c931-3056-cdef-4b9b-aab654c61cb9@gmail.com>
+Date:   Tue, 17 Aug 2021 09:05:36 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210817072609.2110-1-rocco.yue@mediatek.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Aug 2021 15:08:00 -0700 Jakub Kicinski wrote:
-> On Sun, 15 Aug 2021 23:17:38 +0200 Jonas Bechtel wrote:
-> > I've got following installation:
-> > * ping 32 bit version
-> > * Linux 4.4.0 x86_64 (yes, somewhat ancient)
-> > * iproute2  4.9.0 or 4.20.0 or 5.10.0
-> > 
-> > With one ping command active, there are two raw sockets on my system:
-> > one for IPv4 and one for IPv6 (just one of those is used).
-> > 
-> > My problem is that
-> > 
-> > ss -awp
-> > 
-> > shows 
-> > * two raw sockets (4.9.0)
-> > * any raw socket = bug (4.20.0)
-> > * any raw socket = bug (5.10.0)  
-> 
-> Could you clarify how the bug manifests itself? Does ss crash?
-> 
-> > So is this a bug or is this wont-fix (then, if it is related to
-> > kernel version, package maintainers may be interested)?  
+On 8/17/21 1:26 AM, Rocco Yue wrote:
+> @@ -1496,6 +1490,11 @@ static void ndisc_router_discovery(struct sk_buff *skb)
+>  		memcpy(&n, ((u8 *)(ndopts.nd_opts_mtu+1))+2, sizeof(mtu));
+>  		mtu = ntohl(n);
+>  
+> +		if (in6_dev->ra_mtu != mtu) {
+> +			in6_dev->ra_mtu = mtu;
+> +			send_ifinfo_notify = true;
+> +		}
+> +
+>  		if (mtu < IPV6_MIN_MTU || mtu > skb->dev->mtu) {
+>  			ND_PRINTK(2, warn, "RA: invalid mtu: %d\n", mtu);
+>  		} else if (in6_dev->cnf.mtu6 != mtu) {
 
-I had a look, I don't see anything out of the ordinary. I checked with
-v4.6, I don't have a 4.4 box handy. It seems ss got support for dumping
-over netlink in the 4.9. On a 4.4 kernel it should fall back to using
-procfs tho, raw_show() calls inet_show_netlink() which should fails and
-therefore the code should fall through to the old procfs stuff.
 
-No idea why that doesn't happen for you. Is this vanilla 4.4 or does it
-have backports? Is there a /sys/module/raw_diag/ directory on your
-system after you run those commands?
+If an RA no longer carries an MTU or if accept_ra_mtu is reset, then
+in6_dev->ra_mtu should be reset to 0 right?
 
-Does setting PROC_NET_RAW make the newer iproute version work for you?
-
-$ PROC_NET_RAW=/proc/net/raw ss -awp
+rest of the change looks good to me.
