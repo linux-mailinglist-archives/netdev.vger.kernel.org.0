@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AC7B3EF0ED
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 19:28:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 812473EF0F1
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 19:29:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232224AbhHQR3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 13:29:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40894 "EHLO
+        id S232191AbhHQRaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 13:30:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232253AbhHQR3H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 13:29:07 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B103C06179A
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 10:28:34 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id om1-20020a17090b3a8100b0017941c44ce4so6427552pjb.3
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 10:28:34 -0700 (PDT)
+        with ESMTP id S232301AbhHQR3J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 13:29:09 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F060C061764
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 10:28:36 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id n13-20020a17090a4e0d00b0017946980d8dso6405926pjh.5
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 10:28:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=aeFtRhSEJbzsPSHwAOVZxdiX+JzPhBUDakNsooVwFFY=;
-        b=aw2kNv5zZt/Jzl5qxLU9BG1mlyb2D0Mk+O7qN8HQOjiaCBKoWGt6jneB8Gn/HqBNaQ
-         vP4kwqEQhl/t3zBgXFxYl1RM5SUfBUgxRl46BN1sB2WSb2rZvIwdkllKrtHLWIQFMbCX
-         3FoDvQPvMu2cbx+BY7PE0fcb64jM2Al0bLUDO4hZmDVWx/KdvZPMQXkuDFmowUb+Aly8
-         9Mb8KEg/Hf0Xw3x8HTDkRIezw8Y+bWMkTf8vusgK5a5jyBq8VEiLdXU207ZayVGjdOqJ
-         oFHDqktkelVua7G79wcKVowznwpk73GlsLF9E+Emm5HQmR6mYSeR7r5O+oVsoizU+MlI
-         zicw==
+        bh=YiG0yf/5wgs/7bW0GtAApT1I94eSGtteWf/SCyGxK60=;
+        b=Ab9w0u0f+XjH+v0VZ7oInuANGo0mNOViwHc1HjGyrPgONsg4iMEzLrsrpA9FaaqSnR
+         22+d9QGjCMJO71WgC0f6H9v5cGG6iMz+12C3ZspYIQga4ujGt92KoURcP5Q+U/8wHra3
+         h0Q3hL684ICK8OonsHjV6IlM//ovj6cabljsfs+AIN8HMGGfEUTezCaFW7aEj3PeNrSZ
+         b5rnQ9C5o9XQ876AKzaHyh2Ew1fgnELQiDGo8g9MME7D7Cnat0aodUxMqOUT0sHd/ehN
+         SYgSV3JO36M7hjLbaKg06Gs9Zxn5yKIVRhT0K0lj3LUi+iUaUZBq9WzbCoweW588IWxg
+         sLAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=aeFtRhSEJbzsPSHwAOVZxdiX+JzPhBUDakNsooVwFFY=;
-        b=IHekq7aVQwlk9W4fiXgBenF/LFi/EVSbxlA3tPo9yIlONFLdDWknOX8Lr3X51meJtM
-         /jGAoylT8VGJpDbYkgYW9mDpU9lotyTXQ1atq65oqB5pcmsf9n7K+p6hjrd1kZ4jFtMm
-         baQlfUxeptdqGPnA2XcBc6Fk1T8i9wbNfgR9GkSve+PIQsmxrtsvNVueyNanBzahH/kG
-         F6l3QYnW9PfCco2u20fmRg0sfkoz6EMgJdbDFdUBos9a2k7xIA/X3UObgauxWyvQLarZ
-         oXiYk+mMA/Ju6TVpIVRU2XsAnGzO3J6hS68ooc9M1jigynurLFfTUf7N5YlgRVS8L6if
-         uNWA==
-X-Gm-Message-State: AOAM530jZaR4DjKf4l/divVAjdarjjXD37HaeCdJCkD1ilOsPbt4zEOC
-        iw72ssQ859YMttOoZBngXxTRsyfIn9Jq72y4
-X-Google-Smtp-Source: ABdhPJw5OyiXb9BUWMGbSNLv8vciY+HfNtZ2Tjwj699ZPrmosNfiQpvuLygLpT4hRq1km5qpbb0jWA==
-X-Received: by 2002:a17:902:c401:b0:12d:b1c4:5df3 with SMTP id k1-20020a170902c40100b0012db1c45df3mr3620806plk.15.1629221313379;
-        Tue, 17 Aug 2021 10:28:33 -0700 (PDT)
+        bh=YiG0yf/5wgs/7bW0GtAApT1I94eSGtteWf/SCyGxK60=;
+        b=TZBNGWxAVdE0c0p21NateJnY/zp3wj0/zWd0yYq0j0BDphk0zpDKYnuWZpdpIl6zM3
+         yvIk4z5WOQXq4deVK7FN9twijYm4U7v6DC0TTfn+TVvKUVr6vFsaKtvWtjguSRA09GhC
+         NNkBHF11ZQi5I6CxoLdmwV1F90Qb8k05jARthemBNZkjc/SL+M3VezzVqaKr/JbMxyTw
+         wgO1gpwg6TF4/qg1ty8hXFRlaPn70zcd8LtIk+Jkmfbee+1fn3kyeLFTBVN+ZItegqNh
+         jsIOeDlo5hieiPjMZeo/YvQtacjYlxKkUSqU6wJUtJFgblmh/lv75T15ErdZoamCVdNl
+         GY0Q==
+X-Gm-Message-State: AOAM533g6PeZxj6d0MeHCoqtl7S3LZrG2hnq+/KlXemsHvibS8lN9OKJ
+        eJhuvs4p3FJdJ7216QcEk4jTGLhNqHA7pEc1
+X-Google-Smtp-Source: ABdhPJwD56RUEqAKTVsZq+kjRfQl3bIoVtTF2yL72ovLr8L5AGxiVtasHfZhH5Bo7viw4QCgApUY4g==
+X-Received: by 2002:a17:902:ac87:b029:12d:3e59:cb7d with SMTP id h7-20020a170902ac87b029012d3e59cb7dmr3640415plr.22.1629221315796;
+        Tue, 17 Aug 2021 10:28:35 -0700 (PDT)
 Received: from lattitude.lan ([49.206.114.79])
-        by smtp.googlemail.com with ESMTPSA id y5sm3872096pgs.27.2021.08.17.10.28.31
+        by smtp.googlemail.com with ESMTPSA id y5sm3872096pgs.27.2021.08.17.10.28.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Aug 2021 10:28:32 -0700 (PDT)
+        Tue, 17 Aug 2021 10:28:35 -0700 (PDT)
 From:   Gokul Sivakumar <gokulkumar792@gmail.com>
 To:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
         Stephen Hemminger <stephen@networkplumber.org>
 Cc:     Gokul Sivakumar <gokulkumar792@gmail.com>
-Subject: [PATCH iproute2 v3 2/3] bridge: fdb: don't colorize the "dev" & "dst" keywords in "bridge -c fdb"
-Date:   Tue, 17 Aug 2021 22:58:06 +0530
-Message-Id: <20210817172807.3196427-3-gokulkumar792@gmail.com>
+Subject: [PATCH iproute2 v3 3/3] man: bridge: fix the typo to change "-c[lor]" into "-c[olor]" in man page
+Date:   Tue, 17 Aug 2021 22:58:07 +0530
+Message-Id: <20210817172807.3196427-4-gokulkumar792@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210817172807.3196427-1-gokulkumar792@gmail.com>
 References: <20210817172807.3196427-1-gokulkumar792@gmail.com>
@@ -63,53 +63,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To be consistent with the colorized output of "ip" command and to increase
-readability, stop highlighting the "dev" & "dst" keywords in the colorized
-output of "bridge -c fdb" cmd.
-
-Example: in the following "bridge -c fdb" entry, only "00:00:00:00:00:00",
-"vxlan100" and "2001:db8:2::1" fields should be highlighted in color.
-
-00:00:00:00:00:00 dev vxlan100 dst 2001:db8:2::1 self permanent
-
+Fixes: 3a1ca9a5b ("bridge: update man page for new color and json changes")
 Signed-off-by: Gokul Sivakumar <gokulkumar792@gmail.com>
 ---
- bridge/fdb.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ man/man8/bridge.8 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/bridge/fdb.c b/bridge/fdb.c
-index 37465e46..8912f092 100644
---- a/bridge/fdb.c
-+++ b/bridge/fdb.c
-@@ -192,10 +192,13 @@ int print_fdb(struct nlmsghdr *n, void *arg)
- 				   "mac", "%s ", lladdr);
- 	}
- 
--	if (!filter_index && r->ndm_ifindex)
-+	if (!filter_index && r->ndm_ifindex) {
-+		print_string(PRINT_FP, NULL, "dev ", NULL);
-+
- 		print_color_string(PRINT_ANY, COLOR_IFNAME,
--				   "ifname", "dev %s ",
-+				   "ifname", "%s ",
- 				   ll_index_to_name(r->ndm_ifindex));
-+	}
- 
- 	if (tb[NDA_DST]) {
- 		int family = AF_INET;
-@@ -208,9 +211,11 @@ int print_fdb(struct nlmsghdr *n, void *arg)
- 				  RTA_PAYLOAD(tb[NDA_DST]),
- 				  RTA_DATA(tb[NDA_DST]));
- 
-+		print_string(PRINT_FP, NULL, "dst ", NULL);
-+
- 		print_color_string(PRINT_ANY,
- 				   ifa_family_color(family),
--				    "dst", "dst %s ", dst);
-+				   "dst", "%s ", dst);
- 	}
- 
- 	if (vid)
+diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
+index eec7df43..db83a2a6 100644
+--- a/man/man8/bridge.8
++++ b/man/man8/bridge.8
+@@ -22,7 +22,7 @@ bridge \- show / manipulate bridge addresses and devices
+ \fB\-s\fR[\fItatistics\fR] |
+ \fB\-n\fR[\fIetns\fR] name |
+ \fB\-b\fR[\fIatch\fR] filename |
+-\fB\-c\fR[\folor\fR] |
++\fB\-c\fR[\fIolor\fR] |
+ \fB\-p\fR[\fIretty\fR] |
+ \fB\-j\fR[\fIson\fR] |
+ \fB\-o\fR[\fIneline\fr] }
 -- 
 2.25.1
 
