@@ -2,93 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BB983EE69E
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 08:36:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 467A73EE6CC
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 08:44:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234155AbhHQGg7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 02:36:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60008 "EHLO
+        id S238137AbhHQGou (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 02:44:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229716AbhHQGg6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 02:36:58 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEFFDC061764
-        for <netdev@vger.kernel.org>; Mon, 16 Aug 2021 23:36:25 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <afa@pengutronix.de>)
-        id 1mFsht-0007o2-2g; Tue, 17 Aug 2021 08:36:17 +0200
-Received: from afa by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <afa@pengutronix.de>)
-        id 1mFshq-0006vl-De; Tue, 17 Aug 2021 08:36:14 +0200
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-To:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>
-Cc:     kernel@pengutronix.de, Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        SHA-cyfmac-dev-list@infineon.com,
-        brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S230094AbhHQGot (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 02:44:49 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06AC9C061764;
+        Mon, 16 Aug 2021 23:44:17 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id m24-20020a17090a7f98b0290178b1a81700so4732782pjl.4;
+        Mon, 16 Aug 2021 23:44:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qGW+/u32RfeHULBSPZGyDEkWYbTkSdQ+pj8g3ZZmAtc=;
+        b=mqctxBRs74ZzJjSEeMaWsZHYwP3Sl5ea4IY+Up3swBYWGUCjaNlFTWFWG7ngKe3ZeD
+         dZF3f7KVWbgbItP2LiZHwQIQhTv5eE1MCHNozDIct0ma/qF1j0jYuV6Pzac60PnUOdQh
+         Yc6K4mo15ceBG2vriCuA2q53cCf385HJcZ3gmgFXpDnzqfA6GpO/p5C1OBucHpcDQI/E
+         M6wHd0lueb8i28kR4eYaS9hFT6DVFV20kWeBgRnOhgvqdF7krJ8Ke+Zh0mQYTBb5E4+d
+         XHJpGCbFgGVFwFcJzHKbV6dOcgYvISlFWXumEmXYF4APsSKT88Y6LzIFrZYahjxEYqJw
+         OZAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qGW+/u32RfeHULBSPZGyDEkWYbTkSdQ+pj8g3ZZmAtc=;
+        b=H7u7+10AItE+C7iZ6gZZL4VmQGQcyU7DZf1bTt4nJvr6N/vz/u4xSmzdZVL8BrExny
+         ds0ZiaRp1eW2NXTipt5nrnrUgxlGy4deHdGBIV+aFjSjJzrNiLGQuZ2qhqZlriPnd0OT
+         cIvG3DBtUhn8wkKBoEgkPxJUVy47SyZZthoiuqhaXO6LhmFvX0OLtJh0WJCnUFoooehn
+         nQA8jvPQ/q5uVI9cqNCWJ/GZtHW2mmrL+lukTS8a59RLruKqcajdhEsA3mgiWdRGF5Bf
+         BmUa+v0JtkPRf7GG9Ev/EHvMG7jZdZe9s1Ip4ipPKJ/nJOuWeMFxI8y8Yc0uQ57jm/8/
+         O8cQ==
+X-Gm-Message-State: AOAM532YIqz8myIT0r9Ld65h9H+QoS9Fzm2HSVlL90LvvGoCDBmW6evf
+        4BS4QUvcTpkTPUYk+UqROsGAUvWboW70c5IvsuI=
+X-Google-Smtp-Source: ABdhPJxYbpn9kCLT1fi4MGjMSaFXdc5Za03AsrYBuk1cjQTNcYjUZigKFjQenBx/bqdN8VorIN51bg==
+X-Received: by 2002:a63:5509:: with SMTP id j9mr2064571pgb.329.1629182656474;
+        Mon, 16 Aug 2021 23:44:16 -0700 (PDT)
+Received: from localhost.localdomain ([1.240.193.107])
+        by smtp.googlemail.com with ESMTPSA id z11sm1301192pfn.69.2021.08.16.23.44.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Aug 2021 23:44:15 -0700 (PDT)
+From:   Kangmin Park <l4stpr0gr4m@gmail.com>
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tedd Ho-Jeong An <tedd.an@intel.com>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] brcmfmac: pcie: fix oops on failure to resume and reprobe
-Date:   Tue, 17 Aug 2021 08:35:22 +0200
-Message-Id: <20210817063521.22450-1-a.fatoum@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+Subject: [PATCH v3] Bluetooth: Fix return value in hci_dev_do_close()
+Date:   Tue, 17 Aug 2021 15:44:11 +0900
+Message-Id: <20210817064411.2378-1-l4stpr0gr4m@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: afa@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When resuming from suspend, brcmf_pcie_pm_leave_D3 will first attempt a
-hot resume and then fall back to removing the PCI device and then
-reprobing. If this probe fails, the kernel will oops, because brcmf_err,
-which is called to report the failure will dereference the stale bus
-pointer. Open code and use the default bus-less brcmf_err to avoid this.
+hci_error_reset() return without calling hci_dev_do_open() when
+hci_dev_do_close() return error value which is not 0.
 
-Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
----
-To: Arend van Spriel <aspriel@gmail.com>
-To: Franky Lin <franky.lin@broadcom.com>
-To: Hante Meuleman <hante.meuleman@broadcom.com>
-To: Chi-hsien Lin <chi-hsien.lin@infineon.com>
-To: Wright Feng <wright.feng@infineon.com>
-To: Chung-hsien Hsu <chung-hsien.hsu@infineon.com>
-Cc: SHA-cyfmac-dev-list@infineon.com
-Cc: brcm80211-dev-list.pdl@broadcom.com
-Cc: netdev@vger.kernel.org
-Cc: linux-wireless@vger.kernel.org
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: linux-kernel@vger.kernel.org
----
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Also, hci_dev_close() return hci_dev_do_close() function's return
+value.
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-index 9ef94d7a7ca7..d824bea4b79d 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -2209,7 +2209,7 @@ static int brcmf_pcie_pm_leave_D3(struct device *dev)
+But, hci_dev_do_close() return always 0 even if hdev->shutdown
+return error value. So, fix hci_dev_do_close() to save and return
+the return value of the hdev->shutdown when it is called.
+
+Signed-off-by: Kangmin Park <l4stpr0gr4m@gmail.com>
+---
+ net/bluetooth/hci_core.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 8622da2d9395..84afc0d693a8 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -1718,6 +1718,7 @@ static void hci_pend_le_actions_clear(struct hci_dev *hdev)
+ int hci_dev_do_close(struct hci_dev *hdev)
+ {
+ 	bool auto_off;
++	int ret = 0;
  
- 	err = brcmf_pcie_probe(pdev, NULL);
- 	if (err)
--		brcmf_err(bus, "probe after resume failed, err=%d\n", err);
-+		__brcmf_err(NULL, __func__, "probe after resume failed, err=%d\n", err);
+ 	BT_DBG("%s %p", hdev->name, hdev);
  
- 	return err;
+@@ -1732,13 +1733,13 @@ int hci_dev_do_close(struct hci_dev *hdev)
+ 	    test_bit(HCI_UP, &hdev->flags)) {
+ 		/* Execute vendor specific shutdown routine */
+ 		if (hdev->shutdown)
+-			hdev->shutdown(hdev);
++			ret = hdev->shutdown(hdev);
+ 	}
+ 
+ 	if (!test_and_clear_bit(HCI_UP, &hdev->flags)) {
+ 		cancel_delayed_work_sync(&hdev->cmd_timer);
+ 		hci_req_sync_unlock(hdev);
+-		return 0;
++		return ret;
+ 	}
+ 
+ 	hci_leds_update_powered(hdev, false);
+@@ -1845,7 +1846,7 @@ int hci_dev_do_close(struct hci_dev *hdev)
+ 	hci_req_sync_unlock(hdev);
+ 
+ 	hci_dev_put(hdev);
+-	return 0;
++	return ret;
  }
+ 
+ int hci_dev_close(__u16 dev)
 -- 
-2.30.2
+2.26.2
 
