@@ -2,92 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E10D63EEA18
-	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 11:40:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B3673EEA1E
+	for <lists+netdev@lfdr.de>; Tue, 17 Aug 2021 11:41:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236163AbhHQJku (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 05:40:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33796 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236082AbhHQJko (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Aug 2021 05:40:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 6313560F11;
-        Tue, 17 Aug 2021 09:40:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629193211;
-        bh=g8TrUzvroWxlhghmyr7bpyjXsdTGLVOxYdHZl/HVCn0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=QUhwcJq1VG2GtEkStBKjXkGx1NTOGcOgKFQgQb2l03F5hdWDQy96BKnezXzr2cxzM
-         nN+o7bQIXQp/JpIxFtBCr7T7rX6C3AjFsE3Y2k2k+8gvuMW6qAV1SfZo5r6yoQO2dm
-         k5Y8FpjWpnsiWHOLOGPkffMss3kssv1gzYODltZlUrdnprCKQcHG+0Ltn8q9Wzgd9r
-         EQ8j49DWaLydXE8aiiOlqU/3kRRQ57HxZMeZz4tv5i74lbqpwfY7judFrkWbRnKV5W
-         UHjKNqlOpgdbvGWj31J1eENlYPwUplTw4/2R72quHVYu7fgdeWNsOblaJR6d9Kh10G
-         uGQuXnx0qFU4g==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 58397609CF;
-        Tue, 17 Aug 2021 09:40:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S239210AbhHQJls (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 05:41:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46472 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239087AbhHQJlr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 05:41:47 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307C2C061764;
+        Tue, 17 Aug 2021 02:41:14 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id h9so37419025ejs.4;
+        Tue, 17 Aug 2021 02:41:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xfs/l8KNPldYvYSfsE5tioy382KDShw/nZNTXXTrdnc=;
+        b=RVACI4CdE27rO43ekpdJkhagh1GNeqQuDCt+kYuwwLoJjnvR7h5gszWPYgUuOq6i98
+         CMjoNiwwN1M9Y7jFNVeKQUw1zhHSOnJ2cxztNCo3GSF0gjErJ93c9O5L/wbj6n8C/8Eg
+         OUzdTJ++cUmemxAN4zwCQmkeMVloypqy1sVnAybNwvQddcJY1bbztvh/w/DZPycDvjoz
+         SxY1oXidrd9lHXzRl43HO8DoIcvUan8vIY0KzeYvmVMLIRKab0Uka7pYD2C119SdkATF
+         RaMMLlXB9NWlYyLj5QKTbGVfanwFybqryoR+Nc43BK5CXx3si6/HWbaThR45YVNpUbZt
+         ofug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xfs/l8KNPldYvYSfsE5tioy382KDShw/nZNTXXTrdnc=;
+        b=PfDzkv3TJSTv7E+H2HfHL1Z9wwt3HxkG2STspm3wxR3vUhARHjdYsnvNW+6v2JvutB
+         CtkuulxpUq74C1cuwV/oXtQ/pRMyHcydxuzvT4zn6Obj34Uiok+FyBUndErMJpAx1Fda
+         jWyh+xX0/qvJOmSK7cVa+ZhSiN/I9UlfAQFKwTg6WFnT0UJPH+p6/8V+UZ/ywHhQw79W
+         eLQ21mh9ZDGTa9Sh7stXRmUEO7nH3R8/6ii6VQZCnuGeWmFSTlsUlxng9QSRpBuDVzrY
+         reslyyLyi8cQZsqZLsBnxphbqpErPpb3pKUde0GfLjthTabuCLq4ggbR8LOLNpFCdijc
+         etRQ==
+X-Gm-Message-State: AOAM530QWfx8o1RolXaHNcACZ12T5gL4ohF+cqEzCkP/n+MbELayAbqF
+        TFdznWpue7qzZtaCwXyujDw=
+X-Google-Smtp-Source: ABdhPJwd8chO9kxq2L9cysozEO//ABcYOVkuf3f/I/bF8amsiBAxRgt4lVD/+Y9McWwLImO/qLBf+Q==
+X-Received: by 2002:a17:907:2cf0:: with SMTP id hz16mr2991670ejc.466.1629193272716;
+        Tue, 17 Aug 2021 02:41:12 -0700 (PDT)
+Received: from skbuf ([188.25.144.60])
+        by smtp.gmail.com with ESMTPSA id g10sm517357ejj.44.2021.08.17.02.41.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Aug 2021 02:41:12 -0700 (PDT)
+Date:   Tue, 17 Aug 2021 12:41:10 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: [RFC PATCH v3 net-next 09/10] net: dsa: ocelot: felix: add
+ support for VSC75XX control over SPI
+Message-ID: <20210817094110.vfrrbt264trmn7ri@skbuf>
+References: <20210814025003.2449143-1-colin.foster@in-advantage.com>
+ <20210814025003.2449143-10-colin.foster@in-advantage.com>
+ <20210814114329.mycpcfwoqpqxzsyl@skbuf>
+ <20210814120211.v2qjqgi6l3slnkq2@skbuf>
+ <20210815204149.GB3328995@euler>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next PATCH 00/11] octeontx2: Rework MCAM flows management for
- VFs
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162919321135.26227.5808597240956880952.git-patchwork-notify@kernel.org>
-Date:   Tue, 17 Aug 2021 09:40:11 +0000
-References: <1629175493-4895-1-git-send-email-sbhatta@marvell.com>
-In-Reply-To: <1629175493-4895-1-git-send-email-sbhatta@marvell.com>
-To:     Subbaraya Sundeep <sbhatta@marvell.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sgoutham@marvell.com, hkelam@marvell.com, gakula@marvell.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210815204149.GB3328995@euler>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Sun, Aug 15, 2021 at 01:41:49PM -0700, Colin Foster wrote:
+> I also came across some curious code in Seville where it is callocing a
+> struct phy_device * array instead of struct lynx_pcs *. I'm not sure if
+> that's technically a bug or if the thought is "a pointer array is a
+> pointer array."
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+git blame will show you that it is a harmless leftover of commit
+588d05504d2d ("net: dsa: ocelot: use the Lynx PCS helpers in Felix and
+Seville"). Before that patch, the pcs was a struct phy_device.
 
-On Tue, 17 Aug 2021 10:14:42 +0530 you wrote:
-> From Octeontx2 hardware point of view there is no
-> difference between PFs and VFs. Hence with refactoring
-> in driver the packet classification features or offloads
-> can be supported by VFs also. This patchset unifies the
-> mcam flows management so that VFs can also support
-> ntuple filters. Since there are MCAM allocations by
-> all PFs and VFs in the system it is required to have
-> the ability to modify number of mcam rules count
-> for a PF/VF in runtime. This is achieved by using devlink.
-> Below is the summary of patches:
-> 
-> [...]
+> @@ -1062,12 +1062,12 @@ static void vsc9953_mdio_bus_free(struct ocelot *ocelot)
+>  	int port;
+>
+>  	for (port = 0; port < ocelot->num_phys_ports; port++) {
+> -		struct lynx_pcs *pcs = felix->pcs[port];
+> +		struct phylink_pcs *pcs = felix->pcs[port];
+>
+>  		if (!pcs)
+>  			continue;
+>
+> -		mdio_device_free(pcs->mdio);
+> +		mdio_device_free(lynx_pcs_get_mdio(pcs));
 
-Here is the summary with links:
-  - [net-next,01/11] octeontx2-af: Modify install flow error codes
-    https://git.kernel.org/netdev/net-next/c/9cfc58095688
-  - [net-next,02/11] octeontx2-af: add proper return codes for AF mailbox handlers
-    https://git.kernel.org/netdev/net-next/c/7278c359e52c
-  - [net-next,03/11] octeontx2-af: Add debug messages for failures
-    https://git.kernel.org/netdev/net-next/c/a83bdada06bf
-  - [net-next,04/11] octeontx2-pf: Enable NETIF_F_RXALL support for VF driver
-    https://git.kernel.org/netdev/net-next/c/0b3834aeaf47
-  - [net-next,05/11] octeontx2-pf: Ntuple filters support for VF netdev
-    https://git.kernel.org/netdev/net-next/c/3cffaed2136c
-  - [net-next,06/11] octeontx2-pf: Sort the allocated MCAM entry indices
-    https://git.kernel.org/netdev/net-next/c/cc65fcab88be
-  - [net-next,07/11] octeontx2-pf: Unify flow management variables
-    https://git.kernel.org/netdev/net-next/c/2e2a8126ffac
-  - [net-next,08/11] octeontx2-pf: devlink params support to set mcam entry count
-    https://git.kernel.org/netdev/net-next/c/2da489432747
-  - [net-next,09/11] octeontx2-af: Allocate low priority entries for PF
-    https://git.kernel.org/netdev/net-next/c/7df5b4b260dd
-  - [net-next,10/11] octeontx2-af: cn10K: Get NPC counters value
-    https://git.kernel.org/netdev/net-next/c/99b8e5479d49
-  - [net-next,11/11] octeontx2-af: configure npc for cn10k to allow packets from cpt
-    https://git.kernel.org/netdev/net-next/c/aee512249190
+Don't really have a better suggestion than lynx_pcs_get_mdio.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+>  		lynx_pcs_destroy(pcs);
+>  	}
+>  	felix_mdio_bus_free(ocelot);
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+> index ccaf7e35abeb..484f0d4efefe 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+> @@ -270,10 +270,11 @@ static int dpaa2_pcs_create(struct dpaa2_mac *mac,
+>
+>  static void dpaa2_pcs_destroy(struct dpaa2_mac *mac)
+>  {
+> -	struct lynx_pcs *pcs = mac->pcs;
+> +	struct phylink_pcs *pcs = mac->pcs;
+>
+>  	if (pcs) {
+> -		struct device *dev = &pcs->mdio->dev;
+> +		struct mdio_device *mdio = lynx_get_mdio_device(pcs);
+> +		struct device *dev = &mdio->dev;
+>  		lynx_pcs_destroy(pcs);
+>  		put_device(dev);
 
+Ideally dpaa2 would call mdio_device_free too, just like the others.
 
+>  		mac->pcs = NULL;
+> @@ -336,7 +337,7 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
+>  	mac->phylink = phylink;
+>
+>  	if (mac->pcs)
+> -		phylink_set_pcs(mac->phylink, &mac->pcs->pcs);
+> +		phylink_set_pcs(mac->phylink, mac->pcs);
+>
+>  	err = phylink_of_phy_connect(mac->phylink, dpmac_node, 0);
+>  	if (err) {
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+> index 31274325159a..cc2ca51ac984 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+> @@ -823,7 +823,7 @@ static int enetc_imdio_create(struct enetc_pf *pf)
+>  {
+>  	struct device *dev = &pf->si->pdev->dev;
+>  	struct enetc_mdio_priv *mdio_priv;
+> -	struct lynx_pcs *pcs_lynx;
+> +	struct phylink_pcs *pcs_phylink;
+>  	struct mdio_device *pcs;
+
+Agree with Russell's suggestion to replace "pcs" with "mdiodev" wherever
+it refers to a struct mdio_device. Likely as a separate patch.
+
+>  	struct mii_bus *bus;
+>  	int err;
+> @@ -341,13 +355,13 @@ struct lynx_pcs *lynx_pcs_create(struct mdio_device *mdio)
+>  	lynx_pcs->pcs.ops = &lynx_pcs_phylink_ops;
+>  	lynx_pcs->pcs.poll = true;
+>
+> -	return lynx_pcs;
+> +	return lynx_to_phylink_pcs(lynx_pcs);
+
+I would probably write another patch to convert all occurrences of
+"struct lynx_pcs" variables to the same naming scheme. Currently we have
+"lynx", "pcs", "lynx_pcs" only within the pcs-lynx.c file itself. "lynx"
+seems to be the predominant name so all others could be replaced with
+that too.
+
+>  }
+>  EXPORT_SYMBOL(lynx_pcs_create);
+>
+> -void lynx_pcs_destroy(struct lynx_pcs *pcs)
+> +void lynx_pcs_destroy(struct phylink_pcs *pcs)
+>  {
+> -	kfree(pcs);
+> +	kfree(phylink_pcs_to_lynx(pcs));
+
+I would perhaps do this in two stages
+
+	struct lynx_pcs *lynx = phylink_pcs_to_lynx(pcs);
+
+	kfree(lynx);
+
+>  }
+>  EXPORT_SYMBOL(lynx_pcs_destroy);
+>
+> diff --git a/include/linux/pcs-lynx.h b/include/linux/pcs-lynx.h
+> index a6440d6ebe95..5712cc2ce775 100644
+> --- a/include/linux/pcs-lynx.h
+> +++ b/include/linux/pcs-lynx.h
+> @@ -9,13 +9,10 @@
+>  #include <linux/mdio.h>
+>  #include <linux/phylink.h>
+>
+> -struct lynx_pcs {
+> -	struct phylink_pcs pcs;
+> -	struct mdio_device *mdio;
+> -};
+
+Good that this structure is no longer exposed.
+
+> +struct mdio_device *lynx_get_mdio_device(struct phylink_pcs *pcs);
+>
+> -struct lynx_pcs *lynx_pcs_create(struct mdio_device *mdio);
+> +struct phylink_pcs *lynx_pcs_create(struct mdio_device *mdio);
+>
+> -void lynx_pcs_destroy(struct lynx_pcs *pcs);
+> +void lynx_pcs_destroy(struct phylink_pcs *pcs);
+
+We don't want the few phylink_pcs drivers going in different directions,
+so we should modify pcs-xpcs.c too such that it no longer exposes struct
+dw_xpcs to the outside world. I think I hid most of that away already,
+and grepping for "xpcs->" in drivers/net/dsa and drivers/net/ethernet,
+I only see xpcs->mdiodev and xpcs->pcs being accessed, so converting
+khat should be a walk in the park.
+
+Anyway, I would focus for now on getting the ocelot hardware to work and
+writing the phylink_pcs driver for that. That is one part where I can't
+help a lot with.
