@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB1A03EFB56
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 08:11:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8C463EFB26
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 08:09:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238209AbhHRGKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 02:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44302 "EHLO
+        id S238320AbhHRGJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 02:09:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239351AbhHRGJm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 02:09:42 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47059C0698C2
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:06:02 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id a21so1069828pfh.5
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:06:02 -0700 (PDT)
+        with ESMTP id S238453AbhHRGIb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 02:08:31 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00604C061A27
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:05:59 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id e7so1138284pgk.2
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:05:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6lG0U8bM2TUXGlj9bAHKfwVFEdBo2YZlvkgJ69Lo3ko=;
-        b=Y/DVgqUz//veWIPGInRHjxd8QhbyKfsy0kdugXO1nEyKRG4J+RATjtzLJoSS87jCco
-         VSjAoqrkaHNZh0+mHRdYJBCbqV9xxVXdwGu7uaa7PR+N6pyz9+QKjSd2/AWYtac6EKNc
-         sHLZn6ndy938GBH63DZ5ESf+mXsv8jS252ytM=
+        bh=mboTeGUKr9yolgqYZyfRuYdmdGDjzaFuP+f8ddDuJQs=;
+        b=VXB5rWrOkOUtfCqlqmI5NSVNx72RB77dAy2oZKxsFgyJYk7pRfvjGekORMHd3qeDjV
+         w62NkRG1JnHmoQW1LYbSqf66ms3qEBb5M12TfQfmYL+UCdit3vS6intdi7dOK4yxjtOO
+         0a7us/8TNkOy5LfwCUNfHgiRrh5IwxNX3jPnY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6lG0U8bM2TUXGlj9bAHKfwVFEdBo2YZlvkgJ69Lo3ko=;
-        b=AQQRghToyrAXs0xIcT92h9wXQ/0WDMzbmKmx2IJa71Lg1HosCL18dneWJmgXODZZnp
-         akt7TehT1kB8ohEnaE9od3sdDSscPapcmwtnw6vLgAKzzy+tjQTfNaY6QWjcLjL+tU7c
-         Gxxc/5qiNnLX9Qr9ixXQh7a0aMJOpwsq++MYixtbtEvbdIWxaIe+NdYubkdI5+nWZFC5
-         tpuxSWg7ieO9JhDOIFNzS0mhGwFBdhxn4S/J9YOgxh9VbgKhUZAXV68acOfKZwDa1XYY
-         e8BDzMmLw/Bse/INuOEWhDwVCz8ovr/3ko0Usdf0Z9kzQ+9mwZ5ynq5isFwIMpVQwMnc
-         n64g==
-X-Gm-Message-State: AOAM532zQeN4FzBhenelIeFMr/AlmVtL14aPkYB+l/u/4/XxODWLqNNj
-        FnEirnwPfFtzVk0PtEfshzMpJw==
-X-Google-Smtp-Source: ABdhPJx9i0gP/tEqucjw5t2MRNzXtgPICZZmJol3/cEVKCeeDWJ8qCew27BG46wra+MkbfYjKbKkfg==
-X-Received: by 2002:a05:6a00:cd0:b0:3e2:209e:4e30 with SMTP id b16-20020a056a000cd000b003e2209e4e30mr7598474pfv.59.1629266761883;
-        Tue, 17 Aug 2021 23:06:01 -0700 (PDT)
+        bh=mboTeGUKr9yolgqYZyfRuYdmdGDjzaFuP+f8ddDuJQs=;
+        b=KKwBaKxuuEqAWR0q8+LNdoX6L9hAmggukRUusOlcD61BkjviSmB6nS61UaJN6vyKBm
+         wshPy56JemeBBflx3HVX6N569vsa53In3WGtPkXz4k8+RO6h03CwXPakvf08PeeFP7Pl
+         o8AYqHgvD7ipHOFEBXi0unnvWLLIFXm0NumnypKsgf0P+nCImSNyz6Fay7JjUJMgBE8v
+         lJ8qP+kJAsMMcsmDCouxr06BCHYFfCRRWVa6eW5WbgUm5Cscueq3mrv6jvOpptQaDHGr
+         xBH4XfzHvrmsjj71pPthrhqV2VZgeMThSshwGO8MF/N2MMVQ3+U54mZPyRu5Y7xyqei0
+         EnWg==
+X-Gm-Message-State: AOAM532H73EMyd+yvam7nQ6Zkl0u5z10hkhEir5znlC9ll9BS6nrbmxm
+        5xEwwyiBVJbigkDxBaG/3OKgTg==
+X-Google-Smtp-Source: ABdhPJw0NQnubE2J9ww2IV6yMWGOt/X1HjRivrIndHgKRL2cM8oCkbJtHPmmWE3y9dhwziqzIdlJ6Q==
+X-Received: by 2002:a63:2442:: with SMTP id k63mr7181356pgk.54.1629266759640;
+        Tue, 17 Aug 2021 23:05:59 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id r10sm4624434pff.7.2021.08.17.23.05.57
+        by smtp.gmail.com with ESMTPSA id v15sm4713102pff.105.2021.08.17.23.05.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Aug 2021 23:05:58 -0700 (PDT)
+        Tue, 17 Aug 2021 23:05:59 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>,
+Cc:     Kees Cook <keescook@chromium.org>, Daniel Axtens <dja@axtens.net>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andrew Morton <akpm@linux-foundation.org>,
@@ -56,56 +57,48 @@ Cc:     Kees Cook <keescook@chromium.org>,
         clang-built-linux@googlegroups.com,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         linux-hardening@vger.kernel.org
-Subject: [PATCH v2 28/63] fortify: Explicitly disable Clang support
-Date:   Tue, 17 Aug 2021 23:04:58 -0700
-Message-Id: <20210818060533.3569517-29-keescook@chromium.org>
+Subject: [PATCH v2 29/63] fortify: Fix dropped strcpy() compile-time write overflow check
+Date:   Tue, 17 Aug 2021 23:04:59 -0700
+Message-Id: <20210818060533.3569517-30-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210818060533.3569517-1-keescook@chromium.org>
 References: <20210818060533.3569517-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1427; h=from:subject; bh=MScHo/g3fAm2U5yn8644/6JAGaRCvw+x4s3NMxUkYP4=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhHKMkDmaoP7/LrBvrUTwAq8PIwkOtE8yNEb1/iGaE eotqJxGJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYRyjJAAKCRCJcvTf3G3AJvkeD/ wK2I9wXb6VkTqNx8ve7VdNSMmlz+1i164ClH9CGR/35x6hLdSQ8qayX0H9g6LrgzVflJDSu0VPqZq6 B60wT0GUsaN+NPYsGb2bVu1Rg3uumqZGiK90AHNJmSYkYU2G3Fqfi/WbeuSh9MygcOeGp/a9x/PQH5 e8dULezGq6dCpC7cs5Zl3okkhjEBCJNG2UsDzKuR/shPokEXvmczONNPE0wD9SGKoJlCrtTATmKvin 4tu2+3vQYizkssvftVjPL/zU+2R6x89hzrj96XdH+uAmeG5P820sWztifwnAHNcLVL5gq7wUOMrJ+f Z4XjIAC/G5EaSS4AhVIu9sD/iX8aeWmFJWF/Y21WLVPcvT0CbToC2WmKfl6Cf/5cmduks3BDmUc73D LWQ9JncTl44MKCvuBhARaFmlaFAJHnLG2EvjMIRi62WS27zMVn6Had7IAo/qffp70xB+LqBNwHlEFR 1DOf7RDGukFMS2YPB64C7srE0otlJasITjwoT2VlC8SUubfSWf2Xs29w2K9ID2LufJo4jW+DES/y1x In7sKpTi8O1ywlBFrMpRGpBZemeuMVX+n2a4KW0Dlmr8PJZVEczotW0P4mEO8JYhohZFLrpQR/oM0d v1l42WB3iKEQLRJlt/B8Os8r3w8Ad46AyHq8GE3PhyPABlRRPciSKq8TGApQ==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1260; h=from:subject; bh=sAqjTzTf+mWFy7xD73ZEpzjamgoLfVlMB8Pw3aei0Xc=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhHKMkHMEpm10nE/aAHB48K6cSsvZL5sfcJfQj9wD4 87AucWeJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYRyjJAAKCRCJcvTf3G3AJoHIEA CVNsWBrDfaVMhp7dy0y/IJxDyV8yomgG4F72g/uCRRfJZ6t0QDX4mJHghw3qnhtNERaVf1zfyT4EpR Q+CnBXAbbYOY29o4ZaC5ADslFqQrcq5UXqAtvXX2hNdtEpN7jEvy+T0Dp7gErnaLTs1ZlewzFJixmh 05xnc5PGkQ/a2fhA/CtaXfcvvgj/Y1w7itfG3KT1Pc8P7hAB0xQUn5JwIyBFfsLsANHAXHUbw9VYDP fZZ0GNAEXZSrloJoa/3h+EnpUqfUAHZ6NG7o5k6rBUn2ktEbmeFwRAcvF137eXA++u2tSdegoXt14J LaoJ3RY4se8BmlCpgiOu6mTSPrs6Jb74GZdcpGwlL++bhsP342ng60dkvdbosL5Cz5rcQRxwrJ252w 1U0/10JSG6NNPtAYO7As1zp/w4iaNAbTundBjm6o+FckreellK+acr/YR5tu8mhYcwwjhv7Gn0PW53 tctiINRIsKtDHMAo5AYvcxOB0Cxa8Q44hhowrhkhYkzBO6F+t4p0Ht1Gse9m+/b9W5FzR+ruuTjN4b sJwG5NlgDrw9HodFlOrFU0g6f9jy+pOvo/aUejebmfFQ0E0rMohB1Ca6a4NGl1oW+3zmYJgmF3QYnL 3ztj9l/h7QOAIug/e6PSNcgokPbHAFyVpu6eHLsTcqKbjMMcdhK2ihPt1Oaw==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang has never correctly compiled the FORTIFY_SOURCE defenses due to
-a couple bugs:
+The implementation for intra-object overflow in str*-family functions
+accidentally dropped compile-time write overflow checking in strcpy(),
+leaving it entirely to run-time. Add back the intended check.
 
-	Eliding inlines with matching __builtin_* names
-	https://bugs.llvm.org/show_bug.cgi?id=50322
-
-	Incorrect __builtin_constant_p() of some globals
-	https://bugs.llvm.org/show_bug.cgi?id=41459
-
-In the process of making improvements to the FORTIFY_SOURCE defenses, the
-first (silent) bug (coincidentally) becomes worked around, but exposes
-the latter which breaks the build. As such, Clang must not be used with
-CONFIG_FORTIFY_SOURCE until at least latter bug is fixed (in Clang 13),
-and the fortify routines have been rearranged.
-
-Update the Kconfig to reflect the reality of the current situation.
-
+Fixes: 6a39e62abbaf ("lib: string.h: detect intra-object overflow in fortified string functions")
+Cc: Daniel Axtens <dja@axtens.net>
+Cc: Francis Laniel <laniel_francis@privacyrequired.com>
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- security/Kconfig | 3 +++
- 1 file changed, 3 insertions(+)
+ include/linux/fortify-string.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/security/Kconfig b/security/Kconfig
-index 0ced7fd33e4d..fe6c0395fa02 100644
---- a/security/Kconfig
-+++ b/security/Kconfig
-@@ -191,6 +191,9 @@ config HARDENED_USERCOPY_PAGESPAN
- config FORTIFY_SOURCE
- 	bool "Harden common str/mem functions against buffer overflows"
- 	depends on ARCH_HAS_FORTIFY_SOURCE
-+	# https://bugs.llvm.org/show_bug.cgi?id=50322
-+	# https://bugs.llvm.org/show_bug.cgi?id=41459
-+	depends on !CC_IS_CLANG
- 	help
- 	  Detect overflows of buffers in common string and memory functions
- 	  where the compiler can determine and validate the buffer sizes.
+diff --git a/include/linux/fortify-string.h b/include/linux/fortify-string.h
+index 7e67d02764db..68bc5978d916 100644
+--- a/include/linux/fortify-string.h
++++ b/include/linux/fortify-string.h
+@@ -287,7 +287,10 @@ __FORTIFY_INLINE char *strcpy(char *p, const char *q)
+ 	if (p_size == (size_t)-1 && q_size == (size_t)-1)
+ 		return __underlying_strcpy(p, q);
+ 	size = strlen(q) + 1;
+-	/* test here to use the more stringent object size */
++	/* Compile-time check for const size overflow. */
++	if (__builtin_constant_p(size) && p_size < size)
++		__write_overflow();
++	/* Run-time check for dynamic size overflow. */
+ 	if (p_size < size)
+ 		fortify_panic(__func__);
+ 	memcpy(p, q, size);
 -- 
 2.30.2
 
