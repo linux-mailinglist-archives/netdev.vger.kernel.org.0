@@ -2,74 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5462C3EFC83
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 08:25:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2931D3EFC74
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 08:25:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240406AbhHRGZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 02:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48356 "EHLO
+        id S239515AbhHRGZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 02:25:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239145AbhHRGYz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 02:24:55 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F6AC0613CF
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:24:18 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id 17so1183793pgp.4
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:24:18 -0700 (PDT)
+        with ESMTP id S239161AbhHRGYw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 02:24:52 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7B43C061224
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:24:17 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id y190so1099619pfg.7
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:24:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dkCK961ZyttB0QG+MUzGRc9GbPNZyJOzxDRl3nXU6Gc=;
-        b=F3ghc0DUnRIAuSynTOo4HhTisr9dY2clGPt7Tp2ELGFpLUMoqQjF17RYWes7eco0Fp
-         HKzP4hJH6W8dElSRC/l4MPe4WbDo+9mFg+K8Li9eyi19QvOkLGzu4axj3QbMT/3x3/oK
-         4mFZNJ8jfnCy22ecNEUEUkyyEwRPO3Ye/ohuI=
+        bh=pfheq8ucotkU63pWQCdudkbxUtaK+5E7fGdpUnnohcE=;
+        b=bOn7B1lcs0RvnQ+JyDcBrrDHbtMIszKBFbMg36dEvOm/cxiVZauZR1pM19AHYwcUKV
+         a8y/SA1b4oZfyx+I7fB2xkZ8xjkLsTtpEq4EMNm3JkMacp3b4/IpDUQxMVbVY4g6nEfW
+         zLrHVXNFumWsW5ybM/sxAkeypdIu2sT+eqT4k=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dkCK961ZyttB0QG+MUzGRc9GbPNZyJOzxDRl3nXU6Gc=;
-        b=uly7jNCtUq+kUa0Nj6+Npne8ghapgW43UYo7asK3lJCQmbhe2/N28h/fmqkr5nncPo
-         K61WD15FiHSqRukuo4/ZrgeNE2lEAQqYl0R0Rs+sgLu0aIrzCxazKt7wFf82xwMbK+/1
-         ekcnHVQOd5e3noK4CtEnCdSpxp/wr6fk0Hjgg9N2DL/vPlxaI8ct2pGAZ5LjZ04qUA55
-         LmWoMtTKf3m7CZou7moImQ5PO2y1H19JVaKkvVcrJn/p/SKWi3sg5/+Rk+ZeLA3kXEr9
-         svcOlgvF6EosFzsX6UE03BWIkcZ8Hp1qhMNSf+KVuYvlakaep4RRTuMcWMnglQVzjLjv
-         7t3A==
-X-Gm-Message-State: AOAM533ktgk0W5zNRUxhdjmRc5foYImK6DOIT3jIeselOxmCloH9VxQ0
-        B6ci/e2cnz/wTxfz3J/FeAb4ew==
-X-Google-Smtp-Source: ABdhPJzB6Fpw5lksE03mTikq/l8Ungtb52rwsKcOwzebsF0lTq2QR4kdwv8iqtPBdlFbyxw6WcuEBA==
-X-Received: by 2002:aa7:8c19:0:b0:3e1:4b9e:cf89 with SMTP id c25-20020aa78c19000000b003e14b9ecf89mr7683859pfd.58.1629267857641;
-        Tue, 17 Aug 2021 23:24:17 -0700 (PDT)
+        bh=pfheq8ucotkU63pWQCdudkbxUtaK+5E7fGdpUnnohcE=;
+        b=aDh589FmqgUkLR19qNFZGM5H+0d1HRdMyc5jMPsXdm+tZowhlstyDV6dCzMQVpdt9l
+         NRIaTeXYnmcOZJw2Q64VHufnfZ3vH15Y0+80vT67ksuaY+/hIJLuVULVprkAvslQv1lQ
+         BUGuQaxtMIS49w/OxjxhNfkXK+5rGcfgpxGGrn3wNHZEX51IVOVz087+d9xxisAAzPph
+         1m9WgyO6Ad+ykOdWx+scyQrxhsXrQngOpmFBOCUkDmYySiCVUmtYLo3PvEww43AvBWe4
+         +l7pKuUxtWdnAa73AAWDWtX2kxIiFtKdmt77DcoEHQYi6sh6RYc50emlaseMQ6fSFnMq
+         qyKQ==
+X-Gm-Message-State: AOAM533QyOSjI/9BKU/LD3xZdorwlJL6UwqUb3HpmamQOw294NJ5Jv1n
+        Lzx+7kT/gE+QEZS/yoZBpkfKVQ==
+X-Google-Smtp-Source: ABdhPJydUsyn5VnHkzaXMydTCOu45RwPjXJEVv8iarwYsWIPkrbqfwKhMSfmnkkd0A09rXVQCYKrpA==
+X-Received: by 2002:a62:6242:0:b029:3c6:5a66:c8f2 with SMTP id w63-20020a6262420000b02903c65a66c8f2mr7615518pfb.59.1629267856691;
+        Tue, 17 Aug 2021 23:24:16 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id t18sm4582599pfg.111.2021.08.17.23.24.13
+        by smtp.gmail.com with ESMTPSA id s16sm1923432pfd.95.2021.08.17.23.24.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 17 Aug 2021 23:24:15 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        linuxppc-dev@lists.ozlabs.org, kernel test robot <lkp@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-staging@lists.linux.dev,
-        linux-block@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
+        linux-wireless@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         linux-hardening@vger.kernel.org
-Subject: [PATCH v2 57/63] powerpc/signal32: Use struct_group() to zero spe regs
-Date:   Tue, 17 Aug 2021 23:05:27 -0700
-Message-Id: <20210818060533.3569517-58-keescook@chromium.org>
+Subject: [PATCH v2 58/63] ethtool: stats: Use struct_group() to clear all stats at once
+Date:   Tue, 17 Aug 2021 23:05:28 -0700
+Message-Id: <20210818060533.3569517-59-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210818060533.3569517-1-keescook@chromium.org>
 References: <20210818060533.3569517-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2908; h=from:subject; bh=uD1y/xoxNTfC/kMxy1YHPqDr4W4r5gvR6/3LUb/d/+Q=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhHKMqjnaaYE2W2OottJ48+Kv314H+c4/L+2RqMHXv r7V1BciJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYRyjKgAKCRCJcvTf3G3AJgmYD/ 4xOx64rrId3koq1dIVBd1c7qtDRXBXq8ocvbv6TiAzQ5OW2IJsAcesmEDGB0aarLTux96zhVYvPuEY ekfg39GKhCgEPeb5jXP+UH57m9qopfeReANE1S4LvEsOJWuHGa5N2yh0MVFMYdstmPHkfTVtOzOdnW 4FpfS36c3/G650GjYZjHYGK93aUv37ocoMf05CH9DSjWcOrGk+21jowTwXALShjZMmIjz5FWSiAPe+ +1eUzjLiqUeJOGZ7Lv40/p3giVTD2/7lEzVVufOf7KMLHvSJmrltr2bLt88CSW+0Qs2cDc8kDwit4g NSusBANylY1K/6uJsrHXOzr8UYkdtB6bsttgeE9V1+wOYhLMeNib3XArxbwXJKppaNHkpLdAyqOc1N hNWxNmFkEb7gLQI+lgaRv2CySpbhIO+o8h7UWzfZ9W2P7Sz8/0+TLD68DRwxBbPxMHy7FpShanbdlR HAvsXrcU8SaCn8kjeuW7pbNPk+pnaYiQiMH5cl3iCfgq1I13gvGVNmMUEdqsNskPE6H1JjH3DkRQLj i7n33M3844UZk+msL24HAJukYQmiAtXqJDGZb3S179NpLnEREMRQveIz0XRN96WDiRCpbvwy644xQe qmxn1RnVllos5p0W46DDS5Z/a2ezsgCPxronRiihYw6gD81m/cUYTrPKHDSw==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1971; h=from:subject; bh=E0TNBYZqVPbRitBJ5Zh/gLEgPeByfWBcEVfphcdRPN4=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhHKMrF3QPyVB5GMFoBwvbiS+bGesf32/XaWgZh6rV XXUSuGeJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYRyjKwAKCRCJcvTf3G3AJuI/EA ChJAduV9dwQnlnG3wxAW9hWJ1q1jYsNmAAW03oHPyyyn4KhoNewX3nohRktZszGSOaJbWUuapbs0QS zhzLmfVfKhD7+DDfnZKD0XnlGiqH7Qvf5Q5ntMO0/ssU3MUgRP1gtdtb5NMHkByui7zpX/5x9W/2YW raKvA1KIXU6CdJePHvujGsZ5QP8biHCDP1thhwyJfUA4XwPHO3b8i6IC1kMBzBKINuCjLSkeqN3uWD PwoL5hyTqy4UKJN0gW6vj/hdXoIY6bLL/pGtAASCMDf1ZqU/p4Jgph8esB5nghJM4B5K/afkMfJgB+ vA/vxaYQSYgK9DPmx0RcanTPpspjeL27cp7jQyYi0izLRnpEiExj2zheTEAvmAN6nqq/leBQk6MTwN uE7XQ8NliZBAE0y+b+xl4TZEDKqaf3ZQLquskbjy9INmiSPSDGgnZODLH9BjIy5eLOJ0nYrc8QLN5B D18Vfd3FY3RNXbQkdqHx6rRPcX8ywj2ipEby99d78Sf6C421sRvINJCco18C7ckUJ5KbK307TNNlzA niH2xNat1pGZwKiztnfUGK9vkqebtbw9PjWgnoloa26nxruikmIBNbDpX17yxNTtNblkMvaAIxgqlv ZbPLstx3DpgFgVYefzNXWqrNibdM/9iNuS0mCC0zQsf6ZcpjwRIHZD0WHkXA==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -80,64 +76,51 @@ In preparation for FORTIFY_SOURCE performing compile-time and run-time
 field bounds checking for memset(), avoid intentionally writing across
 neighboring fields.
 
-Add a struct_group() for the spe registers so that memset() can correctly reason
-about the size:
+Add struct_group() to mark region of struct stats_reply_data that should
+be initialized, which can now be done in a single memset() call.
 
-   In function 'fortify_memset_chk',
-       inlined from 'restore_user_regs.part.0' at arch/powerpc/kernel/signal_32.c:539:3:
->> include/linux/fortify-string.h:195:4: error: call to '__write_overflow_field' declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Werror=attribute-warning]
-     195 |    __write_overflow_field();
-         |    ^~~~~~~~~~~~~~~~~~~~~~~~
-
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc: Sudeep Holla <sudeep.holla@arm.com>
-Cc: linuxppc-dev@lists.ozlabs.org
-Reported-by: kernel test robot <lkp@intel.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Ido Schimmel <idosch@nvidia.com>
+Cc: netdev@vger.kernel.org
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- arch/powerpc/include/asm/processor.h | 6 ++++--
- arch/powerpc/kernel/signal_32.c      | 6 +++---
- 2 files changed, 7 insertions(+), 5 deletions(-)
+ net/ethtool/stats.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/arch/powerpc/include/asm/processor.h b/arch/powerpc/include/asm/processor.h
-index f348e564f7dd..05dc567cb9a8 100644
---- a/arch/powerpc/include/asm/processor.h
-+++ b/arch/powerpc/include/asm/processor.h
-@@ -191,8 +191,10 @@ struct thread_struct {
- 	int		used_vsr;	/* set if process has used VSX */
- #endif /* CONFIG_VSX */
- #ifdef CONFIG_SPE
--	unsigned long	evr[32];	/* upper 32-bits of SPE regs */
--	u64		acc;		/* Accumulator */
-+	struct_group(spe,
-+		unsigned long	evr[32];	/* upper 32-bits of SPE regs */
-+		u64		acc;		/* Accumulator */
-+	);
- 	unsigned long	spefscr;	/* SPE & eFP status */
- 	unsigned long	spefscr_last;	/* SPEFSCR value on last prctl
- 					   call or trap return */
-diff --git a/arch/powerpc/kernel/signal_32.c b/arch/powerpc/kernel/signal_32.c
-index 0608581967f0..77b86caf5c51 100644
---- a/arch/powerpc/kernel/signal_32.c
-+++ b/arch/powerpc/kernel/signal_32.c
-@@ -532,11 +532,11 @@ static long restore_user_regs(struct pt_regs *regs,
- 	regs_set_return_msr(regs, regs->msr & ~MSR_SPE);
- 	if (msr & MSR_SPE) {
- 		/* restore spe registers from the stack */
--		unsafe_copy_from_user(current->thread.evr, &sr->mc_vregs,
--				      ELF_NEVRREG * sizeof(u32), failed);
-+		unsafe_copy_from_user(&current->thread.spe, &sr->mc_vregs,
-+				      sizeof(current->thread.spe), failed);
- 		current->thread.used_spe = true;
- 	} else if (current->thread.used_spe)
--		memset(current->thread.evr, 0, ELF_NEVRREG * sizeof(u32));
-+		memset(&current->thread.spe, 0, sizeof(current->thread.spe));
+diff --git a/net/ethtool/stats.c b/net/ethtool/stats.c
+index ec07f5765e03..a20e0a24ff61 100644
+--- a/net/ethtool/stats.c
++++ b/net/ethtool/stats.c
+@@ -14,10 +14,12 @@ struct stats_req_info {
  
- 	/* Always get SPEFSCR back */
- 	unsafe_get_user(current->thread.spefscr, (u32 __user *)&sr->mc_vregs + ELF_NEVRREG, failed);
+ struct stats_reply_data {
+ 	struct ethnl_reply_data		base;
+-	struct ethtool_eth_phy_stats	phy_stats;
+-	struct ethtool_eth_mac_stats	mac_stats;
+-	struct ethtool_eth_ctrl_stats	ctrl_stats;
+-	struct ethtool_rmon_stats	rmon_stats;
++	struct_group(stats,
++		struct ethtool_eth_phy_stats	phy_stats;
++		struct ethtool_eth_mac_stats	mac_stats;
++		struct ethtool_eth_ctrl_stats	ctrl_stats;
++		struct ethtool_rmon_stats	rmon_stats;
++	);
+ 	const struct ethtool_rmon_hist_range	*rmon_ranges;
+ };
+ 
+@@ -117,10 +119,7 @@ static int stats_prepare_data(const struct ethnl_req_info *req_base,
+ 	/* Mark all stats as unset (see ETHTOOL_STAT_NOT_SET) to prevent them
+ 	 * from being reported to user space in case driver did not set them.
+ 	 */
+-	memset(&data->phy_stats, 0xff, sizeof(data->phy_stats));
+-	memset(&data->mac_stats, 0xff, sizeof(data->mac_stats));
+-	memset(&data->ctrl_stats, 0xff, sizeof(data->ctrl_stats));
+-	memset(&data->rmon_stats, 0xff, sizeof(data->rmon_stats));
++	memset(&data->stats, 0xff, sizeof(data->stats));
+ 
+ 	if (test_bit(ETHTOOL_STATS_ETH_PHY, req_info->stat_mask) &&
+ 	    dev->ethtool_ops->get_eth_phy_stats)
 -- 
 2.30.2
 
