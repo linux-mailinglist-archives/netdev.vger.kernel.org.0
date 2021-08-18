@@ -2,88 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C8E73EFE94
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 10:05:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE3233EFEB1
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 10:07:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239537AbhHRIFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 04:05:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56728 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239112AbhHRIDt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Aug 2021 04:03:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4438D60EB5;
-        Wed, 18 Aug 2021 08:03:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629273792;
-        bh=5FpJoSsWAijWF1s+2IOmDRgN6RifYoWI9x/j4oSsSuo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eCjsWayN9W0nDaLKUgwVjLP37cSR+eyzVa0lW+E3UgnWM8Ed+d2Ht97prOHtEab2/
-         X/x71YQb858la7JnAqUYjETDTaVoI228RR2bOvzi2OgjMVIlBlbZ/8S+YfbPlvuRmA
-         qDyrCBWHP1jugX/jb0oNaBEO+69SPhZPEsL2XnfzI82tOaQvvxwQWf2JUtBdrTIfce
-         C/L6LJmsBpGkFD6E+64WmOyCKq09uOEPezgI9Hl0j2zREAGQdwlgdGVajFmuLq70Dg
-         dLof8zrC4r3wJKXv/W4ZxGmO8mrOtxCLU11Mxet2Amkm8KUuNk49BpAAlV2VYx+8An
-         Dgwl0rIg9ooWw==
-Date:   Wed, 18 Aug 2021 11:03:09 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Salil Mehta <salil.mehta@huawei.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Yufeng Mo <moyufeng@huawei.com>
-Subject: Re: [PATCH net-next 3/6] devlink: Count struct devlink consumers
-Message-ID: <YRy+vc6nAZadagxT@unreal>
-References: <cover.1628933864.git.leonro@nvidia.com>
- <d4d59d801f4521e562c9ecf2d8767077aaefb456.1628933864.git.leonro@nvidia.com>
- <20210816084741.1dd1c415@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YRqKCVbjTZaSrSy+@unreal>
- <20210816090700.313a54ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S239974AbhHRIHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 04:07:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44570 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239328AbhHRIHi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 04:07:38 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CF55C061764;
+        Wed, 18 Aug 2021 01:07:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=6OzbSXXafKMA7YgF8k8Tjy+aXQW8YBJ4OWUwbnu8sQw=;
+        t=1629274024; x=1630483624; b=kJyjXbrF4QQPa7P0m74IZPrJWoLrDTxa4wVNaIbHD1uWT4j
+        94WcxbQAV4TBftGHgR329zxhDjZNz7es6pyN/wpL5DykoZrLKDy+5V50AnCaJX+RB0rwLYWUMlzhA
+        igPDdKjMIr2nyFrQ/XoBar1CpS8wdVIZOEG3ybj9NN/FCmGOfNXMtAgc+85M3I2EdA+rtCjkjk0jY
+        bgOjGKzxaGuhAJAIqL2SVyK7V0LZy1FtoJm/RkCU3WpNw+IDtKAOWRcO1CbbgT0YU5ML//+xvQCsR
+        zbdz7SZvj2MgHC4iyZ63vwVgx9FT/wPYMeK12sHtb41zcjTDVR5DvWPiHPKT0nZQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94.2)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1mGGb6-00CcdG-FE; Wed, 18 Aug 2021 10:06:52 +0200
+Message-ID: <8b48dac4c40127366e91855306d24e07eb0b81d9.camel@sipsolutions.net>
+Subject: Re: [PATCH v2 44/63] mac80211: Use memset_after() to clear tx status
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        dri-devel@lists.freedesktop.org, linux-staging@lists.linux.dev,
+        linux-block@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-hardening@vger.kernel.org
+Date:   Wed, 18 Aug 2021 10:06:51 +0200
+In-Reply-To: <11db2cdc5316b51f3fa2f34e813a458e455c763d.camel@sipsolutions.net>
+References: <20210818060533.3569517-1-keescook@chromium.org>
+         <20210818060533.3569517-45-keescook@chromium.org>
+         <11db2cdc5316b51f3fa2f34e813a458e455c763d.camel@sipsolutions.net>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210816090700.313a54ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 8bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 16, 2021 at 09:07:00AM -0700, Jakub Kicinski wrote:
-> On Mon, 16 Aug 2021 18:53:45 +0300 Leon Romanovsky wrote:
-> > On Mon, Aug 16, 2021 at 08:47:41AM -0700, Jakub Kicinski wrote:
-> > > On Sat, 14 Aug 2021 12:57:28 +0300 Leon Romanovsky wrote:  
-> > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > > 
-> > > > The struct devlink itself is protected by internal lock and doesn't
-> > > > need global lock during operation. That global lock is used to protect
-> > > > addition/removal new devlink instances from the global list in use by
-> > > > all devlink consumers in the system.
-> > > > 
-> > > > The future conversion of linked list to be xarray will allow us to
-> > > > actually delete that lock, but first we need to count all struct devlink
-> > > > users.  
-> > > 
-> > > Not a problem with this set but to state the obvious the global devlink
-> > > lock also protects from concurrent execution of all the ops which don't
-> > > take the instance lock (DEVLINK_NL_FLAG_NO_LOCK). You most likely know
-> > > this but I thought I'd comment on an off chance it helps.  
+On Wed, 2021-08-18 at 09:08 +0200, Johannes Berg wrote:
+> On Tue, 2021-08-17 at 23:05 -0700, Kees Cook wrote:
 > > 
-> > The end goal will be something like that:
-> > 1. Delete devlink lock
-> > 2. Rely on xa_lock() while grabbing devlink instance (past devlink_try_get)
-> > 3. Convert devlink->lock to be read/write lock to make sure that we can run
-> > get query in parallel.
-> > 4. Open devlink netlink to parallel ops, ".parallel_ops = true".
+> > @@ -275,12 +275,11 @@ static void carl9170_tx_release(struct kref *ref)
+> >  	if (WARN_ON_ONCE(!ar))
+> >  		return;
+> >  
+> > 
+> > 
+> > 
+> > -	BUILD_BUG_ON(
+> > -	    offsetof(struct ieee80211_tx_info, status.ack_signal) != 20);
+> > -
+> > -	memset(&txinfo->status.ack_signal, 0,
+> > -	       sizeof(struct ieee80211_tx_info) -
+> > -	       offsetof(struct ieee80211_tx_info, status.ack_signal));
+> > +	/*
+> > +	 * Should this call ieee80211_tx_info_clear_status() instead of clearing
+> > +	 * manually? txinfo->status.rates do not seem to be used here.
+> > +	 */
 > 
-> IIUC that'd mean setting eswitch mode would hold write lock on 
-> the dl instance. What locks does e.g. registering a dl port take 
-> then?
+> Since you insist, I went digging :)
+> 
+> It should not, carl9170_tx_fill_rateinfo() has filled the rate
+> information before we get to this point.
 
-write lock, because we are adding port to devlink->port_list.
-   9099 int devlink_port_register(struct devlink *devlink,
-   9100                           struct devlink_port *devlink_port,
-   9101                           unsigned int port_index)
-   9102 {
-   ...
-   9115         list_add_tail(&devlink_port->list, &devlink->port_list);
+Otherwise, looks fine, FWIW.
+
+Are you going to apply all of these together somewhere? I (we) can't,
+since memset_after() doesn't exist yet.
+
+johannes
+
