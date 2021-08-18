@@ -2,104 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D4623EFE90
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 10:05:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C8E73EFE94
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 10:05:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239430AbhHRIFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 04:05:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43490 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239334AbhHRIDb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 04:03:31 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06FE5C06179A
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 01:02:48 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id b15so3186570ejg.10
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 01:02:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=to:references:from:subject:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=mZorCO9dHkK9Z+tLmMENe4sm60DKPCbLZG525gkchFY=;
-        b=q6tSnI/hcRssEOPOa+x3Tf6o11TQuaH2Vap6Kz/BOFM9d8cBeudswn2ue6jCVrUA4S
-         42aKPQUMpoBdV2RXEgmBUIuk69wyU09Q4FQn03q87aSLbbeEY54b2aoOEervw8/Vx+Ze
-         RCJDnJWxh+ehYx2l3x9QePYppFzgIhAk9I8Ez1Ui/r1WtLXPhmjlzTE3HypQH/Fmpzd7
-         SjM0w8dE0TQs34HsvUHqSMipeoMFYXXws5EnPFxxmOIzbHU88B37Y4hS/JToPTiLOeXH
-         AyFYW4fBlKR+vnJPKKKZP7U495i7gia5DqO5LG6OjQ4IZEWUmmQmIn1+olH/pn0q4YR7
-         i/iQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=mZorCO9dHkK9Z+tLmMENe4sm60DKPCbLZG525gkchFY=;
-        b=Jfcl4rZcenYkG/NtajNagbdzP+2vDrfJkBVro7tSlJ19rIntfWSVnB0vjmVywF71FL
-         LdobkhJBHxQWVl6K5N6T5CGpub54pxY4e1n5d7tOdlkM07VOp1ONEBmLpmpXFdcmP42y
-         atz417RNvyRn84pDs4w6zlvtSOfxlFMORxFF6N0GuwqNhOCh5yCBD1BElP0AguoMBX0Q
-         idx87SORJ4G4dhxfoQ8HHoTj4APeHzjlk6JSS104UxbOVAXZcl5j7hPspX2RwIcnOmdp
-         UJigaFs9rAgTZVVqfQ5yd8LGM6B3DbhZFw4BxyWhGeNvsf4uF3zzR2X5LVM9mHf3l+sk
-         avaw==
-X-Gm-Message-State: AOAM531UWHHrmp25jLsVAwSZD1D28fsEEQ2rv1DY2xRg11NbI+Wud3kS
-        gjyuvX8a11JYhMw/ZkEZA+nwMg==
-X-Google-Smtp-Source: ABdhPJx/EKzaFi+cRnqWvYi6W0WthKoTJQPIJ62VMOaDiheyKphteFXp8M2RNgE7IjrEAbkEAeFxvw==
-X-Received: by 2002:a17:906:c1da:: with SMTP id bw26mr8561207ejb.253.1629273767444;
-        Wed, 18 Aug 2021 01:02:47 -0700 (PDT)
-Received: from tsr-lap-08.nix.tessares.net ([213.211.156.192])
-        by smtp.gmail.com with ESMTPSA id c25sm2185584eds.93.2021.08.18.01.02.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Aug 2021 01:02:47 -0700 (PDT)
-To:     syzbot <syzbot+7b938780d5deeaaf938f@syzkaller.appspotmail.com>,
-        davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        marcel@holtmann.org, mathew.j.martineau@linux.intel.com,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
-References: <00000000000012030e05c9c8bc85@google.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Subject: Re: [syzbot] KFENCE: use-after-free in kvm_fastop_exception
-Message-ID: <58cef9e0-69de-efdb-4035-7c1ed3d23132@tessares.net>
-Date:   Wed, 18 Aug 2021 10:02:46 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S239537AbhHRIFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 04:05:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56728 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239112AbhHRIDt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Aug 2021 04:03:49 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4438D60EB5;
+        Wed, 18 Aug 2021 08:03:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629273792;
+        bh=5FpJoSsWAijWF1s+2IOmDRgN6RifYoWI9x/j4oSsSuo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eCjsWayN9W0nDaLKUgwVjLP37cSR+eyzVa0lW+E3UgnWM8Ed+d2Ht97prOHtEab2/
+         X/x71YQb858la7JnAqUYjETDTaVoI228RR2bOvzi2OgjMVIlBlbZ/8S+YfbPlvuRmA
+         qDyrCBWHP1jugX/jb0oNaBEO+69SPhZPEsL2XnfzI82tOaQvvxwQWf2JUtBdrTIfce
+         C/L6LJmsBpGkFD6E+64WmOyCKq09uOEPezgI9Hl0j2zREAGQdwlgdGVajFmuLq70Dg
+         dLof8zrC4r3wJKXv/W4ZxGmO8mrOtxCLU11Mxet2Amkm8KUuNk49BpAAlV2VYx+8An
+         Dgwl0rIg9ooWw==
+Date:   Wed, 18 Aug 2021 11:03:09 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Salil Mehta <salil.mehta@huawei.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Yufeng Mo <moyufeng@huawei.com>
+Subject: Re: [PATCH net-next 3/6] devlink: Count struct devlink consumers
+Message-ID: <YRy+vc6nAZadagxT@unreal>
+References: <cover.1628933864.git.leonro@nvidia.com>
+ <d4d59d801f4521e562c9ecf2d8767077aaefb456.1628933864.git.leonro@nvidia.com>
+ <20210816084741.1dd1c415@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YRqKCVbjTZaSrSy+@unreal>
+ <20210816090700.313a54ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <00000000000012030e05c9c8bc85@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210816090700.313a54ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-On 18/08/2021 00:21, syzbot wrote:
-> syzbot has bisected this issue to:
+On Mon, Aug 16, 2021 at 09:07:00AM -0700, Jakub Kicinski wrote:
+> On Mon, 16 Aug 2021 18:53:45 +0300 Leon Romanovsky wrote:
+> > On Mon, Aug 16, 2021 at 08:47:41AM -0700, Jakub Kicinski wrote:
+> > > On Sat, 14 Aug 2021 12:57:28 +0300 Leon Romanovsky wrote:  
+> > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > > 
+> > > > The struct devlink itself is protected by internal lock and doesn't
+> > > > need global lock during operation. That global lock is used to protect
+> > > > addition/removal new devlink instances from the global list in use by
+> > > > all devlink consumers in the system.
+> > > > 
+> > > > The future conversion of linked list to be xarray will allow us to
+> > > > actually delete that lock, but first we need to count all struct devlink
+> > > > users.  
+> > > 
+> > > Not a problem with this set but to state the obvious the global devlink
+> > > lock also protects from concurrent execution of all the ops which don't
+> > > take the instance lock (DEVLINK_NL_FLAG_NO_LOCK). You most likely know
+> > > this but I thought I'd comment on an off chance it helps.  
+> > 
+> > The end goal will be something like that:
+> > 1. Delete devlink lock
+> > 2. Rely on xa_lock() while grabbing devlink instance (past devlink_try_get)
+> > 3. Convert devlink->lock to be read/write lock to make sure that we can run
+> > get query in parallel.
+> > 4. Open devlink netlink to parallel ops, ".parallel_ops = true".
 > 
-> commit c4512c63b1193c73b3f09c598a6d0a7f88da1dd8
-> Author: Matthieu Baerts <matthieu.baerts@tessares.net>
-> Date:   Fri Jun 25 21:25:22 2021 +0000
-> 
->     mptcp: fix 'masking a bool' warning
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=122b0655300000
-> start commit:   b9011c7e671d Add linux-next specific files for 20210816
-> git tree:       linux-next
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=112b0655300000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=162b0655300000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=a245d1aa4f055cc1
-> dashboard link: https://syzkaller.appspot.com/bug?extid=7b938780d5deeaaf938f
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=157a41ee300000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14f78ff9300000
+> IIUC that'd mean setting eswitch mode would hold write lock on 
+> the dl instance. What locks does e.g. registering a dl port take 
+> then?
 
-I'm pretty sure the commit c4512c63b119 ("mptcp: fix 'masking a bool'
-warning") doesn't introduce the reported bug. This minor fix is specific
-to MPTCP which doesn't seem to be used here.
-
-I'm not sure how I can tell syzbot this is a false positive.
-
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+write lock, because we are adding port to devlink->port_list.
+   9099 int devlink_port_register(struct devlink *devlink,
+   9100                           struct devlink_port *devlink_port,
+   9101                           unsigned int port_index)
+   9102 {
+   ...
+   9115         list_add_tail(&devlink_port->list, &devlink->port_list);
