@@ -2,200 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAD543EFF01
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 10:19:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51AE93EFF0C
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 10:22:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239148AbhHRIUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 04:20:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47746 "EHLO
+        id S239633AbhHRIWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 04:22:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239551AbhHRIUP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 04:20:15 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EDEC06179A
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 01:19:40 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mGGnR-0005XT-8O; Wed, 18 Aug 2021 10:19:37 +0200
-Received: from pengutronix.de (unknown [IPv6:2a02:810a:8940:aa0:ed04:8488:5061:54d4])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 9AD836698D4;
-        Wed, 18 Aug 2021 08:19:35 +0000 (UTC)
-Date:   Wed, 18 Aug 2021 10:19:34 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     linux-can <linux-can@vger.kernel.org>,
-        Stefan =?utf-8?B?TcOkdGpl?= <Stefan.Maetje@esd.eu>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 5/7] can: netlink: add interface for CAN-FD
- Transmitter Delay Compensation (TDC)
-Message-ID: <20210818081934.6f23ghoom2dkv53m@pengutronix.de>
-References: <20210815033248.98111-1-mailhol.vincent@wanadoo.fr>
- <20210815033248.98111-6-mailhol.vincent@wanadoo.fr>
- <20210817195551.wwgu7dnhb6qyvo7n@pengutronix.de>
- <CAMZ6RqLj94UU_b8dDAzinVsLaV6pBR-cWbHmjwGhx3vfWiKt_g@mail.gmail.com>
+        with ESMTP id S239308AbhHRIWa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 04:22:30 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B0A1C0617AF
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 01:21:54 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id u3so3362157ejz.1
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 01:21:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=IUGQJMpYD6agvdMJfJSqVaqnT5bLEbnIc4RgJSXH0jg=;
+        b=KFd67qyoRkJqm+Tr0NAOAYYZhcgR6yxB489Fw38wCDJh37MO/2O2e4e8oPY+PO6uB6
+         HH49ENUWtwE8gUtSvSSfOWgLs7LRZ3wgVA3tY71FoC81cixhJJmmkHCA2ueBmqusfYdH
+         1h9Il7+pczkTiA8ExiLy+6fUZ7wjwFSVh7WP8qSCKCYTeGvt21zrqIqrh5pgcmsivxiY
+         hU1bG4vm1e2csd8SwXEQr7ZDzQm0ENmMxUHxH3xrgueNiKd2SixlWP5Ycp734PiN3TtK
+         gcS1gpjidTmNlIyp0ks2qWTjW9va8I8qSogu4J6+7SGkfAH+/o6HVnovDpUZdE2c7Xaf
+         g6kw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=IUGQJMpYD6agvdMJfJSqVaqnT5bLEbnIc4RgJSXH0jg=;
+        b=U8N1Ixws3k8fFoV+xZv0LFgsHYolx4MbHNII0VLVKCClegpFY8Nesy2FpJtZgFQe8x
+         kBbgLaE/O8TtZVKhOxiel31lQFw3hCjPfN5R0aY9CZa8aWnFK78e0VJBT9tqI/1mFdUZ
+         leoIEZESNONXFkFJcI1RI9aLqVpyRp5HAQnYHYnoFCXsJy1W+D4cV+kZZlqD72pYVTXa
+         REOZIhn11vqic2NPyKBLSpVYGjavTJHCe3sBOfNJb4aSTCOThTLQ1G497W1U9zmVGPwX
+         fTaDW/SNiyGWZ1glrY2xseelx/EllmyEW8tAhOrLBELL2JpJCGiBtXQx9OoDaOkaDjXr
+         sJlg==
+X-Gm-Message-State: AOAM533xp355e9AjZkXf1Ry2twjIWpBeKxzwW11sEZ4296/YLOEIdroj
+        wvPSUsIve2Oak4VeiMxhgdNRpw==
+X-Google-Smtp-Source: ABdhPJzKr1rmco8bFNuuVJquILRCkMGTN+jBNA9OPDgxFXrFZPGoyq0JQUUheWmPtUZUeQ01JFh3Ig==
+X-Received: by 2002:a17:907:1b29:: with SMTP id mp41mr8648294ejc.459.1629274913056;
+        Wed, 18 Aug 2021 01:21:53 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net ([213.211.156.192])
+        by smtp.gmail.com with ESMTPSA id ko11sm1694143ejc.54.2021.08.18.01.21.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 Aug 2021 01:21:52 -0700 (PDT)
+Subject: Re: [syzbot] KFENCE: use-after-free in kvm_fastop_exception
+To:     Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot <syzbot+7b938780d5deeaaf938f@syzkaller.appspotmail.com>,
+        davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
+        marcel@holtmann.org, mathew.j.martineau@linux.intel.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
+References: <00000000000012030e05c9c8bc85@google.com>
+ <58cef9e0-69de-efdb-4035-7c1ed3d23132@tessares.net>
+ <6736a510-20a1-9fb5-caf4-86334cabbbb6@gmail.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Message-ID: <32aeb66e-d4f0-26b5-a140-4477bb87067f@tessares.net>
+Date:   Wed, 18 Aug 2021 10:21:51 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="3e3jncuyjzgfz6lc"
-Content-Disposition: inline
-In-Reply-To: <CAMZ6RqLj94UU_b8dDAzinVsLaV6pBR-cWbHmjwGhx3vfWiKt_g@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <6736a510-20a1-9fb5-caf4-86334cabbbb6@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Pavel,
 
---3e3jncuyjzgfz6lc
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 18/08/2021 10:12, Pavel Skripkin wrote:
+> On 8/18/21 11:02 AM, Matthieu Baerts wrote:
+>> Hello,
+>>
+>> On 18/08/2021 00:21, syzbot wrote:
+>>> syzbot has bisected this issue to:
+>>>
+>>> commit c4512c63b1193c73b3f09c598a6d0a7f88da1dd8
+>>> Author: Matthieu Baerts <matthieu.baerts@tessares.net>
+>>> Date:   Fri Jun 25 21:25:22 2021 +0000
+>>>
+>>>     mptcp: fix 'masking a bool' warning
+>>>
+>>> bisection log: 
+>>> https://syzkaller.appspot.com/x/bisect.txt?x=122b0655300000
+>>> start commit:   b9011c7e671d Add linux-next specific files for 20210816
+>>> git tree:       linux-next
+>>> final oops:    
+>>> https://syzkaller.appspot.com/x/report.txt?x=112b0655300000
+>>> console output: https://syzkaller.appspot.com/x/log.txt?x=162b0655300000
+>>> kernel config: 
+>>> https://syzkaller.appspot.com/x/.config?x=a245d1aa4f055cc1
+>>> dashboard link:
+>>> https://syzkaller.appspot.com/bug?extid=7b938780d5deeaaf938f
+>>> syz repro:     
+>>> https://syzkaller.appspot.com/x/repro.syz?x=157a41ee300000
+>>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14f78ff9300000
+>>
+>> I'm pretty sure the commit c4512c63b119 ("mptcp: fix 'masking a bool'
+>> warning") doesn't introduce the reported bug. This minor fix is specific
+>> to MPTCP which doesn't seem to be used here.
+>>
+>> I'm not sure how I can tell syzbot this is a false positive.
+>>
+> 
+> 
+> looks like it's fs/namei bug. Similar reports:
+> 
+> https://syzkaller.appspot.com/bug?id=517fa734b92b7db404c409b924cf5c997640e324
+> 
+> 
+> https://syzkaller.appspot.com/bug?id=484483daf3652b40dae18531923aa9175d392a4d
 
-On 18.08.2021 17:08:51, Vincent MAILHOL wrote:
-> On Wed 18 Aug 2021 at 04:55, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> > On 15.08.2021 12:32:46, Vincent Mailhol wrote:
-> > > +static int can_tdc_changelink(struct net_device *dev, const struct n=
-lattr *nla,
-> > > +                           struct netlink_ext_ack *extack)
-> > > +{
-> > > +     struct nlattr *tb_tdc[IFLA_CAN_TDC_MAX + 1];
-> > > +     struct can_priv *priv =3D netdev_priv(dev);
-> > > +     struct can_tdc *tdc =3D &priv->tdc;
-> > > +     const struct can_tdc_const *tdc_const =3D priv->tdc_const;
-> > > +     int err;
-> > > +
-> > > +     if (!tdc_const || !can_tdc_is_enabled(priv))
-> > > +             return -EOPNOTSUPP;
-> > > +
-> > > +     if (dev->flags & IFF_UP)
-> > > +             return -EBUSY;
-> > > +
-> > > +     err =3D nla_parse_nested(tb_tdc, IFLA_CAN_TDC_MAX, nla,
-> > > +                            can_tdc_policy, extack);
-> > > +     if (err)
-> > > +             return err;
-> > > +
-> > > +     if (tb_tdc[IFLA_CAN_TDC_TDCV]) {
-> > > +             u32 tdcv =3D nla_get_u32(tb_tdc[IFLA_CAN_TDC_TDCV]);
-> > > +
-> > > +             if (tdcv < tdc_const->tdcv_min || tdcv > tdc_const->tdc=
-v_max)
-> > > +                     return -EINVAL;
-> > > +
-> > > +             tdc->tdcv =3D tdcv;
-> >
-> > You have to assign to a temporary struct first, and set the priv->tdc
-> > after complete validation, otherwise you end up with inconsistent
-> > values.
->=20
-> Actually, copying the temporary structure to priv->tdc is not an
-> atomic operation. Here, you are only reducing the window, not
-> closing it.
+Thank you for having checked!
+Should we mark them as "#syz dup" if you think they have the same root
+cause?
 
-It's not a race I'm fixing.
+> It's not false positive. I've suggested the fix here:
+> https://groups.google.com/g/syzkaller-bugs/c/HE3c2fP5nic/m/1Yk17GBeAwAJ
+> I am waiting for author comments about the fix :)
+> 
+> But, yes, syzbot bisection is often wrong, so don't rely on it much :)
 
->=20
-> > > +     }
-> > > +
-> > > +     if (tb_tdc[IFLA_CAN_TDC_TDCO]) {
-> > > +             u32 tdco =3D nla_get_u32(tb_tdc[IFLA_CAN_TDC_TDCO]);
-> > > +
-> > > +             if (tdco < tdc_const->tdco_min || tdco > tdc_const->tdc=
-o_max)
-> > > +                     return -EINVAL;
-> > > +
-> > > +             tdc->tdco =3D tdco;
-> > > +     }
-> > > +
-> > > +     if (tb_tdc[IFLA_CAN_TDC_TDCF]) {
-> > > +             u32 tdcf =3D nla_get_u32(tb_tdc[IFLA_CAN_TDC_TDCF]);
-> > > +
-> > > +             if (tdcf < tdc_const->tdcf_min || tdcf > tdc_const->tdc=
-f_max)
-> > > +                     return -EINVAL;
-> > > +
-> > > +             tdc->tdcf =3D tdcf;
-> > > +     }
-> > > +
-> > > +     return 0;
-> > > +}
-> >
-> > To reproduce (ip pseudo-code only :D ):
-> >
-> > ip down
-> > ip up tdc-mode manual tdco 111 tdcv 33  # 111 is out of range, 33 is va=
-lid
-> > ip down
-> > ip up                                   # results in tdco=3D0 tdcv=3D33=
- mode=3Dmanual
->=20
-> I do not think that this PoC would work because, thankfully, the
-> netlink interface uses a mutex to prevent this issue from
-> occurring.
+Yes sorry, I wanted to say the bisection picked a wrong commit :)
 
-It works, I've tested it :)
+All good then if syzbot often blames the wrong modification :)
 
-> That mutex is defined in:
-> https://elixir.bootlin.com/linux/latest/source/net/core/rtnetlink.c#L68
->=20
-> Each time a netlink message is sent to the kernel, it would be
-> dispatched by rtnetlink_rcv_msg() which will make sure to lock
-> the mutex before doing so:
-> https://elixir.bootlin.com/linux/latest/source/net/core/rtnetlink.c#L5551
->=20
-> A funny note is that because the mutex is global, if you run two
-> ip command in a row:
->=20
-> | ip link set can0 type can bitrate 500000
-> | ip link set can1 up
->=20
-> the second one will wait for the first one to finish even if it
-> is on a different network device.
->=20
-> To conclude, I do not think this needs to be fixed.
-
-It's not a race. Consider this command:
-
-| ip up tdc-mode manual tdco 111 tdcv 33  # 111 is out of range, 33 is valid
-
-tdcv is checked first and valid, then it's assigned to the priv->tdc.
-tdco is checked second and invalid, then can_tdc_changelink() returns -EINV=
-AL.
-
-tdc ends up being half set :(
-
-So the setting of tdc is inconsistent and when you do a "ip down" "ip
-up" then it results in a tdco=3D0 tdcv=3D33 mode=3Dmanual.
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---3e3jncuyjzgfz6lc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEcwpMACgkQqclaivrt
-76mN8QgAqxSO4LyB4IjE16rxksejvFXamtoLW60WQkF+ssrYVu59sO0JnKxrrATU
-izMnj78NfQPmm5JtzE6n+Yr0TwUKeyfBanMFcn6kjT3hVw5ZevdISOqHe7gScI5n
-zbFjofkunuJDo8znOo2E4TNA7W1DR09XE4tLfCLUn3XN+5WcyZVJlHEmfHOeQkzG
-Cnx6U/zS92DZNYvcx6a2+ftYaE+IuYuh/DOLXR2StwufDpKKFe9DCuDHvJscl8f4
-PxD4kzMF3UJF7NuoLP6nC7eOzJ99eyDGZVfuWJwhXmXqtD2I/IFrqlCpOn+XPwbS
-EmOl7nFj06vxn1CYw0ZB5XbxS5e2mw==
-=kO5l
------END PGP SIGNATURE-----
-
---3e3jncuyjzgfz6lc--
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
