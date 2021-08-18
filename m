@@ -2,192 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D79643F021E
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 12:58:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D4813F0281
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 13:19:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234896AbhHRK7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 06:59:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57200 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235126AbhHRK7L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 06:59:11 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DADEC0613D9;
-        Wed, 18 Aug 2021 03:58:37 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id m26so1734130pff.3;
-        Wed, 18 Aug 2021 03:58:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5ARDh7zwSb2X5RObytIAU8QGeSNvl46IYM6BIWZuQHU=;
-        b=kgz0j3/ZG5layIgNAKSLvmcq9bWDXQP5wO8sD43K3y9/ZGRmQQAERtK2A9qODJ1jI7
-         PFjFK0c5msANswvgIHnLeZV39qsLJWn32SOLkpFgeq9IcOGGxP1I7cPTaegGXeQjL8YN
-         ChdGueOimURrUxVDboS+9KgDIeInZ18njgbeyJvoTmIx3STEn7viX79Pf5AgqobNLlqD
-         g+kC4H5RiRTCxB2aZcyfr6Me0rRVmbdOuYSqI65F1fBk33ICF2wdof57wZ+B8VcTSPpO
-         S0AWzBgyMyPOC4Qj2uFmGTp+tnrfgVa8cYU+3oJpBel2e8eCuBL6skVwUkKZ16jlLuR7
-         sueg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5ARDh7zwSb2X5RObytIAU8QGeSNvl46IYM6BIWZuQHU=;
-        b=nAVPqsxSdieOPhPaB+jNSuE87QEvY7Bf3h0IhbtEMuaPUZasFHvCmCvAZWJcw01HKd
-         FpOB9MOgly6Rm/0PxfK6AbFWrV0aFAXxf3LJPgFinq8t+D3CGMBDxLYQxNVjS5RB7IYQ
-         U7Bwpr7YTj0jtPg+YIy5VQIh1rSNNWnolxLI9KAzjyxfk663YCRsvxoJPzCaYH4fYXxG
-         6b7bxwycSy6z/TYfIceYVEl6kHRcuDg475i5hHbhr7ynpspJtuZEdAsNCB/3EoHCHqzE
-         QffcRZAVgx75/j1ZeJU5Q4zRYZ0nw2cfGnpPiZ4SkKJY7kQusgfiyKotKyBobIgS7Pfe
-         ARGQ==
-X-Gm-Message-State: AOAM531Ruc9J1NeAS3kPvThduEGG7B2OGcLugAPTTc03V0JchXSLdWbf
-        BLjfH+RZhdqaOrIXb0MDK1M=
-X-Google-Smtp-Source: ABdhPJw9BpE+Hvns4NnirXV/b/Mn11VgwyMngLva03K9N8cnsYeEB/iBdB4SI3dih+eaj48zaStnYg==
-X-Received: by 2002:a63:1a65:: with SMTP id a37mr8432809pgm.338.1629284316963;
-        Wed, 18 Aug 2021 03:58:36 -0700 (PDT)
-Received: from IRVINGLIU-MB0.tencent.com ([203.205.141.117])
-        by smtp.gmail.com with ESMTPSA id b190sm7099440pgc.91.2021.08.18.03.58.33
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 18 Aug 2021 03:58:36 -0700 (PDT)
-From:   Xu Liu <liuxu623@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xu Liu <liuxu623@gmail.com>
-Subject: [PATCH bpf-next v2 2/2] selftests/bpf: Test for get_netns_cookie
-Date:   Wed, 18 Aug 2021 18:58:20 +0800
-Message-Id: <20210818105820.91894-3-liuxu623@gmail.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20210818105820.91894-1-liuxu623@gmail.com>
-References: <20210818105820.91894-1-liuxu623@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S235366AbhHRLUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 07:20:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56902 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233798AbhHRLUA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Aug 2021 07:20:00 -0400
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D068C6109E;
+        Wed, 18 Aug 2021 11:19:25 +0000 (UTC)
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1mGJbP-005jkk-Lh; Wed, 18 Aug 2021 12:19:23 +0100
+Date:   Wed, 18 Aug 2021 12:19:23 +0100
+Message-ID: <87o89vroec.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Saravana Kannan <saravanak@google.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        linux-amlogic@lists.infradead.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Android Kernel Team <kernel-team@android.com>
+Subject: Re: [PATCH 1/2] irqchip: irq-meson-gpio: make it possible to build as a module
+In-Reply-To: <CAGETcx-FS_88nQuF=xN4iJJ-nGnaeTnO-iiGpZuNELqE42FtoA@mail.gmail.com>
+References: <87r1hwwier.wl-maz@kernel.org>
+        <7h7diwgjup.fsf@baylibre.com>
+        <87im0m277h.wl-maz@kernel.org>
+        <CAGETcx9OukoWM_qprMse9aXdzCE=GFUgFEkfhhNjg44YYsOQLw@mail.gmail.com>
+        <87sfzpwq4f.wl-maz@kernel.org>
+        <CAGETcx95kHrv8wA-O+-JtfH7H9biJEGJtijuPVN0V5dUKUAB3A@mail.gmail.com>
+        <CAGETcx8bpWQEnkpJ0YW9GqX8WE0ewT45zqkbWWdZ0ktJBhG4yQ@mail.gmail.com>
+        <YQuZ2cKVE+3Os25Z@google.com>
+        <YRpeVLf18Z+1R7WE@google.com>
+        <CAGETcx-gSJD0Ra=U_55k3Anps11N_3Ev9gEQV6NaXOvqwP0J3g@mail.gmail.com>
+        <YRtkE62O+4EiyzF9@google.com>
+        <CAGETcx-FS_88nQuF=xN4iJJ-nGnaeTnO-iiGpZuNELqE42FtoA@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: saravanak@google.com, lee.jones@linaro.org, narmstrong@baylibre.com, andrew@lunn.ch, khilman@baylibre.com, jbrunet@baylibre.com, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, kernel-team@android.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add test to use get_netns_cookie() from BPF_PROG_TYPE_SOCK_OPS.
+On Tue, 17 Aug 2021 19:12:34 +0100,
+Saravana Kannan <saravanak@google.com> wrote:
+> 
+> On Tue, Aug 17, 2021 at 12:24 AM Lee Jones <lee.jones@linaro.org> wrote:
+> >
+> > On Mon, 16 Aug 2021, Saravana Kannan wrote:
+> > > > > > I sent out the proper fix as a series:
+> > > > > > https://lore.kernel.org/lkml/20210804214333.927985-1-saravanak@google.com/T/#t
+> > > > > >
+> > > > > > Marc, can you give it a shot please?
+> > > > > >
+> > > > > > -Saravana
+> > > > >
+> > > > > Superstar!  Thanks for taking the time to rectify this for all of us.
+> > > >
+> > > > Just to clarify:
+> > > >
+> > > >   Are we waiting on a subsequent patch submission at this point?
+> > >
+> > > Not that I'm aware of. Andrew added a "Reviewed-by" to all 3 of my
+> > > proper fix patches. I didn't think I needed to send any newer patches.
+> > > Is there some reason you that I needed to?
+> >
+> > Actually, I meant *this* patch.
+> 
+> I think it'll be nice if Neil addresses the stuff Marc mentioned
+> (ideally) using the macros I suggested. Not sure if Marc is waiting on
+> that though. Marc also probably wants my mdio-mux series to merge
+> first before he takes this patch. So that it doesn't break networking
+> in his device.
 
-Signed-off-by: Xu Liu <liuxu623@gmail.com>
----
- .../selftests/bpf/prog_tests/netns_cookie.c   | 61 +++++++++++++++++++
- .../selftests/bpf/progs/netns_cookie_prog.c   | 39 ++++++++++++
- 2 files changed, 100 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/netns_cookie.c
- create mode 100644 tools/testing/selftests/bpf/progs/netns_cookie_prog.c
+Yup. Two things need to happen here:
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/netns_cookie.c b/tools/testing/selftests/bpf/prog_tests/netns_cookie.c
-new file mode 100644
-index 000000000000..6f3cd472fb65
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/netns_cookie.c
-@@ -0,0 +1,61 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <test_progs.h>
-+#include "netns_cookie_prog.skel.h"
-+#include "network_helpers.h"
-+
-+#ifndef SO_NETNS_COOKIE
-+#define SO_NETNS_COOKIE 71
-+#endif
-+
-+static int duration;
-+
-+void test_netns_cookie(void)
-+{
-+	int server_fd = 0, client_fd = 0, cgroup_fd = 0, err = 0, val = 0;
-+	struct netns_cookie_prog *skel;
-+	uint64_t cookie_expected_value;
-+	socklen_t vallen = sizeof(cookie_expected_value);
-+
-+	skel = netns_cookie_prog__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "skel_open"))
-+		return;
-+
-+	cgroup_fd = test__join_cgroup("/netns_cookie");
-+	if (CHECK(cgroup_fd < 0, "join_cgroup", "cgroup creation failed\n"))
-+		goto out;
-+
-+	skel->links.get_netns_cookie_sockops = bpf_program__attach_cgroup(
-+		skel->progs.get_netns_cookie_sockops, cgroup_fd);
-+	if (!ASSERT_OK_PTR(skel->links.get_netns_cookie_sockops, "prog_attach"))
-+		goto close_cgroup_fd;
-+
-+	server_fd = start_server(AF_INET6, SOCK_STREAM, "::1", 0, 0);
-+	if (CHECK(server_fd < 0, "start_server", "errno %d\n", errno))
-+		goto close_cgroup_fd;
-+
-+	client_fd = connect_to_fd(server_fd, 0);
-+	if (CHECK(client_fd < 0, "connect_to_fd", "errno %d\n", errno))
-+		goto close_server_fd;
-+
-+	err = bpf_map_lookup_elem(bpf_map__fd(skel->maps.netns_cookies),
-+				&client_fd, &val);
-+	if (!ASSERT_OK(err, "map_lookup(socket_cookies)"))
-+		goto close_client_fd;
-+
-+	err = getsockopt(client_fd, SOL_SOCKET, SO_NETNS_COOKIE,
-+				&cookie_expected_value, &vallen);
-+	if (!ASSERT_OK(err, "getsockopt)"))
-+		goto close_client_fd;
-+
-+	ASSERT_EQ(val, cookie_expected_value, "cookie_value");
-+
-+close_client_fd:
-+	close(client_fd);
-+close_server_fd:
-+	close(server_fd);
-+close_cgroup_fd:
-+	close(cgroup_fd);
-+out:
-+	netns_cookie_prog__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/netns_cookie_prog.c b/tools/testing/selftests/bpf/progs/netns_cookie_prog.c
-new file mode 100644
-index 000000000000..4ed8d75aa299
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/netns_cookie_prog.c
-@@ -0,0 +1,39 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include "vmlinux.h"
-+
-+#include <bpf/bpf_helpers.h>
-+
-+#define AF_INET6 10
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SK_STORAGE);
-+	__uint(map_flags, BPF_F_NO_PREALLOC);
-+	__type(key, int);
-+	__type(value, int);
-+} netns_cookies SEC(".maps");
-+
-+SEC("sockops")
-+int get_netns_cookie_sockops(struct bpf_sock_ops *ctx)
-+{
-+	struct bpf_sock *sk = ctx->sk;
-+	int *cookie;
-+
-+	if (ctx->family != AF_INET6)
-+		return 1;
-+
-+	if (ctx->op != BPF_SOCK_OPS_TCP_CONNECT_CB)
-+		return 1;
-+
-+	if (!sk)
-+		return 1;
-+
-+	cookie = bpf_sk_storage_get(&netns_cookies, sk, 0,
-+				BPF_SK_STORAGE_GET_F_CREATE);
-+	if (!cookie)
-+		return 1;
-+
-+	*cookie = bpf_get_netns_cookie(ctx);
-+
-+	return 1;
-+}
+- the MDIO fixes must be merged (I think they are queued, from what I
+  can see)
+
+- the irqchip patch must be fixed so that the driver cannot be
+  unloaded (Saravana did explain what needs to be done).
+
+Once these two condition are met, I'll happily take this patch.
+
+	M.
+
 -- 
-2.28.0
-
+Without deviation from the norm, progress is not possible.
