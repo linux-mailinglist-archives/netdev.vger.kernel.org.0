@@ -2,89 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 665B43F04E8
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 15:35:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51F443F04F2
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 15:37:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237760AbhHRNfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 09:35:51 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:29397 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236629AbhHRNfp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 09:35:45 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1629293711; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=D83uvmIKfB3mWVd8vO6++LBuXNB1BJ5IR3kbxJlaHJk=; b=gny5c2qorneGUGCW3/wXNvgtCbmCAZl+LShOy/EAxwqsLABGZOKCW+UK8DFMXwACOhjmsYJP
- wrP9gZqj0S8BL7yJFqgzXDPUXMuiBPm59NFJBXLxJeK4nZn0EB/HF4Y5D2KVR4fZfUqZtFo+
- LSSpePrzH6p9qD4dj+AeA8bAMSU=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
- 611d0c79454b7a558fb27d92 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 18 Aug 2021 13:34:49
- GMT
-Sender: luoj=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id EB928C4360C; Wed, 18 Aug 2021 13:34:48 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-4.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-        version=3.4.0
-Received: from [10.92.1.52] (unknown [180.166.53.36])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: luoj)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 700F5C4338F;
-        Wed, 18 Aug 2021 13:34:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 700F5C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-Subject: Re: [PATCH] net: phy: add qca8081 ethernet phy driver
-To:     Michael Walle <michael@walle.cc>
-Cc:     andrew@lunn.ch, davem@davemloft.net, hkallweit1@gmail.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux@armlinux.org.uk, netdev@vger.kernel.org,
-        sricharan@codeaurora.org
-References: <6856a839-0fa0-1240-47cd-ae8536294bcd@codeaurora.org>
- <20210818074102.78006-1-michael@walle.cc>
-From:   Jie Luo <luoj@codeaurora.org>
-Message-ID: <9aa1543b-e1b8-fba2-1b93-c954dd2e3e50@codeaurora.org>
-Date:   Wed, 18 Aug 2021 21:34:40 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S237104AbhHRNiJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 09:38:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:45604 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237243AbhHRNiI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 09:38:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1629293853;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3nkORLO/atfa6K6RRE8EvWi5+jxgYR6p0inhWO+j+Yk=;
+        b=SzLC9M+TLoWN8iDfCkc6KoJ4eh2vok279hzJrTSNBQ0cd34/27zeEGyF9C6G+otjbC3xbD
+        b3fNtZGUnq+CtFQXwGEBXoBGkSkkJ1k6Er8/1qKDAcGGwUHtqCj1BLZprgAtkFaVwTXTYt
+        zcCHS0f+/cTLFKgqdhwE1hY0nMCRK8A=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-173-w0PLdIXnNE2yhQx9bfj9Fw-1; Wed, 18 Aug 2021 09:37:30 -0400
+X-MC-Unique: w0PLdIXnNE2yhQx9bfj9Fw-1
+Received: by mail-wm1-f71.google.com with SMTP id j33-20020a05600c1c21b02902e6828f7a20so740839wms.7
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 06:37:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3nkORLO/atfa6K6RRE8EvWi5+jxgYR6p0inhWO+j+Yk=;
+        b=DNuxk5TxJ5hnWtH9paLDxEPbjtzmNQhpYHCtuPWrwWM1wL+rXLgX5N17vZCnghgf73
+         iDS59mF7aoEg8lIILmM8BMV63tesLT0PBgo6cj02xMe640L/274Qchpjo/SUl/lKGddt
+         JLrHzBsTKTw0GG67Zj3xkiV9cCBxLx3uSeQqctQNPNYMdVtIG01BJx/z4/2yERH5q4qn
+         qVOXDacHG87/qVrg9L8rgB6XkpTqOoKcTDxrXs5/x0+NAN+6XGkGnFRwaSiAiFWn1bRW
+         VeL/Ledd9Nwvb8iVpi9HGQaP7ZyVgmFVz2P69RPK1CBK/PAxpXFFz9G5cVHd77jLx9Bp
+         C7rQ==
+X-Gm-Message-State: AOAM531XqdLYpOdls2NKoWLxfnKMS8C0/8tByO4k4agi14d9U1buEY6G
+        AYP7I3F6lkp5PA3yOis8fCZ/tDVSLjIqP5Ew9K926CNbaYiSHC/Fut6cFEnuA5dmjnBGj5l+Twp
+        uZ7GZVUjai6y3rx+K
+X-Received: by 2002:a5d:658e:: with SMTP id q14mr10743878wru.142.1629293848999;
+        Wed, 18 Aug 2021 06:37:28 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy6GaFTVTpQDUTjLLN4+PIKc8xkR614JF/2mBb8xZBdKkNDvWyGROPFvGTiY5cTfSEY1cxN5w==
+X-Received: by 2002:a5d:658e:: with SMTP id q14mr10743850wru.142.1629293848825;
+        Wed, 18 Aug 2021 06:37:28 -0700 (PDT)
+Received: from localhost (net-47-53-237-136.cust.vodafonedsl.it. [47.53.237.136])
+        by smtp.gmail.com with ESMTPSA id e3sm5980178wro.15.2021.08.18.06.37.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Aug 2021 06:37:28 -0700 (PDT)
+Date:   Wed, 18 Aug 2021 15:37:25 +0200
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
+        echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com
+Subject: Re: [PATCH v11 bpf-next 17/18] net: xdp: introduce
+ bpf_xdp_adjust_data helper
+Message-ID: <YR0NFQCsNH3x6kfx@lore-desk>
+References: <cover.1628854454.git.lorenzo@kernel.org>
+ <9696df8ef1cf6c931ae788f40a42b9278c87700b.1628854454.git.lorenzo@kernel.org>
+ <87czqbq6ic.fsf@toke.dk>
+ <YR0BYiQFvI8cmOJU@lore-desk>
+ <878s0yrjso.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20210818074102.78006-1-michael@walle.cc>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="TDUwvGzpyHhvnaRL"
+Content-Disposition: inline
+In-Reply-To: <878s0yrjso.fsf@toke.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 8/18/2021 3:41 PM, Michael Walle wrote:
->> qca8081 supports IEEE1588 feature, the IEEE1588 code may be submitted in
->> the near future,
->>
->> so it may be a good idea to keep it out from at803x code.
-> The AR8031 also supports PTP. Unfortunately, there is no public datasheet
-> for the QCA8081, so I can't have a look if both are similar.
->
-> See also,
-> https://lore.kernel.org/netdev/20200228180226.22986-1-michael@walle.cc/
->
-> -michael
+--TDUwvGzpyHhvnaRL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Hi Michael,
+> Lorenzo Bianconi <lorenzo.bianconi@redhat.com> writes:
+>=20
+> >> Lorenzo Bianconi <lorenzo@kernel.org> writes:
+> >>=20
+> > [...]
+> >> > + *	Description
+> >> > + *		For XDP frames split over multiple buffers, the
+> >> > + *		*xdp_md*\ **->data** and*xdp_md *\ **->data_end** pointers
+> >> > + *		will point to the start and end of the first fragment only.
+> >> > + *		This helper can be used to access subsequent fragments by
+> >> > + *		moving the data pointers. To use, an XDP program can call
+> >> > + *		this helper with the byte offset of the packet payload that
+> >> > + *		it wants to access; the helper will move *xdp_md*\ **->data**
+> >> > + *		and *xdp_md *\ **->data_end** so they point to the requested
+> >> > + *		payload offset and to the end of the fragment containing this
+> >> > + *		byte offset, and return the byte offset of the start of the
+> >> > + *		fragment.
+> >>=20
+> >> This comment is wrong now :)
+> >
+> > actually we are still returning the byte offset of the start of the fra=
+gment
+> > (base_offset).
+>=20
+> Hmm, right, I was looking at the 'return 0':
+>=20
+> > +BPF_CALL_2(bpf_xdp_adjust_data, struct xdp_buff *, xdp, u32, offset)
+> > +{
+> > +	struct skb_shared_info *sinfo =3D xdp_get_shared_info_from_buff(xdp);
+> > +	u32 base_offset =3D xdp->mb.headlen;
+> > +	int i;
+> > +
+> > +	if (!xdp_buff_is_mb(xdp) || offset > sinfo->xdp_frags_size)
+> > +		return -EINVAL;
+> > +
+> > +	if (offset < xdp->mb.headlen) {
+> > +		/* linear area */
+> > +		xdp->data =3D xdp->data_hard_start + xdp->mb.headroom;
+> > +		xdp->data_end =3D xdp->data + xdp->mb.headlen;
+> > +		return 0;
+> > +	}
+>=20
+> But I guess that's an offset; but that means the helper is not doing
+> what it says it's doing if it's within the first fragment. That should
+> probably be made consistent... :)
 
-Thanks for this comment. it is true that AR8031 supports basic PTP 
-features.
+ack, right. I will fix it in v12, thanks.
 
-please refer to the following link for the outline features of qca801.
+Regards,
+Lorenzo
 
-https://www.qualcomm.com/products/qca8081
+>=20
+> -Toke
+>=20
+
+--TDUwvGzpyHhvnaRL
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYR0NEgAKCRA6cBh0uS2t
+rH2CAP9C4l1kLYUsnnwq2eF5rOQRodchxqXO2DF0PVG1UEJqQwEAv+B2SSnbBjOa
+5LFTThnRjThl/amR/tGBBW4dvUO+QwA=
+=VZ5A
+-----END PGP SIGNATURE-----
+
+--TDUwvGzpyHhvnaRL--
 
