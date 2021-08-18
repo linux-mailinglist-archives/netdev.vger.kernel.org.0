@@ -2,80 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBF603F00EA
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 11:50:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80D5F3F0119
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 11:57:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232767AbhHRJul (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 05:50:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36556 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231960AbhHRJuk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Aug 2021 05:50:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 24C8760EBD;
-        Wed, 18 Aug 2021 09:50:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629280206;
-        bh=nPk6m8gVc4yQgj1atF2k+8YATLZH+Boe21wz3rbQ36w=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=BkjWZxWsdedRuVW1EQbTs8GYVNf5T6awS8SChUpoOVWJWN9qJrCOndmmSOyshpXxT
-         5An+GwkCE6L9PCpPvii831IGV6ngDy7y2VsI4vNnTWS8QF6Anoq6mxwyQ56OeclCoM
-         AjGnmktAc5vFiwyH6WSSQJFKvjeN+NDIU2cfQ4jz958IIjAYDqwGvYkJzPRCjZm9sV
-         H+J462EU1cSNn9gJNqojEydJqV0h9VmUWNL9s+QwmzVzyT05jwa304qppsBkhZhGs1
-         6tHIqNba9/Ofh2kHe7GWN/GeDLLE9Hf3mIBggplVakCJKRkw2rvL10e2H6CYZp9jKf
-         UxYW6Y7QUYq7Q==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 196EA60A2E;
-        Wed, 18 Aug 2021 09:50:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233134AbhHRJ61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 05:58:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42988 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231910AbhHRJ6X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 05:58:23 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05F7FC0617AE
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 02:57:46 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1mGIJV-0003Ak-CF; Wed, 18 Aug 2021 11:56:49 +0200
+Received: from pengutronix.de (unknown [IPv6:2a02:810a:8940:aa0:ed04:8488:5061:54d4])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 08E5E669A16;
+        Wed, 18 Aug 2021 09:56:36 +0000 (UTC)
+Date:   Wed, 18 Aug 2021 11:56:35 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stanislaw Gruszka <stf_xl@wp.pl>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Mordechay Goodstein <mordechay.goodstein@intel.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Mikulas Patocka <mikulas@artax.karlin.mff.cuni.cz>,
+        linux-crypto@vger.kernel.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-can@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 2/5] treewide: Replace open-coded flex arrays in unions
+Message-ID: <20210818095635.tm42ctkm6aydjr6g@pengutronix.de>
+References: <20210818081118.1667663-1-keescook@chromium.org>
+ <20210818081118.1667663-3-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v3 0/3] Clean up and fix error handling in mdio_mux_init()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162928020609.23266.3797943730217405111.git-patchwork-notify@kernel.org>
-Date:   Wed, 18 Aug 2021 09:50:06 +0000
-References: <20210818033804.3281057-1-saravanak@google.com>
-In-Reply-To: <20210818033804.3281057-1-saravanak@google.com>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, jon.mason@broadcom.com,
-        david.daney@cavium.com, maz@kernel.org, narmstrong@baylibre.com,
-        khilman@baylibre.com, kernel-team@android.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="h4irlmrxob7c5btq"
+Content-Disposition: inline
+In-Reply-To: <20210818081118.1667663-3-keescook@chromium.org>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+--h4irlmrxob7c5btq
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 17 Aug 2021 20:38:00 -0700 you wrote:
-> This patch series was started due to -EPROBE_DEFER not being handled
-> correctly in mdio_mux_init() and causing issues [1]. While at it, I also
-> did some more error handling fixes and clean ups. The -EPROBE_DEFER fix is
-> the last patch.
-> 
-> Ideally, in the last patch we'd treat any error similar to -EPROBE_DEFER
-> but I'm not sure if it'll break any board/platforms where some child
-> mdiobus never successfully registers. If we treated all errors similar to
-> -EPROBE_DEFER, then none of the child mdiobus will work and that might be a
-> regression. If people are sure this is not a real case, then I can fix up
-> the last patch to always fail the entire mdio-mux init if any of the child
-> mdiobus registration fails.
-> 
-> [...]
+On 18.08.2021 01:11:15, Kees Cook wrote:
+> diff --git a/drivers/net/can/usb/etas_es58x/es581_4.h b/drivers/net/can/u=
+sb/etas_es58x/es581_4.h
+> index 4bc60a6df697..8657145dc2a9 100644
+> --- a/drivers/net/can/usb/etas_es58x/es581_4.h
+> +++ b/drivers/net/can/usb/etas_es58x/es581_4.h
+> @@ -192,7 +192,7 @@ struct es581_4_urb_cmd {
+>  		struct es581_4_rx_cmd_ret rx_cmd_ret;
+>  		__le64 timestamp;
+>  		u8 rx_cmd_ret_u8;
+> -		u8 raw_msg[0];
+> +		flex_array(u8 raw_msg);
+>  	} __packed;
+> =20
+>  	__le16 reserved_for_crc16_do_not_use;
+> diff --git a/drivers/net/can/usb/etas_es58x/es58x_fd.h b/drivers/net/can/=
+usb/etas_es58x/es58x_fd.h
+> index ee18a87e40c0..3053e0958132 100644
+> --- a/drivers/net/can/usb/etas_es58x/es58x_fd.h
+> +++ b/drivers/net/can/usb/etas_es58x/es58x_fd.h
+> @@ -228,7 +228,7 @@ struct es58x_fd_urb_cmd {
+>  		struct es58x_fd_tx_ack_msg tx_ack_msg;
+>  		__le64 timestamp;
+>  		__le32 rx_cmd_ret_le32;
+> -		u8 raw_msg[0];
+> +		flex_array(u8 raw_msg[]);
+>  	} __packed;
 
-Here is the summary with links:
-  - [net,v3,1/3] net: mdio-mux: Delete unnecessary devm_kfree
-    https://git.kernel.org/netdev/net/c/663d946af5fb
-  - [net,v3,2/3] net: mdio-mux: Don't ignore memory allocation errors
-    https://git.kernel.org/netdev/net/c/99d81e942474
-  - [net,v3,3/3] net: mdio-mux: Handle -EPROBE_DEFER correctly
-    https://git.kernel.org/netdev/net/c/7bd0cef5dac6
+This doesn't look consistent, what's preferred?
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+u8 raw_msg[0];  -> flex_array(u8 raw_msg);
+ - or-
+                -> flex_array(u8 raw_msg[]);
 
+regards,
+Marc
 
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--h4irlmrxob7c5btq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEc2VEACgkQqclaivrt
+76kXUQf/cn+R4mRgon+iBBoNOjSG6Xpa5C1kWsnyfyJAQq9geHgAtcyoTTot+9QH
+bjo6l3vIxXSY85B6NbV+TQFuedtSpFYkRQJgWzMG/eIuwHZ7Buuf8uK5C5MESqwm
+PJDEl2lZpKA7MtM2gMtvmhElNsv1Nr4FqMEOmCHs5LeQQ8ddsbJ0Ab7X7ffQ4SRu
+UgMoqqUUFxReCmF+pmoxDC5uHBbovnw/hYPulDH6AN7jj8ml9/lPLuJKfBnyYGI5
+jYTHTlc4+VnN6a7NJ7V9DhTCncLaFjXVFFxoQBWYgpetIV/eWwu2WwrrYhyrvEK0
+cORmz7LG97TWWd3NSNNy9j7XKs0y+Q==
+=UYoj
+-----END PGP SIGNATURE-----
+
+--h4irlmrxob7c5btq--
