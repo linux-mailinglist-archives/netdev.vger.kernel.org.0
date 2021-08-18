@@ -2,68 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7142B3F0200
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 12:50:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 442973F0202
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 12:50:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234949AbhHRKum (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 06:50:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49736 "EHLO mail.kernel.org"
+        id S234872AbhHRKul (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 06:50:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49714 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234418AbhHRKuk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233170AbhHRKuk (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 18 Aug 2021 06:50:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0315060FE6;
-        Wed, 18 Aug 2021 10:50:06 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 732FF6103A;
+        Wed, 18 Aug 2021 10:50:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629283806;
-        bh=jAGprjy7lnIT0fLgWXQfA/u/yXFzXLk5oPCebenv9tg=;
+        s=k20201202; t=1629283805;
+        bh=G/e+SSkhPVy4IC4NVqI1ulL6wsDBbQsFzrjctMdAr3A=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TZTafczHFHDgQBAVOYKR9utr+27ZLtqF/lzrbPJCa6tfenxHt66ofUHPn91X6a4LH
-         P6ydMgt0dChrrqGbgvbBORwSh7p+0L1beXQVY5ZqBlMyyfFQftYq5QISKmNeDsoDtT
-         AJEfVa8++IGU8hFJnuh/jF46E270F6d04RQ/PZs4nfAw/RvCCniVOgL04Q/YkdzWYc
-         OZNGL2GcdQTwv1E7EeQNixVWBN13BnoUHHpJYygv+rkRYJKBYiCoqVzIRf+BhpwDeC
-         DVbhQgtlas9QBzSwqK8jDErOiS6QtYyJJGt8hQdvnGrfgm/V+ZyJWaN5Da5lgo7MJG
-         sZbBtqrWrXDGQ==
+        b=aeENeDKX5J9EENEPbKCBVEShP2NEY+iDXtsjrvayMr8sRFOZ8Zdc2bCoX7ch68ily
+         7X5FBVP/YJX5N63t9ABIxP7rFIW/3YK3+o86DT33+4Au2LZkK4nY1twyvLnfDwqhxy
+         QSY0+U68BldiwKPAQgNmYxDfVIgKrbiun5tgcdguQSXIHFMt30Mwr8d5gQb5WkuvZu
+         G92nevliNI0+d+yXoi/kVcE39n/KY9K3pfr7dM91VFl7AhtEbZrUCK7+SOoYXcxnR9
+         pfyqYE2wVlYVpcUXxs3yw45tnGNHjmQGbIQ3XwipJPX7SfhpIKJTGkazS8inffqg5D
+         bGK6jVPhHk4jg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EFE4A609EB;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 66A8D60A2E;
         Wed, 18 Aug 2021 10:50:05 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net-memcg: pass in gfp_t mask to
- mem_cgroup_charge_skmem()
+Subject: Re: [PATCH v4] net: asix: fix uninit value bugs
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162928380597.20153.6653369000646773823.git-patchwork-notify@kernel.org>
+Message-Id: <162928380541.20153.5366417098709462761.git-patchwork-notify@kernel.org>
 Date:   Wed, 18 Aug 2021 10:50:05 +0000
-References: <20210817194003.2102381-1-weiwan@google.com>
-In-Reply-To: <20210817194003.2102381-1-weiwan@google.com>
-To:     Wei Wang <weiwan@google.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        cgroups@vger.kernel.org, linux-mm@kvack.org, guro@fb.com,
-        edumazet@google.com, shakeelb@google.com
+References: <20210817163723.19040-1-paskripkin@gmail.com>
+In-Reply-To: <20210817163723.19040-1-paskripkin@gmail.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux@rempel-privat.de,
+        andrew@lunn.ch, himadrispandya@gmail.com,
+        robert.foss@collabora.com, freddy@asix.com.tw,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+a631ec9e717fb0423053@syzkaller.appspotmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Tue, 17 Aug 2021 12:40:03 -0700 you wrote:
-> Add gfp_t mask as an input parameter to mem_cgroup_charge_skmem(),
-> to give more control to the networking stack and enable it to change
-> memcg charging behavior. In the future, the networking stack may decide
-> to avoid oom-kills when fallbacks are more appropriate.
+On Tue, 17 Aug 2021 19:37:23 +0300 you wrote:
+> Syzbot reported uninit-value in asix_mdio_read(). The problem was in
+> missing error handling. asix_read_cmd() should initialize passed stack
+> variable smsr, but it can fail in some cases. Then while condidition
+> checks possibly uninit smsr variable.
 > 
-> One behavior change in mem_cgroup_charge_skmem() by this patch is to
-> avoid force charging by default and let the caller decide when and if
-> force charging is needed through the presence or absence of
-> __GFP_NOFAIL.
+> Since smsr is uninitialized stack variable, driver can misbehave,
+> because smsr will be random in case of asix_read_cmd() failure.
+> Fix it by adding error handling and just continue the loop instead of
+> checking uninit value.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net-memcg: pass in gfp_t mask to mem_cgroup_charge_skmem()
-    https://git.kernel.org/netdev/net-next/c/4b1327be9fe5
+  - [v4] net: asix: fix uninit value bugs
+    https://git.kernel.org/netdev/net/c/a786e3195d6a
 
 You are awesome, thank you!
 --
