@@ -2,121 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7736F3F0781
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 17:07:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 454AA3F0785
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 17:07:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239526AbhHRPHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 11:07:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59300 "EHLO
+        id S239783AbhHRPHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 11:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235131AbhHRPHg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 11:07:36 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A03F0C061764;
-        Wed, 18 Aug 2021 08:07:01 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id y34so5294815lfa.8;
-        Wed, 18 Aug 2021 08:07:01 -0700 (PDT)
+        with ESMTP id S235131AbhHRPHr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 11:07:47 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8288C061764;
+        Wed, 18 Aug 2021 08:07:12 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id x7so5650691ljn.10;
+        Wed, 18 Aug 2021 08:07:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hpXTPXK1ibNyRndd2z4OxzfYUmUkDAM0OJ5r1uqfGjw=;
-        b=Lnby+xsvPy5y/+y/cRXf1EQaqsXKlWFS0cky80HAYrRYVQVy8eqTbjYWicQuzisYA+
-         uwjAdyx1kNqoM5F55YZ1fZkDctN5X128018xYz9wVqfSk7JXbEaZ4Uhrbjl8DlIjEFZ6
-         7FM4NjKn8Vxrmg1ojsBbPFZ89XF5cyOiw6S1/vKqRf8hJNYDQaLKd72L+K7Yi+0WPjlJ
-         rN2xjezJ/+2LfGHyVDjTtlkXYdMb/9mMSeawQZV87M1PyF366luRkeiio5q8F5SBQ78I
-         etNem7u2LoBeZVsB+0cxWgxWcQronQGCMxe/wCHVn8Roy6QsaO9gJ9n0FuS3juZEuHpo
-         UAhA==
+        bh=Uq7jOLhIzmeqdxixhYyKft2oiqKCnNb7TcSQh4dCmmU=;
+        b=IZhIe7wkQo6rWVFNpLkLjbd4rWhBuJVTk1KQn9uc5JhLOTMs5dKuWlBDZU7XFsLxhl
+         XcO7151yxMctmP9N008kq3O+gK7eDtg/KH//wn3mikEY+pTL22wLvCRA97QrjilnI1w6
+         Ld4KlEYWV3qTWHZBvlCRFNn7GvuUB4pYQqu43/ykPDzHFPAdOyLF7/nbX3RBI+uu5tmi
+         3pUWaRaxy4PHHtn73lIfSdmznbyxG7oeu3mpC1ms/n5T3vr3A283oggPwc5XjGr0MhSD
+         oQOkq9DDJv5dIre/M6HLvZymcfRImW2HCt7kfqQuNnxjKktxwRHoEaxKYlBu/IjuvdJS
+         P+EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hpXTPXK1ibNyRndd2z4OxzfYUmUkDAM0OJ5r1uqfGjw=;
-        b=sT2m9xaPRf240uPjM0dtKx9KQIoZTzJHeZHbMPJpSZsgm5v05MYC7xxY6Tat+GgY7p
-         Mv8x05xXLzyKskm8q2gaf4hOaBcSu1VIow5aY5hT7xgyovyrEfb3f5ORXJQDs7Muf3Ds
-         Cv8h1II6/RWJGDnDgJWdufjPX3gUWGXYS9OVZvwu4kcRRvC69MWT22og9MyU9O/CuAVm
-         kKctvcwNzao+bPdnuA04r/hl+0ww79/uPOsJK1NgrdpKE/TOe+tN1iBLuDXgEI0qxIcE
-         7JiVIPFrdpuDrfE+4zrqbilBz1xNvUc8w+2EfwabT212UT025a2ibPPTM/65PKlnE60S
-         u8PA==
-X-Gm-Message-State: AOAM5307FYED4ZYyJiy44ALWTfZv6XjLK66f5OtMSf5U8ltIhHwIdNSB
-        QlEq9Fi6glyvJl019V9NyOw=
-X-Google-Smtp-Source: ABdhPJzCOWLA8LkvS1HCGXpzALuQrjOzmyeSXstCJmQqthtbcgF8x1zP9tMIe4OYOOtMS7EcwL4Weg==
-X-Received: by 2002:a19:2d0e:: with SMTP id k14mr6573783lfj.409.1629299219839;
-        Wed, 18 Aug 2021 08:06:59 -0700 (PDT)
+        bh=Uq7jOLhIzmeqdxixhYyKft2oiqKCnNb7TcSQh4dCmmU=;
+        b=lBqPNNJ6QkQKK3h9pLCK6IAgjakM/lnE06CBFj5JT/aJNY1o6wyWXM9TaFX0iQhYFk
+         8f/a64cj8gh72En7lXBfOYx1ctjgdbJ2r+uRO6cdr/AKjkN7ortQBnaISBx2vP6nRtvp
+         bbWR2S3VRGnEVZkkBVpGclLDdW1FqVzIF8lB6RHVhLDsLipFiSKwgv0e04YYKVZeQqbY
+         wSlFG6jqAQE61djAAziO8SYMWM+SIVrijcmXmeqyuzrQzwfFllPjxeMb3VRuTPS8s1tv
+         KSkoEjiNu96HIek1qF6WjmZVi11hK4Jte/8ixcZZUMpHfthiq4Kenxg6yi8PPewsTUCt
+         b/kg==
+X-Gm-Message-State: AOAM533Sy6blgryqas8qhtJaAazAlMcUc3/4ahlCt0u7oYsCH6i5fieY
+        wqJEFqo25SrgosIaEoHEws8=
+X-Google-Smtp-Source: ABdhPJz2qLRT1pY8IVngUaTPpNPePT6GeD9ixYTs5scUybiQs90CkMkkPA/QHzJcTYiZUkU9rODxWw==
+X-Received: by 2002:a2e:9594:: with SMTP id w20mr8456492ljh.361.1629299231061;
+        Wed, 18 Aug 2021 08:07:11 -0700 (PDT)
 Received: from localhost.localdomain ([46.235.66.127])
-        by smtp.gmail.com with ESMTPSA id f14sm13489ljk.42.2021.08.18.08.06.59
+        by smtp.gmail.com with ESMTPSA id c10sm11811ljr.134.2021.08.18.08.07.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Aug 2021 08:06:59 -0700 (PDT)
+        Wed, 18 Aug 2021 08:07:10 -0700 (PDT)
 From:   Pavel Skripkin <paskripkin@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org,
         andriy.shevchenko@linux.intel.com, christophe.jaillet@wanadoo.fr,
         kaixuxia@tencent.com
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH v3 1/2] net: pch_gbe: remove mii_ethtool_gset() error handling
-Date:   Wed, 18 Aug 2021 18:06:30 +0300
-Message-Id: <7e8946ac52de91a963beb7fa0354a19a21c5cf73.1629298981.git.paskripkin@gmail.com>
+Subject: [PATCH v3 2/2] net: mii: make mii_ethtool_gset() return void
+Date:   Wed, 18 Aug 2021 18:07:09 +0300
+Message-Id: <0e388dcbe5bbf002b15ba760191e1a862723bc07.1629298981.git.paskripkin@gmail.com>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <YR0gTWn4G0xkekxF@smile.fi.intel.com>
-References: <YR0gTWn4G0xkekxF@smile.fi.intel.com>
+In-Reply-To: <7e8946ac52de91a963beb7fa0354a19a21c5cf73.1629298981.git.paskripkin@gmail.com>
+References: <7e8946ac52de91a963beb7fa0354a19a21c5cf73.1629298981.git.paskripkin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mii_ethtool_gset() does not return any errors, so error handling can be
-omitted to make code more simple.
+mii_ethtool_gset() does not return any errors. Since there are no users
+of this function that rely on its return value, it can be
+made void.
 
-Acked-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 ---
 
 Changes in v3:
-	No changes
+	1. removed empty comment line
+	2. there is -> there are
 
 Changes in v2:
 	inverted the order of patches
 
 ---
- drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c | 8 +-------
- drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_phy.c  | 4 +---
- 2 files changed, 2 insertions(+), 10 deletions(-)
+ drivers/net/mii.c   | 6 +-----
+ include/linux/mii.h | 2 +-
+ 2 files changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
-index e351f3d1608f..539bddfab2d4 100644
---- a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
-+++ b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
-@@ -1031,13 +1031,7 @@ static void pch_gbe_watchdog(struct timer_list *t)
- 		struct ethtool_cmd cmd = { .cmd = ETHTOOL_GSET };
- 		netdev->tx_queue_len = adapter->tx_queue_len;
- 		/* mii library handles link maintenance tasks */
--		if (mii_ethtool_gset(&adapter->mii, &cmd)) {
--			netdev_err(netdev, "ethtool get setting Error\n");
--			mod_timer(&adapter->watchdog_timer,
--				  round_jiffies(jiffies +
--						PCH_GBE_WATCHDOG_PERIOD));
--			return;
--		}
-+		mii_ethtool_gset(&adapter->mii, &cmd);
- 		hw->mac.link_speed = ethtool_cmd_speed(&cmd);
- 		hw->mac.link_duplex = cmd.duplex;
- 		/* Set the RGMII control. */
-diff --git a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_phy.c b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_phy.c
-index ed832046216a..3426f6fa2b57 100644
---- a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_phy.c
-+++ b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_phy.c
-@@ -301,9 +301,7 @@ void pch_gbe_phy_init_setting(struct pch_gbe_hw *hw)
- 	int ret;
- 	u16 mii_reg;
+diff --git a/drivers/net/mii.c b/drivers/net/mii.c
+index 779c3a96dba7..22680f47385d 100644
+--- a/drivers/net/mii.c
++++ b/drivers/net/mii.c
+@@ -49,10 +49,8 @@ static u32 mii_get_an(struct mii_if_info *mii, u16 addr)
+  *
+  * The @ecmd parameter is expected to have been cleared before calling
+  * mii_ethtool_gset().
+- *
+- * Returns 0 for success, negative on error.
+  */
+-int mii_ethtool_gset(struct mii_if_info *mii, struct ethtool_cmd *ecmd)
++void mii_ethtool_gset(struct mii_if_info *mii, struct ethtool_cmd *ecmd)
+ {
+ 	struct net_device *dev = mii->dev;
+ 	u16 bmcr, bmsr, ctrl1000 = 0, stat1000 = 0;
+@@ -131,8 +129,6 @@ int mii_ethtool_gset(struct mii_if_info *mii, struct ethtool_cmd *ecmd)
+ 	mii->full_duplex = ecmd->duplex;
  
--	ret = mii_ethtool_gset(&adapter->mii, &cmd);
--	if (ret)
--		netdev_err(adapter->netdev, "Error: mii_ethtool_gset\n");
-+	mii_ethtool_gset(&adapter->mii, &cmd);
+ 	/* ignore maxtxpkt, maxrxpkt for now */
+-
+-	return 0;
+ }
  
- 	ethtool_cmd_speed_set(&cmd, hw->mac.link_speed);
- 	cmd.duplex = hw->mac.link_duplex;
+ /**
+diff --git a/include/linux/mii.h b/include/linux/mii.h
+index 219b93cad1dd..12ea29e04293 100644
+--- a/include/linux/mii.h
++++ b/include/linux/mii.h
+@@ -32,7 +32,7 @@ struct mii_if_info {
+ 
+ extern int mii_link_ok (struct mii_if_info *mii);
+ extern int mii_nway_restart (struct mii_if_info *mii);
+-extern int mii_ethtool_gset(struct mii_if_info *mii, struct ethtool_cmd *ecmd);
++extern void mii_ethtool_gset(struct mii_if_info *mii, struct ethtool_cmd *ecmd);
+ extern void mii_ethtool_get_link_ksettings(
+ 	struct mii_if_info *mii, struct ethtool_link_ksettings *cmd);
+ extern int mii_ethtool_sset(struct mii_if_info *mii, struct ethtool_cmd *ecmd);
 -- 
 2.32.0
 
