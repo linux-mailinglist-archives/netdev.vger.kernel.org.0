@@ -2,80 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE3CA3F03B8
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 14:29:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A81713F03B9
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 14:29:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236808AbhHRMaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 08:30:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50384 "EHLO
+        id S236682AbhHRMa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 08:30:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236552AbhHRMaE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 08:30:04 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF025C0613CF
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 05:29:29 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id q6so3255280wrv.6
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 05:29:29 -0700 (PDT)
+        with ESMTP id S236690AbhHRMaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 08:30:21 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3EBBC0613A3
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 05:29:43 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id u16so3259879wrn.5
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 05:29:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=engleder-embedded-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iI3L8EBOoJDYtVKe1PR50h7lO3aXxGfOfUrzTD91vss=;
-        b=Cywe5nzK+TDaRmpC4zkauz6rbEMOHT1VFzU5fKtwwx/YHInatc0G+q1QT4HsPozqCY
-         uymIODwryMEsEjoO4qIF4mEjevc702/O9Hvs3mzswpObZ17317c06I3uC1nZJnaMb1Hy
-         o2CmGivAv6o2lVCpCpTtprUrkDnWVBqeWri8skjauVo89wuXAf9Pv4OwWybkSwrBwQgT
-         SZF8YihE6L7R5HSsZSHu8WsaF1YKLzPn+dbWUpHG5IO6eob8Diwm0XNeS8fMRa9GBeQJ
-         xtvJZsPOkM6Ax6VnzfDAyVJF0WpRzo51RCRa04Fwq/vj/kwn3MWM2nO3DSdAbUjobGSH
-         d/eg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=M5wvJU9nS0PBB383gj3PbquvMXX21vpI+F/H85bw73U=;
+        b=x2aEwTrMuhsjoEDCymOGwiImM5i8Ny+fc9dfU/2HMZCqSTPjd8svCc0dXh1FYreWEf
+         ywRk7OWnUIHaw5+YnzsPMT/pqjyKEWORBvX60vm+jT/aTjjOO4g4S116D89ZTaB04l+p
+         46+PAkAfe0mayC9N9F0vVoX9NGEcPVlCzUio2YSCaYqQshHQ65q0qSnamhZqk394j2AZ
+         SnsZragb7q9zK0yuzc/hv/ZvMfNHB1NTgwb5VAU4mg9AfsyvBqRdaeINLpXm/iduZhDK
+         QjAxyf/ZtmTBUm2+32+HFmYIKOq1UtRriT9EurJ/Yk0wyCIt8aS5+iqroQSbPZmAyKyA
+         1eNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iI3L8EBOoJDYtVKe1PR50h7lO3aXxGfOfUrzTD91vss=;
-        b=BDHpp9rNDW1TLJWqk6gv8Kp6JLRDcP7jHvEDtQERVTs60MlP3y5War35CcWHnCRTpa
-         qo5pRqZDnr82/EJHPs/b/yG6hOcBxXbXvle3ohio0/autnSL8A6JjfffIsRC8Mbe+vV5
-         Hpe+6kihnTeW359nthrajFZo7lOx5/uHlwFPC60foXjunFEncTjV6zjlilmS3tYfWRJT
-         eNdoVYE3dzHWjL7dLid1+2Gz5SBSy+wFEKg3+wj4FviCM3wAGiq4utpeCvShcuq1S85B
-         WpT5MdwNj8F9lIMm2vfTHQ3wvU+fsHsnUBgXwWSbpMpbC/esERaEZcx3x0YFteBnOqWw
-         0h6A==
-X-Gm-Message-State: AOAM531zXEs66FJIC7QVFSA2ErHvEC8tCJQHnIpNbcToUL1VLBcGZkda
-        OouydGuTJla7aIgYUzQwmQdBFg==
-X-Google-Smtp-Source: ABdhPJxvNwaGnbRf8RwTAngU+Uvf3zDf1HlVQn5HoMDzPiIwxkIYdpAwOAtbkXcZyIAQCEZVce3KmQ==
-X-Received: by 2002:a5d:6045:: with SMTP id j5mr5650950wrt.0.1629289768399;
-        Wed, 18 Aug 2021 05:29:28 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=M5wvJU9nS0PBB383gj3PbquvMXX21vpI+F/H85bw73U=;
+        b=pbN18radS5gXsJFGacS+TUHezGCFJyHlpVQHPbvZbQfzTM/A/gmhG9myhz+B5iKnpc
+         2GKPknxxZUB+h1GLKZYQKtO06Mh9OL69dMzPKOyH6ZNNjHP8NhSJBrtwA+1WZ48zP/3r
+         otLeiG2lQmaKCCigmwcv2rp4f9o30xnSuDVAHOPHcBv0brYwSgJfIRcXQ77G4xux6P7A
+         2pkHxYK4cTJRQ4i9/PUoURbWXWRqawdkeOJvN086bXvKySYmAo1M+KZcXT4J3bnDXIDS
+         ymTmMfjKrz6Tf7PH22PHsy305jQHY9PM7yI1tB6W5/fr1gkod3cQtAsAGUmG9vtb2hvn
+         YVcg==
+X-Gm-Message-State: AOAM530THvvDfr+9+Jz9d8QkuUXiWpZwha46sCKvHckD+ob+wJj/h0Ye
+        nvHxIN6vU8ZvAGzH6zytSBW2NQ==
+X-Google-Smtp-Source: ABdhPJwx3R40DJstcMGFSXmn7/8lPUj4y/dpGByViPuuXdJRuRP+qdKmFNqCmk8xzMXi8h0OpWOsYw==
+X-Received: by 2002:adf:f741:: with SMTP id z1mr10236267wrp.201.1629289782643;
+        Wed, 18 Aug 2021 05:29:42 -0700 (PDT)
 Received: from hornet.engleder.at (dynamic-2el0lv6sxxeorz8a81-pd01.res.v6.highway.a1.net. [2001:871:23a:b9:6e3b:e5ff:fe2c:34c1])
-        by smtp.gmail.com with ESMTPSA id u16sm5554869wmc.41.2021.08.18.05.29.27
+        by smtp.gmail.com with ESMTPSA id u16sm5554869wmc.41.2021.08.18.05.29.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Aug 2021 05:29:27 -0700 (PDT)
+        Wed, 18 Aug 2021 05:29:42 -0700 (PDT)
 From:   Gerhard Engleder <gerhard@engleder-embedded.com>
 To:     andrew@lunn.ch
 Cc:     netdev@vger.kernel.org,
         Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next 0/2] Add Xilinx GMII2RGMII loopback support
-Date:   Wed, 18 Aug 2021 14:27:34 +0200
-Message-Id: <20210818122736.4877-1-gerhard@engleder-embedded.com>
+Subject: [PATCH net-next 1/2] net: phy: Support set_loopback override
+Date:   Wed, 18 Aug 2021 14:27:35 +0200
+Message-Id: <20210818122736.4877-2-gerhard@engleder-embedded.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210818122736.4877-1-gerhard@engleder-embedded.com>
+References: <20210818122736.4877-1-gerhard@engleder-embedded.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Xilinx GMII2RGMII driver overrides PHY driver functions in order to
-configure the device according to the link speed of the PHY attached to it.
-This is implemented for a normal link but not for loopback.
+phy_read_status and various other PHY functions support PHY specific
+overriding of driver functions by using a PHY specific pointer to the
+PHY driver. Add support of PHY specific override to phy_loopback too.
 
-Andrew told me to use phy_loopback and this changes make phy_loopback work
-in combination with Xilinx GMII2RGMII.
+Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+---
+ drivers/net/phy/phy_device.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-Gerhard Engleder (2):
-  net: phy: Support set_loopback override
-  net: phy: gmii2rgmii: Support PHY loopback
-
- drivers/net/phy/phy_device.c        |  9 +++---
- drivers/net/phy/xilinx_gmii2rgmii.c | 46 ++++++++++++++++++++++-------
- 2 files changed, 39 insertions(+), 16 deletions(-)
-
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 107aa6d7bc6b..ba5ad86ec826 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1821,11 +1821,10 @@ EXPORT_SYMBOL(phy_resume);
+ 
+ int phy_loopback(struct phy_device *phydev, bool enable)
+ {
+-	struct phy_driver *phydrv = to_phy_driver(phydev->mdio.dev.driver);
+ 	int ret = 0;
+ 
+-	if (!phydrv)
+-		return -ENODEV;
++	if (!phydev->drv)
++		return -EIO;
+ 
+ 	mutex_lock(&phydev->lock);
+ 
+@@ -1839,8 +1838,8 @@ int phy_loopback(struct phy_device *phydev, bool enable)
+ 		goto out;
+ 	}
+ 
+-	if (phydrv->set_loopback)
+-		ret = phydrv->set_loopback(phydev, enable);
++	if (phydev->drv->set_loopback)
++		ret = phydev->drv->set_loopback(phydev, enable);
+ 	else
+ 		ret = genphy_loopback(phydev, enable);
+ 
 -- 
 2.20.1
 
