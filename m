@@ -2,110 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 168E03F03CB
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 14:37:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60A283F03F1
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 14:47:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235222AbhHRMhd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 08:37:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52102 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231476AbhHRMhc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 08:37:32 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 043BCC061764
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 05:36:58 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id t68so2741618qkf.8
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 05:36:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=T2tHTb7cLI429oojxYBNMTFkpw1Ju5TQ+mYg+aChvB8=;
-        b=WXh+rqXNBBDVqbTUc1vTfIS+VHDfZdb0TTvRu8b0A1HCf1iocGUQeojx4AGoC7uYe3
-         qPIst9y7avpqoF/ikkgZqjfOwud6w6sc0/bi7XL3G05h+wZEjuaq7hycSNDSmoZrUXPs
-         JlGVqXwSSb6xcrarWKfT0XES5z53ffpVfMsgd5Y7FsTb0E94FqdxIv0Uk0T38N/2C9ja
-         HFMtsrN8sl0ESad5i2uE38+es18sqLtUmbcf5zopEjm5CQDMgXig2tITdulWapHdKLh3
-         IHw1u8O7V3BMKr/sSPG5u1O65xhuQ8CfGMhCxqdnyNsMMXxrm0i/uSerZ+SfOwVjg4Yq
-         sMFQ==
+        id S235966AbhHRMsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 08:48:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:41336 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235627AbhHRMsM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 08:48:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1629290857;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bdfCsij/iWUWWLQYzI7XEIMeIs0Se0vc/fjMAaeTG8Q=;
+        b=S1YgFl9wDJ/gaT3u41Y2YRjVyiIk5ca2/yv3tazEk0MZsyU33hD3fa53Stmvwn8qCHY96i
+        TghrHL/u4CmYIfNbdDrbcyz3Q03EDI0x0cuLXihVg/Q0UycN97t5yCGE3gQ3yBLToGiGMR
+        gtAimSYIVRMbNb2rxNlEv1LtxdpV27U=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-558-r7u2cnbLOJOLpvschbEOGg-1; Wed, 18 Aug 2021 08:47:35 -0400
+X-MC-Unique: r7u2cnbLOJOLpvschbEOGg-1
+Received: by mail-wm1-f69.google.com with SMTP id m13-20020a7bcf2d000000b002e6cd9941a9so2208535wmg.1
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 05:47:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=T2tHTb7cLI429oojxYBNMTFkpw1Ju5TQ+mYg+aChvB8=;
-        b=SVYHP6QPZBzrOeN69dBoPq/dW7H801nweFY7boWYiNzUp/3Yr7YTheEhHO3tEsFnPu
-         4fK/apcMQym11NbWHs61mX+V5DfWMq5qY0UF8RCx0ddxoUWxPUPaOKpQaZKgfa51Rxtu
-         Tle1f97QqNyPb+hsp9DNWLsk1IQ/5XO6fWC07mHw5+/c4DJzSrcZ6j8XZyDU47VPygot
-         TH1LrCrTklFe6b/KTa7fo2fhl49fJipKOOOnrzlQ9o/OuSJ2UwsHQIPd0mNYkQRuxc29
-         LFPeQaq57pk9Os6GrfLw/2SKTUY7PaIFYPk97wp5CMyd9i2sjAjjDjiJA4/4xN/UeuDP
-         zpTQ==
-X-Gm-Message-State: AOAM533MFNJi3wpPLrLSNNc8HNLiMaUWyYg/lF9WS9fF5KOSIWhx3Gu5
-        K4ol3xoZAw9U0iMVgnmkTrkalQ==
-X-Google-Smtp-Source: ABdhPJwP1RIMwKWh/ArWnm519SWx5dv+0wWoit8V5ZIfR1MqtakLGvvC+qE5DvU5F+a0wdCIB5lK4A==
-X-Received: by 2002:a05:620a:811:: with SMTP id s17mr9147537qks.350.1629290217188;
-        Wed, 18 Aug 2021 05:36:57 -0700 (PDT)
-Received: from [192.168.1.171] (bras-base-kntaon1617w-grc-28-184-148-47-47.dsl.bell.ca. [184.148.47.47])
-        by smtp.googlemail.com with ESMTPSA id d16sm2423409qte.3.2021.08.18.05.36.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Aug 2021 05:36:56 -0700 (PDT)
-Subject: Re: [PATCH] flow_offload: action should not be NULL when it is
- referenced
-To:     Ido Schimmel <idosch@idosch.org>, 13145886936@163.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, gushengxian <gushengxian@yulong.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-References: <20210626115606.1243151-1-13145886936@163.com>
- <YRz1297sFSjG7/Cc@shredder>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <d20577c8-e5df-a31d-8435-619994dd5855@mojatatu.com>
-Date:   Wed, 18 Aug 2021 08:36:55 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bdfCsij/iWUWWLQYzI7XEIMeIs0Se0vc/fjMAaeTG8Q=;
+        b=EyHY3w/J7z301RYcXUDzBpMaRAVjnpuSgOKdkUCB+FGn+oIUeo3GI10wFmgQF1llRW
+         oTw+hUIPNY0cR0y+088XPEgDA6WwdyOpUoqUZp14FnO1NM1UvJ+0TuDuYSZ28SO4+1gj
+         xYpA3CFs6O6OjHPQ05LC92WORDDIMcdkW/Wm9CqCbqVt1QUa4sd9Ip67MogyMKLLRa8Z
+         LYnZkmG5pk0/Et1hWACCCY1Y3ma60OCk99Mcb0Bx7KenRYy4l0VW5lyj5Bst3FguVOJj
+         GGmJ05+HtX8oRSB+h2VBDatDc1HCndO+/rhXD3WQPIKku2FaA7XVGF7dRjE3YT0TGqBw
+         KxTg==
+X-Gm-Message-State: AOAM530mpAPaoAVjF61FmGgKSAUABPUO3HVBGxNsMjE0f2kE7yTFirUE
+        oN+J6MB+my3x+xsQCOJsnL/2TmGE2leR6PR91sg7T4NrANwKRQUZUnyRSqovlQMIIeLWCx7bg1a
+        JeDxP7C2cqUT69JSu
+X-Received: by 2002:adf:b1cd:: with SMTP id r13mr10145707wra.78.1629290854327;
+        Wed, 18 Aug 2021 05:47:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzVGzIN2qTD60NeiLCDBkw+kAVWMqa9x+l5K9INCquKZ0X3DfqsEcJATHjBf8R2I8KbhIBsxg==
+X-Received: by 2002:adf:b1cd:: with SMTP id r13mr10145671wra.78.1629290854044;
+        Wed, 18 Aug 2021 05:47:34 -0700 (PDT)
+Received: from localhost (net-47-53-237-136.cust.vodafonedsl.it. [47.53.237.136])
+        by smtp.gmail.com with ESMTPSA id 7sm5205227wmk.39.2021.08.18.05.47.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Aug 2021 05:47:33 -0700 (PDT)
+Date:   Wed, 18 Aug 2021 14:47:30 +0200
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
+        echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com
+Subject: Re: [PATCH v11 bpf-next 17/18] net: xdp: introduce
+ bpf_xdp_adjust_data helper
+Message-ID: <YR0BYiQFvI8cmOJU@lore-desk>
+References: <cover.1628854454.git.lorenzo@kernel.org>
+ <9696df8ef1cf6c931ae788f40a42b9278c87700b.1628854454.git.lorenzo@kernel.org>
+ <87czqbq6ic.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <YRz1297sFSjG7/Cc@shredder>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="2VYlOkOjArDpYxIY"
+Content-Disposition: inline
+In-Reply-To: <87czqbq6ic.fsf@toke.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-08-18 7:58 a.m., Ido Schimmel wrote:
-> On Sat, Jun 26, 2021 at 04:56:06AM -0700, 13145886936@163.com wrote:
->> From: gushengxian <gushengxian@yulong.com>
->>
->> "action" should not be NULL when it is referenced.
->>
->> Signed-off-by: gushengxian <13145886936@163.com>
->> Signed-off-by: gushengxian <gushengxian@yulong.com>
->> ---
->>   include/net/flow_offload.h | 12 +++++++-----
->>   1 file changed, 7 insertions(+), 5 deletions(-)
->>
->> diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
->> index dc5c1e69cd9f..69c9eabf8325 100644
->> --- a/include/net/flow_offload.h
->> +++ b/include/net/flow_offload.h
->> @@ -319,12 +319,14 @@ flow_action_mixed_hw_stats_check(const struct flow_action *action,
->>   	if (flow_offload_has_one_action(action))
->>   		return true;
->>   
->> -	flow_action_for_each(i, action_entry, action) {
->> -		if (i && action_entry->hw_stats != last_hw_stats) {
->> -			NL_SET_ERR_MSG_MOD(extack, "Mixing HW stats types for actions is not supported");
->> -			return false;
->> +	if (action) {
-> 
-> This patch generates a smatch warning:
-> 
-> include/net/flow_offload.h:322 flow_action_mixed_hw_stats_check() warn: variable dereferenced before check 'action' (see line 319)
-> 
-> Why the patch is needed? 'action' is already dereferenced in
-> flow_offload_has_one_action()
-> 
 
-Yep, doesnt make sense at all.
+--2VYlOkOjArDpYxIY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-cheers,
-jamal
+> Lorenzo Bianconi <lorenzo@kernel.org> writes:
+>=20
+[...]
+> > + *	Description
+> > + *		For XDP frames split over multiple buffers, the
+> > + *		*xdp_md*\ **->data** and*xdp_md *\ **->data_end** pointers
+> > + *		will point to the start and end of the first fragment only.
+> > + *		This helper can be used to access subsequent fragments by
+> > + *		moving the data pointers. To use, an XDP program can call
+> > + *		this helper with the byte offset of the packet payload that
+> > + *		it wants to access; the helper will move *xdp_md*\ **->data**
+> > + *		and *xdp_md *\ **->data_end** so they point to the requested
+> > + *		payload offset and to the end of the fragment containing this
+> > + *		byte offset, and return the byte offset of the start of the
+> > + *		fragment.
+>=20
+> This comment is wrong now :)
+
+actually we are still returning the byte offset of the start of the fragment
+(base_offset).
+
+Lorenzo
+
+>=20
+> -Toke
+>=20
+
+--2VYlOkOjArDpYxIY
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYR0BYAAKCRA6cBh0uS2t
+rDZAAQD4zlk/ZnUHVLGjRgogjb108NhQ8VXI1OEvz2qnjndbyAD/VxzZtqd1fFdN
+IOVpKdR7lmo6cNVB6gjiTfwmg8u/HAs=
+=lbP4
+-----END PGP SIGNATURE-----
+
+--2VYlOkOjArDpYxIY--
+
