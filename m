@@ -2,76 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5AF93F03FD
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 14:50:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC3CD3F0415
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 14:59:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236270AbhHRMum (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 08:50:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55108 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234949AbhHRMul (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 08:50:41 -0400
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671C1C061764
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 05:50:07 -0700 (PDT)
-Received: by mail-ot1-x333.google.com with SMTP id r17-20020a0568302371b0290504f3f418fbso3146024oth.12
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 05:50:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=Rk4rh69c/LenRpcagjkzH2FMHZv4am/6zYYDtLbS6zQ=;
-        b=moUPOGBgSBuG8ikzz0Wdi8bpo25IdkQQa+yhk3gRAeMlWNjrEkLQ3zmV1JfCI9cSs6
-         a6y3yASPQoS+6+ASbliC0rSHt00nv8ybMbwIDKvECrrbD3RAtv8wfuC80fWQysNUYF32
-         rSFU56l8HsIVxP1Fk48SnfzBfXuXu4jiJbbqiZ6gQPQo+Gb+xW9deF0LhTA9wK06z7+j
-         z88XHPlkbdgQ7aIwigDrELq6X0wFvP0n8PXpmNBi5MoB90BIsuVAVWahyZUNzEn53V8x
-         QXBH5FYv/BrKPRcq10gSUz66LyX39v+vXENhr2MXu5VOq37SAt9b4xiAigU4/JE1+FIk
-         3tvw==
+        id S236138AbhHRM7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 08:59:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:31110 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236365AbhHRM72 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 08:59:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1629291533;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=09x+8dCI5/TkbKvSdPIJMMOV6aZdICcvnRHsab2iCfM=;
+        b=LvvVkTHV8YOJZdvxyTCYYpWDlGOzstXzlG/u81uoK52KnpzndJvwCxDwl8YxFR+TvSQ64B
+        e+r4geZzQ8R00Dm2+UD2XtMLDdzraAvul6fogF4GfZabCRNW9Peo/sodFNdH+LAnptgcqi
+        zNlYuyYtyLIDyqhI/hAAL3EripGDb0c=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-598-Z3SxlSAvMgGt4z-u4f0YOQ-1; Wed, 18 Aug 2021 08:58:50 -0400
+X-MC-Unique: Z3SxlSAvMgGt4z-u4f0YOQ-1
+Received: by mail-ed1-f70.google.com with SMTP id j15-20020aa7c40f0000b02903be5fbe68a9so996794edq.2
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 05:58:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=Rk4rh69c/LenRpcagjkzH2FMHZv4am/6zYYDtLbS6zQ=;
-        b=lftyRlBXf6I3QayWDSFXPaBVNEEnZ7uqLFSSwD9qE158sj800UIixU1ISieQpfvZp2
-         DQ/c5E8cNANPiDf+LzmphNpQ1FIneBF5pAxjgMtCN9DSScsSGKlwuUJb2f2j/UOXcqZP
-         YeEGttnsX/jiAy9gSCsIfWUYnmiwtoALSmk6ManDmojkPZ4KkYWRtiEySc8J3kRkkbt8
-         +I3knxDTdYIUd559pYvioiV2hFGkuttQyWDnvR+b5NUNfhisk8RGQPIYvzSdq/eGFKOF
-         UOifgNSFvMuCOXG8hqiejrEf2VbruukaQ4Z/Cms/dLM584N4XT6q73vVW940EVwqaoWF
-         xnZw==
-X-Gm-Message-State: AOAM531XgQp6N+MC+WfRCXoy6HaXMEe9N7ueHq+VPhy9ii9Art5z9tbI
-        TES4KcJCVSYzWexm6tpFGy1BRMePGgntEpQuT0U=
-X-Google-Smtp-Source: ABdhPJy4PnOlGBYMejIyMwQCGK7gsNSIVQi9LCWmYP9/M+PYpdpDHB7pjUvQiKAIO+EFf+XxPbmrNKN4Krz7KpGSF1o=
-X-Received: by 2002:a9d:1286:: with SMTP id g6mr6928378otg.282.1629291006587;
- Wed, 18 Aug 2021 05:50:06 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=09x+8dCI5/TkbKvSdPIJMMOV6aZdICcvnRHsab2iCfM=;
+        b=f5aCV+33omc6wOlY/xreVnH3/34Imw+xRvB36nuxo6HXiLNEvboxMoYtcjGjI0R4be
+         nWcolnj7goJ3v23uQSjLS/LHdm8SMST0B3IeqQGwr+fj6z/qtG8OqcUVjnuj0iv+bBJ4
+         GvLP4uZB2lHW8XyYiD+c39AEtA8fXwljk6NfYf6kB6tttNhZerWaBOgQkQr+RXBlNSiQ
+         h0QmTF306fq8z/JaIYKBdstHNJ2QymvdschHXevaXL8Kf66f4VG3IotbQXc4PmOFf3tE
+         wHhoSk1PRQwLw+DvinaM0rk3xCAy8MikzMhljFgsDysCtUT+WgyIS1uat6ZPNWG2A6Qk
+         D9RQ==
+X-Gm-Message-State: AOAM532COROfb4G02PctTrZh2LU6E5cb6loS0S0IyhgWqkYPXgH67NS2
+        1BVuapuHYTehnMHUrXBUSH1ra0rHoHoXEZVPYRLOSUp6inKcu8sRGKXzkMe5jLJfsHs7UNbPDEZ
+        HlzmxeBET+Scnq8Cv
+X-Received: by 2002:a05:6402:1d1c:: with SMTP id dg28mr10347633edb.234.1629291529175;
+        Wed, 18 Aug 2021 05:58:49 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyofstIBDIciczj+UTiU5luCJUGq5UtpCf+huZBHZDLqEX5l4Po8j4IFhWvEYpVmIrk47gCKw==
+X-Received: by 2002:a05:6402:1d1c:: with SMTP id dg28mr10347622edb.234.1629291529057;
+        Wed, 18 Aug 2021 05:58:49 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id u18sm2029941ejf.118.2021.08.18.05.58.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Aug 2021 05:58:48 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id DF76918032C; Wed, 18 Aug 2021 14:58:47 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
+        echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com
+Subject: Re: [PATCH v11 bpf-next 17/18] net: xdp: introduce
+ bpf_xdp_adjust_data helper
+In-Reply-To: <YR0BYiQFvI8cmOJU@lore-desk>
+References: <cover.1628854454.git.lorenzo@kernel.org>
+ <9696df8ef1cf6c931ae788f40a42b9278c87700b.1628854454.git.lorenzo@kernel.org>
+ <87czqbq6ic.fsf@toke.dk> <YR0BYiQFvI8cmOJU@lore-desk>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 18 Aug 2021 14:58:47 +0200
+Message-ID: <878s0yrjso.fsf@toke.dk>
 MIME-Version: 1.0
-Received: by 2002:a05:6838:a3c8:0:0:0:0 with HTTP; Wed, 18 Aug 2021 05:50:06
- -0700 (PDT)
-Reply-To: dorischrstpher@gmail.com
-From:   Doris Christopher <dorischristopher88@gmail.com>
-Date:   Wed, 18 Aug 2021 12:50:06 +0000
-Message-ID: <CADORwpmGVwibOYC6-NqCC5dm=p8r48z+MZNOsQYu1M7nYZr1Tg@mail.gmail.com>
-Subject: Greetings,is me Mrs. Doris Christopher
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings, I really hope this message finds you in peace and will
-bring hope to the needy, less privileged around your reach. With the
-introduction of Identity, I am Mrs. Doris Christopher I am contacting
-you with faith in expecting to hear from you soon. I found your
-contact during my search for a person who I can trust and I decided to
-contact you hoping for a response and not finding it an offense
-barging into your privacy without your permission.
+Lorenzo Bianconi <lorenzo.bianconi@redhat.com> writes:
 
-I want to Impact in a Humanitarian/Charity Project with a legitimate
-sum of $3.9 US (Three Million Nine Hundred Thousands United States
-Dollars) I want to use this sum to bring hope and great help to the
-needy that will enormously benefit from this , Your immediate reply is
-expected as soon as possible inorder to know more about you before
-confiding this amount through you. Your religion, Belief does not
-matter much to me, What matters most is using the money with the fear
-of Almighty God,Your sincere reply will be highly appreciated.
-,
-My greetings in the love of God,
-Mrs. Doris Christopher
+>> Lorenzo Bianconi <lorenzo@kernel.org> writes:
+>> 
+> [...]
+>> > + *	Description
+>> > + *		For XDP frames split over multiple buffers, the
+>> > + *		*xdp_md*\ **->data** and*xdp_md *\ **->data_end** pointers
+>> > + *		will point to the start and end of the first fragment only.
+>> > + *		This helper can be used to access subsequent fragments by
+>> > + *		moving the data pointers. To use, an XDP program can call
+>> > + *		this helper with the byte offset of the packet payload that
+>> > + *		it wants to access; the helper will move *xdp_md*\ **->data**
+>> > + *		and *xdp_md *\ **->data_end** so they point to the requested
+>> > + *		payload offset and to the end of the fragment containing this
+>> > + *		byte offset, and return the byte offset of the start of the
+>> > + *		fragment.
+>> 
+>> This comment is wrong now :)
+>
+> actually we are still returning the byte offset of the start of the fragment
+> (base_offset).
+
+Hmm, right, I was looking at the 'return 0':
+
+> +BPF_CALL_2(bpf_xdp_adjust_data, struct xdp_buff *, xdp, u32, offset)
+> +{
+> +	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
+> +	u32 base_offset = xdp->mb.headlen;
+> +	int i;
+> +
+> +	if (!xdp_buff_is_mb(xdp) || offset > sinfo->xdp_frags_size)
+> +		return -EINVAL;
+> +
+> +	if (offset < xdp->mb.headlen) {
+> +		/* linear area */
+> +		xdp->data = xdp->data_hard_start + xdp->mb.headroom;
+> +		xdp->data_end = xdp->data + xdp->mb.headlen;
+> +		return 0;
+> +	}
+
+But I guess that's an offset; but that means the helper is not doing
+what it says it's doing if it's within the first fragment. That should
+probably be made consistent... :)
+
+-Toke
+
