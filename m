@@ -2,137 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27BC03F0DB6
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 23:51:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A247E3F0DDC
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 00:06:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234389AbhHRVvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 17:51:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40466 "EHLO
+        id S234433AbhHRWGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 18:06:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234286AbhHRVvo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 17:51:44 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F958C0617AE
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 14:51:09 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id d17so2666203plr.12
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 14:51:09 -0700 (PDT)
+        with ESMTP id S234106AbhHRWGd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 18:06:33 -0400
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70786C061764;
+        Wed, 18 Aug 2021 15:05:58 -0700 (PDT)
+Received: by mail-ot1-x333.google.com with SMTP id 61-20020a9d0d430000b02903eabfc221a9so6091484oti.0;
+        Wed, 18 Aug 2021 15:05:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7vHz7lx5HT3o9dUfiJevKg/RCUhyC9oP+KAo7KKSobE=;
-        b=a0gIT1PbsUrzpiMxHFJQf3jDySrUQ8Ww2Lki+TjewXrAJP5UxO7103vV2RR/V3ANRN
-         1nLuL/Iv5GOFWegVwgew6XfBqxD/P2xI/kCXdGtAH6LbMiGNGZJvf9jRwo8l9cGtJXp/
-         NJhI01VKo66AWmiNMy8NublWXQfmYUotQ1JOg=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=0rNS2PoZrMPVMBxbsnOQrGtXMRMxqJ7zXicAn/pdXAY=;
+        b=hb4q7IuwbzqucH4vCCuT4NXU/3RGVRqzzhzpL7Ml56j1/GHt5mt3pRLpI81HJqU3gk
+         ZqmVsIBjJOfZXU+COfY+u7JGtTKJeEgQ47IK4309a8py/4yM0GqZ6NKgxfHzHW5SXcPB
+         cOUJ2neC2YYD8/5Kr1QZvDagbyYvU/Tig+Td4ZHl5oTcoXQLtoYnQvB0ET/O97hir6+S
+         +enJyA5aOPZPEM1T8E2qF6h+9a1NX60H+B2BLFnWHCs0lgPl8oA2kteIlLAACw/YZ7MT
+         7Sglbe3WadDs6pb51U/S9VX7CK6KPA23B6dg9G1AWiPLiatfH7WIhKL7Ezp6Fu4n3kjX
+         FpVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7vHz7lx5HT3o9dUfiJevKg/RCUhyC9oP+KAo7KKSobE=;
-        b=JiMrnHrvKTyHBjIZkZRbBJpcXGaU4qfWv51VgL3KL1utJKkPac8OttZXmQS5owsJBV
-         ZA11+YVYqjF77115W+Bn3RZFlE44sont+BeqnTB67a/AqdVY/YmWGhpLzKm9h9S4xRTv
-         C/VF9PVcS9/CPTw8nWqve120zZDmrr0px2byaMxZ7nqTYLxw+WqJ7Wp2yORuQmYzIljQ
-         OSYjjBxs6FUtvRyGcFnYkuY1m8ls3NXEkzGuUwi4rr2qgbrQDlYgDyD7fTMacypxS3ZA
-         biV5iWL867yMS0zBJqkBwkrluGJgPpY+Ynrr7ROGk5xxmjkncX0mtFq3r5ldrk+sJKtF
-         o84g==
-X-Gm-Message-State: AOAM530gCH6mGqMeqVOLr4VJ4MmTkkbIiREZ6nU1Bw7R0E70i0uGE4IU
-        hqk96Hrfn6xQWV+SE/KYsRv/7g==
-X-Google-Smtp-Source: ABdhPJyzlA1BSNScs1NpCi0WnbTUY9sHZCG50/IaKrR4dcNnW411OdaQOYqLBK5zGkg4QWgJ9r2Cng==
-X-Received: by 2002:a17:902:b601:b029:12b:d9a:894f with SMTP id b1-20020a170902b601b029012b0d9a894fmr9050350pls.63.1629323468448;
-        Wed, 18 Aug 2021 14:51:08 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id b190sm808833pgc.91.2021.08.18.14.51.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Aug 2021 14:51:07 -0700 (PDT)
-Date:   Wed, 18 Aug 2021 14:51:06 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stanislaw Gruszka <stf_xl@wp.pl>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Mordechay Goodstein <mordechay.goodstein@intel.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Mikulas Patocka <mikulas@artax.karlin.mff.cuni.cz>,
-        linux-crypto@vger.kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-can@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH 2/5] treewide: Replace open-coded flex arrays in unions
-Message-ID: <202108181448.9C13CE9@keescook>
-References: <20210818081118.1667663-1-keescook@chromium.org>
- <20210818081118.1667663-3-keescook@chromium.org>
- <20210818095635.tm42ctkm6aydjr6g@pengutronix.de>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=0rNS2PoZrMPVMBxbsnOQrGtXMRMxqJ7zXicAn/pdXAY=;
+        b=j9yaR0v6XKLRnRdZME/9DsEU5N5JvlHA3rmq2g9/1fxZEDXGhawX0kywUg6M1rP1iW
+         z7QphwqwRVW2VUtHVoKLzTqqPcGJW/a0hQYT5uhICNqSbIBcREYUqeTQVdBWInpUf9fE
+         Mt/qMi+fSUrvZeiiqlOAfX9VkgSFKZz8ESSLRa6Ji6m4H/j0xyFImeytA8fWvXmucz57
+         Lqhjtxu/m3HIbk09QxqrRCe96ASJJQEdSWvM5WWk6Z7HvxZB2PVYoqeK56uQQkUqPJqj
+         9+83NtPVIDYtEsyiP0WupdK0/0dIkRr8JXohE8KKQhjdBIidLT1JuegzV6DIxlVVj2W1
+         PdUQ==
+X-Gm-Message-State: AOAM531i98/xuPv05IM68JjLsFyJk4bS6pzRw+0u8F8VryjS0EKrirES
+        7+Ik2m5xLp6yCPNKW6oTXeI=
+X-Google-Smtp-Source: ABdhPJw4rSeTRjxg3dAfoQ8EWVv+CMGy1hX5lWIs9KORSQ4E7XcLcttTcKqXjG0lSImPiuh9fa7F7Q==
+X-Received: by 2002:a9d:3e16:: with SMTP id a22mr9122960otd.101.1629324357778;
+        Wed, 18 Aug 2021 15:05:57 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.45])
+        by smtp.googlemail.com with ESMTPSA id d26sm212266oos.41.2021.08.18.15.05.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 Aug 2021 15:05:57 -0700 (PDT)
+Subject: Re: [PATCH RFC 0/7] add socket to netdev page frag recycling support
+To:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     alexander.duyck@gmail.com, linux@armlinux.org.uk, mw@semihalf.com,
+        linuxarm@openeuler.org, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, thomas.petazzoni@bootlin.com,
+        hawk@kernel.org, ilias.apalodimas@linaro.org, ast@kernel.org,
+        daniel@iogearbox.net, john.fastabend@gmail.com,
+        akpm@linux-foundation.org, peterz@infradead.org, will@kernel.org,
+        willy@infradead.org, vbabka@suse.cz, fenghua.yu@intel.com,
+        guro@fb.com, peterx@redhat.com, feng.tang@intel.com, jgg@ziepe.ca,
+        mcroce@microsoft.com, hughd@google.com, jonathan.lemon@gmail.com,
+        alobakin@pm.me, willemb@google.com, wenxu@ucloud.cn,
+        cong.wang@bytedance.com, haokexin@gmail.com, nogikh@google.com,
+        elver@google.com, yhs@fb.com, kpsingh@kernel.org,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, chenhao288@hisilicon.com, edumazet@google.com,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, memxor@gmail.com,
+        linux@rempel-privat.de, atenart@kernel.org, weiwan@google.com,
+        ap420073@gmail.com, arnd@arndb.de,
+        mathew.j.martineau@linux.intel.com, aahringo@redhat.com,
+        ceggers@arri.de, yangbo.lu@nxp.com, fw@strlen.de,
+        xiangxia.m.yue@gmail.com, linmiaohe@huawei.com
+References: <1629257542-36145-1-git-send-email-linyunsheng@huawei.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <83b8bae8-d524-36a1-302e-59198410d9a9@gmail.com>
+Date:   Wed, 18 Aug 2021 16:05:52 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210818095635.tm42ctkm6aydjr6g@pengutronix.de>
+In-Reply-To: <1629257542-36145-1-git-send-email-linyunsheng@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 18, 2021 at 11:56:35AM +0200, Marc Kleine-Budde wrote:
-> On 18.08.2021 01:11:15, Kees Cook wrote:
-> > diff --git a/drivers/net/can/usb/etas_es58x/es581_4.h b/drivers/net/can/usb/etas_es58x/es581_4.h
-> > index 4bc60a6df697..8657145dc2a9 100644
-> > --- a/drivers/net/can/usb/etas_es58x/es581_4.h
-> > +++ b/drivers/net/can/usb/etas_es58x/es581_4.h
-> > @@ -192,7 +192,7 @@ struct es581_4_urb_cmd {
-> >  		struct es581_4_rx_cmd_ret rx_cmd_ret;
-> >  		__le64 timestamp;
-> >  		u8 rx_cmd_ret_u8;
-> > -		u8 raw_msg[0];
-> > +		flex_array(u8 raw_msg);
-> >  	} __packed;
-> >  
-> >  	__le16 reserved_for_crc16_do_not_use;
-> > diff --git a/drivers/net/can/usb/etas_es58x/es58x_fd.h b/drivers/net/can/usb/etas_es58x/es58x_fd.h
-> > index ee18a87e40c0..3053e0958132 100644
-> > --- a/drivers/net/can/usb/etas_es58x/es58x_fd.h
-> > +++ b/drivers/net/can/usb/etas_es58x/es58x_fd.h
-> > @@ -228,7 +228,7 @@ struct es58x_fd_urb_cmd {
-> >  		struct es58x_fd_tx_ack_msg tx_ack_msg;
-> >  		__le64 timestamp;
-> >  		__le32 rx_cmd_ret_le32;
-> > -		u8 raw_msg[0];
-> > +		flex_array(u8 raw_msg[]);
-> >  	} __packed;
+On 8/17/21 9:32 PM, Yunsheng Lin wrote:
+> This patchset adds the socket to netdev page frag recycling
+> support based on the busy polling and page pool infrastructure.
 > 
-> This doesn't look consistent, what's preferred?
+> The profermance improve from 30Gbit to 41Gbit for one thread iperf
+> tcp flow, and the CPU usages decreases about 20% for four threads
+> iperf flow with 100Gb line speed in IOMMU strict mode.
 > 
-> u8 raw_msg[0];  -> flex_array(u8 raw_msg);
->  - or-
->                 -> flex_array(u8 raw_msg[]);
+> The profermance improve about 2.5% for one thread iperf tcp flow
+> in IOMMU passthrough mode.
+> 
 
-Eek, thanks for catching that. And this helps me realize that having
-"flex_array" and "[]" is redundant, and the above typo would have been
-caught. I will fix this for v2.
+Details about the test setup? cpu model, mtu, any other relevant changes
+/ settings.
 
-Thanks!
+How does that performance improvement compare with using the Tx ZC API?
+At 1500 MTU I see a CPU drop on the Tx side from 80% to 20% with the ZC
+API and ~10% increase in throughput. Bumping the MTU to 3300 and
+performance with the ZC API is 2x the current model with 1/2 the cpu.
 
--Kees
+Epyc 7502, ConnectX-6, IOMMU off.
 
--- 
-Kees Cook
+In short, it seems like improving the Tx ZC API is the better path
+forward than per-socket page pools.
