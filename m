@@ -2,300 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 195E63EFAE3
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 08:06:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36A5A3EFAE7
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 08:06:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238458AbhHRGHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 02:07:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44278 "EHLO
+        id S238387AbhHRGHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 02:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238217AbhHRGGb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 02:06:31 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95AF0C061224
+        with ESMTP id S238267AbhHRGGf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 02:06:35 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D477DC061230
         for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:05:55 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id cp15-20020a17090afb8fb029017891959dcbso8235883pjb.2
+Received: by mail-pl1-x62f.google.com with SMTP id w6so1114568plg.9
         for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:05:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0+ejbkcqZbFXmITuXlL7CDyZypzmre+l3eRsA92DuBs=;
-        b=L0akKXK1kGy5WH++Js4ID4keOQyLjU4nvMwtS4cqGsjwS1xFU9Y8zURE3dmo5F8V05
-         KIsW1RPt4T0R/W281PDW0H0fLfSOQuYUBawn1F1dPLAhZ37UhSTyialAAe7HbhBBWbsu
-         f/DFvbhPjRGc+B3F90LL457312QDPssIXH+XM=
+        bh=AvplAjAyy7Xo+ijXhvo31OZi4yHKm9FY1a+n2JGpi4g=;
+        b=NeXzORZmOiduwjDAC0+j3ijPK837yd7AOHICtcf8M5fH8xvkQaB+Uf/aJua6kMoa7W
+         1vXTWMRBK40BOeZtiWp1NgAe4zigCd52vkBHJFcstCUi0JREIRyq+cWP2cxIfpt3Py5d
+         YQECpl2DUZNSwXCNLd5C5w9uHmFHklnzQCqEg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0+ejbkcqZbFXmITuXlL7CDyZypzmre+l3eRsA92DuBs=;
-        b=pjkjwmRsXkdRd1qu+BewB9dWLDJC5YkamB407Zzv3wXZk1qdAcaoj89AiG6Vy3Lhp+
-         T8e5nF8XDllJJFhSKt5MpnLhfYdQcSCKwEZYCPNFsyR0MH2NTo9cQmfB6tsezOmNl4Le
-         9r0MOpyNNIIhzPJoRkc2CvKliBkk7bDinMmz8BWr0iAcrKXonR4fqNupOLfcSNueiovb
-         Fqh7e1zTZX1HvIF2CXr/r5Gx7ZcQSJ4sdLaCre860455tBBEpXaHJp4RxkwXuJbzJi2u
-         XnPp7T3fjMbyse5URAtGRTBzWO2OisIHZKuNDbK4zVG2EDUhcOTTyNDzZEDyZkK92Q6f
-         9x8g==
-X-Gm-Message-State: AOAM530pIZBwbvMx7YdNyNqcF9mIEaMkWhuAZ3D88bMTnbcIkNpVkUOQ
-        nK32bXDfhv6bg7/0plKqluBFGw==
-X-Google-Smtp-Source: ABdhPJygr1g/bi1zRYFaNXMg6waYnoKPl9E3e4Tfp/TWXQO+BinSpm8T001OPFMZUDUxgc42WizUMA==
-X-Received: by 2002:a17:90b:3442:: with SMTP id lj2mr7420058pjb.81.1629266755106;
+        bh=AvplAjAyy7Xo+ijXhvo31OZi4yHKm9FY1a+n2JGpi4g=;
+        b=XyD0Ore+SyEmgWNdIC9j2erY/4zQmxbPDh96PwG3BuLEM5T2F35ciNr246WxAKNQu7
+         +cf9S59IhwTui9gBO/Gdwo4d/XkQH+hlD/jsNB9m7LyQvAjbVrRHT9eKVPpzjKDTj6BS
+         Wz/ZyEaJB9z1AQcD88y0ma8Jhp3/juBhpR2Cgqqi7oAupPxyc+ezJjA4tjGK2TxnZMhn
+         vFnmbYN6y/IANL92oC9Y/ORCw4s0Qtp2/gMitDfxOOjom4r+8gJi1aM/WnEH8ZukFZkF
+         Do5a77ixP0ccIT3A6+B6UhFKumikKih4FI/1iVF+OYHntU5PVYbJSkxiT3uAIgB/JKBA
+         Dhgw==
+X-Gm-Message-State: AOAM532d7MxHSh5NfScS31kINXD+4uGEa8DiG+YBkH6Triw3jksQkiA4
+        hluSvTOwPP35jeQpWnUl60ncJA==
+X-Google-Smtp-Source: ABdhPJxY62Rs0zD7LqgByaLcYUzxicRfdtBpOOnXndlcdy7gi8jpEy7wbHdOuHGHf2lbmjFtmXZneg==
+X-Received: by 2002:a17:902:e84f:b0:12d:c616:a402 with SMTP id t15-20020a170902e84f00b0012dc616a402mr5833254plg.77.1629266755373;
         Tue, 17 Aug 2021 23:05:55 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id b20sm4633796pfl.9.2021.08.17.23.05.52
+        by smtp.gmail.com with ESMTPSA id y67sm4550662pfg.218.2021.08.17.23.05.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 17 Aug 2021 23:05:53 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
-        Keith Packard <keithp@keithp.com>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        linux-cxl@vger.kernel.org, Dan Williams <dan.j.williams@intel.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         dri-devel@lists.freedesktop.org, linux-staging@lists.linux.dev,
         linux-block@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        clang-built-linux@googlegroups.com, linux-hardening@vger.kernel.org
-Subject: [PATCH v2 05/63] stddef: Introduce struct_group() helper macro
-Date:   Tue, 17 Aug 2021 23:04:35 -0700
-Message-Id: <20210818060533.3569517-6-keescook@chromium.org>
+        clang-built-linux@googlegroups.com,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH v2 06/63] cxl/core: Replace unions with struct_group()
+Date:   Tue, 17 Aug 2021 23:04:36 -0700
+Message-Id: <20210818060533.3569517-7-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210818060533.3569517-1-keescook@chromium.org>
 References: <20210818060533.3569517-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=8609; h=from:subject; bh=8Qg6O9rjkiwOKAeKIVGdgdvKDjqINmqyRAtZrlXXnIA=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhHKMeD0CHW+uuEt76ResWyKF8pbMpqH18BMp8/Pj9 U4ZtvnmJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYRyjHgAKCRCJcvTf3G3AJqb/D/ 93GZOK8t0sjGW1TI4a1tTQBtjO+BfS5KTMQeA3a7Uce4PVwGGMi8plmIGq+Rfhww6bDSGUR3D5Tq8i C/Jxt4JuoLgnD9VoTjkw5H7tFIpQ44zNRI+8ZDaxmiu1VD47VHbY1vE6wOYdGHBrNCSHNYWUAi2vaS E4fN8LuFsXWsMK8sLlZGt8eIxJGzmRPQOsOb31OTMfNyRY6gvuiRFsc+CYTgT/2Rwwg8x5TnOqMHLR 8LQNRHT7vu6QbAeAziCQskZWLxnFAg1+Wjkn7rq24wRdar7ztcqG5+psYuIvRugHU+Igp+JYFpGAxS 512FKT2Yno2+cAIO9/aKyo48MArIW0R0nMBtN9AeeF3y6C5I1GEiDLvBoWZrcmpSmxR/UPgex5+W50 5YzAGHXmLPDsRHR0GuHHnxgbjUWdMHHwN9EmP/KnqmG7v9csbjgCpZm8dBQu9viUOpVGFWXfMFRoAQ umTD8Z//E8AM9XTfe490LNcpHh/WNq93DLwwP5q3HrUb3G113UWGJx+nuf91GKOllfV3S/sJrASX23 sEQ2nIoj+nqPPAU77dYdz6kJa/SnPmKWce5NU111vhOoPjmDoZYruwnsDc3WCGZAmidp5Naz1aYPpb qsNP1TeGqq2MhskDz580+XWS+9E9gVOtBY6COlRwGVpPKMX4dGct/QGB5r4A==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2984; h=from:subject; bh=gH2l7MUrimYDJJHL5/kGu3UEiSd7agDYsUtnIqIDLGg=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhHKMfFeE+SAeXV7TlGs5W5Dan0qJQ1dt63HKDzfHG juo8T9CJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYRyjHwAKCRCJcvTf3G3AJlH/EA CnsBzSF5pyrctJZ6ieH+8X8zUFVzCAy3+BR6FX4EgEQJkJRkPWwnEynE2qGmzAQmsEHsp55I/GrJX4 JR1eEWAvgU7ZjlCsPIcv1hCYd1m27MgsvOjeZZPQo8r02lm4PTiaybJvP6THoSxUoZ7x7i+BLdqnLN CJ2Tai+1QWBg/z5BfgXsolu04ACMdQY4zZdNixxfxbVmz8EfwVyWUFyP3k0U0O43Mhc0n+Pi9sfLdY gqM7Y/4yJ/qOqjNqkAP2FR+u7pDMCwF5q6mugy3ReHQbJ3WUCsx/h6iW6XpvzpLtDmU4PnwCizNbDJ 65jHpkXZBwccb2yWZL3xbfcqAc4M9w9cYxNpLdtt8NZ+rde81+4KjY3RjmaYJ6kbOdG2jTQ2uB7QBR 8IB6Vp3VcelKvfe2D6gT91BL8IxzqodAw+yqwCP18Gg1nRBdVdzBLvr5+AFn9w0jjp98MtTKa6P7ii gkZ2UwvygAIG4rcijtB/7meDfJT0C/h40i2avmZ5bb1UndNmOtfoixIiUnumnomu9UUwzxEUdhNb57 KS5dfN7XmkBAwIOqhTGzOAtYHWmH1VyhVLJnBQ2VfGR39r5zOPfmnkT1aic2J3QdRCTgo2AZbLBI6F DcMPWmOtMJYmAJpqZMcje5nPsclSh7Hq7uJSZSzWOq0scZlLODKdzRVPuALg==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kernel code has a regular need to describe groups of members within a
-structure usually when they need to be copied or initialized separately
-from the rest of the surrounding structure. The generally accepted design
-pattern in C is to use a named sub-struct:
+Use the newly introduced struct_group_typed() macro to clean up the
+declaration of struct cxl_regs.
 
-	struct foo {
-		int one;
-		struct {
-			int two;
-			int three, four;
-		} thing;
-		int five;
-	};
-
-This would allow for traditional references and sizing:
-
-	memcpy(&dst.thing, &src.thing, sizeof(dst.thing));
-
-However, doing this would mean that referencing struct members enclosed
-by such named structs would always require including the sub-struct name
-in identifiers:
-
-	do_something(dst.thing.three);
-
-This has tended to be quite inflexible, especially when such groupings
-need to be added to established code which causes huge naming churn.
-Three workarounds exist in the kernel for this problem, and each have
-other negative properties.
-
-To avoid the naming churn, there is a design pattern of adding macro
-aliases for the named struct:
-
-	#define f_three thing.three
-
-This ends up polluting the global namespace, and makes it difficult to
-search for identifiers.
-
-Another common work-around in kernel code avoids the pollution by avoiding
-the named struct entirely, instead identifying the group's boundaries using
-either a pair of empty anonymous structs of a pair of zero-element arrays:
-
-	struct foo {
-		int one;
-		struct { } start;
-		int two;
-		int three, four;
-		struct { } finish;
-		int five;
-	};
-
-	struct foo {
-		int one;
-		int start[0];
-		int two;
-		int three, four;
-		int finish[0];
-		int five;
-	};
-
-This allows code to avoid needing to use a sub-struct named for member
-references within the surrounding structure, but loses the benefits of
-being able to actually use such a struct, making it rather fragile. Using
-these requires open-coded calculation of sizes and offsets. The efforts
-made to avoid common mistakes include lots of comments, or adding various
-BUILD_BUG_ON()s. Such code is left with no way for the compiler to reason
-about the boundaries (e.g. the "start" object looks like it's 0 bytes
-in length), making bounds checking depend on open-coded calculations:
-
-	if (length > offsetof(struct foo, finish) -
-		     offsetof(struct foo, start))
-		return -EINVAL;
-	memcpy(&dst.start, &src.start, offsetof(struct foo, finish) -
-				       offsetof(struct foo, start));
-
-However, the vast majority of places in the kernel that operate on
-groups of members do so without any identification of the grouping,
-relying either on comments or implicit knowledge of the struct contents,
-which is even harder for the compiler to reason about, and results in
-even more fragile manual sizing, usually depending on member locations
-outside of the region (e.g. to copy "two" and "three", use the start of
-"four" to find the size):
-
-	BUILD_BUG_ON((offsetof(struct foo, four) <
-		      offsetof(struct foo, two)) ||
-		     (offsetof(struct foo, four) <
-		      offsetof(struct foo, three));
-	if (length > offsetof(struct foo, four) -
-		     offsetof(struct foo, two))
-		return -EINVAL;
-	memcpy(&dst.two, &src.two, length);
-
-In order to have a regular programmatic way to describe a struct
-region that can be used for references and sizing, can be examined for
-bounds checking, avoids forcing the use of intermediate identifiers,
-and avoids polluting the global namespace, introduce the struct_group()
-macro. This macro wraps the member declarations to create an anonymous
-union of an anonymous struct (no intermediate name) and a named struct
-(for references and sizing):
-
-	struct foo {
-		int one;
-		struct_group(thing,
-			int two;
-			int three, four;
-		);
-		int five;
-	};
-
-	if (length > sizeof(src.thing))
-		return -EINVAL;
-	memcpy(&dst.thing, &src.thing, length);
-	do_something(dst.three);
-
-There are some rare cases where the resulting struct_group() needs
-attributes added, so struct_group_attr() is also introduced to allow
-for specifying struct attributes (e.g. __align(x) or __packed).
-Additionally, there are places where such declarations would like to
-have the struct be typed, so struct_group_typed() is added.
-
-Given there is a need for a handful of UAPI uses too, the underlying
-__struct_group() macro has been defined in UAPI so it can be used there
-too.
-
-Co-developed-by: Keith Packard <keithp@keithp.com>
-Signed-off-by: Keith Packard <keithp@keithp.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Acked-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-Link: https://lore.kernel.org/lkml/20210728023217.GC35706@embeddedor
-Enhanced-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Link: https://lore.kernel.org/lkml/41183a98-bdb9-4ad6-7eab-5a7292a6df84@rasmusvillemoes.dk
-Enhanced-by: Dan Williams <dan.j.williams@intel.com>
+Cc: Alison Schofield <alison.schofield@intel.com>
+Cc: Vishal Verma <vishal.l.verma@intel.com>
+Cc: Ira Weiny <ira.weiny@intel.com>
+Cc: Ben Widawsky <ben.widawsky@intel.com>
+Cc: linux-cxl@vger.kernel.org
+Suggested-by: Dan Williams <dan.j.williams@intel.com>
 Link: https://lore.kernel.org/lkml/1d9a2e6df2a9a35b2cdd50a9a68cac5991e7e5f0.camel@intel.com
-Enhanced-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Link: https://lore.kernel.org/lkml/YQKa76A6XuFqgM03@phenom.ffwll.local
+Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- include/linux/stddef.h      | 47 +++++++++++++++++++++++++++++++++++++
- include/uapi/linux/stddef.h | 21 +++++++++++++++++
- 2 files changed, 68 insertions(+)
+ drivers/cxl/cxl.h | 61 ++++++++++++++---------------------------------
+ 1 file changed, 18 insertions(+), 43 deletions(-)
 
-diff --git a/include/linux/stddef.h b/include/linux/stddef.h
-index 998a4ba28eba..f2aefdb22d1d 100644
---- a/include/linux/stddef.h
-+++ b/include/linux/stddef.h
-@@ -36,4 +36,51 @@ enum {
- #define offsetofend(TYPE, MEMBER) \
- 	(offsetof(TYPE, MEMBER)	+ sizeof_field(TYPE, MEMBER))
+diff --git a/drivers/cxl/cxl.h b/drivers/cxl/cxl.h
+index 53927f9fa77e..9db0c402c9ce 100644
+--- a/drivers/cxl/cxl.h
++++ b/drivers/cxl/cxl.h
+@@ -75,52 +75,27 @@ static inline int cxl_hdm_decoder_count(u32 cap_hdr)
+ #define CXLDEV_MBOX_BG_CMD_STATUS_OFFSET 0x18
+ #define CXLDEV_MBOX_PAYLOAD_OFFSET 0x20
  
-+/**
-+ * struct_group(NAME, MEMBERS)
-+ *
-+ * Used to create an anonymous union of two structs with identical
-+ * layout and size: one anonymous and one named. The former can be
-+ * used normally without sub-struct naming, and the latter can be
-+ * used to reason about the start, end, and size of the group of
-+ * struct members.
-+ *
-+ * @NAME: The identifier name of the mirrored sub-struct
-+ * @MEMBERS: The member declarations for the mirrored structs
-+ */
-+#define struct_group(NAME, MEMBERS...)	\
-+	__struct_group(/* no tag */, NAME, /* no attrs */, MEMBERS)
-+
-+/**
-+ * struct_group_attr(NAME, ATTRS, MEMBERS)
-+ *
-+ * Used to create an anonymous union of two structs with identical
-+ * layout and size: one anonymous and one named. The former can be
-+ * used normally without sub-struct naming, and the latter can be
-+ * used to reason about the start, end, and size of the group of
-+ * struct members. Includes structure attributes argument.
-+ *
-+ * @NAME: The identifier name of the mirrored sub-struct
-+ * @ATTRS: Any struct attributes
-+ * @MEMBERS: The member declarations for the mirrored structs
-+ */
-+#define struct_group_attr(NAME, ATTRS, MEMBERS...) \
-+	__struct_group(/* no tag */, NAME, ATTRS, MEMBERS)
-+
-+/**
-+ * struct_group_tagged(TAG, NAME, MEMBERS)
-+ *
-+ * Used to create an anonymous union of two structs with identical
-+ * layout and size: one anonymous and one named. The former can be
-+ * used normally without sub-struct naming, and the latter can be
-+ * used to reason about the start, end, and size of the group of
-+ * struct members. Includes struct tag argument for the named copy.
-+ *
-+ * @TAG: The tag name for the named sub-struct
-+ * @NAME: The identifier name of the mirrored sub-struct
-+ * @MEMBERS: The member declarations for the mirrored structs
-+ */
-+#define struct_group_tagged(TAG, NAME, MEMBERS...) \
-+	__struct_group(TAG, NAME, /* no attrs */, MEMBERS)
-+
- #endif
-diff --git a/include/uapi/linux/stddef.h b/include/uapi/linux/stddef.h
-index ee8220f8dcf5..0fbdf2f711aa 100644
---- a/include/uapi/linux/stddef.h
-+++ b/include/uapi/linux/stddef.h
-@@ -4,3 +4,24 @@
- #ifndef __always_inline
- #define __always_inline inline
- #endif
-+
-+/**
-+ * __struct_group(TAG, NAME, ATTRS, MEMBERS)
-+ *
-+ * Used to create an anonymous union of two structs with identical layout
-+ * and size: one anonymous and one named. The former's members can be used
-+ * normally without sub-struct naming, and the latter can be used to
-+ * reason about the start, end, and size of the group of struct members.
-+ * The named struct can also be explicitly tagged, as well as both having
-+ * struct attributes.
-+ *
-+ * @TAG: The tag name for the named sub-struct (usually empty)
-+ * @NAME: The identifier name of the mirrored sub-struct
-+ * @ATTRS: Any struct attributes (usually empty)
-+ * @MEMBERS: The member declarations for the mirrored structs
-+ */
-+#define __struct_group(TAG, NAME, ATTRS, MEMBERS...) \
-+	union { \
-+		struct { MEMBERS } ATTRS; \
-+		struct TAG { MEMBERS } ATTRS NAME; \
-+	}
+-#define CXL_COMPONENT_REGS() \
+-	void __iomem *hdm_decoder
+-
+-#define CXL_DEVICE_REGS() \
+-	void __iomem *status; \
+-	void __iomem *mbox; \
+-	void __iomem *memdev
+-
+-/* See note for 'struct cxl_regs' for the rationale of this organization */
+-/*
+- * CXL_COMPONENT_REGS - Common set of CXL Component register block base pointers
+- * @hdm_decoder: CXL 2.0 8.2.5.12 CXL HDM Decoder Capability Structure
+- */
+-struct cxl_component_regs {
+-	CXL_COMPONENT_REGS();
+-};
+-
+-/* See note for 'struct cxl_regs' for the rationale of this organization */
+-/*
+- * CXL_DEVICE_REGS - Common set of CXL Device register block base pointers
+- * @status: CXL 2.0 8.2.8.3 Device Status Registers
+- * @mbox: CXL 2.0 8.2.8.4 Mailbox Registers
+- * @memdev: CXL 2.0 8.2.8.5 Memory Device Registers
+- */
+-struct cxl_device_regs {
+-	CXL_DEVICE_REGS();
+-};
+-
+ /*
+- * Note, the anonymous union organization allows for per
+- * register-block-type helper routines, without requiring block-type
+- * agnostic code to include the prefix.
++ * Using struct_group() allows for per register-block-type helper routines,
++ * without requiring block-type agnostic code to include the prefix.
+  */
+ struct cxl_regs {
+-	union {
+-		struct {
+-			CXL_COMPONENT_REGS();
+-		};
+-		struct cxl_component_regs component;
+-	};
+-	union {
+-		struct {
+-			CXL_DEVICE_REGS();
+-		};
+-		struct cxl_device_regs device_regs;
+-	};
++	/*
++	 * Common set of CXL Component register block base pointers
++	 * @hdm_decoder: CXL 2.0 8.2.5.12 CXL HDM Decoder Capability Structure
++	 */
++	struct_group_tagged(cxl_component_regs, component,
++		void __iomem *hdm_decoder;
++	);
++	/*
++	 * Common set of CXL Device register block base pointers
++	 * @status: CXL 2.0 8.2.8.3 Device Status Registers
++	 * @mbox: CXL 2.0 8.2.8.4 Mailbox Registers
++	 * @memdev: CXL 2.0 8.2.8.5 Memory Device Registers
++	 */
++	struct_group_tagged(cxl_device_regs, device_regs,
++		void __iomem *status, *mbox, *memdev;
++	);
+ };
+ 
+ struct cxl_reg_map {
 -- 
 2.30.2
 
