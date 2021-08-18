@@ -2,58 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69CF23EFBBE
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 08:15:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58DB53EFBCE
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 08:15:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238526AbhHRGPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 02:15:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45488 "EHLO
+        id S239577AbhHRGOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 02:14:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238207AbhHRGPr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 02:15:47 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D04B7C0617AD
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:14:13 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id gz13-20020a17090b0ecdb0290178c0e0ce8bso4602054pjb.1
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:14:13 -0700 (PDT)
+        with ESMTP id S239160AbhHRGNi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 02:13:38 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D01CC0363D8
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:06:07 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id q2so1141477pgt.6
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:06:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qcRMFUHVF6QqGnr97K+ATth5rLyNBKP5psUqyaewiPQ=;
-        b=a6bTyF6xsvXmJVaSI8AKs77+P0oFTI1gTPlsYa6mh59pACM92P1VFzFqvqU9+X+jNr
-         vTM9CS3vOAuRCBsVzn6N7KgVHI6W6ooLD8DmaYQuGxrolCI4Xru2kAG7C7jmtZ5uZ8PR
-         VDy1iToF9Tpap2g7DTRp0rqJ6lJwmpqW0wJjo=
+        bh=WJrpMRxjlck/EUZE2DWpbaWpfbq9vwWWxHEHR5bnD5E=;
+        b=Y4RaduW1rzoHa2IpujBCd5gie/q9/2hiLeyjeu9ex0Lvtmxof39Ph82c32u/wEVwec
+         BeorvJNM0QtxRwnxngByb5MimEYl+Js8IDKmdRfuXrPFuDqHj3Cmg2kZQWZ0j6OqZuGi
+         4aE9yiwILQW91Q1hmTVcwZmAEbqQUR+FHPZhQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qcRMFUHVF6QqGnr97K+ATth5rLyNBKP5psUqyaewiPQ=;
-        b=Jlb7XQVY7820H1zJXLbOc8TGq4PEcA+DHKF5GPMGTq00Kwzdr24Lirym9X3cgJ1Ijv
-         UyOIbO3V+8h8KkqwnNTBMq1MLTDUYx7ifyPQifKbHf1Tf3hEC7CIzXC3fe0+ej/vdiVf
-         28pbpPefZrw4V5nt2xoYkSmIWuijQxcYovX5p0ollC9N8YpRoFdLI83vQo+OtjE/KTAz
-         0+U+bEHGWAsIGJPVnianNTBSpO7fhRzlcAaHRNrY0facySUu4/XgT2nwz0ufnqpbl022
-         e9uhW4gAXuNRiRLT0gIpOUBzjwrCHN5vOSuInbUBO9MCfXXe1SkBYl8I+gTWUFop40dd
-         rS2w==
-X-Gm-Message-State: AOAM530mbaD66flB4Dvls8YQ48fmsN6lj7NvgAji57WInToffBZ23YFM
-        pOIk6b0hawI/OULOzIJeyt8Big==
-X-Google-Smtp-Source: ABdhPJxYy9uajyke8AmxVdXcCpVPxEVIqn6teRhyhxiibQmTAmVANSe3Um2YhA94u6j4OQrmXZTUYg==
-X-Received: by 2002:a17:902:e9c6:b029:12d:4cb3:3985 with SMTP id 6-20020a170902e9c6b029012d4cb33985mr5959378plk.56.1629267253269;
-        Tue, 17 Aug 2021 23:14:13 -0700 (PDT)
+        bh=WJrpMRxjlck/EUZE2DWpbaWpfbq9vwWWxHEHR5bnD5E=;
+        b=iSuFIY5ml93V0hJJqxQt6c9jGSKblubq67ftxTqJc3il6UGY4yeM9c+EMPmfzjP2a7
+         vmQaOk3qIV532R5sqrg04ZwTK7469wyJN5kQZ233yES+ZBKS4Oerw5Az7AqoXclWBwl9
+         n/Nj+OP4VQ0zhWeDXUDI6BH0ehnCZ3AVBlU1Y+2cXj0c7kU5/7NxP3HJY3bIqDpWt4C/
+         cLsjHNUNMfPAD8g2cUiTL+ZFqzNywONrywgVn7atqfrxTlQYUMZofTdmAFfsX/DCij3b
+         3pjQPUygj33X24/ZTd6Q0rbuzsVyl7vl0pYauY8yc5zJbnwRZ6bOlJaDyTZVo23j6R6e
+         /kmg==
+X-Gm-Message-State: AOAM533q4aGnu48SIW8MF9vIOaMkvL3hHIOJnwMs0ELH3ZdgWxNpfZzz
+        WENnoINnaMwUC9FlhErNUhUTQQ==
+X-Google-Smtp-Source: ABdhPJw+fxDkXxOl4PBdv0otPn1lIDXevnmHeNda+XtjMx2DvEazLyVTOr/SWrLlENk4ZB/InQEloQ==
+X-Received: by 2002:a62:dbc3:0:b029:3e0:ec4a:6e60 with SMTP id f186-20020a62dbc30000b02903e0ec4a6e60mr7438793pfg.25.1629266767474;
+        Tue, 17 Aug 2021 23:06:07 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id l12sm5631661pgc.41.2021.08.17.23.14.12
+        by smtp.gmail.com with ESMTPSA id s5sm5498942pgp.81.2021.08.17.23.06.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Aug 2021 23:14:12 -0700 (PDT)
+        Tue, 17 Aug 2021 23:06:05 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Qinglang Miao <miaoqinglang@huawei.com>,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Hulk Robot <hulkci@huawei.com>,
-        Wang Wensheng <wangwensheng4@huawei.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
@@ -62,54 +56,117 @@ Cc:     Kees Cook <keescook@chromium.org>,
         clang-built-linux@googlegroups.com,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         linux-hardening@vger.kernel.org
-Subject: [PATCH v2 61/63] powerpc: Split memset() to avoid multi-field overflow
-Date:   Tue, 17 Aug 2021 23:05:31 -0700
-Message-Id: <20210818060533.3569517-62-keescook@chromium.org>
+Subject: [PATCH v2 62/63] fortify: Detect struct member overflows in memset() at compile-time
+Date:   Tue, 17 Aug 2021 23:05:32 -0700
+Message-Id: <20210818060533.3569517-63-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210818060533.3569517-1-keescook@chromium.org>
 References: <20210818060533.3569517-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1360; h=from:subject; bh=JCECg/Hewr4d9JO4WQR5kDd0IjByC1o9V4GNPJaYPKM=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhHKMrEHk87hiQVCzgI18EL/HOEsDc4MJhIkHkaVTZ DZKWkUOJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYRyjKwAKCRCJcvTf3G3AJjKnD/ 9vO5rK1NcyiJFD1V1xX5Q3QwJPN1EMRWYcJsr5dTRrhYDef2VBoAd3vGVJhv5tPWCziVR95zI+LgIL d02IU4Ow0Hf/RnPFBOD9Lk1pR4bdZqy2udFH1tE06S0wBxz6HBgDxKiHg0hd49XAZs+xsJCSVXM+ks ZJe+gXBJkwU0QQlyx97a3srOeF6TBCIwRbfsc1ny8kqeq7rHXhuez2Nl/jEpDrSY7P6MGZ0RS9pwGp BG8XE5jwyatTqBbwztRYJO6EDxF1oljeN+vw6wXSMzHTs0P0jZF+xhBsDePue4SrU1uYVK4eI314VF ytJTqzumiq1LoMoetRo7XbnZL9HC+8KQkD7iex+cbwbl0vBuTQNERQCXbWiuHcR7WbrVndhdzqr/qr 7kpYWqqHhGYN42VOTCoEV+CxxyGt6O1oEwupEs9JwlhAHT0ET/3m5v95ln9sj4q/idsJQyugW9w9wS B+pdNyiwZvnrIR6r8PjnSHwflJuJYyRkP28Ci+HZxNLOE9WlE6UmnuDmdrcVKpWz+nctnlPQ9JHhAq vpfGhXMnm0qF1zx5IYh+d69+ZRtUQbUKz2k4hFKSxvSse3CvWfi63pBT3m1O556umLnQD6zZbq4vQZ p0vLhJOR+anh57gwE1CG5ilwh9jU07xLpPrNzUQkHrIgJsiMsfqPJrC73E9g==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3657; h=from:subject; bh=x4SNp17MkJsMDii5dKL06SU0zDLItyjvjIE8yvAGOLw=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhHKMsuEVllcthHvVoZOOtiNzdZSQL+MVxm5lZYC08 cYuVeeiJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYRyjLAAKCRCJcvTf3G3AJhFJD/ 0YywcHnMj1c/NexxJTDTdAYqmtmTUD8x82Ns/wjrQAyODC3hv/6fd7/lXy7KLnBf3O7mSQRPo1siWq mi4sD6BTm3hIo3GuFOJ8CTfGgnxxwdN6j/TkfuxlpJSHWlG8CdQJaYNCYJgI7QT0k7mcvIcU0Yiu5/ YaVOOC0zQ85PA//3PbzguuPv50kBbxQ5bQSD5XS5ptljehOSJcCJ66K/cFUtnJoZrfF5m7naOzclM+ YSn8wlMr9aQqL6DEc6etgSVI2n22I9gcsWaObJAPYCut15PH0LnKu3TXUtF2oQy91xDTCZ0kCAuzqt 5poO59eUPNtjb6apuyTyI2sng4UXAVOqnFeKce+zQIoGAdIb5GjE13ffC5AAon3CmAbxRE5FUufUrx zUIYqjgohnwHn6YDtth4aIZB/W2kLG2W2q4TWuZjMxEaw0SVrnd4P2jJSHU8B8d1a6PkAs8epAq0gc D69QvVpSd/j5KuzMZUdDpOKxgIKUXFGXliJiDsu+4vuCdioBLapgoOTvVDBi1LirQl6lP45HoxFQ0b S64cenON/jFuSH9ZmumaJj1QScmPVkoNRRs09YB5f0juMR7C0bopH+EEmaqk++upwBm1nP/e/Dtxew r7vE625A/r6FGg4xIb9flyd3LdIf3HsRkH/Bt6+5XCnDvRxE/u5ev7V+yD8w==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In preparation for FORTIFY_SOURCE performing compile-time and run-time
-field bounds checking for memset(), avoid intentionally writing across
-neighboring fields.
+As done for memcpy(), also update memset() to use the same tightened
+compile-time bounds checking under CONFIG_FORTIFY_SOURCE.
 
-Instead of writing across a field boundary with memset(), move the call
-to just the array, and an explicit zeroing of the prior field.
-
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Qinglang Miao <miaoqinglang@huawei.com>
-Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc: Hulk Robot <hulkci@huawei.com>
-Cc: Wang Wensheng <wangwensheng4@huawei.com>
-Cc: linuxppc-dev@lists.ozlabs.org
 Signed-off-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/lkml/87czqsnmw9.fsf@mpe.ellerman.id.au
 ---
- drivers/macintosh/smu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/linux/fortify-string.h                | 54 ++++++++++++++++---
+ .../write_overflow_field-memset.c             |  5 ++
+ 2 files changed, 51 insertions(+), 8 deletions(-)
+ create mode 100644 lib/test_fortify/write_overflow_field-memset.c
 
-diff --git a/drivers/macintosh/smu.c b/drivers/macintosh/smu.c
-index 94fb63a7b357..59ce431da7ef 100644
---- a/drivers/macintosh/smu.c
-+++ b/drivers/macintosh/smu.c
-@@ -848,7 +848,8 @@ int smu_queue_i2c(struct smu_i2c_cmd *cmd)
- 	cmd->read = cmd->info.devaddr & 0x01;
- 	switch(cmd->info.type) {
- 	case SMU_I2C_TRANSFER_SIMPLE:
--		memset(&cmd->info.sublen, 0, 4);
-+		cmd->info.sublen = 0;
-+		memset(&cmd->info.subaddr, 0, 3);
- 		break;
- 	case SMU_I2C_TRANSFER_COMBINED:
- 		cmd->info.devaddr &= 0xfe;
+diff --git a/include/linux/fortify-string.h b/include/linux/fortify-string.h
+index 0120d463ba33..7de4673dfe2c 100644
+--- a/include/linux/fortify-string.h
++++ b/include/linux/fortify-string.h
+@@ -198,17 +198,56 @@ __FORTIFY_INLINE char *strncat(char *p, const char *q, __kernel_size_t count)
+ 	return p;
+ }
+ 
+-__FORTIFY_INLINE void *memset(void *p, int c, __kernel_size_t size)
++__FORTIFY_INLINE void fortify_memset_chk(__kernel_size_t size,
++					 const size_t p_size,
++					 const size_t p_size_field)
+ {
+-	size_t p_size = __builtin_object_size(p, 0);
++	if (__builtin_constant_p(size)) {
++		/*
++		 * Length argument is a constant expression, so we
++		 * can perform compile-time bounds checking where
++		 * buffer sizes are known.
++		 */
+ 
+-	if (__builtin_constant_p(size) && p_size < size)
+-		__write_overflow();
+-	if (p_size < size)
+-		fortify_panic(__func__);
+-	return __underlying_memset(p, c, size);
++		/* Error when size is larger than enclosing struct. */
++		if (p_size > p_size_field && p_size < size)
++			__write_overflow();
++
++		/* Warn when write size is larger than dest field. */
++		if (p_size_field < size)
++			__write_overflow_field(p_size_field, size);
++	}
++	/*
++	 * At this point, length argument may not be a constant expression,
++	 * so run-time bounds checking can be done where buffer sizes are
++	 * known. (This is not an "else" because the above checks may only
++	 * be compile-time warnings, and we want to still warn for run-time
++	 * overflows.)
++	 */
++
++	/*
++	 * Always stop accesses beyond the struct that contains the
++	 * field, when the buffer's remaining size is known.
++	 * (The -1 test is to optimize away checks where the buffer
++	 * lengths are unknown.)
++	 */
++	if (p_size != (size_t)(-1) && p_size < size)
++		fortify_panic("memset");
+ }
+ 
++#define __fortify_memset_chk(p, c, size, p_size, p_size_field) ({	\
++	size_t __fortify_size = (size_t)(size);				\
++	fortify_memset_chk(__fortify_size, p_size, p_size_field),	\
++	__underlying_memset(p, c, __fortify_size);			\
++})
++
++/*
++ * __builtin_object_size() must be captured here to avoid evaluating argument
++ * side-effects further into the macro layers.
++ */
++#define memset(p, c, s) __fortify_memset_chk(p, c, s,			\
++		__builtin_object_size(p, 0), __builtin_object_size(p, 1))
++
+ /*
+  * To make sure the compiler can enforce protection against buffer overflows,
+  * memcpy(), memmove(), and memset() must not be used beyond individual
+@@ -399,7 +438,6 @@ __FORTIFY_INLINE char *strcpy(char *p, const char *q)
+ /* Don't use these outside the FORITFY_SOURCE implementation */
+ #undef __underlying_memchr
+ #undef __underlying_memcmp
+-#undef __underlying_memset
+ #undef __underlying_strcat
+ #undef __underlying_strcpy
+ #undef __underlying_strlen
+diff --git a/lib/test_fortify/write_overflow_field-memset.c b/lib/test_fortify/write_overflow_field-memset.c
+new file mode 100644
+index 000000000000..2331da26909e
+--- /dev/null
++++ b/lib/test_fortify/write_overflow_field-memset.c
+@@ -0,0 +1,5 @@
++// SPDX-License-Identifier: GPL-2.0-only
++#define TEST	\
++	memset(instance.buf, 0x42, sizeof(instance.buf) + 1)
++
++#include "test_fortify.h"
 -- 
 2.30.2
 
