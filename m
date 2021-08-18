@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 656543F0886
+	by mail.lfdr.de (Postfix) with ESMTP id AE2EC3F0887
 	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 17:53:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240299AbhHRPyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 11:54:23 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:51515 "EHLO
+        id S240196AbhHRPy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 11:54:27 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:46199 "EHLO
         new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240078AbhHRPyN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 11:54:13 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.nyi.internal (Postfix) with ESMTP id BB589583012;
-        Wed, 18 Aug 2021 11:53:38 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S238409AbhHRPyQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 11:54:16 -0400
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id F0763582FDE;
+        Wed, 18 Aug 2021 11:53:41 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Wed, 18 Aug 2021 11:53:38 -0400
+  by compute6.internal (MEProxy); Wed, 18 Aug 2021 11:53:41 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=/j8AmpA1SIEwBogYgkLwBX6Fe4Mrxe8M/Pp546t55cw=; b=L1cza4Cl
-        lSgT5opjbRKEBegGe1rx2lHT7C3i/Rc2SED1XYtl2bCn2girxce/o1uhXw9uVH58
-        MfHSl/3GEwvKKZqj/EByOa8JBBqoB9sqacVBeAEtXSZvFdtrp6VkJXZXLhuFPAte
-        m820MvPIvgvU4nqY5Fs+2cdPcIF4sPv3MUbZ7+WZwA3iarBrp0Fd64S2fynunS4S
-        y2hwn2gzVtEeuEDy3LQovC15JraCdyL7wJ6VAVzd4YcUoy/QfooKKR7jkw3PmWCI
-        q5iztMu/aGKbetUBPSlz3GJzh0JHXgqxmv+42REjUwdLKfaucWWFc+g1ttJH1H4J
-        8/ypTc802ZvLCg==
-X-ME-Sender: <xms:Ai0dYWfi81Vi6xP800tXLXd16kIX3_60VjjcQS3cuTJ56T1i4Z9eXw>
-    <xme:Ai0dYQMMKgfvZaxoWcqIUlEgdBaSFZ7R_Kny_zVeIpaYDVFJgEEKdKF6eHW_oQhqs
-    MG1Ae3liha5Ct8>
-X-ME-Received: <xmr:Ai0dYXgn1nc2uFQguVaCcfmnrO3a-pCvi7XCbJZR4JT4354xv6VkhaVDTOfuu4udRr_PL0gZNQPmIOnEmhosdZgPMEBffujAeVI2iEbghl_fbw>
+        fm3; bh=jdzr8t+d/pCuUNt75MhYyRWE8O0L2MvzUoMKnJvqODE=; b=musKBm5b
+        mS/2Ymg63EOeQlh/OBd0085H05stoIyq4aoS17caTnN/0T2r69zY/K4x4SiMj9pt
+        +eoW4P5FzMTvZYCy9ylJkMTZsq7TILbdligzxcpV3AoCdV1gJ4We6j6aei68gjMF
+        /Mun2cF2U4KE6b5PcU1RFEIPklQmQkbVTJHjvQ3oyGlXRAwOevT85JiJKFwO5nZa
+        KE8keNZ4/9js+e5i+US41nQvFcDWwJzeYMClAeeVdyEoqSidexqsi62///uj47cL
+        AeoT6LJnVE6hHgmawTSuVDIT+BbP4l+EZ4J3ZVuYFoXM+jD/c89EgmE7N3sZVhMI
+        vIOHEypHwwQRLQ==
+X-ME-Sender: <xms:BS0dYYHuMH-g5WPnm8RwsMQo-TFtSMySu1Xj0Xfao0TvwW1UCFFOlg>
+    <xme:BS0dYRWP_yLl45WcsbNGbocdJX43yAJc-9JfmSAPF2I9Ei7YOINLQHzgMH4U0Bw_C
+    GB51S-hBMiBxpI>
+X-ME-Received: <xmr:BS0dYSIiGZZ6uNfcpICWIbXEHLmViLzpj0kZrfIuiTlpcOG_JL1NSp7935o3XfuxEl4IcsxaBaNeKt8cYbHIduNH2dH3zvluzSEdWXOoolK9Wg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrleehgdelfecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
-    fgtdfftefhledvjefggfehgfevjeekhfenucevlhhushhtvghrufhiiigvpedunecurfgr
+    fgtdfftefhledvjefggfehgfevjeekhfenucevlhhushhtvghrufhiiigvpeefnecurfgr
     rhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:Ai0dYT8KKCWbnvepdZgKK3VmYG-IvPJnhtWcVDY61lia6xa9tFeIjQ>
-    <xmx:Ai0dYSu7mBtU1dKwFbQDv3i9fAkMAIrUF3ZSiKIfW5Vbxs8mYp9AbQ>
-    <xmx:Ai0dYaHvuk48zLO7XbMiUHojZ9IM6zyiF2ER0VTSLwbYy4fL0ZZhVw>
-    <xmx:Ai0dYQDevTPOhPHwv5iIGBN-zm_O3-yla-YBMpUvjWMZ8qWRMUkqUg>
+X-ME-Proxy: <xmx:BS0dYaGAmbXvbD2JrN2EkwlttbRGDl9CQcHur38qTUXqsnDqDZm4Ww>
+    <xmx:BS0dYeUunKpqSw-jw7Tm44UdEk6PQIIkkky5en6SgUZMOsC1clbcag>
+    <xmx:BS0dYdNRpEjlTauRLEALdzBm3VXFdNkfKcwBrlqYR5EauvcnQSI77A>
+    <xmx:BS0dYSrXvL1gvTS0gI-aG60ibLj3gHzYrBI9axBLjPkm-E7TZR9Uhg>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 18 Aug 2021 11:53:36 -0400 (EDT)
+ 18 Aug 2021 11:53:38 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
         mkubecek@suse.cz, pali@kernel.org, jacob.e.keller@intel.com,
         jiri@nvidia.com, vadimp@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [RFC PATCH ethtool-next v2 5/6] ethtool: Print SFF-8636 Power set and Power override bits
-Date:   Wed, 18 Aug 2021 18:53:05 +0300
-Message-Id: <20210818155306.1278356-6-idosch@idosch.org>
+Subject: [RFC PATCH ethtool-next v2 6/6] ethtool: Add transceiver module extended states
+Date:   Wed, 18 Aug 2021 18:53:06 +0300
+Message-Id: <20210818155306.1278356-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210818155306.1278356-1-idosch@idosch.org>
 References: <20210818155306.1278356-1-idosch@idosch.org>
@@ -64,106 +64,61 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Print the SFF-8636 Power set and Power override bits when dumping EEPROM
-contents via the '-m' option. They can be used to understand low power
-mode enforcement by the host.
+Add support for an extended state and two extended sub-states to
+describe link issues related to transceiver modules.
 
-The 'SFF8636_LOW_PWR_MODE' define is renamed to 'SFF8636_LOW_PWR_SET' to
-reflect its naming in the standard for QSFP+/QSFP28.
+Output example:
 
-Example output:
-
- # ethtool -m swp13
- Identifier                                : 0x11 (QSFP28)
+ $ ethtool swp13
  ...
- Extended identifier description           : 5.0W max. Power consumption,  High Power Class (> 3.5 W) enabled
- Power set                                 : Off
- Power override                            : On
- ...
- Transmit avg optical power (Channel 1)    : 0.7633 mW / -1.17 dBm
- Transmit avg optical power (Channel 2)    : 0.7649 mW / -1.16 dBm
- Transmit avg optical power (Channel 3)    : 0.7696 mW / -1.14 dBm
- Transmit avg optical power (Channel 4)    : 0.7739 mW / -1.11 dBm
- Rcvr signal avg optical power(Channel 1)  : 0.9240 mW / -0.34 dBm
- Rcvr signal avg optical power(Channel 2)  : 0.9129 mW / -0.40 dBm
- Rcvr signal avg optical power(Channel 3)  : 0.9194 mW / -0.36 dBm
- Rcvr signal avg optical power(Channel 4)  : 0.8708 mW / -0.60 dBm
+ Link detected: no (Module, Module is in low power mode)
 
- # ethtool --set-module swp13 power-mode-policy low
-
- # ethtool -m swp13
- Identifier                                : 0x11 (QSFP28)
- ...
- Extended identifier description           : 5.0W max. Power consumption,  High Power Class (> 3.5 W) not enabled
- Power set                                 : On
- Power override                            : On
- ...
- Transmit avg optical power (Channel 1)    : 0.0000 mW / -inf dBm
- Transmit avg optical power (Channel 2)    : 0.0000 mW / -inf dBm
- Transmit avg optical power (Channel 3)    : 0.0000 mW / -inf dBm
- Transmit avg optical power (Channel 4)    : 0.0000 mW / -inf dBm
- Rcvr signal avg optical power(Channel 1)  : 0.0000 mW / -inf dBm
- Rcvr signal avg optical power(Channel 2)  : 0.0000 mW / -inf dBm
- Rcvr signal avg optical power(Channel 3)  : 0.0000 mW / -inf dBm
- Rcvr signal avg optical power(Channel 4)  : 0.0000 mW / -inf dBm
-
- # ethtool --set-module swp13 power-mode-policy high
-
- # ethtool -m swp13
- Identifier                                : 0x11 (QSFP28)
- ...
- Extended identifier description           : 5.0W max. Power consumption,  High Power Class (> 3.5 W) enabled
- Power set                                 : Off
- Power override                            : On
- ...
- Transmit avg optical power (Channel 1)    : 0.7733 mW / -1.12 dBm
- Transmit avg optical power (Channel 2)    : 0.7754 mW / -1.10 dBm
- Transmit avg optical power (Channel 3)    : 0.7885 mW / -1.03 dBm
- Transmit avg optical power (Channel 4)    : 0.7886 mW / -1.03 dBm
- Rcvr signal avg optical power(Channel 1)  : 0.9248 mW / -0.34 dBm
- Rcvr signal avg optical power(Channel 2)  : 0.9129 mW / -0.40 dBm
- Rcvr signal avg optical power(Channel 3)  : 0.9187 mW / -0.37 dBm
- Rcvr signal avg optical power(Channel 4)  : 0.8785 mW / -0.56 dBm
-
-In the above example, the LPMode signal is ignored (Power override is
-always on) and low power mode is controlled via software only.
+In case "CMIS transceiver module is not in ModuleReady state" and the
+module is in ModuleFault state, it is possible to read the fault reason
+from the EEPROM dump.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- qsfp.c | 6 ++++++
- qsfp.h | 2 +-
- 2 files changed, 7 insertions(+), 1 deletion(-)
+ netlink/settings.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/qsfp.c b/qsfp.c
-index 644fe148a5aa..08ffb90447f3 100644
---- a/qsfp.c
-+++ b/qsfp.c
-@@ -252,6 +252,12 @@ static void sff8636_show_ext_identifier(const __u8 *id)
- 		printf(" High Power Class (> 3.5 W) enabled\n");
- 	else
- 		printf(" High Power Class (> 3.5 W) not enabled\n");
-+	printf("\t%-41s : ", "Power set");
-+	printf("%s\n", ONOFF(id[SFF8636_PWR_MODE_OFFSET] &
-+			     SFF8636_LOW_PWR_SET));
-+	printf("\t%-41s : ", "Power override");
-+	printf("%s\n", ONOFF(id[SFF8636_PWR_MODE_OFFSET] &
-+			     SFF8636_PWR_OVERRIDE));
- }
+diff --git a/netlink/settings.c b/netlink/settings.c
+index e47a38f3058f..515b9302c09d 100644
+--- a/netlink/settings.c
++++ b/netlink/settings.c
+@@ -593,6 +593,7 @@ static const char *const names_link_ext_state[] = {
+ 	[ETHTOOL_LINK_EXT_STATE_CALIBRATION_FAILURE]	= "Calibration failure",
+ 	[ETHTOOL_LINK_EXT_STATE_POWER_BUDGET_EXCEEDED]	= "Power budget exceeded",
+ 	[ETHTOOL_LINK_EXT_STATE_OVERHEAT]		= "Overheat",
++	[ETHTOOL_LINK_EXT_STATE_MODULE]			= "Module",
+ };
  
- static void sff8636_show_connector(const __u8 *id)
-diff --git a/qsfp.h b/qsfp.h
-index 1d8f24b5cbc2..aabf09fdc623 100644
---- a/qsfp.h
-+++ b/qsfp.h
-@@ -180,7 +180,7 @@
+ static const char *const names_autoneg_link_ext_substate[] = {
+@@ -648,6 +649,13 @@ static const char *const names_cable_issue_link_ext_substate[] = {
+ 		"Cable test failure",
+ };
  
- #define	SFF8636_PWR_MODE_OFFSET		0x5D
- #define	 SFF8636_HIGH_PWR_ENABLE		(1 << 2)
--#define	 SFF8636_LOW_PWR_MODE			(1 << 1)
-+#define	 SFF8636_LOW_PWR_SET			(1 << 1)
- #define	 SFF8636_PWR_OVERRIDE			(1 << 0)
- 
- #define	SFF8636_TX_APP_SELECT_4_OFFSET	0x5E
++static const char *const names_module_link_ext_substate[] = {
++	[ETHTOOL_LINK_EXT_SUBSTATE_MODULE_LOW_POWER_MODE]	=
++		"Module is in low power mode",
++	[ETHTOOL_LINK_EXT_SUBSTATE_MODULE_CMIS_NOT_READY]	=
++		"CMIS module is not in ModuleReady state",
++};
++
+ static const char *link_ext_substate_get(uint8_t link_ext_state_val, uint8_t link_ext_substate_val)
+ {
+ 	switch (link_ext_state_val) {
+@@ -671,6 +679,10 @@ static const char *link_ext_substate_get(uint8_t link_ext_state_val, uint8_t lin
+ 		return get_enum_string(names_cable_issue_link_ext_substate,
+ 				       ARRAY_SIZE(names_cable_issue_link_ext_substate),
+ 				       link_ext_substate_val);
++	case ETHTOOL_LINK_EXT_STATE_MODULE:
++		return get_enum_string(names_module_link_ext_substate,
++				       ARRAY_SIZE(names_module_link_ext_substate),
++				       link_ext_substate_val);
+ 	default:
+ 		return NULL;
+ 	}
 -- 
 2.31.1
 
