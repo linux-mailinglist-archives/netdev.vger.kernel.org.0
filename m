@@ -2,188 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 342353EFD99
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 09:13:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D86F3EFDAC
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 09:18:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238749AbhHRHN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 03:13:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59744 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239560AbhHRHNT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 03:13:19 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A7EC0612A4
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 00:12:42 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mGFkZ-00051F-Ue; Wed, 18 Aug 2021 09:12:35 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mGFkZ-0005Ow-Kd; Wed, 18 Aug 2021 09:12:35 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, David Jander <david@protonic.nl>
-Subject: [PATCH v3 3/3] can: dev: provide optional GPIO based termination support
-Date:   Wed, 18 Aug 2021 09:12:32 +0200
-Message-Id: <20210818071232.20585-4-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210818071232.20585-1-o.rempel@pengutronix.de>
-References: <20210818071232.20585-1-o.rempel@pengutronix.de>
+        id S238914AbhHRHTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 03:19:06 -0400
+Received: from mail.cn.fujitsu.com ([183.91.158.132]:62946 "EHLO
+        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S238376AbhHRHTB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 03:19:01 -0400
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3A4su1RKFKgYkp2hXIpLqE1MeALOsnbusQ8zAX?=
+ =?us-ascii?q?PiFKOHhom6mj+vxG88506faKslwssR0b+OxoW5PwJE80l6QFgrX5VI3KNGbbUQ?=
+ =?us-ascii?q?CTXeNfBOXZowHIKmnX8+5x8eNaebFiNduYNzNHpPe/zA6mM9tI+rW6zJw=3D?=
+X-IronPort-AV: E=Sophos;i="5.84,330,1620662400"; 
+   d="scan'208";a="113061284"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 18 Aug 2021 15:18:20 +0800
+Received: from G08CNEXMBPEKD06.g08.fujitsu.local (unknown [10.167.33.206])
+        by cn.fujitsu.com (Postfix) with ESMTP id 011744D0D4BD;
+        Wed, 18 Aug 2021 15:18:19 +0800 (CST)
+Received: from G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.80) by
+ G08CNEXMBPEKD06.g08.fujitsu.local (10.167.33.206) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Wed, 18 Aug 2021 15:18:18 +0800
+Received: from FNSTPC.g08.fujitsu.local (10.167.226.45) by
+ G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Wed, 18 Aug 2021 15:18:18 +0800
+From:   Li Zhijian <lizhijian@cn.fujitsu.com>
+To:     <shuah@kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <philip.li@intel.com>,
+        <yifeix.zhu@intel.com>, Li Zhijian <lizhijian@cn.fujitsu.com>,
+        "kernel test robot" <lkp@intel.com>
+Subject: [PATCH] selftests/bpf: enlarge timeout to 3 seconds for test_maps
+Date:   Wed, 18 Aug 2021 15:16:02 +0800
+Message-ID: <20210818071602.2189-1-lizhijian@cn.fujitsu.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-yoursite-MailScanner-ID: 011744D0D4BD.ADCE3
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: lizhijian@fujitsu.com
+X-Spam-Status: No
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For CAN buses to work, a termination resistor has to be present at both
-ends of the bus. This resistor is usually 120 Ohms, other values may be
-required for special bus topologies.
+0Day robot observed that it's easily timeout on a heavy load host.
+-------------------
+ # selftests: bpf: test_maps
+ # Fork 1024 tasks to 'test_update_delete'
+ # Fork 1024 tasks to 'test_update_delete'
+ # Fork 100 tasks to 'test_hashmap'
+ # Fork 100 tasks to 'test_hashmap_percpu'
+ # Fork 100 tasks to 'test_hashmap_sizes'
+ # Fork 100 tasks to 'test_hashmap_walk'
+ # Fork 100 tasks to 'test_arraymap'
+ # Fork 100 tasks to 'test_arraymap_percpu'
+ # Failed sockmap unexpected timeout
+ not ok 3 selftests: bpf: test_maps # exit=1
+ # selftests: bpf: test_lru_map
+ # nr_cpus:8
+-------------------
+Since this test will be scheduled by 0Day to a random host that could have
+only a few cpus(2-8), enlarge the timeout to avoid a false NG report.
 
-This patch adds support for a generic GPIO based CAN termination. The
-resistor value has to be specified via device tree, and it can only be
-attached to or detached from the bus. By default the termination is not
-active.
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Li Zhijian <lizhijian@cn.fujitsu.com>
 ---
- drivers/net/can/dev/dev.c | 66 +++++++++++++++++++++++++++++++++++++++
- include/linux/can/dev.h   |  8 +++++
- 2 files changed, 74 insertions(+)
+ tools/testing/selftests/bpf/test_maps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/dev/dev.c b/drivers/net/can/dev/dev.c
-index 311d8564d611..e3d840b81357 100644
---- a/drivers/net/can/dev/dev.c
-+++ b/drivers/net/can/dev/dev.c
-@@ -15,6 +15,7 @@
- #include <linux/can/dev.h>
- #include <linux/can/skb.h>
- #include <linux/can/led.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/of.h>
+diff --git a/tools/testing/selftests/bpf/test_maps.c b/tools/testing/selftests/bpf/test_maps.c
+index 30cbf5d98f7d..72673e0428fd 100644
+--- a/tools/testing/selftests/bpf/test_maps.c
++++ b/tools/testing/selftests/bpf/test_maps.c
+@@ -985,7 +985,7 @@ static void test_sockmap(unsigned int tasks, void *data)
  
- #define MOD_DESC "CAN device driver interface"
-@@ -400,10 +401,69 @@ void close_candev(struct net_device *dev)
- }
- EXPORT_SYMBOL_GPL(close_candev);
- 
-+static int can_set_termination(struct net_device *ndev, u16 term)
-+{
-+	struct can_priv *priv = netdev_priv(ndev);
-+	int set;
-+
-+	if (term == priv->termination_gpio_ohms[CAN_TERMINATION_GPIO_ENABLED])
-+		set = 1;
-+	else
-+		set = 0;
-+
-+	gpiod_set_value(priv->termination_gpio, set);
-+
-+	return 0;
-+}
-+
-+static int can_get_termination(struct net_device *ndev)
-+{
-+	struct can_priv *priv = netdev_priv(ndev);
-+	struct device *dev = ndev->dev.parent;
-+	struct gpio_desc *gpio;
-+	u32 term;
-+	int ret;
-+
-+	/* Disabling termination by default is the safe choice: Else if many
-+	 * bus participants enable it, no communication is possible at all.
-+	 */
-+	gpio = devm_gpiod_get_optional(dev, "termination", GPIOD_OUT_LOW);
-+	if (IS_ERR(gpio))
-+		return dev_err_probe(dev, PTR_ERR(gpio),
-+				     "Cannot get termination-gpios\n");
-+
-+	if (!gpio)
-+		return 0;
-+
-+	ret = device_property_read_u32(dev, "termination-ohms", &term);
-+	if (ret) {
-+		netdev_err(ndev, "Cannot get termination-ohms: %pe\n",
-+			   ERR_PTR(ret));
-+		return ret;
-+	}
-+
-+	if (term > U16_MAX) {
-+		netdev_err(ndev, "Invalid termination-ohms value (%u > %u)\n",
-+			   term, U16_MAX);
-+		return -EINVAL;
-+	}
-+
-+	priv->termination_const_cnt = ARRAY_SIZE(priv->termination_gpio_ohms);
-+	priv->termination_const = priv->termination_gpio_ohms;
-+	priv->termination_gpio = gpio;
-+	priv->termination_gpio_ohms[CAN_TERMINATION_GPIO_DISABLED] =
-+		CAN_TERMINATION_DISABLED;
-+	priv->termination_gpio_ohms[CAN_TERMINATION_GPIO_ENABLED] = term;
-+	priv->do_set_termination = can_set_termination;
-+
-+	return 0;
-+}
-+
- /* Register the CAN network device */
- int register_candev(struct net_device *dev)
- {
- 	struct can_priv *priv = netdev_priv(dev);
-+	int err;
- 
- 	/* Ensure termination_const, termination_const_cnt and
- 	 * do_set_termination consistency. All must be either set or
-@@ -419,6 +479,12 @@ int register_candev(struct net_device *dev)
- 	if (!priv->data_bitrate_const != !priv->data_bitrate_const_cnt)
- 		return -EINVAL;
- 
-+	if (!priv->termination_const) {
-+		err = can_get_termination(dev);
-+		if (err)
-+			return err;
-+	}
-+
- 	dev->rtnl_link_ops = &can_link_ops;
- 	netif_carrier_off(dev);
- 
-diff --git a/include/linux/can/dev.h b/include/linux/can/dev.h
-index 27b275e463da..2413253e54c7 100644
---- a/include/linux/can/dev.h
-+++ b/include/linux/can/dev.h
-@@ -32,6 +32,12 @@ enum can_mode {
- 	CAN_MODE_SLEEP
- };
- 
-+enum can_termination_gpio {
-+	CAN_TERMINATION_GPIO_DISABLED = 0,
-+	CAN_TERMINATION_GPIO_ENABLED,
-+	CAN_TERMINATION_GPIO_MAX,
-+};
-+
- /*
-  * CAN common private data
-  */
-@@ -55,6 +61,8 @@ struct can_priv {
- 	unsigned int termination_const_cnt;
- 	const u16 *termination_const;
- 	u16 termination;
-+	struct gpio_desc *termination_gpio;
-+	u16 termination_gpio_ohms[CAN_TERMINATION_GPIO_MAX];
- 
- 	enum can_state state;
- 
+ 		FD_ZERO(&w);
+ 		FD_SET(sfd[3], &w);
+-		to.tv_sec = 1;
++		to.tv_sec = 3;
+ 		to.tv_usec = 0;
+ 		s = select(sfd[3] + 1, &w, NULL, NULL, &to);
+ 		if (s == -1) {
 -- 
-2.30.2
+2.32.0
+
+
 
