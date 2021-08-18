@@ -2,87 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A76113EFD5A
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 09:07:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FC1F3EFD6B
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 09:09:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238795AbhHRHIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 03:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58312 "EHLO
+        id S238898AbhHRHJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 03:09:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237071AbhHRHH0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 03:07:26 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82DEBC061764
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 00:06:51 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id v16so1175535ilo.10
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 00:06:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=l8/06Pt7vp+QnEaozw4jU2IiSWTeFeipDK9alaB1bSQ=;
-        b=q2oblBvDMuSmXjMkiVOxmfQnOmOeXGvuC09btNnQgc81x6KPpNGLxgBw0gkKn4Qtuj
-         cUktfn5LWaD3SjIjBBjA03MzktMrq69xgyn1bdFTAUkhcNdNiYjHgPXNhnEfgvwVQE8/
-         Ht4O4lfOLmGFovSoElOJNgsSpXLe2q711J3Svzdq2rDwlPZI6QWs+f1l/82+P/ygzuA/
-         VLSychtg6nTMizzWmm0iqyqNqP3fNyNu05VkC9VpvP9GvR+foRPoNsqeeIaXG3lr9SZS
-         pQ5Y0ghMvO2XNUfOfJGELZ1PP8TebmyUXPWYO7x6DUBiBi5BXsLvmFFb1sgMAmiT+WxA
-         Hx7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=l8/06Pt7vp+QnEaozw4jU2IiSWTeFeipDK9alaB1bSQ=;
-        b=V9ueoKG5+R4VtH3DtTF9hs7ZsuZkuz5Whj/MbkzApoAjE+BQoNS5Ebx6NysXPoMJPn
-         KEvkSSsDl3Xm/Ib7qo3h+kxSx7unn6dBWdsaDLDI9wml5YFZpJ0oLIC6RHgyVBYAGSbR
-         8gGrM2P+4Hhn+bZy545qyN1+MaIN171pH5S+cxW9747lTM42dA8EzTmtRf9b1Ajuch+I
-         rz55SBra/8Nu+HZqkBwx8m9XHKYDIm32zHxDS5E++gE6m6VmEeVYSF9iOYxLyiRxu0Wb
-         I99mWyHW+jo+yWlAbbWGdQYw8o2nDVfIgfUBHamrwu9TGxJ0fEVoFzKUQ82ePS2HK/EX
-         XtLg==
-X-Gm-Message-State: AOAM533M6K5itc0Ieav9CW3DkjJX9JzdlH7prhpwKNFk5jSn6kbbdl3R
-        YkA5Xg0lBYmgbNNX4RTT8FHL7duhsZSFdWv7PqA=
-X-Google-Smtp-Source: ABdhPJwTyYHAGrxdalNU4Js4e0rtyC/UBOPCjsjWeK8pSwfTSQeLfwtA0xM1AO6uR58+Z1jzdz+HxwXnTUoy6dw7zSI=
-X-Received: by 2002:a05:6e02:12b3:: with SMTP id f19mr5320663ilr.234.1629270410700;
- Wed, 18 Aug 2021 00:06:50 -0700 (PDT)
-MIME-Version: 1.0
-Reply-To: godwinppter@gmail.com
-Sender: bandafrancisca915@gmail.com
-Received: by 2002:a6b:b854:0:0:0:0:0 with HTTP; Wed, 18 Aug 2021 00:06:50
- -0700 (PDT)
-From:   Godwin Pete <godwinnpeter@gmail.com>
-Date:   Wed, 18 Aug 2021 09:06:50 +0200
-X-Google-Sender-Auth: B4v6EfKRrsHX8kuCkYrSSk0Vy_g
-Message-ID: <CAFC7EqsQeArPfC5nNu4hByW6zG4vkeSczGikWUxD6U456UQ2bw@mail.gmail.com>
-Subject: For your information
-To:     undisclosed-recipients:;
+        with ESMTP id S238745AbhHRHJj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 03:09:39 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD82C061764;
+        Wed, 18 Aug 2021 00:09:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=ym1uD8O5zOub+cpikC9nk8w/uDg8kA95v0fuB8biuWo=;
+        t=1629270544; x=1630480144; b=p1Ld4iQXUw+HDTOMXfbZh8MdkvWZs01KD6dhfc0MHu3ANOJ
+        kjikpASrlMR5ErUwflDXgeN/ePfPdk6uHK5YkYndKFme44SGe7PFapUGhCkd4wr+hgDtuxxi1Rkpn
+        WvMjnMdJMhWMkyETqbRbmGHaQg7QVhzW15MAkXgIMhgfH6px5KEsTbRnJlHYePY3dmbZwub+3EJFn
+        VoTMq7pLiGeW5+Ytg3N/GchGICPxmp+mn2SzwyDGShHa3UdD/h5wGj+yNYTQRsh2X/isgBAOfRWYa
+        QpDGlH4bQR6Vtjrozmt0lhENfx+Evj2JqLHbf2Idbo/xkNnblGpg3bdy8ycEpkKg==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94.2)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1mGFgz-00CbW0-CL; Wed, 18 Aug 2021 09:08:53 +0200
+Message-ID: <11db2cdc5316b51f3fa2f34e813a458e455c763d.camel@sipsolutions.net>
+Subject: Re: [PATCH v2 44/63] mac80211: Use memset_after() to clear tx status
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        dri-devel@lists.freedesktop.org, linux-staging@lists.linux.dev,
+        linux-block@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-hardening@vger.kernel.org
+Date:   Wed, 18 Aug 2021 09:08:52 +0200
+In-Reply-To: <20210818060533.3569517-45-keescook@chromium.org>
+References: <20210818060533.3569517-1-keescook@chromium.org>
+         <20210818060533.3569517-45-keescook@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, 2021-08-17 at 23:05 -0700, Kees Cook wrote:
+> 
+> @@ -275,12 +275,11 @@ static void carl9170_tx_release(struct kref *ref)
+>  	if (WARN_ON_ONCE(!ar))
+>  		return;
+>  
+> 
+> 
+> 
+> -	BUILD_BUG_ON(
+> -	    offsetof(struct ieee80211_tx_info, status.ack_signal) != 20);
+> -
+> -	memset(&txinfo->status.ack_signal, 0,
+> -	       sizeof(struct ieee80211_tx_info) -
+> -	       offsetof(struct ieee80211_tx_info, status.ack_signal));
+> +	/*
+> +	 * Should this call ieee80211_tx_info_clear_status() instead of clearing
+> +	 * manually? txinfo->status.rates do not seem to be used here.
+> +	 */
 
-I just want to use this little opportunity to inform you about my
-success towards the transfer. I'm currently in India for an investment
-with part of my share, after completing the transfer with an Indian
-business man. But i will visit your country, next year. After the
-completion of my project here in India. Please, contact my secretary
-to send you the (ATM) card which I've already credited with the sum of
-($500,000.00). Just contact her to help you in receiving the (ATM)
-card. I've explained everything to her before my trip to India. This
-is what I can do for you because, you couldn't help in the transfer,
-but for the fact that you're the person whom I've contacted initially,
-for the transfer. I decided to give this ($500,000.00) as a
-compensation for being contacted initially for the transfer. I always
-try to make the difference, in dealing with people any time I come in
-contact with them. I'm also trying to show that I'm quite a different
-person from others whose may have a different purpose within them. I
-believe that you will render some help to me when I, will visit your
-country, for another investment there. So contact my secretary for the
-card, Her contact are as follows,
+Since you insist, I went digging :)
 
-Full name: Mrs, Jovita Dumuije,
-Country: Burkina Faso
-Email: jovitadumuije@gmail.com
+It should not, carl9170_tx_fill_rateinfo() has filled the rate
+information before we get to this point.
 
-Thanks, and hope for a good corporation with you in future.
+johannes
 
-Godwin Peter,
