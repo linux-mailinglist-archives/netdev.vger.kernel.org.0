@@ -2,70 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B8493F0A76
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 19:47:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5386A3F0A79
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 19:48:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229703AbhHRRsV convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 18 Aug 2021 13:48:21 -0400
-Received: from lixid.tarent.de ([193.107.123.118]:52320 "EHLO mail.lixid.net"
+        id S230075AbhHRRtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 13:49:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52182 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229522AbhHRRsU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Aug 2021 13:48:20 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.lixid.net (MTA) with ESMTP id 9BDAD140BB7;
-        Wed, 18 Aug 2021 19:47:44 +0200 (CEST)
-Received: from mail.lixid.net ([127.0.0.1])
-        by localhost (mail.lixid.net [127.0.0.1]) (MFA, port 10024) with LMTP
-        id 0kEeqtMHrNMF; Wed, 18 Aug 2021 19:47:38 +0200 (CEST)
-Received: from tglase-nb.lan.tarent.de (vpn-172-34-0-14.dynamic.tarent.de [172.34.0.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.lixid.net (MTA) with ESMTPS id 32BE4140978;
-        Wed, 18 Aug 2021 19:47:38 +0200 (CEST)
-Received: by tglase-nb.lan.tarent.de (Postfix, from userid 1000)
-        id DB8A35226D7; Wed, 18 Aug 2021 19:47:37 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by tglase-nb.lan.tarent.de (Postfix) with ESMTP id D855652238E;
-        Wed, 18 Aug 2021 19:47:37 +0200 (CEST)
-Date:   Wed, 18 Aug 2021 19:47:37 +0200 (CEST)
-From:   Thorsten Glaser <t.glaser@tarent.de>
-To:     Oleg <lego12239@yandex.ru>
-cc:     netdev@vger.kernel.org
-Subject: Re: ipv6 ::1 and lo dev
-In-Reply-To: <20210818165919.GA24787@legohost>
-Message-ID: <fb3e3ad3-7bc3-9420-d3f6-e9bae91f4cd@tarent.de>
-References: <20210818165919.GA24787@legohost>
-Content-Language: de-DE-1901
+        id S229475AbhHRRtD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Aug 2021 13:49:03 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 528AD610FE;
+        Wed, 18 Aug 2021 17:48:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629308908;
+        bh=zqcSN8ZGJ3s8loJMchk4AR8wKBbnZFyztg2k5c0/Osc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=IhovrD4wgmaF314dMXzAmi4/DSDqlvgZsE+nVDMNaDI4NXPM3ekZnEikDfp1co8Ax
+         IfDD3gNGVAA15MVXBV1yGI60iVTVq6FHppmk7IFFB8mXBnOw/RfBqLw1S3ncijhJet
+         JemOhyM3h1i8/k4qF/RkCXU7VHSrs4B5Gl++CmB1f9c5CaEtxahow6ytyiTcr4rV0v
+         FqTTFSrkQuGFkrLxPSna+duobnOXf5L47QbgtvezFLxV//vykyGZsTLt4xYQFvF+YP
+         GcpZQTV0g6a+SOsw1VdLCLuezuubBE5KB98A5+S+i7MFp5WRK97PsNe78jZTaMyrbV
+         tJLvYLp6E5r3A==
+Received: by mail-lf1-f42.google.com with SMTP id t9so6341838lfc.6;
+        Wed, 18 Aug 2021 10:48:28 -0700 (PDT)
+X-Gm-Message-State: AOAM531lFnSTnFjh1qAmY2IWvnVl2DfLfmmonick8cRlLk/MIZ6lhqCn
+        9wqoGATQw3rS+AOwI+UuhHWF6O3rBCuC7VtHwHo=
+X-Google-Smtp-Source: ABdhPJzJ5z9zjxwGjwH8G46iwqR2FJHrzZt9Iwx23Ux3DbKP6t/DL6ge2Jjw2vnOIw+SKyMuVgaNMF+WcH+gjg8MxJ8=
+X-Received: by 2002:ac2:44c3:: with SMTP id d3mr7198748lfm.281.1629308906675;
+ Wed, 18 Aug 2021 10:48:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+References: <20210818105820.91894-1-liuxu623@gmail.com> <20210818105820.91894-3-liuxu623@gmail.com>
+In-Reply-To: <20210818105820.91894-3-liuxu623@gmail.com>
+From:   Song Liu <song@kernel.org>
+Date:   Wed, 18 Aug 2021 10:48:15 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7KmO0ErC3_KySMzag1bnbJAEAmXgOQS9jd8-scFai=tg@mail.gmail.com>
+Message-ID: <CAPhsuW7KmO0ErC3_KySMzag1bnbJAEAmXgOQS9jd8-scFai=tg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 2/2] selftests/bpf: Test for get_netns_cookie
+To:     Xu Liu <liuxu623@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Aug 2021, Oleg wrote:
+On Wed, Aug 18, 2021 at 4:00 AM Xu Liu <liuxu623@gmail.com> wrote:
+>
+> Add test to use get_netns_cookie() from BPF_PROG_TYPE_SOCK_OPS.
+>
+> Signed-off-by: Xu Liu <liuxu623@gmail.com>
 
-> I try to replace ::1/128 ipv6 address on lo dev with ::1/112 to
-> access more than 1 address(like with ipv4 127.0.0.1/8). But i get
+Acked-by: Song Liu <songliubraving@fb.com>
 
-AIUI this is not possible in IPv6, only :: and ::1 are reserved,
-the rest of ::/96 is IPv4-compatible IPv6 addresses.
-
-I never understood why you’d want more than one address for loopback
-anyway (in my experience, the more addresses a host has, the more
-confused it’ll get about which ones to use for what).
-
-bye,
-//mirabilos
--- 
-Infrastrukturexperte • tarent solutions GmbH
-Am Dickobskreuz 10, D-53121 Bonn • http://www.tarent.de/
-Telephon +49 228 54881-393 • Fax: +49 228 54881-235
-HRB AG Bonn 5168 • USt-ID (VAT): DE122264941
-Geschäftsführer: Dr. Stefan Barth, Kai Ebenrett, Boris Esser, Alexander Steeg
-
-*************************************************
-
-Mit dem tarent-Newsletter nichts mehr verpassen: www.tarent.de/newsletter
-
-*************************************************
+> ---
+>  .../selftests/bpf/prog_tests/netns_cookie.c   | 61 +++++++++++++++++++
+>  .../selftests/bpf/progs/netns_cookie_prog.c   | 39 ++++++++++++
+>  2 files changed, 100 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/netns_cookie.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/netns_cookie_prog.c
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/netns_cookie.c b/tools/testing/selftests/bpf/prog_tests/netns_cookie.c
+> new file mode 100644
+> index 000000000000..6f3cd472fb65
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/netns_cookie.c
+> @@ -0,0 +1,61 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +
+> +#include <test_progs.h>
+> +#include "netns_cookie_prog.skel.h"
+> +#include "network_helpers.h"
+> +
+> +#ifndef SO_NETNS_COOKIE
+> +#define SO_NETNS_COOKIE 71
+> +#endif
+> +
+> +static int duration;
+> +
+> +void test_netns_cookie(void)
+> +{
+> +       int server_fd = 0, client_fd = 0, cgroup_fd = 0, err = 0, val = 0;
+> +       struct netns_cookie_prog *skel;
+> +       uint64_t cookie_expected_value;
+> +       socklen_t vallen = sizeof(cookie_expected_value);
+> +
+> +       skel = netns_cookie_prog__open_and_load();
+> +       if (!ASSERT_OK_PTR(skel, "skel_open"))
+> +               return;
+> +
+> +       cgroup_fd = test__join_cgroup("/netns_cookie");
+> +       if (CHECK(cgroup_fd < 0, "join_cgroup", "cgroup creation failed\n"))
+> +               goto out;
+> +
+> +       skel->links.get_netns_cookie_sockops = bpf_program__attach_cgroup(
+> +               skel->progs.get_netns_cookie_sockops, cgroup_fd);
+> +       if (!ASSERT_OK_PTR(skel->links.get_netns_cookie_sockops, "prog_attach"))
+> +               goto close_cgroup_fd;
+> +
+> +       server_fd = start_server(AF_INET6, SOCK_STREAM, "::1", 0, 0);
+> +       if (CHECK(server_fd < 0, "start_server", "errno %d\n", errno))
+> +               goto close_cgroup_fd;
+> +
+> +       client_fd = connect_to_fd(server_fd, 0);
+> +       if (CHECK(client_fd < 0, "connect_to_fd", "errno %d\n", errno))
+> +               goto close_server_fd;
+> +
+> +       err = bpf_map_lookup_elem(bpf_map__fd(skel->maps.netns_cookies),
+> +                               &client_fd, &val);
+> +       if (!ASSERT_OK(err, "map_lookup(socket_cookies)"))
+> +               goto close_client_fd;
+> +
+> +       err = getsockopt(client_fd, SOL_SOCKET, SO_NETNS_COOKIE,
+> +                               &cookie_expected_value, &vallen);
+> +       if (!ASSERT_OK(err, "getsockopt)"))
+> +               goto close_client_fd;
+> +
+> +       ASSERT_EQ(val, cookie_expected_value, "cookie_value");
+> +
+> +close_client_fd:
+> +       close(client_fd);
+> +close_server_fd:
+> +       close(server_fd);
+> +close_cgroup_fd:
+> +       close(cgroup_fd);
+> +out:
+> +       netns_cookie_prog__destroy(skel);
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/netns_cookie_prog.c b/tools/testing/selftests/bpf/progs/netns_cookie_prog.c
+> new file mode 100644
+> index 000000000000..4ed8d75aa299
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/netns_cookie_prog.c
+> @@ -0,0 +1,39 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +
+> +#include "vmlinux.h"
+> +
+> +#include <bpf/bpf_helpers.h>
+> +
+> +#define AF_INET6 10
+> +
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_SK_STORAGE);
+> +       __uint(map_flags, BPF_F_NO_PREALLOC);
+> +       __type(key, int);
+> +       __type(value, int);
+> +} netns_cookies SEC(".maps");
+> +
+> +SEC("sockops")
+> +int get_netns_cookie_sockops(struct bpf_sock_ops *ctx)
+> +{
+> +       struct bpf_sock *sk = ctx->sk;
+> +       int *cookie;
+> +
+> +       if (ctx->family != AF_INET6)
+> +               return 1;
+> +
+> +       if (ctx->op != BPF_SOCK_OPS_TCP_CONNECT_CB)
+> +               return 1;
+> +
+> +       if (!sk)
+> +               return 1;
+> +
+> +       cookie = bpf_sk_storage_get(&netns_cookies, sk, 0,
+> +                               BPF_SK_STORAGE_GET_F_CREATE);
+> +       if (!cookie)
+> +               return 1;
+> +
+> +       *cookie = bpf_get_netns_cookie(ctx);
+> +
+> +       return 1;
+> +}
+> --
+> 2.28.0
+>
