@@ -2,69 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05B663EFC29
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 08:20:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E4853EFC7B
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 08:25:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240838AbhHRGTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 02:19:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45518 "EHLO
+        id S240382AbhHRGZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 02:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238444AbhHRGPz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 02:15:55 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD29C0363F2
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:14:17 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id e19so1121683pla.10
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:14:17 -0700 (PDT)
+        with ESMTP id S238324AbhHRGY4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 02:24:56 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9850DC0611C2
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:24:18 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id m26so1104842pff.3
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:24:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0MMWsXNyPTiNeiAP5gS1SC+QG9nXJlmhwzZVB05s6vU=;
-        b=lFnsOWBb7INVqCBC7qdAJtdwm7/YI/zQgCoP3x3m0bM+t5LwRECJJtnUsDrlQxjrhX
-         QHqsidPkWI4X7e2ihavui/Ywcxlnw/aFhClReU+sv9f1EOAIRk2xMvoRioWP+UFLSFBK
-         RCfXzgJGwfpUuLe9H9dmyKkDNrcpU89QSc2mo=
+        bh=cNmalVG+pbxPr3mreA9zKEEd2H4tBC2vGc39RgbA9Tk=;
+        b=T0mB0uwkd+Bwr8IQl/3YD/ORZ/h6GcZHHAfw4qTPS7nphYkQehERGSWj59cSMbAgzk
+         KKR0vMG5a88SolHec9ej2zYoy9ZdaOnCLwqfmIhA/oS2OWR89diIyEBz4j3SQO5zhg8O
+         FN6UWEuMg4e4CXhSW8Hsl565xQ91qeHwCgvM4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0MMWsXNyPTiNeiAP5gS1SC+QG9nXJlmhwzZVB05s6vU=;
-        b=NN+a/c3CgTfWLH0NSUa/cKh7rsApcp0gNUDhSiDqSEImCJ+kzFqIDh0jaOw9DJi1OJ
-         6oTnri/wXXTM7q//FyrEYxkx7KpbFQa9TuMaB5xPl1AupzXBeKO7IYfikAxqPE2+VeAW
-         dBcLn5jOaINcRkeuk4So+tHDPhEad7n1JVtoOCKWmM2jpi4X78AQoLaxuGnbXvht2qsF
-         dxMy8kcJPhYDdPihJHAh35BdTgjM+3NdnsbW1RLHfgBVHn3FCZuREaa2/GtAzdYTH7vB
-         A6Fms/YCv05xFmXBsyEaXNNUl9SWDoGWqoSk5IUhFiniKe1CQPHqeCDQFIAJfiW3+JEb
-         dqiA==
-X-Gm-Message-State: AOAM530xzvKFV4sc8cXmZVHe5ysPDa1rQ32rzKB6mlhH9TxJkkNG6mze
-        2cRk0blgZYVaD47mTIPMnacpPg==
-X-Google-Smtp-Source: ABdhPJzuLn/Q432TdsC9Yx7ftRK4PSNzWyeMnAwx3i8tWLw6BmbXc/OzOJqqzYHaCmof15Jus1chGA==
-X-Received: by 2002:a17:90a:f3d2:: with SMTP id ha18mr7684231pjb.232.1629267256892;
-        Tue, 17 Aug 2021 23:14:16 -0700 (PDT)
+        bh=cNmalVG+pbxPr3mreA9zKEEd2H4tBC2vGc39RgbA9Tk=;
+        b=c+5STsN4GFwnAWU5tfZ7SaohmnkEwbPTKsSb/owAqnOGw/X+0MvIEk2SAwFlE3M6lM
+         LS8NgzlHFFFfN3HgxrZ6kYLtJ9btM+9J1eXhpjghZSznT5vw09w3U0ymi+UZkndWH+db
+         GAvEQVDwX9Itv6P3D/mmx/tuRpSwBin3opzNdJoKVaokCDU491Od+N1fkg62KIiA6gON
+         rmC8yvwLZhjlKXfgvSMhAjX6vEye3YCkQuTEstLKHxxe9kPk6Pn8akLj4HsBfrYpHaea
+         nbStIi28K80Bbr20drwhCFEMLY4c++yJTN5q9p0z++VTInJ5ItYP/z2z9h1psjxiPbs6
+         D2qA==
+X-Gm-Message-State: AOAM533Hc8T8uktmdTScjuko+jxIy8bl5VDpqJ/dROeabnXnp6RvbcbD
+        o1DGuPyMWxqmQ+45O7d/oA287A==
+X-Google-Smtp-Source: ABdhPJzoElJdRbLlcznm9p1v4fqVMxPQQbVFbTyyeunVo+q1c4LPSW+dleh3870/C7uQRKu+J9kAIA==
+X-Received: by 2002:aa7:82cf:0:b029:3c4:4daa:fd68 with SMTP id f15-20020aa782cf0000b02903c44daafd68mr7700665pfn.66.1629267858224;
+        Tue, 17 Aug 2021 23:24:18 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id y64sm5430806pgy.32.2021.08.17.23.14.14
+        by smtp.gmail.com with ESMTPSA id 64sm4749129pfy.114.2021.08.17.23.24.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Aug 2021 23:14:15 -0700 (PDT)
+        Tue, 17 Aug 2021 23:24:15 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>, David Airlie <airlied@linux.ie>,
-        Lee Jones <lee.jones@linaro.org>,
-        dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+Cc:     Kees Cook <keescook@chromium.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
         linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         linux-hardening@vger.kernel.org
-Subject: [PATCH v2 20/63] drm/mga/mga_ioc32: Use struct_group() for memcpy() region
-Date:   Tue, 17 Aug 2021 23:04:50 -0700
-Message-Id: <20210818060533.3569517-21-keescook@chromium.org>
+Subject: [PATCH v2 21/63] net/mlx5e: Use struct_group() for memcpy() region
+Date:   Tue, 17 Aug 2021 23:04:51 -0700
+Message-Id: <20210818060533.3569517-22-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210818060533.3569517-1-keescook@chromium.org>
 References: <20210818060533.3569517-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4026; h=from:subject; bh=qstupb1mRvuiCQ1RTR6k6oV2NxQS+tS8y2enFqRpd68=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhHKMiDAfxk4XGgNDwyOny5QMoIdZacepKSLc24F9z Lo7XG+GJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYRyjIgAKCRCJcvTf3G3AJh6oD/ 9Ovp0Ql0AYVAVX1IIx8UFncQNMHylWbLYYu/pPeuq//n2vP3YxPODUvUsOhKeGvOP827UQo0zYW5iy tgiG1WBc8ebgh5QPmWb88QrAINPUhtbBp+Ot3NMw60te7sqbHEXsxkZV30DmTsosmCxyISKjyVvCWu k9+q0dosQewqL6/+1hWYp1uFW9SNaxLwoQPTdmTeeACtkvBcffo8L6czjWkLiNyOMCTdoqoQssvvRu zHaZ9swQIAAFRlHyaIwcnYCD8acVZhrpgLkn3SFlhEWx/CsFsuWCNm8ykKqoemb7waZs2mfagTLdNd j9c/hMpmgkGT5eBVZm8ZZc0VIpiQDZFHDrAdet4mxrXfRctgoALoLZZXdvZ6hovyaCJEmAL4dpEmzB SfbVedU11Uqk4gqtVGAPiExd0oEsgw9aH5Yi6f5Kq0NHSdjbUKSXAMoY/rdvqf/QkxZBOmr8Wsmgyh uaHkoAimq3GMz0bp3wb+4kSgsFxg4xCu45/FPrJc/fxu4K2kRpOUDG1wDjMc1G1trTeP21//dqz/DY dcmxUTtVuVe2fPww119RF2WXn3/GxtNi5RK7uTtxCgWr96J2MocjYw5//xWdXRfEEWLjXFK52hcX2N rEw10lDXzkEK6IQwMathNTugVFdbD4ID3UeC/FzYInnBnFPluTRksv4HTSmA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2287; h=from:subject; bh=H1NJrCbG/+gkFDDOH1HKv+jRsuxCwz9I+sItTuJPxig=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhHKMie0CZ8QknrFWsSjQNv2Z5IJELFExqf7lN7Wwc 5aQQO+qJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYRyjIgAKCRCJcvTf3G3AJhJRD/ 96K2w+o05X7hhRITOYKyJKbH37CP3Ty7ALSuqaRioqi5222xg1OlnDlOmTcxm36KPLSYb9gNOPa98l 7az22zZD/h+540iMnPR/nKUQpztke9KGCWfI6q0E264noieiOeBk645rAPlBm4GwcsyT0YYPKqC1ZQ UTpt6I53LSvfaDvqvAqf+r8OlgAEKrvseNyt6qPuA13XUHguBBpovSDddi8OEqv/t5Q2wj7UEMmW9J IV+m0C3UpQKXOeOhTy23oZX7PjawKd6/ah6FLBqp6AKcedGBTDdkEtjHbu8o9trfR1W1JUsvMCcv9S 8dO2gsGyuF0n5SykLaKxqeSKyvE8fjXBmALhef7xIECWwU3oMeXXcDnEKC00an8WKoTI/p3sdBuwGx hjBgHLa6fYkRSNX07ZrUHUpURPOef9SB6ijFamo9WBDRCJqk7AaNFp4cIkmEoupJpZdmr/Cm7s7jzG oQUq+6Tbv7TkwMP3GX9S0UgzY5hbFKCx8+nqIQ8qQxp/nmFHZZ9/B1u/uzYcV0mZ0Z2HD8SsYnTNtT +36VQ5kEs/5D+CCjDnJyxpY0zbiwB11VKD/JrZ8xY1p1Y4YjDHvtOjkykedRvOU0ltxWDBDoGf26q8 mtK38NkfvvezjBrpRzYDrxRYSxWAIcOs6jVAkBvNvKCrsZueeLXchKsyUi4w==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -75,113 +78,56 @@ In preparation for FORTIFY_SOURCE performing compile-time and run-time
 field bounds checking for memcpy(), memmove(), and memset(), avoid
 intentionally writing across neighboring fields.
 
-Use struct_group() in struct drm32_mga_init around members chipset, sgram,
-maccess, fb_cpp, front_offset, front_pitch, back_offset, back_pitch,
-depth_cpp, depth_offset, depth_pitch, texture_offset, and texture_size,
-so they can be referenced together. This will allow memcpy() and sizeof()
-to more easily reason about sizes, improve readability, and avoid future
-warnings about writing beyond the end of chipset.
+Use struct_group() in struct vlan_ethhdr around members h_dest and
+h_source, so they can be referenced together. This will allow memcpy()
+and sizeof() to more easily reason about sizes, improve readability,
+and avoid future warnings about writing beyond the end of h_dest.
 
-"pahole" shows no size nor member offset changes to struct drm32_mga_init.
-"objdump -d" shows no meaningful object code changes (i.e. only source
-line number induced differences and optimizations).
+"pahole" shows no size nor member offset changes to struct vlan_ethhdr.
+"objdump -d" shows no object code changes.
 
-Note that since this is a UAPI header, __struct_group() is used
-directly.
-
-Cc: David Airlie <airlied@linux.ie>
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: dri-devel@lists.freedesktop.org
+Cc: Saeed Mahameed <saeedm@nvidia.com>
+Cc: Leon Romanovsky <leon@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org
+Cc: linux-rdma@vger.kernel.org
 Signed-off-by: Kees Cook <keescook@chromium.org>
-Acked-by: Daniel Vetter <daniel@ffwll.ch>
-Link: https://lore.kernel.org/lkml/YQKa76A6XuFqgM03@phenom.ffwll.local
 ---
- drivers/gpu/drm/mga/mga_ioc32.c | 27 ++++++++++++++-------------
- include/uapi/drm/mga_drm.h      | 22 ++++++++++++----------
- 2 files changed, 26 insertions(+), 23 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_tx.c | 2 +-
+ include/linux/if_vlan.h                         | 6 ++++--
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/mga/mga_ioc32.c b/drivers/gpu/drm/mga/mga_ioc32.c
-index 4fd4de16cd32..894472921c30 100644
---- a/drivers/gpu/drm/mga/mga_ioc32.c
-+++ b/drivers/gpu/drm/mga/mga_ioc32.c
-@@ -38,16 +38,18 @@
- typedef struct drm32_mga_init {
- 	int func;
- 	u32 sarea_priv_offset;
--	int chipset;
--	int sgram;
--	unsigned int maccess;
--	unsigned int fb_cpp;
--	unsigned int front_offset, front_pitch;
--	unsigned int back_offset, back_pitch;
--	unsigned int depth_cpp;
--	unsigned int depth_offset, depth_pitch;
--	unsigned int texture_offset[MGA_NR_TEX_HEAPS];
--	unsigned int texture_size[MGA_NR_TEX_HEAPS];
-+	struct_group(always32bit,
-+		int chipset;
-+		int sgram;
-+		unsigned int maccess;
-+		unsigned int fb_cpp;
-+		unsigned int front_offset, front_pitch;
-+		unsigned int back_offset, back_pitch;
-+		unsigned int depth_cpp;
-+		unsigned int depth_offset, depth_pitch;
-+		unsigned int texture_offset[MGA_NR_TEX_HEAPS];
-+		unsigned int texture_size[MGA_NR_TEX_HEAPS];
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+index c63d78eda606..39942a952736 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+@@ -207,7 +207,7 @@ static inline void mlx5e_insert_vlan(void *start, struct sk_buff *skb, u16 ihs)
+ 	int cpy1_sz = 2 * ETH_ALEN;
+ 	int cpy2_sz = ihs - cpy1_sz;
+ 
+-	memcpy(vhdr, skb->data, cpy1_sz);
++	memcpy(&vhdr->addrs, skb->data, cpy1_sz);
+ 	vhdr->h_vlan_proto = skb->vlan_proto;
+ 	vhdr->h_vlan_TCI = cpu_to_be16(skb_vlan_tag_get(skb));
+ 	memcpy(&vhdr->h_vlan_encapsulated_proto, skb->data + cpy1_sz, cpy2_sz);
+diff --git a/include/linux/if_vlan.h b/include/linux/if_vlan.h
+index 41a518336673..45aad461aa34 100644
+--- a/include/linux/if_vlan.h
++++ b/include/linux/if_vlan.h
+@@ -46,8 +46,10 @@ struct vlan_hdr {
+  *	@h_vlan_encapsulated_proto: packet type ID or len
+  */
+ struct vlan_ethhdr {
+-	unsigned char	h_dest[ETH_ALEN];
+-	unsigned char	h_source[ETH_ALEN];
++	struct_group(addrs,
++		unsigned char	h_dest[ETH_ALEN];
++		unsigned char	h_source[ETH_ALEN];
 +	);
- 	u32 fb_offset;
- 	u32 mmio_offset;
- 	u32 status_offset;
-@@ -67,9 +69,8 @@ static int compat_mga_init(struct file *file, unsigned int cmd,
- 
- 	init.func = init32.func;
- 	init.sarea_priv_offset = init32.sarea_priv_offset;
--	memcpy(&init.chipset, &init32.chipset,
--		offsetof(drm_mga_init_t, fb_offset) -
--		offsetof(drm_mga_init_t, chipset));
-+	memcpy(&init.always32bit, &init32.always32bit,
-+	       sizeof(init32.always32bit));
- 	init.fb_offset = init32.fb_offset;
- 	init.mmio_offset = init32.mmio_offset;
- 	init.status_offset = init32.status_offset;
-diff --git a/include/uapi/drm/mga_drm.h b/include/uapi/drm/mga_drm.h
-index 8c4337548ab5..2978a435dff9 100644
---- a/include/uapi/drm/mga_drm.h
-+++ b/include/uapi/drm/mga_drm.h
-@@ -279,20 +279,22 @@ typedef struct drm_mga_init {
- 
- 	unsigned long sarea_priv_offset;
- 
--	int chipset;
--	int sgram;
-+	__struct_group(/* no tye */, always32bit, /* no attrs */,
-+		int chipset;
-+		int sgram;
- 
--	unsigned int maccess;
-+		unsigned int maccess;
- 
--	unsigned int fb_cpp;
--	unsigned int front_offset, front_pitch;
--	unsigned int back_offset, back_pitch;
-+		unsigned int fb_cpp;
-+		unsigned int front_offset, front_pitch;
-+		unsigned int back_offset, back_pitch;
- 
--	unsigned int depth_cpp;
--	unsigned int depth_offset, depth_pitch;
-+		unsigned int depth_cpp;
-+		unsigned int depth_offset, depth_pitch;
- 
--	unsigned int texture_offset[MGA_NR_TEX_HEAPS];
--	unsigned int texture_size[MGA_NR_TEX_HEAPS];
-+		unsigned int texture_offset[MGA_NR_TEX_HEAPS];
-+		unsigned int texture_size[MGA_NR_TEX_HEAPS];
-+	);
- 
- 	unsigned long fb_offset;
- 	unsigned long mmio_offset;
+ 	__be16		h_vlan_proto;
+ 	__be16		h_vlan_TCI;
+ 	__be16		h_vlan_encapsulated_proto;
 -- 
 2.30.2
 
