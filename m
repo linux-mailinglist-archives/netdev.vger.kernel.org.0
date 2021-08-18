@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BB143EFD9E
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 09:15:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B60973EFD92
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 09:12:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239812AbhHRHOP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 03:14:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59766 "EHLO
+        id S239487AbhHRHNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 03:13:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239540AbhHRHNT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 03:13:19 -0400
+        with ESMTP id S239251AbhHRHNQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 03:13:16 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BF95C0612A3
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3977DC0613D9
         for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 00:12:42 -0700 (PDT)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1mGFkY-00050G-M3; Wed, 18 Aug 2021 09:12:34 +0200
+        id 1mGFkY-00050H-Sr; Wed, 18 Aug 2021 09:12:34 +0200
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1mGFkX-0005NQ-NS; Wed, 18 Aug 2021 09:12:33 +0200
+        id 1mGFkY-0005NZ-K8; Wed, 18 Aug 2021 09:12:34 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Wolfgang Grandegger <wg@grandegger.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
@@ -32,10 +32,12 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         kernel@pengutronix.de, David Jander <david@protonic.nl>
-Subject: [PATCH v2 0/3] can: provide GPIO based termination 
-Date:   Wed, 18 Aug 2021 09:12:29 +0200
-Message-Id: <20210818071232.20585-1-o.rempel@pengutronix.de>
+Subject: [PATCH v3 1/3] dt-bindings: can-controller: add support for termination-gpios
+Date:   Wed, 18 Aug 2021 09:12:30 +0200
+Message-Id: <20210818071232.20585-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210818071232.20585-1-o.rempel@pengutronix.de>
+References: <20210818071232.20585-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
@@ -46,25 +48,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-changes v3:
-- use u32 instead of u16 for termination-ohms
-- extend error handling
+Some boards provide GPIO controllable termination resistor. Provide
+binding to make use of it.
 
-changes v2:
-- add CAN_TERMINATION_GPIO_MAX
-- remove fsl,scu-index from yaml example. It is not used on imx6q
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ .../devicetree/bindings/net/can/can-controller.yaml      | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Oleksij Rempel (3):
-  dt-bindings: can-controller: add support for termination-gpios
-  dt-bindings: can: fsl,flexcan: enable termination-* bindings
-  can: dev: provide optional GPIO based termination support
-
- .../bindings/net/can/can-controller.yaml      |  9 +++
- .../bindings/net/can/fsl,flexcan.yaml         | 17 +++++
- drivers/net/can/dev/dev.c                     | 66 +++++++++++++++++++
- include/linux/can/dev.h                       |  8 +++
- 4 files changed, 100 insertions(+)
-
+diff --git a/Documentation/devicetree/bindings/net/can/can-controller.yaml b/Documentation/devicetree/bindings/net/can/can-controller.yaml
+index 9cf2ae097156..1f0e98051074 100644
+--- a/Documentation/devicetree/bindings/net/can/can-controller.yaml
++++ b/Documentation/devicetree/bindings/net/can/can-controller.yaml
+@@ -13,6 +13,15 @@ properties:
+   $nodename:
+     pattern: "^can(@.*)?$"
+ 
++  termination-gpios:
++    description: GPIO pin to enable CAN bus termination.
++    maxItems: 1
++
++  termination-ohms:
++    description: The resistance value of the CAN bus termination resistor.
++    minimum: 1
++    maximum: 65535
++
+ additionalProperties: true
+ 
+ ...
 -- 
 2.30.2
 
