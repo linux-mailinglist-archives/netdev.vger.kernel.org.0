@@ -2,99 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E621D3F09E6
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 19:06:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B6AD3F09C4
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 19:01:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231685AbhHRRHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 13:07:22 -0400
-Received: from forward104o.mail.yandex.net ([37.140.190.179]:35941 "EHLO
-        forward104o.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229784AbhHRRHU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 13:07:20 -0400
-X-Greylist: delayed 458 seconds by postgrey-1.27 at vger.kernel.org; Wed, 18 Aug 2021 13:07:20 EDT
-Received: from forward103q.mail.yandex.net (forward103q.mail.yandex.net [IPv6:2a02:6b8:c0e:50:0:640:b21c:d009])
-        by forward104o.mail.yandex.net (Yandex) with ESMTP id AC27A9426AB
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 19:59:05 +0300 (MSK)
-Received: from vla1-2a93b1d0b0e8.qloud-c.yandex.net (vla1-2a93b1d0b0e8.qloud-c.yandex.net [IPv6:2a02:6b8:c0d:1e22:0:640:2a93:b1d0])
-        by forward103q.mail.yandex.net (Yandex) with ESMTP id A87EE61E0002
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 19:59:05 +0300 (MSK)
-Received: from vla1-62318bfe5573.qloud-c.yandex.net (vla1-62318bfe5573.qloud-c.yandex.net [2a02:6b8:c0d:3819:0:640:6231:8bfe])
-        by vla1-2a93b1d0b0e8.qloud-c.yandex.net (mxback/Yandex) with ESMTP id FySNkkO1iU-x5ICPm4W;
-        Wed, 18 Aug 2021 19:59:05 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1629305945;
-        bh=OrkV/VcnYgYW1VakrYQXTRkz3HnWhDU7ypOtKyhWNZA=;
-        h=Message-ID:Subject:To:From:Date:Reply-To;
-        b=cTxTizQKUTkLoBgz+2+vGko43VkNEQJQDadRdCvyb0ScgjxyqbqPz3N295cUTB7r9
-         BLxPr//nurN6sGS4KkaN8SaF42I6bsajyV0hmAtooSSSHJelGvbALopD7VAJhPvwSF
-         sNXMm2q42WfxN1Ck5NPSf4pmE/pmCFwGO96QbMFk=
-Authentication-Results: vla1-2a93b1d0b0e8.qloud-c.yandex.net; dkim=pass header.i=@yandex.ru
-Received: by vla1-62318bfe5573.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id qTtwT76aXx-x52OCFOd;
-        Wed, 18 Aug 2021 19:59:05 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-Date:   Wed, 18 Aug 2021 19:59:19 +0300
-From:   Oleg <lego12239@yandex.ru>
-To:     netdev@vger.kernel.org
-Subject: ipv6 ::1 and lo dev
-Message-ID: <20210818165919.GA24787@legohost>
-Reply-To: Oleg <lego12239@yandex.ru>
+        id S230009AbhHRRBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 13:01:39 -0400
+Received: from mail-oi1-f182.google.com ([209.85.167.182]:46859 "EHLO
+        mail-oi1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229784AbhHRRBg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 13:01:36 -0400
+Received: by mail-oi1-f182.google.com with SMTP id o185so4210921oih.13;
+        Wed, 18 Aug 2021 10:01:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6MI4ZiJrNc1T/pvShWCww0N420PCI/tCznhAZae3qLY=;
+        b=Zc94I36nMtkzsLU1cWyMjBqVnuf/AIm9B0QO52knXf9YlBryM8F9PxFoaHc2m0aFKb
+         up4tw/3zSCNRmXBb900bkJ1dbG+/zKHt7Br4+tQvEwwlUzT27g9uci1zd7fx2uz9GweA
+         Is+OdT2Wddq1c6sQnpYAqpXLuVY5CQw9q1JtjpvUVydOnMTOh92p6GRoDTU0wWsoEN9v
+         FKCX8zVqx+YrhMFKrDv7/tCOhagtO8AB/rdA0/L+3gHx7pylCqFUlkLqJz7UebE+4BIq
+         86uk0UEZi6SdaJ7nL9OIkql+O2D8j8ooZ1YSzSataIjcqN5W+wjPI9csnvtNgy3RMihC
+         gweA==
+X-Gm-Message-State: AOAM532XLjlSvlM7ICKAWF70ThErFCuDpHnInRgkPSRnfM/NjTru3+kN
+        4IOMfdLL96XStIjchWkfyw==
+X-Google-Smtp-Source: ABdhPJxk8ZFY/WDqbc8NNEGPO5Phd6iPHAzs9/XobnK73ZV2yYlOraEfKHWOpUpUzbL3mrlxjh7bhA==
+X-Received: by 2002:a05:6808:81:: with SMTP id s1mr7958816oic.130.1629306061257;
+        Wed, 18 Aug 2021 10:01:01 -0700 (PDT)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id 4sm121064otp.23.2021.08.18.10.01.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Aug 2021 10:01:00 -0700 (PDT)
+Received: (nullmailer pid 2758836 invoked by uid 1000);
+        Wed, 18 Aug 2021 17:00:59 -0000
+Date:   Wed, 18 Aug 2021 12:00:59 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v2] of: property: fw_devlink: Add support for
+ "phy-handle" property
+Message-ID: <YR08yzmns7S2ieHx@robh.at.kernel.org>
+References: <20210818021717.3268255-1-saravanak@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20210818021717.3268255-1-saravanak@google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  Hello.
+On Tue, 17 Aug 2021 19:17:16 -0700, Saravana Kannan wrote:
+> Allows tracking dependencies between Ethernet PHYs and their consumers.
+> 
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Saravana Kannan <saravanak@google.com>
+> ---
+> v1 -> v2:
+> - Fixed patch to address my misunderstanding of how PHYs get
+>   initialized.
+> 
+>  drivers/of/property.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
 
-I try to replace ::1/128 ipv6 address on lo dev with ::1/112 to
-access more than 1 address(like with ipv4 127.0.0.1/8). But i get
-worked only address which is set on the dev. For example:
-
-~# ip a show dev lo
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 brd 127.255.255.255 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host 
-       valid_lft forever preferred_lft forever
-~# ping -c1 -w1 127.0.0.2
-PING 127.0.0.2 (127.0.0.2) 56(84) bytes of data.
-64 bytes from 127.0.0.2: icmp_seq=1 ttl=64 time=0.095 ms
-
---- 127.0.0.2 ping statistics ---
-1 packets transmitted, 1 received, 0% packet loss, time 0ms
-rtt min/avg/max/mdev = 0.095/0.095/0.095/0.000 ms
-
-~# ping -c1 -w1 ::2
-PING ::2(::2) 56 data bytes
-
---- ::2 ping statistics ---
-1 packets transmitted, 0 received, 100% packet loss, time 0ms
-
-Replace ::1/128 with ::1/112 and try again:
-
-~# ip -6 a flush dev lo
-~# ip -6 a add dev lo local ::1/112 scope host
-~# ip a show dev lo
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 brd 127.255.255.255 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/112 scope host 
-       valid_lft forever preferred_lft forever
-~# ping -c1 -w1 ::2
-PING ::2(::2) 56 data bytes
-
---- ::2 ping statistics ---
-1 packets transmitted, 0 received, 100% packet loss, time 0ms
-
-So, this don't work. How can i get the same behaviour for ipv6
-loopback addresses as with ipv4?
-
-Thanks!
-
--- 
-Олег Неманов (Oleg Nemanov)
+Applied, thanks!
