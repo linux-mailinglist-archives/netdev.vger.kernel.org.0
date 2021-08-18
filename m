@@ -2,71 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4E2F3F0204
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 12:50:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F0203F0218
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 12:58:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235117AbhHRKur (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 06:50:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49744 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234489AbhHRKuk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Aug 2021 06:50:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1127B610A3;
-        Wed, 18 Aug 2021 10:50:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629283806;
-        bh=ZI9ycpQ7SIGi1GFBcxnMKOwgmJtfn5EVsDAXoZbMxHQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=I9bRfdPK8xRDZ+gjhZbFk5SNWaujzSkfU8TLurLiA7oYx5bwrTFMEbzbmhpJ+Eaeo
-         h5xn915kjxgaruAaXKZFpYbF1MNzowMdxIjhXUUx6KmMsQHu2j257UmY6mUIetCxg5
-         vG/4lSbs2g+EBNbgwu0ME3OHnm5n0DTpxAXLcVKBp/e7VFH6sdysPggg2hVp1K7GSG
-         vMV1jDU1rDUtRR3gpRNftro0jDJ5X2wQ8yZ4LGp0NwFE42umGrjnyvEErv5BuZsDtM
-         znFzea6yRZWpOK/kSOx8362jprGpYnt9E1m4CJVI91C53t7n6fSo9f8frPxWJSF92G
-         YADQt2x9Br75A==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 06DAD60A48;
-        Wed, 18 Aug 2021 10:50:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S235168AbhHRK7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 06:59:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57150 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234824AbhHRK7C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 06:59:02 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C7CC061764;
+        Wed, 18 Aug 2021 03:58:28 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id qe12-20020a17090b4f8c00b00179321cbae7so2082003pjb.2;
+        Wed, 18 Aug 2021 03:58:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6ngK5o3Hm/CpUkzhL3Cyg+OZKC3Si1CRqzv7qINSgho=;
+        b=PiI9i5ZYroCC69aFh91sgtINbzIk21xXLbRfiYx+oN2vINQgXhehdpC7o5mW5HwNP+
+         54TAvaVs7QucAR6LJ74UBzt5oiHi+PzqMi4HRNealzu0jEr3Ro0O69onqCi1ulP2VY9r
+         7Ddrhh1x7uUBClXdzERg9alS1lqKq6dXCVRgAVlmTRK7ZwVT3cnMe29m69Z5xk9dQGS9
+         /Ug3NBJXl0NICSjqSusQfyJMrI3AGy3lW4V4S2esjGvieKbrUvFlaIsG2leQ1NsgRn/N
+         r5D1yKEpHJHibv1ldTNpkyQuEOauSUe+K/BXhxWdGdfggyKuCRd0h6N/dBBPTNJm3Ywo
+         2M7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6ngK5o3Hm/CpUkzhL3Cyg+OZKC3Si1CRqzv7qINSgho=;
+        b=uLdOQKX2PDm7CMJAP1yziB1bBs5xk8szG8AulCquq7PIErE4whvkH9stbPGITl571a
+         Qv3ccN/uKUGitTAgkbd5KIPae/97ir9wmOHiLc91aQQoxvs+rSav5z+90yZ5kyQMCDrx
+         IfIEpeLwY4/DvqiDEvNtV6iX98Y4bFAsqH1pF6n8e3jfKqA9th+NW/QUlg48rK+0CZvb
+         zC3/4M9OXsEiGGeNNJacEN4Q5ztoBGO7/pkdKUoDPkiY+dpHgCQL3n90Ze/Wt6w3luji
+         SusolY2guWpc23Jxl8lEopF/oXARSGEK/f+6nS9bU4HYPof/55le08+YI4HDT8bhy6Ix
+         kHXA==
+X-Gm-Message-State: AOAM532SRmSFlqVv9I2VbFZE9f/x7Gt5XucDfrTs1xOkIJl6EUKdrvc9
+        cNr7FIIdFX326VkqtE8bxOU=
+X-Google-Smtp-Source: ABdhPJy1i3wSsQA/+NBCDkc5WkPVGMtAoKpeW6gJCWCQDfB0jSEzx8/O4GU7Rq/dm33pgBap9E1gtQ==
+X-Received: by 2002:a17:90a:116:: with SMTP id b22mr8525019pjb.97.1629284307907;
+        Wed, 18 Aug 2021 03:58:27 -0700 (PDT)
+Received: from IRVINGLIU-MB0.tencent.com ([203.205.141.117])
+        by smtp.gmail.com with ESMTPSA id b190sm7099440pgc.91.2021.08.18.03.58.24
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 18 Aug 2021 03:58:27 -0700 (PDT)
+From:   Xu Liu <liuxu623@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xu Liu <liuxu623@gmail.com>
+Subject: [PATCH bpf-next v2 0/2] bpf: Allow bpf_get_netns_cookie in BPF_PROG_TYPE_SOCK_OPS
+Date:   Wed, 18 Aug 2021 18:58:18 +0800
+Message-Id: <20210818105820.91894-1-liuxu623@gmail.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] pktgen: Remove fill_imix_distribution() CONFIG_XFRM
- dependency
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162928380602.20153.15506792809667091863.git-patchwork-notify@kernel.org>
-Date:   Wed, 18 Aug 2021 10:50:06 +0000
-References: <20210818013129.1147350-1-richardsonnick@google.com>
-In-Reply-To: <20210818013129.1147350-1-richardsonnick@google.com>
-To:     Nicholas Richardson <richardsonnick@google.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        nrrichar@ncsu.edu, promanov@google.com, arunkaly@google.com,
-        gustavoars@kernel.org, yejune.deng@gmail.com, dev@ooseel.net,
-        yebin10@huawei.com, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+v2: Added selftests
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+Xu Liu (2):
+  bpf: Allow bpf_get_netns_cookie in BPF_PROG_TYPE_SOCK_OPS
+  selftests/bpf: Test for get_netns_cookie
 
-On Wed, 18 Aug 2021 01:31:26 +0000 you wrote:
-> From: Nick Richardson <richardsonnick@google.com>
-> 
-> Currently, the declaration of fill_imix_distribution() is dependent
-> on CONFIG_XFRM. This is incorrect.
-> 
-> Move fill_imix_distribution() declaration out of #ifndef CONFIG_XFRM
-> block.
-> 
-> [...]
+ net/core/filter.c                             | 14 +++++
+ .../selftests/bpf/prog_tests/netns_cookie.c   | 61 +++++++++++++++++++
+ .../selftests/bpf/progs/netns_cookie_prog.c   | 39 ++++++++++++
+ 3 files changed, 114 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/netns_cookie.c
+ create mode 100644 tools/testing/selftests/bpf/progs/netns_cookie_prog.c
 
-Here is the summary with links:
-  - pktgen: Remove fill_imix_distribution() CONFIG_XFRM dependency
-    https://git.kernel.org/netdev/net-next/c/7e5a3ef6b4e6
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+-- 
+2.28.0
 
