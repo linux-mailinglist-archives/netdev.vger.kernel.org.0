@@ -2,123 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE2EC3F0887
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 17:53:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDD143F08B7
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 18:07:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240196AbhHRPy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 11:54:27 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:46199 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238409AbhHRPyQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 11:54:16 -0400
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id F0763582FDE;
-        Wed, 18 Aug 2021 11:53:41 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Wed, 18 Aug 2021 11:53:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=jdzr8t+d/pCuUNt75MhYyRWE8O0L2MvzUoMKnJvqODE=; b=musKBm5b
-        mS/2Ymg63EOeQlh/OBd0085H05stoIyq4aoS17caTnN/0T2r69zY/K4x4SiMj9pt
-        +eoW4P5FzMTvZYCy9ylJkMTZsq7TILbdligzxcpV3AoCdV1gJ4We6j6aei68gjMF
-        /Mun2cF2U4KE6b5PcU1RFEIPklQmQkbVTJHjvQ3oyGlXRAwOevT85JiJKFwO5nZa
-        KE8keNZ4/9js+e5i+US41nQvFcDWwJzeYMClAeeVdyEoqSidexqsi62///uj47cL
-        AeoT6LJnVE6hHgmawTSuVDIT+BbP4l+EZ4J3ZVuYFoXM+jD/c89EgmE7N3sZVhMI
-        vIOHEypHwwQRLQ==
-X-ME-Sender: <xms:BS0dYYHuMH-g5WPnm8RwsMQo-TFtSMySu1Xj0Xfao0TvwW1UCFFOlg>
-    <xme:BS0dYRWP_yLl45WcsbNGbocdJX43yAJc-9JfmSAPF2I9Ei7YOINLQHzgMH4U0Bw_C
-    GB51S-hBMiBxpI>
-X-ME-Received: <xmr:BS0dYSIiGZZ6uNfcpICWIbXEHLmViLzpj0kZrfIuiTlpcOG_JL1NSp7935o3XfuxEl4IcsxaBaNeKt8cYbHIduNH2dH3zvluzSEdWXOoolK9Wg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrleehgdelfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
-    fgtdfftefhledvjefggfehgfevjeekhfenucevlhhushhtvghrufhiiigvpeefnecurfgr
-    rhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:BS0dYaGAmbXvbD2JrN2EkwlttbRGDl9CQcHur38qTUXqsnDqDZm4Ww>
-    <xmx:BS0dYeUunKpqSw-jw7Tm44UdEk6PQIIkkky5en6SgUZMOsC1clbcag>
-    <xmx:BS0dYdNRpEjlTauRLEALdzBm3VXFdNkfKcwBrlqYR5EauvcnQSI77A>
-    <xmx:BS0dYSrXvL1gvTS0gI-aG60ibLj3gHzYrBI9axBLjPkm-E7TZR9Uhg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 18 Aug 2021 11:53:38 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        mkubecek@suse.cz, pali@kernel.org, jacob.e.keller@intel.com,
-        jiri@nvidia.com, vadimp@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [RFC PATCH ethtool-next v2 6/6] ethtool: Add transceiver module extended states
-Date:   Wed, 18 Aug 2021 18:53:06 +0300
-Message-Id: <20210818155306.1278356-7-idosch@idosch.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210818155306.1278356-1-idosch@idosch.org>
-References: <20210818155306.1278356-1-idosch@idosch.org>
+        id S229834AbhHRQI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 12:08:27 -0400
+Received: from ale.deltatee.com ([204.191.154.188]:54198 "EHLO
+        ale.deltatee.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229454AbhHRQI0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 12:08:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
+        Message-ID:From:References:Cc:To:content-disposition;
+        bh=CDm4i4hwwrEGLoygLnIUbGFhDR61f58uuviY8Rqvqis=; b=gaUFIZeu4t5laVHZig7TFyAtzO
+        qe9BVj6lqRpa9C+ID8lUpWLPlL2s1k9opX3QgzUQ3RPNC3Q8l+3e0rimDS+kzs/BK8j4PXy/zZlCp
+        bjiO/VjnY/OHx906RphxMOaJ3PBfF3hf79tG9W8rVCYAKzw7cJmTv7wezTgLb+qgt+k91ByIa1Nos
+        JrRGytM7cAwPBHz1mBkuXwTbbtfxpZnxnM9AlrYhIVJ4sjSwwUKe2WNn5F1V6vpkShkJGd4znEryu
+        A2FmTvAyvL+PqRH6Vkw+vjFZ2IqXWx0q+9d0AyKIdd5/VrSS6+eSWrxO+C1E9m+tsLVGzCW4wFWQp
+        4UA+ElOQ==;
+Received: from s0106a84e3fe8c3f3.cg.shawcable.net ([24.64.144.200] helo=[192.168.0.10])
+        by ale.deltatee.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <logang@deltatee.com>)
+        id 1mGO6G-0001Ud-Cp; Wed, 18 Aug 2021 10:07:37 -0600
+To:     Dongdong Liu <liudongdong3@huawei.com>, helgaas@kernel.org,
+        hch@infradead.org, kw@linux.com, leon@kernel.org,
+        linux-pci@vger.kernel.org, rajur@chelsio.com,
+        hverkuil-cisco@xs4all.nl
+Cc:     linux-media@vger.kernel.org, netdev@vger.kernel.org
+References: <1629291717-38564-1-git-send-email-liudongdong3@huawei.com>
+ <1629291717-38564-7-git-send-email-liudongdong3@huawei.com>
+From:   Logan Gunthorpe <logang@deltatee.com>
+Message-ID: <a097d255-85e4-cab8-c9be-c1b9af9dcaf5@deltatee.com>
+Date:   Wed, 18 Aug 2021 10:07:29 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1629291717-38564-7-git-send-email-liudongdong3@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-CA
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 24.64.144.200
+X-SA-Exim-Rcpt-To: netdev@vger.kernel.org, linux-media@vger.kernel.org, hverkuil-cisco@xs4all.nl, rajur@chelsio.com, linux-pci@vger.kernel.org, leon@kernel.org, kw@linux.com, hch@infradead.org, helgaas@kernel.org, liudongdong3@huawei.com
+X-SA-Exim-Mail-From: logang@deltatee.com
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on ale.deltatee.com
+X-Spam-Level: 
+X-Spam-Status: No, score=-10.9 required=5.0 tests=ALL_TRUSTED,BAYES_00,
+        GREYLIST_ISWHITE,NICE_REPLY_A autolearn=ham autolearn_force=no
+        version=3.4.2
+Subject: Re: [PATCH V8 6/8] PCI/P2PDMA: Add a 10-Bit Tag check in P2PDMA
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
 
-Add support for an extended state and two extended sub-states to
-describe link issues related to transceiver modules.
 
-Output example:
+On 2021-08-18 7:01 a.m., Dongdong Liu wrote:
+> Add a 10-Bit Tag check in the P2PDMA code to ensure that a device with
+> 10-Bit Tag Requester doesn't interact with a device that does not
+> support 10-Bit Tag Completer. Before that happens, the kernel should
+> emit a warning.
+> 
+> "echo 0 > /sys/bus/pci/devices/.../10bit_tag" to disable 10-Bit Tag
+> Requester for PF device.
+> 
+> "echo 0 > /sys/bus/pci/devices/.../sriov_vf_10bit_tag_ctl" to disable
+> 10-Bit Tag Requester for VF device.
+> 
+> Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
 
- $ ethtool swp13
- ...
- Link detected: no (Module, Module is in low power mode)
+Looks good to me, thanks.
 
-In case "CMIS transceiver module is not in ModuleReady state" and the
-module is in ModuleFault state, it is possible to read the fault reason
-from the EEPROM dump.
+Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
 
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- netlink/settings.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/netlink/settings.c b/netlink/settings.c
-index e47a38f3058f..515b9302c09d 100644
---- a/netlink/settings.c
-+++ b/netlink/settings.c
-@@ -593,6 +593,7 @@ static const char *const names_link_ext_state[] = {
- 	[ETHTOOL_LINK_EXT_STATE_CALIBRATION_FAILURE]	= "Calibration failure",
- 	[ETHTOOL_LINK_EXT_STATE_POWER_BUDGET_EXCEEDED]	= "Power budget exceeded",
- 	[ETHTOOL_LINK_EXT_STATE_OVERHEAT]		= "Overheat",
-+	[ETHTOOL_LINK_EXT_STATE_MODULE]			= "Module",
- };
- 
- static const char *const names_autoneg_link_ext_substate[] = {
-@@ -648,6 +649,13 @@ static const char *const names_cable_issue_link_ext_substate[] = {
- 		"Cable test failure",
- };
- 
-+static const char *const names_module_link_ext_substate[] = {
-+	[ETHTOOL_LINK_EXT_SUBSTATE_MODULE_LOW_POWER_MODE]	=
-+		"Module is in low power mode",
-+	[ETHTOOL_LINK_EXT_SUBSTATE_MODULE_CMIS_NOT_READY]	=
-+		"CMIS module is not in ModuleReady state",
-+};
-+
- static const char *link_ext_substate_get(uint8_t link_ext_state_val, uint8_t link_ext_substate_val)
- {
- 	switch (link_ext_state_val) {
-@@ -671,6 +679,10 @@ static const char *link_ext_substate_get(uint8_t link_ext_state_val, uint8_t lin
- 		return get_enum_string(names_cable_issue_link_ext_substate,
- 				       ARRAY_SIZE(names_cable_issue_link_ext_substate),
- 				       link_ext_substate_val);
-+	case ETHTOOL_LINK_EXT_STATE_MODULE:
-+		return get_enum_string(names_module_link_ext_substate,
-+				       ARRAY_SIZE(names_module_link_ext_substate),
-+				       link_ext_substate_val);
- 	default:
- 		return NULL;
- 	}
--- 
-2.31.1
-
+> ---
+>  drivers/pci/p2pdma.c | 48 ++++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 48 insertions(+)
+> 
+> diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
+> index 50cdde3..2b9c2c9 100644
+> --- a/drivers/pci/p2pdma.c
+> +++ b/drivers/pci/p2pdma.c
+> @@ -19,6 +19,7 @@
+>  #include <linux/random.h>
+>  #include <linux/seq_buf.h>
+>  #include <linux/xarray.h>
+> +#include "pci.h"
+>  
+>  enum pci_p2pdma_map_type {
+>  	PCI_P2PDMA_MAP_UNKNOWN = 0,
+> @@ -410,6 +411,50 @@ static unsigned long map_types_idx(struct pci_dev *client)
+>  		(client->bus->number << 8) | client->devfn;
+>  }
+>  
+> +static bool pci_10bit_tags_unsupported(struct pci_dev *a,
+> +				       struct pci_dev *b,
+> +				       bool verbose)
+> +{
+> +	bool req;
+> +	bool comp;
+> +	u16 ctl;
+> +	const char *str = "10bit_tag";
+> +
+> +	if (a->is_virtfn) {
+> +#ifdef CONFIG_PCI_IOV
+> +		req = !!(a->physfn->sriov->ctrl &
+> +			 PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN);
+> +#endif
+> +	} else {
+> +		pcie_capability_read_word(a, PCI_EXP_DEVCTL2, &ctl);
+> +		req = !!(ctl & PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN);
+> +	}
+> +
+> +	comp = !!(b->pcie_devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_COMP);
+> +
+> +	/* 10-bit tags not enabled on requester */
+> +	if (!req)
+> +		return false;
+> +
+> +	 /* Completer can handle anything */
+> +	if (comp)
+> +		return false;
+> +
+> +	if (!verbose)
+> +		return true;
+> +
+> +	pci_warn(a, "cannot be used for peer-to-peer DMA as 10-Bit Tag Requester enable is set for this device, but peer device (%s) does not support the 10-Bit Tag Completer\n",
+> +		 pci_name(b));
+> +
+> +	if (a->is_virtfn)
+> +		str = "sriov_vf_10bit_tag_ctl";
+> +
+> +	pci_warn(a, "to disable 10-Bit Tag Requester for this device, echo 0 > /sys/bus/pci/devices/%s/%s\n",
+> +		 pci_name(a), str);
+> +
+> +	return true;
+> +}
+> +
+>  /*
+>   * Calculate the P2PDMA mapping type and distance between two PCI devices.
+>   *
+> @@ -532,6 +577,9 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
+>  		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
+>  	}
+>  done:
+> +	if (pci_10bit_tags_unsupported(client, provider, verbose))
+> +		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
+> +
+>  	rcu_read_lock();
+>  	p2pdma = rcu_dereference(provider->p2pdma);
+>  	if (p2pdma)
+> 
