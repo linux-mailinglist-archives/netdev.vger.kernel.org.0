@@ -2,69 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01D483F0297
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 13:25:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F3263F0299
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 13:25:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235598AbhHRL0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 07:26:04 -0400
-Received: from mail-dm3nam07on2044.outbound.protection.outlook.com ([40.107.95.44]:32736
-        "EHLO NAM02-DM3-obe.outbound.protection.outlook.com"
+        id S235641AbhHRL0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 07:26:09 -0400
+Received: from mail-dm6nam08on2040.outbound.protection.outlook.com ([40.107.102.40]:29439
+        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235539AbhHRL0B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Aug 2021 07:26:01 -0400
+        id S235570AbhHRL0C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Aug 2021 07:26:02 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WqqSTsbAZm0Slk4ojMSOrHXeA1YYoG9/3fGV3/F1d9CrPABNxXSEltymcY5FrE3FcqHQv6c+eyUrpqJO7h9TKAC8Bp7M01jhx1sTs9yY6HJYW1stKJh0lfT89FCBODPswj0Bo0wmILJzL+90+pZqonunrMCtKu+CVCpMH8ylObAbmArLOqmkNHxj8Y3it7xxuJxq44UIRvAbvR099Kjhf5WYWq0Ytd3UdK1kyBLCOo/eRh4UwoOTGAyo3rk7K7pUyjFxw5WWlzcQPpv/Fmgmcog09XwQcMYle2BSI/3i2n6grHIwtxroOyIXdPDBV65DBTtII7MKpXNGwi2xYLZwYQ==
+ b=XwzDyLdcmPbNnKXSuFYqNmgbco+0MuuDXIUFoMP6Pn3P7rGa5pVVBghUeWNAAE9h1Sdccz52G/2SDKKr/R3yUYVktla14zOEhHJ4WPklr3KhEjWJ8/unYyE7HpkEaK8oUdbLD5pViDcpzh0SLdeHrUk5KbhLZDg2/4gXeYhoKZ6Dw64Y9FmH9U7LTNt9LvGIpOHEseF8F/UheIrK7lCpYfUfDo2nxiwZckVJsifK+0UASnS+YhFSJkUHiHLjIjnoCLwogMGGcw89p82IASGTZDNRUZdriznH/bPnU+T44owykEwfJDj9GmyAu6AQE5juh551Jr7gN4IpPgXmAnZNvg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vkEoTf7C14IfAv/cp7u8XZpx7f+IeI7b6/6RK5uYip4=;
- b=NOzhY/AyLyBqKe0ba6667kTL2v3cz5Y6o9UDuUXDKGaN+bw3EjUADv/gp12gIVqKoXirI61RWcU09n4divqXtxYccekeZgmQq7tzrXrkCUhvqfZX2imp8kzOa0Fi9i0rUiisUaBX7NqU/VRdwl2upNe06HuIU2C2O16N8icXigxq1BgIb6b+y6aBuePDm58kMNtaaWRumGE51CfrNY9WHzm5rLFjXAjE5had9KpNuzVxQrIZyx4WUnQH5KKtO3PVLPkrDKEgiocwgB7Oo/77qLsePwBzjwCY2ua5opYAIeHcEo8hkR5+VQqK9VjCfYYwwa5KuVWJi0Hezy6hyIeN8w==
+ bh=o5fHXxGqdFm9XBTC1WV32CCRN+7osRrirtaxou16t1c=;
+ b=b/4fFbVtRAdG/cBbr/S0bGZ11EnA0i2hT4snFXa6KqNOR77GsjQ5RCq4sxWvNj358Zme4KBVKhehmaO8qDVV7dYv6D79vS7UC8KIKkk1XTkV06yy3N8g42mKnxNGZ/ReS89lUdGXrO73rHfi6qNI3W0qS1hN7eHeZp2xLDUnfB4TZPlen/+HmBJRcp/W7kWbsPzEeeyK9BzjuUCKXhlqxwHiqBhJrQKAxY4RYiZ/w2YEWNApVW+K3mec3cmmMV99vBT2++NVWyqvxlWXBWHWKzL+cYFNgb/wyEbMulRSw+qYSaHEyEYvbR4qqYbuIY6GBs0bTsvmnGne317xC1B7Qg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.32) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ 216.228.112.36) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vkEoTf7C14IfAv/cp7u8XZpx7f+IeI7b6/6RK5uYip4=;
- b=AkbWazGhro/hWjoCwPZe0U3q556VOoY/vecypMRSuorqgsCej9DfxiQmDYqfOJkl+1VHN7UTxOGL6RuycjB8w1KBwXMx6WZFB4ifx+yRqMyuusM2RrZ15G9KZ7hQFmVthI8aDgDfyZZyfIai0mOQVXDuczbHvnu5iPyNTBCAyPxQHhlYO0pMaIAHL129e4qBGUP8GWQ78kI1jekhc/OXFoa/2lrt6R82+QtuVGd3+dTFvCvpLCQ/8uwviNq2/rAmwDI6wcBuilFUefgNiRfuZV945rdncKilFiqMVJDsO4Jm6Tk8Lm60nL0mm9SJGzEaTrOyvogj6zppLn4GdNVQ4w==
-Received: from BN0PR03CA0010.namprd03.prod.outlook.com (2603:10b6:408:e6::15)
- by CY4PR1201MB2518.namprd12.prod.outlook.com (2603:10b6:903:d6::23) with
+ bh=o5fHXxGqdFm9XBTC1WV32CCRN+7osRrirtaxou16t1c=;
+ b=tHmxY4QTzEjNXjuGmXOwanE7cMWnpFiVImLsx0y5fa6k28BNALOH1nC1HoRvHESqb2/6+xusWQfED/NQmRCbw8XEn/C3RHQyzEmzn9ugK8AJX8NXuf85R3lS1/ym6faUTD1qbLaa6LHosTFgzWWq0K4Lm0N0SooViKM7trUJTZBaMAUTP4Qs8wwwdQcZ3COkxy5RrWzBMhFujSbWBC04MRUJLgItmsxFJnfDVsMPDWXXzfqgxqmoYzPwgOm1DR6nMyNouQPQyF+1EUDZU5/IZcksQDL71o1a7WSYDqGnoCu/AM38mqFF1CRN+Y+34ahjuzFoM5jiLWw+6LFxczrr7A==
+Received: from BN6PR22CA0053.namprd22.prod.outlook.com (2603:10b6:404:ca::15)
+ by BYAPR12MB3110.namprd12.prod.outlook.com (2603:10b6:a03:d7::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.22; Wed, 18 Aug
- 2021 11:25:25 +0000
-Received: from BN8NAM11FT040.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e6:cafe::ef) by BN0PR03CA0010.outlook.office365.com
- (2603:10b6:408:e6::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.19; Wed, 18 Aug
+ 2021 11:25:26 +0000
+Received: from BN8NAM11FT027.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:ca:cafe::32) by BN6PR22CA0053.outlook.office365.com
+ (2603:10b6:404:ca::15) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend
- Transport; Wed, 18 Aug 2021 11:25:25 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.32)
+ Transport; Wed, 18 Aug 2021 11:25:26 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.36)
  smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.32 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.32; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.32) by
- BN8NAM11FT040.mail.protection.outlook.com (10.13.177.166) with Microsoft SMTP
+ 216.228.112.36 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.36; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.36) by
+ BN8NAM11FT027.mail.protection.outlook.com (10.13.177.96) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4415.16 via Frontend Transport; Wed, 18 Aug 2021 11:25:25 +0000
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 18 Aug
- 2021 04:25:23 -0700
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 18 Aug
- 2021 11:25:23 +0000
+ 15.20.4436.19 via Frontend Transport; Wed, 18 Aug 2021 11:25:25 +0000
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 18 Aug
+ 2021 11:25:25 +0000
 Received: from vdi.nvidia.com (172.20.187.5) by mail.nvidia.com
  (172.20.187.18) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 18 Aug 2021 11:25:20 +0000
+ Transport; Wed, 18 Aug 2021 11:25:23 +0000
 From:   Mark Zhang <markzhang@nvidia.com>
 To:     <jgg@nvidia.com>, <dledford@redhat.com>, <saeedm@nvidia.com>
 CC:     <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
         <aharonl@nvidia.com>, <netao@nvidia.com>, <leonro@nvidia.com>,
         Mark Zhang <markzhang@nvidia.com>
-Subject: [PATCH rdma-next 04/10] RDMA/mlx5: Add alloc_op_port_stats() support
-Date:   Wed, 18 Aug 2021 14:24:22 +0300
-Message-ID: <20210818112428.209111-5-markzhang@nvidia.com>
+Subject: [PATCH rdma-next 05/10] RDMA/mlx5: Add steering support in optional flow counters
+Date:   Wed, 18 Aug 2021 14:24:23 +0300
+Message-ID: <20210818112428.209111-6-markzhang@nvidia.com>
 X-Mailer: git-send-email 2.8.4
 In-Reply-To: <20210818112428.209111-1-markzhang@nvidia.com>
 References: <20210818112428.209111-1-markzhang@nvidia.com>
@@ -72,174 +69,221 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 60b3bace-21c1-4064-34bc-08d9623adfd6
-X-MS-TrafficTypeDiagnostic: CY4PR1201MB2518:
-X-Microsoft-Antispam-PRVS: <CY4PR1201MB2518FCE17B91AF2C688B7C47C7FF9@CY4PR1201MB2518.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
+X-MS-Office365-Filtering-Correlation-Id: 61a9e63e-30b5-445d-b07d-08d9623ae03c
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3110:
+X-Microsoft-Antispam-PRVS: <BYAPR12MB3110F69D69517971BB95777CC7FF9@BYAPR12MB3110.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5jnw59P1GOYwt7xw1cUE9RK6dkAgCYwae6P7c2R69nagluko5Hin8aIfEl/8EMRjpNU5wvHcS/wQpWykALUJP9STj///Qr1FdXDHnCxsVCvvQJnPr+y9bahmdDrGPvL0YgBjMlUm6mQ0T414ZCtGDw13XBQ+3PKmmMfMgGHfFxkjsD3KHDAcp+fBCfcNR5OUN9vtOG4eQdf6B7BpzYBRORBi9ftfMs3Lfa+B3+zt/+FhO78/AdzQZx+oC6aLY8m4KeW2UxohAzTw/kzwWq3IV5s+SimIsRkhh29zPewETdC6TOthMrJz/2cPEONVw0Ef8cM6d4fDxpOZ287B8OuxuI6U0neStWeIwFzWn6udNTNt5/c1lhxkL+WZkhSfIJ09uMH0C1NS9ggYmMNcLEIKym+jy0OJ9JYZGmtnpdyU0pQDNzT97vx/QeXFAI/0aXlHSpCgj9Atybf/cicoBkETzruYlDhfZBDnG0AvX8w9dYJcYhDO9GHT7crbjSDdCACZIeZHHtGEFYU2ir2lu+KJc0r0LPYdb90cY3FiA/F8WLZ+UXUmQTbQJfy9p+R7EVdRrW5rq9OBahQ7+49VfD6CgHRmKDMu/tTnfpLBakW6m48m00mIKOlHqPwIeoNiz7OYJ+ADnn3Ewb0SVMnP3G/QPF743xmHz4GjiqssmAbUsQr0eAv+efNTACNQhjJUuHgQ6a5uj9w87C79wy5mvHitEg==
-X-Forefront-Antispam-Report: CIP:216.228.112.32;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid01.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(396003)(376002)(346002)(39860400002)(36840700001)(46966006)(336012)(54906003)(47076005)(186003)(107886003)(2616005)(36756003)(26005)(4326008)(8676002)(1076003)(2906002)(6636002)(82310400003)(5660300002)(70206006)(8936002)(110136005)(70586007)(7636003)(7696005)(83380400001)(36860700001)(356005)(82740400003)(86362001)(478600001)(316002)(426003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 8M5yZrkMVIH5AVLv9YCB6M3Su+FTOKTbYCBiyyjCGg9ZyojHg0jD87IbNWpRJVsl8ZTkDEVmHAHRcFz0U8FMhSlExWXDW0sgkwQUdheXjo7vDhpphYoA5yOBLL88Npk05AQj6bGtrbTG/N4oylQU4gGKe5L+OBHqxuaXI2AoRju31HoI69oHmSbe6L+qR+ILgsevFW2+0rSayQzd5/Bdn4pMehh8gJw7nSikwZzyH0MkpYvFaG1YD5akqRRPA4x/Suas23XLbyrLudIY30FrfiwSMeqE78u3z+haR5TRZXbzcptTZxn39O5FwSOFvwF71wipa9ezwN+RY+WcDWKVMHrn58zuqRC2etY9SVr1q1mlkNWAeO5jWBm9eJOObs+AYzoBqytKGqkkOk719HteTUlxSZqTG8CsbqSDwfK1zO0v3EkQAPcxtvWigUv/oJ6D56U4Pi20xKc9ANfI+GB8cIo4esNW8KvVCDgmeYaplcg4ms4lsLNImoJHHldZQGxyfIp5i2GrkZqMx9mXplYb0vZeaEgVcFJG1bYDiOo0C4e0/wVPUiFFB1JMn7mF79P12zgjpHFqcr/yXh9dhVeMet1Bg8u/IsN42KsADrGOUuEuO/vIqZuBo2vuGjuZJaoX8CU7Ko1wBxpnUe6qhz7JdS5RqG88ULzrX5nb7M3rd30wFYts/9wY4hSz0+0T1dyRsF7UxIJ5wwpHDOaNwM5WbA==
+X-Forefront-Antispam-Report: CIP:216.228.112.36;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid05.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(136003)(346002)(396003)(376002)(36840700001)(46966006)(107886003)(82740400003)(86362001)(2906002)(426003)(36756003)(336012)(70206006)(186003)(47076005)(70586007)(83380400001)(82310400003)(26005)(54906003)(2616005)(8936002)(5660300002)(478600001)(316002)(6636002)(8676002)(356005)(7636003)(36860700001)(4326008)(7696005)(110136005)(1076003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2021 11:25:25.1029
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2021 11:25:25.7775
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 60b3bace-21c1-4064-34bc-08d9623adfd6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 61a9e63e-30b5-445d-b07d-08d9623ae03c
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.32];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT040.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.36];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT027.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB2518
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3110
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Aharon Landau <aharonl@nvidia.com>
 
-Add support for ib callback alloc_op_port_stats().
+Adding steering infrastructure for adding and removing optional counter.
+This allows to add and remove the counters dynamically in order not to
+hurt performance.
 
 Signed-off-by: Aharon Landau <aharonl@nvidia.com>
+Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
 Signed-off-by: Mark Zhang <markzhang@nvidia.com>
 ---
- drivers/infiniband/hw/mlx5/counters.c | 71 ++++++++++++++++++++++++++-
- drivers/infiniband/hw/mlx5/mlx5_ib.h  |  8 +++
- include/rdma/ib_verbs.h               |  2 +
- 3 files changed, 79 insertions(+), 2 deletions(-)
+ drivers/infiniband/hw/mlx5/fs.c      | 111 +++++++++++++++++++++++++++
+ drivers/infiniband/hw/mlx5/mlx5_ib.h |  12 +++
+ include/rdma/ib_hdrs.h               |   1 +
+ 3 files changed, 124 insertions(+)
 
-diff --git a/drivers/infiniband/hw/mlx5/counters.c b/drivers/infiniband/hw/mlx5/counters.c
-index 224ba36f2946..5b4b446727d1 100644
---- a/drivers/infiniband/hw/mlx5/counters.c
-+++ b/drivers/infiniband/hw/mlx5/counters.c
-@@ -187,6 +187,72 @@ mlx5_ib_alloc_hw_port_stats(struct ib_device *ibdev, u32 port_num)
- 					  RDMA_HW_STATS_DEFAULT_LIFESPAN);
+diff --git a/drivers/infiniband/hw/mlx5/fs.c b/drivers/infiniband/hw/mlx5/fs.c
+index 5fbc0a8454b9..be6a00969ddb 100644
+--- a/drivers/infiniband/hw/mlx5/fs.c
++++ b/drivers/infiniband/hw/mlx5/fs.c
+@@ -10,12 +10,14 @@
+ #include <rdma/uverbs_std_types.h>
+ #include <rdma/mlx5_user_ioctl_cmds.h>
+ #include <rdma/mlx5_user_ioctl_verbs.h>
++#include <rdma/ib_hdrs.h>
+ #include <rdma/ib_umem.h>
+ #include <linux/mlx5/driver.h>
+ #include <linux/mlx5/fs.h>
+ #include <linux/mlx5/fs_helpers.h>
+ #include <linux/mlx5/accel.h>
+ #include <linux/mlx5/eswitch.h>
++#include <net/inet_ecn.h>
+ #include "mlx5_ib.h"
+ #include "counters.h"
+ #include "devx.h"
+@@ -847,6 +849,115 @@ static struct mlx5_ib_flow_prio *get_flow_table(struct mlx5_ib_dev *dev,
+ 	return prio;
  }
  
-+struct mlx5_ib_opcounter {
-+	const char *name;
-+	enum mlx5_ib_optional_counter_type type;
++enum {
++	RDMA_RX_ECN_OPCOUNTER_PRIO,
++	RDMA_RX_CNP_OPCOUNTER_PRIO,
 +};
 +
-+static const struct mlx5_ib_opcounter basic_op_cnts[] = {
-+	{.name = "cc_rx_ce_pkts", .type = MLX5_IB_OPCOUNTER_CC_RX_CE_PKTS},
++enum {
++	RDMA_TX_CNP_OPCOUNTER_PRIO,
 +};
 +
-+static const struct mlx5_ib_opcounter rdmarx_cnp_op_cnts[] = {
-+	{.name = "cc_rx_cnp_pkts", .type = MLX5_IB_OPCOUNTER_CC_RX_CNP_PKTS},
-+};
-+
-+static const struct mlx5_ib_opcounter rdmatx_cnp_op_cnts[] = {
-+	{.name = "cc_tx_cnp_pkts", .type = MLX5_IB_OPCOUNTER_CC_TX_CNP_PKTS},
-+};
-+
-+static struct rdma_op_stats *
-+mlx5_ib_alloc_op_port_stats(struct ib_device *ibdev, u32 port_num)
++int mlx5_ib_fs_add_op_fc(struct mlx5_ib_dev *dev, struct mlx5_ib_op_fc *opfc,
++			 enum mlx5_ib_optional_counter_type type)
 +{
-+	struct rdma_op_stats *opstats;
-+	struct mlx5_ib_dev *dev = to_mdev(ibdev);
-+	int num_opcounters, i, j = 0;
++	enum mlx5_flow_namespace_type fn_type;
++	struct mlx5_flow_act flow_act = {};
++	struct mlx5_flow_destination dst;
++	struct mlx5_flow_namespace *ns;
++	struct mlx5_ib_flow_prio *prio;
++	struct mlx5_flow_spec *spec;
++	int priority, err = 0;
 +
-+	num_opcounters = ARRAY_SIZE(basic_op_cnts);
++	spec = kvzalloc(sizeof(*spec), GFP_KERNEL);
++	if (!spec)
++		return -ENOMEM;
 +
-+	if (MLX5_CAP_FLOWTABLE(dev->mdev,
-+			       ft_field_support_2_nic_receive_rdma.bth_opcode))
-+		num_opcounters += ARRAY_SIZE(rdmarx_cnp_op_cnts);
++	switch (type) {
++	case MLX5_IB_OPCOUNTER_CC_RX_CE_PKTS:
++		fn_type = MLX5_FLOW_NAMESPACE_RDMA_RX_COUNTERS;
++		priority = RDMA_RX_ECN_OPCOUNTER_PRIO;
++		spec->match_criteria_enable = MLX5_MATCH_OUTER_HEADERS;
++		MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria,
++				 outer_headers.ip_ecn);
++		MLX5_SET(fte_match_param, spec->match_value,
++			 outer_headers.ip_ecn, INET_ECN_CE);
++		break;
 +
-+	if (MLX5_CAP_FLOWTABLE(dev->mdev,
-+			       ft_field_support_2_nic_transmit_rdma.bth_opcode))
-+		num_opcounters += ARRAY_SIZE(rdmatx_cnp_op_cnts);
-+
-+	opstats = kzalloc(sizeof(*opstats) +
-+			  num_opcounters * sizeof(struct rdma_op_counter),
-+			  GFP_KERNEL);
-+	if (!opstats)
-+		return NULL;
-+
-+	for (i = 0; i < ARRAY_SIZE(basic_op_cnts); i++, j++) {
-+		opstats->opcounters[j].name = basic_op_cnts[i].name;
-+		opstats->opcounters[j].type = basic_op_cnts[i].type;
-+	}
-+
-+	if (MLX5_CAP_FLOWTABLE(dev->mdev,
-+			       ft_field_support_2_nic_receive_rdma.bth_opcode)) {
-+		for (i = 0; i < ARRAY_SIZE(rdmarx_cnp_op_cnts); i++, j++) {
-+			opstats->opcounters[j].name = rdmarx_cnp_op_cnts[i].name;
-+			opstats->opcounters[j].type = rdmarx_cnp_op_cnts[i].type;
++	case MLX5_IB_OPCOUNTER_CC_RX_CNP_PKTS:
++		if (!MLX5_CAP_FLOWTABLE(dev->mdev,
++					ft_field_support_2_nic_receive_rdma.bth_opcode)) {
++			err = -EOPNOTSUPP;
++			goto free;
 +		}
-+	}
++		fn_type = MLX5_FLOW_NAMESPACE_RDMA_RX_COUNTERS;
++		priority = RDMA_RX_CNP_OPCOUNTER_PRIO;
++		spec->match_criteria_enable = MLX5_MATCH_MISC_PARAMETERS;
++		MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria,
++				 misc_parameters.bth_opcode);
++		MLX5_SET(fte_match_param, spec->match_value,
++			 misc_parameters.bth_opcode, IB_BTH_OPCODE_CNP);
++		break;
 +
-+	if (MLX5_CAP_FLOWTABLE(dev->mdev,
-+			       ft_field_support_2_nic_transmit_rdma.bth_opcode)) {
-+		for (i = 0; i < ARRAY_SIZE(rdmatx_cnp_op_cnts); i++, j++) {
-+			opstats->opcounters[j].name = rdmatx_cnp_op_cnts[i].name;
-+			opstats->opcounters[j].type = rdmatx_cnp_op_cnts[i].type;
++	case MLX5_IB_OPCOUNTER_CC_TX_CNP_PKTS:
++		if (!MLX5_CAP_FLOWTABLE(dev->mdev,
++					ft_field_support_2_nic_transmit_rdma.bth_opcode)) {
++			err = -EOPNOTSUPP;
++			goto free;
 +		}
++		fn_type = MLX5_FLOW_NAMESPACE_RDMA_TX_COUNTERS;
++		priority = RDMA_TX_CNP_OPCOUNTER_PRIO;
++		spec->match_criteria_enable = MLX5_MATCH_MISC_PARAMETERS;
++		MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria,
++				 misc_parameters.bth_opcode);
++		MLX5_SET(fte_match_param, spec->match_value,
++			 misc_parameters.bth_opcode, IB_BTH_OPCODE_CNP);
++		break;
++
++	default:
++		err = -EOPNOTSUPP;
++		goto free;
 +	}
 +
-+	opstats->num_opcounters = num_opcounters;
++	ns = mlx5_get_flow_namespace(dev->mdev, fn_type);
++	if (!ns) {
++		err = -EOPNOTSUPP;
++		goto free;
++	}
++	prio = _get_prio(ns, &opfc->prio, priority, 1, 1, 0);
++	if (IS_ERR(prio)) {
++		err = PTR_ERR(prio);
++		goto free;
++	}
 +
-+	return opstats;
++	dst.type = MLX5_FLOW_DESTINATION_TYPE_COUNTER;
++	dst.counter_id = mlx5_fc_id(opfc->fc);
++
++	flow_act.action =
++		MLX5_FLOW_CONTEXT_ACTION_COUNT | MLX5_FLOW_CONTEXT_ACTION_ALLOW;
++
++	opfc->rule =
++		mlx5_add_flow_rules(prio->flow_table, spec, &flow_act, &dst, 1);
++	if (IS_ERR(opfc->rule)) {
++		put_flow_table(dev, prio, false);
++		err = PTR_ERR(opfc->rule);
++		goto free;
++	}
++	prio->refcount++;
++
++free:
++	kfree(spec);
++	return err;
 +}
 +
- static int mlx5_ib_query_q_counters(struct mlx5_core_dev *mdev,
- 				    const struct mlx5_ib_counters *cnts,
- 				    struct rdma_hw_stats *stats,
-@@ -672,8 +738,9 @@ void mlx5_ib_counters_clear_description(struct ib_counters *counters)
- 	mutex_unlock(&mcounters->mcntrs_mutex);
- }
- 
--static const struct ib_device_ops hw_stats_ops = {
-+static const struct ib_device_ops stats_ops = {
- 	.alloc_hw_port_stats = mlx5_ib_alloc_hw_port_stats,
-+	.alloc_op_port_stats = mlx5_ib_alloc_op_port_stats,
- 	.get_hw_stats = mlx5_ib_get_hw_stats,
- 	.counter_bind_qp = mlx5_ib_counter_bind_qp,
- 	.counter_unbind_qp = mlx5_ib_counter_unbind_qp,
-@@ -710,7 +777,7 @@ int mlx5_ib_counters_init(struct mlx5_ib_dev *dev)
- 	if (is_mdev_switchdev_mode(dev->mdev))
- 		ib_set_device_ops(&dev->ib_dev, &hw_switchdev_stats_ops);
- 	else
--		ib_set_device_ops(&dev->ib_dev, &hw_stats_ops);
-+		ib_set_device_ops(&dev->ib_dev, &stats_ops);
- 	return mlx5_ib_alloc_counters(dev);
- }
- 
++void mlx5_ib_fs_remove_op_fc(struct mlx5_ib_dev *dev,
++			     struct mlx5_ib_op_fc *opfc)
++{
++	mlx5_del_flow_rules(opfc->rule);
++	put_flow_table(dev, &opfc->prio, true);
++	WARN_ON(opfc->prio.flow_table);
++}
++
+ static void set_underlay_qp(struct mlx5_ib_dev *dev,
+ 			    struct mlx5_flow_spec *spec,
+ 			    u32 underlay_qpn)
 diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-index bf20a388eabe..2ba352702294 100644
+index 2ba352702294..130b2ed79ba2 100644
 --- a/drivers/infiniband/hw/mlx5/mlx5_ib.h
 +++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-@@ -797,6 +797,14 @@ struct mlx5_ib_resources {
- 	struct mlx5_ib_port_resources ports[2];
+@@ -805,6 +805,12 @@ enum mlx5_ib_optional_counter_type {
+ 	MLX5_IB_OPCOUNTER_MAX,
  };
  
-+enum mlx5_ib_optional_counter_type {
-+	MLX5_IB_OPCOUNTER_CC_RX_CE_PKTS,
-+	MLX5_IB_OPCOUNTER_CC_RX_CNP_PKTS,
-+	MLX5_IB_OPCOUNTER_CC_TX_CNP_PKTS,
-+
-+	MLX5_IB_OPCOUNTER_MAX,
++struct mlx5_ib_op_fc {
++	struct mlx5_fc *fc;
++	struct mlx5_ib_flow_prio prio;
++	struct mlx5_flow_handle *rule;
 +};
 +
  struct mlx5_ib_counters {
  	const char **names;
  	size_t *offsets;
-diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
-index e8763d336df1..40b0f7825975 100644
---- a/include/rdma/ib_verbs.h
-+++ b/include/rdma/ib_verbs.h
-@@ -600,10 +600,12 @@ static inline struct rdma_hw_stats *rdma_alloc_hw_stats_struct(
- 
- /**
-  * struct rdma_op_counter
-+ * @type - The vendor-specific type of the counter
-  * @name - The name of the counter
-  * @value - The value of the counter
-  */
- struct rdma_op_counter {
-+	int type;
- 	const char *name;
- 	u64 value;
+@@ -814,6 +820,12 @@ struct mlx5_ib_counters {
+ 	u16 set_id;
  };
+ 
++int mlx5_ib_fs_add_op_fc(struct mlx5_ib_dev *dev, struct mlx5_ib_op_fc *opfc,
++			 enum mlx5_ib_optional_counter_type type);
++
++void mlx5_ib_fs_remove_op_fc(struct mlx5_ib_dev *dev,
++			     struct mlx5_ib_op_fc *opfc);
++
+ struct mlx5_ib_multiport_info;
+ 
+ struct mlx5_ib_multiport {
+diff --git a/include/rdma/ib_hdrs.h b/include/rdma/ib_hdrs.h
+index 7e542205861c..8ae07c0ecdf7 100644
+--- a/include/rdma/ib_hdrs.h
++++ b/include/rdma/ib_hdrs.h
+@@ -232,6 +232,7 @@ static inline u32 ib_get_sqpn(struct ib_other_headers *ohdr)
+ #define IB_BTH_SE_SHIFT	23
+ #define IB_BTH_TVER_MASK	0xf
+ #define IB_BTH_TVER_SHIFT	16
++#define IB_BTH_OPCODE_CNP	0x81
+ 
+ static inline u8 ib_bth_get_pad(struct ib_other_headers *ohdr)
+ {
 -- 
 2.26.2
 
