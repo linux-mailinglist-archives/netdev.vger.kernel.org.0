@@ -2,73 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B36363F09ED
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 19:09:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE39B3F0A5A
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 19:38:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231716AbhHRRKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 13:10:02 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:56922 "EHLO vps0.lunn.ch"
+        id S229661AbhHRRjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 13:39:22 -0400
+Received: from mga07.intel.com ([134.134.136.100]:31099 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229889AbhHRRKB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Aug 2021 13:10:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=FMajQxh4j0Trlt2HiUYVBxTD0sfB9uOoOL1XmXuHepM=; b=lx/TkBMVLBWZl1LqdvbxZPFiUo
-        BIs2zRLqmluT4x8IsGq8GbZJUNmITq1nw0z2WX/qcqX/VOsGD+Ewz72XQAqW5AEevTcelKthXzsvu
-        O6LibKBLTHFZ4GbKtqMlGozntYsYEP9JHM9VYknUITY5Q9XojspLaBv86vMeGG7F6EQA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mGP3x-000oy0-Uf; Wed, 18 Aug 2021 19:09:13 +0200
-Date:   Wed, 18 Aug 2021 19:09:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jie Luo <luoj@codeaurora.org>
-Cc:     Michael Walle <michael@walle.cc>, davem@davemloft.net,
-        hkallweit1@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, sricharan@codeaurora.org
-Subject: Re: [PATCH] net: phy: add qca8081 ethernet phy driver
-Message-ID: <YR0+uXdKoXrFEhpZ@lunn.ch>
-References: <6856a839-0fa0-1240-47cd-ae8536294bcd@codeaurora.org>
- <20210818074102.78006-1-michael@walle.cc>
- <9aa1543b-e1b8-fba2-1b93-c954dd2e3e50@codeaurora.org>
+        id S229448AbhHRRjU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Aug 2021 13:39:20 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10080"; a="280123020"
+X-IronPort-AV: E=Sophos;i="5.84,332,1620716400"; 
+   d="scan'208";a="280123020"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2021 10:38:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,332,1620716400"; 
+   d="scan'208";a="511317134"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga004.fm.intel.com with ESMTP; 18 Aug 2021 10:38:44 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net 0/2][pull request] Intel Wired LAN Driver Updates 2021-08-18
+Date:   Wed, 18 Aug 2021 10:42:15 -0700
+Message-Id: <20210818174217.4138922-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9aa1543b-e1b8-fba2-1b93-c954dd2e3e50@codeaurora.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 18, 2021 at 09:34:40PM +0800, Jie Luo wrote:
-> 
-> On 8/18/2021 3:41 PM, Michael Walle wrote:
-> > > qca8081 supports IEEE1588 feature, the IEEE1588 code may be submitted in
-> > > the near future,
-> > > 
-> > > so it may be a good idea to keep it out from at803x code.
-> > The AR8031 also supports PTP. Unfortunately, there is no public datasheet
-> > for the QCA8081, so I can't have a look if both are similar.
-> > 
-> > See also,
-> > https://lore.kernel.org/netdev/20200228180226.22986-1-michael@walle.cc/
-> > 
-> > -michael
-> 
-> Hi Michael,
-> 
-> Thanks for this comment. it is true that AR8031 supports basic PTP features.
-> 
-> please refer to the following link for the outline features of qca801.
-> 
-> https://www.qualcomm.com/products/qca8081
+This series contains updates to i40e and iavf drivers.
 
-Is the PTP hardware in the qca8081 the same as the ar8031? When you
-add PTP support, will it be for both PHYs?
+Arkadiusz fixes Flow Director not using the correct queue due to calling
+the wrong pick Tx function for i40e.
 
-What about the cable diagnostics? The at803x already has this
-implemented. Will the same work for the qca8081?
+Sylwester resolves traffic loss for iavf when it attempts to change its
+MAC address when it does not have permissions to do so.
 
-    Andrew
+The following are changes since commit a786e3195d6af183033e86f0518ffd2c51c0e8ac:
+  net: asix: fix uninit value bugs
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 40GbE
+
+Arkadiusz Kubalewski (1):
+  i40e: Fix ATR queue selection
+
+Sylwester Dziedziuch (1):
+  iavf: Fix ping is lost after untrusted VF had tried to change MAC
+
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c   |  3 +-
+ drivers/net/ethernet/intel/iavf/iavf.h        |  1 +
+ drivers/net/ethernet/intel/iavf/iavf_main.c   |  1 +
+ .../net/ethernet/intel/iavf/iavf_virtchnl.c   | 47 ++++++++++++++++++-
+ 4 files changed, 48 insertions(+), 4 deletions(-)
+
+-- 
+2.26.2
+
