@@ -2,128 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA0DC3F07AF
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 17:16:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75E303F081F
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 17:36:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239862AbhHRPRX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 11:17:23 -0400
-Received: from mail-bn8nam08on2069.outbound.protection.outlook.com ([40.107.100.69]:21569
-        "EHLO NAM04-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S239506AbhHRPRN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Aug 2021 11:17:13 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OHrYih/dlv43F154Jc7Ahpep476cCPHGfDy7eUqGG2MWAjkNiFIm3ngMGbNUUiy6IBX7A2pAa1lfSidfJ2EGIuIkQfbMu8OmfyltwO/Qgt4KK00hJeN9PjhQOjCSmhummKgJmDu1KZ/ZyCt3iudgVy7VDkPMkxNCSuSl2XRiWaUVkt14jOX+S6i7CyBTOAWA0CtpRnN19JH4JgPVnuBghM1dGhTUgP7mU3oRFnumliVNZgYfdFbwaTDyaEfFMzqiedLMmtzIjdgWU5kGUitHZkI8mxZFRf3xJLYJpGvU6QoVoV3u4cwSnWs81NX0HY0/2cRKm0crKZZlcFqPvENTew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HjGt0ZrgiVUahAClMZ01A9kmYaGRiC1cnvt82jrutMw=;
- b=Hen2g53dp0pFhxR1vKkuxTr5RFJwSchCM1DZawPFq4CEgr29wVByHHuiyxI9695MFfMcRpOYAL0K4ynFZf0vQs8Jayr9nGp20JE0hD10kQiGvXuuMwYwDgpui4Sfmcawmtaj2yxaHNpQk5qJAPGaRKx5SeSGIU8Jn1qGOfgZtfviRzAIBRpQPHrWWC251KG0BkS4RnScQcT2dPNJFolALoe8pmToY7h+ZaZOn2h9tldSIkkBILpBqy7e4kvk3McT0Zv/E6ZjhkyWqQr/I5RyZawcJ2B7apKuObsqkxy8SrzSMSaJn/R0TheuAe4anjWLRAoYQA1InJGpudWTurwtYA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HjGt0ZrgiVUahAClMZ01A9kmYaGRiC1cnvt82jrutMw=;
- b=RNGZYrroPTTud6awNFA4WSC8ABxRWoEYxIfArCcT+pjjlsfThWPbCJE+BResabdpSQrwYH5u+pswjsVve0vQSSBm+LYeO8GF+/rMupWdbIVHiyvEdobqXQPrSfEKNtz/ws7WBrHr1UVwQSEAyK02pb1c/J0HD1oYLoWalaYeye30zYHdkSL5g9I9691IqH+acrDN0sGqfvM2KeYXVMoI8iGtZ3BiSV/tAQf7jJujdkMHy47tezu5brqJp+gHcwWpoPiwNtx5XpNj8604suvwmxZ2+HDSdTHIaX9yqyDG661AMiyzY6qx9YzhEjLB7JsOoHMvcTxOgB55XvX9Ygbdhw==
-Received: from BN9PR03CA0005.namprd03.prod.outlook.com (2603:10b6:408:fa::10)
- by MWHPR1201MB0205.namprd12.prod.outlook.com (2603:10b6:301:4e::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.21; Wed, 18 Aug
- 2021 15:16:37 +0000
-Received: from BN8NAM11FT057.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:fa:cafe::11) by BN9PR03CA0005.outlook.office365.com
- (2603:10b6:408:fa::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend
- Transport; Wed, 18 Aug 2021 15:16:37 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT057.mail.protection.outlook.com (10.13.177.49) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4436.19 via Frontend Transport; Wed, 18 Aug 2021 15:16:36 +0000
-Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 18 Aug
- 2021 15:16:35 +0000
-Received: from reg-r-vrt-018-180.nvidia.com (172.20.187.6) by
- DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 18 Aug 2021 15:16:32 +0000
-References: <20210818142558.36722-1-colin.king@canonical.com>
-User-agent: mu4e 1.4.10; emacs 27.1
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     Saeed Mahameed <saeedm@nvidia.com>,
-        Colin King <colin.king@canonical.com>
-CC:     Leon Romanovsky <leon@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mark Bloch <mbloch@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH][next] net/mlx5: Bridge: Fix uninitialized variable err
-In-Reply-To: <20210818142558.36722-1-colin.king@canonical.com>
-Date:   Wed, 18 Aug 2021 18:16:30 +0300
-Message-ID: <ygnhbl5upyup.fsf@nvidia.com>
+        id S239509AbhHRPhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 11:37:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38118 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230360AbhHRPhR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 11:37:17 -0400
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6D6C061764
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 08:36:43 -0700 (PDT)
+Received: by mail-ot1-x335.google.com with SMTP id m7-20020a9d4c87000000b0051875f56b95so4562289otf.6
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 08:36:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=8TZ2Y+oul8QDiWx6f62RJoAlsez4j19O3ah7Fntx3ww=;
+        b=Cs8jOky5gXX8HsUXsrXnla3CNBqvPbFz8HJreXhD1mVQ7gUvXWx1aRv88KJ9bqM4V5
+         XwmRH/bVGn8Uisp6dR13BVf6jxrc4zdVKye3CrsOmWMT/60wMuaOxRhJVa5CYfb/GfPF
+         yAp0fguMSk04B/vFKUQroa4LoFCK2TuIhTM8DROjH2K4nuYeP54wLoxNSKSYfQ9sD3bl
+         ErdjXW9zKt7Fm1IR1szPjq0KWflbijpzK+3hjDBA7ik4jgA2hYvkKco/q9IHXb5r1YWo
+         rSC/1axwc9aFTnAz5wbJvAJogc1DHIJh9yGYQRgoPnRtVsrey91bdFb8inxqpKGb2geI
+         PU4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=8TZ2Y+oul8QDiWx6f62RJoAlsez4j19O3ah7Fntx3ww=;
+        b=EVlGOz/160vxYUDq8w1DrW+XqeeBMJtECigaeyN551I1SE0nrx0P9zbeg+TGdrKEKr
+         al0mo2+etbvtk+CUVpSUXeKUU7L8EIiKgtzmvq0BWJU95vC/tqVoY0gvKMv8k5DCRzdP
+         hSMBV53LGMy+8F7kr39W23T/IReGbSC+fQtq7zRGB0n+MQ6waJFXphBv2tKNvGxFx6oT
+         OU66gwNYDcI8lYHoZaAqTz5JQINYHdNi9FI4nk2mTJ2QtCznPXKNpe+xZv4otxCxnHum
+         Fqf4ZEsUGGalqytemYruuRUZlbyKj/VGNXGqQdDWUUDADyQQn/YQBJ+62eb+LLh+8iSB
+         lruw==
+X-Gm-Message-State: AOAM533Nm8EMV1qIYYwCwB0nPIfNroQdAw+filxSIydm7II2TvbqgLtf
+        2fBFS+HT1QymXmAEW6WOv0XUPBvA20I=
+X-Google-Smtp-Source: ABdhPJyAFvTKMPAsKBC0jPWYttEXc98vfqjuvjgDNMR0Nv8jQe3Ln9ECSkpprG9GQpj232XeI0pXpw==
+X-Received: by 2002:aca:aad7:: with SMTP id t206mr7328156oie.12.1629301002148;
+        Wed, 18 Aug 2021 08:36:42 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.45])
+        by smtp.googlemail.com with ESMTPSA id f5sm81940oij.6.2021.08.18.08.36.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 Aug 2021 08:36:41 -0700 (PDT)
+Subject: Re: [PATCH] selftests: vrf: Add test for SNAT over VRF
+To:     Lahav Schlesinger <lschlesinger@drivenets.com>,
+        netdev@vger.kernel.org
+Cc:     dsahern@kernel.org, kuba@kernel.org, shuah@kernel.org
+References: <20210818085212.2810249-1-lschlesinger@drivenets.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <2c551684-f3b2-0ec5-4fec-46aabaff1bf7@gmail.com>
+Date:   Wed, 18 Aug 2021 09:36:40 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.20.187.6]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- DRHQMAIL107.nvidia.com (10.27.9.16)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3bc646ba-0488-447e-04ba-08d9625b2bd2
-X-MS-TrafficTypeDiagnostic: MWHPR1201MB0205:
-X-Microsoft-Antispam-PRVS: <MWHPR1201MB0205DFBE8260DBACDE442F4EA0FF9@MWHPR1201MB0205.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eVuZJZdUVcKmT3kV5T28F1gn1jRwue4T4LgTLlHDMb06x3zAAcK+8T5p8tLgZkk0Ckff1dY+ACtVQZs3dKvVsjLwqdSUZ3O2w/QSntcpN7TO/Azs95tjun42UcHs1lYVOpGGmiTs5kSTu/CGpNasNePRv195y3ADbhcNW8QKUTzMzP7wKy98ImE77CwDkGzEzWQxeY3mGiFhcIhzMIXouohGxwzTACNA24q4Y9sZWZpDplfULChlaSunKiF+1Bx7EtuHVZ5RgWxR9/CCbp18nRs0xo5a9TJxSPNdIdk43sRUbwq9X+4vmviH9LelhO5rh8eTqxklo3tmTEYNu5r6cdjfJEyEGHEoDHG5lAsIe6xufpsocTpl81iA+VJ7OG7INaqriITscea7nQ1jL8MPKmC5YuD+cWQrXFqI9WYXLuQJ8N/c84aFU9srhJA3MG6+fmiZrYUCPmH6c17D1cTXE1Tu95zenu7+c9nM2gAX0b3H4s2MB0LhRH+SXHfvPu7PL5rG0MIDQsLQMNMMRvac+xKZ9cAESVYylt/gUKb95t+8sw7Bs8CgxXN3VeYaLuFCE7GbkoMN8WdpIsb/Zhs50ckUzFE0qwQH7BpwRuNP1a5MTbdbHHmGArUKQ4LeMl7xBZ5sCsIpAYsnCbvrTliw9SlQOOpBGgqilAbQeTn4ChtZmjJhyOf9zrUwfdbxDo/6IZhKvfyKpi9vVSPfGPJkBQ==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(396003)(39860400002)(376002)(136003)(36840700001)(46966006)(47076005)(2906002)(8676002)(2616005)(36756003)(4326008)(26005)(86362001)(336012)(426003)(186003)(16526019)(7696005)(82310400003)(54906003)(70586007)(110136005)(316002)(5660300002)(8936002)(356005)(82740400003)(36860700001)(7636003)(478600001)(70206006);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2021 15:16:36.3317
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3bc646ba-0488-447e-04ba-08d9625b2bd2
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT057.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1201MB0205
+In-Reply-To: <20210818085212.2810249-1-lschlesinger@drivenets.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 18 Aug 2021 at 17:25, Colin King <colin.king@canonical.com> wrote:
-> From: Colin Ian King <colin.king@canonical.com>
->
-> A recent change removed the assignment of err to the return from
-> the call mlx5_esw_bridge_lower_rep_vport_num_vhca_id_get, so now
-> err is uninitialized. This is problematic in the switch statement
-> where attr-id is SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS, there
-> is now a possibility of err not being assigned and the function
-> returning a garbage value in err. Fix this by initializing err
-> to zero.
->
-> Addresses-Coverity; ("Uninitialized scalar variable")
-> Fixes: ff9b7521468b ("net/mlx5: Bridge, support LAG")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+On 8/18/21 2:52 AM, Lahav Schlesinger wrote:
+> Commit 09e856d54bda ("vrf: Reset skb conntrack connection on VRF rcv")
+> fixes the "reverse-DNAT" of an SNAT-ed packet over a VRF.
+> 
+> This patch adds a test for this scenario.
+> 
+> Signed-off-by: Lahav Schlesinger <lschlesinger@drivenets.com>
 > ---
+>  tools/testing/selftests/net/fcnal-test.sh | 28 +++++++++++++++++++++++
+>  1 file changed, 28 insertions(+)
+> 
 
-Colin, thanks for fixing this!
-
-Saeed, I've already submitted fix for this and another similar Coverity
-issue (in mlx5_esw_bridge_port_changeupper()) internally. This patch is
-exactly the same one line fix as mine, so you can take whichever you
-prefer.
-
-Reviewed-by: Vlad Buslov <vladbu@nvidia.com>
-
-[...]
-
+Thanks for the follow up!
 
