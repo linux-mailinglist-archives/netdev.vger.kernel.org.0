@@ -2,148 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9B943EFEB4
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 10:07:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D4623EFE90
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 10:05:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239293AbhHRII0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 04:08:26 -0400
-Received: from mga04.intel.com ([192.55.52.120]:5486 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238650AbhHRIIZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Aug 2021 04:08:25 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10079"; a="214431696"
-X-IronPort-AV: E=Sophos;i="5.84,330,1620716400"; 
-   d="scan'208";a="214431696"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2021 01:07:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,330,1620716400"; 
-   d="scan'208";a="510768096"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga004.fm.intel.com with ESMTP; 18 Aug 2021 01:07:47 -0700
-Date:   Wed, 18 Aug 2021 09:52:56 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-Cc:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "toke@redhat.com" <toke@redhat.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Lobakin, Alexandr" <alexandr.lobakin@intel.com>,
-        "bjorn@kernel.org" <bjorn@kernel.org>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "Creeley, Brett" <brett.creeley@intel.com>,
-        "joamaki@gmail.com" <joamaki@gmail.com>
-Subject: Re: [PATCH v5 intel-next 0/9] XDP_TX improvements for ice
-Message-ID: <20210818075256.GA16780@ranger.igk.intel.com>
-References: <20210814140812.46632-1-maciej.fijalkowski@intel.com>
- <86e7bcc04d8211fe5796bd7ecbea9458a725ad03.camel@intel.com>
+        id S239430AbhHRIFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 04:05:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43490 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239334AbhHRIDb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 04:03:31 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06FE5C06179A
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 01:02:48 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id b15so3186570ejg.10
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 01:02:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=to:references:from:subject:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=mZorCO9dHkK9Z+tLmMENe4sm60DKPCbLZG525gkchFY=;
+        b=q6tSnI/hcRssEOPOa+x3Tf6o11TQuaH2Vap6Kz/BOFM9d8cBeudswn2ue6jCVrUA4S
+         42aKPQUMpoBdV2RXEgmBUIuk69wyU09Q4FQn03q87aSLbbeEY54b2aoOEervw8/Vx+Ze
+         RCJDnJWxh+ehYx2l3x9QePYppFzgIhAk9I8Ez1Ui/r1WtLXPhmjlzTE3HypQH/Fmpzd7
+         SjM0w8dE0TQs34HsvUHqSMipeoMFYXXws5EnPFxxmOIzbHU88B37Y4hS/JToPTiLOeXH
+         AyFYW4fBlKR+vnJPKKKZP7U495i7gia5DqO5LG6OjQ4IZEWUmmQmIn1+olH/pn0q4YR7
+         i/iQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=mZorCO9dHkK9Z+tLmMENe4sm60DKPCbLZG525gkchFY=;
+        b=Jfcl4rZcenYkG/NtajNagbdzP+2vDrfJkBVro7tSlJ19rIntfWSVnB0vjmVywF71FL
+         LdobkhJBHxQWVl6K5N6T5CGpub54pxY4e1n5d7tOdlkM07VOp1ONEBmLpmpXFdcmP42y
+         atz417RNvyRn84pDs4w6zlvtSOfxlFMORxFF6N0GuwqNhOCh5yCBD1BElP0AguoMBX0Q
+         idx87SORJ4G4dhxfoQ8HHoTj4APeHzjlk6JSS104UxbOVAXZcl5j7hPspX2RwIcnOmdp
+         UJigaFs9rAgTZVVqfQ5yd8LGM6B3DbhZFw4BxyWhGeNvsf4uF3zzR2X5LVM9mHf3l+sk
+         avaw==
+X-Gm-Message-State: AOAM531UWHHrmp25jLsVAwSZD1D28fsEEQ2rv1DY2xRg11NbI+Wud3kS
+        gjyuvX8a11JYhMw/ZkEZA+nwMg==
+X-Google-Smtp-Source: ABdhPJx/EKzaFi+cRnqWvYi6W0WthKoTJQPIJ62VMOaDiheyKphteFXp8M2RNgE7IjrEAbkEAeFxvw==
+X-Received: by 2002:a17:906:c1da:: with SMTP id bw26mr8561207ejb.253.1629273767444;
+        Wed, 18 Aug 2021 01:02:47 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net ([213.211.156.192])
+        by smtp.gmail.com with ESMTPSA id c25sm2185584eds.93.2021.08.18.01.02.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 Aug 2021 01:02:47 -0700 (PDT)
+To:     syzbot <syzbot+7b938780d5deeaaf938f@syzkaller.appspotmail.com>,
+        davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
+        marcel@holtmann.org, mathew.j.martineau@linux.intel.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
+References: <00000000000012030e05c9c8bc85@google.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: Re: [syzbot] KFENCE: use-after-free in kvm_fastop_exception
+Message-ID: <58cef9e0-69de-efdb-4035-7c1ed3d23132@tessares.net>
+Date:   Wed, 18 Aug 2021 10:02:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <86e7bcc04d8211fe5796bd7ecbea9458a725ad03.camel@intel.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <00000000000012030e05c9c8bc85@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 17, 2021 at 09:59:01PM +0100, Nguyen, Anthony L wrote:
-> On Sat, 2021-08-14 at 16:08 +0200, Maciej Fijalkowski wrote:
-> > With the v5, I think it's time for a proper change log.
+Hello,
+
+On 18/08/2021 00:21, syzbot wrote:
+> syzbot has bisected this issue to:
 > 
-> This isn't applying to the Intel-wired-LAN tree. If you want it to go
-> through there, could you base the patches on that tree?
-
-Interestingly this is the first time that happens to me and I always based
-my XDP related driver work on bpf-next.
-
-iwl tree is some standalone tree or is it just the net-next ?
-
+> commit c4512c63b1193c73b3f09c598a6d0a7f88da1dd8
+> Author: Matthieu Baerts <matthieu.baerts@tessares.net>
+> Date:   Fri Jun 25 21:25:22 2021 +0000
 > 
-> Also, looking at NIPA, it looks like patches 2 and 3 have kdoc issues.
-
-Yeah I saw kdoc issue on patch 3 and wanted to ask you to fix this if you
-would be applying that set but given that you're asking for a re-submit
-i'll fix those by myself.
-
+>     mptcp: fix 'masking a bool' warning
 > 
-> Thanks,
-> Tony
-> 
-> > v4->v5:
-> > * fix issues pointed by lkp; variables used for updating ring stats
-> >   could be un-inited
-> > * s/ice_ring/ice_rx_ring; it looks now symmetric given that we have
-> >   ice_tx_ring struct dedicated for Tx ring
-> > * go through the code and use ice_for_each_* macros; it was spotted
-> > by
-> >   Brett that there was a place around that code that this set is
-> >   touching that was not using the ice_for_each_txq. Turned out that
-> > there
-> >   were more such places
-> > * take care of coalesce related code; carry the info about type of
-> > ring
-> >   container in ice_ring_container
-> > * pull out getting rid of @ring_active onto separate patch, as
-> > suggested
-> >   by Brett
-> >
-> > v3->v4:
-> > * fix lkp issues;
-> >
-> > v2->v3:
-> > * improve XDP_TX in a proper way
-> > * split ice_ring
-> > * propagate XDP ring pointer to Rx ring
-> >
-> > v1->v2:
-> > * try to improve XDP_TX processing
-> >
-> > v4 :
-> > https://lore.kernel.org/bpf/20210806095539.34423-1-maciej.fijalkowski@intel.com/
-> > v3 :
-> > https://lore.kernel.org/bpf/20210805230046.28715-1-maciej.fijalkowski@intel.com/
-> > v2 :
-> > https://lore.kernel.org/bpf/20210705164338.58313-1-maciej.fijalkowski@intel.com/
-> > v1 :
-> > https://lore.kernel.org/bpf/20210601113236.42651-1-maciej.fijalkowski@intel.com/
-> >
-> > Thanks!
-> > Maciej
-> >
-> > Maciej Fijalkowski (9):
-> >   ice: remove ring_active from ice_ring
-> >   ice: move ice_container_type onto ice_ring_container
-> >   ice: split ice_ring onto Tx/Rx separate structs
-> >   ice: unify xdp_rings accesses
-> >   ice: do not create xdp_frame on XDP_TX
-> >   ice: propagate xdp_ring onto rx_ring
-> >   ice: optimize XDP_TX workloads
-> >   ice: introduce XDP_TX fallback path
-> >   ice: make use of ice_for_each_* macros
-> >
-> >  drivers/net/ethernet/intel/ice/ice.h          |  41 +++-
-> >  drivers/net/ethernet/intel/ice/ice_arfs.c     |   2 +-
-> >  drivers/net/ethernet/intel/ice/ice_base.c     |  51 ++---
-> >  drivers/net/ethernet/intel/ice/ice_base.h     |   8 +-
-> >  drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |   9 +-
-> >  drivers/net/ethernet/intel/ice/ice_dcb_lib.h  |  10 +-
-> >  drivers/net/ethernet/intel/ice/ice_ethtool.c  |  93 +++++----
-> >  drivers/net/ethernet/intel/ice/ice_lib.c      |  88 +++++----
-> >  drivers/net/ethernet/intel/ice/ice_lib.h      |   6 +-
-> >  drivers/net/ethernet/intel/ice/ice_main.c     | 142 +++++++++-----
-> >  drivers/net/ethernet/intel/ice/ice_ptp.c      |   2 +-
-> >  drivers/net/ethernet/intel/ice/ice_ptp.h      |   4 +-
-> >  drivers/net/ethernet/intel/ice/ice_trace.h    |  28 +--
-> >  drivers/net/ethernet/intel/ice/ice_txrx.c     | 183 +++++++++++-----
-> > --
-> >  drivers/net/ethernet/intel/ice/ice_txrx.h     | 126 +++++++-----
-> >  drivers/net/ethernet/intel/ice/ice_txrx_lib.c |  98 ++++++++--
-> >  drivers/net/ethernet/intel/ice/ice_txrx_lib.h |  14 +-
-> >  .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |   2 +-
-> >  drivers/net/ethernet/intel/ice/ice_xsk.c      |  70 ++++---
-> >  drivers/net/ethernet/intel/ice/ice_xsk.h      |  20 +-
-> >  20 files changed, 607 insertions(+), 390 deletions(-)
-> >
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=122b0655300000
+> start commit:   b9011c7e671d Add linux-next specific files for 20210816
+> git tree:       linux-next
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=112b0655300000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=162b0655300000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=a245d1aa4f055cc1
+> dashboard link: https://syzkaller.appspot.com/bug?extid=7b938780d5deeaaf938f
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=157a41ee300000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14f78ff9300000
+
+I'm pretty sure the commit c4512c63b119 ("mptcp: fix 'masking a bool'
+warning") doesn't introduce the reported bug. This minor fix is specific
+to MPTCP which doesn't seem to be used here.
+
+I'm not sure how I can tell syzbot this is a false positive.
+
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
