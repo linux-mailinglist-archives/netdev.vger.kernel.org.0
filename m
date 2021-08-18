@@ -2,94 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4C413F04DB
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 15:34:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 665B43F04E8
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 15:35:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237392AbhHRNea (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 09:34:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39160 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233722AbhHRNe1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Aug 2021 09:34:27 -0400
-Received: from oasis.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S237760AbhHRNfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 09:35:51 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:29397 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236629AbhHRNfp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 09:35:45 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1629293711; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=D83uvmIKfB3mWVd8vO6++LBuXNB1BJ5IR3kbxJlaHJk=; b=gny5c2qorneGUGCW3/wXNvgtCbmCAZl+LShOy/EAxwqsLABGZOKCW+UK8DFMXwACOhjmsYJP
+ wrP9gZqj0S8BL7yJFqgzXDPUXMuiBPm59NFJBXLxJeK4nZn0EB/HF4Y5D2KVR4fZfUqZtFo+
+ LSSpePrzH6p9qD4dj+AeA8bAMSU=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 611d0c79454b7a558fb27d92 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 18 Aug 2021 13:34:49
+ GMT
+Sender: luoj=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id EB928C4360C; Wed, 18 Aug 2021 13:34:48 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-4.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+        version=3.4.0
+Received: from [10.92.1.52] (unknown [180.166.53.36])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5C0CE6109E;
-        Wed, 18 Aug 2021 13:33:51 +0000 (UTC)
-Date:   Wed, 18 Aug 2021 09:33:49 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-staging@lists.linux.dev,
-        linux-block@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2 50/63] tracing: Use memset_startat() to zero struct
- trace_iterator
-Message-ID: <20210818093349.3144276b@oasis.local.home>
-In-Reply-To: <20210818060533.3569517-51-keescook@chromium.org>
-References: <20210818060533.3569517-1-keescook@chromium.org>
-        <20210818060533.3569517-51-keescook@chromium.org>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        (Authenticated sender: luoj)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 700F5C4338F;
+        Wed, 18 Aug 2021 13:34:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 700F5C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+Subject: Re: [PATCH] net: phy: add qca8081 ethernet phy driver
+To:     Michael Walle <michael@walle.cc>
+Cc:     andrew@lunn.ch, davem@davemloft.net, hkallweit1@gmail.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        sricharan@codeaurora.org
+References: <6856a839-0fa0-1240-47cd-ae8536294bcd@codeaurora.org>
+ <20210818074102.78006-1-michael@walle.cc>
+From:   Jie Luo <luoj@codeaurora.org>
+Message-ID: <9aa1543b-e1b8-fba2-1b93-c954dd2e3e50@codeaurora.org>
+Date:   Wed, 18 Aug 2021 21:34:40 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210818074102.78006-1-michael@walle.cc>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 Aug 2021 23:05:20 -0700
-Kees Cook <keescook@chromium.org> wrote:
 
-> In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> field bounds checking for memset(), avoid intentionally writing across
-> neighboring fields.
-> 
-> Use memset_startat() to avoid confusing memset() about writing beyond
-> the target struct member.
-> 
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
->  kernel/trace/trace.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-> index 13587e771567..9ff8c31975cd 100644
-> --- a/kernel/trace/trace.c
-> +++ b/kernel/trace/trace.c
-> @@ -6691,9 +6691,7 @@ tracing_read_pipe(struct file *filp, char __user *ubuf,
->  		cnt = PAGE_SIZE - 1;
->  
->  	/* reset all but tr, trace, and overruns */
-> -	memset(&iter->seq, 0,
-> -	       sizeof(struct trace_iterator) -
-> -	       offsetof(struct trace_iterator, seq));
-> +	memset_startat(iter, 0, seq);
+On 8/18/2021 3:41 PM, Michael Walle wrote:
+>> qca8081 supports IEEE1588 feature, the IEEE1588 code may be submitted in
+>> the near future,
+>>
+>> so it may be a good idea to keep it out from at803x code.
+> The AR8031 also supports PTP. Unfortunately, there is no public datasheet
+> for the QCA8081, so I can't have a look if both are similar.
+>
+> See also,
+> https://lore.kernel.org/netdev/20200228180226.22986-1-michael@walle.cc/
+>
+> -michael
 
-I can't find memset_startat() in mainline nor linux-next. I don't see it
-in this thread either, but since this has 63 patches, I could have
-easily missed it.
+Hi Michael,
 
-This change really should belong to a patch set that just introduces
-memset_startat() (and perhaps memset_after()) and then updates all the
-places that should use it. That way I can give it a proper review. In
-other words, you should break this patch set up into smaller, more
-digestible portions for the reviewers.
+Thanks for this comment. it is true that AR8031 supports basic PTP 
+features.
 
-Thanks,
+please refer to the following link for the outline features of qca801.
 
--- Steve
-
-
-
->  	cpumask_clear(iter->started);
->  	trace_seq_init(&iter->seq);
->  	iter->pos = -1;
+https://www.qualcomm.com/products/qca8081
 
