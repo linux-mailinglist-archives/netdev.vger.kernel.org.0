@@ -2,124 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC3CD3F0415
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 14:59:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EC3E3F0432
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 15:04:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236138AbhHRM7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 08:59:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:31110 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236365AbhHRM72 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 08:59:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1629291533;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=09x+8dCI5/TkbKvSdPIJMMOV6aZdICcvnRHsab2iCfM=;
-        b=LvvVkTHV8YOJZdvxyTCYYpWDlGOzstXzlG/u81uoK52KnpzndJvwCxDwl8YxFR+TvSQ64B
-        e+r4geZzQ8R00Dm2+UD2XtMLDdzraAvul6fogF4GfZabCRNW9Peo/sodFNdH+LAnptgcqi
-        zNlYuyYtyLIDyqhI/hAAL3EripGDb0c=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-598-Z3SxlSAvMgGt4z-u4f0YOQ-1; Wed, 18 Aug 2021 08:58:50 -0400
-X-MC-Unique: Z3SxlSAvMgGt4z-u4f0YOQ-1
-Received: by mail-ed1-f70.google.com with SMTP id j15-20020aa7c40f0000b02903be5fbe68a9so996794edq.2
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 05:58:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=09x+8dCI5/TkbKvSdPIJMMOV6aZdICcvnRHsab2iCfM=;
-        b=f5aCV+33omc6wOlY/xreVnH3/34Imw+xRvB36nuxo6HXiLNEvboxMoYtcjGjI0R4be
-         nWcolnj7goJ3v23uQSjLS/LHdm8SMST0B3IeqQGwr+fj6z/qtG8OqcUVjnuj0iv+bBJ4
-         GvLP4uZB2lHW8XyYiD+c39AEtA8fXwljk6NfYf6kB6tttNhZerWaBOgQkQr+RXBlNSiQ
-         h0QmTF306fq8z/JaIYKBdstHNJ2QymvdschHXevaXL8Kf66f4VG3IotbQXc4PmOFf3tE
-         wHhoSk1PRQwLw+DvinaM0rk3xCAy8MikzMhljFgsDysCtUT+WgyIS1uat6ZPNWG2A6Qk
-         D9RQ==
-X-Gm-Message-State: AOAM532COROfb4G02PctTrZh2LU6E5cb6loS0S0IyhgWqkYPXgH67NS2
-        1BVuapuHYTehnMHUrXBUSH1ra0rHoHoXEZVPYRLOSUp6inKcu8sRGKXzkMe5jLJfsHs7UNbPDEZ
-        HlzmxeBET+Scnq8Cv
-X-Received: by 2002:a05:6402:1d1c:: with SMTP id dg28mr10347633edb.234.1629291529175;
-        Wed, 18 Aug 2021 05:58:49 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyofstIBDIciczj+UTiU5luCJUGq5UtpCf+huZBHZDLqEX5l4Po8j4IFhWvEYpVmIrk47gCKw==
-X-Received: by 2002:a05:6402:1d1c:: with SMTP id dg28mr10347622edb.234.1629291529057;
-        Wed, 18 Aug 2021 05:58:49 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id u18sm2029941ejf.118.2021.08.18.05.58.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Aug 2021 05:58:48 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id DF76918032C; Wed, 18 Aug 2021 14:58:47 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
-        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
-        echaudro@redhat.com, jasowang@redhat.com,
-        alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com
-Subject: Re: [PATCH v11 bpf-next 17/18] net: xdp: introduce
- bpf_xdp_adjust_data helper
-In-Reply-To: <YR0BYiQFvI8cmOJU@lore-desk>
-References: <cover.1628854454.git.lorenzo@kernel.org>
- <9696df8ef1cf6c931ae788f40a42b9278c87700b.1628854454.git.lorenzo@kernel.org>
- <87czqbq6ic.fsf@toke.dk> <YR0BYiQFvI8cmOJU@lore-desk>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 18 Aug 2021 14:58:47 +0200
-Message-ID: <878s0yrjso.fsf@toke.dk>
+        id S236808AbhHRNEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 09:04:55 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:17038 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236270AbhHRNEs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 09:04:48 -0400
+Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GqSgH1LQhzbbhR;
+        Wed, 18 Aug 2021 21:00:27 +0800 (CST)
+Received: from SZX1000464847.huawei.com (10.21.59.169) by
+ dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Wed, 18 Aug 2021 21:04:11 +0800
+From:   Dongdong Liu <liudongdong3@huawei.com>
+To:     <helgaas@kernel.org>, <hch@infradead.org>, <kw@linux.com>,
+        <logang@deltatee.com>, <leon@kernel.org>,
+        <linux-pci@vger.kernel.org>, <rajur@chelsio.com>,
+        <hverkuil-cisco@xs4all.nl>
+CC:     <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: [PATCH V8 0/8] PCI: Enable 10-Bit tag support for PCIe devices
+Date:   Wed, 18 Aug 2021 21:01:49 +0800
+Message-ID: <1629291717-38564-1-git-send-email-liudongdong3@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain
+X-Originating-IP: [10.21.59.169]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggeme758-chm.china.huawei.com (10.3.19.104)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenzo Bianconi <lorenzo.bianconi@redhat.com> writes:
+10-Bit Tag capability, introduced in PCIe-4.0 increases the total Tag
+field size from 8 bits to 10 bits.
 
->> Lorenzo Bianconi <lorenzo@kernel.org> writes:
->> 
-> [...]
->> > + *	Description
->> > + *		For XDP frames split over multiple buffers, the
->> > + *		*xdp_md*\ **->data** and*xdp_md *\ **->data_end** pointers
->> > + *		will point to the start and end of the first fragment only.
->> > + *		This helper can be used to access subsequent fragments by
->> > + *		moving the data pointers. To use, an XDP program can call
->> > + *		this helper with the byte offset of the packet payload that
->> > + *		it wants to access; the helper will move *xdp_md*\ **->data**
->> > + *		and *xdp_md *\ **->data_end** so they point to the requested
->> > + *		payload offset and to the end of the fragment containing this
->> > + *		byte offset, and return the byte offset of the start of the
->> > + *		fragment.
->> 
->> This comment is wrong now :)
->
-> actually we are still returning the byte offset of the start of the fragment
-> (base_offset).
+This patchset is to enable 10-Bit tag for PCIe EP devices (include VF).
 
-Hmm, right, I was looking at the 'return 0':
+V7->V8:
+- Add a kernel parameter pcie_tag_peer2peer to disable 10-bit tags.
+- Provide sysfs file to enable 10-bit tags.
+- Remove [PATCH V7 6/9] PCI: Enable 10-Bit Tag support for PCIe RP devices.
+- Rebased on v5.14-rc6.
+- Fix some other comments. Thanks to Bjorn who gave a lot of review comments.
 
-> +BPF_CALL_2(bpf_xdp_adjust_data, struct xdp_buff *, xdp, u32, offset)
-> +{
-> +	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-> +	u32 base_offset = xdp->mb.headlen;
-> +	int i;
-> +
-> +	if (!xdp_buff_is_mb(xdp) || offset > sinfo->xdp_frags_size)
-> +		return -EINVAL;
-> +
-> +	if (offset < xdp->mb.headlen) {
-> +		/* linear area */
-> +		xdp->data = xdp->data_hard_start + xdp->mb.headroom;
-> +		xdp->data_end = xdp->data + xdp->mb.headlen;
-> +		return 0;
-> +	}
+V6->V7:
+- Rebased on v5.14-rc3.
+- Change the "pci=disable_10bit_tag=" parameter to sysfs file to disable
+  10-Bit Tag Requester when need for p2pdma suggested by Leon.
+- Fix comment for p2pdma 10-bit tag check.
 
-But I guess that's an offset; but that means the helper is not doing
-what it says it's doing if it's within the first fragment. That should
-probably be made consistent... :)
+V5->V6:
+- Rebased on v5.14-rc2.
+- Add Reviewed-by: Christoph Hellwig <hch@lst.de> in [PATCH V6 2/8].
+- PCI: Add "pci=disable_10bit_tag=" parameter for peer-to-peer support.
+- Add a 10-bit tag check in P2PDMA.
+- Simplified implementation in [PATCH V6 6/8].
+- Fix some comments in [PATCH V6 4/8].
 
--Toke
+V4->V5:
+- Fix warning variable 'capa' is uninitialized.
+- Fix warning unused variable 'pchild'.
+
+V3->V4:
+- Get the value of pcie_devcap2 in set_pcie_port_type().
+- Add Reviewed-by: Christoph Hellwig <hch@lst.de> in [PATCH V4 1/6],
+  [PATCH V4 3/6], [PATCH V4 4/6], [PATCH V4 5/6].
+- Fix some code style.
+- Rebased on v5.13-rc6.
+
+V2->V3:
+- Use cached Device Capabilities Register suggested by Christoph.
+- Fix code style to avoid > 80 char lines.
+- Rename devcap2 to pcie_devcap2.
+
+V1->V2: Fix some comments by Christoph.
+- Store the devcap2 value in the pci_dev instead of reading it multiple
+  times.
+- Change pci_info to pci_dbg to avoid the noisy log.
+- Rename ext_10bit_tag_comp_path to ext_10bit_tag.
+- Fix the compile error.
+- Rebased on v5.13-rc1.
+
+Dongdong Liu (8):
+  PCI: Use cached Device Capabilities Register
+  PCI: Use cached Device Capabilities 2 Register
+  PCI: Add 10-Bit Tag register definitions
+  PCI/sysfs: Add a 10-Bit Tag sysfs file PCIe Endpoint devices
+  PCI/IOV: Add 10-Bit Tag sysfs files for VF devices
+  PCI/P2PDMA: Add a 10-Bit Tag check in P2PDMA
+  PCI: Enable 10-Bit Tag support for PCIe Endpoint device
+  PCI/IOV: Enable 10-Bit Tag support for PCIe VF devices
+
+ Documentation/ABI/testing/sysfs-bus-pci         | 41 ++++++++++++-
+ Documentation/admin-guide/kernel-parameters.txt |  5 ++
+ drivers/media/pci/cobalt/cobalt-driver.c        |  5 +-
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c |  4 +-
+ drivers/pci/iov.c                               | 68 +++++++++++++++++++++
+ drivers/pci/p2pdma.c                            | 48 +++++++++++++++
+ drivers/pci/pci-sysfs.c                         | 79 +++++++++++++++++++++++++
+ drivers/pci/pci.c                               | 18 +++---
+ drivers/pci/pci.h                               | 10 ++++
+ drivers/pci/pcie/aspm.c                         | 11 ++--
+ drivers/pci/probe.c                             | 79 ++++++++++++++++++++-----
+ drivers/pci/quirks.c                            |  3 +-
+ include/linux/pci.h                             |  3 +
+ include/uapi/linux/pci_regs.h                   |  5 ++
+ 14 files changed, 341 insertions(+), 38 deletions(-)
+
+--
+2.7.4
 
