@@ -2,189 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB6083EFF29
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 10:30:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C8493EFF51
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 10:37:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239395AbhHRIbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 04:31:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50286 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239554AbhHRIbA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 04:31:00 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BDEFC0617AE
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 01:30:25 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id o10so1401688plg.0
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 01:30:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=jL/DkoxZCdzlNexUG7tJ6IG5zbZczoSvIVash/JCFrw=;
-        b=mjex+yt3nPZrktov1+DZ6Bq446vp3EnZsY5Rp2Z4n5iBYWDavjtfqeXt7QZMyuGeQx
-         dmQdu6z3qA1rLvrmaBhTr9RPti/HhOVCjaTV6tvJ/yTjU+xPSVxAQpRZvQwYAgUYofeO
-         mmH2cRgxyDimzxfU4p2xlVikV5Eqxe3uztSntLF0ehtUzbOzCC1Otex7gfri/ddagDJv
-         9dp7MYgwkA567XF/7ghDiEEu0ngZj6uWW6MzAqVr9yQGP+u2DQ2SwhCcZxAd6Jrq2EIp
-         +VMMflY5XYtq41M4/KXWx2ofrDQxrH8xbTuuekFqJwiPORh37Tltgjju+vkismI+2vhj
-         7XKw==
+        id S238896AbhHRIiF convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 18 Aug 2021 04:38:05 -0400
+Received: from mail-lf1-f45.google.com ([209.85.167.45]:39486 "EHLO
+        mail-lf1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238324AbhHRIiE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 04:38:04 -0400
+Received: by mail-lf1-f45.google.com with SMTP id t9so3010466lfc.6;
+        Wed, 18 Aug 2021 01:37:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=jL/DkoxZCdzlNexUG7tJ6IG5zbZczoSvIVash/JCFrw=;
-        b=kbu1g/Fs/KyDsqWKzosN4zsQ+u7SyRzX2AGgq3sZQDqEbdMBMfjRyiVSjFsQ5VVYyU
-         51u9ydYqHfPRg6I78qOAcMEZ94ApHA7/e4QfPC6RROfbC1YKsr4tLdrLwq+E+2QjV5KC
-         9X6aN5iJPtChTbAJEx3+h1i4b6Ry+Ct10FS7p8DXKWKs3WqCtlDExzeUSk1EeEO/jLvE
-         HMziHDKALgWZyoCudLxhqAobf4cvmpGKPbTBPmgDJt5JCb9VWpwe8PZVBoQXb4hhMlfK
-         JChEe69QwObFJ4AXQuT76uvrWH4Ix9GvX6g0FLTaPMu84rMo4mIHnYDePRopyiQlamM2
-         1KEA==
-X-Gm-Message-State: AOAM533vCzCX1dDho6rRvrYPwXWFwu03tZPAX3SAIhh7g5iLKa6kPxl5
-        udgJ91G/eZkyiqT0pif0P5s9Tg==
-X-Google-Smtp-Source: ABdhPJxad1KK36PAE+4ALDJhHQYzMsdq97PArLHgXYjcLRlD/AHutLCPOJ3acpkjSavyCEuDCIetRA==
-X-Received: by 2002:a17:90b:3007:: with SMTP id hg7mr8245674pjb.66.1629275424835;
-        Wed, 18 Aug 2021 01:30:24 -0700 (PDT)
-Received: from [10.254.37.14] ([139.177.225.244])
-        by smtp.gmail.com with ESMTPSA id 11sm5003086pfl.41.2021.08.18.01.30.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Aug 2021 01:30:24 -0700 (PDT)
-Subject: Re: [External] Re: [PATCH] ixgbe: Fix NULL pointer dereference in
- ixgbe_xdp_setup
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, jeffrey.t.kirsher@intel.com,
-        magnus.karlsson@intel.com, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, duanxiongchun@bytedance.com,
-        songmuchun@bytedance.com, zhouchengming@bytedance.com,
-        chenying.kernel@bytedance.com, zhengqi.arch@bytedance.com,
-        wangdongdong.6@bytedance.com
-References: <20210817075407.11961-1-zhoufeng.zf@bytedance.com>
- <20210817111047.GA8143@ranger.igk.intel.com>
-From:   zhoufeng <zhoufeng.zf@bytedance.com>
-Message-ID: <5bddff53-9b78-99db-1d8e-23b3d38167a1@bytedance.com>
-Date:   Wed, 18 Aug 2021 16:30:15 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Yw9a+hq6cSXXfXu6TM/7Zyf0Zb4A07Jxt9yZYTBacBI=;
+        b=HGBJy2QOqhVTIuDkmP2UpKaAisBw3lDzNA3AaeUb3KDa5Ewo6PWA5Ozowt9cTB9sye
+         TOoSmPmTWA2iEPQpCXjnbD3tpxV7cp0pcWW2DVHgg8PpPTmlBWs/msN7Iz6W+tzty29/
+         DCTFVYbi4gwUl1jychfSC28+7osp7H0FAw0nOl8+RxslG8i9nfzMzw52my6nUByo5RM0
+         PpqfkoR7dmzhpWM9defah91uNA31UY3I1Pt7/vaCrR0hUjiNRYzb7DUpCF1mOnFntYPL
+         F7T5X+Jheg444qxI2QgHysI7l3IrzNIQw9ItYKeE8UmhATgdYGdDC6t2UkJ7GtG0hi3y
+         C63w==
+X-Gm-Message-State: AOAM5314ho17bugwKXtUQF+pKW57Oe8Hs0mi3N0drzxN6rhgLnUfnpbx
+        mnsFRaz/F3adw4wq0FnzGL6f1Zw5/phpQrTUMwc=
+X-Google-Smtp-Source: ABdhPJyBQaepossLMH42svZ5QNxoYsHOuJc3w70JY+LKV/KBYSy4/y74UlZ7szItwxg7D6ZHLKzemXBDKWl1NlwUXgg=
+X-Received: by 2002:a05:6512:3aa:: with SMTP id v10mr5613342lfp.393.1629275848891;
+ Wed, 18 Aug 2021 01:37:28 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210817111047.GA8143@ranger.igk.intel.com>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20210815033248.98111-1-mailhol.vincent@wanadoo.fr>
+ <20210815033248.98111-6-mailhol.vincent@wanadoo.fr> <20210817195551.wwgu7dnhb6qyvo7n@pengutronix.de>
+ <CAMZ6RqLj94UU_b8dDAzinVsLaV6pBR-cWbHmjwGhx3vfWiKt_g@mail.gmail.com> <20210818081934.6f23ghoom2dkv53m@pengutronix.de>
+In-Reply-To: <20210818081934.6f23ghoom2dkv53m@pengutronix.de>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Wed, 18 Aug 2021 17:37:17 +0900
+Message-ID: <CAMZ6Rq+PPH8mCayZg1ghftfoU8_y8rzAtO=Of2F5VZxcBKn4KA@mail.gmail.com>
+Subject: Re: [PATCH v5 5/7] can: netlink: add interface for CAN-FD Transmitter
+ Delay Compensation (TDC)
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-can <linux-can@vger.kernel.org>,
+        =?UTF-8?Q?Stefan_M=C3=A4tje?= <Stefan.Maetje@esd.eu>,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed. 18 Aug 2021 Ã  17:19, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> On 18.08.2021 17:08:51, Vincent MAILHOL wrote:
+> > On Wed 18 Aug 2021 at 04:55, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> > > On 15.08.2021 12:32:46, Vincent Mailhol wrote:
+> > > > +static int can_tdc_changelink(struct net_device *dev, const struct nlattr *nla,
+> > > > +                           struct netlink_ext_ack *extack)
+> > > > +{
+> > > > +     struct nlattr *tb_tdc[IFLA_CAN_TDC_MAX + 1];
+> > > > +     struct can_priv *priv = netdev_priv(dev);
+> > > > +     struct can_tdc *tdc = &priv->tdc;
+> > > > +     const struct can_tdc_const *tdc_const = priv->tdc_const;
+> > > > +     int err;
+> > > > +
+> > > > +     if (!tdc_const || !can_tdc_is_enabled(priv))
+> > > > +             return -EOPNOTSUPP;
+> > > > +
+> > > > +     if (dev->flags & IFF_UP)
+> > > > +             return -EBUSY;
+> > > > +
+> > > > +     err = nla_parse_nested(tb_tdc, IFLA_CAN_TDC_MAX, nla,
+> > > > +                            can_tdc_policy, extack);
+> > > > +     if (err)
+> > > > +             return err;
+> > > > +
+> > > > +     if (tb_tdc[IFLA_CAN_TDC_TDCV]) {
+> > > > +             u32 tdcv = nla_get_u32(tb_tdc[IFLA_CAN_TDC_TDCV]);
+> > > > +
+> > > > +             if (tdcv < tdc_const->tdcv_min || tdcv > tdc_const->tdcv_max)
+> > > > +                     return -EINVAL;
+> > > > +
+> > > > +             tdc->tdcv = tdcv;
+> > >
+> > > You have to assign to a temporary struct first, and set the priv->tdc
+> > > after complete validation, otherwise you end up with inconsistent
+> > > values.
+> >
+> > Actually, copying the temporary structure to priv->tdc is not an
+> > atomic operation. Here, you are only reducing the window, not
+> > closing it.
+>
+> It's not a race I'm fixing.
+>
+> >
+> > > > +     }
+> > > > +
+> > > > +     if (tb_tdc[IFLA_CAN_TDC_TDCO]) {
+> > > > +             u32 tdco = nla_get_u32(tb_tdc[IFLA_CAN_TDC_TDCO]);
+> > > > +
+> > > > +             if (tdco < tdc_const->tdco_min || tdco > tdc_const->tdco_max)
+> > > > +                     return -EINVAL;
+> > > > +
+> > > > +             tdc->tdco = tdco;
+> > > > +     }
+> > > > +
+> > > > +     if (tb_tdc[IFLA_CAN_TDC_TDCF]) {
+> > > > +             u32 tdcf = nla_get_u32(tb_tdc[IFLA_CAN_TDC_TDCF]);
+> > > > +
+> > > > +             if (tdcf < tdc_const->tdcf_min || tdcf > tdc_const->tdcf_max)
+> > > > +                     return -EINVAL;
+> > > > +
+> > > > +             tdc->tdcf = tdcf;
+> > > > +     }
+> > > > +
+> > > > +     return 0;
+> > > > +}
+> > >
+> > > To reproduce (ip pseudo-code only :D ):
+> > >
+> > > ip down
+> > > ip up tdc-mode manual tdco 111 tdcv 33  # 111 is out of range, 33 is valid
+> > > ip down
+> > > ip up                                   # results in tdco=0 tdcv=33 mode=manual
+> >
+> > I do not think that this PoC would work because, thankfully, the
+> > netlink interface uses a mutex to prevent this issue from
+> > occurring.
+>
+> It works, I've tested it :)
+>
+> > That mutex is defined in:
+> > https://elixir.bootlin.com/linux/latest/source/net/core/rtnetlink.c#L68
+> >
+> > Each time a netlink message is sent to the kernel, it would be
+> > dispatched by rtnetlink_rcv_msg() which will make sure to lock
+> > the mutex before doing so:
+> > https://elixir.bootlin.com/linux/latest/source/net/core/rtnetlink.c#L5551
+> >
+> > A funny note is that because the mutex is global, if you run two
+> > ip command in a row:
+> >
+> > | ip link set can0 type can bitrate 500000
+> > | ip link set can1 up
+> >
+> > the second one will wait for the first one to finish even if it
+> > is on a different network device.
+> >
+> > To conclude, I do not think this needs to be fixed.
+>
+> It's not a race. Consider this command:
+>
+> | ip up tdc-mode manual tdco 111 tdcv 33  # 111 is out of range, 33 is valid
+>
+> tdcv is checked first and valid, then it's assigned to the priv->tdc.
+> tdco is checked second and invalid, then can_tdc_changelink() returns -EINVAL.
+>
+> tdc ends up being half set :(
+>
+> So the setting of tdc is inconsistent and when you do a "ip down" "ip
+> up" then it results in a tdco=0 tdcv=33 mode=manual.
+
+My bad. Now I understand the issue.
+I was confused because tdco=111 is in the valid range of my driver...
+I will squash your patch.
+
+Actually, I think that there is one more thing which needs to be
+fixed: If can_tdc_changelink() fails (e.g. value out of range),
+the CAN_CTRLMODE_TDC_AUTO or CAN_CTRLMODE_TDC_MANUAL would still
+be set, meaning that can_tdc_is_enabled() would return true. So I
+will add a "fail" branch to clear the flags.
 
 
-ÔÚ 2021/8/17 ÏÂÎç7:10, Maciej Fijalkowski Ð´µÀ:
-> On Tue, Aug 17, 2021 at 03:54:07PM +0800, Feng zhou wrote:
->> From: Feng Zhou <zhoufeng.zf@bytedance.com>
->>
->> The ixgbe driver currently generates a NULL pointer dereference with
->> some machine (online cpus < 63). This is due to the fact that the
->> maximum value of num_xdp_queues is nr_cpu_ids. Code is in
->> "ixgbe_set_rss_queues"".
-> 
-> That's a good catch, but we should fix set channels callback so that it
-> will not allow a setting of queues to be higher than the
-> num_online_cpus().
-> 
-> Please also include the tree in the patch subject that you're directing
-> the patch to.
-> 
-
-Ok, Besides it, I will add more code in "ixgbe_set_channels":
-/* verify the number of channels does not exceed num_online_cpus */
-if (count > num_online_cpus())
-	return -EINVAL;
-If user want set queues num to be higher than the num_online_cpus(),
-return error(-EINVAL).
-
-What do you think?
-
-> I'd be also thankful if you Cc me on Intel XDP related patches.
-> Thanks!
-> 
-
-Ok, of course.
-
-
->>
->> Here's how the problem repeats itself:
->> Some machine (online cpus < 63), And user set num_queues to 63 through
->> ethtool. Code is in the "ixgbe_set_channels",
->> adapter->ring_feature[RING_F_FDIR].limit = count;
->> It becames 63.
->> When user use xdp, "ixgbe_set_rss_queues" will set queues num.
->> adapter->num_rx_queues = rss_i;
->> adapter->num_tx_queues = rss_i;
->> adapter->num_xdp_queues = ixgbe_xdp_queues(adapter);
->> And rss_i's value is from
->> f = &adapter->ring_feature[RING_F_FDIR];
->> rss_i = f->indices = f->limit;
->> So "num_rx_queues" > "num_xdp_queues", when run to "ixgbe_xdp_setup",
->> for (i = 0; i < adapter->num_rx_queues; i++)
->> 	if (adapter->xdp_ring[i]->xsk_umem)
->> lead to panic.
->> Call trace:
->> [exception RIP: ixgbe_xdp+368]
->> RIP: ffffffffc02a76a0  RSP: ffff9fe16202f8d0  RFLAGS: 00010297
->> RAX: 0000000000000000  RBX: 0000000000000020  RCX: 0000000000000000
->> RDX: 0000000000000000  RSI: 000000000000001c  RDI: ffffffffa94ead90
->> RBP: ffff92f8f24c0c18   R8: 0000000000000000   R9: 0000000000000000
->> R10: ffff9fe16202f830  R11: 0000000000000000  R12: ffff92f8f24c0000
->> R13: ffff9fe16202fc01  R14: 000000000000000a  R15: ffffffffc02a7530
->> ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
->>   7 [ffff9fe16202f8f0] dev_xdp_install at ffffffffa89fbbcc
->>   8 [ffff9fe16202f920] dev_change_xdp_fd at ffffffffa8a08808
->>   9 [ffff9fe16202f960] do_setlink at ffffffffa8a20235
->> 10 [ffff9fe16202fa88] rtnl_setlink at ffffffffa8a20384
->> 11 [ffff9fe16202fc78] rtnetlink_rcv_msg at ffffffffa8a1a8dd
->> 12 [ffff9fe16202fcf0] netlink_rcv_skb at ffffffffa8a717eb
->> 13 [ffff9fe16202fd40] netlink_unicast at ffffffffa8a70f88
->> 14 [ffff9fe16202fd80] netlink_sendmsg at ffffffffa8a71319
->> 15 [ffff9fe16202fdf0] sock_sendmsg at ffffffffa89df290
->> 16 [ffff9fe16202fe08] __sys_sendto at ffffffffa89e19c8
->> 17 [ffff9fe16202ff30] __x64_sys_sendto at ffffffffa89e1a64
->> 18 [ffff9fe16202ff38] do_syscall_64 at ffffffffa84042b9
->> 19 [ffff9fe16202ff50] entry_SYSCALL_64_after_hwframe at ffffffffa8c0008c
->>
->> Fixes: 4a9b32f30f80 ("ixgbe: fix potential RX buffer starvation for
->> AF_XDP")
->> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
->> ---
->>   drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 8 ++++++--
->>   1 file changed, 6 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
->> index 14aea40da50f..5db496cc5070 100644
->> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
->> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
->> @@ -10112,6 +10112,7 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
->>   	struct ixgbe_adapter *adapter = netdev_priv(dev);
->>   	struct bpf_prog *old_prog;
->>   	bool need_reset;
->> +	int num_queues;
->>   
->>   	if (adapter->flags & IXGBE_FLAG_SRIOV_ENABLED)
->>   		return -EINVAL;
->> @@ -10161,11 +10162,14 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
->>   	/* Kick start the NAPI context if there is an AF_XDP socket open
->>   	 * on that queue id. This so that receiving will start.
->>   	 */
->> -	if (need_reset && prog)
->> -		for (i = 0; i < adapter->num_rx_queues; i++)
->> +	if (need_reset && prog) {
->> +		num_queues = min_t(int, adapter->num_rx_queues,
->> +			adapter->num_xdp_queues);
->> +		for (i = 0; i < num_queues; i++)
->>   			if (adapter->xdp_ring[i]->xsk_pool)
->>   				(void)ixgbe_xsk_wakeup(adapter->netdev, i,
->>   						       XDP_WAKEUP_RX);
->> +	}
->>   
->>   	return 0;
->>   }
->> -- 
->> 2.11.0
->>
+Yours sincerely,
+Vincent
