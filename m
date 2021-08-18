@@ -2,250 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D92F63F0ED8
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 01:52:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F77A3F0EE6
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 01:59:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235384AbhHRXw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 19:52:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39474 "EHLO
+        id S235236AbhHSAAB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 20:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235064AbhHRXw5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 19:52:57 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26F0C0613CF
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 16:52:21 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id t101-20020a25aaee0000b0290578c0c455b2so4654250ybi.13
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 16:52:21 -0700 (PDT)
+        with ESMTP id S235041AbhHRX76 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 19:59:58 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8028BC061796
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 16:59:23 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id a5so2877431plh.5
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 16:59:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=dNzVzG00YuL9BPubaFReOEmMNwvCEpVxzU7LeS/yc5w=;
-        b=K4KV3UcU5YxbQ1Qg4BbCZXyoiODQYzv/uqz/faq2JQf1e/KVZI3U0R9m9Fxdx0cff5
-         CasFwoKrR4WBAQ0c1TZOVIxk2/4CfUyMDZnvs1nX55Sw8SSdweXNid0r5FBSSM25VhGo
-         oOobBVGTZZUqlxkX17PTJ2yB+NafV4zRdCTDf7auL4Whh+/QXXyw3rrvTnLA1EMxeWvK
-         ttSHlFLBsRNeL9vQ3JTMSk/UJX2XS6z+FZPdLl2XJXQj8pDuopwXpSzTWXPG0/ZJFLfK
-         2RVIHCw3Bs3wbYUuQaMeqy7XnK4ZWpMDSrnl/MJJcG3c/Z2TTh6xh1cTMdUm8EW0jTsC
-         aPQw==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=ihRSUosZ1n/QH58LU5drX97jQNk+oYE3vHV9UEG8bhY=;
+        b=ll0X1F/1yJb+64r0U9YpjrHHbzyCyA3JdVLIsZBGSDD5G8By6g0Da0FvU5ma5PfPOz
+         QC4sz18rY2gpOQxJm5PmQyk9q0bDlmToRffwWKkDWOoZx6TCSYGWys/Yplpd7VScrov4
+         Ino9fR/0iet8k+NaPzK7xaA5zNSBEEQ3I0jbc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=dNzVzG00YuL9BPubaFReOEmMNwvCEpVxzU7LeS/yc5w=;
-        b=cXxbkxq9bNMt4Jd6qUzcY7m06KVGJKHtvYjl2nrgGLhdvTls8crqt2BksP1fNL5e7g
-         /M2rMYboQajDftaqSrAlw1dGkhMvouSakfqyPQCFeweBrQ4Ey0KAyT0lVQWFJr5o1DH2
-         IlPxvDi1amHFZL2Xb5F4fbMCqBYhgYF4q2O2N/T9OEN5PGzyEfZIldbwdnnZaCUnVdpw
-         jO961w5eRWK9X4afgJSVgoKLws5nvGZYki0u3By172XvptScWsZ4Zoi0l0InLAbQyCjj
-         w4nnBzaEsZOnaO4C0yyeBjmPwe3YbqpTnS2er1P6xiG/f8VpwjVs62PLCjWG4hOG0RDi
-         ///w==
-X-Gm-Message-State: AOAM531494Z2mAz0UXGBfVDxQiafpujhpX5kHs2WHmdCH4cEgkwb7Lsc
-        3+8lHYcGR2jtq8CSU9l4tuSUVmCJmBNSndzk+v8MpKBa6l2zCuLk69nNh6sWcLKA/nInj/1jgOT
-        fwCeSYYtfeGP1op6Lzw3XU5m40jf0UcQ+hi/eMmbaND5waHF55vuDsA==
-X-Google-Smtp-Source: ABdhPJwq/fLcYMJf7f4rPMWxBqhc4/YvPJqHBBwjUW1EphvmK0ERzdTWW/WB1aCVUWqjUYZoZtij67Q=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:7401:ef23:e119:5cbc])
- (user=sdf job=sendgmr) by 2002:a25:420b:: with SMTP id p11mr15255535yba.377.1629330740916;
- Wed, 18 Aug 2021 16:52:20 -0700 (PDT)
-Date:   Wed, 18 Aug 2021 16:52:16 -0700
-In-Reply-To: <20210818235216.1159202-1-sdf@google.com>
-Message-Id: <20210818235216.1159202-2-sdf@google.com>
-Mime-Version: 1.0
-References: <20210818235216.1159202-1-sdf@google.com>
-X-Mailer: git-send-email 2.33.0.rc2.250.ged5fa647cd-goog
-Subject: [PATCH bpf-next v3 2/2] bpf: use kvmalloc for map keys in syscalls
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        Stanislav Fomichev <sdf@google.com>,
-        Song Liu <songliubraving@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ihRSUosZ1n/QH58LU5drX97jQNk+oYE3vHV9UEG8bhY=;
+        b=ZVTIVxBqeXPpDzlP+00THXqvTuTxlodqJESRCI5oOmwbplZ/mnG0C09QaDcVwcXwvY
+         6/Yj4E/QZrXiqEXxLRLlp3YzXoSvLayWdmZd+iT5t94q+3/FTaFK8yf4tsLlN/7LNtb6
+         Xm3SB9Bygfy35ll/ZEz9dwCUH9tI/ZoUni+HpJ1bhj0NjEDxpVHMI58zhWYemLsENPfw
+         6cz11Dy6fU0RuNaZnWTvhivAusoUh9nfe7gnRN8Bhazcoc/ts+mACuqqtvvUyZ09PWzD
+         wJxIEM+1PvyINlHeKSQePZJv/YOE33lqbx16K2lapQ6sUVib3DngJbosrx3R3zBHs3yQ
+         848g==
+X-Gm-Message-State: AOAM5339VGifj1KuRGJczBezB7O93L0z445yBSWjcrLJqhGzanofJafT
+        1Nb5lxX3tXKNLr30oze0W8S4/A==
+X-Google-Smtp-Source: ABdhPJyqLAVutuhaUvZwqCN9mzT6ajj2JdJOPLObLJIeTaHnjuorpiaj1FYbc1rllZLoCI06EyvNXg==
+X-Received: by 2002:a17:90a:c006:: with SMTP id p6mr11982780pjt.144.1629331163071;
+        Wed, 18 Aug 2021 16:59:23 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id q4sm834430pjd.52.2021.08.18.16.59.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Aug 2021 16:59:22 -0700 (PDT)
+Date:   Wed, 18 Aug 2021 16:59:21 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     "Lazar, Lijo" <lijo.lazar@amd.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Hawking Zhang <Hawking.Zhang@amd.com>,
+        Feifei Xu <Feifei.Xu@amd.com>, Likun Gao <Likun.Gao@amd.com>,
+        Jiawei Gu <Jiawei.Gu@amd.com>, Evan Quan <evan.quan@amd.com>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v2 18/63] drm/amd/pm: Use struct_group() for memcpy()
+ region
+Message-ID: <202108181619.B603481527@keescook>
+References: <20210818060533.3569517-1-keescook@chromium.org>
+ <20210818060533.3569517-19-keescook@chromium.org>
+ <753ef2d1-0f7e-c930-c095-ed86e1518395@amd.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <753ef2d1-0f7e-c930-c095-ed86e1518395@amd.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Same as previous patch but for the keys. memdup_bpfptr is renamed
-to kvmemdup_bpfptr (and converted to kvmalloc).
+On Wed, Aug 18, 2021 at 05:12:28PM +0530, Lazar, Lijo wrote:
+> 
+> On 8/18/2021 11:34 AM, Kees Cook wrote:
+> > In preparation for FORTIFY_SOURCE performing compile-time and run-time
+> > field bounds checking for memcpy(), memmove(), and memset(), avoid
+> > intentionally writing across neighboring fields.
+> > 
+> > Use struct_group() in structs:
+> > 	struct atom_smc_dpm_info_v4_5
+> > 	struct atom_smc_dpm_info_v4_6
+> > 	struct atom_smc_dpm_info_v4_7
+> > 	struct atom_smc_dpm_info_v4_10
+> > 	PPTable_t
+> > so the grouped members can be referenced together. This will allow
+> > memcpy() and sizeof() to more easily reason about sizes, improve
+> > readability, and avoid future warnings about writing beyond the end of
+> > the first member.
+> > 
+> > "pahole" shows no size nor member offset changes to any structs.
+> > "objdump -d" shows no object code changes.
+> > 
+> > Cc: "Christian König" <christian.koenig@amd.com>
+> > Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
+> > Cc: David Airlie <airlied@linux.ie>
+> > Cc: Daniel Vetter <daniel@ffwll.ch>
+> > Cc: Hawking Zhang <Hawking.Zhang@amd.com>
+> > Cc: Feifei Xu <Feifei.Xu@amd.com>
+> > Cc: Lijo Lazar <lijo.lazar@amd.com>
+> > Cc: Likun Gao <Likun.Gao@amd.com>
+> > Cc: Jiawei Gu <Jiawei.Gu@amd.com>
+> > Cc: Evan Quan <evan.quan@amd.com>
+> > Cc: amd-gfx@lists.freedesktop.org
+> > Cc: dri-devel@lists.freedesktop.org
+> > Signed-off-by: Kees Cook <keescook@chromium.org>
+> > Acked-by: Alex Deucher <alexander.deucher@amd.com>
+> > Link: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flore.kernel.org%2Flkml%2FCADnq5_Npb8uYvd%2BR4UHgf-w8-cQj3JoODjviJR_Y9w9wqJ71mQ%40mail.gmail.com&amp;data=04%7C01%7Clijo.lazar%40amd.com%7C92b8d2f072f0444b9f8508d9620f6971%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637648640625729624%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=rKh5LUXCRUsorYM3kSpG2tkB%2Fczwl9I9EBnWBCtbg6Q%3D&amp;reserved=0
+> > ---
+> >   drivers/gpu/drm/amd/include/atomfirmware.h           |  9 ++++++++-
+> >   .../gpu/drm/amd/pm/inc/smu11_driver_if_arcturus.h    |  3 ++-
+> >   drivers/gpu/drm/amd/pm/inc/smu11_driver_if_navi10.h  |  3 ++-
+> >   .../gpu/drm/amd/pm/inc/smu13_driver_if_aldebaran.h   |  3 ++-
+> 
+> Hi Kees,
 
-v3:
-* kvmemdup_bpfptr and copy_from_bpfptr (Daniel Borkmann)
+Hi! Thanks for looking into this.
 
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
-Acked-by: Song Liu <songliubraving@fb.com>
----
- include/linux/bpfptr.h | 12 ++++++++++--
- kernel/bpf/syscall.c   | 34 +++++++++++++++++-----------------
- 2 files changed, 27 insertions(+), 19 deletions(-)
+> The headers which define these structs are firmware/VBIOS interfaces and are
+> picked directly from those components. There are difficulties in grouping
+> them to structs at the original source as that involves other component
+> changes.
 
-diff --git a/include/linux/bpfptr.h b/include/linux/bpfptr.h
-index 5cdeab497cb3..546e27fc6d46 100644
---- a/include/linux/bpfptr.h
-+++ b/include/linux/bpfptr.h
-@@ -62,9 +62,17 @@ static inline int copy_to_bpfptr_offset(bpfptr_t dst, size_t offset,
- 	return copy_to_sockptr_offset((sockptr_t) dst, offset, src, size);
- }
+So, can you help me understand this a bit more? It sounds like these are
+generated headers, yes? I'd like to understand your constraints and
+weight them against various benefits that could be achieved here.
+
+The groupings I made do appear to be roughly documented already,
+for example:
+
+   struct   atom_common_table_header  table_header;
+     // SECTION: BOARD PARAMETERS
++  struct_group(dpm_info,
+
+Something emitted the "BOARD PARAMETERS" section heading as a comment,
+so it likely also would know where it ends, yes? The good news here is
+that for the dpm_info groups, they all end at the end of the existing
+structs, see:
+	struct atom_smc_dpm_info_v4_5
+	struct atom_smc_dpm_info_v4_6
+	struct atom_smc_dpm_info_v4_7
+	struct atom_smc_dpm_info_v4_10
+
+The matching regions in the PPTable_t structs are similarly marked with a
+"BOARD PARAMETERS" section heading comment:
+
+--- a/drivers/gpu/drm/amd/pm/inc/smu11_driver_if_arcturus.h
++++ b/drivers/gpu/drm/amd/pm/inc/smu11_driver_if_arcturus.h
+@@ -643,6 +643,7 @@ typedef struct {
+   // SECTION: BOARD PARAMETERS
  
--static inline void *memdup_bpfptr(bpfptr_t src, size_t len)
-+static inline void *kvmemdup_bpfptr(bpfptr_t src, size_t len)
- {
--	return memdup_sockptr((sockptr_t) src, len);
-+	void *p = kvmalloc(len, GFP_USER | __GFP_NOWARN);
-+
-+	if (!p)
-+		return ERR_PTR(-ENOMEM);
-+	if (copy_from_bpfptr(p, src, len)) {
-+		kvfree(p);
-+		return ERR_PTR(-EFAULT);
-+	}
-+	return p;
- }
+   // SVI2 Board Parameters
++  struct_group(v4_6,
+   uint16_t     MaxVoltageStepGfx; // In mV(Q2) Max voltage step that SMU will request. Multiple steps are taken if voltage change exceeds this value.
+   uint16_t     MaxVoltageStepSoc; // In mV(Q2) Max voltage step that SMU will request. Multiple steps are taken if voltage change exceeds this value.
  
- static inline long strncpy_from_bpfptr(char *dst, bpfptr_t src, size_t count)
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 075f650d297a..4e50c0bfdb7d 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -1013,7 +1013,7 @@ int __weak bpf_stackmap_copy(struct bpf_map *map, void *key, void *value)
- static void *__bpf_copy_key(void __user *ukey, u64 key_size)
- {
- 	if (key_size)
--		return memdup_user(ukey, key_size);
-+		return vmemdup_user(ukey, key_size);
+@@ -728,10 +729,10 @@ typedef struct {
+   uint32_t     BoardVoltageCoeffB;    // decode by /1000
  
- 	if (ukey)
- 		return ERR_PTR(-EINVAL);
-@@ -1024,7 +1024,7 @@ static void *__bpf_copy_key(void __user *ukey, u64 key_size)
- static void *___bpf_copy_key(bpfptr_t ukey, u64 key_size)
- {
- 	if (key_size)
--		return memdup_bpfptr(ukey, key_size);
-+		return kvmemdup_bpfptr(ukey, key_size);
+   uint32_t     BoardReserved[7];
++  );
  
- 	if (!bpfptr_is_null(ukey))
- 		return ERR_PTR(-EINVAL);
-@@ -1093,7 +1093,7 @@ static int map_lookup_elem(union bpf_attr *attr)
- free_value:
- 	kvfree(value);
- free_key:
--	kfree(key);
-+	kvfree(key);
- err_put:
- 	fdput(f);
- 	return err;
-@@ -1153,7 +1153,7 @@ static int map_update_elem(union bpf_attr *attr, bpfptr_t uattr)
- free_value:
- 	kvfree(value);
- free_key:
--	kfree(key);
-+	kvfree(key);
- err_put:
- 	fdput(f);
- 	return err;
-@@ -1205,7 +1205,7 @@ static int map_delete_elem(union bpf_attr *attr)
- 	bpf_enable_instrumentation();
- 	maybe_wait_bpf_programs(map);
- out:
--	kfree(key);
-+	kvfree(key);
- err_put:
- 	fdput(f);
- 	return err;
-@@ -1247,7 +1247,7 @@ static int map_get_next_key(union bpf_attr *attr)
- 	}
- 
- 	err = -ENOMEM;
--	next_key = kmalloc(map->key_size, GFP_USER);
-+	next_key = kvmalloc(map->key_size, GFP_USER);
- 	if (!next_key)
- 		goto free_key;
- 
-@@ -1270,9 +1270,9 @@ static int map_get_next_key(union bpf_attr *attr)
- 	err = 0;
- 
- free_next_key:
--	kfree(next_key);
-+	kvfree(next_key);
- free_key:
--	kfree(key);
-+	kvfree(key);
- err_put:
- 	fdput(f);
- 	return err;
-@@ -1299,7 +1299,7 @@ int generic_map_delete_batch(struct bpf_map *map,
- 	if (!max_count)
- 		return 0;
- 
--	key = kmalloc(map->key_size, GFP_USER | __GFP_NOWARN);
-+	key = kvmalloc(map->key_size, GFP_USER | __GFP_NOWARN);
- 	if (!key)
- 		return -ENOMEM;
- 
-@@ -1326,7 +1326,7 @@ int generic_map_delete_batch(struct bpf_map *map,
- 	if (copy_to_user(&uattr->batch.count, &cp, sizeof(cp)))
- 		err = -EFAULT;
- 
--	kfree(key);
-+	kvfree(key);
- 	return err;
- }
- 
-@@ -1357,13 +1357,13 @@ int generic_map_update_batch(struct bpf_map *map,
- 	if (!max_count)
- 		return 0;
- 
--	key = kmalloc(map->key_size, GFP_USER | __GFP_NOWARN);
-+	key = kvmalloc(map->key_size, GFP_USER | __GFP_NOWARN);
- 	if (!key)
- 		return -ENOMEM;
- 
- 	value = kvmalloc(value_size, GFP_USER | __GFP_NOWARN);
- 	if (!value) {
--		kfree(key);
-+		kvfree(key);
- 		return -ENOMEM;
- 	}
- 
-@@ -1385,7 +1385,7 @@ int generic_map_update_batch(struct bpf_map *map,
- 		err = -EFAULT;
- 
- 	kvfree(value);
--	kfree(key);
-+	kvfree(key);
- 	return err;
- }
- 
-@@ -1419,13 +1419,13 @@ int generic_map_lookup_batch(struct bpf_map *map,
- 	if (put_user(0, &uattr->batch.count))
- 		return -EFAULT;
- 
--	buf_prevkey = kmalloc(map->key_size, GFP_USER | __GFP_NOWARN);
-+	buf_prevkey = kvmalloc(map->key_size, GFP_USER | __GFP_NOWARN);
- 	if (!buf_prevkey)
- 		return -ENOMEM;
- 
- 	buf = kvmalloc(map->key_size + value_size, GFP_USER | __GFP_NOWARN);
- 	if (!buf) {
--		kfree(buf_prevkey);
-+		kvfree(buf_prevkey);
- 		return -ENOMEM;
- 	}
- 
-@@ -1485,7 +1485,7 @@ int generic_map_lookup_batch(struct bpf_map *map,
- 		err = -EFAULT;
- 
- free_buf:
--	kfree(buf_prevkey);
-+	kvfree(buf_prevkey);
- 	kvfree(buf);
- 	return err;
- }
-@@ -1575,7 +1575,7 @@ static int map_lookup_and_delete_elem(union bpf_attr *attr)
- free_value:
- 	kvfree(value);
- free_key:
--	kfree(key);
-+	kvfree(key);
- err_put:
- 	fdput(f);
- 	return err;
+   // Padding for MMHUB - do not modify this
+   uint32_t     MmHubPadding[8]; // SMU internal use
+-
+ } PPTable_t;
+
+Where they end seems known as well (the padding switches from a "Board"
+to "MmHub" prefix at exactly the matching size).
+
+So, given that these regions are already known by the export tool, how
+about just updating the export tool to emit a struct there? I imagine
+the problem with this would be the identifier churn needed, but that's
+entirely mechanical.
+
+However, I'm curious about another aspect of these regions: they are,
+by definition, the same. Why isn't there a single struct describing
+them already, given the existing redundancy? For example, look at the
+member names: maxvoltagestepgfx vs MaxVoltageStepGfx. Why aren't these
+the same? And then why aren't they described separately?
+
+Fixing that would cut down on the redundancy here, and in the renaming,
+you can fix the identifiers as well. It should be straight forward to
+write a Coccinelle script to do this renaming for you after extracting
+the structure.
+
+> The driver_if_* files updates are frequent and it is error prone to manually
+> group them each time we pick them for any update.
+
+Why are these structs updated? It looks like they're specifically
+versioned, and aren't expected to change (i.e. v4.5, v4.6, v4.10, etc).
+
+> Our usage of memcpy in this way is restricted only to a very few places.
+
+True, there's 1 per PPTable_t duplication. With a proper struct, you
+wouldn't even need a memcpy().
+
+Instead of the existing:
+               memcpy(smc_pptable->I2cControllers, smc_dpm_table_v4_7->I2cControllers,
+                       sizeof(*smc_dpm_table_v4_7) - sizeof(smc_dpm_table_v4_7->table_header));
+
+or my proposed:
+               memcpy(&smc_pptable->v4, &smc_dpm_table_v4_7->dpm_info,
+                      sizeof(smc_dpm_table_v4_7->dpm_info));
+
+you could just have:
+		smc_pptable->v4 = smc_dpm_table_v4_7->dpm_info;
+
+since they'd be explicitly the same type.
+
+That looks like a much cleaner solution to this. It greatly improves
+readability, reduces the redundancy in the headers, and should be a
+simple mechanical refactoring.
+
+Oh my, I just noticed append_vbios_pptable() in
+drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega12_processpptables.c
+which does an open-coded assignment of the entire PPTable_t, including
+padding, and, apparently, the i2c address twice:
+
+        ppsmc_pptable->Vr2_I2C_address = smc_dpm_table.Vr2_I2C_address;
+
+        ppsmc_pptable->Vr2_I2C_address = smc_dpm_table.Vr2_I2C_address;
+
+> As another option - is it possible to have a helper function/macro like
+> memcpy_fortify() which takes the extra arguments and does the extra compile
+> time checks? We will use the helper whenever we have such kind of usage.
+
+I'd rather avoid special cases just for this, especially when the code
+here is already doing a couple things we try to avoid in the rest of
+the kernel (i.e. open coded redundant struct contents, etc).
+
+If something mechanically produced append_vbios_pptable() above, I bet
+we can get rid of the memcpy()s entirely and save a lot of code doing a
+member-to-member assignment.
+
+What do you think?
+
+-Kees
+
 -- 
-2.33.0.rc2.250.ged5fa647cd-goog
-
+Kees Cook
