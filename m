@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFDB03EF8A8
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 05:33:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E51463EF8AD
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 05:34:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237103AbhHRDe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 23:34:26 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:8033 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237147AbhHRDeW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 23:34:22 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GqD4y2dPszYqJb;
-        Wed, 18 Aug 2021 11:33:22 +0800 (CST)
+        id S237694AbhHRDeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 23:34:37 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:8873 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236287AbhHRDeX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 23:34:23 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GqD0n1Tyjz8sZd;
+        Wed, 18 Aug 2021 11:29:45 +0800 (CST)
 Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2176.2; Wed, 18 Aug 2021 11:33:27 +0800
 Received: from localhost.localdomain (10.69.192.56) by
@@ -47,9 +47,9 @@ CC:     <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
         <mathew.j.martineau@linux.intel.com>, <aahringo@redhat.com>,
         <ceggers@arri.de>, <yangbo.lu@nxp.com>, <fw@strlen.de>,
         <xiangxia.m.yue@gmail.com>, <linmiaohe@huawei.com>
-Subject: [PATCH RFC 1/7] page_pool: refactor the page pool to support multi alloc context
-Date:   Wed, 18 Aug 2021 11:32:17 +0800
-Message-ID: <1629257542-36145-2-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH RFC 2/7] skbuff: add interface to manipulate frag count for tx recycling
+Date:   Wed, 18 Aug 2021 11:32:18 +0800
+Message-ID: <1629257542-36145-3-git-send-email-linyunsheng@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1629257542-36145-1-git-send-email-linyunsheng@huawei.com>
 References: <1629257542-36145-1-git-send-email-linyunsheng@huawei.com>
@@ -63,277 +63,135 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the page pool assumes the caller MUST guarantee safe
-non-concurrent access, e.g. softirq for rx.
+As the skb->pp_recycle and page->pp_magic may not be enough
+to track if a frag page is from page pool after the calling
+of __skb_frag_ref(), mostly because of a data race, see:
+commit 2cc3aeb5eccc ("skbuff: Fix a potential race while
+recycling page_pool packets").
 
-This patch refactors the page pool to support multi allocation
-contexts, in order to support the tx recycling support in the
-page pool(tx means 'socket to netdev' here).
+As the case of tcp, there may be fragmenting, coalescing or
+retransmiting case that might lose the track if a frag page
+is from page pool or not.
+
+So increment the frag count when __skb_frag_ref() is called,
+and use the bit 0 in frag->bv_page to indicate if a page is
+from a page pool, which automically pass down to another
+frag->bv_page when doing a '*new_frag = *frag' or memcpying
+the shinfo.
+
+It seems we could do the trick for rx too if it makes sense.
 
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 ---
- include/net/page_pool.h | 10 ++++++
- net/core/page_pool.c    | 86 +++++++++++++++++++++++++++----------------------
- 2 files changed, 57 insertions(+), 39 deletions(-)
+ include/linux/skbuff.h  | 43 ++++++++++++++++++++++++++++++++++++++++---
+ include/net/page_pool.h |  5 +++++
+ 2 files changed, 45 insertions(+), 3 deletions(-)
 
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 6bdb0db..2878d26 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -331,6 +331,11 @@ static inline unsigned int skb_frag_size(const skb_frag_t *frag)
+ 	return frag->bv_len;
+ }
+ 
++static inline bool skb_frag_is_pp(const skb_frag_t *frag)
++{
++	return (unsigned long)frag->bv_page & 1UL;
++}
++
+ /**
+  * skb_frag_size_set() - Sets the size of a skb fragment
+  * @frag: skb fragment
+@@ -2190,6 +2195,21 @@ static inline void __skb_fill_page_desc(struct sk_buff *skb, int i,
+ 		skb->pfmemalloc	= true;
+ }
+ 
++static inline void __skb_fill_pp_page_desc(struct sk_buff *skb, int i,
++					   struct page *page, int off,
++					   int size)
++{
++	skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
++
++	frag->bv_page = (struct page *)((unsigned long)page | 0x1UL);
++	frag->bv_offset = off;
++	skb_frag_size_set(frag, size);
++
++	page = compound_head(page);
++	if (page_is_pfmemalloc(page))
++		skb->pfmemalloc = true;
++}
++
+ /**
+  * skb_fill_page_desc - initialise a paged fragment in an skb
+  * @skb: buffer containing fragment to be initialised
+@@ -2211,6 +2231,14 @@ static inline void skb_fill_page_desc(struct sk_buff *skb, int i,
+ 	skb_shinfo(skb)->nr_frags = i + 1;
+ }
+ 
++static inline void skb_fill_pp_page_desc(struct sk_buff *skb, int i,
++					 struct page *page, int off,
++					 int size)
++{
++	__skb_fill_pp_page_desc(skb, i, page, off, size);
++	skb_shinfo(skb)->nr_frags = i + 1;
++}
++
+ void skb_add_rx_frag(struct sk_buff *skb, int i, struct page *page, int off,
+ 		     int size, unsigned int truesize);
+ 
+@@ -3062,7 +3090,10 @@ static inline void skb_frag_off_copy(skb_frag_t *fragto,
+  */
+ static inline struct page *skb_frag_page(const skb_frag_t *frag)
+ {
+-	return frag->bv_page;
++	unsigned long page = (unsigned long)frag->bv_page;
++
++	page &= ~1UL;
++	return (struct page *)page;
+ }
+ 
+ /**
+@@ -3073,7 +3104,12 @@ static inline struct page *skb_frag_page(const skb_frag_t *frag)
+  */
+ static inline void __skb_frag_ref(skb_frag_t *frag)
+ {
+-	get_page(skb_frag_page(frag));
++	struct page *page = skb_frag_page(frag);
++
++	if (skb_frag_is_pp(frag))
++		page_pool_atomic_inc_frag_count(page);
++	else
++		get_page(page);
+ }
+ 
+ /**
+@@ -3101,7 +3137,8 @@ static inline void __skb_frag_unref(skb_frag_t *frag, bool recycle)
+ 	struct page *page = skb_frag_page(frag);
+ 
+ #ifdef CONFIG_PAGE_POOL
+-	if (recycle && page_pool_return_skb_page(page))
++	if ((recycle || skb_frag_is_pp(frag)) &&
++	    page_pool_return_skb_page(page))
+ 		return;
+ #endif
+ 	put_page(page);
 diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index a408240..8d4ae4b 100644
+index 8d4ae4b..86babb2 100644
 --- a/include/net/page_pool.h
 +++ b/include/net/page_pool.h
-@@ -135,6 +135,9 @@ struct page_pool {
- };
- 
- struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp);
-+struct page *__page_pool_alloc_pages(struct page_pool *pool,
-+				     struct pp_alloc_cache *alloc,
-+				     gfp_t gfp);
- 
- static inline struct page *page_pool_dev_alloc_pages(struct page_pool *pool)
- {
-@@ -155,6 +158,13 @@ static inline struct page *page_pool_dev_alloc_frag(struct page_pool *pool,
- 	return page_pool_alloc_frag(pool, offset, size, gfp);
+@@ -270,6 +270,11 @@ static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
+ 	return ret;
  }
  
-+struct page *page_pool_drain_frag(struct page_pool *pool, struct page *page,
-+				  long drain_count);
-+void page_pool_free_frag(struct page_pool *pool, struct page *page,
-+			 long drain_count);
-+void page_pool_empty_alloc_cache_once(struct page_pool *pool,
-+				      struct pp_alloc_cache *alloc);
-+
- /* get the stored dma direction. A driver might decide to treat this locally and
-  * avoid the extra cache line from page_pool to determine the direction
-  */
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index e140905..7194dcc 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -110,7 +110,8 @@ EXPORT_SYMBOL(page_pool_create);
- static void page_pool_return_page(struct page_pool *pool, struct page *page);
- 
- noinline
--static struct page *page_pool_refill_alloc_cache(struct page_pool *pool)
-+static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
-+						 struct pp_alloc_cache *alloc)
- {
- 	struct ptr_ring *r = &pool->ring;
- 	struct page *page;
-@@ -140,7 +141,7 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool)
- 			break;
- 
- 		if (likely(page_to_nid(page) == pref_nid)) {
--			pool->alloc.cache[pool->alloc.count++] = page;
-+			alloc->cache[alloc->count++] = page;
- 		} else {
- 			/* NUMA mismatch;
- 			 * (1) release 1 page to page-allocator and
-@@ -151,27 +152,28 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool)
- 			page = NULL;
- 			break;
- 		}
--	} while (pool->alloc.count < PP_ALLOC_CACHE_REFILL);
-+	} while (alloc->count < PP_ALLOC_CACHE_REFILL);
- 
- 	/* Return last page */
--	if (likely(pool->alloc.count > 0))
--		page = pool->alloc.cache[--pool->alloc.count];
-+	if (likely(alloc->count > 0))
-+		page = alloc->cache[--alloc->count];
- 
- 	spin_unlock(&r->consumer_lock);
- 	return page;
- }
- 
- /* fast path */
--static struct page *__page_pool_get_cached(struct page_pool *pool)
-+static struct page *__page_pool_get_cached(struct page_pool *pool,
-+					   struct pp_alloc_cache *alloc)
- {
- 	struct page *page;
- 
- 	/* Caller MUST guarantee safe non-concurrent access, e.g. softirq */
--	if (likely(pool->alloc.count)) {
-+	if (likely(alloc->count)) {
- 		/* Fast-path */
--		page = pool->alloc.cache[--pool->alloc.count];
-+		page = alloc->cache[--alloc->count];
- 	} else {
--		page = page_pool_refill_alloc_cache(pool);
-+		page = page_pool_refill_alloc_cache(pool, alloc);
- 	}
- 
- 	return page;
-@@ -252,6 +254,7 @@ static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
- /* slow path */
- noinline
- static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
-+						 struct pp_alloc_cache *alloc,
- 						 gfp_t gfp)
- {
- 	const int bulk = PP_ALLOC_CACHE_REFILL;
-@@ -265,13 +268,13 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- 		return __page_pool_alloc_page_order(pool, gfp);
- 
- 	/* Unnecessary as alloc cache is empty, but guarantees zero count */
--	if (unlikely(pool->alloc.count > 0))
--		return pool->alloc.cache[--pool->alloc.count];
-+	if (unlikely(alloc->count > 0))
-+		return alloc->cache[--alloc->count];
- 
- 	/* Mark empty alloc.cache slots "empty" for alloc_pages_bulk_array */
--	memset(&pool->alloc.cache, 0, sizeof(void *) * bulk);
-+	memset(alloc->cache, 0, sizeof(void *) * bulk);
- 
--	nr_pages = alloc_pages_bulk_array(gfp, bulk, pool->alloc.cache);
-+	nr_pages = alloc_pages_bulk_array(gfp, bulk, alloc->cache);
- 	if (unlikely(!nr_pages))
- 		return NULL;
- 
-@@ -279,7 +282,7 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- 	 * page element have not been (possibly) DMA mapped.
- 	 */
- 	for (i = 0; i < nr_pages; i++) {
--		page = pool->alloc.cache[i];
-+		page = alloc->cache[i];
- 		if ((pp_flags & PP_FLAG_DMA_MAP) &&
- 		    unlikely(!page_pool_dma_map(pool, page))) {
- 			put_page(page);
-@@ -287,7 +290,7 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- 		}
- 
- 		page_pool_set_pp_info(pool, page);
--		pool->alloc.cache[pool->alloc.count++] = page;
-+		alloc->cache[alloc->count++] = page;
- 		/* Track how many pages are held 'in-flight' */
- 		pool->pages_state_hold_cnt++;
- 		trace_page_pool_state_hold(pool, page,
-@@ -295,8 +298,8 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- 	}
- 
- 	/* Return last page */
--	if (likely(pool->alloc.count > 0))
--		page = pool->alloc.cache[--pool->alloc.count];
-+	if (likely(alloc->count > 0))
-+		page = alloc->cache[--alloc->count];
- 	else
- 		page = NULL;
- 
-@@ -307,19 +310,27 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- /* For using page_pool replace: alloc_pages() API calls, but provide
-  * synchronization guarantee for allocation side.
-  */
--struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp)
-+struct page *__page_pool_alloc_pages(struct page_pool *pool,
-+				     struct pp_alloc_cache *alloc,
-+				     gfp_t gfp)
- {
- 	struct page *page;
- 
- 	/* Fast-path: Get a page from cache */
--	page = __page_pool_get_cached(pool);
-+	page = __page_pool_get_cached(pool, alloc);
- 	if (page)
- 		return page;
- 
- 	/* Slow-path: cache empty, do real allocation */
--	page = __page_pool_alloc_pages_slow(pool, gfp);
-+	page = __page_pool_alloc_pages_slow(pool, alloc, gfp);
- 	return page;
- }
-+EXPORT_SYMBOL(__page_pool_alloc_pages);
-+
-+struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp)
++static void page_pool_atomic_inc_frag_count(struct page *page)
 +{
-+	return __page_pool_alloc_pages(pool, &pool->alloc, gfp);
++	atomic_long_inc(&page->pp_frag_count);
 +}
- EXPORT_SYMBOL(page_pool_alloc_pages);
- 
- /* Calculate distance between two u32 values, valid if distance is below 2^(31)
-@@ -522,11 +533,9 @@ void page_pool_put_page_bulk(struct page_pool *pool, void **data,
- }
- EXPORT_SYMBOL(page_pool_put_page_bulk);
- 
--static struct page *page_pool_drain_frag(struct page_pool *pool,
--					 struct page *page)
-+struct page *page_pool_drain_frag(struct page_pool *pool, struct page *page,
-+				  long drain_count)
- {
--	long drain_count = BIAS_MAX - pool->frag_users;
--
- 	/* Some user is still using the page frag */
- 	if (likely(page_pool_atomic_sub_frag_count_return(page,
- 							  drain_count)))
-@@ -543,13 +552,9 @@ static struct page *page_pool_drain_frag(struct page_pool *pool,
- 	return NULL;
- }
- 
--static void page_pool_free_frag(struct page_pool *pool)
-+void page_pool_free_frag(struct page_pool *pool, struct page *page,
-+			 long drain_count)
- {
--	long drain_count = BIAS_MAX - pool->frag_users;
--	struct page *page = pool->frag_page;
--
--	pool->frag_page = NULL;
--
- 	if (!page ||
- 	    page_pool_atomic_sub_frag_count_return(page, drain_count))
- 		return;
-@@ -572,7 +577,8 @@ struct page *page_pool_alloc_frag(struct page_pool *pool,
- 	*offset = pool->frag_offset;
- 
- 	if (page && *offset + size > max_size) {
--		page = page_pool_drain_frag(pool, page);
-+		page = page_pool_drain_frag(pool, page,
-+					    BIAS_MAX - pool->frag_users);
- 		if (page)
- 			goto frag_reset;
- 	}
-@@ -628,26 +634,26 @@ static void page_pool_free(struct page_pool *pool)
- 	kfree(pool);
- }
- 
--static void page_pool_empty_alloc_cache_once(struct page_pool *pool)
-+void page_pool_empty_alloc_cache_once(struct page_pool *pool,
-+				      struct pp_alloc_cache *alloc)
- {
- 	struct page *page;
- 
--	if (pool->destroy_cnt)
--		return;
--
- 	/* Empty alloc cache, assume caller made sure this is
- 	 * no-longer in use, and page_pool_alloc_pages() cannot be
- 	 * call concurrently.
- 	 */
--	while (pool->alloc.count) {
--		page = pool->alloc.cache[--pool->alloc.count];
-+	while (alloc->count) {
-+		page = alloc->cache[--alloc->count];
- 		page_pool_return_page(pool, page);
- 	}
- }
- 
- static void page_pool_scrub(struct page_pool *pool)
- {
--	page_pool_empty_alloc_cache_once(pool);
-+	if (!pool->destroy_cnt)
-+		page_pool_empty_alloc_cache_once(pool, &pool->alloc);
 +
- 	pool->destroy_cnt++;
- 
- 	/* No more consumers should exist, but producers could still
-@@ -705,7 +711,9 @@ void page_pool_destroy(struct page_pool *pool)
- 	if (!page_pool_put(pool))
- 		return;
- 
--	page_pool_free_frag(pool);
-+	page_pool_free_frag(pool, pool->frag_page,
-+			    BIAS_MAX - pool->frag_users);
-+	pool->frag_page = NULL;
- 
- 	if (!page_pool_release(pool))
- 		return;
+ static inline bool is_page_pool_compiled_in(void)
+ {
+ #ifdef CONFIG_PAGE_POOL
 -- 
 2.7.4
 
