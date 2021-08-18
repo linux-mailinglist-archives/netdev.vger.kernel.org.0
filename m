@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6E9A3F0329
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 14:03:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D9B63F032C
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 14:03:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235832AbhHRMDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 08:03:46 -0400
-Received: from mail-vi1eur05on2074.outbound.protection.outlook.com ([40.107.21.74]:54881
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        id S235799AbhHRMEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 08:04:00 -0400
+Received: from mail-eopbgr00067.outbound.protection.outlook.com ([40.107.0.67]:52143
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231476AbhHRMDb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Aug 2021 08:03:31 -0400
+        id S235775AbhHRMDo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Aug 2021 08:03:44 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eaTQ9nWEhPRnlGoCasTr7b6cv69Unik6pLWw+mOxLgeK1+Vsom24uFLXVHfq7xJYbRjOtD+kPwUbefC/R0gqCplLMTXEsZLl20aROwN5kJKQU4Z1/Cc+fCHaXHthnrdW0p33PqHhQK2vlvdGk1RDFat3ES/I7EYVGVl2++wVNafdWHsJHBDDE61YPu/H75nVgkZFDnWZiM9lF009lBSbnE/PwTg6DTTEoUX3NVpFDlvTNBzbkrEjYvDukSW6uidtAe3PLaxD9Bm6rmKpDsFnD73HB/V73cNs8LMLVBmBi7mfoozout7MgpxHNV3xdeeA5ogz1guZUXJOlekZKEFtOw==
+ b=PuuL7Ghw7xgR+mWEGMw5m/BK4xbymTJbmpqcuihwfMi1ludz2zXDYXtNS9AyYszXJwTmPjzRPNzSkrQDdqlwbnanb1dtrD3qGr1m5yJSf2uw6DH8L8ke8B43URf60I8pN7otoEe5tpq/wPUQhNTp2Il+xRxq9SOHk1mXKznKRj+aOgj3Zyalc/ivQffChMBkK2IN7D0pH2d+Hke2Pzo+fNkR9+Dgs/LYoAcBJO/idbotSbw+celKSbzJNSs7qqI8AetoeM9coxg/mHPyCVyHfH+xsWgFk8a6YGpl91du7W+96fMUHwF89DONFq+958Wl07D0FIuLCbjWVOo5Qng0Ug==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BOlI1pFu88wHvrSjom9afx0Xd1HuttK75WyO46AuYeM=;
- b=bZ347bf75OAq8nGvbmFatbPfMvTIEuJBBad3tDLqEV0H+BpPjJ/VfWNRlBVGSWXjX8VgmyP38DSEE3vxRS7qWSG9ifdyilSpAzMvK5g3lwSG4paf2BTx9hZu8t75sIp2dFBCJ5LR02vX+o8AVu0xDi/R+2Ixg9+hOym+8S/5pmGLSS/INqnTWYPIKnZRG1WPUs0xJP/WaXd0m1TnanIX+TGqP2a8Yi3oRWAFenWWPY+O39J1a/PZROIAjYI7Qv7G4gKUvUeGzhiA5LVu9ZKLrQjKXlkMJiTih0ArphT9n5OksjE3wD5X682oaeXCuAYMbpmtiUaD1y8vrc2yGr1MkQ==
+ bh=XRIcbky/+LcdkEqbG9KlQXO5Fqrx1ryRnkHrQO74wCY=;
+ b=bkl/KVkeqSWuw0dAtAWVtPrGgDO6O4jewx3BvhLpYOA3tIDmVPpZAukqO1FiF7l8yCuE1yFMUAqfKnMmEW0UYpCYdV+EbSXuXEEjYI6TFq8ZBaRR/dqusZxFyUmQfe94qmD6fz83td4cuU6ta0LUM0uljZtmFwIsnQ+mVRFFRXs9/CbhJREq3+BqTsZafN8P3Q3lnJoY7mCNV3R8aZ0avkfQtYEox1eUNqvj413zYBbIt4m7v8sPZXql8qv8hgj908Y3RhIWu8IAc9cdrDJZK5oMMkzVIk9YW28oaLydplwTQqXryEo5HmMqVcyxRNTI6RypoSvlFqT1hfoCgvm1HQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BOlI1pFu88wHvrSjom9afx0Xd1HuttK75WyO46AuYeM=;
- b=IfkSicghmlhc85O9l59E9kxomzCd5qjBgga3Pg90i1ljqZiT8F+/EB5vNcvvrarDqkv+Ob1gfKLhlpyCakdEf+Np3rrKTJhfWz2F57U4LyQWqd9GNXmDfK5PtwQRRooa2p2Wced+7h6+sGnbjkj4bnUQ7bdZ1entQ48Bye0wGPc=
+ bh=XRIcbky/+LcdkEqbG9KlQXO5Fqrx1ryRnkHrQO74wCY=;
+ b=G14zvpXuE7iIRAYu2qudEEd+wV3x8X5MUcTw1IsDGqoqqZMaZ1zVxagCIT4TOkbCKsG9cBJEZH+fimR1ScOd5woarMm/DCVucce0VG9fWp0B0neQ+jM2deVVV5MwbNxKFg2sSlQhOzQu4h59gwNWyXNitL97oBZTcmXYyZ07UVA=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB4222.eurprd04.prod.outlook.com (2603:10a6:803:46::19) with
+ by VI1PR0402MB3839.eurprd04.prod.outlook.com (2603:10a6:803:21::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.18; Wed, 18 Aug
- 2021 12:02:54 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.17; Wed, 18 Aug
+ 2021 12:02:56 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4415.024; Wed, 18 Aug 2021
- 12:02:54 +0000
+ 12:02:56 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -79,9 +79,9 @@ Cc:     Roopa Prabhu <roopa@nvidia.com>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Peter Ujfalusi <peter.ujfalusi@ti.com>
-Subject: [RFC PATCH net-next 03/20] net: dsa: propagate the bridge_num to driver .port_bridge_{join,leave} methods
-Date:   Wed, 18 Aug 2021 15:01:33 +0300
-Message-Id: <20210818120150.892647-4-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 04/20] net: switchdev: move SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE to the blocking notifier chain
+Date:   Wed, 18 Aug 2021 15:01:34 +0300
+Message-Id: <20210818120150.892647-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210818120150.892647-1-vladimir.oltean@nxp.com>
 References: <20210818120150.892647-1-vladimir.oltean@nxp.com>
@@ -92,528 +92,1209 @@ X-ClientProxiedBy: VI1PR08CA0134.eurprd08.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.144.60) by VI1PR08CA0134.eurprd08.prod.outlook.com (2603:10a6:800:d5::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Wed, 18 Aug 2021 12:02:53 +0000
+Received: from localhost.localdomain (188.25.144.60) by VI1PR08CA0134.eurprd08.prod.outlook.com (2603:10a6:800:d5::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Wed, 18 Aug 2021 12:02:54 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 392a4594-09ae-4eb4-59ed-08d962401c4c
-X-MS-TrafficTypeDiagnostic: VI1PR04MB4222:
+X-MS-Office365-Filtering-Correlation-Id: 663aec4a-0af0-4374-1fb3-08d962401d26
+X-MS-TrafficTypeDiagnostic: VI1PR0402MB3839:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB42223CB432A5B3F492F8115CE0FF9@VI1PR04MB4222.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1265;
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB38391AA2AA8095EFEB0A07F2E0FF9@VI1PR0402MB3839.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tgZGLxLTb4mUcvrscUdQ7K5U+PIy8wSI9KHfWa/p5B0TrEegMbT/TFCnPjGdEUzBdAh9YqfNEHW2i3tN3bPRBbNGSomdGwZwx4llsgfae7Rjc8tiO/8U9lYCd+skBpY6/5pYXICHQ0P5VdG61ta76hmM0+g7xfgu6HEN1kHb9Ibguk8N7ecAR7CRlNRbhW0pWW0Fcy2tBiZ07sbGcU4zqeEOruzsut4l+ail9pJGLRw6N0OSsxZpdijwb0PrIowvlNYV7J27Bqddrr42PMZUWZGq5KM78QbMuug8bE31HzxtSbdMKSnJZ1X7TilyHMa/Dx4ln67yI4k+OACW+oJRiXoeMsPREZCDYXXpQmbmLpbR5lQI1yvEjiKZ/rP8lY0rp6QmwsqV7/XUFJ2Lwhr82WXOCTgFislsX3rEQmKMuwzbAod5cHV887BkT1y7LTVqjzxoPNV8kL+PN4Ottgio1Q5klFMd3ES8bGJDUtwhl3LP/PjKxQ/ySIZ3lnyXO+gNpg1IaPD2h0l95JDWBMYLWhxl1VrMT1kuFDpHp8fcyqgpGuaRmW7ISHxnchLJlxn+J11lY36TOYTGQ2eANAJjPyz1u0NT/9ZGZWn7HX+sxDEuTbGLQEF4UHLeZiQw8ov888++T7oGQIDo6OKmlgqVwx0kVMPozJyNMQINbHg428GfGRd2iujhV21Y04joc9Si/A2Nc9KTc1UoIcDQzTjlM2i+TLPPX9VH//I+w/2MgVk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(136003)(39860400002)(366004)(376002)(6486002)(52116002)(2616005)(44832011)(4326008)(5660300002)(26005)(1076003)(6666004)(54906003)(956004)(6512007)(6506007)(186003)(38350700002)(30864003)(38100700002)(86362001)(36756003)(110136005)(316002)(83380400001)(8936002)(478600001)(8676002)(66476007)(7416002)(7406005)(66946007)(66556008)(2906002)(142923001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 1TvvElrJZu5dfocyFPMuWSwotjX9hsrtpr+S4zgjZNm1302baL2cwCYOM0+ohQUWQ7JJZAiIlhF7loQDY1A0w/z/zjAtdQPUTAAKsPwFnj56RgPZopYarZc280fnmsIFiDT2dgMcqI/ywvFl6ib/Bol+3IryTQnoy1sABsO5pxRg/+7Kgc8/ZQ4wIJdahZ39bpSnYxetY057TKe4iqGSqm/BzuUcsutKodvogxnGJ9lK1AKr6NXX5Tdul6QcD8IFj9HKRNa8CElqpQcu2YbhgH+cUCwL3wh/yiDBf3Wp3PW+pCATRXXtY8BjyLDHrFa+7y898ZKf9FxVmyAmWqRNJ/OhRcuy+4CilD3Do9CHTWIW1AogEYs3ZoBUjv5w7TLCyfoRhutdK6yW7Z7B+Qkba2iZ02lVTWoeyoZLxBfb9N1SbmoRs1fXaodbkxJ47v0LXUk/UHq7jlY3n11RQrRY8WzrQCVeHQIhvDBiBr5Kdo1x8N8Di6wc1QE58My6Fq8z9SluHFubXK43jgXl5VuVBE5ph7BEO5BGEuLpnjBRiWS3UsDpP9o98+MLeHNrcM0V+gj6OKcKkJ6TxO7IlUzAo7O9FnVBHX0SLs49prZEnHR/ldzj71CsuBujb7+9Q8yeJfDAQEKASPilYn0++7q+BHBteHHBhnTuFH/e8AI0BCnnrJsWfWzDgwH+C3UENdWynvBwiRuuempPXW+ym6HxYw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(136003)(39840400004)(366004)(376002)(66476007)(2906002)(66556008)(8936002)(6506007)(186003)(7406005)(7416002)(52116002)(26005)(86362001)(66946007)(6486002)(44832011)(36756003)(30864003)(5660300002)(1076003)(110136005)(54906003)(6512007)(8676002)(316002)(6666004)(38350700002)(38100700002)(956004)(478600001)(83380400001)(2616005)(4326008);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cFEuvJ6EKJJtILmL7KSXLZMbCnuLdAaOybycBXDFx5VRvSs8XHA5r0fb8O1R?=
- =?us-ascii?Q?mZXZcQEIqJYhw58O2AxVcOjBTiNtmLnu916i9FEDYkKi4hrvafDXIVUJCAjQ?=
- =?us-ascii?Q?kvIoiesyzFhG4+WTqL437ghao2N3BC5EZmQE8/B12Dk6Wmxx91Gsebm6Aa1U?=
- =?us-ascii?Q?F/sO2DuiCDu8di2h1Fkxej3/TQ3VHFFSJszOVac7S2GCyrJuI0107GIvE5Ua?=
- =?us-ascii?Q?6cxUcgSSNok6kjGMn9rrsC0n28MaQjEugQrXHPJ55teiMWI8DEUndqoeRKqf?=
- =?us-ascii?Q?/U+ADVIZ2CvwWaUXY0tnmBSrnQvHsjhP4hjmDKE17AYjRD4JQnZ8JMqrPGCB?=
- =?us-ascii?Q?fyCt/2O04NK4rkWSvkoPwhczwSiBMAlNpFDG9ZlP5P6WqhhRoLaDZBhoAci1?=
- =?us-ascii?Q?KMUHt7gP4qCSWR3PSErmNZXnfb985FbyZAYv7YK6O+Zwb8mUSv4/yMrCg+Ed?=
- =?us-ascii?Q?RpLZ7q2YoK2+r8DXj7+IlE27az51ACwE0Yg0GDxZvsvh/v0kx0qwcRsvSC/T?=
- =?us-ascii?Q?GFPugvAtYVJzNwRZ6T/NLM8L/0nN8CshZ6uQmSTCDKghT7QYkye7/Hm7GMFV?=
- =?us-ascii?Q?fSAH4f9lykIFlW7njRD00aqkU5s1vGP2IQmYhBlEmUHUYdUS1EbTyqadDh0L?=
- =?us-ascii?Q?KwzQUhsz0H2P8/f2wFxdOyyx39qx7zRJ+AuHEJ4suyDdOOlbTxdtx4YGXPI+?=
- =?us-ascii?Q?sBFFLc6Tec/BM0A0Gkw1sNnmcnJZACT5NRkjdUjG0IrDauCGdWCEhS/0ChmW?=
- =?us-ascii?Q?ea4sfEPF0ekY7k6jAhAGduJbjpbXbxpvgBpOIl5Gd6H8F8NOLhgM3A1I/K5y?=
- =?us-ascii?Q?3QHe2iiRzaR/g1O66krda/s5h8DbvksjAR5v2jnYjbGk9e7IeTsbg519ChiJ?=
- =?us-ascii?Q?rWVYqJ+fvCkmYkBU64zdEVHybMNuQVGLoeJolxHLvQ62WTUKykmBwnLVXwIb?=
- =?us-ascii?Q?mYKpyS7Qk9Zj+MENRn+/ot0a1EOy4W8YZzCCuZDXY8AUllr+3BWkvJ4qn22l?=
- =?us-ascii?Q?PJ9LwTv/jZ6ksVkj/qdGtX5XyyxPyv/dYyNEFs/NL5huzjlijiXngHm45Atg?=
- =?us-ascii?Q?raMfAsgb5Z1irKLTvQegDE13nG2HN3AYsF066hKgJh7QyhrIafRsMoO7AZun?=
- =?us-ascii?Q?W9ICFOsB2sPJvHimAnuzH1prYv1F4Gaz04UGUvh9d1zpTEEhJ48D23ipocgW?=
- =?us-ascii?Q?yO0tIZhkrWNWwPIW4USv2Q3RMpAbs1rEydsgiMdFfGIJcVaMcn6JV3++V0NH?=
- =?us-ascii?Q?vmth8mwyFehumiUEX94O2BFPYw+YxYOquH9XcxsJ3h9Q+dNafuqwPgvfNfv5?=
- =?us-ascii?Q?QEiEPMGAyaFlMuy3JK4PE7rC?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/hPJOapbxgXYRdzLnMwDM8W2U5ggPZhx5DVMw8jeqjtOfKEYCPSofFvFW1St?=
+ =?us-ascii?Q?XNXebierjTKK3WWNMziRAQmeHGnwQfPIcsXexDYQrYGM+Dr4oQkPU9AMQr7m?=
+ =?us-ascii?Q?EhDF9EZQiplEJIpFOznNaWZr32ZNxhFIGaOxHudrOfbsaNy8N+T95wcSGyuN?=
+ =?us-ascii?Q?CZZI5gATTTUzadP8CyhS7Tk2qrbEYmGWYh/YEJAH+GtRWsgLm3rANegDuSE8?=
+ =?us-ascii?Q?pEX4J+OCWIZXuIXcpiv7XLotl10xDAk6kF6dz+VA3CFuiv33sFtadnpao2Av?=
+ =?us-ascii?Q?dn8ea8WpkiunR2SGwiTlmsIB4aWVdBSbLUB8+mh0pusJs/WInRWdxFLsv8rR?=
+ =?us-ascii?Q?eB0+kya8TAljO6haLJ2U4xh7503gqrfPihZwZFZRRqdWxh2WOW68Lnh7sLzH?=
+ =?us-ascii?Q?quuieqU0tJCaj0LcxFIA74LL/WIs+U2wxFmqYJgfaTVZEWFNewuQP1RrLS+L?=
+ =?us-ascii?Q?G92rPnPl8bfHyHbXdTVt2+m+nCh04ryJ09+69tSHJ8xHCc9jA7XJNyXFDA+q?=
+ =?us-ascii?Q?p1jJg7spJfH9SHG2SXBaYslmrBhZdX23tTdF1w26Hn0zu0NQ4LpR+nJ6kwkI?=
+ =?us-ascii?Q?8iBMiqjttm7fQIXZdVa8cEaceFM0WzeTTl4Blyo7o+sJ5e9vN/N4c8PFsZA/?=
+ =?us-ascii?Q?7uKeM7hvs3i1jTd1L2x2h55rF5ldwLnDUYut9C05KE/HpS7jcgmD88VHx91q?=
+ =?us-ascii?Q?Z85ld6tizMCjD3yqFqAo86Xihb3NH1xgRFTC1e4gBI79LC0UfIiEdYjBMcDL?=
+ =?us-ascii?Q?omXHyxdp+tDjdzX4cU8oeNgRLXcLNmLRZgx6RIIMTxaYit+2fkGlWtGN4NC4?=
+ =?us-ascii?Q?dN/CNAPW1ptaaaAn+lubb/fvY6g7VRNIdyhggOzsllU8qlLNsN/G149gfgQF?=
+ =?us-ascii?Q?AvZzvDURhsoGfJI3u8kzqSc2PgfqAFlYwZpczIquF9mM9Xl+TMKI+vCeSz3l?=
+ =?us-ascii?Q?qc3hmO63ehkQVaJBGG+9oo0L0dCWftzdK/AAIdU1KClP89vIg9INJIHInhRU?=
+ =?us-ascii?Q?KgDxvOgOXiGbTOdv13M+YbXKfv9MVqUf+Rt1wIkQebOKEN7xN747g9xzCuy/?=
+ =?us-ascii?Q?8d9KUer7eX8F5TVduxtj1TDpVCuT5cIOFDlXMCpdlq/AQ7aTQcxHibDPL1wH?=
+ =?us-ascii?Q?dLArX0W3PKXInspuBupESoCsgHS8Y571FhyqOcTohovf3xJU4NPsmE3R0fkW?=
+ =?us-ascii?Q?WxyqUx9aWgION1czdKZ9w+sOKGVm+eAn9IOjKHnbyHsRU04osrgUySieQFKV?=
+ =?us-ascii?Q?PtWX2JGiIw7Hrxgkc6xmX06S3uZ6bKH+dNuT2/H9SQVJ5bGb1lsK+zpYpjzP?=
+ =?us-ascii?Q?alRW9MRwjcV9dZK4OSL0Kr5r?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 392a4594-09ae-4eb4-59ed-08d962401c4c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 663aec4a-0af0-4374-1fb3-08d962401d26
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2021 12:02:54.4439
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2021 12:02:55.8741
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rf4NHuCO/WwViLScfoltLARiiig0vDtTmN2veYVUcL+sPuTaGIL5S7eWKVOfwngQFU8/e3mQ5XEXhidjABH3Xw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4222
+X-MS-Exchange-CrossTenant-UserPrincipalName: APc/A+cQKe1sU7a0cvwzRkITWwYjSvueaT1wqzROGkA1SB8jj9DYvk8Wyzt8nUV5kMnQn2XffDkuVdEOQvHVLw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3839
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the driver needs to do something to isolate FDBs of different
-bridges, it must be able to reliably get a FDB identifier for each
-bridge.
+Currently, br_switchdev_fdb_notify() uses call_switchdev_notifiers (and
+br_fdb_replay() open-codes the same thing). This means that drivers
+handle the SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE events on the atomic
+switchdev notifier block.
 
-So one might ask: why is the driver not able to call something like
-dsa_bridge_num_find(bridge_dev) and find the associated FDB identifier
-already provided by the DSA core if it needs to, and not change anything
-if it doesn't?
+Most existing switchdev drivers either talk to firmware, or to a device
+over a bus where the I/O is sleepable (SPI, I2C, MDIO etc). So there
+exists an (anti)pattern where drivers make a sleepable context for
+offloading the given FDB entry by registering an ordered workqueue and
+scheduling work items on it, and doing all the work from there.
 
-The issue is that drivers might need to do something with the FDB
-identifier on .port_bridge_leave too, and the dsa_bridge_num_find
-function is stateful: it only retrieves a valid bridge_num if there is
-at least one port which has dp->bridge_dev == br.
+The problem is the inherent limitation that this design imposes upon
+what a switchdev driver can do with those FDB entries.
 
-But the dsa_port_bridge_leave() method first clears dp->bridge_dev and
-dp->bridge_num, and only then notifies the driver. The bridge that the
-port just left is only present inside the cross-chip notifier attribute,
-and is passed by value to the switch driver.
+For example, a switchdev driver might want to perform FDB isolation,
+i.e. associate each FDB entry with the bridge it belongs to. Maybe the
+driver associates each bridge with a number, allocating that number when
+the first port of the driver joins that bridge, and freeing it when the
+last port leaves it.
 
-So the bridge_num of the bridge we just left needs to be passed by value
-too, just like the bridge_dev itself. And from there, .port_bridge_join
-follows the same prototype mostly for symmetry.
+And this is where the problem is. When user space deletes a bridge and
+all the ports leave, the bridge will notify us of the deletion of all
+FDB entries in atomic context, and switchdev drivers will schedule their
+private work items on their private workqueue.
+
+The FDB entry deletion notifications will succeed, the bridge will then
+finish deleting itself, but the switchdev work items have not run yet.
+When they will eventually get scheduled, the aforementioned association
+between the bridge_dev and a number will have already been broken by the
+switchdev driver. All ports are standalone now, the bridge is a foreign
+interface!
+
+One might say "why don't you cache all your associations while you're
+still in the atomic context and they're still valid, pass them by value
+through your switchdev_work and work with the cached values as opposed
+to the current ones?"
+
+This option smells of poor design, because instead of fixing a central
+problem, we add tens of lateral workarounds to avoid it. It should be
+easier to use switchdev, not harder, and we should look at the common
+patterns which lead to code duplication and eliminate them.
+
+In this case, we must notice that
+(a) switchdev already has the concept of notifiers emitted from the fast
+    path that are still processed by drivers from blocking context. This
+    is accomplished through the SWITCHDEV_F_DEFER flag which is used by
+    e.g. SWITCHDEV_OBJ_ID_HOST_MDB.
+(b) the bridge del_nbp() function already calls switchdev_deferred_process().
+    So if we could hook into that, we could have a chance that the
+    bridge simply waits for our FDB entry offloading procedure to finish
+    before it calls netdev_upper_dev_unlink() - which is almost
+    immediately afterwards, and also when switchdev drivers typically
+    break their stateful associations between the bridge upper and
+    private data.
+
+So it is in fact possible to use switchdev's generic
+switchdev_deferred_enqueue mechanism to get a sleepable callback, and
+from there we can call_switchdev_blocking_notifiers().
+
+In the case of br_fdb_replay(), the only code path is from
+switchdev_bridge_port_offload(), which is already in blocking context.
+So we don't need to go through switchdev_deferred_enqueue, and we can
+just call the blocking notifier block directly.
+
+To preserve the same behavior as before, all drivers need to have their
+SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE handlers moved from their switchdev
+atomic notifier blocks to the blocking ones. This patch attempts to make
+that trivial movement. Note that now they might schedule a work item for
+nothing (since they are now called from a work item themselves), but I
+don't have the energy or hardware to test all of them, so this will have
+to do.
+
+Note that previously, we were under rcu_read_lock() but now we're not.
+I have eyeballed the drivers that make any sort of RCU assumption and
+enclosed them between a private rcu_read_lock()/rcu_read_unlock(). This
+can be dropped when the drivers themselves are reworked.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/b53/b53_common.c       |  6 ++++--
- drivers/net/dsa/b53/b53_priv.h         |  6 ++++--
- drivers/net/dsa/dsa_loop.c             |  6 ++++--
- drivers/net/dsa/hirschmann/hellcreek.c |  6 ++++--
- drivers/net/dsa/lan9303-core.c         |  4 ++--
- drivers/net/dsa/lantiq_gswip.c         |  4 ++--
- drivers/net/dsa/microchip/ksz_common.c |  4 ++--
- drivers/net/dsa/microchip/ksz_common.h |  4 ++--
- drivers/net/dsa/mt7530.c               |  4 ++--
- drivers/net/dsa/mv88e6xxx/chip.c       | 12 ++++++++----
- drivers/net/dsa/ocelot/felix.c         |  4 ++--
- drivers/net/dsa/qca8k.c                |  6 ++++--
- drivers/net/dsa/sja1105/sja1105_main.c |  4 ++--
- drivers/net/dsa/xrs700x/xrs700x.c      |  4 ++--
- include/net/dsa.h                      |  8 ++++----
- net/dsa/dsa_priv.h                     |  1 +
- net/dsa/port.c                         |  3 +++
- net/dsa/switch.c                       | 11 +++++++----
- 18 files changed, 59 insertions(+), 38 deletions(-)
+ .../ethernet/freescale/dpaa2/dpaa2-switch.c   |  84 +++++++-------
+ .../marvell/prestera/prestera_switchdev.c     | 106 +++++++++---------
+ .../mellanox/mlx5/core/en/rep/bridge.c        |  59 +++++++++-
+ .../mellanox/mlxsw/spectrum_switchdev.c       |  57 +++++++++-
+ .../microchip/sparx5/sparx5_switchdev.c       |  74 ++++++------
+ drivers/net/ethernet/rocker/rocker_main.c     |  74 ++++++------
+ drivers/net/ethernet/ti/am65-cpsw-switchdev.c |  59 +++++-----
+ drivers/net/ethernet/ti/cpsw_switchdev.c      |  62 +++++-----
+ drivers/s390/net/qeth_l2_main.c               |   4 +-
+ include/net/switchdev.h                       |  21 ++++
+ net/bridge/br_fdb.c                           |   2 +
+ net/bridge/br_switchdev.c                     |  10 +-
+ net/dsa/slave.c                               |  32 +++---
+ net/switchdev/switchdev.c                     |  47 ++++++++
+ 14 files changed, 443 insertions(+), 248 deletions(-)
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index bd1417a66cbf..d0f00cb0a235 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -1847,7 +1847,8 @@ int b53_mdb_del(struct dsa_switch *ds, int port,
- }
- EXPORT_SYMBOL(b53_mdb_del);
- 
--int b53_br_join(struct dsa_switch *ds, int port, struct net_device *br)
-+int b53_br_join(struct dsa_switch *ds, int port, struct net_device *br,
-+		int bridge_num)
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
+index d260993ab2dc..5de475927958 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
+@@ -2254,52 +2254,11 @@ static int dpaa2_switch_port_event(struct notifier_block *nb,
+ 				   unsigned long event, void *ptr)
  {
- 	struct b53_device *dev = ds->priv;
- 	s8 cpu_port = dsa_to_port(ds, port)->cpu_dp->index;
-@@ -1898,7 +1899,8 @@ int b53_br_join(struct dsa_switch *ds, int port, struct net_device *br)
- }
- EXPORT_SYMBOL(b53_br_join);
+ 	struct net_device *dev = switchdev_notifier_info_to_dev(ptr);
+-	struct ethsw_port_priv *port_priv = netdev_priv(dev);
+-	struct ethsw_switchdev_event_work *switchdev_work;
+-	struct switchdev_notifier_fdb_info *fdb_info = ptr;
+-	struct ethsw_core *ethsw = port_priv->ethsw_data;
  
--void b53_br_leave(struct dsa_switch *ds, int port, struct net_device *br)
-+void b53_br_leave(struct dsa_switch *ds, int port, struct net_device *br,
-+		  int bridge_num)
- {
- 	struct b53_device *dev = ds->priv;
- 	struct b53_vlan *vl = &dev->vlans[0];
-diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
-index 9bf8319342b0..e3f1e9ff1b50 100644
---- a/drivers/net/dsa/b53/b53_priv.h
-+++ b/drivers/net/dsa/b53/b53_priv.h
-@@ -318,8 +318,10 @@ void b53_get_strings(struct dsa_switch *ds, int port, u32 stringset,
- void b53_get_ethtool_stats(struct dsa_switch *ds, int port, uint64_t *data);
- int b53_get_sset_count(struct dsa_switch *ds, int port, int sset);
- void b53_get_ethtool_phy_stats(struct dsa_switch *ds, int port, uint64_t *data);
--int b53_br_join(struct dsa_switch *ds, int port, struct net_device *bridge);
--void b53_br_leave(struct dsa_switch *ds, int port, struct net_device *bridge);
-+int b53_br_join(struct dsa_switch *ds, int port, struct net_device *bridge,
-+		int bridge_num);
-+void b53_br_leave(struct dsa_switch *ds, int port, struct net_device *bridge,
-+		  int bridge_num);
- void b53_br_set_stp_state(struct dsa_switch *ds, int port, u8 state);
- void b53_br_fast_age(struct dsa_switch *ds, int port);
- int b53_br_flags_pre(struct dsa_switch *ds, int port,
-diff --git a/drivers/net/dsa/dsa_loop.c b/drivers/net/dsa/dsa_loop.c
-index bfdf3324aac3..c9fefdede1d1 100644
---- a/drivers/net/dsa/dsa_loop.c
-+++ b/drivers/net/dsa/dsa_loop.c
-@@ -167,7 +167,8 @@ static int dsa_loop_phy_write(struct dsa_switch *ds, int port,
- }
+ 	if (event == SWITCHDEV_PORT_ATTR_SET)
+ 		return dpaa2_switch_port_attr_set_event(dev, ptr);
  
- static int dsa_loop_port_bridge_join(struct dsa_switch *ds, int port,
--				     struct net_device *bridge)
-+				     struct net_device *bridge,
-+				     int bridge_num)
- {
- 	dev_dbg(ds->dev, "%s: port: %d, bridge: %s\n",
- 		__func__, port, bridge->name);
-@@ -176,7 +177,8 @@ static int dsa_loop_port_bridge_join(struct dsa_switch *ds, int port,
+-	if (!dpaa2_switch_port_dev_check(dev))
+-		return NOTIFY_DONE;
+-
+-	switchdev_work = kzalloc(sizeof(*switchdev_work), GFP_ATOMIC);
+-	if (!switchdev_work)
+-		return NOTIFY_BAD;
+-
+-	INIT_WORK(&switchdev_work->work, dpaa2_switch_event_work);
+-	switchdev_work->dev = dev;
+-	switchdev_work->event = event;
+-
+-	switch (event) {
+-	case SWITCHDEV_FDB_ADD_TO_DEVICE:
+-	case SWITCHDEV_FDB_DEL_TO_DEVICE:
+-		memcpy(&switchdev_work->fdb_info, ptr,
+-		       sizeof(switchdev_work->fdb_info));
+-		switchdev_work->fdb_info.addr = kzalloc(ETH_ALEN, GFP_ATOMIC);
+-		if (!switchdev_work->fdb_info.addr)
+-			goto err_addr_alloc;
+-
+-		ether_addr_copy((u8 *)switchdev_work->fdb_info.addr,
+-				fdb_info->addr);
+-
+-		/* Take a reference on the device to avoid being freed. */
+-		dev_hold(dev);
+-		break;
+-	default:
+-		kfree(switchdev_work);
+-		return NOTIFY_DONE;
+-	}
+-
+-	queue_work(ethsw->workqueue, &switchdev_work->work);
+-
+ 	return NOTIFY_DONE;
+-
+-err_addr_alloc:
+-	kfree(switchdev_work);
+-	return NOTIFY_BAD;
  }
  
- static void dsa_loop_port_bridge_leave(struct dsa_switch *ds, int port,
--				       struct net_device *bridge)
-+				       struct net_device *bridge,
-+				       int bridge_num)
- {
- 	dev_dbg(ds->dev, "%s: port: %d, bridge: %s\n",
- 		__func__, port, bridge->name);
-diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
-index 5c54ae1be62c..732fff99bfb2 100644
---- a/drivers/net/dsa/hirschmann/hellcreek.c
-+++ b/drivers/net/dsa/hirschmann/hellcreek.c
-@@ -674,7 +674,8 @@ static int hellcreek_bridge_flags(struct dsa_switch *ds, int port,
+ static int dpaa2_switch_port_obj_event(unsigned long event,
+@@ -2324,6 +2283,46 @@ static int dpaa2_switch_port_obj_event(unsigned long event,
+ 	return notifier_from_errno(err);
  }
  
- static int hellcreek_port_bridge_join(struct dsa_switch *ds, int port,
--				      struct net_device *br)
-+				      struct net_device *br,
-+				      int bridge_num)
++static int dpaa2_switch_fdb_event(unsigned long event,
++				  struct net_device *dev,
++				  struct switchdev_notifier_fdb_info *fdb_info)
++{
++	struct ethsw_port_priv *port_priv = netdev_priv(dev);
++	struct ethsw_switchdev_event_work *switchdev_work;
++	struct ethsw_core *ethsw = port_priv->ethsw_data;
++
++	if (!dpaa2_switch_port_dev_check(dev))
++		return NOTIFY_DONE;
++
++	switchdev_work = kzalloc(sizeof(*switchdev_work), GFP_ATOMIC);
++	if (!switchdev_work)
++		return NOTIFY_BAD;
++
++	INIT_WORK(&switchdev_work->work, dpaa2_switch_event_work);
++	switchdev_work->dev = dev;
++	switchdev_work->event = event;
++
++	memcpy(&switchdev_work->fdb_info, fdb_info,
++	       sizeof(switchdev_work->fdb_info));
++	switchdev_work->fdb_info.addr = kzalloc(ETH_ALEN, GFP_ATOMIC);
++	if (!switchdev_work->fdb_info.addr)
++		goto err_addr_alloc;
++
++	ether_addr_copy((u8 *)switchdev_work->fdb_info.addr,
++			fdb_info->addr);
++
++	/* Take a reference on the device to avoid being freed. */
++	dev_hold(dev);
++
++	queue_work(ethsw->workqueue, &switchdev_work->work);
++
++	return NOTIFY_DONE;
++
++err_addr_alloc:
++	kfree(switchdev_work);
++	return NOTIFY_BAD;
++}
++
+ static int dpaa2_switch_port_blocking_event(struct notifier_block *nb,
+ 					    unsigned long event, void *ptr)
  {
- 	struct hellcreek *hellcreek = ds->priv;
+@@ -2335,6 +2334,9 @@ static int dpaa2_switch_port_blocking_event(struct notifier_block *nb,
+ 		return dpaa2_switch_port_obj_event(event, dev, ptr);
+ 	case SWITCHDEV_PORT_ATTR_SET:
+ 		return dpaa2_switch_port_attr_set_event(dev, ptr);
++	case SWITCHDEV_FDB_ADD_TO_DEVICE:
++	case SWITCHDEV_FDB_DEL_TO_DEVICE:
++		return dpaa2_switch_fdb_event(event, dev, ptr);
+ 	}
  
-@@ -691,7 +692,8 @@ static int hellcreek_port_bridge_join(struct dsa_switch *ds, int port,
- }
- 
- static void hellcreek_port_bridge_leave(struct dsa_switch *ds, int port,
--					struct net_device *br)
-+					struct net_device *br,
-+					int bridge_num)
+ 	return NOTIFY_DONE;
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
+index 3ce6ccd0f539..3f574a69c244 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
+@@ -845,10 +845,6 @@ static int prestera_switchdev_event(struct notifier_block *unused,
+ 				    unsigned long event, void *ptr)
  {
- 	struct hellcreek *hellcreek = ds->priv;
- 
-diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
-index d7ce281570b5..4e72fd04eb5f 100644
---- a/drivers/net/dsa/lan9303-core.c
-+++ b/drivers/net/dsa/lan9303-core.c
-@@ -1103,7 +1103,7 @@ static void lan9303_port_disable(struct dsa_switch *ds, int port)
- }
- 
- static int lan9303_port_bridge_join(struct dsa_switch *ds, int port,
--				    struct net_device *br)
-+				    struct net_device *br, int bridge_num)
- {
- 	struct lan9303 *chip = ds->priv;
- 
-@@ -1117,7 +1117,7 @@ static int lan9303_port_bridge_join(struct dsa_switch *ds, int port,
- }
- 
- static void lan9303_port_bridge_leave(struct dsa_switch *ds, int port,
--				      struct net_device *br)
-+				      struct net_device *br, int bridge_num)
- {
- 	struct lan9303 *chip = ds->priv;
- 
-diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index e78026ef6d8c..2ce4da567106 100644
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -1128,7 +1128,7 @@ static int gswip_vlan_remove(struct gswip_priv *priv,
- }
- 
- static int gswip_port_bridge_join(struct dsa_switch *ds, int port,
--				  struct net_device *bridge)
-+				  struct net_device *bridge, int bridge_num)
- {
- 	struct gswip_priv *priv = ds->priv;
+ 	struct net_device *dev = switchdev_notifier_info_to_dev(ptr);
+-	struct switchdev_notifier_fdb_info *fdb_info;
+-	struct switchdev_notifier_info *info = ptr;
+-	struct prestera_fdb_event_work *swdev_work;
+-	struct net_device *upper;
  	int err;
-@@ -1148,7 +1148,7 @@ static int gswip_port_bridge_join(struct dsa_switch *ds, int port,
- }
  
- static void gswip_port_bridge_leave(struct dsa_switch *ds, int port,
--				    struct net_device *bridge)
-+				    struct net_device *bridge, int bridge_num)
- {
- 	struct gswip_priv *priv = ds->priv;
+ 	if (event == SWITCHDEV_PORT_ATTR_SET) {
+@@ -858,54 +854,7 @@ static int prestera_switchdev_event(struct notifier_block *unused,
+ 		return notifier_from_errno(err);
+ 	}
  
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 1542bfb8b5e5..4f821933e291 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -173,7 +173,7 @@ void ksz_get_ethtool_stats(struct dsa_switch *ds, int port, uint64_t *buf)
- EXPORT_SYMBOL_GPL(ksz_get_ethtool_stats);
- 
- int ksz_port_bridge_join(struct dsa_switch *ds, int port,
--			 struct net_device *br)
-+			 struct net_device *br, int bridge_num)
- {
- 	struct ksz_device *dev = ds->priv;
- 
-@@ -190,7 +190,7 @@ int ksz_port_bridge_join(struct dsa_switch *ds, int port,
- EXPORT_SYMBOL_GPL(ksz_port_bridge_join);
- 
- void ksz_port_bridge_leave(struct dsa_switch *ds, int port,
--			   struct net_device *br)
-+			   struct net_device *br, int bridge_num)
- {
- 	struct ksz_device *dev = ds->priv;
- 
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 1597c63988b4..3e905059374b 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -159,9 +159,9 @@ void ksz_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
- int ksz_sset_count(struct dsa_switch *ds, int port, int sset);
- void ksz_get_ethtool_stats(struct dsa_switch *ds, int port, uint64_t *buf);
- int ksz_port_bridge_join(struct dsa_switch *ds, int port,
--			 struct net_device *br);
-+			 struct net_device *br, int bridge_num);
- void ksz_port_bridge_leave(struct dsa_switch *ds, int port,
--			   struct net_device *br);
-+			   struct net_device *br, int bridge_num);
- void ksz_port_fast_age(struct dsa_switch *ds, int port);
- int ksz_port_fdb_dump(struct dsa_switch *ds, int port, dsa_fdb_dump_cb_t *cb,
- 		      void *data);
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index d757d9dcba51..751e477691f4 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -1192,7 +1192,7 @@ mt7530_port_bridge_flags(struct dsa_switch *ds, int port,
- 
- static int
- mt7530_port_bridge_join(struct dsa_switch *ds, int port,
--			struct net_device *bridge)
-+			struct net_device *bridge, int bridge_num)
- {
- 	struct mt7530_priv *priv = ds->priv;
- 	u32 port_bitmap = BIT(MT7530_CPU_PORT);
-@@ -1305,7 +1305,7 @@ mt7530_port_set_vlan_aware(struct dsa_switch *ds, int port)
- 
- static void
- mt7530_port_bridge_leave(struct dsa_switch *ds, int port,
--			 struct net_device *bridge)
-+			 struct net_device *bridge, int bridge_num)
- {
- 	struct mt7530_priv *priv = ds->priv;
- 	int i;
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 32fd657a325a..37878ccf499c 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -2387,7 +2387,8 @@ static int mv88e6xxx_bridge_map(struct mv88e6xxx_chip *chip,
- }
- 
- static int mv88e6xxx_port_bridge_join(struct dsa_switch *ds, int port,
--				      struct net_device *br)
-+				      struct net_device *br,
-+				      int bridge_num)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	int err;
-@@ -2400,7 +2401,8 @@ static int mv88e6xxx_port_bridge_join(struct dsa_switch *ds, int port,
- }
- 
- static void mv88e6xxx_port_bridge_leave(struct dsa_switch *ds, int port,
--					struct net_device *br)
-+					struct net_device *br,
-+					int bridge_num)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 
-@@ -2413,7 +2415,8 @@ static void mv88e6xxx_port_bridge_leave(struct dsa_switch *ds, int port,
- 
- static int mv88e6xxx_crosschip_bridge_join(struct dsa_switch *ds,
- 					   int tree_index, int sw_index,
--					   int port, struct net_device *br)
-+					   int port, struct net_device *br,
-+					   int bridge_num)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	int err;
-@@ -2430,7 +2433,8 @@ static int mv88e6xxx_crosschip_bridge_join(struct dsa_switch *ds,
- 
- static void mv88e6xxx_crosschip_bridge_leave(struct dsa_switch *ds,
- 					     int tree_index, int sw_index,
--					     int port, struct net_device *br)
-+					     int port, struct net_device *br,
-+					     int bridge_num)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index cbe23b20f3fa..3ab7cf2f0f50 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -695,7 +695,7 @@ static int felix_bridge_flags(struct dsa_switch *ds, int port,
- }
- 
- static int felix_bridge_join(struct dsa_switch *ds, int port,
--			     struct net_device *br)
-+			     struct net_device *br, int bridge_num)
- {
- 	struct ocelot *ocelot = ds->priv;
- 
-@@ -705,7 +705,7 @@ static int felix_bridge_join(struct dsa_switch *ds, int port,
- }
- 
- static void felix_bridge_leave(struct dsa_switch *ds, int port,
--			       struct net_device *br)
-+			       struct net_device *br, int bridge_num)
- {
- 	struct ocelot *ocelot = ds->priv;
- 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 1f63f50f73f1..9addf99ceead 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -1505,7 +1505,8 @@ qca8k_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
+-	if (!prestera_netdev_check(dev))
+-		return NOTIFY_DONE;
+-
+-	upper = netdev_master_upper_dev_get_rcu(dev);
+-	if (!upper)
+-		return NOTIFY_DONE;
+-
+-	if (!netif_is_bridge_master(upper))
+-		return NOTIFY_DONE;
+-
+-	swdev_work = kzalloc(sizeof(*swdev_work), GFP_ATOMIC);
+-	if (!swdev_work)
+-		return NOTIFY_BAD;
+-
+-	swdev_work->event = event;
+-	swdev_work->dev = dev;
+-
+-	switch (event) {
+-	case SWITCHDEV_FDB_ADD_TO_DEVICE:
+-	case SWITCHDEV_FDB_DEL_TO_DEVICE:
+-		fdb_info = container_of(info,
+-					struct switchdev_notifier_fdb_info,
+-					info);
+-
+-		INIT_WORK(&swdev_work->work, prestera_fdb_event_work);
+-		memcpy(&swdev_work->fdb_info, ptr,
+-		       sizeof(swdev_work->fdb_info));
+-
+-		swdev_work->fdb_info.addr = kzalloc(ETH_ALEN, GFP_ATOMIC);
+-		if (!swdev_work->fdb_info.addr)
+-			goto out_bad;
+-
+-		ether_addr_copy((u8 *)swdev_work->fdb_info.addr,
+-				fdb_info->addr);
+-		dev_hold(dev);
+-		break;
+-
+-	default:
+-		kfree(swdev_work);
+-		return NOTIFY_DONE;
+-	}
+-
+-	queue_work(swdev_wq, &swdev_work->work);
+ 	return NOTIFY_DONE;
+-
+-out_bad:
+-	kfree(swdev_work);
+-	return NOTIFY_BAD;
  }
  
  static int
--qca8k_port_bridge_join(struct dsa_switch *ds, int port, struct net_device *br)
-+qca8k_port_bridge_join(struct dsa_switch *ds, int port, struct net_device *br,
-+		       int bridge_num)
- {
- 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
- 	int port_mask = BIT(QCA8K_CPU_PORT);
-@@ -1534,7 +1535,8 @@ qca8k_port_bridge_join(struct dsa_switch *ds, int port, struct net_device *br)
+@@ -1101,6 +1050,53 @@ static int prestera_port_obj_del(struct net_device *dev, const void *ctx,
+ 	}
  }
  
- static void
--qca8k_port_bridge_leave(struct dsa_switch *ds, int port, struct net_device *br)
-+qca8k_port_bridge_leave(struct dsa_switch *ds, int port, struct net_device *br,
-+			int bridge_num)
++static int prestera_switchdev_fdb_event(struct net_device *dev,
++					unsigned long event,
++					struct switchdev_notifier_info *info)
++{
++	struct switchdev_notifier_fdb_info *fdb_info;
++	struct prestera_fdb_event_work *swdev_work;
++	struct net_device *upper;
++
++	if (!prestera_netdev_check(dev))
++		return 0;
++
++	upper = netdev_master_upper_dev_get_rcu(dev);
++	if (!upper)
++		return 0;
++
++	if (!netif_is_bridge_master(upper))
++		return 0;
++
++	swdev_work = kzalloc(sizeof(*swdev_work), GFP_ATOMIC);
++	if (!swdev_work)
++		return -ENOMEM;
++
++	swdev_work->event = event;
++	swdev_work->dev = dev;
++
++	fdb_info = container_of(info, struct switchdev_notifier_fdb_info,
++				info);
++
++	INIT_WORK(&swdev_work->work, prestera_fdb_event_work);
++	memcpy(&swdev_work->fdb_info, fdb_info, sizeof(swdev_work->fdb_info));
++
++	swdev_work->fdb_info.addr = kzalloc(ETH_ALEN, GFP_ATOMIC);
++	if (!swdev_work->fdb_info.addr)
++		goto out_bad;
++
++	ether_addr_copy((u8 *)swdev_work->fdb_info.addr,
++			fdb_info->addr);
++	dev_hold(dev);
++
++	queue_work(swdev_wq, &swdev_work->work);
++	return 0;
++
++out_bad:
++	kfree(swdev_work);
++	return -ENOMEM;
++}
++
+ static int prestera_switchdev_blk_event(struct notifier_block *unused,
+ 					unsigned long event, void *ptr)
  {
- 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
- 	int i;
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 715557c20cb5..12a92deb5e5b 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -1985,13 +1985,13 @@ static void sja1105_bridge_stp_state_set(struct dsa_switch *ds, int port,
+@@ -1123,8 +1119,12 @@ static int prestera_switchdev_blk_event(struct notifier_block *unused,
+ 						     prestera_netdev_check,
+ 						     prestera_port_obj_attr_set);
+ 		break;
+-	default:
+-		err = -EOPNOTSUPP;
++	case SWITCHDEV_FDB_ADD_TO_DEVICE:
++	case SWITCHDEV_FDB_DEL_TO_DEVICE:
++		rcu_read_lock();
++		err = prestera_switchdev_fdb_event(dev, event, ptr);
++		rcu_read_unlock();
++		break;
+ 	}
+ 
+ 	return notifier_from_errno(err);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
+index 0c38c2e319be..ea7c3f07f6fe 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
+@@ -276,6 +276,55 @@ mlx5_esw_bridge_port_obj_attr_set(struct net_device *dev,
+ 	return err;
  }
  
- static int sja1105_bridge_join(struct dsa_switch *ds, int port,
--			       struct net_device *br)
-+			       struct net_device *br, int bridge_num)
++static struct mlx5_bridge_switchdev_fdb_work *
++mlx5_esw_bridge_init_switchdev_fdb_work(struct net_device *dev, bool add,
++					struct switchdev_notifier_fdb_info *fdb_info,
++					struct mlx5_esw_bridge_offloads *br_offloads);
++
++static int
++mlx5_esw_bridge_fdb_event(struct net_device *dev, unsigned long event,
++			  struct switchdev_notifier_info *info,
++			  struct mlx5_esw_bridge_offloads *br_offloads)
++{
++	struct switchdev_notifier_fdb_info *fdb_info;
++	struct mlx5_bridge_switchdev_fdb_work *work;
++	struct mlx5_eswitch *esw = br_offloads->esw;
++	u16 vport_num, esw_owner_vhca_id;
++	struct net_device *upper, *rep;
++
++	upper = netdev_master_upper_dev_get_rcu(dev);
++	if (!upper)
++		return 0;
++	if (!netif_is_bridge_master(upper))
++		return 0;
++
++	rep = mlx5_esw_bridge_rep_vport_num_vhca_id_get(dev, esw,
++							&vport_num,
++							&esw_owner_vhca_id);
++	if (!rep)
++		return 0;
++
++	/* only handle the event on peers */
++	if (mlx5_esw_bridge_is_local(dev, rep, esw))
++		return 0;
++
++	fdb_info = container_of(info, struct switchdev_notifier_fdb_info, info);
++
++	work = mlx5_esw_bridge_init_switchdev_fdb_work(dev,
++						       event == SWITCHDEV_FDB_ADD_TO_DEVICE,
++						       fdb_info,
++						       br_offloads);
++	if (IS_ERR(work)) {
++		WARN_ONCE(1, "Failed to init switchdev work, err=%ld",
++			  PTR_ERR(work));
++		return PTR_ERR(work);
++	}
++
++	queue_work(br_offloads->wq, &work->work);
++
++	return 0;
++}
++
+ static int mlx5_esw_bridge_event_blocking(struct notifier_block *nb,
+ 					  unsigned long event, void *ptr)
  {
- 	return sja1105_bridge_member(ds, port, br, true);
+@@ -295,6 +344,12 @@ static int mlx5_esw_bridge_event_blocking(struct notifier_block *nb,
+ 	case SWITCHDEV_PORT_ATTR_SET:
+ 		err = mlx5_esw_bridge_port_obj_attr_set(dev, ptr, br_offloads);
+ 		break;
++	case SWITCHDEV_FDB_ADD_TO_DEVICE:
++	case SWITCHDEV_FDB_DEL_TO_DEVICE:
++		rcu_read_lock();
++		err = mlx5_esw_bridge_fdb_event(dev, event, ptr, br_offloads);
++		rcu_read_unlock();
++		break;
+ 	default:
+ 		err = 0;
+ 	}
+@@ -415,9 +470,7 @@ static int mlx5_esw_bridge_switchdev_event(struct notifier_block *nb,
+ 		/* only handle the event on peers */
+ 		if (mlx5_esw_bridge_is_local(dev, rep, esw))
+ 			break;
+-		fallthrough;
+-	case SWITCHDEV_FDB_ADD_TO_DEVICE:
+-	case SWITCHDEV_FDB_DEL_TO_DEVICE:
++
+ 		fdb_info = container_of(info,
+ 					struct switchdev_notifier_fdb_info,
+ 					info);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
+index 22fede5cb32c..791a165fe3aa 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
+@@ -3247,8 +3247,6 @@ static int mlxsw_sp_switchdev_event(struct notifier_block *unused,
+ 	switchdev_work->event = event;
+ 
+ 	switch (event) {
+-	case SWITCHDEV_FDB_ADD_TO_DEVICE:
+-	case SWITCHDEV_FDB_DEL_TO_DEVICE:
+ 	case SWITCHDEV_FDB_ADD_TO_BRIDGE:
+ 	case SWITCHDEV_FDB_DEL_TO_BRIDGE:
+ 		fdb_info = container_of(info,
+@@ -3513,6 +3511,55 @@ mlxsw_sp_switchdev_handle_vxlan_obj_del(struct net_device *vxlan_dev,
+ 	}
  }
  
- static void sja1105_bridge_leave(struct dsa_switch *ds, int port,
--				 struct net_device *br)
-+				 struct net_device *br, int bridge_num)
++static int mlxsw_sp_switchdev_fdb_event(struct net_device *dev, unsigned long event,
++					struct switchdev_notifier_info *info)
++{
++	struct mlxsw_sp_switchdev_event_work *switchdev_work;
++	struct switchdev_notifier_fdb_info *fdb_info;
++	struct net_device *br_dev;
++
++	/* Tunnel devices are not our uppers, so check their master instead */
++	br_dev = netdev_master_upper_dev_get_rcu(dev);
++	if (!br_dev)
++		return 0;
++	if (!netif_is_bridge_master(br_dev))
++		return 0;
++	if (!mlxsw_sp_port_dev_lower_find_rcu(br_dev))
++		return 0;
++
++	switchdev_work = kzalloc(sizeof(*switchdev_work), GFP_ATOMIC);
++	if (!switchdev_work)
++		return -ENOMEM;
++
++	switchdev_work->dev = dev;
++	switchdev_work->event = event;
++
++	fdb_info = container_of(info, struct switchdev_notifier_fdb_info,
++				info);
++	INIT_WORK(&switchdev_work->work,
++		  mlxsw_sp_switchdev_bridge_fdb_event_work);
++	memcpy(&switchdev_work->fdb_info, fdb_info,
++	       sizeof(switchdev_work->fdb_info));
++	switchdev_work->fdb_info.addr = kzalloc(ETH_ALEN, GFP_ATOMIC);
++	if (!switchdev_work->fdb_info.addr)
++		goto err_addr_alloc;
++	ether_addr_copy((u8 *)switchdev_work->fdb_info.addr,
++			fdb_info->addr);
++	/* Take a reference on the device. This can be either
++	 * upper device containig mlxsw_sp_port or just a
++	 * mlxsw_sp_port
++	 */
++	dev_hold(dev);
++
++	mlxsw_core_schedule_work(&switchdev_work->work);
++
++	return 0;
++
++err_addr_alloc:
++	kfree(switchdev_work);
++	return NOTIFY_BAD;
++}
++
+ static int mlxsw_sp_switchdev_blocking_event(struct notifier_block *unused,
+ 					     unsigned long event, void *ptr)
  {
- 	sja1105_bridge_member(ds, port, br, false);
- }
-diff --git a/drivers/net/dsa/xrs700x/xrs700x.c b/drivers/net/dsa/xrs700x/xrs700x.c
-index 130abb0f1438..230dbbcc48f3 100644
---- a/drivers/net/dsa/xrs700x/xrs700x.c
-+++ b/drivers/net/dsa/xrs700x/xrs700x.c
-@@ -542,13 +542,13 @@ static int xrs700x_bridge_common(struct dsa_switch *ds, int port,
+@@ -3541,6 +3588,12 @@ static int mlxsw_sp_switchdev_blocking_event(struct notifier_block *unused,
+ 						     mlxsw_sp_port_dev_check,
+ 						     mlxsw_sp_port_attr_set);
+ 		return notifier_from_errno(err);
++	case SWITCHDEV_FDB_ADD_TO_DEVICE:
++	case SWITCHDEV_FDB_DEL_TO_DEVICE:
++		rcu_read_lock();
++		err = mlxsw_sp_switchdev_fdb_event(dev, event, ptr);
++		rcu_read_unlock();
++		return notifier_from_errno(err);
+ 	}
+ 
+ 	return NOTIFY_DONE;
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
+index 649ca609884a..7fb9f59d43e0 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
+@@ -268,9 +268,6 @@ static int sparx5_switchdev_event(struct notifier_block *unused,
+ 				  unsigned long event, void *ptr)
+ {
+ 	struct net_device *dev = switchdev_notifier_info_to_dev(ptr);
+-	struct sparx5_switchdev_event_work *switchdev_work;
+-	struct switchdev_notifier_fdb_info *fdb_info;
+-	struct switchdev_notifier_info *info = ptr;
+ 	int err;
+ 
+ 	switch (event) {
+@@ -279,39 +276,9 @@ static int sparx5_switchdev_event(struct notifier_block *unused,
+ 						     sparx5_netdevice_check,
+ 						     sparx5_port_attr_set);
+ 		return notifier_from_errno(err);
+-	case SWITCHDEV_FDB_ADD_TO_DEVICE:
+-		fallthrough;
+-	case SWITCHDEV_FDB_DEL_TO_DEVICE:
+-		switchdev_work = kzalloc(sizeof(*switchdev_work), GFP_ATOMIC);
+-		if (!switchdev_work)
+-			return NOTIFY_BAD;
+-
+-		switchdev_work->dev = dev;
+-		switchdev_work->event = event;
+-
+-		fdb_info = container_of(info,
+-					struct switchdev_notifier_fdb_info,
+-					info);
+-		INIT_WORK(&switchdev_work->work,
+-			  sparx5_switchdev_bridge_fdb_event_work);
+-		memcpy(&switchdev_work->fdb_info, ptr,
+-		       sizeof(switchdev_work->fdb_info));
+-		switchdev_work->fdb_info.addr = kzalloc(ETH_ALEN, GFP_ATOMIC);
+-		if (!switchdev_work->fdb_info.addr)
+-			goto err_addr_alloc;
+-
+-		ether_addr_copy((u8 *)switchdev_work->fdb_info.addr,
+-				fdb_info->addr);
+-		dev_hold(dev);
+-
+-		sparx5_schedule_work(&switchdev_work->work);
+-		break;
+ 	}
+ 
+ 	return NOTIFY_DONE;
+-err_addr_alloc:
+-	kfree(switchdev_work);
+-	return NOTIFY_BAD;
  }
  
- static int xrs700x_bridge_join(struct dsa_switch *ds, int port,
--			       struct net_device *bridge)
-+			       struct net_device *bridge, int bridge_num)
- {
- 	return xrs700x_bridge_common(ds, port, bridge, true);
+ static void sparx5_sync_port_dev_addr(struct sparx5 *sparx5,
+@@ -459,6 +426,43 @@ static int sparx5_handle_port_obj_del(struct net_device *dev,
+ 	return err;
  }
  
- static void xrs700x_bridge_leave(struct dsa_switch *ds, int port,
--				 struct net_device *bridge)
-+				 struct net_device *bridge, int bridge_num)
++static int sparx5_switchdev_fdb_event(struct net_device *dev, unsigned long event,
++				      struct switchdev_notifier_info *info)
++{
++	struct sparx5_switchdev_event_work *switchdev_work;
++	struct switchdev_notifier_fdb_info *fdb_info;
++
++	switchdev_work = kzalloc(sizeof(*switchdev_work), GFP_ATOMIC);
++	if (!switchdev_work)
++		return -ENOMEM;
++
++	switchdev_work->dev = dev;
++	switchdev_work->event = event;
++
++	fdb_info = container_of(info,
++				struct switchdev_notifier_fdb_info,
++				info);
++	INIT_WORK(&switchdev_work->work,
++		  sparx5_switchdev_bridge_fdb_event_work);
++	memcpy(&switchdev_work->fdb_info, fdb_info,
++	       sizeof(switchdev_work->fdb_info));
++	switchdev_work->fdb_info.addr = kzalloc(ETH_ALEN, GFP_ATOMIC);
++	if (!switchdev_work->fdb_info.addr)
++		goto err_addr_alloc;
++
++	ether_addr_copy((u8 *)switchdev_work->fdb_info.addr,
++			fdb_info->addr);
++	dev_hold(dev);
++
++	sparx5_schedule_work(&switchdev_work->work);
++
++	return 0;
++
++err_addr_alloc:
++	kfree(switchdev_work);
++	return -ENOMEM;
++}
++
+ static int sparx5_switchdev_blocking_event(struct notifier_block *nb,
+ 					   unsigned long event,
+ 					   void *ptr)
+@@ -478,6 +482,10 @@ static int sparx5_switchdev_blocking_event(struct notifier_block *nb,
+ 						     sparx5_netdevice_check,
+ 						     sparx5_port_attr_set);
+ 		return notifier_from_errno(err);
++	case SWITCHDEV_FDB_ADD_TO_DEVICE:
++	case SWITCHDEV_FDB_DEL_TO_DEVICE:
++		err = sparx5_switchdev_fdb_event(dev, event, ptr);
++		return notifier_from_errno(err);
+ 	}
+ 
+ 	return NOTIFY_DONE;
+diff --git a/drivers/net/ethernet/rocker/rocker_main.c b/drivers/net/ethernet/rocker/rocker_main.c
+index 3364b6a56bd1..3132573f5363 100644
+--- a/drivers/net/ethernet/rocker/rocker_main.c
++++ b/drivers/net/ethernet/rocker/rocker_main.c
+@@ -2767,9 +2767,6 @@ static int rocker_switchdev_event(struct notifier_block *unused,
+ 				  unsigned long event, void *ptr)
  {
- 	xrs700x_bridge_common(ds, port, bridge, false);
+ 	struct net_device *dev = switchdev_notifier_info_to_dev(ptr);
+-	struct rocker_switchdev_event_work *switchdev_work;
+-	struct switchdev_notifier_fdb_info *fdb_info = ptr;
+-	struct rocker_port *rocker_port;
+ 
+ 	if (!rocker_port_dev_check(dev))
+ 		return NOTIFY_DONE;
+@@ -2777,38 +2774,6 @@ static int rocker_switchdev_event(struct notifier_block *unused,
+ 	if (event == SWITCHDEV_PORT_ATTR_SET)
+ 		return rocker_switchdev_port_attr_set_event(dev, ptr);
+ 
+-	rocker_port = netdev_priv(dev);
+-	switchdev_work = kzalloc(sizeof(*switchdev_work), GFP_ATOMIC);
+-	if (WARN_ON(!switchdev_work))
+-		return NOTIFY_BAD;
+-
+-	INIT_WORK(&switchdev_work->work, rocker_switchdev_event_work);
+-	switchdev_work->rocker_port = rocker_port;
+-	switchdev_work->event = event;
+-
+-	switch (event) {
+-	case SWITCHDEV_FDB_ADD_TO_DEVICE:
+-	case SWITCHDEV_FDB_DEL_TO_DEVICE:
+-		memcpy(&switchdev_work->fdb_info, ptr,
+-		       sizeof(switchdev_work->fdb_info));
+-		switchdev_work->fdb_info.addr = kzalloc(ETH_ALEN, GFP_ATOMIC);
+-		if (unlikely(!switchdev_work->fdb_info.addr)) {
+-			kfree(switchdev_work);
+-			return NOTIFY_BAD;
+-		}
+-
+-		ether_addr_copy((u8 *)switchdev_work->fdb_info.addr,
+-				fdb_info->addr);
+-		/* Take a reference on the rocker device */
+-		dev_hold(dev);
+-		break;
+-	default:
+-		kfree(switchdev_work);
+-		return NOTIFY_DONE;
+-	}
+-
+-	queue_work(rocker_port->rocker->rocker_owq,
+-		   &switchdev_work->work);
+ 	return NOTIFY_DONE;
  }
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 62820bd1d00d..b2aaef292c6d 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -694,9 +694,9 @@ struct dsa_switch_ops {
- 	 */
- 	int	(*set_ageing_time)(struct dsa_switch *ds, unsigned int msecs);
- 	int	(*port_bridge_join)(struct dsa_switch *ds, int port,
--				    struct net_device *bridge);
-+				    struct net_device *bridge, int bridge_num);
- 	void	(*port_bridge_leave)(struct dsa_switch *ds, int port,
--				     struct net_device *bridge);
-+				     struct net_device *bridge, int bridge_num);
- 	/* Called right after .port_bridge_join() */
- 	int	(*port_bridge_tx_fwd_offload)(struct dsa_switch *ds, int port,
- 					      struct net_device *bridge,
-@@ -776,10 +776,10 @@ struct dsa_switch_ops {
- 	 */
- 	int	(*crosschip_bridge_join)(struct dsa_switch *ds, int tree_index,
- 					 int sw_index, int port,
--					 struct net_device *br);
-+					 struct net_device *br, int bridge_num);
- 	void	(*crosschip_bridge_leave)(struct dsa_switch *ds, int tree_index,
- 					  int sw_index, int port,
--					  struct net_device *br);
-+					  struct net_device *br, int bridge_num);
- 	int	(*crosschip_lag_change)(struct dsa_switch *ds, int sw_index,
- 					int port);
- 	int	(*crosschip_lag_join)(struct dsa_switch *ds, int sw_index,
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 88aaf43b2da4..c5caa2d975d2 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -53,6 +53,7 @@ struct dsa_notifier_ageing_time_info {
- /* DSA_NOTIFIER_BRIDGE_* */
- struct dsa_notifier_bridge_info {
- 	struct net_device *br;
-+	int bridge_num;
- 	int tree_index;
- 	int sw_index;
- 	int port;
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 605c6890e53b..3ef55bd6eb40 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -368,6 +368,8 @@ int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
- 	if (err)
+ 
+@@ -2831,6 +2796,42 @@ rocker_switchdev_port_obj_event(unsigned long event, struct net_device *netdev,
+ 	return notifier_from_errno(err);
+ }
+ 
++static int
++rocker_switchdev_fdb_event(unsigned long event, struct net_device *dev,
++			   struct switchdev_notifier_fdb_info *fdb_info)
++{
++	struct rocker_switchdev_event_work *switchdev_work;
++	struct switchdev_notifier_fdb_info *fdb_info = ptr;
++	struct rocker_port *rocker_port;
++
++	rocker_port = netdev_priv(dev);
++	switchdev_work = kzalloc(sizeof(*switchdev_work), GFP_ATOMIC);
++	if (WARN_ON(!switchdev_work))
++		return NOTIFY_BAD;
++
++	INIT_WORK(&switchdev_work->work, rocker_switchdev_event_work);
++	switchdev_work->rocker_port = rocker_port;
++	switchdev_work->event = event;
++
++	memcpy(&switchdev_work->fdb_info, ptr,
++	       sizeof(switchdev_work->fdb_info));
++	switchdev_work->fdb_info.addr = kzalloc(ETH_ALEN, GFP_ATOMIC);
++	if (unlikely(!switchdev_work->fdb_info.addr)) {
++		kfree(switchdev_work);
++		return NOTIFY_BAD;
++	}
++
++	ether_addr_copy((u8 *)switchdev_work->fdb_info.addr,
++			fdb_info->addr);
++	/* Take a reference on the rocker device */
++	dev_hold(dev);
++
++	queue_work(rocker_port->rocker->rocker_owq,
++		   &switchdev_work->work);
++
++	return NOTIFY_DONE;
++}
++
+ static int rocker_switchdev_blocking_event(struct notifier_block *unused,
+ 					   unsigned long event, void *ptr)
+ {
+@@ -2845,6 +2846,9 @@ static int rocker_switchdev_blocking_event(struct notifier_block *unused,
+ 		return rocker_switchdev_port_obj_event(event, dev, ptr);
+ 	case SWITCHDEV_PORT_ATTR_SET:
+ 		return rocker_switchdev_port_attr_set_event(dev, ptr);
++	case SWITCHDEV_FDB_ADD_TO_DEVICE:
++	case SWITCHDEV_FDB_DEL_TO_DEVICE:
++		return rocker_switchdev_fdb_event(event, dev, ptr);
+ 	}
+ 
+ 	return NOTIFY_DONE;
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-switchdev.c b/drivers/net/ethernet/ti/am65-cpsw-switchdev.c
+index 599708a3e81d..c1627e261948 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-switchdev.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-switchdev.c
+@@ -424,9 +424,6 @@ static int am65_cpsw_switchdev_event(struct notifier_block *unused,
+ 				     unsigned long event, void *ptr)
+ {
+ 	struct net_device *ndev = switchdev_notifier_info_to_dev(ptr);
+-	struct am65_cpsw_switchdev_event_work *switchdev_work;
+-	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
+-	struct switchdev_notifier_fdb_info *fdb_info = ptr;
+ 	int err;
+ 
+ 	if (event == SWITCHDEV_PORT_ATTR_SET) {
+@@ -436,47 +433,49 @@ static int am65_cpsw_switchdev_event(struct notifier_block *unused,
+ 		return notifier_from_errno(err);
+ 	}
+ 
++	return NOTIFY_DONE;
++}
++
++static struct notifier_block cpsw_switchdev_notifier = {
++	.notifier_call = am65_cpsw_switchdev_event,
++};
++
++static int am65_cpsw_switchdev_fdb_event(struct net_device *ndev,
++					 unsigned long event,
++					 struct switchdev_notifier_fdb_info *fdb_info)
++{
++	struct am65_cpsw_switchdev_event_work *switchdev_work;
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++
+ 	if (!am65_cpsw_port_dev_check(ndev))
+-		return NOTIFY_DONE;
++		return 0;
+ 
+ 	switchdev_work = kzalloc(sizeof(*switchdev_work), GFP_ATOMIC);
+ 	if (WARN_ON(!switchdev_work))
+-		return NOTIFY_BAD;
++		return -ENOMEM;
+ 
+ 	INIT_WORK(&switchdev_work->work, am65_cpsw_switchdev_event_work);
+ 	switchdev_work->port = port;
+ 	switchdev_work->event = event;
+ 
+-	switch (event) {
+-	case SWITCHDEV_FDB_ADD_TO_DEVICE:
+-	case SWITCHDEV_FDB_DEL_TO_DEVICE:
+-		memcpy(&switchdev_work->fdb_info, ptr,
+-		       sizeof(switchdev_work->fdb_info));
+-		switchdev_work->fdb_info.addr = kzalloc(ETH_ALEN, GFP_ATOMIC);
+-		if (!switchdev_work->fdb_info.addr)
+-			goto err_addr_alloc;
+-		ether_addr_copy((u8 *)switchdev_work->fdb_info.addr,
+-				fdb_info->addr);
+-		dev_hold(ndev);
+-		break;
+-	default:
+-		kfree(switchdev_work);
+-		return NOTIFY_DONE;
+-	}
++	memcpy(&switchdev_work->fdb_info, ptr,
++	       sizeof(switchdev_work->fdb_info));
++	switchdev_work->fdb_info.addr = kzalloc(ETH_ALEN, GFP_ATOMIC);
++	if (!switchdev_work->fdb_info.addr)
++		goto err_addr_alloc;
++	ether_addr_copy((u8 *)switchdev_work->fdb_info.addr,
++			fdb_info->addr);
++	dev_hold(ndev);
+ 
+ 	queue_work(system_long_wq, &switchdev_work->work);
+ 
+-	return NOTIFY_DONE;
++	return 0;
+ 
+ err_addr_alloc:
+ 	kfree(switchdev_work);
+-	return NOTIFY_BAD;
++	return -ENOMEM;
+ }
+ 
+-static struct notifier_block cpsw_switchdev_notifier = {
+-	.notifier_call = am65_cpsw_switchdev_event,
+-};
+-
+ static int am65_cpsw_switchdev_blocking_event(struct notifier_block *unused,
+ 					      unsigned long event, void *ptr)
+ {
+@@ -499,8 +498,10 @@ static int am65_cpsw_switchdev_blocking_event(struct notifier_block *unused,
+ 						     am65_cpsw_port_dev_check,
+ 						     am65_cpsw_port_attr_set);
+ 		return notifier_from_errno(err);
+-	default:
+-		break;
++	case SWITCHDEV_FDB_ADD_TO_DEVICE:
++	case SWITCHDEV_FDB_DEL_TO_DEVICE:
++		err = am65_cpsw_switchdev_fdb_event(dev, event, ptr);
++		return notifier_from_errno(err);
+ 	}
+ 
+ 	return NOTIFY_DONE;
+diff --git a/drivers/net/ethernet/ti/cpsw_switchdev.c b/drivers/net/ethernet/ti/cpsw_switchdev.c
+index a7d97d429e06..cb047bc8d9d6 100644
+--- a/drivers/net/ethernet/ti/cpsw_switchdev.c
++++ b/drivers/net/ethernet/ti/cpsw_switchdev.c
+@@ -434,9 +434,6 @@ static int cpsw_switchdev_event(struct notifier_block *unused,
+ 				unsigned long event, void *ptr)
+ {
+ 	struct net_device *ndev = switchdev_notifier_info_to_dev(ptr);
+-	struct switchdev_notifier_fdb_info *fdb_info = ptr;
+-	struct cpsw_switchdev_event_work *switchdev_work;
+-	struct cpsw_priv *priv = netdev_priv(ndev);
+ 	int err;
+ 
+ 	if (event == SWITCHDEV_PORT_ATTR_SET) {
+@@ -446,47 +443,50 @@ static int cpsw_switchdev_event(struct notifier_block *unused,
+ 		return notifier_from_errno(err);
+ 	}
+ 
+-	if (!cpsw_port_dev_check(ndev))
+-		return NOTIFY_DONE;
++	return NOTIFY_DONE;
++}
++
++static struct notifier_block cpsw_switchdev_notifier = {
++	.notifier_call = cpsw_switchdev_event,
++};
++
++static int cpsw_switchdev_fdb_event(struct net_device *dev, unsigned long event,
++				    struct switchdev_notifier_fdb_info *fdb_info)
++{
++	struct cpsw_switchdev_event_work *switchdev_work;
++	struct cpsw_priv *priv;
++
++	if (!cpsw_port_dev_check(dev))
++		return 0;
++
++	priv = netdev_priv(dev);
+ 
+ 	switchdev_work = kzalloc(sizeof(*switchdev_work), GFP_ATOMIC);
+ 	if (WARN_ON(!switchdev_work))
+-		return NOTIFY_BAD;
++		return -ENOMEM;
+ 
+ 	INIT_WORK(&switchdev_work->work, cpsw_switchdev_event_work);
+ 	switchdev_work->priv = priv;
+ 	switchdev_work->event = event;
+ 
+-	switch (event) {
+-	case SWITCHDEV_FDB_ADD_TO_DEVICE:
+-	case SWITCHDEV_FDB_DEL_TO_DEVICE:
+-		memcpy(&switchdev_work->fdb_info, ptr,
+-		       sizeof(switchdev_work->fdb_info));
+-		switchdev_work->fdb_info.addr = kzalloc(ETH_ALEN, GFP_ATOMIC);
+-		if (!switchdev_work->fdb_info.addr)
+-			goto err_addr_alloc;
+-		ether_addr_copy((u8 *)switchdev_work->fdb_info.addr,
+-				fdb_info->addr);
+-		dev_hold(ndev);
+-		break;
+-	default:
+-		kfree(switchdev_work);
+-		return NOTIFY_DONE;
+-	}
++	memcpy(&switchdev_work->fdb_info, fdb_info,
++	       sizeof(switchdev_work->fdb_info));
++	switchdev_work->fdb_info.addr = kzalloc(ETH_ALEN, GFP_ATOMIC);
++	if (!switchdev_work->fdb_info.addr)
++		goto err_addr_alloc;
++	ether_addr_copy((u8 *)switchdev_work->fdb_info.addr,
++			fdb_info->addr);
++	dev_hold(dev);
+ 
+ 	queue_work(system_long_wq, &switchdev_work->work);
+ 
+-	return NOTIFY_DONE;
++	return 0;
+ 
+ err_addr_alloc:
+ 	kfree(switchdev_work);
+-	return NOTIFY_BAD;
++	return -ENOMEM;
+ }
+ 
+-static struct notifier_block cpsw_switchdev_notifier = {
+-	.notifier_call = cpsw_switchdev_event,
+-};
+-
+ static int cpsw_switchdev_blocking_event(struct notifier_block *unused,
+ 					 unsigned long event, void *ptr)
+ {
+@@ -509,8 +509,10 @@ static int cpsw_switchdev_blocking_event(struct notifier_block *unused,
+ 						     cpsw_port_dev_check,
+ 						     cpsw_port_attr_set);
+ 		return notifier_from_errno(err);
+-	default:
+-		break;
++	case SWITCHDEV_FDB_ADD_TO_DEVICE:
++	case SWITCHDEV_FDB_DEL_TO_DEVICE:
++		err = cpsw_switchdev_fdb_event(dev, event, ptr);
++		return notifier_from_errno(err);
+ 	}
+ 
+ 	return NOTIFY_DONE;
+diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
+index 72e84ff9fea5..367d15937eae 100644
+--- a/drivers/s390/net/qeth_l2_main.c
++++ b/drivers/s390/net/qeth_l2_main.c
+@@ -904,7 +904,7 @@ static void qeth_l2_br2dev_get(void)
+ 	int rc;
+ 
+ 	if (!refcount_inc_not_zero(&qeth_l2_switchdev_notify_refcnt)) {
+-		rc = register_switchdev_notifier(&qeth_l2_sw_notifier);
++		rc = register_switchdev_blocking_notifier(&qeth_l2_sw_notifier);
+ 		if (rc) {
+ 			QETH_DBF_MESSAGE(2,
+ 					 "failed to register qeth_l2_sw_notifier: %d\n",
+@@ -924,7 +924,7 @@ static void qeth_l2_br2dev_put(void)
+ 	int rc;
+ 
+ 	if (refcount_dec_and_test(&qeth_l2_switchdev_notify_refcnt)) {
+-		rc = unregister_switchdev_notifier(&qeth_l2_sw_notifier);
++		rc = unregister_switchdev_blocking_notifier(&qeth_l2_sw_notifier);
+ 		if (rc) {
+ 			QETH_DBF_MESSAGE(2,
+ 					 "failed to unregister qeth_l2_sw_notifier: %d\n",
+diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+index 60d806b6a5ae..ff61df255142 100644
+--- a/include/net/switchdev.h
++++ b/include/net/switchdev.h
+@@ -283,6 +283,13 @@ int switchdev_port_obj_add(struct net_device *dev,
+ int switchdev_port_obj_del(struct net_device *dev,
+ 			   const struct switchdev_obj *obj);
+ 
++int
++switchdev_fdb_add_to_device(struct net_device *dev,
++			    const struct switchdev_notifier_fdb_info *fdb_info);
++int
++switchdev_fdb_del_to_device(struct net_device *dev,
++			    const struct switchdev_notifier_fdb_info *fdb_info);
++
+ int register_switchdev_notifier(struct notifier_block *nb);
+ int unregister_switchdev_notifier(struct notifier_block *nb);
+ int call_switchdev_notifiers(unsigned long val, struct net_device *dev,
+@@ -386,6 +393,20 @@ static inline int switchdev_port_obj_del(struct net_device *dev,
+ 	return -EOPNOTSUPP;
+ }
+ 
++static inline int
++switchdev_fdb_add_to_device(struct net_device *dev,
++			    const struct switchdev_notifier_fdb_info *fdb_info)
++{
++	return -EOPNOTSUPP;
++}
++
++static inline int
++switchdev_fdb_del_to_device(struct net_device *dev,
++			    const struct switchdev_notifier_fdb_info *fdb_info)
++{
++	return -EOPNOTSUPP;
++}
++
+ static inline int register_switchdev_notifier(struct notifier_block *nb)
+ {
+ 	return 0;
+diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+index 46812b659710..0bdbcfc53914 100644
+--- a/net/bridge/br_fdb.c
++++ b/net/bridge/br_fdb.c
+@@ -763,6 +763,8 @@ int br_fdb_replay(const struct net_device *br_dev, const void *ctx, bool adding,
+ 	if (!nb)
+ 		return 0;
+ 
++	ASSERT_RTNL();
++
+ 	if (!netif_is_bridge_master(br_dev))
+ 		return -EINVAL;
+ 
+diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
+index 6bf518d78f02..cd413b010567 100644
+--- a/net/bridge/br_switchdev.c
++++ b/net/bridge/br_switchdev.c
+@@ -138,12 +138,10 @@ br_switchdev_fdb_notify(struct net_bridge *br,
+ 
+ 	switch (type) {
+ 	case RTM_DELNEIGH:
+-		call_switchdev_notifiers(SWITCHDEV_FDB_DEL_TO_DEVICE,
+-					 dev, &info.info, NULL);
++		switchdev_fdb_del_to_device(dev, &info);
+ 		break;
+ 	case RTM_NEWNEIGH:
+-		call_switchdev_notifiers(SWITCHDEV_FDB_ADD_TO_DEVICE,
+-					 dev, &info.info, NULL);
++		switchdev_fdb_add_to_device(dev, &info);
+ 		break;
+ 	}
+ }
+@@ -287,7 +285,7 @@ static int nbp_switchdev_sync_objs(struct net_bridge_port *p, const void *ctx,
+ 	if (err && err != -EOPNOTSUPP)
  		return err;
  
-+	info.bridge_num = dp->bridge_num;
+-	err = br_fdb_replay(br_dev, ctx, true, atomic_nb);
++	err = br_fdb_replay(br_dev, ctx, true, blocking_nb);
+ 	if (err && err != -EOPNOTSUPP)
+ 		return err;
+ 
+@@ -306,7 +304,7 @@ static void nbp_switchdev_unsync_objs(struct net_bridge_port *p,
+ 
+ 	br_mdb_replay(br_dev, dev, ctx, false, blocking_nb, NULL);
+ 
+-	br_fdb_replay(br_dev, ctx, false, atomic_nb);
++	br_fdb_replay(br_dev, ctx, false, blocking_nb);
+ }
+ 
+ /* Let the bridge know that this port is offloaded, so that it can assign a
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index eb9d9e53c536..249303ac3c3c 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -2454,20 +2454,6 @@ static int dsa_slave_switchdev_event(struct notifier_block *unused,
+ 						     dsa_slave_dev_check,
+ 						     dsa_slave_port_attr_set);
+ 		return notifier_from_errno(err);
+-	case SWITCHDEV_FDB_ADD_TO_DEVICE:
+-		err = switchdev_handle_fdb_add_to_device(dev, ptr,
+-							 dsa_slave_dev_check,
+-							 dsa_foreign_dev_check,
+-							 dsa_slave_fdb_add_to_device,
+-							 NULL);
+-		return notifier_from_errno(err);
+-	case SWITCHDEV_FDB_DEL_TO_DEVICE:
+-		err = switchdev_handle_fdb_del_to_device(dev, ptr,
+-							 dsa_slave_dev_check,
+-							 dsa_foreign_dev_check,
+-							 dsa_slave_fdb_del_to_device,
+-							 NULL);
+-		return notifier_from_errno(err);
+ 	default:
+ 		return NOTIFY_DONE;
+ 	}
+@@ -2497,6 +2483,24 @@ static int dsa_slave_switchdev_blocking_event(struct notifier_block *unused,
+ 						     dsa_slave_dev_check,
+ 						     dsa_slave_port_attr_set);
+ 		return notifier_from_errno(err);
++	case SWITCHDEV_FDB_ADD_TO_DEVICE:
++		rcu_read_lock();
++		err = switchdev_handle_fdb_add_to_device(dev, ptr,
++							 dsa_slave_dev_check,
++							 dsa_foreign_dev_check,
++							 dsa_slave_fdb_add_to_device,
++							 NULL);
++		rcu_read_unlock();
++		return notifier_from_errno(err);
++	case SWITCHDEV_FDB_DEL_TO_DEVICE:
++		rcu_read_lock();
++		err = switchdev_handle_fdb_del_to_device(dev, ptr,
++							 dsa_slave_dev_check,
++							 dsa_foreign_dev_check,
++							 dsa_slave_fdb_del_to_device,
++							 NULL);
++		rcu_read_unlock();
++		return notifier_from_errno(err);
+ 	}
+ 
+ 	return NOTIFY_DONE;
+diff --git a/net/switchdev/switchdev.c b/net/switchdev/switchdev.c
+index 0b2c18efc079..c34c6abceec6 100644
+--- a/net/switchdev/switchdev.c
++++ b/net/switchdev/switchdev.c
+@@ -378,6 +378,53 @@ int call_switchdev_blocking_notifiers(unsigned long val, struct net_device *dev,
+ }
+ EXPORT_SYMBOL_GPL(call_switchdev_blocking_notifiers);
+ 
++static void switchdev_fdb_add_deferred(struct net_device *dev, const void *data)
++{
++	const struct switchdev_notifier_fdb_info *fdb_info = data;
++	struct switchdev_notifier_fdb_info tmp = *fdb_info;
++	int err;
 +
- 	brport_dev = dsa_port_to_bridge_port(dp);
- 
- 	err = dsa_broadcast(DSA_NOTIFIER_BRIDGE_JOIN, &info);
-@@ -417,6 +419,7 @@ void dsa_port_bridge_leave(struct dsa_port *dp, struct net_device *br)
- 		.sw_index = dp->ds->index,
- 		.port = dp->index,
- 		.br = br,
-+		.bridge_num = dp->bridge_num,
- 	};
- 	int bridge_num = dp->bridge_num;
- 	int err;
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index fd1a1c6bf9cf..44d40a267632 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -94,7 +94,8 @@ static int dsa_switch_bridge_join(struct dsa_switch *ds,
- 
- 	if (dst->index == info->tree_index && ds->index == info->sw_index &&
- 	    ds->ops->port_bridge_join) {
--		err = ds->ops->port_bridge_join(ds, info->port, info->br);
-+		err = ds->ops->port_bridge_join(ds, info->port, info->br,
-+						info->bridge_num);
- 		if (err)
- 			return err;
- 	}
-@@ -103,7 +104,8 @@ static int dsa_switch_bridge_join(struct dsa_switch *ds,
- 	    ds->ops->crosschip_bridge_join) {
- 		err = ds->ops->crosschip_bridge_join(ds, info->tree_index,
- 						     info->sw_index,
--						     info->port, info->br);
-+						     info->port, info->br,
-+						     info->bridge_num);
- 		if (err)
- 			return err;
- 	}
-@@ -121,13 +123,14 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
- 
- 	if (dst->index == info->tree_index && ds->index == info->sw_index &&
- 	    ds->ops->port_bridge_leave)
--		ds->ops->port_bridge_leave(ds, info->port, info->br);
-+		ds->ops->port_bridge_leave(ds, info->port, info->br,
-+					   info->bridge_num);
- 
- 	if ((dst->index != info->tree_index || ds->index != info->sw_index) &&
- 	    ds->ops->crosschip_bridge_leave)
- 		ds->ops->crosschip_bridge_leave(ds, info->tree_index,
- 						info->sw_index, info->port,
--						info->br);
-+						info->br, info->bridge_num);
- 
- 	/* If the bridge was vlan_filtering, the bridge core doesn't trigger an
- 	 * event for changing vlan_filtering setting upon slave ports leaving
++	ASSERT_RTNL();
++	err = call_switchdev_blocking_notifiers(SWITCHDEV_FDB_ADD_TO_DEVICE,
++						dev, &tmp.info, NULL);
++	err = notifier_to_errno(err);
++	if (err && err != -EOPNOTSUPP)
++		netdev_err(dev, "failed to add FDB entry: %pe\n", ERR_PTR(err));
++}
++
++static void switchdev_fdb_del_deferred(struct net_device *dev, const void *data)
++{
++	const struct switchdev_notifier_fdb_info *fdb_info = data;
++	struct switchdev_notifier_fdb_info tmp = *fdb_info;
++	int err;
++
++	ASSERT_RTNL();
++	err = call_switchdev_blocking_notifiers(SWITCHDEV_FDB_DEL_TO_DEVICE,
++						dev, &tmp.info, NULL);
++	err = notifier_to_errno(err);
++	if (err && err != -EOPNOTSUPP)
++		netdev_err(dev, "failed to delete FDB entry: %pe\n",
++			   ERR_PTR(err));
++}
++
++int
++switchdev_fdb_add_to_device(struct net_device *dev,
++			    const struct switchdev_notifier_fdb_info *fdb_info)
++{
++	return switchdev_deferred_enqueue(dev, fdb_info, sizeof(*fdb_info),
++					  switchdev_fdb_add_deferred);
++}
++EXPORT_SYMBOL_GPL(switchdev_fdb_add_to_device);
++
++int
++switchdev_fdb_del_to_device(struct net_device *dev,
++			    const struct switchdev_notifier_fdb_info *fdb_info)
++{
++	return switchdev_deferred_enqueue(dev, fdb_info, sizeof(*fdb_info),
++					  switchdev_fdb_del_deferred);
++}
++EXPORT_SYMBOL_GPL(switchdev_fdb_del_to_device);
++
+ struct switchdev_nested_priv {
+ 	bool (*check_cb)(const struct net_device *dev);
+ 	bool (*foreign_dev_check_cb)(const struct net_device *dev,
 -- 
 2.25.1
 
