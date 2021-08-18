@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 774553EF8AC
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 05:34:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B98843EF8A2
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 05:33:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237277AbhHRDee (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 23:34:34 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:8874 "EHLO
+        id S237269AbhHRDeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 23:34:22 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:8872 "EHLO
         szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237271AbhHRDeY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 23:34:24 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GqD0n3445z8sZf;
-        Wed, 18 Aug 2021 11:29:45 +0800 (CST)
+        with ESMTP id S237103AbhHRDeU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 23:34:20 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GqD0h54PCz8sZR;
+        Wed, 18 Aug 2021 11:29:40 +0800 (CST)
 Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2176.2; Wed, 18 Aug 2021 11:33:29 +0800
 Received: from localhost.localdomain (10.69.192.56) by
  dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 18 Aug 2021 11:33:28 +0800
+ 15.1.2176.2; Wed, 18 Aug 2021 11:33:29 +0800
 From:   Yunsheng Lin <linyunsheng@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
@@ -47,9 +47,9 @@ CC:     <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
         <mathew.j.martineau@linux.intel.com>, <aahringo@redhat.com>,
         <ceggers@arri.de>, <yangbo.lu@nxp.com>, <fw@strlen.de>,
         <xiangxia.m.yue@gmail.com>, <linmiaohe@huawei.com>
-Subject: [PATCH RFC 5/7] sock: support refilling pfrag from pfrag_pool
-Date:   Wed, 18 Aug 2021 11:32:21 +0800
-Message-ID: <1629257542-36145-6-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH RFC 6/7] net: hns3: support tx recycling in the hns3 driver
+Date:   Wed, 18 Aug 2021 11:32:22 +0800
+Message-ID: <1629257542-36145-7-git-send-email-linyunsheng@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1629257542-36145-1-git-send-email-linyunsheng@huawei.com>
 References: <1629257542-36145-1-git-send-email-linyunsheng@huawei.com>
@@ -63,125 +63,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As previous patch has added pfrag pool based on the page
-pool, so support refilling pfrag from the new pfrag pool
-for tcpv4.
+Use netif_recyclable_napi_add() to register page pool to
+the NAPI instance, and avoid doing the DMA mapping/unmapping
+when the page is from page pool.
 
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 ---
- include/net/sock.h |  1 +
- net/core/sock.c    |  9 +++++++++
- net/ipv4/tcp.c     | 34 ++++++++++++++++++++++++++--------
- 3 files changed, 36 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 32 +++++++++++++++----------
+ 1 file changed, 19 insertions(+), 13 deletions(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 6e76145..af40084 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -455,6 +455,7 @@ struct sock {
- 	unsigned long		sk_pacing_rate; /* bytes per second */
- 	unsigned long		sk_max_pacing_rate;
- 	struct page_frag	sk_frag;
-+	struct pfrag_pool	*sk_frag_pool;
- 	netdev_features_t	sk_route_caps;
- 	netdev_features_t	sk_route_nocaps;
- 	netdev_features_t	sk_route_forced_caps;
-diff --git a/net/core/sock.c b/net/core/sock.c
-index aada649..53152c9 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -140,6 +140,7 @@
- #include <net/busy_poll.h>
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index fcbeb1f..ab86566 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -1689,12 +1689,18 @@ static int hns3_map_and_fill_desc(struct hns3_enet_ring *ring, void *priv,
+ 		return 0;
+ 	} else {
+ 		skb_frag_t *frag = (skb_frag_t *)priv;
++		struct page *page = skb_frag_page(frag);
  
- #include <linux/ethtool.h>
-+#include <net/pfrag_pool.h>
+ 		size = skb_frag_size(frag);
+ 		if (!size)
+ 			return 0;
  
- static DEFINE_MUTEX(proto_list_mutex);
- static LIST_HEAD(proto_list);
-@@ -1934,6 +1935,11 @@ static void __sk_destruct(struct rcu_head *head)
- 		put_page(sk->sk_frag.page);
- 		sk->sk_frag.page = NULL;
+-		dma = skb_frag_dma_map(dev, frag, 0, size, DMA_TO_DEVICE);
++		if (skb_frag_is_pp(frag) && page->pp->p.dev == dev) {
++			dma = page_pool_get_dma_addr(page) + skb_frag_off(frag);
++			type = DESC_TYPE_PP_FRAG;
++		} else {
++			dma = skb_frag_dma_map(dev, frag, 0, size, DMA_TO_DEVICE);
++		}
  	}
-+	if (sk->sk_frag_pool) {
-+		pfrag_pool_flush(sk->sk_frag_pool);
-+		kfree(sk->sk_frag_pool);
-+		sk->sk_frag_pool = NULL;
+ 
+ 	if (unlikely(dma_mapping_error(dev, dma))) {
+@@ -4525,7 +4531,7 @@ static int hns3_nic_init_vector_data(struct hns3_nic_priv *priv)
+ 		ret = hns3_get_vector_ring_chain(tqp_vector,
+ 						 &vector_ring_chain);
+ 		if (ret)
+-			goto map_ring_fail;
++			return ret;
+ 
+ 		ret = h->ae_algo->ops->map_ring_to_vector(h,
+ 			tqp_vector->vector_irq, &vector_ring_chain);
+@@ -4533,19 +4539,10 @@ static int hns3_nic_init_vector_data(struct hns3_nic_priv *priv)
+ 		hns3_free_vector_ring_chain(tqp_vector, &vector_ring_chain);
+ 
+ 		if (ret)
+-			goto map_ring_fail;
+-
+-		netif_napi_add(priv->netdev, &tqp_vector->napi,
+-			       hns3_nic_common_poll, NAPI_POLL_WEIGHT);
++			return ret;
+ 	}
+ 
+ 	return 0;
+-
+-map_ring_fail:
+-	while (i--)
+-		netif_napi_del(&priv->tqp_vector[i].napi);
+-
+-	return ret;
+ }
+ 
+ static void hns3_nic_init_coal_cfg(struct hns3_nic_priv *priv)
+@@ -4754,7 +4751,7 @@ static void hns3_alloc_page_pool(struct hns3_enet_ring *ring)
+ 				(PAGE_SIZE << hns3_page_order(ring)),
+ 		.nid = dev_to_node(ring_to_dev(ring)),
+ 		.dev = ring_to_dev(ring),
+-		.dma_dir = DMA_FROM_DEVICE,
++		.dma_dir = DMA_BIDIRECTIONAL,
+ 		.offset = 0,
+ 		.max_len = PAGE_SIZE << hns3_page_order(ring),
+ 	};
+@@ -4923,6 +4920,15 @@ int hns3_init_all_ring(struct hns3_nic_priv *priv)
+ 		u64_stats_init(&priv->ring[i].syncp);
+ 	}
+ 
++	for (i = 0; i < priv->vector_num; i++) {
++		struct hns3_enet_tqp_vector *tqp_vector;
++
++		tqp_vector = &priv->tqp_vector[i];
++		netif_recyclable_napi_add(priv->netdev, &tqp_vector->napi,
++					  hns3_nic_common_poll, NAPI_POLL_WEIGHT,
++					  tqp_vector->rx_group.ring->page_pool);
 +	}
- 
- 	if (sk->sk_peer_cred)
- 		put_cred(sk->sk_peer_cred);
-@@ -3134,6 +3140,9 @@ void sock_init_data(struct socket *sock, struct sock *sk)
- 
- 	sk->sk_frag.page	=	NULL;
- 	sk->sk_frag.offset	=	0;
 +
-+	sk->sk_frag_pool = kzalloc(sizeof(*sk->sk_frag_pool), sk->sk_allocation);
-+
- 	sk->sk_peek_off		=	-1;
+ 	return 0;
  
- 	sk->sk_peer_pid 	=	NULL;
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index f931def..992dcbc 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -280,6 +280,7 @@
- #include <linux/uaccess.h>
- #include <asm/ioctls.h>
- #include <net/busy_poll.h>
-+#include <net/pfrag_pool.h>
- 
- /* Track pending CMSGs. */
- enum {
-@@ -1337,12 +1338,20 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 			if (err)
- 				goto do_fault;
- 		} else if (!zc) {
--			bool merge = true;
-+			bool merge = true, pfrag_pool = true;
- 			int i = skb_shinfo(skb)->nr_frags;
--			struct page_frag *pfrag = sk_page_frag(sk);
-+			struct page_frag *pfrag;
- 
--			if (!sk_page_frag_refill(sk, pfrag))
--				goto wait_for_space;
-+			pfrag_pool_updata_napi(sk->sk_frag_pool,
-+					       READ_ONCE(sk->sk_napi_id));
-+			pfrag = pfrag_pool_refill(sk->sk_frag_pool, sk->sk_allocation);
-+			if (!pfrag) {
-+				pfrag = sk_page_frag(sk);
-+				if (!sk_page_frag_refill(sk, pfrag))
-+					goto wait_for_space;
-+
-+				pfrag_pool = false;
-+			}
- 
- 			if (!skb_can_coalesce(skb, i, pfrag->page,
- 					      pfrag->offset)) {
-@@ -1369,11 +1378,20 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 			if (merge) {
- 				skb_frag_size_add(&skb_shinfo(skb)->frags[i - 1], copy);
- 			} else {
--				skb_fill_page_desc(skb, i, pfrag->page,
--						   pfrag->offset, copy);
--				page_ref_inc(pfrag->page);
-+				if (pfrag_pool) {
-+					skb_fill_pp_page_desc(skb, i, pfrag->page,
-+							      pfrag->offset, copy);
-+				} else {
-+					page_ref_inc(pfrag->page);
-+					skb_fill_page_desc(skb, i, pfrag->page,
-+							   pfrag->offset, copy);
-+				}
- 			}
--			pfrag->offset += copy;
-+
-+			if (pfrag_pool)
-+				pfrag_pool_commit(sk->sk_frag_pool, copy, merge);
-+			else
-+				pfrag->offset += copy;
- 		} else {
- 			if (!sk_wmem_schedule(sk, copy))
- 				goto wait_for_space;
+ out_when_alloc_ring_memory:
 -- 
 2.7.4
 
