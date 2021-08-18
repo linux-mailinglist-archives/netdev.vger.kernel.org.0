@@ -2,160 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E66FD3F0BAA
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 21:18:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8888F3F0B7E
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 21:08:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233186AbhHRTTY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 15:19:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33448 "EHLO
+        id S233634AbhHRTIZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 15:08:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231743AbhHRTTW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 15:19:22 -0400
-X-Greylist: delayed 567 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 18 Aug 2021 12:18:44 PDT
-Received: from confino.investici.org (confino.investici.org [IPv6:2a00:c38:11e:ffff::a020])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC70C061764;
-        Wed, 18 Aug 2021 12:18:44 -0700 (PDT)
-Received: from mx1.investici.org (unknown [127.0.0.1])
-        by confino.investici.org (Postfix) with ESMTP id 4Gqcrh08nxz10yG;
-        Wed, 18 Aug 2021 19:09:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=privacyrequired.com;
-        s=stigmate; t=1629313748;
-        bh=zZRv+nXoCrBil3F5oNtg2nOIZFdUyNScEfpQhHkWs20=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XuNyCGrF4TFImYa8YkqQMbYM79KtRR5mjYpqhKJM6XXrw3sAON1jt+Y/v45iEN+cy
-         Nbzj3fNcPYxB8NOjFzB0xdXNDXJvqNY6iamhJ9vb6u8qWPeDiUAbgsciFPC3g7lCn0
-         bKt0uIxCi4lHr8vwhgUg7zZ7PXj3VH8B7+AkRuxE=
-Received: from [212.103.72.250] (mx1.investici.org [212.103.72.250]) (Authenticated sender: laniel_francis@privacyrequired.com) by localhost (Postfix) with ESMTPSA id 4Gqcrf3wsYz10y6;
-        Wed, 18 Aug 2021 19:09:06 +0000 (UTC)
-From:   Francis Laniel <laniel_francis@privacyrequired.com>
-To:     linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Daniel Axtens <dja@axtens.net>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-staging@lists.linux.dev,
-        linux-block@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2 27/63] fortify: Move remaining fortify helpers into fortify-string.h
-Date:   Wed, 18 Aug 2021 21:05:58 +0200
-Message-ID: <77588349.MC4sUV1sfq@machine>
-In-Reply-To: <20210818060533.3569517-28-keescook@chromium.org>
-References: <20210818060533.3569517-1-keescook@chromium.org> <20210818060533.3569517-28-keescook@chromium.org>
+        with ESMTP id S233496AbhHRTIF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 15:08:05 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E1EDC0613A3;
+        Wed, 18 Aug 2021 12:07:25 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id c129-20020a1c35870000b02902e6b6135279so2476508wma.0;
+        Wed, 18 Aug 2021 12:07:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=LDIfWEhWO8mVudTFuw38niuUgR6UGRnl4p6utnT37F4=;
+        b=UvzolmWpYEyJzarXLllRnqJ9qRIjTu/H5jojxM9143e7AthN4ECQwqTBsQx/4ZyKHx
+         IItSbEB5UNZbi9dL5W0+9wvVNF1j2i050BJ6aaIQm264QM3uv14iq9tIB28PGMjiaPgm
+         JqaBkQL5/mwvAXaa2b2+ujSXNsaQ2y4o4/CaSfeIWeuP8DcTr/0eUT075PlvMfw4Frss
+         iGFWUwmap1Ujlg2jvIPtC9RwmAnPI9TWjJfOyow+Olq30E4CsjsmXFYOvR9CdDtjqJ+Q
+         TtlUyqIHBuqf79NxH5rdpfhnLor4Qp6JrDCBhIKNvsu8YA9/vbXqhVgoa2YuNC+Y553G
+         DrXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LDIfWEhWO8mVudTFuw38niuUgR6UGRnl4p6utnT37F4=;
+        b=izoJyANs8WbBdgeqpzGS7RkleT3FrxURkudAQPAxLu4+H69vTiEY5B1HhWaUwEgxdB
+         xAvupAuoZ8k3cXeFCGDECJB69x6uvSnUTI9x32LLxbchqDdysEMyEV43XL/kcctxAQuz
+         apBSAQT1wb4t2Za6neb3SpJS4LnVJyS4/P+CFdh6yXk8R30GT4MZo98svwbYPYh4x9hB
+         Sdz4al8wilk+R6kzU9ogC4BADnxGaEp2vIdarfvwBUgmzQf24Ka3mI8p7j+8g13LI4A/
+         oGK45VfLxYf8KL72b1UPKxE9Odjuxv9Dyt1O7cyVUFN/0Zt5y9hSxFR/YZ8C7qCwK1Nk
+         aHtQ==
+X-Gm-Message-State: AOAM5337pN3uqByl6NG26jY1hjIM+DJc4J0dE5cb7sw1dIHVlxMFPbYU
+        bbevxTj4DsO9Ocxr2QCqgmIrhSBmW4pafA==
+X-Google-Smtp-Source: ABdhPJzbczZWhLAF3ylgWjegsy80xxr46YwXW/f9gHPD38R3XLN1AUEBQQ+aJmwYzXcLaIG7PPv+ng==
+X-Received: by 2002:a7b:c5d2:: with SMTP id n18mr9990022wmk.97.1629313643865;
+        Wed, 18 Aug 2021 12:07:23 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f08:4500:5c16:403a:870d:fceb? (p200300ea8f0845005c16403a870dfceb.dip0.t-ipconnect.de. [2003:ea:8f08:4500:5c16:403a:870d:fceb])
+        by smtp.googlemail.com with ESMTPSA id 7sm6043999wmk.39.2021.08.18.12.07.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 Aug 2021 12:07:23 -0700 (PDT)
+Subject: [PATCH 8/8] tg3: Use new function pci_vpd_find_ro_info_keyword
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <f693b1ae-447c-0eb1-7a9a-d1aaf9a26641@gmail.com>
+Message-ID: <0ae9d4c0-590d-682a-a0af-2272e5f71630@gmail.com>
+Date:   Wed, 18 Aug 2021 21:06:40 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+In-Reply-To: <f693b1ae-447c-0eb1-7a9a-d1aaf9a26641@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi.
+Use new VPD API function pci_vpd_find_ro_info_keyword() to simplify
+the code.
 
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/broadcom/tg3.c | 59 ++++++++---------------------
+ 1 file changed, 16 insertions(+), 43 deletions(-)
 
-Le mercredi 18 ao=FBt 2021, 08:04:57 CEST Kees Cook a =E9crit :
-> When commit a28a6e860c6c ("string.h: move fortified functions definitions
-> in a dedicated header.") moved the fortify-specific code, some helpers
-> were left behind. Moves the remaining fortify-specific helpers into
-> fortify-string.h so they're together where they're used. This requires
-> that any FORTIFY helper function prototypes be conditionally built to
-> avoid "no prototype" warnings. Additionally removes unused helpers.
->=20
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Francis Laniel <laniel_francis@privacyrequired.com>
-> Cc: Daniel Axtens <dja@axtens.net>
-> Cc: Vincenzo Frascino <vincenzo.frascino@arm.com>
-> Cc: Andrey Konovalov <andreyknvl@google.com>
-> Cc: Dan Williams <dan.j.williams@intel.com>
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
->  include/linux/fortify-string.h | 7 +++++++
->  include/linux/string.h         | 9 ---------
->  lib/string_helpers.c           | 2 ++
->  3 files changed, 9 insertions(+), 9 deletions(-)
->=20
-> diff --git a/include/linux/fortify-string.h b/include/linux/fortify-strin=
-g.h
-> index c1be37437e77..7e67d02764db 100644
-> --- a/include/linux/fortify-string.h
-> +++ b/include/linux/fortify-string.h
-> @@ -2,6 +2,13 @@
->  #ifndef _LINUX_FORTIFY_STRING_H_
->  #define _LINUX_FORTIFY_STRING_H_
->=20
-> +#define __FORTIFY_INLINE extern __always_inline __attribute__((gnu_inlin=
-e))
-> +#define __RENAME(x) __asm__(#x)
-> +
-> +void fortify_panic(const char *name) __noreturn __cold;
-> +void __read_overflow(void) __compiletime_error("detected read beyond size
-> of object (1st parameter)"); +void __read_overflow2(void)
-> __compiletime_error("detected read beyond size of object (2nd parameter)"=
-);
-> +void __write_overflow(void) __compiletime_error("detected write beyond
-> size of object (1st parameter)");
->=20
->  #if defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)
->  extern void *__underlying_memchr(const void *p, int c, __kernel_size_t
-> size) __RENAME(memchr); diff --git a/include/linux/string.h
-> b/include/linux/string.h
-> index b48d2d28e0b1..9473f81b9db2 100644
-> --- a/include/linux/string.h
-> +++ b/include/linux/string.h
-> @@ -249,15 +249,6 @@ static inline const char *kbasename(const char *path)
->  	return tail ? tail + 1 : path;
->  }
->=20
-> -#define __FORTIFY_INLINE extern __always_inline __attribute__((gnu_inlin=
-e))
-> -#define __RENAME(x) __asm__(#x)
-> -
-> -void fortify_panic(const char *name) __noreturn __cold;
-> -void __read_overflow(void) __compiletime_error("detected read beyond size
-> of object passed as 1st parameter"); -void __read_overflow2(void)
-> __compiletime_error("detected read beyond size of object passed as 2nd
-> parameter"); -void __read_overflow3(void) __compiletime_error("detected
-> read beyond size of object passed as 3rd parameter"); -void
-> __write_overflow(void) __compiletime_error("detected write beyond size of
-> object passed as 1st parameter"); -
->  #if !defined(__NO_FORTIFY) && defined(__OPTIMIZE__) &&
-> defined(CONFIG_FORTIFY_SOURCE) #include <linux/fortify-string.h>
->  #endif
-> diff --git a/lib/string_helpers.c b/lib/string_helpers.c
-> index bde13612c25d..faa9d8e4e2c5 100644
-> --- a/lib/string_helpers.c
-> +++ b/lib/string_helpers.c
-> @@ -883,9 +883,11 @@ char *strreplace(char *s, char old, char new)
->  }
->  EXPORT_SYMBOL(strreplace);
->=20
-> +#ifdef CONFIG_FORTIFY_SOURCE
->  void fortify_panic(const char *name)
->  {
->  	pr_emerg("detected buffer overflow in %s\n", name);
->  	BUG();
->  }
->  EXPORT_SYMBOL(fortify_panic);
-> +#endif /* CONFIG_FORTIFY_SOURCE */
-
-If I remember correctly, I let these helpers in string.h because I thought=
-=20
-they could be used by code not related to fortify-string.h.
-
-But you are right and I think it is better to have all the code related to =
-one=20
-feature in the same place.
-I am happy to see the kernel is fortifying, and this contribution is good, =
-so=20
-here is what I can give:
-Acked-by: Francis Laniel <laniel_francis@privacyrequired.com>
-
-
-Best regards.
+diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
+index 309aec742..6637a97d7 100644
+--- a/drivers/net/ethernet/broadcom/tg3.c
++++ b/drivers/net/ethernet/broadcom/tg3.c
+@@ -15592,63 +15592,36 @@ static int tg3_phy_probe(struct tg3 *tp)
+ static void tg3_read_vpd(struct tg3 *tp)
+ {
+ 	u8 *vpd_data;
+-	unsigned int block_end, rosize, len, vpdlen;
+-	int j, i = 0;
++	unsigned int len, vpdlen;
++	int i;
+ 
+ 	vpd_data = (u8 *)tg3_vpd_readblock(tp, &vpdlen);
+ 	if (!vpd_data)
+ 		goto out_no_vpd;
+ 
+-	i = pci_vpd_find_tag(vpd_data, vpdlen, PCI_VPD_LRDT_RO_DATA);
++	i = pci_vpd_find_ro_info_keyword(vpd_data, vpdlen,
++					 PCI_VPD_RO_KEYWORD_MFR_ID, &len);
+ 	if (i < 0)
+-		goto out_not_found;
+-
+-	rosize = pci_vpd_lrdt_size(&vpd_data[i]);
+-	block_end = i + PCI_VPD_LRDT_TAG_SIZE + rosize;
+-	i += PCI_VPD_LRDT_TAG_SIZE;
+-
+-	if (block_end > vpdlen)
+-		goto out_not_found;
+-
+-	j = pci_vpd_find_info_keyword(vpd_data, i, rosize,
+-				      PCI_VPD_RO_KEYWORD_MFR_ID);
+-	if (j > 0) {
+-		len = pci_vpd_info_field_size(&vpd_data[j]);
++		goto partno;
+ 
+-		j += PCI_VPD_INFO_FLD_HDR_SIZE;
+-		if (j + len > block_end || len != 4 ||
+-		    memcmp(&vpd_data[j], "1028", 4))
+-			goto partno;
++	if (len != 4 || memcmp(vpd_data + i, "1028", 4))
++		goto partno;
+ 
+-		j = pci_vpd_find_info_keyword(vpd_data, i, rosize,
+-					      PCI_VPD_RO_KEYWORD_VENDOR0);
+-		if (j < 0)
+-			goto partno;
+-
+-		len = pci_vpd_info_field_size(&vpd_data[j]);
++	i = pci_vpd_find_ro_info_keyword(vpd_data, vpdlen,
++					 PCI_VPD_RO_KEYWORD_VENDOR0, &len);
++	if (i < 0)
++		goto partno;
+ 
+-		j += PCI_VPD_INFO_FLD_HDR_SIZE;
+-		if (j + len > block_end)
+-			goto partno;
+-
+-		if (len >= sizeof(tp->fw_ver))
+-			len = sizeof(tp->fw_ver) - 1;
+-		memset(tp->fw_ver, 0, sizeof(tp->fw_ver));
+-		snprintf(tp->fw_ver, sizeof(tp->fw_ver), "%.*s bc ", len,
+-			 &vpd_data[j]);
+-	}
++	memset(tp->fw_ver, 0, sizeof(tp->fw_ver));
++	snprintf(tp->fw_ver, sizeof(tp->fw_ver), "%.*s bc ", len, vpd_data + i);
+ 
+ partno:
+-	i = pci_vpd_find_info_keyword(vpd_data, i, rosize,
+-				      PCI_VPD_RO_KEYWORD_PARTNO);
++	i = pci_vpd_find_ro_info_keyword(vpd_data, vpdlen,
++					 PCI_VPD_RO_KEYWORD_PARTNO, &len);
+ 	if (i < 0)
+ 		goto out_not_found;
+ 
+-	len = pci_vpd_info_field_size(&vpd_data[i]);
+-
+-	i += PCI_VPD_INFO_FLD_HDR_SIZE;
+-	if (len > TG3_BPN_SIZE ||
+-	    (len + i) > vpdlen)
++	if (len > TG3_BPN_SIZE)
+ 		goto out_not_found;
+ 
+ 	memcpy(tp->board_part_number, &vpd_data[i], len);
+-- 
+2.32.0
 
 
