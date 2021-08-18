@@ -2,67 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE8833F0E4E
+	by mail.lfdr.de (Postfix) with ESMTP id 2C8F13F0E4A
 	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 00:40:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234724AbhHRWkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 18:40:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55344 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234624AbhHRWkm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234664AbhHRWkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 18 Aug 2021 18:40:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B8532610D2;
+Received: from mail.kernel.org ([198.145.29.99]:55292 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232456AbhHRWkl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Aug 2021 18:40:41 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 33D0A6108B;
         Wed, 18 Aug 2021 22:40:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1629326406;
-        bh=ub4117PCBJL9tI8sXJcmEZA5GAcpq4QhJp59K8FOGCg=;
+        bh=rpH07toMkyUa4SU29qgQ5rbYk0DjTSEbT1X0U1mDRts=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sZNV5qdbb3+fOs/E8z3dR0c/tCfOvkerE39Fmd5PzQ6ipRUatnOVFkdRNlq/LYiY3
-         Jv8EKJ/2Bto1+zxGc1fz8LRZ+STBwdzEIuEf6XDskt6HXGLZgZ4xkYn05XBOF5KfBr
-         dNC8sa8Qc6TmpPAx2iJ8zD0nA6+7I3iA4lX/ybBCumbmGnbGW6e0h3Db18sb8Vk2uP
-         ckeK29K+oFSHBXsrYdM/vZUQgQMMUMpH0MDpKskSSFzCda3dlHCrpemxDCJLtHklTH
-         HJQ7PH95qUxbBrFVYT6PoWDWPf0zG+jYEy6SJkO3jr6OirOqK5vCl8ThH7ZstTHCRE
-         4VaMxpHsdPWtQ==
+        b=OHGUzGE+sxlmXXSLaAXwOxb2wkIbkJQ2z/+CaZIEsIlTQdy+UJzWM57jutW8qml76
+         aHmHJVnelqICzA3oNQhTRzC88YDd5IdQLhcC8xC1csQdquKKvSnyUu+BY8w0T7jLGf
+         ZYULqcvzwcQI2wqXllEvoaszLgas8TckLsXqgZZ2V2nvv17/WPei2Guv5nwgd4Uj4X
+         zxZs/jPTGm5hPMSrNWAPdMeY81IrguyKs0kMd1dP+7r12u7igISFwdAzb2+x6e7Zsw
+         93usWvfFnsxhXQHIfMw8tmINLEUszmlGTCr6RF+VKcxagD+Uhk20VWbkoO+WcwjxOO
+         LH8TZZSs/dMmA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AEC6660A25;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 26E6060A2E;
         Wed, 18 Aug 2021 22:40:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/1] net/rds: dma_map_sg is entitled to merge entries
+Subject: Re: [PATCH bpf-next v2 0/2] bpf: Allow bpf_get_netns_cookie in
+ BPF_PROG_TYPE_SOCK_OPS
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162932640671.7744.17327639180995052321.git-patchwork-notify@kernel.org>
+Message-Id: <162932640615.7744.7394691791287169298.git-patchwork-notify@kernel.org>
 Date:   Wed, 18 Aug 2021 22:40:06 +0000
-References: <60efc69f-1f35-529d-a7ef-da0549cad143@oracle.com>
-In-Reply-To: <60efc69f-1f35-529d-a7ef-da0549cad143@oracle.com>
-To:     Gerd Rausch <gerd.rausch@oracle.com>
-Cc:     santosh.shilimkar@oracle.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com
+References: <20210818105820.91894-1-liuxu623@gmail.com>
+In-Reply-To: <20210818105820.91894-1-liuxu623@gmail.com>
+To:     Xu Liu <liuxu623@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to bpf/bpf-next.git (refs/heads/master):
 
-On Tue, 17 Aug 2021 10:04:37 -0700 you wrote:
-> Function "dma_map_sg" is entitled to merge adjacent entries
-> and return a value smaller than what was passed as "nents".
+On Wed, 18 Aug 2021 18:58:18 +0800 you wrote:
+> v2: Added selftests
 > 
-> Subsequently "ib_map_mr_sg" needs to work with this value ("sg_dma_len")
-> rather than the original "nents" parameter ("sg_len").
+> Xu Liu (2):
+>   bpf: Allow bpf_get_netns_cookie in BPF_PROG_TYPE_SOCK_OPS
+>   selftests/bpf: Test for get_netns_cookie
 > 
-> This old RDS bug was exposed and reliably causes kernel panics
-> (using RDMA operations "rds-stress -D") on x86_64 starting with:
-> commit c588072bba6b ("iommu/vt-d: Convert intel iommu driver to the iommu ops")
-> 
-> [...]
+>  net/core/filter.c                             | 14 +++++
+>  .../selftests/bpf/prog_tests/netns_cookie.c   | 61 +++++++++++++++++++
+>  .../selftests/bpf/progs/netns_cookie_prog.c   | 39 ++++++++++++
+>  3 files changed, 114 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/netns_cookie.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/netns_cookie_prog.c
 
 Here is the summary with links:
-  - [net,1/1] net/rds: dma_map_sg is entitled to merge entries
-    https://git.kernel.org/netdev/net/c/fb4b1373dcab
+  - [bpf-next,v2,1/2] bpf: Allow bpf_get_netns_cookie in BPF_PROG_TYPE_SOCK_OPS
+    https://git.kernel.org/bpf/bpf-next/c/6cf1770d63dd
+  - [bpf-next,v2,2/2] selftests/bpf: Test for get_netns_cookie
+    https://git.kernel.org/bpf/bpf-next/c/374e74de9631
 
 You are awesome, thank you!
 --
