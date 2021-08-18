@@ -2,70 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98D113EFAF0
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 08:06:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 118D23EFAFB
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 08:07:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238257AbhHRGHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 02:07:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44282 "EHLO
+        id S238872AbhHRGHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 02:07:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238282AbhHRGGg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 02:06:36 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13531C0611FA
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:05:56 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id u21-20020a17090a8915b02901782c36f543so8173512pjn.4
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:05:56 -0700 (PDT)
+        with ESMTP id S238526AbhHRGG4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 02:06:56 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE08C06129D
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:05:57 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id u13-20020a17090abb0db0290177e1d9b3f7so8249171pjr.1
+        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 23:05:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=gUjXHriNI60ZMiX98O41J0RBUaJAOzuxCN136yOtJx8=;
-        b=PFR7uYpP3VrpE4Zr8VMf97aLHDhHs7MCH87WL+gpOmTOK1WCgqayKERpAzNjnF+s4i
-         9ajmen1yXG+vpJNm8m9nhLHe3xml94z7vjPinj8nzZWRd+UvkObZQmTbKhHOgjie9KGY
-         GwGNjjyCQL5UCD3lxRE1kWmJhtmjWT2CNQkZk=
+        bh=Xs7dVfyCL9iWYPvsRCT3aHsdLwLjC6pcEwrwKfCUWFg=;
+        b=TEf6/TXCjpfGS9UXykN02SfNjHK5IVogzarwF+/pd4bie+1D+OFliU7/CvjJXmOFlP
+         uID/DzUYWa+WnG85IGgCCCd0wZSjSbxIL9BjQiUelCHSaJE6ttcwL0indJBpV2UfG3XP
+         /QuqoDZi2eevsoxzYvwIqa0mOMlVcx4djTE8Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gUjXHriNI60ZMiX98O41J0RBUaJAOzuxCN136yOtJx8=;
-        b=DXyIP4+GoqVBzS74CuXXylNVDD0tVbc7HhTo+Yc8vHAgMTDiOAf5ANqejCeDvmI94b
-         8O9d0ieRZ3fywH/waO/Ualg9dstncbgJLwCIo826uwZgY/z1bWRMVpGkQPCrpfpL+kaH
-         Z4gPI+5zkEXN4mAVfyTeqgVHXfasIzXFeDrsvnZxdkEyxFW4qDJSN1dYNADSfgukMhhF
-         fya2skz4RrqD5uCl2Fxtz7nNJXo7eBv2yyhhP7w2xs4Qv20ae+uIXCgAYAgHKV1bSoeb
-         pHd9AjlOnOzKyCiqIVzNv2qSDxz2dvIDOAHHxSoWyoygeBtOwdKiho70+3aJ0+tZby5/
-         wLug==
-X-Gm-Message-State: AOAM532ETBsmZbKw/RUxTxn5vvKdDwhFiHytU88c9vbi2d9jQt4OsGvd
-        2o83UNgGIH7uPwLOxGcrmy4YjA==
-X-Google-Smtp-Source: ABdhPJx12eVE2s9aJqrT8X6wYbgyP7wX5Q41/S0rPW3qXiQMC3iYutyI7oCSghqi1s9SYy0llSUR8w==
-X-Received: by 2002:a17:90b:11c2:: with SMTP id gv2mr3328920pjb.227.1629266755654;
-        Tue, 17 Aug 2021 23:05:55 -0700 (PDT)
+        bh=Xs7dVfyCL9iWYPvsRCT3aHsdLwLjC6pcEwrwKfCUWFg=;
+        b=AfxY2PsptvAL/oXcp2Z1yZkJaJdVGaZC/Il5xPBysEyOZt2A7862t6H8yf7xnQFvaK
+         2XqC+dnlkpsp9Cfm8APmH0gHfQTyi2objcYD4D/LDW1qKRKgX+LZJQoe1yXcrp/Wai/s
+         QeDqc8ED+OqBaBgg3WuF7orTgTPbnutpZrqqb/JpqdnjOEg377ahDQ5b2PHeQtRumcOW
+         CE0NxJFFEpPfE7RJd33MNWOkyPwY6KCoiiOC0GDVgMu3LQfvy3lDsoT2xVlFSRIQ/os/
+         h9sYp15nvwNt/2wytnu/JOnN9oAWOFscLdujSCsywsuBpIx7rqs4H8A/mX8FhHQNzk6s
+         ZJMA==
+X-Gm-Message-State: AOAM531KelGoMDQwYihftraUVCgGdKLdGe2UgM3byZE5PRvJ1CreyeDd
+        +Tly8xc0n5gO70G1WHT75P0/JA==
+X-Google-Smtp-Source: ABdhPJwTi1V24180jdpxp0J/irIQkuTbyz9wEdSSc+XtZLCOmtidlizMdtS+gLzb5nX5T1PtO2A5EA==
+X-Received: by 2002:a17:90a:b105:: with SMTP id z5mr7594033pjq.64.1629266756958;
+        Tue, 17 Aug 2021 23:05:56 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id p34sm4534140pfh.172.2021.08.17.23.05.52
+        by smtp.gmail.com with ESMTPSA id p3sm4750151pfw.152.2021.08.17.23.05.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 17 Aug 2021 23:05:53 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
-        Michael Chan <michael.chan@broadcom.com>,
+        Lennert Buytenhek <buytenh@wantstofly.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        wengjianfeng <wengjianfeng@yulong.com>,
+        Lv Yunlong <lyl2019@mail.ustc.edu.cn>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Allen Pais <allen.lkml@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        linux-wireless@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
+        dri-devel@lists.freedesktop.org, linux-staging@lists.linux.dev,
+        linux-block@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         linux-hardening@vger.kernel.org
-Subject: [PATCH v2 08/63] bnxt_en: Use struct_group_attr() for memcpy() region
-Date:   Tue, 17 Aug 2021 23:04:38 -0700
-Message-Id: <20210818060533.3569517-9-keescook@chromium.org>
+Subject: [PATCH v2 09/63] mwl8k: Use struct_group() for memcpy() region
+Date:   Tue, 17 Aug 2021 23:04:39 -0700
+Message-Id: <20210818060533.3569517-10-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210818060533.3569517-1-keescook@chromium.org>
 References: <20210818060533.3569517-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2801; h=from:subject; bh=TrncHbsmiWtnPjfAh2YkxN9s4bIlTDfFJMFZjUYKPP8=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhHKMfghAlM5KHg2hODEFSil5MEnhHr6UFtvkVIcLZ UTb+yCiJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYRyjHwAKCRCJcvTf3G3AJrOJD/ 9hJH7jjz6tTkXVy3qRA527RgZiJeLECLzI6DoacBsPBfgyoKgz38PgicK9SwNgGvknQLWXJVluWAP3 E6rfbFiFlaM+Ah7i9TxwUplp60bQ8YQ6iLUK1jH7hES5/9GBkUaUVkVD3QjkV+GFMjzQAoawZjdUpr bE2gauE7tXilXaSUlWcyJfI07eT+K1XAEXoEY25zZpgxMGLL9yt/EbtvJcI+IrQuzSk/npjqhtQ2T3 d1nN9lTpRoS2zYNWrlVJJwNxvF1D1OBofuImaHDiDSNHXNKeThXLcbj1UYQqw/Ysgyk3p6pUd21lZB EuXd1zc9Yz9IEs6aPE6YEdm0AdAKR4pu8NCfI2LOYoDFMavYA+UDx+3rb/38ISxKIokoPZG0aHpP4c ezu4gtgECYTqz+PxbA2YWRttoBtOT9wi+rXSXOrtuHdJ9I1SuKBFQ8dMZXVFk0b2j6eA/u33kPuF+X I7KNJW1I+qU7lmi4iGjzDA1ALhfCCbWN78KpBUzwnIJbehj6BXZr2B04FaSAWa5Qe1BlLaaCW2szcx ScEByKBugc990sVUSUI2bY2JLlU8S6kgDfe8tUa7onXMNbGcnY2eexNnUsFBVySVYvcIQmVaSDF/u/ corCu6p0SQZQCPWdEE3UyQoxqtTSfoiIghXXJkxUfXrbaG5HgaIbs8lXLpJA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2241; h=from:subject; bh=L38tHT7L5gwWnZoNqjA8WBUp8uc/YzLDlgGZNE5EF7Q=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhHKMfQHi0c/KxdlPcXJ7NIKNf3opHAze8JHRqvZJ2 HTMb8o6JAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYRyjHwAKCRCJcvTf3G3AJsndEA CTyr1mrRcwMNsVqnkQNKyL2vXGiaBP+O8ZL2ZnJYif0LzQ9SgU1FelufoxGIaesSZHEE5SPnP0Tfsl 9KJcO93AOrsZEpzIQ8drNeTOQ3lBvwG90XmnGMgbxprrjE8LUpiZhRSW7YHRT+D5AU2QRUIx8NWfMb abbVbTWbLt5ToBy6dxfb2m/nwWj7/j+KLjUYb1o6S/Gdh3F7rPGoJGPUhDvpfJ4ZEJwHG8eXPqBIpG 6H1pdmsRypyZ7TWzR8qZ303ptNMXJOIqxpJWH0oX46+I8DMTK3djo8qRqPMyrocaXaHH97cU/N6f16 CCjZgAxDqMhwoQxDT15ELj9UhtbUR98KcbTKZ65LXcHTIb3hN0+1HQUic3J6laKt3yYRNVzKQv1d94 GldIV0iCJHVvpmLzhBYcaR+nfF+YtoIRRyh4PmHtkSgG8lcV6ALD1vQy9CkCCEzg68xUrtLP0TMdv1 bWkRRkd8XAjLuvASWkcKkp9OxA+Nu75+d0Gdk0vAppy3FJjK3KNlSSfI+Y2g0bi0Uli2M6Pcacs1IJ 1sepRhmyuFQR4lAMVe+6LiCvvzcOSoJKRi+SJnYEddKohZIZQqqNSVghz/13aPpi9uItW/cfE4MMXK I7/jg0JFYnqdJT3/iN+fC7P2L4x21xvDExvG1DjqZQouQihAaONHkkxoYo0A==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -76,72 +83,59 @@ In preparation for FORTIFY_SOURCE performing compile-time and run-time
 field bounds checking for memcpy(), memmove(), and memset(), avoid
 intentionally writing across neighboring fields.
 
-Use struct_group() around members queue_id, min_bw, max_bw, tsa, pri_lvl,
-and bw_weight so they can be referenced together. This will allow memcpy()
-and sizeof() to more easily reason about sizes, improve readability,
-and avoid future warnings about writing beyond the end of queue_id.
+Use struct_group() in struct mwl8k_cmd_set_key around members
+key_material, tkip_tx_mic_key, and tkip_rx_mic_key so they can be
+referenced together. This will allow memcpy() and sizeof() to more easily
+reason about sizes, improve readability, and avoid future warnings about
+writing beyond the end of key_material.
 
-"pahole" shows no size nor member offset changes to struct bnxt_cos2bw_cfg.
-"objdump -d" shows no meaningful object code changes (i.e. only source
-line number induced differences and optimizations).
+"pahole" shows no size nor member offset changes to struct
+mwl8k_cmd_set_key. "objdump -d" shows no object code changes.
 
-Cc: Michael Chan <michael.chan@broadcom.com>
+Cc: Lennert Buytenhek <buytenh@wantstofly.org>
+Cc: Kalle Valo <kvalo@codeaurora.org>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: wengjianfeng <wengjianfeng@yulong.com>
+Cc: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: Allen Pais <allen.lkml@gmail.com>
+Cc: linux-wireless@vger.kernel.org
 Cc: netdev@vger.kernel.org
 Signed-off-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
-Link: https://lore.kernel.org/lkml/CACKFLinDc6Y+P8eZ=450yA1nMC7swTURLtcdyiNR=9J6dfFyBg@mail.gmail.com
-Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-Link: https://lore.kernel.org/lkml/20210728044517.GE35706@embeddedor
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c |  4 ++--
- drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.h | 14 ++++++++------
- 2 files changed, 10 insertions(+), 8 deletions(-)
+ drivers/net/wireless/marvell/mwl8k.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
-index 8a68df4d9e59..95c636f89329 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
-@@ -148,10 +148,10 @@ static int bnxt_hwrm_queue_cos2bw_qcfg(struct bnxt *bp, struct ieee_ets *ets)
+diff --git a/drivers/net/wireless/marvell/mwl8k.c b/drivers/net/wireless/marvell/mwl8k.c
+index 3bf6571f4149..a29277d5f9da 100644
+--- a/drivers/net/wireless/marvell/mwl8k.c
++++ b/drivers/net/wireless/marvell/mwl8k.c
+@@ -4225,9 +4225,11 @@ struct mwl8k_cmd_set_key {
+ 	__le32 key_info;
+ 	__le32 key_id;
+ 	__le16 key_len;
+-	__u8 key_material[MAX_ENCR_KEY_LENGTH];
+-	__u8 tkip_tx_mic_key[MIC_KEY_LENGTH];
+-	__u8 tkip_rx_mic_key[MIC_KEY_LENGTH];
++	struct {
++			__u8 key_material[MAX_ENCR_KEY_LENGTH];
++			__u8 tkip_tx_mic_key[MIC_KEY_LENGTH];
++			__u8 tkip_rx_mic_key[MIC_KEY_LENGTH];
++	} tkip;
+ 	__le16 tkip_rsc_low;
+ 	__le32 tkip_rsc_high;
+ 	__le16 tkip_tsc_low;
+@@ -4375,7 +4377,7 @@ static int mwl8k_cmd_encryption_set_key(struct ieee80211_hw *hw,
+ 		goto done;
  	}
  
- 	data = &resp->queue_id0 + offsetof(struct bnxt_cos2bw_cfg, queue_id);
--	for (i = 0; i < bp->max_tc; i++, data += sizeof(cos2bw) - 4) {
-+	for (i = 0; i < bp->max_tc; i++, data += sizeof(cos2bw.cfg)) {
- 		int tc;
+-	memcpy(cmd->key_material, key->key, keymlen);
++	memcpy(&cmd->tkip, key->key, keymlen);
+ 	cmd->action = cpu_to_le32(action);
  
--		memcpy(&cos2bw.queue_id, data, sizeof(cos2bw) - 4);
-+		memcpy(&cos2bw.cfg, data, sizeof(cos2bw.cfg));
- 		if (i == 0)
- 			cos2bw.queue_id = resp->queue_id0;
- 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.h
-index 6eed231de565..716742522161 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.h
-@@ -23,13 +23,15 @@ struct bnxt_dcb {
- 
- struct bnxt_cos2bw_cfg {
- 	u8			pad[3];
--	u8			queue_id;
--	__le32			min_bw;
--	__le32			max_bw;
-+	struct_group_attr(cfg, __packed,
-+		u8		queue_id;
-+		__le32		min_bw;
-+		__le32		max_bw;
- #define BW_VALUE_UNIT_PERCENT1_100		(0x1UL << 29)
--	u8			tsa;
--	u8			pri_lvl;
--	u8			bw_weight;
-+		u8		tsa;
-+		u8		pri_lvl;
-+		u8		bw_weight;
-+	);
- 	u8			unused;
- };
- 
+ 	rc = mwl8k_post_pervif_cmd(hw, vif, &cmd->header);
 -- 
 2.30.2
 
