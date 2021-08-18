@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AA863F0338
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 14:04:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F60F3F033C
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 14:05:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236552AbhHRMFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 08:05:19 -0400
-Received: from mail-eopbgr00079.outbound.protection.outlook.com ([40.107.0.79]:39586
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        id S232574AbhHRMGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 08:06:09 -0400
+Received: from mail-vi1eur05on2074.outbound.protection.outlook.com ([40.107.21.74]:54881
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236514AbhHRMEe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Aug 2021 08:04:34 -0400
+        id S235979AbhHRMD5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Aug 2021 08:03:57 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lRUMeQUu6dzd8mMZzzMZwr/AgyjK4jpJysDe8+HSmtGltXGaX0YmKsIIIVHMaLfmCGXdTJYklA4ChTjswSy86a77DMymyJUxqApWylLzywkESqz2TZ7WXWfJIG8fSnbdhwX2EfKaxsy487CaTEPrs0IsEfTkFUsNcA+auJ+F7nFSBm0sn4VvxjIfNw8GhvXYrbJoP5mOWmra5/qhm2i7y3StR3lDM8sgxYQ3H/dVqhvgSXh9OAEBdEjqMDE+aJ8mAxgqUnawSWbpz+8kIEffLVz2UldY0hFKt5GVQeSwUcA11UhFoknLExg8H7JEPOaghbx98NlF7fjp9aHdDqT1zg==
+ b=GQEDaNK8UlqR3fGkpNwuKr3/CGjL7CLQjJcoMUdTde7QKZE2JOt0KINDSBto9khX/txQ9oWb92QElafAPNFfrVRIl+cZSuqU7ah9a89JNb/oWMC3/SAqatwvud+ymryn/RNs9O1sJgO4s9j8fbXd7+ppaMpqBwAZfQKFcFEPDmrGkdmrKOBHKgXdvEQPFNdWkI55ibrYRfX9Y/hrmU56rBuR/f9SLZtBLMLInnb9ftZNkwV/DMFgQZv+sWUnTZNlgsw9jysprqb5VBKziP49OPPkbgMC9nI1jr0yQPERBkh57ZC24Qzi0SO5dffscVhZmXYI9vRhV41DUIX6/e34FQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+gYMrjC734w41a+FENTyateW6BDOP9qXfJuiGdkGxu0=;
- b=btO33jVeZBQ+8RVEl6uNb48KVuv8WqRIJ2GkJ3hV+dZn0nYOCLh8hnlR/xELB9wubp+LWbb8781qIfpXwoc5eD8s0Io7cOUnAYXoNnRqt3AyJK2wvrLhFY3nrtodi2rzzSD3bNsWOFjuoalsC0BJfCbWWSnSzi4QUmucfAJAnvv0bhlGYG6K2vmP0YkdNgB1VTeGtS7leqKOx63mR4hXPUIwPGbDB1g+bOHeMH265OMy9N66Ankp2nuMTrv3Xkrg/4QEND8g8m8q/7xtR98y0h39ChDsHk74y2uThXi1AHpyd7tNmTpM6ecjZpTht3g4JtpYsU+SqLaPpEBPOIXlGQ==
+ bh=3WQCwH5GbFPvs5E2VGIWrR+dDYLsA6Qori/cPxi4Lqo=;
+ b=crY2ccXAEJNfsuDESqKVIWwIiweIMEwRn3So4HPvCXb2rSzI9z2K70GpwOq1NdmMivSFgIyP0X7hc0iGkanHdhlh9te62Hdnh0Rl9MYLLXnZlJ7zREFxKfvkVWcyw4w33k7iPC6+F+ycp8PBbwkyqhSjATZIxyrSkzMlKh1LtTTRyBE8N4XhH5gWuDMmwkFkyJcquSplVb2egTT/8HkRjHN8DLL0TBdjmNOynNeROM+IZjA2GR5jUH8FVkQfXItkyCxuzzDzUqEIKzwSeBBgFw2xo963avp56ENYxMdlFj4ZWp2Yo9ZV2Uq01RWq7FuPIvOvQqbiyrdO13hzRtD43g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+gYMrjC734w41a+FENTyateW6BDOP9qXfJuiGdkGxu0=;
- b=H+U5p9JCKGP8ZyMY0wBLfLLXoddqlW/kmie/L+2CXjQjoKCJtee3BHr8BdLZh2h6c9h00ns8KPTVlno9s+PsjGvxTQILPoaAgDZW2tpwXLgoY4dCHoBxdjqKxrvSIvxEozPK1xfURyppuGSuetBc04wJEda8I30MOQFSmfeBMzw=
+ bh=3WQCwH5GbFPvs5E2VGIWrR+dDYLsA6Qori/cPxi4Lqo=;
+ b=qIkmTYrt5wdO94G6kPQgFsFRL6huGM1rx+4kuzXV9el+Ze6SjbHiJFNfHfG6KmO2B6hzGjxpP4Vhv3XzTN91nUOAa4WHPfrJSZEwOz3rn/YlEvebeZXg3aOvm6Rle7TpAf2SbpHM9dMEzRU2p3b7wc+vsUS9ycZMShUtrSB6arc=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR0402MB3839.eurprd04.prod.outlook.com (2603:10a6:803:21::19) with
+ by VI1PR04MB4222.eurprd04.prod.outlook.com (2603:10a6:803:46::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.17; Wed, 18 Aug
- 2021 12:03:14 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.18; Wed, 18 Aug
+ 2021 12:03:15 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4415.024; Wed, 18 Aug 2021
- 12:03:13 +0000
+ 12:03:15 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -79,9 +79,9 @@ Cc:     Roopa Prabhu <roopa@nvidia.com>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Peter Ujfalusi <peter.ujfalusi@ti.com>
-Subject: [RFC PATCH net-next 16/20] net: dsa: sja1105: enforce FDB isolation
-Date:   Wed, 18 Aug 2021 15:01:46 +0300
-Message-Id: <20210818120150.892647-17-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 17/20] net: mscc: ocelot: transmit the "native VLAN" error via extack
+Date:   Wed, 18 Aug 2021 15:01:47 +0300
+Message-Id: <20210818120150.892647-18-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210818120150.892647-1-vladimir.oltean@nxp.com>
 References: <20210818120150.892647-1-vladimir.oltean@nxp.com>
@@ -92,200 +92,199 @@ X-ClientProxiedBy: VI1PR08CA0134.eurprd08.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.144.60) by VI1PR08CA0134.eurprd08.prod.outlook.com (2603:10a6:800:d5::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Wed, 18 Aug 2021 12:03:11 +0000
+Received: from localhost.localdomain (188.25.144.60) by VI1PR08CA0134.eurprd08.prod.outlook.com (2603:10a6:800:d5::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Wed, 18 Aug 2021 12:03:13 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b4e7e361-475d-4f1a-a24e-08d962402751
-X-MS-TrafficTypeDiagnostic: VI1PR0402MB3839:
+X-MS-Office365-Filtering-Correlation-Id: aee6f6a7-3ad7-4cfa-a952-08d962402828
+X-MS-TrafficTypeDiagnostic: VI1PR04MB4222:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB3839E6C355E194CE91071CB2E0FF9@VI1PR0402MB3839.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <VI1PR04MB42224C1AE619856E3CDDA39AE0FF9@VI1PR04MB4222.eurprd04.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: t79XLDclmAKI97AEkFbSTV62zPUcts2rjFWf+Gz9ex6ytg5CzvjGX95ENaPiuIK5c97eUTSv0P86N4FWlL9uRpby32xSk+ZedySVI+2ArBgZllh7EnZuQJ5QeDK7I+dWnhXd10IK8miMTmQKXGZO7lMatiJPUs0uAjjIgn4d4zv5ubA/wYbQAoLyzF2zASaejPehkD0X9qugDYV5RnOACjyVbQDa3JAbO3zB9V0p7fXT31kf731O2icRk11tZDjXFrSY/PQ4BNGrKxlHgoL8/CsKOwsTMnVf10Rh3AHGAx+3vvfssKZpbwUovvcmI2h3TVTHjbOAz0sMMl1ozdT0xd2Tq8LD0eS6CdWLOHMUfiY61Py7AD3E+JJgOEyiS6eevrk59XFaQT3UsLbTu67ipo2jTr4Llh9OCuNTYB/5HHUhwpgAYLje9sbmN+erq3lq+AZH3zD1NxZ9h61gb//7ixSfRBIqg77n+QAT0Ah8zZ5ENDXtrekRwvANBQRWL1XMHwoUiZyy3yS/YNUL1pVn3yNmiPz4AKJ+wwNuiwrabaMzHM35PezFxu5npR22UTRQGD61diHjOBmDcFIBT4Cz+LSXzA3VVXWsbuHQh2z0xlo1HuA3fTQ8kGEBKbQLHBctOBRzLacup3sUs6M1JhLcHPT7N9JtSh/c4vcS5RpMPoSwS5ieJGSmQHT5Ngz5YNhCHv0fZsbhOlfOjRnQ/W0QgA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(136003)(39850400004)(366004)(376002)(66476007)(2906002)(66556008)(8936002)(6506007)(186003)(7406005)(7416002)(52116002)(26005)(86362001)(66946007)(6486002)(44832011)(36756003)(5660300002)(1076003)(110136005)(54906003)(6512007)(8676002)(316002)(6666004)(38350700002)(38100700002)(956004)(478600001)(83380400001)(2616005)(4326008);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 1x0rOXuaNSjATNW91O1Xcw2ftV75uMjcpS6EPVWdfqd2lA5N2UEfo422ynrosueej1Hr37bBt5jjZTTvvL5NskdcC17UtHaIf04Qv6ILjTlZ1FrWPRrDkOXmjnetmN1AtbAMAdKpHYtONX5aV25sILOCHgD74d9blafy8KWA4s9FPEsEx8ZFPRq9Ebpe0r/fDeUyqGzKXMrkQAkaNRCVFi8vFH4GIU4gu7zX/i4fCfDddPpsAOPiKVSdZT0GXcxrB8zBI3yvb+Q1RKeDHcNLFlqFWOMf1/om3H+vc8tGfFvE+QjofAvWncBe7JaGJgGdO8U+UK1B50qpFfw03TLtq3GZlNjdGrKKURFRvyx0Ebt6BL316JH6JrZkPBV2/rPpUS5JxbXUjf5Ba6U8INYL2ZhkwekN5Tsl46kckC49Ns0jJ6qiNcsq4+Bnkqu32RnBz/bivTw+BdCCWVj732Xne/DMTAwbhO89ilzbG39Qw/tIHjPaYq43h2zS9/HeOWMvRRXRchM9Y5e6RLkZ6Nj25H/y7+BPheqCA4sbRiT+zfHeIqPPQzN6gXg/WIZjf5vtT6rpZYErbPmsjikM/08Sm/UlzrAbeeTu4mk/u0FHLfVb8YGA93GaoKDY+fnhx4EwrYhzOCSVCLOo2aFx7FlFx7GqN3qFqCOUIjsUQAduXUMA+lrOQWicxTf7m8Q0hgjS9LSlBFJrZARfvpJZySNopg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(136003)(39860400002)(366004)(376002)(6486002)(52116002)(2616005)(44832011)(4326008)(5660300002)(26005)(1076003)(6666004)(54906003)(956004)(6512007)(6506007)(186003)(38350700002)(38100700002)(86362001)(36756003)(110136005)(316002)(83380400001)(8936002)(478600001)(8676002)(66476007)(7416002)(7406005)(66946007)(66556008)(2906002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zz0IhX+bjIM8t/52tySATmGztEcAaEGCweFDSVA8MTWU9Rp7VJWSWE9ZuiAF?=
- =?us-ascii?Q?Crs14XpGQCodTD7cezcEzYGiTqsiBeykjYtLmvgtXjZEoFjG8uiQWscaREma?=
- =?us-ascii?Q?oXS2Pz4VTlxhl+O/IU8F+yhl3MDUQtISlMNc0zc/cLd95Q7AMmGQviJISkq5?=
- =?us-ascii?Q?rV3L3XAb5UPCYsXFChnegVyddJmia24ujwlH8Z35hdbUifjhxoHWJrNS3Ovz?=
- =?us-ascii?Q?oDjC0Hj7XNLzl7bCHFlC2SEbg2j2T4kWUAH6HaZF9pA09aQ9l7gZXPi4nMQU?=
- =?us-ascii?Q?W9p0Sd55onls1EW+GyrXC42o9I3xdNbnLDwAo3lV8ZTDBILP2n+fbjocn9O8?=
- =?us-ascii?Q?qyBvoDJv6Vy7t9+mWyi3sNdEiV2/lpwhK8MZHInNY/xdcsXo2GxPP+MV+uxH?=
- =?us-ascii?Q?fA5IGeYc6AELfAO6f9+Rp5u77qFlW1h12S9uK6RG2WrHeguSILd2rRv0rF7W?=
- =?us-ascii?Q?hRDPQ8VhJSL9FDy4i+hC8RObcLsQ8Y+NgE3Cy9rJI+1aQzWC6co24YoVIN5d?=
- =?us-ascii?Q?QN0dXJcPJ6pw886ZntP7LyyjWybm+vJM5ODd5XbxSAht57sEDV4MCfjXgioS?=
- =?us-ascii?Q?I/tXwHjdnIAFxMGxGUQCydAEWW/rGedJzjF3DO+m18Z73Fz9THTo239CW3rs?=
- =?us-ascii?Q?KJApsI5MXf9nNFwyrC1wf86zGKYxMqzd9fJdtR9Bl47tUB/m4PSZmvZgaVeI?=
- =?us-ascii?Q?f67UwDGXsww0K2/KC/IDb8xJFjaKLtwaUKe84/ghRTgq4BL+RiXPemM066MO?=
- =?us-ascii?Q?DWecQRbU4tiltUeST3XTwVK2BrUmJI8wu2rLajeoDwGr9rAd8CqMF3OFxI+U?=
- =?us-ascii?Q?+Iv2euW4/Ax7hUu+qzUFzOqyaqdSFryAiWIh0swW1/vpmFONx11IqnezKx6C?=
- =?us-ascii?Q?pi0EqT731FpI1CQsYlM7rhDOzcVlpF3Ld0Z7TuLaL5Xp/p7ezbOSV9SVKdqv?=
- =?us-ascii?Q?RIqCgODWjm9+QQMrBNSkWLedfPeQ2CMx/krW6yNA/OI2Rxvy4YsPLMpBGC1M?=
- =?us-ascii?Q?6v6LGGFoAqJ2M8jmxwUTXnd5JQnysqutlk/Qv+hpJL5Fk9RAJUGXUAlbD8gH?=
- =?us-ascii?Q?+wttuFdEajRienM9rLqSEZQEPE7LC7ulbOZjpdDCFln3SFadj2j8daNtc0cj?=
- =?us-ascii?Q?1HdjZH2BxYOUOXBDJoSCdfuyk2j7IAApA1nyuU6AIT2avFRxZ1gtJJZEQrlb?=
- =?us-ascii?Q?XfKXSEeb7OesO2XyGSi4mOrewTjZVFiVzyrXyfrhORSGw0reHlIFIL0Fr5b2?=
- =?us-ascii?Q?lu9HC6HNv7lfDxTCxavqKqhGpndsnvcj+sdc0GlHFiju+LsDwdPCgxQpKPgH?=
- =?us-ascii?Q?KVLcjNdO9H7Wtxcljr9+Lq6A?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vkm6QxaSYXwxHB/zZmsAxqI3hyAYaYm0E0ld/OZuoHf7X0IhDLtpRNzIvbNp?=
+ =?us-ascii?Q?3jez7j8zSc/CkI6ARDOWVqrcBJZiR3CjJ2CKJS4Yx8ms1PmdCXNd9t2MEx9n?=
+ =?us-ascii?Q?ITbvjQpfGlSYzbsPw6LKei2T7HXpw4hyoXHjvTjpHBgz5xZ8RnhpU1x+vLXu?=
+ =?us-ascii?Q?q4BV6J9mT9Uu981zHsGwwS52+rJ1Bsx383u0QQNTJsDApXcnWsJKOcPVnHAB?=
+ =?us-ascii?Q?NfZQD/OsIy6L7YKmn22qXG9pTz73aDN/lwoOJ3aEbfMA7oZdJMX4d//9QtdN?=
+ =?us-ascii?Q?jFmCxf++mytxKUvY/Tp48tkXgbF//hEHzwoOmfu9eONajUpd3dhrE/p5yZcE?=
+ =?us-ascii?Q?bIu7YkJKNj1lQAx1YP5H0qKM18+9KNQ8aoRDZQkD+MokwUOHyXnNlGxyrd3l?=
+ =?us-ascii?Q?6IdgiS8duaczkdAKaqvUnHOtGHghlt9wd6UsBO541A2V3K7Cefm2HT2MFjz4?=
+ =?us-ascii?Q?cT2z3dprWvFL+c/C00s8ynSqYVeRzAX9gv6RJUvQAE3C+eOy9M5tUAsUJ72U?=
+ =?us-ascii?Q?BFnm2/2CXFeXQj3dubrz11+7pXlTWX4h1XiY/d2vJ69jhkLBQXQ0wTzLkMDL?=
+ =?us-ascii?Q?Vs2ivm4ANVrhHyzkTKoctMexi2Ak/+vTCuXD5sdoG79ErVC+dJVBnWzcrxK8?=
+ =?us-ascii?Q?9P5ioBjTSUvmZz8JGr94kUKobcl49B8ciJWS1VwRJHeezDSL3uyHLQN40LA7?=
+ =?us-ascii?Q?ov0ONSIGqxbdOTu7Skyjiq8cvzd/swWF2o/0a1Myk1iGMw8NR8rqk09HJ7NG?=
+ =?us-ascii?Q?FaVMkbJULtaQ/VKxV/7W26mRDr6J/DICSNLMc0gdODKLu+oP/gQ0jpThsinT?=
+ =?us-ascii?Q?3KhI2kIo69XkRzEzs5ozvnJq+5/R740ueqIyvASRZYcINA9bpL48ycl1Qlg2?=
+ =?us-ascii?Q?rzHRnMaKD/5sM6kYpgx+aCDJ0bRCW8vz5BfrPKI1DJeLd+LLUKw2woRIvKD/?=
+ =?us-ascii?Q?I5A9qwXVtBtzhLBCkHd/Esn6NLq2oQvXRp6T13tUG2MsAOq8S8rGiQBTK7pi?=
+ =?us-ascii?Q?9DooDgNmJiKqglOnC2rS2FeJxeZL8Z1JSn1KKdIfYGKvIplJs9Y6+HZuMMJM?=
+ =?us-ascii?Q?Mq/cCpshRaF5LZGUKPSsfb1WKM0/HTy5C/iYAbr6K0XT3vXBzlYI71GFV3Ai?=
+ =?us-ascii?Q?AzMUC1NauYtA8x4De7FAdrswT6bigH+EyRJlfDoDc5pbe/EE6HXXpOg21jaI?=
+ =?us-ascii?Q?Hny7NrTcn1PcXaRWja0nF7kSs+Tx335UL9ziPs01CWyPikH39bDNec+gncDs?=
+ =?us-ascii?Q?MrePG2kpdXivUL6lVuCVGMYeqVbK91mCVMqXpVBZ/hDrv6Jbxjd1FRElJMjN?=
+ =?us-ascii?Q?wst4rDTCS8XRQbx442lbTOaU?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b4e7e361-475d-4f1a-a24e-08d962402751
+X-MS-Exchange-CrossTenant-Network-Message-Id: aee6f6a7-3ad7-4cfa-a952-08d962402828
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2021 12:03:12.9284
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2021 12:03:14.3076
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kzueV/2TV5ZbsjUJ8EZ7Esp7Ylr1M/Pc3buhM1i6vw6A7N5aRLBPElB3DPhv4m4axB6uYUNahKQvk1hushzqhQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3839
+X-MS-Exchange-CrossTenant-UserPrincipalName: waFRrkcPU65M/yRdgvFpHNS48wTlSSxJd9k7Z9F2/jlfUvd2vTq+nqlEEFNVl7ZqkAttFnKnms9mK6NzpmWUSQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4222
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For sja1105, to enforce FDB isolation simply means to turn on
-Independent VLAN Learning unconditionally, and to remap VLAN-unaware FDB
-and MDB entries towards the private VLAN allocated by tag_8021q for each
-bridge.
-
-Standalone ports each have their own standalone tag_8021q VLAN. No
-learning happens in that VLAN due to:
-- learning being disabled on standalone user ports
-- learning being disabled on the CPU port (we use
-  assisted_learning_on_cpu_port which only installs bridge FDBs)
-
-VLAN-aware ports learn FDB entries with the bridge VLANs.
-
-VLAN-unaware bridge ports learn with the tag_8021q VLAN for bridging.
-
-Since sja1105 is the first driver to use the dsa_bridge_num_find()
-helper, we need to export it.
+We need to reject some more configurations in future patches, convert
+the existing one to netlink extack.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 38 +++++++-------------------
- include/net/dsa.h                      |  1 +
- net/dsa/dsa2.c                         |  3 +-
- 3 files changed, 13 insertions(+), 29 deletions(-)
+ drivers/net/dsa/ocelot/felix.c         |  8 ++++---
+ drivers/net/ethernet/mscc/ocelot.c     |  7 +++---
+ drivers/net/ethernet/mscc/ocelot_net.c | 30 ++++++++++++++------------
+ include/soc/mscc/ocelot.h              |  2 +-
+ 4 files changed, 25 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 667e698b5ae8..bc0d89b96353 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -361,10 +361,8 @@ static int sja1105_init_l2_lookup_params(struct sja1105_private *priv)
- 		.start_dynspc = 0,
- 		/* 2^8 + 2^5 + 2^3 + 2^2 + 2^1 + 1 in Koopman notation */
- 		.poly = 0x97,
--		/* This selects between Independent VLAN Learning (IVL) and
--		 * Shared VLAN Learning (SVL)
--		 */
--		.shared_learn = true,
-+		/* Always use Independent VLAN Learning (IVL) */
-+		.shared_learn = false,
- 		/* Don't discard management traffic based on ENFPORT -
- 		 * we don't perform SMAC port enforcement anyway, so
- 		 * what we are setting here doesn't matter.
-@@ -1736,6 +1734,9 @@ static int sja1105_fdb_add(struct dsa_switch *ds, int port,
- {
- 	struct sja1105_private *priv = ds->priv;
- 
-+	if (!vid)
-+		vid = dsa_tag_8021q_bridge_vid(dsa_bridge_num_find(br));
-+
- 	return priv->info->fdb_add_cmd(ds, port, addr, vid);
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index e764d8646d0b..0b3f7345d13d 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -740,7 +740,8 @@ static int felix_lag_change(struct dsa_switch *ds, int port)
  }
  
-@@ -1745,6 +1746,9 @@ static int sja1105_fdb_del(struct dsa_switch *ds, int port,
+ static int felix_vlan_prepare(struct dsa_switch *ds, int port,
+-			      const struct switchdev_obj_port_vlan *vlan)
++			      const struct switchdev_obj_port_vlan *vlan,
++			      struct netlink_ext_ack *extack)
  {
- 	struct sja1105_private *priv = ds->priv;
+ 	struct ocelot *ocelot = ds->priv;
+ 	u16 flags = vlan->flags;
+@@ -758,7 +759,8 @@ static int felix_vlan_prepare(struct dsa_switch *ds, int port,
  
-+	if (!vid)
-+		vid = dsa_tag_8021q_bridge_vid(dsa_bridge_num_find(br));
-+
- 	return priv->info->fdb_del_cmd(ds, port, addr, vid);
+ 	return ocelot_vlan_prepare(ocelot, port, vlan->vid,
+ 				   flags & BRIDGE_VLAN_INFO_PVID,
+-				   flags & BRIDGE_VLAN_INFO_UNTAGGED);
++				   flags & BRIDGE_VLAN_INFO_UNTAGGED,
++				   extack);
  }
  
-@@ -1787,8 +1791,9 @@ static int sja1105_fdb_dump(struct dsa_switch *ds, int port,
- 		u64_to_ether_addr(l2_lookup.macaddr, macaddr);
+ static int felix_vlan_filtering(struct dsa_switch *ds, int port, bool enabled,
+@@ -777,7 +779,7 @@ static int felix_vlan_add(struct dsa_switch *ds, int port,
+ 	u16 flags = vlan->flags;
+ 	int err;
  
- 		/* We need to hide the dsa_8021q VLANs from the user. */
--		if (!priv->vlan_aware)
-+		if (vid_is_dsa_8021q(l2_lookup.vlanid))
- 			l2_lookup.vlanid = 0;
-+
- 		rc = cb(macaddr, l2_lookup.vlanid, l2_lookup.lockeds, data);
- 		if (rc)
- 			return rc;
-@@ -2269,7 +2274,6 @@ sja1105_get_tag_protocol(struct dsa_switch *ds, int port,
- int sja1105_vlan_filtering(struct dsa_switch *ds, int port, bool enabled,
- 			   struct netlink_ext_ack *extack)
+-	err = felix_vlan_prepare(ds, port, vlan);
++	err = felix_vlan_prepare(ds, port, vlan, extack);
+ 	if (err)
+ 		return err;
+ 
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 8ec194178aa2..ccb8a9863890 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -259,16 +259,15 @@ int ocelot_port_vlan_filtering(struct ocelot *ocelot, int port,
+ EXPORT_SYMBOL(ocelot_port_vlan_filtering);
+ 
+ int ocelot_vlan_prepare(struct ocelot *ocelot, int port, u16 vid, bool pvid,
+-			bool untagged)
++			bool untagged, struct netlink_ext_ack *extack)
  {
--	struct sja1105_l2_lookup_params_entry *l2_lookup_params;
- 	struct sja1105_general_params_entry *general_params;
- 	struct sja1105_private *priv = ds->priv;
- 	struct sja1105_table *table;
-@@ -2321,28 +2325,6 @@ int sja1105_vlan_filtering(struct dsa_switch *ds, int port, bool enabled,
- 	general_params->incl_srcpt1 = enabled;
- 	general_params->incl_srcpt0 = enabled;
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
  
--	/* VLAN filtering => independent VLAN learning.
--	 * No VLAN filtering (or best effort) => shared VLAN learning.
--	 *
--	 * In shared VLAN learning mode, untagged traffic still gets
--	 * pvid-tagged, and the FDB table gets populated with entries
--	 * containing the "real" (pvid or from VLAN tag) VLAN ID.
--	 * However the switch performs a masked L2 lookup in the FDB,
--	 * effectively only looking up a frame's DMAC (and not VID) for the
--	 * forwarding decision.
--	 *
--	 * This is extremely convenient for us, because in modes with
--	 * vlan_filtering=0, dsa_8021q actually installs unique pvid's into
--	 * each front panel port. This is good for identification but breaks
--	 * learning badly - the VID of the learnt FDB entry is unique, aka
--	 * no frames coming from any other port are going to have it. So
--	 * for forwarding purposes, this is as though learning was broken
--	 * (all frames get flooded).
--	 */
--	table = &priv->static_config.tables[BLK_IDX_L2_LOOKUP_PARAMS];
--	l2_lookup_params = table->entries;
--	l2_lookup_params->shared_learn = !priv->vlan_aware;
--
- 	for (port = 0; port < ds->num_ports; port++) {
- 		if (dsa_is_unused_port(ds, port))
- 			continue;
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 103b738bd773..5bf8d3a85106 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -1046,6 +1046,7 @@ static inline int dsa_ndo_eth_ioctl(struct net_device *dev, struct ifreq *ifr,
- void dsa_unregister_switch(struct dsa_switch *ds);
- int dsa_register_switch(struct dsa_switch *ds);
- struct dsa_switch *dsa_switch_find(int tree_index, int sw_index);
-+int dsa_bridge_num_find(const struct net_device *bridge_dev);
- #ifdef CONFIG_PM_SLEEP
- int dsa_switch_suspend(struct dsa_switch *ds);
- int dsa_switch_resume(struct dsa_switch *ds);
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 1b2b25d7bd02..0d07a44eeecf 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -129,7 +129,7 @@ void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag)
+ 	/* Deny changing the native VLAN, but always permit deleting it */
+ 	if (untagged && ocelot_port->native_vlan.vid != vid &&
+ 	    ocelot_port->native_vlan.valid) {
+-		dev_err(ocelot->dev,
+-			"Port already has a native VLAN: %d\n",
+-			ocelot_port->native_vlan.vid);
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Port already has a native VLAN");
+ 		return -EBUSY;
  	}
+ 
+diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
+index 04ca55ff0fd0..133634852ecf 100644
+--- a/drivers/net/ethernet/mscc/ocelot_net.c
++++ b/drivers/net/ethernet/mscc/ocelot_net.c
+@@ -385,17 +385,6 @@ static int ocelot_setup_tc(struct net_device *dev, enum tc_setup_type type,
+ 	return 0;
  }
  
--static int dsa_bridge_num_find(const struct net_device *bridge_dev)
-+int dsa_bridge_num_find(const struct net_device *bridge_dev)
+-static int ocelot_vlan_vid_prepare(struct net_device *dev, u16 vid, bool pvid,
+-				   bool untagged)
+-{
+-	struct ocelot_port_private *priv = netdev_priv(dev);
+-	struct ocelot_port *ocelot_port = &priv->port;
+-	struct ocelot *ocelot = ocelot_port->ocelot;
+-	int port = priv->chip_port;
+-
+-	return ocelot_vlan_prepare(ocelot, port, vid, pvid, untagged);
+-}
+-
+ static int ocelot_vlan_vid_add(struct net_device *dev, u16 vid, bool pvid,
+ 			       bool untagged)
  {
- 	struct dsa_switch_tree *dst;
- 	struct dsa_port *dp;
-@@ -147,6 +147,7 @@ static int dsa_bridge_num_find(const struct net_device *bridge_dev)
- 
- 	return -1;
+@@ -943,14 +932,26 @@ static int ocelot_port_attr_set(struct net_device *dev, const void *ctx,
+ 	return err;
  }
-+EXPORT_SYMBOL_GPL(dsa_bridge_num_find);
  
- int dsa_bridge_num_get(const struct net_device *bridge_dev, int max)
++static int ocelot_vlan_vid_prepare(struct net_device *dev, u16 vid, bool pvid,
++				   bool untagged, struct netlink_ext_ack *extack)
++{
++	struct ocelot_port_private *priv = netdev_priv(dev);
++	struct ocelot_port *ocelot_port = &priv->port;
++	struct ocelot *ocelot = ocelot_port->ocelot;
++	int port = priv->chip_port;
++
++	return ocelot_vlan_prepare(ocelot, port, vid, pvid, untagged, extack);
++}
++
+ static int ocelot_port_obj_add_vlan(struct net_device *dev,
+-				    const struct switchdev_obj_port_vlan *vlan)
++				    const struct switchdev_obj_port_vlan *vlan,
++				    struct netlink_ext_ack *extack)
  {
+ 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+ 	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
+ 	int ret;
+ 
+-	ret = ocelot_vlan_vid_prepare(dev, vlan->vid, pvid, untagged);
++	ret = ocelot_vlan_vid_prepare(dev, vlan->vid, pvid, untagged, extack);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1038,7 +1039,8 @@ static int ocelot_port_obj_add(struct net_device *dev, const void *ctx,
+ 	switch (obj->id) {
+ 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
+ 		ret = ocelot_port_obj_add_vlan(dev,
+-					       SWITCHDEV_OBJ_PORT_VLAN(obj));
++					       SWITCHDEV_OBJ_PORT_VLAN(obj),
++					       extack);
+ 		break;
+ 	case SWITCHDEV_OBJ_ID_PORT_MDB:
+ 		ret = ocelot_port_obj_add_mdb(dev, SWITCHDEV_OBJ_PORT_MDB(obj));
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index fb5681f7e61b..ac072303dadf 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -825,7 +825,7 @@ int ocelot_fdb_add(struct ocelot *ocelot, int port,
+ int ocelot_fdb_del(struct ocelot *ocelot, int port,
+ 		   const unsigned char *addr, u16 vid);
+ int ocelot_vlan_prepare(struct ocelot *ocelot, int port, u16 vid, bool pvid,
+-			bool untagged);
++			bool untagged, struct netlink_ext_ack *extack);
+ int ocelot_vlan_add(struct ocelot *ocelot, int port, u16 vid, bool pvid,
+ 		    bool untagged);
+ int ocelot_vlan_del(struct ocelot *ocelot, int port, u16 vid);
 -- 
 2.25.1
 
