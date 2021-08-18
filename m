@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC9D13F0335
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 14:04:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C0BC3F0336
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 14:04:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236749AbhHRME5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 08:04:57 -0400
-Received: from mail-eopbgr00067.outbound.protection.outlook.com ([40.107.0.67]:52143
+        id S235550AbhHRMFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 08:05:03 -0400
+Received: from mail-eopbgr00085.outbound.protection.outlook.com ([40.107.0.85]:55044
         "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236420AbhHRMEO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S236429AbhHRMEO (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 18 Aug 2021 08:04:14 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZSHmbYMT5oNQQnSsNqJhI1npi0UYChTvHLtjKkqOXVRM/jOKEHFUbLlRHUGCAncyD3+wuqn/meymo7idAe5qeGBvXprZxgXO2IQrVHlH8oRkSdDTS7ERf31K92moTWEl51RdxLmR8xPp+6euCJ24Zg/uNthwdIbEzt9C+udL3EbBRBtgTaIbgSrzb7DGfeBbY6iSR3zJh7CqlTZ/bed3sNFBp3oukTOCXfAwk+9i0dROCLZ/8GOw0C+6g1rOHBNBd4NvKTGhllHL5ZRXmyJanK4FscEptBg5eo2b9i0gTbqfDxuMIK2rLF0ZtSWYD8LD1nKXXJAP7MSyW4ynUzjtHA==
+ b=GPh0i477QIW1AczL8N+o6Aj3FaJbyGQKATU7/zCWQ2ODZXokE1ArqHHojCc4PJSFpk19ScyaPzwpGtIj4/H02DCUU7NbKgegGDjgkGsoK6J9rs5ULFIZSKNwwMcwWu0UzNz2Pf+Sq6yZCyaBufZRgKKkK80UOMVEzoxOl6CXBs5iYyJypgpH6jvCtLJLhxD7SyV13NSqTgFGmiqIJR08OpxKsxHjEIY/r/vIFZ8J4mvt2YvZUilbF3ZyVShX3DY0Tk8NE5zVveZDyPNfXj9Bx73hJXNCjPaU6Pv4P29SdieRWGhQ/VXI1w7E5mzM56I4Z8zR5aOF9tT7AZDfJ1Rptg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vf3+O7tUQaJn6O4WmHb3hFm/Vvw7RaSJB+jVPnqm3t8=;
- b=njP4Bpj4GuH1KYABhvpNeXIEQnsuNoFAoP44qO4Q9fiYr1Iy29Fe6ZbhMaxfFwDf+SNCo8NXffx8kLnsW6Kal1t+Cf4L1/az87QyrxXyZguVb8IVFjftSrF+FEE4TMY2x7lW5A8UFfpl+4yFL8A48Hoh7bU/YRbmI/Cc2e7SoIb9OKqLeM+uloC8l33YYGa05o3DlhHDgIBdQ+xdFl9lpCZmAEWL9PUGigS93QLz7ob+S5U0RxPnUmnnaIr8YwDeCzZocGDalCg86sFaex47WnFHC27hFMNOxJkfEApnY5g3zja8/OdGhaw7gk/FCyQybg+SLBXMLa+zTFWu72AjIA==
+ bh=2GNw2doj2mneTs9MCg88u3o7d0vmR9sCmO2rWru6r70=;
+ b=AhAfx3RuFNHYHXpewtWH6EfKYKxZvJzx8vGHNYVTAy3w2dH/JzD6omcq/5ZFdVQIDOxh9IMupwAg2osKj3wZeBkoNarE9/vSFfst1NVlhNqLIqtxOmngurPn90Uky08kfOlMBqok0XAS5RuMEESz8biAJQHxOtvlQVeRaDsMTJIIyFaVn1y9vPzSY2KK/XShMTnU4QebKXTyqA1bybSY9+E4EWu4dyFTWQFTCzIpPArNLpv8LDGoxSgu4qU+oU9mhNhA1/Jrw1LJTTAoy4EDZJro/YbahmVBOQ4SB2JQCUaG2bXY5En37ofPZAlpsesz9Og4/y080Lk7gOMEpydOHQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vf3+O7tUQaJn6O4WmHb3hFm/Vvw7RaSJB+jVPnqm3t8=;
- b=hleKJRxVCZWAIFUnRNLL4a25QFcRVLH5UymuYNXnk/t0RW1Wd8tSW28FZuC+dJUH3Zf9bKv0CCX7FkS5WEFQJ+AatuRCmuKVpSQAvqJSeUTZqDdbaowkSaag9oqRz5PuJRQ8ysmdAPGPBB6UF66ZJ40Q+iWX8WpmEdVwHoDkdwo=
+ bh=2GNw2doj2mneTs9MCg88u3o7d0vmR9sCmO2rWru6r70=;
+ b=JwzLT1jM1r4rRVl8DgKLmb1CBG461k6k79jk1x3oByOB3T1ht5kH+8CZ8dJExQeOYqRSjjJ9EnbdBaOPu6CywMtsd0D6mqmQ+2NPrALGlRO0ypMfX1Vcg3QSzeZGm/79lHjGndPszp6XvSWHr4JeQZyNDaEwvbi1KZHuK9XQPd0=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0402MB3839.eurprd04.prod.outlook.com (2603:10a6:803:21::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.17; Wed, 18 Aug
- 2021 12:03:10 +0000
+ 2021 12:03:11 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4415.024; Wed, 18 Aug 2021
- 12:03:10 +0000
+ 12:03:11 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -79,9 +79,9 @@ Cc:     Roopa Prabhu <roopa@nvidia.com>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Peter Ujfalusi <peter.ujfalusi@ti.com>
-Subject: [RFC PATCH net-next 14/20] net: dsa: pass extack to .port_bridge_join driver methods
-Date:   Wed, 18 Aug 2021 15:01:44 +0300
-Message-Id: <20210818120150.892647-15-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 15/20] net: dsa: request drivers to perform FDB isolation
+Date:   Wed, 18 Aug 2021 15:01:45 +0300
+Message-Id: <20210818120150.892647-16-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210818120150.892647-1-vladimir.oltean@nxp.com>
 References: <20210818120150.892647-1-vladimir.oltean@nxp.com>
@@ -92,366 +92,943 @@ X-ClientProxiedBy: VI1PR08CA0134.eurprd08.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.144.60) by VI1PR08CA0134.eurprd08.prod.outlook.com (2603:10a6:800:d5::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Wed, 18 Aug 2021 12:03:08 +0000
+Received: from localhost.localdomain (188.25.144.60) by VI1PR08CA0134.eurprd08.prod.outlook.com (2603:10a6:800:d5::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Wed, 18 Aug 2021 12:03:10 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bc3cf240-e099-47e7-da9d-08d962402595
+X-MS-Office365-Filtering-Correlation-Id: 10539c05-65ec-449b-b1ab-08d962402670
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB3839:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB3839641E392AD3BFED533BADE0FF9@VI1PR0402MB3839.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1284;
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB3839EA6172A41C3CB8F11D10E0FF9@VI1PR0402MB3839.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Gv0NAGn3l0P10SYKRXxPZ1+En1DQCy0UIfA07zNNvrahHjsOa5xqoCAhF8N23GThTHRxmtAzCTbjV9XH+hTBQ+ZDhUr3ix+dsRr+Q8oF7yYOaEXFHAtzM/EwCU0mBDCmva6kq7CsCV7KQmcCL7F+rChMGvKAs4R7Gc6OK1ows15K8lnEd/XLyEuyxxomnJt1Q2WZfSx7guCqjtZiv9gfI4QVjj1NY1c4ECMAeyBawSLRY7OAwwJm9//VzOg1muq9svptxcTOu4amb3FrXY9zcVqIoYVPT/GyXuEUSNo/7ktfbyPcBRf7u4lffbOdNHewyU6nH4CA00jk+dTdjrD9eyrVO7K+HDLpgW3Ya2uihmIm1ZzcRlV6KJkLVny6OcO5xSXcrwst0urqw+fpLGFOvMnWbtC11Z4bLnKdOAWclsp35/htjJfY5dSeobQOAFkw1KBcANBTuKdA3P3HOEeDdtmTKePsL6htvJd18kj9ovnJ3j+4Jg16VLnuyRJOgVqVyDiEGoee7mxWvG1kS/RX/n+lLBM5QMQIXVqheMgW0DG1UehRtsexvo8cE5B+QWBzBSGwR1uW4oQ51hTLC8OaSS2DoOBOgbfMaGzBvignioleHBygPwFqymXK2uXugsVkqfS4/E63Jjb60NPoJy7SIx8hGzLyh+lCt7E9BSID0yJ8cTRqrwn4pc3IeZlkR7T539iD/jxOw+orfYgNm2y/bXoqu2d8lkk22TPxkawLo3U=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(136003)(39850400004)(366004)(376002)(66476007)(2906002)(66556008)(8936002)(6506007)(186003)(7406005)(7416002)(52116002)(26005)(86362001)(66946007)(6486002)(44832011)(36756003)(30864003)(5660300002)(1076003)(110136005)(54906003)(6512007)(8676002)(316002)(6666004)(38350700002)(38100700002)(956004)(478600001)(83380400001)(2616005)(4326008)(142923001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: MmzDKevEAgKoM+8hf0xDETO5/fm82CrvB8/ilyTrRTfezYgo2NzJFx8FWgfnCqNxMO7kp1tQgbGVFGAwNjxXIAQi38+qvJ1tkWH+1f9P/ZRGeDSArGRJ1HiUe8ogtMjvNPHFU8Zic3Y0Uurfie0oMrBIJYfTQnwYDvcgCaqCpTHJxnJXSzXXGoFC0hxqU1la5A+d1gKkFnLVOYg8mHmHhVy7ueFMiVZj36Rgfi6SsQ5av9N9UUVoCAUgQhzVGcLhXd238KVMGdEuIfN6mF+J1ElCtb8X2Xbc0IEBYoZv6gv5lFwkSqdr3rl9yMfKx0qF9P784ih+bI4T3C/KBgl6xgGnqaKEtVYS5gzxNqoUtrTgpXkOlsJmPxiX/3gr1lhe81H2MSEJbeDtAgWg66qzUfa2RPeUzvMEyCQVFvpPmR7TQa2t5doE6lAFP92537cBBO2zTrxmxpY+S1iyhi8vS7a8vS5STAyPVdetjgFlLk/0wzKfVis7eZx6uE3M2S90JCr14PaB4EvT7D6HTFJhipHn6GtU45/SNb65Thfmb9mj7JYbp8BhgHfEJRML7SEms0X8BfcecXLL6RwkXdK/Fj1jUv72bQn0Hfi1E+oP1jmCiu5MSbdPUBwmNkpKeyXY6QJRPX4kcJsana/vRp7awPgYZT9AOdrQjM3LG7gjkDIkuMe38iNV2Cx0fpd2OoExSWsKAzip4HEdS8ueUlpzgw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(136003)(39850400004)(366004)(376002)(66476007)(2906002)(66556008)(8936002)(6506007)(186003)(7406005)(7416002)(52116002)(26005)(86362001)(66946007)(6486002)(44832011)(36756003)(30864003)(5660300002)(1076003)(110136005)(54906003)(6512007)(8676002)(316002)(6666004)(38350700002)(38100700002)(956004)(478600001)(83380400001)(2616005)(4326008);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+8zip0GunMv3PR1OqotzvpxOszn3yCeuCxdGVTFZKcX4YJpZdBsvirSqh7Vb?=
- =?us-ascii?Q?meDTvZVXBfWoz0WoDmhT4sb9BdpurGX22T8rMYtI4NX0fzIhLunTiW1V5rGK?=
- =?us-ascii?Q?9BsBifnWZLyPgudBa58EITTuj/5TzUNJuSDOBQ3SJme5DopzlpFVUdPt8oC6?=
- =?us-ascii?Q?QiTkAKA2h1MrdOXOUlnNiqiRzkcXHqGab84r9I11LgL1leaIBA+MmbDo8aY4?=
- =?us-ascii?Q?uaKSoX0XhMOgPnQCRbxpmZL1QvU7eo9JunF2qJwYps86vLuN5rXTbRCHLvsJ?=
- =?us-ascii?Q?D4bJgEDKPwYsEMNwVEE4fyQZqhILNZXp5+JW778hAPttkFClFloU38kClYtQ?=
- =?us-ascii?Q?5A1UN/qgPwClVZxiaZDV3ryNTsK3NPA2Sf8ZaJS3lbp8rR6+EF+FPMn4VgZg?=
- =?us-ascii?Q?BLjP5JwM5lIo2WhvBc5/HLc51Qy3s2UKU/6aq5lZyy3Bj1xsw+Kl6xRVTvGu?=
- =?us-ascii?Q?bpbVcYRX/yujL3JSua5JaSLCHbf9bjfyGnqcLZBFGfodclyRRoV2yCGogNIj?=
- =?us-ascii?Q?hID8YkWhZk3nF26e3ICwWOtx1f8MTxdWYwuWY/hnltOWfIH18AclwRJ6dS1Q?=
- =?us-ascii?Q?aFTQgB/1DLCcKD3Ifm7qQoBI+dQ+/l7sYe8qL6XfUFm0KshjMHlSV2xHr1ki?=
- =?us-ascii?Q?p3kxQHfi/MG+nDhYSUp+eCfxsrdOgQovQPIeJJughbqksRMdWET/rUyqMUnD?=
- =?us-ascii?Q?fdQqSL2sDGT7wDxgp3nFwvpQfi+yOS1wF2+ETc6ECkOBymP32ABlS3z7w73Q?=
- =?us-ascii?Q?iOQtH04WzgJp3c4P3HUyy2a8V8BfokrHr6ZuISxArfXSjVgXn70PgXumbOXC?=
- =?us-ascii?Q?7qvWrz9Ajr6qO2xTUup7OxXWBeL/Xvu5BnCmW49LPCIDQ0fRZc1JBSWU40bQ?=
- =?us-ascii?Q?t06yJAGNlV5P70McXS+WekQ/UNAo5dnsoBJLe68UOG4PqSUrpkd6IAy5LBn7?=
- =?us-ascii?Q?4mdEQ+CUCofm5RTpCWr0ov+9cAWX3+UXbfdVVaAM4XOrshni49xulSKToxJv?=
- =?us-ascii?Q?v0egAWRZiLSkIB0B7pHGJByRt6PtWrFewjEeYa/Fv6UNCUy7r8/AOppQ7anc?=
- =?us-ascii?Q?RVxuEucPzIqzMGGIRJUuxEYXdQfDlgCozvci63o01x/df0i2tKRZT6nvQzzg?=
- =?us-ascii?Q?E4wD6+lW9G2IjMcZHAwqyCeukE7//RA8Kwx0LG/oVpHDki4YjxVa6mpV2ohz?=
- =?us-ascii?Q?riNNbnw/JxlRofqLeSyO/Wr7KkhsQojTYUWmLEThIqkt62h6CqcRjYZ08MGw?=
- =?us-ascii?Q?gIdbVS4+SNDs2hr0cgT5RrX15PkReobWqYhFAS8PVC0U5l6wm0Hj2DjzQrYe?=
- =?us-ascii?Q?wzmsz21orwRyOEBYJVCDh0h3?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?kEcoKjF6pVLuD/oq1iIiCNJBvGoIPu+1rAwxJlDWCXZsSx2xHyqTJk0xE36v?=
+ =?us-ascii?Q?BlAEYeXMh7D4SYSVentiehVz+UPmUAQuwpm5QNq9EDBwz4xFn9pDT95G818O?=
+ =?us-ascii?Q?5bly3CFTNmrqsOTgK9hZMsp9N7Ubr8XgBEgJtZpCM9Rp4i/9PQGzOiKRpinx?=
+ =?us-ascii?Q?PKvgp4YVeXC7UGroKoWyJgWiBzzUSPg379H7ckiiyAROkG+wXH1A+QPF+Sav?=
+ =?us-ascii?Q?CFxL2u71rxgcv6MF9vunOZxvlaVYqKi/8bvlCjKxWOeW3ff7kylwUXfNJFDO?=
+ =?us-ascii?Q?moslu58gccatJFHRbWJ/PsGCVuSeARHLG6v9Lc8bnj1rT6LMAZRvTC0sus7p?=
+ =?us-ascii?Q?mKm7ku7KFv5B1Jn4pPVbX3BZmxhjccfOAZnDy7HKKHucWraSRjJnA2waqE3D?=
+ =?us-ascii?Q?udtHrqQosfjamU5ecamHmZ1OOSb40u7yE1xdAcMovcXlFBnLsg/MDnLJYF2N?=
+ =?us-ascii?Q?XjOsc03vbLi8mK+Hag5/pZqancUs/1a1ryeBNRLDyTNZBAd0TXQcp7sRS8xu?=
+ =?us-ascii?Q?g1r37K8l+wLZVl/nRtg5cBTzJyFtkc6NahCPpl+idA/3Awadq0sDsDGM8ELE?=
+ =?us-ascii?Q?I9YPaM6TALTFNNBo7FMR52P7ndyYFzugfFyJweBU0bCWBGs6f9nLh2nOzz+m?=
+ =?us-ascii?Q?VTIrhDOHUlQ3mHVyrPTI383JijBgFCHe6CuDLPQPnLL7/FIQXjnZM5ANVim1?=
+ =?us-ascii?Q?BilRepaf7GYcw0PmRrX/2TkoFGztnW/gIUa6/vAQlED5o/lfAJhLWmuS+NRe?=
+ =?us-ascii?Q?oYlpE++TKO9xRisREB88XzMtZWaASj9a6YQIogY/H+pMrrjd8HVsmHvR1MTu?=
+ =?us-ascii?Q?iTc+ANi3TlNYzOyRGaMFoGBafiQUATh3KlG9EI8gZsBGAYMVxVtvVhi3RGWU?=
+ =?us-ascii?Q?Di7TaUB5CvwcNfDnb/d8/iFyUhB2ozg2ZckbkZdkWvkXOFSs0ggHo8QdOvV7?=
+ =?us-ascii?Q?o6zx0aPdV6ssRSLx1gwUM0XqcZ7qfwoSRYc7EeSoxwPe2xfgjycOALSJPpTl?=
+ =?us-ascii?Q?mQ/DlK0in5rhYgPl5n8tdyAUryLeb1B9LVgeoEPlOY0EiErXPV8U654oHMwk?=
+ =?us-ascii?Q?uSoZuCCIgCSM/Qn1SoU7wSPFVaiP42OtestnTfWa3q2bokw5puwN26dOX1e5?=
+ =?us-ascii?Q?lt/J+ku5TmoA89yRGOXybw3XxUhXFAwVKf63AoSYS9ijDGUY/7tTuVz5/C0y?=
+ =?us-ascii?Q?ryLuRUJtw4iXnoA8M5EW+dEgu+kI9vr6Wlo99uwrNpdX6vMS3JnQtMqOQspr?=
+ =?us-ascii?Q?0c6DO1/JHTobdPuAFT4Qzyh6HzbTOx9UAc2HLbpocr9Ls/go/dT9pOtjPGwg?=
+ =?us-ascii?Q?JhU22WQMhLJjY7nznLvglCbX?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bc3cf240-e099-47e7-da9d-08d962402595
+X-MS-Exchange-CrossTenant-Network-Message-Id: 10539c05-65ec-449b-b1ab-08d962402670
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2021 12:03:09.9981
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2021 12:03:11.4633
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sdxzVnze9jmqJcOlthq61ZzKqzSQJ4jj8j35JeVZQMOfgRHnurYPwXS9uWE6Oe7wOYu3bWim4P4G1y0uniIibw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: wQBg6YYnbtTyDInaFHmD1LikxcYtUOp8prwxXXcFizkaIPGeW4cZYU7JrZGGX8kKRqZPPjrClvj4zU7rT/vfqw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3839
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As FDB isolation cannot be enforced between VLAN-aware bridges in lack
-of hardware assistance like extra FID bits, it seems plausible that many
-DSA switches cannot do it. Therefore, they need to reject configurations
-with multiple VLAN-aware bridges from the two code paths that can
-transition towards that state:
+For DSA, to encourage drivers to perform FDB isolation simply means to
+track which bridge does each FDB and MDB entry belong to. It then
+becomes the driver responsibility to use something that makes the FDB
+entry from one bridge not match the FDB lookup of ports from other
+bridges.
 
-- joining a VLAN-aware bridge
-- toggling VLAN awareness on an existing bridge
+The top-level functions where the bridge is determined are:
+- dsa_port_fdb_{add,del}
+- dsa_port_host_fdb_{add,del}
+- dsa_port_mdb_{add,del}
+- dsa_port_host_mdb_{add,del}
 
-The .port_vlan_filtering method already propagates the netlink extack to
-the driver, let's propagate it from .port_bridge_join too, to make sure
-that the driver can use the same function for both.
+aka the pre-crosschip-notifier functions.
+
+One might obviously ask: why do you pass the bridge_dev all the way to
+drivers, can't they just look at dsa_to_port(ds, port)->bridge_dev?!
+
+Well, no.
+
+While that might work for user ports, it does not work for CPU and DSA
+ports. Those service multiple bridges, of course.
+
+When dsa_port_host_fdb_add(dp) is called, the driver is notified on
+dp->cpu_dp. So it loses the information about the original dp, so it
+cannot access dp->bridge_dev.
+
+But notice that at least we don't explicitly pass the bridge_num to it.
+Drivers can call dsa_bridge_num_find(bridge_dev), sure, but it is
+optional and if they have a better tracking scheme, they should be free
+to use it.
+
+DSA must perform refcounting on the CPU and DSA ports by also taking
+into account the bridge number. So if two bridges request the same local
+address, DSA must notify the driver twice, once for each bridge.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/b53/b53_common.c       | 2 +-
- drivers/net/dsa/b53/b53_priv.h         | 2 +-
- drivers/net/dsa/dsa_loop.c             | 3 ++-
- drivers/net/dsa/hirschmann/hellcreek.c | 3 ++-
- drivers/net/dsa/lan9303-core.c         | 3 ++-
- drivers/net/dsa/lantiq_gswip.c         | 3 ++-
- drivers/net/dsa/microchip/ksz_common.c | 3 ++-
- drivers/net/dsa/microchip/ksz_common.h | 3 ++-
- drivers/net/dsa/mt7530.c               | 3 ++-
- drivers/net/dsa/mv88e6xxx/chip.c       | 6 ++++--
- drivers/net/dsa/ocelot/felix.c         | 3 ++-
- drivers/net/dsa/qca8k.c                | 2 +-
- drivers/net/dsa/sja1105/sja1105_main.c | 3 ++-
- drivers/net/dsa/xrs700x/xrs700x.c      | 3 ++-
- include/net/dsa.h                      | 6 ++++--
- net/dsa/dsa_priv.h                     | 1 +
- net/dsa/port.c                         | 1 +
- net/dsa/switch.c                       | 5 +++--
- 18 files changed, 36 insertions(+), 19 deletions(-)
+ drivers/net/dsa/b53/b53_common.c       | 12 +++--
+ drivers/net/dsa/b53/b53_priv.h         | 12 +++--
+ drivers/net/dsa/hirschmann/hellcreek.c |  6 ++-
+ drivers/net/dsa/lan9303-core.c         | 13 ++++--
+ drivers/net/dsa/lantiq_gswip.c         |  6 ++-
+ drivers/net/dsa/microchip/ksz9477.c    | 12 +++--
+ drivers/net/dsa/microchip/ksz_common.c |  6 ++-
+ drivers/net/dsa/microchip/ksz_common.h |  6 ++-
+ drivers/net/dsa/mt7530.c               | 12 +++--
+ drivers/net/dsa/mv88e6xxx/chip.c       | 12 +++--
+ drivers/net/dsa/ocelot/felix.c         | 12 +++--
+ drivers/net/dsa/qca8k.c                |  6 ++-
+ drivers/net/dsa/sja1105/sja1105_main.c | 19 +++++---
+ include/net/dsa.h                      | 13 ++++--
+ net/dsa/dsa_priv.h                     |  2 +
+ net/dsa/port.c                         |  9 +++-
+ net/dsa/switch.c                       | 63 +++++++++++++++-----------
+ 17 files changed, 143 insertions(+), 78 deletions(-)
 
 diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index d0f00cb0a235..55bfcec2b204 100644
+index 55bfcec2b204..bec55bf0efeb 100644
 --- a/drivers/net/dsa/b53/b53_common.c
 +++ b/drivers/net/dsa/b53/b53_common.c
-@@ -1848,7 +1848,7 @@ int b53_mdb_del(struct dsa_switch *ds, int port,
- EXPORT_SYMBOL(b53_mdb_del);
- 
- int b53_br_join(struct dsa_switch *ds, int port, struct net_device *br,
--		int bridge_num)
-+		int bridge_num, struct netlink_ext_ack *extack)
- {
- 	struct b53_device *dev = ds->priv;
- 	s8 cpu_port = dsa_to_port(ds, port)->cpu_dp->index;
-diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
-index e3f1e9ff1b50..4e9b05008524 100644
---- a/drivers/net/dsa/b53/b53_priv.h
-+++ b/drivers/net/dsa/b53/b53_priv.h
-@@ -319,7 +319,7 @@ void b53_get_ethtool_stats(struct dsa_switch *ds, int port, uint64_t *data);
- int b53_get_sset_count(struct dsa_switch *ds, int port, int sset);
- void b53_get_ethtool_phy_stats(struct dsa_switch *ds, int port, uint64_t *data);
- int b53_br_join(struct dsa_switch *ds, int port, struct net_device *bridge,
--		int bridge_num);
-+		int bridge_num, struct netlink_ext_ack *extack);
- void b53_br_leave(struct dsa_switch *ds, int port, struct net_device *bridge,
- 		  int bridge_num);
- void b53_br_set_stp_state(struct dsa_switch *ds, int port, u8 state);
-diff --git a/drivers/net/dsa/dsa_loop.c b/drivers/net/dsa/dsa_loop.c
-index c9fefdede1d1..658c23195b05 100644
---- a/drivers/net/dsa/dsa_loop.c
-+++ b/drivers/net/dsa/dsa_loop.c
-@@ -168,7 +168,8 @@ static int dsa_loop_phy_write(struct dsa_switch *ds, int port,
- 
- static int dsa_loop_port_bridge_join(struct dsa_switch *ds, int port,
- 				     struct net_device *bridge,
--				     int bridge_num)
-+				     int bridge_num,
-+				     struct netlink_ext_ack *extack)
- {
- 	dev_dbg(ds->dev, "%s: port: %d, bridge: %s\n",
- 		__func__, port, bridge->name);
-diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
-index 732fff99bfb2..fdae74313eb7 100644
---- a/drivers/net/dsa/hirschmann/hellcreek.c
-+++ b/drivers/net/dsa/hirschmann/hellcreek.c
-@@ -675,7 +675,8 @@ static int hellcreek_bridge_flags(struct dsa_switch *ds, int port,
- 
- static int hellcreek_port_bridge_join(struct dsa_switch *ds, int port,
- 				      struct net_device *br,
--				      int bridge_num)
-+				      int bridge_num,
-+				      struct netlink_ext_ack *extack)
- {
- 	struct hellcreek *hellcreek = ds->priv;
- 
-diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
-index 4e72fd04eb5f..d1148ab2f66e 100644
---- a/drivers/net/dsa/lan9303-core.c
-+++ b/drivers/net/dsa/lan9303-core.c
-@@ -1103,7 +1103,8 @@ static void lan9303_port_disable(struct dsa_switch *ds, int port)
+@@ -1712,7 +1712,8 @@ static int b53_arl_op(struct b53_device *dev, int op, int port,
  }
  
- static int lan9303_port_bridge_join(struct dsa_switch *ds, int port,
--				    struct net_device *br, int bridge_num)
-+				    struct net_device *br, int bridge_num,
-+				    struct netlink_ext_ack *extack)
+ int b53_fdb_add(struct dsa_switch *ds, int port,
+-		const unsigned char *addr, u16 vid)
++		const unsigned char *addr, u16 vid,
++		const struct net_device *br)
+ {
+ 	struct b53_device *priv = ds->priv;
+ 
+@@ -1727,7 +1728,8 @@ int b53_fdb_add(struct dsa_switch *ds, int port,
+ EXPORT_SYMBOL(b53_fdb_add);
+ 
+ int b53_fdb_del(struct dsa_switch *ds, int port,
+-		const unsigned char *addr, u16 vid)
++		const unsigned char *addr, u16 vid,
++		const struct net_device *br)
+ {
+ 	struct b53_device *priv = ds->priv;
+ 
+@@ -1819,7 +1821,8 @@ int b53_fdb_dump(struct dsa_switch *ds, int port,
+ EXPORT_SYMBOL(b53_fdb_dump);
+ 
+ int b53_mdb_add(struct dsa_switch *ds, int port,
+-		const struct switchdev_obj_port_mdb *mdb)
++		const struct switchdev_obj_port_mdb *mdb,
++		const struct net_device *br)
+ {
+ 	struct b53_device *priv = ds->priv;
+ 
+@@ -1834,7 +1837,8 @@ int b53_mdb_add(struct dsa_switch *ds, int port,
+ EXPORT_SYMBOL(b53_mdb_add);
+ 
+ int b53_mdb_del(struct dsa_switch *ds, int port,
+-		const struct switchdev_obj_port_mdb *mdb)
++		const struct switchdev_obj_port_mdb *mdb,
++		const struct net_device *br)
+ {
+ 	struct b53_device *priv = ds->priv;
+ 	int ret;
+diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
+index 4e9b05008524..6124d0f0d62b 100644
+--- a/drivers/net/dsa/b53/b53_priv.h
++++ b/drivers/net/dsa/b53/b53_priv.h
+@@ -358,15 +358,19 @@ int b53_vlan_add(struct dsa_switch *ds, int port,
+ int b53_vlan_del(struct dsa_switch *ds, int port,
+ 		 const struct switchdev_obj_port_vlan *vlan);
+ int b53_fdb_add(struct dsa_switch *ds, int port,
+-		const unsigned char *addr, u16 vid);
++		const unsigned char *addr, u16 vid,
++		const struct net_device *br);
+ int b53_fdb_del(struct dsa_switch *ds, int port,
+-		const unsigned char *addr, u16 vid);
++		const unsigned char *addr, u16 vid,
++		const struct net_device *br);
+ int b53_fdb_dump(struct dsa_switch *ds, int port,
+ 		 dsa_fdb_dump_cb_t *cb, void *data);
+ int b53_mdb_add(struct dsa_switch *ds, int port,
+-		const struct switchdev_obj_port_mdb *mdb);
++		const struct switchdev_obj_port_mdb *mdb,
++		const struct net_device *br);
+ int b53_mdb_del(struct dsa_switch *ds, int port,
+-		const struct switchdev_obj_port_mdb *mdb);
++		const struct switchdev_obj_port_mdb *mdb,
++		const struct net_device *br);
+ int b53_mirror_add(struct dsa_switch *ds, int port,
+ 		   struct dsa_mall_mirror_tc_entry *mirror, bool ingress);
+ enum dsa_tag_protocol b53_get_tag_protocol(struct dsa_switch *ds, int port,
+diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
+index fdae74313eb7..f4de182a091b 100644
+--- a/drivers/net/dsa/hirschmann/hellcreek.c
++++ b/drivers/net/dsa/hirschmann/hellcreek.c
+@@ -826,7 +826,8 @@ static int hellcreek_fdb_get(struct hellcreek *hellcreek,
+ }
+ 
+ static int hellcreek_fdb_add(struct dsa_switch *ds, int port,
+-			     const unsigned char *addr, u16 vid)
++			     const unsigned char *addr, u16 vid,
++			     const struct net_device *br)
+ {
+ 	struct hellcreek_fdb_entry entry = { 0 };
+ 	struct hellcreek *hellcreek = ds->priv;
+@@ -871,7 +872,8 @@ static int hellcreek_fdb_add(struct dsa_switch *ds, int port,
+ }
+ 
+ static int hellcreek_fdb_del(struct dsa_switch *ds, int port,
+-			     const unsigned char *addr, u16 vid)
++			     const unsigned char *addr, u16 vid,
++			     const struct net_device *br)
+ {
+ 	struct hellcreek_fdb_entry entry = { 0 };
+ 	struct hellcreek *hellcreek = ds->priv;
+diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
+index d1148ab2f66e..311d8f5e3c87 100644
+--- a/drivers/net/dsa/lan9303-core.c
++++ b/drivers/net/dsa/lan9303-core.c
+@@ -1181,7 +1181,8 @@ static void lan9303_port_fast_age(struct dsa_switch *ds, int port)
+ }
+ 
+ static int lan9303_port_fdb_add(struct dsa_switch *ds, int port,
+-				const unsigned char *addr, u16 vid)
++				const unsigned char *addr, u16 vid,
++				const struct net_device *br)
+ {
+ 	struct lan9303 *chip = ds->priv;
+ 
+@@ -1193,8 +1194,8 @@ static int lan9303_port_fdb_add(struct dsa_switch *ds, int port,
+ }
+ 
+ static int lan9303_port_fdb_del(struct dsa_switch *ds, int port,
+-				const unsigned char *addr, u16 vid)
+-
++				const unsigned char *addr, u16 vid,
++				const struct net_device *br)
+ {
+ 	struct lan9303 *chip = ds->priv;
+ 
+@@ -1238,7 +1239,8 @@ static int lan9303_port_mdb_prepare(struct dsa_switch *ds, int port,
+ }
+ 
+ static int lan9303_port_mdb_add(struct dsa_switch *ds, int port,
+-				const struct switchdev_obj_port_mdb *mdb)
++				const struct switchdev_obj_port_mdb *mdb,
++				const struct net_device *br)
+ {
+ 	struct lan9303 *chip = ds->priv;
+ 	int err;
+@@ -1253,7 +1255,8 @@ static int lan9303_port_mdb_add(struct dsa_switch *ds, int port,
+ }
+ 
+ static int lan9303_port_mdb_del(struct dsa_switch *ds, int port,
+-				const struct switchdev_obj_port_mdb *mdb)
++				const struct switchdev_obj_port_mdb *mdb,
++				const struct net_device *br)
  {
  	struct lan9303 *chip = ds->priv;
  
 diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index 2ce4da567106..64a22652cc75 100644
+index 64a22652cc75..7dd9d9752a17 100644
 --- a/drivers/net/dsa/lantiq_gswip.c
 +++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -1128,7 +1128,8 @@ static int gswip_vlan_remove(struct gswip_priv *priv,
+@@ -1364,13 +1364,15 @@ static int gswip_port_fdb(struct dsa_switch *ds, int port,
  }
  
- static int gswip_port_bridge_join(struct dsa_switch *ds, int port,
--				  struct net_device *bridge, int bridge_num)
-+				  struct net_device *bridge, int bridge_num,
-+				  struct netlink_ext_ack *extack)
+ static int gswip_port_fdb_add(struct dsa_switch *ds, int port,
+-			      const unsigned char *addr, u16 vid)
++			      const unsigned char *addr, u16 vid,
++			      const struct net_device *br)
  {
- 	struct gswip_priv *priv = ds->priv;
- 	int err;
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 4f821933e291..202fd93caae3 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -173,7 +173,8 @@ void ksz_get_ethtool_stats(struct dsa_switch *ds, int port, uint64_t *buf)
- EXPORT_SYMBOL_GPL(ksz_get_ethtool_stats);
+ 	return gswip_port_fdb(ds, port, addr, vid, true);
+ }
  
- int ksz_port_bridge_join(struct dsa_switch *ds, int port,
--			 struct net_device *br, int bridge_num)
-+			 struct net_device *br, int bridge_num,
-+			 struct netlink_ext_ack *extack)
+ static int gswip_port_fdb_del(struct dsa_switch *ds, int port,
+-			      const unsigned char *addr, u16 vid)
++			      const unsigned char *addr, u16 vid,
++			      const struct net_device *br)
+ {
+ 	return gswip_port_fdb(ds, port, addr, vid, false);
+ }
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 854e25f43fa7..1cc6ab1dfef8 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -583,7 +583,8 @@ static int ksz9477_port_vlan_del(struct dsa_switch *ds, int port,
+ }
+ 
+ static int ksz9477_port_fdb_add(struct dsa_switch *ds, int port,
+-				const unsigned char *addr, u16 vid)
++				const unsigned char *addr, u16 vid,
++				const struct net_device *br)
  {
  	struct ksz_device *dev = ds->priv;
+ 	u32 alu_table[4];
+@@ -640,7 +641,8 @@ static int ksz9477_port_fdb_add(struct dsa_switch *ds, int port,
+ }
  
+ static int ksz9477_port_fdb_del(struct dsa_switch *ds, int port,
+-				const unsigned char *addr, u16 vid)
++				const unsigned char *addr, u16 vid,
++				const struct net_device *br)
+ {
+ 	struct ksz_device *dev = ds->priv;
+ 	u32 alu_table[4];
+@@ -782,7 +784,8 @@ static int ksz9477_port_fdb_dump(struct dsa_switch *ds, int port,
+ }
+ 
+ static int ksz9477_port_mdb_add(struct dsa_switch *ds, int port,
+-				const struct switchdev_obj_port_mdb *mdb)
++				const struct switchdev_obj_port_mdb *mdb,
++				const struct net_device *br)
+ {
+ 	struct ksz_device *dev = ds->priv;
+ 	u32 static_table[4];
+@@ -857,7 +860,8 @@ static int ksz9477_port_mdb_add(struct dsa_switch *ds, int port,
+ }
+ 
+ static int ksz9477_port_mdb_del(struct dsa_switch *ds, int port,
+-				const struct switchdev_obj_port_mdb *mdb)
++				const struct switchdev_obj_port_mdb *mdb,
++				const struct net_device *br)
+ {
+ 	struct ksz_device *dev = ds->priv;
+ 	u32 static_table[4];
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 202fd93caae3..96b4cd6f7daa 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -246,7 +246,8 @@ int ksz_port_fdb_dump(struct dsa_switch *ds, int port, dsa_fdb_dump_cb_t *cb,
+ EXPORT_SYMBOL_GPL(ksz_port_fdb_dump);
+ 
+ int ksz_port_mdb_add(struct dsa_switch *ds, int port,
+-		     const struct switchdev_obj_port_mdb *mdb)
++		     const struct switchdev_obj_port_mdb *mdb,
++		     const struct net_device *br)
+ {
+ 	struct ksz_device *dev = ds->priv;
+ 	struct alu_struct alu;
+@@ -291,7 +292,8 @@ int ksz_port_mdb_add(struct dsa_switch *ds, int port,
+ EXPORT_SYMBOL_GPL(ksz_port_mdb_add);
+ 
+ int ksz_port_mdb_del(struct dsa_switch *ds, int port,
+-		     const struct switchdev_obj_port_mdb *mdb)
++		     const struct switchdev_obj_port_mdb *mdb,
++		     const struct net_device *br)
+ {
+ 	struct ksz_device *dev = ds->priv;
+ 	struct alu_struct alu;
 diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 3e905059374b..59c42cc1000b 100644
+index 59c42cc1000b..31653e1ae15f 100644
 --- a/drivers/net/dsa/microchip/ksz_common.h
 +++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -159,7 +159,8 @@ void ksz_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
- int ksz_sset_count(struct dsa_switch *ds, int port, int sset);
- void ksz_get_ethtool_stats(struct dsa_switch *ds, int port, uint64_t *buf);
- int ksz_port_bridge_join(struct dsa_switch *ds, int port,
--			 struct net_device *br, int bridge_num);
-+			 struct net_device *br, int bridge_num,
-+			 struct netlink_ext_ack *extack);
- void ksz_port_bridge_leave(struct dsa_switch *ds, int port,
- 			   struct net_device *br, int bridge_num);
- void ksz_port_fast_age(struct dsa_switch *ds, int port);
+@@ -167,9 +167,11 @@ void ksz_port_fast_age(struct dsa_switch *ds, int port);
+ int ksz_port_fdb_dump(struct dsa_switch *ds, int port, dsa_fdb_dump_cb_t *cb,
+ 		      void *data);
+ int ksz_port_mdb_add(struct dsa_switch *ds, int port,
+-		     const struct switchdev_obj_port_mdb *mdb);
++		     const struct switchdev_obj_port_mdb *mdb,
++		     const struct net_device *br);
+ int ksz_port_mdb_del(struct dsa_switch *ds, int port,
+-		     const struct switchdev_obj_port_mdb *mdb);
++		     const struct switchdev_obj_port_mdb *mdb,
++		     const struct net_device *br);
+ int ksz_enable_port(struct dsa_switch *ds, int port, struct phy_device *phy);
+ 
+ /* Common register access functions */
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 751e477691f4..3f3b4d3a36e4 100644
+index 3f3b4d3a36e4..08a5e5ef75e6 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -1192,7 +1192,8 @@ mt7530_port_bridge_flags(struct dsa_switch *ds, int port,
+@@ -1348,7 +1348,8 @@ mt7530_port_bridge_leave(struct dsa_switch *ds, int port,
  
  static int
- mt7530_port_bridge_join(struct dsa_switch *ds, int port,
--			struct net_device *bridge, int bridge_num)
-+			struct net_device *bridge, int bridge_num,
-+			struct netlink_ext_ack *extack)
+ mt7530_port_fdb_add(struct dsa_switch *ds, int port,
+-		    const unsigned char *addr, u16 vid)
++		    const unsigned char *addr, u16 vid,
++		    const struct net_device *br)
  {
  	struct mt7530_priv *priv = ds->priv;
- 	u32 port_bitmap = BIT(MT7530_CPU_PORT);
+ 	int ret;
+@@ -1364,7 +1365,8 @@ mt7530_port_fdb_add(struct dsa_switch *ds, int port,
+ 
+ static int
+ mt7530_port_fdb_del(struct dsa_switch *ds, int port,
+-		    const unsigned char *addr, u16 vid)
++		    const unsigned char *addr, u16 vid,
++		    const struct net_device *br)
+ {
+ 	struct mt7530_priv *priv = ds->priv;
+ 	int ret;
+@@ -1415,7 +1417,8 @@ mt7530_port_fdb_dump(struct dsa_switch *ds, int port,
+ 
+ static int
+ mt7530_port_mdb_add(struct dsa_switch *ds, int port,
+-		    const struct switchdev_obj_port_mdb *mdb)
++		    const struct switchdev_obj_port_mdb *mdb,
++		    const struct net_device *br)
+ {
+ 	struct mt7530_priv *priv = ds->priv;
+ 	const u8 *addr = mdb->addr;
+@@ -1441,7 +1444,8 @@ mt7530_port_mdb_add(struct dsa_switch *ds, int port,
+ 
+ static int
+ mt7530_port_mdb_del(struct dsa_switch *ds, int port,
+-		    const struct switchdev_obj_port_mdb *mdb)
++		    const struct switchdev_obj_port_mdb *mdb,
++		    const struct net_device *br)
+ {
+ 	struct mt7530_priv *priv = ds->priv;
+ 	const u8 *addr = mdb->addr;
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 37878ccf499c..92c2833a25a4 100644
+index 92c2833a25a4..1b46641052a6 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.c
 +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -2388,7 +2388,8 @@ static int mv88e6xxx_bridge_map(struct mv88e6xxx_chip *chip,
+@@ -2241,7 +2241,8 @@ static int mv88e6xxx_port_vlan_del(struct dsa_switch *ds, int port,
+ }
  
- static int mv88e6xxx_port_bridge_join(struct dsa_switch *ds, int port,
- 				      struct net_device *br,
--				      int bridge_num)
-+				      int bridge_num,
-+				      struct netlink_ext_ack *extack)
+ static int mv88e6xxx_port_fdb_add(struct dsa_switch *ds, int port,
+-				  const unsigned char *addr, u16 vid)
++				  const unsigned char *addr, u16 vid,
++				  const struct net_device *br)
  {
  	struct mv88e6xxx_chip *chip = ds->priv;
  	int err;
-@@ -2416,7 +2417,8 @@ static void mv88e6xxx_port_bridge_leave(struct dsa_switch *ds, int port,
- static int mv88e6xxx_crosschip_bridge_join(struct dsa_switch *ds,
- 					   int tree_index, int sw_index,
- 					   int port, struct net_device *br,
--					   int bridge_num)
-+					   int bridge_num,
-+					   struct netlink_ext_ack *extack)
+@@ -2255,7 +2256,8 @@ static int mv88e6xxx_port_fdb_add(struct dsa_switch *ds, int port,
+ }
+ 
+ static int mv88e6xxx_port_fdb_del(struct dsa_switch *ds, int port,
+-				  const unsigned char *addr, u16 vid)
++				  const unsigned char *addr, u16 vid,
++				  const struct net_device *br)
+ {
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	int err;
+@@ -5682,7 +5684,8 @@ static int mv88e6xxx_change_tag_protocol(struct dsa_switch *ds, int port,
+ }
+ 
+ static int mv88e6xxx_port_mdb_add(struct dsa_switch *ds, int port,
+-				  const struct switchdev_obj_port_mdb *mdb)
++				  const struct switchdev_obj_port_mdb *mdb,
++				  const struct net_device *br)
+ {
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	int err;
+@@ -5696,7 +5699,8 @@ static int mv88e6xxx_port_mdb_add(struct dsa_switch *ds, int port,
+ }
+ 
+ static int mv88e6xxx_port_mdb_del(struct dsa_switch *ds, int port,
+-				  const struct switchdev_obj_port_mdb *mdb)
++				  const struct switchdev_obj_port_mdb *mdb,
++				  const struct net_device *br)
  {
  	struct mv88e6xxx_chip *chip = ds->priv;
  	int err;
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 747dd739f533..cccbd33d5ac5 100644
+index cccbd33d5ac5..e764d8646d0b 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -688,7 +688,8 @@ static int felix_bridge_flags(struct dsa_switch *ds, int port,
+@@ -628,7 +628,8 @@ static int felix_fdb_dump(struct dsa_switch *ds, int port,
  }
  
- static int felix_bridge_join(struct dsa_switch *ds, int port,
--			     struct net_device *br, int bridge_num)
-+			     struct net_device *br, int bridge_num,
-+			     struct netlink_ext_ack *extack)
+ static int felix_fdb_add(struct dsa_switch *ds, int port,
+-			 const unsigned char *addr, u16 vid)
++			 const unsigned char *addr, u16 vid,
++			 const struct net_device *br)
+ {
+ 	struct ocelot *ocelot = ds->priv;
+ 
+@@ -636,7 +637,8 @@ static int felix_fdb_add(struct dsa_switch *ds, int port,
+ }
+ 
+ static int felix_fdb_del(struct dsa_switch *ds, int port,
+-			 const unsigned char *addr, u16 vid)
++			 const unsigned char *addr, u16 vid,
++			 const struct net_device *br)
+ {
+ 	struct ocelot *ocelot = ds->priv;
+ 
+@@ -644,7 +646,8 @@ static int felix_fdb_del(struct dsa_switch *ds, int port,
+ }
+ 
+ static int felix_mdb_add(struct dsa_switch *ds, int port,
+-			 const struct switchdev_obj_port_mdb *mdb)
++			 const struct switchdev_obj_port_mdb *mdb,
++			 const struct net_device *br)
+ {
+ 	struct ocelot *ocelot = ds->priv;
+ 
+@@ -652,7 +655,8 @@ static int felix_mdb_add(struct dsa_switch *ds, int port,
+ }
+ 
+ static int felix_mdb_del(struct dsa_switch *ds, int port,
+-			 const struct switchdev_obj_port_mdb *mdb)
++			 const struct switchdev_obj_port_mdb *mdb,
++			 const struct net_device *br)
  {
  	struct ocelot *ocelot = ds->priv;
  
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 9addf99ceead..4254fbd84432 100644
+index 4254fbd84432..b4893b179289 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -1506,7 +1506,7 @@ qca8k_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
+@@ -1619,7 +1619,8 @@ qca8k_port_fdb_insert(struct qca8k_priv *priv, const u8 *addr,
  
  static int
- qca8k_port_bridge_join(struct dsa_switch *ds, int port, struct net_device *br,
--		       int bridge_num)
-+		       int bridge_num, struct netlink_ext_ack *extack)
+ qca8k_port_fdb_add(struct dsa_switch *ds, int port,
+-		   const unsigned char *addr, u16 vid)
++		   const unsigned char *addr, u16 vid,
++		   const struct net_device *br)
  {
  	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
- 	int port_mask = BIT(QCA8K_CPU_PORT);
+ 	u16 port_mask = BIT(port);
+@@ -1629,7 +1630,8 @@ qca8k_port_fdb_add(struct dsa_switch *ds, int port,
+ 
+ static int
+ qca8k_port_fdb_del(struct dsa_switch *ds, int port,
+-		   const unsigned char *addr, u16 vid)
++		   const unsigned char *addr, u16 vid,
++		   const struct net_device *br)
+ {
+ 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
+ 	u16 port_mask = BIT(port);
 diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 3c319114e292..8580ca2e88df 100644
+index 8580ca2e88df..667e698b5ae8 100644
 --- a/drivers/net/dsa/sja1105/sja1105_main.c
 +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -1985,7 +1985,8 @@ static void sja1105_bridge_stp_state_set(struct dsa_switch *ds, int port,
+@@ -1731,7 +1731,8 @@ int sja1105pqrs_fdb_del(struct dsa_switch *ds, int port,
  }
  
- static int sja1105_bridge_join(struct dsa_switch *ds, int port,
--			       struct net_device *br, int bridge_num)
-+			       struct net_device *br, int bridge_num,
-+			       struct netlink_ext_ack *extack)
+ static int sja1105_fdb_add(struct dsa_switch *ds, int port,
+-			   const unsigned char *addr, u16 vid)
++			   const unsigned char *addr, u16 vid,
++			   const struct net_device *br)
  {
- 	int rc;
+ 	struct sja1105_private *priv = ds->priv;
  
-diff --git a/drivers/net/dsa/xrs700x/xrs700x.c b/drivers/net/dsa/xrs700x/xrs700x.c
-index 230dbbcc48f3..2b6806610a89 100644
---- a/drivers/net/dsa/xrs700x/xrs700x.c
-+++ b/drivers/net/dsa/xrs700x/xrs700x.c
-@@ -542,7 +542,8 @@ static int xrs700x_bridge_common(struct dsa_switch *ds, int port,
+@@ -1739,7 +1740,8 @@ static int sja1105_fdb_add(struct dsa_switch *ds, int port,
  }
  
- static int xrs700x_bridge_join(struct dsa_switch *ds, int port,
--			       struct net_device *bridge, int bridge_num)
-+			       struct net_device *bridge, int bridge_num,
-+			       struct netlink_ext_ack *extack)
+ static int sja1105_fdb_del(struct dsa_switch *ds, int port,
+-			   const unsigned char *addr, u16 vid)
++			   const unsigned char *addr, u16 vid,
++			   const struct net_device *br)
  {
- 	return xrs700x_bridge_common(ds, port, bridge, true);
+ 	struct sja1105_private *priv = ds->priv;
+ 
+@@ -1796,6 +1798,7 @@ static int sja1105_fdb_dump(struct dsa_switch *ds, int port,
+ 
+ static void sja1105_fast_age(struct dsa_switch *ds, int port)
+ {
++	const struct net_device *br = dsa_to_port(ds, port)->bridge_dev;
+ 	struct sja1105_private *priv = ds->priv;
+ 	int i;
+ 
+@@ -1824,7 +1827,7 @@ static void sja1105_fast_age(struct dsa_switch *ds, int port)
+ 
+ 		u64_to_ether_addr(l2_lookup.macaddr, macaddr);
+ 
+-		rc = sja1105_fdb_del(ds, port, macaddr, l2_lookup.vlanid);
++		rc = sja1105_fdb_del(ds, port, macaddr, l2_lookup.vlanid, br);
+ 		if (rc) {
+ 			dev_err(ds->dev,
+ 				"Failed to delete FDB entry %pM vid %lld: %pe\n",
+@@ -1835,15 +1838,17 @@ static void sja1105_fast_age(struct dsa_switch *ds, int port)
  }
+ 
+ static int sja1105_mdb_add(struct dsa_switch *ds, int port,
+-			   const struct switchdev_obj_port_mdb *mdb)
++			   const struct switchdev_obj_port_mdb *mdb,
++			   const struct net_device *br)
+ {
+-	return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid);
++	return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid, br);
+ }
+ 
+ static int sja1105_mdb_del(struct dsa_switch *ds, int port,
+-			   const struct switchdev_obj_port_mdb *mdb)
++			   const struct switchdev_obj_port_mdb *mdb,
++			   const struct net_device *br)
+ {
+-	return sja1105_fdb_del(ds, port, mdb->addr, mdb->vid);
++	return sja1105_fdb_del(ds, port, mdb->addr, mdb->vid, br);
+ }
+ 
+ /* Common function for unicast and broadcast flood configuration.
 diff --git a/include/net/dsa.h b/include/net/dsa.h
-index b2aaef292c6d..5ecba358889a 100644
+index 5ecba358889a..103b738bd773 100644
 --- a/include/net/dsa.h
 +++ b/include/net/dsa.h
-@@ -694,7 +694,8 @@ struct dsa_switch_ops {
+@@ -305,6 +305,7 @@ struct dsa_link {
+ struct dsa_mac_addr {
+ 	unsigned char addr[ETH_ALEN];
+ 	u16 vid;
++	const struct net_device *br;
+ 	refcount_t refcount;
+ 	struct list_head list;
+ };
+@@ -731,9 +732,11 @@ struct dsa_switch_ops {
+ 	 * Forwarding database
  	 */
- 	int	(*set_ageing_time)(struct dsa_switch *ds, unsigned int msecs);
- 	int	(*port_bridge_join)(struct dsa_switch *ds, int port,
--				    struct net_device *bridge, int bridge_num);
-+				    struct net_device *bridge, int bridge_num,
-+				    struct netlink_ext_ack *extack);
- 	void	(*port_bridge_leave)(struct dsa_switch *ds, int port,
- 				     struct net_device *bridge, int bridge_num);
- 	/* Called right after .port_bridge_join() */
-@@ -776,7 +777,8 @@ struct dsa_switch_ops {
+ 	int	(*port_fdb_add)(struct dsa_switch *ds, int port,
+-				const unsigned char *addr, u16 vid);
++				const unsigned char *addr, u16 vid,
++				const struct net_device *br);
+ 	int	(*port_fdb_del)(struct dsa_switch *ds, int port,
+-				const unsigned char *addr, u16 vid);
++				const unsigned char *addr, u16 vid,
++				const struct net_device *br);
+ 	int	(*port_fdb_dump)(struct dsa_switch *ds, int port,
+ 				 dsa_fdb_dump_cb_t *cb, void *data);
+ 
+@@ -741,9 +744,11 @@ struct dsa_switch_ops {
+ 	 * Multicast database
  	 */
- 	int	(*crosschip_bridge_join)(struct dsa_switch *ds, int tree_index,
- 					 int sw_index, int port,
--					 struct net_device *br, int bridge_num);
-+					 struct net_device *br, int bridge_num,
-+					 struct netlink_ext_ack *extack);
- 	void	(*crosschip_bridge_leave)(struct dsa_switch *ds, int tree_index,
- 					  int sw_index, int port,
- 					  struct net_device *br, int bridge_num);
+ 	int	(*port_mdb_add)(struct dsa_switch *ds, int port,
+-				const struct switchdev_obj_port_mdb *mdb);
++				const struct switchdev_obj_port_mdb *mdb,
++				const struct net_device *br);
+ 	int	(*port_mdb_del)(struct dsa_switch *ds, int port,
+-				const struct switchdev_obj_port_mdb *mdb);
++				const struct switchdev_obj_port_mdb *mdb,
++				const struct net_device *br);
+ 	/*
+ 	 * RXNFC
+ 	 */
 diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 417fac51c6e8..3a9d81ca3e64 100644
+index 3a9d81ca3e64..ffdec05e1530 100644
 --- a/net/dsa/dsa_priv.h
 +++ b/net/dsa/dsa_priv.h
-@@ -57,6 +57,7 @@ struct dsa_notifier_bridge_info {
- 	int tree_index;
- 	int sw_index;
+@@ -66,6 +66,7 @@ struct dsa_notifier_fdb_info {
  	int port;
-+	struct netlink_ext_ack *extack;
+ 	const unsigned char *addr;
+ 	u16 vid;
++	const struct net_device *br;
  };
  
- /* DSA_NOTIFIER_FDB_* */
+ /* DSA_NOTIFIER_MDB_* */
+@@ -73,6 +74,7 @@ struct dsa_notifier_mdb_info {
+ 	const struct switchdev_obj_port_mdb *mdb;
+ 	int sw_index;
+ 	int port;
++	const struct net_device *br;
+ };
+ 
+ /* DSA_NOTIFIER_LAG_* */
 diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 270624e88358..07c57287ac3e 100644
+index 07c57287ac3e..0c904525a95b 100644
 --- a/net/dsa/port.c
 +++ b/net/dsa/port.c
-@@ -355,6 +355,7 @@ int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
+@@ -739,6 +739,7 @@ int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+ 		.port = dp->index,
+ 		.addr = addr,
+ 		.vid = vid,
++		.br = dp->bridge_dev,
+ 	};
+ 
+ 	return dsa_port_notify(dp, DSA_NOTIFIER_FDB_ADD, &info);
+@@ -752,7 +753,7 @@ int dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+ 		.port = dp->index,
+ 		.addr = addr,
+ 		.vid = vid,
+-
++		.br = dp->bridge_dev,
+ 	};
+ 
+ 	return dsa_port_notify(dp, DSA_NOTIFIER_FDB_DEL, &info);
+@@ -766,6 +767,7 @@ int dsa_port_host_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+ 		.port = dp->index,
+ 		.addr = addr,
+ 		.vid = vid,
++		.br = dp->bridge_dev,
+ 	};
+ 	struct dsa_port *cpu_dp = dp->cpu_dp;
+ 	int err;
+@@ -785,6 +787,7 @@ int dsa_port_host_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+ 		.port = dp->index,
+ 		.addr = addr,
+ 		.vid = vid,
++		.br = dp->bridge_dev,
+ 	};
+ 	struct dsa_port *cpu_dp = dp->cpu_dp;
+ 	int err;
+@@ -814,6 +817,7 @@ int dsa_port_mdb_add(const struct dsa_port *dp,
  		.sw_index = dp->ds->index,
  		.port = dp->index,
- 		.br = br,
-+		.extack = extack,
+ 		.mdb = mdb,
++		.br = dp->bridge_dev,
  	};
- 	struct net_device *dev = dp->slave;
- 	struct net_device *brport_dev;
+ 
+ 	return dsa_port_notify(dp, DSA_NOTIFIER_MDB_ADD, &info);
+@@ -826,6 +830,7 @@ int dsa_port_mdb_del(const struct dsa_port *dp,
+ 		.sw_index = dp->ds->index,
+ 		.port = dp->index,
+ 		.mdb = mdb,
++		.br = dp->bridge_dev,
+ 	};
+ 
+ 	return dsa_port_notify(dp, DSA_NOTIFIER_MDB_DEL, &info);
+@@ -838,6 +843,7 @@ int dsa_port_host_mdb_add(const struct dsa_port *dp,
+ 		.sw_index = dp->ds->index,
+ 		.port = dp->index,
+ 		.mdb = mdb,
++		.br = dp->bridge_dev,
+ 	};
+ 	struct dsa_port *cpu_dp = dp->cpu_dp;
+ 	int err;
+@@ -856,6 +862,7 @@ int dsa_port_host_mdb_del(const struct dsa_port *dp,
+ 		.sw_index = dp->ds->index,
+ 		.port = dp->index,
+ 		.mdb = mdb,
++		.br = dp->bridge_dev,
+ 	};
+ 	struct dsa_port *cpu_dp = dp->cpu_dp;
+ 	int err;
 diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 26dbd70ebb5e..b1c38eee2cac 100644
+index b1c38eee2cac..d0fda69104f9 100644
 --- a/net/dsa/switch.c
 +++ b/net/dsa/switch.c
-@@ -95,7 +95,7 @@ static int dsa_switch_bridge_join(struct dsa_switch *ds,
- 	if (dst->index == info->tree_index && ds->index == info->sw_index &&
- 	    ds->ops->port_bridge_join) {
- 		err = ds->ops->port_bridge_join(ds, info->port, info->br,
--						info->bridge_num);
-+						info->bridge_num, info->extack);
- 		if (err)
- 			return err;
- 	}
-@@ -105,7 +105,8 @@ static int dsa_switch_bridge_join(struct dsa_switch *ds,
- 		err = ds->ops->crosschip_bridge_join(ds, info->tree_index,
- 						     info->sw_index,
- 						     info->port, info->br,
--						     info->bridge_num);
-+						     info->bridge_num,
-+						     info->extack);
- 		if (err)
- 			return err;
- 	}
+@@ -188,20 +188,22 @@ static bool dsa_switch_host_address_match(struct dsa_switch *ds, int port,
+ }
+ 
+ static struct dsa_mac_addr *dsa_mac_addr_find(struct list_head *addr_list,
+-					      const unsigned char *addr,
+-					      u16 vid)
++					      const unsigned char *addr, u16 vid,
++					      const struct net_device *br)
+ {
+ 	struct dsa_mac_addr *a;
+ 
+ 	list_for_each_entry(a, addr_list, list)
+-		if (ether_addr_equal(a->addr, addr) && a->vid == vid)
++		if (ether_addr_equal(a->addr, addr) && a->vid == vid &&
++		    a->br == br)
+ 			return a;
+ 
+ 	return NULL;
+ }
+ 
+ static int dsa_switch_do_mdb_add(struct dsa_switch *ds, int port,
+-				 const struct switchdev_obj_port_mdb *mdb)
++				 const struct switchdev_obj_port_mdb *mdb,
++				 const struct net_device *br)
+ {
+ 	struct dsa_port *dp = dsa_to_port(ds, port);
+ 	struct dsa_mac_addr *a;
+@@ -209,9 +211,9 @@ static int dsa_switch_do_mdb_add(struct dsa_switch *ds, int port,
+ 
+ 	/* No need to bother with refcounting for user ports */
+ 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp)))
+-		return ds->ops->port_mdb_add(ds, port, mdb);
++		return ds->ops->port_mdb_add(ds, port, mdb, br);
+ 
+-	a = dsa_mac_addr_find(&dp->mdbs, mdb->addr, mdb->vid);
++	a = dsa_mac_addr_find(&dp->mdbs, mdb->addr, mdb->vid, br);
+ 	if (a) {
+ 		refcount_inc(&a->refcount);
+ 		return 0;
+@@ -221,7 +223,7 @@ static int dsa_switch_do_mdb_add(struct dsa_switch *ds, int port,
+ 	if (!a)
+ 		return -ENOMEM;
+ 
+-	err = ds->ops->port_mdb_add(ds, port, mdb);
++	err = ds->ops->port_mdb_add(ds, port, mdb, br);
+ 	if (err) {
+ 		kfree(a);
+ 		return err;
+@@ -229,6 +231,7 @@ static int dsa_switch_do_mdb_add(struct dsa_switch *ds, int port,
+ 
+ 	ether_addr_copy(a->addr, mdb->addr);
+ 	a->vid = mdb->vid;
++	a->br = br;
+ 	refcount_set(&a->refcount, 1);
+ 	list_add_tail(&a->list, &dp->mdbs);
+ 
+@@ -236,7 +239,8 @@ static int dsa_switch_do_mdb_add(struct dsa_switch *ds, int port,
+ }
+ 
+ static int dsa_switch_do_mdb_del(struct dsa_switch *ds, int port,
+-				 const struct switchdev_obj_port_mdb *mdb)
++				 const struct switchdev_obj_port_mdb *mdb,
++				 const struct net_device *br)
+ {
+ 	struct dsa_port *dp = dsa_to_port(ds, port);
+ 	struct dsa_mac_addr *a;
+@@ -244,16 +248,16 @@ static int dsa_switch_do_mdb_del(struct dsa_switch *ds, int port,
+ 
+ 	/* No need to bother with refcounting for user ports */
+ 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp)))
+-		return ds->ops->port_mdb_del(ds, port, mdb);
++		return ds->ops->port_mdb_del(ds, port, mdb, br);
+ 
+-	a = dsa_mac_addr_find(&dp->mdbs, mdb->addr, mdb->vid);
++	a = dsa_mac_addr_find(&dp->mdbs, mdb->addr, mdb->vid, br);
+ 	if (!a)
+ 		return -ENOENT;
+ 
+ 	if (!refcount_dec_and_test(&a->refcount))
+ 		return 0;
+ 
+-	err = ds->ops->port_mdb_del(ds, port, mdb);
++	err = ds->ops->port_mdb_del(ds, port, mdb, br);
+ 	if (err) {
+ 		refcount_inc(&a->refcount);
+ 		return err;
+@@ -266,7 +270,8 @@ static int dsa_switch_do_mdb_del(struct dsa_switch *ds, int port,
+ }
+ 
+ static int dsa_switch_do_fdb_add(struct dsa_switch *ds, int port,
+-				 const unsigned char *addr, u16 vid)
++				 const unsigned char *addr, u16 vid,
++				 const struct net_device *br)
+ {
+ 	struct dsa_port *dp = dsa_to_port(ds, port);
+ 	struct dsa_mac_addr *a;
+@@ -274,9 +279,9 @@ static int dsa_switch_do_fdb_add(struct dsa_switch *ds, int port,
+ 
+ 	/* No need to bother with refcounting for user ports */
+ 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp)))
+-		return ds->ops->port_fdb_add(ds, port, addr, vid);
++		return ds->ops->port_fdb_add(ds, port, addr, vid, br);
+ 
+-	a = dsa_mac_addr_find(&dp->fdbs, addr, vid);
++	a = dsa_mac_addr_find(&dp->fdbs, addr, vid, br);
+ 	if (a) {
+ 		refcount_inc(&a->refcount);
+ 		return 0;
+@@ -286,7 +291,7 @@ static int dsa_switch_do_fdb_add(struct dsa_switch *ds, int port,
+ 	if (!a)
+ 		return -ENOMEM;
+ 
+-	err = ds->ops->port_fdb_add(ds, port, addr, vid);
++	err = ds->ops->port_fdb_add(ds, port, addr, vid, br);
+ 	if (err) {
+ 		kfree(a);
+ 		return err;
+@@ -294,6 +299,7 @@ static int dsa_switch_do_fdb_add(struct dsa_switch *ds, int port,
+ 
+ 	ether_addr_copy(a->addr, addr);
+ 	a->vid = vid;
++	a->br = br;
+ 	refcount_set(&a->refcount, 1);
+ 	list_add_tail(&a->list, &dp->fdbs);
+ 
+@@ -301,7 +307,8 @@ static int dsa_switch_do_fdb_add(struct dsa_switch *ds, int port,
+ }
+ 
+ static int dsa_switch_do_fdb_del(struct dsa_switch *ds, int port,
+-				 const unsigned char *addr, u16 vid)
++				 const unsigned char *addr, u16 vid,
++				 const struct net_device *br)
+ {
+ 	struct dsa_port *dp = dsa_to_port(ds, port);
+ 	struct dsa_mac_addr *a;
+@@ -309,16 +316,16 @@ static int dsa_switch_do_fdb_del(struct dsa_switch *ds, int port,
+ 
+ 	/* No need to bother with refcounting for user ports */
+ 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp)))
+-		return ds->ops->port_fdb_del(ds, port, addr, vid);
++		return ds->ops->port_fdb_del(ds, port, addr, vid, br);
+ 
+-	a = dsa_mac_addr_find(&dp->fdbs, addr, vid);
++	a = dsa_mac_addr_find(&dp->fdbs, addr, vid, br);
+ 	if (!a)
+ 		return -ENOENT;
+ 
+ 	if (!refcount_dec_and_test(&a->refcount))
+ 		return 0;
+ 
+-	err = ds->ops->port_fdb_del(ds, port, addr, vid);
++	err = ds->ops->port_fdb_del(ds, port, addr, vid, br);
+ 	if (err) {
+ 		refcount_inc(&a->refcount);
+ 		return err;
+@@ -343,7 +350,7 @@ static int dsa_switch_host_fdb_add(struct dsa_switch *ds,
+ 		if (dsa_switch_host_address_match(ds, port, info->sw_index,
+ 						  info->port)) {
+ 			err = dsa_switch_do_fdb_add(ds, port, info->addr,
+-						    info->vid);
++						    info->vid, info->br);
+ 			if (err)
+ 				break;
+ 		}
+@@ -365,7 +372,7 @@ static int dsa_switch_host_fdb_del(struct dsa_switch *ds,
+ 		if (dsa_switch_host_address_match(ds, port, info->sw_index,
+ 						  info->port)) {
+ 			err = dsa_switch_do_fdb_del(ds, port, info->addr,
+-						    info->vid);
++						    info->vid, info->br);
+ 			if (err)
+ 				break;
+ 		}
+@@ -382,7 +389,7 @@ static int dsa_switch_fdb_add(struct dsa_switch *ds,
+ 	if (!ds->ops->port_fdb_add)
+ 		return -EOPNOTSUPP;
+ 
+-	return dsa_switch_do_fdb_add(ds, port, info->addr, info->vid);
++	return dsa_switch_do_fdb_add(ds, port, info->addr, info->vid, info->br);
+ }
+ 
+ static int dsa_switch_fdb_del(struct dsa_switch *ds,
+@@ -393,7 +400,7 @@ static int dsa_switch_fdb_del(struct dsa_switch *ds,
+ 	if (!ds->ops->port_fdb_del)
+ 		return -EOPNOTSUPP;
+ 
+-	return dsa_switch_do_fdb_del(ds, port, info->addr, info->vid);
++	return dsa_switch_do_fdb_del(ds, port, info->addr, info->vid, info->br);
+ }
+ 
+ static int dsa_switch_hsr_join(struct dsa_switch *ds,
+@@ -463,7 +470,7 @@ static int dsa_switch_mdb_add(struct dsa_switch *ds,
+ 	if (!ds->ops->port_mdb_add)
+ 		return -EOPNOTSUPP;
+ 
+-	return dsa_switch_do_mdb_add(ds, port, info->mdb);
++	return dsa_switch_do_mdb_add(ds, port, info->mdb, info->br);
+ }
+ 
+ static int dsa_switch_mdb_del(struct dsa_switch *ds,
+@@ -474,7 +481,7 @@ static int dsa_switch_mdb_del(struct dsa_switch *ds,
+ 	if (!ds->ops->port_mdb_del)
+ 		return -EOPNOTSUPP;
+ 
+-	return dsa_switch_do_mdb_del(ds, port, info->mdb);
++	return dsa_switch_do_mdb_del(ds, port, info->mdb, info->br);
+ }
+ 
+ static int dsa_switch_host_mdb_add(struct dsa_switch *ds,
+@@ -489,7 +496,8 @@ static int dsa_switch_host_mdb_add(struct dsa_switch *ds,
+ 	for (port = 0; port < ds->num_ports; port++) {
+ 		if (dsa_switch_host_address_match(ds, port, info->sw_index,
+ 						  info->port)) {
+-			err = dsa_switch_do_mdb_add(ds, port, info->mdb);
++			err = dsa_switch_do_mdb_add(ds, port, info->mdb,
++						    info->br);
+ 			if (err)
+ 				break;
+ 		}
+@@ -510,7 +518,8 @@ static int dsa_switch_host_mdb_del(struct dsa_switch *ds,
+ 	for (port = 0; port < ds->num_ports; port++) {
+ 		if (dsa_switch_host_address_match(ds, port, info->sw_index,
+ 						  info->port)) {
+-			err = dsa_switch_do_mdb_del(ds, port, info->mdb);
++			err = dsa_switch_do_mdb_del(ds, port, info->mdb,
++						    info->br);
+ 			if (err)
+ 				break;
+ 		}
 -- 
 2.25.1
 
