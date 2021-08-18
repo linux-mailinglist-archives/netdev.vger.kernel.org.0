@@ -2,72 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66F3B3F0D38
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 23:20:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 841E83F0D43
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 23:23:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233872AbhHRVU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 17:20:58 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57274 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233753AbhHRVU4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Aug 2021 17:20:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=KjZbslUDSsRTouML/anK3fJ95C9w1DxGIoxVwKiJy/0=; b=SD1+A4ilJQrrwI1CTMy9P1E/zS
-        Yb7F0brjaM5jyx1hXiHTC5c7qJRFCyw3/7wFwOKNjoG211G/njmpuDrv/6N8sq01/muMOW9KJXfxx
-        nWF2gS42yO0YHSFFe4AUpLNRyOCCg0DLagYTWX+vCcku6WNNWNX0mS2UaFbo2oW71r1k=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mGSyw-000qek-Ps; Wed, 18 Aug 2021 23:20:18 +0200
-Date:   Wed, 18 Aug 2021 23:20:18 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc:     netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/2] net: phy: Support set_loopback override
-Message-ID: <YR15ku/FsZN55/Pi@lunn.ch>
-References: <20210818122736.4877-1-gerhard@engleder-embedded.com>
- <20210818122736.4877-2-gerhard@engleder-embedded.com>
- <YR0hQ6UmtmGNg2AW@lunn.ch>
- <CANr-f5xL_H0GOQ7u6xsVxS--mKpM5zve6k-jcMKnqHBf+Bm9rg@mail.gmail.com>
+        id S234037AbhHRVYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 17:24:20 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:22270 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233753AbhHRVYT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 17:24:19 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17ILEiqC010153
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 14:23:44 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=7fpbhmy4NjQlauIn6hGsGBA07BHUjNjrEoUXjX+MLm0=;
+ b=h5WzG6E3IMvgY1dXv227QrqrYs2vfYIqDgPIKMoOF5e2814BcfCGthQXs2CA6MqXFFoH
+ htTOjCvkE9UcKNXS3vjYRwYfKL0dQ/aOQi9Fuo7ckFYEOnu3PLHk61hVqgu8Myg1qPvf
+ NrkiSp4dPu74MWTiHWxwFFnx6w7YjekSuds= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3ags1v5war-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 14:23:44 -0700
+Received: from intmgw002.25.frc3.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 18 Aug 2021 14:23:43 -0700
+Received: by devvm2049.vll0.facebook.com (Postfix, from userid 197479)
+        id 536FB1A8F337; Wed, 18 Aug 2021 14:23:37 -0700 (PDT)
+From:   Neil Spring <ntspring@fb.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>
+CC:     <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <kuba@kernel.org>,
+        <netdev@vger.kernel.org>, <ncardwell@google.com>,
+        <ycheng@google.com>, Neil Spring <ntspring@fb.com>
+Subject: [net-next 0/1] tcp: support window clamp mid-stream
+Date:   Wed, 18 Aug 2021 14:23:30 -0700
+Message-ID: <20210818212331.3780069-1-ntspring@fb.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANr-f5xL_H0GOQ7u6xsVxS--mKpM5zve6k-jcMKnqHBf+Bm9rg@mail.gmail.com>
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-FB-Source: Intern
+X-Proofpoint-GUID: iYIusZ7YLCou-wvu2MR3p_xFT8gGhpFH
+X-Proofpoint-ORIG-GUID: iYIusZ7YLCou-wvu2MR3p_xFT8gGhpFH
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-08-18_07:2021-08-17,2021-08-18 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0 spamscore=0
+ malwarescore=0 lowpriorityscore=0 mlxlogscore=866 mlxscore=0
+ suspectscore=0 bulkscore=0 priorityscore=1501 adultscore=0 impostorscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2107140000 definitions=main-2108180132
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I saw only 4 references for to_phy_driver():
-> - phy_loopback() of course
-> - phy_probe() which uses it to initialize phydev->drv 3 lines later
+The TCP_WINDOW_CLAMP socket option is defined in tcp(7) to "Bound the siz=
+e of
+the advertised window to this value."  Window clamping is distributed acr=
+oss two
+variables, window_clamp ("Maximal window to advertise" in tcp.h) and rcv_=
+ssthresh
+("Current window clamp").
 
-This is correct. The driver core will set dev.driver to what it thinks
-is the correct driver to use, before calling probe.
+This patch updates the function where the window clamp is set to also red=
+uce the current
+window clamp, rcv_sshthresh, if needed.  With this, setting the TCP_WINDO=
+W_CLAMP option
+has the documented effect of limiting the window.
 
-> - mdio_bus_phy_may_suspend() which checks only for valid suspend function
->   pointer, but later phy_suspend() uses phydev->drv, so this is at
->   least inconsistent
+Neil Spring (1):
+  tcp: enable mid stream window clamp
 
-I guess the real question here is, can a device be suspended before it
-is probed? It would seem rather odd. So i expect phydev->drv is safe
-to use.
+ net/ipv4/tcp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-> - phy_bus_match() which casts from struct device_driver to struct phy_driver
+--=20
+2.30.2
 
-This is used by the driver core when trying to find a matching
-driver. So it is used before phy_probe(). So this is correct.
-
-> 
-> phydev->drv is used much more often and seems to be the right way. I suggest to
-> also fix mdio_bus_phy_may_suspend(). phy_probe() and phy_bus_match() are
-> valid uses, because phydev->drv is not available for them.
-> 
-> Do you agree?
-
-Agreed. Thanks for spending the time to look at this. I was expecting
-there to be more problems than just loopback.
-
-	Andrew
