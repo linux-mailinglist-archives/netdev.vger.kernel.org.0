@@ -2,80 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E4453F09EA
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 19:08:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B36363F09ED
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 19:09:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231247AbhHRRJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 13:09:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59722 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230009AbhHRRJY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 13:09:24 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7ED4C061764;
-        Wed, 18 Aug 2021 10:08:49 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id j187so2783083pfg.4;
-        Wed, 18 Aug 2021 10:08:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=M71yeZtn0Mun3ZvdAVAmKe6cwHYWfdCa6xD1ze29eOk=;
-        b=eSI1HCjh4Kl6cOZHIBRVDdCsWKr+5XL5Y1ma4RLKwOto7zySlZunuiaBhdzu3t7x0g
-         JhkjjJ9e11TtkFw5I0fq5ujIlqgwC6LRqOyKqcfIEEYIdiKa9SODn0xOsEKeEIS8qnAZ
-         Uy9xorihpMF2C2+Nn6mF+PPQuliZQep+xePSJBy3R+Knk0tODf2CHQTQacUzFXCIATCQ
-         EdXgQQ/f0Peao9Hq9Vc28705MaMt6X6giB6Ygu0TyRziy63Y2o+2Q2kgRva7a+EHSLF5
-         /yFTfQjVlU1T9m1ZK6puh9nRIY8lfOdVcyGdOFn6O11gLsjk9wV2C2yBgzU+PCEk+cSh
-         EnhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=M71yeZtn0Mun3ZvdAVAmKe6cwHYWfdCa6xD1ze29eOk=;
-        b=eTlrPPNK3bCk6pQL7sFnQUUyOLE0rFeQG2mHxVF674GrFgmuBOc72cCgmK4WntXDat
-         KN3+k0zvPUz95aqEkf1NxbS6VMHvP9OZmz3Tt2Ie9G9/JtUbON/GRmlUT4SYOENBJUSB
-         gyg4B9w8QhzmoBjOvucyYLuOrw3D4ANwRf0+zLoh/PmzoL5SG1dKBLbLBzzzxWxNHUwT
-         uJ0OGCvj979wyHS43pSt6KU62XeBvZFbzvMEeF61GQ4OU6zcTrtW5GH7xri+vplfoy+9
-         TjuIqlwWN4kqOGaszORisLQQhmyxVvuk/UXgIhYPGm3aBc7oTy/YU1yQkaZNtiet1q2b
-         z5uA==
-X-Gm-Message-State: AOAM531pM3Kj9zcFRdMOv8ZBJ+2f4OwM3EAPyQo1uqS4Dgpn1KNgMPbf
-        3qfkwiIFOttRYDSLe0gHDXE=
-X-Google-Smtp-Source: ABdhPJw3R40Uavn6HH+tNvVbXV+cgGaLDjHn0YN8aESokpiCkJ+872e8mbpXwzGHN61RBJu98HTrMw==
-X-Received: by 2002:a63:101c:: with SMTP id f28mr9842153pgl.330.1629306529482;
-        Wed, 18 Aug 2021 10:08:49 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id k22sm305834pff.154.2021.08.18.10.08.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Aug 2021 10:08:48 -0700 (PDT)
-Date:   Wed, 18 Aug 2021 10:08:46 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Cc:     linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
-        arnd@arndb.de, nikolay@nvidia.com, cong.wang@bytedance.com,
-        colin.king@canonical.com, gustavoars@kernel.org
-Subject: Re: [RFC net-next 0/7] Add basic SyncE interfaces
-Message-ID: <20210818170846.GF9992@hoboy.vegasvil.org>
-References: <20210816160717.31285-1-arkadiusz.kubalewski@intel.com>
+        id S231716AbhHRRKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 13:10:02 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:56922 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229889AbhHRRKB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Aug 2021 13:10:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=FMajQxh4j0Trlt2HiUYVBxTD0sfB9uOoOL1XmXuHepM=; b=lx/TkBMVLBWZl1LqdvbxZPFiUo
+        BIs2zRLqmluT4x8IsGq8GbZJUNmITq1nw0z2WX/qcqX/VOsGD+Ewz72XQAqW5AEevTcelKthXzsvu
+        O6LibKBLTHFZ4GbKtqMlGozntYsYEP9JHM9VYknUITY5Q9XojspLaBv86vMeGG7F6EQA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mGP3x-000oy0-Uf; Wed, 18 Aug 2021 19:09:13 +0200
+Date:   Wed, 18 Aug 2021 19:09:13 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jie Luo <luoj@codeaurora.org>
+Cc:     Michael Walle <michael@walle.cc>, davem@davemloft.net,
+        hkallweit1@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, sricharan@codeaurora.org
+Subject: Re: [PATCH] net: phy: add qca8081 ethernet phy driver
+Message-ID: <YR0+uXdKoXrFEhpZ@lunn.ch>
+References: <6856a839-0fa0-1240-47cd-ae8536294bcd@codeaurora.org>
+ <20210818074102.78006-1-michael@walle.cc>
+ <9aa1543b-e1b8-fba2-1b93-c954dd2e3e50@codeaurora.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210816160717.31285-1-arkadiusz.kubalewski@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <9aa1543b-e1b8-fba2-1b93-c954dd2e3e50@codeaurora.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 16, 2021 at 06:07:10PM +0200, Arkadiusz Kubalewski wrote:
+On Wed, Aug 18, 2021 at 09:34:40PM +0800, Jie Luo wrote:
+> 
+> On 8/18/2021 3:41 PM, Michael Walle wrote:
+> > > qca8081 supports IEEE1588 feature, the IEEE1588 code may be submitted in
+> > > the near future,
+> > > 
+> > > so it may be a good idea to keep it out from at803x code.
+> > The AR8031 also supports PTP. Unfortunately, there is no public datasheet
+> > for the QCA8081, so I can't have a look if both are similar.
+> > 
+> > See also,
+> > https://lore.kernel.org/netdev/20200228180226.22986-1-michael@walle.cc/
+> > 
+> > -michael
+> 
+> Hi Michael,
+> 
+> Thanks for this comment. it is true that AR8031 supports basic PTP features.
+> 
+> please refer to the following link for the outline features of qca801.
+> 
+> https://www.qualcomm.com/products/qca8081
 
-> Multiple reference clock sources can be available. PHY ports recover
-> the frequency at which the transmitter sent the data on the RX side.
-> Alternatively, we can use external sources like 1PPS GPS, etc.
+Is the PTP hardware in the qca8081 the same as the ar8031? When you
+add PTP support, will it be for both PHYs?
 
-There is a generic PHY subsystem (drivers/phy) used by USB, PCIe, CAN,
-and so on.  Why not use that?
+What about the cable diagnostics? The at803x already has this
+implemented. Will the same work for the qca8081?
 
-Thanks,
-Richard
+    Andrew
