@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E51463EF8AD
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 05:34:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D5233EF8A9
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 05:34:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237694AbhHRDeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 23:34:37 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:8873 "EHLO
+        id S237168AbhHRDeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 23:34:21 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:8871 "EHLO
         szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236287AbhHRDeX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 23:34:23 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GqD0n1Tyjz8sZd;
-        Wed, 18 Aug 2021 11:29:45 +0800 (CST)
+        with ESMTP id S237076AbhHRDeU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 23:34:20 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GqD0h3NJVz8sZW;
+        Wed, 18 Aug 2021 11:29:40 +0800 (CST)
 Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 18 Aug 2021 11:33:27 +0800
+ 15.1.2176.2; Wed, 18 Aug 2021 11:33:28 +0800
 Received: from localhost.localdomain (10.69.192.56) by
  dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -47,9 +47,9 @@ CC:     <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
         <mathew.j.martineau@linux.intel.com>, <aahringo@redhat.com>,
         <ceggers@arri.de>, <yangbo.lu@nxp.com>, <fw@strlen.de>,
         <xiangxia.m.yue@gmail.com>, <linmiaohe@huawei.com>
-Subject: [PATCH RFC 2/7] skbuff: add interface to manipulate frag count for tx recycling
-Date:   Wed, 18 Aug 2021 11:32:18 +0800
-Message-ID: <1629257542-36145-3-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH RFC 3/7] net: add NAPI api to register and retrieve the page pool ptr
+Date:   Wed, 18 Aug 2021 11:32:19 +0800
+Message-ID: <1629257542-36145-4-git-send-email-linyunsheng@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1629257542-36145-1-git-send-email-linyunsheng@huawei.com>
 References: <1629257542-36145-1-git-send-email-linyunsheng@huawei.com>
@@ -63,135 +63,145 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As the skb->pp_recycle and page->pp_magic may not be enough
-to track if a frag page is from page pool after the calling
-of __skb_frag_ref(), mostly because of a data race, see:
-commit 2cc3aeb5eccc ("skbuff: Fix a potential race while
-recycling page_pool packets").
-
-As the case of tcp, there may be fragmenting, coalescing or
-retransmiting case that might lose the track if a frag page
-is from page pool or not.
-
-So increment the frag count when __skb_frag_ref() is called,
-and use the bit 0 in frag->bv_page to indicate if a page is
-from a page pool, which automically pass down to another
-frag->bv_page when doing a '*new_frag = *frag' or memcpying
-the shinfo.
-
-It seems we could do the trick for rx too if it makes sense.
+As tx recycling is built upon the busy polling infrastructure,
+and busy polling is based on napi_id, so add a api for driver
+to register a page pool to a NAPI instance and api for socket
+layer to retrieve the page pool corresponding to a NAPI.
 
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 ---
- include/linux/skbuff.h  | 43 ++++++++++++++++++++++++++++++++++++++++---
- include/net/page_pool.h |  5 +++++
- 2 files changed, 45 insertions(+), 3 deletions(-)
+ include/linux/netdevice.h |  9 +++++++++
+ net/core/dev.c            | 34 +++++++++++++++++++++++++++++++---
+ 2 files changed, 40 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 6bdb0db..2878d26 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -331,6 +331,11 @@ static inline unsigned int skb_frag_size(const skb_frag_t *frag)
- 	return frag->bv_len;
- }
- 
-+static inline bool skb_frag_is_pp(const skb_frag_t *frag)
-+{
-+	return (unsigned long)frag->bv_page & 1UL;
-+}
-+
- /**
-  * skb_frag_size_set() - Sets the size of a skb fragment
-  * @frag: skb fragment
-@@ -2190,6 +2195,21 @@ static inline void __skb_fill_page_desc(struct sk_buff *skb, int i,
- 		skb->pfmemalloc	= true;
- }
- 
-+static inline void __skb_fill_pp_page_desc(struct sk_buff *skb, int i,
-+					   struct page *page, int off,
-+					   int size)
-+{
-+	skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
-+
-+	frag->bv_page = (struct page *)((unsigned long)page | 0x1UL);
-+	frag->bv_offset = off;
-+	skb_frag_size_set(frag, size);
-+
-+	page = compound_head(page);
-+	if (page_is_pfmemalloc(page))
-+		skb->pfmemalloc = true;
-+}
-+
- /**
-  * skb_fill_page_desc - initialise a paged fragment in an skb
-  * @skb: buffer containing fragment to be initialised
-@@ -2211,6 +2231,14 @@ static inline void skb_fill_page_desc(struct sk_buff *skb, int i,
- 	skb_shinfo(skb)->nr_frags = i + 1;
- }
- 
-+static inline void skb_fill_pp_page_desc(struct sk_buff *skb, int i,
-+					 struct page *page, int off,
-+					 int size)
-+{
-+	__skb_fill_pp_page_desc(skb, i, page, off, size);
-+	skb_shinfo(skb)->nr_frags = i + 1;
-+}
-+
- void skb_add_rx_frag(struct sk_buff *skb, int i, struct page *page, int off,
- 		     int size, unsigned int truesize);
- 
-@@ -3062,7 +3090,10 @@ static inline void skb_frag_off_copy(skb_frag_t *fragto,
-  */
- static inline struct page *skb_frag_page(const skb_frag_t *frag)
- {
--	return frag->bv_page;
-+	unsigned long page = (unsigned long)frag->bv_page;
-+
-+	page &= ~1UL;
-+	return (struct page *)page;
- }
- 
- /**
-@@ -3073,7 +3104,12 @@ static inline struct page *skb_frag_page(const skb_frag_t *frag)
-  */
- static inline void __skb_frag_ref(skb_frag_t *frag)
- {
--	get_page(skb_frag_page(frag));
-+	struct page *page = skb_frag_page(frag);
-+
-+	if (skb_frag_is_pp(frag))
-+		page_pool_atomic_inc_frag_count(page);
-+	else
-+		get_page(page);
- }
- 
- /**
-@@ -3101,7 +3137,8 @@ static inline void __skb_frag_unref(skb_frag_t *frag, bool recycle)
- 	struct page *page = skb_frag_page(frag);
- 
- #ifdef CONFIG_PAGE_POOL
--	if (recycle && page_pool_return_skb_page(page))
-+	if ((recycle || skb_frag_is_pp(frag)) &&
-+	    page_pool_return_skb_page(page))
- 		return;
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 2f03cd9..51a1169 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -40,6 +40,7 @@
  #endif
- 	put_page(page);
-diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index 8d4ae4b..86babb2 100644
---- a/include/net/page_pool.h
-+++ b/include/net/page_pool.h
-@@ -270,6 +270,11 @@ static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
- 	return ret;
- }
+ #include <net/netprio_cgroup.h>
+ #include <net/xdp.h>
++#include <net/page_pool.h>
  
-+static void page_pool_atomic_inc_frag_count(struct page *page)
-+{
-+	atomic_long_inc(&page->pp_frag_count);
-+}
+ #include <linux/netdev_features.h>
+ #include <linux/neighbour.h>
+@@ -336,6 +337,7 @@ struct napi_struct {
+ 	struct hlist_node	napi_hash_node;
+ 	unsigned int		napi_id;
+ 	struct task_struct	*thread;
++	struct page_pool        *pp;
+ };
+ 
+ enum {
+@@ -349,6 +351,7 @@ enum {
+ 	NAPI_STATE_PREFER_BUSY_POLL,	/* prefer busy-polling over softirq processing*/
+ 	NAPI_STATE_THREADED,		/* The poll is performed inside its own thread*/
+ 	NAPI_STATE_SCHED_THREADED,	/* Napi is currently scheduled in threaded mode */
++	NAPI_STATE_RECYCLABLE,          /* Support tx page recycling */
+ };
+ 
+ enum {
+@@ -362,6 +365,7 @@ enum {
+ 	NAPIF_STATE_PREFER_BUSY_POLL	= BIT(NAPI_STATE_PREFER_BUSY_POLL),
+ 	NAPIF_STATE_THREADED		= BIT(NAPI_STATE_THREADED),
+ 	NAPIF_STATE_SCHED_THREADED	= BIT(NAPI_STATE_SCHED_THREADED),
++	NAPIF_STATE_RECYCLABLE          = BIT(NAPI_STATE_RECYCLABLE),
+ };
+ 
+ enum gro_result {
+@@ -2473,6 +2477,10 @@ static inline void *netdev_priv(const struct net_device *dev)
+ void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
+ 		    int (*poll)(struct napi_struct *, int), int weight);
+ 
++void netif_recyclable_napi_add(struct net_device *dev, struct napi_struct *napi,
++			       int (*poll)(struct napi_struct *, int),
++			       int weight, struct page_pool *pool);
 +
- static inline bool is_page_pool_compiled_in(void)
+ /**
+  *	netif_tx_napi_add - initialize a NAPI context
+  *	@dev:  network device
+@@ -2997,6 +3005,7 @@ struct net_device *dev_get_by_index(struct net *net, int ifindex);
+ struct net_device *__dev_get_by_index(struct net *net, int ifindex);
+ struct net_device *dev_get_by_index_rcu(struct net *net, int ifindex);
+ struct net_device *dev_get_by_napi_id(unsigned int napi_id);
++struct page_pool *page_pool_get_by_napi_id(unsigned int napi_id);
+ int netdev_get_name(struct net *net, char *name, int ifindex);
+ int dev_restart(struct net_device *dev);
+ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 74fd402..d6b905b 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -935,6 +935,19 @@ struct net_device *dev_get_by_napi_id(unsigned int napi_id)
+ }
+ EXPORT_SYMBOL(dev_get_by_napi_id);
+ 
++struct page_pool *page_pool_get_by_napi_id(unsigned int napi_id)
++{
++	struct napi_struct *napi;
++	struct page_pool *pp = NULL;
++
++	napi = napi_by_id(napi_id);
++	if (napi)
++		pp = napi->pp;
++
++	return pp;
++}
++EXPORT_SYMBOL(page_pool_get_by_napi_id);
++
+ /**
+  *	netdev_get_name - get a netdevice name, knowing its ifindex.
+  *	@net: network namespace
+@@ -6757,7 +6770,8 @@ EXPORT_SYMBOL(napi_busy_loop);
+ 
+ static void napi_hash_add(struct napi_struct *napi)
  {
- #ifdef CONFIG_PAGE_POOL
+-	if (test_bit(NAPI_STATE_NO_BUSY_POLL, &napi->state))
++	if (test_bit(NAPI_STATE_NO_BUSY_POLL, &napi->state) ||
++	    !test_bit(NAPI_STATE_RECYCLABLE, &napi->state))
+ 		return;
+ 
+ 	spin_lock(&napi_hash_lock);
+@@ -6860,8 +6874,10 @@ int dev_set_threaded(struct net_device *dev, bool threaded)
+ }
+ EXPORT_SYMBOL(dev_set_threaded);
+ 
+-void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
+-		    int (*poll)(struct napi_struct *, int), int weight)
++void netif_recyclable_napi_add(struct net_device *dev,
++			       struct napi_struct *napi,
++			       int (*poll)(struct napi_struct *, int),
++			       int weight, struct page_pool *pool)
+ {
+ 	if (WARN_ON(test_and_set_bit(NAPI_STATE_LISTED, &napi->state)))
+ 		return;
+@@ -6886,6 +6902,11 @@ void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
+ 	set_bit(NAPI_STATE_SCHED, &napi->state);
+ 	set_bit(NAPI_STATE_NPSVC, &napi->state);
+ 	list_add_rcu(&napi->dev_list, &dev->napi_list);
++	if (pool) {
++		napi->pp = pool;
++		set_bit(NAPI_STATE_RECYCLABLE, &napi->state);
++	}
++
+ 	napi_hash_add(napi);
+ 	/* Create kthread for this napi if dev->threaded is set.
+ 	 * Clear dev->threaded if kthread creation failed so that
+@@ -6894,6 +6915,13 @@ void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
+ 	if (dev->threaded && napi_kthread_create(napi))
+ 		dev->threaded = 0;
+ }
++EXPORT_SYMBOL(netif_recyclable_napi_add);
++
++void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
++		    int (*poll)(struct napi_struct *, int), int weight)
++{
++	netif_recyclable_napi_add(dev, napi, poll, weight, NULL);
++}
+ EXPORT_SYMBOL(netif_napi_add);
+ 
+ void napi_disable(struct napi_struct *n)
 -- 
 2.7.4
 
