@@ -2,121 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CA053EFFB9
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 10:57:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4053B3EFFD8
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 11:03:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230506AbhHRI6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 04:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56922 "EHLO
+        id S231303AbhHRJD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 05:03:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230340AbhHRI6O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 04:58:14 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30E6C061796
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 01:57:39 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id cq23so1956724edb.12
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 01:57:39 -0700 (PDT)
+        with ESMTP id S229574AbhHRJDx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 05:03:53 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF62FC0613D9
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 02:03:18 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id a5so1394776plh.5
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 02:03:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=yyB09rflCzHIn1ju5X9fd70kpkBZLkV0jkVgx5Jum1M=;
-        b=eUXyKdJAzmmk9t9EBWMwn5DQQ/3lULWEUIXsJT6jM89cXNHXUK+6MhzdMrncDYiKdE
-         3LtdGmfp1B7S/lU3UCxJLF9bM2hjDv350E1zN4Xsbsmo/pTOkY9ErxHacO2nm7Sd3mRm
-         yh/CK53CmSUPNd1H6VYQechEs9zkG9LFweVaADOOfpNXJ2osI0aUZKBPiLFqmlwViXJv
-         ha5Hk+7eKJ3jOiJYHascMT/otfIdpe320Z7iQ3AzXwXi+/BzxXKk9Qn73lvz/vD5Cyfo
-         2IhGDb9ZmPpLtOXYH4I6CLMuZi2EfYiqcXZvuNuEgUL78PluLKvPncpOhR6zSmPnXBdB
-         quHA==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Wi6GiW3siAeArZqvWLcz46sruMCMOkQL9Tx1MHP2F9M=;
+        b=O6b9QEJX2A+BMP2t/Jopnb3uLzfw7MkxdgYGDPd8kXg7lj6i5rW4b1KQUD7duBp0NW
+         ARZb6rSvwK8yUjjDtTmZ/No5b/N6TJNMpFMfjHQcB66xfWC5jxVfZdmVgg/rw4tb9D9m
+         KTQ5SvRW25g7NfqelO4dYcMxQcfvJG7CIhrVQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yyB09rflCzHIn1ju5X9fd70kpkBZLkV0jkVgx5Jum1M=;
-        b=SKJczIz3AAUPD6YfN6dAodCwR5PCbPAQKDrnkIhhaLVbFS/b3C9Z3i6ITcdV3HZSIJ
-         +HWP69DLiB0S7Kj9lS6zSS7g/+eIPW7M27oQtCCjDRHrycnTqGPGXxjyGccH7C9jo0+e
-         pAzLrZg/5R2QHHMV8lM9lMJyiCA/LZsMbO4M1O3YC1q78ZnqPORV65pwjTnEhQlC0z2y
-         sCk5d8jqc0Gn8MSgTdxrePrFpuMWz2fnOmU1UInFx9UqbYivt3Vcb1B3HJTbwQBw01pQ
-         hk3j3c6lmpscwvn9/YtQ4plwDEaN2itUgwks2HVRv2LVcBhIajE3xQHlapu057ev0H/4
-         8MPQ==
-X-Gm-Message-State: AOAM530zQmBe86Y434bPgq6yMLWEvr4eux343n/KvRpcsvIldpP7DdZe
-        2AObJdyVhgBRWbaKiIfcuO+n1Q==
-X-Google-Smtp-Source: ABdhPJzGR88Pk3GJEFXwZCriKTFugvn/HeIUrvcrkEfL+IGeE0KfFWsxaBzduCrnXLd9v8ytkPDFXw==
-X-Received: by 2002:aa7:c894:: with SMTP id p20mr8907066eds.42.1629277058064;
-        Wed, 18 Aug 2021 01:57:38 -0700 (PDT)
-Received: from tsr-lap-08.nix.tessares.net ([213.211.156.192])
-        by smtp.gmail.com with ESMTPSA id n10sm1759880ejk.86.2021.08.18.01.57.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Aug 2021 01:57:37 -0700 (PDT)
-Subject: Re: [syzbot] KFENCE: use-after-free in kvm_fastop_exception
-To:     Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot <syzbot+7b938780d5deeaaf938f@syzkaller.appspotmail.com>,
-        davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        marcel@holtmann.org, mathew.j.martineau@linux.intel.com,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
-References: <00000000000012030e05c9c8bc85@google.com>
- <58cef9e0-69de-efdb-4035-7c1ed3d23132@tessares.net>
- <6736a510-20a1-9fb5-caf4-86334cabbbb6@gmail.com>
- <32aeb66e-d4f0-26b5-a140-4477bb87067f@tessares.net>
- <3a8dd8db-61d6-603e-b270-5faf1be02c6b@gmail.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Message-ID: <f9c5ec7f-4014-c073-164f-5152111c1d31@tessares.net>
-Date:   Wed, 18 Aug 2021 10:57:36 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Wi6GiW3siAeArZqvWLcz46sruMCMOkQL9Tx1MHP2F9M=;
+        b=WOSHXE6cbO9xonVGnnUGhRrT+8gOkFjKSwFqZJXWl2E8geZW1VwaEOzox/zKmIEd2C
+         6d3xWDmBtUbWUgI/ZuePCo7o1Cc6ORLNj31xbITNNOqHIUxD/8yfLcDeEA+/+Oqr7nER
+         pn7qWyVycuiR7hea6FD3YiGoa9IyZSNF7Xsf3Dlplc2tG2uHr5i+DwPsFmxnm8wLjrFe
+         cho1lBYzDRE1YwF/juYe9+xNZN/LgoIH+WRJ8Lx0T2YjeBCxlsZmW8hGBQ/PARPA7DMQ
+         44/7S8c59FU8V0nhTaTztY7rq1qlJJLETa01TMUn50FCL+suO8JA9U/Pj7BFwd3AqB3W
+         YvFA==
+X-Gm-Message-State: AOAM530cWntmUEkqpZ2TGulpbmg/2lYCm8CCv2oe8XQNwhA6luuLyKvp
+        SaQIPcaGSMXF3vxhjS0ClYnIuQ==
+X-Google-Smtp-Source: ABdhPJwBy4P3b9ZHL/uuEc5QK3+QU7JmWq9RZXhEv09uSY9Rwkh8duMfsoih0ejFVq5RU4iOGkX0cA==
+X-Received: by 2002:a17:903:22cd:b0:12d:8876:eea7 with SMTP id y13-20020a17090322cd00b0012d8876eea7mr6462580plg.75.1629277398247;
+        Wed, 18 Aug 2021 02:03:18 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id y13sm5730422pfq.147.2021.08.18.02.03.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Aug 2021 02:03:17 -0700 (PDT)
+Date:   Wed, 18 Aug 2021 02:03:16 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
+        linux-can <linux-can@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] can: etas_es58x: Replace 0-element raw_msg array
+Message-ID: <202108180159.5C1CEE70F@keescook>
+References: <20210818034010.800652-1-keescook@chromium.org>
+ <CAMZ6RqK4Rn4d-1CZsg9vJiAMHhxN6fgcqukdHpGwXoGTyNVr_Q@mail.gmail.com>
+ <202108172320.1540EC10C@keescook>
+ <CAMZ6RqLecbytJFQDC35n7YiqBbrB3--POofnXFeH77Zi2xzqWA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <3a8dd8db-61d6-603e-b270-5faf1be02c6b@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMZ6RqLecbytJFQDC35n7YiqBbrB3--POofnXFeH77Zi2xzqWA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/08/2021 10:55, Pavel Skripkin wrote:
-> On 8/18/21 11:21 AM, Matthieu Baerts wrote:
->> Hi Pavel,
->>
-> [snip]
->>>>
->>>> I'm pretty sure the commit c4512c63b119 ("mptcp: fix 'masking a bool'
->>>> warning") doesn't introduce the reported bug. This minor fix is
->>>> specific
->>>> to MPTCP which doesn't seem to be used here.
->>>>
->>>> I'm not sure how I can tell syzbot this is a false positive.
->>>>
->>>
->>>
->>> looks like it's fs/namei bug. Similar reports:
->>>
->>> https://syzkaller.appspot.com/bug?id=517fa734b92b7db404c409b924cf5c997640e324
->>>
->>>
->>>
->>> https://syzkaller.appspot.com/bug?id=484483daf3652b40dae18531923aa9175d392a4d
->>>
->>
->> Thank you for having checked!
->> Should we mark them as "#syz dup" if you think they have the same root
->> cause?
->>
+On Wed, Aug 18, 2021 at 04:55:20PM +0900, Vincent MAILHOL wrote:
+> At the end, the only goal of raw_msg[] is to have a tag pointing
+> to the beginning of the union. It would be virtually identical to
+> something like:
+> |    u8 raw_msg[];
+> |    union {
+> |        /* ... */
+> |    } __packed ;
 > 
-> I think, yes, but I want to receive feedback from fs people about this
-> bug. There were huge updates last month, and, maybe, I am missing some
-> details. Alloc/free calltrace is the same, but anyway, I want some
-> confirmation to not close different bugs by mistake :)
+> I had a look at your work and especially at your struct_group() macro.
+> Do you think it would make sense to introduce a union_group()?
 > 
-> If these bugs really have same root case I will close them manually
-> after fix posted.
+> Result would look like:
+> 
+> |    union_group_attr(urb_msg, __packed, /* raw_msg renamed to urb_msg */
+> |        struct es58x_fd_tx_conf_msg tx_conf_msg;
+> |        u8 tx_can_msg_buf[ES58X_FD_TX_BULK_MAX * ES58X_FD_CANFD_TX_LEN];
+> |        u8 rx_can_msg_buf[ES58X_FD_RX_BULK_MAX * ES58X_FD_CANFD_RX_LEN];
+> |        struct es58x_fd_echo_msg echo_msg[ES58X_FD_ECHO_BULK_MAX];
+> |        struct es58x_fd_rx_event_msg rx_event_msg;
+> |        struct es58x_fd_tx_ack_msg tx_ack_msg;
+> |        __le64 timestamp;
+> |        __le32 rx_cmd_ret_le32;
+> |    );
+> 
+> And I can then use urb_msg in place of the old raw_msg (might
+> need a bit of rework here and there but I can take care of it).
+> 
+> This is the most pretty way I can think of to remove this zero length array.
+> Keeping the raw_msg[] but with another size seems odd to me.
+> 
+> Or maybe I would be the only one using this feature in the full
+> tree? In that case, maybe it would make sense to keep the
+> union_group_attr() macro local to the etas_es58x driver?
 
-Thank you for the explanation. Sounds good to me!
+I actually ended up with something close to this idea, but more
+generalized for other cases in the kernel. There was a sane way to
+include a "real" flexible array in a union (or alone in a struct), so
+I've proposed this flex_array() helper:
+https://lore.kernel.org/lkml/20210818081118.1667663-2-keescook@chromium.org/
 
-Cheers,
-Matt
+and then it's just a drop-in replacement for all the places that need
+this fixed, including etas_es58x:
+https://lore.kernel.org/lkml/20210818081118.1667663-3-keescook@chromium.org/#Z30drivers:net:can:usb:etas_es58x:es581_4.h
+
+Hopefully this will work out; I think it's as clean as we can get for
+now. :)
+
 -- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+Kees Cook
