@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2B143EFED9
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 10:11:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 467BC3EFED8
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 10:11:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240378AbhHRIMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 04:12:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45700 "EHLO
+        id S240411AbhHRIMF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 04:12:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240304AbhHRIMC (ORCPT
+        with ESMTP id S239740AbhHRIMC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 04:12:02 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B643DC06129E
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 01:11:23 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id mq2-20020a17090b3802b0290178911d298bso1828663pjb.1
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 01:11:23 -0700 (PDT)
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C57D9C0613A4
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 01:11:22 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id fa24-20020a17090af0d8b0290178bfa69d97so1882449pjb.0
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 01:11:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GpF0E/FgRi6qGX/LhpbMUwPUICr1VhVyZ7DJ8GUlvVk=;
-        b=WvNev3Oy64pO1VSwJ5tg1EH5fDsgG5exsqM7TIsClrkbN4NJq0UxJBeVt6CBoBXmNE
-         fdSHSypHujJ+KyDwq4QIBIkVE4ohdvyKTklOAT49I0mmqB5Fp6AqHcGioFE9Ks2KGsGr
-         LIYBqO3DsdO5DFjJDd2pcSj/qzz/3rKq6YRQo=
+        bh=uKeBKUwE3LB2nCKXyKZoeLxITXnz1RP0s5Q/fll2nTo=;
+        b=Ud6o0IAPA7dYQt34AcmxuyISOXFvgs9qpRK6B9PeskadeGwtK6xcXGOUYvN7tBoLLn
+         c4s5qUZw1rPPummP4+YUYLufW+tVVTMzocUi5WwVTAc+JqsbPMtyqvkRbRJTUP/lwZbf
+         Wz/2Skr8LxfHmXbtK3gLSdNq9SRz8QC4VeeO8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GpF0E/FgRi6qGX/LhpbMUwPUICr1VhVyZ7DJ8GUlvVk=;
-        b=bzSH/J91KpV/HSFbFCBj8V9MqZuyX50FS2cVDPGVvZjpcGlMzxUibUmk/LHkfA3X5n
-         Jx25w38ohvduNHseoGXWvZEZQLF2+yl8K0k/7nmgt1mMqZR+mQGnnnwAbW3lH2KpanPH
-         NVGcqAI5d4elqeCEO5HACuX9/LPNj8cVy+9mMCLV8apupMJwWSCjYQVnA2CiSvwzc/VF
-         M/fPKE4lLsMTPq1nPkGKA3mQOF3gKSlVzvDiOl3DuZOVAfHPVBzy4SaLDKyDd6ARYoXA
-         MDO+PIvyBVzspjZC73d8oAEZsIH4zytInzJn+PKkrzQTr6/E2NGfBGycL1MJokzHNkOz
-         r1pA==
-X-Gm-Message-State: AOAM5330tBBvPKCxXMyIyCvpY3kfv4zphPg4en5eXjUGPicOI8D+bwCx
-        Lgh3pwW22w+LDpFxXrlQihOdNw==
-X-Google-Smtp-Source: ABdhPJzA57q+7lV/BgTR8zE9bfaFWDujbp+9gxoVmizaVZbAfhx73JbpI6XIc+bce+b65qnBgrBFDQ==
-X-Received: by 2002:a17:902:d114:b029:12d:4202:655a with SMTP id w20-20020a170902d114b029012d4202655amr6377479plw.0.1629274283306;
-        Wed, 18 Aug 2021 01:11:23 -0700 (PDT)
+        bh=uKeBKUwE3LB2nCKXyKZoeLxITXnz1RP0s5Q/fll2nTo=;
+        b=h+DP5bJyO6nQ9AksObXnbeN90mOUlniMIypbnoluJfRQ89WRk/ud1IzLSt/GTu3V4G
+         mYHRzv8Bo0sFbGhN758h0pJsLXm+9/do+7zgukbS7xKHPClZ48sFmzxMwISEkNGkRESH
+         hG7zHqF3iOTQwY1bqb+i4s9rflpV6w96JT1kRmBalQgQbMTESP3jVvA2tKFIZC56/eoM
+         V9eoLM1GQgW4qCCUB34LeSup540icu/5vlMjgW5uZ/MJ2UQWsmC/mZw5+HSoxgdWWCz3
+         lqH+2lY9GTgRmvRzJtbKZSrY3thIphlr2CeUJnTKbyUvepxwOfXP3+Mlub/nbZf+I7QI
+         WjDQ==
+X-Gm-Message-State: AOAM533RtALMSuNgiRGX25Vbr/gnV58VdbUBQRJFXDbSQoHiC3NH4FxM
+        Nq83uxJmD5fdILKnCAaKibK2xg==
+X-Google-Smtp-Source: ABdhPJy6FYQc+6tJoX65EdY5eXrQDH5atPjJc2WIJdLF+T75mSr6aYZdYVEmN6MNWkli7PvjMOw21g==
+X-Received: by 2002:a17:90b:4504:: with SMTP id iu4mr8271766pjb.209.1629274282283;
+        Wed, 18 Aug 2021 01:11:22 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id c133sm5360276pfb.39.2021.08.18.01.11.20
+        by smtp.gmail.com with ESMTPSA id 136sm6743988pge.77.2021.08.18.01.11.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Wed, 18 Aug 2021 01:11:21 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
@@ -49,375 +49,374 @@ To:     linux-kernel@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         Arnd Bergmann <arnd@arndb.de>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
         Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Stanislaw Gruszka <stf_xl@wp.pl>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        Manish Rangankar <mrangankar@marvell.com>,
+        GR-QLogic-Storage-Upstream@marvell.com,
         "James E.J. Bottomley" <jejb@linux.ibm.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Mordechay Goodstein <mordechay.goodstein@intel.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Mikulas Patocka <mikulas@artax.karlin.mff.cuni.cz>,
-        linux-crypto@vger.kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-can@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Florian Schilhabel <florian.c.schilhabel@googlemail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Fabio Aiuto <fabioaiuto83@gmail.com>,
+        Ross Schmidt <ross.schm.dev@gmail.com>,
+        Marco Cesati <marcocesati@gmail.com>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-staging@lists.linux.dev, clang-built-linux@googlegroups.com,
         linux-hardening@vger.kernel.org
-Subject: [PATCH 2/5] treewide: Replace open-coded flex arrays in unions
-Date:   Wed, 18 Aug 2021 01:11:15 -0700
-Message-Id: <20210818081118.1667663-3-keescook@chromium.org>
+Subject: [PATCH 3/5] treewide: Replace 0-element memcpy() destinations with flexible arrays
+Date:   Wed, 18 Aug 2021 01:11:16 -0700
+Message-Id: <20210818081118.1667663-4-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210818081118.1667663-1-keescook@chromium.org>
 References: <20210818081118.1667663-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=12062; h=from:subject; bh=0CCkznI664JYVvRMoE3qzwUtrImx1HNe0LKH8ibyfWs=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhHMCkRUrXEgtkRNrsSMCJSduhfGiaBzyFF1NfkOz5 1sgSW+CJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYRzApAAKCRCJcvTf3G3AJjS0D/ 0b1LwVuUqze95mS2bSnJ7AH4aPgzU1OO2ZMuzSJFdp54NANtgs8l78GnvlaKS2+1Ucg+9SQedab8yy euPrypenPhGxTSyPMT/BKLX4a7OIafCIZRczkVbcnJs512dcNHXVnwxS+53StYdCJ/utKT9M+ljmPc zSzT3rZfunCmfYjnj0CAZ89VQD43HOQwB7OXXxnsX/Aap/kJkCVs+2vZJEsuXVMD9q2tE/xxXAMpjQ YQY2aKPlJ22s20dcW5jeOlG2uK/ReD6K1+++LZVuzl4L6nd5RKa0BuxfPwr3eGMd4nrVQ5hZzaIOCy H4hhv6MgoNJlTIWKFx8fpsBFYgvzf5xLdi8AoGExlkbYlF4wux4PBJP5NHYYQx1+npbK4+8R42Au1I Q4tBLdisBCZYCoQC9/28MjZOEjQJIKes+scxMlO7PjqQez4p+Bc4zriVjRY6jabxsVBLZnCTcojjVN OzyO87Y9aOvuJf8omcP/8KGnNDzJ7acs5VKkD+fCrj+UEim0wgCof8IdtNtt/dBWEFCOPkCIwAzClV rPM9sLwD1J7Pkck/Q4oBpil6tAoTL2OJ28j4JrFP4tF6IWHCds9bLtt1tgzp+o8uyDjFVR3NvvRNpx ZQsS9C9S0z3P7LvltwiuKbf3UzDoltBxV4HvPDQRGG0MEziUOwhNtB7FxYPQ==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=9667; h=from:subject; bh=pWyGi50I3DoGigMPxMXfi4rXyJiQ6nw3FErUCMEg720=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhHMClyDZBWRqepCcCaaLFSu6A+jHJa/aMEBC9Xr26 EKKR8y2JAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYRzApQAKCRCJcvTf3G3AJgFwD/ sFEBeEkAmPeaI817B7jt5/HbQSKJ9EuH/1R/X46YYmKKK2PDo76+cRm5w0hKBD8aQ+KxtqszuQy//2 tSbnMXP/DOnwelANH5FB4/toadqqQGw5socCzFtbQ/KEMOcwnfV7N/VKJMkwk0XsYHAJSFtS/CehL0 9xlNgi+L7QFaiWFtgWw57FWO2cJT877pYQrzp60hL6jS52Bl4hbsAnQuzMl56e1qY5cwCYufqeoky2 nXpo9Zl+FeMUKfJA/6tr5dKitWgFl46DIAiC8kjnStRSaTJwmdPOE+pqvf1ENr7o2gYUOsKU1CMSvI uPGUn7yyFh9CfgeqNWCIH1AuBBCYB8LDMsoGVBIy1fGVCKtwmuIvnrB5yIj98IL7dOCT2pty+319T5 Bns5x91HX+ruQKp0ZC9QzDCG+nA99CgAJMwa2pO69f8AFt1pfEilhpFItoBs1tsQVsU1PXQoOEPrLk /vPh0ZItZgXPNbd/eoe/jlVS1fKnjKJuLs3HFlh1SXDkauYUcnpo6+/mOKQP1JoSMGez07paP7RIWq TwlHslAUB5qHzHBATyyzbRcTN/IniFnAzxWTAgwhlYnvmnDFuTp58Sq2g9zHvmrezQgKtCetFnxBKj RbJbt8WLOaQZ4IbzgLYtTVO9Dw55Q3NhutRjAn+nrmJdyHLI6yEigrwwS8NQ==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In support of enabling -Warray-bounds and -Wzero-length-bounds and
-correctly handling run-time memcpy() bounds checking, replace all
-open-coded flexible arrays (i.e. 0-element arrays) in unions with the
-flex_array() helper macro.
+The 0-element arrays that are used as memcpy() destinations are actually
+flexible arrays. Adjust their structures accordingly so that memcpy()
+can better reason able their destination size (i.e. they need to be seen
+as "unknown" length rather than "zero").
 
-This fixes warnings such as:
-
-fs/hpfs/anode.c: In function 'hpfs_add_sector_to_btree':
-fs/hpfs/anode.c:209:27: warning: array subscript 0 is outside the bounds of an interior zero-length array 'struct bplus_internal_node[0]' [-Wzero-length-bounds]
-  209 |    anode->btree.u.internal[0].down = cpu_to_le32(a);
-      |    ~~~~~~~~~~~~~~~~~~~~~~~^~~
-In file included from fs/hpfs/hpfs_fn.h:26,
-                 from fs/hpfs/anode.c:10:
-fs/hpfs/hpfs.h:412:32: note: while referencing 'internal'
-  412 |     struct bplus_internal_node internal[0]; /* (internal) 2-word entries giving
-      |                                ^~~~~~~~
-
-drivers/net/can/usb/etas_es58x/es58x_fd.c: In function 'es58x_fd_tx_can_msg':
-drivers/net/can/usb/etas_es58x/es58x_fd.c:360:35: warning: array subscript 65535 is outside the bounds of an interior zero-length array 'u8[0]' {aka 'unsigned char[]'} [-Wzero-length-bounds]
-  360 |  tx_can_msg = (typeof(tx_can_msg))&es58x_fd_urb_cmd->raw_msg[msg_len];
-      |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-In file included from drivers/net/can/usb/etas_es58x/es58x_core.h:22,
-                 from drivers/net/can/usb/etas_es58x/es58x_fd.c:17:
-drivers/net/can/usb/etas_es58x/es58x_fd.h:231:6: note: while referencing 'raw_msg'
-  231 |   u8 raw_msg[0];
-      |      ^~~~~~~
+In some cases, use of the flex_array() helper is needed when a flexible
+array is part of a union.
 
 Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
 Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Ayush Sawal <ayush.sawal@chelsio.com>
-Cc: Vinay Kumar Yadav <vinay.yadav@chelsio.com>
-Cc: Rohit Maheshwari <rohitm@chelsio.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Stanislaw Gruszka <stf_xl@wp.pl>
-Cc: Luca Coelho <luciano.coelho@intel.com>
+Cc: Nilesh Javali <njavali@marvell.com>
+Cc: Manish Rangankar <mrangankar@marvell.com>
+Cc: GR-QLogic-Storage-Upstream@marvell.com
 Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
 Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: Johannes Berg <johannes.berg@intel.com>
-Cc: Mordechay Goodstein <mordechay.goodstein@intel.com>
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: Wolfgang Grandegger <wg@grandegger.com>
-Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-Cc: Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>
-Cc: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc: Mikulas Patocka <mikulas@artax.karlin.mff.cuni.cz>
-Cc: linux-crypto@vger.kernel.org
+Cc: Larry Finger <Larry.Finger@lwfinger.net>
+Cc: Phillip Potter <phil@philpotter.co.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Florian Schilhabel <florian.c.schilhabel@googlemail.com>
+Cc: Johannes Berg <johannes@sipsolutions.net>
+Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: Fabio Aiuto <fabioaiuto83@gmail.com>
+Cc: Ross Schmidt <ross.schm.dev@gmail.com>
+Cc: Marco Cesati <marcocesati@gmail.com>
 Cc: ath10k@lists.infradead.org
 Cc: linux-wireless@vger.kernel.org
 Cc: netdev@vger.kernel.org
 Cc: linux-scsi@vger.kernel.org
-Cc: linux-can@vger.kernel.org
-Cc: bpf@vger.kernel.org
+Cc: linux-staging@lists.linux.dev
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/crypto/chelsio/chcr_crypto.h              | 14 +++++++++-----
- drivers/net/can/usb/etas_es58x/es581_4.h          |  2 +-
- drivers/net/can/usb/etas_es58x/es58x_fd.h         |  2 +-
- drivers/net/wireless/ath/ath10k/htt.h             |  7 +++++--
- drivers/net/wireless/intel/iwlegacy/commands.h    |  6 ++++--
- drivers/net/wireless/intel/iwlwifi/dvm/commands.h |  6 ++++--
- drivers/net/wireless/intel/iwlwifi/fw/api/tx.h    |  6 ++++--
- drivers/scsi/aic94xx/aic94xx_sds.c                |  6 ++++--
- fs/hpfs/hpfs.h                                    |  8 ++++----
- include/linux/filter.h                            |  6 ++++--
- include/scsi/sas.h                                | 12 ++++++++----
- include/uapi/rdma/rdma_user_rxe.h                 |  6 ++++--
- include/uapi/sound/asoc.h                         |  6 ++++--
- 13 files changed, 56 insertions(+), 31 deletions(-)
+ drivers/net/wireless/ath/ath10k/bmi.h         | 12 +++----
+ drivers/scsi/qla4xxx/ql4_def.h                |  4 +--
+ drivers/staging/r8188eu/include/ieee80211.h   |  6 ++--
+ drivers/staging/rtl8712/ieee80211.h           |  4 +--
+ drivers/staging/rtl8723bs/include/ieee80211.h |  6 ++--
+ include/linux/ieee80211.h                     | 34 +++++++++----------
+ include/uapi/linux/dlm_device.h               |  4 +--
+ 7 files changed, 33 insertions(+), 37 deletions(-)
 
-diff --git a/drivers/crypto/chelsio/chcr_crypto.h b/drivers/crypto/chelsio/chcr_crypto.h
-index e89f9e0094b4..1cadc231c6b0 100644
---- a/drivers/crypto/chelsio/chcr_crypto.h
-+++ b/drivers/crypto/chelsio/chcr_crypto.h
-@@ -222,8 +222,10 @@ struct chcr_authenc_ctx {
- };
- 
- struct __aead_ctx {
--	struct chcr_gcm_ctx gcm[0];
--	struct chcr_authenc_ctx authenc[];
-+	union {
-+		flex_array(struct chcr_gcm_ctx gcm[]);
-+		flex_array(struct chcr_authenc_ctx authenc[]);
-+	};
- };
- 
- struct chcr_aead_ctx {
-@@ -245,9 +247,11 @@ struct hmac_ctx {
- };
- 
- struct __crypto_ctx {
--	struct hmac_ctx hmacctx[0];
--	struct ablk_ctx ablkctx[0];
--	struct chcr_aead_ctx aeadctx[];
-+	union {
-+		flex_array(struct hmac_ctx hmacctx[]);
-+		flex_array(struct ablk_ctx ablkctx[]);
-+		flex_array(struct chcr_aead_ctx aeadctx[]);
-+	};
- };
- 
- struct chcr_context {
-diff --git a/drivers/net/can/usb/etas_es58x/es581_4.h b/drivers/net/can/usb/etas_es58x/es581_4.h
-index 4bc60a6df697..8657145dc2a9 100644
---- a/drivers/net/can/usb/etas_es58x/es581_4.h
-+++ b/drivers/net/can/usb/etas_es58x/es581_4.h
-@@ -192,7 +192,7 @@ struct es581_4_urb_cmd {
- 		struct es581_4_rx_cmd_ret rx_cmd_ret;
- 		__le64 timestamp;
- 		u8 rx_cmd_ret_u8;
--		u8 raw_msg[0];
-+		flex_array(u8 raw_msg);
- 	} __packed;
- 
- 	__le16 reserved_for_crc16_do_not_use;
-diff --git a/drivers/net/can/usb/etas_es58x/es58x_fd.h b/drivers/net/can/usb/etas_es58x/es58x_fd.h
-index ee18a87e40c0..3053e0958132 100644
---- a/drivers/net/can/usb/etas_es58x/es58x_fd.h
-+++ b/drivers/net/can/usb/etas_es58x/es58x_fd.h
-@@ -228,7 +228,7 @@ struct es58x_fd_urb_cmd {
- 		struct es58x_fd_tx_ack_msg tx_ack_msg;
- 		__le64 timestamp;
- 		__le32 rx_cmd_ret_le32;
--		u8 raw_msg[0];
-+		flex_array(u8 raw_msg[]);
- 	} __packed;
- 
- 	__le16 reserved_for_crc16_do_not_use;
-diff --git a/drivers/net/wireless/ath/ath10k/htt.h b/drivers/net/wireless/ath/ath10k/htt.h
-index ec689e3ce48a..c0729f882556 100644
---- a/drivers/net/wireless/ath/ath10k/htt.h
-+++ b/drivers/net/wireless/ath/ath10k/htt.h
-@@ -1674,8 +1674,11 @@ struct htt_tx_fetch_ind {
- 	__le32 token;
- 	__le16 num_resp_ids;
- 	__le16 num_records;
--	__le32 resp_ids[0]; /* ath10k_htt_get_tx_fetch_ind_resp_ids() */
--	struct htt_tx_fetch_record records[];
-+	union {
-+		/* ath10k_htt_get_tx_fetch_ind_resp_ids() */
-+		flex_array(__le32 resp_ids[]);
-+		flex_array(struct htt_tx_fetch_record records[]);
-+	};
+diff --git a/drivers/net/wireless/ath/ath10k/bmi.h b/drivers/net/wireless/ath/ath10k/bmi.h
+index f6fadcbdd86e..7a9bb97d45c1 100644
+--- a/drivers/net/wireless/ath/ath10k/bmi.h
++++ b/drivers/net/wireless/ath/ath10k/bmi.h
+@@ -109,7 +109,7 @@ struct bmi_cmd {
+ 		struct {
+ 			__le32 addr;
+ 			__le32 len;
+-			u8 payload[0];
++			u8 payload[];
+ 		} write_mem;
+ 		struct {
+ 			__le32 addr;
+@@ -138,18 +138,18 @@ struct bmi_cmd {
+ 		} rompatch_uninstall;
+ 		struct {
+ 			__le32 count;
+-			__le32 patch_ids[0]; /* length of @count */
++			__le32 patch_ids[]; /* length of @count */
+ 		} rompatch_activate;
+ 		struct {
+ 			__le32 count;
+-			__le32 patch_ids[0]; /* length of @count */
++			__le32 patch_ids[]; /* length of @count */
+ 		} rompatch_deactivate;
+ 		struct {
+ 			__le32 addr;
+ 		} lz_start;
+ 		struct {
+ 			__le32 len; /* max BMI_MAX_DATA_SIZE */
+-			u8 payload[0]; /* length of @len */
++			u8 payload[]; /* length of @len */
+ 		} lz_data;
+ 		struct {
+ 			u8 name[BMI_NVRAM_SEG_NAME_SZ];
+@@ -159,9 +159,7 @@ struct bmi_cmd {
  } __packed;
  
- static inline void *
-diff --git a/drivers/net/wireless/intel/iwlegacy/commands.h b/drivers/net/wireless/intel/iwlegacy/commands.h
-index 89c6671b32bc..ec0bc534c503 100644
---- a/drivers/net/wireless/intel/iwlegacy/commands.h
-+++ b/drivers/net/wireless/intel/iwlegacy/commands.h
-@@ -1408,8 +1408,10 @@ struct il3945_tx_cmd {
- 	 * MAC header goes here, followed by 2 bytes padding if MAC header
- 	 * length is 26 or 30 bytes, followed by payload data
- 	 */
--	u8 payload[0];
--	struct ieee80211_hdr hdr[];
-+	union {
-+		flex_array(u8 payload[]);
-+		flex_array(struct ieee80211_hdr hdr[]);
-+	};
- } __packed;
+ union bmi_resp {
+-	struct {
+-		u8 payload[0];
+-	} read_mem;
++	flex_array(u8 payload[]) read_mem;
+ 	struct {
+ 		__le32 result;
+ 	} execute;
+diff --git a/drivers/scsi/qla4xxx/ql4_def.h b/drivers/scsi/qla4xxx/ql4_def.h
+index 031569c496e5..69a590546bf9 100644
+--- a/drivers/scsi/qla4xxx/ql4_def.h
++++ b/drivers/scsi/qla4xxx/ql4_def.h
+@@ -366,13 +366,13 @@ struct qla4_work_evt {
+ 		struct {
+ 			enum iscsi_host_event_code code;
+ 			uint32_t data_size;
+-			uint8_t data[0];
++			uint8_t data[];
+ 		} aen;
+ 		struct {
+ 			uint32_t status;
+ 			uint32_t pid;
+ 			uint32_t data_size;
+-			uint8_t data[0];
++			uint8_t data[];
+ 		} ping;
+ 	} u;
+ };
+diff --git a/drivers/staging/r8188eu/include/ieee80211.h b/drivers/staging/r8188eu/include/ieee80211.h
+index bc5b030e9c40..9204dd42f319 100644
+--- a/drivers/staging/r8188eu/include/ieee80211.h
++++ b/drivers/staging/r8188eu/include/ieee80211.h
+@@ -185,7 +185,7 @@ struct ieee_param {
+ 		struct {
+ 			u32 len;
+ 			u8 reserved[32];
+-			u8 data[0];
++			u8 data[];
+ 		} wpa_ie;
+ 		struct {
+ 			int command;
+@@ -198,7 +198,7 @@ struct ieee_param {
+ 			u8 idx;
+ 			u8 seq[8]; /* sequence counter (set: RX, get: TX) */
+ 			u16 key_len;
+-			u8 key[0];
++			u8 key[];
+ 		} crypt;
+ #ifdef CONFIG_88EU_AP_MODE
+ 		struct {
+@@ -210,7 +210,7 @@ struct ieee_param {
+ 		} add_sta;
+ 		struct {
+ 			u8	reserved[2];/* for set max_num_sta */
+-			u8	buf[0];
++			u8	buf[];
+ 		} bcn_ie;
+ #endif
  
- /*
-diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/commands.h b/drivers/net/wireless/intel/iwlwifi/dvm/commands.h
-index 235c7a2e3483..efe205929a21 100644
---- a/drivers/net/wireless/intel/iwlwifi/dvm/commands.h
-+++ b/drivers/net/wireless/intel/iwlwifi/dvm/commands.h
-@@ -1251,8 +1251,10 @@ struct iwl_tx_cmd {
- 	 * MAC header goes here, followed by 2 bytes padding if MAC header
- 	 * length is 26 or 30 bytes, followed by payload data
- 	 */
--	u8 payload[0];
--	struct ieee80211_hdr hdr[];
-+	union {
-+		flex_array(u8 payload[]);
-+		flex_array(struct ieee80211_hdr hdr[]);
-+	};
- } __packed;
- 
- /*
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/api/tx.h b/drivers/net/wireless/intel/iwlwifi/fw/api/tx.h
-index 24e4a82a55da..d183f4856220 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/api/tx.h
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/api/tx.h
-@@ -713,8 +713,10 @@ struct iwl_mvm_compressed_ba_notif {
- 	__le32 tx_rate;
- 	__le16 tfd_cnt;
- 	__le16 ra_tid_cnt;
--	struct iwl_mvm_compressed_ba_ratid ra_tid[0];
--	struct iwl_mvm_compressed_ba_tfd tfd[];
-+	union {
-+		flex_array(struct iwl_mvm_compressed_ba_ratid ra_tid[]);
-+		flex_array(struct iwl_mvm_compressed_ba_tfd tfd[]);
-+	};
- } __packed; /* COMPRESSED_BA_RES_API_S_VER_4 */
- 
- /**
-diff --git a/drivers/scsi/aic94xx/aic94xx_sds.c b/drivers/scsi/aic94xx/aic94xx_sds.c
-index 46815e65f7a4..ae20b855d449 100644
---- a/drivers/scsi/aic94xx/aic94xx_sds.c
-+++ b/drivers/scsi/aic94xx/aic94xx_sds.c
-@@ -517,8 +517,10 @@ struct asd_ms_conn_map {
- 	u8    num_nodes;
- 	u8    usage_model_id;
- 	u32   _resvd;
--	struct asd_ms_conn_desc conn_desc[0];
--	struct asd_ms_node_desc node_desc[];
-+	union {
-+		flex_array(struct asd_ms_conn_desc conn_desc[]);
-+		flex_array(struct asd_ms_node_desc node_desc[]);
-+	};
- } __attribute__ ((packed));
- 
- struct asd_ctrla_phy_entry {
-diff --git a/fs/hpfs/hpfs.h b/fs/hpfs/hpfs.h
-index d92c4af3e1b4..ee26c85d57a7 100644
---- a/fs/hpfs/hpfs.h
-+++ b/fs/hpfs/hpfs.h
-@@ -409,10 +409,10 @@ struct bplus_header
-   __le16 first_free;			/* offset from start of header to
- 					   first free node in array */
-   union {
--    struct bplus_internal_node internal[0]; /* (internal) 2-word entries giving
--					       subtree pointers */
--    struct bplus_leaf_node external[0];	    /* (external) 3-word entries giving
--					       sector runs */
-+	/* (internal) 2-word entries giving subtree pointers */
-+	flex_array(struct bplus_internal_node internal[]);
-+	/* (external) 3-word entries giving sector runs */
-+	flex_array(struct bplus_leaf_node external[]);
-   } u;
+diff --git a/drivers/staging/rtl8712/ieee80211.h b/drivers/staging/rtl8712/ieee80211.h
+index 61eff7c5746b..65ceaca9b51e 100644
+--- a/drivers/staging/rtl8712/ieee80211.h
++++ b/drivers/staging/rtl8712/ieee80211.h
+@@ -78,7 +78,7 @@ struct ieee_param {
+ 		struct {
+ 			u32 len;
+ 			u8 reserved[32];
+-			u8 data[0];
++			u8 data[];
+ 		} wpa_ie;
+ 		struct {
+ 			int command;
+@@ -91,7 +91,7 @@ struct ieee_param {
+ 			u8 idx;
+ 			u8 seq[8]; /* sequence counter (set: RX, get: TX) */
+ 			u16 key_len;
+-			u8 key[0];
++			u8 key[];
+ 		} crypt;
+ 	} u;
+ };
+diff --git a/drivers/staging/rtl8723bs/include/ieee80211.h b/drivers/staging/rtl8723bs/include/ieee80211.h
+index d6236f5b069d..c11d7e2d2347 100644
+--- a/drivers/staging/rtl8723bs/include/ieee80211.h
++++ b/drivers/staging/rtl8723bs/include/ieee80211.h
+@@ -172,7 +172,7 @@ struct ieee_param {
+ 		struct {
+ 			u32 len;
+ 			u8 reserved[32];
+-			u8 data[0];
++			u8 data[];
+ 		} wpa_ie;
+ 	        struct{
+ 			int command;
+@@ -185,7 +185,7 @@ struct ieee_param {
+ 			u8 idx;
+ 			u8 seq[8]; /* sequence counter (set: RX, get: TX) */
+ 			u16 key_len;
+-			u8 key[0];
++			u8 key[];
+ 		} crypt;
+ 		struct {
+ 			u16 aid;
+@@ -196,7 +196,7 @@ struct ieee_param {
+ 		} add_sta;
+ 		struct {
+ 			u8 reserved[2];/* for set max_num_sta */
+-			u8 buf[0];
++			u8 buf[];
+ 		} bcn_ie;
+ 	} u;
+ };
+diff --git a/include/linux/ieee80211.h b/include/linux/ieee80211.h
+index a6730072d13a..195084289078 100644
+--- a/include/linux/ieee80211.h
++++ b/include/linux/ieee80211.h
+@@ -1101,7 +1101,7 @@ struct ieee80211_mgmt {
+ 			__le16 auth_transaction;
+ 			__le16 status_code;
+ 			/* possibly followed by Challenge text */
+-			u8 variable[0];
++			u8 variable[];
+ 		} __packed auth;
+ 		struct {
+ 			__le16 reason_code;
+@@ -1110,26 +1110,26 @@ struct ieee80211_mgmt {
+ 			__le16 capab_info;
+ 			__le16 listen_interval;
+ 			/* followed by SSID and Supported rates */
+-			u8 variable[0];
++			u8 variable[];
+ 		} __packed assoc_req;
+ 		struct {
+ 			__le16 capab_info;
+ 			__le16 status_code;
+ 			__le16 aid;
+ 			/* followed by Supported rates */
+-			u8 variable[0];
++			u8 variable[];
+ 		} __packed assoc_resp, reassoc_resp;
+ 		struct {
+ 			__le16 capab_info;
+ 			__le16 status_code;
+-			u8 variable[0];
++			u8 variable[];
+ 		} __packed s1g_assoc_resp, s1g_reassoc_resp;
+ 		struct {
+ 			__le16 capab_info;
+ 			__le16 listen_interval;
+ 			u8 current_ap[ETH_ALEN];
+ 			/* followed by SSID and Supported rates */
+-			u8 variable[0];
++			u8 variable[];
+ 		} __packed reassoc_req;
+ 		struct {
+ 			__le16 reason_code;
+@@ -1140,19 +1140,17 @@ struct ieee80211_mgmt {
+ 			__le16 capab_info;
+ 			/* followed by some of SSID, Supported rates,
+ 			 * FH Params, DS Params, CF Params, IBSS Params, TIM */
+-			u8 variable[0];
++			u8 variable[];
+ 		} __packed beacon;
+-		struct {
+-			/* only variable items: SSID, Supported rates */
+-			u8 variable[0];
+-		} __packed probe_req;
++		/* only variable items: SSID, Supported rates */
++		flex_array(u8 variable[]) __packed probe_req;
+ 		struct {
+ 			__le64 timestamp;
+ 			__le16 beacon_int;
+ 			__le16 capab_info;
+ 			/* followed by some of SSID, Supported rates,
+ 			 * FH Params, DS Params, CF Params, IBSS Params */
+-			u8 variable[0];
++			u8 variable[];
+ 		} __packed probe_resp;
+ 		struct {
+ 			u8 category;
+@@ -1161,16 +1159,16 @@ struct ieee80211_mgmt {
+ 					u8 action_code;
+ 					u8 dialog_token;
+ 					u8 status_code;
+-					u8 variable[0];
++					u8 variable[];
+ 				} __packed wme_action;
+ 				struct{
+ 					u8 action_code;
+-					u8 variable[0];
++					u8 variable[];
+ 				} __packed chan_switch;
+ 				struct{
+ 					u8 action_code;
+ 					struct ieee80211_ext_chansw_ie data;
+-					u8 variable[0];
++					u8 variable[];
+ 				} __packed ext_chan_switch;
+ 				struct{
+ 					u8 action_code;
+@@ -1186,7 +1184,7 @@ struct ieee80211_mgmt {
+ 					__le16 timeout;
+ 					__le16 start_seq_num;
+ 					/* followed by BA Extension */
+-					u8 variable[0];
++					u8 variable[];
+ 				} __packed addba_req;
+ 				struct{
+ 					u8 action_code;
+@@ -1202,11 +1200,11 @@ struct ieee80211_mgmt {
+ 				} __packed delba;
+ 				struct {
+ 					u8 action_code;
+-					u8 variable[0];
++					u8 variable[];
+ 				} __packed self_prot;
+ 				struct{
+ 					u8 action_code;
+-					u8 variable[0];
++					u8 variable[];
+ 				} __packed mesh_action;
+ 				struct {
+ 					u8 action;
+@@ -1250,7 +1248,7 @@ struct ieee80211_mgmt {
+ 					u8 toa[6];
+ 					__le16 tod_error;
+ 					__le16 toa_error;
+-					u8 variable[0];
++					u8 variable[];
+ 				} __packed ftm;
+ 			} u;
+ 		} __packed action;
+diff --git a/include/uapi/linux/dlm_device.h b/include/uapi/linux/dlm_device.h
+index f880d2831160..e83954c69fff 100644
+--- a/include/uapi/linux/dlm_device.h
++++ b/include/uapi/linux/dlm_device.h
+@@ -45,13 +45,13 @@ struct dlm_lock_params {
+ 	void __user *bastaddr;
+ 	struct dlm_lksb __user *lksb;
+ 	char lvb[DLM_USER_LVB_LEN];
+-	char name[0];
++	char name[];
  };
  
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index 1797e8506929..6c41c03b791c 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -588,8 +588,10 @@ struct bpf_prog {
- 	struct bpf_prog_aux	*aux;		/* Auxiliary fields */
- 	struct sock_fprog_kern	*orig_prog;	/* Original BPF program */
- 	/* Instructions for interpreter */
--	struct sock_filter	insns[0];
--	struct bpf_insn		insnsi[];
-+	union {
-+		flex_array(struct sock_filter	insns[]);
-+		flex_array(struct bpf_insn	insnsi[]);
-+	};
+ struct dlm_lspace_params {
+ 	__u32 flags;
+ 	__u32 minor;
+-	char name[0];
++	char name[];
  };
  
- struct sk_filter {
-diff --git a/include/scsi/sas.h b/include/scsi/sas.h
-index 4726c1bbec65..67c63a87602f 100644
---- a/include/scsi/sas.h
-+++ b/include/scsi/sas.h
-@@ -323,8 +323,10 @@ struct ssp_response_iu {
- 	__be32 sense_data_len;
- 	__be32 response_data_len;
- 
--	u8     resp_data[0];
--	u8     sense_data[];
-+	union {
-+		flex_array(u8     resp_data[]);
-+		flex_array(u8     sense_data[]);
-+	};
- } __attribute__ ((packed));
- 
- struct ssp_command_iu {
-@@ -554,8 +556,10 @@ struct ssp_response_iu {
- 	__be32 sense_data_len;
- 	__be32 response_data_len;
- 
--	u8     resp_data[0];
--	u8     sense_data[];
-+	union {
-+		flex_array(u8     resp_data[]);
-+		flex_array(u8     sense_data[]);
-+	};
- } __attribute__ ((packed));
- 
- struct ssp_command_iu {
-diff --git a/include/uapi/rdma/rdma_user_rxe.h b/include/uapi/rdma/rdma_user_rxe.h
-index e283c2220aba..fb63de88423b 100644
---- a/include/uapi/rdma/rdma_user_rxe.h
-+++ b/include/uapi/rdma/rdma_user_rxe.h
-@@ -141,8 +141,10 @@ struct rxe_dma_info {
- 	__u32			sge_offset;
- 	__u32			reserved;
- 	union {
--		__u8		inline_data[0];
--		struct rxe_sge	sge[0];
-+		__flex_array(__fa1,
-+			     __u8 inline_data[]);
-+		__flex_array(__fa2,
-+			     struct rxe_sge sge[]);
- 	};
- };
- 
-diff --git a/include/uapi/sound/asoc.h b/include/uapi/sound/asoc.h
-index da61398b1f8f..aa4e9dd94d29 100644
---- a/include/uapi/sound/asoc.h
-+++ b/include/uapi/sound/asoc.h
-@@ -240,8 +240,10 @@ struct snd_soc_tplg_vendor_array {
- struct snd_soc_tplg_private {
- 	__le32 size;	/* in bytes of private data */
- 	union {
--		char data[0];
--		struct snd_soc_tplg_vendor_array array[0];
-+		__flex_array(__fa1,
-+			     char data[]);
-+		__flex_array(__fa2,
-+			     struct snd_soc_tplg_vendor_array array[]);
- 	};
- } __attribute__((packed));
- 
+ struct dlm_purge_params {
 -- 
 2.30.2
 
