@@ -2,62 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D57373F0EB9
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 01:42:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D4673F0EBA
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 01:43:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235074AbhHRXnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 19:43:23 -0400
+        id S235097AbhHRXnY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 19:43:24 -0400
 Received: from mga12.intel.com ([192.55.52.136]:17429 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235060AbhHRXnX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S235064AbhHRXnX (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 18 Aug 2021 19:43:23 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10080"; a="196031724"
+X-IronPort-AV: E=McAfee;i="6200,9189,10080"; a="196031725"
 X-IronPort-AV: E=Sophos;i="5.84,333,1620716400"; 
-   d="scan'208";a="196031724"
+   d="scan'208";a="196031725"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2021 16:42:47 -0700
 X-IronPort-AV: E=Sophos;i="5.84,333,1620716400"; 
-   d="scan'208";a="449944706"
+   d="scan'208";a="449944707"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.117.66])
   by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2021 16:42:47 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev, geliangtang@gmail.com
-Subject: [PATCH net 0/2] mptcp: Bug fixes
-Date:   Wed, 18 Aug 2021 16:42:35 -0700
-Message-Id: <20210818234237.242266-1-mathew.j.martineau@linux.intel.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev, geliangtang@gmail.com,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net 1/2] mptcp: fix memory leak on address flush
+Date:   Wed, 18 Aug 2021 16:42:36 -0700
+Message-Id: <20210818234237.242266-2-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20210818234237.242266-1-mathew.j.martineau@linux.intel.com>
+References: <20210818234237.242266-1-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Here are two bug fixes for the net tree:
+From: Paolo Abeni <pabeni@redhat.com>
 
-Patch 1 fixes a memory leak that could be encountered when clearing the
-list of advertised MPTCP addresses.
+The endpoint cleanup path is prone to a memory leak, as reported
+by syzkaller:
 
-Patch 2 fixes a protocol issue early in an MPTCP connection, to ensure
-both peers correctly understand that the full MPTCP connection handshake
-has completed even when the server side quickly sends an ADD_ADDR
-option.
+ BUG: memory leak
+ unreferenced object 0xffff88810680ea00 (size 64):
+   comm "syz-executor.6", pid 6191, jiffies 4295756280 (age 24.138s)
+   hex dump (first 32 bytes):
+     58 75 7d 3c 80 88 ff ff 22 01 00 00 00 00 ad de  Xu}<....".......
+     01 00 02 00 00 00 00 00 ac 1e 00 07 00 00 00 00  ................
+   backtrace:
+     [<0000000072a9f72a>] kmalloc include/linux/slab.h:591 [inline]
+     [<0000000072a9f72a>] mptcp_nl_cmd_add_addr+0x287/0x9f0 net/mptcp/pm_netlink.c:1170
+     [<00000000f6e931bf>] genl_family_rcv_msg_doit.isra.0+0x225/0x340 net/netlink/genetlink.c:731
+     [<00000000f1504a2c>] genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
+     [<00000000f1504a2c>] genl_rcv_msg+0x341/0x5b0 net/netlink/genetlink.c:792
+     [<0000000097e76f6a>] netlink_rcv_skb+0x148/0x430 net/netlink/af_netlink.c:2504
+     [<00000000ceefa2b8>] genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
+     [<000000008ff91aec>] netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+     [<000000008ff91aec>] netlink_unicast+0x537/0x750 net/netlink/af_netlink.c:1340
+     [<0000000041682c35>] netlink_sendmsg+0x846/0xd80 net/netlink/af_netlink.c:1929
+     [<00000000df3aa8e7>] sock_sendmsg_nosec net/socket.c:704 [inline]
+     [<00000000df3aa8e7>] sock_sendmsg+0x14e/0x190 net/socket.c:724
+     [<000000002154c54c>] ____sys_sendmsg+0x709/0x870 net/socket.c:2403
+     [<000000001aab01d7>] ___sys_sendmsg+0xff/0x170 net/socket.c:2457
+     [<00000000fa3b1446>] __sys_sendmsg+0xe5/0x1b0 net/socket.c:2486
+     [<00000000db2ee9c7>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+     [<00000000db2ee9c7>] do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
+     [<000000005873517d>] entry_SYSCALL_64_after_hwframe+0x44/0xae
 
+We should not require an allocation to cleanup stuff.
 
-Matthieu Baerts (1):
-  mptcp: full fully established support after ADD_ADDR
+Rework the code a bit so that the additional RCU work is no more needed.
 
-Paolo Abeni (1):
-  mptcp: fix memory leak on address flush
-
- net/mptcp/options.c    | 10 +++-------
+Fixes: 1729cf186d8a ("mptcp: create the listening socket for new port")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+---
  net/mptcp/pm_netlink.c | 44 ++++++++++++------------------------------
- 2 files changed, 15 insertions(+), 39 deletions(-)
+ 1 file changed, 12 insertions(+), 32 deletions(-)
 
-
-base-commit: fb4b1373dcab086d0619c29310f0466a0b2ceb8a
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index 56263c2c4014..7b3794459783 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -1135,36 +1135,12 @@ static int mptcp_nl_remove_subflow_and_signal_addr(struct net *net,
+ 	return 0;
+ }
+ 
+-struct addr_entry_release_work {
+-	struct rcu_work	rwork;
+-	struct mptcp_pm_addr_entry *entry;
+-};
+-
+-static void mptcp_pm_release_addr_entry(struct work_struct *work)
++/* caller must ensure the RCU grace period is already elapsed */
++static void __mptcp_pm_release_addr_entry(struct mptcp_pm_addr_entry *entry)
+ {
+-	struct addr_entry_release_work *w;
+-	struct mptcp_pm_addr_entry *entry;
+-
+-	w = container_of(to_rcu_work(work), struct addr_entry_release_work, rwork);
+-	entry = w->entry;
+-	if (entry) {
+-		if (entry->lsk)
+-			sock_release(entry->lsk);
+-		kfree(entry);
+-	}
+-	kfree(w);
+-}
+-
+-static void mptcp_pm_free_addr_entry(struct mptcp_pm_addr_entry *entry)
+-{
+-	struct addr_entry_release_work *w;
+-
+-	w = kmalloc(sizeof(*w), GFP_ATOMIC);
+-	if (w) {
+-		INIT_RCU_WORK(&w->rwork, mptcp_pm_release_addr_entry);
+-		w->entry = entry;
+-		queue_rcu_work(system_wq, &w->rwork);
+-	}
++	if (entry->lsk)
++		sock_release(entry->lsk);
++	kfree(entry);
+ }
+ 
+ static int mptcp_nl_remove_id_zero_address(struct net *net,
+@@ -1244,7 +1220,8 @@ static int mptcp_nl_cmd_del_addr(struct sk_buff *skb, struct genl_info *info)
+ 	spin_unlock_bh(&pernet->lock);
+ 
+ 	mptcp_nl_remove_subflow_and_signal_addr(sock_net(skb->sk), &entry->addr);
+-	mptcp_pm_free_addr_entry(entry);
++	synchronize_rcu();
++	__mptcp_pm_release_addr_entry(entry);
+ 
+ 	return ret;
+ }
+@@ -1297,6 +1274,7 @@ static void mptcp_nl_remove_addrs_list(struct net *net,
+ 	}
+ }
+ 
++/* caller must ensure the RCU grace period is already elapsed */
+ static void __flush_addrs(struct list_head *list)
+ {
+ 	while (!list_empty(list)) {
+@@ -1305,7 +1283,7 @@ static void __flush_addrs(struct list_head *list)
+ 		cur = list_entry(list->next,
+ 				 struct mptcp_pm_addr_entry, list);
+ 		list_del_rcu(&cur->list);
+-		mptcp_pm_free_addr_entry(cur);
++		__mptcp_pm_release_addr_entry(cur);
+ 	}
+ }
+ 
+@@ -1329,6 +1307,7 @@ static int mptcp_nl_cmd_flush_addrs(struct sk_buff *skb, struct genl_info *info)
+ 	bitmap_zero(pernet->id_bitmap, MAX_ADDR_ID + 1);
+ 	spin_unlock_bh(&pernet->lock);
+ 	mptcp_nl_remove_addrs_list(sock_net(skb->sk), &free_list);
++	synchronize_rcu();
+ 	__flush_addrs(&free_list);
+ 	return 0;
+ }
+@@ -1939,7 +1918,8 @@ static void __net_exit pm_nl_exit_net(struct list_head *net_list)
+ 		struct pm_nl_pernet *pernet = net_generic(net, pm_nl_pernet_id);
+ 
+ 		/* net is removed from namespace list, can't race with
+-		 * other modifiers
++		 * other modifiers, also netns core already waited for a
++		 * RCU grace period.
+ 		 */
+ 		__flush_addrs(&pernet->local_addr_list);
+ 	}
 -- 
 2.33.0
 
