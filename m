@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFDAE3F0B86
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 21:08:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF7193F0B8E
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 21:08:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233040AbhHRTI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 15:08:58 -0400
-Received: from relmlor1.renesas.com ([210.160.252.171]:14414 "EHLO
+        id S233729AbhHRTJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 15:09:16 -0400
+Received: from relmlor1.renesas.com ([210.160.252.171]:22399 "EHLO
         relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S233727AbhHRTIp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 15:08:45 -0400
+        by vger.kernel.org with ESMTP id S233283AbhHRTIt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 15:08:49 -0400
 X-IronPort-AV: E=Sophos;i="5.84,332,1620658800"; 
-   d="scan'208";a="91033544"
+   d="scan'208";a="91033551"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 19 Aug 2021 04:08:10 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 19 Aug 2021 04:08:14 +0900
 Received: from localhost.localdomain (unknown [10.226.93.61])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 09B4140D5D97;
-        Thu, 19 Aug 2021 04:08:06 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id B908A40D5D67;
+        Thu, 19 Aug 2021 04:08:10 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -32,9 +32,9 @@ Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Chris Paterson <Chris.Paterson2@renesas.com>,
         Biju Das <biju.das@bp.renesas.com>,
         Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH net-next v3 1/9] ravb: Use unsigned int for num_tx_desc variable in struct ravb_private
-Date:   Wed, 18 Aug 2021 20:07:52 +0100
-Message-Id: <20210818190800.20191-2-biju.das.jz@bp.renesas.com>
+Subject: [PATCH net-next v3 2/9] ravb: Add struct ravb_hw_info to driver data
+Date:   Wed, 18 Aug 2021 20:07:53 +0100
+Message-Id: <20210818190800.20191-3-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210818190800.20191-1-biju.das.jz@bp.renesas.com>
 References: <20210818190800.20191-1-biju.das.jz@bp.renesas.com>
@@ -42,111 +42,159 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The number of TX descriptors per packet is an unsigned value and
-the variable for holding this information should be unsigned.
+The DMAC and EMAC blocks of Gigabit Ethernet IP found on RZ/G2L SoC are
+similar to the R-Car Ethernet AVB IP. With a few changes in the driver we
+can support both IPs.
 
-This patch replaces the data type of num_tx_desc variable in struct
-ravb_private from 'int' to 'unsigned int'.
-This patch also updates the data type of local variables to unsigned int,
-where the local variables are evaluated using num_tx_desc.
+This patch adds the struct ravb_hw_info to hold hw features, driver data
+and function pointers to support both the IPs. It also replaces the driver
+data chip type with struct ravb_hw_info by moving chip type to it.
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
-v3:- new patch
-ref:- https://patchwork.kernel.org/project/linux-renesas-soc/patch/20210802102654.5996-2-biju.das.jz@bp.renesas.com/
+v2->v3:
+ * Retained Rb tag from Andrew, since there is no functionality change
+   apart from just splitting the patch into 2. Also updated the commit
+   description.
+v2:
+ * Incorporated Andrew and Sergei's review comments for making it smaller patch
+   and provided detailed description.
 ---
- drivers/net/ethernet/renesas/ravb.h      |  2 +-
- drivers/net/ethernet/renesas/ravb_main.c | 28 ++++++++++++------------
- 2 files changed, 15 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/renesas/ravb.h      |  6 ++++
+ drivers/net/ethernet/renesas/ravb_main.c | 35 +++++++++++++++---------
+ 2 files changed, 28 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-index 80e62ca2e3d3..85ece16134c9 100644
+index 85ece16134c9..6ff0b2626708 100644
 --- a/drivers/net/ethernet/renesas/ravb.h
 +++ b/drivers/net/ethernet/renesas/ravb.h
-@@ -1039,7 +1039,7 @@ struct ravb_private {
- 	unsigned rxcidm:1;		/* RX Clock Internal Delay Mode */
+@@ -988,6 +988,10 @@ enum ravb_chip_id {
+ 	RCAR_GEN3,
+ };
+ 
++struct ravb_hw_info {
++	enum ravb_chip_id chip_id;
++};
++
+ struct ravb_private {
+ 	struct net_device *ndev;
+ 	struct platform_device *pdev;
+@@ -1040,6 +1044,8 @@ struct ravb_private {
  	unsigned txcidm:1;		/* TX Clock Internal Delay Mode */
  	unsigned rgmii_override:1;	/* Deprecated rgmii-*id behavior */
--	int num_tx_desc;		/* TX descriptors per packet */
-+	unsigned int num_tx_desc;	/* TX descriptors per packet */
+ 	unsigned int num_tx_desc;	/* TX descriptors per packet */
++
++	const struct ravb_hw_info *info;
  };
  
  static inline u32 ravb_read(struct net_device *ndev, enum ravb_reg reg)
 diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-index 62b0605f02ff..94eb9136752d 100644
+index 94eb9136752d..b6554e5e13af 100644
 --- a/drivers/net/ethernet/renesas/ravb_main.c
 +++ b/drivers/net/ethernet/renesas/ravb_main.c
-@@ -177,10 +177,10 @@ static int ravb_tx_free(struct net_device *ndev, int q, bool free_txed_only)
- {
- 	struct ravb_private *priv = netdev_priv(ndev);
- 	struct net_device_stats *stats = &priv->stats[q];
--	int num_tx_desc = priv->num_tx_desc;
-+	unsigned int num_tx_desc = priv->num_tx_desc;
- 	struct ravb_tx_desc *desc;
-+	unsigned int entry;
- 	int free_num = 0;
--	int entry;
- 	u32 size;
+@@ -1924,12 +1924,20 @@ static int ravb_mdio_release(struct ravb_private *priv)
+ 	return 0;
+ }
  
- 	for (; priv->cur_tx[q] - priv->dirty_tx[q] > 0; priv->dirty_tx[q]++) {
-@@ -220,9 +220,9 @@ static int ravb_tx_free(struct net_device *ndev, int q, bool free_txed_only)
- static void ravb_ring_free(struct net_device *ndev, int q)
++static const struct ravb_hw_info ravb_gen3_hw_info = {
++	.chip_id = RCAR_GEN3,
++};
++
++static const struct ravb_hw_info ravb_gen2_hw_info = {
++	.chip_id = RCAR_GEN2,
++};
++
+ static const struct of_device_id ravb_match_table[] = {
+-	{ .compatible = "renesas,etheravb-r8a7790", .data = (void *)RCAR_GEN2 },
+-	{ .compatible = "renesas,etheravb-r8a7794", .data = (void *)RCAR_GEN2 },
+-	{ .compatible = "renesas,etheravb-rcar-gen2", .data = (void *)RCAR_GEN2 },
+-	{ .compatible = "renesas,etheravb-r8a7795", .data = (void *)RCAR_GEN3 },
+-	{ .compatible = "renesas,etheravb-rcar-gen3", .data = (void *)RCAR_GEN3 },
++	{ .compatible = "renesas,etheravb-r8a7790", .data = &ravb_gen2_hw_info },
++	{ .compatible = "renesas,etheravb-r8a7794", .data = &ravb_gen2_hw_info },
++	{ .compatible = "renesas,etheravb-rcar-gen2", .data = &ravb_gen2_hw_info },
++	{ .compatible = "renesas,etheravb-r8a7795", .data = &ravb_gen3_hw_info },
++	{ .compatible = "renesas,etheravb-rcar-gen3", .data = &ravb_gen3_hw_info },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, ravb_match_table);
+@@ -2023,8 +2031,8 @@ static void ravb_set_delay_mode(struct net_device *ndev)
+ static int ravb_probe(struct platform_device *pdev)
  {
- 	struct ravb_private *priv = netdev_priv(ndev);
--	int num_tx_desc = priv->num_tx_desc;
--	int ring_size;
--	int i;
-+	unsigned int num_tx_desc = priv->num_tx_desc;
-+	unsigned int ring_size;
-+	unsigned int i;
+ 	struct device_node *np = pdev->dev.of_node;
++	const struct ravb_hw_info *info;
+ 	struct ravb_private *priv;
+-	enum ravb_chip_id chip_id;
+ 	struct net_device *ndev;
+ 	int error, irq, q;
+ 	struct resource *res;
+@@ -2047,9 +2055,9 @@ static int ravb_probe(struct platform_device *pdev)
+ 	pm_runtime_enable(&pdev->dev);
+ 	pm_runtime_get_sync(&pdev->dev);
  
- 	if (priv->rx_ring[q]) {
- 		for (i = 0; i < priv->num_rx_ring[q]; i++) {
-@@ -275,15 +275,15 @@ static void ravb_ring_free(struct net_device *ndev, int q)
- static void ravb_ring_format(struct net_device *ndev, int q)
- {
- 	struct ravb_private *priv = netdev_priv(ndev);
--	int num_tx_desc = priv->num_tx_desc;
-+	unsigned int num_tx_desc = priv->num_tx_desc;
- 	struct ravb_ex_rx_desc *rx_desc;
- 	struct ravb_tx_desc *tx_desc;
- 	struct ravb_desc *desc;
--	int rx_ring_size = sizeof(*rx_desc) * priv->num_rx_ring[q];
--	int tx_ring_size = sizeof(*tx_desc) * priv->num_tx_ring[q] *
--			   num_tx_desc;
-+	unsigned int rx_ring_size = sizeof(*rx_desc) * priv->num_rx_ring[q];
-+	unsigned int tx_ring_size = sizeof(*tx_desc) * priv->num_tx_ring[q] *
-+				    num_tx_desc;
- 	dma_addr_t dma_addr;
--	int i;
-+	unsigned int i;
+-	chip_id = (enum ravb_chip_id)of_device_get_match_data(&pdev->dev);
++	info = of_device_get_match_data(&pdev->dev);
  
- 	priv->cur_rx[q] = 0;
- 	priv->cur_tx[q] = 0;
-@@ -339,10 +339,10 @@ static void ravb_ring_format(struct net_device *ndev, int q)
- static int ravb_ring_init(struct net_device *ndev, int q)
- {
- 	struct ravb_private *priv = netdev_priv(ndev);
--	int num_tx_desc = priv->num_tx_desc;
-+	unsigned int num_tx_desc = priv->num_tx_desc;
-+	unsigned int ring_size;
- 	struct sk_buff *skb;
--	int ring_size;
--	int i;
-+	unsigned int i;
+-	if (chip_id == RCAR_GEN3)
++	if (info->chip_id == RCAR_GEN3)
+ 		irq = platform_get_irq_byname(pdev, "ch22");
+ 	else
+ 		irq = platform_get_irq(pdev, 0);
+@@ -2062,6 +2070,7 @@ static int ravb_probe(struct platform_device *pdev)
+ 	SET_NETDEV_DEV(ndev, &pdev->dev);
  
- 	/* Allocate RX and TX skb rings */
- 	priv->rx_skb[q] = kcalloc(priv->num_rx_ring[q],
-@@ -1488,7 +1488,7 @@ static void ravb_tx_timeout_work(struct work_struct *work)
- static netdev_tx_t ravb_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- {
- 	struct ravb_private *priv = netdev_priv(ndev);
--	int num_tx_desc = priv->num_tx_desc;
-+	unsigned int num_tx_desc = priv->num_tx_desc;
- 	u16 q = skb_get_queue_mapping(skb);
- 	struct ravb_tstamp_skb *ts_skb;
- 	struct ravb_tx_desc *desc;
+ 	priv = netdev_priv(ndev);
++	priv->info = info;
+ 	priv->ndev = ndev;
+ 	priv->pdev = pdev;
+ 	priv->num_tx_ring[RAVB_BE] = BE_TX_RING_SIZE;
+@@ -2088,7 +2097,7 @@ static int ravb_probe(struct platform_device *pdev)
+ 	priv->avb_link_active_low =
+ 		of_property_read_bool(np, "renesas,ether-link-active-low");
+ 
+-	if (chip_id == RCAR_GEN3) {
++	if (info->chip_id == RCAR_GEN3) {
+ 		irq = platform_get_irq_byname(pdev, "ch24");
+ 		if (irq < 0) {
+ 			error = irq;
+@@ -2113,7 +2122,7 @@ static int ravb_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
+-	priv->chip_id = chip_id;
++	priv->chip_id = info->chip_id;
+ 
+ 	priv->clk = devm_clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(priv->clk)) {
+@@ -2131,7 +2140,7 @@ static int ravb_probe(struct platform_device *pdev)
+ 	ndev->max_mtu = 2048 - (ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN);
+ 	ndev->min_mtu = ETH_MIN_MTU;
+ 
+-	priv->num_tx_desc = chip_id == RCAR_GEN2 ?
++	priv->num_tx_desc = info->chip_id == RCAR_GEN2 ?
+ 		NUM_TX_DESC_GEN2 : NUM_TX_DESC_GEN3;
+ 
+ 	/* Set function */
+@@ -2173,7 +2182,7 @@ static int ravb_probe(struct platform_device *pdev)
+ 	INIT_LIST_HEAD(&priv->ts_skb_list);
+ 
+ 	/* Initialise PTP Clock driver */
+-	if (chip_id != RCAR_GEN2)
++	if (info->chip_id != RCAR_GEN2)
+ 		ravb_ptp_init(ndev, pdev);
+ 
+ 	/* Debug message level */
+@@ -2221,7 +2230,7 @@ static int ravb_probe(struct platform_device *pdev)
+ 			  priv->desc_bat_dma);
+ 
+ 	/* Stop PTP Clock driver */
+-	if (chip_id != RCAR_GEN2)
++	if (info->chip_id != RCAR_GEN2)
+ 		ravb_ptp_stop(ndev);
+ out_disable_refclk:
+ 	clk_disable_unprepare(priv->refclk);
 -- 
 2.17.1
 
