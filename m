@@ -2,96 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C44803EF848
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 04:57:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F89D3EF878
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 05:21:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235253AbhHRC5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Aug 2021 22:57:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57846 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231449AbhHRC5x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 22:57:53 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495C9C061764
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 19:57:19 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id a126so2372330ybg.6
-        for <netdev@vger.kernel.org>; Tue, 17 Aug 2021 19:57:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=E8J1M8TLojn9lNRFCWALG+xqr0khqK2ghlCL+ZC08FY=;
-        b=MabUach2AGIkoGUn1LDVwxrSHsqBJSDF/BKO0y7/EcAkJ9sCwtzJbIwJdTHbx3GN7p
-         8kIG/jVLcxrsWOXJlwXRmuCn3I41YUAjzBndeTLst7n+SKYrv4KmTosi8OVRgFVQIKSr
-         aPUPFoqw50AH0kDfWlxiAz9mfQkvmL2uRr1qNsIo38a09+dLbqQCofKYqG9LFEKFMOWr
-         94+dJ8H/ujR1vnip5z38VTVdVIuMI63l9Gscml9Oth2gr+tMnx8K9Au7x7YrgKVcEU34
-         +sdTQkTDLimsebm9Z6BzIdNx8sE51k+1JCpGC1a3Rwv4NYybgOSyqpSjpunh5KUgz8bz
-         +rpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=E8J1M8TLojn9lNRFCWALG+xqr0khqK2ghlCL+ZC08FY=;
-        b=cvDPFhyaMvbctebA1Xh0Pciz2uMCRKW+Y/Qif8K3FSczbLZfzoBJCi5raG7VziJGrP
-         2TPZVpuIWsaRkg7Fo8efCg+mE2C4wwF3q9YuAn9cQjOtBQg2KGFgGNefKNVNE0jDbcdU
-         OIE/KoxIK09RHV5ORmKYOhEDjCnnCkqAO4WaGs/N1Hbp6HbZ/wW/iHbfGaQhR3B1Wloz
-         fXvFAOvu2TZa7yW8egFOj7aYLi5itO+OCiCEEKaBRRIO5f8pspVM4IfD7DiC3PpFHdNu
-         B3e042dR+IqJQmtrQQo0HQsXbceDlsG9cE+9xqrz3Mls1wZduNijaEVMP6RXYFZ6Da8z
-         0vgw==
-X-Gm-Message-State: AOAM5334XM8xJLVXZo7Vnqnu5AycXAswEewLg15kG3kxFaoB0T5Hnttg
-        iQZUD0eowpiL8Dv66stJKmMjXv8JpQygn3O/u5KN5Q==
-X-Google-Smtp-Source: ABdhPJxI6FTcE3c47Wn0i+htLO57WaK/N9r5UacnETGWbX71+m63BkfRB2kVMW33iIPN/Rimw1sywjsUf/wkZujNgKk=
-X-Received: by 2002:a25:81ce:: with SMTP id n14mr8943857ybm.32.1629255438297;
- Tue, 17 Aug 2021 19:57:18 -0700 (PDT)
+        id S235464AbhHRDVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Aug 2021 23:21:36 -0400
+Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:58432 "EHLO
+        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230433AbhHRDVd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Aug 2021 23:21:33 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R651e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0UjanrPv_1629256856;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0UjanrPv_1629256856)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 18 Aug 2021 11:20:56 +0800
+From:   Dust Li <dust.li@linux.alibaba.com>
+To:     Julian Anastasov <ja@ssi.bg>, Simon Horman <horms@verge.net.au>,
+        Wensong Zhang <wensong@linux-vs.org>
+Cc:     lvs-devel@vger.kernel.org, netdev@vger.kernel.org,
+        yunhong-cgl jiang <xintian1976@gmail.com>
+Subject: [PATCH] net: ipvs: add sysctl_run_estimation to support disable estimation
+Date:   Wed, 18 Aug 2021 11:20:56 +0800
+Message-Id: <20210818032056.44886-1-dust.li@linux.alibaba.com>
+X-Mailer: git-send-email 2.19.1.3.ge56e4f7
 MIME-Version: 1.0
-References: <20210817180841.3210484-1-saravanak@google.com>
- <20210817180841.3210484-2-saravanak@google.com> <YRwlyH0cjazjsSwe@lunn.ch>
-In-Reply-To: <YRwlyH0cjazjsSwe@lunn.ch>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Tue, 17 Aug 2021 19:56:42 -0700
-Message-ID: <CAGETcx-B=oxqGP-iz4qf2YrLVw3_Q-oTc_3m+dgP1P17FmLs=g@mail.gmail.com>
-Subject: Re: [PATCH net v2 1/3] net: mdio-mux: Delete unnecessary devm_kfree
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>, kernel-team@android.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 17, 2021 at 2:10 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Tue, Aug 17, 2021 at 11:08:39AM -0700, Saravana Kannan wrote:
-> > The whole point of devm_* APIs is that you don't have to undo them if you
-> > are returning an error that's going to get propagated out of a probe()
-> > function. So delete unnecessary devm_kfree() call in the error return path.
-> >
-> > Signed-off-by: Saravana Kannan <saravanak@google.com>
-> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> > Acked-by: Marc Zyngier <maz@kernel.org>
-> > Tested-by: Marc Zyngier <maz@kernel.org>
-> > Acked-by: Kevin Hilman <khilman@baylibre.com>
-> > Tested-by: Kevin Hilman <khilman@baylibre.com>
->
-> Please add a Fixes: tag, since you want this in stable.
->
-> All three patches need fixes tags, possibly different for each patch?
+fix #31562403
 
-I generally ask for patches to be picked up by stable only if it fixes
-a bug that puts the kernel in a bad state or if it fixes an issue
-someone actually reported on the stable kernel. In this case, it's
-just failing device probes in some cases and I didn't think that met
-the bar for stable. But if you think they should, then that's fine by
-me.
+estimation_timer will iterater the est_list to do estimation
+for each ipvs stats. When there are lots of services, the
+list can be very large.
+We observiced estimation_timer() run for more then 200ms on
+a machine with 104 CPU and 50K services.
 
-I'll send out v3 patches with Fixes. I'm fairly sure these issues were
-present since the time mdio-mux was added. Hopefully v3 will be the
-last version I have to send out :)
+yunhong-cgl jiang report the same phenomenon before:
+https://www.spinics.net/lists/lvs-devel/msg05426.html
 
--Saravana
+In some cases(for example a large K8S cluster with many ipvs services),
+ipvs estimation may not be needed. So adding a sysctl blob to allow
+users to disable this completely.
+
+Default is: 1 (enable)
+
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+---
+ Documentation/networking/ipvs-sysctl.rst | 17 ++++++
+ include/net/ip_vs.h                      |  3 +
+ net/netfilter/ipvs/ip_vs_est.c           | 73 ++++++++++++++++++++++++
+ 3 files changed, 93 insertions(+)
+
+diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
+index 2afccc63856e..e20f7a27fc85 100644
+--- a/Documentation/networking/ipvs-sysctl.rst
++++ b/Documentation/networking/ipvs-sysctl.rst
+@@ -300,3 +300,20 @@ sync_version - INTEGER
+ 
+ 	Kernels with this sync_version entry are able to receive messages
+ 	of both version 1 and version 2 of the synchronisation protocol.
++
++run_estimation - BOOLEAN
++	0 - disabled
++	not 0 - enabled (default)
++
++	If disabled, the estimation will be stop, and you can't see
++	any update on speed estimation data.
++
++	For example
++	'Conns/s   Pkts/s   Pkts/s          Bytes/s          Bytes/s'
++	those data in /proc/net/ip_vs_stats will always be zero.
++	Note, this only affect the speed estimation, the total data
++	will still be updated.
++
++	You can always re-enable estimation by setting this value to 1.
++	But be carefull, the first estimation after re-enable is not
++	accurate.
+diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+index d609e957a3ec..6cbb3a08b176 100644
+--- a/include/net/ip_vs.h
++++ b/include/net/ip_vs.h
+@@ -941,6 +941,9 @@ struct netns_ipvs {
+ 	struct ctl_table_header	*lblcr_ctl_header;
+ 	struct ctl_table	*lblcr_ctl_table;
+ 	/* ip_vs_est */
++	int			sysctl_run_estimation;
++	struct ctl_table_header	*est_ctl_header;
++	struct ctl_table	*est_ctl_table;
+ 	struct list_head	est_list;	/* estimator list */
+ 	spinlock_t		est_lock;
+ 	struct timer_list	est_timer;	/* Estimation timer */
+diff --git a/net/netfilter/ipvs/ip_vs_est.c b/net/netfilter/ipvs/ip_vs_est.c
+index 05b8112ffb37..6709796b8621 100644
+--- a/net/netfilter/ipvs/ip_vs_est.c
++++ b/net/netfilter/ipvs/ip_vs_est.c
+@@ -100,6 +100,9 @@ static void estimation_timer(struct timer_list *t)
+ 	u64 rate;
+ 	struct netns_ipvs *ipvs = from_timer(ipvs, t, est_timer);
+ 
++	if (!ipvs->sysctl_run_estimation)
++		goto skip;
++
+ 	spin_lock(&ipvs->est_lock);
+ 	list_for_each_entry(e, &ipvs->est_list, list) {
+ 		s = container_of(e, struct ip_vs_stats, est);
+@@ -131,6 +134,8 @@ static void estimation_timer(struct timer_list *t)
+ 		spin_unlock(&s->lock);
+ 	}
+ 	spin_unlock(&ipvs->est_lock);
++
++skip:
+ 	mod_timer(&ipvs->est_timer, jiffies + 2*HZ);
+ }
+ 
+@@ -184,10 +189,77 @@ void ip_vs_read_estimator(struct ip_vs_kstats *dst, struct ip_vs_stats *stats)
+ 	dst->outbps = (e->outbps + 0xF) >> 5;
+ }
+ 
++#ifdef CONFIG_SYSCTL
++/* IPVS ESTIMATION sysctl table */
++static struct ctl_table vs_vars_table[] = {
++	{
++		.procname	= "run_estimation",
++		.data		= NULL,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++	},
++	{ }
++};
++
++static int ip_vs_est_sysctl_init(struct netns_ipvs *ipvs)
++{
++	struct net *net = ipvs->net;
++
++	if (!net_eq(net, &init_net)) {
++		ipvs->est_ctl_table = kmemdup(vs_vars_table,
++					      sizeof(vs_vars_table),
++					      GFP_KERNEL);
++		if (!ipvs->est_ctl_table)
++			return -ENOMEM;
++
++		/* Don't export sysctls to unprivileged users */
++		if (net->user_ns != &init_user_ns)
++			ipvs->est_ctl_table[0].procname = NULL;
++
++	} else {
++		ipvs->est_ctl_table = vs_vars_table;
++	}
++
++	ipvs->sysctl_run_estimation = 1;
++	ipvs->est_ctl_table[0].data = &ipvs->sysctl_run_estimation;
++
++	ipvs->est_ctl_header =
++		register_net_sysctl(net, "net/ipv4/vs", ipvs->est_ctl_table);
++	if (!ipvs->est_ctl_header) {
++		if (!net_eq(net, &init_net))
++			kfree(ipvs->est_ctl_table);
++		return -ENOMEM;
++	}
++
++	return 0;
++}
++
++static void ip_vs_est_sysctl_cleanup(struct netns_ipvs *ipvs)
++{
++	unregister_net_sysctl_table(ipvs->est_ctl_header);
++
++	if (!net_eq(ipvs->net, &init_net))
++		kfree(ipvs->est_ctl_table);
++}
++
++#else
++
++static int ip_vs_est_sysctl_init(struct netns_ipvs *ipvs)
++{
++	ipvs->sysctl_run_estimation = 1;
++	return 0;
++}
++
++static void ip_vs_est_sysctl_cleanup(struct netns_ipvs *ipvs) { }
++
++#endif
++
+ int __net_init ip_vs_estimator_net_init(struct netns_ipvs *ipvs)
+ {
+ 	INIT_LIST_HEAD(&ipvs->est_list);
+ 	spin_lock_init(&ipvs->est_lock);
++	ip_vs_est_sysctl_init(ipvs);
+ 	timer_setup(&ipvs->est_timer, estimation_timer, 0);
+ 	mod_timer(&ipvs->est_timer, jiffies + 2 * HZ);
+ 	return 0;
+@@ -196,4 +268,5 @@ int __net_init ip_vs_estimator_net_init(struct netns_ipvs *ipvs)
+ void __net_exit ip_vs_estimator_net_cleanup(struct netns_ipvs *ipvs)
+ {
+ 	del_timer_sync(&ipvs->est_timer);
++	ip_vs_est_sysctl_cleanup(ipvs);
+ }
+-- 
+2.19.1.3.ge56e4f7
+
