@@ -2,77 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 861AE3F0044
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 11:20:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E81113F004A
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 11:20:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232327AbhHRJUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 05:20:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57456 "EHLO mail.kernel.org"
+        id S230340AbhHRJUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 05:20:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57474 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232016AbhHRJUk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232065AbhHRJUk (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 18 Aug 2021 05:20:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 61C7E6108D;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 713296109F;
         Wed, 18 Aug 2021 09:20:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1629278406;
-        bh=E34R3QMCFjgiYXKgWkhWxihDMxJtNjNnxGvDvKZjm9s=;
+        bh=SVwsSla8QBWC+Vuw2hQ3Cs90NAIfZqEmtvXWQEFhzB0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=OwmjyKOXfwyMSIzEHF/rode6uPijPJxUHyD/WNkYvlVGE5eeAZoA+dfOb3xhHkiax
-         YKLIAUkztOassMf7qvEcoUb6V+PflKU+RJBgStKNAlRiwb/czevOgFPnSph3BuXskm
-         bKMVzkwxf0MDvVOQxWiGIsVBYeGXoBWOyyoX43Y9GeztjYihxLBKr5n7eZigDj9dPq
-         6fYX3q2/4QuMRchwziwU/Z6qS2dPLEMZkYW9G7i7ZQ8cooU3pu3c0fr+2fjzaascr/
-         u5SecyxKSgQYZikxDac3I/0u4+N1CgKXfh3byXvzBMuHxvEjqOvxFmVqxFa54p43e0
-         /z0wCgab2kHUw==
+        b=PMbOQr5pQX7aCTUVH3wD4xkR2MPeG1MkN2aXcs/YfUF2bapJXuBJZvtdXEcVw0Qhc
+         LVoMe2kjeOpmXfw+XmAz0DbYDHpGW9ztyl38u5VbNT8xm9a9tEPSKCrBQ0X3keX6Gz
+         bb7AZINmMWNZdzfx3awVuAXMjdIA50L/UAf5MimhGSFe8pAQ62OXJssv7hDQalWBue
+         Y+WaQE3YkIu3YTb1vAQyPptXHRLh1rvfY0oCGf/LTn4yU1ijKmEwws9fI2XsI3OhJr
+         bSMbmIZN4y4MeGlVBGFFwiegiaTRChUfMk79nHgkf33K06xs+pHqXMgjBbLQsuV5Jh
+         4XOpYm900TiLQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5385F60A2E;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5DF1C60A25;
         Wed, 18 Aug 2021 09:20:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/6] mptcp: Add full mesh path manager option
+Subject: Re: [PATCH net-next] net: procfs: add seq_puts() statement for dev_mcast
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162927840633.7428.12959095508156490312.git-patchwork-notify@kernel.org>
+Message-Id: <162927840637.7428.6834799134600240229.git-patchwork-notify@kernel.org>
 Date:   Wed, 18 Aug 2021 09:20:06 +0000
-References: <20210817220727.192198-1-mathew.j.martineau@linux.intel.com>
-In-Reply-To: <20210817220727.192198-1-mathew.j.martineau@linux.intel.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        matthieu.baerts@tessares.net, mptcp@lists.linux.dev,
-        geliangtang@xiaomi.com
+References: <20210816085757.28166-1-yajun.deng@linux.dev>
+In-Reply-To: <20210816085757.28166-1-yajun.deng@linux.dev>
+To:     Yajun Deng <yajun.deng@linux.dev>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 17 Aug 2021 15:07:21 -0700 you wrote:
-> The path manager in MPTCP controls the creation of additional subflows
-> after the initial connection is created. As each peer advertises
-> available endpoints with the ADD_ADDR MPTCP option, the recipient of
-> those advertisements must decide which subflows to create from the known
-> local and remote interfaces that are available for use by MPTCP.
+On Mon, 16 Aug 2021 16:57:57 +0800 you wrote:
+> Add seq_puts() statement for dev_mcast, make it more readable.
+> As also, keep vertical alignment for {dev, ptype, dev_mcast} that
+> under /proc/net.
 > 
-> The existing in-kernel path manager will create one additional subflow
-> when an ADD_ADDR is received, or a local address is newly configured for
-> MPTCP use. The maximum number of subflows has a configurable limit.
-> 
-> [...]
+> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+> ---
+>  net/core/net-procfs.c | 24 +++++++++++++-----------
+>  1 file changed, 13 insertions(+), 11 deletions(-)
 
 Here is the summary with links:
-  - [net-next,1/6] mptcp: drop flags and ifindex arguments
-    https://git.kernel.org/netdev/net-next/c/ee285257a9c1
-  - [net-next,2/6] mptcp: remote addresses fullmesh
-    https://git.kernel.org/netdev/net-next/c/2843ff6f36db
-  - [net-next,3/6] mptcp: local addresses fullmesh
-    https://git.kernel.org/netdev/net-next/c/1a0d6136c5f0
-  - [net-next,4/6] selftests: mptcp: set and print the fullmesh flag
-    https://git.kernel.org/netdev/net-next/c/371b90377e60
-  - [net-next,5/6] selftests: mptcp: add fullmesh testcases
-    https://git.kernel.org/netdev/net-next/c/4f49d63352da
-  - [net-next,6/6] selftests: mptcp: delete uncontinuous removing ids
-    https://git.kernel.org/netdev/net-next/c/f7713dd5d23a
+  - [net-next] net: procfs: add seq_puts() statement for dev_mcast
+    https://git.kernel.org/netdev/net-next/c/ec18e8455484
 
 You are awesome, thank you!
 --
