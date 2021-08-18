@@ -2,121 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C52A33EFFA7
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 10:55:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 649BE3EFFB3
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 10:57:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230152AbhHRI4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 04:56:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56358 "EHLO
+        id S230289AbhHRI5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 04:57:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229820AbhHRIz7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 04:55:59 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14241C061764;
-        Wed, 18 Aug 2021 01:55:23 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id x7so3708667ljn.10;
-        Wed, 18 Aug 2021 01:55:22 -0700 (PDT)
+        with ESMTP id S229699AbhHRI5x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 04:57:53 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CCFC0613CF
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 01:57:19 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id a93so3905380ybi.1
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 01:57:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=PyuHTiYtcp7PenUOgX16JRdXO479FYx66sP5cfTDtJ8=;
-        b=bFhAKTFYhRq6nSBU53V7nBfYhXxkjiAhCqJps2SBtRGMCJIXp+7lU6McxX8loQ6meE
-         fSG/FM3TmRbrP/b8JPftQvirvT0vqmE8IBifTejnoi6fVmyDgoVZJi0A2nL7TEJ5ep6U
-         o2VSz0DNti8zycJniW8NTFPj0oSHwn9/KbdCQon5p3dgkjGpfZjfSf9d8VaQbCgzW7AF
-         xcA2d+ms1Dm0JAK5Ztk4Qxii2GLc9+YyZSyRDLbM8q8GIfUWYUD2PlJCGYGdRSa9U/SY
-         wlL63UXYJiyw80MiPemF3cVUtFHjQpfvfBbn2auULEHwWpm/C6cbpNM1CHQtc6q3bxgN
-         f9Kw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YTLMiHhkiL4q3jiK9pt4YDrvktzE393XGs6AJ7TzC8Q=;
+        b=I6kyAYLAi/5ZODW7wt6QJbXbDvsHP7w+wgDYfsI9r0WrXnLIOL6x9SX+oTGZt2MtHL
+         1c7P6go5VFqsUuq53wUjUoUKTprlG1Th4tey6QyS0hU6YC1q8xQWAuuACjr/b8aHL8Od
+         ygWUVKvp3pmjMLay2722OExM1GZtyq9rU7kS3IptT7DOB6b1U/JCLU/elvfNkt0dUgDW
+         D68MoMMMhGyarXKuBDTRYHEEk/BT2LdVTObaZxoP8QXZjnRnb1DBaZTUw1U0djh7mGxy
+         ANvzU50AEt9CCJsTBZMXFibsDsapAXORN2rA+9Gs1o7YNz1j6YW3n0RIdySVgY8TkyHo
+         D/1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=PyuHTiYtcp7PenUOgX16JRdXO479FYx66sP5cfTDtJ8=;
-        b=BlTUqSkQpk/9Fc47ea6C798OCLe1seYD/jZuiUYoaIcewbU9eVq+YKfq8kf29xRcNE
-         JphiwLv128X5VInOYG/JrVTe10GQI4cTRpAYCJrmV+5k1pq138UDMOcg13YiufutSwOA
-         1Q0GyJVa7ZFRf8SL7xFbYVTE6STzm3iAwb7/1d7MW6PpxMisiViO9xOubqbjmmjsGs6L
-         oOudwkfap5IAyMvJPpevV7J8S+M+z/B/bUZEcmOSrDTX8lS/IoruXQRGCg7wNtS4wIeK
-         3OfjpnB/SqFODHYvHJ3D6sKqDmMlc3bgYQ6qy757FW1qJs/FLyoQhP47p1o88C9w2tA+
-         6XFg==
-X-Gm-Message-State: AOAM532llg9xnFPxgXrmwrkGueuvVGythGXIiMGeW7xcPGt2ghsBjfly
-        Iuu5pqG0kN2Qxo0SqjYdM6g=
-X-Google-Smtp-Source: ABdhPJzBpe3DARPr+h0Pu2Yu7QwdF+94FYfIVaP5pXL2ykMkVckZmxUEm9OoslOsTrhEkgEvNsI3Fg==
-X-Received: by 2002:a2e:b611:: with SMTP id r17mr7101788ljn.10.1629276921412;
-        Wed, 18 Aug 2021 01:55:21 -0700 (PDT)
-Received: from localhost.localdomain ([46.61.204.60])
-        by smtp.gmail.com with ESMTPSA id g5sm432730lfe.174.2021.08.18.01.55.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Aug 2021 01:55:20 -0700 (PDT)
-Subject: Re: [syzbot] KFENCE: use-after-free in kvm_fastop_exception
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>,
-        syzbot <syzbot+7b938780d5deeaaf938f@syzkaller.appspotmail.com>,
-        davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        marcel@holtmann.org, mathew.j.martineau@linux.intel.com,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
-References: <00000000000012030e05c9c8bc85@google.com>
- <58cef9e0-69de-efdb-4035-7c1ed3d23132@tessares.net>
- <6736a510-20a1-9fb5-caf4-86334cabbbb6@gmail.com>
- <32aeb66e-d4f0-26b5-a140-4477bb87067f@tessares.net>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-Message-ID: <3a8dd8db-61d6-603e-b270-5faf1be02c6b@gmail.com>
-Date:   Wed, 18 Aug 2021 11:55:19 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YTLMiHhkiL4q3jiK9pt4YDrvktzE393XGs6AJ7TzC8Q=;
+        b=Z2phHlS1VfsYXKAeL+w2Td2q6mNoYrb2rRsA1Wp7l4FmAshfkeIKFZ/HDgD9ZhAcPZ
+         isvYdlTVJb8JyDLfnyrUlHJMw/Pn8Wy4NXAwV3v4GFX6iAhURcvxyJWy8grM4KECL+V5
+         t7Uj+9m+i99VAuometjKNQNHMA99+bg6yp8HcRJyGYFEFr0MVJjC1GDycYQ2A8DiV1vn
+         KhsLOUhceABt/5Tm9/EytRZTusXSjJD5fM+x5Ix0fb58kSOJMxtwbYUuaWE2oP227AOQ
+         8izzAIxK23ORPU3Ii/gdUik54hBMXseOFTEsbl52cqm+9KA+SeWdkeQxS6sYFMNA+Fh1
+         P5kA==
+X-Gm-Message-State: AOAM533L7EDUKB5LARpx0OwYcU8IDy9p4Am5x0d8B7UuSyaXK39EaydG
+        SAEtTtHZ0vIUUlLKVYCTFXq579gEjR6Kvl+PsNVjQg==
+X-Google-Smtp-Source: ABdhPJyr//c5nET8Z+mQvISb2NuJCd3AYTwGtAcJ75E4Y1uMidK+37ZjnYYMRwdrb7U9vOsDNUCsMMdMc8v5xECDm0Q=
+X-Received: by 2002:a25:7806:: with SMTP id t6mr10195954ybc.132.1629277037785;
+ Wed, 18 Aug 2021 01:57:17 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <32aeb66e-d4f0-26b5-a140-4477bb87067f@tessares.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <1629257542-36145-1-git-send-email-linyunsheng@huawei.com>
+In-Reply-To: <1629257542-36145-1-git-send-email-linyunsheng@huawei.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 18 Aug 2021 10:57:06 +0200
+Message-ID: <CANn89iJDf9uzSdqLEBeTeGB1uAxvmruKfK5HbeZWp+Cdc+qggQ@mail.gmail.com>
+Subject: Re: [PATCH RFC 0/7] add socket to netdev page frag recycling support
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Marcin Wojtas <mw@semihalf.com>, linuxarm@openeuler.org,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Peter Xu <peterx@redhat.com>,
+        "Tang, Feng" <feng.tang@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        mcroce@microsoft.com, Hugh Dickins <hughd@google.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Willem de Bruijn <willemb@google.com>,
+        wenxu <wenxu@ucloud.cn>, Cong Wang <cong.wang@bytedance.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Marco Elver <elver@google.com>, Yonghong Song <yhs@fb.com>,
+        kpsingh@kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        chenhao288@hisilicon.com,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, memxor@gmail.com,
+        linux@rempel-privat.de, Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Taehee Yoo <ap420073@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        aahringo@redhat.com, ceggers@arri.de, yangbo.lu@nxp.com,
+        Florian Westphal <fw@strlen.de>, xiangxia.m.yue@gmail.com,
+        linmiaohe <linmiaohe@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/18/21 11:21 AM, Matthieu Baerts wrote:
-> Hi Pavel,
-> 
-[snip]
->>>
->>> I'm pretty sure the commit c4512c63b119 ("mptcp: fix 'masking a bool'
->>> warning") doesn't introduce the reported bug. This minor fix is specific
->>> to MPTCP which doesn't seem to be used here.
->>>
->>> I'm not sure how I can tell syzbot this is a false positive.
->>>
->> 
->> 
->> looks like it's fs/namei bug. Similar reports:
->> 
->> https://syzkaller.appspot.com/bug?id=517fa734b92b7db404c409b924cf5c997640e324
->> 
->> 
->> https://syzkaller.appspot.com/bug?id=484483daf3652b40dae18531923aa9175d392a4d
-> 
-> Thank you for having checked!
-> Should we mark them as "#syz dup" if you think they have the same root
-> cause?
-> 
+On Wed, Aug 18, 2021 at 5:33 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>
+> This patchset adds the socket to netdev page frag recycling
+> support based on the busy polling and page pool infrastructure.
 
-I think, yes, but I want to receive feedback from fs people about this 
-bug. There were huge updates last month, and, maybe, I am missing some 
-details. Alloc/free calltrace is the same, but anyway, I want some 
-confirmation to not close different bugs by mistake :)
+I really do not see how this can scale to thousands of sockets.
 
-If these bugs really have same root case I will close them manually 
-after fix posted.
+tcp_mem[] defaults to ~ 9 % of physical memory.
 
->> It's not false positive. I've suggested the fix here:
->> https://groups.google.com/g/syzkaller-bugs/c/HE3c2fP5nic/m/1Yk17GBeAwAJ
->> I am waiting for author comments about the fix :)
->> 
->> But, yes, syzbot bisection is often wrong, so don't rely on it much :)
-> 
-> Yes sorry, I wanted to say the bisection picked a wrong commit :)
-> 
-> All good then if syzbot often blames the wrong modification :)
-> 
-With regards,
-Pavel Skripkin
+If you now run tests with thousands of sockets, their skbs will
+consume Gigabytes
+of memory on typical servers, now backed by order-0 pages (instead of
+current order-3 pages)
+So IOMMU costs will actually be much bigger.
+
+Are we planning to use Gigabyte sized page pools for NIC ?
+
+Have you tried instead to make TCP frags twice bigger ?
+This would require less IOMMU mappings.
+(Note: This could require some mm help, since PAGE_ALLOC_COSTLY_ORDER
+is currently 3, not 4)
+
+diff --git a/net/core/sock.c b/net/core/sock.c
+index a3eea6e0b30a7d43793f567ffa526092c03e3546..6b66b51b61be9f198f6f1c4a3d81b57fa327986a
+100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2560,7 +2560,7 @@ static void sk_leave_memory_pressure(struct sock *sk)
+        }
+ }
+
+-#define SKB_FRAG_PAGE_ORDER    get_order(32768)
++#define SKB_FRAG_PAGE_ORDER    get_order(65536)
+ DEFINE_STATIC_KEY_FALSE(net_high_order_alloc_disable_key);
+
+ /**
+
+
+
+>
+> The profermance improve from 30Gbit to 41Gbit for one thread iperf
+> tcp flow, and the CPU usages decreases about 20% for four threads
+> iperf flow with 100Gb line speed in IOMMU strict mode.
+>
+> The profermance improve about 2.5% for one thread iperf tcp flow
+> in IOMMU passthrough mode.
+>
+> Yunsheng Lin (7):
+>   page_pool: refactor the page pool to support multi alloc context
+>   skbuff: add interface to manipulate frag count for tx recycling
+>   net: add NAPI api to register and retrieve the page pool ptr
+>   net: pfrag_pool: add pfrag pool support based on page pool
+>   sock: support refilling pfrag from pfrag_pool
+>   net: hns3: support tx recycling in the hns3 driver
+>   sysctl_tcp_use_pfrag_pool
+>
+>  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 32 +++++----
+>  include/linux/netdevice.h                       |  9 +++
+>  include/linux/skbuff.h                          | 43 +++++++++++-
+>  include/net/netns/ipv4.h                        |  1 +
+>  include/net/page_pool.h                         | 15 ++++
+>  include/net/pfrag_pool.h                        | 24 +++++++
+>  include/net/sock.h                              |  1 +
+>  net/core/Makefile                               |  1 +
+>  net/core/dev.c                                  | 34 ++++++++-
+>  net/core/page_pool.c                            | 86 ++++++++++++-----------
+>  net/core/pfrag_pool.c                           | 92 +++++++++++++++++++++++++
+>  net/core/sock.c                                 | 12 ++++
+>  net/ipv4/sysctl_net_ipv4.c                      |  7 ++
+>  net/ipv4/tcp.c                                  | 34 ++++++---
+>  14 files changed, 325 insertions(+), 66 deletions(-)
+>  create mode 100644 include/net/pfrag_pool.h
+>  create mode 100644 net/core/pfrag_pool.c
+>
+> --
+> 2.7.4
+>
