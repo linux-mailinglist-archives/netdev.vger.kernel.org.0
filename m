@@ -2,107 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E5AE3F0B99
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 21:09:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B25B73F0C65
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 22:06:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232713AbhHRTJf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 15:09:35 -0400
-Received: from relmlor2.renesas.com ([210.160.252.172]:2486 "EHLO
-        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S233785AbhHRTJT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 15:09:19 -0400
-X-IronPort-AV: E=Sophos;i="5.84,332,1620658800"; 
-   d="scan'208";a="91051835"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 19 Aug 2021 04:08:41 +0900
-Received: from localhost.localdomain (unknown [10.226.93.61])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 7E61140D5D67;
-        Thu, 19 Aug 2021 04:08:38 +0900 (JST)
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH net-next v3 9/9] ravb: Add tx_counters to struct ravb_hw_info
-Date:   Wed, 18 Aug 2021 20:08:00 +0100
-Message-Id: <20210818190800.20191-10-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210818190800.20191-1-biju.das.jz@bp.renesas.com>
-References: <20210818190800.20191-1-biju.das.jz@bp.renesas.com>
+        id S233475AbhHRUG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 16:06:56 -0400
+Received: from aibo.runbox.com ([91.220.196.211]:41128 "EHLO aibo.runbox.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232149AbhHRUGx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Aug 2021 16:06:53 -0400
+Received: from [10.9.9.72] (helo=submission01.runbox)
+        by mailtransmit03.runbox with esmtp (Exim 4.86_2)
+        (envelope-from <post@jbechtel.de>)
+        id 1mGRpI-0008Io-AX; Wed, 18 Aug 2021 22:06:16 +0200
+Received: by submission01.runbox with esmtpsa  [Authenticated ID (535840)]  (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90_1)
+        id 1mGRp0-0007Ru-GY; Wed, 18 Aug 2021 22:05:58 +0200
+Date:   Wed, 18 Aug 2021 21:57:38 +0200
+From:   Jonas Bechtel <post@jbechtel.de>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: ss command not showing raw sockets? (regression)
+Message-ID: <20210818215738.1830fd0b@mmluhan>
+In-Reply-To: <74deda94-f14e-be9e-6925-527c7b70a563@gmail.com>
+References: <20210815231738.7b42bad4@mmluhan>
+        <20210816150800.28ef2e7c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210817080451.34286807@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210817202135.6b42031f@mmluhan>
+        <20210817114402.78463d9d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <af485441-123b-4f50-f01b-cee2612b9218@gmail.com>
+        <20210817143753.30f21bb0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <74deda94-f14e-be9e-6925-527c7b70a563@gmail.com>
+X-Mailer: Claws Mail ~3.16
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The register for retrieving TX counters is present only on R-Car Gen3
-and RZ/G2L; it is not present on R-Car Gen2.
 
-Add the tx_counters hw feature bit to struct ravb_hw_info, to enable this
-feature specifically for R-Car Gen3 now and later extend it to RZ/G2L.
 
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
-v2->v3:
- * Retained Rb tag from Andrew, since change is just renaming the variable
-   and comment update.
-v2:
- * Incorporated Andrew and Sergei's review comments for making it smaller patch
-   and provided detailed description.
----
- drivers/net/ethernet/renesas/ravb.h      | 1 +
- drivers/net/ethernet/renesas/ravb_main.c | 4 +++-
- 2 files changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-index 65a13ad458e6..37ad0f8aaf3c 100644
---- a/drivers/net/ethernet/renesas/ravb.h
-+++ b/drivers/net/ethernet/renesas/ravb.h
-@@ -1000,6 +1000,7 @@ struct ravb_hw_info {
- 
- 	/* hardware features */
- 	unsigned internal_delay:1;	/* AVB-DMAC has internal delays */
-+	unsigned tx_counters:1;		/* E-MAC has TX counters */
- };
- 
- struct ravb_private {
-diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-index 2fe4b9231523..02842b980a7f 100644
---- a/drivers/net/ethernet/renesas/ravb_main.c
-+++ b/drivers/net/ethernet/renesas/ravb_main.c
-@@ -1632,13 +1632,14 @@ static u16 ravb_select_queue(struct net_device *ndev, struct sk_buff *skb,
- static struct net_device_stats *ravb_get_stats(struct net_device *ndev)
- {
- 	struct ravb_private *priv = netdev_priv(ndev);
-+	const struct ravb_hw_info *info = priv->info;
- 	struct net_device_stats *nstats, *stats0, *stats1;
- 
- 	nstats = &ndev->stats;
- 	stats0 = &priv->stats[RAVB_BE];
- 	stats1 = &priv->stats[RAVB_NC];
- 
--	if (priv->chip_id == RCAR_GEN3) {
-+	if (info->tx_counters) {
- 		nstats->tx_dropped += ravb_read(ndev, TROCR);
- 		ravb_write(ndev, 0, TROCR);	/* (write clear) */
- 	}
-@@ -1937,6 +1938,7 @@ static const struct ravb_hw_info ravb_gen3_hw_info = {
- 	.stats_len = ARRAY_SIZE(ravb_gstrings_stats),
- 	.max_rx_len = RX_BUF_SZ + RAVB_ALIGN - 1,
- 	.internal_delay = 1,
-+	.tx_counters = 1,
- };
- 
- static const struct ravb_hw_info ravb_gen2_hw_info = {
--- 
-2.17.1
+On Tue, 17 Aug 2021 18:47:06 -0600
+David Ahern <dsahern@gmail.com> wrote with subject
+"Re: ss command not showing raw sockets? (regression)":
+
+> On 8/17/21 3:37 PM, Jakub Kicinski wrote:
+> > 
+> > Ah, good point, strace will show it. 
+> > 
+> > /me goes off to look at the strace Jonas sent off list.
+> > 
+> > Well this is unexpected:
+> > 
+> > sendmsg(3, {msg_name={sa_family=AF_NETLINK, nl_pid=0,
+> > nl_groups=00000000}, msg_namelen=12, msg_iov=[{iov_base={{len=76,
+> > type=DCCPDIAG_GETSOCK, ... --->8----------------  
+> > 
+> > From: Jakub Kicinski <kuba@kernel.org>
+> > Subject: ss: fix fallback to procfs for raw and sctp sockets
+> > 
+> > sockdiag_send() diverts to tcpdiag_send() to try the older
+> > netlink interface. tcpdiag_send() works for TCP and DCCP
+> > but not other protocols. Instead of rejecting unsupported
+> > protocols (and missing RAW and SCTP) match on supported ones.
+> > 
+> > Fixes: 41fe6c34de50 ("ss: Add inet raw sockets information
+> > gathering via netlink diag interface") Signed-off-by: Jakub
+> > Kicinski <kuba@kernel.org> ---
+> >  misc/ss.c | 8 ++++----
+> >  1 file changed, 4 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/misc/ss.c b/misc/ss.c
+> > index 894ad40574f1..b39f63fe3b17 100644
+> > --- a/misc/ss.c
+> > +++ b/misc/ss.c
+> > @@ -3404,13 +3404,13 @@ static int tcpdiag_send(int fd, int
+> > protocol, struct filter *f) struct iovec iov[3];
+> >  	int iovlen = 1;
+> >  
+> > -	if (protocol == IPPROTO_UDP || protocol == IPPROTO_MPTCP)
+> > -		return -1;
+> > -
+> >  	if (protocol == IPPROTO_TCP)
+> >  		req.nlh.nlmsg_type = TCPDIAG_GETSOCK;
+> > -	else
+> > +	else if (protocol == IPPROTO_DCCP)
+> >  		req.nlh.nlmsg_type = DCCPDIAG_GETSOCK;
+> > +	else
+> > +		return -1;
+> > +
+> >  	if (show_mem) {
+> >  		req.r.idiag_ext |= (1<<(INET_DIAG_MEMINFO-1));
+> >  		req.r.idiag_ext |= (1<<(INET_DIAG_SKMEMINFO-1));
+> >   
+> 
+> That looks correct to me.
+> 
+> Jonas: can you build iproute2 and test?
+
+I've cloned branch main as instructed in https://wiki.linuxfoundation.org/networking/iproute2. Most recent commit is 9b7ea92b9e3f. After building, no socket was listed in table.
+
+Then I [manually] applied the patch and rebuilt. The patched version works well, I do see the two sockets right now.
+
+Command was in both cases misc/ss -awp
 
