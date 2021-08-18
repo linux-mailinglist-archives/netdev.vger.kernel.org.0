@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AD963F0334
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 14:04:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC9D13F0335
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 14:04:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236705AbhHRMEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 08:04:49 -0400
-Received: from mail-eopbgr00079.outbound.protection.outlook.com ([40.107.0.79]:39586
+        id S236749AbhHRME5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 08:04:57 -0400
+Received: from mail-eopbgr00067.outbound.protection.outlook.com ([40.107.0.67]:52143
         "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236417AbhHRMEO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S236420AbhHRMEO (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 18 Aug 2021 08:04:14 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e7uxa5vqDtZXmzi4nTuyuv4lCfwcMq1rhKtnkwqEQ58uzXVFIjpOw+5wQsZzLkQQ74R6gDg041O6eAAxPbg3Wr9E+XhUAj7/nUbVgh+yJKpQI/c9sJPnbyTDS9jiKQ4mtwkoWxPvkI3Ytw6mXk5N2JHnY2iJ5sgUrdpHJZEwrS4F/XfXQxDrMwPk9x+tjVlyg459VoYkqo+1CZtWVKDfOyYh9fBDyUCYGzzV6Am/+Y3uU4JAG9c8l0oR68Ow+aqTPzz7i98eU2GW4ZHs9qEr916a1idmraBwWnu7LYr6iaOkEHmrWUuPEnyHi35HdbH+2Uh/IdbXaeZdRSMhH2n6Zw==
+ b=ZSHmbYMT5oNQQnSsNqJhI1npi0UYChTvHLtjKkqOXVRM/jOKEHFUbLlRHUGCAncyD3+wuqn/meymo7idAe5qeGBvXprZxgXO2IQrVHlH8oRkSdDTS7ERf31K92moTWEl51RdxLmR8xPp+6euCJ24Zg/uNthwdIbEzt9C+udL3EbBRBtgTaIbgSrzb7DGfeBbY6iSR3zJh7CqlTZ/bed3sNFBp3oukTOCXfAwk+9i0dROCLZ/8GOw0C+6g1rOHBNBd4NvKTGhllHL5ZRXmyJanK4FscEptBg5eo2b9i0gTbqfDxuMIK2rLF0ZtSWYD8LD1nKXXJAP7MSyW4ynUzjtHA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=42qOyEGqyDcrl0xp2CU/fZoXQV6Xj6iwz8MeoQA8PPM=;
- b=ddOcqrnDxq+fEAnzEBUKdWNFwuBiG/OFyrBbd5N5iE5A1wOMynR2guSYJzm/cGYGRCD1zIUTM1/z2xmrGq8GD7Zvay5t4mK8B+Cb4OhAXM/qEtK4O2/tNrY4YKgX9L8gPSjAR3VHwOYwbqYqS903gSuMM7AgCnBwId+jon8wuS9bbxF4qa7LbQfWEhtcehcICH/Jf6agVivRRppOHGufnXlSYhY4RgbEKzuikBXrVfV7+As1tBJR3qHKNbmBml5qSR41zodvsIzkbNmebJIOKTs0yds0E2HNuMJAj+15sF3yZUwrO0v7HUh7lzLyludngfNiQN0Uzp0yQIyYa9j0+A==
+ bh=Vf3+O7tUQaJn6O4WmHb3hFm/Vvw7RaSJB+jVPnqm3t8=;
+ b=njP4Bpj4GuH1KYABhvpNeXIEQnsuNoFAoP44qO4Q9fiYr1Iy29Fe6ZbhMaxfFwDf+SNCo8NXffx8kLnsW6Kal1t+Cf4L1/az87QyrxXyZguVb8IVFjftSrF+FEE4TMY2x7lW5A8UFfpl+4yFL8A48Hoh7bU/YRbmI/Cc2e7SoIb9OKqLeM+uloC8l33YYGa05o3DlhHDgIBdQ+xdFl9lpCZmAEWL9PUGigS93QLz7ob+S5U0RxPnUmnnaIr8YwDeCzZocGDalCg86sFaex47WnFHC27hFMNOxJkfEApnY5g3zja8/OdGhaw7gk/FCyQybg+SLBXMLa+zTFWu72AjIA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=42qOyEGqyDcrl0xp2CU/fZoXQV6Xj6iwz8MeoQA8PPM=;
- b=Q3re+qF/Fv6oAa8mdJH9H8umUIMpAnWW3s1NaK5DddUVTDuCmWlK/Aqz/sxF10CCEDyj0WibrBpP0ZqXObALMxM/mh4O9z+w5OSHVIrQOYlRRl/VOfgNyr7dsXkHwuGGgEjQyz8GoCeWYtTPJKMKThW8vPM3GOrmJjg/6wYwuTA=
+ bh=Vf3+O7tUQaJn6O4WmHb3hFm/Vvw7RaSJB+jVPnqm3t8=;
+ b=hleKJRxVCZWAIFUnRNLL4a25QFcRVLH5UymuYNXnk/t0RW1Wd8tSW28FZuC+dJUH3Zf9bKv0CCX7FkS5WEFQJ+AatuRCmuKVpSQAvqJSeUTZqDdbaowkSaag9oqRz5PuJRQ8ysmdAPGPBB6UF66ZJ40Q+iWX8WpmEdVwHoDkdwo=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0402MB3839.eurprd04.prod.outlook.com (2603:10a6:803:21::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.17; Wed, 18 Aug
- 2021 12:03:08 +0000
+ 2021 12:03:10 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4415.024; Wed, 18 Aug 2021
- 12:03:08 +0000
+ 12:03:10 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -79,9 +79,9 @@ Cc:     Roopa Prabhu <roopa@nvidia.com>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Peter Ujfalusi <peter.ujfalusi@ti.com>
-Subject: [RFC PATCH net-next 13/20] net: dsa: tag_8021q: rename dsa_8021q_bridge_tx_fwd_offload_vid
-Date:   Wed, 18 Aug 2021 15:01:43 +0300
-Message-Id: <20210818120150.892647-14-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 14/20] net: dsa: pass extack to .port_bridge_join driver methods
+Date:   Wed, 18 Aug 2021 15:01:44 +0300
+Message-Id: <20210818120150.892647-15-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210818120150.892647-1-vladimir.oltean@nxp.com>
 References: <20210818120150.892647-1-vladimir.oltean@nxp.com>
@@ -92,133 +92,366 @@ X-ClientProxiedBy: VI1PR08CA0134.eurprd08.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.144.60) by VI1PR08CA0134.eurprd08.prod.outlook.com (2603:10a6:800:d5::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Wed, 18 Aug 2021 12:03:07 +0000
+Received: from localhost.localdomain (188.25.144.60) by VI1PR08CA0134.eurprd08.prod.outlook.com (2603:10a6:800:d5::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Wed, 18 Aug 2021 12:03:08 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3fdef58b-a08b-4cb4-6769-08d9624024ba
+X-MS-Office365-Filtering-Correlation-Id: bc3cf240-e099-47e7-da9d-08d962402595
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB3839:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB3839364FE8954514C0F350EDE0FF9@VI1PR0402MB3839.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB3839641E392AD3BFED533BADE0FF9@VI1PR0402MB3839.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1284;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pUKTSoVZ9LiCS5SmQs0P2m1OQvGpJrsnsjutkalpxhVH8B4U/e0ZDx3FDxLUssM1ZcJuh+2rkt2hoytKuaJ6Xq7YrmsBz4H+aJhUCcY54jyyyayGd3GfKpOFscvJp8EbWjXrf9LKg+EAy/wa5zXEQcqcxMHSDH5D2ZQRsE/vaqSavQuWNwfBfi+qVCKP6A83Xf7emNZ2YTBCj+KVyEdddDHVt83baY+L4cA71eHc3x3ZJjc2tHi4dsRh96LzuvmsNVerC2tg85qLXfAZXeTRdYZUrNhFJDvCLu0PX8SW7x7WmkFPg1Tu4QyQnU8CKhIF82YIliPha+3Yfw72SYiTNTRse0OUyXNA9r/rTl+BXqo+rx5hvmw8ysOKXiKaoUSSBV78g3gIHSGCWYL2l8DOGJJVPEYqJGsRvOoOBIVs7DmtyYrv8ldMuJV1JXeGfP7TGekxRadOanr40yr0prVRx+8H7darFk+SynN/VgEZoydwx6Wg1YNcctC8go1Xx8S2H5uktkBLwBImTEirjvk2ewzgKkzxrkJ9WlDAPw60mFM6E+Bs6RQKib8UKmAlwmJ/rmbat3sWFK+y4tzj0gN+fBqoP7i1UvoJlVhca6F2MHqvflkVurRriSoKip5f9cYjPC2T39Mt+CIHncqH5yklBY0JROiUQSEVtE9AzZu2wnz1Uka9ly4wLd880uSZrcqC
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(136003)(39850400004)(366004)(376002)(66476007)(2906002)(66556008)(8936002)(6506007)(186003)(7406005)(7416002)(52116002)(26005)(86362001)(66946007)(6486002)(44832011)(36756003)(5660300002)(1076003)(110136005)(54906003)(6512007)(8676002)(316002)(6666004)(38350700002)(38100700002)(956004)(478600001)(83380400001)(2616005)(4326008);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Gv0NAGn3l0P10SYKRXxPZ1+En1DQCy0UIfA07zNNvrahHjsOa5xqoCAhF8N23GThTHRxmtAzCTbjV9XH+hTBQ+ZDhUr3ix+dsRr+Q8oF7yYOaEXFHAtzM/EwCU0mBDCmva6kq7CsCV7KQmcCL7F+rChMGvKAs4R7Gc6OK1ows15K8lnEd/XLyEuyxxomnJt1Q2WZfSx7guCqjtZiv9gfI4QVjj1NY1c4ECMAeyBawSLRY7OAwwJm9//VzOg1muq9svptxcTOu4amb3FrXY9zcVqIoYVPT/GyXuEUSNo/7ktfbyPcBRf7u4lffbOdNHewyU6nH4CA00jk+dTdjrD9eyrVO7K+HDLpgW3Ya2uihmIm1ZzcRlV6KJkLVny6OcO5xSXcrwst0urqw+fpLGFOvMnWbtC11Z4bLnKdOAWclsp35/htjJfY5dSeobQOAFkw1KBcANBTuKdA3P3HOEeDdtmTKePsL6htvJd18kj9ovnJ3j+4Jg16VLnuyRJOgVqVyDiEGoee7mxWvG1kS/RX/n+lLBM5QMQIXVqheMgW0DG1UehRtsexvo8cE5B+QWBzBSGwR1uW4oQ51hTLC8OaSS2DoOBOgbfMaGzBvignioleHBygPwFqymXK2uXugsVkqfS4/E63Jjb60NPoJy7SIx8hGzLyh+lCt7E9BSID0yJ8cTRqrwn4pc3IeZlkR7T539iD/jxOw+orfYgNm2y/bXoqu2d8lkk22TPxkawLo3U=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(136003)(39850400004)(366004)(376002)(66476007)(2906002)(66556008)(8936002)(6506007)(186003)(7406005)(7416002)(52116002)(26005)(86362001)(66946007)(6486002)(44832011)(36756003)(30864003)(5660300002)(1076003)(110136005)(54906003)(6512007)(8676002)(316002)(6666004)(38350700002)(38100700002)(956004)(478600001)(83380400001)(2616005)(4326008)(142923001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?neo91Z9+8OhFoU8tsP3hnIHPiDj+pc/C1Rm9BmbMVeFwne32avUs/4TGt3aB?=
- =?us-ascii?Q?/dmrtijytp3DeE/VTLLZviwecG2/fS8dTZdSo1+h0JZN4yCRrEHbwTX9Ifo0?=
- =?us-ascii?Q?c0HCuIfaicfnhzdx+EXaF9cDT0sY1RIMavM2wUkEZenJrUb/qNjlC7jM9kbK?=
- =?us-ascii?Q?Spki8i12GV3+ZXJOKU5p8z/sKc86WXNrv/VapKlpMxEws5XuUE1Eh4b5ea8N?=
- =?us-ascii?Q?eyp7AxqEP1tftbIDTo96qKYSC8GL8U/kuPL1JbtUUdDb7TKAZ9zwqaacMxJ+?=
- =?us-ascii?Q?YlHksnJkAqnuzF4CNM4HfcB/FRMQB3RvRYVvQA9jhKGXhcxSys9kf/5qU076?=
- =?us-ascii?Q?FxyX1Q35vI2gbVSVvA1LhT+F0UVqS3P8IhnsQeFnjWUf2gpGeYTyHjE4NaPa?=
- =?us-ascii?Q?wbTg7XeCrnSedtJPpOeOP6ienR8vRytonok9xzFBPFQRFkejNj6GtRjCvvBy?=
- =?us-ascii?Q?SEGuntkoBh1IobfTNMV+Vyg/h/PhsKLWNkPWWhn4y+9Buhzr5F/E37+dBuqv?=
- =?us-ascii?Q?C207dQyo8FqMcATOF/QmXCThSBBZrf0fNaM9OqT9suUefvE8BcgvA8fSvokp?=
- =?us-ascii?Q?1/cG4VCrRe/MEI44Gp9AxYg/YgDKUifLcqzabu/oEdShh5189hTzQE5SsDnF?=
- =?us-ascii?Q?FMnH/iH4UE4tSQB2SvTk4lKD5zKGQvLrVxo0iWXLwzZdkgdpGecH3QLflkbH?=
- =?us-ascii?Q?DpSvfjmJ2mHU7XJkOQjbtH9myeC0DCucVvVrzk/srEh8sPNEsgdU3K/fBQ2T?=
- =?us-ascii?Q?Vc4GrRrtBuFhtz+bleLBgQU6Is7ZnMliKOSN6gpEj9pQxSGe8EJlWEAvcQWi?=
- =?us-ascii?Q?TnA5lJjTSL3Gso/jVKTi3xXno9Zmj4cMY1kKPBkMHuf3AeHKubniuF1/ldJd?=
- =?us-ascii?Q?itAlncXmvLSUqP8Bu0Zy5RC93eqS7URoLH5qe6TbWLHy92dpXHPxwz7x2u9f?=
- =?us-ascii?Q?U7qNr/8ncUlFCdV/2KIp3N27UmUfQZwhqgphffnZg414S5Irh/CzEeiPqUid?=
- =?us-ascii?Q?4M6jB5Y9JaFazEPhU7PLTMYKfTBVWdojnpw5fjsQR85RnNfBuKw8wJtUHrdx?=
- =?us-ascii?Q?0WUBL9VJw2aDFzbMm53iT+B/du+1hjUqLdB9nI07P57z7pg8XPTLaZMfBE1L?=
- =?us-ascii?Q?dYJAmc1tO/YO1jG34kr0LYULKWyYo3V2CUZTN9eBwpjGULka36k1UJ6hzfhL?=
- =?us-ascii?Q?l3tLZ3rWLt89wUrbwI2W9XD2czsNcGi7cNmvpSrOpiHtccTCT+92RCawoQ1b?=
- =?us-ascii?Q?McAklLjI6zjq2OcCpTkoaACDan3U7i4CseVINIuEbNJ2AxF8B+xd8f4IBRfT?=
- =?us-ascii?Q?iD5vKhXdl6/Ayq3S14Bh/Ytn?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+8zip0GunMv3PR1OqotzvpxOszn3yCeuCxdGVTFZKcX4YJpZdBsvirSqh7Vb?=
+ =?us-ascii?Q?meDTvZVXBfWoz0WoDmhT4sb9BdpurGX22T8rMYtI4NX0fzIhLunTiW1V5rGK?=
+ =?us-ascii?Q?9BsBifnWZLyPgudBa58EITTuj/5TzUNJuSDOBQ3SJme5DopzlpFVUdPt8oC6?=
+ =?us-ascii?Q?QiTkAKA2h1MrdOXOUlnNiqiRzkcXHqGab84r9I11LgL1leaIBA+MmbDo8aY4?=
+ =?us-ascii?Q?uaKSoX0XhMOgPnQCRbxpmZL1QvU7eo9JunF2qJwYps86vLuN5rXTbRCHLvsJ?=
+ =?us-ascii?Q?D4bJgEDKPwYsEMNwVEE4fyQZqhILNZXp5+JW778hAPttkFClFloU38kClYtQ?=
+ =?us-ascii?Q?5A1UN/qgPwClVZxiaZDV3ryNTsK3NPA2Sf8ZaJS3lbp8rR6+EF+FPMn4VgZg?=
+ =?us-ascii?Q?BLjP5JwM5lIo2WhvBc5/HLc51Qy3s2UKU/6aq5lZyy3Bj1xsw+Kl6xRVTvGu?=
+ =?us-ascii?Q?bpbVcYRX/yujL3JSua5JaSLCHbf9bjfyGnqcLZBFGfodclyRRoV2yCGogNIj?=
+ =?us-ascii?Q?hID8YkWhZk3nF26e3ICwWOtx1f8MTxdWYwuWY/hnltOWfIH18AclwRJ6dS1Q?=
+ =?us-ascii?Q?aFTQgB/1DLCcKD3Ifm7qQoBI+dQ+/l7sYe8qL6XfUFm0KshjMHlSV2xHr1ki?=
+ =?us-ascii?Q?p3kxQHfi/MG+nDhYSUp+eCfxsrdOgQovQPIeJJughbqksRMdWET/rUyqMUnD?=
+ =?us-ascii?Q?fdQqSL2sDGT7wDxgp3nFwvpQfi+yOS1wF2+ETc6ECkOBymP32ABlS3z7w73Q?=
+ =?us-ascii?Q?iOQtH04WzgJp3c4P3HUyy2a8V8BfokrHr6ZuISxArfXSjVgXn70PgXumbOXC?=
+ =?us-ascii?Q?7qvWrz9Ajr6qO2xTUup7OxXWBeL/Xvu5BnCmW49LPCIDQ0fRZc1JBSWU40bQ?=
+ =?us-ascii?Q?t06yJAGNlV5P70McXS+WekQ/UNAo5dnsoBJLe68UOG4PqSUrpkd6IAy5LBn7?=
+ =?us-ascii?Q?4mdEQ+CUCofm5RTpCWr0ov+9cAWX3+UXbfdVVaAM4XOrshni49xulSKToxJv?=
+ =?us-ascii?Q?v0egAWRZiLSkIB0B7pHGJByRt6PtWrFewjEeYa/Fv6UNCUy7r8/AOppQ7anc?=
+ =?us-ascii?Q?RVxuEucPzIqzMGGIRJUuxEYXdQfDlgCozvci63o01x/df0i2tKRZT6nvQzzg?=
+ =?us-ascii?Q?E4wD6+lW9G2IjMcZHAwqyCeukE7//RA8Kwx0LG/oVpHDki4YjxVa6mpV2ohz?=
+ =?us-ascii?Q?riNNbnw/JxlRofqLeSyO/Wr7KkhsQojTYUWmLEThIqkt62h6CqcRjYZ08MGw?=
+ =?us-ascii?Q?gIdbVS4+SNDs2hr0cgT5RrX15PkReobWqYhFAS8PVC0U5l6wm0Hj2DjzQrYe?=
+ =?us-ascii?Q?wzmsz21orwRyOEBYJVCDh0h3?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3fdef58b-a08b-4cb4-6769-08d9624024ba
+X-MS-Exchange-CrossTenant-Network-Message-Id: bc3cf240-e099-47e7-da9d-08d962402595
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2021 12:03:08.5599
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2021 12:03:09.9981
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: s7lnBn9E7ykgquX5Z9egW4OF6/qJ3xjMhBL8frwA1SlmXXAPB30YlkJNGuawhVsbWg5DN6eQGLtkvBQMA9TIyA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: sdxzVnze9jmqJcOlthq61ZzKqzSQJ4jj8j35JeVZQMOfgRHnurYPwXS9uWE6Oe7wOYu3bWim4P4G1y0uniIibw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3839
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The dsa_8021q_bridge_tx_fwd_offload_vid is no longer used just for
-bridge TX forwarding offload, it is the private VLAN reserved for
-VLAN-unaware bridging in a way that is compatible with FDB isolation.
+As FDB isolation cannot be enforced between VLAN-aware bridges in lack
+of hardware assistance like extra FID bits, it seems plausible that many
+DSA switches cannot do it. Therefore, they need to reject configurations
+with multiple VLAN-aware bridges from the two code paths that can
+transition towards that state:
 
-So just rename it dsa_tag_8021q_bridge_vid.
+- joining a VLAN-aware bridge
+- toggling VLAN awareness on an existing bridge
+
+The .port_vlan_filtering method already propagates the netlink extack to
+the driver, let's propagate it from .port_bridge_join too, to make sure
+that the driver can use the same function for both.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- include/linux/dsa/8021q.h | 2 +-
- net/dsa/tag_8021q.c       | 8 ++++----
- net/dsa/tag_sja1105.c     | 2 +-
- 3 files changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/dsa/b53/b53_common.c       | 2 +-
+ drivers/net/dsa/b53/b53_priv.h         | 2 +-
+ drivers/net/dsa/dsa_loop.c             | 3 ++-
+ drivers/net/dsa/hirschmann/hellcreek.c | 3 ++-
+ drivers/net/dsa/lan9303-core.c         | 3 ++-
+ drivers/net/dsa/lantiq_gswip.c         | 3 ++-
+ drivers/net/dsa/microchip/ksz_common.c | 3 ++-
+ drivers/net/dsa/microchip/ksz_common.h | 3 ++-
+ drivers/net/dsa/mt7530.c               | 3 ++-
+ drivers/net/dsa/mv88e6xxx/chip.c       | 6 ++++--
+ drivers/net/dsa/ocelot/felix.c         | 3 ++-
+ drivers/net/dsa/qca8k.c                | 2 +-
+ drivers/net/dsa/sja1105/sja1105_main.c | 3 ++-
+ drivers/net/dsa/xrs700x/xrs700x.c      | 3 ++-
+ include/net/dsa.h                      | 6 ++++--
+ net/dsa/dsa_priv.h                     | 1 +
+ net/dsa/port.c                         | 1 +
+ net/dsa/switch.c                       | 5 +++--
+ 18 files changed, 36 insertions(+), 19 deletions(-)
 
-diff --git a/include/linux/dsa/8021q.h b/include/linux/dsa/8021q.h
-index 5c67ac422282..c114663cd687 100644
---- a/include/linux/dsa/8021q.h
-+++ b/include/linux/dsa/8021q.h
-@@ -46,7 +46,7 @@ void dsa_8021q_rcv(struct sk_buff *skb, int *source_port, int *switch_id,
- struct net_device *dsa_tag_8021q_find_port_by_vbid(struct net_device *master,
- 						   int vbid);
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index d0f00cb0a235..55bfcec2b204 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -1848,7 +1848,7 @@ int b53_mdb_del(struct dsa_switch *ds, int port,
+ EXPORT_SYMBOL(b53_mdb_del);
  
--u16 dsa_8021q_bridge_tx_fwd_offload_vid(int bridge_num);
-+u16 dsa_tag_8021q_bridge_vid(int bridge_num);
- 
- u16 dsa_tag_8021q_standalone_vid(struct dsa_port *dp);
- 
-diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
-index 76e4b99ecd89..e7890aa79df8 100644
---- a/net/dsa/tag_8021q.c
-+++ b/net/dsa/tag_8021q.c
-@@ -63,12 +63,12 @@
- #define DSA_8021Q_PORT(x)		(((x) << DSA_8021Q_PORT_SHIFT) & \
- 						 DSA_8021Q_PORT_MASK)
- 
--u16 dsa_8021q_bridge_tx_fwd_offload_vid(int bridge_num)
-+u16 dsa_tag_8021q_bridge_vid(int bridge_num)
+ int b53_br_join(struct dsa_switch *ds, int port, struct net_device *br,
+-		int bridge_num)
++		int bridge_num, struct netlink_ext_ack *extack)
  {
- 	/* The VBID value of 0 is reserved for precise TX */
- 	return DSA_8021Q_RSV | DSA_8021Q_VBID(bridge_num + 1);
+ 	struct b53_device *dev = ds->priv;
+ 	s8 cpu_port = dsa_to_port(ds, port)->cpu_dp->index;
+diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
+index e3f1e9ff1b50..4e9b05008524 100644
+--- a/drivers/net/dsa/b53/b53_priv.h
++++ b/drivers/net/dsa/b53/b53_priv.h
+@@ -319,7 +319,7 @@ void b53_get_ethtool_stats(struct dsa_switch *ds, int port, uint64_t *data);
+ int b53_get_sset_count(struct dsa_switch *ds, int port, int sset);
+ void b53_get_ethtool_phy_stats(struct dsa_switch *ds, int port, uint64_t *data);
+ int b53_br_join(struct dsa_switch *ds, int port, struct net_device *bridge,
+-		int bridge_num);
++		int bridge_num, struct netlink_ext_ack *extack);
+ void b53_br_leave(struct dsa_switch *ds, int port, struct net_device *bridge,
+ 		  int bridge_num);
+ void b53_br_set_stp_state(struct dsa_switch *ds, int port, u8 state);
+diff --git a/drivers/net/dsa/dsa_loop.c b/drivers/net/dsa/dsa_loop.c
+index c9fefdede1d1..658c23195b05 100644
+--- a/drivers/net/dsa/dsa_loop.c
++++ b/drivers/net/dsa/dsa_loop.c
+@@ -168,7 +168,8 @@ static int dsa_loop_phy_write(struct dsa_switch *ds, int port,
+ 
+ static int dsa_loop_port_bridge_join(struct dsa_switch *ds, int port,
+ 				     struct net_device *bridge,
+-				     int bridge_num)
++				     int bridge_num,
++				     struct netlink_ext_ack *extack)
+ {
+ 	dev_dbg(ds->dev, "%s: port: %d, bridge: %s\n",
+ 		__func__, port, bridge->name);
+diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
+index 732fff99bfb2..fdae74313eb7 100644
+--- a/drivers/net/dsa/hirschmann/hellcreek.c
++++ b/drivers/net/dsa/hirschmann/hellcreek.c
+@@ -675,7 +675,8 @@ static int hellcreek_bridge_flags(struct dsa_switch *ds, int port,
+ 
+ static int hellcreek_port_bridge_join(struct dsa_switch *ds, int port,
+ 				      struct net_device *br,
+-				      int bridge_num)
++				      int bridge_num,
++				      struct netlink_ext_ack *extack)
+ {
+ 	struct hellcreek *hellcreek = ds->priv;
+ 
+diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
+index 4e72fd04eb5f..d1148ab2f66e 100644
+--- a/drivers/net/dsa/lan9303-core.c
++++ b/drivers/net/dsa/lan9303-core.c
+@@ -1103,7 +1103,8 @@ static void lan9303_port_disable(struct dsa_switch *ds, int port)
  }
--EXPORT_SYMBOL_GPL(dsa_8021q_bridge_tx_fwd_offload_vid);
-+EXPORT_SYMBOL_GPL(dsa_tag_8021q_bridge_vid);
  
- /* Returns the VID that will be installed as pvid for this switch port, sent as
-  * tagged egress towards the CPU port and decoded by the rcv function.
-@@ -313,7 +313,7 @@ int dsa_tag_8021q_bridge_join(struct dsa_switch *ds, int port,
- 	 * bridging VLAN
- 	 */
- 	standalone_vid = dsa_tag_8021q_standalone_vid(dp);
--	bridge_vid = dsa_8021q_bridge_tx_fwd_offload_vid(bridge_num);
-+	bridge_vid = dsa_tag_8021q_bridge_vid(bridge_num);
+ static int lan9303_port_bridge_join(struct dsa_switch *ds, int port,
+-				    struct net_device *br, int bridge_num)
++				    struct net_device *br, int bridge_num,
++				    struct netlink_ext_ack *extack)
+ {
+ 	struct lan9303 *chip = ds->priv;
  
- 	dsa_port_tag_8021q_vlan_del(dp, standalone_vid, false);
- 
-@@ -338,7 +338,7 @@ void dsa_tag_8021q_bridge_leave(struct dsa_switch *ds, int port,
- 	 * standalone VLAN
- 	 */
- 	standalone_vid = dsa_tag_8021q_standalone_vid(dp);
--	bridge_vid = dsa_8021q_bridge_tx_fwd_offload_vid(bridge_num);
-+	bridge_vid = dsa_tag_8021q_bridge_vid(bridge_num);
- 
- 	dsa_port_tag_8021q_vlan_del(dp, bridge_vid, true);
- 
-diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
-index 52002aa2a045..0902e7334cf3 100644
---- a/net/dsa/tag_sja1105.c
-+++ b/net/dsa/tag_sja1105.c
-@@ -163,7 +163,7 @@ static struct sk_buff *sja1105_imprecise_xmit(struct sk_buff *skb,
- 	 * TX VLAN that targets the bridge's entire broadcast domain,
- 	 * instead of just the specific port.
- 	 */
--	tx_vid = dsa_8021q_bridge_tx_fwd_offload_vid(dp->bridge_num);
-+	tx_vid = dsa_tag_8021q_bridge_vid(dp->bridge_num);
- 
- 	return dsa_8021q_xmit(skb, netdev, sja1105_xmit_tpid(dp), tx_vid);
+diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+index 2ce4da567106..64a22652cc75 100644
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -1128,7 +1128,8 @@ static int gswip_vlan_remove(struct gswip_priv *priv,
  }
+ 
+ static int gswip_port_bridge_join(struct dsa_switch *ds, int port,
+-				  struct net_device *bridge, int bridge_num)
++				  struct net_device *bridge, int bridge_num,
++				  struct netlink_ext_ack *extack)
+ {
+ 	struct gswip_priv *priv = ds->priv;
+ 	int err;
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 4f821933e291..202fd93caae3 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -173,7 +173,8 @@ void ksz_get_ethtool_stats(struct dsa_switch *ds, int port, uint64_t *buf)
+ EXPORT_SYMBOL_GPL(ksz_get_ethtool_stats);
+ 
+ int ksz_port_bridge_join(struct dsa_switch *ds, int port,
+-			 struct net_device *br, int bridge_num)
++			 struct net_device *br, int bridge_num,
++			 struct netlink_ext_ack *extack)
+ {
+ 	struct ksz_device *dev = ds->priv;
+ 
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 3e905059374b..59c42cc1000b 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -159,7 +159,8 @@ void ksz_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
+ int ksz_sset_count(struct dsa_switch *ds, int port, int sset);
+ void ksz_get_ethtool_stats(struct dsa_switch *ds, int port, uint64_t *buf);
+ int ksz_port_bridge_join(struct dsa_switch *ds, int port,
+-			 struct net_device *br, int bridge_num);
++			 struct net_device *br, int bridge_num,
++			 struct netlink_ext_ack *extack);
+ void ksz_port_bridge_leave(struct dsa_switch *ds, int port,
+ 			   struct net_device *br, int bridge_num);
+ void ksz_port_fast_age(struct dsa_switch *ds, int port);
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 751e477691f4..3f3b4d3a36e4 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -1192,7 +1192,8 @@ mt7530_port_bridge_flags(struct dsa_switch *ds, int port,
+ 
+ static int
+ mt7530_port_bridge_join(struct dsa_switch *ds, int port,
+-			struct net_device *bridge, int bridge_num)
++			struct net_device *bridge, int bridge_num,
++			struct netlink_ext_ack *extack)
+ {
+ 	struct mt7530_priv *priv = ds->priv;
+ 	u32 port_bitmap = BIT(MT7530_CPU_PORT);
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 37878ccf499c..92c2833a25a4 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -2388,7 +2388,8 @@ static int mv88e6xxx_bridge_map(struct mv88e6xxx_chip *chip,
+ 
+ static int mv88e6xxx_port_bridge_join(struct dsa_switch *ds, int port,
+ 				      struct net_device *br,
+-				      int bridge_num)
++				      int bridge_num,
++				      struct netlink_ext_ack *extack)
+ {
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	int err;
+@@ -2416,7 +2417,8 @@ static void mv88e6xxx_port_bridge_leave(struct dsa_switch *ds, int port,
+ static int mv88e6xxx_crosschip_bridge_join(struct dsa_switch *ds,
+ 					   int tree_index, int sw_index,
+ 					   int port, struct net_device *br,
+-					   int bridge_num)
++					   int bridge_num,
++					   struct netlink_ext_ack *extack)
+ {
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	int err;
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 747dd739f533..cccbd33d5ac5 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -688,7 +688,8 @@ static int felix_bridge_flags(struct dsa_switch *ds, int port,
+ }
+ 
+ static int felix_bridge_join(struct dsa_switch *ds, int port,
+-			     struct net_device *br, int bridge_num)
++			     struct net_device *br, int bridge_num,
++			     struct netlink_ext_ack *extack)
+ {
+ 	struct ocelot *ocelot = ds->priv;
+ 
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index 9addf99ceead..4254fbd84432 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -1506,7 +1506,7 @@ qca8k_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
+ 
+ static int
+ qca8k_port_bridge_join(struct dsa_switch *ds, int port, struct net_device *br,
+-		       int bridge_num)
++		       int bridge_num, struct netlink_ext_ack *extack)
+ {
+ 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
+ 	int port_mask = BIT(QCA8K_CPU_PORT);
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 3c319114e292..8580ca2e88df 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -1985,7 +1985,8 @@ static void sja1105_bridge_stp_state_set(struct dsa_switch *ds, int port,
+ }
+ 
+ static int sja1105_bridge_join(struct dsa_switch *ds, int port,
+-			       struct net_device *br, int bridge_num)
++			       struct net_device *br, int bridge_num,
++			       struct netlink_ext_ack *extack)
+ {
+ 	int rc;
+ 
+diff --git a/drivers/net/dsa/xrs700x/xrs700x.c b/drivers/net/dsa/xrs700x/xrs700x.c
+index 230dbbcc48f3..2b6806610a89 100644
+--- a/drivers/net/dsa/xrs700x/xrs700x.c
++++ b/drivers/net/dsa/xrs700x/xrs700x.c
+@@ -542,7 +542,8 @@ static int xrs700x_bridge_common(struct dsa_switch *ds, int port,
+ }
+ 
+ static int xrs700x_bridge_join(struct dsa_switch *ds, int port,
+-			       struct net_device *bridge, int bridge_num)
++			       struct net_device *bridge, int bridge_num,
++			       struct netlink_ext_ack *extack)
+ {
+ 	return xrs700x_bridge_common(ds, port, bridge, true);
+ }
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index b2aaef292c6d..5ecba358889a 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -694,7 +694,8 @@ struct dsa_switch_ops {
+ 	 */
+ 	int	(*set_ageing_time)(struct dsa_switch *ds, unsigned int msecs);
+ 	int	(*port_bridge_join)(struct dsa_switch *ds, int port,
+-				    struct net_device *bridge, int bridge_num);
++				    struct net_device *bridge, int bridge_num,
++				    struct netlink_ext_ack *extack);
+ 	void	(*port_bridge_leave)(struct dsa_switch *ds, int port,
+ 				     struct net_device *bridge, int bridge_num);
+ 	/* Called right after .port_bridge_join() */
+@@ -776,7 +777,8 @@ struct dsa_switch_ops {
+ 	 */
+ 	int	(*crosschip_bridge_join)(struct dsa_switch *ds, int tree_index,
+ 					 int sw_index, int port,
+-					 struct net_device *br, int bridge_num);
++					 struct net_device *br, int bridge_num,
++					 struct netlink_ext_ack *extack);
+ 	void	(*crosschip_bridge_leave)(struct dsa_switch *ds, int tree_index,
+ 					  int sw_index, int port,
+ 					  struct net_device *br, int bridge_num);
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 417fac51c6e8..3a9d81ca3e64 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -57,6 +57,7 @@ struct dsa_notifier_bridge_info {
+ 	int tree_index;
+ 	int sw_index;
+ 	int port;
++	struct netlink_ext_ack *extack;
+ };
+ 
+ /* DSA_NOTIFIER_FDB_* */
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index 270624e88358..07c57287ac3e 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -355,6 +355,7 @@ int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
+ 		.sw_index = dp->ds->index,
+ 		.port = dp->index,
+ 		.br = br,
++		.extack = extack,
+ 	};
+ 	struct net_device *dev = dp->slave;
+ 	struct net_device *brport_dev;
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index 26dbd70ebb5e..b1c38eee2cac 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -95,7 +95,7 @@ static int dsa_switch_bridge_join(struct dsa_switch *ds,
+ 	if (dst->index == info->tree_index && ds->index == info->sw_index &&
+ 	    ds->ops->port_bridge_join) {
+ 		err = ds->ops->port_bridge_join(ds, info->port, info->br,
+-						info->bridge_num);
++						info->bridge_num, info->extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -105,7 +105,8 @@ static int dsa_switch_bridge_join(struct dsa_switch *ds,
+ 		err = ds->ops->crosschip_bridge_join(ds, info->tree_index,
+ 						     info->sw_index,
+ 						     info->port, info->br,
+-						     info->bridge_num);
++						     info->bridge_num,
++						     info->extack);
+ 		if (err)
+ 			return err;
+ 	}
 -- 
 2.25.1
 
