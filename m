@@ -2,152 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC7743F048A
-	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 15:22:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4C413F04DB
+	for <lists+netdev@lfdr.de>; Wed, 18 Aug 2021 15:34:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236873AbhHRNW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 09:22:57 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:27205 "EHLO m43-7.mailgun.net"
+        id S237392AbhHRNea (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 09:34:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39160 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236676AbhHRNW4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Aug 2021 09:22:56 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1629292942; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=7+Ab/9z1rA+iXhTGMj2XCyz3LmnToltqWhfqUmQZaZg=; b=fkLrUaVVe0AV37jygLOYrfnhXJt723S6yUy3i65lBXXA7N9/IaxcjOigbfUgbVDOA/oYY1Xm
- hAWvyFXk2gGhozl+kx3t9wNnSsqu6xJU8PPeqZQT4J4vtJYL9YdUQkgQYd7ziubF4+58qyp5
- Rz/NHdbnQRoGxVMlP28SoCX00tc=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
- 611d096f2892f803bc36d822 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 18 Aug 2021 13:21:51
- GMT
-Sender: luoj=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id DB9F0C43617; Wed, 18 Aug 2021 13:21:49 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-4.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from [10.92.1.52] (unknown [180.166.53.36])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S233722AbhHRNe1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Aug 2021 09:34:27 -0400
+Received: from oasis.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: luoj)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 0AE05C4338F;
-        Wed, 18 Aug 2021 13:21:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 0AE05C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-Subject: Re: [PATCH] net: phy: add qca8081 ethernet phy driver
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, sricharan@codeaurora.org
-References: <20210816113440.22290-1-luoj@codeaurora.org>
- <YRpuhIcwN2IsaHzy@lunn.ch>
- <6856a839-0fa0-1240-47cd-ae8536294bcd@codeaurora.org>
- <YRu6n49p/Evecd8P@lunn.ch>
-From:   Jie Luo <luoj@codeaurora.org>
-Message-ID: <92c80a0b-87ad-252b-7a9a-30176e7f06cf@codeaurora.org>
-Date:   Wed, 18 Aug 2021 21:21:45 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        by mail.kernel.org (Postfix) with ESMTPSA id 5C0CE6109E;
+        Wed, 18 Aug 2021 13:33:51 +0000 (UTC)
+Date:   Wed, 18 Aug 2021 09:33:49 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-staging@lists.linux.dev,
+        linux-block@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v2 50/63] tracing: Use memset_startat() to zero struct
+ trace_iterator
+Message-ID: <20210818093349.3144276b@oasis.local.home>
+In-Reply-To: <20210818060533.3569517-51-keescook@chromium.org>
+References: <20210818060533.3569517-1-keescook@chromium.org>
+        <20210818060533.3569517-51-keescook@chromium.org>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <YRu6n49p/Evecd8P@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 17 Aug 2021 23:05:20 -0700
+Kees Cook <keescook@chromium.org> wrote:
 
-On 8/17/2021 9:33 PM, Andrew Lunn wrote:
-> On Tue, Aug 17, 2021 at 09:10:44PM +0800, Jie Luo wrote:
->> On 8/16/2021 9:56 PM, Andrew Lunn wrote:
->>> On Mon, Aug 16, 2021 at 07:34:40PM +0800, Luo Jie wrote:
->>>> qca8081 is industry’s lowest cost and power 1-port 2.5G/1G Ethernet PHY
->>>> chip, which implements SGMII/SGMII+ for interface to SoC.
->>> Hi Luo
->>>
->>> No Marketing claims in the commit message please. Even if it is
->>> correct now, it will soon be wrong with newer generations of
->>> devices.
->>>
->>> And what is SGMII+? Please reference a document. Is it actually
->>> 2500BaseX?
->> Hi Andrew,
->>
->> thanks for the comments, will remove the claims in the next patch.
->>
->> SGMII+ is for 2500BaseX, which is same as SGMII, but the clock frequency of
->> SGMII+ is 2.5 times SGMII.
-> 25000BaseX is not SGMII over clocked at 2.5GHz.
->
-> If it is using 2500BaseX then call it 2500BaseX, because 2500BaseX is
-> well defined in the standards, and SGMII overclocked to 2.5G is not
-> standardised.
+> In preparation for FORTIFY_SOURCE performing compile-time and run-time
+> field bounds checking for memset(), avoid intentionally writing across
+> neighboring fields.
+> 
+> Use memset_startat() to avoid confusing memset() about writing beyond
+> the target struct member.
+> 
+> Cc: Steven Rostedt <rostedt@goodmis.org>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  kernel/trace/trace.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+> index 13587e771567..9ff8c31975cd 100644
+> --- a/kernel/trace/trace.c
+> +++ b/kernel/trace/trace.c
+> @@ -6691,9 +6691,7 @@ tracing_read_pipe(struct file *filp, char __user *ubuf,
+>  		cnt = PAGE_SIZE - 1;
+>  
+>  	/* reset all but tr, trace, and overruns */
+> -	memset(&iter->seq, 0,
+> -	       sizeof(struct trace_iterator) -
+> -	       offsetof(struct trace_iterator, seq));
+> +	memset_startat(iter, 0, seq);
 
-will update it to use 2500BaseX in the next patch, thanks for this comment.
+I can't find memset_startat() in mainline nor linux-next. I don't see it
+in this thread either, but since this has 63 patches, I could have
+easily missed it.
 
->
->>> A lot of these registers look the same as the at803x. So i'm thinking
->>> you should merge these two drivers. There is a lot of code which is
->>> identical, or very similar, which you can share.
->> Hi Andrew,
->>
->> qca8081 supports IEEE1588 feature, the IEEE1588 code may be submitted in the
->> near future,
->>
->> so it may be a good idea to keep it out from at803x code.
-> Please merge it. A lot of the code is the same, and a lot of the new
-> code you are adding will go away once you use the helpers. And
-> probably you can improve the features of the older PHYs at the same
-> time, where features are the same between them.
-thanks for the comment, will update the patch to merge it into at803x code.
->
->>>> +static int qca808x_phy_ms_seed_enable(struct phy_device *phydev, bool enable)
->>>> +{
->>>> +	u16 seed_enable = 0;
->>>> +
->>>> +	if (enable)
->>>> +		seed_enable = QCA808X_MASTER_SLAVE_SEED_ENABLE;
->>>> +
->>>> +	return qca808x_debug_reg_modify(phydev, QCA808X_PHY_DEBUG_LOCAL_SEED,
->>>> +			QCA808X_MASTER_SLAVE_SEED_ENABLE, seed_enable);
->>>> +}
->>> This is interesting. I've not seen any other PHY does this. is there
->>> documentation? Is the datasheet available?
->> this piece of code is for configuring the random seed to a lower value to
->> make the PHY linked
->>
->> as the SLAVE mode for fixing some IOT issue, for master/slave
->> auto-negotiation, please refer to
->>
->> https://www.ieee802.org/3/an/public/jul04/lynskey_2_0704.pdf.
-> And what happens when this device is used in an Ethernet switch? A
-> next generation of a qca8k? Take a look at
-> genphy_setup_master_slave().  Use MASTER_SLAVE_CFG_MASTER_PREFERRED or
-> MASTER_SLAVE_CFG_SLAVE_PREFERRED to decide how to bias the
-> master/slave decision.
->
->       Andrew
+This change really should belong to a patch set that just introduces
+memset_startat() (and perhaps memset_after()) and then updates all the
+places that should use it. That way I can give it a proper review. In
+other words, you should break this patch set up into smaller, more
+digestible portions for the reviewers.
 
-Hi Andrew, thanks for this comment, qca8081 is mainly used in the IPQ 
-SOC chip currently.
+Thanks,
 
-qca801 is configured as MASTER_SLAVE_CFG_SLAVE_PREFERRED by default.
+-- Steve
 
-the SEED random lower value is for making the qca8081 linked as SLAVE 
-mode when the link
 
-partner is also configured as MASTER_SLAVE_CFG_SLAVE_PREFERRED in 
-auto-negotiation.
 
-.
-
+>  	cpumask_clear(iter->started);
+>  	trace_seq_init(&iter->seq);
+>  	iter->pos = -1;
 
