@@ -2,91 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F07523F1617
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 11:24:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 784193F1672
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 11:41:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234040AbhHSJZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 05:25:17 -0400
-Received: from mail-lf1-f46.google.com ([209.85.167.46]:36603 "EHLO
-        mail-lf1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbhHSJZQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 05:25:16 -0400
-Received: by mail-lf1-f46.google.com with SMTP id r9so11475552lfn.3;
-        Thu, 19 Aug 2021 02:24:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ILYDCppuvFZoKFobc82YakJdHXPK2hb0yUNeKSxvHzo=;
-        b=N76JFLUtC2/HHO9Rxxkoxri46r0j4GUjLSa1Xlq4cLqOqnNl864gBi9Ra6A3RyWdHO
-         WToSI8wyCEaJaNLkXetVwsxZPZQf3kP8xnGVmucRbFG3G86rOibHzGmzUUlGgHnPh4Ax
-         itaq5bFLdDMZQDvw86138YsNDarnsrh1L43wa32cmSOb15WseA8aHN7jVP7lZn/UU+5r
-         nz7XUnPZxkKk83ypeL9XxKZzcq06DIy0Ix92KTdINIyHP7PWQCy+7poIti3+O82PrpC7
-         ATR2sG71d8QPs+QNLvSpRNTQh53H9POOh+No8iOTKyHIHabxTpjejV1QXOOxl1n1AiWG
-         oaNw==
-X-Gm-Message-State: AOAM5304xotFbE9afFbkX2uqa4iVA9XrYLG1/7+/W4uOrPo+twDIH9Aq
-        ddUfNV+PaIly7PP6IJol8t0+CjJNQKER4BUl7LRzJpuuumo3Vw==
-X-Google-Smtp-Source: ABdhPJx0oHSXYAd8W7hO0TM69SuIG7H5yBKVoSOniXVHQ2SQp7tDENYABHsqD3ZibNHGPVLycv5ngyB9FkaA0XM2wuQ=
-X-Received: by 2002:a05:6512:3aa:: with SMTP id v10mr9936420lfp.393.1629365078821;
- Thu, 19 Aug 2021 02:24:38 -0700 (PDT)
+        id S237552AbhHSJmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 05:42:14 -0400
+Received: from mga18.intel.com ([134.134.136.126]:30072 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233957AbhHSJmN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Aug 2021 05:42:13 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10080"; a="203668108"
+X-IronPort-AV: E=Sophos;i="5.84,334,1620716400"; 
+   d="scan'208";a="203668108"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2021 02:41:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,334,1620716400"; 
+   d="scan'208";a="679254573"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by fmsmga006.fm.intel.com with ESMTP; 19 Aug 2021 02:41:34 -0700
+Date:   Thu, 19 Aug 2021 11:26:34 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com, ciara.loftus@intel.com,
+        bpf@vger.kernel.org, yhs@fb.com, andrii@kernel.org
+Subject: Re: [PATCH bpf-next v2 10/16] selftests: xsk: validate tx stats on
+ tx thread
+Message-ID: <20210819092634.GA32204@ranger.igk.intel.com>
+References: <20210817092729.433-1-magnus.karlsson@gmail.com>
+ <20210817092729.433-11-magnus.karlsson@gmail.com>
 MIME-Version: 1.0
-References: <20210815033248.98111-1-mailhol.vincent@wanadoo.fr>
- <20210815033248.98111-2-mailhol.vincent@wanadoo.fr> <20210819074514.jkg7fwztzpxecrwb@pengutronix.de>
-In-Reply-To: <20210819074514.jkg7fwztzpxecrwb@pengutronix.de>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Thu, 19 Aug 2021 18:24:27 +0900
-Message-ID: <CAMZ6RqL0uT7tNNxRjAYaUNrnsSV6smMQvowttLaqjUrOZ5V1Fg@mail.gmail.com>
-Subject: Re: [PATCH v5 1/7] can: netlink: allow user to turn off unsupported features
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can <linux-can@vger.kernel.org>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <Stefan.Maetje@esd.eu>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210817092729.433-11-magnus.karlsson@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu. 19 Aug 2021 at 16:45, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> On 15.08.2021 12:32:42, Vincent Mailhol wrote:
-> > The sanity checks on the control modes will reject any request related
-> > to an unsupported features, even turning it off.
-> >
-> > Example on an interface which does not support CAN-FD:
-> >
-> > $ ip link set can0 type can bitrate 500000 fd off
-> > RTNETLINK answers: Operation not supported
-> >
-> > This patch lets such command go through (but requests to turn on an
-> > unsupported feature are, of course, still denied).
-> >
-> > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
->
-> I'm planing to send a pull request to net-next today. I want to do some
-> more tests with this series
+On Tue, Aug 17, 2021 at 11:27:23AM +0200, Magnus Karlsson wrote:
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
+> 
+> Validate the tx stats on the Tx thread instead of the Rx
+> tread. Depending on your settings, you might not be allowed to query
+> the statistics of a socket you do not own, so better to do this on the
+> correct thread to start with.
+> 
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> ---
+>  tools/testing/selftests/bpf/xdpxceiver.c | 55 ++++++++++++++++++------
+>  1 file changed, 41 insertions(+), 14 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
+> index fe3d281a0575..8ff24472ef1e 100644
+> --- a/tools/testing/selftests/bpf/xdpxceiver.c
+> +++ b/tools/testing/selftests/bpf/xdpxceiver.c
+> @@ -642,23 +642,22 @@ static void tx_only_all(struct ifobject *ifobject)
+>  	complete_tx_only_all(ifobject);
+>  }
+>  
+> -static void stats_validate(struct ifobject *ifobject)
+> +static bool rx_stats_are_valid(struct ifobject *ifobject)
+>  {
+> +	u32 xsk_stat = 0, expected_stat = opt_pkt_count;
+> +	struct xsk_socket *xsk = ifobject->xsk->xsk;
+> +	int fd = xsk_socket__fd(xsk);
+>  	struct xdp_statistics stats;
+>  	socklen_t optlen;
+>  	int err;
+> -	struct xsk_socket *xsk = stat_test_type == STAT_TEST_TX_INVALID ?
+> -							ifdict[!ifobject->ifdict_index]->xsk->xsk :
+> -							ifobject->xsk->xsk;
+> -	int fd = xsk_socket__fd(xsk);
+> -	unsigned long xsk_stat = 0, expected_stat = opt_pkt_count;
+> -
+> -	sigvar = 0;
+>  
+>  	optlen = sizeof(stats);
+>  	err = getsockopt(fd, SOL_XDP, XDP_STATISTICS, &stats, &optlen);
+> -	if (err)
+> -		return;
+> +	if (err) {
+> +		ksft_test_result_fail("ERROR: [%s] getsockopt(XDP_STATISTICS) error %u %s\n",
+> +				      __func__, -err, strerror(-err));
+> +		return true;
 
-Ack, I am also preparing a new version. But first, I am just
-waiting for your reply on the tdc-mode {auto, manual, off}. :)
+Can we invert the logic or change the name of the func?
+Returning 'true' for error case is a bit confusing given the name of func
+is blah_are_valid, no? If there was an error then I'd return false.
 
-> but this patch is more or less unrelated,
-> so I can take it in this PR, should I?
+OTOH we're testing faulty socket situations in here, but error from
+getsockopt does not mean that stats were valid.
 
-FYI, the reason to add it to the series is that when setting TDC to
-off, the ip tool sets both CAN_CTRLMODE_TDC_AUTO and
-CAN_CTRLMODE_TDC_MANUAL to zero (which the corresponding bits in
-can_ctrlmode::mask set to 1).  Without this patch, netlink would
-return -ENOTSUPP if the driver only supported one of
-CAN_CTRLMODE_TDC_{AUTO,MANUAL}.
-
-Regardless, this patch makes sense as a standalone, I am fine if
-you include it in your PR.
-
-
-Also, if you want, you can include the latest patch of the series as well:
-https://lore.kernel.org/linux-can/20210815033248.98111-8-mailhol.vincent@wanadoo.fr/
-
-It's a comment fix, it should be pretty harmless.
-
-
-Yours sincerely,
-Vincent
+> +	}
+>  
+>  	if (optlen == sizeof(struct xdp_statistics)) {
+>  		switch (stat_test_type) {
+> @@ -666,8 +665,7 @@ static void stats_validate(struct ifobject *ifobject)
+>  			xsk_stat = stats.rx_dropped;
+>  			break;
+>  		case STAT_TEST_TX_INVALID:
+> -			xsk_stat = stats.tx_invalid_descs;
+> -			break;
+> +			return true;
+>  		case STAT_TEST_RX_FULL:
+>  			xsk_stat = stats.rx_ring_full;
+>  			expected_stat -= RX_FULL_RXQSIZE;
+> @@ -680,8 +678,33 @@ static void stats_validate(struct ifobject *ifobject)
+>  		}
+>  
+>  		if (xsk_stat == expected_stat)
+> -			sigvar = 1;
+> +			return true;
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +static void tx_stats_validate(struct ifobject *ifobject)
+> +{
+> +	struct xsk_socket *xsk = ifobject->xsk->xsk;
+> +	int fd = xsk_socket__fd(xsk);
+> +	struct xdp_statistics stats;
+> +	socklen_t optlen;
+> +	int err;
+> +
+> +	optlen = sizeof(stats);
+> +	err = getsockopt(fd, SOL_XDP, XDP_STATISTICS, &stats, &optlen);
+> +	if (err) {
+> +		ksft_test_result_fail("ERROR: [%s] getsockopt(XDP_STATISTICS) error %u %s\n",
+> +				      __func__, -err, strerror(-err));
+> +		return;
+>  	}
+> +
+> +	if (stats.tx_invalid_descs == opt_pkt_count)
+> +		return;
+> +
+> +	ksft_test_result_fail("ERROR: [%s] tx_invalid_descs incorrect. Got [%u] expected [%u]\n",
+> +			      __func__, stats.tx_invalid_descs, opt_pkt_count);
+>  }
+>  
+>  static void thread_common_ops(struct ifobject *ifobject, void *bufs)
+> @@ -767,6 +790,9 @@ static void *worker_testapp_validate_tx(void *arg)
+>  	print_verbose("Sending %d packets on interface %s\n", opt_pkt_count, ifobject->ifname);
+>  	tx_only_all(ifobject);
+>  
+> +	if (stat_test_type == STAT_TEST_TX_INVALID)
+> +		tx_stats_validate(ifobject);
+> +
+>  	testapp_cleanup_xsk_res(ifobject);
+>  	pthread_exit(NULL);
+>  }
+> @@ -792,7 +818,8 @@ static void *worker_testapp_validate_rx(void *arg)
+>  		if (test_type != TEST_TYPE_STATS) {
+>  			rx_pkt(ifobject->xsk, fds);
+>  		} else {
+> -			stats_validate(ifobject);
+> +			if (rx_stats_are_valid(ifobject))
+> +				break;
+>  		}
+>  		if (sigvar)
+>  			break;
+> -- 
+> 2.29.0
+> 
