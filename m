@@ -2,167 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68C6E3F13CA
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 08:51:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A3FB3F1441
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 09:16:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231909AbhHSGvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 02:51:35 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:42904
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231347AbhHSGve (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 02:51:34 -0400
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id F1B41411C4
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 06:50:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1629355857;
-        bh=0jvhx6f4zq/7XnfZg+ORPB90W+qrIJ0dzkFCj+LBYPM=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=oQDm5RlFi4hKRmrSsCqErub8kjjmP4tFH2MrN5YwUNcrJ/Sd9J6isE+t0KmkNfMcQ
-         JO773VXClh5x3eXdLyxzhB6p+LL2Me6VMsnZu9qLhmRQlWWxQ/L3MEZp6Nx886Ho6F
-         GfOpAHDZ5SXbOJqZpPcdrW3HWI48XUJAEY9nHzjZE88fWbw2mKbeKczSRk3mf8PHdl
-         7b1rYJ5XqA+pnS1+mKkOYik1AmDl38JqwohddnuSn+UbaXqBY+poQDOyWFnTT/KIsB
-         RE9CEZqxm8VvwLvJJHQVMcCdlpTs7uUwyTq2MLr6U7Dh/ZQWVNZzJ+qtBcd+lcUgIW
-         Ucg+zNutnjLOg==
-Received: by mail-ed1-f70.google.com with SMTP id ec47-20020a0564020d6fb02903be5e0a8cd2so2340035edb.0
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 23:50:57 -0700 (PDT)
+        id S236730AbhHSHQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 03:16:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:23588 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236651AbhHSHQk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 03:16:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1629357364;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UALzSo2GrJ9j01xCRrcgLejUq52T/7G8b3s1/Jyjb3g=;
+        b=N8/qErVXUTeMJQCcEwbNY07Cap7bml9xZbiwsRqBDURhu962bv+FK4S5KtI9foN+lAZewk
+        F8c74mdRulpVr8pBHX65BFL52n14wmu3C3etLX9cZ71b8boCe60Y+suDGIjwlZm2fM0CbW
+        zAAwWgT0sL6YevRoNh0CewFCpl2u4zI=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-38-ztyNuvzJPZyhfIufrFyMSg-1; Thu, 19 Aug 2021 03:16:02 -0400
+X-MC-Unique: ztyNuvzJPZyhfIufrFyMSg-1
+Received: by mail-lj1-f200.google.com with SMTP id e17-20020a2ea551000000b001ba24d10343so1847492ljn.0
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 00:16:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0jvhx6f4zq/7XnfZg+ORPB90W+qrIJ0dzkFCj+LBYPM=;
-        b=G9QfFg9qTvnqV7II+rgeU2aLbjDKxsn8seoyRgO27xSogYFFL/w8SPWT03ri0SWzWA
-         RO+kBR6ozRkEMiAA2mK+NnxjOgy0XYoJ9xuaTtGead5Y/q5WQR121WUzQJ/mJRhISzwG
-         Bk4kT6awPKgz4Qci/I4CZ/5PBTd7EgrIeX1iBN2AH5syHSOL7TyZuDZU30dJXjT5GBS2
-         HMwznXdtSLIGmH4LiYt3qw+/qHEUbNfrTFoq7njWgW1FeifBuOB6/ObeSkDjVbvfGvad
-         QB6hYQXB9sSQo12TXXljQIVW4obfvU85yZQHgbG1Iuf/cajgpVwBbUsQqjp3AnojC1Bu
-         uVSg==
-X-Gm-Message-State: AOAM531cQ8JlxByPCM9TWThoCzTKbqjOQMtL+LYoTxchi+ZE6ToXYUc5
-        VF/6tL+IFali7Sr5kjpr0ocqp64d7y9j1qNpo+CPEYCOwySngJB7lRb/X1xP62sdmgXUg74ssJV
-        gKVeIHX1x2jZYvt+bhLjdU1V2CYKLBcpfD5zEUet4cuEPRtToXw==
-X-Received: by 2002:a17:906:f8c4:: with SMTP id lh4mr14052775ejb.542.1629355857652;
-        Wed, 18 Aug 2021 23:50:57 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy7XQhtjEFl5wsBgomaAboB0rmAqmgcek25DRCCx7AdlA7HAMg46JkTr7MA3PiPZ8CWLKTxjQcDb0l3DC8Hxm0=
-X-Received: by 2002:a17:906:f8c4:: with SMTP id lh4mr14052749ejb.542.1629355857324;
- Wed, 18 Aug 2021 23:50:57 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=UALzSo2GrJ9j01xCRrcgLejUq52T/7G8b3s1/Jyjb3g=;
+        b=ZVYw5SC5kruVEKqos7znu9+afHjRLsPsSN1hXEDNQa+pSAvqBvMk4WyXBAWV80vNbV
+         y5s1kZWRDfkWo63mulrC2KWp6uDGkL4OSd613UT2uGlYIVV8TBZ9uSVdcAyEz9NPHtm4
+         C3Fe7SzZtOpjj8XqjrXbNrh35qeoFaxeD7pyq8EcFPRkXpZCmpqtnX0sN4MTCuL9LuPb
+         ikLjZFlWwSddlcq5OY1x0o/wL8hhdat/P+/nfslQ3g327VTn5luVfbm+HPQa8avYuSS3
+         hEyNCxzrYcd+G4irtUJvgVJBchEh3y+zfjAiKShhMmhSSS2vMX+e+ZwBxrvki9NOu1MX
+         7TTA==
+X-Gm-Message-State: AOAM530CIa5F38YMw8G2jTeNWvAdi1VU0qCltAgsG2SEYQwz6LNMopwk
+        yadbHHFyYqDO7Nvq1/5BtBRrT2OVbHn6jf/0paVYwlEC4HV1JwqXk6C+Y2Ly6UqieEuwduaK+tr
+        8bgU855TJ8Y/seaQdTkxQ6lCcK/qxV1sa
+X-Received: by 2002:ac2:5e7a:: with SMTP id a26mr9462709lfr.312.1629357361347;
+        Thu, 19 Aug 2021 00:16:01 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz3IoEfD4gxn0Nr+TIGTIxAc4ooYHxWzFw8gFQUry5zBtizmgIUWjSZFiLRaGMqdxMlUDGirI0BKaxr54b0YkA=
+X-Received: by 2002:ac2:5e7a:: with SMTP id a26mr9462701lfr.312.1629357361197;
+ Thu, 19 Aug 2021 00:16:01 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210819054542.608745-1-kai.heng.feng@canonical.com>
- <20210819054542.608745-4-kai.heng.feng@canonical.com> <084b8ea3-99d8-3393-4b74-0779c92fde64@gmail.com>
-In-Reply-To: <084b8ea3-99d8-3393-4b74-0779c92fde64@gmail.com>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Thu, 19 Aug 2021 14:50:44 +0800
-Message-ID: <CAAd53p4CYOOXjyNdTnBtsQ+2MW-Jar8fgEfPFZHSPrJde=HqVA@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 3/3] r8169: Enable ASPM for selected NICs
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     nic_swsd <nic_swsd@realtek.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20210818095714.3220-1-lingshan.zhu@intel.com> <e3ec8ed7-84ac-73cc-0b74-4de1bb6c0030@redhat.com>
+ <9e6f6cb0-eaed-9d83-c297-3a89f5cc9efd@intel.com>
+In-Reply-To: <9e6f6cb0-eaed-9d83-c297-3a89f5cc9efd@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Thu, 19 Aug 2021 15:15:50 +0800
+Message-ID: <CACGkMEsjyx9GDwm1tNtRozC4ooN_QFXBGL20yqc029PKVH2L-w@mail.gmail.com>
+Subject: Re: [PATCH 0/2] vDPA/ifcvf: enable multiqueue and control vq
+To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Cc:     mst <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, kvm <kvm@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 19, 2021 at 2:08 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+On Thu, Aug 19, 2021 at 2:50 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrot=
+e:
 >
-> On 19.08.2021 07:45, Kai-Heng Feng wrote:
-> > The latest vendor driver enables ASPM for more recent r8168 NICs, so
-> > disable ASPM on older chips and enable ASPM for the rest.
-> >
-> > Rename aspm_manageable to pcie_aspm_manageable to indicate it's ASPM
-> > from PCIe, and use rtl_aspm_supported for Realtek NIC's internal ASPM
-> > function.
-> >
-> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> > ---
-> > v3:
-> >  - Use pcie_aspm_supported() to retrieve ASPM support status
-> >  - Use whitelist for r8169 internal ASPM status
-> >
-> > v2:
-> >  - No change
-> >
-> >  drivers/net/ethernet/realtek/r8169_main.c | 27 ++++++++++++++++-------
-> >  1 file changed, 19 insertions(+), 8 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> > index 3359509c1c351..88e015d93e490 100644
-> > --- a/drivers/net/ethernet/realtek/r8169_main.c
-> > +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> > @@ -623,7 +623,8 @@ struct rtl8169_private {
-> >       } wk;
-> >
-> >       unsigned supports_gmii:1;
-> > -     unsigned aspm_manageable:1;
-> > +     unsigned pcie_aspm_manageable:1;
-> > +     unsigned rtl_aspm_supported:1;
-> >       unsigned rtl_aspm_enabled:1;
-> >       struct delayed_work aspm_toggle;
-> >       atomic_t aspm_packet_count;
-> > @@ -702,6 +703,20 @@ static bool rtl_is_8168evl_up(struct rtl8169_private *tp)
-> >              tp->mac_version <= RTL_GIGA_MAC_VER_53;
-> >  }
-> >
-> > +static int rtl_supports_aspm(struct rtl8169_private *tp)
-> > +{
-> > +     switch (tp->mac_version) {
-> > +     case RTL_GIGA_MAC_VER_02 ... RTL_GIGA_MAC_VER_31:
-> > +     case RTL_GIGA_MAC_VER_37:
-> > +     case RTL_GIGA_MAC_VER_39:
-> > +     case RTL_GIGA_MAC_VER_43:
-> > +     case RTL_GIGA_MAC_VER_47:
-> > +             return 0;
-> > +     default:
-> > +             return 1;
-> > +     }
-> > +}
-> > +
-> >  static bool rtl_supports_eee(struct rtl8169_private *tp)
-> >  {
-> >       return tp->mac_version >= RTL_GIGA_MAC_VER_34 &&
-> > @@ -2669,7 +2684,7 @@ static void rtl_pcie_state_l2l3_disable(struct rtl8169_private *tp)
-> >
-> >  static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
-> >  {
-> > -     if (!tp->aspm_manageable && enable)
-> > +     if (!(tp->pcie_aspm_manageable && tp->rtl_aspm_supported) && enable)
-> >               return;
-> >
-> >       tp->rtl_aspm_enabled = enable;
-> > @@ -5319,12 +5334,8 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
-> >       if (rc)
-> >               return rc;
-> >
-> > -     /* Disable ASPM completely as that cause random device stop working
-> > -      * problems as well as full system hangs for some PCIe devices users.
-> > -      */
-> > -     rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S |
-> > -                                       PCIE_LINK_STATE_L1);
-> > -     tp->aspm_manageable = !rc;
-> > +     tp->pcie_aspm_manageable = pcie_aspm_supported(pdev);
 >
-> That's not what I meant, and it's also not correct.
+>
+> On 8/19/2021 12:11 PM, Jason Wang wrote:
+> >
+> > =E5=9C=A8 2021/8/18 =E4=B8=8B=E5=8D=885:57, Zhu Lingshan =E5=86=99=E9=
+=81=93:
+> >> This series enables multi-queue and control vq features
+> >> for ifcvf.
+> >>
+> >> These patches are based on my previous vDPA/ifcvf management link
+> >> implementation series:
+> >> https://lore.kernel.org/kvm/20210812032454.24486-2-lingshan.zhu@intel.=
+com/T/
+> >>
+> >>
+> >> Thanks!
+> >>
+> >> Zhu Lingshan (2):
+> >>    vDPA/ifcvf: detect and use the onboard number of queues directly
+> >>    vDPA/ifcvf: enable multiqueue and control vq
+> >>
+> >>   drivers/vdpa/ifcvf/ifcvf_base.c |  8 +++++---
+> >>   drivers/vdpa/ifcvf/ifcvf_base.h | 19 ++++---------------
+> >>   drivers/vdpa/ifcvf/ifcvf_main.c | 32 +++++++++++++++----------------=
+-
+> >>   3 files changed, 24 insertions(+), 35 deletions(-)
+> >>
+> >
+> > Patch looks good.
+> >
+> > I wonder the compatibility. E.g does it work on the qemu master
+> > without cvq support? (mq=3Doff or not specified)
+> Hi Jason,
+>
+> Yes, it works with qemu master. When no cvq/mq support, only one queue
+> pair shown.
 
-In case I make another mistake in next series, let me ask it more clearly...
-What you meant was to check both link->aspm_enabled and link->aspm_support?
+Good to know this.
+
+Thanks
 
 >
-> > +     tp->rtl_aspm_supported = rtl_supports_aspm(tp);
-
-Is rtl_supports_aspm() what you expect for the whitelist?
-And what else am I missing?
-
-Kai-Heng
-
+> Thanks,
+> Zhu Lingshan
 > >
-> >       /* enable device (incl. PCI PM wakeup and hotplug setup) */
-> >       rc = pcim_enable_device(pdev);
+> > Thanks
 > >
 >
+
