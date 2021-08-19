@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 232C63F1AB4
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 15:40:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D4F83F1AC2
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 15:40:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240285AbhHSNk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 09:40:27 -0400
+        id S240348AbhHSNkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 09:40:39 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240231AbhHSNkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 09:40:18 -0400
+        with ESMTP id S240334AbhHSNk0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 09:40:26 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C53C061575
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 06:39:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2DA2C0612A7
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 06:39:45 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1mGiGi-0004vp-OK
-        for netdev@vger.kernel.org; Thu, 19 Aug 2021 15:39:40 +0200
+        id 1mGiGm-00058u-3O
+        for netdev@vger.kernel.org; Thu, 19 Aug 2021 15:39:44 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 5548366A87C
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 13:39:34 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id AF19566A896
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 13:39:36 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 1FC6666A82F;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 8840966A836;
         Thu, 19 Aug 2021 13:39:25 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 5ae2be16;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 897fe4fb;
         Thu, 19 Aug 2021 13:39:16 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Matt Kline <matt@bitbashing.io>,
+        kernel@pengutronix.de, Dario Binacchi <dariobin@libero.it>,
+        Rob Herring <robh@kernel.org>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 15/22] can: m_can: Batch FIFO writes during CAN transmit
-Date:   Thu, 19 Aug 2021 15:39:06 +0200
-Message-Id: <20210819133913.657715-16-mkl@pengutronix.de>
+Subject: [PATCH net-next 16/22] dt-bindings: net: can: c_can: convert to json-schema
+Date:   Thu, 19 Aug 2021 15:39:07 +0200
+Message-Id: <20210819133913.657715-17-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210819133913.657715-1-mkl@pengutronix.de>
 References: <20210819133913.657715-1-mkl@pengutronix.de>
@@ -53,144 +54,223 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matt Kline <matt@bitbashing.io>
+From: Dario Binacchi <dariobin@libero.it>
 
-Give FIFO writes the same treatment as reads to avoid fixed costs of
-individual transfers on a slow bus (e.g., tcan4x5x).
+Convert the Bosch C_CAN/D_CAN controller device tree binding
+documentation to json-schema.
 
-Link: https://lore.kernel.org/r/20210817050853.14875-4-matt@bitbashing.io
-Signed-off-by: Matt Kline <matt@bitbashing.io>
+Document missing properties.
+Remove "ti,hwmods" as it is no longer used in TI dts.
+Make "clocks" required as it is used in all dts.
+Update the examples.
+
+Link: https://lore.kernel.org/r/20210805192750.9051-1-dariobin@libero.it
+Signed-off-by: Dario Binacchi <dariobin@libero.it>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/m_can/m_can.c | 61 +++++++++++++++--------------------
- 1 file changed, 26 insertions(+), 35 deletions(-)
+ .../bindings/net/can/bosch,c_can.yaml         | 119 ++++++++++++++++++
+ .../devicetree/bindings/net/can/c_can.txt     |  65 ----------
+ 2 files changed, 119 insertions(+), 65 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/can/bosch,c_can.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/can/c_can.txt
 
-diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index fbd32b48d265..2470c47b2e31 100644
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -279,7 +279,7 @@ enum m_can_reg {
- /* Message RAM Elements */
- #define M_CAN_FIFO_ID		0x0
- #define M_CAN_FIFO_DLC		0x4
--#define M_CAN_FIFO_DATA(n)	(0x8 + ((n) << 2))
-+#define M_CAN_FIFO_DATA		0x8
- 
- /* Rx Buffer Element */
- /* R0 */
-@@ -514,7 +514,7 @@ static int m_can_read_fifo(struct net_device *dev, u32 rxfs)
- 		if (fifo_header.dlc & RX_BUF_BRS)
- 			cf->flags |= CANFD_BRS;
- 
--		err = m_can_fifo_read(cdev, fgi, M_CAN_FIFO_DATA(0),
-+		err = m_can_fifo_read(cdev, fgi, M_CAN_FIFO_DATA,
- 				      cf->data, DIV_ROUND_UP(cf->len, 4));
- 		if (err)
- 			goto out_fail;
-@@ -1588,8 +1588,9 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
- 	struct canfd_frame *cf = (struct canfd_frame *)cdev->tx_skb->data;
- 	struct net_device *dev = cdev->net;
- 	struct sk_buff *skb = cdev->tx_skb;
--	u32 id, dlc, cccr, fdflags;
--	int i, err;
-+	struct id_and_dlc fifo_header;
-+	u32 cccr, fdflags;
-+	int err;
- 	int putidx;
- 
- 	cdev->tx_skb = NULL;
-@@ -1597,34 +1598,30 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
- 	/* Generate ID field for TX buffer Element */
- 	/* Common to all supported M_CAN versions */
- 	if (cf->can_id & CAN_EFF_FLAG) {
--		id = cf->can_id & CAN_EFF_MASK;
--		id |= TX_BUF_XTD;
-+		fifo_header.id = cf->can_id & CAN_EFF_MASK;
-+		fifo_header.id |= TX_BUF_XTD;
- 	} else {
--		id = ((cf->can_id & CAN_SFF_MASK) << 18);
-+		fifo_header.id = ((cf->can_id & CAN_SFF_MASK) << 18);
- 	}
- 
- 	if (cf->can_id & CAN_RTR_FLAG)
--		id |= TX_BUF_RTR;
-+		fifo_header.id |= TX_BUF_RTR;
- 
- 	if (cdev->version == 30) {
- 		netif_stop_queue(dev);
- 
--		/* message ram configuration */
--		err = m_can_fifo_write(cdev, 0, M_CAN_FIFO_ID, &id, 1);
-+		fifo_header.dlc = can_fd_len2dlc(cf->len) << 16;
+diff --git a/Documentation/devicetree/bindings/net/can/bosch,c_can.yaml b/Documentation/devicetree/bindings/net/can/bosch,c_can.yaml
+new file mode 100644
+index 000000000000..2cd145a642f1
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/can/bosch,c_can.yaml
+@@ -0,0 +1,119 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/can/bosch,c_can.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+		/* Write the frame ID, DLC, and payload to the FIFO element. */
-+		err = m_can_fifo_write(cdev, 0, M_CAN_FIFO_ID, &fifo_header, 2);
- 		if (err)
- 			goto out_fail;
- 
--		dlc = can_fd_len2dlc(cf->len) << 16;
--		err = m_can_fifo_write(cdev, 0, M_CAN_FIFO_DLC, &dlc, 1);
-+		err = m_can_fifo_write(cdev, 0, M_CAN_FIFO_DATA,
-+				       cf->data, DIV_ROUND_UP(cf->len, 4));
- 		if (err)
- 			goto out_fail;
- 
--		for (i = 0; i < cf->len; i += 4) {
--			err = m_can_fifo_write(cdev, 0, M_CAN_FIFO_DATA(i / 4), cf->data + i, 1);
--			if (err)
--				goto out_fail;
--		}
++title: Bosch C_CAN/D_CAN controller Device Tree Bindings
++
++description: Bosch C_CAN/D_CAN controller for CAN bus
++
++maintainers:
++  - Dario Binacchi <dariobin@libero.it>
++
++allOf:
++  - $ref: can-controller.yaml#
++
++properties:
++  compatible:
++    oneOf:
++      - enum:
++          - bosch,c_can
++          - bosch,d_can
++          - ti,dra7-d_can
++          - ti,am3352-d_can
++      - items:
++          - enum:
++              - ti,am4372-d_can
++          - const: ti,am3352-d_can
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    minItems: 1
++    maxItems: 4
++
++  power-domains:
++    description: |
++      Should contain a phandle to a PM domain provider node and an args
++      specifier containing the DCAN device id value. It's mandatory for
++      Keystone 2 66AK2G SoCs only.
++    maxItems: 1
++
++  clocks:
++    description: |
++      CAN functional clock phandle.
++    maxItems: 1
++
++  clock-names:
++    maxItems: 1
++
++  syscon-raminit:
++    description: |
++      Handle to system control region that contains the RAMINIT register,
++      register offset to the RAMINIT register and the CAN instance number (0
++      offset).
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    items:
++      items:
++        - description: The phandle to the system control region.
++        - description: The register offset.
++        - description: The CAN instance number.
++
++  resets:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++
++if:
++  properties:
++    compatible:
++      contains:
++        enum:
++          - bosch,d_can
++
++then:
++  properties:
++    interrupts:
++      minItems: 4
++      maxItems: 4
++      items:
++        - description: Error and status IRQ
++        - description: Message object IRQ
++        - description: RAM ECC correctable error IRQ
++        - description: RAM ECC non-correctable error IRQ
++
++else:
++  properties:
++    interrupts:
++      maxItems: 1
++      items:
++        - description: Error and status IRQ
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/reset/altr,rst-mgr.h>
++
++    can@ffc00000 {
++       compatible = "bosch,d_can";
++       reg = <0xffc00000 0x1000>;
++       interrupts = <0 131 4>, <0 132 4>, <0 133 4>, <0 134 4>;
++       clocks = <&can0_clk>;
++       resets = <&rst CAN0_RESET>;
++    };
++  - |
++    can@0 {
++        compatible = "ti,am3352-d_can";
++        reg = <0x0 0x2000>;
++        clocks = <&dcan1_fck>;
++        clock-names = "fck";
++        syscon-raminit = <&scm_conf 0x644 1>;
++        interrupts = <55>;
++    };
+diff --git a/Documentation/devicetree/bindings/net/can/c_can.txt b/Documentation/devicetree/bindings/net/can/c_can.txt
+deleted file mode 100644
+index 366479806acb..000000000000
+--- a/Documentation/devicetree/bindings/net/can/c_can.txt
++++ /dev/null
+@@ -1,65 +0,0 @@
+-Bosch C_CAN/D_CAN controller Device Tree Bindings
+--------------------------------------------------
 -
- 		can_put_echo_skb(skb, dev, 0, 0);
- 
- 		if (cdev->can.ctrlmode & CAN_CTRLMODE_FD) {
-@@ -1667,10 +1664,11 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
- 		/* get put index for frame */
- 		putidx = FIELD_GET(TXFQS_TFQPI_MASK,
- 				   m_can_read(cdev, M_CAN_TXFQS));
--		/* Write ID Field to FIFO Element */
--		err = m_can_fifo_write(cdev, putidx, M_CAN_FIFO_ID, &id, 1);
--		if (err)
--			goto out_fail;
-+
-+		/* Construct DLC Field, with CAN-FD configuration.
-+		 * Use the put index of the fifo as the message marker,
-+		 * used in the TX interrupt for sending the correct echo frame.
-+		 */
- 
- 		/* get CAN FD configuration of frame */
- 		fdflags = 0;
-@@ -1680,24 +1678,17 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
- 				fdflags |= TX_BUF_BRS;
- 		}
- 
--		/* Construct DLC Field. Also contains CAN-FD configuration
--		 * use put index of fifo as message marker
--		 * it is used in TX interrupt for
--		 * sending the correct echo frame
--		 */
--		dlc = FIELD_PREP(TX_BUF_MM_MASK, putidx) |
-+		fifo_header.dlc = FIELD_PREP(TX_BUF_MM_MASK, putidx) |
- 			FIELD_PREP(TX_BUF_DLC_MASK, can_fd_len2dlc(cf->len)) |
- 			fdflags | TX_BUF_EFC;
--		err = m_can_fifo_write(cdev, putidx, M_CAN_FIFO_DLC, &dlc, 1);
-+		err = m_can_fifo_write(cdev, putidx, M_CAN_FIFO_ID, &fifo_header, 2);
- 		if (err)
- 			goto out_fail;
- 
--		for (i = 0; i < cf->len; i += 4) {
--			err = m_can_fifo_write(cdev, putidx, M_CAN_FIFO_DATA(i / 4),
--					       cf->data + i, 1);
--			if (err)
--				goto out_fail;
--		}
-+		err = m_can_fifo_write(cdev, putidx, M_CAN_FIFO_DATA,
-+				       cf->data, DIV_ROUND_UP(cf->len, 4));
-+		if (err)
-+			goto out_fail;
- 
- 		/* Push loopback echo.
- 		 * Will be looped back on TX interrupt based on message marker
+-Required properties:
+-- compatible		: Should be "bosch,c_can" for C_CAN controllers and
+-			  "bosch,d_can" for D_CAN controllers.
+-			  Can be "ti,dra7-d_can", "ti,am3352-d_can" or
+-			  "ti,am4372-d_can".
+-- reg			: physical base address and size of the C_CAN/D_CAN
+-			  registers map
+-- interrupts		: property with a value describing the interrupt
+-			  number
+-
+-The following are mandatory properties for DRA7x, AM33xx and AM43xx SoCs only:
+-- ti,hwmods		: Must be "d_can<n>" or "c_can<n>", n being the
+-			  instance number
+-
+-The following are mandatory properties for Keystone 2 66AK2G SoCs only:
+-- power-domains		: Should contain a phandle to a PM domain provider node
+-			  and an args specifier containing the DCAN device id
+-			  value. This property is as per the binding,
+-			  Documentation/devicetree/bindings/soc/ti/sci-pm-domain.yaml
+-- clocks		: CAN functional clock phandle. This property is as per the
+-			  binding,
+-			  Documentation/devicetree/bindings/clock/ti,sci-clk.yaml
+-
+-Optional properties:
+-- syscon-raminit	: Handle to system control region that contains the
+-			  RAMINIT register, register offset to the RAMINIT
+-			  register and the CAN instance number (0 offset).
+-
+-Note: "ti,hwmods" field is used to fetch the base address and irq
+-resources from TI, omap hwmod data base during device registration.
+-Future plan is to migrate hwmod data base contents into device tree
+-blob so that, all the required data will be used from device tree dts
+-file.
+-
+-Example:
+-
+-Step1: SoC common .dtsi file
+-
+-	dcan1: d_can@481d0000 {
+-		compatible = "bosch,d_can";
+-		reg = <0x481d0000 0x2000>;
+-		interrupts = <55>;
+-		interrupt-parent = <&intc>;
+-		status = "disabled";
+-	};
+-
+-(or)
+-
+-	dcan1: d_can@481d0000 {
+-		compatible = "bosch,d_can";
+-		ti,hwmods = "d_can1";
+-		reg = <0x481d0000 0x2000>;
+-		interrupts = <55>;
+-		interrupt-parent = <&intc>;
+-		status = "disabled";
+-	};
+-
+-Step 2: board specific .dts file
+-
+-	&dcan1 {
+-		status = "okay";
+-	};
 -- 
 2.32.0
 
