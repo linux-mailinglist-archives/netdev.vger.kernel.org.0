@@ -2,70 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE33D3F1A1C
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 15:13:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB0CE3F1A2C
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 15:18:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239839AbhHSNNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 09:13:52 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58406 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239472AbhHSNNv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Aug 2021 09:13:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=gBtIxJWYugc+EFF9NXvpeecWmfabaXomnN0ipme+Trc=; b=WqIuz26wXnt6dk7ifYbdlbKajb
-        ZW/bc/a+51ow4ClkqR7+77Cz0OhWBVUVSQYP0k5Ww04ro8068csmzj7iBlNJp15nkXwxe2X/Fgxd1
-        8w4hZ8NnxDe3xkEhacaovr5VhetP9CWZ67bQSDll46Sc72vq7L3jq6eM8ci7sxQTfFlU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mGhr4-000yJc-ND; Thu, 19 Aug 2021 15:13:10 +0200
-Date:   Thu, 19 Aug 2021 15:13:10 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, mkubecek@suse.cz, pali@kernel.org,
-        jacob.e.keller@intel.com, jiri@nvidia.com, vadimp@nvidia.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH net-next v2 1/6] ethtool: Add ability to control
- transceiver modules' power mode
-Message-ID: <YR5Y5hCavFaWZCFH@lunn.ch>
-References: <20210818155202.1278177-1-idosch@idosch.org>
- <20210818155202.1278177-2-idosch@idosch.org>
- <20210818153241.7438e611@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YR2P7+1ZGiEBDtAq@lunn.ch>
- <YR4NTylFy2ejODV6@shredder>
+        id S239578AbhHSNSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 09:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54834 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233713AbhHSNSo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 09:18:44 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C45CC061575
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 06:18:08 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id x10so9079254wrt.8
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 06:18:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version;
+        bh=uZBbRZ+KKC2xzTbSnl2sSazP2JG5bxY8f1y2TyEWlk4=;
+        b=WAqQDndqctVywrG5ySro28T4DGm44S0PvwIXTnJHmODEBXbsOe1UHyBCD8pLd0Geqs
+         xkaLNXJKLdpIA+cbr8KhMCiwrKSsS8oFynmrMZbF+or2a/uATFeTqe/tK4TfQ7OyasOp
+         h14s+K7KeFWSPf1336EukWwM1DdHKCmI2oTXKIvi/axVoS1P77Hv8iJrACD3aokURM47
+         jKZIVDPbi66K/73ubzES9pT2ex73+fjNgqyHmTsHMHqjLvp+gkPR9ZOaxgL6/X2itO16
+         aPcfhZncx0sFfBldmnNGx7NA82fwLNGgJh7M6POD9ibGA+HemIHK62XDnQ+poSLfHuRz
+         sXhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
+        bh=uZBbRZ+KKC2xzTbSnl2sSazP2JG5bxY8f1y2TyEWlk4=;
+        b=RWcXCF4wuHjrpz7JFHngsFJuQmbvwGjBAb+kVdM0vpodwYpHFKvFoQhQhL+Y35CwbM
+         Bdm22OnxPeiD2MX18hEWRDDrYXzMcExBSN99YMUqoJRINugZLIML6uT2FVkjj+w6SL02
+         OD1tf4MshltKzPNOlXZlUnafaI2fAhgnjYvioUp4MNvZfge5IQcgcJUEoLE15J82GEPS
+         rgiF52L2QVRtfNAW8uKQoV0f1fa9Ry8TXpedkBVv29Tw7ICCf/lMaH18T7Zt63tlVzcy
+         a4QJX1VyxqvWaiG45Pdl8n8C9Z1AVh897KOx9gDzdYnYmOq2N0gjcvk3PYOXIqhISoO+
+         ICvQ==
+X-Gm-Message-State: AOAM5305f6pmAZj/+UOMtd8u3rKFz8O8fz1fdDSJw6uvjsglLLjzj+4P
+        dNVFOzb8jLQuQg6gFeIsgBB419Z9en5QxQ==
+X-Google-Smtp-Source: ABdhPJzRaYzxIWT6Njuo7TEioIKVYqse39MBGrqT95Bo/6cyfnRQy/MckbGxpsEGWEtR5/ganh6Drg==
+X-Received: by 2002:adf:8102:: with SMTP id 2mr3722370wrm.89.1629379086891;
+        Thu, 19 Aug 2021 06:18:06 -0700 (PDT)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id w9sm2480359wmc.19.2021.08.19.06.18.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Aug 2021 06:18:06 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     m-karicheri2@ti.com, ap420073@gmail.com, Arvid.Brodin@xdin.com,
+        xiyou.wangcong@gmail.com, george.mccollister@gmail.com,
+        marco.wenzel@a-eberle.de
+Cc:     netdev@vger.kernel.org
+Subject: HSR Addressing
+Date:   Thu, 19 Aug 2021 15:18:04 +0200
+Message-ID: <877dghmv3n.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YR4NTylFy2ejODV6@shredder>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Should we also document what the default is? Seems like
-> > ETHTOOL_MODULE_POWER_MODE_POLICY_HIGH_ON_UP is the generic network
-> > interface default, so maybe it should also be the default for SFPs?
-> 
-> I will add a note in Documentation/networking/ethtool-netlink.rst that
-> the default power mode policy is driver-dependent (can be queried) and
-> that it can either be 'high' or 'auto'.
+Hi netdev,
 
-Hi Ido
+TL;DR: I am having a hard time squaring the kernel's implementation of
+HSR with the spec (IEC 62439-3). Has anyone actually deployed this
+successfully? Especially in rings containing RedBoxes.
 
-That is kind of my question. Do you want the default driver defined,
-and varying between implementations, or do we want a clearly defined
-default?
+The spec (5.6) says that:
 
-The stack has a mixture of both. An interface is admin down by
-default, but it is anybody guess how pause will be configured?
+    For the purpose of Duplicate Discard, a frame shall be identified
+    by:
 
-By making it driver undefined, you cannot assume anything, and you
-require user space to always configure it.
+    - its source MAC address;
+    - its sequence number.
 
-I don't have too strong an opinion, i'm more interested in what others
-say, those who have to live with this.
+And yet, the kernel seems to match HSR nodes using a {MAC_A, MAC_B}
+tuple on ingress, and conversely sends each replicated HSR tagged frame
+with the underlying port's MAC address as the SA (instead of the HSR
+interface's ditto) on egress.
 
-	Andrew
+In a setup with only "DAN-H" nodes (~end-devices) the kernel can be made
+to mostly behave, by manually configuring the MAC address of port A and
+B to match that of the HSR interface.
+
+But if you connect a "RedBox" (~HSR-to-80's-Ethernet-bridge) to the
+ring, the kernel will associate a station behind that RedBox with a
+tuple containing {station's real MAC, RedBox's MAC}, leading to
+intermittent periods of (1) no traffic, (2) traffic, or (3) duplicated
+traffic. This issue seems to stem from the kernel interpreting the
+"RedBox TLV" in the supervision frame as the MAC used by the station to
+send the replicated frames in the opposite direction.
+
+It seems to me that...
+
+- On egress, both HSR tagged replicas should be identical - with the
+  exception of the PathId field.
+
+- Supervision frames could use either the port MAC or the HSR
+  interface's MAC in the Ethernet header, but the payload (TLV type 23)
+  should always specify the HSR interface's MAC.
+
+- Nodes should be identified by a single source address, no tuple
+  matching. (But we should still record the RedBox MAC for debug
+  purposes).
+
+... OTOH, it seems highly unlikely that the implementation is this
+broken and much more likely that I am mistaken. :)
+
+Hoping someone can shed some light on this. Thanks!
