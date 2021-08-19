@@ -2,148 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDB093F1343
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 08:21:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D36F73F1336
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 08:19:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231461AbhHSGV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 02:21:58 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:17046 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230416AbhHSGVx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 02:21:53 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Gqvgt6dLbzbfqw;
-        Thu, 19 Aug 2021 14:17:30 +0800 (CST)
-Received: from dggpeml500024.china.huawei.com (7.185.36.10) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 19 Aug 2021 14:21:16 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 19 Aug 2021 14:21:15 +0800
-From:   Yufeng Mo <moyufeng@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <shenjian15@huawei.com>,
-        <lipeng321@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linyunsheng@huawei.com>, <huangguangbin2@huawei.com>,
-        <chenhao288@hisilicon.com>, <salil.mehta@huawei.com>,
-        <moyufeng@huawei.com>, <linuxarm@huawei.com>,
-        <linuxarm@openeuler.org>, <dledford@redhat.com>, <jgg@ziepe.ca>,
-        <netanel@amazon.com>, <akiyano@amazon.com>,
-        <thomas.lendacky@amd.com>, <irusskikh@marvell.com>,
-        <michael.chan@broadcom.com>, <edwin.peer@broadcom.com>,
-        <rohitm@chelsio.com>, <jacob.e.keller@intel.com>,
-        <ioana.ciornei@nxp.com>, <vladimir.oltean@nxp.com>,
-        <sgoutham@marvell.com>, <sbhatta@marvell.com>, <saeedm@nvidia.com>,
-        <ecree.xilinx@gmail.com>, <grygorii.strashko@ti.com>,
-        <merez@codeaurora.org>, <kvalo@codeaurora.org>,
-        <linux-wireless@vger.kernel.org>
-Subject: [PATCH V2 net-next 4/4] net: hns3: add ethtool support for CQE/EQE mode configuration
-Date:   Thu, 19 Aug 2021 14:17:24 +0800
-Message-ID: <1629353844-49626-5-git-send-email-moyufeng@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1629353844-49626-1-git-send-email-moyufeng@huawei.com>
-References: <1629353844-49626-1-git-send-email-moyufeng@huawei.com>
+        id S230527AbhHSGT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 02:19:59 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:58168
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230303AbhHSGT4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 02:19:56 -0400
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPS id A130F411F1
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 06:19:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1629353959;
+        bh=qEtVTiJin9b0M1DkYv8DcnGnIW+RsIPC9ADG4dJnT4o=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=N3xhBs+49++GdAMSJ8xlhr5Xzp+Rr+aoUebyVTv2OTbwGRYj33wGlrWZxmlu0AIoj
+         8ffxay1E8CObjcUXT1mDCnStOo4ICq0Pq6ptz3n48oiVXkmYmPIawKC6gqOwkyeGjo
+         +9WDvScWkVndFdiZYT2I9FibWg7s6zXI5w3H81dEuz0ilkxj/tlq5Z80urnh2uV6mR
+         J4BOXDpMCH2c59ZbHRr290Htg2LhK8xGywB3V/2ubmRBYI7kLti26Ma03swvOu224k
+         ir8n7QaqWdgPvc68uzSI9mgH5Q0rC5IilVr/dnBqa7m24ufNO8g+PJYv2mbcZZH3RV
+         on2pgl6DQJ8+A==
+Received: by mail-ed1-f70.google.com with SMTP id f21-20020a056402005500b003bf4e6b5b96so502535edu.5
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 23:19:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qEtVTiJin9b0M1DkYv8DcnGnIW+RsIPC9ADG4dJnT4o=;
+        b=hliaVTSzPMZUSjQFYcrzfHiIdLx+GkBR/JvM4E1J/4pzpC+3WrfEMZIFAhF5v5reGc
+         iai0SiNwJgLEdy3bvZCCUFA0a5wwd/xzgSInTcwPW7U77Y58By3UOtFVf3x0eR1dadYq
+         pO7pvPjr/kp4YyZK0w+mJhG+bmpX33Td7omJGGH+8b+xpJ+dj/BRFd2z2Y+G0TlsuhcO
+         XLRQ24/0MPAHpH9uXeDp1rilclZOtEOzJhVN6xtihv5gTDKc0fXCnBbDF/aegHA+OW7T
+         55ceegU4YNgdgCMXTf6G41PWmWeqUGS5w/Mqu/YbP2uYJsOSihOGSBiQXSytSaRiE0Si
+         ztIA==
+X-Gm-Message-State: AOAM531JZRdVHUHcBGXrYIFh09CpGRTCpO/WfVpJypbfEDdhy5QqtTDq
+        SPuQzdJq2sTaNJ7ViulhN8Z+YMzafcqNpDUv8RWhH5lHUkhMw4Sep7b8sEGA7yjOVbLwEiAH089
+        tf84JIDnvYnNujQEqwE6g1xN2PK8Anh/47uFiGERF09qn3i1xOQ==
+X-Received: by 2002:a05:6402:b64:: with SMTP id cb4mr14429984edb.49.1629353959257;
+        Wed, 18 Aug 2021 23:19:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw6uek5wW3YjQA4vSSYLJiAy5IA1O6J/ytxuGPYxDhJKHP7TDdnXrrE69RuJ6b7u6FD00XjM9NEQEB7GNyNEXw=
+X-Received: by 2002:a05:6402:b64:: with SMTP id cb4mr14429958edb.49.1629353959017;
+ Wed, 18 Aug 2021 23:19:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500024.china.huawei.com (7.185.36.10)
-X-CFilter-Loop: Reflected
+References: <20210819054542.608745-1-kai.heng.feng@canonical.com> <b14bc147-d39c-6f55-cc0e-7b2de92d23b1@gmail.com>
+In-Reply-To: <b14bc147-d39c-6f55-cc0e-7b2de92d23b1@gmail.com>
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Thu, 19 Aug 2021 14:19:07 +0800
+Message-ID: <CAAd53p5Fu+x9M0fAta4k-8mja4Bxybhcg9veut4v7TVFZrD_aQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 0/3] r8169: Implement dynamic ASPM mechanism
+ for recent 1.0/2.5Gbps Realtek NICs
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     nic_swsd <nic_swsd@realtek.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support in ethtool for switching EQE/CQE mode.
+On Thu, Aug 19, 2021 at 2:08 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>
+> On 19.08.2021 07:45, Kai-Heng Feng wrote:
+> > The latest Realtek vendor driver and its Windows driver implements a
+> > feature called "dynamic ASPM" which can improve performance on it's
+> > ethernet NICs.
+> >
+> This statement would need a proof. Which performance improvement
+> did you measure? And why should performance improve?
 
-Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  6 +++---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  3 +++
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 18 +++++++++++++++++-
- 3 files changed, 23 insertions(+), 4 deletions(-)
+It means what patch 1/3 fixes...
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 1bd83d7..39d01ca 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -5055,9 +5055,9 @@ static void hns3_set_cq_period_mode(struct hns3_nic_priv *priv,
- 	}
- }
- 
--static void hns3_cq_period_mode_init(struct hns3_nic_priv *priv,
--				     enum dim_cq_period_mode tx_mode,
--				     enum dim_cq_period_mode rx_mode)
-+void hns3_cq_period_mode_init(struct hns3_nic_priv *priv,
-+			      enum dim_cq_period_mode tx_mode,
-+			      enum dim_cq_period_mode rx_mode)
- {
- 	hns3_set_cq_period_mode(priv, tx_mode, true);
- 	hns3_set_cq_period_mode(priv, rx_mode, false);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index ff45825..dfad906 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -718,4 +718,7 @@ void hns3_dbg_register_debugfs(const char *debugfs_dir_name);
- void hns3_dbg_unregister_debugfs(void);
- void hns3_shinfo_pack(struct skb_shared_info *shinfo, __u32 *size);
- u16 hns3_get_max_available_channels(struct hnae3_handle *h);
-+void hns3_cq_period_mode_init(struct hns3_nic_priv *priv,
-+			      enum dim_cq_period_mode tx_mode,
-+			      enum dim_cq_period_mode rx_mode);
- #endif
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 049be076..b8d9851 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -1203,6 +1203,11 @@ static int hns3_get_coalesce(struct net_device *netdev,
- 	cmd->tx_max_coalesced_frames = tx_coal->int_ql;
- 	cmd->rx_max_coalesced_frames = rx_coal->int_ql;
- 
-+	kernel_coal->use_cqe_mode_tx = (priv->tx_cqe_mode ==
-+					DIM_CQ_PERIOD_MODE_START_FROM_CQE);
-+	kernel_coal->use_cqe_mode_rx = (priv->rx_cqe_mode ==
-+					DIM_CQ_PERIOD_MODE_START_FROM_CQE);
-+
- 	return 0;
- }
- 
-@@ -1372,6 +1377,8 @@ static int hns3_set_coalesce(struct net_device *netdev,
- 	struct hns3_enet_coalesce *tx_coal = &priv->tx_coal;
- 	struct hns3_enet_coalesce *rx_coal = &priv->rx_coal;
- 	u16 queue_num = h->kinfo.num_tqps;
-+	enum dim_cq_period_mode tx_mode;
-+	enum dim_cq_period_mode rx_mode;
- 	int ret;
- 	int i;
- 
-@@ -1397,6 +1404,14 @@ static int hns3_set_coalesce(struct net_device *netdev,
- 	for (i = 0; i < queue_num; i++)
- 		hns3_set_coalesce_per_queue(netdev, cmd, i);
- 
-+	tx_mode = kernel_coal->use_cqe_mode_tx ?
-+		  DIM_CQ_PERIOD_MODE_START_FROM_CQE :
-+		  DIM_CQ_PERIOD_MODE_START_FROM_EQE;
-+	rx_mode = kernel_coal->use_cqe_mode_rx ?
-+		  DIM_CQ_PERIOD_MODE_START_FROM_CQE :
-+		  DIM_CQ_PERIOD_MODE_START_FROM_EQE;
-+	hns3_cq_period_mode_init(priv, tx_mode, rx_mode);
-+
- 	return 0;
- }
- 
-@@ -1702,7 +1717,8 @@ static int hns3_set_tunable(struct net_device *netdev,
- 				 ETHTOOL_COALESCE_USE_ADAPTIVE |	\
- 				 ETHTOOL_COALESCE_RX_USECS_HIGH |	\
- 				 ETHTOOL_COALESCE_TX_USECS_HIGH |	\
--				 ETHTOOL_COALESCE_MAX_FRAMES)
-+				 ETHTOOL_COALESCE_MAX_FRAMES |		\
-+				 ETHTOOL_COALESCE_USE_CQE)
- 
- static int hns3_get_ts_info(struct net_device *netdev,
- 			    struct ethtool_ts_info *info)
--- 
-2.8.1
+> On mainline ASPM is disabled, therefore I don't think we can see
+> a performance improvement. More the opposite in the scenario
+> I described: If traffic starts and there's a congestion in the chip,
+> then it may take a second until ASPM gets disabled. This may hit
+> performance.
 
+OK. We can know if the 1 sec interval is enough once it's deployed in the wild.
+
+>
+> > Heiner Kallweit pointed out the potential root cause can be that the
+> > buffer is to small for its ASPM exit latency.
+> >
+> > So bring the dynamic ASPM to r8169 so we can have both nice performance
+> > and powersaving at the same time.
+> >
+> > v2:
+> > https://lore.kernel.org/netdev/20210812155341.817031-1-kai.heng.feng@canonical.com/
+> >
+> > v1:
+> > https://lore.kernel.org/netdev/20210803152823.515849-1-kai.heng.feng@canonical.com/
+> >
+> > Kai-Heng Feng (3):
+> >   r8169: Implement dynamic ASPM mechanism
+> >   PCI/ASPM: Introduce a new helper to report ASPM support status
+> >   r8169: Enable ASPM for selected NICs
+> >
+> >  drivers/net/ethernet/realtek/r8169_main.c | 69 ++++++++++++++++++++---
+> >  drivers/pci/pcie/aspm.c                   | 11 ++++
+> >  include/linux/pci.h                       |  2 +
+> >  3 files changed, 74 insertions(+), 8 deletions(-)
+> >
+> This series is meant for your downstream kernel only, and posted here to
+> get feedback. Therefore it should be annotated as RFC, not that it gets
+> applied accidentally.
+
+Noted. Will annotate in next version.
+
+Kai-Heng
