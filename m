@@ -2,75 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE5383F2195
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 22:28:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52EFA3F21A5
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 22:29:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233289AbhHSU3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 16:29:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43066 "EHLO
+        id S235433AbhHSU3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 16:29:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235222AbhHSU3G (ORCPT
+        with ESMTP id S232343AbhHSU3G (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 16:29:06 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 798ACC0613CF
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210CEC061757
         for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 13:28:29 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id t42so4020656pfg.12
+Received: by mail-pg1-x532.google.com with SMTP id c17so6992981pgc.0
         for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 13:28:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=23NqigPoreurbrTRI3DzstnCrCz1u9qo8AUicrCllIQ=;
-        b=F/aXFSEFO3B0S1KjxtCFJ0bHN8UOoU5i9j7QIQ9H4wCLpPExP8i4eq1nUqdGC+vTAl
-         qpkYSn/zo5uF001tqNcSIy5OHDEEyNlsMGJFCO4L+E7F3tNOhKH/pjcDNRFmTt4sIiKy
-         R+62ZU9GtHuOUMyC4YOREpkj2XaWxyuMRkKPQ=
+        bh=LmJ99teUGdinNbfoKjiCNsrT2KdowhAH1C31uHkGRNA=;
+        b=Dj15yo21NCrkIvM7NC1lrgzKnXjpR6Ran1CaUSVIc7SDs+XJQu4+4SIyboeBH2p0+3
+         N8nGdctdwQHRXi+AuCSq4u8lcVPv+/dBJ6wSYJ3XdJGosYQ6TiqS0KWc1gyWYzhKmmYw
+         3lPlg0n+jRA26KK/nvtftN5I3bOswZf505Pqk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=23NqigPoreurbrTRI3DzstnCrCz1u9qo8AUicrCllIQ=;
-        b=t9UOv6O12u+gr5PJlgmJzpOrwROVUOdz6XbRn3s/YsOaKu2d6M15Ts6WwCE/XQlsd3
-         BPgUoLIrIFZZe1LT8nhfYicaCEQUo6tkB0KWDDtrSrFmQuCcLoyvduwTUHjfH/opuS2E
-         QEfKA1tTOQFgSPoyVW4Bm5A3JDNn24NbMcbvU6trJdrX96ZU4QVreCrH8BidUQRYUfzP
-         Lx+T68WDvCRU8+0jDgOv+6/ocQ8nhrfm5H2JEJenimIWwp47HMBRYQ8CUZtUjGKJFh84
-         sep2PGnbBkUbx6xyUcZI8NEvCftuDXxcJjgB1PgEhRhjYjtcT2W+C6iw5uWmwjEdC1Sq
-         ubjQ==
-X-Gm-Message-State: AOAM530r1nhi/YP9AIH/CrNMRPHJnmI/4D9TD+0H0iu3urhMjNmAjV79
-        tMGCDTVghSBakZMeChggWHRXxw==
-X-Google-Smtp-Source: ABdhPJz+KOpZhGJ5FXJOigQpPSgrYjpb97GBUvqFXR+qoBMUxfptkbVry7hNayEJ2a7UzVP906Pfwg==
-X-Received: by 2002:aa7:8b07:0:b029:3c7:c29f:9822 with SMTP id f7-20020aa78b070000b02903c7c29f9822mr15973588pfd.33.1629404909020;
-        Thu, 19 Aug 2021 13:28:29 -0700 (PDT)
+        bh=LmJ99teUGdinNbfoKjiCNsrT2KdowhAH1C31uHkGRNA=;
+        b=iLcYK0i9sNJKieqKFNzmE6YVhN+mSXvzM6upuc+7CsDl45g1sA4EPtnXxy+iPl7pe+
+         W+7+1qPhbehqHHwYKHckrVYfh/JDDLKqyWByAMub9NnCNzswnHQuUUJNtPAJyvkpauEl
+         eltjOEz82BY2l7nWc6s7S6Px/9F5mNBV+fttwMzHxgiJmRcYqYwM+yL38I8an1WhdO77
+         958CuVz3ub4/AXIrF8eNNBNBS5WSSDn0VyJ6HPgQ39czZb/dA3i7aWgJ+hY8J8QQ9dEK
+         VHkFx+tNJ6tBnFyYa01SZnqbWhkWaBIWEJrfS4swAZDJ0FRHVIN6/jAJFFPO1qNxNHNx
+         /GWw==
+X-Gm-Message-State: AOAM533Da7dxxzYtSDNTQMHjmpTeyVF09+IpFzzur9GKTJ5n1s266NE4
+        HF3hcHajVxIEw0jo4iLzyvN+FQ==
+X-Google-Smtp-Source: ABdhPJyDdCH7kBGcDAaf55svTOs4FrH/0oEtzY2oPb1XFGfb9dMJOJHOnZ1x6JELh6d01qnrUV728Q==
+X-Received: by 2002:a65:468c:: with SMTP id h12mr15916127pgr.423.1629404908650;
+        Thu, 19 Aug 2021 13:28:28 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id k25sm4370211pfa.213.2021.08.19.13.28.27
+        by smtp.gmail.com with ESMTPSA id x14sm4439825pfa.127.2021.08.19.13.28.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Thu, 19 Aug 2021 13:28:27 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     netdev@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
-        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
+        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
+        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH 1/3] ipw2x00: Avoid field-overflowing memcpy()
-Date:   Thu, 19 Aug 2021 13:28:23 -0700
-Message-Id: <20210819202825.3545692-2-keescook@chromium.org>
+        linux-wireless@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: [PATCH 2/3] net/mlx5e: Avoid field-overflowing memcpy()
+Date:   Thu, 19 Aug 2021 13:28:24 -0700
+Message-Id: <20210819202825.3545692-3-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210819202825.3545692-1-keescook@chromium.org>
 References: <20210819202825.3545692-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4716; h=from:subject; bh=3b5t4fLR/wEetR2E8Hwk2j3VzU8yz2BgAEsleqg3XAU=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhHr7o3RE3VXLm1V4wHPPpY4uHLTNlH2i9cpT7/zcX 6bMNqjOJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYR6+6AAKCRCJcvTf3G3AJumUD/ 0f1bg3FbVuqAiMBaS9IMEbmlwImkHFdXvVqAGU0c0JnDVZSLl2o2jU4irNcZfOHOGiyYpNUxA8mBNP Y0BXEwPXwzfEODoS/bKlfvvDB4v5d0nQoewu4eFdhGrxNUqnaYxIf2ZgkWFpbxJQnWNR9PSXhdRv/7 8Xe1K+TlHO/3aUYVYuWA/xyvHtdSpptiyvVf3SzuCCmB1Nxzl1mT2w8+AUzjXJ33G+FItKamDkI9iU fpmEm+7I35jZniX3qbMeW+pB/I1M/xgCAPZSeRkDk+x+5wL+ENoCG8oWONDewGhXmjydCkRSIcCinC Iw5eONYFN8dyEG0CljmQvmUrLMIaIowHZwfIbrnf2We+VJEMYCDc6DwIe6OB/fNutrXM0C7eF9il4z PrdDwnVMQawJ9pmSFF8T8fSvCFQ5IYh7/qiP+bYkKv6D6iBH8sep+aWaGHsPbXJCBTV4MSCj8Htluh T2+HVUM+wthFo1IgE64PMPX1dOnTXs6C/w+96vYw3d8flThTGS4zgwyEIXUBWVuqFeyl6zwyNeC2s8 91oO/WcGpuQ7nfQe/lhNmXygtElyjfy8OrkfQqJzAHjJOr7/h9InrqLU8Q93mnIFEx2mDaWcrJUMYR sQ8w+xtOk+PnA9bV07nr3lpdK4YQX8rffoX2nSX4l2Yc4i2FTP3Z66PxBt+Q==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5945; h=from:subject; bh=aAhXgOvjd8fFl6HHAOH2dNe1RpxfNiJeVAevXZn1G1s=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhHr7os55xLZsomlfyqNbHN963vbWsu6lq/7sGdDVv bsZ6eIyJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYR6+6AAKCRCJcvTf3G3AJt4zD/ sHmmUuEJhefcu1/BIWauiIG3HeHJeUZKq/wb8kvLmppRsA5tE5R8SCtTbNOLGdb5P1FZoq/2nSAtlB Jg3AjDzmiNAVMiF+TmElADQXKuoGQE4qy+GV4RXJEJZ8U03o4eHw0KWWg4elHpCA4WPUveev5SI5gW WrW9hq4yscbuASX4gRfrp8EuwinBveG0xhjB1TZh7qb4u8TAW5OOIovOFIzxYOz6A9Zb98Gx1Vu7ZN 3/BpRrAPSKgKoBB6yMWoLMCugPVDG0Cn4PQRUfW+KwNZDUsLpZube9hmCXe0Ujs/f0H97jfVvaX1bz 7hWcaE5rWoSBj63Uqom5NIHhwPjvg54h4KPCNDZ9KLmG0ToxwmqDhk7F798BIs7estEA2YpZTEsyOR +9tYFwDtPOb7EOG9e5Y8x/BswkIyutAAGkGMd9c9LUiHu5zV2nbF/yiPGECcAhVL8uldcIBzDwJPE9 goDkibmTjyrsaa4i4Vept+fpSjR3D7fg8nMtlneYdzSN9ZL+L8RofiQtRy+8aj/1/dJ/oFim9ddoBz e17OLMyoVP9lixwQZxCqQN4wH+9Cu3H2zsTeY7pVhBnqYpoXOB2WcWa2CoK8TV0dj8DEoTOPX1NwFi sfWnuW/PQPEQP7GSt52LOkvFLNkl5tPpWq5cqouM4sWlz9Q0n5dzRvYdx39w==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -81,133 +81,136 @@ In preparation for FORTIFY_SOURCE performing compile-time and run-time
 field bounds checking for memcpy(), memmove(), and memset(), avoid
 intentionally writing across neighboring fields.
 
-libipw_read_qos_param_element() copies a struct libipw_info_element
-into a struct libipw_qos_information_element, but is actually wanting to
-copy into the larger struct libipw_qos_parameter_info (the contents of
-ac_params_record[] is later examined). Refactor the routine to perform
-centralized checks, and copy the entire contents directly (since the id
-and len members match the elementID and length members):
+Use flexible arrays instead of zero-element arrays (which look like they
+are always overflowing) and split the cross-field memcpy() into two halves
+that can be appropriately bounds-checked by the compiler.
 
-struct libipw_info_element {
-        u8 id;
-        u8 len;
-        u8 data[];
-} __packed;
+We were doing:
 
-struct libipw_qos_information_element {
-        u8 elementID;
-        u8 length;
-        u8 qui[QOS_OUI_LEN];
-        u8 qui_type;
-        u8 qui_subtype;
-        u8 version;
-        u8 ac_info;
-} __packed;
+	#define ETH_HLEN  14
+	#define VLAN_HLEN  4
+	...
+	#define MLX5E_XDP_MIN_INLINE (ETH_HLEN + VLAN_HLEN)
+	...
+        struct mlx5e_tx_wqe      *wqe  = mlx5_wq_cyc_get_wqe(wq, pi);
+	...
+        struct mlx5_wqe_eth_seg  *eseg = &wqe->eth;
+        struct mlx5_wqe_data_seg *dseg = wqe->data;
+	...
+	memcpy(eseg->inline_hdr.start, xdptxd->data, MLX5E_XDP_MIN_INLINE);
 
-struct libipw_qos_parameter_info {
-        struct libipw_qos_information_element info_element;
-        u8 reserved;
-        struct libipw_qos_ac_parameter ac_params_record[QOS_QUEUE_NUM];
-} __packed;
+target is wqe->eth.inline_hdr.start (which the compiler sees as being
+2 bytes in size), but copying 18, intending to write across start
+(really vlan_tci, 2 bytes). The remaining 16 bytes get written into
+wqe->data[0], covering byte_count (4 bytes), lkey (4 bytes), and addr
+(8 bytes).
 
-Cc: Stanislav Yakovlev <stas.yakovlev@gmail.com>
-Cc: Kalle Valo <kvalo@codeaurora.org>
+struct mlx5e_tx_wqe {
+        struct mlx5_wqe_ctrl_seg   ctrl;                 /*     0    16 */
+        struct mlx5_wqe_eth_seg    eth;                  /*    16    16 */
+        struct mlx5_wqe_data_seg   data[];               /*    32     0 */
+
+        /* size: 32, cachelines: 1, members: 3 */
+        /* last cacheline: 32 bytes */
+};
+
+struct mlx5_wqe_eth_seg {
+        u8                         swp_outer_l4_offset;  /*     0     1 */
+        u8                         swp_outer_l3_offset;  /*     1     1 */
+        u8                         swp_inner_l4_offset;  /*     2     1 */
+        u8                         swp_inner_l3_offset;  /*     3     1 */
+        u8                         cs_flags;             /*     4     1 */
+        u8                         swp_flags;            /*     5     1 */
+        __be16                     mss;                  /*     6     2 */
+        __be32                     flow_table_metadata;  /*     8     4 */
+        union {
+                struct {
+                        __be16     sz;                   /*    12     2 */
+                        u8         start[2];             /*    14     2 */
+                } inline_hdr;                            /*    12     4 */
+                struct {
+                        __be16     type;                 /*    12     2 */
+                        __be16     vlan_tci;             /*    14     2 */
+                } insert;                                /*    12     4 */
+                __be32             trailer;              /*    12     4 */
+        };                                               /*    12     4 */
+
+        /* size: 16, cachelines: 1, members: 9 */
+        /* last cacheline: 16 bytes */
+};
+
+struct mlx5_wqe_data_seg {
+        __be32                     byte_count;           /*     0     4 */
+        __be32                     lkey;                 /*     4     4 */
+        __be64                     addr;                 /*     8     8 */
+
+        /* size: 16, cachelines: 1, members: 3 */
+        /* last cacheline: 16 bytes */
+};
+
+So, split the memcpy() so the compiler can reason about the buffer
+sizes.
+
+"pahole" shows no size nor member offset changes to struct mlx5e_tx_wqe
+nor struct mlx5e_umr_wqe. "objdump -d" shows no meaningful object
+code changes (i.e. only source line number induced differences and
+optimizations).
+
+Cc: Saeed Mahameed <saeedm@nvidia.com>
+Cc: Leon Romanovsky <leon@kernel.org>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: linux-wireless@vger.kernel.org
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Jesper Dangaard Brouer <hawk@kernel.org>
+Cc: John Fastabend <john.fastabend@gmail.com>
 Cc: netdev@vger.kernel.org
+Cc: linux-rdma@vger.kernel.org
+Cc: bpf@vger.kernel.org
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- .../net/wireless/intel/ipw2x00/libipw_rx.c    | 56 ++++++-------------
- 1 file changed, 17 insertions(+), 39 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en.h     | 4 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c | 4 +++-
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/ipw2x00/libipw_rx.c b/drivers/net/wireless/intel/ipw2x00/libipw_rx.c
-index 5a2a723e480b..7a684b76f39b 100644
---- a/drivers/net/wireless/intel/ipw2x00/libipw_rx.c
-+++ b/drivers/net/wireless/intel/ipw2x00/libipw_rx.c
-@@ -927,7 +927,8 @@ static u8 qos_oui[QOS_OUI_LEN] = { 0x00, 0x50, 0xF2 };
- static int libipw_verify_qos_info(struct libipw_qos_information_element
- 				     *info_element, int sub_type)
- {
--
-+	if (info_element->elementID != QOS_ELEMENT_ID)
-+		return -1;
- 	if (info_element->qui_subtype != sub_type)
- 		return -1;
- 	if (memcmp(info_element->qui, qos_oui, QOS_OUI_LEN))
-@@ -943,57 +944,34 @@ static int libipw_verify_qos_info(struct libipw_qos_information_element
- /*
-  * Parse a QoS parameter element
-  */
--static int libipw_read_qos_param_element(struct libipw_qos_parameter_info
--					    *element_param, struct libipw_info_element
--					    *info_element)
-+static int libipw_read_qos_param_element(
-+			struct libipw_qos_parameter_info *element_param,
-+			struct libipw_info_element *info_element)
- {
--	int ret = 0;
--	u16 size = sizeof(struct libipw_qos_parameter_info) - 2;
-+	size_t size = sizeof(*element_param);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+index 4f6897c1ea8d..8997476c20cc 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+@@ -200,7 +200,7 @@ static inline int mlx5e_get_max_num_channels(struct mlx5_core_dev *mdev)
+ struct mlx5e_tx_wqe {
+ 	struct mlx5_wqe_ctrl_seg ctrl;
+ 	struct mlx5_wqe_eth_seg  eth;
+-	struct mlx5_wqe_data_seg data[0];
++	struct mlx5_wqe_data_seg data[];
+ };
  
--	if ((info_element == NULL) || (element_param == NULL))
-+	if (!element_param || !info_element || info_element->len != size - 2)
- 		return -1;
+ struct mlx5e_rx_wqe_ll {
+@@ -216,7 +216,7 @@ struct mlx5e_umr_wqe {
+ 	struct mlx5_wqe_ctrl_seg       ctrl;
+ 	struct mlx5_wqe_umr_ctrl_seg   uctrl;
+ 	struct mlx5_mkey_seg           mkc;
+-	struct mlx5_mtt                inline_mtts[0];
++	struct mlx5_mtt                inline_mtts[];
+ };
  
--	if (info_element->id == QOS_ELEMENT_ID && info_element->len == size) {
--		memcpy(element_param->info_element.qui, info_element->data,
--		       info_element->len);
--		element_param->info_element.elementID = info_element->id;
--		element_param->info_element.length = info_element->len;
--	} else
--		ret = -1;
--	if (ret == 0)
--		ret = libipw_verify_qos_info(&element_param->info_element,
--						QOS_OUI_PARAM_SUB_TYPE);
--	return ret;
-+	memcpy(element_param, info_element, size);
-+	return libipw_verify_qos_info(&element_param->info_element,
-+				      QOS_OUI_PARAM_SUB_TYPE);
- }
+ extern const char mlx5e_self_tests[][ETH_GSTRING_LEN];
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+index 2f0df5cc1a2d..efae2444c26f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+@@ -341,8 +341,10 @@ mlx5e_xmit_xdp_frame(struct mlx5e_xdpsq *sq, struct mlx5e_xmit_data *xdptxd,
  
- /*
-  * Parse a QoS information element
-  */
--static int libipw_read_qos_info_element(struct
--					   libipw_qos_information_element
--					   *element_info, struct libipw_info_element
--					   *info_element)
-+static int libipw_read_qos_info_element(
-+			struct libipw_qos_information_element *element_info,
-+			struct libipw_info_element *info_element)
- {
--	int ret = 0;
--	u16 size = sizeof(struct libipw_qos_information_element) - 2;
-+	size_t size = sizeof(struct libipw_qos_information_element) - 2;
- 
--	if (element_info == NULL)
-+	if (!element_info || !info_element || info_element->len != size - 2)
- 		return -1;
--	if (info_element == NULL)
--		return -1;
--
--	if ((info_element->id == QOS_ELEMENT_ID) && (info_element->len == size)) {
--		memcpy(element_info->qui, info_element->data,
--		       info_element->len);
--		element_info->elementID = info_element->id;
--		element_info->length = info_element->len;
--	} else
--		ret = -1;
- 
--	if (ret == 0)
--		ret = libipw_verify_qos_info(element_info,
--						QOS_OUI_INFO_SUB_TYPE);
--	return ret;
-+	memcpy(element_info, info_element, size);
-+	return libipw_verify_qos_info(element_info, QOS_OUI_INFO_SUB_TYPE);
- }
- 
- /*
+ 	/* copy the inline part if required */
+ 	if (sq->min_inline_mode != MLX5_INLINE_MODE_NONE) {
+-		memcpy(eseg->inline_hdr.start, xdptxd->data, MLX5E_XDP_MIN_INLINE);
++		memcpy(eseg->inline_hdr.start, xdptxd->data, sizeof(eseg->inline_hdr.start));
+ 		eseg->inline_hdr.sz = cpu_to_be16(MLX5E_XDP_MIN_INLINE);
++		memcpy(dseg, xdptxd->data + sizeof(eseg->inline_hdr.start),
++		       MLX5E_XDP_MIN_INLINE - sizeof(eseg->inline_hdr.start));
+ 		dma_len  -= MLX5E_XDP_MIN_INLINE;
+ 		dma_addr += MLX5E_XDP_MIN_INLINE;
+ 		dseg++;
 -- 
 2.30.2
 
