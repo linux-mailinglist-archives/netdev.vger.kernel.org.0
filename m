@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF70E3F1AA3
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 15:39:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72DEE3F1AA7
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 15:40:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240254AbhHSNkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 09:40:11 -0400
+        id S240228AbhHSNkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 09:40:17 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240200AbhHSNkC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 09:40:02 -0400
+        with ESMTP id S240231AbhHSNkG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 09:40:06 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FD0CC061796
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 06:39:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20738C06129E
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 06:39:28 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1mGiGS-0004PE-Qt
-        for netdev@vger.kernel.org; Thu, 19 Aug 2021 15:39:24 +0200
+        id 1mGiGU-0004QX-EI
+        for netdev@vger.kernel.org; Thu, 19 Aug 2021 15:39:26 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 875E366A810
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 13:39:22 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 8509166A81B
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 13:39:23 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 1490766A7FC;
-        Thu, 19 Aug 2021 13:39:20 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id B977166A805;
+        Thu, 19 Aug 2021 13:39:21 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id addc6840;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 99ad2b50;
         Thu, 19 Aug 2021 13:39:15 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 07/22] can: etas_es58x: clean-up documentation of struct es58x_fd_tx_conf_msg
-Date:   Thu, 19 Aug 2021 15:38:58 +0200
-Message-Id: <20210819133913.657715-8-mkl@pengutronix.de>
+        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Thomas Kopp <thomas.kopp@microchip.com>
+Subject: [PATCH net-next 08/22] can: mcp251xfd: mark some instances of struct mcp251xfd_priv as const
+Date:   Thu, 19 Aug 2021 15:38:59 +0200
+Message-Id: <20210819133913.657715-9-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210819133913.657715-1-mkl@pengutronix.de>
 References: <20210819133913.657715-1-mkl@pengutronix.de>
@@ -54,58 +54,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+With the patch 07ff4aed015c ("time/timecounter: Mark 1st argument of
+timecounter_cyc2time() as const") some instances of the struct
+mcp251xfd_priv can be marked as const. This patch marks these as
+const.
 
-The documentation of struct es58x_fd_tx_conf_msg explains in details
-the different TDC parameters. However, those description are redundant
-with the documentation of struct can_tdc.
-
-Remove most of the description.
-
-Also, fixes a typo in the reference to the datasheet (E701 -> E70).
-
-Link: https://lore.kernel.org/r/20210815033248.98111-8-mailhol.vincent@wanadoo.fr
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Link: https://lore.kernel.org/r/20210813091027.159379-1-mkl@pengutronix.de
+Cc: Manivannan Sadhasivam <mani@kernel.org>
+Cc: Thomas Kopp <thomas.kopp@microchip.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/usb/etas_es58x/es58x_fd.h | 23 +++++++----------------
- 1 file changed, 7 insertions(+), 16 deletions(-)
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c      | 2 +-
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-timestamp.c | 4 ++--
+ drivers/net/can/spi/mcp251xfd/mcp251xfd.h           | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/can/usb/etas_es58x/es58x_fd.h b/drivers/net/can/usb/etas_es58x/es58x_fd.h
-index ee18a87e40c0..a191891b8777 100644
---- a/drivers/net/can/usb/etas_es58x/es58x_fd.h
-+++ b/drivers/net/can/usb/etas_es58x/es58x_fd.h
-@@ -96,23 +96,14 @@ struct es58x_fd_bittiming {
-  * @ctrlmode: type enum es58x_fd_ctrlmode.
-  * @canfd_enabled: boolean (0: Classical CAN, 1: CAN and/or CANFD).
-  * @data_bittiming: Bittiming for flexible data-rate transmission.
-- * @tdc_enabled: Transmitter Delay Compensation switch (0: disabled,
-- *	1: enabled). On very high bitrates, the delay between when the
-- *	bit is sent and received on the CANTX and CANRX pins of the
-- *	transceiver start to be significant enough for errors to occur
-- *	and thus need to be compensated.
-- * @tdco: Transmitter Delay Compensation Offset. Offset value, in time
-- *	quanta, defining the delay between the start of the bit
-- *	reception on the CANRX pin of the transceiver and the SSP
-- *	(Secondary Sample Point). Valid values: 0 to 127.
-- * @tdcf: Transmitter Delay Compensation Filter window. Defines the
-- *	minimum value for the SSP position, in time quanta. The
-- *	feature is enabled when TDCF is configured to a value greater
-- *	than TDCO. Valid values: 0 to 127.
-+ * @tdc_enabled: Transmitter Delay Compensation switch (0: TDC is
-+ *	disabled, 1: TDC is enabled).
-+ * @tdco: Transmitter Delay Compensation Offset.
-+ * @tdcf: Transmitter Delay Compensation Filter window.
-  *
-- * Please refer to the microcontroller datasheet: "SAM
-- * E701/S70/V70/V71 Family" section 49 "Controller Area Network
-- * (MCAN)" for additional information.
-+ * Please refer to the microcontroller datasheet: "SAM E70/S70/V70/V71
-+ * Family" section 49 "Controller Area Network (MCAN)" for additional
-+ * information.
-  */
- struct es58x_fd_tx_conf_msg {
- 	struct es58x_fd_bittiming nominal_bittiming;
+diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
+index 6c369a399c45..673861ab665a 100644
+--- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
++++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
+@@ -1456,7 +1456,7 @@ mcp251xfd_rx_ring_update(const struct mcp251xfd_priv *priv,
+ }
+ 
+ static void
+-mcp251xfd_hw_rx_obj_to_skb(struct mcp251xfd_priv *priv,
++mcp251xfd_hw_rx_obj_to_skb(const struct mcp251xfd_priv *priv,
+ 			   const struct mcp251xfd_hw_rx_obj_canfd *hw_rx_obj,
+ 			   struct sk_buff *skb)
+ {
+diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-timestamp.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-timestamp.c
+index ed3169274d24..712e09186987 100644
+--- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-timestamp.c
++++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-timestamp.c
+@@ -13,7 +13,7 @@
+ 
+ static u64 mcp251xfd_timestamp_read(const struct cyclecounter *cc)
+ {
+-	struct mcp251xfd_priv *priv;
++	const struct mcp251xfd_priv *priv;
+ 	u32 timestamp = 0;
+ 	int err;
+ 
+@@ -39,7 +39,7 @@ static void mcp251xfd_timestamp_work(struct work_struct *work)
+ 			      MCP251XFD_TIMESTAMP_WORK_DELAY_SEC * HZ);
+ }
+ 
+-void mcp251xfd_skb_set_timestamp(struct mcp251xfd_priv *priv,
++void mcp251xfd_skb_set_timestamp(const struct mcp251xfd_priv *priv,
+ 				 struct sk_buff *skb, u32 timestamp)
+ {
+ 	struct skb_shared_hwtstamps *hwtstamps = skb_hwtstamps(skb);
+diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd.h b/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
+index 1002f3902ad2..0f322dabaf65 100644
+--- a/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
++++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
+@@ -853,7 +853,7 @@ int mcp251xfd_regmap_init(struct mcp251xfd_priv *priv);
+ u16 mcp251xfd_crc16_compute2(const void *cmd, size_t cmd_size,
+ 			     const void *data, size_t data_size);
+ u16 mcp251xfd_crc16_compute(const void *data, size_t data_size);
+-void mcp251xfd_skb_set_timestamp(struct mcp251xfd_priv *priv,
++void mcp251xfd_skb_set_timestamp(const struct mcp251xfd_priv *priv,
+ 				 struct sk_buff *skb, u32 timestamp);
+ void mcp251xfd_timestamp_init(struct mcp251xfd_priv *priv);
+ void mcp251xfd_timestamp_stop(struct mcp251xfd_priv *priv);
 -- 
 2.32.0
 
