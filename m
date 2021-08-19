@@ -2,131 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 747203F1554
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 10:41:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F82C3F1577
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 10:44:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237467AbhHSImF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 04:42:05 -0400
-Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:43799 "EHLO
-        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237341AbhHSIl7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 04:41:59 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R921e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0Uk.dNXL_1629362480;
-Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0Uk.dNXL_1629362480)
+        id S237789AbhHSIpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 04:45:13 -0400
+Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:42199 "EHLO
+        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237834AbhHSIo5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 04:44:57 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0Uk-bAwd_1629362658;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0Uk-bAwd_1629362658)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 19 Aug 2021 16:41:21 +0800
-Date:   Thu, 19 Aug 2021 16:41:20 +0800
-From:   "dust.li" <dust.li@linux.alibaba.com>
-To:     kernel test robot <lkp@intel.com>, Julian Anastasov <ja@ssi.bg>,
-        Simon Horman <horms@verge.net.au>,
+          Thu, 19 Aug 2021 16:44:18 +0800
+From:   Dust Li <dust.li@linux.alibaba.com>
+To:     Julian Anastasov <ja@ssi.bg>, Simon Horman <horms@verge.net.au>,
         Wensong Zhang <wensong@linux-vs.org>
-Cc:     kbuild-all@lists.01.org, lvs-devel@vger.kernel.org,
-        netdev@vger.kernel.org, yunhong-cgl jiang <xintian1976@gmail.com>
-Subject: Re: [PATCH net-next v2] net: ipvs: add sysctl_run_estimation to
- support disable estimation
-Message-ID: <20210819084120.GB5594@linux.alibaba.com>
-Reply-To: dust.li@linux.alibaba.com
-References: <20210819045137.35447-1-dust.li@linux.alibaba.com>
- <202108191644.QJhpxuWp-lkp@intel.com>
+Cc:     lvs-devel@vger.kernel.org, netdev@vger.kernel.org,
+        yunhong-cgl jiang <xintian1976@gmail.com>
+Subject: [PATCH net-next v3] net: ipvs: add sysctl_run_estimation to support disable estimation
+Date:   Thu, 19 Aug 2021 16:44:18 +0800
+Message-Id: <20210819084418.27004-1-dust.li@linux.alibaba.com>
+X-Mailer: git-send-email 2.19.1.3.ge56e4f7
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202108191644.QJhpxuWp-lkp@intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 19, 2021 at 04:23:32PM +0800, kernel test robot wrote:
->Hi Dust,
->
->Thank you for the patch! Yet something to improve:
->
->[auto build test ERROR on net-next/master]
+estimation_timer will iterater the est_list to do estimation
+for each ipvs stats. When there are lots of services, the
+list can be very large.
+We observiced estimation_timer() run for more then 200ms on
+a machine with 104 CPU and 50K services.
 
-Sorry, my fault !
+yunhong-cgl jiang report the same phenomenon before:
+https://www.spinics.net/lists/lvs-devel/msg05426.html
 
-The sysctl_run_estimation() was put in the wrong place when
-CONFIG_SYSCTL not defined.
+In some cases(for example a large K8S cluster with many ipvs services),
+ipvs estimation may not be needed. So adding a sysctl blob to allow
+users to disable this completely.
 
-I will send a v3.
+Default is: 1 (enable)
 
->
->url:    https://github.com/0day-ci/linux/commits/Dust-Li/net-ipvs-add-sysctl_run_estimation-to-support-disable-estimation/20210819-125335
->base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 19b8ece42c56aaa122f7e91eb391bb3dd7e193cd
->config: ia64-randconfig-r024-20210818 (attached as .config)
->compiler: ia64-linux-gcc (GCC) 11.2.0
->reproduce (this is a W=1 build):
->        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->        chmod +x ~/bin/make.cross
->        # https://github.com/0day-ci/linux/commit/8f0f8c6b2f04fe397ca8df17353590cdd2f5a414
->        git remote add linux-review https://github.com/0day-ci/linux
->        git fetch --no-tags linux-review Dust-Li/net-ipvs-add-sysctl_run_estimation-to-support-disable-estimation/20210819-125335
->        git checkout 8f0f8c6b2f04fe397ca8df17353590cdd2f5a414
->        # save the attached .config to linux build tree
->        mkdir build_dir
->        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash net/netfilter/ipvs/
->
->If you fix the issue, kindly add following tag as appropriate
->Reported-by: kernel test robot <lkp@intel.com>
->
->All errors (new ones prefixed by >>):
->
->   In file included from arch/ia64/include/asm/pgtable.h:153,
->                    from include/linux/pgtable.h:6,
->                    from arch/ia64/include/asm/uaccess.h:40,
->                    from include/linux/uaccess.h:11,
->                    from include/net/checksum.h:21,
->                    from include/net/ip_vs.h:23,
->                    from net/netfilter/ipvs/ip_vs_lc.c:18:
->   arch/ia64/include/asm/mmu_context.h: In function 'reload_context':
->   arch/ia64/include/asm/mmu_context.h:127:48: warning: variable 'old_rr4' set but not used [-Wunused-but-set-variable]
->     127 |         unsigned long rr0, rr1, rr2, rr3, rr4, old_rr4;
->         |                                                ^~~~~~~
->   In file included from net/netfilter/ipvs/ip_vs_lc.c:18:
->   include/net/ip_vs.h: At top level:
->>> include/net/ip_vs.h:1660:19: error: redefinition of 'sysctl_run_estimation'
->    1660 | static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
->         |                   ^~~~~~~~~~~~~~~~~~~~~
->   include/net/ip_vs.h:1075:19: note: previous definition of 'sysctl_run_estimation' with type 'int(struct netns_ipvs *)'
->    1075 | static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
->         |                   ^~~~~~~~~~~~~~~~~~~~~
->--
->   In file included from arch/ia64/include/asm/pgtable.h:153,
->                    from include/linux/pgtable.h:6,
->                    from include/linux/mm.h:33,
->                    from include/linux/bvec.h:14,
->                    from include/linux/skbuff.h:17,
->                    from include/linux/ip.h:16,
->                    from net/netfilter/ipvs/ip_vs_core.c:27:
->   arch/ia64/include/asm/mmu_context.h: In function 'reload_context':
->   arch/ia64/include/asm/mmu_context.h:127:48: warning: variable 'old_rr4' set but not used [-Wunused-but-set-variable]
->     127 |         unsigned long rr0, rr1, rr2, rr3, rr4, old_rr4;
->         |                                                ^~~~~~~
->   In file included from net/netfilter/ipvs/ip_vs_core.c:52:
->   include/net/ip_vs.h: At top level:
->>> include/net/ip_vs.h:1660:19: error: redefinition of 'sysctl_run_estimation'
->    1660 | static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
->         |                   ^~~~~~~~~~~~~~~~~~~~~
->   include/net/ip_vs.h:1075:19: note: previous definition of 'sysctl_run_estimation' with type 'int(struct netns_ipvs *)'
->    1075 | static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
->         |                   ^~~~~~~~~~~~~~~~~~~~~
->   net/netfilter/ipvs/ip_vs_core.c: In function 'ip_vs_in_icmp':
->   net/netfilter/ipvs/ip_vs_core.c:1643:15: warning: variable 'outer_proto' set but not used [-Wunused-but-set-variable]
->    1643 |         char *outer_proto = "IPIP";
->         |               ^~~~~~~~~~~
->
->
->vim +/sysctl_run_estimation +1660 include/net/ip_vs.h
->
->  1659	
->> 1660	static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
->  1661	{
->  1662		return 1;
->  1663	}
->  1664	
->
->---
->0-DAY CI Kernel Test Service, Intel Corporation
->https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Cc: yunhong-cgl jiang <xintian1976@gmail.com>
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+---
+v2: Use common sysctl facilities
+v3: Fix sysctl_run_estimation() redefine when CONFIG_SYSCTL not enabled
+---
+ Documentation/networking/ipvs-sysctl.rst | 17 +++++++++++++++++
+ include/net/ip_vs.h                      | 12 ++++++++++++
+ net/netfilter/ipvs/ip_vs_ctl.c           |  8 ++++++++
+ net/netfilter/ipvs/ip_vs_est.c           |  5 +++++
+ 4 files changed, 42 insertions(+)
 
+diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
+index 2afccc63856e..e20f7a27fc85 100644
+--- a/Documentation/networking/ipvs-sysctl.rst
++++ b/Documentation/networking/ipvs-sysctl.rst
+@@ -300,3 +300,20 @@ sync_version - INTEGER
+ 
+ 	Kernels with this sync_version entry are able to receive messages
+ 	of both version 1 and version 2 of the synchronisation protocol.
++
++run_estimation - BOOLEAN
++	0 - disabled
++	not 0 - enabled (default)
++
++	If disabled, the estimation will be stop, and you can't see
++	any update on speed estimation data.
++
++	For example
++	'Conns/s   Pkts/s   Pkts/s          Bytes/s          Bytes/s'
++	those data in /proc/net/ip_vs_stats will always be zero.
++	Note, this only affect the speed estimation, the total data
++	will still be updated.
++
++	You can always re-enable estimation by setting this value to 1.
++	But be carefull, the first estimation after re-enable is not
++	accurate.
+diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+index 7cb5a1aace40..269f8808f6db 100644
+--- a/include/net/ip_vs.h
++++ b/include/net/ip_vs.h
+@@ -931,6 +931,7 @@ struct netns_ipvs {
+ 	int			sysctl_conn_reuse_mode;
+ 	int			sysctl_schedule_icmp;
+ 	int			sysctl_ignore_tunneled;
++	int 			sysctl_run_estimation;
+ 
+ 	/* ip_vs_lblc */
+ 	int			sysctl_lblc_expiration;
+@@ -1071,6 +1072,11 @@ static inline int sysctl_cache_bypass(struct netns_ipvs *ipvs)
+ 	return ipvs->sysctl_cache_bypass;
+ }
+ 
++static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
++{
++	return ipvs->sysctl_run_estimation;
++}
++
+ #else
+ 
+ static inline int sysctl_sync_threshold(struct netns_ipvs *ipvs)
+@@ -1163,6 +1169,11 @@ static inline int sysctl_cache_bypass(struct netns_ipvs *ipvs)
+ 	return 0;
+ }
+ 
++static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
++{
++	return 1;
++}
++
+ #endif
+ 
+ /* IPVS core functions
+@@ -1650,6 +1661,7 @@ static inline int ip_vs_confirm_conntrack(struct sk_buff *skb)
+ static inline void ip_vs_conn_drop_conntrack(struct ip_vs_conn *cp)
+ {
+ }
++
+ #endif /* CONFIG_IP_VS_NFCT */
+ 
+ /* Using old conntrack that can not be redirected to another real server? */
+diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+index c25097092a06..cbea5a68afb5 100644
+--- a/net/netfilter/ipvs/ip_vs_ctl.c
++++ b/net/netfilter/ipvs/ip_vs_ctl.c
+@@ -2017,6 +2017,12 @@ static struct ctl_table vs_vars[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec,
+ 	},
++	{
++		.procname	= "run_estimation",
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++	},
+ #ifdef CONFIG_IP_VS_DEBUG
+ 	{
+ 		.procname	= "debug_level",
+@@ -4090,6 +4096,8 @@ static int __net_init ip_vs_control_net_init_sysctl(struct netns_ipvs *ipvs)
+ 	tbl[idx++].data = &ipvs->sysctl_conn_reuse_mode;
+ 	tbl[idx++].data = &ipvs->sysctl_schedule_icmp;
+ 	tbl[idx++].data = &ipvs->sysctl_ignore_tunneled;
++	ipvs->sysctl_run_estimation = 1;
++	tbl[idx++].data = &ipvs->sysctl_run_estimation;
+ 
+ 	ipvs->sysctl_hdr = register_net_sysctl(net, "net/ipv4/vs", tbl);
+ 	if (ipvs->sysctl_hdr == NULL) {
+diff --git a/net/netfilter/ipvs/ip_vs_est.c b/net/netfilter/ipvs/ip_vs_est.c
+index 05b8112ffb37..9a1a7af6a186 100644
+--- a/net/netfilter/ipvs/ip_vs_est.c
++++ b/net/netfilter/ipvs/ip_vs_est.c
+@@ -100,6 +100,9 @@ static void estimation_timer(struct timer_list *t)
+ 	u64 rate;
+ 	struct netns_ipvs *ipvs = from_timer(ipvs, t, est_timer);
+ 
++	if (!sysctl_run_estimation(ipvs))
++		goto skip;
++
+ 	spin_lock(&ipvs->est_lock);
+ 	list_for_each_entry(e, &ipvs->est_list, list) {
+ 		s = container_of(e, struct ip_vs_stats, est);
+@@ -131,6 +134,8 @@ static void estimation_timer(struct timer_list *t)
+ 		spin_unlock(&s->lock);
+ 	}
+ 	spin_unlock(&ipvs->est_lock);
++
++skip:
+ 	mod_timer(&ipvs->est_timer, jiffies + 2*HZ);
+ }
+ 
+-- 
+2.19.1.3.ge56e4f7
 
