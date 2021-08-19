@@ -2,104 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5B8D3F1C43
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 17:10:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EAD13F1C6B
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 17:15:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239863AbhHSPKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 11:10:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52926 "EHLO
+        id S238924AbhHSPQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 11:16:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232821AbhHSPKj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 11:10:39 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 997BBC061575;
-        Thu, 19 Aug 2021 08:10:02 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id y34so13668058lfa.8;
-        Thu, 19 Aug 2021 08:10:02 -0700 (PDT)
+        with ESMTP id S232821AbhHSPQG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 11:16:06 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5F1BC061575;
+        Thu, 19 Aug 2021 08:15:28 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id c12so12150528ljr.5;
+        Thu, 19 Aug 2021 08:15:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=5Z1QQroQWVoOLfcgLvsMByWTY84xsaRYlR2gMwC7hxk=;
-        b=Wph47GNrBXv6xnwCytTIYfUWyrKDGiYMLx8wDAPgogTj5qllaQVxbDbOxvOkVT8wkh
-         aBL1oMDTfuf7Dq/rz1FnOavTRnKppZcR0bX/0ZAZSpyqMnCdaMBmS0vnTJykEz3SvsD9
-         b7Azv/+91i/9zESgsuaTghrh+WiYQNdhDZtengbdIql+gxY4hhlSD3hSdsdvCsIiw7gV
-         ELvQg14IaG4yg1BU+GVRpQJPJjAqO6WdS3aGdrHLyFEKYDpmKWT+i81TutZmpv8HKelY
-         9X/NsfshCPQYUmVqEfj57itsP9knmanK5d8v8+ut7AQj1aW5RP+LVP8GiBJQbU9nc9zn
-         vf/w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=vZjXPmOCbplWUcGOomjfHqgKyvdCopt0JA72wssuj18=;
+        b=qIY/kbWXI66jpRCw0g3aG654Q0g3cTSO8/Gc+/KbOiUuKcq1KvHgOn0PebKOA038o5
+         3k8lPgXmhG9O/nHDJMsFkEo7XRKFt4AS8jEJDyTmVQ7ELbZoGJlwuDrgoagiox71Ko/y
+         cI2h/DicOTZJRlGA9nPeYMp3M5mWeF9mjQ3hsPr7MRFr3dWK1YPGjVsDwdqwN9ejjy8n
+         2Ncq3D/mnYsf8TenPmorYaUJj2cW/0MuAtja7TCJKOLBEU/+SXolsAZz/g7dEIeeQyyq
+         pb/0rA4MfdCDK1jY7pnjTyx9HEhr2WMH8cVTzMSSJYvotOF6lcykoBHAszN6WOxWtfC5
+         XxvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=5Z1QQroQWVoOLfcgLvsMByWTY84xsaRYlR2gMwC7hxk=;
-        b=jXCrrkrV+VbM/HE5ACbeBxHputIq4msXVRpZyUUrGNNpe1SnJwlJqZkaP1ZoqOM4+V
-         YQcqlzY1ydUzk7cpUD3bNN3zjmpmkWds31NQIq0iL7KgKblHuEfMepuhfCJFXTif9LuD
-         Pp0qY5wIbFHc6Yt5soQ6cAGcdZb9IjxEo64yGheoNZtlAya5NtF4AGz51EtZK5Srd6iy
-         L3Fjnpo3Qo39T1F3zEmi16T0mucE0ocK9dlrvw8M7qpELBIB+i1iHMNv0bJ5K2QCIKW1
-         sVlQFOb+j9gCBcR+Cobq7r9ZpIccrglINyH12W8qmJTe+BVIW9Gk/ghhLM0pbuJGCGdC
-         iWWA==
-X-Gm-Message-State: AOAM5313/Xzof8pw+mlkq96sgChIsTgoAQ+ZXnoflCQNfTFhdykHRMxr
-        88cdy6wpPqg74Ed5Fr5vUN0=
-X-Google-Smtp-Source: ABdhPJwgWP38M/SP0uiucvEGNq6+a0txunVlUgBKtt8n9jnpujqJPWVmJzmYr/N0T2dlE19gdvxsFQ==
-X-Received: by 2002:a05:6512:2187:: with SMTP id b7mr11146881lft.185.1629385800800;
-        Thu, 19 Aug 2021 08:10:00 -0700 (PDT)
-Received: from [192.168.1.11] ([46.235.66.127])
-        by smtp.gmail.com with ESMTPSA id w12sm332511lfq.277.2021.08.19.08.10.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Aug 2021 08:10:00 -0700 (PDT)
-Subject: Re: [PATCH] Bluetooth: add timeout sanity check to hci_inquiry
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+be2baed593ea56c6a84c@syzkaller.appspotmail.com
-References: <20210817103108.1160-1-paskripkin@gmail.com>
- <0038C6D9-DEAF-4CB2-874C-00F6CEFCF26C@holtmann.org>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=vZjXPmOCbplWUcGOomjfHqgKyvdCopt0JA72wssuj18=;
+        b=Vrd5B5q/dUS2nsJC41hlp4VeyEwuO0jrqlu9u8JYwOZ6Xe2LLP1+MK36URm9f9YIeG
+         cxeLwWbkafsqQMlWOZEOKwyP7MXOYP7D2AQNJ+ORdqoJOgK4j9/vfpKj2bqNkJA74yDs
+         lYi89WRA7Q4CzkrHacBFgJj6hxWGC3jZtkEFWOJrb0AcM/g3c4bNlogay6F39GgqdWn4
+         mVMD8YdoBEObY8mYyiKuOho8Zmc8sB0izRUc4QPvbwHrd18YmRHynUjx560zwu73XO/0
+         6SSO55Cl6rh3vByS8fF7zEQkVAuQxktdp5TJdnGznuvN3jjBxNgDhvDPAdaX1pz7T5vB
+         bI0g==
+X-Gm-Message-State: AOAM530isGLb7MN630ZU3y7ROwP3IVfGZ1pB17muaRfGEwnn5LYoMxya
+        8oksDwOHm8RbKBavCzGe4Jo=
+X-Google-Smtp-Source: ABdhPJyAvTUD4BUAIU3FuCccZygogstrXmZzgehkWq/i4HWe50f4H9ujcTO+s3wFDonDLj7w6WFo+A==
+X-Received: by 2002:a2e:a54c:: with SMTP id e12mr12894890ljn.139.1629386127253;
+        Thu, 19 Aug 2021 08:15:27 -0700 (PDT)
+Received: from localhost.localdomain ([46.235.66.127])
+        by smtp.gmail.com with ESMTPSA id br33sm334616lfb.46.2021.08.19.08.15.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Aug 2021 08:15:26 -0700 (PDT)
 From:   Pavel Skripkin <paskripkin@gmail.com>
-Message-ID: <c3e1a8ca-2ded-f992-a1c3-d144397a7b2a@gmail.com>
-Date:   Thu, 19 Aug 2021 18:09:58 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
-MIME-Version: 1.0
+To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        davem@davemloft.net
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+be2baed593ea56c6a84c@syzkaller.appspotmail.com
+Subject: [PATCH v2] Bluetooth: add timeout sanity check to hci_inquiry
+Date:   Thu, 19 Aug 2021 18:15:21 +0300
+Message-Id: <20210819151521.17380-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.32.0
 In-Reply-To: <0038C6D9-DEAF-4CB2-874C-00F6CEFCF26C@holtmann.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <0038C6D9-DEAF-4CB2-874C-00F6CEFCF26C@holtmann.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/19/21 6:05 PM, Marcel Holtmann wrote:
-> Hi Pavel,
-> 
->> 	}
->> 
-> 
-> 	/* Restrict maximum inquiry length to 60 seconds */
-> 	if (ir.length > 60) {
-> 		..
-> 	}
-> 
->> +	if (ir.length > HCI_INQUIRY_MAX_TIMEOUT) {
->> +		err = -EINVAL;
->> +		goto done;
->> +	}
->> +
-> 
-> I found this easier to read than adding anything define somewhere else. And since this is a legacy interface that is no longer used by bluetoothd, this should be fine. We will start to deprecate this eventually.
-> 
-> And I prefer 1 minute max time here. Just to be safe.
-> 
+Syzbot hit "task hung" bug in hci_req_sync(). The problem was in
+unreasonable huge inquiry timeout passed from userspace.
+Fix it by adding sanity check for timeout value to hci_inquiry().
 
-I thought, that user-space should be aware of maximum value, that's why 
-I decided to add this define :) I didn't know, that this interface is 
-legacy.
+Since hci_inquiry() is the only user of hci_req_sync() with user
+controlled timeout value, it makes sense to check timeout value in
+hci_inquiry() and don't touch hci_req_sync().
 
-Will fix in v2, thank you!
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-and-tested-by: syzbot+be2baed593ea56c6a84c@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
 
+Changes in v2:
+	Removed define + added comment suggested by Marcel
 
-With regards,
-Pavel Skripkin
+---
+ net/bluetooth/hci_core.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index e1a545c8a69f..170f513efa86 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -1343,6 +1343,12 @@ int hci_inquiry(void __user *arg)
+ 		goto done;
+ 	}
+ 
++	/* Restrict maximum inquiry length to 60 seconds */
++	if (ir.length > 60) {
++		err = -EINVAL;
++		goto done;
++	}
++
+ 	hci_dev_lock(hdev);
+ 	if (inquiry_cache_age(hdev) > INQUIRY_CACHE_AGE_MAX ||
+ 	    inquiry_cache_empty(hdev) || ir.flags & IREQ_CACHE_FLUSH) {
+-- 
+2.32.0
+
