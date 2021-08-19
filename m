@@ -2,120 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1D583F22EC
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 00:19:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69D243F22EF
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 00:20:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236808AbhHSWUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 18:20:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39944 "EHLO
+        id S236929AbhHSWUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 18:20:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236661AbhHSWUH (ORCPT
+        with ESMTP id S236175AbhHSWUH (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 18:20:07 -0400
 Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A95C061575
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 15:19:30 -0700 (PDT)
-Received: by mail-il1-x12f.google.com with SMTP id u7so7506476ilk.7
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 15:19:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411E6C061575
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 15:19:31 -0700 (PDT)
+Received: by mail-il1-x12f.google.com with SMTP id z2so7560331iln.0
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 15:19:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vPUru/TYDi5YjR/bbAhvMjF9OzpGGdZFmOl2rbUnBB4=;
-        b=S7vi+fiVH/33qj0cnmQ8BsS//9/RbmQkZAE9NIfUZaQamE0mxS8rlq4pBey3Zg0dXk
-         pujrPK9G3j11L02JpYV8TnSbqs3bBljFpwrM7yL96+2cngVEMIA1qYZOJM05SuaDV1Rj
-         2ExUNLcA665tlRfnIcJ0NEzD4xPE4RXUMBV//wp3XSBpooHTvvMXtIN9Tisdtkamnfye
-         9Q2okibI5n1e1Dgb4ZgBG5q5qsDFPOApxogYjMgzPL+Il4vfTT2+HFUyRdGkiBV7OatM
-         0EpWHps/ujczw+cztWpk9fccvhqU7a6RBh1s8k1YhpshhQT8b9i6M5po6B64JoqmZPTf
-         ZZpQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=V++C25JgTAQBV+qvjbbsx7LF9B3PcrPKDl21IMwbBpc=;
+        b=s5OT934ARZG2T706DJwUzoXYG1MuzAK8St19X9YAi8+KxO4XZcpoL+COEtj/GQs5Wb
+         KyurwKfLS7m15lTEy9/Tfoqr55D6va0IN/nKjcbVAv203qb/Jj4ycBbxOlKfwxu6ShOq
+         u67svKGCITaG0MaIUKIPteM5ietmI08WniGCCV9VDRkYilV+CU83bjQ9o/6Dqo1t48Kv
+         V4qXN85gcOumEFvIWGPmqbq40XuWekGkTusVrcySWJ6M32/dsMHWfFn+0tWySGoM+3DY
+         8jj/iXM6/K/yDmNmt3sdZ1K9e/Y22dMqNoi11ItomFl0suhJp+NEadsGO/7y2v4+FA7D
+         n2Vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vPUru/TYDi5YjR/bbAhvMjF9OzpGGdZFmOl2rbUnBB4=;
-        b=Hvf221PJSb7aSAGNohM/S3JuUHnckb9ajaDUKgry+whYY5VpKYxIVwAAX29O3ch8V4
-         z9kY4Vz/F84IjZVU482zBvHvPJq+dE7GpPXcTGNR45zs289U5eK8dUT52q1GgztdltI6
-         Bt+v9ACg2b+wDl9o+UW7kg1OlGdIEFRfe6Bc4AuG5m0EfiXAMDxTSMRn309S5dtehmKY
-         TmtSDt+n4IiH1JFpLWW2JCT9a7kdkg55Vkq2f7LpVq66klA4RiBMkbhSiIJlDjVG6EK7
-         JDfqrJa0ayqUCM3pVr85N45g8L08QOYea4LyhNzOKAfki4NXzNltTT4z8lXCssWY4kdm
-         Ndjg==
-X-Gm-Message-State: AOAM532qHP4QLULTcR3sY5smb1Fqq9o3WEyaZByZXwDisCnBlzpo6MWx
-        qZESrrcDv8+lyvZ1OlFzdFbK7ALh5kIB3cmu
-X-Google-Smtp-Source: ABdhPJxDB9EdhwwGVYmZKbE4M6XSdELpdA4qZ1QD+Y/0MjpEsXVuIjVbxFsjKMN29zkfqGLPLEet3Q==
-X-Received: by 2002:a92:c601:: with SMTP id p1mr11250320ilm.284.1629411569899;
-        Thu, 19 Aug 2021 15:19:29 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=V++C25JgTAQBV+qvjbbsx7LF9B3PcrPKDl21IMwbBpc=;
+        b=OCNFzRhtcN20riva78Ss3t3sbGQk93VgA7d1o7ffP98BszVpiIyQAFVN9FEyNPg71U
+         V5gkuiesxTOVcrGWJJg5K4ubK/RKMTwYl7o/8J12ZsZ5+L+lsh1KLlkxRnaZxx6RC3Vy
+         nPhU9fVI8AIuGLephiIGNGWEBKibQVwmqKA9JZfa7FGentI2vmzRb/X/YdLUjcBERDHD
+         X9+a/UacIt9gXUXMf4SnQjIswFagC8qkpImBJMeYysZiD862VE7bAIhHqHz1FXMQZEIE
+         p4pe5UUwoTmAzW/2KTw1Za7NZc8wJB0isXOI0Tw1wnDZYXGqrRZgLGCCOiRfdxiQuNvY
+         NAVQ==
+X-Gm-Message-State: AOAM531W4Opo3KwVX4bngxnT/Dsp67zr8NIkgx4QyldpbrzOEejS1sYA
+        48qA/RFDC2dukCncG7m9b+vOow==
+X-Google-Smtp-Source: ABdhPJyoBfygwH63o/Y4lTrQ8gTQ0nUkr/9iuKVAdVpmJAwAdMrGlkKIJCQHaYpTRI/f/eozX812MQ==
+X-Received: by 2002:a92:cccf:: with SMTP id u15mr12046419ilq.144.1629411570672;
+        Thu, 19 Aug 2021 15:19:30 -0700 (PDT)
 Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
         by smtp.gmail.com with ESMTPSA id o15sm2245188ilo.73.2021.08.19.15.19.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Aug 2021 15:19:29 -0700 (PDT)
+        Thu, 19 Aug 2021 15:19:30 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
         cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 0/5] net: ipa: kill off ipa_clock_get()
-Date:   Thu, 19 Aug 2021 17:19:22 -0500
-Message-Id: <20210819221927.3286267-1-elder@linaro.org>
+Subject: [PATCH net-next 1/5] net: ipa: don't use ipa_clock_get() in "ipa_main.c"
+Date:   Thu, 19 Aug 2021 17:19:23 -0500
+Message-Id: <20210819221927.3286267-2-elder@linaro.org>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210819221927.3286267-1-elder@linaro.org>
+References: <20210819221927.3286267-1-elder@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series replaces the remaining uses of ipa_clock_get() with
-calls to pm_runtime_get_sync() instead.  It replaces all calls to
-ipa_clock_put() with calls to pm_runtime_put().
+We need the hardware to be powered starting at the config stage of
+initialization when the IPA driver probes.  And we need it powered
+when the driver is removed, at least until the deconfig stage has
+completed.
 
-This completes the preparation for enabling automated suspend under
-the control of the power management core code.  The next patch (in
-an upcoming series) enables that.  Then the "ipa_clock" files and
-symbols will switch to using an "ipa_power" naming convention instead.
+Replace callers of ipa_clock_get() in ipa_probe() and ipa_exit(),
+calling pm_runtime_get_sync() instead.  Replace the corresponding
+callers of ipa_clock_put(), calling pm_runtime_put() instead.
 
-Additional info
+The only error we expect when getting power would occur when the
+system is suspended.  The ->probe and ->remove driver callbacks
+won't be called when suspended, so issue a WARN() call if an error
+is seen getting power.
 
-It is possible for pm_runtime_get_sync() to return an error.  There
-are really three cases, identified by return value:
-  - 1, meaning power was already active
-  - 0, meaning power was not previously active, but is now
-  - EACCES, meaning runtime PM is disabled
-One additional case is EINVAL, meaning a previous suspend or resume
-(or idle) call returned an error.  But we have always assumed this
-won't happen (we previously didn't even check for an error).
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+ drivers/net/ipa/ipa_main.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
-But because we use pm_runtime_force_suspend() to implement system
-suspend, there's a chance we'd get an EACCES error (the first thing
-that function does is disable runtime suspend).  Individual patches
-explain what happens in that case, but generally we just accept that
-it could be an unlikely problem (occurring only at startup time).
-
-Similarly, pm_runtime_put() could return an error.  There too, we
-ignore EINVAL, assuming the IPA suspend and resume operations won't
-produce an error.  EBUSY and EPERM are not applicable, EAGAIN is not
-expected (and harmless).  We should never get EACCES (runtime
-suspend disabled), because pm_runtime_put() calls match prior
-pm_runtime_get_sync() calls, and a system suspend will not be
-started while a runtime suspend or resume is underway.  In summary,
-the value returned from pm_runtime_put() is not meaningful, so we
-explicitly ignore it.
-
-					-Alex
-
-Alex Elder (5):
-  net: ipa: don't use ipa_clock_get() in "ipa_main.c"
-  net: ipa: don't use ipa_clock_get() in "ipa_smp2p.c"
-  net: ipa: don't use ipa_clock_get() in "ipa_uc.c"
-  net: ipa: don't use ipa_clock_get() in "ipa_modem.c"
-  net: ipa: kill ipa_clock_get()
-
- drivers/net/ipa/ipa_clock.c     | 17 --------------
- drivers/net/ipa/ipa_clock.h     | 24 --------------------
- drivers/net/ipa/ipa_interrupt.c | 14 ++++++------
- drivers/net/ipa/ipa_main.c      | 21 ++++++++---------
- drivers/net/ipa/ipa_modem.c     | 40 +++++++++++++++++++--------------
- drivers/net/ipa/ipa_smp2p.c     | 19 +++++++++-------
- drivers/net/ipa/ipa_uc.c        | 22 ++++++++++--------
- 7 files changed, 65 insertions(+), 92 deletions(-)
-
+diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
+index 69fa4b3120fd3..3969aef6c4370 100644
+--- a/drivers/net/ipa/ipa_main.c
++++ b/drivers/net/ipa/ipa_main.c
+@@ -15,6 +15,7 @@
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+ #include <linux/of_address.h>
++#include <linux/pm_runtime.h>
+ #include <linux/qcom_scm.h>
+ #include <linux/soc/qcom/mdt_loader.h>
+ 
+@@ -737,13 +738,13 @@ static int ipa_probe(struct platform_device *pdev)
+ 		goto err_table_exit;
+ 
+ 	/* The clock needs to be active for config and setup */
+-	ret = ipa_clock_get(ipa);
++	ret = pm_runtime_get_sync(dev);
+ 	if (WARN_ON(ret < 0))
+-		goto err_clock_put;
++		goto err_power_put;
+ 
+ 	ret = ipa_config(ipa, data);
+ 	if (ret)
+-		goto err_clock_put;
++		goto err_power_put;
+ 
+ 	dev_info(dev, "IPA driver initialized");
+ 
+@@ -765,14 +766,14 @@ static int ipa_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err_deconfig;
+ done:
+-	(void)ipa_clock_put(ipa);
++	(void)pm_runtime_put(dev);
+ 
+ 	return 0;
+ 
+ err_deconfig:
+ 	ipa_deconfig(ipa);
+-err_clock_put:
+-	(void)ipa_clock_put(ipa);
++err_power_put:
++	(void)pm_runtime_put(dev);
+ 	ipa_modem_exit(ipa);
+ err_table_exit:
+ 	ipa_table_exit(ipa);
+@@ -798,9 +799,9 @@ static int ipa_remove(struct platform_device *pdev)
+ 	struct ipa_clock *clock = ipa->clock;
+ 	int ret;
+ 
+-	ret = ipa_clock_get(ipa);
++	ret = pm_runtime_get_sync(&pdev->dev);
+ 	if (WARN_ON(ret < 0))
+-		goto out_clock_put;
++		goto out_power_put;
+ 
+ 	if (ipa->setup_complete) {
+ 		ret = ipa_modem_stop(ipa);
+@@ -816,8 +817,8 @@ static int ipa_remove(struct platform_device *pdev)
+ 	}
+ 
+ 	ipa_deconfig(ipa);
+-out_clock_put:
+-	(void)ipa_clock_put(ipa);
++out_power_put:
++	(void)pm_runtime_put(&pdev->dev);
+ 
+ 	ipa_modem_exit(ipa);
+ 	ipa_table_exit(ipa);
 -- 
 2.27.0
 
