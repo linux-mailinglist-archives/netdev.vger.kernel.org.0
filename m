@@ -2,64 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E75653F193E
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 14:30:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 334443F1943
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 14:30:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239450AbhHSMao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 08:30:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47390 "EHLO mail.kernel.org"
+        id S239558AbhHSMar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 08:30:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47384 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237873AbhHSMan (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237181AbhHSMan (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 19 Aug 2021 08:30:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5DA9261153;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 53AF06113B;
         Thu, 19 Aug 2021 12:30:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1629376207;
-        bh=anGh5FLsPof2yaYGjPPNFfMzwanLHLltIKFEPMiCmUc=;
+        bh=To182//YcJ1LCAQ8opO9ETogE0IQmzChUZQqM0g2+bo=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=GOhrt7UZxC/xtMme8w44a/wsZqAcebLAmfs4jzqs0N9URWepby8lDpSt6oe5JewHp
-         +2DINR/IgkRySNjdj80rCfKN8zSi9J+IkqVENdaBf7mg7/FoDPocjhHa5tPoRE7GrS
-         QJVNiXQR/FV48MiYRb52t2jQBu5RrA/m+HMtOAmVXH8Wk8zEnoyJPyFqQMkigv+8nO
-         Q9AEuPf5mGDw47bsi2vNo7zi1WQREtR30YaOV8zTpZFSWVC02s8y4MkLXoXgWmhX9K
-         vhDe0HRIpvNMu1PRoSgFYS4ZN+/6rQgl3Xaef6dxhgBSyxI2vOf8FTeWCTJJvjrwIj
-         jbL1/0CGru0lw==
+        b=ZVTHY92pZYfEZLEZDGMBk5614wO4FW9vbScB9Gp+FCGEtz+sMUL/gs+RlOHyWUQH3
+         e2YUaLrnezWpPDMdSP51q3vaC4TFEVeseB11kYytioN39c4N8BBlU6LL6IPNc0ucbN
+         WIS/Ojy2N8nU1s3JjQMWJ/1H5VLDypYfUmM1GxpH/8/Gn7E0x9w84yxOfE1bAaqWH1
+         k75E/+V5er4pxGkO4BusL/ybsUCvkSdVM6O/bvAtA4NLvktDGocHCm72/Dh28m7GJR
+         gzwnEA/SAcBoTpdHL/mjlyZ18KE7WdNdgg11s3xpIQYIk7z4mWtsuOOoaK8WS+KZ5v
+         JPBHUyvN7Vw4g==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5103260A90;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 483F160997;
         Thu, 19 Aug 2021 12:30:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCHv2 net-next 0/2] Indirect dev ingress qdisc creation order
+Subject: Re: [PATCH] net: ethernet: ti: cpsw: make array stpa static const,
+ makes object smaller
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162937620732.15458.16109884338789671523.git-patchwork-notify@kernel.org>
+Message-Id: <162937620729.15458.551511596902094158.git-patchwork-notify@kernel.org>
 Date:   Thu, 19 Aug 2021 12:30:07 +0000
-References: <20210817170518.378686-1-elic@nvidia.com>
-In-Reply-To: <20210817170518.378686-1-elic@nvidia.com>
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+References: <20210819120443.7083-1-colin.king@canonical.com>
+In-Reply-To: <20210819120443.7083-1-colin.king@canonical.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     grygorii.strashko@ti.com, davem@davemloft.net, kuba@kernel.org,
+        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 17 Aug 2021 20:05:16 +0300 you wrote:
-> The first patch is just a cleanup of the code.
-> The second patch is fixing the dependency in ingress qdisc creation
-> relative to offloading driver registration to filter configurations.
+On Thu, 19 Aug 2021 13:04:43 +0100 you wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> v1 -> v2:
-> Fix warning - variable set but not used
+> Don't populate the array stpa on the stack but instead it
+> static const. Makes the object code smaller by 81 bytes:
+> 
+> Before:
+>    text    data   bss    dec    hex filename
+>   54993   17248     0  72241  11a31 ./drivers/net/ethernet/ti/cpsw_new.o
 > 
 > [...]
 
 Here is the summary with links:
-  - [PATCHv2,net-next,1/2] net/core: Remove unused field from struct flow_indr_dev
-    https://git.kernel.org/netdev/net-next/c/c1c5cb3aee05
-  - [PATCHv2,net-next,2/2] net: Fix offloading indirect devices dependency on qdisc order creation
-    https://git.kernel.org/netdev/net-next/c/74fc4f828769
+  - net: ethernet: ti: cpsw: make array stpa static const, makes object smaller
+    https://git.kernel.org/netdev/net-next/c/5c8a2bb48159
 
 You are awesome, thank you!
 --
