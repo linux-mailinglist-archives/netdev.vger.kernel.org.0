@@ -2,255 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BEED3F1B78
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 16:18:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E9D83F1BAA
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 16:34:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240512AbhHSOSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 10:18:49 -0400
-Received: from mail-eopbgr80072.outbound.protection.outlook.com ([40.107.8.72]:22711
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S240490AbhHSOSr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Aug 2021 10:18:47 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PRKwTjxlyZAYXS2Ah8C+1cfYNLasHnRXMd6OTj7L+unoMpdZNlWqpTejqcjZRL+IF5UW9xLyzXkUJKARKB8LfhfZw7CsoEAv3i6kIJh0aShkQolAA413NbbDb62+AW9koxHP7DUsbNysNG+Oyog0/EWeGSZQVePz37GrmeV4oAz/MdmnbQ90ssf1pgXyFCEKNPZHy4QZB8I4m8q2M5vBuTxeNAROC8/xsSTA6et2oYRY8VBqFk4ffr+hpPdMCAsGp5xCcPFvtAhK4VZ/mZpVWBMpFeDCO2leIAEVewh/JwqCOKKY5TWiO0n7UJ58Zf01sWfMiOlChQhV0TsHoCYYXA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aie8SP03NdruGhQa1Vgqm6kygGbr5v82iVSG52HFcI4=;
- b=NRkg9VN3rz1vRINIteVk7i1kskTBk0wUjv/U3AXovT+tYclJeVF18lIbWAhKE26GdjUrCZlv3xrYMHjtOdGYrN3m/JycS/y1cLRcmpqJxpKsrQKHsuT8dsRKLUe5XDAlbRNKcF3snx3Km3KFoodbwS87hc8SAR8ybxlAJazJP+DsFddVF1Z0Wu702jFTZcClFvGxOJfzoXiQOr4gGy9WeGlD9vUf2miqLhScVQZppGKHl9PpgjiqVuLrY9D8d1l6QV/SbaE+G9bUjX39xGJkcvAiv6CgQiQNpIXmn4Sfpjl+crMzFvIT5w2AtsVYMpWcfkUlXMxWdHUbWt34Or2Snw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aie8SP03NdruGhQa1Vgqm6kygGbr5v82iVSG52HFcI4=;
- b=j/Is1J5hdKybnPAqsGLPk56NOnZgBdJ1X2gSmyHtqS+Njto1OFBqNq7ISjn5DTrniP3OfHUFMtohrLT9UMEbw29F/mZ8AKY7fv+KF+SVjsYtxpMo6MwONOv/BnSRrSaMWmQAOXoTwk2fj9Wqgwrkw1npftpoAqONrocCzHqDUHw=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VE1PR04MB6640.eurprd04.prod.outlook.com (2603:10a6:803:122::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.16; Thu, 19 Aug
- 2021 14:18:09 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4436.019; Thu, 19 Aug 2021
- 14:18:09 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net] net: dpaa2-switch: disable the control interface on error path
-Date:   Thu, 19 Aug 2021 17:17:55 +0300
-Message-Id: <20210819141755.1931423-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR02CA0181.eurprd02.prod.outlook.com
- (2603:10a6:20b:28e::18) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        id S240539AbhHSOfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 10:35:30 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:60083 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238547AbhHSOf3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 10:35:29 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id B717E580A1C;
+        Thu, 19 Aug 2021 10:34:52 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Thu, 19 Aug 2021 10:34:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=bjqTlZ
+        Os1a7kp3IJhmetlzhS6Ki+E9AJU18kgYXkNi4=; b=AJIOuDpe1ja60M1BaYq6QP
+        EZPdNW3viMveSojk+1FM22Qj72ZTrGXS3gMjpDI8qqLDhG1ykFJigAaQKPA/nNCR
+        4tfD/+aC8VRvsZ6aIoP3OcrLtMjHXGsUyE1kOKiC2pBUlOXUu0EZ43C4q4vxVGk6
+        ON5mLcqq+xowfRCFVMi7/4BWD/qlGBYdyydBryjOtRGbqxK3yuJo2llsYi8f1Xl8
+        ovUCBiI2R9pC3841vU2rf7TWZPPtNF0xLJTjIzG3ScWZWo3zJKDhN2hLSE2JPkVf
+        CBlGDBaR0iwTwOxXF3xjcdO4wdzS2dv+XN2mVTKQOiewW7L9Hu4BSjhW8J9l8xKg
+        ==
+X-ME-Sender: <xms:CmweYYBvrkmZrIty_Tt8hY8bQZzQzKqdf5NlGyjjiPfdT66uUOOfsQ>
+    <xme:CmweYaiVaClQ8u9gHoUpHpocIegP6mxb3L48jd9iqsNnqh1d2cWJWobKY7_XVfM4z
+    jpIQA3ye81ZD14>
+X-ME-Received: <xmr:CmweYbkAPTa9XQbQdM3JJKF8WD2G1CUWnnRI5HCRiGNt7WM840vobhxWFTf1Z8wLgJn0KDVuZAqFNdr63DQ7BnRfGzt4hw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrleejgdejiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnhepjeehudefleekfeevkeeiieeifeefteejieegudevieekvdetieelkefghffgledv
+    necuffhomhgrihhnpehmvghllhgrnhhogidrtghomhenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:CmweYezwDkS8CAxei3-0U5P_PP5LEQLqnL849er_EZDTM_1WkqnEkA>
+    <xmx:CmweYdRgpGTaZuneFt8TqslnUpx8pdESMWDLrggYduLQra-r515MaA>
+    <xmx:CmweYZZOUiVkeO479cgpnrjTzD_dQjnshjKeOwQxjZTLzqSkkImfnA>
+    <xmx:DGweYYGJASth1xwc9YBNHUayFjHWRALq4vwCIU0DdKVgkitUaCJn9w>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 19 Aug 2021 10:34:50 -0400 (EDT)
+Date:   Thu, 19 Aug 2021 17:34:46 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, mkubecek@suse.cz, pali@kernel.org,
+        jacob.e.keller@intel.com, jiri@nvidia.com, vadimp@nvidia.com,
+        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next v2 1/6] ethtool: Add ability to control
+ transceiver modules' power mode
+Message-ID: <YR5sBqnf7RZqVKl4@shredder>
+References: <20210818155202.1278177-1-idosch@idosch.org>
+ <20210818155202.1278177-2-idosch@idosch.org>
+ <20210818153241.7438e611@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YR2P7+1ZGiEBDtAq@lunn.ch>
+ <YR4NTylFy2ejODV6@shredder>
+ <YR5Y5hCavFaWZCFH@lunn.ch>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.144.60) by AM0PR02CA0181.eurprd02.prod.outlook.com (2603:10a6:20b:28e::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Thu, 19 Aug 2021 14:18:09 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 29fecd4f-7b2a-45eb-5999-08d9631c2bd4
-X-MS-TrafficTypeDiagnostic: VE1PR04MB6640:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VE1PR04MB6640924C9A8E074CE2885E94E0C09@VE1PR04MB6640.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2512;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AzVCwzvIJBswjLQYbBlhKxJ5+mLgUZEKFyZqLyJzEpdVGeeG5gAY8rsMXbO0Z3sQMDAuynwL2XswUuz63XWaE4qwjcQvizsT9arkTV6hdhXPV0iPuEmoZa6VwX6EZN1hA5pI6OmzC+QZOHUj6whx8SpNDUzE1/K+kw3a6rf7rI3OeIGgF4vWNPl09RuusMlbq16Jew6fo0JC7JBgEeXOs1aLIqe3rqY4fmzyIRaX78QBdV5sePs/v11HNW3VCtPPFjzjlt8Z3CWpKXb217jC1X/mXO+wXVNORNarvCWkUuWG5E2hya9XGiG2BXvvUnGTIzrEKbgdZO5NrkqLPE+W5j9e4zwaOvSKltmu5pZr8s9LLRUkYOrTjo4kjED7cdhamKCarlQjeoNqw5pme/+r/DVioMloTCdUttlUG0j50NiWhX/7j+T4mKvaWXEsfcbGYbjDe9DxaThoC14s0JPCk370TYCC4IpcExfXKV4/EJG6jfBdFlf6xfoTu1bvs80qkTtIGoNeRqQk26pbTYXq95l8m3g9UBHYepbHYRGAcxfwbxbRTqPZ/dDdK8YNmZUpg3sSREFsid4xvqaACuSUe0ya6yq7MK9/rVp+iCPgOtinnpayxPqUzj/kp3TJZrUuxykZ2e7rcgp59cbB28C7xdSheu8xTgsx+T+HO8pWlroboAE7C+HkI5BziZTzorl9
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(39860400002)(366004)(346002)(376002)(6512007)(8676002)(6506007)(6486002)(316002)(86362001)(52116002)(5660300002)(36756003)(83380400001)(478600001)(8936002)(2616005)(956004)(6666004)(38350700002)(186003)(4326008)(66946007)(110136005)(66556008)(2906002)(1076003)(66476007)(26005)(44832011)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4dh8mKhEsxuRkGzdBoK9Q9+1oelwx+Lt/KlkOqV66gzXZFmukjLVtRpj0QpP?=
- =?us-ascii?Q?7pkwASTJp9Ny/vVgNRgjJjJ+0TQOOr75dCu0eI4ofT+esMXTxy1PGD9RB6p1?=
- =?us-ascii?Q?XRKrmwhphzLp5jojnd2qBdARZxWIPwXy81SewEzhtC7SdvWrkb8xkoV07fTu?=
- =?us-ascii?Q?Sn8FYx/EYLRflxzxGYe2smsU6oX9DU0T4zZfSAXCA41IYUxP+LrSMfP6jhFx?=
- =?us-ascii?Q?gsv6FifDB1zJ+Uz55LeMnP4xzQuY/cqRpuL9+DVw3Y9vLHME+yVSCd5bLeSA?=
- =?us-ascii?Q?5F6Eea6GYNHUFsd4BQz4K3f1AAU7MVawo8oD4seU6N+7i/9rSCn87M0lL+lW?=
- =?us-ascii?Q?w1vgxwC2TgMeCNAPrnRzfvS2DSxau3NFzvL86t0nOShk+BufMhzFKB6SE0l3?=
- =?us-ascii?Q?sOZA40C/tgoHHSoCz9QzC/V7/Q83N0KLyzg/gnV2eukLG+zE6NZtj4Vae7MY?=
- =?us-ascii?Q?ayht9LlyQ+lyis4dx4gqyVmTxdmhBQwDC3BWHDVqpZ13zj5LEC3Ic5K5Ww3I?=
- =?us-ascii?Q?l72DQzzrO37VcygKvAV0rzuPeLxzcqYJEmACHFQUcJaHkFAhntKyj1un5IpQ?=
- =?us-ascii?Q?8P/cFthYlRVmeuVEKi4gTbugROSe1MRtXpqtwpZg15pl3rguyGdcSEmK+7mH?=
- =?us-ascii?Q?tQp/hBasG5i8VjsgX0pmXIzmFslS0yExmaqgi8+ef3NVrOtDNQFiKJtcoOzi?=
- =?us-ascii?Q?qOOtFI7fc3dvkzcWkK2qPpGTy43tIDqUV3v2mKAFAv8nf++sVbZMRkZ58h4n?=
- =?us-ascii?Q?ZrA6D+SgMASLWxSPhaFbjOTPmSsRTYcNsKZoZAZuTMj5mOrr2jzKkZZYSjL5?=
- =?us-ascii?Q?9t/PRLa2x66hyuIOWMZhOV/pmmC1c2QF99n9r38HmKVpYrWM+PpE02XkNhpE?=
- =?us-ascii?Q?LErKmF4txLan8XAvlrG7RE9ML8wEBniKaizhq+R9eu4Y11Ag59z29sZTktE1?=
- =?us-ascii?Q?RBwXVPBsoM/fMtr9fS+YIy1u8fLuGWUlcYVPF8HJZZlH91OGguFw27Xex8mc?=
- =?us-ascii?Q?IVtRgkQrPhK6fVzb3PxWAfb6QySh8ZenvDcdy83YSkmWMYUnbwv5udLiDhs7?=
- =?us-ascii?Q?O7iZcGCKspByBOZnfxNXyXwmJht/o1OZ1ti8cOLWjOWtrf8wdd8mrPL+EEh5?=
- =?us-ascii?Q?r+CQhaSxIaT1bg6eq3ONmeBq6/AgL7M2O3SuG/wsGQXl9OYWcCvxLnqNGDoq?=
- =?us-ascii?Q?nDVcVNSBOvN9/MJzNUlGOlfwa1Ox3nBI2ZvjQMi5v9HAqqd/sPMnDLjEiFzi?=
- =?us-ascii?Q?kbR7SEjRYxIJJrJgPJTBuFZSbxzFviBRBTBWABDnWpMVreur5AgDRAUig4eP?=
- =?us-ascii?Q?9ZfCE0mWB5YE7Cw5G0RuJdTw?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 29fecd4f-7b2a-45eb-5999-08d9631c2bd4
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2021 14:18:09.6526
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 295tBelcBXxk4G3S5IOqTY5WTYdPNi3LLzA2MiNk53kpSx7iMe1vKZurFjT4d4H+DmZ+y+ALmbGJdzz/AxdPHg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6640
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YR5Y5hCavFaWZCFH@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently dpaa2_switch_takedown has a funny name and does not do the
-opposite of dpaa2_switch_init, which makes probing fail when we need to
-handle an -EPROBE_DEFER.
+On Thu, Aug 19, 2021 at 03:13:10PM +0200, Andrew Lunn wrote:
+> > > Should we also document what the default is? Seems like
+> > > ETHTOOL_MODULE_POWER_MODE_POLICY_HIGH_ON_UP is the generic network
+> > > interface default, so maybe it should also be the default for SFPs?
+> > 
+> > I will add a note in Documentation/networking/ethtool-netlink.rst that
+> > the default power mode policy is driver-dependent (can be queried) and
+> > that it can either be 'high' or 'auto'.
+> 
+> Hi Ido
 
-A sketch of what dpaa2_switch_init does:
+Hi Andrew,
 
-	dpsw_open
+> 
+> That is kind of my question. Do you want the default driver defined,
+> and varying between implementations, or do we want a clearly defined
+> default?
+> 
+> The stack has a mixture of both. An interface is admin down by
+> default, but it is anybody guess how pause will be configured?
+> 
+> By making it driver undefined, you cannot assume anything, and you
+> require user space to always configure it.
+> 
+> I don't have too strong an opinion, i'm more interested in what others
+> say, those who have to live with this.
 
-	dpaa2_switch_detect_features
+I evaluated the link up times using a QSFP module [1] connected to my
+system. There is a 36% increase in link up times when using the 'auto'
+policy compared to the 'high' policy (default on all Mellanox systems).
+Very noticeable and very measurable.
 
-	dpsw_reset
+Couple the above with the fact that despite shipping millions of ports
+over the years, we are only now getting requests to control the power
+mode of transceivers and from a small number of users.
 
-	for (i = 0; i < ethsw->sw_attr.num_ifs; i++) {
-		dpsw_if_disable
+In addition, any user space that is interested in changing the behavior,
+has the ability to query the default policy and override it in a
+vendor-agnostic way.
 
-		dpsw_if_set_stp
+Therefore, I'm strictly against changing the existing behavior.
 
-		dpsw_vlan_remove_if_untagged
+[1] https://www.mellanox.com/related-docs/prod_cables/PB_MFS1S00-VxxxE_200GbE_QSFP56_AOC.pdf
 
-		dpsw_if_set_tci
-
-		dpsw_vlan_remove_if
-	}
-
-	dpsw_vlan_remove
-
-	alloc_ordered_workqueue
-
-	dpsw_fdb_remove
-
-	dpaa2_switch_ctrl_if_setup
-
-When dpaa2_switch_takedown is called from the error path of
-dpaa2_switch_probe(), the control interface, enabled by
-dpaa2_switch_ctrl_if_setup from dpaa2_switch_init, remains enabled,
-because dpaa2_switch_takedown does not call
-dpaa2_switch_ctrl_if_teardown.
-
-Since dpaa2_switch_probe might fail due to EPROBE_DEFER of a PHY, this
-means that a second probe of the driver will happen with the control
-interface directly enabled.
-
-This will trigger a second error:
-
-[   93.273528] fsl_dpaa2_switch dpsw.0: dpsw_ctrl_if_set_pools() failed
-[   93.281966] fsl_dpaa2_switch dpsw.0: fsl_mc_driver_probe failed: -13
-[   93.288323] fsl_dpaa2_switch: probe of dpsw.0 failed with error -13
-
-Which if we investigate the /dev/dpaa2_mc_console log, we find out is
-caused by:
-
-[E, ctrl_if_set_pools:2211, DPMNG]  ctrl_if must be disabled
-
-So make dpaa2_switch_takedown do the opposite of dpaa2_switch_init (in
-reasonable limits, no reason to change STP state, re-add VLANs etc), and
-rename it to something more conventional, like dpaa2_switch_teardown.
-
-Fixes: 613c0a5810b7 ("staging: dpaa2-switch: enable the control interface")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- .../ethernet/freescale/dpaa2/dpaa2-switch.c   | 36 +++++++++----------
- 1 file changed, 18 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-index 68b78642c045..98cc0133c343 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-@@ -3038,26 +3038,30 @@ static int dpaa2_switch_port_init(struct ethsw_port_priv *port_priv, u16 port)
- 	return err;
- }
- 
--static void dpaa2_switch_takedown(struct fsl_mc_device *sw_dev)
-+static void dpaa2_switch_ctrl_if_teardown(struct ethsw_core *ethsw)
-+{
-+	dpsw_ctrl_if_disable(ethsw->mc_io, 0, ethsw->dpsw_handle);
-+	dpaa2_switch_free_dpio(ethsw);
-+	dpaa2_switch_destroy_rings(ethsw);
-+	dpaa2_switch_drain_bp(ethsw);
-+	dpaa2_switch_free_dpbp(ethsw);
-+}
-+
-+static void dpaa2_switch_teardown(struct fsl_mc_device *sw_dev)
- {
- 	struct device *dev = &sw_dev->dev;
- 	struct ethsw_core *ethsw = dev_get_drvdata(dev);
- 	int err;
- 
-+	dpaa2_switch_ctrl_if_teardown(ethsw);
-+
-+	destroy_workqueue(ethsw->workqueue);
-+
- 	err = dpsw_close(ethsw->mc_io, 0, ethsw->dpsw_handle);
- 	if (err)
- 		dev_warn(dev, "dpsw_close err %d\n", err);
- }
- 
--static void dpaa2_switch_ctrl_if_teardown(struct ethsw_core *ethsw)
--{
--	dpsw_ctrl_if_disable(ethsw->mc_io, 0, ethsw->dpsw_handle);
--	dpaa2_switch_free_dpio(ethsw);
--	dpaa2_switch_destroy_rings(ethsw);
--	dpaa2_switch_drain_bp(ethsw);
--	dpaa2_switch_free_dpbp(ethsw);
--}
--
- static int dpaa2_switch_remove(struct fsl_mc_device *sw_dev)
- {
- 	struct ethsw_port_priv *port_priv;
-@@ -3068,8 +3072,6 @@ static int dpaa2_switch_remove(struct fsl_mc_device *sw_dev)
- 	dev = &sw_dev->dev;
- 	ethsw = dev_get_drvdata(dev);
- 
--	dpaa2_switch_ctrl_if_teardown(ethsw);
--
- 	dpaa2_switch_teardown_irqs(sw_dev);
- 
- 	dpsw_disable(ethsw->mc_io, 0, ethsw->dpsw_handle);
-@@ -3084,9 +3086,7 @@ static int dpaa2_switch_remove(struct fsl_mc_device *sw_dev)
- 	kfree(ethsw->acls);
- 	kfree(ethsw->ports);
- 
--	dpaa2_switch_takedown(sw_dev);
--
--	destroy_workqueue(ethsw->workqueue);
-+	dpaa2_switch_teardown(sw_dev);
- 
- 	fsl_mc_portal_free(ethsw->mc_io);
- 
-@@ -3199,7 +3199,7 @@ static int dpaa2_switch_probe(struct fsl_mc_device *sw_dev)
- 			       GFP_KERNEL);
- 	if (!(ethsw->ports)) {
- 		err = -ENOMEM;
--		goto err_takedown;
-+		goto err_teardown;
- 	}
- 
- 	ethsw->fdbs = kcalloc(ethsw->sw_attr.num_ifs, sizeof(*ethsw->fdbs),
-@@ -3270,8 +3270,8 @@ static int dpaa2_switch_probe(struct fsl_mc_device *sw_dev)
- err_free_ports:
- 	kfree(ethsw->ports);
- 
--err_takedown:
--	dpaa2_switch_takedown(sw_dev);
-+err_teardown:
-+	dpaa2_switch_teardown(sw_dev);
- 
- err_free_cmdport:
- 	fsl_mc_portal_free(ethsw->mc_io);
--- 
-2.25.1
-
+> 
+> 	Andrew
