@@ -2,100 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0E0D3F1E7B
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 18:57:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59C263F1E7C
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 18:57:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230312AbhHSQ6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 12:58:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229580AbhHSQ6Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 12:58:16 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0BDC061756
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 09:57:39 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id x11so14393983ejv.0
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 09:57:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Q4tGqtodxm8cq9s5nssrQK8UELCa81JVaJ+mdBHNrMA=;
-        b=MFNDt8U3uf+R5KlZ32EtgNfNPP7b6zj1iTV2LzL0Y9SV+rkF+HQCrG+AI+wr7GaOlX
-         1pGPelfy2gRTJHkJTMj1vQD/4eRKq0H9+ziqXzcaLYdt6UF5KWNYJOgq/FpUb+YCgeKr
-         uwjJXo87PB9Tw8aljBbRBc3Ko1vLy89qNQoSXPlkAcxjso5FpvdGlrVxawCQFRE1/GiF
-         PMuVBYEgsnO7jyIMU3QmK/mkM11JJ/RfaIV0XJ4PW/3bIXsnK1Cmk0HLSD7qmTv13guX
-         CHjvT/I9G0FnpCr2mlk/fUGARp2RGs4dn/R3xuYXPpkeJWqfKUBqhz2b2T2fSKaAOvxi
-         8RAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q4tGqtodxm8cq9s5nssrQK8UELCa81JVaJ+mdBHNrMA=;
-        b=qjJHGJ3BtBC9DS7jckHWuJdx06SNh5nq1dA6pIDzHxDD++wEEnp855h+uP9LdrqzUZ
-         xAH0dj1xEVvv6+2AKlPiyHY7kudOT+wlzsAMP9DWBfYWqbXb1dutkJHlSA9/eibdQdEj
-         hzEv2iHM5vjNFpcIEJQLT1NFmv7gHjmmfR5e8QiRKstKSPPL7fIqLeaHTsTlPOxBa2Iy
-         5Txlb4n20EOmhOAfPZuq+zY+xDcKV5rzYU1OgaDi38cg0VcHrkUMNk/1b98Y9o7nCks6
-         501QZ4w8rHI/dfUoPxvaMKJnMVDu8aqn2WXVB1BeI9xicHsHNUCmDh40AJcDuAZ1+d8I
-         IMGA==
-X-Gm-Message-State: AOAM532xE3wfd3bZdYmw5/WCuwRNSvdQj0bxqUQXB6N99q6Yr9Jc9m86
-        HyXo3mneOtePwnz6zAQslMSnY+GzA14=
-X-Google-Smtp-Source: ABdhPJzwK7s50aJ8UnQ5GjJh9oR2Uj0ggQqfJzMDZoD7NLQJyqPB6ZcJV24+Vug1Gdf6l1SGI9yPUg==
-X-Received: by 2002:a17:906:2bc2:: with SMTP id n2mr16660615ejg.455.1629392258589;
-        Thu, 19 Aug 2021 09:57:38 -0700 (PDT)
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
-        by smtp.gmail.com with ESMTPSA id r27sm2019065edb.66.2021.08.19.09.57.37
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Aug 2021 09:57:37 -0700 (PDT)
-Received: by mail-wr1-f45.google.com with SMTP id x12so10054104wrr.11
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 09:57:37 -0700 (PDT)
-X-Received: by 2002:a5d:494d:: with SMTP id r13mr5017809wrs.12.1629392256880;
- Thu, 19 Aug 2021 09:57:36 -0700 (PDT)
+        id S230416AbhHSQ6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 12:58:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35210 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229759AbhHSQ6Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Aug 2021 12:58:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B3EE860FE6;
+        Thu, 19 Aug 2021 16:57:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629392260;
+        bh=fLZ0moATq+iedeajzsVeMx4RO/u++Zw9Hj7B9K3nQuI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GaLFnb1g7AgvVwf/MoKri+a3jUtPdiQQCmSDM9n1bnZBzdT2XKJSiUufvYoeycAme
+         Uqa/7F4nP4Byq5lgPmD2UP9/l7nWHUQZgo60mBhGIG1QG7unx+/23Ygzb/5+ZBXHUV
+         IP4AE+W9JlaW6486xIqNPQ5BJiXFymx6KMOmPp2k5bHdiuBy7rw9hh7cUBJZkbM7DY
+         zeKEHrnuh9LFAoPLVk+kD0UYLX0L8ydOUHNXQ4rKIr5sl23Q4yac5dEoS5HAzE7ZHz
+         +8fGKXyem/61Xt/QXLUYlqlRSIezNAsME84QMYWvwGGwABn00XdmZzAYAlxQYZNhST
+         fxAe6N9qCdzJA==
+Date:   Thu, 19 Aug 2021 22:27:31 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     butt3rflyh4ck <butterflyhuangxx@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: Another out-of-bound Read in qrtr_endpoint_post in
+ net/qrtr/qrtr.c
+Message-ID: <20210819165731.GD200135@thinkpad>
+References: <CAFcO6XOLxfHcRFVNvUTPVNiyQ4FKwZ-x9SDgL7n9EJphoxawxQ@mail.gmail.com>
+ <CAFcO6XOGjHzys4GywczXyePiPcEXw7P=gBPwYU5nv0f-a=eFig@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210819143447.314539-1-chouhan.shreyansh630@gmail.com>
-In-Reply-To: <20210819143447.314539-1-chouhan.shreyansh630@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 19 Aug 2021 12:56:59 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSdsLzjMapC-OGugkSP-ML99xF5UC-FjDhFS1_BDDSJ2sg@mail.gmail.com>
-Message-ID: <CA+FuTSdsLzjMapC-OGugkSP-ML99xF5UC-FjDhFS1_BDDSJ2sg@mail.gmail.com>
-Subject: Re: [PATCH] ip_gre/ip6_gre: add check for invalid csum_start
-To:     Shreyansh Chouhan <chouhan.shreyansh630@gmail.com>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, willemdebruijn.kernel@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+ff8e1b9f2f36481e2efc@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFcO6XOGjHzys4GywczXyePiPcEXw7P=gBPwYU5nv0f-a=eFig@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 19, 2021 at 10:35 AM Shreyansh Chouhan
-<chouhan.shreyansh630@gmail.com> wrote:
->
-> If we get a ip gre packet with TUNNEL_CSUM set, an invalid csum_start
-> value causes skb->csum_start offset to be less than the offset for
-> skb->data after we pull the ip header from the packet during the
-> ipgre_xmit call.
->
-> This patch adds a sanity check to gre_handle_offloads, which checks the
-> validity of skb->csum_start after we have pulled the ip header from the
-> packet in the ipgre_xmit call.
->
-> Reported-by: syzbot+ff8e1b9f2f36481e2efc@syzkaller.appspotmail.com
-> Signed-off-by: Shreyansh Chouhan <chouhan.shreyansh630@gmail.com>
+Hi,
 
-For the ipv4 portion:
+On Wed, Aug 18, 2021 at 03:33:38PM +0800, butt3rflyh4ck wrote:
+> Here I make a patch for this issue.
 
-Fixes: c54419321455 ("GRE: Refactor GRE tunneling code.")
+[...]
 
-For the ipv6 portion:
+> From 18d9f83f17375785beadbe6a0d0ee59503f65925 Mon Sep 17 00:00:00 2001
+> From: butt3rflyh4ck <butterflyhhuangxx@gmail.com>
+> Date: Wed, 18 Aug 2021 14:19:38 +0800
+> Subject: [PATCH] net: qrtr: fix another OOB Read in qrtr_endpoint_post
+> 
+> This check was incomplete, did not consider size is 0:
+> 
+> 	if (len != ALIGN(size, 4) + hdrlen)
+>                     goto err;
+> 
+> if size from qrtr_hdr is 0, the result of ALIGN(size, 4)
+> will be 0, In case of len == hdrlen and size == 0
+> in header this check won't fail and
+> 
+> 	if (cb->type == QRTR_TYPE_NEW_SERVER) {
+>                 /* Remote node endpoint can bridge other distant nodes */
+>                 const struct qrtr_ctrl_pkt *pkt = data + hdrlen;
+> 
+>                 qrtr_node_assign(node, le32_to_cpu(pkt->server.node));
+>         }
+> 
+> will also read out of bound from data, which is hdrlen allocated block.
+> 
+> Fixes: 194ccc88297a ("net: qrtr: Support decoding incoming v2 packets")
+> Fixes: ad9d24c9429e ("net: qrtr: fix OOB Read in qrtr_endpoint_post")
+> Signed-off-by: butt3rflyh4ck <butterflyhhuangxx@gmail.com>
 
-Fixes: b05229f44228 ("gre6: Cleanup GREv6 transmit path, call common
-GRE functions")
+Thanks for the bug report and the fix. Could you please send the fix as a proper
+patch as per: Documentation/process/submitting-patches.rst
 
-It's possible that a similar bug exists before those, but the patch
-wouldn't apply anyway.
+Thanks,
+Mani
 
-Technically, for backporting purposes, the patch needs to be split
-into two, each with their own Fixes tag. And target [PATCH net]
+> ---
+>  net/qrtr/qrtr.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+> index 171b7f3be6ef..0c30908628ba 100644
+> --- a/net/qrtr/qrtr.c
+> +++ b/net/qrtr/qrtr.c
+> @@ -493,7 +493,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
+>  		goto err;
+>  	}
+>  
+> -	if (len != ALIGN(size, 4) + hdrlen)
+> +	if (!size || len != ALIGN(size, 4) + hdrlen)
+>  		goto err;
+>  
+>  	if (cb->dst_port != QRTR_PORT_CTRL && cb->type != QRTR_TYPE_DATA &&
+> -- 
+> 2.25.1
+> 
+
