@@ -2,205 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43C643F16BC
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 11:52:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C5583F16D6
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 11:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237834AbhHSJxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 05:53:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34794 "EHLO
+        id S238120AbhHSJ5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 05:57:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237543AbhHSJxH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 05:53:07 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D61E5C061575;
-        Thu, 19 Aug 2021 02:52:31 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id c17so3621929plz.2;
-        Thu, 19 Aug 2021 02:52:31 -0700 (PDT)
+        with ESMTP id S238109AbhHSJ5A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 05:57:00 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC3C1C0613CF;
+        Thu, 19 Aug 2021 02:56:23 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id l11so8182491wrx.4;
+        Thu, 19 Aug 2021 02:56:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MtX3zfkwXjgZQmvG0rh2e9cIM28vvI+IW/MYmEHnn/g=;
-        b=LYVd7+spnMM/0LWG4s85cvDd2nW2HgTfSitRafnJg9uow2ho3eqiGjfbUz9hC84fyx
-         28bOtfIIw/UXBZJnBmVnIAe95XnqpbBSlmMS6D02rRidiCs3xdFbSsR7MGblu8FO+IfG
-         3pDxnrlyfLntKd6WEhHbOLpTdJT72BPTSwcs5XwvDbPzV8MJhmJCCToGzyts7bqwA4HK
-         2rPg7pCeklMWcYZamB6LAr/GA8iTIfnpoyFpOigilDHZgseKgS8xlEwqA+1TQtvg7miX
-         KLflhCPlgvZjarkIsVc8T60r6mtXJB9wkw40F0ryzXIBlFxLYNLjUXx9B+BUMlh4UIRj
-         MtUA==
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ZGvg8dfc9wmKRNl+QTgPyRSm2QhtLNfk+83gimM4XNI=;
+        b=hag8HjWkoLnlWff2dlAOAjapUPbMFhns4/RrxwIf+cDegN7pvOFV7IfidwjeW08FXQ
+         Je5DUPNJLtqG/sUQaoBAmHu5UXUQxve7qCtaIKPUOmDLAf6T9UhuCy7bmTfQed2OxHrM
+         aHChMrPIA7tydWGo4dnGXOD0+ZzCHzGFZM8F4oOAJoi5JO2vs2iWYwaWZ+wKS5Lkgsb/
+         WZdhWbue0BccvU9iVXZItQuIhcCvx1tvofwNURqgK5385KBnererOE2iJWfQrNS+eBPk
+         j5ZJRQo5rlxDP6qRR5bQysbTRpyJnnuii4QnhDZ0aXklIyB6vr2vkP7byz9KkKYcz5v8
+         RcjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MtX3zfkwXjgZQmvG0rh2e9cIM28vvI+IW/MYmEHnn/g=;
-        b=RgaGrxsE5gLVj+XeexA5I3KLpxBHkiv1Vbtg4pLvkARGTAj/1oltnX8Erg1CMnrAIP
-         N+v3iAu951iGVLBVJieCiSSz2mpC8HksEnECiuS3ZwPXza4sQXroLpCKKmr94QbT+wZP
-         q0Yj23yXHEMdX0TNqZgZ5TyPdJ+gbDpgNhEOdz5/QBTN97oV2VWVQyWPpHNHKZmftlpR
-         1bhq5hW3ovMFHO2SB2uu5SkdSCeDadysp1z5GPvVQLDGnZiCisbNhMfGoxH93CRHWPPJ
-         XbJ2qAn8NYPwtqMWfVJQl0GahsCGQilJeWEqoDZmnNSGGvjf5hG0WW+LTTXa2UBHWCgN
-         zCfQ==
-X-Gm-Message-State: AOAM532tWTrycUWDP1fCc2VpFl51RvIx/blbFghHYFB/+xUPTDOWatxa
-        9IsDMfckhlNXKLbap6D+c0VPOziaT8pzcA1WpkA=
-X-Google-Smtp-Source: ABdhPJxmBy4Cguct7mmL7MQTi9YV9a75Akl7f3g5y4ppTVad0Fp31wEzXxx0NFgYP6DGiP0FMnlprTTnDwyGfZ26pd4=
-X-Received: by 2002:a17:90b:18f:: with SMTP id t15mr13935469pjs.168.1629366751349;
- Thu, 19 Aug 2021 02:52:31 -0700 (PDT)
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ZGvg8dfc9wmKRNl+QTgPyRSm2QhtLNfk+83gimM4XNI=;
+        b=nzZAs+Xe2ink19GpjDYLZ1Ko4/sEEbMjSNNJ3PYlPNLmo7ohKwVIDgNEg5kFHpD+uI
+         l3AdU0pfV/VoljaF/mamP4l8/YqKbVBZc3F31bta9lY3A4ewZoOk5Ii5WMNT/fGyMT2Y
+         69Kl3va95o2rSdMLx4TublyaFD1eFu3V8MoJL5JKtrAFwQGhlWjCFbmlc9Cq3KX6MSSE
+         XSlKmGyomYS7eJfMsE8Hl1GRlJhRLZS5bZrgPPTCBgEkK2O07/Il7bI6Bvahcs3cyuqI
+         dlT06oS5Rs8nqPlFSGMnKojm+GFzyCE1TrfzSel/N2nIGGtBD9lNLtaD8jRmPzNiY+6A
+         0eig==
+X-Gm-Message-State: AOAM533MX1Orz/MNaCjkm02Uc1izYrcpJmLIosCAxxL4YqdeS41zugti
+        TApjSQNLHy8kDxwCVkNFgsUIiahcZGSieg==
+X-Google-Smtp-Source: ABdhPJxlGYn7yHv27sS4+nkt/PPDWOb1MWMaWjfTDsGFR/1mUORspVeaACo9BHfSH46NWm2h9tIvHA==
+X-Received: by 2002:a5d:4d8e:: with SMTP id b14mr2683537wru.422.1629366982248;
+        Thu, 19 Aug 2021 02:56:22 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f08:4500:c830:756b:68fa:7529? (p200300ea8f084500c830756b68fa7529.dip0.t-ipconnect.de. [2003:ea:8f08:4500:c830:756b:68fa:7529])
+        by smtp.googlemail.com with ESMTPSA id o14sm2005680wms.2.2021.08.19.02.56.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Aug 2021 02:56:21 -0700 (PDT)
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     nic_swsd <nic_swsd@realtek.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20210819054542.608745-1-kai.heng.feng@canonical.com>
+ <20210819054542.608745-4-kai.heng.feng@canonical.com>
+ <084b8ea3-99d8-3393-4b74-0779c92fde64@gmail.com>
+ <CAAd53p4CYOOXjyNdTnBtsQ+2MW-Jar8fgEfPFZHSPrJde=HqVA@mail.gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next v3 3/3] r8169: Enable ASPM for selected NICs
+Message-ID: <d3e4ec0b-2681-1b3c-f0ca-828b24b253e7@gmail.com>
+Date:   Thu, 19 Aug 2021 11:56:11 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <20210817092729.433-1-magnus.karlsson@gmail.com>
- <20210817092729.433-11-magnus.karlsson@gmail.com> <20210819092634.GA32204@ranger.igk.intel.com>
-In-Reply-To: <20210819092634.GA32204@ranger.igk.intel.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Thu, 19 Aug 2021 11:52:20 +0200
-Message-ID: <CAJ8uoz2aUnsnN5TQ5JstfbzByq80yX9utzbt3THwMKFHpYs4zA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 10/16] selftests: xsk: validate tx stats on tx thread
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Ciara Loftus <ciara.loftus@intel.com>,
-        bpf <bpf@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAAd53p4CYOOXjyNdTnBtsQ+2MW-Jar8fgEfPFZHSPrJde=HqVA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 19, 2021 at 11:41 AM Maciej Fijalkowski
-<maciej.fijalkowski@intel.com> wrote:
->
-> On Tue, Aug 17, 2021 at 11:27:23AM +0200, Magnus Karlsson wrote:
-> > From: Magnus Karlsson <magnus.karlsson@intel.com>
-> >
-> > Validate the tx stats on the Tx thread instead of the Rx
-> > tread. Depending on your settings, you might not be allowed to query
-> > the statistics of a socket you do not own, so better to do this on the
-> > correct thread to start with.
-> >
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > ---
-> >  tools/testing/selftests/bpf/xdpxceiver.c | 55 ++++++++++++++++++------
-> >  1 file changed, 41 insertions(+), 14 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-> > index fe3d281a0575..8ff24472ef1e 100644
-> > --- a/tools/testing/selftests/bpf/xdpxceiver.c
-> > +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-> > @@ -642,23 +642,22 @@ static void tx_only_all(struct ifobject *ifobject)
-> >       complete_tx_only_all(ifobject);
-> >  }
-> >
-> > -static void stats_validate(struct ifobject *ifobject)
-> > +static bool rx_stats_are_valid(struct ifobject *ifobject)
-> >  {
-> > +     u32 xsk_stat = 0, expected_stat = opt_pkt_count;
-> > +     struct xsk_socket *xsk = ifobject->xsk->xsk;
-> > +     int fd = xsk_socket__fd(xsk);
-> >       struct xdp_statistics stats;
-> >       socklen_t optlen;
-> >       int err;
-> > -     struct xsk_socket *xsk = stat_test_type == STAT_TEST_TX_INVALID ?
-> > -                                                     ifdict[!ifobject->ifdict_index]->xsk->xsk :
-> > -                                                     ifobject->xsk->xsk;
-> > -     int fd = xsk_socket__fd(xsk);
-> > -     unsigned long xsk_stat = 0, expected_stat = opt_pkt_count;
-> > -
-> > -     sigvar = 0;
-> >
-> >       optlen = sizeof(stats);
-> >       err = getsockopt(fd, SOL_XDP, XDP_STATISTICS, &stats, &optlen);
-> > -     if (err)
-> > -             return;
-> > +     if (err) {
-> > +             ksft_test_result_fail("ERROR: [%s] getsockopt(XDP_STATISTICS) error %u %s\n",
-> > +                                   __func__, -err, strerror(-err));
-> > +             return true;
->
-> Can we invert the logic or change the name of the func?
-> Returning 'true' for error case is a bit confusing given the name of func
-> is blah_are_valid, no? If there was an error then I'd return false.
->
-> OTOH we're testing faulty socket situations in here, but error from
-> getsockopt does not mean that stats were valid.
+On 19.08.2021 08:50, Kai-Heng Feng wrote:
+> On Thu, Aug 19, 2021 at 2:08 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>>
+>> On 19.08.2021 07:45, Kai-Heng Feng wrote:
+>>> The latest vendor driver enables ASPM for more recent r8168 NICs, so
+>>> disable ASPM on older chips and enable ASPM for the rest.
+>>>
+>>> Rename aspm_manageable to pcie_aspm_manageable to indicate it's ASPM
+>>> from PCIe, and use rtl_aspm_supported for Realtek NIC's internal ASPM
+>>> function.
+>>>
+>>> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+>>> ---
+>>> v3:
+>>>  - Use pcie_aspm_supported() to retrieve ASPM support status
+>>>  - Use whitelist for r8169 internal ASPM status
+>>>
+>>> v2:
+>>>  - No change
+>>>
+>>>  drivers/net/ethernet/realtek/r8169_main.c | 27 ++++++++++++++++-------
+>>>  1 file changed, 19 insertions(+), 8 deletions(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+>>> index 3359509c1c351..88e015d93e490 100644
+>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>>> @@ -623,7 +623,8 @@ struct rtl8169_private {
+>>>       } wk;
+>>>
+>>>       unsigned supports_gmii:1;
+>>> -     unsigned aspm_manageable:1;
+>>> +     unsigned pcie_aspm_manageable:1;
+>>> +     unsigned rtl_aspm_supported:1;
+>>>       unsigned rtl_aspm_enabled:1;
+>>>       struct delayed_work aspm_toggle;
+>>>       atomic_t aspm_packet_count;
+>>> @@ -702,6 +703,20 @@ static bool rtl_is_8168evl_up(struct rtl8169_private *tp)
+>>>              tp->mac_version <= RTL_GIGA_MAC_VER_53;
+>>>  }
+>>>
+>>> +static int rtl_supports_aspm(struct rtl8169_private *tp)
+>>> +{
+>>> +     switch (tp->mac_version) {
+>>> +     case RTL_GIGA_MAC_VER_02 ... RTL_GIGA_MAC_VER_31:
+>>> +     case RTL_GIGA_MAC_VER_37:
+>>> +     case RTL_GIGA_MAC_VER_39:
+>>> +     case RTL_GIGA_MAC_VER_43:
+>>> +     case RTL_GIGA_MAC_VER_47:
+>>> +             return 0;
+>>> +     default:
+>>> +             return 1;
+>>> +     }
+>>> +}
+>>> +
+>>>  static bool rtl_supports_eee(struct rtl8169_private *tp)
+>>>  {
+>>>       return tp->mac_version >= RTL_GIGA_MAC_VER_34 &&
+>>> @@ -2669,7 +2684,7 @@ static void rtl_pcie_state_l2l3_disable(struct rtl8169_private *tp)
+>>>
+>>>  static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
+>>>  {
+>>> -     if (!tp->aspm_manageable && enable)
+>>> +     if (!(tp->pcie_aspm_manageable && tp->rtl_aspm_supported) && enable)
+>>>               return;
+>>>
+>>>       tp->rtl_aspm_enabled = enable;
+>>> @@ -5319,12 +5334,8 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>>>       if (rc)
+>>>               return rc;
+>>>
+>>> -     /* Disable ASPM completely as that cause random device stop working
+>>> -      * problems as well as full system hangs for some PCIe devices users.
+>>> -      */
+>>> -     rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S |
+>>> -                                       PCIE_LINK_STATE_L1);
+>>> -     tp->aspm_manageable = !rc;
+>>> +     tp->pcie_aspm_manageable = pcie_aspm_supported(pdev);
+>>
+>> That's not what I meant, and it's also not correct.
+> 
+> In case I make another mistake in next series, let me ask it more clearly...
+> What you meant was to check both link->aspm_enabled and link->aspm_support?
+> 
+aspm_enabled can be changed by the user at any time.
+pci_disable_link_state() also considers whether BIOS forbids that OS
+mess with ASPM. See aspm_disabled.
 
-Yes, this is not that clear. We want the loop on the higher level to
-quit, therefore we return true when there is an error. A problem with
-the stats tests is that they do not terminate when the stats are
-wrong, only when they pass. Once I get the second patch set accepted
-(in some form), we should rewrite these stats tests in that new
-framework so that they will terminate even when the stats are wrong.
-This whole problem will likely disappear at that point. But I will
-scratch my head and try to make it better in this patch.
+>>
+>>> +     tp->rtl_aspm_supported = rtl_supports_aspm(tp);
+> 
+> Is rtl_supports_aspm() what you expect for the whitelist?
+> And what else am I missing?
+> 
+I meant use rtl_supports_aspm() to check when ASPM is relevant at all,
+and in addition use a blacklist for chip versions where ASPM is
+completely unusable.
 
-> > +     }
-> >
-> >       if (optlen == sizeof(struct xdp_statistics)) {
-> >               switch (stat_test_type) {
-> > @@ -666,8 +665,7 @@ static void stats_validate(struct ifobject *ifobject)
-> >                       xsk_stat = stats.rx_dropped;
-> >                       break;
-> >               case STAT_TEST_TX_INVALID:
-> > -                     xsk_stat = stats.tx_invalid_descs;
-> > -                     break;
-> > +                     return true;
-> >               case STAT_TEST_RX_FULL:
-> >                       xsk_stat = stats.rx_ring_full;
-> >                       expected_stat -= RX_FULL_RXQSIZE;
-> > @@ -680,8 +678,33 @@ static void stats_validate(struct ifobject *ifobject)
-> >               }
-> >
-> >               if (xsk_stat == expected_stat)
-> > -                     sigvar = 1;
-> > +                     return true;
-> > +     }
-> > +
-> > +     return false;
-> > +}
-> > +
-> > +static void tx_stats_validate(struct ifobject *ifobject)
-> > +{
-> > +     struct xsk_socket *xsk = ifobject->xsk->xsk;
-> > +     int fd = xsk_socket__fd(xsk);
-> > +     struct xdp_statistics stats;
-> > +     socklen_t optlen;
-> > +     int err;
-> > +
-> > +     optlen = sizeof(stats);
-> > +     err = getsockopt(fd, SOL_XDP, XDP_STATISTICS, &stats, &optlen);
-> > +     if (err) {
-> > +             ksft_test_result_fail("ERROR: [%s] getsockopt(XDP_STATISTICS) error %u %s\n",
-> > +                                   __func__, -err, strerror(-err));
-> > +             return;
-> >       }
-> > +
-> > +     if (stats.tx_invalid_descs == opt_pkt_count)
-> > +             return;
-> > +
-> > +     ksft_test_result_fail("ERROR: [%s] tx_invalid_descs incorrect. Got [%u] expected [%u]\n",
-> > +                           __func__, stats.tx_invalid_descs, opt_pkt_count);
-> >  }
-> >
-> >  static void thread_common_ops(struct ifobject *ifobject, void *bufs)
-> > @@ -767,6 +790,9 @@ static void *worker_testapp_validate_tx(void *arg)
-> >       print_verbose("Sending %d packets on interface %s\n", opt_pkt_count, ifobject->ifname);
-> >       tx_only_all(ifobject);
-> >
-> > +     if (stat_test_type == STAT_TEST_TX_INVALID)
-> > +             tx_stats_validate(ifobject);
-> > +
-> >       testapp_cleanup_xsk_res(ifobject);
-> >       pthread_exit(NULL);
-> >  }
-> > @@ -792,7 +818,8 @@ static void *worker_testapp_validate_rx(void *arg)
-> >               if (test_type != TEST_TYPE_STATS) {
-> >                       rx_pkt(ifobject->xsk, fds);
-> >               } else {
-> > -                     stats_validate(ifobject);
-> > +                     if (rx_stats_are_valid(ifobject))
-> > +                             break;
-> >               }
-> >               if (sigvar)
-> >                       break;
-> > --
-> > 2.29.0
-> >
+> Kai-Heng
+> 
+>>>
+>>>       /* enable device (incl. PCI PM wakeup and hotplug setup) */
+>>>       rc = pcim_enable_device(pdev);
+>>>
+>>
+
