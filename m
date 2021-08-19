@@ -2,106 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D9D03F1034
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 04:06:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67F163F112F
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 05:06:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235588AbhHSCHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 22:07:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41574 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235551AbhHSCHW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 22:07:22 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2959C061764
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 19:06:46 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id y23so4365358pgi.7
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 19:06:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=OrL4s0pfrrLzOp/BIo3qRcvOX3sNT0GNldJEqz5rsDw=;
-        b=fuMVxwkgoSsXiHms6BPF1MiGm1oMsXyg/diivLVc9WjlsYNnzR3+pDhzo52WsEQbvR
-         zhaqt27PqvJbIQuXAPdodbIQ33VwYFrhGPKAFqPEMVtNgcFGP5Gt7PVog7xz+qlaAfAX
-         EWlBPYHdwh3Zy73YzPtbjIYpsIxU64a4ejhckP7w56RWL41LLwZ2sT8rNdeUhAn8MNHf
-         8jhSUPLcBE1hQUhiyZGrn/PU3XF02gbPKqgQbSpySdHZcHYZMtgiCg4sZSdtjPlF+bb3
-         TR8D5hKJ/86RRWLjQUit2RCIxiUDFyOwXs/rDVpxl+qCC1kYKPglwBAzY+fOw4Hfj+q3
-         SD3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=OrL4s0pfrrLzOp/BIo3qRcvOX3sNT0GNldJEqz5rsDw=;
-        b=LBeMePA0tgw6Jk4dVqlzzrF7bUuDrJLNACOYNVQ7Kz/9kfwI0IVX8a+hLiueaK93sY
-         02DL4cS2hQmGVZjiCjSlJ6Vz6gsZJYA09hIwmjc6W1su6kjtHnhThQvAJEELGaQEodM4
-         UNaY7+Ke2u+0Pbn0PuMA9uzQSrRYbU4WCdWqfbPqFzgmcTQQkbwLCxIpv7hTPegHy3qK
-         B97SAZhroa0928SbEpSfHI6bSwZrDKYBsmyo8lkz07he1aOEP3HgEuoFJt7v/PXq/5YP
-         Va8UdfI1R+oFWlplRkRuZw+5Na4GVb1HB0hLt+Hk14+HJRDnBkVFvLmp57A9bpekKhFO
-         XFEw==
-X-Gm-Message-State: AOAM533FfZe23nmMsHSj3NhC2/fyn19t7dTh13B66z+Fi95zHPrPVk37
-        DoJUmgFWINPT05n9bVpQvtnTzXKZQIMLyyIhsKJJSA==
-X-Google-Smtp-Source: ABdhPJwiHXaMpxjpX1zn1MW0xhzAjYXjj3njAvksdlvRoV+Erau19+0l/ULyoFlBelm5iOBpJ4y+tQEfGuVqDZZ8y4I=
-X-Received: by 2002:a63:154d:: with SMTP id 13mr4377452pgv.404.1629338806282;
- Wed, 18 Aug 2021 19:06:46 -0700 (PDT)
+        id S236181AbhHSDGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 23:06:49 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:45053 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236077AbhHSDGs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 23:06:48 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 17J361gmC007584, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 17J361gmC007584
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 19 Aug 2021 11:06:01 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Thu, 19 Aug 2021 11:06:01 +0800
+Received: from fc34.localdomain (172.21.177.102) by RTEXMBS04.realtek.com.tw
+ (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Thu, 19 Aug
+ 2021 11:06:00 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     <kuba@kernel.org>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        Hayes Wang <hayeswang@realtek.com>
+Subject: [PATCH net 0/2] r8152: fix bp settings
+Date:   Thu, 19 Aug 2021 11:05:35 +0800
+Message-ID: <20210819030537.3730-377-nic_swsd@realtek.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210818022215.5979-1-fankaixi.li@bytedance.com> <401464ef-2238-ebe0-c661-714403083317@gmail.com>
-In-Reply-To: <401464ef-2238-ebe0-c661-714403083317@gmail.com>
-From:   =?UTF-8?B?6IyD5byA5Zac?= <fankaixi.li@bytedance.com>
-Date:   Thu, 19 Aug 2021 10:06:35 +0800
-Message-ID: <CAEEdnKEi1ZUMqUjGE7kKZmQLkB+pceo24OLQu9H8PA8J_fUk6Q@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH] ovs: clear skb->tstamp in forwarding path
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     dev@openvswitch.org, netdev@vger.kernel.org,
-        xiexiaohui <xiexiaohui.xxh@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.177.102]
+X-ClientProxiedBy: RTEXH36501.realtek.com.tw (172.21.6.27) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 08/19/2021 02:52:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzgvMTggpFWkyCAxMToyNTowMA==?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 08/19/2021 02:54:56
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 165646 [Aug 18 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 454 454 39c6e442fd417993330528e7f9d13ac1bf7fdf8c
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1;127.0.0.199:7.1.2
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 08/19/2021 02:57:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eric Dumazet <eric.dumazet@gmail.com> =E4=BA=8E2021=E5=B9=B48=E6=9C=8818=E6=
-=97=A5=E5=91=A8=E4=B8=89 =E4=B8=8B=E5=8D=885:32=E5=86=99=E9=81=93=EF=BC=9A
->
->
->
-> On 8/18/21 4:22 AM, fankaixi.li@bytedance.com wrote:
-> > From: kaixi.fan <fankaixi.li@bytedance.com>
-> >
-> > fq qdisc requires tstamp to be cleared in the forwarding path. Now ovs
-> > doesn't clear skb->tstamp. We encountered a problem with linux
-> > version 5.4.56 and ovs version 2.14.1, and packets failed to
-> > dequeue from qdisc when fq qdisc was attached to ovs port.
-> >
->
-> Fixes: fb420d5d91c1 ("tcp/fq: move back to CLOCK_MONOTONIC")
->
-> This is more precise than " version 5.4.56 and ovs version ..."
->
-> Thanks.
->
-> > Signed-off-by: kaixi.fan <fankaixi.li@bytedance.com>
-> > Signed-off-by: xiexiaohui <xiexiaohui.xxh@bytedance.com>
-> > Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-> > ---
-> >  net/openvswitch/vport.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/net/openvswitch/vport.c b/net/openvswitch/vport.c
-> > index 88deb5b41429..cf2ce5812489 100644
-> > --- a/net/openvswitch/vport.c
-> > +++ b/net/openvswitch/vport.c
-> > @@ -507,6 +507,7 @@ void ovs_vport_send(struct vport *vport, struct sk_=
-buff *skb, u8 mac_proto)
-> >       }
-> >
-> >       skb->dev =3D vport->dev;
-> > +     skb->tstamp =3D 0;
-> >       vport->ops->send(skb);
-> >       return;
-> >
-> >
+Fix the wrong bp settings of the firmware.
 
-Hi Eric Dumazet,
+Hayes Wang (2):
+  r8152: fix writing USB_BP2_EN
+  r8152: fix the maximum number of PLA bp for RTL8153C
 
-Yes and many thanks.
+ drivers/net/usb/r8152.c | 23 ++++++++++++++++++++---
+ 1 file changed, 20 insertions(+), 3 deletions(-)
+
+-- 
+2.31.1
+
