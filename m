@@ -2,147 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A8BE3F23CB
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 01:43:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E39353F23DD
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 01:53:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236839AbhHSXnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 19:43:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59028 "EHLO
+        id S236930AbhHSXx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 19:53:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232701AbhHSXnk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 19:43:40 -0400
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24D21C061756
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 16:43:04 -0700 (PDT)
-Received: by mail-oi1-x236.google.com with SMTP id bj40so10774550oib.6
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 16:43:04 -0700 (PDT)
+        with ESMTP id S234148AbhHSXx5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 19:53:57 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D609C061575
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 16:53:20 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id a93so15525179ybi.1
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 16:53:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8LHZxCEWR5/C4vnwOrp7U43kFfte1OHNOyXMODVHA5A=;
-        b=eElLfnhKFd3yW9Uwfwg4ay/PWquxMgQp7A3/vCvgyeg+XrrSjsvEM1fvDeQ6ftAim6
-         8+ntIVwMzPYywiaGr/seW2o4K+wIinmrS0eHMHyszkSDtqcpnlzpTPiapaoE/U17o7rU
-         yO4YU7xRue4Vtzvvg4bq3iNNHFPdCE762BxVmGuSoJno/QV3EEhly0VHleUjEojGJaDN
-         dTun/wU4p3/n5/+OkIYIFQNTsuyTK9OZ+uJ14qe0k2CwQRc1Bj4XJEXlNdn5yeAXxgCs
-         Q+/WXhEBjdWiXi/qQHavSWMrMZ9OUUiUqa4BO7xZJzc9KQpFYVDqTX7emoc0ycEU6b7c
-         wa/w==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=63KoA8xIsswXJCIPxal5wud/3rJsIkh+dfypiPGVen8=;
+        b=mlykyyb6YJvqMKagkxuCgLAdk6feKw2XukuuLJkb7ooouUPNwG3MQiKpx91oqCRdFW
+         eYpKMmQEGPK6zYwmlz8OpsVFekJupgtMUGxRNnNWn8YoE2l8ZHqFrN1Ec2WA+cCvy6nf
+         TQkMQIMmiOjWOqbdL9ym+VXFMYmZ9JiQnDHwYbYXkE0rA337bUXwxIpKMpZZeO8rz4bx
+         uc3ZmsUFdRqmEw73XPUU0TWeXn+MwtnRPFVd1HaQyPEw94FinOBJci/2ktQZ5t5dVq2i
+         9pt8cgByPT47q69rkBd093dkMyb8CLJCeKyKK0bIzMUTfL259QWPsdGQAJMaKFI/gOjH
+         wPDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8LHZxCEWR5/C4vnwOrp7U43kFfte1OHNOyXMODVHA5A=;
-        b=Fr5dZTdbzfWCKQFA/xCo3PX31FnOMEBSYGtivrxmqVELNCGw29EoPpWZ1gFuX3FKMR
-         ak7sl+i614bw0YjaIRurRR7Rfwz/cL29UbBudNxnHwfUtYW9X60LYX7wqvyjKq2is81V
-         TrfSU1Z7gLAIc4o6XFKxa0mSNBKgHc1GQo/NCxGchF2rkfV5TigTMjqWcPcS9IiM1vRU
-         NdY/BCeLz3VswkagPcsVwbs022mNYxW12fuVJ+CAtZz6FwgbDyyxzOLmVUZRKONaO3zW
-         jjwJurO1aXJrwF/mAjHjt1nsp6RWPOna7kYRK44/A7Nqj0RrkqVs9y64IpnalOHwL/aB
-         pNyQ==
-X-Gm-Message-State: AOAM532hiQIbplKEcdeW8oMF1VJu9RNDaRQARUmG7B1PNVDPFnhGQ40k
-        KOLoHR1pgak0jAzqOWFe0vziww==
-X-Google-Smtp-Source: ABdhPJw1Q4apWWBHVYYvewNXXvqK3Xr2GzQSAu+2VXBrcwCXMXMTH9UZhRAI49Wn+01q1dGlrCzfkA==
-X-Received: by 2002:aca:1308:: with SMTP id e8mr926649oii.15.1629416583563;
-        Thu, 19 Aug 2021 16:43:03 -0700 (PDT)
-Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id w14sm1040972otl.58.2021.08.19.16.43.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Aug 2021 16:43:03 -0700 (PDT)
-Date:   Thu, 19 Aug 2021 16:44:26 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 14/15] WIP: PCI: qcom: use pwrseq to power up bus
- devices
-Message-ID: <YR7s2vK7jdUssx+A@ripper>
-References: <20210817005507.1507580-1-dmitry.baryshkov@linaro.org>
- <20210817005507.1507580-15-dmitry.baryshkov@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=63KoA8xIsswXJCIPxal5wud/3rJsIkh+dfypiPGVen8=;
+        b=D5XPjdp6U+OTdAuK0ZZWKKSQ/miS9YlUkjMasnUdxNc9DS1UofDEL/I0ESxl5gX4Si
+         tcRwkLB3YPwayz1gVmC6K5XJCSYO5y44ZcirhpZ2JyEJTflUcy9edYZZ4lfEw0BYUTu9
+         cW/xVfXkXMyqUTrbkEGSF48WwnhJDlhd2nSgpeO9onSULUeBgg6TPFDDmV50dAah/UGQ
+         WRX9xsdjUeEu7M1LfqZP/O0c4KGAwtE6C2HUuwqYz/YI5IcnV7hwPrqggy5ZQa+Ly9c+
+         WgfeYf3VrHyrvt1jacecXWTVFAlg87oB+Sc8GJTPJzf11mYmhpJY+dC1m1N/CO6YqUKc
+         gQkQ==
+X-Gm-Message-State: AOAM531Rr0KJbXaXlZnvJ2l31V51qMkH9AfYRPTod1GXp3MvQj3hnozY
+        oh5Qj7QVc09a1HYJ3Atrc7B5zQsbEWKZ0xY3IPVPhQ==
+X-Google-Smtp-Source: ABdhPJwPOsNqUv86h/852FiFKeo/J0LYEBAGf1X3wQ5FrVYMusXbXeN0XPy5EXkM7zPrxwkij/lu115h8GAKCUL9nOU=
+X-Received: by 2002:a25:804:: with SMTP id 4mr20289745ybi.346.1629417199619;
+ Thu, 19 Aug 2021 16:53:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210817005507.1507580-15-dmitry.baryshkov@linaro.org>
+References: <20210817145245.3555077-1-vladimir.oltean@nxp.com>
+ <cd0d9c40-d07b-e2ab-b068-d0bcb4685d09@bang-olufsen.dk> <20210817223101.7wbdofi7xkeqa2cp@skbuf>
+ <CAGETcx8T-ReJ_Gj-U+nxQyZPsv1v67DRBvpp9hS0fXgGRUQ17w@mail.gmail.com>
+ <6b89a9e1-e92e-ca99-9fbd-1d98f6a7864b@bang-olufsen.dk> <CAGETcx_uj0V4DChME-gy5HGKTYnxLBX=TH2rag29f_p=UcG+Tg@mail.gmail.com>
+ <YR5eMeKzcuYtB6Tk@lunn.ch>
+In-Reply-To: <YR5eMeKzcuYtB6Tk@lunn.ch>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Thu, 19 Aug 2021 16:52:43 -0700
+Message-ID: <CAGETcx9=AyEfjX_-adgRuX=8a0MkLnj8sy2KJGhxpNCinJu4yA@mail.gmail.com>
+Subject: Re: [PATCH net] net: dsa: sja1105: fix use-after-free after calling
+ of_find_compatible_node, or worse
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon 16 Aug 17:55 PDT 2021, Dmitry Baryshkov wrote:
+On Thu, Aug 19, 2021 at 6:35 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > (2) is what is happening in this case. fw_devlink=on sees that
+> > "switch" implements the "switch_intc" and "switch" hasn't finished
+> > probing yet. So it has no way of knowing that switch_intc is actually
+> > ready. And even if switch_intc was registered as part of switch's
+> > probe() by the time the PHYs are added, switch_intc could get
+> > deregistered if the probe fails at a later point. So until probe()
+> > returns 0, fw_devlink can't be fully sure the supplier (switch_intc)
+> > is ready. Which is good in general because you won't have to
+> > forcefully unbind (if that is even handled correctly in the first
+> > place) the consumers of a device if it fails probe() half way through
+> > registering a few services.
 
-> Use bus-pwrseq device tree node to power up the devices on the bus. This
-> is to be rewritten with the proper code parsing the device tree and
-> powering up individual devices.
-> 
+I had to read your email a couple of times before I understood it. I
+think I do now, but apologies if I'm not making sense.
 
-How about describing the PCI device in DT and having the PCIe controller
-dig it up up from there? Although we won't have a struct device until
-later, so perhaps we need the of-based pwrseq_get() for that.
+>
+> There are actually a few different circular references with the way
+> switches work. Take for example:
+>
+> &fec1 {
+>         phy-mode = "rmii";
+>         pinctrl-names = "default";
+>         pinctrl-0 = <&pinctrl_fec1>;
+>         status = "okay";
+>
+>         fixed-link {
+>                 speed = <100>;
+>                 full-duplex;
+>         };
+>
+>         mdio1: mdio {
+>                 #address-cells = <1>;
+>                 #size-cells = <0>;
+>                 clock-frequency = <12500000>;
+>                 suppress-preamble;
+>                 status = "okay";
+>
+>                 switch0: switch0@0 {
+>                         compatible = "marvell,mv88e6190";
+>                         pinctrl-0 = <&pinctrl_gpio_switch0>;
+>                         pinctrl-names = "default";
+>                         reg = <0>;
+>                         eeprom-length = <65536>;
+>                         interrupt-parent = <&gpio3>;
+>                         interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
+>                         interrupt-controller;
+>                         #interrupt-cells = <2>;
+>
+>                         ports {
+>                                 #address-cells = <1>;
+>                                 #size-cells = <0>;
+>
+>                                 port@0 {
+>                                         reg = <0>;
+>                                         label = "cpu";
+>                                         ethernet = <&fec1>;
+>
+>                                         fixed-link {
+>                                                 speed = <100>;
+>                                                 full-duplex;
+>                                         };
+>                                 };
+>
+> FEC is an ethernet controller. It has an MDIO bus, and on the bus is
+> an Ethernet switch. port 0 of the Ethernet switch is connected to the
+> FEC ethernet controller.
+>
+> While the FEC probes, it will at some point register its MDIO bus. At
+> that point, the MDIO bus is probed, the switch is found, and
+> registered with the switch core. The switch core looks for the port
+> with an ethernet property and goes looking for that ethernet
+> interface. But that this point in time, the FEC probe has only got as
+> far as registering the MDIO bus. The interface itself is not
+> registered. So finding the interface fails, and we go into
+> EPROBE_DEFER for probing the switch.
 
-Regards,
-Bjorn
+Ok, I understood up to here. Couple of questions:
+Is this EPROBE_DEFER causing an issue? Wouldn't the switch then
+probe successfully when it's reattempted? And then things work
+normally? I don't see what the problem is.
 
-> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> ---
->  drivers/pci/controller/dwc/pcie-qcom.c | 13 +++++++++++++
->  drivers/power/pwrseq/pwrseq_qca.c      |  1 +
->  2 files changed, 14 insertions(+)
-> 
-> diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-> index 8a7a300163e5..a60d41fbcd6f 100644
-> --- a/drivers/pci/controller/dwc/pcie-qcom.c
-> +++ b/drivers/pci/controller/dwc/pcie-qcom.c
-> @@ -23,6 +23,7 @@
->  #include <linux/pm_runtime.h>
->  #include <linux/platform_device.h>
->  #include <linux/phy/phy.h>
-> +#include <linux/pwrseq/consumer.h>
->  #include <linux/regulator/consumer.h>
->  #include <linux/reset.h>
->  #include <linux/slab.h>
-> @@ -1467,6 +1468,7 @@ static int qcom_pcie_probe(struct platform_device *pdev)
->  	struct pcie_port *pp;
->  	struct dw_pcie *pci;
->  	struct qcom_pcie *pcie;
-> +	struct pwrseq *pwrseq;
->  	int ret;
->  
->  	pcie = devm_kzalloc(dev, sizeof(*pcie), GFP_KERNEL);
-> @@ -1520,6 +1522,17 @@ static int qcom_pcie_probe(struct platform_device *pdev)
->  
->  	pp->ops = &qcom_pcie_dw_ops;
->  
-> +	pwrseq = devm_pwrseq_get_optional(dev, "bus");
-> +	if (IS_ERR(pwrseq)) {
-> +		ret = PTR_ERR(pwrseq);
-> +		goto err_pm_runtime_put;
-> +	}
-> +	if (pwrseq) {
-> +		ret = pwrseq_full_power_on(pwrseq);
-> +		if (ret)
-> +			goto err_pm_runtime_put;
-> +	}
-> +
->  	ret = phy_init(pcie->phy);
->  	if (ret) {
->  		pm_runtime_disable(&pdev->dev);
-> diff --git a/drivers/power/pwrseq/pwrseq_qca.c b/drivers/power/pwrseq/pwrseq_qca.c
-> index 3421a4821126..4107f0a9c05d 100644
-> --- a/drivers/power/pwrseq/pwrseq_qca.c
-> +++ b/drivers/power/pwrseq/pwrseq_qca.c
-> @@ -1,3 +1,4 @@
-> +#define DEBUG
->  // SPDX-License-Identifier: GPL-2.0-only
->  /*
->   * Copyright (c) 2021, Linaro Ltd.
-> -- 
-> 2.30.2
-> 
+> It is pretty hard to solve. An Ethernet interface can be used by the
+> kernel itself, e.g. NFS root. At the point you call register_netdev()
+> in the probe function, to register the interface with the core,
+
+Are you using "ethernet interface" and "ethernet controller"
+interchangeably? Looking at some other drivers, it looks like the
+ethernet controlled (FEC) is what would call register_netdev(). So
+what's wrong with that happening if switch0 has not probed
+successfully?
+
+> it
+> needs to be fully ready to go.  The networking stack can start using
+> the interface before register_netdev() even returns. So you cannot
+> first register the interface and then register the MDIO bus.
+>
+> I once looked to see if it was possible to tell the driver core to not
+> even bother probing a bus as soon as it is registered, go straight to
+> defer probe handling. Because this is one case we know it cannot
+> work. But it does not seem possible.
+
+fw_devlink doesn't understand the "ethernet" property. If I add that,
+then in the example you state above, switch0's probe won't even be
+called until the FEC probe returns. The change is pretty trivial
+(pasted below) -- can you try it out and tell me if it does what you
+need/want?
+
+-Saravana
+
++++ b/drivers/of/property.c
+@@ -1292,6 +1292,7 @@ DEFINE_SIMPLE_PROP(resets, "resets", "#reset-cells")
+ DEFINE_SIMPLE_PROP(leds, "leds", NULL)
+ DEFINE_SIMPLE_PROP(backlight, "backlight", NULL)
+ DEFINE_SIMPLE_PROP(phy_handle, "phy-handle", NULL)
++DEFINE_SIMPLE_PROP(ethernet, "ethernet", NULL)
+ DEFINE_SUFFIX_PROP(regulators, "-supply", NULL)
+ DEFINE_SUFFIX_PROP(gpio, "-gpio", "#gpio-cells")
+
+@@ -1381,6 +1382,7 @@ static const struct supplier_bindings
+of_supplier_bindings[] = {
+        { .parse_prop = parse_leds, },
+        { .parse_prop = parse_backlight, },
+        { .parse_prop = parse_phy_handle, },
++       { .parse_prop = parse_ethernet, },
+        { .parse_prop = parse_gpio_compat, },
+        { .parse_prop = parse_interrupts, },
+        { .parse_prop = parse_regulators, },
