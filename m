@@ -2,195 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 876D03F22F6
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 00:20:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E77543F2311
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 00:23:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237165AbhHSWUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 18:20:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39978 "EHLO
+        id S236398AbhHSWXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 18:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236904AbhHSWUL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 18:20:11 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964EFC061757
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 15:19:34 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id x5so7535043ill.3
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 15:19:34 -0700 (PDT)
+        with ESMTP id S236304AbhHSWXq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 18:23:46 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 673EFC061575;
+        Thu, 19 Aug 2021 15:23:09 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id a5so4807207plh.5;
+        Thu, 19 Aug 2021 15:23:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=bOryrdzD3qCC5WFsDKYio83PoI6w7fQiXhMMT5rIdTM=;
-        b=O0YMdz8y55fYcCHLECiTAc5PuhOOg1smSjJ4C/IMgLibk8+DTlgv/qnjwqIMJwEt2U
-         tqk6W5GEigGoJT4CkFhkT5LYSJ+BVf1Tr0BL4rrgm5ifITnVN3fCsBjaFB9sKrC5AoHt
-         q8diyS/jL4RvOUkB8n+UbRQhdOMpkBSqlOCXv1q90S3ZTpNlzuKvJnfDcCT5wpRGi+Kb
-         bvVqXzMiXh3kkrwoNWxRGLhYgt0jWaxJURQrGJcDeoF2teljuElbjRdEdNZ5iq/PL3py
-         FoicmVQMKyepjbg9qcSETcPgUnozLIkayQz9oLNo8Oq74ZjI3DLjFd9E3syL40hgKph4
-         BY0Q==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=G2jhdOu2ca6vjL9Bc8zir8YaOp90KJxiD9Z7YkrPKcA=;
+        b=I5efwC4rwgdvW16+GSERDjCWU9rB5fLWPRkK2brL+L7DS9vFfvmc31iEfeTntFCTsX
+         TD/N+QsRFRZpkI5P+vijXGsK8nRev+jbv5M4qQIQJgJLFZ/mTK2Ent1Wkdp8ws3tZrqf
+         Ou4QvzP7DWGKzg9HGf4INH8m7k0u20V5eSdbOqscKt0YLX1FyikWJKPGFHuc85gKrXBp
+         NB+nI/bmpCGc0ZwzHL9/L5h3g9SMpWklzDUloAfI6v5HmoaiHYiqHBmYd3c1DeNpzy56
+         FpxCBkHkXZ8W/pwy7eChWKEWCfSCMxgHY3S1ePpApir6/keAUaKKvtqJw/H/0cRoaYiX
+         aWJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=bOryrdzD3qCC5WFsDKYio83PoI6w7fQiXhMMT5rIdTM=;
-        b=XVqSqI2W0uDdjLPr/qDUmxhW3EbWJ1BGTW85etxeORB1GaszOBobGmOyl6+BN9Js8c
-         aY4nFIqBQ51fpMcPZpmjBa0fZo06jX5qg61yyC9hnooK4WWTKRw+1ikydLvbYEmzGFmG
-         qr2Mu4SvCWJYiNqF8gPTWLdhMi/WrJArMJ8aJlTB/CBrk02F2f2olowuMhRmmLOrFAl5
-         wDFCbAcb9haA4bbzMXLmFJ04E1xt10Q09YJkn3hXNR2OBj/D8M0MPSOx1mZADNsCAOVd
-         Paf/e5g31YWycFVGwc4B4BLejZAPU3wOIeCpMTf4mx4EuTK0dO/IKKUPaMFKP+ie6GAu
-         QeXA==
-X-Gm-Message-State: AOAM531DRuiY3j1G0kdOlSEKZSRgnlXQbKWc836YKoaZTuMmWkS+PzkV
-        PZQI/Et31Riw21ZvA+4sqfO47A==
-X-Google-Smtp-Source: ABdhPJzCUT2nFMM9/U4tP1sDyybeRJByki72pPXQJtcSi8ZIzGhKM+oIk2cobdLtv+69NdSRUedHBw==
-X-Received: by 2002:a92:b112:: with SMTP id t18mr11377156ilh.36.1629411573983;
-        Thu, 19 Aug 2021 15:19:33 -0700 (PDT)
-Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id o15sm2245188ilo.73.2021.08.19.15.19.33
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=G2jhdOu2ca6vjL9Bc8zir8YaOp90KJxiD9Z7YkrPKcA=;
+        b=gAJBWENo1vEeklF6nECDdZJe4GNS4NNO109qBwwyFq3EnOXn/OQTXhWkedSNrcKMPn
+         1pFxIWXgj4Xodl+e9ifCuekD/fXPxXfLY4zDygxnX02DaLZawybOTtd/NZb4KBa2gAnE
+         h4FNoZq/Tc9MhM8l0Wkw2e5HMXwJhZ2/67nD94s8u1jrauN0+EnoIF1xJ7kmRhY2lyLR
+         RckWb24wDruKFRxhxtj55Pq61pmu3E1VJETzPy8S2S2UFBzr4T7MgLRZLKM0hWJMEPs1
+         DyVAaD8SPgnJ3PCo9QV5A6vE68MmqV9V2EPxldvNbZTakJfuBrTqHW/MT1nEOIWBrnAs
+         hmog==
+X-Gm-Message-State: AOAM530xPjG25qvPombMMsgSMYXadOJCn0ba9XlIk+OiBs174+SrIoiP
+        43BKxupBr9/rwCOIIn+jQh8=
+X-Google-Smtp-Source: ABdhPJyxQisasRwuzw9WpWpJlRdSmJuuQBJQqIVw5MG3eC1LXHV4Kpl+NjTeBGd1yPDdY0TMpZO/Ng==
+X-Received: by 2002:a17:90a:fa89:: with SMTP id cu9mr1017335pjb.5.1629411788765;
+        Thu, 19 Aug 2021 15:23:08 -0700 (PDT)
+Received: from lvondent-mobl4.intel.com (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
+        by smtp.gmail.com with ESMTPSA id n18sm4678633pfu.3.2021.08.19.15.23.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Aug 2021 15:19:33 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
+        Thu, 19 Aug 2021 15:23:08 -0700 (PDT)
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 5/5] net: ipa: kill ipa_clock_get()
-Date:   Thu, 19 Aug 2021 17:19:27 -0500
-Message-Id: <20210819221927.3286267-6-elder@linaro.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210819221927.3286267-1-elder@linaro.org>
-References: <20210819221927.3286267-1-elder@linaro.org>
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: pull request: bluetooth 2021-08-19
+Date:   Thu, 19 Aug 2021 15:23:07 -0700
+Message-Id: <20210819222307.242695-1-luiz.dentz@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The only remaining user of the ipa_clock_{get,put}() interface is
-ipa_isr_thread().  Replace calls to ipa_clock_get() there calling
-pm_runtime_get_sync() instead.  And call pm_runtime_put() there
-rather than ipa_clock_put().  Warn if we ever get an error.
+The following changes since commit 4431531c482a2c05126caaa9fcc5053a4a5c495b:
 
-With that, we can get rid of ipa_clock_get() and ipa_clock_put().
+  nfp: fix return statement in nfp_net_parse_meta() (2021-07-22 05:46:03 -0700)
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_clock.c     | 17 -----------------
- drivers/net/ipa/ipa_clock.h     | 24 ------------------------
- drivers/net/ipa/ipa_interrupt.c | 14 +++++++-------
- 3 files changed, 7 insertions(+), 48 deletions(-)
+are available in the Git repository at:
 
-diff --git a/drivers/net/ipa/ipa_clock.c b/drivers/net/ipa/ipa_clock.c
-index 8f25107c1f1e7..357be73a45834 100644
---- a/drivers/net/ipa/ipa_clock.c
-+++ b/drivers/net/ipa/ipa_clock.c
-@@ -266,23 +266,6 @@ static int ipa_runtime_idle(struct device *dev)
- 	return -EAGAIN;
- }
- 
--/* Get an IPA clock reference.  If the reference count is non-zero, it is
-- * incremented and return is immediate.  Otherwise the IPA clock is
-- * enabled.
-- */
--int ipa_clock_get(struct ipa *ipa)
--{
--	return pm_runtime_get_sync(&ipa->pdev->dev);
--}
--
--/* Attempt to remove an IPA clock reference.  If this represents the
-- * last reference, disable the IPA clock.
-- */
--int ipa_clock_put(struct ipa *ipa)
--{
--	return pm_runtime_put(&ipa->pdev->dev);
--}
--
- static int ipa_suspend(struct device *dev)
- {
- 	struct ipa *ipa = dev_get_drvdata(dev);
-diff --git a/drivers/net/ipa/ipa_clock.h b/drivers/net/ipa/ipa_clock.h
-index 5c53241336a1a..8c21a007c4375 100644
---- a/drivers/net/ipa/ipa_clock.h
-+++ b/drivers/net/ipa/ipa_clock.h
-@@ -52,28 +52,4 @@ struct ipa_clock *ipa_clock_init(struct device *dev,
-  */
- void ipa_clock_exit(struct ipa_clock *clock);
- 
--/**
-- * ipa_clock_get() - Get an IPA clock reference
-- * @ipa:	IPA pointer
-- *
-- * Return:	0 if clock started, 1 if clock already running, or a negative
-- *		error code
-- *
-- * This call blocks if this is the first reference.  A reference is
-- * taken even if an error occurs starting the IPA clock.
-- */
--int ipa_clock_get(struct ipa *ipa);
--
--/**
-- * ipa_clock_put() - Drop an IPA clock reference
-- * @ipa:	IPA pointer
-- *
-- * Return:	0 if successful, or a negative error code
-- *
-- * This drops a clock reference.  If the last reference is being dropped,
-- * the clock is stopped and RX endpoints are suspended.  This call will
-- * not block unless the last reference is dropped.
-- */
--int ipa_clock_put(struct ipa *ipa);
--
- #endif /* _IPA_CLOCK_H_ */
-diff --git a/drivers/net/ipa/ipa_interrupt.c b/drivers/net/ipa/ipa_interrupt.c
-index 934c14e066a0a..3fecaadb4a37e 100644
---- a/drivers/net/ipa/ipa_interrupt.c
-+++ b/drivers/net/ipa/ipa_interrupt.c
-@@ -21,9 +21,9 @@
- 
- #include <linux/types.h>
- #include <linux/interrupt.h>
-+#include <linux/pm_runtime.h>
- 
- #include "ipa.h"
--#include "ipa_clock.h"
- #include "ipa_reg.h"
- #include "ipa_endpoint.h"
- #include "ipa_interrupt.h"
-@@ -80,14 +80,16 @@ static irqreturn_t ipa_isr_thread(int irq, void *dev_id)
- 	struct ipa_interrupt *interrupt = dev_id;
- 	struct ipa *ipa = interrupt->ipa;
- 	u32 enabled = interrupt->enabled;
-+	struct device *dev;
- 	u32 pending;
- 	u32 offset;
- 	u32 mask;
- 	int ret;
- 
--	ret = ipa_clock_get(ipa);
-+	dev = &ipa->pdev->dev;
-+	ret = pm_runtime_get_sync(dev);
- 	if (WARN_ON(ret < 0))
--		goto out_clock_put;
-+		goto out_power_put;
- 
- 	/* The status register indicates which conditions are present,
- 	 * including conditions whose interrupt is not enabled.  Handle
-@@ -108,15 +110,13 @@ static irqreturn_t ipa_isr_thread(int irq, void *dev_id)
- 
- 	/* If any disabled interrupts are pending, clear them */
- 	if (pending) {
--		struct device *dev = &ipa->pdev->dev;
--
- 		dev_dbg(dev, "clearing disabled IPA interrupts 0x%08x\n",
- 			pending);
- 		offset = ipa_reg_irq_clr_offset(ipa->version);
- 		iowrite32(pending, ipa->reg_virt + offset);
- 	}
--out_clock_put:
--	(void)ipa_clock_put(ipa);
-+out_power_put:
-+	(void)pm_runtime_put(dev);
- 
- 	return IRQ_HANDLED;
- }
--- 
-2.27.0
+  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git tags/for-net-next-2021-08-19
 
+for you to fetch changes up to 61969ef867d48fc76551fe50cefe0501e624766e:
+
+  Bluetooth: Fix return value in hci_dev_do_close() (2021-08-19 17:28:40 +0200)
+
+----------------------------------------------------------------
+bluetooth-next pull request for net-next:
+
+ - Add support for Foxconn Mediatek Chip
+ - Add support for LG LGSBWAC92/TWCM-K505D
+ - hci_h5 flow control fixes and suspend support
+ - Switch to use lock_sock for SCO and RFCOMM
+ - Various fixes for extended advertising
+ - Reword Intel's setup on btusb unifying the supported generations
+
+----------------------------------------------------------------
+Aaron Ma (1):
+      Bluetooth: btusb: Add support for Foxconn Mediatek Chip
+
+Andy Shevchenko (1):
+      Bluetooth: hci_bcm: Fix kernel doc comments
+
+Angus Ainslie (1):
+      Bluetooth: btbcm: add patch ram for bluetooth
+
+Archie Pusaka (4):
+      Bluetooth: btrtl: Set MSFT opcode for RTL8852
+      Bluetooth: hci_h5: add WAKEUP_DISABLE flag
+      Bluetooth: hci_h5: btrtl: Maintain flow control if wakeup is enabled
+      Bluetooth: hci_h5: Add runtime suspend
+
+Chethan T N (1):
+      Bluetooth: btusb: Enable MSFT extension for Intel next generation controllers
+
+Colin Ian King (2):
+      6lowpan: iphc: Fix an off-by-one check of array index
+      Bluetooth: increase BTNAMSIZ to 21 chars to fix potential buffer overflow
+
+Dan Carpenter (1):
+      Bluetooth: sco: prevent information leak in sco_conn_defer_accept()
+
+Desmond Cheong Zhi Xi (7):
+      Bluetooth: skip invalid hci_sync_conn_complete_evt
+      Bluetooth: schedule SCO timeouts with delayed_work
+      Bluetooth: avoid circular locks in sco_sock_connect
+      Bluetooth: switch to lock_sock in SCO
+      Bluetooth: serialize calls to sco_sock_{set,clear}_timer
+      Bluetooth: switch to lock_sock in RFCOMM
+      Bluetooth: fix repeated calls to sco_sock_kill
+
+Forest Crossman (1):
+      Bluetooth: btusb: Add support for LG LGSBWAC92/TWCM-K505D
+
+Hans de Goede (1):
+      Bluetooth: hci_h5: Disable the hci_suspend_notifier for btrtl devices
+
+Ian Mackinnon (1):
+      Bluetooth: btusb: Load Broadcom firmware for Dell device 413c:8197
+
+Ismael Ferreras Morezuelas (1):
+      Bluetooth: btusb: Make the CSR clone chip force-suspend workaround more generic
+
+Jun Miao (1):
+      Bluetooth: btusb: Fix a unspported condition to set available debug features
+
+Kai-Heng Feng (1):
+      Bluetooth: Move shutdown callback before flushing tx and rx queue
+
+Kangmin Park (1):
+      Bluetooth: Fix return value in hci_dev_do_close()
+
+Kees Cook (1):
+      Bluetooth: mgmt: Pessimize compile-time bounds-check
+
+Kiran K (1):
+      Bluetooth: Fix race condition in handling NOP command
+
+Larry Finger (1):
+      Bluetooth: Add additional Bluetooth part for Realtek 8852AE
+
+Len Baker (1):
+      Bluetooth: btmrvl_sdio: Remove all strcpy() uses
+
+Luiz Augusto von Dentz (4):
+      Bluetooth: HCI: Add proper tracking for enable status of adv instances
+      Bluetooth: Fix not generating RPA when required
+      Bluetooth: Fix handling of LE Enhanced Connection Complete
+      Bluetooth: Store advertising handle so it can be re-enabled
+
+Max Chou (1):
+      Bluetooth: btusb: Remove WAKEUP_DISABLE and add WAKEUP_AUTOSUSPEND for Realtek devices
+
+Michael Sun (2):
+      Bluetooth: btusb: Add valid le states quirk
+      Bluetooth: btusb: Enable MSFT extension for WCN6855 controller
+
+Pauli Virtanen (1):
+      Bluetooth: btusb: check conditions before enabling USB ALT 3 for WBS
+
+Pavel Skripkin (1):
+      Bluetooth: add timeout sanity check to hci_inquiry
+
+Randy Dunlap (1):
+      Bluetooth: btrsi: use non-kernel-doc comment for copyright
+
+Tedd Ho-Jeong An (13):
+      Bluetooth: mgmt: Fix wrong opcode in the response for add_adv cmd
+      Bluetooth: Add support hdev to allocate private data
+      Bluetooth: btintel: Add combined setup and shutdown functions
+      Bluetooth: btintel: Refactoring setup routine for legacy ROM sku
+      Bluetooth: btintel: Add btintel data struct
+      Bluetooth: btintel: Fix the first HCI command not work with ROM device
+      Bluetooth: btintel: Fix the LED is not turning off immediately
+      Bluetooth: btintel: Add combined set_diag functions
+      Bluetooth: btintel: Refactoring setup routine for bootloader devices
+      Bluetooth: btintel: Move hci quirks to setup routine
+      Bluetooth: btintel: Clean the exported function to static
+      Bluetooth: btintel: Fix the legacy bootloader returns tlv based version
+      Bluetooth: btintel: Combine setting up MSFT extension
+
+Tetsuo Handa (1):
+      Bluetooth: defer cleanup of resources in hci_unregister_dev()
+
+Wai Paulo Valerio Wang (1):
+      Bluetooth: btusb: Add support for IMC Networks Mediatek Chip
+
+mark-yw.chen (4):
+      Bluetooth: btusb: Enable MSFT extension for Mediatek Chip (MT7921)
+      Bluetooth: btusb: Record debug log for Mediatek Chip.
+      Bluetooth: btusb: Support Bluetooth Reset for Mediatek Chip(MT7921)
+      Bluetooth: btusb: Fix fall-through warnings
+
+ drivers/bluetooth/btbcm.c        |    1 +
+ drivers/bluetooth/btintel.c      | 1314 +++++++++++++++++++++++++++++++--
+ drivers/bluetooth/btintel.h      |  119 ++-
+ drivers/bluetooth/btmrvl_sdio.c  |   29 +-
+ drivers/bluetooth/btrsi.c        |    2 +-
+ drivers/bluetooth/btrtl.c        |   10 +-
+ drivers/bluetooth/btusb.c        | 1510 ++++++++------------------------------
+ drivers/bluetooth/hci_bcm.c      |    6 +
+ drivers/bluetooth/hci_h5.c       |  116 ++-
+ drivers/bluetooth/hci_serdev.c   |    3 +
+ drivers/bluetooth/hci_uart.h     |    7 +-
+ include/net/bluetooth/hci_core.h |   20 +-
+ net/6lowpan/debugfs.c            |    3 +-
+ net/bluetooth/cmtp/cmtp.h        |    2 +-
+ net/bluetooth/hci_core.c         |   57 +-
+ net/bluetooth/hci_event.c        |  223 ++++--
+ net/bluetooth/hci_request.c      |   81 +-
+ net/bluetooth/hci_sock.c         |   20 +-
+ net/bluetooth/hci_sysfs.c        |    2 +-
+ net/bluetooth/mgmt.c             |    4 +-
+ net/bluetooth/rfcomm/sock.c      |    8 +-
+ net/bluetooth/sco.c              |  106 +--
+ 22 files changed, 2088 insertions(+), 1555 deletions(-)
