@@ -2,111 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCA573F1605
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 11:17:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F07523F1617
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 11:24:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237325AbhHSJSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 05:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54622 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237216AbhHSJRj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 05:17:39 -0400
-Received: from forward100j.mail.yandex.net (forward100j.mail.yandex.net [IPv6:2a02:6b8:0:801:2::100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1984C061575
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 02:17:00 -0700 (PDT)
-Received: from myt5-89d0765c5c65.qloud-c.yandex.net (myt5-89d0765c5c65.qloud-c.yandex.net [IPv6:2a02:6b8:c12:3e1f:0:640:89d0:765c])
-        by forward100j.mail.yandex.net (Yandex) with ESMTP id 4E0A764F27C3;
-        Thu, 19 Aug 2021 12:16:53 +0300 (MSK)
-Received: from myt5-ca5ec8faf378.qloud-c.yandex.net (myt5-ca5ec8faf378.qloud-c.yandex.net [2a02:6b8:c12:2514:0:640:ca5e:c8fa])
-        by myt5-89d0765c5c65.qloud-c.yandex.net (mxback/Yandex) with ESMTP id GsaM8CAsl0-GrH4BahK;
-        Thu, 19 Aug 2021 12:16:53 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1629364613;
-        bh=ZIsZMznqwCvXQEq2mpEZROyvikPAJ2XM6Q/UOyAX/Rs=;
-        h=In-Reply-To:Reply-To:Message-ID:Subject:To:From:References:Date:
-         Cc;
-        b=YDiDU2rR3sRNgWZC/6cl/idtE4HSXiIycMgHp/WlPN7UYrtl59c+SozjYkHGpXzT5
-         lzYbfTzxnZ2Hxpp229lvRi8TQwjC3FQbGuod3iKAeBXRwtvo+W2sbq4ieIWExq1tf4
-         EFKT4N/iuTvjGY8A+ZvawCCvFLoMtPUY+6YaPZlY=
-Authentication-Results: myt5-89d0765c5c65.qloud-c.yandex.net; dkim=pass header.i=@yandex.ru
-Received: by myt5-ca5ec8faf378.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id BPHASKTnwu-GqiSXReW;
-        Thu, 19 Aug 2021 12:16:52 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-Date:   Thu, 19 Aug 2021 12:16:52 +0300
-From:   Oleg <lego12239@yandex.ru>
-To:     Thorsten Glaser <t.glaser@tarent.de>
-Cc:     netdev@vger.kernel.org
-Subject: Re: ipv6 ::1 and lo dev
-Message-ID: <20210819091652.GA22188@legohost>
-Reply-To: Oleg <lego12239@yandex.ru>
-References: <20210818165919.GA24787@legohost>
- <fb3e3ad3-7bc3-9420-d3f6-e9bae91f4cd@tarent.de>
+        id S234040AbhHSJZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 05:25:17 -0400
+Received: from mail-lf1-f46.google.com ([209.85.167.46]:36603 "EHLO
+        mail-lf1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229448AbhHSJZQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 05:25:16 -0400
+Received: by mail-lf1-f46.google.com with SMTP id r9so11475552lfn.3;
+        Thu, 19 Aug 2021 02:24:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ILYDCppuvFZoKFobc82YakJdHXPK2hb0yUNeKSxvHzo=;
+        b=N76JFLUtC2/HHO9Rxxkoxri46r0j4GUjLSa1Xlq4cLqOqnNl864gBi9Ra6A3RyWdHO
+         WToSI8wyCEaJaNLkXetVwsxZPZQf3kP8xnGVmucRbFG3G86rOibHzGmzUUlGgHnPh4Ax
+         itaq5bFLdDMZQDvw86138YsNDarnsrh1L43wa32cmSOb15WseA8aHN7jVP7lZn/UU+5r
+         nz7XUnPZxkKk83ypeL9XxKZzcq06DIy0Ix92KTdINIyHP7PWQCy+7poIti3+O82PrpC7
+         ATR2sG71d8QPs+QNLvSpRNTQh53H9POOh+No8iOTKyHIHabxTpjejV1QXOOxl1n1AiWG
+         oaNw==
+X-Gm-Message-State: AOAM5304xotFbE9afFbkX2uqa4iVA9XrYLG1/7+/W4uOrPo+twDIH9Aq
+        ddUfNV+PaIly7PP6IJol8t0+CjJNQKER4BUl7LRzJpuuumo3Vw==
+X-Google-Smtp-Source: ABdhPJx0oHSXYAd8W7hO0TM69SuIG7H5yBKVoSOniXVHQ2SQp7tDENYABHsqD3ZibNHGPVLycv5ngyB9FkaA0XM2wuQ=
+X-Received: by 2002:a05:6512:3aa:: with SMTP id v10mr9936420lfp.393.1629365078821;
+ Thu, 19 Aug 2021 02:24:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <fb3e3ad3-7bc3-9420-d3f6-e9bae91f4cd@tarent.de>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20210815033248.98111-1-mailhol.vincent@wanadoo.fr>
+ <20210815033248.98111-2-mailhol.vincent@wanadoo.fr> <20210819074514.jkg7fwztzpxecrwb@pengutronix.de>
+In-Reply-To: <20210819074514.jkg7fwztzpxecrwb@pengutronix.de>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Thu, 19 Aug 2021 18:24:27 +0900
+Message-ID: <CAMZ6RqL0uT7tNNxRjAYaUNrnsSV6smMQvowttLaqjUrOZ5V1Fg@mail.gmail.com>
+Subject: Re: [PATCH v5 1/7] can: netlink: allow user to turn off unsupported features
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-can <linux-can@vger.kernel.org>,
+        =?UTF-8?Q?Stefan_M=C3=A4tje?= <Stefan.Maetje@esd.eu>,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 18, 2021 at 07:47:37PM +0200, Thorsten Glaser wrote:
-> On Wed, 18 Aug 2021, Oleg wrote:
-> 
-> > I try to replace ::1/128 ipv6 address on lo dev with ::1/112 to
-> > access more than 1 address(like with ipv4 127.0.0.1/8). But i get
-> 
-> AIUI this is not possible in IPv6, only :: and ::1 are reserved,
-> the rest of ::/96 is IPv4-compatible IPv6 addresses.
+On Thu. 19 Aug 2021 at 16:45, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> On 15.08.2021 12:32:42, Vincent Mailhol wrote:
+> > The sanity checks on the control modes will reject any request related
+> > to an unsupported features, even turning it off.
+> >
+> > Example on an interface which does not support CAN-FD:
+> >
+> > $ ip link set can0 type can bitrate 500000 fd off
+> > RTNETLINK answers: Operation not supported
+> >
+> > This patch lets such command go through (but requests to turn on an
+> > unsupported feature are, of course, still denied).
+> >
+> > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+>
+> I'm planing to send a pull request to net-next today. I want to do some
+> more tests with this series
 
-This is a big mistake of standards and, i think, we shouldn't conform to
-standards in this area. Because standards conflicts with real life practice
-(and needs) here.
+Ack, I am also preparing a new version. But first, I am just
+waiting for your reply on the tdc-mode {auto, manual, off}. :)
 
-I think, we can safely use ::/104 as analog of 127.0.0.1/8, because, AFAIK,
-0.0.0.0/8 isn't used now in practice and thus there are no problems with
-ipv4-mapped ipv6 addresses.
+> but this patch is more or less unrelated,
+> so I can take it in this PR, should I?
 
-In any case, we should allow users to get an expected behaviour for lo dev
-address - as with 127.0.0.1/8. I.e. when i remove ::1/128 and set ::1/104
-i expect that ping ::2, ::3 and etc will work(may be only if some parameter for
-"ip a add" is specified).
+FYI, the reason to add it to the series is that when setting TDC to
+off, the ip tool sets both CAN_CTRLMODE_TDC_AUTO and
+CAN_CTRLMODE_TDC_MANUAL to zero (which the corresponding bits in
+can_ctrlmode::mask set to 1).  Without this patch, netlink would
+return -ENOTSUPP if the driver only supported one of
+CAN_CTRLMODE_TDC_{AUTO,MANUAL}.
 
-Unfortunately i can't suggest any patch, because my kernel programming level
-is about 0 :-). May be anybody can do it?
+Regardless, this patch makes sense as a standalone, I am fine if
+you include it in your PR.
 
-> I never understood why you’d want more than one address for loopback
-> anyway (in my experience, the more addresses a host has, the more
-> confused it’ll get about which ones to use for what).
 
-Besides already mentioned cases i say you about my 2 cases:
+Also, if you want, you can include the latest patch of the series as well:
+https://lore.kernel.org/linux-can/20210815033248.98111-8-mailhol.vincent@wanadoo.fr/
 
-1. We have a service which serve many tunnels to different machines
-  (think of it as many ssh -R X:127.0.0.N:Y to our service servers). Each
-  machine is mapped to address:port(thus it constant between sessions).
-  And we use many addresses from 127.0.0.1/8 :-).
-2. We have many qemu VMs on several hardware hosts. We assign an address
-  to every VM from 127.0.0.1/8 for comfort use of telnet/vnc. E.g. we
-  have in /etc/hosts something like this(where third column is for
-  host machine index and fourth column is for VM index):
+It's a comment fix, it should be pretty harmless.
 
-  ...
-  127.0.1.2       www1.vm
-  127.0.1.3       www2.vm
-  127.0.1.4       www3.vm
-  127.0.1.5       dns1.vm
-  127.0.1.5       dns2.vm
-  127.0.1.6       mail1.vm
-  ...
 
-  and run qemu with:
-
-  -serial telnet:dns1.vm:23,server,nowait -vnc dns1.vm:0
-
-  This /etc/hosts syncronized between hardware hosts and if one if it fail
-  we can migrate all VMs from it to another one and their addresses aren't
-  intermixed.
-
--- 
-Олег Неманов (Oleg Nemanov)
+Yours sincerely,
+Vincent
