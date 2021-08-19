@@ -2,69 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52AA13F1BF4
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 16:52:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDD8E3F1C2D
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 17:05:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240640AbhHSOxK convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Aug 2021 10:53:10 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:45577 "EHLO
+        id S238681AbhHSPGU convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Aug 2021 11:06:20 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:44635 "EHLO
         mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238590AbhHSOxJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 10:53:09 -0400
+        with ESMTP id S238292AbhHSPGT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 11:06:19 -0400
 Received: from smtpclient.apple (p5b3d23f8.dip0.t-ipconnect.de [91.61.35.248])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 04737CED16;
-        Thu, 19 Aug 2021 16:52:30 +0200 (CEST)
+        by mail.holtmann.org (Postfix) with ESMTPSA id E45AECED16;
+        Thu, 19 Aug 2021 17:05:41 +0200 (CEST)
 Content-Type: text/plain;
         charset=us-ascii
 Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
-Subject: Re: [PATCH] Bluetooth: mgmt: Pessimize compile-time bounds-check
+Subject: Re: [PATCH] Bluetooth: add timeout sanity check to hci_inquiry
 From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20210818043912.1466447-1-keescook@chromium.org>
-Date:   Thu, 19 Aug 2021 16:52:30 +0200
+In-Reply-To: <20210817103108.1160-1-paskripkin@gmail.com>
+Date:   Thu, 19 Aug 2021 17:05:41 +0200
 Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
         Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:BLUETOOTH SUBSYSTEM" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-hardening@vger.kernel.org
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+be2baed593ea56c6a84c@syzkaller.appspotmail.com
 Content-Transfer-Encoding: 8BIT
-Message-Id: <73F86183-989F-439F-9A92-B186C4E3306E@holtmann.org>
-References: <20210818043912.1466447-1-keescook@chromium.org>
-To:     Kees Cook <keescook@chromium.org>
+Message-Id: <0038C6D9-DEAF-4CB2-874C-00F6CEFCF26C@holtmann.org>
+References: <20210817103108.1160-1-paskripkin@gmail.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
 X-Mailer: Apple Mail (2.3654.120.0.1.13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kees,
+Hi Pavel,
 
-> After gaining __alloc_size hints, GCC thinks it can reach a memcpy()
-> with eir_len == 0 (since it can't see into the rewrite of status).
-> Instead, check eir_len == 0, avoiding this future warning:
+> Syzbot hit "task hung" bug in hci_req_sync(). The problem was in
+> unreasonable huge inquiry timeout passed from userspace.
+> Fix it by adding sanity check for timeout value and add constant to
+> hsi_sock.h to inform userspace, that hci_inquiry_req::length field has
+> maximum possible value.
 > 
-> In function 'eir_append_data',
->    inlined from 'read_local_oob_ext_data_complete' at net/bluetooth/mgmt.c:7210:12:
-> ./include/linux/fortify-string.h:54:29: warning: '__builtin_memcpy' offset 5 is out of the bounds [0, 3] [-Warray-bounds]
-> ...
-> net/bluetooth/hci_request.h:133:2: note: in expansion of macro 'memcpy'
->  133 |  memcpy(&eir[eir_len], data, data_len);
->      |  ^~~~~~
+> Since hci_inquiry() is the only user of hci_req_sync() with user
+> controlled timeout value, it makes sense to check timeout value in
+> hci_inquiry() and don't touch hci_req_sync().
 > 
-> Cc: Marcel Holtmann <marcel@holtmann.org>
-> Cc: Johan Hedberg <johan.hedberg@gmail.com>
-> Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: linux-bluetooth@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Reported-and-tested-by: syzbot+be2baed593ea56c6a84c@syzkaller.appspotmail.com
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 > ---
-> net/bluetooth/mgmt.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> Hi, Bluetooth maintainers/reviewers!
+> 
+> I believe, 60 seconds will be more than enough for inquiry request. I've
+> searched for examples on the internet and maximum ir.length I found was 
+> 8. Maybe, we have users, which need more than 60 seconds... I look forward
+> to receiving your views on this value.
+> 
+> ---
+> include/net/bluetooth/hci_sock.h | 1 +
+> net/bluetooth/hci_core.c         | 5 +++++
+> 2 files changed, 6 insertions(+)
+> 
+> diff --git a/include/net/bluetooth/hci_sock.h b/include/net/bluetooth/hci_sock.h
+> index 9949870f7d78..1cd63d4da00b 100644
+> --- a/include/net/bluetooth/hci_sock.h
+> +++ b/include/net/bluetooth/hci_sock.h
+> @@ -168,6 +168,7 @@ struct hci_inquiry_req {
+> 	__u16 dev_id;
+> 	__u16 flags;
+> 	__u8  lap[3];
+> +#define HCI_INQUIRY_MAX_TIMEOUT		30
+> 	__u8  length;
+> 	__u8  num_rsp;
+> };
+> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+> index e1a545c8a69f..104babf67351 100644
+> --- a/net/bluetooth/hci_core.c
+> +++ b/net/bluetooth/hci_core.c
+> @@ -1343,6 +1343,11 @@ int hci_inquiry(void __user *arg)
+> 		goto done;
+> 	}
+> 
 
-patch has been applied to bluetooth-next tree.
+	/* Restrict maximum inquiry length to 60 seconds */
+	if (ir.length > 60) {
+		..
+	}
+
+> +	if (ir.length > HCI_INQUIRY_MAX_TIMEOUT) {
+> +		err = -EINVAL;
+> +		goto done;
+> +	}
+> +
+
+I found this easier to read than adding anything define somewhere else. And since this is a legacy interface that is no longer used by bluetoothd, this should be fine. We will start to deprecate this eventually.
+
+And I prefer 1 minute max time here. Just to be safe.
 
 Regards
 
