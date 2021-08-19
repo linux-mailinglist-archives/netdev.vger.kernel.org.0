@@ -2,309 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20E373F1F3A
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 19:36:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7A813F1F47
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 19:40:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232039AbhHSRhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 13:37:15 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:35048 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229465AbhHSRhM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 13:37:12 -0400
-Received: from netfilter.org (unknown [213.94.13.0])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 88C216002F;
-        Thu, 19 Aug 2021 19:35:45 +0200 (CEST)
-Date:   Thu, 19 Aug 2021 19:36:26 +0200
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter <netfilter@vger.kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>
-Cc:     netdev@vger.kernel.org, netfilter-announce@lists.netfilter.org,
-        lwn@lwn.net
-Subject: [ANNOUNCE] nftables 1.0.0 release
-Message-ID: <20210819173626.GA1776@salvia>
+        id S231517AbhHSRlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 13:41:12 -0400
+Received: from mail-eopbgr00081.outbound.protection.outlook.com ([40.107.0.81]:62067
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229728AbhHSRlL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Aug 2021 13:41:11 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KmtSvOtCCGlxNfEToKByN7MY5r/5thBx7ctBhG4qfxm9nvxnnMEm7XNjbt19LUHHs4Hb+IlDX92oN1RmZyTb67nmUaReoWooIzUaGzoCOL8FDcUmg0DgS0n4HJ5Al3d1903OqHcmqFODtP4Ew7sLkvnSWSAkyOk+PMZCYWpOb3uvA/yS/quX819OuuPkeK5kFnXFBy9Qgm9bfVklxIXS7pSLNVxZbP81RvITRrZnkej6XC8Sxg40cImN1/ypLHeudJsERLra4WKYsAuYD81Q8gnCG/tOcuV3KXSRa8l8MO4NtA0BcXSCedEpRkXWcIN3/NT27u2PG8WPzdgkwWgbxQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Pc+jvJzJUl7qOi21ZEvSC0rZojwOthvCFeOFeDO5nYs=;
+ b=XZ7pO5JmYI+yOJ05OVfDflUB8lQ+SXaDODuoZDhl+vWbpjaUqY61PhBS0SE/Vek/i0NzMi+pShnMGXsEnpq9GOyOS+3tj0UnRQ9mwaKdGdOW93cNxWPvY9e43CJ7aX+Q9RmRa56du6XziutZojmeXJNGkUzL9OacmdNftHwn95oEdMFjpGlpVVXnHsVROUbhtd3GZMkjwlJ39Rmv/2UbtJ1ML1uXHFBqny1umMFPtFAf6OhOLwVIRg7z5dM2SbVgkI482CGatRnvonZWMsBtoRnJ3C9QvjkvwocMsCNfyQgHs5n8olaHIrqcVJoKzTZGjQr7Q11ObBf2OC7/5lqDOw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Pc+jvJzJUl7qOi21ZEvSC0rZojwOthvCFeOFeDO5nYs=;
+ b=apaj1gukLUZACcN9i6/SaEa5ELWA6AQLf0RHVrvJUgnIkFSFVhbvhVtZt61sJsXUISjFdKPyGASFLB3njDRDEqldhyu3RK5Y9nWSzNuBBHklGdYPcyQ8mKgGtzZjBdX6uzHU92OwHyQ9HMO4WL5ZPDlgFO2Qj4R2vCbvytE+8OA=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR0401MB2686.eurprd04.prod.outlook.com (2603:10a6:800:5b::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.17; Thu, 19 Aug
+ 2021 17:40:32 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4436.019; Thu, 19 Aug 2021
+ 17:40:32 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        UNGLinuxDriver@microchip.com
+Subject: [PATCH v2 net-next 0/3] Small ocelot VLAN improvements
+Date:   Thu, 19 Aug 2021 20:40:05 +0300
+Message-Id: <20210819174008.2268874-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR02CA0191.eurprd02.prod.outlook.com
+ (2603:10a6:20b:28e::28) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="opJtzjQTFsWo+cga"
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (188.25.144.60) by AM0PR02CA0191.eurprd02.prod.outlook.com (2603:10a6:20b:28e::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Thu, 19 Aug 2021 17:40:30 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 930a1eef-92fe-4f30-8809-08d963387138
+X-MS-TrafficTypeDiagnostic: VI1PR0401MB2686:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR0401MB26866DFC6D1C8C30990D9204E0C09@VI1PR0401MB2686.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 6F6c8vR6YDKC3F/dZ4WymG0JWFZE+jgS20CgRANLN5cePyNOY6FZMv2R1/PIlJuYJ3DIXDg9IMqNYdy8MJgP5pYgD+cp1d0w0aqbuPehWaxb4SkR+mRlSOM2NwK8D/5OT4kqe/jOdEqrvlw2rgoiJW2XpnmfgloePnR42KIIFITQ4mlaaYjccEMc15d9nna8m5Xi3lq11wQiHqTc65SYGlIt/FfjOKsP+MZ1h5RWGd4JDEfFj4uYhOGmfaVQYNBd4khn7e1e6Z8BxMFcJpvE3OSG0Hcbm4ganNa+WfXPCbzdGrmVHQ3gK8SgGn4YfyjtxRfltQjcIKlOpcvP9yh9LXngZGTr57W5Y6cG+0cvl76lLz3PXiyahQwM59Zd8liLji/8pm8FXag/k1SohA0GYl/3HRexqzQ7ztVn9fdM9AfnhNy6gmjPgwRIRLo9QBJRhcJD7UdGtd9qVGF1DvR3npgVJPt573on+bpXPvn8esXbPnttqFji+EJBeBlmsfuGCdtyimddoXCdJjfrea4T5V6wNJDWYnjlQve1cBLwBh33PA0oXdzbHjJAwp6k+yGXkvwK1n/BycKUais3oMZx1LZewTkjJhbPLgzszFETkJxLGStBYwQF1e7SzEJlAt82T/MHrjryrOlQbGfY5lZXvvnDeSgRZkgkhxB2mZTIU5SgDeux/bjPVOXIWNLJpye+4bqrZ9593oVpBgostt2+gi0qUh8f6gQY+BJfINJBT6J8DgkWY0qlIkB3IApzH7Ay8O9Dgwyf5hheZs6bx4PlEA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(396003)(346002)(39850400004)(376002)(6486002)(966005)(316002)(6666004)(44832011)(4744005)(83380400001)(110136005)(54906003)(1076003)(8936002)(36756003)(186003)(26005)(38350700002)(8676002)(5660300002)(6506007)(6512007)(86362001)(38100700002)(4326008)(956004)(2616005)(478600001)(66476007)(66556008)(66946007)(2906002)(52116002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?kTUnhYxUzAGZH8bTc5lepG4RrpS4MseCgsyeCdVgUynrUGVzcNtzerXZFhBS?=
+ =?us-ascii?Q?npmwrCaWkp55L2EgaokHd3dE3mCX1f5DfD/sCpJddZbzFTTooa2E+PdFsoga?=
+ =?us-ascii?Q?xwF6pU/MP1EbhBC2smvUMRHrbmqSKbxNwSTsnOk9SNf/uPb7as0f9rcHHOW6?=
+ =?us-ascii?Q?dv2MmQoX2mqUuhO2wppOFD+RwOjp9Jycs6RdEhenSJQQHRAHA/m6qJUsZE9j?=
+ =?us-ascii?Q?1jLoP2Bag7OU7nJ6m1V9g/G1pNcuF8+j+nQtn2jmILA89iXe74dLs4nxwmsK?=
+ =?us-ascii?Q?hScX93xmStJcsiQYMVnWgPD+P8nB8HmcJorTQj8CtOiVNmmLq+5SPLk6YIY7?=
+ =?us-ascii?Q?3Z0d37dmJeWf5VqynGHaky9x6U3K2DCHOrU2Rtjh1FsavizXXV/sAwSGxNid?=
+ =?us-ascii?Q?LUdsX9GQ8V+s2Zshdq6rYdHKO4EXjwwPhYkdZKf5wFtfIaHgys4VGCFNvH6K?=
+ =?us-ascii?Q?nVTEqo4QIkGbQjKQ1KMApWJrl37AV2LnJ//6foJqO1EHQQ6xDqwfKyzwK6Fp?=
+ =?us-ascii?Q?MKp2H1a4MLgKw2u4B+RS+OlQ09ugOXLBy8VTEn4hDngXTvfOmKuUqaRlEFjI?=
+ =?us-ascii?Q?k5vh8XoBhREtpV5BPvRrZPmNgFFJ7ouv3a6vwkyXo3T2OKT1sdaoT421UJD5?=
+ =?us-ascii?Q?5DEoNKAOrmp9eAKs7tamKUnraJ6oJfubhwBF0kPLi0A4LgsfKClcvRFTWddK?=
+ =?us-ascii?Q?QiJ86n55I7q182T/2kd6woxJ2zFHAqapwxhJYNJWF6jd0nPDNu0rzgwksMbU?=
+ =?us-ascii?Q?w6w3PdgQyBN97FQGf/wS+sgAQlcq0vTSHqqflQgN02STv/f/hGSbbpNS8f6/?=
+ =?us-ascii?Q?6T2xrhqD1DpoYH/XvSm495hHqJ57WmrLlsfarnbWvZjkswmE7gXKs1nGiuAb?=
+ =?us-ascii?Q?uZFLnaK++QahxJ1/XAqwLxncH6OJ+NZ57JxZM2TQTefO0pt/dki87DY77zFW?=
+ =?us-ascii?Q?R0qy5e42SJoTkUjXct8fTyLkWriPCammVAor846a20BS9CvQzwwaiStwJ0Mb?=
+ =?us-ascii?Q?8/pQigt4BzdqBgVPmtfOF8q+VAV+KaUI1x7b1LOO6EGgjYBeHmkE/5vK29I3?=
+ =?us-ascii?Q?tQT847jOz5yaqPpda3k/OFuYagxQllvNdSBoRvnPq3AX5q+fbzk7W60A4AMs?=
+ =?us-ascii?Q?Tw/GGIS8PE808/5phvwuVP1TdFEf/m93B1N7z/W0q6iw/5PIdJKrU/Ll6gJY?=
+ =?us-ascii?Q?/ejox4V2SCnZpbOO2ucPSsN7uSG3fUswh7c/whnlSLIoh+M6/No0A+GwUkeB?=
+ =?us-ascii?Q?vhUboaY3C4ONZF1CWrm7O+VsjfKsQVmuDle6KyISG0Ev0ZftHakAHAUx6vVT?=
+ =?us-ascii?Q?T1efJ8hGtver5N5cwiwkKQTs?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 930a1eef-92fe-4f30-8809-08d963387138
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2021 17:40:31.9863
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HpgZBUFuuPpRRrT9vBx346mg6nZD4z2cW2k/dr9jMO8vH3sfR059xurtgfZaC6ss9xBhi5Vjjli/kXIuGCPG1A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2686
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This small series propagates some VLAN restrictions via netlink extack
+and creates some helper functions instead of open-coding VLAN table
+manipulations from multiple places.
 
---opJtzjQTFsWo+cga
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+This is split from the larger "DSA FDB isolation" series, hence the v2
+tag:
+https://patchwork.kernel.org/project/netdevbpf/cover/20210818120150.892647-1-vladimir.oltean@nxp.com/
 
-Hi!
+Vladimir Oltean (3):
+  net: mscc: ocelot: transmit the "native VLAN" error via extack
+  net: mscc: ocelot: transmit the VLAN filtering restrictions via extack
+  net: mscc: ocelot: use helpers for port VLAN membership
 
-The Netfilter project proudly presents:
+ drivers/net/dsa/ocelot/felix.c         | 10 ++--
+ drivers/net/ethernet/mscc/ocelot.c     | 73 ++++++++++++++++----------
+ drivers/net/ethernet/mscc/ocelot_net.c | 38 ++++++++------
+ include/soc/mscc/ocelot.h              |  5 +-
+ 4 files changed, 76 insertions(+), 50 deletions(-)
 
-        nftables 1.0.0
+-- 
+2.25.1
 
-This release contains fixes, documentation updates and new features
-available up to the Linux kernel 5.13 release, more specifically:
-
-* Catch-all set element support: This allows users to define the
-  special wildcard set element for anything else not defined in
-  the set.
-
-  table x {
-        map blocklist {
-                type ipv4_addr : verdict
-                flags interval
-                elements = { 192.168.0.0/16 : accept, 10.0.0.0/8 : accept, * : drop }
-        }
-
-        chain y {
-                type filter hook prerouting priority 0; policy accept;
-                ip saddr vmap @blocklist
-        }
-  }
-
-  [ this feature is actually supported since 0.9.9, but it was not
-    included in the previous release announcement. ]
-
-* Define variables from the command line through --define:
-
-  # cat test.nft
-  table netdev x {
-        chain y {
-               type filter hook ingress devices = $dev priority 0; policy drop;
-        }
-  }
-  # nft --define dev="{ eth0, eth1 }" -f test.nft
-
-* Allow to use stateful expressions in maps:
-
-  table inet filter {
-       map portmap {
-               type inet_service : verdict
-               counter
-               elements = { 22 counter packets 0 bytes 0 : jump ssh_input, * counter packets 0 bytes 0 : drop }
-       }
-
-       chain ssh_input {
-       }
-
-       chain wan_input {
-               tcp dport vmap @portmap
-       }
-
-       chain prerouting {
-               type filter hook prerouting priority raw; policy accept;
-               iif vmap { "lo" : jump wan_input }
-       }
-  }
-
-* Add command to list the netfilter hooks pipeline for a given packet
-  family. If device is specified, then ingress path is also included.
-
-     # nft list hooks ip device eth0
-     family ip {
-            hook ingress {
-                    +0000000010 chain netdev x y [nf_tables]
-                    +0000000300 chain inet m w  [nf_tables]
-            }
-            hook input {
-                    -0000000100 chain ip a b [nf_tables]
-                    +0000000300 chain inet m z [nf_tables]
-            }
-            hook forward {
-                    -0000000225 selinux_ipv4_forward
-                     0000000000 chain ip a c [nf_tables]
-            }
-            hook output {
-                    -0000000225 selinux_ipv4_output
-            }
-            hook postrouting {
-                    +0000000225 selinux_ipv4_postroute
-            }
-     }
-
-* Allow to combine jhash, symhash and numgen expressions with the
-  queue statement, to fan out packets to userspace queues via
-  nfnetlink_queue.
-
-  ... queue to symhash mod 65536
-  ... queue flags bypass to numgen inc mod 65536
-  ... queue to jhash oif . meta mark mod 32
-
-  You can also combine it with maps, to select the userspace queue
-  based on any other singleton key or concatenations:
-
-  ... queue flags bypass to oifname map { "eth0" : 0, "ppp0" : 2, "eth1" : 2 }
-
-* Expand variable containing set into multiple mappings
-
-  define interfaces = { eth0, eth1 }
-
-  table ip x {
-        chain y {
-                type filter hook input priority 0; policy accept;
-                iifname vmap { lo : accept, $interfaces : drop }
-        }
- }
- # nft -f x.nft
- # nft list ruleset
- table ip x {
-       chain y {
-                type filter hook input priority 0; policy accept;
-                iifname vmap { "lo" : accept, "eth0" : drop, "eth1" : drop }
-        }
- }
-
-* Allow to combine verdict maps with interval concatenations
-
- # nft add rule x y tcp dport . ip saddr vmap { 1025-65535 . 192.168.10.2 : accept }
-
-* Simplify syntax for NAT mappings. You can specify an IP range:
-
- ... snat to ip saddr map { 10.141.11.4 : 192.168.2.2-192.168.2.4 }
-
- Or a specific IP and port.
-
- ... dnat to ip saddr map { 10.141.11.4 : 192.168.2.3 . 80 }
-
-  Or a combination of range of IP addresses and ports.
-
- ... dnat to ip saddr . tcp dport map { 192.168.1.2 . 80 : 10.141.10.2-10.141.10.5 . 8888-8999 }
-
-And bugfixes.
-
-You can download this new release from:
-
-https://www.netfilter.org/projects/nftables/downloads.html#nftables-0.9.9
-
-To build the code, libnftnl >= 1.2.0 and libmnl >= 1.0.4 are required:
-
-* https://netfilter.org/projects/libnftnl/index.html
-* https://netfilter.org/projects/libmnl/index.html
-
-Visit our wikipage for user documentation at:
-
-* https://wiki.nftables.org
-
-For the manpage reference, check man(8) nft.
-
-In case of bugs and feature request, file them via:
-
-* https://bugzilla.netfilter.org
-
-Happy firewalling.
-
---opJtzjQTFsWo+cga
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: attachment; filename="changes-nftables-1.0.0.txt"
-
-Duncan Roe (1):
-      build: get `make distcheck` to pass again
-
-Florian Westphal (26):
-      json: fix base chain output
-      json: fix parse of flagcmp expression
-      tests/py: fix error message
-      json: catchall element support
-      tests: py: update netdev reject test file
-      tests: ct: prefer normal cmp
-      tests: remove redundant test cases
-      evaluate: remove anon sets with exactly one element
-      tests: add test case for removal of anon sets with only a single element
-      scanner: add list cmd parser scope
-      src: add support for base hook dumping
-      doc: add LISTING section
-      json: tests: fix vlan.t cfi test case
-      json: tests: add missing concat test case
-      netlink_delinearize: add missing icmp id/sequence support
-      payload: do not remove icmp echo dependency
-      tests: add a icmp-reply only and icmpv6 id test cases
-      evaluate: fix hash expression maxval
-      parser: restrict queue num expressiveness
-      src: add queue expr and flags to queue_stmt_alloc
-      parser: add queue_stmt_compat
-      parser: new queue flag input format
-      src: queue: allow use of arbitrary queue expressions
-      tests: extend queue testcases for new sreg support
-      src: queue: allow use of MAP statement for queue number retrieval
-      netlink_delinarize: don't check for set element if set is not populated
-
-Kerin Millar (1):
-      json: Print warnings to stderr rather than stdout
-
-Pablo Neira Ayuso (59):
-      statement: connlimit: remove extra whitespace in print function
-      doc: nft: ct id does not allow for original|reply
-      json: missing catchall expression stub with ./configure --without-json
-      rule: rework CMD_OBJ_SETELEMS logic
-      cmd: check for table mismatch first in error reporting
-      netlink: quick sort array of devices
-      src: add vlan dei
-      evaluate: restore interval + concatenation in anonymous set
-      evaluate: add set to cache once
-      src: add xzalloc_array() and use it to allocate the expression hashtable
-      src: replace opencoded NFT_SET_ANONYMOUS set flag check by set_is_anonymous()
-      tests: shell: extend connlimit test
-      tests: shell: cover split chain reference across tables
-      evaluate: do not skip mapping elements
-      evaluate: unbreak verdict maps with implicit map with interval concatenations
-      evaluate: memleak in binary operation transfer to RHS
-      netlink_delinearize: memleak in string netlink postprocessing
-      segtree: memleak in error path of the set to segtree conversion
-      netlink_delinearize: memleak when listing ct event rule
-      parser_bison: memleak in osf flags
-      rule: memleak of list of timeout policies
-      evaluate: fix maps with key and data concatenations
-      libnftables: fix memleak when first message in batch is used to report error
-      parser_bison: string memleak in YYERROR path
-      parser_bison: memleak in rate limit parser
-      rule: obj_free() releases timeout state string
-      cmd: incorrect table location in error reporting
-      cmd: incorrect error reporting when table declaration exists
-      netlink_delinearize: stmt and expr error path memleaks
-      src: remove STMT_NAT_F_INTERVAL flags and interval keyword
-      src: infer NAT mapping with concatenation from set
-      src: support for nat with interval concatenation
-      tests: py: extend coverage for dnat with classic range representation
-      src: add --define key=value
-      evaluate: fix inet nat with no layer 3 info
-      libnftables: missing nft_ctx_add_var() symbol map update
-      tests: py: add dnat to port without defining destination address
-      parser_bison: missing initialization of ct timeout policy list
-      parser_json: inconditionally initialize ct timeout list
-      src: fix nft_ctx_clear_include_paths in libnftables.map
-      src: expose nft_ctx_clear_vars as API
-      parser_bison: stateful statement support in map
-      parser_bison: parse number as reject icmp code
-      src: promote 'reject with icmp CODE' syntax
-      evaluate: error reporting for missing statements in set/map declaration
-      tests: py: update new reject with icmp code syntax leftover
-      tests: py: missing json update for numeric reject with icmp numeric
-      expression: missing != in flagcmp expression print function
-      netlink_linearize: incorrect netlink bytecode with binary operation and flags
-      evaluate: disallow negation with binary operation
-      tests: py: idempotent tcp flags & syn != 0 to tcp flag syn
-      netlink_delinearize: skip flags / mask notation for singleton bitmask
-      tests: py: tcp flags & (fin | syn | rst | ack) == syn
-      tests: py: check more flag match transformations to compact syntax
-      mnl: revisit hook listing
-      tcpopt: bogus assertion on undefined options
-      evaluate: expand variable containing set into multiple mappings
-      netlink_delinearize: skip flags / mask notation for singleton bitmask again
-      build: Bump version to v1.0.0
-
-Phil Sutter (13):
-      segtree: Fix segfault when restoring a huge interval set
-      parser_bison: Fix for implicit declaration of isalnum
-      parser_json: Fix for memleak in tcp option error path
-      evaluate: Mark fall through case in str2hooknum()
-      json: Drop pointless assignment in exthdr_expr_json()
-      netlink: Avoid memleak in error path of netlink_delinearize_set()
-      netlink: Avoid memleak in error path of netlink_delinearize_chain()
-      netlink: Avoid memleak in error path of netlink_delinearize_table()
-      netlink: Avoid memleak in error path of netlink_delinearize_obj()
-      netlink_delinearize: Fix suspicious calloc() call
-      rule: Fix for potential off-by-one in cmd_add_loc()
-      tests: shell: Fix bogus testsuite failure with 100Hz
-      tests/py: Make netns spawning more robust
-
-
---opJtzjQTFsWo+cga--
