@@ -2,76 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E3053F1595
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 10:50:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 141753F15BD
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 11:06:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236661AbhHSIuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 04:50:35 -0400
-Received: from verein.lst.de ([213.95.11.211]:36611 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229649AbhHSIud (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Aug 2021 04:50:33 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 9B4F767357; Thu, 19 Aug 2021 10:49:51 +0200 (CEST)
-Date:   Thu, 19 Aug 2021 10:49:51 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Tianyu Lan <ltykernel@gmail.com>
-Cc:     Christoph Hellwig <hch@lst.de>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
-        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
-        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, ardb@kernel.org,
-        Tianyu.Lan@microsoft.com, pgonda@google.com,
-        martin.b.radev@gmail.com, akpm@linux-foundation.org,
-        kirill.shutemov@linux.intel.com, rppt@kernel.org,
-        sfr@canb.auug.org.au, saravanand@fb.com,
-        krish.sadhukhan@oracle.com, aneesh.kumar@linux.ibm.com,
-        xen-devel@lists.xenproject.org, rientjes@google.com,
-        hannes@cmpxchg.org, tj@kernel.org, michael.h.kelley@microsoft.com,
-        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, parri.andrea@gmail.com, dave.hansen@intel.com
-Subject: Re: [PATCH V3 10/13] x86/Swiotlb: Add Swiotlb bounce buffer remap
- function for HV IVM
-Message-ID: <20210819084951.GA10461@lst.de>
-References: <20210809175620.720923-1-ltykernel@gmail.com> <20210809175620.720923-11-ltykernel@gmail.com> <20210812122741.GC19050@lst.de> <d18ae061-6fc2-e69e-fc2c-2e1a1114c4b4@gmail.com> <890e5e21-714a-2db6-f68a-6211a69bebb9@gmail.com>
+        id S234974AbhHSJGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 05:06:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52070 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234211AbhHSJGa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 05:06:30 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B5DC061575
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 02:05:54 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id gr13so11394914ejb.6
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 02:05:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=konsulko.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=avdBfOFXMdxh5LUuOT/Y26UwCZnLaQOMunZqBLbNGVA=;
+        b=edikmR2uWKXJkjcDxxQrs5EOfyplzW8KRdMAR9X1QiZPsAXxA7hCjV8V0AAThzACvd
+         7DOI5WKWljZhbDewRGH8Y733HXnCzjo202FR+cyI7fGHZymji4+O6lNjuKF1w+h7MsQF
+         ya2FYnuZeT4QTtn0WFk7fBWndguCyl2RiY++E=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=avdBfOFXMdxh5LUuOT/Y26UwCZnLaQOMunZqBLbNGVA=;
+        b=cW5RTkm/xIDZTlcuHv9ygtjKPhWdYCw9+c0HsQtux40KGk9QGmVsiVszy4Iv+kOIhS
+         aF6jwUZR5fJs4hWkJDDcphfQmSeZhsrSxoairFr/uPyyzvAqLYbNYu+GqC3CWCZBBqDG
+         DNsG79AHKdsWg/KPqxYD5Uw8XwLl8jSV0Q8St6AGb6e5jgZAN4tHrLsojdEKKBD0J5UV
+         swNE+VJ91DtdKf/h2z73QEkiKAHcw7RMzq12o5e3V/maiGgwXdFfreKVX4oLGoYPXyNP
+         ldb9wxq4U6WJclV7qxwX4gHYvn9JxCVxRW8xWphhs5fmA9clCAgcjvVmqA/5RW1Q9qI7
+         TP+g==
+X-Gm-Message-State: AOAM5315W3mzCL6qUra2Z8UB+wvhbm/XOjJZKZn29mBto9I1elP8SrIz
+        00l/W43IhOWCLduS+BhdKWnwyA==
+X-Google-Smtp-Source: ABdhPJx2PF353HZGATdrBf928LpiL/1Q8aQY5pB0yztlTFCepM3IUxMLxGuwqIziwWpPT9HTBW60SA==
+X-Received: by 2002:a17:906:58c7:: with SMTP id e7mr14321313ejs.197.1629363953206;
+        Thu, 19 Aug 2021 02:05:53 -0700 (PDT)
+Received: from taos.k.g (lan.nucleusys.com. [92.247.61.126])
+        by smtp.gmail.com with ESMTPSA id k21sm968747ejj.55.2021.08.19.02.05.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Aug 2021 02:05:52 -0700 (PDT)
+From:   Petko Manolov <petko.manolov@konsulko.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, paskripkin@gmail.com,
+        stable@vger.kernel.org, Petko Manolov <petko.manolov@konsulko.com>
+Subject: [PATCH] net: usb: pegasus: fixes of set_register(s) return value evaluation;
+Date:   Thu, 19 Aug 2021 12:05:39 +0300
+Message-Id: <20210819090539.15879-1-petko.manolov@konsulko.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <890e5e21-714a-2db6-f68a-6211a69bebb9@gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 16, 2021 at 10:50:26PM +0800, Tianyu Lan wrote:
-> Hi Christoph:
->       Sorry to bother you.Please double check with these two patches
-> " [PATCH V3 10/13] x86/Swiotlb: Add Swiotlb bounce buffer remap function 
-> for HV IVM" and "[PATCH V3 09/13] DMA: Add dma_map_decrypted/dma_
-> unmap_encrypted() function".
+  - restore the behavior in enable_net_traffic() to avoid regressions - Jakub
+    Kicinski;
+  - hurried up and removed redundant assignment in pegasus_open() before yet
+    another checker complains;
+  - explicitly check for negative value in pegasus_set_wol(), even if
+    usb_control_msg_send() never return positive number we'd still be in sync
+    with the rest of the driver style;
 
-Do you have a git tree somewhere to look at the whole tree?
+Fixes: 8a160e2e9aeb net: usb: pegasus: Check the return value of get_geristers() and friends;
+Reported-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Petko Manolov <petko.manolov@konsulko.com>
+---
+ drivers/net/usb/pegasus.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
->       The swiotlb bounce buffer in the isolation VM are allocated in the
-> low end memory and these memory has struct page backing. All dma address
-> returned by swiotlb/DMA API are low end memory and this is as same as what 
-> happen in the traditional VM.
+diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
+index 652e9fcf0b77..1ef93082c772 100644
+--- a/drivers/net/usb/pegasus.c
++++ b/drivers/net/usb/pegasus.c
+@@ -446,7 +446,7 @@ static int enable_net_traffic(struct net_device *dev, struct usb_device *usb)
+ 		write_mii_word(pegasus, 0, 0x1b, &auxmode);
+ 	}
+ 
+-	return 0;
++	return ret;
+ fail:
+ 	netif_dbg(pegasus, drv, pegasus->net, "%s failed\n", __func__);
+ 	return ret;
+@@ -835,7 +835,7 @@ static int pegasus_open(struct net_device *net)
+ 	if (!pegasus->rx_skb)
+ 		goto exit;
+ 
+-	res = set_registers(pegasus, EthID, 6, net->dev_addr);
++	set_registers(pegasus, EthID, 6, net->dev_addr);
+ 
+ 	usb_fill_bulk_urb(pegasus->rx_urb, pegasus->usb,
+ 			  usb_rcvbulkpipe(pegasus->usb, 1),
+@@ -932,7 +932,7 @@ pegasus_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
+ 	pegasus->wolopts = wol->wolopts;
+ 
+ 	ret = set_register(pegasus, WakeupControl, reg78);
+-	if (!ret)
++	if (ret < 0)
+ 		ret = device_set_wakeup_enable(&pegasus->usb->dev,
+ 						wol->wolopts);
+ 	return ret;
+-- 
+2.30.2
 
-Indeed.
-
->       The API dma_map_decrypted() introduced in the patch 9 is to map the 
-> bounce buffer in the extra space and these memory in the low end space are 
-> used as DMA memory in the driver. Do you prefer these APIs
-> still in the set_memory.c? I move the API to dma/mapping.c due to the
-> suggested name arch_dma_map_decrypted() in the previous mail
-> (https://lore.kernel.org/netdev/20210720135437.GA13554@lst.de/).
-
-Well, what would help is a clear description of the semantics.
