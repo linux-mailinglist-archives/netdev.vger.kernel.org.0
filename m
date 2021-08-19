@@ -2,203 +2,321 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 405283F20A7
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 21:32:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA3753F20AB
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 21:33:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234529AbhHSTdU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 15:33:20 -0400
-Received: from mga11.intel.com ([192.55.52.93]:63342 "EHLO mga11.intel.com"
+        id S234748AbhHSTdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 15:33:40 -0400
+Received: from mga14.intel.com ([192.55.52.115]:63558 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230504AbhHSTdS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Aug 2021 15:33:18 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10081"; a="213508624"
+        id S234838AbhHSTdj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Aug 2021 15:33:39 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10081"; a="216363100"
 X-IronPort-AV: E=Sophos;i="5.84,335,1620716400"; 
-   d="scan'208";a="213508624"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2021 12:32:42 -0700
+   d="scan'208";a="216363100"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2021 12:33:01 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,335,1620716400"; 
-   d="scan'208";a="641828785"
-Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
-  by orsmga005.jf.intel.com with ESMTP; 19 Aug 2021 12:32:41 -0700
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+   d="scan'208";a="679605045"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmsmga006.fm.intel.com with ESMTP; 19 Aug 2021 12:33:01 -0700
+Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Thu, 19 Aug 2021 12:32:41 -0700
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ 15.1.2242.10; Thu, 19 Aug 2021 12:33:00 -0700
+Received: from orsmsx606.amr.corp.intel.com (10.22.229.19) by
+ ORSMSX608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Thu, 19 Aug 2021 12:32:41 -0700
+ 15.1.2242.10; Thu, 19 Aug 2021 12:33:00 -0700
 Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ orsmsx606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10 via Frontend Transport; Thu, 19 Aug 2021 12:32:40 -0700
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.44) by
+ 15.1.2242.10 via Frontend Transport; Thu, 19 Aug 2021 12:33:00 -0700
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.45) by
  edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.10; Thu, 19 Aug 2021 12:32:40 -0700
+ 15.1.2242.10; Thu, 19 Aug 2021 12:32:59 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GBnGks4FT4Hl4kux+Xa7I4jLNzzp6s5b6IXknb8xpHRvNRN22gZ7FDEzI4gvkuf30ZDtNr85JV5Hw5Imlcq3ImziTaFuA6s5ZyuPdNRQPUlDCXmzSAE3KW2BU8Agwv+uzlbz83PVR3LAGeQlmGfBqOKWAP++HCBVBvfqgiRBRNNQmpSSL8y/bZ1G96DAtLlZganhUW7W4JZPulUuEQr4HRHw3XC2yuiC8/rxL5F6JJU0rsOIKPed5c83luy9bRMED7gc4nVJlZ1VIh9UsB5J1c53085Ahq+WShWVYa3Xq48B0NoLSJ4O7EcwC7giiDM/ETo0aO4tmim/QsXiMBvtag==
+ b=lK4wwfv05BcCF5faR/rO3fpVq2X6KNRTl+p65+i6yVvJFrfYtq5zntiOvvVUS7eUY43THmQKSDrTxGnRiBJs18xJkP8Gow+9rc085O5YDbdHuzxBEsTOe8XT+PV9TOcwRGKiC1+frep6hW8+nX2dSkdYIS/N5X/CYcr5ZQ1n4ZPow2lNGO0lbs3zzGcsmFsVdnj7KtbOZnTlrcndKmQRoTm/8/uGmyHmDlf4SJzurXA5JJKN6LV8k/aiCZ8Ifbvxdv9U+j0XHQ9VukZbbcthZ2PRrWlbgBVYlEQfWwLeeCiWlbhWg+KlJm6zKlqEhFlhzTxHP+eZkMteb/jQTd9KWw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=69GTT3Bz+joQUAkn9D14+2cPvPkvPm8phKR+dL5RQt8=;
- b=gm206Oq26RZQk21B4KTZn7uPcN4B6S8w1tkaU6GGo/OzDHejudb3UcmLS86F3PGhOeVsK+cNZ64o1GKIrrDsNdS5d94saPTq8YlXSPYr/Y4DB61NBsXWH+0EinmhCOOz8DUNLmOf3WwwlJRA5H4UiNwYhG+LEPgAPHIqoCHgDykwan7MP8BP1edltjcllO2WrL6kQx69uNpMQ+v1JWnbtCd0qrXt+EjEquXvF/XmuZ+jmmSIClmotYZzoLuZNa8NibthKLgCDc10A/4J0ZAGl+sGrduwgHglGqkNXg7TYHz9MBKyWNViNdI+k1teXnlvTicVS+dBwh/X+TLCms/cyQ==
+ bh=CrOd1m/SOqhtuLLA7c38drYfrJzpafJD7Iuii28g8Ns=;
+ b=GuLCgxG9SLp4VIqDVtLbZ1Q8SwcBnaJHOEiwHgqBZKHffSKRWOUpEU6bVVztnk2CToFV4sE/oqTMz3y3OHZPg1gY2XJFuCzDjGaP+IWKVzpUFsl2cX7WudLB1EzGdbj+dUSzbF1Z3H8ugYKoih5BtH14VXQIaqelJGmFJ6kV2SbBhPER7jQFmIT5GtTo5n5bID8zzgSWwMHy4QKMMlrop8xVhSABzDuDjt8AJ3EOq4jZ2PGczHij0lMsc7mb3tqn1pepJG8itgJPqYCd5JiTRmOghtPEHIPJbbaY3JaXonP5GLLakbgONDCr0fWjinSu8yX5mqMb1VNifdQaw6ZCOw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
  s=selector2-intel-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=69GTT3Bz+joQUAkn9D14+2cPvPkvPm8phKR+dL5RQt8=;
- b=Abb0tS7qQaTSMMnKVPV2Zp0XcOvoBw1IF8ATM6lZaPw1p119CNH04wJs9B7Di5qcjqb4OKK+yWbT+xRUJre9x3I4/PxrNaMzWlH0TOTDqu5ITl1SjkrqRv6DMvCo9xSF/gwHEypKOKwe3ApQLPtSV/DJ3j10d9JwcQG+MzjnRaE=
-Authentication-Results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=intel.com;
+ bh=CrOd1m/SOqhtuLLA7c38drYfrJzpafJD7Iuii28g8Ns=;
+ b=DdEiOCCiUdUbAhk2YyO+42/AJRHoNFfNU7+4lpPNfTubkr8GpYMtybF520puo4g4HYvfza2z7zXBnYaImdMjfEhG3oJjaf6Qr/JAgwP4U/eBNfaleNiCmQaPoolmAfUabhSr2L6LM2ZsdQpXGO9cBC5Vm/XQXFYyIo+IAGz39x4=
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=intel.com;
 Received: from CO1PR11MB5140.namprd11.prod.outlook.com (2603:10b6:303:95::6)
  by MWHPR1101MB2365.namprd11.prod.outlook.com (2603:10b6:300:74::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19; Thu, 19 Aug
- 2021 19:32:39 +0000
+ 2021 19:32:58 +0000
 Received: from CO1PR11MB5140.namprd11.prod.outlook.com
  ([fe80::1968:cbde:518e:2acb]) by CO1PR11MB5140.namprd11.prod.outlook.com
  ([fe80::1968:cbde:518e:2acb%9]) with mapi id 15.20.4415.025; Thu, 19 Aug 2021
- 19:32:39 +0000
-Subject: Re: [RFC bpf-next 5/5] samples/bpf/xdpsock_user.c: Launchtime/TXTIME
- API usage
+ 19:32:58 +0000
+Subject: Re: [RFC bpf-next 2/5] libbpf: SO_TXTIME support in AF_XDP
 To:     Jesper Dangaard Brouer <jbrouer@redhat.com>, <bpf@vger.kernel.org>,
         <netdev@vger.kernel.org>, <hawk@kernel.org>,
         <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-CC:     <brouer@redhat.com>, Jithu Joseph <jithu.joseph@intel.com>
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jithu Joseph <jithu.joseph@intel.com>
+CC:     <brouer@redhat.com>
 References: <20210803171006.13915-1-kishen.maloor@intel.com>
- <20210803171006.13915-6-kishen.maloor@intel.com>
- <4ea898db-563c-851b-c3da-9389abcb83ac@redhat.com>
+ <20210803171006.13915-3-kishen.maloor@intel.com>
+ <31fb6a84-562e-a41d-0614-061e1f475db3@redhat.com>
 From:   Kishen Maloor <kishen.maloor@intel.com>
-Message-ID: <d15fdcb4-9b5f-ebf4-f5fe-5b16f06f2afc@intel.com>
-Date:   Thu, 19 Aug 2021 15:32:35 -0400
+Message-ID: <b3c05e8d-bb93-0287-2a96-e8d7f690be83@intel.com>
+Date:   Thu, 19 Aug 2021 15:32:55 -0400
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.12.0
-In-Reply-To: <4ea898db-563c-851b-c3da-9389abcb83ac@redhat.com>
+In-Reply-To: <31fb6a84-562e-a41d-0614-061e1f475db3@redhat.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: CO2PR04CA0122.namprd04.prod.outlook.com
- (2603:10b6:104:7::24) To CO1PR11MB5140.namprd11.prod.outlook.com
+X-ClientProxiedBy: CO2PR04CA0132.namprd04.prod.outlook.com
+ (2603:10b6:104:7::34) To CO1PR11MB5140.namprd11.prod.outlook.com
  (2603:10b6:303:95::6)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from jhatkins-mobl1.amr.corp.intel.com (96.250.176.213) by CO2PR04CA0122.namprd04.prod.outlook.com (2603:10b6:104:7::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Thu, 19 Aug 2021 19:32:38 +0000
+Received: from jhatkins-mobl1.amr.corp.intel.com (96.250.176.213) by CO2PR04CA0132.namprd04.prod.outlook.com (2603:10b6:104:7::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Thu, 19 Aug 2021 19:32:57 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cf3351cd-bd62-46e2-a87f-08d963481b44
+X-MS-Office365-Filtering-Correlation-Id: bebf0502-def2-4acb-4e47-08d96348269c
 X-MS-TrafficTypeDiagnostic: MWHPR1101MB2365:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MWHPR1101MB23656C396B8766725B6C20F5E1C09@MWHPR1101MB2365.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Microsoft-Antispam-PRVS: <MWHPR1101MB2365255FF013A9574F9022FEE1C09@MWHPR1101MB2365.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3Xg/sM/14M1bE88TS3/KefNmPV59NqGo/Szuj2BNI7ElcoK3Gh8blmTVjhCLlQ3M5N7FI3f+qR895P3eGISQ69CglUFv93ATLYko3eXfn+QnbZBR6gCmfWk7OhuVg79QCuq3G0cZrpWIrC/mvNymXbHZuVvA9iRSXDqWNhTrzm+IAd2vGgMTBr4Ya5yN2fW7rvd1BWWGfWac4FHv+bVj7/BJKlxt1+epcBquan56M3+Pm047jmScTzxviKFObQ18zdud1VIXVP0nO4s1X+5arx6BTggNE3M5ZBZvEaCxhD+NOZlXQ2LnpLikru73u8YSWgSyU3D8MGta9dx8E4nnr0d/odTM9l1z1/FaR9RSYGKNF0y+kZ8Fv6Fr7VWzAjQmsOtzOsb50oHZ2xAGZKDsTokX4R3XToKDX9kKMdicP+KB03tFzNRjKuNjRrCMSM3HqfgO2xNMM+dyd8UZrux5K4lD9SQ8PqN7XlilSEbrtIoti4Y+YZHUPfQKkz1NtWXCAAmKqD+k1WPwPZ818UDAY7PuSE44xAM1mgI7nv7qOrycmpPZrIliLQcVGkXbpQnrMyfZ2inwkI9fb1yP9NA97IUwx0tTI+yWaT5qiU2Sw+m0uT0omp9zg4pYpQfRRhpU71N+Wwz3mWlxTzFwvM+jbDmI7e59YW+Rt1z6BTzs0lIhL51VX6eRsRkIgkq+UCRu1OZaM1loasobfcFPfKVAG3cRA469/yzy5UuCTo58Dgs=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5140.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(39860400002)(396003)(366004)(346002)(136003)(86362001)(31696002)(8936002)(316002)(110136005)(38100700002)(478600001)(36756003)(8676002)(4326008)(31686004)(6666004)(107886003)(53546011)(6486002)(956004)(66946007)(2906002)(66556008)(66574015)(66476007)(44832011)(83380400001)(5660300002)(26005)(2616005)(7696005)(186003)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: Ars9RGQrFm8w8yrFkn/2IGvSl+lqEgbJ8eEOjBpUGWHdhIjUf5Mgw6yEnbdoih7TKCU0bXsG+YjeNADx9YVdHfBuot3pcwuoDDAeLh6K/tDlR8uLFtt7paxDyHSlf8Kcco5PA+s9x80UWfumsYQyRyeqYeOAQJAcFT0ZdTnBwqm1LNGjAvn2GuVveMinOv0OXut+uh2Veqsn2Gj28ow5uDd6SEjaptdNLozQPTaJJfkswi0WWuHMZyaQOgwfz226J4LWVYgc9Y7PMrnG/6vs/dWcu9/Lroc3gHLAyWBCQcFOLSKlElB+/p28izTlF1/P9mQvsJuNW0r4WX+34ATdx88fUJFUu+u9YpiLcjCOQu89zHQwNR9RV39Mt2QaEAa1yJkv7iQ1jdd+eWIAQ4MxLRAEkjaKVu87JBNJFZFbFitoWZ5QCq6KNPh1Ayduo9ljQ0tNhoAzHJe/YIsDSgBBxe2V5a8JtusjurxmYw/+dYkOHWCIBaDGU54LvobBlPSRitUzSMHTuFAl190ebu9J6xRI5K+Or7rjz1scH8BFxLIOu3BxzhgbMuwtjV7lCfJskO5B47091y3wHg2BeGCS8m8VyJTEtsNHKE3bwsbUHxevBsdH/t6y/2/r8I2gnkw+gw1la9hxMmi2dmzJzfW+HHk/T9LcdrCt8sNySNlfI8/+vwduomVCkS8vQiX0AUcuseFPASyxDrKS7NCZ0VDPwgVPk6CBI8RkUtarB+dknGOmlaRlZxAxh8CRzHpRhfG6aDBVJ9dpZSjyqSc3gesJgkqb8EHUwz5uGVlhINusswkA4V/SCUWneD+qfxN8n4l7
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5140.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(39860400002)(396003)(366004)(346002)(136003)(86362001)(31696002)(8936002)(316002)(110136005)(38100700002)(478600001)(36756003)(8676002)(4326008)(31686004)(53546011)(6486002)(956004)(66946007)(2906002)(66556008)(66476007)(44832011)(83380400001)(5660300002)(26005)(966005)(2616005)(7696005)(186003)(6636002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MHRQUitBLzB6d2JYUXRqU1NSUC9qNDZkbTBKbEYxSDllc2JNd1pDYnVqUEtq?=
- =?utf-8?B?VTEvUEJhcWJhR01BU0VvVzlINjZCNk5SZU15OXRZMlIyRCtia2ZuSWNwS0Uy?=
- =?utf-8?B?OXBKZE5ub0tIbFlZVGJvY0xlOEEyUGhNOE1yMElZOEdDb09kcHpBRmZGcFdH?=
- =?utf-8?B?bzlya2ppVzBSc2VmUlp4Y3ZJQ1hmSGk1MWE4Uk5NbDZKN0dHRjQ1STcySURu?=
- =?utf-8?B?TTZxYkhIK3lUdDhDRm5GSFlqNWxxZGFoNXhVeExqYzdVeE55WVhBbFhEU2hC?=
- =?utf-8?B?bjlxYkxSNm5FeHlvVmJTbkowYk84MUUyckVjS1p1MEVIb0doMktyMHpXN1NY?=
- =?utf-8?B?V1hVMXA2NllYKzg3NVdrSWlMR1VvS2gwMTZaVDU3VDlEcmZSSzJBeHFUTDcy?=
- =?utf-8?B?empEdWc5aExJMldTRWMxRnZBUDNVLzZqSWxyUmU1eUVDck1HRkdrTVIwQVBL?=
- =?utf-8?B?L2lJaGRTL3B4T3lqc2cyVkZqaWQwQ25PZlRuZ0ZOaFBEV2dzazY1NUVCWUNJ?=
- =?utf-8?B?SnNhMVdQZVhlMGpQMlVsejBUMEZOcnZKM2xNVTU1U2N1YmlESGFvcndBclV1?=
- =?utf-8?B?Mm92c00vUURvRjltWVllbS9zc3l4WnZLNHNXejJFZE5pZW1TemlXN01jcGlk?=
- =?utf-8?B?Vk95UEY2MVBBeVJrb2VmRnBMYVJrVlpueitUQzJ1dFFQOW9YUXZMM3JGcEls?=
- =?utf-8?B?ZE14UmNGMTljV3pRTFpLTW5aSEFSSGZrVVc4ZkFDVHZ0SlNKak90Y0lqNHN6?=
- =?utf-8?B?dDVzRHYyMGw1dzdKYVhNa1VhSEY4VnZoUTFzUVoyZm52QXNQSyt4Rmw2eHV3?=
- =?utf-8?B?eTE3TzBvZmhyMFBPd0hibWc1VmN1RGZ0OWMxN2Q3WmpFLzJhdFhkQWppNngx?=
- =?utf-8?B?ek9tbVdXWVJhZWJmNHdWY29LQW1RLy9DaklBN254Sk1obnlwOFNZdUhMY29Q?=
- =?utf-8?B?d2Q3UW1iWG1VT0szRUsrVklOWjE4UnJ0VEIrWHoxekdGZXFWdlpoRlZnRHg5?=
- =?utf-8?B?NVJZVkRiTmlVWGFoVUUzRCtYc2VZRCs2eXZVR2NXWXFOaGNwSHlWdVZadXNK?=
- =?utf-8?B?WXp2K3h6d2cvRVFOWCtjTDgxWHNGd0dZSVNOc3E5emtuL2lJci82Z2lVRTdN?=
- =?utf-8?B?M2oxZm5aL0tKM1FEUGhaK3hkc0NLeUprc3MxeGhoaGFUc0t2MVVYYzZVLzFs?=
- =?utf-8?B?RmVJZmUvOUZPbkxRNG9iczBXS00rS0p1QSt1RFFrbnFIaGNZTUoxRm5HM3BK?=
- =?utf-8?B?bzJMdU9UYmtQK1ErZGZJazVuSWNaUVFVdHY0WENHVHBSWWtnOE5OUlhMK2RJ?=
- =?utf-8?B?ay9uWjYwUFpsL2x2SjQ5S0hzWUZwSm9VaXFzcjZhUkI1bDVWSWRRUHBCRjFG?=
- =?utf-8?B?bGhKVWZmY0ptbTZ4SUJ3ODk4a29lSFNlU0xraUV3dzF4ZGtLSFYxNnJWL0xj?=
- =?utf-8?B?aFBJUzIwNmZyR0JSWEhHc05ZakxQMEtyaWMwaXB0T05lbnUvcDhRWUUyc1I3?=
- =?utf-8?B?dkpWSDh6UW1QNTk4Tmt4aE1XNm1mS2UwK0hqd2QxWXBzTHNwZU5OeEtSeUx0?=
- =?utf-8?B?bjkxU1hWTGxXNUdlczVvZkF6dE5Qclk3MStKbzk2MEQyQzVoeXY5UDRUTW90?=
- =?utf-8?B?RkRtbjJ4cHVhR1QxSXZxR3ZobHdTMlRSNE5wV0lLSlJSaHR3OEc1ZnRsNG9G?=
- =?utf-8?B?VjZkU09QSCtqaEhvSy8xYTFFSk5Kc1V2a3h4dTIzdGtmbFY3SXV4cEtHUHYx?=
- =?utf-8?Q?7sXl3TXMs+tDtANvS5ug0LgP+5tzoiw2qCsr5Oa?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: cf3351cd-bd62-46e2-a87f-08d963481b44
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SllrNXNqbkFSTG1OcWVYMVdrMFpsTy94T0tsNHZ6aVkvMStHZlJ4bFN3S2J0?=
+ =?utf-8?B?SGdIb25IQ2k5dUJ4MUdoaXN0Nlc4S0poNm1DeVpqNS9RSDVQbm9PZ1ZaSzZQ?=
+ =?utf-8?B?T0t1NGNBbWdYQzcvd3hlZ0VUWVlzNzRYN3orVUhVZUZialBzeThTTDlUQndq?=
+ =?utf-8?B?SnNtcVY4T1lobTJFMXJIRkR3N2p0dFZXVmNSNU9oL0NkYmRhYXVQNUVld0ZN?=
+ =?utf-8?B?WWtDdlNqWDJYb3FhZXdtMUh1TEduSHIyNjBGS2twSEdHZGVZUkdGY21TbzBi?=
+ =?utf-8?B?SWZJanB5MVVKaTFSOGVLNjJWUnlBdkh1aW1XTk1WSEs1cmc4ZENOaElwajJj?=
+ =?utf-8?B?QklRREFJWVBITjJDejhmUmYxdGpucGxuMUpFZkZrc2R4eEZFL2Q2Z2VjSHVi?=
+ =?utf-8?B?QjVGK1d6UXpqUHhXSzZNY1ozVmpkZzRWTDV1MzM5QXd0THRtNlU4dk9hRjM5?=
+ =?utf-8?B?WmhYeHBLVEdrYUdmTkNYdWhlQmxPM3ZaYWoyWjF0dHNoemcrSHZOR00wWEVI?=
+ =?utf-8?B?V2hlYVZoMEdYenNDanRXbDZyYjczYnRuQ1NsVUhJcmhrNWRsMzBjRURCM3Vz?=
+ =?utf-8?B?MTc5dkZoTmVwR2I0Z3ZmSzZFdlpXQ01lSXl1Tll2TXpyRmpkVkRZQWRTSzU5?=
+ =?utf-8?B?UERocEF6ZlNXditoRjlOOXgvMXFwbEYvMmUySjVMU0lhS0NIOXg0MWNlMEd0?=
+ =?utf-8?B?ZENUMFF3bnM1cWNkTktremFLOUxSY1ZTeHJlb2MvSmJlc0lYQTg5U0pvRmE3?=
+ =?utf-8?B?WE13cVVRWVQvSVk5OGVpRHdrNEF2ZGJkQXhQemYwTUc4bnhZTU80dStsWGVT?=
+ =?utf-8?B?azVKWUhmenNyR2hsMXVJS2dSZ1VNMXlwWmJkT2djZ0t0U01EV3YwK0QyQ0V6?=
+ =?utf-8?B?bFFocTBDdm9PYm84TWVNUUlYT0NnV0JXd1FINkkxR0FHQm5yMDEwSUNnTnFX?=
+ =?utf-8?B?R0dYanhvRXlMV0hrM2xhT0xqL0h5RDBzVmpodUNPeUczdlZ3ZFRVODVUbEpi?=
+ =?utf-8?B?UU9JU3ZuY1pBVVNhUUEyQnk4dXk1WnVjQzlOeTlSOVV5MWVvRVp4S08ySXQ3?=
+ =?utf-8?B?ekQwOXE1NWc4YldDRTM4QmE3S3dTTEFPKzNteEVEdnFuL1RWZlRHaGF0blZY?=
+ =?utf-8?B?c3VyWWZHZytPeUtUQ3Bsb295N1BPekFSVFByVGFJN09zbm5Hd2FBT1Rpek1J?=
+ =?utf-8?B?ZDdRUk04UWdQYlhQWXdHZ0JzT0JVWWFnekxJdDdnZVNheUttcy84MlltNzNl?=
+ =?utf-8?B?Wnc2YWZlYzhTZGtXYVRFWmhZRGtDSEJwR2Q4VUh5WjF1TGQ4Vm01ZWlaZWFW?=
+ =?utf-8?B?bUN3dkZKUXhUZFh1TWRmV3ovSHVDNFo1VU1BSW9GQktaSHFScDQ5N3lwNTdW?=
+ =?utf-8?B?aTMxSVh3TE1lem85dHZIa3FmVkFUT1phRThTR0VRRWwxRGhFVUxmZ1JUVnpk?=
+ =?utf-8?B?eFRKcDc2Rnp4U0tkQUd3M0NuSFNWYnEySUl6S2orYW9nSitnYmx2bUdUVTh5?=
+ =?utf-8?B?MFdQTjFJR1gvK3B5SzBuN3JnemFqYUFOYWh2TGp5ZXgrRWtBWFJtTVE1UEZn?=
+ =?utf-8?B?RnRhaWZNVjVaYVBlTUlONnNNMWdEWWxPN3dWZjBCUFNWbVo5Wm9IRC9Bb2Ja?=
+ =?utf-8?B?a0tubllTSVJjd0xSTEl4SVJ5MTJrSDBxaGh5d3RQSUdRV2J6MVBEV1RpdEtC?=
+ =?utf-8?B?T0hPWGpRVjQxMzBOOXd5elJ4eFFqdnU1SzRFRmZiYUxVencxS1l1cEJsTTMw?=
+ =?utf-8?Q?UeA3gTCmn4/yGToYUuGYedyu7KPnRtT7+tR9C5z?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: bebf0502-def2-4acb-4e47-08d96348269c
 X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5140.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2021 19:32:39.7787
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2021 19:32:58.8020
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DBQ+drRU34DJU/m0XMIgWGOJjtayIu9n2iG3c8GTKcg3oqIb/YIDewgZfNVzMIXEbQ/LA5MtKMsZzBvcr7yC9g==
+X-MS-Exchange-CrossTenant-UserPrincipalName: CbdCIEC64CbxY2uoZz+aUt9vO4pa9XXXAmws9C5GoL1KbZg830tGIMqLavJdu43K4VIuhRuaTQ2TuNLYckpf6w==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1101MB2365
 X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/18/21 4:54 AM, Jesper Dangaard Brouer wrote:
+On 8/18/21 5:49 AM, Jesper Dangaard Brouer wrote:
+> 
 > 
 > On 03/08/2021 19.10, Kishen Maloor wrote:
->> diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
->> index 3fd2f6a0d1eb..a0fd3d5414ba 100644
->> --- a/samples/bpf/xdpsock_user.c
->> +++ b/samples/bpf/xdpsock_user.c
-> [...]
->> @@ -741,6 +745,8 @@ static inline u16 udp_csum(u32 saddr, u32 daddr, u32 len,
->>     #define ETH_FCS_SIZE 4
->>   +#define MD_SIZE (sizeof(struct xdp_user_tx_metadata))
+>> This change adds userspace support for SO_TXTIME in AF_XDP
+>> to include a specific TXTIME (aka "Launch Time")
+>> with XDP frames issued from userspace XDP applications.
+>>
+>> The userspace API has been expanded with two helper functons:
+>>
+>> - int xsk_socket__enable_so_txtime(struct xsk_socket *xsk, bool enable)
+>>     Sets the SO_TXTIME option on the AF_XDP socket (using setsockopt()).
+>>
+>> - void xsk_umem__set_md_txtime(void *umem_area, __u64 chunkAddr,
+>>                                 __s64 txtime)
+>>     Packages the application supplied TXTIME into struct xdp_user_tx_metadata:
+>>     struct xdp_user_tx_metadata {
+> 
+> Struct name is important and becomes UAPI. I'm not 100% convinced this is a good name.
+
+Sure, we can choose a better name. Open to suggestions.
+
+> 
+> For BPF programs libbpf can at load-time lookup the 'btf_id' via:
+> 
+>   btf_id = bpf_core_type_id_kernel(struct xdp_user_tx_metadata);
+> 
+> Example see[1]
+>  [1] https://github.com/xdp-project/bpf-examples/commit/2390b4b11079
+> 
+> I know this is AF_XDP userspace, but I hope Andrii can help guide us howto expose the bpf_core_type_id_kernel() API via libbpf, to be used by the AF_XDP userspace program.
+> 
+> 
+>>          __u64 timestamp;
+>>          __u32 md_valid;
+>>          __u32 btf_id;
+>>     };
+> 
+> I assume this struct is intended to be BTF "described".
+
+Yes, the intention here was to be future-proof in a sense, as once all the related infrastructure/tooling for BTF comes into existence, it should hopefully be a 
+simple matter to adapt this code to work with that.
+
+> 
+> Struct member *names* are very important for BTF. (E.g. see how 'spinlock' have special meaning and is matched internally by kernel).
+> 
+> The member name 'timestamp' seems too generic.  This is a very specific 'LaunchTime' feature, which could be reflected in the name.
+
+Yes, LaunchTime is the specific use case addressed by this RFC, so open to suggestions on the struct member name (e.g. launch_time?).
+
+> 
+> Later it looks like you are encoding the "type" in md_valid, which I guess it is needed as timestamps can have different "types".
+
+No, the purpose of md_valid is to flag all those md fields that have been set/conveyed by this metadata. So, XDP_METADATA_USER_TX_TIMESTAMP is 
+meant as a reference to the 'timestamp' field in struct xdp_user_tx_metadata.
+
+> E.g. some of the clockid_t types from clock_gettime(2):
+>  CLOCK_REALTIME
+>  CLOCK_TAI
+>  CLOCK_MONOTONIC
+>  CLOCK_BOOTTIME
+> 
+> Which of these timestamp does XDP_METADATA_USER_TX_TIMESTAMP represent?
+> Or what timestamp type is the expected one?
+
+CLOCK_TAI is what we use for LaunchTime, and supported by IGC/i225.
+
+> 
+> In principle we could name the member 'Launch_Time_CLOCK_TAI' to encoded the clockid_t type in the name, but I think that would be too much (and require too advanced BTF helpers to extract type, having a clock_type member is easier to understand/consume from C).
+> 
+> 
+>>     and stores it in the XDP metadata area, which precedes the XDP frame.
+>>
+>> Signed-off-by: Kishen Maloor <kishen.maloor@intel.com>
+>> ---
+>>   tools/include/uapi/linux/if_xdp.h     |  2 ++
+>>   tools/include/uapi/linux/xdp_md_std.h | 14 ++++++++++++++
+>>   tools/lib/bpf/xsk.h                   | 27 ++++++++++++++++++++++++++-
+>>   3 files changed, 42 insertions(+), 1 deletion(-)
+>>   create mode 100644 tools/include/uapi/linux/xdp_md_std.h
+>>
+>> diff --git a/tools/include/uapi/linux/if_xdp.h b/tools/include/uapi/linux/if_xdp.h
+>> index a78a8096f4ce..31f81f82ed86 100644
+>> --- a/tools/include/uapi/linux/if_xdp.h
+>> +++ b/tools/include/uapi/linux/if_xdp.h
+>> @@ -106,6 +106,8 @@ struct xdp_desc {
+>>       __u32 options;
+>>   };
+>>   +#define XDP_DESC_OPTION_METADATA (1 << 0)
 >> +
->>   #define PKT_HDR_SIZE (sizeof(struct ethhdr) + sizeof(struct iphdr) + \
->>                 sizeof(struct udphdr))
->>   @@ -798,8 +804,10 @@ static void gen_eth_hdr_data(void)
->>     static void gen_eth_frame(struct xsk_umem_info *umem, u64 addr)
->>   {
->> -    memcpy(xsk_umem__get_data(umem->buffer, addr), pkt_data,
->> -           PKT_SIZE);
->> +    if (opt_launch_time)
->> +        memcpy(xsk_umem__get_data(umem->buffer, addr) + MD_SIZE, pkt_data, PKT_SIZE);
->> +    else
->> +        memcpy(xsk_umem__get_data(umem->buffer, addr), pkt_data, PKT_SIZE);
->>   }
->>   
+>>   /* UMEM descriptor is __u64 */
+>>     #endif /* _LINUX_IF_XDP_H */
+>> diff --git a/tools/include/uapi/linux/xdp_md_std.h b/tools/include/uapi/linux/xdp_md_std.h
+>> new file mode 100644
+>> index 000000000000..f00996a61639
+>> --- /dev/null
+>> +++ b/tools/include/uapi/linux/xdp_md_std.h
+>> @@ -0,0 +1,14 @@
+>> +#ifndef _UAPI_LINUX_XDP_MD_STD_H
+>> +#define _UAPI_LINUX_XDP_MD_STD_H
+>> +
+>> +#include <linux/types.h>
+>> +
+>> +#define XDP_METADATA_USER_TX_TIMESTAMP 0x1
+>> +
+>> +struct xdp_user_tx_metadata {
+>> +    __u64 timestamp;
+>> +    __u32 md_valid;
+>> +    __u32 btf_id;
+>> +};
+>> +
+>> +#endif /* _UAPI_LINUX_XDP_MD_STD_H */
+>> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
+>> index 01c12dca9c10..1b52ffe1c9a3 100644
+>> --- a/tools/lib/bpf/xsk.h
+>> +++ b/tools/lib/bpf/xsk.h
+>> @@ -16,7 +16,8 @@
+>>   #include <stdint.h>
+>>   #include <stdbool.h>
+>>   #include <linux/if_xdp.h>
+>> -
+>> +#include <linux/xdp_md_std.h>
+>> +#include <errno.h>
+>>   #include "libbpf.h"
+>>     #ifdef __cplusplus
+>> @@ -248,6 +249,30 @@ static inline __u64 xsk_umem__add_offset_to_addr(__u64 addr)
+>>   LIBBPF_API int xsk_umem__fd(const struct xsk_umem *umem);
+>>   LIBBPF_API int xsk_socket__fd(const struct xsk_socket *xsk);
+>>   +/* Helpers for SO_TXTIME */
+>> +
+>> +static inline void xsk_umem__set_md_txtime(void *umem_area, __u64 addr, __s64 txtime)
+>> +{
+>> +    struct xdp_user_tx_metadata *md;
+>> +
+>> +    md = (struct xdp_user_tx_metadata *)&((char *)umem_area)[addr];
+>> +
+>> +    md->timestamp = txtime;
+>> +    md->md_valid |= XDP_METADATA_USER_TX_TIMESTAMP;
 > 
-> I imagined that AF_XDP 'addr' would still point to the start of the packet data, and that metadata area was access via a negative offset from 'addr'.
-> 
+> Is this encoding the "type" of the timestamp?
 
-There is currently no kernel "infrastructure" on the TX path which factors in the concept of XDP metadata, so the application needs to make place for it. (For e.g., XDP_PACKET_HEADROOM has no de facto role on the TX path AFAIK).
-
-xsk_umem__get_data() just returns the UMEM chunk at the user supplied 'addr' and applications need to write both the XDP packet and any accompanying metadata into this (raw) buffer.
-
-In doing so, it places that metadata right ahead of the XDP packet (much like how that's structured in the RX path), and further plugs (addr + offset_to_XDP_packet (the metadata size, in other words)) into the TX descriptor 'addr' so that lower layers (e.g. the driver) can access the XDP packet as always.
-(Note also that the TX descriptor 'len' would exclude the md size)
-
-> Maybe I misunderstood the code, but it looks like 'addr' (xsk_umem__get_data(umem->buffer, addr)) points to metadata area, is this correct?
-> 
-
-No, more specifically, it is the user supplied UMEM chunk 'addr'. 
-
-> (and to skip this the code does + MD_SIZE, before memcpy)
-
-Since the packet is written (by the application) to immediately follow the metadata (both stored on the chunk), the code does that (+ MD_SIZE).
+No, it is hinting at the field (timestamp) being conveyed in this metadata.
 
 > 
-> One problem/challenge with AF_XDP is that we don't have room in struct xdp_desc to store info on the size of the metadata area.  Bjørn came up with the idea of having btf_id as last member (access able via minus 4 bytes), as this tells the kernel the size of metadata area.
+> I don't see the btf_id being updated.  Does that happen in another patch?
 
-Yes, the RFC follows this idea and hence btf_id is the last member of struct xdp_user_tx_metadata.
+No. As I understand, BTF support and it's overall applicability (particularly from AF_XDP userspace) is still a WIP. So, btf_id currently exists as a 
+placeholder to facilitate future BTF integration.
+ 
+Meanwhile, this RFC re-purposes SO_TXTIME on the control path from AF_XDP userspace to exercise the LaunchTime feature in the presented pattern.
 
 > 
-> Maybe you have come up with a better solution?
-> (of making the metadata area size dynamic)
+> As I note above we are current;y lacking an libbpf equivalent bpf_core_type_id_kernel() lookup function in userspace.
 > 
-> --Jesper
+>> +}
+>> +
+>> +static inline int xsk_socket__enable_so_txtime(struct xsk_socket *xsk, bool enable)
+>> +{
+>> +    unsigned int val = (enable) ? 1 : 0;
+>> +    int err;
+>> +
+>> +    err = setsockopt(xsk_socket__fd(xsk), SOL_XDP, SO_TXTIME, &val, sizeof(val));
+>> +
+>> +    if (err)
+>> +        return -errno;
+>> +    return 0;
+>> +}
+>> +
+>>   #define XSK_RING_CONS__DEFAULT_NUM_DESCS      2048
+>>   #define XSK_RING_PROD__DEFAULT_NUM_DESCS      2048
+>>   #define XSK_UMEM__DEFAULT_FRAME_SHIFT    12 /* 4096 bytes */
+>>
 > 
 
