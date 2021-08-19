@@ -2,104 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E3113F18A7
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 13:58:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1CF63F18E6
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 14:15:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238931AbhHSL6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 07:58:53 -0400
-Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:51638
-        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238105AbhHSL6v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 07:58:51 -0400
-Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 3806D3F367;
-        Thu, 19 Aug 2021 11:58:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1629374294;
-        bh=8tUdKXborkpkb9B6b8mLjUQl9KMTxCxIx0f8+/7UNMw=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
-        b=SDJK6/QhUK5RkJwZcNgFVm5RKHNgwJYNJ4KqpO1ygEl8ImlqjU3jSENI8NwJsIWlO
-         lSzrufbs99yLGvbbHPZsoQit/q3+2wx8xPdj+E7FRJ4jvzZLpiAeqwmzUdlM70RS5X
-         SFJsFw5lokxBAUmRNvANppXjzhtZS4lHWsRw4zGGoXfEQwoM7wIghYbKslQCIlViqs
-         bR2bibyzQJPcSrRBC4EPrtxvpAGaHA/lwcwtFNyqSvuBtAbu/HQYrRfJ9AwfC5Gm0w
-         gpsQynOOv3T/iJA8n/F8k1r2bySHUlBTqXu5V90zbQ00I6C4hfLDBHKz54Sb/nFQi7
-         iC4Y7ZIaOuBYg==
-From:   Colin King <colin.king@canonical.com>
-To:     Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Huazhong Tan <tanhuazhong@huawei.com>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: hns3: make array spec_opcode static const, makes object smaller
-Date:   Thu, 19 Aug 2021 12:58:13 +0100
-Message-Id: <20210819115813.6692-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.32.0
+        id S238878AbhHSMPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 08:15:50 -0400
+Received: from mga06.intel.com ([134.134.136.31]:50600 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233610AbhHSMPu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Aug 2021 08:15:50 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10080"; a="277560935"
+X-IronPort-AV: E=Sophos;i="5.84,334,1620716400"; 
+   d="scan'208";a="277560935"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2021 05:15:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,334,1620716400"; 
+   d="scan'208";a="532195059"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by fmsmga002.fm.intel.com with ESMTP; 19 Aug 2021 05:15:10 -0700
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        anthony.l.nguyen@intel.com, kuba@kernel.org, bjorn@kernel.org,
+        magnus.karlsson@intel.com, jesse.brandeburg@intel.com,
+        alexandr.lobakin@intel.com, joamaki@gmail.com, toke@redhat.com,
+        brett.creeley@intel.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: [PATCH v7 intel-next 0/9] XDP_TX improvements for ice
+Date:   Thu, 19 Aug 2021 13:59:55 +0200
+Message-Id: <20210819120004.34392-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+I didn't realize that on v6 I didn't have CONFIG_NET_SWITCHDEV option
+set in the kernel config. I removed ice_eswitch_remap_ring but didn't
+adjust the q_vector's ring pointer to the new Rx/Tx union.
 
-Don't populate the array spec_opcode on the stack but instead it
-static const. Makes the object code smaller by 158 bytes:
+Hope that it's the last time of embarrassment :)
 
-Before:
-   text   data   bss     dec    hex filename
-  12271   3976   128   16375   3ff7 .../hisilicon/hns3/hns3pf/hclge_cmd.o
+v6->v7:
+* fix compilation issues when CONFIG_NET_SWITCHDEV=y
 
-After:
-   text   data   bss     dec    hex filename
-  12017   4072   128   16217   3f59 .../hisilicon/hns3/hns3pf/hclge_cmd.o
+v5->v6:
+* rebase set on Tony's dev-queue
+* adjust switchdev code to ring split
+* compile with W=1 C=2 and fix outstanding kdoc issues
 
-(gcc version 10.3.0)
+v4->v5:
+* fix issues pointed by lkp; variables used for updating ring stats
+  could be un-inited
+* s/ice_ring/ice_rx_ring; it looks now symmetric given that we have
+  ice_tx_ring struct dedicated for Tx ring
+* go through the code and use ice_for_each_* macros; it was spotted by
+  Brett that there was a place around that code that this set is
+  touching that was not using the ice_for_each_txq. Turned out that there
+  were more such places
+* take care of coalesce related code; carry the info about type of ring
+  container in ice_ring_container
+* pull out getting rid of @ring_active onto separate patch, as suggested
+  by Brett
 
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- .../hisilicon/hns3/hns3pf/hclge_cmd.c         | 24 ++++++++++---------
- 1 file changed, 13 insertions(+), 11 deletions(-)
+v3->v4:
+* fix lkp issues;
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
-index 887297e37cf3..13042f1cac6f 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
-@@ -169,17 +169,19 @@ static bool hclge_is_special_opcode(u16 opcode)
- 	/* these commands have several descriptors,
- 	 * and use the first one to save opcode and return value
- 	 */
--	u16 spec_opcode[] = {HCLGE_OPC_STATS_64_BIT,
--			     HCLGE_OPC_STATS_32_BIT,
--			     HCLGE_OPC_STATS_MAC,
--			     HCLGE_OPC_STATS_MAC_ALL,
--			     HCLGE_OPC_QUERY_32_BIT_REG,
--			     HCLGE_OPC_QUERY_64_BIT_REG,
--			     HCLGE_QUERY_CLEAR_MPF_RAS_INT,
--			     HCLGE_QUERY_CLEAR_PF_RAS_INT,
--			     HCLGE_QUERY_CLEAR_ALL_MPF_MSIX_INT,
--			     HCLGE_QUERY_CLEAR_ALL_PF_MSIX_INT,
--			     HCLGE_QUERY_ALL_ERR_INFO};
-+	static const u16 spec_opcode[] = {
-+		HCLGE_OPC_STATS_64_BIT,
-+		HCLGE_OPC_STATS_32_BIT,
-+		HCLGE_OPC_STATS_MAC,
-+		HCLGE_OPC_STATS_MAC_ALL,
-+		HCLGE_OPC_QUERY_32_BIT_REG,
-+		HCLGE_OPC_QUERY_64_BIT_REG,
-+		HCLGE_QUERY_CLEAR_MPF_RAS_INT,
-+		HCLGE_QUERY_CLEAR_PF_RAS_INT,
-+		HCLGE_QUERY_CLEAR_ALL_MPF_MSIX_INT,
-+		HCLGE_QUERY_CLEAR_ALL_PF_MSIX_INT,
-+		HCLGE_QUERY_ALL_ERR_INFO
-+	};
- 	int i;
- 
- 	for (i = 0; i < ARRAY_SIZE(spec_opcode); i++) {
+v2->v3:
+* improve XDP_TX in a proper way
+* split ice_ring
+* propagate XDP ring pointer to Rx ring
+
+v1->v2:
+* try to improve XDP_TX processing
+
+v6 : https://lore.kernel.org/bpf/20210818135916.25007-1-maciej.fijalkowski@intel.com/
+v5 : https://lore.kernel.org/bpf/20210818075256.GA16780@ranger.igk.intel.com/
+v4 : https://lore.kernel.org/bpf/20210806095539.34423-1-maciej.fijalkowski@intel.com/
+v3 : https://lore.kernel.org/bpf/20210805230046.28715-1-maciej.fijalkowski@intel.com/
+v2 : https://lore.kernel.org/bpf/20210705164338.58313-1-maciej.fijalkowski@intel.com/
+v1 : https://lore.kernel.org/bpf/20210601113236.42651-1-maciej.fijalkowski@intel.com/
+
+Thanks!
+Maciej
+
+Maciej Fijalkowski (9):
+  ice: remove ring_active from ice_ring
+  ice: move ice_container_type onto ice_ring_container
+  ice: split ice_ring onto Tx/Rx separate structs
+  ice: unify xdp_rings accesses
+  ice: do not create xdp_frame on XDP_TX
+  ice: propagate xdp_ring onto rx_ring
+  ice: optimize XDP_TX workloads
+  ice: introduce XDP_TX fallback path
+  ice: make use of ice_for_each_* macros
+
+ drivers/net/ethernet/intel/ice/ice.h          |  41 +++-
+ drivers/net/ethernet/intel/ice/ice_arfs.c     |   2 +-
+ drivers/net/ethernet/intel/ice/ice_base.c     |  59 +++---
+ drivers/net/ethernet/intel/ice/ice_base.h     |   8 +-
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |   9 +-
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.h  |  10 +-
+ drivers/net/ethernet/intel/ice/ice_eswitch.c  |  35 ++--
+ drivers/net/ethernet/intel/ice/ice_eswitch.h  |   4 +-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |  95 +++++----
+ drivers/net/ethernet/intel/ice/ice_lib.c      |  92 +++++----
+ drivers/net/ethernet/intel/ice/ice_lib.h      |   6 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     | 145 +++++++++-----
+ drivers/net/ethernet/intel/ice/ice_ptp.c      |   2 +-
+ drivers/net/ethernet/intel/ice/ice_ptp.h      |   4 +-
+ drivers/net/ethernet/intel/ice/ice_trace.h    |  28 +--
+ drivers/net/ethernet/intel/ice/ice_txrx.c     | 183 +++++++++++-------
+ drivers/net/ethernet/intel/ice/ice_txrx.h     | 126 +++++++-----
+ drivers/net/ethernet/intel/ice/ice_txrx_lib.c |  98 ++++++++--
+ drivers/net/ethernet/intel/ice/ice_txrx_lib.h |  14 +-
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |   2 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c      |  70 ++++---
+ drivers/net/ethernet/intel/ice/ice_xsk.h      |  20 +-
+ 22 files changed, 629 insertions(+), 424 deletions(-)
+
 -- 
-2.32.0
+2.20.1
 
