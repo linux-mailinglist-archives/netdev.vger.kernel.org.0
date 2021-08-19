@@ -2,173 +2,309 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C75023F1F2E
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 19:33:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20E373F1F3A
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 19:36:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231863AbhHSRdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 13:33:55 -0400
-Received: from mail-eopbgr1410109.outbound.protection.outlook.com ([40.107.141.109]:47232
-        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231714AbhHSRdy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Aug 2021 13:33:54 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FttX4v2HSjR+S+dJl72I6IcmzMT0ZCwGQEeWcu0s6DdgnyktlswIV4LRu8PYsYsKzZlLcVprvogLQ7swBKwPakclcabYTLZLiArQs2OY8CO9mVvJ0ysj1QKyluwMA1Dp9Cu42R0PkU9AB5WeIpG/OZ874WLzEvZYpDsopoxZls4u1q+nYOYpPTtdWD34G1ednPxIu0GWsRrG0AuJ58as5dnJJs/yD8hmOvz5AdSRzxwTg7txfKZiOFv6Zc77Lrki7IiWn8ERKXWXF7jBFHm/97v8ROTsdoS/+1wyptOjfTDFulDzmGQvK7T1v3cfU0yofcPx/LsHynFD0McS76jBaw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sc5MmcxZpmoX/SvQMSp5APtM+jE0kVH4JlOlxj3PywU=;
- b=V3M//HHjIQPat2gJRUKvXvSXhOzCfM4pwtZIgpyRF+1Gnd2uFnqKjYeha71ldJViocGj5iXHOWzd54KTNDnHn7Ttq00NkQG19mwGOrQMfgL1sOb3BVIFAIoSsoQmTf5MP4AsJhtvQ7dunDyi9fgu7YUB6VZKp+3WTwFGsoCCCnltiMo0/jRjoXjj/668aWII4dF3nmeUzFbqYBlTxKXLDrTlZbHtupqCj6SWUu4EWd0+08i4kgj+IHghPaxhJzoyRnIXr1IbwmEMkcGZKe2M6tT32NTBkKuDdusd8thoz71BtG+U7bMGj5TO8+WZUoFkS+O9Xus3+vlit/4Jq66KQA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sc5MmcxZpmoX/SvQMSp5APtM+jE0kVH4JlOlxj3PywU=;
- b=bjSgMv/nTCDcVn0iBN8lcUTJfqc1hNPq+DscZMXT2Hs1C6iNb5Et8Hjm5f1Fee0XvPK+A/JQVSI+YVdaiJrMsnX/02KlVd0kcsW/ZXwaUWOYV+wiNdcM06FwlmAqGL+x09IoME294VjrxPSg6U2PpushpprPb3epGUXYtEmwaUc=
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
- by OSAPR01MB2675.jpnprd01.prod.outlook.com (2603:1096:604:8::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.18; Thu, 19 Aug
- 2021 17:33:15 +0000
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::c6f:e31f:eaa9:60fe]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::c6f:e31f:eaa9:60fe%9]) with mapi id 15.20.4415.024; Thu, 19 Aug 2021
- 17:33:15 +0000
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: RE: [PATCH net-next v3 2/9] ravb: Add struct ravb_hw_info to driver
- data
-Thread-Topic: [PATCH net-next v3 2/9] ravb: Add struct ravb_hw_info to driver
- data
-Thread-Index: AQHXlGRmebHvAK0ckUmJ6xprhg3pVat7AyUAgAARjoA=
-Date:   Thu, 19 Aug 2021 17:33:15 +0000
-Message-ID: <OS0PR01MB59222DD93A66863B561C69C086C09@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-References: <20210818190800.20191-1-biju.das.jz@bp.renesas.com>
- <20210818190800.20191-3-biju.das.jz@bp.renesas.com>
- <6ddde794-1ee4-e57a-c768-8e67d68a004f@omp.ru>
-In-Reply-To: <6ddde794-1ee4-e57a-c768-8e67d68a004f@omp.ru>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: omp.ru; dkim=none (message not signed)
- header.d=none;omp.ru; dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8752bd1e-586c-406c-4dd3-08d963376cfc
-x-ms-traffictypediagnostic: OSAPR01MB2675:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <OSAPR01MB2675323CB45975513FCB1C6F86C09@OSAPR01MB2675.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2331;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 45KBCC/uVyj5Q7/00eGbzNNzQBJ+PMA1kBeMdfv25AJ0ve+xrs/3R/nN5Bgk++y7TgrV3vkjOvj4JFWjEirs68SlMFxCAlYi0Dp0GOt2Ytml/AMjQWtj6nczw6WpbPnBxgrSbwjdGdM+twDOQ8cUy/rxedmnK7YhxuDwvqLRDyqEkshmQt8JdgdkFTnpBXtbJzuJ+YhasjXpwh3MvZN7+9r3ilkGdTMObgJjHfCU7d5Y8SLW+w9qSCSZvuXf6T8aiXUrJPmIAdsbLoQ6NpYwo+5DgfH2Z8X2tZAit+zlSkPkbhVWz/HIUm76ujLrnnQb4ufclhUlMP3hXmxNiEVCYzRc37OTQfyro3Wc50RnccRpeHRe0FFrir5O0kcK98GxRjFuZVFrnOUB6HapJrJVR97A+swUl/RJ5VZ6tjteOtr/X5l59JQaPtKuDnPBldgGt3o2Pd0KxzPyCuy6Aep7KG1+22w1lrFgnnr2DH+a92CkP05Y2cCIFf+G3Z4Xl02CCuTi1NSbCGIxQEGF9PCd5Kb2cxzdVHmmCRGpGXIb5oYzttwGusQ8EABoa9ml9gyl4Gosa94jrekQ4UzT9+xOssSnj+2JRxxNJO50rEJudk92VWD7bPtPuT/HGH+yHDmQLMa/teQCobc2sF/WqhgBxlOJO3GQruUsAegOm+nM+HlSsqyCwYP8BF/7kPd14SnCI4CCEjY17U6lztMEEfBs8VYL0YMtsYmEF0xwSK7EpTZTn8ddUCj5+Ijft+My2nePyCd/L+B0sRCL2S0pIlh7+GOQZFrMaaz9V9RqBO2ICrQ=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(396003)(39850400004)(376002)(346002)(33656002)(52536014)(6506007)(122000001)(9686003)(26005)(86362001)(53546011)(38070700005)(55016002)(5660300002)(66946007)(83380400001)(8936002)(66446008)(8676002)(76116006)(64756008)(66476007)(478600001)(107886003)(110136005)(71200400001)(7696005)(7416002)(186003)(2906002)(4326008)(316002)(54906003)(38100700002)(966005)(66556008);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SHBEUWljUUwwUjl4TnJ5UnorQU83MktSUVdqWDhvOEFSYzdGcnhWUHNJcnJX?=
- =?utf-8?B?ZnhGNHA1alNwRmxxZWxkdE9NK0dpVEVMc1ByalZLNDRQZERBVG4vYTFvRjdG?=
- =?utf-8?B?b3AyVUNRSDVhcThBbmFRaUNDa2J4VzVDMkFtN0J4ZlpETkc5K1JBVEprTmxt?=
- =?utf-8?B?Q1VHRno5czQ1ay9vQ3dGTm9XU2hLL3FIYVVGaVVtOEhzRU1oS2lqaU5TUi9x?=
- =?utf-8?B?aEhKWGZXNnZ2SCtQT3ZmdG11U2F6TWc2L21Td2NZTlBiOXYyaFdzWXBHVFhH?=
- =?utf-8?B?cnY3aUFPTHBxZFpzMjNxVFlZYVQzZUFMWkt0UDRPdHVaLzVrc2FJZ0pPZEQv?=
- =?utf-8?B?MW9RdzR2WkUvYVF0M2EvaG1SSzY4TklnRFJUb2o3UEx5d0JNZ05LdkE2d0JQ?=
- =?utf-8?B?MllWT0prRENFeUl4V1NpN2ZzZDhxZmt1ZDJJdC9nZGY1SG10YmdPOGVuY2Q3?=
- =?utf-8?B?eFlCUnMwL0hQMnk0aktMeG1MNGExMnN6bEVYcGFmY2U3aW85VFp6ZFVMYVVv?=
- =?utf-8?B?dWc4c004R2NraEJLVVZuWnlHMUNYaHVZQTZpSTNlZzAvSXBXTmUrL3FBRGI1?=
- =?utf-8?B?Qlo0Wms3aE5PaGFWa0FlaWY0TzE0YS94WXY4UjBmelZKUDFZSS92ZmFnUGpv?=
- =?utf-8?B?NWVRSHA5bjJpY1l2VmJINktJa0JEOVdCM2tucFpDWmFHODFsdWNsY3B2ZmFl?=
- =?utf-8?B?MlJHKzlrNjM0UStBU2t6MW92UnphNjZ0Ukd1NllqZW80MnM0UG84SXI5WlBO?=
- =?utf-8?B?aVN0VXRpelhNeTVFYjlMNE8rY0xEUU10UUpsbG1rN21YR1V5L0E1MDVqWDRG?=
- =?utf-8?B?UWo4U0pJWmpsNjRTK0NOLzVMQkhqMnNnTzV1ZzNMVkhya2dVYmNUSVBxZmxX?=
- =?utf-8?B?UUNjdkNlUVFhRmwxaU44TEpJUVBSNlczTjhuaWVpRFltcGlQQitoeEo4SUJ2?=
- =?utf-8?B?d2s3UlQzcmZaVDhlSUV5bkNLRUV5SmtpcVpvOHZ0cGc1bHZHcVBOU0FTUTNH?=
- =?utf-8?B?RmNtVDRVVHZSMU9jWjF0V0w1UWRTaTVVUXE4S3owSzZxODNZV1NUYjZOdDJ5?=
- =?utf-8?B?UW1WQzJQWnk3NVhRdTNLUVA4bytZa3BFbER4RFpSZ3kvY2VRemI5U2U0clBH?=
- =?utf-8?B?dGlVSEdUTHozMndwNFdJQTZ2QjhTKzh4UUxtZTVzYmh5TlpvSkl4SHRqT1BW?=
- =?utf-8?B?RnFuNEFpbGsrTWJtV1loeVlSQ0JISWl0TXlkVDJIVlRkd2FNamw1WnlWOTNM?=
- =?utf-8?B?WktDUmZTZ251WFZ3T1VOS2Z6cVEvM0lBOVdzc1RiTGl1eFUzT0dHY2NlbWFL?=
- =?utf-8?B?NXJ6NlRmWXlMdkcvWnIxZ2IvaFpya1VuWVA3YUkvUWw3enlEUjBYeGNxT0VL?=
- =?utf-8?B?dDZqNlJmdDZrQmcxRlpTZTY3eVlPbCszaEhsQy9RSkp0RTVBeVZ1M1ora1Z0?=
- =?utf-8?B?NE9XYkZOMEQ1cUtlVmZGVHpXbSs4WW5RbjdQVzNLMXFzQlA0eHRVVlV5Ynk3?=
- =?utf-8?B?cW00MUdVRDNmMzRJZ2crQ2Y1TG9oU3hkT2F4bDJwdEdUQVpXSzU5OGFONWZI?=
- =?utf-8?B?VmcyTit5UE4wTjRoVHdMWlVmeXhMZEFPSlQ4dmtESTFTamtvck1NOFhXN3Z4?=
- =?utf-8?B?ekF5aUQ5SVB4OWVhRlJvbEF0Sk9OUkRESWZJbmJsVXl2OG9Ocm0rZmk5Tkw3?=
- =?utf-8?B?d1lZd1krN1hlNUNkZVNPRUNjcFE5bkE4QUVmbTJWRUQ0NEFha2ZLUXVFanFE?=
- =?utf-8?Q?vWH7DBozF8OyWy7sYk=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S232039AbhHSRhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 13:37:15 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:35048 "EHLO
+        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229465AbhHSRhM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 13:37:12 -0400
+Received: from netfilter.org (unknown [213.94.13.0])
+        by mail.netfilter.org (Postfix) with ESMTPSA id 88C216002F;
+        Thu, 19 Aug 2021 19:35:45 +0200 (CEST)
+Date:   Thu, 19 Aug 2021 19:36:26 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter <netfilter@vger.kernel.org>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>
+Cc:     netdev@vger.kernel.org, netfilter-announce@lists.netfilter.org,
+        lwn@lwn.net
+Subject: [ANNOUNCE] nftables 1.0.0 release
+Message-ID: <20210819173626.GA1776@salvia>
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8752bd1e-586c-406c-4dd3-08d963376cfc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Aug 2021 17:33:15.0649
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: rnGxW2oUcTURUqeXz5Q2if7kjHR/bwbjzxmd94/z/5zVYS3DzTioj2UdL+eiApCNzezAeoLdXVmfac1p5VJZTsxiedmRl1fhQwu0LBSUwMA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB2675
+Content-Type: multipart/mixed; boundary="opJtzjQTFsWo+cga"
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgU2VyZ2VpLA0KDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbmV0LW5leHQgdjMgMi85XSByYXZi
-OiBBZGQgc3RydWN0IHJhdmJfaHdfaW5mbyB0bw0KPiBkcml2ZXIgZGF0YQ0KPiANCj4gT24gOC8x
-OC8yMSAxMDowNyBQTSwgQmlqdSBEYXMgd3JvdGU6DQo+IA0KPiA+IFRoZSBETUFDIGFuZCBFTUFD
-IGJsb2NrcyBvZiBHaWdhYml0IEV0aGVybmV0IElQIGZvdW5kIG9uIFJaL0cyTCBTb0MNCj4gPiBh
-cmUgc2ltaWxhciB0byB0aGUgUi1DYXIgRXRoZXJuZXQgQVZCIElQLiBXaXRoIGEgZmV3IGNoYW5n
-ZXMgaW4gdGhlDQo+ID4gZHJpdmVyIHdlIGNhbiBzdXBwb3J0IGJvdGggSVBzLg0KPiA+DQo+ID4g
-VGhpcyBwYXRjaCBhZGRzIHRoZSBzdHJ1Y3QgcmF2Yl9od19pbmZvIHRvIGhvbGQgaHcgZmVhdHVy
-ZXMsIGRyaXZlcg0KPiA+IGRhdGEgYW5kIGZ1bmN0aW9uIHBvaW50ZXJzIHRvIHN1cHBvcnQgYm90
-aCB0aGUgSVBzLiBJdCBhbHNvIHJlcGxhY2VzDQo+ID4gdGhlIGRyaXZlciBkYXRhIGNoaXAgdHlw
-ZSB3aXRoIHN0cnVjdCByYXZiX2h3X2luZm8gYnkgbW92aW5nIGNoaXAgdHlwZQ0KPiB0byBpdC4N
-Cj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IEJpanUgRGFzIDxiaWp1LmRhcy5qekBicC5yZW5lc2Fz
-LmNvbT4NCj4gPiBSZXZpZXdlZC1ieTogTGFkIFByYWJoYWthciA8cHJhYmhha2FyLm1haGFkZXYt
-bGFkLnJqQGJwLnJlbmVzYXMuY29tPg0KPiA+IFJldmlld2VkLWJ5OiBBbmRyZXcgTHVubiA8YW5k
-cmV3QGx1bm4uY2g+DQo+ID4gLS0tDQo+ID4gdjItPnYzOg0KPiA+ICAqIFJldGFpbmVkIFJiIHRh
-ZyBmcm9tIEFuZHJldywgc2luY2UgdGhlcmUgaXMgbm8gZnVuY3Rpb25hbGl0eSBjaGFuZ2UNCj4g
-PiAgICBhcGFydCBmcm9tIGp1c3Qgc3BsaXR0aW5nIHRoZSBwYXRjaCBpbnRvIDIuIEFsc28gdXBk
-YXRlZCB0aGUgY29tbWl0DQo+ID4gICAgZGVzY3JpcHRpb24uDQo+ID4gdjI6DQo+ID4gICogSW5j
-b3Jwb3JhdGVkIEFuZHJldyBhbmQgU2VyZ2VpJ3MgcmV2aWV3IGNvbW1lbnRzIGZvciBtYWtpbmcg
-aXQNCj4gc21hbGxlciBwYXRjaA0KPiA+ICAgIGFuZCBwcm92aWRlZCBkZXRhaWxlZCBkZXNjcmlw
-dGlvbi4NCj4gDQo+IFsuLi5dDQo+ID4gIHN0YXRpYyBpbmxpbmUgdTMyIHJhdmJfcmVhZChzdHJ1
-Y3QgbmV0X2RldmljZSAqbmRldiwgZW51bSByYXZiX3JlZw0KPiA+IHJlZykgZGlmZiAtLWdpdCBh
-L2RyaXZlcnMvbmV0L2V0aGVybmV0L3JlbmVzYXMvcmF2Yl9tYWluLmMNCj4gPiBiL2RyaXZlcnMv
-bmV0L2V0aGVybmV0L3JlbmVzYXMvcmF2Yl9tYWluLmMNCj4gPiBpbmRleCA5NGViOTEzNjc1MmQu
-LmI2NTU0ZTVlMTNhZiAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9yZW5l
-c2FzL3JhdmJfbWFpbi5jDQo+ID4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvcmVuZXNhcy9y
-YXZiX21haW4uYw0KPiBbLi4uXQ0KPiA+IEBAIC0yMTEzLDcgKzIxMjIsNyBAQCBzdGF0aWMgaW50
-IHJhdmJfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZQ0KPiAqcGRldikNCj4gPiAgCQl9DQo+
-ID4gIAl9DQo+ID4NCj4gPiAtCXByaXYtPmNoaXBfaWQgPSBjaGlwX2lkOw0KPiA+ICsJcHJpdi0+
-Y2hpcF9pZCA9IGluZm8tPmNoaXBfaWQ7DQo+IA0KPiAgICBEbyB3ZSBzdGlsbCBuZWVkIHByaXYt
-PmNoaXBfaWQ/DQoNClRoZSBwYXRjaCBjdXJyZW50bHkgbWVyZ2VkIGlzIHByZXBhcmF0aW9uIHBh
-dGNoLCBzdWJzZXF1ZW50IHBhdGNoIHdpbGwgcmVwbGFjZQ0KYWxsIHRoZSBjaGlwX2lkIGluIHJh
-dmJfbWFpbiB3aXRoIGhhcmR3YXJlIGZlYXR1cmVzIGFuZCBkcml2ZXIgZmVhdHVyZXMuDQpBZnRl
-ciB0aGF0IGJvdGggcHJpdi0+Y2hpcF9pZCBhbmQgaW5mb19jaGlwaWQgaXMgbm90IHJlcXVpcmVk
-IGZvciByYXZiX21haW4uYw0KDQpIb3dldmVyIHB0cCBkcml2ZXJbMV0gc3RpbGwgdXNlcyBpdCwg
-YnkgYWRkaW5nIGEgZmVhdHVyZSBiaXQgd2UgY2FuIHJlcGxhY2UNCnRoYXQgYXMgd2VsbC4gU28g
-Z29pbmcgZm9yd2FyZCwgdGhlcmUgd29uJ3QgYmUgYW55IHByaXYtPmNoaXBfaWQgb3IgaW5mby0+
-Y2hpcF9pZC4NCg0KRG9lcyBpdCBtYWtlcyBzZW5zZT8NCg0KWzFdIGh0dHBzOi8vZ2l0Lmtlcm5l
-bC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3RvcnZhbGRzL2xpbnV4LmdpdC90cmVlL2Ry
-aXZlcnMvbmV0L2V0aGVybmV0L3JlbmVzYXMvcmF2Yl9wdHAuYz9oPXY1LjE0LXJjNiNuMjAwDQoN
-ClJlZ2FyZHMsDQpCaWp1DQoNCj4gDQo+ID4gIAlwcml2LT5jbGsgPSBkZXZtX2Nsa19nZXQoJnBk
-ZXYtPmRldiwgTlVMTCk7DQo+ID4gIAlpZiAoSVNfRVJSKHByaXYtPmNsaykpIHsNCj4gWy4uLl0N
-Cj4gDQo+IFJldmlld2VkLWJ5OiBTZXJnZXkgU2h0eWx5b3YgPHMuc2h0eWx5b3ZAb21wLnJ1Pg0K
-PiANCj4gWy4uLl0NCj4gDQo+IE1CUiwgU2VyZ2V5DQo=
+
+--opJtzjQTFsWo+cga
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+
+Hi!
+
+The Netfilter project proudly presents:
+
+        nftables 1.0.0
+
+This release contains fixes, documentation updates and new features
+available up to the Linux kernel 5.13 release, more specifically:
+
+* Catch-all set element support: This allows users to define the
+  special wildcard set element for anything else not defined in
+  the set.
+
+  table x {
+        map blocklist {
+                type ipv4_addr : verdict
+                flags interval
+                elements = { 192.168.0.0/16 : accept, 10.0.0.0/8 : accept, * : drop }
+        }
+
+        chain y {
+                type filter hook prerouting priority 0; policy accept;
+                ip saddr vmap @blocklist
+        }
+  }
+
+  [ this feature is actually supported since 0.9.9, but it was not
+    included in the previous release announcement. ]
+
+* Define variables from the command line through --define:
+
+  # cat test.nft
+  table netdev x {
+        chain y {
+               type filter hook ingress devices = $dev priority 0; policy drop;
+        }
+  }
+  # nft --define dev="{ eth0, eth1 }" -f test.nft
+
+* Allow to use stateful expressions in maps:
+
+  table inet filter {
+       map portmap {
+               type inet_service : verdict
+               counter
+               elements = { 22 counter packets 0 bytes 0 : jump ssh_input, * counter packets 0 bytes 0 : drop }
+       }
+
+       chain ssh_input {
+       }
+
+       chain wan_input {
+               tcp dport vmap @portmap
+       }
+
+       chain prerouting {
+               type filter hook prerouting priority raw; policy accept;
+               iif vmap { "lo" : jump wan_input }
+       }
+  }
+
+* Add command to list the netfilter hooks pipeline for a given packet
+  family. If device is specified, then ingress path is also included.
+
+     # nft list hooks ip device eth0
+     family ip {
+            hook ingress {
+                    +0000000010 chain netdev x y [nf_tables]
+                    +0000000300 chain inet m w  [nf_tables]
+            }
+            hook input {
+                    -0000000100 chain ip a b [nf_tables]
+                    +0000000300 chain inet m z [nf_tables]
+            }
+            hook forward {
+                    -0000000225 selinux_ipv4_forward
+                     0000000000 chain ip a c [nf_tables]
+            }
+            hook output {
+                    -0000000225 selinux_ipv4_output
+            }
+            hook postrouting {
+                    +0000000225 selinux_ipv4_postroute
+            }
+     }
+
+* Allow to combine jhash, symhash and numgen expressions with the
+  queue statement, to fan out packets to userspace queues via
+  nfnetlink_queue.
+
+  ... queue to symhash mod 65536
+  ... queue flags bypass to numgen inc mod 65536
+  ... queue to jhash oif . meta mark mod 32
+
+  You can also combine it with maps, to select the userspace queue
+  based on any other singleton key or concatenations:
+
+  ... queue flags bypass to oifname map { "eth0" : 0, "ppp0" : 2, "eth1" : 2 }
+
+* Expand variable containing set into multiple mappings
+
+  define interfaces = { eth0, eth1 }
+
+  table ip x {
+        chain y {
+                type filter hook input priority 0; policy accept;
+                iifname vmap { lo : accept, $interfaces : drop }
+        }
+ }
+ # nft -f x.nft
+ # nft list ruleset
+ table ip x {
+       chain y {
+                type filter hook input priority 0; policy accept;
+                iifname vmap { "lo" : accept, "eth0" : drop, "eth1" : drop }
+        }
+ }
+
+* Allow to combine verdict maps with interval concatenations
+
+ # nft add rule x y tcp dport . ip saddr vmap { 1025-65535 . 192.168.10.2 : accept }
+
+* Simplify syntax for NAT mappings. You can specify an IP range:
+
+ ... snat to ip saddr map { 10.141.11.4 : 192.168.2.2-192.168.2.4 }
+
+ Or a specific IP and port.
+
+ ... dnat to ip saddr map { 10.141.11.4 : 192.168.2.3 . 80 }
+
+  Or a combination of range of IP addresses and ports.
+
+ ... dnat to ip saddr . tcp dport map { 192.168.1.2 . 80 : 10.141.10.2-10.141.10.5 . 8888-8999 }
+
+And bugfixes.
+
+You can download this new release from:
+
+https://www.netfilter.org/projects/nftables/downloads.html#nftables-0.9.9
+
+To build the code, libnftnl >= 1.2.0 and libmnl >= 1.0.4 are required:
+
+* https://netfilter.org/projects/libnftnl/index.html
+* https://netfilter.org/projects/libmnl/index.html
+
+Visit our wikipage for user documentation at:
+
+* https://wiki.nftables.org
+
+For the manpage reference, check man(8) nft.
+
+In case of bugs and feature request, file them via:
+
+* https://bugzilla.netfilter.org
+
+Happy firewalling.
+
+--opJtzjQTFsWo+cga
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: attachment; filename="changes-nftables-1.0.0.txt"
+
+Duncan Roe (1):
+      build: get `make distcheck` to pass again
+
+Florian Westphal (26):
+      json: fix base chain output
+      json: fix parse of flagcmp expression
+      tests/py: fix error message
+      json: catchall element support
+      tests: py: update netdev reject test file
+      tests: ct: prefer normal cmp
+      tests: remove redundant test cases
+      evaluate: remove anon sets with exactly one element
+      tests: add test case for removal of anon sets with only a single element
+      scanner: add list cmd parser scope
+      src: add support for base hook dumping
+      doc: add LISTING section
+      json: tests: fix vlan.t cfi test case
+      json: tests: add missing concat test case
+      netlink_delinearize: add missing icmp id/sequence support
+      payload: do not remove icmp echo dependency
+      tests: add a icmp-reply only and icmpv6 id test cases
+      evaluate: fix hash expression maxval
+      parser: restrict queue num expressiveness
+      src: add queue expr and flags to queue_stmt_alloc
+      parser: add queue_stmt_compat
+      parser: new queue flag input format
+      src: queue: allow use of arbitrary queue expressions
+      tests: extend queue testcases for new sreg support
+      src: queue: allow use of MAP statement for queue number retrieval
+      netlink_delinarize: don't check for set element if set is not populated
+
+Kerin Millar (1):
+      json: Print warnings to stderr rather than stdout
+
+Pablo Neira Ayuso (59):
+      statement: connlimit: remove extra whitespace in print function
+      doc: nft: ct id does not allow for original|reply
+      json: missing catchall expression stub with ./configure --without-json
+      rule: rework CMD_OBJ_SETELEMS logic
+      cmd: check for table mismatch first in error reporting
+      netlink: quick sort array of devices
+      src: add vlan dei
+      evaluate: restore interval + concatenation in anonymous set
+      evaluate: add set to cache once
+      src: add xzalloc_array() and use it to allocate the expression hashtable
+      src: replace opencoded NFT_SET_ANONYMOUS set flag check by set_is_anonymous()
+      tests: shell: extend connlimit test
+      tests: shell: cover split chain reference across tables
+      evaluate: do not skip mapping elements
+      evaluate: unbreak verdict maps with implicit map with interval concatenations
+      evaluate: memleak in binary operation transfer to RHS
+      netlink_delinearize: memleak in string netlink postprocessing
+      segtree: memleak in error path of the set to segtree conversion
+      netlink_delinearize: memleak when listing ct event rule
+      parser_bison: memleak in osf flags
+      rule: memleak of list of timeout policies
+      evaluate: fix maps with key and data concatenations
+      libnftables: fix memleak when first message in batch is used to report error
+      parser_bison: string memleak in YYERROR path
+      parser_bison: memleak in rate limit parser
+      rule: obj_free() releases timeout state string
+      cmd: incorrect table location in error reporting
+      cmd: incorrect error reporting when table declaration exists
+      netlink_delinearize: stmt and expr error path memleaks
+      src: remove STMT_NAT_F_INTERVAL flags and interval keyword
+      src: infer NAT mapping with concatenation from set
+      src: support for nat with interval concatenation
+      tests: py: extend coverage for dnat with classic range representation
+      src: add --define key=value
+      evaluate: fix inet nat with no layer 3 info
+      libnftables: missing nft_ctx_add_var() symbol map update
+      tests: py: add dnat to port without defining destination address
+      parser_bison: missing initialization of ct timeout policy list
+      parser_json: inconditionally initialize ct timeout list
+      src: fix nft_ctx_clear_include_paths in libnftables.map
+      src: expose nft_ctx_clear_vars as API
+      parser_bison: stateful statement support in map
+      parser_bison: parse number as reject icmp code
+      src: promote 'reject with icmp CODE' syntax
+      evaluate: error reporting for missing statements in set/map declaration
+      tests: py: update new reject with icmp code syntax leftover
+      tests: py: missing json update for numeric reject with icmp numeric
+      expression: missing != in flagcmp expression print function
+      netlink_linearize: incorrect netlink bytecode with binary operation and flags
+      evaluate: disallow negation with binary operation
+      tests: py: idempotent tcp flags & syn != 0 to tcp flag syn
+      netlink_delinearize: skip flags / mask notation for singleton bitmask
+      tests: py: tcp flags & (fin | syn | rst | ack) == syn
+      tests: py: check more flag match transformations to compact syntax
+      mnl: revisit hook listing
+      tcpopt: bogus assertion on undefined options
+      evaluate: expand variable containing set into multiple mappings
+      netlink_delinearize: skip flags / mask notation for singleton bitmask again
+      build: Bump version to v1.0.0
+
+Phil Sutter (13):
+      segtree: Fix segfault when restoring a huge interval set
+      parser_bison: Fix for implicit declaration of isalnum
+      parser_json: Fix for memleak in tcp option error path
+      evaluate: Mark fall through case in str2hooknum()
+      json: Drop pointless assignment in exthdr_expr_json()
+      netlink: Avoid memleak in error path of netlink_delinearize_set()
+      netlink: Avoid memleak in error path of netlink_delinearize_chain()
+      netlink: Avoid memleak in error path of netlink_delinearize_table()
+      netlink: Avoid memleak in error path of netlink_delinearize_obj()
+      netlink_delinearize: Fix suspicious calloc() call
+      rule: Fix for potential off-by-one in cmd_add_loc()
+      tests: shell: Fix bogus testsuite failure with 100Hz
+      tests/py: Make netns spawning more robust
+
+
+--opJtzjQTFsWo+cga--
