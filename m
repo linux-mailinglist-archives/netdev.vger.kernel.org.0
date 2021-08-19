@@ -2,119 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D02073F1705
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 12:03:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EB0C3F1716
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 12:08:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238229AbhHSKD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 06:03:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37452 "EHLO
+        id S238267AbhHSKIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 06:08:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232750AbhHSKDz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 06:03:55 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65928C061575;
-        Thu, 19 Aug 2021 03:03:19 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id n12so3625687plf.4;
-        Thu, 19 Aug 2021 03:03:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0Z5bZ3ATC9rIbWdXJn4JmmnZhJaPoQBdkWHt9cjrKG8=;
-        b=IT2Usca3A4sKF8ubQedNM5SaMd/P+GOOPAsVwIijlGErP0fzExJmYSY+A4eUcUkpXJ
-         rlIgf13cji4zTPlulH73wgPhlbbzcXLto1AWAY23pc05ugnHQG+lyNsgg/hndXCJDvOZ
-         akViMH02DTRkHylRGYPHa/SdGfpAhtYNgDzsjZBFu8ziREk5Ir52t81sOV2jRIjUiWu/
-         9kVTMEdyW5UV9EJv7Rbge0li4OczD1s3+x4R5IGStjZTrxrYWtpg+4kGHyRYWdS60W/5
-         Am1K2wsgWrjeJ9fH+MvIMoJfBnS3nAhxZjbc45vuLQjaMveZqMq4x3zvuPukeR63TOml
-         jWXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0Z5bZ3ATC9rIbWdXJn4JmmnZhJaPoQBdkWHt9cjrKG8=;
-        b=Y5MN8Zbm5dAwNafJHeGb7lBqAbEiJDCsM4jvqABc1KRLuq2uDqoSoDags/zUgzDZEA
-         GM7puysXgSiDJikiagz/HT0+kSS5NNXQBw4lXT7DfLMVSpmIyPNoi3gBQU/V7jdCBiA5
-         Ol2z6pQAyfvdbGx1enQ0w4mDFL9NWoSEfE7tWYhaKvtGo0+BBKl3HS13c/6gpefHjZ6m
-         f476g5pZFahcm4EA5u45TV53h5E/s/18lx1ZqZioWVRHaHsWZYxaznECBHRIo27s2G7p
-         hryHHsbC6Gl29U6SqByVmC3iCw9tDRJY0lrflXzVhCjURILVur8luwYrSSzbGPl+B89u
-         xfHQ==
-X-Gm-Message-State: AOAM530q1SDPu7lmm0WX5ovbkZ8ugMDwU9jgu7WflcNzdhGUuX0coFXY
-        wpnIEeUR/YaBopwqK3dVMWY=
-X-Google-Smtp-Source: ABdhPJzfJPRP2BLYCvwXpllkEgoVoCQWlDbtUrPyndvtVP/tYRGu2BCJLYGTmAw6sGYSn2DMVJ/QVQ==
-X-Received: by 2002:a17:902:bc4b:b029:12d:77e8:2c26 with SMTP id t11-20020a170902bc4bb029012d77e82c26mr10961353plz.67.1629367398962;
-        Thu, 19 Aug 2021 03:03:18 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
-        by smtp.gmail.com with ESMTPSA id l11sm2847556pfd.187.2021.08.19.03.03.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Aug 2021 03:03:18 -0700 (PDT)
-Subject: Re: [PATCH V3 10/13] x86/Swiotlb: Add Swiotlb bounce buffer remap
- function for HV IVM
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
-        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
-        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, ardb@kernel.org,
-        Tianyu.Lan@microsoft.com, pgonda@google.com,
-        martin.b.radev@gmail.com, akpm@linux-foundation.org,
-        kirill.shutemov@linux.intel.com, rppt@kernel.org,
-        sfr@canb.auug.org.au, saravanand@fb.com,
-        krish.sadhukhan@oracle.com, aneesh.kumar@linux.ibm.com,
-        xen-devel@lists.xenproject.org, rientjes@google.com,
-        hannes@cmpxchg.org, tj@kernel.org, michael.h.kelley@microsoft.com,
-        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, parri.andrea@gmail.com, dave.hansen@intel.com
-References: <20210809175620.720923-1-ltykernel@gmail.com>
- <20210809175620.720923-11-ltykernel@gmail.com>
- <20210812122741.GC19050@lst.de>
- <d18ae061-6fc2-e69e-fc2c-2e1a1114c4b4@gmail.com>
- <890e5e21-714a-2db6-f68a-6211a69bebb9@gmail.com>
- <20210819084951.GA10461@lst.de>
- <1c5ae861-2c35-2ef5-e764-db45bbcb88a9@gmail.com>
- <20210819100200.GA16908@lst.de>
-From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <8bcadc06-ce4c-8be9-c1ac-44c544e02960@gmail.com>
-Date:   Thu, 19 Aug 2021 18:03:04 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        with ESMTP id S238137AbhHSKIY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 06:08:24 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA0B4C061575
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 03:07:47 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1mGexb-00043B-U9; Thu, 19 Aug 2021 12:07:43 +0200
+Received: from pengutronix.de (unknown [IPv6:2a02:810a:8940:aa0:5b60:c5f4:67f4:2e1e])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1CC0766A599;
+        Thu, 19 Aug 2021 10:07:42 +0000 (UTC)
+Date:   Thu, 19 Aug 2021 12:07:40 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     linux-can <linux-can@vger.kernel.org>,
+        Stefan =?utf-8?B?TcOkdGpl?= <Stefan.Maetje@esd.eu>,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5 1/7] can: netlink: allow user to turn off unsupported
+ features
+Message-ID: <20210819100740.l4ci5taj6m27x2am@pengutronix.de>
+References: <20210815033248.98111-1-mailhol.vincent@wanadoo.fr>
+ <20210815033248.98111-2-mailhol.vincent@wanadoo.fr>
+ <20210819074514.jkg7fwztzpxecrwb@pengutronix.de>
+ <CAMZ6RqL0uT7tNNxRjAYaUNrnsSV6smMQvowttLaqjUrOZ5V1Fg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210819100200.GA16908@lst.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="lyy5ts6arsg6xxal"
+Content-Disposition: inline
+In-Reply-To: <CAMZ6RqL0uT7tNNxRjAYaUNrnsSV6smMQvowttLaqjUrOZ5V1Fg@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/19/2021 6:02 PM, Christoph Hellwig wrote:
-> On Thu, Aug 19, 2021 at 05:59:02PM +0800, Tianyu Lan wrote:
->>
->>
->> On 8/19/2021 4:49 PM, Christoph Hellwig wrote:
->>> On Mon, Aug 16, 2021 at 10:50:26PM +0800, Tianyu Lan wrote:
->>>> Hi Christoph:
->>>>         Sorry to bother you.Please double check with these two patches
->>>> " [PATCH V3 10/13] x86/Swiotlb: Add Swiotlb bounce buffer remap function
->>>> for HV IVM" and "[PATCH V3 09/13] DMA: Add dma_map_decrypted/dma_
->>>> unmap_encrypted() function".
->>>
->>> Do you have a git tree somewhere to look at the whole tree?
->>
->> Yes, here is my github link for these two patches.
->>
->> https://github.com/lantianyu/linux/commit/462f7e4e44644fe7e182f7a5fb043a75acb90ee5
->>
->> https://github.com/lantianyu/linux/commit/c8de236bf4366d39e8b98e5a091c39df29b03e0b
-> 
-> Which branch is this?
-> 
 
-https://github.com/lantianyu/linux/tree/isolationv3
+--lyy5ts6arsg6xxal
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On 19.08.2021 18:24:27, Vincent MAILHOL wrote:
+> On Thu. 19 Aug 2021 at 16:45, Marc Kleine-Budde <mkl@pengutronix.de> wrot=
+e:
+> > On 15.08.2021 12:32:42, Vincent Mailhol wrote:
+> > > The sanity checks on the control modes will reject any request related
+> > > to an unsupported features, even turning it off.
+> > >
+> > > Example on an interface which does not support CAN-FD:
+> > >
+> > > $ ip link set can0 type can bitrate 500000 fd off
+> > > RTNETLINK answers: Operation not supported
+> > >
+> > > This patch lets such command go through (but requests to turn on an
+> > > unsupported feature are, of course, still denied).
+> > >
+> > > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> >
+> > I'm planing to send a pull request to net-next today. I want to do some
+> > more tests with this series
+>=20
+> Ack, I am also preparing a new version. But first, I am just
+> waiting for your reply on the tdc-mode {auto, manual, off}. :)
+
+I want to do some proper testing, if it's now working as I'm expecting,
+before continuing the discussion. :D
+
+> > but this patch is more or less unrelated,
+> > so I can take it in this PR, should I?
+>=20
+> FYI, the reason to add it to the series is that when setting TDC to
+> off, the ip tool sets both CAN_CTRLMODE_TDC_AUTO and
+> CAN_CTRLMODE_TDC_MANUAL to zero (which the corresponding bits in
+> can_ctrlmode::mask set to 1).  Without this patch, netlink would
+> return -ENOTSUPP if the driver only supported one of
+> CAN_CTRLMODE_TDC_{AUTO,MANUAL}.
+
+Oh, I see.
+
+> Regardless, this patch makes sense as a standalone, I am fine if
+> you include it in your PR.
+
+Why not, reduces the patch amount on your side :)
+
+> Also, if you want, you can include the latest patch of the series as well:
+> https://lore.kernel.org/linux-can/20210815033248.98111-8-mailhol.vincent@=
+wanadoo.fr/
+>=20
+> It's a comment fix, it should be pretty harmless.
+
+Ok, makes sense.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--lyy5ts6arsg6xxal
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEeLWoACgkQqclaivrt
+76kV/Af/aQMfgwa5V4mMqsDeBdm/vXj2gp5/xZI0co2GN7kjwo0sXws9VF7Dsg0Z
+LIzH79naGLMLfs/3zx1xOpqLCmGNhu9SV+rneZZZtJQ32f18UVD0u34Zg3+SJ3QN
+DmPO5TKQFS9c+bDXbBxHGxza2eZTP1L1aGqFU4f4GzGB0HMwD84DV7xqmzmzWA3o
+IkqKqYdTcV0zf6H+IqvtXY1TNKHqTbxPajUn4DwQs2XXZzCyw7ynoR3I+BSZmDNW
+KEZ5uUBJ4NIYPC5HRfGsftyBfEKARgbzc54Vs0O+b9PPlCR3ucVs15kB4tZbstPn
+GlgNuVG9//8vf36wGB1Y2HBiIUCD8g==
+=KMQY
+-----END PGP SIGNATURE-----
+
+--lyy5ts6arsg6xxal--
