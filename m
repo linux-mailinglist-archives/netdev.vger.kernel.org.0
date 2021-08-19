@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C1873F1A1A
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 15:12:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83C583F1A1B
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 15:12:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239655AbhHSNNH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 09:13:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53568 "EHLO
+        id S239794AbhHSNNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 09:13:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239794AbhHSNNH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 09:13:07 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69F1C061575
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 06:12:30 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id x12so9018914wrr.11
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 06:12:30 -0700 (PDT)
+        with ESMTP id S239808AbhHSNNJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 09:13:09 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 234C1C061756
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 06:12:33 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id f9-20020a05600c1549b029025b0f5d8c6cso6779465wmg.4
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 06:12:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=engleder-embedded-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=V09boSFG66nz8jPL2ItfwtlzK7dZXPHZLQbwCkrST28=;
-        b=o8fK1m3ttjkL4PWcg9GbTcBzaZMP2B2d0mmLqVkR82YcS70BVKRa3L4O0GNXZGOrgP
-         hhP9y0VY0dTUz/lnJh9PWmMnEWwNwOe5TmEolP88YG8CdEUT8TU4GqtImS1htQZHRiDI
-         kG05kYVxn3PQvcCWnhUvZIsGXR1EnI9YJm9KstIEfrpK/l3zUpthVFzVBxN4N39jP/sX
-         /4GRqM3xR6LGHAg6js/35OxlcAeK2UsdLF1bitMaNxeSNqNPVt8w3nNt6NSipM2KjS3u
-         ktxUssRWCcoSnNVM+dImZt5wRxyklMfubzaIJaNX9momWbTMPKF4Mpx1jnu5dZsBRZuw
-         sF/A==
+        bh=41vzQz17yY023l5WeMyfnRBC0yKCfFsWSJLJ4kmuWB0=;
+        b=uIvVIpuYUYl+rROb47a8U0dUIX8Q/zFRZJIti5ypNef2+0vn6pZR//V4FX+TpTKsRR
+         lJWb0CqCIpzs2p4sX23CaD4LutIIvHQwKbllk1lk0m6AdcyDlPKscgU8cXm7DJpGkNKT
+         XBwPWP+sE9Q+7F7aVH8SXpjHntybx9MtUFKCQE7Fxp8FPKfbexaL7ZPntE8cE65ZHq7o
+         tyVdiCg9MjK6vfaBomdoxNfGQYX/FqKiIhbHgGfj0niLa4pcOXhS2GcnJc1gu6nFxS/v
+         JgVzAGozJEbnzTitPNLKoyytxBPPB+DWsBm1NKXV6j8qRF/7XOygtZ9rMdoRyMfxLmXQ
+         aY2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=V09boSFG66nz8jPL2ItfwtlzK7dZXPHZLQbwCkrST28=;
-        b=OlFrfEjiuIYvYCfQgrq1MV0/sE+b/mIyBo//rwKfovkC2FgZsZTqWtsfM+NQaBlHjg
-         8DZphTm12wXtuXdSzG+EP12CbswPm2BnzEyrFYW1t/BEb6XaMkPy0nOx3XFnnFk8U7pU
-         C08mBiXWZj57Au4/oeet4gw+RKhENfwan9T3dxxCPKaOb7fuEGoyChDS62rhYdgag+vr
-         H8LX+7sPM5kFgVOx5OWvj7zlW92xaM2aaaRETUW5y5OS0KUF2rn3ncaHCxWe+DVlMTDy
-         vDZYeQSwWSfxPvrg0Xod7xZQfIxZMbKk6p5TXML7Iu5ANgaChM0TZ31OAkJ7AsIyDjtF
-         Ncdw==
-X-Gm-Message-State: AOAM531RtO0tPhWKec1wAFi375azoDfQIDs7vERuXEkO4Q8HKXeAJ0VK
-        s2Ovxk8LXTEp2KrKUF9a3B73vQ==
-X-Google-Smtp-Source: ABdhPJzVPprl4Ghl6UnsNll/DcE2oidNlSshbGPael1zWBN8Zwx/CkhTcVSIMyzbYsPCaB9EvCjKIA==
-X-Received: by 2002:a5d:4088:: with SMTP id o8mr3761276wrp.34.1629378749495;
-        Thu, 19 Aug 2021 06:12:29 -0700 (PDT)
+        bh=41vzQz17yY023l5WeMyfnRBC0yKCfFsWSJLJ4kmuWB0=;
+        b=CvX5i/v61J1l3dn5aFwIR07MSwucMU1Cy4MRQp/AVsTPD7MIWeyE9rebBdPZKLQTiw
+         vVX1GXyYr+ZnEhI2Aeep4Gxv2vEGLh3p3lthrU1cW4QkhhwIVPxmPvs8d/M59YrWf3A+
+         CNAt3CqYkN7eHnuXPH/1Px7mdtCbARTEOGKTnwhxAAr1afTxQKJbHtHY4ZdOMvfmT+Jp
+         sboVcrDBK45x0syTLAO345o/p7sgcp9B/COAsgqig8yAv8FaN+04zoGT2ZGAw3JEqBlc
+         ANHGLw4xNYNvhnHtf0jVPb7IuMp+fgtQQ+6iEBMpEx6M1CPFZRCtuE2xOSZWG7hvBlxC
+         HiUA==
+X-Gm-Message-State: AOAM532NBIaP2em6k6pZ8uhWbaoAELaO+3/Yw/cCuNTaXdUV7b1nHppd
+        0Cvja53E7nQ5M9vL+5Vmxp+VYQ==
+X-Google-Smtp-Source: ABdhPJx7p/Q2U170DrSuVWLkIvnIE64c+YJs/hMeV7g4n9/p7kNXo73GDAgkVyFuVjQiSgr5a50mNQ==
+X-Received: by 2002:a05:600c:4ec8:: with SMTP id g8mr11921627wmq.34.1629378751790;
+        Thu, 19 Aug 2021 06:12:31 -0700 (PDT)
 Received: from hornet.engleder.at (dynamic-2el0lv6sxxeorz8a81-pd01.res.v6.highway.a1.net. [2001:871:23a:b9:6e3b:e5ff:fe2c:34c1])
-        by smtp.gmail.com with ESMTPSA id d4sm3087088wrc.34.2021.08.19.06.12.28
+        by smtp.gmail.com with ESMTPSA id d4sm3087088wrc.34.2021.08.19.06.12.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Aug 2021 06:12:29 -0700 (PDT)
+        Thu, 19 Aug 2021 06:12:31 -0700 (PDT)
 From:   Gerhard Engleder <gerhard@engleder-embedded.com>
 To:     andrew@lunn.ch
 Cc:     netdev@vger.kernel.org,
         Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next v2 2/3] net: phy: Uniform PHY driver access
-Date:   Thu, 19 Aug 2021 15:11:53 +0200
-Message-Id: <20210819131154.6586-3-gerhard@engleder-embedded.com>
+Subject: [PATCH net-next v2 3/3] net: phy: gmii2rgmii: Support PHY loopback
+Date:   Thu, 19 Aug 2021 15:11:54 +0200
+Message-Id: <20210819131154.6586-4-gerhard@engleder-embedded.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210819131154.6586-1-gerhard@engleder-embedded.com>
 References: <20210819131154.6586-1-gerhard@engleder-embedded.com>
@@ -63,37 +63,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-struct phy_device contains a pointer to the PHY driver and nearly
-everywhere this pointer is used to access the PHY driver. Only
-mdio_bus_phy_may_suspend() is still using to_phy_driver() instead of the
-PHY driver pointer. Uniform PHY driver access by eliminating
-to_phy_driver() use in mdio_bus_phy_may_suspend().
-
-Only phy_bus_match() and phy_probe() are still using to_phy_driver(),
-because PHY driver pointer is not available there.
+Configure speed if loopback is used. read_status is not called for
+loopback.
 
 Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
 ---
- drivers/net/phy/phy_device.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/phy/xilinx_gmii2rgmii.c | 46 ++++++++++++++++++++++-------
+ 1 file changed, 35 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index ba5ad86ec826..9e2891d8e8dd 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -233,11 +233,9 @@ static DEFINE_MUTEX(phy_fixup_lock);
+diff --git a/drivers/net/phy/xilinx_gmii2rgmii.c b/drivers/net/phy/xilinx_gmii2rgmii.c
+index 151c2a3f0b3a..8dcb49ed1f3d 100644
+--- a/drivers/net/phy/xilinx_gmii2rgmii.c
++++ b/drivers/net/phy/xilinx_gmii2rgmii.c
+@@ -27,12 +27,28 @@ struct gmii2rgmii {
+ 	struct mdio_device *mdio;
+ };
  
- static bool mdio_bus_phy_may_suspend(struct phy_device *phydev)
+-static int xgmiitorgmii_read_status(struct phy_device *phydev)
++static void xgmiitorgmii_configure(struct gmii2rgmii *priv, int speed)
  {
--	struct device_driver *drv = phydev->mdio.dev.driver;
--	struct phy_driver *phydrv = to_phy_driver(drv);
- 	struct net_device *netdev = phydev->attached_dev;
+-	struct gmii2rgmii *priv = mdiodev_get_drvdata(&phydev->mdio);
+ 	struct mii_bus *bus = priv->mdio->bus;
+ 	int addr = priv->mdio->addr;
+-	u16 val = 0;
++	u16 val;
++
++	val = mdiobus_read(bus, addr, XILINX_GMII2RGMII_REG);
++	val &= ~XILINX_GMII2RGMII_SPEED_MASK;
++
++	if (speed == SPEED_1000)
++		val |= BMCR_SPEED1000;
++	else if (speed == SPEED_100)
++		val |= BMCR_SPEED100;
++	else
++		val |= BMCR_SPEED10;
++
++	mdiobus_write(bus, addr, XILINX_GMII2RGMII_REG, val);
++}
++
++static int xgmiitorgmii_read_status(struct phy_device *phydev)
++{
++	struct gmii2rgmii *priv = mdiodev_get_drvdata(&phydev->mdio);
+ 	int err;
  
--	if (!drv || !phydrv->suspend)
-+	if (!phydev->drv->suspend)
- 		return false;
+ 	if (priv->phy_drv->read_status)
+@@ -42,17 +58,24 @@ static int xgmiitorgmii_read_status(struct phy_device *phydev)
+ 	if (err < 0)
+ 		return err;
  
- 	/* PHY not attached? May suspend if the PHY has not already been
+-	val = mdiobus_read(bus, addr, XILINX_GMII2RGMII_REG);
+-	val &= ~XILINX_GMII2RGMII_SPEED_MASK;
++	xgmiitorgmii_configure(priv, phydev->speed);
+ 
+-	if (phydev->speed == SPEED_1000)
+-		val |= BMCR_SPEED1000;
+-	else if (phydev->speed == SPEED_100)
+-		val |= BMCR_SPEED100;
++	return 0;
++}
++
++static int xgmiitorgmii_set_loopback(struct phy_device *phydev, bool enable)
++{
++	struct gmii2rgmii *priv = mdiodev_get_drvdata(&phydev->mdio);
++	int err;
++
++	if (priv->phy_drv->set_loopback)
++		err = priv->phy_drv->set_loopback(phydev, enable);
+ 	else
+-		val |= BMCR_SPEED10;
++		err = genphy_loopback(phydev, enable);
++	if (err < 0)
++		return err;
+ 
+-	mdiobus_write(bus, addr, XILINX_GMII2RGMII_REG, val);
++	xgmiitorgmii_configure(priv, phydev->speed);
+ 
+ 	return 0;
+ }
+@@ -90,6 +113,7 @@ static int xgmiitorgmii_probe(struct mdio_device *mdiodev)
+ 	memcpy(&priv->conv_phy_drv, priv->phy_dev->drv,
+ 	       sizeof(struct phy_driver));
+ 	priv->conv_phy_drv.read_status = xgmiitorgmii_read_status;
++	priv->conv_phy_drv.set_loopback = xgmiitorgmii_set_loopback;
+ 	mdiodev_set_drvdata(&priv->phy_dev->mdio, priv);
+ 	priv->phy_dev->drv = &priv->conv_phy_drv;
+ 
 -- 
 2.20.1
 
