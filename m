@@ -2,89 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09F3D3F19D3
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 14:55:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9403F3F19DF
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 14:59:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239249AbhHSM4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 08:56:31 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:39300
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235893AbhHSM4a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 08:56:30 -0400
-Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 26A773F110;
-        Thu, 19 Aug 2021 12:55:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1629377753;
-        bh=R7cOArTeMf4Z+13kjZUeEM64BDVv4YsvBwyzgpNCHT4=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
-        b=Ha/DTwuhAetyPC9+ngOydDWPtgLNhFqPCxIuYlyn96w+FBrrwWPtlg6+3iJ5YCP/r
-         oRl0HaWFPpinfRc0FL8j08IVBg3jpgIF0IsAkfjXruVcLeC1LLjtvSmupRu4yPxXHw
-         bCJmzqdQlrE2MuczaQFQTAcS3BTFP+uDB46rnVUbPfNRecIAuRRKJ544dWG31rgtN7
-         gjKCnPGiv7jBOa4HCbdGVi8Y1eoXIOmCiy2PkbIZvOYC2c3I3ztD2K0Kz+bf8C75rh
-         BPtyRS0CIPZ+Q3CxXmzOuRScGWuO/HZ/G1Ds31jIL5cFG9/3u2b6Du0WH2CprE/9bX
-         q8exiF4MWamDA==
-From:   Colin King <colin.king@canonical.com>
-To:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org
-Subject: [PATCH] brcmsmac: make array addr static const, makes object smaller
-Date:   Thu, 19 Aug 2021 13:55:52 +0100
-Message-Id: <20210819125552.8888-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.32.0
+        id S238877AbhHSM7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 08:59:53 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:53777 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229601AbhHSM7w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 08:59:52 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 17JCxCtC5031868, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 17JCxCtC5031868
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 19 Aug 2021 20:59:12 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Thu, 19 Aug 2021 20:59:11 +0800
+Received: from fc34.localdomain (172.21.177.102) by RTEXMBS04.realtek.com.tw
+ (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Thu, 19 Aug
+ 2021 20:59:10 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     <linux-firmware@kernel.org>
+CC:     <nic_swsd@realtek.com>, <netdev@vger.kernel.org>,
+        Hayes Wang <hayeswang@realtek.com>
+Subject: [PATCH linux-firmware] rtl_nic: update firmware of RTL8153C
+Date:   Thu, 19 Aug 2021 20:58:22 +0800
+Message-ID: <20210819125822.6899-380-nic_swsd@realtek.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.177.102]
+X-ClientProxiedBy: RTEXH36501.realtek.com.tw (172.21.6.27) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 08/19/2021 12:45:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzgvMTkgpFekyCAxMDoxNjowMA==?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 08/19/2021 12:42:01
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 165664 [Aug 19 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 454 454 39c6e442fd417993330528e7f9d13ac1bf7fdf8c
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1;127.0.0.199:7.1.2
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 08/19/2021 12:45:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+- rtl8153c-1 v2 08/19/21:
+    1. Update the firmware of RTL_FW_USB.
+    2. Set bp_en_addr of RTL_FW_PLA to 0xfc48.
 
-Don't populate the array addr on the stack but instead it
-static const. Makes the object code smaller by 79 bytes:
-
-Before:
-   text   data   bss     dec    hex filename
- 176015  54652   128  230795  3858b .../broadcom/brcm80211/brcmsmac/main.o
-
-After:
-   text   data   bss     dec    hex filename
- 175872  54716   128  230716  3853c .../broadcom/brcm80211/brcmsmac/main.o
-
-(gcc version 10.3.0)
-
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Signed-off-by: Hayes Wang <hayeswang@realtek.com>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ rtl_nic/rtl8153c-1.fw | Bin 816 -> 832 bytes
+ 1 file changed, 0 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c
-index 26de1bd7fee9..8ddfc3d06687 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c
-@@ -704,7 +704,7 @@ static void brcms_c_write_inits(struct brcms_hardware *wlc_hw,
- static void brcms_c_write_mhf(struct brcms_hardware *wlc_hw, u16 *mhfs)
- {
- 	u8 idx;
--	u16 addr[] = {
-+	static const u16 addr[] = {
- 		M_HOST_FLAGS1, M_HOST_FLAGS2, M_HOST_FLAGS3, M_HOST_FLAGS4,
- 		M_HOST_FLAGS5
- 	};
+diff --git a/rtl_nic/rtl8153c-1.fw b/rtl_nic/rtl8153c-1.fw
+index 5c3d1c468e5307c588ff347b57f7d0ca719f8341..e2b5d74f8c051a8bb4eefc1d742388701b5aa015 100644
+GIT binary patch
+delta 224
+zcmdnMc7QFxq>sDKZB4b|<Az(|@`4U4KkRudH|HMLs{d=u6wf>_xLs6|V_|4&oUCi8
+zP-diHV4-hlsc&S+00&G!)(1ugh6DzNXKH^K7I^&OXVCb=!f;OER*VV98|jIO(k=|w
+z&odbr7#YSJ7#kYJ2l<$p8(KQXr{xzVr^b5(#}_1)Bxf)PJg9sy{lUx!3mz<bu;jtA
+z2P+<|da&lfx(6E`Y<jTe!M2UtB^d=A5*j=jJ(@fmI+zYI?D`-*`2wTN<X=oWf<Ol_
+UZ~%!228JI%S2TD`He~t_0AJNrX#fBK
+
+delta 205
+zcmX@Wwt+29E63&t=i_A6`yHVR7j3>jOG|o#lN`&Y>ir?+Rwn(mK}97w7KWzA$-0IL
+zWrhj{#`?yF`bLHfaKHp)Jz!*Dh+trNruK(nfyW<q28}<=4CfSX#h7qROq8|*D!6{0
+zF*MjIJ|M9qIV0XVKP5H3xGc}u*u<Qn`@g`0$_LXQ%zQBW!Q2P)A1r*Z_`%W#%O9+K
+vu=>H;2kRef+_+zoaq>GxvC01!*?`zcn1KOk8v_T#${#>08!RR}GW`bt*oI66
+
 -- 
-2.32.0
+2.31.1
 
