@@ -2,87 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAD2B3F1905
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 14:16:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 606383F190F
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 14:20:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239271AbhHSMRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 08:17:30 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:36268
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238357AbhHSMR3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 08:17:29 -0400
-Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 5676440C9E;
-        Thu, 19 Aug 2021 12:16:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1629375411;
-        bh=jsGWeGecQ1kWffqrQvCeBJMCWUwwxyDVLr5Pq+OBIQA=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
-        b=qP8naA+8cHCYt7YbKmUmxvC6slgIAPThy+wi0iVhtyAfdCqx9ER7XSNn07hEcq/cK
-         vfRm4ryOD58AaJU5bZrlnwXHOFqSsKT3H10wOxYI/I5OEE9B8rNjX6RGJwPVgFYbcw
-         Q5QHbslXwLOWR7v0DzgAZ+izOq5w62VNEaPSWP3H6Hg9RPJvvpXs+FNniIo/iGwfVg
-         KqphZBwMoKpjLR4gRaXdCukhRXULbIcSfzAkSCt3DfyvBslVHN5qklx/WHUYPNDOUs
-         Y4rWP15bLPnpJSWcxlxIoZJrkwAJBxHzu4WQ3KBUdVzqgRs8/bfcSKMVvNgOEiOUlh
-         aBhFM03CDAIdg==
-From:   Colin King <colin.king@canonical.com>
-To:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] mwifiex: make arrays static const, makes object smaller
-Date:   Thu, 19 Aug 2021 13:16:51 +0100
-Message-Id: <20210819121651.7566-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.32.0
-MIME-Version: 1.0
+        id S237181AbhHSMUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 08:20:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45430 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230303AbhHSMUm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Aug 2021 08:20:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 379036113B;
+        Thu, 19 Aug 2021 12:20:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629375606;
+        bh=GmXH1roX7XuBgtRKhCu2Kp+P2R17fwEo2sAsoqwcLcI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=JUUrt2YCKmfzVxEgdnOFhZhx2RacbF2i4oKb+n4d2HPzKMzYVyjUaoejU8+HvLczd
+         /VTrSkovf2e2IRG+PqsZ0wXRbag/S7vuc/+CdFXeOiW63ee+kBx3ADigi6UH9ZRoRl
+         BvZ7nktKnGcluqzfX48bg7dUR71tjLYJJm39wNTSLdRWefm0ffDKCOW/B+L6JqHOzn
+         dSfK6Zmk3DsXCLlLnXjBtZjL2y56y30zWvcWw0UAE2P9aVgddRg3iNrDvB8mUs3dFL
+         qpWV5PZdkKSGnRtv6bFZmXvG1ckMOrorvXEe6Lkdobn4tIB6q/3MzDM4IGX2DZocrn
+         VgmSpTdmgkABQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2B20A60A50;
+        Thu, 19 Aug 2021 12:20:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3 1/2] net: pch_gbe: remove mii_ethtool_gset() error handling
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162937560617.11166.5626597500396850477.git-patchwork-notify@kernel.org>
+Date:   Thu, 19 Aug 2021 12:20:06 +0000
+References: <7e8946ac52de91a963beb7fa0354a19a21c5cf73.1629298981.git.paskripkin@gmail.com>
+In-Reply-To: <7e8946ac52de91a963beb7fa0354a19a21c5cf73.1629298981.git.paskripkin@gmail.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        andriy.shevchenko@linux.intel.com, christophe.jaillet@wanadoo.fr,
+        kaixuxia@tencent.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+Hello:
 
-Don't populate the arrays wpa_oui and wps_oui on the stack but
-instead them static const. Makes the object code smaller by 63 bytes:
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-Before:
-   text   data  bss     dec    hex filename
-  29453   5451   64   34968   8898 .../wireless/marvell/mwifiex/sta_ioctl.o
+On Wed, 18 Aug 2021 18:06:30 +0300 you wrote:
+> mii_ethtool_gset() does not return any errors, so error handling can be
+> omitted to make code more simple.
+> 
+> Acked-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> ---
+> 
+> [...]
 
-After:
-   text	  data  bss     dec    hex filename
-  29356	  5611   64   35031   88d7 ../wireless/marvell/mwifiex/sta_ioctl.o
+Here is the summary with links:
+  - [v3,1/2] net: pch_gbe: remove mii_ethtool_gset() error handling
+    https://git.kernel.org/netdev/net-next/c/9fcfd0888cb7
+  - [v3,2/2] net: mii: make mii_ethtool_gset() return void
+    https://git.kernel.org/netdev/net-next/c/2274af1d60fe
 
-(gcc version 10.3.0)
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/wireless/marvell/mwifiex/sta_ioctl.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/wireless/marvell/mwifiex/sta_ioctl.c b/drivers/net/wireless/marvell/mwifiex/sta_ioctl.c
-index 653f9e094256..fb3b11cf123b 100644
---- a/drivers/net/wireless/marvell/mwifiex/sta_ioctl.c
-+++ b/drivers/net/wireless/marvell/mwifiex/sta_ioctl.c
-@@ -1325,8 +1325,8 @@ mwifiex_set_gen_ie_helper(struct mwifiex_private *priv, u8 *ie_data_ptr,
- 			  u16 ie_len)
- {
- 	struct ieee_types_vendor_header *pvendor_ie;
--	const u8 wpa_oui[] = { 0x00, 0x50, 0xf2, 0x01 };
--	const u8 wps_oui[] = { 0x00, 0x50, 0xf2, 0x04 };
-+	static const u8 wpa_oui[] = { 0x00, 0x50, 0xf2, 0x01 };
-+	static const u8 wps_oui[] = { 0x00, 0x50, 0xf2, 0x04 };
- 	u16 unparsed_len = ie_len, cur_ie_len;
- 
- 	/* If the passed length is zero, reset the buffer */
--- 
-2.32.0
 
