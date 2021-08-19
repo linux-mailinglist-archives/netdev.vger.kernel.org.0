@@ -2,122 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F3513F238E
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 01:16:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6772B3F239C
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 01:18:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236730AbhHSXRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 19:17:09 -0400
-Received: from ozlabs.org ([203.11.71.1]:58237 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230340AbhHSXRI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Aug 2021 19:17:08 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4GrLHc6mcyz9sWw;
-        Fri, 20 Aug 2021 09:16:28 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1629414990;
-        bh=JRuRcxrgsvz+ySmMZ1ebZzgnlNqFw91zL6kHFmjeQ2o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qm+z3PRuiPy1D0ZECxC3CRYRNmRvguarIIozjD3pI1kdoEJYevy2V3u3LIH3Il3Z5
-         fOqQQ6oLjSiS+UJxtX/0cM00OG9IoqYzqHbUJpinZD6/Y2QIvHbB4nWlHFyyohwDOe
-         C+3tRvUDR3gr74+OJoWVFSOd7T1y3AAhGrqHOhfGjLDTT+oZrYZ0eKNc1vZyNiLSdf
-         I3iiIcMmApluKuJmZT2Va59XBuUXXvUV7abwDGw3LsdOKufG5q/HSWH0T+a2jDRtOv
-         g4bJC0lfRsgBgy8jL44W0qu7NLnx+Cmzi/787EOF7AqbyRiYQVAnojoAT8y0R2nIyh
-         v1m1pZevUZjUw==
-Date:   Fri, 20 Aug 2021 09:16:27 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the net-next tree
-Message-ID: <20210820091627.2d071982@canb.auug.org.au>
-In-Reply-To: <20210815220432.7eea02e9@canb.auug.org.au>
-References: <20210809202046.596dad87@canb.auug.org.au>
-        <CAK8P3a103SSaMmFEKehPQO0p9idVwhfck-OX5t1_3-gW4ox2tw@mail.gmail.com>
-        <20210815220432.7eea02e9@canb.auug.org.au>
+        id S236978AbhHSXTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 19:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53590 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236976AbhHSXTb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 19:19:31 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0276EC061575
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 16:18:54 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id gt38so16088197ejc.13
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 16:18:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=S61LkYUw4d1geWpp+QDlaq0lSQGpd4QPKugypwHhKEI=;
+        b=YmzmU6+tpIgVmuKjZ3zNiEdbnhL+GWM+1X0hUeWwkub3WerKBUXvhHItWKQ2Rbj5Tj
+         wtve9OVYKRD/A9Dd7JpoSpTkvQrtFZfjdLANN4kuZ3pChi3XoTmKsDwzIbDHyt9PDjyq
+         Zq8lygK/T/tZ6/J+i4cOI8knWCnFIgX0yfAGkDg9cDcECVLbz5RGMFN9hNIljcC9Yc5O
+         Q3WWxbdWCaB/k+zcts3OojfsesgLTC0hWMMa76dN/QdCY5oEtPQ8+UEHqMHiT91kfYpN
+         UtQAi6tX99nwXa0jDCPGsO/u059cuQD8lOCEjblQjUHHdmcL4gpcvd4jNQneXP5MnN+y
+         IOfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=S61LkYUw4d1geWpp+QDlaq0lSQGpd4QPKugypwHhKEI=;
+        b=bjBy275fjeCMfetCSsiRMd/dYPpVUYxLKqEP/ZWlP5+K1iRtgWuM1Bs69oPgiyOBQp
+         zJU7ks2Kq12gkx5cpLZrIcLU0foREZs+cVKoK+iF6+Xd6vB3ZsGSQM/dvJAqtdSR92xp
+         GowODREP+QlfzEYKE/Vh8g0p3lIl9k6hyy9PgwMkMl6+5OP5vM5IjbHAkzsAw9SKU+QC
+         6m5yxN/ajzAe7qv7+64c/FVMP/x7hirjl0qDRFN971WLw10BsBrRXaGYicjJ8YbU8FU/
+         Rbp55XhRIQYYB2pzaB9nYk5Ikt/+msk9LEFSEb+CQ6N1OW7ctj+Unx7lBQKofXx/blI3
+         +pKg==
+X-Gm-Message-State: AOAM533LO+9Jz+wVDYAqngsV9IceHNDQ0FcX3C3zJvIcqmxHH7R9zvpQ
+        ZbDfiREDgc1PEo6EIFG5lNc=
+X-Google-Smtp-Source: ABdhPJzic9kX5vVIl2CsrIf91yCgBx+jCqTRKuOCUuWdo+8GZiR3uj3KIiNSKO+rUw/DK4lbMNoiqw==
+X-Received: by 2002:a17:907:9152:: with SMTP id l18mr18124196ejs.190.1629415132528;
+        Thu, 19 Aug 2021 16:18:52 -0700 (PDT)
+Received: from skbuf ([188.25.144.60])
+        by smtp.gmail.com with ESMTPSA id s10sm1915920ejc.39.2021.08.19.16.18.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Aug 2021 16:18:52 -0700 (PDT)
+Date:   Fri, 20 Aug 2021 02:18:49 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Vlad Buslov <vladbu@nvidia.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        UNGLinuxDriver@microchip.com,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Marek Behun <kabel@blackhole.sk>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Jianbo Liu <jianbol@nvidia.com>,
+        Mark Bloch <mbloch@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+Subject: Re: [PATCH v2 net-next 1/5] net: switchdev: move
+ SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE to the blocking notifier chain
+Message-ID: <20210819231849.us3hxtszkwbo2nik@skbuf>
+References: <20210819160723.2186424-1-vladimir.oltean@nxp.com>
+ <20210819160723.2186424-2-vladimir.oltean@nxp.com>
+ <ygnh5yw1pah6.fsf@nvidia.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/zEEIMRfpESnzCINoDH766AH";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ygnh5yw1pah6.fsf@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/zEEIMRfpESnzCINoDH766AH
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi Vlad,
 
-Hi all,
-
-On Sun, 15 Aug 2021 22:04:32 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> On Mon, 9 Aug 2021 15:21:41 +0200 Arnd Bergmann <arnd@arndb.de> wrote:
+On Thu, Aug 19, 2021 at 09:15:17PM +0300, Vlad Buslov wrote:
+> On Thu 19 Aug 2021 at 19:07, Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
+> > index 0c38c2e319be..ea7c3f07f6fe 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
+> > @@ -276,6 +276,55 @@ mlx5_esw_bridge_port_obj_attr_set(struct net_device *dev,
+> >  	return err;
+> >  }
 > >
-> > On Mon, Aug 9, 2021 at 12:20 PM Stephen Rothwell <sfr@canb.auug.org.au>=
- wrote: =20
-> > >
-> > > After merging the net-next tree, today's linux-next build (powerpc
-> > > allyesconfig) failed like this:
-> > >
-> > > drivers/net/ethernet/cirrus/cs89x0.c: In function 'net_open':
-> > > drivers/net/ethernet/cirrus/cs89x0.c:897:20: error: implicit declarat=
-ion of function 'isa_virt_to_bus' [-Werror=3Dimplicit-function-declaration]
-> > >   897 |     (unsigned long)isa_virt_to_bus(lp->dma_buff));
-> > >       |                    ^~~~~~~~~~~~~~~   =20
-> >=20
-> > Thank you for the report! I already sent a patch for m68knommu running =
-into
-> > this issue, but it seems there are other architectures that still have =
-it.
-> >=20
-> > The driver checks CONFIG_ISA_DMA_API at compile time to determine
-> > whether isa_virt_to_bus(), set_dma_mode(), set_dma_addr(), ... are all
-> > defined.
-> >=20
-> > It seems that isa_virt_to_bus() is only implemented on most of the
-> > architectures that set ISA_DMA_API: alpha, arm, mips, parisc and x86,
-> > but not on m68k/coldfire and powerpc.
-> >=20
-> > Before my patch, the platform driver could only be built on ARM,
-> > so maybe we should just go back to that dependency or something
-> > like
-> >=20
-> >          depends on ARM || ((X86 || !ISA_DMA_API) && COMPILE_TEST)
-> >=20
-> > for extra build coverage. Then again, it's hard to find any machine
-> > actually using these: we have a couple of s3c24xx machines that
-> > use the wrong device name, so the device never gets probed, the imx
-> > machines that used to work are gone, and the ep7211-edb7211.dts
-> > is missing a device node for it. Most likely, neither the platform nor
-> > the ISA driver are actually used by anyone. =20
->=20
-> I am still applying my patch removing COMPILE_TEST from this driver ..
+> > +static struct mlx5_bridge_switchdev_fdb_work *
+> > +mlx5_esw_bridge_init_switchdev_fdb_work(struct net_device *dev, bool add,
+> > +					struct switchdev_notifier_fdb_info *fdb_info,
+> > +					struct mlx5_esw_bridge_offloads *br_offloads);
+> > +
+> > +static int
+> > +mlx5_esw_bridge_fdb_event(struct net_device *dev, unsigned long event,
+> > +			  struct switchdev_notifier_info *info,
+> > +			  struct mlx5_esw_bridge_offloads *br_offloads)
+> > +{
+> > +	struct switchdev_notifier_fdb_info *fdb_info;
+> > +	struct mlx5_bridge_switchdev_fdb_work *work;
+> > +	struct mlx5_eswitch *esw = br_offloads->esw;
+> > +	u16 vport_num, esw_owner_vhca_id;
+> > +	struct net_device *upper, *rep;
+> > +
+> > +	upper = netdev_master_upper_dev_get_rcu(dev);
+> > +	if (!upper)
+> > +		return 0;
+> > +	if (!netif_is_bridge_master(upper))
+> > +		return 0;
+> > +
+> > +	rep = mlx5_esw_bridge_rep_vport_num_vhca_id_get(dev, esw,
+> > +							&vport_num,
+> > +							&esw_owner_vhca_id);
+> > +	if (!rep)
+> > +		return 0;
+> > +
+> > +	/* only handle the event on peers */
+> > +	if (mlx5_esw_bridge_is_local(dev, rep, esw))
+> > +		return 0;
+>
+> This check is only needed for SWITCHDEV_FDB_DEL_TO_BRIDGE case. Here it
+> breaks the offload.
 
-Ping?  Did I miss a fix being merged?
+Very good point, thanks for looking. I copied the entire atomic notifier
+handler and deleted the code which wasn't needed, but I actually took a
+break while converting mlx5, and so I forgot to delete this part when I
+came back.
 
---=20
-Cheers,
-Stephen Rothwell
+> > +
+> > +	fdb_info = container_of(info, struct switchdev_notifier_fdb_info, info);
+> > +
+> > +	work = mlx5_esw_bridge_init_switchdev_fdb_work(dev,
+> > +						       event == SWITCHDEV_FDB_ADD_TO_DEVICE,
+> > +						       fdb_info,
+>
+> Here FDB info can already be deallocated[1] since this is now executing
+> asynchronously and races with fdb_rcu_free() that is scheduled to be
+> called after rcu grace period by fdb_delete().
 
---Sig_/zEEIMRfpESnzCINoDH766AH
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+I am incredibly lucky that you caught this, apparently I needed to add
+an msleep(1000) to see it as well.
 
------BEGIN PGP SIGNATURE-----
+It is not the struct switchdev_notifier_fdb_info *fdb_info that gets
+freed under RCU. It is fdb_info->addr (the MAC address), since
+switchdev_deferred_enqueue only performs a shallow copy. I will address
+that in v3.
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmEe5ksACgkQAVBC80lX
-0GyLdgf9F0ROREULuv+N+e4tU/inn1SdqxjYfMR5qTwn0znCi7UBjiscos1bzkcI
-KxlEHAWHbZsBxm2ABFy/PXdE0vPrrGHsh56jeHKScQpiskJ1pI/J+WSG580J3COc
-wGBPN7uIztt8JppZkLLKhwl/Zsd00voLnEYxcEojlB1doy2yzMj4i0Cc1EjOMOaT
-Dm6yVhMGZ4okX3gkxnNrtFh2SNs6a9E4ITgk9SbJbjs5GCm3ufssYTjRaq3lmdOv
-H1/WyHEYAfj1z19JKyjJ6v1KSxLKB23D67zKxGQQTGrW3CkRZS0MPv8nBacp+y/Z
-tKQ2IJRwhXTKTA4JmEe1E7sZCzcJ2Q==
-=gEBF
------END PGP SIGNATURE-----
+> > @@ -415,9 +470,7 @@ static int mlx5_esw_bridge_switchdev_event(struct notifier_block *nb,
+> >  		/* only handle the event on peers */
+> >  		if (mlx5_esw_bridge_is_local(dev, rep, esw))
+> >  			break;
+>
+> I really like the idea of completely remove the driver wq from FDB
+> handling code, but I'm not yet too familiar with bridge internals to
+> easily determine whether same approach can be applied to
+> SWITCHDEV_FDB_{ADD|DEL}_TO_BRIDGE event after this series is accepted.
+> It seems that all current users already generate these events from
+> blocking context, so would it be a trivial change for me to do in your
+> opinion? That would allow me to get rid of mlx5_esw_bridge_offloads->wq
+> in our driver.
 
---Sig_/zEEIMRfpESnzCINoDH766AH--
+If all callers really are in blocking context (and they do appear to be)
+you can even forgo the switchdev_deferred_enqueue that switchdev_fdb_add_to_device
+does, and just call_switchdev_blocking_notifiers() directly. Then you
+move the bridge handler from br_switchdev_event() to br_switchdev_blocking_event().
+It should be even simpler than this conversion.
