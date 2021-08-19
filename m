@@ -2,99 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B8BC3F123B
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 06:11:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AEC03F129A
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 06:51:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229706AbhHSELx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 00:11:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33392 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229521AbhHSELw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 00:11:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1629346277;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VBYriaxQXLlAIO2jBLfdlJqsXE4thEUkTkWuNBb3xSE=;
-        b=NSL0AM6FQGjjzKycsdRyVzBEizk/PXOVwzv9wBu6nggNcF/UWT5jGrPyfN5ZilYYNWlw+g
-        Osy3nn7Zg92ujgOOxroB0uGgm9PCSqdBLmlVvpcIaZLRE6TKh23S8xFPr0XzipBU+Es1CO
-        i0FiIWOE4we/mhTUPUvQqZaW3WBZHIE=
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com
- [209.85.214.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-195-YfBJpFzFOFyAKbVTXRdZRA-1; Thu, 19 Aug 2021 00:11:14 -0400
-X-MC-Unique: YfBJpFzFOFyAKbVTXRdZRA-1
-Received: by mail-pl1-f197.google.com with SMTP id p7-20020a170902b087b029012c2879a885so1142524plr.6
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 21:11:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=VBYriaxQXLlAIO2jBLfdlJqsXE4thEUkTkWuNBb3xSE=;
-        b=gUC0Obf7FK6MWLH2u4dgsCEvZBQGNrLB2miF9UqTd0VGCzgie21UWDA+Wr3AGSj2u/
-         +wOGOWhL8ln76rwa4hI7l7B4IDRySZAnbBlaVHt8bXBFMLuBfaBSf4ujOO6LCyN8q2og
-         Q/XRVH06pgQbecrEpGQxfQ9klkozx9gix+/8YrugeLuEkuWJDpztTlPwB5A9qn+0VV2U
-         HHAwKAa4Ok9aTIBLjiw02ePRg6xifNKvJQemLw2SKwvMo95jU54TZbgQP3lsfJTLCANI
-         67o3JXtkJxPkCPomMOxL7kBEfHtiZm5xG4E9BmrPXJlveqzzKSk9i3+TPlZFTSXFnCVB
-         KQ/g==
-X-Gm-Message-State: AOAM533gpUGCTQZcElzjKrZyMC/zMAA+BfLfp30l3uAXpS0fIvEBkxaj
-        dPL1YpDBNBRebT4iZnsWD3jVwfwQ48ln3XUF61d4NmOEwID13HxZ2Hd6IzAMTf6keKFMedbuBXu
-        HESuaP3h6NLtLa4UH
-X-Received: by 2002:a05:6a00:1ace:b0:3e2:2a73:e0a4 with SMTP id f14-20020a056a001ace00b003e22a73e0a4mr12939446pfv.73.1629346273951;
-        Wed, 18 Aug 2021 21:11:13 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyLQPUem25xDlLQ3uF4CA7Dea+zPxgfi0RExMgvKM2TveGCChyP8g6txlY/nWsye2RZ0v3/9w==
-X-Received: by 2002:a05:6a00:1ace:b0:3e2:2a73:e0a4 with SMTP id f14-20020a056a001ace00b003e22a73e0a4mr12939432pfv.73.1629346273757;
-        Wed, 18 Aug 2021 21:11:13 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id nv11sm6500567pjb.48.2021.08.18.21.11.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Aug 2021 21:11:13 -0700 (PDT)
-Subject: Re: [PATCH 0/2] vDPA/ifcvf: enable multiqueue and control vq
-To:     Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org
-References: <20210818095714.3220-1-lingshan.zhu@intel.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <e3ec8ed7-84ac-73cc-0b74-4de1bb6c0030@redhat.com>
-Date:   Thu, 19 Aug 2021 12:11:09 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.13.0
+        id S229861AbhHSEwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 00:52:17 -0400
+Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:51691 "EHLO
+        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229451AbhHSEwQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 00:52:16 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0UjwlzJ7_1629348697;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0UjwlzJ7_1629348697)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 19 Aug 2021 12:51:37 +0800
+From:   Dust Li <dust.li@linux.alibaba.com>
+To:     Julian Anastasov <ja@ssi.bg>, Simon Horman <horms@verge.net.au>,
+        Wensong Zhang <wensong@linux-vs.org>
+Cc:     lvs-devel@vger.kernel.org, netdev@vger.kernel.org,
+        yunhong-cgl jiang <xintian1976@gmail.com>
+Subject: [PATCH net-next v2] net: ipvs: add sysctl_run_estimation to support disable estimation
+Date:   Thu, 19 Aug 2021 12:51:37 +0800
+Message-Id: <20210819045137.35447-1-dust.li@linux.alibaba.com>
+X-Mailer: git-send-email 2.19.1.3.ge56e4f7
 MIME-Version: 1.0
-In-Reply-To: <20210818095714.3220-1-lingshan.zhu@intel.com>
-Content-Type: text/plain; charset=gbk; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+estimation_timer will iterater the est_list to do estimation
+for each ipvs stats. When there are lots of services, the
+list can be very large.
+We observiced estimation_timer() run for more then 200ms on
+a machine with 104 CPU and 50K services.
 
-ÔÚ 2021/8/18 ÏÂÎç5:57, Zhu Lingshan Ð´µÀ:
-> This series enables multi-queue and control vq features
-> for ifcvf.
->
-> These patches are based on my previous vDPA/ifcvf management link
-> implementation series:
-> https://lore.kernel.org/kvm/20210812032454.24486-2-lingshan.zhu@intel.com/T/
->
-> Thanks!
->
-> Zhu Lingshan (2):
->    vDPA/ifcvf: detect and use the onboard number of queues directly
->    vDPA/ifcvf: enable multiqueue and control vq
->
->   drivers/vdpa/ifcvf/ifcvf_base.c |  8 +++++---
->   drivers/vdpa/ifcvf/ifcvf_base.h | 19 ++++---------------
->   drivers/vdpa/ifcvf/ifcvf_main.c | 32 +++++++++++++++-----------------
->   3 files changed, 24 insertions(+), 35 deletions(-)
->
+yunhong-cgl jiang report the same phenomenon before:
+https://www.spinics.net/lists/lvs-devel/msg05426.html
 
-Patch looks good.
+In some cases(for example a large K8S cluster with many ipvs services),
+ipvs estimation may not be needed. So adding a sysctl blob to allow
+users to disable this completely.
 
-I wonder the compatibility. E.g does it work on the qemu master without 
-cvq support? (mq=off or not specified)
+Default is: 1 (enable)
 
-Thanks
+Cc: yunhong-cgl jiang <xintian1976@gmail.com>
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+---
+v2: Use common sysctl facilities
+---
+ Documentation/networking/ipvs-sysctl.rst | 17 +++++++++++++++++
+ include/net/ip_vs.h                      | 12 ++++++++++++
+ net/netfilter/ipvs/ip_vs_ctl.c           |  8 ++++++++
+ net/netfilter/ipvs/ip_vs_est.c           |  5 +++++
+ 4 files changed, 42 insertions(+)
+
+diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
+index 2afccc63856e..e20f7a27fc85 100644
+--- a/Documentation/networking/ipvs-sysctl.rst
++++ b/Documentation/networking/ipvs-sysctl.rst
+@@ -300,3 +300,20 @@ sync_version - INTEGER
+ 
+ 	Kernels with this sync_version entry are able to receive messages
+ 	of both version 1 and version 2 of the synchronisation protocol.
++
++run_estimation - BOOLEAN
++	0 - disabled
++	not 0 - enabled (default)
++
++	If disabled, the estimation will be stop, and you can't see
++	any update on speed estimation data.
++
++	For example
++	'Conns/s   Pkts/s   Pkts/s          Bytes/s          Bytes/s'
++	those data in /proc/net/ip_vs_stats will always be zero.
++	Note, this only affect the speed estimation, the total data
++	will still be updated.
++
++	You can always re-enable estimation by setting this value to 1.
++	But be carefull, the first estimation after re-enable is not
++	accurate.
+diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+index 7cb5a1aace40..dba2102ec316 100644
+--- a/include/net/ip_vs.h
++++ b/include/net/ip_vs.h
+@@ -931,6 +931,7 @@ struct netns_ipvs {
+ 	int			sysctl_conn_reuse_mode;
+ 	int			sysctl_schedule_icmp;
+ 	int			sysctl_ignore_tunneled;
++	int 			sysctl_run_estimation;
+ 
+ 	/* ip_vs_lblc */
+ 	int			sysctl_lblc_expiration;
+@@ -1071,6 +1072,11 @@ static inline int sysctl_cache_bypass(struct netns_ipvs *ipvs)
+ 	return ipvs->sysctl_cache_bypass;
+ }
+ 
++static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
++{
++	return ipvs->sysctl_run_estimation;
++}
++
+ #else
+ 
+ static inline int sysctl_sync_threshold(struct netns_ipvs *ipvs)
+@@ -1650,6 +1656,12 @@ static inline int ip_vs_confirm_conntrack(struct sk_buff *skb)
+ static inline void ip_vs_conn_drop_conntrack(struct ip_vs_conn *cp)
+ {
+ }
++
++static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
++{
++	return 1;
++}
++
+ #endif /* CONFIG_IP_VS_NFCT */
+ 
+ /* Using old conntrack that can not be redirected to another real server? */
+diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+index c25097092a06..cbea5a68afb5 100644
+--- a/net/netfilter/ipvs/ip_vs_ctl.c
++++ b/net/netfilter/ipvs/ip_vs_ctl.c
+@@ -2017,6 +2017,12 @@ static struct ctl_table vs_vars[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec,
+ 	},
++	{
++		.procname	= "run_estimation",
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++	},
+ #ifdef CONFIG_IP_VS_DEBUG
+ 	{
+ 		.procname	= "debug_level",
+@@ -4090,6 +4096,8 @@ static int __net_init ip_vs_control_net_init_sysctl(struct netns_ipvs *ipvs)
+ 	tbl[idx++].data = &ipvs->sysctl_conn_reuse_mode;
+ 	tbl[idx++].data = &ipvs->sysctl_schedule_icmp;
+ 	tbl[idx++].data = &ipvs->sysctl_ignore_tunneled;
++	ipvs->sysctl_run_estimation = 1;
++	tbl[idx++].data = &ipvs->sysctl_run_estimation;
+ 
+ 	ipvs->sysctl_hdr = register_net_sysctl(net, "net/ipv4/vs", tbl);
+ 	if (ipvs->sysctl_hdr == NULL) {
+diff --git a/net/netfilter/ipvs/ip_vs_est.c b/net/netfilter/ipvs/ip_vs_est.c
+index 05b8112ffb37..9a1a7af6a186 100644
+--- a/net/netfilter/ipvs/ip_vs_est.c
++++ b/net/netfilter/ipvs/ip_vs_est.c
+@@ -100,6 +100,9 @@ static void estimation_timer(struct timer_list *t)
+ 	u64 rate;
+ 	struct netns_ipvs *ipvs = from_timer(ipvs, t, est_timer);
+ 
++	if (!sysctl_run_estimation(ipvs))
++		goto skip;
++
+ 	spin_lock(&ipvs->est_lock);
+ 	list_for_each_entry(e, &ipvs->est_list, list) {
+ 		s = container_of(e, struct ip_vs_stats, est);
+@@ -131,6 +134,8 @@ static void estimation_timer(struct timer_list *t)
+ 		spin_unlock(&s->lock);
+ 	}
+ 	spin_unlock(&ipvs->est_lock);
++
++skip:
+ 	mod_timer(&ipvs->est_timer, jiffies + 2*HZ);
+ }
+ 
+-- 
+2.19.1.3.ge56e4f7
 
