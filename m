@@ -2,51 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCD713F2061
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 21:08:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BFD23F2072
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 21:16:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234014AbhHSTJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 15:09:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50562 "EHLO mail.kernel.org"
+        id S234626AbhHSTRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 15:17:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55326 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229465AbhHSTJI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Aug 2021 15:09:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E5325610A5;
-        Thu, 19 Aug 2021 19:08:30 +0000 (UTC)
+        id S231500AbhHSTRI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Aug 2021 15:17:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 674BC6056B;
+        Thu, 19 Aug 2021 19:16:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629400112;
-        bh=vZ+AsgA+LL6ARAeSPGYJS6fjzFl41SpTlEnvQdUjMLY=;
+        s=k20201202; t=1629400591;
+        bh=SJ3235q9hx12OGYIqj8/Xxy7qhG3c50+PnIJGMoSKFs=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ohfv9AtsSCoSIllXg+e9g/k5S3dPmLksn25/vBYMGfvIj6964k11XqqMnpka1cdgu
-         zP/4RpLlUMgvThSpY3yZmT2gGHJSzeACKJCBF7dC7IiHaNY35j6FueiItTuBk6ALq0
-         B3GTFlgASLkZagwenGElEasjd/CC+kuEdIubqLPLGhsqRzES7+PoG0fgHc5dUv9Pgc
-         d3iJsPebwC31D/Ik8HUJFiOV/vyW5SN8B8uWZm0Si+VLIgE6JAdGgPk6bXMyyRWgba
-         VZ6MOQyZUoimyEhwfcabwoNp6AXYdSUZDX+qkggG43DfChxmEOIq0m2CbeZaw6wPXr
-         CGBHQwwzW+8xQ==
-Date:   Thu, 19 Aug 2021 12:08:29 -0700
+        b=Jd/GRVSISKYAijQLjgoLT9KaALfVQp9430QDHKRKwIynSx+U9/h0wz6ZoPfB1GmfC
+         +z/U8IjS3mskE4paQZeFqjV4cTD/EVsf4VJyvjTdf8ILql/0qb6qOj4q8gJa0dlV0e
+         SZpFkAOfbEu/8T1AGJbh7X60bDi0lXEjzgWhJZI9xoKxk3fymAcv+s6s5hUbeSfpm2
+         ZOIBCDxxQG+EAu87xwUl2JJy7AfyESG0JkWfrcCYNymLdLf54tIUiFjMzvoPhZcfNJ
+         IdoniaeSO8Qf8AmgW4LWbF4ge7iGseLwxamnP5BL6HERxQHuzaNXl0oEg8i9pvWhEa
+         qcqbNnoU7B5qw==
+Date:   Thu, 19 Aug 2021 12:16:30 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yufeng Mo <moyufeng@huawei.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <shenjian15@huawei.com>, <lipeng321@huawei.com>,
-        <yisen.zhuang@huawei.com>, <linyunsheng@huawei.com>,
-        <huangguangbin2@huawei.com>, <chenhao288@hisilicon.com>,
-        <salil.mehta@huawei.com>, <linuxarm@huawei.com>,
-        <linuxarm@openeuler.org>, <dledford@redhat.com>, <jgg@ziepe.ca>,
-        <netanel@amazon.com>, <akiyano@amazon.com>,
-        <thomas.lendacky@amd.com>, <irusskikh@marvell.com>,
-        <michael.chan@broadcom.com>, <edwin.peer@broadcom.com>,
-        <rohitm@chelsio.com>, <jacob.e.keller@intel.com>,
-        <ioana.ciornei@nxp.com>, <vladimir.oltean@nxp.com>,
-        <sgoutham@marvell.com>, <sbhatta@marvell.com>, <saeedm@nvidia.com>,
-        <ecree.xilinx@gmail.com>, <grygorii.strashko@ti.com>,
-        <merez@codeaurora.org>, <kvalo@codeaurora.org>,
-        <linux-wireless@vger.kernel.org>
-Subject: Re: [PATCH V2 net-next 2/4] ethtool: extend coalesce setting uAPI
- with CQE mode
-Message-ID: <20210819120829.27c9b124@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1629353844-49626-3-git-send-email-moyufeng@huawei.com>
-References: <1629353844-49626-1-git-send-email-moyufeng@huawei.com>
-        <1629353844-49626-3-git-send-email-moyufeng@huawei.com>
+To:     butt3rflyh4ck <butterflyhuangxx@gmail.com>
+Cc:     mani@kernel.org, davem@davemloft.net,
+        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        butt3rflyh4ck <butterflyhhuangxx@gmail.com>,
+        bjorn.andersson@linaro.org, paskripkin@gmail.com
+Subject: Re: [PATCH] net: qrtr: fix another OOB Read in qrtr_endpoint_post
+Message-ID: <20210819121630.1223327f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210819181458.623832-1-butterflyhuangxx@gmail.com>
+References: <20210819181458.623832-1-butterflyhuangxx@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,38 +42,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Aug 2021 14:17:22 +0800 Yufeng Mo wrote:
-> In order to support more coalesce parameters through netlink,
-> add two new parameter kernel_coal and extack for .set_coalesce
-> and .get_coalesce, then some extra info can return to user with
-> the netlink API.
+On Fri, 20 Aug 2021 02:14:58 +0800 butt3rflyh4ck wrote:
+> From: butt3rflyh4ck <butterflyhhuangxx@gmail.com>
 > 
-> Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
-> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+> This check was incomplete, did not consider size is 0:
+> 
+> 	if (len != ALIGN(size, 4) + hdrlen)
+>                     goto err;
+> 
+> if size from qrtr_hdr is 0, the result of ALIGN(size, 4)
+> will be 0, In case of len == hdrlen and size == 0
+> in header this check won't fail and
+> 
+> 	if (cb->type == QRTR_TYPE_NEW_SERVER) {
+>                 /* Remote node endpoint can bridge other distant nodes */
+>                 const struct qrtr_ctrl_pkt *pkt = data + hdrlen;
+> 
+>                 qrtr_node_assign(node, le32_to_cpu(pkt->server.node));
+>         }
+> 
+> will also read out of bound from data, which is hdrlen allocated block.
+> 
+> Fixes: 194ccc88297a ("net: qrtr: Support decoding incoming v2 packets")
+> Fixes: ad9d24c9429e ("net: qrtr: fix OOB Read in qrtr_endpoint_post")
 
-Looks like it builds fine, unfortunately you need to correct the kdoc 
-of the functions which have it (by adding the new param description
-everywhere), otherwise we'll get these on W=1 builds:
+Please make sure to CC authors of patches which are under Fixes, they
+are usually the best people to review the patch. Adding them now.
 
-drivers/net/ethernet/hisilicon/hns/hns_ethtool.c:741: warning: Function parameter or member 'kernel_coal' not described in 'hns_get_coalesce'
-drivers/net/ethernet/hisilicon/hns/hns_ethtool.c:741: warning: Function parameter or member 'extack' not described in 'hns_get_coalesce'
-drivers/net/ethernet/hisilicon/hns/hns_ethtool.c:787: warning: Function parameter or member 'kernel_coal' not described in 'hns_set_coalesce'
-drivers/net/ethernet/hisilicon/hns/hns_ethtool.c:787: warning: Function parameter or member 'extack' not described in 'hns_set_coalesce'
-drivers/net/ethernet/intel/i40e/i40e_ethtool.c:2825: warning: Function parameter or member 'kernel_coal' not described in 'i40e_get_coalesce'
-drivers/net/ethernet/intel/i40e/i40e_ethtool.c:2825: warning: Function parameter or member 'extack' not described in 'i40e_get_coalesce'
-drivers/net/ethernet/intel/i40e/i40e_ethtool.c:2999: warning: Function parameter or member 'kernel_coal' not described in 'i40e_set_coalesce'
-drivers/net/ethernet/intel/i40e/i40e_ethtool.c:2999: warning: Function parameter or member 'extack' not described in 'i40e_set_coalesce'
-drivers/net/ethernet/intel/iavf/iavf_ethtool.c:699: warning: Function parameter or member 'kernel_coal' not described in 'iavf_get_coalesce'
-drivers/net/ethernet/intel/iavf/iavf_ethtool.c:699: warning: Function parameter or member 'extack' not described in 'iavf_get_coalesce'
-drivers/net/ethernet/intel/iavf/iavf_ethtool.c:817: warning: Function parameter or member 'kernel_coal' not described in 'iavf_set_coalesce'
-drivers/net/ethernet/intel/iavf/iavf_ethtool.c:817: warning: Function parameter or member 'extack' not described in 'iavf_set_coalesce'
-drivers/net/ethernet/ti/davinci_emac.c:395: warning: Function parameter or member 'kernel_coal' not described in 'emac_get_coalesce'
-drivers/net/ethernet/ti/davinci_emac.c:395: warning: Function parameter or member 'extack' not described in 'emac_get_coalesce'
-drivers/net/ethernet/ti/davinci_emac.c:415: warning: Function parameter or member 'kernel_coal' not described in 'emac_set_coalesce'
-drivers/net/ethernet/ti/davinci_emac.c:415: warning: Function parameter or member 'extack' not described in 'emac_set_coalesce'
-drivers/net/ethernet/xilinx/xilinx_axienet_main.c:1416: warning: Function parameter or member 'kernel_coal' not described in 'axienet_ethtools_get_coalesce'
-drivers/net/ethernet/xilinx/xilinx_axienet_main.c:1416: warning: Function parameter or member 'extack' not described in 'axienet_ethtools_get_coalesce'
-drivers/net/ethernet/xilinx/xilinx_axienet_main.c:1444: warning: Function parameter or member 'kernel_coal' not described in 'axienet_ethtools_set_coalesce'
-drivers/net/ethernet/xilinx/xilinx_axienet_main.c:1444: warning:
-Function parameter or member 'extack' not described in
-'axienet_ethtools_set_coalesce'
+> Signed-off-by: butt3rflyh4ck <butterflyhhuangxx@gmail.com>
+
+We'll need your name. AFAIU it's because of Developer Certificate of
+Origin. You'll need to resend with this fixed (and please remember the CCs).
+
+> diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+> index 171b7f3be6ef..0c30908628ba 100644
+> --- a/net/qrtr/qrtr.c
+> +++ b/net/qrtr/qrtr.c
+> @@ -493,7 +493,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
+>  		goto err;
+>  	}
+>  
+> -	if (len != ALIGN(size, 4) + hdrlen)
+> +	if (!size || len != ALIGN(size, 4) + hdrlen)
+>  		goto err;
+>  
+>  	if (cb->dst_port != QRTR_PORT_CTRL && cb->type != QRTR_TYPE_DATA &&
+
