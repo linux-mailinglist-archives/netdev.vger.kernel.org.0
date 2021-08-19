@@ -2,325 +2,442 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B9DA3F1F6D
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 19:55:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C92C13F1F9F
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 20:11:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233957AbhHSRz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 13:55:56 -0400
-Received: from mail-eopbgr00071.outbound.protection.outlook.com ([40.107.0.71]:49963
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233719AbhHSRzv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Aug 2021 13:55:51 -0400
+        id S234306AbhHSSMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 14:12:14 -0400
+Received: from mail-oln040093003006.outbound.protection.outlook.com ([40.93.3.6]:52591
+        "EHLO outbound.mail.eo.outlook.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232328AbhHSSMM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 14:12:12 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k7G3hr2ti7oHCTCGtmRauwqog3XIUr86tEDEe5RHvxmNENhcGK0h4jqomefmBA/eDkfHAtLqcHJpOkUiFxylZbeAzo6rcH4FEMnRDcJDG7UbDUOBZRhVrWG+3mh+X9F0hdJOSSvwH0eEUOZ/g9UD5rAhtVDaXFY/GNsLYECPAZJ8sVBB/rVCJgaj07KPp8/TXb7nd0IJuCJM5EQBCRiz6hbwUvdhT0sHNKaoBODN+JzcGWS+0jiCZoWr61Bvl6+mVvarXG4Ppo61owJ5K8SvafEI7uQpwjeqNNGL/7D6W0Vf+/NWeq2tnNWI05+D1N34iFA+Ff3QUjPVCIG888m5KQ==
+ b=CQx5RicZXCQVwO21zoJEl63zLjOPV98nW7kJOO50pf07D3DZuHZzDM7P04kFHCvnYdmdc5z0k1IL73/tT9q0Wwzxcf2Nu6Mf9NkvFJjcGLyWf+W9HC6DVTUxWkCaqJsIRLVds2RVoVFWpGVOBtGRgrIgfNuVzXOh2O0D3aL7DU+Ywy8CKosw0uF6fn2cbNc47l5L5AiXfUKYRp8k09H1I/060xbu8EvwlA/UQfCgibSrX3uo4pGpxqJ4NTZdD5Ie+rRvZuyElPUeQZRiRfxqc1WVdcl/eVbpDcFtPhG+TCNqcKOtSV7kf9oet+LPtkMoPFA3fNzq+Txdj9qkJsRVpw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XD36Voaw6OVULhBSYtzQS/CX+AB2KD5LbMYBGJNC9KY=;
- b=e9wGOoIP/4fO7rKmfR1krKJW9CSIQC9+yI1gOYtqS9L45Qq4XVITi+2dN0RIgK7SIRbAYT648szF/ija0frYqKCG/RGPmmPvxltSXFKSM0o0MZSWSQl7CeRS1Tkzccikwn5gh3y+R+kqNITwmT+26nzUjbzTW0AGu932AiDRzExJ+NIsfWHmxeC18frcvnXQ93x+TrR+iq/EqD2P+aFg9kkLmLIXKA9WtdV7JXxHd7QZd1X6/DXW//0cWKLmyU0waUhNbWMEei1yJWm83h0lJ0VEqPRx8G6au3fLm+zgWsFa3FGl7p2kXP51E8ae8l84gHnkdYbZ9BKpw556XmrLgQ==
+ bh=wrY7M72rF1Zr0I5j/dlAudxwgz6bxl1zXCiMr7diBYQ=;
+ b=Isrmb0PG4kuJDNvN7MtzhFnxRmSsZe13SWdgqzaH+huqpsw+HZj09I78htq+zbjSRp0H4RM283VMbqaluorYPui0Ytp+CXufgLgFmsTYCxA0QeCMIo7E0pNHfg+DTcsvWW9pFrzsywa+h67Bcj9B0Z2wG88/q1oc763lNYZq85iFNbLGeid5CoIkxdmuXdg9jVtDtCfqvVIN7pRSLy+QS3TCPnnSWRI6/xjSlAPlaHtQ4TgKuckCqcSRGWyt99U39HmLMIgA8llnl3Wlzgm+0pyNlJdwUdO1OnY/CPUebkbtoaPSzqDvZLSi1ZOsfyJjFlIUBJMbAEllGCcdKbxOQg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XD36Voaw6OVULhBSYtzQS/CX+AB2KD5LbMYBGJNC9KY=;
- b=PGhApkXgFYJHZPSv3U5fZSfz9njbb2yVcWjzLZ4hSLU0eDqUb03/qDWTj2ZekHj460nUBk8GbZow8v0yGqbr0pl16oh87LqRH+eAJgW1KV5kFnr1MePsnPRhilI9lRVrjP50c2mVcr62FM2zcYAh83HMplxncJ52DU+yWGerfYY=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB4222.eurprd04.prod.outlook.com (2603:10a6:803:46::19) with
+ bh=wrY7M72rF1Zr0I5j/dlAudxwgz6bxl1zXCiMr7diBYQ=;
+ b=hfNdtZK8RSKoA3hwSF992+kvPvqlclLcx+yqaiu78PJDZ5ZjNo4FW+09UIZ2u3A0XHyn58K/s5N1rG1FmriLRx1P7jDLGdoziV//mMgICpMsWc65CjGXU5HynWDTErFsZe47Dm0E3MBGroRemZbar1qrWg/5pjFEKJbDn+bEA7Y=
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
+ by MWHPR21MB0157.namprd21.prod.outlook.com (2603:10b6:300:78::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.18; Thu, 19 Aug
- 2021 17:55:11 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4436.019; Thu, 19 Aug 2021
- 17:55:11 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH v2 net-next] net: dsa: track unique bridge numbers across all DSA switch trees
-Date:   Thu, 19 Aug 2021 20:55:00 +0300
-Message-Id: <20210819175500.2276709-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM3PR07CA0133.eurprd07.prod.outlook.com
- (2603:10a6:207:8::19) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.0; Thu, 19 Aug
+ 2021 18:11:31 +0000
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::e8f7:b582:9e2d:ba55]) by MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::e8f7:b582:9e2d:ba55%2]) with mapi id 15.20.4436.012; Thu, 19 Aug 2021
+ 18:11:31 +0000
+From:   Michael Kelley <mikelley@microsoft.com>
+To:     Tianyu Lan <ltykernel@gmail.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "will@kernel.org" <will@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "pgonda@google.com" <pgonda@google.com>,
+        "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "rppt@kernel.org" <rppt@kernel.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "saravanand@fb.com" <saravanand@fb.com>,
+        "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
+        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "rientjes@google.com" <rientjes@google.com>,
+        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
+        "tj@kernel.org" <tj@kernel.org>
+CC:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        vkuznets <vkuznets@redhat.com>,
+        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+        "dave.hansen@intel.com" <dave.hansen@intel.com>
+Subject: RE: [PATCH V3 11/13] HV/IOMMU: Enable swiotlb bounce buffer for
+ Isolation VM
+Thread-Topic: [PATCH V3 11/13] HV/IOMMU: Enable swiotlb bounce buffer for
+ Isolation VM
+Thread-Index: AQHXjUfwueIoKygi8UWT9Nsp+4fozKt7FrWA
+Date:   Thu, 19 Aug 2021 18:11:30 +0000
+Message-ID: <MWHPR21MB159315B335EB0B064B0B0F23D7C09@MWHPR21MB1593.namprd21.prod.outlook.com>
+References: <20210809175620.720923-1-ltykernel@gmail.com>
+ <20210809175620.720923-12-ltykernel@gmail.com>
+In-Reply-To: <20210809175620.720923-12-ltykernel@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=8f24f853-954e-4fb1-ba7f-63e5be13c4af;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-08-19T16:38:26Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: fc5d809c-5b04-466a-c429-08d9633cc55f
+x-ms-traffictypediagnostic: MWHPR21MB0157:
+x-ms-exchange-transport-forked: True
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <MWHPR21MB0157CD7828DEB9B8D9516BE2D7C09@MWHPR21MB0157.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:158;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: SPUUuhJnmIoU4Cg2uH/0j1m2WmDcK82EdbcqiGt/Qpd7R93+9NSK/73ZEo7m+u3HzTEV8EH9PKu8ZR1VaicjcrAMSuCxUvYSTmNYs7z9IWhiMKozkADkRlt6GZJuk1ZFBLP7DCDsCNRgGRL8TJYoMG/Pv6HFH57jPTftFywGCAVIfq5oIQunUdWyeza2sdVOEOvvLW+IBr9rbYOU76HYHA7dewHPwIqycl+0KUi48higib82Wi+kxgVIWjpN4WhqZ37GMII1k/+FdPNe+QIrPkzngdsiYirxG9PCfINg8jyfyd4tXEJ1aI2ADD7uCn6s7yMIGxKSl9xD5ZXwlIyE6f4WKj3SXXnnd+hD1iIkd5b72YraW0AfU20ZdOlLD/CdNjcyNUo7amsEmFMVLXnU3wVRtt2EKiSJuzgb9SX3hEBb8v21kw+iuA60zOKWKDXV2M4iaLwl50Y2xs/G4tet0Vx2rzXJJUrKq0NupMXc0YFedO5qU0Ygenb+MSzjHkABFggHhENC+e6wVn+aC75NwafOYHWH+gJt6wwJII/PVvRo4RqDB9J2Ap97JLUf0+cncnmxo4UB1visL4A+eFaenJ52o0Rhpf1lXl6N6vUKOCG5icYFJ9fLfgdIM75htovp3CmbwVWfeWF0cwGu6RFDjq38/ivKRW+n7Qi9fOzFWcVGLkg+9mz8Uo/841rGgyUboCfjTrhb/PfFSwRO6cwniQK7wHZ0honSVO4xM1jCyUI=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR21MB1593.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(55016002)(86362001)(8990500004)(316002)(26005)(186003)(38100700002)(71200400001)(33656002)(83380400001)(7696005)(8676002)(2906002)(122000001)(110136005)(4326008)(8936002)(921005)(54906003)(64756008)(6506007)(82960400001)(82950400001)(7416002)(7406005)(76116006)(9686003)(5660300002)(508600001)(38070700005)(66946007)(66446008)(66476007)(66556008)(10290500003)(52536014);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?DIKV3NFT4RCfv0UJLUwGs0tkglczd6DzZOKR4Nd4SWO3HLo0gpsP+ruBwJBn?=
+ =?us-ascii?Q?MAs2uKtttEwKVaeyvNYa+DE1FfLWlFQtv2KGMzXfUoAMwA2E4lmHpGDBKkeq?=
+ =?us-ascii?Q?igu6RayZBcu7cZ58JM8vLbwIX9KIuWec5qAQmxmYzeMNjjRqTVel9sAx8C45?=
+ =?us-ascii?Q?wcQfHk0R7zcN4lEA8RkZNmzIMNXz7HQcmxTEkdHjHtXQ8biYKI+S6KdbmZ3N?=
+ =?us-ascii?Q?yboAB0JzrVirv0A+u8o1ewz0PSIP5gfR+dJ3UO5H/yxIu7T8M+ecqHfPhJNR?=
+ =?us-ascii?Q?25SibdIC1rVeBRnnd7kVSXA9SznT9zSFE//S1VGZpG1YIJatNbzSZN+Ysa0I?=
+ =?us-ascii?Q?3OD2CqIBQtqAHAXtUd9Jta5uN+Rjk2PYm7i8Ojz61ptdXCVeazoXIOOu5ALh?=
+ =?us-ascii?Q?ORq1u/+VGvgUEvCL1G/KPkf4c86CT/vm5c/W7CLjHi27Nxwj6pGSTRjpM80o?=
+ =?us-ascii?Q?y4CTUGm7fpsNYM0mlPbQt6H/43nm/egNEI+g+6aAKAwYypsMEOrFKBcdMw+0?=
+ =?us-ascii?Q?0pfcmCsnFyE1kYdVdG+T7gkQ6z1M7gOz8X2msN1q59YRTt2riJaq5P+OxfHH?=
+ =?us-ascii?Q?ckt0BlNPi1rCqPbyFsiwJRmKjrm3teQQ5/XJo4Xp6TYDv+EWHRrbRcG1+5YJ?=
+ =?us-ascii?Q?MnzvHaTxksV2beguJUlNxFwhd10Fioy74YnJh9sEH5nDgLHFny/aw3lGzrGY?=
+ =?us-ascii?Q?Tk22qNMhimJZAAaY6y17RA40aNnCz9ybQcnthSL2HEBubuZqij8tBxOvFb1y?=
+ =?us-ascii?Q?Sd1vADCi762MTCHNgAnKps6TdUjQnkupP+vJep/4v+cazdqR5Ltb69FAhQqv?=
+ =?us-ascii?Q?uWrDGwkDiyCsTiVuy8pa0oTeUaf3jvcqRYze3hLECI1ak9JdcV8dXnWID66S?=
+ =?us-ascii?Q?agQP4vECtqJl/D/xz/e6T75UbJKb7qOd+8iSwW5gVClEgFoMrY3rXIMa34yM?=
+ =?us-ascii?Q?utjVtK/bQJd9oS4Ytt5C/Rg5IbJvpmN0WaixDNkqBg5jK/736t6WBqtMz0Z9?=
+ =?us-ascii?Q?XEOxOIg2cSn/BJBLWpSlBe8DBFCCwyafOy/AR2gRllMoRVpKNv+b3oJfl+tZ?=
+ =?us-ascii?Q?DgJt1o/B0nMWqOPlQxwtvgIAy31s9R9wpjpyr6szO0lGGBfYSVewPorYJdAi?=
+ =?us-ascii?Q?1niDSx5/2d7ru1pnNe7IMKiZ33GRvRX1kS6pP69PTIgLjJ3VcbFrQ0/5g8wR?=
+ =?us-ascii?Q?R8E7mdKzCVcwAVZtdZNpTqmXIHXDXltIDdQI0zJXVE1SBHaQ0sYSlTP4mjKf?=
+ =?us-ascii?Q?27OFTifi8oQG5KBQgMp8dxl+Tj3M9wz8hdjdR/TZ6OYyFHWjdvRRTQPnlzp7?=
+ =?us-ascii?Q?vYoUas0MUDBTnI/25TN8EN29?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.144.60) by AM3PR07CA0133.eurprd07.prod.outlook.com (2603:10a6:207:8::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.9 via Frontend Transport; Thu, 19 Aug 2021 17:55:11 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9ea8dfd0-bbb1-4405-5976-08d9633a7daf
-X-MS-TrafficTypeDiagnostic: VI1PR04MB4222:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB4222267C556D775FE1A3A42AE0C09@VI1PR04MB4222.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vdSVvA1D+Mp6qzEqcBmc9qGuOm62i63B8+MWJI1ESAnJ78w62yMXIkvgXa1f+GpmVNK0BU3sr8VTzCEl5C9IO2ws/v9gkdPc2V0SpSDzBQ7oNRCwlNQD8TzX78KwWV15uoOFTJH2JchhA1ni5RzN2pfCDoBKfEro8Nklx0cT5v9V05GvB6rz176TmiVyhZ4DCTSfPOed6e9ntNq9mRFrVLc1gU7iHl101KVCLe3UXEzhK4y9Yya0E4CsEc67knIWj0yN6V3BYeIbAmcJll4JLsTc9F5Sh/ycmOS5HBZp51J2TwCoL+VdVIPtBbq0NlXsj1hpEU+XaUYMPgx5o3YrZLhL4I9qtjy9ek9gqcAySK0JEup8br3c9zih2CBKUzB/czJt03utPqZrLx7X4m5cKm5w6rX3ejjpMEHZ2Hloa6wn71QHxOrPqISmBGkQANkpRoc0TG2R8/yQo12n4HTFwAs6UQVwO/ZfkhYXbv/l48x4b9wHfXEgQJTvwahNJJEKlNq+LLVXph5raoOQR7t1HID9li9swRYTWItMuHn0Y7JyJxXPsZAcTfGclf4Z/FMMvQjMlqA2dHtOaYu7sYhojUVSYLLwbhBubbZQY816Rt1eZ3v15eGtAckOwsoh3SfAxoyc5VEwQtFY7Z+ULahTSOg1Ml2ms4iI6TRKfQjLSjDUWIuvm4trW2aQGAqN4u1MHBYBTpTA+iTm0Gk/FaT5fA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(346002)(136003)(396003)(39850400004)(86362001)(26005)(83380400001)(316002)(66476007)(66946007)(66556008)(38350700002)(38100700002)(2906002)(8936002)(478600001)(8676002)(956004)(1076003)(52116002)(6666004)(54906003)(6486002)(2616005)(44832011)(4326008)(5660300002)(36756003)(6512007)(186003)(6506007)(110136005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jvViRR6L8LMbNuiae4Nxrjjq3CbGhyWBzgPWwDKm48qBmB9YLnaLhJEHpkh3?=
- =?us-ascii?Q?ltVyM0CI/Vk5TjuCBxL8ERK0J6IMr9F0GTPjmCuR8oy8DDRutdqHB+OFfA0F?=
- =?us-ascii?Q?OO0v27HfMZZRv8Qo4eTI1BGXXXSgqhzQCi25aQ5dXx7tYvcQt2rngLyMom3b?=
- =?us-ascii?Q?0SOvP++RbvBoD1I6BokFvNEf5rtIR34f1AehEmOxdNGYIG4Z1+3gbDfkWKsW?=
- =?us-ascii?Q?M6qCdFGhmlQTPJOGe+L8iLLK6s12Z9SiHSulTLdYOQFcBvKmPr9cAMfNvfHg?=
- =?us-ascii?Q?CQCtj9dNXF6VnHSJ+UwWAhjiwoc0gNoUrpYcWUgwDtaxi8ceUqIZzvQOxepY?=
- =?us-ascii?Q?wg6ei12b7E8M5awpgCg4zvkLOKkWGKwZo1hp3aQSmNYR57QOH9t9ghvN0Bhn?=
- =?us-ascii?Q?eCnwmjj75VwWy8xTmJ0MSrwx1j3KEu2libPD7ZTZO70FxsaNFE7BrmNriUBl?=
- =?us-ascii?Q?O/uAfyiXrgm/87DVlxtCmMblijdY5V1WKqitiU5gZEIRnq7HHS69Ml7DreYV?=
- =?us-ascii?Q?d1QZs97QVerX+JorTYAfA+aFccmej7l3wiKP5WOKzv3eimVnOB+d0SFcH0cZ?=
- =?us-ascii?Q?aPL1oG5BvhDmQUeNz8COzxQ6YG+qyzN6H1qa6bBs5h8KieMhlMCYrLg33hF0?=
- =?us-ascii?Q?q0gagTXxsHyBubKTc1NzFvt70oUDNbJAwWC1luKrqj1KdJyTYk7Sv9Wpm1MF?=
- =?us-ascii?Q?6XY3vEl3BDA0jm4D6ZA/LOaougfCyIZ42k8UYz606C/SLJD+RUZbKsaGl3nJ?=
- =?us-ascii?Q?M28Tv4w1KAWztQo9ncb/PTXHvd8H/s7Ts0ejQ1Z1WyRlbW/TDUCPZ9DxtiS4?=
- =?us-ascii?Q?vM8V7smtc0jRweIitx7avRsfAT3LqFNbw0EwfATqw/j8TwYvkKSkSt8hPbav?=
- =?us-ascii?Q?3Vo/LNLbFfSjBv496hmVT763DKuO13eL23tLU50OzssymbYGPCrf65j4krvh?=
- =?us-ascii?Q?CnBclTp+FXhQ6aPdV4SFKhS4Zf4/xJpBTGZXlL6FmsjUM3yuAss+m8+RNfoB?=
- =?us-ascii?Q?lJ3/zi94Yoc0JhVIgrZDSYVsZDDvig+7TdYQ0udPfxyhu0oVgLPwaWitO2mC?=
- =?us-ascii?Q?lkC+wVTJ05/z6b6Az0mC41GE84578eOBinLj1Zrv1zEwneXLyOjvnoMBmWDF?=
- =?us-ascii?Q?VbQs3U5t1L1aVfedGpjIOnSnjBNdfoW+ZUQq2EOsU5IMLaVRyzQIzhZZ7sLt?=
- =?us-ascii?Q?3+OiNWXIe3/wmBd2weGg3EzapnOfCogBLKknJD/uftIiqrB8aAf30n9NIUwK?=
- =?us-ascii?Q?u1jqdO8EDdJkN+QNZvXAj8MW3lPHZiDQiM3LibWv7ck58qdbau3AVEHylQYy?=
- =?us-ascii?Q?89QmRloyZRZj2KiQ6qHGHd6u?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ea8dfd0-bbb1-4405-5976-08d9633a7daf
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2021 17:55:11.8531
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fc5d809c-5b04-466a-c429-08d9633cc55f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Aug 2021 18:11:30.5573
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: llNjS2hTXIM9CfsjSrWTn2EdcIC/jCWkFIXHFC5P4hFVIXGwCyE3kUse0P4DoXZ9CTGIB1TnmCZ01fAJIQ5SEg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4222
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: AFKFCJFP/cZmiQz10Z4UdhOqv4fcDTJ5JGB62xVcIQeC6YNJ1lOeSov8cJhlaQy9TXja7INKtQF+2rL5l6qJjV5hA8OKlMSR9aBaWTAoKzM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR21MB0157
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Right now, cross-tree bridging setups work somewhat by mistake.
+From: Tianyu Lan <ltykernel@gmail.com> Sent: Monday, August 9, 2021 10:56 A=
+M
+>=20
+> Hyper-V Isolation VM requires bounce buffer support to copy
+> data from/to encrypted memory and so enable swiotlb force
+> mode to use swiotlb bounce buffer for DMA transaction.
+>=20
+> In Isolation VM with AMD SEV, the bounce buffer needs to be
+> accessed via extra address space which is above shared_gpa_boundary
+> (E.G 39 bit address line) reported by Hyper-V CPUID ISOLATION_CONFIG.
+> The access physical address will be original physical address +
+> shared_gpa_boundary. The shared_gpa_boundary in the AMD SEV SNP
+> spec is called virtual top of memory(vTOM). Memory addresses below
+> vTOM are automatically treated as private while memory above
+> vTOM is treated as shared.
+>=20
+> Swiotlb bounce buffer code calls dma_map_decrypted()
+> to mark bounce buffer visible to host and map it in extra
+> address space. Populate dma memory decrypted ops with hv
+> map/unmap function.
+>=20
+> Hyper-V initalizes swiotlb bounce buffer and default swiotlb
+> needs to be disabled. pci_swiotlb_detect_override() and
+> pci_swiotlb_detect_4gb() enable the default one. To override
+> the setting, hyperv_swiotlb_detect() needs to run before
+> these detect functions which depends on the pci_xen_swiotlb_
+> init(). Make pci_xen_swiotlb_init() depends on the hyperv_swiotlb
+> _detect() to keep the order.
+>=20
+> The map function vmap_pfn() can't work in the early place
+> hyperv_iommu_swiotlb_init() and so initialize swiotlb bounce
+> buffer in the hyperv_iommu_swiotlb_later_init().
+>=20
+> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> ---
+>  arch/x86/hyperv/ivm.c           | 28 ++++++++++++++
+>  arch/x86/include/asm/mshyperv.h |  2 +
+>  arch/x86/xen/pci-swiotlb-xen.c  |  3 +-
+>  drivers/hv/vmbus_drv.c          |  3 ++
+>  drivers/iommu/hyperv-iommu.c    | 65 +++++++++++++++++++++++++++++++++
+>  include/linux/hyperv.h          |  1 +
+>  6 files changed, 101 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
+> index c13ec5560d73..0f05e4d6fc62 100644
+> --- a/arch/x86/hyperv/ivm.c
+> +++ b/arch/x86/hyperv/ivm.c
+> @@ -265,3 +265,31 @@ int hv_set_mem_host_visibility(unsigned long addr, i=
+nt numpages, bool visible)
+>=20
+>  	return __hv_set_mem_host_visibility((void *)addr, numpages, visibility)=
+;
+>  }
+> +
+> +/*
+> + * hv_map_memory - map memory to extra space in the AMD SEV-SNP Isolatio=
+n VM.
+> + */
+> +void *hv_map_memory(void *addr, unsigned long size)
+> +{
+> +	unsigned long *pfns =3D kcalloc(size / HV_HYP_PAGE_SIZE,
+> +				      sizeof(unsigned long), GFP_KERNEL);
+> +	void *vaddr;
+> +	int i;
+> +
+> +	if (!pfns)
+> +		return NULL;
+> +
+> +	for (i =3D 0; i < size / HV_HYP_PAGE_SIZE; i++)
+> +		pfns[i] =3D virt_to_hvpfn(addr + i * HV_HYP_PAGE_SIZE) +
+> +			(ms_hyperv.shared_gpa_boundary >> HV_HYP_PAGE_SHIFT);
+> +
+> +	vaddr =3D vmap_pfn(pfns, size / HV_HYP_PAGE_SIZE,	PAGE_KERNEL_IO);
+> +	kfree(pfns);
+> +
+> +	return vaddr;
+> +}
 
-In the case of cross-tree bridging with sja1105, all switch instances
-need to agree upon a common VLAN ID for forwarding a packet that belongs
-to a certain bridging domain.
+This function is manipulating page tables in the guest VM.  It is not invol=
+ved
+in communicating with Hyper-V, or passing PFNs to Hyper-V.  The pfn array
+contains guest PFNs, not Hyper-V PFNs.  So it should use PAGE_SIZE
+instead of HV_HYP_PAGE_SIZE, and similarly PAGE_SHIFT and virt_to_pfn().
+If this code were ever to run on ARM64 in the future with PAGE_SIZE other
+than 4 Kbytes, the use of PAGE_SIZE is correct choice.
 
-With TX forwarding offload, the VLAN ID is the bridge VLAN for
-VLAN-aware bridging, and the tag_8021q TX forwarding offload VID
-(a VLAN which has non-zero VBID bits) for VLAN-unaware bridging.
+> +
+> +void hv_unmap_memory(void *addr)
+> +{
+> +	vunmap(addr);
+> +}
+> diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyp=
+erv.h
+> index a30c60f189a3..b247739f57ac 100644
+> --- a/arch/x86/include/asm/mshyperv.h
+> +++ b/arch/x86/include/asm/mshyperv.h
+> @@ -250,6 +250,8 @@ int hv_unmap_ioapic_interrupt(int ioapic_id, struct h=
+v_interrupt_entry *entry);
+>  int hv_mark_gpa_visibility(u16 count, const u64 pfn[],
+>  			   enum hv_mem_host_visibility visibility);
+>  int hv_set_mem_host_visibility(unsigned long addr, int numpages, bool vi=
+sible);
+> +void *hv_map_memory(void *addr, unsigned long size);
+> +void hv_unmap_memory(void *addr);
+>  void hv_sint_wrmsrl_ghcb(u64 msr, u64 value);
+>  void hv_sint_rdmsrl_ghcb(u64 msr, u64 *value);
+>  void hv_signal_eom_ghcb(void);
+> diff --git a/arch/x86/xen/pci-swiotlb-xen.c b/arch/x86/xen/pci-swiotlb-xe=
+n.c
+> index 54f9aa7e8457..43bd031aa332 100644
+> --- a/arch/x86/xen/pci-swiotlb-xen.c
+> +++ b/arch/x86/xen/pci-swiotlb-xen.c
+> @@ -4,6 +4,7 @@
+>=20
+>  #include <linux/dma-map-ops.h>
+>  #include <linux/pci.h>
+> +#include <linux/hyperv.h>
+>  #include <xen/swiotlb-xen.h>
+>=20
+>  #include <asm/xen/hypervisor.h>
+> @@ -91,6 +92,6 @@ int pci_xen_swiotlb_init_late(void)
+>  EXPORT_SYMBOL_GPL(pci_xen_swiotlb_init_late);
+>=20
+>  IOMMU_INIT_FINISH(pci_xen_swiotlb_detect,
+> -		  NULL,
+> +		  hyperv_swiotlb_detect,
+>  		  pci_xen_swiotlb_init,
+>  		  NULL);
+> diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
+> index 57bbbaa4e8f7..f068e22a5636 100644
+> --- a/drivers/hv/vmbus_drv.c
+> +++ b/drivers/hv/vmbus_drv.c
+> @@ -23,6 +23,7 @@
+>  #include <linux/cpu.h>
+>  #include <linux/sched/task_stack.h>
+>=20
+> +#include <linux/dma-map-ops.h>
+>  #include <linux/delay.h>
+>  #include <linux/notifier.h>
+>  #include <linux/panic_notifier.h>
+> @@ -2081,6 +2082,7 @@ struct hv_device *vmbus_device_create(const guid_t =
+*type,
+>  	return child_device_obj;
+>  }
+>=20
+> +static u64 vmbus_dma_mask =3D DMA_BIT_MASK(64);
+>  /*
+>   * vmbus_device_register - Register the child device
+>   */
+> @@ -2121,6 +2123,7 @@ int vmbus_device_register(struct hv_device *child_d=
+evice_obj)
+>  	}
+>  	hv_debug_add_dev_dir(child_device_obj);
+>=20
+> +	child_device_obj->device.dma_mask =3D &vmbus_dma_mask;
+>  	return 0;
+>=20
+>  err_kset_unregister:
+> diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
+> index e285a220c913..01e874b3b43a 100644
+> --- a/drivers/iommu/hyperv-iommu.c
+> +++ b/drivers/iommu/hyperv-iommu.c
+> @@ -13,14 +13,22 @@
+>  #include <linux/irq.h>
+>  #include <linux/iommu.h>
+>  #include <linux/module.h>
+> +#include <linux/hyperv.h>
+> +#include <linux/io.h>
+>=20
+>  #include <asm/apic.h>
+>  #include <asm/cpu.h>
+>  #include <asm/hw_irq.h>
+>  #include <asm/io_apic.h>
+> +#include <asm/iommu.h>
+> +#include <asm/iommu_table.h>
+>  #include <asm/irq_remapping.h>
+>  #include <asm/hypervisor.h>
+>  #include <asm/mshyperv.h>
+> +#include <asm/swiotlb.h>
+> +#include <linux/dma-map-ops.h>
+> +#include <linux/dma-direct.h>
+> +#include <linux/set_memory.h>
+>=20
+>  #include "irq_remapping.h"
+>=20
+> @@ -36,6 +44,9 @@
+>  static cpumask_t ioapic_max_cpumask =3D { CPU_BITS_NONE };
+>  static struct irq_domain *ioapic_ir_domain;
+>=20
+> +static unsigned long hyperv_io_tlb_size;
+> +static void *hyperv_io_tlb_start;
+> +
+>  static int hyperv_ir_set_affinity(struct irq_data *data,
+>  		const struct cpumask *mask, bool force)
+>  {
+> @@ -337,4 +348,58 @@ static const struct irq_domain_ops hyperv_root_ir_do=
+main_ops =3D {
+>  	.free =3D hyperv_root_irq_remapping_free,
+>  };
+>=20
+> +void __init hyperv_iommu_swiotlb_init(void)
+> +{
+> +	unsigned long bytes;
+> +
+> +	/*
+> +	 * Allocate Hyper-V swiotlb bounce buffer at early place
+> +	 * to reserve large contiguous memory.
+> +	 */
+> +	hyperv_io_tlb_size =3D 256 * 1024 * 1024;
 
-The VBID for VLAN-unaware bridging is derived from the dp->bridge_num
-value calculated by DSA independently for each switch tree.
+A hard coded size here seems problematic.   The memory size of
+Isolated VMs can vary by orders of magnitude.  I see that
+xen_swiotlb_init() uses swiotlb_size_or_default(), which at least
+pays attention to the value specified on the kernel boot line.
 
-If ports from one tree join one bridge, and ports from another tree join
-another bridge, DSA will assign them the same bridge_num, even though
-the bridges are different. If cross-tree bridging is supported, this
-is an issue.
+Another example is sev_setup_arch(), which in the native case sets
+the size to 6% of main memory, with a max of 1 Gbyte.  This is
+the case that's closer to Isolated VMs, so doing something
+similar could be a good approach.
 
-Modify DSA to calculate the bridge_num globally across all switch trees.
-This has the implication for a driver that the dp->bridge_num value that
-DSA will assign to its ports might not be contiguous, if there are
-boards with multiple DSA drivers instantiated. Additionally, all
-bridge_num values eat up towards each switch's
-ds->num_fwd_offloading_bridges maximum, which is potentially unfortunate,
-and can be seen as a limitation introduced by this patch. However, that
-is the lesser evil for now.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-This was split from the larger "DSA FDB isolation" series, hence the v2
-tag.
-
- include/net/dsa.h  |  8 +++-----
- net/dsa/dsa2.c     | 48 ++++++++++++++++++++++++++++++++++++++++++++++
- net/dsa/dsa_priv.h |  2 ++
- net/dsa/port.c     | 39 +++++--------------------------------
- 4 files changed, 58 insertions(+), 39 deletions(-)
-
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 0c2cba45fa79..c7ea0f61056f 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -155,9 +155,6 @@ struct dsa_switch_tree {
- 
- 	/* Track the largest switch index within a tree */
- 	unsigned int last_switch;
--
--	/* Track the bridges with forwarding offload enabled */
--	unsigned long fwd_offloading_bridges;
- };
- 
- #define dsa_lags_foreach_id(_id, _dst)				\
-@@ -411,8 +408,9 @@ struct dsa_switch {
- 	unsigned int		num_lag_ids;
- 
- 	/* Drivers that support bridge forwarding offload should set this to
--	 * the maximum number of bridges spanning the same switch tree that can
--	 * be offloaded.
-+	 * the maximum number of bridges spanning the same switch tree (or all
-+	 * trees, in the case of cross-tree bridging support) that can be
-+	 * offloaded.
- 	 */
- 	unsigned int		num_fwd_offloading_bridges;
- 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index dcd67801eca4..1b2b25d7bd02 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -21,6 +21,9 @@
- static DEFINE_MUTEX(dsa2_mutex);
- LIST_HEAD(dsa_tree_list);
- 
-+/* Track the bridges with forwarding offload enabled */
-+static unsigned long dsa_fwd_offloading_bridges;
-+
- /**
-  * dsa_tree_notify - Execute code for all switches in a DSA switch tree.
-  * @dst: collection of struct dsa_switch devices to notify.
-@@ -126,6 +129,51 @@ void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag)
- 	}
- }
- 
-+static int dsa_bridge_num_find(const struct net_device *bridge_dev)
-+{
-+	struct dsa_switch_tree *dst;
-+	struct dsa_port *dp;
-+
-+	/* When preparing the offload for a port, it will have a valid
-+	 * dp->bridge_dev pointer but a not yet valid dp->bridge_num.
-+	 * However there might be other ports having the same dp->bridge_dev
-+	 * and a valid dp->bridge_num, so just ignore this port.
-+	 */
-+	list_for_each_entry(dst, &dsa_tree_list, list)
-+		list_for_each_entry(dp, &dst->ports, list)
-+			if (dp->bridge_dev == bridge_dev &&
-+			    dp->bridge_num != -1)
-+				return dp->bridge_num;
-+
-+	return -1;
-+}
-+
-+int dsa_bridge_num_get(const struct net_device *bridge_dev, int max)
-+{
-+	int bridge_num = dsa_bridge_num_find(bridge_dev);
-+
-+	if (bridge_num < 0) {
-+		/* First port that offloads TX forwarding for this bridge */
-+		bridge_num = find_first_zero_bit(&dsa_fwd_offloading_bridges,
-+						 DSA_MAX_NUM_OFFLOADING_BRIDGES);
-+		if (bridge_num >= max)
-+			return -1;
-+
-+		set_bit(bridge_num, &dsa_fwd_offloading_bridges);
-+	}
-+
-+	return bridge_num;
-+}
-+
-+void dsa_bridge_num_put(const struct net_device *bridge_dev, int bridge_num)
-+{
-+	/* Check if the bridge is still in use, otherwise it is time
-+	 * to clean it up so we can reuse this bridge_num later.
-+	 */
-+	if (!dsa_bridge_num_find(bridge_dev))
-+		clear_bit(bridge_num, &dsa_fwd_offloading_bridges);
-+}
-+
- struct dsa_switch *dsa_switch_find(int tree_index, int sw_index)
- {
- 	struct dsa_switch_tree *dst;
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index b7a269e0513f..88aaf43b2da4 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -543,6 +543,8 @@ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
- 			      struct net_device *master,
- 			      const struct dsa_device_ops *tag_ops,
- 			      const struct dsa_device_ops *old_tag_ops);
-+int dsa_bridge_num_get(const struct net_device *bridge_dev, int max);
-+void dsa_bridge_num_put(const struct net_device *bridge_dev, int bridge_num);
- 
- /* tag_8021q.c */
- int dsa_tag_8021q_bridge_join(struct dsa_switch *ds,
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 979042a64d1a..4fbe81ffb1ce 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -270,27 +270,9 @@ static void dsa_port_switchdev_unsync_attrs(struct dsa_port *dp)
- 	 */
- }
- 
--static int dsa_tree_find_bridge_num(struct dsa_switch_tree *dst,
--				    struct net_device *bridge_dev)
--{
--	struct dsa_port *dp;
--
--	/* When preparing the offload for a port, it will have a valid
--	 * dp->bridge_dev pointer but a not yet valid dp->bridge_num.
--	 * However there might be other ports having the same dp->bridge_dev
--	 * and a valid dp->bridge_num, so just ignore this port.
--	 */
--	list_for_each_entry(dp, &dst->ports, list)
--		if (dp->bridge_dev == bridge_dev && dp->bridge_num != -1)
--			return dp->bridge_num;
--
--	return -1;
--}
--
- static void dsa_port_bridge_tx_fwd_unoffload(struct dsa_port *dp,
- 					     struct net_device *bridge_dev)
- {
--	struct dsa_switch_tree *dst = dp->ds->dst;
- 	int bridge_num = dp->bridge_num;
- 	struct dsa_switch *ds = dp->ds;
- 
-@@ -300,11 +282,7 @@ static void dsa_port_bridge_tx_fwd_unoffload(struct dsa_port *dp,
- 
- 	dp->bridge_num = -1;
- 
--	/* Check if the bridge is still in use, otherwise it is time
--	 * to clean it up so we can reuse this bridge_num later.
--	 */
--	if (!dsa_tree_find_bridge_num(dst, bridge_dev))
--		clear_bit(bridge_num, &dst->fwd_offloading_bridges);
-+	dsa_bridge_num_put(bridge_dev, bridge_num);
- 
- 	/* Notify the chips only once the offload has been deactivated, so
- 	 * that they can update their configuration accordingly.
-@@ -316,23 +294,16 @@ static void dsa_port_bridge_tx_fwd_unoffload(struct dsa_port *dp,
- static bool dsa_port_bridge_tx_fwd_offload(struct dsa_port *dp,
- 					   struct net_device *bridge_dev)
- {
--	struct dsa_switch_tree *dst = dp->ds->dst;
- 	struct dsa_switch *ds = dp->ds;
- 	int bridge_num, err;
- 
- 	if (!ds->ops->port_bridge_tx_fwd_offload)
- 		return false;
- 
--	bridge_num = dsa_tree_find_bridge_num(dst, bridge_dev);
--	if (bridge_num < 0) {
--		/* First port that offloads TX forwarding for this bridge */
--		bridge_num = find_first_zero_bit(&dst->fwd_offloading_bridges,
--						 DSA_MAX_NUM_OFFLOADING_BRIDGES);
--		if (bridge_num >= ds->num_fwd_offloading_bridges)
--			return false;
--
--		set_bit(bridge_num, &dst->fwd_offloading_bridges);
--	}
-+	bridge_num = dsa_bridge_num_get(bridge_dev,
-+					ds->num_fwd_offloading_bridges);
-+	if (bridge_num < 0)
-+		return false;
- 
- 	dp->bridge_num = bridge_num;
- 
--- 
-2.25.1
+> +	hyperv_io_tlb_start =3D
+> +			memblock_alloc_low(
+> +				  PAGE_ALIGN(hyperv_io_tlb_size),
+> +				  HV_HYP_PAGE_SIZE);
+> +
+> +	if (!hyperv_io_tlb_start) {
+> +		pr_warn("Fail to allocate Hyper-V swiotlb buffer.\n");
+> +		return;
+> +	}
+> +}
+> +
+> +int __init hyperv_swiotlb_detect(void)
+> +{
+> +	if (hypervisor_is_type(X86_HYPER_MS_HYPERV)
+> +	    && hv_is_isolation_supported()) {
+> +		/*
+> +		 * Enable swiotlb force mode in Isolation VM to
+> +		 * use swiotlb bounce buffer for dma transaction.
+> +		 */
+> +		swiotlb_force =3D SWIOTLB_FORCE;
+> +
+> +		dma_memory_generic_decrypted_ops.map =3D hv_map_memory;
+> +		dma_memory_generic_decrypted_ops.unmap =3D hv_unmap_memory;
+> +		return 1;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +void __init hyperv_iommu_swiotlb_later_init(void)
+> +{
+> +	/*
+> +	 * Swiotlb bounce buffer needs to be mapped in extra address
+> +	 * space. Map function doesn't work in the early place and so
+> +	 * call swiotlb_late_init_with_tbl() here.
+> +	 */
+> +	if (swiotlb_late_init_with_tbl(hyperv_io_tlb_start,
+> +				       hyperv_io_tlb_size >> IO_TLB_SHIFT))
+> +		panic("Fail to initialize hyperv swiotlb.\n");
+> +}
+> +
+> +IOMMU_INIT_FINISH(hyperv_swiotlb_detect,
+> +		  NULL, hyperv_iommu_swiotlb_init,
+> +		  hyperv_iommu_swiotlb_later_init);
+> +
+>  #endif
+> diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
+> index 90b542597143..83fa567ad594 100644
+> --- a/include/linux/hyperv.h
+> +++ b/include/linux/hyperv.h
+> @@ -1744,6 +1744,7 @@ int hyperv_write_cfg_blk(struct pci_dev *dev, void =
+*buf, unsigned int len,
+>  int hyperv_reg_block_invalidate(struct pci_dev *dev, void *context,
+>  				void (*block_invalidate)(void *context,
+>  							 u64 block_mask));
+> +int __init hyperv_swiotlb_detect(void);
+>=20
+>  struct hyperv_pci_block_ops {
+>  	int (*read_block)(struct pci_dev *dev, void *buf, unsigned int buf_len,
+> --
+> 2.25.1
 
