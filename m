@@ -2,116 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B10E3F1DB7
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 18:22:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FE8D3F1DC9
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 18:25:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230062AbhHSQXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 12:23:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42116 "EHLO
+        id S229451AbhHSQZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 12:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbhHSQXY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 12:23:24 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8353C061575
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 09:22:47 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id v2so9666322edq.10
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 09:22:47 -0700 (PDT)
+        with ESMTP id S229715AbhHSQZj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 12:25:39 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AD34C061575
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 09:25:03 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id u13-20020a17090abb0db0290177e1d9b3f7so11742846pjr.1
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 09:25:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=sgDW0EeKIbc+tXjRijAMbaibbrP+Mz/1SBwo8s0GZRs=;
-        b=bHeGJQpbkzoTrOkfCmMFaZkuTpg5QP5tMmyTlG8ndVg9eD+zGCnzPv7A2aI22Lmxia
-         XHL5utpReYqP9T/3rMhb8joLsWDGFSJggm5MFwVMzWxgZC45U5JVUKhOaY6JhEdpbUr0
-         PmynGgOCXXPAn8691qSlko5mP/2C94gMR9qK+WBAWJcNVLvffSxSSiBauH+8MNi5Qe4v
-         hfQVd7b76yCpAM54eJJaxCO9VpuqbEFS0MqmL80AyPAPTwh6crTMCu8mQsCaJaOc//4M
-         UK6gxB62fXVUdjDbnQ0FDopH+swhy+Ly1PclxpHSGQFWHM4eKlqccpyxchnP+z6ap0MI
-         Odqw==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UyAqbe771W+Lff6kTHtxqnAb6wyR4jVkJwEdQgLmwXM=;
+        b=RCXKCYv9ln5LbhRxVsZkAgrsxHMHPqdffVncbCoP8zHTR2s05PTRSMgK+hG8fnm1xI
+         VE6KocOflCQf5XUe9L88OiJ4Gd0AvGpF0XcmTinZR6J2WFjWLqXyGYbTjTqdNZrTLIee
+         af/RfWFTDj7DmtJmZJTbT1bZunbQVpzZBc1ts=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=sgDW0EeKIbc+tXjRijAMbaibbrP+Mz/1SBwo8s0GZRs=;
-        b=WQ4W011O7P6h3PxBkD5471/BWuPHehQ2S9x3Rlz3GkjtnYxyhEatyhYVlJCi9C0R0W
-         UhWnSRC8E50XRwhz3+0zk7yAdMDcWIdn4pRGk7zhZ/v+hxv9y7q2cuv9zpPaKCo9HaG9
-         x05zxTlZd6SAxXo+xzGXzbP5fXMZ3b8B1wBYvtGeZ6OqUvDCARuTcgQODoqvcMUyhDcx
-         NKdPL+LZ6xZvXfCL7fR4ZcZwe/dOs763Y9zRB+t38GBakEAh/h50ZPqqoXqP+LgTqQg6
-         zc+6QhD79MV8pv3aXIbxk7lFuAm40MWLBcbHaE8VhT7tUoOnYsTVYVuVVgi4AXBo3E69
-         935Q==
-X-Gm-Message-State: AOAM533TVFWjzLkUYReYZHn56g76XKx7cOcInXh0msmeiw7ndYkFA0nC
-        /Uw/4/m640f7HxVyU3znHg4I2A==
-X-Google-Smtp-Source: ABdhPJwDflUsJEgmQVE8lQzR79B4ronR5T/P3YOz4uDNkODM3tVmRf4z0FcLRzMfN9LtAUjsgZALhw==
-X-Received: by 2002:a05:6402:2554:: with SMTP id l20mr17177108edb.252.1629390166253;
-        Thu, 19 Aug 2021 09:22:46 -0700 (PDT)
-Received: from [192.168.0.111] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id h10sm1951831edb.74.2021.08.19.09.22.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Aug 2021 09:22:45 -0700 (PDT)
-Subject: Re: [PATCH net-next 00/15] net: bridge: multicast: add vlan support
-To:     Joachim Wiberg <troglobit@gmail.com>, netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-References: <20210719170637.435541-1-razor@blackwall.org>
- <875yw1qv9a.fsf@gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-Message-ID: <458e3729-0bf0-8c45-9e45-352da76eaeb6@blackwall.org>
-Date:   Thu, 19 Aug 2021 19:22:44 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UyAqbe771W+Lff6kTHtxqnAb6wyR4jVkJwEdQgLmwXM=;
+        b=VXL+kDjI4L3Kx5t1gc2LHb6/tCSQWQ6YTmSn6/k5CxMemv/iIrWpJj1z01A8TLPPho
+         tIGUT97PgQwC8c0PQT5waEXRnVHlt0CAfQvvVDW3hxfM69gCL7Hq+eE+UjXkmnaY3Sai
+         XJ313EfIs4EeicdsRc/TVHlYCm6ESwE69QKbITnPXFZIUbkCrG0K7e/7KDNe9M8Mb3Lg
+         bgc2C+fnGnuiDkVkDwUZTUy1t+fFTHVV5F1YGwsYzDlvpb33If2cIofyt7ThMht11EhH
+         n+TMrgi47iJLv8OXBi/UxkBO7ZrMWebMkyV7pxEni3/e7uukHOTJLxV5zt6seTso8IEu
+         IN0A==
+X-Gm-Message-State: AOAM532IZCf3BDubMBsU31gjCThi0UiHImZanYJacjnuBEarahLSJTFR
+        zt6QTkJTmGXTJPT3DkVS0nzAIw==
+X-Google-Smtp-Source: ABdhPJyq4LOVatvfadz65o72x/gkprpZlPk/8y+Qcd235dkYfx++eKkOf6dJ+KUNEdEavgccQRbFxg==
+X-Received: by 2002:a17:90a:4894:: with SMTP id b20mr16180176pjh.13.1629390302929;
+        Thu, 19 Aug 2021 09:25:02 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id nn18sm8165841pjb.21.2021.08.19.09.25.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Aug 2021 09:25:02 -0700 (PDT)
+Date:   Thu, 19 Aug 2021 09:25:01 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        dri-devel@lists.freedesktop.org, linux-staging@lists.linux.dev,
+        linux-block@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v2 45/63] ath11k: Use memset_startat() for clearing queue
+ descriptors
+Message-ID: <202108190923.30FD4FC6E@keescook>
+References: <20210818060533.3569517-1-keescook@chromium.org>
+ <20210818060533.3569517-46-keescook@chromium.org>
+ <87eeapbmhi.fsf@tynnyri.adurom.net>
 MIME-Version: 1.0
-In-Reply-To: <875yw1qv9a.fsf@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87eeapbmhi.fsf@tynnyri.adurom.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/08/2021 19:01, Joachim Wiberg wrote:
-> Hi Hik, everyone!
+On Thu, Aug 19, 2021 at 04:19:37PM +0300, Kalle Valo wrote:
+> Kees Cook <keescook@chromium.org> writes:
 > 
-
-Hi,
-> On Mon, Jul 19, 2021 at 20:06, Nikolay Aleksandrov <razor@blackwall.org> wrote:
->> From: Nikolay Aleksandrov <nikolay@nvidia.com>
->> This patchset adds initial per-vlan multicast support, most of the code
->> deals with moving to multicast context pointers from bridge/port pointers.
+> > In preparation for FORTIFY_SOURCE performing compile-time and run-time
+> > field bounds checking for memset(), avoid intentionally writing across
+> > neighboring fields.
+> >
+> > Use memset_startat() so memset() doesn't get confused about writing
+> > beyond the destination member that is intended to be the starting point
+> > of zeroing through the end of the struct. Additionally split up a later
+> > field-spanning memset() so that memset() can reason about the size.
+> >
+> > Cc: Kalle Valo <kvalo@codeaurora.org>
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: ath11k@lists.infradead.org
+> > Cc: linux-wireless@vger.kernel.org
+> > Cc: netdev@vger.kernel.org
+> > Signed-off-by: Kees Cook <keescook@chromium.org>
 > 
-> Awesome work, this looks very interesting! :)  I've already built and
-> tested net-next for regressions on Marvell SOHO switches, looking good
-> so far.
-> 
-> Curious, are you planning querier per-vlan, including use-ifaddr support
-> as well?  In our in-house hack, which I posted a few years ago, we added
-> some "dumpster diving" to inet_select_addr(), but it got rather tricky.
-> So I've been leaning towards having that in userspace instead.
-> 
+> To avoid conflicts I prefer taking this via my ath tree.
 
-Yes, that is already supported (use-ifaddr needs attention though). In my next
-patch-set where I added the initial global vlan mcast options I added control
-for per-vlan querier with per-vlan querier elections and so on. The use-ifaddr
-needs more work though, that's why I still haven't added that option. I need
-to add the per-vlan/port router control option so we'll have mostly everything
-ready in a single release.
+The memset helpers are introduced as part of this series, so that makes
+things more difficult. Do you want me to create a branch with the
+helpers that you can merge?
 
->> Future patch-sets which build on this one (in order):
->>  - iproute2 support for all the new uAPIs
-> 
-> I'm very eager to try out all the new IGMP per-VLAN stuff, do you have
-> any branch of the iproute2 support available yet for testing?  For now
-> I've hard-coded BROPT_MCAST_VLAN_SNOOPING_ENABLED in br_multicast_init()
-> as a workaround, and everything seems to work just as expected :-)
+-Kees
 
-I don't have it public yet because I need to polish the support, currently
-it's very rough, enough for testing purposes for these patch-sets. :)
-I plan to work on that after I finish with the per-vlan/port router control.
-
-> 
-> Best regards
->  /Joachim
-> 
-
-Thanks,
- Nik
-
+-- 
+Kees Cook
