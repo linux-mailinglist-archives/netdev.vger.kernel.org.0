@@ -2,97 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BD103F1C39
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 17:07:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B44A3F1C3B
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 17:08:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239619AbhHSPIQ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Aug 2021 11:08:16 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:34178 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238141AbhHSPIP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 11:08:15 -0400
-Received: from smtpclient.apple (p5b3d23f8.dip0.t-ipconnect.de [91.61.35.248])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 7E93ECED16;
-        Thu, 19 Aug 2021 17:07:37 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
-Subject: Re: [PATCH v3] Bluetooth: Fix return value in hci_dev_do_close()
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20210817064411.2378-1-l4stpr0gr4m@gmail.com>
-Date:   Thu, 19 Aug 2021 17:07:37 +0200
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tedd Ho-Jeong An <tedd.an@intel.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <C0D6D79E-7325-4A7C-9153-FB35A88DD9CB@holtmann.org>
-References: <20210817064411.2378-1-l4stpr0gr4m@gmail.com>
-To:     Kangmin Park <l4stpr0gr4m@gmail.com>
-X-Mailer: Apple Mail (2.3654.120.0.1.13)
+        id S239766AbhHSPIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 11:08:47 -0400
+Received: from mxout03.lancloud.ru ([45.84.86.113]:46174 "EHLO
+        mxout03.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238141AbhHSPIq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 11:08:46 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru 1CEE920FAAD5
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH net-next v3 0/9] Add Gigabit Ethernet driver support
+To:     <patchwork-bot+netdevbpf@kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <sergei.shtylyov@gmail.com>, <geert+renesas@glider.be>,
+        <s.shtylyov@omprussia.ru>, <aford173@gmail.com>, <andrew@lunn.ch>,
+        <ashiduka@fujitsu.com>, <yoshihiro.shimoda.uh@renesas.com>,
+        <yangyingliang@huawei.com>, <netdev@vger.kernel.org>,
+        <linux-renesas-soc@vger.kernel.org>, <Chris.Paterson2@renesas.com>,
+        <biju.das@bp.renesas.com>,
+        <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20210818190800.20191-1-biju.das.jz@bp.renesas.com>
+ <162937140695.9830.1977811163674506658.git-patchwork-notify@kernel.org>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <9b060154-aed4-1e11-68ac-6468e5f4f136@omp.ru>
+Date:   Thu, 19 Aug 2021 18:08:03 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
+MIME-Version: 1.0
+In-Reply-To: <162937140695.9830.1977811163674506658.git-patchwork-notify@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kangmin,
+On 8/19/21 2:10 PM, patchwork-bot+netdevbpf@kernel.org wrote:
 
-> hci_error_reset() return without calling hci_dev_do_open() when
-> hci_dev_do_close() return error value which is not 0.
+[...]
+> This series was applied to netdev/net-next.git (refs/heads/master):
 > 
-> Also, hci_dev_close() return hci_dev_do_close() function's return
-> value.
+> On Wed, 18 Aug 2021 20:07:51 +0100 you wrote:
+>> The DMAC and EMAC blocks of Gigabit Ethernet IP found on RZ/G2L SoC are
+>> similar to the R-Car Ethernet AVB IP.
+>>
+>> The Gigabit Ethernet IP consists of Ethernet controller (E-MAC), Internal
+>> TCP/IP Offload Engine (TOE)  and Dedicated Direct memory access controller
+>> (DMAC).
+>>
+>> [...]
 > 
-> But, hci_dev_do_close() return always 0 even if hdev->shutdown
-> return error value. So, fix hci_dev_do_close() to save and return
-> the return value of the hdev->shutdown when it is called.
+> Here is the summary with links:
+>   - [net-next,v3,1/9] ravb: Use unsigned int for num_tx_desc variable in struct ravb_private
+>     https://git.kernel.org/netdev/net-next/c/cb537b241725
+>   - [net-next,v3,2/9] ravb: Add struct ravb_hw_info to driver data
+>     https://git.kernel.org/netdev/net-next/c/ebb091461a9e
+>   - [net-next,v3,3/9] ravb: Add aligned_tx to struct ravb_hw_info
+>     https://git.kernel.org/netdev/net-next/c/68ca3c923213
+>   - [net-next,v3,4/9] ravb: Add max_rx_len to struct ravb_hw_info
+>     https://git.kernel.org/netdev/net-next/c/cb01c672c2a7
+>   - [net-next,v3,5/9] ravb: Add stats_len to struct ravb_hw_info
+>     https://git.kernel.org/netdev/net-next/c/25154301fc2b
+>   - [net-next,v3,6/9] ravb: Add gstrings_stats and gstrings_size to struct ravb_hw_info
+>     https://git.kernel.org/netdev/net-next/c/896a818e0e1d
+>   - [net-next,v3,7/9] ravb: Add net_features and net_hw_features to struct ravb_hw_info
+>     https://git.kernel.org/netdev/net-next/c/8912ed25daf6
+>   - [net-next,v3,8/9] ravb: Add internal delay hw feature to struct ravb_hw_info
+>     https://git.kernel.org/netdev/net-next/c/8bc4caa0abaf
+>   - [net-next,v3,9/9] ravb: Add tx_counters to struct ravb_hw_info
+>     https://git.kernel.org/netdev/net-next/c/0b81d6731167
 > 
-> Signed-off-by: Kangmin Park <l4stpr0gr4m@gmail.com>
-> ---
-> net/bluetooth/hci_core.c | 7 ++++---
-> 1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> index 8622da2d9395..84afc0d693a8 100644
-> --- a/net/bluetooth/hci_core.c
-> +++ b/net/bluetooth/hci_core.c
-> @@ -1718,6 +1718,7 @@ static void hci_pend_le_actions_clear(struct hci_dev *hdev)
-> int hci_dev_do_close(struct hci_dev *hdev)
-> {
-> 	bool auto_off;
-> +	int ret = 0;
-> 
-> 	BT_DBG("%s %p", hdev->name, hdev);
-> 
-> @@ -1732,13 +1733,13 @@ int hci_dev_do_close(struct hci_dev *hdev)
-> 	    test_bit(HCI_UP, &hdev->flags)) {
-> 		/* Execute vendor specific shutdown routine */
-> 		if (hdev->shutdown)
-> -			hdev->shutdown(hdev);
-> +			ret = hdev->shutdown(hdev);
-> 	}
-> 
-> 	if (!test_and_clear_bit(HCI_UP, &hdev->flags)) {
-> 		cancel_delayed_work_sync(&hdev->cmd_timer);
-> 		hci_req_sync_unlock(hdev);
-> -		return 0;
-> +		return ret;
-> 	}
-> 
-> 	hci_leds_update_powered(hdev, false);
-> @@ -1845,7 +1846,7 @@ int hci_dev_do_close(struct hci_dev *hdev)
-> 	hci_req_sync_unlock(hdev);
-> 
-> 	hci_dev_put(hdev);
-> -	return 0;
-> +	return ret;
-> }
+> You are awesome, thank you!
 
-actually use variable name err instead of ret since that is more consistent in this code.
+   Are we in such a haste? I was just going to review these patches today...
 
-Regards
-
-Marcel
-
+MBR, Sergey
