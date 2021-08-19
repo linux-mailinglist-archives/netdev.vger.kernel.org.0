@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 625BA3F1AB2
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 15:40:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 232C63F1AB4
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 15:40:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240213AbhHSNk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 09:40:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59914 "EHLO
+        id S240285AbhHSNk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 09:40:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240199AbhHSNkS (ORCPT
+        with ESMTP id S240231AbhHSNkS (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 09:40:18 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E40C06175F
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C53C061575
         for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 06:39:42 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1mGiGi-0004w9-O4
+        id 1mGiGi-0004vp-OK
         for netdev@vger.kernel.org; Thu, 19 Aug 2021 15:39:40 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 571FF66A87E
+        by bjornoya.blackshift.org (Postfix) with SMTP id 5548366A87C
         for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 13:39:34 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id ECFF266A82C;
-        Thu, 19 Aug 2021 13:39:24 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 1FC6666A82F;
+        Thu, 19 Aug 2021 13:39:25 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 7e1e2a6c;
-        Thu, 19 Aug 2021 13:39:15 +0000 (UTC)
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 5ae2be16;
+        Thu, 19 Aug 2021 13:39:16 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         kernel@pengutronix.de, Matt Kline <matt@bitbashing.io>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 14/22] can: m_can: Batch FIFO reads during CAN receive
-Date:   Thu, 19 Aug 2021 15:39:05 +0200
-Message-Id: <20210819133913.657715-15-mkl@pengutronix.de>
+Subject: [PATCH net-next 15/22] can: m_can: Batch FIFO writes during CAN transmit
+Date:   Thu, 19 Aug 2021 15:39:06 +0200
+Message-Id: <20210819133913.657715-16-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210819133913.657715-1-mkl@pengutronix.de>
 References: <20210819133913.657715-1-mkl@pengutronix.de>
@@ -55,124 +55,142 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Matt Kline <matt@bitbashing.io>
 
-On peripherals communicating over a relatively slow SPI line
-(e.g. tcan4x5x), individual transfers have high fixed costs.
-This causes the driver to spend most of its time waiting between
-transfers and severely limits throughput.
+Give FIFO writes the same treatment as reads to avoid fixed costs of
+individual transfers on a slow bus (e.g., tcan4x5x).
 
-Reduce these overheads by reading more than one word at a time.
-Writing could get a similar treatment in follow-on commits.
-
-Link: https://lore.kernel.org/r/20210817050853.14875-3-matt@bitbashing.io
+Link: https://lore.kernel.org/r/20210817050853.14875-4-matt@bitbashing.io
 Signed-off-by: Matt Kline <matt@bitbashing.io>
-[mkl: remove __packed from struct id_and_dlc]
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/m_can/m_can.c | 51 +++++++++++++++++++----------------
- 1 file changed, 28 insertions(+), 23 deletions(-)
+ drivers/net/can/m_can/m_can.c | 61 +++++++++++++++--------------------
+ 1 file changed, 26 insertions(+), 35 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 8922ca0f8e94..fbd32b48d265 100644
+index fbd32b48d265..2470c47b2e31 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
-@@ -309,6 +309,15 @@ enum m_can_reg {
- #define TX_EVENT_MM_MASK	GENMASK(31, 24)
- #define TX_EVENT_TXTS_MASK	GENMASK(15, 0)
+@@ -279,7 +279,7 @@ enum m_can_reg {
+ /* Message RAM Elements */
+ #define M_CAN_FIFO_ID		0x0
+ #define M_CAN_FIFO_DLC		0x4
+-#define M_CAN_FIFO_DATA(n)	(0x8 + ((n) << 2))
++#define M_CAN_FIFO_DATA		0x8
  
-+/* The ID and DLC registers are adjacent in M_CAN FIFO memory,
-+ * and we can save a (potentially slow) bus round trip by combining
-+ * reads and writes to them.
-+ */
-+struct id_and_dlc {
-+	u32 id;
-+	u32 dlc;
-+};
-+
- static inline u32 m_can_read(struct m_can_classdev *cdev, enum m_can_reg reg)
- {
- 	return cdev->ops->read_reg(cdev, reg);
-@@ -464,17 +473,18 @@ static int m_can_read_fifo(struct net_device *dev, u32 rxfs)
- 	struct m_can_classdev *cdev = netdev_priv(dev);
- 	struct canfd_frame *cf;
- 	struct sk_buff *skb;
--	u32 id, fgi, dlc;
-+	struct id_and_dlc fifo_header;
-+	u32 fgi;
- 	u32 timestamp = 0;
--	int i, err;
-+	int err;
- 
- 	/* calculate the fifo get index for where to read data */
- 	fgi = FIELD_GET(RXFS_FGI_MASK, rxfs);
--	err = m_can_fifo_read(cdev, fgi, M_CAN_FIFO_DLC, &dlc, 1);
-+	err = m_can_fifo_read(cdev, fgi, M_CAN_FIFO_ID, &fifo_header, 2);
- 	if (err)
- 		goto out_fail;
- 
--	if (dlc & RX_BUF_FDF)
-+	if (fifo_header.dlc & RX_BUF_FDF)
- 		skb = alloc_canfd_skb(dev, &cf);
- 	else
- 		skb = alloc_can_skb(dev, (struct can_frame **)&cf);
-@@ -483,36 +493,31 @@ static int m_can_read_fifo(struct net_device *dev, u32 rxfs)
- 		return 0;
- 	}
- 
--	if (dlc & RX_BUF_FDF)
--		cf->len = can_fd_dlc2len((dlc >> 16) & 0x0F);
-+	if (fifo_header.dlc & RX_BUF_FDF)
-+		cf->len = can_fd_dlc2len((fifo_header.dlc >> 16) & 0x0F);
- 	else
--		cf->len = can_cc_dlc2len((dlc >> 16) & 0x0F);
--
--	err = m_can_fifo_read(cdev, fgi, M_CAN_FIFO_ID, &id, 1);
--	if (err)
--		goto out_fail;
-+		cf->len = can_cc_dlc2len((fifo_header.dlc >> 16) & 0x0F);
- 
--	if (id & RX_BUF_XTD)
--		cf->can_id = (id & CAN_EFF_MASK) | CAN_EFF_FLAG;
-+	if (fifo_header.id & RX_BUF_XTD)
-+		cf->can_id = (fifo_header.id & CAN_EFF_MASK) | CAN_EFF_FLAG;
- 	else
--		cf->can_id = (id >> 18) & CAN_SFF_MASK;
-+		cf->can_id = (fifo_header.id >> 18) & CAN_SFF_MASK;
- 
--	if (id & RX_BUF_ESI) {
-+	if (fifo_header.id & RX_BUF_ESI) {
- 		cf->flags |= CANFD_ESI;
- 		netdev_dbg(dev, "ESI Error\n");
- 	}
- 
--	if (!(dlc & RX_BUF_FDF) && (id & RX_BUF_RTR)) {
-+	if (!(fifo_header.dlc & RX_BUF_FDF) && (fifo_header.id & RX_BUF_RTR)) {
- 		cf->can_id |= CAN_RTR_FLAG;
- 	} else {
--		if (dlc & RX_BUF_BRS)
-+		if (fifo_header.dlc & RX_BUF_BRS)
+ /* Rx Buffer Element */
+ /* R0 */
+@@ -514,7 +514,7 @@ static int m_can_read_fifo(struct net_device *dev, u32 rxfs)
+ 		if (fifo_header.dlc & RX_BUF_BRS)
  			cf->flags |= CANFD_BRS;
  
+-		err = m_can_fifo_read(cdev, fgi, M_CAN_FIFO_DATA(0),
++		err = m_can_fifo_read(cdev, fgi, M_CAN_FIFO_DATA,
+ 				      cf->data, DIV_ROUND_UP(cf->len, 4));
+ 		if (err)
+ 			goto out_fail;
+@@ -1588,8 +1588,9 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
+ 	struct canfd_frame *cf = (struct canfd_frame *)cdev->tx_skb->data;
+ 	struct net_device *dev = cdev->net;
+ 	struct sk_buff *skb = cdev->tx_skb;
+-	u32 id, dlc, cccr, fdflags;
+-	int i, err;
++	struct id_and_dlc fifo_header;
++	u32 cccr, fdflags;
++	int err;
+ 	int putidx;
+ 
+ 	cdev->tx_skb = NULL;
+@@ -1597,34 +1598,30 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
+ 	/* Generate ID field for TX buffer Element */
+ 	/* Common to all supported M_CAN versions */
+ 	if (cf->can_id & CAN_EFF_FLAG) {
+-		id = cf->can_id & CAN_EFF_MASK;
+-		id |= TX_BUF_XTD;
++		fifo_header.id = cf->can_id & CAN_EFF_MASK;
++		fifo_header.id |= TX_BUF_XTD;
+ 	} else {
+-		id = ((cf->can_id & CAN_SFF_MASK) << 18);
++		fifo_header.id = ((cf->can_id & CAN_SFF_MASK) << 18);
+ 	}
+ 
+ 	if (cf->can_id & CAN_RTR_FLAG)
+-		id |= TX_BUF_RTR;
++		fifo_header.id |= TX_BUF_RTR;
+ 
+ 	if (cdev->version == 30) {
+ 		netif_stop_queue(dev);
+ 
+-		/* message ram configuration */
+-		err = m_can_fifo_write(cdev, 0, M_CAN_FIFO_ID, &id, 1);
++		fifo_header.dlc = can_fd_len2dlc(cf->len) << 16;
++
++		/* Write the frame ID, DLC, and payload to the FIFO element. */
++		err = m_can_fifo_write(cdev, 0, M_CAN_FIFO_ID, &fifo_header, 2);
+ 		if (err)
+ 			goto out_fail;
+ 
+-		dlc = can_fd_len2dlc(cf->len) << 16;
+-		err = m_can_fifo_write(cdev, 0, M_CAN_FIFO_DLC, &dlc, 1);
++		err = m_can_fifo_write(cdev, 0, M_CAN_FIFO_DATA,
++				       cf->data, DIV_ROUND_UP(cf->len, 4));
+ 		if (err)
+ 			goto out_fail;
+ 
 -		for (i = 0; i < cf->len; i += 4) {
--			err = m_can_fifo_read(cdev, fgi, M_CAN_FIFO_DATA(i / 4), cf->data + i, 1);
+-			err = m_can_fifo_write(cdev, 0, M_CAN_FIFO_DATA(i / 4), cf->data + i, 1);
 -			if (err)
 -				goto out_fail;
 -		}
-+		err = m_can_fifo_read(cdev, fgi, M_CAN_FIFO_DATA(0),
-+				      cf->data, DIV_ROUND_UP(cf->len, 4));
+-
+ 		can_put_echo_skb(skb, dev, 0, 0);
+ 
+ 		if (cdev->can.ctrlmode & CAN_CTRLMODE_FD) {
+@@ -1667,10 +1664,11 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
+ 		/* get put index for frame */
+ 		putidx = FIELD_GET(TXFQS_TFQPI_MASK,
+ 				   m_can_read(cdev, M_CAN_TXFQS));
+-		/* Write ID Field to FIFO Element */
+-		err = m_can_fifo_write(cdev, putidx, M_CAN_FIFO_ID, &id, 1);
+-		if (err)
+-			goto out_fail;
++
++		/* Construct DLC Field, with CAN-FD configuration.
++		 * Use the put index of the fifo as the message marker,
++		 * used in the TX interrupt for sending the correct echo frame.
++		 */
+ 
+ 		/* get CAN FD configuration of frame */
+ 		fdflags = 0;
+@@ -1680,24 +1678,17 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
+ 				fdflags |= TX_BUF_BRS;
+ 		}
+ 
+-		/* Construct DLC Field. Also contains CAN-FD configuration
+-		 * use put index of fifo as message marker
+-		 * it is used in TX interrupt for
+-		 * sending the correct echo frame
+-		 */
+-		dlc = FIELD_PREP(TX_BUF_MM_MASK, putidx) |
++		fifo_header.dlc = FIELD_PREP(TX_BUF_MM_MASK, putidx) |
+ 			FIELD_PREP(TX_BUF_DLC_MASK, can_fd_len2dlc(cf->len)) |
+ 			fdflags | TX_BUF_EFC;
+-		err = m_can_fifo_write(cdev, putidx, M_CAN_FIFO_DLC, &dlc, 1);
++		err = m_can_fifo_write(cdev, putidx, M_CAN_FIFO_ID, &fifo_header, 2);
+ 		if (err)
+ 			goto out_fail;
+ 
+-		for (i = 0; i < cf->len; i += 4) {
+-			err = m_can_fifo_write(cdev, putidx, M_CAN_FIFO_DATA(i / 4),
+-					       cf->data + i, 1);
+-			if (err)
+-				goto out_fail;
+-		}
++		err = m_can_fifo_write(cdev, putidx, M_CAN_FIFO_DATA,
++				       cf->data, DIV_ROUND_UP(cf->len, 4));
 +		if (err)
 +			goto out_fail;
- 	}
  
- 	/* acknowledge rx fifo 0 */
-@@ -521,7 +526,7 @@ static int m_can_read_fifo(struct net_device *dev, u32 rxfs)
- 	stats->rx_packets++;
- 	stats->rx_bytes += cf->len;
- 
--	timestamp = FIELD_GET(RX_BUF_RXTS_MASK, dlc);
-+	timestamp = FIELD_GET(RX_BUF_RXTS_MASK, fifo_header.dlc);
- 
- 	m_can_receive_skb(cdev, skb, timestamp);
- 
+ 		/* Push loopback echo.
+ 		 * Will be looped back on TX interrupt based on message marker
 -- 
 2.32.0
 
