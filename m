@@ -2,251 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F77A3F0EE6
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 01:59:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6365B3F0F02
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 02:02:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235236AbhHSAAB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Aug 2021 20:00:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41124 "EHLO
+        id S235191AbhHSACt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Aug 2021 20:02:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235041AbhHRX76 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 19:59:58 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8028BC061796
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 16:59:23 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id a5so2877431plh.5
-        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 16:59:23 -0700 (PDT)
+        with ESMTP id S234986AbhHSACr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Aug 2021 20:02:47 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 961AFC0613CF
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 17:02:12 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id x4so4101535pgh.1
+        for <netdev@vger.kernel.org>; Wed, 18 Aug 2021 17:02:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=ihRSUosZ1n/QH58LU5drX97jQNk+oYE3vHV9UEG8bhY=;
-        b=ll0X1F/1yJb+64r0U9YpjrHHbzyCyA3JdVLIsZBGSDD5G8By6g0Da0FvU5ma5PfPOz
-         QC4sz18rY2gpOQxJm5PmQyk9q0bDlmToRffwWKkDWOoZx6TCSYGWys/Yplpd7VScrov4
-         Ino9fR/0iet8k+NaPzK7xaA5zNSBEEQ3I0jbc=
+         :content-disposition:in-reply-to;
+        bh=No/CqcYi/ja+9aQOR285LDlQZpZG4tmFE2Pn19n6my4=;
+        b=GCsLDCnT1IGo2ICI8aIFEl7kCwiCIR1K3yHJzTlpK+e6S2iHvTa9PDNboC80JdoO84
+         7qA4G0tlNAdBMtSHQBeyX6n/AuWMsudOz5uq/iTGlMH10Q9h4POgQqR/tjXC7Id59AgS
+         W54I+QF851939R6t+NKPj0fi0SIIiz3PspBiE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=ihRSUosZ1n/QH58LU5drX97jQNk+oYE3vHV9UEG8bhY=;
-        b=ZVTIVxBqeXPpDzlP+00THXqvTuTxlodqJESRCI5oOmwbplZ/mnG0C09QaDcVwcXwvY
-         6/Yj4E/QZrXiqEXxLRLlp3YzXoSvLayWdmZd+iT5t94q+3/FTaFK8yf4tsLlN/7LNtb6
-         Xm3SB9Bygfy35ll/ZEz9dwCUH9tI/ZoUni+HpJ1bhj0NjEDxpVHMI58zhWYemLsENPfw
-         6cz11Dy6fU0RuNaZnWTvhivAusoUh9nfe7gnRN8Bhazcoc/ts+mACuqqtvvUyZ09PWzD
-         wJxIEM+1PvyINlHeKSQePZJv/YOE33lqbx16K2lapQ6sUVib3DngJbosrx3R3zBHs3yQ
-         848g==
-X-Gm-Message-State: AOAM5339VGifj1KuRGJczBezB7O93L0z445yBSWjcrLJqhGzanofJafT
-        1Nb5lxX3tXKNLr30oze0W8S4/A==
-X-Google-Smtp-Source: ABdhPJyqLAVutuhaUvZwqCN9mzT6ajj2JdJOPLObLJIeTaHnjuorpiaj1FYbc1rllZLoCI06EyvNXg==
-X-Received: by 2002:a17:90a:c006:: with SMTP id p6mr11982780pjt.144.1629331163071;
-        Wed, 18 Aug 2021 16:59:23 -0700 (PDT)
+         :mime-version:content-disposition:in-reply-to;
+        bh=No/CqcYi/ja+9aQOR285LDlQZpZG4tmFE2Pn19n6my4=;
+        b=P51/y2fgScViED4/2uC4l0hUWyZuX1Ie8vU6+SSGVnYy2pwFrTq/Bucnl8jB1LZCMe
+         y5HBFnf8WIMGZHziIu+3iJ3WD1neRnKkanTG/azAUGC+g7IqtBFVI5p0ZUPDfRFEtM8f
+         tUL5vPnMP0Os4htcg4+CBuAGx0Gs54d3gfMou0FLvjGczw+E0FHBXpLaCu4uhlbJWX0g
+         IQBejuz44omuWQJp2UvzBIbGcVOJ3LhWPrrTO/ZJ2nVeW6Fm7sJLSPt0X0Udl/qOmKzN
+         W6IDo6ibseTzIp83Vkmnpn4oCqiybTlM5QaJaeHBwMaLOkVRlvfoLfWo8ii/WqO3Fcd5
+         Rt1Q==
+X-Gm-Message-State: AOAM5323sLORcofbGT2v3KzZ+/E+dsK0D0vVSNaOfo5LdgilyCJD+W4y
+        T79umldLwi0jypZbH5NpqCcwVVNhvCwVyw==
+X-Google-Smtp-Source: ABdhPJx7IuiG55H+hxSJMh1slQNmZgtLecHPm4aA6V8X2OmyKoMMc+5FXWn7b7rsYHq/dPyvgsoalg==
+X-Received: by 2002:a62:ea0f:0:b029:319:8eef:5ff1 with SMTP id t15-20020a62ea0f0000b02903198eef5ff1mr11907946pfh.74.1629331332031;
+        Wed, 18 Aug 2021 17:02:12 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id q4sm834430pjd.52.2021.08.18.16.59.21
+        by smtp.gmail.com with ESMTPSA id w9sm872502pja.16.2021.08.18.17.02.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Aug 2021 16:59:22 -0700 (PDT)
-Date:   Wed, 18 Aug 2021 16:59:21 -0700
+        Wed, 18 Aug 2021 17:02:11 -0700 (PDT)
+Date:   Wed, 18 Aug 2021 17:02:10 -0700
 From:   Kees Cook <keescook@chromium.org>
-To:     "Lazar, Lijo" <lijo.lazar@amd.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        Feifei Xu <Feifei.Xu@amd.com>, Likun Gao <Likun.Gao@amd.com>,
-        Jiawei Gu <Jiawei.Gu@amd.com>, Evan Quan <evan.quan@amd.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
+        linux-can <linux-can@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
         linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2 18/63] drm/amd/pm: Use struct_group() for memcpy()
- region
-Message-ID: <202108181619.B603481527@keescook>
-References: <20210818060533.3569517-1-keescook@chromium.org>
- <20210818060533.3569517-19-keescook@chromium.org>
- <753ef2d1-0f7e-c930-c095-ed86e1518395@amd.com>
+Subject: Re: [PATCH] can: etas_es58x: Replace 0-element raw_msg array
+Message-ID: <202108181659.3DE5E5451@keescook>
+References: <20210818034010.800652-1-keescook@chromium.org>
+ <CAMZ6RqK4Rn4d-1CZsg9vJiAMHhxN6fgcqukdHpGwXoGTyNVr_Q@mail.gmail.com>
+ <202108172320.1540EC10C@keescook>
+ <CAMZ6RqLecbytJFQDC35n7YiqBbrB3--POofnXFeH77Zi2xzqWA@mail.gmail.com>
+ <202108180159.5C1CEE70F@keescook>
+ <CAMZ6RqK=Q3mvV5gyPVhBsFxE+JPANHNrgFqs=bvTgkbXjwT4Eg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <753ef2d1-0f7e-c930-c095-ed86e1518395@amd.com>
+In-Reply-To: <CAMZ6RqK=Q3mvV5gyPVhBsFxE+JPANHNrgFqs=bvTgkbXjwT4Eg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 18, 2021 at 05:12:28PM +0530, Lazar, Lijo wrote:
+On Wed, Aug 18, 2021 at 06:33:39PM +0900, Vincent MAILHOL wrote:
+> On Wed. 18 Aug 2021 at 18:03, Kees Cook <keescook@chromium.org> wrote:
+> > On Wed, Aug 18, 2021 at 04:55:20PM +0900, Vincent MAILHOL wrote:
+> > > At the end, the only goal of raw_msg[] is to have a tag pointing
+> > > to the beginning of the union. It would be virtually identical to
+> > > something like:
+> > > |    u8 raw_msg[];
+> > > |    union {
+> > > |        /* ... */
+> > > |    } __packed ;
+> > >
+> > > I had a look at your work and especially at your struct_group() macro.
+> > > Do you think it would make sense to introduce a union_group()?
+> > >
+> > > Result would look like:
+> > >
+> > > |    union_group_attr(urb_msg, __packed, /* raw_msg renamed to urb_msg */
+> > > |        struct es58x_fd_tx_conf_msg tx_conf_msg;
+> > > |        u8 tx_can_msg_buf[ES58X_FD_TX_BULK_MAX * ES58X_FD_CANFD_TX_LEN];
+> > > |        u8 rx_can_msg_buf[ES58X_FD_RX_BULK_MAX * ES58X_FD_CANFD_RX_LEN];
+> > > |        struct es58x_fd_echo_msg echo_msg[ES58X_FD_ECHO_BULK_MAX];
+> > > |        struct es58x_fd_rx_event_msg rx_event_msg;
+> > > |        struct es58x_fd_tx_ack_msg tx_ack_msg;
+> > > |        __le64 timestamp;
+> > > |        __le32 rx_cmd_ret_le32;
+> > > |    );
+> > >
+> > > And I can then use urb_msg in place of the old raw_msg (might
+> > > need a bit of rework here and there but I can take care of it).
+> > >
+> > > This is the most pretty way I can think of to remove this zero length array.
+> > > Keeping the raw_msg[] but with another size seems odd to me.
+> > >
+> > > Or maybe I would be the only one using this feature in the full
+> > > tree? In that case, maybe it would make sense to keep the
+> > > union_group_attr() macro local to the etas_es58x driver?
+> >
+> > I actually ended up with something close to this idea, but more
+> > generalized for other cases in the kernel. There was a sane way to
+> > include a "real" flexible array in a union (or alone in a struct), so
+> > I've proposed this flex_array() helper:
+> > https://lore.kernel.org/lkml/20210818081118.1667663-2-keescook@chromium.org/
+> >
+> > and then it's just a drop-in replacement for all the places that need
+> > this fixed, including etas_es58x:
+> > https://lore.kernel.org/lkml/20210818081118.1667663-3-keescook@chromium.org/#Z30drivers:net:can:usb:etas_es58x:es581_4.h
+> >
+> > Hopefully this will work out; I think it's as clean as we can get for
+> > now. :)
 > 
-> On 8/18/2021 11:34 AM, Kees Cook wrote:
-> > In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> > field bounds checking for memcpy(), memmove(), and memset(), avoid
-> > intentionally writing across neighboring fields.
-> > 
-> > Use struct_group() in structs:
-> > 	struct atom_smc_dpm_info_v4_5
-> > 	struct atom_smc_dpm_info_v4_6
-> > 	struct atom_smc_dpm_info_v4_7
-> > 	struct atom_smc_dpm_info_v4_10
-> > 	PPTable_t
-> > so the grouped members can be referenced together. This will allow
-> > memcpy() and sizeof() to more easily reason about sizes, improve
-> > readability, and avoid future warnings about writing beyond the end of
-> > the first member.
-> > 
-> > "pahole" shows no size nor member offset changes to any structs.
-> > "objdump -d" shows no object code changes.
-> > 
-> > Cc: "Christian König" <christian.koenig@amd.com>
-> > Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
-> > Cc: David Airlie <airlied@linux.ie>
-> > Cc: Daniel Vetter <daniel@ffwll.ch>
-> > Cc: Hawking Zhang <Hawking.Zhang@amd.com>
-> > Cc: Feifei Xu <Feifei.Xu@amd.com>
-> > Cc: Lijo Lazar <lijo.lazar@amd.com>
-> > Cc: Likun Gao <Likun.Gao@amd.com>
-> > Cc: Jiawei Gu <Jiawei.Gu@amd.com>
-> > Cc: Evan Quan <evan.quan@amd.com>
-> > Cc: amd-gfx@lists.freedesktop.org
-> > Cc: dri-devel@lists.freedesktop.org
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
-> > Acked-by: Alex Deucher <alexander.deucher@amd.com>
-> > Link: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flore.kernel.org%2Flkml%2FCADnq5_Npb8uYvd%2BR4UHgf-w8-cQj3JoODjviJR_Y9w9wqJ71mQ%40mail.gmail.com&amp;data=04%7C01%7Clijo.lazar%40amd.com%7C92b8d2f072f0444b9f8508d9620f6971%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637648640625729624%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=rKh5LUXCRUsorYM3kSpG2tkB%2Fczwl9I9EBnWBCtbg6Q%3D&amp;reserved=0
-> > ---
-> >   drivers/gpu/drm/amd/include/atomfirmware.h           |  9 ++++++++-
-> >   .../gpu/drm/amd/pm/inc/smu11_driver_if_arcturus.h    |  3 ++-
-> >   drivers/gpu/drm/amd/pm/inc/smu11_driver_if_navi10.h  |  3 ++-
-> >   .../gpu/drm/amd/pm/inc/smu13_driver_if_aldebaran.h   |  3 ++-
-> 
-> Hi Kees,
+> The __flex_array itself is a nasty hack :D
 
-Hi! Thanks for looking into this.
+Indeed. ;)
 
-> The headers which define these structs are firmware/VBIOS interfaces and are
-> picked directly from those components. There are difficulties in grouping
-> them to structs at the original source as that involves other component
-> changes.
+> but the rest is clean.
 
-So, can you help me understand this a bit more? It sounds like these are
-generated headers, yes? I'd like to understand your constraints and
-weight them against various benefits that could be achieved here.
+Thanks!
 
-The groupings I made do appear to be roughly documented already,
-for example:
+> Is this compliant to the C standard? Well, I guess that as long
+> as both GCC and LLVM supports it, it is safe to add it to the
+> kernel.
 
-   struct   atom_common_table_header  table_header;
-     // SECTION: BOARD PARAMETERS
-+  struct_group(dpm_info,
+The kernel already uses a bunch of compiler extensions, none of which
+were legal under the C standard to begin with. :) So, really, this is
+about normalizing what we're already doing and finding a single hack
+that helps the code base for readability and robustness.
 
-Something emitted the "BOARD PARAMETERS" section heading as a comment,
-so it likely also would know where it ends, yes? The good news here is
-that for the dpm_info groups, they all end at the end of the existing
-structs, see:
-	struct atom_smc_dpm_info_v4_5
-	struct atom_smc_dpm_info_v4_6
-	struct atom_smc_dpm_info_v4_7
-	struct atom_smc_dpm_info_v4_10
+> I like the final result. I will do a bit more testing and give my
+> acknowledgement if everything goes well.
 
-The matching regions in the PPTable_t structs are similarly marked with a
-"BOARD PARAMETERS" section heading comment:
-
---- a/drivers/gpu/drm/amd/pm/inc/smu11_driver_if_arcturus.h
-+++ b/drivers/gpu/drm/amd/pm/inc/smu11_driver_if_arcturus.h
-@@ -643,6 +643,7 @@ typedef struct {
-   // SECTION: BOARD PARAMETERS
- 
-   // SVI2 Board Parameters
-+  struct_group(v4_6,
-   uint16_t     MaxVoltageStepGfx; // In mV(Q2) Max voltage step that SMU will request. Multiple steps are taken if voltage change exceeds this value.
-   uint16_t     MaxVoltageStepSoc; // In mV(Q2) Max voltage step that SMU will request. Multiple steps are taken if voltage change exceeds this value.
- 
-@@ -728,10 +729,10 @@ typedef struct {
-   uint32_t     BoardVoltageCoeffB;    // decode by /1000
- 
-   uint32_t     BoardReserved[7];
-+  );
- 
-   // Padding for MMHUB - do not modify this
-   uint32_t     MmHubPadding[8]; // SMU internal use
--
- } PPTable_t;
-
-Where they end seems known as well (the padding switches from a "Board"
-to "MmHub" prefix at exactly the matching size).
-
-So, given that these regions are already known by the export tool, how
-about just updating the export tool to emit a struct there? I imagine
-the problem with this would be the identifier churn needed, but that's
-entirely mechanical.
-
-However, I'm curious about another aspect of these regions: they are,
-by definition, the same. Why isn't there a single struct describing
-them already, given the existing redundancy? For example, look at the
-member names: maxvoltagestepgfx vs MaxVoltageStepGfx. Why aren't these
-the same? And then why aren't they described separately?
-
-Fixing that would cut down on the redundancy here, and in the renaming,
-you can fix the identifiers as well. It should be straight forward to
-write a Coccinelle script to do this renaming for you after extracting
-the structure.
-
-> The driver_if_* files updates are frequent and it is error prone to manually
-> group them each time we pick them for any update.
-
-Why are these structs updated? It looks like they're specifically
-versioned, and aren't expected to change (i.e. v4.5, v4.6, v4.10, etc).
-
-> Our usage of memcpy in this way is restricted only to a very few places.
-
-True, there's 1 per PPTable_t duplication. With a proper struct, you
-wouldn't even need a memcpy().
-
-Instead of the existing:
-               memcpy(smc_pptable->I2cControllers, smc_dpm_table_v4_7->I2cControllers,
-                       sizeof(*smc_dpm_table_v4_7) - sizeof(smc_dpm_table_v4_7->table_header));
-
-or my proposed:
-               memcpy(&smc_pptable->v4, &smc_dpm_table_v4_7->dpm_info,
-                      sizeof(smc_dpm_table_v4_7->dpm_info));
-
-you could just have:
-		smc_pptable->v4 = smc_dpm_table_v4_7->dpm_info;
-
-since they'd be explicitly the same type.
-
-That looks like a much cleaner solution to this. It greatly improves
-readability, reduces the redundancy in the headers, and should be a
-simple mechanical refactoring.
-
-Oh my, I just noticed append_vbios_pptable() in
-drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega12_processpptables.c
-which does an open-coded assignment of the entire PPTable_t, including
-padding, and, apparently, the i2c address twice:
-
-        ppsmc_pptable->Vr2_I2C_address = smc_dpm_table.Vr2_I2C_address;
-
-        ppsmc_pptable->Vr2_I2C_address = smc_dpm_table.Vr2_I2C_address;
-
-> As another option - is it possible to have a helper function/macro like
-> memcpy_fortify() which takes the extra arguments and does the extra compile
-> time checks? We will use the helper whenever we have such kind of usage.
-
-I'd rather avoid special cases just for this, especially when the code
-here is already doing a couple things we try to avoid in the rest of
-the kernel (i.e. open coded redundant struct contents, etc).
-
-If something mechanically produced append_vbios_pptable() above, I bet
-we can get rid of the memcpy()s entirely and save a lot of code doing a
-member-to-member assignment.
-
-What do you think?
-
--Kees
+Great; thank you!
 
 -- 
 Kees Cook
