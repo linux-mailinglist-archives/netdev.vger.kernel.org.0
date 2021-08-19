@@ -2,171 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F8CF3F2119
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 21:53:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A2B73F2124
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 21:55:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234950AbhHSTyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 15:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34920 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233995AbhHSTyX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 15:54:23 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33AE5C061575;
-        Thu, 19 Aug 2021 12:53:46 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id i9so15322609lfg.10;
-        Thu, 19 Aug 2021 12:53:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3AeLjlhKssMz6KvR/jEzAbtHb+o6oHjAp1MwtFyLU8Y=;
-        b=WDOtLTk7j3Iqf8J5xFUaOS+zMJa2mL9dRyGMpKAmf7mpxVa4Xgpu3mr1HQ1auUI50o
-         /d8XXvQ1GSfxdbLqbXo7Tvg3cTH64hlGIQt0fzzAH5Ksip3CeIwfHszMlw81niNEmzXM
-         ngwl5V/iIUohW1yLZ08Dc2Nh5FivILEE+m/nlHEZ44FVB3ix8WyFmQ6k7vHl1PgQ5BKU
-         4I6/7CrHCb4SjfP42RbgJbWbhfsK9v+eYWF5h8U7R09rkqA6xT7E0AxhlxD/65cQ7Ys4
-         t3dvClvhpCHhNzT7PTldKs13CriaDFa00m8OerZOu4/L9+MFncC5taTXcYMV7RWhSoeC
-         0EaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=3AeLjlhKssMz6KvR/jEzAbtHb+o6oHjAp1MwtFyLU8Y=;
-        b=hVMlimGlEfHD6U5nLrNLUEAC59PLYYdBOGCB181uIPnmJam4YEJTik4vHUY3hjdVKZ
-         dkeIGc+NZGNUvMR2v+p5s5fAZc6F05eK/K4PHli4vAGMVfLX9Mr4vZOzASI4GIB8uhqx
-         XRSOwqplQo1IPrD2zo2njTOtLQjZuQ5ZYAYt6fa3dsRGIEEVEbFnRHCBF/cSG2vFd69d
-         dqPiuMjFMOdGNS2STg+Ytx0/pqMp2n84TTTsoh5OEiCBZi5HjyzX4Ss73kjat5+WK9zn
-         4W5Y7sJAFL7ZDDmp679T3+RcMkXiEB58ZRoPrhhyHk9TSy78tDYJ6eVjuPtWbr7hRXH8
-         iS+g==
-X-Gm-Message-State: AOAM5305CEShdKGCY0wTop73NO72Svwt8RPh54ng896puF0UtirlvMyL
-        lVO0y/hAesN8bQermuhM0as=
-X-Google-Smtp-Source: ABdhPJwwE1NnTfqb2LgPEF4P9P4EwUf4JuziZpI7/tJZJFh9ERu9KrmMFfIek/3PNSSdNEk0GsaEzw==
-X-Received: by 2002:a05:6512:3906:: with SMTP id a6mr11515501lfu.69.1629402824551;
-        Thu, 19 Aug 2021 12:53:44 -0700 (PDT)
-Received: from [192.168.1.11] ([46.235.66.127])
-        by smtp.gmail.com with ESMTPSA id s3sm402427lfb.15.2021.08.19.12.53.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Aug 2021 12:53:44 -0700 (PDT)
-Subject: Re: [PATCH] net: qrtr: fix another OOB Read in qrtr_endpoint_post
-To:     Jakub Kicinski <kuba@kernel.org>,
-        butt3rflyh4ck <butterflyhuangxx@gmail.com>
-Cc:     mani@kernel.org, davem@davemloft.net,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        butt3rflyh4ck <butterflyhhuangxx@gmail.com>,
-        bjorn.andersson@linaro.org
-References: <20210819181458.623832-1-butterflyhuangxx@gmail.com>
- <20210819121630.1223327f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-Message-ID: <3a5aef93-fafb-5076-4133-690928b8644a@gmail.com>
-Date:   Thu, 19 Aug 2021 22:53:43 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S235097AbhHSTzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 15:55:48 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:23396 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234371AbhHSTzs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 15:55:48 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17JJsmNh013968
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 12:55:11 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=5hZu6M7Ng+3MnHuYvRCD+Ll8dQucfd0NEP4GuQaJvGw=;
+ b=eacnpM7nWynqNJMANF8JWfb5koVJUqkivjVS99eDlaGKRYPtOqGknQn2/2AMagXiU+jl
+ JZXOFQyf0kfKHYkGkeyajWT9CNsm8cyj8YULcxhpGY9HqUBfR0kp+0cWCkooV6z4I6+i
+ YDkzRpMtaV5Ecn2LfKidcD3rPn690aWmAF0= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3ahrtb28rc-7
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 12:55:11 -0700
+Received: from intmgw002.48.prn1.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 19 Aug 2021 12:55:07 -0700
+Received: by devvm2049.vll0.facebook.com (Postfix, from userid 197479)
+        id 75B311BFB179; Thu, 19 Aug 2021 12:54:59 -0700 (PDT)
+From:   Neil Spring <ntspring@fb.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>
+CC:     <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <kuba@kernel.org>,
+        <netdev@vger.kernel.org>, <ncardwell@google.com>,
+        <ycheng@google.com>, Neil Spring <ntspring@fb.com>
+Subject: [PATCH net-next v2] tcp: enable mid stream window clamp
+Date:   Thu, 19 Aug 2021 12:54:43 -0700
+Message-ID: <20210819195443.1191973-1-ntspring@fb.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <20210819121630.1223327f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-FB-Source: Intern
+X-Proofpoint-ORIG-GUID: doX_gku0FqlQXqtlqFoFLYmcfxORevsk
+X-Proofpoint-GUID: doX_gku0FqlQXqtlqFoFLYmcfxORevsk
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-08-19_07:2021-08-17,2021-08-19 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ malwarescore=0 spamscore=0 priorityscore=1501 lowpriorityscore=0
+ phishscore=0 bulkscore=0 mlxscore=0 impostorscore=0 clxscore=1015
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2107140000 definitions=main-2108190115
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/19/21 10:16 PM, Jakub Kicinski wrote:
-> On Fri, 20 Aug 2021 02:14:58 +0800 butt3rflyh4ck wrote:
->> From: butt3rflyh4ck <butterflyhhuangxx@gmail.com>
->> 
->> This check was incomplete, did not consider size is 0:
->> 
->> 	if (len != ALIGN(size, 4) + hdrlen)
->>                     goto err;
->> 
->> if size from qrtr_hdr is 0, the result of ALIGN(size, 4)
->> will be 0, In case of len == hdrlen and size == 0
->> in header this check won't fail and
->> 
->> 	if (cb->type == QRTR_TYPE_NEW_SERVER) {
->>                 /* Remote node endpoint can bridge other distant nodes */
->>                 const struct qrtr_ctrl_pkt *pkt = data + hdrlen;
->> 
->>                 qrtr_node_assign(node, le32_to_cpu(pkt->server.node));
->>         }
->> 
->> will also read out of bound from data, which is hdrlen allocated block.
->> 
->> Fixes: 194ccc88297a ("net: qrtr: Support decoding incoming v2 packets")
->> Fixes: ad9d24c9429e ("net: qrtr: fix OOB Read in qrtr_endpoint_post")
-> 
-> Please make sure to CC authors of patches which are under Fixes, they
-> are usually the best people to review the patch. Adding them now.
-> 
->> Signed-off-by: butt3rflyh4ck <butterflyhhuangxx@gmail.com>
-> 
-> We'll need your name. AFAIU it's because of Developer Certificate of
-> Origin. You'll need to resend with this fixed (and please remember the CCs).
-> 
->> diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
->> index 171b7f3be6ef..0c30908628ba 100644
->> --- a/net/qrtr/qrtr.c
->> +++ b/net/qrtr/qrtr.c
->> @@ -493,7 +493,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
->>  		goto err;
->>  	}
->>  
->> -	if (len != ALIGN(size, 4) + hdrlen)
->> +	if (!size || len != ALIGN(size, 4) + hdrlen)
->>  		goto err;
->>  
->>  	if (cb->dst_port != QRTR_PORT_CTRL && cb->type != QRTR_TYPE_DATA &&
-> 
+The TCP_WINDOW_CLAMP socket option is defined in tcp(7) to "Bound the siz=
+e of
+the advertised window to this value."  Window clamping is distributed acr=
+oss two
+variables, window_clamp ("Maximal window to advertise" in tcp.h) and rcv_=
+ssthresh
+("Current window clamp").
 
-I am able to trigger described bug with this repro:
+This patch updates the function where the window clamp is set to also red=
+uce the current
+window clamp, rcv_sshthresh, if needed.  With this, setting the TCP_WINDO=
+W_CLAMP option
+has the documented effect of limiting the window.
 
-#define _GNU_SOURCE
-
-#include <endian.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/syscall.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-uint64_t r[1] = {0xffffffffffffffff};
-
-int main(void)
-{
-    syscall(__NR_mmap, 0x1ffff000ul, 0x1000ul, 0ul, 0x32ul, -1, 0ul);
-    syscall(__NR_mmap, 0x20000000ul, 0x1000000ul, 7ul, 0x32ul, -1, 0ul);
-    syscall(__NR_mmap, 0x21000000ul, 0x1000ul, 0ul, 0x32ul, -1, 0ul);
-    intptr_t res = 0;
-    memcpy((void*)0x20000000, "/dev/qrtr-tun\000", 14);
-    res = syscall(__NR_openat, 0xffffffffffffff9cul, 0x20000000ul, 
-0x82ul, 0);
-    if (res != -1)
-      r[0] = res;
-    memcpy((void*)0x20000000, 
-"\x01\x21\x21\x39\x04\x00\x00\x00\xd6\x2c\xf3\x50"
- 
-"\x1a\x47\x56\x52\x19\x56\x86\xef\x00\x00\x00\x00"
-                              "\xff\xff\xff\x00\xfe\xff\xff\xff", 32);
-    syscall(__NR_write, r[0], 0x20000000ul, 0x20ul);
-    return 0;
-}
-
-( I didn't write it, it's modified syzbot's repro :) )
-
-One thing I am wondering about is why Fixes tag points to my commit? My 
-commit didn't introduce any bugs, this bug will happen even _without_ my 
-change.
-
-Anyway, LGTM!
-
-Reviewed-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Neil Spring <ntspring@fb.com>
+---
+v2: - fix email formatting
 
 
+ net/ipv4/tcp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index f931def6302e..2dc6212d5888 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3338,6 +3338,8 @@ int tcp_set_window_clamp(struct sock *sk, int val)
+ 	} else {
+ 		tp->window_clamp =3D val < SOCK_MIN_RCVBUF / 2 ?
+ 			SOCK_MIN_RCVBUF / 2 : val;
++		tp->rcv_ssthresh =3D min(tp->rcv_ssthresh,
++				       tp->window_clamp);
+ 	}
+ 	return 0;
+ }
+--=20
+2.30.2
 
-With regards,
-Pavel Skripkin
