@@ -2,106 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D0023F1FB9
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 20:15:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86A0A3F1FBB
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 20:15:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234529AbhHSSQC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 14:16:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40424 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233971AbhHSSPt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 14:15:49 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 460C5C061764;
-        Thu, 19 Aug 2021 11:15:12 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id h9so14702673ejs.4;
-        Thu, 19 Aug 2021 11:15:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QZeyn80AkA3R6umXDzeR1g+4aAh8ymRt/6Rb4eSHFWs=;
-        b=r1ndwMAMQnxUrOKgNwAKYiBN7MlQDLZKEv0cewJoHvSni3A5CPwhbE6j8UBENjsRGb
-         RdsTVrOHXfHdcPp5FVeijubn5mbnt97KQApJPKlrm9UpabqBM3PRJpM6lvZetnpDcogg
-         9jXVFPtoOAdNtJErsmRDq/AUHeHruDSwRmCnPczlcp2EVz2ZpiS3dpVYVHfLFYhudgle
-         xRQBx9OLi4WGVG7FferiNubK9+1fBvcLAS4Odieuff1529RIez7V/K4baws+NuJf4SdB
-         //fVCqYQR068cwC0vcmpx6rs+HZIlO4a0qdlvztKBjN5+Ts4rAVEbIuiwXo+EfRIzZYy
-         axLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QZeyn80AkA3R6umXDzeR1g+4aAh8ymRt/6Rb4eSHFWs=;
-        b=JpX8LgXjf1FCd3UyqOreWdQoDD2gXC4nVHyZHHXvzIHpvd4MaNAtL9PqIbT2lyzgJV
-         vibpeJRx3trCy/sxxSHYjT7bJ+lwg/GWqxHPIzuXxn8iZoS6r3ZB9URrL46AdugYQcTY
-         JsMu1zPW3dpAMqfxffHAYFqfJauTMa67FSUeYmJfVuU+qsvkTKgyjTBeVyb3yjCd/jM9
-         lcPLS9c5nDfdTek5FE0rQhcZCokHe6icY/jkImmBi5KdME5xG18v/ouPeCB8EhpUoHHW
-         dCo34b+O20EvSIv4GdoWlDui5Gro1eJGmri3omUpx+5DtStGs45GK6tpO/IbQ+vgGs8b
-         4+Ng==
-X-Gm-Message-State: AOAM532FP+MSUbMah1GOOuVIPx0DFFrXmCI+IY46CQW3Z2JADuHGIYMQ
-        /TkqrKVMll/3UINv+B/D6o8=
-X-Google-Smtp-Source: ABdhPJwv3I7xzyNM8XRr6uNEKaPEy8KXIrhmMI6EC0i7o6eqmhKhpFLy6+2KFRKJB2tDVagZwNtCLg==
-X-Received: by 2002:a17:906:dff3:: with SMTP id lc19mr17391652ejc.34.1629396910919;
-        Thu, 19 Aug 2021 11:15:10 -0700 (PDT)
-Received: from localhost.localdomain (185.239.71.98.16clouds.com. [185.239.71.98])
-        by smtp.gmail.com with ESMTPSA id ks20sm1599314ejb.101.2021.08.19.11.15.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Aug 2021 11:15:10 -0700 (PDT)
-From:   butt3rflyh4ck <butterflyhuangxx@gmail.com>
-To:     mani@kernel.org, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        butt3rflyh4ck <butterflyhhuangxx@gmail.com>
-Subject: [PATCH] net: qrtr: fix another OOB Read in qrtr_endpoint_post
-Date:   Fri, 20 Aug 2021 02:14:58 +0800
-Message-Id: <20210819181458.623832-1-butterflyhuangxx@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S234511AbhHSSQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 14:16:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55876 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234586AbhHSSPy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Aug 2021 14:15:54 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E8E5860F5E;
+        Thu, 19 Aug 2021 18:15:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629396918;
+        bh=MH3KBUsP31Zg149sXGgA9d+b6FiXWMEHwNIc35rZFjY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=law/IyVJO9snho3TQ1nA0RaNgWwP+/IY2F2x0iu5I3/o8pM4OIcd04z/bE1hNdVlP
+         KjR0Irq3Xf6gOi3I1VEM/i2Tqa2d+W5MuAKKUqn9ZlhFhyZso4A1g6OQGDI4zx9Bgl
+         VpExGK/axNjeFAMXIVJFuoPrg2T6v7PovhA/hztxW8VPZ3kH66hJUgFrIoIWzZgDjk
+         LCDbr4Z4PpbqqPdeGOyyL1KGyvicfx62Ebpi+k+UxnwRUy4N6stVWUVOPIRovF1xIt
+         84xPnT5JOrvoIQRp1UNSElVUPZ9qnmXNvspBjCG0W+MFlUYRjNh4AKb9FZq+u/zmFG
+         X+APx0DVcCe4g==
+Date:   Thu, 19 Aug 2021 11:15:16 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>,
+        gushengxian <gushengxian@yulong.com>
+Subject: Re: [PATCH net] Revert "flow_offload: action should not be NULL
+ when it is referenced"
+Message-ID: <20210819111516.5b7b7a66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <75084a98-f274-9d28-db5f-61eb00492e2a@mojatatu.com>
+References: <20210819105842.1315705-1-idosch@idosch.org>
+        <75084a98-f274-9d28-db5f-61eb00492e2a@mojatatu.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: butt3rflyh4ck <butterflyhhuangxx@gmail.com>
+On Thu, 19 Aug 2021 07:51:15 -0400 Jamal Hadi Salim wrote:
+> On 2021-08-19 6:58 a.m., Ido Schimmel wrote:
+> > From: Ido Schimmel <idosch@nvidia.com>
+> > 
+> > This reverts commit 9ea3e52c5bc8bb4a084938dc1e3160643438927a.
+> > 
+> > Cited commit added a check to make sure 'action' is not NULL, but
+> > 'action' is already dereferenced before the check, when calling
+> > flow_offload_has_one_action().
+> > 
+> > Therefore, the check does not make any sense and results in a smatch
+> > warning:
+> > 
+> > include/net/flow_offload.h:322 flow_action_mixed_hw_stats_check() warn:
+> > variable dereferenced before check 'action' (see line 319)
+> > 
+> > Fix by reverting this commit.
+> > 
+> > Cc: gushengxian <gushengxian@yulong.com>
+> > Fixes: 9ea3e52c5bc8 ("flow_offload: action should not be NULL when it is referenced")
+> > Signed-off-by: Ido Schimmel <idosch@nvidia.com>  
+> 
+> Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 
-This check was incomplete, did not consider size is 0:
-
-	if (len != ALIGN(size, 4) + hdrlen)
-                    goto err;
-
-if size from qrtr_hdr is 0, the result of ALIGN(size, 4)
-will be 0, In case of len == hdrlen and size == 0
-in header this check won't fail and
-
-	if (cb->type == QRTR_TYPE_NEW_SERVER) {
-                /* Remote node endpoint can bridge other distant nodes */
-                const struct qrtr_ctrl_pkt *pkt = data + hdrlen;
-
-                qrtr_node_assign(node, le32_to_cpu(pkt->server.node));
-        }
-
-will also read out of bound from data, which is hdrlen allocated block.
-
-Fixes: 194ccc88297a ("net: qrtr: Support decoding incoming v2 packets")
-Fixes: ad9d24c9429e ("net: qrtr: fix OOB Read in qrtr_endpoint_post")
-Signed-off-by: butt3rflyh4ck <butterflyhhuangxx@gmail.com>
----
- net/qrtr/qrtr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index 171b7f3be6ef..0c30908628ba 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -493,7 +493,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
- 		goto err;
- 	}
- 
--	if (len != ALIGN(size, 4) + hdrlen)
-+	if (!size || len != ALIGN(size, 4) + hdrlen)
- 		goto err;
- 
- 	if (cb->dst_port != QRTR_PORT_CTRL && cb->type != QRTR_TYPE_DATA &&
--- 
-2.25.1
-
+Applied, thanks!
