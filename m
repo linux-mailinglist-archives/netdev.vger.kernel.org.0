@@ -2,63 +2,334 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 603D43F220C
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 23:02:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E2BE3F2216
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 23:12:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236085AbhHSVDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 17:03:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48094 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236024AbhHSVDL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Aug 2021 17:03:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7FD7361028;
-        Thu, 19 Aug 2021 21:02:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629406954;
-        bh=Lt3nR1GcCVw2g3nxucPozAraluMprVdKiQGv4h0FyMA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aYUC5dRmtbYIY/VTAkSPs5FVCWGYITJxvMypldM+2fVtbkBOxxueMCxyHG61qwHMQ
-         Blf0DlOToLGczn9+Upe2o2LptmuQ//eoOFgRZbL74UAaLy0EbWWT3u2+hLTK5x3s3u
-         cB+zlrQm2EDVji4g01iwRZ1whg0VSIZpQu7OD3iya5RyUqInnqd+7YSNPN3SbWKSAv
-         qo1+ymVF9qrpK4dLjdT42G2yzKLrkgRDWQdV8Bj8V/eGkclnAlEUwZ1wOEq9PqzlkE
-         80qhTK192NuM2kCka7DeRJXG+YtB2E0KMEp+p375Kwk+mEZV/WnfmdnP3EnSpKTUIt
-         9RExB/Pdsg+CQ==
-Date:   Thu, 19 Aug 2021 14:02:33 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     butt3rflyh4ck <butterflyhuangxx@gmail.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        butt3rflyh4ck <butterflyhhuangxx@gmail.com>,
-        bjorn.andersson@linaro.org
-Subject: Re: [PATCH] net: qrtr: fix another OOB Read in qrtr_endpoint_post
-Message-ID: <20210819140233.5f8d8cd1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <763a3f4d-9edc-bb0d-539c-c97309a4975d@gmail.com>
-References: <20210819181458.623832-1-butterflyhuangxx@gmail.com>
-        <20210819121630.1223327f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <3a5aef93-fafb-5076-4133-690928b8644a@gmail.com>
-        <CAFcO6XMTiEmAfVJ4rwdeB6QQ7s3B-1hx3LJpa-StCb-WJwasPg@mail.gmail.com>
-        <763a3f4d-9edc-bb0d-539c-c97309a4975d@gmail.com>
+        id S235105AbhHSVNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 17:13:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53080 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232766AbhHSVNJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 17:13:09 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C854C061756
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 14:12:32 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id j18so9458033ioj.8
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 14:12:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jSBLpGDBfE/hp/FUq45hwBpnFzLcifRi4gXiIBosHFk=;
+        b=vFJB0kidbUctiduMSgwwjvLIMOeKer2CqfnkWTONGdp/zunl4QrNxMN2wvbw3GJn+Z
+         MF4PCZe/3Bcu9wN0BGxUDDSiRbTgPA2pmbZrPaSkIdZ8bMZH/iCwAIzqTz7vUfvKpdjo
+         dYxHwfR/pISSi+zcLATUBd21G/jObfVS4n+iGCE974E1VrHZ36iwGXm6YiiZJyAyxAx9
+         fggWL2yiR8lyWGlRcoZHVPz39qd0qnU1Q0dN0vx8xqYlPLruL0iSWCtaF8zigNMfTAkd
+         mcB99OHsVBE6v9MYvS8DJJ4aQGZpPKlmMSbFEwNk4z8meW5i3m1RZUCsdy6Z4Tdrixtk
+         gS2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jSBLpGDBfE/hp/FUq45hwBpnFzLcifRi4gXiIBosHFk=;
+        b=UtZn/uRAhiHsnxwkuofT6RlTvhOQWeIUm1gakQm72i/kee+6t4r7k93tCcVynZeDCS
+         nQ7ZxhUMDAm9djkbRMBl35a/1tY9k+vmgvHohRf/lTiDC18rPwieiXsyHMd28nK2q5kH
+         Q3xR+q7yLwsR3QQHZ2r15H/7wJBcp4E0pDrOpqyFd6Jk7WYUyJDFNnf32qizJJbSk6ot
+         PxYWAGYbBnYaXzD08bPeIkHZLJTFdSMdk6nYewJsQ9juoCWPOhX+DhBHlGTMLhlSve+N
+         VWbfKePZdlbLuPiwqea7fsv1gHi6U2yXlDCZODXLNi/N5cr4P9/IrBg5gQIwibidhSiY
+         /KhQ==
+X-Gm-Message-State: AOAM531nJ56zR6XKbw9bYv4ztslTRfEcdEC8JhJommYTa0Y9QtCBqHsF
+        v76Kjpo5LSxUOCkgjzWjOgJ9HA==
+X-Google-Smtp-Source: ABdhPJxpAPeX9qUpFfO8ceaP7McIaRgCxE6a73CBCh0SFgiEFMalvm4OfmtzMfkEZrVlZn8ygzXKAw==
+X-Received: by 2002:a05:6638:3465:: with SMTP id q37mr14579410jav.113.1629407551487;
+        Thu, 19 Aug 2021 14:12:31 -0700 (PDT)
+Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id s16sm2159871iln.5.2021.08.19.14.12.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Aug 2021 14:12:31 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2] net: ipa: fix TX queue race
+Date:   Thu, 19 Aug 2021 16:12:28 -0500
+Message-Id: <20210819211228.3192173-1-elder@linaro.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Aug 2021 23:24:39 +0300 Pavel Skripkin wrote:
-> On 8/19/21 11:06 PM, butt3rflyh4ck wrote:
-> > Yes, this bug can be triggered without your change. The reason why I
-> > point to your commit is to make it easier for everyone to understand
-> > this bug.
-> 
-> As I understand, purpose of Fixes: tag is to point to commit where the 
-> bug was introduced. I could be wrong, so it's up to maintainer to decide 
-> is this Fixes: tag is needed or not :)
+Jakub Kicinski pointed out a race condition in ipa_start_xmit() in a
+recently-accepted series of patches:
+  https://lore.kernel.org/netdev/20210812195035.2816276-1-elder@linaro.org/
+We are stopping the modem TX queue in that function if the power
+state is not active.  We restart the TX queue again once hardware
+resume is complete.
 
-You're right thanks for pointing that out. May it should actually be:
+  TX path                       Power Management
+  -------                       ----------------
+  pm_runtime_get(); no power    Start resume
+  Stop TX queue                      ...
+  pm_runtime_put()              Resume complete
+  return NETDEV_TX_BUSY         Start TX queue
 
-Fixes: 0baa99ee353c ("net: qrtr: Allow non-immediate node routing") ?
+  pm_runtime_get()
+  Power present, transmit
+  pm_runtime_put()              (auto-suspend)
+
+The issue is that the power management (resume) activity and the
+network transmit activity can occur concurrently, and there's a
+chance the queue will be stopped *after* it has been started again.
+
+  TX path                       Power Management
+  -------                       ----------------
+                                Resume underway
+  pm_runtime_get(); no power         ...
+                                Resume complete
+                                Start TX queue
+  Stop TX queue       <-- No more transmits after this
+  pm_runtime_put()
+  return NETDEV_TX_BUSY
+
+We address this using a STARTED flag to indicate when the TX queue
+has been started from the resume path, and a spinlock to make the
+flag and queue updates happen atomically.
+
+  TX path                       Power Management
+  -------                       ----------------
+                                Resume underway
+  pm_runtime_get(); no power    Resume complete
+                                start TX queue     \
+  If STARTED flag is *not* set:                     > atomic
+      Stop TX queue             set STARTED flag   /
+  pm_runtime_put()
+  return NETDEV_TX_BUSY
+
+A second flag is used to address a different race that involves
+another path requesting power.
+
+  TX path            Other path              Power Management
+  -------            ----------              ----------------
+                     pm_runtime_get_sync()   Resume
+                                             Start TX queue   \ atomic
+                                             Set STARTED flag /
+                     (do its thing)
+                     pm_runtime_put()
+                                             (auto-suspend)
+  pm_runtime_get()                           Mark delayed resume
+  STARTED *is* set, so
+    do *not* stop TX queue  <-- Queue should be stopped here
+  pm_runtime_put()
+  return NETDEV_TX_BUSY                      Suspend done, resume
+                                             Resume complete
+  pm_runtime_get()
+  Stop TX queue
+    (STARTED is *not* set)                   Start TX queue   \ atomic
+  pm_runtime_put()                           Set STARTED flag /
+  return NETDEV_TX_BUSY
+
+So a STOPPED flag is set in the transmit path when it has stopped
+the TX queue, and this pair of operations is also protected by the
+spinlock.  The resume path only restarts the TX queue if the STOPPED
+flag is set.  This case isn't a major problem, but it avoids the
+"non-trivial amount of useless work" done by the networking stack
+when NETDEV_TX_BUSY is returned.
+
+Fixes: 6b51f802d652b ("net: ipa: ensure hardware has power in ipa_start_xmit()")
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+v2:  Somehow a line got deleted in what I sent; fixed that.
+
+ drivers/net/ipa/ipa_clock.c | 71 +++++++++++++++++++++++++++++++++++++
+ drivers/net/ipa/ipa_clock.h | 18 ++++++++++
+ drivers/net/ipa/ipa_modem.c |  7 ++--
+ 3 files changed, 94 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ipa/ipa_clock.c b/drivers/net/ipa/ipa_clock.c
+index 8f25107c1f1e7..74eb9ecdd19bd 100644
+--- a/drivers/net/ipa/ipa_clock.c
++++ b/drivers/net/ipa/ipa_clock.c
+@@ -48,11 +48,15 @@ struct ipa_interconnect {
+  * enum ipa_power_flag - IPA power flags
+  * @IPA_POWER_FLAG_RESUMED:	Whether resume from suspend has been signaled
+  * @IPA_POWER_FLAG_SYSTEM:	Hardware is system (not runtime) suspended
++ * @IPA_POWER_FLAG_STOPPED:	Modem TX is disabled by ipa_start_xmit()
++ * @IPA_POWER_FLAG_STARTED:	Modem TX was enabled by ipa_runtime_resume()
+  * @IPA_POWER_FLAG_COUNT:	Number of defined power flags
+  */
+ enum ipa_power_flag {
+ 	IPA_POWER_FLAG_RESUMED,
+ 	IPA_POWER_FLAG_SYSTEM,
++	IPA_POWER_FLAG_STOPPED,
++	IPA_POWER_FLAG_STARTED,
+ 	IPA_POWER_FLAG_COUNT,		/* Last; not a flag */
+ };
+ 
+@@ -60,6 +64,7 @@ enum ipa_power_flag {
+  * struct ipa_clock - IPA clocking information
+  * @dev:		IPA device pointer
+  * @core:		IPA core clock
++ * @spinlock:		Protects modem TX queue enable/disable
+  * @flags:		Boolean state flags
+  * @interconnect_count:	Number of elements in interconnect[]
+  * @interconnect:	Interconnect array
+@@ -67,6 +72,7 @@ enum ipa_power_flag {
+ struct ipa_clock {
+ 	struct device *dev;
+ 	struct clk *core;
++	spinlock_t spinlock;	/* used with STOPPED/STARTED power flags */
+ 	DECLARE_BITMAP(flags, IPA_POWER_FLAG_COUNT);
+ 	u32 interconnect_count;
+ 	struct ipa_interconnect *interconnect;
+@@ -334,6 +340,70 @@ static void ipa_suspend_handler(struct ipa *ipa, enum ipa_irq_id irq_id)
+ 	ipa_interrupt_suspend_clear_all(ipa->interrupt);
+ }
+ 
++/* The next few functions coordinate stopping and starting the modem
++ * network device transmit queue.
++ *
++ * Transmit can be running concurrent with power resume, and there's a
++ * chance the resume completes before the transmit path stops the queue,
++ * leaving the queue in a stopped state.  The next two functions are used
++ * to avoid this: ipa_power_modem_queue_stop() is used by ipa_start_xmit()
++ * to conditionally stop the TX queue; and ipa_power_modem_queue_start()
++ * is used by ipa_runtime_resume() to conditionally restart it.
++ *
++ * Two flags and a spinlock are used.  If the queue is stopped, the STOPPED
++ * power flag is set.  And if the queue is started, the STARTED flag is set.
++ * The queue is only started on resume if the STOPPED flag is set.  And the
++ * queue is only started in ipa_start_xmit() if the STARTED flag is *not*
++ * set.  As a result, the queue remains operational if the two activites
++ * happen concurrently regardless of the order they complete.  The spinlock
++ * ensures the flag and TX queue operations are done atomically.
++ *
++ * The first function stops the modem netdev transmit queue, but only if
++ * the STARTED flag is *not* set.  That flag is cleared if it was set.
++ * If the queue is stopped, the STOPPED flag is set.  This is called only
++ * from the power ->runtime_resume operation.
++ */
++void ipa_power_modem_queue_stop(struct ipa *ipa)
++{
++	struct ipa_clock *clock = ipa->clock;
++	unsigned long flags;
++
++	spin_lock_irqsave(&clock->spinlock, flags);
++
++	if (!__test_and_clear_bit(IPA_POWER_FLAG_STARTED, clock->flags)) {
++		netif_stop_queue(ipa->modem_netdev);
++		__set_bit(IPA_POWER_FLAG_STOPPED, clock->flags);
++	}
++
++	spin_unlock_irqrestore(&clock->spinlock, flags);
++}
++
++/* This function starts the modem netdev transmit queue, but only if the
++ * STOPPED flag is set.  That flag is cleared if it was set.  If the queue
++ * was restarted, the STARTED flag is set; this allows ipa_start_xmit()
++ * to skip stopping the queue in the event of a race.
++ */
++void ipa_power_modem_queue_wake(struct ipa *ipa)
++{
++	struct ipa_clock *clock = ipa->clock;
++	unsigned long flags;
++
++	spin_lock_irqsave(&clock->spinlock, flags);
++
++	if (__test_and_clear_bit(IPA_POWER_FLAG_STOPPED, clock->flags)) {
++		__set_bit(IPA_POWER_FLAG_STARTED, clock->flags);
++		netif_wake_queue(ipa->modem_netdev);
++	}
++
++	spin_unlock_irqrestore(&clock->spinlock, flags);
++}
++
++/* This function clears the STARTED flag once the TX queue is operating */
++void ipa_power_modem_queue_active(struct ipa *ipa)
++{
++	clear_bit(IPA_POWER_FLAG_STARTED, ipa->clock->flags);
++}
++
+ int ipa_power_setup(struct ipa *ipa)
+ {
+ 	int ret;
+@@ -383,6 +453,7 @@ ipa_clock_init(struct device *dev, const struct ipa_clock_data *data)
+ 	}
+ 	clock->dev = dev;
+ 	clock->core = clk;
++	spin_lock_init(&clock->spinlock);
+ 	clock->interconnect_count = data->interconnect_count;
+ 
+ 	ret = ipa_interconnect_init(clock, dev, data->interconnect_data);
+diff --git a/drivers/net/ipa/ipa_clock.h b/drivers/net/ipa/ipa_clock.h
+index 5c53241336a1a..64cd15981b1da 100644
+--- a/drivers/net/ipa/ipa_clock.h
++++ b/drivers/net/ipa/ipa_clock.h
+@@ -22,6 +22,24 @@ extern const struct dev_pm_ops ipa_pm_ops;
+  */
+ u32 ipa_clock_rate(struct ipa *ipa);
+ 
++/**
++ * ipa_power_modem_queue_stop() - Possibly stop the modem netdev TX queue
++ * @ipa:	IPA pointer
++ */
++void ipa_power_modem_queue_stop(struct ipa *ipa);
++
++/**
++ * ipa_power_modem_queue_wake() - Possibly wake the modem netdev TX queue
++ * @ipa:	IPA pointer
++ */
++void ipa_power_modem_queue_wake(struct ipa *ipa);
++
++/**
++ * ipa_power_modem_queue_active() - Report modem netdev TX queue active
++ * @ipa:	IPA pointer
++ */
++void ipa_power_modem_queue_active(struct ipa *ipa);
++
+ /**
+  * ipa_power_setup() - Set up IPA power management
+  * @ipa:	IPA pointer
+diff --git a/drivers/net/ipa/ipa_modem.c b/drivers/net/ipa/ipa_modem.c
+index c8724af935b85..16d87910305e1 100644
+--- a/drivers/net/ipa/ipa_modem.c
++++ b/drivers/net/ipa/ipa_modem.c
+@@ -130,6 +130,7 @@ ipa_start_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 	if (ret < 1) {
+ 		/* If a resume won't happen, just drop the packet */
+ 		if (ret < 0 && ret != -EINPROGRESS) {
++			ipa_power_modem_queue_active(ipa);
+ 			pm_runtime_put_noidle(dev);
+ 			goto err_drop_skb;
+ 		}
+@@ -138,13 +139,15 @@ ipa_start_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 		 * until we're resumed; ipa_modem_resume() arranges for the
+ 		 * TX queue to be started again.
+ 		 */
+-		netif_stop_queue(netdev);
++		ipa_power_modem_queue_stop(ipa);
+ 
+ 		(void)pm_runtime_put(dev);
+ 
+ 		return NETDEV_TX_BUSY;
+ 	}
+ 
++	ipa_power_modem_queue_active(ipa);
++
+ 	ret = ipa_endpoint_skb_tx(endpoint, skb);
+ 
+ 	(void)pm_runtime_put(dev);
+@@ -241,7 +244,7 @@ static void ipa_modem_wake_queue_work(struct work_struct *work)
+ {
+ 	struct ipa_priv *priv = container_of(work, struct ipa_priv, work);
+ 
+-	netif_wake_queue(priv->ipa->modem_netdev);
++	ipa_power_modem_queue_wake(priv->ipa);
+ }
+ 
+ /** ipa_modem_resume() - resume callback for runtime_pm
+-- 
+2.27.0
 
