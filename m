@@ -2,96 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F4B33F1A31
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 15:20:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCE2B3F1A74
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 15:35:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239835AbhHSNUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 09:20:51 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:49589 "EHLO m43-7.mailgun.net"
+        id S240012AbhHSNg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 09:36:27 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58446 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239629AbhHSNUu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Aug 2021 09:20:50 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1629379214; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=l4dT+tFYjcxU/834O3TlS8Kbm5D9Je72nne0F+3BpO8=; b=B0ZmkAsDAaaICZEqquNgU7THQGljgtZG78UH30cXFXRymk46e9vZoHf7RxkeIHNr0pCOz/jv
- lHRmECibGDT7BJSL22cXbkv8uBcDm5r9tWZVXlrUfEcpHrkYmgCHB+KZdowpeTPePqhmjtzc
- 479fP73tAKE8g4NvBKlznTOBSB0=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 611e5a76f746c298d95da997 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 19 Aug 2021 13:19:50
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 6E904C4360D; Thu, 19 Aug 2021 13:19:50 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from tynnyri.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2682CC4338F;
-        Thu, 19 Aug 2021 13:19:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 2682CC4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel@vger.kernel.org,
+        id S240010AbhHSNg0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Aug 2021 09:36:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=V5jHhDV1c6P8nuNBrs+Sc4uIZf3xCOEXlWMVOOJ6w6Q=; b=EHBApSPUpPBCOh/BQYKIG57a9q
+        R13PZ1yUx8oy6wypPOaIlOM+vxNC8f2BqTSzB4GkPsfoKzSRgay1aj/nfweuZ+TV/8aHHEVWX7wnC
+        OG5a6slb0vP0DAqor3RLFCCBKDjtQzT0Ku2gzS8vD5HOHQt4lLpEbIIWmmCpCqAqGZHY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mGiCv-000yQB-AX; Thu, 19 Aug 2021 15:35:45 +0200
+Date:   Thu, 19 Aug 2021 15:35:45 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        dri-devel@lists.freedesktop.org, linux-staging@lists.linux.dev,
-        linux-block@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2 45/63] ath11k: Use memset_startat() for clearing queue descriptors
-References: <20210818060533.3569517-1-keescook@chromium.org>
-        <20210818060533.3569517-46-keescook@chromium.org>
-Date:   Thu, 19 Aug 2021 16:19:37 +0300
-In-Reply-To: <20210818060533.3569517-46-keescook@chromium.org> (Kees Cook's
-        message of "Tue, 17 Aug 2021 23:05:15 -0700")
-Message-ID: <87eeapbmhi.fsf@tynnyri.adurom.net>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH net] net: dsa: sja1105: fix use-after-free after calling
+ of_find_compatible_node, or worse
+Message-ID: <YR5eMeKzcuYtB6Tk@lunn.ch>
+References: <20210817145245.3555077-1-vladimir.oltean@nxp.com>
+ <cd0d9c40-d07b-e2ab-b068-d0bcb4685d09@bang-olufsen.dk>
+ <20210817223101.7wbdofi7xkeqa2cp@skbuf>
+ <CAGETcx8T-ReJ_Gj-U+nxQyZPsv1v67DRBvpp9hS0fXgGRUQ17w@mail.gmail.com>
+ <6b89a9e1-e92e-ca99-9fbd-1d98f6a7864b@bang-olufsen.dk>
+ <CAGETcx_uj0V4DChME-gy5HGKTYnxLBX=TH2rag29f_p=UcG+Tg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGETcx_uj0V4DChME-gy5HGKTYnxLBX=TH2rag29f_p=UcG+Tg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kees Cook <keescook@chromium.org> writes:
+> (2) is what is happening in this case. fw_devlink=on sees that
+> "switch" implements the "switch_intc" and "switch" hasn't finished
+> probing yet. So it has no way of knowing that switch_intc is actually
+> ready. And even if switch_intc was registered as part of switch's
+> probe() by the time the PHYs are added, switch_intc could get
+> deregistered if the probe fails at a later point. So until probe()
+> returns 0, fw_devlink can't be fully sure the supplier (switch_intc)
+> is ready. Which is good in general because you won't have to
+> forcefully unbind (if that is even handled correctly in the first
+> place) the consumers of a device if it fails probe() half way through
+> registering a few services.
 
-> In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> field bounds checking for memset(), avoid intentionally writing across
-> neighboring fields.
->
-> Use memset_startat() so memset() doesn't get confused about writing
-> beyond the destination member that is intended to be the starting point
-> of zeroing through the end of the struct. Additionally split up a later
-> field-spanning memset() so that memset() can reason about the size.
->
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: ath11k@lists.infradead.org
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+There are actually a few different circular references with the way
+switches work. Take for example:
 
-To avoid conflicts I prefer taking this via my ath tree.
+&fec1 {
+        phy-mode = "rmii";
+        pinctrl-names = "default";
+        pinctrl-0 = <&pinctrl_fec1>;
+        status = "okay";
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+        fixed-link {
+                speed = <100>;
+                full-duplex;
+        };
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+        mdio1: mdio {
+                #address-cells = <1>;
+                #size-cells = <0>;
+                clock-frequency = <12500000>;
+                suppress-preamble;
+                status = "okay";
+
+                switch0: switch0@0 {
+                        compatible = "marvell,mv88e6190";
+                        pinctrl-0 = <&pinctrl_gpio_switch0>;
+                        pinctrl-names = "default";
+                        reg = <0>;
+                        eeprom-length = <65536>;
+                        interrupt-parent = <&gpio3>;
+                        interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
+                        interrupt-controller;
+                        #interrupt-cells = <2>;
+
+                        ports {
+                                #address-cells = <1>;
+                                #size-cells = <0>;
+
+                                port@0 {
+                                        reg = <0>;
+                                        label = "cpu";
+                                        ethernet = <&fec1>;
+
+                                        fixed-link {
+                                                speed = <100>;
+                                                full-duplex;
+                                        };
+                                };
+
+FEC is an ethernet controller. It has an MDIO bus, and on the bus is
+an Ethernet switch. port 0 of the Ethernet switch is connected to the
+FEC ethernet controller.
+
+While the FEC probes, it will at some point register its MDIO bus. At
+that point, the MDIO bus is probed, the switch is found, and
+registered with the switch core. The switch core looks for the port
+with an ethernet property and goes looking for that ethernet
+interface. But that this point in time, the FEC probe has only got as
+far as registering the MDIO bus. The interface itself is not
+registered. So finding the interface fails, and we go into
+EPROBE_DEFER for probing the switch.
+
+It is pretty hard to solve. An Ethernet interface can be used by the
+kernel itself, e.g. NFS root. At the point you call register_netdev()
+in the probe function, to register the interface with the core, it
+needs to be fully ready to go.  The networking stack can start using
+the interface before register_netdev() even returns. So you cannot
+first register the interface and then register the MDIO bus.
+
+I once looked to see if it was possible to tell the driver core to not
+even bother probing a bus as soon as it is registered, go straight to
+defer probe handling. Because this is one case we know it cannot
+work. But it does not seem possible.
+
+      Andrew
