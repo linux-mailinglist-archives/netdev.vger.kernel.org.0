@@ -2,107 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F5C13F22AD
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 00:09:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BF8B3F22C9
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 00:10:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235837AbhHSWJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 18:09:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45454 "EHLO mail.kernel.org"
+        id S236719AbhHSWLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 18:11:03 -0400
+Received: from mout.perfora.net ([74.208.4.197]:33231 "EHLO mout.perfora.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235771AbhHSWJo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Aug 2021 18:09:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 45AAD610A5;
-        Thu, 19 Aug 2021 22:09:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629410947;
-        bh=AYSsdq1T+WJd/WPPjiJxb+R+LyWyGay3qN7C8kjHd3o=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=TYTVkF/D4Zzx5uoGpL5vKt+FnfsmuEgU2NJd0W5dn4A9JL5KlVgbel65dQLUVOXJt
-         gUnu2u53U+CrBWJiELgJutMgXaQUCm4E69V9KgKB/qAisBz6YaeBFwT3x+oUQMZ0/7
-         xbuQ5nm4w2lgNKYBgIfa8z2txxLJTBccvAI8n7XIZPBepMPANn8oyGptSo9nUGmDMW
-         G+sYneGmUEt7NrLM9gOihoYH3B2qKY8Q22P8U7WV5Zs2drgXUV8K57phfi5n6YijpD
-         0Sty8oLxTy8BfE84Av4agoVFyPbicsgAAbfK3nIc2KGw65qxJX1ixrdQraWECtdMtH
-         5K6isA3gof+Ig==
-Received: by mail-lf1-f51.google.com with SMTP id i28so16096125lfl.2;
-        Thu, 19 Aug 2021 15:09:07 -0700 (PDT)
-X-Gm-Message-State: AOAM5302D0dK3wqkDHOwXdwQou93CTHGmatzxbAlE7Gco8+SS81c32Af
-        nd3Gt39/ZLes/lVSHBXqjnWJP+RnmmEmYWDfGT0=
-X-Google-Smtp-Source: ABdhPJxpMJvtmt/wlWrBRm8sIykY2bqH1OBaJ194CASEOKBUdMDXaNBE282t1PWWPFwy/EqckmIh6cJke2g2n6FSDsc=
-X-Received: by 2002:a05:6512:11e9:: with SMTP id p9mr12235770lfs.372.1629410945562;
- Thu, 19 Aug 2021 15:09:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210819072431.21966-1-lizhijian@cn.fujitsu.com>
-In-Reply-To: <20210819072431.21966-1-lizhijian@cn.fujitsu.com>
-From:   Song Liu <song@kernel.org>
-Date:   Thu, 19 Aug 2021 15:08:54 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW4LfJhqgqcrmbtWPadsQsjxF6sx39Gmj3dbb01oZ6GX_Q@mail.gmail.com>
-Message-ID: <CAPhsuW4LfJhqgqcrmbtWPadsQsjxF6sx39Gmj3dbb01oZ6GX_Q@mail.gmail.com>
-Subject: Re: [PATCH 1/3] selftests/bpf: make test_doc_build.sh work from
- script directory
-To:     Li Zhijian <lizhijian@cn.fujitsu.com>
-Cc:     Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        id S236766AbhHSWK6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Aug 2021 18:10:58 -0400
+Received: from toolbox.cardiotech.int ([81.221.236.183]) by mrelay.perfora.net
+ (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MUYKb-1mgvhI3nyl-00RKn6;
+ Fri, 20 Aug 2021 00:09:24 +0200
+From:   Marcel Ziswiler <marcel@ziswiler.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        Andreas Kemnade <andreas@kemnade.info>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Anson Huang <Anson.Huang@nxp.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Fabio Estevam <festevam@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>, philip.li@intel.com,
-        yifeix.zhu@intel.com, kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Li Yang <leoyang.li@nxp.com>, Marek Vasut <marex@denx.de>,
+        Martin KaFai Lau <kafai@fb.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Olof Johansson <olof@lixom.net>,
+        Otavio Salvador <otavio@ossystems.com.br>,
+        Pascal Zimmermann <pzimmermann@dh-electronics.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Stefan Riedmueller <s.riedmueller@phytec.de>,
+        Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, soc@kernel.org
+Subject: [PATCH v2 0/9] ARM: prepare and add colibri imx6ull 1gb (emmc) support
+Date:   Fri, 20 Aug 2021 00:09:01 +0200
+Message-Id: <20210819220910.586819-1-marcel@ziswiler.com>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:M7jZ1dV3SMzKEadODKaF8SQsj8meK+kkTJZ10fSsSmTujoPQ3+A
+ DB3wjDJ8+8oaqu00xJ68VSf6dLBG24Iu6X62NiJiDVB8y9FDg3WOmVdGOjdD0UnRmhberzd
+ J2jljSe/ue0HzlFhkpc9oGHDXqtSRWeETubdPTtXrgdHYWNCFBEfs3VEXdzkNF30zWuo2Tv
+ 1IGM1o3XZKZq6s0C7tLzg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:yFDIVQYoi3E=:4EZnkmZOdg0/SrB0ZKogLB
+ fdUNGtW3x39RntUiihgpR5nI8ZWLV9z1L8ut9781mTCnxyfd8/vF4xXk+0tVAjLqjW6vG+2af
+ YOfbuVuZEilyqM5ajgp9AFEYFJPAu/SrM/5LTCf0ukLHW/00C7k7kDzsAzAgMN8RVOyA5fFBB
+ e352fRP26DwGE6CjHpqwwEItIspaBbpQ1J1VG7di0ikkZy3KHaqym8IBn7bDL6dvsI8gcVWM3
+ oyf1l5cHA611lfKUS2Qamp6chrJHYtJ00iRJhWOnFX1SsBI3QW5GsLGaM++pASZnyGNNEZmy7
+ FSwNmDb9HygsTZb63kadqtTGMg/vKvL+aGQLu3V0S3b/uVprJ7z6GLUttrJn03QyiekmTOYQZ
+ amiWYSWj5v8mTqv6Jk8H0PlSGebJj+BnjlLkcOBmlJeKfB3NGIK5cN8z8YQu6A0MbIG0M8r4O
+ K4YNqbXqpouC41qZm7jkiI4Z/TSBqHvASFBGsWTZP3Qr9H8hD+mr12Y/MuvJnME7n2x9hHm9c
+ GS7+p21JbJdjG1Uop9+hA8p8eLtZEP8cI/cNFxRovsamN5aQOcOqSMgi+5Fye+qwA7P1Bw10a
+ ihgLpWPM8x+geW7eADnbc/SnIlUv/HsH73MH1jCdt4cVg6OeNNmeaTsCsv6hW3+hZInmELAkc
+ 51ecRMEamRqBSe+OhdMFGMkzOiV2ZPJeSXIQwTL271fkpjnIefoXq3C24LapGV4HXDWt4rrf+
+ y+iJjG06SsHHgb7ruCMILq/wTxSx7zXxNJgT8VieG71b0fErMm+U912smIETOpr8+IXrjJnjF
+ 8UX0oo79mzhyTCW73pY1V0Z/FUIGFYFrpuCrOaEaWlh5s3XJSZjg9o7uKmD0OSgT0ka+QDE
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 19, 2021 at 12:27 AM Li Zhijian <lizhijian@cn.fujitsu.com> wrote:
->
-> Previously, it fails as below:
-> -------------
-> root@lkp-skl-d01 /opt/rootfs/v5.14-rc4/tools/testing/selftests/bpf# ./test_doc_build.sh
-> ++ realpath --relative-to=/opt/rootfs/v5.14-rc4/tools/testing/selftests/bpf ./test_doc_build.sh
-> + SCRIPT_REL_PATH=test_doc_build.sh
-> ++ dirname test_doc_build.sh
-> + SCRIPT_REL_DIR=.
-> ++ realpath /opt/rootfs/v5.14-rc4/tools/testing/selftests/bpf/./../../../../
-> + KDIR_ROOT_DIR=/opt/rootfs/v5.14-rc4
-> + cd /opt/rootfs/v5.14-rc4
-> + for tgt in docs docs-clean
-> + make -s -C /opt/rootfs/v5.14-rc4/. docs
-> make: *** No rule to make target 'docs'.  Stop.
-> + for tgt in docs docs-clean
-> + make -s -C /opt/rootfs/v5.14-rc4/. docs-clean
-> make: *** No rule to make target 'docs-clean'.  Stop.
-> -----------
->
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Li Zhijian <lizhijian@cn.fujitsu.com>
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Acked-by: Song Liu <songliubraving@fb.com>
 
-> ---
->  tools/testing/selftests/bpf/test_doc_build.sh | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/test_doc_build.sh b/tools/testing/selftests/bpf/test_doc_build.sh
-> index ed12111cd2f0..d67ced95a6cf 100755
-> --- a/tools/testing/selftests/bpf/test_doc_build.sh
-> +++ b/tools/testing/selftests/bpf/test_doc_build.sh
-> @@ -4,9 +4,10 @@ set -e
->
->  # Assume script is located under tools/testing/selftests/bpf/. We want to start
->  # build attempts from the top of kernel repository.
-> -SCRIPT_REL_PATH=$(realpath --relative-to=$PWD $0)
-> +SCRIPT_REL_PATH=$(realpath $0)
->  SCRIPT_REL_DIR=$(dirname $SCRIPT_REL_PATH)
-> -KDIR_ROOT_DIR=$(realpath $PWD/$SCRIPT_REL_DIR/../../../../)
-> +KDIR_ROOT_DIR=$(realpath $SCRIPT_REL_DIR/../../../../)
-> +SCRIPT_REL_DIR=$(dirname $(realpath --relative-to=$KDIR_ROOT_DIR $SCRIPT_REL_PATH))
->  cd $KDIR_ROOT_DIR
->
->  for tgt in docs docs-clean; do
-> --
-> 2.32.0
->
->
->
+Clean-up imx_v6_v7_defconfig and then add support for the new Colibri
+iMX6ULL 1GB (eMMC) which builds on the success of the existing Colibri
+iMX6ULL SKUs using raw NAND but replaces this with more RAM (1 GB) and
+an eMMC (4 GB).
+
+Changes in v2:
+- New patch cleaning-up dt-bindings documentation.
+- Fix indentation.
+- Use latest agreed upon SPDX-License-Identifier GPL-2.0+ OR MIT.
+- Drop AG in our copyright statement as recommended by our legal.
+- New patch documenting dt-bindings.
+
+Marcel Ziswiler (8):
+  ARM: imx_v6_v7_defconfig: enable mtd physmap
+  ARM: imx_v6_v7_defconfig: enable fb
+  ARM: imx_v6_v7_defconfig: change snd soc tlv320aic3x to i2c variant
+  ARM: imx_v6_v7_defconfig: rebuild default configuration
+  ARM: imx_v6_v7_defconfig: build imx sdma driver as module
+  ARM: imx_v6_v7_defconfig: enable bpf syscall and cgroup bpf
+  dt-bindings: arm: fsl: clean-up all toradex boards/modules
+  dt-bindings: arm: fsl: add toradex,colibri-imx6ull-emmc
+
+Max Krummenacher (1):
+  ARM: dts: colibri-imx6ull-emmc: add device tree
+
+ .../devicetree/bindings/arm/fsl.yaml          |  87 ++++----
+ arch/arm/boot/dts/Makefile                    |   1 +
+ .../boot/dts/imx6ull-colibri-emmc-eval-v3.dts |  17 ++
+ .../dts/imx6ull-colibri-emmc-nonwifi.dtsi     | 185 ++++++++++++++++++
+ arch/arm/boot/dts/imx6ull-colibri.dtsi        |  32 ++-
+ arch/arm/configs/imx_v6_v7_defconfig          |  46 ++---
+ 6 files changed, 299 insertions(+), 69 deletions(-)
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-emmc-eval-v3.dts
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-emmc-nonwifi.dtsi
+
+-- 
+2.26.2
+
