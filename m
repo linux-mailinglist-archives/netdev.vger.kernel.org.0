@@ -2,109 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE68F3F1799
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 12:59:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 213D23F17BE
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 13:10:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238410AbhHSLAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 07:00:00 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:55131 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236149AbhHSK77 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 06:59:59 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.nyi.internal (Postfix) with ESMTP id B37F95C0159;
-        Thu, 19 Aug 2021 06:59:22 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Thu, 19 Aug 2021 06:59:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=Fbh/GUGixdVIS398e
-        w3saLTA8QL4tpBuyFiDFzaG+0M=; b=YnxASP+4+unwFGxQEEoEZE00mhxYXVNYB
-        lSpKSvDX/WnD+JPDA4QlN6+kxG+sDQGYH5uXJzqZz9cYCabthWuX7ERsdZeyLyPA
-        RZzXOmPYEWix5s6uFDMqRM7+HmaIze0jYfu9krndD8pIRVcn41Wdall14ZDuQR8g
-        9j7ZIlR/PyVZ7kdcYoCDZxdNB2rYMGV5jrLexPPWeZ6oLG7q1atwQBX3pHbR3aHj
-        BKQEwqF8T+RzQfUUVQHKU0O3vGqdpKewBhhCnLjo4sF4gs2Vli/EBNhy5cHNS5be
-        fGAUJ9/O07a/3tD+ARYbIxCH3ZBVMiWGUvpN0940WtLbm5m1exppw==
-X-ME-Sender: <xms:iTkeYXYDG7Qtxb-kqpfWfeLb9ksRYxeavekL635wG83LiBYjlnfcYw>
-    <xme:iTkeYWaZWsH0AdneleDo_LZPWwJUWmZxSSXQM7l0BgmqbZVMGq8Q-1nkCsWYlo7f2
-    DcrL_y2Qea7ysQ>
-X-ME-Received: <xmr:iTkeYZ9MzY7KrtZJfbXfYrrtTedGmZn2DruZaBB6uq2nHH7rE1mxjuK9vQvfUK1vzZkO_udUYphLIHB3ReLI72FClCsaCPuVmg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrleejgdeffecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
-    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
-    rdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuheehte
-    ffieekgeehveefvdegledvffduhfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgr
-    mhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:iTkeYdrltwmFL1lCl7AGgfiGFkV9JIPEYwvRJ09dXrX4P0ANtM-HJQ>
-    <xmx:iTkeYSp-ColSTipaaeoFZUZ08mTfOT9d4s3bA7kqMPCBpRCicGCBaQ>
-    <xmx:iTkeYTQQcAL98840onxwOV9D5yjI6F3Y_TYieVrXw2h58TldyRJPkA>
-    <xmx:ijkeYblJV4aAo42gRncjxkfLe7quHwW7bVtSgXNnnP6b0APjTbL3BA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 19 Aug 2021 06:59:19 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jhs@mojatatu.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>,
-        gushengxian <gushengxian@yulong.com>
-Subject: [PATCH net] Revert "flow_offload: action should not be NULL when it is referenced"
-Date:   Thu, 19 Aug 2021 13:58:42 +0300
-Message-Id: <20210819105842.1315705-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.31.1
+        id S238533AbhHSLKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 07:10:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41320 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238079AbhHSLKn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Aug 2021 07:10:43 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 040D86113E;
+        Thu, 19 Aug 2021 11:10:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629371407;
+        bh=rTZ3soS6t4MCZrC4yO5vSLk6S/T807Fuu4TcfoTKNsw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=STUDo/w1/vv/RFdqN+4E6iXnjqs+Um3PXZDI5Zupjy4ORjX1PGzEwTBpbJVc2D0A6
+         +fdlfHksL79Ebo80ZqWxnqcCUA7h5jtWNs0IWw9Exse+b5db2HIgGC63ileGD12CIW
+         Jb09AY6iXacaqDw1J1jzX+V8TnO+rMYuYXOIZNT1H0+L8SjwOHftPiIEPh0A6c3Gct
+         17mGiE3HRM9n4fC7P2NIBiwyBp6OD1Anvhfcxht+Bkq/3leC73bx5lHco7X08XI9CU
+         B68htndhV2G3KGFnp77eKV2+4p66gQ/QzEFcs29CnLVGVYEdmn2RSLn6vAhIGTMGmv
+         uy6+5dk4ZWg4g==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EA04260A50;
+        Thu, 19 Aug 2021 11:10:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v3 0/9] Add Gigabit Ethernet driver support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162937140695.9830.1977811163674506658.git-patchwork-notify@kernel.org>
+Date:   Thu, 19 Aug 2021 11:10:06 +0000
+References: <20210818190800.20191-1-biju.das.jz@bp.renesas.com>
+In-Reply-To: <20210818190800.20191-1-biju.das.jz@bp.renesas.com>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, sergei.shtylyov@gmail.com,
+        geert+renesas@glider.be, s.shtylyov@omprussia.ru,
+        aford173@gmail.com, andrew@lunn.ch, ashiduka@fujitsu.com,
+        yoshihiro.shimoda.uh@renesas.com, yangyingliang@huawei.com,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Chris.Paterson2@renesas.com, biju.das@bp.renesas.com,
+        prabhakar.mahadev-lad.rj@bp.renesas.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+Hello:
 
-This reverts commit 9ea3e52c5bc8bb4a084938dc1e3160643438927a.
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-Cited commit added a check to make sure 'action' is not NULL, but
-'action' is already dereferenced before the check, when calling
-flow_offload_has_one_action().
+On Wed, 18 Aug 2021 20:07:51 +0100 you wrote:
+> The DMAC and EMAC blocks of Gigabit Ethernet IP found on RZ/G2L SoC are
+> similar to the R-Car Ethernet AVB IP.
+> 
+> The Gigabit Ethernet IP consists of Ethernet controller (E-MAC), Internal
+> TCP/IP Offload Engine (TOE)  and Dedicated Direct memory access controller
+> (DMAC).
+> 
+> [...]
 
-Therefore, the check does not make any sense and results in a smatch
-warning:
+Here is the summary with links:
+  - [net-next,v3,1/9] ravb: Use unsigned int for num_tx_desc variable in struct ravb_private
+    https://git.kernel.org/netdev/net-next/c/cb537b241725
+  - [net-next,v3,2/9] ravb: Add struct ravb_hw_info to driver data
+    https://git.kernel.org/netdev/net-next/c/ebb091461a9e
+  - [net-next,v3,3/9] ravb: Add aligned_tx to struct ravb_hw_info
+    https://git.kernel.org/netdev/net-next/c/68ca3c923213
+  - [net-next,v3,4/9] ravb: Add max_rx_len to struct ravb_hw_info
+    https://git.kernel.org/netdev/net-next/c/cb01c672c2a7
+  - [net-next,v3,5/9] ravb: Add stats_len to struct ravb_hw_info
+    https://git.kernel.org/netdev/net-next/c/25154301fc2b
+  - [net-next,v3,6/9] ravb: Add gstrings_stats and gstrings_size to struct ravb_hw_info
+    https://git.kernel.org/netdev/net-next/c/896a818e0e1d
+  - [net-next,v3,7/9] ravb: Add net_features and net_hw_features to struct ravb_hw_info
+    https://git.kernel.org/netdev/net-next/c/8912ed25daf6
+  - [net-next,v3,8/9] ravb: Add internal delay hw feature to struct ravb_hw_info
+    https://git.kernel.org/netdev/net-next/c/8bc4caa0abaf
+  - [net-next,v3,9/9] ravb: Add tx_counters to struct ravb_hw_info
+    https://git.kernel.org/netdev/net-next/c/0b81d6731167
 
-include/net/flow_offload.h:322 flow_action_mixed_hw_stats_check() warn:
-variable dereferenced before check 'action' (see line 319)
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Fix by reverting this commit.
-
-Cc: gushengxian <gushengxian@yulong.com>
-Fixes: 9ea3e52c5bc8 ("flow_offload: action should not be NULL when it is referenced")
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- include/net/flow_offload.h | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
-
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index f3c2841566a0..1b9d75aedb22 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -319,14 +319,12 @@ flow_action_mixed_hw_stats_check(const struct flow_action *action,
- 	if (flow_offload_has_one_action(action))
- 		return true;
- 
--	if (action) {
--		flow_action_for_each(i, action_entry, action) {
--			if (i && action_entry->hw_stats != last_hw_stats) {
--				NL_SET_ERR_MSG_MOD(extack, "Mixing HW stats types for actions is not supported");
--				return false;
--			}
--			last_hw_stats = action_entry->hw_stats;
-+	flow_action_for_each(i, action_entry, action) {
-+		if (i && action_entry->hw_stats != last_hw_stats) {
-+			NL_SET_ERR_MSG_MOD(extack, "Mixing HW stats types for actions is not supported");
-+			return false;
- 		}
-+		last_hw_stats = action_entry->hw_stats;
- 	}
- 	return true;
- }
--- 
-2.31.1
 
