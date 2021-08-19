@@ -2,147 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 719433F1487
-	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 09:50:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ECD33F1489
+	for <lists+netdev@lfdr.de>; Thu, 19 Aug 2021 09:50:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234249AbhHSHvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 03:51:22 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:45983 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229927AbhHSHvV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 03:51:21 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 12EEA580CB1;
-        Thu, 19 Aug 2021 03:50:45 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 19 Aug 2021 03:50:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=9ZqtJn
-        J0H+EdolVALfJ0fnZU/c0Rk6VytaazMf6oyuk=; b=lDS8qoC7R4OglpoH7ph+N2
-        NntI/nnJyXQ/t/Y3LOQ3b8t7skehEIFGn4AbBHxjaD2u5D39aXxRshWfAiZDVihn
-        37FVNt9XUaHPI7bfaQ4zCY9sBHuhdHmVR+vLCwWzdV7DTFpO3iNKorPHPXQh2YAl
-        oAkZ6eG6DQ4icZBsEM8wIRnJihB2mhutTqqPelE0HOKgLcRRysIpLgUvOh8EDk/C
-        CuTHtMygO0YY0UIA7u7BfPuaKH5rao8R+IzPsjOn3vVZ8534tSQ6F884oTwRNJpa
-        r+3j0p9Jj18shjxswwVSr3UbE4rGTitG5KKzp7AuZfI3dJkr7ppWl1345kiNbQpA
-        ==
-X-ME-Sender: <xms:Ug0eYY1kqG-95NS98PcUTTH04WKMeWUtWyDfoHt8MYRmEof4NwBE7Q>
-    <xme:Ug0eYTGa-xQkJSbK_cyNEXoC1tWrDSx6tKeQu9aNffnBPWw2O22wBzvia6vQdjt9k
-    kL5yI2wqeZ9GTk>
-X-ME-Received: <xmr:Ug0eYQ4FNZadOg-ga7s_RGdiW28ugYqYF7tskbswzYT7QHhyO7fNWgSaR_dcvyJAAL86vxjqHeu4X544Mdqh1rPFbciQ_w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrleeigdduvdefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:Ug0eYR0n6agO5ct5EntaFUwCtgemS6iqJCTM_UvgPmg957rrXb_YmA>
-    <xmx:Ug0eYbF5adVIaN6CZuXmayAPBdd-kHXKfvltdaVnAzr6JbpClzrJlA>
-    <xmx:Ug0eYa9yUM9rF6kq8sezLMU6iZArhkbhBW0nZGD7NOLXwLzL8hL8Zw>
-    <xmx:VQ0eYRZNh0_SbqM_ZUMWJrlxYCI1_hBRv2vrnCQUt5vssRB_YJfOgQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 19 Aug 2021 03:50:42 -0400 (EDT)
-Date:   Thu, 19 Aug 2021 10:50:39 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, mkubecek@suse.cz, pali@kernel.org,
-        jacob.e.keller@intel.com, jiri@nvidia.com, vadimp@nvidia.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH net-next v2 1/6] ethtool: Add ability to control
- transceiver modules' power mode
-Message-ID: <YR4NTylFy2ejODV6@shredder>
-References: <20210818155202.1278177-1-idosch@idosch.org>
- <20210818155202.1278177-2-idosch@idosch.org>
- <20210818153241.7438e611@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YR2P7+1ZGiEBDtAq@lunn.ch>
+        id S236765AbhHSHv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 03:51:29 -0400
+Received: from mail-mw2nam12on2065.outbound.protection.outlook.com ([40.107.244.65]:57441
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S235102AbhHSHv2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Aug 2021 03:51:28 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WQx9qd8SfK/tROIp5RKHLsOWmpeCiQYOz9Fh/o/Ei0UNe6urjD/kbkCIA9oRNukCuW9UiBcnzm/26EtHJ+lq7v3fF9ar5SWvVxTzPMA+oMgAyKIDKQl+FWP7oEYeGiaJjTUimqfPeJTntzBbPml+Q3gXRZBaFUSwg/BaC2CeGCwqsZMMZxktSrG/ZfdFFLKK1pLqy18/TvYwgpLuNNHRyyp9aOtKHj83UO7o0abi8O7WtSnimO9qavvOpd4jHqxoHS/uz2o21Y9k+ffULt8ShtciXh+qg9EBedqrpqYW2G0IPUNjs68IOqfxQZImkDVCdd1GrXAUNqB9iAV0a12ZRw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5ErwqSMe4rJcugaPShLbLw8ACCRtV1YT6cefcuGLfNg=;
+ b=Irk6xhWOSTbkH7iJ2Fr4Ok4khwg+LHMZ4MJmqY4gjtNUqcfNHAV6ss6TSrjwQnWPuWXcyKxXIJ4IGJdVeT2Z/cEHl8IH0Lm3RTfqUSgYXktnjqMcsTwdOqKTYRdcMtHzXjAMlPosn/PvasCqpFOoCXarrRKBUOQ1QHIvYX+XK1iVT7Hxz0kEWqeer9kE0iRf/q42Ok65kDmY+nXleDx+LUqOvUOET39h67zk1tC+X6/Vm3ztnH6QrAArKgnoXbpbmfEUT+2WWEVYl+P2f5W846vOIwxo2P9sroYYPsloKtDhqrBTgLk2p4rc0yDzpvklsyN4P2BebUZcrqGrh5MDjA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5ErwqSMe4rJcugaPShLbLw8ACCRtV1YT6cefcuGLfNg=;
+ b=gSUMuQGlq2965l0KmmvutLWsOEx0Ij22h1Z5JAExJtJahOeyh8BUY7astmJUW/P7fHczU73TbfMLPCjwbivSLPATPKL7yvI/FBgeMSZ5M+sSsRr2Y2qmnjHHDNp+g41bxl3UewqAYI2u3NGy39ZYcV7QKgxuhDOqUuGZAbM1G6mqCGsDqQlvKDTqaYRlL4CaLFq2imALSqZbtQbZ0GWjWAsIrXvBj98/8lV4qY9/cthYdgCf/lZ2hzK/hFBabXUImLnGxy5f+Bw8Gmmv+K8NKW+dky9WFY7vQfy7ZzzqrddWf51JJ+Q/AFnByVGVPIyBob1yiVLbL50DhBfrmzHeKg==
+Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
+ by BYAPR12MB3637.namprd12.prod.outlook.com (2603:10b6:a03:da::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.14; Thu, 19 Aug
+ 2021 07:50:51 +0000
+Received: from BY5PR12MB4209.namprd12.prod.outlook.com
+ ([fe80::e000:8099:a5da:d74]) by BY5PR12MB4209.namprd12.prod.outlook.com
+ ([fe80::e000:8099:a5da:d74%5]) with mapi id 15.20.4436.019; Thu, 19 Aug 2021
+ 07:50:51 +0000
+From:   Saeed Mahameed <saeedm@nvidia.com>
+To:     "tim.gardner@canonical.com" <tim.gardner@canonical.com>,
+        Vlad Buslov <vladbu@nvidia.com>
+CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Roi Dayan <roid@nvidia.com>,
+        "vladimir.oltean@nxp.com" <vladimir.oltean@nxp.com>,
+        Mark Bloch <mbloch@nvidia.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "leon@kernel.org" <leon@kernel.org>,
+        Jianbo Liu <jianbol@nvidia.com>
+Subject: Re: [PATCH][linux-next] net/mlx5: Bridge, fix uninitialized variable
+ in mlx5_esw_bridge_port_changeupper()
+Thread-Topic: [PATCH][linux-next] net/mlx5: Bridge, fix uninitialized variable
+ in mlx5_esw_bridge_port_changeupper()
+Thread-Index: AQHXlEkLsgnnT4Q3m0+5x5/L0iS5QKt5eQOAgAD8RQA=
+Date:   Thu, 19 Aug 2021 07:50:51 +0000
+Message-ID: <f42ff8df9d10b6e171e3ca45247a3df9b9fba71c.camel@nvidia.com>
+References: <20210818155210.14522-1-tim.gardner@canonical.com>
+         <ygnh8s0ypumc.fsf@nvidia.com>
+In-Reply-To: <ygnh8s0ypumc.fsf@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+authentication-results: canonical.com; dkim=none (message not signed)
+ header.d=none;canonical.com; dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3b960698-78a4-4031-47ab-08d962e610e7
+x-ms-traffictypediagnostic: BYAPR12MB3637:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR12MB36374914D0D1E9054EC67173B3C09@BYAPR12MB3637.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: nOrlvtx6ZxOD8kc2qsfxVDiGLzvBA+QgS4V8a1fjhSxhpQdDQbq6Q0LgTAtNmcdvm3H82SGx7/abj1dpzCFa0rS5V8pW/Tkhet5XxYlCcWTjouhshGX9BOs4uVilGjcbWOzwxL/njfUi2disY7R7j5L7s0ofYPoWP5RGuv5KhMdc0Afc4JXyFviUcgfREI8ZxPIOI4CXNmEMqTn25FHFRr2ZUQ8osMowhA+w139Rfyo2ANVe1aS4uztZxgYB2Vfq70mNQrq1BvG1/mCN7mzaTzoZ701oSOvqWmJ9JJ68BiI2S8SIFj8PrL2hP8G7VvNSvAS3whHRXcR+EXl1CsaKyDIR0FtTpHU6tARZpIz4uKOXY8UOAQyD5bDP0YR+jjlm/Az73q2awk949gf1lNibV4WzJ2kNlEFgQLAZhOnr4gxtik+bA9D+72hm/M4BEY/RhNaCn1fvCiv+qVBLem0mYQtwhQG7FL0/bIi5Y5Oced6/Rtvxlt9KiERRFwVl7k/lYXBlywqwhG+909QdnG2NvvkJHBIVdZhP/l1rMKkhLQ2Dm/6pNUAflVZP1aQ+z3eUvKEnJ6Iv+0EwIWwECSecEQKEqsMwM2k+BGQvzfH4SaCwhFJrf+nICkrvMcCJ/VObmeOTu9sFGLhIixz8IRArE1Xe6TaOx2WhvDOZB9dfRxFtZdAkc8k32rKN/JN5rc7lBkF0VnqYsDUrLlPQ9wQtcg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(376002)(136003)(396003)(366004)(8936002)(38100700002)(64756008)(122000001)(316002)(38070700005)(2906002)(6512007)(6486002)(66446008)(6506007)(76116006)(54906003)(26005)(66946007)(66556008)(36756003)(186003)(110136005)(66476007)(4326008)(5660300002)(6636002)(86362001)(107886003)(8676002)(478600001)(71200400001)(2616005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?UWdCQ04zTjAwWFpGT1RvVDM1ZWJLTzh4WGhHZVArVTNMSjVUTUxMVVFEZnQz?=
+ =?utf-8?B?WjVRaUR3enNXS21MN2hSU0xJYk5FbExwdVV2ekVuSE5sc25FWXlzbUdacks2?=
+ =?utf-8?B?c2hHeXhIdnMvYXRSVlJKYWdXVnpsNHRGYXZVb2lEd29qZjQ4ZU9iTDBIVGl5?=
+ =?utf-8?B?andzRi9LeHBTR2NzMGRBejZrT3M5UnFYVkpnbjVsVFpZY2kvMzVTaS8vcGd1?=
+ =?utf-8?B?NFZRd0hXd0hwcDB5dnh5eVZ1UDdDV3I0Ny94Q1YwbEQ2STIrRElMVmVnZ3Qw?=
+ =?utf-8?B?cVc3Ni9Ob2p3YytIVHN3eWZFWkl5U0JKWmZzWFFJTXpxUllMUmIwYlhLcmp0?=
+ =?utf-8?B?YUpoL3EvTWhQc1k2LzR4YmhWRlEwd2gzbzlOQjBMTWIxOHFNSlZqZ3QrOUg4?=
+ =?utf-8?B?UENQcDQ3VmtVSnl0aElkak1PS0VmdTZBZVJPUTZsODA0MS81STlZWWViU0JR?=
+ =?utf-8?B?MFNNNk1CNGQ0ZzNJaTNkc2k0RzB0cTNNem41S08wKzJVL2FLRVJMQlI2MFNN?=
+ =?utf-8?B?bmdTQSt4YzM3WnZvS0Q3K21NVk9BeVZWYTlFa1ROckx3OGFYcUdoUnM4eGF2?=
+ =?utf-8?B?QjBOMk4yM0RDZGVFQkM0cys3Sys2YUh1U3RFN05ENUV1TURFQVIyTDFxaGoy?=
+ =?utf-8?B?QnI2aHJ6OVpRRCtrNTlvMWc3RGZITDBvRmtrOXRhbFhGckJJSEw3b3hORjRC?=
+ =?utf-8?B?dzM5Q3lDb0VmSFA0aG42S1diTlFSenlUaTR2b25WT3paWGZsUk4zU2lNT3RZ?=
+ =?utf-8?B?MnVpUUdWemltMkJMSGQ3aVpGSTZjT1IvRlByVGVrTXNpbXplR2EvS0w1THFp?=
+ =?utf-8?B?eXFXdEhzUEdYTytBT24rQ2QzNW9qMnA1bjRTQldMUVQ1WHdJSG1VWGRRb2Fq?=
+ =?utf-8?B?UE03SGRMNGtXSFhZQXhqWXBjRFFoeW15R3Rvb3NRQWpiV3U3OGEwbTBPZ1BI?=
+ =?utf-8?B?Vm5DOGI4MFFhNnp0RGdtbE90dmNnbXZXSFFZYjgxQmtoQktUd2luTHZrT3Vz?=
+ =?utf-8?B?d0RtWnR0eWdjY0hJVVdmZXZLdi9ZUTBQeitRV2dUM2JEeUhsRkFiNHFXeEdH?=
+ =?utf-8?B?bDFXK1lBZDlTVktPWHBadnZFRjYrVFl5NnV4c2dvdktibVdpYlg4T0xKRE5B?=
+ =?utf-8?B?WGViV2g2a2h5aFRFZldUNExKeEkwdWpkM1AxbCs3SVVISXBvSk1Zcy90aVlK?=
+ =?utf-8?B?UU1HWnRCYjNVZW0zS0MxYWRKVnZNanFHanlISEtjL2w0ZFhtY0N0dytpa1Ns?=
+ =?utf-8?B?cEo3RGRnblkxeVRKNjJhS214R2ltZDN2blRkNm1rUnRCS2ZLQis0SnYvWHYw?=
+ =?utf-8?B?dE11R0RYWklMbHpyRDB4cVF2b3NuSzVza1AyRmxTRzFPRGRyYS9YNCs2VEN5?=
+ =?utf-8?B?SDR2VlZMbWNXQVZhczRHdXNUaFlacFNlaHd4OHI4NnNnMlY2V3dONlk4RlNR?=
+ =?utf-8?B?NmhyWEYwYmFtYmc1eHdkU0NJNkl5b21oeUt3MVRGUzhIUU50NDl4UENNdjQx?=
+ =?utf-8?B?dnZKRlR2bUMrdEs0Q041Z08xQW54dHZmQVE4eGhqSGZQK2gvUXdUbXF5RUx2?=
+ =?utf-8?B?TFF2N1Z0RDZPSy9mdW41TDF0MWdpZEhSRm9lLzI4ZEpUUXZqemhieFZtMEdQ?=
+ =?utf-8?B?UUhWa3d5a3J0QlQ4NVJpeTU2KzEyUzlrdTRrd3VuQlRHd0w1aUJJcUhSL2h0?=
+ =?utf-8?B?djJJUnBOTVRObmZYQW4wZ2JoVFZCenY2WG5kSE5sbGFUbmJxY3BxaGVUbHM2?=
+ =?utf-8?B?Wjk4QkpsNjlkU2U0WFlKVHRnRjBZOFpKRVAyY0x0QmlPN0YxZm52NExFWkRE?=
+ =?utf-8?B?K3Buc3NIZktWTEtBTGV1QT09?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <5F2283876EC812428C2EF345F87DD945@namprd12.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YR2P7+1ZGiEBDtAq@lunn.ch>
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3b960698-78a4-4031-47ab-08d962e610e7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Aug 2021 07:50:51.4725
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 6+6f5kknpiU/xGBk50fqm7LRBh/nJUF26UHGKjOPiV7XxhcSJX/kd2srZO4oAhenz5M65CnHf0JLUGhqi9pW+w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3637
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 19, 2021 at 12:55:43AM +0200, Andrew Lunn wrote:
-> On Wed, Aug 18, 2021 at 03:32:41PM -0700, Jakub Kicinski wrote:
-> > On Wed, 18 Aug 2021 18:51:57 +0300 Ido Schimmel wrote:
-> > > +MODULE_SET
-> > > +==========
-> > > +
-> > > +Sets transceiver module parameters.
-> > > +
-> > > +Request contents:
-> > > +
-> > > +  ======================================  ======  ==========================
-> > > +  ``ETHTOOL_A_MODULE_HEADER``             nested  request header
-> > > +  ``ETHTOOL_A_MODULE_POWER_MODE_POLICY``  u8      power mode policy
-> > > +  ======================================  ======  ==========================
-> > > +
-> > > +When set, the optional ``ETHTOOL_A_MODULE_POWER_MODE_POLICY`` attribute is used
-> > > +to set the transceiver module power policy enforced by the host. Possible
-> > > +values are:
-> > > +
-> > > +.. kernel-doc:: include/uapi/linux/ethtool.h
-> > > +    :identifiers: ethtool_module_power_mode_policy
-> > > +
-> > > +For SFF-8636 modules, low power mode is forced by the host according to table
-> > > +6-10 in revision 2.10a of the specification.
-> > > +
-> > > +For CMIS modules, low power mode is forced by the host according to table 6-12
-> > > +in revision 5.0 of the specification.
-> > > +
-> > > +To avoid changes to the operational state of the device, power mode policy can
-> > > +only be set when the device is administratively down.
-> > 
-> > Would you mind explaining why?
-> 
-> Part of the issue is we have two different sorts of policy mixed
-> together.
-> 
-> ETHTOOL_MODULE_POWER_MODE_POLICY_LOW and
-> ETHTOOL_MODULE_POWER_MODE_POLICY_HIGH change the state now. This could
-> be a surprise to a user when there link disappears for the
-> ETHTOOL_MODULE_POWER_MODE_POLICY_LOW case, when the interface is admin up.
-> 
-> ETHTOOL_MODULE_POWER_MODE_POLICY_HIGH_ON_UP however follows the state
-> of the interface. So there should not be any surprises.
-> 
-> I actually think ETHTOOL_MODULE_POWER_MODE_POLICY_HIGH_ON_UP should be
-> allowed at any time, just to make it easier to use.
-
-Yes
-
-> 
-> > > +/**
-> > > + * enum ethtool_module_power_mode_policy - plug-in module power mode policy
-> > > + * @ETHTOOL_MODULE_POWER_MODE_POLICY_LOW: Module is always in low power mode.
-> > 
-> > Did you have a use case for this one or is it for completeness? Seems
-> > like user can just bring the port down if they want no carrier? My
-> > understanding was you primarily wanted the latter two, and those can
-> > be freely changed when netdev is running, right?
-> > 
-> > > + * @ETHTOOL_MODULE_POWER_MODE_POLICY_HIGH: Module is always in high power mode.
-> > > + * @ETHTOOL_MODULE_POWER_MODE_POLICY_HIGH_ON_UP: Module is transitioned by the
-> > > + *	host to high power mode when the first port using it is put
-> > > + *	administratively up and to low power mode when the last port using it
-> > > + *	is put administratively down.
-> > 
-> > s/HIGH_ON_UP/AUTO/ ?
-> > high on up == low on down, right, seems arbitrary to pick one over the
-> > other
-> 
-> Should we also document what the default is? Seems like
-> ETHTOOL_MODULE_POWER_MODE_POLICY_HIGH_ON_UP is the generic network
-> interface default, so maybe it should also be the default for SFPs?
-
-I will add a note in Documentation/networking/ethtool-netlink.rst that
-the default power mode policy is driver-dependent (can be queried) and
-that it can either be 'high' or 'auto'.
-
-> 
-> 	  Andrew
+T24gV2VkLCAyMDIxLTA4LTE4IGF0IDE5OjQ3ICswMzAwLCBWbGFkIEJ1c2xvdiB3cm90ZToNCj4g
+T24gV2VkIDE4IEF1ZyAyMDIxIGF0IDE4OjUyLCBUaW0gR2FyZG5lciA8dGltLmdhcmRuZXJAY2Fu
+b25pY2FsLmNvbT4NCj4gd3JvdGU6DQo+ID4gQSByZWNlbnQgY2hhbmdlIHJlbW92ZWQgY29kZSB0
+aGF0IGluaXRpYWxpemVkIHRoZSByZXR1cm4gY29kZQ0KPiA+IHZhcmlhYmxlICdlcnInLiBJdA0K
+PiA+IGlzIG5vdyBwb3NzaWJsZSBmb3IgbWx4NV9lc3dfYnJpZGdlX3BvcnRfY2hhbmdldXBwZXIo
+KSB0byByZXR1cm4gYW4NCj4gPiBlcnJvciBjb2RlDQo+ID4gdXNpbmcgdGhpcyB1bmluaXRpYWxp
+emVkIHZhcmlhYmxlLiBGaXggaXQgYnkgaW5pdGlhbGl6aW5nIHRvIDAuDQo+ID4gDQo+ID4gQWRk
+cmVzc2VzLUNvdmVyaXR5OiAoIlVuaW5pdGlhbGl6ZWQgc2NhbGFyIHZhcmlhYmxlIChVTklOSVQp
+IikNCj4gPiANCj4gPiBDYzogU2FlZWQgTWFoYW1lZWQgPHNhZWVkbUBudmlkaWEuY29tPg0KPiA+
+IENjOiBMZW9uIFJvbWFub3Zza3kgPGxlb25Aa2VybmVsLm9yZz4NCj4gPiBDYzogIkRhdmlkIFMu
+IE1pbGxlciIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+DQo+ID4gQ2M6IEpha3ViIEtpY2luc2tpIDxr
+dWJhQGtlcm5lbC5vcmc+DQo+ID4gQ2M6IFZsYWQgQnVzbG92IDx2bGFkYnVAbnZpZGlhLmNvbT4N
+Cj4gPiBDYzogSmlhbmJvIExpdSA8amlhbmJvbEBudmlkaWEuY29tPg0KPiA+IENjOiBNYXJrIEJs
+b2NoIDxtYmxvY2hAbnZpZGlhLmNvbT4NCj4gPiBDYzogUm9pIERheWFuIDxyb2lkQG52aWRpYS5j
+b20+DQo+ID4gQ2M6IFZsYWRpbWlyIE9sdGVhbiA8dmxhZGltaXIub2x0ZWFuQG54cC5jb20+DQo+
+ID4gQ2M6IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmcNCj4gPiBDYzogbGludXgtcmRtYUB2Z2VyLmtl
+cm5lbC5vcmcNCj4gPiBDYzogbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZw0KDQpKdXN0IHdv
+bmRlcmluZywgZG8gd2UgcmVhbGx5IG5lZWQgMTIgaW5saW5lIENDcyBmb3IgZml4aW5nIGEgcG9v
+cg0KY292ZXJpdHk/DQoNCj4gPiBTaWduZWQtb2ZmLWJ5OiBUaW0gR2FyZG5lciA8dGltLmdhcmRu
+ZXJAY2Fub25pY2FsLmNvbT4NCj4gPiAtLS0NCj4gDQo+IFRpbSwgdGhhbmtzIGZvciBmaXhpbmcg
+dGhpcyENCj4gDQo+IFNhZWVkLCB0aGlzIGlzIHRoZSBzZWNvbmQgc2ltaWxhciBpc3N1ZSB0aGF0
+IEkgbWVudGlvbmVkIGluIG15IHJlcGx5DQo+IHRvDQo+IENvbGluLiBBZ2FpbiwgSSd2ZSBhbHJl
+YWR5IHN1Ym1pdHRlZCBzYW1lIHBhdGNoIGludGVybmFsbHkgYW5kIHRoaXMNCj4gb25lDQo+IGlz
+IGFzIGdvb2QgYXMgbWluZS4NCg0KSSBkb24ndCBtaW5kIGJvdGggcGF0Y2hlcyBhcmUgcGVyZmVj
+dC4NCg0KPiANCj4gUmV2aWV3ZWQtYnk6IFZsYWQgQnVzbG92IDx2bGFkYnVAbnZpZGlhLmNvbT4N
+Cj4gDQo+IFsuLi5dDQo+IA0KPiANCg0K
