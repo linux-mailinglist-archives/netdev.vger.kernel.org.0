@@ -2,103 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3390F3F22CC
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 00:11:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 793313F22DB
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 00:13:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236027AbhHSWLT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 18:11:19 -0400
-Received: from mout.perfora.net ([74.208.4.197]:42293 "EHLO mout.perfora.net"
+        id S236187AbhHSWOP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 18:14:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48040 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236811AbhHSWK7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Aug 2021 18:10:59 -0400
-Received: from toolbox.cardiotech.int ([81.221.236.183]) by mrelay.perfora.net
- (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0Lb4Gd-1mwosX3M9x-00ke5m;
- Fri, 20 Aug 2021 00:09:41 +0200
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andreas Kemnade <andreas@kemnade.info>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Anson Huang <Anson.Huang@nxp.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Fabio Estevam <festevam@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Marek Vasut <marex@denx.de>,
-        Martin KaFai Lau <kafai@fb.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pascal Zimmermann <pzimmermann@dh-electronics.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v2 6/9] ARM: imx_v6_v7_defconfig: enable bpf syscall and cgroup bpf
-Date:   Fri, 20 Aug 2021 00:09:07 +0200
-Message-Id: <20210819220910.586819-7-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210819220910.586819-1-marcel@ziswiler.com>
-References: <20210819220910.586819-1-marcel@ziswiler.com>
+        id S235679AbhHSWOO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Aug 2021 18:14:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 31A70610A0;
+        Thu, 19 Aug 2021 22:13:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629411217;
+        bh=48vToeVCTgJWFqh43BBe/nhigtxNdkSSAJh27xugjVg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=l+bKA3le/phRKytYe6EEMgLaIG6kDta81HcBri1QXlimWKQSgA8mxiNJov3lz37Re
+         KECkvgOqht5H16etSIc01E+V+4gxpG83jo7Izvv4QrSpCiw1M77DcJpWIzfB+07bMA
+         7V+xbnojHDo/J5pSojo8uXFJiURKKpLZg8yA71+i8irz8Gm5m9nMudXCozL0zykQ2V
+         yPjGF7IPNCNv6k4cxVMso7RLMm7vhfSO6OvUhntOu5XFUI6TG1uZAZFQytB51pECZ9
+         a0lX5V9NwhJ8jUkmlDxVOqRHaPq9u8o0nlIeT3WkYkbFgp9KPCTWMjM5vrUWvLNXUn
+         7nn8mic7JyEUA==
+Received: by mail-lf1-f51.google.com with SMTP id u22so16001575lfq.13;
+        Thu, 19 Aug 2021 15:13:37 -0700 (PDT)
+X-Gm-Message-State: AOAM5332kK6kNmhvK01EY2zxPp2cBzvkeIgm3G2YimiIdQ6FajO6w5XR
+        ze/R9j6eZ5p+f1Y0MlF9mWyiwYP2df+d5yF4q9s=
+X-Google-Smtp-Source: ABdhPJwumbdNjAIQOU/dThvLNp3k2jl6kVoIqFHgbRcETT9xYYUrzue39xM/LDvoIaVxRit81S+oWcFQDXbqCXh/eaQ=
+X-Received: by 2002:ac2:58e5:: with SMTP id v5mr11834113lfo.438.1629411215541;
+ Thu, 19 Aug 2021 15:13:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:ShyQ8uLhgyULjUKVlmeT3C9qX+UeB8G3E0gUgAdHEk5Na9ZHHYp
- 1imKvB5tP2wml0qsBaXLRLXqvnFZEVj//ErS4+XQbDb+qscLChuZ3G0sRyBjYG2yKJRVjbb
- VAFVp4m4080xvup26lgXnEzIkfVtRRLW2YRuyTi1tWvtGyJQgq13cd5BUc3oKvB080Y/Yxu
- 2hbB756UmUX2tnAgj/DhQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:V4sqZyu9e84=:bspV/ZLPo+2mOtwY0p9gb1
- XQaSxkBb/yzdBxPa12loIoNDwP0ppAg9A707qHb5/PawaoIGMjJpnRdkG7+V3qMiIawiv6Aju
- gEMP7gaTTeLo/TgX6sjXLIGwM0+Jh36tEF/uAclREqTCo0OpMSdHnXxBKnRBDPOGgkOFA88IQ
- BehTQWaTFQ+jiHIXLTZfbqPkjs8y5TiXxKPpGUz8LUPKW+ngXcaI+xgapXfrixwcl7xISm2fq
- 50LgXgCue7IfN13VeOwF50UC0zfmNzP4poW1QKXOuIBi0F7MWSQqYzMjkj9QKa5Ca/LbUaD08
- cH78usVMnp0RWNEe1gp9cP8Objii6/qN430mfDCvMJRtncQ8+FpgEXL5UUYqK6wAWGYHYnIMu
- tUpeLG+PqTkLfvu6pa5An87oxmTf5cxoc0q5PxWPi7Xy087ShfR0UhLSL9kU32d40IgDWxsIf
- fdqyIofuPteKoZG175DxEFJTNJvXJ6Mv7WklSQflcMcKmv/0MFfiYZhVjpNzZlA7Ny96FxQ8K
- gmkyVzgwsO2pgAbu1gD9RfEFLeuoxTgZdXDrm6xvj8Pp7045kmaTUHdyOyJE7ROfCehuYdgXM
- N+YZiq6urYWYai2YmVxmG1VZ6w1PAL46EherdxcEhdYPXm6dl14uJ9WAMD42s5eeRPuQ/cMzc
- YHFeEn8/d4krIsm1SdDP1OTTH4l7Xas+zZUYGTWaSdyCTcKzGHeJWe50TlTEK1pOEftY2rJBr
- eKZF77culVdYYYcQ3mZsF+R5QlSZ3U4zpB+GEi3oDK1ma3G1UvzYJRuHXqaX1u/ejbHEzeW54
- ibrUxZn56AvYySCNJc8n/bMran2Bqkj6Ds6ap7CM1IcTD0iBCRARkFjwkUhL3U8WIDb//0G
+References: <20210819072431.21966-1-lizhijian@cn.fujitsu.com> <20210819072431.21966-2-lizhijian@cn.fujitsu.com>
+In-Reply-To: <20210819072431.21966-2-lizhijian@cn.fujitsu.com>
+From:   Song Liu <song@kernel.org>
+Date:   Thu, 19 Aug 2021 15:13:24 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW6Bq==H9qdjCQtuQiaUz6+oqgeMTTnseCUwS5WuhH1TNQ@mail.gmail.com>
+Message-ID: <CAPhsuW6Bq==H9qdjCQtuQiaUz6+oqgeMTTnseCUwS5WuhH1TNQ@mail.gmail.com>
+Subject: Re: [PATCH 2/3] selftests/bpf: add default bpftool built by selftests
+ to PATH
+To:     Li Zhijian <lizhijian@cn.fujitsu.com>
+Cc:     Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>, philip.li@intel.com,
+        yifeix.zhu@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+On Thu, Aug 19, 2021 at 12:27 AM Li Zhijian <lizhijian@cn.fujitsu.com> wrote:
+>
+> For 'make run_tests':
+> selftests will build bpftool into tools/testing/selftests/bpf/tools/sbin/bpftool
+> by default.
+>
+> ==================
+> root@lkp-skl-d01 /opt/rootfs/v5.14-rc4# make -C tools/testing/selftests/bpf run_tests
+> make: Entering directory '/opt/rootfs/v5.14-rc4/tools/testing/selftests/bpf'
+>   MKDIR    include
+>   MKDIR    libbpf
+>   MKDIR    bpftool
+> [...]
+>   GEN     /opt/rootfs/v5.14-rc4/tools/testing/selftests/bpf/tools/build/bpftool/profiler.skel.h
+>   CC      /opt/rootfs/v5.14-rc4/tools/testing/selftests/bpf/tools/build/bpftool/prog.o
+>   GEN     /opt/rootfs/v5.14-rc4/tools/testing/selftests/bpf/tools/build/bpftool/pid_iter.skel.h
+>   CC      /opt/rootfs/v5.14-rc4/tools/testing/selftests/bpf/tools/build/bpftool/pids.o
+>   LINK    /opt/rootfs/v5.14-rc4/tools/testing/selftests/bpf/tools/build/bpftool/bpftool
+>   INSTALL bpftool
+>   GEN      vmlinux.h
+> [...]
+>  # test_feature_dev_json (test_bpftool.TestBpftool) ... ERROR
+>  # test_feature_kernel (test_bpftool.TestBpftool) ... ERROR
+>  # test_feature_kernel_full (test_bpftool.TestBpftool) ... ERROR
+>  # test_feature_kernel_full_vs_not_full (test_bpftool.TestBpftool) ... ERROR
+>  # test_feature_macros (test_bpftool.TestBpftool) ... Error: bug: failed to retrieve CAP_BPF status: Invalid argument
+>  # ERROR
+>  #
+>  # ======================================================================
+>  # ERROR: test_feature_dev_json (test_bpftool.TestBpftool)
+>  # ----------------------------------------------------------------------
+>  # Traceback (most recent call last):
+>  #   File "/opt/rootfs/v5.14-rc4/tools/testing/selftests/bpf/test_bpftool.py", line 57, in wrapper
+>  #     return f(*args, iface, **kwargs)
+>  #   File "/opt/rootfs/v5.14-rc4/tools/testing/selftests/bpf/test_bpftool.py", line 82, in test_feature_dev_json
+>  #     res = bpftool_json(["feature", "probe", "dev", iface])
+>  #   File "/opt/rootfs/v5.14-rc4/tools/testing/selftests/bpf/test_bpftool.py", line 42, in bpftool_json
+>  #     res = _bpftool(args)
+>  #   File "/opt/rootfs/v5.14-rc4/tools/testing/selftests/bpf/test_bpftool.py", line 34, in _bpftool
+>  #     return subprocess.check_output(_args)
+>  #   File "/usr/lib/python3.7/subprocess.py", line 395, in check_output
+>  #     **kwargs).stdout
+>  #   File "/usr/lib/python3.7/subprocess.py", line 487, in run
+>  #     output=stdout, stderr=stderr)
+>  # subprocess.CalledProcessError: Command '['bpftool', '-j', 'feature', 'probe', 'dev', 'dummy0']' returned non-zero exit status 255.
+>  #
+> ==================
+>
+> Signed-off-by: Li Zhijian <lizhijian@cn.fujitsu.com>
 
-Enable CONFIG_BPF_SYSCALL and CONFIG_CGROUP_BPF to allow for systemd
-interoperability. This avoids the following failure on boot:
+Acked-by: Song Liu <songliubraving@fb.com>
 
-[   10.615914] systemd[1]: system-getty.slice: unit configures an IP
- firewall, but the local system does not support BPF/cgroup firewalling.
-
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
----
-
-(no changes since v1)
-
- arch/arm/configs/imx_v6_v7_defconfig | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/arch/arm/configs/imx_v6_v7_defconfig b/arch/arm/configs/imx_v6_v7_defconfig
-index c0008b7faf2ce..3e58c76763563 100644
---- a/arch/arm/configs/imx_v6_v7_defconfig
-+++ b/arch/arm/configs/imx_v6_v7_defconfig
-@@ -2,11 +2,13 @@ CONFIG_KERNEL_LZO=y
- CONFIG_SYSVIPC=y
- CONFIG_NO_HZ=y
- CONFIG_HIGH_RES_TIMERS=y
-+CONFIG_BPF_SYSCALL=y
- CONFIG_PREEMPT_VOLUNTARY=y
- CONFIG_IKCONFIG=y
- CONFIG_IKCONFIG_PROC=y
- CONFIG_LOG_BUF_SHIFT=18
- CONFIG_CGROUPS=y
-+CONFIG_CGROUP_BPF=y
- CONFIG_RELAY=y
- CONFIG_BLK_DEV_INITRD=y
- CONFIG_EXPERT=y
--- 
-2.26.2
-
+> ---
+>  tools/testing/selftests/bpf/test_bpftool.sh | 5 +++++
+>  1 file changed, 5 insertions(+)
+>
+> diff --git a/tools/testing/selftests/bpf/test_bpftool.sh b/tools/testing/selftests/bpf/test_bpftool.sh
+> index 66690778e36d..6b7ba19be1d0 100755
+> --- a/tools/testing/selftests/bpf/test_bpftool.sh
+> +++ b/tools/testing/selftests/bpf/test_bpftool.sh
+> @@ -2,4 +2,9 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  # Copyright (c) 2020 SUSE LLC.
+>
+> +SCRIPT_DIR=$(dirname $(realpath $0))
+> +
+> +# 'make -C tools/testing/selftests/bpf' will install to BPFTOOL_INSTALL_PATH
+> +BPFTOOL_INSTALL_PATH="$SCRIPT_DIR"/tools/sbin
+> +export PATH=$BPFTOOL_INSTALL_PATH:$PATH
+>  python3 -m unittest -v test_bpftool.TestBpftool
+> --
+> 2.32.0
+>
+>
+>
