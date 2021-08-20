@@ -2,223 +2,309 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1F923F2615
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 06:53:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A11813F2616
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 06:55:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232187AbhHTEyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 00:54:06 -0400
-Received: from mg.ssi.bg ([178.16.128.9]:41336 "EHLO mg.ssi.bg"
+        id S232686AbhHTE4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 00:56:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45460 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229457AbhHTEyD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Aug 2021 00:54:03 -0400
-Received: from mg.ssi.bg (localhost [127.0.0.1])
-        by mg.ssi.bg (Proxmox) with ESMTP id C8DB52DCCC
-        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 07:53:23 +0300 (EEST)
-Received: from ink.ssi.bg (ink.ssi.bg [178.16.128.7])
-        by mg.ssi.bg (Proxmox) with ESMTP id 867F32DCCA
-        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 07:53:19 +0300 (EEST)
-Received: from ja.ssi.bg (unknown [178.16.129.10])
-        by ink.ssi.bg (Postfix) with ESMTPS id E6A553C0332;
-        Fri, 20 Aug 2021 07:53:14 +0300 (EEST)
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.16.1/8.16.1) with ESMTP id 17K4r7bV011009;
-        Fri, 20 Aug 2021 07:53:09 +0300
-Date:   Fri, 20 Aug 2021 07:53:06 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     Dust Li <dust.li@linux.alibaba.com>
-cc:     Simon Horman <horms@verge.net.au>,
-        Wensong Zhang <wensong@linux-vs.org>,
-        lvs-devel@vger.kernel.org, netdev@vger.kernel.org,
-        yunhong-cgl jiang <xintian1976@gmail.com>
-Subject: Re: [PATCH net-next v3] net: ipvs: add sysctl_run_estimation to
- support disable estimation
-In-Reply-To: <20210819084418.27004-1-dust.li@linux.alibaba.com>
-Message-ID: <5fee5fd0-2e2-1ec2-8640-def6b0bc32ee@ssi.bg>
-References: <20210819084418.27004-1-dust.li@linux.alibaba.com>
+        id S229457AbhHTE4B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Aug 2021 00:56:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8390F60FF2;
+        Fri, 20 Aug 2021 04:55:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629435323;
+        bh=KYssx4rqXlDQrrOv0/El9+dvwgiFMsUuBQUrdsnqwaQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bqmox3/6eYvCGWbLffNB2CZ/VLbNbCDOEzebPgCN2qFq0Y+YAm1MF0uX4rge00jcY
+         Cmo3dYfIRnypF3Si9JCV85QnYaHc0cm58YT1XUpLcwvSqTZJg8pPXFkh9qH04fdz+7
+         gFLU26f85WDWrGWqvPdM2jwS2nc7BQb7hHG435k5vVVIMd1UorCBX/+/z3f+qXQhzl
+         t1o28dKSHhYszpd9C64esNb3UcKKNbzC+NgoO6CVq7MUGm6+Xu7xdh68XbOM769rac
+         u0NYwRCuMUwdYVviIQjV4R6Rt9ldnwVBj4FOJJ8ZwWMvGkKqgKgY8jcuZ65b0zjuM4
+         oEpJZMZNw9A2A==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next 00/15] mlx5 updates 2021-08-19
+Date:   Thu, 19 Aug 2021 21:55:00 -0700
+Message-Id: <20210820045515.265297-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-	Hello,
+Hi Dave & Jakub,
 
-On Thu, 19 Aug 2021, Dust Li wrote:
+This series provides mlx5 support for:
 
-> estimation_timer will iterater the est_list to do estimation
+1) TC flow sampling offload for tunneled traffic.
+2) devlink QoS rate object groups
 
-	...will iterate...
+For more information please see tag log below.
 
-> for each ipvs stats. When there are lots of services, the
-> list can be very large.
-> We observiced estimation_timer() run for more then 200ms on
+Please pull and let me know if there is any problem.
 
-	...We found that estimation_timer() runs for...
+Thanks,
+Saeed.
 
-> a machine with 104 CPU and 50K services.
-> 
-> yunhong-cgl jiang report the same phenomenon before:
-> https://www.spinics.net/lists/lvs-devel/msg05426.html
-> 
-> In some cases(for example a large K8S cluster with many ipvs services),
-> ipvs estimation may not be needed. So adding a sysctl blob to allow
-> users to disable this completely.
-> 
-> Default is: 1 (enable)
-> 
-> Cc: yunhong-cgl jiang <xintian1976@gmail.com>
-> Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
-> ---
-> v2: Use common sysctl facilities
-> v3: Fix sysctl_run_estimation() redefine when CONFIG_SYSCTL not enabled
-> ---
+---
+The following changes since commit f444fea7896dbc267249d27f604082a51b8efca2:
 
-	Replace above "---" after v3 with empty line,
-avoid multiple "---" lines.
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2021-08-19 18:09:18 -0700)
 
->  Documentation/networking/ipvs-sysctl.rst | 17 +++++++++++++++++
->  include/net/ip_vs.h                      | 12 ++++++++++++
->  net/netfilter/ipvs/ip_vs_ctl.c           |  8 ++++++++
->  net/netfilter/ipvs/ip_vs_est.c           |  5 +++++
->  4 files changed, 42 insertions(+)
-> 
-> diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
-> index 2afccc63856e..e20f7a27fc85 100644
-> --- a/Documentation/networking/ipvs-sysctl.rst
-> +++ b/Documentation/networking/ipvs-sysctl.rst
-> @@ -300,3 +300,20 @@ sync_version - INTEGER
->  
->  	Kernels with this sync_version entry are able to receive messages
->  	of both version 1 and version 2 of the synchronisation protocol.
-> +
-> +run_estimation - BOOLEAN
-> +	0 - disabled
-> +	not 0 - enabled (default)
-> +
-> +	If disabled, the estimation will be stop, and you can't see
-> +	any update on speed estimation data.
-> +
-> +	For example
-> +	'Conns/s   Pkts/s   Pkts/s          Bytes/s          Bytes/s'
-> +	those data in /proc/net/ip_vs_stats will always be zero.
-> +	Note, this only affect the speed estimation, the total data
-> +	will still be updated.
+are available in the Git repository at:
 
-	We can remove the above example
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-08-19
 
-> +
-> +	You can always re-enable estimation by setting this value to 1.
-> +	But be carefull, the first estimation after re-enable is not
+for you to fetch changes up to 3202ea65f85c5488926e01aa51d73d53dfe17e6e:
 
-	...careful...
+  net/mlx5: E-switch, Add QoS tracepoints (2021-08-19 21:50:41 -0700)
 
-> +	accurate.
-> diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
-> index 7cb5a1aace40..269f8808f6db 100644
-> --- a/include/net/ip_vs.h
-> +++ b/include/net/ip_vs.h
-> @@ -931,6 +931,7 @@ struct netns_ipvs {
->  	int			sysctl_conn_reuse_mode;
->  	int			sysctl_schedule_icmp;
->  	int			sysctl_ignore_tunneled;
-> +	int 			sysctl_run_estimation;
+----------------------------------------------------------------
+mlx5-updates-2021-08-19
 
-	scripts/checkpatch.pl --strict /tmp/file.patch
-reports for extra space just after 'int'.
+This series introduces the support for two new mlx5 features:
 
->  
->  	/* ip_vs_lblc */
->  	int			sysctl_lblc_expiration;
-> @@ -1071,6 +1072,11 @@ static inline int sysctl_cache_bypass(struct netns_ipvs *ipvs)
->  	return ipvs->sysctl_cache_bypass;
->  }
->  
-> +static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
-> +{
-> +	return ipvs->sysctl_run_estimation;
-> +}
-> +
->  #else
->  
->  static inline int sysctl_sync_threshold(struct netns_ipvs *ipvs)
-> @@ -1163,6 +1169,11 @@ static inline int sysctl_cache_bypass(struct netns_ipvs *ipvs)
->  	return 0;
->  }
->  
-> +static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
-> +{
-> +	return 1;
-> +}
-> +
->  #endif
->  
->  /* IPVS core functions
-> @@ -1650,6 +1661,7 @@ static inline int ip_vs_confirm_conntrack(struct sk_buff *skb)
->  static inline void ip_vs_conn_drop_conntrack(struct ip_vs_conn *cp)
->  {
->  }
-> +
+1) Sample offload for tunneled traffic
+2) devlink rate objects support
 
-	Remove this irrelevant hunk.
+1) From Chris Mi: Sample offload for tunneled traffic
+=====================================================
 
->  #endif /* CONFIG_IP_VS_NFCT */
->  
->  /* Using old conntrack that can not be redirected to another real server? */
-> diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
-> index c25097092a06..cbea5a68afb5 100644
-> --- a/net/netfilter/ipvs/ip_vs_ctl.c
-> +++ b/net/netfilter/ipvs/ip_vs_ctl.c
-> @@ -2017,6 +2017,12 @@ static struct ctl_table vs_vars[] = {
->  		.mode		= 0644,
->  		.proc_handler	= proc_dointvec,
->  	},
-> +	{
-> +		.procname	= "run_estimation",
-> +		.maxlen		= sizeof(int),
-> +		.mode		= 0644,
-> +		.proc_handler	= proc_dointvec,
-> +	},
->  #ifdef CONFIG_IP_VS_DEBUG
->  	{
->  		.procname	= "debug_level",
-> @@ -4090,6 +4096,8 @@ static int __net_init ip_vs_control_net_init_sysctl(struct netns_ipvs *ipvs)
->  	tbl[idx++].data = &ipvs->sysctl_conn_reuse_mode;
->  	tbl[idx++].data = &ipvs->sysctl_schedule_icmp;
->  	tbl[idx++].data = &ipvs->sysctl_ignore_tunneled;
-> +	ipvs->sysctl_run_estimation = 1;
-> +	tbl[idx++].data = &ipvs->sysctl_run_estimation;
->  
->  	ipvs->sysctl_hdr = register_net_sysctl(net, "net/ipv4/vs", tbl);
->  	if (ipvs->sysctl_hdr == NULL) {
-> diff --git a/net/netfilter/ipvs/ip_vs_est.c b/net/netfilter/ipvs/ip_vs_est.c
-> index 05b8112ffb37..9a1a7af6a186 100644
-> --- a/net/netfilter/ipvs/ip_vs_est.c
-> +++ b/net/netfilter/ipvs/ip_vs_est.c
-> @@ -100,6 +100,9 @@ static void estimation_timer(struct timer_list *t)
->  	u64 rate;
->  	struct netns_ipvs *ipvs = from_timer(ipvs, t, est_timer);
->  
-> +	if (!sysctl_run_estimation(ipvs))
-> +		goto skip;
-> +
->  	spin_lock(&ipvs->est_lock);
->  	list_for_each_entry(e, &ipvs->est_list, list) {
->  		s = container_of(e, struct ip_vs_stats, est);
-> @@ -131,6 +134,8 @@ static void estimation_timer(struct timer_list *t)
->  		spin_unlock(&s->lock);
->  	}
->  	spin_unlock(&ipvs->est_lock);
-> +
-> +skip:
->  	mod_timer(&ipvs->est_timer, jiffies + 2*HZ);
->  }
->  
-> -- 
-> 2.19.1.3.ge56e4f7
+Background and solution
+-----------------------
 
-Regards
+Currently the sample offload actions send the encapsulated packet
+to software. This series de-capsulates the packet before performing
+the sampling and set the tunnel properties on the skb metadata
+fields to make the behavior consistent with OVS sFlow.
 
---
-Julian Anastasov <ja@ssi.bg>
+If de-capsulating first, we can't use the same match like before in
+default table. So instantiate a post action instance to continue
+processing the action list. If HW can preserve reg_c, also use the
+post action instance.
 
+Post action infrastructure
+--------------------------
+
+Some tc actions are modeled in hardware using multiple tables
+causing a tc action list split. For example, CT action is modeled
+by jumping to a ct table which is controlled by nf flow table.
+sFlow jumps in hardware to a sample table, which continues to a
+"default table" where it should continue processing the action list.
+
+Multi table actions are modeled in hardware using a unique fte_id.
+The fte_id is set before jumping to a table. Split actions continue
+to a post-action table where the matched fte_id value continues the
+execution the tc action list.
+
+This series also introduces post action infrastructure. Both ct and
+sample use it.
+
+Sample for tunnel in TC SW
+--------------------------
+
+tc filter add dev vxlan1 protocol ip parent ffff: prio 3		\
+	flower src_mac 24:25:d0:e1:00:00 dst_mac 02:25:d0:13:01:02	\
+	enc_src_ip 192.168.1.14 enc_dst_ip 192.168.1.13			\
+	enc_dst_port 4789 enc_key_id 4					\
+	action sample rate 1 group 6					\
+	action tunnel_key unset						\
+	action mirred egress redirect dev enp4s0f0_1
+
+MLX5 sample HW offload
+----------------------
+
+For the following typical flow table:
+
++-------------------------------+
++       original flow table     +
++-------------------------------+
++         original match        +
++-------------------------------+
++ sample action + other actions +
++-------------------------------+
+
+We translate the tc filter with sample action to the following HW model:
+
+        +---------------------+
+        + original flow table +
+        +---------------------+
+        +   original match    +
+        +---------------------+
+              | set fte_id (if reg_c preserve cap)
+              | do decap
+              v
++------------------------------------------------+
++                Flow Sampler Object             +
++------------------------------------------------+
++                    sample ratio                +
++------------------------------------------------+
++    sample table id    |    default table id    +
++------------------------------------------------+
+           |                            |
+           v                            v
++-----------------------------+  +-------------------+
++        sample table         +  +   default table   +
++-----------------------------+  +-------------------+
++ forward to management vport +             |
++-----------------------------+             |
+                                    +-------+------+
+                                    |              |reg_c preserve cap
+                                    |              |or decap action
+                                    v              v
+                       +-----------------+   +-------------+
+                       + per vport table +   + post action +
+                       +-----------------+   +-------------+
+                       + original match  +
+                       +-----------------+
+                       + other actions   +
+                       +-----------------+
+
+2) From Dmytro Linkin: devlink rate object support for mlx5_core driver
+=======================================================================
+
+HIGH-LEVEL OVERVIEW
+
+Devlink leaf rate objects created per vport (VF/SF, and PF on BlueField)
+in switchdev mode on devlink port registration.
+Implement devlink ops callbacks to create/destroy rate groups, set TX
+rate values of the vport/group, assign vport to the group.
+Driver accepts TX rate values as fraction of 1Mbps.
+
+Refactor existing eswitch QoS infrastructure to be accessible by legacy
+NDO rate API and new devlink rate API. NDO rate API is not
+removed/disabled in switchdev mode to not break existing users. Rate
+values configured with NDO rate API are not visible for devlink
+infrastructure, therefore APIs should not be used simultaneously.
+
+IMPLEMENTATION DETAILS
+
+Driver provide two level rate hierarchy to manage bandwidth - group
+level and vport level. Initially each vport added to internal unlimited
+group created by default. Each rate element (vport or group) receive
+bandwidth relative to its parent element (for groups the parent is a
+physical link itself) in a Round Robin manner, where element get
+bandwidth value according to its weight. Example:
+
+Created four rate groups with tx_share limits:
+
+$ devlink port function rate add \
+    pci/0000:06:00.0/group_1 tx_share 30gbit
+$ devlink port function rate add \
+    pci/0000:06:00.0/group_2 tx_share 20gbit
+$ devlink port function rate add \
+    pci/0000:06:00.0/group_3 tx_share 20gbit
+$ devlink port function rate add \
+    pci/0000:06:00.0/group_4 tx_share 10gbit
+
+Weights created in HW for each group are relative to the bigest tx_share
+value, which is 30gbit:
+
+<group_1> 1.0
+<group_2> 0.67
+<group_3> 0.67
+<group_4> 0.33
+
+Assuming link speed is 50 Gbit/sec and each group can sustain such
+amount of traffic, maximum bandwidth is 50 / (1.0 + 0.67 + 0.67 + 0.33)
+ = ~18.75 Gbit/sec. Normilized bandwidth values for groups:
+
+<group_1> 18.75 * 1.0  = 18.75 Gbit/sec
+<group_2> 18.75 * 0.67 = 12.5 Gbit/sec
+<group_3> 18.75 * 0.67 = 12.5 Gbit/sec
+<group_4> 18.75 * 0.33 = 6.25 Gbit/sec
+
+If in example above group_1 doesn't produce any traffic, then maximum
+bandwidth becomes 50 / (0.67 + 0.67 + 0.33) = ~30.0 Gbit/sec. Normalized
+values:
+
+<group_2> 30.0 * 0.67 = 20.0 Gbit/sec
+<group_3> 30.0 * 0.67 = 20.0 Gbit/sec
+<group_4> 30.0 * 0.33 = 10.0 Gbit/sec
+
+Same normalization applied to each vport in the group.
+
+Normalized values are internal, therefore driver provides QoS
+tracepoints for next events:
+
+* vport rate element creation/deletion:
+* vport rate element configuration;
+* group rate element creation/deletion;
+* group rate element configuration.
+
+PATCHES OVERVIEW
+
+1 - Moving and isolation of eswitch QoS logic in separate file;
+
+2 - Implement devlink leaf rate object support for vports;
+
+3 - Implement rate groups creation/deletion;
+
+4 - Implement TX rate management for the groups;
+
+5 - Implement parent set for vports;
+
+6 - Eswitch QoS tracepoints.
+
+----------------------------------------------------------------
+Chris Mi (8):
+      net/mlx5e: Move esw/sample to en/tc/sample
+      net/mlx5e: Move sample attribute to flow attribute
+      net/mlx5e: CT, Use xarray to manage fte ids
+      net/mlx5e: Introduce post action infrastructure
+      net/mlx5e: Refactor ct to use post action infrastructure
+      net/mlx5e: TC, Remove CONFIG_NET_TC_SKB_EXT dependency when restoring tunnel
+      net/mlx5e: TC, Restore tunnel info for sample offload
+      net/mlx5e: TC, Support sample offload action for tunneled traffic
+
+Dmytro Linkin (6):
+      net/mlx5: E-switch, Move QoS related code to dedicated file
+      net/mlx5: E-switch, Enable devlink port tx_{share|max} rate control
+      net/mlx5: E-switch, Introduce rate limiting groups API
+      net/mlx5: E-switch, Allow setting share/max tx rate limits of rate groups
+      net/mlx5: E-switch, Allow to add vports to rate groups
+      net/mlx5: E-switch, Add QoS tracepoints
+
+Saeed Mahameed (1):
+      net/mlx5e: Remove mlx5e dependency from E-Switch sample
+
+ .../device_drivers/ethernet/mellanox/mlx5.rst      |  44 ++
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |  13 +-
+ drivers/net/ethernet/mellanox/mlx5/core/devlink.c  |   8 +
+ drivers/net/ethernet/mellanox/mlx5/core/en/fs.h    |   3 +
+ .../net/ethernet/mellanox/mlx5/core/en/rep/tc.c    |  48 +-
+ .../ethernet/mellanox/mlx5/core/en/tc/post_act.c   | 164 ++++
+ .../ethernet/mellanox/mlx5/core/en/tc/post_act.h   |  35 +
+ .../mellanox/mlx5/core/{esw => en/tc}/sample.c     | 474 +++++++----
+ .../net/ethernet/mellanox/mlx5/core/en/tc/sample.h |  41 +
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 154 +---
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h |   6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  57 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h    |   1 +
+ .../ethernet/mellanox/mlx5/core/esw/devlink_port.c |  26 +
+ .../mellanox/mlx5/core/esw/diag/qos_tracepoint.h   | 123 +++
+ .../net/ethernet/mellanox/mlx5/core/esw/legacy.c   |  20 +
+ drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c  | 869 +++++++++++++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/esw/qos.h  |  41 +
+ .../net/ethernet/mellanox/mlx5/core/esw/sample.h   |  42 -
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  | 310 +-------
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  21 +-
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  11 +-
+ include/linux/mlx5/mlx5_ifc.h                      |   3 +-
+ 24 files changed, 1815 insertions(+), 703 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.h
+ rename drivers/net/ethernet/mellanox/mlx5/core/{esw => en/tc}/sample.c (53%)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/diag/qos_tracepoint.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/qos.h
+ delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/sample.h
