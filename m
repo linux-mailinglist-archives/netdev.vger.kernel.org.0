@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88C653F2620
+	by mail.lfdr.de (Postfix) with ESMTP id 3E3EB3F261F
 	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 06:56:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238049AbhHTE4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 00:56:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45560 "EHLO mail.kernel.org"
+        id S238263AbhHTE4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 00:56:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45562 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233825AbhHTE4H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233877AbhHTE4H (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 20 Aug 2021 00:56:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2207B610A1;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A9B49610A3;
         Fri, 20 Aug 2021 04:55:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629435328;
-        bh=WkMtPdIh8e7Do3NIeQ42g74vI2+mhke/Obc9fAyFIjs=;
+        s=k20201202; t=1629435329;
+        bh=ZSv7oZgOz3CqJriiuM/HaGRJK2k534wpq6DN56iD8H8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PBkerteZIKJdqK2aTNekAu3Nqt86XhEOMRNDXJ1ezjReBkXOJAkzh+CT4AAsObCCl
-         HSZQXVz1SCx3pNutIvtuCSUnS+H/wLOeCLdTy4L8ef5uExysU8rc+5z2CKInMTcEUr
-         O8zbHaRQjUuEXJpFPQsHk0rgXWz/S+BWy760ThhRVmYDtsvoVl39sMHv9y6HYzSQkH
-         EUQrdxGuknMd/RCNVQhfRFBkbCtHnAvsRbILS3/HWinhp0R/UTA7JgQ8XXvAgxwsbz
-         yBSzzPQ/qTieTL6Y7DfYt2dL4JpyXvRI2rebE933C5csw51quo+ni98SrVdK7ICquC
-         Wcx68tiNmZxpQ==
+        b=fWe4J8+G/X0W+xj09Pboi22qf0I4f/XjRLNNt0L5ffHnlmi3MKULdBDi3US6RdaFI
+         La/pAnldyXuLO/C711/ZnTOSyeSdvqTmRdA8HFiywv5KpUGU6jRGd+LAgVaXC7oMMV
+         6SFZXCpfkw84EBSm9EsEYk1bdp+RT6djuAbPufWLX0zVtxvv6hQZ+MFuio6K9pwPRA
+         v6Ezfv4RW8rpbtPlrVFx0Zoq6DGg/MI8RqoVSl++p5/71fE2ppaMYPXwLIdQaGlcEx
+         CAV9YyNbYzdAZrT30jYH6mc2/rpNxX0PDfQOGGgLu+jUi4wO0n7TFDlQTVVVQk7/pi
+         jld02bgPv2OBw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Chris Mi <cmi@nvidia.com>,
-        Oz Shlomo <ozsh@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Mark Bloch <mbloch@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Dmytro Linkin <dlinkin@nvidia.com>,
+        Huy Nguyen <huyn@nvidia.com>, Mark Bloch <mbloch@nvidia.com>,
+        Parav Pandit <parav@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 09/15] net/mlx5e: TC, Support sample offload action for tunneled traffic
-Date:   Thu, 19 Aug 2021 21:55:09 -0700
-Message-Id: <20210820045515.265297-10-saeed@kernel.org>
+Subject: [net-next 10/15] net/mlx5: E-switch, Move QoS related code to dedicated file
+Date:   Thu, 19 Aug 2021 21:55:10 -0700
+Message-Id: <20210820045515.265297-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210820045515.265297-1-saeed@kernel.org>
 References: <20210820045515.265297-1-saeed@kernel.org>
@@ -42,586 +42,829 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chris Mi <cmi@nvidia.com>
+From: Dmytro Linkin <dlinkin@nvidia.com>
 
-Currently the sample offload actions send the encapsulated packet
-to software. This commit decapsulates the packet before performing
-the sampling and set the tunnel properties on the skb metadata
-fields to make the behavior consistent with OVS sFlow.
+Move eswitch QoS related code into dedicated file. Provide eswitch API
+to access this code meaning it is isolated and restricted to be used
+only by eswitch.c. Exception is legacy NDO vf set rate, which moved to
+esw/legacy.c.
 
-If decapsulating first, we can't use the same match like before in
-default table. So instantiate a post action instance to continue
-processing the action list. If HW can preserve reg_c, also use the
-post action instance.
-
-Signed-off-by: Chris Mi <cmi@nvidia.com>
-Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
+Signed-off-by: Dmytro Linkin <dlinkin@nvidia.com>
+Reviewed-by: Huy Nguyen <huyn@nvidia.com>
 Reviewed-by: Mark Bloch <mbloch@nvidia.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/en/tc/sample.c         | 294 +++++++++++++-----
- .../mellanox/mlx5/core/en/tc/sample.h         |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |   8 +-
  .../net/ethernet/mellanox/mlx5/core/en_tc.c   |   2 +-
- .../mellanox/mlx5/core/eswitch_offloads.c     |   5 +-
- 4 files changed, 214 insertions(+), 91 deletions(-)
+ .../ethernet/mellanox/mlx5/core/esw/legacy.c  |  18 +
+ .../net/ethernet/mellanox/mlx5/core/esw/qos.c | 295 +++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/esw/qos.h |  19 ++
+ .../net/ethernet/mellanox/mlx5/core/eswitch.c | 310 +-----------------
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |  10 +-
+ 7 files changed, 346 insertions(+), 316 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/qos.h
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-index 739292d52aca..6552ecee3f9b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-@@ -4,6 +4,7 @@
- #include <linux/skbuff.h>
- #include <net/psample.h>
- #include "en/mapping.h"
-+#include "en/tc/post_act.h"
- #include "sample.h"
- #include "eswitch.h"
- #include "en_tc.h"
-@@ -25,6 +26,7 @@ struct mlx5e_tc_psample {
- 	struct mutex ht_lock; /* protect hashtbl */
- 	DECLARE_HASHTABLE(restore_hashtbl, 8);
- 	struct mutex restore_lock; /* protect restore_hashtbl */
-+	struct mlx5e_post_act *post_act;
- };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+index 024d72b3b1aa..63032cd6efb1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
++++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+@@ -53,11 +53,13 @@ mlx5_core-$(CONFIG_MLX5_TC_SAMPLE)   += en/tc/sample.o
+ # Core extra
+ #
+ mlx5_core-$(CONFIG_MLX5_ESWITCH)   += eswitch.o eswitch_offloads.o eswitch_offloads_termtbl.o \
+-				      ecpf.o rdma.o esw/legacy.o
++				      ecpf.o rdma.o esw/legacy.o \
++				      esw/devlink_port.o esw/vporttbl.o esw/qos.o
++
+ mlx5_core-$(CONFIG_MLX5_ESWITCH)   += esw/acl/helper.o \
+ 				      esw/acl/egress_lgcy.o esw/acl/egress_ofld.o \
+-				      esw/acl/ingress_lgcy.o esw/acl/ingress_ofld.o \
+-				      esw/devlink_port.o esw/vporttbl.o
++				      esw/acl/ingress_lgcy.o esw/acl/ingress_ofld.o
++
+ mlx5_core-$(CONFIG_MLX5_BRIDGE)    += esw/bridge.o en/rep/bridge.o
  
- struct mlx5e_sampler {
-@@ -41,13 +43,16 @@ struct mlx5e_sample_flow {
- 	struct mlx5e_sample_restore *restore;
- 	struct mlx5_flow_attr *pre_attr;
- 	struct mlx5_flow_handle *pre_rule;
--	struct mlx5_flow_handle *rule;
-+	struct mlx5_flow_attr *post_attr;
-+	struct mlx5_flow_handle *post_rule;
-+	struct mlx5e_post_act_handle *post_act_handle;
- };
+ mlx5_core-$(CONFIG_MLX5_MPFS)      += lib/mpfs.o
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 1bd2bc05fb94..6603d9c823a3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -4689,7 +4689,7 @@ static int apply_police_params(struct mlx5e_priv *priv, u64 rate,
+ 		rate_mbps = max_t(u32, rate, 1);
+ 	}
  
- struct mlx5e_sample_restore {
- 	struct hlist_node hlist;
- 	struct mlx5_modify_hdr *modify_hdr;
- 	struct mlx5_flow_handle *rule;
-+	struct mlx5e_post_act_handle *post_act_handle;
- 	u32 obj_id;
- 	int count;
- };
-@@ -217,8 +222,15 @@ sampler_put(struct mlx5e_tc_psample *tc_psample, struct mlx5e_sampler *sampler)
- 	mutex_unlock(&tc_psample->ht_lock);
- }
- 
-+/* obj_id is used to restore the sample parameters.
-+ * Set fte_id in original flow table, then match it in the default table.
-+ * Only set it for NICs can preserve reg_c or decap action. For other cases,
-+ * use the same match in the default table.
-+ * Use one header rewrite for both obj_id and fte_id.
-+ */
- static struct mlx5_modify_hdr *
--sample_metadata_rule_get(struct mlx5_core_dev *mdev, u32 obj_id)
-+sample_modify_hdr_get(struct mlx5_core_dev *mdev, u32 obj_id,
-+		      struct mlx5e_post_act_handle *handle)
- {
- 	struct mlx5e_tc_mod_hdr_acts mod_acts = {};
- 	struct mlx5_modify_hdr *modify_hdr;
-@@ -229,6 +241,12 @@ sample_metadata_rule_get(struct mlx5_core_dev *mdev, u32 obj_id)
+-	err = mlx5_esw_modify_vport_rate(esw, vport_num, rate_mbps);
++	err = mlx5_esw_qos_modify_vport_rate(esw, vport_num, rate_mbps);
  	if (err)
- 		goto err_set_regc0;
+ 		NL_SET_ERR_MSG_MOD(extack, "failed applying action to hardware");
  
-+	if (handle) {
-+		err = mlx5e_tc_post_act_set_handle(mdev, handle, &mod_acts);
-+		if (err)
-+			goto err_post_act;
-+	}
-+
- 	modify_hdr = mlx5_modify_header_alloc(mdev, MLX5_FLOW_NAMESPACE_FDB,
- 					      mod_acts.num_actions,
- 					      mod_acts.actions);
-@@ -241,23 +259,40 @@ sample_metadata_rule_get(struct mlx5_core_dev *mdev, u32 obj_id)
- 	return modify_hdr;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c
+index d9041b16611d..2b52f7c09152 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c
+@@ -11,6 +11,7 @@
+ #include "mlx5_core.h"
+ #include "eswitch.h"
+ #include "fs_core.h"
++#include "esw/qos.h"
  
- err_modify_hdr:
-+err_post_act:
- 	dealloc_mod_hdr_actions(&mod_acts);
- err_set_regc0:
- 	return ERR_PTR(err);
+ enum {
+ 	LEGACY_VEPA_PRIO = 0,
+@@ -508,3 +509,20 @@ int mlx5_eswitch_set_vport_trust(struct mlx5_eswitch *esw,
+ 	mutex_unlock(&esw->state_lock);
+ 	return err;
  }
- 
-+static u32
-+restore_hash(u32 obj_id, struct mlx5e_post_act_handle *post_act_handle)
-+{
-+	return jhash_2words(obj_id, hash32_ptr(post_act_handle), 0);
-+}
 +
-+static bool
-+restore_equal(struct mlx5e_sample_restore *restore, u32 obj_id,
-+	      struct mlx5e_post_act_handle *post_act_handle)
++int mlx5_eswitch_set_vport_rate(struct mlx5_eswitch *esw, u16 vport,
++				u32 max_rate, u32 min_rate)
 +{
-+	return restore->obj_id == obj_id && restore->post_act_handle == post_act_handle;
-+}
-+
- static struct mlx5e_sample_restore *
--sample_restore_get(struct mlx5e_tc_psample *tc_psample, u32 obj_id)
-+sample_restore_get(struct mlx5e_tc_psample *tc_psample, u32 obj_id,
-+		   struct mlx5e_post_act_handle *post_act_handle)
- {
- 	struct mlx5_eswitch *esw = tc_psample->esw;
- 	struct mlx5_core_dev *mdev = esw->dev;
- 	struct mlx5e_sample_restore *restore;
- 	struct mlx5_modify_hdr *modify_hdr;
-+	u32 hash_key;
- 	int err;
- 
- 	mutex_lock(&tc_psample->restore_lock);
--	hash_for_each_possible(tc_psample->restore_hashtbl, restore, hlist, obj_id)
--		if (restore->obj_id == obj_id)
-+	hash_key = restore_hash(obj_id, post_act_handle);
-+	hash_for_each_possible(tc_psample->restore_hashtbl, restore, hlist, hash_key)
-+		if (restore_equal(restore, obj_id, post_act_handle))
- 			goto add_ref;
- 
- 	restore = kzalloc(sizeof(*restore), GFP_KERNEL);
-@@ -266,8 +301,9 @@ sample_restore_get(struct mlx5e_tc_psample *tc_psample, u32 obj_id)
- 		goto err_alloc;
- 	}
- 	restore->obj_id = obj_id;
-+	restore->post_act_handle = post_act_handle;
- 
--	modify_hdr = sample_metadata_rule_get(mdev, obj_id);
-+	modify_hdr = sample_modify_hdr_get(mdev, obj_id, post_act_handle);
- 	if (IS_ERR(modify_hdr)) {
- 		err = PTR_ERR(modify_hdr);
- 		goto err_modify_hdr;
-@@ -280,7 +316,7 @@ sample_restore_get(struct mlx5e_tc_psample *tc_psample, u32 obj_id)
- 		goto err_restore;
- 	}
- 
--	hash_add(tc_psample->restore_hashtbl, &restore->hlist, obj_id);
-+	hash_add(tc_psample->restore_hashtbl, &restore->hlist, hash_key);
- add_ref:
- 	restore->count++;
- 	mutex_unlock(&tc_psample->restore_lock);
-@@ -325,6 +361,87 @@ void mlx5e_tc_sample_skb(struct sk_buff *skb, struct mlx5_mapped_obj *mapped_obj
- 	psample_sample_packet(&psample_group, skb, mapped_obj->sample.rate, &md);
- }
- 
-+static int
-+add_post_rule(struct mlx5_eswitch *esw, struct mlx5e_sample_flow *sample_flow,
-+	      struct mlx5_flow_spec *spec, struct mlx5_flow_attr *attr,
-+	      u32 *default_tbl_id)
-+{
-+	struct mlx5_esw_flow_attr *esw_attr = attr->esw_attr;
-+	u32 attr_sz = ns_to_attr_sz(MLX5_FLOW_NAMESPACE_FDB);
-+	struct mlx5_vport_tbl_attr per_vport_tbl_attr;
-+	struct mlx5_flow_table *default_tbl;
-+	struct mlx5_flow_attr *post_attr;
++	struct mlx5_vport *evport = mlx5_eswitch_get_vport(esw, vport);
 +	int err;
 +
-+	/* Allocate default table per vport, chain and prio. Otherwise, there is
-+	 * only one default table for the same sampler object. Rules with different
-+	 * prio and chain may overlap. For CT sample action, per vport default
-+	 * table is needed to resotre the metadata.
-+	 */
-+	per_vport_tbl_attr.chain = attr->chain;
-+	per_vport_tbl_attr.prio = attr->prio;
-+	per_vport_tbl_attr.vport = esw_attr->in_rep->vport;
-+	per_vport_tbl_attr.vport_ns = &mlx5_esw_vport_tbl_sample_ns;
-+	default_tbl = mlx5_esw_vporttbl_get(esw, &per_vport_tbl_attr);
-+	if (IS_ERR(default_tbl)) {
-+		err = PTR_ERR(default_tbl);
-+		goto err_default_tbl;
-+	}
-+	*default_tbl_id = default_tbl->id;
++	if (!mlx5_esw_allowed(esw))
++		return -EPERM;
++	if (IS_ERR(evport))
++		return PTR_ERR(evport);
 +
-+	post_attr = mlx5_alloc_flow_attr(MLX5_FLOW_NAMESPACE_FDB);
-+	if (!post_attr) {
-+		err = -ENOMEM;
-+		goto err_attr;
-+	}
-+	sample_flow->post_attr = post_attr;
-+	memcpy(post_attr, attr, attr_sz);
-+	/* Perform the original matches on the default table.
-+	 * Offload all actions except the sample action.
-+	 */
-+	post_attr->chain = 0;
-+	post_attr->prio = 0;
-+	post_attr->ft = default_tbl;
-+	post_attr->flags = MLX5_ESW_ATTR_FLAG_NO_IN_PORT;
++	mutex_lock(&esw->state_lock);
++	err = mlx5_esw_qos_set_vport_rate(esw, evport, max_rate, min_rate);
++	mutex_unlock(&esw->state_lock);
++	return err;
++}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
+new file mode 100644
+index 000000000000..7f4a8a927115
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
+@@ -0,0 +1,295 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
 +
-+	/* When offloading sample and encap action, if there is no valid
-+	 * neigh data struct, a slow path rule is offloaded first. Source
-+	 * port metadata match is set at that time. A per vport table is
-+	 * already allocated. No need to match it again. So clear the source
-+	 * port metadata match.
-+	 */
-+	mlx5_eswitch_clear_rule_source_port(esw, spec);
-+	sample_flow->post_rule = mlx5_eswitch_add_offloaded_rule(esw, spec, post_attr);
-+	if (IS_ERR(sample_flow->post_rule)) {
-+		err = PTR_ERR(sample_flow->post_rule);
-+		goto err_rule;
++#include "eswitch.h"
++#include "esw/qos.h"
++
++/* Minimum supported BW share value by the HW is 1 Mbit/sec */
++#define MLX5_MIN_BW_SHARE 1
++
++#define MLX5_RATE_TO_BW_SHARE(rate, divider, limit) \
++	min_t(u32, max_t(u32, (rate) / (divider), MLX5_MIN_BW_SHARE), limit)
++
++static int esw_qos_vport_config(struct mlx5_eswitch *esw,
++				struct mlx5_vport *vport,
++				u32 max_rate, u32 bw_share)
++{
++	u32 sched_ctx[MLX5_ST_SZ_DW(scheduling_context)] = {};
++	struct mlx5_core_dev *dev = esw->dev;
++	void *vport_elem;
++	u32 bitmask = 0;
++	int err;
++
++	if (!MLX5_CAP_GEN(dev, qos) || !MLX5_CAP_QOS(dev, esw_scheduling))
++		return -EOPNOTSUPP;
++
++	if (!vport->qos.enabled)
++		return -EIO;
++
++	MLX5_SET(scheduling_context, sched_ctx, element_type,
++		 SCHEDULING_CONTEXT_ELEMENT_TYPE_VPORT);
++	vport_elem = MLX5_ADDR_OF(scheduling_context, sched_ctx,
++				  element_attributes);
++	MLX5_SET(vport_element, vport_elem, vport_number, vport->vport);
++	MLX5_SET(scheduling_context, sched_ctx, parent_element_id, esw->qos.root_tsar_ix);
++	MLX5_SET(scheduling_context, sched_ctx, max_average_bw, max_rate);
++	MLX5_SET(scheduling_context, sched_ctx, bw_share, bw_share);
++	bitmask |= MODIFY_SCHEDULING_ELEMENT_IN_MODIFY_BITMASK_MAX_AVERAGE_BW;
++	bitmask |= MODIFY_SCHEDULING_ELEMENT_IN_MODIFY_BITMASK_BW_SHARE;
++
++	err = mlx5_modify_scheduling_element_cmd(dev,
++						 SCHEDULING_HIERARCHY_E_SWITCH,
++						 sched_ctx,
++						 vport->qos.esw_tsar_ix,
++						 bitmask);
++	if (err) {
++		esw_warn(esw->dev, "E-Switch modify TSAR vport element failed (vport=%d,err=%d)\n",
++			 vport->vport, err);
++		return err;
 +	}
++
 +	return 0;
++}
 +
-+err_rule:
-+	kfree(post_attr);
-+err_attr:
-+	mlx5_esw_vporttbl_put(esw, &per_vport_tbl_attr);
-+err_default_tbl:
++static u32 calculate_vports_min_rate_divider(struct mlx5_eswitch *esw)
++{
++	u32 fw_max_bw_share = MLX5_CAP_QOS(esw->dev, max_tsar_bw_share);
++	struct mlx5_vport *evport;
++	u32 max_guarantee = 0;
++	unsigned long i;
++
++	mlx5_esw_for_each_vport(esw, i, evport) {
++		if (!evport->enabled || evport->qos.min_rate < max_guarantee)
++			continue;
++		max_guarantee = evport->qos.min_rate;
++	}
++
++	if (max_guarantee)
++		return max_t(u32, max_guarantee / fw_max_bw_share, 1);
++	return 0;
++}
++
++static int normalize_vports_min_rate(struct mlx5_eswitch *esw)
++{
++	u32 fw_max_bw_share = MLX5_CAP_QOS(esw->dev, max_tsar_bw_share);
++	u32 divider = calculate_vports_min_rate_divider(esw);
++	struct mlx5_vport *evport;
++	u32 vport_max_rate;
++	u32 vport_min_rate;
++	unsigned long i;
++	u32 bw_share;
++	int err;
++
++	mlx5_esw_for_each_vport(esw, i, evport) {
++		if (!evport->enabled)
++			continue;
++		vport_min_rate = evport->qos.min_rate;
++		vport_max_rate = evport->qos.max_rate;
++		bw_share = 0;
++
++		if (divider)
++			bw_share = MLX5_RATE_TO_BW_SHARE(vport_min_rate,
++							 divider,
++							 fw_max_bw_share);
++
++		if (bw_share == evport->qos.bw_share)
++			continue;
++
++		err = esw_qos_vport_config(esw, evport, vport_max_rate,
++					   bw_share);
++		if (!err)
++			evport->qos.bw_share = bw_share;
++		else
++			return err;
++	}
++
++	return 0;
++}
++
++int mlx5_esw_qos_set_vport_rate(struct mlx5_eswitch *esw, struct mlx5_vport *evport,
++				u32 max_rate, u32 min_rate)
++{
++	bool min_rate_supported;
++	bool max_rate_supported;
++	u32 previous_min_rate;
++	u32 fw_max_bw_share;
++	int err;
++
++	fw_max_bw_share = MLX5_CAP_QOS(esw->dev, max_tsar_bw_share);
++	min_rate_supported = MLX5_CAP_QOS(esw->dev, esw_bw_share) &&
++				fw_max_bw_share >= MLX5_MIN_BW_SHARE;
++	max_rate_supported = MLX5_CAP_QOS(esw->dev, esw_rate_limit);
++
++	if (!esw->qos.enabled || !evport->enabled || !evport->qos.enabled)
++		return -EOPNOTSUPP;
++
++	if ((min_rate && !min_rate_supported) || (max_rate && !max_rate_supported))
++		return -EOPNOTSUPP;
++
++	if (min_rate == evport->qos.min_rate)
++		goto set_max_rate;
++
++	previous_min_rate = evport->qos.min_rate;
++	evport->qos.min_rate = min_rate;
++	err = normalize_vports_min_rate(esw);
++	if (err) {
++		evport->qos.min_rate = previous_min_rate;
++		return err;
++	}
++
++set_max_rate:
++	if (max_rate == evport->qos.max_rate)
++		return 0;
++
++	err = esw_qos_vport_config(esw, evport, max_rate, evport->qos.bw_share);
++	if (!err)
++		evport->qos.max_rate = max_rate;
++
 +	return err;
 +}
 +
-+static void
-+del_post_rule(struct mlx5_eswitch *esw, struct mlx5e_sample_flow *sample_flow,
-+	      struct mlx5_flow_attr *attr)
++static bool esw_qos_element_type_supported(struct mlx5_core_dev *dev, int type)
 +{
-+	struct mlx5_esw_flow_attr *esw_attr = attr->esw_attr;
-+	struct mlx5_vport_tbl_attr tbl_attr;
-+
-+	mlx5_eswitch_del_offloaded_rule(esw, sample_flow->post_rule, sample_flow->post_attr);
-+	kfree(sample_flow->post_attr);
-+	tbl_attr.chain = attr->chain;
-+	tbl_attr.prio = attr->prio;
-+	tbl_attr.vport = esw_attr->in_rep->vport;
-+	tbl_attr.vport_ns = &mlx5_esw_vport_tbl_sample_ns;
-+	mlx5_esw_vporttbl_put(esw, &tbl_attr);
++	switch (type) {
++	case SCHEDULING_CONTEXT_ELEMENT_TYPE_TSAR:
++		return MLX5_CAP_QOS(dev, esw_element_type) &
++		       ELEMENT_TYPE_CAP_MASK_TASR;
++	case SCHEDULING_CONTEXT_ELEMENT_TYPE_VPORT:
++		return MLX5_CAP_QOS(dev, esw_element_type) &
++		       ELEMENT_TYPE_CAP_MASK_VPORT;
++	case SCHEDULING_CONTEXT_ELEMENT_TYPE_VPORT_TC:
++		return MLX5_CAP_QOS(dev, esw_element_type) &
++		       ELEMENT_TYPE_CAP_MASK_VPORT_TC;
++	case SCHEDULING_CONTEXT_ELEMENT_TYPE_PARA_VPORT_TC:
++		return MLX5_CAP_QOS(dev, esw_element_type) &
++		       ELEMENT_TYPE_CAP_MASK_PARA_VPORT_TC;
++	}
++	return false;
 +}
 +
- /* For the following typical flow table:
-  *
-  * +-------------------------------+
-@@ -342,8 +459,9 @@ void mlx5e_tc_sample_skb(struct sk_buff *skb, struct mlx5_mapped_obj *mapped_obj
-  *         +---------------------+
-  *         +   original match    +
-  *         +---------------------+
-- *                    |
-- *                    v
-+ *               | set fte_id (if reg_c preserve cap)
-+ *               | do decap (if required)
-+ *               v
-  * +------------------------------------------------+
-  * +                Flow Sampler Object             +
-  * +------------------------------------------------+
-@@ -353,13 +471,22 @@ void mlx5e_tc_sample_skb(struct sk_buff *skb, struct mlx5_mapped_obj *mapped_obj
-  * +------------------------------------------------+
-  *            |                            |
-  *            v                            v
-- * +-----------------------------+  +----------------------------------------+
-- * +        sample table         +  + default table per <vport, chain, prio> +
-- * +-----------------------------+  +----------------------------------------+
-- * + forward to management vport +  +            original match              +
-- * +-----------------------------+  +----------------------------------------+
-- *                                  +            other actions               +
-- *                                  +----------------------------------------+
-+ * +-----------------------------+  +-------------------+
-+ * +        sample table         +  +   default table   +
-+ * +-----------------------------+  +-------------------+
-+ * + forward to management vport +             |
-+ * +-----------------------------+             |
-+ *                                     +-------+------+
-+ *                                     |              |reg_c preserve cap
-+ *                                     |              |or decap action
-+ *                                     v              v
-+ *                        +-----------------+   +-------------+
-+ *                        + per vport table +   + post action +
-+ *                        +-----------------+   +-------------+
-+ *                        + original match  +
-+ *                        +-----------------+
-+ *                        + other actions   +
-+ *                        +-----------------+
-  */
- struct mlx5_flow_handle *
- mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
-@@ -367,15 +494,15 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
- 			struct mlx5_flow_attr *attr,
- 			u32 tunnel_id)
- {
-+	struct mlx5e_post_act_handle *post_act_handle = NULL;
- 	struct mlx5_esw_flow_attr *esw_attr = attr->esw_attr;
--	struct mlx5_vport_tbl_attr per_vport_tbl_attr;
- 	struct mlx5_esw_flow_attr *pre_esw_attr;
- 	struct mlx5_mapped_obj restore_obj = {};
- 	struct mlx5e_sample_flow *sample_flow;
- 	struct mlx5e_sample_attr *sample_attr;
--	struct mlx5_flow_table *default_tbl;
- 	struct mlx5_flow_attr *pre_attr;
- 	struct mlx5_eswitch *esw;
-+	u32 default_tbl_id;
- 	u32 obj_id;
- 	int err;
++void mlx5_esw_qos_create(struct mlx5_eswitch *esw)
++{
++	u32 tsar_ctx[MLX5_ST_SZ_DW(scheduling_context)] = {};
++	struct mlx5_core_dev *dev = esw->dev;
++	__be32 *attr;
++	int err;
++
++	if (!MLX5_CAP_GEN(dev, qos) || !MLX5_CAP_QOS(dev, esw_scheduling))
++		return;
++
++	if (!esw_qos_element_type_supported(dev, SCHEDULING_CONTEXT_ELEMENT_TYPE_TSAR))
++		return;
++
++	if (esw->qos.enabled)
++		return;
++
++	MLX5_SET(scheduling_context, tsar_ctx, element_type,
++		 SCHEDULING_CONTEXT_ELEMENT_TYPE_TSAR);
++
++	attr = MLX5_ADDR_OF(scheduling_context, tsar_ctx, element_attributes);
++	*attr = cpu_to_be32(TSAR_ELEMENT_TSAR_TYPE_DWRR << 16);
++
++	err = mlx5_create_scheduling_element_cmd(dev,
++						 SCHEDULING_HIERARCHY_E_SWITCH,
++						 tsar_ctx,
++						 &esw->qos.root_tsar_ix);
++	if (err) {
++		esw_warn(dev, "E-Switch create TSAR failed (%d)\n", err);
++		return;
++	}
++
++	esw->qos.enabled = true;
++}
++
++void mlx5_esw_qos_destroy(struct mlx5_eswitch *esw)
++{
++	int err;
++
++	if (!esw->qos.enabled)
++		return;
++
++	err = mlx5_destroy_scheduling_element_cmd(esw->dev,
++						  SCHEDULING_HIERARCHY_E_SWITCH,
++						  esw->qos.root_tsar_ix);
++	if (err)
++		esw_warn(esw->dev, "E-Switch destroy TSAR failed (%d)\n", err);
++
++	esw->qos.enabled = false;
++}
++
++int mlx5_esw_qos_vport_enable(struct mlx5_eswitch *esw, struct mlx5_vport *vport,
++			      u32 max_rate, u32 bw_share)
++{
++	u32 sched_ctx[MLX5_ST_SZ_DW(scheduling_context)] = {};
++	struct mlx5_core_dev *dev = esw->dev;
++	void *vport_elem;
++	int err;
++
++	lockdep_assert_held(&esw->state_lock);
++	if (!esw->qos.enabled)
++		return 0;
++
++	if (vport->qos.enabled)
++		return -EEXIST;
++
++	MLX5_SET(scheduling_context, sched_ctx, element_type,
++		 SCHEDULING_CONTEXT_ELEMENT_TYPE_VPORT);
++	vport_elem = MLX5_ADDR_OF(scheduling_context, sched_ctx, element_attributes);
++	MLX5_SET(vport_element, vport_elem, vport_number, vport->vport);
++	MLX5_SET(scheduling_context, sched_ctx, parent_element_id, esw->qos.root_tsar_ix);
++	MLX5_SET(scheduling_context, sched_ctx, max_average_bw, max_rate);
++	MLX5_SET(scheduling_context, sched_ctx, bw_share, bw_share);
++
++	err = mlx5_create_scheduling_element_cmd(dev,
++						 SCHEDULING_HIERARCHY_E_SWITCH,
++						 sched_ctx,
++						 &vport->qos.esw_tsar_ix);
++	if (err)
++		esw_warn(dev, "E-Switch create TSAR vport element failed (vport=%d,err=%d)\n",
++			 vport->vport, err);
++	else
++		vport->qos.enabled = true;
++
++	return err;
++}
++
++void mlx5_esw_qos_vport_disable(struct mlx5_eswitch *esw, struct mlx5_vport *vport)
++{
++	int err;
++
++	lockdep_assert_held(&esw->state_lock);
++	if (!esw->qos.enabled || !vport->qos.enabled)
++		return;
++
++	err = mlx5_destroy_scheduling_element_cmd(esw->dev,
++						  SCHEDULING_HIERARCHY_E_SWITCH,
++						  vport->qos.esw_tsar_ix);
++	if (err)
++		esw_warn(esw->dev, "E-Switch destroy TSAR vport element failed (vport=%d,err=%d)\n",
++			 vport->vport, err);
++
++	vport->qos.enabled = false;
++}
++
++int mlx5_esw_qos_modify_vport_rate(struct mlx5_eswitch *esw, u16 vport_num, u32 rate_mbps)
++{
++	u32 ctx[MLX5_ST_SZ_DW(scheduling_context)] = {};
++	struct mlx5_vport *vport;
++	u32 bitmask;
++
++	vport = mlx5_eswitch_get_vport(esw, vport_num);
++	if (IS_ERR(vport))
++		return PTR_ERR(vport);
++
++	if (!vport->qos.enabled)
++		return -EOPNOTSUPP;
++
++	MLX5_SET(scheduling_context, ctx, max_average_bw, rate_mbps);
++	bitmask = MODIFY_SCHEDULING_ELEMENT_IN_MODIFY_BITMASK_MAX_AVERAGE_BW;
++
++	return mlx5_modify_scheduling_element_cmd(esw->dev,
++						  SCHEDULING_HIERARCHY_E_SWITCH,
++						  ctx,
++						  vport->qos.esw_tsar_ix,
++						  bitmask);
++}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.h b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.h
+new file mode 100644
+index 000000000000..7329405282ad
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.h
+@@ -0,0 +1,19 @@
++/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
++/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
++
++#ifndef __MLX5_ESW_QOS_H__
++#define __MLX5_ESW_QOS_H__
++
++#ifdef CONFIG_MLX5_ESWITCH
++
++int mlx5_esw_qos_set_vport_rate(struct mlx5_eswitch *esw, struct mlx5_vport *evport,
++				u32 max_rate, u32 min_rate);
++void mlx5_esw_qos_create(struct mlx5_eswitch *esw);
++void mlx5_esw_qos_destroy(struct mlx5_eswitch *esw);
++int mlx5_esw_qos_vport_enable(struct mlx5_eswitch *esw, struct mlx5_vport *vport,
++			      u32 max_rate, u32 bw_share);
++void mlx5_esw_qos_vport_disable(struct mlx5_eswitch *esw, struct mlx5_vport *vport);
++
++#endif
++
++#endif
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+index 2fde9f59e8b4..ec136b499204 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+@@ -38,6 +38,7 @@
+ #include <linux/mlx5/mpfs.h>
+ #include "esw/acl/lgcy.h"
+ #include "esw/legacy.h"
++#include "esw/qos.h"
+ #include "mlx5_core.h"
+ #include "lib/eq.h"
+ #include "eswitch.h"
+@@ -740,201 +741,6 @@ static void esw_vport_change_handler(struct work_struct *work)
+ 	mutex_unlock(&esw->state_lock);
+ }
  
-@@ -395,40 +522,31 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
- 	sample_attr = attr->sample_attr;
- 	sample_attr->sample_flow = sample_flow;
- 
--	/* Allocate default table per vport, chain and prio. Otherwise, there is
--	 * only one default table for the same sampler object. Rules with different
--	 * prio and chain may overlap. For CT sample action, per vport default
--	 * table is needed to resotre the metadata.
--	 */
--	per_vport_tbl_attr.chain = attr->chain;
--	per_vport_tbl_attr.prio = attr->prio;
--	per_vport_tbl_attr.vport = esw_attr->in_rep->vport;
--	per_vport_tbl_attr.vport_ns = &mlx5_esw_vport_tbl_sample_ns;
--	default_tbl = mlx5_esw_vporttbl_get(esw, &per_vport_tbl_attr);
--	if (IS_ERR(default_tbl)) {
--		err = PTR_ERR(default_tbl);
--		goto err_default_tbl;
+-static bool element_type_supported(struct mlx5_eswitch *esw, int type)
+-{
+-	const struct mlx5_core_dev *dev = esw->dev;
+-
+-	switch (type) {
+-	case SCHEDULING_CONTEXT_ELEMENT_TYPE_TSAR:
+-		return MLX5_CAP_QOS(dev, esw_element_type) &
+-		       ELEMENT_TYPE_CAP_MASK_TASR;
+-	case SCHEDULING_CONTEXT_ELEMENT_TYPE_VPORT:
+-		return MLX5_CAP_QOS(dev, esw_element_type) &
+-		       ELEMENT_TYPE_CAP_MASK_VPORT;
+-	case SCHEDULING_CONTEXT_ELEMENT_TYPE_VPORT_TC:
+-		return MLX5_CAP_QOS(dev, esw_element_type) &
+-		       ELEMENT_TYPE_CAP_MASK_VPORT_TC;
+-	case SCHEDULING_CONTEXT_ELEMENT_TYPE_PARA_VPORT_TC:
+-		return MLX5_CAP_QOS(dev, esw_element_type) &
+-		       ELEMENT_TYPE_CAP_MASK_PARA_VPORT_TC;
+-	}
+-	return false;
+-}
+-
+-/* Vport QoS management */
+-static void esw_create_tsar(struct mlx5_eswitch *esw)
+-{
+-	u32 tsar_ctx[MLX5_ST_SZ_DW(scheduling_context)] = {0};
+-	struct mlx5_core_dev *dev = esw->dev;
+-	__be32 *attr;
+-	int err;
+-
+-	if (!MLX5_CAP_GEN(dev, qos) || !MLX5_CAP_QOS(dev, esw_scheduling))
+-		return;
+-
+-	if (!element_type_supported(esw, SCHEDULING_CONTEXT_ELEMENT_TYPE_TSAR))
+-		return;
+-
+-	if (esw->qos.enabled)
+-		return;
+-
+-	MLX5_SET(scheduling_context, tsar_ctx, element_type,
+-		 SCHEDULING_CONTEXT_ELEMENT_TYPE_TSAR);
+-
+-	attr = MLX5_ADDR_OF(scheduling_context, tsar_ctx, element_attributes);
+-	*attr = cpu_to_be32(TSAR_ELEMENT_TSAR_TYPE_DWRR << 16);
+-
+-	err = mlx5_create_scheduling_element_cmd(dev,
+-						 SCHEDULING_HIERARCHY_E_SWITCH,
+-						 tsar_ctx,
+-						 &esw->qos.root_tsar_id);
+-	if (err) {
+-		esw_warn(esw->dev, "E-Switch create TSAR failed (%d)\n", err);
+-		return;
 -	}
 -
--	/* Perform the original matches on the default table.
--	 * Offload all actions except the sample action.
--	 */
--	sample_attr->sample_default_tbl = default_tbl;
--	/* When offloading sample and encap action, if there is no valid
--	 * neigh data struct, a slow path rule is offloaded first. Source
--	 * port metadata match is set at that time. A per vport table is
--	 * already allocated. No need to match it again. So clear the source
--	 * port metadata match.
-+	/* For NICs with reg_c_preserve support or decap action, use
-+	 * post action instead of the per vport, chain and prio table.
-+	 * Only match the fte id instead of the same match in the
-+	 * original flow table.
- 	 */
--	mlx5_eswitch_clear_rule_source_port(esw, spec);
--	sample_flow->rule = mlx5_eswitch_add_offloaded_rule(esw, spec, attr);
--	if (IS_ERR(sample_flow->rule)) {
--		err = PTR_ERR(sample_flow->rule);
--		goto err_offload_rule;
-+	if (MLX5_CAP_GEN(esw->dev, reg_c_preserve) ||
-+	    attr->action & MLX5_FLOW_CONTEXT_ACTION_DECAP) {
-+		struct mlx5_flow_table *ft;
-+
-+		ft = mlx5e_tc_post_act_get_ft(tc_psample->post_act);
-+		default_tbl_id = ft->id;
-+		post_act_handle = mlx5e_tc_post_act_add(tc_psample->post_act, attr);
-+		if (IS_ERR(post_act_handle)) {
-+			err = PTR_ERR(post_act_handle);
-+			goto err_post_act;
-+		}
-+		sample_flow->post_act_handle = post_act_handle;
-+	} else {
-+		err = add_post_rule(esw, sample_flow, spec, attr, &default_tbl_id);
-+		if (err)
-+			goto err_post_rule;
- 	}
- 
- 	/* Create sampler object. */
--	sample_flow->sampler = sampler_get(tc_psample, sample_attr->rate, default_tbl->id);
-+	sample_flow->sampler = sampler_get(tc_psample, sample_attr->rate, default_tbl_id);
- 	if (IS_ERR(sample_flow->sampler)) {
- 		err = PTR_ERR(sample_flow->sampler);
- 		goto err_sampler;
-@@ -446,7 +564,7 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
- 	sample_attr->restore_obj_id = obj_id;
- 
- 	/* Create sample restore context. */
--	sample_flow->restore = sample_restore_get(tc_psample, obj_id);
-+	sample_flow->restore = sample_restore_get(tc_psample, obj_id, post_act_handle);
- 	if (IS_ERR(sample_flow->restore)) {
- 		err = PTR_ERR(sample_flow->restore);
- 		goto err_sample_restore;
-@@ -458,19 +576,21 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
- 	pre_attr = mlx5_alloc_flow_attr(MLX5_FLOW_NAMESPACE_FDB);
- 	if (!pre_attr) {
- 		err = -ENOMEM;
--		goto err_alloc_flow_attr;
+-	esw->qos.enabled = true;
+-}
+-
+-static void esw_destroy_tsar(struct mlx5_eswitch *esw)
+-{
+-	int err;
+-
+-	if (!esw->qos.enabled)
+-		return;
+-
+-	err = mlx5_destroy_scheduling_element_cmd(esw->dev,
+-						  SCHEDULING_HIERARCHY_E_SWITCH,
+-						  esw->qos.root_tsar_id);
+-	if (err)
+-		esw_warn(esw->dev, "E-Switch destroy TSAR failed (%d)\n", err);
+-
+-	esw->qos.enabled = false;
+-}
+-
+-static int esw_vport_enable_qos(struct mlx5_eswitch *esw,
+-				struct mlx5_vport *vport,
+-				u32 initial_max_rate, u32 initial_bw_share)
+-{
+-	u32 sched_ctx[MLX5_ST_SZ_DW(scheduling_context)] = {0};
+-	struct mlx5_core_dev *dev = esw->dev;
+-	void *vport_elem;
+-	int err = 0;
+-
+-	if (!esw->qos.enabled)
+-		return 0;
+-
+-	if (vport->qos.enabled)
+-		return -EEXIST;
+-
+-	MLX5_SET(scheduling_context, sched_ctx, element_type,
+-		 SCHEDULING_CONTEXT_ELEMENT_TYPE_VPORT);
+-	vport_elem = MLX5_ADDR_OF(scheduling_context, sched_ctx,
+-				  element_attributes);
+-	MLX5_SET(vport_element, vport_elem, vport_number, vport->vport);
+-	MLX5_SET(scheduling_context, sched_ctx, parent_element_id,
+-		 esw->qos.root_tsar_id);
+-	MLX5_SET(scheduling_context, sched_ctx, max_average_bw,
+-		 initial_max_rate);
+-	MLX5_SET(scheduling_context, sched_ctx, bw_share, initial_bw_share);
+-
+-	err = mlx5_create_scheduling_element_cmd(dev,
+-						 SCHEDULING_HIERARCHY_E_SWITCH,
+-						 sched_ctx,
+-						 &vport->qos.esw_tsar_ix);
+-	if (err) {
+-		esw_warn(esw->dev, "E-Switch create TSAR vport element failed (vport=%d,err=%d)\n",
+-			 vport->vport, err);
+-		return err;
 -	}
--	sample_attr = kzalloc(sizeof(*sample_attr), GFP_KERNEL);
--	if (!sample_attr) {
--		err = -ENOMEM;
--		goto err_alloc_sample_attr;
-+		goto err_alloc_pre_flow_attr;
- 	}
- 	pre_attr->action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST | MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
-+	/* For decap action, do decap in the original flow table instead of the
-+	 * default flow table.
-+	 */
-+	if (tunnel_id)
-+		pre_attr->action |= MLX5_FLOW_CONTEXT_ACTION_DECAP;
- 	pre_attr->modify_hdr = sample_flow->restore->modify_hdr;
- 	pre_attr->flags = MLX5_ESW_ATTR_FLAG_SAMPLE;
-+	pre_attr->inner_match_level = attr->inner_match_level;
-+	pre_attr->outer_match_level = attr->outer_match_level;
- 	pre_attr->chain = attr->chain;
- 	pre_attr->prio = attr->prio;
--	pre_attr->sample_attr = sample_attr;
-+	pre_attr->sample_attr = attr->sample_attr;
- 	sample_attr->sampler_id = sample_flow->sampler->sampler_id;
- 	pre_esw_attr = pre_attr->esw_attr;
- 	pre_esw_attr->in_mdev = esw_attr->in_mdev;
-@@ -482,28 +602,23 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
- 	}
- 	sample_flow->pre_attr = pre_attr;
- 
--	return sample_flow->rule;
-+	return sample_flow->post_rule;
- 
- err_pre_offload_rule:
--	kfree(sample_attr);
--err_alloc_sample_attr:
- 	kfree(pre_attr);
--err_alloc_flow_attr:
-+err_alloc_pre_flow_attr:
- 	sample_restore_put(tc_psample, sample_flow->restore);
- err_sample_restore:
- 	mapping_remove(esw->offloads.reg_c0_obj_pool, obj_id);
- err_obj_id:
- 	sampler_put(tc_psample, sample_flow->sampler);
- err_sampler:
--	/* For sample offload, rule is added in default_tbl. No need to call
--	 * mlx5_esw_chains_put_table()
--	 */
--	attr->prio = 0;
--	attr->chain = 0;
--	mlx5_eswitch_del_offloaded_rule(esw, sample_flow->rule, attr);
--err_offload_rule:
--	mlx5_esw_vporttbl_put(esw, &per_vport_tbl_attr);
--err_default_tbl:
-+	if (!post_act_handle)
-+		del_post_rule(esw, sample_flow, attr);
-+err_post_rule:
-+	if (post_act_handle)
-+		mlx5e_tc_post_act_del(tc_psample->post_act, post_act_handle);
-+err_post_act:
- 	kfree(sample_flow);
- 	return ERR_PTR(err);
- }
-@@ -516,7 +631,6 @@ mlx5e_tc_sample_unoffload(struct mlx5e_tc_psample *tc_psample,
- 	struct mlx5_esw_flow_attr *esw_attr = attr->esw_attr;
- 	struct mlx5e_sample_flow *sample_flow;
- 	struct mlx5_vport_tbl_attr tbl_attr;
--	struct mlx5_flow_attr *pre_attr;
- 	struct mlx5_eswitch *esw;
- 
- 	if (IS_ERR_OR_NULL(tc_psample))
-@@ -531,28 +645,35 @@ mlx5e_tc_sample_unoffload(struct mlx5e_tc_psample *tc_psample,
- 		return;
- 	}
- 
-+	/* The following delete order can't be changed, otherwise,
-+	 * will hit fw syndromes.
-+	 */
- 	sample_flow = attr->sample_attr->sample_flow;
--	pre_attr = sample_flow->pre_attr;
--	memset(pre_attr, 0, sizeof(*pre_attr));
--	mlx5_eswitch_del_offloaded_rule(esw, sample_flow->pre_rule, pre_attr);
--	mlx5_eswitch_del_offloaded_rule(esw, sample_flow->rule, attr);
-+	mlx5_eswitch_del_offloaded_rule(esw, sample_flow->pre_rule, sample_flow->pre_attr);
-+	if (!sample_flow->post_act_handle)
-+		mlx5_eswitch_del_offloaded_rule(esw, sample_flow->post_rule,
-+						sample_flow->post_attr);
- 
- 	sample_restore_put(tc_psample, sample_flow->restore);
- 	mapping_remove(esw->offloads.reg_c0_obj_pool, attr->sample_attr->restore_obj_id);
- 	sampler_put(tc_psample, sample_flow->sampler);
--	tbl_attr.chain = attr->chain;
--	tbl_attr.prio = attr->prio;
--	tbl_attr.vport = esw_attr->in_rep->vport;
--	tbl_attr.vport_ns = &mlx5_esw_vport_tbl_sample_ns;
--	mlx5_esw_vporttbl_put(esw, &tbl_attr);
-+	if (sample_flow->post_act_handle) {
-+		mlx5e_tc_post_act_del(tc_psample->post_act, sample_flow->post_act_handle);
-+	} else {
-+		tbl_attr.chain = attr->chain;
-+		tbl_attr.prio = attr->prio;
-+		tbl_attr.vport = esw_attr->in_rep->vport;
-+		tbl_attr.vport_ns = &mlx5_esw_vport_tbl_sample_ns;
-+		mlx5_esw_vporttbl_put(esw, &tbl_attr);
-+		kfree(sample_flow->post_attr);
-+	}
- 
--	kfree(pre_attr->sample_attr);
--	kfree(pre_attr);
-+	kfree(sample_flow->pre_attr);
- 	kfree(sample_flow);
- }
- 
- struct mlx5e_tc_psample *
--mlx5e_tc_sample_init(struct mlx5_eswitch *esw)
-+mlx5e_tc_sample_init(struct mlx5_eswitch *esw, struct mlx5e_post_act *post_act)
+-
+-	vport->qos.enabled = true;
+-	return 0;
+-}
+-
+-static void esw_vport_disable_qos(struct mlx5_eswitch *esw,
+-				  struct mlx5_vport *vport)
+-{
+-	int err;
+-
+-	if (!vport->qos.enabled)
+-		return;
+-
+-	err = mlx5_destroy_scheduling_element_cmd(esw->dev,
+-						  SCHEDULING_HIERARCHY_E_SWITCH,
+-						  vport->qos.esw_tsar_ix);
+-	if (err)
+-		esw_warn(esw->dev, "E-Switch destroy TSAR vport element failed (vport=%d,err=%d)\n",
+-			 vport->vport, err);
+-
+-	vport->qos.enabled = false;
+-}
+-
+-static int esw_vport_qos_config(struct mlx5_eswitch *esw,
+-				struct mlx5_vport *vport,
+-				u32 max_rate, u32 bw_share)
+-{
+-	u32 sched_ctx[MLX5_ST_SZ_DW(scheduling_context)] = {0};
+-	struct mlx5_core_dev *dev = esw->dev;
+-	void *vport_elem;
+-	u32 bitmask = 0;
+-	int err = 0;
+-
+-	if (!MLX5_CAP_GEN(dev, qos) || !MLX5_CAP_QOS(dev, esw_scheduling))
+-		return -EOPNOTSUPP;
+-
+-	if (!vport->qos.enabled)
+-		return -EIO;
+-
+-	MLX5_SET(scheduling_context, sched_ctx, element_type,
+-		 SCHEDULING_CONTEXT_ELEMENT_TYPE_VPORT);
+-	vport_elem = MLX5_ADDR_OF(scheduling_context, sched_ctx,
+-				  element_attributes);
+-	MLX5_SET(vport_element, vport_elem, vport_number, vport->vport);
+-	MLX5_SET(scheduling_context, sched_ctx, parent_element_id,
+-		 esw->qos.root_tsar_id);
+-	MLX5_SET(scheduling_context, sched_ctx, max_average_bw,
+-		 max_rate);
+-	MLX5_SET(scheduling_context, sched_ctx, bw_share, bw_share);
+-	bitmask |= MODIFY_SCHEDULING_ELEMENT_IN_MODIFY_BITMASK_MAX_AVERAGE_BW;
+-	bitmask |= MODIFY_SCHEDULING_ELEMENT_IN_MODIFY_BITMASK_BW_SHARE;
+-
+-	err = mlx5_modify_scheduling_element_cmd(dev,
+-						 SCHEDULING_HIERARCHY_E_SWITCH,
+-						 sched_ctx,
+-						 vport->qos.esw_tsar_ix,
+-						 bitmask);
+-	if (err) {
+-		esw_warn(esw->dev, "E-Switch modify TSAR vport element failed (vport=%d,err=%d)\n",
+-			 vport->vport, err);
+-		return err;
+-	}
+-
+-	return 0;
+-}
+-
+-int mlx5_esw_modify_vport_rate(struct mlx5_eswitch *esw, u16 vport_num,
+-			       u32 rate_mbps)
+-{
+-	u32 ctx[MLX5_ST_SZ_DW(scheduling_context)] = {};
+-	struct mlx5_vport *vport;
+-
+-	vport = mlx5_eswitch_get_vport(esw, vport_num);
+-	if (IS_ERR(vport))
+-		return PTR_ERR(vport);
+-
+-	if (!vport->qos.enabled)
+-		return -EOPNOTSUPP;
+-
+-	MLX5_SET(scheduling_context, ctx, max_average_bw, rate_mbps);
+-
+-	return mlx5_modify_scheduling_element_cmd(esw->dev,
+-						  SCHEDULING_HIERARCHY_E_SWITCH,
+-						  ctx,
+-						  vport->qos.esw_tsar_ix,
+-						  MODIFY_SCHEDULING_ELEMENT_IN_MODIFY_BITMASK_MAX_AVERAGE_BW);
+-}
+-
+ static void node_guid_gen_from_mac(u64 *node_guid, const u8 *mac)
  {
- 	struct mlx5e_tc_psample *tc_psample;
- 	int err;
-@@ -560,17 +681,22 @@ mlx5e_tc_sample_init(struct mlx5_eswitch *esw)
- 	tc_psample = kzalloc(sizeof(*tc_psample), GFP_KERNEL);
- 	if (!tc_psample)
- 		return ERR_PTR(-ENOMEM);
-+	if (IS_ERR_OR_NULL(post_act)) {
-+		err = PTR_ERR(post_act);
-+		goto err_post_act;
-+	}
-+	tc_psample->post_act = post_act;
- 	tc_psample->esw = esw;
- 	err = sampler_termtbl_create(tc_psample);
- 	if (err)
--		goto err_termtbl;
-+		goto err_post_act;
+ 	((u8 *)node_guid)[7] = mac[0];
+@@ -976,7 +782,7 @@ static int esw_vport_setup(struct mlx5_eswitch *esw, struct mlx5_vport *vport)
+ 		return err;
  
- 	mutex_init(&tc_psample->ht_lock);
- 	mutex_init(&tc_psample->restore_lock);
+ 	/* Attach vport to the eswitch rate limiter */
+-	esw_vport_enable_qos(esw, vport, vport->qos.max_rate, vport->qos.bw_share);
++	mlx5_esw_qos_vport_enable(esw, vport, vport->qos.max_rate, vport->qos.bw_share);
  
- 	return tc_psample;
+ 	if (mlx5_esw_is_manager_vport(esw, vport_num))
+ 		return 0;
+@@ -1013,7 +819,7 @@ static void esw_vport_cleanup(struct mlx5_eswitch *esw, struct mlx5_vport *vport
+ 					      vport_num, 1,
+ 					      MLX5_VPORT_ADMIN_STATE_DOWN);
  
--err_termtbl:
-+err_post_act:
- 	kfree(tc_psample);
- 	return ERR_PTR(err);
+-	esw_vport_disable_qos(esw, vport);
++	mlx5_esw_qos_vport_disable(esw, vport);
+ 	esw_vport_cleanup_acl(esw, vport);
  }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.h
-index 1bcf4d399ccd..db0146df9b30 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.h
-@@ -8,6 +8,7 @@
  
- struct mlx5_flow_attr;
- struct mlx5e_tc_psample;
-+struct mlx5e_post_act;
+@@ -1454,7 +1260,7 @@ int mlx5_eswitch_enable_locked(struct mlx5_eswitch *esw, int mode, int num_vfs)
  
- struct mlx5e_sample_attr {
- 	u32 group_num;
-@@ -15,7 +16,6 @@ struct mlx5e_sample_attr {
- 	u32 trunc_size;
- 	u32 restore_obj_id;
- 	u32 sampler_id;
--	struct mlx5_flow_table *sample_default_tbl;
- 	struct mlx5e_sample_flow *sample_flow;
- };
+ 	mlx5_eswitch_update_num_of_vfs(esw, num_vfs);
  
-@@ -33,7 +33,7 @@ mlx5e_tc_sample_unoffload(struct mlx5e_tc_psample *sample_priv,
- 			  struct mlx5_flow_attr *attr);
+-	esw_create_tsar(esw);
++	mlx5_esw_qos_create(esw);
  
- struct mlx5e_tc_psample *
--mlx5e_tc_sample_init(struct mlx5_eswitch *esw);
-+mlx5e_tc_sample_init(struct mlx5_eswitch *esw, struct mlx5e_post_act *post_act);
+ 	esw->mode = mode;
  
- void
- mlx5e_tc_sample_cleanup(struct mlx5e_tc_psample *tc_psample);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 38cf5bdfbd4b..1bd2bc05fb94 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -4989,7 +4989,7 @@ int mlx5e_tc_esw_init(struct rhashtable *tc_ht)
- 					       uplink_priv->post_act);
+@@ -1484,7 +1290,7 @@ int mlx5_eswitch_enable_locked(struct mlx5_eswitch *esw, int mode, int num_vfs)
+ 	if (mode == MLX5_ESWITCH_OFFLOADS)
+ 		mlx5_rescan_drivers(esw->dev);
  
- #if IS_ENABLED(CONFIG_MLX5_TC_SAMPLE)
--	uplink_priv->tc_psample = mlx5e_tc_sample_init(esw);
-+	uplink_priv->tc_psample = mlx5e_tc_sample_init(esw, uplink_priv->post_act);
- #endif
+-	esw_destroy_tsar(esw);
++	mlx5_esw_qos_destroy(esw);
+ 	mlx5_esw_acls_ns_cleanup(esw);
+ 	return err;
+ }
+@@ -1553,7 +1359,7 @@ void mlx5_eswitch_disable_locked(struct mlx5_eswitch *esw, bool clear_vf)
+ 	if (old_mode == MLX5_ESWITCH_OFFLOADS)
+ 		mlx5_rescan_drivers(esw->dev);
  
- 	mapping_id = mlx5_query_nic_system_image_guid(esw->dev);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index 61175992a789..0d461e38add3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -540,10 +540,7 @@ mlx5_eswitch_add_offloaded_rule(struct mlx5_eswitch *esw,
- 	if (flow_act.action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR)
- 		flow_act.modify_hdr = attr->modify_hdr;
+-	esw_destroy_tsar(esw);
++	mlx5_esw_qos_destroy(esw);
+ 	mlx5_esw_acls_ns_cleanup(esw);
  
--	/* sample_attr is allocated only when there is a sample action */
--	if (attr->sample_attr && attr->sample_attr->sample_default_tbl) {
--		fdb = attr->sample_attr->sample_default_tbl;
--	} else if (split) {
-+	if (split) {
- 		fwd_attr.chain = attr->chain;
- 		fwd_attr.prio = attr->prio;
- 		fwd_attr.vport = esw_attr->in_rep->vport;
+ 	if (clear_vf)
+@@ -2050,110 +1856,6 @@ int __mlx5_eswitch_set_vport_vlan(struct mlx5_eswitch *esw,
+ 	return err;
+ }
+ 
+-static u32 calculate_vports_min_rate_divider(struct mlx5_eswitch *esw)
+-{
+-	u32 fw_max_bw_share = MLX5_CAP_QOS(esw->dev, max_tsar_bw_share);
+-	struct mlx5_vport *evport;
+-	u32 max_guarantee = 0;
+-	unsigned long i;
+-
+-	mlx5_esw_for_each_vport(esw, i, evport) {
+-		if (!evport->enabled || evport->qos.min_rate < max_guarantee)
+-			continue;
+-		max_guarantee = evport->qos.min_rate;
+-	}
+-
+-	if (max_guarantee)
+-		return max_t(u32, max_guarantee / fw_max_bw_share, 1);
+-	return 0;
+-}
+-
+-static int normalize_vports_min_rate(struct mlx5_eswitch *esw)
+-{
+-	u32 fw_max_bw_share = MLX5_CAP_QOS(esw->dev, max_tsar_bw_share);
+-	u32 divider = calculate_vports_min_rate_divider(esw);
+-	struct mlx5_vport *evport;
+-	u32 vport_max_rate;
+-	u32 vport_min_rate;
+-	unsigned long i;
+-	u32 bw_share;
+-	int err;
+-
+-	mlx5_esw_for_each_vport(esw, i, evport) {
+-		if (!evport->enabled)
+-			continue;
+-		vport_min_rate = evport->qos.min_rate;
+-		vport_max_rate = evport->qos.max_rate;
+-		bw_share = 0;
+-
+-		if (divider)
+-			bw_share = MLX5_RATE_TO_BW_SHARE(vport_min_rate,
+-							 divider,
+-							 fw_max_bw_share);
+-
+-		if (bw_share == evport->qos.bw_share)
+-			continue;
+-
+-		err = esw_vport_qos_config(esw, evport, vport_max_rate,
+-					   bw_share);
+-		if (!err)
+-			evport->qos.bw_share = bw_share;
+-		else
+-			return err;
+-	}
+-
+-	return 0;
+-}
+-
+-int mlx5_eswitch_set_vport_rate(struct mlx5_eswitch *esw, u16 vport,
+-				u32 max_rate, u32 min_rate)
+-{
+-	struct mlx5_vport *evport = mlx5_eswitch_get_vport(esw, vport);
+-	u32 fw_max_bw_share;
+-	u32 previous_min_rate;
+-	bool min_rate_supported;
+-	bool max_rate_supported;
+-	int err = 0;
+-
+-	if (!mlx5_esw_allowed(esw))
+-		return -EPERM;
+-	if (IS_ERR(evport))
+-		return PTR_ERR(evport);
+-
+-	fw_max_bw_share = MLX5_CAP_QOS(esw->dev, max_tsar_bw_share);
+-	min_rate_supported = MLX5_CAP_QOS(esw->dev, esw_bw_share) &&
+-				fw_max_bw_share >= MLX5_MIN_BW_SHARE;
+-	max_rate_supported = MLX5_CAP_QOS(esw->dev, esw_rate_limit);
+-
+-	if ((min_rate && !min_rate_supported) || (max_rate && !max_rate_supported))
+-		return -EOPNOTSUPP;
+-
+-	mutex_lock(&esw->state_lock);
+-
+-	if (min_rate == evport->qos.min_rate)
+-		goto set_max_rate;
+-
+-	previous_min_rate = evport->qos.min_rate;
+-	evport->qos.min_rate = min_rate;
+-	err = normalize_vports_min_rate(esw);
+-	if (err) {
+-		evport->qos.min_rate = previous_min_rate;
+-		goto unlock;
+-	}
+-
+-set_max_rate:
+-	if (max_rate == evport->qos.max_rate)
+-		goto unlock;
+-
+-	err = esw_vport_qos_config(esw, evport, max_rate, evport->qos.bw_share);
+-	if (!err)
+-		evport->qos.max_rate = max_rate;
+-
+-unlock:
+-	mutex_unlock(&esw->state_lock);
+-	return err;
+-}
+-
+ int mlx5_eswitch_get_vport_stats(struct mlx5_eswitch *esw,
+ 				 u16 vport_num,
+ 				 struct ifla_vf_stats *vf_stats)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+index 3be34b24e737..ebeccee38a57 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+@@ -76,11 +76,6 @@ struct mlx5_mapped_obj {
+ #define MLX5_MAX_MC_PER_VPORT(dev) \
+ 	(1 << MLX5_CAP_GEN(dev, log_max_current_mc_list))
+ 
+-#define MLX5_MIN_BW_SHARE 1
+-
+-#define MLX5_RATE_TO_BW_SHARE(rate, divider, limit) \
+-	min_t(u32, max_t(u32, (rate) / (divider), MLX5_MIN_BW_SHARE), limit)
+-
+ #define mlx5_esw_has_fwd_fdb(dev) \
+ 	MLX5_CAP_ESW_FLOWTABLE(dev, fdb_multi_path_to_table)
+ 
+@@ -310,7 +305,7 @@ struct mlx5_eswitch {
+ 
+ 	struct {
+ 		bool            enabled;
+-		u32             root_tsar_id;
++		u32             root_tsar_ix;
+ 	} qos;
+ 
+ 	struct mlx5_esw_bridge_offloads *br_offloads;
+@@ -336,8 +331,7 @@ int mlx5_esw_offloads_vport_metadata_set(struct mlx5_eswitch *esw, bool enable);
+ u32 mlx5_esw_match_metadata_alloc(struct mlx5_eswitch *esw);
+ void mlx5_esw_match_metadata_free(struct mlx5_eswitch *esw, u32 metadata);
+ 
+-int mlx5_esw_modify_vport_rate(struct mlx5_eswitch *esw, u16 vport_num,
+-			       u32 rate_mbps);
++int mlx5_esw_qos_modify_vport_rate(struct mlx5_eswitch *esw, u16 vport_num, u32 rate_mbps);
+ 
+ /* E-Switch API */
+ int mlx5_eswitch_init(struct mlx5_core_dev *dev);
 -- 
 2.31.1
 
