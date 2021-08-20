@@ -2,102 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CEB33F2469
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 03:48:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98B363F247A
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 03:58:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235711AbhHTBso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 21:48:44 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:14289 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234909AbhHTBsn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 21:48:43 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GrPfL3cnVz88Db;
-        Fri, 20 Aug 2021 09:47:54 +0800 (CST)
-Received: from dggpeml500024.china.huawei.com (7.185.36.10) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 20 Aug 2021 09:48:00 +0800
-Received: from [10.67.103.6] (10.67.103.6) by dggpeml500024.china.huawei.com
- (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Fri, 20 Aug
- 2021 09:48:00 +0800
-Subject: Re: [PATCH V2 net-next 2/4] ethtool: extend coalesce setting uAPI
- with CQE mode
-To:     Jakub Kicinski <kuba@kernel.org>
-References: <1629353844-49626-1-git-send-email-moyufeng@huawei.com>
- <1629353844-49626-3-git-send-email-moyufeng@huawei.com>
- <20210819120829.27c9b124@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <shenjian15@huawei.com>, <lipeng321@huawei.com>,
-        <yisen.zhuang@huawei.com>, <linyunsheng@huawei.com>,
-        <huangguangbin2@huawei.com>, <chenhao288@hisilicon.com>,
-        <salil.mehta@huawei.com>, <linuxarm@huawei.com>,
-        <linuxarm@openeuler.org>, <dledford@redhat.com>, <jgg@ziepe.ca>,
-        <netanel@amazon.com>, <akiyano@amazon.com>,
-        <thomas.lendacky@amd.com>, <irusskikh@marvell.com>,
-        <michael.chan@broadcom.com>, <edwin.peer@broadcom.com>,
-        <rohitm@chelsio.com>, <jacob.e.keller@intel.com>,
-        <ioana.ciornei@nxp.com>, <vladimir.oltean@nxp.com>,
-        <sgoutham@marvell.com>, <sbhatta@marvell.com>, <saeedm@nvidia.com>,
-        <ecree.xilinx@gmail.com>, <grygorii.strashko@ti.com>,
-        <merez@codeaurora.org>, <kvalo@codeaurora.org>,
-        <linux-wireless@vger.kernel.org>
-From:   moyufeng <moyufeng@huawei.com>
-Message-ID: <6e68afa9-9071-4459-ca6b-666ea806ace6@huawei.com>
-Date:   Fri, 20 Aug 2021 09:48:00 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.8.0
+        id S236013AbhHTB7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 21:59:16 -0400
+Received: from mail.cn.fujitsu.com ([183.91.158.132]:41738 "EHLO
+        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S234428AbhHTB7P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 21:59:15 -0400
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3Akw+xbamDvtd26P+Sn+GA+fpoPEPpDfIQ3DAb?=
+ =?us-ascii?q?v31ZSRFFG/Fw9vre+MjzsCWYtN9/Yh8dcK+7UpVoLUm8yXcX2/h1AV7BZniEhI?=
+ =?us-ascii?q?LAFugLgrcKqAeQeREWmNQ86Y5QN4B6CPDVSWNxlNvG5mCDeOoI8Z2q97+JiI7l?=
+ =?us-ascii?q?o0tQcQ=3D=3D?=
+X-IronPort-AV: E=Sophos;i="5.84,336,1620662400"; 
+   d="scan'208";a="113155626"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 20 Aug 2021 09:58:35 +0800
+Received: from G08CNEXMBPEKD04.g08.fujitsu.local (unknown [10.167.33.201])
+        by cn.fujitsu.com (Postfix) with ESMTP id B5CF14D0D4BE;
+        Fri, 20 Aug 2021 09:58:31 +0800 (CST)
+Received: from G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.80) by
+ G08CNEXMBPEKD04.g08.fujitsu.local (10.167.33.201) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Fri, 20 Aug 2021 09:58:32 +0800
+Received: from FNSTPC.g08.fujitsu.local (10.167.226.45) by
+ G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Fri, 20 Aug 2021 09:58:10 +0800
+From:   Li Zhijian <lizhijian@cn.fujitsu.com>
+To:     <shuah@kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
+        <kpsingh@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <philip.li@intel.com>, <yifeix.zhu@intel.com>,
+        Li Zhijian <lizhijian@cn.fujitsu.com>
+Subject: [PATCH v2 0/5] selftests/bpf: minor fixups
+Date:   Fri, 20 Aug 2021 09:55:52 +0800
+Message-ID: <20210820015556.23276-1-lizhijian@cn.fujitsu.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-In-Reply-To: <20210819120829.27c9b124@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.103.6]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500024.china.huawei.com (7.185.36.10)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-yoursite-MailScanner-ID: B5CF14D0D4BE.A1391
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: lizhijian@fujitsu.com
+X-Spam-Status: No
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Fix a few issues reported by 0Day/LKP during runing selftests/bpf.
+
+Changelog:
+V2:
+- folded previous similar standalone patch to [1/5], and add acked tag
+  from Song Liu
+- add acked tag to [2/5], [3/5] from Song Liu
+- [4/5]: move test_bpftool.py to TEST_PROGS_EXTENDED, files in TEST_GEN_PROGS_EXTENDED
+are generated by make. Otherwise, it will break out-of-tree install:
+'make O=/kselftest-build SKIP_TARGETS= V=1 -C tools/testing/selftests install INSTALL_PATH=/kselftest-install'
+- [5/5]: new patch
 
 
-On 2021/8/20 3:08, Jakub Kicinski wrote:
-> On Thu, 19 Aug 2021 14:17:22 +0800 Yufeng Mo wrote:
->> In order to support more coalesce parameters through netlink,
->> add two new parameter kernel_coal and extack for .set_coalesce
->> and .get_coalesce, then some extra info can return to user with
->> the netlink API.
->>
->> Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
->> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-> 
-> Looks like it builds fine, unfortunately you need to correct the kdoc 
-> of the functions which have it (by adding the new param description
-> everywhere), otherwise we'll get these on W=1 builds:
-> 
-> drivers/net/ethernet/hisilicon/hns/hns_ethtool.c:741: warning: Function parameter or member 'kernel_coal' not described in 'hns_get_coalesce'
-> drivers/net/ethernet/hisilicon/hns/hns_ethtool.c:741: warning: Function parameter or member 'extack' not described in 'hns_get_coalesce'
-> drivers/net/ethernet/hisilicon/hns/hns_ethtool.c:787: warning: Function parameter or member 'kernel_coal' not described in 'hns_set_coalesce'
-> drivers/net/ethernet/hisilicon/hns/hns_ethtool.c:787: warning: Function parameter or member 'extack' not described in 'hns_set_coalesce'
-> drivers/net/ethernet/intel/i40e/i40e_ethtool.c:2825: warning: Function parameter or member 'kernel_coal' not described in 'i40e_get_coalesce'
-> drivers/net/ethernet/intel/i40e/i40e_ethtool.c:2825: warning: Function parameter or member 'extack' not described in 'i40e_get_coalesce'
-> drivers/net/ethernet/intel/i40e/i40e_ethtool.c:2999: warning: Function parameter or member 'kernel_coal' not described in 'i40e_set_coalesce'
-> drivers/net/ethernet/intel/i40e/i40e_ethtool.c:2999: warning: Function parameter or member 'extack' not described in 'i40e_set_coalesce'
-> drivers/net/ethernet/intel/iavf/iavf_ethtool.c:699: warning: Function parameter or member 'kernel_coal' not described in 'iavf_get_coalesce'
-> drivers/net/ethernet/intel/iavf/iavf_ethtool.c:699: warning: Function parameter or member 'extack' not described in 'iavf_get_coalesce'
-> drivers/net/ethernet/intel/iavf/iavf_ethtool.c:817: warning: Function parameter or member 'kernel_coal' not described in 'iavf_set_coalesce'
-> drivers/net/ethernet/intel/iavf/iavf_ethtool.c:817: warning: Function parameter or member 'extack' not described in 'iavf_set_coalesce'
-> drivers/net/ethernet/ti/davinci_emac.c:395: warning: Function parameter or member 'kernel_coal' not described in 'emac_get_coalesce'
-> drivers/net/ethernet/ti/davinci_emac.c:395: warning: Function parameter or member 'extack' not described in 'emac_get_coalesce'
-> drivers/net/ethernet/ti/davinci_emac.c:415: warning: Function parameter or member 'kernel_coal' not described in 'emac_set_coalesce'
-> drivers/net/ethernet/ti/davinci_emac.c:415: warning: Function parameter or member 'extack' not described in 'emac_set_coalesce'
-> drivers/net/ethernet/xilinx/xilinx_axienet_main.c:1416: warning: Function parameter or member 'kernel_coal' not described in 'axienet_ethtools_get_coalesce'
-> drivers/net/ethernet/xilinx/xilinx_axienet_main.c:1416: warning: Function parameter or member 'extack' not described in 'axienet_ethtools_get_coalesce'
-> drivers/net/ethernet/xilinx/xilinx_axienet_main.c:1444: warning: Function parameter or member 'kernel_coal' not described in 'axienet_ethtools_set_coalesce'
-> drivers/net/ethernet/xilinx/xilinx_axienet_main.c:1444: warning:
-> Function parameter or member 'extack' not described in
-> 'axienet_ethtools_set_coalesce'
-> .
-> 
-ok, will fix it in V3, thanks
+Li Zhijian (5):
+  selftests/bpf: enlarge select() timeout for test_maps
+  selftests/bpf: make test_doc_build.sh work from script directory
+  selftests/bpf: add default bpftool built by selftests to PATH
+  selftests/bpf: add missing files required by test_bpftool.sh for
+    installing
+  selftests/bpf: exit with KSFT_SKIP if no Makefile found
+
+ tools/testing/selftests/bpf/Makefile              |  4 +++-
+ tools/testing/selftests/bpf/test_bpftool.sh       |  6 ++++++
+ tools/testing/selftests/bpf/test_bpftool_build.sh |  2 +-
+ tools/testing/selftests/bpf/test_doc_build.sh     | 10 ++++++++--
+ tools/testing/selftests/bpf/test_maps.c           |  2 +-
+ 5 files changed, 19 insertions(+), 5 deletions(-)
+
+-- 
+2.32.0
+
+
+
