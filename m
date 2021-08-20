@@ -2,71 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 750D93F3040
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 17:55:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E68D03F3046
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 17:55:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241320AbhHTP4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 11:56:21 -0400
+        id S241353AbhHTP43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 11:56:29 -0400
 Received: from mga17.intel.com ([192.55.52.151]:53677 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240952AbhHTP4U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S241230AbhHTP4U (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 20 Aug 2021 11:56:20 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10082"; a="197050448"
+X-IronPort-AV: E=McAfee;i="6200,9189,10082"; a="197050452"
 X-IronPort-AV: E=Sophos;i="5.84,338,1620716400"; 
-   d="scan'208";a="197050448"
+   d="scan'208";a="197050452"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2021 08:55:42 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2021 08:55:43 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,338,1620716400"; 
-   d="scan'208";a="680126965"
+   d="scan'208";a="680126969"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga006.fm.intel.com with ESMTP; 20 Aug 2021 08:55:42 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
-        sasha.neftin@intel.com, vitaly.lifshits@intel.com
-Subject: [PATCH net 0/4][pull request] Intel Wired LAN Driver Updates 2021-08-20
-Date:   Fri, 20 Aug 2021 08:59:11 -0700
-Message-Id: <20210820155915.1119889-1-anthony.l.nguyen@intel.com>
+Cc:     Aaron Ma <aaron.ma@canonical.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, sasha.neftin@intel.com,
+        vitaly.lifshits@intel.com,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
+Subject: [PATCH net 1/4] igc: fix page fault when thunderbolt is unplugged
+Date:   Fri, 20 Aug 2021 08:59:12 -0700
+Message-Id: <20210820155915.1119889-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210820155915.1119889-1-anthony.l.nguyen@intel.com>
+References: <20210820155915.1119889-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to igc and e1000e drivers.
+From: Aaron Ma <aaron.ma@canonical.com>
 
-Aaron Ma resolves a page fault which occurs when thunderbolt is
-unplugged for igc.
+After unplug thunderbolt dock with i225, pciehp interrupt is triggered,
+remove call will read/write mmio address which is already disconnected,
+then cause page fault and make system hang.
 
-Toshiki Nishioka fixes Tx queue looping to use actual number of queues
-instead of max value for igc.
+Check PCI state to remove device safely.
 
-Sasha fixes an incorrect latency comparison by decoding the values before
-comparing and prevents attempted writes to read-only NVMs for e1000e.
+Trace:
+BUG: unable to handle page fault for address: 000000000000b604
+Oops: 0000 [#1] SMP NOPTI
+RIP: 0010:igc_rd32+0x1c/0x90 [igc]
+Call Trace:
+igc_ptp_suspend+0x6c/0xa0 [igc]
+igc_ptp_stop+0x12/0x50 [igc]
+igc_remove+0x7f/0x1c0 [igc]
+pci_device_remove+0x3e/0xb0
+__device_release_driver+0x181/0x240
 
-The following are changes since commit ffc9c3ebb4af870a121da99826e9ccb63dc8b3d7:
-  net: usb: pegasus: fixes of set_register(s) return value evaluation;
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 1GbE
+Fixes: 13b5b7fd6a4a ("igc: Add support for Tx/Rx rings")
+Fixes: b03c49cde61f ("igc: Save PTP time before a reset")
+Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/igc/igc_main.c | 32 ++++++++++++++---------
+ drivers/net/ethernet/intel/igc/igc_ptp.c  |  3 ++-
+ 2 files changed, 21 insertions(+), 14 deletions(-)
 
-Aaron Ma (1):
-  igc: fix page fault when thunderbolt is unplugged
-
-Sasha Neftin (2):
-  e1000e: Fix the max snoop/no-snoop latency for 10M
-  e1000e: Do not take care about recovery NVM checksum
-
-Toshiki Nishioka (1):
-  igc: Use num_tx_queues when iterating over tx_ring queue
-
- drivers/net/ethernet/intel/e1000e/ich8lan.c | 32 +++++++++++++-----
- drivers/net/ethernet/intel/e1000e/ich8lan.h |  3 ++
- drivers/net/ethernet/intel/igc/igc_main.c   | 36 ++++++++++++---------
- drivers/net/ethernet/intel/igc/igc_ptp.c    |  3 +-
- 4 files changed, 50 insertions(+), 24 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index e29aadbc6744..5e9c86ea3a5a 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -149,6 +149,9 @@ static void igc_release_hw_control(struct igc_adapter *adapter)
+ 	struct igc_hw *hw = &adapter->hw;
+ 	u32 ctrl_ext;
+ 
++	if (!pci_device_is_present(adapter->pdev))
++		return;
++
+ 	/* Let firmware take over control of h/w */
+ 	ctrl_ext = rd32(IGC_CTRL_EXT);
+ 	wr32(IGC_CTRL_EXT,
+@@ -4449,26 +4452,29 @@ void igc_down(struct igc_adapter *adapter)
+ 
+ 	igc_ptp_suspend(adapter);
+ 
+-	/* disable receives in the hardware */
+-	rctl = rd32(IGC_RCTL);
+-	wr32(IGC_RCTL, rctl & ~IGC_RCTL_EN);
+-	/* flush and sleep below */
+-
++	if (pci_device_is_present(adapter->pdev)) {
++		/* disable receives in the hardware */
++		rctl = rd32(IGC_RCTL);
++		wr32(IGC_RCTL, rctl & ~IGC_RCTL_EN);
++		/* flush and sleep below */
++	}
+ 	/* set trans_start so we don't get spurious watchdogs during reset */
+ 	netif_trans_update(netdev);
+ 
+ 	netif_carrier_off(netdev);
+ 	netif_tx_stop_all_queues(netdev);
+ 
+-	/* disable transmits in the hardware */
+-	tctl = rd32(IGC_TCTL);
+-	tctl &= ~IGC_TCTL_EN;
+-	wr32(IGC_TCTL, tctl);
+-	/* flush both disables and wait for them to finish */
+-	wrfl();
+-	usleep_range(10000, 20000);
++	if (pci_device_is_present(adapter->pdev)) {
++		/* disable transmits in the hardware */
++		tctl = rd32(IGC_TCTL);
++		tctl &= ~IGC_TCTL_EN;
++		wr32(IGC_TCTL, tctl);
++		/* flush both disables and wait for them to finish */
++		wrfl();
++		usleep_range(10000, 20000);
+ 
+-	igc_irq_disable(adapter);
++		igc_irq_disable(adapter);
++	}
+ 
+ 	adapter->flags &= ~IGC_FLAG_NEED_LINK_UPDATE;
+ 
+diff --git a/drivers/net/ethernet/intel/igc/igc_ptp.c b/drivers/net/ethernet/intel/igc/igc_ptp.c
+index 69617d2c1be2..4ae19c6a3247 100644
+--- a/drivers/net/ethernet/intel/igc/igc_ptp.c
++++ b/drivers/net/ethernet/intel/igc/igc_ptp.c
+@@ -849,7 +849,8 @@ void igc_ptp_suspend(struct igc_adapter *adapter)
+ 	adapter->ptp_tx_skb = NULL;
+ 	clear_bit_unlock(__IGC_PTP_TX_IN_PROGRESS, &adapter->state);
+ 
+-	igc_ptp_time_save(adapter);
++	if (pci_device_is_present(adapter->pdev))
++		igc_ptp_time_save(adapter);
+ }
+ 
+ /**
 -- 
 2.26.2
 
