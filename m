@@ -2,185 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F0AF3F29AE
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 11:59:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB2373F2A2F
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 12:37:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238065AbhHTKAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 06:00:21 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:1266 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S237960AbhHTKAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 06:00:19 -0400
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17K9YVH1103128;
-        Fri, 20 Aug 2021 05:59:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=fgec9wzmL5YIWXWVdMoacPQadvBtzmrQWOpAGnJ4gHE=;
- b=nZ8OTZtdNovFNv8mfE8wX+NXJZhiWLnkub2CWtuuwxso9nOWGt5cEO+lKjoMHe+9DmF+
- F0dirDP0G/LXzDKAUb1UpDxiYDUt0H+o3KUgcD4Sba+8XxJQJHxXNzUBoy3c9X2jM1xN
- FJzcnUcnUi3zeWvBDSfNe7gXcMCaYNxGnsZbJrclGs0JF/W3wSXT80vvvK9HXzJ7kAxM
- mkAvKxh0aa8BoYYyleKL5QBuA7H4gDFj4ZQudqdLxAvdtnq9dXV8PvyT+SwLtcatFrmS
- EZgWuiOwscjx8S21PADdKLHR2Sc7i9Wta1/IHPKlB4+CD+l5w6Xz1p8lYgRd44QSQ5mL yg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3ahq10727y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 Aug 2021 05:59:37 -0400
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 17K9YXFc103394;
-        Fri, 20 Aug 2021 05:59:36 -0400
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3ahq10727k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 Aug 2021 05:59:36 -0400
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 17K9qFG0028216;
-        Fri, 20 Aug 2021 09:59:35 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma01fra.de.ibm.com with ESMTP id 3ae5f8gae7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 Aug 2021 09:59:34 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 17K9xWuH55509462
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 20 Aug 2021 09:59:32 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 56289A405F;
-        Fri, 20 Aug 2021 09:59:32 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E4CC5A4054;
-        Fri, 20 Aug 2021 09:59:31 +0000 (GMT)
-Received: from sig-9-145-45-111.uk.ibm.com (unknown [9.145.45.111])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 20 Aug 2021 09:59:31 +0000 (GMT)
-Message-ID: <8a4bcb40a1c63e302fbf0c9c0f6e56822c3293b7.camel@linux.ibm.com>
-Subject: Re: [PATCH] ptp: ocp: don't allow on S390
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Christian Borntraeger <borntraeger@de.ibm.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Hendrik Brueckner <brueckner@linux.vnet.ibm.com>,
-        linux-s390 <linux-s390@vger.kernel.org>
-Cc:     netdev@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Date:   Fri, 20 Aug 2021 11:59:31 +0200
-In-Reply-To: <72ffff17-0b46-c12e-2f67-1a18bdcb8532@de.ibm.com>
-References: <20210813203026.27687-1-rdunlap@infradead.org>
-         <20210816210914.qkyd4em4rw3thbyg@bsd-mbp.dhcp.thefacebook.com>
-         <16acf1ad-d626-b3a3-1cad-3fa6c61c8a22@infradead.org>
-         <20210816214103.w54pfwcuge4nqevw@bsd-mbp.dhcp.thefacebook.com>
-         <0e6bd492-a3f5-845c-9d93-50f1cc182a62@infradead.org>
-         <72ffff17-0b46-c12e-2f67-1a18bdcb8532@de.ibm.com>
+        id S239160AbhHTKiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 06:38:18 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:49904 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237223AbhHTKiR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 06:38:17 -0400
+Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
+        by linux.microsoft.com (Postfix) with ESMTPSA id B03AC20C33D3;
+        Fri, 20 Aug 2021 03:37:39 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B03AC20C33D3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1629455859;
+        bh=iZCuOLADbbT0RFS8G7uJNKKtYP+HH+o4bNtsW00FGJ0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=mSOgJE8smxwaE9vG5d4E8Fekp43ctCKD8sFTOFnKNfzZyaRConcmUjNjAdnRC0HVk
+         N7r64P+EcCSC/wfMMLQ0uaAdl1Nm/DhrAGd2VjpemsBPwzrh+GpNVvVFPXZbJ/T5XP
+         N/DTAfvgiP1lBoiFj/7DemMsJDh0eh+Usx/Q7ff8=
+Received: by mail-pj1-f51.google.com with SMTP id u11-20020a17090adb4b00b00181668a56d6so683719pjx.5;
+        Fri, 20 Aug 2021 03:37:39 -0700 (PDT)
+X-Gm-Message-State: AOAM531stapqmUIVYAdUGRy+NWW6Yx+dMGe9BRNjnn36JwCl/HkO0GHv
+        kot4X9MHay0Ri5MvnVkHfzSnfksJlu5XSGZV7oM=
+X-Google-Smtp-Source: ABdhPJyzdRc+FIVwfLSPCZCE1K/bGkGNbPCFuO7BPwZm5dc/PmNHPKsmvy994saRreKZsDdKndQkWHmeI8U48eO5tLI=
+X-Received: by 2002:a17:903:4095:b029:12d:315e:5f0d with SMTP id
+ z21-20020a1709034095b029012d315e5f0dmr15804610plc.19.1629455859101; Fri, 20
+ Aug 2021 03:37:39 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210614022504.24458-1-mcroce@linux.microsoft.com>
+ <871r71azjw.wl-maz@kernel.org> <YROmOQ+4Kqukgd6z@orome.fritz.box>
+ <202417ef-f8ae-895d-4d07-1f9f3d89b4a4@gmail.com> <87o8a49idp.wl-maz@kernel.org>
+ <fe5f99c8-5655-7fbb-a64e-b5f067c3273c@gmail.com> <20210812121835.405d2e37@linux.microsoft.com>
+ <874kbuapod.wl-maz@kernel.org> <CAFnufp2=1t2+fmxyGJ0Qu3Z+=wRwAX8faaPvrJdFpFeTS3J7Uw@mail.gmail.com>
+ <87wnohqty1.wl-maz@kernel.org>
+In-Reply-To: <87wnohqty1.wl-maz@kernel.org>
+From:   Matteo Croce <mcroce@linux.microsoft.com>
+Date:   Fri, 20 Aug 2021 12:37:03 +0200
+X-Gmail-Original-Message-ID: <CAFnufp3xjYqe_iVfbmdjz4-xN2UX_oo3GUw4Z4M_q-R38EN+uQ@mail.gmail.com>
+Message-ID: <CAFnufp3xjYqe_iVfbmdjz4-xN2UX_oo3GUw4Z4M_q-R38EN+uQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] stmmac: align RX buffers
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Will Deacon <will@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-16.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: eJSLW4_X41W_ngKQwujzb0fI4wk4VdHi
-X-Proofpoint-GUID: iNzcbTnJlefcH8_SQzgesuiIy6Q7wa1f
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-08-20_03:2021-08-20,2021-08-20 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 bulkscore=0
- impostorscore=0 suspectscore=0 lowpriorityscore=0 malwarescore=0
- phishscore=0 adultscore=0 spamscore=0 mlxlogscore=999 priorityscore=1501
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2107140000 definitions=main-2108200053
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2021-08-20 at 10:02 +0200, Christian Borntraeger wrote:
-> 
-> On 20.08.21 00:58, Randy Dunlap wrote:
-> > On 8/16/21 2:41 PM, Jonathan Lemon wrote:
-> > > On Mon, Aug 16, 2021 at 02:15:51PM -0700, Randy Dunlap wrote:
-> > > > On 8/16/21 2:09 PM, Jonathan Lemon wrote:
-> > > > > On Fri, Aug 13, 2021 at 01:30:26PM -0700, Randy Dunlap wrote:
-> > > > > > There is no 8250 serial on S390. See commit 1598e38c0770.
-> > > > > 
-> > > > > There's a 8250 serial device on the PCI card.   Its been
-> > > > > ages since I've worked on the architecture, but does S390
-> > > > > even support PCI?
-> > > > 
-> > > > Yes, it does.
-> 
-> We do support PCI, but only a (very) limited amount of cards.
-> So there never will be a PCI card with 8250 on s390 and
-> I also doubt that we will see the "OpenCompute TimeCard"
-> on s390.
-> 
-> So in essence the original patch is ok but the patch below
-> would also be ok for KVM. But it results in a larger kernel
-> with code that will never be used. So I guess the original
-> patch is the better choice.
+On Thu, Aug 19, 2021 at 6:29 PM Marc Zyngier <maz@kernel.org> wrote:
+>
+> On Thu, 12 Aug 2021 12:18:48 +0100,
+> Matteo Croce <mcroce@linux.microsoft.com> wrote:
+> >
+> > [1  <text/plain; UTF-8 (7bit)>]
+> > On Thu, Aug 12, 2021 at 1:05 PM Marc Zyngier <maz@kernel.org> wrote:
+> > >
+> > > On Thu, 12 Aug 2021 11:18:35 +0100,
+> > > Matteo Croce <mcroce@linux.microsoft.com> wrote:
+> > > >
+> > > > On Thu, 12 Aug 2021 10:48:03 +0200
+> > > > Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> > > >
+> > > > >
+> > > > >
+> > > > > On 8/11/21 4:16 PM, Marc Zyngier wrote:
+> > > > > > On Wed, 11 Aug 2021 13:53:59 +0100,
+> > > > > > Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> > > > > >
+> > > > > >> Are you sure you do not need to adjust stmmac_set_bfsize(),
+> > > > > >> stmmac_rx_buf1_len() and stmmac_rx_buf2_len() ?
+> > > > > >>
+> > > > > >> Presumably DEFAULT_BUFSIZE also want to be increased by NET_SKB_PAD
+> > > > > >>
+> > > > > >> Patch for stmmac_rx_buf1_len() :
+> > > > > >>
+> > > > > >> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> > > > > >> b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c index
+> > > > > >> 7b8404a21544cf29668e8a14240c3971e6bce0c3..041a74e7efca3436bfe3e17f972dd156173957a9
+> > > > > >> 100644 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c +++
+> > > > > >> b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c @@ -4508,12
+> > > > > >> +4508,12 @@ static unsigned int stmmac_rx_buf1_len(struct
+> > > > > >> stmmac_priv *priv, /* First descriptor, not last descriptor and
+> > > > > >> not split header */ if (status & rx_not_ls)
+> > > > > >> -               return priv->dma_buf_sz;
+> > > > > >> +               return priv->dma_buf_sz - NET_SKB_PAD -
+> > > > > >> NET_IP_ALIGN;
+> > > > > >>         plen = stmmac_get_rx_frame_len(priv, p, coe);
+> > > > > >>
+> > > > > >>         /* First descriptor and last descriptor and not split
+> > > > > >> header */
+> > > > > >> -       return min_t(unsigned int, priv->dma_buf_sz, plen);
+> > > > > >> +       return min_t(unsigned int, priv->dma_buf_sz - NET_SKB_PAD
+> > > > > >> - NET_IP_ALIGN, plen); }
+> > > > > >>
+> > > > > >>  static unsigned int stmmac_rx_buf2_len(struct stmmac_priv *priv,
+> > > > > >
+> > > > > > Feels like a major deficiency of the original patch. Happy to test a
+> > > > > > more complete patch if/when you have one.
+> > > > >
+> > > > > I wont have time in the immediate future.
+> > > > >
+> > > > > Matteo, if you do not work on a fix, I suggest we revert
+> > > > >  a955318fe67ec0d962760b5ee58e74bffaf649b8 stmmac: align RX buffers
+> > > > >
+> > > > > before a more polished version can be submitted.
+> > > > >
+> > > >
+> > > > Better to use stmmac_rx_offset() so to have the correct length when
+> > > > using XDP. Also, when XDP is enabled, the offset was
+> > > > XDP_PACKET_HEADROOM (i.e. 256 bytes) even before the change, so it
+> > > > could be already broken. Mark, can you try on the Jetson TX2 by
+> > > > attaching an XDP program and see if it works without my change?
+> > >
+> > > Sorry, you'll have to hold my hand here, as I know exactly nothing
+> > > about XDP....
+> > >
+> >
+> > Attach the attached object with:
+> >
+> > ip link set eth0 xdp object passall.o
+> >
+> > This is an empty XDP program, its source:
+> >
+> > __attribute__((section("prog"), used))
+> > int xdp_main(struct xdp_md *ctx)
+> > {
+> >        return XDP_PASS;
+> > }
+> >
+> > Every packet will pass untouched, but the offset will be shifted from
+> > 0 to 256 bytes, which could trigger the problem anyway:
+>
+> Nope. On 5.13, which doesn't have the issue, adding this payload
+> doesn't result in any problem and the whole thing is rock solid.
+>
+> >
+> > > > A possible fix, which takes in account also the XDP headroom for
+> > > > stmmac_rx_buf1_len() only could be (only compile tested, I don't have
+> > > > the hardware now):
+> > >
+> > > However, this doesn't fix my issue. I still get all sort of
+> > > corruption. Probably stmmac_rx_buf2_len() also need adjusting (it has
+> > > a similar logic as its buf1 counterpart...)
+> > >
+> > > Unless you can fix it very quickly, and given that we're towards the
+> > > end of the cycle, I'd be more comfortable if we reverted this patch.
+> > >
+> >
+> > Can it be that the HW can't do DMA on an address which is not word aligned?
+> > What if you replace NET_SKB_PAD with, let's say, 8?
+>
+> With this:
+>
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> index fcdb1d20389b..244aa6579ef4 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> @@ -341,7 +341,7 @@ static inline unsigned int stmmac_rx_offset(struct stmmac_priv *priv)
+>         if (stmmac_xdp_is_enabled(priv))
+>                 return XDP_PACKET_HEADROOM + NET_IP_ALIGN;
+>
+> -       return NET_SKB_PAD + NET_IP_ALIGN;
+> +       return 8 + NET_IP_ALIGN;
+>  }
+>
+>  void stmmac_disable_rx_queue(struct stmmac_priv *priv, u32 queue);
+>
+> I don't see the system corrupting packets anymore. Is that exactly
+> what you had in mind? This really seems to point to a basic buffer
+> overflow.
+>
+> Thanks,
+>
+>         M.
+>
+> --
+> Without deviation from the norm, progress is not possible.
 
-It looks to me like the SERIAL_8250 driver can be build as a module so
-would then not increase the kernel image size or am I missing
-something?
+Sorry, I meant something like:
 
-In that case I would vote for the patch below. For PCI on s390 we do
-intend to, in principle, support arbitrary PCI devices and have already
-seen cases where non-trivial cards that were never before tested on
-s390 did "just work" once someone needed them.
+-       return NET_SKB_PAD + NET_IP_ALIGN;
++       return 8;
 
-While I do agree that both 8250 and the Time Card are unlikely to be
-used on s390 never say never and compile testing a variety of driver
-code against our PCI primitives is good for quality control.
+I had some hardware which DMA fails if the receive buffer was not word
+aligned, but this seems not the case, as 8 + NET_IP_ALIGN = 10, and
+it's not aligned too.
 
-In the end I'm okay with either.
-
-> 
-> > > > > > Is this driver useful even without 8250 serial?
-> > > > > 
-> > > > > The FB timecard has an FPGA that will internally parse the
-> > > > > GNSS strings and correct the clock, so the PTP clock will
-> > > > > work even without the serial devices.
-> > > > > 
-> > > > > However, there are userspace tools which want to read the
-> > > > > GNSS signal (for holdolver and leap second indication),
-> > > > > which is why they are exposed.
-> > > > 
-> > > > So what do you recommend here?
-> > > 
-> > > Looking at 1598e38c0770, it appears the 8250 console is the
-> > > problem.  Couldn't S390 be fenced by SERIAL_8250_CONSOLE, instead
-> > > of SERIAL_8250, which would make the 8250 driver available?
-> > 
-> > OK, that sounds somewhat reasonable.
-> > 
-> > > For now, just disabling the driver on S390 sounds reasonable.
-> > > 
-> > 
-> > S390 people, how does this look to you?
-> > 
-> > This still avoids having serial 8250 console conflicting
-> > with S390's sclp console.
-> > (reference commit 1598e38c0770)
-> > 
-> > 
-> > ---
-> >   drivers/tty/serial/8250/Kconfig |    2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > --- linux-next-20210819.orig/drivers/tty/serial/8250/Kconfig
-> > +++ linux-next-20210819/drivers/tty/serial/8250/Kconfig
-> > @@ -6,7 +6,6 @@
-> > 
-> >   config SERIAL_8250
-> >       tristate "8250/16550 and compatible serial support"
-> > -    depends on !S390
-> >       select SERIAL_CORE
-> >       select SERIAL_MCTRL_GPIO if GPIOLIB
-> >       help
-> > @@ -85,6 +84,7 @@ config SERIAL_8250_FINTEK
-> >   config SERIAL_8250_CONSOLE
-> >       bool "Console on 8250/16550 and compatible serial port"
-> >       depends on SERIAL_8250=y
-> > +    depends on !S390
-> >       select SERIAL_CORE_CONSOLE
-> >       select SERIAL_EARLYCON
-> >       help
-> > 
-> > 
-
+-- 
+per aspera ad upstream
