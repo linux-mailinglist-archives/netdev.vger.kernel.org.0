@@ -2,160 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 277F63F2547
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 05:28:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B870A3F255A
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 05:31:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238139AbhHTD3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 23:29:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53114 "EHLO
+        id S238210AbhHTDbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 23:31:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237934AbhHTD3E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 23:29:04 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A762C061756
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 20:28:27 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id m66-20020a257145000000b00598282d96ceso2035235ybc.3
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 20:28:27 -0700 (PDT)
+        with ESMTP id S237933AbhHTDbv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 23:31:51 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 994A2C061575;
+        Thu, 19 Aug 2021 20:31:14 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id t66so9624497qkb.0;
+        Thu, 19 Aug 2021 20:31:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=PPVWx1bdM2r6k6HCDP6FMLkldqZlCb3M27xZWJhcudQ=;
-        b=gJN5GOKfS246dQiqnCnxZvxuC/yXOqjmoGhZvQVQ2BLGma8RRmBU3gem6jqeHf+y4z
-         I/L1/iYKjkKHs3cQflrmo/FHJ9ltxCadW1advCtd+c0D0MO6WJiYxV2LjQG6kQoJwOuT
-         a5QEMxVkRWM/WDwb4JRs48V0egXca37UP7kdkA3VVU8jxtyw9ApSKkTAGX7G7XdO1Fmw
-         nOcFn7JwJbENq4wX3k6NV+rqoZyYqJdwU+kisrl8NmfDj9WaMsgCmC7G55hUQZZW8xEn
-         Jr5jt2xH84vG8N5ZXfw5J+6Nd/Z+1lMtP8ZbTqWVwWRVMtRUmbtT4nzDctfNmKFXh45l
-         xzAg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o71P6Ra+Zi7C6O03ccvneZzNal5clWO5NdzPrype27A=;
+        b=p0xG8PkSTCBoEQMuhsRmO+NkOvz21M9ONlm+0sP4280qmyXFg8uESSQ1cqmyaIdikY
+         OyldHtq6mileVjvMeuRJUtrHhEZyedWkPmc80S4U4U28WP06OAmK2ll2ffTkh3Xed261
+         mDoD3Ubfy3T7tnREsmaEBeoRHvziD/TjDw8Exp+LKLMwe2OpTefyXRG59gJV8EGUemwn
+         TK5m45hgnXO4srgJuQgsNF8jTRrIVuugFUFWqoHI9KtNiCWrbEwlswqlVjlqCTUFX6tF
+         CBZkoAad+x4kVMmQyt/I3mHKVYMgL0AYxt9VXRpepppJf1l1W6GuFoHMHPzSL18zCQFA
+         XeQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=PPVWx1bdM2r6k6HCDP6FMLkldqZlCb3M27xZWJhcudQ=;
-        b=QZlwM15aUokS6Hcz1x2Eow3QvfNIiOHaKT/65z6FKk9T4bDWorJ5ssa0NB3LW1s08g
-         Itmllqh33Kujv7ja+MEtbgibQ/AEVn+hnGBgCn9tc/epGciHj9iKCmIfOi89VYL7CPwQ
-         vRrQjrJiMRv44fU4oybxdJ4I2DILhKkRRXCrml3WrM1VRMDTk1fAWe4KDBceqd/QM5oB
-         hmZGA+Y0horuDNqCMVKsWpMMRj9b8N3TDXJ34ePEWuGkjYiZXdrA0mZm42lCIbUMq6hW
-         ljln7IhY0lWYGpP54gGG01v3+y2AzAaByr1fzrl0f5yVtjv2PWOfMgF6J3t0DwdH3Udi
-         PpBw==
-X-Gm-Message-State: AOAM530lr13v17LT0tpmDPxqIfr4m5q/q1AdJ9aTw7oboZwm8gYBgNNU
-        8ytxjF0P7u77BDWblCyZJ/W5c3vxkM6AWA==
-X-Google-Smtp-Source: ABdhPJzCh/1CY9NFlmYEsuZDv3AWwnW88JmxfsBsDibcRNOWieWtPeEac36CDQ+YgoLoeoCGd7Zv1ubtLBAIMA==
-X-Received: from mmandlik.mtv.corp.google.com ([2620:15c:202:201:f6f9:890a:ebc2:929c])
- (user=mmandlik job=sendgmr) by 2002:a25:cec6:: with SMTP id
- x189mr21255905ybe.89.1629430106592; Thu, 19 Aug 2021 20:28:26 -0700 (PDT)
-Date:   Thu, 19 Aug 2021 20:28:22 -0700
-Message-Id: <20210819202819.v5.1.Id9bc5434114de07512661f002cdc0ada8b3d6d02@changeid>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.33.0.rc2.250.ged5fa647cd-goog
-Subject: [PATCH v5] Bluetooth: Keep MSFT ext info throughout a hci_dev's life cycle
-From:   Manish Mandlik <mmandlik@google.com>
-To:     marcel@holtmann.org, luiz.dentz@gmail.com
-Cc:     Archie Pusaka <apusaka@chromium.org>,
-        linux-bluetooth@vger.kernel.org,
-        Alain Michaud <alainm@chromium.org>,
-        chromeos-bluetooth-upstreaming@chromium.org,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        Manish Mandlik <mmandlik@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o71P6Ra+Zi7C6O03ccvneZzNal5clWO5NdzPrype27A=;
+        b=C+OPzX5r2wgvCNx6GY4IVyYDLE+jfKP6P64XqFl+GeM2E1NMck8NwAx9YCRl8sWFNq
+         ZYIFtmF21WjXmTkC/Hz4l4jWnlRjM8gRq5jUaExVB0Lee6ZU570TN1p59wm8lg321KJI
+         BQMTLV/tyEL9i/OREXlvMQr5ndQhLnDUb1t/cdweLc6dksTMX2Y+4G0v6Z3ui/hoMkn4
+         X91AZz+N5R9CFd+Q1aoluf621Wydlb/g8IImUW4kdVsqH3rH1Hwp6CeH1bGeosI0Eg17
+         ixLofFdD5dwcMFl4st8LiIftYzwwF/sfWDUfP8y57Np4J+T0VfTSLXPxACfBkq1AMjP1
+         e+4Q==
+X-Gm-Message-State: AOAM531rWsPac/ySFSBg80V0dXzV8wwM9Y7NIhmwFrOX23iFWHyYtequ
+        HNxM/3tMD39ituOviC1uTzg=
+X-Google-Smtp-Source: ABdhPJzE4RKGFzyux0S+iKMw4H1k9x+N/4CRw7n8C5pMAXXQrT4/RjeUmvcJwL81kcuONsHkZ0de7w==
+X-Received: by 2002:a05:620a:1671:: with SMTP id d17mr6880822qko.191.1629430273893;
+        Thu, 19 Aug 2021 20:31:13 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id p188sm2628878qka.114.2021.08.19.20.31.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Aug 2021 20:31:13 -0700 (PDT)
+From:   CGEL <cgel.zte@gmail.com>
+X-Google-Original-From: CGEL <jing.yangyang@zte.com.cn>
+To:     Shuah Khan <shuah@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Andrei Matei <andreimatei1@gmail.com>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jing yangyang <jing.yangyang@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] tools: fix warning comparing pointer to 0
+Date:   Thu, 19 Aug 2021 20:30:57 -0700
+Message-Id: <20210820033057.13063-1-jing.yangyang@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Miao-chen Chou <mcchou@chromium.org>
+From: jing yangyang <jing.yangyang@zte.com.cn>
 
-This moves msft_do_close() from hci_dev_do_close() to
-hci_unregister_dev() to avoid clearing MSFT extension info. This also
-re-reads MSFT info upon every msft_do_open() even if MSFT extension has
-been initialized.
+Fix the following coccicheck warning:
+./tools/testing/selftests/bpf/progs/profiler.inc.h:364:18-22:WARNING
+comparing pointer to 0
+./tools/testing/selftests/bpf/progs/profiler.inc.h:537:23-27:WARNING
+comparing pointer to 0
+./tools/testing/selftests/bpf/progs/profiler.inc.h:544:21-25:WARNING
+comparing pointer to 0
+./tools/testing/selftests/bpf/progs/profiler.inc.h:770:13-17:WARNING
+comparing pointer to 0
 
-The following test steps were performed.
-(1) boot the test device and verify the MSFT support debug log in syslog
-(2) restart bluetoothd and verify msft_do_close() doesn't get invoked
-    and msft_do_open re-reads the MSFT support.
-
-Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
-Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Reviewed-by: Archie Pusaka <apusaka@chromium.org>
-Reviewed-by: Alain Michaud <alainm@chromium.org>
-Signed-off-by: Manish Mandlik <mmandlik@google.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: jing yangyang <jing.yangyang@zte.com.cn>
 ---
+ tools/testing/selftests/bpf/progs/profiler.inc.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Changes in v5:
-- Rebase on ToT and remove extra blank line
-
-Changes in v4:
-- Re-read the MSFT data instead of skipping if it's initiated already
-
-Changes in v3:
-- Remove the accepted commits from the series
-
- net/bluetooth/hci_core.c |  3 ++-
- net/bluetooth/msft.c     | 20 +++++++++++++++++---
- 2 files changed, 19 insertions(+), 4 deletions(-)
-
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index fb296478b86e..681c6dabb550 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -1798,7 +1798,6 @@ int hci_dev_do_close(struct hci_dev *hdev)
- 	hci_sock_dev_event(hdev, HCI_DEV_DOWN);
+diff --git a/tools/testing/selftests/bpf/progs/profiler.inc.h b/tools/testing/selftests/bpf/progs/profiler.inc.h
+index 4896fdf..5c0bdab 100644
+--- a/tools/testing/selftests/bpf/progs/profiler.inc.h
++++ b/tools/testing/selftests/bpf/progs/profiler.inc.h
+@@ -361,7 +361,7 @@ static INLINE void* populate_var_metadata(struct var_metadata_t* metadata,
+ 	int zero = 0;
+ 	struct var_kill_data_t* kill_data = bpf_map_lookup_elem(&data_heap, &zero);
  
- 	aosp_do_close(hdev);
--	msft_do_close(hdev);
+-	if (kill_data == NULL)
++	if (!kill_dat)
+ 		return NULL;
+ 	struct task_struct* task = (struct task_struct*)bpf_get_current_task();
  
- 	if (hdev->flush)
- 		hdev->flush(hdev);
-@@ -4026,6 +4025,8 @@ void hci_unregister_dev(struct hci_dev *hdev)
- 		cancel_work_sync(&hdev->suspend_prepare);
- 	}
+@@ -534,14 +534,14 @@ static INLINE bool is_dentry_allowed_for_filemod(struct dentry* file_dentry,
+ 	*device_id = dev_id;
+ 	bool* allowed_device = bpf_map_lookup_elem(&allowed_devices, &dev_id);
  
-+	msft_do_close(hdev);
-+
- 	hci_dev_do_close(hdev);
+-	if (allowed_device == NULL)
++	if (!allowed_device)
+ 		return false;
  
- 	if (!test_bit(HCI_INIT, &hdev->flags) &&
-diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
-index b4bfae41e8a5..c2568e93598a 100644
---- a/net/bluetooth/msft.c
-+++ b/net/bluetooth/msft.c
-@@ -184,16 +184,30 @@ static void reregister_monitor_on_restart(struct hci_dev *hdev, int handle)
+ 	u64 ino = BPF_CORE_READ(file_dentry, d_inode, i_ino);
+ 	*file_ino = ino;
+ 	bool* allowed_file = bpf_map_lookup_elem(&allowed_file_inodes, &ino);
  
- void msft_do_open(struct hci_dev *hdev)
- {
--	struct msft_data *msft;
-+	struct msft_data *msft = NULL;
+-	if (allowed_file == NULL)
++	if (!allowed_fil)
+ 		if (!is_ancestor_in_allowed_inodes(BPF_CORE_READ(file_dentry, d_parent)))
+ 			return false;
+ 	return true;
+@@ -689,7 +689,7 @@ int raw_tracepoint__sched_process_exec(struct bpf_raw_tracepoint_args* ctx)
+ 	u64 inode = BPF_CORE_READ(bprm, file, f_inode, i_ino);
  
- 	if (hdev->msft_opcode == HCI_OP_NOP)
- 		return;
+ 	bool* should_filter_binprm = bpf_map_lookup_elem(&disallowed_exec_inodes, &inode);
+-	if (should_filter_binprm != NULL)
++	if (should_filter_binprm)
+ 		goto out;
  
- 	bt_dev_dbg(hdev, "Initialize MSFT extension");
- 
--	msft = kzalloc(sizeof(*msft), GFP_KERNEL);
--	if (!msft)
-+	/* If MSFT data exists, reset its members */
-+	if (hdev->msft_data) {
-+		msft = hdev->msft_data;
-+		hdev->msft_data = NULL;
-+
-+		msft->features = 0;
-+		kfree(msft->evt_prefix);
-+		msft->evt_prefix = NULL;
-+		msft->evt_prefix_len = 0;
-+	} else {
-+		msft = kzalloc(sizeof(*msft), GFP_KERNEL);
-+	}
-+
-+	if (!msft) {
-+		bt_dev_err(hdev, "Failed to init MSFT extension");
- 		return;
-+	}
- 
- 	if (!read_supported_features(hdev, msft)) {
- 		kfree(msft);
+ 	int zero = 0;
 -- 
-2.33.0.rc2.250.ged5fa647cd-goog
+1.8.3.1
+
 
