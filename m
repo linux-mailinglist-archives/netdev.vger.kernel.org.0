@@ -2,233 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7E013F26B2
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 08:12:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3EDB3F26C5
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 08:26:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238343AbhHTGNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 02:13:19 -0400
-Received: from mail-lf1-f46.google.com ([209.85.167.46]:44923 "EHLO
-        mail-lf1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237102AbhHTGNS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 02:13:18 -0400
-Received: by mail-lf1-f46.google.com with SMTP id o10so18161396lfr.11;
-        Thu, 19 Aug 2021 23:12:39 -0700 (PDT)
+        id S238369AbhHTG0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 02:26:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36090 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231761AbhHTG0u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 02:26:50 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC1BC061575
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 23:26:12 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id i9so18220233lfg.10
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 23:26:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=xM/5hg73CAO5nDlUiWnC06sBYRoGEVNZps4ThjEK80g=;
+        b=SM1DxTrgTQmc/EbSc5o/ZKIU4t62Dau5mNSp1bsk7iNoKcDtfvVrYZ+dAjdNqwDI4x
+         nzZKOWr7tfhFVPyHPSlQURghDVLrbMfgs43M7gPs+0Uio3Cpz2RTkontu83Eb5mqdD3x
+         OfK85T0Upyl6y/12E5n1WE0FwhaPhAS68b7KKXmpmZfkRI286LwpC3WlK4agL7LGhxYo
+         xeYHLXxFaBRst7J9z64xRfBl0XEtWNcH9VGL5vGE/T6AMbtDcdvXM8PAmExa+LN6S9qr
+         5RKsTcMQqfMeaucp4c3MObUiIn8thVESL/Uxh5Vp5kfczH7zxWIx/+QUw3kXePwqCkPM
+         meGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xLvU9GuXVhZoxVFcj/FjnjcckHyZpXV4uqRAEhn5yh4=;
-        b=PAbnmW/vGWkpIlC5AYvYgErcPGVqeMUh91jdy6DpNZtVIN6irhpt5S7nf5odrL3JUw
-         lTMAusFKH5tAZeTUe6rT4NZITgGDb+MviYDl/mRfO83U0WUrpYm0rAuocYAkYwtL+MoK
-         v6qtAN1pZ6QCmBTNrW+fJ9Dpa79mvtMPL0vk+eEIK4KmoemBwzGO3cHga7Ncm5b9ijH6
-         uupKfR3IR4y3AOGHi5Ns7JTsW3OtwOkE+TEuTJ9sd4I7lOVRZHdanId7uKCh3z/+WvHa
-         WTe6u2fXBuls/rTMQYTEN4Dy6QQ7UtiLrerWxABxl6I1dY6/S1Bt+fIa5yM9dvHUKSzk
-         Lthg==
-X-Gm-Message-State: AOAM533m9lqBxdD/CpB3YUXCMGISULtebgttxVNfVHkTQFIDg/qhTx1w
-        8Yq57sEFuPCokfuqKLDthBh0h6qnAIhNCfbl+vE=
-X-Google-Smtp-Source: ABdhPJwVIIevQCIed41pBtiC60V491vzwR5191VKMVLKJIhu0v22jdVkbHV4ejbb19KJUnj41IlW4Vfybt4q+wKkuiA=
-X-Received: by 2002:a05:6512:3991:: with SMTP id j17mr5874457lfu.374.1629439958905;
- Thu, 19 Aug 2021 23:12:38 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=xM/5hg73CAO5nDlUiWnC06sBYRoGEVNZps4ThjEK80g=;
+        b=etZ53SWuueHuBBMreslvnGMy0/1X8bdLseex6PRfB9nahuVvwAbV/jF5D30sELrmbS
+         Rw+Hl09sjJXElC9ASoym4oJyBPNj2PsjVE+qRPQzRQxxYxhg7gyo8u/Swbla9W+t6w3S
+         e0Jh0hAdnQcO/RmYcHLoaE4xd2KvYRMbIFUaLUrBoalSlUFWVXSMRQWerOcp17BROHIe
+         L2VDVAHbg8eO8aaGdCiIbMG036dHJkayteSh7FQeYS4c3ccY40JSJfWpvxjn388zHlvV
+         5HRBuIw7sYlNyh6AQQdwMwb+nlnJVYQ8GgFg4Sw7QB6ye06EIPlapziSZmLZgRd/cl0a
+         cGoQ==
+X-Gm-Message-State: AOAM530l8r+gaeuZRqX3qSMGlR0fXzeyK0Z6esS7doD0iiAjBUFO6Msa
+        x9V4ORTpcrbsJNfM4YHMV+g=
+X-Google-Smtp-Source: ABdhPJygigIOh3nwUm5DE31I2p4oPZ2Dma+yQlZ7L6UHOGLe18iCJvkPJk3AuAOtuy+WJR7ClhlHbw==
+X-Received: by 2002:a05:6512:401a:: with SMTP id br26mr9465748lfb.539.1629440771118;
+        Thu, 19 Aug 2021 23:26:11 -0700 (PDT)
+Received: from wbg (h-155-4-221-58.NA.cust.bahnhof.se. [155.4.221.58])
+        by smtp.gmail.com with ESMTPSA id bu31sm529124lfb.153.2021.08.19.23.26.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Aug 2021 23:26:10 -0700 (PDT)
+From:   Joachim Wiberg <troglobit@gmail.com>
+To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: Re: [PATCH net-next 00/15] net: bridge: multicast: add vlan support
+In-Reply-To: <458e3729-0bf0-8c45-9e45-352da76eaeb6@blackwall.org>
+References: <20210719170637.435541-1-razor@blackwall.org> <875yw1qv9a.fsf@gmail.com> <458e3729-0bf0-8c45-9e45-352da76eaeb6@blackwall.org>
+Date:   Fri, 20 Aug 2021 08:26:09 +0200
+Message-ID: <871r6or5ry.fsf@gmail.com>
 MIME-Version: 1.0
-References: <20210815033248.98111-1-mailhol.vincent@wanadoo.fr>
- <20210815033248.98111-3-mailhol.vincent@wanadoo.fr> <20210816084235.fr7fzau2ce7zl4d4@pengutronix.de>
- <CAMZ6RqK5t62UppiMe9k5jG8EYvnSbFW3doydhCvp72W_X2rXAw@mail.gmail.com>
- <20210816122519.mme272z6tqrkyc6x@pengutronix.de> <20210816123309.pfa57tke5hrycqae@pengutronix.de>
- <20210816134342.w3bc5zjczwowcjr4@pengutronix.de> <CAMZ6RqJFxKSZahAMz9Y8hpPJPh858jxDEXsRm1YkTwf4NFAFwg@mail.gmail.com>
- <20210817200123.4wcdwsdfsdjr3ovk@pengutronix.de> <CAMZ6RqKsjPF2gBbzsKatFG7S4qcOahSX9vSU=dj_e9R-Kqq0CA@mail.gmail.com>
- <20210818122923.hvxmffoi5rf7rbe6@pengutronix.de> <CAMZ6Rq+H4u9D41Fdx+J-kj35g3GVRqoYvDiHtR3LGMXfRjcsiA@mail.gmail.com>
-In-Reply-To: <CAMZ6Rq+H4u9D41Fdx+J-kj35g3GVRqoYvDiHtR3LGMXfRjcsiA@mail.gmail.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Fri, 20 Aug 2021 15:12:27 +0900
-Message-ID: <CAMZ6RqJkzLh2Qf1gWo5oZ2XvTKGeeZREWu79Q4zGTdZ3Vv_mkA@mail.gmail.com>
-Subject: Re: [PATCH v5 2/7] can: bittiming: allow TDC{V,O} to be zero and add can_tdc_const::tdc{v,o,f}_min
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can <linux-can@vger.kernel.org>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <Stefan.Maetje@esd.eu>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed. 18 Aug 2021 at 23:17, Vincent MAILHOL
-<mailhol.vincent@wanadoo.fr> wrote:
-> On Wed. 18 Aug 2021 at 21:29, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> > On 18.08.2021 18:22:33, Vincent MAILHOL wrote:
-> > > > Backwards compatibility using an old ip tool on a new kernel/driver must
-> > > > work.
-> > >
-> > > I am not trying to argue against backward compatibility :)
-> > > My comment was just to point out that I had other intents as well.
-> > >
-> > > > In case of the mcp251xfd the tdc mode must be activated and tdcv
-> > > > set to the automatic calculated value and tdco automatically measured.
-> > >
-> > > Sorry but I am not sure if I will follow you. Here, do you mean
-> > > that "nothing" should do the "fully automated" calculation?
-> >
-> > Sort of.
-> > The use case is the old ip tool with a driver that supports tdc, for
-> > CAN-FD to work it must be configured in fully automated mode.
->
-> The current patch does that: "nothing" means that both TDC_AUTO
-> and TDC_MANUAL are not set, same as what an old ip tool would
-> do. And that triggers the default (fully automated) mode (call
-> can_calc_tdco()).
->
-> > > In your previous message, you said:
-> > >
-> > > > Does it make sense to let "mode auto" without a tdco value switch the
-> > > > controller into full automatic mode and /* nothing */ not tough the tdc
-> > > > config at all?
-> > >
-> > > So, you would like this behavior:
-> > >
-> > > | mode auto, no tdco provided -> kernel decides between TDC_AUTO and TDC off.
-> >
-> > NACK - mode auto, no tdco -> TDC_AUTO with tdco calculated by the kernel
->
-> Currently, the tdco calculation is paired with the decision to
-> enable or not TDC. If dbrp is one or two, then do the tdco
-> calculation, else, TDC is off (c.f. can_calc_tdco()). This
-> behaviour is to follow ISO 11898-1 which states that TDC is only
-> applicable if data BRP is one or two. In the current patch I
-> allow to have TDC enabled with a dbrp greater than 2 only if the
-> tdco is provided by the user (i.e. I allow the user to forcefully
-> go against ISO but the automatic calculation guarantees
-> compliance).
->
-> So what do you suggest to do when drbp is greater than 2? Still
-> enable TDC (and violate ISO standard) or return an error
-> code (e.g. -ENOTSUPP)?
->
-> > > | mode auto, tdco provided -> TDC_AUTO
-> >
-> > ACK - TDC_AUTO with user supplied tdco
-> >
-> > > | mode manual, tdcv and tdco provided -> TDC_MANUAL
-> >
-> > ACK - TDC_MANUAL with tdco and tdcv user provided
-> >
-> > > | mode off is not needed anymore (redundant with "nothing")
-> > > (TDCF left out of the picture intentionally)
-> >
-> > NACK - TDC is switched off
->
-> Same as the current patch then :)
->
-> > > | "nothing" -> TDC is off (not touch the tdc config at all)
-> >
-> > NACK - do not touch TDC setting, use previous setting
->
-> Sorry but I still fail to understand your definition of "do not
-> touch".
->
-> The first time you start a device, all the structures are zeroed
-> out meaning that TDC is off to begin with.  So the first time the
-> user do something like:
->
-> | ip link set can0 type can bitrate 1000000 dbitrate 8000000 fd on
->
-> If you "do not touch" TDC it means that all TDC values stays at
-> zero, i.e. TDC stays off. This would contradict point 1/.
->
-> > > Correct?
-> >
-> > See above. Plus a change that addresses your issue 1/ from below.
-> >
-> > If driver supports TDC it should be initially brought into TDC auto
-> > mode, if no TDC mode is given. Maybe we need an explizit TDC off to make
-> > that work.
-> >
-> > > If you do so, I see three issues:
-> > >
-> > > 1/ Some of the drivers already implement TDC. Those will
-> > > automatically do a calculation as long as FD is on. If "nothing"
-> > > now brings TDC off, some users will find themselves with some
-> > > error on the bus after the iproute2 update if they continue using
-> > > the same command.
-> >
-> > Nothing would mean "do not touch" and as TDC auto is default a new ip
-> > would work out of the box. Old ip will work, too. Just failing to decode
-> > TDC_AUTO...
->
-> See above: if you "do not touch", my understanding is that the
-> old ip tool will indefinitely keep TDC to its initial value:
-> everything zeroed out.
->
-> To turn TDC auto, you will eventually call can_calc_tdco() and
-> that will touch something.
->
-> > > 2/ Users will need to read and understand how to use the TDC
-> > > parameters of iproute2. And by experience, too many people just
-> > > don't read the doc. If I can make the interface transparent and
-> > > do the correct thing by default ("nothing"), I prefer to do so.
-> >
-> > ACK, see above
-> >
-> > > 3/ Final one is more of a nitpick. The mode auto might result in
-> > > TDC being off. If we have a TDC_AUTO flag, I would expect the
-> > > auto mode to always set that flag (unless error occurs). I see
-> > > this to be slightly counter intuitive (I recognize that my
-> > > solution also has some aspects which are not intuitive, I just
-> > > want to point here that none are perfect).
-> >
-> > What are the corner cases where TDC_AUTO results in TDC off?
->
-> dbrp greater than 2 (see above).
->
-> > > To be honest, I really preferred the v1 of this series where
-> > > there were no tdc-mode {auto,manual,off} and where the "off"
-> > > behavior was controlled by setting TDCO to zero. However, as we
-> > > realized, zero is a valid value and thus, I had to add all this
-> > > complexity just to allow that damn zero value.
-> >
-> > Maybe we should not put the TDC mode _not_ into ctrl-mode, but info a
-> > dedicated tdc-mode (which is not bit-field) inside the struct tdc?
->
-> If you do so, then you would need both a tdcmode and a
-> tdcmode_supported in order for the device to announce which modes
-> it supports (same as the ctrlmode and ctrlmode_supported in
-> can_priv). I seriously thought about this option but it seemed
-> like reinventing the wheel for me.
->
-> Also, it needs to be bit field to differentiate between a device
-> which would only support manual mode, one device which would only
-> support auto mode and one device which would support both.
+On Thu, Aug 19, 2021 at 19:22, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+> On 19/08/2021 19:01, Joachim Wiberg wrote:
+>> On Mon, Jul 19, 2021 at 20:06, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+>>> From: Nikolay Aleksandrov <nikolay@nvidia.com>
+>> Curious, are you planning querier per-vlan, including use-ifaddr support
+>> as well?  In our in-house hack, which I posted a few years ago, we added
+>> some "dumpster diving" to inet_select_addr(), but it got rather tricky.
+>> So I've been leaning towards having that in userspace instead.
+> Yes, that is already supported (use-ifaddr needs attention though). In my next
+> patch-set where I added the initial global vlan mcast options I added control
+> for per-vlan querier with per-vlan querier elections and so on. The use-ifaddr
+> needs more work though, that's why I still haven't added that option. I need
+> to add the per-vlan/port router control option so we'll have mostly everything
+> ready in a single release.
 
-I just realized something. If the user first sets the TDC
-parameters and then does another command without any data
-bittiming parameters provided, then the TDC parameters will be
-recalculated but the other data bittiming parameters would remain
-unchanged.
+Wow, OK now we're talking, yeah that would be great to have in place as well!
 
-Example:
-$ ip link set can0 type can bitrate 1000000 dbitrate 8000000 fd on
-tdcv 33 tdco 16 tdc-mode manual
-$ ip link set can0 type can bitrate 500000
+>>> Future patch-sets which build on this one (in order):
+>>>  - iproute2 support for all the new uAPIs
+>> I'm very eager to try out all the new IGMP per-VLAN stuff, do you have
+>> any branch of the iproute2 support available yet for testing?
+> I don't have it public yet because I need to polish the support, currently
+> it's very rough, enough for testing purposes for these patch-sets. :)
+> I plan to work on that after I finish with the per-vlan/port router control.
 
-Here, can_calc_tdco() will be triggered resulting in a switch to
-TDC_AUTO mode.
-In this scenario, it is not normal to only have the TDC
-recalculated but not the other data bittiming parameters. Is it
-what you were trying to explain when saying "do not touch"?
+Alright, I can appreciate that.  Really looking forward to this, I'll be
+patiently waiting here in the wings, testing this out.
 
-I am preparing a new series with below behavior:
+Fantastic work with this, again! :)
 
-* data bittiming not provided: TDC parameters unchanged
-* data bittiming provided: (unchanged from current behavior)
-    - tdc-mode not provided: do can_calc_tdco (fully automated)
-    - tdc-mode auto and tdco provided: TDC_AUTO
-    - tdc-mode manual and both of tdcv and tdco provided: TDC_MANUAL
-
-N.B. TDC parameters must be provided together with data bittiming
-parameters, e.g. data bittiming not provided + TDC parameters is
-an invalid command.
-
-Does that make more sense?
-
-
-Yours sincerely,
-Vinent
+All the best
+ /Joachim
+ 
