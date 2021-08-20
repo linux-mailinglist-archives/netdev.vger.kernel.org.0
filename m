@@ -2,187 +2,270 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B984C3F2454
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 03:24:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47F623F2456
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 03:26:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234577AbhHTBXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Aug 2021 21:23:44 -0400
-Received: from mga17.intel.com ([192.55.52.151]:46172 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232564AbhHTBXn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Aug 2021 21:23:43 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10081"; a="196947284"
-X-IronPort-AV: E=Sophos;i="5.84,336,1620716400"; 
-   d="scan'208";a="196947284"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2021 18:22:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,336,1620716400"; 
-   d="scan'208";a="573783023"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga004.jf.intel.com with ESMTP; 19 Aug 2021 18:22:58 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Thu, 19 Aug 2021 18:22:57 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10 via Frontend Transport; Thu, 19 Aug 2021 18:22:57 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.169)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.10; Thu, 19 Aug 2021 18:22:56 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GWHzJbMYbFWOsnsnk9kQ6VqH9fNDxrrCDFiMiymg1RfSdiaSQF5muWJ57d8zWG3Vb7qPF1/1cPiYb9zUIVjqvm2pSDNfgHQ2QDmVvv3nf40NDK4+VJ8W5StLnR61htOnGL+s+EH4V7vnFtbnOa1LoLYGd3A+dqbZz8EVARhLUWGJtreZztayjRLmC2hrwhiX4iHYhaydS9+tD2q05lnaK01ttzMOWyyosj82r2AMzwVAWTkSFG5FbyDlruOn9a+0QypMOXJYz951DeAJkOfeki6KdTz+vsHDlp8xLXGI0weEiOKcpA7fF/HkNUqYsGKSeNQ4VuWXViBLy/264YRV+Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vWauQEVQ70hvDdqo4KOjJO3AicvhqYduvl2+XtqMUzA=;
- b=CO60NsT1V1dcybAD1zkh0PdkK0whbYcOBPGtahgPnxmZkMWxCuUIwqHuCtV1Qkqh1MJO3cPFnS0HeHUd7Obu5WU/bbIO8rQdXdJpyWEl53R/x9xZg/YmCgRNhHvyccHIZwGenU1ACRfk7e24JvjEO2WGMPef/3f9lmHsnd5XOgiwbVcBhY+gOYr4pFKB6A317bYWBgX8jENNfHotz1q1kxNkEVzexdye9sbtN6p9CDrUra/xtzk695CCaVO37MujjhAEr4sDmEuSO9vVbh0YobWbzEL6ajHbeKRpqZBQaljHtsvhutUUGgxwvQxQNhMMUTV95S4Lx76N74soV/o5Dw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vWauQEVQ70hvDdqo4KOjJO3AicvhqYduvl2+XtqMUzA=;
- b=qy3YAfpANHVMp+GR5LxoDdirdDKt0b3T08VKTVUSIUmpXosWJY8VaW6C18vFAm/ovHt00J0HOXyeGCJ0cecI9PqQGl8VaQ8MAgoTwVvnT9ugbYXjNDn9hBcJrY5tgSuRVGWN2CXmSitW/AzwqpsCItTXfK4ymP5AW2fh/czdm0Q=
-Received: from PH0PR11MB4950.namprd11.prod.outlook.com (2603:10b6:510:33::20)
- by PH0PR11MB5078.namprd11.prod.outlook.com (2603:10b6:510:3e::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.17; Fri, 20 Aug
- 2021 01:22:50 +0000
-Received: from PH0PR11MB4950.namprd11.prod.outlook.com
- ([fe80::784e:e2d4:5303:3e0a]) by PH0PR11MB4950.namprd11.prod.outlook.com
- ([fe80::784e:e2d4:5303:3e0a%9]) with mapi id 15.20.4308.026; Fri, 20 Aug 2021
- 01:22:50 +0000
-From:   "Song, Yoong Siang" <yoong.siang.song@intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     =?iso-8859-1?Q?Marek_Beh=FAn?= <kabel@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next 1/1] net: phy: marvell10g: Add WAKE_PHY support
- to WOL event
-Thread-Topic: [PATCH net-next 1/1] net: phy: marvell10g: Add WAKE_PHY support
- to WOL event
-Thread-Index: AQHXkCCVH1orffAF2Euk1FyXsMmop6tzQucAgAAKnYCAAB0pgIACCFZwgAAXTQCAABQhQIAAHfaAgAAGzYCAAAsMAIAAATnQgAAZtYCAAFGJUIAAC2WAgAVZPWA=
-Date:   Fri, 20 Aug 2021 01:22:50 +0000
-Message-ID: <PH0PR11MB4950AF75A507FDB0885174DAD8C19@PH0PR11MB4950.namprd11.prod.outlook.com>
-References: <20210814194916.GB22278@shell.armlinux.org.uk>
- <PH0PR11MB4950652B4D07C189508767F1D8FD9@PH0PR11MB4950.namprd11.prod.outlook.com>
- <YRnmRp92j7Qpir7N@lunn.ch>
- <PH0PR11MB4950F854C789F610ECD88E6ED8FD9@PH0PR11MB4950.namprd11.prod.outlook.com>
- <20210816071419.GF22278@shell.armlinux.org.uk>
- <PH0PR11MB495065FCAFD90520684810F7D8FD9@PH0PR11MB4950.namprd11.prod.outlook.com>
- <20210816081812.GH22278@shell.armlinux.org.uk>
- <PH0PR11MB49509E7A82947DCB6BB48203D8FD9@PH0PR11MB4950.namprd11.prod.outlook.com>
- <20210816115435.664d921b@dellmb>
- <PH0PR11MB49507764E1924DAB8B588D59D8FD9@PH0PR11MB4950.namprd11.prod.outlook.com>
- <YRqDz9QZwqjadNdL@lunn.ch>
-In-Reply-To: <YRqDz9QZwqjadNdL@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8a104190-6b54-4f96-9fc2-08d9637906f6
-x-ms-traffictypediagnostic: PH0PR11MB5078:
-x-microsoft-antispam-prvs: <PH0PR11MB507815B8DC14DF864433FBA4D8C19@PH0PR11MB5078.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: pgC9qLKH/ngCBc3eky8KPHf+BzbWy7y1000vIy+xjqtLKiVL3Vk72yWeq2IdAmM5ep7SRnPeIxH9QHNke06f5rOy7gwhjnFFPoB4niO9Vku5SJ2/engw7ZCkekzcnZ4E7goZ0lXUZHCB9zsPzMt/ms6OnCXcmmqeNafGRpoyGvA6tLJqRmWLv0Ug/HlkAwGDXx8p7YRXXSAZBfWls5Arj0GmWI3EWx1VEJSmW+5DkKxSIOn+fFY/7QPtww8nMeWGgFA2EHTktOFdYmcKa3H0b5Cijp9yctVpzwkOmm2fehocGiipre/llnT2Z1j+WsfmLigonfpgNa3gniTof8rHjRzujjUYRMFExi1RHDKDZnNDOHBbuA4ajC7LMz4xEi3hK3vysQ6++QlgJhZMx/piH89Y25E49jGg4m/qdjZPWQwiz1HkXYce+wxckEV8tfRCWud7cbtoc8lM1kIV5jCddIHohisnV3yutaV16I54hekRaaKbV7hV1aQpC6MTVWNLZ27yK8LshaBUYJ/oEzfU9k0qCBb7WhVp8fl2Bm9FNYMYPK8YDGs01oOBuJ6gvHapRH+mVsdSLEm7QNkDyU1I6/AUR3YXWHhomxGm+UBWiglCOi5ExM9NhMUWicnF277BduTpMMJfUcX+3KQ9UvmrHozs7eF2cR7su1SrjWQJrKu6tYPV8yqOMSioERHXmjilrOBKAgrRYzM380+YTE1ecA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4950.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(396003)(136003)(376002)(346002)(39860400002)(2906002)(38070700005)(8676002)(8936002)(4326008)(71200400001)(33656002)(86362001)(66476007)(38100700002)(186003)(9686003)(76116006)(26005)(66946007)(66446008)(64756008)(54906003)(55236004)(316002)(122000001)(6506007)(7696005)(5660300002)(52536014)(6916009)(478600001)(66556008)(55016002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?XO8Zhyy9AGcGUAKO5uwGOpjvrIUCC/S9a2X9M4urycC84oQaUctfoJ2KgQ?=
- =?iso-8859-1?Q?n0GOCrR24CQ3vA2lN6ju+9q2YitFUN24sKsSmjPhcVxp9qZnvXYpdwRIr8?=
- =?iso-8859-1?Q?N12ozbP7Ql/L94sAVdagpIUNini/YC8TAM33WUM8Zc6tRgu/KkMEafJUmY?=
- =?iso-8859-1?Q?kSlUgX7HV/WARwTBQ+uD64Bh41oJoJDv+o+4AJNG6qPV54iQnH3FEv29iM?=
- =?iso-8859-1?Q?xEWWU0q1aCO/AjVlhxjOIdcdel21p3WFQvGBsEoFJ/cN5Q32+g4Pf3cWeh?=
- =?iso-8859-1?Q?g/PASbY/ghc45JlSv3ZBoIPFQGigYU1DnrkAEPWYuFFa/Jf37Vvc3H2I1m?=
- =?iso-8859-1?Q?O8y85rvwArP7dYhDa5Pasl3fj7Tu62E0nYhM9pRpe6WbowGTweF/7kpIwp?=
- =?iso-8859-1?Q?fhvSJ9qC6JKgaK4Y23JAHj54YnZCEHAS+i2H4sOtqaUSvyewN6iTnX4yKF?=
- =?iso-8859-1?Q?gM+iwf1ZbI8yqS5VyPPdPXX1pSdyxXExTDcGFOvK9xLJjZXZoWuEPpNW7e?=
- =?iso-8859-1?Q?rbTadZYlNzmSS5ws/SMkuNP9JQPKpeKkMcWpgj11w3WqT2zObUvRmaPFfx?=
- =?iso-8859-1?Q?QEAdMK8v0iECQKyfAU4oG2vRiIPb4edc6RPc+Kb/M1TW0BN+CYaY3SkrbR?=
- =?iso-8859-1?Q?e4HWprEWFmxndiowEHx9XAaqriS//rRHyoluNDcp1iBFmMaK3MYMaJsSWF?=
- =?iso-8859-1?Q?Smv6T/z24141BqEor4OU1J3ZWxoidZbAslSCIVvrkqqar3H8l+SBzT7JFS?=
- =?iso-8859-1?Q?F65KFEhJ82wH7VPjnUPn6Ht9k78JPzAr9o1X0sbUjcyLlyAS4VHjx10VVQ?=
- =?iso-8859-1?Q?5BFj+vF4mupASejEiNGkU/4kvfg8NY1WnoxWRMHEw+y08S3eQIbskU7BdM?=
- =?iso-8859-1?Q?b8TLq6TyUyBj6ItdO/0Yec40TaIeDer16TSuwgYLIygLC2NMF4DLttd1KG?=
- =?iso-8859-1?Q?nAJW53tjZzqUMKDWauIJbWBwOw9eQVkNqfpHGRdj+osLitbF74W/sVVAjA?=
- =?iso-8859-1?Q?3MELRaN87uFWZynlUlsLKfHp9Sm/TOTGWQ6ZiPFjnm68QtMIn1ofWyY1t1?=
- =?iso-8859-1?Q?KGZtVYGtLrA6Jpwd0spXo/pdDfvr+Of54ZevWKoyLxbUlr6wsuWTmfHVEF?=
- =?iso-8859-1?Q?4YU05pM/c8+g8RVERfbJLAvGZR8bKq1gjVr/JLgLKLvnHqSaopDXtoTF5L?=
- =?iso-8859-1?Q?xV/rYG7uXXojTbfzVfScLcnjTUbJTvnlaepzaDR9x5jC1KrWrTz4oPNGMd?=
- =?iso-8859-1?Q?2FcuTZVissLplWN4vwgMa8GQ0UJBtpwsRJMqMcDtuArTR5psitRBqQ/RGR?=
- =?iso-8859-1?Q?hRkgHJaPpgro2GhPPEhG4VHwhT9MGQueYIUgxKIXC1xbIbAW22OrP9thmu?=
- =?iso-8859-1?Q?bXih7sxgaN?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S235237AbhHTB1A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Aug 2021 21:27:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54048 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232564AbhHTB1A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Aug 2021 21:27:00 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3AF1C061575
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 18:26:22 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id l144so15745178ybl.12
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 18:26:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DgcxC84JPKqGlLhnbwkxXpEm/q2dRXuF6KEKen5eaHg=;
+        b=qqjbo/uHESpCg5XiXopcYQSYq1jYjOTp4OvfSP/rRQZ2LwiGjN9w9hz2WuEBpLsoCo
+         V6zWIpvpxtBENgLiZCTnJcgZpkz/Iyo683/z6s4mtxNzireZ7A6anoBNHwuMQvkkGQfc
+         4afGry3MwMIZLXPai71wc0Z/Z4ydnCmfM90dlg5Pzlaq5lpNzQ9nBqtAPcJYVBJf4ff2
+         Eo8I7aIoj/fHjkmgoI4B8Cnb2XrnHMfPVOW33Wu4jU9jae2H34nB18b4ONWKNclzYTUH
+         lJF5o7cHOG5VzWXP9I7rJKQ6FjH4DWyGFi2sMHHZ63IczlRcjF3WXyigUgx9wEdcPXtr
+         bCNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DgcxC84JPKqGlLhnbwkxXpEm/q2dRXuF6KEKen5eaHg=;
+        b=WRD2Y43lfrWPRw3ysA9SUMBYhtoDN2WFtokTW3cdGVbDdlcFWKoiMVRuicA91tVpOK
+         ZFXv6JlEAnbAUnYL/eHOG7XzieW8qhnQ6boIOIjiL6mXLTLVbwUeNCRuElQCG5HZU+16
+         REhkxJHGv7tI3n5OtT2E3nFz+IaVpz2atg+B14x8+3iKsZZqjM8Q36e9L7Cym55/22k/
+         G0EgdBossjBS+fQ2TQ//JGvGYk4eegbq/k+JeNqGEqrv+YliG0tITh/Pz4HBxonZYhnQ
+         SSI4/RE4cg3G1/ZiZKHWivzPr5UC2oymjREQglGGhSLL9Z3Y8NZmz+iuf+Uh9wVyCd8g
+         yGMg==
+X-Gm-Message-State: AOAM531yK50IDZ55IJ+OGeNfovz5JbEQg/8cNcvVugqu2sDi6/EHQp+3
+        tN6/tiYKDPyggfEnUCKgwMfQ1pyQ3fpMNi6Cv1fEzQ==
+X-Google-Smtp-Source: ABdhPJxEVRFgkLevcVSqr5/I7YKj2gTta7V7YsRb5frCbZFa+dyN8RkdnCPGJZJ2y4952VC4rViohdrCqLcvxnPObYY=
+X-Received: by 2002:a25:804:: with SMTP id 4mr20679528ybi.346.1629422782039;
+ Thu, 19 Aug 2021 18:26:22 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4950.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a104190-6b54-4f96-9fc2-08d9637906f6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Aug 2021 01:22:50.7051
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 7Wvu2wBInLm+/qv8tsZ5DDTqveEpGevr3ebs65IFG5mZf7gLiMCXm+SvOf8BOFJGXk4WSlGPCWhKtjY4EsqJtfF3rsRAEmVwPFmwPHpfZDw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5078
-X-OriginatorOrg: intel.com
+References: <20210817145245.3555077-1-vladimir.oltean@nxp.com>
+ <cd0d9c40-d07b-e2ab-b068-d0bcb4685d09@bang-olufsen.dk> <20210817223101.7wbdofi7xkeqa2cp@skbuf>
+ <CAGETcx8T-ReJ_Gj-U+nxQyZPsv1v67DRBvpp9hS0fXgGRUQ17w@mail.gmail.com>
+ <6b89a9e1-e92e-ca99-9fbd-1d98f6a7864b@bang-olufsen.dk> <CAGETcx_uj0V4DChME-gy5HGKTYnxLBX=TH2rag29f_p=UcG+Tg@mail.gmail.com>
+ <YR5eMeKzcuYtB6Tk@lunn.ch> <CAGETcx9=AyEfjX_-adgRuX=8a0MkLnj8sy2KJGhxpNCinJu4yA@mail.gmail.com>
+ <20210820003720.fieifa5sa457q76r@skbuf>
+In-Reply-To: <20210820003720.fieifa5sa457q76r@skbuf>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Thu, 19 Aug 2021 18:25:45 -0700
+Message-ID: <CAGETcx9wy4+ayaWkNhWWuR=juGeB6sdKRVuXppJagXQLUhQFdg@mail.gmail.com>
+Subject: Re: [PATCH net] net: dsa: sja1105: fix use-after-free after calling
+ of_find_compatible_node, or worse
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > > Yes, you are right. I missed the effect of get_wol.
-> > > > Is it needed in future to implement link change interrupt in phy
-> > > > driver? Cause I dint see much phy driver implement link change
-> > > > interrupt.
+On Thu, Aug 19, 2021 at 5:37 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> On Thu, Aug 19, 2021 at 04:52:43PM -0700, Saravana Kannan wrote:
+> > On Thu, Aug 19, 2021 at 6:35 AM Andrew Lunn <andrew@lunn.ch> wrote:
 > > >
-> > > If there is a board that has interrupt pin wired correctly from the
-> > > PHY and the interrupt controller is safe to use (i.e. it is not a
-> > > PCA953x which cannot handle interrupt storms correctly), then I
-> > > think the PHY driver should use the interrupt, instead of polling.
-> > >
-> > > Marek
+> > > > (2) is what is happening in this case. fw_devlink=on sees that
+> > > > "switch" implements the "switch_intc" and "switch" hasn't finished
+> > > > probing yet. So it has no way of knowing that switch_intc is actually
+> > > > ready. And even if switch_intc was registered as part of switch's
+> > > > probe() by the time the PHYs are added, switch_intc could get
+> > > > deregistered if the probe fails at a later point. So until probe()
+> > > > returns 0, fw_devlink can't be fully sure the supplier (switch_intc)
+> > > > is ready. Which is good in general because you won't have to
+> > > > forcefully unbind (if that is even handled correctly in the first
+> > > > place) the consumers of a device if it fails probe() half way through
+> > > > registering a few services.
 > >
-> > Any suggestion to avoid the conflict of "WoL on link change" mentioned =
-by
-> Russell?
-> > Is it make sense to create a new member called wolopts under struct
-> > phy_device to track the WoL status and return the correct status in get=
-_wol
-> callback?
->=20
-> I really think you need to look at your PMC and see if you can make it an
-> interrupt controller. You only need level interrupts, not edge. So the
-> microcontroller in the PMC could just poll the GPIO. There appears to be =
-a
-> simple IPC between the host and PMC, so just extend it with a couple of
-> registers, interrupt state, interrupt mask, and make use of the existing
-> interrupt between the host and PMC.
->=20
->     Andrew
+> > I had to read your email a couple of times before I understood it. I
+> > think I do now, but apologies if I'm not making sense.
+> >
+> > >
+> > > There are actually a few different circular references with the way
+> > > switches work. Take for example:
+> > >
+> > > &fec1 {
+> > >         phy-mode = "rmii";
+> > >         pinctrl-names = "default";
+> > >         pinctrl-0 = <&pinctrl_fec1>;
+> > >         status = "okay";
+> > >
+> > >         fixed-link {
+> > >                 speed = <100>;
+> > >                 full-duplex;
+> > >         };
+> > >
+> > >         mdio1: mdio {
+> > >                 #address-cells = <1>;
+> > >                 #size-cells = <0>;
+> > >                 clock-frequency = <12500000>;
+> > >                 suppress-preamble;
+> > >                 status = "okay";
+> > >
+> > >                 switch0: switch0@0 {
+> > >                         compatible = "marvell,mv88e6190";
+> > >                         pinctrl-0 = <&pinctrl_gpio_switch0>;
+> > >                         pinctrl-names = "default";
+> > >                         reg = <0>;
+> > >                         eeprom-length = <65536>;
+> > >                         interrupt-parent = <&gpio3>;
+> > >                         interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
+> > >                         interrupt-controller;
+> > >                         #interrupt-cells = <2>;
+> > >
+> > >                         ports {
+> > >                                 #address-cells = <1>;
+> > >                                 #size-cells = <0>;
+> > >
+> > >                                 port@0 {
+> > >                                         reg = <0>;
+> > >                                         label = "cpu";
+> > >                                         ethernet = <&fec1>;
+> > >
+> > >                                         fixed-link {
+> > >                                                 speed = <100>;
+> > >                                                 full-duplex;
+> > >                                         };
+> > >                                 };
+> > >
+> > > FEC is an ethernet controller. It has an MDIO bus, and on the bus is
+> > > an Ethernet switch. port 0 of the Ethernet switch is connected to the
+> > > FEC ethernet controller.
+> > >
+> > > While the FEC probes, it will at some point register its MDIO bus. At
+> > > that point, the MDIO bus is probed, the switch is found, and
+> > > registered with the switch core. The switch core looks for the port
+> > > with an ethernet property and goes looking for that ethernet
+> > > interface. But that this point in time, the FEC probe has only got as
+> > > far as registering the MDIO bus. The interface itself is not
+> > > registered. So finding the interface fails, and we go into
+> > > EPROBE_DEFER for probing the switch.
+> >
+> > Ok, I understood up to here. Couple of questions:
+> > Is this EPROBE_DEFER causing an issue? Wouldn't the switch then
+> > probe successfully when it's reattempted? And then things work
+> > normally? I don't see what the problem is.
+>
+> It's not an issue per se, since it's not a fully circular dependency:
+> the DSA master (the FEC controller) does not have any dependency on the
+> switch beneath it to probe (there's nothing like a phy-handle from the
+> FEC to the switch or to something provided by it).
+>
+> A few EPROBE_DEFER iterations later the switch will finally find its DSA
+> master fully probed via of_find_net_device_by_node.
+>
+> Andrew is wondering how to avoid those extra EPROBE_DEFER iterations.
+> It is weird that the entire functionality of the system depends on those
+> EPROBE_DEFERs, typically you'd expect that EPROBE_DEFER just serializes
+> asynchronous probing of drivers with interdependencies. But in this case
+> it serializes synchronous probing.
+>
+> > > It is pretty hard to solve. An Ethernet interface can be used by the
+> > > kernel itself, e.g. NFS root. At the point you call register_netdev()
+> > > in the probe function, to register the interface with the core,
+> >
+> > Are you using "ethernet interface" and "ethernet controller"
+> > interchangeably? Looking at some other drivers, it looks like the
+> > ethernet controlled (FEC) is what would call register_netdev(). So
+> > what's wrong with that happening if switch0 has not probed
+> > successfully?
+>
+> The "interface" and "controller" terms are not really interchangeable,
+> an interface can also be virtual (stacked interfaces on top of physical
+> ones, like VLAN or DSA) while network controllers are typically physical
+> (unless emulated). But that is not of importance.
+>
+> The context here is that you cannot solve the interdependency by
+> registering the DSA master (FEC) first, then its MDIO bus second (the
+> DSA switch probes on the DSA master's MDIO bus => if you do this,
+> of_find_net_device_by_node from the DSA layer would find its master the
+> first time). The reason you cannot do that is because you need the MDIO
+> bus for really basic stuff: you also have your Ethernet PHY on it, and
+> you need to initialize that in order to send traffic. And you need to be
+> able to send traffic as soon as register_netdev() completes.
+>
+> So since the driver initialization sequence has a single written order
+> regardless of whether DSA switches are attached or not, that order is
+> picked to be the one where traffic works as soon as register_netdev completes.
+>
+> > > it
+> > > needs to be fully ready to go.  The networking stack can start using
+> > > the interface before register_netdev() even returns. So you cannot
+> > > first register the interface and then register the MDIO bus.
+> > >
+> > > I once looked to see if it was possible to tell the driver core to not
+> > > even bother probing a bus as soon as it is registered, go straight to
+> > > defer probe handling. Because this is one case we know it cannot
+> > > work. But it does not seem possible.
+> >
+> > fw_devlink doesn't understand the "ethernet" property. If I add that,
+> > then in the example you state above, switch0's probe won't even be
+> > called until the FEC probe returns. The change is pretty trivial
+> > (pasted below) -- can you try it out and tell me if it does what you
+> > need/want?
+> >
+> > -Saravana
+> >
+> > +++ b/drivers/of/property.c
+> > @@ -1292,6 +1292,7 @@ DEFINE_SIMPLE_PROP(resets, "resets", "#reset-cells")
+> >  DEFINE_SIMPLE_PROP(leds, "leds", NULL)
+> >  DEFINE_SIMPLE_PROP(backlight, "backlight", NULL)
+> >  DEFINE_SIMPLE_PROP(phy_handle, "phy-handle", NULL)
+> > +DEFINE_SIMPLE_PROP(ethernet, "ethernet", NULL)
+> >  DEFINE_SUFFIX_PROP(regulators, "-supply", NULL)
+> >  DEFINE_SUFFIX_PROP(gpio, "-gpio", "#gpio-cells")
+> >
+> > @@ -1381,6 +1382,7 @@ static const struct supplier_bindings
+> > of_supplier_bindings[] = {
+> >         { .parse_prop = parse_leds, },
+> >         { .parse_prop = parse_backlight, },
+> >         { .parse_prop = parse_phy_handle, },
+> > +       { .parse_prop = parse_ethernet, },
+> >         { .parse_prop = parse_gpio_compat, },
+> >         { .parse_prop = parse_interrupts, },
+> >         { .parse_prop = parse_regulators, },
+>
+> I don't have this exact setup to test, so I'll let Andrew do it, but I
+> have a question: DSA sets up a device link to its master in dsa_master_setup.
+> It does this to autoremove itself when the DSA master gets removed, but
+> fundamentally it does it after the entire EPROBE_DEFER shebang discussed
+> above has already happened. If your patch works, we can drop the manually
+> added device link, right?
 
-Thanks for your suggestion. Currently, PMC is designed for platform-wide
-power management and not meant to control any device specific registers.
-Seem like it is not possible to make PMC an interrupt controller, but I wil=
-l
-continue to discuss more with my team.
+Yes, you can drop that code if fw_devlink=on works and forms the links
+correctly (it should and if not it shouldn't be hard to fix -- just
+needs a bit of time to figure out why).
 
-Regards
-Siang
+> There's also the question of what to do in case of multiple DSA masters
+
+Sigh... I'm out of my depth with all this network specific discussions
+:( Especially when it comes to Linux network related frameworks.
+
+> (multiple "ethernet" properties). Right now, if you describe two DSA
+> masters in the device tree, DSA will pick the first DSA master and use
+> just that (it doesn't have full support for more than one). But even
+> though the second DSA master is not used for anything, with your change,
+> unbinding it will also unbind the switch, will it not?
+
+I think I understand your question. And the answer is "yes". It
+actually goes one step further. Until both all the DSA masters
+(devices pointed to by the "ethernet" properties) of a DSA are bound
+successfully, the DSA will not even be probed in the first place. You
+can set come command line args to timeout waiting for suppliers with
+missing drivers, but ideally you shouldn't need to use those
+(fw_devlink is fairly new and I'm continuing to work on improving
+it/making it work by default).
+
+-Saravana
