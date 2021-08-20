@@ -2,152 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19E1A3F2CCB
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 15:08:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D41D63F2CE1
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 15:11:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240662AbhHTNJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 09:09:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44244 "EHLO
+        id S240716AbhHTNMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 09:12:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240720AbhHTNJL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 09:09:11 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 928BCC061575
-        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 06:08:33 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id l24so7403287qtj.4
-        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 06:08:33 -0700 (PDT)
+        with ESMTP id S240444AbhHTNMJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 09:12:09 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 568A1C061575;
+        Fri, 20 Aug 2021 06:11:31 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id x4so9113269pgh.1;
+        Fri, 20 Aug 2021 06:11:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=TUaFXYR3HgX7rq/VVrgPte+1/jUiDRhyGavFeUWW8ns=;
-        b=qyykdYkmfS+sozWV6prsKemkogSdt6dw3JI6xplGBEyTZrCLVw/V2WrXps+vMYETkc
-         8Te8E/naVt9sCYftHN+RQWgeipXTUxRrtvWgldkYCu2Cbe9g6ADwtRoynUE5z+qBzTjG
-         54yO9pPGaOTEYQUVc1FEW/T8RQKm7EsP8D7GtvNgk4bFWoxEOLRtHkxavfl9A0+APfke
-         fUSP5CH+beQOqMRPOpWAxyXQpPSp8NBKx7ZcRxpsbapjzzBlp12z8K73a7u/zLR3Yi/5
-         /eO+ssNjqZxgkZLIbtO1QrlN47VLwXpLqfNwD+gSTbQel6v8qOEG9qHA3WYS7WzopQpP
-         XncQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DumM/jSCQ5pQ9eZgFpU+0KewnSiWRI7kODNq3MVNO9E=;
+        b=Lxpe8djYypSrG+rDhdI8Zj8XoAi8qqQia8zhwT4UV3xhiowgSs10jy3AgDNzKEDEyF
+         2GuLbi9GVVFcjh9UlMDL9KUW8QrzZktPvIUcY7JQUGRvDt+fa7vHuxhyvZAdvey3t4ob
+         hD12I6HXHDrZkRjMhWqSXBvFA8t0l/nORUqxhobI5jL9kGkFeKuaLFh4hExMg94Nn/+Y
+         ZX0iJa6zVUQl4P3W+vN6fOmLG2tonMXiCheuMNI43YhxqI96dxD+FKqPHJQaTLtG54GP
+         oe6y5RcUvG1ZNewnn9OX4H8s3Nmh0Ni6Kg3bG+ljwBTTlaL4sNTRBPgI879siMp4TQte
+         F+eA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=TUaFXYR3HgX7rq/VVrgPte+1/jUiDRhyGavFeUWW8ns=;
-        b=GqnYb8my1QZRQ1jtZBmZ7EetHCNYkKEAh4M32iW2NVkyVUHfLkqgGXuz+tatxxWAP+
-         HI7BiFqYegtIa9vnup+/zr+IwM8ZttpVViPnFaSwgBRV0vbWB1BZETfUZ82PGOWYOt3m
-         qMegJJbcA/l1zzlcl4QOWcK45dfb/YWAbXuvHlTzav8PCvEE8Pc1II00x//9lBMwbilf
-         7fF3vj1bsj0VrqwD9E1V0nw1nyI+2RUudT+l2uhxPvj2GE8ER73V0pYGikB8G1iN6l57
-         QU5vXKXsKMelHRRAj/hP5hTt5pkf2kPrMoWxvW8uhfdN75Dj0KUgLb/x45gP39be94fM
-         JU8Q==
-X-Gm-Message-State: AOAM5323LJra/P1s/Kntqb3tqT5AmLp5CGOG2oT8DGU2LXCKsXdY7tcC
-        aKBcIqAWjsCcGwi//Zqjt+KZWd7ngPwM8HLhCwGY8Q==
-X-Google-Smtp-Source: ABdhPJyHXvzqFdkh92xFSl2Tfgr6Wq+GnxyuqFmSQJ3g0FPjwxN9S26JOc0IArVq879EP1YIZ1goBTULRA693ce45J8=
-X-Received: by 2002:a05:622a:13c8:: with SMTP id p8mr17705841qtk.238.1629464912762;
- Fri, 20 Aug 2021 06:08:32 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DumM/jSCQ5pQ9eZgFpU+0KewnSiWRI7kODNq3MVNO9E=;
+        b=llyNHPpVpo3iir1cPeIivDcuTL3CoBNVeJ1trZDaZrDqn5wYbXJyGqVxUwHwg9JpOY
+         5GrTRTcr1EeQTQujIPQXjip6HqrLCDYjCt+qYwUTSoU7K+85j2ji8gWfsbTxb4JBL5Qv
+         t9H3vtHyHg7JzjFM5tlyPFnuSuhyFZHjJZKKLOotbRP0qD3WUNAojwwJBupw8jZFfzro
+         +Wjl68Ompb4Dsb/i0/ju8ibMec6cAcWv0ESIjTJ00USAu2CyN2Mi4QqnwRUFnU/Mahxx
+         fiWRuhWneVc5cG7B14Hm/5icG1Ht/ASra39JMRsIBk3qyvb0nRHrVbiz7mGIqksI+EYH
+         rxsQ==
+X-Gm-Message-State: AOAM533vlTcDF7wjP9dD1SWcb8U3JZLWmWjhRQIez0IDt/cNGGWOL36+
+        FLJZ7+n6+zhJYwlJ8osFlGY=
+X-Google-Smtp-Source: ABdhPJxylFQdwesAZv+5jXWctSOyZLpktCQebAX+HYEeyV7Dv3stIO/u8x8uQwcYBOXvuYmq81vLhg==
+X-Received: by 2002:aa7:95a6:0:b0:3e0:efe2:83ee with SMTP id a6-20020aa795a6000000b003e0efe283eemr19334679pfk.36.1629465090875;
+        Fri, 20 Aug 2021 06:11:30 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
+        by smtp.gmail.com with ESMTPSA id z2sm8304603pgb.33.2021.08.20.06.11.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 Aug 2021 06:11:30 -0700 (PDT)
+Subject: Re: [PATCH V3 12/13] HV/Netvsc: Add Isolation VM support for netvsc
+ driver
+To:     "hch@lst.de" <hch@lst.de>, Michael Kelley <mikelley@microsoft.com>
+Cc:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "will@kernel.org" <will@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "pgonda@google.com" <pgonda@google.com>,
+        "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "rppt@kernel.org" <rppt@kernel.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "saravanand@fb.com" <saravanand@fb.com>,
+        "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
+        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "rientjes@google.com" <rientjes@google.com>,
+        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
+        "tj@kernel.org" <tj@kernel.org>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        vkuznets <vkuznets@redhat.com>,
+        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+        "dave.hansen@intel.com" <dave.hansen@intel.com>
+References: <20210809175620.720923-1-ltykernel@gmail.com>
+ <20210809175620.720923-13-ltykernel@gmail.com>
+ <MWHPR21MB15936FE72E65A62FBA3EF4F2D7C09@MWHPR21MB1593.namprd21.prod.outlook.com>
+ <20210820042151.GB26450@lst.de>
+From:   Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <9e4d5de1-37b3-550d-9bca-4eb158e45b33@gmail.com>
+Date:   Fri, 20 Aug 2021 21:11:15 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <20210817005507.1507580-1-dmitry.baryshkov@linaro.org> <1CA665D1-86F0-45A1-862D-17DAB3ABA974@holtmann.org>
-In-Reply-To: <1CA665D1-86F0-45A1-862D-17DAB3ABA974@holtmann.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Fri, 20 Aug 2021 16:08:21 +0300
-Message-ID: <CAA8EJpoOxerwmwQozL3gp1nX-+oxLMFUFjVPvRy-MoVfPuvqrw@mail.gmail.com>
-Subject: Re: [RFC PATCH 00/15] create power sequencing subsystem
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        MSM <linux-arm-msm@vger.kernel.org>, linux-mmc@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:BLUETOOTH SUBSYSTEM" <linux-bluetooth@vger.kernel.org>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210820042151.GB26450@lst.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-On Thu, 19 Aug 2021 at 18:23, Marcel Holtmann <marcel@holtmann.org> wrote:
-> > This is an RFC of the proposed power sequencer subsystem. This is a
-> > generification of the MMC pwrseq code. The subsystem tries to abstract
-> > the idea of complex power-up/power-down/reset of the devices.
-> >
-> > The primary set of devices that promted me to create this patchset is
-> > the Qualcomm BT+WiFi family of chips. They reside on serial+platform
-> > interfaces (older generations) or on serial+PCIe (newer generations).
-> > They require a set of external voltage regulators to be powered on and
-> > (some of them) have separate WiFi and Bluetooth enable GPIOs.
-> >
-> > This patchset being an RFC tries to demonstrate the approach, design an=
-d
-> > usage of the pwrseq subsystem. Following issues are present in the RFC
-> > at this moment but will be fixed later if the overall approach would be
-> > viewed as acceptable:
-> >
-> > - No documentation
-> >   While the code tries to be self-documenting proper documentation
-> >   would be required.
-> >
-> > - Minimal device tree bindings changes
-> >   There are no proper updates for the DT bindings (thus neither Rob
-> >   Herring nor devicetree are included in the To/Cc lists). The dt
-> >   schema changes would be a part of v1.
-> >
-> > - Lack of proper PCIe integration
-> >   At this moment support for PCIe is hacked up to be able to test the
-> >   PCIe part of qca6390. Proper PCIe support would require automatically
-> >   powering up the devices before the scan basing on the proper device
-> >   structure in the device tree.
-> >
-> > ----------------------------------------------------------------
-> > Dmitry Baryshkov (15):
-> >      power: add power sequencer subsystem
-> >      pwrseq: port MMC's pwrseq drivers to new pwrseq subsystem
-> >      mmc: core: switch to new pwrseq subsystem
-> >      ath10k: add support for pwrseq sequencing
-> >      Bluetooth: hci_qca: merge qca_power into qca_serdev
-> >      Bluetooth: hci_qca: merge init paths
-> >      Bluetooth: hci_qca: merge qca_power_on with qca_regulators_init
-> >      Bluetooth: hci_qca: futher rework of power on/off handling
-> >      Bluetooth: hci_qca: add support for pwrseq
->
-> any chance you can try to abandon patching hci_qca. The serdev support in=
- hci_uart is rather hacking into old line discipline code and it is not agi=
-ng well. It is really becoming a mess.
 
-I wanted to stay away from rewriting the BT code. But... New driver
-would have a bonus point that I don't have to be compatible with old
-bindings. In fact we can even make it the other way around: let the
-old driver always use regulators and make the new driver support only
-the pwrseq. Then it should be possible to drop the old hci_qca driver
-together with dropping the old bindings.
+On 8/20/2021 12:21 PM, hch@lst.de wrote:
+> On Thu, Aug 19, 2021 at 06:14:51PM +0000, Michael Kelley wrote:
+>>> +	if (!pfns)
+>>> +		return NULL;
+>>> +
+>>> +	for (i = 0; i < size / HV_HYP_PAGE_SIZE; i++)
+>>> +		pfns[i] = virt_to_hvpfn(buf + i * HV_HYP_PAGE_SIZE)
+>>> +			+ (ms_hyperv.shared_gpa_boundary >> HV_HYP_PAGE_SHIFT);
+>>> +
+>>> +	vaddr = vmap_pfn(pfns, size / HV_HYP_PAGE_SIZE, PAGE_KERNEL_IO);
+>>> +	kfree(pfns);
+>>> +
+>>> +	return vaddr;
+>>> +}
+>>
+>> This function appears to be a duplicate of hv_map_memory() in Patch 11 of this
+>> series.  Is it possible to structure things so there is only one implementation?  In
+> 
+> So right now it it identical, but there is an important difference:
+> the swiotlb memory is physically contiguous to start with, so we can
+> do the simple remap using vmap_range as suggested in the last mail.
+> The cases here are pretty weird in that netvsc_remap_buf is called right
+> after vzalloc.  That is we create _two_ mappings in vmalloc space right
+> after another, where the original one is just used for establishing the
+> "GPADL handle" and freeing the memory.  In other words, the obvious thing
+> to do here would be to use a vmalloc variant that allows to take the
+> shared_gpa_boundary into account when setting up the PTEs.
 
-> I would say that the Qualcomm serial devices could use a separate standal=
-one serdev driver. A while I send an RFC for a new serdev driver.
->
-> https://www.spinics.net/lists/linux-bluetooth/msg74918.html
+The buffer is allocated via vmalloc(). It needs to be marked as host
+visible via hyperv hvcall before being accessed via address space above
+shared_gpa_boundary. The hvcall is called in the vmbus_establish_gpadl().
 
-Any reason why your driver stayed as an RFC and never made it into the
-kernel? Do you plan to revive your old RFCs on H:4 and H:5?
+> 
+> And here is somthing I need help from the x86 experts:  does the CPU
+> actually care about this shared_gpa_boundary?  Or does it just matter
+> for the generated DMA address?  Does somehow have a good pointer to
+> how this mechanism works?
+> 
 
-> There I had the idea that simple vendor specifics can be in that driver (=
-like the Broadcom part I added there), but frankly the QCA specifics are a =
-bit too specific and it should be a separate driver. However I think this w=
-ould be a good starting point.
->
-> In general a H:4 based Bluetooth driver is dead simple with the help of h=
-4_recv.h helper we have in the kernel. The complicated part is the power ma=
-nagement pieces or any vendor specific low-power protocol they are running =
-on that serial line. And since you are touching this anyway, doing a driver=
- from scratch might be lot simpler and cleaner. It would surely help all th=
-e new QCA device showing up in the future.
+The shared_gpa_boundary is vTOM feature of AMD SEV-SNP. Tom Lendacky
+introduced the feature in previous mail. I copy it here and please have
+a look.
 
---=20
-With best wishes
-Dmitry
+ From Tom Lendacky:
+IIUC, this is using the vTOM feature of SEV-SNP. When this feature is
+enabled for a VMPL level, any physical memory addresses below vTOM are
+considered private/encrypted and any physical memory addresses above vTOM
+are considered shared/unencrypted. With this option, you don't need a
+fully enlightened guest that sets and clears page table encryption bits.
+You just need the DMA buffers to be allocated in the proper range above 
+vTOM.
+
+See the section on "Virtual Machine Privilege Levels" in
+https://www.amd.com/system/files/TechDocs/SEV-SNP-strengthening-vm-isolation-with-integrity-protection-and-more.pdf.
