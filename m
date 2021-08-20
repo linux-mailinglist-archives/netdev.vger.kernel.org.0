@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 296DC3F261A
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 06:55:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDDFC3F261B
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 06:56:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235156AbhHTE4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 00:56:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45496 "EHLO mail.kernel.org"
+        id S235779AbhHTE4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 00:56:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45508 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232848AbhHTE4C (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Aug 2021 00:56:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 694316108B;
+        id S233073AbhHTE4D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Aug 2021 00:56:03 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E7DC460FF2;
         Fri, 20 Aug 2021 04:55:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629435325;
-        bh=93patY7AWTL7iDBlH51ykHLddHt8CQqNO7jB1cv7Zfc=;
+        s=k20201202; t=1629435326;
+        bh=q5prN//hKPuQsMDIrmHHS2ddHAxCEB/ocOW4V14wKDk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CrL5gmXserbD+r9XlO3X+4mNjqTWGnO/T49DnZE1qvQm9UMI+jr45ItHv4hLE2HCf
-         T/8try+JxNRBV5OwyTrxf9RUOcCRs4R8ySm1k8mCCn4mpSxz1oFBm5MWdJ4cyiQDRg
-         UKjGBuNUU5A1iBAPMaweoRimdRM07RUX8XC1w6M1Oygc8RPfrJNopd/naWbFVl2ft5
-         M1zkF4ht6WU4xKKaly7jM9M0BEm92fHOFrR36bxaqpSLEu7fomPGORamOqRQ0JW54R
-         fGt0ddu78lpK8VCag51tcRuEcz3iZEscvMNF8Kx+c/UUdcEJnueeuhcItRYAOACy/v
-         SwkLCFEBDa8xw==
+        b=AcIe5QafImpdLes+0eU37ETSGRc7TCKZIaRK57a20fWYNtC1KnHtPHRKy53/pAW+U
+         EEfPpm99NW6Tob+Ye5xUm9Osr8ngIhKsir6PfcQStDCbb2ZDpoMOJy6QbJJ+5OiCgL
+         XMxvX/vm+qkxh+RTVMeHZZ6RFgwb57+M6Q6EEjH9yeYB+feQmQwofn2HU5uzmwWIvI
+         6YApdW1+mCAlrVvb2Jb8NxDcUJO5dc742E00VgzSy6BGrtsThSn7aJsTsYHEAfhjQL
+         uJemsA63ZyBM+OMOTjwFlSdUM/Q7GunVsGOBG8rMtC+qu+UB9W64Uz0UiAgX1Kbtwa
+         zfWPpuQWX2oew==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Chris Mi <cmi@nvidia.com>,
         Oz Shlomo <ozsh@nvidia.com>, Roi Dayan <roid@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 04/15] net/mlx5e: CT, Use xarray to manage fte ids
-Date:   Thu, 19 Aug 2021 21:55:04 -0700
-Message-Id: <20210820045515.265297-5-saeed@kernel.org>
+Subject: [net-next 05/15] net/mlx5e: Introduce post action infrastructure
+Date:   Thu, 19 Aug 2021 21:55:05 -0700
+Message-Id: <20210820045515.265297-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210820045515.265297-1-saeed@kernel.org>
 References: <20210820045515.265297-1-saeed@kernel.org>
@@ -43,83 +43,140 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Chris Mi <cmi@nvidia.com>
 
-IDR is deprecated. Use xarray instead.
+Some tc actions are modeled in hardware using multiple tables
+causing a tc action list split. For example, CT action is modeled
+by jumping to a ct table which is controlled by nf flowtable.
+sFlow jumps in hardware to a sample table, which continues to a
+"default table" where it should continue processing the action list.
+
+Multi table actions are modeled in hardware using a unique fte_id.
+The fte_id is set before jumping to a table. Split actions continue
+to a post-action table where the matched fte_id value continues the
+execution the tc action list.
+
+Currently the post-action design is implemented only by the ct
+action. Introduce post action infrastructure as a pre-step for
+reusing it with the sFlow offload feature. Init and destroy the
+common post action table. Refactor the ct offload to use the
+common post table infrastructure in the next patch.
 
 Signed-off-by: Chris Mi <cmi@nvidia.com>
 Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |  3 +-
+ .../mellanox/mlx5/core/en/tc/post_act.c       | 62 +++++++++++++++++++
+ .../mellanox/mlx5/core/en/tc/post_act.h       | 17 +++++
+ 3 files changed, 81 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.h
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index b1707b86aa16..9609692e5837 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -46,7 +46,7 @@ struct mlx5_tc_ct_priv {
- 	struct mlx5_core_dev *dev;
- 	const struct net_device *netdev;
- 	struct mod_hdr_tbl *mod_hdr_tbl;
--	struct idr fte_ids;
-+	struct xarray fte_ids;
- 	struct xarray tuple_ids;
- 	struct rhashtable zone_ht;
- 	struct rhashtable ct_tuples_ht;
-@@ -1773,12 +1773,12 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
- 	}
- 	ct_flow->ft = ft;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+index 34e17e502e40..024d72b3b1aa 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
++++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+@@ -44,7 +44,8 @@ mlx5_core-$(CONFIG_MLX5_CLS_ACT)     += en_tc.o en/rep/tc.o en/rep/neigh.o \
+ 					lib/fs_chains.o en/tc_tun.o \
+ 					esw/indir_table.o en/tc_tun_encap.o \
+ 					en/tc_tun_vxlan.o en/tc_tun_gre.o en/tc_tun_geneve.o \
+-					en/tc_tun_mplsoudp.o diag/en_tc_tracepoint.o
++					en/tc_tun_mplsoudp.o diag/en_tc_tracepoint.o \
++					en/tc/post_act.o
+ mlx5_core-$(CONFIG_MLX5_TC_CT)	     += en/tc_ct.o
+ mlx5_core-$(CONFIG_MLX5_TC_SAMPLE)   += en/tc/sample.o
  
--	err = idr_alloc_u32(&ct_priv->fte_ids, ct_flow, &fte_id,
--			    MLX5_FTE_ID_MAX, GFP_KERNEL);
-+	err = xa_alloc(&ct_priv->fte_ids, &fte_id, ct_flow,
-+		       XA_LIMIT(1, MLX5_FTE_ID_MAX), GFP_KERNEL);
- 	if (err) {
- 		netdev_warn(priv->netdev,
- 			    "Failed to allocate fte id, err: %d\n", err);
--		goto err_idr;
-+		goto err_xarray;
- 	}
- 	ct_flow->fte_id = fte_id;
- 
-@@ -1914,8 +1914,8 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
- err_alloc_post:
- 	kfree(ct_flow->pre_ct_attr);
- err_alloc_pre:
--	idr_remove(&ct_priv->fte_ids, fte_id);
--err_idr:
-+	xa_erase(&ct_priv->fte_ids, fte_id);
-+err_xarray:
- 	mlx5_tc_ct_del_ft_cb(ct_priv, ft);
- err_ft:
- 	kvfree(post_ct_spec);
-@@ -2033,7 +2033,7 @@ __mlx5_tc_ct_delete_flow(struct mlx5_tc_ct_priv *ct_priv,
- 		mlx5_tc_rule_delete(priv, ct_flow->post_ct_rule,
- 				    ct_flow->post_ct_attr);
- 		mlx5_chains_put_chain_mapping(ct_priv->chains, ct_flow->chain_mapping);
--		idr_remove(&ct_priv->fte_ids, ct_flow->fte_id);
-+		xa_erase(&ct_priv->fte_ids, ct_flow->fte_id);
- 		mlx5_tc_ct_del_ft_cb(ct_priv, ct_flow->ft);
- 	}
- 
-@@ -2203,7 +2203,7 @@ mlx5_tc_ct_init(struct mlx5e_priv *priv, struct mlx5_fs_chains *chains,
- 		goto err_post_ct_tbl;
- 	}
- 
--	idr_init(&ct_priv->fte_ids);
-+	xa_init_flags(&ct_priv->fte_ids, XA_FLAGS_ALLOC1);
- 	mutex_init(&ct_priv->control_lock);
- 	rhashtable_init(&ct_priv->zone_ht, &zone_params);
- 	rhashtable_init(&ct_priv->ct_tuples_ht, &tuples_ht_params);
-@@ -2247,7 +2247,7 @@ mlx5_tc_ct_clean(struct mlx5_tc_ct_priv *ct_priv)
- 	rhashtable_destroy(&ct_priv->ct_tuples_nat_ht);
- 	rhashtable_destroy(&ct_priv->zone_ht);
- 	mutex_destroy(&ct_priv->control_lock);
--	idr_destroy(&ct_priv->fte_ids);
-+	xa_destroy(&ct_priv->fte_ids);
- 	kfree(ct_priv);
- }
- 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
+new file mode 100644
+index 000000000000..cd729557b17b
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
+@@ -0,0 +1,62 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++// Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
++
++#include "post_act.h"
++#include "mlx5_core.h"
++
++struct mlx5e_post_act {
++	enum mlx5_flow_namespace_type ns_type;
++	struct mlx5_fs_chains *chains;
++	struct mlx5_flow_table *ft;
++	struct mlx5e_priv *priv;
++};
++
++struct mlx5e_post_act *
++mlx5e_tc_post_act_init(struct mlx5e_priv *priv, struct mlx5_fs_chains *chains,
++		       enum mlx5_flow_namespace_type ns_type)
++{
++	struct mlx5e_post_act *post_act;
++	int err;
++
++	if (ns_type == MLX5_FLOW_NAMESPACE_FDB &&
++	    !MLX5_CAP_ESW_FLOWTABLE_FDB(priv->mdev, ignore_flow_level)) {
++		mlx5_core_warn(priv->mdev, "firmware level support is missing\n");
++		err = -EOPNOTSUPP;
++		goto err_check;
++	} else if (!MLX5_CAP_FLOWTABLE_NIC_RX(priv->mdev, ignore_flow_level)) {
++		mlx5_core_warn(priv->mdev, "firmware level support is missing\n");
++		err = -EOPNOTSUPP;
++		goto err_check;
++	}
++
++	post_act = kzalloc(sizeof(*post_act), GFP_KERNEL);
++	if (!post_act) {
++		err = -ENOMEM;
++		goto err_check;
++	}
++	post_act->ft = mlx5_chains_create_global_table(chains);
++	if (IS_ERR(post_act->ft)) {
++		err = PTR_ERR(post_act->ft);
++		mlx5_core_warn(priv->mdev, "failed to create post action table, err: %d\n", err);
++		goto err_ft;
++	}
++	post_act->chains = chains;
++	post_act->ns_type = ns_type;
++	post_act->priv = priv;
++	return post_act;
++
++err_ft:
++	kfree(post_act);
++err_check:
++	return ERR_PTR(err);
++}
++
++void
++mlx5e_tc_post_act_destroy(struct mlx5e_post_act *post_act)
++{
++	if (IS_ERR_OR_NULL(post_act))
++		return;
++
++	mlx5_chains_destroy_global_table(post_act->chains, post_act->ft);
++	kfree(post_act);
++}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.h
+new file mode 100644
+index 000000000000..a7ac69ef7b07
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.h
+@@ -0,0 +1,17 @@
++/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
++/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
++
++#ifndef __MLX5_POST_ACTION_H__
++#define __MLX5_POST_ACTION_H__
++
++#include "en.h"
++#include "lib/fs_chains.h"
++
++struct mlx5e_post_act *
++mlx5e_tc_post_act_init(struct mlx5e_priv *priv, struct mlx5_fs_chains *chains,
++		       enum mlx5_flow_namespace_type ns_type);
++
++void
++mlx5e_tc_post_act_destroy(struct mlx5e_post_act *post_act);
++
++#endif /* __MLX5_POST_ACTION_H__ */
 -- 
 2.31.1
 
