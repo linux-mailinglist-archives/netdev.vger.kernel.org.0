@@ -2,189 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E064B3F25E6
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 06:32:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1F923F2615
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 06:53:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233004AbhHTEdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 00:33:22 -0400
-Received: from verein.lst.de ([213.95.11.211]:39666 "EHLO verein.lst.de"
+        id S232187AbhHTEyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 00:54:06 -0400
+Received: from mg.ssi.bg ([178.16.128.9]:41336 "EHLO mg.ssi.bg"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229457AbhHTEdU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Aug 2021 00:33:20 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 0B8C66736F; Fri, 20 Aug 2021 06:32:38 +0200 (CEST)
-Date:   Fri, 20 Aug 2021 06:32:37 +0200
-From:   "hch@lst.de" <hch@lst.de>
-To:     Michael Kelley <mikelley@microsoft.com>
-Cc:     Tianyu Lan <ltykernel@gmail.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "joro@8bytes.org" <joro@8bytes.org>,
-        "will@kernel.org" <will@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "ardb@kernel.org" <ardb@kernel.org>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "pgonda@google.com" <pgonda@google.com>,
-        "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "rppt@kernel.org" <rppt@kernel.org>,
-        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "saravanand@fb.com" <saravanand@fb.com>,
-        "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
-        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "rientjes@google.com" <rientjes@google.com>,
-        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
-        "tj@kernel.org" <tj@kernel.org>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        vkuznets <vkuznets@redhat.com>,
-        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
-        "dave.hansen@intel.com" <dave.hansen@intel.com>
-Subject: Re: [PATCH V3 13/13] HV/Storvsc: Add Isolation VM support for
- storvsc driver
-Message-ID: <20210820043237.GC26450@lst.de>
-References: <20210809175620.720923-1-ltykernel@gmail.com> <20210809175620.720923-14-ltykernel@gmail.com> <MWHPR21MB1593EEF30FFD5C60ED744985D7C09@MWHPR21MB1593.namprd21.prod.outlook.com>
+        id S229457AbhHTEyD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Aug 2021 00:54:03 -0400
+Received: from mg.ssi.bg (localhost [127.0.0.1])
+        by mg.ssi.bg (Proxmox) with ESMTP id C8DB52DCCC
+        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 07:53:23 +0300 (EEST)
+Received: from ink.ssi.bg (ink.ssi.bg [178.16.128.7])
+        by mg.ssi.bg (Proxmox) with ESMTP id 867F32DCCA
+        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 07:53:19 +0300 (EEST)
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id E6A553C0332;
+        Fri, 20 Aug 2021 07:53:14 +0300 (EEST)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.16.1/8.16.1) with ESMTP id 17K4r7bV011009;
+        Fri, 20 Aug 2021 07:53:09 +0300
+Date:   Fri, 20 Aug 2021 07:53:06 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     Dust Li <dust.li@linux.alibaba.com>
+cc:     Simon Horman <horms@verge.net.au>,
+        Wensong Zhang <wensong@linux-vs.org>,
+        lvs-devel@vger.kernel.org, netdev@vger.kernel.org,
+        yunhong-cgl jiang <xintian1976@gmail.com>
+Subject: Re: [PATCH net-next v3] net: ipvs: add sysctl_run_estimation to
+ support disable estimation
+In-Reply-To: <20210819084418.27004-1-dust.li@linux.alibaba.com>
+Message-ID: <5fee5fd0-2e2-1ec2-8640-def6b0bc32ee@ssi.bg>
+References: <20210819084418.27004-1-dust.li@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <MWHPR21MB1593EEF30FFD5C60ED744985D7C09@MWHPR21MB1593.namprd21.prod.outlook.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 19, 2021 at 06:17:40PM +0000, Michael Kelley wrote:
-> > +#define storvsc_dma_map(dev, page, offset, size, dir) \
-> > +	dma_map_page(dev, page, offset, size, dir)
-> > +
-> > +#define storvsc_dma_unmap(dev, dma_range, dir)		\
-> > +		dma_unmap_page(dev, dma_range.dma,	\
-> > +			       dma_range.mapping_size,	\
-> > +			       dir ? DMA_FROM_DEVICE : DMA_TO_DEVICE)
-> > +
+
+	Hello,
+
+On Thu, 19 Aug 2021, Dust Li wrote:
+
+> estimation_timer will iterater the est_list to do estimation
+
+	...will iterate...
+
+> for each ipvs stats. When there are lots of services, the
+> list can be very large.
+> We observiced estimation_timer() run for more then 200ms on
+
+	...We found that estimation_timer() runs for...
+
+> a machine with 104 CPU and 50K services.
 > 
-> Each of these macros is used only once.  IMHO, they don't
-> add a lot of value.  Just coding dma_map/unmap_page()
-> inline would be fine and eliminate these lines of code.
-
-Yes, I had the same thought when looking over the code.  Especially
-as macros tend to further obsfucate the code (compared to actual helper
-functions).
-
-> > +				for (i = 0; i < request->hvpg_count; i++)
-> > +					storvsc_dma_unmap(&device->device,
-> > +						request->dma_range[i],
-> > +						request->vstor_packet.vm_srb.data_in == READ_TYPE);
+> yunhong-cgl jiang report the same phenomenon before:
+> https://www.spinics.net/lists/lvs-devel/msg05426.html
 > 
-> I think you can directly get the DMA direction as request->cmd->sc_data_direction.
-
-Yes.
-
-> > 
-> > @@ -1824,6 +1848,13 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
-> >  		payload->range.len = length;
-> >  		payload->range.offset = offset_in_hvpg;
-> > 
-> > +		cmd_request->dma_range = kcalloc(hvpg_count,
-> > +				 sizeof(*cmd_request->dma_range),
-> > +				 GFP_ATOMIC);
+> In some cases(for example a large K8S cluster with many ipvs services),
+> ipvs estimation may not be needed. So adding a sysctl blob to allow
+> users to disable this completely.
 > 
-> With this patch, it appears that storvsc_queuecommand() is always
-> doing bounce buffering, even when running in a non-isolated VM.
-> The dma_range is always allocated, and the inner loop below does
-> the dma mapping for every I/O page.  The corresponding code in
-> storvsc_on_channel_callback() that does the dma unmap allows for
-> the dma_range to be NULL, but that never happens.
-
-Maybe I'm missing something in the hyperv code, but I don't think
-dma_map_page would bounce buffer for the non-isolated case.  It
-will just return the physical address.
-
-> > +		if (!cmd_request->dma_range) {
-> > +			ret = -ENOMEM;
+> Default is: 1 (enable)
 > 
-> The other memory allocation failure in this function returns
-> SCSI_MLQUEUE_DEVICE_BUSY.   It may be debatable as to whether
-> that's the best approach, but that's a topic for a different patch.  I
-> would suggest being consistent and using the same return code
-> here.
+> Cc: yunhong-cgl jiang <xintian1976@gmail.com>
+> Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+> ---
+> v2: Use common sysctl facilities
+> v3: Fix sysctl_run_estimation() redefine when CONFIG_SYSCTL not enabled
+> ---
 
-Independent of if SCSI_MLQUEUE_DEVICE_BUSY is good (it it a common
-pattern in SCSI drivers), ->queuecommand can't return normal
-negative errnos.  It must return the SCSI_MLQUEUE_* codes or 0.
-We should probably change the return type of the method definition
-to a suitable enum to make this more clear.
+	Replace above "---" after v3 with empty line,
+avoid multiple "---" lines.
 
-> > +				if (offset_in_hvpg) {
-> > +					payload->range.offset = dma & ~HV_HYP_PAGE_MASK;
-> > +					offset_in_hvpg = 0;
-> > +				}
+>  Documentation/networking/ipvs-sysctl.rst | 17 +++++++++++++++++
+>  include/net/ip_vs.h                      | 12 ++++++++++++
+>  net/netfilter/ipvs/ip_vs_ctl.c           |  8 ++++++++
+>  net/netfilter/ipvs/ip_vs_est.c           |  5 +++++
+>  4 files changed, 42 insertions(+)
 > 
-> I'm not clear on why payload->range.offset needs to be set again.
-> Even after the dma mapping is done, doesn't the offset in the first
-> page have to be the same?  If it wasn't the same, Hyper-V wouldn't
-> be able to process the PFN list correctly.  In fact, couldn't the above
-> code just always set offset_in_hvpg = 0?
+> diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
+> index 2afccc63856e..e20f7a27fc85 100644
+> --- a/Documentation/networking/ipvs-sysctl.rst
+> +++ b/Documentation/networking/ipvs-sysctl.rst
+> @@ -300,3 +300,20 @@ sync_version - INTEGER
+>  
+>  	Kernels with this sync_version entry are able to receive messages
+>  	of both version 1 and version 2 of the synchronisation protocol.
+> +
+> +run_estimation - BOOLEAN
+> +	0 - disabled
+> +	not 0 - enabled (default)
+> +
+> +	If disabled, the estimation will be stop, and you can't see
+> +	any update on speed estimation data.
+> +
+> +	For example
+> +	'Conns/s   Pkts/s   Pkts/s          Bytes/s          Bytes/s'
+> +	those data in /proc/net/ip_vs_stats will always be zero.
+> +	Note, this only affect the speed estimation, the total data
+> +	will still be updated.
 
-Careful.  DMA mapping is supposed to keep the offset in the page, but
-for that the DMA mapping code needs to know what the device considers a
-"page".  For that the driver needs to set the min_align_mask field in
-struct device_dma_parameters.
+	We can remove the above example
 
-> 
-> The whole approach here is to do dma remapping on each individual page
-> of the I/O buffer.  But wouldn't it be possible to use dma_map_sg() to map
-> each scatterlist entry as a unit?  Each scatterlist entry describes a range of
-> physically contiguous memory.  After dma_map_sg(), the resulting dma
-> address must also refer to a physically contiguous range in the swiotlb
-> bounce buffer memory.   So at the top of the "for" loop over the scatterlist
-> entries, do dma_map_sg() if we're in an isolated VM.  Then compute the
-> hvpfn value based on the dma address instead of sg_page().  But everything
-> else is the same, and the inner loop for populating the pfn_arry is unmodified.
-> Furthermore, the dma_range array that you've added is not needed, since
-> scatterlist entries already have a dma_address field for saving the mapped
-> address, and dma_unmap_sg() uses that field.
+> +
+> +	You can always re-enable estimation by setting this value to 1.
+> +	But be carefull, the first estimation after re-enable is not
 
-Yes, I think dma_map_sg is the right thing to use here, probably even
-for the non-isolated case so that we can get the hv drivers out of their
-little corner and into being more like a normal kernel driver.  That
-is, use the scsi_dma_map/scsi_dma_unmap helpers, and then iterate over
-the dma addresses one page at a time using for_each_sg_dma_page.
+	...careful...
 
-> 
-> One thing:  There's a maximum swiotlb mapping size, which I think works
-> out to be 256 Kbytes.  See swiotlb_max_mapping_size().  We need to make
-> sure that we don't get a scatterlist entry bigger than this size.  But I think
-> this already happens because you set the device->dma_mask field in
-> Patch 11 of this series.  __scsi_init_queue checks for this setting and
-> sets max_sectors to limits transfers to the max mapping size.
+> +	accurate.
+> diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+> index 7cb5a1aace40..269f8808f6db 100644
+> --- a/include/net/ip_vs.h
+> +++ b/include/net/ip_vs.h
+> @@ -931,6 +931,7 @@ struct netns_ipvs {
+>  	int			sysctl_conn_reuse_mode;
+>  	int			sysctl_schedule_icmp;
+>  	int			sysctl_ignore_tunneled;
+> +	int 			sysctl_run_estimation;
 
-Indeed.
+	scripts/checkpatch.pl --strict /tmp/file.patch
+reports for extra space just after 'int'.
+
+>  
+>  	/* ip_vs_lblc */
+>  	int			sysctl_lblc_expiration;
+> @@ -1071,6 +1072,11 @@ static inline int sysctl_cache_bypass(struct netns_ipvs *ipvs)
+>  	return ipvs->sysctl_cache_bypass;
+>  }
+>  
+> +static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
+> +{
+> +	return ipvs->sysctl_run_estimation;
+> +}
+> +
+>  #else
+>  
+>  static inline int sysctl_sync_threshold(struct netns_ipvs *ipvs)
+> @@ -1163,6 +1169,11 @@ static inline int sysctl_cache_bypass(struct netns_ipvs *ipvs)
+>  	return 0;
+>  }
+>  
+> +static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
+> +{
+> +	return 1;
+> +}
+> +
+>  #endif
+>  
+>  /* IPVS core functions
+> @@ -1650,6 +1661,7 @@ static inline int ip_vs_confirm_conntrack(struct sk_buff *skb)
+>  static inline void ip_vs_conn_drop_conntrack(struct ip_vs_conn *cp)
+>  {
+>  }
+> +
+
+	Remove this irrelevant hunk.
+
+>  #endif /* CONFIG_IP_VS_NFCT */
+>  
+>  /* Using old conntrack that can not be redirected to another real server? */
+> diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+> index c25097092a06..cbea5a68afb5 100644
+> --- a/net/netfilter/ipvs/ip_vs_ctl.c
+> +++ b/net/netfilter/ipvs/ip_vs_ctl.c
+> @@ -2017,6 +2017,12 @@ static struct ctl_table vs_vars[] = {
+>  		.mode		= 0644,
+>  		.proc_handler	= proc_dointvec,
+>  	},
+> +	{
+> +		.procname	= "run_estimation",
+> +		.maxlen		= sizeof(int),
+> +		.mode		= 0644,
+> +		.proc_handler	= proc_dointvec,
+> +	},
+>  #ifdef CONFIG_IP_VS_DEBUG
+>  	{
+>  		.procname	= "debug_level",
+> @@ -4090,6 +4096,8 @@ static int __net_init ip_vs_control_net_init_sysctl(struct netns_ipvs *ipvs)
+>  	tbl[idx++].data = &ipvs->sysctl_conn_reuse_mode;
+>  	tbl[idx++].data = &ipvs->sysctl_schedule_icmp;
+>  	tbl[idx++].data = &ipvs->sysctl_ignore_tunneled;
+> +	ipvs->sysctl_run_estimation = 1;
+> +	tbl[idx++].data = &ipvs->sysctl_run_estimation;
+>  
+>  	ipvs->sysctl_hdr = register_net_sysctl(net, "net/ipv4/vs", tbl);
+>  	if (ipvs->sysctl_hdr == NULL) {
+> diff --git a/net/netfilter/ipvs/ip_vs_est.c b/net/netfilter/ipvs/ip_vs_est.c
+> index 05b8112ffb37..9a1a7af6a186 100644
+> --- a/net/netfilter/ipvs/ip_vs_est.c
+> +++ b/net/netfilter/ipvs/ip_vs_est.c
+> @@ -100,6 +100,9 @@ static void estimation_timer(struct timer_list *t)
+>  	u64 rate;
+>  	struct netns_ipvs *ipvs = from_timer(ipvs, t, est_timer);
+>  
+> +	if (!sysctl_run_estimation(ipvs))
+> +		goto skip;
+> +
+>  	spin_lock(&ipvs->est_lock);
+>  	list_for_each_entry(e, &ipvs->est_list, list) {
+>  		s = container_of(e, struct ip_vs_stats, est);
+> @@ -131,6 +134,8 @@ static void estimation_timer(struct timer_list *t)
+>  		spin_unlock(&s->lock);
+>  	}
+>  	spin_unlock(&ipvs->est_lock);
+> +
+> +skip:
+>  	mod_timer(&ipvs->est_timer, jiffies + 2*HZ);
+>  }
+>  
+> -- 
+> 2.19.1.3.ge56e4f7
+
+Regards
+
+--
+Julian Anastasov <ja@ssi.bg>
+
