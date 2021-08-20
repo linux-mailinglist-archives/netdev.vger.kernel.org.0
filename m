@@ -2,169 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6FE83F2814
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 10:04:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED14C3F2829
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 10:10:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231297AbhHTIFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 04:05:19 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:7222 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230363AbhHTIFJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 04:05:09 -0400
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17K7XZNQ116411;
-        Fri, 20 Aug 2021 04:02:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=1LLkyb0PdFwV77Bc8XO1wRtPxe9DolzxOJdMvJ4iNHk=;
- b=XW0asrJQcXOMYsKkfGYpLykU467ZGg5kVEe743hTXMhgS8g0HA+0seRkYv0PyLErMC/O
- UdyKZqnSbYqkqUtyRSdLmhZ93F40SU8jkQQRMjPMOvP3q9TC7DYh0xiHN/rJvsAL6lQc
- gLHoXNtRfckoKt8oPw/P9ydY3GNX+qqbS/S5szxWWV2UU0QtYEZjq2VfzPUB1cFB7QHZ
- IMQ/uVxbdOG2yP7n3DYryKkg51EYrtLI09YZu3Uc+MwBm3qkYsIC6mQgJ4Iean9cOsz3
- vK1Kg0LCESiIPfsqpGwbPz2KdSLWrd/vjIBRJr5RfC4CooPb7ovknVLuxTGxGYeFk+Nc kw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ahq0wctsf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 Aug 2021 04:02:32 -0400
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 17K7XYM4116404;
-        Fri, 20 Aug 2021 04:02:32 -0400
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ahq0wctrm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 Aug 2021 04:02:32 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 17K82QkQ030819;
-        Fri, 20 Aug 2021 08:02:30 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma03ams.nl.ibm.com with ESMTP id 3ae5f8hdpm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 Aug 2021 08:02:29 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 17K82P3d35127578
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 20 Aug 2021 08:02:25 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 33DC942079;
-        Fri, 20 Aug 2021 08:02:25 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DEAB042063;
-        Fri, 20 Aug 2021 08:02:24 +0000 (GMT)
-Received: from oc7455500831.ibm.com (unknown [9.145.53.209])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 20 Aug 2021 08:02:24 +0000 (GMT)
-Subject: Re: [PATCH] ptp: ocp: don't allow on S390
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Hendrik Brueckner <brueckner@linux.vnet.ibm.com>,
-        linux-s390 <linux-s390@vger.kernel.org>
-Cc:     netdev@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-References: <20210813203026.27687-1-rdunlap@infradead.org>
- <20210816210914.qkyd4em4rw3thbyg@bsd-mbp.dhcp.thefacebook.com>
- <16acf1ad-d626-b3a3-1cad-3fa6c61c8a22@infradead.org>
- <20210816214103.w54pfwcuge4nqevw@bsd-mbp.dhcp.thefacebook.com>
- <0e6bd492-a3f5-845c-9d93-50f1cc182a62@infradead.org>
-From:   Christian Borntraeger <borntraeger@de.ibm.com>
-Message-ID: <72ffff17-0b46-c12e-2f67-1a18bdcb8532@de.ibm.com>
-Date:   Fri, 20 Aug 2021 10:02:24 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S229586AbhHTILT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 04:11:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60178 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230036AbhHTILS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 04:11:18 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E871C061756
+        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 01:10:41 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id d5so6846638qtd.3
+        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 01:10:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=g5IS6e3Hnyb2jRAb6f1KMnSZamwQJcSDoTsblYNlRlY=;
+        b=AZ9hPtV94XSFU7TEKvhcU+et+rJ+GpExWH9lrUhoqWoy0ewHu2M34a/uO6l9DjkV3W
+         f0oJk7nxCalOBi4OJVItLOhpuaLrPNMPtOlhahFsCqEnDmrPKqvI4ExcusqN0kmf2dmm
+         X6aVP3hh5uVmOusZVgIhxqBCEvpuDtGXIU0bCJxnBEYFye8qFaFZb0rRPDeTD4tGclZw
+         r6C1JJE68Lj5FmT8KeHnhA7VE0yN5hMhHlb84zbNqFmbhPEbOEPv33O68IOJr/4+cmXs
+         8UuTDZzFcGnR83wrcms+xf3UQTABzatiaTOhd2YkS23GfoR9Q7lX2ajxwnwJ0ubC8bl1
+         XkYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=g5IS6e3Hnyb2jRAb6f1KMnSZamwQJcSDoTsblYNlRlY=;
+        b=ZYYG0cq2xoKRot14vx1e4l5aO7iHWMvq82BHsCw+q5aVQCG4bpNabbthCfNmVoWw7N
+         FhUEYuOVh/W3J0guXfOkJ/N35iiwo3yfb1jAx2yRjQc/QhvuU7dhvmkigRu3ZIhpFUQq
+         tuE4a5OHTLre53VRC2mkh6/118LQQUdaQQ+NAV/vbGQo1Wqr4AaMOpBXQhvDFRTSt1i+
+         mw6tbioMfPcoV/gCMYjqpqjxVAWn8d343aTkO92Wg8eylP+Zn32pKZxnv20EF/g3uwQu
+         AnuJKGlVFV+eRKDn86sUzD1Genx5L5VNKbwJm5AFN3FGvk2k7q1e8xinIsLCsWpNp+I5
+         JAvw==
+X-Gm-Message-State: AOAM533EJShnxeEnZ4sxlKmXiGFnQQWFrorgmfq6kTB0ds6+95mtt5Jd
+        0kTSmVGb3bybCKWT1DZbymbs0h/mVYsB0J9REhXW1g==
+X-Google-Smtp-Source: ABdhPJykvHLGPJLrte3XmQ+2fZnjn7MpEKijpvU45xzTfUuHaBNaF5vvWd95j2y77Xi7ngLBiT0SX8r507FJf1UymdA=
+X-Received: by 2002:a05:622a:13c8:: with SMTP id p8mr16634457qtk.238.1629447040101;
+ Fri, 20 Aug 2021 01:10:40 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <0e6bd492-a3f5-845c-9d93-50f1cc182a62@infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: SIESr2GvgPMdtbZVD_6xpbsNh5XNr4qv
-X-Proofpoint-ORIG-GUID: B8vkqK7dSXHVtszFwyGUHu48KrFyfRYj
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-08-20_03:2021-08-20,2021-08-20 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
- priorityscore=1501 lowpriorityscore=0 bulkscore=0 suspectscore=0
- mlxscore=0 spamscore=0 impostorscore=0 clxscore=1011 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2107140000 definitions=main-2108200043
+References: <20210817005507.1507580-1-dmitry.baryshkov@linaro.org>
+ <20210817005507.1507580-11-dmitry.baryshkov@linaro.org> <YR7m43mURVJ8YufC@ripper>
+In-Reply-To: <YR7m43mURVJ8YufC@ripper>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Fri, 20 Aug 2021 11:10:29 +0300
+Message-ID: <CAA8EJpr+=Yg2B_DzQWntW0GgvBfaSpAu0K+UD3NowdkusiYxrQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 10/15] pwrseq: add support for QCA BT+WiFi power sequencer
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        "open list:DRM DRIVER FOR MSM ADRENO GPU" 
+        <linux-arm-msm@vger.kernel.org>, linux-mmc@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-bluetooth@vger.kernel.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
+
+On Fri, 20 Aug 2021 at 02:17, Bjorn Andersson
+<bjorn.andersson@linaro.org> wrote:
+>
+> On Mon 16 Aug 17:55 PDT 2021, Dmitry Baryshkov wrote:
+> [..]
+> > diff --git a/drivers/power/pwrseq/pwrseq_qca.c b/drivers/power/pwrseq/pwrseq_qca.c
+> > new file mode 100644
+> > index 000000000000..3421a4821126
+> > --- /dev/null
+> > +++ b/drivers/power/pwrseq/pwrseq_qca.c
+> > @@ -0,0 +1,290 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> > +/*
+> > + * Copyright (c) 2021, Linaro Ltd.
+> > + *
+> > + * Author: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> > + *
+> > + * Power Sequencer for Qualcomm WiFi + BT SoCs
+> > + */
+> > +
+> > +#include <linux/delay.h>
+> > +#include <linux/gpio/consumer.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/pwrseq/driver.h>
+> > +#include <linux/regulator/consumer.h>
+> > +
+> > +/*
+> > + * Voltage regulator information required for configuring the
+> > + * QCA WiFi+Bluetooth chipset
+> > + */
+> > +struct qca_vreg {
+> > +     const char *name;
+> > +     unsigned int load_uA;
+> > +};
+> > +
+> > +struct qca_device_data {
+> > +     struct qca_vreg vddio;
+>
+> Any particular reason why this isn't just the first entry in vregs and
+> operated as part of the bulk API?
+
+Because VDDIO should be up before bringing the rest of the power
+sources (at least for wcn39xx). This is usually the case since VDDIO
+is S4A, but I'd still prefer to express this in the code.
+And register_bulk_enable powers up all the supplies asynchronously,
+thus it can not guarantee that the first entry would be powered up
+first.
+
+>
+> > +     struct qca_vreg *vregs;
+> > +     size_t num_vregs;
+> > +     bool has_bt_en;
+> > +     bool has_wifi_en;
+> > +};
+> > +
+> > +struct pwrseq_qca;
+> > +struct pwrseq_qca_one {
+> > +     struct pwrseq_qca *common;
+> > +     struct gpio_desc *enable;
+> > +};
+> > +
+> > +#define PWRSEQ_QCA_WIFI 0
+> > +#define PWRSEQ_QCA_BT 1
+> > +
+> > +#define PWRSEQ_QCA_MAX 2
+> > +
+> > +struct pwrseq_qca {
+> > +     struct regulator *vddio;
+> > +     struct gpio_desc *sw_ctrl;
+> > +     struct pwrseq_qca_one pwrseq_qcas[PWRSEQ_QCA_MAX];
+> > +     int num_vregs;
+> > +     struct regulator_bulk_data vregs[];
+> > +};
+> > +
+> > +static int pwrseq_qca_power_on(struct pwrseq *pwrseq)
+> > +{
+> > +     struct pwrseq_qca_one *qca_one = pwrseq_get_data(pwrseq);
+> > +     int ret;
+> > +
+> > +     if (qca_one->common->vddio) {
+>
+> devm_regulator_get() doesn't return NULL, so this is always true.
+
+This is more of the safety guard for the cases when the qca doesn't
+have the special vddio supply.
+
+>
+> > +             ret = regulator_enable(qca_one->common->vddio);
+> > +             if (ret)
+> > +                     return ret;
+> > +     }
+> > +
+> > +     ret = regulator_bulk_enable(qca_one->common->num_vregs, qca_one->common->vregs);
+> > +     if (ret)
+> > +             goto vddio_off;
+> > +
+> > +     if (qca_one->enable) {
+> > +             gpiod_set_value_cansleep(qca_one->enable, 0);
+> > +             msleep(50);
+> > +             gpiod_set_value_cansleep(qca_one->enable, 1);
+> > +             msleep(150);
+> > +     }
+> > +
+> > +     if (qca_one->common->sw_ctrl) {
+> > +             bool sw_ctrl_state = gpiod_get_value_cansleep(qca_one->common->sw_ctrl);
+> > +             dev_dbg(&pwrseq->dev, "SW_CTRL is %d", sw_ctrl_state);
+> > +     }
+> > +
+> > +     return 0;
+> > +
+> > +vddio_off:
+> > +     regulator_disable(qca_one->common->vddio);
+> > +
+> > +     return ret;
+> > +}
+> [..]
+> > +static int pwrseq_qca_probe(struct platform_device *pdev)
+> > +{
+> > +     struct pwrseq_qca *pwrseq_qca;
+> > +     struct pwrseq *pwrseq;
+> > +     struct pwrseq_provider *provider;
+> > +     struct device *dev = &pdev->dev;
+> > +     struct pwrseq_onecell_data *onecell;
+> > +     const struct qca_device_data *data;
+> > +     int ret, i;
+> > +
+> > +     data = device_get_match_data(dev);
+> > +     if (!data)
+> > +             return -EINVAL;
+> > +
+> > +     pwrseq_qca = devm_kzalloc(dev, struct_size(pwrseq_qca, vregs, data->num_vregs), GFP_KERNEL);
+> > +     if (!pwrseq_qca)
+> > +             return -ENOMEM;
+> > +
+> > +     onecell = devm_kzalloc(dev, struct_size(onecell, pwrseqs, PWRSEQ_QCA_MAX), GFP_KERNEL);
+> > +     if (!onecell)
+> > +             return -ENOMEM;
+> > +
+> > +     ret = pwrseq_qca_regulators_init(dev, pwrseq_qca, data);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     if (data->has_wifi_en) {
+> > +             pwrseq_qca->pwrseq_qcas[PWRSEQ_QCA_WIFI].enable = devm_gpiod_get(dev, "wifi-enable", GPIOD_OUT_LOW);
+> > +             if (IS_ERR(pwrseq_qca->pwrseq_qcas[PWRSEQ_QCA_WIFI].enable)) {
+> > +                     return dev_err_probe(dev, PTR_ERR(pwrseq_qca->pwrseq_qcas[PWRSEQ_QCA_WIFI].enable),
+> > +                                     "failed to acquire WIFI enable GPIO\n");
+> > +             }
+> > +     }
+> > +
+> > +     if (data->has_bt_en) {
+> > +             pwrseq_qca->pwrseq_qcas[PWRSEQ_QCA_BT].enable = devm_gpiod_get(dev, "bt-enable", GPIOD_OUT_LOW);
+> > +             if (IS_ERR(pwrseq_qca->pwrseq_qcas[PWRSEQ_QCA_BT].enable)) {
+> > +                     return dev_err_probe(dev, PTR_ERR(pwrseq_qca->pwrseq_qcas[PWRSEQ_QCA_BT].enable),
+> > +                                     "failed to acquire BT enable GPIO\n");
+> > +             }
+> > +     }
+> > +
+> > +     pwrseq_qca->sw_ctrl = devm_gpiod_get_optional(dev, "swctrl", GPIOD_IN);
+> > +     if (IS_ERR(pwrseq_qca->sw_ctrl)) {
+> > +             return dev_err_probe(dev, PTR_ERR(pwrseq_qca->sw_ctrl),
+> > +                             "failed to acquire SW_CTRL gpio\n");
+> > +     } else if (!pwrseq_qca->sw_ctrl)
+> > +             dev_info(dev, "No SW_CTRL gpio\n");
+>
+> Some {} around the else as well please.
+
+ack
+
+>
+> Regards,
+> Bjorn
 
 
-On 20.08.21 00:58, Randy Dunlap wrote:
-> On 8/16/21 2:41 PM, Jonathan Lemon wrote:
->> On Mon, Aug 16, 2021 at 02:15:51PM -0700, Randy Dunlap wrote:
->>> On 8/16/21 2:09 PM, Jonathan Lemon wrote:
->>>> On Fri, Aug 13, 2021 at 01:30:26PM -0700, Randy Dunlap wrote:
->>>>> There is no 8250 serial on S390. See commit 1598e38c0770.
->>>>
->>>> There's a 8250 serial device on the PCI card.   Its been
->>>> ages since I've worked on the architecture, but does S390
->>>> even support PCI?
->>>
->>> Yes, it does.
 
-We do support PCI, but only a (very) limited amount of cards.
-So there never will be a PCI card with 8250 on s390 and
-I also doubt that we will see the "OpenCompute TimeCard"
-on s390.
-
-So in essence the original patch is ok but the patch below
-would also be ok for KVM. But it results in a larger kernel
-with code that will never be used. So I guess the original
-patch is the better choice.
-
->>>
->>>>> Is this driver useful even without 8250 serial?
->>>>
->>>> The FB timecard has an FPGA that will internally parse the
->>>> GNSS strings and correct the clock, so the PTP clock will
->>>> work even without the serial devices.
->>>>
->>>> However, there are userspace tools which want to read the
->>>> GNSS signal (for holdolver and leap second indication),
->>>> which is why they are exposed.
->>>
->>> So what do you recommend here?
->>
->> Looking at 1598e38c0770, it appears the 8250 console is the
->> problem.  Couldn't S390 be fenced by SERIAL_8250_CONSOLE, instead
->> of SERIAL_8250, which would make the 8250 driver available?
-> 
-> OK, that sounds somewhat reasonable.
-> 
->> For now, just disabling the driver on S390 sounds reasonable.
->>
-> 
-> S390 people, how does this look to you?
-> 
-> This still avoids having serial 8250 console conflicting
-> with S390's sclp console.
-> (reference commit 1598e38c0770)
-> 
-> 
-> ---
->   drivers/tty/serial/8250/Kconfig |    2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> --- linux-next-20210819.orig/drivers/tty/serial/8250/Kconfig
-> +++ linux-next-20210819/drivers/tty/serial/8250/Kconfig
-> @@ -6,7 +6,6 @@
-> 
->   config SERIAL_8250
->       tristate "8250/16550 and compatible serial support"
-> -    depends on !S390
->       select SERIAL_CORE
->       select SERIAL_MCTRL_GPIO if GPIOLIB
->       help
-> @@ -85,6 +84,7 @@ config SERIAL_8250_FINTEK
->   config SERIAL_8250_CONSOLE
->       bool "Console on 8250/16550 and compatible serial port"
->       depends on SERIAL_8250=y
-> +    depends on !S390
->       select SERIAL_CORE_CONSOLE
->       select SERIAL_EARLYCON
->       help
-> 
-> 
+-- 
+With best wishes
+Dmitry
