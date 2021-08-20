@@ -2,281 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1853D3F28CF
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 11:03:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 155583F2900
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 11:16:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234825AbhHTJEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 05:04:20 -0400
-Received: from smtp11.smtpout.orange.fr ([80.12.242.133]:20546 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234622AbhHTJET (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 05:04:19 -0400
-Received: from tomoyo.flets-east.jp ([114.149.34.46])
-        by mwinf5d89 with ME
-        id jl3S250090zjR6y03l3dMz; Fri, 20 Aug 2021 11:03:39 +0200
-X-ME-Helo: tomoyo.flets-east.jp
-X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
-X-ME-Date: Fri, 20 Aug 2021 11:03:39 +0200
-X-ME-IP: 114.149.34.46
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH] can: netlink: prevent incoherent can configuration in case of early return
-Date:   Fri, 20 Aug 2021 18:03:13 +0900
-Message-Id: <20210820090313.299483-1-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.31.1
+        id S232380AbhHTJRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 05:17:00 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:38511 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233761AbhHTJQ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 05:16:56 -0400
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
+        by mailnew.nyi.internal (Postfix) with ESMTP id B340C580B27;
+        Fri, 20 Aug 2021 05:16:18 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Fri, 20 Aug 2021 05:16:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=p8CFZs
+        QoBWGFQjO7uqov/8dojZVhQBnWxPLdLX5Deac=; b=en5I7X27Hl0AqM/iuUIpVx
+        uEhA4PbBAuPeO946qSJ3v3qoMb2x57mSm24dCiM9/G38vsAZOyFsTjPle2+SBFL8
+        +eCg9xqBoHrXofl72MXleTlr3weB0i2dQa0IgsH33R5jRp7mObWDuZdv9nU+Y/j/
+        uRjVu31hQwmPQbJUGzO/ZqR+nFzUKMOJiq+DumIwiqxdhxJcVWzbad70XCYWtzQY
+        wGU96TSdkiZyIOiXfQrvY7nMu6QhQTGV4qiwm452A4MPbeS2OVBhwhAv5on4t8g8
+        RgPOfLhiTMgRLVdGo0+GDRs2LASO+O88AgQUJ6DuYe4H6DnJxw1gKH0R4kfQN9Jg
+        ==
+X-ME-Sender: <xms:3nIfYWHbqtcnMxNtmigJOMoHaXfBZhVyu11dSV7cVJSY1-QnGkQMhg>
+    <xme:3nIfYXWqOvjxznwnM4Nje9had7G0l6EnXA_87iYwZ2I1y3ctoSHfuBKqmlKlNEKFt
+    STNFIRKdArsPZc>
+X-ME-Received: <xmr:3nIfYQIKXPck_ptKtj7NjdRHQ0IzRhtf8j2kjlAgwexWFolOgmoaDMTHqf7CUnx6JiBZgr-6x_djs-K4lyvCn6TNbVWQPw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrleelgddufecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnhepgfevgfevueduueffieffheeifffgjeelvedtteeuteeuffekvefggfdtudfgkeev
+    necuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:3nIfYQF76T0mazT1GLKlwnmqzAasWpsXgyuOZV8CJD2wjLbPQiK_fA>
+    <xmx:3nIfYcUJHKAcyaPTHYACAHipqkETbEH-BZtZgcVNb6AmigwYWvZ-Og>
+    <xmx:3nIfYTPDObXdMwce2c4o4_ElHzfPj5315bu3Dm6VlAY5p0K3EGCVWA>
+    <xmx:4nIfYSEdgA9CiyjRB_lRPAuVPZuq-sEjQCkrK-DnOD1z5NNtHWtyxw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 20 Aug 2021 05:16:13 -0400 (EDT)
+Date:   Fri, 20 Aug 2021 12:16:10 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        UNGLinuxDriver@microchip.com,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Marek Behun <kabel@blackhole.sk>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Jianbo Liu <jianbol@nvidia.com>,
+        Mark Bloch <mbloch@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+Subject: Re: [PATCH v2 net-next 0/5] Make SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE
+ blocking
+Message-ID: <YR9y2nwQWtGTumIS@shredder>
+References: <20210819160723.2186424-1-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210819160723.2186424-1-vladimir.oltean@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-struct can_priv has a set of flags (can_priv::ctrlmode) which are
-correlated with the other field of the structure. In can_changelink(),
-those flags are set first and copied to can_priv. If the function has
-to return early, for example due to an out of range value provided by
-the user, then the global configuration might become incoherent.
+On Thu, Aug 19, 2021 at 07:07:18PM +0300, Vladimir Oltean wrote:
+> Problem statement:
+> 
+> Any time a driver needs to create a private association between a bridge
+> upper interface and use that association within its
+> SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE handler, we have an issue with FDB
+> entries deleted by the bridge when the port leaves. The issue is that
+> all switchdev drivers schedule a work item to have sleepable context,
+> and that work item can be actually scheduled after the port has left the
+> bridge, which means the association might have already been broken by
+> the time the scheduled FDB work item attempts to use it.
 
-Example: the user provides an out of range dbitrate (e.g. 20
-Mbps). The command fails (-EINVAL), however the FD flag was already
-set resulting in a configuration where FD is on but the databittiming
-parameters are empty.
+This is handled in mlxsw by telling the device to flush the FDB entries
+pointing to the {port, FID} when the VLAN is deleted (synchronously).
 
-Illustration of above example:
+> 
+> The solution is to modify switchdev to use its embedded SWITCHDEV_F_DEFER
+> mechanism to make the FDB notifiers emitted from the fastpath be
+> scheduled in sleepable context. All drivers are converted to handle
+> SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE from their blocking notifier block
+> handler (or register a blocking switchdev notifier handler if they
+> didn't have one). This solves the aforementioned problem because the
+> bridge waits for the switchdev deferred work items to finish before a
+> port leaves (del_nbp calls switchdev_deferred_process), whereas a work
+> item privately scheduled by the driver will obviously not be waited upon
+> by the bridge, leading to the possibility of having the race.
 
-| $ ip link set can0 type can bitrate 500000 dbitrate 20000000 fd on
-| RTNETLINK answers: Invalid argument
-| $ ip --details link show can0
-| 1: can0: <NOARP,ECHO> mtu 72 qdisc noop state DOWN mode DEFAULT group default qlen 10
-|     link/can  promiscuity 0 minmtu 0 maxmtu 0
-|     can <FD> state STOPPED restart-ms 0
-           ^^ FD flag is set without any of the databittiming parameters...
-| 	  bitrate 500000 sample-point 0.875
-| 	  tq 12 prop-seg 69 phase-seg1 70 phase-seg2 20 sjw 1
-| 	  ES582.1/ES584.1: tseg1 2..256 tseg2 2..128 sjw 1..128 brp 1..512 brp-inc 1
-| 	  ES582.1/ES584.1: dtseg1 2..32 dtseg2 1..16 dsjw 1..8 dbrp 1..32 dbrp-inc 1
-| 	  clock 80000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
+How the problem is solved if after this patchset drivers still queue a
+work item?
 
-To prevent this from happening, we do a local copy of can_priv, work
-on it, an copy it at the very end of the function (i.e. only if all
-previous checks succeeded).
+DSA supports learning, but does not report the entries to the bridge.
+How are these entries deleted when a port leaves the bridge?
 
-Once this done, there is no more need to have a temporary variable for
-a specific parameter. As such, the bittiming and data bittiming (bt
-and dbt) are directly written to the temporary priv variable.
+> 
+> This is a dependency for the "DSA FDB isolation" posted here. It was
+> split out of that series hence the numbering starts directly at v2.
+> 
+> https://patchwork.kernel.org/project/netdevbpf/cover/20210818120150.892647-1-vladimir.oltean@nxp.com/
 
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
-Hi Marc,
+What is FDB isolation? Cover letter says: "There are use cases which
+need FDB isolation between standalone ports and bridged ports, as well
+as isolation between ports of different bridges".
 
-Do you think this need a "Fixes" tag?
-If yes, feel free to add this line to the patch:
+Does it mean that DSA currently forwards packets between ports even if
+they are member in different bridges or standalone?
 
-Fixes: 9859ccd2c8be ("can: introduce the data bitrate configuration for CAN FD")
----
- drivers/net/can/dev/netlink.c | 86 ++++++++++++++++++-----------------
- 1 file changed, 45 insertions(+), 41 deletions(-)
-
-diff --git a/drivers/net/can/dev/netlink.c b/drivers/net/can/dev/netlink.c
-index 80425636049d..6a14c51a058b 100644
---- a/drivers/net/can/dev/netlink.c
-+++ b/drivers/net/can/dev/netlink.c
-@@ -58,14 +58,20 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 			  struct nlattr *data[],
- 			  struct netlink_ext_ack *extack)
- {
--	struct can_priv *priv = netdev_priv(dev);
-+	/* Work on a local copy of priv to prevent inconsistent value
-+	 * in case of early return. net/core/rtnetlink.c has a global
-+	 * mutex so static declaration is OK
-+	 */
-+	static struct can_priv priv;
- 	int err;
- 
- 	/* We need synchronization with dev->stop() */
- 	ASSERT_RTNL();
- 
-+	memcpy(&priv, netdev_priv(dev), sizeof(priv));
-+
- 	if (data[IFLA_CAN_BITTIMING]) {
--		struct can_bittiming bt;
-+		struct can_bittiming *bt = &priv.bittiming;
- 
- 		/* Do not allow changing bittiming while running */
- 		if (dev->flags & IFF_UP)
-@@ -76,28 +82,26 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		 * directly via do_set_bitrate(). Bail out if neither
- 		 * is given.
- 		 */
--		if (!priv->bittiming_const && !priv->do_set_bittiming)
-+		if (!priv.bittiming_const && !priv.do_set_bittiming)
- 			return -EOPNOTSUPP;
- 
--		memcpy(&bt, nla_data(data[IFLA_CAN_BITTIMING]), sizeof(bt));
--		err = can_get_bittiming(dev, &bt,
--					priv->bittiming_const,
--					priv->bitrate_const,
--					priv->bitrate_const_cnt);
-+		memcpy(bt, nla_data(data[IFLA_CAN_BITTIMING]), sizeof(*bt));
-+		err = can_get_bittiming(dev, bt,
-+					priv.bittiming_const,
-+					priv.bitrate_const,
-+					priv.bitrate_const_cnt);
- 		if (err)
- 			return err;
- 
--		if (priv->bitrate_max && bt.bitrate > priv->bitrate_max) {
-+		if (priv.bitrate_max && bt->bitrate > priv.bitrate_max) {
- 			netdev_err(dev, "arbitration bitrate surpasses transceiver capabilities of %d bps\n",
--				   priv->bitrate_max);
-+				   priv.bitrate_max);
- 			return -EINVAL;
- 		}
- 
--		memcpy(&priv->bittiming, &bt, sizeof(bt));
--
--		if (priv->do_set_bittiming) {
-+		if (priv.do_set_bittiming) {
- 			/* Finally, set the bit-timing registers */
--			err = priv->do_set_bittiming(dev);
-+			err = priv.do_set_bittiming(dev);
- 			if (err)
- 				return err;
- 		}
-@@ -112,11 +116,11 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		if (dev->flags & IFF_UP)
- 			return -EBUSY;
- 		cm = nla_data(data[IFLA_CAN_CTRLMODE]);
--		ctrlstatic = priv->ctrlmode_static;
-+		ctrlstatic = priv.ctrlmode_static;
- 		maskedflags = cm->flags & cm->mask;
- 
- 		/* check whether provided bits are allowed to be passed */
--		if (maskedflags & ~(priv->ctrlmode_supported | ctrlstatic))
-+		if (maskedflags & ~(priv.ctrlmode_supported | ctrlstatic))
- 			return -EOPNOTSUPP;
- 
- 		/* do not check for static fd-non-iso if 'fd' is disabled */
-@@ -128,16 +132,16 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 			return -EOPNOTSUPP;
- 
- 		/* clear bits to be modified and copy the flag values */
--		priv->ctrlmode &= ~cm->mask;
--		priv->ctrlmode |= maskedflags;
-+		priv.ctrlmode &= ~cm->mask;
-+		priv.ctrlmode |= maskedflags;
- 
- 		/* CAN_CTRLMODE_FD can only be set when driver supports FD */
--		if (priv->ctrlmode & CAN_CTRLMODE_FD) {
-+		if (priv.ctrlmode & CAN_CTRLMODE_FD) {
- 			dev->mtu = CANFD_MTU;
- 		} else {
- 			dev->mtu = CAN_MTU;
--			memset(&priv->data_bittiming, 0,
--			       sizeof(priv->data_bittiming));
-+			memset(&priv.data_bittiming, 0,
-+			       sizeof(priv.data_bittiming));
- 		}
- 	}
- 
-@@ -145,7 +149,7 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		/* Do not allow changing restart delay while running */
- 		if (dev->flags & IFF_UP)
- 			return -EBUSY;
--		priv->restart_ms = nla_get_u32(data[IFLA_CAN_RESTART_MS]);
-+		priv.restart_ms = nla_get_u32(data[IFLA_CAN_RESTART_MS]);
- 	}
- 
- 	if (data[IFLA_CAN_RESTART]) {
-@@ -158,7 +162,7 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 	}
- 
- 	if (data[IFLA_CAN_DATA_BITTIMING]) {
--		struct can_bittiming dbt;
-+		struct can_bittiming *dbt = &priv.data_bittiming;
- 
- 		/* Do not allow changing bittiming while running */
- 		if (dev->flags & IFF_UP)
-@@ -169,31 +173,29 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		 * directly via do_set_bitrate(). Bail out if neither
- 		 * is given.
- 		 */
--		if (!priv->data_bittiming_const && !priv->do_set_data_bittiming)
-+		if (!priv.data_bittiming_const && !priv.do_set_data_bittiming)
- 			return -EOPNOTSUPP;
- 
--		memcpy(&dbt, nla_data(data[IFLA_CAN_DATA_BITTIMING]),
--		       sizeof(dbt));
--		err = can_get_bittiming(dev, &dbt,
--					priv->data_bittiming_const,
--					priv->data_bitrate_const,
--					priv->data_bitrate_const_cnt);
-+		memcpy(dbt, nla_data(data[IFLA_CAN_DATA_BITTIMING]),
-+		       sizeof(*dbt));
-+		err = can_get_bittiming(dev, dbt,
-+					priv.data_bittiming_const,
-+					priv.data_bitrate_const,
-+					priv.data_bitrate_const_cnt);
- 		if (err)
- 			return err;
- 
--		if (priv->bitrate_max && dbt.bitrate > priv->bitrate_max) {
-+		if (priv.bitrate_max && dbt->bitrate > priv.bitrate_max) {
- 			netdev_err(dev, "canfd data bitrate surpasses transceiver capabilities of %d bps\n",
--				   priv->bitrate_max);
-+				   priv.bitrate_max);
- 			return -EINVAL;
- 		}
- 
--		memcpy(&priv->data_bittiming, &dbt, sizeof(dbt));
--
- 		can_calc_tdco(dev);
- 
--		if (priv->do_set_data_bittiming) {
-+		if (priv.do_set_data_bittiming) {
- 			/* Finally, set the bit-timing registers */
--			err = priv->do_set_data_bittiming(dev);
-+			err = priv.do_set_data_bittiming(dev);
- 			if (err)
- 				return err;
- 		}
-@@ -201,28 +203,30 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 
- 	if (data[IFLA_CAN_TERMINATION]) {
- 		const u16 termval = nla_get_u16(data[IFLA_CAN_TERMINATION]);
--		const unsigned int num_term = priv->termination_const_cnt;
-+		const unsigned int num_term = priv.termination_const_cnt;
- 		unsigned int i;
- 
--		if (!priv->do_set_termination)
-+		if (!priv.do_set_termination)
- 			return -EOPNOTSUPP;
- 
- 		/* check whether given value is supported by the interface */
- 		for (i = 0; i < num_term; i++) {
--			if (termval == priv->termination_const[i])
-+			if (termval == priv.termination_const[i])
- 				break;
- 		}
- 		if (i >= num_term)
- 			return -EINVAL;
- 
- 		/* Finally, set the termination value */
--		err = priv->do_set_termination(dev, termval);
-+		err = priv.do_set_termination(dev, termval);
- 		if (err)
- 			return err;
- 
--		priv->termination = termval;
-+		priv.termination = termval;
- 	}
- 
-+	memcpy(netdev_priv(dev), &priv, sizeof(priv));
-+
- 	return 0;
- }
- 
--- 
-2.31.1
-
+> 
+> Vladimir Oltean (5):
+>   net: switchdev: move SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE to the blocking
+>     notifier chain
+>   net: bridge: switchdev: make br_fdb_replay offer sleepable context to
+>     consumers
+>   net: switchdev: drop the atomic notifier block from
+>     switchdev_bridge_port_{,un}offload
+>   net: switchdev: don't assume RCU context in
+>     switchdev_handle_fdb_{add,del}_to_device
+>   net: dsa: handle SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE synchronously
+> 
+>  .../ethernet/freescale/dpaa2/dpaa2-switch.c   |  86 +++++------
+>  .../marvell/prestera/prestera_switchdev.c     | 110 +++++++-------
+>  .../mellanox/mlx5/core/en/rep/bridge.c        |  59 +++++++-
+>  .../mellanox/mlxsw/spectrum_switchdev.c       |  61 +++++++-
+>  .../microchip/sparx5/sparx5_switchdev.c       |  78 +++++-----
+>  drivers/net/ethernet/mscc/ocelot_net.c        |   3 -
+>  drivers/net/ethernet/rocker/rocker_main.c     |  73 ++++-----
+>  drivers/net/ethernet/rocker/rocker_ofdpa.c    |   4 +-
+>  drivers/net/ethernet/ti/am65-cpsw-nuss.c      |   4 +-
+>  drivers/net/ethernet/ti/am65-cpsw-switchdev.c |  57 ++++----
+>  drivers/net/ethernet/ti/cpsw_new.c            |   4 +-
+>  drivers/net/ethernet/ti/cpsw_switchdev.c      |  60 ++++----
+>  drivers/s390/net/qeth_l2_main.c               |  10 +-
+>  include/net/switchdev.h                       |  30 +++-
+>  net/bridge/br.c                               |   5 +-
+>  net/bridge/br_fdb.c                           |  40 ++++-
+>  net/bridge/br_private.h                       |   4 -
+>  net/bridge/br_switchdev.c                     |  18 +--
+>  net/dsa/dsa.c                                 |  15 --
+>  net/dsa/dsa_priv.h                            |  15 --
+>  net/dsa/port.c                                |   3 -
+>  net/dsa/slave.c                               | 138 ++++++------------
+>  net/switchdev/switchdev.c                     |  61 +++++++-
+>  23 files changed, 529 insertions(+), 409 deletions(-)
+> 
+> -- 
+> 2.25.1
+> 
