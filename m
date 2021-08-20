@@ -2,88 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F2463F3720
-	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 01:00:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 666BE3F3732
+	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 01:09:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238719AbhHTXAj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 19:00:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40026 "EHLO
+        id S234097AbhHTXKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 19:10:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230303AbhHTXAh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 19:00:37 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C010C061575;
-        Fri, 20 Aug 2021 15:59:59 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id g26so21652421ybe.0;
-        Fri, 20 Aug 2021 15:59:59 -0700 (PDT)
+        with ESMTP id S230303AbhHTXJ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 19:09:59 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDF25C061575
+        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 16:09:20 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id z2so23711547lft.1
+        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 16:09:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5N+b3wOihMALaJmPpP13xN80cULdgks84ZuFcJ4Lqvk=;
-        b=e4AsedA7BbI048hd6BciCpkwEXxr12d8azmp/cis/ZRj1t77xjjRRxYp8hOiPOdyBV
-         l5VtXir0kobg1g6K44KlcTXjbyFNBBBXmv/F2raLLVx3RC3rlcYXrCvhy2FUXdA/DKmS
-         BYdX9t/VSwBxxbAWeckNBXMmjN+rXFCW/yPSX/4ytsGAnOd12R/vBVn8Xu5UIUJPPQLY
-         sdorUeG6gXvBvw2pQK93shF4JWCtk0pLgTgUNm9I+m/EVFJFMjh2+KvD11CRStjigL63
-         +CRrRSm7LptGr7coosujWHqPXmSPFImamlQU4Djr+X69hr9JpzG3Yu9zBWgwJctw59rH
-         Q2sg==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=fz/QOMWRVaBYPZhPJ4zLv6WTjxE3TJcFieehZ+Lm/hM=;
+        b=GkUU8HFcRGmt4IW4J3Ifr/nG/oyTfV2Vh1HbWBD0TQyn6OJRHSV/KMVFczWXWWKsBL
+         a94A8AdGz7Kp2Ca8ugsaJ2TXsDfxPGYuGLELQoxnNf82l4/MVTMYzfIczQX+APRCXp9X
+         2nUtfKqQ0lE/aQi8hIc5zMFGHTreCMw79oAdS1y4wgsbaoMJOVUjAss0Hepxqvcwzdit
+         jLF+sj153huvB2mPugg4oeIdRHw2+c7CtZJHrZCqOBCEKRXUA0IB34iQo6/MVezCNUl/
+         6z62Z61xYacX0OsGT5Dvh+9PO0ylJIk76UBcXYtdja9CflG/DSy5Y3315RxkTz8WCxCu
+         UWtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5N+b3wOihMALaJmPpP13xN80cULdgks84ZuFcJ4Lqvk=;
-        b=lRUsgZ/jZIZBZr2mgI/tmlN9zO2k4kQPqUsnBEVcn6hf4ICxRX3jUg+ALFqOaxBR+u
-         N0b7Zu0PikqihiCMc+1CQOao7kix/iTue0MMJSQOgxWSUJNu/HH9JcNIaJkagthaqIWc
-         QCjaBynZHeaEaxBtDq9dcbUlRSO/XFQ/D4MkPBRYGqPWH9OifwpNdmdQsq19x8cOvAen
-         FM1s055BgYGmUL7vOCdf2CjF49hVjixJugkKzVvCPEZrPcx8sNqA0TkKQzZ0aX9uFWcy
-         2c0fFvnbJCPwEtEb7s6StjI+xF93lEtOSfyju61p+9XpwhXlgPprVvDfDH9rb2GZUGC2
-         EEkw==
-X-Gm-Message-State: AOAM531emPlPJ0CNpU0b1ronOdPD1Y/QZGtg/4nhOjcskkOaxCuTlbQo
-        t/hIL4in19cKsL3rl8pm0oyy8wkRO4if5TF8fiITGrOp
-X-Google-Smtp-Source: ABdhPJyjslmcvtoD5j26IAscy7jdLMc0UG9s5eocFS7q6/noc0zqsi3zPOdZBLQnzrol0w5lMDAWmYTRy2pPDAp2mlM=
-X-Received: by 2002:a05:6902:114c:: with SMTP id p12mr30417216ybu.282.1629500398491;
- Fri, 20 Aug 2021 15:59:58 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=fz/QOMWRVaBYPZhPJ4zLv6WTjxE3TJcFieehZ+Lm/hM=;
+        b=nmDGZdTfRWnQLZllm4My9Gr27Zx+OGao5O64/ey830mrkRRn2We/nPLrpx9nvDPkz9
+         dPKwMj9QiYILlsV09vhJzCHxtw6MTjUegqqaBQ6knRIE3iBoggJmlc11iw336+RJm8Ds
+         FX+WPrm723o7fSW5GE1KrzFAsQUoBoyQE4qChe3H6FalayDooFdy7/v/SQ6d0kp/at0F
+         Ee0wTd0g+/KWumDX2EERZ6W9fiiS2EFAXWqcziplTHZxn8PaJW0UT2+tFYCllnwAnn5r
+         kbtt7dWn67B0KZN/uEirLqwa7siWoIyfVrdgWx6NHgYmQRZu2IOTLKOslXZEQBCXiP59
+         9P1A==
+X-Gm-Message-State: AOAM533Q723axiErpBFMiuFlLPyqHXpjTC8TrHbB543YfjFfGgCLQjmx
+        0K2iW501VjUVVbWydbUBPYs8UdFbG+Oc7tynDLw=
+X-Google-Smtp-Source: ABdhPJylBF0jIr5RIyz4vaFE37lgmwKKudKmJtQG9Bwns7T23u4h/YdQKu2uREPwMZmB56xl1zo07v9ugGcwoiNuAaA=
+X-Received: by 2002:a19:c517:: with SMTP id w23mr16960216lfe.219.1629500959304;
+ Fri, 20 Aug 2021 16:09:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210819222307.242695-1-luiz.dentz@gmail.com> <20210820.124629.2213659775230733647.davem@davemloft.net>
-In-Reply-To: <20210820.124629.2213659775230733647.davem@davemloft.net>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Fri, 20 Aug 2021 15:59:47 -0700
-Message-ID: <CABBYNZ+N0d96GieMggHx+x2075cK5aswJpBua-wX2LA87LkgkQ@mail.gmail.com>
-Subject: Re: pull request: bluetooth 2021-08-19
-To:     David Miller <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Received: by 2002:aa6:c347:0:b0:138:9452:87a6 with HTTP; Fri, 20 Aug 2021
+ 16:09:19 -0700 (PDT)
+Reply-To: Salemchantal2@mail.com
+From:   MRS Salem Chantal Lawrence <salemchantal001@gmail.com>
+Date:   Sat, 21 Aug 2021 00:09:19 +0100
+Message-ID: <CAP+w9Ba7HMOouq8GBEzKi_52pvNpfj4-FZw12gHr2U2H8XH8fg@mail.gmail.com>
+Subject: Attention
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+Hello
 
-On Fri, Aug 20, 2021 at 4:46 AM David Miller <davem@davemloft.net> wrote:
->
-> From: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-> Date: Thu, 19 Aug 2021 15:23:07 -0700
->
-> > The following changes since commit 4431531c482a2c05126caaa9fcc5053a4a5c495b:
-> >
-> >   nfp: fix return statement in nfp_net_parse_meta() (2021-07-22 05:46:03 -0700)
-> >
-> > are available in the Git repository at:
-> >
-> >   git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git tags/for-net-next-2021-08-19
-> >
->
-> There was a major merge conflict with the deferred hci cleanup fix that came in via
-> 'net'.  Please double check my conflict resolution.
+You Have Been Compensated With The Sum Of 4.6 Million Dollars In This
+United Nation The Payment Will Be Issue Into Atm Visa Card And Send
+To You From The Santander Bank of Spain  We Need Your Address And Your
+Whatsapp Number,This is my whatsapp number Contact Me Now + 1 (360) 5979388
 
-My bad, I thought I had rebased it on top of net-next but perhaps I
-didn't do it correctly, anyway the correct version would be the one
-Linus had pushed to his tree so you could have just skipped the one we
-had in bluetooth-next which was an early attempt to fix the same
-issue.
+And My Email.id (Salemchantal2@mail.com)
 
-
--- 
-Luiz Augusto von Dentz
+THANKS
+MRS Salem Chantal Lawrence
