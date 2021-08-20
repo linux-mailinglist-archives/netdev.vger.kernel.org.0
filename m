@@ -2,105 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23BAC3F35D9
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 23:03:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C29F3F3605
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 23:29:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240520AbhHTVDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 17:03:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56504 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231171AbhHTVDt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Aug 2021 17:03:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ABC6C6103B;
-        Fri, 20 Aug 2021 21:03:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629493391;
-        bh=VwThOwWPE5ah7M2RNMlkuI70PYe8BX7MFqiL2p7+V4c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=IL7alGUYy94QHWEfVdL9LwHa/8uQQOAUeDkP6l+STRyktqrTuM6aZwmW6ZT/vWyg2
-         71QbZqQwn/nCJhn8SV4O5+S51qNU3vaHIs+Nb0Wu3n5+T8ZZ0MHVVegsFdTvtPR4V9
-         r7UyhWKwJjVpv03y2qiGddGRDbA0BDinKfcCpFfBu8zbo5sMrAP+bgzcmQKH1FgbQK
-         fv+J8NV0xxIPgA4WMPEft8LPhib8t0obfWAdNT4m4/wHYlEUE+7hoA1s9FKbx6w18R
-         nyvYuRVjp198nEV/a1lwAZjAkLNuqk61A4I7vGbeaQSDt2JRqhPmk/mZdBhS8ooMdg
-         C/z/pFEAatw2A==
-Date:   Fri, 20 Aug 2021 16:03:09 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>, nic_swsd@realtek.com,
-        bhelgaas@google.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 1/3] r8169: Implement dynamic ASPM mechanism
-Message-ID: <20210820210309.GA3357515@bjorn-Precision-5520>
+        id S240652AbhHTV35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 17:29:57 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:55277 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237534AbhHTV3x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 17:29:53 -0400
+Received: by mail-il1-f200.google.com with SMTP id r6-20020a92c506000000b002246015b2a4so6102726ilg.21
+        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 14:29:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=irP4+a4MqOno9gjzxCYV4LkdM8U6+CH4E7PsJC0/pm4=;
+        b=sjxJHi5XOsSQXs0MnU61d3vN5BIXBylWzi6Sl64gIJ+Mlfw+0V+cBeRNts5g5dpBy2
+         8JVvS/0nFSdR1mgYahP/KE2mGU4gdZ4n/52qX1eEIhKGCWEQOd3QyauQut8jALZ4GAkT
+         vlpQnZplkHi5bZCTBwONBMWI6g7Pypf0IBFE7Yt3H2DXp6LPAfeDZ8WxN4rp79AU8Mv3
+         La9PNSr6D/KKGJpDF7STuDeIsODjyoSxFNbg0dPpeQj6ZVA6q4k0F5Pv2QgmLLelH7kP
+         8Q4tqd/aSYt4g6V44Jcc3sffXHF7xq9KCGKsqs4tsHCCyE+rODxwK/AAZB/unDomujZn
+         QF/A==
+X-Gm-Message-State: AOAM5330PgA0CZxb/yjutY41tO6PvR9vHZncwk0uDJLG0txI2Iv73/p1
+        gGr+noe+IawG22OJ1g2GppqyelvvwzZS7gHPP0OS9a1jKgEH
+X-Google-Smtp-Source: ABdhPJzwQnqnBvNJw3VYBFYSQJOZJNIfjhdUk4XZi5YP/GetgfyT4o7ZYLOJzWzalZHwhX6L41qpYmxt/NbXjWGg30XqrAwCrd24
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9ebf8fa1-cbd4-75d6-1099-1a45ca8b8bb0@gmail.com>
+X-Received: by 2002:a92:7108:: with SMTP id m8mr10061663ilc.238.1629494954973;
+ Fri, 20 Aug 2021 14:29:14 -0700 (PDT)
+Date:   Fri, 20 Aug 2021 14:29:14 -0700
+In-Reply-To: <0000000000000845ce05c9222d57@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f460a305ca045b3e@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in nf_tables_dump_sets
+From:   syzbot <syzbot+8cc940a9689599e10587@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 19, 2021 at 05:45:22PM +0200, Heiner Kallweit wrote:
-> On 19.08.2021 13:42, Bjorn Helgaas wrote:
-> > On Thu, Aug 19, 2021 at 01:45:40PM +0800, Kai-Heng Feng wrote:
-> >> r8169 NICs on some platforms have abysmal speed when ASPM is enabled.
-> >> Same issue can be observed with older vendor drivers.
-> > 
-> > On some platforms but not on others?  Maybe the PCIe topology is a
-> > factor?  Do you have bug reports with data, e.g., "lspci -vv" output?
-> > 
-> >> The issue is however solved by the latest vendor driver. There's a new
-> >> mechanism, which disables r8169's internal ASPM when the NIC traffic has
-> >> more than 10 packets, and vice versa. 
-> > 
-> > Presumably there's a time interval related to the 10 packets?  For
-> > example, do you want to disable ASPM if 10 packets are received (or
-> > sent?) in a certain amount of time?
-> > 
-> >> The possible reason for this is
-> >> likely because the buffer on the chip is too small for its ASPM exit
-> >> latency.
-> > 
-> > Maybe this means the chip advertises incorrect exit latencies?  If so,
-> > maybe a quirk could override that?
-> > 
-> >> Realtek confirmed that all their PCIe LAN NICs, r8106, r8168 and r8125
-> >> use dynamic ASPM under Windows. So implement the same mechanism here to
-> >> resolve the issue.
-> > 
-> > What exactly is "dynamic ASPM"?
-> > 
-> > I see Heiner's comment about this being intended only for a downstream
-> > kernel.  But why?
-> > 
-> We've seen various more or less obvious symptoms caused by the broken
-> ASPM support on Realtek network chips. Unfortunately Realtek releases
-> neither datasheets nor errata information.
-> Last time we attempted to re-enable ASPM numerous problem reports came
-> in. These Realtek chips are used on basically every consumer mainboard.
-> The proposed workaround has potential side effects: In case of a
-> congestion in the chip it may take up to a second until ASPM gets
-> disabled, what may affect performance, especially in case of alternating
-> traffic patterns. Also we can't expect support from Realtek.
-> Having said that my decision was that it's too risky to re-enable ASPM
-> in mainline even with this workaround in place. Kai-Heng weights the
-> power saving higher and wants to take the risk in his downstream kernel.
-> If there are no problems downstream after few months, then this
-> workaround may make it to mainline.
+syzbot has bisected this issue to:
 
-Since ASPM apparently works well on some platforms but not others, I'd
-suspect some incorrect exit latencies.
+commit 6001a930ce0378b62210d4f83583fc88a903d89d
+Author: Pablo Neira Ayuso <pablo@netfilter.org>
+Date:   Mon Feb 15 11:28:07 2021 +0000
 
-Ideally we'd have some launchpad/bugzilla links, and a better
-understanding of the problem, and maybe a quirk that makes this work
-on all platforms without mucking up the driver with ASPM tweaks.
+    netfilter: nftables: introduce table ownership
 
-But I'm a little out of turn here because the only direct impact to
-the PCI core is the pcie_aspm_supported() interface.  It *looks* like
-these patches don't actually touch the PCIe architected ASPM controls
-in Link Control; all I see is mucking with Realtek-specific registers.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12d34475300000
+start commit:   f9be84db09d2 net: bonding: bond_alb: Remove the dependency..
+git tree:       net-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=11d34475300000
+console output: https://syzkaller.appspot.com/x/log.txt?x=16d34475300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8075b2614f3db143
+dashboard link: https://syzkaller.appspot.com/bug?extid=8cc940a9689599e10587
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15fbb98e300000
 
-I think this is more work than it should be and likely to be not as
-reliable as it should be.  But I guess that's up to you guys.
+Reported-by: syzbot+8cc940a9689599e10587@syzkaller.appspotmail.com
+Fixes: 6001a930ce03 ("netfilter: nftables: introduce table ownership")
 
-Bjorn
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
