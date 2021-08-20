@@ -2,60 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CEF33F3204
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 19:08:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FDAE3F3205
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 19:09:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232673AbhHTRJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 13:09:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43712 "EHLO mail.kernel.org"
+        id S232598AbhHTRK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 13:10:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45088 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231799AbhHTRJM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Aug 2021 13:09:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9BD2B610CC;
-        Fri, 20 Aug 2021 17:08:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629479314;
-        bh=6Ad+ilmKXkBYKGB3YDYi+cYk50uXVwyBdAJ/McR8sZU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EIPZ4n/dZwsQlmWUpqPYhQwFaRUfzhGvZfKn0PW/OZe7YeEPC3wfWmiLtZ7x2t8z6
-         kA9XSKb8dF7fKkO5v8Vyec9FF+UhzhULfPQMY9z0BuEeNiK2fGqn8dAVXsM+1cFqb4
-         4h0EP/SlhD/26WYauS6CFyPzx5YMviKWCukQ/qDYCStTSxfsONu+WkA1rKSUSMFVNP
-         4KICGbswo34oyUFlnkbNsG2op/SZRWSGhCkP2dhvP/VKI4VWNblD50yYtXzilo9VHX
-         UuZzPjC9qQpuU5D6rlZTH5B0VU11HaZUFEHvrA/0Bg/L+seYwOZpMjCEnQaBKNINZz
-         dfIXM8qQTvS3A==
-Date:   Fri, 20 Aug 2021 10:08:32 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net 1/1] net: usb: asix: ax88772: move embedded PHY
- detection as early as possible
-Message-ID: <20210820100832.4b548200@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210820095243.2452-1-o.rempel@pengutronix.de>
-References: <20210820095243.2452-1-o.rempel@pengutronix.de>
-MIME-Version: 1.0
+        id S230052AbhHTRK1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Aug 2021 13:10:27 -0400
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4CADF610CC;
+        Fri, 20 Aug 2021 17:09:49 +0000 (UTC)
+Received: from sofa.misterjones.org ([185.219.108.64] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1mH81b-006F6e-9Z; Fri, 20 Aug 2021 18:09:47 +0100
+Date:   Fri, 20 Aug 2021 18:09:48 +0100
+Message-ID: <87mtpcyrdv.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Matteo Croce <mcroce@linux.microsoft.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Will Deacon <will@kernel.org>
+Subject: Re: [PATCH net-next] stmmac: align RX buffers
+In-Reply-To: <CAFnufp2T75cvDLUx+ZyPQbkaNeY_S1OJ7KTJe=2EK-qXRNkwyw@mail.gmail.com>
+References: <20210614022504.24458-1-mcroce@linux.microsoft.com>
+        <871r71azjw.wl-maz@kernel.org>
+        <YROmOQ+4Kqukgd6z@orome.fritz.box>
+        <202417ef-f8ae-895d-4d07-1f9f3d89b4a4@gmail.com>
+        <87o8a49idp.wl-maz@kernel.org>
+        <fe5f99c8-5655-7fbb-a64e-b5f067c3273c@gmail.com>
+        <20210812121835.405d2e37@linux.microsoft.com>
+        <874kbuapod.wl-maz@kernel.org>
+        <CAFnufp2=1t2+fmxyGJ0Qu3Z+=wRwAX8faaPvrJdFpFeTS3J7Uw@mail.gmail.com>
+        <87wnohqty1.wl-maz@kernel.org>
+        <CAFnufp3xjYqe_iVfbmdjz4-xN2UX_oo3GUw4Z4M_q-R38EN+uQ@mail.gmail.com>
+        <87fsv4qdzm.wl-maz@kernel.org>
+        <CAFnufp2T75cvDLUx+ZyPQbkaNeY_S1OJ7KTJe=2EK-qXRNkwyw@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: mcroce@linux.microsoft.com, eric.dumazet@gmail.com, thierry.reding@gmail.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, peppe.cavallaro@st.com, alexandre.torgue@foss.st.com, davem@davemloft.net, kuba@kernel.org, palmer@dabbelt.com, paul.walmsley@sifive.com, drew@beagleboard.org, kernel@esmil.dk, jonathanh@nvidia.com, will@kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 20 Aug 2021 11:52:43 +0200 Oleksij Rempel wrote:
-> Some HW revisions need additional MAC configuration before the embedded PHY
-> can be enabled. If this is not done, we won't be able to get response
-> from the internal PHY.
+On Fri, 20 Aug 2021 17:38:14 +0100,
+Matteo Croce <mcroce@linux.microsoft.com> wrote:
 > 
-> This issue was detected on chipcode == AX_AX88772_CHIPCODE variant,
-> where ax88772_hw_reset() was executed with missing embd_phy flag.
+> On Fri, Aug 20, 2021 at 6:26 PM Marc Zyngier <maz@kernel.org> wrote:
+> >
+> > On Fri, 20 Aug 2021 11:37:03 +0100,
+> > Matteo Croce <mcroce@linux.microsoft.com> wrote:
+> > >
+> > > On Thu, Aug 19, 2021 at 6:29 PM Marc Zyngier <maz@kernel.org> wrote:
+> >
+> > [...]
+> >
+> > > > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> > > > index fcdb1d20389b..244aa6579ef4 100644
+> > > > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> > > > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> > > > @@ -341,7 +341,7 @@ static inline unsigned int stmmac_rx_offset(struct stmmac_priv *priv)
+> > > >         if (stmmac_xdp_is_enabled(priv))
+> > > >                 return XDP_PACKET_HEADROOM + NET_IP_ALIGN;
+> > > >
+> > > > -       return NET_SKB_PAD + NET_IP_ALIGN;
+> > > > +       return 8 + NET_IP_ALIGN;
+> > > >  }
+> > > >
+> > > >  void stmmac_disable_rx_queue(struct stmmac_priv *priv, u32 queue);
+> > > >
+> > > > I don't see the system corrupting packets anymore. Is that exactly
+> > > > what you had in mind? This really seems to point to a basic buffer
+> > > > overflow.
+> >
+> > [...]
+> >
+> > > Sorry, I meant something like:
+> > >
+> > > -       return NET_SKB_PAD + NET_IP_ALIGN;
+> > > +       return 8;
+> > >
+> > > I had some hardware which DMA fails if the receive buffer was not word
+> > > aligned, but this seems not the case, as 8 + NET_IP_ALIGN = 10, and
+> > > it's not aligned too.
+> >
+> > No error in that case either, as expected. Given that NET_SKB_PAD is
+> > likely to expand to 64, it is likely a DMA buffer overflow which
+> > probably only triggers for large-ish packets.
+> >
+> > Now, we're almost at -rc7, and we don't have a solution in sight.
+> >
+> > Can we please revert this until we have an understanding of what is
+> > happening? I'll hopefully have more cycles to work on the issue once
+> > 5.14 is out, and hopefully the maintainers of this driver can chime in
+> > (they have been pretty quiet so far).
+> >
+> > Thanks,
+> >
+> >         M.
+> >
+> > --
+> > Without deviation from the norm, progress is not possible.
 > 
-> Fixes: e532a096be0e ("net: usb: asix: ax88772: add phylib support")
-> Reported-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-> Tested-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Last try, what about adding only NET_IP_ALIGN and leaving NET_SKB_PAD?
+> 
+> -       return NET_SKB_PAD + NET_IP_ALIGN;
+> +       return NET_IP_ALIGN;
+> 
+> I think that alloc_skb adds another NET_SKB_PAD anyway.
 
-Does not apply to net, please rebase
+I don't see any packet corruption with this. However, this doesn't
+prove that this is correct either. What was the rational for adding
+NET_SKB_PAD the first place?
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
