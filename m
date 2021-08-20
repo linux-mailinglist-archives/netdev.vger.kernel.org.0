@@ -2,41 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA6643F2D47
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 15:40:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83BC73F2D44
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 15:40:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240703AbhHTNk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 09:40:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56754 "EHLO mail.kernel.org"
+        id S235407AbhHTNkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 09:40:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56734 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232665AbhHTNkq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229829AbhHTNkq (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 20 Aug 2021 09:40:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B63B061157;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9C4366113D;
         Fri, 20 Aug 2021 13:40:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1629466808;
-        bh=OgFeBlAxzRYUo/gT3DfEvqcX+cDoxg9wP38wmVK+Nz4=;
+        bh=UFBUTq618TtcT/YxIm+dN6KV327WLqIO20nJD/ctcrw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CkdkZFZvtJf6XMrPrRzLMJ345hBZG53FKhr/ZpZ8fSqUGxJTWO2qMjTczheINUVbx
-         wVprrOlE+Ebty/r0z7G2Z+V/5aeIKKYlcSQYluggJgO9mD64/m6kqPWuYFbRnqKGg+
-         sUyp08Xih0Op2+iFaahgwFkFHHMFdlatlEWLrQgjKkJAaZihcIe6PzfC8oXDylnoKp
-         93+Z5UIu+AIZ7DUDBIFqbpjy19E3sGuv9H3zKt9d3pBGC4Cb96B3iMLOg1cJ/+EPey
-         JdliVBl7OzigsTgd3XVQoabrb7pdt3zynFmJanSgmWtpZSntkgEUqploNTcsp4PE8z
-         UdVsBI1K+M24A==
+        b=K7AkTc9fUV/DtKSg6u7P9JaEm4ExgE+UV7xzaPgP3NHtswl5kmlov1q3JAQ3UmzTd
+         Jy27h8HTUK9vwfGYlIfcWqQvsIWgxZ3XmviVj7nDi4elvp543UHnxtFQg9ViPxCxDF
+         0zV5pTXTGF5gQrf55RmqX6Q/yMiUt+Cx9AtZIm2UWrhB3d7Ukbqqd5u/myPB7Dde1z
+         viwxCXqcw7pq6rdN31f3cRiyLXG21sBZ1DlLldsYyFjm2t/p9ka9TqdFvAR+LCuoS4
+         NM/sXmA/kmJRgL6V//1tRCDMKeOL4tHOEJToW71nGoJZ/y5x8TZFmOTvMD46Mbe3U8
+         P7jnKoy1YQNXQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A538960A94;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 918C260A50;
         Fri, 20 Aug 2021 13:40:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/3] Add Xilinx GMII2RGMII loopback support
+Subject: Re: [PATCH net-next v2 0/2] Adding Frame DMA functionality to Sparx5
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162946680867.23508.17751840651047181515.git-patchwork-notify@kernel.org>
+Message-Id: <162946680859.23508.488868985364862077.git-patchwork-notify@kernel.org>
 Date:   Fri, 20 Aug 2021 13:40:08 +0000
-References: <20210819131154.6586-1-gerhard@engleder-embedded.com>
-In-Reply-To: <20210819131154.6586-1-gerhard@engleder-embedded.com>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc:     andrew@lunn.ch, netdev@vger.kernel.org
+References: <20210819073940.1589383-1-steen.hegelund@microchip.com>
+In-Reply-To: <20210819073940.1589383-1-steen.hegelund@microchip.com>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, UNGLinuxDriver@microchip.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, alexandre.belloni@bootlin.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -45,23 +47,22 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu, 19 Aug 2021 15:11:51 +0200 you wrote:
-> The Xilinx GMII2RGMII driver overrides PHY driver functions in order to
-> configure the device according to the link speed of the PHY attached to
-> it. This is implemented for a normal link but not for loopback.
+On Thu, 19 Aug 2021 09:39:38 +0200 you wrote:
+> v2:
+>     Removed an unused variable (proc_ctrl) from sparx5_fdma_start.
 > 
-> Andrew told me to use phy_loopback and this changes make phy_loopback
-> work in combination with Xilinx GMII2RGMII.
+> This add frame DMA functionality to the Sparx5 platform.
+> 
+> Until now the Sparx5 SwitchDev driver has been using register based
+> injection and extraction when sending frames to/from the host CPU.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2,1/3] net: phy: Support set_loopback override
-    https://git.kernel.org/netdev/net-next/c/4ed311b08a91
-  - [net-next,v2,2/3] net: phy: Uniform PHY driver access
-    https://git.kernel.org/netdev/net-next/c/3ac8eed62596
-  - [net-next,v2,3/3] net: phy: gmii2rgmii: Support PHY loopback
-    https://git.kernel.org/netdev/net-next/c/ceaeaafc8b62
+  - [net-next,v2,1/2] net: sparx5: switchdev: adding frame DMA functionality
+    https://git.kernel.org/netdev/net-next/c/10615907e9b5
+  - [net-next,v2,2/2] arm64: dts: sparx5: Add the Sparx5 switch frame DMA support
+    https://git.kernel.org/netdev/net-next/c/920c293af8d0
 
 You are awesome, thank you!
 --
