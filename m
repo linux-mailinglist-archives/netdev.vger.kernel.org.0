@@ -2,187 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 155583F2900
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 11:16:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66A1A3F2938
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 11:32:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232380AbhHTJRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 05:17:00 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:38511 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233761AbhHTJQ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 05:16:56 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailnew.nyi.internal (Postfix) with ESMTP id B340C580B27;
-        Fri, 20 Aug 2021 05:16:18 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Fri, 20 Aug 2021 05:16:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=p8CFZs
-        QoBWGFQjO7uqov/8dojZVhQBnWxPLdLX5Deac=; b=en5I7X27Hl0AqM/iuUIpVx
-        uEhA4PbBAuPeO946qSJ3v3qoMb2x57mSm24dCiM9/G38vsAZOyFsTjPle2+SBFL8
-        +eCg9xqBoHrXofl72MXleTlr3weB0i2dQa0IgsH33R5jRp7mObWDuZdv9nU+Y/j/
-        uRjVu31hQwmPQbJUGzO/ZqR+nFzUKMOJiq+DumIwiqxdhxJcVWzbad70XCYWtzQY
-        wGU96TSdkiZyIOiXfQrvY7nMu6QhQTGV4qiwm452A4MPbeS2OVBhwhAv5on4t8g8
-        RgPOfLhiTMgRLVdGo0+GDRs2LASO+O88AgQUJ6DuYe4H6DnJxw1gKH0R4kfQN9Jg
-        ==
-X-ME-Sender: <xms:3nIfYWHbqtcnMxNtmigJOMoHaXfBZhVyu11dSV7cVJSY1-QnGkQMhg>
-    <xme:3nIfYXWqOvjxznwnM4Nje9had7G0l6EnXA_87iYwZ2I1y3ctoSHfuBKqmlKlNEKFt
-    STNFIRKdArsPZc>
-X-ME-Received: <xmr:3nIfYQIKXPck_ptKtj7NjdRHQ0IzRhtf8j2kjlAgwexWFolOgmoaDMTHqf7CUnx6JiBZgr-6x_djs-K4lyvCn6TNbVWQPw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrleelgddufecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnhepgfevgfevueduueffieffheeifffgjeelvedtteeuteeuffekvefggfdtudfgkeev
-    necuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtne
-    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:3nIfYQF76T0mazT1GLKlwnmqzAasWpsXgyuOZV8CJD2wjLbPQiK_fA>
-    <xmx:3nIfYcUJHKAcyaPTHYACAHipqkETbEH-BZtZgcVNb6AmigwYWvZ-Og>
-    <xmx:3nIfYTPDObXdMwce2c4o4_ElHzfPj5315bu3Dm6VlAY5p0K3EGCVWA>
-    <xmx:4nIfYSEdgA9CiyjRB_lRPAuVPZuq-sEjQCkrK-DnOD1z5NNtHWtyxw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 20 Aug 2021 05:16:13 -0400 (EDT)
-Date:   Fri, 20 Aug 2021 12:16:10 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        UNGLinuxDriver@microchip.com,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Marek Behun <kabel@blackhole.sk>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Jianbo Liu <jianbol@nvidia.com>,
-        Mark Bloch <mbloch@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH v2 net-next 0/5] Make SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE
- blocking
-Message-ID: <YR9y2nwQWtGTumIS@shredder>
-References: <20210819160723.2186424-1-vladimir.oltean@nxp.com>
+        id S237059AbhHTJdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 05:33:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50646 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235321AbhHTJdM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 05:33:12 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E138C061575;
+        Fri, 20 Aug 2021 02:32:35 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id o2so8571522pgr.9;
+        Fri, 20 Aug 2021 02:32:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=F/INelQk2As+/GtcCaMtJ+YzY5fXWvqQ9IG9ehmEJG8=;
+        b=NOsRg08JE9vqoPHWkIYlLgvhL+MicNH2byE8RBT270hR7Y34lewYGmzCG7ZiSOPfst
+         hHwY77aZbHyaZy74ak1zDkDcJThEyYHT+phdATRZfrBFvdCFxZDPgNsT5HA2ACIGOssj
+         5flQeCaYSnsS7x235BGVvDlZVJfoVF2viLSRLpv9bgZw/C28yjBIhSKVFmgAWxO0RwLs
+         SqRSs/9c3L856W6LO84v1LhAxpS7IpBUWCu4vR1ZWSmuRYMsAqASRYQzmnl0WEeB+EGQ
+         v8cJErq4KMIgeGnBvkCcPfJfi85pvA0P+J4N0lc0Qhk1awxXio8YvgLwIqm9BpqqWqJj
+         KSgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=F/INelQk2As+/GtcCaMtJ+YzY5fXWvqQ9IG9ehmEJG8=;
+        b=rMtsF+QGUp5drnz5DEzx92ESwG2lVeehtmHgXgebbn9DWpKd10X1hVLAetRbdR831K
+         7F/8E6cLz88oDH+DjKGSyuhDc+9MppljHQQhMgASwRdtSjxdaYJ3EiKoKPyZDXs58lGg
+         rhhSZJE1+Ve8TDPp3xPAfwG4g+Ho7Hp0vK8LRtXnMGeFpxoC40wQwVIo8bP86x9zMAou
+         4X5TPFPrmuyVSJnMjD8dUjLQb3kuhdaNqlGzlRH3hE6pUOao5lOAQv4IYfyLzOkc8Gsh
+         IV0dNxG9Hyh5WmB2EI8C+GvcOgpMkEw0+yd0wh9y0bUuKnBGDGEKw95GJsehI84urXs7
+         mtOg==
+X-Gm-Message-State: AOAM532IL8cvcpm73pASbWfQURLATeNMESX/FjpoJml+CHBp1N5Khav4
+        wBWq2g5P7X5zoNgJhMN4lXY=
+X-Google-Smtp-Source: ABdhPJyMzC9zZ4t/lY/N9LWV+o+9MRA4tnKQgAYkkUeEh5Y8L6QkAwqXlqjG86qeQ0htTXLK/F9JXQ==
+X-Received: by 2002:a63:1a46:: with SMTP id a6mr17708253pgm.226.1629451955046;
+        Fri, 20 Aug 2021 02:32:35 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
+        by smtp.gmail.com with ESMTPSA id x42sm6108890pfh.205.2021.08.20.02.32.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 Aug 2021 02:32:34 -0700 (PDT)
+Subject: Re: [PATCH V3 11/13] HV/IOMMU: Enable swiotlb bounce buffer for
+ Isolation VM
+To:     Michael Kelley <mikelley@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "will@kernel.org" <will@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "pgonda@google.com" <pgonda@google.com>,
+        "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "rppt@kernel.org" <rppt@kernel.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "saravanand@fb.com" <saravanand@fb.com>,
+        "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
+        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "rientjes@google.com" <rientjes@google.com>,
+        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
+        "tj@kernel.org" <tj@kernel.org>
+Cc:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        vkuznets <vkuznets@redhat.com>,
+        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+        "dave.hansen@intel.com" <dave.hansen@intel.com>
+References: <20210809175620.720923-1-ltykernel@gmail.com>
+ <20210809175620.720923-12-ltykernel@gmail.com>
+ <MWHPR21MB159315B335EB0B064B0B0F23D7C09@MWHPR21MB1593.namprd21.prod.outlook.com>
+From:   Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <e933f7e3-5573-bb8a-c313-75884d59235c@gmail.com>
+Date:   Fri, 20 Aug 2021 17:32:19 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210819160723.2186424-1-vladimir.oltean@nxp.com>
+In-Reply-To: <MWHPR21MB159315B335EB0B064B0B0F23D7C09@MWHPR21MB1593.namprd21.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 19, 2021 at 07:07:18PM +0300, Vladimir Oltean wrote:
-> Problem statement:
-> 
-> Any time a driver needs to create a private association between a bridge
-> upper interface and use that association within its
-> SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE handler, we have an issue with FDB
-> entries deleted by the bridge when the port leaves. The issue is that
-> all switchdev drivers schedule a work item to have sleepable context,
-> and that work item can be actually scheduled after the port has left the
-> bridge, which means the association might have already been broken by
-> the time the scheduled FDB work item attempts to use it.
 
-This is handled in mlxsw by telling the device to flush the FDB entries
-pointing to the {port, FID} when the VLAN is deleted (synchronously).
 
-> 
-> The solution is to modify switchdev to use its embedded SWITCHDEV_F_DEFER
-> mechanism to make the FDB notifiers emitted from the fastpath be
-> scheduled in sleepable context. All drivers are converted to handle
-> SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE from their blocking notifier block
-> handler (or register a blocking switchdev notifier handler if they
-> didn't have one). This solves the aforementioned problem because the
-> bridge waits for the switchdev deferred work items to finish before a
-> port leaves (del_nbp calls switchdev_deferred_process), whereas a work
-> item privately scheduled by the driver will obviously not be waited upon
-> by the bridge, leading to the possibility of having the race.
+On 8/20/2021 2:11 AM, Michael Kelley wrote:
+>>   }
+>> +
+>> +/*
+>> + * hv_map_memory - map memory to extra space in the AMD SEV-SNP Isolation VM.
+>> + */
+>> +void *hv_map_memory(void *addr, unsigned long size)
+>> +{
+>> +	unsigned long *pfns = kcalloc(size / HV_HYP_PAGE_SIZE,
+>> +				      sizeof(unsigned long), GFP_KERNEL);
+>> +	void *vaddr;
+>> +	int i;
+>> +
+>> +	if (!pfns)
+>> +		return NULL;
+>> +
+>> +	for (i = 0; i < size / HV_HYP_PAGE_SIZE; i++)
+>> +		pfns[i] = virt_to_hvpfn(addr + i * HV_HYP_PAGE_SIZE) +
+>> +			(ms_hyperv.shared_gpa_boundary >> HV_HYP_PAGE_SHIFT);
+>> +
+>> +	vaddr = vmap_pfn(pfns, size / HV_HYP_PAGE_SIZE,	PAGE_KERNEL_IO);
+>> +	kfree(pfns);
+>> +
+>> +	return vaddr;
+>> +}
+> This function is manipulating page tables in the guest VM.  It is not involved
+> in communicating with Hyper-V, or passing PFNs to Hyper-V.  The pfn array
+> contains guest PFNs, not Hyper-V PFNs.  So it should use PAGE_SIZE
+> instead of HV_HYP_PAGE_SIZE, and similarly PAGE_SHIFT and virt_to_pfn().
+> If this code were ever to run on ARM64 in the future with PAGE_SIZE other
+> than 4 Kbytes, the use of PAGE_SIZE is correct choice.
 
-How the problem is solved if after this patchset drivers still queue a
-work item?
+OK. Will update with PAGE_SIZE.
 
-DSA supports learning, but does not report the entries to the bridge.
-How are these entries deleted when a port leaves the bridge?
-
-> 
-> This is a dependency for the "DSA FDB isolation" posted here. It was
-> split out of that series hence the numbering starts directly at v2.
-> 
-> https://patchwork.kernel.org/project/netdevbpf/cover/20210818120150.892647-1-vladimir.oltean@nxp.com/
-
-What is FDB isolation? Cover letter says: "There are use cases which
-need FDB isolation between standalone ports and bridged ports, as well
-as isolation between ports of different bridges".
-
-Does it mean that DSA currently forwards packets between ports even if
-they are member in different bridges or standalone?
 
 > 
-> Vladimir Oltean (5):
->   net: switchdev: move SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE to the blocking
->     notifier chain
->   net: bridge: switchdev: make br_fdb_replay offer sleepable context to
->     consumers
->   net: switchdev: drop the atomic notifier block from
->     switchdev_bridge_port_{,un}offload
->   net: switchdev: don't assume RCU context in
->     switchdev_handle_fdb_{add,del}_to_device
->   net: dsa: handle SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE synchronously
+>> +void __init hyperv_iommu_swiotlb_init(void)
+>> +{
+>> +	unsigned long bytes;
+>> +
+>> +	/*
+>> +	 * Allocate Hyper-V swiotlb bounce buffer at early place
+>> +	 * to reserve large contiguous memory.
+>> +	 */
+>> +	hyperv_io_tlb_size = 256 * 1024 * 1024;
+> A hard coded size here seems problematic.   The memory size of
+> Isolated VMs can vary by orders of magnitude.  I see that
+> xen_swiotlb_init() uses swiotlb_size_or_default(), which at least
+> pays attention to the value specified on the kernel boot line.
 > 
->  .../ethernet/freescale/dpaa2/dpaa2-switch.c   |  86 +++++------
->  .../marvell/prestera/prestera_switchdev.c     | 110 +++++++-------
->  .../mellanox/mlx5/core/en/rep/bridge.c        |  59 +++++++-
->  .../mellanox/mlxsw/spectrum_switchdev.c       |  61 +++++++-
->  .../microchip/sparx5/sparx5_switchdev.c       |  78 +++++-----
->  drivers/net/ethernet/mscc/ocelot_net.c        |   3 -
->  drivers/net/ethernet/rocker/rocker_main.c     |  73 ++++-----
->  drivers/net/ethernet/rocker/rocker_ofdpa.c    |   4 +-
->  drivers/net/ethernet/ti/am65-cpsw-nuss.c      |   4 +-
->  drivers/net/ethernet/ti/am65-cpsw-switchdev.c |  57 ++++----
->  drivers/net/ethernet/ti/cpsw_new.c            |   4 +-
->  drivers/net/ethernet/ti/cpsw_switchdev.c      |  60 ++++----
->  drivers/s390/net/qeth_l2_main.c               |  10 +-
->  include/net/switchdev.h                       |  30 +++-
->  net/bridge/br.c                               |   5 +-
->  net/bridge/br_fdb.c                           |  40 ++++-
->  net/bridge/br_private.h                       |   4 -
->  net/bridge/br_switchdev.c                     |  18 +--
->  net/dsa/dsa.c                                 |  15 --
->  net/dsa/dsa_priv.h                            |  15 --
->  net/dsa/port.c                                |   3 -
->  net/dsa/slave.c                               | 138 ++++++------------
->  net/switchdev/switchdev.c                     |  61 +++++++-
->  23 files changed, 529 insertions(+), 409 deletions(-)
+> Another example is sev_setup_arch(), which in the native case sets
+> the size to 6% of main memory, with a max of 1 Gbyte.  This is
+> the case that's closer to Isolated VMs, so doing something
+> similar could be a good approach.
 > 
-> -- 
-> 2.25.1
-> 
+
+Yes, agree. It's better to keep bounce buffer size with AMD SEV.
