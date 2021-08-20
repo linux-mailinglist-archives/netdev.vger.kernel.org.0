@@ -2,255 +2,304 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27E363F2789
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 09:18:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34D5F3F27B7
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 09:39:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238830AbhHTHSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 03:18:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47886 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238809AbhHTHSI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 03:18:08 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D24C06175F;
-        Fri, 20 Aug 2021 00:17:31 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id hv22-20020a17090ae416b0290178c579e424so6638873pjb.3;
-        Fri, 20 Aug 2021 00:17:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4rVLqSimv7UuIZrRmP3KLf98LVIiiHsRms8VmtPDtqw=;
-        b=L8Id37/04OusMzLb1gDwbEBbbBQwm+obf0L8FN892kPqxlPjCV7/IqtyanEWZzazRU
-         l8hZPrKcY3U2QkaX+WxjlyIRZYCVoNk/l6scXNl2ALjz1VNzpgqUqnG0ooy5wHtyvR/3
-         rA31OX/kDjl/MYdFKuLPocaABBYDmnO6SkOGgNfdfulvg2Q4qPl6wC7Xi1AbSmZ/k6zq
-         FIunXYffGewa/XQhB0sNbCijV1N4R3GrPJkdRtTacVXxW78/MRVyCTpIK9TS64xwno89
-         vK/txJqSh+rL+x1Ex0B22jWqLDNe6m7hIdnhEIaGhLECPUFboT0sU942t3wyNH18Q7fc
-         +gUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4rVLqSimv7UuIZrRmP3KLf98LVIiiHsRms8VmtPDtqw=;
-        b=LkmSgZP+zs0FK9lfmpJbLmpGaK6zvahZbGmSGBCEp7Uwc6KBCac91l1wXKabSWaBmH
-         XKNaHjE4wKIdGccN505AaaSsUN3pFQj2b2IhJDmQt7T4LbPnl93JfGmZxwGhkNu6qGjO
-         T1M6mvE7o/Ji/geeI7hgEVSWbNzIQt397I1N8/AMKCAVWNNFmy0T//WZ82W2ncL1ktqu
-         qdL8CHeSooxHV2LwkSN79G2pDP419g7dFJMmXMPPOD3nbRwF6s5ol94vwzXeDp7sUICe
-         C/Q23RI4xuTucj9+376qJDy92T0fllXoRSj7kDOm1uUK62fsFEobW8LYr6YCPOnN4Xck
-         2EWA==
-X-Gm-Message-State: AOAM530JmlUcrUmNAli19JBQId86lz7HKLngNTkrtcPDcoWNo1DYR7Yf
-        05XPaklxCQ4oSyeKZGWM0nQ=
-X-Google-Smtp-Source: ABdhPJx4L5kYE1blgtCT2GaPpIx+ra8mSSHZoKMsi0Z968iTab5tOPLX3XNGT75e7MDVJl8ClBh0fQ==
-X-Received: by 2002:a17:90a:7848:: with SMTP id y8mr3085125pjl.223.1629443850620;
-        Fri, 20 Aug 2021 00:17:30 -0700 (PDT)
-Received: from IRVINGLIU-MB0.tencent.com ([203.205.141.114])
-        by smtp.gmail.com with ESMTPSA id u21sm5717544pfh.163.2021.08.20.00.17.27
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 20 Aug 2021 00:17:30 -0700 (PDT)
-From:   Xu Liu <liuxu623@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xu Liu <liuxu623@gmail.com>
-Subject: [PATCH bpf-next 2/2] selftests/bpf: Test for get_netns_cookie
-Date:   Fri, 20 Aug 2021 15:17:12 +0800
-Message-Id: <20210820071712.52852-3-liuxu623@gmail.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20210820071712.52852-1-liuxu623@gmail.com>
-References: <20210820071712.52852-1-liuxu623@gmail.com>
+        id S238849AbhHTHkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 03:40:02 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:8897 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238799AbhHTHjv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 03:39:51 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GrYLz6Jxbz8srd;
+        Fri, 20 Aug 2021 15:35:07 +0800 (CST)
+Received: from dggpeml500024.china.huawei.com (7.185.36.10) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 20 Aug 2021 15:39:12 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 20 Aug 2021 15:39:11 +0800
+From:   Yufeng Mo <moyufeng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <shenjian15@huawei.com>,
+        <lipeng321@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linyunsheng@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>, <salil.mehta@huawei.com>,
+        <moyufeng@huawei.com>, <linuxarm@huawei.com>,
+        <linuxarm@openeuler.org>, <dledford@redhat.com>, <jgg@ziepe.ca>,
+        <netanel@amazon.com>, <akiyano@amazon.com>,
+        <thomas.lendacky@amd.com>, <irusskikh@marvell.com>,
+        <michael.chan@broadcom.com>, <edwin.peer@broadcom.com>,
+        <rohitm@chelsio.com>, <jacob.e.keller@intel.com>,
+        <ioana.ciornei@nxp.com>, <vladimir.oltean@nxp.com>,
+        <sgoutham@marvell.com>, <sbhatta@marvell.com>, <saeedm@nvidia.com>,
+        <ecree.xilinx@gmail.com>, <grygorii.strashko@ti.com>,
+        <merez@codeaurora.org>, <kvalo@codeaurora.org>,
+        <linux-wireless@vger.kernel.org>
+Subject: [PATCH V3 net-next 0/4] ethtool: extend coalesce uAPI
+Date:   Fri, 20 Aug 2021 15:35:16 +0800
+Message-ID: <1629444920-25437-1-git-send-email-moyufeng@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500024.china.huawei.com (7.185.36.10)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add test to use get_netns_cookie() from BPF_PROG_TYPE_SK_MSG.
+In order to support some configuration in coalesce uAPI, this series
+extend coalesce uAPI and add support for CQE mode.
 
-Signed-off-by: Xu Liu <liuxu623@gmail.com>
----
- .../selftests/bpf/prog_tests/netns_cookie.c   | 57 ++++++++++++-------
- .../selftests/bpf/progs/netns_cookie_prog.c   | 55 ++++++++++++++++--
- 2 files changed, 88 insertions(+), 24 deletions(-)
+Below is some test result with HNS3 driver:
+1. old ethtool(ioctl) + new kernel:
+estuary:/$ ethtool -c eth0
+Coalesce parameters for eth0:
+Adaptive RX: on  TX: on
+stats-block-usecs: 0
+sample-interval: 0
+pkt-rate-low: 0
+pkt-rate-high: 0
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/netns_cookie.c b/tools/testing/selftests/bpf/prog_tests/netns_cookie.c
-index 6f3cd472fb65..71d8f3ba7d6b 100644
---- a/tools/testing/selftests/bpf/prog_tests/netns_cookie.c
-+++ b/tools/testing/selftests/bpf/prog_tests/netns_cookie.c
-@@ -12,10 +12,12 @@ static int duration;
- 
- void test_netns_cookie(void)
- {
--	int server_fd = 0, client_fd = 0, cgroup_fd = 0, err = 0, val = 0;
-+	int server_fd = -1, client_fd = -1, cgroup_fd = -1;
-+	int err, val, ret, map, verdict;
- 	struct netns_cookie_prog *skel;
- 	uint64_t cookie_expected_value;
- 	socklen_t vallen = sizeof(cookie_expected_value);
-+	static const char send_msg[] = "message";
- 
- 	skel = netns_cookie_prog__open_and_load();
- 	if (!ASSERT_OK_PTR(skel, "skel_open"))
-@@ -23,39 +25,56 @@ void test_netns_cookie(void)
- 
- 	cgroup_fd = test__join_cgroup("/netns_cookie");
- 	if (CHECK(cgroup_fd < 0, "join_cgroup", "cgroup creation failed\n"))
--		goto out;
-+		goto done;
- 
- 	skel->links.get_netns_cookie_sockops = bpf_program__attach_cgroup(
- 		skel->progs.get_netns_cookie_sockops, cgroup_fd);
- 	if (!ASSERT_OK_PTR(skel->links.get_netns_cookie_sockops, "prog_attach"))
--		goto close_cgroup_fd;
-+		goto done;
-+
-+	verdict = bpf_program__fd(skel->progs.get_netns_cookie_sk_msg);
-+	map = bpf_map__fd(skel->maps.sock_map);
-+	err = bpf_prog_attach(verdict, map, BPF_SK_MSG_VERDICT, 0);
-+	if (!ASSERT_OK(err, "prog_attach"))
-+		goto done;
- 
- 	server_fd = start_server(AF_INET6, SOCK_STREAM, "::1", 0, 0);
- 	if (CHECK(server_fd < 0, "start_server", "errno %d\n", errno))
--		goto close_cgroup_fd;
-+		goto done;
- 
- 	client_fd = connect_to_fd(server_fd, 0);
- 	if (CHECK(client_fd < 0, "connect_to_fd", "errno %d\n", errno))
--		goto close_server_fd;
-+		goto done;
-+
-+	ret = send(client_fd, send_msg, sizeof(send_msg), 0);
-+	if (CHECK(ret != sizeof(send_msg), "send(msg)", "ret:%d\n", ret))
-+		goto done;
- 
--	err = bpf_map_lookup_elem(bpf_map__fd(skel->maps.netns_cookies),
--				&client_fd, &val);
--	if (!ASSERT_OK(err, "map_lookup(socket_cookies)"))
--		goto close_client_fd;
-+	err = bpf_map_lookup_elem(bpf_map__fd(skel->maps.sockops_netns_cookies),
-+				  &client_fd, &val);
-+	if (!ASSERT_OK(err, "map_lookup(sockops_netns_cookies)"))
-+		goto done;
- 
- 	err = getsockopt(client_fd, SOL_SOCKET, SO_NETNS_COOKIE,
--				&cookie_expected_value, &vallen);
--	if (!ASSERT_OK(err, "getsockopt)"))
--		goto close_client_fd;
-+			 &cookie_expected_value, &vallen);
-+	if (!ASSERT_OK(err, "getsockopt"))
-+		goto done;
-+
-+	ASSERT_EQ(val, cookie_expected_value, "cookie_value");
-+
-+	err = bpf_map_lookup_elem(bpf_map__fd(skel->maps.sk_msg_netns_cookies),
-+				  &client_fd, &val);
-+	if (!ASSERT_OK(err, "map_lookup(sk_msg_netns_cookies)"))
-+		goto done;
- 
- 	ASSERT_EQ(val, cookie_expected_value, "cookie_value");
- 
--close_client_fd:
--	close(client_fd);
--close_server_fd:
--	close(server_fd);
--close_cgroup_fd:
--	close(cgroup_fd);
--out:
-+done:
-+	if (server_fd != -1)
-+		close(server_fd);
-+	if (client_fd != -1)
-+		close(client_fd);
-+	if (cgroup_fd != -1)
-+		close(cgroup_fd);
- 	netns_cookie_prog__destroy(skel);
- }
-diff --git a/tools/testing/selftests/bpf/progs/netns_cookie_prog.c b/tools/testing/selftests/bpf/progs/netns_cookie_prog.c
-index 4ed8d75aa299..aeff3a4f9287 100644
---- a/tools/testing/selftests/bpf/progs/netns_cookie_prog.c
-+++ b/tools/testing/selftests/bpf/progs/netns_cookie_prog.c
-@@ -11,29 +11,74 @@ struct {
- 	__uint(map_flags, BPF_F_NO_PREALLOC);
- 	__type(key, int);
- 	__type(value, int);
--} netns_cookies SEC(".maps");
-+} sockops_netns_cookies SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SK_STORAGE);
-+	__uint(map_flags, BPF_F_NO_PREALLOC);
-+	__type(key, int);
-+	__type(value, int);
-+} sk_msg_netns_cookies SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SOCKMAP);
-+	__uint(max_entries, 2);
-+	__type(key, __u32);
-+	__type(value, __u64);
-+} sock_map SEC(".maps");
- 
- SEC("sockops")
- int get_netns_cookie_sockops(struct bpf_sock_ops *ctx)
- {
- 	struct bpf_sock *sk = ctx->sk;
- 	int *cookie;
-+	__u32 key = 0;
- 
- 	if (ctx->family != AF_INET6)
- 		return 1;
- 
--	if (ctx->op != BPF_SOCK_OPS_TCP_CONNECT_CB)
-+	if (!sk)
-+		return 1;
-+
-+	switch (ctx->op) {
-+	case BPF_SOCK_OPS_TCP_CONNECT_CB:
-+		cookie = bpf_sk_storage_get(&sockops_netns_cookies, sk, 0,
-+					    BPF_SK_STORAGE_GET_F_CREATE);
-+		if (!cookie)
-+			return 1;
-+
-+		*cookie = bpf_get_netns_cookie(ctx);
-+		break;
-+	case BPF_SOCK_OPS_ACTIVE_ESTABLISHED_CB:
-+		bpf_sock_map_update(ctx, &sock_map, &key, BPF_NOEXIST);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return 1;
-+}
-+
-+SEC("sk_msg")
-+int get_netns_cookie_sk_msg(struct sk_msg_md *msg)
-+{
-+	struct bpf_sock *sk = msg->sk;
-+	int *cookie;
-+
-+	if (msg->family != AF_INET6)
- 		return 1;
- 
- 	if (!sk)
- 		return 1;
- 
--	cookie = bpf_sk_storage_get(&netns_cookies, sk, 0,
--				BPF_SK_STORAGE_GET_F_CREATE);
-+	cookie = bpf_sk_storage_get(&sk_msg_netns_cookies, sk, 0,
-+				    BPF_SK_STORAGE_GET_F_CREATE);
- 	if (!cookie)
- 		return 1;
- 
--	*cookie = bpf_get_netns_cookie(ctx);
-+	*cookie = bpf_get_netns_cookie(msg);
- 
- 	return 1;
- }
-+
-+char _license[] SEC("license") = "GPL";
+rx-usecs: 20
+rx-frames: 0
+rx-usecs-irq: 0
+rx-frames-irq: 0
+
+tx-usecs: 20
+tx-frames: 0
+tx-usecs-irq: 0
+tx-frames-irq: 0
+
+rx-usecs-low: 0
+rx-frame-low: 0
+tx-usecs-low: 0
+tx-frame-low: 0
+
+rx-usecs-high: 0
+rx-frame-high: 0
+tx-usecs-high: 0
+tx-frame-high: 0
+
+2. ethtool(netlink with cqe mode) + kernel without cqe mode:
+estuary:/$ ethtool -c eth0
+Coalesce parameters for eth0:
+Adaptive RX: on  TX: on
+stats-block-usecs: n/a
+sample-interval: n/a
+pkt-rate-low: n/a
+pkt-rate-high: n/a
+
+rx-usecs: 20
+rx-frames: 0
+rx-usecs-irq: n/a
+rx-frames-irq: n/a
+
+tx-usecs: 20
+tx-frames: 0
+tx-usecs-irq: n/a
+tx-frames-irq: n/a
+
+rx-usecs-low: n/a
+rx-frame-low: n/a
+tx-usecs-low: n/a
+tx-frame-low: n/a
+
+rx-usecs-high: 0
+rx-frame-high: n/a
+tx-usecs-high: 0
+tx-frame-high: n/a
+
+CQE mode RX: n/a  TX: n/a
+
+3. ethool(netlink with cqe mode) + kernel with cqe mode:
+estuary:/$ ethtool -c eth0
+Coalesce parameters for eth0:
+Adaptive RX: on  TX: on
+stats-block-usecs: n/a
+sample-interval: n/a
+pkt-rate-low: n/a
+pkt-rate-high: n/a
+
+rx-usecs: 20
+rx-frames: 0
+rx-usecs-irq: n/a
+rx-frames-irq: n/a
+
+tx-usecs: 20
+tx-frames: 0
+tx-usecs-irq: n/a
+tx-frames-irq: n/a
+
+rx-usecs-low: n/a
+rx-frame-low: n/a
+tx-usecs-low: n/a
+tx-frame-low: n/a
+
+rx-usecs-high: 0
+rx-frame-high: n/a
+tx-usecs-high: 0
+tx-frame-high: n/a
+
+CQE mode RX: off  TX: off
+
+4. ethool(netlink without cqe mode) + kernel with cqe mode:
+estuary:/$ ethtool -c eth0
+Coalesce parameters for eth0:
+Adaptive RX: on  TX: on
+stats-block-usecs: n/a
+sample-interval: n/a
+pkt-rate-low: n/a
+pkt-rate-high: n/a
+
+rx-usecs: 20
+rx-frames: 0
+rx-usecs-irq: n/a
+rx-frames-irq: n/a
+
+tx-usecs: 20
+tx-frames: 0
+tx-usecs-irq: n/a
+tx-frames-irq: n/a
+
+rx-usecs-low: n/a
+rx-frame-low: n/a
+tx-usecs-low: n/a
+tx-frame-low: n/a
+
+rx-usecs-high: 0
+rx-frame-high: n/a
+tx-usecs-high: 0
+tx-frame-high: n/a
+
+Change log:
+V2 -> V3:
+         fix some warning on W=1 builds in #2
+
+V1 -> V2:
+         1. fix compile error using allmodconfig in #2
+         2. move some property-related modifications from #2 to #1
+            for better review suggested by Jakub Kicinski.
+
+Change log from RFC:
+V3 -> V4:
+         add document explaining the difference between CQE and EQE
+         in #1 suggested by Jakub Kicinski.
+
+V2 -> V3:
+         1. split #1 into adding new parameter and adding new attributes.
+         2. use NLA_POLICY_MAX(NLA_U8, 1) instead of NLA_U8.
+         3. modify the description of CQE in Document. 
+
+V1 -> V2:
+         refactor #1&#2 in V1 suggestted by Jakub Kicinski.
+
+Yufeng Mo (4):
+  ethtool: add two coalesce attributes for CQE mode
+  ethtool: extend coalesce setting uAPI with CQE mode
+  net: hns3: add support for EQE/CQE mode configuration
+  net: hns3: add ethtool support for CQE/EQE mode configuration
+
+ Documentation/networking/ethtool-netlink.rst       | 15 +++++++
+ drivers/infiniband/ulp/ipoib/ipoib_ethtool.c       |  8 +++-
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c      |  8 +++-
+ drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c       |  8 +++-
+ .../net/ethernet/aquantia/atlantic/aq_ethtool.c    |  8 +++-
+ drivers/net/ethernet/broadcom/bcmsysport.c         |  8 +++-
+ drivers/net/ethernet/broadcom/bnx2.c               | 12 ++++--
+ .../net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c    |  8 +++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c  |  8 +++-
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c     |  8 +++-
+ drivers/net/ethernet/broadcom/tg3.c                | 10 ++++-
+ drivers/net/ethernet/brocade/bna/bnad_ethtool.c    | 12 ++++--
+ drivers/net/ethernet/cavium/liquidio/lio_ethtool.c |  8 +++-
+ .../net/ethernet/cavium/thunder/nicvf_ethtool.c    |  4 +-
+ drivers/net/ethernet/chelsio/cxgb/cxgb2.c          |  8 +++-
+ drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c    |  8 +++-
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c |  8 +++-
+ .../net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c    |  8 +++-
+ drivers/net/ethernet/cisco/enic/enic_ethtool.c     |  8 +++-
+ drivers/net/ethernet/cortina/gemini.c              |  8 +++-
+ drivers/net/ethernet/emulex/benet/be_ethtool.c     |  8 +++-
+ drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c |  8 +++-
+ .../net/ethernet/freescale/enetc/enetc_ethtool.c   |  8 +++-
+ drivers/net/ethernet/freescale/fec_main.c          | 14 ++++---
+ drivers/net/ethernet/freescale/gianfar_ethtool.c   |  8 +++-
+ drivers/net/ethernet/hisilicon/hip04_eth.c         |  8 +++-
+ drivers/net/ethernet/hisilicon/hns/hns_ethtool.c   | 12 +++++-
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  1 +
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 49 +++++++++++++++++++++-
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    | 11 +++++
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 26 ++++++++++--
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |  1 +
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  1 +
+ drivers/net/ethernet/huawei/hinic/hinic_ethtool.c  |  8 +++-
+ drivers/net/ethernet/intel/e1000/e1000_ethtool.c   |  8 +++-
+ drivers/net/ethernet/intel/e1000e/ethtool.c        |  8 +++-
+ drivers/net/ethernet/intel/fm10k/fm10k_ethtool.c   |  8 +++-
+ drivers/net/ethernet/intel/i40e/i40e_ethtool.c     | 12 +++++-
+ drivers/net/ethernet/intel/iavf/iavf_ethtool.c     | 12 +++++-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c       | 12 ++++--
+ drivers/net/ethernet/intel/igb/igb_ethtool.c       |  8 +++-
+ drivers/net/ethernet/intel/igbvf/ethtool.c         |  8 +++-
+ drivers/net/ethernet/intel/igc/igc_ethtool.c       |  8 +++-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c   |  8 +++-
+ drivers/net/ethernet/intel/ixgbevf/ethtool.c       |  8 +++-
+ drivers/net/ethernet/jme.c                         | 12 ++++--
+ drivers/net/ethernet/marvell/mv643xx_eth.c         | 12 ++++--
+ drivers/net/ethernet/marvell/mvneta.c              | 14 +++++--
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c    | 14 +++++--
+ .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  |  8 +++-
+ drivers/net/ethernet/marvell/skge.c                |  8 +++-
+ drivers/net/ethernet/marvell/sky2.c                |  8 +++-
+ drivers/net/ethernet/mellanox/mlx4/en_ethtool.c    |  8 +++-
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  8 +++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  8 +++-
+ .../ethernet/mellanox/mlx5/core/ipoib/ethtool.c    |  8 +++-
+ drivers/net/ethernet/myricom/myri10ge/myri10ge.c   | 12 ++++--
+ .../net/ethernet/netronome/nfp/nfp_net_ethtool.c   |  8 +++-
+ drivers/net/ethernet/ni/nixge.c                    | 14 +++++--
+ .../net/ethernet/pensando/ionic/ionic_ethtool.c    |  8 +++-
+ .../ethernet/qlogic/netxen/netxen_nic_ethtool.c    |  8 +++-
+ drivers/net/ethernet/qlogic/qede/qede.h            |  4 +-
+ drivers/net/ethernet/qlogic/qede/qede_ethtool.c    |  8 +++-
+ .../net/ethernet/qlogic/qlcnic/qlcnic_ethtool.c    |  8 +++-
+ drivers/net/ethernet/realtek/r8169_main.c          | 10 ++++-
+ drivers/net/ethernet/samsung/sxgbe/sxgbe_ethtool.c |  8 +++-
+ drivers/net/ethernet/sfc/ethtool.c                 |  8 +++-
+ drivers/net/ethernet/sfc/falcon/ethtool.c          |  8 +++-
+ drivers/net/ethernet/socionext/netsec.c            | 10 +++--
+ .../net/ethernet/stmicro/stmmac/stmmac_ethtool.c   |  8 +++-
+ drivers/net/ethernet/synopsys/dwc-xlgmac-ethtool.c | 14 +++++--
+ drivers/net/ethernet/tehuti/tehuti.c               | 12 ++++--
+ drivers/net/ethernet/ti/cpsw.c                     |  2 +-
+ drivers/net/ethernet/ti/cpsw_ethtool.c             |  8 +++-
+ drivers/net/ethernet/ti/cpsw_new.c                 |  2 +-
+ drivers/net/ethernet/ti/cpsw_priv.h                |  8 +++-
+ drivers/net/ethernet/ti/davinci_emac.c             | 14 +++++--
+ drivers/net/ethernet/via/via-velocity.c            |  8 +++-
+ drivers/net/ethernet/xilinx/ll_temac_main.c        | 14 +++++--
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c  | 18 ++++++--
+ drivers/net/netdevsim/ethtool.c                    |  8 +++-
+ drivers/net/tun.c                                  |  8 +++-
+ drivers/net/usb/r8152.c                            |  8 +++-
+ drivers/net/virtio_net.c                           |  8 +++-
+ drivers/net/vmxnet3/vmxnet3_ethtool.c              | 12 ++++--
+ drivers/net/wireless/ath/wil6210/ethtool.c         | 14 +++++--
+ drivers/s390/net/qeth_ethtool.c                    |  4 +-
+ drivers/staging/qlge/qlge_ethtool.c                | 10 ++++-
+ include/linux/ethtool.h                            | 22 ++++++++--
+ include/uapi/linux/ethtool_netlink.h               |  2 +
+ net/ethtool/coalesce.c                             | 29 ++++++++++---
+ net/ethtool/ioctl.c                                | 15 +++++--
+ net/ethtool/netlink.h                              |  2 +-
+ 93 files changed, 699 insertions(+), 209 deletions(-)
+
 -- 
-2.28.0
+2.8.1
 
