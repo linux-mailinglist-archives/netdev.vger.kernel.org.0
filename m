@@ -2,96 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3EDB3F26C5
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 08:26:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9C573F26CA
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 08:29:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238369AbhHTG0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 02:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36090 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231761AbhHTG0u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 02:26:50 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC1BC061575
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 23:26:12 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id i9so18220233lfg.10
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 23:26:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=xM/5hg73CAO5nDlUiWnC06sBYRoGEVNZps4ThjEK80g=;
-        b=SM1DxTrgTQmc/EbSc5o/ZKIU4t62Dau5mNSp1bsk7iNoKcDtfvVrYZ+dAjdNqwDI4x
-         nzZKOWr7tfhFVPyHPSlQURghDVLrbMfgs43M7gPs+0Uio3Cpz2RTkontu83Eb5mqdD3x
-         OfK85T0Upyl6y/12E5n1WE0FwhaPhAS68b7KKXmpmZfkRI286LwpC3WlK4agL7LGhxYo
-         xeYHLXxFaBRst7J9z64xRfBl0XEtWNcH9VGL5vGE/T6AMbtDcdvXM8PAmExa+LN6S9qr
-         5RKsTcMQqfMeaucp4c3MObUiIn8thVESL/Uxh5Vp5kfczH7zxWIx/+QUw3kXePwqCkPM
-         meGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=xM/5hg73CAO5nDlUiWnC06sBYRoGEVNZps4ThjEK80g=;
-        b=etZ53SWuueHuBBMreslvnGMy0/1X8bdLseex6PRfB9nahuVvwAbV/jF5D30sELrmbS
-         Rw+Hl09sjJXElC9ASoym4oJyBPNj2PsjVE+qRPQzRQxxYxhg7gyo8u/Swbla9W+t6w3S
-         e0Jh0hAdnQcO/RmYcHLoaE4xd2KvYRMbIFUaLUrBoalSlUFWVXSMRQWerOcp17BROHIe
-         L2VDVAHbg8eO8aaGdCiIbMG036dHJkayteSh7FQeYS4c3ccY40JSJfWpvxjn388zHlvV
-         5HRBuIw7sYlNyh6AQQdwMwb+nlnJVYQ8GgFg4Sw7QB6ye06EIPlapziSZmLZgRd/cl0a
-         cGoQ==
-X-Gm-Message-State: AOAM530l8r+gaeuZRqX3qSMGlR0fXzeyK0Z6esS7doD0iiAjBUFO6Msa
-        x9V4ORTpcrbsJNfM4YHMV+g=
-X-Google-Smtp-Source: ABdhPJygigIOh3nwUm5DE31I2p4oPZ2Dma+yQlZ7L6UHOGLe18iCJvkPJk3AuAOtuy+WJR7ClhlHbw==
-X-Received: by 2002:a05:6512:401a:: with SMTP id br26mr9465748lfb.539.1629440771118;
-        Thu, 19 Aug 2021 23:26:11 -0700 (PDT)
-Received: from wbg (h-155-4-221-58.NA.cust.bahnhof.se. [155.4.221.58])
-        by smtp.gmail.com with ESMTPSA id bu31sm529124lfb.153.2021.08.19.23.26.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Aug 2021 23:26:10 -0700 (PDT)
-From:   Joachim Wiberg <troglobit@gmail.com>
-To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: Re: [PATCH net-next 00/15] net: bridge: multicast: add vlan support
-In-Reply-To: <458e3729-0bf0-8c45-9e45-352da76eaeb6@blackwall.org>
-References: <20210719170637.435541-1-razor@blackwall.org> <875yw1qv9a.fsf@gmail.com> <458e3729-0bf0-8c45-9e45-352da76eaeb6@blackwall.org>
-Date:   Fri, 20 Aug 2021 08:26:09 +0200
-Message-ID: <871r6or5ry.fsf@gmail.com>
+        id S238342AbhHTGa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 02:30:28 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:8054 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235243AbhHTGa1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 02:30:27 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GrWv454RszYrg7;
+        Fri, 20 Aug 2021 14:29:20 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 20 Aug 2021 14:29:47 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Fri, 20 Aug
+ 2021 14:29:47 +0800
+Subject: Re: [PATCH net-next 2/2] page_pool: optimize the cpu sync operation
+ when DMA mapping
+To:     Heiner Kallweit <hkallweit1@gmail.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+CC:     <hawk@kernel.org>, <ilias.apalodimas@linaro.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <1629425195-10130-1-git-send-email-linyunsheng@huawei.com>
+ <1629425195-10130-3-git-send-email-linyunsheng@huawei.com>
+ <badfd7fd-ff25-f399-8828-9f44180d6948@gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <7a58fbbd-f5d2-1826-1168-ec5da52b794e@huawei.com>
+Date:   Fri, 20 Aug 2021 14:29:46 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <badfd7fd-ff25-f399-8828-9f44180d6948@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme717-chm.china.huawei.com (10.1.199.113) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 19, 2021 at 19:22, Nikolay Aleksandrov <razor@blackwall.org> wrote:
-> On 19/08/2021 19:01, Joachim Wiberg wrote:
->> On Mon, Jul 19, 2021 at 20:06, Nikolay Aleksandrov <razor@blackwall.org> wrote:
->>> From: Nikolay Aleksandrov <nikolay@nvidia.com>
->> Curious, are you planning querier per-vlan, including use-ifaddr support
->> as well?  In our in-house hack, which I posted a few years ago, we added
->> some "dumpster diving" to inet_select_addr(), but it got rather tricky.
->> So I've been leaning towards having that in userspace instead.
-> Yes, that is already supported (use-ifaddr needs attention though). In my next
-> patch-set where I added the initial global vlan mcast options I added control
-> for per-vlan querier with per-vlan querier elections and so on. The use-ifaddr
-> needs more work though, that's why I still haven't added that option. I need
-> to add the per-vlan/port router control option so we'll have mostly everything
-> ready in a single release.
+On 2021/8/20 14:10, Heiner Kallweit wrote:
+> On 20.08.2021 04:06, Yunsheng Lin wrote:
+>> If the DMA_ATTR_SKIP_CPU_SYNC is not set, cpu syncing is
+>> also done in dma_map_page_attrs(), so set the attrs according
+>> to pool->p.flags to avoid calling dma sync function again.
+>>
+>> Also mark the dma error as the unlikely case While we are at
+>> it.
+>>
+> This shouldn't be needed. dma_mapping_error() will be (most likely)
+> inlined by the compiler, and it includes the unlikely() hint.
 
-Wow, OK now we're talking, yeah that would be great to have in place as well!
+Good point, will remove the unlikely() mark.
+Thanks.
 
->>> Future patch-sets which build on this one (in order):
->>>  - iproute2 support for all the new uAPIs
->> I'm very eager to try out all the new IGMP per-VLAN stuff, do you have
->> any branch of the iproute2 support available yet for testing?
-> I don't have it public yet because I need to polish the support, currently
-> it's very rough, enough for testing purposes for these patch-sets. :)
-> I plan to work on that after I finish with the per-vlan/port router control.
-
-Alright, I can appreciate that.  Really looking forward to this, I'll be
-patiently waiting here in the wings, testing this out.
-
-Fantastic work with this, again! :)
-
-All the best
- /Joachim
- 
+> 
+>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>> ---
+>>  net/core/page_pool.c | 11 ++++++-----
+>>  1 file changed, 6 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+>> index 1a69784..8172045 100644
+>> --- a/net/core/page_pool.c
+>> +++ b/net/core/page_pool.c
+>> @@ -191,8 +191,12 @@ static void page_pool_dma_sync_for_device(struct page_pool *pool,
+>>  
+>>  static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
+>>  {
+>> +	unsigned long attrs = DMA_ATTR_SKIP_CPU_SYNC;
+>>  	dma_addr_t dma;
+>>  
+>> +	if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
+>> +		attrs = 0;
+>> +
+>>  	/* Setup DMA mapping: use 'struct page' area for storing DMA-addr
+>>  	 * since dma_addr_t can be either 32 or 64 bits and does not always fit
+>>  	 * into page private data (i.e 32bit cpu with 64bit DMA caps)
+>> @@ -200,15 +204,12 @@ static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
+>>  	 */
+>>  	dma = dma_map_page_attrs(pool->p.dev, page, 0,
+>>  				 (PAGE_SIZE << pool->p.order),
+>> -				 pool->p.dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+>> -	if (dma_mapping_error(pool->p.dev, dma))
+>> +				 pool->p.dma_dir, attrs);
+>> +	if (unlikely(dma_mapping_error(pool->p.dev, dma)))
+>>  		return false;
+>>  
+>>  	page_pool_set_dma_addr(page, dma);
+>>  
+>> -	if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
+>> -		page_pool_dma_sync_for_device(pool, page, pool->p.max_len);
+>> -
+>>  	return true;
+>>  }
+>>  
+>>
+> 
+> .
+> 
