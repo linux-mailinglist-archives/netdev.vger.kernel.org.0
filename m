@@ -2,140 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3195D3F2751
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 09:08:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD9473F275A
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 09:13:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235996AbhHTHJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 03:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45816 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238523AbhHTHJP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 03:09:15 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFC30C061756
-        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 00:08:37 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id lo4so18137906ejb.7
-        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 00:08:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=konsulko.com; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tZyS+zXa1Utgu1YkWDpQkftwI+AG9c8wXg8Bo5VkgJM=;
-        b=XogW8rGOW6/tdWw0ZKA3JxvyqAbJCI6lEDDU7fvgasNzT+o800W3F2gKp9fejx/fy3
-         VqFGtNy/fuJfUNq2JrI1m4CZ8MOYxzDJtO/+4xgSkxJww0TxpY/ThctCmcOHN4SCL6FL
-         +vQTY8DjH21YBJ2leSKoXDGVxmyO1Gh7U4fdc=
+        id S238492AbhHTHNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 03:13:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:60882 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233073AbhHTHNL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 03:13:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1629443553;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2GoNPZi9qrBQcCL3gakdQwO2nPqTgYHaAONgLRbdpqM=;
+        b=U87S2oV58bxbag6XL0FoXbQRf33lVpFDKkBn8lHjFApzPHlIMFVhlaiffazVc2hS3k4IHO
+        ns2EWZ4uRz8fxDo9+rzg+Ey+3cloz5NkjZHwPE1NDFH7LHdzhTPT3MdbAx8Lt1GAP62OHD
+        JkVvIUpoTqDk5Mg4Z4SpnKYRm5deOjM=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-441-aXJw0NThOPWLHYJ5fblNFw-1; Fri, 20 Aug 2021 03:12:31 -0400
+X-MC-Unique: aXJw0NThOPWLHYJ5fblNFw-1
+Received: by mail-wr1-f71.google.com with SMTP id x18-20020a5d49120000b0290154e9dcf3dbso2522597wrq.7
+        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 00:12:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=tZyS+zXa1Utgu1YkWDpQkftwI+AG9c8wXg8Bo5VkgJM=;
-        b=IcqupT7MKYqaq3D5janGf46iMMscsHZixcdzrtyepmgBb9EPP7tVvX83DEFxJUNw+b
-         8aASYF7dtZigxChDT5VR2H3ShH3CCKSN24zsKc+fzFWORmZ1iG/WMauGAL5VfiQO66w+
-         k05Hq3EEvZLYv2vUX/oaGawByZtrrFP6j8eCyXkAAtTsJQAHGJ2CkKeQ5llzOqY5LR4n
-         C7lnS6Zpzq96yXxKj3zpzDHZG74mWbKmNB4Z6InCCtcJcSX+aBa16349cbAaQpP0OeqQ
-         21Jijl1/8/YbTdkQsy9kYUT5p9StrG//+5BQizGq1AtgK9c6c+cS1vtIIQbM0yO0/8SA
-         vixw==
-X-Gm-Message-State: AOAM531ETHBgCt+1HNN5sqhtmeBiVGycbxU6wBPh3wi/v7UjvA3NbkmX
-        s8D6wZ2ZSdxS0cYpM8OmAwttKw==
-X-Google-Smtp-Source: ABdhPJyyGdJimIeNUa5bT+wDN8Nb2/rDE+ePtHJAG3OyMAFMOcG+Qizyvz71eWwE+cJnle3s0hRkRw==
-X-Received: by 2002:a17:906:184e:: with SMTP id w14mr20107548eje.526.1629443316292;
-        Fri, 20 Aug 2021 00:08:36 -0700 (PDT)
-Received: from carbon (78-83-68-78.spectrumnet.bg. [78.83.68.78])
-        by smtp.gmail.com with ESMTPSA id z70sm3045792ede.76.2021.08.20.00.08.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Aug 2021 00:08:35 -0700 (PDT)
-Date:   Fri, 20 Aug 2021 10:08:35 +0300
-From:   Petko Manolov <petko.manolov@konsulko.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, paskripkin@gmail.com,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] net: usb: pegasus: fixes of set_register(s) return value
- evaluation;
-Message-ID: <YR9U80Iv9I2SjABw@carbon>
-Mail-Followup-To: Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org, paskripkin@gmail.com,
-        stable@vger.kernel.org
-References: <20210819090539.15879-1-petko.manolov@konsulko.com>
- <20210819123429.7b15f08e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        h=x-gm-message-state:from:cc:subject:to:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2GoNPZi9qrBQcCL3gakdQwO2nPqTgYHaAONgLRbdpqM=;
+        b=pwLp/EYtxlml3sYDB4hvU2cV7VYrUQf0Cr+NgbDNlKXP98JCS1W30HyDHqptA0K+1g
+         ckyTSyg2zbNEseup8ejMOTPkps+fyLtTTCBDBXyrMCbtD62YPSg4DK+XY5FdMlvdt+Tn
+         DZA4LaCwp08tfJXyUyOT5RdQcx2s3lL5+9+a6dkgSINHlNoeB9LtNzMmVrQnsckLpUOA
+         1MfrvI0Pyi0XH/4KHji89y093UN0IbNANAiOdZdLWLVeON5u9JAI7jFEU8mdziYJu/Ft
+         XBX+wazw6gYRWQOlWWJVRykNwJkw3OkCu/l1hL65Lb4vczyOhURvK0tsL3sXy3iz0ftV
+         l2Rg==
+X-Gm-Message-State: AOAM532nTceors2EgDhGmi4UkG6jjYV3en7quAwXRxTqMUbRZTyTQ8sL
+        Yh1xEotK4xhGdeCWZjLTyQch3h+R8TFJINUgzvCad+aDPY0ghuTg74HoXubrjpw5qWr9O3W/sQx
+        rDHVcJpTld39eHNSH
+X-Received: by 2002:a5d:5305:: with SMTP id e5mr8230881wrv.243.1629443550551;
+        Fri, 20 Aug 2021 00:12:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz1ka/XH/E2ChCX6u+2m7dnx/k73Zseqx1DsN/ARQ+EguZGs7f1VYaoN97NBfkeQmjufl8bcQ==
+X-Received: by 2002:a5d:5305:: with SMTP id e5mr8230862wrv.243.1629443550414;
+        Fri, 20 Aug 2021 00:12:30 -0700 (PDT)
+Received: from [192.168.42.238] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
+        by smtp.gmail.com with ESMTPSA id r4sm4064242wmq.10.2021.08.20.00.12.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 Aug 2021 00:12:30 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     brouer@redhat.com, hawk@kernel.org, ilias.apalodimas@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hkallweit1@gmail.com
+Subject: Re: [PATCH net-next v2 1/2] page_pool: use relaxed atomic for release
+ side accounting
+To:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org
+References: <1629442611-61547-1-git-send-email-linyunsheng@huawei.com>
+ <1629442611-61547-2-git-send-email-linyunsheng@huawei.com>
+Message-ID: <9363880e-4ed2-5acd-87da-d669b68d0134@redhat.com>
+Date:   Fri, 20 Aug 2021 09:12:29 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210819123429.7b15f08e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1629442611-61547-2-git-send-email-linyunsheng@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21-08-19 12:34:29, Jakub Kicinski wrote:
-> On Thu, 19 Aug 2021 12:05:39 +0300 Petko Manolov wrote:
-> >   - restore the behavior in enable_net_traffic() to avoid regressions - Jakub
-> >     Kicinski;
-> >   - hurried up and removed redundant assignment in pegasus_open() before yet
-> >     another checker complains;
-> >   - explicitly check for negative value in pegasus_set_wol(), even if
-> >     usb_control_msg_send() never return positive number we'd still be in sync
-> >     with the rest of the driver style;
-> > 
-> > Fixes: 8a160e2e9aeb net: usb: pegasus: Check the return value of get_geristers() and friends;
+
+On 20/08/2021 08.56, Yunsheng Lin wrote:
+> There is no need to synchronize the account updating, so
+> use the relaxed atomic to avoid some memory barrier in the
+> data path.
 > 
-> I guess this is fine but not exactly the preferred format, please see
-> Submitting patches.
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 
-If the preferred format involves brackets and quotes - so be it.
+LGTM
 
-> > Reported-by: Jakub Kicinski <kuba@kernel.org>
-> > Signed-off-by: Petko Manolov <petko.manolov@konsulko.com>
-> > ---
-> >  drivers/net/usb/pegasus.c | 6 +++---
-> >  1 file changed, 3 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
-> > index 652e9fcf0b77..1ef93082c772 100644
-> > --- a/drivers/net/usb/pegasus.c
-> > +++ b/drivers/net/usb/pegasus.c
-> > @@ -446,7 +446,7 @@ static int enable_net_traffic(struct net_device *dev, struct usb_device *usb)
-> >  		write_mii_word(pegasus, 0, 0x1b, &auxmode);
-> >  	}
-> >  
-> > -	return 0;
-> > +	return ret;
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+> ---
+>   net/core/page_pool.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> yup
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index e140905..1a69784 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -370,7 +370,7 @@ void page_pool_release_page(struct page_pool *pool, struct page *page)
+>   	/* This may be the last page returned, releasing the pool, so
+>   	 * it is not safe to reference pool afterwards.
+>   	 */
+> -	count = atomic_inc_return(&pool->pages_state_release_cnt);
+> +	count = atomic_inc_return_relaxed(&pool->pages_state_release_cnt);
+>   	trace_page_pool_state_release(pool, page, count);
+>   }
+>   EXPORT_SYMBOL(page_pool_release_page);
 > 
-> >  fail:
-> >  	netif_dbg(pegasus, drv, pegasus->net, "%s failed\n", __func__);
-> >  	return ret;
-> > @@ -835,7 +835,7 @@ static int pegasus_open(struct net_device *net)
-> >  	if (!pegasus->rx_skb)
-> >  		goto exit;
-> >  
-> > -	res = set_registers(pegasus, EthID, 6, net->dev_addr);
-> > +	set_registers(pegasus, EthID, 6, net->dev_addr);
-> 
-> yup
-> 
-> >  	usb_fill_bulk_urb(pegasus->rx_urb, pegasus->usb,
-> >  			  usb_rcvbulkpipe(pegasus->usb, 1),
-> > @@ -932,7 +932,7 @@ pegasus_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
-> >  	pegasus->wolopts = wol->wolopts;
-> >  
-> >  	ret = set_register(pegasus, WakeupControl, reg78);
-> > -	if (!ret)
-> > +	if (ret < 0)
-> >  		ret = device_set_wakeup_enable(&pegasus->usb->dev,
-> >  						wol->wolopts);
-> 
-> now this looks incorrect and unrelated to recent changes (IOW the
-> commit under Fixes), please drop this chunk
 
-It may not be related, but the change is:
-
-	a) obviously correct; and
-
-	b) in sync with the rest of 'ret' evaluations;
-
-To be honest i do not envision usb_control_msg_send() returning positive value
-anytime soon, but (ret < 0) looks "more" correct than (!ret).
-
-
-		Petko
