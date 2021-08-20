@@ -2,187 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BCE33F3185
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 18:34:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF0B43F3191
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 18:38:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231849AbhHTQek (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 12:34:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36248 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231448AbhHTQei (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 12:34:38 -0400
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F081C061764
-        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 09:34:00 -0700 (PDT)
-Received: by mail-ot1-x332.google.com with SMTP id y14-20020a0568302a0e00b0051acbdb2869so8245600otu.2
-        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 09:34:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/C8NeHo7GpZkUH1MXjk90wBsd8C6uuIwq8RGb1Hq5vo=;
-        b=IZP6XmBG5SL2HxTLGkkDDx0/FLxPIdyJJdRIudKqB/cJ5PKq6qEgam/BDbPyMLfM7f
-         0zg2lzUj8Xj4r6szTG6ovaYq+wgcPJhiyYiEed/J/YvFOCeyQytIO8nfzLWzRO9wn5y/
-         RYFQhWyBWqpIh7r+V2m8XKlZDol/Dz1Ls5qJGa+LUgPV74FcDLUpFTLELob79i2r4t2Z
-         7IVd9RkjubFRtkRPkv/3eOTKPUmKLUhfnfVKuUEtfupfUuv5Cc6AJD1qY2Nfu74lypAZ
-         NWx69F5Bm/YiQ14jsu+6OnJ/QvCKOiwflMtD3A/w2W2cADV+eD2Bt6hx8RqKWw3+cAD/
-         Conw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/C8NeHo7GpZkUH1MXjk90wBsd8C6uuIwq8RGb1Hq5vo=;
-        b=rwBnPZrFgL44NsBcTfwqqiD8PuRWN4PLtibIYl+sPX+W6QgUEvbwtDYioRH88DZrUx
-         2E+2n+pmM3jnwKAqZb5tukh2ES2KVDX6WzLKOQQKOPbkNyBXbLHUrm+DJ1lAeDIEFX19
-         4yxG6uKDVElZ5h31Xii4f4WqxMjJE26nq1IBesGk80XDGu86Ohpsik2lBySdzQeru36O
-         n7tx0JeZqJLBDQFLc98LWzN3btNVpSTXDiOP0bios+A1PuHSHiZp7DUG+VrQ1hP5bzGs
-         R1PlJBA4DX4YTIJtxMjOYg9Q3H/VivVNLDZPDThG9hOblvJjVryp+EoAsjnwJTY1U422
-         PxIQ==
-X-Gm-Message-State: AOAM531ovwu6Tyx5AwCST2aeD83IqmsCgZ/pcLbg8EVmjuXekgn5AR27
-        dYUf8Rj/0NNm4XGz9yfQJ/LAVA==
-X-Google-Smtp-Source: ABdhPJxBghjCh0btKNfjwzvGN2Vxx1KHZIfWf5hcsClQM0NLrJC694h/EB+IoLCQTcq+zXsFqp+5HA==
-X-Received: by 2002:a9d:7ccc:: with SMTP id r12mr17883793otn.350.1629477239291;
-        Fri, 20 Aug 2021 09:33:59 -0700 (PDT)
-Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id r20sm202737oot.16.2021.08.20.09.33.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Aug 2021 09:33:58 -0700 (PDT)
-Date:   Fri, 20 Aug 2021 09:35:21 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        id S231787AbhHTQja (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 12:39:30 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:60678 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231757AbhHTQj3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 12:39:29 -0400
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 3696D20C33D8;
+        Fri, 20 Aug 2021 09:38:51 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3696D20C33D8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1629477531;
+        bh=WaK5G/evZ18+jqtp1X6uZFuicVOVUnSl34NTPmE/jIc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=eYmin74tZXjXnVDwQL3iH5Eaw5f/w7gQT7W/KU38DOtTsgd2G5d1u5Wthggk5RarQ
+         z/iWL/PT4rXm+b4YsDV6UYHIDqYl5ahnIDmZHXGMDuQt5aK6SpqZKhiz5zudBiVGMS
+         uO13TbWtoDrh2RSHx77oe+pIl8wmdMbpKXK7GBn4=
+Received: by mail-pf1-f178.google.com with SMTP id t13so9074512pfl.6;
+        Fri, 20 Aug 2021 09:38:51 -0700 (PDT)
+X-Gm-Message-State: AOAM533NQKoy0UBjsmzK3zTzXMk6Xb+1bLY7f3pSC1Sg7I2C3NG1MU1z
+        5PnzUD8CEqrT+4GkYew8cJfTXo7k3JH+G3LC1jk=
+X-Google-Smtp-Source: ABdhPJx3t4f1Aul2iRUkWWLv3zwPwQq7eYRa/ej0J4paFUQ0VObfABymqJHmf3UIvGM0woTmJGTNFo/Db/gQBzQO+1c=
+X-Received: by 2002:a63:1422:: with SMTP id u34mr1216269pgl.326.1629477530715;
+ Fri, 20 Aug 2021 09:38:50 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210614022504.24458-1-mcroce@linux.microsoft.com>
+ <871r71azjw.wl-maz@kernel.org> <YROmOQ+4Kqukgd6z@orome.fritz.box>
+ <202417ef-f8ae-895d-4d07-1f9f3d89b4a4@gmail.com> <87o8a49idp.wl-maz@kernel.org>
+ <fe5f99c8-5655-7fbb-a64e-b5f067c3273c@gmail.com> <20210812121835.405d2e37@linux.microsoft.com>
+ <874kbuapod.wl-maz@kernel.org> <CAFnufp2=1t2+fmxyGJ0Qu3Z+=wRwAX8faaPvrJdFpFeTS3J7Uw@mail.gmail.com>
+ <87wnohqty1.wl-maz@kernel.org> <CAFnufp3xjYqe_iVfbmdjz4-xN2UX_oo3GUw4Z4M_q-R38EN+uQ@mail.gmail.com>
+ <87fsv4qdzm.wl-maz@kernel.org>
+In-Reply-To: <87fsv4qdzm.wl-maz@kernel.org>
+From:   Matteo Croce <mcroce@linux.microsoft.com>
+Date:   Fri, 20 Aug 2021 18:38:14 +0200
+X-Gmail-Original-Message-ID: <CAFnufp2T75cvDLUx+ZyPQbkaNeY_S1OJ7KTJe=2EK-qXRNkwyw@mail.gmail.com>
+Message-ID: <CAFnufp2T75cvDLUx+ZyPQbkaNeY_S1OJ7KTJe=2EK-qXRNkwyw@mail.gmail.com>
+Subject: Re: [PATCH net-next] stmmac: align RX buffers
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        "open list:DRM DRIVER FOR MSM ADRENO GPU" 
-        <linux-arm-msm@vger.kernel.org>, linux-mmc@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-bluetooth@vger.kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 10/15] pwrseq: add support for QCA BT+WiFi power
- sequencer
-Message-ID: <YR/ZyVrkmfVd0a8r@ripper>
-References: <20210817005507.1507580-1-dmitry.baryshkov@linaro.org>
- <20210817005507.1507580-11-dmitry.baryshkov@linaro.org>
- <YR7m43mURVJ8YufC@ripper>
- <CAA8EJpr+=Yg2B_DzQWntW0GgvBfaSpAu0K+UD3NowdkusiYxrQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAA8EJpr+=Yg2B_DzQWntW0GgvBfaSpAu0K+UD3NowdkusiYxrQ@mail.gmail.com>
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Will Deacon <will@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri 20 Aug 01:10 PDT 2021, Dmitry Baryshkov wrote:
-
-> Hi,
-> 
-> On Fri, 20 Aug 2021 at 02:17, Bjorn Andersson
-> <bjorn.andersson@linaro.org> wrote:
+On Fri, Aug 20, 2021 at 6:26 PM Marc Zyngier <maz@kernel.org> wrote:
+>
+> On Fri, 20 Aug 2021 11:37:03 +0100,
+> Matteo Croce <mcroce@linux.microsoft.com> wrote:
 > >
-> > On Mon 16 Aug 17:55 PDT 2021, Dmitry Baryshkov wrote:
-> > [..]
-> > > diff --git a/drivers/power/pwrseq/pwrseq_qca.c b/drivers/power/pwrseq/pwrseq_qca.c
-> > > new file mode 100644
-> > > index 000000000000..3421a4821126
-> > > --- /dev/null
-> > > +++ b/drivers/power/pwrseq/pwrseq_qca.c
-> > > @@ -0,0 +1,290 @@
-> > > +// SPDX-License-Identifier: GPL-2.0-only
-> > > +/*
-> > > + * Copyright (c) 2021, Linaro Ltd.
-> > > + *
-> > > + * Author: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> > > + *
-> > > + * Power Sequencer for Qualcomm WiFi + BT SoCs
-> > > + */
-> > > +
-> > > +#include <linux/delay.h>
-> > > +#include <linux/gpio/consumer.h>
-> > > +#include <linux/platform_device.h>
-> > > +#include <linux/pwrseq/driver.h>
-> > > +#include <linux/regulator/consumer.h>
-> > > +
-> > > +/*
-> > > + * Voltage regulator information required for configuring the
-> > > + * QCA WiFi+Bluetooth chipset
-> > > + */
-> > > +struct qca_vreg {
-> > > +     const char *name;
-> > > +     unsigned int load_uA;
-> > > +};
-> > > +
-> > > +struct qca_device_data {
-> > > +     struct qca_vreg vddio;
+> > On Thu, Aug 19, 2021 at 6:29 PM Marc Zyngier <maz@kernel.org> wrote:
+>
+> [...]
+>
+> > > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> > > index fcdb1d20389b..244aa6579ef4 100644
+> > > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> > > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> > > @@ -341,7 +341,7 @@ static inline unsigned int stmmac_rx_offset(struct stmmac_priv *priv)
+> > >         if (stmmac_xdp_is_enabled(priv))
+> > >                 return XDP_PACKET_HEADROOM + NET_IP_ALIGN;
+> > >
+> > > -       return NET_SKB_PAD + NET_IP_ALIGN;
+> > > +       return 8 + NET_IP_ALIGN;
+> > >  }
+> > >
+> > >  void stmmac_disable_rx_queue(struct stmmac_priv *priv, u32 queue);
+> > >
+> > > I don't see the system corrupting packets anymore. Is that exactly
+> > > what you had in mind? This really seems to point to a basic buffer
+> > > overflow.
+>
+> [...]
+>
+> > Sorry, I meant something like:
 > >
-> > Any particular reason why this isn't just the first entry in vregs and
-> > operated as part of the bulk API?
-> 
-> Because VDDIO should be up before bringing the rest of the power
-> sources (at least for wcn39xx). This is usually the case since VDDIO
-> is S4A, but I'd still prefer to express this in the code.
-> And register_bulk_enable powers up all the supplies asynchronously,
-> thus it can not guarantee that the first entry would be powered up
-> first.
-> 
-
-Ahh, forgot about the async nature of bulk_enable. Make the code a
-little ugly, but it needs to be done like that.
-
-Thinking about it, isn't there a required minimum time between vddio and
-the others in the wcn specification?
-
+> > -       return NET_SKB_PAD + NET_IP_ALIGN;
+> > +       return 8;
 > >
-> > > +     struct qca_vreg *vregs;
-> > > +     size_t num_vregs;
-> > > +     bool has_bt_en;
-> > > +     bool has_wifi_en;
-> > > +};
-> > > +
-> > > +struct pwrseq_qca;
-> > > +struct pwrseq_qca_one {
-> > > +     struct pwrseq_qca *common;
-> > > +     struct gpio_desc *enable;
-> > > +};
-> > > +
-> > > +#define PWRSEQ_QCA_WIFI 0
-> > > +#define PWRSEQ_QCA_BT 1
-> > > +
-> > > +#define PWRSEQ_QCA_MAX 2
-> > > +
-> > > +struct pwrseq_qca {
-> > > +     struct regulator *vddio;
-> > > +     struct gpio_desc *sw_ctrl;
-> > > +     struct pwrseq_qca_one pwrseq_qcas[PWRSEQ_QCA_MAX];
-> > > +     int num_vregs;
-> > > +     struct regulator_bulk_data vregs[];
-> > > +};
-> > > +
-> > > +static int pwrseq_qca_power_on(struct pwrseq *pwrseq)
-> > > +{
-> > > +     struct pwrseq_qca_one *qca_one = pwrseq_get_data(pwrseq);
-> > > +     int ret;
-> > > +
-> > > +     if (qca_one->common->vddio) {
-> >
-> > devm_regulator_get() doesn't return NULL, so this is always true.
-> 
-> This is more of the safety guard for the cases when the qca doesn't
-> have the special vddio supply.
-> 
+> > I had some hardware which DMA fails if the receive buffer was not word
+> > aligned, but this seems not the case, as 8 + NET_IP_ALIGN = 10, and
+> > it's not aligned too.
+>
+> No error in that case either, as expected. Given that NET_SKB_PAD is
+> likely to expand to 64, it is likely a DMA buffer overflow which
+> probably only triggers for large-ish packets.
+>
+> Now, we're almost at -rc7, and we don't have a solution in sight.
+>
+> Can we please revert this until we have an understanding of what is
+> happening? I'll hopefully have more cycles to work on the issue once
+> 5.14 is out, and hopefully the maintainers of this driver can chime in
+> (they have been pretty quiet so far).
+>
+> Thanks,
+>
+>         M.
+>
+> --
+> Without deviation from the norm, progress is not possible.
 
-If you think there's such a case coming up, then it makes sense.
-On the flip side, debugging the resulting panic when someone adds a new
-compatible without vddio is very minor...
+Last try, what about adding only NET_IP_ALIGN and leaving NET_SKB_PAD?
 
+-       return NET_SKB_PAD + NET_IP_ALIGN;
++       return NET_IP_ALIGN;
 
-I think this looks good then.
+I think that alloc_skb adds another NET_SKB_PAD anyway.
 
-Regards,
-Bjorn
+-- 
+per aspera ad upstream
