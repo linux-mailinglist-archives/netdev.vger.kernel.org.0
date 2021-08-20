@@ -2,245 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 162F83F258B
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 06:07:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB76C3F259C
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 06:13:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232520AbhHTEHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 00:07:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbhHTEHU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 00:07:20 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8775AC061575
-        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 21:06:43 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mGvnh-0006UH-U8; Fri, 20 Aug 2021 06:06:37 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mGvnf-0001WP-PY; Fri, 20 Aug 2021 06:06:35 +0200
-Date:   Fri, 20 Aug 2021 06:06:35 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: Regression with commit e532a096be0e ("net: usb: asix: ax88772:
- add phylib support")
-Message-ID: <20210820040635.GA3573@pengutronix.de>
-References: <3904c728-1ea2-9c2b-ec11-296396fd2f7e@linux.intel.com>
- <20210816081314.3b251d2e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210816161822.td7jl4tv7zfbprty@pengutronix.de>
- <e575a7a9-2645-9ebc-fdea-f0421ecaf0e2@linux.intel.com>
- <20210817090920.7wviv7fsfzyhli5t@pengutronix.de>
- <1e54ca43-6631-a76a-2e40-1355fe187538@linux.intel.com>
+        id S232578AbhHTEOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 00:14:23 -0400
+Received: from verein.lst.de ([213.95.11.211]:39594 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229457AbhHTEOW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Aug 2021 00:14:22 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 816B46736F; Fri, 20 Aug 2021 06:13:40 +0200 (CEST)
+Date:   Fri, 20 Aug 2021 06:13:40 +0200
+From:   "hch@lst.de" <hch@lst.de>
+To:     Michael Kelley <mikelley@microsoft.com>
+Cc:     Tianyu Lan <ltykernel@gmail.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "will@kernel.org" <will@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "pgonda@google.com" <pgonda@google.com>,
+        "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "rppt@kernel.org" <rppt@kernel.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "saravanand@fb.com" <saravanand@fb.com>,
+        "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
+        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "rientjes@google.com" <rientjes@google.com>,
+        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
+        "tj@kernel.org" <tj@kernel.org>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        vkuznets <vkuznets@redhat.com>,
+        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+        "dave.hansen@intel.com" <dave.hansen@intel.com>
+Subject: Re: [PATCH V3 11/13] HV/IOMMU: Enable swiotlb bounce buffer for
+ Isolation VM
+Message-ID: <20210820041340.GA26450@lst.de>
+References: <20210809175620.720923-1-ltykernel@gmail.com> <20210809175620.720923-12-ltykernel@gmail.com> <MWHPR21MB159315B335EB0B064B0B0F23D7C09@MWHPR21MB1593.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="bp/iNruPH9dso1Pn"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1e54ca43-6631-a76a-2e40-1355fe187538@linux.intel.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 06:02:09 up 172 days, 13:37, 84 users,  load average: 3.46, 2.80,
- 1.94
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <MWHPR21MB159315B335EB0B064B0B0F23D7C09@MWHPR21MB1593.namprd21.prod.outlook.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Aug 19, 2021 at 06:11:30PM +0000, Michael Kelley wrote:
+> This function is manipulating page tables in the guest VM.  It is not involved
+> in communicating with Hyper-V, or passing PFNs to Hyper-V.  The pfn array
+> contains guest PFNs, not Hyper-V PFNs.  So it should use PAGE_SIZE
+> instead of HV_HYP_PAGE_SIZE, and similarly PAGE_SHIFT and virt_to_pfn().
+> If this code were ever to run on ARM64 in the future with PAGE_SIZE other
+> than 4 Kbytes, the use of PAGE_SIZE is correct choice.
 
---bp/iNruPH9dso1Pn
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Yes.  I just stumled over this yesterday.  I think we can actually use a
+nicer helper ased around vmap_range() to simplify this exactly because it
+always uses the host page size.  I hope I can draft up a RFC today.
 
-Hi Jarkko,
-
-On Tue, Aug 17, 2021 at 02:55:20PM +0300, Jarkko Nikula wrote:
-> On 8/17/21 12:09 PM, Oleksij Rempel wrote:
-> > OK thx, I'll need to your help to debug it:
-> > - please send me complete log, or at least parts related to the asix
-> >    (dmesg | grep -i Asix)
-> 
-> I added following dyndebug options if that helps:
-> asix.dyndbg=+p ax88179_178a.dyndbg=+p
-> 
-> Around ~8 s or so after bootup I run following:
-> ifconfig eth0 down; sleep 5; ifconfig eth0 up; sleep 5; ifconfig eth0 down
-> 
-> Attachments have grepped dmesg from v5.13 and linux-next next-20210816.
-
-thank you! It helps.
-
-> > - do the interface is not able to go up at all? For example, it works on
-> >    hot plug, but is not working on reboot.
-> > - Can you please test it with other link partners.
-> > 
-> I'm now testing this remotely but can test these later this week or next
-> week at the office.
-
-Can you please test attached patch.
-And may be add some prints to the ax88772_hw_reset() and ax88772a_hw_reset().
-It would be interesting to know, which variant is actually affected.
-
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-
---bp/iNruPH9dso1Pn
-Content-Type: text/x-diff; charset=utf-8
-Content-Disposition: attachment; filename="0001-net-usb-asix-ax88772-move-embedded-PHY-detection-as-.patch"
-
-From a96a1bcaba8afa9d716e88b241ac77d97be068f9 Mon Sep 17 00:00:00 2001
-From: Oleksij Rempel <o.rempel@pengutronix.de>
-Date: Thu, 19 Aug 2021 06:58:52 +0200
-Subject: [PATCH] net: usb: asix: ax88772: move embedded PHY detection as early
- as possible
-
-Some HW revisions need additional MAC configuration before the embedded PHY
-can be enabled. If this is not done, we won't be able to get response
-from the PHY.
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/usb/asix.h         |  1 +
- drivers/net/usb/asix_devices.c | 41 +++++++++++++++++-----------------
- 2 files changed, 21 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/net/usb/asix.h b/drivers/net/usb/asix.h
-index e1994a246122..2a1e31defe71 100644
---- a/drivers/net/usb/asix.h
-+++ b/drivers/net/usb/asix.h
-@@ -184,6 +184,7 @@ struct asix_common_private {
- 	struct phy_device *phydev;
- 	u16 phy_addr;
- 	char phy_name[20];
-+	bool embd_phy;
- };
- 
- extern const struct driver_info ax88172a_info;
-diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index cb01897c7a5d..a74e67a60436 100644
---- a/drivers/net/usb/asix_devices.c
-+++ b/drivers/net/usb/asix_devices.c
-@@ -354,24 +354,23 @@ static int ax88772_reset(struct usbnet *dev)
- static int ax88772_hw_reset(struct usbnet *dev, int in_pm)
- {
- 	struct asix_data *data = (struct asix_data *)&dev->data;
--	int ret, embd_phy;
-+	struct asix_common_private *priv = dev->driver_priv;
- 	u16 rx_ctl;
-+	int ret;
- 
- 	ret = asix_write_gpio(dev, AX_GPIO_RSE | AX_GPIO_GPO_2 |
- 			      AX_GPIO_GPO2EN, 5, in_pm);
- 	if (ret < 0)
- 		goto out;
- 
--	embd_phy = ((dev->mii.phy_id & 0x1f) == 0x10 ? 1 : 0);
--
--	ret = asix_write_cmd(dev, AX_CMD_SW_PHY_SELECT, embd_phy,
-+	ret = asix_write_cmd(dev, AX_CMD_SW_PHY_SELECT, priv->embd_phy,
- 			     0, 0, NULL, in_pm);
- 	if (ret < 0) {
- 		netdev_dbg(dev->net, "Select PHY #1 failed: %d\n", ret);
- 		goto out;
- 	}
- 
--	if (embd_phy) {
-+	if (priv->embd_phy) {
- 		ret = asix_sw_reset(dev, AX_SWRESET_IPPD, in_pm);
- 		if (ret < 0)
- 			goto out;
-@@ -449,17 +448,16 @@ static int ax88772_hw_reset(struct usbnet *dev, int in_pm)
- static int ax88772a_hw_reset(struct usbnet *dev, int in_pm)
- {
- 	struct asix_data *data = (struct asix_data *)&dev->data;
--	int ret, embd_phy;
-+	struct asix_common_private *priv = dev->driver_priv;
- 	u16 rx_ctl, phy14h, phy15h, phy16h;
- 	u8 chipcode = 0;
-+	int ret;
- 
- 	ret = asix_write_gpio(dev, AX_GPIO_RSE, 5, in_pm);
- 	if (ret < 0)
- 		goto out;
- 
--	embd_phy = ((dev->mii.phy_id & 0x1f) == 0x10 ? 1 : 0);
--
--	ret = asix_write_cmd(dev, AX_CMD_SW_PHY_SELECT, embd_phy |
-+	ret = asix_write_cmd(dev, AX_CMD_SW_PHY_SELECT, priv->embd_phy |
- 			     AX_PHYSEL_SSEN, 0, 0, NULL, in_pm);
- 	if (ret < 0) {
- 		netdev_dbg(dev->net, "Select PHY #1 failed: %d\n", ret);
-@@ -683,12 +681,6 @@ static int ax88772_init_phy(struct usbnet *dev)
- 	struct asix_common_private *priv = dev->driver_priv;
- 	int ret;
- 
--	ret = asix_read_phy_addr(dev, true);
--	if (ret < 0)
--		return ret;
--
--	priv->phy_addr = ret;
--
- 	snprintf(priv->phy_name, sizeof(priv->phy_name), PHY_ID_FMT,
- 		 priv->mdio->id, priv->phy_addr);
- 
-@@ -715,6 +707,12 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
- 	struct asix_common_private *priv;
- 	int ret, i;
- 
-+	priv = devm_kzalloc(&dev->udev->dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	dev->driver_priv = priv;
-+
- 	usbnet_get_endpoints(dev, intf);
- 
- 	/* Maybe the boot loader passed the MAC address via device tree */
-@@ -750,6 +748,13 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
- 	dev->net->needed_headroom = 4; /* cf asix_tx_fixup() */
- 	dev->net->needed_tailroom = 4; /* cf asix_tx_fixup() */
- 
-+	ret = asix_read_phy_addr(dev, true);
-+	if (ret < 0)
-+		return ret;
-+
-+	priv->phy_addr = ret;
-+	priv->embd_phy = ((priv->phy_addr & 0x1f) == 0x10 ? true : false);
-+
- 	asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1, &chipcode, 0);
- 	chipcode &= AX_CHIPCODE_MASK;
- 
-@@ -768,12 +773,6 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
- 		dev->rx_urb_size = 2048;
- 	}
- 
--	priv = devm_kzalloc(&dev->udev->dev, sizeof(*priv), GFP_KERNEL);
--	if (!priv)
--		return -ENOMEM;
--
--	dev->driver_priv = priv;
--
- 	priv->presvd_phy_bmcr = 0;
- 	priv->presvd_phy_advertise = 0;
- 	if (chipcode == AX_AX88772_CHIPCODE) {
--- 
-2.30.2
-
-
---bp/iNruPH9dso1Pn--
