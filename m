@@ -2,119 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B33C43F2963
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 11:39:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD8793F2988
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 11:53:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237184AbhHTJkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 05:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52436 "EHLO
+        id S237748AbhHTJxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 05:53:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233976AbhHTJkc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 05:40:32 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A98BDC061575
-        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 02:39:54 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id w21-20020a7bc1150000b02902e69ba66ce6so5700538wmi.1
-        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 02:39:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=SgAZrAuLqFLWkgFha/gddUSo+jVTcbw0CntqEuGsVoo=;
-        b=hJw/IoWz1kBujVQ1PZSAH9y2ccNURgfsnDZ1H/HYY8CDBDZ7KHY+8QuBOcdDy82R5e
-         Znpr2XZvoCEMy3bFPCLH82imTz8kMGJt+WiJAKevCRqapWBuiPx51NC2mN7m7SMDBnON
-         J7pPhuVzQagYiomad5QJbZDV+b5aSJs1xMliX5pmWoQru6xVby4ZOaeP94n5NvbIrBYt
-         MUhn32WFW3/s+bftjKqsOTW6jkFOAfen7JdlyAq9FaHgb/44BAblZUv49HEDCPxjUGuh
-         OzsCf8ZO2MT3i/NqzKCd75Cu1NIqYJwrudWyxuahruTK+vS0qGhKNDxJmto+xIeldr56
-         WBUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SgAZrAuLqFLWkgFha/gddUSo+jVTcbw0CntqEuGsVoo=;
-        b=Ai6cWPH0Gs3lJ/pJr3l9fupPgx2aqRlT5TQhr2EsBPCbyfuSaKKw5FixWxNeOAOnKM
-         uU1z7YiXqCL8vOWxeYlg4DO5kD0s9wyxIw/5j5Q1LRG67t62WJ5iSPMO9VVyVTYpguZO
-         30dD5vyCE6GJS1LFe3srE1YORaiyaHLx92yb957r+QxgSn4qlhLM/GJH4+dSKLM8SjJm
-         hT3Y7Hv6QZCVWBkgj8rlJwwSNac1CRL0h7Pb19444yqIORCxcAlGwR5TUSqfmmenkbkn
-         KkXnlBfX9JUeVERj+KQGMF+W2XG4E6taxcKTN8mzimLgGUxICtoiOqGWx/UHkum3NcWD
-         qWcw==
-X-Gm-Message-State: AOAM530cQsTT5Dcd4qLd4uyk/chvvtuIZYNW6tH89OD6I1Mhipj+771P
-        ufqZpOIagy8Z0zMxAPwy0ewtvA==
-X-Google-Smtp-Source: ABdhPJwN1H4oiaqFFnk+KcpRnJHbcydYHgaP9ld0Bns8XUmcEyvT456ckvZJsU0WiGxvhogYhw7gkQ==
-X-Received: by 2002:a05:600c:242:: with SMTP id 2mr2877004wmj.167.1629452392633;
-        Fri, 20 Aug 2021 02:39:52 -0700 (PDT)
-Received: from Iliass-MBP (athedsl-93705.home.otenet.gr. [87.203.119.87])
-        by smtp.gmail.com with ESMTPSA id h6sm5250280wmq.5.2021.08.20.02.39.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Aug 2021 02:39:52 -0700 (PDT)
-Date:   Fri, 20 Aug 2021 12:39:45 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        hkallweit1@gmail.com
-Subject: Re: [PATCH net-next v2 2/2] page_pool: optimize the cpu sync
- operation when DMA mapping
-Message-ID: <YR94YYRv2qpQtdSZ@Iliass-MBP>
-References: <1629442611-61547-1-git-send-email-linyunsheng@huawei.com>
- <1629442611-61547-3-git-send-email-linyunsheng@huawei.com>
+        with ESMTP id S234846AbhHTJxg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 05:53:36 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C41FC061575
+        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 02:52:58 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mH1Ch-0000Zh-4v; Fri, 20 Aug 2021 11:52:47 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mH1Cf-0000gz-0D; Fri, 20 Aug 2021 11:52:45 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net 1/1] net: usb: asix: ax88772: move embedded PHY detection as early as possible
+Date:   Fri, 20 Aug 2021 11:52:43 +0200
+Message-Id: <20210820095243.2452-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1629442611-61547-3-git-send-email-linyunsheng@huawei.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 20, 2021 at 02:56:51PM +0800, Yunsheng Lin wrote:
-> If the DMA_ATTR_SKIP_CPU_SYNC is not set, cpu syncing is
-> also done in dma_map_page_attrs(), so set the attrs according
-> to pool->p.flags to avoid calling cpu sync function again.
+Some HW revisions need additional MAC configuration before the embedded PHY
+can be enabled. If this is not done, we won't be able to get response
+from the internal PHY.
 
-Isn't DMA_ATTR_SKIP_CPU_SYNC checked within dma_map_page_attrs() anyway?
+This issue was detected on chipcode == AX_AX88772_CHIPCODE variant,
+where ax88772_hw_reset() was executed with missing embd_phy flag.
 
-Regards
-/Ilias
-> 
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> ---
->  net/core/page_pool.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
-> 
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 1a69784..3df5554 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -191,8 +191,12 @@ static void page_pool_dma_sync_for_device(struct page_pool *pool,
->  
->  static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
->  {
-> +	unsigned long attrs = DMA_ATTR_SKIP_CPU_SYNC;
->  	dma_addr_t dma;
->  
-> +	if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
-> +		attrs = 0;
-> +
->  	/* Setup DMA mapping: use 'struct page' area for storing DMA-addr
->  	 * since dma_addr_t can be either 32 or 64 bits and does not always fit
->  	 * into page private data (i.e 32bit cpu with 64bit DMA caps)
-> @@ -200,15 +204,12 @@ static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
->  	 */
->  	dma = dma_map_page_attrs(pool->p.dev, page, 0,
->  				 (PAGE_SIZE << pool->p.order),
-> -				 pool->p.dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
-> +				 pool->p.dma_dir, attrs);
->  	if (dma_mapping_error(pool->p.dev, dma))
->  		return false;
->  
->  	page_pool_set_dma_addr(page, dma);
->  
-> -	if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
-> -		page_pool_dma_sync_for_device(pool, page, pool->p.max_len);
-> -
->  	return true;
->  }
->  
-> -- 
-> 2.7.4
-> 
+Fixes: e532a096be0e ("net: usb: asix: ax88772: add phylib support")
+Reported-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Tested-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/usb/asix.h         |  1 +
+ drivers/net/usb/asix_devices.c | 41 +++++++++++++++++-----------------
+ 2 files changed, 21 insertions(+), 21 deletions(-)
+
+diff --git a/drivers/net/usb/asix.h b/drivers/net/usb/asix.h
+index e1994a246122..2a1e31defe71 100644
+--- a/drivers/net/usb/asix.h
++++ b/drivers/net/usb/asix.h
+@@ -184,6 +184,7 @@ struct asix_common_private {
+ 	struct phy_device *phydev;
+ 	u16 phy_addr;
+ 	char phy_name[20];
++	bool embd_phy;
+ };
+ 
+ extern const struct driver_info ax88172a_info;
+diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
+index cb01897c7a5d..a74e67a60436 100644
+--- a/drivers/net/usb/asix_devices.c
++++ b/drivers/net/usb/asix_devices.c
+@@ -354,24 +354,23 @@ static int ax88772_reset(struct usbnet *dev)
+ static int ax88772_hw_reset(struct usbnet *dev, int in_pm)
+ {
+ 	struct asix_data *data = (struct asix_data *)&dev->data;
+-	int ret, embd_phy;
++	struct asix_common_private *priv = dev->driver_priv;
+ 	u16 rx_ctl;
++	int ret;
+ 
+ 	ret = asix_write_gpio(dev, AX_GPIO_RSE | AX_GPIO_GPO_2 |
+ 			      AX_GPIO_GPO2EN, 5, in_pm);
+ 	if (ret < 0)
+ 		goto out;
+ 
+-	embd_phy = ((dev->mii.phy_id & 0x1f) == 0x10 ? 1 : 0);
+-
+-	ret = asix_write_cmd(dev, AX_CMD_SW_PHY_SELECT, embd_phy,
++	ret = asix_write_cmd(dev, AX_CMD_SW_PHY_SELECT, priv->embd_phy,
+ 			     0, 0, NULL, in_pm);
+ 	if (ret < 0) {
+ 		netdev_dbg(dev->net, "Select PHY #1 failed: %d\n", ret);
+ 		goto out;
+ 	}
+ 
+-	if (embd_phy) {
++	if (priv->embd_phy) {
+ 		ret = asix_sw_reset(dev, AX_SWRESET_IPPD, in_pm);
+ 		if (ret < 0)
+ 			goto out;
+@@ -449,17 +448,16 @@ static int ax88772_hw_reset(struct usbnet *dev, int in_pm)
+ static int ax88772a_hw_reset(struct usbnet *dev, int in_pm)
+ {
+ 	struct asix_data *data = (struct asix_data *)&dev->data;
+-	int ret, embd_phy;
++	struct asix_common_private *priv = dev->driver_priv;
+ 	u16 rx_ctl, phy14h, phy15h, phy16h;
+ 	u8 chipcode = 0;
++	int ret;
+ 
+ 	ret = asix_write_gpio(dev, AX_GPIO_RSE, 5, in_pm);
+ 	if (ret < 0)
+ 		goto out;
+ 
+-	embd_phy = ((dev->mii.phy_id & 0x1f) == 0x10 ? 1 : 0);
+-
+-	ret = asix_write_cmd(dev, AX_CMD_SW_PHY_SELECT, embd_phy |
++	ret = asix_write_cmd(dev, AX_CMD_SW_PHY_SELECT, priv->embd_phy |
+ 			     AX_PHYSEL_SSEN, 0, 0, NULL, in_pm);
+ 	if (ret < 0) {
+ 		netdev_dbg(dev->net, "Select PHY #1 failed: %d\n", ret);
+@@ -683,12 +681,6 @@ static int ax88772_init_phy(struct usbnet *dev)
+ 	struct asix_common_private *priv = dev->driver_priv;
+ 	int ret;
+ 
+-	ret = asix_read_phy_addr(dev, true);
+-	if (ret < 0)
+-		return ret;
+-
+-	priv->phy_addr = ret;
+-
+ 	snprintf(priv->phy_name, sizeof(priv->phy_name), PHY_ID_FMT,
+ 		 priv->mdio->id, priv->phy_addr);
+ 
+@@ -715,6 +707,12 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
+ 	struct asix_common_private *priv;
+ 	int ret, i;
+ 
++	priv = devm_kzalloc(&dev->udev->dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	dev->driver_priv = priv;
++
+ 	usbnet_get_endpoints(dev, intf);
+ 
+ 	/* Maybe the boot loader passed the MAC address via device tree */
+@@ -750,6 +748,13 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
+ 	dev->net->needed_headroom = 4; /* cf asix_tx_fixup() */
+ 	dev->net->needed_tailroom = 4; /* cf asix_tx_fixup() */
+ 
++	ret = asix_read_phy_addr(dev, true);
++	if (ret < 0)
++		return ret;
++
++	priv->phy_addr = ret;
++	priv->embd_phy = ((priv->phy_addr & 0x1f) == 0x10 ? true : false);
++
+ 	asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1, &chipcode, 0);
+ 	chipcode &= AX_CHIPCODE_MASK;
+ 
+@@ -768,12 +773,6 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
+ 		dev->rx_urb_size = 2048;
+ 	}
+ 
+-	priv = devm_kzalloc(&dev->udev->dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
+-		return -ENOMEM;
+-
+-	dev->driver_priv = priv;
+-
+ 	priv->presvd_phy_bmcr = 0;
+ 	priv->presvd_phy_advertise = 0;
+ 	if (chipcode == AX_AX88772_CHIPCODE) {
+-- 
+2.30.2
+
