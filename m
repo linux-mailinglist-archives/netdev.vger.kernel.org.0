@@ -2,62 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48F173F3261
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 19:41:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 792CD3F3282
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 19:52:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234483AbhHTRlu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 13:41:50 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:32920 "EHLO vps0.lunn.ch"
+        id S234992AbhHTRwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 13:52:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38082 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229940AbhHTRlt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Aug 2021 13:41:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=jQD2OATswpHp4bNzlY3nCz9N+HNVVMddP1vTz/Eobi4=; b=oEIIcNTZ77tkcpIYxVQ7660CA0
-        DQ9L9PJCx48VE/0l6QeLOhpsNtXJZbTsh5mQ1rpx/JJRw8JYBt4YyR32H0ZiW6FyzpYfILqqfU1W6
-        XiG2m2odoOcWSMB7PEaGLd07gkcvLB1FHehzm9qObvzugwbw3CpTrRbUmWEFv3fdGa9w=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mH8Vr-001CJX-JT; Fri, 20 Aug 2021 19:41:03 +0200
-Date:   Fri, 20 Aug 2021 19:41:03 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Joel Stanley <joel@jms.id.au>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        id S229940AbhHTRwh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Aug 2021 13:52:37 -0400
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EAE2060F58;
+        Fri, 20 Aug 2021 17:51:58 +0000 (UTC)
+Received: from sofa.misterjones.org ([185.219.108.64] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1mH8gO-006FUP-VK; Fri, 20 Aug 2021 18:51:57 +0100
+Date:   Fri, 20 Aug 2021 18:51:56 +0100
+Message-ID: <87fsv4ypfn.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Matteo Croce <mcroce@linux.microsoft.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: net: Add bindings for LiteETH
-Message-ID: <YR/pLw8EDKJWt8Uw@lunn.ch>
-References: <20210820074726.2860425-1-joel@jms.id.au>
- <20210820074726.2860425-2-joel@jms.id.au>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210820074726.2860425-2-joel@jms.id.au>
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Will Deacon <will@kernel.org>
+Subject: Re: [PATCH net-next] stmmac: align RX buffers
+In-Reply-To: <CAFnufp3HbyeTGhxB33mej4Y4G2T2Yv5swKCx_C41zfc71Kj11A@mail.gmail.com>
+References: <20210614022504.24458-1-mcroce@linux.microsoft.com>
+        <871r71azjw.wl-maz@kernel.org>
+        <YROmOQ+4Kqukgd6z@orome.fritz.box>
+        <202417ef-f8ae-895d-4d07-1f9f3d89b4a4@gmail.com>
+        <87o8a49idp.wl-maz@kernel.org>
+        <fe5f99c8-5655-7fbb-a64e-b5f067c3273c@gmail.com>
+        <20210812121835.405d2e37@linux.microsoft.com>
+        <874kbuapod.wl-maz@kernel.org>
+        <CAFnufp2=1t2+fmxyGJ0Qu3Z+=wRwAX8faaPvrJdFpFeTS3J7Uw@mail.gmail.com>
+        <87wnohqty1.wl-maz@kernel.org>
+        <CAFnufp3xjYqe_iVfbmdjz4-xN2UX_oo3GUw4Z4M_q-R38EN+uQ@mail.gmail.com>
+        <87fsv4qdzm.wl-maz@kernel.org>
+        <CAFnufp2T75cvDLUx+ZyPQbkaNeY_S1OJ7KTJe=2EK-qXRNkwyw@mail.gmail.com>
+        <87mtpcyrdv.wl-maz@kernel.org>
+        <CAFnufp0N2MzaTjF95tx9Q1D33z9f9AAK6UHbhU9rhG1ue_r1ug@mail.gmail.com>
+        <87h7fkyqpv.wl-maz@kernel.org>
+        <CAFnufp3HbyeTGhxB33mej4Y4G2T2Yv5swKCx_C41zfc71Kj11A@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: mcroce@linux.microsoft.com, eric.dumazet@gmail.com, thierry.reding@gmail.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, peppe.cavallaro@st.com, alexandre.torgue@foss.st.com, davem@davemloft.net, kuba@kernel.org, palmer@dabbelt.com, paul.walmsley@sifive.com, drew@beagleboard.org, kernel@esmil.dk, jonathanh@nvidia.com, will@kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 20, 2021 at 05:17:25PM +0930, Joel Stanley wrote:
-> LiteETH is a small footprint and configurable Ethernet core for FPGA
-> based system on chips.
+On Fri, 20 Aug 2021 18:35:45 +0100,
+Matteo Croce <mcroce@linux.microsoft.com> wrote:
+> 
+> On Fri, Aug 20, 2021 at 7:24 PM Marc Zyngier <maz@kernel.org> wrote:
+> >
+> > On Fri, 20 Aug 2021 18:14:30 +0100,
+> > Matteo Croce <mcroce@linux.microsoft.com> wrote:
+> > >
+> > > On Fri, Aug 20, 2021 at 7:09 PM Marc Zyngier <maz@kernel.org> wrote:
+> > > >
+> > > > On Fri, 20 Aug 2021 17:38:14 +0100,
+> > > > Matteo Croce <mcroce@linux.microsoft.com> wrote:
+> > > > >
+> > > > > On Fri, Aug 20, 2021 at 6:26 PM Marc Zyngier <maz@kernel.org> wrote:
+> > > > > >
+> > > > > > On Fri, 20 Aug 2021 11:37:03 +0100,
+> > > > > > Matteo Croce <mcroce@linux.microsoft.com> wrote:
+> > > > > > >
+> > > > > > > On Thu, Aug 19, 2021 at 6:29 PM Marc Zyngier <maz@kernel.org> wrote:
+> > > > > >
+> > > > > > [...]
+> > > > > >
+> > > > > > > > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> > > > > > > > index fcdb1d20389b..244aa6579ef4 100644
+> > > > > > > > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> > > > > > > > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> > > > > > > > @@ -341,7 +341,7 @@ static inline unsigned int stmmac_rx_offset(struct stmmac_priv *priv)
+> > > > > > > >         if (stmmac_xdp_is_enabled(priv))
+> > > > > > > >                 return XDP_PACKET_HEADROOM + NET_IP_ALIGN;
+> > > > > > > >
+> > > > > > > > -       return NET_SKB_PAD + NET_IP_ALIGN;
+> > > > > > > > +       return 8 + NET_IP_ALIGN;
+> > > > > > > >  }
+> > > > > > > >
+> > > > > > > >  void stmmac_disable_rx_queue(struct stmmac_priv *priv, u32 queue);
+> > > > > > > >
+> > > > > > > > I don't see the system corrupting packets anymore. Is that exactly
+> > > > > > > > what you had in mind? This really seems to point to a basic buffer
+> > > > > > > > overflow.
+> > > > > >
+> > > > > > [...]
+> > > > > >
+> > > > > > > Sorry, I meant something like:
+> > > > > > >
+> > > > > > > -       return NET_SKB_PAD + NET_IP_ALIGN;
+> > > > > > > +       return 8;
+> > > > > > >
+> > > > > > > I had some hardware which DMA fails if the receive buffer was not word
+> > > > > > > aligned, but this seems not the case, as 8 + NET_IP_ALIGN = 10, and
+> > > > > > > it's not aligned too.
+> > > > > >
+> > > > > > No error in that case either, as expected. Given that NET_SKB_PAD is
+> > > > > > likely to expand to 64, it is likely a DMA buffer overflow which
+> > > > > > probably only triggers for large-ish packets.
+> > > > > >
+> > > > > > Now, we're almost at -rc7, and we don't have a solution in sight.
+> > > > > >
+> > > > > > Can we please revert this until we have an understanding of what is
+> > > > > > happening? I'll hopefully have more cycles to work on the issue once
+> > > > > > 5.14 is out, and hopefully the maintainers of this driver can chime in
+> > > > > > (they have been pretty quiet so far).
+> > > > > >
+> > > > > > Thanks,
+> > > > > >
+> > > > > >         M.
+> > > > > >
+> > > > > > --
+> > > > > > Without deviation from the norm, progress is not possible.
+> > > > >
+> > > > > Last try, what about adding only NET_IP_ALIGN and leaving NET_SKB_PAD?
+> > > > >
+> > > > > -       return NET_SKB_PAD + NET_IP_ALIGN;
+> > > > > +       return NET_IP_ALIGN;
+> > > > >
+> > > > > I think that alloc_skb adds another NET_SKB_PAD anyway.
+> > > >
+> > > > I don't see any packet corruption with this. However, this doesn't
+> > > > prove that this is correct either. What was the rational for adding
+> > > > NET_SKB_PAD the first place?
+> > > >
+> > >
+> > > I think it's wrong. The original offset was 0, and to align it to the
+> > > boundary we need to add just NET_IP_ALIGN, which is two.
+> > > NET_SKB_PAD is a much bigger value, (I think 64), which is used to
+> > > reserve space to prepend an header, e.g. with tunnels.
+> >
+> > How about the other adjustments that Eric mentioned regarding the size
+> > of the buffer? Aren't they required?
+> >
+> 
+> I guess that if stmmac_rx_buf1_len() needed such adjustment, it would
+> be already broken when XDP is in use.
+> When you use XDP, stmmac_rx_offset() adds a pretty big headroom of 256
+> byte, which would easily trigger an overflow if not accounted.
+> Did you try attaching a simple XDP program on a stock 5.13 kernel?
 
-Hi Joel
+Yes, as mentioned in [1], to which you replied...
 
-Just an FYI.
+	M.
 
-DT is considered ABI. Once released, you should not be making changes
-which are not backwards compatible.
+[1] https://lore.kernel.org/r/87wnohqty1.wl-maz@kernel.org
 
-All the PHY and MDIO properties you are adding here are unused in the
-driver. They all look sensible, and you should be able to make it
-work. But when you do come to make that implementation, this
-definition is the base of what you have to work with.
-
-	   Andrew
+-- 
+Without deviation from the norm, progress is not possible.
