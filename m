@@ -2,54 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 112C83F3150
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 18:12:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B13C3F315B
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 18:15:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232053AbhHTQMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 12:12:55 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:32794 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231955AbhHTQMs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Aug 2021 12:12:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=+qSVY5sV8V2bh7iMOY20ymxPZqm7yqT4YtSL85pNV4Q=; b=TM5KR+bxWA1751LM1MD0Y0FPG8
-        KKHGKgBpGs8Adv8Cv9ojW9CMXJHgPsjiWnvsPGBFm7SLsaCGMLN+0WdRJDNqvZxdZkcM4vjlvrDoS
-        Fef666uDtwA0ECthfDg2+0+sxGpWMom7KghSfVpndRzfbLxzr0xPGZSqYAavhvQjSZKU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mH77h-001BhH-Ut; Fri, 20 Aug 2021 18:12:01 +0200
-Date:   Fri, 20 Aug 2021 18:12:01 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Subject: Re: [PATCH] dt-bindings: net: brcm,unimac-mdio: convert to the
- json-schema
-Message-ID: <YR/UUZ5EZDe9s969@lunn.ch>
-References: <20210819100946.10748-1-zajec5@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210819100946.10748-1-zajec5@gmail.com>
+        id S231448AbhHTQPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 12:15:35 -0400
+Received: from relmlor2.renesas.com ([210.160.252.172]:50922 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231527AbhHTQPe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 12:15:34 -0400
+X-IronPort-AV: E=Sophos;i="5.84,338,1620658800"; 
+   d="scan'208";a="91278064"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 21 Aug 2021 01:14:54 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id EAF93409F9A6;
+        Sat, 21 Aug 2021 01:14:52 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH -next] can: rcar_canfd: Fix redundant assignment
+Date:   Fri, 20 Aug 2021 17:14:49 +0100
+Message-Id: <20210820161449.18169-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +  interrupts:
-> +    oneOf:
-> +      - description: >
-> +          Tnterrupt shared with the Ethernet MAC or Ethernet switch this MDIO
+Fix redundant assignment of 'priv' to itself in
+rcar_canfd_handle_channel_tx().
 
-Interrupt.
+Fixes: 76e9353a80e9 ("can: rcar_canfd: Add support for RZ/G2L family")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+---
+ drivers/net/can/rcar/rcar_canfd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-	Andrew
+diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
+index 5d4d52afde15..c47988d3674e 100644
+--- a/drivers/net/can/rcar/rcar_canfd.c
++++ b/drivers/net/can/rcar/rcar_canfd.c
+@@ -1182,7 +1182,7 @@ static void rcar_canfd_state_change(struct net_device *ndev,
+ 
+ static void rcar_canfd_handle_channel_tx(struct rcar_canfd_global *gpriv, u32 ch)
+ {
+-	struct rcar_canfd_channel *priv = priv = gpriv->ch[ch];
++	struct rcar_canfd_channel *priv = gpriv->ch[ch];
+ 	struct net_device *ndev = priv->ndev;
+ 	u32 sts;
+ 
+-- 
+2.17.1
+
