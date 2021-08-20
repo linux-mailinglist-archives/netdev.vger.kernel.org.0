@@ -2,259 +2,390 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34C553F2E2A
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 16:35:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AAC13F2EBD
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 17:20:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240892AbhHTOfp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 10:35:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36038 "EHLO
+        id S241006AbhHTPVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 11:21:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240840AbhHTOfo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 10:35:44 -0400
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA842C061575;
-        Fri, 20 Aug 2021 07:35:06 -0700 (PDT)
-Received: by mail-ot1-x32b.google.com with SMTP id m7-20020a9d4c87000000b0051875f56b95so14081964otf.6;
-        Fri, 20 Aug 2021 07:35:06 -0700 (PDT)
+        with ESMTP id S235928AbhHTPVP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 11:21:15 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC33C061575;
+        Fri, 20 Aug 2021 08:20:37 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id k24so9497974pgh.8;
+        Fri, 20 Aug 2021 08:20:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GlxWmdbgAhgJmRKW2WBD70lKJAM5EQ+Q7/SVNHfXJYU=;
-        b=MH3z1wlry27pAZBCB6uADj1RpQ9eHcxli/CH1/h+DWmo/X0bkAB7bose6q+9g9jK4Q
-         lgqqOjiQ6PlaASw5RdSY3Op1WU7jtEr6tfEQ+Oz02JR9EXOhdlDx973EaufZZkNVM5fM
-         zhiKqTVLbAwOyYHkEl7rKZ6y0ZnhMoVKUxzNrf5bsJZjLdLa3m/gejLsVk1cAUtxuc2j
-         WSrqBUnRLVLuuKRLFOqXI0sS2P8mvlfdRFSKVNrafLaKAJjAetCvtuQol1hF1gd8DZMC
-         6kC3yAlTZutQjrQzEbUSlvIyEzdbrAoPK50QrnIRAH3SnGHdTE1IPgmOgHBZIfjBxlgQ
-         nt7g==
+        bh=lOEOP553DOa54mvzQOTvxqghJgRlAqL/9egTYk51TpA=;
+        b=mNTS2gd5G3Ks7sZBiQSqKbxnuIVyWXDolh/tFasaTIp9Tx741ulpCEBBJUeNG6CWbn
+         bJhOlYcTmBgVknfCmejlU0pKjFYMNkb+mTQ+mEeg9ITv0adYOUR3hmKmVoC7BoPnsD0I
+         XWSBpp9HDsxPIU9RwnpnjWs+5qzfOYMAlk5vuGurnNnqnw7ijhJHg8X5IJWWxqYixCt3
+         +tg+SVuZQBaKBNS55ZDk0TnfxHeHQGNWLe/31oj8sgUHgNeRZB8TZc9b01CQkJiBbfS1
+         6m4md9Xn57tauA6eGKdWIXay7jb4zj040dBBFUXZl5hvlW19Wrja0c672M7277VVHF2w
+         s3ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=GlxWmdbgAhgJmRKW2WBD70lKJAM5EQ+Q7/SVNHfXJYU=;
-        b=LuWrEXEWqaffYuuJK4gotas4+PD3Yo7SudgKOB3wpI3MGZyyBwkyAi2vhGlO4lJD89
-         p+d2vO1LlyhxPhrAF14nx44FBJiaxn22fQOEVTrha9B8l7szmUfYP0urfvEZvEPG5hgg
-         CreQm+v5zqVO9DOCYhvJOQWiNHdG8onvosn3n+Nooi9qRzJFG9O/T2mNNZzx5xHcGbE7
-         FJ0FpOf9xZDYuq2vIBS2HPf/xZsmXukKDvImnQYtGBitkTVDINg1FifOsl7AQjbBWbtk
-         gBnR3STuqGAVGf/G/c+V3zGUiwl8inzRva7DFesdFqRYUgENu00mXQCZ2k5YWIwe1lWn
-         lMOQ==
-X-Gm-Message-State: AOAM53168PJRz2kIzlfF9sf2xO9MZLKJ4xukAQTF11C7tGnOd/Y86mny
-        mF/9en2PSiWQWTnpv30NltE=
-X-Google-Smtp-Source: ABdhPJy5GhP51GEmWb65Io7iCYS1QZeW+fh4dgAJI0cEJOwJ83rhUYR9Ek7Ophet7YupVlODkZdEbQ==
-X-Received: by 2002:a05:6830:438d:: with SMTP id s13mr17380105otv.288.1629470105979;
-        Fri, 20 Aug 2021 07:35:05 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.45])
-        by smtp.googlemail.com with ESMTPSA id a6sm1454392oto.36.2021.08.20.07.35.02
+        bh=lOEOP553DOa54mvzQOTvxqghJgRlAqL/9egTYk51TpA=;
+        b=c3LQHquSjGvnTqiS7vJc2Q/OJ81jX3xZvqbCgqpeVKn6XsY6jgCaZ15tkDDW28T+BC
+         N1MRazeusC/g1brIPi/YuqyscIrjuG8h6RTv284R2StK1B6lX0eQd/Cz5nj/F8hle+1H
+         jvg6onG4XS+aiW+L/9p2G9n2yq9Y21s7Y13zhIBl8zcLsgjRYoBOb2JCIWTaf9jTtjjL
+         a/1fT6em0BZuMXW2J3V7+I6xfK7P6L1pUo81MKsAJ4bVx42nyic/ZyTClfVOOz+A3qYC
+         jEMaBrFDtcnQXNiW6y90LWRMQEoX2IijqS3UbbpYlZRfgH/a7lTPT7xrxoGBZi2GcUKK
+         PzrA==
+X-Gm-Message-State: AOAM530nBcFAbCpzP2JyioetA+oRTt+eW0AAeH3s19JBalirVbKx43Q3
+        K7wnPvXKwwjkPGV2HZqS/Us=
+X-Google-Smtp-Source: ABdhPJzI2VZH5dwiRm0Ac/QtnJrMRH7ImkxlvumANqaLggfhogz2MaNnTDbHOsxuG4eIDNmSXl+big==
+X-Received: by 2002:aa7:9f12:0:b029:3e0:3224:6cd5 with SMTP id g18-20020aa79f120000b02903e032246cd5mr20286867pfr.43.1629472836712;
+        Fri, 20 Aug 2021 08:20:36 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
+        by smtp.gmail.com with ESMTPSA id j5sm12049220pjv.56.2021.08.20.08.20.23
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Aug 2021 07:35:05 -0700 (PDT)
-Subject: Re: [PATCH RFC 0/7] add socket to netdev page frag recycling support
-To:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     alexander.duyck@gmail.com, linux@armlinux.org.uk, mw@semihalf.com,
-        linuxarm@openeuler.org, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, thomas.petazzoni@bootlin.com,
-        hawk@kernel.org, ilias.apalodimas@linaro.org, ast@kernel.org,
-        daniel@iogearbox.net, john.fastabend@gmail.com,
-        akpm@linux-foundation.org, peterz@infradead.org, will@kernel.org,
-        willy@infradead.org, vbabka@suse.cz, fenghua.yu@intel.com,
-        guro@fb.com, peterx@redhat.com, feng.tang@intel.com, jgg@ziepe.ca,
-        mcroce@microsoft.com, hughd@google.com, jonathan.lemon@gmail.com,
-        alobakin@pm.me, willemb@google.com, wenxu@ucloud.cn,
-        cong.wang@bytedance.com, haokexin@gmail.com, nogikh@google.com,
-        elver@google.com, yhs@fb.com, kpsingh@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, chenhao288@hisilicon.com, edumazet@google.com,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, memxor@gmail.com,
-        linux@rempel-privat.de, atenart@kernel.org, weiwan@google.com,
-        ap420073@gmail.com, arnd@arndb.de,
-        mathew.j.martineau@linux.intel.com, aahringo@redhat.com,
-        ceggers@arri.de, yangbo.lu@nxp.com, fw@strlen.de,
-        xiangxia.m.yue@gmail.com, linmiaohe@huawei.com
-References: <1629257542-36145-1-git-send-email-linyunsheng@huawei.com>
- <83b8bae8-d524-36a1-302e-59198410d9a9@gmail.com>
- <f0d935b9-45fe-4c51-46f0-1f526167877f@huawei.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <619b5ca5-a48b-49e9-2fef-a849811d62bb@gmail.com>
-Date:   Fri, 20 Aug 2021 08:35:01 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
+        Fri, 20 Aug 2021 08:20:36 -0700 (PDT)
+Subject: Re: [PATCH V3 13/13] HV/Storvsc: Add Isolation VM support for storvsc
+ driver
+To:     Michael Kelley <mikelley@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "will@kernel.org" <will@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "pgonda@google.com" <pgonda@google.com>,
+        "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "rppt@kernel.org" <rppt@kernel.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "saravanand@fb.com" <saravanand@fb.com>,
+        "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
+        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "rientjes@google.com" <rientjes@google.com>,
+        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
+        "tj@kernel.org" <tj@kernel.org>
+Cc:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        vkuznets <vkuznets@redhat.com>,
+        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+        "dave.hansen@intel.com" <dave.hansen@intel.com>
+References: <20210809175620.720923-1-ltykernel@gmail.com>
+ <20210809175620.720923-14-ltykernel@gmail.com>
+ <MWHPR21MB1593EEF30FFD5C60ED744985D7C09@MWHPR21MB1593.namprd21.prod.outlook.com>
+From:   Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <a96626db-4ac9-3ce4-64e9-92568e4f827a@gmail.com>
+Date:   Fri, 20 Aug 2021 23:20:21 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <f0d935b9-45fe-4c51-46f0-1f526167877f@huawei.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <MWHPR21MB1593EEF30FFD5C60ED744985D7C09@MWHPR21MB1593.namprd21.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/19/21 2:18 AM, Yunsheng Lin wrote:
-> On 2021/8/19 6:05, David Ahern wrote:
->> On 8/17/21 9:32 PM, Yunsheng Lin wrote:
->>> This patchset adds the socket to netdev page frag recycling
->>> support based on the busy polling and page pool infrastructure.
->>>
->>> The profermance improve from 30Gbit to 41Gbit for one thread iperf
->>> tcp flow, and the CPU usages decreases about 20% for four threads
->>> iperf flow with 100Gb line speed in IOMMU strict mode.
->>>
->>> The profermance improve about 2.5% for one thread iperf tcp flow
->>> in IOMMU passthrough mode.
->>>
+
+
+On 8/20/2021 2:17 AM, Michael Kelley wrote:
+> From: Tianyu Lan <ltykernel@gmail.com> Sent: Monday, August 9, 2021 10:56 AM
 >>
->> Details about the test setup? cpu model, mtu, any other relevant changes
->> / settings.
 > 
-> CPU is arm64 Kunpeng 920, see:
-> https://www.hisilicon.com/en/products/Kunpeng/Huawei-Kunpeng-920
+> Subject line tag should be "scsi: storvsc:"
 > 
-> mtu is 1500, the relevant changes/settings I can think of the iperf
-> client runs on the same numa as the nic hw exists(which has one 100Gbit
-> port), and the driver has the XPS enabled too.
+>> In Isolation VM, all shared memory with host needs to mark visible
+>> to host via hvcall. vmbus_establish_gpadl() has already done it for
+>> storvsc rx/tx ring buffer. The page buffer used by vmbus_sendpacket_
+>> mpb_desc() still need to handle. Use DMA API to map/umap these
+> 
+> s/need to handle/needs to be handled/
+> 
+>> memory during sending/receiving packet and Hyper-V DMA ops callback
+>> will use swiotlb function to allocate bounce buffer and copy data
+>> from/to bounce buffer.
+>>
+>> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+>> ---
+>>   drivers/scsi/storvsc_drv.c | 68 +++++++++++++++++++++++++++++++++++---
+>>   1 file changed, 63 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
+>> index 328bb961c281..78320719bdd8 100644
+>> --- a/drivers/scsi/storvsc_drv.c
+>> +++ b/drivers/scsi/storvsc_drv.c
+>> @@ -21,6 +21,8 @@
+>>   #include <linux/device.h>
+>>   #include <linux/hyperv.h>
+>>   #include <linux/blkdev.h>
+>> +#include <linux/io.h>
+>> +#include <linux/dma-mapping.h>
+>>   #include <scsi/scsi.h>
+>>   #include <scsi/scsi_cmnd.h>
+>>   #include <scsi/scsi_host.h>
+>> @@ -427,6 +429,8 @@ struct storvsc_cmd_request {
+>>   	u32 payload_sz;
+>>
+>>   	struct vstor_packet vstor_packet;
+>> +	u32 hvpg_count;
+> 
+> This count is really the number of entries in the dma_range
+> array, right?  If so, perhaps "dma_range_count" would be
+> a better name so that it is more tightly associated.
+
+Yes, will update.
+
+> 
+>> +	struct hv_dma_range *dma_range;
+>>   };
+>>
+>>
+>> @@ -509,6 +513,14 @@ struct storvsc_scan_work {
+>>   	u8 tgt_id;
+>>   };
+>>
+>> +#define storvsc_dma_map(dev, page, offset, size, dir) \
+>> +	dma_map_page(dev, page, offset, size, dir)
+>> +
+>> +#define storvsc_dma_unmap(dev, dma_range, dir)		\
+>> +		dma_unmap_page(dev, dma_range.dma,	\
+>> +			       dma_range.mapping_size,	\
+>> +			       dir ? DMA_FROM_DEVICE : DMA_TO_DEVICE)
+>> +
+> 
+> Each of these macros is used only once.  IMHO, they don't
+> add a lot of value.  Just coding dma_map/unmap_page()
+> inline would be fine and eliminate these lines of code.
+
+OK. Will update.
+
+> 
+>>   static void storvsc_device_scan(struct work_struct *work)
+>>   {
+>>   	struct storvsc_scan_work *wrk;
+>> @@ -1260,6 +1272,7 @@ static void storvsc_on_channel_callback(void *context)
+>>   	struct hv_device *device;
+>>   	struct storvsc_device *stor_device;
+>>   	struct Scsi_Host *shost;
+>> +	int i;
+>>
+>>   	if (channel->primary_channel != NULL)
+>>   		device = channel->primary_channel->device_obj;
+>> @@ -1314,6 +1327,15 @@ static void storvsc_on_channel_callback(void *context)
+>>   				request = (struct storvsc_cmd_request *)scsi_cmd_priv(scmnd);
+>>   			}
+>>
+>> +			if (request->dma_range) {
+>> +				for (i = 0; i < request->hvpg_count; i++)
+>> +					storvsc_dma_unmap(&device->device,
+>> +						request->dma_range[i],
+>> +						request->vstor_packet.vm_srb.data_in == READ_TYPE);
+> 
+> I think you can directly get the DMA direction as request->cmd->sc_data_direction.
+> 
+>> +
+>> +				kfree(request->dma_range);
+>> +			}
+>> +
+>>   			storvsc_on_receive(stor_device, packet, request);
+>>   			continue;
+>>   		}
+>> @@ -1810,7 +1832,9 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
+>>   		unsigned int hvpgoff, hvpfns_to_add;
+>>   		unsigned long offset_in_hvpg = offset_in_hvpage(sgl->offset);
+>>   		unsigned int hvpg_count = HVPFN_UP(offset_in_hvpg + length);
+>> +		dma_addr_t dma;
+>>   		u64 hvpfn;
+>> +		u32 size;
+>>
+>>   		if (hvpg_count > MAX_PAGE_BUFFER_COUNT) {
+>>
+>> @@ -1824,6 +1848,13 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
+>>   		payload->range.len = length;
+>>   		payload->range.offset = offset_in_hvpg;
+>>
+>> +		cmd_request->dma_range = kcalloc(hvpg_count,
+>> +				 sizeof(*cmd_request->dma_range),
+>> +				 GFP_ATOMIC);
+> 
+> With this patch, it appears that storvsc_queuecommand() is always
+> doing bounce buffering, even when running in a non-isolated VM.
+
+In the non-isolated VM, SWIOTLB_FORCE mode isn't enabled and so
+the swiotlb bounce buffer will not work.
+
+> The dma_range is always allocated, and the inner loop below does
+> the dma mapping for every I/O page.  The corresponding code in
+> storvsc_on_channel_callback() that does the dma unmap allows for
+> the dma_range to be NULL, but that never happens.
+
+Yes, dma mapping function will return PA directly in non-isolated VM.
+
+> 
+>> +		if (!cmd_request->dma_range) {
+>> +			ret = -ENOMEM;
+> 
+> The other memory allocation failure in this function returns
+> SCSI_MLQUEUE_DEVICE_BUSY.   It may be debatable as to whether
+> that's the best approach, but that's a topic for a different patch.  I
+> would suggest being consistent and using the same return code
+> here.
+
+OK. I will keep to return SCSI_MLQUEUE_DEVICE_BUSY here.
+
+> 
+>> +			goto free_payload;
+>> +		}
+>>
+>>   		for (i = 0; sgl != NULL; sgl = sg_next(sgl)) {
+>>   			/*
+>> @@ -1847,9 +1878,29 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
+>>   			 * last sgl should be reached at the same time that
+>>   			 * the PFN array is filled.
+>>   			 */
+>> -			while (hvpfns_to_add--)
+>> -				payload->range.pfn_array[i++] =	hvpfn++;
+>> +			while (hvpfns_to_add--) {
+>> +				size = min(HV_HYP_PAGE_SIZE - offset_in_hvpg,
+>> +					   (unsigned long)length);
+>> +				dma = storvsc_dma_map(&dev->device, pfn_to_page(hvpfn++),
+>> +						      offset_in_hvpg, size,
+>> +						      scmnd->sc_data_direction);
+>> +				if (dma_mapping_error(&dev->device, dma)) {
+>> +					ret = -ENOMEM;
+> 
+> The typical error from dma_map_page() will be running out of
+> bounce buffer memory.   This is a transient condition that should be
+> retried at the higher levels.  So make sure to return an error code
+> that indicates the I/O should be resubmitted.
+
+OK. It looks like error code should be SCSI_MLQUEUE_DEVICE_BUSY here.
+
+> 
+>> +					goto free_dma_range;
+>> +				}
+>> +
+>> +				if (offset_in_hvpg) {
+>> +					payload->range.offset = dma & ~HV_HYP_PAGE_MASK;
+>> +					offset_in_hvpg = 0;
+>> +				}
+> 
+> I'm not clear on why payload->range.offset needs to be set again.
+> Even after the dma mapping is done, doesn't the offset in the first
+> page have to be the same?  If it wasn't the same, Hyper-V wouldn't
+> be able to process the PFN list correctly.  In fact, couldn't the above
+> code just always set offset_in_hvpg = 0?
+
+The offset will be changed. The swiotlb bounce buffer is allocated with 
+IO_TLB_SIZE(2K) as unit. So the offset here may be changed.
+
+> 
+>> +
+>> +				cmd_request->dma_range[i].dma = dma;
+>> +				cmd_request->dma_range[i].mapping_size = size;
+>> +				payload->range.pfn_array[i++] = dma >> HV_HYP_PAGE_SHIFT;
+>> +				length -= size;
+>> +			}
+>>   		}
+>> +		cmd_request->hvpg_count = hvpg_count;
+> 
+> This line just saves the size of the dma_range array.  Could
+> it be moved up with the code that allocates the dma_range
+> array?  To me, it would make more sense to have all that
+> code together in one place.
+
+Sure. Will update.
+
+> 
+>>   	}
+> 
+> The whole approach here is to do dma remapping on each individual page
+> of the I/O buffer.  But wouldn't it be possible to use dma_map_sg() to map
+> each scatterlist entry as a unit?  Each scatterlist entry describes a range of
+> physically contiguous memory.  After dma_map_sg(), the resulting dma
+> address must also refer to a physically contiguous range in the swiotlb
+> bounce buffer memory.   So at the top of the "for" loop over the scatterlist
+> entries, do dma_map_sg() if we're in an isolated VM.  Then compute the
+> hvpfn value based on the dma address instead of sg_page().  But everything
+> else is the same, and the inner loop for populating the pfn_arry is unmodified.
+> Furthermore, the dma_range array that you've added is not needed, since
+> scatterlist entries already have a dma_address field for saving the mapped
+> address, and dma_unmap_sg() uses that field.
+
+I don't use dma_map_sg() here in order to avoid introducing one more 
+loop(e,g dma_map_sg()). We already have a loop to populate 
+cmd_request->dma_range[] and so do the dma map in the same loop.
+
+> 
+> One thing:  There's a maximum swiotlb mapping size, which I think works
+> out to be 256 Kbytes.  See swiotlb_max_mapping_size().  We need to make
+> sure that we don't get a scatterlist entry bigger than this size.  But I think
+> this already happens because you set the device->dma_mask field in
+> Patch 11 of this series.  __scsi_init_queue checks for this setting and
+> sets max_sectors to limits transfers to the max mapping size.
+
+I will double check.
+
 > 
 >>
->> How does that performance improvement compare with using the Tx ZC API?
->> At 1500 MTU I see a CPU drop on the Tx side from 80% to 20% with the ZC
->> API and ~10% increase in throughput. Bumping the MTU to 3300 and
->> performance with the ZC API is 2x the current model with 1/2 the cpu.
-> 
-> I added a sysctl node to decide whether pfrag pool is used:
-> net.ipv4.tcp_use_pfrag_pool
-> 
-> and use msg_zerocopy to compare the result:
-> Server uses cmd "./msg_zerocopy -4 -i eth4 -C 32 -S 192.168.100.2 -r tcp"
-> Client uses cmd "./msg_zerocopy -4 -i eth4 -C 0 -S 192.168.100.1 -D 192.168.100.2 tcp -"
-> 
-> The zc does seem to improve the CPU usages significantly, but not for throughput
-> with mtu 1500. And the result seems to be similar with mtu 3300.
-> 
-> the detail result is below:
-> 
-> (1) IOMMU strict mode + net.ipv4.tcp_use_pfrag_pool = 0:
-> root@(none):/# perf stat -e cycles ./msg_zerocopy -4 -i eth4 -C 0 -S 192.168.100.1 -D 192.168.100.2 tcp
-> tx=115317 (7196 MB) txc=0 zc=n
-> 
->  Performance counter stats for './msg_zerocopy -4 -i eth4 -C 0 -S 192.168.100.1 -D 192.168.100.2 tcp':
-> 
->         4315472244      cycles
-> 
->        4.199890190 seconds time elapsed
-> 
->        0.084328000 seconds user
->        1.528714000 seconds sys
-> root@(none):/# perf stat -e cycles ./msg_zerocopy -4 -i eth4 -C 0 -S 192.168.100.1 -D 192.168.100.2 tcp -z
-> tx=90121 (5623 MB) txc=90121 zc=y
-> 
->  Performance counter stats for './msg_zerocopy -4 -i eth4 -C 0 -S 192.168.100.1 -D 192.168.100.2 tcp -z':
-> 
->         1715892155      cycles
-> 
->        4.243329050 seconds time elapsed
-> 
->        0.083275000 seconds user
->        0.755355000 seconds sys
-> 
-> 
-> (2)IOMMU strict mode + net.ipv4.tcp_use_pfrag_pool = 1:
-> root@(none):/# perf stat -e cycles ./msg_zerocopy -4 -i eth4 -C 0 -S 192.168.100.1 -D 192.168.100.2 tcp
-> tx=138932 (8669 MB) txc=0 zc=n
-> 
->  Performance counter stats for './msg_zerocopy -4 -i eth4 -C 0 -S 192.168.100.1 -D 192.168.100.2 tcp':
-> 
->         4034016168      cycles
-> 
->        4.199877510 seconds time elapsed
-> 
->        0.058143000 seconds user
->        1.644480000 seconds sys
-> root@(none):/# perf stat -e cycles ./msg_zerocopy -4 -i eth4 -C 0 -S 192.168.100.1 -D 192.168.100.2 tcp -z
-> tx=93369 (5826 MB) txc=93369 zc=y
-> 
->  Performance counter stats for './msg_zerocopy -4 -i eth4 -C 0 -S 192.168.100.1 -D 192.168.100.2 tcp -z':
-> 
->         1815300491      cycles
-> 
->        4.243259530 seconds time elapsed
-> 
->        0.051767000 seconds user
->        0.796610000 seconds sys
-> 
-> 
-> (3)IOMMU passthrough + net.ipv4.tcp_use_pfrag_pool=0
-> root@(none):/# perf stat -e cycles ./msg_zerocopy -4 -i eth4 -C 0 -S 192.168.100.1 -D 192.168.100.2 tcp
-> tx=129927 (8107 MB) txc=0 zc=n
-> 
->  Performance counter stats for './msg_zerocopy -4 -i eth4 -C 0 -S 192.168.100.1 -D 192.168.100.2 tcp':
-> 
->         3720131007      cycles
-> 
->        4.200651840 seconds time elapsed
-> 
->        0.038604000 seconds user
->        1.455521000 seconds sys
-> root@(none):/# perf stat -e cycles ./msg_zerocopy -4 -i eth4 -C 0 -S 192.168.100.1 -D 192.168.100.2 tcp -z
-> tx=135285 (8442 MB) txc=135285 zc=y
-> 
->  Performance counter stats for './msg_zerocopy -4 -i eth4 -C 0 -S 192.168.100.1 -D 192.168.100.2 tcp -z':
-> 
->         1721949875      cycles
-> 
->        4.242596800 seconds time elapsed
-> 
->        0.024963000 seconds user
->        0.779391000 seconds sys
-> 
-> (4)IOMMU  passthrough + net.ipv4.tcp_use_pfrag_pool=1
-> root@(none):/# perf stat -e cycles ./msg_zerocopy -4 -i eth4 -C 0 -S 192.168.100.1 -D 192.168.100.2 tcp
-> tx=151844 (9475 MB) txc=0 zc=n
-> 
->  Performance counter stats for './msg_zerocopy -4 -i eth4 -C 0 -S 192.168.100.1 -D 192.168.100.2 tcp':
-> 
->         3786216097      cycles
-> 
->        4.200606520 seconds time elapsed
-> 
->        0.028633000 seconds user
->        1.569736000 seconds sys
-> 
-> 
+>>   	cmd_request->payload = payload;
+>> @@ -1860,13 +1911,20 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
+>>   	put_cpu();
 >>
->> Epyc 7502, ConnectX-6, IOMMU off.
+>>   	if (ret == -EAGAIN) {
+>> -		if (payload_sz > sizeof(cmd_request->mpb))
+>> -			kfree(payload);
+>>   		/* no more space */
+>> -		return SCSI_MLQUEUE_DEVICE_BUSY;
+>> +		ret = SCSI_MLQUEUE_DEVICE_BUSY;
+>> +		goto free_dma_range;
+>>   	}
 >>
->> In short, it seems like improving the Tx ZC API is the better path
->> forward than per-socket page pools.
+>>   	return 0;
+>> +
+>> +free_dma_range:
+>> +	kfree(cmd_request->dma_range);
+>> +
+>> +free_payload:
+>> +	if (payload_sz > sizeof(cmd_request->mpb))
+>> +		kfree(payload);
+>> +	return ret;
+>>   }
+>>
+>>   static struct scsi_host_template scsi_driver = {
+>> --
+>> 2.25.1
 > 
-> The main goal is to optimize the SMMU mapping/unmaping, if the cost of memcpy
-> it higher than the SMMU mapping/unmaping + page pinning, then Tx ZC may be a
-> better path, at leas it is not sure for small packet?
-> 
-
-It's a CPU bound problem - either Rx or Tx is cpu bound depending on the
-test configuration. In my tests 3.3 to 3.5M pps is the limit (not using
-LRO in the NIC - that's a different solution with its own problems).
-
-At 1500 MTU lowering CPU usage on the Tx side does not accomplish much
-on throughput since the Rx is 100% cpu.
-
-At 3300 MTU you have ~47% the pps for the same throughput. Lower pps
-reduces Rx processing and lower CPU to process the incoming stream. Then
-using the Tx ZC API you lower the Tx overehad allowing a single stream
-to faster - sending more data which in the end results in much higher
-pps and throughput. At the limit you are CPU bound (both ends in my
-testing as Rx side approaches the max pps, and Tx side as it continually
-tries to send data).
-
-Lowering CPU usage on Tx the side is a win regardless of whether there
-is a big increase on the throughput at 1500 MTU since that configuration
-is an Rx CPU bound problem. Hence, my point that we have a good start
-point for lowering CPU usage on the Tx side; we should improve it rather
-than add per-socket page pools.
-
-You can stress the Tx side and emphasize its overhead by modifying the
-receiver to drop the data on Rx rather than copy to userspace which is a
-huge bottleneck (e.g., MSG_TRUNC on recv). This allows the single flow
-stream to go faster and emphasize Tx bottlenecks as the pps at 3300
-approaches the top pps at 1500. e.g., doing this with iperf3 shows the
-spinlock overhead with tcp_sendmsg, overhead related to 'select' and
-then gup_pgd_range.
