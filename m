@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 384023F2781
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 09:18:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 423FE3F2786
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 09:18:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238710AbhHTHSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 03:18:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47832 "EHLO
+        id S238848AbhHTHSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 03:18:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233162AbhHTHR7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 03:17:59 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03584C061575;
-        Fri, 20 Aug 2021 00:17:22 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id j1so6736126pjv.3;
-        Fri, 20 Aug 2021 00:17:21 -0700 (PDT)
+        with ESMTP id S238802AbhHTHSD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 03:18:03 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71E2DC061756;
+        Fri, 20 Aug 2021 00:17:26 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id e7so8258719pgk.2;
+        Fri, 20 Aug 2021 00:17:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=l8FQnO8UfRtzR0lfog04xhkJJWyrlxZJ2j/rGU3rdIw=;
-        b=jsNpYuKNJMVxJ3rwWtGgyuYzeoJIsyCV1pW6kcT8eV+XJF//TXeOBlmDtKlwmpJv4k
-         bA5SSxww+fbUpKGnwmRyaJLWvWNO6Qc9imWTJFSuwu/QpF1K1qPIw3a5R4RVdkaHic9r
-         CPJnuie977xdJM7TAwpRUSgmLdECufOyPjwt3YR32D+R+i6fvddl0JYqujI3Fc3KfNu2
-         UGZGngFzNU/u/BQ0yBKUPiCWaoimFCXHbUGIoZPDlU0yGSTTVdjnK91Qaoly4QSH6mH9
-         Krp1gBglH2Mgx9rllEeaAIXP6GM0n89xpReAfvEDBeF1Fq2TJ+H+xdT8LeubDcPs7rLb
-         UieQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Dc4aSLuoa6omNl1zxvSqWiFnOSWJh9ZCFnyIQ8OBVvw=;
+        b=AiqJit9EickB/UfRVGdlsM1wvjmSgrIFfkfs3KK3CS7DVqJvaxy0fOy+kBUeT0nWVd
+         2zVXUVSpPMjW56olO6Vb5ypfqxzKcgrMLdgljmGiJRguWWgm9axfgRcwoCgokdG83ddI
+         n7MPewrsyUdW2gi7LbjpY+PRXvOKlGffwWWWo0UVMKGx4k1z0ddloJ/AbIbDSSlxiCl0
+         gBYdu4pikQ+Nx+E3IRvsrRmHeuPUyvSjF8sX7vV7K6Yl/2eX5dDSxY1xGGMq05cfdPko
+         nm3SNQwff2gsVVkUkspB6BwDGa4IJV7DnYkN1RPO1SwkAj1ZD/F8R7Iey+i/mP6WcZVk
+         574g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=l8FQnO8UfRtzR0lfog04xhkJJWyrlxZJ2j/rGU3rdIw=;
-        b=dI0lvrpOCq2MveLFhK9bPGrt04w1hrvIwXUcFiOGbc0Io0J+bj4qikJvCUec9FwnjM
-         AgugnHgvQfsLdKK6AQQ2J3Vovdy15VCIFBJuwoBwVjmSM3GNQhcrPOvljeT0JEwSDPfX
-         Uwq4bJ//sUzAZb8ZDdYdC8v3GBNsZKDs9gQqAt+DDNiQRhRMc8+DXMs+NaBmAxlIG7mN
-         o5NWN2EQFfyGzYguwobX+9zWL5Qi0Mknxf1RFxV1dl4VRJZa1G3OUwlf1XFAE+t31IdW
-         VPWzdFA1dYEfc/zfhLBYDxBLktDZBC49n1V0y7WZ4ecp9equgCC/blYsZnVUUyltJ30c
-         tGxw==
-X-Gm-Message-State: AOAM532O9RPEuqpm7+fsK3RLJ32rCFxB+DbC3yX86h0w3TSEFzbn/NRY
-        6laOezp85iuTl6wfm5KsRNA=
-X-Google-Smtp-Source: ABdhPJzWOjzXclyesGv788y3fagM+2/3MU0UiuzRtlkV02ZwL0HJsm/f46jIbXWzQNfa6GO3uB3Bvw==
-X-Received: by 2002:a17:90b:3007:: with SMTP id hg7mr3220360pjb.66.1629443841497;
-        Fri, 20 Aug 2021 00:17:21 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Dc4aSLuoa6omNl1zxvSqWiFnOSWJh9ZCFnyIQ8OBVvw=;
+        b=bydN2IP02103Az+CNmR2qI/aRKTiRF3HYCvvMsPfnI8iDOkXkn/DlknF0R01RvPB35
+         UUO2uY+M0jk/myIe6IH0bq7Kxv5gcuhYbuKWMjs6rB3Nnz9243nE+2pyIJucyR1qhtms
+         KH7Mc88MzXEf1dDE0NKfQ7/ybiu8esv9idmI7CVdxuSJJe85Z7ZD4ki+EmfjTBGL2Rwn
+         4xNLxgOPaQyDZ1a0NOp6A2TAvPs40n1Z9hZAWexDpv6nccupvVt3RnhpCpTrlMwyLld9
+         J8HC4Do8Gd9vWjc+VjbUezCjUZ9a+1mGXyHI8kbau9at9d9liCruFe64kiLgatBjdy3Y
+         ob7w==
+X-Gm-Message-State: AOAM532C68Vj7Z+UTts2zdBqbxQDABoSWpdmjIl5gYLdixfH0VVlLYah
+        PMcfX+JPKLnFw4hD1uHzv9A=
+X-Google-Smtp-Source: ABdhPJx0+IMIlg1yKCkvYaeYfTos+noh8LNoea9H+8nSMzliw7ejKAQ6joSgHiCChlupYvfNcafKng==
+X-Received: by 2002:a05:6a00:a8a:b029:30c:a10b:3e3f with SMTP id b10-20020a056a000a8ab029030ca10b3e3fmr18258595pfl.40.1629443846047;
+        Fri, 20 Aug 2021 00:17:26 -0700 (PDT)
 Received: from IRVINGLIU-MB0.tencent.com ([203.205.141.114])
-        by smtp.gmail.com with ESMTPSA id u21sm5717544pfh.163.2021.08.20.00.17.17
+        by smtp.gmail.com with ESMTPSA id u21sm5717544pfh.163.2021.08.20.00.17.22
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 20 Aug 2021 00:17:21 -0700 (PDT)
+        Fri, 20 Aug 2021 00:17:25 -0700 (PDT)
 From:   Xu Liu <liuxu623@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
@@ -54,10 +54,12 @@ To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         kuba@kernel.org
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kernel@vger.kernel.org, Xu Liu <liuxu623@gmail.com>
-Subject: [PATCH bpf-next 0/2] bpf: Allow bpf_get_netns_cookie in BPF_PROG_TYPE_SK_MSG
-Date:   Fri, 20 Aug 2021 15:17:10 +0800
-Message-Id: <20210820071712.52852-1-liuxu623@gmail.com>
+Subject: [PATCH bpf-next 1/2] bpf: Allow bpf_get_netns_cookie in BPF_PROG_TYPE_SK_MSG
+Date:   Fri, 20 Aug 2021 15:17:11 +0800
+Message-Id: <20210820071712.52852-2-liuxu623@gmail.com>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20210820071712.52852-1-liuxu623@gmail.com>
+References: <20210820071712.52852-1-liuxu623@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -67,15 +69,43 @@ X-Mailing-List: netdev@vger.kernel.org
 We'd like to be able to identify netns from sk_msg hooks
 to accelerate local process communication form different netns.
 
-Xu Liu (2):
-  bpf: Allow bpf_get_netns_cookie in BPF_PROG_TYPE_SK_MSG
-  selftests/bpf: Test for get_netns_cookie
+Signed-off-by: Xu Liu <liuxu623@gmail.com>
+---
+ net/core/filter.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
- net/core/filter.c                             | 14 +++++
- .../selftests/bpf/prog_tests/netns_cookie.c   | 57 ++++++++++++-------
- .../selftests/bpf/progs/netns_cookie_prog.c   | 55 ++++++++++++++++--
- 3 files changed, 102 insertions(+), 24 deletions(-)
-
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 59b8f5050180..cfbd01167eb5 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -4688,6 +4688,18 @@ static const struct bpf_func_proto bpf_get_netns_cookie_sock_ops_proto = {
+ 	.arg1_type	= ARG_PTR_TO_CTX_OR_NULL,
+ };
+ 
++BPF_CALL_1(bpf_get_netns_cookie_sk_msg, struct sk_msg *, ctx)
++{
++	return __bpf_get_netns_cookie(ctx ? ctx->sk : NULL);
++}
++
++static const struct bpf_func_proto bpf_get_netns_cookie_sk_msg_proto = {
++	.func		= bpf_get_netns_cookie_sk_msg,
++	.gpl_only	= false,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_PTR_TO_CTX_OR_NULL,
++};
++
+ BPF_CALL_1(bpf_get_socket_uid, struct sk_buff *, skb)
+ {
+ 	struct sock *sk = sk_to_full_sk(skb->sk);
+@@ -7551,6 +7563,8 @@ sk_msg_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_sk_storage_get_proto;
+ 	case BPF_FUNC_sk_storage_delete:
+ 		return &bpf_sk_storage_delete_proto;
++	case BPF_FUNC_get_netns_cookie:
++		return &bpf_get_netns_cookie_sk_msg_proto;
+ #ifdef CONFIG_CGROUPS
+ 	case BPF_FUNC_get_current_cgroup_id:
+ 		return &bpf_get_current_cgroup_id_proto;
 -- 
 2.28.0
 
