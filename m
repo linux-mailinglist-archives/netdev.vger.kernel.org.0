@@ -2,153 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C8103F32B4
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 20:04:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A1823F32BF
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 20:06:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232629AbhHTSFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 14:05:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57344 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230007AbhHTSFF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 14:05:05 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF8BAC061575;
-        Fri, 20 Aug 2021 11:04:27 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id gz13-20020a17090b0ecdb0290178c0e0ce8bso9688600pjb.1;
-        Fri, 20 Aug 2021 11:04:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QqX9IQo8g7WhG7Y3/RlQFVFx2KCstQLv7H4OsFNThv0=;
-        b=QGQqGFLjVXsqVhcZsfR9+tjVsH1D3pSrX1tMNmqU0GIyCghQ/ePeqEBsaqliat+lBk
-         sWM1blpaQD4n8UpkoQGp3GvRWRD5hog7rntjqP/tLitl0UO8N+cmjlpSE6BuDGlg1mOb
-         ftTvn2OIVzMZD9A7EbVTeoquvRVhZ0TurG6rgOA49IykfcmSDWD+7KL1XF1ICKaePoh7
-         eovukTIu5///DrcvTy6y4fU2ec67g3e7kh09QvOizKu6BPyJpz+gWDr2a4pZbE6eJ3jC
-         tPpnVVUWuDkSNMXnx1AP93T+ZlOwsUj1K/EjlhTs/8P1XObwmDCUhDI36MeSDeyv+Lyx
-         4pUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QqX9IQo8g7WhG7Y3/RlQFVFx2KCstQLv7H4OsFNThv0=;
-        b=gr21mCjSC7WDpFIE9nA/cmpxhpQK+nV8yu5tWKASVMUZQlYN+XEae5hgyvoeT78Fln
-         19BVm2vCvEQOgf/PfIkTNHohlWp/nSM6bd9IaeDB29+3fWpnwlaezI/Nw6LWj5ytrASw
-         cowu4q60UeSuVKiuvYmUBqtujttiiadUzTuEbUq5Hf2NdRnRfA75cPm3NAHmSIPaYYUV
-         9h2Q7eOeg8rZzhD4fVjZBrN55k2pzcbXkNywf3oGhfWvKMANTkkMErdqu+9XBDDwTj0S
-         p7LJWwjphzpu3RgtwwR3fr9JqqzDcmno+8q03ZcDlP1Oseki2+9SRBE3koM05HIcbLBx
-         KuiQ==
-X-Gm-Message-State: AOAM533vvLQCgNOEUTaJjcE6K9opzszyPoI78l+wASpDVfaBxfzAf+zz
-        QCJ8RIG+CZtYNpX6KY1zg4w=
-X-Google-Smtp-Source: ABdhPJyVf/JDbkxrxYIOEx8LcPerWBJMz+suKjnjDiwPFUPj971OZDtTnjV4pO5ZrAubU2bKD5IcXw==
-X-Received: by 2002:a17:902:be0d:b0:12d:cb3c:3e7f with SMTP id r13-20020a170902be0d00b0012dcb3c3e7fmr17262258pls.0.1629482667216;
-        Fri, 20 Aug 2021 11:04:27 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
-        by smtp.gmail.com with ESMTPSA id w14sm7846700pfn.91.2021.08.20.11.04.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Aug 2021 11:04:26 -0700 (PDT)
-Subject: Re: [PATCH V3 13/13] HV/Storvsc: Add Isolation VM support for storvsc
- driver
-To:     Michael Kelley <mikelley@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "joro@8bytes.org" <joro@8bytes.org>,
-        "will@kernel.org" <will@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "ardb@kernel.org" <ardb@kernel.org>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "pgonda@google.com" <pgonda@google.com>,
-        "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "rppt@kernel.org" <rppt@kernel.org>,
-        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "saravanand@fb.com" <saravanand@fb.com>,
-        "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
-        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "rientjes@google.com" <rientjes@google.com>,
-        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
-        "tj@kernel.org" <tj@kernel.org>
-Cc:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        vkuznets <vkuznets@redhat.com>,
-        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
-        "dave.hansen@intel.com" <dave.hansen@intel.com>
-References: <20210809175620.720923-1-ltykernel@gmail.com>
- <20210809175620.720923-14-ltykernel@gmail.com>
- <MWHPR21MB1593EEF30FFD5C60ED744985D7C09@MWHPR21MB1593.namprd21.prod.outlook.com>
- <a96626db-4ac9-3ce4-64e9-92568e4f827a@gmail.com>
- <CY4PR21MB158664748760672446BFA075D7C19@CY4PR21MB1586.namprd21.prod.outlook.com>
-From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <939aa552-5c24-65ee-518d-1cf72867c15d@gmail.com>
-Date:   Sat, 21 Aug 2021 02:04:11 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S232930AbhHTSHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 14:07:13 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:41774 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229560AbhHTSHM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 14:07:12 -0400
+Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
+        by linux.microsoft.com (Postfix) with ESMTPSA id DC71320C33D5;
+        Fri, 20 Aug 2021 11:06:33 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com DC71320C33D5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1629482793;
+        bh=TawcIDwLw6//Gm4u2yn5lu5a4ZS6+2gDCjGqcHeuimU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=K1VJwv5ss64RbWMF/zk8eHP5BO1FsisgU3ah+UtmPELqhKukoR2Ii34ZVG6HnCupa
+         oqeYkEKbI8xJEVM5S3ZCcAS+GfqTVm1a6OOYlmEFbSIF/iBRkffhJ0A59+R5ZjzbvU
+         06Cip3qkCzKVyer71G4vXMb2M4HDoMGhMIMHYOig=
+Received: by mail-pg1-f182.google.com with SMTP id r2so9945051pgl.10;
+        Fri, 20 Aug 2021 11:06:33 -0700 (PDT)
+X-Gm-Message-State: AOAM533VKVF3Rvngcd/hQTsgx9DxfWhgALMm9JMeJEcJX/xt0KKvTQnH
+        gHFWsJNOjcolADHRVn/Q3fyxNWjA3VTMC3iTS8g=
+X-Google-Smtp-Source: ABdhPJzm0hvDUTbm4e2ogi3DtvuLSiqfNULNbRO30kAzAIw1JVV8nb4u6QXIcKWIW++PFI2l/VFJ2Rp1Wx0M9i8WDR8=
+X-Received: by 2002:aa7:9904:0:b0:3e1:a79a:222e with SMTP id
+ z4-20020aa79904000000b003e1a79a222emr21030272pff.41.1629482793349; Fri, 20
+ Aug 2021 11:06:33 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CY4PR21MB158664748760672446BFA075D7C19@CY4PR21MB1586.namprd21.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210614022504.24458-1-mcroce@linux.microsoft.com>
+ <871r71azjw.wl-maz@kernel.org> <YROmOQ+4Kqukgd6z@orome.fritz.box>
+ <202417ef-f8ae-895d-4d07-1f9f3d89b4a4@gmail.com> <87o8a49idp.wl-maz@kernel.org>
+ <fe5f99c8-5655-7fbb-a64e-b5f067c3273c@gmail.com> <20210812121835.405d2e37@linux.microsoft.com>
+ <874kbuapod.wl-maz@kernel.org> <CAFnufp2=1t2+fmxyGJ0Qu3Z+=wRwAX8faaPvrJdFpFeTS3J7Uw@mail.gmail.com>
+ <87wnohqty1.wl-maz@kernel.org> <CAFnufp3xjYqe_iVfbmdjz4-xN2UX_oo3GUw4Z4M_q-R38EN+uQ@mail.gmail.com>
+ <87fsv4qdzm.wl-maz@kernel.org> <CAFnufp2T75cvDLUx+ZyPQbkaNeY_S1OJ7KTJe=2EK-qXRNkwyw@mail.gmail.com>
+ <87mtpcyrdv.wl-maz@kernel.org> <CAFnufp0N2MzaTjF95tx9Q1D33z9f9AAK6UHbhU9rhG1ue_r1ug@mail.gmail.com>
+ <87h7fkyqpv.wl-maz@kernel.org> <CAFnufp3HbyeTGhxB33mej4Y4G2T2Yv5swKCx_C41zfc71Kj11A@mail.gmail.com>
+ <87fsv4ypfn.wl-maz@kernel.org> <CAFnufp2qFuhMDae20u_dV+aOPfB+zpcEK8D-=8ACE6r4kDn2rw@mail.gmail.com>
+In-Reply-To: <CAFnufp2qFuhMDae20u_dV+aOPfB+zpcEK8D-=8ACE6r4kDn2rw@mail.gmail.com>
+From:   Matteo Croce <mcroce@linux.microsoft.com>
+Date:   Fri, 20 Aug 2021 20:05:57 +0200
+X-Gmail-Original-Message-ID: <CAFnufp3SCJLgDz5XS0K36QkPb3TFRP1io-9AdRsQp6vkvVWJSw@mail.gmail.com>
+Message-ID: <CAFnufp3SCJLgDz5XS0K36QkPb3TFRP1io-9AdRsQp6vkvVWJSw@mail.gmail.com>
+Subject: Re: [PATCH net-next] stmmac: align RX buffers
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Will Deacon <will@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Aug 20, 2021 at 7:56 PM Matteo Croce <mcroce@linux.microsoft.com> wrote:
+>
+> On Fri, Aug 20, 2021 at 7:51 PM Marc Zyngier <maz@kernel.org> wrote:
+> >
+> > On Fri, 20 Aug 2021 18:35:45 +0100,
+> > Matteo Croce <mcroce@linux.microsoft.com> wrote:
+> > >
+> > > On Fri, Aug 20, 2021 at 7:24 PM Marc Zyngier <maz@kernel.org> wrote:
+> > > >
+> > > > On Fri, 20 Aug 2021 18:14:30 +0100,
+> > > > Matteo Croce <mcroce@linux.microsoft.com> wrote:
+> > > > >
+> > > > > On Fri, Aug 20, 2021 at 7:09 PM Marc Zyngier <maz@kernel.org> wrote:
+> > > > > >
+> > > > > > On Fri, 20 Aug 2021 17:38:14 +0100,
+> > > > > > Matteo Croce <mcroce@linux.microsoft.com> wrote:
+> > > > > > >
+> > > > > > > On Fri, Aug 20, 2021 at 6:26 PM Marc Zyngier <maz@kernel.org> wrote:
+> > > > > > > >
+> > > > > > > > On Fri, 20 Aug 2021 11:37:03 +0100,
+> > > > > > > > Matteo Croce <mcroce@linux.microsoft.com> wrote:
+> > > > > > > > >
+> > > > > > > > > On Thu, Aug 19, 2021 at 6:29 PM Marc Zyngier <maz@kernel.org> wrote:
+> > > > > > > >
+> > > > > > > > [...]
+> > > > > > > >
+> > > > > > > > > > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> > > > > > > > > > index fcdb1d20389b..244aa6579ef4 100644
+> > > > > > > > > > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> > > > > > > > > > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> > > > > > > > > > @@ -341,7 +341,7 @@ static inline unsigned int stmmac_rx_offset(struct stmmac_priv *priv)
+> > > > > > > > > >         if (stmmac_xdp_is_enabled(priv))
+> > > > > > > > > >                 return XDP_PACKET_HEADROOM + NET_IP_ALIGN;
+> > > > > > > > > >
+> > > > > > > > > > -       return NET_SKB_PAD + NET_IP_ALIGN;
+> > > > > > > > > > +       return 8 + NET_IP_ALIGN;
+> > > > > > > > > >  }
+> > > > > > > > > >
+> > > > > > > > > >  void stmmac_disable_rx_queue(struct stmmac_priv *priv, u32 queue);
+> > > > > > > > > >
+> > > > > > > > > > I don't see the system corrupting packets anymore. Is that exactly
+> > > > > > > > > > what you had in mind? This really seems to point to a basic buffer
+> > > > > > > > > > overflow.
+> > > > > > > >
+> > > > > > > > [...]
+> > > > > > > >
+> > > > > > > > > Sorry, I meant something like:
+> > > > > > > > >
+> > > > > > > > > -       return NET_SKB_PAD + NET_IP_ALIGN;
+> > > > > > > > > +       return 8;
+> > > > > > > > >
+> > > > > > > > > I had some hardware which DMA fails if the receive buffer was not word
+> > > > > > > > > aligned, but this seems not the case, as 8 + NET_IP_ALIGN = 10, and
+> > > > > > > > > it's not aligned too.
+> > > > > > > >
+> > > > > > > > No error in that case either, as expected. Given that NET_SKB_PAD is
+> > > > > > > > likely to expand to 64, it is likely a DMA buffer overflow which
+> > > > > > > > probably only triggers for large-ish packets.
+> > > > > > > >
+> > > > > > > > Now, we're almost at -rc7, and we don't have a solution in sight.
+> > > > > > > >
+> > > > > > > > Can we please revert this until we have an understanding of what is
+> > > > > > > > happening? I'll hopefully have more cycles to work on the issue once
+> > > > > > > > 5.14 is out, and hopefully the maintainers of this driver can chime in
+> > > > > > > > (they have been pretty quiet so far).
+> > > > > > > >
+> > > > > > > > Thanks,
+> > > > > > > >
+> > > > > > > >         M.
+> > > > > > > >
+> > > > > > > > --
+> > > > > > > > Without deviation from the norm, progress is not possible.
+> > > > > > >
+> > > > > > > Last try, what about adding only NET_IP_ALIGN and leaving NET_SKB_PAD?
+> > > > > > >
+> > > > > > > -       return NET_SKB_PAD + NET_IP_ALIGN;
+> > > > > > > +       return NET_IP_ALIGN;
+> > > > > > >
+> > > > > > > I think that alloc_skb adds another NET_SKB_PAD anyway.
+> > > > > >
+> > > > > > I don't see any packet corruption with this. However, this doesn't
+> > > > > > prove that this is correct either. What was the rational for adding
+> > > > > > NET_SKB_PAD the first place?
+> > > > > >
+> > > > >
+> > > > > I think it's wrong. The original offset was 0, and to align it to the
+> > > > > boundary we need to add just NET_IP_ALIGN, which is two.
+> > > > > NET_SKB_PAD is a much bigger value, (I think 64), which is used to
+> > > > > reserve space to prepend an header, e.g. with tunnels.
+> > > >
+> > > > How about the other adjustments that Eric mentioned regarding the size
+> > > > of the buffer? Aren't they required?
+> > > >
+> > >
+> > > I guess that if stmmac_rx_buf1_len() needed such adjustment, it would
+> > > be already broken when XDP is in use.
+> > > When you use XDP, stmmac_rx_offset() adds a pretty big headroom of 256
+> > > byte, which would easily trigger an overflow if not accounted.
+> > > Did you try attaching a simple XDP program on a stock 5.13 kernel?
+> >
+> > Yes, as mentioned in [1], to which you replied...
+> >
+> >         M.
+> >
+> > [1] https://lore.kernel.org/r/87wnohqty1.wl-maz@kernel.org
+> >
+>
+> Great.
+> So I doubt that the adjustment is needed.
+> Does it work with all the frame size?
+>
 
+Last check, are you sure that the bpf program was loaded in the driver
+and not as generic XDP?
+You can force it as native with "xdpdrv":
 
-On 8/21/2021 12:08 AM, Michael Kelley wrote:
->>>>    	}
->>> The whole approach here is to do dma remapping on each individual page
->>> of the I/O buffer.  But wouldn't it be possible to use dma_map_sg() to map
->>> each scatterlist entry as a unit?  Each scatterlist entry describes a range of
->>> physically contiguous memory.  After dma_map_sg(), the resulting dma
->>> address must also refer to a physically contiguous range in the swiotlb
->>> bounce buffer memory.   So at the top of the "for" loop over the scatterlist
->>> entries, do dma_map_sg() if we're in an isolated VM.  Then compute the
->>> hvpfn value based on the dma address instead of sg_page().  But everything
->>> else is the same, and the inner loop for populating the pfn_arry is unmodified.
->>> Furthermore, the dma_range array that you've added is not needed, since
->>> scatterlist entries already have a dma_address field for saving the mapped
->>> address, and dma_unmap_sg() uses that field.
->> I don't use dma_map_sg() here in order to avoid introducing one more
->> loop(e,g dma_map_sg()). We already have a loop to populate
->> cmd_request->dma_range[] and so do the dma map in the same loop.
->>
-> I'm not seeing where the additional loop comes from.  Storvsc
-> already has a loop through the sgl entries.  Retain that loop and call
-> dma_map_sg() with nents set to 1.  Then the sequence is
-> dma_map_sg() --> dma_map_sg_attrs() --> dma_direct_map_sg() ->
-> dma_direct_map_page().  The latter function will call swiotlb_map()
-> to map all pages of the sgl entry as a single operation.
+ip link set eth xdpdrv object kernel_passall.o
 
-After dma_map_sg(), we still need to go through scatter list again to 
-populate payload->rrange.pfn_array. We may just go through the scatter 
-list just once if dma_map_sg() accepts a callback and run it during go
-through scatter list.
+-- 
+per aspera ad upstream
