@@ -2,67 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF3293F2C78
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 14:52:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBC763F2C79
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 14:52:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240472AbhHTMwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 08:52:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40420 "EHLO mail.kernel.org"
+        id S240505AbhHTMwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 08:52:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40474 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240278AbhHTMwr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Aug 2021 08:52:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 59EE8610E6;
-        Fri, 20 Aug 2021 12:52:09 +0000 (UTC)
+        id S240262AbhHTMwx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Aug 2021 08:52:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 48772610D2;
+        Fri, 20 Aug 2021 12:52:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629463929;
-        bh=UQqyMBr4CjifbSyBvwHrwok7V98Vkx5B/FpgWfcV0gg=;
+        s=k20201202; t=1629463935;
+        bh=Va7ZQFgJHrGn7mNkVlFaDEcq8Ve2SUabng9PkIPguek=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dPLfngGA55N2RQzouwURV53d1e0Tb/YtNj4al0TQSl1AxCHkaY4rKGlWfPPuu5cOR
-         d3iSngE9S33MBO3bNLpbeyyln37igP5li9N2I5lJ/ow9L3HcL1gL3/5SMu3HsaOBqN
-         O1bQqAOJ3DC9E2zJqUjdaAZuC1ouyBh6KZyQ8eWS4+ZN1tWGBI6pGVu1Ar+uXzpey4
-         1ES2k+zZOKrD6YALMI4sB7YHP+E9t5V4rkAzb94eBJWecf8RpV0UOsarggaYp/YwYb
-         TUxOVNbDURzGSLRkRHow9iGgDeITcaSY6bYznvLL49IUUz59CkzCaVIj0jzturEir2
-         KG8te9CPs/zzw==
+        b=AsDMkT+EdHVIezFXvrifc4GM6Q+peUlMb9yLT6fdnN8UbPcNKq1TuRlVXlk8FddJU
+         BF6Pfhi75Et2geJxN/8ywC/MqcltalVUZoo3x/dBh4dhlY+XWYSjA4wicSynbSooos
+         Fwvk0vQI1d6tG7Hb1UX7A7tekUP/oK7Sh1zjkp39bR7NpUpPVSKg3TBlkTn6S6Psb0
+         FOqpFNy2XyTj+GfAvi6bSUodcWyzx9uF+CN7Uml8aZDFmhp+SOpVBblzs0qxV64r9k
+         x2BrnpkXF6VC4cJidJrV3g/oBkCXZ5trOwyfVZ0GEovHI3FL0jYKiB6zDZSZolox2I
+         YHqyuEVWBGuEg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5043C60A89;
-        Fri, 20 Aug 2021 12:52:09 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 42AC060A89;
+        Fri, 20 Aug 2021 12:52:15 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v3 1/2] bpf: use kvmalloc for map values in syscall
+Subject: Re: [PATCH net v2 1/1] ice: do not abort devlink info if board identifier
+ can't be found
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162946392932.27725.1911854236154842439.git-patchwork-notify@kernel.org>
-Date:   Fri, 20 Aug 2021 12:52:09 +0000
-References: <20210818235216.1159202-1-sdf@google.com>
-In-Reply-To: <20210818235216.1159202-1-sdf@google.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, songliubraving@fb.com
+Message-Id: <162946393526.27725.12188950066010528143.git-patchwork-notify@kernel.org>
+Date:   Fri, 20 Aug 2021 12:52:15 +0000
+References: <20210819223451.245613-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20210819223451.245613-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, jacob.e.keller@intel.com,
+        netdev@vger.kernel.org, tonyx.brelinski@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to bpf/bpf-next.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Wed, 18 Aug 2021 16:52:15 -0700 you wrote:
-> Use kvmalloc/kvfree for temporary value when manipulating a map via
-> syscall. kmalloc might not be sufficient for percpu maps where the value
-> is big (and further multiplied by hundreds of CPUs).
+On Thu, 19 Aug 2021 15:34:51 -0700 you wrote:
+> From: Jacob Keller <jacob.e.keller@intel.com>
 > 
-> Can be reproduced with netcnt test on qemu with "-smp 255".
-> 
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> Acked-by: Song Liu <songliubraving@fb.com>
+> The devlink dev info command reports version information about the
+> device and firmware running on the board. This includes the "board.id"
+> field which is supposed to represent an identifier of the board design.
+> The ice driver uses the Product Board Assembly identifier for this.
 > 
 > [...]
 
 Here is the summary with links:
-  - [bpf-next,v3,1/2] bpf: use kvmalloc for map values in syscall
-    https://git.kernel.org/bpf/bpf-next/c/f0dce1d9b7c8
-  - [bpf-next,v3,2/2] bpf: use kvmalloc for map keys in syscalls
-    https://git.kernel.org/bpf/bpf-next/c/44779a4b85ab
+  - [net,v2,1/1] ice: do not abort devlink info if board identifier can't be found
+    https://git.kernel.org/netdev/net/c/a8f89fa27773
 
 You are awesome, thank you!
 --
