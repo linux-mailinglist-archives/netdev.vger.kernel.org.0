@@ -2,90 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C93823F271F
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 09:00:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FA3B3F271B
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 09:00:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238730AbhHTG6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 02:58:48 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:14291 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235172AbhHTG6h (ORCPT
+        id S238581AbhHTG6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 02:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43300 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238492AbhHTG6h (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 02:58:37 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GrXWw5qC0z87RS;
-        Fri, 20 Aug 2021 14:57:48 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 20 Aug 2021 14:57:58 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 20 Aug 2021 14:57:58 +0800
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <hawk@kernel.org>, <ilias.apalodimas@linaro.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <hkallweit1@gmail.com>
-Subject: [PATCH net-next v2 2/2] page_pool: optimize the cpu sync operation when DMA mapping
-Date:   Fri, 20 Aug 2021 14:56:51 +0800
-Message-ID: <1629442611-61547-3-git-send-email-linyunsheng@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1629442611-61547-1-git-send-email-linyunsheng@huawei.com>
-References: <1629442611-61547-1-git-send-email-linyunsheng@huawei.com>
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0357C061756
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 23:57:59 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id v2so12491136edq.10
+        for <netdev@vger.kernel.org>; Thu, 19 Aug 2021 23:57:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=konsulko.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vktROwdfT/2W3HLGzWkFifgLXqdoBqZ18sow34pIXJc=;
+        b=sN6fC/++0BAFLYXaTS0QbiVZEEevvpfvw9hqYlfpbsDBZIdSdQDF/ZZakZj3RX8Ysm
+         iCH/USyAdh6h1p1xUn6806Rs9YoBrCvk7HMiuhil0Br5SmX1k6SBLRxygKY3/9X5u9lf
+         3czYGOOkRjjKDbZ7PPYyVhsviXZ+acAcfQib8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vktROwdfT/2W3HLGzWkFifgLXqdoBqZ18sow34pIXJc=;
+        b=GunGXWRr/zXJ2s81EA/NPomLW2bm17aGY2GwUeKA0Sltur6iayHlqVOnUgCP1Pg8FL
+         1dMnWn/1Ieq+bSLf/UOnq4JsOYUieI2/GvoKXWCeeOcq9F38gdJ3yASEU6GnUd7ok02O
+         dtXfMnrk7d5jOvyYKRBBySH85+Waa8bRlSi7cglqNudy9aZNR/iht2U6NRXerK13w5be
+         Zok/wPTNRZl55DS8t5wiPm8ElQkMKMKjEhaiz2sniEP0pAchhKqpFNofamoNlsGYjnhG
+         nQ7oDD58c8bZyZ5l5Bo1pzGu7sI2gXU7frDhfTKAXLTCMbWGy0QB3Y71dR2dKUXtrOBj
+         HwsQ==
+X-Gm-Message-State: AOAM532Yz/1+/ZVl30sQTRUzxBV8bwauy59nmL65LH0Jq6VCajd67XDw
+        bENlVv8Crkj/oWyZSAGEcoTALg==
+X-Google-Smtp-Source: ABdhPJwsRnKJaYTjDWrtS6drI4s2jw3vNhBvYSf0AABuBHXvET7UJEQjIMwXbfgajRxhPiSwakGE0g==
+X-Received: by 2002:aa7:c0c6:: with SMTP id j6mr9439846edp.146.1629442678056;
+        Thu, 19 Aug 2021 23:57:58 -0700 (PDT)
+Received: from taos.k.g (lan.nucleusys.com. [92.247.61.126])
+        by smtp.gmail.com with ESMTPSA id z6sm2984637edc.52.2021.08.19.23.57.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Aug 2021 23:57:57 -0700 (PDT)
+From:   Petko Manolov <petko.manolov@konsulko.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, paskripkin@gmail.com,
+        stable@vger.kernel.org, Petko Manolov <petko.manolov@konsulko.com>
+Subject: [PATCH v2] net: usb: pegasus: fixes of set_register(s) return value evaluation;
+Date:   Fri, 20 Aug 2021 09:57:53 +0300
+Message-Id: <20210820065753.1803-1-petko.manolov@konsulko.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the DMA_ATTR_SKIP_CPU_SYNC is not set, cpu syncing is
-also done in dma_map_page_attrs(), so set the attrs according
-to pool->p.flags to avoid calling cpu sync function again.
+  - restore the behavior in enable_net_traffic() to avoid regressions - Jakub
+    Kicinski;
+  - hurried up and removed redundant assignment in pegasus_open() before yet
+    another checker complains;
 
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+Fixes: 8a160e2e9aeb ("net: usb: pegasus: Check the return value of get_geristers() and friends;")
+Reported-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Petko Manolov <petko.manolov@konsulko.com>
 ---
- net/core/page_pool.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/usb/pegasus.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 1a69784..3df5554 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -191,8 +191,12 @@ static void page_pool_dma_sync_for_device(struct page_pool *pool,
+diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
+index 652e9fcf0b77..9f9dd0de33cb 100644
+--- a/drivers/net/usb/pegasus.c
++++ b/drivers/net/usb/pegasus.c
+@@ -446,7 +446,7 @@ static int enable_net_traffic(struct net_device *dev, struct usb_device *usb)
+ 		write_mii_word(pegasus, 0, 0x1b, &auxmode);
+ 	}
  
- static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
- {
-+	unsigned long attrs = DMA_ATTR_SKIP_CPU_SYNC;
- 	dma_addr_t dma;
+-	return 0;
++	return ret;
+ fail:
+ 	netif_dbg(pegasus, drv, pegasus->net, "%s failed\n", __func__);
+ 	return ret;
+@@ -835,7 +835,7 @@ static int pegasus_open(struct net_device *net)
+ 	if (!pegasus->rx_skb)
+ 		goto exit;
  
-+	if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
-+		attrs = 0;
-+
- 	/* Setup DMA mapping: use 'struct page' area for storing DMA-addr
- 	 * since dma_addr_t can be either 32 or 64 bits and does not always fit
- 	 * into page private data (i.e 32bit cpu with 64bit DMA caps)
-@@ -200,15 +204,12 @@ static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
- 	 */
- 	dma = dma_map_page_attrs(pool->p.dev, page, 0,
- 				 (PAGE_SIZE << pool->p.order),
--				 pool->p.dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
-+				 pool->p.dma_dir, attrs);
- 	if (dma_mapping_error(pool->p.dev, dma))
- 		return false;
+-	res = set_registers(pegasus, EthID, 6, net->dev_addr);
++	set_registers(pegasus, EthID, 6, net->dev_addr);
  
- 	page_pool_set_dma_addr(page, dma);
- 
--	if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
--		page_pool_dma_sync_for_device(pool, page, pool->p.max_len);
--
- 	return true;
- }
- 
+ 	usb_fill_bulk_urb(pegasus->rx_urb, pegasus->usb,
+ 			  usb_rcvbulkpipe(pegasus->usb, 1),
 -- 
-2.7.4
-
+2.30.2
