@@ -2,310 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E33A3F2625
-	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 06:56:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E5123F263E
+	for <lists+netdev@lfdr.de>; Fri, 20 Aug 2021 06:59:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238227AbhHTE43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 00:56:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45662 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237993AbhHTE4N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Aug 2021 00:56:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A9D56610E6;
-        Fri, 20 Aug 2021 04:55:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629435332;
-        bh=QNS7t+YS8Bf3ZxhLm9xiq4FrrMN5B92xcMgRP/1hOrk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NzJpiAAqAe2hY9ho35v6NxUdxZ0Ut6UBYB7tWf59jjTxZfUZq+llkOYM0yxKRxvcM
-         7FZYcvF2vF9QGUeVJQslkN6sNHkcrolNy9vU1yVNFzeNnV2cHGMux7EG6Y2h1Gw+R0
-         wyXX2IjHdWT3K8nDW6GdsExzvFwRL5wzjnD2NIkoSuZHiMapHPHB1EmID2cIeN23ps
-         PIeWkZ+gZ9AIEPL+tKWyEMYo35PUexXCJTzSDieUPrz8yh5w+I/6vK9ORJp9l8GYOW
-         p7VJzPmSfgxyMHM7SATmfG+e/xQi+EUD69j1AYYN6by3/fXDuaSydYNut0m7gBEeRD
-         Xm0q439rVdZkQ==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Dmytro Linkin <dlinkin@nvidia.com>,
-        Huy Nguyen <huyn@nvidia.com>, Mark Bloch <mbloch@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 15/15] net/mlx5: E-switch, Add QoS tracepoints
-Date:   Thu, 19 Aug 2021 21:55:15 -0700
-Message-Id: <20210820045515.265297-16-saeed@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210820045515.265297-1-saeed@kernel.org>
-References: <20210820045515.265297-1-saeed@kernel.org>
+        id S238469AbhHTFAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 01:00:03 -0400
+Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:45478 "EHLO
+        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233505AbhHTE7o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 00:59:44 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0UkFVSTL_1629435544;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0UkFVSTL_1629435544)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 20 Aug 2021 12:59:05 +0800
+Date:   Fri, 20 Aug 2021 12:59:04 +0800
+From:   "dust.li" <dust.li@linux.alibaba.com>
+To:     Julian Anastasov <ja@ssi.bg>
+Cc:     Simon Horman <horms@verge.net.au>,
+        Wensong Zhang <wensong@linux-vs.org>,
+        lvs-devel@vger.kernel.org, netdev@vger.kernel.org,
+        yunhong-cgl jiang <xintian1976@gmail.com>
+Subject: Re: [PATCH net-next v3] net: ipvs: add sysctl_run_estimation to
+ support disable estimation
+Message-ID: <20210820045904.GC5594@linux.alibaba.com>
+Reply-To: dust.li@linux.alibaba.com
+References: <20210819084418.27004-1-dust.li@linux.alibaba.com>
+ <5fee5fd0-2e2-1ec2-8640-def6b0bc32ee@ssi.bg>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5fee5fd0-2e2-1ec2-8640-def6b0bc32ee@ssi.bg>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dmytro Linkin <dlinkin@nvidia.com>
+On Fri, Aug 20, 2021 at 07:53:06AM +0300, Julian Anastasov wrote:
+>
+>	Hello,
+>
+>On Thu, 19 Aug 2021, Dust Li wrote:
+>
+>> estimation_timer will iterater the est_list to do estimation
+>
+>	...will iterate...
+>
+>> for each ipvs stats. When there are lots of services, the
+>> list can be very large.
+>> We observiced estimation_timer() run for more then 200ms on
+>
+>	...We found that estimation_timer() runs for...
 
-Add tracepoints to log QoS enabling/disabling/configuration for vports
-and rate groups.
+OK, thanks for you carefull review, I will fix those details
+and send a v4.
 
-Signed-off-by: Dmytro Linkin <dlinkin@nvidia.com>
-Reviewed-by: Huy Nguyen <huyn@nvidia.com>
-Reviewed-by: Mark Bloch <mbloch@nvidia.com>
-Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../device_drivers/ethernet/mellanox/mlx5.rst |  44 +++++++
- .../mlx5/core/esw/diag/qos_tracepoint.h       | 123 ++++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/esw/qos.c |  13 +-
- 3 files changed, 179 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/diag/qos_tracepoint.h
+Thanks again !
 
-diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-index ef8cb62e82a1..4b59cf2c599f 100644
---- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-+++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-@@ -656,3 +656,47 @@ Bridge offloads tracepoints:
-     $ cat /sys/kernel/debug/tracing/trace
-     ...
-     ip-5387    [000] ...1       573713: mlx5_esw_bridge_vport_cleanup: vport_num=1
-+
-+Eswitch QoS tracepoints:
-+
-+- mlx5_esw_vport_qos_create: trace creation of transmit scheduler arbiter for vport::
-+
-+    $ echo mlx5:mlx5_esw_vport_qos_create >> /sys/kernel/debug/tracing/set_event
-+    $ cat /sys/kernel/debug/tracing/trace
-+    ...
-+    <...>-23496   [018] .... 73136.838831: mlx5_esw_vport_qos_create: (0000:82:00.0) vport=2 tsar_ix=4 bw_share=0, max_rate=0 group=000000007b576bb3
-+
-+- mlx5_esw_vport_qos_config: trace configuration of transmit scheduler arbiter for vport::
-+
-+    $ echo mlx5:mlx5_esw_vport_qos_config >> /sys/kernel/debug/tracing/set_event
-+    $ cat /sys/kernel/debug/tracing/trace
-+    ...
-+    <...>-26548   [023] .... 75754.223823: mlx5_esw_vport_qos_config: (0000:82:00.0) vport=1 tsar_ix=3 bw_share=34, max_rate=10000 group=000000007b576bb3
-+
-+- mlx5_esw_vport_qos_destroy: trace deletion of transmit scheduler arbiter for vport::
-+
-+    $ echo mlx5:mlx5_esw_vport_qos_destroy >> /sys/kernel/debug/tracing/set_event
-+    $ cat /sys/kernel/debug/tracing/trace
-+    ...
-+    <...>-27418   [004] .... 76546.680901: mlx5_esw_vport_qos_destroy: (0000:82:00.0) vport=1 tsar_ix=3
-+
-+- mlx5_esw_group_qos_create: trace creation of transmit scheduler arbiter for rate group::
-+
-+    $ echo mlx5:mlx5_esw_group_qos_create >> /sys/kernel/debug/tracing/set_event
-+    $ cat /sys/kernel/debug/tracing/trace
-+    ...
-+    <...>-26578   [008] .... 75776.022112: mlx5_esw_group_qos_create: (0000:82:00.0) group=000000008dac63ea tsar_ix=5
-+
-+- mlx5_esw_group_qos_config: trace configuration of transmit scheduler arbiter for rate group::
-+
-+    $ echo mlx5:mlx5_esw_group_qos_config >> /sys/kernel/debug/tracing/set_event
-+    $ cat /sys/kernel/debug/tracing/trace
-+    ...
-+    <...>-27303   [020] .... 76461.455356: mlx5_esw_group_qos_config: (0000:82:00.0) group=000000008dac63ea tsar_ix=5 bw_share=100 max_rate=20000
-+
-+- mlx5_esw_group_qos_destroy: trace deletion of transmit scheduler arbiter for group::
-+
-+    $ echo mlx5:mlx5_esw_group_qos_destroy >> /sys/kernel/debug/tracing/set_event
-+    $ cat /sys/kernel/debug/tracing/trace
-+    ...
-+    <...>-27418   [006] .... 76547.187258: mlx5_esw_group_qos_destroy: (0000:82:00.0) group=000000007b576bb3 tsar_ix=1
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/diag/qos_tracepoint.h b/drivers/net/ethernet/mellanox/mlx5/core/esw/diag/qos_tracepoint.h
-new file mode 100644
-index 000000000000..458baf0c6415
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/diag/qos_tracepoint.h
-@@ -0,0 +1,123 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-+/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
-+
-+#undef TRACE_SYSTEM
-+#define TRACE_SYSTEM mlx5
-+
-+#if !defined(_MLX5_ESW_TP_) || defined(TRACE_HEADER_MULTI_READ)
-+#define _MLX5_ESW_TP_
-+
-+#include <linux/tracepoint.h>
-+#include "eswitch.h"
-+
-+TRACE_EVENT(mlx5_esw_vport_qos_destroy,
-+	    TP_PROTO(const struct mlx5_vport *vport),
-+	    TP_ARGS(vport),
-+	    TP_STRUCT__entry(__string(devname, dev_name(vport->dev->device))
-+			     __field(unsigned short, vport_id)
-+			     __field(unsigned int,   tsar_ix)
-+			     ),
-+	    TP_fast_assign(__assign_str(devname, dev_name(vport->dev->device));
-+		    __entry->vport_id = vport->vport;
-+		    __entry->tsar_ix = vport->qos.esw_tsar_ix;
-+	    ),
-+	    TP_printk("(%s) vport=%hu tsar_ix=%u\n",
-+		      __get_str(devname), __entry->vport_id, __entry->tsar_ix
-+		      )
-+);
-+
-+DECLARE_EVENT_CLASS(mlx5_esw_vport_qos_template,
-+		    TP_PROTO(const struct mlx5_vport *vport, u32 bw_share, u32 max_rate),
-+		    TP_ARGS(vport, bw_share, max_rate),
-+		    TP_STRUCT__entry(__string(devname, dev_name(vport->dev->device))
-+				     __field(unsigned short, vport_id)
-+				     __field(unsigned int, tsar_ix)
-+				     __field(unsigned int, bw_share)
-+				     __field(unsigned int, max_rate)
-+				     __field(void *, group)
-+				     ),
-+		    TP_fast_assign(__assign_str(devname, dev_name(vport->dev->device));
-+			    __entry->vport_id = vport->vport;
-+			    __entry->tsar_ix = vport->qos.esw_tsar_ix;
-+			    __entry->bw_share = bw_share;
-+			    __entry->max_rate = max_rate;
-+			    __entry->group = vport->qos.group;
-+		    ),
-+		    TP_printk("(%s) vport=%hu tsar_ix=%u bw_share=%u, max_rate=%u group=%p\n",
-+			      __get_str(devname), __entry->vport_id, __entry->tsar_ix,
-+			      __entry->bw_share, __entry->max_rate, __entry->group
-+			      )
-+);
-+
-+DEFINE_EVENT(mlx5_esw_vport_qos_template, mlx5_esw_vport_qos_create,
-+	     TP_PROTO(const struct mlx5_vport *vport, u32 bw_share, u32 max_rate),
-+	     TP_ARGS(vport, bw_share, max_rate)
-+	     );
-+
-+DEFINE_EVENT(mlx5_esw_vport_qos_template, mlx5_esw_vport_qos_config,
-+	     TP_PROTO(const struct mlx5_vport *vport, u32 bw_share, u32 max_rate),
-+	     TP_ARGS(vport, bw_share, max_rate)
-+	     );
-+
-+DECLARE_EVENT_CLASS(mlx5_esw_group_qos_template,
-+		    TP_PROTO(const struct mlx5_core_dev *dev,
-+			     const struct mlx5_esw_rate_group *group,
-+			     unsigned int tsar_ix),
-+		    TP_ARGS(dev, group, tsar_ix),
-+		    TP_STRUCT__entry(__string(devname, dev_name(dev->device))
-+				     __field(const void *, group)
-+				     __field(unsigned int, tsar_ix)
-+				     ),
-+		    TP_fast_assign(__assign_str(devname, dev_name(dev->device));
-+			    __entry->group = group;
-+			    __entry->tsar_ix = tsar_ix;
-+		    ),
-+		    TP_printk("(%s) group=%p tsar_ix=%u\n",
-+			      __get_str(devname), __entry->group, __entry->tsar_ix
-+			      )
-+);
-+
-+DEFINE_EVENT(mlx5_esw_group_qos_template, mlx5_esw_group_qos_create,
-+	     TP_PROTO(const struct mlx5_core_dev *dev,
-+		      const struct mlx5_esw_rate_group *group,
-+		      unsigned int tsar_ix),
-+	     TP_ARGS(dev, group, tsar_ix)
-+	     );
-+
-+DEFINE_EVENT(mlx5_esw_group_qos_template, mlx5_esw_group_qos_destroy,
-+	     TP_PROTO(const struct mlx5_core_dev *dev,
-+		      const struct mlx5_esw_rate_group *group,
-+		      unsigned int tsar_ix),
-+	     TP_ARGS(dev, group, tsar_ix)
-+	     );
-+
-+TRACE_EVENT(mlx5_esw_group_qos_config,
-+	    TP_PROTO(const struct mlx5_core_dev *dev,
-+		     const struct mlx5_esw_rate_group *group,
-+		     unsigned int tsar_ix, u32 bw_share, u32 max_rate),
-+	    TP_ARGS(dev, group, tsar_ix, bw_share, max_rate),
-+	    TP_STRUCT__entry(__string(devname, dev_name(dev->device))
-+			     __field(const void *, group)
-+			     __field(unsigned int, tsar_ix)
-+			     __field(unsigned int, bw_share)
-+			     __field(unsigned int, max_rate)
-+			     ),
-+	    TP_fast_assign(__assign_str(devname, dev_name(dev->device));
-+		    __entry->group = group;
-+		    __entry->tsar_ix = tsar_ix;
-+		    __entry->bw_share = bw_share;
-+		    __entry->max_rate = max_rate;
-+	    ),
-+	    TP_printk("(%s) group=%p tsar_ix=%u bw_share=%u max_rate=%u\n",
-+		      __get_str(devname), __entry->group, __entry->tsar_ix,
-+		      __entry->bw_share, __entry->max_rate
-+		      )
-+);
-+#endif /* _MLX5_ESW_TP_ */
-+
-+/* This part must be outside protection */
-+#undef TRACE_INCLUDE_PATH
-+#define TRACE_INCLUDE_PATH esw/diag
-+#undef TRACE_INCLUDE_FILE
-+#define TRACE_INCLUDE_FILE qos_tracepoint
-+#include <trace/define_trace.h>
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
-index 692c9d543f75..985e305179d1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
-@@ -4,6 +4,8 @@
- #include "eswitch.h"
- #include "esw/qos.h"
- #include "en/port.h"
-+#define CREATE_TRACE_POINTS
-+#include "diag/qos_tracepoint.h"
- 
- /* Minimum supported BW share value by the HW is 1 Mbit/sec */
- #define MLX5_MIN_BW_SHARE 1
-@@ -54,6 +56,8 @@ static int esw_qos_group_config(struct mlx5_eswitch *esw, struct mlx5_esw_rate_g
- 	if (err)
- 		NL_SET_ERR_MSG_MOD(extack, "E-Switch modify group TSAR element failed");
- 
-+	trace_mlx5_esw_group_qos_config(dev, group, group->tsar_ix, bw_share, max_rate);
-+
- 	return err;
- }
- 
-@@ -89,6 +93,8 @@ static int esw_qos_vport_config(struct mlx5_eswitch *esw,
- 		return err;
- 	}
- 
-+	trace_mlx5_esw_vport_qos_config(vport, bw_share, max_rate);
-+
- 	return 0;
- }
- 
-@@ -461,6 +467,7 @@ esw_qos_create_rate_group(struct mlx5_eswitch *esw, struct netlink_ext_ack *exta
- 			goto err_min_rate;
- 		}
- 	}
-+	trace_mlx5_esw_group_qos_create(esw->dev, group, group->tsar_ix);
- 
- 	return group;
- 
-@@ -496,6 +503,7 @@ static int esw_qos_destroy_rate_group(struct mlx5_eswitch *esw,
- 	if (err)
- 		NL_SET_ERR_MSG_MOD(extack, "E-Switch destroy TSAR_ID failed");
- 
-+	trace_mlx5_esw_group_qos_destroy(esw->dev, group, group->tsar_ix);
- 	kfree(group);
- 	return err;
- }
-@@ -613,8 +621,10 @@ int mlx5_esw_qos_vport_enable(struct mlx5_eswitch *esw, struct mlx5_vport *vport
- 	vport->qos.group = esw->qos.group0;
- 
- 	err = esw_qos_vport_create_sched_element(esw, vport, max_rate, bw_share);
--	if (!err)
-+	if (!err) {
- 		vport->qos.enabled = true;
-+		trace_mlx5_esw_vport_qos_create(vport, bw_share, max_rate);
-+	}
- 
- 	return err;
- }
-@@ -637,6 +647,7 @@ void mlx5_esw_qos_vport_disable(struct mlx5_eswitch *esw, struct mlx5_vport *vpo
- 			 vport->vport, err);
- 
- 	vport->qos.enabled = false;
-+	trace_mlx5_esw_vport_qos_destroy(vport);
- }
- 
- int mlx5_esw_qos_modify_vport_rate(struct mlx5_eswitch *esw, u16 vport_num, u32 rate_mbps)
--- 
-2.31.1
-
+>
+>> a machine with 104 CPU and 50K services.
+>> 
+>> yunhong-cgl jiang report the same phenomenon before:
+>> https://www.spinics.net/lists/lvs-devel/msg05426.html
+>> 
+>> In some cases(for example a large K8S cluster with many ipvs services),
+>> ipvs estimation may not be needed. So adding a sysctl blob to allow
+>> users to disable this completely.
+>> 
+>> Default is: 1 (enable)
+>> 
+>> Cc: yunhong-cgl jiang <xintian1976@gmail.com>
+>> Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+>> ---
+>> v2: Use common sysctl facilities
+>> v3: Fix sysctl_run_estimation() redefine when CONFIG_SYSCTL not enabled
+>> ---
+>
+>	Replace above "---" after v3 with empty line,
+>avoid multiple "---" lines.
+>
+>>  Documentation/networking/ipvs-sysctl.rst | 17 +++++++++++++++++
+>>  include/net/ip_vs.h                      | 12 ++++++++++++
+>>  net/netfilter/ipvs/ip_vs_ctl.c           |  8 ++++++++
+>>  net/netfilter/ipvs/ip_vs_est.c           |  5 +++++
+>>  4 files changed, 42 insertions(+)
+>> 
+>> diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
+>> index 2afccc63856e..e20f7a27fc85 100644
+>> --- a/Documentation/networking/ipvs-sysctl.rst
+>> +++ b/Documentation/networking/ipvs-sysctl.rst
+>> @@ -300,3 +300,20 @@ sync_version - INTEGER
+>>  
+>>  	Kernels with this sync_version entry are able to receive messages
+>>  	of both version 1 and version 2 of the synchronisation protocol.
+>> +
+>> +run_estimation - BOOLEAN
+>> +	0 - disabled
+>> +	not 0 - enabled (default)
+>> +
+>> +	If disabled, the estimation will be stop, and you can't see
+>> +	any update on speed estimation data.
+>> +
+>> +	For example
+>> +	'Conns/s   Pkts/s   Pkts/s          Bytes/s          Bytes/s'
+>> +	those data in /proc/net/ip_vs_stats will always be zero.
+>> +	Note, this only affect the speed estimation, the total data
+>> +	will still be updated.
+>
+>	We can remove the above example
+>
+>> +
+>> +	You can always re-enable estimation by setting this value to 1.
+>> +	But be carefull, the first estimation after re-enable is not
+>
+>	...careful...
+>
+>> +	accurate.
+>> diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+>> index 7cb5a1aace40..269f8808f6db 100644
+>> --- a/include/net/ip_vs.h
+>> +++ b/include/net/ip_vs.h
+>> @@ -931,6 +931,7 @@ struct netns_ipvs {
+>>  	int			sysctl_conn_reuse_mode;
+>>  	int			sysctl_schedule_icmp;
+>>  	int			sysctl_ignore_tunneled;
+>> +	int 			sysctl_run_estimation;
+>
+>	scripts/checkpatch.pl --strict /tmp/file.patch
+>reports for extra space just after 'int'.
+>
+>>  
+>>  	/* ip_vs_lblc */
+>>  	int			sysctl_lblc_expiration;
+>> @@ -1071,6 +1072,11 @@ static inline int sysctl_cache_bypass(struct netns_ipvs *ipvs)
+>>  	return ipvs->sysctl_cache_bypass;
+>>  }
+>>  
+>> +static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
+>> +{
+>> +	return ipvs->sysctl_run_estimation;
+>> +}
+>> +
+>>  #else
+>>  
+>>  static inline int sysctl_sync_threshold(struct netns_ipvs *ipvs)
+>> @@ -1163,6 +1169,11 @@ static inline int sysctl_cache_bypass(struct netns_ipvs *ipvs)
+>>  	return 0;
+>>  }
+>>  
+>> +static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
+>> +{
+>> +	return 1;
+>> +}
+>> +
+>>  #endif
+>>  
+>>  /* IPVS core functions
+>> @@ -1650,6 +1661,7 @@ static inline int ip_vs_confirm_conntrack(struct sk_buff *skb)
+>>  static inline void ip_vs_conn_drop_conntrack(struct ip_vs_conn *cp)
+>>  {
+>>  }
+>> +
+>
+>	Remove this irrelevant hunk.
+>
+>>  #endif /* CONFIG_IP_VS_NFCT */
+>>  
+>>  /* Using old conntrack that can not be redirected to another real server? */
+>> diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+>> index c25097092a06..cbea5a68afb5 100644
+>> --- a/net/netfilter/ipvs/ip_vs_ctl.c
+>> +++ b/net/netfilter/ipvs/ip_vs_ctl.c
+>> @@ -2017,6 +2017,12 @@ static struct ctl_table vs_vars[] = {
+>>  		.mode		= 0644,
+>>  		.proc_handler	= proc_dointvec,
+>>  	},
+>> +	{
+>> +		.procname	= "run_estimation",
+>> +		.maxlen		= sizeof(int),
+>> +		.mode		= 0644,
+>> +		.proc_handler	= proc_dointvec,
+>> +	},
+>>  #ifdef CONFIG_IP_VS_DEBUG
+>>  	{
+>>  		.procname	= "debug_level",
+>> @@ -4090,6 +4096,8 @@ static int __net_init ip_vs_control_net_init_sysctl(struct netns_ipvs *ipvs)
+>>  	tbl[idx++].data = &ipvs->sysctl_conn_reuse_mode;
+>>  	tbl[idx++].data = &ipvs->sysctl_schedule_icmp;
+>>  	tbl[idx++].data = &ipvs->sysctl_ignore_tunneled;
+>> +	ipvs->sysctl_run_estimation = 1;
+>> +	tbl[idx++].data = &ipvs->sysctl_run_estimation;
+>>  
+>>  	ipvs->sysctl_hdr = register_net_sysctl(net, "net/ipv4/vs", tbl);
+>>  	if (ipvs->sysctl_hdr == NULL) {
+>> diff --git a/net/netfilter/ipvs/ip_vs_est.c b/net/netfilter/ipvs/ip_vs_est.c
+>> index 05b8112ffb37..9a1a7af6a186 100644
+>> --- a/net/netfilter/ipvs/ip_vs_est.c
+>> +++ b/net/netfilter/ipvs/ip_vs_est.c
+>> @@ -100,6 +100,9 @@ static void estimation_timer(struct timer_list *t)
+>>  	u64 rate;
+>>  	struct netns_ipvs *ipvs = from_timer(ipvs, t, est_timer);
+>>  
+>> +	if (!sysctl_run_estimation(ipvs))
+>> +		goto skip;
+>> +
+>>  	spin_lock(&ipvs->est_lock);
+>>  	list_for_each_entry(e, &ipvs->est_list, list) {
+>>  		s = container_of(e, struct ip_vs_stats, est);
+>> @@ -131,6 +134,8 @@ static void estimation_timer(struct timer_list *t)
+>>  		spin_unlock(&s->lock);
+>>  	}
+>>  	spin_unlock(&ipvs->est_lock);
+>> +
+>> +skip:
+>>  	mod_timer(&ipvs->est_timer, jiffies + 2*HZ);
+>>  }
+>>  
+>> -- 
+>> 2.19.1.3.ge56e4f7
+>
+>Regards
+>
+>--
+>Julian Anastasov <ja@ssi.bg>
