@@ -2,93 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A9563F383D
-	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 05:08:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A3DC3F3857
+	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 05:45:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232094AbhHUDJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 23:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37876 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbhHUDJC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 23:09:02 -0400
-Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F658C061575;
-        Fri, 20 Aug 2021 20:08:24 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Gs3Nf130pz9sW8;
-        Sat, 21 Aug 2021 13:08:17 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1629515300;
-        bh=mEhJjhXS+qMda3U7FwpADzeee1VExK11iy0O7hbSvZo=;
-        h=Date:From:To:Cc:Subject:From;
-        b=vBzPXamOxihY1Fl3SbNh+ZYp2HaegQrh5PMQadAFw71TEBrgewwRy5RpLCASl8gok
-         +kdWsbwBJB67mng9XACTmNzyYPqlROAyGrIrwHD/Y2Dw+IBj4CnL0tdkdpoyaXwzou
-         Adl28mM6dfF02E2eWpwWBWW0gKDEGPlDpiooqYBb+EKcDEMdwSijz8TzLTgBABNCBm
-         SdgTvvcCktjSa9ZShvGn4tIUFDF/2piS41bVeaP/y0IwTMVi9u1YXMqnaKy4YcjJUv
-         3yIh/L/4fSmZ9UkpEtDf2bClc6zuV3ts3OFKHzy95O98Xe0CaoMGB5IoH9F69FK+LS
-         sxeLDZbSoqTAw==
-Date:   Sat, 21 Aug 2021 13:08:15 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Dmytro Linkin <dlinkin@nvidia.com>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Sven Eckelmann <sven@narfation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Signed-off-by missing for commits in the net-next tree
-Message-ID: <20210821130815.22b5cfc3@canb.auug.org.au>
+        id S233002AbhHUDpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 23:45:02 -0400
+Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:55370 "EHLO
+        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S229610AbhHUDpA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 23:45:00 -0400
+Received: from cwcc.thunk.org (pool-72-74-133-215.bstnma.fios.verizon.net [72.74.133.215])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 17L3hoN2017864
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 20 Aug 2021 23:43:51 -0400
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id 6D62315C3DBB; Fri, 20 Aug 2021 23:43:50 -0400 (EDT)
+Date:   Fri, 20 Aug 2021 23:43:50 -0400
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     syzbot <syzbot+13146364637c7363a7de@syzkaller.appspotmail.com>
+Cc:     a@unstable.cc, adilger.kernel@dilger.ca, arnd@arndb.de,
+        b.a.t.m.a.n@lists.open-mesh.org, christian@brauner.io,
+        davem@davemloft.net, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
+        netdev@vger.kernel.org, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] KASAN: slab-out-of-bounds Write in
+ ext4_write_inline_data_end
+Message-ID: <YSB2dsveNTr9G3Mq@mit.edu>
+References: <000000000000e5080305c9e51453@google.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/CA.HyUEqCjRIq9lItb9qTcl";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000e5080305c9e51453@google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/CA.HyUEqCjRIq9lItb9qTcl
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Thu, Aug 19, 2021 at 01:10:18AM -0700, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    614cb2751d31 Merge tag 'trace-v5.14-rc6' of git://git.kern..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=130112c5300000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=f61012d0b1cd846f
+> dashboard link: https://syzkaller.appspot.com/bug?extid=13146364637c7363a7de
+> compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.1
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=104d7cc5300000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1333ce0e300000
+> 
+> The issue was bisected to:
+> 
+> commit a154d5d83d21af6b9ee32adc5dbcea5ac1fb534c
+> Author: Arnd Bergmann <arnd@arndb.de>
+> Date:   Mon Mar 4 20:38:03 2019 +0000
+> 
+>     net: ignore sysctl_devconf_inherit_init_net without SYSCTL
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13f970b6300000
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=100570b6300000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=17f970b6300000
 
-Hi all,
+In case it wasn't obvious, this is a bogus bisection.  It's a bug
+ext4's inline_data support where there is a race between writing to an
+inline_data file against setting extended attributes on that same
+inline_data file.
 
-Commits
+Fix is coming up....
 
-  3202ea65f85c ("net/mlx5: E-switch, Add QoS tracepoints")
-  0fe132eac38c ("net/mlx5: E-switch, Allow to add vports to rate groups")
-  f47e04eb96e0 ("net/mlx5: E-switch, Allow setting share/max tx rate limits=
- of rate groups")
-  1ae258f8b343 ("net/mlx5: E-switch, Introduce rate limiting groups API")
-  ad34f02fe2c9 ("net/mlx5: E-switch, Enable devlink port tx_{share|max} rat=
-e control")
-  2d116e3e7e49 ("net/mlx5: E-switch, Move QoS related code to dedicated fil=
-e")
-  71d41c09f1fa ("batman-adv: Move IRC channel to hackint.org")
-
-are missing a Signed-off-by from their committers.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/CA.HyUEqCjRIq9lItb9qTcl
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmEgbh8ACgkQAVBC80lX
-0GwqWgf8D1+t0P9Z9FAdzzF53G4cG26V8P323a+0hs8SVQvUWIZN+1tZ0siaVeE4
-pcSnIZ6Qz9UN7EKqF/4RHRyPPHyMuPXraVc4v9rXTpY+LlyxSe3slJfJLMcBuU7Z
-TG/l7m3bffS28r+5nLGzOHxMbrd9++xVFTp8cq0WumnO61FrzvrYS3giW8WncpvD
-8QrDBrhIpLW/xEF33G7RwYf3YC+aUtrcvrAJyMuy5bVCJg1OA1jKmH7AIzbHPWv7
-bXpqkwXJI9OOcFhPTP33xwF8c8diSkYQPkljCksb+ayHC7nWLnC06vtmWcfvIWRm
-m+eB1lXHk77CYxxO/RPLslLd6pydqA==
-=MnGt
------END PGP SIGNATURE-----
-
---Sig_/CA.HyUEqCjRIq9lItb9qTcl--
+					- Ted
