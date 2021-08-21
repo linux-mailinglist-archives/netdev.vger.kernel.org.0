@@ -2,150 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 774923F38D0
-	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 07:20:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 254133F38E2
+	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 07:43:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230333AbhHUFU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Aug 2021 01:20:57 -0400
-Received: from smtp-fw-80006.amazon.com ([99.78.197.217]:46156 "EHLO
-        smtp-fw-80006.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbhHUFU4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Aug 2021 01:20:56 -0400
+        id S231944AbhHUFnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Aug 2021 01:43:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231651AbhHUFnt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Aug 2021 01:43:49 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDF3C061760
+        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 22:43:11 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id hv22-20020a17090ae416b0290178c579e424so8690172pjb.3
+        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 22:43:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1629523218; x=1661059218;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=hRjIA2N7XqbYT9/bYzG7LF9KmVpB8TKkOtmPXU0WOg8=;
-  b=p7hKn6+vME6R58Vpi6gvRJdFXt88a0GhmCTZ/aLKoaa5vqgIbUq2nOy2
-   h8xvb7aHqNxzUTKKFboVGADZJYz1kCMB8/INiAQk+NzIa+3rUmt4AMzxu
-   n6cd3H6wnFLQSeYiyJXd/mCKdo4TkWi/nb5VA0t4nahpspP81hd/WrDRj
-   g=;
-X-IronPort-AV: E=Sophos;i="5.84,338,1620691200"; 
-   d="scan'208";a="20872219"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-1d-25e59222.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 21 Aug 2021 05:20:16 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1d-25e59222.us-east-1.amazon.com (Postfix) with ESMTPS id 20D13A2437;
-        Sat, 21 Aug 2021 05:20:11 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.23; Sat, 21 Aug 2021 05:20:11 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.161.229) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.23; Sat, 21 Aug 2021 05:20:06 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <jiang.wang@bytedance.com>
-CC:     <andrii@kernel.org>, <ast@kernel.org>, <chaiwen.cc@bytedance.com>,
-        <christian.brauner@ubuntu.com>, <cong.wang@bytedance.com>,
-        <davem@davemloft.net>, <digetx@gmail.com>,
-        <duanxiongchun@bytedance.com>, <kuba@kernel.org>,
-        <kuniyu@amazon.co.jp>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <rao.shoaib@oracle.com>,
-        <viro@zeniv.linux.org.uk>, <xieyongji@bytedance.com>,
-        <bpf@vger.kernel.org>
-Subject: [PATCH v1] af_unix: fix NULL pointer bug in unix_shutdown
-Date:   Sat, 21 Aug 2021 14:20:02 +0900
-Message-ID: <20210821052002.37230-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210821035045.373991-1-jiang.wang@bytedance.com>
-References: <20210821035045.373991-1-jiang.wang@bytedance.com>
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9sE8/Gezsq3ktVT1yBNWUnjMOxfVYbA50Rdyo+0rKjg=;
+        b=i+WrkoXjNKg4kf7Ku0gUlQx7eIoc5b0b0YLG92TKYL9BVo0rPqj+uzdLB+MjPabU3J
+         HjWDWfEsdrVtR+NH2G9+XReIX26V18hHaRdIgzgV8JpSXS7H5HUc9NyL4mjtoZdJexDM
+         PZIXoQghEQmI+ZcvoTlg3lVMhlUTAKbTqJLVM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9sE8/Gezsq3ktVT1yBNWUnjMOxfVYbA50Rdyo+0rKjg=;
+        b=GT+yhNzP+U/qkp2KxsXeAbYIPh0T/coxyNWfZ2aUhDadLuz8CzrY6SvvlVkdPq9dPi
+         xXvP6vw08xKLRNDuM7SczaLbBwByD3QOHmnci5+o2j/kRFCi7enmiv257ajqAU733357
+         61I5+w6OyE8s256/jRU0vLglTJpbWUVXiVhBFkrBdfxtFPtmNQWoyGvV4Nrm+LEb4KSa
+         Hx1sVSV2SIerinK60eukAkfNzWb3SlUbF9rMaCxF0RSVQAgfTuN3NAdkihrC4eW+shCX
+         wsgkzuc+7WZZy1q8VcVuSaIVLmwuDrlHomr7C7Rb+w/hzUlMkfw7qOwId720gg8PRNqj
+         FLUg==
+X-Gm-Message-State: AOAM532xjJsJZM4AhLuh6Z5CdHhejq/8seaSZw9J90g+J5Y+wP5sgELC
+        kGTSQuOCo75f0b9LImXCvnZD0A==
+X-Google-Smtp-Source: ABdhPJzgQUYdkk9J8dqAROFTOnmvvqyCpq+uP6WafjZ2SeuiM0a5Vtnmi8qv2wGXx2oleUl8CurB6g==
+X-Received: by 2002:a17:902:bb92:b0:12d:ad99:7fb6 with SMTP id m18-20020a170902bb9200b0012dad997fb6mr19095378pls.49.1629524590503;
+        Fri, 20 Aug 2021 22:43:10 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id n11sm7570761pjf.17.2021.08.20.22.43.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Aug 2021 22:43:09 -0700 (PDT)
+Date:   Fri, 20 Aug 2021 22:43:08 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Joe Perches <joe@perches.com>, LKML <linux-kernel@vger.kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        LukasBulwahn <lukas.bulwahn@gmail.com>,
+        linux-doc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, linux-hardening@vger.kernel.org,
+        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
+        linux-csky@vger.kernel.org
+Subject: Re: What is the oldest perl version being used with the kernel ?
+ update oldest supported to 5.14 ?
+Message-ID: <202108201856.41AB391@keescook>
+References: <37ec9a36a5f7c71a8e23ab45fd3b7f20efd5da24.camel@perches.com>
+ <YR/zrjiCwnzMMcmA@casper.infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.229]
-X-ClientProxiedBy: EX13D29UWA004.ant.amazon.com (10.43.160.33) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YR/zrjiCwnzMMcmA@casper.infradead.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Jiang Wang <jiang.wang@bytedance.com>
-Date:   Sat, 21 Aug 2021 03:50:44 +0000
-> Commit 94531cfcbe79 ("af_unix: Add unix_stream_proto for sockmap") 
-> introduced a bug for af_unix SEQPACKET type. In unix_shutdown, the 
-> unhash function will call prot->unhash(), which is NULL for SEQPACKET. 
-> And kernel will panic. On ARM32, it will show following messages: (it 
-> likely affects x86 too).
+On Fri, Aug 20, 2021 at 07:25:50PM +0100, Matthew Wilcox wrote:
+> On Fri, Aug 20, 2021 at 10:27:59AM -0700, Joe Perches wrote:
+> > Perl 5.8 is nearly 20 years old now.
+> > 
+> > https://en.wikipedia.org/wiki/Perl_5_version_history
+> > 
+> > checkpatch uses regexes that are incompatible with perl versions
+> > earlier than 5.10, but these uses are currently runtime checked
+> > and skipped if the perl version is too old.  This runtime checking
+> > skips several useful tests.
+> > 
+> > There is also some desire for tools like kernel-doc, checkpatch and
+> > get_maintainer to use a common library of regexes and functions:
+> > https://lore.kernel.org/lkml/YR2lexDd9N0sWxIW@casper.infradead.org/
+> > 
+> > It'd be useful to set the minimum perl version to something more modern.
+> > 
+> > I believe perl 5.14, now only a decade old, is a reasonable target.
+> > 
+> > Any objections or suggestions for a newer minimum version?
 > 
-> Fix the bug by checking the sk->type first.
+> Not an objection per se, but some data points.
 > 
-> Kernel log:
-> <--- cut here ---
->  Unable to handle kernel NULL pointer dereference at virtual address
-> 00000000
->  pgd = 2fba1ffb
->  *pgd=00000000
->  Internal error: Oops: 80000005 [#1] PREEMPT SMP THUMB2
->  Modules linked in:
->  CPU: 1 PID: 1999 Comm: falkon Tainted: G        W
-> 5.14.0-rc5-01175-g94531cfcbe79-dirty #9240
->  Hardware name: NVIDIA Tegra SoC (Flattened Device Tree)
->  PC is at 0x0
->  LR is at unix_shutdown+0x81/0x1a8
->  pc : [<00000000>]    lr : [<c08f3311>]    psr: 600f0013
->  sp : e45aff70  ip : e463a3c0  fp : beb54f04
->  r10: 00000125  r9 : e45ae000  r8 : c4a56664
->  r7 : 00000001  r6 : c4a56464  r5 : 00000001  r4 : c4a56400
->  r3 : 00000000  r2 : c5a6b180  r1 : 00000000  r0 : c4a56400
->  Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
->  Control: 50c5387d  Table: 05aa804a  DAC: 00000051
->  Register r0 information: slab PING start c4a56400 pointer offset 0
->  Register r1 information: NULL pointer
->  Register r2 information: slab task_struct start c5a6b180 pointer offset 0
->  Register r3 information: NULL pointer
->  Register r4 information: slab PING start c4a56400 pointer offset 0
->  Register r5 information: non-paged memory
->  Register r6 information: slab PING start c4a56400 pointer offset 100
->  Register r7 information: non-paged memory
->  Register r8 information: slab PING start c4a56400 pointer offset 612
->  Register r9 information: non-slab/vmalloc memory
->  Register r10 information: non-paged memory
->  Register r11 information: non-paged memory
->  Register r12 information: slab filp start e463a3c0 pointer offset 0
->  Process falkon (pid: 1999, stack limit = 0x9ec48895)
->  Stack: (0xe45aff70 to 0xe45b0000)
->  ff60:                                     e45ae000 c5f26a00 00000000 00000125
->  ff80: c0100264 c07f7fa3 beb54f04 fffffff7 00000001 e6f3fc0e b5e5e9ec beb54ec4
->  ffa0: b5da0ccc c010024b b5e5e9ec beb54ec4 0000000f 00000000 00000000 beb54ebc
->  ffc0: b5e5e9ec beb54ec4 b5da0ccc 00000125 beb54f58 00785238 beb5529c beb54f04
->  ffe0: b5da1e24 beb54eac b301385c b62b6ee8 600f0030 0000000f 00000000 00000000
->  [<c08f3311>] (unix_shutdown) from [<c07f7fa3>] (__sys_shutdown+0x2f/0x50)
->  [<c07f7fa3>] (__sys_shutdown) from [<c010024b>]
-> (__sys_trace_return+0x1/0x16)
->  Exception stack(0xe45affa8 to 0xe45afff0)
+> Oracle Linux 5 (released 2007, still under support) has perl 5.8.8
+> Oracle Linux 6 (released 2011) has perl 5.10.1
+> Oracle Linux 7 (released 2014) has perl 5.16.3
+> Oracle Linux 8 (released 2019) has perl 5.26.3
 > 
-> Signed-off-by: Jiang Wang <jiang.wang@bytedance.com>
-> Reported-by: Dmitry Osipenko <digetx@gmail.com>
-> Tested-by: Dmitry Osipenko <digetx@gmail.com>
-
-Fixes: 94531cfcbe79 ("af_unix: Add unix_stream_proto for sockmap")
-
-And the commit is not in net-next yet, so is this patch for bpf-next?
-
-
-> ---
->  net/unix/af_unix.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> I don't know that we need to be able to build on a distro from 2007
+> or even from 2011.  I think it's reasonable to require updating to a
+> 2014 distro in order to build a 2021 kernel.
 > 
-> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-> index 443c49081636..6965bc578a80 100644
-> --- a/net/unix/af_unix.c
-> +++ b/net/unix/af_unix.c
-> @@ -2847,7 +2847,8 @@ static int unix_shutdown(struct socket *sock, int mode)
->  		int peer_mode = 0;
->  		const struct proto *prot = READ_ONCE(other->sk_prot);
->  
-> -		prot->unhash(other);
-> +		if (sk->sk_type == SOCK_STREAM)
+> For comparison, we currently require gcc-4.9 to build the kernel, and
+> 4.9.0 was released in 2014.  So perl-5.16 wouldn't be an unreasonable
+> requirement, I believe.
 
-		if (prot->unhash)
-is more straight?
+Ubuntu name/version mapping: https://wiki.ubuntu.com/
+Ubuntu Perl versions: https://launchpad.net/ubuntu/+source/perl
 
+The oldest publicly supported Ubuntu (18.04 Bionic) uses Perl 5.26.
 
-> +			prot->unhash(other);
->  		if (mode&RCV_SHUTDOWN)
->  			peer_mode |= SEND_SHUTDOWN;
->  		if (mode&SEND_SHUTDOWN)
-> -- 
-> 2.20.1
+-- 
+Kees Cook
