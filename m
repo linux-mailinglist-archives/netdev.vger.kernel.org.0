@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 248353F3CAE
+	by mail.lfdr.de (Postfix) with ESMTP id E4D283F3CB0
 	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 01:08:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231331AbhHUXGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Aug 2021 19:06:24 -0400
+        id S231481AbhHUXG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Aug 2021 19:06:29 -0400
 Received: from mail-eopbgr140053.outbound.protection.outlook.com ([40.107.14.53]:31556
         "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230343AbhHUXGW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Aug 2021 19:06:22 -0400
+        id S231314AbhHUXGY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Aug 2021 19:06:24 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WhEQ0ACncKqgBUces2vD/fySZuo2xxIwYSsLOMwURJbiw+HzA7G30XmEjBCCYpRVUYFJff7tN9PII5Px64eRn/5oVZnqD96hh35pFZ2Qzx6aRYYAPLe1AsDTztqqDThct0P41d1nmal9veMsZVPBt5RxUcBHQfHpmg0hUqbS/T3GSzBLj3yu1WAfHIJoVmd+LYBg0pGQ+jOKgT9tW5yL2CDqI6ZYJxILz3F1UoYdB28+b0HMQU8i1Rbro3IOjvHqBf0GG848vocpsShUzucmnwQifggNVrjZocwSodtHLDRgSNmQP46Kqy4fy1Axi1i/TAk4ynEtrjrBDFhYtZToZA==
+ b=VJZNMTZoZgqPmhmAmC/M9PT5pGN95HDaJtqOK1riEM5BGQwNlFO6rJKiRb6J3jX82K1+YNjdc1YYKnOIOYLBDLB1FxrvfREfYDJ3xOazXGvZwK08+kd7XO7pDq2+UE8eCSTYkpawRxhfdNMQjGTuQCtnIic2oHuZDq5M1SwqtHBfmyCEqhHNU++eXK4Yv8P/AxZGNilrTIqxCkLrTuTr5w6XzBqkLV02ixlddKl+GtTMQjyBdxizItZmSt9J8eo76JiTxp0PvUVkxShMeBxu/unMxHwxU33AO/6KWqgl+c0ihlc61Vuj0/hj4cDJx6xrPxQ9cU9JmHDXnfGjgM+4AA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MX0xfVFSGIOJ5G+oqOXY25v1h+GK18vYoD1lvNdKD2M=;
- b=SLyu3DDOzEYlNuZ1IP4Yzl7/Jxwc5LXsEO/51FJQI1eEif+2l1m5WnjTriTebQHx00aZHBqMw7BLEvEgzPAz93Is4j8YZ9NiC+J1rb2ou9ZcBLDHk4QtWSHsXiPJvGBw4JYebsMiRjhbeiirq8ZjLx+/rwVE7RNDK5Ff9Ye1JHK0YIy5NG5RbgQ++P3i90BHf7plIlE035aU3Gtm7TQ++V+L4VqinTE0xacZAOT2WbzWc0BwosRoQhv4zN8sXV4oec/n5lz4uO6mJn26fzghlno4PP6wOqHA9iLE/bxnv8v8aA9gwYm8q+Rq6oLF8NmQMLZh0sUDFVcdyt1HwmC5PA==
+ bh=b6PTMTxvGQQuOiHFRbqbjdinXJtGTBS3VqJ1laN9eTQ=;
+ b=IgwgroGRyDZERwdwoVaAm7hU2uCJd5JvWo/qknPvDuN7UAv3ehd7s0htMsIHuShCVVL04PePvxYxlA4jG6Ci+kMSLruMmOpPxVWPvt3KMhfz4as7g3uWnYx+Td+wQmrJqJtr0CAMdzWoR6PipMqmMRTe+TmAltvB95d/pg0IWghSeMZOrENoetN/qX0gCodu75Apnxtqje5DBuOco6Pfyu4xKv9mllvdcDiLFQ+Jp+yC0XG5o1goynHLBSXwlYbhMsSzk0kIf9bUZLCqY2imlTf8zrLk4+3CD4DiLfL7gAhlGcJLaVYe0/P0ZDCL1S+VnrnasQ/wUqx9/z0cSDQoMA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MX0xfVFSGIOJ5G+oqOXY25v1h+GK18vYoD1lvNdKD2M=;
- b=O7I/aNlF+trT+92xZAcJROYm33quMrV43fwJCfH+WXLrYbFQxBK5SvWwV/MJrZOydO5lYUKIq1TMipdT7EY/rwNUUA3IsHNvlGfn9T5h5N0QMe8N4NfiHmxkbiVKiTUDswOljX/FPQmRp4GZxHOGq1dhrYOM2CLysbsvNvGhW54=
+ bh=b6PTMTxvGQQuOiHFRbqbjdinXJtGTBS3VqJ1laN9eTQ=;
+ b=j+HlThJLvttKg01Br/K1/QL9ncWwUILZozBzleye4Y8xSIG/MquRyG8IZz39gYAq61/+YQ914dJA2HI2L/9+zdj9uG0UwluofL1CjFOcgIxXE/zxhhPNP98dotvpgxjbDnLwD+Llqq++1UTAWfitQex5QSUkwefGyl129TZtcyY=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
@@ -39,9 +39,9 @@ Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  23:05:39 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
-Subject: [PATCH net-next 3/4] docs: net: dsa: remove references to struct dsa_device_ops::filter
-Date:   Sun, 22 Aug 2021 02:04:40 +0300
-Message-Id: <20210821230441.1371168-4-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 4/4] docs: net: dsa: document the new methods for bridge TX forwarding offload
+Date:   Sun, 22 Aug 2021 02:04:41 +0300
+Message-Id: <20210821230441.1371168-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210821230441.1371168-1-vladimir.oltean@nxp.com>
 References: <20210821230441.1371168-1-vladimir.oltean@nxp.com>
@@ -52,92 +52,89 @@ X-ClientProxiedBy: AM4PR0501CA0047.eurprd05.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.144.60) by AM4PR0501CA0047.eurprd05.prod.outlook.com (2603:10a6:200:68::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Sat, 21 Aug 2021 23:05:38 +0000
+Received: from localhost.localdomain (188.25.144.60) by AM4PR0501CA0047.eurprd05.prod.outlook.com (2603:10a6:200:68::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Sat, 21 Aug 2021 23:05:39 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f4f770fa-fef4-4449-3776-08d964f8313e
+X-MS-Office365-Filtering-Correlation-Id: a0679cca-03f1-432e-8d3e-08d964f83189
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5133:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB51338DBF5BB3E6F3EEDBF39DE0C29@VI1PR04MB5133.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3044;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB513335C91D36A08FC38FDBF0E0C29@VI1PR04MB5133.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NBlVbBNBnyjrBaiwyksxbFnEdB3Ry54wAVPaSIB2Y/VLAew3m2nIZJUFbIXacS5Pxos0kRDAThrI2ygD8+d9u4qR8KrcnqiBTySnrR4dOty2Zb5CZg2yxmtWHtn0FzaBwr0j7+jEGgeRgxViAD8cx9WHZONPkP5LeQRMKOYPZiht06DgR+ux6++mpRqoif+iOMgrP4LyMVosJKehmxUMNZ5/5aXZAhMXN1RY8OV3q1bjRNBV0hrCEOiJQgEHba8LMoKun2P7cWQvbOMhZd9ca/TAIQURtGczluCIj8bzovrq0ANpwF8sG0KTAGSfwhAtPtcBiTv6qYLgq1naj06PfAPF8UxY71lJ3+7xQijRWEVH6fY9h4TtgNTZ8wmBpR3ZTju7pSxygcT02EKFlc6+G09S0PehueSXcFODgshmVogA1nKq9q4Yy6v7+49oHXBkuefBijCkQavAesQmNsOFeKXw6eihYJYhWD04fxnuvY/mB5ypXwBrGJoouier6gKeYexePuac9c9sMA4zZkPaMX47STofz1OxndDMVlioX5gRlbPknHCCWpaOaXYGcMBB5uZ6ysd6ZpFezoENpE19h2r2+nsNNah5dNKqfqGjBGl5jQfPuy5Z0DFCoMXMv7ZuArVwkxs1F79IkGnDGZxSFzIzvCC5ZrWhZ9xO/Dy10UfD9PSP4q9jumro6mPP8ZK3rZV12R6VFNHdLwuTLAyd3Q==
+X-Microsoft-Antispam-Message-Info: WOUMulVu0LWjIhzJhKqqETsD1GTKFFy+yPDUPnLIax+/2LSwDX1T+8MBSFcrL1mZRYGs/SEUJ320DD0hDdmkDlZH9mzBSSvsAn0D9pV10wJnEnopVbCFd5xxpig56u0z0ELYuddBvp80vFdhwwzbPW4prtVwivQDrYP3We00+6ODRBuum/QpXElwmZFxD+ciCeu6utL2biZcsYkoLf1XXA34oQ9BFEBCtRzhRWBkgye/BnAmR+e57Z43u+82seH2Pin7no1FjmQg54buMJ5rhwWxQPujnFHinOb5wAYc5uJ8coHlt0380BSgW4iIT+vzn1DK5nRIlnMqZsj71MJNnYWcHn8IoficgZiAXeNw0n7pAAW4PJJu0+d8D8f9nTr4Uq8+vxlSM1hpdKItIT3oKteaZ20t91pjAyG4jPpbKiMO/LE6b1r0w7iw80EvS5a5hBrXonvTjXg+WFRgaPp49OYzA7Znf/V64b+l9wqACsfAOQnXquQucZCoq7vRRmxsxNcqkWXsBFTJXfrQqWVX4jPzNmXQyRpWY/ScJdDu/lsJahxGsbPpjMRJAlH09VALJXA2a8cs7/s/efkb9o+NJG41vDig3nMC2XmqBRMQInER/6jpY7njCOmRSYzpMUae3TYcv2x//bSZeQfqLanfyZlkH31PnF6Djze3wHIfVbvsNwr34YDJatSqB/FyfRRObADVoJ2OzE4JyJhlxYH0ew==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(376002)(366004)(39850400004)(346002)(396003)(66556008)(66476007)(86362001)(66946007)(2616005)(956004)(44832011)(38100700002)(38350700002)(316002)(6486002)(1076003)(6512007)(478600001)(83380400001)(36756003)(6666004)(6506007)(52116002)(6916009)(26005)(186003)(8676002)(8936002)(2906002)(5660300002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7XqZOGHACH4X+tpqKppMJDSTG7f7s8F+jiCb0dtYr52vOAZoVGRIne62jCXc?=
- =?us-ascii?Q?IQrS0yJe39zILi28T7eOHMs958/pB44HuAhiiL2hdmg3s5NIfQMNR/Ow+F8g?=
- =?us-ascii?Q?wx5SMqnRCwI4iLJqDtNNLL7H6+9gU9SMDJLMCuFz6k1cAm/eX10WWcuz1uZo?=
- =?us-ascii?Q?O8qM2hJigzwl09KYVIy3Gq+mXLAPnuZRmy+ReZd/MepiQMMeDERPcfG4aq3q?=
- =?us-ascii?Q?gjL7qSSp66uBlVojBI2I7wfIu4KNcahCNUe43B2gcWz69x96AgfsHTg9PkpG?=
- =?us-ascii?Q?2APTB4tz5peYviqWU1a0SzFyZuAN1gyMG4ErcbZxUjrL3/XEo6k8VoAwH/aG?=
- =?us-ascii?Q?YRZpILma4WKIQMc1mcCMvgIbe2FDO11fM0+XSXdRlzOecI+YySPsIeSdBOEf?=
- =?us-ascii?Q?RfwM7CXpyMaV806fQ+/2t9d7TwLrD68PI+P54HxmDeD46bYU1900lX7H3Lvp?=
- =?us-ascii?Q?1of7dTKL7t0rs9QeVDBT6CjVq3MPSfx8bLx0FtfavjGo4DpNt1D72xbKfzWz?=
- =?us-ascii?Q?JZ/pN8aGrgAlrpUWgVKtXwQTBHC9cLYCO6Xb4hjtwM6qby+rtLiHAbJTPA2q?=
- =?us-ascii?Q?UG8ponRQyJU0ET2kQN4i6j9Orm+GH3aBPcZTJWsWotwh8ykqdglCv1LH267I?=
- =?us-ascii?Q?L7kZxgyb5WgnKZONB2Dn6mWb3HPHxsgKpXLGRmyG1MFAQtHZuaQ57FiQBNcZ?=
- =?us-ascii?Q?y6vYMgnk8ackqChVrSDqjTX0N7kW4U3R+CQD9JizRQYZ5PwTAhT9Rtysbdig?=
- =?us-ascii?Q?nLtV3UMGzeDGPtbcfp8vICiRF1LJz/jHysn9G8c5i5GTqzDC0mEUgW+NnnaS?=
- =?us-ascii?Q?1Saoxt1XriHI+IZUHNDzFAKKb6RI0MxpdY3mVnbO8OZULm0J+XleEDFkKL9X?=
- =?us-ascii?Q?TjI4GqC4cEmuaOdSFke3sNvLpG5jihX5QMi+AEZPuSKwgHI5TU1uwQCwLkzC?=
- =?us-ascii?Q?YIzB4Rvh/mUEfZ5cR4WO1+zdkd+hGbnogTCLLW6WOK8sOolomQsQ9A6YauS0?=
- =?us-ascii?Q?pd1o22J2O8ZNgwVUhdcH+mBR/Gnbt/4VGjyuIEafFvWxmKSihh6gCu2+o1F6?=
- =?us-ascii?Q?gAXNVr9VxQcygbo+gwpsSB8OuKK5ImB8CizOhmxBo6MKgqF+OBJt/EgGrBui?=
- =?us-ascii?Q?DncMBRvOb4oF4mHAzBMiaJqiIuAQXoD5mDYxD44cARfBKx13xDmZmZRNL3w0?=
- =?us-ascii?Q?l8ykIM3xZ51O5GsJD/4zM0Vtq69z2x0cBbXBFNLH8GDv1CAYtJdInqdu3bKJ?=
- =?us-ascii?Q?7sHacFCjLewcOhiJL1KYw/g5zs5QTdj9sKcbQO6I6LoJrO236GyXPKM8yDN2?=
- =?us-ascii?Q?dyr6VW/rWPkzAAfl9D0z41p2?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ouhOAUl92JVR1vYA3usce6bzLo5OenEuCDcT3tkqQQYVe3kDJIWHSxIbqLIf?=
+ =?us-ascii?Q?ARVIFdwIZWc/SinHaLaATzUgT+osyI86pCW8qNSM9lXEn+RC5YMS2rIbPnzk?=
+ =?us-ascii?Q?DBYHMcpHY/uNsI0vbhmzPXc+LWuqmcM7NjX5HN+9l0jLFE0Ia0uKHShQBnl5?=
+ =?us-ascii?Q?LqUGBULpWra5/8F9b9TE8dvdfDTPJryXIvhWgsNO6GYs4oSqlmBDulxawQYn?=
+ =?us-ascii?Q?/mtXj88++bKXudaCS00/aJkwbX9dqFqbfgushIKvvV1y8Nbjv1s10mucDGeN?=
+ =?us-ascii?Q?HueaKNNXaYiaxi6mCkrBOK+R1G6chRUwieQRahG9TSJOpnfhHv5YYFgtUtsk?=
+ =?us-ascii?Q?i+N2uJIgCqSObM3YygjrUwSx6ut6Bgqn8mzFTO+Nsr0oOcN1GQza4A4rY3hO?=
+ =?us-ascii?Q?ZNeR1xh67jyWJfqDXhub6bUtqwSXb0UE0VCDyFHJEd0YRzhUESgd8JBq8NSg?=
+ =?us-ascii?Q?tuQdkS6vOV8GII202YtSAAXeV3g0nQGpQTtDNEnCHx7NfM7WdV08c0pvBve6?=
+ =?us-ascii?Q?lF/d5gG+L1gteV/CErwnnilQ84b5rWKM6zoRCdFvKKYmONld7zZkAC/EpdPc?=
+ =?us-ascii?Q?LZCcvEnws12iwNBCOkXOi8toPMdb3vZKENqz+uN3DRDc4HM1FOzwmpLJAwqo?=
+ =?us-ascii?Q?jWrbym4lVZtJo3MsdRh1yBuPRiLBH6NuPbHLF8nP6NvSGrWv79FUmjvZfaEr?=
+ =?us-ascii?Q?laXMhRiDPfL2zhPshOjl4LyTh6BoAtrH/rkg6C1UV/mF9m97S2glDBE9qcPK?=
+ =?us-ascii?Q?IEHr1aVaX3BDxqRyMT3P5u3y1Wrr83GsvpTnfIDZU4nFXvlGmEDY1WNiycNR?=
+ =?us-ascii?Q?TM7DEjCTtuTABR73Yh1hsrwKUZMON/mN3SKnxpxnt9JU0Z8ewuLC4+AoORYm?=
+ =?us-ascii?Q?Cu8ptaMkJo4Ox0udHvqQ5DyRuOjfF1zXZxtGZFXe+xSLHptFUYhSkoECjpIH?=
+ =?us-ascii?Q?DThT6eWOQ7CKglBdz5cmxNx2V72Y7oS5PvDAX3rCRdBhjTZ4RimsuJWayjAN?=
+ =?us-ascii?Q?wV3TR8aYvEIEWjmAG5KMo2w20A/0TfdbdIgDt7yF0OrvKwG/bQXY3De0KeIp?=
+ =?us-ascii?Q?OP2wHenUTBrxY4emucjEirrnckErhLhFoglmhqXBQ+ZE/7xtCPIJ1ykEH+YQ?=
+ =?us-ascii?Q?f96QFiw9j/cIJjKp6f4rH+898g2zsoAJTMQdwNJ2DO81ag+ZoHjYWXsOjKd6?=
+ =?us-ascii?Q?zQNVjy66ejAqwNxDCLSr0aqHhqZayVQ3l1DwvC2BQWKu9xiKfZZG4nr8fTHt?=
+ =?us-ascii?Q?QHdQIYBLJmt2i2wdvF3F+tMdGdrZaNuzn/JV0+0y+8HjL9W+EwWAMu7bh1FP?=
+ =?us-ascii?Q?T8ALZsRkbvgdJD+SL1g2CMNp?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f4f770fa-fef4-4449-3776-08d964f8313e
+X-MS-Exchange-CrossTenant-Network-Message-Id: a0679cca-03f1-432e-8d3e-08d964f83189
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2021 23:05:39.1403
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2021 23:05:39.6800
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vcD/Medc2ji2i5zyn39n5cRUX+86ZUQpjuUiW6FtmveO6QPT1VbIWQ5KgwLFiem0MWtd6KUF9ce3Amxo7zs+Zg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: nfa2dXQuEQHj+qLPXWBaxeEsPCXrIk5eyq23nqVonJcPpm3FHgJopzLqqmLo8n25VBJ3FkV0JYrS5xHzpXfNZQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5133
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This function has disappeared in commit edac6f6332d9 ("Revert "net: dsa:
-Allow drivers to filter packets they can decode source port from"").
-
-Also, since commit 4e50025129ef ("net: dsa: generalize overhead for
-taggers that use both headers and trailers"), the next paragraph is no
-longer true (it is still discouraged to do that, but it is now
-supported, so no point in mentioning it). Delete.
+Two new methods have been introduced, add some verbiage about what they do.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- Documentation/networking/dsa/dsa.rst | 13 -------------
- 1 file changed, 13 deletions(-)
+ Documentation/networking/dsa/dsa.rst | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
 diff --git a/Documentation/networking/dsa/dsa.rst b/Documentation/networking/dsa/dsa.rst
-index 20baacf2bc5c..b64cb4068c13 100644
+index b64cb4068c13..89bb4fa4c362 100644
 --- a/Documentation/networking/dsa/dsa.rst
 +++ b/Documentation/networking/dsa/dsa.rst
-@@ -200,19 +200,6 @@ receive all frames regardless of the value of the MAC DA. This can be done by
- setting the ``promisc_on_master`` property of the ``struct dsa_device_ops``.
- Note that this assumes a DSA-unaware master driver, which is the norm.
+@@ -650,6 +650,22 @@ Bridge layer
+   CPU port, and flooding towards the CPU port should also be enabled, due to a
+   lack of an explicit address filtering mechanism in the DSA core.
  
--Hardware manufacturers are strongly discouraged to do this, but some tagging
--protocols might not provide source port information on RX for all packets, but
--e.g. only for control traffic (link-local PDUs). In this case, by implementing
--the ``filter`` method of ``struct dsa_device_ops``, the tagger might select
--which packets are to be redirected on RX towards the virtual DSA user network
--interfaces, and which are to be left in the DSA master's RX data path.
--
--It might also happen (although silicon vendors are strongly discouraged to
--produce hardware like this) that a tagging protocol splits the switch-specific
--information into a header portion and a tail portion, therefore not falling
--cleanly into any of the above 3 categories. DSA does not support this
--configuration.
--
- Master network devices
- ----------------------
++- ``port_bridge_tx_fwd_offload``: bridge layer function invoked after
++  ``port_bridge_join`` when a driver sets ``ds->num_fwd_offloading_bridges`` to
++  a non-zero value. Returning success in this function activates the TX
++  forwarding offload bridge feature for this port, which enables the tagging
++  protocol driver to inject data plane packets towards the bridging domain that
++  the port is a part of. Data plane packets are subject to FDB lookup, hardware
++  learning on the CPU port, and do not override the port STP state.
++  Additionally, replication of data plane packets (multicast, flooding) is
++  handled in hardware and the bridge driver will transmit a single skb for each
++  packet that needs replication. The method is provided as a configuration
++  point for drivers that need to configure the hardware for enabling this
++  feature.
++
++- ``port_bridge_tx_fwd_unoffload``: bridge layer function invoken when a driver
++  leaves a bridge port which had the TX forwarding offload feature enabled.
++
+ Bridge VLAN filtering
+ ---------------------
  
 -- 
 2.25.1
