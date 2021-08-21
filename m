@@ -2,101 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 178333F3C4B
-	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 21:20:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 282F53F3C4F
+	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 21:42:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229914AbhHUTV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Aug 2021 15:21:28 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:24779 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230364AbhHUTVX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Aug 2021 15:21:23 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1629573643; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=uU3flCSn+iSXZF50k3teJibmCKL3vWrmBnwznoFYZGw=;
- b=q97HT5JrXJWMBojwU72wIPWaKlqkgamBownFKAnC74No3hJI/hp4q0EWmCgkcb1MfDYzn879
- CpjdosA6d2RBZmF+34rRlglkAaXldRDHUWPl7tS9SR8rIrwqgGZlf9IBymclXek7ycLkZRkl
- r4Hwpmoa6aNhqcqIs1HjdAU4hnU=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 6121520034bfa7697987cce9 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 21 Aug 2021 19:20:32
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id E1BE5C43617; Sat, 21 Aug 2021 19:20:32 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1A513C4338F;
-        Sat, 21 Aug 2021 19:20:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 1A513C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S230003AbhHUTje (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Aug 2021 15:39:34 -0400
+Received: from smtprelay0219.hostedemail.com ([216.40.44.219]:37438 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229484AbhHUTjd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Aug 2021 15:39:33 -0400
+Received: from omf15.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay03.hostedemail.com (Postfix) with ESMTP id 4A6F3837F24A;
+        Sat, 21 Aug 2021 19:38:53 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf15.hostedemail.com (Postfix) with ESMTPA id 0E0ACC4190;
+        Sat, 21 Aug 2021 19:38:51 +0000 (UTC)
+Message-ID: <293b9231af8b36bb9a24a11c689d33c7e89c3c4e.camel@perches.com>
+Subject: Re: [PATCH v1 1/1] ray_cs: use %*ph to print small buffer
+From:   Joe Perches <joe@perches.com>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Date:   Sat, 21 Aug 2021 12:38:49 -0700
+In-Reply-To: <20210821171432.B996DC4360C@smtp.codeaurora.org>
+References: <20210712142943.23981-1-andriy.shevchenko@linux.intel.com>
+         <20210821171432.B996DC4360C@smtp.codeaurora.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] brcmsmac: make array addr static const,
- makes object smaller
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210819125552.8888-1-colin.king@canonical.com>
-References: <20210819125552.8888-1-colin.king@canonical.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-Id: <20210821192032.E1BE5C43617@smtp.codeaurora.org>
-Date:   Sat, 21 Aug 2021 19:20:32 +0000 (UTC)
+X-Rspamd-Server: rspamout01
+X-Rspamd-Queue-Id: 0E0ACC4190
+X-Spam-Status: No, score=-1.48
+X-Stat-Signature: p3cihmthp6xep5gyb15h48yio8xswn9z
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX184milWoUGuNOSSPU8ary2jK00LMOvrdE0=
+X-HE-Tag: 1629574731-433881
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Colin King <colin.king@canonical.com> wrote:
-
-> From: Colin Ian King <colin.king@canonical.com>
+On Sat, 2021-08-21 at 17:14 +0000, Kalle Valo wrote:
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 > 
-> Don't populate the array addr on the stack but instead it
-> static const. Makes the object code smaller by 79 bytes:
+> > Use %*ph format to print small buffer as hex string.
+> > 
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > 
-> Before:
->    text   data   bss     dec    hex filename
->  176015  54652   128  230795  3858b .../broadcom/brcm80211/brcmsmac/main.o
+> Patch applied to wireless-drivers-next.git, thanks.
 > 
-> After:
->    text   data   bss     dec    hex filename
->  175872  54716   128  230716  3853c .../broadcom/brcm80211/brcmsmac/main.o
+> 502213fd8fca ray_cs: use %*ph to print small buffer
 > 
-> (gcc version 10.3.0)
-> 
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-Patch applied to wireless-drivers-next.git, thanks.
+There's one more of these in the same file but it's in an #ifdef 0 block...
+---
+ drivers/net/wireless/ray_cs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-0dc62413c882 brcmsmac: make array addr static const, makes object smaller
+diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
+index 590bd974d94f4..849216fbb8363 100644
+--- a/drivers/net/wireless/ray_cs.c
++++ b/drivers/net/wireless/ray_cs.c
+@@ -2284,9 +2284,9 @@ static void untranslate(ray_dev_t *local, struct sk_buff *skb, int len)
+ 			       DUMP_PREFIX_NONE, 16, 1,
+ 			       skb->data, 64, true);
+ 		printk(KERN_DEBUG
+-		       "type = %08x, xsap = %02x%02x%02x, org = %02x02x02x\n",
++		       "type = %08x, xsap = %02x%02x%02x, org = %3phN\n",
+ 		       ntohs(type), psnap->dsap, psnap->ssap, psnap->ctrl,
+-		       psnap->org[0], psnap->org[1], psnap->org[2]);
++		       psnap->org);
+ 		printk(KERN_DEBUG "untranslate skb->data = %p\n", skb->data);
+ 	}
+ #endif
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210819125552.8888-1-colin.king@canonical.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
