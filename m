@@ -2,171 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA8AF3F3C39
-	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 21:09:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDFFA3F3C44
+	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 21:20:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229833AbhHUTKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Aug 2021 15:10:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49942 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbhHUTJ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Aug 2021 15:09:59 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60378C061575
-        for <netdev@vger.kernel.org>; Sat, 21 Aug 2021 12:09:19 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id u3so27335084ejz.1
-        for <netdev@vger.kernel.org>; Sat, 21 Aug 2021 12:09:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=L9N79qtg6oeakzFCcrHv9+5GFa1azvSn/FSRg6c4WXw=;
-        b=rpQY5iuUFatizpoH1cHdWlgkFILqK9X9cE9VPDHwH10va8Rz33rUIs5FHPLTxBzMeq
-         qYUZML8NvjByqloF+QateZS7Zg9+dWnBAp/0CkTRp2s4rNSBobclIjYzFMM58tTf5si9
-         17mpOOiV5trqQfUCkkzBGXkW0kSFLXY4L9mWh/ie8/e73R7c4JfgzN3Xa792HGfRIbXE
-         6qEb0+My7uW9OfTb3bEtIHssk8/i19HWyv8qKxcAUClzsH+vgTHRyQxXmXdyCL2C2s6m
-         e65AE581fF38+W4QTJO49LRkjjV5OraWO8Dg0/tBbU5pKzPNEaMSyfvRdqqwdEdkAvJo
-         Icbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=L9N79qtg6oeakzFCcrHv9+5GFa1azvSn/FSRg6c4WXw=;
-        b=fc6DV2eIiLJm8y/XG4S1WFXeqsAoEZhemihqUNT8pir/TdG6iHVbKciwXVaKIKgPKd
-         YaxNEJtQ3IvM9pDi6djxnSNKx4hHSbrrcWStSWFgaVBD5yoFbMAlsJfsHQt4Jv+9bBAl
-         raNuIoDuAnJudiyuZoXFp5sRrJmuudPWnYonsMviLtzCoeQa22rIFoEaxAVtbWaNljfa
-         vurF0Z8zICfx+bvSIah0z2cAVRAgKpSb2BQq3xJn8weM+lAwD3SD2mgnJziBJ2+3wX4Z
-         Lv1bqJ+2RyXlIpSQufzt0JGJS5PcDpEadj/l+DT67OSC9Qkr7SBOwDxX2+59diulkC6E
-         sJZw==
-X-Gm-Message-State: AOAM532zIkYkjH4bUka5DuQ8vtYwX8ilAg5aeYOmW4KRmg+A4oW31ln2
-        slROKgmfuiDZ2VIj+0sn2vLUL+PBXSk=
-X-Google-Smtp-Source: ABdhPJyd5SdGEWEicm6X0C1u3HYEDn/JMiMPZkBLRHRJubBDFwQ4UmONYz0S73OHCIcFZNVymkV2tA==
-X-Received: by 2002:a17:906:4310:: with SMTP id j16mr28162577ejm.182.1629572957808;
-        Sat, 21 Aug 2021 12:09:17 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id l16sm4680111eje.67.2021.08.21.12.09.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Aug 2021 12:09:17 -0700 (PDT)
-Date:   Sat, 21 Aug 2021 22:09:14 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        UNGLinuxDriver@microchip.com,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Marek Behun <kabel@blackhole.sk>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Jianbo Liu <jianbol@nvidia.com>,
-        Mark Bloch <mbloch@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH v2 net-next 0/5] Make SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE
- blocking
-Message-ID: <20210821190914.dkrjtcbn277m67bk@skbuf>
-References: <20210819160723.2186424-1-vladimir.oltean@nxp.com>
- <YR9y2nwQWtGTumIS@shredder>
- <20210820104948.vcnomur33fhvcmas@skbuf>
- <YR/UI/SrR9R/8TAt@shredder>
+        id S230212AbhHUTVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Aug 2021 15:21:10 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:24212 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230022AbhHUTVI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Aug 2021 15:21:08 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1629573629; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=a/CGSa13ltQ0+VJXtsPJ4pMzrIAABHKl6f/JaLvluu4=;
+ b=R9JmEfly6Jq6s1gpFOXkceMH5vNsYZm2VBV8fZ6dxONmlQ7tV+KX+5Hypoc2R0a/17dKQYWq
+ KFtKscakidkDWzxP3ce4ydECxEcwzbwgB2G9dyToBCDdweSz5B5UOGC8V/EF2cM3EQLMpBKu
+ TJ2sFMVkQK5nyAJxnSu8BOeOcI8=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 612151e7f588e42af19bb408 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 21 Aug 2021 19:20:07
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id A2C21C4360C; Sat, 21 Aug 2021 19:20:07 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 5E08DC4338F;
+        Sat, 21 Aug 2021 19:20:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 5E08DC4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YR/UI/SrR9R/8TAt@shredder>
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v4] rtw88: Remove unnecessary check code
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20210731163546.10753-1-len.baker@gmx.com>
+References: <20210731163546.10753-1-len.baker@gmx.com>
+To:     Len Baker <len.baker@gmx.com>
+Cc:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Len Baker <len.baker@gmx.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Brian Norris <briannorris@chromium.org>,
+        Pkshih <pkshih@realtek.com>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-Id: <20210821192007.A2C21C4360C@smtp.codeaurora.org>
+Date:   Sat, 21 Aug 2021 19:20:07 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 20, 2021 at 07:11:15PM +0300, Ido Schimmel wrote:
-> On Fri, Aug 20, 2021 at 01:49:48PM +0300, Vladimir Oltean wrote:
-> > On Fri, Aug 20, 2021 at 12:16:10PM +0300, Ido Schimmel wrote:
-> > > On Thu, Aug 19, 2021 at 07:07:18PM +0300, Vladimir Oltean wrote:
-> > > > Problem statement:
-> > > >
-> > > > Any time a driver needs to create a private association between a bridge
-> > > > upper interface and use that association within its
-> > > > SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE handler, we have an issue with FDB
-> > > > entries deleted by the bridge when the port leaves. The issue is that
-> > > > all switchdev drivers schedule a work item to have sleepable context,
-> > > > and that work item can be actually scheduled after the port has left the
-> > > > bridge, which means the association might have already been broken by
-> > > > the time the scheduled FDB work item attempts to use it.
-> > >
-> > > This is handled in mlxsw by telling the device to flush the FDB entries
-> > > pointing to the {port, FID} when the VLAN is deleted (synchronously).
-> > 
-> > If you have FDB entries pointing to bridge ports that are foreign
-> > interfaces and you offload them, do you catch the VLAN deletion on the
-> > foreign port and flush your entries towards it at that time?
+Len Baker <len.baker@gmx.com> wrote:
+
+> The rtw_pci_init_rx_ring function is only ever called with a fixed
+> constant or RTK_MAX_RX_DESC_NUM for the "len" argument. Since this
+> constant is defined as 512, the "if (len > TRX_BD_IDX_MASK)" check
+> can never happen (TRX_BD_IDX_MASK is defined as GENMASK(11, 0) or in
+> other words as 4095).
 > 
-> Yes, that's how VXLAN offload works. VLAN addition is used to determine
-> the mapping between VNI and VLAN.
+> So, remove this check.
+> 
+> The true motivation for this patch is to silence a false Coverity
+> warning.
+> 
+> Reviewed-by: Brian Norris <briannorris@chromium.org>
+> Signed-off-by: Len Baker <len.baker@gmx.com>
 
-I was only able to follow as far as:
+Patch applied to wireless-drivers-next.git, thanks.
 
-mlxsw_sp_switchdev_blocking_event
--> mlxsw_sp_switchdev_handle_vxlan_obj_del
-   -> mlxsw_sp_switchdev_vxlan_vlans_del
-      -> mlxsw_sp_switchdev_vxlan_vlan_del
-         -> ??? where are the FDB entries flushed?
+d816ce8744db rtw88: Remove unnecessary check code
 
-I was expecting to see something along the lines of
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20210731163546.10753-1-len.baker@gmx.com/
 
-mlxsw_sp_switchdev_blocking_event
--> mlxsw_sp_port_vlans_del
-   -> mlxsw_sp_bridge_port_vlan_del
-      -> mlxsw_sp_port_vlan_bridge_leave
-         -> mlxsw_sp_bridge_port_fdb_flush
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
-but that is exactly on the other branch of the "if (netif_is_vxlan(dev))"
-condition (and also, mlxsw_sp_bridge_port_fdb_flush flushes an externally-facing
-port, not really what I needed to know, see below).
-
-Anyway, it also seems to me that we are referring to slightly different
-things by "foreign" interfaces. To me, a "foreign" interface is one
-towards which there is no hardware data path. Like for example if you
-have a mlxsw port in a plain L2 bridge with an Intel card. The data path
-is the CPU and that was my question: do you track FDB entries towards
-those interfaces (implicitly: towards the CPU)? You've answered about
-VXLAN, which is quite not "foreign" in the sense I am thinking about,
-because mlxsw does have a hardware data path towards a VXLAN interface
-(as you've mentioned, it associates a VID with each VNI).
-
-I've been searching through the mlxsw driver and I don't see that this
-is being done, so I'm guessing you might wonder/ask why you would want
-to do that in the first place. If you bridge a mlxsw port with an Intel
-card, then (from another thread where you've said that mlxsw always
-injects control packets where hardware learning is not performed) my
-guess is that the MAC addresses learned on the Intel bridge port will
-never be learned on the mlxsw device. So every packet that ingresses the
-mlxsw and must egress the Intel card will reach the CPU through flooding
-(and will consequently be flooded in the entire broadcast domain of the
-mlxsw side of the bridge). Right?
