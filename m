@@ -2,47 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46AE53F3CAC
-	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 01:08:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C0223F3CAF
+	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 01:08:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231130AbhHUXGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Aug 2021 19:06:21 -0400
+        id S231372AbhHUXGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Aug 2021 19:06:25 -0400
 Received: from mail-eopbgr140053.outbound.protection.outlook.com ([40.107.14.53]:31556
         "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230343AbhHUXGV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Aug 2021 19:06:21 -0400
+        id S231271AbhHUXGX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Aug 2021 19:06:23 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KChEyvayEZzJCzb6+AkkGGtKZe6lslKjUobOQjn1BpQo7KWRIkv0clBhlioAFe8EHyZzyXc3WI1vXfF8gS2uBCiZ0aW3YW6EpDbG2mFZC/tKHv64y6QAb4yw00pGpClio2SxLBq5nAupNd/EeqjK9yLiiFVoguSWocFPp4zt6iTDleRk9D8AUw4WSoJddecrOJm0LOJxToMcZbo17cd30FXajXX+Aim/Mm1FJXYA8xdB1PKs1Wfvmm2WnCQMRrsHrbEQRmohhyrTv5B79j98CAc5hlhF54EpND5l5YVHPGMCs2BnXLkezIdAf4lxm7yIKUn6twWGZ9UwltVMS/UDeg==
+ b=kOHeMCGFDE89cBy5qhpy157sxBBqg0z+QL+gxuruP08Ye3TZd4+QxETXHyd1mU+hHT8cgTTjp5ugShUDsDMkMxYAO1T+tBJtIyHlEjAcSlo5t+Lvk2vTbDv8KnqJF9bPorPgEPl5IWaKdai+AWGkQZxvG2Icj7RUp6Zihh+hPQxxTdddU8PiiYTqE5YKkJodjRWNKPcvZhjlQGs686XKEz8mjynwtw+iGTuWzwjip96mpgz/2B9/Nx0Xx9O3oFEtzYpr2jlH2M1WIJGhLLgmFfmDdtk7leHro5+QS41jGy/nTxAFea3QRkOAJtAQb1supuxrbxEbJD6VkR4q8qlCqg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0FuR6TJNF6KVe0D7RhXWIavgArkwq7Go5h43Is2L1bc=;
- b=gHvOnVWsk83ihXcPqK4sJ6SaIBoXZik6wjMpm89sGnVmR4enGY+hyLIZ7MqIONiZ/kXoZF3ec320GQwZroiooEj5hhdPO7OyJp+UnvvAMu4vsWVo9IY/hiB7gCyhC+8ynJNpDKbFTHuXdc2P/nJlCIsz4gRbdFQuCnHIcAoWcZn9JiNcchhZ5FmnRKvH2Iwz15NXGp5k3Nv8Frc6w201a6lwyQrywlpIBDnrQE0+kqoGUuewHmsfgTCfykPm6v4cxWX3eqO9AbSzMoBW72u5BiITLn2RIypDNjmWY7m7IquNiU7Hq1tspzi2sM8kCdfdQ2q8LjAOMjpzP5Bl5tz7iQ==
+ bh=lYGBf4GyZH0+A9LBR9Ndam5KLHkQG7xKXkqjU0capXI=;
+ b=n0jnaYRFLR8o+HKel2ACbt0+KllfhZr6Jjbli4/q8l1jVp99eqPOIQc4DYJGdJqO7HO4t484WTH+y8qjoimMrI3A9tgyRcTkT169BymMutoEtNZdZ2a58nKY/GZYB/2NKFOLClK6mp39/+5kBeLCaApzCKBvK6uZZoSWsE33kmtWHdf0YNCSxW6SvILD/Pj/YbDbAySiFrj1m4W+4AxyrC/1n9A4UVldrOTgizLfijPl8pq4rbrzAv27Dj+z9zX3uzzV6A75kSwS1tfCj2NOhm8T3EIyrq+lCZevX5A5MCxcGHHPKtxtjQXNNg+0QumBykuPF/aRoGPNXuiIqb3fkA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0FuR6TJNF6KVe0D7RhXWIavgArkwq7Go5h43Is2L1bc=;
- b=s2IAbqWugi11HbgbXl5ZmdxvfRDYmEhVi+dcSmBhqsTX/SRMcqtV/YFM6DsSMHaVJKV4H3b4y8e7WMwJ0/PksLd73gzy8CFkB4Slz3UdgyiQrQbR+lLRQRm+WbDapnyZ9qBv1+WuZpAi9Sa6znAKiTphV9ByqZgKxjDLyXvV0A0=
+ bh=lYGBf4GyZH0+A9LBR9Ndam5KLHkQG7xKXkqjU0capXI=;
+ b=g8gxnB8Xg9pFnLs0HApp7H2X8d3X8c7viHNz8l/ILzZz1tfVxbORy58Cxgk94SwzFEdFtn+Rip/X8lYE9tCaPqexERnzgQbVSF3IPtq1fmIga7huhtV1kIBc7Q4VHpus37CzdHGYUBzoGPwWiz9E7m6YJQxHHGU1MeW0Ky7Bb+o=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR04MB5133.eurprd04.prod.outlook.com (2603:10a6:803:5a::30) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.22; Sat, 21 Aug
- 2021 23:05:37 +0000
+ 2021 23:05:38 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4436.022; Sat, 21 Aug 2021
- 23:05:37 +0000
+ 23:05:38 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
-Subject: [PATCH net-next 0/4] DSA documentation updates for v5.15
-Date:   Sun, 22 Aug 2021 02:04:37 +0300
-Message-Id: <20210821230441.1371168-1-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 1/4] docs: devlink: remove the references to sja1105
+Date:   Sun, 22 Aug 2021 02:04:38 +0300
+Message-Id: <20210821230441.1371168-2-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210821230441.1371168-1-vladimir.oltean@nxp.com>
+References: <20210821230441.1371168-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: AM4PR0501CA0047.eurprd05.prod.outlook.com
@@ -52,72 +54,131 @@ MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 Received: from localhost.localdomain (188.25.144.60) by AM4PR0501CA0047.eurprd05.prod.outlook.com (2603:10a6:200:68::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Sat, 21 Aug 2021 23:05:37 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a8150cd3-6063-421b-f74d-08d964f8303a
+X-MS-Office365-Filtering-Correlation-Id: 446fa425-9882-450e-1426-08d964f8308e
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5133:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB513334A01864A9C672DFEFB1E0C29@VI1PR04MB5133.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB5133CE850F5580A61EFD54E6E0C29@VI1PR04MB5133.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YIzpR0GrNba5EVersQ2kMiekbTKt7c/VywwtA+t7S33yFp4Mfvw895UuyLOgTErwSeoLKn640s9/x03UK3RpEFky6o/EVZXuEf+2Qs5YPge2Ct0Ga7IRy/oUH3VV0PQLlJDIAShCNirjJuP4OWEGUzkjo64bWtzKFmxWKhmKbloPLJcL4OOE6JPU9l7UlV4gUXKfhMXzv05PKxUikAWshqxpZjySaBfwj+sYIK3i7kGDcw8K1ScOsZ7LvqgOiDkxTKtkNDs7N1CveQ1C6G3hMR9ovHQhS08AGEM/81Hpx4blR3nisyCg364cMgl4+gGHPtVOAYYhi34yvyjw5F+CDO1imkG4mnHb/DrdzdeBoZKIzJRpE1g7Y9NKBIo6uKfXYrXPKNEeWlXxtakCG/vRqfl3nBL3xKhUAh9M8fdEsUgykNfkZHJSs6H7hJsZxLJFTMabAfumRFoKdbvwGeOLOUImisPpS+z7pHDtTUoSAGY7xYWwyxqUCdrgsXYVtZfjCI4xIbVv2duxNOHXh1uA3IFWpvaH59gzyPhjJryMgrBehjO0/Qi8IYdnfnczvB02PaeEZL3jyT8UN3qJyf5jgSKSaylwrnY2Y8UoG+PlRze33ulwF69LwuBBS6ofRIqw28TK6sLcWIGgYqLF1BlNf4m4FOWmtsd2vQEHfKG/0zRsh/csiLEAipJ2/sJu3CXy
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(376002)(366004)(39850400004)(346002)(396003)(66556008)(66476007)(86362001)(66946007)(2616005)(956004)(44832011)(38100700002)(38350700002)(316002)(6486002)(1076003)(6512007)(478600001)(83380400001)(36756003)(6506007)(52116002)(6916009)(26005)(186003)(8676002)(8936002)(2906002)(5660300002)(15650500001)(4744005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: wSFXOImKzrbtcZezo4iWKHKzey1xERosPUQEiYW1dF4JsuQqx3fwfwRXh7RaOUF4hvQDPHkK71Ux9+ICfUMPXm5Em397DDdJ6S2bpPLZ5HsQErNZ5ci6el8egAKzvUqDd2eoTAReyCRsmbCnVTK/2CzPJX4AKYQx48tu0R+by7fEnVpsKRfw01Q/gtbUfJpZWSGi9kjR800GB8XMUCbFpJlouGYWq1bZpv9exVPhJAZbuMh7JuP+62j6YLJtLm99UQVGG7Vgq0dA5WcPqp3dMOwJx33p4aZvDIYbnt6m0Z5skTUiCENO5FznbG0+dHPtrpTjO1EEmOXonPfH7jfkRi8nE/JrwNtJiQ2gtwOHhnHaQhXBzfH1RNfevKaPq2GoJFW6rhzyTR6sdA1v5Wuf+lixonzu871UKPWlL7C/BywClVd4lEGMtl+blcQZEZmHv8sEsraXip1ctrnDLyVcWdBw8BgxWNkIUJ4GWheGVBFAfRUKCXIbOc6BOUaiKqt+dXO/0S/b1RVkiQIOuZDxbUeJgAeWnait5Dl9Go2uikGDllo/vogM2CO2HcKvOqVW3stPgf26XVv3IL8s5gcTuk/pOJgH8qsXA8TaVz47XBHml94q3VCEF53vS4TTI0sQJgo7xpOcviNJIyShMxqxYfBXgN7RHMruN5PSDRu6vNDDN0xxQEdMp2Ncy7oDgS8m9o2Usgckq9uKCXeXnFlnyg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(376002)(366004)(39850400004)(346002)(396003)(66556008)(66476007)(86362001)(66946007)(2616005)(956004)(44832011)(38100700002)(38350700002)(316002)(6486002)(1076003)(6512007)(478600001)(83380400001)(36756003)(6506007)(52116002)(6916009)(26005)(186003)(8676002)(8936002)(2906002)(5660300002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zgYOvjfWW1erpMLrZTne5DUPMqgTkbeiTfsE7UnwCUP6As/vQjlh1HEAMXGl?=
- =?us-ascii?Q?c3YIU2exxJMtP+9Xzi+pWxvCzVMWa6sS4y0t1tWbdVbxXsw7Xq7qTPYdITtv?=
- =?us-ascii?Q?oNPNXGixBxgBrFEwXJtABskJ+RFLEyPJ3yIqmOc65J96VQ5OEcOGj2ye1ecP?=
- =?us-ascii?Q?AiNI+tNZJpBDulWdKAozHFrPrA3OKY0AgIRiqON3PXbvIT5AyW++o2LYOkdl?=
- =?us-ascii?Q?ThPwKRROWDprEuBcp/vCyRd8Us553banhmuO0Z8ZkDIc3OwZ8YoZpg/1o24z?=
- =?us-ascii?Q?PE9KXtRmD5oulaRDjrHg3l4sG5h3xVk0oXJJ8wMxUrGZwI0LNreM00LAmmXS?=
- =?us-ascii?Q?dWv++I3C9FRqPYyumc1JiemNJh474HalDu2z96rHzKmmw5PVKdH5QFJn9JK7?=
- =?us-ascii?Q?0iqvxfBSp7Wcp9lavKISxmnp/A9gWzZzHnjrT5PGGJpS0bDGZu7wxN6OK6q6?=
- =?us-ascii?Q?917yM/wxITHM1miWZVx2bixeGDd+ht2XEPvX8XdZ0WUi3LiYAFJbf72+Gmco?=
- =?us-ascii?Q?rI5jT5drT9cqb8X8ue3+uyWoIJfwtyXU2gfozu0eEqBJLiUPuZxWcs4B5a+m?=
- =?us-ascii?Q?V4iKIsNxkCqXJcfeUiWDqBsOLpN0bjkd0fihNtPT+IQl8peGzI3MbvXF9XIC?=
- =?us-ascii?Q?eEK3bkRTu+4yNvnbDnEh+c5ZXEgMz1Wsud/egIS9On4i9zLUnqrK7eLEDqJN?=
- =?us-ascii?Q?r+4SyT3/NmWIlE6aVPQhdx5EmUT7vDPExsBRBZ5BeuyeU/1WX6naGjIFp8Ak?=
- =?us-ascii?Q?Y8ZliTvZLPgvIWadYgJSJC1D9jS6iyZYaVylGonULsN+nwRWOVZExISaaRrC?=
- =?us-ascii?Q?St+a+OqpGgFDiEWA+OP/lH0ufQ8rhmkeZet9MeeNJtd0B+KKoYVinkK1+UVv?=
- =?us-ascii?Q?w5pITyz9WXNz/IYykmKrQXv9Dbns2vB4/pmgrU2LyHMXY+3+Su6fqFNfBz7T?=
- =?us-ascii?Q?r3R6lVyAiuVSdn3XeOL9gI9LRPi3IDM1Liis5fMdbhauwY74hpunmltinouB?=
- =?us-ascii?Q?an4afp4VmmL5IN/tUHQCvuhurGpYgm8kQXp2elpE4yCJbUx53cQpNuDnHQNo?=
- =?us-ascii?Q?Tv7Qg3KN/671QEvDgJCR+EYaIXvhX+5DblXydmYb9f7IvbW56FvJXPk3Pv99?=
- =?us-ascii?Q?ueyJftCDh8cO+wT75LA81E3R/uiTmnbBH0c6AoIgXT8Qwl14TbtHo0c/YeYG?=
- =?us-ascii?Q?46O80K6N6RVV97JwXRCGtY4RmSTDxt7v8R6lMQNL+JneO7aLu2VnEN+rU1Gl?=
- =?us-ascii?Q?jXlUiYIA7+UgeRWwAA78kr631nB7MeZuc3wwj6UEAICErbCNfp5zu/2Estfz?=
- =?us-ascii?Q?HS6TWUgdx7RnmDu9FnyIbiOS?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?IzaPzAWzZNB6uuFc5oqkEtF+t8CeeZZDKcmoLhEFnukQ+4vDUfIcZm3dMOmT?=
+ =?us-ascii?Q?IzdVd4pd6Ql5KENiOabhLj+WkHJGQiSIs1+yIlV2y7wSWgBp7acdKqzwGjQb?=
+ =?us-ascii?Q?H4Z/mTWaNyn1/wjYK1n43s+iQIVNR2KR1JYUVOZ8mqA/wy0JbPRvUwJVE6FM?=
+ =?us-ascii?Q?XWMiGcRxQ61GlWC9Rd+5Jnj0KaAUO2Ddoh6eUXShIOaXAmMXfVB9JPrVEYjv?=
+ =?us-ascii?Q?bCvwvNORUjliR5kSoLmSe9YCu+lp4vSldKKcCTGhTrqfMaHQ4I7o9h2r9j5L?=
+ =?us-ascii?Q?DSplr1iSV0alB1mnGVQ2ubygsSd0Tu+c5NsR7slQNhnCKfXi3Pz2MxbLcZaZ?=
+ =?us-ascii?Q?I4MPbCfGM4RCfqF8dczQMn6QWo0AgydgIlUBpgmxPYCWD0t2FDguPtabIZgG?=
+ =?us-ascii?Q?3OpJoaCDR9T42E/HZZ4WdcBSk+BxSUi7d0wzN40JwPBFr2AjTptuhlUoqcyx?=
+ =?us-ascii?Q?kkLVd3OlrFPh+BI0hUiSf/NyRBZlZ3l+D2v/eiNJ6greoMLpWGB0UrMo9Oon?=
+ =?us-ascii?Q?1ME53sv5bmp4k/bk8Nnd3OgfkivxopHCAqbr36zijFAmVhA0K6T+tdirN/VN?=
+ =?us-ascii?Q?ame6D6g3k6putBPYkq+Mtr4p8DEPvHHWoV+KDwI8EJlXZkhyN3X+iQQvyHl2?=
+ =?us-ascii?Q?6r698EpkZcTmYqjCKTWvApfWkytySg1jpGHwX48FmLLIwR5FYdZH4tpa/zKy?=
+ =?us-ascii?Q?dr1uy14FjLVDmTxNQeb25K9Sj+G411qAm4L/HSG5KlHQ+bhYCYFuvki6gzGn?=
+ =?us-ascii?Q?GLfOgzEjKZ8eT1oYqBphHTHdqkMkZcEkSzJrttUPjfxJXPG9DUoXFF0uqNLs?=
+ =?us-ascii?Q?bO9uU0hAT+AIk2+1mb69CxHzSbfUn7qbvZ6ZtA19ZmS7aLiO2GbHmRm1FzH7?=
+ =?us-ascii?Q?UDut/9tQRJ5Nq8wSL4bcMNegWDas4XuSMUAQuVducRdaJLPfXnHWtL+Ftpp5?=
+ =?us-ascii?Q?UCm2wrgskQjpbfEaw7l3nTmSc5eZCR+MbPtlxUrvwJ3lW92QIJvB4UgMknF6?=
+ =?us-ascii?Q?1OdnUy9Y/uj7bZPcpu+qjB48T8Nxx/UPecvNQRSPekY31G6KQBuzp4Dkr0LK?=
+ =?us-ascii?Q?ou18/7eYPfiNGsY7XdwDKGVSY+ldVoAguZX7i21CN/uFmCyvpZs8tJWqszwB?=
+ =?us-ascii?Q?HOXhsWbSVgKLys6umOJAOvvMcjO0qR3VuqR4jvUz6QLsPqpegmbuxsVN+N2g?=
+ =?us-ascii?Q?7Tlh+o6Frv52bIUSa1a3T8IwhF+xO0dzx9FohftnOiP0pn7kX9M6dtAJNImk?=
+ =?us-ascii?Q?DbF2mswNuYt9tEMmhBXZhuMskECZ3pyktVLwGYhiJrHjqxhsQ5QwzCI1oVWL?=
+ =?us-ascii?Q?OraC+zevkcuCNRQ2iZFNzI/N?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a8150cd3-6063-421b-f74d-08d964f8303a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 446fa425-9882-450e-1426-08d964f8308e
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2021 23:05:37.4922
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2021 23:05:38.1538
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: V5eLVZ0US/EKWLdYYT2NjKJbIA4+9cte9x1GKwMX2zdLO0NrX7WTMV8JsqLO9SjVYzTRI7ysEiXzYFU4VxzxBQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: UaBVDLG3htuFni+6vzTQ2Rd7ttqX9qKyzrifwh6cdXyqLxBqgmdD9N/6KP53/DkvblkComUNpUcu41gO/g7H/w==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5133
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There were some documentation-visible changes made to DSA in the
-net-next tree for v5.15. There may be more, but these are the ones I am
-aware of.
+The sja1105 driver has removed its devlink params, so there is nothing
+to see here.
 
-Vladimir Oltean (4):
-  docs: devlink: remove the references to sja1105
-  docs: net: dsa: sja1105: update list of limitations
-  docs: net: dsa: remove references to struct dsa_device_ops::filter
-  docs: net: dsa: document the new methods for bridge TX forwarding
-    offload
-
- Documentation/networking/devlink/index.rst   |   1 -
- Documentation/networking/devlink/sja1105.rst |  49 -----
- Documentation/networking/dsa/dsa.rst         |  29 +--
- Documentation/networking/dsa/sja1105.rst     | 218 +------------------
- 4 files changed, 17 insertions(+), 280 deletions(-)
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ Documentation/networking/devlink/index.rst   |  1 -
+ Documentation/networking/devlink/sja1105.rst | 49 --------------------
+ 2 files changed, 50 deletions(-)
  delete mode 100644 Documentation/networking/devlink/sja1105.rst
 
+diff --git a/Documentation/networking/devlink/index.rst b/Documentation/networking/devlink/index.rst
+index 03f56ed2961f..45b5f8b341df 100644
+--- a/Documentation/networking/devlink/index.rst
++++ b/Documentation/networking/devlink/index.rst
+@@ -43,7 +43,6 @@ parameters, info versions, and other features it supports.
+    mv88e6xxx
+    netdevsim
+    nfp
+-   sja1105
+    qed
+    ti-cpsw-switch
+    am65-nuss-cpsw-switch
+diff --git a/Documentation/networking/devlink/sja1105.rst b/Documentation/networking/devlink/sja1105.rst
+deleted file mode 100644
+index e2679c274085..000000000000
+--- a/Documentation/networking/devlink/sja1105.rst
++++ /dev/null
+@@ -1,49 +0,0 @@
+-.. SPDX-License-Identifier: GPL-2.0
+-
+-=======================
+-sja1105 devlink support
+-=======================
+-
+-This document describes the devlink features implemented
+-by the ``sja1105`` device driver.
+-
+-Parameters
+-==========
+-
+-.. list-table:: Driver-specific parameters implemented
+-  :widths: 5 5 5 85
+-
+-  * - Name
+-    - Type
+-    - Mode
+-    - Description
+-  * - ``best_effort_vlan_filtering``
+-    - Boolean
+-    - runtime
+-    - Allow plain ETH_P_8021Q headers to be used as DSA tags.
+-
+-      Benefits:
+-
+-      - Can terminate untagged traffic over switch net
+-        devices even when enslaved to a bridge with
+-        vlan_filtering=1.
+-      - Can terminate VLAN-tagged traffic over switch net
+-        devices even when enslaved to a bridge with
+-        vlan_filtering=1, with some constraints (no more than
+-        7 non-pvid VLANs per user port).
+-      - Can do QoS based on VLAN PCP and VLAN membership
+-        admission control for autonomously forwarded frames
+-        (regardless of whether they can be terminated on the
+-        CPU or not).
+-
+-      Drawbacks:
+-
+-      - User cannot use VLANs in range 1024-3071. If the
+-	switch receives frames with such VIDs, it will
+-	misinterpret them as DSA tags.
+-      - Switch uses Shared VLAN Learning (FDB lookup uses
+-	only DMAC as key).
+-      - When VLANs span cross-chip topologies, the total
+-	number of permitted VLANs may be less than 7 per
+-	port, due to a maximum number of 32 VLAN retagging
+-	rules per switch.
 -- 
 2.25.1
 
