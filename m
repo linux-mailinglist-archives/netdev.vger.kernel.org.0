@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEBFD3F37A7
-	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 02:21:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD1073F37AA
+	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 02:21:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241078AbhHUAV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 20:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58000 "EHLO
+        id S241207AbhHUAWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 20:22:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241017AbhHUAVs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 20:21:48 -0400
+        with ESMTP id S241010AbhHUAVt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 20:21:49 -0400
 Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD634C0612A4;
-        Fri, 20 Aug 2021 17:21:02 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id s11so10808949pgr.11;
-        Fri, 20 Aug 2021 17:21:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F02C061575;
+        Fri, 20 Aug 2021 17:21:05 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id k24so10812505pgh.8;
+        Fri, 20 Aug 2021 17:21:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=n3Vps2oF1/mGCBVP5pXBg7QUi/CGy6/10w/l+hL8SbQ=;
-        b=dEElm2Ahjx1gEhElCNLXrbKmBaBDkb94MZPJQyPMnFp7uw4dzxkVSt4/axzBLN6utq
-         Tsf3tZ1iVaJGb8CpUfPafGlmSHzRydnHXZI6a45I5FNtQzUDuScZCCZTDDMovdf0v3ru
-         ucpfZhagoIRoA5hnz0zBvMrvcPTzsmXXVi5PcDZTMQe/Z+GxF1Nrcja3qRiyEcYia++G
-         PAVfCUqbFJR+Oy1EfzEaDTf1NiklxqkNQcvJaXBGpLtMH+0gjOjxlFrIrr6vvP0MXXBe
-         AZRl5SLlqW5C4LGxhrtBOctBs3zpZUNKSNO8Szbp0/l8uB2m0KT8PTHxD4VOS3Gn+TWb
-         //2A==
+        bh=k1kczFxUOT5iKO+CrTf2jZEpAHSQATeNRTa5sZwT6/w=;
+        b=aPC0flfGPE9lmUU/sNirYUsJSHgrV0GlNYTon024cv6nBSv48gtfXZ8Ffh+ntxS72C
+         1qb6w2BK67nkTHCgbwUNN/zuV/dy/nf0bk7g/SQfdP6JHRsCwqz8s8/EajDFzoFwX9Qt
+         217eoRNg4P3Fr6jdUsXwAh3wB44/SRoKNNq6GZ1qc8NukbK3EpTIuH4100Bb/b9J9+TN
+         37gWJ1Dzb0Vv7vArylbIqfhIiwAWmKMHgl+mvhz2VUUF+sJ2gVt5KyZHdJBodt3QEecU
+         fkW5LwssbFBGjjn2iptP3K2xTzr5HFsuMSJOWXbog0sN0sZhOnZtqHuehRD6QOe5Vbp3
+         QzOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=n3Vps2oF1/mGCBVP5pXBg7QUi/CGy6/10w/l+hL8SbQ=;
-        b=DJ//I6MjMhxd15X5m+JSXpGeLaAz9Xd3XMJWUHouMtImQHaDM+oi8WzDXCVz8NiLba
-         EOMMMKgaP5lbYN3h61DqmZ84eM437OkmQUNZhGkGFZP7CCwBA1ysH5RHYbMK4rUPnSSl
-         aYv6crLUFeDI8bh5z8mC1X210SsUkX754jNA763MidrEJpoGkYrTCgQoEaxBznJqgUnE
-         Zv5KjUytMxNQ4CSfvapXNVeaGzziUNURTtyM3A4uQ3rEZE7BPxo7pkSOZ4uOT1WOqpNU
-         SENnx0MfISJtsLyepXyYBbZ/1W92bEqJw6aLsOirLEG5xnDBXxhRwvdstWSLJWy3E3rz
-         MmGQ==
-X-Gm-Message-State: AOAM530ztxoiil4ibZF+DmFEWXip0jRBpbFKi08xvKRlERHyqyDCHj62
-        3iVbp6nzOa7zzqmJmnouGAwtyLsrb44=
-X-Google-Smtp-Source: ABdhPJxgmQQw5wjOmP3LQ9ahCpzoGZZ2dyPGLmGbKDjzfrNNQVxwKAnQ8+l7gUTqdYqW2HQxp/7N2Q==
-X-Received: by 2002:a63:3d4a:: with SMTP id k71mr21374995pga.276.1629505262064;
-        Fri, 20 Aug 2021 17:21:02 -0700 (PDT)
+        bh=k1kczFxUOT5iKO+CrTf2jZEpAHSQATeNRTa5sZwT6/w=;
+        b=GmLP95gYpcmCmTX0bzx8ziNZjFW++hb/wo4NVrHxGcs+N/bmnwGbJNCfpxRY/82H0s
+         /VaR/awTwQWuAoj0ieC+5MZeFcunmvyk8KQX6E39KYKQ0b8S+IBFgk+rgLJXwTFc75xt
+         gZqeOhbIJ8dBkbDFe7vFfv9CW+9t/GcPZaSECkcENwrWkgoWvz+LwbCoeU+BQgiBCJJA
+         /TQ6lXdFiU+OAshE+xOfb+ZiryTHpqiLHaDCvjuf9PXrFlsC/BxtRZZ9879y5OMfUFMu
+         R3RWRfIj8tdjfkVuJ+mLZDo7bUkZwJHFxk5vrYb9JHsrpJi9olKWvhrKg+QfNPnziH+n
+         Csew==
+X-Gm-Message-State: AOAM5300I7HcqHkcp+OkSDIJsiJ/x49Lbv29BVX1UmlOl/9zbejnsNKw
+        fBc2zu6gGHeOjYuMG/gLNbySq9Yxg0s=
+X-Google-Smtp-Source: ABdhPJzJ4OvGeQl6qvUy+PUDHr0UqLtp7kjKCeGyWvJmk6+6guljd3suOtV63FZ9B02w002a+g2+gQ==
+X-Received: by 2002:a63:2f04:: with SMTP id v4mr20804236pgv.380.1629505265100;
+        Fri, 20 Aug 2021 17:21:05 -0700 (PDT)
 Received: from localhost ([2405:201:6014:d820:9cc6:d37f:c2fd:dc6])
-        by smtp.gmail.com with ESMTPSA id l10sm7544802pjg.11.2021.08.20.17.21.01
+        by smtp.gmail.com with ESMTPSA id gj24sm10638102pjb.34.2021.08.20.17.21.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Aug 2021 17:21:01 -0700 (PDT)
+        Fri, 20 Aug 2021 17:21:04 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
@@ -56,9 +56,9 @@ Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH bpf-next v4 16/22] samples: bpf: Convert xdp_redirect to XDP samples helper
-Date:   Sat, 21 Aug 2021 05:50:04 +0530
-Message-Id: <20210821002010.845777-17-memxor@gmail.com>
+Subject: [PATCH bpf-next v4 17/22] samples: bpf: Convert xdp_redirect_cpu_kern.o to XDP samples helper
+Date:   Sat, 21 Aug 2021 05:50:05 +0530
+Message-Id: <20210821002010.845777-18-memxor@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210821002010.845777-1-memxor@gmail.com>
 References: <20210821002010.845777-1-memxor@gmail.com>
@@ -68,392 +68,709 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the libbpf skeleton facility and other utilities provided by XDP
-samples helper.
-
-One important note:
-The XDP samples helper handles ownership of installed XDP programs on
-devices, including responding to SIGINT and SIGTERM, so drop the code
-here and use the helpers we provide going forward for all xdp_redirect*
-conversions.
+Similar to xdp_monitor_kern, a lot of these BPF programs have been
+reimplemented properly consolidating missing features from other XDP
+samples. Hence, drop the unneeded code and rename to .bpf.c suffix.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- samples/bpf/Makefile            |   5 +-
- samples/bpf/xdp_redirect_user.c | 270 +++++++++++++-------------------
- 2 files changed, 116 insertions(+), 159 deletions(-)
+ samples/bpf/Makefile                          |   5 +-
+ ...rect_cpu_kern.c => xdp_redirect_cpu.bpf.c} | 393 +++++-------------
+ 2 files changed, 105 insertions(+), 293 deletions(-)
+ rename samples/bpf/{xdp_redirect_cpu_kern.c => xdp_redirect_cpu.bpf.c} (52%)
 
 diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 0b94a6acb348..d05105227ec5 100644
+index d05105227ec5..231cdbc773a7 100644
 --- a/samples/bpf/Makefile
 +++ b/samples/bpf/Makefile
-@@ -39,7 +39,6 @@ tprogs-y += lwt_len_hist
- tprogs-y += xdp_tx_iptunnel
- tprogs-y += test_map_in_map
- tprogs-y += per_socket_stats_example
--tprogs-y += xdp_redirect
- tprogs-y += xdp_redirect_map
- tprogs-y += xdp_redirect_map_multi
- tprogs-y += xdp_redirect_cpu
-@@ -56,6 +55,7 @@ tprogs-y += xdp_sample_pkts
- tprogs-y += ibumad
- tprogs-y += hbm
+@@ -165,7 +165,6 @@ always-y += tcp_tos_reflect_kern.o
+ always-y += tcp_dumpstats_kern.o
+ always-y += xdp_redirect_map_kern.o
+ always-y += xdp_redirect_map_multi_kern.o
+-always-y += xdp_redirect_cpu_kern.o
+ always-y += xdp_rxq_info_kern.o
+ always-y += xdp2skb_meta_kern.o
+ always-y += syscall_tp_kern.o
+@@ -356,6 +355,7 @@ endef
  
-+tprogs-y += xdp_redirect
- tprogs-y += xdp_monitor
+ CLANG_SYS_INCLUDES = $(call get_sys_includes,$(CLANG))
  
- # Libbpf dependencies
-@@ -100,7 +100,6 @@ lwt_len_hist-objs := lwt_len_hist_user.o
- xdp_tx_iptunnel-objs := xdp_tx_iptunnel_user.o
- test_map_in_map-objs := test_map_in_map_user.o
- per_socket_stats_example-objs := cookie_uid_helper_example.o
--xdp_redirect-objs := xdp_redirect_user.o
- xdp_redirect_map-objs := xdp_redirect_map_user.o
- xdp_redirect_map_multi-objs := xdp_redirect_map_multi_user.o
- xdp_redirect_cpu-objs := xdp_redirect_cpu_user.o
-@@ -117,6 +116,7 @@ xdp_sample_pkts-objs := xdp_sample_pkts_user.o
- ibumad-objs := ibumad_user.o
- hbm-objs := hbm.o $(CGROUP_HELPERS)
++$(obj)/xdp_redirect_cpu.bpf.o: $(obj)/xdp_sample.bpf.o
+ $(obj)/xdp_redirect.bpf.o: $(obj)/xdp_sample.bpf.o
+ $(obj)/xdp_monitor.bpf.o: $(obj)/xdp_sample.bpf.o
  
-+xdp_redirect-objs := xdp_redirect_user.o $(XDP_SAMPLE)
- xdp_monitor-objs := xdp_monitor_user.o $(XDP_SAMPLE)
+@@ -367,9 +367,10 @@ $(obj)/%.bpf.o: $(src)/%.bpf.c $(obj)/vmlinux.h $(src)/xdp_sample.bpf.h $(src)/x
+ 		-I$(srctree)/tools/lib $(CLANG_SYS_INCLUDES) \
+ 		-c $(filter %.bpf.c,$^) -o $@
  
- # Tell kbuild to always build the programs
-@@ -312,6 +312,7 @@ verify_target_bpf: verify_cmds
- $(BPF_SAMPLES_PATH)/*.c: verify_target_bpf $(LIBBPF)
- $(src)/*.c: verify_target_bpf $(LIBBPF)
+-LINKED_SKELS := xdp_redirect.skel.h xdp_monitor.skel.h
++LINKED_SKELS := xdp_redirect_cpu.skel.h xdp_redirect.skel.h xdp_monitor.skel.h
+ clean-files += $(LINKED_SKELS)
  
-+$(obj)/xdp_redirect_user.o: $(obj)/xdp_redirect.skel.h
- $(obj)/xdp_monitor_user.o: $(obj)/xdp_monitor.skel.h
++xdp_redirect_cpu.skel.h-deps := xdp_redirect_cpu.bpf.o xdp_sample.bpf.o
+ xdp_redirect.skel.h-deps := xdp_redirect.bpf.o xdp_sample.bpf.o
+ xdp_monitor.skel.h-deps := xdp_monitor.bpf.o xdp_sample.bpf.o
  
- $(obj)/tracex5_kern.o: $(obj)/syscall_nrs.h
-diff --git a/samples/bpf/xdp_redirect_user.c b/samples/bpf/xdp_redirect_user.c
-index 93854e135134..7af5b07a7523 100644
---- a/samples/bpf/xdp_redirect_user.c
-+++ b/samples/bpf/xdp_redirect_user.c
-@@ -1,6 +1,10 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /* Copyright (c) 2016 John Fastabend <john.r.fastabend@intel.com>
+diff --git a/samples/bpf/xdp_redirect_cpu_kern.c b/samples/bpf/xdp_redirect_cpu.bpf.c
+similarity index 52%
+rename from samples/bpf/xdp_redirect_cpu_kern.c
+rename to samples/bpf/xdp_redirect_cpu.bpf.c
+index 8255025dea97..f10fe3cf25f6 100644
+--- a/samples/bpf/xdp_redirect_cpu_kern.c
++++ b/samples/bpf/xdp_redirect_cpu.bpf.c
+@@ -2,74 +2,18 @@
+  *
+  *  GPLv2, Copyright(c) 2017 Jesper Dangaard Brouer, Red Hat, Inc.
   */
-+static const char *__doc__ =
-+"XDP redirect tool, using bpf_redirect helper\n"
-+"Usage: xdp_redirect <IFINDEX|IFNAME>_IN <IFINDEX|IFNAME>_OUT\n";
+-#include <uapi/linux/if_ether.h>
+-#include <uapi/linux/if_packet.h>
+-#include <uapi/linux/if_vlan.h>
+-#include <uapi/linux/ip.h>
+-#include <uapi/linux/ipv6.h>
+-#include <uapi/linux/in.h>
+-#include <uapi/linux/tcp.h>
+-#include <uapi/linux/udp.h>
+-
+-#include <uapi/linux/bpf.h>
+-#include <bpf/bpf_helpers.h>
++#include "vmlinux.h"
++#include "xdp_sample.bpf.h"
++#include "xdp_sample_shared.h"
+ #include "hash_func01.h"
+ 
+-#define MAX_CPUS NR_CPUS
+-
+ /* Special map type that can XDP_REDIRECT frames to another CPU */
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_CPUMAP);
+ 	__uint(key_size, sizeof(u32));
+ 	__uint(value_size, sizeof(struct bpf_cpumap_val));
+-	__uint(max_entries, MAX_CPUS);
+ } cpu_map SEC(".maps");
+ 
+-/* Common stats data record to keep userspace more simple */
+-struct datarec {
+-	__u64 processed;
+-	__u64 dropped;
+-	__u64 issue;
+-	__u64 xdp_pass;
+-	__u64 xdp_drop;
+-	__u64 xdp_redirect;
+-};
+-
+-/* Count RX packets, as XDP bpf_prog doesn't get direct TX-success
+- * feedback.  Redirect TX errors can be caught via a tracepoint.
+- */
+-struct {
+-	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+-	__type(key, u32);
+-	__type(value, struct datarec);
+-	__uint(max_entries, 1);
+-} rx_cnt SEC(".maps");
+-
+-/* Used by trace point */
+-struct {
+-	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+-	__type(key, u32);
+-	__type(value, struct datarec);
+-	__uint(max_entries, 2);
+-	/* TODO: have entries for all possible errno's */
+-} redirect_err_cnt SEC(".maps");
+-
+-/* Used by trace point */
+-struct {
+-	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+-	__type(key, u32);
+-	__type(value, struct datarec);
+-	__uint(max_entries, MAX_CPUS);
+-} cpumap_enqueue_cnt SEC(".maps");
+-
+-/* Used by trace point */
+-struct {
+-	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+-	__type(key, u32);
+-	__type(value, struct datarec);
+-	__uint(max_entries, 1);
+-} cpumap_kthread_cnt SEC(".maps");
+-
+ /* Set of maps controlling available CPU, and for iterating through
+  * selectable redirect CPUs.
+  */
+@@ -77,14 +21,15 @@ struct {
+ 	__uint(type, BPF_MAP_TYPE_ARRAY);
+ 	__type(key, u32);
+ 	__type(value, u32);
+-	__uint(max_entries, MAX_CPUS);
+ } cpus_available SEC(".maps");
 +
- #include <linux/bpf.h>
- #include <linux/if_link.h>
- #include <assert.h>
-@@ -13,126 +17,73 @@
- #include <net/if.h>
- #include <unistd.h>
- #include <libgen.h>
-+#include <getopt.h>
- #include <sys/resource.h>
--
--#include "bpf_util.h"
- #include <bpf/bpf.h>
- #include <bpf/libbpf.h>
-+#include "bpf_util.h"
-+#include "xdp_sample_user.h"
-+#include "xdp_redirect.skel.h"
- 
--static int ifindex_in;
--static int ifindex_out;
--static bool ifindex_out_xdp_dummy_attached = true;
--static __u32 prog_id;
--static __u32 dummy_prog_id;
--
--static __u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
--static int rxcnt_map_fd;
--
--static void int_exit(int sig)
--{
--	__u32 curr_prog_id = 0;
--
--	if (bpf_get_link_xdp_id(ifindex_in, &curr_prog_id, xdp_flags)) {
--		printf("bpf_get_link_xdp_id failed\n");
--		exit(1);
--	}
--	if (prog_id == curr_prog_id)
--		bpf_set_link_xdp_fd(ifindex_in, -1, xdp_flags);
--	else if (!curr_prog_id)
--		printf("couldn't find a prog id on iface IN\n");
--	else
--		printf("program on iface IN changed, not removing\n");
--
--	if (ifindex_out_xdp_dummy_attached) {
--		curr_prog_id = 0;
--		if (bpf_get_link_xdp_id(ifindex_out, &curr_prog_id,
--					xdp_flags)) {
--			printf("bpf_get_link_xdp_id failed\n");
--			exit(1);
--		}
--		if (dummy_prog_id == curr_prog_id)
--			bpf_set_link_xdp_fd(ifindex_out, -1, xdp_flags);
--		else if (!curr_prog_id)
--			printf("couldn't find a prog id on iface OUT\n");
--		else
--			printf("program on iface OUT changed, not removing\n");
--	}
--	exit(0);
--}
--
--static void poll_stats(int interval, int ifindex)
--{
--	unsigned int nr_cpus = bpf_num_possible_cpus();
--	__u64 values[nr_cpus], prev[nr_cpus];
--
--	memset(prev, 0, sizeof(prev));
--
--	while (1) {
--		__u64 sum = 0;
--		__u32 key = 0;
--		int i;
--
--		sleep(interval);
--		assert(bpf_map_lookup_elem(rxcnt_map_fd, &key, values) == 0);
--		for (i = 0; i < nr_cpus; i++)
--			sum += (values[i] - prev[i]);
--		if (sum)
--			printf("ifindex %i: %10llu pkt/s\n",
--			       ifindex, sum / interval);
--		memcpy(prev, values, sizeof(values));
--	}
--}
-+static int mask = SAMPLE_RX_CNT | SAMPLE_REDIRECT_ERR_CNT |
-+		  SAMPLE_EXCEPTION_CNT | SAMPLE_DEVMAP_XMIT_CNT_MULTI;
- 
--static void usage(const char *prog)
--{
--	fprintf(stderr,
--		"usage: %s [OPTS] <IFNAME|IFINDEX>_IN <IFNAME|IFINDEX>_OUT\n\n"
--		"OPTS:\n"
--		"    -S    use skb-mode\n"
--		"    -N    enforce native mode\n"
--		"    -F    force loading prog\n",
--		prog);
--}
-+DEFINE_SAMPLE_INIT(xdp_redirect);
- 
-+static const struct option long_options[] = {
-+	{"help",	no_argument,		NULL, 'h' },
-+	{"skb-mode",	no_argument,		NULL, 'S' },
-+	{"force",	no_argument,		NULL, 'F' },
-+	{"stats",	no_argument,		NULL, 's' },
-+	{"interval",	required_argument,	NULL, 'i' },
-+	{"verbose",	no_argument,		NULL, 'v' },
-+	{}
-+};
- 
- int main(int argc, char **argv)
- {
--	struct bpf_prog_load_attr prog_load_attr = {
--		.prog_type	= BPF_PROG_TYPE_XDP,
--	};
--	struct bpf_program *prog, *dummy_prog;
--	int prog_fd, tx_port_map_fd, opt;
--	struct bpf_prog_info info = {};
--	__u32 info_len = sizeof(info);
--	const char *optstr = "FSN";
--	struct bpf_object *obj;
--	char filename[256];
--	int dummy_prog_fd;
--	int ret, key = 0;
--
--	while ((opt = getopt(argc, argv, optstr)) != -1) {
-+	int ifindex_in, ifindex_out, opt;
-+	char str[2 * IF_NAMESIZE + 1];
-+	char ifname_out[IF_NAMESIZE];
-+	char ifname_in[IF_NAMESIZE];
-+	int ret = EXIT_FAIL_OPTION;
-+	unsigned long interval = 2;
-+	struct xdp_redirect *skel;
-+	bool generic = false;
-+	bool force = false;
-+	bool error = true;
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_ARRAY);
+ 	__type(key, u32);
+ 	__type(value, u32);
+ 	__uint(max_entries, 1);
+ } cpus_count SEC(".maps");
 +
-+	while ((opt = getopt_long(argc, argv, "hSFi:vs",
-+				  long_options, NULL)) != -1) {
- 		switch (opt) {
- 		case 'S':
--			xdp_flags |= XDP_FLAGS_SKB_MODE;
--			break;
--		case 'N':
--			/* default, set below */
-+			generic = true;
-+			mask &= ~(SAMPLE_DEVMAP_XMIT_CNT |
-+				  SAMPLE_DEVMAP_XMIT_CNT_MULTI);
- 			break;
- 		case 'F':
--			xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;
-+			force = true;
-+			break;
-+		case 'i':
-+			interval = strtoul(optarg, NULL, 0);
-+			break;
-+		case 'v':
-+			sample_switch_mode();
-+			break;
-+		case 's':
-+			mask |= SAMPLE_REDIRECT_CNT;
- 			break;
-+		case 'h':
-+			error = false;
- 		default:
--			usage(basename(argv[0]));
--			return 1;
-+			sample_usage(argv, long_options, __doc__, mask, error);
-+			return ret;
- 		}
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+ 	__type(key, u32);
+@@ -92,24 +37,16 @@ struct {
+ 	__uint(max_entries, 1);
+ } cpus_iterator SEC(".maps");
+ 
+-/* Used by trace point */
+ struct {
+-	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+-	__type(key, u32);
+-	__type(value, struct datarec);
++	__uint(type, BPF_MAP_TYPE_DEVMAP);
++	__uint(key_size, sizeof(int));
++	__uint(value_size, sizeof(struct bpf_devmap_val));
+ 	__uint(max_entries, 1);
+-} exception_cnt SEC(".maps");
++} tx_port SEC(".maps");
+ 
+-/* Helper parse functions */
++char tx_mac_addr[ETH_ALEN];
+ 
+-/* Parse Ethernet layer 2, extract network layer 3 offset and protocol
+- *
+- * Returns false on error and non-supported ether-type
+- */
+-struct vlan_hdr {
+-	__be16 h_vlan_TCI;
+-	__be16 h_vlan_encapsulated_proto;
+-};
++/* Helper parse functions */
+ 
+ static __always_inline
+ bool parse_eth(struct ethhdr *eth, void *data_end,
+@@ -125,11 +62,12 @@ bool parse_eth(struct ethhdr *eth, void *data_end,
+ 	eth_type = eth->h_proto;
+ 
+ 	/* Skip non 802.3 Ethertypes */
+-	if (unlikely(ntohs(eth_type) < ETH_P_802_3_MIN))
++	if (__builtin_expect(bpf_ntohs(eth_type) < ETH_P_802_3_MIN, 0))
+ 		return false;
+ 
+ 	/* Handle VLAN tagged packet */
+-	if (eth_type == htons(ETH_P_8021Q) || eth_type == htons(ETH_P_8021AD)) {
++	if (eth_type == bpf_htons(ETH_P_8021Q) ||
++	    eth_type == bpf_htons(ETH_P_8021AD)) {
+ 		struct vlan_hdr *vlan_hdr;
+ 
+ 		vlan_hdr = (void *)eth + offset;
+@@ -139,7 +77,8 @@ bool parse_eth(struct ethhdr *eth, void *data_end,
+ 		eth_type = vlan_hdr->h_vlan_encapsulated_proto;
+ 	}
+ 	/* Handle double VLAN tagged packet */
+-	if (eth_type == htons(ETH_P_8021Q) || eth_type == htons(ETH_P_8021AD)) {
++	if (eth_type == bpf_htons(ETH_P_8021Q) ||
++	    eth_type == bpf_htons(ETH_P_8021AD)) {
+ 		struct vlan_hdr *vlan_hdr;
+ 
+ 		vlan_hdr = (void *)eth + offset;
+@@ -149,7 +88,7 @@ bool parse_eth(struct ethhdr *eth, void *data_end,
+ 		eth_type = vlan_hdr->h_vlan_encapsulated_proto;
  	}
  
--	if (!(xdp_flags & XDP_FLAGS_SKB_MODE))
--		xdp_flags |= XDP_FLAGS_DRV_MODE;
--
--	if (optind + 2 != argc) {
--		printf("usage: %s <IFNAME|IFINDEX>_IN <IFNAME|IFINDEX>_OUT\n", argv[0]);
--		return 1;
-+	if (argc <= optind + 1) {
-+		sample_usage(argv, long_options, __doc__, mask, true);
-+		return ret;
- 	}
- 
- 	ifindex_in = if_nametoindex(argv[optind]);
-@@ -143,75 +94,80 @@ int main(int argc, char **argv)
- 	if (!ifindex_out)
- 		ifindex_out = strtoul(argv[optind + 1], NULL, 0);
- 
--	printf("input: %d output: %d\n", ifindex_in, ifindex_out);
--
--	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
--	prog_load_attr.file = filename;
--
--	if (bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd))
--		return 1;
--
--	prog = bpf_program__next(NULL, obj);
--	dummy_prog = bpf_program__next(prog, obj);
--	if (!prog || !dummy_prog) {
--		printf("finding a prog in obj file failed\n");
--		return 1;
-+	if (!ifindex_in || !ifindex_out) {
-+		fprintf(stderr, "Bad interface index or name\n");
-+		sample_usage(argv, long_options, __doc__, mask, true);
-+		goto end;
- 	}
--	/* bpf_prog_load_xattr gives us the pointer to first prog's fd,
--	 * so we're missing only the fd for dummy prog
--	 */
--	dummy_prog_fd = bpf_program__fd(dummy_prog);
--	if (prog_fd < 0 || dummy_prog_fd < 0) {
--		printf("bpf_prog_load_xattr: %s\n", strerror(errno));
--		return 1;
-+
-+	skel = xdp_redirect__open();
-+	if (!skel) {
-+		fprintf(stderr, "Failed to xdp_redirect__open: %s\n", strerror(errno));
-+		ret = EXIT_FAIL_BPF;
-+		goto end;
- 	}
- 
--	tx_port_map_fd = bpf_object__find_map_fd_by_name(obj, "tx_port");
--	rxcnt_map_fd = bpf_object__find_map_fd_by_name(obj, "rxcnt");
--	if (tx_port_map_fd < 0 || rxcnt_map_fd < 0) {
--		printf("bpf_object__find_map_fd_by_name failed\n");
--		return 1;
-+	ret = sample_init_pre_load(skel);
-+	if (ret < 0) {
-+		fprintf(stderr, "Failed to sample_init_pre_load: %s\n", strerror(-ret));
-+		ret = EXIT_FAIL_BPF;
-+		goto end_destroy;
- 	}
- 
--	if (bpf_set_link_xdp_fd(ifindex_in, prog_fd, xdp_flags) < 0) {
--		printf("ERROR: link set xdp fd failed on %d\n", ifindex_in);
--		return 1;
-+	skel->rodata->from_match[0] = ifindex_in;
-+	skel->rodata->to_match[0] = ifindex_out;
-+	skel->rodata->ifindex_out = ifindex_out;
-+
-+	ret = xdp_redirect__load(skel);
-+	if (ret < 0) {
-+		fprintf(stderr, "Failed to xdp_redirect__load: %s\n", strerror(errno));
-+		ret = EXIT_FAIL_BPF;
-+		goto end_destroy;
- 	}
- 
--	ret = bpf_obj_get_info_by_fd(prog_fd, &info, &info_len);
--	if (ret) {
--		printf("can't get prog info - %s\n", strerror(errno));
--		return ret;
-+	ret = sample_init(skel, mask);
-+	if (ret < 0) {
-+		fprintf(stderr, "Failed to initialize sample: %s\n", strerror(-ret));
-+		ret = EXIT_FAIL;
-+		goto end_destroy;
- 	}
--	prog_id = info.id;
-+
-+	ret = EXIT_FAIL_XDP;
-+	if (sample_install_xdp(skel->progs.xdp_redirect_prog, ifindex_in,
-+			       generic, force) < 0)
-+		goto end_destroy;
- 
- 	/* Loading dummy XDP prog on out-device */
--	if (bpf_set_link_xdp_fd(ifindex_out, dummy_prog_fd,
--			    (xdp_flags | XDP_FLAGS_UPDATE_IF_NOEXIST)) < 0) {
--		printf("WARN: link set xdp fd failed on %d\n", ifindex_out);
--		ifindex_out_xdp_dummy_attached = false;
-+	sample_install_xdp(skel->progs.xdp_redirect_dummy_prog, ifindex_out,
-+			   generic, force);
-+
-+	ret = EXIT_FAIL;
-+	if (!if_indextoname(ifindex_in, ifname_in)) {
-+		fprintf(stderr, "Failed to if_indextoname for %d: %s\n", ifindex_in,
-+			strerror(errno));
-+		goto end_destroy;
- 	}
- 
--	memset(&info, 0, sizeof(info));
--	ret = bpf_obj_get_info_by_fd(dummy_prog_fd, &info, &info_len);
--	if (ret) {
--		printf("can't get prog info - %s\n", strerror(errno));
--		return ret;
-+	if (!if_indextoname(ifindex_out, ifname_out)) {
-+		fprintf(stderr, "Failed to if_indextoname for %d: %s\n", ifindex_out,
-+			strerror(errno));
-+		goto end_destroy;
- 	}
--	dummy_prog_id = info.id;
- 
--	signal(SIGINT, int_exit);
--	signal(SIGTERM, int_exit);
-+	safe_strncpy(str, get_driver_name(ifindex_in), sizeof(str));
-+	printf("Redirecting from %s (ifindex %d; driver %s) to %s (ifindex %d; driver %s)\n",
-+	       ifname_in, ifindex_in, str, ifname_out, ifindex_out, get_driver_name(ifindex_out));
-+	snprintf(str, sizeof(str), "%s->%s", ifname_in, ifname_out);
- 
--	/* bpf redirect port */
--	ret = bpf_map_update_elem(tx_port_map_fd, &key, &ifindex_out, 0);
--	if (ret) {
--		perror("bpf_update_elem");
--		goto out;
-+	ret = sample_run(interval, NULL, NULL);
-+	if (ret < 0) {
-+		fprintf(stderr, "Failed during sample run: %s\n", strerror(-ret));
-+		ret = EXIT_FAIL;
-+		goto end_destroy;
- 	}
--
--	poll_stats(2, ifindex_out);
--
--out:
--	return ret;
-+	ret = EXIT_OK;
-+end_destroy:
-+	xdp_redirect__destroy(skel);
-+end:
-+	sample_exit(ret);
+-	*eth_proto = ntohs(eth_type);
++	*eth_proto = bpf_ntohs(eth_type);
+ 	*l3_offset = offset;
+ 	return true;
  }
+@@ -172,7 +111,7 @@ u16 get_dest_port_ipv4_udp(struct xdp_md *ctx, u64 nh_off)
+ 	if (udph + 1 > data_end)
+ 		return 0;
+ 
+-	dport = ntohs(udph->dest);
++	dport = bpf_ntohs(udph->dest);
+ 	return dport;
+ }
+ 
+@@ -200,50 +139,48 @@ int get_proto_ipv6(struct xdp_md *ctx, u64 nh_off)
+ 	return ip6h->nexthdr;
+ }
+ 
+-SEC("xdp_cpu_map0")
++SEC("xdp")
+ int  xdp_prognum0_no_touch(struct xdp_md *ctx)
+ {
+-	void *data_end = (void *)(long)ctx->data_end;
+-	void *data     = (void *)(long)ctx->data;
++	u32 key = bpf_get_smp_processor_id();
+ 	struct datarec *rec;
+ 	u32 *cpu_selected;
+-	u32 cpu_dest;
+-	u32 key = 0;
++	u32 cpu_dest = 0;
++	u32 key0 = 0;
+ 
+ 	/* Only use first entry in cpus_available */
+-	cpu_selected = bpf_map_lookup_elem(&cpus_available, &key);
++	cpu_selected = bpf_map_lookup_elem(&cpus_available, &key0);
+ 	if (!cpu_selected)
+ 		return XDP_ABORTED;
+ 	cpu_dest = *cpu_selected;
+ 
+-	/* Count RX packet in map */
+ 	rec = bpf_map_lookup_elem(&rx_cnt, &key);
+ 	if (!rec)
+-		return XDP_ABORTED;
+-	rec->processed++;
++		return XDP_PASS;
++	NO_TEAR_INC(rec->processed);
+ 
+-	if (cpu_dest >= MAX_CPUS) {
+-		rec->issue++;
++	if (cpu_dest >= nr_cpus) {
++		NO_TEAR_INC(rec->issue);
+ 		return XDP_ABORTED;
+ 	}
+-
+ 	return bpf_redirect_map(&cpu_map, cpu_dest, 0);
+ }
+ 
+-SEC("xdp_cpu_map1_touch_data")
++SEC("xdp")
+ int  xdp_prognum1_touch_data(struct xdp_md *ctx)
+ {
+ 	void *data_end = (void *)(long)ctx->data_end;
+ 	void *data     = (void *)(long)ctx->data;
++	u32 key = bpf_get_smp_processor_id();
+ 	struct ethhdr *eth = data;
+ 	struct datarec *rec;
+ 	u32 *cpu_selected;
+-	u32 cpu_dest;
++	u32 cpu_dest = 0;
++	u32 key0 = 0;
+ 	u16 eth_type;
+-	u32 key = 0;
+ 
+ 	/* Only use first entry in cpus_available */
+-	cpu_selected = bpf_map_lookup_elem(&cpus_available, &key);
++	cpu_selected = bpf_map_lookup_elem(&cpus_available, &key0);
+ 	if (!cpu_selected)
+ 		return XDP_ABORTED;
+ 	cpu_dest = *cpu_selected;
+@@ -252,36 +189,33 @@ int  xdp_prognum1_touch_data(struct xdp_md *ctx)
+ 	if (eth + 1 > data_end)
+ 		return XDP_ABORTED;
+ 
+-	/* Count RX packet in map */
+ 	rec = bpf_map_lookup_elem(&rx_cnt, &key);
+ 	if (!rec)
+-		return XDP_ABORTED;
+-	rec->processed++;
++		return XDP_PASS;
++	NO_TEAR_INC(rec->processed);
+ 
+ 	/* Read packet data, and use it (drop non 802.3 Ethertypes) */
+ 	eth_type = eth->h_proto;
+-	if (ntohs(eth_type) < ETH_P_802_3_MIN) {
+-		rec->dropped++;
++	if (bpf_ntohs(eth_type) < ETH_P_802_3_MIN) {
++		NO_TEAR_INC(rec->dropped);
+ 		return XDP_DROP;
+ 	}
+ 
+-	if (cpu_dest >= MAX_CPUS) {
+-		rec->issue++;
++	if (cpu_dest >= nr_cpus) {
++		NO_TEAR_INC(rec->issue);
+ 		return XDP_ABORTED;
+ 	}
+-
+ 	return bpf_redirect_map(&cpu_map, cpu_dest, 0);
+ }
+ 
+-SEC("xdp_cpu_map2_round_robin")
++SEC("xdp")
+ int  xdp_prognum2_round_robin(struct xdp_md *ctx)
+ {
+ 	void *data_end = (void *)(long)ctx->data_end;
+ 	void *data     = (void *)(long)ctx->data;
+-	struct ethhdr *eth = data;
++	u32 key = bpf_get_smp_processor_id();
+ 	struct datarec *rec;
+-	u32 cpu_dest;
+-	u32 *cpu_lookup;
++	u32 cpu_dest = 0;
+ 	u32 key0 = 0;
+ 
+ 	u32 *cpu_selected;
+@@ -307,40 +241,37 @@ int  xdp_prognum2_round_robin(struct xdp_md *ctx)
+ 		return XDP_ABORTED;
+ 	cpu_dest = *cpu_selected;
+ 
+-	/* Count RX packet in map */
+-	rec = bpf_map_lookup_elem(&rx_cnt, &key0);
++	rec = bpf_map_lookup_elem(&rx_cnt, &key);
+ 	if (!rec)
+-		return XDP_ABORTED;
+-	rec->processed++;
++		return XDP_PASS;
++	NO_TEAR_INC(rec->processed);
+ 
+-	if (cpu_dest >= MAX_CPUS) {
+-		rec->issue++;
++	if (cpu_dest >= nr_cpus) {
++		NO_TEAR_INC(rec->issue);
+ 		return XDP_ABORTED;
+ 	}
+-
+ 	return bpf_redirect_map(&cpu_map, cpu_dest, 0);
+ }
+ 
+-SEC("xdp_cpu_map3_proto_separate")
++SEC("xdp")
+ int  xdp_prognum3_proto_separate(struct xdp_md *ctx)
+ {
+ 	void *data_end = (void *)(long)ctx->data_end;
+ 	void *data     = (void *)(long)ctx->data;
++	u32 key = bpf_get_smp_processor_id();
+ 	struct ethhdr *eth = data;
+ 	u8 ip_proto = IPPROTO_UDP;
+ 	struct datarec *rec;
+ 	u16 eth_proto = 0;
+ 	u64 l3_offset = 0;
+ 	u32 cpu_dest = 0;
+-	u32 cpu_idx = 0;
+ 	u32 *cpu_lookup;
+-	u32 key = 0;
++	u32 cpu_idx = 0;
+ 
+-	/* Count RX packet in map */
+ 	rec = bpf_map_lookup_elem(&rx_cnt, &key);
+ 	if (!rec)
+-		return XDP_ABORTED;
+-	rec->processed++;
++		return XDP_PASS;
++	NO_TEAR_INC(rec->processed);
+ 
+ 	if (!(parse_eth(eth, data_end, &eth_proto, &l3_offset)))
+ 		return XDP_PASS; /* Just skip */
+@@ -381,35 +312,33 @@ int  xdp_prognum3_proto_separate(struct xdp_md *ctx)
+ 		return XDP_ABORTED;
+ 	cpu_dest = *cpu_lookup;
+ 
+-	if (cpu_dest >= MAX_CPUS) {
+-		rec->issue++;
++	if (cpu_dest >= nr_cpus) {
++		NO_TEAR_INC(rec->issue);
+ 		return XDP_ABORTED;
+ 	}
+-
+ 	return bpf_redirect_map(&cpu_map, cpu_dest, 0);
+ }
+ 
+-SEC("xdp_cpu_map4_ddos_filter_pktgen")
++SEC("xdp")
+ int  xdp_prognum4_ddos_filter_pktgen(struct xdp_md *ctx)
+ {
+ 	void *data_end = (void *)(long)ctx->data_end;
+ 	void *data     = (void *)(long)ctx->data;
++	u32 key = bpf_get_smp_processor_id();
+ 	struct ethhdr *eth = data;
+ 	u8 ip_proto = IPPROTO_UDP;
+ 	struct datarec *rec;
+ 	u16 eth_proto = 0;
+ 	u64 l3_offset = 0;
+ 	u32 cpu_dest = 0;
++	u32 *cpu_lookup;
+ 	u32 cpu_idx = 0;
+ 	u16 dest_port;
+-	u32 *cpu_lookup;
+-	u32 key = 0;
+ 
+-	/* Count RX packet in map */
+ 	rec = bpf_map_lookup_elem(&rx_cnt, &key);
+ 	if (!rec)
+-		return XDP_ABORTED;
+-	rec->processed++;
++		return XDP_PASS;
++	NO_TEAR_INC(rec->processed);
+ 
+ 	if (!(parse_eth(eth, data_end, &eth_proto, &l3_offset)))
+ 		return XDP_PASS; /* Just skip */
+@@ -443,8 +372,7 @@ int  xdp_prognum4_ddos_filter_pktgen(struct xdp_md *ctx)
+ 		/* DDoS filter UDP port 9 (pktgen) */
+ 		dest_port = get_dest_port_ipv4_udp(ctx, l3_offset);
+ 		if (dest_port == 9) {
+-			if (rec)
+-				rec->dropped++;
++			NO_TEAR_INC(rec->dropped);
+ 			return XDP_DROP;
+ 		}
+ 		break;
+@@ -457,11 +385,10 @@ int  xdp_prognum4_ddos_filter_pktgen(struct xdp_md *ctx)
+ 		return XDP_ABORTED;
+ 	cpu_dest = *cpu_lookup;
+ 
+-	if (cpu_dest >= MAX_CPUS) {
+-		rec->issue++;
++	if (cpu_dest >= nr_cpus) {
++		NO_TEAR_INC(rec->issue);
+ 		return XDP_ABORTED;
+ 	}
+-
+ 	return bpf_redirect_map(&cpu_map, cpu_dest, 0);
+ }
+ 
+@@ -496,10 +423,10 @@ u32 get_ipv6_hash_ip_pair(struct xdp_md *ctx, u64 nh_off)
+ 	if (ip6h + 1 > data_end)
+ 		return 0;
+ 
+-	cpu_hash  = ip6h->saddr.s6_addr32[0] + ip6h->daddr.s6_addr32[0];
+-	cpu_hash += ip6h->saddr.s6_addr32[1] + ip6h->daddr.s6_addr32[1];
+-	cpu_hash += ip6h->saddr.s6_addr32[2] + ip6h->daddr.s6_addr32[2];
+-	cpu_hash += ip6h->saddr.s6_addr32[3] + ip6h->daddr.s6_addr32[3];
++	cpu_hash  = ip6h->saddr.in6_u.u6_addr32[0] + ip6h->daddr.in6_u.u6_addr32[0];
++	cpu_hash += ip6h->saddr.in6_u.u6_addr32[1] + ip6h->daddr.in6_u.u6_addr32[1];
++	cpu_hash += ip6h->saddr.in6_u.u6_addr32[2] + ip6h->daddr.in6_u.u6_addr32[2];
++	cpu_hash += ip6h->saddr.in6_u.u6_addr32[3] + ip6h->daddr.in6_u.u6_addr32[3];
+ 	cpu_hash = SuperFastHash((char *)&cpu_hash, 4, INITVAL + ip6h->nexthdr);
+ 
+ 	return cpu_hash;
+@@ -509,30 +436,29 @@ u32 get_ipv6_hash_ip_pair(struct xdp_md *ctx, u64 nh_off)
+  * hashing scheme is symmetric, meaning swapping IP src/dest still hit
+  * same CPU.
+  */
+-SEC("xdp_cpu_map5_lb_hash_ip_pairs")
++SEC("xdp")
+ int  xdp_prognum5_lb_hash_ip_pairs(struct xdp_md *ctx)
+ {
+ 	void *data_end = (void *)(long)ctx->data_end;
+ 	void *data     = (void *)(long)ctx->data;
++	u32 key = bpf_get_smp_processor_id();
+ 	struct ethhdr *eth = data;
+-	u8 ip_proto = IPPROTO_UDP;
+ 	struct datarec *rec;
+ 	u16 eth_proto = 0;
+ 	u64 l3_offset = 0;
+ 	u32 cpu_dest = 0;
+ 	u32 cpu_idx = 0;
+ 	u32 *cpu_lookup;
++	u32 key0 = 0;
+ 	u32 *cpu_max;
+ 	u32 cpu_hash;
+-	u32 key = 0;
+ 
+-	/* Count RX packet in map */
+ 	rec = bpf_map_lookup_elem(&rx_cnt, &key);
+ 	if (!rec)
+-		return XDP_ABORTED;
+-	rec->processed++;
++		return XDP_PASS;
++	NO_TEAR_INC(rec->processed);
+ 
+-	cpu_max = bpf_map_lookup_elem(&cpus_count, &key);
++	cpu_max = bpf_map_lookup_elem(&cpus_count, &key0);
+ 	if (!cpu_max)
+ 		return XDP_ABORTED;
+ 
+@@ -560,171 +486,56 @@ int  xdp_prognum5_lb_hash_ip_pairs(struct xdp_md *ctx)
+ 		return XDP_ABORTED;
+ 	cpu_dest = *cpu_lookup;
+ 
+-	if (cpu_dest >= MAX_CPUS) {
+-		rec->issue++;
++	if (cpu_dest >= nr_cpus) {
++		NO_TEAR_INC(rec->issue);
+ 		return XDP_ABORTED;
+ 	}
+-
+ 	return bpf_redirect_map(&cpu_map, cpu_dest, 0);
+ }
+ 
+-char _license[] SEC("license") = "GPL";
+-
+-/*** Trace point code ***/
+-
+-/* Tracepoint format: /sys/kernel/debug/tracing/events/xdp/xdp_redirect/format
+- * Code in:                kernel/include/trace/events/xdp.h
+- */
+-struct xdp_redirect_ctx {
+-	u64 __pad;	// First 8 bytes are not accessible by bpf code
+-	int prog_id;	//	offset:8;  size:4; signed:1;
+-	u32 act;	//	offset:12  size:4; signed:0;
+-	int ifindex;	//	offset:16  size:4; signed:1;
+-	int err;	//	offset:20  size:4; signed:1;
+-	int to_ifindex;	//	offset:24  size:4; signed:1;
+-	u32 map_id;	//	offset:28  size:4; signed:0;
+-	int map_index;	//	offset:32  size:4; signed:1;
+-};			//	offset:36
+-
+-enum {
+-	XDP_REDIRECT_SUCCESS = 0,
+-	XDP_REDIRECT_ERROR = 1
+-};
+-
+-static __always_inline
+-int xdp_redirect_collect_stat(struct xdp_redirect_ctx *ctx)
++SEC("xdp_cpumap/redirect")
++int xdp_redirect_cpu_devmap(struct xdp_md *ctx)
+ {
+-	u32 key = XDP_REDIRECT_ERROR;
+-	struct datarec *rec;
+-	int err = ctx->err;
++	void *data_end = (void *)(long)ctx->data_end;
++	void *data = (void *)(long)ctx->data;
++	struct ethhdr *eth = data;
++	u64 nh_off;
+ 
+-	if (!err)
+-		key = XDP_REDIRECT_SUCCESS;
++	nh_off = sizeof(*eth);
++	if (data + nh_off > data_end)
++		return XDP_DROP;
+ 
+-	rec = bpf_map_lookup_elem(&redirect_err_cnt, &key);
+-	if (!rec)
+-		return 0;
+-	rec->dropped += 1;
+-
+-	return 0; /* Indicate event was filtered (no further processing)*/
+-	/*
+-	 * Returning 1 here would allow e.g. a perf-record tracepoint
+-	 * to see and record these events, but it doesn't work well
+-	 * in-practice as stopping perf-record also unload this
+-	 * bpf_prog.  Plus, there is additional overhead of doing so.
+-	 */
++	swap_src_dst_mac(data);
++	return bpf_redirect_map(&tx_port, 0, 0);
+ }
+ 
+-SEC("tracepoint/xdp/xdp_redirect_err")
+-int trace_xdp_redirect_err(struct xdp_redirect_ctx *ctx)
++SEC("xdp_cpumap/pass")
++int xdp_redirect_cpu_pass(struct xdp_md *ctx)
+ {
+-	return xdp_redirect_collect_stat(ctx);
++	return XDP_PASS;
+ }
+ 
+-SEC("tracepoint/xdp/xdp_redirect_map_err")
+-int trace_xdp_redirect_map_err(struct xdp_redirect_ctx *ctx)
++SEC("xdp_cpumap/drop")
++int xdp_redirect_cpu_drop(struct xdp_md *ctx)
+ {
+-	return xdp_redirect_collect_stat(ctx);
++	return XDP_DROP;
+ }
+ 
+-/* Tracepoint format: /sys/kernel/debug/tracing/events/xdp/xdp_exception/format
+- * Code in:                kernel/include/trace/events/xdp.h
+- */
+-struct xdp_exception_ctx {
+-	u64 __pad;	// First 8 bytes are not accessible by bpf code
+-	int prog_id;	//	offset:8;  size:4; signed:1;
+-	u32 act;	//	offset:12; size:4; signed:0;
+-	int ifindex;	//	offset:16; size:4; signed:1;
+-};
+-
+-SEC("tracepoint/xdp/xdp_exception")
+-int trace_xdp_exception(struct xdp_exception_ctx *ctx)
++SEC("xdp_devmap/egress")
++int xdp_redirect_egress_prog(struct xdp_md *ctx)
+ {
+-	struct datarec *rec;
+-	u32 key = 0;
+-
+-	rec = bpf_map_lookup_elem(&exception_cnt, &key);
+-	if (!rec)
+-		return 1;
+-	rec->dropped += 1;
+-
+-	return 0;
+-}
++	void *data_end = (void *)(long)ctx->data_end;
++	void *data = (void *)(long)ctx->data;
++	struct ethhdr *eth = data;
++	u64 nh_off;
+ 
+-/* Tracepoint: /sys/kernel/debug/tracing/events/xdp/xdp_cpumap_enqueue/format
+- * Code in:         kernel/include/trace/events/xdp.h
+- */
+-struct cpumap_enqueue_ctx {
+-	u64 __pad;		// First 8 bytes are not accessible by bpf code
+-	int map_id;		//	offset:8;  size:4; signed:1;
+-	u32 act;		//	offset:12; size:4; signed:0;
+-	int cpu;		//	offset:16; size:4; signed:1;
+-	unsigned int drops;	//	offset:20; size:4; signed:0;
+-	unsigned int processed;	//	offset:24; size:4; signed:0;
+-	int to_cpu;		//	offset:28; size:4; signed:1;
+-};
+-
+-SEC("tracepoint/xdp/xdp_cpumap_enqueue")
+-int trace_xdp_cpumap_enqueue(struct cpumap_enqueue_ctx *ctx)
+-{
+-	u32 to_cpu = ctx->to_cpu;
+-	struct datarec *rec;
++	nh_off = sizeof(*eth);
++	if (data + nh_off > data_end)
++		return XDP_DROP;
+ 
+-	if (to_cpu >= MAX_CPUS)
+-		return 1;
++	__builtin_memcpy(eth->h_source, (const char *)tx_mac_addr, ETH_ALEN);
+ 
+-	rec = bpf_map_lookup_elem(&cpumap_enqueue_cnt, &to_cpu);
+-	if (!rec)
+-		return 0;
+-	rec->processed += ctx->processed;
+-	rec->dropped   += ctx->drops;
+-
+-	/* Record bulk events, then userspace can calc average bulk size */
+-	if (ctx->processed > 0)
+-		rec->issue += 1;
+-
+-	/* Inception: It's possible to detect overload situations, via
+-	 * this tracepoint.  This can be used for creating a feedback
+-	 * loop to XDP, which can take appropriate actions to mitigate
+-	 * this overload situation.
+-	 */
+-	return 0;
++	return XDP_PASS;
+ }
+ 
+-/* Tracepoint: /sys/kernel/debug/tracing/events/xdp/xdp_cpumap_kthread/format
+- * Code in:         kernel/include/trace/events/xdp.h
+- */
+-struct cpumap_kthread_ctx {
+-	u64 __pad;			// First 8 bytes are not accessible
+-	int map_id;			//	offset:8;  size:4; signed:1;
+-	u32 act;			//	offset:12; size:4; signed:0;
+-	int cpu;			//	offset:16; size:4; signed:1;
+-	unsigned int drops;		//	offset:20; size:4; signed:0;
+-	unsigned int processed;		//	offset:24; size:4; signed:0;
+-	int sched;			//	offset:28; size:4; signed:1;
+-	unsigned int xdp_pass;		//	offset:32; size:4; signed:0;
+-	unsigned int xdp_drop;		//	offset:36; size:4; signed:0;
+-	unsigned int xdp_redirect;	//	offset:40; size:4; signed:0;
+-};
+-
+-SEC("tracepoint/xdp/xdp_cpumap_kthread")
+-int trace_xdp_cpumap_kthread(struct cpumap_kthread_ctx *ctx)
+-{
+-	struct datarec *rec;
+-	u32 key = 0;
+-
+-	rec = bpf_map_lookup_elem(&cpumap_kthread_cnt, &key);
+-	if (!rec)
+-		return 0;
+-	rec->processed += ctx->processed;
+-	rec->dropped   += ctx->drops;
+-	rec->xdp_pass  += ctx->xdp_pass;
+-	rec->xdp_drop  += ctx->xdp_drop;
+-	rec->xdp_redirect  += ctx->xdp_redirect;
+-
+-	/* Count times kthread yielded CPU via schedule call */
+-	if (ctx->sched)
+-		rec->issue++;
+-
+-	return 0;
+-}
++char _license[] SEC("license") = "GPL";
 -- 
 2.33.0
 
