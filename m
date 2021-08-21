@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E83BA3F378E
-	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 02:20:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7C213F378F
+	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 02:20:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240681AbhHUAVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 20:21:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57802 "EHLO
+        id S240794AbhHUAVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 20:21:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240668AbhHUAVF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 20:21:05 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B32ACC06175F;
-        Fri, 20 Aug 2021 17:20:26 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id m26so10014557pff.3;
-        Fri, 20 Aug 2021 17:20:26 -0700 (PDT)
+        with ESMTP id S240643AbhHUAVI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 20:21:08 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC4ABC061575;
+        Fri, 20 Aug 2021 17:20:29 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id n13-20020a17090a4e0d00b0017946980d8dso14932990pjh.5;
+        Fri, 20 Aug 2021 17:20:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=aIdOzPOyt5RWS2jcpOyOOwqGZSP27eRqXGJRYx8ozC0=;
-        b=kPh2noo7u8xW1KhmPGVdFH+w3ryckLvKKYa9cn94tnSO46Y/mklLLKylEbTSEe3wCp
-         tayOj9/y96XMqZxFxa1leXxyTw2Bg+ixo+Gw4StTDsnPTcyHKepLhxaPsaWjaQjLcAmj
-         YW4kg0uyTwWR/dFe7ZBQ1KUM5t/LCxedo9DDLxDB+9urJAzYe3PDnOG98oXtVbaymBDA
-         Kz6+lNm20Guw/wayPHCMUIR27FfgQi66sE3x4OdF0C6uzM38isyXLX+RSZaxZUEPdjGK
-         ek0cNYMtFvwRYKHEagK9kw7R9Q5LSpqoB8wlrKSXebw98DZlWgRr2JVvY0Q53TzfGt4K
-         fS7Q==
+        bh=BGV30f9MCuHvJJtoBnOiQfknQvRub3QyxEXDZjAzwvU=;
+        b=BVWKua8rY9avvM2ODO0fE9u8KofW2GPG4P8qWto9J4T/2Fqw3T+NirQZ+FVkIH5+Z6
+         nneAb2NU1peIEEdH6cENp5PXZHm9424fQjxQR8VMpnLzMwZXB3v0ELnZosEssL7BsK2F
+         Q5BnnScxGsxnEilXMj21EVeXxWY3PSO3hOV8XLRGBjnILDjihKqgaYmOOd9iCE9CJy5S
+         JY3FGndNfvoUE9ndwejavJlSds9UuIOyoLUMvGtfMD1D8rg8PO9U8CPR19iB1WUAuAWL
+         VNz70qYpa+Yt8HASksrjzsGl9IWfQ3iHnHZKtGcNzCuhrG9BJTOzr1LQuEnz/GakRy5D
+         elww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=aIdOzPOyt5RWS2jcpOyOOwqGZSP27eRqXGJRYx8ozC0=;
-        b=cm35XHqUHUAxye/u3FdKRNJohRGIbL6up1U7mXuZVDmlrgw2XZQr0Q8wJcM6X+ftrr
-         BSPUuB3rf660Hmd6wMBckB3xs6cJqYxJJLZGaarDTCrA/AOgEWzBR+2i46rdMqT1FmWm
-         3KQtfcJoplaEmUWSfKALhnWLPjw8A3wqtRLS3FGGFrw2GhX0xn7ooYIyxN5y9Ib6p6mB
-         GCzajNJ4jDx1SNhfG+ZvuA23EXoee8G2JzKKUTXrNWNl7THlOMEYfi87YZ4/pN5bMTll
-         qDI92hWRtaIms7xZLDhhmcUspmXYDP27+em+gG3TDpGyomMIpAfYiSXUarr4kal1liNT
-         nYXw==
-X-Gm-Message-State: AOAM533ZC29f4Wj0veYZsLGKYqx1BasyVqg3THjf1W6CKgyTS7Gk4sDC
-        mUbZxmkS7tLrhaczlErzvxIYaSuKgnM=
-X-Google-Smtp-Source: ABdhPJwrrl628l3vbR3gtxT3DIpAjwWUr5/12vPJl4SG78iz/2A3KfrA40eokVx6LZ+3YXfauA/tAA==
-X-Received: by 2002:a63:ee03:: with SMTP id e3mr21002423pgi.386.1629505226115;
-        Fri, 20 Aug 2021 17:20:26 -0700 (PDT)
+        bh=BGV30f9MCuHvJJtoBnOiQfknQvRub3QyxEXDZjAzwvU=;
+        b=MZNLBoOpDC0p0UWwm0yYdBV9NOoq0QycPsezdTgfydc1XTZIEgjaJaKEdBynbdF03w
+         ovfh243iUQ0oT2XsmxZbvN9cKV6+APmrXWLHCnpfnOCSiEUynwS4/pBw1EDqS7x/49nz
+         6JcIeXm7J2yNDOvhaMAh/anVoSTXhLxxqh0aHqDvE4R3i6iOt4kn+ohHzd2sc9XqNggu
+         HQvv0BSWPnfyI29m1vu0m1oxZBDELTh8e4Pbm3iHeaw+OMqAupmWHIyi/xwwYonw8AGk
+         tkWINeuIivelJlU84HG2Lgeae6aryikxNo/XdKr8SdBlXNPmES7pT4sfxG64p5yAWvbd
+         hYhQ==
+X-Gm-Message-State: AOAM530yyV6kDCEJx0DW3MoFKRtgP5aP0NLt2Xqx4Qkym+IwXKM+qXXZ
+        ASHwjEwKLICu5JS21PnUlUx+Pc/t+Aw=
+X-Google-Smtp-Source: ABdhPJwTxajDgJVIBlHl9PjeNHTrcwU4WFBpN6fC2Hqt/uY8Zc0Xj/hwUGDxW9J9ymfD9Rg/+jni0Q==
+X-Received: by 2002:a17:902:bd81:b029:12c:b6fb:feef with SMTP id q1-20020a170902bd81b029012cb6fbfeefmr18624563pls.84.1629505229128;
+        Fri, 20 Aug 2021 17:20:29 -0700 (PDT)
 Received: from localhost ([2405:201:6014:d820:9cc6:d37f:c2fd:dc6])
-        by smtp.gmail.com with ESMTPSA id f9sm12979258pjq.36.2021.08.20.17.20.25
+        by smtp.gmail.com with ESMTPSA id l12sm9648313pgc.41.2021.08.20.17.20.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Aug 2021 17:20:25 -0700 (PDT)
+        Fri, 20 Aug 2021 17:20:28 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
@@ -56,9 +56,9 @@ Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH bpf-next v4 04/22] samples: bpf: Add BPF support for redirect tracepoint
-Date:   Sat, 21 Aug 2021 05:49:52 +0530
-Message-Id: <20210821002010.845777-5-memxor@gmail.com>
+Subject: [PATCH bpf-next v4 05/22] samples: bpf: Add redirect tracepoint statistics support
+Date:   Sat, 21 Aug 2021 05:49:53 +0530
+Message-Id: <20210821002010.845777-6-memxor@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210821002010.845777-1-memxor@gmail.com>
 References: <20210821002010.845777-1-memxor@gmail.com>
@@ -68,286 +68,370 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds the shared BPF file that will be used going forward for
-sharing tracepoint programs among XDP redirect samples.
-
-Since vmlinux.h conflicts with tools/include for READ_ONCE/WRITE_ONCE
-and ARRAY_SIZE, they are copied in to xdp_sample.bpf.h along with other
-helpers that will be required.
+This implements per-errno reporting (for the ones we explicitly
+recognize), adds some help output, and implements the stats retrieval
+and printing functions.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- samples/bpf/xdp_sample.bpf.c | 112 ++++++++++++++++++++++++++++
- samples/bpf/xdp_sample.bpf.h | 141 +++++++++++++++++++++++++++++++++++
- 2 files changed, 253 insertions(+)
- create mode 100644 samples/bpf/xdp_sample.bpf.c
- create mode 100644 samples/bpf/xdp_sample.bpf.h
+ samples/bpf/xdp_sample_user.c | 194 ++++++++++++++++++++++++++++++++++
+ samples/bpf/xdp_sample_user.h |  21 ++++
+ 2 files changed, 215 insertions(+)
 
-diff --git a/samples/bpf/xdp_sample.bpf.c b/samples/bpf/xdp_sample.bpf.c
-new file mode 100644
-index 000000000000..e22f2a97a988
---- /dev/null
-+++ b/samples/bpf/xdp_sample.bpf.c
-@@ -0,0 +1,112 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*  GPLv2, Copyright(c) 2017 Jesper Dangaard Brouer, Red Hat, Inc. */
-+#include "xdp_sample.bpf.h"
-+
-+#include <bpf/bpf_tracing.h>
-+#include <bpf/bpf_core_read.h>
-+#include <bpf/bpf_helpers.h>
-+
-+array_map rx_cnt SEC(".maps");
-+array_map redir_err_cnt SEC(".maps");
-+
-+const volatile int nr_cpus = 0;
-+
-+/* These can be set before loading so that redundant comparisons can be DCE'd by
-+ * the verifier, and only actual matches are tried after loading tp_btf program.
-+ * This allows sample to filter tracepoint stats based on net_device.
-+ */
-+const volatile int from_match[32] = {};
-+const volatile int to_match[32] = {};
-+
-+/* Find if b is part of set a, but if a is empty set then evaluate to true */
-+#define IN_SET(a, b)                                                 \
-+	({                                                           \
-+		bool __res = !(a)[0];                                \
-+		for (int i = 0; i < ARRAY_SIZE(a) && (a)[i]; i++) { \
-+			__res = (a)[i] == (b);                       \
-+			if (__res)                                   \
-+				break;                               \
-+		}                                                    \
-+		__res;                                               \
-+	})
-+
-+static __always_inline __u32 xdp_get_err_key(int err)
-+{
-+	switch (err) {
-+	case 0:
-+		return 0;
-+	case -EINVAL:
-+		return 2;
-+	case -ENETDOWN:
-+		return 3;
-+	case -EMSGSIZE:
-+		return 4;
-+	case -EOPNOTSUPP:
-+		return 5;
-+	case -ENOSPC:
-+		return 6;
-+	default:
-+		return 1;
-+	}
-+}
-+
-+static __always_inline int xdp_redirect_collect_stat(int from, int err)
-+{
-+	u32 cpu = bpf_get_smp_processor_id();
-+	u32 key = XDP_REDIRECT_ERROR;
-+	struct datarec *rec;
-+	u32 idx;
-+
-+	if (!IN_SET(from_match, from))
-+		return 0;
-+
-+	key = xdp_get_err_key(err);
-+
-+	idx = key * nr_cpus + cpu;
-+	rec = bpf_map_lookup_elem(&redir_err_cnt, &idx);
-+	if (!rec)
-+		return 0;
-+	if (key)
-+		NO_TEAR_INC(rec->dropped);
-+	else
-+		NO_TEAR_INC(rec->processed);
-+	return 0; /* Indicate event was filtered (no further processing)*/
-+	/*
-+	 * Returning 1 here would allow e.g. a perf-record tracepoint
-+	 * to see and record these events, but it doesn't work well
-+	 * in-practice as stopping perf-record also unload this
-+	 * bpf_prog.  Plus, there is additional overhead of doing so.
-+	 */
-+}
-+
-+SEC("tp_btf/xdp_redirect_err")
-+int BPF_PROG(tp_xdp_redirect_err, const struct net_device *dev,
-+	     const struct bpf_prog *xdp, const void *tgt, int err,
-+	     const struct bpf_map *map, u32 index)
-+{
-+	return xdp_redirect_collect_stat(dev->ifindex, err);
-+}
-+
-+SEC("tp_btf/xdp_redirect_map_err")
-+int BPF_PROG(tp_xdp_redirect_map_err, const struct net_device *dev,
-+	     const struct bpf_prog *xdp, const void *tgt, int err,
-+	     const struct bpf_map *map, u32 index)
-+{
-+	return xdp_redirect_collect_stat(dev->ifindex, err);
-+}
-+
-+SEC("tp_btf/xdp_redirect")
-+int BPF_PROG(tp_xdp_redirect, const struct net_device *dev,
-+	     const struct bpf_prog *xdp, const void *tgt, int err,
-+	     const struct bpf_map *map, u32 index)
-+{
-+	return xdp_redirect_collect_stat(dev->ifindex, err);
-+}
-+
-+SEC("tp_btf/xdp_redirect_map")
-+int BPF_PROG(tp_xdp_redirect_map, const struct net_device *dev,
-+	     const struct bpf_prog *xdp, const void *tgt, int err,
-+	     const struct bpf_map *map, u32 index)
-+{
-+	return xdp_redirect_collect_stat(dev->ifindex, err);
-+}
-diff --git a/samples/bpf/xdp_sample.bpf.h b/samples/bpf/xdp_sample.bpf.h
-new file mode 100644
-index 000000000000..25b1dbe9b37b
---- /dev/null
-+++ b/samples/bpf/xdp_sample.bpf.h
-@@ -0,0 +1,141 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#ifndef _XDP_SAMPLE_BPF_H
-+#define _XDP_SAMPLE_BPF_H
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_tracing.h>
-+#include <bpf/bpf_core_read.h>
-+#include <bpf/bpf_helpers.h>
-+
-+#include "xdp_sample_shared.h"
-+
-+#define ETH_ALEN 6
-+#define ETH_P_802_3_MIN 0x0600
-+#define ETH_P_8021Q 0x8100
-+#define ETH_P_8021AD 0x88A8
-+#define ETH_P_IP 0x0800
-+#define ETH_P_IPV6 0x86DD
-+#define ETH_P_ARP 0x0806
-+#define IPPROTO_ICMPV6 58
-+
-+#define EINVAL 22
-+#define ENETDOWN 100
-+#define EMSGSIZE 90
-+#define EOPNOTSUPP 95
-+#define ENOSPC 28
-+
-+typedef struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(map_flags, BPF_F_MMAPABLE);
-+	__type(key, unsigned int);
-+	__type(value, struct datarec);
-+} array_map;
-+
-+extern array_map rx_cnt;
-+extern const volatile int nr_cpus;
-+
-+enum {
-+	XDP_REDIRECT_SUCCESS = 0,
-+	XDP_REDIRECT_ERROR = 1
+diff --git a/samples/bpf/xdp_sample_user.c b/samples/bpf/xdp_sample_user.c
+index 073aa3424e4b..c34592566825 100644
+--- a/samples/bpf/xdp_sample_user.c
++++ b/samples/bpf/xdp_sample_user.c
+@@ -73,6 +73,7 @@
+ 
+ enum map_type {
+ 	MAP_RX,
++	MAP_REDIRECT_ERR,
+ 	NUM_MAP,
+ };
+ 
+@@ -96,17 +97,24 @@ struct map_entry {
+ 
+ struct stats_record {
+ 	struct record rx_cnt;
++	struct record redir_err[XDP_REDIRECT_ERR_MAX];
+ };
+ 
+ struct sample_output {
+ 	struct {
+ 		__u64 rx;
++		__u64 redir;
++		__u64 err;
+ 	} totals;
+ 	struct {
+ 		__u64 pps;
+ 		__u64 drop;
+ 		__u64 err;
+ 	} rx_cnt;
++	struct {
++		__u64 suc;
++		__u64 err;
++	} redir_cnt;
+ };
+ 
+ struct xdp_desc {
+@@ -127,6 +135,27 @@ int sample_n_cpus;
+ int sample_sig_fd;
+ int sample_mask;
+ 
++static const char *xdp_redirect_err_names[XDP_REDIRECT_ERR_MAX] = {
++	/* Key=1 keeps unknown errors */
++	"Success",
++	"Unknown",
++	"EINVAL",
++	"ENETDOWN",
++	"EMSGSIZE",
++	"EOPNOTSUPP",
++	"ENOSPC",
 +};
 +
-+static __always_inline void swap_src_dst_mac(void *data)
++/* Keyed from Unknown */
++static const char *xdp_redirect_err_help[XDP_REDIRECT_ERR_MAX - 1] = {
++	"Unknown error",
++	"Invalid redirection",
++	"Device being redirected to is down",
++	"Packet length too large for device",
++	"Operation not supported",
++	"No space in ptr_ring of cpumap kthread",
++};
++
+ static __u64 gettime(void)
+ {
+ 	struct timespec t;
+@@ -162,6 +191,21 @@ static void sample_print_help(int mask)
+ 		       " \t\t\t\tdrop/s    - Packets dropped per second\n"
+ 		       " \t\t\t\terror/s   - Errors encountered per second\n\n");
+ 	}
++	if (mask & (SAMPLE_REDIRECT_CNT | SAMPLE_REDIRECT_ERR_CNT)) {
++		printf("  redirect\t\tDisplays the number of packets successfully redirected\n"
++		       "  \t\t\tErrors encountered are expanded under redirect_err field\n"
++		       "  \t\t\tNote that passing -s to enable it has a per packet overhead\n"
++		       "  \t\t\t\tredir/s   - Packets redirected successfully per second\n\n"
++		       "  redirect_err\t\tDisplays the number of packets that failed redirection\n"
++		       "  \t\t\tThe errno is expanded under this field with per CPU count\n"
++		       "  \t\t\tThe recognized errors are:\n");
++
++		for (int i = 2; i < XDP_REDIRECT_ERR_MAX; i++)
++			printf("\t\t\t  %s: %s\n", xdp_redirect_err_names[i],
++			       xdp_redirect_err_help[i - 1]);
++
++		printf("  \n\t\t\t\terror/s   - Packets that failed redirection per second\n\n");
++	}
+ }
+ 
+ void sample_usage(char *argv[], const struct option *long_options,
+@@ -269,8 +313,25 @@ static struct stats_record *alloc_stats_record(void)
+ 			goto end_rec;
+ 		}
+ 	}
++	if (sample_mask & (SAMPLE_REDIRECT_CNT | SAMPLE_REDIRECT_ERR_CNT)) {
++		for (i = 0; i < XDP_REDIRECT_ERR_MAX; i++) {
++			rec->redir_err[i].cpu = alloc_record_per_cpu();
++			if (!rec->redir_err[i].cpu) {
++				fprintf(stderr,
++					"Failed to allocate redir_err per-CPU array for "
++					"\"%s\" case\n",
++					xdp_redirect_err_names[i]);
++				while (i--)
++					free(rec->redir_err[i].cpu);
++				goto end_rx_cnt;
++			}
++		}
++	}
+ 
+ 	return rec;
++
++end_rx_cnt:
++	free(rec->rx_cnt.cpu);
+ end_rec:
+ 	free(rec);
+ 	return NULL;
+@@ -282,6 +343,8 @@ static void free_stats_record(struct stats_record *r)
+ 	struct map_entry *e;
+ 	int i;
+ 
++	for (i = 0; i < XDP_REDIRECT_ERR_MAX; i++)
++		free(r->redir_err[i].cpu);
+ 	free(r->rx_cnt.cpu);
+ 	free(r);
+ }
+@@ -407,6 +470,87 @@ static void stats_get_rx_cnt(struct stats_record *stats_rec,
+ 	}
+ }
+ 
++static void stats_get_redirect_cnt(struct stats_record *stats_rec,
++				   struct stats_record *stats_prev,
++				   unsigned int nr_cpus,
++				   struct sample_output *out)
 +{
-+	unsigned short *p = data;
-+	unsigned short dst[3];
++	struct record *rec, *prev;
++	double t, pps;
++	int i;
 +
-+	dst[0] = p[0];
-+	dst[1] = p[1];
-+	dst[2] = p[2];
-+	p[0] = p[3];
-+	p[1] = p[4];
-+	p[2] = p[5];
-+	p[3] = dst[0];
-+	p[4] = dst[1];
-+	p[5] = dst[2];
-+}
++	rec = &stats_rec->redir_err[0];
++	prev = &stats_prev->redir_err[0];
++	t = calc_period(rec, prev);
++	for (i = 0; i < nr_cpus; i++) {
++		struct datarec *r = &rec->cpu[i];
++		struct datarec *p = &prev->cpu[i];
++		char str[64];
 +
-+#if defined(__BYTE_ORDER__) && defined(__ORDER_LITTLE_ENDIAN__) && \
-+	__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-+#define bpf_ntohs(x)		__builtin_bswap16(x)
-+#define bpf_htons(x)		__builtin_bswap16(x)
-+#elif defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && \
-+	__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-+#define bpf_ntohs(x)		(x)
-+#define bpf_htons(x)		(x)
-+#else
-+# error "Endianness detection needs to be set up for your compiler?!"
-+#endif
++		pps = calc_pps(r, p, t);
++		if (!pps)
++			continue;
 +
-+/*
-+ * Note: including linux/compiler.h or linux/kernel.h for the macros below
-+ * conflicts with vmlinux.h include in BPF files, so we define them here.
-+ *
-+ * Following functions are taken from kernel sources and
-+ * break aliasing rules in their original form.
-+ *
-+ * While kernel is compiled with -fno-strict-aliasing,
-+ * perf uses -Wstrict-aliasing=3 which makes build fail
-+ * under gcc 4.4.
-+ *
-+ * Using extra __may_alias__ type to allow aliasing
-+ * in this case.
-+ */
-+typedef __u8  __attribute__((__may_alias__))  __u8_alias_t;
-+typedef __u16 __attribute__((__may_alias__)) __u16_alias_t;
-+typedef __u32 __attribute__((__may_alias__)) __u32_alias_t;
-+typedef __u64 __attribute__((__may_alias__)) __u64_alias_t;
++		snprintf(str, sizeof(str), "cpu:%d", i);
++		print_default("    %-18s " FMT_COLUMNf "\n", str, REDIR(pps));
++	}
 +
-+static __always_inline void __read_once_size(const volatile void *p, void *res, int size)
-+{
-+	switch (size) {
-+	case 1: *(__u8_alias_t  *) res = *(volatile __u8_alias_t  *) p; break;
-+	case 2: *(__u16_alias_t *) res = *(volatile __u16_alias_t *) p; break;
-+	case 4: *(__u32_alias_t *) res = *(volatile __u32_alias_t *) p; break;
-+	case 8: *(__u64_alias_t *) res = *(volatile __u64_alias_t *) p; break;
-+	default:
-+		asm volatile ("" : : : "memory");
-+		__builtin_memcpy((void *)res, (const void *)p, size);
-+		asm volatile ("" : : : "memory");
++	if (out) {
++		pps = calc_pps(&rec->total, &prev->total, t);
++		out->redir_cnt.suc = pps;
++		out->totals.redir += pps;
 +	}
 +}
 +
-+static __always_inline void __write_once_size(volatile void *p, void *res, int size)
++static void stats_get_redirect_err_cnt(struct stats_record *stats_rec,
++				       struct stats_record *stats_prev,
++				       unsigned int nr_cpus,
++				       struct sample_output *out)
 +{
-+	switch (size) {
-+	case 1: *(volatile  __u8_alias_t *) p = *(__u8_alias_t  *) res; break;
-+	case 2: *(volatile __u16_alias_t *) p = *(__u16_alias_t *) res; break;
-+	case 4: *(volatile __u32_alias_t *) p = *(__u32_alias_t *) res; break;
-+	case 8: *(volatile __u64_alias_t *) p = *(__u64_alias_t *) res; break;
-+	default:
-+		asm volatile ("" : : : "memory");
-+		__builtin_memcpy((void *)p, (const void *)res, size);
-+		asm volatile ("" : : : "memory");
++	struct record *rec, *prev;
++	double t, drop, sum = 0;
++	int rec_i, i;
++
++	for (rec_i = 1; rec_i < XDP_REDIRECT_ERR_MAX; rec_i++) {
++		char str[64];
++
++		rec = &stats_rec->redir_err[rec_i];
++		prev = &stats_prev->redir_err[rec_i];
++		t = calc_period(rec, prev);
++
++		drop = calc_drop_pps(&rec->total, &prev->total, t);
++		if (drop > 0 && !out) {
++			snprintf(str, sizeof(str),
++				 sample_log_level & LL_DEFAULT ? "%s total" :
++								       "%s",
++				 xdp_redirect_err_names[rec_i]);
++			print_err(drop, "    %-18s " FMT_COLUMNf "\n", str,
++				  ERR(drop));
++		}
++
++		for (i = 0; i < nr_cpus; i++) {
++			struct datarec *r = &rec->cpu[i];
++			struct datarec *p = &prev->cpu[i];
++			double drop;
++
++			drop = calc_drop_pps(r, p, t);
++			if (!drop)
++				continue;
++
++			snprintf(str, sizeof(str), "cpu:%d", i);
++			print_default("       %-16s" FMT_COLUMNf "\n", str,
++				      ERR(drop));
++		}
++
++		sum += drop;
++	}
++
++	if (out) {
++		out->redir_cnt.err = sum;
++		out->totals.err += sum;
 +	}
 +}
 +
-+#define READ_ONCE(x)					\
-+({							\
-+	union { typeof(x) __val; char __c[1]; } __u =	\
-+		{ .__c = { 0 } };			\
-+	__read_once_size(&(x), __u.__c, sizeof(x));	\
-+	__u.__val;					\
-+})
+ 
+ static void stats_print(const char *prefix, int mask, struct stats_record *r,
+ 			struct stats_record *p, struct sample_output *out)
+@@ -417,6 +561,8 @@ static void stats_print(const char *prefix, int mask, struct stats_record *r,
+ 	print_always("%-23s", prefix ?: "Summary");
+ 	if (mask & SAMPLE_RX_CNT)
+ 		print_always(FMT_COLUMNl, RX(out->totals.rx));
++	if (mask & SAMPLE_REDIRECT_CNT)
++		print_always(FMT_COLUMNl, REDIR(out->totals.redir));
+ 	printf("\n");
+ 
+ 	if (mask & SAMPLE_RX_CNT) {
+@@ -431,6 +577,24 @@ static void stats_print(const char *prefix, int mask, struct stats_record *r,
+ 		stats_get_rx_cnt(r, p, nr_cpus, NULL);
+ 	}
+ 
++	if (mask & SAMPLE_REDIRECT_CNT) {
++		str = out->redir_cnt.suc ? "redirect total" : "redirect";
++		print_default("  %-20s " FMT_COLUMNl "\n", str,
++			      REDIR(out->redir_cnt.suc));
 +
-+#define WRITE_ONCE(x, val)				\
-+({							\
-+	union { typeof(x) __val; char __c[1]; } __u =	\
-+		{ .__val = (val) }; 			\
-+	__write_once_size(&(x), __u.__c, sizeof(x));	\
-+	__u.__val;					\
-+})
++		stats_get_redirect_cnt(r, p, nr_cpus, NULL);
++	}
 +
-+/* Add a value using relaxed read and relaxed write. Less expensive than
-+ * fetch_add when there is no write concurrency.
-+ */
-+#define NO_TEAR_ADD(x, val) WRITE_ONCE((x), READ_ONCE(x) + (val))
-+#define NO_TEAR_INC(x) NO_TEAR_ADD((x), 1)
++	if (mask & SAMPLE_REDIRECT_ERR_CNT) {
++		str = (sample_log_level & LL_DEFAULT) && out->redir_cnt.err ?
++				    "redirect_err total" :
++				    "redirect_err";
++		print_err(out->redir_cnt.err, "  %-20s " FMT_COLUMNl "\n", str,
++			  ERR(out->redir_cnt.err));
 +
-+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
++		stats_get_redirect_err_cnt(r, p, nr_cpus, NULL);
++	}
 +
-+#endif
+ 	if (sample_log_level & LL_DEFAULT ||
+ 	    ((sample_log_level & LL_SIMPLE) && sample_err_exp)) {
+ 		sample_err_exp = false;
+@@ -449,6 +613,10 @@ int sample_setup_maps(struct bpf_map **maps)
+ 		case MAP_RX:
+ 			sample_map_count[i] = sample_n_cpus;
+ 			break;
++		case MAP_REDIRECT_ERR:
++			sample_map_count[i] =
++				XDP_REDIRECT_ERR_MAX * sample_n_cpus;
++			break;
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -568,6 +736,17 @@ static void sample_summary_print(void)
+ 		print_always("  Average packets/s   : %'-10.0f\n",
+ 			     sample_round(pkts / period));
+ 	}
++	if (sample_out.totals.redir) {
++		double pkts = sample_out.totals.redir;
++
++		print_always("  Packets redirected  : %'-10llu\n",
++			     sample_out.totals.redir);
++		print_always("  Average redir/s     : %'-10.0f\n",
++			     sample_round(pkts / period));
++	}
++	if (sample_out.totals.err)
++		print_always("  Errors recorded     : %'-10llu\n",
++			     sample_out.totals.err);
+ }
+ 
+ void sample_exit(int status)
+@@ -600,12 +779,23 @@ static int sample_stats_collect(struct stats_record *rec)
+ 	if (sample_mask & SAMPLE_RX_CNT)
+ 		map_collect_percpu(sample_mmap[MAP_RX], &rec->rx_cnt);
+ 
++	if (sample_mask & SAMPLE_REDIRECT_CNT)
++		map_collect_percpu(sample_mmap[MAP_REDIRECT_ERR], &rec->redir_err[0]);
++
++	if (sample_mask & SAMPLE_REDIRECT_ERR_CNT) {
++		for (i = 1; i < XDP_REDIRECT_ERR_MAX; i++)
++			map_collect_percpu(&sample_mmap[MAP_REDIRECT_ERR][i * sample_n_cpus],
++					   &rec->redir_err[i]);
++	}
++
+ 	return 0;
+ }
+ 
+ static void sample_summary_update(struct sample_output *out, int interval)
+ {
+ 	sample_out.totals.rx += out->totals.rx;
++	sample_out.totals.redir += out->totals.redir;
++	sample_out.totals.err += out->totals.err;
+ 	sample_out.rx_cnt.pps += interval;
+ }
+ 
+@@ -617,6 +807,10 @@ static void sample_stats_print(int mask, struct stats_record *cur,
+ 
+ 	if (mask & SAMPLE_RX_CNT)
+ 		stats_get_rx_cnt(cur, prev, 0, &out);
++	if (mask & SAMPLE_REDIRECT_CNT)
++		stats_get_redirect_cnt(cur, prev, 0, &out);
++	if (mask & SAMPLE_REDIRECT_ERR_CNT)
++		stats_get_redirect_err_cnt(cur, prev, 0, &out);
+ 	sample_summary_update(&out, interval);
+ 
+ 	stats_print(prog_name, mask, cur, prev, &out);
+diff --git a/samples/bpf/xdp_sample_user.h b/samples/bpf/xdp_sample_user.h
+index d630998df547..1935a0e2f85b 100644
+--- a/samples/bpf/xdp_sample_user.h
++++ b/samples/bpf/xdp_sample_user.h
+@@ -10,6 +10,10 @@
+ enum stats_mask {
+ 	_SAMPLE_REDIRECT_MAP        = 1U << 0,
+ 	SAMPLE_RX_CNT               = 1U << 1,
++	SAMPLE_REDIRECT_ERR_CNT     = 1U << 2,
++	SAMPLE_REDIRECT_CNT         = 1U << 7,
++	SAMPLE_REDIRECT_MAP_CNT     = SAMPLE_REDIRECT_CNT | _SAMPLE_REDIRECT_MAP,
++	SAMPLE_REDIRECT_ERR_MAP_CNT = SAMPLE_REDIRECT_ERR_CNT | _SAMPLE_REDIRECT_MAP,
+ };
+ 
+ /* Exit return codes */
+@@ -47,6 +51,15 @@ static inline char *safe_strncpy(char *dst, const char *src, size_t size)
+ }
+ #pragma GCC diagnostic pop
+ 
++#define __attach_tp(name)                                                      \
++	({                                                                     \
++		if (!bpf_program__is_tracing(skel->progs.name))                \
++			return -EINVAL;                                        \
++		skel->links.name = bpf_program__attach(skel->progs.name);      \
++		if (!skel->links.name)                                         \
++			return -errno;                                         \
++	})
++
+ #define DEFINE_SAMPLE_INIT(name)                                               \
+ 	static int sample_init(struct name *skel, int mask)                    \
+ 	{                                                                      \
+@@ -54,6 +67,14 @@ static inline char *safe_strncpy(char *dst, const char *src, size_t size)
+ 		ret = __sample_init(mask);                                     \
+ 		if (ret < 0)                                                   \
+ 			return ret;                                            \
++		if (mask & SAMPLE_REDIRECT_MAP_CNT)                            \
++			__attach_tp(tp_xdp_redirect_map);                      \
++		if (mask & SAMPLE_REDIRECT_CNT)                                \
++			__attach_tp(tp_xdp_redirect);                          \
++		if (mask & SAMPLE_REDIRECT_ERR_MAP_CNT)                        \
++			__attach_tp(tp_xdp_redirect_map_err);                  \
++		if (mask & SAMPLE_REDIRECT_ERR_CNT)                            \
++			__attach_tp(tp_xdp_redirect_err);                      \
+ 		return 0;                                                      \
+ 	}
+ 
 -- 
 2.33.0
 
