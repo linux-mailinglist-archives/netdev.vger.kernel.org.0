@@ -2,151 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 205983F3B25
-	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 17:19:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64ED23F3B3E
+	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 17:53:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232215AbhHUPT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Aug 2021 11:19:59 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:56951 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229945AbhHUPT6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Aug 2021 11:19:58 -0400
-Received: by mail-io1-f72.google.com with SMTP id c22-20020a5d9a960000b029059c9e04cd63so7177581iom.23
-        for <netdev@vger.kernel.org>; Sat, 21 Aug 2021 08:19:19 -0700 (PDT)
+        id S233157AbhHUPyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Aug 2021 11:54:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35158 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232533AbhHUPyA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Aug 2021 11:54:00 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD70C061575;
+        Sat, 21 Aug 2021 08:53:20 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id v10so7511362wrd.4;
+        Sat, 21 Aug 2021 08:53:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3no8bjlTC7qG2fVZz3i3VTGfYtIjxhSSicUhax0MRz4=;
+        b=qbIgQsGJ4NKkBTRex/r3TPba7U5y7NqF18rCVNREbYIa2mEKAoUP/isyAVxDQpDbVa
+         etlzoccomTsu/ipCqEU6rDxNfz09bEjpqmK1esD0sgSPWJ54KAlvrxV5tI7P4ts/lXv7
+         fWNGMFMQn+JN9PhpPHfn3F9rbPyjLwIFYwR5YssPdPmDqlGr6Pj0HzJ0l3WZTuQtUj9e
+         Ab//0/uTBy1H53kg13PjCEB+joyueLTgxmokA0Eu+i3Wv33JtaTUH/sdVOeu0YurKLY6
+         5IUahl2BZeu182mNeG68741Ahc+7sgcushXRQDxhASDLwFqc43UTJ2QOd306SnrQOVEu
+         FVqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=MWvlGvJX3+lC+CEYrV+NJHyCqoKq7RyLbTXAsQO2CkQ=;
-        b=kEiAnnLp9t4XLbgnfwBHxd2gTsHynwg31IApqH0n7gJxMv3IPfv1SQd+kY1oI1lVJj
-         8d6vv4bWhPkyw0rRVlOZU0qB6TrKaXVbaRxM3YaDiuR6zVfisGMpwOwGh4QrsSAUvOtI
-         J2N5M5Znueyn5j1fIhQ1FM3gkDKFdv6d7xiEpPRxiVbapm5sIHwv7beaGh7Lg7IYWSsz
-         U1JdTiYKRsBEDUL4K5oFaqSYY2wOni6QjXhWhsAMsda6jY4cSa7hegL/U9j915QVlDs3
-         vQco7j0cebpkqF7hnwkSng1vOPQ7oA4PIx9a3UXh9nU6oO6peQyW0uFZehYDxKc5ibI6
-         FWiA==
-X-Gm-Message-State: AOAM530Lc4q+Lr2GPJQGdfxBPeyHK+8P2pq/ubxyRFvPOjtaW1exW9CJ
-        jMcil4WASKVgQc3YW9l4X1rG9Kk2gcCyBn9/D552zB7LPCAO
-X-Google-Smtp-Source: ABdhPJwtfhWP2cfkdff8Z/zHnkfT0tZgwaUP5HKN+ka3i6qEb3FVDC/Z62GKMqghqbhutTFdaMU02QNNxsK63f/Qp3KIufdL9hPq
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3no8bjlTC7qG2fVZz3i3VTGfYtIjxhSSicUhax0MRz4=;
+        b=mWh/P5rNOA4RhQFTJqt1sOW9sfSjqLaYS+tRilVKZdTMTQZ8Uq0NqyF21tDuqPiseN
+         GBrkSa4+hyYO6+yhl3bawadfdU4vY4WAUTRAEzy1LJ4CB5RALi749y/ZsY2Yej6/nb2n
+         +1WUhftEFWTQo/5GkjBb8hMDDxRoqVlcnxWjc8NAB5/sz4EbYx4I+0Kf/e64bJO97o0W
+         wmRPfiKDkEy6j4txWJQjbJGYjZkdBTIvXvfp6OxqkoBlcf+dIS2whsP1dyBDSySkoNqt
+         C0tUXRGhvBhgODReMs+OOEmpLJ6ER+alKcRjVAgGdM/ijwmZ1mbZfJ7PZZnI8YGi+8je
+         AMRQ==
+X-Gm-Message-State: AOAM533kpW3JR27D7vtwtDJ1WgJSWRBlv26kY7V7TL5HZlU54JmiRPPu
+        /2XtyLT+2k5TzJIuN3PJQ28=
+X-Google-Smtp-Source: ABdhPJwtv94+OnpvcNSQQUev8ESWsIq+ajwCOY8LzcCeq0TWgSjaPuIsSbBFLYzD4A8cbPcPhhtNAQ==
+X-Received: by 2002:a05:6000:1091:: with SMTP id y17mr4418460wrw.202.1629561199016;
+        Sat, 21 Aug 2021 08:53:19 -0700 (PDT)
+Received: from localhost.localdomain ([85.255.233.174])
+        by smtp.gmail.com with ESMTPSA id e3sm9479554wro.15.2021.08.21.08.53.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Aug 2021 08:53:18 -0700 (PDT)
+From:   Pavel Begunkov <asml.silence@gmail.com>
+To:     Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org,
+        Josh Triplett <josh@joshtriplett.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Stefan Metzmacher <metze@samba.org>
+Subject: [PATCH v3 0/4] open/accept directly into io_uring fixed file table 
+Date:   Sat, 21 Aug 2021 16:52:36 +0100
+Message-Id: <cover.1629559905.git.asml.silence@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-X-Received: by 2002:a92:6711:: with SMTP id b17mr17814117ilc.122.1629559158845;
- Sat, 21 Aug 2021 08:19:18 -0700 (PDT)
-Date:   Sat, 21 Aug 2021 08:19:18 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000cdb89d05ca134e47@google.com>
-Subject: [syzbot] BUG: unable to handle kernel NULL pointer dereference in unix_shutdown
-From:   syzbot <syzbot+cd7ceee0d3b5892f07af@syzkaller.appspotmail.com>
-To:     Rao.Shoaib@oracle.com, andrii@kernel.org, ast@kernel.org,
-        bpf@vger.kernel.org, cong.wang@bytedance.com, daniel@iogearbox.net,
-        davem@davemloft.net, john.fastabend@gmail.com, kafai@fb.com,
-        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk,
-        yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Add an optional feature to open/accept directly into io_uring's fixed
+file table bypassing the normal file table. Same behaviour if as the
+snippet below, but in one operation:
 
-syzbot found the following issue on:
+sqe = prep_[open,accept](...);
+cqe = submit_and_wait(sqe);
+io_uring_register_files_update(uring_idx, (fd = cqe->res));
+close((fd = cqe->res));
 
-HEAD commit:    9803fb968c8c Add linux-next specific files for 20210817
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1727c65e300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=681282daead30d81
-dashboard link: https://syzkaller.appspot.com/bug?extid=cd7ceee0d3b5892f07af
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13fb6ff9300000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15272861300000
+The idea in pretty old, and was brough up and implemented a year ago
+by Josh Triplett, though haven't sought the light for some reasons.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+cd7ceee0d3b5892f07af@syzkaller.appspotmail.com
+The behaviour is controlled by setting sqe->file_index, where 0 implies
+the old behaviour. If non-zero value is specified, then it will behave
+as described and place the file into a fixed file slot
+sqe->file_index - 1. A file table should be already created, the slot
+should be valid and empty, otherwise the operation will fail.
 
-BUG: kernel NULL pointer dereference, address: 0000000000000000
-#PF: supervisor instruction fetch in kernel mode
-#PF: error_code(0x0010) - not-present page
-PGD 6f812067 P4D 6f812067 PUD 6fe2f067 PMD 0 
-Oops: 0010 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 6569 Comm: syz-executor133 Not tainted 5.14.0-rc6-next-20210817-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:0x0
-Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
-RSP: 0018:ffffc90002dcfe38 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: ffffffff8d27cfa0 RCX: 0000000000000000
-RDX: 1ffffffff1a4fa0a RSI: ffffffff87d03085 RDI: ffff888077074d80
-RBP: ffff888077074d80 R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff87d03004 R11: 0000000000000001 R12: 0000000000000001
-R13: ffff888077075398 R14: ffff888077075b58 R15: ffff888077074e00
-FS:  0000000001747300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffffffffffffd6 CR3: 000000006f93f000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- unix_shutdown+0x28a/0x5b0 net/unix/af_unix.c:2857
- __sys_shutdown_sock net/socket.c:2242 [inline]
- __sys_shutdown_sock net/socket.c:2236 [inline]
- __sys_shutdown+0xf1/0x1b0 net/socket.c:2254
- __do_sys_shutdown net/socket.c:2262 [inline]
- __se_sys_shutdown net/socket.c:2260 [inline]
- __x64_sys_shutdown+0x50/0x70 net/socket.c:2260
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x43ee29
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffdc0b3c908 EFLAGS: 00000246 ORIG_RAX: 0000000000000030
-RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043ee29
-RDX: 00000000004ac018 RSI: 0000000000000000 RDI: 0000000000000003
-RBP: 0000000000402e10 R08: 0000000000000000 R09: 0000000000400488
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000402ea0
-R13: 0000000000000000 R14: 00000000004ac018 R15: 0000000000400488
-Modules linked in:
-CR2: 0000000000000000
----[ end trace f541a02ac6ed69b5 ]---
-RIP: 0010:0x0
-Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
-RSP: 0018:ffffc90002dcfe38 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: ffffffff8d27cfa0 RCX: 0000000000000000
-RDX: 1ffffffff1a4fa0a RSI: ffffffff87d03085 RDI: ffff888077074d80
-RBP: ffff888077074d80 R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff87d03004 R11: 0000000000000001 R12: 0000000000000001
-R13: ffff888077075398 R14: ffff888077075b58 R15: ffff888077074e00
-FS:  0000000001747300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffffffffffffd6 CR3: 000000006f93f000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	28 c3                	sub    %al,%bl
-   2:	e8 2a 14 00 00       	callq  0x1431
-   7:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
-   e:	00 00 00 
-  11:	48 89 f8             	mov    %rdi,%rax
-  14:	48 89 f7             	mov    %rsi,%rdi
-  17:	48 89 d6             	mov    %rdx,%rsi
-  1a:	48 89 ca             	mov    %rcx,%rdx
-  1d:	4d 89 c2             	mov    %r8,%r10
-  20:	4d 89 c8             	mov    %r9,%r8
-  23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
-  28:	0f 05                	syscall 
-  2a:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax <-- trapping instruction
-  30:	73 01                	jae    0x33
-  32:	c3                   	retq   
-  33:	48 c7 c1 c0 ff ff ff 	mov    $0xffffffffffffffc0,%rcx
-  3a:	f7 d8                	neg    %eax
-  3c:	64 89 01             	mov    %eax,%fs:(%rcx)
-  3f:	48                   	rex.W
+we can't use IOSQE_FIXED_FILE to switch between modes, because accept
+takes a file, and it already uses the flag with a different meaning.
 
+since RFC:
+ - added attribution
+ - updated descriptions
+ - rebased
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+since v1:
+ - EBADF if slot is already used (Josh Triplett)
+ - alias index with splice_fd_in (Josh Triplett)
+ - fix a bound check bug
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Pavel Begunkov (4):
+  net: add accept helper not installing fd
+  io_uring: openat directly into fixed fd table
+  io_uring: hand code io_accept() fd installing
+  io_uring: accept directly into fixed file table
+
+ fs/io_uring.c                 | 129 +++++++++++++++++++++++++++++-----
+ include/linux/socket.h        |   3 +
+ include/uapi/linux/io_uring.h |   5 +-
+ net/socket.c                  |  71 ++++++++++---------
+ 4 files changed, 157 insertions(+), 51 deletions(-)
+
+-- 
+2.32.0
+
