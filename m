@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2638C3F3C7A
-	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 23:00:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D13343F3C79
+	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 23:00:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231130AbhHUVBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Aug 2021 17:01:22 -0400
+        id S230471AbhHUVBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Aug 2021 17:01:21 -0400
 Received: from mail-vi1eur05on2082.outbound.protection.outlook.com ([40.107.21.82]:58336
         "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230376AbhHUVBT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Aug 2021 17:01:19 -0400
+        id S230107AbhHUVBS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Aug 2021 17:01:18 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LFvyOQLs6H4jakyCb8kZ4TPY5HOvrkvmKmlpSLxE/gtjeJV61up9yOI4G2Dc3aPgPUAtBkzRGTuK0N8+TAgzxoMGHrXeX37acgYWBpCbvdIbcVdzQzBZT7x03ETb1bdyr/uGJQjjpFfb3T1/pO2FiTlt+RrUFNd6CYiyKHbBQvWIk2hjSisa+zAeawltkP3CM/H+CRZNZOdZ32YekmodQvkMTUNht2sfWQ0qrmGNM7UqElKTWCGlquGf4NuQwqOkq5/Lcg9GCYpuiAKMA0ZBE4Llw3Tp5Rd/I1SREx9OS0CNPGuCrLzjirJ8svhobzLmCw2VrLEfwN0ffIVfM3U0kg==
+ b=BQYG93uYwJfpj435zwqkspoeTfsZ4anDx3RsPRL/Y+GKEmRxPUULHZ2Yv/kq9+NJFG2G/HpL/fnGFKHZ1vlaYhVidcy0eFqAqpiR5DmbPObppoi3yEsQFYprb1qGODD0dbhRNYK8MQ27Xb6LN20U7N8mW5Rzg5xGjb0ZkUuOnFQ42Kz1wYzC8H7C3eZfIN3Oqiwgm3VptCU3umrJq5pUJyp/mejABAcwcT9v1umGVzQX+LoyCKZCEElc9PyeRNABO4BO5Fk7HWV1IYLJ1cS0FIkjbFstgLz6bCm1lH39eBkC4FvyHCzgqxfPgIArCTMi5yqZDfl/Kcy0nDzqrqAklw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7AO1CC4MEKOv3ddlsxX0r7WS0FtFtxvd764mJ7DcaP0=;
- b=AQsP7SvRbjTsZuUrOd4ZsZfuaDrIjBP9NSJde5nmiHdym8zyYlMJULYcjN2lolLtlBCSPxlN9B48/a2+PkWbpS9Wo3ANcrundvWhk3mSBubMONUYuqYFo6gmnm4SbkAbvpf5ILxTqYv/tZLN3gj1tFHxJbTZqsLQ301kBW4Zlkil3ajQRnBcd/GRYFLFVdXVgmCiJzaW4MqZ2X9LkdKh4sIUYBNuhKQTQu2lqYeieEENXGzsH2KzDTD7tZfrzdrSMq22lxgj0sOAyovGefWLPkyAJxvN+OjIyyMrXa2DibbmS+g8dsFrjejH9kEwRvs6oQ45tP/9zas2TgmETuzQQQ==
+ bh=TORUjjKYrAQEwqvTmGOI2DlVVneZE51wC2QGCtKltFU=;
+ b=OA47UFKq+fwGQdRadg6Hoj03fDQdHV4pq3JZUekIt1spwbOogI9tcsDmfahcfa8rPl/UmZFg2tGVH16kTT31CIwucLFZxNAHSLpyOM6c6h0YqD/Lo++9O5KTsJQRiCqLN/TsVKofJ2Wo1mH+myDNAhocy19KAk+rH3gfSgsq2HqPxs14JT9HSPL6Xf8xHLytT6m5aoTVOzRGIZEZA57I1kbMlC+aDwVk4LuONHj7sJqfsPW6wjujDS/WwHhPbi5vlPjluoUQ5QSrHIVPfmvzrBoOn4QZj1dk/oxPX6Rcy1j/6hYwEOKFuaZOx5GkqQfS+hX30ES5CKvccUahzm9ing==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7AO1CC4MEKOv3ddlsxX0r7WS0FtFtxvd764mJ7DcaP0=;
- b=lVLenzMWdktd0gmEMbGuQmrhyMmOssiCM5p7R6Eyka80+V9T0kA1BYjzQyp2vMphw3yMEulW++jGnkZRkx4PSNzjkLbXyvay0TBEXUdSauhS3Ed/sfvYb3J+wH2+15YU7beA6OvXPAnKR8SoTk+CCKQYphMQ+5pjVR+zNiGPpZE=
+ bh=TORUjjKYrAQEwqvTmGOI2DlVVneZE51wC2QGCtKltFU=;
+ b=fl5A8yGrJWgwCDvmJIAC5rP0u9KISAr15ijjUTkwiJAk0ncPTO2gZ7b+1YUfDszpoQFm+fgkru7uVZiEwv6dM48xhdpFXPYQyP2EYmlhlrd3dKILY9Tt1Hl5atALUQCz/lHcWjJAqQRjp3OA7+k0rMUvJvsLfF4Hrmfoz/0ZJRk=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
@@ -39,9 +39,9 @@ Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  21:00:34 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
-Subject: [RFC PATCH 3/4] net: dsa: implement a shared FDB dump procedure
-Date:   Sun, 22 Aug 2021 00:00:17 +0300
-Message-Id: <20210821210018.1314952-4-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH 4/4] net: dsa: sja1105: implement shared FDB dump
+Date:   Sun, 22 Aug 2021 00:00:18 +0300
+Message-Id: <20210821210018.1314952-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210821210018.1314952-1-vladimir.oltean@nxp.com>
 References: <20210821210018.1314952-1-vladimir.oltean@nxp.com>
@@ -54,417 +54,156 @@ MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 Received: from localhost.localdomain (188.25.144.60) by VI1PR0601CA0010.eurprd06.prod.outlook.com (2603:10a6:800:1e::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Sat, 21 Aug 2021 21:00:33 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8a62dcd3-bf89-4641-b975-08d964e6b7a5
+X-MS-Office365-Filtering-Correlation-Id: e3385972-5abb-43eb-43ba-08d964e6b7eb
 X-MS-TrafficTypeDiagnostic: VI1PR0401MB2687:
-X-Microsoft-Antispam-PRVS: <VI1PR0401MB2687DFCAE93351048DBFA8D9E0C29@VI1PR0401MB2687.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:849;
+X-Microsoft-Antispam-PRVS: <VI1PR0401MB2687DCB94793A700FB936A2DE0C29@VI1PR0401MB2687.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CDfXGzJeFhUi+8Iarn0ehcKI5Yr80EOlqIy6YQO3joEsZVABNDVDf/RH4CdZ+NU6QHbvyjiJP7kvTsfsPecxOp0pYA8GL5gTjlUkO3a4ikDprGppx4qtIrkPMzVI6Uqq2y2B0NbyTactzyAqMn1XigLCjHKO5ZOmFIV8cEs34MWBxsVzWAv0r4w3n+T4hOEHT2eqLfFRMxYtRKPKrb/+x8bMzCF9rRd43OsM80EIYKQNql2vAcCGa9DbadeT4JXoDe+dqr1RcK8SiFj6SFs20B8kTCZBLgfY33F4qqos0Ye/Pn43iNPiiFD3QlBO2VmKwv5oYjbDlsLd+4Dsn5OWW+0LxYtxjZQXYjXrB0kcowfvGk9b5EYPYYI272f1hii44YlfHRbBM0VmczGZYSfaFmCLiWLVP17LXifyyENxXvB+dgiGUl4ZexdKsNyBSTHI9g2fVrJNCyRE6IyOT/fGTIhUVypE2b9lM2eqzmQSBbgkaXWnIe/nWHn6uI0zV9MAyV6tp3Eui4bIVUQSSJLai3QVWr/VSNTn7CgZKWFaTQHstiM1vqqGKheNQvp8bzXGPSGzmkz603ivZ6GtNVidAxvLF5Na2MNgvDy3rINewM7gN75nsZtdATvZq3mfpFOjP2QUm/zsJUtkfc0PEwGi7LQamcm1o1obpemCBhzRsx+j3yDJWlslyU4Ngkgwnfq1E2Fh+MAtfh7PyXFXasnvug==
+X-Microsoft-Antispam-Message-Info: hO7QlKFl1sYoboUjAL0OFf4DY+mJKHlmiZQOEf++NE1YXRR1NY9sAUuOL4tQ7ehwSywwNuge8HeejOzsES9eDbmF3rn0KCvNYB5AzsiA+wYSEJuPmRy0lsYBZtmEYOy38B4RXFpZzP2OxTPvMVnoRXjIQhbD+4jptDVLwH4dB7Deuc08AP/cminDQPIXnupa9tUs51rj8v+4E752s3SRos6j0ukQk8KFEW9uYfc7MCDlLo9py35v2kAKjnm83Ry5k57r3s8LdjHLa9Ar6C+Ork9V9tjb40EmnK+1z4JmBiuAtqH+baaQpaBaAjQWnB8SNl8wkfl2kPUNeu12xlPzy6TvYLOk6wGrONlC43mYCGy1K7Oh6I+psZ5XAQ46A3sI6cWuH1Utakvt5Ne2MUBw8llv/xf0BKf8raDXc6ldKmgdFiUT5e2jivzRG+76urANUEqzV1g9LGnXQcM+OuFWlLAp9ZK4QBEmt9mU3TLOBuoCUEaHLUjy+3NBJTYZF0D9o6GWXusmTcLnYisDwfcAoxu9qNvECp8wrNA1Yw5txaTP4SvqnjW5/yxQrk6kmpUR+pJWN1kEB2B0CFExSkCJ/qtw/34V3y6wOzBS85dTcpVNPl+gAnYSIKiIgrhBpVj1flYD53l9ki0TQs+/1an86pbHElBU+tlT3cPefczxgXKl/McQHMFQYmoQNwhB76zJc+FHfmRxJrbqQ7mRnJAV6A==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(39850400004)(366004)(346002)(376002)(136003)(6666004)(86362001)(6486002)(6506007)(6512007)(83380400001)(66946007)(66556008)(66476007)(52116002)(26005)(8936002)(478600001)(36756003)(316002)(956004)(8676002)(44832011)(5660300002)(38100700002)(2616005)(38350700002)(186003)(6916009)(1076003)(2906002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AcuExKj/hHm+ryIsHXr96UwpX/yIBrH0z3slivvaEujcO38pPG8VY//t6aP2?=
- =?us-ascii?Q?6t7ryqXfQAHI5Kxt8Su+rGV6HbKfLjIYMm7Kms+xEAVCBK4t39tknbyhW9Nh?=
- =?us-ascii?Q?FTUxOoMHz+Oe5XaUayrIV0FwAX1YEdXU/pCtDiy1y3r3OjnsBh81HCQuskNU?=
- =?us-ascii?Q?EKG57AfZeEqKZmGd+5V447Ub6CokQd3bdVXXkmWOCOIC//QhGi+QtUGKhxRG?=
- =?us-ascii?Q?lpMemQx4Vbe8NeB2QSF+eFvmPDcgiWVi96Z9uimIJLYC0fNZLwyAy1H2lX1N?=
- =?us-ascii?Q?kqDTOAZX8S95qxoEYY7M/+WTTZiC5yZat/SS9E4Mmd/uI8nneVw0qwxnPzck?=
- =?us-ascii?Q?pqJIBTKDilKIJTvSVwRNgXKbIa7yfc6FLF6DNG1R4FnD13u3OgzyCEqmDWQo?=
- =?us-ascii?Q?aM6P9HSaZoEgZ6rbtZz/6EVQlYbnOGoFsU1QITcd5mamKjbZjX5eRzVf069v?=
- =?us-ascii?Q?WL9ijxa4yIdO7x0HG6dKDM9CBwfGjq9IatHx7p7wncfzfHVbIJTpO1gxQtdx?=
- =?us-ascii?Q?Vh5OJnDT3tbZYbWnPbEHII9T1qshOs+zeMm9vGoAXnagVnKrFrFD+YTMp75f?=
- =?us-ascii?Q?nj2A8BcTJ2qwja7DCqpyDrDjMu1D0wzuPJ1qB3u7CNS735ThhAGfEhQQVS+n?=
- =?us-ascii?Q?Pmb1W7riDk+wOWv3GB9sJJeoi0UUbH7qVUg9Whmy0HFvFKCBFvHlp03g7umT?=
- =?us-ascii?Q?QvhREj6e5HFGp8pDpRsppb/1SZ/TAikR4dyLvsa+8YU40mTb+8qZHr33u/A/?=
- =?us-ascii?Q?IpjEAGQz+xoBPijtIgrlJSlRhrYnUjuoY1C64bxMxOUJNjgT38KGxkZYHpqk?=
- =?us-ascii?Q?6bmcWiyDBDLxAZKYQwiOYo/bFbiswc9hHt/7y4XUJKG9w3ocOsvQlJZKW/LX?=
- =?us-ascii?Q?FZ1TvY+Sn7RgnhvIotTeBuQQDTH8h3An4ZK1cfWDuviKU7xSyUfvG8XE6lg0?=
- =?us-ascii?Q?J1s66rsJrTj74kfwhUgqZt33KFts9WX8xrXqo+90VnidYJmcBSAw1CDTvx2+?=
- =?us-ascii?Q?fEbLzF/9zkDKG2L5BcHWUYWnw2YD0LTyLR72teLA0Vj/XURXAA4km2EKpUJf?=
- =?us-ascii?Q?wbauYCbTnkXLKvQHhCKcIm+XFrl/a+1gC2qphlhblkIcLTA67Ut0yoyiQ4fl?=
- =?us-ascii?Q?2SVorJbisU/jNwlj4jPu1mtKVozmGBZ5YwdhQCBCiGyFUhwvnxicxwVOak55?=
- =?us-ascii?Q?Ujoa34/5Jvw2ZzN6QAb3X1kcYUCDSmlEUD56JMAj+VUr0O8inXf/PLYEGey/?=
- =?us-ascii?Q?lT5xKnQysVoLCNwS+0nnqjy401HATCB5m9fINEwEx4hIqrjqB9KpcQQbHZ/r?=
- =?us-ascii?Q?qRtY3ElrUGqLg6N7qIi77tjY?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?i/1ZAqlaP6o+TVuNIdkY8KcHXxjinaucCXpYydEWJZOsZ5hctXOpwPnQ1hJz?=
+ =?us-ascii?Q?NWyKT3Ad3LeJhOsul3Bxc4vsklG6Nfq3K8vj1FhPtV6GXnzJyBZDa51qOVaR?=
+ =?us-ascii?Q?NS3q4BZGZnSngemekrCZA9xInUpjs9NPzSDxfcD5GY922H9hnJitrbSgMt08?=
+ =?us-ascii?Q?eA9HOQyTxAtcSVQwQSAY5MU8KwZb5B54xJL38JCo2xjAYBf1HD3M5b5IUXq6?=
+ =?us-ascii?Q?8k1HbfodnX2nBgnkJ1TWAT1EXUpkRGpFNODNEVD0NPps/5IBTA+7ya8HqB7X?=
+ =?us-ascii?Q?ZEEgM7OVEEQUaJpCyH8Ut1tsZPNmlEolwrHeu2hav1x6b7S/IzSOI1O8Zgec?=
+ =?us-ascii?Q?BqCyw+BivbVyrB9V1T3FW06BhYYdyKXaySo/y0RYVgCgDzPjc1dD1EzD7wXN?=
+ =?us-ascii?Q?5+6E57gCMbOpOaOMx77e03xeLANBdyjc3YVT5x1Dm9VY1e80hsmEBG3E4WgI?=
+ =?us-ascii?Q?RxLbZEteg4Kd9n0QOcLtSwk2/t+WkrLzlTdZpiQ0x15Wi0E1WcCiVP3pLW7p?=
+ =?us-ascii?Q?RWR6YkBl0vmW+aT0G8q8T3eMmS3aYWNYgS2t39OxlPCUsw2DEZliK+YR8go2?=
+ =?us-ascii?Q?NFyunZoXUFEkhzMZARbsWnEg6DHvRppA5VH6WnDO8aqKvCBN7S8+NeKA6Zx1?=
+ =?us-ascii?Q?j+kGwImH85r/kDQ2kPa6EGySFYFNKVEfuEyGJYaPo41pGHMcxkED6LLIbRVh?=
+ =?us-ascii?Q?fuOg7Nfp+ZV0pYx6w4A8/2b27/Fwjq3I6j8GCAwpbEV5JzQFw6P0SRVnUql4?=
+ =?us-ascii?Q?KkWXQYhCrUd1YfyXoHb3kcWxEzCpGnHCLXKk9f99fqV/cyO4sh9b4vT44SvB?=
+ =?us-ascii?Q?QmhqJiye0duHoxie4O94Yi7x8E4j8F9KOR2y/LQOjRX0aI9QzKfG925AOLLl?=
+ =?us-ascii?Q?5TM6S3xkff2fFAF/FnlQFeobu12geR2HV9YS0NiUzFO9FR11SU/9S885Xtqx?=
+ =?us-ascii?Q?15jNj754J4mGVCuH3ePEXiuRxopxo0S0VswIesdz27boZZaxoF2mI0ty/6gS?=
+ =?us-ascii?Q?b6orXK8ufA6DiemBisKKgMWg2r32myoZukvxnJk2YZ/wIIAvcQo/4tPYlH+f?=
+ =?us-ascii?Q?nEsL92lxw/47EkgEM30RMD+smiQE/eI7gD+MYMVL7w9gm46r/+0sOBCJrpQo?=
+ =?us-ascii?Q?+oaqrkzgEAj/K30WGIt1njhNWHDSc6hbSdSorTlyx2dNVDMtWj+/D1hj5xA7?=
+ =?us-ascii?Q?dHk4O56oWLqeUKotiwRBTBPGZDmtnZ4XCnWtCeS0Bn2w6MWGzKKNrsS/sEWZ?=
+ =?us-ascii?Q?GIQ0iVHDq+BnTUFwM+6c/M6xaBtIVlD3RlR24kbvbpOTh1XByFX7HW7b0jrB?=
+ =?us-ascii?Q?Dp7SYyHDybj/LX7omrGez/zF?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a62dcd3-bf89-4641-b975-08d964e6b7a5
+X-MS-Exchange-CrossTenant-Network-Message-Id: e3385972-5abb-43eb-43ba-08d964e6b7eb
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2021 21:00:33.7182
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2021 21:00:34.1509
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: b1cvY2BOjKRy0lgLFJIxF3AvX9oBF/U0Z8oaNLVQzQhgEDWOgaw2QkHmADrJNXJRa60WPT6unnSB45M8xmE3Eg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: hiW1wQv9/ah+28q6Fj95+FcTJOw1cxdqfXwFN87/IB6uC3I3WktjcCrVQUHWcOCByhm1TCcXLq3ca0UzGpLDGg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2687
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Create a list of FDB entries per switch that will be:
-
-- populated during the ndo_fdb_dump prepare phase
-- looked up during the ndo_fdb_dump commit phase
-- freed during the ndo_fdb_dump finish phase
-
-Also a bool ds->shared_fdb_dump_in_progress to denote whether we should
-perform the shared FDB dump or the normal FDB dump procedure (since the
-shared FDB dump needs more memory, we prefer the per-port procedure for
-dumps that target a single port).
-
-Introduce a new dsa_switch_ops method for the shared FDB dump. This is
-"switch_fdb_dump" and lacks a "port" argument - instead, the switch is
-supposed to provide the port for each FDB entry it finds.
+This driver already walks linearly over the FDB in the .port_fdb_dump
+method, so the .switch_fdb_dump can reuse the same logic, just call back
+a different DSA method when it finds something.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- include/net/dsa.h  |  17 ++++
- net/dsa/dsa2.c     |   2 +
- net/dsa/dsa_priv.h |   1 +
- net/dsa/slave.c    | 194 ++++++++++++++++++++++++++++++++++++++-------
- net/dsa/switch.c   |   8 ++
- 5 files changed, 195 insertions(+), 27 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_main.c | 50 +++++++++++++++++++-------
+ 1 file changed, 38 insertions(+), 12 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 0c2cba45fa79..23b675f843f4 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -312,8 +312,17 @@ struct dsa_mac_addr {
- 	struct list_head list;
- };
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 05ba65042b5f..e1e9e514814e 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -1747,14 +1747,17 @@ static int sja1105_fdb_del(struct dsa_switch *ds, int port,
+ }
  
-+struct dsa_fdb_entry {
-+	unsigned char addr[ETH_ALEN];
-+	u16 vid;
-+	bool is_static;
-+	struct net_device *dev;
-+	struct list_head list;
-+};
+ static int sja1105_fdb_dump(struct dsa_switch *ds, int port,
+-			    dsa_fdb_dump_cb_t *cb, void *data)
++			    dsa_fdb_dump_cb_t *port_cb,
++			    dsa_switch_fdb_dump_cb_t *switch_cb,
++			    void *data)
+ {
+ 	struct sja1105_private *priv = ds->priv;
+ 	struct device *dev = ds->dev;
+-	int i;
++	int i, p;
+ 
+ 	for (i = 0; i < SJA1105_MAX_L2_LOOKUP_COUNT; i++) {
+ 		struct sja1105_l2_lookup_entry l2_lookup = {0};
++		unsigned long destports;
+ 		u8 macaddr[ETH_ALEN];
+ 		int rc;
+ 
+@@ -1768,13 +1771,12 @@ static int sja1105_fdb_dump(struct dsa_switch *ds, int port,
+ 			return rc;
+ 		}
+ 
+-		/* FDB dump callback is per port. This means we have to
+-		 * disregard a valid entry if it's not for this port, even if
+-		 * only to revisit it later. This is inefficient because the
+-		 * 1024-sized FDB table needs to be traversed 4 times through
+-		 * SPI during a 'bridge fdb show' command.
++		destports = l2_lookup.destports;
 +
- struct dsa_switch {
- 	bool setup;
-+	bool shared_fdb_dump_in_progress;
++		/* If the FDB dump callback is per port, ignore the entries
++		 * belonging to a different one.
+ 		 */
+-		if (!(l2_lookup.destports & BIT(port)))
++		if (port >= 0 && !(destports & BIT(port)))
+ 			continue;
  
- 	struct device *dev;
- 
-@@ -355,6 +364,9 @@ struct dsa_switch {
- 	/* Storage for drivers using tag_8021q */
- 	struct dsa_8021q_context *tag_8021q_ctx;
- 
-+	/* Storage for shared FDB dumps */
-+	struct list_head	fdb_list;
+ 		/* We need to hide the FDB entry for unknown multicast */
+@@ -1787,13 +1789,36 @@ static int sja1105_fdb_dump(struct dsa_switch *ds, int port,
+ 		/* We need to hide the dsa_8021q VLANs from the user. */
+ 		if (!priv->vlan_aware)
+ 			l2_lookup.vlanid = 0;
+-		rc = cb(macaddr, l2_lookup.vlanid, l2_lookup.lockeds, data);
+-		if (rc)
+-			return rc;
 +
- 	/* devlink used to represent this switch device */
- 	struct devlink		*devlink;
- 
-@@ -565,6 +577,9 @@ struct net_device *dsa_port_to_bridge_port(const struct dsa_port *dp)
- 
- typedef int dsa_fdb_dump_cb_t(const unsigned char *addr, u16 vid,
- 			      bool is_static, void *data);
-+typedef int dsa_switch_fdb_dump_cb_t(struct dsa_switch *ds, int port,
-+				     const unsigned char *addr, u16 vid,
-+				     bool is_static);
- struct dsa_switch_ops {
- 	/*
- 	 * Tagging protocol helpers called for the CPU ports and DSA links.
-@@ -737,6 +752,8 @@ struct dsa_switch_ops {
- 				const unsigned char *addr, u16 vid);
- 	int	(*port_fdb_dump)(struct dsa_switch *ds, int port,
- 				 dsa_fdb_dump_cb_t *cb, void *data);
-+	int	(*switch_fdb_dump)(struct dsa_switch *ds,
-+				   dsa_switch_fdb_dump_cb_t *cb);
- 
- 	/*
- 	 * Multicast database
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index dcd67801eca4..99b5aad46b02 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -801,6 +801,8 @@ static int dsa_switch_setup(struct dsa_switch *ds)
- 			goto teardown;
++		if (port_cb) {
++			rc = port_cb(macaddr, l2_lookup.vlanid,
++				     l2_lookup.lockeds, data);
++			if (rc)
++				return rc;
++		} else {
++			for_each_set_bit(p, &destports, ds->num_ports) {
++				rc = switch_cb(ds, p, macaddr, l2_lookup.vlanid,
++					       l2_lookup.lockeds);
++				if (rc)
++					return rc;
++			}
++		}
  	}
- 
-+	INIT_LIST_HEAD(&ds->fdb_list);
-+
- 	ds->setup = true;
- 
- 	return 0;
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index b7a269e0513f..c8306b1f1c11 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -533,6 +533,7 @@ static inline void *dsa_etype_header_pos_tx(struct sk_buff *skb)
- /* switch.c */
- int dsa_switch_register_notifier(struct dsa_switch *ds);
- void dsa_switch_unregister_notifier(struct dsa_switch *ds);
-+int dsa_switch_fdb_dump(struct dsa_switch *ds, dsa_switch_fdb_dump_cb_t *cb);
- 
- /* dsa2.c */
- void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag);
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 9331093a84dd..ba864c5d1350 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -186,23 +186,18 @@ struct dsa_slave_dump_ctx {
- 	int idx;
- };
- 
--static int
--dsa_slave_port_fdb_do_dump(const unsigned char *addr, u16 vid,
--			   bool is_static, void *data)
--{
--	struct dsa_slave_dump_ctx *dump = data;
--	u32 portid = NETLINK_CB(dump->cb->skb).portid;
--	u32 seq = dump->cb->nlh->nlmsg_seq;
--	struct rtnl_fdb_dump_ctx *ctx;
-+static int dsa_nlmsg_populate_fdb(struct sk_buff *skb,
-+				  struct netlink_callback *cb,
-+				  struct net_device *dev,
-+				  const unsigned char *addr, u16 vid,
-+				  bool is_static)
-+{
-+	u32 portid = NETLINK_CB(cb->skb).portid;
-+	u32 seq = cb->nlh->nlmsg_seq;
- 	struct nlmsghdr *nlh;
- 	struct ndmsg *ndm;
- 
--	ctx = (struct rtnl_fdb_dump_ctx *)dump->cb->ctx;
--
--	if (dump->idx < ctx->fidx)
--		goto skip;
--
--	nlh = nlmsg_put(dump->skb, portid, seq, RTM_NEWNEIGH,
-+	nlh = nlmsg_put(skb, portid, seq, RTM_NEWNEIGH,
- 			sizeof(*ndm), NLM_F_MULTI);
- 	if (!nlh)
- 		return -EMSGSIZE;
-@@ -213,32 +208,152 @@ dsa_slave_port_fdb_do_dump(const unsigned char *addr, u16 vid,
- 	ndm->ndm_pad2    = 0;
- 	ndm->ndm_flags   = NTF_SELF;
- 	ndm->ndm_type    = 0;
--	ndm->ndm_ifindex = dump->dev->ifindex;
-+	ndm->ndm_ifindex = dev->ifindex;
- 	ndm->ndm_state   = is_static ? NUD_NOARP : NUD_REACHABLE;
- 
--	if (nla_put(dump->skb, NDA_LLADDR, ETH_ALEN, addr))
-+	if (nla_put(skb, NDA_LLADDR, ETH_ALEN, addr))
- 		goto nla_put_failure;
- 
--	if (vid && nla_put_u16(dump->skb, NDA_VLAN, vid))
-+	if (vid && nla_put_u16(skb, NDA_VLAN, vid))
- 		goto nla_put_failure;
- 
--	nlmsg_end(dump->skb, nlh);
-+	nlmsg_end(skb, nlh);
- 
--skip:
--	dump->idx++;
- 	return 0;
- 
- nla_put_failure:
--	nlmsg_cancel(dump->skb, nlh);
-+	nlmsg_cancel(skb, nlh);
- 	return -EMSGSIZE;
- }
- 
-+static int dsa_switch_shared_fdb_save_one(struct dsa_switch *ds, int port,
-+					  const unsigned char *addr, u16 vid,
-+					  bool is_static)
-+{
-+	struct dsa_port *dp = dsa_to_port(ds, port);
-+	struct dsa_fdb_entry *fdb;
-+
-+	if (!dsa_port_is_user(dp))
-+		return 0;
-+
-+	/* Will be freed during the finish phase */
-+	fdb = kzalloc(sizeof(*fdb), GFP_KERNEL);
-+	if (!fdb)
-+		return -ENOMEM;
-+
-+	ether_addr_copy(fdb->addr, addr);
-+	fdb->vid = vid;
-+	fdb->is_static = is_static;
-+	fdb->dev = dp->slave;
-+	list_add_tail(&fdb->list, &ds->fdb_list);
-+
-+	return 0;
-+}
-+
-+/* If the switch does not support shared FDB dump, do nothing and do the work
-+ * in the commit phase.
-+ */
-+static int dsa_shared_fdb_dump_prepare(struct net_device *dev)
-+{
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct dsa_switch *ds = dp->ds;
-+	int err;
-+
-+	if (!ds->ops->switch_fdb_dump)
-+		return 0;
-+
-+	if (ds->shared_fdb_dump_in_progress)
-+		return 0;
-+
-+	/* If this switch's FDB has not been dumped before during this
-+	 * prepare/commit/finish cycle, dump it now and save the results.
-+	 */
-+	err = dsa_switch_fdb_dump(ds, dsa_switch_shared_fdb_save_one);
-+	if (err)
-+		return err;
-+
-+	ds->shared_fdb_dump_in_progress = true;
-+
-+	return 0;
-+}
-+
- static int
--dsa_slave_fdb_dump(struct sk_buff *skb, struct netlink_callback *cb,
--		   struct net_device *dev, struct net_device *filter_dev,
--		   int *idx)
-+dsa_shared_fdb_dump_commit(struct sk_buff *skb, struct netlink_callback *cb,
-+			   struct net_device *dev, int *idx)
- {
- 	struct rtnl_fdb_dump_ctx *ctx = (struct rtnl_fdb_dump_ctx *)cb->ctx;
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct dsa_switch *ds = dp->ds;
-+	struct dsa_fdb_entry *fdb;
-+	int err;
-+
-+	/* Dump the FDB entries corresponding to the requested port from the
-+	 * saved results.
-+	 */
-+	list_for_each_entry(fdb, &ds->fdb_list, list) {
-+		if (fdb->dev != dev)
-+			continue;
-+
-+		if (*idx < ctx->fidx)
-+			goto skip;
-+
-+		err = dsa_nlmsg_populate_fdb(skb, cb, dev, fdb->addr, fdb->vid,
-+					     fdb->is_static);
-+		if (err)
-+			return err;
-+
-+skip:
-+		*idx += 1;
-+	}
-+
-+	return 0;
-+}
-+
-+/* Tear down the context stored during the shared FDB dump */
-+static void dsa_shared_fdb_dump_finish(struct net_device *dev)
-+{
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct dsa_fdb_entry *fdb, *tmp;
-+	struct dsa_switch *ds = dp->ds;
-+
-+	if (!ds->shared_fdb_dump_in_progress)
-+		return;
-+
-+	list_for_each_entry_safe(fdb, tmp, &ds->fdb_list, list) {
-+		list_del(&fdb->list);
-+		kfree(fdb);
-+	}
-+
-+	ds->shared_fdb_dump_in_progress = false;
-+}
-+
-+static int
-+dsa_slave_port_fdb_do_dump(const unsigned char *addr, u16 vid,
-+			   bool is_static, void *data)
-+{
-+	struct dsa_slave_dump_ctx *dump = data;
-+	struct rtnl_fdb_dump_ctx *ctx;
-+	int err;
-+
-+	ctx = (struct rtnl_fdb_dump_ctx *)dump->cb->ctx;
-+
-+	if (dump->idx < ctx->fidx)
-+		goto skip;
-+
-+	err = dsa_nlmsg_populate_fdb(dump->skb, dump->cb, dump->dev, addr, vid,
-+				     is_static);
-+	if (err)
-+		return err;
-+
-+skip:
-+	dump->idx++;
-+	return 0;
-+}
-+
-+static int
-+dsa_slave_fdb_dump_single(struct sk_buff *skb, struct netlink_callback *cb,
-+			  struct net_device *dev, int *idx)
-+{
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
- 	struct dsa_slave_dump_ctx dump = {
- 		.dev = dev,
-@@ -248,15 +363,40 @@ dsa_slave_fdb_dump(struct sk_buff *skb, struct netlink_callback *cb,
- 	};
- 	int err;
- 
--	if (ctx->state != RTNL_FDB_DUMP_COMMIT)
--		return 0;
--
- 	err = dsa_port_fdb_dump(dp, dsa_slave_port_fdb_do_dump, &dump);
- 	*idx = dump.idx;
- 
- 	return err;
- }
- 
-+static int
-+dsa_slave_fdb_dump(struct sk_buff *skb, struct netlink_callback *cb,
-+		   struct net_device *dev, struct net_device *filter_dev,
-+		   int *idx)
-+{
-+	struct rtnl_fdb_dump_ctx *ctx = (struct rtnl_fdb_dump_ctx *)cb->ctx;
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct dsa_switch *ds = dp->ds;
-+	int err = 0;
-+
-+	switch (ctx->state) {
-+	case RTNL_FDB_DUMP_PREPARE:
-+		err = dsa_shared_fdb_dump_prepare(dev);
-+		break;
-+	case RTNL_FDB_DUMP_COMMIT:
-+		if (ds->shared_fdb_dump_in_progress)
-+			err = dsa_shared_fdb_dump_commit(skb, cb, dev, idx);
-+		else
-+			err = dsa_slave_fdb_dump_single(skb, cb, dev, idx);
-+		break;
-+	case RTNL_FDB_DUMP_FINISH:
-+		dsa_shared_fdb_dump_finish(dev);
-+		break;
-+	}
-+
-+	return err;
-+}
-+
- static int dsa_slave_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- {
- 	struct dsa_slave_priv *p = netdev_priv(dev);
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index fd1a1c6bf9cf..a64613e1f99e 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -655,6 +655,14 @@ dsa_switch_mrp_del_ring_role(struct dsa_switch *ds,
  	return 0;
  }
  
-+int dsa_switch_fdb_dump(struct dsa_switch *ds, dsa_switch_fdb_dump_cb_t *cb)
++static int sja1105_port_fdb_dump(struct dsa_switch *ds, int port,
++				 dsa_fdb_dump_cb_t *cb, void *data)
 +{
-+	if (!ds->ops->switch_fdb_dump)
-+		return -EOPNOTSUPP;
-+
-+	return ds->ops->switch_fdb_dump(ds, cb);
++	return sja1105_fdb_dump(ds, port, cb, NULL, data);
 +}
 +
- static int dsa_switch_event(struct notifier_block *nb,
- 			    unsigned long event, void *info)
++static int sja1105_switch_fdb_dump(struct dsa_switch *ds,
++				   dsa_switch_fdb_dump_cb_t *cb)
++{
++	return sja1105_fdb_dump(ds, -1, NULL, cb, NULL);
++}
++
+ static void sja1105_fast_age(struct dsa_switch *ds, int port)
  {
+ 	struct sja1105_private *priv = ds->priv;
+@@ -3114,7 +3139,8 @@ const struct dsa_switch_ops sja1105_switch_ops = {
+ 	.get_sset_count		= sja1105_get_sset_count,
+ 	.get_ts_info		= sja1105_get_ts_info,
+ 	.port_disable		= sja1105_port_disable,
+-	.port_fdb_dump		= sja1105_fdb_dump,
++	.port_fdb_dump		= sja1105_port_fdb_dump,
++	.switch_fdb_dump	= sja1105_switch_fdb_dump,
+ 	.port_fdb_add		= sja1105_fdb_add,
+ 	.port_fdb_del		= sja1105_fdb_del,
+ 	.port_fast_age		= sja1105_fast_age,
 -- 
 2.25.1
 
