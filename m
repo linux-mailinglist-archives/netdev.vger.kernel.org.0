@@ -2,95 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AC003F37FF
-	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 04:11:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 930E53F3815
+	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 04:29:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240896AbhHUCJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 22:09:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53160 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230455AbhHUCJm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 22:09:42 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01BF0C061575;
-        Fri, 20 Aug 2021 19:09:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=mcAGd4syBQmVvuYw/FXr91ofwKpJKCgF/Cq6zrQxiU0=; b=3WAo4n4liJuDkp4HI1U0WWfYzx
-        WtJl1xf3E2gRSEflLuAI2lKmQTO0XBYfTy/2PTpeTpRNvTBuN0Jsnphq+VsilmVL2quUHug/gTuC3
-        efyxNmKyv2GPNJBgh1EOZhYTNpB4wYD+xlxFI7HQx9GahzUQxwbQIfI/KD7cu8i+cN5P5pDlL5FhM
-        w8MLtGlOiRZEkBsZn6Ef6rDW0GCiSf1PFJ78/iUgakH8L34/w3qhhPL08MXBbv0wFwTT1VxdFgYzL
-        SeY7Op85StOgCrIaSQx9lo1i9UwCOplHpqD9WIXi3FRnHa0asgNsQ9/pIlAgRsM1j35TT6DwDzCg1
-        EK2vc9PA==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mHGRS-00CNDA-II; Sat, 21 Aug 2021 02:09:02 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     netdev@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        linux-wireless@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH -net] wireless: iwlwifi: fix printk format warnings in uefi.c
-Date:   Fri, 20 Aug 2021 19:09:01 -0700
-Message-Id: <20210821020901.25901-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.31.1
+        id S239457AbhHUC3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 22:29:46 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:41920 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231804AbhHUC3p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 22:29:45 -0400
+Received: by mail-io1-f72.google.com with SMTP id s22-20020a5e98160000b02905afde383110so6531790ioj.8
+        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 19:29:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=iHf8LUR6Ovn1Eydbqz2P3rlkkwnXm6QsDeIBC7GD3Qg=;
+        b=jgGRKZs/zUjkI+bQ7qGe4k99OsVnwomZHh/9SjbQ0OGrX9+kOvGpJVN7ArNuBZPv5C
+         UHEAsRDQYopn5isAldWOu1un8sHhDrVvqGxlWzI/tVsIXPeLSJ8DWbf3v4rZzMU6s+FN
+         ta3FvDUsMD6bqA0eadSL/fDA9GMA2eR8n3BXkJB9jP2FwbL1AR2/X6QEB1/MnvmdWrzM
+         U6c56utSASamX8ZZEv58x9dE2xKd5fNojdqVsznHR09DPSeIes3B2av8ACsfA7S8NKPN
+         ZO2DscYLe12ApDUrXrd8Kmk77OruDHigJ6qDmRlk7VEuIwjzYtjNLY+ZGseipRGUb6hw
+         tHsg==
+X-Gm-Message-State: AOAM531WqUXeqW8PvVZVzhOlrXX/ym5eQnNQn7167Zw4H/fvgOgCR+AA
+        BnfGk2rwrBDbXRp9gKfqNFQNndPkGEhTTNxdUF9ECu4jB53e
+X-Google-Smtp-Source: ABdhPJzK0a8DAE41lfsQEjn583iPFBrbzLkXnZnYep9X4S+LuDPXekPfSUKswjhPhf9qYgtRx0WLpEqRtx7gWnRPEARQrCKJT9xa
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6e02:5c8:: with SMTP id l8mr16040022ils.282.1629512946491;
+ Fri, 20 Aug 2021 19:29:06 -0700 (PDT)
+Date:   Fri, 20 Aug 2021 19:29:06 -0700
+In-Reply-To: <00000000000000410c05c8e29289@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000552aaf05ca088c20@google.com>
+Subject: Re: [syzbot] KASAN: invalid-free in bdev_free_inode (2)
+From:   syzbot <syzbot+5fa698422954b6b9307b@syzkaller.appspotmail.com>
+To:     axboe@kernel.dk, balbi@kernel.org, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-block@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        lorenzo@google.com, manish.narani@xilinx.com, maze@google.com,
+        netdev@vger.kernel.org, phind.uet@gmail.com,
+        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The kernel test robot reports printk format warnings in uefi.c, so
-correct them.
+syzbot has bisected this issue to:
 
-../drivers/net/wireless/intel/iwlwifi/fw/uefi.c: In function 'iwl_uefi_get_pnvm':
-../drivers/net/wireless/intel/iwlwifi/fw/uefi.c:52:30: warning: format '%zd' expects argument of type 'signed size_t', but argument 7 has type 'long unsigned int' [-Wformat=]
-   52 |                              "PNVM UEFI variable not found %d (len %zd)\n",
-      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   53 |                              err, package_size);
-      |                                   ~~~~~~~~~~~~
-      |                                   |
-      |                                   long unsigned int
-../drivers/net/wireless/intel/iwlwifi/fw/uefi.c:59:29: warning: format '%zd' expects argument of type 'signed size_t', but argument 6 has type 'long unsigned int' [-Wformat=]
-   59 |         IWL_DEBUG_FW(trans, "Read PNVM from UEFI with size %zd\n", package_size);
-      |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~
-      |                                                                    |
-      |                                                                    long unsigned int
+commit 63d152149b2d0860ccf8c4e6596b6175b2b7ace6
+Author: Lorenzo Colitti <lorenzo@google.com>
+Date:   Wed Jan 13 23:42:22 2021 +0000
 
-Fixes: 84c3c9952afb ("iwlwifi: move UEFI code to a separate file")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: Luca Coelho <luciano.coelho@intel.com>
-Cc: linux-wireless@vger.kernel.org
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
----
- drivers/net/wireless/intel/iwlwifi/fw/uefi.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+    usb: gadget: u_ether: support configuring interface names.
 
---- linux-next-20210820.orig/drivers/net/wireless/intel/iwlwifi/fw/uefi.c
-+++ linux-next-20210820/drivers/net/wireless/intel/iwlwifi/fw/uefi.c
-@@ -49,14 +49,14 @@ void *iwl_uefi_get_pnvm(struct iwl_trans
- 	err = efivar_entry_get(pnvm_efivar, NULL, &package_size, data);
- 	if (err) {
- 		IWL_DEBUG_FW(trans,
--			     "PNVM UEFI variable not found %d (len %zd)\n",
-+			     "PNVM UEFI variable not found %d (len %lu)\n",
- 			     err, package_size);
- 		kfree(data);
- 		data = ERR_PTR(err);
- 		goto out;
- 	}
- 
--	IWL_DEBUG_FW(trans, "Read PNVM from UEFI with size %zd\n", package_size);
-+	IWL_DEBUG_FW(trans, "Read PNVM from UEFI with size %lu\n", package_size);
- 	*len = package_size;
- 
- out:
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=155abcc1300000
+start commit:   d3432bf10f17 net: Support filtering interfaces on no master
+git tree:       net-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=175abcc1300000
+console output: https://syzkaller.appspot.com/x/log.txt?x=135abcc1300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8075b2614f3db143
+dashboard link: https://syzkaller.appspot.com/bug?extid=5fa698422954b6b9307b
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=174ebaf6300000
+
+Reported-by: syzbot+5fa698422954b6b9307b@syzkaller.appspotmail.com
+Fixes: 63d152149b2d ("usb: gadget: u_ether: support configuring interface names.")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
