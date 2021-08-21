@@ -2,209 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A34E03F3C8E
-	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 23:18:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46AE53F3CAC
+	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 01:08:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230372AbhHUVSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Aug 2021 17:18:39 -0400
-Received: from mail-oln040093008001.outbound.protection.outlook.com ([40.93.8.1]:49843
-        "EHLO outbound.mail.eo.outlook.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S230003AbhHUVSi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Aug 2021 17:18:38 -0400
+        id S231130AbhHUXGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Aug 2021 19:06:21 -0400
+Received: from mail-eopbgr140053.outbound.protection.outlook.com ([40.107.14.53]:31556
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230343AbhHUXGV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Aug 2021 19:06:21 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XnfYTmFkSb8QVF2LJDMHLqiHU+c9wBPosyJOtO/8nFAlDb8KIONQrh/t8p4PJoVEH8+0vHBIMnjbuljSOjeu2BzJn6OC64wIM5sEF3TwmBHWFpVqwcXE0q/t14cvLUafLG6pKjkegn+agqG66hu4dY4898KXPAc6g/qBxdD9Pob7URLRE6RPIC9gNTgHi0a+DxBDPLnSldK+t/jo59FS7xqFmOOAJQXULezFx9pbrKvA7l429U30qCG5/nqGeaXCYa0uYusJ284alCd8EqBejvqnwLaE1Vs8mL7CZ6Auusk/0lvod4U1MolMa9ElR5nXVRyQPcPYoN4BW7g/AVco2w==
+ b=KChEyvayEZzJCzb6+AkkGGtKZe6lslKjUobOQjn1BpQo7KWRIkv0clBhlioAFe8EHyZzyXc3WI1vXfF8gS2uBCiZ0aW3YW6EpDbG2mFZC/tKHv64y6QAb4yw00pGpClio2SxLBq5nAupNd/EeqjK9yLiiFVoguSWocFPp4zt6iTDleRk9D8AUw4WSoJddecrOJm0LOJxToMcZbo17cd30FXajXX+Aim/Mm1FJXYA8xdB1PKs1Wfvmm2WnCQMRrsHrbEQRmohhyrTv5B79j98CAc5hlhF54EpND5l5YVHPGMCs2BnXLkezIdAf4lxm7yIKUn6twWGZ9UwltVMS/UDeg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=7YEDmzbsvRwxHCP5vnFhTqWBYogn+E7OeoUwoMYho14=;
- b=fsb/aBALi06L95PgcIOaEYxl35zpHiYXlfZjkya1VWxCtLejqPWbtd0nfWKJITfoVDHDHX/9vQvhNWm8EAg1xOcxV+aW6RpDHGK2uto79s4Ipw/aJlmtPL2oIxiRqD2FoEzIMkk5AX00NYnuJnpi7fSce/BQ3MY0T65zjghEkdbUMfrRkRy1gyGsZOymjh0/xK1Mba7cGR5bYMnNeZZycPBNj0s55feotTbn72E4BTJBBGcM0PxkZkr+NLnioO0l+lrnbr5LWaHJR+GwdptDIUFH52BOo4CPvHgNZlOFOGtAatSCyBPNB2mq7weL2mJlW5pgk2FBpUMMdtEhJZC/2A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
+ s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7YEDmzbsvRwxHCP5vnFhTqWBYogn+E7OeoUwoMYho14=;
- b=jtrjubaJssj+eT2wylebi0UKNLq47UGWJCkP26f38lo+Yhwq2DpMYGUNFu8HSQD95fJ3wQUdIcTgUIt4cjJZAUjy9+AXoOwH97JCdu77kqjhKPaYXyre7s8eQt5A48EI2uRalfjMJAaGadHhaMzo8FEmkuorcZYGq3HjlyVR8eQ=
-Received: from MN2PR21MB1295.namprd21.prod.outlook.com (2603:10b6:208:3e::25)
- by MN2PR21MB1277.namprd21.prod.outlook.com (2603:10b6:208:3d::24) with
+ bh=0FuR6TJNF6KVe0D7RhXWIavgArkwq7Go5h43Is2L1bc=;
+ b=gHvOnVWsk83ihXcPqK4sJ6SaIBoXZik6wjMpm89sGnVmR4enGY+hyLIZ7MqIONiZ/kXoZF3ec320GQwZroiooEj5hhdPO7OyJp+UnvvAMu4vsWVo9IY/hiB7gCyhC+8ynJNpDKbFTHuXdc2P/nJlCIsz4gRbdFQuCnHIcAoWcZn9JiNcchhZ5FmnRKvH2Iwz15NXGp5k3Nv8Frc6w201a6lwyQrywlpIBDnrQE0+kqoGUuewHmsfgTCfykPm6v4cxWX3eqO9AbSzMoBW72u5BiITLn2RIypDNjmWY7m7IquNiU7Hq1tspzi2sM8kCdfdQ2q8LjAOMjpzP5Bl5tz7iQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0FuR6TJNF6KVe0D7RhXWIavgArkwq7Go5h43Is2L1bc=;
+ b=s2IAbqWugi11HbgbXl5ZmdxvfRDYmEhVi+dcSmBhqsTX/SRMcqtV/YFM6DsSMHaVJKV4H3b4y8e7WMwJ0/PksLd73gzy8CFkB4Slz3UdgyiQrQbR+lLRQRm+WbDapnyZ9qBv1+WuZpAi9Sa6znAKiTphV9ByqZgKxjDLyXvV0A0=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB5133.eurprd04.prod.outlook.com (2603:10a6:803:5a::30) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.0; Sat, 21 Aug
- 2021 21:17:56 +0000
-Received: from MN2PR21MB1295.namprd21.prod.outlook.com
- ([fe80::b5fb:5714:f890:e69e]) by MN2PR21MB1295.namprd21.prod.outlook.com
- ([fe80::b5fb:5714:f890:e69e%3]) with mapi id 15.20.4457.008; Sat, 21 Aug 2021
- 21:17:55 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     Dexuan Cui <decui@microsoft.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Paul Rosswurm <paulros@microsoft.com>,
-        Shachar Raindel <shacharr@microsoft.com>,
-        "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next] mana: Add support for EQ sharing
-Thread-Topic: [PATCH net-next] mana: Add support for EQ sharing
-Thread-Index: AQHXlgQDWZC2thMJY02Y9szk3dkpa6t9HCeAgAFXN/A=
-Date:   Sat, 21 Aug 2021 21:17:55 +0000
-Message-ID: <MN2PR21MB1295573318B3897A2039B094CAC29@MN2PR21MB1295.namprd21.prod.outlook.com>
-References: <1629492169-11749-1-git-send-email-haiyangz@microsoft.com>
- <BYAPR21MB12708078CCAD0B60EAA1508BBFC29@BYAPR21MB1270.namprd21.prod.outlook.com>
-In-Reply-To: <BYAPR21MB12708078CCAD0B60EAA1508BBFC29@BYAPR21MB1270.namprd21.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=39af8494-2174-414d-b904-55e74a9fa146;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-08-20T22:30:32Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d4ce24a7-65f5-493b-7a97-08d964e924f4
-x-ms-traffictypediagnostic: MN2PR21MB1277:
-x-ms-exchange-transport-forked: True
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <MN2PR21MB1277E376001AAB650CB65F96CAC29@MN2PR21MB1277.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: xA9A1+mYAfohHFi21KNpjrJYMdm23EuVwI7KO99OXk0kZvWe/VF7gUsGhgrfD8uhQodAw7EpCGYVd0qKdfaTOKZygerKjia0B8ZaW0nSCpKwT7125ISdFDLQhfNgv2k0YT73dgK83EWxppaeR5HssE0i11FWTaR0T7uCWtM85dXEEgSomRCZzE3tEgJ7pCJUdpRJ2H9n0yM2PXGtmJ6dmBPDU1Eo2fqVRtJV3D+Hk1CxfCNtd43WKb2Myuv2tKO9KLSl/aAZVcA25VfVms2tEaFD1Y0wz/I8dCHBdqYGuNuBBiDJn4a7Av24X+1n4xWO9vhFX/IxWK/lE+/S3wePRVp+wrxgO9cvgrfJCPx61hW5HK/cTcaxlg6c3vgpGWqc0kfE0WMy6vaR3h4KGd2DKofpaf07Q7TCzi/+VLP4N0BmUa66/ubPrlGyoLLH7Z/ridvBu8WndImcdo3R8a5CTl4Oo+jFaDM7WQbnQn8xDT8VWRF/dOmPRJh/wxzUIDSbqoMBT1ZmM4dS+t7Q5zO05oloPzkHlc6d2HSaqfd6J4G4wX4KC1rLV+4EdepvuglgsIg6SVNsdz6r4PWaX4fJSWWidEYG1J0kopf7c3bbdSXIQyaGx6vo/Wlu2tyzBkfO1X227HODqFyHjb/d8dHm/mYRxLC18HNloZ62x2UQbBocyuRsxGA2EXCQbrUMNXxyXkFYAwvH+Q49E4cYW5+1xw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR21MB1295.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(33656002)(4326008)(66946007)(66446008)(76116006)(7696005)(66476007)(66556008)(9686003)(26005)(52536014)(55016002)(71200400001)(186003)(508600001)(6506007)(53546011)(64756008)(5660300002)(86362001)(10290500003)(2906002)(54906003)(8676002)(83380400001)(316002)(8936002)(8990500004)(110136005)(38070700005)(38100700002)(82950400001)(82960400001)(122000001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?7x2dPOJxw3wFt27FVqTkK9ocYqci955pDRjakPybPmO51rubH437gK5hiol8?=
- =?us-ascii?Q?WS6i8TGLwDIzcvKwo6fQ5bQG6CSbeouOdGTdQzv1m+3I8fPWzV9oaQk3t/43?=
- =?us-ascii?Q?7iQYi6V0vuu49yLsrjeqDtBPm/XzcXPrP6iRFQW/O7QgY5EAYvTB1j1pND2H?=
- =?us-ascii?Q?xMZWKFguEDnYhl/iHeA1NdRd9OYedTZ3o2cKbQcYdD5/xiLbs7FLFtBAyadO?=
- =?us-ascii?Q?yfqhEHfwVLeiXilEq0Q0s7GA2D/q6gfCf0+ua1j2W9vJFaMND9WZS8KAx712?=
- =?us-ascii?Q?tXpc5fTgGuye/vhgFL1J4v63LC4+b8z9wX0iUgXik0goVN+loC5y+6vLbpKe?=
- =?us-ascii?Q?CE2cAxFKDAiPWxsMBBaNm1ke4rPvDSbxz/7PMC8EvDxZ4DRBYmz5YUO9r3mB?=
- =?us-ascii?Q?1QeHm0yZytYgR0aq2H8e04VoFDv6LOf9M63G+7Hca5zxuW9wpQkZ6cN1QxGD?=
- =?us-ascii?Q?psu5DS8Mx2VMux8jJWVcytQaZq6E51Q9svOV+053ZxSwReKfoXpVu1TaQ6WM?=
- =?us-ascii?Q?LrFeY5DuF89+MPZMOiTfeXA0lms7Ed2c66EGPUuuMKHe0iKLxEYpSwHhhjLZ?=
- =?us-ascii?Q?yPNxuc6qXOaHy6PZleKp9VojRcd7yeFfRXYl0pm52VMtJ+cUiV4mrHB/HHpG?=
- =?us-ascii?Q?gdSc5KIaf5Dn5UjrlwxdK6TFVeEbuJ+XwF+gBOphJb/OsPpuT+h1DPWkclOC?=
- =?us-ascii?Q?iWjCnaeK4r4vBxrKwRn/US3Ybod5WqhaqoDXGL59rAG3Sy1Ke38Mp3mgMtUR?=
- =?us-ascii?Q?mI3AH9QN1UfVxY50WeCujaYGO+AVL+TGmWOm20oQvOWtU8D6K/40Sx8ukqYf?=
- =?us-ascii?Q?Jh/caDiKhkeNCWiHf4/MJcUDV7lUgVSCW8wZCPQJcJ03bL3fxj1ypWIDhegu?=
- =?us-ascii?Q?rAyr2UhYs/3kKwPmmNAomr7RRxJH0JlKWyUjl0kzLgLVviqhz7TNZgX77qkH?=
- =?us-ascii?Q?eDwzVpwScZnNVvuC0EDfaOkEqioQEKP5MHRudnjSQQCS2BGaIeKUz9vnij5O?=
- =?us-ascii?Q?s/oMB6QUl4jcBQN9dt2Amij/bUCLNdeMMzTN4q9GqilWxrOhvnfN6IaloCYq?=
- =?us-ascii?Q?kRdne20fnTAFc8/j0t5cJwMWP99AP6o80dkMqsmtN5JkXTLkyiIOwpEGqMdj?=
- =?us-ascii?Q?xpW67Fo6uhNpErwLFiCvvk8OSOaUQs9RcnP9MqsE5ovib9fqzF3Mt58nmkMw?=
- =?us-ascii?Q?EcArsKXxIl7V3wJPi4yeurZTgyBxIOhjnE7uy0u6ohaXSwSLibasgmtEu3pr?=
- =?us-ascii?Q?bhBlIO+s+RrFlUN9kN8e8cAWQM66zgTbM0fU7hTdeOQxdPHUmsYCXULmp5KQ?=
- =?us-ascii?Q?nQo4L53z43oiOJ7bdHepfQdE?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.22; Sat, 21 Aug
+ 2021 23:05:37 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4436.022; Sat, 21 Aug 2021
+ 23:05:37 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Subject: [PATCH net-next 0/4] DSA documentation updates for v5.15
+Date:   Sun, 22 Aug 2021 02:04:37 +0300
+Message-Id: <20210821230441.1371168-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM4PR0501CA0047.eurprd05.prod.outlook.com
+ (2603:10a6:200:68::15) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (188.25.144.60) by AM4PR0501CA0047.eurprd05.prod.outlook.com (2603:10a6:200:68::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Sat, 21 Aug 2021 23:05:37 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a8150cd3-6063-421b-f74d-08d964f8303a
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5133:
+X-Microsoft-Antispam-PRVS: <VI1PR04MB513334A01864A9C672DFEFB1E0C29@VI1PR04MB5133.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YIzpR0GrNba5EVersQ2kMiekbTKt7c/VywwtA+t7S33yFp4Mfvw895UuyLOgTErwSeoLKn640s9/x03UK3RpEFky6o/EVZXuEf+2Qs5YPge2Ct0Ga7IRy/oUH3VV0PQLlJDIAShCNirjJuP4OWEGUzkjo64bWtzKFmxWKhmKbloPLJcL4OOE6JPU9l7UlV4gUXKfhMXzv05PKxUikAWshqxpZjySaBfwj+sYIK3i7kGDcw8K1ScOsZ7LvqgOiDkxTKtkNDs7N1CveQ1C6G3hMR9ovHQhS08AGEM/81Hpx4blR3nisyCg364cMgl4+gGHPtVOAYYhi34yvyjw5F+CDO1imkG4mnHb/DrdzdeBoZKIzJRpE1g7Y9NKBIo6uKfXYrXPKNEeWlXxtakCG/vRqfl3nBL3xKhUAh9M8fdEsUgykNfkZHJSs6H7hJsZxLJFTMabAfumRFoKdbvwGeOLOUImisPpS+z7pHDtTUoSAGY7xYWwyxqUCdrgsXYVtZfjCI4xIbVv2duxNOHXh1uA3IFWpvaH59gzyPhjJryMgrBehjO0/Qi8IYdnfnczvB02PaeEZL3jyT8UN3qJyf5jgSKSaylwrnY2Y8UoG+PlRze33ulwF69LwuBBS6ofRIqw28TK6sLcWIGgYqLF1BlNf4m4FOWmtsd2vQEHfKG/0zRsh/csiLEAipJ2/sJu3CXy
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(376002)(366004)(39850400004)(346002)(396003)(66556008)(66476007)(86362001)(66946007)(2616005)(956004)(44832011)(38100700002)(38350700002)(316002)(6486002)(1076003)(6512007)(478600001)(83380400001)(36756003)(6506007)(52116002)(6916009)(26005)(186003)(8676002)(8936002)(2906002)(5660300002)(15650500001)(4744005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zgYOvjfWW1erpMLrZTne5DUPMqgTkbeiTfsE7UnwCUP6As/vQjlh1HEAMXGl?=
+ =?us-ascii?Q?c3YIU2exxJMtP+9Xzi+pWxvCzVMWa6sS4y0t1tWbdVbxXsw7Xq7qTPYdITtv?=
+ =?us-ascii?Q?oNPNXGixBxgBrFEwXJtABskJ+RFLEyPJ3yIqmOc65J96VQ5OEcOGj2ye1ecP?=
+ =?us-ascii?Q?AiNI+tNZJpBDulWdKAozHFrPrA3OKY0AgIRiqON3PXbvIT5AyW++o2LYOkdl?=
+ =?us-ascii?Q?ThPwKRROWDprEuBcp/vCyRd8Us553banhmuO0Z8ZkDIc3OwZ8YoZpg/1o24z?=
+ =?us-ascii?Q?PE9KXtRmD5oulaRDjrHg3l4sG5h3xVk0oXJJ8wMxUrGZwI0LNreM00LAmmXS?=
+ =?us-ascii?Q?dWv++I3C9FRqPYyumc1JiemNJh474HalDu2z96rHzKmmw5PVKdH5QFJn9JK7?=
+ =?us-ascii?Q?0iqvxfBSp7Wcp9lavKISxmnp/A9gWzZzHnjrT5PGGJpS0bDGZu7wxN6OK6q6?=
+ =?us-ascii?Q?917yM/wxITHM1miWZVx2bixeGDd+ht2XEPvX8XdZ0WUi3LiYAFJbf72+Gmco?=
+ =?us-ascii?Q?rI5jT5drT9cqb8X8ue3+uyWoIJfwtyXU2gfozu0eEqBJLiUPuZxWcs4B5a+m?=
+ =?us-ascii?Q?V4iKIsNxkCqXJcfeUiWDqBsOLpN0bjkd0fihNtPT+IQl8peGzI3MbvXF9XIC?=
+ =?us-ascii?Q?eEK3bkRTu+4yNvnbDnEh+c5ZXEgMz1Wsud/egIS9On4i9zLUnqrK7eLEDqJN?=
+ =?us-ascii?Q?r+4SyT3/NmWIlE6aVPQhdx5EmUT7vDPExsBRBZ5BeuyeU/1WX6naGjIFp8Ak?=
+ =?us-ascii?Q?Y8ZliTvZLPgvIWadYgJSJC1D9jS6iyZYaVylGonULsN+nwRWOVZExISaaRrC?=
+ =?us-ascii?Q?St+a+OqpGgFDiEWA+OP/lH0ufQ8rhmkeZet9MeeNJtd0B+KKoYVinkK1+UVv?=
+ =?us-ascii?Q?w5pITyz9WXNz/IYykmKrQXv9Dbns2vB4/pmgrU2LyHMXY+3+Su6fqFNfBz7T?=
+ =?us-ascii?Q?r3R6lVyAiuVSdn3XeOL9gI9LRPi3IDM1Liis5fMdbhauwY74hpunmltinouB?=
+ =?us-ascii?Q?an4afp4VmmL5IN/tUHQCvuhurGpYgm8kQXp2elpE4yCJbUx53cQpNuDnHQNo?=
+ =?us-ascii?Q?Tv7Qg3KN/671QEvDgJCR+EYaIXvhX+5DblXydmYb9f7IvbW56FvJXPk3Pv99?=
+ =?us-ascii?Q?ueyJftCDh8cO+wT75LA81E3R/uiTmnbBH0c6AoIgXT8Qwl14TbtHo0c/YeYG?=
+ =?us-ascii?Q?46O80K6N6RVV97JwXRCGtY4RmSTDxt7v8R6lMQNL+JneO7aLu2VnEN+rU1Gl?=
+ =?us-ascii?Q?jXlUiYIA7+UgeRWwAA78kr631nB7MeZuc3wwj6UEAICErbCNfp5zu/2Estfz?=
+ =?us-ascii?Q?HS6TWUgdx7RnmDu9FnyIbiOS?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a8150cd3-6063-421b-f74d-08d964f8303a
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR21MB1295.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d4ce24a7-65f5-493b-7a97-08d964e924f4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Aug 2021 21:17:55.8336
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2021 23:05:37.4922
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: OEPStP9e28EfxRccdLSuNuX2IYvuTYYQPI4MgIN+yqgXYvUeSvR2T/IJgGgAKeKoQ7+PSYDOzmVt6nqs8kfoHg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR21MB1277
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: V5eLVZ0US/EKWLdYYT2NjKJbIA4+9cte9x1GKwMX2zdLO0NrX7WTMV8JsqLO9SjVYzTRI7ysEiXzYFU4VxzxBQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5133
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+There were some documentation-visible changes made to DSA in the
+net-next tree for v5.15. There may be more, but these are the ones I am
+aware of.
 
+Vladimir Oltean (4):
+  docs: devlink: remove the references to sja1105
+  docs: net: dsa: sja1105: update list of limitations
+  docs: net: dsa: remove references to struct dsa_device_ops::filter
+  docs: net: dsa: document the new methods for bridge TX forwarding
+    offload
 
-> -----Original Message-----
-> From: Dexuan Cui <decui@microsoft.com>
-> Sent: Friday, August 20, 2021 8:33 PM
-> To: Haiyang Zhang <haiyangz@microsoft.com>; linux-hyperv@vger.kernel.org;
-> netdev@vger.kernel.org
-> Cc: Haiyang Zhang <haiyangz@microsoft.com>; KY Srinivasan
-> <kys@microsoft.com>; Stephen Hemminger <sthemmin@microsoft.com>; Paul
-> Rosswurm <paulros@microsoft.com>; Shachar Raindel
-> <shacharr@microsoft.com>; olaf@aepfle.de; vkuznets <vkuznets@redhat.com>;
-> davem@davemloft.net; linux-kernel@vger.kernel.org
-> Subject: RE: [PATCH net-next] mana: Add support for EQ sharing
->=20
-> > Subject: [PATCH net-next] mana: Add support for EQ sharing
->=20
-> "mana:" --> "net: mana:"
-Will do.
+ Documentation/networking/devlink/index.rst   |   1 -
+ Documentation/networking/devlink/sja1105.rst |  49 -----
+ Documentation/networking/dsa/dsa.rst         |  29 +--
+ Documentation/networking/dsa/sja1105.rst     | 218 +------------------
+ 4 files changed, 17 insertions(+), 280 deletions(-)
+ delete mode 100644 Documentation/networking/devlink/sja1105.rst
 
->=20
-> > The existing code uses (1 + #vPorts * #Queues) MSIXs, which may exceed
-> > the device limit.
-> >
-> > Support EQ sharing, so that multiple vPorts can share the same set of
-> > MSIXs.
-> >
-> > Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
->=20
-> The patch itself looks good to me, but IMO the changes are too big to be
-> in one patch. :-) Can you please split it into some smaller ones and
-> please document the important changes in the commit messages, e.g.
-Will do.
-
-> 1) move NAPI processing from EQ to CQ.
->=20
-> 2) report the EQ-sharing capability bit to the host, which means the
-> host can potentially offer more vPorts and queues to the VM.
->=20
-> 3) support up to 256 virtual ports (it was 16).
->=20
-> 4) support up to 64 queues per net interface (it was 16). It looks like
-> the default number of queues is also 64 if the VM has >=3D64 CPUs? --
-> should we add a new field apc->default_queues and limit it to 16 or 32?
-> We'd like to make sure typically the best performance can be achieved
-> with the default number of queues.
-I found on a 40 cpu VM, the mana_query_vport_cfg() returns max_txq:32,=20
-max_rxq:32, so I didn't further reduce the number (32) from PF.=20
-
-That's also the opinion from the host team -- if they upgrade the NIC=20
-HW in the future, they can adjust the setting from PF side without=20
-requiring VF driver change.
-
-
->=20
-> 5) If the VM has >=3D64 CPUs, with the patch we create 1 HWC EQ and 64 NI=
-C
-> EQs, and IMO the creation of the last NIC EQ fails since now the host PF
-> driver allows only 64 MSI-X interrupts? If this is the case, I think
-> mana_probe() -> mana_create_eq() fails and no net interface will be
-> created. It looks like we should create up to 63 NIC EQs in this case,
-> and make sure we don't create too many SQs/RQs accordingly.
->=20
-> At the end of mana_gd_query_max_resources(), should we add something
-> like:
-> 	if (gc->max_num_queues >=3D gc->num_msix_usable -1)
-> 		gc->max_num_queues =3D gc->num_msix_usable -1;
-As said, the PF allows 32 queues, and 64 MSI-X interrupts for now.=20
-The PF should increase the MSI-X limit if the #queues is increased to=20
-64+.=20
-
-But for robustness, I like your idea that add a check in VF like above.
-
-
->=20
-> 6) Since we support up to 256 ports, up to 64 NIC EQs and up to
-> 64 SQ CQs and 64 RQ CQs per port, the size of one EQ should be at least
-> 256*2*GDMA_EQE_SIZE =3D 256*2*16 =3D 8KB. Currently EQ_SIZE is hardcoded =
-to
-> 8 pages (i.e. 32 KB on x86-64), which should be big enough. Let's add
-> the below just in case we support more ports in future:
->=20
-> BUILD_BUG_ON(MAX_PORTS_IN_MANA_DEV*2* GDMA_EQE_SIZE > EQ_SIZE);
-Will do.
-
->=20
-> 7) In mana_gd_read_cqe(), can we add a WARN_ON_ONCE() in the case of
-> overflow. Currently the error (which normally should not happen) is
-> sliently ignored.
-Will do.
-
-Thank you for the detailed reviews!
-
-- Haiyang
+-- 
+2.25.1
 
