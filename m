@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E5853F3B9C
-	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 19:16:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3998D3F3BC0
+	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 19:32:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230491AbhHURQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Aug 2021 13:16:47 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:51548 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230306AbhHURQr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Aug 2021 13:16:47 -0400
+        id S231969AbhHURdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Aug 2021 13:33:08 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:18856 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230402AbhHURdG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Aug 2021 13:33:06 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1629566167; h=Date: Message-Id: Cc: To: References:
+ s=smtp; t=1629567147; h=Date: Message-Id: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=MLXw2kAV40fUYj05/3m6TBzD/fnzpbaaqB86lj9wxNQ=;
- b=adVTl/bAR/vARRJz3qajtU/nH+62wvkd4mioA1552wZ9LGg9yFDwYRkvguZtsgda0CkO/zHw
- XJxThJNZhs3fobUmKNX+hA/1o4fl3tfMfCFO1MoBp2q+CMq5V8jo06+zubEKQEp09Ad0s0/d
- Ls8bvFKcCHcKrOlUjALaBzxxwGc=
-X-Mailgun-Sending-Ip: 69.72.43.7
+ Content-Type: Sender; bh=2BboqZtCczhs7Gj5gmMKaCpliJBrP2gnrnXMEhNrp9U=;
+ b=EDmmvxaP72lWkOiUe/gSVk04K+W/4JMvKxZPXA2/bFaFsxRjDtW7DAzCJcgPgobSRdr9OojP
+ 58iBmBQaHMxlgi3ESYd8mzuq0lKCZVsa0R+OukhrG6XMH6cbLgUQorSbm/GmmahPzVAv9yK2
+ OqqIZLGXRo9JXFezN7Aye212nN8=
+X-Mailgun-Sending-Ip: 198.61.254.9
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
- 612134cb89fbdf3ffe78282e (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 21 Aug 2021 17:15:55
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 6121388ff588e42af1471068 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 21 Aug 2021 17:31:59
  GMT
 Sender: kvalo=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 398BEC43619; Sat, 21 Aug 2021 17:15:54 +0000 (UTC)
+        id 7AED7C43616; Sat, 21 Aug 2021 17:31:59 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -39,92 +39,51 @@ Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id AEA07C4360C;
-        Sat, 21 Aug 2021 17:15:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org AEA07C4360C
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id CCD6DC4338F;
+        Sat, 21 Aug 2021 17:31:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org CCD6DC4338F
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH 1/3] ipw2x00: Avoid field-overflowing memcpy()
+Subject: Re: [PATCH 3/3] rtlwifi: rtl8192de: fix array size limit in for-loop
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210819202825.3545692-2-keescook@chromium.org>
-References: <20210819202825.3545692-2-keescook@chromium.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     netdev@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+In-Reply-To: <20210803144949.79433-3-colin.king@canonical.com>
+References: <20210803144949.79433-3-colin.king@canonical.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     Ping-Ke Shih <pkshih@realtek.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
-        linux-hardening@vger.kernel.org
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, Joe Perches <joe@perches.com>,
+        linux-kernel@vger.kernel.org
 User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-Id: <20210821171554.398BEC43619@smtp.codeaurora.org>
-Date:   Sat, 21 Aug 2021 17:15:54 +0000 (UTC)
+Message-Id: <20210821173159.7AED7C43616@smtp.codeaurora.org>
+Date:   Sat, 21 Aug 2021 17:31:59 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kees Cook <keescook@chromium.org> wrote:
+Colin King <colin.king@canonical.com> wrote:
 
-> In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> field bounds checking for memcpy(), memmove(), and memset(), avoid
-> intentionally writing across neighboring fields.
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> libipw_read_qos_param_element() copies a struct libipw_info_element
-> into a struct libipw_qos_information_element, but is actually wanting to
-> copy into the larger struct libipw_qos_parameter_info (the contents of
-> ac_params_record[] is later examined). Refactor the routine to perform
-> centralized checks, and copy the entire contents directly (since the id
-> and len members match the elementID and length members):
+> Currently the size of the entire array is being used in a for-loop
+> for the element count. While this works since the elements are u8
+> sized, it is preferred to use ARRAY_SIZE to get the element count
+> of the array.
 > 
-> struct libipw_info_element {
->         u8 id;
->         u8 len;
->         u8 data[];
-> } __packed;
+> Kudos to Joe Perches for spotting this issue.
 > 
-> struct libipw_qos_information_element {
->         u8 elementID;
->         u8 length;
->         u8 qui[QOS_OUI_LEN];
->         u8 qui_type;
->         u8 qui_subtype;
->         u8 version;
->         u8 ac_info;
-> } __packed;
-> 
-> struct libipw_qos_parameter_info {
->         struct libipw_qos_information_element info_element;
->         u8 reserved;
->         struct libipw_qos_ac_parameter ac_params_record[QOS_QUEUE_NUM];
-> } __packed;
-> 
-> Cc: Stanislav Yakovlev <stas.yakovlev@gmail.com>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-2 patches applied to wireless-drivers-next.git, thanks.
+Dropped per Colin's request.
 
-d6b6d1bb80be ipw2x00: Avoid field-overflowing memcpy()
-92276c592a6b ray_cs: Split memcpy() to avoid bounds check warning
+Patch set to Changes Requested.
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210819202825.3545692-2-keescook@chromium.org/
+https://patchwork.kernel.org/project/linux-wireless/patch/20210803144949.79433-3-colin.king@canonical.com/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
