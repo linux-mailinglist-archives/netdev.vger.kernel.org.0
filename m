@@ -2,154 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D33DF3F3B44
-	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 17:54:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70B893F3B46
+	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 17:54:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235091AbhHUPy0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Aug 2021 11:54:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35186 "EHLO
+        id S235250AbhHUPyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Aug 2021 11:54:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232898AbhHUPyF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Aug 2021 11:54:05 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AAA3C06175F;
-        Sat, 21 Aug 2021 08:53:24 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id n5so6392211wro.12;
-        Sat, 21 Aug 2021 08:53:24 -0700 (PDT)
+        with ESMTP id S234940AbhHUPyr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Aug 2021 11:54:47 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151B2C061224;
+        Sat, 21 Aug 2021 08:53:53 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id w68so11385190pfd.0;
+        Sat, 21 Aug 2021 08:53:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RKv2iOkOB2q/Doy6cx3JdFQv2ceaGk66lT97NgE4xbs=;
-        b=hGWEuTh2N9U+uOVXt0/h5SU43Y/HWs1t0XL73VOkQi0RN6mDLTYAshQprTveikDOxI
-         TIf7tWk1yLJP9TxJCwIfAViLfGg5sd0HhgzD1XB2Ploux4XoY14kFjl0vo26CVulckK1
-         GIRxWgmAyd7v2NenIiQV7S7LR8yjHGmDdDVXY+8DYDZ65oON2eVaiN+8DbRFTNE6rVmU
-         +BLRhY88EKxdOyZpkZX9IsAvBQ45zWhSkvI3Ex6xNVcWGxeCKL2XZrwZPq9hOflU9tMO
-         87v7W63FibuMzlymcmHqti90nsE3BNo04Fta4KqKjMwWjhrClvwYV5C3sfQbwSKfottF
-         2h+w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zRpYwGeL8XTo33SfCVOcmqX7DUSwoGgUjS+gHhg53uE=;
+        b=VFe1LSLOInW6zThI798Aqu4wyQ95LRYKLefq/NWxyh9ABl56vmV9Ji3DMl6plCNz+p
+         q4vku+63l/YMQNfB5v3oL49xKZDY8pqaBTfiHfvrkJPGnkJD7DIXhWSRxc39jgkjQZMa
+         LN3PGr+d5dAgx97c5PtxENWLKXkfuQdhda7i+qVAKQsfKVHv/KxcsvM06Vmg8UZsK/Cl
+         OV6tAvmSEFYo8c/YD6HqQ1HHunMo4B8UIcjvOOjrCWm/Pmjd8OBt1Qsv+En7lSIKhFQd
+         HU7GGsEY8mhtYp7qoUbMqgyplJBKCNaY6yivneoATa+ZTiDK8O0Q0rqluaB5al8EW2CW
+         D3XQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RKv2iOkOB2q/Doy6cx3JdFQv2ceaGk66lT97NgE4xbs=;
-        b=il7N/5hfM/LxPj+z+slQumU9lhLZXqiAwToTT8Nt/lbOGcCQlhS8WOL17bgcL76PQh
-         HNbRGvbl3j7YvkJK9Jhfd2uQT0EIWCp3ja6Vr3gkDEa9uKp22nnF6fs1FcfGgU+z+Lil
-         kybCKnA01FustOwkXkyUzZyNBjkEayjaCYhcL2FRLYgzkZ/+oT267QuPU8N0AVvnYSqT
-         fM6ktvaqWwuyRHUOxmcq2grfSlHYp8JlUXGuTcXfuTfXzFqm3cMpEAAqm2mvKYumFV3c
-         kW8kGKiMHmBkifWzv5UitKKwWNKM6QCBEsRf4TIit5V58ObTJIoPIImoCAHHFwuzqNR2
-         60Wg==
-X-Gm-Message-State: AOAM531aW5iwdoE2gvczfwABrsvvWVwmit2soePMOxmaP+BBcjFxFTjx
-        56NCSnQemi8dNkfGoS8qG4s=
-X-Google-Smtp-Source: ABdhPJxd4CQe+K0DFlHZMMRzdTdQhoyeJsujEiYWrjslyK9HhfFryQTZ0qQXaSVnbzGoNla/jjuY/g==
-X-Received: by 2002:a5d:658e:: with SMTP id q14mr4524076wru.142.1629561202848;
-        Sat, 21 Aug 2021 08:53:22 -0700 (PDT)
-Received: from localhost.localdomain ([85.255.233.174])
-        by smtp.gmail.com with ESMTPSA id e3sm9479554wro.15.2021.08.21.08.53.22
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zRpYwGeL8XTo33SfCVOcmqX7DUSwoGgUjS+gHhg53uE=;
+        b=EFqvD+M6bptgxgHQ5MBgIznl/uRnEJD5oSw4CyYn9RJQOSymxhlSRgHGy6wptP/kmp
+         9I6hdUOL9oDjlDA2bsCVDUC07/qvSleLVhfgal5aWtEsvD1IGKjJJ43iLO57snF9MCSr
+         zapdtsMpLN5ihFyKzNtxcWVPUPfYzi8gqkLRGuRwQR/aLirLD1V2tdLOjAZH7TdJJ1Dg
+         ZCENvD27Ud/abtOCzm8aBzeRwG4l2Lkq6h9Dp+Eym7l5n9F3GFZMi2AFZhKEllwDnZ7D
+         pVWlpbLeAF6+puAog3tWdCLTIlLW6hgg5b9PL+nxg4pxmHG4XvR6x95eA2H91uUzD7An
+         UezA==
+X-Gm-Message-State: AOAM5311rMGy+scDp3tWgdkxHTOM385pA0BEL7wT1gH1fAc4WP15fZ+p
+        +CSK6aLT/CcwBUA9k1lBUtE=
+X-Google-Smtp-Source: ABdhPJz0wOXLZrc/S73w9devvoQzXg/4smtNR7mKHf3B4mkxetFnKFDGAZ6FHf5mrcbURHL4dWru3Q==
+X-Received: by 2002:a63:6602:: with SMTP id a2mr24241086pgc.93.1629561232644;
+        Sat, 21 Aug 2021 08:53:52 -0700 (PDT)
+Received: from localhost.localdomain ([223.106.48.93])
+        by smtp.googlemail.com with ESMTPSA id x42sm10615384pfh.205.2021.08.21.08.53.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Aug 2021 08:53:22 -0700 (PDT)
-From:   Pavel Begunkov <asml.silence@gmail.com>
-To:     Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org,
-        Josh Triplett <josh@joshtriplett.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Stefan Metzmacher <metze@samba.org>
-Subject: [PATCH v3 4/4] io_uring: accept directly into fixed file table
-Date:   Sat, 21 Aug 2021 16:52:40 +0100
-Message-Id: <2339d899ba5f56ef1f7480e2a252224f8ad408c8.1629559905.git.asml.silence@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <cover.1629559905.git.asml.silence@gmail.com>
-References: <cover.1629559905.git.asml.silence@gmail.com>
+        Sat, 21 Aug 2021 08:53:52 -0700 (PDT)
+From:   jony-one <yan2228598786@gmail.com>
+To:     kuba@kernel.org
+Cc:     edumazet@google.com, rostedt@goodmis.org, mingo@redhat.com,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hengqi.chen@gmail.com, yhs@fb.com,
+        jony-one <yan2228598786@gmail.com>
+Subject: [PATCH] net/mlx4: tcp_drop replace of tcp_drop_new
+Date:   Sat, 21 Aug 2021 08:53:27 -0700
+Message-Id: <20210821155327.251284-1-yan2228598786@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As done with open opcodes, allow accept to skip installing fd into
-processes' file tables and put it directly into io_uring's fixed file
-table. Same restrictions and design as for open.
+We never know why we are deleting a tcp packet when we delete it,
+and the tcp_drop_new() function can effectively solve this problem.
+The tcp_drop_new() will learn from the specified status code why the
+packet was deleted, and the caller from whom the packet was deleted.
+The kernel should be a little more open to data that is about to be
+destroyed and useless, and users should be able to keep track of it.
 
-Suggested-by: Josh Triplett <josh@joshtriplett.org>
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Signed-off-by: jony-one <yan2228598786@gmail.com>
 ---
- fs/io_uring.c | 30 ++++++++++++++++++++++++------
- 1 file changed, 24 insertions(+), 6 deletions(-)
+ include/trace/events/tcp.h | 51 ++++++++++++++++++++++++++++++++++++++
+ net/ipv4/tcp_input.c       | 29 ++++++++++++++--------
+ 2 files changed, 69 insertions(+), 11 deletions(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index a54994a4f4ae..0323e947f403 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -4759,10 +4759,11 @@ static int io_recv(struct io_kiocb *req, unsigned int issue_flags)
- static int io_accept_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- {
- 	struct io_accept *accept = &req->accept;
-+	unsigned index;
+diff --git a/include/trace/events/tcp.h b/include/trace/events/tcp.h
+index 521059d8d..5a0478440 100644
+--- a/include/trace/events/tcp.h
++++ b/include/trace/events/tcp.h
+@@ -371,6 +371,57 @@ DEFINE_EVENT(tcp_event_skb, tcp_bad_csum,
+ 	TP_ARGS(skb)
+ );
  
- 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
- 		return -EINVAL;
--	if (sqe->ioprio || sqe->len || sqe->buf_index || sqe->splice_fd_in)
-+	if (sqe->ioprio || sqe->len || sqe->buf_index)
- 		return -EINVAL;
- 
- 	accept->addr = u64_to_user_ptr(READ_ONCE(sqe->addr));
-@@ -4770,6 +4771,17 @@ static int io_accept_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 	accept->flags = READ_ONCE(sqe->accept_flags);
- 	accept->nofile = rlimit(RLIMIT_NOFILE);
- 
-+	index = READ_ONCE(sqe->file_index);
-+	req->buf_index = index;
-+	if (index) {
-+		if (req->open.how.flags & O_CLOEXEC)
-+			return -EINVAL;
-+		if (req->buf_index != index)
-+			return -EINVAL;
-+	}
++/*
++ * tcp event whit argument sk, skb, reason
++ */
++TRACE_EVENT(tcp_drop_new,
 +
-+	if (req->buf_index && (accept->flags & SOCK_CLOEXEC))
-+		return -EINVAL;
- 	if (accept->flags & ~(SOCK_CLOEXEC | SOCK_NONBLOCK))
- 		return -EINVAL;
- 	if (SOCK_NONBLOCK != O_NONBLOCK && (accept->flags & SOCK_NONBLOCK))
-@@ -4782,28 +4794,34 @@ static int io_accept(struct io_kiocb *req, unsigned int issue_flags)
- 	struct io_accept *accept = &req->accept;
- 	bool force_nonblock = issue_flags & IO_URING_F_NONBLOCK;
- 	unsigned int file_flags = force_nonblock ? O_NONBLOCK : 0;
-+	bool fixed = !!req->buf_index;
- 	struct file *file;
- 	int ret, fd;
++		TP_PROTO(struct sock *sk, struct sk_buff *skb, const char *reason),
++
++		TP_ARGS(sk, skb, reason),
++
++		TP_STRUCT__entry(
++			__field(const void *, skbaddr)
++			__field(const void *, skaddr)
++			__string(reason, reason)
++			__field(int, state)
++			__field(__u16, sport)
++			__field(__u16, dport)
++			__array(__u8, saddr, 4)
++			__array(__u8, daddr, 4)
++			__array(__u8, saddr_v6, 16)
++			__array(__u8, daddr_v6, 16)
++		),
++
++		TP_fast_assign(
++			struct inet_sock *inet = inet_sk(sk);
++			__be32 *p32;
++
++			__assign_str(reason, reason);
++
++			__entry->skbaddr = skb;
++			__entry->skaddr = sk;
++			__entry->state = sk->sk_state;
++
++			__entry->sport = ntohs(inet->inet_sport);
++			__entry->dport = ntohs(inet->inet_dport);
++
++			p32 = (__be32 *) __entry->saddr;
++			*p32 = inet->inet_saddr;
++
++			p32 = (__be32 *) __entry->daddr;
++			*p32 =  inet->inet_daddr;
++
++			TP_STORE_ADDRS(__entry, inet->inet_saddr, inet->inet_daddr,
++				sk->sk_v6_rcv_saddr, sk->sk_v6_daddr);
++		),
++
++		TP_printk("sport=%hu dport=%hu saddr=%pI4 daddr=%pI4 saddrv6=%pI6c daddrv6=%pI6c state=%s reason=%s",
++				__entry->sport, __entry->dport, __entry->saddr, __entry->daddr,
++				__entry->saddr_v6, __entry->daddr_v6,
++				show_tcp_state_name(__entry->state), __get_str(reason))
++);
++
+ #endif /* _TRACE_TCP_H */
  
- 	if (req->file->f_flags & O_NONBLOCK)
- 		req->flags |= REQ_F_NOWAIT;
+ /* This part must be outside protection */
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 149ceb5c9..988989e25 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -4649,6 +4649,13 @@ static void tcp_drop(struct sock *sk, struct sk_buff *skb)
+ 	__kfree_skb(skb);
+ }
  
--	fd = __get_unused_fd_flags(accept->flags, accept->nofile);
--	if (unlikely(fd < 0))
--		return fd;
--
-+	if (!fixed) {
-+		fd = __get_unused_fd_flags(accept->flags, accept->nofile);
-+		if (unlikely(fd < 0))
-+			return fd;
-+	}
- 	file = do_accept(req->file, file_flags, accept->addr, accept->addr_len,
- 			 accept->flags);
- 	if (IS_ERR(file)) {
-+		if (!fixed)
-+			put_unused_fd(fd);
- 		ret = PTR_ERR(file);
- 		if (ret == -EAGAIN && force_nonblock)
- 			return -EAGAIN;
- 		if (ret == -ERESTARTSYS)
- 			ret = -EINTR;
- 		req_set_fail(req);
--	} else {
-+	} else if (!fixed) {
- 		fd_install(fd, file);
- 		ret = fd;
-+	} else {
-+		ret = io_install_fixed_file(req, file, issue_flags);
++static void tcp_drop_new(struct sock *sk, struct sk_buff *skb, const char *reason)
++{
++	trace_tcp_drop_new(sk, skb, reason);
++	sk_drops_add(sk, skb);
++	__kfree_skb(skb);
++}
++
+ /* This one checks to see if we can put data from the
+  * out_of_order queue into the receive_queue.
+  */
+@@ -4676,7 +4683,7 @@ static void tcp_ofo_queue(struct sock *sk)
+ 		rb_erase(&skb->rbnode, &tp->out_of_order_queue);
+ 
+ 		if (unlikely(!after(TCP_SKB_CB(skb)->end_seq, tp->rcv_nxt))) {
+-			tcp_drop(sk, skb);
++			tcp_drop_new(sk, skb, __func__);
+ 			continue;
+ 		}
+ 
+@@ -4732,7 +4739,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
+ 	if (unlikely(tcp_try_rmem_schedule(sk, skb, skb->truesize))) {
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPOFODROP);
+ 		sk->sk_data_ready(sk);
+-		tcp_drop(sk, skb);
++		tcp_drop_new(sk, skb, __func__);
+ 		return;
  	}
- 	__io_req_complete(req, issue_flags, ret, 0);
+ 
+@@ -4795,7 +4802,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
+ 				/* All the bits are present. Drop. */
+ 				NET_INC_STATS(sock_net(sk),
+ 					      LINUX_MIB_TCPOFOMERGE);
+-				tcp_drop(sk, skb);
++				tcp_drop_new(sk, skb, __func__);
+ 				skb = NULL;
+ 				tcp_dsack_set(sk, seq, end_seq);
+ 				goto add_sack;
+@@ -4814,7 +4821,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
+ 						 TCP_SKB_CB(skb1)->end_seq);
+ 				NET_INC_STATS(sock_net(sk),
+ 					      LINUX_MIB_TCPOFOMERGE);
+-				tcp_drop(sk, skb1);
++				tcp_drop_new(sk, skb1, __func__);
+ 				goto merge_right;
+ 			}
+ 		} else if (tcp_ooo_try_coalesce(sk, skb1,
+@@ -4842,7 +4849,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
+ 		tcp_dsack_extend(sk, TCP_SKB_CB(skb1)->seq,
+ 				 TCP_SKB_CB(skb1)->end_seq);
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPOFOMERGE);
+-		tcp_drop(sk, skb1);
++		tcp_drop_new(sk, skb1, __func__);
+ 	}
+ 	/* If there is no skb after us, we are the last_skb ! */
+ 	if (!skb1)
+@@ -5019,7 +5026,7 @@ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
+ 		tcp_enter_quickack_mode(sk, TCP_MAX_QUICKACKS);
+ 		inet_csk_schedule_ack(sk);
+ drop:
+-		tcp_drop(sk, skb);
++		tcp_drop_new(sk, skb, __func__);
+ 		return;
+ 	}
+ 
+@@ -5276,7 +5283,7 @@ static bool tcp_prune_ofo_queue(struct sock *sk)
+ 		prev = rb_prev(node);
+ 		rb_erase(node, &tp->out_of_order_queue);
+ 		goal -= rb_to_skb(node)->truesize;
+-		tcp_drop(sk, rb_to_skb(node));
++		tcp_drop_new(sk, rb_to_skb(node), __func__);
+ 		if (!prev || goal <= 0) {
+ 			sk_mem_reclaim(sk);
+ 			if (atomic_read(&sk->sk_rmem_alloc) <= sk->sk_rcvbuf &&
+@@ -5701,7 +5708,7 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
+ 	return true;
+ 
+ discard:
+-	tcp_drop(sk, skb);
++	tcp_drop_new(sk, skb, __func__);
+ 	return false;
+ }
+ 
+@@ -5905,7 +5912,7 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
+ 	TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
+ 
+ discard:
+-	tcp_drop(sk, skb);
++	tcp_drop_new(sk, skb, __func__);
+ }
+ EXPORT_SYMBOL(tcp_rcv_established);
+ 
+@@ -6196,7 +6203,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
+ 						  TCP_DELACK_MAX, TCP_RTO_MAX);
+ 
+ discard:
+-			tcp_drop(sk, skb);
++			tcp_drop_new(sk, skb, __func__);
+ 			return 0;
+ 		} else {
+ 			tcp_send_ack(sk);
+@@ -6568,7 +6575,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 
+ 	if (!queued) {
+ discard:
+-		tcp_drop(sk, skb);
++		tcp_drop_new(sk, skb, __func__);
+ 	}
  	return 0;
+ }
 -- 
-2.32.0
+2.25.1
 
