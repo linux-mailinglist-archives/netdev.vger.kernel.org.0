@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3A6F3F3941
-	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 09:15:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38E043F3942
+	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 09:15:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232756AbhHUHPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Aug 2021 03:15:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34874 "EHLO
+        id S232936AbhHUHPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Aug 2021 03:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231738AbhHUHPV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Aug 2021 03:15:21 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4EFBC061575;
-        Sat, 21 Aug 2021 00:14:42 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id fa24-20020a17090af0d8b0290178bfa69d97so8854315pjb.0;
-        Sat, 21 Aug 2021 00:14:42 -0700 (PDT)
+        with ESMTP id S231738AbhHUHP3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Aug 2021 03:15:29 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE9BC061575;
+        Sat, 21 Aug 2021 00:14:50 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id t42so8038441pfg.12;
+        Sat, 21 Aug 2021 00:14:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=d64sHr5B5Q8l4jh+HMlfEo+7I1B8zRJJdtRpfTb8yTE=;
-        b=OxgELvsvTZVoJqFsJ0aQI36b1FlaOxfZDaPPcGK25dxmRlIbbyfX8IODEWa9zdMzUs
-         gjy0I9lSD9AKjmYD8Nh/RAqiuDGZ7L5/9EQnzbPWYGskritjL2JXMT4XlZQuz5QIb0Zk
-         //4q6Sdm21dUiztHiNP35NgxnolaRRBQFIC2ruYWZeCIKj3EA+35ce27qRFiTEdGinqr
-         AWv6UG95GHB59kvQYu/mWoYknBT9T9JrSbkHEiYTgaQgmLxirc2elpT8tbsqyK5QuxNc
-         cjwCDm1sVULtm9T+6Pl9+c7f8yuXj6qI72gGn+ySOrBs+GnanhwdM9hws2B2KYTdxm1I
-         vgKw==
+        bh=G2F9LcG3CzlqOOitDkVcplNgqWD9v/P1osOYyggjlHo=;
+        b=Lp5PGR4UvGg/Nv5nQangIEIvKsSc/VPWdnj781TfUlHSLh48xqOgo9vRwByC8fBELE
+         1R/126BE98KvaRoi6Zjn4ZSfx6si6J1zDxDPAiruX+3th/T0altsH2g8zBCKaNAe6Isl
+         HFCttqw+QJaprRpWzE6MK5t6rmyqIoR1yz1ogNswgONpHbTsz2UBd8k0neh2F/xOl76C
+         eRzy/xq697131P5sUZjMhslwXtI+hEHJJi2hQbm3gVloTAQfTA42TVBlE66wTA83pqeX
+         jJ1rBlTxEqgCD0C8zE43vLvetdBFuaqpeT5X+LFpij+g4UJMaruza4ewHt7Z1a0KTP7s
+         6G9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=d64sHr5B5Q8l4jh+HMlfEo+7I1B8zRJJdtRpfTb8yTE=;
-        b=ZNlNwMkS6u/ggCupNQnTE9TTlrmWusUjlLN+eMgzeXGcbtTX8RQQoWWLHQegO4FFv8
-         S+MtSYKOPprTPZsRdsj/muLsA0BKXT2pr0TxBwCO7jH8GjpukyoqO2aNJs3XoZTrPXpJ
-         Ykc0/lDjLor1yG647KjHh2jCqLp8EIHPg+7NPs6SSQapJim8vizoS450pHWXBQ5jw0J7
-         IXDtmJSVNNyh9C8JlHmjxiCNHuso8KGV0kTAkxsAgKPsi6Zx3inl4r6w0EUNMwAZJ63j
-         gkZKtuosVfFTEr7hctT0TWXpKhDJT/OgKurcwKikSlJKEaQe1GSsAXdgQGs52RfWRIv0
-         UaQQ==
-X-Gm-Message-State: AOAM531WaQzowFNsC2P24PnhlEGB7tkM8EVEDOUXGHXa1pVirpuOT3tV
-        4b26cwL96JdVfGEopYP+UEQ=
-X-Google-Smtp-Source: ABdhPJxumDzpnaUtwpVrde/2JIooqvWXtjXYqslScKiNGDjI7R0DlJKzBTJXWe6sS8OD/PXWjIMePw==
-X-Received: by 2002:a17:902:c10a:b0:12d:97e1:f035 with SMTP id 10-20020a170902c10a00b0012d97e1f035mr19775570pli.52.1629530082300;
-        Sat, 21 Aug 2021 00:14:42 -0700 (PDT)
+        bh=G2F9LcG3CzlqOOitDkVcplNgqWD9v/P1osOYyggjlHo=;
+        b=LjORUc6YrZPL8ud9TBVvTy32IT/fTIho8SxDWxhOGa+/amsWHChpcCJxZlcEkK7jOf
+         xYuEiZiX93OkYIp9gg35ULnllyb7Ev9czWIP1Q8zJlMJxJwhNYdgu6nvV59Xu3E1GuXR
+         L3NFU4QXBVUTosdRen+U0E4Gc7ZLbANvhQoaw59PyGSGXtoKE1XOvMjoXiy3ccuf4+jt
+         VHyX08207jaZ3Zz4LtW1Isq04BX40M120YXXNyvYXa1D4jO2KO85kyiepn0CD6D4wkko
+         iYJw3a4Xtsp4txXtBT9ceRz2sWi6qy8oDGHTaOExQDP0nbsnh7rLoPdDyLSF2DXZV4q/
+         +bLA==
+X-Gm-Message-State: AOAM533x/lzr5FAzBU56BybM91OOtIcEwg4j2ERlICzvYhbBO6GBep4E
+        BGYQifv0nMNobKabriCHmTg=
+X-Google-Smtp-Source: ABdhPJwpBRh3emBs6A3HeggDiou5daSspA79nMlz5XXQ25O0I3OvTdZFhhS0OG56Zf179R0XfC60aw==
+X-Received: by 2002:a63:d104:: with SMTP id k4mr22021585pgg.196.1629530090472;
+        Sat, 21 Aug 2021 00:14:50 -0700 (PDT)
 Received: from fedora.. ([2405:201:6008:6ce2:9fb0:9db:90a4:39e2])
-        by smtp.googlemail.com with ESMTPSA id c7sm6901973pjc.31.2021.08.21.00.14.32
+        by smtp.googlemail.com with ESMTPSA id c7sm6901973pjc.31.2021.08.21.00.14.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Aug 2021 00:14:41 -0700 (PDT)
+        Sat, 21 Aug 2021 00:14:50 -0700 (PDT)
 From:   Shreyansh Chouhan <chouhan.shreyansh630@gmail.com>
 To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
         kuba@kernel.org, pshelar@nicira.com,
@@ -54,9 +54,9 @@ To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
 Cc:     Shreyansh Chouhan <chouhan.shreyansh630@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         syzbot+ff8e1b9f2f36481e2efc@syzkaller.appspotmail.com
-Subject: [PATCH 1/2 net] ip_gre: add validation for csum_start
-Date:   Sat, 21 Aug 2021 12:44:24 +0530
-Message-Id: <20210821071425.512834-1-chouhan.shreyansh630@gmail.com>
+Subject: [PATCH 2/2 net] ip6_gre: add validation for csum_start
+Date:   Sat, 21 Aug 2021 12:44:25 +0530
+Message-Id: <20210821071425.512834-2-chouhan.shreyansh630@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210819100447.00201b26@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 References: <20210819100447.00201b26@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
@@ -70,28 +70,29 @@ Validate csum_start in gre_handle_offloads before we call _gre_xmit so
 that we do not crash later when the csum_start value is used in the
 lco_csum function call.
 
-This patch deals with ipv4 code.
+This patch deals with ipv6 code.
 
-Fixes: c54419321455 ("GRE: Refactor GRE tunneling code.")
+Fixes: Fixes: b05229f44228 ("gre6: Cleanup GREv6 transmit path, call common
+GRE functions")
 Reported-by: syzbot+ff8e1b9f2f36481e2efc@syzkaller.appspotmail.com
 Signed-off-by: Shreyansh Chouhan <chouhan.shreyansh630@gmail.com>
 ---
- net/ipv4/ip_gre.c | 2 ++
+ net/ipv6/ip6_gre.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-index 12dca0c85f3c..95419b7adf5c 100644
---- a/net/ipv4/ip_gre.c
-+++ b/net/ipv4/ip_gre.c
-@@ -473,6 +473,8 @@ static void __gre_xmit(struct sk_buff *skb, struct net_device *dev,
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index bc224f917bbd..7a5e90e09363 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -629,6 +629,8 @@ static int gre_rcv(struct sk_buff *skb)
  
  static int gre_handle_offloads(struct sk_buff *skb, bool csum)
  {
 +	if (csum && skb_checksum_start(skb) < skb->data)
 +		return -EINVAL;
- 	return iptunnel_handle_offloads(skb, csum ? SKB_GSO_GRE_CSUM : SKB_GSO_GRE);
+ 	return iptunnel_handle_offloads(skb,
+ 					csum ? SKB_GSO_GRE_CSUM : SKB_GSO_GRE);
  }
- 
 -- 
 2.31.1
 
