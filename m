@@ -2,217 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80AAB3F3834
-	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 04:59:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A9563F383D
+	for <lists+netdev@lfdr.de>; Sat, 21 Aug 2021 05:08:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241006AbhHUDAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Aug 2021 23:00:03 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:7436 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240979AbhHUDAD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 23:00:03 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17L2ns2s025227
-        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 19:59:24 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=x5MH0LICWFGXZzJKV/mKS2xu1y75l/9W0mB962bIBEM=;
- b=ceSYUczT0w2mdn3HZXyt998+Bz/FHls5ymLYEJ1swMyl8BParCUlrB2p838iVPuwVqHF
- nVERAqpeMdLmWJwJMZvD2jBXUT3PSZ6tg7dhzo8DO2hwyD30qO9FRaDQbuY8hbLRkFM7
- kucWQl0WeNByDKVQ0mDwBZrf0SXClhS1w3A= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3aj09u07wr-8
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 20 Aug 2021 19:59:24 -0700
-Received: from intmgw001.25.frc3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 20 Aug 2021 19:59:19 -0700
-Received: by devbig030.frc3.facebook.com (Postfix, from userid 158236)
-        id 4D7C457300BA; Fri, 20 Aug 2021 19:59:14 -0700 (PDT)
-From:   Dave Marchevsky <davemarchevsky@fb.com>
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Yonghong Song <yhs@fb.com>,
-        Florent Revest <revest@chromium.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>
-Subject: [PATCH bpf-next 5/5] selftests/bpf: add trace_vprintk test prog
-Date:   Fri, 20 Aug 2021 19:58:37 -0700
-Message-ID: <20210821025837.1614098-6-davemarchevsky@fb.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210821025837.1614098-1-davemarchevsky@fb.com>
-References: <20210821025837.1614098-1-davemarchevsky@fb.com>
+        id S232094AbhHUDJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Aug 2021 23:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37876 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229610AbhHUDJC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Aug 2021 23:09:02 -0400
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F658C061575;
+        Fri, 20 Aug 2021 20:08:24 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Gs3Nf130pz9sW8;
+        Sat, 21 Aug 2021 13:08:17 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1629515300;
+        bh=mEhJjhXS+qMda3U7FwpADzeee1VExK11iy0O7hbSvZo=;
+        h=Date:From:To:Cc:Subject:From;
+        b=vBzPXamOxihY1Fl3SbNh+ZYp2HaegQrh5PMQadAFw71TEBrgewwRy5RpLCASl8gok
+         +kdWsbwBJB67mng9XACTmNzyYPqlROAyGrIrwHD/Y2Dw+IBj4CnL0tdkdpoyaXwzou
+         Adl28mM6dfF02E2eWpwWBWW0gKDEGPlDpiooqYBb+EKcDEMdwSijz8TzLTgBABNCBm
+         SdgTvvcCktjSa9ZShvGn4tIUFDF/2piS41bVeaP/y0IwTMVi9u1YXMqnaKy4YcjJUv
+         3yIh/L/4fSmZ9UkpEtDf2bClc6zuV3ts3OFKHzy95O98Xe0CaoMGB5IoH9F69FK+LS
+         sxeLDZbSoqTAw==
+Date:   Sat, 21 Aug 2021 13:08:15 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Dmytro Linkin <dlinkin@nvidia.com>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Sven Eckelmann <sven@narfation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Signed-off-by missing for commits in the net-next tree
+Message-ID: <20210821130815.22b5cfc3@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-FB-Source: Intern
-X-Proofpoint-ORIG-GUID: 3ifIlFIkwFfLiSm2HIKlflRxFJduuxga
-X-Proofpoint-GUID: 3ifIlFIkwFfLiSm2HIKlflRxFJduuxga
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-08-20_11:2021-08-20,2021-08-20 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0 bulkscore=0
- impostorscore=0 malwarescore=0 adultscore=0 priorityscore=1501
- clxscore=1015 lowpriorityscore=0 suspectscore=0 mlxlogscore=999
- phishscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2107140000 definitions=main-2108210016
-X-FB-Internal: deliver
+Content-Type: multipart/signed; boundary="Sig_/CA.HyUEqCjRIq9lItb9qTcl";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit adds a test prog for vprintk which confirms that:
-  * bpf_trace_vprintk is writing to dmesg
-  * bpf_vprintk convenience macro works as expected
-  * >3 args are printed
+--Sig_/CA.HyUEqCjRIq9lItb9qTcl
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Approach and code are borrowed from trace_printk test.
+Hi all,
 
-Signed-off-by: Dave Marchevsky <davemarchevsky@fb.com>
----
- tools/testing/selftests/bpf/Makefile          |  3 +-
- .../selftests/bpf/prog_tests/trace_vprintk.c  | 75 +++++++++++++++++++
- .../selftests/bpf/progs/trace_vprintk.c       | 25 +++++++
- 3 files changed, 102 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/trace_vprintk.=
-c
- create mode 100644 tools/testing/selftests/bpf/progs/trace_vprintk.c
+Commits
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftes=
-ts/bpf/Makefile
-index 2a58b7b5aea4..af5e7a1e9a7c 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -313,7 +313,8 @@ LINKED_SKELS :=3D test_static_linked.skel.h linked_fu=
-ncs.skel.h		\
- 		linked_vars.skel.h linked_maps.skel.h
-=20
- LSKELS :=3D kfunc_call_test.c fentry_test.c fexit_test.c fexit_sleep.c \
--	test_ksyms_module.c test_ringbuf.c atomics.c trace_printk.c
-+	test_ksyms_module.c test_ringbuf.c atomics.c trace_printk.c \
-+	trace_vprintk.c
- SKEL_BLACKLIST +=3D $$(LSKELS)
-=20
- test_static_linked.skel.h-deps :=3D test_static_linked1.o test_static_li=
-nked2.o
-diff --git a/tools/testing/selftests/bpf/prog_tests/trace_vprintk.c b/too=
-ls/testing/selftests/bpf/prog_tests/trace_vprintk.c
-new file mode 100644
-index 000000000000..fd70427d2918
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/trace_vprintk.c
-@@ -0,0 +1,75 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+
-+#include <test_progs.h>
-+
-+#include "trace_vprintk.lskel.h"
-+
-+#define TRACEBUF	"/sys/kernel/debug/tracing/trace_pipe"
-+#define SEARCHMSG	"1,2,3,4,5,6,7,8,9,10"
-+
-+void test_trace_vprintk(void)
-+{
-+	int err, iter =3D 0, duration =3D 0, found =3D 0;
-+	struct trace_vprintk__bss *bss;
-+	struct trace_vprintk *skel;
-+	char *buf =3D NULL;
-+	FILE *fp =3D NULL;
-+	size_t buflen;
-+
-+	skel =3D trace_vprintk__open();
-+	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
-+		return;
-+
-+	err =3D trace_vprintk__load(skel);
-+	if (CHECK(err, "skel_load", "failed to load skeleton: %d\n", err))
-+		goto cleanup;
-+
-+	bss =3D skel->bss;
-+
-+	err =3D trace_vprintk__attach(skel);
-+	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
-+		goto cleanup;
-+
-+	fp =3D fopen(TRACEBUF, "r");
-+	if (CHECK(fp =3D=3D NULL, "could not open trace buffer",
-+		  "error %d opening %s", errno, TRACEBUF))
-+		goto cleanup;
-+
-+	/* We do not want to wait forever if this test fails... */
-+	fcntl(fileno(fp), F_SETFL, O_NONBLOCK);
-+
-+	/* wait for tracepoint to trigger */
-+	usleep(1);
-+	trace_vprintk__detach(skel);
-+
-+	if (CHECK(bss->trace_vprintk_ran =3D=3D 0,
-+		  "bpf_trace_vprintk never ran",
-+		  "ran =3D=3D %d", bss->trace_vprintk_ran))
-+		goto cleanup;
-+
-+	if (CHECK(bss->trace_vprintk_ret <=3D 0,
-+		  "bpf_trace_vprintk returned <=3D 0 value",
-+		  "got %d", bss->trace_vprintk_ret))
-+		goto cleanup;
-+
-+	/* verify our search string is in the trace buffer */
-+	while (getline(&buf, &buflen, fp) >=3D 0 || errno =3D=3D EAGAIN) {
-+		if (strstr(buf, SEARCHMSG) !=3D NULL)
-+			found++;
-+		if (found =3D=3D bss->trace_vprintk_ran)
-+			break;
-+		if (++iter > 1000)
-+			break;
-+	}
-+
-+	if (CHECK(!found, "message from bpf_trace_vprintk not found",
-+		  "no instance of %s in %s", SEARCHMSG, TRACEBUF))
-+		goto cleanup;
-+
-+cleanup:
-+	trace_vprintk__destroy(skel);
-+	free(buf);
-+	if (fp)
-+		fclose(fp);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/trace_vprintk.c b/tools/te=
-sting/selftests/bpf/progs/trace_vprintk.c
-new file mode 100644
-index 000000000000..993439a19e1e
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/trace_vprintk.c
-@@ -0,0 +1,25 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") =3D "GPL";
-+
-+int trace_vprintk_ret =3D 0;
-+int trace_vprintk_ran =3D 0;
-+
-+SEC("fentry/__x64_sys_nanosleep")
-+int sys_enter(void *ctx)
-+{
-+	static const char one[] =3D "1";
-+	static const char three[] =3D "3";
-+	static const char five[] =3D "5";
-+	static const char seven[] =3D "7";
-+	static const char nine[] =3D "9";
-+
-+	trace_vprintk_ret =3D bpf_vprintk("%s,%d,%s,%d,%s,%d,%s,%d,%s,%d %d\n",
-+		one, 2, three, 4, five, 6, seven, 8, nine, 10, ++trace_vprintk_ran);
-+	return 0;
-+}
+  3202ea65f85c ("net/mlx5: E-switch, Add QoS tracepoints")
+  0fe132eac38c ("net/mlx5: E-switch, Allow to add vports to rate groups")
+  f47e04eb96e0 ("net/mlx5: E-switch, Allow setting share/max tx rate limits=
+ of rate groups")
+  1ae258f8b343 ("net/mlx5: E-switch, Introduce rate limiting groups API")
+  ad34f02fe2c9 ("net/mlx5: E-switch, Enable devlink port tx_{share|max} rat=
+e control")
+  2d116e3e7e49 ("net/mlx5: E-switch, Move QoS related code to dedicated fil=
+e")
+  71d41c09f1fa ("batman-adv: Move IRC channel to hackint.org")
+
+are missing a Signed-off-by from their committers.
+
 --=20
-2.30.2
+Cheers,
+Stephen Rothwell
 
+--Sig_/CA.HyUEqCjRIq9lItb9qTcl
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmEgbh8ACgkQAVBC80lX
+0GwqWgf8D1+t0P9Z9FAdzzF53G4cG26V8P323a+0hs8SVQvUWIZN+1tZ0siaVeE4
+pcSnIZ6Qz9UN7EKqF/4RHRyPPHyMuPXraVc4v9rXTpY+LlyxSe3slJfJLMcBuU7Z
+TG/l7m3bffS28r+5nLGzOHxMbrd9++xVFTp8cq0WumnO61FrzvrYS3giW8WncpvD
+8QrDBrhIpLW/xEF33G7RwYf3YC+aUtrcvrAJyMuy5bVCJg1OA1jKmH7AIzbHPWv7
+bXpqkwXJI9OOcFhPTP33xwF8c8diSkYQPkljCksb+ayHC7nWLnC06vtmWcfvIWRm
+m+eB1lXHk77CYxxO/RPLslLd6pydqA==
+=MnGt
+-----END PGP SIGNATURE-----
+
+--Sig_/CA.HyUEqCjRIq9lItb9qTcl--
