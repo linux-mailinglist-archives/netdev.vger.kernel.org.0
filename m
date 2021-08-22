@@ -2,75 +2,293 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB7E43F4106
-	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 20:55:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 753443F4108
+	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 21:02:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232272AbhHVS4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 14:56:07 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:7348 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230245AbhHVS4F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 14:56:05 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 17MI21gR001662;
-        Sun, 22 Aug 2021 11:55:19 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=PnZIWHy+JwswUHCXY0k59JrWGsPqhZ9ocCmm/zbrkIs=;
- b=daBCww7pheH5dfM/hRejBG8VZNChD9vxBK85aRSQVsSEJWVm1g3tei3trExA+4hkDWs0
- +YvmucjWaFLI7FtSscIigKJEtSnSwmF+nwVrUStgGBkhfe3IVsmzjBboGQ0bmOmkFpTu
- wt3I1ZCa9lHfz3Q6C+IGmir/PJtlNzC+RR0RXl6k6ge7NaSMAT+lJF/QLQM3VpgYZhWX
- ty/8Pi/HZHW9zaOKfgHGAd/Fv+Hb8iJ1YhELrsAgsgtUTMAbgZNrdE84myQ3OjmtEJpm
- lWRpfBbSWSHutEZPToIPhauBco8mdA0/vcUCnLCXbwOkS1bnaN17r2emoDqHOxQDEwEF 4Q== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 3ak10mudbh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 22 Aug 2021 11:55:19 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Sun, 22 Aug
- 2021 11:55:17 -0700
-Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
- DC5-EXCH01.marvell.com (10.69.176.38) with Microsoft SMTP Server id
- 15.0.1497.23 via Frontend Transport; Sun, 22 Aug 2021 11:55:15 -0700
-From:   Shai Malin <smalin@marvell.com>
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <aelior@marvell.com>, <smalin@marvell.com>, <malin1024@gmail.com>
-Subject: [PATCH] qed: Enable RDMA relaxed ordering
-Date:   Sun, 22 Aug 2021 21:54:48 +0300
-Message-ID: <20210822185448.12053-1-smalin@marvell.com>
-X-Mailer: git-send-email 2.16.6
+        id S231520AbhHVTDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 15:03:08 -0400
+Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:41951 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230245AbhHVTDI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 15:03:08 -0400
+Received: from pop-os.home ([90.126.253.178])
+        by mwinf5d51 with ME
+        id kj2Q250063riaq203j2Q48; Sun, 22 Aug 2021 21:02:25 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sun, 22 Aug 2021 21:02:25 +0200
+X-ME-IP: 90.126.253.178
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] net: 8139cp: switch from 'pci_' to 'dma_' API
+Date:   Sun, 22 Aug 2021 21:02:23 +0200
+Message-Id: <7d235ccb64d5713b2eec38f10e75d425c15ceef7.1629658846.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: JUeXKodGkZH6S9ClbHNU_f2lWnGpaN66
-X-Proofpoint-ORIG-GUID: JUeXKodGkZH6S9ClbHNU_f2lWnGpaN66
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-08-22_04,2021-08-20_03,2020-04-07_01
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enable the RoCE and iWARP FW relaxed ordering.
+The wrappers in include/linux/pci-dma-compat.h should go away.
 
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: Shai Malin <smalin@marvell.com>
+The patch has been generated with the coccinelle script below.
+
+It has been hand modified to use 'dma_set_mask_and_coherent()' instead of
+'pci_set_dma_mask()/pci_set_consistent_dma_mask()' when applicable.
+This is less verbose.
+
+It has been compile tested.
+
+
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
+
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
+
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
+
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- drivers/net/ethernet/qlogic/qed/qed_rdma.c | 2 ++
- 1 file changed, 2 insertions(+)
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+---
+ drivers/net/ethernet/realtek/8139cp.c | 31 +++++++++++----------------
+ 1 file changed, 12 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.c b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-index 4f4b79250a2b..496092655f26 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-@@ -643,6 +643,8 @@ static int qed_rdma_start_fw(struct qed_hwfn *p_hwfn,
- 				    cnq_id);
- 	}
+diff --git a/drivers/net/ethernet/realtek/8139cp.c b/drivers/net/ethernet/realtek/8139cp.c
+index edc61906694f..2b84b4565e64 100644
+--- a/drivers/net/ethernet/realtek/8139cp.c
++++ b/drivers/net/ethernet/realtek/8139cp.c
+@@ -514,7 +514,7 @@ static int cp_rx_poll(struct napi_struct *napi, int budget)
+ 		}
  
-+	p_params_header->relaxed_ordering = 1;
-+
- 	return qed_spq_post(p_hwfn, p_ent, NULL);
+ 		new_mapping = dma_map_single(&cp->pdev->dev, new_skb->data, buflen,
+-					 PCI_DMA_FROMDEVICE);
++					 DMA_FROM_DEVICE);
+ 		if (dma_mapping_error(&cp->pdev->dev, new_mapping)) {
+ 			dev->stats.rx_dropped++;
+ 			kfree_skb(new_skb);
+@@ -522,7 +522,7 @@ static int cp_rx_poll(struct napi_struct *napi, int budget)
+ 		}
+ 
+ 		dma_unmap_single(&cp->pdev->dev, mapping,
+-				 buflen, PCI_DMA_FROMDEVICE);
++				 buflen, DMA_FROM_DEVICE);
+ 
+ 		/* Handle checksum offloading for incoming packets. */
+ 		if (cp_rx_csum_ok(status))
+@@ -666,7 +666,7 @@ static void cp_tx (struct cp_private *cp)
+ 
+ 		dma_unmap_single(&cp->pdev->dev, le64_to_cpu(txd->addr),
+ 				 cp->tx_opts[tx_tail] & 0xffff,
+-				 PCI_DMA_TODEVICE);
++				 DMA_TO_DEVICE);
+ 
+ 		if (status & LastFrag) {
+ 			if (status & (TxError | TxFIFOUnder)) {
+@@ -724,7 +724,7 @@ static void unwind_tx_frag_mapping(struct cp_private *cp, struct sk_buff *skb,
+ 		txd = &cp->tx_ring[index];
+ 		this_frag = &skb_shinfo(skb)->frags[frag];
+ 		dma_unmap_single(&cp->pdev->dev, le64_to_cpu(txd->addr),
+-				 skb_frag_size(this_frag), PCI_DMA_TODEVICE);
++				 skb_frag_size(this_frag), DMA_TO_DEVICE);
+ 	}
  }
  
+@@ -781,7 +781,7 @@ static netdev_tx_t cp_start_xmit (struct sk_buff *skb,
+ 		dma_addr_t mapping;
+ 
+ 		len = skb->len;
+-		mapping = dma_map_single(&cp->pdev->dev, skb->data, len, PCI_DMA_TODEVICE);
++		mapping = dma_map_single(&cp->pdev->dev, skb->data, len, DMA_TO_DEVICE);
+ 		if (dma_mapping_error(&cp->pdev->dev, mapping))
+ 			goto out_dma_error;
+ 
+@@ -810,7 +810,7 @@ static netdev_tx_t cp_start_xmit (struct sk_buff *skb,
+ 		first_eor = eor;
+ 		first_len = skb_headlen(skb);
+ 		first_mapping = dma_map_single(&cp->pdev->dev, skb->data,
+-					       first_len, PCI_DMA_TODEVICE);
++					       first_len, DMA_TO_DEVICE);
+ 		if (dma_mapping_error(&cp->pdev->dev, first_mapping))
+ 			goto out_dma_error;
+ 
+@@ -826,7 +826,7 @@ static netdev_tx_t cp_start_xmit (struct sk_buff *skb,
+ 			len = skb_frag_size(this_frag);
+ 			mapping = dma_map_single(&cp->pdev->dev,
+ 						 skb_frag_address(this_frag),
+-						 len, PCI_DMA_TODEVICE);
++						 len, DMA_TO_DEVICE);
+ 			if (dma_mapping_error(&cp->pdev->dev, mapping)) {
+ 				unwind_tx_frag_mapping(cp, skb, first_entry, entry);
+ 				goto out_dma_error;
+@@ -1069,7 +1069,7 @@ static int cp_refill_rx(struct cp_private *cp)
+ 			goto err_out;
+ 
+ 		mapping = dma_map_single(&cp->pdev->dev, skb->data,
+-					 cp->rx_buf_sz, PCI_DMA_FROMDEVICE);
++					 cp->rx_buf_sz, DMA_FROM_DEVICE);
+ 		if (dma_mapping_error(&cp->pdev->dev, mapping)) {
+ 			kfree_skb(skb);
+ 			goto err_out;
+@@ -1139,7 +1139,7 @@ static void cp_clean_rings (struct cp_private *cp)
+ 		if (cp->rx_skb[i]) {
+ 			desc = cp->rx_ring + i;
+ 			dma_unmap_single(&cp->pdev->dev,le64_to_cpu(desc->addr),
+-					 cp->rx_buf_sz, PCI_DMA_FROMDEVICE);
++					 cp->rx_buf_sz, DMA_FROM_DEVICE);
+ 			dev_kfree_skb_any(cp->rx_skb[i]);
+ 		}
+ 	}
+@@ -1151,7 +1151,7 @@ static void cp_clean_rings (struct cp_private *cp)
+ 			desc = cp->tx_ring + i;
+ 			dma_unmap_single(&cp->pdev->dev,le64_to_cpu(desc->addr),
+ 					 le32_to_cpu(desc->opts1) & 0xffff,
+-					 PCI_DMA_TODEVICE);
++					 DMA_TO_DEVICE);
+ 			if (le32_to_cpu(desc->opts1) & LastFrag)
+ 				dev_kfree_skb_any(skb);
+ 			cp->dev->stats.tx_dropped++;
+@@ -1945,24 +1945,17 @@ static int cp_init_one (struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	/* Configure DMA attributes. */
+ 	if ((sizeof(dma_addr_t) > 4) &&
+-	    !pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64)) &&
+-	    !pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
++	    !dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64))) {
+ 		pci_using_dac = 1;
+ 	} else {
+ 		pci_using_dac = 0;
+ 
+-		rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
++		rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+ 		if (rc) {
+ 			dev_err(&pdev->dev,
+ 				"No usable DMA configuration, aborting\n");
+ 			goto err_out_res;
+ 		}
+-		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
+-		if (rc) {
+-			dev_err(&pdev->dev,
+-				"No usable consistent DMA configuration, aborting\n");
+-			goto err_out_res;
+-		}
+ 	}
+ 
+ 	cp->cpcmd = (pci_using_dac ? PCIDAC : 0) |
 -- 
-2.22.0
+2.30.2
 
