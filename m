@@ -2,193 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F17E33F4240
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 01:04:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28D303F4245
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 01:11:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233578AbhHVXFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 19:05:05 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:35644 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229969AbhHVXFF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 22 Aug 2021 19:05:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=kqOfZkiM1fyfpjgWvAbrg98C0JSgqONnGqU5IgTuDKI=; b=eM
-        6yHnyx12LFME3b4CXIee/lD+4DJNhNesTxbSF3A0s5aZ+l49jP8TUqPr3HBZFD5xeecX4iEw0DAgr
-        JOFMD444KQm87wGRtD58kQM6Ob/MWOwAynh7kpqJedAWm6E7DvaPaQO+CQ1Z8qLvxVVaxVH65wqsX
-        0EGAiIl5bheGX9M=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mHwVi-003O3n-BN; Mon, 23 Aug 2021 01:04:14 +0200
-Date:   Mon, 23 Aug 2021 01:04:14 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        id S233987AbhHVXLq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 19:11:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47602 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229969AbhHVXLp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 19:11:45 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C76FC061575;
+        Sun, 22 Aug 2021 16:11:03 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id ia27so10808966ejc.10;
+        Sun, 22 Aug 2021 16:11:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=7QGoM4tcK5vkzIS0n+cv6yXG9W2hzXnh8S6NLAqs4F8=;
+        b=XgPUfQgGuYh1dn4g44W8Dyo7/gMqAF5GCzcZioOCz07yj/capZ89PgdQI78ZkAvXvR
+         jdFvWdPf9zJyrk+HaYfbQDaE1cmW1+gZRAs7JoimsuDsaSEfi/n6DT8veIO5EOXSUV2e
+         LqQhrx7PJ1MrmaHGW1EKiNaZWwbVkPAuMgzvwwBnM9gbB7TZ69yQBpXyP0CAIZMopsFu
+         6PlNFtnyWvLHZaa1yQJwOB2JDiajf/UHGG+C7CAHowk+YysHSIetvLFwRSM7TKnpwWmU
+         3qTlzTqSsTwT5O8jpDEoMhOA3PyDXGHGyWgaah7i6HzVa7FcrtufjdtbbV/1KRenTNOn
+         6/GA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=7QGoM4tcK5vkzIS0n+cv6yXG9W2hzXnh8S6NLAqs4F8=;
+        b=L7M2+LvxANlm83BtRzB8cusGfwR+ozUNRIOWQrakpQ+xQTTwMhP3SEkbdSARNtgTbD
+         y+fgWc1+PLIGZ+EOjjfw/ET+oMckdtnc575yoNiBhzal5rYPHNyJ2TitEJygrB7HIUn+
+         +u7wPF2Zl7MOdyFMW25ehUJuVPBzCbmEQvnOOp7ZetNgjVJx9BJKePLW2AWzgB44Aw0l
+         XMvGheNsyX/42Ew2iYLc3IaMY1RGuVWJo1nQsf6ZQb74tJEi321vfzOnShuZXBM4dF05
+         xK6hTRxG5kPTuBEqROw02HtNk9zH2pzsTjJaoDbWxJw+7CkitSrkEn/LpsZr86HjpqeV
+         UHQQ==
+X-Gm-Message-State: AOAM530rKQ2JBPXQzMMM69LED6LwYFjqRw0YwR5uIamrgIiM1GqRO9ch
+        MRTcUssXT2XQ76mHVvHctzw=
+X-Google-Smtp-Source: ABdhPJzzgDuTN/0aAer4kf7S7J0CBNx1AYhhZpUR8hRpmK0h8dwIQ/OfZ/oSzcpnOa/ZUtUAujT31Q==
+X-Received: by 2002:a17:906:8804:: with SMTP id zh4mr3980934ejb.395.1629673861702;
+        Sun, 22 Aug 2021 16:11:01 -0700 (PDT)
+Received: from skbuf ([188.25.144.60])
+        by smtp.gmail.com with ESMTPSA id s3sm6400008ejm.49.2021.08.22.16.11.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 Aug 2021 16:11:01 -0700 (PDT)
+Date:   Mon, 23 Aug 2021 02:10:59 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
+Cc:     Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, mir@bang-olufsen.dk,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net-next 4/5] net: dsa: realtek-smi: add rtl8365mb
- subdriver for RTL8365MB-VC
-Message-ID: <YSLX7qhyZ4YGec83@lunn.ch>
+        Russell King <linux@armlinux.org.uk>,
+        Michael Rasmussen <MIR@bang-olufsen.dk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH net-next 1/5] net: dsa: realtek-smi: fix mdio_free
+ bug on module unload
+Message-ID: <20210822231059.l2xkesbvrfyqgbve@skbuf>
 References: <20210822193145.1312668-1-alvin@pqrs.dk>
- <20210822193145.1312668-5-alvin@pqrs.dk>
+ <20210822193145.1312668-2-alvin@pqrs.dk>
+ <20210822215442.a2xywnodg7qwf2b5@skbuf>
+ <65997ecd-d405-c258-89d2-d6418c3ae2c4@bang-olufsen.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210822193145.1312668-5-alvin@pqrs.dk>
+In-Reply-To: <65997ecd-d405-c258-89d2-d6418c3ae2c4@bang-olufsen.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-> Co-developed-by: Michael Rasmussen <mir@bang-olufsen.dk>
-> Signed-off-by: Michael Rasmussen <mir@bang-olufsen.dk>
+On Sun, Aug 22, 2021 at 10:42:23PM +0000, Alvin Šipraga wrote:
+> > Objection: dsa_switch_teardown has:
+> >
+> > 	if (ds->slave_mii_bus && ds->ops->phy_read)
+> > 		mdiobus_unregister(ds->slave_mii_bus);
+>
+> This is unregistering an mdiobus registered in dsa_switch_setup:
+>
+> 	if (!ds->slave_mii_bus && ds->ops->phy_read) {
+> 		ds->slave_mii_bus = devm_mdiobus_alloc(ds->dev);
+> 		if (!ds->slave_mii_bus) {
+> 			err = -ENOMEM;
+> 			goto teardown;
+> 		}
+>
+> 		dsa_slave_mii_bus_init(ds);
+>
+> 		err = mdiobus_register(ds->slave_mii_bus);
+> 		if (err < 0)
+> 			goto teardown;
+> 	}
+>
+> However, we don't enter this codepath because:
+>
+> - ds->slave_mii_bus is already set in the call to ds->ops->setup()
+> before the code snippet above;
+> - ds->ops->phy_read is not set.
+>
+> We don't want to either, since we want to use of_mdiobus_register().
+>
+> >
+> > The realtek_smi_setup_mdio function does:
+> >
+> > 	smi->ds->slave_mii_bus = smi->slave_mii_bus;
+> >
+> > so I would expect that this would result in a double unregister on some
+> > systems.
+> >
+> > I haven't went through your new driver, but I wonder whether you have
+> > the phy_read and phy_write methods implemented? Maybe that is the
+> > difference?
+>
+> Right, phy_read/phy_write are not set in the dsa_switch_ops of
+> rtl8365mb. So we should be safe.
 
-Hi Alvin
+Correct, DSA only unregisters the ds->slave_mii_bus it has registered,
+which is provided when the driver implements phy_read and/or phy_write
+but does not set/register ds->slave_mii_bus itself. The patch is fine.
 
-Since you are submitting the patch, your SOB goes last.
+>
+> It did get me thinking that it would be nice if dsa_register_switch()
+> could call of_mdiobus_register() when necessary, since the snippet above
+> (and its call to dsa_slave_mii_bus_init()) is almost same as
+> realtek_smi_setup_mdio(). It would simplify some logic in realtek-smi
+> drivers and obviate the need for this patch. I am not sure what the
+> right approach to this would be but with some pointers I can give it a shot.
 
-> +/* Port mapping macros
-> + *
-> + * PORT_NUM_x2y: map a port number from domain x to domain y
-> + * PORT_MASK_x2y: map a port mask from domain x to domain y
-> + *
-> + * L = logical port domain, i.e. dsa_port.index
-> + * P = physical port domain, used by the Realtek ASIC for port indexing;
-> + *     for ports with internal PHYs, this is also the PHY index
-> + * E = extension port domain, used by the Realtek ASIC for managing EXT ports
-> + *
-> + * The terminology is borrowed from the vendor driver. The extension port domain
-> + * is mostly used to navigate the labyrinthine layout of EXT port configuration
-> + * registers and is not considered intuitive by the author.
-> + *
-> + * Unless a function is accessing chip registers, it should be using the logical
-> + * port domain. Moreover, function arguments for port numbers and port masks
-> + * must always be in the logical domain. The conversion must be done as close as
-> + * possible to the register access to avoid chaos.
-> + *
-> + * The mappings vary between chips in the family supported by this driver. Here
-> + * is an example of the mapping for the RTL8365MB-VC:
-> + *
-> + *    L | P | E | remark
-> + *   ---+---+---+--------
-> + *    0 | 0 |   | user port
-> + *    1 | 1 |   | user port
-> + *    2 | 2 |   | user port
-> + *    3 | 3 |   | user port
-> + *    4 | 6 | 1 | extension (CPU) port
+I don't think DSA could call of_mdiobus_register, since you would need
+to pass it the OF node you want and the read/write ops for the bus and
+its name and a place to store it (one DSA switch might have more than
+one MDIO bus), and I just fail to see the point of doing that.
 
-Did you consider not bothering with this. Just always use the Physical
-port number? The DSA framework does not care if there are ports
-missing. If it makes the code simpler, ignore the logical number, and
-just enforce that the missing ports are not used, by returning -EINVAL
-in the port_enable() callback.
+The whole point of having ds->slave_mii_bus (either allocated by the
+driver or by DSA) is to access the PHY registers of a port under a very
+narrow set of assumptions: it implicitly assumes that the port N has a
+PHY at MDIO address N, as opposed to doing the usual which is to follow
+the phy-handle, and that there is a single internal MDIO bus. DSA will
+do this as last resort in dsa_slave_phy_setup. But if you use
+of_mdiobus_register, just put a phy-handle in the device tree and be
+done, you don't need ds->ops->phy_read or ds->ops->phy_write, nor can
+you/should you overload these pointers for DSA to do the
+of_mdiobus_register for you.
 
-> +/* Interrupt control register - enable or disable specific interrupt types */
-> +#define RTL8365MB_INTR_CTRL				0x1101
-> +#define   RTL8365MB_INTR_CTRL_SLIENT_START_2_MASK	0x1000
-> +#define   RTL8365MB_INTR_CTRL_SLIENT_START_MASK		0x800
-> +#define   RTL8365MB_INTR_CTRL_ACL_ACTION_MASK		0x200
-> +#define   RTL8365MB_INTR_CTRL_CABLE_DIAG_FIN_MASK	0x100
-> +#define   RTL8365MB_INTR_CTRL_INTERRUPT_8051_MASK	0x80
-> +#define   RTL8365MB_INTR_CTRL_LOOP_DETECTION_MASK	0x40
-> +#define   RTL8365MB_INTR_CTRL_GREEN_TIMER_MASK		0x20
-> +#define   RTL8365MB_INTR_CTRL_SPECIAL_CONGEST_MASK	0x10
-> +#define   RTL8365MB_INTR_CTRL_SPEED_CHANGE_MASK		0x8
-> +#define   RTL8365MB_INTR_CTRL_LEARN_OVER_MASK		0x4
-> +#define   RTL8365MB_INTR_CTRL_METER_EXCEEDED_MASK	0x2
-> +#define   RTL8365MB_INTR_CTRL_LINK_CHANGE_MASK		0x1
-> +
-> +
-> +/* Interrupt status register */
-> +#define RTL8365MB_INTR_STATUS_REG			0x1102
-> +#define   RTL8365MB_INTR_STATUS_SLIENT_START_2_MASK	0x1000
-> +#define   RTL8365MB_INTR_STATUS_SLIENT_START_MASK	0x800
-> +#define   RTL8365MB_INTR_STATUS_ACL_ACTION_MASK		0x200
-> +#define   RTL8365MB_INTR_STATUS_CABLE_DIAG_FIN_MASK	0x100
-> +#define   RTL8365MB_INTR_STATUS_INTERRUPT_8051_MASK	0x80
-> +#define   RTL8365MB_INTR_STATUS_LOOP_DETECTION_MASK	0x40
-> +#define   RTL8365MB_INTR_STATUS_GREEN_TIMER_MASK	0x20
-> +#define   RTL8365MB_INTR_STATUS_SPECIAL_CONGEST_MASK	0x10
-> +#define   RTL8365MB_INTR_STATUS_SPEED_CHANGE_MASK	0x8
-> +#define   RTL8365MB_INTR_STATUS_LEARN_OVER_MASK		0x4
-> +#define   RTL8365MB_INTR_STATUS_METER_EXCEEDED_MASK	0x2
-> +#define   RTL8365MB_INTR_STATUS_LINK_CHANGE_MASK	0x1
-> +#define   RTL8365MB_INTR_STATUS_ALL_MASK                      \
-
-Interrupt control and status registers are generally identical. So you
-don't need to define the values twice.
-
- +static void rtl8365mb_phylink_validate(struct dsa_switch *ds, int port,
-> +				       unsigned long *supported,
-> +				       struct phylink_link_state *state)
-> +{
-> +	struct realtek_smi *smi = ds->priv;
-> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0 };
-> +
-> +	/* include/linux/phylink.h says:
-> +	 *     When @state->interface is %PHY_INTERFACE_MODE_NA, phylink
-> +	 *     expects the MAC driver to return all supported link modes.
-> +	 */
-> +	if (state->interface != PHY_INTERFACE_MODE_NA &&
-> +	    !rtl8365mb_phy_mode_supported(ds, port, state->interface)) {
-> +		dev_err(smi->dev, "phy mode %s is unsupported on port %d\n",
-> +			phy_modes(state->interface), port);
-> +		linkmode_zero(supported);
-> +		return;
-> +	}
-> +
-> +	phylink_set_port_modes(mask);
-> +
-> +	phylink_set(mask, Autoneg);
-> +	phylink_set(mask, Pause);
-> +	phylink_set(mask, Asym_Pause);
-> +
-> +	phylink_set(mask, 10baseT_Half);
-> +	phylink_set(mask, 10baseT_Full);
-> +	phylink_set(mask, 100baseT_Half);
-> +	phylink_set(mask, 100baseT_Full);
-> +	phylink_set(mask, 1000baseT_Full);
-> +	phylink_set(mask, 1000baseT_Half);
-
-Does the documentation actually mention 1000baseT_Half? Often it is
-not implemented.
-
-> +static int rtl8365mb_port_enable(struct dsa_switch *ds, int port,
-> +				 struct phy_device *phy)
-> +{
-> +	struct realtek_smi *smi = ds->priv;
-> +	int val;
-> +
-> +	if (dsa_is_user_port(ds, port)) {
-> +		/* Power up the internal PHY and restart autonegotiation */
-> +		val = rtl8365mb_phy_read(smi, port, MII_BMCR);
-> +		if (val < 0)
-> +			return val;
-> +
-> +		val &= ~BMCR_PDOWN;
-> +		val |= BMCR_ANRESTART;
-> +
-> +		return rtl8365mb_phy_write(smi, port, MII_BMCR, val);
-> +	}
-
-There should not be any need to do this. phylib should do it. In
-generally, you should not need to touch any PHY registers, you just
-need to allow access to the PHY registers.
-
-I want to take another look at the interrupt code. But this looks
-pretty nice in general.
-
-       Andrew
+> >
+> >>   static enum dsa_tag_protocol rtl8366_get_tag_protocol(struct dsa_switch *ds,
+> >>   						      int port,
+> >>   						      enum dsa_tag_protocol mp)
+> >> @@ -1505,6 +1512,7 @@ static int rtl8366rb_detect(struct realtek_smi *smi)
+> >>   static const struct dsa_switch_ops rtl8366rb_switch_ops = {
+> >>   	.get_tag_protocol = rtl8366_get_tag_protocol,
+> >>   	.setup = rtl8366rb_setup,
+> >> +	.teardown = rtl8366rb_teardown,
+> >>   	.phylink_mac_link_up = rtl8366rb_mac_link_up,
+> >>   	.phylink_mac_link_down = rtl8366rb_mac_link_down,
+> >>   	.get_strings = rtl8366_get_strings,
+> >> --
+> >> 2.32.0
+> >>
