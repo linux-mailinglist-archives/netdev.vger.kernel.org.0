@@ -2,214 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 953AB3F4193
-	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 22:49:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B82573F4196
+	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 22:50:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233072AbhHVUt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 16:49:59 -0400
-Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:46256 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232800AbhHVUt4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 16:49:56 -0400
-Received: from pop-os.home ([90.126.253.178])
-        by mwinf5d51 with ME
-        id kkpD250093riaq203kpD9o; Sun, 22 Aug 2021 22:49:14 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 22 Aug 2021 22:49:14 +0200
-X-ME-IP: 90.126.253.178
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     luobin9@huawei.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] hinic: switch from 'pci_' to 'dma_' API
-Date:   Sun, 22 Aug 2021 22:49:12 +0200
-Message-Id: <b5a92ba4aef427a07d0b35e5cc48a9555634b8ec.1629665282.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.30.2
+        id S233191AbhHVUuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 16:50:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33888 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233019AbhHVUut (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 22 Aug 2021 16:50:49 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2843761356;
+        Sun, 22 Aug 2021 20:50:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629665408;
+        bh=BBusbWPFRwmEvG3HpKuJ7ruvlYLvRLHv8PB13wgdl/0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=PWKVozzWTw1s1HdRo4pnB1ntlWqiQCPlfljVHFQeL8fZfxqtZEk4VDEC9Z6J7uIA+
+         OiRhlugT14degPbfcO/TKsdI6hUpuYPBAVy4Hd0YIo24GZKFWkc97gVKFEnc1O0jr7
+         zscYyLx1VetKNh0irGSejykytmmlqpS3epPsG2ZOHLzhdEPfc3zMpT0qQnwadPc8N2
+         S8/6JoHurapbHwBLXdCUXajyCv6QSJWoPsSmgIS4a262RRk8nvWUtrYsx+trdgIcMG
+         i5A7gIejq793N6lL+LX+dL44hdfGLZdHeikPZ+Es/jeAB4tCrm6yJ+TQRHYFQei1N5
+         I4r2K3WL6QfEw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1CDCB60AA1;
+        Sun, 22 Aug 2021 20:50:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/4] mlxsw: Refactor parsing configuration
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162966540811.2709.14909922004255328605.git-patchwork-notify@kernel.org>
+Date:   Sun, 22 Aug 2021 20:50:08 +0000
+References: <20210822113716.1440716-1-idosch@idosch.org>
+In-Reply-To: <20210822113716.1440716-1-idosch@idosch.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@nvidia.com, amcohen@nvidia.com, mlxsw@nvidia.com,
+        idosch@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
+Hello:
 
-The patch has been generated with the coccinelle script below.
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-It has been hand modified to use 'dma_set_mask_and_coherent()' instead of
-'pci_set_dma_mask()/pci_set_consistent_dma_mask()' when applicable.
-This is less verbose.
+On Sun, 22 Aug 2021 14:37:12 +0300 you wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
+> 
+> The Spectrum ASIC has a configurable limit on how deep into the packet
+> it parses. By default, the limit is 96 bytes.
+> 
+> There are several cases where this parsing depth is not enough and there
+> is a need to increase it: Decapsulation of VxLAN packets and
+> timestamping of PTP packets.
+> 
+> [...]
 
-It has been compile tested.
+Here is the summary with links:
+  - [net-next,1/4] mlxsw: spectrum: Add infrastructure for parsing configuration
+    https://git.kernel.org/netdev/net-next/c/2d91f0803b84
+  - [net-next,2/4] mlxsw: Convert existing consumers to use new API for parsing configuration
+    https://git.kernel.org/netdev/net-next/c/0071e7cdc386
+  - [net-next,3/4] mlxsw: Remove old parsing depth infrastructure
+    https://git.kernel.org/netdev/net-next/c/c3d2ed93b14d
+  - [net-next,4/4] mlxsw: spectrum_router: Increase parsing depth for multipath hash
+    https://git.kernel.org/netdev/net-next/c/43c1b83305fa
 
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
-
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
-
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
-
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
----
- drivers/net/ethernet/huawei/hinic/hinic_main.c | 17 ++---------------
- 1 file changed, 2 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-index 881d0b247561..ae707e305684 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-@@ -1392,28 +1392,16 @@ static int hinic_probe(struct pci_dev *pdev,
- 
- 	pci_set_master(pdev);
- 
--	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
-+	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
- 	if (err) {
- 		dev_warn(&pdev->dev, "Couldn't set 64-bit DMA mask\n");
--		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-+		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
- 		if (err) {
- 			dev_err(&pdev->dev, "Failed to set DMA mask\n");
- 			goto err_dma_mask;
- 		}
- 	}
- 
--	err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
--	if (err) {
--		dev_warn(&pdev->dev,
--			 "Couldn't set 64-bit consistent DMA mask\n");
--		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
--		if (err) {
--			dev_err(&pdev->dev,
--				"Failed to set consistent DMA mask\n");
--			goto err_dma_consistent_mask;
--		}
--	}
--
- 	err = nic_dev_init(pdev);
- 	if (err) {
- 		dev_err(&pdev->dev, "Failed to initialize NIC device\n");
-@@ -1424,7 +1412,6 @@ static int hinic_probe(struct pci_dev *pdev,
- 	return 0;
- 
- err_nic_dev_init:
--err_dma_consistent_mask:
- err_dma_mask:
- 	pci_release_regions(pdev);
- 
--- 
-2.30.2
 
