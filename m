@@ -2,109 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25F7A3F3D26
-	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 04:31:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B4D03F3DF8
+	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 07:08:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231658AbhHVCbm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Aug 2021 22:31:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60384 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229571AbhHVCbl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Aug 2021 22:31:41 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F4D8C061575;
-        Sat, 21 Aug 2021 19:31:01 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id n18so13228236pgm.12;
-        Sat, 21 Aug 2021 19:31:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XSTqDa97zOWgSBwGLOjBEzY0W1HCbmfHTpND18fwsyA=;
-        b=PhbRgYaQFfP7M8LtuZ0DJCgRqBc2hijhPP12YvRUKwgoWfGJfWjb4yDuFfii56KLZx
-         UApdP4wFmmp+bk/JkRzpa0RZ0bNMO6dk2YGX3PubQBqiSvbPWBns8puXAyEgDCmG00B7
-         tr1Ug/czFutolnj2Qe36ZPYYZhOAnccfghpigop6gfOoSkm04XMamwXZxuQ23biWfg5r
-         QTc60M6NIaNGgnBLGkI/blXBoEWtl6MR0PEvsYzfewnZge+ORNa8GokVvugIQtnbX9vk
-         Cb5bInAXy/ZIHsL06t2tqvp3KODH+/9slG/it09ZgKWWEofwipch7QXYfXPvXvEqC1LS
-         OC1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XSTqDa97zOWgSBwGLOjBEzY0W1HCbmfHTpND18fwsyA=;
-        b=DmYEp0x/TEUY7LIrjMzWGZHl8a19frlrdAtXv8+nlzjJm4dxexJhs+MZktL1dr/IkC
-         H72o2U2Afo/wpUKiIPBeHcwxkmcusm5PJYdp5piEZDGAqgpZTp+PQ8A+MXmPmEuFR9+C
-         sn/icLB46CZ7D85nnAqT58K609vdvowJlKlIVEHIRhNOouchHCO7733GTwec7H26yizo
-         8m7P05w8uupR6cyP9i4P/nV/gVRl/OqAjgovdx1kHwR/ypc9JFhFOtuhUtymScrL3SGb
-         atXput/w28MJRr3cFhVvq5TRiyx/B+GCc/TV3/Jb1OiJYUyzDhVYV//HaadH8nx6Cmuw
-         zgIw==
-X-Gm-Message-State: AOAM533WLlAqfnXeJ0JmBEq9+f9bgjbkdGE3jCnlsnMspVdlEHfo4tH7
-        iwOBr3Pek7YaLRDluE7NsBY=
-X-Google-Smtp-Source: ABdhPJwWkVfbhs8JZCkYB40Ea1nyaA/y97j+qEa6V5jVVdosZTc+l16NXyb9birWU12gqKpy95GIYQ==
-X-Received: by 2002:a63:2541:: with SMTP id l62mr26438157pgl.183.1629599460655;
-        Sat, 21 Aug 2021 19:31:00 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id mq18sm9743976pjb.45.2021.08.21.19.30.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Aug 2021 19:31:00 -0700 (PDT)
-Date:   Sat, 21 Aug 2021 19:30:57 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
-Cc:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "nikolay@nvidia.com" <nikolay@nvidia.com>,
-        "cong.wang@bytedance.com" <cong.wang@bytedance.com>,
-        "colin.king@canonical.com" <colin.king@canonical.com>,
-        "gustavoars@kernel.org" <gustavoars@kernel.org>,
-        "Bross, Kevin" <kevin.bross@intel.com>,
-        "Stanton, Kevin B" <kevin.b.stanton@intel.com>,
-        Ahmad Byagowi <abyagowi@fb.com>
-Subject: Re: [RFC net-next 1/7] ptp: Add interface for acquiring DPLL state
-Message-ID: <20210822023057.GA6481@hoboy.vegasvil.org>
-References: <20210816160717.31285-1-arkadiusz.kubalewski@intel.com>
- <20210816160717.31285-2-arkadiusz.kubalewski@intel.com>
- <20210816235400.GA24680@hoboy.vegasvil.org>
- <PH0PR11MB4951762ECB04D90D634E905DEAFE9@PH0PR11MB4951.namprd11.prod.outlook.com>
- <20210818170259.GD9992@hoboy.vegasvil.org>
- <PH0PR11MB495162EC9116F197D79589F5EAFF9@PH0PR11MB4951.namprd11.prod.outlook.com>
- <20210819153414.GC26242@hoboy.vegasvil.org>
- <PH0PR11MB4951F51CBA231DFD65806CDAEAC09@PH0PR11MB4951.namprd11.prod.outlook.com>
- <20210820155538.GB9604@hoboy.vegasvil.org>
- <PH0PR11MB49518ED9AAF8B543FD8324B9EAC19@PH0PR11MB4951.namprd11.prod.outlook.com>
+        id S230258AbhHVFJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 01:09:22 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:40296 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229757AbhHVFJV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 01:09:21 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1629608921; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=fCW+fuhpLtJtoS0Vq35xVvfhFpaYBTJcy038J0U+ubM=; b=VnnSYEiAIrzDpiRliVLy9vX44H6+gfFiPAWesTtk9yTbcJ7GStZpOobgamI/BiOeefRAe8RU
+ naKLOLSOP7EU71gRlPScGIN2w2b5C4bQtDPwfZaJaGpSfqD6Rfdx9VbcRYFrvHUl5uyHa0Tx
+ REfL9dDePFRrsTH04TCzgJ4J+hE=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
+ 6121dbd089fbdf3ffe6a26a5 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 22 Aug 2021 05:08:32
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 9394AC43460; Sun, 22 Aug 2021 05:08:31 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 90B6AC4338F;
+        Sun, 22 Aug 2021 05:08:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 90B6AC4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Joe Perches <joe@perches.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v1 1/1] ray_cs: use %*ph to print small buffer
+References: <20210712142943.23981-1-andriy.shevchenko@linux.intel.com>
+        <20210821171432.B996DC4360C@smtp.codeaurora.org>
+        <293b9231af8b36bb9a24a11c689d33c7e89c3c4e.camel@perches.com>
+Date:   Sun, 22 Aug 2021 08:08:23 +0300
+In-Reply-To: <293b9231af8b36bb9a24a11c689d33c7e89c3c4e.camel@perches.com> (Joe
+        Perches's message of "Sat, 21 Aug 2021 12:38:49 -0700")
+Message-ID: <877dgerrqw.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR11MB49518ED9AAF8B543FD8324B9EAC19@PH0PR11MB4951.namprd11.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 20, 2021 at 06:30:02PM +0000, Machnikowski, Maciej wrote:
+Joe Perches <joe@perches.com> writes:
 
-> Since the 40.5.2 is not applicable to higher-speed ethernet which
-> don't use auto-negotiation, but rather the link training sequence
-> where the RX side always syncs its clock to the TX side.
+> On Sat, 2021-08-21 at 17:14 +0000, Kalle Valo wrote:
+>> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+>> 
+>> > Use %*ph format to print small buffer as hex string.
+>> > 
+>> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+>> 
+>> Patch applied to wireless-drivers-next.git, thanks.
+>> 
+>> 502213fd8fca ray_cs: use %*ph to print small buffer
+>> 
+>
+> There's one more of these in the same file but it's in an #ifdef 0 block...
 
-By "the RX side always syncs its clock to the TX side" do you mean the
-RX channel synchronizes to the link partner's TX channel?
+I would rather remove the whole ifdef 0 block, patches welcome.
 
-Wow, that brings back the 100 megabit scheme I guess.  That's cool,
-because the same basic idea applies to the PHYTER then.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-Still we are doing to need a way for user space to query the HW
-topology to discover whether a given ports may be syntonized from a
-second port.  I don't think your pin selection thing works unless user
-space can tell what the pins are connected to.
-
-Thanks,
-Richard
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
