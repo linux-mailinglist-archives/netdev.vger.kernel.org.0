@@ -2,60 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06BC03F425B
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 01:25:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D004A3F425F
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 01:27:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233168AbhHVX0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 19:26:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50878 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229969AbhHVX0X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 19:26:23 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93BB9C061575;
-        Sun, 22 Aug 2021 16:25:41 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id a25so6384480ejv.6;
-        Sun, 22 Aug 2021 16:25:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=oEwuxjvbqeYdRRdJDdNeLoYIGcQWDOv+hdj9rgaB0Dg=;
-        b=CgWEf6H3cBXo+I9nquyuyUw8F4TmalzEvAFueTCjAvWd5K81Wn7oHWx9r3J8A4ninH
-         ec/2D8HvXbEFtBz3phsnbMw6I38+8f7fERjnpP6MGJcNDXJglP3n8l77DIJTFfbTjdhp
-         4TEaM644kOHqdtXyw4kGpX0/00wYAGEJUO/0FYQjv29Md5alWuZuzqORMPCHsvsr8GpD
-         xsXzL3K/R85TK8r9QyMjGhf1v5+E1iUIh97Q7OTslpwZaHwtcyOdWKHcjgVJKeJ8x6aT
-         /C4kwN2P1t9AKerkqrfIFxRMbhgtfhxWkRhAHb41kd4L+lQQ7eiGpqsrSFsFBbkmVKMk
-         1IrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=oEwuxjvbqeYdRRdJDdNeLoYIGcQWDOv+hdj9rgaB0Dg=;
-        b=fs+ubNJJt9h0jw2r3780Bl4diGrfrs+7E8/VOe53FMN4PomTAVE7IZoyhafB3PWc0l
-         YBQ8cxsQTqcHka3yLdL9ZU3OsVSS3yHoINZqrK8b8bsLD+odTK4bd+lsnf24eoB5PBWv
-         /yyVRdbcNHsvwABZdGSacJAX1baatSBCMinPQzwc4JmfyxhGKqh3w0xgf97hwavsDNE0
-         zKB4ZRjcmtI1EcIttKEKk8EwG2I1oswkCSeFL1l7Jb2BW/c7lM9rTDBS8TwnGh/UsyMI
-         5GgukOm++O4BTyKU4ux/fnw5WwFOGtO7uOZCumX3LgT6T32jcMv9Prq11ywY5KcCh3gR
-         yHcA==
-X-Gm-Message-State: AOAM531KaTcJVuB+J0Nuczr6AC8cJruAb1kYgHCH4PJmVscg/onqjg2L
-        18cQ/S/794Gxdp2oqV0TIVg=
-X-Google-Smtp-Source: ABdhPJwT5D8xOs1VfaUYEmkX2+WSvviPW0TwH3Dk4ecFx4i577n/+NyR6q1pe8t5uLkxpSdsVpnc7Q==
-X-Received: by 2002:a17:906:8281:: with SMTP id h1mr34234127ejx.352.1629674740224;
-        Sun, 22 Aug 2021 16:25:40 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id cq12sm8002441edb.43.2021.08.22.16.25.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Aug 2021 16:25:40 -0700 (PDT)
-Date:   Mon, 23 Aug 2021 02:25:38 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
-Cc:     Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>,
+        id S234217AbhHVX2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 19:28:01 -0400
+Received: from mail-eopbgr140090.outbound.protection.outlook.com ([40.107.14.90]:57612
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229969AbhHVX17 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 22 Aug 2021 19:27:59 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RIdb/fgLtK3D4xcS6JzX1alEb9ztOTgNdWfhWP8DitAd2IUrxEwSEs2gIKRaDasfQ67dB+7OaivmxHfmCAkLKFjT9CQF3mwKe4Oi3RkUMHWoLoHGSTHlpHp7KKYvWI2S8Umdem5Qg4DnRJJKIRA4INhSZukA7r6UDjXsXu7clzg9Q08Oep49w4B/WLdgENRGxp1sLHMofg/yXvClm1DS73r+Zu1tT5390deSlveYGRT/hRDJ/xho5Q+Y5/DlanBAslbdBuW+G53cWFnmyrnLuVm2vTd019Gbh/35Z215VA56OOshwMLFZA768RCBydaCSCxC74dXocz9x5T4AQaJQQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=o/SlBc1hV/VUEHT1wmRD8tpGXI2BSbe/NMBfAJHGaB0=;
+ b=A0i6bJ+zCC0FeyyP0rWRLZWQVcl+ORiSDS8j1Yk+KluBzbnVUpt9VvWg0emF9w0SnwmD+wQ/W2j/8X2pfpWUpc+hXFuHVx+LIIJxfvDTVg2Yq0qjLuL2jtvCM0mOZcEtDbyYA+DOrcO2nLpoM3nfbp42sKHumPBio2+4bvq35eWZbn/wQT7qMYV4if+1wCVBgEqDIrMPFbELrlcfd0G1XvPwM+T1oGZ10dCBWvNNFzaJ4GzrFIG4aoXvyVWyPmYJGx86kWHEnwreIwM+LiHhV+PzGwkSJKf2Hf4onzrwnPnmzrsoNXndNcf524UDFkYrN0qhBuStGukS4GIQ2mJSZg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bang-olufsen.dk; dmarc=pass action=none
+ header.from=bang-olufsen.dk; dkim=pass header.d=bang-olufsen.dk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bang-olufsen.dk;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=o/SlBc1hV/VUEHT1wmRD8tpGXI2BSbe/NMBfAJHGaB0=;
+ b=hKXoMD7oq3ldno+UtgU9xyGOtA+FA88rW/eLXf5zFFLAQtZeSGdNnwKwQ0Ka4/dSPPiFhYpsxpC61+13p/0xo/5SWhRfCHJWqOJq2JuSHAECVd628B65UN7YDhNQpUyx6QlgLD/F/5xvz6BPE6YdY26NShOa0OOH6x21pN9Msb0=
+Received: from HE1PR03MB3114.eurprd03.prod.outlook.com (2603:10a6:7:60::18) by
+ HE1PR0302MB2780.eurprd03.prod.outlook.com (2603:10a6:3:f0::21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4436.19; Sun, 22 Aug 2021 23:27:12 +0000
+Received: from HE1PR03MB3114.eurprd03.prod.outlook.com
+ ([fe80::7cc8:2d4:32b3:320f]) by HE1PR03MB3114.eurprd03.prod.outlook.com
+ ([fe80::7cc8:2d4:32b3:320f%5]) with mapi id 15.20.4415.024; Sun, 22 Aug 2021
+ 23:27:12 +0000
+From:   =?utf-8?B?QWx2aW4gxaBpcHJhZ2E=?= <ALSI@bang-olufsen.dk>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     =?utf-8?B?QWx2aW4gxaBpcHJhZ2E=?= <alvin@pqrs.dk>,
         Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -65,117 +51,96 @@ Cc:     Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH net-next 3/5] net: dsa: tag_rtl8_4: add realtek 8
+Subject: Re: [RFC PATCH net-next 3/5] net: dsa: tag_rtl8_4: add realtek 8 byte
+ protocol 4 tag
+Thread-Topic: [RFC PATCH net-next 3/5] net: dsa: tag_rtl8_4: add realtek 8
  byte protocol 4 tag
-Message-ID: <20210822232538.pkjsbipmddle5bdt@skbuf>
+Thread-Index: AQHXl4yAoQircf8Jw0+inLvWs8TmmauAE7kAgAANXwCAAAa0gIAAA5GA
+Date:   Sun, 22 Aug 2021 23:27:11 +0000
+Message-ID: <c4a2302e-b961-fc2d-c0f3-c3123dbaab83@bang-olufsen.dk>
 References: <20210822193145.1312668-1-alvin@pqrs.dk>
- <20210822193145.1312668-4-alvin@pqrs.dk>
- <20210822221307.mh4bggohdvx2yehy@skbuf>
- <9d6af614-d9f9-6e7b-b6b5-a5f5f0eb8af2@bang-olufsen.dk>
+ <20210822193145.1312668-4-alvin@pqrs.dk> <YSLJervLt/xNIKHn@lunn.ch>
+ <eeca192a-ef7f-0553-1b4a-1c38d9892ea0@bang-olufsen.dk>
+ <YSLaUUe0eBeMQYtj@lunn.ch>
+In-Reply-To: <YSLaUUe0eBeMQYtj@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=bang-olufsen.dk;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1d5325ce-e1e3-46dd-d2fc-08d965c45e5c
+x-ms-traffictypediagnostic: HE1PR0302MB2780:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <HE1PR0302MB2780A9CED3C334DC72D9D22B83C39@HE1PR0302MB2780.eurprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:561;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: AhF3c/1aRRC8G6uJ6cNg8z4DsEU0fVDSSlpPxGv5XFR2ahtIEEpSicS5hA0P2M+9I/q26c3yxW61yk4MB7ufDTvQ9Q+kW1Z3C2LF2fn8dbOIwfzylueUPMBFi+CrvI4aptsdh4cYseJCaIo+W+CNKbzLg43bxu3a+TApzv7cfeuafcBzkBOQmsn5nB+DmJkyU+3F/I4xSJ/j11APoltne8x3S1u1E4nc9GownwTPZpS71fWHhUd7SIsyxqL/45uD+7DfM1nA6CcP9AxwdjzRhMXeEPu8tVD7TyDHeGuVFowW8FdlYFxwXNDk3Yg5z4F/q1EYLHpQHh3bmNY/SafOSGB0O/9x4SITg/BLAepAckBKGo8o5mejj4PRXy1YHh41JfBUrCwptEMGTq9WYeRrxqqzO1QfDK9h99HGOoWUlmULgtmCJmoKCIYrR9FpH8fsBHPsD5w6AsTv+whPzosqxzYUoZyp7NJ9cWOumiAflNsX7HtcZ7Rz/bq2S1j69J4F7mNvko1lEoLC9e2Yk6tcY0qe1cGOb0Unq/HxWjsbCzczhPGK+flJrayjv8yrTpKZKs8nx3KTFvacKd0f1sUQNwyJbim2sDhULifvpHBY2aPE6bTNyTPmJW//5evj9Cd97syn7m7+I19p9SpHA6wlTeuRT9FSbUV8bKq1DZyzFwnGLmg5lw+id0e0cXrf9QdhO7pMkltq/YRq9OuVjZnCARUpiRxKqKWtQts4XpIYGNuzeUQWv5+mEx38uvrlCeqgjUBhIZfaNXLAZVfcVeAcHw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR03MB3114.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39840400004)(346002)(376002)(396003)(366004)(136003)(8936002)(8676002)(7416002)(31696002)(53546011)(8976002)(186003)(91956017)(76116006)(26005)(83380400001)(2616005)(86362001)(122000001)(38100700002)(6916009)(4326008)(5660300002)(6506007)(71200400001)(31686004)(4744005)(36756003)(85182001)(66946007)(85202003)(478600001)(6486002)(2906002)(66446008)(38070700005)(64756008)(66556008)(66476007)(6512007)(316002)(54906003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?VjVpYXQxOGFBVXh6dW1XcVVaTGNqTWlBOGJDc0pFTGJIaFVjM1dxUnVyRTJK?=
+ =?utf-8?B?bk9EWFkyZld6Zks3eTVpWkRVVW42NHB3eTVqT1R4MGFNOXNscTZKWkhWUXJa?=
+ =?utf-8?B?SEM2eWZnYnYxQlcvS09WSlgrbE5ZTytZY21pQUtyZkpoZk1PWm1MZDRUWE41?=
+ =?utf-8?B?OWZOWUM5SGZiZitBTXQyeDYrTlc4UmdxMlNNSVhPaXJ6REx1UjZLRFgrdHdB?=
+ =?utf-8?B?emRYeXVEQWFVa3l5TkR2d1loNkxWS2Fqa0RycVAzWVZsRkdYUlhZL3R6bFMy?=
+ =?utf-8?B?WXRKWS9JcG1jTjB1aDFObVlWNjhWaGR6MjEwK1FsMDhEYm5aNUVCTGdWWFZZ?=
+ =?utf-8?B?MVk4bW12WmIvRmlrRlh0dDdqWlBYSE5ldWNTWUJWeUxjTFFXWG1kM01JekMr?=
+ =?utf-8?B?dTlDRnZyM0ZzaGJIcmthZTBsUDlBbWQxMHp1djY4RGJBblliRERuMWg3Szlm?=
+ =?utf-8?B?dWtOU05oamhGcVEyWmZ3YzdwaXhGTWtsVERiWG04TDIzQlNSREJBZU5lQXR2?=
+ =?utf-8?B?UFRQWUVsYXBXampUMDY1REJpcytTd3JQc3FPcm5HQy95ZmNkTHZ5dFZONjVG?=
+ =?utf-8?B?cmZFRGkxL29jcmVSZFE0cGpWTjlGKzRCNXk0KzVYeE02R2JCRUlNQllpZW1S?=
+ =?utf-8?B?aVROVjFmRG9QSFJ6NGNIZ2Nka1h5R3FPV0QrYThMRU40R3ZNODY2djZ4VDJj?=
+ =?utf-8?B?ckJKa3p6Uk5GQ0x2d2xEeGJvZGRjTTlQcjJNeVl2TkI1Ulg2K08ySk55SlZI?=
+ =?utf-8?B?MkRuSkgwbzN2MC93OXZpMCt6b29uTXpnNUR2K21DSnVRRkp4TzhaeGJUQ2FR?=
+ =?utf-8?B?U2xBdklacDZwNXh6SG1RU2lhR0VNWC9KS2o3Z3Rra1F4U2s5UDN3bjlNSFZ4?=
+ =?utf-8?B?TUtuZ3RJakN1bHNyZ0tIdC9sZXE1UGloeXdYVjdvM1k0Q2RWbHM0RElYakht?=
+ =?utf-8?B?S0N0WmFkTDdmMm9KMDBzOHJRbWg0bEh1TUljcjNlNzgyY3Z0TUdlamZrZUgy?=
+ =?utf-8?B?ZVNQT2xKRzlRQmROVWpuTnhyTmJwc2tWdnFBbjFJK0RYYWRjMUpqWUJEOG5l?=
+ =?utf-8?B?ZEFCWVR2emlUb1drRTRYWW5vUXhnMm1aUFRmM09PSGVEd3pkVGlONFBsV1FU?=
+ =?utf-8?B?cENnY3MrbE5JNTFlZkJ1SHBCdEY5cnowMWRWbkMrcVpTZWlqODBIMTFrOTFn?=
+ =?utf-8?B?MkNrQlYyK1pCSkJ4dmJpR2xPOWp3bkxzNXBuZzdNZ0xjbllNWDRaNTlsb3dM?=
+ =?utf-8?B?MFZNUmN4bXE4UW1FdEVvZUczRXFaZjl1eTBDS3lGQmhWdEQvc3d4RWl6TFY2?=
+ =?utf-8?B?bkxkbEk2NHZQRmdscWk3UmloTGs2UkFHdjlmQ0VZRjAwSFdjNnNCak5VU3dJ?=
+ =?utf-8?B?ZHFWekpndXZzZzVFdTB4UHU2LytnODczUWNLQW4zK0ZwdnhUUkF2RkJudUYx?=
+ =?utf-8?B?S1BxUWM1Y3E3MWRNdzlSNzRGSzJIWmNxK2dNUXRJR0h6ODFHbFN0TW9sTWtx?=
+ =?utf-8?B?ZW00UGFNVHl4U1VHYUxtZ1RyTGZ4U0FJL05VNTN3S3o0djN1ckd3S1lkRFZU?=
+ =?utf-8?B?NlBRUS9HaG42K2J6bDhDY2g2RHlpdURxZ2hrZC9CNzE2a0sxY2lFOFIvajNU?=
+ =?utf-8?B?Y2o4bzFKdkU4UEhqNlJ2RzNhd1ZXU2ljSC9sUlNSLzYvaGIrR2RXRkNVejZr?=
+ =?utf-8?B?L05RS0x5Y3hNdjdzcTdCcHVKY2lsSG5wVEZiTTRabzFISjRob3RQSndaZG96?=
+ =?utf-8?Q?lnlVNgGeeAJLxjy97aacvYhWRKizZUK+2ZD2vyr?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <282F77BFE16A6D4ABBEFA174C14EFD63@eurprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9d6af614-d9f9-6e7b-b6b5-a5f5f0eb8af2@bang-olufsen.dk>
+X-OriginatorOrg: bang-olufsen.dk
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: HE1PR03MB3114.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1d5325ce-e1e3-46dd-d2fc-08d965c45e5c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Aug 2021 23:27:11.9363
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 210d08b8-83f7-470a-bc96-381193ca14a1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: wnhj+cmBxFEMwWg7SGKhRNdU6uG3nI1pT13pfLR1KYIOKPIx7YkyN7zk/VeO0hLsxYGCDaV8AwZo4Bzm4QZsbQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0302MB2780
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 22, 2021 at 11:11:21PM +0000, Alvin Šipraga wrote:
-> >> + *    KEEP       | preserve packet VLAN tag format
-> >
-> > What does it mean to preserve packet VLAN tag format? Trying to
-> > understand if the sane thing is to clear or set this bit. Does it mean
-> > to strip the VLAN tag on egress if the VLAN is configured as
-> > egress-untagged on the port?
->
-> I suppose you mean "Does it mean _don't_ strip the VLAN tag on egress..."?
->
-> I'm not sure what the semantics of this KEEP are. When I configure the
-> ports to be egress-untagged, the packets leave the port untagged. When I
-> configure the ports without egress-untagged, the packets leave the port
-> tagged. This is with the code as you see it - so KEEP=0. If I am to
-> hazard a guess, maybe it overrides any port-based egress-untagged
-> setting. I will run some tests tomorrow.
-
-Ok, then it makes sense to set KEEP=0 and not override the port settings.
-
-> >
-> >> +	*p = htons(~(1 << 15) & BIT(dp->index));
-> >
-> > I am deeply confused by this line.
-> >
-> > ~(1 << 15) is GENMASK(14, 0)
-> > By AND-ing it with BIT(dp->index), what do you gain?
->
-> Deliberate verbosity for the human who was engaged in writing the
-> tagging driver to begin with, but obviously stupid. I'll remove.
-
-I wouldn't say "stupid", but it's non-obvious, hard to read and at the same time pointless.
-I had to take out the abacus to see if I'm missing something.
-
-> >> +	/* Ignore FID_EN, FID, PRI_EN, PRI, KEEP, LEARN_DIS */
-> >> +	p = (__be16 *)(tag + 4);
-> >
-> > Delete then?
->
-> Deliberate verbosity again - but I figure any half-decent compiler will
-> optimize this out to begin with. I thought it serves as a perfectly fine
-> "add stuff here" notice together with the comment, but I can remove in v2.
-
-Keeping just the comment is fine, but having the line of code is pretty
-pointless. Just like any half-decent compiler will optimize it out, any
-developer with half a brain will figure out what to do to parse
-FID_EN ... LEARN_DIS thanks to the other comments.
-
-> >
-> >> +
-> >> +	/* Ignore ALLOW; parse TX (switch->CPU) */
-> >> +	p = (__be16 *)(tag + 6);
-> >> +	tmp = ntohs(*p);
-> >> +	port = tmp & 0xf; /* Port number is the LSB 4 bits */
-> >> +
-> >> +	skb->dev = dsa_master_find_slave(dev, 0, port);
-> >> +	if (!skb->dev) {
-> >> +		netdev_dbg(dev, "could not find slave for port %d\n", port);
-> >> +		return NULL;
-> >> +	}
-> >> +
-> >> +	/* Remove tag and recalculate checksum */
-> >> +	skb_pull_rcsum(skb, RTL8_4_TAG_LEN);
-> >> +
-> >> +	dsa_strip_etype_header(skb, RTL8_4_TAG_LEN);
-> >> +
-> >> +	skb->offload_fwd_mark = 1;
-> >
-> > At the very least, please use
-> >
-> > 	dsa_default_offload_fwd_mark(skb);
-> >
-> > which does the right thing when the port is not offloading the bridge.
->
-> Sure. Can you elaborate on what you mean by "at the very least"? Can it
-> be improved even further?
-
-The elaboration is right below. skb->offload_fwd_mark should be set to
-zero for packets that have been forwarded only to the host (like packets
-that have hit a trapping rule). I guess the switch will denote this
-piece of info through the REASON code.
-
-This allows the software bridge data path to know to not flood packets
-that have already been flooded by the switch in its hardware data path.
-
-Control packets can still be re-forwarded by the software data path,
-even if the switch has trapped/not forwarded them, through the
-"group_fwd_mask" option in "man ip-link").
-
-> >
-> > Also tell us more about REASON and ALLOW. Is there a bit in the RX tag
-> > which denotes that the packet was forwarded only to the host?
->
-> As I wrote to Andrew, REASON is undocumented and I have not investigated
-> this field yet. I have addressed ALLOW upstairs in this email, but
-> suffice to say I am not sure.
-
-On xmit, you have. On rcv (switch->CPU), I am not sure whether the
-switch will ever set ALLOW to 1, and what is the meaning of that.
+SGkgQW5kcmV3LA0KDQpPbiA4LzIzLzIxIDE6MTQgQU0sIEFuZHJldyBMdW5uIHdyb3RlOg0KPj4+
+PiArICovDQo+Pj4+ICsNCj4+Pj4gKyNpbmNsdWRlIDxsaW51eC9ldGhlcmRldmljZS5oPg0KPj4+
+PiArI2luY2x1ZGUgPGxpbnV4L2JpdHMuaD4NCj4+Pj4gKw0KPj4+PiArI2luY2x1ZGUgImRzYV9w
+cml2LmgiDQo+Pj4+ICsNCj4+Pj4gKyNkZWZpbmUgUlRMOF80X1RBR19MRU4JCQk4DQo+Pj4+ICsj
+ZGVmaW5lIFJUTDhfNF9FVEhFUlRZUEUJCTB4ODg5OQ0KPj4+DQo+Pj4gUGxlYXNlIGFkZCB0aGlz
+IHRvIGluY2x1ZGUvdWFwaS9saW51eC9pZl9ldGhlci5oDQo+IA0KPiBNYXliZSBjYWxsIGl0IEVU
+SF9QX1JFQUxURUssIGFuZCBjb21tZW50IC8qIE11bHRpcGxlIFByb3ByaWV0YXJ5DQo+IHByb3Rv
+Y29scyAqLyA/DQo+IA0KPiBJZiB5b3UgZG8gaXQgaW4gYW4gaW5kaXZpZHVhbCBwYXRjaCwgeW91
+IGNhbiBleHBsYWluIG1vcmUgaW4gdGhlDQo+IGNvbW1pdCBtZXNzYWdlIGFib3V0IGl0IGJlaW5n
+IHVzZWQgZm9yIGRpZmZlcmVudCBwcm90b2NvbHMgYnkgUmVhbHRlaywNCj4gYW5kIHRoYXQgbm8g
+YXNzdW1wdGlvbnMgc2hvdWxkIGJlIG1hZGUgd2hlbiB0cnlpbmcgdG8gZGVjb2RlIGl0Lg0KDQpT
+b3VuZHMgZ29vZCwgSSdsbCBkbyB0aGF0IGluIHYyLg0KDQo+IA0KPiAJICBBbmRyZXcNCj4gDQo=
