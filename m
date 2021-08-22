@@ -2,30 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D5893F3E0F
-	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 07:50:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0E833F3E13
+	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 07:59:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231255AbhHVFuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 01:50:32 -0400
-Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:58561 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbhHVFu2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 01:50:28 -0400
+        id S231410AbhHVGAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 02:00:30 -0400
+Received: from out02.smtpout.orange.fr ([193.252.22.211]:31291 "EHLO
+        out.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231153AbhHVGA3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 02:00:29 -0400
 Received: from pop-os.home ([90.126.253.178])
         by mwinf5d59 with ME
-        id kVpj2500B3riaq203Vpjfn; Sun, 22 Aug 2021 07:49:45 +0200
+        id kVzl2500D3riaq203VzlCp; Sun, 22 Aug 2021 07:59:47 +0200
 X-ME-Helo: pop-os.home
 X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 22 Aug 2021 07:49:45 +0200
+X-ME-Date: Sun, 22 Aug 2021 07:59:47 +0200
 X-ME-IP: 90.126.253.178
 From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     irusskikh@marvell.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
+To:     rmody@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        davem@davemloft.net, kuba@kernel.org, michael.chan@broadcom.com,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com, siva.kallam@broadcom.com,
+        prashant@broadcom.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
         Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] net: atlantic: switch from 'pci_' to 'dma_' API
-Date:   Sun, 22 Aug 2021 07:49:42 +0200
-Message-Id: <b263cad7a606091efb10392a81ee45f294f16bab.1629611296.git.christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] net: broadcom: switch from 'pci_' to 'dma_' API
+Date:   Sun, 22 Aug 2021 07:59:44 +0200
+Message-Id: <c609bc53686fb8326244194a9bfccb75e0aef3f5.1629611777.git.christophe.jaillet@wanadoo.fr>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -36,12 +40,6 @@ X-Mailing-List: netdev@vger.kernel.org
 The wrappers in include/linux/pci-dma-compat.h should go away.
 
 The patch has been generated with the coccinelle script below.
-
-It has been hand modified to use 'dma_set_mask_and_coherent()' instead of
-'pci_set_dma_mask()/pci_set_consistent_dma_mask()' when applicable.
-This is less verbose.
-
-A useless "!= 0" has also been removed in a test.
 
 It has been compile tested.
 
@@ -167,33 +165,508 @@ Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 If needed, see post from Christoph Hellwig on the kernel-janitors ML:
    https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/broadcom/bnx2.c          | 43 ++++++------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 20 +++---
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  4 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |  2 +-
+ drivers/net/ethernet/broadcom/tg3.c           | 69 +++++++++----------
+ 5 files changed, 68 insertions(+), 70 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-index 59253846e885..cdeece459c14 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-@@ -119,16 +119,10 @@ static int aq_pci_func_init(struct pci_dev *pdev)
- {
- 	int err;
+diff --git a/drivers/net/ethernet/broadcom/bnx2.c b/drivers/net/ethernet/broadcom/bnx2.c
+index 89ee1c0e9c79..7acf88696b25 100644
+--- a/drivers/net/ethernet/broadcom/bnx2.c
++++ b/drivers/net/ethernet/broadcom/bnx2.c
+@@ -2730,7 +2730,7 @@ bnx2_alloc_rx_page(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr, u16 index, gf
+ 	if (!page)
+ 		return -ENOMEM;
+ 	mapping = dma_map_page(&bp->pdev->dev, page, 0, PAGE_SIZE,
+-			       PCI_DMA_FROMDEVICE);
++			       DMA_FROM_DEVICE);
+ 	if (dma_mapping_error(&bp->pdev->dev, mapping)) {
+ 		__free_page(page);
+ 		return -EIO;
+@@ -2753,7 +2753,7 @@ bnx2_free_rx_page(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr, u16 index)
+ 		return;
  
--	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
--	if (!err)
--		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
-+	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-+	if (err)
-+		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
- 	if (err) {
--		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
--		if (!err)
--			err = pci_set_consistent_dma_mask(pdev,
--							  DMA_BIT_MASK(32));
--	}
--	if (err != 0) {
- 		err = -ENOSR;
- 		goto err_exit;
+ 	dma_unmap_page(&bp->pdev->dev, dma_unmap_addr(rx_pg, mapping),
+-		       PAGE_SIZE, PCI_DMA_FROMDEVICE);
++		       PAGE_SIZE, DMA_FROM_DEVICE);
+ 
+ 	__free_page(page);
+ 	rx_pg->page = NULL;
+@@ -2775,7 +2775,7 @@ bnx2_alloc_rx_data(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr, u16 index, gf
+ 	mapping = dma_map_single(&bp->pdev->dev,
+ 				 get_l2_fhdr(data),
+ 				 bp->rx_buf_use_size,
+-				 PCI_DMA_FROMDEVICE);
++				 DMA_FROM_DEVICE);
+ 	if (dma_mapping_error(&bp->pdev->dev, mapping)) {
+ 		kfree(data);
+ 		return -EIO;
+@@ -2881,7 +2881,7 @@ bnx2_tx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
+ 		}
+ 
+ 		dma_unmap_single(&bp->pdev->dev, dma_unmap_addr(tx_buf, mapping),
+-			skb_headlen(skb), PCI_DMA_TODEVICE);
++			skb_headlen(skb), DMA_TO_DEVICE);
+ 
+ 		tx_buf->skb = NULL;
+ 		last = tx_buf->nr_frags;
+@@ -2895,7 +2895,7 @@ bnx2_tx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
+ 			dma_unmap_page(&bp->pdev->dev,
+ 				dma_unmap_addr(tx_buf, mapping),
+ 				skb_frag_size(&skb_shinfo(skb)->frags[i]),
+-				PCI_DMA_TODEVICE);
++				DMA_TO_DEVICE);
+ 		}
+ 
+ 		sw_cons = BNX2_NEXT_TX_BD(sw_cons);
+@@ -3003,7 +3003,7 @@ bnx2_reuse_rx_data(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr,
+ 
+ 	dma_sync_single_for_device(&bp->pdev->dev,
+ 		dma_unmap_addr(cons_rx_buf, mapping),
+-		BNX2_RX_OFFSET + BNX2_RX_COPY_THRESH, PCI_DMA_FROMDEVICE);
++		BNX2_RX_OFFSET + BNX2_RX_COPY_THRESH, DMA_FROM_DEVICE);
+ 
+ 	rxr->rx_prod_bseq += bp->rx_buf_use_size;
+ 
+@@ -3044,7 +3044,7 @@ bnx2_rx_skb(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr, u8 *data,
  	}
+ 
+ 	dma_unmap_single(&bp->pdev->dev, dma_addr, bp->rx_buf_use_size,
+-			 PCI_DMA_FROMDEVICE);
++			 DMA_FROM_DEVICE);
+ 	skb = build_skb(data, 0);
+ 	if (!skb) {
+ 		kfree(data);
+@@ -3110,7 +3110,7 @@ bnx2_rx_skb(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr, u8 *data,
+ 			}
+ 
+ 			dma_unmap_page(&bp->pdev->dev, mapping_old,
+-				       PAGE_SIZE, PCI_DMA_FROMDEVICE);
++				       PAGE_SIZE, DMA_FROM_DEVICE);
+ 
+ 			frag_size -= frag_len;
+ 			skb->data_len += frag_len;
+@@ -3180,7 +3180,7 @@ bnx2_rx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
+ 
+ 		dma_sync_single_for_cpu(&bp->pdev->dev, dma_addr,
+ 			BNX2_RX_OFFSET + BNX2_RX_COPY_THRESH,
+-			PCI_DMA_FROMDEVICE);
++			DMA_FROM_DEVICE);
+ 
+ 		next_ring_idx = BNX2_RX_RING_IDX(BNX2_NEXT_RX_BD(sw_cons));
+ 		next_rx_buf = &rxr->rx_buf_ring[next_ring_idx];
+@@ -5449,7 +5449,7 @@ bnx2_free_tx_skbs(struct bnx2 *bp)
+ 			dma_unmap_single(&bp->pdev->dev,
+ 					 dma_unmap_addr(tx_buf, mapping),
+ 					 skb_headlen(skb),
+-					 PCI_DMA_TODEVICE);
++					 DMA_TO_DEVICE);
+ 
+ 			tx_buf->skb = NULL;
+ 
+@@ -5460,7 +5460,7 @@ bnx2_free_tx_skbs(struct bnx2 *bp)
+ 				dma_unmap_page(&bp->pdev->dev,
+ 					dma_unmap_addr(tx_buf, mapping),
+ 					skb_frag_size(&skb_shinfo(skb)->frags[k]),
+-					PCI_DMA_TODEVICE);
++					DMA_TO_DEVICE);
+ 			}
+ 			dev_kfree_skb(skb);
+ 		}
+@@ -5491,7 +5491,7 @@ bnx2_free_rx_skbs(struct bnx2 *bp)
+ 			dma_unmap_single(&bp->pdev->dev,
+ 					 dma_unmap_addr(rx_buf, mapping),
+ 					 bp->rx_buf_use_size,
+-					 PCI_DMA_FROMDEVICE);
++					 DMA_FROM_DEVICE);
+ 
+ 			rx_buf->data = NULL;
+ 
+@@ -5843,7 +5843,7 @@ bnx2_run_loopback(struct bnx2 *bp, int loopback_mode)
+ 		packet[i] = (unsigned char) (i & 0xff);
+ 
+ 	map = dma_map_single(&bp->pdev->dev, skb->data, pkt_size,
+-			     PCI_DMA_TODEVICE);
++			     DMA_TO_DEVICE);
+ 	if (dma_mapping_error(&bp->pdev->dev, map)) {
+ 		dev_kfree_skb(skb);
+ 		return -EIO;
+@@ -5882,7 +5882,7 @@ bnx2_run_loopback(struct bnx2 *bp, int loopback_mode)
+ 
+ 	udelay(5);
+ 
+-	dma_unmap_single(&bp->pdev->dev, map, pkt_size, PCI_DMA_TODEVICE);
++	dma_unmap_single(&bp->pdev->dev, map, pkt_size, DMA_TO_DEVICE);
+ 	dev_kfree_skb(skb);
+ 
+ 	if (bnx2_get_hw_tx_cons(tx_napi) != txr->tx_prod)
+@@ -5901,7 +5901,7 @@ bnx2_run_loopback(struct bnx2 *bp, int loopback_mode)
+ 
+ 	dma_sync_single_for_cpu(&bp->pdev->dev,
+ 		dma_unmap_addr(rx_buf, mapping),
+-		bp->rx_buf_use_size, PCI_DMA_FROMDEVICE);
++		bp->rx_buf_use_size, DMA_FROM_DEVICE);
+ 
+ 	if (rx_hdr->l2_fhdr_status &
+ 		(L2_FHDR_ERRORS_BAD_CRC |
+@@ -6660,7 +6660,8 @@ bnx2_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	} else
+ 		mss = 0;
+ 
+-	mapping = dma_map_single(&bp->pdev->dev, skb->data, len, PCI_DMA_TODEVICE);
++	mapping = dma_map_single(&bp->pdev->dev, skb->data, len,
++				 DMA_TO_DEVICE);
+ 	if (dma_mapping_error(&bp->pdev->dev, mapping)) {
+ 		dev_kfree_skb_any(skb);
+ 		return NETDEV_TX_OK;
+@@ -6741,7 +6742,7 @@ bnx2_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	tx_buf = &txr->tx_buf_ring[ring_prod];
+ 	tx_buf->skb = NULL;
+ 	dma_unmap_single(&bp->pdev->dev, dma_unmap_addr(tx_buf, mapping),
+-			 skb_headlen(skb), PCI_DMA_TODEVICE);
++			 skb_headlen(skb), DMA_TO_DEVICE);
+ 
+ 	/* unmap remaining mapped pages */
+ 	for (i = 0; i < last_frag; i++) {
+@@ -6750,7 +6751,7 @@ bnx2_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		tx_buf = &txr->tx_buf_ring[ring_prod];
+ 		dma_unmap_page(&bp->pdev->dev, dma_unmap_addr(tx_buf, mapping),
+ 			       skb_frag_size(&skb_shinfo(skb)->frags[i]),
+-			       PCI_DMA_TODEVICE);
++			       DMA_TO_DEVICE);
+ 	}
+ 
+ 	dev_kfree_skb_any(skb);
+@@ -8224,15 +8225,15 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
+ 		persist_dma_mask = dma_mask = DMA_BIT_MASK(64);
+ 
+ 	/* Configure DMA attributes. */
+-	if (pci_set_dma_mask(pdev, dma_mask) == 0) {
++	if (dma_set_mask(&pdev->dev, dma_mask) == 0) {
+ 		dev->features |= NETIF_F_HIGHDMA;
+-		rc = pci_set_consistent_dma_mask(pdev, persist_dma_mask);
++		rc = dma_set_coherent_mask(&pdev->dev, persist_dma_mask);
+ 		if (rc) {
+ 			dev_err(&pdev->dev,
+ 				"pci_set_consistent_dma_mask failed, aborting\n");
+ 			goto err_out_unmap;
+ 		}
+-	} else if ((rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) != 0) {
++	} else if ((rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) != 0) {
+ 		dev_err(&pdev->dev, "System does not support DMA, aborting\n");
+ 		goto err_out_unmap;
+ 	}
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 893bdaf03043..980e22e4e0e1 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -672,7 +672,7 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	prod = txr->tx_prod;
+ 	tx_buf = &txr->tx_buf_ring[prod];
+ 	dma_unmap_single(&pdev->dev, dma_unmap_addr(tx_buf, mapping),
+-			 skb_headlen(skb), PCI_DMA_TODEVICE);
++			 skb_headlen(skb), DMA_TO_DEVICE);
+ 	prod = NEXT_TX(prod);
+ 
+ 	/* unmap remaining mapped pages */
+@@ -681,7 +681,7 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		tx_buf = &txr->tx_buf_ring[prod];
+ 		dma_unmap_page(&pdev->dev, dma_unmap_addr(tx_buf, mapping),
+ 			       skb_frag_size(&skb_shinfo(skb)->frags[i]),
+-			       PCI_DMA_TODEVICE);
++			       DMA_TO_DEVICE);
+ 	}
+ 
+ tx_free:
+@@ -720,7 +720,7 @@ static void bnxt_tx_int(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts)
+ 		}
+ 
+ 		dma_unmap_single(&pdev->dev, dma_unmap_addr(tx_buf, mapping),
+-				 skb_headlen(skb), PCI_DMA_TODEVICE);
++				 skb_headlen(skb), DMA_TO_DEVICE);
+ 		last = tx_buf->nr_frags;
+ 
+ 		for (j = 0; j < last; j++) {
+@@ -730,7 +730,7 @@ static void bnxt_tx_int(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts)
+ 				&pdev->dev,
+ 				dma_unmap_addr(tx_buf, mapping),
+ 				skb_frag_size(&skb_shinfo(skb)->frags[j]),
+-				PCI_DMA_TODEVICE);
++				DMA_TO_DEVICE);
+ 		}
+ 		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS)) {
+ 			if (bp->flags & BNXT_FLAG_CHIP_P5) {
+@@ -903,7 +903,7 @@ static inline int bnxt_alloc_rx_page(struct bnxt *bp,
+ 	}
+ 
+ 	mapping = dma_map_page_attrs(&pdev->dev, page, offset,
+-				     BNXT_RX_PAGE_SIZE, PCI_DMA_FROMDEVICE,
++				     BNXT_RX_PAGE_SIZE, DMA_FROM_DEVICE,
+ 				     DMA_ATTR_WEAK_ORDERING);
+ 	if (dma_mapping_error(&pdev->dev, mapping)) {
+ 		__free_page(page);
+@@ -1143,7 +1143,7 @@ static struct sk_buff *bnxt_rx_pages(struct bnxt *bp,
+ 		}
+ 
+ 		dma_unmap_page_attrs(&pdev->dev, mapping, BNXT_RX_PAGE_SIZE,
+-				     PCI_DMA_FROMDEVICE,
++				     DMA_FROM_DEVICE,
+ 				     DMA_ATTR_WEAK_ORDERING);
+ 
+ 		skb->data_len += frag_len;
+@@ -2713,7 +2713,7 @@ static void bnxt_free_tx_skbs(struct bnxt *bp)
+ 				dma_unmap_single(&pdev->dev,
+ 					dma_unmap_addr(tx_buf, mapping),
+ 					dma_unmap_len(tx_buf, len),
+-					PCI_DMA_TODEVICE);
++					DMA_TO_DEVICE);
+ 				xdp_return_frame(tx_buf->xdpf);
+ 				tx_buf->action = 0;
+ 				tx_buf->xdpf = NULL;
+@@ -2738,7 +2738,7 @@ static void bnxt_free_tx_skbs(struct bnxt *bp)
+ 			dma_unmap_single(&pdev->dev,
+ 					 dma_unmap_addr(tx_buf, mapping),
+ 					 skb_headlen(skb),
+-					 PCI_DMA_TODEVICE);
++					 DMA_TO_DEVICE);
+ 
+ 			last = tx_buf->nr_frags;
+ 			j += 2;
+@@ -2750,7 +2750,7 @@ static void bnxt_free_tx_skbs(struct bnxt *bp)
+ 				dma_unmap_page(
+ 					&pdev->dev,
+ 					dma_unmap_addr(tx_buf, mapping),
+-					skb_frag_size(frag), PCI_DMA_TODEVICE);
++					skb_frag_size(frag), DMA_TO_DEVICE);
+ 			}
+ 			dev_kfree_skb(skb);
+ 		}
+@@ -2817,7 +2817,7 @@ static void bnxt_free_one_rx_ring_skbs(struct bnxt *bp, int ring_nr)
+ 			continue;
+ 
+ 		dma_unmap_page_attrs(&pdev->dev, rx_agg_buf->mapping,
+-				     BNXT_RX_PAGE_SIZE, PCI_DMA_FROMDEVICE,
++				     BNXT_RX_PAGE_SIZE, DMA_FROM_DEVICE,
+ 				     DMA_ATTR_WEAK_ORDERING);
+ 
+ 		rx_agg_buf->page = NULL;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 485252d12245..364460ef8db7 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -3366,7 +3366,7 @@ static int bnxt_run_loopback(struct bnxt *bp)
+ 		data[i] = (u8)(i & 0xff);
+ 
+ 	map = dma_map_single(&bp->pdev->dev, skb->data, pkt_size,
+-			     PCI_DMA_TODEVICE);
++			     DMA_TO_DEVICE);
+ 	if (dma_mapping_error(&bp->pdev->dev, map)) {
+ 		dev_kfree_skb(skb);
+ 		return -EIO;
+@@ -3379,7 +3379,7 @@ static int bnxt_run_loopback(struct bnxt *bp)
+ 	bnxt_db_write(bp, &txr->tx_db, txr->tx_prod);
+ 	rc = bnxt_poll_loopback(bp, cpr, pkt_size);
+ 
+-	dma_unmap_single(&bp->pdev->dev, map, pkt_size, PCI_DMA_TODEVICE);
++	dma_unmap_single(&bp->pdev->dev, map, pkt_size, DMA_TO_DEVICE);
+ 	dev_kfree_skb(skb);
+ 	return rc;
+ }
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+index bee6e091a997..c8083df5e0ab 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+@@ -87,7 +87,7 @@ void bnxt_tx_int_xdp(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts)
+ 			dma_unmap_single(&pdev->dev,
+ 					 dma_unmap_addr(tx_buf, mapping),
+ 					 dma_unmap_len(tx_buf, len),
+-					 PCI_DMA_TODEVICE);
++					 DMA_TO_DEVICE);
+ 			xdp_return_frame(tx_buf->xdpf);
+ 			tx_buf->action = 0;
+ 			tx_buf->xdpf = NULL;
+diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
+index 6f82eeaa4b9f..eefb070a68d2 100644
+--- a/drivers/net/ethernet/broadcom/tg3.c
++++ b/drivers/net/ethernet/broadcom/tg3.c
+@@ -6564,10 +6564,8 @@ static void tg3_tx(struct tg3_napi *tnapi)
+ 			skb_tstamp_tx(skb, &timestamp);
+ 		}
+ 
+-		pci_unmap_single(tp->pdev,
+-				 dma_unmap_addr(ri, mapping),
+-				 skb_headlen(skb),
+-				 PCI_DMA_TODEVICE);
++		dma_unmap_single(&tp->pdev->dev, dma_unmap_addr(ri, mapping),
++				 skb_headlen(skb), DMA_TO_DEVICE);
+ 
+ 		ri->skb = NULL;
+ 
+@@ -6584,10 +6582,10 @@ static void tg3_tx(struct tg3_napi *tnapi)
+ 			if (unlikely(ri->skb != NULL || sw_idx == hw_idx))
+ 				tx_bug = 1;
+ 
+-			pci_unmap_page(tp->pdev,
++			dma_unmap_page(&tp->pdev->dev,
+ 				       dma_unmap_addr(ri, mapping),
+ 				       skb_frag_size(&skb_shinfo(skb)->frags[i]),
+-				       PCI_DMA_TODEVICE);
++				       DMA_TO_DEVICE);
+ 
+ 			while (ri->fragmented) {
+ 				ri->fragmented = false;
+@@ -6646,8 +6644,8 @@ static void tg3_rx_data_free(struct tg3 *tp, struct ring_info *ri, u32 map_sz)
+ 	if (!ri->data)
+ 		return;
+ 
+-	pci_unmap_single(tp->pdev, dma_unmap_addr(ri, mapping),
+-			 map_sz, PCI_DMA_FROMDEVICE);
++	dma_unmap_single(&tp->pdev->dev, dma_unmap_addr(ri, mapping), map_sz,
++			 DMA_FROM_DEVICE);
+ 	tg3_frag_free(skb_size <= PAGE_SIZE, ri->data);
+ 	ri->data = NULL;
+ }
+@@ -6711,11 +6709,9 @@ static int tg3_alloc_rx_data(struct tg3 *tp, struct tg3_rx_prodring_set *tpr,
+ 	if (!data)
+ 		return -ENOMEM;
+ 
+-	mapping = pci_map_single(tp->pdev,
+-				 data + TG3_RX_OFFSET(tp),
+-				 data_size,
+-				 PCI_DMA_FROMDEVICE);
+-	if (unlikely(pci_dma_mapping_error(tp->pdev, mapping))) {
++	mapping = dma_map_single(&tp->pdev->dev, data + TG3_RX_OFFSET(tp),
++				 data_size, DMA_FROM_DEVICE);
++	if (unlikely(dma_mapping_error(&tp->pdev->dev, mapping))) {
+ 		tg3_frag_free(skb_size <= PAGE_SIZE, data);
+ 		return -EIO;
+ 	}
+@@ -6882,8 +6878,8 @@ static int tg3_rx(struct tg3_napi *tnapi, int budget)
+ 			if (skb_size < 0)
+ 				goto drop_it;
+ 
+-			pci_unmap_single(tp->pdev, dma_addr, skb_size,
+-					 PCI_DMA_FROMDEVICE);
++			dma_unmap_single(&tp->pdev->dev, dma_addr, skb_size,
++					 DMA_FROM_DEVICE);
+ 
+ 			/* Ensure that the update to the data happens
+ 			 * after the usage of the old DMA mapping.
+@@ -6908,11 +6904,13 @@ static int tg3_rx(struct tg3_napi *tnapi, int budget)
+ 				goto drop_it_no_recycle;
+ 
+ 			skb_reserve(skb, TG3_RAW_IP_ALIGN);
+-			pci_dma_sync_single_for_cpu(tp->pdev, dma_addr, len, PCI_DMA_FROMDEVICE);
++			dma_sync_single_for_cpu(&tp->pdev->dev, dma_addr, len,
++						DMA_FROM_DEVICE);
+ 			memcpy(skb->data,
+ 			       data + TG3_RX_OFFSET(tp),
+ 			       len);
+-			pci_dma_sync_single_for_device(tp->pdev, dma_addr, len, PCI_DMA_FROMDEVICE);
++			dma_sync_single_for_device(&tp->pdev->dev, dma_addr,
++						   len, DMA_FROM_DEVICE);
+ 		}
+ 
+ 		skb_put(skb, len);
+@@ -7762,10 +7760,8 @@ static void tg3_tx_skb_unmap(struct tg3_napi *tnapi, u32 entry, int last)
+ 	skb = txb->skb;
+ 	txb->skb = NULL;
+ 
+-	pci_unmap_single(tnapi->tp->pdev,
+-			 dma_unmap_addr(txb, mapping),
+-			 skb_headlen(skb),
+-			 PCI_DMA_TODEVICE);
++	dma_unmap_single(&tnapi->tp->pdev->dev, dma_unmap_addr(txb, mapping),
++			 skb_headlen(skb), DMA_TO_DEVICE);
+ 
+ 	while (txb->fragmented) {
+ 		txb->fragmented = false;
+@@ -7779,9 +7775,9 @@ static void tg3_tx_skb_unmap(struct tg3_napi *tnapi, u32 entry, int last)
+ 		entry = NEXT_TX(entry);
+ 		txb = &tnapi->tx_buffers[entry];
+ 
+-		pci_unmap_page(tnapi->tp->pdev,
++		dma_unmap_page(&tnapi->tp->pdev->dev,
+ 			       dma_unmap_addr(txb, mapping),
+-			       skb_frag_size(frag), PCI_DMA_TODEVICE);
++			       skb_frag_size(frag), DMA_TO_DEVICE);
+ 
+ 		while (txb->fragmented) {
+ 			txb->fragmented = false;
+@@ -7816,10 +7812,10 @@ static int tigon3_dma_hwbug_workaround(struct tg3_napi *tnapi,
+ 		ret = -1;
+ 	} else {
+ 		/* New SKB is guaranteed to be linear. */
+-		new_addr = pci_map_single(tp->pdev, new_skb->data, new_skb->len,
+-					  PCI_DMA_TODEVICE);
++		new_addr = dma_map_single(&tp->pdev->dev, new_skb->data,
++					  new_skb->len, DMA_TO_DEVICE);
+ 		/* Make sure the mapping succeeded */
+-		if (pci_dma_mapping_error(tp->pdev, new_addr)) {
++		if (dma_mapping_error(&tp->pdev->dev, new_addr)) {
+ 			dev_kfree_skb_any(new_skb);
+ 			ret = -1;
+ 		} else {
+@@ -8043,8 +8039,9 @@ static netdev_tx_t tg3_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 	len = skb_headlen(skb);
+ 
+-	mapping = pci_map_single(tp->pdev, skb->data, len, PCI_DMA_TODEVICE);
+-	if (pci_dma_mapping_error(tp->pdev, mapping))
++	mapping = dma_map_single(&tp->pdev->dev, skb->data, len,
++				 DMA_TO_DEVICE);
++	if (dma_mapping_error(&tp->pdev->dev, mapping))
+ 		goto drop;
+ 
+ 
+@@ -13499,8 +13496,8 @@ static int tg3_run_loopback(struct tg3 *tp, u32 pktsz, bool tso_loopback)
+ 	for (i = data_off; i < tx_len; i++)
+ 		tx_data[i] = (u8) (i & 0xff);
+ 
+-	map = pci_map_single(tp->pdev, skb->data, tx_len, PCI_DMA_TODEVICE);
+-	if (pci_dma_mapping_error(tp->pdev, map)) {
++	map = dma_map_single(&tp->pdev->dev, skb->data, tx_len, DMA_TO_DEVICE);
++	if (dma_mapping_error(&tp->pdev->dev, map)) {
+ 		dev_kfree_skb(skb);
+ 		return -EIO;
+ 	}
+@@ -13598,8 +13595,8 @@ static int tg3_run_loopback(struct tg3 *tp, u32 pktsz, bool tso_loopback)
+ 		} else
+ 			goto out;
+ 
+-		pci_dma_sync_single_for_cpu(tp->pdev, map, rx_len,
+-					    PCI_DMA_FROMDEVICE);
++		dma_sync_single_for_cpu(&tp->pdev->dev, map, rx_len,
++					DMA_FROM_DEVICE);
+ 
+ 		rx_data += TG3_RX_OFFSET(tp);
+ 		for (i = data_off; i < rx_len; i++, val++) {
+@@ -17755,11 +17752,11 @@ static int tg3_init_one(struct pci_dev *pdev,
+ 
+ 	/* Configure DMA attributes. */
+ 	if (dma_mask > DMA_BIT_MASK(32)) {
+-		err = pci_set_dma_mask(pdev, dma_mask);
++		err = dma_set_mask(&pdev->dev, dma_mask);
+ 		if (!err) {
+ 			features |= NETIF_F_HIGHDMA;
+-			err = pci_set_consistent_dma_mask(pdev,
+-							  persist_dma_mask);
++			err = dma_set_coherent_mask(&pdev->dev,
++						    persist_dma_mask);
+ 			if (err < 0) {
+ 				dev_err(&pdev->dev, "Unable to obtain 64 bit "
+ 					"DMA for consistent allocations\n");
+@@ -17768,7 +17765,7 @@ static int tg3_init_one(struct pci_dev *pdev,
+ 		}
+ 	}
+ 	if (err || dma_mask == DMA_BIT_MASK(32)) {
+-		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
++		err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+ 		if (err) {
+ 			dev_err(&pdev->dev,
+ 				"No usable DMA configuration, aborting\n");
 -- 
 2.30.2
 
