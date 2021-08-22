@@ -2,194 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F3CA3F3E35
-	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 09:00:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C60D3F3E40
+	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 09:15:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231700AbhHVHAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 03:00:41 -0400
-Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:26776 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231636AbhHVHAk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 03:00:40 -0400
-Received: from pop-os.home ([90.126.253.178])
-        by mwinf5d59 with ME
-        id kWzx250083riaq203Wzx1S; Sun, 22 Aug 2021 08:59:58 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 22 Aug 2021 08:59:58 +0200
-X-ME-IP: 90.126.253.178
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     rain.1986.08.12@gmail.com, zyjzyj2000@gmail.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] forcedeth: switch from 'pci_' to 'dma_' API
-Date:   Sun, 22 Aug 2021 08:59:56 +0200
-Message-Id: <099a3b5974f6b2be8770e180823e2883209a3691.1629615550.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.30.2
+        id S231391AbhHVHPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 03:15:36 -0400
+Received: from smtprelay0037.hostedemail.com ([216.40.44.37]:51066 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229934AbhHVHPg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 03:15:36 -0400
+Received: from omf02.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 3553D18037BD8;
+        Sun, 22 Aug 2021 07:14:54 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf02.hostedemail.com (Postfix) with ESMTPA id 09A5F1D42F4;
+        Sun, 22 Aug 2021 07:14:52 +0000 (UTC)
+Message-ID: <2e0bea3524268f96a39506b3e5ea9f738c6aab27.camel@perches.com>
+Subject: Re: [PATCH v1 1/1] ray_cs: use %*ph to print small buffer
+From:   Joe Perches <joe@perches.com>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Date:   Sun, 22 Aug 2021 00:14:51 -0700
+In-Reply-To: <877dgerrqw.fsf@codeaurora.org>
+References: <20210712142943.23981-1-andriy.shevchenko@linux.intel.com>
+         <20210821171432.B996DC4360C@smtp.codeaurora.org>
+         <293b9231af8b36bb9a24a11c689d33c7e89c3c4e.camel@perches.com>
+         <877dgerrqw.fsf@codeaurora.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Rspamd-Server: rspamout04
+X-Rspamd-Queue-Id: 09A5F1D42F4
+X-Stat-Signature: ybkgy97sw4z5qypncs8n4fbpy78rcu97
+X-Spam-Status: No, score=-1.59
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+yJGoCh/tebKAdOx3pd0yDij8KagAZkmo=
+X-HE-Tag: 1629616492-286889
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
+On Sun, 2021-08-22 at 08:08 +0300, Kalle Valo wrote:
+> Joe Perches <joe@perches.com> writes:
+> 
+> > On Sat, 2021-08-21 at 17:14 +0000, Kalle Valo wrote:
+> > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > > 
+> > > > Use %*ph format to print small buffer as hex string.
+> > > > 
+> > > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > > 
+> > > Patch applied to wireless-drivers-next.git, thanks.
+> > > 
+> > > 502213fd8fca ray_cs: use %*ph to print small buffer
+> > > 
+> > 
+> > There's one more of these in the same file but it's in an #ifdef 0 block...
+> 
+> I would rather remove the whole ifdef 0 block, patches welcome.
+> 
 
-The patch has been generated with the coccinelle script below.
+It'd probably take you about 20 seconds if you do it yourself.
 
-It has been hand modified to use 'dma_set_mask_and_coherent()' instead of
-'pci_set_dma_mask()/pci_set_consistent_dma_mask()' when applicable.
-This is less verbose.
+$ git grep -P -n '^\s*#\s*if\s+0\b' drivers/net/wireless/ray_cs.c
+drivers/net/wireless/ray_cs.c:637:#if 0
+drivers/net/wireless/ray_cs.c:2281:#if 0
+drivers/net/wireless/ray_cs.c:2341:#if 0
 
-It has been compile tested.
+Rather a bit more time if you want to do the whole kernel...
+
+$ git grep -P -n '^\s*#\s*if\s+0\b' | wc -l
+1558
 
 
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
-
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
-
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
-
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
-
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
----
- drivers/net/ethernet/nvidia/forcedeth.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
-index 8724d6a9ed02..ef3fb4cc90af 100644
---- a/drivers/net/ethernet/nvidia/forcedeth.c
-+++ b/drivers/net/ethernet/nvidia/forcedeth.c
-@@ -5782,15 +5782,11 @@ static int nv_probe(struct pci_dev *pci_dev, const struct pci_device_id *id)
- 		np->desc_ver = DESC_VER_3;
- 		np->txrxctl_bits = NVREG_TXRXCTL_DESC_3;
- 		if (dma_64bit) {
--			if (pci_set_dma_mask(pci_dev, DMA_BIT_MASK(39)))
-+			if (dma_set_mask_and_coherent(&pci_dev->dev, DMA_BIT_MASK(39)))
- 				dev_info(&pci_dev->dev,
- 					 "64-bit DMA failed, using 32-bit addressing\n");
- 			else
- 				dev->features |= NETIF_F_HIGHDMA;
--			if (pci_set_consistent_dma_mask(pci_dev, DMA_BIT_MASK(39))) {
--				dev_info(&pci_dev->dev,
--					 "64-bit DMA (consistent) failed, using 32-bit ring buffers\n");
--			}
- 		}
- 	} else if (id->driver_data & DEV_HAS_LARGEDESC) {
- 		/* packet format 2: supports jumbo frames */
--- 
-2.30.2
 
